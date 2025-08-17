@@ -24,10 +24,8 @@ variable (p q : Prop) {α : Sort u} (s : α → Prop)
 -- Note: we want `Classical.not_imp` to be attempted before the more general `not_forall_eq`.
 -- This happens because `not_forall_eq` isn't a `push` lemma,
 -- but instead is handled manually by the `pushNegBuiltin`.
-attribute [push] not_not not_or Classical.not_imp
-
--- We may want to rewrite `¬n = 0` into `0 < n` for `n : ℕ`, so `ne_eq` is marked with low priority.
-attribute [push ← low] ne_eq
+attribute [push] not_not not_or Classical.not_imp not_true not_false
+attribute [push ←] ne_eq
 
 @[push] theorem not_iff : ¬(p ↔ q) ↔ (p ∧ ¬q) ∨ (¬p ∧ q) :=
   _root_.not_iff.trans <| iff_iff_and_or_not_and_not.trans <| by rw [not_not, or_comm]
@@ -81,33 +79,10 @@ where
   mkSimpStep (e : Expr) (pf : Expr) : Simp.Step :=
     Simp.Step.continue (some { expr := e, proof? := some pf })
 
-/-- The type for a constant to be pushed by `push`. -/
-inductive Head where
-| name (const : Name)
-| lambda
-| forall
-
-def Head.toString : Head → String
-  | .name const => const.toString
-  | .lambda => "fun _ => ·"
-  | .forall => "∀ _, ·"
-
-/--
-Check whether the expression is a target for pushing `head`.
-
-Note that for constants, we require `e` to be an application,
-because otherwise there is nothing to push.
--/
-def Head.isHeadOf (head : Head) (e : Expr) : Bool :=
-  match head with
-  | .name const => e.isApp && e.isAppOf const
-  | .lambda => e.isLambda
-  | .forall => e.isForall
-
 section ElabHead
 open Elab Term
 
-partial def syntaxLambdaBody (stx : Syntax) : Syntax :=
+private partial def syntaxLambdaBody (stx : Syntax) : Syntax :=
   match stx with
   | `(fun $_ => $stx) => syntaxLambdaBody stx
   | _ => stx
@@ -167,10 +142,11 @@ end ElabHead
 /-- Push at the top level of the current expression. -/
 def pushStep (head : Head) : Simp.Simproc := fun e => do
   let e_whnf ← whnfR e
-  unless head.isHeadOf e_whnf do
+  let some e_head := Head.ofExpr? e_whnf | return Simp.Step.continue
+  unless e_head == head do
     return Simp.Step.continue
-  let thms ← pushExt.getTheorems
-  if let some r ← Simp.rewrite? e thms.pre {} (tag := "push") (rflOnly := false) then
+  let thms := pushExt.getState (← getEnv)
+  if let some r ← Simp.rewrite? e thms {} "push" false then
     -- We return `.visit r` instead of `.continue r`, because in the case of a triple negation,
     -- after rewriting `¬¬¬p` into `¬p`, we want to rewrite again at `¬p`.
     return Simp.Step.visit r
@@ -222,8 +198,6 @@ def pushLocalDecl (head : Head) (discharge? : Option Simp.Discharge) (fvarId : F
   if mvarIdNew == mvarId then throwError "push made no progress"
   replaceMainGoal [mvarIdNew]
 
-open private Lean.Elab.Tactic.mkDischargeWrapper in mkSimpContext
-
 /--
 `push` pushes the given constant away from the root of the expression. For example
 - `push · ∈ ·` rewrites `x ∈ {y} ∪ zᶜ` into `x = y ∨ ¬ x ∈ z`
@@ -241,6 +215,8 @@ To push a constant at a hypothesis, use the `push ... at h` or `push ... at *` s
 -/
 syntax (name := push) "push " (discharger)? (colGt term) (location)? : tactic
 
+open private Lean.Elab.Tactic.mkDischargeWrapper in mkSimpContext
+
 @[tactic push, inherit_doc push]
 def elabPush : Tactic := fun stx => do
   let dischargeWrapper ← Lean.Elab.Tactic.mkDischargeWrapper stx[1]
@@ -253,13 +229,13 @@ def elabPush : Tactic := fun stx => do
       (fun _ ↦ logInfo m!"`push` couldn't find a {head.toString} to push")
 
 /--
-Push negations into the conclusion of a hypothesis.
+Push negations into the conclusion or a hypothesis.
 For instance, a hypothesis `h : ¬ ∀ x, ∃ y, x ≤ y` will be transformed by `push_neg at h` into
-`h : ∃ x, ∀ y, y < x`. Variable names are conserved.
+`h : ∃ x, ∀ y, y < x`. Variable names are conserved. There is also a `pushNeg` simproc which
+should be used as `simp [↓pushNeg]`
 
-`push_neg` is a special case of the more general `push` tactic, applied to the constant `Not`.
-The `push` tactic can be extended using the `@[push]` attribute. Additionally,
-there is a `pushNeg` simproc, which can be used as `simp [↓pushNeg]`.
+`push_neg` is a special case of the more general `push` tactic, for the constant `Not`.
+The `push` tactic can be extended using the `@[push]` attribute.
 
 `push_neg` has two modes: in standard mode, it transforms `¬(p ∧ q)` into `p → ¬q`, whereas in
 distrib mode it produces `¬p ∨ ¬q`. To use distrib mode, use `set_option push_neg.use_distrib true`.
@@ -326,9 +302,9 @@ syntax (name := pushTree) "#push_discr_tree " (colGt term) : command
 def elabPushTree : Elab.Command.CommandElab := fun stx => do
   Elab.Command.runTermElabM fun _ => do
   let head ← elabHead ⟨stx[1]⟩
-  let thms ← pushExt.getTheorems
+  let thms := pushExt.getState (← getEnv)
   let mut logged := false
-  for (key, trie) in thms.pre.root do
+  for (key, trie) in thms.root do
     let matchesHead (k : DiscrTree.Key) : Bool :=
       match k, head with
       | .const n _, .name n' => n == n'
@@ -339,7 +315,7 @@ def elabPushTree : Elab.Command.CommandElab := fun stx => do
       logInfo m! "DiscrTree branch for {key}:{indentD (format trie)}"
       logged := true
   unless logged do
-    logInfo m! "There are no `push` theorems for the key {head.toString}"
+    logInfo m! "There are no `push` theorems for {head.toString}"
 
 end DiscrTree
 
