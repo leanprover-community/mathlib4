@@ -1,3 +1,4 @@
+-- import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.Ring.NamePolyVars
 
 -- set_option trace.name_poly_vars true

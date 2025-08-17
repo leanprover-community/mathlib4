@@ -41,21 +41,36 @@ initialize registerTraceClass `name_poly_vars
 
 namespace Mathlib.Tactic.NamePolyVars
 
+/-- The signature of a polynomial-like notation, consisting of the opening and closing brackets,
+and a `Bool` to declare if it is multivariate. -/
 structure NotationSignature where
+  /-- The opening bracket. -/
   opening : String
+  /-- The closing bracket. -/
   closing : String
+  /-- Whether the notation is multivariate. -/
   mv? : Bool
 deriving Inhabited, DecidableEq, Hashable, Repr
 
+/-- A polynomial-like notation, consisting of the opening and closing brackets, a `Bool` to declare
+if it is multivariate, the `type` (e.g. `Polynomial`), the constant term `c` (e.g. `Polynomial.C`),
+and the formal variable(s) `x` (e.g. `Polynomial.X`). -/
 structure Notation where
+  /-- The opening bracket. -/
   opening : String
+  /-- The closing bracket. -/
   closing : String
+  /-- Whether the notation is multivariate. -/
   mv? : Bool
+  /-- The polynomial-like type of the notation. -/
   type : Term
+  /-- The constant term of the notation. -/
   c : Term
+  /-- The formal variable(s) of the notation. -/
   x : Term
 deriving Inhabited, Repr
 
+/-- Get the signature of a polynomial-like notation. -/
 def Notation.signature (n : Notation) : NotationSignature where
   opening := n.opening
   closing := n.closing
@@ -65,26 +80,34 @@ def Notation.signature (n : Notation) : NotationSignature where
 `syntax "[" vars "]" : polyesque_notation` -/
 declare_syntax_cat polyesque_notation
 
+/-- A polynomial-like notation. -/
 abbrev PolyesqueNotation : Type := TSyntax `polyesque_notation
 
+/-- A syntax for variables in a polynomial-like notation. The special case of one-variable
+multivariate notation is `X,` with a trailing comma. -/
 syntax vars := sepBy(ident,",",",",allowTrailingSep)
 
--- right = mv
+/-- Parse variables in a polynomial-like notation. One-variable goes to `Sum.inl`, and multivariate
+goes to `Sum.inr`. -/
 def parseVars : TSyntax ``vars → Option (Ident ⊕ Array Ident)
   | `(vars| $var:ident) => pure (Sum.inl var)
   | `(vars| $var:ident,) => pure (Sum.inr #[var])
   | `(vars| $vars:ident,*) => pure (Sum.inr vars.getElems)
   | _ => .none
 
+/-- A syntax to declare whether the polynomial notation is for one-variable or multivariate. -/
 syntax var_decl := &"X" ("," "...")?
 
+/-- The syntax for variable declarations in a polynomial-like notation. -/
 abbrev VarDecl : Type := TSyntax ``var_decl
 
+/-- The parser for whether the polynomial notation is for one-variable or multivariate. -/
 def _root_.Lean.TSyntax.varDeclToBool : VarDecl → Bool
   | `(var_decl| X) => false
   | `(var_decl| X, ...) => true
   | _ => false
 
+/-- Convert a `Bool` to a variable declaration. -/
 def _root_.Bool.toVarDecl : Bool → String
   | false => "X"
   | true => "X, ..."
@@ -92,6 +115,7 @@ def _root_.Bool.toVarDecl : Bool → String
 /-- An unambiguous term declaration, which is either an identifier or a term enclosed in brackets -/
 syntax term_decl := ident <|> ("(" term ")")
 
+/-- A type synonym for a term declaration, used to avoid ambiguity in the syntax. -/
 abbrev TermDecl : Type := TSyntax ``term_decl
 
 /-- Convert a `TermDecl` to a term. -/
@@ -100,15 +124,19 @@ def _root_.Lean.TSyntax.term : TermDecl → Term
   | `(term_decl| ($u:term)) => u
   | _ => default
 
+/-- Convert a `TermDecl` to a string. -/
 def _root_.Lean.TSyntax.rawTermDecl : TermDecl → String
   | `(term_decl| $k:ident) => s!"{k.getId}"
   | `(term_decl| ($u:term)) => s!"({u.raw.prettyPrint.pretty'})"
   | _ => ""
 
+/-- The table for storing registered polynomial-like notations. We use the signature for lookup. -/
 abbrev NotationTable := Std.HashMap NotationSignature Notation
 
+/-- The environmental extension for registered polynomial-like notations. -/
 abbrev NotationTableExt := SimpleScopedEnvExtension Notation NotationTable
 
+/-- Initialize the notation table extension. -/
 initialize notationTableExt : NotationTableExt ← registerSimpleScopedEnvExtension <|
   { addEntry old new := insert (new.signature, new) old
     initial := {} }
@@ -123,6 +151,7 @@ register_poly_vars "[[" X, ... "]]" MvPowerSeries (MvPowerSeries.C _ _) MvPowerS
 syntax (name := register)
   "register_poly_vars " str var_decl str term_decl term_decl term_decl : command
 
+/-- Elaborate the `register_poly_vars` command. -/
 @[command_elab register]
 def registerElab : CommandElab := fun stx ↦ do
   let `(command|register_poly_vars $opening:str $mv?:var_decl $closing:str
@@ -134,8 +163,8 @@ def registerElab : CommandElab := fun stx ↦ do
   if declared.keys.all fun s ↦ (s.opening, s.closing) ≠ (opening, closing) then
     -- Extend the polyesque_notation to include the new notation
     -- e.g. for polynomial, `syntax "[" vars "]" : polyesque_notation`
-    elabCommand <| ← `(command|syntax $(quote opening):str vars $(quote closing):str :
-      polyesque_notation)
+    elabCommand <| ← `(command|/-- Register a polynomial-like notation. -/
+      syntax $(quote opening):str vars $(quote closing):str : polyesque_notation)
   -- register the new syntax to the global table
   trace[name_poly_vars] m!"Registering new syntax: {opening} {mv?} {closing}"
   notationTableExt.add
@@ -148,8 +177,11 @@ def registerElab : CommandElab := fun stx ↦ do
     .global
   trace[name_poly_vars] m!"New table size: {(notationTableExt.getState (← getEnv)).size}"
 
+/-- A parsed body for one polynomial-like notation, consisting of the type of the notation
+(e.g. `MvPolynomial`) and the array of variable identifiers (or one identifier). -/
 abbrev Body : Type := Notation × (Ident ⊕ Array Ident)
 
+/-- Get the `Body` from a polynomial-like notation. -/
 def _root_.Lean.TSyntax.polyesqueNotation (p : PolyesqueNotation) : CoreM Body := do
   let .node _ _ #[.atom _ opening, v, .atom _ closing] := p.raw
     | throwError m!"Unrecognised polynomial-like notation: {p}"
@@ -161,19 +193,23 @@ def _root_.Lean.TSyntax.polyesqueNotation (p : PolyesqueNotation) : CoreM Body :
     | throwError s!"Unrecognised polynomial-like syntax: {opening} {mv?.toVarDecl} {closing}"
   return (n, v)
 
+/-- Create the type for a polynomial-like notation. -/
 def Body.mkType (b : Body) (type : Term) : CoreM Term :=
   match b.snd with
   | Sum.inl _ => `($b.fst.type $type)
   | Sum.inr ns => `($b.fst.type (Fin $(quote ns.size)) $type)
 
+/-- Create the constant term for a polynomial-like notation. -/
 def Body.mkC (b : Body) (term : Term) : CoreM Term :=
   `($b.fst.c $term)
 
+/-- Create the formal variable term(s) for a polynomial-like notation. -/
 def Body.mkX (b : Body) : CoreM (Array (Ident × Term)) :=
   match b.snd with
   | Sum.inl n => return #[(n, b.fst.x)]
   | Sum.inr ns => ns.zipIdx.mapM fun n ↦ return (n.fst, ← `($b.fst.x $(quote n.snd)))
 
+/-- Convert the notation to a raw string. -/
 def Body.raw (b : Body) : String :=
   b.fst.opening ++
   (match b.snd with
@@ -181,34 +217,60 @@ def Body.raw (b : Body) : String :=
     | Sum.inr ns => ",".intercalate (ns.map fun n ↦ s!"{n.getId}").toList) ++
   b.fst.closing
 
+/-- The syntax for polynomial-like notations, which is an unambiguous term declaration followed by
+one or more polynomial-like notations, e.g. `(Fin 37)[x,y,z][[t]]`. -/
 syntax polyesque := term_decl noWs polyesque_notation+
 
+/-- The type of polynomial-like syntaxes. -/
 abbrev Polyesque : Type := TSyntax ``polyesque
 
+/-- A syntax category for declared polynomial-like notations, stored as raw strings literals.
+For example, after `(Fin 37)[x,y,z]` is declared, this will store the string literal `"[x,y,z]"`.
+This is used to retrieve the declared notation, e.g. `(Fin 37)[x,y,z]` as a term will now be parsed
+as the term declaration `(Fin 37)` followed by the atom `"[x,y,z]"`. -/
 declare_syntax_cat polyesque_declared
 
+/-- The syntax category for retrieving declared notations, which is an umambiguous term declaration
+followed by a declared polynomial-like notation, e.g. `(Fin 37)` followed by `"[x,y,z][[t]]"`. -/
 syntax (name := polyesqueTerm) term_decl noWs polyesque_declared : term
 
+/-- Parse a declared polynomial-like notation. -/
 def parseDeclared (stx : TSyntax `polyesque_declared) : String :=
   match stx.raw with
   | .node _ _ #[.atom _ str] => str
   | _ => ""
 
+/-- Declare a local polynomial-like notation. Usage:
+```lean
+name_poly_vars (Fin 37)[x,y,z][[t]]
+#check x
+#check t
+#check (Fin 37)[x,y,z][[t]]
+```
+-/
 syntax (name := declare) "name_poly_vars " polyesque : command
 
+/-- The table to store local polynomial-like notations, indexed by the raw string representation. -/
 abbrev Declared := Std.HashMap String Term
 
+/-- The environmental extension to locally store polynomial-like notations. -/
 abbrev DeclaredExt := SimpleScopedEnvExtension (String × Term) Declared
 
+/-- Initialise the environmental extension to locally store polynomial-like notations. -/
 initialize declaredExt : DeclaredExt ← registerSimpleScopedEnvExtension <|
   { addEntry old new := insert new old
     initial := {} }
 
+/-- Return the raw string for a declaration of polynomial-like notation. -/
 def _root_.Lean.TSyntax.parsePolyesqueRaw (p : Polyesque) : CoreM String := do
   let `(polyesque| $head:term_decl$body:polyesque_notation*) := p
     | throwError m!"Unrecognised syntax: {p}"
   return head.rawTermDecl ++ .join (← body.mapM fun p ↦ return (← p.polyesqueNotation).raw).toList
 
+/-- Given a declaration of polynomial-like notation (e.g. `(Fin 37)[x,y,z][[t]]`), parse it fully to
+return the head (e.g. `(Fin 37)`), the raw body (e.g. `"[x,y,z][[t]]`"), the total type generated
+(e.g. `PowerSeries (MvPolynomial (Fin 3) (Fin 37))`), and the terms corresponding to each declared
+identifier (e.g. `x := PowerSeries.C (MvPolynomial.X 0)`). -/
 def _root_.Lean.TSyntax.parsePolyesqueFull (p : Polyesque) :
     CoreM (String × String × Term × Array (Ident × Term)) := do
   let `(polyesque| $head:term_decl$body:polyesque_notation*) := p
@@ -223,6 +285,7 @@ def _root_.Lean.TSyntax.parsePolyesqueFull (p : Polyesque) :
     raw := raw ++ b.raw
   return (head.rawTermDecl, raw, type, terms)
 
+/-- Elaborate the command `name_poly_vars`. -/
 @[command_elab declare]
 def elabDeclarePolyVars : CommandElab := fun stx => do
   let `(command|name_poly_vars $p:polyesque) := stx
@@ -238,6 +301,7 @@ def elabDeclarePolyVars : CommandElab := fun stx => do
   elabCommand <| ← `(command| local syntax $(quote bodyStr):str : polyesque_declared)
   declaredExt.add (raw, type) .local
 
+/-- Elaborate the later references to the polynomial-like notation, e.g. `(Fin 37)[x,y,z][[t]]`. -/
 @[term_elab polyesqueTerm]
 def polyesqueElab : Term.TermElab := fun stx e => do
   let `(polyesqueTerm| $head:term_decl$body:polyesque_declared) := stx
