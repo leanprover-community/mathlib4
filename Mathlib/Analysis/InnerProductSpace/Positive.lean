@@ -103,7 +103,7 @@ theorem isPositive_zero : IsPositive (0 : E →ₗ[𝕜] E) := ⟨.zero, by simp
 @[simp]
 theorem isPositive_one : IsPositive (1 : E →ₗ[𝕜] E) := ⟨.id, fun _ => inner_self_nonneg⟩
 
-@[simp]
+@[simp, nolint simpNF] -- failed to synthesize CharP (E →L[𝕜] E) ?m.5
 theorem isPositive_natCast {n : ℕ} : IsPositive (n : E →ₗ[𝕜] E) := by
   refine ⟨IsSymmetric.natCast n, fun x => ?_⟩
   simp only [Module.End.natCast_apply, ← Nat.cast_smul_eq_nsmul 𝕜, inner_smul_left, map_natCast,
@@ -232,7 +232,7 @@ theorem isPositive_zero : IsPositive (0 : E →L[𝕜] E) :=
 theorem isPositive_one : IsPositive (1 : E →L[𝕜] E) :=
   ⟨.one _, fun _ => inner_self_nonneg⟩
 
-@[simp]
+@[simp, nolint simpNF] -- failed to synthesize CharP (E →L[𝕜] E) ?m.5
 theorem isPositive_natCast {n : ℕ} : IsPositive (n : E →L[𝕜] E) :=
   (isPositive_toLinearMap_iff _).mp LinearMap.isPositive_natCast
 
