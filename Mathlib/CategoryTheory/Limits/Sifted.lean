@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
-import Mathlib.CategoryTheory.Monoidal.ExternalProduct
+import Mathlib.CategoryTheory.Monoidal.ExternalProduct.Basic
 import Mathlib.CategoryTheory.Closed.Types
 import Mathlib.CategoryTheory.Monoidal.Limits.Preserves
 import Mathlib.CategoryTheory.Limits.Preserves.Bifunctor
@@ -213,7 +213,7 @@ theorem isSiftedOrEmpty_of_colimit_preservesBinaryProducts
     _ ≅ colimit (_ ⊗ _) := HasColimit.isoOfNatIso
       (NatIso.ofComponents (fun _ ↦ Iso.refl _)).symm
     _ ≅ (colimit _) ⊗ (colimit _) := CartesianMonoidalCategory.prodComparisonIso colim _ _
-    _ ≅ PUnit ⊗ PUnit := (Coyoneda.colimitCoyonedaIso _) ⊗ (Coyoneda.colimitCoyonedaIso _)
+    _ ≅ PUnit ⊗ PUnit := (Coyoneda.colimitCoyonedaIso _) ⊗ᵢ (Coyoneda.colimitCoyonedaIso _)
     _ ≅ PUnit := λ_ _
 
 lemma isSiftedOrEmpty_of_colimit_preservesFiniteProducts
@@ -260,7 +260,7 @@ theorem of_final_functor_from_sifted'
       (fun c ↦ Final.colimitIso F _)
       (fun _ ↦ by
         apply colimit.hom_ext
-        simp [comp_obj, colimit.ι_pre_assoc, ι_colimMap, ι_colimMap_assoc])
+        simp [comp_obj, ι_colimMap, ι_colimMap_assoc])
   apply preservesLimit_of_natIso K colim_comp_iso
 
 end
