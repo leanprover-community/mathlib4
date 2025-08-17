@@ -166,11 +166,7 @@ def lift [HasReverse V'] (φ : Prefunctor V V') :
 
 theorem lift_spec [HasReverse V'] (φ : Prefunctor V V') :
     Symmetrify.of.comp (Symmetrify.lift φ) = φ := by
-  fapply Prefunctor.ext
-  · rintro X
-    rfl
-  · rintro X Y f
-    rfl
+  tauto
 
 theorem lift_reverse [h : HasInvolutiveReverse V']
     (φ : Prefunctor V V') {X Y : Symmetrify V} (f : X ⟶ Y) :
