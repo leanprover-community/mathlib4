@@ -242,9 +242,7 @@ theorem sub_quot {R : Type uR} [Ring R] (r : R → R → Prop) {a b} :
 
 theorem smul_quot [Algebra S R] {n : S} {a : R} :
     (n • ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (n • a)⟩ := by
-  change smul r _ _ = _
-  rw [smul]
-  rfl
+  tauto
 
 instance instIsScalarTower [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T R]
     [IsScalarTower S T R] : IsScalarTower S T (RingQuot r) :=
