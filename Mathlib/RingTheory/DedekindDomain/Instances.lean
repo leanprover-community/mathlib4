@@ -84,10 +84,12 @@ local notation3 "Sₚ" => Localization P'
 
 variable [FaithfulSMul R S]
 
-noncomputable instance : Algebra Sₚ L :=
+noncomputable abbrev Localization.AtPrime.lift_algebra : Algebra Sₚ L :=
   (map _ (T := S⁰) (RingHom.id S)
     (algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul _
       P.primeCompl_le_nonZeroDivisors)).toAlgebra
+
+attribute [local instance] Localization.AtPrime.lift_algebra
 
 instance : IsScalarTower S Sₚ L :=
   localization_isScalarTower_of_submonoid_le _ _ _ _
