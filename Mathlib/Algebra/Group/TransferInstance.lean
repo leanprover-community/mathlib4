@@ -194,6 +194,15 @@ protected abbrev mulAction (e : α ≃ β) [MulAction M β] : MulAction M α whe
   one_smul := by simp [smul_def]
   mul_smul := by simp [smul_def, mul_smul]
 
+/-- Transfer `SMulCommClass` across an `Equiv` -/
+protected lemma smulCommClass (M N) [SMul M β] [SMul N β] [SMulCommClass M N β] :
+    letI := Equiv.smul M e
+    letI := Equiv.smul N e
+    SMulCommClass M N α :=
+  letI := Equiv.smul M e
+  letI := Equiv.smul N e
+  { smul_comm m n x := by simp [Equiv.smul_def,Equiv.apply_symm_apply, smul_comm m n] }
+
 end Equiv
 
 namespace Finite
