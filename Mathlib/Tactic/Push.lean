@@ -24,7 +24,7 @@ variable (p q : Prop) {α : Sort u} (s : α → Prop)
 -- Note: we want `Classical.not_imp` to be attempted before the more general `not_forall_eq`.
 -- This happens because `not_forall_eq` isn't a `push` lemma,
 -- but instead is handled manually by the `pushNegBuiltin`.
-attribute [push] not_not not_or Classical.not_imp not_true not_false
+attribute [push] not_not not_or Classical.not_imp not_false_eq_true not_true_eq_false
 attribute [push ←] ne_eq
 
 @[push] theorem not_iff : ¬(p ↔ q) ↔ (p ∧ ¬q) ∨ (¬p ∧ q) :=
@@ -177,9 +177,8 @@ def pushTarget (head : Head) (disch? : Option Simp.Discharge) :
     TacticM Unit := withMainContext do
   let mvarId ← getMainGoal
   let tgt ← instantiateMVars (← mvarId.getType)
-  let mvarIdNew ← applySimpResultToTarget mvarId tgt (← pushCore head tgt disch?)
-  if mvarIdNew == mvarId then throwError "push made no progress"
-  replaceMainGoal [mvarIdNew]
+  let mvarId ← applySimpResultToTarget mvarId tgt (← pushCore head tgt disch?)
+  replaceMainGoal [mvarId]
 
 /-- Execute main loop of `push` at a local hypothesis. -/
 def pushLocalDecl (head : Head) (disch? : Option Simp.Discharge) (fvarId : FVarId) :
@@ -189,9 +188,10 @@ def pushLocalDecl (head : Head) (disch? : Option Simp.Discharge) (fvarId : FVarI
   let tgt ← instantiateMVars ldecl.type
   let mvarId ← getMainGoal
   let result ← pushCore head tgt disch?
-  let some (_, mvarIdNew) ← applySimpResultToLocalDecl mvarId fvarId result False | failure
-  if mvarIdNew == mvarId then throwError "push made no progress"
-  replaceMainGoal [mvarIdNew]
+  if let some (_, mvarId) ← applySimpResultToLocalDecl mvarId fvarId result False then
+    replaceMainGoal [mvarId]
+  else
+    replaceMainGoal []
 
 end push
 
@@ -231,9 +231,8 @@ def pullTarget (head : Head) (discharge? : Option Simp.Discharge) :
     TacticM Unit := withMainContext do
   let mvarId ← getMainGoal
   let tgt ← instantiateMVars (← mvarId.getType)
-  let mvarIdNew ← applySimpResultToTarget mvarId tgt (← pullCore head tgt discharge?)
-  if mvarIdNew == mvarId then throwError "pull made no progress"
-  replaceMainGoal [mvarIdNew]
+  let mvarId ← applySimpResultToTarget mvarId tgt (← pullCore head tgt discharge?)
+  replaceMainGoal [mvarId]
 
 /-- Execute main loop of `pull` at a local hypothesis. -/
 def pullLocalDecl (head : Head) (discharge? : Option Simp.Discharge) (fvarId : FVarId) :
@@ -243,9 +242,10 @@ def pullLocalDecl (head : Head) (discharge? : Option Simp.Discharge) (fvarId : F
   let tgt ← instantiateMVars ldecl.type
   let mvarId ← getMainGoal
   let result ← pullCore head tgt discharge?
-  let some (_, mvarIdNew) ← applySimpResultToLocalDecl mvarId fvarId result False | failure
-  if mvarIdNew == mvarId then throwError "pull made no progress"
-  replaceMainGoal [mvarIdNew]
+  if let some (_, mvarId) ← applySimpResultToLocalDecl mvarId fvarId result False then
+    replaceMainGoal [mvarId]
+  else
+    replaceMainGoal []
 
 end pull
 
@@ -292,8 +292,7 @@ def elabPush : Tactic := fun stx => do
 /--
 Push negations into the conclusion or a hypothesis.
 For instance, a hypothesis `h : ¬ ∀ x, ∃ y, x ≤ y` will be transformed by `push_neg at h` into
-`h : ∃ x, ∀ y, y < x`. Variable names are conserved. There is also a `pushNeg` simproc which
-should be used as `simp [↓pushNeg]`
+`h : ∃ x, ∀ y, y < x`. Variable names are conserved.
 
 `push_neg` is a special case of the more general `push` tactic, for the constant `Not`.
 The `push` tactic can be extended using the `@[push]` attribute.
@@ -315,12 +314,6 @@ at every hypothesis and the goal using `push_neg at *` or at selected hypotheses
 using say `push_neg at h h' ⊢`, as usual.
 -/
 macro (name := push_neg) "push_neg" loc:(location)? : tactic => `(tactic| push Not $[$loc]?)
-
-/--
-A simproc variant of `push_neg` that can be used as `simp [↓pushNeg]`.
-It is better to write `↓pushNeg` instead of `pushNeg` because it is faster.
--/
-simproc_decl _root_.pushNeg (Not _) := pushStep (.name ``Not)
 
 /--
 `pull` is the inverse tactic to `pull`.
