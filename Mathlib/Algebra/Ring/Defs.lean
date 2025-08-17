@@ -140,7 +140,12 @@ addition, and `0` and `1` are additive and multiplicative identities. -/
 class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
 
 /-- A `Ring` is a `Semiring` with negation making it an additive group. -/
-class Ring (α : Type u) extends Semiring α, NonUnitalRing α, NonAssocRing α
+class Ring (α : Type u)
+  extends Semiring α, NonUnitalRing α, NonAssocRing α, AddCommGroupWithOne α -- remove?
+
+-- see Note [lower instance priority]
+attribute [instance 100] Ring.toNonUnitalRing
+attribute [instance 100] Ring.toNonAssocRing -- remove?
 
 /-!
 ### Semirings
@@ -219,6 +224,10 @@ class NonAssocCommSemiring (α : Type u)
 /-- A commutative semiring is a semiring with commutative multiplication. -/
 class CommSemiring (α : Type u)
   extends Semiring α, NonUnitalCommSemiring α, NonAssocCommSemiring α, CommMonoidWithZero α
+
+-- see Note [lower instance priority]
+attribute [instance 100] CommSemiring.toNonUnitalCommSemiring
+attribute [instance 100] CommSemiring.toNonAssocCommSemiring
 
 section CommSemiring
 
@@ -356,6 +365,14 @@ class NonAssocCommRing (α : Type u)
 
 /-- A commutative ring is a ring with commutative multiplication. -/
 class CommRing (α : Type u) extends Ring α, CommSemiring α, NonUnitalCommRing α, NonAssocCommRing α
+
+-- see Note [lower instance priority]
+attribute [instance 100] NonUnitalCommRing.toNonUnitalCommSemiring
+attribute [instance 100] CommRing.toCommSemiring
+attribute [instance 100] CommRing.toNonUnitalCommRing
+attribute [instance 100] CommRing.toNonAssocCommRing
+
+instance [CommRing α] : CommMonoid α := inferInstance -- remove?
 
 /-- A domain is a nontrivial semiring such that multiplication by a non zero element
 is cancellative on both sides. In other words, a nontrivial semiring `R` satisfying
