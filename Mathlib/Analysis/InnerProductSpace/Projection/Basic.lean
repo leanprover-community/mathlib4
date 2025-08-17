@@ -560,7 +560,6 @@ theorem starProjection_orthogonalComplement_singleton_eq_zero (v : E) :
   rw [starProjection_apply, coe_eq_zero]
   exact orthogonalProjection_orthogonalComplement_singleton_eq_zero v
 
-
 /-- If the orthogonal projection to `K` is well-defined, then a vector splits as the sum of its
 orthogonal projections onto a complete submodule `K` and onto the orthogonal complement of `K`. -/
 theorem starProjection_add_starProjection_orthogonal [K.HasOrthogonalProjection]
