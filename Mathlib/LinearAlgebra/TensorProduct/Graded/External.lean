@@ -104,9 +104,7 @@ def gradedComm :
 /-- The braiding is symmetric. -/
 @[simp]
 theorem gradedComm_symm : (gradedComm R 𝒜 ℬ).symm = gradedComm R ℬ 𝒜 := by
-  rw [gradedComm, gradedComm, LinearEquiv.trans_symm, LinearEquiv.symm_symm]
-  ext
-  rfl
+  tauto
 
 theorem gradedComm_of_tmul_of (i j : ι) (a : 𝒜 i) (b : ℬ j) :
     gradedComm R 𝒜 ℬ (lof R _ 𝒜 i a ⊗ₜ lof R _ ℬ j b) =
