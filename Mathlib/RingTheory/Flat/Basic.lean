@@ -593,7 +593,7 @@ theorem map_id_injective_of_flat_left [Module.Flat R M] {MN MP : Type*} [AddComm
     [AddCommMonoid MP] [Module R MN] [Module R MP] {f : M →ₗ[R] N →ₗ[R] MN} {g : M →ₗ[R] P →ₗ[R] MP}
     (hf : IsTensorProduct f) (hg : IsTensorProduct g) (i : N →ₗ[R] P)
     (hi : Function.Injective i) : Function.Injective (hf.map hg LinearMap.id i) := by
-  have h : hf.map hg LinearMap.id i = hg.equiv ∘ ((i.lTensor M) ∘ hf.equiv.symm) :=
+  have h : hf.map hg LinearMap.id i = hg.equiv ∘ i.lTensor M ∘ hf.equiv.symm :=
     funext fun x ↦ hf.inductionOn x (by simp) (by simp) (fun _ _ hx hy ↦ by simp [hx, hy])
   simpa [h] using Module.Flat.lTensor_preserves_injective_linearMap i hi
 
@@ -601,7 +601,7 @@ theorem map_id_injective_of_flat_right [Module.Flat R M] {NM PM : Type*} [AddCom
     [AddCommMonoid PM] [Module R NM] [Module R PM] {f : N →ₗ[R] M →ₗ[R] NM} {g : P →ₗ[R] M →ₗ[R] PM}
     (hf : IsTensorProduct f) (hg : IsTensorProduct g) (i : N →ₗ[R] P)
     (hi : Function.Injective i) : Function.Injective (hf.map hg i LinearMap.id) := by
-  have h : hf.map hg i LinearMap.id = hg.equiv ∘ ((i.rTensor M) ∘ hf.equiv.symm) :=
+  have h : hf.map hg i LinearMap.id = hg.equiv ∘ i.rTensor M ∘ hf.equiv.symm :=
     funext fun x ↦ hf.inductionOn x (by simp) (by simp) (fun _ _ hx hy ↦ by simp [hx, hy])
   simpa [h] using Module.Flat.rTensor_preserves_injective_linearMap i hi
 
@@ -609,7 +609,7 @@ theorem map_id_injective_of_flat_right [Module.Flat R M] {NM PM : Type*} [AddCom
   Also see `IsTensorProduct.map_injective_of_flat'` for different flatness conditions. -/
 theorem map_injective_of_flat (h₁ : Function.Injective i₁) (h₂ : Function.Injective i₂)
     [Module.Flat R M₂] [Module.Flat R N₁] : Function.Injective (hf.map hg i₁ i₂) := by
-  have h : hf.map hg i₁ i₂ = hg.equiv ∘ (((TensorProduct.map i₁ i₂)) ∘ hf.equiv.symm) :=
+  have h : hf.map hg i₁ i₂ = hg.equiv ∘ TensorProduct.map i₁ i₂ ∘ hf.equiv.symm :=
     funext fun x ↦ hf.inductionOn x (by simp) (by simp) (fun _ _ hx hy ↦ by simp [hx, hy])
   simpa [h] using map_injective_of_flat_flat i₁ i₂ h₁ h₂
 
@@ -617,7 +617,7 @@ theorem map_injective_of_flat (h₁ : Function.Injective i₁) (h₂ : Function.
   Also see `IsTensorProduct.map_injective_of_flat` for different flatness conditions. -/
 theorem map_injective_of_flat' (h₁ : Function.Injective i₁) (h₂ : Function.Injective i₂)
     [Module.Flat R M₁] [Module.Flat R N₂] : Function.Injective (hf.map hg i₁ i₂) := by
-  have h : hf.map hg i₁ i₂ = hg.equiv ∘ (((TensorProduct.map i₁ i₂)) ∘ hf.equiv.symm) :=
+  have h : hf.map hg i₁ i₂ = hg.equiv ∘ TensorProduct.map i₁ i₂ ∘ hf.equiv.symm :=
     funext fun x ↦ hf.inductionOn x (by simp) (by simp) (fun _ _ hx hy ↦ by simp [hx, hy])
   simpa [h] using map_injective_of_flat_flat' i₁ i₂ h₁ h₂
 
