@@ -85,15 +85,12 @@ where
 inductive Head where
 | name (const : Name)
 | lambda
-| Forall
+| forall
 
-/-- Retrieve the `Head` of an expression. -/
-def Head.ofExpr (e : Expr) : MetaM Head := do
-  if e.isForall then return .Forall
-  if e.isLambda then return .lambda
-  if let some const := e.getAppFn.constName? then
-    return .name const
-  throwError "tactic `push` expected a term that can be pushed, not {indentExpr e}"
+def Head.toString : Head → String
+  | .name const => const.toString
+  | .lambda => "fun _ => ·"
+  | .forall => "∀ _, ·"
 
 /--
 Check whether the expression is a target for pushing `head`.
@@ -105,7 +102,67 @@ def Head.isHeadOf (head : Head) (e : Expr) : Bool :=
   match head with
   | .name const => e.isApp && e.isAppOf const
   | .lambda => e.isLambda
-  | .Forall => e.isForall
+  | .forall => e.isForall
+
+section ElabHead
+open Elab Term
+
+partial def syntaxLambdaBody (stx : Syntax) : Syntax :=
+  match stx with
+  | `(fun $_ => $stx) => syntaxLambdaBody stx
+  | _ => stx
+
+/--
+This is a copy of `elabCDotFunctionAlias?` in core lean.
+It has been modified so that it can also support `∃ _, ·`, `∑ _, ·`, etc.
+-/
+def elabCDotFunctionAlias? (stx : Term) : TermElabM (Option Expr) := do
+  let some stx ← liftMacroM <| expandCDotArg? stx | pure none
+  let stx ← liftMacroM <| expandMacros stx
+  match stx with
+  | `(fun $binders* => $f $args*) =>
+    -- we use `syntaxLambdaBody` to get rid of extra lambdas in cases like `∃ _, ·`
+    if binders.raw.toList.isPerm (args.raw.toList.map syntaxLambdaBody) then
+      try Term.resolveId? f catch _ => return none
+    else
+      return none
+  | `(fun $binders* => binop% $f $a $b)
+  | `(fun $binders* => binop_lazy% $f $a $b)
+  | `(fun $binders* => leftact% $f $a $b)
+  | `(fun $binders* => rightact% $f $a $b)
+  | `(fun $binders* => binrel% $f $a $b)
+  | `(fun $binders* => binrel_no_prop% $f $a $b) =>
+    if binders == #[a, b] || binders == #[b, a] then
+      try Term.resolveId? f catch _ => return none
+    else
+      return none
+  | `(fun $binders* => unop% $f $a) =>
+    if binders == #[a] then
+      try Term.resolveId? f catch _ => return none
+    else
+      return none
+  | _ => return none
+where
+  expandCDotArg? (stx : Term) : MacroM (Option Term) :=
+    match stx with
+    | `(($h:hygieneInfo $e)) => Term.expandCDot? e h.getHygieneInfo
+    | _ => Term.expandCDot? stx none
+
+/-- Elaborator for the argument passed to `push`. It accepts a constant, or a function -/
+def elabHead (term : Term) : TermElabM Head := withRef term do
+  match term with
+  | `(fun $_ => ·) => return .lambda
+  | `(∀ $_, ·) => return .forall
+  | _ =>
+    match ← resolveId? term (withInfo := true) <|> elabCDotFunctionAlias? term with
+    | some (.const name _) =>
+      return .name name
+    | _ => throwError "Could not resolve `push` arugment {term}. \
+      Expected either a constant as in `push Not`, \
+      or a function with `·` notation as in `push ¬.`"
+
+end ElabHead
+
 
 /-- Push at the top level of the current expression. -/
 def pushStep (head : Head) : Simp.Simproc := fun e => do
@@ -184,27 +241,16 @@ To push a constant at a hypothesis, use the `push ... at h` or `push ... at *` s
 -/
 syntax (name := push) "push " (discharger)? (colGt term) (location)? : tactic
 
-open Elab in
-/-- Elaborator for the expression passed to `push` -/
-def elabHead (stx : Syntax) : TermElabM Expr := withRef stx do
-  if stx.isIdent then
-    if let some e ← Term.resolveId? stx (withInfo := true) then
-      return e
-  withTheReader Term.Context ({ · with ignoreTCFailures := true }) <|
-  Term.withoutModifyingElabMetaStateWithInfo <|
-  Term.withoutErrToSorry <|
-  Term.elabTerm stx none
-
 @[tactic push, inherit_doc push]
 def elabPush : Tactic := fun stx => do
   let dischargeWrapper ← Lean.Elab.Tactic.mkDischargeWrapper stx[1]
-  let head ← Head.ofExpr (← elabHead stx[2])
+  let head ← elabHead ⟨stx[2]⟩
   let loc := expandOptLocation stx[3]
   dischargeWrapper.with fun discharge? => do
     withLocation loc
       (pushLocalDecl head discharge?)
       (pushTarget head discharge?)
-      (fun _ ↦ logInfo "push_neg couldn't find a negation to push")
+      (fun _ ↦ logInfo m!"`push` couldn't find a {head.toString} to push")
 
 /--
 Push negations into the conclusion of a hypothesis.
@@ -244,7 +290,7 @@ macro "push_neg" : conv => `(conv| push Not)
 /-- Execute `push` as a conv tactic. -/
 @[tactic pushConv] def elabPushConv : Tactic := fun stx ↦ withMainContext do
   let dischargeWrapper ← Lean.Elab.Tactic.mkDischargeWrapper stx[1]
-  let head ← Head.ofExpr (← elabHead stx[2])
+  let head ← elabHead ⟨stx[2]⟩
   dischargeWrapper.with fun discharge? => do
     Conv.applySimpResult (← pushCore head (← instantiateMVars (← Conv.getLhs)) discharge?)
 
@@ -269,22 +315,21 @@ syntax (name := pushTree) "#push_discr_tree " (colGt term) : command
 @[command_elab pushTree, inherit_doc pushTree]
 def elabPushTree : Elab.Command.CommandElab := fun stx => do
   Elab.Command.runTermElabM fun _ => do
-  let head ← elabHead stx[1]
-  let headKey : DiscrTree.Key := (← withReducible <| DiscrTree.getMatchKeyRootFor head).1
+  let head ← elabHead ⟨stx[1]⟩
   let thms ← pushExt.getTheorems
   let mut logged := false
   for (key, trie) in thms.pre.root do
-    let keyEq (k k' : DiscrTree.Key) : Bool :=
-      match k, k' with
-      | .const n _, .const n' _ => n == n'
-      | .other    , .other      => true
-      | .arrow    , .arrow      => true
-      | _         , _           => false
-    if keyEq key headKey then
+    let matchesHead (k : DiscrTree.Key) : Bool :=
+      match k, head with
+      | .const n _, .name n' => n == n'
+      | .other    , .lambda  => true
+      | .arrow    , .forall  => true
+      | _         , _        => false
+    if matchesHead key then
       logInfo m! "DiscrTree branch for {key}:{indentD (format trie)}"
       logged := true
   unless logged do
-    logInfo m! "There are no `push` theorems for the key {headKey}"
+    logInfo m! "There are no `push` theorems for the key {head.toString}"
 
 end DiscrTree
 
