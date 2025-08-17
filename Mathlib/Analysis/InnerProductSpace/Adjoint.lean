@@ -460,14 +460,14 @@ def adjoint : (E →ₗ[𝕜] F) ≃ₗ⋆[𝕜] F →ₗ[𝕜] E :=
 theorem adjoint_toContinuousLinearMap (A : E →ₗ[𝕜] F) :
     haveI := FiniteDimensional.complete 𝕜 E
     haveI := FiniteDimensional.complete 𝕜 F
-    LinearMap.toContinuousLinearMap A.adjoint =
-      ContinuousLinearMap.adjoint A.toContinuousLinearMap :=
+    LinearMap.toContinuousLinearMap (LinearMap.adjoint A) =
+      ContinuousLinearMap.adjoint (LinearMap.toContinuousLinearMap A) :=
   rfl
 
 theorem adjoint_eq_toCLM_adjoint (A : E →ₗ[𝕜] F) :
     haveI := FiniteDimensional.complete 𝕜 E
     haveI := FiniteDimensional.complete 𝕜 F
-    A.adjoint = ContinuousLinearMap.adjoint A.toContinuousLinearMap :=
+    LinearMap.adjoint A = ContinuousLinearMap.adjoint (LinearMap.toContinuousLinearMap A) :=
   rfl
 
 /-- The fundamental property of the adjoint. -/
@@ -709,7 +709,7 @@ lemma linearIsometryEquiv_coe_apply (u : unitary (H →L[𝕜] H)) :
 
 @[simp]
 lemma linearIsometryEquiv_coe_symm_apply (e : H ≃ₗᵢ[𝕜] H) :
-    ↑(linearIsometryEquiv.symm e) = (e : H →L[𝕜] H) :=
+    linearIsometryEquiv.symm e = (e : H →L[𝕜] H) :=
   rfl
 
 end unitary

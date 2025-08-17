@@ -65,7 +65,7 @@ lemma respectsIso : RespectsIso FaithfullyFlat :=
   stableUnderComposition.respectsIso (fun e ↦ .of_bijective e.bijective)
 
 lemma isStableUnderBaseChange : IsStableUnderBaseChange FaithfullyFlat := by
-  refine .mk respectsIso (fun R S T _ _ _ _ _ _ ↦ show (algebraMap S _).FaithfullyFlat from ?_)
+  refine .mk respectsIso (fun R S T _ _ _ _ _ _ ↦ show (algebraMap _ _).FaithfullyFlat from ?_)
   rw [faithfullyFlat_algebraMap_iff] at *
   infer_instance
 
