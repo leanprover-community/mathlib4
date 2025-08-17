@@ -384,12 +384,7 @@ def piFinset : @Filtration (Π i, X i) (Finset ι) _ pi where
 
 lemma piFinset_eq_comap_restrict (s : Finset ι) :
     piFinset (X := X) s = pi.comap s.toSet.restrict := by
-  apply le_antisymm
-  · simp_rw [piFinset, ← Set.piCongrLeft_comp_restrict, ← MeasurableEquiv.coe_piCongrLeft,
-      ← comap_comp]
-    exact MeasurableSpace.comap_mono <| (MeasurableEquiv.measurable _).comap_le
-  · rw [← piCongrLeft_comp_restrict, ← MeasurableEquiv.coe_piCongrLeft, ← comap_comp]
-    exact MeasurableSpace.comap_mono <| (MeasurableEquiv.measurable _).comap_le
+  tauto
 
 end piFinset
 
