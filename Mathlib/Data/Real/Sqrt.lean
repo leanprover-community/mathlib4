@@ -193,7 +193,7 @@ theorem sqrt_le_sqrt (h : x ≤ y) : √x ≤ √y := by
 
 @[mono]
 theorem sqrt_monotone : Monotone Real.sqrt :=
-  fun _ _ ↦ Real.sqrt_le_sqrt
+  fun _ _ ↦ sqrt_le_sqrt
 
 @[gcongr, bound]
 theorem sqrt_lt_sqrt (hx : 0 ≤ x) (h : x < y) : √x < √y :=
