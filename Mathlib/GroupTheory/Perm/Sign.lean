@@ -230,18 +230,10 @@ theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f
   dsimp only [signBijAux]
   rw [mul_apply, mul_apply]
   rw [mem_finPairsLT] at hab
-  by_cases h : g b < g a
-  · rw [dif_pos h]
-    simp only [not_le_of_gt hab, mul_one, Perm.inv_apply_self, if_false]
-  · rw [dif_neg h, inv_apply_self, inv_apply_self, if_pos hab.le]
-    by_cases h₁ : f (g b) ≤ f (g a)
-    · have : f (g b) ≠ f (g a) := by
-        rw [Ne, f.injective.eq_iff, g.injective.eq_iff]
-        exact ne_of_lt hab
-      rw [if_pos h₁, if_neg (h₁.lt_of_ne this).not_ge]
-      rfl
-    · rw [if_neg h₁, if_pos (lt_of_not_ge h₁).le]
-      rfl
+  by_cases hg : g b < g a
+  · simp [*]
+  obtain hf | hf := (f.injective.ne <| g.injective.ne hab.ne).lt_or_gt <;>
+    simp_all [le_of_lt, not_le_of_gt, not_lt_of_ge]
 
 private theorem signAux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2)) 1) = -1 :=
   show _ = ∏ x ∈ {(⟨1, 0⟩ : Σ _ : Fin (n + 2), Fin (n + 2))},
