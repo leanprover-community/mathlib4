@@ -99,8 +99,6 @@ noncomputable def terminalIso : ⊤_ Type u ≅ PUnit :=
 noncomputable def isTerminalPunit : IsTerminal (PUnit : Type u) :=
   terminalIsTerminal.ofIso terminalIso
 
--- Porting note: the following three instances have been added to ease
--- the automation in a definition in `AlgebraicTopology.SimplicialSet`
 noncomputable instance : Inhabited (⊤_ (Type u)) :=
   ⟨@terminal.from (Type u) _ _ (ULift (Fin 1)) (ULift.up 0)⟩
 

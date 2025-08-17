@@ -296,7 +296,6 @@ theorem Spec_Γ_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
 @[simps! hom_app inv_app]
 def LocallyRingedSpace.SpecΓIdentity : Spec.toLocallyRingedSpace.rightOp ⋙ Γ ≅ 𝟭 _ :=
   Iso.symm <| NatIso.ofComponents.{u,u,u+1,u+1} (fun R =>
-    -- Porting note: In Lean3, this `IsIso` is synthesized automatically
     letI : IsIso (toSpecΓ R) := StructureSheaf.isIso_to_global _
     asIso (toSpecΓ R)) fun {X Y} f => by convert Spec_Γ_naturality (R := X) (S := Y) f
 
@@ -310,8 +309,6 @@ theorem Spec_map_localization_isIso (R : CommRingCat.{u}) (M : Submonoid R)
         (CommRingCat.ofHom (algebraMap R (Localization M))).op).stalkMap x) := by
   dsimp only [Spec.toPresheafedSpace_map, Quiver.Hom.unop_op]
   rw [← localRingHom_comp_stalkIso]
-  -- Porting note: replaced `apply (config := { instances := false })`.
-  -- See https://github.com/leanprover/lean4/issues/2273
   refine IsIso.comp_isIso' inferInstance (IsIso.comp_isIso' ?_ inferInstance)
   /- I do not know why this is defeq to the goal, but I'm happy to accept that it is. -/
   change
