@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2025 S. Gangloff. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: S. Gangloff
+-/
+
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Int.Basic
@@ -15,11 +21,6 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Topology.Instances.EReal.Lemmas
 import Mathlib.Data.Finset.Basic
 import Mathlib.Logic.Equiv.Defs
-
-open Set Topology
-open Filter
-
-namespace SymbolicDynamics
 
 /-!
 # Symbolic dynamics over `ℤ^d`
@@ -51,6 +52,12 @@ boxes and a (limsup-based) notion of topological entropy.
 
 -/
 
+open Set Topology
+open Filter
+
+namespace SymbolicDynamics
+
+
 variable {A : Type*} [Fintype A] [DecidableEq A] [Inhabited A]
   [TopologicalSpace A] [DiscreteTopology A]
 
@@ -59,8 +66,8 @@ variable {d : ℕ}
 /-- The lattice `ℤ^d` as functions `Fin d → ℤ`. -/
 def Zd (d : ℕ) := Fin d → ℤ
 
-@[instance]
 /-- Decidable equality on `Zd d`. -/
+@[instance]
 def Zd.decidableEq (d : ℕ) : DecidableEq (Zd d) :=
   inferInstanceAs (DecidableEq (Fin d → ℤ))
 
@@ -137,13 +144,18 @@ lemma cylinder_is_open (U : Finset (Zd d)) (x : Zd d → A) :
   IsOpen (cylinder U x) := by
   let S : Set (FullShiftZd A d) := ⋂ i ∈ U, { y | y i = x i }
   have : cylinder U x = S := by
-    ext y; simp [cylinder, mem_iInter₂]
+    ext y
+    rw [cylinder, mem_setOf_eq]
+    rw [mem_iInter₂]
+    simp only [mem_setOf_eq]
   rw [this]
   apply isOpen_biInter_finset
   intro i _
   have : { y : FullShiftZd A d | y i = x i } = (fun y ↦ y i) ⁻¹' {x i} := rfl
-  simpa [this] using
-    (Continuous.isOpen_preimage (continuous_apply i) (isOpen_discrete ({x i} : Set A)))
+  rw [this]
+  apply Continuous.isOpen_preimage
+  · exact continuous_apply i
+  · exact isOpen_discrete ({x i} : Set A)
 end
 
 section
@@ -156,14 +168,41 @@ lemma cylinder_is_closed (d : ℕ) (U : Finset (Zd d)) (x : Zd d → A) :
     IsClosed (cylinder U x) := by
   have h : (cylinder U x)ᶜ = ⋃ (i ∈ U) (a ∈ (Finset.univ \ {x i} : Finset A)),
       cylinder {i} (Function.update x i a) := by
-    ext y; simp [mem_cylinder, exists_prop, mem_iUnion, mem_compl_iff]
+    · ext y
+      simp only [mem_compl_iff]
+      simp only [mem_iUnion]
+      simp only [mem_cylinder]
+      simp only [Finset.mem_univ, Finset.mem_sdiff]
+      simp only [not_forall]
+      simp only [exists_prop]
+      constructor
+      · intro hy
+        push_neg at hy
+        obtain ⟨i, hiU, hiy⟩ := hy
+        use i, hiU, y i
+        constructor
+        · simp [hiy]
+        · simp [Function.update_apply]
+      · rintro ⟨i, hiU, a, ha, hy⟩
+        simp only [true_and] at ha
+        use i, hiU
+        rw [hy]
+        simp only [Function.update_apply]
+        have hne : a ≠ x i := by
+          intro h
+          apply ha
+          rw [h]
+          exact Finset.mem_singleton_self _
+        exact hne
+        exact Finset.mem_singleton_self i
   have : IsOpen ((cylinder U x)ᶜ) := by
-    simpa [h] using
-      (isOpen_iUnion fun i ↦
-        isOpen_iUnion fun _ ↦
-          isOpen_iUnion fun _ ↦
-            isOpen_iUnion fun _ ↦ cylinder_is_open {i} (Function.update x i ·))
-  simpa [isOpen_compl_iff] using this
+    rw [h]
+    apply isOpen_iUnion; intro i
+    apply isOpen_iUnion; intro hi
+    apply isOpen_iUnion; intro a
+    apply isOpen_iUnion; intro ha
+    exact cylinder_is_open {i} (Function.update x i a)
+  exact isOpen_compl_iff.mp this
 end
 
 /-! ## Subshifts and patterns -/
