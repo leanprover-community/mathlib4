@@ -333,30 +333,27 @@ theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg
   let g : ℕ → A⁰_ f := fun j => (m + m).choose j •
       if h2 : m + m < j then (0 : A⁰_ f)
       else
-        -- Porting note: inlining `l`, `r` causes a "can't synth HMul A⁰_ f A⁰_ f ?" error
         if h1 : j ≤ m then
-          letI l : A⁰_ f := HomogeneousLocalization.mk
+          (HomogeneousLocalization.mk
             ⟨m * i, ⟨proj 𝒜 i a ^ j * proj 𝒜 i b ^ (m - j), ?_⟩,
-              ⟨_, by rw [mul_comm]; mem_tac⟩, ⟨i, rfl⟩⟩
-          letI r : A⁰_ f := (HomogeneousLocalization.mk
+              ⟨_, by rw [mul_comm]; mem_tac⟩, ⟨i, rfl⟩⟩ : A⁰_ f) *
+          (HomogeneousLocalization.mk
             ⟨m * i, ⟨proj 𝒜 i b ^ m, by rw [← smul_eq_mul]; mem_tac⟩,
-              ⟨_, by rw [mul_comm]; mem_tac⟩, ⟨i, rfl⟩⟩)
-          l * r
+              ⟨_, by rw [mul_comm]; mem_tac⟩, ⟨i, rfl⟩⟩ : A⁰_ f)
         else
-          letI l : A⁰_ f := HomogeneousLocalization.mk
+          (HomogeneousLocalization.mk
             ⟨m * i, ⟨proj 𝒜 i a ^ m, by rw [← smul_eq_mul]; mem_tac⟩,
-              ⟨_, by rw [mul_comm]; mem_tac⟩, ⟨i, rfl⟩⟩
-          letI r : A⁰_ f := HomogeneousLocalization.mk
+              ⟨_, by rw [mul_comm]; mem_tac⟩, ⟨i, rfl⟩⟩ : A⁰_ f) *
+          (HomogeneousLocalization.mk
             ⟨m * i, ⟨proj 𝒜 i a ^ (j - m) * proj 𝒜 i b ^ (m + m - j), ?_⟩,
-              ⟨_, by rw [mul_comm]; mem_tac⟩, ⟨i, rfl⟩⟩
-          l * r
+              ⟨_, by rw [mul_comm]; mem_tac⟩, ⟨i, rfl⟩⟩ : A⁰_ f)
   rotate_left
   · rw [(_ : m * i = _)]
     apply GradedMonoid.toGradedMul.mul_mem <;> mem_tac_aux
     rw [← add_smul, Nat.add_sub_of_le h1]; rfl
   · rw [(_ : m * i = _)]
     apply GradedMonoid.toGradedMul.mul_mem (i := (j-m) • i) (j := (m + m - j) • i) <;> mem_tac_aux
-    rw [← add_smul]; congr; zify [le_of_not_gt h2, le_of_not_ge h1]; abel
+    rw [← add_smul]; congr; omega
   convert_to ∑ i ∈ range (m + m + 1), g i ∈ q.1; swap
   · refine q.1.sum_mem fun j _ => nsmul_mem ?_ _; split_ifs
     exacts [q.1.zero_mem, q.1.mul_mem_left _ (hb i), q.1.mul_mem_right _ (ha i)]

@@ -546,7 +546,7 @@ def costructuredArrowMapCocone (G : D ⥤ H) (α : F ⟶ L ⋙ G) (Y : D) :
     naturality := by simp [← G.map_comp] }
 
 @[simp]
-lemma pointwiseLeftKanExtension_desc_app (G : D ⥤ H) (α :  F ⟶ L ⋙ G) (Y : D) :
+lemma pointwiseLeftKanExtension_desc_app (G : D ⥤ H) (α : F ⟶ L ⋙ G) (Y : D) :
     ((pointwiseLeftKanExtension L F).descOfIsLeftKanExtension (pointwiseLeftKanExtensionUnit L F)
       G α |>.app Y) = colimit.desc _ (costructuredArrowMapCocone L F G α Y) := by
   let β : L.pointwiseLeftKanExtension F ⟶ G :=

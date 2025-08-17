@@ -96,7 +96,7 @@ theorem HasEval.map (hφ : Continuous φ) {a : R} (ha : HasEval a) :
   simp only [hasEval_iff] at ha ⊢
   exact ha.map hφ
 
-protected theorem HasEval.X:
+protected theorem HasEval.X :
     HasEval (X : R⟦X⟧) := by
   rw [hasEval_iff]
   exact MvPowerSeries.HasEval.X

@@ -42,6 +42,8 @@ but add these assumptions later as needed. (Quite a few results still do not req
 
 We define a few constructions of smooth manifolds:
 * every empty type is a smooth manifold
+* `IsManifold.of_discreteTopoloy`: a discrete space is a smooth manifold
+  (over the trivial model with corners on the trivial space)
 * the product of two smooth manifolds
 * the disjoint union of two manifolds (over the same charted space)
 
@@ -155,7 +157,7 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
   `ModelWithCorners.of_convex_range` -/
   convex_range' :
     if h : IsRCLikeNormedField 𝕜 then
-      letI := h.rclike 𝕜;
+      letI := h.rclike 𝕜
       letI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
       Convex ℝ (range toPartialEquiv)
     else range toPartialEquiv = univ
@@ -331,7 +333,7 @@ theorem convex_range [NormedSpace ℝ E] : Convex ℝ (range I) := by
 
 protected theorem uniqueDiffOn : UniqueDiffOn 𝕜 (range I) := by
   by_cases h : IsRCLikeNormedField 𝕜
-  · letI := h.rclike 𝕜;
+  · letI := h.rclike 𝕜
     letI := NormedSpace.restrictScalars ℝ 𝕜 E
     apply uniqueDiffOn_convex_of_isRCLikeNormedField _ I.nonempty_interior
     simpa [h] using I.convex_range
@@ -490,7 +492,7 @@ def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Ty
       have : range (fun (x : ModelProd H H') ↦ (I x.1, I' x.2)) = range (Prod.map I I') := rfl
       rw [this, Set.range_prodMap]
       split_ifs with h
-      · letI := h.rclike;
+      · letI := h.rclike
         letI := NormedSpace.restrictScalars ℝ 𝕜 E; letI := NormedSpace.restrictScalars ℝ 𝕜 E'
         exact I.convex_range.prod I'.convex_range
       · simp [range_eq_univ_of_not_isRCLikeNormedField, h]
@@ -512,8 +514,8 @@ def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Typ
   convex_range' := by
     rw [PartialEquiv.pi_apply, Set.range_piMap]
     split_ifs with h
-    · letI := h.rclike;
-      letI := fun i ↦ NormedSpace.restrictScalars ℝ 𝕜 (E i);
+    · letI := h.rclike
+      letI := fun i ↦ NormedSpace.restrictScalars ℝ 𝕜 (E i)
       exact convex_pi fun i _hi ↦ (I i).convex_range
     · simp [range_eq_univ_of_not_isRCLikeNormedField, h]
   nonempty_interior' := by
@@ -764,8 +766,6 @@ class IsManifold {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [TopologicalSpace M] [ChartedSpace H M] : Prop
     extends HasGroupoid M (contDiffGroupoid n I)
 
-@[deprecated (since := "2025-01-09")] alias SmoothManifoldWithCorners := IsManifold
-
 /-- Building a `C^n` manifold from a `HasGroupoid` assumption. -/
 theorem IsManifold.mk' {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
@@ -773,8 +773,6 @@ theorem IsManifold.mk' {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     [gr : HasGroupoid M (contDiffGroupoid n I)] : IsManifold I n M :=
   { gr with }
-
-@[deprecated (since := "2025-01-09")] alias SmoothManifoldWithCorners.mk' := IsManifold.mk'
 
 theorem isManifold_of_contDiffOn {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
@@ -786,9 +784,6 @@ theorem isManifold_of_contDiffOn {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   compatible := by
     haveI : HasGroupoid M (contDiffGroupoid n I) := hasGroupoid_of_pregroupoid _ (h _ _)
     apply StructureGroupoid.compatible
-
-@[deprecated (since := "2025-01-09")]
-alias smoothManifoldWithCorners_of_contDiffOn := isManifold_of_contDiffOn
 
 /-- For any model with corners, the model space is a `C^n` manifold -/
 instance instIsManifoldModelSpace {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
@@ -956,20 +951,12 @@ theorem PartialHomeomorph.isManifold_singleton
   @IsManifold.mk' _ _ _ _ _ _ _ _ _ _ _ (id _) <|
     e.singleton_hasGroupoid h (contDiffGroupoid n I)
 
-@[deprecated (since := "2025-01-09")]
-alias PartialHomeomorph.singleton_smoothManifoldWithCorners :=
-  PartialHomeomorph.isManifold_singleton
-
 theorem Topology.IsOpenEmbedding.isManifold_singleton {𝕜 E H : Type*}
     [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [TopologicalSpace H]
     {I : ModelWithCorners 𝕜 E H} {n : WithTop ℕ∞}
     {M : Type*} [TopologicalSpace M] [Nonempty M] {f : M → H} (h : IsOpenEmbedding f) :
     @IsManifold 𝕜 _ E _ _ H _ I n M _ h.singletonChartedSpace :=
   (h.toPartialHomeomorph f).isManifold_singleton (by simp)
-
-@[deprecated (since := "2025-01-09")]
-alias Topology.IsOpenEmbedding.singleton_smoothManifoldWithCorners :=
-  Topology.IsOpenEmbedding.isManifold_singleton
 
 namespace TopologicalSpace.Opens
 
@@ -997,28 +984,27 @@ set_option linter.unusedVariables false in
 /-- The tangent space at a point of the manifold `M`. It is just `E`. We could use instead
 `(tangentBundleCore I M).to_topological_vector_bundle_core.fiber x`, but we use `E` to help the
 kernel.
+
+The definition of `TangentSpace` is not reducible so that type class inference
+does not pick wrong instances.
 -/
 @[nolint unusedArguments]
 def TangentSpace {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
     {M : Type*} [TopologicalSpace M] [ChartedSpace H M] (_x : M) : Type u := E
--- The `TopologicalSpace, AddCommGroup, IsTopologicalAddGroup` instances should be constructed by a
--- deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-/- In general, the definition of `TangentSpace` is not reducible, so that type class inference
-does not pick wrong instances. We record the right instances for them. -/
+deriving
+  TopologicalSpace, AddCommGroup, IsTopologicalAddGroup, Module 𝕜,
+  ContinuousSMul 𝕜,
+  -- the following instance derives from the previous one, but through an instance with priority 100
+  -- which takes a long time to be found. We register a shortcut instance instead
+  ContinuousConstSMul 𝕜
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M}
 
-instance : TopologicalSpace (TangentSpace I x) := inferInstanceAs (TopologicalSpace E)
-instance : AddCommGroup (TangentSpace I x) := inferInstanceAs (AddCommGroup E)
-instance : IsTopologicalAddGroup (TangentSpace I x) := inferInstanceAs (IsTopologicalAddGroup E)
-instance : Module 𝕜 (TangentSpace I x) := inferInstanceAs (Module 𝕜 E)
 instance : Inhabited (TangentSpace I x) := ⟨0⟩
 
 variable (M) in
@@ -1034,6 +1020,6 @@ section Real
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M}
 
-instance : PathConnectedSpace (TangentSpace I x) := inferInstanceAs (PathConnectedSpace E)
+deriving instance PathConnectedSpace for TangentSpace I x
 
 end Real

@@ -83,7 +83,7 @@ in June 2024.
 
 universe t t' w w' u v
 
-open TensorProduct MvPolynomial
+open TensorProduct Module MvPolynomial
 
 variable (n m : ℕ)
 
@@ -110,7 +110,7 @@ variable {R S ι σ}
 variable (P : PreSubmersivePresentation R S ι σ)
 
 include P in
-lemma card_relations_le_card_vars_of_isFinite [Finite ι]  :
+lemma card_relations_le_card_vars_of_isFinite [Finite ι] :
     Nat.card σ ≤ Nat.card ι :=
   Nat.card_le_card_of_injective P.map P.map_inj
 
@@ -414,7 +414,7 @@ noncomputable def reindex (P : PreSubmersivePresentation R S ι σ)
     exact f.injective
 
 lemma jacobiMatrix_reindex {ι' σ' : Type*} (e : ι' ≃ ι) (f : σ' ≃ σ)
-  [Fintype σ'] [DecidableEq σ'] [Fintype σ] [DecidableEq σ] :
+    [Fintype σ'] [DecidableEq σ'] [Fintype σ] [DecidableEq σ] :
     (P.reindex e f).jacobiMatrix =
       (P.jacobiMatrix.reindex f.symm f.symm).map (MvPolynomial.rename e.symm) := by
   ext i j : 1
@@ -436,6 +436,36 @@ lemma jacobian_reindex (P : PreSubmersivePresentation R S ι σ)
     AlgHom.mapMatrix_apply, Matrix.map_map]
   simp [← AlgHom.coe_comp, rename_comp_rename, rename_id]
 
+section
+
+variable {v : ι → MvPolynomial σ R} (a : ι → σ) (ha : Function.Injective a)
+  (s : MvPolynomial σ R ⧸ (Ideal.span <| Set.range v) → MvPolynomial σ R :=
+    Function.surjInv Ideal.Quotient.mk_surjective)
+  (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x := by apply Function.surjInv_eq)
+
+/--
+The naive pre-submersive presentation of a quotient `R[Xᵢ] ⧸ (vⱼ)`.
+If the definitional equality of the section matters, it can be explicitly provided.
+
+To construct the associated submersive presentation, use
+`PreSubmersivePresentation.jacobiMatrix_naive`.
+-/
+@[simps! toPresentation]
+noncomputable
+def naive {v : ι → MvPolynomial σ R} (a : ι → σ) (ha : Function.Injective a)
+    (s : MvPolynomial σ R ⧸ (Ideal.span <| Set.range v) → MvPolynomial σ R :=
+      Function.surjInv Ideal.Quotient.mk_surjective)
+    (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x := by apply Function.surjInv_eq) :
+    PreSubmersivePresentation R (MvPolynomial σ R ⧸ (Ideal.span <| Set.range v)) σ ι where
+  __ := Presentation.naive s hs
+  map := a
+  map_inj := ha
+
+@[simp] lemma jacobiMatrix_naive [Fintype ι] [DecidableEq ι] (i j : ι) :
+    (naive a ha s hs).jacobiMatrix i j = (v j).pderiv (a i) :=
+  jacobiMatrix_apply _ _ _
+
+end
 
 end Constructions
 
