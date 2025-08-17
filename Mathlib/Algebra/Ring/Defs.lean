@@ -143,7 +143,7 @@ class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, 
 class Ring (α : Type u) extends Semiring α, NonUnitalRing α, NonAssocRing α
 
 -- see Note [lower instance priority]
-attribute [instance 100] Semiring.toNonUnitalSemiring
+attribute [instance high] Semiring.toNonAssocSemiring
 attribute [instance 100] Ring.toNonUnitalRing
 attribute [instance 100] Ring.toNonAssocRing
 
