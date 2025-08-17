@@ -9,13 +9,19 @@ import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 /-!
 # Birkhoff sum and average for quasi measure preserving maps
 
-This file contains lemmas about the `birkhoffSum` and `birkhoffAverage` of a map which is
-`QuasiMeasurePreserving`.
+Given a map `f` and measure `μ`, under the assumption of `QuasiMeasurePreserving f μ μ` we prove:
+
+- `birkhoffSum_ae_eq_of_ae_eq`: if observables  `φ` and `ψ` are `μ`-a.e. equal then the
+  corresponding `birkhoffSum f` are `μ`-a.e. equal.
+
+- `birkhoffAverage_ae_eq_of_ae_eq`: if observables `φ` and `ψ` are `μ`-a.e. equal then the
+  corresponding `birkhoffAverage R f` are `μ`-a.e. equal.
+
 -/
 
-namespace QuasiMeasurePreserving
+namespace MeasureTheory.Measure.QuasiMeasurePreserving
 
-open MeasureTheory Measure Filter
+open Filter
 
 variable {α M : Type*} [MeasurableSpace α] [AddCommMonoid M]
 variable {f : α → α} {μ : Measure α} {φ ψ : α → M}
@@ -35,4 +41,4 @@ theorem birkhoffAverage_ae_eq_of_ae_eq (R : Type*) [DivisionSemiring R] [Module 
     birkhoffAverage R f φ n =ᵐ[μ] birkhoffAverage R f ψ n :=
   EventuallyEq.const_smul (birkhoffSum_ae_eq_of_ae_eq hf hφ n) (n : R)⁻¹
 
-end QuasiMeasurePreserving
+end MeasureTheory.Measure.QuasiMeasurePreserving
