@@ -489,14 +489,14 @@ theorem measurable_from_prod_countable [Countable β]
 alias measurable_from_prod_countable' := measurable_from_prod_countable
 
 /-- For the version where the first space in the product is countable,
-see `measurable_from_prod_countable_right`.-/
+see `measurable_from_prod_countable_right`. -/
 theorem measurable_from_prod_countable_left [Countable β] [MeasurableSingletonClass β]
     {_ : MeasurableSpace γ} {f : α × β → γ} (hf : ∀ y, Measurable fun x => f (x, y)) :
     Measurable f :=
   measurable_from_prod_countable hf (by simp (config := {contextual := true}))
 
 /-- For the version where the second space in the product is countable,
-see `measurable_from_prod_countable_left`.-/
+see `measurable_from_prod_countable_left`. -/
 lemma measurable_from_prod_countable_right [Countable β] [MeasurableSingletonClass β]
     {f : β × α → γ} (hf : ∀ x, Measurable fun y => f (x, y)) :
     Measurable f := by
@@ -508,7 +508,7 @@ lemma measurable_from_prod_countable_right [Countable β] [MeasurableSingletonCl
 theorem Measurable.find {_ : MeasurableSpace α} {f : ℕ → α → β} {p : ℕ → α → Prop}
     [∀ n, DecidablePred (p n)] (hf : ∀ n, Measurable (f n)) (hp : ∀ n, MeasurableSet { x | p n x })
     (h : ∀ x, ∃ n, p n x) : Measurable fun x => f (Nat.find (h x)) x :=
-  have : Measurable fun p : α × ℕ => f p.2 p.1 := measurable_from_prod_countable fun n => hf n
+  have : Measurable fun p : α × ℕ => f p.2 p.1 := measurable_from_prod_countable_left fun n => hf n
   this.comp (Measurable.prodMk measurable_id (measurable_find h hp))
 
 /-- Let `t i` be a countable covering of a set `T` by measurable sets. Let `f i : t i → β` be a
