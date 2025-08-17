@@ -259,7 +259,7 @@ theorem lift_mul (a b : Cardinal.{u}) : lift.{v} (a * b) = lift.{v} a * lift.{v}
 theorem lift_two : lift.{u, v} 2 = 2 := by simp [← one_add_one_eq_two]
 
 @[simp]
-theorem mk_set {α : Type u} : #(Set α) = 2 ^ #α := by simp [← one_add_one_eq_two, Set, mk_arrow]
+theorem mk_set {α : Type u} : #(Set α) = 2 ^ #α := by simp [← one_add_one_eq_two, Set]
 
 /-- A variant of `Cardinal.mk_set` expressed in terms of a `Set` instead of a `Type`. -/
 @[simp]
@@ -341,7 +341,7 @@ theorem self_le_power (a : Cardinal) {b : Cardinal} (hb : 1 ≤ b) : a ≤ a ^ b
 
 /-- **Cantor's theorem** -/
 theorem cantor (a : Cardinal.{u}) : a < 2 ^ a := by
-  induction' a using Cardinal.inductionOn with α
+  induction a using Cardinal.inductionOn with | _ α
   rw [← mk_set]
   refine ⟨⟨⟨singleton, fun a b => singleton_eq_singleton_iff.1⟩⟩, ?_⟩
   rintro ⟨⟨f, hf⟩⟩
@@ -421,7 +421,7 @@ theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) :=
     (le_of_not_gt fun h => by
       rcases lt_lift_iff.1 h with ⟨b, h, e⟩
       rw [lt_succ_iff, ← lift_le, e] at h
-      exact h.not_lt (lt_succ _))
+      exact h.not_gt (lt_succ _))
     (succ_le_of_lt <| lift_lt.2 <| lt_succ a)
 
 /-! ### Limit cardinals -/
@@ -569,7 +569,7 @@ theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f 
       show ∀ i, ∃ b, ∀ a, G ⟨i, a⟩ i ≠ b by
         intro i
         simp only [not_exists.symm, not_forall.symm]
-        refine fun h => (H i).not_le ?_
+        refine fun h => (H i).not_ge ?_
         rw [← mk_out (f i), ← mk_out (g i)]
         exact ⟨Embedding.ofSurjective _ h⟩
     let ⟨⟨i, a⟩, h⟩ := sG C

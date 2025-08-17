@@ -198,7 +198,7 @@ theorem IsTranscendenceBasis.sumElim_comp [NoZeroDivisors A] {x : ι → S} {y :
   let Rxy := adjoin Rx (range y)
   rw [show adjoin R (range <| Sum.elim y (algebraMap S A ∘ x)) = Rxy.restrictScalars R by
     rw [← adjoin_algebraMap_image_union_eq_adjoin_adjoin, Sum.elim_range, union_comm, range_comp]]
-  show Algebra.IsAlgebraic Rxy A
+  change Algebra.IsAlgebraic Rxy A
   have := hx.1.algebraMap_injective.nontrivial
   have := hy.1.algebraMap_injective.nontrivial
   have := hy.isAlgebraic
@@ -311,6 +311,7 @@ theorem matroid_isBasis_iff [IsDomain A] {s t : Set A} : (matroid R A).IsBasis s
     fun alg a ha h ↦ ((AlgebraicIndepOn.insert_iff ha).mp h.1).2 <| by
       rw [image_id]; exact alg _ <| h.2 <| mem_insert ..⟩
 
+open Subsingleton in
 theorem matroid_isBasis_iff_of_subsingleton [Subsingleton A] {s t : Set A} :
     (matroid R A).IsBasis s t ↔ s = t := by
   have := (FaithfulSMul.algebraMap_injective R A).subsingleton
@@ -348,6 +349,8 @@ theorem matroid_spanning_iff [IsDomain A] {s : Set A} :
     (matroid R A).Spanning s ↔ Algebra.IsAlgebraic (adjoin R s) A := by
   simp_rw [Matroid.spanning_iff, matroid_e, subset_univ, and_true, eq_univ_iff_forall,
     matroid_closure_eq, SetLike.mem_coe, mem_algebraicClosure, Algebra.isAlgebraic_def]
+
+open Subsingleton -- brings the Subsingleton.to_noZeroDivisors instance into scope
 
 theorem matroid_isFlat_of_subsingleton [Subsingleton A] (s : Set A) : (matroid R A).IsFlat s := by
   simp_rw [Matroid.isFlat_iff, matroid_e, subset_univ,
@@ -516,7 +519,7 @@ theorem isTranscendenceBasis_of_trdeg_le {ι : Type w} {x : ι → A} (hx : Alge
 theorem isTranscendenceBasis_of_lift_trdeg_le_of_finite [Finite ι] (hx : AlgebraicIndependent R x)
     (le : lift.{u} (trdeg R A) ≤ lift.{w} #ι) : IsTranscendenceBasis R x :=
   isTranscendenceBasis_of_lift_trdeg_le hx
-    (lift_lt.mp <| le.trans_lt <| by simp [mk_lt_aleph0_iff]) le
+    (lift_lt.mp <| le.trans_lt <| by simp) le
 
 theorem isTranscendenceBasis_of_trdeg_le_of_finite {ι : Type w} [Finite ι] {x : ι → A}
     (hx : AlgebraicIndependent R x) (le : trdeg R A ≤ #ι) : IsTranscendenceBasis R x :=

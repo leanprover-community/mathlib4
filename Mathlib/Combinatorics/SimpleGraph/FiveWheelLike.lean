@@ -63,12 +63,12 @@ statements of results and match our definition of `IsFiveWheelLikeFree`.
 
 ## References
 
-* B. Andrasfái, P Erdős, V. T. Sós
+* [B. Andrasfái, P Erdős, V. T. Sós
   **On the connection between chromatic number, maximal clique, and minimal degree of a graph**
-  https://doi.org/10.1016/0012-365X(74)90133-2
+  https://doi.org/10.1016/0012-365X(74)90133-2][andrasfaiErdosSos1974]
 
-* S. Brandt **On the structure of graphs with bounded clique number**
-  https://doi.org/10.1007/s00493-003-0042-z
+* [S. Brandt **On the structure of graphs with bounded clique number**
+  https://doi.org/10.1007/s00493-003-0042-z][brandt2003]
 -/
 open Finset SimpleGraph
 
@@ -98,7 +98,7 @@ An `IsFiveWheelLike r k v w₁ w₂ s t` structure in `G` consists of vertices `
 `s` and `t` such that `{v, w₁, w₂}` induces the single edge `w₁w₂` (i.e. they form an
 `IsPathGraph3Compl`), `v, w₁, w₂ ∉ s ∪ t`, `s ∪ {v}, t ∪ {v}, s ∪ {w₁}, t ∪ {w₂}` are all
 `(r + 1)`- cliques and `#(s ∩ t) = k`. (If `G` is maximally `(r + 2)`-cliquefree and not complete
- multipartite then `G` will contain such a structure : see
+multipartite then `G` will contain such a structure : see
 `exists_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartite`.)
 -/
 structure IsFiveWheelLike (G : SimpleGraph α) (r k : ℕ) (v w₁ w₂ : α) (s t : Finset α) :
@@ -125,7 +125,7 @@ lemma exists_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartite
 
 /-- `G.FiveWheelLikeFree r k` means there is no `IsFiveWheelLike r k` structure in `G`. -/
 def FiveWheelLikeFree (G : SimpleGraph α) (r k : ℕ) : Prop :=
-    ∀ {v w₁ w₂ s t}, ¬ G.IsFiveWheelLike r k v w₁ w₂ s t
+  ∀ {v w₁ w₂ s t}, ¬ G.IsFiveWheelLike r k v w₁ w₂ s t
 
 namespace IsFiveWheelLike
 
@@ -200,11 +200,11 @@ lemma exists_max_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartit
   classical
   obtain ⟨_, _, _, _, _, hw⟩ := Nat.findGreatest_spec (hw.card_inter_lt_of_cliqueFree h.1).le hk
   exact ⟨_, _, _, _, _, _, hw, hw.card_inter_lt_of_cliqueFree h.1,
-         fun _ hj _ _ _ _ _ hv ↦ hj.not_le <| Nat.le_findGreatest
+         fun _ hj _ _ _ _ _ hv ↦ hj.not_ge <| Nat.le_findGreatest
            (hv.card_inter_lt_of_cliqueFree h.1).le ⟨_, _, _, _, _, hv⟩⟩
 
 lemma CliqueFree.fiveWheelLikeFree_of_le (h : G.CliqueFree (r + 2)) (hk : r ≤ k) :
-    G.FiveWheelLikeFree r k := fun hw ↦ (hw.card_inter_lt_of_cliqueFree h).not_le hk
+    G.FiveWheelLikeFree r k := fun hw ↦ (hw.card_inter_lt_of_cliqueFree h).not_ge hk
 
 /-- A maximally `Kᵣ₊₁`-free graph is `r`-colorable iff it is complete-multipartite. -/
 theorem colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree

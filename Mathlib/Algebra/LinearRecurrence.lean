@@ -24,12 +24,12 @@ We prove a few basic lemmas about this concept, such as :
   is a field)
 * the function that maps a solution `u` to its first `d` terms builds a `LinearEquiv`
   between the solution space and `Fin d → α`, aka `α ^ d`. As a consequence, two
-  solutions are equal if and only if their first `d` terms are equals.
+  solutions are equal if and only if their first `d` terms are equal.
 * a geometric sequence `q ^ n` is solution iff `q` is a root of a particular polynomial,
   which we call the *characteristic polynomial* of the recurrence
 
 Of course, although we can inductively generate solutions (cf `mkSol`), the
-interesting part would be to determinate closed-forms for the solutions.
+interesting part would be to determine closed-forms for the solutions.
 This is currently *not implemented*, as we are waiting for definition and
 properties of eigenvalues and eigenvectors.
 
@@ -84,7 +84,7 @@ theorem is_sol_mkSol (init : Fin E.order → R) : E.IsSolution (E.mkSol init) :=
 theorem mkSol_eq_init (init : Fin E.order → R) : ∀ n : Fin E.order, E.mkSol init n = init n := by
   intro n
   rw [mkSol]
-  simp only [n.is_lt, dif_pos, Fin.mk_val, Fin.eta]
+  simp only [n.is_lt, dif_pos, Fin.mk_val]
 
 /-- If `u` is a solution to `E` and `init` designates its first `E.order` values,
   then `∀ n, u n = E.mkSol init n`. -/

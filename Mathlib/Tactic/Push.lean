@@ -142,6 +142,7 @@ simproc_decl _root_.pushNeg (Not _) := pushStep (.name ``Not)
 def pushSimpConfig : Simp.Config where
   zeta := false
   proj := false
+  congrConsts := false -- this is a workaround, and can hopefully be removed
 
 /-- Common entry point to the implementation of `push`. -/
 def pushCore (head : Head) (tgt : Expr) (disch? : Option Simp.Discharge) : MetaM Simp.Result := do

@@ -70,7 +70,11 @@ def funPropTac : Tactic
         { config := cfg,
           disch := disch
           constToUnfold := .ofArray namesToUnfold _}
-      let (r?, s) ← funProp goalType ctx |>.run {}
+      let env ← getEnv
+      let s := {
+        morTheorems        := morTheoremsExt.getState env
+        transitionTheorems := transitionTheoremsExt.getState env }
+      let (r?, s) ← funProp goalType ctx |>.run s
       if let .some r := r? then
         goal.assign r.proof
       else

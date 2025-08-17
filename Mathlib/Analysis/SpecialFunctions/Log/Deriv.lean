@@ -38,7 +38,7 @@ theorem hasStrictDerivAt_log_of_pos (hx : 0 < x) : HasStrictDerivAt log x⁻¹ x
   rwa [exp_log hx] at this
 
 theorem hasStrictDerivAt_log (hx : x ≠ 0) : HasStrictDerivAt log x⁻¹ x := by
-  rcases hx.lt_or_lt with hx | hx
+  rcases hx.lt_or_gt with hx | hx
   · convert (hasStrictDerivAt_log_of_pos (neg_pos.mpr hx)).comp x (hasStrictDerivAt_neg x) using 1
     · ext y; exact (log_neg_eq_log y).symm
     · field_simp [hx.ne]
@@ -73,7 +73,7 @@ theorem contDiffAt_log {n : WithTop ℕ∞} {x : ℝ} : ContDiffAt ℝ n log x �
     · convert hasDerivAt_exp (log y)
       rw [exp_log hy]
     · exact analyticAt_rexp.contDiffAt
-  rcases hx.lt_or_lt with hx | hx
+  rcases hx.lt_or_gt with hx | hx
   · have : ContDiffAt ℝ n (log ∘ (fun y ↦ -y)) x := by
       apply ContDiffAt.comp
       apply A _ (Left.neg_pos_iff.mpr hx)
@@ -128,7 +128,7 @@ theorem deriv.log (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0) :
 `f x  ≠ 0`. -/
 lemma Real.deriv_log_comp_eq_logDeriv {f : ℝ → ℝ} {x : ℝ} (h₁ : DifferentiableAt ℝ f x)
     (h₂ : f x ≠ 0) : deriv (log ∘ f) x = logDeriv f x := by
-  simp only [ne_eq, logDeriv, Pi.div_apply, ← deriv.log h₁ h₂, Function.comp_def]
+  simp only [logDeriv, Pi.div_apply, ← deriv.log h₁ h₂, Function.comp_def]
 
 end deriv
 
@@ -218,7 +218,7 @@ theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
   -- First step: compute the derivative of `F`
   have A : ∀ y ∈ Ioo (-1 : ℝ) 1, HasDerivAt F (F' y) y := fun y hy ↦ by
     have : HasDerivAt F ((∑ i ∈ range n, ↑(i + 1) * y ^ i / (↑i + 1)) + (-1) / (1 - y)) y :=
-      .add (.sum fun i _ ↦ (hasDerivAt_pow (i + 1) y).div_const ((i : ℝ) + 1))
+      .add (.fun_sum fun i _ ↦ (hasDerivAt_pow (i + 1) y).div_const ((i : ℝ) + 1))
         (((hasDerivAt_id y).const_sub _).log <| sub_ne_zero.2 hy.2.ne')
     convert this using 1
     calc

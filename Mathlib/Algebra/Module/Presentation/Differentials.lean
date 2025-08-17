@@ -31,6 +31,8 @@ from the file `Mathlib/RingTheory/Kaehler/CotangentComplex.lean`.
 
 -/
 
+open Module
+
 universe w' t w u v
 
 namespace Algebra.Presentation
@@ -64,12 +66,8 @@ sequence shall follow from the exactness of the second which is
 /-- Same as `comm₂₃` below, but here we have not yet constructed `differentialsSolution`. -/
 lemma comm₂₃' : pres.toExtension.toKaehler.comp pres.cotangentSpaceBasis.repr.symm.toLinearMap =
     Finsupp.linearCombination S (fun g ↦ D _ _ (pres.val g)) := by
-  ext g
-  dsimp
-  rw [Basis.repr_symm_apply, Finsupp.linearCombination_single,
-    Finsupp.linearCombination_single, one_smul, one_smul,
-    Generators.cotangentSpaceBasis_apply]
-  simp [Generators.toExtension]
+  ext
+  simp
 
 /-- The canonical map `(σ →₀ S) →ₗ[S] pres.toExtension.Cotangent`. -/
 noncomputable def hom₁ : (σ →₀ S) →ₗ[S] pres.toExtension.Cotangent :=
@@ -126,7 +124,7 @@ open differentials in
 equations `pres.differentialsRelations.Solution` when `pres` is a presentation
 of `S` as an `R`-algebra. -/
 noncomputable def differentialsSolution :
-    pres.differentialsRelations.Solution (Ω[S⁄R]) where
+    pres.differentialsRelations.Solution Ω[S⁄R] where
   var g := D _ _ (pres.val g)
   linearCombination_var_relation r := by
     simp only [differentialsRelations_G, LinearMap.coe_comp, LinearEquiv.coe_coe,
@@ -157,7 +155,7 @@ lemma differentialsSolution_isPresentation :
 
 /-- The presentation of the `S`-module `Ω[S⁄R]` deduced from a presentation
 of `S` as a `R`-algebra. -/
-noncomputable def differentials : Module.Presentation S (Ω[S⁄R]) where
+noncomputable def differentials : Module.Presentation S Ω[S⁄R] where
   G := ι
   R := σ
   relation := _

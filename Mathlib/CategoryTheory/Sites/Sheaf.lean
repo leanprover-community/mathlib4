@@ -106,8 +106,6 @@ def conesEquivSieveCompatibleFamily :
         rw [id_comp]
         convert rfl
         rw [Over.w] }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 variable {P S E}
 variable {x : FamilyOfElements (P ⋙ coyoneda.obj E) S.arrows} (hx : SieveCompatible x)
@@ -126,8 +124,6 @@ def homEquivAmalgamation :
     (hx.cone ⟶ P.mapCone S.arrows.cocone.op) ≃ { t // x.IsAmalgamation t } where
   toFun l := ⟨l.hom, fun _ f hf => l.w (op ⟨Over.mk f, hf⟩)⟩
   invFun t := ⟨t.1, fun f => t.2 f.unop.1.hom f.unop.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 variable (P S)
 
@@ -265,9 +261,6 @@ lemma IsSheaf.existsUnique_amalgamation_ofArrows :
   (Presieve.isSheafFor_arrows_iff _ _).1
     ((Presieve.isSheafFor_iff_generate _).2 (hP E _ hf)) x (fun _ _ _ _ _ w => hx _ _ w)
 
-@[deprecated (since := "2024-12-17")]
-alias IsSheaf.exists_unique_amalgamation_ofArrows := IsSheaf.existsUnique_amalgamation_ofArrows
-
 /-- If `P : Cᵒᵖ ⥤ A` is a sheaf and `f i : X i ⟶ S` is a covering family, then
 a morphism `E ⟶ P.obj (op S)` can be constructed from a compatible family of
 morphisms `x : E ⟶ P.obj (op (X i))`. -/
@@ -283,8 +276,8 @@ end
 
 theorem isSheaf_of_iso_iff {P P' : Cᵒᵖ ⥤ A} (e : P ≅ P') : IsSheaf J P ↔ IsSheaf J P' :=
   forall_congr' fun _ =>
-    ⟨Presieve.isSheaf_iso J (isoWhiskerRight e _),
-      Presieve.isSheaf_iso J (isoWhiskerRight e.symm _)⟩
+    ⟨Presieve.isSheaf_iso J (Functor.isoWhiskerRight e _),
+      Presieve.isSheaf_iso J (Functor.isoWhiskerRight e.symm _)⟩
 
 variable (J)
 
@@ -383,7 +376,7 @@ theorem isSheaf_iff_isSheaf_of_type (P : Cᵒᵖ ⥤ Type w) :
   constructor
   · intro hP
     refine Presieve.isSheaf_iso J ?_ (hP PUnit)
-    exact isoWhiskerLeft _ Coyoneda.punitIso ≪≫ P.rightUnitor
+    exact Functor.isoWhiskerLeft _ Coyoneda.punitIso ≪≫ P.rightUnitor
   · intro hP X Y S hS z hz
     refine ⟨fun x => (hP S hS).amalgamate (fun Z f hf => z f hf x) ?_, ?_, ?_⟩
     · intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ h
@@ -471,7 +464,7 @@ instance sheafHomHasNSMul : SMul ℕ (P ⟶ Q) where
         naturality := fun U V i => by
           induction n with
           | zero => simp only [zero_smul, comp_zero, zero_comp]
-          | succ n ih => simp only [Nat.succ_eq_add_one, add_smul, ih, one_nsmul, comp_add,
+          | succ n ih => simp only [add_smul, ih, one_nsmul, comp_add,
               NatTrans.naturality, add_comp] }
 
 instance : Zero (P ⟶ Q) where zero := Sheaf.Hom.mk 0
@@ -485,7 +478,7 @@ theorem Sheaf.Hom.add_app (f g : P ⟶ Q) (U) : (f + g).1.app U = f.1.app U + g.
 instance Sheaf.Hom.addCommGroup : AddCommGroup (P ⟶ Q) :=
   Function.Injective.addCommGroup (fun f : Sheaf.Hom P Q => f.1)
     (fun _ _ h => Sheaf.Hom.ext h) rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => by aesop_cat) (fun _ _ => by aesop_cat)
+    (fun _ _ => by cat_disch) (fun _ _ => by cat_disch)
 
 instance : Preadditive (Sheaf J A) where
   homGroup _ _ := Sheaf.Hom.addCommGroup
@@ -594,7 +587,7 @@ variable [HasProducts.{max u₁ v₁} A']
 diagram of the Stacks entry. -/
 @[stacks 00VM "The middle object of the fork diagram there."]
 def firstObj : A :=
-  ∏ᶜ fun f : ΣV, { f : V ⟶ U // R f } => P.obj (op f.1)
+  ∏ᶜ fun f : Σ V, { f : V ⟶ U // R f } => P.obj (op f.1)
 
 /-- The left morphism of the fork diagram given in Equation (3) of [MM92], as well as the fork
 diagram of the Stacks entry. -/
@@ -609,7 +602,7 @@ contains the data used to check a family of elements for a presieve is compatibl
 -/
 @[stacks 00VM "The rightmost object of the fork diagram there."]
 def secondObj : A :=
-  ∏ᶜ fun fg : (ΣV, { f : V ⟶ U // R f }) × ΣW, { g : W ⟶ U // R g } =>
+  ∏ᶜ fun fg : (Σ V, { f : V ⟶ U // R f }) × Σ W, { g : W ⟶ U // R g } =>
     P.obj (op (pullback fg.1.2.1 fg.2.2.1))
 
 /-- The map `pr₀*` of the Stacks entry. -/

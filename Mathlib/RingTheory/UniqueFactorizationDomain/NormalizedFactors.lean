@@ -51,9 +51,6 @@ theorem prod_normalizedFactors {a : α} (ane0 : a ≠ 0) :
   ext
   rw [Function.comp_apply, Associates.mk_normalize]
 
-@[deprecated (since := "2024-12-04")]
-alias normalizedFactors_prod := prod_normalizedFactors
-
 theorem prod_normalizedFactors_eq {a : α} (ane0 : a ≠ 0) :
     (normalizedFactors a).prod = normalize a := by
   trans normalize (normalizedFactors a).prod
@@ -321,7 +318,7 @@ theorem dvdNotUnit_iff_normalizedFactors_lt_normalizedFactors {x y : α} (hx : x
     exact
       dvdNotUnit_of_dvd_of_not_dvd
         ((dvd_iff_normalizedFactors_le_normalizedFactors hx hy).mpr h.le)
-        (mt (dvd_iff_normalizedFactors_le_normalizedFactors hy hx).mp h.not_le)
+        (mt (dvd_iff_normalizedFactors_le_normalizedFactors hy hx).mp h.not_ge)
 
 theorem normalizedFactors_multiset_prod (s : Multiset α) (hs : 0 ∉ s) :
     normalizedFactors (s.prod) = (s.map normalizedFactors).sum := by

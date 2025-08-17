@@ -94,7 +94,7 @@ theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι →
   simp only [HasSum, ← integral_finset_sum _ fun n _ => hF_integrable n]
   refine tendsto_integral_filter_of_dominated_convergence
       (fun a => ∑' n, bound n a) ?_ ?_ bound_integrable h_lim
-  · exact Eventually.of_forall fun s => s.aestronglyMeasurable_sum fun n _ => hF_meas n
+  · exact Eventually.of_forall fun s => s.aestronglyMeasurable_fun_sum fun n _ => hF_meas n
   · filter_upwards with s
     filter_upwards [eventually_countable_forall.2 h_bound, hb_nonneg, bound_summable]
       with a hFa ha0 has
@@ -364,7 +364,7 @@ theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
       dsimp [indicator]
       split_ifs <;> simp
     · have : ∀ᵐ t ∂μ, t < b₀ ∨ b₀ < t := by
-        filter_upwards [compl_mem_ae_iff.mpr hb₀] with x hx using Ne.lt_or_lt hx
+        filter_upwards [compl_mem_ae_iff.mpr hb₀] with x hx using Ne.lt_or_gt hx
       apply this.mono
       rintro x₀ (hx₀ | hx₀) -
       · have : ∀ᶠ x in 𝓝[Icc b₁ b₂] b₀, {t : ℝ | t ≤ x}.indicator f x₀ = f x₀ := by
@@ -468,7 +468,7 @@ theorem continuousOn_primitive (h_int : IntegrableOn f (Icc a b) μ) :
     rw [continuousOn_congr this]
     intro x₀ _
     refine continuousWithinAt_primitive (measure_singleton x₀) ?_
-    simp only [intervalIntegrable_iff_integrableOn_Ioc_of_le, min_eq_left, max_eq_right, h,
+    simp only [intervalIntegrable_iff_integrableOn_Ioc_of_le, max_eq_right, h,
       min_self]
     exact h_int.mono Ioc_subset_Icc_self le_rfl
   · rw [Icc_eq_empty h]

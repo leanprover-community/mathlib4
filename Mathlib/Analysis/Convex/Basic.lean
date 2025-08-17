@@ -183,8 +183,8 @@ theorem Convex.linear_preimage {𝕜₁ : Type*} [Semiring 𝕜₁] [Module 𝕜
   exact hs hx hy ha hb hab
 
 theorem Convex.is_linear_preimage {𝕜₁ : Type*} [Semiring 𝕜₁] [Module 𝕜₁ E] [Module 𝕜₁ F] {s : Set F}
-  [SMul 𝕜 𝕜₁] [IsScalarTower 𝕜 𝕜₁ E] [IsScalarTower 𝕜 𝕜₁ F] (hs : Convex 𝕜 s) {f : E → F}
-  (hf : IsLinearMap 𝕜₁ f) :
+    [SMul 𝕜 𝕜₁] [IsScalarTower 𝕜 𝕜₁ E] [IsScalarTower 𝕜 𝕜₁ F] (hs : Convex 𝕜 s) {f : E → F}
+    (hf : IsLinearMap 𝕜₁ f) :
     Convex 𝕜 (f ⁻¹' s) :=
   hs.linear_preimage <| hf.mk' f
 
@@ -257,12 +257,8 @@ theorem convex_Icc (r s : β) : Convex 𝕜 (Icc r s) :=
 
 theorem convex_halfSpace_le {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | f w ≤ r } :=
   (convex_Iic r).is_linear_preimage h
-@[deprecated (since := "2024-11-12")] alias convex_halfspace_le := convex_halfSpace_le
-
 theorem convex_halfSpace_ge {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | r ≤ f w } :=
   (convex_Ici r).is_linear_preimage h
-@[deprecated (since := "2024-11-12")] alias convex_halfspace_ge := convex_halfSpace_ge
-
 theorem convex_hyperplane {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | f w = r } := by
   simp_rw [le_antisymm_iff]
   exact (convex_halfSpace_le h r).inter (convex_halfSpace_ge h r)
@@ -299,12 +295,8 @@ theorem convex_Ioc (r s : β) : Convex 𝕜 (Ioc r s) :=
 
 theorem convex_halfSpace_lt {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | f w < r } :=
   (convex_Iio r).is_linear_preimage h
-@[deprecated (since := "2024-11-12")] alias convex_halfspace_lt := convex_halfSpace_lt
-
 theorem convex_halfSpace_gt {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | r < f w } :=
   (convex_Ioi r).is_linear_preimage h
-@[deprecated (since := "2024-11-12")] alias convex_halfspace_gt := convex_halfSpace_gt
-
 end OrderedCancelAddCommMonoid
 
 section LinearOrderedAddCommMonoid
@@ -678,7 +670,6 @@ def stdSimplexEquivIcc : stdSimplex 𝕜 (Fin 2) ≃ Icc (0 : 𝕜) 1 where
       calc
         (1 : 𝕜) - f.1 0 = f.1 0 + f.1 1 - f.1 0 := by rw [← Fin.sum_univ_two f.1, f.2.2]
         _ = f.1 1 := add_sub_cancel_left _ _
-  right_inv _ := Subtype.eq rfl
 
 end OrderedRing
 
