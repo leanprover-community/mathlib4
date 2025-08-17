@@ -596,20 +596,20 @@ theorem contMDiff_infty : ContMDiff I I' ∞ f ↔ ∀ n : ℕ, ContMDiff I I' n
 
 section Analytic
 
-/-- Functions are `ContMDiffAt` iff they are continuous and analytic in charts -/
+/-- Functions are `ContMDiffAt` iff they are continuous and analytic in charts. -/
 theorem contMDiffAt_omega_iff [CompleteSpace E'] :
     ContMDiffAt I I' ω f x ↔ ContinuousAt f x ∧
       AnalyticWithinAt 𝕜 (extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm) (range I)
       (extChartAt I x x) := by
   rw [contMDiffAt_iff, contDiffWithinAt_omega_iff_analyticWithinAt]
 
-/-- Functions are `ContMDiffAt` iff they are continuous and analytic in charts -/
+/-- Functions are `ContMDiffAt` iff they are continuous and analytic in charts. -/
 theorem contMDiffAt_omega_iff_of_boundaryless [I.Boundaryless] [CompleteSpace E'] :
     ContMDiffAt I I' ω f x ↔ ContinuousAt f x ∧
       AnalyticAt 𝕜 (extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm) (extChartAt I x x) := by
   simp only [contMDiffAt_omega_iff, I.range_eq_univ, analyticWithinAt_univ]
 
-/-- Functions are `ContMDiff` iff they are continuous and analytic in charts everywhere -/
+/-- Functions are `ContMDiff` iff they are continuous and analytic in charts everywhere. -/
 theorem contMDiff_omega_iff [CompleteSpace E'] :
     ContMDiff I I' ω f ↔ Continuous f ∧
       ∀ x : M, AnalyticWithinAt 𝕜 (extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm)
@@ -618,7 +618,7 @@ theorem contMDiff_omega_iff [CompleteSpace E'] :
     contDiffWithinAt_omega_iff_analyticWithinAt]
   aesop
 
-/-- Functions are `ContMDiff` iff they are continuous and analytic in charts everywhere -/
+/-- Functions are `ContMDiff` iff they are continuous and analytic in charts everywhere. -/
 theorem contMDiff_omega_iff_of_boundaryless [I.Boundaryless]
     [CompleteSpace E'] :
     ContMDiff I I' ω f ↔ Continuous f ∧
