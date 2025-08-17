@@ -485,6 +485,9 @@ theorem measurable_from_prod_countable [Countable β]
   rw [this]
   exact .iUnion (fun y ↦ (hf y hs).prod (.measurableAtom_of_countable y))
 
+@[deprecated (since := "2025-08-17")]
+alias measurable_from_prod_countable' := measurable_from_prod_countable
+
 /-- For the version where the first space in the product is countable,
 see `measurable_from_prod_countable_right`.-/
 theorem measurable_from_prod_countable_left [Countable β] [MeasurableSingletonClass β]
