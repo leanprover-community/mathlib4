@@ -89,9 +89,7 @@ theorem prod_ite_eq [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M �
 
 theorem sum_ite_self_eq [DecidableEq α] {N : Type*} [AddCommMonoid N] (f : α →₀ N) (a : α) :
     (f.sum fun x v => ite (a = x) v 0) = f a := by
-  classical
-    convert f.sum_ite_eq a fun _ => id
-    simp [ite_eq_right_iff.2 Eq.symm]
+  simp_all
 
 /--
 The left hand side of `sum_ite_self_eq` simplifies; this is the variant that is useful for `simp`.
