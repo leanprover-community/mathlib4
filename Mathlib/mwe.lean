@@ -25,6 +25,11 @@ theorem isCompact_closure_of_totallyBounded_complete
     {s : Set E} (ht : TotallyBounded s) : IsCompact (closure s) :=
   isCompact_of_totallyBounded_isClosed (TotallyBounded.closure ht) isClosed_closure
 
+theorem isCompact_closure_of_totallyBounded_complete'
+    {s : Set E} (ht : TotallyBounded s) : IsCompact (closure s) :=
+  isCompact_iff_totallyBounded_isComplete.mpr ⟨TotallyBounded.closure ht,
+    IsClosed.isComplete isClosed_closure⟩
+
 theorem isCompact_closedAbsConvexHull_of_totallyBounded_complete
     [AddCommGroup E] [Module ℝ E] [IsUniformAddGroup E] [ContinuousSMul ℝ E]
     [LocallyConvexSpace ℝ E] {s : Set E}
