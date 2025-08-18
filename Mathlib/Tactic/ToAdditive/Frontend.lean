@@ -856,7 +856,7 @@ partial def transformDeclAux
     addDecl trgDecl.toDeclaration!
     setEnv <| addNoncomputable (← getEnv) tgt
   else
-    addAndCompile trgDecl.toDeclaration!
+    addAndCompile trgDecl.toDeclaration! (logCompileErrors := (IR.findEnvDecl env src).isSome)
   if let .defnDecl { hints := .abbrev, .. } := trgDecl.toDeclaration! then
     if (← getReducibilityStatus src) == .reducible then
       setReducibilityStatus tgt .reducible
