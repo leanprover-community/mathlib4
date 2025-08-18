@@ -577,7 +577,7 @@ where /-- Implementation of `applyReplacementFun`. -/
   aux (env : Environment) (trace : Bool) : Expr → Expr :=
   let reorderFn : Name → List (List ℕ) := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
   let relevantArg : Name → ℕ := fun nm ↦ (relevantArgAttr.find? env nm).getD 0
-  Lean.Expr.replaceRec fun r e ↦ Id.run do
+  memoFix fun r e ↦ Id.run do
     if trace then
       dbg_trace s!"replacing at {e}"
     match e with
@@ -589,13 +589,13 @@ where /-- Implementation of `applyReplacementFun`. -/
           dbg_trace s!"changing {n₀} to {n₁}"
         if 0 ∈ (reorderFn n₀).flatten then
           dbg_trace s!"reordering the universe variables from {ls₀} to {ls₁}"
-      return some <| Lean.mkConst n₁ ls₁
+      return Lean.mkConst n₁ ls₁
     | .app g x => do
       let gf := g.getAppFn
       if gf.isBVar && x.isLit then
         if trace then
           dbg_trace s!"applyReplacementFun: Variables applied to numerals are not changed {g.app x}"
-        return some <| g.app x
+        return g.app x
       let mut gAllArgs := e.getAppArgs
       let some nm := gf.constName? | return mkAppN (← r gf) (← gAllArgs.mapM r)
       -- e = `(nm y₁ .. yₙ x)
@@ -638,8 +638,8 @@ where /-- Implementation of `applyReplacementFun`. -/
       if trace then
         dbg_trace s!"applyReplacementFun: in projection {e}.{idx} of type {n₀}, \
           replace type with {n₁}"
-      return some <| .proj n₁ idx <| ← r e
-    | _ => return none
+      return .proj n₁ idx <| ← r e
+    | _ => e.traverseChildren r
 
 /-- Eta expands `e` at most `n` times. -/
 def etaExpandN (n : Nat) (e : Expr) : MetaM Expr := do
