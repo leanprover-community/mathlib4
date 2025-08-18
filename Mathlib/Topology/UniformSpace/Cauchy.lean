@@ -673,6 +673,15 @@ theorem isCompact_of_totallyBounded_isClosed [CompleteSpace α] {s : Set α} (ht
     (hc : IsClosed s) : IsCompact s :=
   (@isCompact_iff_totallyBounded_isComplete α _ s).2 ⟨ht, hc.isComplete⟩
 
+theorem isCompact_closure_of_totallyBounded_of_isComplete_closure {s : Set α}
+    (ht : TotallyBounded s) (hc : IsComplete (closure s)) : IsCompact (closure s) :=
+  isCompact_iff_totallyBounded_isComplete.mpr ⟨TotallyBounded.closure ht, hc⟩
+
+theorem isCompact_closure_of_totallyBounded_complete [CompleteSpace α] {s : Set α}
+    (ht : TotallyBounded s) : IsCompact (closure s) :=
+  isCompact_closure_of_totallyBounded_of_isComplete_closure ht
+    (IsClosed.isComplete isClosed_closure)
+
 /-- Every Cauchy sequence over `ℕ` is totally bounded. -/
 theorem CauchySeq.totallyBounded_range {s : ℕ → α} (hs : CauchySeq s) :
     TotallyBounded (range s) := by
