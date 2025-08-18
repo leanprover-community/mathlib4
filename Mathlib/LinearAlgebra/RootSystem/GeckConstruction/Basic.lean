@@ -122,7 +122,7 @@ open Matrix in
     h₀.eq_iff, exists_eq_right]
 
 omit [Finite ι] [IsDomain R] [CharZero R] in
-lemma apply_sum_inl_eq_zero_of_mem_span_range_h
+lemma apply_sum_inl_eq_zero_of_mem_span_h
     (i : b.support) (j : b.support ⊕ ι) {x : Matrix (b.support ⊕ ι) (b.support ⊕ ι) R}
     (hx : x ∈ span R (range h)) :
     x j (Sum.inl i) = 0 := by
