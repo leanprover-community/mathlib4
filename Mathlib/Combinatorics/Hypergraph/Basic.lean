@@ -5,13 +5,8 @@ Authors: Evan Spotte-Smith
 -/
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.Card
-import Mathlib.Data.Sym.Sym2
-import Mathlib.Data.Matrix.Basic
-import Mathlib.Data.Matrix.Defs
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Finset.Max
-import Mathlib.Combinatorics.Graph.Basic
 
 /-!
 # Undirected hypergraphs
