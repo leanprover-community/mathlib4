@@ -55,18 +55,21 @@ jobs:
         printf $'\n\nRunning a test %slake build` to verify, for instance, the absence of import loops\n' $'`'
         lake build Mathlib.Init
 
-    - name: build mathlib (linarith)
-      id: build-linarith
+    - name: Add GitHub problem matcher wrapper
       uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
       with:
+        action: add
         linters: lean
-        run: |
-          # The next line could also be `delimiter=$(uuidgen)` if `utils-linux` package were installed.
-          delimiter=$(echo "console.log(crypto.randomUUID())" | node -)
-          echo "buildlog<<${delimiter}" >> $GITHUB_OUTPUT
-          # Pipe to tee so we see the build results both on Zulip and in the log.
-          lake build | tee -a $GITHUB_OUTPUT
-          echo "${delimiter}" >> $GITHUB_OUTPUT
+
+    - name: build mathlib (linarith)
+      id: build-linarith
+      run: |
+        # The next line could also be `delimiter=$(uuidgen)` if `utils-linux` package were installed.
+        delimiter=$(echo "console.log(crypto.randomUUID())" | node -)
+        echo "buildlog<<${delimiter}" >> $GITHUB_OUTPUT
+        # Pipe to tee so we see the build results both on Zulip and in the log.
+        lake build | tee -a $GITHUB_OUTPUT
+        echo "${delimiter}" >> $GITHUB_OUTPUT
 
     - name: Post output to Zulip (linarith)
       uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
@@ -98,16 +101,13 @@ jobs:
 
     - name: build mathlib (omega)
       id: build-omega
-      uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
-      with:
-        linters: lean
-        run: |
-          # The next line could also be `delimiter=$(uuidgen)` if `utils-linux` package were installed.
-          delimiter=$(echo "console.log(crypto.randomUUID())" | node -)
-          echo "buildlog<<${delimiter}" >> $GITHUB_OUTPUT
-          # Pipe to tee so we see the build results both on Zulip and in the log.
-          lake build | tee -a $GITHUB_OUTPUT
-          echo "${delimiter}" >> $GITHUB_OUTPUT
+      run: |
+        # The next line could also be `delimiter=$(uuidgen)` if `utils-linux` package were installed.
+        delimiter=$(echo "console.log(crypto.randomUUID())" | node -)
+        echo "buildlog<<${delimiter}" >> $GITHUB_OUTPUT
+        # Pipe to tee so we see the build results both on Zulip and in the log.
+        lake build | tee -a $GITHUB_OUTPUT
+        echo "${delimiter}" >> $GITHUB_OUTPUT
 
     - name: Post output to Zulip (omega)
       uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
@@ -139,16 +139,19 @@ jobs:
 
     - name: build mathlib (ring)
       id: build-ring
+      run: |
+        # The next line could also be `delimiter=$(uuidgen)` if `utils-linux` package were installed.
+        delimiter=$(echo "console.log(crypto.randomUUID())" | node -)
+        echo "buildlog<<${delimiter}" >> $GITHUB_OUTPUT
+        # Pipe to tee so we see the build results both on Zulip and in the log.
+        lake build | tee -a $GITHUB_OUTPUT
+        echo "${delimiter}" >> $GITHUB_OUTPUT
+
+    - name: Remove GitHub problem matcher wrapper
       uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
       with:
+        action: remove
         linters: lean
-        run: |
-          # The next line could also be `delimiter=$(uuidgen)` if `utils-linux` package were installed.
-          delimiter=$(echo "console.log(crypto.randomUUID())" | node -)
-          echo "buildlog<<${delimiter}" >> $GITHUB_OUTPUT
-          # Pipe to tee so we see the build results both on Zulip and in the log.
-          lake build | tee -a $GITHUB_OUTPUT
-          echo "${delimiter}" >> $GITHUB_OUTPUT
 
     - name: Post output to Zulip (ring)
       uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
