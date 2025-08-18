@@ -369,9 +369,10 @@ partial def linarithUsedHyps (only_on : Bool) (hyps : List Expr)
   | (some (t, v), g) => pure (g, some t, some v)
 
   g.withContext do
-  -- set up the list of hypotheses, considering the `only_on` and `restrict_type` options
-    let hyps ← (if only_on then return new_var.toList ++ hyps
-      else return (← getLocalHyps).toList ++ hyps)
+    -- set up the list of hypotheses, considering the `only_on` and `restrict_type` options
+    let hyps ←
+      (if only_on then return new_var.toList ++ hyps
+        else return (← getLocalHyps).toList ++ hyps)
 
     -- TODO in mathlib3 we could specify a restriction to a single type.
     -- I haven't done that here because I don't know how to store a `Type` in `LinarithConfig`.
@@ -386,6 +387,12 @@ partial def linarithUsedHyps (only_on : Bool) (hyps : List Expr)
       | none => used
     return used
 
+/--
+Run the core `linarith` procedure on the goal `g` using the hypotheses `hyps`.
+If `only_on` is true, the search is restricted to `hyps`; otherwise all suitable
+local hypotheses are considered. This is the workhorse behind the user-facing
+`linarith` tactic.
+-/
 partial def linarith (only_on : Bool) (hyps : List Expr) (cfg : LinarithConfig := {})
     (g : MVarId) : MetaM Unit := do
   discard <| linarithUsedHyps only_on hyps cfg g
@@ -460,6 +467,14 @@ The option `set_option trace.linarith true` will trace certain intermediate stag
 routine.
 -/
 syntax (name := linarith) "linarith" "!"? linarithArgsRest : tactic
+
+/--
+`linarith?` behaves like `linarith` but, on success, it prints a suggestion of
+the form `linarith only [...]` listing a minimized set of hypotheses used in the
+final proof.  Use `linarith?!` for the higher-reducibility variant and set the
+`minimize` flag in the configuration to control whether greedy minimization is
+performed.
+-/
 syntax (name := linarith?) "linarith?" "!"? linarithArgsRest : tactic
 
 @[inherit_doc linarith] macro "linarith!" rest:linarithArgsRest : tactic =>

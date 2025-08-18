@@ -139,11 +139,11 @@ def mkNegOneLtZeroProof (tp : Expr) : MetaM Expr := do
   let zero_lt_one ← mkAppOptM ``Linarith.zero_lt_one #[tp, none, none, none]
   mkAppM `neg_neg_of_pos #[zero_lt_one]
 
-/-
-`addNegEqProofsIdx l` inspects a list `l` of pairs `(h, i)` where `h` is a
-proof of `tᵢ Rᵢ 0` and `i` records the original index of the hypothesis. For
-each equality proof `t = 0` in the list, it appends a proof of `-t = 0` with
-the same index `i`. All other entries are preserved.
+/--
+`addNegEqProofsIdx l` inspects a list `l` of pairs `(h, i)` where `h` proves
+`tᵢ Rᵢ 0` and `i` records the original index of the hypothesis. For each
+equality proof `t = 0` in the list, it appends a proof of `-t = 0` with the
+same index `i`. All other entries are preserved.
 -/
 def addNegEqProofsIdx : List (Expr × Nat) → MetaM (List (Expr × Nat))
   | [] => return []
