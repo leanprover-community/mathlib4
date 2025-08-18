@@ -330,15 +330,13 @@ def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} 
 
 /-- `@[simp]`-normal form of `locallyRingedSpaceAdjunction_counit_app`. -/
 @[simp]
-lemma natIso_specΓIdentity_inv_app (R : CommRingCatᵒᵖ) :
-    (NatIso.op SpecΓIdentity.{u}).inv.app R =
-      (toOpen R.unop ⊤).op := rfl
+lemma toSpecΓ_unop (R : CommRingCatᵒᵖ) :
+    AlgebraicGeometry.toSpecΓ (Opposite.unop R) = toOpen R.unop ⊤ := rfl
 
 /-- `@[simp]`-normal form of `locallyRingedSpaceAdjunction_counit_app'`. -/
 @[simp]
-lemma natIso_specΓIdentity_inv_app' (R : Type u) [CommRing R] :
-    (NatIso.op SpecΓIdentity.{u}).inv.app (op <| CommRingCat.of R) =
-      (toOpen R ⊤).op := rfl
+lemma toSpecΓ_of (R : Type u) [CommRing R] :
+    AlgebraicGeometry.toSpecΓ (CommRingCat.of R) = toOpen R ⊤ := rfl
 
 lemma locallyRingedSpaceAdjunction_counit_app (R : CommRingCatᵒᵖ) :
     locallyRingedSpaceAdjunction.counit.app R =
