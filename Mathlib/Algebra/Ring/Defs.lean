@@ -202,7 +202,7 @@ theorem boole_mul {α} [MulZeroOneClass α] (P : Prop) [Decidable P] (a : α) :
 /-- A not-necessarily-unital, not-necessarily-associative, but commutative semiring. -/
 class NonUnitalNonAssocCommSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, CommMagma α
 
-attribute [instance 100] NonUnitalNonAssocCommSemiring.toNonUnitalNonAssocSemiring
+attribute [instance 10] NonUnitalNonAssocCommSemiring.toNonUnitalNonAssocSemiring
 
 /-- A non-unital commutative semiring is a `NonUnitalSemiring` with commutative multiplication.
 In other words, it is a type with the following structures: additive commutative monoid
