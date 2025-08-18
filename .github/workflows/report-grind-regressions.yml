@@ -61,7 +61,8 @@ jobs:
       with:
         linters: lean
         run: |
-          delimiter=$(uuidgen)
+          # The next line could also be `delimiter=$(uuidgen)` if `utils-linux` package were installed.
+          delimiter=$(echo "console.log(crypto.randomUUID())" | node -)
           echo "buildlog<<${delimiter}" >> $GITHUB_OUTPUT
           # Pipe to tee so we see the build results both on Zulip and in the log.
           lake build | tee -a $GITHUB_OUTPUT
@@ -101,7 +102,8 @@ jobs:
       with:
         linters: lean
         run: |
-          delimiter=$(uuidgen)
+          # The next line could also be `delimiter=$(uuidgen)` if `utils-linux` package were installed.
+          delimiter=$(echo "console.log(crypto.randomUUID())" | node -)
           echo "buildlog<<${delimiter}" >> $GITHUB_OUTPUT
           # Pipe to tee so we see the build results both on Zulip and in the log.
           lake build | tee -a $GITHUB_OUTPUT
@@ -141,7 +143,8 @@ jobs:
       with:
         linters: lean
         run: |
-          delimiter=$(uuidgen)
+          # The next line could also be `delimiter=$(uuidgen)` if `utils-linux` package were installed.
+          delimiter=$(echo "console.log(crypto.randomUUID())" | node -)
           echo "buildlog<<${delimiter}" >> $GITHUB_OUTPUT
           # Pipe to tee so we see the build results both on Zulip and in the log.
           lake build | tee -a $GITHUB_OUTPUT
