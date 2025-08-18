@@ -43,7 +43,7 @@ jobs:
       test-outcome: ${{ steps.test.outcome }}
     defaults: # On Hoskinson runners, landrun is already installed.
       run:
-        shell: landrun --rox /usr --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT -- bash -euxo pipefail {0}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT -- bash -euxo pipefail {0}
     steps:
       - name: cleanup
         shell: bash    # This *just* deletes old files, so is safe to run outside landrun.
@@ -286,6 +286,10 @@ jobs:
         run: |
           cd pr-branch
 
+          # Trim trailing whitespace from secrets to prevent issues with accidentally added spaces
+          export MATHLIB_CACHE_SAS="${MATHLIB_CACHE_SAS_RAW%"${MATHLIB_CACHE_SAS_RAW##*[![:space:]]}"}"
+          export MATHLIB_CACHE_S3_TOKEN="${MATHLIB_CACHE_S3_TOKEN_RAW%"${MATHLIB_CACHE_S3_TOKEN_RAW##*[![:space:]]}"}"
+
           # Use the trusted cache tool from master-branch
           # TODO: this is not doing anything currently, and needs to be integrated with put-unpacked
           # ../master-branch/.lake/build/bin/cache commit || true
@@ -294,8 +298,8 @@ jobs:
           # do not try to upload files just downloaded
           ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked
         env:
-          MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
-          MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
+          MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
+          MATHLIB_CACHE_S3_TOKEN_RAW: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
       # Note: we should not be including `Archive` and `Counterexamples` in the cache.
       # We do this for now for the sake of not rebuilding them in every CI run
@@ -342,11 +346,16 @@ jobs:
         shell: bash
         run: |
           cd pr-branch
+
+          # Trim trailing whitespace from secrets to prevent issues with accidentally added spaces
+          export MATHLIB_CACHE_SAS="${MATHLIB_CACHE_SAS_RAW%"${MATHLIB_CACHE_SAS_RAW##*[![:space:]]}"}"
+          export MATHLIB_CACHE_S3_TOKEN="${MATHLIB_CACHE_S3_TOKEN_RAW%"${MATHLIB_CACHE_S3_TOKEN_RAW##*[![:space:]]}"}"
+
           ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put Archive.lean
           ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put Counterexamples.lean
         env:
-          MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
-          MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
+          MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
+          MATHLIB_CACHE_S3_TOKEN_RAW: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
       - name: Check {Mathlib, Tactic, Counterexamples, Archive}.lean
         if: always()
@@ -410,7 +419,7 @@ jobs:
             ##  we filter out the output lines that begin with `✔ [xx/yy]`, where xx, yy
             ##  are either numbers or ?, and the "Build completed successfully." message.
             ##  We keep the rest, which are actual outputs of the files
-            awk '!($0 ~ "^\\s*✔ \\[[?0-9]*/[?0-9]*\\]" || $0 == "Build completed successfully."){ print $0 }')"
+            awk '!($0 ~ "^\\s*✔ \\[[?0-9]*/[?0-9]*\\]" || $0 ~ "^Build completed successfully( \\([0-9]+ jobs\\))?\\.?$"){ print $0 }')"
           if [ -n "${buildMsgs}" ]
           then
             printf $'%s\n' "${buildMsgs}"
