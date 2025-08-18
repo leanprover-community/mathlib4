@@ -15,8 +15,9 @@ contain only finitely many arrows.
 ## Main Definitions
 
 - `CategoryTheory.Pretopology.finite`: The finite pretopology on a category.
-
 -/
+
+universe v v₁ u u₁
 
 namespace CategoryTheory
 
