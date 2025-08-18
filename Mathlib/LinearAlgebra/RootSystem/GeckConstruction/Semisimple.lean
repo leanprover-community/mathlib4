@@ -257,8 +257,6 @@ private lemma instIsIrreducible_aux₁ (U : LieSubmodule K H (b.support ⊕ ι �
   have : ⨆ (χ : H → K), ⨆ (_ : χ ≠ 0), (⊥ : LieSubmodule K H U) = ⊥ := biSup_const ⟨1, one_ne_zero⟩
   rw [← iSup_genWeightSpace_eq_top K H U, iSup_split_single _ 0, biSup_congr hU, this, sup_bot_eq]
 
-/-- An auxiliary lemma en route to `RootPairing.GeckConstruction.instIsIrreducible` (where the same
-conclusion is proved with the hypothesis `hi` weakened to just `U ≠ ⊥`). -/
 private lemma instIsIrreducible_aux₂ [P.IsReduced] [P.IsIrreducible]
     {U : LieSubmodule K (lieAlgebra b) (b.support ⊕ ι → K)} {i : ι} (hi : v b i ∈ U) :
     U = ⊤ := by
@@ -326,8 +324,7 @@ private lemma instIsIrreducible_aux₂ [P.IsReduced] [P.IsIrreducible]
     exact (U.smul_mem_iff (by norm_cast)).mp this
 
 lemma coe_genWeightSpace_zero_eq_span_range_u :
-    genWeightSpace (b.support ⊕ ι → K) (0 : H → K) =
-      span K (range <| u (b := b)) := by
+    genWeightSpace (b.support ⊕ ι → K) (0 : H → K) = span K (range <| u (b := b)) := by
   refine le_antisymm (fun w hw ↦ Pi.mem_span_range_single_inl_iff.mpr fun i ↦ ?_) ?_
   · replace hw : ∀ (x) (hx : x ∈ lieAlgebra b), ⟨x, hx⟩ ∈ H →
         ∃ k, (x.toLin' ^ k) w = 0 := by simpa [mem_genWeightSpace] using hw
