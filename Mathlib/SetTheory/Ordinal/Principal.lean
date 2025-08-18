@@ -95,8 +95,8 @@ theorem op_eq_self_of_principal (hao : a < o) (H : IsNormal (op a))
 theorem nfp_le_of_principal (hao : a < o) (ho : Principal op o) : nfp (op a) a ≤ o :=
   nfp_le fun n => (ho.iterate_lt hao n).le
 
-protected theorem Principal.sSup {op : Ordinal → Ordinal → Ordinal} {s : Set Ordinal}
-    (H : ∀ x ∈ s, Principal op x) : Principal op (sSup s) := by
+protected theorem Principal.sSup {s : Set Ordinal} (H : ∀ x ∈ s, Principal op x) :
+    Principal op (sSup s) := by
   have : Principal op (sSup ∅) := by simp
   by_cases hs : BddAbove s; swap; rwa [csSup_of_not_bddAbove hs]
   obtain rfl | hs' := s.eq_empty_or_nonempty; assumption
@@ -108,8 +108,8 @@ protected theorem Principal.sSup {op : Ordinal → Ordinal → Ordinal} {s : Set
   · exact H a has ha (hb.trans_le hab)
   · exact H b hbs (ha.trans_le hab) hb
 
-protected theorem Principal.iSup {op : Ordinal → Ordinal → Ordinal} {ι} {f : ι → Ordinal}
-    (H : ∀ i, Principal op (f i)) : Principal op (⨆ i, f i) := by
+protected theorem Principal.iSup {ι} {f : ι → Ordinal} (H : ∀ i, Principal op (f i)) :
+    Principal op (⨆ i, f i) := by
   apply Principal.sSup
   simpa
 
