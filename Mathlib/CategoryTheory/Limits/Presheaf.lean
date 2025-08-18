@@ -131,7 +131,7 @@ lemma restrictedULiftYonedaHomEquiv'_symm_naturality_right (P : Cᵒᵖ ⥤ Type
 @[reassoc]
 lemma restrictedULiftYonedaHomEquiv'_symm_app_naturality_left
     {P Q : Cᵒᵖ ⥤ Type (max w v₁ v₂)} (f : P ⟶ Q) (E : ℰ)
-    (g : (Q ⟶ (restrictedULiftYoneda.{max w v₁} A).obj E))
+    (g : Q ⟶ (restrictedULiftYoneda.{max w v₁} A).obj E)
     (p : CostructuredArrow uliftYoneda.{max w v₂} P) :
     ((restrictedULiftYonedaHomEquiv' A P E).symm (f ≫ g)).app p =
       ((restrictedULiftYonedaHomEquiv' A Q E).symm g).app
@@ -678,6 +678,14 @@ theorem final_toCostructuredArrow_comp_pre {c : Cocone (F ⋙ yoneda)} (hc : IsC
     (colimit.isColimit ((c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) ⋙
       CostructuredArrow.toOver yoneda c.pt))
   exact Over.isoMk (hc.coconePointUniqueUpToIso isc) (hc.hom_ext fun i => by simp)
+
+@[deprecated (since := "2025-08-16")] alias restrictedYoneda := restrictedULiftYoneda
+@[deprecated (since := "2025-08-16")] alias isExtensionAlongYoneda := isExtensionAlongULiftYoneda
+@[deprecated (since := "2025-08-16")] alias isLeftKanExtension_along_yoneda_iff :=
+  isLeftKanExtension_along_uliftYoneda_iff
+@[deprecated (since := "2025-08-16")] alias yonedaAdjunction := uliftYonedaAdjunction
+@[deprecated (since := "2025-08-16")] alias uniqueExtensionAlongYoneda :=
+  uniqueExtensionAlongULiftYoneda
 
 end Presheaf
 

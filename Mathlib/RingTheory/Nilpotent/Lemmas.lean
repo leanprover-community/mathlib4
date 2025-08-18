@@ -14,6 +14,8 @@ import Mathlib.RingTheory.Nilpotent.Defs
 This file contains results about nilpotent elements that involve ring theory.
 -/
 
+assert_not_exists Cardinal
+
 universe u v
 
 open Function Module Set

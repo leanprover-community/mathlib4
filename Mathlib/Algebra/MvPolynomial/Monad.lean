@@ -331,7 +331,6 @@ instance monad : Monad fun σ => MvPolynomial σ R where
 
 instance lawfulFunctor : LawfulFunctor fun σ => MvPolynomial σ R where
   map_const := by intros; rfl
-  -- Porting note: I guess `map_const` no longer has a default implementation?
   id_map := by intros; simp [(· <$> ·)]
   comp_map := by intros; simp [(· <$> ·)]
 

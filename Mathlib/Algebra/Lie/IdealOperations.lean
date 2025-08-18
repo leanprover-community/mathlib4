@@ -274,7 +274,7 @@ theorem comap_bracket_eq {J₁ J₂ : LieIdeal R L'} (h : f.IsIdealMorphism) :
   congr
   ext
   simp_all only [Subtype.exists, LieSubmodule.mem_inf, LieHom.mem_idealRange_iff, exists_prop,
-    Set.mem_setOf_eq, LieHom.coe_toLinearMap, mem_comap, Set.mem_image,
+    Set.mem_setOf_eq, LieHom.coe_toLinearMap, mem_comap,
     exists_exists_and_exists_and_eq_and, LieHom.map_lie]
   grind
 

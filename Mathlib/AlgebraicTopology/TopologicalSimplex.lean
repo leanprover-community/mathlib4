@@ -121,7 +121,7 @@ def toTop₀ : SimplexCategory ⥤ TopCat.{0} where
 
 /-- The functor `SimplexCategory ⥤ TopCat.{u}`
 associating the topological `n`-simplex to `⦋n⦌ : SimplexCategory`. -/
-@[simps! obj map]
+@[simps! obj map, pp_with_univ]
 def toTop : SimplexCategory ⥤ TopCat.{u} :=
   toTop₀ ⋙ TopCat.uliftFunctor
 
