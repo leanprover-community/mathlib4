@@ -40,7 +40,9 @@ def zariskiPretopology : Pretopology (Scheme.{u}) :=
 
 /-- The Zariski topology on the category of schemes. -/
 abbrev zariskiTopology : GrothendieckTopology (Scheme.{u}) :=
-  zariskiPretopology.toGrothendieck
+  grothendieckTopology IsOpenImmersion
+
+lemma zariskiTopology_eq : zariskiTopology.{u} = zariskiPretopology.toGrothendieck := rfl
 
 instance subcanonical_zariskiTopology : zariskiTopology.Subcanonical := by
   apply GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj
