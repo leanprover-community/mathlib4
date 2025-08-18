@@ -599,7 +599,7 @@ abbrev FiniteMulArchimedeanClass := {A : MulArchimedeanClass M // A ≠ ⊤}
 namespace FiniteMulArchimedeanClass
 
 /-- Create a `FiniteMulArchimedeanClass` from a non-one element. -/
-@[to_additive /-- Create a `FiniteArchimedeanClass` from a non-zero element.-/]
+@[to_additive /-- Create a `FiniteArchimedeanClass` from a non-zero element. -/]
 def mk (a : M) (h : a ≠ 1) : FiniteMulArchimedeanClass M :=
   ⟨MulArchimedeanClass.mk a, MulArchimedeanClass.mk_eq_top_iff.not.mpr h⟩
 
