@@ -185,6 +185,7 @@ def refinementSpec {R : CommRingCat.{u}}
       let ⟨f, g, hfj, hg, hgj, p, hypg⟩ := (U.map j).exists_factor y
       ⟨⟨f, j, hfj⟩, p, hjyx ▸ hypg ▸ congr(($hgj.symm).base p)⟩)
 
+/-- The `refinementSpec` cover is a refinement of the original cover. -/
 noncomputable def refinementSpecHom {R : CommRingCat.{u}} (U : Cover IsOpenImmersion (Spec R)) :
     (refinementSpec U).openCover ⟶ U where
   idx j := j.2.choose
@@ -209,6 +210,7 @@ noncomputable instance {X : Scheme.{u}} [CompactSpace X] (U : AffineOpenCover.{v
     Fintype U.finiteSubcover.J :=
   inferInstanceAs (Fintype (U.openCover.finiteSubcover.J))
 
+/-- The finite subcover is a refinement of the original cover. -/
 noncomputable def finiteSubcoverHom {X : Scheme.{u}} [CompactSpace X] (U : AffineOpenCover.{u} X) :
     U.finiteSubcover.openCover ⟶ U.openCover where
   idx j := U.f j.val
