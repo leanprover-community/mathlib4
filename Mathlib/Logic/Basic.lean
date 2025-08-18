@@ -1002,18 +1002,8 @@ alias beq_eq_decide := Bool.beq_eq_decide_eq
 
 @[ext]
 theorem beq_ext {α : Type*} (inst1 : BEq α) (inst2 : BEq α)
-    (h : ∀ x y, @BEq.beq _ inst1 x y = @BEq.beq _ inst2 x y) :
-    inst1 = inst2 := by
-  have ⟨beq1⟩ := inst1
-  have ⟨beq2⟩ := inst2
-  congr
-  funext x y
-  exact h x y
+    (h : ∀ x y, @BEq.beq _ inst1 x y = @BEq.beq _ inst2 x y) : inst1 = inst2 :=
+  match inst1, inst2, funext₂ h with | ⟨_⟩, ⟨_⟩, rfl => rfl
 
 theorem lawful_beq_subsingleton {α : Type*} (inst1 : BEq α) (inst2 : BEq α)
-    [@LawfulBEq α inst1] [@LawfulBEq α inst2] :
-    inst1 = inst2 := by
-  apply beq_ext
-  intro x y
-  classical
-  simp only [beq_eq_decide]
+    [@LawfulBEq α inst1] [@LawfulBEq α inst2] : inst1 = inst2 := by ext; simp
