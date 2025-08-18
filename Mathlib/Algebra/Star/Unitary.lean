@@ -184,6 +184,57 @@ lemma _root_.isStarNormal_of_mem_unitary {u : R} (hu : u ∈ unitary R) : IsStar
 
 end Monoid
 
+section SMul
+
+section
+
+variable {A : Type*}
+  [Monoid R] [Monoid A] [MulAction R A] [SMulCommClass R A A]
+  [IsScalarTower R A A] [StarMul R] [StarMul A] [StarModule R A]
+
+lemma smul_mem_of_mem {r : R} {a : A} (hr : r ∈ unitary R) (ha : a ∈ unitary A) :
+    r • a ∈ unitary A := by
+  simp [mem_iff, smul_smul, mul_smul_comm, smul_mul_assoc, hr, ha]
+
+lemma smul_mem (r : unitary R) {a : A} (ha : a ∈ unitary A) :
+    r • a ∈ unitary A :=
+  smul_mem_of_mem (R := R) r.prop ha
+
+instance : SMul (unitary R) (unitary A) where
+  smul r a := ⟨r • a, smul_mem r a.prop⟩
+
+@[simp, norm_cast]
+lemma coe_smul (r : unitary R) (a : unitary A) : ↑(r • a) = r • (a : A) := rfl
+
+instance : MulAction (unitary R) (unitary A) where
+  one_smul _ := Subtype.ext <| one_smul ..
+  mul_smul _ _ _ := Subtype.ext <| mul_smul ..
+
+instance : StarModule (unitary R) (unitary A) where
+  star_smul _ _ := Subtype.ext <| star_smul (_ : R) _
+
+end
+
+section
+
+variable {S A : Type*}
+  [Monoid R] [Monoid S] [Monoid A] [StarMul R] [StarMul S] [StarMul A]
+  [MulAction R S] [MulAction R A] [MulAction S A]
+  [StarModule R S] [StarModule R A] [StarModule S A]
+  [IsScalarTower R A A] [IsScalarTower S A A]
+  [SMulCommClass R A A] [SMulCommClass S A A]
+
+instance [SMulCommClass R S A] : SMulCommClass (unitary R) (unitary S) (unitary A) where
+  smul_comm _ _ _ := Subtype.ext <| smul_comm _ (_ : S) (_ : A)
+
+instance [IsScalarTower R S S] [SMulCommClass R S S] [IsScalarTower R S A] :
+    IsScalarTower (unitary R) (unitary S) (unitary A) where
+  smul_assoc _ _ _ := Subtype.ext <| smul_assoc _ (_ : S) (_ : A)
+
+end
+
+end SMul
+
 section Map
 
 variable {F R S : Type*} [Monoid R] [StarMul R] [Monoid S] [StarMul S]
