@@ -36,6 +36,9 @@ open ENNReal (ofReal)
 
 /-- Bundled monotone right-continuous real functions, used to construct Stieltjes measures. -/
 structure StieltjesFunction where
+  /-- The underlying function `ℝ → ℝ`.
+
+  Do NOT use directly. Use the coercion instead. -/
   toFun : ℝ → ℝ
   mono' : Monotone toFun
   right_continuous' : ∀ x, ContinuousWithinAt toFun (Ici x) x

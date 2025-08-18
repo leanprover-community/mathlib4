@@ -27,6 +27,8 @@ namespace MonoidAlgebra
 section Semiring
 variable [Semiring R] [Semiring S] {f : M → N} {a : M} {r : R}
 
+/-- Given a function `f : M → N` between magmas, return the corresponding map `R[M] → R[N]` obtained
+by summing the coefficients along each fiber of `f`. -/
 abbrev mapDomain (f : M → N) (v : MonoidAlgebra R M) : MonoidAlgebra R N := Finsupp.mapDomain f v
 
 lemma mapDomain_sum (f : M → N) (s : MonoidAlgebra S M) (v : M → S → MonoidAlgebra R M) :
@@ -89,6 +91,8 @@ namespace AddMonoidAlgebra
 section Semiring
 variable [Semiring R] [Semiring S] {f : M → N} {a : M} {r : R}
 
+/-- Given a function `f : M → N` between magmas, return the corresponding map `R[M] → R[N]` obtained
+by summing the coefficients along each fiber of `f`. -/
 abbrev mapDomain (f : M → N) (v : R[M]) : R[N] := Finsupp.mapDomain f v
 
 lemma mapDomain_sum (f : M → N) (s : S[M]) (v : M → S → R[M]) :
