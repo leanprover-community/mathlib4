@@ -221,12 +221,12 @@ attribute [instance 100] NonAssocCommSemiring.toNonAssocSemiring
 attribute [instance 100] NonAssocCommSemiring.toNonUnitalNonAssocCommSemiring
 
 -- see Note [lower instance priority]
-instance (priority := 100) NonUnitalCommSemiring.toNonUnitalNonAssocCommSemiring
-    [NonUnitalCommSemiring α] : NonUnitalNonAssocCommSemiring α := fast_instance% {}
+instance (priority := 10) NonUnitalCommSemiring.toNonUnitalNonAssocCommSemiring
+    [NonUnitalCommSemiring α] : NonUnitalNonAssocCommSemiring α where
 
 -- see Note [lower instance priority]
-instance (priority := 100) CommSemiring.toNonAssocCommSemiring [CommSemiring α] :
-    NonAssocCommSemiring α := fast_instance% {}
+instance (priority := 10) CommSemiring.toNonAssocCommSemiring [CommSemiring α] :
+    NonAssocCommSemiring α where
 
 -- see Note [lower instance priority]
 instance (priority := 100) CommSemiring.toNonUnitalCommSemiring [CommSemiring α] :
