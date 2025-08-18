@@ -13,6 +13,8 @@ localization map away from some element. We also define the equivalent
 `Algebra.IsStandardOpenImmersion`.
 -/
 
+universe u
+
 namespace RingHom
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T] (f : R →+* S) (g : S →+* T)
