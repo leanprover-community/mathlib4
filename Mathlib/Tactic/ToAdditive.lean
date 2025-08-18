@@ -9,9 +9,10 @@ import Mathlib.Tactic.ToAdditive.Frontend
 ## `@[to_additive]` attributes for basic types
 -/
 
-attribute [to_additive self] Empty PEmpty Unit PUnit
+attribute [to_additive self] Empty PEmpty Unit PUnit inferInstance inferInstanceAs
 
 attribute [to_additive_change_numeral 2] OfNat OfNat.ofNat
+attribute [to_additive_instance_arg 3] OfNat.ofNat
 
 attribute [to_additive] One
 attribute [to_additive existing Zero.toOfNat0] One.toOfNat1

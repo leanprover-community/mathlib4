@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
 import Mathlib.Data.Nat.Notation
 import Mathlib.Data.String.Defs
 import Mathlib.Data.Array.Defs
-import Mathlib.Lean.Expr.ReplaceRec
+import Mathlib.Util.MemoFix
 import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Meta.Simp
 import Mathlib.Lean.Name
@@ -465,6 +465,40 @@ initialize translations : NameMapExtension Name ← registerNameMapExtension _
 def findTranslation? (env : Environment) : Name → Option Name :=
   (ToAdditive.translations.getState env).find?
 
+/-- Get the multiplicative → additive translation for the given name,
+falling back to translating just a prefix of the name. -/
+def findPrefixTranslation? (env : Environment) (nm : Name) : Option Name :=
+  nm.mapPrefix (findTranslation? env)
+
+/--
+Find the first argument of `nm` that has a multiplicative type-class on it.
+Returns 1 if there are no types with a multiplicative class as arguments.
+E.g. `Prod.instGroup` returns 1, and `Pi.instOne` returns 2.
+Note: we only consider the first argument of each type-class.
+E.g. `[Pow A N]` is a multiplicative type-class on `A`, not on `N`.
+
+Also returns the position of the multiplicative type-class, if available
+-/
+def firstMultiplicativeArg (nm : Name) : CoreM (Nat × Option Nat) := MetaM.run' do
+  forallTelescopeReducing (← getConstInfo nm).type fun xs _ ↦ do
+    -- xs are the arguments to the constant
+    let xs := xs.toList.mapIdx (·, ·)
+    let l ← xs.filterMapM fun (n, x) ↦ do
+      -- write the type of `x` as `(y₀ : α₀) → ... → (yₙ : αₙ) → f a₀ ... aₙ`;
+      -- if `f` can be additivized, mark free variables in `a₀` as multiplicative arguments
+      forallTelescopeReducing (← inferType x) fun _ys tgt ↦ do
+        if let some c := tgt.getAppFn.constName? then
+          if findTranslation? (← getEnv) c |>.isSome then
+            if let some arg := tgt.getArg? 0 then
+              return (xs.findIdx? (arg.containsFVar ·.2.fvarId!)).map (·, n)
+        return none
+    trace[to_additive_detail] "firstMultiplicativeArg: {l}"
+    match l with
+    | [] => return (0, none)
+    | (head :: tail) =>
+      let (n, m) := tail.foldl (fun x y => if x.2 ≤ y.2 then x else y) head
+      return (n, some m)
+
 /-- Add a (multiplicative → additive) name translation to the translations map. -/
 def insertTranslation (src tgt : Name) (failIfExists := true) : CoreM Unit := do
   if let some tgt' := findTranslation? (← getEnv) src then
@@ -475,6 +509,13 @@ def insertTranslation (src tgt : Name) (failIfExists := true) : CoreM Unit := do
       return
   modifyEnv (ToAdditive.translations.addEntry · (src, tgt))
   trace[to_additive] "Added translation {src} ↦ {tgt}"
+  let (firstMultArg, instArg?) ← firstMultiplicativeArg src
+  if firstMultArg != 0 then
+    trace[to_additive_detail] "Setting relevant_arg for {src} to be {firstMultArg}."
+    relevantArgAttr.add src firstMultArg
+  if let some instArg := instArg? then
+    trace[to_additive_detail] "Setting instance_arg for {src} to be {instArg}."
+    instanceArgAttr.add src instArg
 
 /-- `Config` is the type of the arguments that can be provided to `to_additive`. -/
 structure Config : Type where
@@ -593,24 +634,32 @@ def applyReplacementFun (e : Expr) : MetaM Expr := do
         executeReservedNameAction n
     | _ => pure ()
   return e'
-where /-- Implementation of `applyReplacementFun`. -/
+where
+  /-- Check if the expression morally a bvar. -/
+  hasBVarHead : Expr → Bool
+  | .app f _ => hasBVarHead f
+  | .lam _ _ b _ => hasBVarHead b
+  | .bvar _ => true
+  | _ => false
+
+  /-- Implementation of `applyReplacementFun`.
+  In each recursive step, we return a `Bool` that signifies whether the
+  top level expression has been changed. -/
   aux (env : Environment) (trace : Bool) : Expr → Expr × Bool :=
   let reorderFn : Name → List (List ℕ) := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
   let relevantArg : Name → ℕ := fun nm ↦ (relevantArgAttr.find? env nm).getD 0
+  let instanceArg? : Name → Option ℕ := fun nm ↦ instanceArgAttr.find? env nm
   memoFix fun r e ↦ (StateT.run · false : StateM Bool Expr → Expr × Bool) <| do
-    let rM (e) : StateM Bool Expr := do
-      let (e, b) := r e
-      if b then set true
-      pure e
+    let rM (e) : StateM Bool Expr := fun b => let (e, b') := r e; (e, b || b')
     if trace then
       dbg_trace s!"replacing at {e}"
     match e with
     | .const n₀ ls₀ => do
-      let n₁ := n₀.mapPrefix <| findTranslation? env
+      let some n₁ := findPrefixTranslation? env n₀ | return e
+      set true
       let ls₁ : List Level := if 0 ∈ (reorderFn n₀).flatten then ls₀.swapFirstTwo else ls₀
       if trace then
-        if n₀ != n₁ then
-          dbg_trace s!"changing {n₀} to {n₁}"
+        dbg_trace s!"changing {n₀} to {n₁}"
         if 0 ∈ (reorderFn n₀).flatten then
           dbg_trace s!"reordering the universe variables from {ls₀} to {ls₁}"
       return Lean.mkConst n₁ ls₁
@@ -620,8 +669,8 @@ where /-- Implementation of `applyReplacementFun`. -/
         if trace then
           dbg_trace s!"applyReplacementFun: Variables applied to numerals are not changed {e}"
         return e
-      let mut args := e.getAppArgs
-      let some nm := fn.constName? | return mkAppN (← rM fn) (← args.mapM rM)
+      let args := e.getAppArgs
+      let some nm := fn.constName? | return mkAppN (← rM fn) (args.map (r · |>.1))
       -- e = `(nm y₁ .. yₙ x)
       /- Test if the head should not be replaced. -/
       let relevantArgId := relevantArg nm
@@ -630,9 +679,19 @@ where /-- Implementation of `applyReplacementFun`. -/
           if trace then
             dbg_trace s!"The application of {nm} contains the fixed type \
               {fxd}, so it is not changed"
-          return mkAppN fn (← args.mapM rM)
-      if false then -- here I will check the condition that the instance argument is modified
-        return mkAppN fn (← args.mapM rM)
+          return mkAppN fn (args.map (r · |>.1))
+      let args := args.map r
+      let fixedInstArg := match instanceArg? nm with
+        | some instArg => match args[instArg]? with
+          | some (arg, false) => if hasBVarHead arg then none else some arg
+          | _ => none
+        | _ => none
+      let mut args := args.map (·.1)
+      if let some fxd := fixedInstArg then
+        if trace then
+          dbg_trace s!"The application of {nm} contains the fixed instance \
+            {fxd}, so it is not changed"
+        return mkAppN fn args
       /- Test if arguments should be reordered. -/
       let reorder := reorderFn nm
       if !reorder.isEmpty then
@@ -654,9 +713,9 @@ where /-- Implementation of `applyReplacementFun`. -/
               changeNumeral arg
             else
               arg
-      return mkAppN (← rM fn) (← args.mapM rM)
+      return mkAppN (← rM fn) args
     | .proj n₀ idx e => do
-      let n₁ := n₀.mapPrefix <| findTranslation? env
+      let n₁ := (findPrefixTranslation? env n₀).getD n₀
       if trace then
         dbg_trace s!"applyReplacementFun: in projection {e}.{idx} of type {n₀}, \
           replace type with {n₁}"
@@ -940,35 +999,6 @@ def additivizeLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT Co
     for (srcLemma, tgtLemma) in srcLemmas.zip tgtLemmas do
       insertTranslation srcLemma tgtLemma
 
-/--
-Find the first argument of `nm` that has a multiplicative type-class on it.
-Returns 1 if there are no types with a multiplicative class as arguments.
-E.g. `Prod.instGroup` returns 1, and `Pi.instOne` returns 2.
-Note: we only consider the first argument of each type-class.
-E.g. `[Pow A N]` is a multiplicative type-class on `A`, not on `N`.
-
-Also returns the position of the multiplicative type-class, if available
--/
-def firstMultiplicativeArg (nm : Name) : MetaM (Nat × Option Nat) := do
-  forallTelescopeReducing (← getConstInfo nm).type fun xs _ ↦ do
-    -- xs are the arguments to the constant
-    let xs := xs.toList.mapIdx (·, ·)
-    let l ← xs.filterMapM fun (n, x) ↦ do
-      -- write the type of `x` as `(y₀ : α₀) → ... → (yₙ : αₙ) → f a₀ ... aₙ`;
-      -- if `f` can be additivized, mark free variables in `a₀` as multiplicative arguments
-      forallTelescopeReducing (← inferType x) fun _ys tgt ↦ do
-        if let some c := tgt.getAppFn.constName? then
-          if findTranslation? (← getEnv) c |>.isSome then
-            if let some arg := tgt.getArg? 0 then
-              return (xs.findIdx? (arg.containsFVar ·.2.fvarId!)).map (·, n)
-        return none
-    trace[to_additive_detail] "firstMultiplicativeArg: {l}"
-    match l with
-    | [] => return (0, none)
-    | (head :: tail) =>
-      let (n, m) := tail.foldl (fun x y => if x.1 ≤ y.1 then x else y) head
-      return (n, some m)
-
 /-- Helper for `capitalizeLike`. -/
 partial def capitalizeLikeAux (s : String) (i : String.Pos := 0) (p : String) : String :=
   if p.atEnd i || s.atEnd i then
@@ -1172,7 +1202,7 @@ def targetName (cfg : Config) (src : Name) : CoreM Name := do
   trace[to_additive_detail] "The name {s} splits as {s.splitCase}"
   let tgt_auto := guessName s
   let depth := cfg.tgt.getNumParts
-  let pre := pre.mapPrefix <| findTranslation? (← getEnv)
+  let pre := (findPrefixTranslation? (← getEnv) pre).getD pre
   let (pre1, pre2) := pre.splitAt (depth - 1)
   let res := if cfg.tgt == .anonymous then pre.str tgt_auto else pre1 ++ cfg.tgt
   if res == src then
@@ -1203,10 +1233,7 @@ def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (Array Name))
   for (srcField, tgtField) in srcFields.zip tgtFields do
     let srcName := if prependName then src ++ srcField else srcField
     let tgtName := if prependName then tgt ++ tgtField else tgtField
-    if srcField != tgtField then
-      insertTranslation srcName tgtName
-    else
-      trace[to_additive] "Translation {srcName} ↦ {tgtName} is automatic."
+    insertTranslation srcName tgtName
 
 /-- Add the structure fields of `src` to the translations dictionary
 so that future uses of `to_additive` will map them to the corresponding `tgt` fields. -/
@@ -1439,13 +1466,6 @@ partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind
     -- for example, this is necessary for `HPow.hPow`
     if findTranslation? (← getEnv) src |>.isSome then
       return #[tgt]
-  let (firstMultArg, instArg?) ← MetaM.run' <| firstMultiplicativeArg src
-  if firstMultArg != 0 then
-    trace[to_additive_detail] "Setting relevant_arg for {src} to be {firstMultArg}."
-    relevantArgAttr.add src firstMultArg
-  if let some instArg := instArg? then
-    trace[to_additive_detail] "Setting instance_arg for {src} to be {instArg}."
-    instanceArgAttr.add src instArg
   insertTranslation src tgt alreadyExists
   let nestedNames ←
     if alreadyExists then

@@ -38,12 +38,13 @@ namespace Name
 
 /-- Find the largest prefix `n` of a `Name` such that `f n != none`, then replace this prefix
 with the value of `f n`. -/
-def mapPrefix (f : Name → Option Name) (n : Name) : Name := Id.run do
+@[specialize]
+def mapPrefix (f : Name → Option Name) (n : Name) : Option Name := do
   if let some n' := f n then return n'
   match n with
-  | anonymous => anonymous
-  | str n' s => mkStr (mapPrefix f n') s
-  | num n' i => mkNum (mapPrefix f n') i
+  | anonymous => none
+  | str n' s => (mkStr · s) <$> mapPrefix f n'
+  | num n' i => (mkNum · i) <$> mapPrefix f n'
 
 /-- Build a name from components.
 For example, ``from_components [`foo, `bar]`` becomes ``` `foo.bar```.
