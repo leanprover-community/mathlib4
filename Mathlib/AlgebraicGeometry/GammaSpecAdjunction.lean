@@ -328,12 +328,22 @@ def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} 
       Spec.toLocallyRingedSpace_map, Quiver.Hom.unop_op]
     exact right_triangle R.unop
 
+/-- `@[simp]`-normal form of `locallyRingedSpaceAdjunction_counit_app`. -/
 @[simp]
+lemma natIso_specΓIdentity_inv_app (R : CommRingCatᵒᵖ) :
+    (NatIso.op SpecΓIdentity.{u}).inv.app R =
+      (toOpen R.unop ⊤).op := rfl
+
+/-- `@[simp]`-normal form of `locallyRingedSpaceAdjunction_counit_app'`. -/
+@[simp]
+lemma natIso_specΓIdentity_inv_app' (R : Type u) [CommRing R] :
+    (NatIso.op SpecΓIdentity.{u}).inv.app (op <| CommRingCat.of R) =
+      (toOpen R ⊤).op := rfl
+
 lemma locallyRingedSpaceAdjunction_counit_app (R : CommRingCatᵒᵖ) :
     locallyRingedSpaceAdjunction.counit.app R =
       (toOpen R.unop ⊤).op := rfl
 
-@[simp]
 lemma locallyRingedSpaceAdjunction_counit_app' (R : Type u) [CommRing R] :
     locallyRingedSpaceAdjunction.counit.app (op <| CommRingCat.of R) =
       (toOpen R ⊤).op := rfl
