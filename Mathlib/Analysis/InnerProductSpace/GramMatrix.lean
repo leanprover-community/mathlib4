@@ -66,7 +66,9 @@ variable (𝕜) in
 lemma isHermitian_gram (v : n → E) : (gram 𝕜 v).IsHermitian :=
   Matrix.ext fun _ _ ↦ inner_conj_symm _ _
 
-theorem star_dotProduct_gram_mulVec [Fintype n] {v : n → E} (x : n → 𝕜) :
+variable [Fintype n]
+
+theorem star_dotProduct_gram_mulVec {v : n → E} (x : n → 𝕜) :
     star x ⬝ᵥ (gram 𝕜 v) *ᵥ x = ⟪∑ i, x i • v i, ∑ i, x i • v i⟫_𝕜 := by
   trans ∑ i, ∑ j, conj (x i) * x j * ⟪v i, v j⟫_𝕜
   · simp_rw [dotProduct, mul_assoc, ← Finset.mul_sum, mulVec, dotProduct, mul_comm, ← star_def,
@@ -75,14 +77,14 @@ theorem star_dotProduct_gram_mulVec [Fintype n] {v : n → E} (x : n → 𝕜) :
 
 variable (𝕜) in
 /-- A Gram matrix is positive semidefinite. -/
-theorem posSemidef_gram [Fintype n] (v : n → E) :
+theorem posSemidef_gram (v : n → E) :
     PosSemidef (gram 𝕜 v) := by
   refine ⟨isHermitian_gram _ _, fun x ↦ ?_⟩
   rw [star_dotProduct_gram_mulVec, le_iff_re_im]
   simp [inner_self_nonneg]
 
 /-- In a seminormed space, positive definiteness of `gram 𝕜 v` implies inear independence of `v` -/
-theorem linearIndependent_of_posDef_gram [Fintype n] {v : n → E} (h_gram : PosDef (gram 𝕜 v)) :
+theorem linearIndependent_of_posDef_gram {v : n → E} (h_gram : PosDef (gram 𝕜 v)) :
     LinearIndependent 𝕜 v := by
   rw [Fintype.linearIndependent_iff]
   intro y hy
@@ -93,10 +95,10 @@ theorem linearIndependent_of_posDef_gram [Fintype n] {v : n → E} (h_gram : Pos
 end SemiInnerProductSpace
 
 section NormedInnerProductSpace
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [Fintype n]
 
 /-- In a normed space, linear independence of `v` implies positive definiteness of `gram 𝕜 v`. -/
-theorem posDef_gram_of_linearIndependent  [Fintype n]
+theorem posDef_gram_of_linearIndependent
     {v : n → E} (h_li : LinearIndependent 𝕜 v) : PosDef (gram 𝕜 v) := by
   rw [Fintype.linearIndependent_iff] at h_li
   obtain ⟨h0, h1⟩ := posSemidef_gram (𝕜 := 𝕜) (v := v)
@@ -106,7 +108,7 @@ theorem posDef_gram_of_linearIndependent  [Fintype n]
 
 /-- In a normed space, linear independence of `v` is equivalent to positive definiteness of
 `gram 𝕜 v`. -/
-theorem posDef_gram_iff_linearIndependent [Fintype n] {v : n → E} :
+theorem posDef_gram_iff_linearIndependent {v : n → E} :
     PosDef (gram 𝕜 v) ↔ LinearIndependent 𝕜 v :=
   ⟨linearIndependent_of_posDef_gram, posDef_gram_of_linearIndependent⟩
 
