@@ -3,9 +3,8 @@ Copyright (c) 2025 Lua Viana Reis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lua Viana Reis, Oliver Butterley
 -/
-import Mathlib.Algebra.Order.AddGroup.PartialSups
 import Mathlib.Algebra.Order.Ring.Star
-import Mathlib.Algebra.Order.SuccOrder.PartialSups
+import Mathlib.Algebra.Order.SuccPred.PartialSups
 import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
 import Mathlib.Data.Real.StarOrdered
 import Mathlib.Dynamics.BirkhoffSum.QuasiMeasurePreserving
