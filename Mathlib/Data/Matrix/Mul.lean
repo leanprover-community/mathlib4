@@ -776,27 +776,35 @@ theorem vecMulVec_mul_vecMulVec [Fintype m] (u : l → α) (v w : m → α) (x :
   simp_rw [mul_apply, dotProduct, vecMulVec, Pi.smul_apply, of_apply, mul_assoc, ← Finset.mul_sum,
     smul_eq_mul, Finset.sum_mul, mul_assoc]
 
-lemma isLeftRegular_iff_mulVec_injective [Fintype m] [DecidableEq m] {A : Matrix m m α} :
-    IsLeftRegular A ↔ Function.Injective A.mulVec := by
+lemma mul_right_injective_iff_mulVec_injective [Fintype m] [Nonempty n] {A : Matrix l m α} :
+    Function.Injective (fun B : Matrix m n α ↦ A * B) ↔ Function.Injective A.mulVec := by
   refine ⟨fun ha v w hvw => ?_, fun ha B C hBC => ext_col fun j => ha congr(($hBC).col j)⟩
-  cases isEmpty_or_nonempty m
-  · exact Subsingleton.elim _ _
-  inhabit m
+  inhabit n
   -- `replicateRow` is not available yet
-  suffices (of fun i j : m => v i) = (of fun i j => w i) from
-    funext fun i => congrFun₂ this i (default : m)
+  suffices (of fun i j => v i) = (of fun i j => w i) from
+    funext fun i => congrFun₂ this i (default : n)
   exact ha <| ext fun _ _ => congrFun hvw _
 
-lemma isRightRegular_iff_vecMul_injective [Fintype m] [DecidableEq m] {A : Matrix m m α} :
-    IsRightRegular A ↔ Function.Injective A.vecMul := by
+lemma mul_left_injective_iff_vecMul_injective [Nonempty l] [Fintype m] {A : Matrix m n α} :
+    Function.Injective (fun B : Matrix l m α ↦ B * A) ↔ Function.Injective A.vecMul := by
   refine ⟨fun ha v w hvw => ?_, fun ha B C hBC => ext_row fun i => ha congr(($hBC).row i)⟩
-  cases isEmpty_or_nonempty m
-  · exact Subsingleton.elim _ _
-  inhabit m
+  inhabit l
   --  `replicateCol` is not available yet
-  suffices (of fun i j : m => v j) = (of fun i j => w j) from
-    funext fun j => congrFun₂ this (default : m) j
+  suffices (of fun i j => v j) = (of fun i j => w j) from
+    funext fun j => congrFun₂ this (default : l) j
   exact ha <| ext fun _ _ => congrFun hvw _
+
+lemma isLeftRegular_iff_mulVec_injective [Fintype m] {A : Matrix m m α} :
+    IsLeftRegular A ↔ Function.Injective A.mulVec := by
+  cases isEmpty_or_nonempty m
+  · simp [IsLeftRegular, Function.injective_of_subsingleton]
+  exact mul_right_injective_iff_mulVec_injective
+
+lemma isRightRegular_iff_vecMul_injective [Fintype m] {A : Matrix m m α} :
+    IsRightRegular A ↔ Function.Injective A.vecMul := by
+  cases isEmpty_or_nonempty m
+  · simp [IsRightRegular, Function.injective_of_subsingleton]
+  exact mul_left_injective_iff_vecMul_injective
 
 end NonUnitalSemiring
 
