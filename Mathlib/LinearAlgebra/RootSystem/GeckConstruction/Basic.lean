@@ -56,9 +56,63 @@ attribute [local simp] Matrix.mul_apply Matrix.one_apply Matrix.diagonal_apply
 
 namespace RootPairing.GeckConstruction
 
-variable {ι R M N : Type*} [Finite ι] [CommRing R] [IsDomain R] [CharZero R]
+variable {ι R M N : Type*} [CommRing R]
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
   {P : RootPairing ι R M N} [P.IsCrystallographic] {b : P.Base}
+
+/-- Part of an `sl₂` triple used in Geck's construction of a Lie algebra from a root system. -/
+def h (i : b.support) :
+    Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
+  open scoped Classical in
+  .fromBlocks 0 0 0 (.diagonal (P.pairingIn ℤ · i))
+
+lemma h_def [DecidableEq ι] (i : b.support) :
+    h i = .fromBlocks 0 0 0 (.diagonal (P.pairingIn ℤ · i)) := by
+  ext (j | j) (k | k) <;> simp [h, Matrix.diagonal_apply]
+
+lemma h_eq_diagonal [DecidableEq ι] (i : b.support) :
+    h i = .diagonal (Sum.elim 0 (P.pairingIn ℤ · i)) := by
+  ext (j | j) (k | k) <;> simp [h, Matrix.diagonal_apply]
+
+lemma span_range_h_le_range_diagonal [DecidableEq ι] :
+    span R (range h) ≤ LinearMap.range (Matrix.diagonalLinearMap (b.support ⊕ ι) R R) := by
+  rw [span_le]
+  rintro - ⟨i, rfl⟩
+  rw [h_eq_diagonal]
+  exact LinearMap.mem_range_self _ _
+
+open Matrix in
+@[simp] lemma diagonal_elim_mem_span_h_iff [DecidableEq ι] {d : ι → R} :
+    diagonal (Sum.elim 0 d) ∈ span R (range <| h (b := b)) ↔
+      d ∈ span R (range <| fun (i : b.support) j ↦ (P.pairingIn ℤ j i : R)) := by
+  let g : Matrix ι ι R →ₗ[R] Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
+    { toFun := .fromBlocks 0 0 0
+      map_add' x y := by ext (i | i) (j | j) <;> simp
+      map_smul' t x := by ext (i | i) (j | j) <;> simp }
+  have h₀ : Injective (g ∘ diagonalLinearMap ι R R) := fun _ _ hd ↦ funext <| by simpa [g] using hd
+  have h₁ {d : ι → R} : diagonal (Sum.elim 0 d) = g (diagonalLinearMap ι R R d) := by
+    ext (i | i) (j | j) <;> simp [g]
+  have h₂ : range h = g '' (diagonalLinearMap ι R R ''
+    (range <| fun (i : b.support) j ↦ (P.pairingIn ℤ j i : R))) := by ext; simp [g, h_def]
+  simp_rw [h₁, h₂, span_image, ← map_comp, ← comp_apply (f := g), mem_map, LinearMap.coe_comp,
+    h₀.eq_iff, exists_eq_right]
+
+lemma apply_sum_inl_eq_zero_of_mem_span_h
+    (i : b.support) (j : b.support ⊕ ι) {x : Matrix (b.support ⊕ ι) (b.support ⊕ ι) R}
+    (hx : x ∈ span R (range h)) :
+    x j (Sum.inl i) = 0 := by
+  induction hx using span_induction with
+  | mem x h => obtain ⟨i, rfl⟩ := h; cases j <;> simp [h]
+  | zero => simp
+  | add u v _ _ hu hv => simp [hu, hv]
+  | smul t u _ hu => simp [hu]
+
+lemma lie_h_h [Fintype ι] (i j : b.support) :
+    ⁅h i, h j⁆ = 0 := by
+  classical
+  simpa only [h_eq_diagonal, ← commute_iff_lie_eq] using Matrix.commute_diagonal _ _
+
+variable [Finite ι] [IsDomain R] [CharZero R]
 
 /-- Part of an `sl₂` triple used in Geck's construction of a Lie algebra from a root system. -/
 def e (i : b.support) :
@@ -79,64 +133,6 @@ def f (i : b.support) :
     (.of fun i' j ↦ if i' = i ∧ j = i then 1 else 0)
     (.of fun i' j ↦ if i' = - i then ↑|b.cartanMatrix i j| else 0)
     (.of fun i' j ↦ if P.root i' = P.root j - P.root i then P.chainTopCoeff i j + 1 else 0)
-
-/-- Part of an `sl₂` triple used in Geck's construction of a Lie algebra from a root system. -/
-def h (i : b.support) :
-    Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
-  open scoped Classical in
-  .fromBlocks 0 0 0 (.diagonal (P.pairingIn ℤ · i))
-
-omit [Finite ι] [IsDomain R] [CharZero R] in
-lemma h_def [DecidableEq ι] (i : b.support) :
-    h i = .fromBlocks 0 0 0 (.diagonal (P.pairingIn ℤ · i)) := by
-  ext (j | j) (k | k) <;> simp [h, Matrix.diagonal_apply]
-
-omit [Finite ι] [IsDomain R] [CharZero R] in
-lemma h_eq_diagonal [DecidableEq ι] (i : b.support) :
-    h i = .diagonal (Sum.elim 0 (P.pairingIn ℤ · i)) := by
-  ext (j | j) (k | k) <;> simp [h, Matrix.diagonal_apply]
-
-omit [Finite ι] [IsDomain R] [CharZero R] in
-lemma span_range_h_le_range_diagonal [DecidableEq ι] :
-    span R (range h) ≤ LinearMap.range (Matrix.diagonalLinearMap (b.support ⊕ ι) R R) := by
-  rw [span_le]
-  rintro - ⟨i, rfl⟩
-  rw [h_eq_diagonal]
-  exact LinearMap.mem_range_self _ _
-
-omit [Finite ι] [IsDomain R] [CharZero R] in
-open Matrix in
-@[simp] lemma diagonal_elim_mem_span_h_iff [DecidableEq ι] {d : ι → R} :
-    diagonal (Sum.elim 0 d) ∈ span R (range <| h (b := b)) ↔
-      d ∈ span R (range <| fun (i : b.support) j ↦ (P.pairingIn ℤ j i : R)) := by
-  let g : Matrix ι ι R →ₗ[R] Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
-    { toFun := .fromBlocks 0 0 0
-      map_add' x y := by ext (i | i) (j | j) <;> simp
-      map_smul' t x := by ext (i | i) (j | j) <;> simp }
-  have h₀ : Injective (g ∘ diagonalLinearMap ι R R) := fun _ _ hd ↦ funext <| by simpa [g] using hd
-  have h₁ {d : ι → R} : diagonal (Sum.elim 0 d) = g (diagonalLinearMap ι R R d) := by
-    ext (i | i) (j | j) <;> simp [g]
-  have h₂ : range h = g '' (diagonalLinearMap ι R R ''
-    (range <| fun (i : b.support) j ↦ (P.pairingIn ℤ j i : R))) := by ext; simp [g, h_def]
-  simp_rw [h₁, h₂, span_image, ← map_comp, ← comp_apply (f := g), mem_map, LinearMap.coe_comp,
-    h₀.eq_iff, exists_eq_right]
-
-omit [Finite ι] [IsDomain R] [CharZero R] in
-lemma apply_sum_inl_eq_zero_of_mem_span_h
-    (i : b.support) (j : b.support ⊕ ι) {x : Matrix (b.support ⊕ ι) (b.support ⊕ ι) R}
-    (hx : x ∈ span R (range h)) :
-    x j (Sum.inl i) = 0 := by
-  induction hx using span_induction with
-  | mem x h => obtain ⟨i, rfl⟩ := h; cases j <;> simp [h]
-  | zero => simp
-  | add u v _ _ hu hv => simp [hu, hv]
-  | smul t u _ hu => simp [hu]
-
-omit [Finite ι] [IsDomain R] [CharZero R] in
-lemma lie_h_h [Fintype ι] (i j : b.support) :
-    ⁅h i, h j⁆ = 0 := by
-  classical
-  simpa only [h_eq_diagonal, ← commute_iff_lie_eq] using Matrix.commute_diagonal _ _
 
 variable (b)
 
