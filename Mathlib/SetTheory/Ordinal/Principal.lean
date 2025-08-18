@@ -98,15 +98,17 @@ theorem nfp_le_of_principal (hao : a < o) (ho : Principal op o) : nfp (op a) a �
 protected theorem Principal.sSup {s : Set Ordinal} (H : ∀ x ∈ s, Principal op x) :
     Principal op (sSup s) := by
   have : Principal op (sSup ∅) := by simp
-  by_cases hs : BddAbove s; swap; rwa [csSup_of_not_bddAbove hs]
-  obtain rfl | hs' := s.eq_empty_or_nonempty; assumption
-  refine fun x y hx hy ↦ ?_
-  rw [lt_csSup_iff hs hs'] at *
-  obtain ⟨a, has, ha⟩ := hx
-  obtain ⟨b, hbs, hb⟩ := hy
-  refine ⟨_, max_rec' _ has hbs, max_rec ?_ ?_⟩ <;> intro hab
-  · exact H a has ha (hb.trans_le hab)
-  · exact H b hbs (ha.trans_le hab) hb
+  by_cases hs : BddAbove s
+  · obtain rfl | hs' := s.eq_empty_or_nonempty
+    · assumption
+    · refine fun x y hx hy ↦ ?_
+      rw [lt_csSup_iff hs hs'] at *
+      obtain ⟨a, has, ha⟩ := hx
+      obtain ⟨b, hbs, hb⟩ := hy
+      refine ⟨_, max_rec' _ has hbs, max_rec ?_ ?_⟩ <;> intro hab
+      · exact H a has ha (hb.trans_le hab)
+      · exact H b hbs (ha.trans_le hab) hb
+  · rwa [csSup_of_not_bddAbove hs]
 
 protected theorem Principal.iSup {ι} {f : ι → Ordinal} (H : ∀ i, Principal op (f i)) :
     Principal op (⨆ i, f i) := by
