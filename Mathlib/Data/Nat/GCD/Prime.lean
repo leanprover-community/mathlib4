@@ -9,11 +9,9 @@ import Mathlib.Data.Nat.Prime.Defs
 /-!
 # Lemmas related to `Nat.Prime`
 
-Some simple lemmas in the module related to `Nat.Prime` that's separated from the others
-as they depend on `import Mathlib.Data.Nat.Prime.Defs`.
+This file contains lemmas related to `Nat.Prime`.
+These lemmas are kept separate from `Data.Nat.GCD.Basic` in order to minimize imports.
 
-Currently there are only theorems about a prime number dividing an LCM `p ∣ lcm a b` in this file.
-More theorems related to prime number could be added in the future.
 -/
 
 namespace Nat
