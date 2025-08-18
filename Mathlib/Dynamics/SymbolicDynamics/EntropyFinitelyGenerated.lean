@@ -14,7 +14,7 @@ import Mathlib.Data.Int.Basic
 import Mathlib.Data.Int.Interval
 import Mathlib.Data.Fin.VecNotation
 
-import Mathlib.Dynamics.SymbolicDynamics.Basic2
+import Mathlib.Dynamics.SymbolicDynamics.Basic
 
 /-!
 # Entropy for subshifts via finite shape systems
