@@ -224,15 +224,15 @@ def Xor' (a b : Prop) := (a ∧ ¬b) ∨ (b ∧ ¬a)
 
 instance [Decidable a] [Decidable b] : Decidable (Xor' a b) := inferInstanceAs (Decidable (Or ..))
 
-@[simp] theorem xor_true : Xor' True = Not := by grind
+@[simp] theorem xor_true : Xor' True = Not := by ext; simp [Xor']
 
-@[simp] theorem xor_false : Xor' False = id := by grind
+@[simp] theorem xor_false : Xor' False = id := by ext; simp [Xor']
 
-theorem xor_comm (a b : Prop) : Xor' a b = Xor' b a := by grind
+theorem xor_comm (a b : Prop) : Xor' a b = Xor' b a := by simp [Xor', or_comm]
 
 instance : Std.Commutative Xor' := ⟨xor_comm⟩
 
-@[simp] theorem xor_self (a : Prop) : Xor' a a = False := by grind
+@[simp] theorem xor_self (a : Prop) : Xor' a a = False := by simp [Xor']
 
 @[simp] theorem xor_not_left : Xor' (¬a) b ↔ (a ↔ b) := by grind
 
@@ -240,7 +240,7 @@ instance : Std.Commutative Xor' := ⟨xor_comm⟩
 
 theorem xor_not_not : Xor' (¬a) (¬b) ↔ Xor' a b := by grind
 
-protected theorem Xor'.or (h : Xor' a b) : a ∨ b := by grind
+protected theorem Xor'.or (h : Xor' a b) : a ∨ b := h.imp (·.1) (·.1)
 
 /-! ### Declarations about `and` -/
 
@@ -348,8 +348,8 @@ theorem xor_iff_iff_not : Xor' a b ↔ (a ↔ ¬b) := by simp only [← @xor_not
 theorem xor_iff_not_iff' : Xor' a b ↔ (¬a ↔ b) := by simp only [← @xor_not_left _ b, not_not]
 
 theorem xor_iff_or_and_not_and (a b : Prop) : Xor' a b ↔ (a ∨ b) ∧ (¬(a ∧ b)) := by
-  rw [Xor', or_and_right, not_and_or, and_or_left, and_not_self_iff, false_or,
-    and_or_left, and_not_self_iff, or_false]
+  rw [or_and_right]
+  apply or_congr <;> simp (contextual:=true)
 
 end Propositional
 
