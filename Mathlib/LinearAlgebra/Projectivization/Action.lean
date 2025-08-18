@@ -3,9 +3,8 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Data.Matrix.Action
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 import Mathlib.LinearAlgebra.Projectivization.Basic
+import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Group actions on projectivization
@@ -13,7 +12,7 @@ import Mathlib.LinearAlgebra.Projectivization.Basic
 Show that (among other groups), the general linear group of `V` acts on `ℙ K V`.
 -/
 
-open scoped LinearAlgebra.Projectivization MatrixGroups Matrix
+open scoped LinearAlgebra.Projectivization Matrix
 
 namespace Projectivization
 
