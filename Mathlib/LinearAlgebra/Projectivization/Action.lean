@@ -8,33 +8,12 @@ import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 import Mathlib.LinearAlgebra.Projectivization.Basic
 
 /-!
-# Action of the general linear group on projectivization
+# Group actions on projectivization
 
-Show that the general linear group of `V` acts on `ℙ K V`.
+Show that (among other groups), the general linear group of `V` acts on `ℙ K V`.
 -/
 
 open scoped LinearAlgebra.Projectivization MatrixGroups Matrix
-
-section Preliminaries
-
-variable {R n : Type*} [CommSemiring R] [Fintype n] [DecidableEq n]
-
-instance : Module (Matrix (Fin 2) (Fin 2) R) (R × R) :=
-  (LinearEquiv.finTwoArrow R R).symm.toAddEquiv.module _
-
-instance : SMulCommClass (Matrix (Fin 2) (Fin 2) R) R (R × R) :=
-  (LinearEquiv.finTwoArrow R R).symm.smulCommClass _ _
-
-@[simp] lemma Matrix.fin_two_smul_prod (g : Matrix (Fin 2) (Fin 2) R) (v : R × R) :
-    g • v = (g 0 0 * v.1 + g 0 1 * v.2, g 1 0 * v.1 + g 1 1 * v.2) := by
-  simp [Equiv.smul_def, smul_eq_mulVec, Matrix.mulVec_eq_sum, mul_comm]
-
-@[simp] lemma Matrix.GeneralLinearGroup.fin_two_smul_prod {R : Type*} [CommRing R]
-    (g : GL (Fin 2) R) (v : R × R) :
-    g • v = (g 0 0 * v.1 + g 0 1 * v.2, g 1 0 * v.1 + g 1 1 * v.2) := by
-  simp [Units.smul_def]
-
-end Preliminaries
 
 namespace Projectivization
 
@@ -44,6 +23,7 @@ variable {α K V : Type*} [AddCommGroup V] [DivisionRing K] [Module K V]
   [Group α] [DistribMulAction α V] [SMulCommClass α K V]
 
 /-- Any group acting `K`-linearly on `V` (such as the general linear group) acts on `ℙ V`. -/
+@[simps -isSimp]
 instance : MulAction α (ℙ K V) where
   smul g x := x.map (DistribMulAction.toModuleEnd _ _ g)
     (DistribMulAction.toLinearEquiv _ _ g).injective
@@ -52,7 +32,7 @@ instance : MulAction α (ℙ K V) where
     simp_rw [map_mul, Module.End.mul_eq_comp]
     rw [map_comp, Function.comp_apply]
 
-lemma smul_def (g : LinearMap.GeneralLinearGroup K V) (x : ℙ K V) :
+lemma generalLinearGroup_smul_def (g : LinearMap.GeneralLinearGroup K V) (x : ℙ K V) :
     g • x = x.map g.toLinearEquiv.toLinearMap g.toLinearEquiv.injective := by
   rfl
 

@@ -3,7 +3,7 @@ Copyright (c) 2024 Bjørn Kjos-Hanssen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen, Oliver Nash
 -/
-import Mathlib.LinearAlgebra.Projectivization.GLAction
+import Mathlib.LinearAlgebra.Projectivization.Action
 import Mathlib.Topology.Compactification.OnePoint.Basic
 
 /-!
@@ -28,6 +28,27 @@ one-point extension, projectivization
 open scoped LinearAlgebra.Projectivization OnePoint
 
 open Projectivization Matrix
+
+section
+
+variable {R n : Type*} [CommSemiring R] [Fintype n] [DecidableEq n]
+
+instance : Module (Matrix (Fin 2) (Fin 2) R) (R × R) :=
+  (LinearEquiv.finTwoArrow R R).symm.toAddEquiv.module _
+
+instance : SMulCommClass (Matrix (Fin 2) (Fin 2) R) R (R × R) :=
+  (LinearEquiv.finTwoArrow R R).symm.smulCommClass _ _
+
+@[simp] lemma Matrix.fin_two_smul_prod (g : Matrix (Fin 2) (Fin 2) R) (v : R × R) :
+    g • v = (g 0 0 * v.1 + g 0 1 * v.2, g 1 0 * v.1 + g 1 1 * v.2) := by
+  simp [Equiv.smul_def, smul_eq_mulVec, Matrix.mulVec_eq_sum, mul_comm]
+
+@[simp] lemma Matrix.GeneralLinearGroup.fin_two_smul_prod {R : Type*} [CommRing R]
+    (g : GL (Fin 2) R) (v : R × R) :
+    g • v = (g 0 0 * v.1 + g 0 1 * v.2, g 1 0 * v.1 + g 1 1 * v.2) := by
+  simp [Units.smul_def]
+
+end
 
 namespace OnePoint
 
