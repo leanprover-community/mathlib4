@@ -61,7 +61,13 @@ variable {α : Sort u} {β : Sort v} {γ : Sort w}
 
 /-- `α ≃ β` is the type of functions from `α → β` with a two-sided inverse. -/
 structure Equiv (α : Sort*) (β : Sort _) where
+  /-- The forward map of an equivalence.
+
+  Do NOT use directly. Use the coercion instead. -/
   protected toFun : α → β
+  /-- The backward map of an equivalence.
+
+  Do NOT use `e.invFun` directly. Use the coercion of `e.symm` instead. -/
   protected invFun : β → α
   protected left_inv : LeftInverse invFun toFun := by intro; first | rfl | ext <;> rfl
   protected right_inv : RightInverse invFun toFun := by intro; first |  rfl | ext <;> rfl
