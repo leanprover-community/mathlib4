@@ -60,6 +60,16 @@ anyway.
 Warning: interactions between this and the `(reorder := ...)` argument are not well-tested. -/
 syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg " num : attr
 
+/-- An attribute that is automatically added to declarations tagged with `@[to_additive]`,
+if needed.
+
+This attribute tells which argument is the first argument that is a multiplicative structure.
+This is used for the following heuristic:
+
+If the argument in this position is not changed by `to_additive`, then we should also not translate
+the constant. -/
+syntax (name := to_additive_instance_arg) "to_additive_instance_arg " num : attr
+
 /-- An attribute that stores all the declarations that deal with numeric literals on variable types.
 
 Numeral literals occur in expressions without type information, so in order to decide whether `1`
@@ -398,7 +408,7 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
       "Auxiliary attribute for `to_additive` stating that certain arguments are not additivized."
     add   := fun _ stx ↦ do
         let ids ← match stx with
-          | `(attr| to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.1.isNatLit?.get!)
+          | `(attr| to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.getNat)
           | _ => throwUnsupportedSyntax
         return ids.toList }
 
@@ -412,9 +422,19 @@ initialize relevantArgAttr : NameMapExtension Nat ←
   registerNameMapAttribute {
     name := `to_additive_relevant_arg
     descr := "Auxiliary attribute for `to_additive` stating \
-      which arguments are the types with a multiplicative structure."
+      which argument is a type with a multiplicative structure."
     add := fun
-    | _, `(attr| to_additive_relevant_arg $id) => pure <| id.1.isNatLit?.get!.pred
+    | _, `(attr| to_additive_relevant_arg $id) => pure <| id.getNat.pred
+    | _, _ => throwUnsupportedSyntax }
+
+@[inherit_doc to_additive_instance_arg]
+initialize instanceArgAttr : NameMapExtension Nat ←
+  registerNameMapAttribute {
+    name := `to_additive_instance_arg
+    descr := "Auxiliary attribute for `to_additive` stating \
+      which arguments has a multiplicative structure."
+    add := fun
+    | _, `(attr| to_additive_instance_arg $id) => pure <| id.getNat.pred
     | _, _ => throwUnsupportedSyntax }
 
 @[inherit_doc to_additive_dont_translate]
@@ -435,7 +455,7 @@ initialize changeNumeralAttr : NameMapExtension (List Nat) ←
       "Auxiliary attribute for `to_additive` that stores functions that have numerals as argument."
     add := fun
     | _, `(attr| to_additive_change_numeral $[$arg]*) =>
-      pure <| arg.map (·.1.isNatLit?.get!.pred) |>.toList
+      pure <| arg.map (·.getNat.pred) |>.toList
     | _, _ => throwUnsupportedSyntax }
 
 /-- Maps multiplicative names to their additive counterparts. -/
@@ -926,24 +946,28 @@ Returns 1 if there are no types with a multiplicative class as arguments.
 E.g. `Prod.instGroup` returns 1, and `Pi.instOne` returns 2.
 Note: we only consider the first argument of each type-class.
 E.g. `[Pow A N]` is a multiplicative type-class on `A`, not on `N`.
+
+Also returns the position of the multiplicative type-class, if available
 -/
-def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
+def firstMultiplicativeArg (nm : Name) : MetaM (Nat × Option Nat) := do
   forallTelescopeReducing (← getConstInfo nm).type fun xs _ ↦ do
     -- xs are the arguments to the constant
-    let xs := xs.toList
-    let l ← xs.filterMapM fun x ↦ do
+    let xs := xs.toList.mapIdx (·, ·)
+    let l ← xs.filterMapM fun (n, x) ↦ do
       -- write the type of `x` as `(y₀ : α₀) → ... → (yₙ : αₙ) → f a₀ ... aₙ`;
       -- if `f` can be additivized, mark free variables in `a₀` as multiplicative arguments
       forallTelescopeReducing (← inferType x) fun _ys tgt ↦ do
         if let some c := tgt.getAppFn.constName? then
           if findTranslation? (← getEnv) c |>.isSome then
             if let some arg := tgt.getArg? 0 then
-              return xs.findIdx? (arg.containsFVar ·.fvarId!)
+              return (xs.findIdx? (arg.containsFVar ·.2.fvarId!)).map (·, n)
         return none
     trace[to_additive_detail] "firstMultiplicativeArg: {l}"
     match l with
-    | [] => return 0
-    | (head :: tail) => return tail.foldl Nat.min head
+    | [] => return (0, none)
+    | (head :: tail) =>
+      let (n, m) := tail.foldl (fun x y => if x.1 ≤ y.1 then x else y) head
+      return (n, some m)
 
 /-- Helper for `capitalizeLike`. -/
 partial def capitalizeLikeAux (s : String) (i : String.Pos := 0) (p : String) : String :=
@@ -1415,10 +1439,13 @@ partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind
     -- for example, this is necessary for `HPow.hPow`
     if findTranslation? (← getEnv) src |>.isSome then
       return #[tgt]
-  let firstMultArg ← MetaM.run' <| firstMultiplicativeArg src
+  let (firstMultArg, instArg?) ← MetaM.run' <| firstMultiplicativeArg src
   if firstMultArg != 0 then
     trace[to_additive_detail] "Setting relevant_arg for {src} to be {firstMultArg}."
     relevantArgAttr.add src firstMultArg
+  if let some instArg := instArg? then
+    trace[to_additive_detail] "Setting instance_arg for {src} to be {instArg}."
+    instanceArgAttr.add src instArg
   insertTranslation src tgt alreadyExists
   let nestedNames ←
     if alreadyExists then
