@@ -9,7 +9,7 @@ import Mathlib.Init
 /-!
 # Convenience functions for hash maps
 
-These will be reimplemented in the Lean standard library.
+This is now reimplemented in the Lean standard library.
 -/
 
 namespace Std.HashMap
