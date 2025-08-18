@@ -280,6 +280,11 @@ protected theorem map_smul [SMul R α] [SMul R β] (f : α → β) (r : R) (hf :
     (M : Matrix m n α) : (r • M).map f = r • M.map f :=
   ext fun _ _ => hf _
 
+protected theorem map_smulₛₗ [SMul R α] [SMul S β] (f : α → β) (σ : R → S) (r : R)
+    (hf : ∀ a, f (r • a) = σ r • f a)
+    (M : Matrix m n α) : (r • M).map f = σ r • M.map f :=
+  ext fun _ _ => hf _
+
 /-- The scalar action via `Mul.toSMul` is transformed by the same map as the elements
 of the matrix, when `f` preserves multiplication. -/
 theorem map_smul' [Mul α] [Mul β] (f : α → β) (r : α) (A : Matrix n n α)
