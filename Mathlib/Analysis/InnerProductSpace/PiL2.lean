@@ -572,7 +572,7 @@ theorem _root_.Module.Basis.coe_toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : O
     _ = (v : ι → E) := by simp
 
 section Singleton
-variable {ι 𝕜 E : Type*} [Unique ι] [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable {ι 𝕜 : Type*} [Unique ι] [RCLike 𝕜]
 
 variable (ι 𝕜) in
 /-- `OrthonormalBasis.singleton ι 𝕜` is the orthonormal basis sending the unique element of `ι` to
