@@ -833,7 +833,6 @@ theorem dvd_of_lcm_left_dvd (h : lcm a b ∣ c) : b ∣ c :=
   (dvd_lcm_right a b).trans h
 
 namespace Prime
-
 variable {p : α} (hp : Prime p)
 include hp
 
