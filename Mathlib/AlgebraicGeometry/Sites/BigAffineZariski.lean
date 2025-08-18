@@ -33,7 +33,7 @@ equivalent to the category of affine schemes.
 
 -/
 
-universe v v₁ v₂ v₃ u u₁ u₂
+universe u₀ v v₁ v₂ v₃ u u₁ u₂
 
 open CategoryTheory Functor Opposite Category Limits CommRingCat
 open AlgebraicGeometry AffineScheme Scheme TensorProduct PrimeSpectrum
@@ -124,26 +124,6 @@ namespace AlgebraicGeometry
 
 namespace Scheme
 
-/-- The jointly surjective topology on `Scheme` is defined by the same condition as the jointly
-surjective pretopology. -/
-def surjectiveFamiliesTopology : GrothendieckTopology Scheme.{u} where
-  sieves X s := surjectiveFamiliesPretopology X s
-  top_mem' X x := ⟨X, x, 𝟙 X, trivial, by simp⟩
-  pullback_stable' X B s b hs x := by
-    obtain ⟨-, y, -, ⟨Y, u, hu⟩, hyx⟩ := surjectiveFamiliesPretopology.pullbacks b s hs x
-    refine ⟨pullback u b, y, pullback.snd u b, ?_, hyx⟩
-    rw [Sieve.pullback_apply, ← pullback.condition]
-    exact s.downward_closed hu (pullback.fst u b)
-  transitive' X s hs t hst x :=
-    let ⟨Y, y, u, hsu, hyx⟩ := hs x
-    let ⟨Z, z, v, htv, hzy⟩ := hst hsu y
-    ⟨Z, z, v ≫ u, htv, by simp [hzy, hyx]⟩
-
-lemma surjectiveFamiliesTopology_eq_toGrothendieck_surjectiveFamiliesPretopology :
-    surjectiveFamiliesTopology.{u} = surjectiveFamiliesPretopology.toGrothendieck :=
-  GrothendieckTopology.ext <| funext fun _ ↦ Set.ext fun s ↦ ⟨fun hs ↦ ⟨s, hs, le_rfl⟩,
-    fun ⟨_, hp, hps⟩ x ↦ let ⟨Y, y, u, hu, hyx⟩ := hp x; ⟨Y, y, u, hps _ hu, hyx⟩⟩
-
 variable {X : Scheme.{u}} {P : MorphismProperty Scheme.{u}}
 
 /-- An open immersion `u : U ⟶ Spec R` is covered by `Spec R[1/f]`. In other words, for every
@@ -187,17 +167,10 @@ See `Cover.mkOfCovers`. -/
 
 namespace Cover
 
-/-- `U₁` is a refinment of `U₂`: every arrow in `U₁` factors through some arrow in `U₂`. -/
-def IsRefinement (U₁ : Cover.{v₁} P X) (U₂ : Cover.{v₂} P X) : Prop :=
-  ∀ j₁ : U₁.J, ∃ (j₂ : U₂.J) (f : U₁.obj j₁ ⟶ U₂.obj j₂), P f ∧ f ≫ U₂.map j₂ = U₁.map j₁
-
-@[trans] lemma IsRefinement.trans [P.IsStableUnderComposition]
-    {U₁ : Cover.{v₁} P X} {U₂ : Cover.{v₂} P X} {U₃ : Cover.{v₃} P X}
-    (h₁₂ : IsRefinement U₁ U₂) (h₂₃ : IsRefinement U₂ U₃) :
-    IsRefinement U₁ U₃ := fun j₁ ↦
-  let ⟨j₂, f, hf, hfu⟩ := h₁₂ j₁
-  let ⟨j₃, g, hg, hgu⟩ := h₂₃ j₂
-  ⟨j₃, f ≫ g, P.comp_mem _ _ hf hg, by rw [assoc, hgu, hfu]⟩
+/-- Package the data of `U₁ ⟶ U₂` into a theorem. -/
+theorem Hom.exists {U₁ U₂ : Cover.{v} P X} (h : U₁.Hom U₂) (j₁ : U₁.J) :
+    ∃ (j₂ : U₂.J) (f : U₁.obj j₁ ⟶ U₂.obj j₂), P f ∧ f ≫ U₂.map j₂ = U₁.map j₁ :=
+  ⟨h.idx j₁, h.app j₁, h.app_prop j₁, h.w j₁⟩
 
 /-- Given an open cover of `Spec R`, refine it to a cover by `Spec R[1/f]`. -/
 @[simps! (isSimp := False) map] noncomputable
@@ -212,13 +185,11 @@ def refinementSpec {R : CommRingCat.{u}}
       let ⟨f, g, hfj, hg, hgj, p, hypg⟩ := (U.map j).exists_factor y
       ⟨⟨f, j, hfj⟩, p, hjyx ▸ hypg ▸ congr(($hgj.symm).base p)⟩)
 
-theorem isRefinement_refinementSpec {R : CommRingCat.{u}}
-    (U : Cover IsOpenImmersion (Spec R)) :
-    (refinementSpec U).openCover.IsRefinement U :=
-  fun ⟨f, j, hfj⟩ ↦ ⟨j, (U.map_prop j).lift _
-    (Spec.map <| ofHom <| algebraMap R (Localization.Away f))
-    ((localization_away_comap_range (Localization.Away f) f).trans_subset hfj),
-  inferInstance, by simp [refinementSpec_map]⟩
+noncomputable def refinementSpecHom {R : CommRingCat.{u}} (U : Cover IsOpenImmersion (Spec R)) :
+    (refinementSpec U).openCover ⟶ U where
+  idx j := j.2.choose
+  app j := (U.map_prop j.2.choose).lift _ (Spec.map <| ofHom <| algebraMap _ _) <|
+    (localization_away_comap_range (Localization.Away j.1) j.1).trans_subset j.2.choose_spec
 
 end Cover
 
@@ -238,10 +209,10 @@ noncomputable instance {X : Scheme.{u}} [CompactSpace X] (U : AffineOpenCover.{v
     Fintype U.finiteSubcover.J :=
   inferInstanceAs (Fintype (U.openCover.finiteSubcover.J))
 
-theorem isRefinement_finiteSubcover {X : Scheme.{u}} [CompactSpace X]
-    (U : AffineOpenCover.{v} X) :
-    U.finiteSubcover.openCover.IsRefinement U.openCover :=
-  fun j ↦ ⟨U.f j.val, 𝟙 _, inferInstance, by rw [id_comp]; rfl⟩
+noncomputable def finiteSubcoverHom {X : Scheme.{u}} [CompactSpace X] (U : AffineOpenCover.{u} X) :
+    U.finiteSubcover.openCover ⟶ U.openCover where
+  idx j := U.f j.val
+  app j := 𝟙 _
 
 end AffineOpenCover
 
@@ -336,10 +307,10 @@ def jointlySurjective : Pretopology CommRingCat.{u}ᵒᵖ where
 
 open PrimeSpectrum
 
-/-- Given an open cover indexed by a `Fintype`, shrink the fintype into `Type 0`. -/
+/-- Shrink a given open cover. -/
 @[simps!] noncomputable def _root_.AlgebraicGeometry.Scheme.OpenCover.shrink {X : Scheme.{u}}
-    (U : OpenCover.{v} X) [Fintype U.J] : OpenCover.{0} X :=
-  U.reindex (equivShrink.{0} U.J).symm
+    (U : OpenCover.{v} X) [Small.{u₀} U.J] : OpenCover.{u₀} X :=
+  U.reindex (equivShrink.{u₀} U.J).symm
 
 /-- Actually a subcover (the indexing type is a subtype of `U.J`). -/
 @[simps!] noncomputable def _root_.AlgebraicGeometry.Scheme.OpenCover.finiteSubcover'
@@ -403,8 +374,7 @@ lemma zariskiTopology_eq_toGrothendieck_zariskiPretopology :
     · exact finite_ofCover U'
     · rintro _ _ ⟨j', rfl, h⟩
       rw [eqToHom_refl, id_comp] at h; subst h
-      obtain ⟨j, f, hf, hfj⟩ := U.refinementSpec.isRefinement_finiteSubcover.trans
-        U.isRefinement_refinementSpec j'
+      obtain ⟨j, f, hf, hfj⟩ := (U.refinementSpec.finiteSubcoverHom ≫ U.refinementSpecHom).exists j'
       obtain ⟨Z, g, h, hsg, hjhg⟩ := hus _ ⟨j⟩
       rw [← AffineOpenCover.openCover_map, ← hfj, hjhg, ← assoc, Spec.preimage_comp,
         Scheme.Spec_map, Spec.preimage_map, op_comp, Quiver.Hom.op_unop]
