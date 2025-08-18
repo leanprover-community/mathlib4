@@ -132,7 +132,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
         x * x + (1 - t₃) * (1 - t₃) * (y * y) = x * x + y * y - 2 * y * (t₃ * y) + t₃ * y * (t₃ * y)
         by ring,
       add_left_inj] at hcr₃
-    have ht₃ : t₃ = ycc₂ / y := by field_simp [ycc₂, ← hcr₃, hy0]
+    have ht₃ : t₃ = ycc₂ / y := by simp [ycc₂, ← hcr₃, hy0]
     subst ht₃
     change cc₃ = cc₂ at hcc₃''
     congr
@@ -192,7 +192,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
       convert ha.notMem_affineSpan_diff i Set.univ
       change (Set.range fun i2 : { x | x ≠ i } => p i2) = _
       rw [← Set.image_eq_range]
-      congr with j
+      congr 1 with j
       simp
 
 end EuclideanGeometry

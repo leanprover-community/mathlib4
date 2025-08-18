@@ -584,52 +584,61 @@ end Nontrivial
 namespace IsTensorProduct
 
 variable {R M N P : Type*} [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-  [Module R M] [Module R N] [Module R P]
+  [Module R M] [Module R N] [Module R P] {M₁ M₂ N₁ N₂ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂]
+  [Module R M₁] [Module R M₂] [AddCommMonoid N₁] [AddCommMonoid N₂] [Module R N₁] [Module R N₂]
+  {f : M₁ →ₗ[R] M₂ →ₗ[R] M} {g : N₁ →ₗ[R] N₂ →ₗ[R] N}
+  (hf : IsTensorProduct f) (hg : IsTensorProduct g) (i₁ : M₁ →ₗ[R] N₁) (i₂ : M₂ →ₗ[R] N₂)
 
-theorem lTensor_injective_of_flat [Module.Flat R M] {MN MP : Type*} [AddCommMonoid MN]
-    [AddCommMonoid MP] [Module R MN] [Module R MP] {f : M →ₗ[R] N →ₗ[R] MN} {g : M →ₗ[R] P →ₗ[R] MP}
-    (hf : IsTensorProduct f) (hg : IsTensorProduct g) (i : N →ₗ[R] P)
-    (hi : Function.Injective i) : Function.Injective (hf.lTensor hg i) := by
-  have h : hf.lTensor hg i = hg.equiv ∘ ((i.lTensor M) ∘ hf.equiv.symm) :=
+theorem map_id_injective_of_flat_left {g : M₁ →ₗ[R] N₂ →ₗ[R] N} (hg : IsTensorProduct g)
+    (i : M₂ →ₗ[R] N₂) (hi : Function.Injective i) [Module.Flat R M₁] :
+    Function.Injective (hf.map hg LinearMap.id i) := by
+  have h : hf.map hg LinearMap.id i = hg.equiv ∘ i.lTensor M₁ ∘ hf.equiv.symm :=
     funext fun x ↦ hf.inductionOn x (by simp) (by simp) (fun _ _ hx hy ↦ by simp [hx, hy])
   simpa [h] using Module.Flat.lTensor_preserves_injective_linearMap i hi
 
-theorem rTensor_injective_of_flat [Module.Flat R M] {NM PM : Type*} [AddCommMonoid NM]
-    [AddCommMonoid PM] [Module R NM] [Module R PM] {f : N →ₗ[R] M →ₗ[R] NM} {g : P →ₗ[R] M →ₗ[R] PM}
-    (hf : IsTensorProduct f) (hg : IsTensorProduct g) (i : N →ₗ[R] P)
-    (hi : Function.Injective i) : Function.Injective (hf.rTensor hg i) := by
-  have h : hf.rTensor hg i = hg.equiv ∘ ((i.rTensor M) ∘ hf.equiv.symm) :=
+theorem map_id_injective_of_flat_right {g : N₁ →ₗ[R] M₂ →ₗ[R] N} (hg : IsTensorProduct g)
+    (i : M₁ →ₗ[R] N₁) (hi : Function.Injective i) [Module.Flat R M₂] :
+    Function.Injective (hf.map hg i LinearMap.id) := by
+  have h : hf.map hg i LinearMap.id = hg.equiv ∘ i.rTensor M₂ ∘ hf.equiv.symm :=
     funext fun x ↦ hf.inductionOn x (by simp) (by simp) (fun _ _ hx hy ↦ by simp [hx, hy])
   simpa [h] using Module.Flat.rTensor_preserves_injective_linearMap i hi
 
-theorem map_injective_of_flat {M₁ M₂ N₁ N₂ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂]
-    [Module R M₁] [Module R M₂] [AddCommMonoid N₁] [AddCommMonoid N₂] [Module R N₁] [Module R N₂]
-    [Module.Flat R N₁] [Module.Flat R M₂] {f : M₁ →ₗ[R] M₂ →ₗ[R] M} {g : N₁ →ₗ[R] N₂ →ₗ[R] N}
-    (hf : IsTensorProduct f) (hg : IsTensorProduct g) (i₁ : M₁ →ₗ[R] N₁) (i₂ : M₂ →ₗ[R] N₂)
-    (h₁ : Function.Injective i₁) (h₂ : Function.Injective i₂) :
-    Function.Injective (hf.map hg i₁ i₂) := by
-  have h := TensorProduct.isTensorProduct R N₁ M₂
-  rw [← hf.lTensor_comp_rTensor hg h]
-  exact (h.lTensor_injective_of_flat hg i₂ h₂).comp (hf.rTensor_injective_of_flat h i₁ h₁)
+/-- If `M₂` and `N₁` are flat `R`-modules, `i₁ : M₁ →ₗ[R] N₁` and `i₂ : M₂ →ₗ[R] N₂` are injective
+  linear maps, then the linear map `i : M ≅ M₁ ⊗[R] M₂ →ₗ[R] N₁ ⊗[R] N₂ ≅ N` induced by `i₁`
+  and `i₂` is injective.
+  See `IsTensorProduct.map_injective_of_flat'` for different flatness conditions. -/
+theorem map_injective_of_flat_right_left (h₁ : Function.Injective i₁) (h₂ : Function.Injective i₂)
+    [Module.Flat R M₂] [Module.Flat R N₁] : Function.Injective (hf.map hg i₁ i₂) := by
+  have h : hf.map hg i₁ i₂ = hg.equiv ∘ TensorProduct.map i₁ i₂ ∘ hf.equiv.symm :=
+    funext fun x ↦ hf.inductionOn x (by simp) (by simp) (fun _ _ hx hy ↦ by simp [hx, hy])
+  simpa [h] using map_injective_of_flat_flat i₁ i₂ h₁ h₂
+
+/-- If `M₁` and `N₂` are flat `R`-modules, `i₁ : M₁ →ₗ[R] N₁` and `i₂ : M₂ →ₗ[R] N₂` are injective
+  linear maps, then the linear map `i : M ≅ M₁ ⊗[R] M₂ →ₗ[R] N₁ ⊗[R] N₂ ≅ N` induced by `i₁`
+  and `i₂` is injective.
+  See `IsTensorProduct.map_injective_of_flat` for different flatness conditions. -/
+theorem map_injective_of_flat_left_right (h₁ : Function.Injective i₁) (h₂ : Function.Injective i₂)
+    [Module.Flat R M₁] [Module.Flat R N₂] : Function.Injective (hf.map hg i₁ i₂) := by
+  have h : hf.map hg i₁ i₂ = hg.equiv ∘ TensorProduct.map i₁ i₂ ∘ hf.equiv.symm :=
+    funext fun x ↦ hf.inductionOn x (by simp) (by simp) (fun _ _ hx hy ↦ by simp [hx, hy])
+  simpa [h] using map_injective_of_flat_flat' i₁ i₂ h₁ h₂
 
 end IsTensorProduct
 
 section IsSMulRegular
 
-open Module
-
-variable {R S M N : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [Flat R S]
+variable {R S M N : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [Module.Flat R S]
   [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [Module S N] [IsScalarTower R S N]
 
 theorem IsSMulRegular.of_flat_of_isBaseChange {f : M →ₗ[R] N} (hf : IsBaseChange S f) {x : R}
     (reg : IsSMulRegular M x) : IsSMulRegular N (algebraMap R S x) := by
-  have h := hf.lTensor_injective_of_flat hf ((LinearMap.lsmul R M) x) reg
-  have eq : hf.lTensor hf ((LinearMap.lsmul R M) x) = (LinearMap.lsmul S N) (algebraMap R S x) := by
+  have eq : hf.map hf .id ((LinearMap.lsmul R M) x) = (LinearMap.lsmul S N) (algebraMap R S x) := by
     ext y
     refine IsTensorProduct.inductionOn hf y (by simp) ?_ (fun _ _ ha hb ↦ by simp [ha, hb])
     intro s m
-    rw [hf.lTensor_eq hf]
+    rw [hf.map_eq hf]
     simpa using smul_comm x s (f m)
+  have h := hf.map_id_injective_of_flat_left hf ((LinearMap.lsmul R M) x) reg
   rwa [eq] at h
 
 theorem IsSMulRegular.of_flat {x : R} (reg : IsSMulRegular R x) :
