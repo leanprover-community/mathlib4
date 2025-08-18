@@ -132,8 +132,10 @@ theorem A_fibre_over_judgePair_card {p : JudgePair J} (h : p.Distinct) :
       ((A r).filter fun a : AgreedTriple C J => a.judgePair = p).card := by
   rw [A_fibre_over_judgePair r h]
   apply Finset.card_image_of_injOn
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10936): used to be `tidy`
-  unfold Set.InjOn; intros; ext; all_goals aesop
+  -- `aesop` sees through the abbrev `AgreedTriple C J = C × (J × J)`, but `simp` does not.
+  -- Tell `simp` to unfold the abbreviations more aggressively, and it works.
+  -- See also: https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/.60simp.60.20can't.20see.20through.20structure.20abbrevs.3F/with/534442087
+  aesop (add simp [Set.InjOn, AgreedTriple.contestant, AgreedTriple.judgePair])
 
 theorem A_card_upper_bound {k : ℕ}
     (hk : ∀ p : JudgePair J, p.Distinct → (agreedContestants r p).card ≤ k) :
