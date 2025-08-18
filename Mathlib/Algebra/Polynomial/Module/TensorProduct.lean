@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George McNinch
 -/
 
-import Mathlib
+import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Algebra.Polynomial.Module.Basic
+import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
 # `PolynomialModule` and the tensor product
