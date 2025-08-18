@@ -65,7 +65,8 @@ the vertex or edge set. This is an issue, but is likely amenable to automation."
 ## Acknowledgments
 
 Credit to Shreyas Srinivas, GitHub user @NotWearingPants ("Snir" on the Lean Zulip), Ammar
-Husain, and Aaron Liu for patient guidance and useful feedback on this implementation.
+Husain, Aaron Liu, and Tristan Figueroa-Reid for patient guidance and useful feedback on this
+implementation.
 -/
 
 structure Hypergraph (α : Type*) where
@@ -116,8 +117,7 @@ def Adj (H : Hypergraph α) (x : α) (y : α) : Prop :=
   ∃ e ∈ E(H), x ∈ e ∧ y ∈ e
 
 lemma Adj.symm {H : Hypergraph α} {x y : α} (h : H.Adj x y) : H.Adj y x := by
-  unfold Adj at h
-  unfold Adj
+  unfold Adj at *
   obtain ⟨e, he⟩ := h
   use e
   constructor
@@ -133,23 +133,29 @@ lemma hypergraph_adj_comm (x y) : H.Adj x y ↔ H.Adj y x :=
 /--
 Predicate for (hyperedge) adjacency. Analogous to `Hypergraph.Adj`, hyperedges `e` and `f` are
 adjacent if there is some vertex `x ∈ V(H)` where `x` is incident on both `e` and `f`.
-
-Note that we do not need to explicitly check that e, f ∈ E(H) here because a vertex cannot be
-incident on a hyperedge that is not in the hyperedge set.
 -/
 def EAdj (H : Hypergraph α) (e : Set α) (f : Set α) : Prop :=
-  ∃ x ∈ V(H), x ∈ e ∧ x ∈ f
+  e ∈ E(H) ∧ f ∈ E(H) ∧ ∃ x ∈ V(H), x ∈ e ∧ x ∈ f
 
 lemma EAdj.symm {H : Hypergraph α} {e f : Set α} (h : H.EAdj e f) : H.EAdj f e := by
-  unfold EAdj at h
-  unfold EAdj
-  obtain ⟨v, hv⟩ := h
-  use v
+  unfold EAdj at *
+  obtain ⟨v, hv⟩ := h.2.2
   constructor
-  · exact hv.1
+  · exact h.2.1
   constructor
-  · exact hv.2.2
-  · exact hv.2.1
+  · exact h.1
+  · use v
+    constructor
+    · exact hv.1
+    constructor
+    · exact hv.2.2
+    · exact hv.2.1
+
+lemma eAdj_imp_inter_nonempty {H : Hypergraph α} {e f : Set α} (hef : H.EAdj e f) :
+(e ∩ f).Nonempty := by
+    unfold EAdj at *
+    have h' : ∃ x ∈ e, x ∈ f := by grind
+    apply Set.inter_nonempty.mpr h'
 
 -- Credit: Peter Nelson, Jun Kwon
 lemma hypergraph_eadj_comm (e f) : H.EAdj e f ↔ H.EAdj f e :=
@@ -207,6 +213,24 @@ associated vertex subset `{x}`
 -/
 def IsIsolated (H : Hypergraph α) (x : α) : Prop := ∀ e ∈ E(H), x ∉ e
 
+lemma not_exists_isolated_vertex_iff_sUnion_hyperedgeSet_eq_vertexSet {H : Hypergraph α} :
+Set.sUnion E(H) = V(H) ↔ ∀ x ∈ V(H), ¬IsIsolated H x :=
+  Iff.intro
+  (by
+    unfold IsIsolated
+    intro h
+    grind
+  )
+  (by
+    unfold IsIsolated
+    intro h
+    have h' : ∀ x ∈ V(H), ∃ e ∈ E(H), x ∈ e := by grind
+    refine Subset.antisymm ?_ h'
+    apply Set.sUnion_subset
+    exact fun t' a ↦ H.hyperedge_isSubset_vertexSet a
+  )
+
+
 /--
 Predicate to determine if a hyperedge `e` is a loop, meaning that its associated vertex subset `s`
 contains only one vertex, i.e., `|s| = 1`
@@ -243,7 +267,26 @@ Predicate to determine if a hypergraph is trivial
 
 A hypergraph is trivial if it has a nonempty vertex set and an empty hyperedge set
 -/
-def IsTrivial (H : Hypergraph α) : Prop := Nonempty V(H) ∧ E(H) = ∅
+def IsTrivial (H : Hypergraph α) : Prop := Set.Nonempty V(H) ∧ E(H) = ∅
+
+/--
+A trivial hypergraph of type α with vertex set h
+-/
+def trivialHypergraph {α : Type*} (h : Set α) :=
+  Hypergraph.mk
+  h
+  ∅
+  (by
+    intro e he
+    exact False.elim he
+  )
+
+lemma not_isEmpty_trivial_hypergraph {H : Hypergraph α} (hh : IsTrivial H) : ¬IsEmpty H := by
+  unfold IsEmpty
+  unfold IsTrivial at hh
+  refine not_and_of_not_or_not ?_
+  left
+  apply Set.nonempty_iff_ne_empty.mp hh.1
 
 /--
 Predicate to determine is a hypergraph `H` is complete, meaning that each member of the power set of
@@ -365,22 +408,10 @@ Given a subset of the hyperedge set `E(H)` of a hypergraph `H` (`l : Set (Set α
 *partial hypergraph* `Hˡ` has `E(Hˡ) = l ∩ E(H)` and `V(Hˡ)` is the subset of `V(H)` which is
 incident on at least one hyperedge in `E(Hˡ)`.
 -/
-def partialHypergraph (H : Hypergraph α) (l : Set (Set α)) :=
-  Hypergraph.mk
-  {x | ∃ e ∈ l, e ∈ E(H) ∧ x ∈ e}
-  (l ∩ E(H))
-  (by
-    intro q hq
-    have h0 : ∀ x ∈ q, ∃ e ∈ l, e ∈ E(H) ∧ x ∈ e := by
-      intro x hx
-      use q
-      constructor
-      · exact mem_of_mem_inter_left hq
-      constructor
-      · exact mem_of_mem_inter_right hq
-      · exact hx
-    exact h0
-  )
+def partialHypergraph (H : Hypergraph α) (l : Set (Set α)) : Hypergraph α where
+  vertexSet := {x | ∃ e ∈ l, e ∈ E(H) ∧ x ∈ e}
+  hyperedgeSet := l ∩ E(H)
+  hyperedge_isSubset_vertexSet q hq _ hx := ⟨q, hq.1, hq.2, hx⟩
 
 end Sub
 
