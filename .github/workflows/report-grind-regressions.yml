@@ -38,10 +38,6 @@ jobs:
         use-mathlib-cache: false
         reinstall-transient-toolchain: true
 
-    - name: install dependencies
-      run: |
-        apt install utils-linux
-
     - name: add linarithToGrind linter option
       run: |
         # Reset contents of the lakefile, so we don't leave the wrong options enabled.
