@@ -5,8 +5,7 @@ Authors: S. Gangloff
 -/
 
 import Mathlib.Topology.Basic
-import Mathlib.Topology.UniformSpace.Pi
-import Mathlib.Topology.Instances.Discrete
+import Mathlib.Topology.Constructions
 import Mathlib.Data.Finset.Basic
 import Mathlib.Logic.Equiv.Defs
 
