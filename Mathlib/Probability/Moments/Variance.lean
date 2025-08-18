@@ -523,8 +523,7 @@ lemma variance_dual_prod' {L : StrongDual ℝ (E × F)}
     Var[L; μ.prod ν] = Var[L.comp (.inl ℝ E F); μ] + Var[L.comp (.inr ℝ E F); ν] := by
   have : L = fun x : E × F ↦ L.comp (.inl ℝ E F) x.1 + L.comp (.inr ℝ E F) x.2 := by
     ext; rw [L.comp_inl_add_comp_inr]
-  conv_lhs => rw [this]
-  rw [variance_add_prod hLμ hLν]
+  rw [this, variance_add_prod hLμ hLν]
 
 lemma variance_dual_prod {L : StrongDual ℝ (E × F)} (hLμ : MemLp id 2 μ) (hLν : MemLp id 2 ν) :
     Var[L; μ.prod ν] = Var[L.comp (.inl ℝ E F); μ] + Var[L.comp (.inr ℝ E F); ν] :=
