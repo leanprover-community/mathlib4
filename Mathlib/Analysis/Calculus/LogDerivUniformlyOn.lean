@@ -16,7 +16,6 @@ individual functions.
 
 -/
 
-
 open  TopologicalSpace Filter  Complex Set Function
 
 theorem logDeriv_tprod_eq_tsum {ι : Type*} {s : Set ℂ} (hs : IsOpen s) {x : s} {f : ι → ℂ → ℂ}
