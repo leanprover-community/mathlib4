@@ -692,14 +692,12 @@ protected def finsetSubtypeComm (p : α → Prop) :
   left_inv s := by
     ext a; constructor <;> intro h <;>
     simp only [Finset.mem_map, Finset.mem_attach, true_and, Subtype.exists, Embedding.coeFn_mk,
-      exists_and_right, exists_eq_right, Subtype.impEmbedding] at *
-    · grind
-    · grind
+      exists_and_right, exists_eq_right, Subtype.impEmbedding] at * <;>
+    grind
   right_inv s := by
     ext a; constructor <;> intro h <;>
     simp only [Finset.mem_map, Finset.mem_attach, Subtype.exists, Embedding.coeFn_mk,
-      Subtype.impEmbedding] at *
-    · grind
-    · grind
+      Subtype.impEmbedding] at * <;>
+    grind
 
 end Equiv

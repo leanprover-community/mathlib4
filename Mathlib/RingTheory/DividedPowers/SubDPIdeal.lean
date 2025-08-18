@@ -418,17 +418,16 @@ theorem span_carrier_eq_dpow_span {S : Set A} (hS : S ⊆ I) :
       Set.mem_insert_of_mem _
         (fun x hx ↦ subset_span ⟨1, one_ne_zero, x, hx, by rw [hI.dpow_one (hS hx)]⟩)
     refine sInf_le_of_le ⟨J, ?_⟩ (le_refl _)
-    simp only [h, ciInf_pos]
-    rfl
+    simp only [h, ciInf_pos, J]
   · rw [le_iInf₂_iff]
     intro K hK
     have : S ≤ K := by
       simp only [Set.mem_insert_iff, Set.mem_setOf_eq] at hK
-      rcases hK with hKI | hKS
-      exacts [hKI ▸ hS, hKS]
+      rcases hK with rfl | hKS
+      exacts [hS, hKS]
     rw [span_le]
-    rintro y ⟨n, hn, x, hx, hxy⟩
-    exact hxy ▸ K.dpow_mem n hn x (this hx)
+    rintro y ⟨n, hn, x, hx, rfl⟩
+    exact K.dpow_mem n hn x (this hx)
 
 end Generated
 

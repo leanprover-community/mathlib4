@@ -728,19 +728,11 @@ theorem Continuous.strictMono_of_inj {f : α → δ}
     (hf_c.continuousOn.strictMonoOn_of_injOn_Icc' hcd.le hf_i.injOn).imp
       (hf_c.strictMonoOn_of_inj_rigidity hf_i hcd)
       (hf_c.strictMonoOn_of_inj_rigidity (δ := δᵒᵈ) hf_i hcd)
-  by_cases hn : Nonempty α
-  · let a : α := Classical.choice ‹_›
-    by_cases h : ∃ b : α, a ≠ b
-    · choose b hb using h
-      by_cases hab : a < b
-      · exact H hab
-      · push_neg at hab
-        have : b < a := by exact Ne.lt_of_le hb.symm hab
-        exact H this
-    · push_neg at h
-      haveI : Subsingleton α := ⟨fun c d => Trans.trans (h c).symm (h d)⟩
-      exact Or.inl <| Subsingleton.strictMono f
-  · aesop
+  cases subsingleton_or_nontrivial α with
+  | inl h => exact Or.inl <| Subsingleton.strictMono f
+  | inr h =>
+    obtain ⟨a, b, hab⟩ := exists_pair_lt α
+    exact H hab
 
 /-- Every continuous injective `f : (a, b) → δ` is strictly monotone
 or antitone (increasing or decreasing). -/

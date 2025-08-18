@@ -79,9 +79,9 @@ variable {P : RootPairing ι R M N} (b : P.Base)
 
 lemma support_nonempty [Nonempty ι] [NeZero (2 : R)] : b.support.Nonempty := by
   by_contra! contra
-  replace contra : b.support = ∅ := by aesop
-  obtain ⟨i⟩ := inferInstanceAs (Nonempty ι)
-  simpa [P.ne_zero i, contra] using b.root_mem_or_neg_mem i
+  rw [Finset.not_nonempty_iff_eq_empty] at contra
+  inhabit ι
+  simpa [P.ne_zero default, contra] using b.root_mem_or_neg_mem default
 
 /-- Interchanging roots and coroots, one still has a base of a root pairing. -/
 @[simps] protected def flip :

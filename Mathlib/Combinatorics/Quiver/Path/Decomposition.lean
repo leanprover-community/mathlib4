@@ -28,10 +28,8 @@ theorem exists_notMem_mem_hom_path_path_of_notMem_mem {a b : V} (p : Path a b) (
   induction' h_len : p.length with n ih generalizing a b S ha_not_in_S hb_in_S
   · obtain rfl := eq_of_length_zero p h_len
     exact (ha_not_in_S hb_in_S).elim
-  · have h_pos : 0 < p.length := by rw [h_len]; simp only [lt_add_iff_pos_left, add_pos_iff,
-      Nat.lt_one_iff, pos_of_gt, or_true]
-    have h_ne : p.length ≠ 0 := ne_of_gt h_pos
-    obtain ⟨c, p', e, rfl⟩ := (length_ne_zero_iff_eq_cons p).mp h_ne
+  · have h_pos : 0 < p.length := by simp [h_len]
+    obtain ⟨c, p', e, rfl⟩ := (length_ne_zero_iff_eq_cons p).mp h_pos.ne'
     by_cases hc_in_S : c ∈ S
     · have p'_len : p'.length = n := by simp_all
       obtain ⟨u, hu_not_S, v, hv_S, e_uv, p₁, p₂, hp'⟩ :=
@@ -50,7 +48,7 @@ theorem exists_mem_notMem_hom_path_path_of_notMem_mem {a b : V} (p : Path a b) (
   have hb_in_compl : b ∈ Sᶜ := by simpa
   obtain ⟨u, hu_not_in_compl, v, hv_in_compl, e, p₁, p₂, hp⟩ :=
     exists_notMem_mem_hom_path_path_of_notMem_mem p Sᶜ ha_not_in_compl hb_in_compl
-  simp at hu_not_in_compl hv_in_compl
+  simp only [Set.mem_compl_iff, not_not] at hu_not_in_compl hv_in_compl
   refine ⟨u, hu_not_in_compl, v, hv_in_compl, e, p₁, p₂, hp⟩
 
 end BoundaryEdges
