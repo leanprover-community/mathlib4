@@ -5,6 +5,11 @@ Authors: Mario Carneiro, Kim Morrison, Violeta Hernández Palacios, Junyan Xu, T
 -/
 import Mathlib.Logic.Hydra
 import Mathlib.SetTheory.Surreal.Basic
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Surreal.Multiplication` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 ### Surreal multiplication

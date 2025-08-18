@@ -6,6 +6,11 @@ Authors: Violeta Hernández Palacios
 import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.SetTheory.Game.Ordinal
 import Mathlib.SetTheory.Ordinal.NaturalOps
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Game.Birthday` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Birthdays of games
@@ -274,7 +279,7 @@ theorem small_setOf_birthday_lt (o : Ordinal) : Small.{u} {x : Game.{u} // birth
   induction o using Ordinal.induction with | h o IH =>
   let S := ⋃ a ∈ Set.Iio o, {x : Game.{u} | birthday x < a}
   let H : Small.{u} S := @small_biUnion _ _ _ _ _ IH
-  obtain rfl | ⟨a, rfl⟩ | ho := zero_or_succ_or_limit o
+  obtain rfl | ⟨a, rfl⟩ | ho := zero_or_succ_or_isSuccLimit o
   · simp_rw [Ordinal.not_lt_zero]
     exact small_empty
   · simp_rw [Order.lt_succ_iff, le_iff_lt_or_eq]
@@ -301,7 +306,7 @@ theorem small_setOf_birthday_lt (o : Ordinal) : Small.{u} {x : Game.{u} // birth
         exact (birthday_quot_le_pGameBirthday _).trans_lt (PGame.birthday_moveRight_lt i)
   · convert H
     change birthday _ < o ↔ ∃ a, _
-    simpa using lt_limit ho
+    simpa using ho.lt_iff_exists_lt
 
 end Game
 

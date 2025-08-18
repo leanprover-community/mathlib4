@@ -268,6 +268,10 @@ lemma toFinset_range'_1_1 (a : ℕ) : (List.range' 1 a).toFinset = Icc 1 a := by
   ext x
   rw [List.mem_toFinset, List.mem_range'_1, add_comm, Nat.lt_succ_iff, Finset.mem_Icc]
 
+lemma toFinset_range (a : ℕ) : (List.range a).toFinset = Finset.range a := by
+  ext x
+  rw [List.mem_toFinset, List.mem_range, Finset.mem_range]
+
 end List
 
 namespace Finset
@@ -285,7 +289,7 @@ theorem range_add_eq_union : range (a + b) = range a ∪ (range b).map (addLeftE
   ext x
   simp only [Ico_zero_eq_range, mem_image, mem_range, addLeftEmbedding_apply, mem_Ico]
   constructor
-  · aesop
+  · omega
   · rintro h
     exact ⟨x - a, by omega⟩
 

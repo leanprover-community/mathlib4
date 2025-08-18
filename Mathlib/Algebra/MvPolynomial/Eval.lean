@@ -170,11 +170,7 @@ theorem eval₂Hom_X' (f : R →+* S₁) (g : σ → S₁) (i : σ) : eval₂Hom
 @[simp]
 theorem comp_eval₂Hom [CommSemiring S₂] (f : R →+* S₁) (g : σ → S₁) (φ : S₁ →+* S₂) :
     φ.comp (eval₂Hom f g) = eval₂Hom (φ.comp f) fun i => φ (g i) := by
-  apply MvPolynomial.ringHom_ext
-  · intro r
-    rw [RingHom.comp_apply, eval₂Hom_C, eval₂Hom_C, RingHom.comp_apply]
-  · intro i
-    rw [RingHom.comp_apply, eval₂Hom_X', eval₂Hom_X']
+  ext <;> simp
 
 theorem map_eval₂Hom [CommSemiring S₂] (f : R →+* S₁) (g : σ → S₁) (φ : S₁ →+* S₂)
     (p : MvPolynomial σ R) : φ (eval₂Hom f g p) = eval₂Hom (φ.comp f) (fun i => φ (g i)) p := by
@@ -463,11 +459,7 @@ theorem C_dvd_iff_map_hom_eq_zero (q : R →+* S₁) (r : R) (hr : ∀ r' : R, q
 
 theorem map_mapRange_eq_iff (f : R →+* S₁) (g : S₁ → R) (hg : g 0 = 0) (φ : MvPolynomial σ S₁) :
     map f (Finsupp.mapRange g hg φ) = φ ↔ ∀ d, f (g (coeff d φ)) = coeff d φ := by
-  rw [MvPolynomial.ext_iff]
-  apply forall_congr'; intro m
-  rw [coeff_map]
-  apply eq_iff_eq_cancel_right.mpr
-  rfl
+  simp_rw [MvPolynomial.ext_iff, coeff_map, coeff_mapRange]
 
 lemma coeffs_map (f : R →+* S₁) (p : MvPolynomial σ R) [DecidableEq S₁] :
     (map f p).coeffs ⊆ p.coeffs.image f := by
@@ -518,13 +510,7 @@ lemma mem_range_map_iff_coeffs_subset {f : R →+* S₁} {x : MvPolynomial σ S�
 def mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
     MvPolynomial σ S₁ →ₐ[R] MvPolynomial σ S₂ :=
   { map (↑f : S₁ →+* S₂) with
-    commutes' := fun r => by
-      have h₁ : algebraMap R (MvPolynomial σ S₁) r = C (algebraMap R S₁ r) := rfl
-      have h₂ : algebraMap R (MvPolynomial σ S₂) r = C (algebraMap R S₂ r) := rfl
-      simp_rw [OneHom.toFun_eq_coe]
-      -- Porting note: we're missing some `simp` lemmas like `MonoidHom.coe_toOneHom`
-      change @DFunLike.coe (_ →+* _) _ _ _ _ _ = _
-      rw [h₁, h₂, map, eval₂Hom_C, RingHom.comp_apply, AlgHom.coe_toRingHom, AlgHom.commutes] }
+    commutes' r := by simp }
 
 @[simp]
 theorem mapAlgHom_id [Algebra R S₁] :
@@ -553,9 +539,6 @@ section Aeval
 
 variable [Algebra R S₁] [CommSemiring S₂]
 variable (f : σ → S₁)
-
-@[simp]
-theorem algebraMap_apply (r : R) : algebraMap R (MvPolynomial σ S₁) r = C (algebraMap R S₁ r) := rfl
 
 /-- A map `σ → S₁` where `S₁` is an algebra over `R` generates an `R`-algebra homomorphism
 from multivariate polynomials over `σ` to `S₁`. -/
@@ -772,9 +755,7 @@ theorem eval₂_mem {f : R →+* S} {p : MvPolynomial σ R} {s : subS}
   | monomial_add a b f ha _ ih =>
     rw [eval₂_add, eval₂_monomial]
     refine add_mem (mul_mem ?_ <| prod_mem fun i _ => pow_mem (hv _) _) (ih fun i => ?_)
-    · have := hs a -- Porting note: was `simpa only [...]`
-      rwa [coeff_add, MvPolynomial.notMem_support_iff.1 ha, add_zero, coeff_monomial,
-        if_pos rfl] at this
+    · simpa [MvPolynomial.notMem_support_iff.1 ha] using hs a
     have := hs i
     rw [coeff_add, coeff_monomial] at this
     split_ifs at this with h

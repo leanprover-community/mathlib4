@@ -129,7 +129,9 @@ theorem isArtinian_of_linearEquiv (f : M ≃ₗ[R] P) [IsArtinian R M] : IsArtin
 theorem LinearEquiv.isArtinian_iff (f : M ≃ₗ[R] P) : IsArtinian R M ↔ IsArtinian R P :=
   ⟨fun _ ↦ isArtinian_of_linearEquiv f, fun _ ↦ isArtinian_of_linearEquiv f.symm⟩
 
-instance (priority := 100) isArtinian_of_finite [Finite M] : IsArtinian R M :=
+-- This was previously a global instance,
+-- but it doesn't appear to be used and has been implicated in slow typeclass resolutions.
+lemma isArtinian_of_finite [Finite M] : IsArtinian R M :=
   ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
 
 -- Porting note: elab_as_elim can only be global and cannot be changed on an imported decl
@@ -139,7 +141,7 @@ open Submodule
 
 theorem IsArtinian.finite_of_linearIndependent [Nontrivial R] [h : IsArtinian R M] {s : Set M}
     (hs : LinearIndependent R ((↑) : s → M)) : s.Finite := by
-  refine by_contradiction fun hf ↦ (RelEmbedding.wellFounded_iff_no_descending_seq.1 h.wf).elim' ?_
+  refine by_contradiction fun hf ↦ (RelEmbedding.wellFounded_iff_isEmpty.1 h.wf).elim' ?_
   have f : ℕ ↪ s := Set.Infinite.natEmbedding s hf
   have : ∀ n, (↑) ∘ f '' { m | n ≤ m } ⊆ s := by
     rintro n x ⟨y, _, rfl⟩
@@ -195,7 +197,7 @@ open Function
 theorem surjective_of_injective_endomorphism (f : M →ₗ[R] M) (s : Injective f) : Surjective f := by
   have h := ‹IsArtinian R M›; contrapose! h
   rw [IsArtinian, WellFoundedLT, isWellFounded_iff]
-  refine (RelEmbedding.natGT (LinearMap.range <| f ^ ·) ?_).not_wellFounded_of_decreasing_seq
+  refine (RelEmbedding.natGT (LinearMap.range <| f ^ ·) ?_).not_wellFounded
   intro n
   simp_rw [pow_succ, Module.End.mul_eq_comp, LinearMap.range_comp, ← Submodule.map_top (f ^ n)]
   refine Submodule.map_strictMono_of_injective (Module.End.iterate_injective s n) (Ne.lt_top ?_)
@@ -397,7 +399,7 @@ theorem isArtinian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid M
   ⟨(Submodule.restrictScalarsEmbedding R S M).wellFounded h.wf⟩
 
 -- See `Mathlib/RingTheory/Artinian/Ring.lean`
-assert_not_exists IsLocalization LocalRing
+assert_not_exists IsLocalization IsLocalRing
 
 /-- A ring is Artinian if it is Artinian as a module over itself.
 
