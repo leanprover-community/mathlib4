@@ -98,7 +98,7 @@ example : P (x ^ 2 * x⁻¹) := by test_field_simp
 #guard_msgs in
 example : P (x ^ 3 * x⁻¹) := by test_field_simp
 
--- TODO (new implementation): this should reduce to `P (1 / x ^ 2)`
+-- TODO (new implementation): this should reduce to `P (1 / x ^ 3)`
 /-- error: `simp` made no progress -/
 #guard_msgs in
 example : P (x / x ^ 4) := by test_field_simp
@@ -148,7 +148,7 @@ example {hx : x ≠ 0} : P (x / x) := by test_field_simp
 #guard_msgs in
 example {hx : x ≠ 0} : P (x ^ 3 * x⁻¹) := by test_field_simp
 
--- TODO (new implementation): this should reduce to `P (1 / x ^ 2)`
+-- TODO (new implementation): this should reduce to `P (1 / x ^ 3)`
 /-- error: `simp` made no progress -/
 #guard_msgs in
 example {hx : x ≠ 0} : P (x / x ^ 4) := by test_field_simp
