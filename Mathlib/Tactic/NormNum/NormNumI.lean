@@ -44,12 +44,10 @@ theorem IsComplex.mul : ∀ {z₁ z₂ : 𝕜} {a₁ a₂ b₁ b₂ : ℝ},
       IsComplex (z₁ * z₂) (a₁ * a₂ - b₁ * b₂) (a₁ * b₂ + b₁ * a₂)
   | z₁, z₂, _, _, _, _, ⟨rfl, rfl⟩, ⟨rfl, rfl⟩ => ⟨RCLike.mul_re z₁ z₂, RCLike.mul_im z₁ z₂⟩
 
--- TODO: generalize to 𝕜
-theorem IsComplex.inv {z : ℂ} {x y : ℝ} (h : IsComplex z x y) :
+theorem IsComplex.inv {z : 𝕜} {x y : ℝ} (h : IsComplex z x y) :
     IsComplex z⁻¹ (x / (x * x + y * y)) (- y / (x * x + y * y)) := by
   obtain ⟨rfl, rfl⟩ := h
-  simp_rw [inv_def]
-  exact ⟨by simp [normSq_apply]; rfl, by simp [normSq_apply, neg_div]; rfl⟩
+  constructor <;> simp [RCLike.normSq]
 
 theorem IsComplex.neg : ∀ {z : 𝕜} {a b : ℝ}, IsComplex z a b → IsComplex (-z) (-a) (-b)
   | _, _, _, ⟨rfl, rfl⟩ => ⟨map_neg _ _, map_neg _ _⟩

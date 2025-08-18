@@ -590,6 +590,12 @@ theorem intCast_re (n : ℤ) : re (n : K) = n := by rw [← ofReal_intCast, ofRe
 @[simp, rclike_simps, norm_cast]
 theorem intCast_im (n : ℤ) : im (n : K) = 0 := by rw [← ofReal_intCast, ofReal_im]
 
+@[simp, rclike_simps] -- Porting note: removed `norm_cast`
+theorem nnratCast_re (q : ℚ≥0) : re (q : K) = q := by rw [← ofReal_nnratCast, ofReal_re]
+
+@[simp, rclike_simps, norm_cast]
+theorem nnratCast_im (q : ℚ≥0) : im (q : K) = 0 := by rw [← ofReal_nnratCast, ofReal_im]
+
 @[rclike_simps, norm_cast]
 theorem ofReal_ratCast (n : ℚ) : ((n : ℝ) : K) = n :=
   map_ratCast _ n
