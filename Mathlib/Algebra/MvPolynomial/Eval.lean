@@ -755,9 +755,7 @@ theorem eval₂_mem {f : R →+* S} {p : MvPolynomial σ R} {s : subS}
   | monomial_add a b f ha _ ih =>
     rw [eval₂_add, eval₂_monomial]
     refine add_mem (mul_mem ?_ <| prod_mem fun i _ => pow_mem (hv _) _) (ih fun i => ?_)
-    · have := hs a -- Porting note: was `simpa only [...]`
-      rwa [coeff_add, MvPolynomial.notMem_support_iff.1 ha, add_zero, coeff_monomial,
-        if_pos rfl] at this
+    · simpa [MvPolynomial.notMem_support_iff.1 ha] using hs a
     have := hs i
     rw [coeff_add, coeff_monomial] at this
     split_ifs at this with h

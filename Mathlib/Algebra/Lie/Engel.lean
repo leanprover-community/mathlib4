@@ -142,8 +142,6 @@ end LieSubmodule
 
 section LieAlgebra
 
--- Porting note: somehow this doesn't hide `LieModule.IsNilpotent`, so `_root_.IsNilpotent` is used
--- a number of times below.
 open LieModule hiding IsNilpotent
 
 variable (R L)
@@ -155,7 +153,7 @@ Engel's theorem `LieAlgebra.isEngelian_of_isNoetherian` states that any Noetheri
 Engelian. -/
 def LieAlgebra.IsEngelian : Prop :=
   ∀ (M : Type u₄) [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M],
-    (∀ x : L, _root_.IsNilpotent (toEnd R L M x)) → LieModule.IsNilpotent L M
+    (∀ x : L, IsNilpotent (toEnd R L M x)) → LieModule.IsNilpotent L M
 
 variable {R L}
 
@@ -218,7 +216,7 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
   intro M _i1 _i2 _i3 _i4 h
   rw [← isNilpotent_range_toEnd_iff R]
   let L' := (toEnd R L M).range
-  replace h : ∀ y : L', _root_.IsNilpotent (y : Module.End R M) := by
+  replace h : ∀ y : L', IsNilpotent (y : Module.End R M) := by
     rintro ⟨-, ⟨y, rfl⟩⟩
     simp [h]
   change LieModule.IsNilpotent L' M
@@ -273,7 +271,7 @@ theorem LieModule.isNilpotent_iff_forall' [IsNoetherian R M] :
 
 /-- Engel's theorem. -/
 theorem LieAlgebra.isNilpotent_iff_forall [IsNoetherian R L] :
-    LieRing.IsNilpotent L ↔ ∀ x, _root_.IsNilpotent <| LieAlgebra.ad R L x :=
+    LieRing.IsNilpotent L ↔ ∀ x, IsNilpotent <| LieAlgebra.ad R L x :=
   LieModule.isNilpotent_iff_forall
 
 end LieAlgebra
