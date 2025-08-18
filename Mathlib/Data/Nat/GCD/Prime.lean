@@ -9,8 +9,14 @@ import Mathlib.Data.Nat.Prime.Defs
 /-!
 # Lemmas related to `Nat.Prime`
 
-This file contains lemmas related to `Nat.Prime`.
+This file contains lemmas about how primes interact with `Nat.lcm`.
 These lemmas are kept separate from `Data.Nat.GCD.Basic` in order to minimize imports.
+
+## Main results
+
+- `Nat.Prime.dvd_or_dvd_of_dvd_lcm`: If `p ∣ lcm a b`, then `p ∣ a ∨ p ∣ b`.
+- `Nat.Prime.dvd_lcm`: `p ∣ lcm a b ↔ p ∣ a ∨ p ∣ b`.
+- `Nat.Prime.not_dvd_lcm`: If `p ∤ a` and `p ∤ b`, then `p ∤ lcm a b`.
 
 -/
 
