@@ -55,66 +55,67 @@ def gammaSet_one_equiv (a a' : Fin 2 → ZMod 1) : gammaSet 1 a ≃ gammaSet 1 a
   Equiv.setCongr (gammaSet_one_eq a a')
 
 /-- The map from `Fin 2 → ℤ` sending `![a,b]` to `a.gcd b`. -/
-def fin_to_gcd_map (v : Fin 2 → ℤ) : ℕ := (v 0).gcd (v 1)
+def finGcdMap (v : Fin 2 → ℤ) : ℕ := (v 0).gcd (v 1)
 
 /-- The set of pairs of integers whose gcd is `N`, defined as the fiber of
-`fin_to_gcd_map` at `N`. -/
-def gammaSetN (N : ℕ) : Set (Fin 2 → ℤ) := fin_to_gcd_map ⁻¹' {N}
+`finGcdMap` at `N`. -/
+def gammaSetWithGcd (N : ℕ) : Set (Fin 2 → ℤ) := finGcdMap ⁻¹' {N}
 
 /-- An abbreviation of the map which divides a integer vector by an integer. -/
-abbrev div_N_map (N : ℤ) {m : ℕ} (v : Fin m → ℤ) : Fin m → ℤ := fun i => v i / N
+abbrev divIntMap (N : ℤ) {m : ℕ} (v : Fin m → ℤ) : Fin m → ℤ := fun i => v i / N
 
 lemma gammaSet_top_mem (v : Fin 2 → ℤ) : v ∈ gammaSet 1 0 ↔ IsCoprime (v 0) (v 1) := by
   simpa [gammaSet] using fun h ↦ Subsingleton.eq_zero (Int.cast ∘ v)
 
-lemma gammaSetN_div_N {N : ℕ} {v : Fin 2 → ℤ} (hv : v ∈ gammaSetN N) (i : Fin 2) :
+lemma gammaSetWithGcd_div_N {N : ℕ} {v : Fin 2 → ℤ} (hv : v ∈ gammaSetWithGcd N) (i : Fin 2) :
    (N : ℤ) ∣ v i  := by
-  simp only [gammaSetN, mem_preimage, fin_to_gcd_map, Fin.isValue, mem_singleton_iff] at *
+  simp only [gammaSetWithGcd, mem_preimage, finGcdMap, Fin.isValue, mem_singleton_iff] at *
   fin_cases i <;> simp [← hv, Int.gcd_dvd_left, Int.gcd_dvd_right]
 
-lemma gammaSetN_to_gammaSet10_bijection {N : ℕ} (hN : N ≠ 0) :
-    Set.BijOn (div_N_map N) (gammaSetN N) (gammaSet 1 0) := by
+lemma gammaSetWithGcd_to_gammaSet10_bijection {N : ℕ} (hN : N ≠ 0) :
+    Set.BijOn (divIntMap N) (gammaSetWithGcd N) (gammaSet 1 0) := by
   refine ⟨?_, ?_, ?_⟩
   · intro x hx
-    simp only [ne_eq, gammaSetN, mem_preimage, fin_to_gcd_map, Fin.isValue, mem_singleton_iff,
+    simp only [ne_eq, gammaSetWithGcd, mem_preimage, finGcdMap, Fin.isValue, mem_singleton_iff,
       gammaSet_top_mem] at *
     rw [← hx] at hN ⊢
     apply isCoprime_div_gcd_div_gcd' (by simpa using hN)
   · intro x hx v hv hv2
     ext i
-    · apply (Int.ediv_left_inj (gammaSetN_div_N hx i) (gammaSetN_div_N hv i)).mp (congr_fun hv2 i)
+    exact (Int.ediv_left_inj (gammaSetWithGcd_div_N hx i) (gammaSetWithGcd_div_N hv i)).mp
+        (congr_fun hv2 i)
   · intro x hx
     use N • x
-    simp only [gammaSetN, nsmul_eq_mul, mem_preimage, fin_to_gcd_map, Fin.isValue, Pi.mul_apply,
-      Pi.natCast_apply, mem_singleton_iff]
+    simp only [gammaSetWithGcd, nsmul_eq_mul, mem_preimage, finGcdMap, Fin.isValue,
+      Pi.mul_apply, Pi.natCast_apply, mem_singleton_iff]
     constructor
     · rw [gammaSet_top_mem, Int.isCoprime_iff_gcd_eq_one] at hx
       simp [Int.gcd_mul_left, hx]
     · ext i
-      simp_all [div_N_map]
+      simp_all [divIntMap]
 
-lemma gammaSetN_map_eq {N : ℕ} (v : gammaSetN N) : v.1 = N • (div_N_map N v) := by
+lemma gammaSetWithGcd_map_eq {N : ℕ} (v : gammaSetWithGcd N) : v.1 = N • (divIntMap N v) := by
   by_cases hN : N = 0
   · have hv := v.2
-    simp only [hN, gammaSetN, mem_preimage, fin_to_gcd_map, Fin.isValue, mem_singleton_iff,
+    simp only [hN, gammaSetWithGcd, mem_preimage, finGcdMap, Fin.isValue, mem_singleton_iff,
       Int.gcd_eq_zero_iff, CharP.cast_eq_zero, zero_nsmul] at *
     ext i
     fin_cases i <;> simp [hv]
   · ext i
-    simp_all [Pi.smul_apply, div_N_map, ← Int.mul_ediv_assoc _ (gammaSetN_div_N v.2 i)]
+    simp_all [Pi.smul_apply, divIntMap, ← Int.mul_ediv_assoc _ (gammaSetWithGcd_div_N v.2 i)]
 
-/-- The equivalence between `gammaSetN` and `gammaSet` for non-zero `N`. -/
-def gammaSetN_Equiv {N : ℕ} (hN : N ≠ 0) : gammaSetN N ≃ gammaSet 1 0 := by
-  apply Set.BijOn.equiv _ (gammaSetN_to_gammaSet10_bijection hN)
+/-- The equivalence between `gammaSetWithGcd` and `gammaSet` for non-zero `N`. -/
+def gammaSetWithGcdEquiv {N : ℕ} (hN : N ≠ 0) : gammaSetWithGcd N ≃ gammaSet 1 0 := by
+  apply Set.BijOn.equiv _ (gammaSetWithGcd_to_gammaSet10_bijection hN)
 
-/-- The equivalence between `(Fin 2 → ℤ)` and `Σ  n : ℕ, gammaSetN n)` . -/
-def GammaSet_top_Equiv : (Fin 2 → ℤ) ≃ (Σ  n : ℕ, gammaSetN n) :=
-  (Equiv.sigmaFiberEquiv fin_to_gcd_map).symm
+/-- The equivalence between `(Fin 2 → ℤ)` and `Σ  n : ℕ, gammaSetWithGcd n)` . -/
+def gammaSetWithGcdTopEquiv : (Fin 2 → ℤ) ≃ (Σ  n : ℕ, gammaSetWithGcd n) :=
+  (Equiv.sigmaFiberEquiv finGcdMap).symm
 
 @[simp]
-lemma GammaSet_top_Equiv_symm_eq (v : Σ n : ℕ, gammaSetN n) :
-    (GammaSet_top_Equiv.symm v) = v.2 := by
-  simp [GammaSet_top_Equiv, fin_to_gcd_map, Equiv.sigmaFiberEquiv]
+lemma gammaSetWithGcdTopEquiv_symm_eq (v : Σ n : ℕ, gammaSetWithGcd n) :
+    (gammaSetWithGcdTopEquiv.symm v) = v.2 := by
+  simp [gammaSetWithGcdTopEquiv, finGcdMap, Equiv.sigmaFiberEquiv]
 
 end gammaSet_def
 
