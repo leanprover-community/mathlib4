@@ -85,7 +85,7 @@ instance decidableMem (μ : YoungDiagram) : DecidablePred (· ∈ μ) :=
   inferInstanceAs (DecidablePred (· ∈ μ.cells))
 
 /-- In "English notation", a Young diagram is drawn so that (i1, j1) ≤ (i2, j2)
-    means (i1, j1) is weakly up-and-left of (i2, j2). -/
+means (i1, j1) is weakly up-and-left of (i2, j2). -/
 theorem up_left_mem (μ : YoungDiagram) {i1 i2 j1 j2 : ℕ} (hi : i1 ≤ i2) (hj : j1 ≤ j2)
     (hcell : (i2, j2) ∈ μ) : (i1, j1) ∈ μ :=
   μ.isLowerSet (Prod.mk_le_mk.mpr ⟨hi, hj⟩) hcell
@@ -409,7 +409,7 @@ protected def cellsOfRowLens : List ℕ → Finset (ℕ × ℕ)
 protected theorem mem_cellsOfRowLens {w : List ℕ} {c : ℕ × ℕ} :
     c ∈ YoungDiagram.cellsOfRowLens w ↔ ∃ h : c.fst < w.length, c.snd < w[c.fst] := by
   induction w generalizing c <;> rw [YoungDiagram.cellsOfRowLens]
-  · simp [YoungDiagram.cellsOfRowLens]
+  · simp
   · rcases c with ⟨⟨_, _⟩, _⟩ <;> simp_all
 
 /-- Young diagram from a sorted list -/

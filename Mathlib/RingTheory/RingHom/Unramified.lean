@@ -27,9 +27,7 @@ def FormallyUnramified (f : R →+* S) : Prop :=
 
 lemma formallyUnramified_algebraMap [Algebra R S] :
     (algebraMap R S).FormallyUnramified ↔ Algebra.FormallyUnramified R S := by
-  delta FormallyUnramified
-  congr!
-  exact Algebra.algebra_ext _ _ fun _ ↦ rfl
+  rw [FormallyUnramified, toAlgebra_algebraMap]
 
 namespace FormallyUnramified
 
@@ -50,7 +48,7 @@ lemma isStableUnderBaseChange :
     IsStableUnderBaseChange FormallyUnramified := by
   refine .mk respectsIso ?_
   intros R S T _ _ _ _ _ h
-  show (algebraMap _ _).FormallyUnramified
+  change (algebraMap _ _).FormallyUnramified
   rw [formallyUnramified_algebraMap] at h ⊢
   infer_instance
 

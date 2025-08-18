@@ -87,7 +87,7 @@ open Lean Syntax in
 /-- Return the link text and inserted text above and below of the conv widget. -/
 @[nolint unusedArguments]
 def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
-    (params : SelectInsertParams): MetaM (String × String × Option (String.Pos × String.Pos)) := do
+    (params : SelectInsertParams) : MetaM (String × String × Option (String.Pos × String.Pos)) := do
   let some pos := locations[0]? | throwError "You must select something."
   let (fvar, subexprPos) ← match pos with
   | ⟨_, .target subexprPos⟩ => pure (none, subexprPos)
@@ -136,4 +136,4 @@ in the goal. -/
 elab stx:"conv?" : tactic => do
   let some replaceRange := (← getFileMap).rangeOfStx? stx | return
   Widget.savePanelWidgetInfo ConvSelectionPanel.javascriptHash
-   (pure <| json% { replaceRange: $(replaceRange) }) stx
+    (pure <| json% { replaceRange: $(replaceRange) }) stx

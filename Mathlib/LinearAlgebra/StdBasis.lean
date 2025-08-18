@@ -31,7 +31,7 @@ this is a basis over `Fin 3 → R`.
 
 -/
 
-open Function Set Submodule
+open Function Module Set Submodule
 
 namespace Pi
 
@@ -94,13 +94,13 @@ theorem basis_repr_single [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j)) (
   ext ⟨j', i'⟩
   by_cases hj : j = j'
   · subst hj
-    simp only [Pi.basis, LinearEquiv.trans_apply, Basis.repr_self, Pi.single_eq_same,
+    simp only [Pi.basis, LinearEquiv.trans_apply,
       LinearEquiv.piCongrRight, Finsupp.sigmaFinsuppLEquivPiFinsupp_symm_apply,
-      Basis.repr_symm_apply, LinearEquiv.coe_mk, ne_eq, Sigma.mk.inj_iff, heq_eq_eq, true_and]
+      Basis.repr_symm_apply, LinearEquiv.coe_mk]
     symm
     simp [Finsupp.single_apply]
   simp only [Pi.basis, LinearEquiv.trans_apply, Finsupp.sigmaFinsuppLEquivPiFinsupp_symm_apply,
-    LinearEquiv.piCongrRight, coe_single]
+    LinearEquiv.piCongrRight]
   dsimp
   rw [Pi.single_eq_of_ne (Ne.symm hj), LinearEquiv.map_zero, Finsupp.zero_apply,
     Finsupp.single_eq_of_ne]

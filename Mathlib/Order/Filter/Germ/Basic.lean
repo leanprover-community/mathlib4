@@ -5,6 +5,7 @@ Authors: Yury Kudryashov, Abhimanyu Pallavi Sudhir
 -/
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Data.Int.Cast.Pi
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Order.Filter.Tendsto
@@ -408,7 +409,7 @@ instance instMonoid [Monoid M] : Monoid (Germ l M) :=
     npow := fun n a => a ^ n }
 
 /-- Coercion from functions to germs as a monoid homomorphism. -/
-@[to_additive "Coercion from functions to germs as an additive monoid homomorphism."]
+@[to_additive /-- Coercion from functions to germs as an additive monoid homomorphism. -/]
 def coeMulHom [Monoid M] (l : Filter α) : (α → M) →* Germ l M where
   toFun := ofFun; map_one' := rfl; map_mul' _ _ := rfl
 
@@ -445,7 +446,7 @@ theorem intCast_def [IntCast M] (n : ℤ) : ((fun _ ↦ n : α → M) : Germ l M
 
 instance instAddMonoidWithOne [AddMonoidWithOne M] : AddMonoidWithOne (Germ l M) where
   natCast_zero := congrArg ofFun <| by simp; rfl
-  natCast_succ _ := congrArg ofFun <| by simp [Function.comp]; rfl
+  natCast_succ _ := congrArg ofFun <| by simp; rfl
 
 instance instAddCommMonoidWithOne [AddCommMonoidWithOne M] : AddCommMonoidWithOne (Germ l M) :=
   { add_comm := add_comm }
@@ -656,7 +657,7 @@ instance instModule [Semiring R] [AddCommMonoid M] [Module R M] : Module R (Germ
   zero_smul f :=
     inductionOn f fun f => by
       norm_cast
-      simp [zero_smul, coe_zero]
+      simp [zero_smul]
 
 instance instModule' [Semiring R] [AddCommMonoid M] [Module R M] :
     Module (Germ l R) (Germ l M) where

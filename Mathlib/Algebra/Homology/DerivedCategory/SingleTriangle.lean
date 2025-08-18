@@ -62,8 +62,8 @@ noncomputable def singleTriangleIso :
       triangleOfSES (hS.map_of_exact (HomologicalComplex.single C (ComplexShape.up ℤ) 0)) := by
   let e := (SingleFunctors.evaluation _ _ 0).mapIso (singleFunctorsPostcompQIso C)
   refine Triangle.isoMk _ _ (e.app S.X₁) (e.app S.X₂) (e.app S.X₃) ?_ ?_ ?_
-  · aesop_cat
-  · aesop_cat
+  · cat_disch
+  · cat_disch
   · dsimp [singleδ, e]
     rw [Category.assoc, Category.assoc, ← Functor.map_comp, SingleFunctors.inv_hom_id_hom_app]
     erw [Functor.map_id]

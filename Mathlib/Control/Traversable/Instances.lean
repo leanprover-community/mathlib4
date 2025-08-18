@@ -139,7 +139,7 @@ open Applicative Functor
 
 protected theorem traverse_map {α β γ : Type u} (g : α → β) (f : β → G γ) (x : σ ⊕ α) :
     Sum.traverse f (g <$> x) = Sum.traverse (f ∘ g) x := by
-  cases x <;> simp [Sum.traverse, id_map, functor_norm] <;> rfl
+  cases x <;> simp [Sum.traverse, functor_norm] <;> rfl
 
 protected theorem id_traverse {σ α} (x : σ ⊕ α) :
     Sum.traverse (pure : α → Id α) x = x := by cases x <;> rfl
@@ -157,7 +157,7 @@ protected theorem traverse_eq_map_id {α β} (f : α → β) (x : σ ⊕ α) :
 
 protected theorem map_traverse {α β γ} (g : α → G β) (f : β → γ) (x : σ ⊕ α) :
     (f <$> ·) <$> Sum.traverse g x = Sum.traverse (f <$> g ·) x := by
-  cases x <;> simp [Sum.traverse, id_map, functor_norm] <;> congr
+  cases x <;> simp [Sum.traverse, functor_norm] <;> congr
 
 variable [LawfulApplicative F] (η : ApplicativeTransformation F G)
 

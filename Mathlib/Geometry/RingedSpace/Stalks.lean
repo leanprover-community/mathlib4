@@ -28,7 +28,7 @@ variable {C : Type u} [Category.{v} C] [HasColimits C]
 -- Porting note: no tidy tactic
 -- attribute [local tidy] tactic.auto_cases_opens
 -- this could be replaced by
--- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opens
+attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opens
 -- but it doesn't appear to be needed here.
 
 open TopCat.Presheaf
@@ -83,7 +83,7 @@ theorem restrictStalkIso_inv_eq_germ {U : TopCat} (X : PresheafedSpace.{_, _, v}
 theorem restrictStalkIso_inv_eq_ofRestrict {U : TopCat} (X : PresheafedSpace.{_, _, v} C)
     {f : U ⟶ (X : TopCat.{v})} (h : IsOpenEmbedding f) (x : U) :
     (X.restrictStalkIso h x).inv = (X.ofRestrict h).stalkMap x := by
-  -- We can't use `ext` here due to https://github.com/leanprover/std4/pull/159
+  -- We can't use `ext` here because it would call `stalk_hom_ext` instead.
   refine colimit.hom_ext fun V => ?_
   induction V with | op V => ?_
   let i : (h.isOpenMap.functorNhds x).obj ((OpenNhds.map f x).obj V) ⟶ V :=
@@ -112,7 +112,7 @@ theorem id (X : PresheafedSpace.{_, _, v} C) (x : X) :
   rw [← map_comp]
   convert (stalkFunctor C x).map_id X.presheaf
   ext
-  simp only [id_c, id_comp, Pushforward.id_hom_app, op_obj, eqToHom_refl, map_id]
+  simp only [id_c, id_comp, Pushforward.id_hom_app]
   rfl
 
 @[simp]
@@ -194,11 +194,10 @@ theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
   induction j with | op j => ?_
   dsimp
   simp only [colimit.ι_desc_assoc, ι_colimMap_assoc, whiskerLeft_app,
-    whiskerRight_app, NatTrans.id_app, map_id, colimit.ι_pre, id_comp, assoc,
+    whiskerRight_app, NatTrans.id_app, colimit.ι_pre, assoc,
     colimit.pre_desc, colimit.map_desc, colimit.ι_desc, Cocones.precompose_obj_ι,
     Cocone.whisker_ι, NatTrans.comp_app]
-  erw [X.presheaf.map_id, id_comp]
-  rfl
+  tauto
 
 end stalkMap
 

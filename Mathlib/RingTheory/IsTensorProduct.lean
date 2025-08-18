@@ -3,9 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Module.ULift
 import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.Tactic.Ring
 
 /-!
 # The characteristic predicate of tensor product
@@ -225,12 +223,12 @@ noncomputable nonrec def IsBaseChange.equiv : S ⊗[R] M ≃ₗ[S] N :=
         -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was simp [smul_tmul', Algebra.ofId_apply]
         simp only [Algebra.linearMap_apply, lift.tmul, smul_eq_mul, Module.End.mul_apply,
           LinearMap.smul_apply, IsTensorProduct.equiv_apply, Module.algebraMap_end_apply, map_mul,
-          smul_tmul', eq_self_iff_true, LinearMap.coe_restrictScalars, LinearMap.flip_apply]
+          smul_tmul', LinearMap.coe_restrictScalars, LinearMap.flip_apply]
       · intro x y hx hy
         rw [map_add, smul_add, map_add, smul_add, hx, hy] }
 
 theorem IsBaseChange.equiv_tmul (s : S) (m : M) : h.equiv (s ⊗ₜ m) = s • f m :=
-  TensorProduct.lift.tmul s m
+  rfl
 
 theorem IsBaseChange.equiv_symm_apply (m : M) : h.equiv.symm (f m) = 1 ⊗ₜ m := by
   rw [h.equiv.symm_apply_eq, h.equiv_tmul, one_smul]
@@ -253,7 +251,7 @@ of `M ⊗[R] P` to `A`. This is simply the isomorphism
 `A ⊗[S] (M ⊗[R] P) ≃ₗ[A] (A ⊗[S] M) ⊗[R] P`. -/
 lemma isBaseChange_tensorProduct_map {f : M →ₗ[S] N} (hf : IsBaseChange A f) :
     IsBaseChange A (AlgebraTensorModule.map f (LinearMap.id (R := R) (M := P))) := by
-  let e : A ⊗[S] M ⊗[R] P ≃ₗ[A] N ⊗[R] P := (AlgebraTensorModule.assoc R S A A M P).symm.trans
+  let e : A ⊗[S] (M ⊗[R] P) ≃ₗ[A] N ⊗[R] P := (AlgebraTensorModule.assoc R S A A M P).symm.trans
     (AlgebraTensorModule.congr hf.equiv (LinearEquiv.refl R P))
   refine IsBaseChange.of_equiv e (fun x ↦ ?_)
   induction x with
@@ -313,7 +311,7 @@ theorem IsBaseChange.ofEquiv (e : M ≃ₗ[R] N) : IsBaseChange R e.toLinearMap 
   intro Q I₁ I₂ I₃ I₄ g
   have : I₂ = I₃ := by
     ext r q
-    show (by let _ := I₂; exact r • q) = (by let _ := I₃; exact r • q)
+    change (by let _ := I₂; exact r • q) = (by let _ := I₃; exact r • q)
     dsimp
     rw [← one_smul R q, smul_smul, ← @smul_assoc _ _ _ (id _) (id _) (id _) I₄, smul_eq_mul]
   cases this
@@ -381,6 +379,13 @@ lemma IsBaseChange.comp_iff {f : M →ₗ[R] N} (hf : IsBaseChange S f) {h : N �
     IsBaseChange T ((h : N →ₗ[R] O) ∘ₗ f) ↔ IsBaseChange T h :=
   ⟨fun hc ↦ IsBaseChange.of_comp hf hc, fun hh ↦ IsBaseChange.comp hf hh⟩
 
+/-- Let `R` be a commutative ring, `S` be an `R`-algebra, `M` be an `R`-module, `P` be an `S`
+  module, `N` be the base change of `M` to `S`, then `P ⊗[S] N` is isomorphic to `P ⊗[R] M`
+  as `S`-modules. -/
+noncomputable def IsBaseChange.tensorEquiv {f : M →ₗ[R] N} (hf : IsBaseChange S f) (P : Type*)
+    [AddCommGroup P] [Module R P] [Module S P] [IsScalarTower R S P] : P ⊗[S] N ≃ₗ[S] P ⊗[R] M :=
+  LinearEquiv.lTensor P hf.equiv.symm ≪≫ₗ AlgebraTensorModule.cancelBaseChange R S S P M
+
 variable {R' S' : Type*} [CommSemiring R'] [CommSemiring S']
 variable [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S']
 variable [IsScalarTower R R' S'] [IsScalarTower R S S']
@@ -436,7 +441,7 @@ theorem Algebra.IsPushout.symm (h : Algebra.IsPushout R S R' S') : Algebra.IsPus
   out := .of_equiv
     { __ := (TensorProduct.comm R ..).toAddEquiv.trans (equiv R S R' S').toAddEquiv,
       map_smul' _ x := x.induction_on (by simp) (fun _ _ ↦ by
-        simp [smul_tmul', equiv_tmul, Algebra.smul_def, mul_left_comm]) (by simp+contextual) }
+        simp [equiv_tmul, Algebra.smul_def, mul_left_comm]) (by simp+contextual) }
     fun _ ↦ by simp [equiv_tmul]
 
 variable (R S R' S')
@@ -537,5 +542,15 @@ lemma Algebra.IsPushout.comp_iff {T' : Type*} [CommSemiring T'] [Algebra R T']
     simp [f, ← IsScalarTower.algebraMap_apply]
   rw [isPushout_iff, isPushout_iff, ← heq, IsBaseChange.comp_iff]
   exact Algebra.IsPushout.out
+
+variable {R R' S S'} in
+lemma Algebra.IsPushout.of_equiv [h : IsPushout R R' S S']
+    {T : Type*} [CommSemiring T] [Algebra R' T] [Algebra S T] [Algebra R T]
+    [IsScalarTower R S T] [IsScalarTower R R' T] (e : S' ≃ₐ[R'] T)
+    (he : e.toRingHom.comp (algebraMap S S') = algebraMap S T) :
+    IsPushout R R' S T := by
+  rw [isPushout_iff] at h ⊢
+  refine IsBaseChange.of_equiv (h.equiv ≪≫ₗ e.toLinearEquiv) fun x ↦ ?_
+  simpa [h.equiv_tmul] using DFunLike.congr_fun he x
 
 end IsBaseChange

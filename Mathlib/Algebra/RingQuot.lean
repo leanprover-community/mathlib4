@@ -20,7 +20,7 @@ definition, which is made irreducible for this purpose.
 Since everything runs in parallel for quotients of `R`-algebras, we do that case at the same time.
 -/
 
-assert_not_exists Star.star
+assert_not_exists TrivialStar
 
 universe uR uS uT uA u₄
 
@@ -215,34 +215,34 @@ theorem one_quot : (⟨Quot.mk _ 1⟩ : RingQuot r) = 1 :=
   show _ = one r by rw [one_def]
 
 theorem add_quot {a b} : (⟨Quot.mk _ a⟩ + ⟨Quot.mk _ b⟩ : RingQuot r) = ⟨Quot.mk _ (a + b)⟩ := by
-  show add r _ _ = _
+  change add r _ _ = _
   rw [add_def]
   rfl
 
 theorem mul_quot {a b} : (⟨Quot.mk _ a⟩ * ⟨Quot.mk _ b⟩ : RingQuot r) = ⟨Quot.mk _ (a * b)⟩ := by
-  show mul r _ _ = _
+  change mul r _ _ = _
   rw [mul_def]
   rfl
 
 theorem pow_quot {a} {n : ℕ} : (⟨Quot.mk _ a⟩ ^ n : RingQuot r) = ⟨Quot.mk _ (a ^ n)⟩ := by
-  show npow r _ _ = _
+  change npow r _ _ = _
   rw [npow_def]
 
 theorem neg_quot {R : Type uR} [Ring R] (r : R → R → Prop) {a} :
     (-⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (-a)⟩ := by
-  show neg r _ = _
+  change neg r _ = _
   rw [neg_def]
   rfl
 
 theorem sub_quot {R : Type uR} [Ring R] (r : R → R → Prop) {a b} :
     (⟨Quot.mk _ a⟩ - ⟨Quot.mk _ b⟩ : RingQuot r) = ⟨Quot.mk _ (a - b)⟩ := by
-  show sub r _ _ = _
+  change sub r _ _ = _
   rw [sub_def]
   rfl
 
 theorem smul_quot [Algebra S R] {n : S} {a : R} :
     (n • ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (n • a)⟩ := by
-  show smul r _ _ = _
+  change smul r _ _ = _
   rw [smul]
   rfl
 
@@ -315,7 +315,7 @@ instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
   nsmul := (· • ·)
   nsmul_zero := by
     rintro ⟨⟨⟩⟩
-    simp only [smul_quot, zero_smul, zero_quot]
+    simp only [zero_smul]
   nsmul_succ := by
     rintro n ⟨⟨⟩⟩
     simp only [smul_quot, nsmul_eq_mul, Nat.cast_add, Nat.cast_one, add_mul, one_mul,
@@ -355,7 +355,7 @@ instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot
       exact congrArg (Quot.mk _) (Int.cast_negSucc n) }
 
 instance instCommSemiring {R : Type uR} [CommSemiring R] (r : R → R → Prop) :
-  CommSemiring (RingQuot r) :=
+    CommSemiring (RingQuot r) :=
   { RingQuot.instSemiring r with
     mul_comm := by
       rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
@@ -443,7 +443,7 @@ irreducible_def lift {r : R → R → Prop} :
       simp only [preLift_def]
       ext
       simp only [mkRingHom_def, RingHom.coe_comp, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
-                 Function.comp_apply, forall_const] }
+        Function.comp_apply] }
 
 @[simp]
 theorem lift_mkRingHom_apply (f : R →+* T) {r : R → R → Prop} (w : ∀ ⦃x y⦄, r x y → f x = f y) (x) :
@@ -512,16 +512,10 @@ def ringQuotEquivIdealQuotient (r : B → B → Prop) : RingQuot r ≃+* B ⧸ I
   RingEquiv.ofHomInv (ringQuotToIdealQuotient r) (idealQuotientToRingQuot r)
     (by
       ext x
-      simp_rw [ringQuotToIdealQuotient, lift_def, preLift_def, mkRingHom_def]
-      change mkRingHom r x = _
-      rw [mkRingHom_def]
-      rfl)
+      simp)
     (by
       ext x
-      simp_rw [ringQuotToIdealQuotient, lift_def, preLift_def, mkRingHom_def]
-      change Quot.lift _ _ ((mkRingHom r) x).toQuot = _
-      rw [mkRingHom_def]
-      rfl)
+      simp)
 
 end CommRing
 
@@ -591,13 +585,13 @@ irreducible_def liftAlgHom {s : A → A → Prop} :
     invFun := fun F ↦ ⟨F.comp (mkAlgHom S s), fun _ _ h ↦ congr_arg F (mkAlgHom_rel S h)⟩
     left_inv := fun f ↦ by
       ext
-      simp only [preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def, RingHom.toMonoidHom_eq_coe,
-                 RingHom.coe_monoidHom_mk, AlgHom.coe_comp, AlgHom.coe_mk, RingHom.coe_mk,
-                 MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply]
+      simp only [preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def,
+        AlgHom.coe_comp, AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+        Function.comp_apply]
     right_inv := fun F ↦ by
       ext
-      simp only [preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def, RingHom.toMonoidHom_eq_coe,
-                 RingHom.coe_monoidHom_mk, AlgHom.coe_comp, AlgHom.coe_mk, RingHom.coe_mk,
+      simp only [preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def,
+                 AlgHom.coe_comp, AlgHom.coe_mk, RingHom.coe_mk,
                  MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply] }
 
 @[simp]

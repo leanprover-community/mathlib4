@@ -247,9 +247,6 @@ lemma Submodule.finite_ne_bot_of_iSupIndep {ι : Type*} {N : ι → Submodule R 
     Set.Finite {i | N i ≠ ⊥} :=
   WellFoundedGT.finite_ne_bot_of_iSupIndep h
 
-@[deprecated (since := "2024-11-24")]
-alias Submodule.finite_ne_bot_of_independent := Submodule.finite_ne_bot_of_iSupIndep
-
 /-- A linearly-independent family of vectors in a module over a non-trivial ring must be finite if
 the module is Noetherian. -/
 theorem LinearIndependent.finite_of_isNoetherian [Nontrivial R] {ι} {v : ι → M}
