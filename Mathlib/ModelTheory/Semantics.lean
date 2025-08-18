@@ -198,7 +198,7 @@ theorem realize_constantsVarsEquivLeft [L[[α]].Structure M]
   simp only [constantsVarsEquivLeft, realize_relabel, Equiv.coe_trans, Function.comp_apply,
     constantsVarsEquiv_apply, relabelEquiv_symm_apply]
   refine _root_.trans ?_ realize_constantsToVars
-  rcongr x
+  congr 1; funext x -- Note: was previously rcongr x
   rcases x with (a | (b | i)) <;> simp
 
 end Term
@@ -628,7 +628,7 @@ theorem realize_equivSentence_symm_con [L[[α]].Structure M]
     BoundedFormula.realize_relabelEquiv, Function.comp]
   refine _root_.trans ?_ BoundedFormula.realize_constantsVarsEquiv
   rw [iff_iff_eq]
-  congr with (_ | a)
+  congr 1 with (_ | a)
   · simp
   · cases a
 
