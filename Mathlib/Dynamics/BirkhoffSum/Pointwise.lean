@@ -393,7 +393,7 @@ theorem ae_tendsTo_birkhoffAverage_condExp {Φ : α → ℝ} (hf : MeasurePreser
   have hφ : Integrable φ μ := (integrable_congr hΦ.left.ae_eq_mk).mp hΦ
   have h1 := condExp_congr_ae (m := invariants f) hΦ'
   have h2 := ae_tendsTo_birkhoffAverage_condExp_aux μ hf hφ hΦ.left.measurable_mk
-  have h3 := ae_all_iff.mpr <| birkhoffAverage_ae_eq_of_ae_eq ℝ hf.quasiMeasurePreserving hΦ'
+  have h3 := ae_all_iff.mpr <| hf.quasiMeasurePreserving.birkhoffAverage_ae_eq_of_ae_eq ℝ hΦ'
   filter_upwards [h1, h2, h3] with _ h1' h2' h3'
   simp [h1', h2', h3']
 
