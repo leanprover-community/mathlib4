@@ -129,6 +129,9 @@ lemma comp_partialSups {F : Type*} [FunLike F α β] [SupHomClass F α β] (f : 
     partialSups (g ∘ f) = g ∘ partialSups f := by
   funext _; simp [partialSups]
 
+lemma map_partialSups {F : Type*} [FunLike F α β] [SupHomClass F α β] (f : F) (g : ι → α) (i : ι) :
+    partialSups (fun j ↦ f (g j)) i = f (partialSups g i) := congr($(comp_partialSups ..) i)
+
 end Preorder
 
 @[simp]
