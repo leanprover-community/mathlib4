@@ -35,7 +35,7 @@ def IsRightRegular (c : R) :=
 on the right is injective. -/
 structure IsAddRegular {R : Type*} [Add R] (c : R) : Prop where
   /-- An add-regular element `c` is left-regular -/
-  left : IsAddLeftRegular c -- Porting note: It seems like to_additive is misbehaving
+  left : IsAddLeftRegular c
   /-- An add-regular element `c` is right-regular -/
   right : IsAddRightRegular c
 

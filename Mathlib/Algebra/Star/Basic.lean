@@ -313,14 +313,7 @@ For example, for complex conjugation, we don't want simp to turn `conj x`
 into the bare function `star x` automatically since most lemmas are about `conj x`. -/
 theorem starRingEnd_apply (x : R) : starRingEnd R x = star x := rfl
 
-/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute due to report by linter:
-
-simp can prove this:
-  by simp only [RingHomCompTriple.comp_apply, RingHom.id_apply]
-One of the lemmas above could be a duplicate.
-If that's not the case try reordering lemmas or adding @[priority].
--/
--- @[simp]
+-- Not `@[simp]` because `simp` can already prove it.
 theorem starRingEnd_self_apply (x : R) : starRingEnd R (starRingEnd R x) = x := star_star x
 
 instance RingHom.involutiveStar {S : Type*} [NonAssocSemiring S] : InvolutiveStar (S →+* R) where
