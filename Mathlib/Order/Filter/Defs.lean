@@ -414,7 +414,7 @@ syntax (name := filterUpwards) "filter_upwards" (" [" term,* "]")?
 
 elab_rules : tactic
 | `(tactic| filter_upwards $[[$[$args],*]]? $[with $wth*]? $[using $usingArg]?) => do
-  focus do
+  focus <| withMainContext do
     let m ← mkFreshExprSyntheticOpaqueMVar (← mkFreshTypeMVar)
     let mut pf ← ``(Filter.univ_mem' $(← Term.exprToSyntax m))
     for e in args.getD #[] do
