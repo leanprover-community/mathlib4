@@ -5,8 +5,6 @@ Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
 
 import Mathlib.Analysis.InnerProductSpace.Continuous
-import Mathlib.LinearAlgebra.Dimension.Finrank
-import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 
 /-!
 # Linear maps on inner product spaces
