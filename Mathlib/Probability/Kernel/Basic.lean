@@ -438,6 +438,13 @@ instance [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] : IsMarkovKernel (b
       <;> simp only [boolKernel_apply, Bool.false_eq_true, ↓reduceIte]
       <;> infer_instance
 
+instance [SFinite μ] [SFinite ν] : IsSFiniteKernel (boolKernel μ ν) where
+  tsum_finite := by
+    refine ⟨fun n ↦ boolKernel (sfiniteSeq μ n) (sfiniteSeq ν n), fun n ↦ inferInstance, ?_⟩
+    ext b
+    rw [Kernel.sum_apply]
+    cases b <;> simp [sum_sfiniteSeq]
+
 lemma eq_boolKernel (κ : Kernel Bool α) : κ = boolKernel (κ false) (κ true) := by
   ext (_ | _) <;> simp
 
