@@ -633,7 +633,7 @@ instance [Nontrivial M] : Nonempty (FiniteMulArchimedeanClass M) := by
   exact ⟨mk x hx, by simpa using hx⟩
 
 /-- Lift a `f : {a : M // a ≠ 1} → α` function to `FiniteMulArchimedeanClass M → α`. -/
-@[to_additive /--Lift a `f : {a : M // a ≠ 0} → α` function to `FiniteArchimedeanClass M → α`. -/]
+@[to_additive /-- Lift a `f : {a : M // a ≠ 0} → α` function to `FiniteArchimedeanClass M → α`. -/]
 def lift {α : Type*} (f : {a : M // a ≠ 1} → α)
     (h : ∀ (a b : {a : M // a ≠ 1}), mk a.val a.prop = mk b.val b.prop → f a = f b) :
     FiniteMulArchimedeanClass M → α := fun ⟨A, hA⟩ ↦ by
