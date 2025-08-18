@@ -119,22 +119,16 @@ end CylindersDefs
 section CylindersOpen
 variable {A G : Type*} [TopologicalSpace A] [DiscreteTopology A]
 /-- Cylinders are open (and, dually, closed) when `A` is discrete. -/
-lemma cylinder_is_open (U : Finset (G)) (x : G → A) :
-  IsOpen (cylinder U x) := by
-  let S : Set (FullShift A G) := ⋂ i ∈ U, { y | y i = x i }
-  have : cylinder U x = S := by
-    ext y
-    rw [cylinder, mem_setOf_eq]
-    rw [mem_iInter₂]
-    simp only [mem_setOf_eq]
-  rw [this]
-  apply isOpen_biInter_finset
-  intro i _
-  have : { y : FullShift A G | y i = x i } = (fun y ↦ y i) ⁻¹' {x i} := rfl
-  rw [this]
-  apply Continuous.isOpen_preimage
-  · exact continuous_apply i
-  · exact isOpen_discrete ({x i} : Set A)
+lemma cylinder_is_open (U : Finset G) (x : G → A) :
+  IsOpen (cylinder (A:=A) (G:=G) U x) := by
+  classical
+  have hopen : ∀ i ∈ (↑U : Set G), IsOpen ({x i} : Set A) := by
+    intro i _; simp
+  have hpi :
+      IsOpen (Set.pi (s := (↑U : Set G))
+                     (t := fun i => ({x i} : Set A))) :=
+    isOpen_set_pi (U.finite_toSet) hopen
+  simpa [cylinder_eq_set_pi (A:=A) (G:=G) U x] using hpi
 end CylindersOpen
 
 section CylindersClosed
