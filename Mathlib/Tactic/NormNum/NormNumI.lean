@@ -106,6 +106,20 @@ theorem pow_bit_false (z : 𝕜) (m : ℕ) : z ^ Nat.bit false m = z ^ m * z ^ m
 theorem pow_bit_true (z : 𝕜) (m : ℕ) : z ^ Nat.bit true m = z ^ m * z ^ m * z := by
   rw [Nat.bit, cond, pow_add, pow_mul', pow_one, sq]
 
+section
+variable {u : Level} {𝕜 : Q(Type u)} (inst : Q(RCLike $𝕜) := by assumption)
+
+structure ResultI (a : Q($𝕜)) where
+  re : NormNum.Result q(RCLike.re $a)
+  im : NormNum.Result q(RCLike.im $a)
+
+def ResultI.add {a b : Q($𝕜)} (ha : ResultI inst q($a)) (hb : ResultI inst q($a)) :
+    MetaM (ResultI inst q($a + $b)) := do
+  return { re := ← NormNum.evalMul.core, im := ← sorry }
+
+
+end
+
 /-- Using fast exponentiation to handle nat powers of complexes. -/
 partial def parsePow (n' : ℕ) :
     ⦃a b : Q(ℝ)⦄ → (z : Q(ℂ)) → (n : Q(ℕ)) → Q(NormNum.IsNat $n $n') →  Q(IsComplex $z $a $b) →
