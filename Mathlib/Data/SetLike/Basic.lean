@@ -238,7 +238,7 @@ attribute [local instance] instSubtypeSet instSubtype
 end
 
 @[nontriviality]
-lemma mem_of_subsingleton {A} (F) [Subsingleton A] [SetLike F A] {S : F} [h : Nonempty S] {a : A} :
+lemma mem_of_subsingleton {A F} [Subsingleton A] [SetLike F A] (S : F) [h : Nonempty S] {a : A} :
     a ∈ S := by
   obtain ⟨s, hs⟩ := nonempty_subtype.mp h
   simpa [Subsingleton.elim a s]
