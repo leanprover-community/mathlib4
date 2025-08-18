@@ -71,20 +71,47 @@ theorem coeFn_generalLinearEquiv (f : GeneralLinearGroup R M) :
 
 section Functoriality
 
-variable {S N : Type*} [Semiring S] [AddCommMonoid N] [Module S N]
-  {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+variable {R₁ R₂ R₃ M₁ M₂ M₃ : Type*}
+  [Semiring R₁] [Semiring R₂] [Semiring R₃]
+  [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+  [Module R₁ M₁] [Module R₂ M₂] [Module R₃ M₃]
+  {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃}
+  {σ₂₁ : R₂ →+* R₁} {σ₃₂ : R₃ →+* R₂} {σ₃₁ : R₃ →+* R₁}
+  [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₃ σ₃₂] [RingHomInvPair σ₁₃ σ₃₁]
+  [RingHomInvPair σ₂₁ σ₁₂] [RingHomInvPair σ₃₂ σ₂₃] [RingHomInvPair σ₃₁ σ₁₃]
+  [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₃₂ σ₂₁ σ₃₁]
 
 /-- A semilinear equivalence from `V` to `W` determines an isomorphism of general linear
 groups. -/
-def congrLinearEquiv (e : M ≃ₛₗ[σ] N) : GeneralLinearGroup R M ≃* GeneralLinearGroup S N :=
-  Units.mapEquiv (LinearEquiv.conjRingEquiv e).toMulEquiv
+def congrLinearEquiv (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) :
+    GeneralLinearGroup R₁ M₁ ≃* GeneralLinearGroup R₂ M₂ :=
+  Units.mapEquiv (LinearEquiv.conjRingEquiv e₁₂).toMulEquiv
 
-@[simp] lemma congrLinearEquiv_apply (e : M ≃ₛₗ[σ] N) (g : GeneralLinearGroup R M) :
-    congrLinearEquiv e g = ofLinearEquiv (e.symm.trans <| g.toLinearEquiv.trans e) :=
+@[simp] lemma congrLinearEquiv_apply (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (g : GeneralLinearGroup R₁ M₁) :
+    congrLinearEquiv e₁₂ g = ofLinearEquiv (e₁₂.symm.trans <| g.toLinearEquiv.trans e₁₂) :=
   rfl
 
-@[simp] lemma congrLinearEquiv_symm (e : M ≃ₛₗ[σ] N) :
-    (congrLinearEquiv e).symm = congrLinearEquiv e.symm :=
+@[simp] lemma congrLinearEquiv_symm (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) :
+    (congrLinearEquiv e₁₂).symm = congrLinearEquiv e₁₂.symm :=
+  rfl
+
+@[simp]
+lemma congrLinearEquiv_trans
+    {N₁ N₂ N₃ : Type*} [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
+    [Module R N₁] [Module R N₂] [Module R N₃] (e₁₂ : N₁ ≃ₗ[R] N₂) (e₂₃ : N₂ ≃ₗ[R] N₃) :
+    (congrLinearEquiv e₁₂).trans (congrLinearEquiv e₂₃) = congrLinearEquiv (e₁₂.trans e₂₃) :=
+  rfl
+
+/-- Stronger form of `congrLinearEquiv.trans` applying to semilinear maps. Not a simp lemma as
+`σ₁₃` and `σ₃₁` cannot be inferred from the LHS. -/
+lemma congrLinearEquiv_trans' (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ₂₃] M₃) :
+    (congrLinearEquiv e₁₂).trans (congrLinearEquiv e₂₃) =
+      congrLinearEquiv (e₁₂.trans e₂₃) :=
+  rfl
+
+@[simp]
+lemma congrLinearEquiv_refl :
+    congrLinearEquiv (LinearEquiv.refl R₁ M₁) = MulEquiv.refl (GeneralLinearGroup R₁ M₁) :=
   rfl
 
 end Functoriality

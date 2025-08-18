@@ -3,7 +3,6 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Data.Fintype.Basic
@@ -20,7 +19,7 @@ When adding new definitions that transfer type-classes across an equivalence, pl
 `abbrev`. See note [reducible non-instances].
 -/
 
-assert_not_exists MonoidWithZero
+assert_not_exists MonoidWithZero MulAction
 
 namespace Equiv
 variable {M α β : Type*} (e : α ≃ β)
@@ -185,23 +184,6 @@ protected abbrev commGroup [CommGroup β] : CommGroup α := by
   let npow := e.pow ℕ
   let zpow := e.pow ℤ
   apply e.injective.commGroup _ <;> intros <;> exact e.apply_symm_apply _
-
-variable (M) [Monoid M] in
-/-- Transfer `MulAction` across an `Equiv` -/
-@[to_additive /-- Transfer `AddAction` across an `Equiv` -/]
-protected abbrev mulAction (e : α ≃ β) [MulAction M β] : MulAction M α where
-  __ := e.smul M
-  one_smul := by simp [smul_def]
-  mul_smul := by simp [smul_def, mul_smul]
-
-/-- Transfer `SMulCommClass` across an `Equiv` -/
-protected lemma smulCommClass (M N) [SMul M β] [SMul N β] [SMulCommClass M N β] :
-    letI := Equiv.smul M e
-    letI := Equiv.smul N e
-    SMulCommClass M N α :=
-  letI := Equiv.smul M e
-  letI := Equiv.smul N e
-  { smul_comm m n x := by simp [Equiv.smul_def,Equiv.apply_symm_apply, smul_comm m n] }
 
 end Equiv
 
