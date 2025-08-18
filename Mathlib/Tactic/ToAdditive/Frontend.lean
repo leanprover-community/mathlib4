@@ -596,52 +596,43 @@ where /-- Implementation of `applyReplacementFun`. -/
         if trace then
           dbg_trace s!"applyReplacementFun: Variables applied to numerals are not changed {g.app x}"
         return some <| g.app x
-      let gArgs := g.getAppArgs
-      let mut gAllArgs := gArgs.push x
-      let (gfAdditive, gAllArgsAdditive) ←
-        if let some nm := gf.constName? then
-          -- e = `(nm y₁ .. yₙ x)
-          /- Test if the head should not be replaced. -/
-          let relevantArgId := relevantArg nm
-          let gfAdditive :=
-            if h : relevantArgId < gAllArgs.size ∧ gf.isConst then
-              if let some fxd :=
-                additiveTest env gAllArgs[relevantArgId] then
-                Id.run <| do
-                  if trace then
-                    dbg_trace s!"The application of {nm} contains the fixed type \
-                      {fxd}, so it is not changed"
-                  gf
-              else
-                r gf
-            else
-              r gf
+      let mut gAllArgs := e.getAppArgs
+      let some nm := gf.constName? | return mkAppN (← r gf) (← gAllArgs.mapM r)
+      -- e = `(nm y₁ .. yₙ x)
+      /- Test if the head should not be replaced. -/
+      let relevantArgId := relevantArg nm
+      let mut gf := gf
+      if h : relevantArgId < gAllArgs.size then
+        if let some fxd := additiveTest env gAllArgs[relevantArgId] then
+          if trace then
+            dbg_trace s!"The application of {nm} contains the fixed type \
+              {fxd}, so it is not changed"
+        else
+          gf := r gf
           /- Test if arguments should be reordered. -/
           let reorder := reorderFn nm
-          if !reorder.isEmpty && relevantArgId < gAllArgs.size &&
-            (additiveTest env gAllArgs[relevantArgId]!).isNone then
+          if !reorder.isEmpty then
             gAllArgs := gAllArgs.permute! reorder
             if trace then
               dbg_trace s!"reordering the arguments of {nm} using the cyclic permutations {reorder}"
-          /- Do not replace numerals in specific types. -/
-          let firstArg := gAllArgs[0]!
-          if let some changedArgNrs := changeNumeralAttr.find? env nm then
-            if additiveTest env firstArg |>.isNone then
-              if trace then
-                dbg_trace s!"applyReplacementFun: We change the numerals in this expression. \
-                  However, we will still recurse into all the non-numeral arguments."
-              -- In this case, we still update all arguments of `g` that are not numerals,
-              -- since all other arguments can contain subexpressions like
-              -- `(fun x ↦ ℕ) (1 : G)`, and we have to update the `(1 : G)` to `(0 : G)`
-              gAllArgs := gAllArgs.mapIdx fun argNr arg ↦
-                if changedArgNrs.contains argNr then
-                  changeNumeral arg
-                else
-                  arg
-          pure <| (gfAdditive, ← gAllArgs.mapM r)
-        else
-          pure (← r gf, ← gAllArgs.mapM r)
-      return some <| mkAppN gfAdditive gAllArgsAdditive
+      else
+        gf := r gf
+      /- Do not replace numerals in specific types. -/
+      if let some changedArgNrs := changeNumeralAttr.find? env nm then
+        let firstArg := gAllArgs[0]!
+        if additiveTest env firstArg |>.isNone then
+          if trace then
+            dbg_trace s!"applyReplacementFun: We change the numerals in this expression. \
+              However, we will still recurse into all the non-numeral arguments."
+          -- In this case, we still update all arguments of `g` that are not numerals,
+          -- since all other arguments can contain subexpressions like
+          -- `(fun x ↦ ℕ) (1 : G)`, and we have to update the `(1 : G)` to `(0 : G)`
+          gAllArgs := gAllArgs.mapIdx fun argNr arg ↦
+            if changedArgNrs.contains argNr then
+              changeNumeral arg
+            else
+              arg
+      return mkAppN gf (← gAllArgs.mapM r)
     | .proj n₀ idx e => do
       let n₁ := n₀.mapPrefix <| findTranslation? env
       if trace then
