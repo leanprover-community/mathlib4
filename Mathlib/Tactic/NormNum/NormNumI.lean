@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Yunzhou Xie, Sidharth Hariharan
 -/
 import Mathlib.Analysis.Normed.Ring.Basic
-import Mathlib.Data.Complex.Basic
+import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Analysis.Complex.Basic
 
 /-!
 ## `norm_num` extension for complex numbers
@@ -20,88 +21,93 @@ open ComplexConjugate
 namespace Mathlib.Meta
 namespace NormNumI
 
+variable {𝕜} [RCLike 𝕜]
+
 /-- Assert that a complex number is equal to `re + im * I`. -/
-structure IsComplex (z : ℂ) (re im : ℝ) : Prop where
-  out : z = ⟨re, im⟩
+structure IsComplex {𝕜} [RCLike 𝕜] (z : 𝕜) (re im : ℝ) : Prop where
+  re_eq : RCLike.re z = re
+  im_eq : RCLike.im z = im
 
-theorem IsComplex.I : IsComplex I 0 1 := ⟨rfl⟩
 
-theorem IsComplex.zero : IsComplex (0 : ℂ) 0 0 := ⟨rfl⟩
+theorem IsComplex.I : IsComplex (RCLike.I : ℂ) 0 1 := ⟨rfl, rfl⟩
 
-theorem IsComplex.one : IsComplex (1 : ℂ) 1 0 := ⟨rfl⟩
+theorem IsComplex.zero : IsComplex (0 : 𝕜) 0 0 := ⟨RCLike.zero_re, RCLike.zero_im⟩
 
-theorem IsComplex.add : ∀ {z₁ z₂ : ℂ} {a₁ a₂ b₁ b₂ : ℝ},
+theorem IsComplex.one : IsComplex (1 : 𝕜) 1 0 := ⟨RCLike.one_re, RCLike.one_im⟩
+
+theorem IsComplex.add : ∀ {z₁ z₂ : 𝕜} {a₁ a₂ b₁ b₂ : ℝ},
     IsComplex z₁ a₁ b₁ → IsComplex z₂ a₂ b₂ → IsComplex (z₁ + z₂) (a₁ + a₂) (b₁ + b₂)
-  | _, _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩ => ⟨rfl⟩
+  | _, _, _, _, _, _, ⟨rfl, rfl⟩, ⟨rfl, rfl⟩ => ⟨map_add _ _ _, map_add _ _ _⟩
 
-theorem IsComplex.mul : ∀ {z₁ z₂ : ℂ} {a₁ a₂ b₁ b₂ : ℝ},
+theorem IsComplex.mul : ∀ {z₁ z₂ : 𝕜} {a₁ a₂ b₁ b₂ : ℝ},
     IsComplex z₁ a₁ b₁ → IsComplex z₂ a₂ b₂ →
       IsComplex (z₁ * z₂) (a₁ * a₂ - b₁ * b₂) (a₁ * b₂ + b₁ * a₂)
-  | _, _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩ => ⟨rfl⟩
+  | z₁, z₂, _, _, _, _, ⟨rfl, rfl⟩, ⟨rfl, rfl⟩ => ⟨RCLike.mul_re z₁ z₂, RCLike.mul_im z₁ z₂⟩
 
+-- TODO: generalize to 𝕜
 theorem IsComplex.inv {z : ℂ} {x y : ℝ} (h : IsComplex z x y) :
     IsComplex z⁻¹ (x / (x * x + y * y)) (- y / (x * x + y * y)) := by
-  constructor
-  obtain ⟨rfl⟩ := h
-  rw [inv_def]
-  exact Complex.ext (by simp [normSq_apply]; rfl) (by simp [normSq_apply, neg_div]; rfl)
+  obtain ⟨rfl, rfl⟩ := h
+  simp_rw [inv_def]
+  exact ⟨by simp [normSq_apply]; rfl, by simp [normSq_apply, neg_div]; rfl⟩
 
-theorem IsComplex.neg : ∀ {z : ℂ} {a b : ℝ}, IsComplex z a b → IsComplex (-z) (-a) (-b)
-  | _, _, _, ⟨rfl⟩ => ⟨rfl⟩
+theorem IsComplex.neg : ∀ {z : 𝕜} {a b : ℝ}, IsComplex z a b → IsComplex (-z) (-a) (-b)
+  | _, _, _, ⟨rfl, rfl⟩ => ⟨map_neg _ _, map_neg _ _⟩
 
-theorem IsComplex.sub : ∀ {z₁ z₂ : ℂ} {a₁ a₂ b₁ b₂ : ℝ},
+theorem IsComplex.sub : ∀ {z₁ z₂ : 𝕜} {a₁ a₂ b₁ b₂ : ℝ},
     IsComplex z₁ a₁ b₁ → IsComplex z₂ a₂ b₂ → IsComplex (z₁ - z₂) (a₁ - a₂) (b₁ - b₂)
-  | _, _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩ => ⟨rfl⟩
+  | _, _, _, _, _, _, ⟨rfl, rfl⟩, ⟨rfl, rfl⟩ => ⟨map_sub _ _ _, map_sub _ _ _⟩
 
-theorem IsComplex.conj : ∀ {z : ℂ} {a b : ℝ}, IsComplex z a b → IsComplex (conj z) a (-b)
-  | _, _, _, ⟨rfl⟩ => ⟨rfl⟩
+theorem IsComplex.conj : ∀ {z : 𝕜} {a b : ℝ}, IsComplex z a b → IsComplex (conj z) a (-b)
+  | _, _, _, ⟨rfl, rfl⟩ => ⟨RCLike.conj_re _, RCLike.conj_im _⟩
 
 theorem IsComplex.ofNat (n : ℕ) [n.AtLeastTwo] :
-    IsComplex (OfNat.ofNat (α := ℂ) n) (OfNat.ofNat n) 0 := ⟨rfl⟩
+    IsComplex (OfNat.ofNat (α := 𝕜) n) (OfNat.ofNat n) 0 := ⟨RCLike.ofNat_re _, RCLike.ofNat_im _⟩
 
+-- TODO: generalize to 𝕜
 theorem IsComplex.scientific (m exp : ℕ) (x : Bool) :
     IsComplex (OfScientific.ofScientific m x exp : ℂ) (OfScientific.ofScientific m x exp : ℝ) 0 :=
-  ⟨rfl⟩
+  ⟨rfl, rfl⟩
 
-theorem eq_eq {z : ℂ} {a b a' b' : ℝ} (pf : IsComplex z a b) (pf_a : a = a') (pf_b : b = b') :
+theorem eq_eq {z : 𝕜} {a b a' b' : ℝ} (pf : IsComplex z a b) (pf_a : a = a') (pf_b : b = b') :
   IsComplex z a' b' := by simp_all
 
-theorem eq_of_eq_of_eq_of_eq {z w : ℂ} {az bz aw bw : ℝ}
+theorem eq_of_eq_of_eq_of_eq {z w : 𝕜} {az bz aw bw : ℝ}
     (hz : IsComplex z az bz) (hw : IsComplex w aw bw)
     (ha : az = aw) (hb : bz = bw) : z = w := by
-  simp [hz.out, hw.out, ha, hb]
+  obtain ⟨rfl, rfl⟩ := hz
+  obtain ⟨rfl, rfl⟩ := hw
+  apply RCLike.ext <;> assumption
 
-theorem ne_of_re_ne {z w : ℂ} {az bz aw bw : ℝ} (hz : IsComplex z az bz) (hw : IsComplex w aw bw)
-    (ha : az ≠ aw) : z ≠ w := by
-  simp [hz.out, hw.out, ha]
+theorem ne_of_re_ne {z w : 𝕜} {az bz aw bw : ℝ} (hz : IsComplex z az bz) (hw : IsComplex w aw bw) :
+    az ≠ aw → z ≠ w := (mt · ·) <| by
+  rintro rfl
+  obtain ⟨rfl, rfl⟩ := hz
+  obtain ⟨rfl, rfl⟩ := hw
+  rfl
 
-theorem ne_of_im_ne {z w : ℂ} {az bz aw bw : ℝ} (hz : IsComplex z az bz) (hw : IsComplex w aw bw)
-    (hb : bz ≠ bw) : z ≠ w := by
-  simp [hz.out, hw.out, hb]
+theorem ne_of_im_ne {z w : 𝕜} {az bz aw bw : ℝ} (hz : IsComplex z az bz) (hw : IsComplex w aw bw) :
+    bz ≠ bw → z ≠ w := (mt · ·) <| by
+  rintro rfl
+  obtain ⟨rfl, rfl⟩ := hz
+  obtain ⟨rfl, rfl⟩ := hw
+  rfl
 
-theorem IsComplex.re_eq {z : ℂ} {a b : ℝ} (hz : IsComplex z a b) : Complex.re z = a := by
-  simp [hz.out]
-
-theorem IsComplex.im_eq {z : ℂ} {a b : ℝ} (hz : IsComplex z a b) : Complex.im z = b := by
-  simp [hz.out]
-
-theorem IsComplex.of_pow_negSucc {w : ℂ} {a b : ℝ} {n : ℕ} {k' : ℤ}
+theorem IsComplex.of_pow_negSucc {w : 𝕜} {a b : ℝ} {n : ℕ} {k' : ℤ}
     (hk : NormNum.IsInt k' (Int.negSucc n)) (hz : IsComplex (w ^ (n + 1))⁻¹ a b) :
     IsComplex (w ^ (k' : ℤ)) a b := by
-  constructor
-  rw [hk.out, Int.cast_id, zpow_negSucc, hz.out]
+  rwa [hk.out, Int.cast_id, zpow_negSucc]
 
-theorem IsComplex.of_pow_ofNat {w : ℂ} {k : ℤ} {n : ℕ} {a b : ℝ}
+theorem IsComplex.of_pow_ofNat {w : 𝕜} {k : ℤ} {n : ℕ} {a b : ℝ}
     (hkk' : NormNum.IsInt k n) (hw : IsComplex (w ^ n) a b) :
     IsComplex (w ^ k) a b := by
   obtain rfl : k = n := by simpa using hkk'.out
-  constructor
-  simpa using hw.out
+  simpa only [zpow_natCast] using hw
 
-theorem pow_bit_false (z : ℂ) (m : ℕ) : z ^ Nat.bit false m = z ^ m * z ^ m := by
+theorem pow_bit_false (z : 𝕜) (m : ℕ) : z ^ Nat.bit false m = z ^ m * z ^ m := by
   rw [Nat.bit, cond, pow_mul', sq]
 
-theorem pow_bit_true (z : ℂ) (m : ℕ) : z ^ Nat.bit true m = z ^ m * z ^ m * z := by
+theorem pow_bit_true (z : 𝕜) (m : ℕ) : z ^ Nat.bit true m = z ^ m * z ^ m * z := by
   rw [Nat.bit, cond, pow_add, pow_mul', pow_one, sq]
 
 /-- Using fast exponentiation to handle nat powers of complexes. -/
@@ -186,6 +192,11 @@ def normalize (z : Q(ℂ)) : MetaM (Σ a b : Q(ℝ), Q(IsComplex $z $a $b)) := d
   let { expr := (a' : Q(ℝ)), proof? := (pf_a : Q($a = $a')) } ← ra.toSimpResult | unreachable!
   let { expr := (b' : Q(ℝ)), proof? := (pf_b : Q($b = $b')) } ← rb.toSimpResult | unreachable!
   return ⟨a', b', q(eq_eq $pf $pf_a $pf_b)⟩
+
+-- TODO: change to use `x + y*I` so that it's fine for `ℝ` too.
+theorem IsComplex.out {z : ℂ} {re im : ℝ} (h : IsComplex z re im) : z = ⟨re, im⟩ := by
+  obtain ⟨rfl, rfl⟩ := h
+  rfl
 
 /-- Create the `NormNumI` tactic in `conv` mode. -/
 elab "norm_numI" : conv => do
