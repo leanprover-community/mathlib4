@@ -120,7 +120,7 @@ lemma div_lt_self' (a b : ℕ) : (a + 1) / (b + 2) < a + 1 :=
 @[deprecated (since := "2025-06-05")] protected alias div_le_self' := Nat.div_le_self
 
 lemma two_mul_odd_div_two (hn : n % 2 = 1) : 2 * (n / 2) = n - 1 := by
-  conv => rhs; rw [← Nat.mod_add_div n 2, hn, Nat.add_sub_cancel_left]
+  omega
 
 /-! ### `pow` -/
 
