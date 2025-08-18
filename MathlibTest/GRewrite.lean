@@ -153,6 +153,14 @@ example {a b : ℤ} (h1 : a ≡ 3 [ZMOD 5]) (h2 : b ≡ a ^ 2 + 1 [ZMOD 5]) :
 
 end modeq
 
+section dvd
+
+example {a b c : ℤ} (h₁ : a ∣ b) (h₂ : b ∣ a ^ 2 * c) : a ∣ b ^ 2 * c := by
+  grw [h₁] at *
+  exact h₂
+
+end dvd
+
 section wildcard
 
 /-! Rewriting at a wildcard `*`, i.e. `grw [h] at *`, will sometimes include a rewrite at `h` itself
@@ -204,7 +212,8 @@ relation does not have its main goals proved by `gcongr` (in the two examples he
 the inequality goes in the wrong direction). -/
 
 /--
-error: tactic 'grewrite' failed, could not discharge x ≤ y using x ≥ y
+error: Tactic `grewrite` failed: could not discharge x ≤ y using x ≥ y
+
 case h₁.h
 α : Type u_1
 inst✝² : CommRing α
@@ -250,7 +259,8 @@ example {Prime : ℕ → Prop} {a a' : ℕ} (h₁ : Prime (a + 1)) (h₂ : a = a
   exact test_sorry
 
 /--
-error: tactic 'grewrite' failed, could not discharge b ≤ a using a ≤ b
+error: Tactic `grewrite` failed: could not discharge b ≤ a using a ≤ b
+
 case h₁.h
 α : Type u_1
 inst✝² : CommRing α
@@ -301,3 +311,12 @@ example : ∃ n, n < 2 := by
   on_goal 2 => grw [← one_lt_two]
   exact 0
   refine zero_lt_one
+
+variable {a b c d n : ℤ}
+
+example (h : a ≡ b [ZMOD n]) : a ^ 2 ≡ b ^ 2 [ZMOD n] := by
+  grw [h]
+
+example (h₁ : a ∣ b) (h₂ : b ∣ a * d) : a ∣ b * d := by
+  grw [h₁] at h₂ ⊢
+  exact h₂

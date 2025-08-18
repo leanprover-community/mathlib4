@@ -66,7 +66,7 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
     exact mem.2
   have hi₀ : i₀ ∈ t := filter_subset _ _ mem
   let k : E → 𝕜 := fun z => f z - f i₀ / g i₀ * g z
-  have hk : k i₀ = 0 := by field_simp [k, ne_of_gt hg]
+  have hk : k i₀ = 0 := by simp [k, ne_of_gt hg]
   have ksum : ∑ e ∈ t.erase i₀, k e = 1 := by
     calc
       ∑ e ∈ t.erase i₀, k e = ∑ e ∈ t, k e := by
