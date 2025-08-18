@@ -71,6 +71,64 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
   calc (p.length : WithBot ℕ∞) ≤ (p.length - 1 + 1 : ℕ) := Nat.cast_le.mpr le_tsub_add
     _ ≤ _ := by simpa using add_le_add_right (by exact le_iSup_iff.mpr fun _ h ↦ h q') 1
 
+lemma ringKrullDim_le_ringKrullDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIdeal R) :
+    ringKrullDim R ≤ ringKrullDim (R ⧸ x • (⊤ : Ideal R)) + 1 := by
+  rw [← Module.supportDim_self_eq_ringKrullDim, ← Module.supportDim_quotient_eq_ringKrullDim]
+  exact supportDim_le_supportDim_quotSMulTop_succ hx
+
+lemma ringKrullDim_le_ringKrullDim_add_card {S : Finset R} (hS : (S : Set R) ⊆ maximalIdeal R) :
+    ringKrullDim R ≤ ringKrullDim (R ⧸ Ideal.span S.toSet) + S.card := by
+  classical
+  induction' S using Finset.induction_on with a S nmem ih
+  · simp only [Finset.card_empty, CharP.cast_eq_zero, add_zero]
+    apply le_of_eq
+    rw [Finset.coe_empty, Ideal.span_empty]
+    exact RingEquiv.ringKrullDim (RingEquiv.quotientBot R).symm
+  · have sub : (S : Set R) ⊆ maximalIdeal R := fun x hx ↦ hS (Finset.mem_insert_of_mem hx)
+    have : Nontrivial (R ⧸ Ideal.span S.toSet) :=
+      Ideal.Quotient.nontrivial (ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (Ideal.span_le.mpr sub))
+    have lochom : IsLocalHom (Ideal.Quotient.mk (Ideal.span S.toSet)) :=
+      IsLocalHom.of_surjective _ (Ideal.Quotient.mk_surjective)
+    let _ : IsLocalRing (R ⧸ span S.toSet) :=
+      IsLocalRing.of_surjective _ Ideal.Quotient.mk_surjective
+    apply le_trans (ih sub)
+    simp only [Finset.card_insert_of_notMem nmem, Nat.cast_add, Nat.cast_one, add_comm _ 1,
+      ← add_assoc]
+    apply add_le_add_right
+    let f : R ⧸ span S.toSet →+* R ⧸ span (insert a S).toSet :=
+      Ideal.Quotient.factor (Ideal.span_mono (S.subset_insert a))
+    have surj : Function.Surjective f := Ideal.Quotient.factor_surjective _
+    have kereq : RingHom.ker f =
+      (Ideal.Quotient.mk (span S.toSet) a) • (⊤ : Ideal (R ⧸ span S.toSet)) := by
+      ext x
+      rcases Ideal.Quotient.mk_surjective x with ⟨y, hy⟩
+      simp only [← hy, RingHom.mem_ker, Quotient.factor_mk, f]
+      rw [← Submodule.ideal_span_singleton_smul, smul_eq_mul, mul_top,
+        Ideal.Quotient.eq_zero_iff_mem, ← mem_comap]
+      have : span {(Ideal.Quotient.mk (span S.toSet)) a} =
+        (span {a}).map (Ideal.Quotient.mk (span S.toSet)) := by simp [Ideal.map_span]
+      rw [this, Ideal.comap_map_of_surjective' _ Ideal.Quotient.mk_surjective, Ideal.mk_ker,
+        ← Ideal.span_union]
+      simp
+    let f' : (R ⧸ span S.toSet) ⧸ (Ideal.Quotient.mk (span S.toSet) a) •
+      (⊤ : Ideal (R ⧸ span S.toSet)) →+* R ⧸ span (insert a S).toSet :=
+      Ideal.Quotient.lift _ f (by simp [← kereq])
+    have bij : Function.Bijective f' := by
+      refine ⟨?_, Ideal.Quotient.lift_surjective_of_surjective _ _
+        (Ideal.Quotient.factor_surjective _)⟩
+      rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero]
+      intro x hx
+      rcases Ideal.Quotient.mk_surjective x with ⟨y, hy⟩
+      simp only [← hy, Ideal.Quotient.lift_mk, ← RingHom.mem_ker, kereq, f'] at hx
+      simpa [← hy, Ideal.Quotient.eq_zero_iff_mem] using hx
+    let e : (R ⧸ span S.toSet) ⧸ (Ideal.Quotient.mk (span S.toSet) a) •
+      (⊤ : Ideal (R ⧸ span S.toSet)) ≃+* R ⧸ span (insert a S).toSet :=
+      RingEquiv.ofBijective f' bij
+    rw [← ringKrullDim_eq_of_ringEquiv e]
+    apply ringKrullDim_le_ringKrullDim_quotSMulTop_succ
+    have := ((IsLocalRing.local_hom_TFAE _).out 0 4).mp lochom
+    simpa [← mem_comap, this] using hS (Finset.mem_insert_self a S)
+
 omit [IsNoetherianRing R] [IsLocalRing R] in
 /-- If $M$ is a finite module over a commutative ring $R$, $x \in M$ is not in any minimal prime of
   $M$, then $\dim M/xM + 1 \le \dim M$. -/
