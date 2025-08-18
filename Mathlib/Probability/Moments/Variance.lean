@@ -263,6 +263,13 @@ lemma variance_fun_sub [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 
     Var[fun ω ↦ X ω - Y ω; μ] = Var[X; μ] - 2 * cov[X, Y; μ] + Var[Y; μ] :=
   variance_sub hX hY
 
+/-- Polarization identity for the covariance and variance. -/
+lemma covariance_eq_variance_add_sub_div_two [IsFiniteMeasure μ]
+    (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
+    cov[X, Y; μ] = (Var[X + Y; μ] - Var[X; μ] - Var[Y; μ]) / 2 := by
+  rw [variance_add hX hY]
+  ring
+
 variable {ι : Type*} {s : Finset ι} {X : (i : ι) → Ω → ℝ}
 
 lemma variance_sum' [IsFiniteMeasure μ] (hX : ∀ i ∈ s, MemLp (X i) 2 μ) :
