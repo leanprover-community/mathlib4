@@ -63,11 +63,14 @@ jobs:
 
     - name: build mathlib (linarith)
       id: build-linarith
+      continue-on-error: true
       run: |
         delimiter=$(cat /proc/sys/kernel/random/uuid)
         echo "buildlog<<${delimiter}" >> $GITHUB_OUTPUT
         # Pipe to tee so we see the build results both on Zulip and in the log.
-        lake build | tee -a $GITHUB_OUTPUT
+        # Zulip gives us a max of 10 000 characters.
+        # We cut off the build log after 9000 characters so we can add some descriptive comments.
+        lake build | tee >(head --bytes=9000 >> $GITHUB_OUTPUT)
         echo "${delimiter}" >> $GITHUB_OUTPUT
 
     - name: Post output to Zulip (linarith)
@@ -100,11 +103,14 @@ jobs:
 
     - name: build mathlib (omega)
       id: build-omega
+      continue-on-error: true
       run: |
         delimiter=$(cat /proc/sys/kernel/random/uuid)
         echo "buildlog<<${delimiter}" >> $GITHUB_OUTPUT
         # Pipe to tee so we see the build results both on Zulip and in the log.
-        lake build | tee -a $GITHUB_OUTPUT
+        # Zulip gives us a max of 10 000 characters.
+        # We cut off the build log after 9000 characters so we can add some descriptive comments.
+        lake build | tee >(head --bytes=9000 >> $GITHUB_OUTPUT)
         echo "${delimiter}" >> $GITHUB_OUTPUT
 
     - name: Post output to Zulip (omega)
@@ -137,11 +143,14 @@ jobs:
 
     - name: build mathlib (ring)
       id: build-ring
+      continue-on-error: true
       run: |
         delimiter=$(cat /proc/sys/kernel/random/uuid)
         echo "buildlog<<${delimiter}" >> $GITHUB_OUTPUT
         # Pipe to tee so we see the build results both on Zulip and in the log.
-        lake build | tee -a $GITHUB_OUTPUT
+        # Zulip gives us a max of 10 000 characters.
+        # We cut off the build log after 9000 characters so we can add some descriptive comments.
+        lake build | tee >(head --bytes=9000 >> $GITHUB_OUTPUT)
         echo "${delimiter}" >> $GITHUB_OUTPUT
 
     - name: Remove GitHub problem matcher wrapper
