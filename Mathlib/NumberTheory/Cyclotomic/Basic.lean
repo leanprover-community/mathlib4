@@ -696,13 +696,13 @@ section CyclotomicRing
 /-- If `K` is an `A`-algebra, the `A`-algebra structure on `CyclotomicField n K`.
 -/
 instance CyclotomicField.algebraBase : Algebra A (CyclotomicField n K) :=
-  SplittingField.algebra' (cyclotomic n K)
+  SplittingField.instAlgebra (cyclotomic n K)
 
 /-- Ensure there are no diamonds when `A = ℤ` but there are `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906 -/
 example : Ring.toIntAlgebra (CyclotomicField n ℚ) = CyclotomicField.algebraBase _ _ _ := rfl
 
 instance {R : Type*} [CommRing R] [Algebra R K] : IsScalarTower R K (CyclotomicField n K) :=
-  SplittingField.isScalarTower _
+  SplittingField.instIsScalarTower _
 
 instance [IsFractionRing A K] : NoZeroSMulDivisors A (CyclotomicField n K) := by
   rw [NoZeroSMulDivisors.iff_faithfulSMul, faithfulSMul_iff_algebraMap_injective,

@@ -25,16 +25,9 @@ namespace Real
 /-- The type of angles -/
 def Angle : Type :=
   AddCircle (2 * π)
--- The `NormedAddCommGroup, Inhabited` instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
+deriving NormedAddCommGroup, Inhabited
 
 namespace Angle
-
-instance : NormedAddCommGroup Angle :=
-  inferInstanceAs (NormedAddCommGroup (AddCircle (2 * π)))
-
-instance : Inhabited Angle :=
-  inferInstanceAs (Inhabited (AddCircle (2 * π)))
 
 /-- The canonical map from `ℝ` to the quotient `Angle`. -/
 @[coe]
