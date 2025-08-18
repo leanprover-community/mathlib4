@@ -143,6 +143,17 @@ lemma G2_cauchy (z : ℍ) : CauchySeq (fun N : ℕ => ∑ m ∈ Icc (-N : ℤ) N
     -8 * π ^ 2 * ∑' (n : ℕ+), (σ 1 n) * cexp (2 * π * Complex.I * z) ^ (n : ℕ))
   simpa using G2_tendsto z
 
+lemma G2_q_exp (z : ℍ) : G2 z = (2 * riemannZeta 2)  - 8 * π ^ 2 *
+  ∑' n : ℕ+, sigma 1 n * cexp (2 * π * Complex.I * z) ^ (n : ℕ) := by
+  rw [G2, Filter.Tendsto.limUnder_eq]
+  conv =>
+    enter [1]
+    ext N
+    rw [G2_partial_sum_eq z N]
+  rw [sub_eq_add_neg]
+  apply Filter.Tendsto.add
+  · simp
+  · simpa using G2_tendsto z
 
 
 

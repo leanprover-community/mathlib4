@@ -407,6 +407,28 @@ theorem summable_norm_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : R}
   exact summable_norm_mul_geometric_of_norm_lt_one (k := k) (u := fun n ↦ n ^ k) hr
     (isBigO_refl _ _)
 
+lemma logDeriv_q_expo_summable {F : Type*} [NontriviallyNormedField F] [CompleteSpace F]
+    {r : F} (hr : ‖r‖ < 1) : Summable fun n : ℕ ↦ (n * r ^ n / (1 - r ^ n)) := by
+  have : Tendsto (fun n : ℕ => 1 - r ^ n) atTop (𝓝 1) := by
+    rw [show (1 : F) = 1 - 0 by ring]
+    apply Filter.Tendsto.sub (by simp) (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hr)
+  have h1 : Tendsto (fun n : ℕ => (1 : F)) atTop (𝓝 1) := by simp only [tendsto_const_nhds_iff]
+  have h2 := Filter.Tendsto.div h1 this (by simp)
+  simp only [ne_eq, one_ne_zero, not_false_eq_true, div_self, Metric.tendsto_atTop, gt_iff_lt,
+    ge_iff_le, Pi.div_apply, one_div, dist_eq_norm] at h2
+  apply Summable.of_norm_bounded_eventually_nat (g := fun n => 2 * ‖n * r ^ n‖)
+  · apply Summable.mul_left
+    simpa using (summable_norm_pow_mul_geometric_of_norm_lt_one 1 hr)
+  · simp only [norm_div, norm_mul, norm_pow, eventually_atTop, ge_iff_le]
+    obtain ⟨N, hN⟩ := h2 1 (by norm_num)
+    refine ⟨N, fun n hn ↦ ?_⟩
+    have := norm_lt_of_mem_ball (by rw [mem_ball_iff_norm]; apply hN n hn) (E := F)
+    simp only [tendsto_const_nhds_iff, norm_inv, norm_one, mul_comm, div_eq_mul_inv, ge_iff_le] at *
+    gcongr
+    apply le_trans this.le (by linarith)
+
+
+
 theorem summable_norm_geometric_of_norm_lt_one {r : R}
     (hr : ‖r‖ < 1) : Summable fun n : ℕ ↦ ‖(r ^ n : R)‖ := by
   simpa using summable_norm_pow_mul_geometric_of_norm_lt_one 0 hr

@@ -27,16 +27,9 @@ open Real Complex
 
 open scoped UpperHalfPlane
 
-/-- The UpperHalfPlane as a subset of `ℂ`. This is convinient for takind derivatives of functions
-on the upper half plane. -/
-abbrev complexUpperHalfPlane := {z : ℂ | 0 < z.im}
-
-local notation "ℍₒ" => complexUpperHalfPlane
-
-lemma complexUpperHalPlane_isOpen : IsOpen ℍₒ := by
-  exact (isOpen_lt continuous_const Complex.continuous_im)
-
 local notation "ℂ_ℤ" => integerComplement
+
+local notation "ℍₒ" => UpperHalfPlane.complexUpperHalfPlane
 
 lemma Complex.cot_eq_exp_ratio (z : ℂ) :
     cot z = (Complex.exp (2 * I * z) + 1) / (I * (1 - Complex.exp (2 * I * z))) := by
@@ -405,7 +398,7 @@ theorem iteratedDerivWithin_cot_sub_inv_eq_series_rep {k : ℕ} (hk : 1 ≤ k) (
 theorem iteratedDerivWithin_cot_pi_z_sub_inv (k : ℕ) (z : ℍ) :
     iteratedDerivWithin k (fun x ↦ π * Complex.cot (π * x) - 1 / x) ℍₒ z =
     (iteratedDerivWithin k (fun x ↦ π * Complex.cot (π * x)) ℍₒ z) -
-    (-1) ^ k * (k !) * ((z : ℂ) ^ (-1 - k : ℤ)) := by
+    (-1) ^ k * k ! * ((z : ℂ) ^ (-1 - k : ℤ)) := by
   simp_rw [sub_eq_add_neg]
   rw [iteratedDerivWithin_fun_add (by apply z.2) complexUpperHalPlane_isOpen.uniqueDiffOn]
   · simpa [iteratedDerivWithin_fun_neg] using iteratedDerivWithin_one_div k
@@ -417,7 +410,7 @@ theorem iteratedDerivWithin_cot_pi_z_sub_inv (k : ℕ) (z : ℍ) :
 
 theorem iteratedDerivWithin_cot_series_rep {k : ℕ} (hk : 1 ≤ k) (z : ℍ) :
     iteratedDerivWithin k (fun x ↦ π * Complex.cot (π * x)) ℍₒ z =
-    (-1) ^ k * (k : ℕ)! * ∑' n : ℤ, ((z : ℂ) + n) ^ (-1 - k : ℤ):= by
+    (-1) ^ k * k ! * ∑' n : ℤ, ((z : ℂ) + n) ^ (-1 - k : ℤ):= by
   have h0 := iteratedDerivWithin_cot_pi_z_sub_inv k z
   rw [iteratedDerivWithin_cot_sub_inv_eq_series_rep hk z, add_comm] at h0
   rw [← add_left_inj (-(-1) ^ k * ↑k ! * (z : ℂ) ^ (-1 - k : ℤ)), h0]
@@ -425,7 +418,7 @@ theorem iteratedDerivWithin_cot_series_rep {k : ℕ} (hk : 1 ≤ k) (z : ℍ) :
 
 theorem iteratedDerivWithin_cot_series_rep_one_div {k : ℕ} (hk : 1 ≤ k) (z : ℍ) :
     iteratedDerivWithin k (fun x ↦ π * Complex.cot (π * x)) ℍₒ z =
-    (-1) ^ k * (k : ℕ)! * ∑' n : ℤ, 1 / ((z : ℂ) + n) ^ (k + 1) := by
+    (-1) ^ k * k ! * ∑' n : ℤ, 1 / ((z : ℂ) + n) ^ (k + 1) := by
   simp only [iteratedDerivWithin_cot_series_rep hk z, Int.reduceNeg, one_div, mul_eq_mul_left_iff,
     mul_eq_zero, pow_eq_zero_iff', neg_eq_zero, one_ne_zero, ne_eq, Nat.cast_eq_zero,
     show -1 - (k : ℤ) = -(k + 1) by ring]
