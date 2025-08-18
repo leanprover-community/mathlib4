@@ -112,20 +112,22 @@ def _root_.Bool.toVarDecl : Bool → String
   | false => "X"
   | true => "X, ..."
 
-/-- An unambiguous term declaration, which is either an identifier or a term enclosed in brackets -/
-syntax term_decl := ident <|> ("(" term ")")
+/-- An unambiguous term declaration, which is `_`, an identifier, or a term enclosed in brackets -/
+syntax term_decl := hole <|> ident <|> ("(" term ")")
 
 /-- A type synonym for a term declaration, used to avoid ambiguity in the syntax. -/
 abbrev TermDecl : Type := TSyntax ``term_decl
 
 /-- Convert a `TermDecl` to a term. -/
 def _root_.Lean.TSyntax.term : TermDecl → Term
-  | `(term_decl| $k:ident) => { raw := k.raw }
+  | `(term_decl| $u:hole) => ⟨u.raw⟩
+  | `(term_decl| $k:ident) => ⟨k.raw⟩
   | `(term_decl| ($u:term)) => u
   | _ => default
 
 /-- Convert a `TermDecl` to a string. -/
 def _root_.Lean.TSyntax.rawTermDecl : TermDecl → String
+  | `(term_decl| $_:hole) => "_"
   | `(term_decl| $k:ident) => s!"{k.getId}"
   | `(term_decl| ($u:term)) => s!"({u.raw.prettyPrint.pretty'})"
   | _ => ""
@@ -193,11 +195,11 @@ def _root_.Lean.TSyntax.polyesqueNotation (p : PolyesqueNotation) : CoreM Body :
     | throwError s!"Unrecognised polynomial-like syntax: {opening} {mv?.toVarDecl} {closing}"
   return (n, v)
 
-/-- Create the type for a polynomial-like notation. -/
-def Body.mkType (b : Body) (type : Term) : CoreM Term :=
+/-- Create the functor for a polynomial-like notation, e.g. `[a,b]` gives `MvPolynomial (Fin 2)`. -/
+def Body.mkFunctor (b : Body) : CoreM Term :=
   match b.snd with
-  | Sum.inl _ => `($b.fst.type $type)
-  | Sum.inr ns => `($b.fst.type (Fin $(quote ns.size)) $type)
+  | Sum.inl _ => `($b.fst.type)
+  | Sum.inr ns => `($b.fst.type (Fin $(quote ns.size)))
 
 /-- Create the constant term for a polynomial-like notation. -/
 def Body.mkC (b : Body) (term : Term) : CoreM Term :=
@@ -247,14 +249,30 @@ name_poly_vars (Fin 37)[x,y,z][[t]]
 #check t
 #check (Fin 37)[x,y,z][[t]]
 ```
+
+Use `_` to declare it for all base rings. Usage:
+```lean
+name_poly_vars _[a,b,c,d]
+#check R[a,b,c,d]
+#check S[a,b,c,d]
+```
 -/
 syntax (name := declare) "name_poly_vars " polyesque : command
 
-/-- The table to store local polynomial-like notations, indexed by the raw string representation. -/
-abbrev Declared := Std.HashMap String Term
+/-- The table to store local polynomial-like notations, indexed by the raw string representation.
+If the head is a hole `_`, then the array of functors will be stored. Otherwise, we store the
+one resulting term.
+
+E.g. for `_[a,b][c]`, we store the array ``#[`(MvPolynomial (Fin 2)), `(Polynomial)]``;
+
+for `R[a,b][c]`, we store the one term `Polynomial (MvPolynomial (Fin 2) R))` -/
+abbrev Declared := Std.HashMap String (Term ⊕ Array Term)
 
 /-- The environmental extension to locally store polynomial-like notations. -/
-abbrev DeclaredExt := SimpleScopedEnvExtension (String × Term) Declared
+abbrev DeclaredExt := SimpleScopedEnvExtension (String × (Term ⊕ Array Term)) Declared
+
+@[local instance] def inhabitedSum {α β : Type _} [Inhabited α] : Inhabited (α ⊕ β) :=
+  ⟨.inl default⟩
 
 /-- Initialise the environmental extension to locally store polynomial-like notations. -/
 initialize declaredExt : DeclaredExt ← registerSimpleScopedEnvExtension <|
@@ -272,46 +290,61 @@ return the head (e.g. `(Fin 37)`), the raw body (e.g. `"[x,y,z][[t]]`"), the tot
 (e.g. `PowerSeries (MvPolynomial (Fin 3) (Fin 37))`), and the terms corresponding to each declared
 identifier (e.g. `x := PowerSeries.C (MvPolynomial.X 0)`). -/
 def _root_.Lean.TSyntax.parsePolyesqueFull (p : Polyesque) :
-    CoreM (String × String × Term × Array (Ident × Term)) := do
+    CoreM (String × String × Bool × Term × Array Term × Array (Ident × Term)) := do
   let `(polyesque| $head:term_decl$body:polyesque_notation*) := p
     | throwError m!"Unrecognised syntax: {p}"
+  have isHole : Bool := match head with
+    | `(term_decl| $_:hole) => true
+    | _ => false
   let mut type : Term := head.term
+  let mut funcs : Array Term := #[]
   let mut terms : Array (Ident × Term) := #[]
   let mut raw : String := ""
   for p in body do
     let b ← p.polyesqueNotation
-    type ← b.mkType type
+    let func ← b.mkFunctor
+    type ← `($func $type)
+    funcs := funcs ++ #[func]
     terms := (← terms.mapM fun it ↦ return (it.fst, ← b.mkC it.snd)) ++ (← b.mkX)
     raw := raw ++ b.raw
-  return (head.rawTermDecl, raw, type, terms)
+  return (head.rawTermDecl, raw, isHole, type, funcs, terms)
 
 /-- Elaborate the command `name_poly_vars`. -/
 @[command_elab declare]
 def elabDeclarePolyVars : CommandElab := fun stx => do
   let `(command|name_poly_vars $p:polyesque) := stx
     | throwError m!"Wrong command syntax: {stx}"
-  let (headStr, bodyStr, type, terms) ← liftCoreM p.parsePolyesqueFull
+  let (headStr, bodyStr, isHole, type, funcs, terms) ← liftCoreM p.parsePolyesqueFull
   have raw := headStr ++ bodyStr
   trace[«name_poly_vars»] m!"Declaring polynomial-like notation: {raw}"
   trace[«name_poly_vars»] m!"Result: {type}"
   trace[«name_poly_vars»] m!"Terms:"
   for (i, t) in terms do
     elabCommand <| ← `(command| local notation $(quote s!"{i.getId}"):str => ($t : $type))
-    trace[«name_poly_vars»] m!"  {i.getId} : {t}"
+    trace[«name_poly_vars»] m!"{i.getId} : {t}"
   elabCommand <| ← `(command| local syntax $(quote bodyStr):str : polyesque_declared)
-  declaredExt.add (raw, type) .local
+  declaredExt.add (raw, if isHole then Sum.inr funcs else Sum.inl type) .local
+
+/-- Retrieve the polynomial-like notation for a given head and body. -/
+def retrievePolyesque (head : TermDecl) (body : String) : Term.TermElabM Term := do
+  have d := declaredExt.getState (← getEnv)
+  match d.get? (head.rawTermDecl ++ body) with
+  | some (Sum.inl type) => return type
+  | some (Sum.inr funcs) => funcs.foldlM (fun type func ↦ `($func $type)) head.term
+  | none =>
+    match d.get? ("_" ++ body) with
+    | some (Sum.inl _) => throwError "unreachable"
+    | some (Sum.inr funcs) => funcs.foldlM (fun type func ↦ `($func $type)) head.term
+    | none => throwError m!"Undeclared polynomial-like notation: {head.rawTermDecl ++ body}"
 
 /-- Elaborate the later references to the polynomial-like notation, e.g. `(Fin 37)[x,y,z][[t]]`. -/
 @[term_elab polyesqueTerm]
 def polyesqueElab : Term.TermElab := fun stx e => do
   let `(polyesqueTerm| $head:term_decl$body:polyesque_declared) := stx
     | throwError m!"Unrecognised syntax: {stx}"
-  have raw := head.rawTermDecl ++ parseDeclared body
-  let .some type := (declaredExt.getState (← getEnv)).get? raw
-    | throwError m!"Undeclared polynomial-like notation: {raw}"
-  -- let .some type := (declaredExt.getState (← getEnv)).get? (head.rawTermDecl ++ body.getString)
-  --   | throwError m!"Undeclared polynomial-like notation: {raw}"
-  trace[«name_poly_vars»] m!"Retrieving polynomial-like notation: {raw}"
+  have bodyStr := parseDeclared body
+  trace[«name_poly_vars»] m!"Retrieving polynomial-like notation: {head.rawTermDecl ++ bodyStr}"
+  let type ← retrievePolyesque head bodyStr
   trace[«name_poly_vars»] m!"Result: {type}"
   Term.elabTerm type e
 
