@@ -44,11 +44,17 @@ instance of_isGalois [FiniteDimensional K L] [IsGalois K L] : IsGaloisGroup (L �
   commutes := inferInstance
   isInvariant := ⟨fun x ↦ (IsGalois.mem_bot_iff_fixed x).mpr⟩
 
-theorem card_eq_finrank [Finite G] [IsGaloisGroup G K L] : Nat.card G = Module.finrank K L := by
-  have : Fintype G := Fintype.ofFinite G
-  have : FaithfulSMul G L := faithful K
-  rw [← IntermediateField.finrank_bot', ← fixedPoints_eq_bot G, Nat.card_eq_fintype_card]
-  exact (FixedPoints.finrank_eq_card G L).symm
+theorem card_eq_finrank [IsGaloisGroup G K L] : Nat.card G = Module.finrank K L := by
+  rcases fintypeOrInfinite G with _ | hG
+  · have : FaithfulSMul G L := faithful K
+    rw [← IntermediateField.finrank_bot', ← fixedPoints_eq_bot G, Nat.card_eq_fintype_card]
+    exact (FixedPoints.finrank_eq_card G L).symm
+  · rw [Nat.card_eq_zero_of_infinite, eq_comm]
+    contrapose! hG
+    rw [not_infinite_iff_finite]
+    have : FiniteDimensional K L := FiniteDimensional.of_finrank_pos (Nat.zero_lt_of_ne_zero hG)
+    exact Finite.of_injective (MulSemiringAction.toAlgAut G K L)
+      (fun _ _ ↦ (faithful K).eq_of_smul_eq_smul ∘ DFunLike.ext_iff.mp)
 
 theorem finiteDimensional [Finite G] [IsGaloisGroup G K L] : FiniteDimensional K L :=
   FiniteDimensional.of_finrank_pos (card_eq_finrank G K L ▸ Nat.card_pos)
@@ -59,7 +65,7 @@ theorem finiteDimensional [Finite G] [IsGaloisGroup G K L] : FiniteDimensional K
     have := isGalois G K L
     have := finiteDimensional G K L
     rw [Nat.bijective_iff_injective_and_card, card_eq_finrank G K L,
-      Nat.card_eq_fintype_card, IsGalois.card_aut_eq_finrank K L]
+      IsGalois.card_aut_eq_finrank K L]
     exact ⟨fun _ _ ↦ (faithful K).eq_of_smul_eq_smul ∘ DFunLike.ext_iff.mp, rfl⟩)
 
 /-- If `G` and `H` are finite Galois groups for `L/K`, then `G` is isomorphic to `H`. -/

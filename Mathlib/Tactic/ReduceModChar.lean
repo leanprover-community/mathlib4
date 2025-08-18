@@ -69,7 +69,7 @@ def normBareNumeral {α : Q(Type u)} (n n' : Q(ℕ)) (pn : Q(IsNat «$n» «$n'�
 mutual
 
   /-- Given an expression of the form `a ^ b` in a ring of characteristic `n`, reduces `a`
-      modulo `n` recursively and then calculates `a ^ b` using fast modular exponentiation. -/
+  modulo `n` recursively and then calculates `a ^ b` using fast modular exponentiation. -/
   partial def normPow {α : Q(Type u)} (n n' : Q(ℕ)) (pn : Q(IsNat «$n» «$n'»)) (e : Q($α))
       (_ : Q(Ring $α)) (instCharP : Q(CharP $α $n)) : MetaM (Result e) := do
     let .app (.app (f : Q($α → ℕ → $α)) (a : Q($α))) (b : Q(ℕ)) ← whnfR e | failure
@@ -83,7 +83,7 @@ mutual
     return .isNat sα c q(CharP.isNat_pow (f := $f) $instCharP (.refl $f) $pa $pb $pn $r)
 
   /-- If `e` is of the form `a ^ b`, reduce it using fast modular exponentiation, otherwise
-      reduce it using `norm_num`. -/
+  reduce it using `norm_num`. -/
   partial def normIntNumeral' {α : Q(Type u)} (n n' : Q(ℕ)) (pn : Q(IsNat «$n» «$n'»))
       (e : Q($α)) (_ : Q(Ring $α)) (instCharP : Q(CharP $α $n)) : MetaM (Result e) :=
     normPow n n' pn e _ instCharP <|> normBareNumeral n n' pn e _ instCharP
@@ -91,10 +91,8 @@ mutual
 end
 
 lemma CharP.intCast_eq_mod (R : Type _) [Ring R] (p : ℕ) [CharP R p] (k : ℤ) :
-    (k : R) = (k % p : ℤ) := by
-  calc
-    (k : R) = ↑(k % p + p * (k / p)) := by rw [Int.emod_add_ediv]
-    _ = ↑(k % p) := by simp [CharP.cast_eq_zero R]
+    (k : R) = (k % p : ℤ) :=
+  CharP.intCast_eq_intCast_mod R p
 
 /-- Given an integral expression `e : t` such that `t` is a ring of characteristic `n`,
 reduce `e` modulo `n`. -/

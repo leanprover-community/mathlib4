@@ -46,7 +46,7 @@ universe w₁ w₂ v₁ v₂ u₁ u₂
 
 noncomputable section
 
-open CategoryTheory.Category
+open CategoryTheory.Category CategoryTheory.Functor
 
 open Opposite
 
@@ -89,7 +89,7 @@ private def liftToDiscrete {α : Type u₂} (F : J ⥤ Discrete α) : J ⥤ Disc
 /-- Implementation detail of `isoConstant`. -/
 private def factorThroughDiscrete {α : Type u₂} (F : J ⥤ Discrete α) :
     liftToDiscrete F ⋙ Discrete.functor F.obj ≅ F :=
-  NatIso.ofComponents (fun _ => eqToIso Function.apply_invFun_apply) (by aesop_cat)
+  NatIso.ofComponents (fun _ => eqToIso Function.apply_invFun_apply) (by cat_disch)
 
 end IsPreconnected.IsoConstantAux
 
@@ -198,13 +198,14 @@ theorem IsConnected.of_induct {j₀ : J}
     intro j j'
     rw [w j, w j']
 
+attribute [local instance] uliftCategory in
 /-- Lifting the universe level of morphisms and objects preserves connectedness. -/
 instance [hc : IsConnected J] : IsConnected (ULiftHom.{v₂} (ULift.{u₂} J)) := by
   apply IsConnected.of_induct
   · rintro p hj₀ h ⟨j⟩
     let p' : Set J := {j : J | p ⟨j⟩}
     have hj₀' : Classical.choice hc.is_nonempty ∈ p' := by
-      simp only [p', (eq_self p')]
+      simp only [p']
       exact hj₀
     apply induct_on_objects p' hj₀' fun f => h ((ULiftHomULiftCategory.equiv J).functor.map f)
 

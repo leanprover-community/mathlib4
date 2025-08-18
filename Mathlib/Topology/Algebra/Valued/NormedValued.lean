@@ -63,7 +63,7 @@ instance {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
     Valuation.RankOne (valuation (K := K)) where
   hom := .id _
   strictMono' := strictMono_id
-  nontrivial' := (exists_one_lt_norm K).imp fun x h ↦ by
+  exists_val_nontrivial := (exists_one_lt_norm K).imp fun x h ↦ by
     have h' : x ≠ 0 := norm_eq_zero.not.mp (h.gt.trans' (by simp)).ne'
     simp [valuation_apply, ← NNReal.coe_inj, h.ne', h']
 
@@ -126,7 +126,7 @@ def toNormedField : NormedField L :=
           use δ, hδ_pos
           apply subset_trans _ hε
           intro x hx
-          simp only [mem_setOf_eq, norm, hδ, NNReal.val_eq_coe, NNReal.coe_lt_coe] at hx
+          simp only [mem_setOf_eq, norm, hδ, NNReal.coe_lt_coe] at hx
           rw [mem_setOf, ← neg_sub, Valuation.map_neg]
           exact (RankOne.strictMono Valued.v).lt_iff_lt.mp hx
         · haveI : Nontrivial Γ₀ˣ := (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mpr
@@ -155,7 +155,7 @@ section NormedField
 
 open scoped Valued
 
-protected lemma isNonarchimedean_norm : IsNonarchimedean ((‖·‖): L → ℝ) := Valued.norm_add_le
+protected lemma isNonarchimedean_norm : IsNonarchimedean ((‖·‖) : L → ℝ) := Valued.norm_add_le
 
 instance : IsUltrametricDist L :=
   ⟨fun x y z ↦ by
@@ -197,12 +197,17 @@ theorem one_le_norm_iff : 1 ≤ ‖x‖ ↔ 1 ≤ val.v x := by
 theorem one_lt_norm_iff : 1 < ‖x‖ ↔ 1 < val.v x := by
   simpa only [map_one] using (Valuation.RankOne.strictMono val.v).lt_iff_lt (a := 1)
 
+lemma setOf_mem_integer_eq_closedBall :
+    { x : L | x ∈ Valued.v.integer } = Metric.closedBall 0 1 := by
+  ext x
+  simp [mem_integer_iff]
+
 end toNormedField
 
 /--
 The nontrivially normed field structure determined by a rank one valuation.
 -/
-def toNontriviallyNormedField: NontriviallyNormedField L := {
+def toNontriviallyNormedField : NontriviallyNormedField L := {
   val.toNormedField with
   non_trivial := by
     obtain ⟨x, hx⟩ := Valuation.RankOne.nontrivial val.v

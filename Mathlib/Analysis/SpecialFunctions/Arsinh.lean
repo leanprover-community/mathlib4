@@ -70,7 +70,7 @@ theorem arsinh_neg (x : ℝ) : arsinh (-x) = -arsinh x := by
 /-- `arsinh` is the right inverse of `sinh`. -/
 @[simp]
 theorem sinh_arsinh (x : ℝ) : sinh (arsinh x) = x := by
-  rw [sinh_eq, ← arsinh_neg, exp_arsinh, exp_arsinh, neg_sq]; field_simp
+  rw [sinh_eq, ← arsinh_neg, exp_arsinh, exp_arsinh, neg_sq]; simp
 
 @[simp]
 theorem cosh_arsinh (x : ℝ) : cosh (arsinh x) = √(1 + x ^ 2) := by

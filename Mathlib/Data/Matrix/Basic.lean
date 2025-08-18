@@ -28,12 +28,12 @@ Under various conditions, multiplication of infinite matrices makes sense.
 These have not yet been implemented.
 -/
 
-assert_not_exists Star
+assert_not_exists TrivialStar
 
 universe u u' v w
 
 variable {l m n o : Type*} {m' : o → Type*} {n' : o → Type*}
-variable {R : Type*} {S : Type*} {α : Type v} {β : Type w} {γ : Type*}
+variable {R : Type*} {S : Type*} {T : Type*} {α : Type v} {β : Type w} {γ : Type*}
 
 namespace Matrix
 
@@ -221,7 +221,7 @@ instance instAlgebra : Algebra R (Matrix n n α) where
 theorem algebraMap_matrix_apply {r : R} {i j : n} :
     algebraMap R (Matrix n n α) r i j = if i = j then algebraMap R α r else 0 := by
   dsimp [algebraMap, Algebra.algebraMap, Matrix.scalar]
-  split_ifs with h <;> simp [h, Matrix.one_apply_ne]
+  split_ifs with h <;> simp [h]
 
 theorem algebraMap_eq_diagonal (r : R) :
     algebraMap R (Matrix n n α) r = diagonal (algebraMap R (n → α) r) := rfl
@@ -296,7 +296,7 @@ lemma entryAddMonoidHom_eq_comp {i : m} {j : n} :
   simp [AddMonoidHom.ext_iff]
 
 @[simp] lemma entryAddMonoidHom_toAddHom {i : m} {j : n} :
-  (entryAddMonoidHom α i j : AddHom _ _) = entryAddHom α i j := rfl
+    (entryAddMonoidHom α i j : AddHom _ _) = entryAddHom α i j := rfl
 
 end AddMonoidHom
 
@@ -428,40 +428,48 @@ end AddEquiv
 
 namespace LinearMap
 
-variable [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [AddCommMonoid γ]
-variable [Module R α] [Module R β] [Module R γ]
+variable [Semiring R] [Semiring S] [Semiring T]
+variable [AddCommMonoid α] [AddCommMonoid β] [AddCommMonoid γ]
+variable [Module R α] [Module S β] [Module T γ]
+variable {σᵣₛ : R →+* S} {σₛₜ : S →+* T} {σᵣₜ : R →+* T} [RingHomCompTriple σᵣₛ σₛₜ σᵣₜ]
 
 /-- The `LinearMap` between spaces of matrices induced by a `LinearMap` between their
 coefficients. This is `Matrix.map` as a `LinearMap`. -/
 @[simps]
-def mapMatrix (f : α →ₗ[R] β) : Matrix m n α →ₗ[R] Matrix m n β where
+def mapMatrix (f : α →ₛₗ[σᵣₛ] β) : Matrix m n α →ₛₗ[σᵣₛ] Matrix m n β where
   toFun M := M.map f
   map_add' := Matrix.map_add f f.map_add
-  map_smul' r := Matrix.map_smul f r (f.map_smul r)
+  map_smul' r := Matrix.map_smulₛₗ f _ r (f.map_smulₛₗ r)
 
 @[simp]
 theorem mapMatrix_id : LinearMap.id.mapMatrix = (LinearMap.id : Matrix m n α →ₗ[R] _) :=
   rfl
 
 @[simp]
-theorem mapMatrix_comp (f : β →ₗ[R] γ) (g : α →ₗ[R] β) :
-    f.mapMatrix.comp g.mapMatrix = ((f.comp g).mapMatrix : Matrix m n α →ₗ[R] _) :=
+theorem mapMatrix_comp (f : β →ₛₗ[σₛₜ] γ) (g : α →ₛₗ[σᵣₛ] β) :
+    f.mapMatrix.comp g.mapMatrix = ((f.comp g).mapMatrix : Matrix m n α →ₛₗ[_] _) :=
   rfl
 
-@[simp] lemma entryLinearMap_comp_mapMatrix (f : α →ₗ[R] β) (i : m) (j : n) :
-    entryLinearMap R _ i j ∘ₗ f.mapMatrix = f ∘ₗ entryLinearMap R _ i j := rfl
+@[simp] lemma entryLinearMap_comp_mapMatrix (f : α →ₛₗ[σᵣₛ] β) (i : m) (j : n) :
+    (entryLinearMap S _ i j).comp f.mapMatrix = f.comp (entryLinearMap R _ i j) := rfl
 
 end LinearMap
 
 namespace LinearEquiv
 
-variable [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [AddCommMonoid γ]
-variable [Module R α] [Module R β] [Module R γ]
+variable [Semiring R] [Semiring S] [Semiring T]
+variable [AddCommMonoid α] [AddCommMonoid β] [AddCommMonoid γ]
+variable [Module R α] [Module S β] [Module T γ]
+variable {σᵣₛ : R →+* S} {σₛₜ : S →+* T} {σᵣₜ : R →+* T} [RingHomCompTriple σᵣₛ σₛₜ σᵣₜ]
+variable {σₛᵣ : S →+* R} {σₜₛ : T →+* S} {σₜᵣ : T →+* R} [RingHomCompTriple σₜₛ σₛᵣ σₜᵣ]
+variable [RingHomInvPair σᵣₛ σₛᵣ] [RingHomInvPair σₛᵣ σᵣₛ]
+variable [RingHomInvPair σₛₜ σₜₛ] [RingHomInvPair σₜₛ σₛₜ]
+variable [RingHomInvPair σᵣₜ σₜᵣ] [RingHomInvPair σₜᵣ σᵣₜ]
 
 /-- The `LinearEquiv` between spaces of matrices induced by a `LinearEquiv` between their
 coefficients. This is `Matrix.map` as a `LinearEquiv`. -/
 @[simps apply]
-def mapMatrix (f : α ≃ₗ[R] β) : Matrix m n α ≃ₗ[R] Matrix m n β :=
+def mapMatrix (f : α ≃ₛₗ[σᵣₛ] β) : Matrix m n α ≃ₛₗ[σᵣₛ] Matrix m n β :=
   { f.toEquiv.mapMatrix,
     f.toLinearMap.mapMatrix with
     toFun := fun M => M.map f
@@ -472,22 +480,22 @@ theorem mapMatrix_refl : (LinearEquiv.refl R α).mapMatrix = LinearEquiv.refl R 
   rfl
 
 @[simp]
-theorem mapMatrix_symm (f : α ≃ₗ[R] β) :
-    f.mapMatrix.symm = (f.symm.mapMatrix : Matrix m n β ≃ₗ[R] _) :=
+theorem mapMatrix_symm (f : α ≃ₛₗ[σᵣₛ] β) :
+    f.mapMatrix.symm = (f.symm.mapMatrix : Matrix m n β ≃ₛₗ[_] _) :=
   rfl
 
 @[simp]
-theorem mapMatrix_trans (f : α ≃ₗ[R] β) (g : β ≃ₗ[R] γ) :
-    f.mapMatrix.trans g.mapMatrix = ((f.trans g).mapMatrix : Matrix m n α ≃ₗ[R] _) :=
+theorem mapMatrix_trans (f : α ≃ₛₗ[σᵣₛ] β) (g : β ≃ₛₗ[σₛₜ] γ) :
+    f.mapMatrix.trans g.mapMatrix = ((f.trans g).mapMatrix : Matrix m n α ≃ₛₗ[_] _) :=
   rfl
 
-@[simp] lemma mapMatrix_toLinearMap (f : α ≃ₗ[R] β) :
-    (f.mapMatrix : _ ≃ₗ[R] Matrix m n β).toLinearMap = f.toLinearMap.mapMatrix := by
+@[simp] lemma mapMatrix_toLinearMap (f : α ≃ₛₗ[σᵣₛ] β) :
+    (f.mapMatrix : _ ≃ₛₗ[_] Matrix m n β).toLinearMap = f.toLinearMap.mapMatrix := by
   rfl
 
-@[simp] lemma entryLinearMap_comp_mapMatrix (f : α ≃ₗ[R] β) (i : m) (j : n) :
-    entryLinearMap R _ i j ∘ₗ f.mapMatrix.toLinearMap =
-      f.toLinearMap ∘ₗ entryLinearMap R _ i j := by
+lemma entryLinearMap_comp_mapMatrix (f : α ≃ₛₗ[σᵣₛ] β) (i : m) (j : n) :
+    (entryLinearMap S _ i j).comp f.mapMatrix.toLinearMap =
+      f.toLinearMap.comp (entryLinearMap R _ i j) := by
   simp only [mapMatrix_toLinearMap, LinearMap.entryLinearMap_comp_mapMatrix]
 
 end LinearEquiv
@@ -622,6 +630,80 @@ we can get rid of the `ᵒᵖ` in the left-hand side, see `Matrix.transposeAlgEq
     ext; simp [algebraMap_matrix_apply, eq_comm, apply_ite MulOpposite.unop]
 
 end AlgEquiv
+
+namespace AddSubmonoid
+
+variable {A : Type*} [AddMonoid A]
+
+/-- A version of `Set.matrix` for `AddSubmonoid`s.
+Given an `AddSubmonoid` `S`, `S.matrix` is the `AddSubmonoid` of matrices `m`
+all of whose entries `m i j` belong to `S`. -/
+@[simps]
+def matrix (S : AddSubmonoid A) : AddSubmonoid (Matrix m n A) where
+  carrier := Set.matrix S
+  add_mem' hm hn i j := add_mem (hm i j) (hn i j)
+  zero_mem' _ _ := zero_mem _
+
+end AddSubmonoid
+
+namespace AddSubgroup
+
+variable {A : Type*} [AddGroup A]
+
+/-- A version of `Set.matrix` for `AddSubgroup`s.
+Given an `AddSubgroup` `S`, `S.matrix` is the `AddSubgroup` of matrices `m`
+all of whose entries `m i j` belong to `S`. -/
+@[simps!]
+def matrix (S : AddSubgroup A) : AddSubgroup (Matrix m n A) where
+  __ := S.toAddSubmonoid.matrix
+  neg_mem' hm i j := AddSubgroup.neg_mem _ (hm i j)
+
+end AddSubgroup
+
+namespace Subsemiring
+
+variable {R : Type*} [NonAssocSemiring R]
+variable [Fintype n] [DecidableEq n]
+
+/-- A version of `Set.matrix` for `Subsemiring`s.
+Given a `Subsemiring` `S`, `S.matrix` is the `Subsemiring` of square matrices `m`
+all of whose entries `m i j` belong to `S`. -/
+@[simps!]
+def matrix (S : Subsemiring R) : Subsemiring (Matrix n n R) where
+  __ := S.toAddSubmonoid.matrix
+  mul_mem' ha hb i j := Subsemiring.sum_mem _ (fun k _ => Subsemiring.mul_mem _ (ha i k) (hb k j))
+  one_mem' := (diagonal_mem_matrix_iff (Subsemiring.zero_mem _)).mpr fun _ => Subsemiring.one_mem _
+
+end Subsemiring
+
+namespace Subring
+
+variable {R : Type*} [Ring R]
+variable [Fintype n] [DecidableEq n]
+
+/-- A version of `Set.matrix` for `Subring`s.
+Given a `Subring` `S`, `S.matrix` is the `Subring` of square matrices `m`
+all of whose entries `m i j` belong to `S`. -/
+@[simps!]
+def matrix (S : Subring R) : Subring (Matrix n n R) where
+  __ := S.toSubsemiring.matrix
+  neg_mem' hm i j := Subring.neg_mem _ (hm i j)
+
+end Subring
+
+namespace Submodule
+
+variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+
+/-- A version of `Set.matrix` for `Submodule`s.
+Given a `Submodule` `S`, `S.matrix` is the `Submodule` of matrices `m`
+all of whose entries `m i j` belong to `S`. -/
+@[simps!]
+def matrix (S : Submodule R M) : Submodule R (Matrix m n M) where
+  __ := S.toAddSubmonoid.matrix
+  smul_mem' _ _ hm i j := Submodule.smul_mem _ _ (hm i j)
+
+end Submodule
 
 open Matrix
 

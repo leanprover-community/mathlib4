@@ -22,36 +22,12 @@ open Filter Function Set Topology
 
 variable {X Y W Z : Type*}
 
-namespace Homeomorph
+section
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace W] [TopologicalSpace Z]
   {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
 
-/-- Homeomorphism given an embedding. -/
-@[simps! apply_coe]
-noncomputable def _root_.Topology.IsEmbedding.toHomeomorph {f : X → Y} (hf : IsEmbedding f) :
-    X ≃ₜ Set.range f :=
-  Equiv.ofInjective f hf.injective |>.toHomeomorphOfIsInducing <|
-    IsInducing.subtypeVal.of_comp_iff.mp hf.toIsInducing
-
-@[deprecated (since := "2025-04-16")]
-alias ofIsEmbedding := IsEmbedding.toHomeomorph
-
-@[deprecated (since := "2024-10-26")]
-alias ofEmbedding := IsEmbedding.toHomeomorph
-
-/-- A surjective embedding is a homeomorphism. -/
-@[simps! apply]
-noncomputable def _root_.Topology.IsEmbedding.toHomeomorphOfSurjective {f : X → Y}
-    (hf : IsEmbedding f) (hsurj : Function.Surjective f) : X ≃ₜ Y :=
-  Equiv.ofBijective f ⟨hf.injective, hsurj⟩ |>.toHomeomorphOfIsInducing hf.toIsInducing
-
-@[deprecated (since := "2025-04-16")]
-alias _root_.Topology.IsEmbedding.toHomeomorph_of_surjective :=
-  IsEmbedding.toHomeomorphOfSurjective
-
-@[deprecated (since := "2024-10-26")]
-alias _root_.Embedding.toHomeomeomorph_of_surjective := IsEmbedding.toHomeomorphOfSurjective
+namespace Homeomorph
 
 protected theorem secondCountableTopology [SecondCountableTopology Y]
     (h : X ≃ₜ Y) : SecondCountableTopology X :=
@@ -197,6 +173,26 @@ def setCongr {s t : Set X} (h : s = t) : s ≃ₜ t where
   toEquiv := Equiv.setCongr h
 
 section prod
+
+variable (X Y W Z)
+
+/-- `X × {*}` is homeomorphic to `X`. -/
+@[simps! symm_apply_snd]
+def prodUnique [Unique Y] :
+    X × Y ≃ₜ X where
+  toEquiv := Equiv.prodUnique X Y
+  continuous_toFun := continuous_fst
+  continuous_invFun := continuous_id.prodMk continuous_const
+
+@[simp] theorem coe_prodUnique [Unique Y] : ⇑(prodUnique X Y) = Prod.fst := rfl
+
+/-- `X × {*}` is homeomorphic to `X`. -/
+@[simps! symm_apply_snd]
+def uniqueProd (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] [Unique X] :
+    X × Y ≃ₜ Y :=
+  (prodComm _ _).trans (prodUnique Y X)
+
+@[simp] theorem coe_uniqueProd [Unique X] : ⇑(uniqueProd X Y) = Prod.snd := rfl
 
 /-- The product over `S ⊕ T` of a family of topological spaces
 is homeomorphic to the product of (the product over `S`) and (the product over `T`).
@@ -420,6 +416,35 @@ end
 
 end Homeomorph
 
+namespace Topology.IsEmbedding
+
+/-- Homeomorphism given an embedding. -/
+@[simps! apply_coe]
+noncomputable def toHomeomorph {f : X → Y} (hf : IsEmbedding f) :
+    X ≃ₜ Set.range f :=
+  Equiv.ofInjective f hf.injective |>.toHomeomorphOfIsInducing <|
+    IsInducing.subtypeVal.of_comp_iff.mp hf.toIsInducing
+
+@[deprecated (since := "2025-04-16")]
+alias _root_.Homeomorph.ofIsEmbedding := toHomeomorph
+
+/-- A surjective embedding is a homeomorphism. -/
+@[simps! apply]
+noncomputable def toHomeomorphOfSurjective {f : X → Y}
+    (hf : IsEmbedding f) (hsurj : Function.Surjective f) : X ≃ₜ Y :=
+  Equiv.ofBijective f ⟨hf.injective, hsurj⟩ |>.toHomeomorphOfIsInducing hf.toIsInducing
+
+@[deprecated (since := "2025-04-16")]
+alias toHomeomorph_of_surjective := toHomeomorphOfSurjective
+
+/-- A set is homeomorphic to its image under any embedding. -/
+noncomputable def homeomorphImage {f : X → Y} (hf : IsEmbedding f) (s : Set X) : s ≃ₜ f '' s :=
+  (hf.comp .subtypeVal).toHomeomorph.trans <| .setCongr <| by simp [Set.range_comp]
+
+end Topology.IsEmbedding
+
+end
+
 namespace Continuous
 
 variable [TopologicalSpace X] [TopologicalSpace Y]
@@ -456,7 +481,7 @@ variable (f) in
 noncomputable def homeomorph : X ≃ₜ Y where
   continuous_toFun := hf.1
   continuous_invFun := by
-    rw [continuous_iff_continuousOn_univ, ← hf.bijective.2.range_eq]
+    rw [← continuousOn_univ, ← hf.bijective.2.range_eq]
     exact hf.isOpenMap.continuousOn_range_of_leftInverse (leftInverse_surjInv hf.bijective)
   toEquiv := Equiv.ofBijective f hf.bijective
 
@@ -467,14 +492,6 @@ lemma isEmbedding : IsEmbedding f := (hf.homeomorph f).isEmbedding
 lemma isOpenEmbedding : IsOpenEmbedding f := (hf.homeomorph f).isOpenEmbedding
 lemma isClosedEmbedding : IsClosedEmbedding f := (hf.homeomorph f).isClosedEmbedding
 lemma isDenseEmbedding : IsDenseEmbedding f := (hf.homeomorph f).isDenseEmbedding
-
-@[deprecated (since := "2024-10-28")] alias inducing := isInducing
-
-@[deprecated (since := "2024-10-26")]
-alias embedding := isEmbedding
-
-@[deprecated (since := "2024-10-22")]
-alias quotientMap := isQuotientMap
 
 end IsHomeomorph
 
@@ -496,11 +513,8 @@ lemma isHomeomorph_iff_isEmbedding_surjective : IsHomeomorph f ↔ IsEmbedding f
   mpr h := ⟨h.1.continuous, ((isOpenEmbedding_iff f).2 ⟨h.1, h.2.range_eq ▸ isOpen_univ⟩).isOpenMap,
     h.1.injective, h.2⟩
 
-@[deprecated (since := "2024-10-26")]
-alias isHomeomorph_iff_embedding_surjective := isHomeomorph_iff_isEmbedding_surjective
-
 /-- A map is a homeomorphism iff it is continuous, closed and bijective. -/
-lemma isHomeomorph_iff_continuous_isClosedMap_bijective  : IsHomeomorph f ↔
+lemma isHomeomorph_iff_continuous_isClosedMap_bijective : IsHomeomorph f ↔
     Continuous f ∧ IsClosedMap f ∧ Function.Bijective f :=
   ⟨fun hf => ⟨hf.continuous, hf.isClosedMap, hf.bijective⟩, fun ⟨hf, hf', hf''⟩ =>
     ⟨hf, fun _ hu => isClosed_compl_iff.1 (image_compl_eq hf'' ▸ hf' _ hu.isClosed_compl), hf''⟩⟩

@@ -80,11 +80,7 @@ variable [hT : Fact (0 < T)]
 /-- Haar measure on the additive circle, normalised to have total measure 1. -/
 def haarAddCircle : Measure (AddCircle T) :=
   addHaarMeasure ⊤
-
--- The `IsAddHaarMeasure` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-instance : IsAddHaarMeasure (@haarAddCircle T _) :=
-  Measure.isAddHaarMeasure_addHaarMeasure ⊤
+deriving IsAddHaarMeasure
 
 instance : IsProbabilityMeasure (@haarAddCircle T _) :=
   IsProbabilityMeasure.mk addHaarMeasure_self
@@ -184,7 +180,7 @@ theorem fourier_add_half_inv_index {n : ℤ} (hn : n ≠ 0) (hT : 0 < T) (x : Ad
 def fourierSubalgebra : StarSubalgebra ℂ C(AddCircle T, ℂ) where
   toSubalgebra := Algebra.adjoin ℂ (range fourier)
   star_mem' := by
-    show Algebra.adjoin ℂ (range (fourier (T := T))) ≤
+    change Algebra.adjoin ℂ (range (fourier (T := T))) ≤
       star (Algebra.adjoin ℂ (range (fourier (T := T))))
     refine adjoin_le ?_
     rintro - ⟨n, rfl⟩
@@ -356,7 +352,7 @@ section FourierL2
 /-- We define `fourierBasis` to be a `ℤ`-indexed Hilbert basis for `Lp ℂ 2 haarAddCircle`,
 which by definition is an isometric isomorphism from `Lp ℂ 2 haarAddCircle` to `ℓ²(ℤ, ℂ)`. -/
 def fourierBasis : HilbertBasis ℤ ℂ (Lp ℂ 2 <| @haarAddCircle T hT) :=
-  HilbertBasis.mk orthonormal_fourier (span_fourierLp_closure_eq_top (by norm_num)).ge
+  HilbertBasis.mk orthonormal_fourier (span_fourierLp_closure_eq_top (by simp)).ge
 
 /-- The elements of the Hilbert basis `fourierBasis` are the functions `fourierLp 2`, i.e. the
 monomials `fourier n` on the circle considered as elements of `L²`. -/

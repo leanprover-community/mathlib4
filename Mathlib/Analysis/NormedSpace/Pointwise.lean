@@ -366,8 +366,6 @@ theorem smul_closedBall (c : 𝕜) (x : E) {r : ℝ} (hr : 0 ≤ r) :
 theorem smul_unitClosedBall (c : 𝕜) : c • closedBall (0 : E) (1 : ℝ) = closedBall (0 : E) ‖c‖ := by
   rw [_root_.smul_closedBall _ _ zero_le_one, smul_zero, mul_one]
 
-@[deprecated (since := "2024-12-01")] alias smul_closedUnitBall := smul_unitClosedBall
-
 variable [NormedSpace ℝ E]
 
 /-- In a real normed space, the image of the unit closed ball under multiplication by a nonnegative
@@ -375,23 +373,6 @@ number `r` is the closed ball of radius `r` with center at the origin. -/
 theorem smul_unitClosedBall_of_nonneg {r : ℝ} (hr : 0 ≤ r) :
     r • closedBall (0 : E) 1 = closedBall (0 : E) r := by
   rw [smul_unitClosedBall, Real.norm_of_nonneg hr]
-
-@[deprecated (since := "2024-12-01")]
-alias smul_closedUnitBall_of_nonneg := smul_unitClosedBall_of_nonneg
-
-/-- In a nontrivial real normed space, a sphere is nonempty if and only if its radius is
-nonnegative. -/
-@[simp]
-theorem NormedSpace.sphere_nonempty [Nontrivial E] {x : E} {r : ℝ} :
-    (sphere x r).Nonempty ↔ 0 ≤ r := by
-  obtain ⟨y, hy⟩ := exists_ne x
-  refine ⟨fun h => nonempty_closedBall.1 (h.mono sphere_subset_closedBall), fun hr =>
-    ⟨r • ‖y - x‖⁻¹ • (y - x) + x, ?_⟩⟩
-  have : ‖y - x‖ ≠ 0 := by simpa [sub_eq_zero]
-  simp only [mem_sphere_iff_norm, add_sub_cancel_right, norm_smul, Real.norm_eq_abs, norm_inv,
-    norm_norm, ne_eq, norm_eq_zero]
-  simp only [abs_norm, ne_eq, norm_eq_zero]
-  rw [inv_mul_cancel₀ this, mul_one, abs_eq_self.mpr hr]
 
 theorem smul_sphere [Nontrivial E] (c : 𝕜) (x : E) {r : ℝ} (hr : 0 ≤ r) :
     c • sphere x r = sphere (c • x) (‖c‖ * r) := by

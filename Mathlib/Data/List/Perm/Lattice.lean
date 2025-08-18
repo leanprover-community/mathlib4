@@ -30,14 +30,14 @@ theorem Perm.bagInter_right {l₁ l₂ : List α} (t : List α) (h : l₁ ~ l₂
     l₁.bagInter t ~ l₂.bagInter t := by
   induction h generalizing t with
   | nil => simp
-  | cons x => by_cases x ∈ t <;> simp [*, Perm.cons]
+  | cons x => by_cases x ∈ t <;> simp [*]
   | swap x y =>
     by_cases h : x = y
     · simp [h]
     by_cases xt : x ∈ t <;> by_cases yt : y ∈ t
     · simp [xt, yt, mem_erase_of_ne h, mem_erase_of_ne (Ne.symm h), erase_comm, swap]
-    · simp [xt, yt, mt mem_of_mem_erase, Perm.cons]
-    · simp [xt, yt, mt mem_of_mem_erase, Perm.cons]
+    · simp [xt, yt, mt mem_of_mem_erase]
+    · simp [xt, yt, mt mem_of_mem_erase]
     · simp [xt, yt]
   | trans _ _ ih_1 ih_2 => exact (ih_1 _).trans (ih_2 _)
 

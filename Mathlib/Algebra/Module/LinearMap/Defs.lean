@@ -51,7 +51,7 @@ linear map
 -/
 
 
-assert_not_exists Star DomMulAct Pi.module WCovBy.image Field
+assert_not_exists TrivialStar DomMulAct Pi.module WCovBy.image Field
 
 open Function
 
@@ -581,8 +581,8 @@ instance CompatibleSMul.intModule {S : Type*} [Semiring S] [Module S M] [Module 
   ⟨fun fₗ c x ↦ by
     induction c with
     | zero => simp
-    | succ n ih => simp [add_smul, ih]
-    | pred n ih => simp [sub_smul, ih]⟩
+    | succ n ih => simp [add_smul]
+    | pred n ih => simp [sub_smul]⟩
 
 instance CompatibleSMul.units {R S : Type*} [Monoid R] [MulAction R M] [MulAction R M₂]
     [Semiring S] [Module S M] [Module S M₂] [CompatibleSMul M M₂ R S] : CompatibleSMul M M₂ Rˣ S :=
@@ -611,17 +611,7 @@ variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
 variable [Semiring R] [Module R M] [Semiring S] [Module S M₂] [Module R M₃]
 variable {σ : R →+* S}
 
-/-- A `DistribMulActionHom` between two modules is a linear map. -/
-@[deprecated "No deprecation message was provided." (since := "2024-11-08")]
-def toSemilinearMap (fₗ : M →ₑ+[σ.toMonoidHom] M₂) : M →ₛₗ[σ] M₂ :=
-  { fₗ with }
-
 instance : SemilinearMapClass (M →ₑ+[σ.toMonoidHom] M₂) σ M M₂ where
-
-/-- A `DistribMulActionHom` between two modules is a linear map. -/
-@[deprecated "No deprecation message was provided." (since := "2024-11-08")]
-def toLinearMap (fₗ : M →+[R] M₃) : M →ₗ[R] M₃ :=
-  { fₗ with }
 
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
 instance : LinearMapClass (M →+[R] M₃) R M M₃ where
@@ -700,6 +690,11 @@ theorem AddMonoidHom.toNatLinearMap_injective [AddCommMonoid M] [AddCommMonoid M
   intro f g h
   ext x
   exact LinearMap.congr_fun h x
+
+@[simp]
+theorem AddMonoidHom.coe_toNatLinearMap [AddCommMonoid M] [AddCommMonoid M₂] (f : M →+ M₂) :
+    ⇑f.toNatLinearMap = f :=
+  rfl
 
 /-- Reinterpret an additive homomorphism as a `ℤ`-linear map. -/
 def AddMonoidHom.toIntLinearMap [AddCommGroup M] [AddCommGroup M₂] (f : M →+ M₂) : M →ₗ[ℤ] M₂ where
@@ -855,7 +850,7 @@ instance : Sub (M →ₛₗ[σ₁₂] N₂) :=
   ⟨fun f g ↦
     { toFun := f - g
       map_add' := fun x y ↦ by simp only [Pi.sub_apply, map_add, add_sub_add_comm]
-      map_smul' := fun r x ↦ by simp [Pi.sub_apply, map_smul, smul_sub] }⟩
+      map_smul' := fun r x ↦ by simp [Pi.sub_apply, smul_sub] }⟩
 
 @[simp]
 theorem sub_apply (f g : M →ₛₗ[σ₁₂] N₂) (x : M) : (f - g) x = f x - g x :=
@@ -968,7 +963,7 @@ theorem restrictScalars_smul (c : R₁) (f : M →ₗ[S] N) :
 @[simp]
 lemma restrictScalars_comp [AddCommMonoid P] [Module S P] [Module R P]
     [CompatibleSMul N P R S] [CompatibleSMul M P R S] (f : N →ₗ[S] P) (g : M →ₗ[S] N) :
-    (f ∘ₗ g).restrictScalars R = f.restrictScalars R ∘ₗ g.restrictScalars R := by
+    (f ∘ₗ g).restrictScalars R = f.restrictScalars R ∘ₗ g.restrictScalars R :=
   rfl
 
 @[simp]
