@@ -575,7 +575,8 @@ section Singleton
 variable {ι 𝕜 E : Type*} [Unique ι] [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 variable (ι 𝕜) in
-/-- `OrthonormalBasis.singleton ι 𝕜` is the basis sending the unique element of `ι` to `1 : 𝕜`. -/
+/-- `OrthonormalBasis.singleton ι 𝕜` is the orthonormal basis sending the unique element of `ι` to
+`1 : 𝕜`. -/
 protected noncomputable def singleton : OrthonormalBasis ι 𝕜 𝕜 :=
   (Basis.singleton ι 𝕜).toOrthonormalBasis (by simp [orthonormal_iff_ite, Unique.eq_default])
 
