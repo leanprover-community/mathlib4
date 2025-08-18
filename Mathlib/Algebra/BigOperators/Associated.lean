@@ -63,8 +63,7 @@ theorem Associated.prod {M : Type*} [CommMonoid M] {ι : Type*} (s : Finset ι) 
     classical
     convert_to (∏ i ∈ insert j s, f i) ~ᵤ (∏ i ∈ insert j s, g i)
     rw [Finset.prod_insert hjs, Finset.prod_insert hjs]
-    exact Associated.mul_mul (h j (Finset.mem_insert_self j s))
-      (IH (fun i hi ↦ h i (Finset.mem_insert_of_mem hi)))
+    grind [Associated.mul_mul]
 
 theorem exists_associated_mem_of_dvd_prod [CancelCommMonoidWithZero M₀] {p : M₀} (hp : Prime p)
     {s : Multiset M₀} : (∀ r ∈ s, Prime r) → p ∣ s.prod → ∃ q ∈ s, p ~ᵤ q :=
@@ -123,7 +122,7 @@ theorem Multiset.prod_primes_dvd [CancelCommMonoidWithZero M₀]
   | cons a s induct =>
     rw [Multiset.prod_cons]
     obtain ⟨k, rfl⟩ : a ∣ n := div a (Multiset.mem_cons_self a s)
-    apply mul_dvd_mul_left a
+    gcongr
     refine induct _ (fun a ha => h a (Multiset.mem_cons_of_mem ha)) (fun b b_in_s => ?_)
       fun a => (Multiset.countP_le_of_le _ (Multiset.le_cons_self _ _)).trans (uniq a)
     have b_div_n := div b (Multiset.mem_cons_of_mem b_in_s)

@@ -75,13 +75,13 @@ structure ShiftMkCore where
   assoc_hom_app : ∀ (m₁ m₂ m₃ : A) (X : C),
     (add (m₁ + m₂) m₃).hom.app X ≫ (F m₃).map ((add m₁ m₂).hom.app X) =
       eqToHom (by rw [add_assoc]) ≫ (add m₁ (m₂ + m₃)).hom.app X ≫
-        (add m₂ m₃).hom.app ((F m₁).obj X) := by aesop_cat
+        (add m₂ m₃).hom.app ((F m₁).obj X) := by cat_disch
   /-- compatibility with the left addition with 0 -/
   zero_add_hom_app : ∀ (n : A) (X : C), (add 0 n).hom.app X =
-    eqToHom (by dsimp; rw [zero_add]) ≫ (F n).map (zero.inv.app X) := by aesop_cat
+    eqToHom (by dsimp; rw [zero_add]) ≫ (F n).map (zero.inv.app X) := by cat_disch
   /-- compatibility with the right addition with 0 -/
   add_zero_hom_app : ∀ (n : A) (X : C), (add n 0).hom.app X =
-    eqToHom (by dsimp; rw [add_zero]) ≫ zero.inv.app ((F n).obj X) := by aesop_cat
+    eqToHom (by dsimp; rw [add_zero]) ≫ zero.inv.app ((F n).obj X) := by cat_disch
 
 namespace ShiftMkCore
 
@@ -355,9 +355,7 @@ abbrev shiftAdd (i j : A) : X⟦i + j⟧ ≅ X⟦i⟧⟦j⟧ :=
 
 theorem shift_shift' (i j : A) :
     f⟦i⟧'⟦j⟧' = (shiftAdd X i j).inv ≫ f⟦i + j⟧' ≫ (shiftAdd Y i j).hom := by
-  symm
-  rw [← Functor.comp_map, Iso.app_inv]
-  apply NatIso.naturality_1
+  simp
 
 variable (A)
 
