@@ -8,6 +8,7 @@ import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Tactic.Spread
 import Mathlib.Util.AssertExists
+import Mathlib.Tactic.FastInstance
 import Mathlib.Tactic.StacksAttribute
 
 /-!
@@ -221,11 +222,11 @@ attribute [instance 100] NonAssocCommSemiring.toNonUnitalNonAssocCommSemiring
 
 -- see Note [lower instance priority]
 instance (priority := 100) NonUnitalCommSemiring.toNonUnitalNonAssocCommSemiring
-    [NonUnitalCommSemiring α] : NonUnitalNonAssocCommSemiring α where
+    [NonUnitalCommSemiring α] : NonUnitalNonAssocCommSemiring α := fast_instance% {}
 
 -- see Note [lower instance priority]
 instance (priority := 100) CommSemiring.toNonAssocCommSemiring [CommSemiring α] :
-    NonAssocCommSemiring α where
+    NonAssocCommSemiring α := fast_instance% {}
 
 -- see Note [lower instance priority]
 instance (priority := 100) CommSemiring.toNonUnitalCommSemiring [CommSemiring α] :
