@@ -15,7 +15,7 @@ import Mathlib.Combinatorics.Graph.Basic
 
 open Set
 
-variable {α β γ : Type*} {x y : α} {e f g h : Set α} {l : Set (Set α)}
+variable {α β : Type*} {x y : α} {e f g h : Set α} {l : Set (Set α)}
 
 /-!
 # Undirected hypergraphs
@@ -33,12 +33,6 @@ one where `E(H) = 𝒫 V(H)`, where `𝒫 V(H)` is the *power set* of the vertex
 If a hyperedge `e` contains only one vertex (i.e., `|e| = 1`), then it is a *loop*.
 
 This module defines `Hypergraph α` for a vertex type `α` (hyperedges are defined as `Set Set α`).
-In the near term, the hope is to provide an API for incidence and adjacency, as well as for
-conversions:
-- `Graph α β → Hypergraph α` (coersion/generalization of graph as 2-uniform hypergraph)
-- `Hypergraph α → Graph α (α × α)` (as a *clique graph* or *two-section graph*)
-- `Hypergraph α → Matrix α (Set α) γ` (the *incidence matrix* of the hypergraph)
-- `Hypergraph α → Hypergraph α` (e.g., constructing the *dual* of a hypergraph)
 
 ## Main definitions
 
@@ -57,10 +51,13 @@ For `H : Hypergraph α`:
 This implementation is heavily inspired by Peter Nelson and Jun Kwon's `Graph` implementation,
 which was in turn inspired by `Matroid`.
 
-From `Mathlib.Combinatorics.Graph.Basic`:
+Paraphrasing `Mathlib.Combinatorics.Graph.Basic`:
 "The main tradeoff is that parts of the API will need to care about whether a term
-`x : α` or `e : β` is a 'real' vertex or edge of the graph, rather than something outside
+`x : α` or `e : Set α` is a 'real' vertex or edge of the graph, rather than something outside
 the vertex or edge set. This is an issue, but is likely amenable to automation."
+
+Because `hyperedgeSet` is a `Set (Set α)`, rather than a multiset, here we are assuming that
+all hypergraphs are *without repeated hyperedge*.
 
 ## Acknowledgments
 
@@ -69,6 +66,7 @@ Husain, Aaron Liu, and Tristan Figueroa-Reid for patient guidance and useful fee
 implementation.
 -/
 
+@[ext]
 structure Hypergraph (α : Type*) where
   /-- The vertex set -/
   vertexSet : Set α
@@ -151,7 +149,7 @@ lemma EAdj.symm {H : Hypergraph α} {e f : Set α} (h : H.EAdj e f) : H.EAdj f e
     · exact hv.2.2
     · exact hv.2.1
 
-lemma eAdj_imp_inter_nonempty {H : Hypergraph α} {e f : Set α} (hef : H.EAdj e f) :
+lemma EAdj.inter_nonempty {H : Hypergraph α} {e f : Set α} (hef : H.EAdj e f) :
 (e ∩ f).Nonempty := by
     unfold EAdj at *
     have h' : ∃ x ∈ e, x ∈ f := by grind
@@ -179,32 +177,22 @@ def hyperedgeNeighbors (H : Hypergraph α) (e : Set α) : Set (Set α) := {f | H
 
 end Adjacency
 
-section Extensionality
-
-/-! ## Extensionality -/
-
--- TODO: this
--- Start here? https://lean-lang.org/theorem_proving_in_lean4/Axioms-and-Computation/#propositional-extensionality
-
-lemma ext {H₁ H₂ : Hypergraph α} (hv : V(H₁) = V(H₂)) (he : E(H₁) = E(H₂)) : H₁ = H₂ := by sorry
-
-end Extensionality
-
 section DefsPreds
 
 /-! ## Basic Hypergraph Definitions & Predicates-/
 
 /--
-The set of all hyperedges `e ∈ E(H)` that a given vertex `x` is incident on
+The *star* of a vertex is the set of all hyperedges `e ∈ E(H)` that a given vertex `x` is incident
+on
 -/
-def hyperedgesIncVertex (H : Hypergraph α) (x : α) : Set (Set α) := {e ∈ E(H) | x ∈ e }
+def star (H : Hypergraph α) (x : α) : Set (Set α) := {e ∈ E(H) | x ∈ e }
 
 /--
-We define the *vertex hyperedge set* as the set of subsets of `E(H)` that each vertex in `V(H)` is
+We define the *star set* as the set of subsets of `E(H)` that each vertex in `V(H)` is
 incident upon
 -/
-def hyperedgesIncVertices (H : Hypergraph α) : Set (Set (Set α)) :=
-  {H.hyperedgesIncVertex x | x ∈ V(H)}
+def stars (H : Hypergraph α) : Set (Set (Set α)) :=
+  {H.star x | x ∈ V(H)}
 
 /--
 Predicate to determine if a vertex is isolated, meaning that it is not incident on any hyperedges.
@@ -259,8 +247,8 @@ lemma isEmpty_empty_hypergraph {α : Type*} : IsEmpty (Hypergraph.emptyHypergrap
   unfold IsEmpty
   exact Prod.mk_inj.mp rfl
 
--- lemma isEmpty_eq_empty_hypergraph {H : Hypergraph α} (hh : IsEmpty H) : H = Hypergraph.emptyHypergraph α := by
---   have h0 : V(H) = ∅ ∧ E(H) = ∅ := by exact hh
+lemma isEmpty_eq_empty_hypergraph {H : Hypergraph α} (h : H.IsEmpty) : H = emptyHypergraph α := by
+  exact Hypergraph.ext_iff.mpr h
 
 /--
 Predicate to determine if a hypergraph is trivial
@@ -317,7 +305,7 @@ Predicate to determine if a hypergraph is *`d`-regular*.
 In a `d`-regular hypergraph `H`, all vertices `v ∈ V(H)` have the same degree, i.e., all vertices
 are incident on `d` hyperedges.
 -/
-def IsDRegular (H : Hypergraph α) (d : ℕ) : Prop := ∀ l ∈ H.hyperedgesIncVertices, Set.ncard l = d
+def IsDRegular (H : Hypergraph α) (d : ℕ) : Prop := ∀ l ∈ H.stars, Set.ncard l = d
 
 end DefsPreds
 
@@ -342,7 +330,7 @@ A vertex `x` has degree `n`, where `n` is the number of hyperedges in `E(H)` tha
 on.
 -/
 noncomputable def vertexDegrees (H : Hypergraph α) : Set ENat :=
-  {Set.encard l | l ∈ H.hyperedgesIncVertices}
+  {Set.encard l | l ∈ H.stars}
 
 /--
 The set of hyperedge *degrees* of a hypergraph `H`.
@@ -428,10 +416,10 @@ The *incidence matrix* `M` of a hypergraph `H` is a `|V(H)|`-by-`|E(H)|` matrix 
 Note that this means that the incidence Matrix is defined even for members of α and Set α that are
 not part of the hypergraph `H`.
 
-TODO: there's no way this DecidableRel requirement is reasonable
+TODO: there's no way this DecidableRel requirement is reasonable... right?
 -/
 def incidenceMatrix (H : Hypergraph α)
-[DecidableRel fun x e => x ∈ V(H) ∧ e ∈ E(H) ∧ x ∈ e] [Zero γ] [One γ] : Matrix α (Set α) γ :=
+[DecidableRel fun x e => x ∈ V(H) ∧ e ∈ E(H) ∧ x ∈ e] [Zero β] [One β] : Matrix α (Set α) β :=
   Matrix.of (fun x e => ite (x ∈ V(H) ∧ e ∈ E(H) ∧ x ∈ e) 1 0)
 
 end IncMatrix
