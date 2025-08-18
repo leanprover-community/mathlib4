@@ -39,11 +39,11 @@ are both homotopic to corresponding identity maps.
 structure HomotopyEquiv (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] where
   /-- The forward map of an homotopy.
 
-  Do not use directly. Use the coercion instead. -/
+  Do NOT use directly. Use the coercion instead. -/
   toFun : C(X, Y)
   /-- The backward map of an homotopy.
 
-  Do not use `e.invFun` directly. Use the coercion of `e.symm` instead. -/
+  Do NOT use `e.invFun` directly. Use the coercion of `e.symm` instead. -/
   invFun : C(Y, X)
   left_inv : (invFun.comp toFun).Homotopic (ContinuousMap.id X)
   right_inv : (toFun.comp invFun).Homotopic (ContinuousMap.id Y)
