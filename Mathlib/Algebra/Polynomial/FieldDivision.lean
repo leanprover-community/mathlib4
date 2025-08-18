@@ -708,7 +708,7 @@ theorem natDegree_pos : 0 < f.natDegree := Nat.pos_of_ne_zero fun H ↦ by
   exact h.1 (hf ▸ isUnit_C.2 (Ne.isUnit hx))
 
 /-- An irreducible polynomial over a field must have positive degree. -/
-theorem degree_pos [DivisionSemiring R] {f : R[X]} (h : Irreducible f) : 0 < f.degree := by
+theorem degree_pos : 0 < f.degree := by
   rw [← natDegree_pos_iff_degree_pos]
   exact h.natDegree_pos
 
