@@ -37,31 +37,9 @@ namespace Matrix
 
 variable {n 𝕜 : Type*} [RCLike 𝕜] [Fintype n] [DecidableEq n] {A : Matrix n n 𝕜}
 
-lemma finite_real_spectrum : (spectrum ℝ A).Finite := by
-  rw [← spectrum.preimage_algebraMap 𝕜]
-  exact A.finite_spectrum.preimage (FaithfulSMul.algebraMap_injective ℝ 𝕜).injOn
-
-instance : Finite (spectrum ℝ A) := A.finite_real_spectrum
-
 namespace IsHermitian
 
 variable (hA : IsHermitian A)
-
-/-- The spectrum of a Hermitian matrix is the range of its eigenvalues under `RCLike.ofReal`. -/
-theorem spectrum_eq_image_range :
-    spectrum 𝕜 A = RCLike.ofReal '' Set.range hA.eigenvalues := Set.ext fun x => by
-  conv_lhs => rw [hA.spectral_theorem]
-  simp
-
-/-- The `ℝ`-spectrum of a Hermitian matrix over `RCLike` field is the range of the eigenvalue
-function. -/
-theorem spectrum_real_eq_range_eigenvalues :
-    spectrum ℝ A = Set.range hA.eigenvalues := Set.ext fun x => by
-  conv_lhs => rw [hA.spectral_theorem, ← spectrum.algebraMap_mem_iff 𝕜]
-  simp
-
-@[deprecated (since := "14-08-2025")] alias eigenvalues_eq_spectrum_real :=
-  spectrum_real_eq_range_eigenvalues
 
 /-- The star algebra homomorphism underlying the instance of the continuous functional
 calculus of a Hermitian matrix. This is an auxiliary definition and is not intended
