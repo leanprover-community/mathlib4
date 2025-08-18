@@ -51,11 +51,11 @@ protected theorem two_nsmul (x : R) : 2 • x = 0 := by rw [two_smul, add_self_e
 
 @[scoped simp]
 protected theorem add_cancel_left (a b : R) : a + (a + b) = b := by
-  rw [← add_assoc, add_self, zero_add]
+  rw [← add_assoc, add_self_eq_zero, zero_add]
 
 @[scoped simp]
 protected theorem add_cancel_right (a b : R) : a + b + b = a := by
-  rw [add_assoc, add_self, add_zero]
+  rw [add_assoc, add_self_eq_zero, add_zero]
 
 end Semiring
 
