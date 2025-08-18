@@ -13,7 +13,6 @@ import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.Int.Interval
 import Mathlib.Data.Fin.VecNotation
-
 import Mathlib.Dynamics.SymbolicDynamics.Basic
 
 /-!
@@ -96,7 +95,7 @@ noncomputable def limsupAtTop (u : ℕ → ℝ) : ℝ :=
 
 /-- Entropy of a subshift `X` along a sequence of finite shapes `F` with nonempty shapes. -/
 noncomputable def entropyAlong (X : Subshift A G)
-    (F : ℕ → Finset G) (_ : ∀ n, 0 < (F n).card) : ℝ :=
+    (F : ℕ → Finset G) : ℝ :=
   limsupAtTop (fun n =>
     Real.log (patternCountOn (A:=A) (G:=G) X (F n) + 1) / ((F n).card : ℝ))
 
@@ -106,14 +105,17 @@ noncomputable def entropyAlong (X : Subshift A G)
 We keep only what we need for `entropy_word`: a sequence of finite shapes and their
 nonemptiness. More axioms (monotonicity, invariance properties) can be added later. -/
 structure WordMetricShapes (G : Type*) [Group G] [DecidableEq G] where
-  (S : Finset G)              -- chosen finite generating set (intended symmetric)
-  (F : ℕ → Finset G)          -- shapes, e.g. word-metric balls
-  (F_pos : ∀ n, 0 < (F n).card) -- nonempty shapes
+  /-- A chosen finite generating set (intended symmetric). -/
+  (S : Finset G)
+  /-- The finite shapes, typically word-metric balls. -/
+  (F : ℕ → Finset G)
+  /-- Nonemptiness of each shape. -/
+  (F_pos : ∀ n, 0 < (F n).card)
 
 /-- Entropy of a subshift along a given word-metric shape system. -/
 noncomputable def entropy_word [DecidableEq G]
     (Y : Subshift A G) (shapes : WordMetricShapes G) : ℝ :=
-  entropyAlong (A:=A) (G:=G) Y shapes.F shapes.F_pos
+  entropyAlong (A:=A) (G:=G) Y shapes.F
 
 /-! ## Specializations: `ℤ` and `ℤ^d` -/
 
@@ -149,7 +151,7 @@ variable {d : ℕ}
 /-- The lattice `ℤ^d` as functions `Fin d → ℤ`. -/
 abbrev Zd (d : ℕ) := Fin d → ℤ
 
-
+/-- The axis-aligned box `[-n,n]^d` in `ℤ^d` (as a `Finset`). -/
 def box (d : ℕ) (n : ℕ) : Finset (Zd d) :=
     Fintype.piFinset (fun _ => Finset.Icc (-(n : ℤ)) (n : ℤ))
 

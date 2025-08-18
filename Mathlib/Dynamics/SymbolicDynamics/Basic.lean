@@ -132,54 +132,28 @@ end CylindersOpen
 
 section CylindersClosed
 variable {A G : Type*}
-[TopologicalSpace A] [DiscreteTopology A] [Fintype A] [DecidableEq A] [DecidableEq G]
-lemma cylinder_is_closed (U : Finset (G)) (x : G → A) :
-    IsClosed (cylinder U x) := by
-  have h : (cylinder U x)ᶜ = ⋃ (i ∈ U) (a ∈ (Finset.univ \ {x i} : Finset A)),
-      cylinder {i} (Function.update x i a) := by
-    · ext y
-      simp only [mem_compl_iff]
-      simp only [mem_iUnion]
-      simp only [mem_cylinder]
-      simp only [Finset.mem_univ, Finset.mem_sdiff]
-      simp only [not_forall]
-      simp only [exists_prop]
-      constructor
-      · intro hy
-        push_neg at hy
-        obtain ⟨i, hiU, hiy⟩ := hy
-        use i, hiU, y i
-        constructor
-        · simp [hiy]
-        · simp [Function.update_apply]
-      · rintro ⟨i, hiU, a, ha, hy⟩
-        simp only [true_and] at ha
-        use i, hiU
-        rw [hy]
-        simp only [Function.update_apply]
-        have hne : a ≠ x i := by
-          intro h
-          apply ha
-          rw [h]
-          exact Finset.mem_singleton_self _
-        exact hne
-        exact Finset.mem_singleton_self i
-  have : IsOpen ((cylinder U x)ᶜ) := by
-    rw [h]
-    apply isOpen_iUnion; intro i
-    apply isOpen_iUnion; intro hi
-    apply isOpen_iUnion; intro a
-    apply isOpen_iUnion; intro ha
-    exact cylinder_is_open {i} (Function.update x i a)
-  exact isOpen_compl_iff.mp this
+[TopologicalSpace A] [DiscreteTopology A]
+lemma cylinder_is_closed (U : Finset G) (x : G → A) :
+  IsClosed (cylinder (A:=A) (G:=G) U x) := by
+  classical
+  have hclosed : ∀ i ∈ (↑U : Set G), IsClosed ({x i} : Set A) := by
+    intro i _; simp
+  have hpi :
+      IsClosed (Set.pi (s := (↑U : Set G))
+                       (t := fun i => ({x i} : Set A))) :=
+    isClosed_set_pi hclosed
+  simpa [cylinder_eq_set_pi (A:=A) (G:=G) U x] using hpi
 end CylindersClosed
 
 /-! ## Patterns and occurrences -/
 
 /-- A subshift is a closed, shift-invariant subset. -/
 structure Subshift (A : Type*) [TopologicalSpace A] [Inhabited A] (G : Type*) [Group G] where
+  /-- The underlying set of configurations. -/
   carrier : Set (FullShift A G)
+  /-- Closedness of `carrier`. -/
   isClosed : IsClosed carrier
+  /-- Shift invariance of `carrier`. -/
   shiftInvariant : ∀ g : G, ∀ x ∈ carrier, shift (A:=A) (G:=G) g x ∈ carrier
 
 /-- The full shift is a subshift. -/
@@ -191,7 +165,9 @@ example : Subshift A G :=
 
 /-- A finite pattern: finite support in `G` and values on it. -/
 structure Pattern (A : Type*) (G : Type*) [Group G] where
+  /-- Finite support of the pattern. -/
   support : Finset G
+  /-- The value (symbol) at each point of the support. -/
   data : support → A
 
 /-- The domino supported on `{i,j}` with values `ai`,`aj`. -/
@@ -286,7 +262,7 @@ end OccSetsOpen
 
 section OccSetsClosed
 variable {A G : Type*} [Group G] [TopologicalSpace A] [DiscreteTopology A]
-           [Inhabited A] [DecidableEq G] [Fintype A] [DecidableEq A]
+           [Inhabited A] [DecidableEq G]
 
 /-- Occurrence sets are closed. -/
 lemma occursAt_closed (p : Pattern A G) (g : G) :
@@ -336,6 +312,7 @@ noncomputable def languageCardOn (X : Set (G → A)) (U : Finset G) : ℕ := by
     |>.subset (by intro y hy; simp)
   exact hfin.toFinset.card
 
+/-- Number of patterns of a subshift on a finite shape `U`. -/
 noncomputable def patternCountOn (Y : Subshift A G) (U : Finset G) : ℕ :=
   languageCardOn (A:=A) (G:=G) Y.carrier U
 
