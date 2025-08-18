@@ -681,7 +681,7 @@ theorem liftOrderHom_mk {α : Type*} [PartialOrder α]
 
 variable (M) in
 /-- Adding top to the type of finite classes yields the type of all classes. -/
-@[to_additive /--Adding top to the type of finite classes yields the type of all classes.-/]
+@[to_additive /-- Adding top to the type of finite classes yields the type of all classes. -/]
 noncomputable
 def withTopOrderIso : WithTop (FiniteMulArchimedeanClass M) ≃o MulArchimedeanClass M :=
   WithTop.subtypeOrderIso
