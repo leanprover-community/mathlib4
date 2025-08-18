@@ -428,6 +428,5 @@ elab_rules : tactic
     if let some e := usingArg then
       evalTactic <| ← `(tactic| exact $e)
     appendGoals sideGoals
-    pruneSolvedGoals
 
 end Mathlib.Tactic
