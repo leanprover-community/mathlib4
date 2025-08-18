@@ -76,7 +76,13 @@ lemma hasLaw_cameronMartinRKHS (x : cameronMartinRKHS μ) :
     have hy_map' (n : ℕ) : μ.map (y n) = gaussianReal (μ[y n]) (‖x‖₊ ^ 2) := by
       rw [IsGaussian.map_eq_gaussianReal]
       congr
-      sorry
+      rw [← sq_norm_centeredToLp_two, hy n]
+      unfold L'
+      simp only [AddSubgroupClass.coe_norm, norm_smul, norm_div, norm_norm]
+      rw [div_mul_cancel₀]
+      · norm_cast
+        rw [Real.toNNReal_pow (norm_nonneg _), norm_toNNReal]
+      · sorry -- might not be true, but eventually ok?
     have hL'_map n : μ.map (L' n) = gaussianReal 0 (‖x‖₊ ^ 2) := by
       have h_eq : L' n =ᵐ[μ] fun x ↦ y n x - μ[y n] := by
         rw [← hy]
