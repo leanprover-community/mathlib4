@@ -78,4 +78,4 @@ open Ideal
 /-- If all prime ideals in a commutative ring are finitely generated, so are all other ideals. -/
 theorem IsNoetherianRing.of_prime [CommRing R] (H : ∀ I : Ideal R, I.IsPrime → I.FG) :
     IsNoetherianRing R :=
-  ⟨isOka_fg.forall_of_forall_prime_isOka exists_maximal_not_fg H⟩
+  ⟨isOka_fg.forall_of_forall_prime exists_maximal_not_fg H⟩
