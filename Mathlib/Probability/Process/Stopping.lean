@@ -1055,19 +1055,11 @@ theorem condExp_stopping_time_ae_eq_restrict_eq_of_countable_range [SigmaFiniteF
     (hτ.measurableSet_eq_of_countable_range' h_countable i) fun t => ?_
   rw [Set.inter_comm _ t, IsStoppingTime.measurableSet_inter_eq_iff]
 
-@[deprecated (since := "2025-01-21")]
-alias condexp_stopping_time_ae_eq_restrict_eq_of_countable_range :=
-  condExp_stopping_time_ae_eq_restrict_eq_of_countable_range
-
 theorem condExp_stopping_time_ae_eq_restrict_eq_of_countable [Countable ι]
     [SigmaFiniteFiltration μ ℱ] (hτ : IsStoppingTime ℱ τ)
     [SigmaFinite (μ.trim hτ.measurableSpace_le_of_countable)] (i : ι) :
     μ[f|hτ.measurableSpace] =ᵐ[μ.restrict {x | τ x = i}] μ[f|ℱ i] :=
   condExp_stopping_time_ae_eq_restrict_eq_of_countable_range hτ (Set.to_countable _) i
-
-@[deprecated (since := "2025-01-21")]
-alias condexp_stopping_time_ae_eq_restrict_eq_of_countable :=
-  condExp_stopping_time_ae_eq_restrict_eq_of_countable
 
 variable [(Filter.atTop : Filter ι).IsCountablyGenerated]
 
@@ -1082,10 +1074,6 @@ theorem condExp_min_stopping_time_ae_eq_restrict_le_const (hτ : IsStoppingTime 
   refine (condExp_ae_eq_restrict_of_measurableSpace_eq_on hτ.measurableSpace_le
     (hτ.min_const i).measurableSpace_le (hτ.measurableSet_le' i) fun t => ?_).symm
   rw [Set.inter_comm _ t, hτ.measurableSet_inter_le_const_iff]
-
-@[deprecated (since := "2025-01-21")]
-alias condexp_min_stopping_time_ae_eq_restrict_le_const :=
-  condExp_min_stopping_time_ae_eq_restrict_le_const
 
 variable [TopologicalSpace ι] [OrderTopology ι]
 
