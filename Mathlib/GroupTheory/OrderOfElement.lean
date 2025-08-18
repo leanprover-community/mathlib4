@@ -680,7 +680,9 @@ lemma IsOfFinOrder.mem_zpowers_iff_mem_range_orderOf [DecidableEq G] (hx : IsOfF
     y ∈ zpowers x ↔ y ∈ (Finset.range (orderOf x)).image (x ^ ·) :=
   hx.mem_powers_iff_mem_zpowers.symm.trans hx.mem_powers_iff_mem_range_orderOf
 
-/-- `Subgroup.closure_toSubmonoid_of_finite` which simplifies the hypothesis to `Finite G`. -/
+/-- See `Subgroup.closure_toSubmonoid_of_finite` for a version for finite groups. -/
+@[to_additive
+/-- See `AddSubgroup.closure_toAddSubmonoid_of_finite` for a version for finite additive groups. -/]
 lemma Subgroup.closure_toSubmonoid_of_isOfFinOrder {s : Set G} (hs : ∀ x ∈ s, IsOfFinOrder x) :
     (closure s).toSubmonoid = Submonoid.closure s := by
   refine le_antisymm ?_ (le_closure_toSubmonoid s)
@@ -903,6 +905,9 @@ theorem zpowersEquivZPowers_apply (h : orderOf x = orderOf y) (n : ℕ) :
   simp [h]
 
 /-- See `Subgroup.closure_toSubmonoid_of_isOfFinOrder` for a version with weaker assumptions. -/
+@[to_additive
+/-- See `AddSubgroup.closure_toAddSubmonoid_of_isOfFinOrder` for a version with weaker
+assumptions. -/]
 lemma Subgroup.closure_toSubmonoid_of_finite {s : Set G} :
     (closure s).toSubmonoid = Submonoid.closure s :=
   closure_toSubmonoid_of_isOfFinOrder <| by simp [isOfFinOrder_of_finite]
