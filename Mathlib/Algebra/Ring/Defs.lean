@@ -233,6 +233,9 @@ attribute [instance 100] NonAssocCommSemiring.toNonAssocSemiring
 attribute [instance 100] NonAssocCommSemiring.toNonUnitalNonAssocCommSemiring
 attribute [instance 100] CommSemiring.toNonUnitalCommSemiring
 attribute [instance 100] CommSemiring.toNonAssocCommSemiring
+attribute [instance 100] CommSemiring.toCommMonoidWithZero
+
+instance CommSemiring.toCommMonoid [CommSemiring α] : CommMonoid α := inferInstance
 
 section CommSemiring
 
