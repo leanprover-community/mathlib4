@@ -81,6 +81,12 @@ variable {R₁ R₂ R₃ M₁ M₂ M₃ : Type*}
   [RingHomInvPair σ₂₁ σ₁₂] [RingHomInvPair σ₃₂ σ₂₃] [RingHomInvPair σ₃₁ σ₁₃]
   [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₃₂ σ₂₁ σ₃₁]
 
+instance RingHomCompTriple.comp : RingHomCompTriple σ₁₂ σ₂₃ (σ₂₃.comp σ₁₂) := ⟨rfl⟩
+
+instance RingHomInvPair.comp : RingHomInvPair (σ₂₃.comp σ₁₂) (σ₂₁.comp σ₃₂) := ⟨by
+    ext; simp_rw [RingHom.comp_apply, RingHomInvPair.comp_apply_eq, RingHom.id_apply], by
+    ext; simp_rw [RingHom.comp_apply, RingHomInvPair.comp_apply_eq, RingHom.id_apply]⟩
+
 /-- A semilinear equivalence from `V` to `W` determines an isomorphism of general linear
 groups. -/
 def congrLinearEquiv (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) :
@@ -96,8 +102,17 @@ def congrLinearEquiv (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) :
   rfl
 
 @[simp]
-lemma congrLinearEquiv_trans (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ₂₃] M₃) :
+lemma congrLinearEquiv_trans
+    {N₁ N₂ N₃ : Type*} [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
+    [Module R N₁] [Module R N₂] [Module R N₃] (e₁₂ : N₁ ≃ₗ[R] N₂) (e₂₃ : N₂ ≃ₗ[R] N₃) :
     (congrLinearEquiv e₁₂).trans (congrLinearEquiv e₂₃) = congrLinearEquiv (e₁₂.trans e₂₃) :=
+  rfl
+
+/-- Stronger form of `congrLinearEquiv.trans` applying to semilinear maps. Not a simp lemma as
+`σ₁₃` and `σ₃₁` cannot be inferred from the LHS. -/
+lemma congrLinearEquiv_trans' (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ₂₃] M₃) :
+    (congrLinearEquiv e₁₂).trans (congrLinearEquiv e₂₃) =
+      congrLinearEquiv (e₁₂.trans e₂₃) :=
   rfl
 
 @[simp]
