@@ -467,9 +467,7 @@ protected lemma add_posSemidef [AddLeftMono R]
 protected lemma posSemidef_add [AddLeftMono R]
     {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosSemidef) (hB : B.PosDef) : (A + B).PosDef :=
-  ⟨hA.isHermitian.add hB.isHermitian, fun x hx => by
-    rw [add_mulVec, dotProduct_add]
-    exact add_pos_of_nonneg_of_pos (hA.2 x) (hB.2 x hx)⟩
+  add_comm A B ▸ hB.add_posSemidef hA
 
 protected lemma add [AddLeftMono R] {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosDef) (hB : B.PosDef) : (A + B).PosDef :=
