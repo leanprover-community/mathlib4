@@ -195,7 +195,7 @@ omit [Finite ι] [IsDomain R] [CharZero R] in
 
 lemma h_mem_lieAlgebra [Fintype ι] [DecidableEq ι] (i : b.support) :
     h i ∈ lieAlgebra b :=
-  LieSubalgebra.subset_lieSpan <| Or.inl <| Or.inl <| mem_range_self i
+  LieSubalgebra.subset_lieSpan <| by simp
 
 lemma e_mem_lieAlgebra [Fintype ι] [DecidableEq ι] (i : b.support) :
     e i ∈ lieAlgebra b :=
