@@ -216,8 +216,8 @@ class NonAssocCommSemiring (α : Type u)
 /-- A commutative semiring is a semiring with commutative multiplication. -/
 class CommSemiring (R : Type u) extends Semiring R, CommMonoid R
 
-attribute [instance 100] NonAssocCommSemiring.toNonAssocSemiring
-attribute [instance 100] NonAssocCommSemiring.toNonUnitalNonAssocCommSemiring
+attribute [instance 10] NonAssocCommSemiring.toNonAssocSemiring
+attribute [instance 10] NonAssocCommSemiring.toNonUnitalNonAssocCommSemiring
 
 -- see Note [lower instance priority]
 instance (priority := 10) NonUnitalCommSemiring.toNonUnitalNonAssocCommSemiring
