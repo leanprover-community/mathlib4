@@ -131,7 +131,7 @@ lemma restrictedULiftYonedaHomEquiv'_symm_naturality_right (P : Cᵒᵖ ⥤ Type
 @[reassoc]
 lemma restrictedULiftYonedaHomEquiv'_symm_app_naturality_left
     {P Q : Cᵒᵖ ⥤ Type (max w v₁ v₂)} (f : P ⟶ Q) (E : ℰ)
-    (g : (Q ⟶ (restrictedULiftYoneda.{max w v₁} A).obj E))
+    (g : Q ⟶ (restrictedULiftYoneda.{max w v₁} A).obj E)
     (p : CostructuredArrow uliftYoneda.{max w v₂} P) :
     ((restrictedULiftYonedaHomEquiv' A P E).symm (f ≫ g)).app p =
       ((restrictedULiftYonedaHomEquiv' A Q E).symm g).app
