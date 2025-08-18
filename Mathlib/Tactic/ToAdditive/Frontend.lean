@@ -789,9 +789,11 @@ def findAuxDecls (e : Expr) (pre : Name) : NameSet :=
     else
       l
 
-/-- transform the declaration `src` and all declarations `pre._proof_i` occurring in `src`
+/-- Transform the declaration `src` and all declarations `pre._proof_i` occurring in `src`
 using the transforms dictionary.
+
 `replace_all`, `trace`, `ignore` and `reorder` are configuration options.
+
 `pre` is the declaration that got the `@[to_additive]` attribute and `tgt_pre` is the target of this
 declaration. -/
 partial def transformDeclAux
