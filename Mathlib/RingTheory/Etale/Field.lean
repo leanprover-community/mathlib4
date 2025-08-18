@@ -7,7 +7,7 @@ import Mathlib.RingTheory.Etale.Pi
 import Mathlib.RingTheory.Unramified.Field
 
 /-!
-# Etale algebras over fields
+# Étale algebras over fields
 
 ## Main results
 
