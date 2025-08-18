@@ -58,7 +58,7 @@ noncomputable abbrev etaProdTerm (z : ℂ) := ∏' (n : ℕ), (1 - eta_q n z)
 
 local notation "ηₚ" => etaProdTerm
 
-/-- The eta function, whose value at z is `q^1/24 * ∏' 1 - q ^ (n + 1)` for `q = e ^ 2 π i z`. -/
+/-- The eta function, whose value at z is `q^ 1 / 24 * ∏' 1 - q ^ (n + 1)` for `q = e ^ 2 π i z`. -/
 noncomputable def ModularForm.eta (z : ℂ) := 𝕢 24 z * ηₚ z
 
 local notation "η" => ModularForm.eta
@@ -66,9 +66,7 @@ local notation "η" => ModularForm.eta
 open ModularForm
 
 theorem Summable_eta_q (z : ℍ) : Summable fun n ↦ ‖-eta_q n z‖ := by
-    simp_rw  [eta_q, eta_q_eq_pow, norm_neg, norm_pow, summable_nat_add_iff 1]
-    simp only [summable_geometric_iff_norm_lt_one, norm_norm]
-    apply norm_exp_two_pi_I_lt_one z
+  simp [eta_q, eta_q_eq_pow, summable_nat_add_iff 1, norm_exp_two_pi_I_lt_one z]
 
 lemma hasProdLocallyUniformlyOn_eta : HasProdLocallyUniformlyOn (fun n a ↦ 1 - eta_q n a) ηₚ ℍₒ:= by
   simp_rw [sub_eq_add_neg]
@@ -99,7 +97,7 @@ lemma eta_ne_zero_on_UpperHalfPlane (z : ℍ) : η z ≠ 0 := by
   simpa [ModularForm.eta, Periodic.qParam] using etaProdTerm_ne_zero z
 
 lemma logDeriv_one_sub_cexp (r : ℂ) : logDeriv (fun z ↦ 1 - r * cexp z) =
-    fun z ↦ -r * cexp z / (1 - r * cexp ( z)) := by
+    fun z ↦ -r * cexp z / (1 - r * cexp z) := by
   ext z
   simp [logDeriv]
 
