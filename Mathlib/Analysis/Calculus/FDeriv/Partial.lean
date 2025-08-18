@@ -34,7 +34,7 @@ in the product space.
   `f'x = f₁x.coprod (f₂ x)`. `hasFDerivWithinAt_of_partial_fst_continuousWithinAt_prod_open` has
   the roles of the partial derivatives reversed.
 
-  The proofs follow §9.8.1 from Dieudonné's *Foundations of Modern Analysis* (1969).
+  The proofs follow §8.9.1 from Dieudonné's *Foundations of Modern Analysis* (1969).
 
 * `hasFDerivWithinAt_continuous(On|WithinAt)_of_partial_continuous(On|WithinAt)_open`: when
   both partial derivatives exist and are continuous on (or at `x` in) an open set `s`, this more
@@ -173,12 +173,12 @@ theorem HasFDerivWithinAt.partial_fst
   {s₁ : Set E₁} {s₂ : Set E₂}
   {x : E₁ × E₂} (hx : x ∈ s₁ ×ˢ s₂)
   (hf : HasFDerivWithinAt f (f' x) (s₁ ×ˢ s₂) x) :
-      HasFDerivWithinAt (f ∘ (·, x.2)) (f' x ∘L .inl ..) s₁ x.1 := by
-    have hleft (u:E₁) := HasFDerivWithinAt.prodMk
-      (hasFDerivWithinAt_id (𝕜 := 𝕜) u s₁)
-      (hasFDerivWithinAt_const x.2 u s₁)
-    convert HasFDerivWithinAt.comp x.1 (hf) (hleft x.1)
-      (fun u hu => mem_prod.mpr ⟨hu, (mem_prod.mp hx).right⟩)
+    HasFDerivWithinAt (f ∘ (·, x.2)) (f' x ∘L .inl ..) s₁ x.1 := by
+  have hleft (u:E₁) := HasFDerivWithinAt.prodMk
+    (hasFDerivWithinAt_id (𝕜 := 𝕜) u s₁)
+    (hasFDerivWithinAt_const x.2 u s₁)
+  convert HasFDerivWithinAt.comp x.1 (hf) (hleft x.1)
+    (fun u hu => mem_prod.mpr ⟨hu, (mem_prod.mp hx).right⟩)
 
 /-- Differentiable implies also that the second partial derivative exists. -/
 theorem HasFDerivWithinAt.partial_snd
@@ -186,12 +186,12 @@ theorem HasFDerivWithinAt.partial_snd
   {s₁ : Set E₁} {s₂ : Set E₂}
   {x : E₁ × E₂} (hx : x ∈ s₁ ×ˢ s₂)
   (hf : HasFDerivWithinAt f (f' x) (s₁ ×ˢ s₂) x) :
-      HasFDerivWithinAt (f ∘ (x.1, ·)) (f' x ∘L .inr ..) s₂ x.2 := by
-    have hright (v:E₂) := HasFDerivWithinAt.prodMk
-      (hasFDerivWithinAt_const x.1 v s₂)
-      (hasFDerivWithinAt_id (𝕜 := 𝕜) v s₂)
-    convert HasFDerivWithinAt.comp x.2 (hf) (hright x.2)
-      (fun v hv => mem_prod.mpr ⟨(mem_prod.mp hx).left, hv⟩)
+    HasFDerivWithinAt (f ∘ (x.1, ·)) (f' x ∘L .inr ..) s₂ x.2 := by
+  have hright (v:E₂) := HasFDerivWithinAt.prodMk
+    (hasFDerivWithinAt_const x.1 v s₂)
+    (hasFDerivWithinAt_id (𝕜 := 𝕜) v s₂)
+  convert HasFDerivWithinAt.comp x.2 (hf) (hright x.2)
+    (fun v hv => mem_prod.mpr ⟨(mem_prod.mp hx).left, hv⟩)
 
 /-- If a function `f : E₁ × E₂ → F` has a first partial derivative (within set `s₁`) `f₁x` at `x`
 and has a second partial derivative (within open set `s₂`) `f₂` continuous on `s₁ ×ˢ s₂`,
