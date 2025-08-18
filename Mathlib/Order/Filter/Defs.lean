@@ -414,21 +414,24 @@ syntax (name := filterUpwards) "filter_upwards" (" [" term,* "]")?
 
 elab_rules : tactic
 | `(tactic| filter_upwards $[[$[$args],*]]? $[with $wth*]? $[using $usingArg]?) => do
-  let config : ApplyConfig := {newGoals := ApplyNewGoals.nonDependentOnly}
-  for e in args.getD #[] |>.reverse do
-    let goal ← getMainGoal
-    replaceMainGoal <| ← goal.withContext <| runTermElab do
-      let m ← mkFreshExprMVar none
-      let lem ← Term.elabTermEnsuringType
-        (← ``(Filter.mp_mem $e $(← Term.exprToSyntax m))) (← goal.getType)
-      goal.assign lem
-      return [m.mvarId!]
-  liftMetaTactic fun goal => do
-    goal.apply (← mkConstWithFreshMVarLevels ``Filter.univ_mem') config
-  evalTactic <|← `(tactic| dsimp -zeta only [Set.mem_setOf_eq])
-  if let some l := wth then
-    evalTactic <|← `(tactic| intro $[$l]*)
-  if let some e := usingArg then
-    evalTactic <|← `(tactic| exact $e)
+  focus do
+    let mut acc : List MVarId := []
+    for e in args.getD #[] |>.reverse do
+      let goalName ← mkFreshUserName `goal
+      let goalIdent := mkIdent goalName
+      evalTactic <| ← `(tactic| refine Filter.mp_mem $e ?$goalIdent:ident)
+      acc := (← getGoals) ++ acc
+      let some goal := (← getMCtx).findUserName? goalName
+        | throwAbortTactic
+      setGoals [goal]
+    evalTactic <| ← `(tactic| refine Filter.univ_mem' ?_)
+    evalTactic <| ← `(tactic| dsimp -zeta only [Set.mem_setOf_eq])
+    if let some l := wth then
+      evalTactic <| ←  `(tactic| intro $[$l]*)
+    if let some e := usingArg then
+      evalTactic <| ← `(tactic| exact $e)
+    appendGoals acc
+    pruneSolvedGoals
+
 
 end Mathlib.Tactic
