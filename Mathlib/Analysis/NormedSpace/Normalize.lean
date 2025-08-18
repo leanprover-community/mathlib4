@@ -15,17 +15,13 @@ Function that calculates unit length vector from a vector
 
 section RCLike
 
-variable {V : Type*}
-variable (𝕜 : Type*)
-variable [NormedAddCommGroup V]
-variable [RCLike 𝕜]
-variable [NormedSpace 𝕜 V]
+variable {V : Type*} (𝕜 : Type*) [NormedAddCommGroup V] [RCLike 𝕜] [NormedSpace 𝕜 V]
 
 /-- The normalized vector from a given vector. `normalize 0 = 0`, otherwise it is
 the corresponding unit length vector. -/
 noncomputable def NormedSpace.normalize (x : V) : V := (‖x‖⁻¹ : 𝕜) • x
 
-open NormedSpace
+namespace NormedSpace
 
 @[simp]
 theorem normalize_zero_eq_zero : normalize 𝕜 (0 : V) = 0 := by
@@ -53,14 +49,12 @@ theorem normalize_normalize (x : V) : normalize 𝕜 (normalize 𝕜 x) = normal
 theorem normalize_neg (x : V) : normalize 𝕜 (- x) = - normalize 𝕜 x := by
   simp [normalize]
 
-end RCLike
+end RCLike.NormedSpace
 
 
-variable {V : Type*}
-variable [NormedAddCommGroup V]
-variable [NormedSpace ℝ V]
+variable {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
 
-open NormedSpace
+namespace NormedSpace
 
 theorem normalize_smul_of_pos {r : ℝ} (hr : 0 < r) (x : V) :
     normalize ℝ (r • x) = normalize ℝ x := by
@@ -69,3 +63,5 @@ theorem normalize_smul_of_pos {r : ℝ} (hr : 0 < r) (x : V) :
 theorem normalize_smul_of_neg {r : ℝ} (hr : r < 0) (x : V) :
     normalize ℝ (r • x) = - normalize ℝ x := by
   simpa using normalize_smul_of_pos (show 0 < -r by linarith) (-x)
+
+end NormedSpace
