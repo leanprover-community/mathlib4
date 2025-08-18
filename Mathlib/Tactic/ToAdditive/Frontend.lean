@@ -564,7 +564,7 @@ It will also reorder arguments of certain functions, using `reorderFn`:
 e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorderFn g = some [1]`.
 -/
 def applyReplacementFun (e : Expr) : MetaM Expr := do
-  let e' := aux (← getEnv) (← getBoolOption `trace.to_additive_detail) e
+  let (e', _) := aux (← getEnv) (← getBoolOption `trace.to_additive_detail) e
   -- Make sure any new reserved names in the expr are realized; this needs to be done outside of
   -- `aux` as it is monadic.
   e'.forEach fun
@@ -574,10 +574,14 @@ def applyReplacementFun (e : Expr) : MetaM Expr := do
     | _ => pure ()
   return e'
 where /-- Implementation of `applyReplacementFun`. -/
-  aux (env : Environment) (trace : Bool) : Expr → Expr :=
+  aux (env : Environment) (trace : Bool) : Expr → Expr × Bool :=
   let reorderFn : Name → List (List ℕ) := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
   let relevantArg : Name → ℕ := fun nm ↦ (relevantArgAttr.find? env nm).getD 0
-  memoFix fun r e ↦ Id.run do
+  memoFix fun r e ↦ (StateT.run · false : StateM Bool Expr → Expr × Bool) <| do
+    let rM (e) : StateM Bool Expr := do
+      let (e, b) := r e
+      if b then set true
+      pure e
     if trace then
       dbg_trace s!"replacing at {e}"
     match e with
@@ -591,35 +595,33 @@ where /-- Implementation of `applyReplacementFun`. -/
           dbg_trace s!"reordering the universe variables from {ls₀} to {ls₁}"
       return Lean.mkConst n₁ ls₁
     | .app g x => do
-      let gf := g.getAppFn
-      if gf.isBVar && x.isLit then
+      let fn := g.getAppFn
+      if fn.isBVar && x.isLit then
         if trace then
-          dbg_trace s!"applyReplacementFun: Variables applied to numerals are not changed {g.app x}"
-        return g.app x
-      let mut gAllArgs := e.getAppArgs
-      let some nm := gf.constName? | return mkAppN (← r gf) (← gAllArgs.mapM r)
+          dbg_trace s!"applyReplacementFun: Variables applied to numerals are not changed {e}"
+        return e
+      let mut args := e.getAppArgs
+      let some nm := fn.constName? | return mkAppN (← rM fn) (← args.mapM rM)
       -- e = `(nm y₁ .. yₙ x)
       /- Test if the head should not be replaced. -/
       let relevantArgId := relevantArg nm
-      let mut gf := gf
-      if h : relevantArgId < gAllArgs.size then
-        if let some fxd := additiveTest env gAllArgs[relevantArgId] then
+      if h : relevantArgId < args.size then
+        if let some fxd := additiveTest env args[relevantArgId] then
           if trace then
             dbg_trace s!"The application of {nm} contains the fixed type \
               {fxd}, so it is not changed"
-        else
-          gf := r gf
-          /- Test if arguments should be reordered. -/
-          let reorder := reorderFn nm
-          if !reorder.isEmpty then
-            gAllArgs := gAllArgs.permute! reorder
-            if trace then
-              dbg_trace s!"reordering the arguments of {nm} using the cyclic permutations {reorder}"
-      else
-        gf := r gf
+          return mkAppN fn (← args.mapM rM)
+      if false then -- here I will check the condition that the instance argument is modified
+        return mkAppN fn (← args.mapM rM)
+      /- Test if arguments should be reordered. -/
+      let reorder := reorderFn nm
+      if !reorder.isEmpty then
+        args := args.permute! reorder
+        if trace then
+          dbg_trace s!"reordering the arguments of {nm} using the cyclic permutations {reorder}"
       /- Do not replace numerals in specific types. -/
       if let some changedArgNrs := changeNumeralAttr.find? env nm then
-        let firstArg := gAllArgs[0]!
+        let firstArg := args[0]!
         if additiveTest env firstArg |>.isNone then
           if trace then
             dbg_trace s!"applyReplacementFun: We change the numerals in this expression. \
@@ -627,19 +629,19 @@ where /-- Implementation of `applyReplacementFun`. -/
           -- In this case, we still update all arguments of `g` that are not numerals,
           -- since all other arguments can contain subexpressions like
           -- `(fun x ↦ ℕ) (1 : G)`, and we have to update the `(1 : G)` to `(0 : G)`
-          gAllArgs := gAllArgs.mapIdx fun argNr arg ↦
+          args := args.mapIdx fun argNr arg ↦
             if changedArgNrs.contains argNr then
               changeNumeral arg
             else
               arg
-      return mkAppN gf (← gAllArgs.mapM r)
+      return mkAppN (← rM fn) (← args.mapM rM)
     | .proj n₀ idx e => do
       let n₁ := n₀.mapPrefix <| findTranslation? env
       if trace then
         dbg_trace s!"applyReplacementFun: in projection {e}.{idx} of type {n₀}, \
           replace type with {n₁}"
-      return .proj n₁ idx <| ← r e
-    | _ => e.traverseChildren r
+      return .proj n₁ idx <| ← rM e
+    | _ => e.traverseChildren rM
 
 /-- Eta expands `e` at most `n` times. -/
 def etaExpandN (n : Nat) (e : Expr) : MetaM Expr := do
