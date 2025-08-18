@@ -11,14 +11,14 @@ import Mathlib.Algebra.Exact
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 /-!
-# The module of kaehler differentials
+# The module of Kähler differentials
 
 ## Main results
 
-- `KaehlerDifferential`: The module of kaehler differentials. For an `R`-algebra `S`, we provide
+- `KaehlerDifferential`: The module of Kähler differentials. For an `R`-algebra `S`, we provide
   the notation `Ω[S⁄R]` for `KaehlerDifferential R S`.
   Note that the slash is `\textfractionsolidus`.
-- `KaehlerDifferential.D`: The derivation into the module of kaehler differentials.
+- `KaehlerDifferential.D`: The derivation into the module of Kähler differentials.
 - `KaehlerDifferential.span_range_derivation`: The image of `D` spans `Ω[S⁄R]` as an `S`-module.
 - `KaehlerDifferential.linearMapEquivDerivation`:
   The isomorphism `Hom_R(Ω[S⁄R], M) ≃ₗ[S] Der_R(S, M)`.

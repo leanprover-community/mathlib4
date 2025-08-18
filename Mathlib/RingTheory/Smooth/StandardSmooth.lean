@@ -62,11 +62,11 @@ Finally, for ring homomorphisms we define:
 
 ## TODO
 
-- Show that the module of Kaehler differentials of a standard smooth `R`-algebra `S` of relative
+- Show that the module of Kähler differentials of a standard smooth `R`-algebra `S` of relative
   dimension `n` is `S`-free of rank `n`. In particular this shows that the relative dimension
   is independent of the choice of the standard smooth presentation.
 - Show that standard smooth algebras are smooth. This relies on the computation of the module of
-  Kaehler differentials.
+  Kähler differentials.
 - Show that locally on the target, smooth algebras are standard smooth.
 
 ## Implementation details
