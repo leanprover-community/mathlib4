@@ -143,14 +143,10 @@ theorem Int.isCoprime_of_sq_sum {r s : ℤ} (h2 : IsCoprime s r) : IsCoprime (r 
   rw [sq, sq]
   exact (IsCoprime.mul_left h2 h2).mul_add_left_left r
 
-@[deprecated (since := "2025-01-23")] alias Int.coprime_of_sq_sum := Int.isCoprime_of_sq_sum
-
 theorem Int.isCoprime_of_sq_sum' {r s : ℤ} (h : IsCoprime r s) :
     IsCoprime (r ^ 2 + s ^ 2) (r * s) := by
   apply IsCoprime.mul_right (Int.isCoprime_of_sq_sum (isCoprime_comm.mp h))
   rw [add_comm]; apply Int.isCoprime_of_sq_sum h
-
-@[deprecated (since := "2025-01-23")] alias Int.coprime_of_sq_sum' := Int.isCoprime_of_sq_sum'
 
 namespace Fermat42
 
@@ -189,9 +185,7 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
   have h4 : 0 < m := by
     apply lt_of_le_of_ne ht6
     rintro rfl
-    revert hb20
-    rw [ht2]
-    simp
+    omega
   obtain ⟨r, s, _, htt2, htt3, htt4, htt5, htt6⟩ := htt.coprime_classification' h3 ha2 h4
   -- Now use the fact that (b / 2) ^ 2 = m * r * s, and m, r and s are pairwise coprime to obtain
   -- i, j and k such that m = i ^ 2, r = j ^ 2 and s = k ^ 2.
