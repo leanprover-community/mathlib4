@@ -116,24 +116,6 @@ lemma associated_prime_eq_minimalPrimes_isCohenMacaulay (M : ModuleCat.{v} R)
   le_antisymm (fun p hp ↦ associated_prime_minimal_of_isCohenMacaulay p M hp)
     (Module.associatedPrimes.minimalPrimes_annihilator_subset_associatedPrimes R M)
 
-lemma ENat.add_right_cancel_iff (a b c : ℕ∞) (netop : c ≠ ⊤) : a + c = b + c ↔ a = b :=
-  ⟨fun h ↦ ENat.add_left_injective_of_ne_top netop h, fun h ↦ by rw [h]⟩
-
-lemma withBotENat_add_coe_cancel (a b : WithBot ℕ∞) (c : ℕ) : a + c = b + c ↔ a = b := by
-  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
-  by_cases eqbot : a = ⊥
-  · simp [eqbot, WithBot.bot_add] at h
-    rw [WithBot.add_coe_eq_bot_iff.mp h.symm, eqbot]
-  · by_cases eqbot' : b = ⊥
-    · absurd eqbot
-      simpa [eqbot'] using h
-    · have : a.unbot eqbot + c = b.unbot eqbot' + c := by
-        apply WithBot.coe_inj.mp
-        convert h
-        repeat simpa using by rfl
-      rw [← WithBot.coe_unbot a eqbot, ← WithBot.coe_unbot b eqbot', WithBot.coe_inj]
-      simpa [ENat.add_right_cancel_iff _ _ _ (ENat.coe_ne_top c)] using this
-
 lemma quotSMulTop_isCohenMacaulay_iff_isCohenMacaulay (M : ModuleCat.{v} R) [Module.Finite R M]
     (r : R) (reg : IsSMulRegular M r) (mem : r ∈ maximalIdeal R) :
      M.IsCohenMacaulay ↔ (ModuleCat.of R (QuotSMulTop r M)).IsCohenMacaulay := by
