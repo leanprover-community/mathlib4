@@ -776,8 +776,10 @@ def sigmaAntidiagonalEquivProd : (Σ n : ℕ+, Nat.divisorsAntidiagonal n) ≃ �
     ext <;> simp [divisorsAntidiagonalFactors, ← PNat.coe_injective.eq_iff, h.1]
   right_inv _ := rfl
 
-lemma sigmaAntidiagonalEquivProd_symm_apply (x : ℕ+ × ℕ+) :
-    sigmaAntidiagonalEquivProd.symm x = ⟨⟨x.1 * x.2, mul_pos x.1.2 x.2.2⟩,
-      ⟨x.1, x.2⟩, by simp [Nat.mem_divisorsAntidiagonal]⟩ := rfl
+lemma sigmaAntidiagonalEquivProd_symm_apply_fst (x : ℕ+ × ℕ+) :
+    (sigmaAntidiagonalEquivProd.symm x).1 = x.1.1 * x.2.1 := rfl
+
+lemma sigmaAntidiagonalEquivProd_symm_apply_snd (x : ℕ+ × ℕ+) :
+    (sigmaAntidiagonalEquivProd.symm x).2 = (x.1.1, x.2.1) := rfl
 
 end pnat
