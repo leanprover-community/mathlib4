@@ -13,10 +13,6 @@ import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Max
 import Mathlib.Combinatorics.Graph.Basic
 
-open Set
-
-variable {α : Type*} {x y : α} {e f g h : Set α} {l : Set (Set α)}
-
 /-!
 # Undirected hypergraphs
 
@@ -66,6 +62,17 @@ Husain, Aaron Liu, and Tristan Figueroa-Reid for patient guidance and useful fee
 implementation.
 -/
 
+open Set
+
+variable {α : Type*} {x y : α} {e f g h : Set α} {l : Set (Set α)}
+
+/--
+An undirected hypergraph with vertices of type `α` and hyperedges of type `Set α`,
+as described by vertex and hyperedge sets `vertexSet : Set α` and `hyperedgeSet : Set (Set α)`.
+
+The requirement `hyperedge_isSubset_vertexSet` ensures that all vertices in hyperedges are part of
+`vertexSet`, i.e., all hyperedges are subsets of the `vertexSet`.
+-/
 @[ext]
 structure Hypergraph (α : Type*) where
   /-- The vertex set -/
