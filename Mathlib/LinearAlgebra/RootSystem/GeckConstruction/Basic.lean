@@ -383,9 +383,9 @@ lemma ωConj_mem_of_mem
     obtain (⟨i, rfl⟩ | ⟨i, rfl⟩ | ⟨i, rfl⟩) : (∃ j, h j = u) ∨ (∃ j, e j = u) ∨ (∃ j, f j = u) := by
       simpa only [mem_union, mem_range, or_assoc] using hu
     · rw [← neg_mem_iff]
-      exact LieSubalgebra.subset_lieSpan <| Or.inl <| Or.inl ⟨i, by simp [ω_mul_h, mul_assoc]⟩
-    · exact LieSubalgebra.subset_lieSpan <| Or.inr ⟨i, by simp [ω_mul_e, mul_assoc]⟩
-    · exact LieSubalgebra.subset_lieSpan <| Or.inl <| Or.inr ⟨i, by simp [ω_mul_f, mul_assoc]⟩
+      exact LieSubalgebra.subset_lieSpan <| by simp [ω_mul_h, mul_assoc]
+    · exact LieSubalgebra.subset_lieSpan <| by simp [ω_mul_e, mul_assoc]
+    · exact LieSubalgebra.subset_lieSpan <| by simp [ω_mul_f, mul_assoc]
   | zero => simp
   | add u v _ _ hu hv => simpa [mul_add, add_mul] using add_mem hu hv
   | smul t u _ hu => simpa using SMulMemClass.smul_mem _ hu
