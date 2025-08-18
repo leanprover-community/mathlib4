@@ -71,12 +71,13 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
   calc (p.length : WithBot ℕ∞) ≤ (p.length - 1 + 1 : ℕ) := Nat.cast_le.mpr le_tsub_add
     _ ≤ _ := by simpa using add_le_add_right (by exact le_iSup_iff.mpr fun _ h ↦ h q') 1
 
-lemma ringKrullDim_le_ringKrullDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIdeal R) :
+lemma _root_.ringKrullDim_le_ringKrullDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIdeal R) :
     ringKrullDim R ≤ ringKrullDim (R ⧸ x • (⊤ : Ideal R)) + 1 := by
   rw [← Module.supportDim_self_eq_ringKrullDim, ← Module.supportDim_quotient_eq_ringKrullDim]
   exact supportDim_le_supportDim_quotSMulTop_succ hx
 
-lemma ringKrullDim_le_ringKrullDim_add_card {S : Finset R} (hS : (S : Set R) ⊆ maximalIdeal R) :
+lemma _root_.ringKrullDim_le_ringKrullDim_add_card {S : Finset R}
+    (hS : (S : Set R) ⊆ maximalIdeal R) :
     ringKrullDim R ≤ ringKrullDim (R ⧸ Ideal.span S.toSet) + S.card := by
   classical
   induction' S using Finset.induction_on with a S nmem ih
