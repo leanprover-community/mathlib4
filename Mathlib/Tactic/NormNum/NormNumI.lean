@@ -28,7 +28,6 @@ structure IsComplex {𝕜} [RCLike 𝕜] (z : 𝕜) (re im : ℝ) : Prop where
   re_eq : RCLike.re z = re
   im_eq : RCLike.im z = im
 
-
 theorem IsComplex.I : IsComplex (RCLike.I : ℂ) 0 1 := ⟨rfl, rfl⟩
 
 theorem IsComplex.zero : IsComplex (0 : 𝕜) 0 0 := ⟨RCLike.zero_re, RCLike.zero_im⟩
@@ -62,10 +61,9 @@ theorem IsComplex.conj : ∀ {z : 𝕜} {a b : ℝ}, IsComplex z a b → IsCompl
 theorem IsComplex.ofNat (n : ℕ) [n.AtLeastTwo] :
     IsComplex (OfNat.ofNat (α := 𝕜) n) (OfNat.ofNat n) 0 := ⟨RCLike.ofNat_re _, RCLike.ofNat_im _⟩
 
--- TODO: generalize to 𝕜
 theorem IsComplex.scientific (m exp : ℕ) (x : Bool) :
-    IsComplex (OfScientific.ofScientific m x exp : ℂ) (OfScientific.ofScientific m x exp : ℝ) 0 :=
-  ⟨rfl, rfl⟩
+    IsComplex (OfScientific.ofScientific m x exp : 𝕜) (OfScientific.ofScientific m x exp : ℝ) 0 :=
+  ⟨RCLike.nnratCast_re _, RCLike.nnratCast_im _⟩
 
 theorem eq_eq {z : 𝕜} {a b a' b' : ℝ} (pf : IsComplex z a b) (pf_a : a = a') (pf_b : b = b') :
   IsComplex z a' b' := by simp_all
