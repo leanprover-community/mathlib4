@@ -15,7 +15,7 @@ import Mathlib.Combinatorics.Graph.Basic
 
 open Set
 
-variable {α β : Type*} {x y : α} {e f g h : Set α} {l : Set (Set α)}
+variable {α : Type*} {x y : α} {e f g h : Set α} {l : Set (Set α)}
 
 /-!
 # Undirected hypergraphs
@@ -402,26 +402,5 @@ def partialHypergraph (H : Hypergraph α) (l : Set (Set α)) : Hypergraph α whe
   hyperedge_isSubset_vertexSet q hq _ hx := ⟨q, hq.1, hq.2, hx⟩
 
 end Sub
-
-section IncMatrix
-
-/-! ## Incidence Matrix -/
-
-/--
-The *incidence matrix* `M` of a hypergraph `H` is a `|V(H)|`-by-`|E(H)|` matrix with elements:
-
-`Mₓₑ = 1` if `x ∈ V(H) ∧ e ∈ E(H) ∧ x ∈ e`
-`Mₓₑ = 0` otherwise
-
-Note that this means that the incidence Matrix is defined even for members of α and Set α that are
-not part of the hypergraph `H`.
-
-TODO: there's no way this DecidableRel requirement is reasonable... right?
--/
-def incidenceMatrix (H : Hypergraph α)
-[DecidableRel fun x e => x ∈ V(H) ∧ e ∈ E(H) ∧ x ∈ e] [Zero β] [One β] : Matrix α (Set α) β :=
-  Matrix.of (fun x e => ite (x ∈ V(H) ∧ e ∈ E(H) ∧ x ∈ e) 1 0)
-
-end IncMatrix
 
 end Hypergraph
