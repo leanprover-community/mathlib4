@@ -180,6 +180,10 @@ protected theorem sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).Sorted (· >
         rcases H with ⟨⟨a, a'⟩, H, rfl⟩
         exact (fst_le_log H).trans_lt (log_mod_opow_log_lt_log_self hb hbo)
 
+private theorem nodupKeys (b o : Ordinal) : (map Prod.toSigma (CNF b o)).NodupKeys := by
+  rw [NodupKeys, List.keys, map_map, Prod.fst_comp_toSigma]
+  exact (CNF.sorted ..).nodup
+
 /-! ### Cantor normal form as a finsupp -/
 
 open AList Finsupp
@@ -188,15 +192,17 @@ open AList Finsupp
 `CNF` of `o`, for each `e`. -/
 @[pp_nodot]
 def coeff (b o : Ordinal) : Ordinal →₀ Ordinal :=
-  lookupFinsupp ⟨_, (CNF.sorted b o).nodup.map Prod.toSigma_injective⟩
+  lookupFinsupp ⟨_, nodupKeys b o⟩
 
 theorem coeff_of_mem_CNF {b o e c : Ordinal} (h : ⟨e, c⟩ ∈ CNF b o) :
     coeff b o e = c := by
-  rw [coeff, lookupFinsupp_apply, mem_lookup_iff.2 h, Option.getD_some]
+  rw [coeff, lookupFinsupp_apply, mem_lookup_iff.2, Option.getD_some]
+  simpa
 
 theorem coeff_of_not_mem_CNF {b o e : Ordinal} (h : e ∉ (CNF b o).map Prod.fst) :
     coeff b o e = 0 := by
-  rw [CNF_coeff, lookupFinsupp_apply, lookup_eq_none.2 h, Option.getD_none]
+  rw [coeff, lookupFinsupp_apply, lookup_eq_none.2, Option.getD_none]
+  simp_all [List.keys]
 
 theorem coeff_zero_apply (b e : Ordinal) : coeff b 0 e = 0 := by
   apply coeff_of_not_mem_CNF
@@ -205,7 +211,7 @@ theorem coeff_zero_apply (b e : Ordinal) : coeff b 0 e = 0 := by
 @[simp]
 theorem coeff_zero_right (b : Ordinal) : coeff b 0 = 0 := by
   ext e
-  exact CNF_coeff_zero_apply b e
+  exact coeff_zero_apply b e
 
 theorem coeff_of_le_one {b : Ordinal} (hb : b ≤ 1) (o : Ordinal) : coeff b o = single 0 o := by
   ext a
@@ -213,11 +219,11 @@ theorem coeff_of_le_one {b : Ordinal} (hb : b ≤ 1) (o : Ordinal) : coeff b o =
   · simp
   · obtain rfl | ha := eq_or_ne a 0
     · apply coeff_of_mem_CNF
-      rw [CNF_of_le_one hb ho]
+      rw [CNF.of_le_one hb ho]
       simp
     · rw [single_eq_of_ne ha.symm]
-      apply CNF_coeff_of_not_mem_CNF
-      rw [CNF.exponents, CNF_of_le_one hb ho]
+      apply coeff_of_not_mem_CNF
+      rw [CNF.of_le_one hb ho]
       simpa using ha
 
 @[simp]
