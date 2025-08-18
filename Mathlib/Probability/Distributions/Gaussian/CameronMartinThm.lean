@@ -90,7 +90,7 @@ lemma hasLaw_cameronMartinRKHS (x : cameronMartinRKHS μ) :
         simp only [hz, map_sub, sub_right_inj]
         rw [IsGaussian.integral_dual]
       rw [Measure.map_congr h_eq]
-      sorry
+      simpa using gaussianReal_sub_const' (hy_map' n) (μ[y n])
     have hL'_prob n : IsProbabilityMeasure (μ.map (L' n)) := by
       rw [hL'_map n]
       infer_instance
