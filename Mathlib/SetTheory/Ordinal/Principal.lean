@@ -101,7 +101,7 @@ protected theorem Principal.sSup {s : Set Ordinal} (H : ∀ x ∈ s, Principal o
   by_cases hs : BddAbove s
   · obtain rfl | hs' := s.eq_empty_or_nonempty
     · assumption
-    · refine fun x y hx hy ↦ ?_
+    · intro x y hx hy
       rw [lt_csSup_iff hs hs'] at *
       obtain ⟨a, has, ha⟩ := hx
       obtain ⟨b, hbs, hb⟩ := hy
