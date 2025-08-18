@@ -305,6 +305,13 @@ lemma variance_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
   · refine AEStronglyMeasurable.pow ?_ _
     exact AEMeasurable.aestronglyMeasurable (by fun_prop)
 
+lemma _root_.MeasureTheory.MeasurePreserving.variance_fun_comp {Ω' : Type*}
+    {mΩ' : MeasurableSpace Ω'} {ν : Measure Ω'} {X : Ω → Ω'}
+    (hX : MeasurePreserving X μ ν) {f : Ω' → ℝ} (hf : AEMeasurable f ν) :
+    Var[fun ω ↦ f (X ω); μ] = Var[f; ν] := by
+  rw [← hX.map_eq, variance_map (hX.map_eq ▸ hf) hX.aemeasurable]
+  rfl
+
 lemma variance_map_equiv {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
     (X : Ω → ℝ) (Y : Ω' ≃ᵐ Ω) :
     Var[X; μ.map Y] = Var[X ∘ Y; μ] := by
@@ -393,6 +400,11 @@ nonrec theorem IndepFun.variance_add {X Y : Ω → ℝ} (hX : MemLp X 2 μ)
   rw [variance_add hX hY, h.covariance_eq_zero hX hY]
   simp
 
+/-- The variance of the sum of two independent random variables is the sum of the variances. -/
+lemma IndepFun.variance_fun_add {X Y : Ω → ℝ} (hX : MemLp X 2 μ)
+    (hY : MemLp Y 2 μ) (h : IndepFun X Y μ) : Var[fun ω ↦ X ω + Y ω; μ] = Var[X; μ] + Var[Y; μ] :=
+  h.variance_add hX hY
+
 -- Porting note: supplied `MeasurableSpace Ω` argument of `hs`, `h` by unification
 /-- The variance of a finite sum of pairwise independent random variables is the sum of the
 variances. -/
@@ -479,19 +491,10 @@ lemma covariance_fst_snd_prod (hfμ : MemLp X 2 μ) (hgν : MemLp Y 2 ν) :
 
 lemma variance_add_prod (hfμ : MemLp X 2 μ) (hgν : MemLp Y 2 ν) :
     Var[fun p ↦ X p.1 + Y p.2; μ.prod ν] = Var[X; μ] + Var[Y; ν] := by
-  rw [variance_fun_add (hfμ.comp_fst ν) (hgν.comp_snd μ)]
-  simp only [covariance_fst_snd_prod hfμ hgν, mul_zero, add_zero]
-  have h_map1 : (μ.prod ν).map Prod.fst = μ := by simp
-  have h_map2 : (μ.prod ν).map Prod.snd = ν := by simp
-  conv_rhs => rw [← h_map1]
-              rhs
-              rw [← h_map2]
-  rw [variance_map _ (by fun_prop), variance_map _ (by fun_prop)]
-  · rfl
-  · simp only [Measure.map_snd_prod, measure_univ, one_smul]
-    exact hgν.aemeasurable
-  · simp only [Measure.map_fst_prod, measure_univ, one_smul]
-    exact hfμ.aemeasurable
+  refine (IndepFun.variance_fun_add (hfμ.comp_fst ν) (hgν.comp_snd μ) ?_).trans ?_
+  · exact indepFun_prod₀ hfμ.aemeasurable hgν.aemeasurable
+  · rw [measurePreserving_fst.variance_fun_comp hfμ.aemeasurable,
+      measurePreserving_snd.variance_fun_comp hgν.aemeasurable]
 
 end Prod
 
