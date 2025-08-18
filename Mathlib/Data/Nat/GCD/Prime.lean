@@ -19,7 +19,6 @@ More theorems related to prime number could be added in the future.
 namespace Nat
 
 namespace Prime
-
 variable {p a b : ℕ} (hp : Prime p)
 include hp
 
