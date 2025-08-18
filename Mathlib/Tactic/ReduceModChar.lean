@@ -287,14 +287,15 @@ syntax (name := reduce_mod_char) "reduce_mod_char" (location)? : tactic
 @[inherit_doc reduce_mod_char]
 syntax (name := reduce_mod_char!) "reduce_mod_char!" (location)? : tactic
 
+open Mathlib.Tactic in
 elab_rules : tactic
 | `(tactic| reduce_mod_char $[$loc]?) => unsafe do
   let loc := expandOptLocation (Lean.mkOptionalNode loc)
-  Mathlib.Tactic.atNondepPropLocation (.noContext derive) "reduce_mod_char" loc
+  (SimprocLike.noContext derive).atNondepPropLocation "reduce_mod_char" loc
     (failIfUnchanged := false)
 | `(tactic| reduce_mod_char! $[$loc]?) => unsafe do
   let loc := expandOptLocation (Lean.mkOptionalNode loc)
-  Mathlib.Tactic.atNondepPropLocation (.noContext (derive (expensive := true))) "reduce_mod_char"
+  (SimprocLike.noContext (derive (expensive := true))).atNondepPropLocation "reduce_mod_char"
     loc (failIfUnchanged := false)
 
 end ReduceModChar

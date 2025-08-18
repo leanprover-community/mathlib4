@@ -228,7 +228,7 @@ def getSimpContext (cfg args : Syntax) (simpOnly := false) : TacticM Simp.Contex
         (congrTheorems := ← getSimpCongrTheorems))
   return ctx
 
-open Elab.Tactic in
+open Elab Tactic in
 /--
 Elaborates a call to `norm_num only? [args]` or `norm_num1`.
 * `args`: the `(simpArgs)?` syntax for simp arguments
@@ -241,7 +241,7 @@ def elabNormNum (cfg args loc : Syntax) (simpOnly := false) (useSimp := true) :
     TacticM Unit := withMainContext do
   let ctx ← getSimpContext cfg args (!useSimp || simpOnly)
   let loc := expandOptLocation loc
-  Tactic.atNondepPropLocation (.withContext ctx (deriveSimp · useSimp)) "norm_num" loc
+  (SimprocLike.withContext ctx (deriveSimp · useSimp)).atNondepPropLocation "norm_num" loc
     (failIfUnchanged := false) (mayCloseGoalFromHyp := true)
 
 end Meta.NormNum

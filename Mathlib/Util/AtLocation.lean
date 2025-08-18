@@ -54,10 +54,11 @@ inductive SimprocLike
   `Simp.Context` to use it with; this will be modified at each hypothesis `h` to forget `h`. -/
   | withContext (ctx : Simp.Context) (m : Simp.Context → Expr → MetaM Simp.Result)
 
-variable (m : SimprocLike)
+namespace SimprocLike
 
 /-- Use the procedure `m` to rewrite the provided goal. -/
-def atTarget (proc : String) (failIfUnchanged : Bool) (goal : MVarId) : MetaM (Option MVarId) := do
+def atTarget (m : SimprocLike) (proc : String) (failIfUnchanged : Bool) (goal : MVarId) :
+    MetaM (Option MVarId) := do
   let tgt ← instantiateMVars (← goal.getType)
   let m := match m with
   | .noContext m => m
@@ -77,8 +78,8 @@ def atTarget (proc : String) (failIfUnchanged : Bool) (goal : MVarId) : MetaM (O
     applySimpResultToTarget goal tgt r
 
 /-- Use the procedure `m` to rewrite hypothesis `fvarId`. -/
-def atLocalDecl (proc : String) (failIfUnchanged : Bool) (mayCloseGoal : Bool) (fvarId : FVarId)
-    (goal : MVarId) :
+def atLocalDecl (m : SimprocLike) (proc : String) (failIfUnchanged : Bool) (mayCloseGoal : Bool)
+    (fvarId : FVarId) (goal : MVarId) :
     MetaM (Option MVarId) := do
   let ldecl ← fvarId.getDecl
   if ldecl.isImplementationDetail then
@@ -95,7 +96,7 @@ def atLocalDecl (proc : String) (failIfUnchanged : Bool) (mayCloseGoal : Bool) (
   return (← applySimpResultToLocalDecl goal fvarId r mayCloseGoal).map Prod.snd
 
 /-- Use the procedure `m` to rewrite at specified locations. -/
-def atLocation (proc : String) (loc : Location) (failIfUnchanged : Bool := true)
+def atLocation (m : SimprocLike) (proc : String) (loc : Location) (failIfUnchanged : Bool := true)
     (mayCloseGoalFromHyp : Bool := false) :
     TacticM Unit :=
   withLocation loc
@@ -106,12 +107,14 @@ def atLocation (proc : String) (loc : Location) (failIfUnchanged : Bool := true)
 /-- Use the procedure `m` to rewrite at specified locations.
 
 In the wildcard case (`*`), filter out all dependent and/or non-Prop hypotheses. -/
-def atNondepPropLocation (proc : String) (loc : Location) (failIfUnchanged : Bool := true)
-    (mayCloseGoalFromHyp : Bool := false) :
+def atNondepPropLocation (m : SimprocLike) (proc : String) (loc : Location)
+    (failIfUnchanged : Bool := true) (mayCloseGoalFromHyp : Bool := false) :
     TacticM Unit :=
   withNondepPropLocation loc
     (liftMetaTactic1 ∘ atLocalDecl m proc failIfUnchanged mayCloseGoalFromHyp)
     (liftMetaTactic1 <| atTarget m proc failIfUnchanged)
     fun _ ↦ throwError "{proc} made no progress anywhere"
+
+end SimprocLike
 
 end Mathlib.Tactic
