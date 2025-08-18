@@ -323,6 +323,7 @@ import Mathlib.Algebra.Group.Action.Pretransitive
 import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.Group.Action.Sigma
 import Mathlib.Algebra.Group.Action.Sum
+import Mathlib.Algebra.Group.Action.TransferInstance
 import Mathlib.Algebra.Group.Action.TypeTags
 import Mathlib.Algebra.Group.Action.Units
 import Mathlib.Algebra.Group.AddChar
@@ -457,6 +458,7 @@ import Mathlib.Algebra.GroupWithZero.Action.Pi
 import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Finset
 import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 import Mathlib.Algebra.GroupWithZero.Action.Prod
+import Mathlib.Algebra.GroupWithZero.Action.TransferInstance
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.GroupWithZero.Associated
 import Mathlib.Algebra.GroupWithZero.Basic
