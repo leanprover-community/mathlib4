@@ -86,14 +86,8 @@ theorem isComplete_closure_of_totallyBounded_quasiComplete {E : Type*} {𝕜 : T
 /- TVS III.8 for complete spaces -/
 theorem isCompact_closure_of_totallyBounded_quasiComplete {E : Type*} {𝕜 : Type*} [NormedField 𝕜]
     [AddCommGroup E] [Module 𝕜 E] [UniformSpace E] [IsUniformAddGroup E] [ContinuousSMul 𝕜 E]
-    [QuasiCompleteSpace 𝕜 E] {s : Set E} (ht : TotallyBounded s) : IsCompact (closure s) := by
-  rw [isCompact_iff_totallyBounded_isComplete]
-  constructor
-  · exact totallyBounded_closure_of_totallyBounded ht
-  · exact isComplete_closure_of_totallyBounded_quasiComplete (𝕜 := 𝕜) ht
-
-#check TotallyBounded
-
-
+    [QuasiCompleteSpace 𝕜 E] {s : Set E} (ht : TotallyBounded s) : IsCompact (closure s) :=
+  isCompact_iff_totallyBounded_isComplete.mpr ⟨totallyBounded_closure_of_totallyBounded ht,
+    isComplete_closure_of_totallyBounded_quasiComplete (𝕜 := 𝕜) ht⟩
 
 end QuasiCompleteSpace
