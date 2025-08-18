@@ -4,10 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Group.Subgroup.Lattice
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Data.Finset.Max
 import Mathlib.Order.Antisymmetrization
+import Mathlib.Order.UpperLower.CompleteLattice
+import Mathlib.Order.UpperLower.Principal
 
 /-!
 # Archimedean classes of a linearly ordered group
@@ -24,6 +27,10 @@ is "infinitesimal" to `b` in the sense that `n • |a| < |b|` for all natural nu
 * `MulArchimedeanClass` is the archimedean class for multiplicative linearly ordered group.
 * `ArchimedeanClass.orderHom` and `MulArchimedeanClass.orderHom` are `OrderHom` over
   archimedean classes lifted from ordered group homomorphisms.
+* `ArchimedeanClass.ballAddSubgroup` and `MulArchimedeanClass.ballSubgroup` are subgroups
+  formed by an open interval of archimedean classes
+* `ArchimedeanClass.closedBallAddSubgroup` and `MulArchimedeanClass.closedBallSubgroup` are
+  subgroups formed by a closed interval of archimedean classes.
 
 ## Main statements
 
@@ -451,5 +458,112 @@ theorem liftOrderHom_mk (f : M → α) (h : ∀ a b, mk a ≤ mk b → f a ≤ f
   lift_mk f (fun a b heq ↦ le_antisymm (h a b heq.le) (h b a heq.ge)) a
 
 end LiftHom
+
+/-- Given a `UpperSet` of `MulArchimedeanClass`,
+all group elements belonging to these classes form a subsemigroup.
+This is not yet a subgroup because it doesn't contain the identity if `s = ⊤`. -/
+@[to_additive /-- Given a `UpperSet` of `ArchimedeanClass`,
+all group elements belonging to these classes form a subsemigroup.
+This is not yet a subgroup because it doesn't contain the identity if `s = ⊤`. -/]
+def subsemigroup (s : UpperSet (MulArchimedeanClass M)) : Subsemigroup M where
+  carrier := mk ⁻¹' s
+  mul_mem' {a b} ha hb := by
+    rw [Set.mem_preimage] at ha hb ⊢
+    obtain h | h := min_le_iff.mp (min_le_mk_mul a b)
+    · exact s.upper h ha
+    · exact s.upper h hb
+
+/-- Make `MulArchimedeanClass.subsemigroup` a subgroup by assigning
+s = ⊤ with a junk value ⊥. -/
+@[to_additive /-- Make `ArchimedeanClass.subsemigroup` a subgroup by assigning
+s = ⊤ with a junk value ⊥. -/]
+noncomputable
+def subgroup (s : UpperSet (MulArchimedeanClass M)) : Subgroup M :=
+  open Classical in
+  if hs : s = ⊤ then
+    ⊥
+  else {
+    subsemigroup s with
+    one_mem' := by
+      rw [subsemigroup, Set.mem_preimage]
+      obtain ⟨u, hu⟩ := UpperSet.coe_nonempty.mpr hs
+      simpa using s.upper (by simp) hu
+    inv_mem' := by simp [subsemigroup]
+  }
+
+variable {s : UpperSet (MulArchimedeanClass M)}
+
+@[to_additive]
+theorem subsemigroup_eq_subgroup_of_ne_top (hs : s ≠ ⊤) :
+    subsemigroup s = (subgroup s : Set M)  := by
+  simp [subgroup, hs]
+
+variable (M) in
+@[to_additive (attr := simp)]
+theorem subgroup_eq_bot : subgroup (M := M) ⊤ = ⊥ := by
+  simp [subgroup]
+
+@[to_additive (attr := simp)]
+theorem mem_subgroup_iff (hs : s ≠ ⊤) : a ∈ subgroup s ↔ mk a ∈ s := by
+  simp [subgroup, subsemigroup, hs]
+
+@[to_additive]
+theorem subgroup_strictAntiOn : StrictAntiOn (subgroup (M := M)) (Set.Iio ⊤) := by
+  intro s hs t ht hst
+  rw [← SetLike.coe_ssubset_coe]
+  rw [← subsemigroup_eq_subgroup_of_ne_top (Set.mem_Iio.mp hs).ne_top]
+  rw [← subsemigroup_eq_subgroup_of_ne_top (Set.mem_Iio.mp ht).ne_top]
+  refine Set.ssubset_iff_subset_ne.mpr ⟨by simpa [subsemigroup] using hst.le, ?_⟩
+  contrapose! hst with heq
+  apply le_of_eq
+  simpa [mk_surjective, subsemigroup] using heq
+
+@[to_additive]
+theorem subgroup_antitone : Antitone (subgroup (M := M)) := by
+  intro s t hst
+  obtain rfl | hs := eq_or_ne s ⊤
+  · rw [eq_top_iff.mpr hst]
+  obtain rfl | ht := eq_or_ne t ⊤
+  · simp
+  rwa [subgroup_strictAntiOn.le_iff_ge ht.lt_top hs.lt_top]
+
+/-- An open ball defined by `MulArchimedeanClass.subgroup` of `UpperSet.Ioi c`.
+For `c = ⊤`, we assign the junk value `⊥`. -/
+@[to_additive /--An open ball defined by `ArchimedeanClass.addSubgroup` of `UpperSet.Ioi c`.
+For `c = ⊤`, we assign the junk value `⊥`. -/]
+noncomputable
+abbrev ballSubgroup (c : MulArchimedeanClass M) := subgroup (UpperSet.Ioi c)
+
+/-- A closed ball defined by `MulArchimedeanClass.subgroup` of `UpperSet.Ici c`. -/
+@[to_additive /-- A closed ball defined by `ArchimedeanClass.addSubgroup` of `UpperSet.Ici c`. -/]
+noncomputable
+abbrev closedBallSubgroup (c : MulArchimedeanClass M) := subgroup (UpperSet.Ici c)
+
+@[to_additive]
+theorem mem_ballSubgroup_iff {a : M} {c : MulArchimedeanClass M} (hA : c ≠ ⊤) :
+    a ∈ ballSubgroup c ↔ c < mk a := by
+  simp [hA]
+
+@[to_additive]
+theorem mem_closedBallSubgroup_iff {a : M} {c : MulArchimedeanClass M} :
+    a ∈ closedBallSubgroup c ↔ c ≤ mk a := by
+  simp
+
+variable (M) in
+@[to_additive (attr := simp)]
+theorem ballSubgroup_top : ballSubgroup (M := M) ⊤ = ⊥ := by
+  convert subgroup_eq_bot M
+  simp
+
+variable (M) in
+@[to_additive (attr := simp)]
+theorem closedBallSubgroup_top : closedBallSubgroup (M := M) ⊤ = ⊥ := by
+  ext
+  simp
+
+@[to_additive]
+theorem ballSubgroup_antitone : Antitone (ballSubgroup (M := M)) := by
+  intro _ _ h
+  exact subgroup_antitone <| (UpperSet.Ioi_strictMono _).monotone h
 
 end MulArchimedeanClass

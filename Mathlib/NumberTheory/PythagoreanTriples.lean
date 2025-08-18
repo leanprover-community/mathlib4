@@ -486,9 +486,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
     exfalso
     have h1 : 2 ∣ (Int.gcd n m : ℤ) :=
       Int.dvd_coe_gcd (Int.dvd_of_emod_eq_zero hn2) (Int.dvd_of_emod_eq_zero hm2)
-    rw [hnmcp] at h1
-    revert h1
-    decide
+    omega
   · -- m even, n odd
     apply h.isPrimitiveClassified_aux hc hzpos hm2n2 hv2 hw2 _ hmncp
     · apply Or.intro_left
@@ -512,9 +510,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
         rw [← Rat.divInt_eq_div, ← Rat.divInt_mul_right (by simp : (2 : ℤ) ≠ 0)]
         rw [Int.ediv_mul_cancel h1.1, Int.ediv_mul_cancel h1.2.1, hw2, Rat.divInt_eq_div]
         norm_cast
-      · apply (mul_lt_mul_right (by simp : 0 < (2 : ℤ))).mp
-        rw [Int.ediv_mul_cancel h1.1, zero_mul]
-        exact hm2n2
+      · omega
     norm_num [h2.1, h1.2.2.1] at hyo
 
 theorem isPrimitiveClassified_of_coprime_of_pos (hc : Int.gcd x y = 1) (hzpos : 0 < z) :
@@ -542,7 +538,7 @@ theorem classified : h.IsClassified := by
       apply Int.natAbs_eq_zero.mp
       apply Nat.eq_zero_of_gcd_eq_zero_right h0
     use 0, 1, 0
-    field_simp [hx, hy]
+    simp [hx, hy]
   apply h.isClassified_of_normalize_isPrimitiveClassified
   apply h.normalize.isPrimitiveClassified_of_coprime
   apply Int.gcd_div_gcd_div_gcd (Nat.pos_of_ne_zero h0)
