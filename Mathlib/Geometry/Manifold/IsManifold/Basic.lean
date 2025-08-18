@@ -130,7 +130,15 @@ noncomputable section
 
 universe u v w u' v' w'
 
-open Set Filter Function
+namespace PartialEquiv
+
+@[fun_prop]
+lemma Continuous.invFun {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+    (e : PartialEquiv α β) (he : Continuous e.symm) : Continuous e.invFun := he
+
+end PartialEquiv
+
+open Set Filter Function PartialEquiv
 
 open scoped Manifold Topology ContDiff
 
@@ -172,7 +180,7 @@ lemma ModelWithCorners.range_eq_target {𝕜 E H : Type*} [NontriviallyNormedFie
 def ModelWithCorners.of_target_univ (𝕜 : Type*) [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (φ : PartialEquiv H E) (hsource : φ.source = univ) (htarget : φ.target = univ)
-    (hcont : Continuous φ) (hcont_inv : Continuous φ.invFun) : ModelWithCorners 𝕜 E H where
+    (hcont : Continuous φ) (hcont_inv : Continuous φ.symm) : ModelWithCorners 𝕜 E H where
   toPartialEquiv := φ
   source_eq := hsource
   convex_range' := by
@@ -303,7 +311,7 @@ lemma _root_.Convex.convex_isRCLikeNormedField [NormedSpace ℝ E] [h : IsRCLike
 def of_convex_range
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
     (φ : PartialEquiv H E) (hsource : φ.source = univ) (htarget : Convex ℝ φ.target)
-    (hcont : Continuous φ) (hcont_inv : Continuous φ.invFun) (hint : (interior φ.target).Nonempty) :
+    (hcont : Continuous φ) (hcont_inv : Continuous φ.symm) (hint : (interior φ.target).Nonempty) :
     ModelWithCorners ℝ E H where
   toPartialEquiv := φ
   source_eq := hsource
