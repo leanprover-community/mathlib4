@@ -217,11 +217,10 @@ lemma span_range_h'_eq_top [Fintype ι] [DecidableEq ι] :
   rintro ⟨⟨x, -⟩, hx : x ∈ span R (range h)⟩ -
   let g : cartanSubalgebra' b →ₗ[R] Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
     (lieAlgebra b).subtype ∘ₗ (cartanSubalgebra' b).subtype
-  have hg : g '' range h' = range h := (range_comp ..).symm
-  rw [← SetLike.mem_coe, ← (injective_subtype _).mem_set_image,
-      ← (injective_subtype _).mem_set_image, ← image_comp]
-  change x ∈ (span R (range h')).map g
-  rwa [map_span, hg]
+  suffices x ∈ (span R (range h')).map g by
+    rwa [← SetLike.mem_coe, ← (injective_subtype _).mem_set_image,
+        ← (injective_subtype _).mem_set_image, ← image_comp]
+  rwa [map_span, ← range_comp]
 
 omit [Finite ι] [IsDomain R] [CharZero R] [P.IsCrystallographic] in
 @[simp] lemma ω_mul_ω [DecidableEq ι] [Fintype ι] :
