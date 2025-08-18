@@ -834,6 +834,7 @@ theorem dvd_of_lcm_left_dvd (h : lcm a b ∣ c) : b ∣ c :=
 
 namespace Prime
 variable {p : α} (hp : Prime p)
+
 include hp
 
 theorem dvd_or_dvd_of_dvd_lcm (h : p ∣ lcm a b) : p ∣ a ∨ p ∣ b :=
