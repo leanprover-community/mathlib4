@@ -12,13 +12,7 @@ import Mathlib.Data.Fintype.Basic
 /-!
 # Transfer algebraic structures across `Equiv`s
 
-In this file we prove lemmas of the following form: if `β` has a group structure and `α ≃ β`
-then `α` has a group structure, and similarly for monoids, semigroups and so on.
-
-### Implementation details
-
-When adding new definitions that transfer type-classes across an equivalence, please use
-`abbrev`. See note [reducible non-instances].
+This continues the pattern set in `Mathlib/Algebra/Group/TransferInstance.lean`.
 -/
 
 assert_not_exists MonoidWithZero
