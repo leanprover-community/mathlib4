@@ -46,7 +46,6 @@ structure MagmaCat : Type (u + 1) where
   [str : Mul carrier]
 
 attribute [instance] AddMagmaCat.str MagmaCat.str
-attribute [to_additive existing] MagmaCat.carrier MagmaCat.str
 
 initialize_simps_projections AddMagmaCat (carrier → coe, -str)
 initialize_simps_projections MagmaCat (carrier → coe, -str)
@@ -68,18 +67,16 @@ end MagmaCat
 /-- The type of morphisms in `AddMagmaCat R`. -/
 @[ext]
 structure AddMagmaCat.Hom (A B : AddMagmaCat.{u}) where
-  private mk ::
+  mk ::
   /-- The underlying `AddHom`. -/
   hom' : A →ₙ+ B
 
 /-- The type of morphisms in `MagmaCat R`. -/
 @[to_additive, ext]
 structure MagmaCat.Hom (A B : MagmaCat.{u}) where
-  private mk ::
+  mk ::
   /-- The underlying `MulHom`. -/
   hom' : A →ₙ* B
-
-attribute [to_additive existing AddMagmaCat.Hom.mk] MagmaCat.Hom.mk
 
 namespace MagmaCat
 
@@ -208,7 +205,6 @@ structure Semigrp : Type (u + 1) where
   [str : Semigroup carrier]
 
 attribute [instance] AddSemigrp.str Semigrp.str
-attribute [to_additive existing] Semigrp.carrier Semigrp.str
 
 initialize_simps_projections AddSemigrp (carrier → coe, -str)
 initialize_simps_projections Semigrp (carrier → coe, -str)
@@ -230,18 +226,16 @@ end Semigrp
 /-- The type of morphisms in `AddSemigrp R`. -/
 @[ext]
 structure AddSemigrp.Hom (A B : AddSemigrp.{u}) where
-  private mk ::
+  mk ::
   /-- The underlying `AddHom`. -/
   hom' : A →ₙ+ B
 
 /-- The type of morphisms in `Semigrp R`. -/
 @[to_additive, ext]
 structure Semigrp.Hom (A B : Semigrp.{u}) where
-  private mk ::
+  mk ::
   /-- The underlying `MulHom`. -/
   hom' : A →ₙ* B
-
-attribute [to_additive existing AddSemigrp.Hom.mk] Semigrp.Hom.mk
 
 namespace Semigrp
 

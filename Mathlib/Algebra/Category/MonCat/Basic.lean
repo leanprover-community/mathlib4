@@ -41,7 +41,6 @@ structure MonCat : Type (u + 1) where
   [str : Monoid carrier]
 
 attribute [instance] AddMonCat.str MonCat.str
-attribute [to_additive existing] MonCat.carrier MonCat.str
 
 initialize_simps_projections AddMonCat (carrier → coe, -str)
 initialize_simps_projections MonCat (carrier → coe, -str)
@@ -63,18 +62,16 @@ end MonCat
 /-- The type of morphisms in `AddMonCat`. -/
 @[ext]
 structure AddMonCat.Hom (A B : AddMonCat.{u}) where
-  private mk ::
+  mk ::
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
 /-- The type of morphisms in `MonCat`. -/
 @[to_additive, ext]
 structure MonCat.Hom (A B : MonCat.{u}) where
-  private mk ::
+  mk ::
   /-- The underlying monoid homomorphism. -/
   hom' : A →* B
-
-attribute [to_additive existing AddMonCat.Hom.mk] MonCat.Hom.mk
 
 namespace MonCat
 
