@@ -151,7 +151,7 @@ def finLiftOn₂ : φ := Quotient.liftOn₂ (finChoice q₁) (finChoice q₂) f 
 lemma finLiftOn₂_mk (a : ∀ i, α i) (b : ∀ i, β i) : finLiftOn₂ (⟦a ·⟧) (⟦b ·⟧) f c = f a b := by
   simp_rw [finLiftOn₂, finChoice_eq, lift_mk]
 
-end
+end finLift
 
 /-- `Quotient.finChoice` as an equivalence. -/
 @[simps]
