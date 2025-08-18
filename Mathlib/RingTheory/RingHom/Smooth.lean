@@ -49,8 +49,7 @@ lemma FormallySmooth.respectsIso : RespectsIso @FormallySmooth :=
 
 lemma FormallySmooth.isStableUnderBaseChange : IsStableUnderBaseChange @FormallySmooth := by
   refine .mk respectsIso ?_
-  intros R S T _ _ _ _ _ H
-  change (algebraMap _ _).FormallySmooth
+  introv H
   rw [formallySmooth_algebraMap] at H ⊢
   infer_instance
 
