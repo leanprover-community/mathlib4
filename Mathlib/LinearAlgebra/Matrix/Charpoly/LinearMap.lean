@@ -39,7 +39,7 @@ theorem PiToModule.fromMatrix_apply [DecidableEq ι] (A : Matrix ι ι R) (w : �
 theorem PiToModule.fromMatrix_apply_single_one [DecidableEq ι] (A : Matrix ι ι R) (j : ι) :
     PiToModule.fromMatrix R b A (Pi.single j 1) = ∑ i : ι, A i j • b i := by
   rw [PiToModule.fromMatrix_apply, Fintype.linearCombination_apply, Matrix.mulVec_single]
-  simp_rw [MulOpposite.op_one, one_smul, transpose_apply]
+  simp_rw [MulOpposite.op_one, one_smul, col_apply]
 
 /-- The endomorphisms of `M` acts on `(ι → R) →ₗ[R] M`, and takes the projection
 to a `(ι → R) →ₗ[R] M`. -/
@@ -121,7 +121,7 @@ theorem Matrix.Represents.zero : (0 : Matrix ι ι R).Represents b 0 := by
 theorem Matrix.Represents.smul {A : Matrix ι ι R} {f : Module.End R M} (h : A.Represents b f)
     (r : R) : (r • A).Represents b (r • f) := by
   delta Matrix.Represents at h ⊢
-  rw [_root_.map_smul, _root_.map_smul, h]
+  rw [map_smul, map_smul, h]
 
 theorem Matrix.Represents.algebraMap (r : R) :
     (algebraMap _ (Matrix ι ι R) r).Represents b (algebraMap _ (Module.End R M) r) := by

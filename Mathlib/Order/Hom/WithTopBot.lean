@@ -63,6 +63,33 @@ def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithTop α where
   inj' := WithTop.coe_injective
   map_rel_iff' := WithTop.coe_le_coe
 
+/-- Any `OrderTop` is equivalent to `WithTop` of the subtype excluding `⊤`.
+
+See also `Equiv.optionSubtypeNe`. -/
+def subtypeOrderIso [PartialOrder α] [OrderTop α] [DecidablePred (· = (⊤ : α))] :
+    WithTop {a : α // a ≠ ⊤} ≃o α where
+  toFun a := (a.map (↑)).untopD ⊤
+  invFun a := if h : a = ⊤ then ⊤ else .some ⟨a, h⟩
+  left_inv
+  | .some ⟨a, h⟩ => by simp [h]
+  | ⊤ => by simp
+  right_inv a := by dsimp only; split_ifs <;> simp [*]
+  map_rel_iff' {a b} := match a, b with
+  | .some a, .some b => by simp
+  | ⊤, .some ⟨b, h⟩ => by simp [h]
+  | a, ⊤ => by simp
+
+@[simp]
+theorem subtypeOrderIso_apply_coe [PartialOrder α] [OrderTop α] [DecidablePred (· = (⊤ : α))]
+    (a : {a : α // a ≠ ⊤}) :
+  subtypeOrderIso (a : WithTop {a : α // a ≠ ⊤}) = a := rfl
+
+theorem subtypeOrderIso_symm_apply [PartialOrder α] [OrderTop α] [DecidablePred (· = (⊤ : α))]
+    {a : α} (h : a ≠ ⊤) :
+    (subtypeOrderIso).symm a = (⟨a, h⟩ : {a : α // a ≠ ⊤}) := by
+  rw [OrderIso.symm_apply_eq]
+  rfl
+
 end WithTop
 
 namespace WithBot
@@ -109,6 +136,23 @@ def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithBot α where
   inj' := WithBot.coe_injective
   map_rel_iff' := WithBot.coe_le_coe
 
+/-- Any `OrderBot` is equivalent to `WithBot` of the subtype excluding `⊥`.
+
+See also `Equiv.optionSubtypeNe`. -/
+def subtypeOrderIso [PartialOrder α] [OrderBot α] [DecidablePred (· = (⊥ : α))] :
+    WithBot {a : α // a ≠ ⊥} ≃o α := (WithTop.subtypeOrderIso (α := αᵒᵈ)).dual
+
+@[simp]
+theorem subtypeOrderIso_apply_coe [PartialOrder α] [OrderBot α] [DecidablePred (· = (⊥ : α))]
+    (a : {a : α // a ≠ ⊥}) :
+  subtypeOrderIso (a : WithTop {a : α // a ≠ ⊥}) = a := rfl
+
+theorem subtypeOrderIso_symm_apply [PartialOrder α] [OrderBot α] [DecidablePred (· = (⊥ : α))]
+    {a : α} (h : a ≠ ⊥) :
+    (subtypeOrderIso).symm a = (⟨a, h⟩ : {a : α // a ≠ ⊥}) := by
+  rw [OrderIso.symm_apply_eq]
+  rfl
+
 end WithBot
 
 namespace OrderHom
@@ -132,9 +176,10 @@ namespace OrderEmbedding
 variable [Preorder α] [Preorder β]
 
 /-- A version of `WithBot.map` for order embeddings. -/
-@[simps! -fullyApplied]
+@[simps -fullyApplied]
 protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β where
-  __ := f.toEmbedding.optionMap
+  toFun := WithBot.map f
+  inj' := WithBot.map_injective f.injective
   map_rel_iff' := WithBot.map_le_iff f f.map_rel_iff
 
 /-- A version of `WithTop.map` for order embeddings. -/
@@ -161,40 +206,43 @@ namespace OrderIso
 variable [PartialOrder α] [PartialOrder β] [PartialOrder γ]
 
 /-- A version of `Equiv.optionCongr` for `WithTop`. -/
-@[simps! apply]
-def withTopCongr (e : α ≃o β) : WithTop α ≃o WithTop β :=
-  { e.toOrderEmbedding.withTopMap with
-    toEquiv := e.toEquiv.optionCongr }
+@[simps -fullyApplied]
+def withTopCongr (e : α ≃o β) : WithTop α ≃o WithTop β where
+  toFun := WithTop.map e
+  __ := e.toOrderEmbedding.withTopMap
+  __ := e.toEquiv.optionCongr
 
 @[simp]
 theorem withTopCongr_refl : (OrderIso.refl α).withTopCongr = OrderIso.refl _ :=
   RelIso.toEquiv_injective Equiv.optionCongr_refl
 
 @[simp]
-theorem withTopCongr_symm (e : α ≃o β) : e.withTopCongr.symm = e.symm.withTopCongr :=
+theorem withTopCongr_symm (e : α ≃o β) : e.symm.withTopCongr = e.withTopCongr.symm :=
   RelIso.toEquiv_injective e.toEquiv.optionCongr_symm
 
 @[simp]
 theorem withTopCongr_trans (e₁ : α ≃o β) (e₂ : β ≃o γ) :
-    e₁.withTopCongr.trans e₂.withTopCongr = (e₁.trans e₂).withTopCongr :=
+    (e₁.trans e₂).withTopCongr = e₁.withTopCongr.trans e₂.withTopCongr :=
   RelIso.toEquiv_injective <| e₁.toEquiv.optionCongr_trans e₂.toEquiv
 
 /-- A version of `Equiv.optionCongr` for `WithBot`. -/
-@[simps! apply]
-def withBotCongr (e : α ≃o β) : WithBot α ≃o WithBot β :=
-  { e.toOrderEmbedding.withBotMap with toEquiv := e.toEquiv.optionCongr }
+@[simps -fullyApplied]
+def withBotCongr (e : α ≃o β) : WithBot α ≃o WithBot β where
+  toFun := WithBot.map e
+  __ := e.toOrderEmbedding.withBotMap
+  __ := e.toEquiv.optionCongr
 
 @[simp]
 theorem withBotCongr_refl : (OrderIso.refl α).withBotCongr = OrderIso.refl _ :=
   RelIso.toEquiv_injective Equiv.optionCongr_refl
 
 @[simp]
-theorem withBotCongr_symm (e : α ≃o β) : e.withBotCongr.symm = e.symm.withBotCongr :=
+theorem withBotCongr_symm (e : α ≃o β) : e.symm.withBotCongr = e.withBotCongr.symm :=
   RelIso.toEquiv_injective e.toEquiv.optionCongr_symm
 
 @[simp]
 theorem withBotCongr_trans (e₁ : α ≃o β) (e₂ : β ≃o γ) :
-    e₁.withBotCongr.trans e₂.withBotCongr = (e₁.trans e₂).withBotCongr :=
+    (e₁.trans e₂).withBotCongr = e₁.withBotCongr.trans e₂.withBotCongr :=
   RelIso.toEquiv_injective <| e₁.toEquiv.optionCongr_trans e₂.toEquiv
 
 end OrderIso

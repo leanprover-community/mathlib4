@@ -3,11 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 -/
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Algebra.MonoidAlgebra.Defs
 import Mathlib.Data.Finsupp.SMul
-import Mathlib.LinearAlgebra.Finsupp.LSum
 
 /-!
 # MonoidAlgebra.mapDomain
@@ -161,7 +158,6 @@ protected def AddMonoidAlgebra.toMultiplicative [Semiring k] [Add G] :
       Multiplicative.ofAdd with
     toFun := equivMapDomain Multiplicative.ofAdd
     map_mul' := fun x y => by
-      dsimp only
       repeat' rw [equivMapDomain_eq_mapDomain (M := k)]
       dsimp [Multiplicative.ofAdd]
       exact MonoidAlgebra.mapDomain_mul (α := Multiplicative G) (β := k)
@@ -174,7 +170,6 @@ protected def MonoidAlgebra.toAdditive [Semiring k] [Mul G] :
   { Finsupp.domCongr Additive.ofMul with
     toFun := equivMapDomain Additive.ofMul
     map_mul' := fun x y => by
-      dsimp only
       repeat' rw [equivMapDomain_eq_mapDomain (M := k)]
       dsimp [Additive.ofMul]
       convert MonoidAlgebra.mapDomain_mul (β := k) (MulHom.id G) x y }

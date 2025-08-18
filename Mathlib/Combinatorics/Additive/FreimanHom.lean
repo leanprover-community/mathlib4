@@ -5,11 +5,11 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Algebra.Order.BigOperators.Group.Multiset
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.ZMod.Defs
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Freiman homomorphisms
@@ -145,7 +145,7 @@ lemma IsMulFreimanIso.mul_eq_mul (hf : IsMulFreimanIso 2 A B f) {a b c d : α}
   refine hf.map_prod_eq_map_prod ?_ ?_ (card_pair _ _) (card_pair _ _) <;> simp [ha, hb, hc, hd]
 
 /-- Characterisation of `2`-Freiman homomorphisms. -/
-@[to_additive "Characterisation of `2`-Freiman homomorphisms."]
+@[to_additive /-- Characterisation of `2`-Freiman homomorphisms. -/]
 lemma isMulFreimanHom_two :
     IsMulFreimanHom 2 A B f ↔ MapsTo f A B ∧ ∀ a ∈ A, ∀ b ∈ A, ∀ c ∈ A, ∀ d ∈ A,
       a * b = c * d → f a * f b = f c * f d where
@@ -153,7 +153,7 @@ lemma isMulFreimanHom_two :
   mpr hf := ⟨hf.1, by aesop (add simp card_eq_two)⟩
 
 /-- Characterisation of `2`-Freiman homs. -/
-@[to_additive "Characterisation of `2`-Freiman isomorphisms."]
+@[to_additive /-- Characterisation of `2`-Freiman isomorphisms. -/]
 lemma isMulFreimanIso_two :
     IsMulFreimanIso 2 A B f ↔ BijOn f A B ∧ ∀ a ∈ A, ∀ b ∈ A, ∀ c ∈ A, ∀ d ∈ A,
       f a * f b = f c * f d ↔ a * b = c * d where
@@ -226,13 +226,13 @@ lemma isMulFreimanIso_one_iff : IsMulFreimanIso 1 A B f ↔ BijOn f A B :=
 @[to_additive (attr := simp)]
 lemma isMulFreimanHom_empty : IsMulFreimanHom n (∅ : Set α) B f where
   mapsTo := mapsTo_empty f B
-  map_prod_eq_map_prod s t := by aesop (add simp eq_zero_of_forall_not_mem)
+  map_prod_eq_map_prod s t := by aesop (add simp eq_zero_of_forall_notMem)
 
 @[to_additive (attr := simp)]
 lemma isMulFreimanIso_empty : IsMulFreimanIso n (∅ : Set α) (∅ : Set β) f where
   bijOn := bijOn_empty _
   map_prod_eq_map_prod s t hs ht := by
-    simp [eq_zero_of_forall_not_mem hs, eq_zero_of_forall_not_mem ht]
+    simp [eq_zero_of_forall_notMem hs, eq_zero_of_forall_notMem ht]
 
 @[to_additive] lemma IsMulFreimanHom.mul (h₁ : IsMulFreimanHom n A B₁ f₁)
     (h₂ : IsMulFreimanHom n A B₂ f₂) : IsMulFreimanHom n A (B₁ * B₂) (f₁ * f₂) where
@@ -388,6 +388,8 @@ end Prod
 
 namespace Fin
 variable {k m n : ℕ}
+
+open Fin.CommRing
 
 private lemma aux (hm : m ≠ 0) (hkmn : m * k ≤ n) : k < (n + 1) :=
   Nat.lt_succ_iff.2 <| le_trans (Nat.le_mul_of_pos_left _ hm.bot_lt) hkmn

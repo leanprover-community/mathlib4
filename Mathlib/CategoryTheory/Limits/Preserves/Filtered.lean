@@ -20,13 +20,12 @@ open CategoryTheory.Functor
 
 namespace CategoryTheory.Limits
 
-universe w' w₂' w w₂ v u₁ u₂ u₃
+universe w' w₂' w w₂ v₁ v₂ v₃ u₁ u₂ u₃
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
-variable {C : Type u₁} [Category.{v} C]
-variable {D : Type u₂} [Category.{v} D]
-variable {E : Type u₃} [Category.{v} E]
-variable {J : Type v} [SmallCategory J] {K : J ⥤ C}
+variable {C : Type u₁} [Category.{v₁} C]
+variable {D : Type u₂} [Category.{v₂} D]
+variable {E : Type u₃} [Category.{v₃} E]
 
 section FilteredColimits
 
@@ -46,7 +45,7 @@ A functor is said to preserve filtered colimits, if it preserves all colimits of
 live.
 -/
 abbrev PreservesFilteredColimits (F : C ⥤ D) : Prop :=
-  PreservesFilteredColimitsOfSize.{v, v} F
+  PreservesFilteredColimitsOfSize.{v₂, v₂} F
 
 attribute [instance 100] PreservesFilteredColimitsOfSize.preserves_filtered_colimits
 
@@ -102,7 +101,7 @@ A functor is said to reflect filtered colimits, if it reflects all colimits of s
 live.
 -/
 abbrev ReflectsFilteredColimits (F : C ⥤ D) : Prop :=
-  ReflectsFilteredColimitsOfSize.{v, v} F
+  ReflectsFilteredColimitsOfSize.{v₂, v₂} F
 
 attribute [instance 100] ReflectsFilteredColimitsOfSize.reflects_filtered_colimits
 
@@ -162,7 +161,7 @@ A functor is said to preserve cofiltered limits, if it preserves all limits of s
 source live.
 -/
 abbrev PreservesCofilteredLimits (F : C ⥤ D) : Prop :=
-  PreservesCofilteredLimitsOfSize.{v, v} F
+  PreservesCofilteredLimitsOfSize.{v₂, v₂} F
 
 attribute [instance 100] PreservesCofilteredLimitsOfSize.preserves_cofiltered_limits
 
@@ -218,7 +217,7 @@ A functor is said to reflect cofiltered limits, if it reflects all limits of sha
 source live.
 -/
 abbrev ReflectsCofilteredLimits (F : C ⥤ D) : Prop :=
-  ReflectsCofilteredLimitsOfSize.{v, v} F
+  ReflectsCofilteredLimitsOfSize.{v₂, v₂} F
 
 attribute [instance 100] ReflectsCofilteredLimitsOfSize.reflects_cofiltered_limits
 

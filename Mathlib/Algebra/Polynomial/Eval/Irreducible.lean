@@ -39,7 +39,7 @@ it is monic and irreducible over `ℤ/pℤ` for some prime `p`.
 -/
 lemma Monic.irreducible_of_irreducible_map (f : R[X]) (h_mon : Monic f)
     (h_irr : Irreducible (f.map φ)) : Irreducible f := by
-  refine ⟨h_irr.not_unit ∘ IsUnit.map (mapRingHom φ), fun a b h => ?_⟩
+  refine ⟨h_irr.not_isUnit ∘ IsUnit.map (mapRingHom φ), fun a b h => ?_⟩
   dsimp [Monic] at h_mon
   have q := (leadingCoeff_mul a b).symm
   rw [← h, h_mon] at q

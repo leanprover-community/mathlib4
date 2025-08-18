@@ -69,7 +69,6 @@ theorem map_comp_c_app (F : J ⥤ PresheafedSpace.{_, _, v} C) {j₁ j₂ j₃}
           (pushforwardEq (congr_arg Hom.base (F.map_comp f g).symm) _).hom.app U := by
   simp [PresheafedSpace.congr_app (F.map_comp f g)]
 
--- See note [dsimp, simp]
 /-- Given a diagram of `PresheafedSpace C`s, its colimit is computed by pushing the sheaves onto
 the colimit of the underlying spaces, and taking componentwise limit.
 This is the componentwise diagram for an open set `U` of the colimit of the underlying spaces.
@@ -81,7 +80,6 @@ def componentwiseDiagram (F : J ⥤ PresheafedSpace.{_, _, v} C) [HasColimit F]
   map {j k} f := (F.map f.unop).c.app _ ≫
     (F.obj (unop k)).presheaf.map (eqToHom (by rw [← colimit.w F f.unop, comp_base]; rfl))
   map_comp {i j k} f g := by
-    dsimp
     simp only [assoc, CategoryTheory.NatTrans.naturality_assoc]
     simp
 
@@ -104,7 +102,7 @@ def pushforwardDiagramToColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
     apply (opEquiv _ _).injective
     refine NatTrans.ext (funext fun U => ?_)
     induction U with
-    | h U =>
+    | op U =>
       simp [opEquiv]
       rfl
   map_comp {j₁ j₂ j₃} f g := by
@@ -301,7 +299,7 @@ def colimitPresheafObjIsoComponentwiseLimit (F : J ⥤ PresheafedSpace.{_, _, v}
   fapply NatIso.ofComponents
   · intro X
     refine (F.obj (unop X)).presheaf.mapIso (eqToIso ?_)
-    simp only [Functor.op_obj, unop_op, op_inj_iff, Opens.map_coe, SetLike.ext'_iff,
+    simp only [Functor.op_obj, op_inj_iff, Opens.map_coe, SetLike.ext'_iff,
       Set.preimage_preimage]
     refine congr_arg (Set.preimage · U.1) (funext fun x => ?_)
     erw [← TopCat.comp_app]

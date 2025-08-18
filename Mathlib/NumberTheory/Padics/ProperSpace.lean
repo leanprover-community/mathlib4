@@ -21,7 +21,7 @@ and that `ℚ_[p]` is proper.
 
 ## Notation
 
- - `p` : Is a natural prime.
+- `p` : Is a natural prime.
 
 ## References
 

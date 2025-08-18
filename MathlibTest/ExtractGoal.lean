@@ -8,20 +8,21 @@ set_option autoImplicit true
 set_option linter.unusedVariables false
 
 -- the example in the documentation for the tactic.
-/-- info: theorem extracted_1 (i j k : ℕ) (h₀ : i ≤ j) (h₁ : j ≤ k) : i ≤ k := sorry -/
+/-- info: theorem _example.extracted_1 (i j k : ℕ) (h₀ : i ≤ j) (h₁ : j ≤ k) : i ≤ k := sorry -/
 #guard_msgs (info) in
 example (i j k : ℕ) (h₀ : i ≤ j) (h₁ : j ≤ k) : i ≤ k := by
   extract_goal
   exact h₀.trans h₁
 
-/-- info: theorem extracted_1 (i j k : ℕ) (h₁ : j ≤ k) : i ≤ k := sorry -/
+/-- info: theorem _example.extracted_1 (i j k : ℕ) (h₁ : j ≤ k) : i ≤ k := sorry -/
 #guard_msgs (info) in
 example (i j k : ℕ) (h₀ : i ≤ j) (h₁ : j ≤ k) : i ≤ k := by
   extract_goal h₁
   exact h₀.trans h₁
 
 -- an example with all binder types
-/-- info: theorem extracted_1.{v, u} {α : Type u} {β : Type v} [h : Sub β] (f : α → β) (a : α) {b : β} :
+/--
+info: theorem _example.extracted_1.{v, u} {α : Type u} {β : Type v} [h : Sub β] (f : α → β) (a : α) {b : β} :
   f a - b = f a - b := sorry
 -/
 #guard_msgs in
@@ -31,7 +32,7 @@ example {α : Type u} {β : Type v} [Add α] [h : Sub β] (f : α → β) ⦃_g 
   rfl
 
 -- an example with a hygienic variable
-/-- info: theorem extracted_1 (n : ℕ) : n + 1 = n + 1 := sorry -/
+/-- info: theorem _example.extracted_1 (n : ℕ) : n + 1 = n + 1 := sorry -/
 #guard_msgs in
 example (n : ℕ) : n = n := by
   cases n
@@ -40,16 +41,14 @@ example (n : ℕ) : n = n := by
   rfl
 
 -- an example with auto-implicit `Sort` and variable
-/--
-info: theorem extracted_1.{u_1} {α : Sort u_1} {n : α} : n = n := sorry
--/
+/-- info: theorem _example.extracted_1.{u_1} {α : Sort u_1} {n : α} : n = n := sorry -/
 #guard_msgs in
 example : n = n := by
   extract_goal
   rfl
 
 /--
-info: theorem extracted_1 {z : Int} :
+info: theorem _example.extracted_1 {z : Int} :
   @Exists.{1} Nat fun (n : Nat) ↦ @Eq.{1} Int (@Nat.cast.{0} Int instNatCastInt n) z := sorry
 ---
 warning: declaration uses 'sorry'
@@ -80,13 +79,13 @@ example (n : ℕ) : True := by
   extract_goal n using foo
   sorry
 
-/-- error: unknown identifier 'k' -/
+/-- error: Unknown identifier `k` -/
 #guard_msgs in
 example (n : ℕ) : True := by
   extract_goal k
 
 /--
-info: theorem extracted_1 (n : ℕ) : True := sorry
+info: theorem _example.extracted_1 (n : ℕ) : True := sorry
 ---
 warning: declaration uses 'sorry'
 -/
@@ -97,7 +96,7 @@ example (n : ℕ) : True := by
 
 -- Clears `i` since neither `n` nor the goal depends on it.
 /--
-info: theorem extracted_1 (n : ℕ) : True := sorry
+info: theorem _example.extracted_1 (n : ℕ) : True := sorry
 ---
 warning: declaration uses 'sorry'
 -/
@@ -107,7 +106,7 @@ example (n : ℕ) (i : Fin n) : True := by
   sorry
 
 /--
-info: theorem extracted_1 (n : ℕ) (i : Fin n) : True := sorry
+info: theorem _example.extracted_1 (n : ℕ) (i : Fin n) : True := sorry
 ---
 warning: declaration uses 'sorry'
 -/
@@ -118,7 +117,7 @@ example (n : ℕ) (i : Fin n) : True := by
 
 -- Contradiction proof gives full context:
 /--
-info: theorem extracted_1 (h : 1 = 2) : False := sorry
+info: theorem _example.extracted_1 (h : 1 = 2) : False := sorry
 ---
 warning: declaration uses 'sorry'
 -/
@@ -129,7 +128,7 @@ example (h : 1 = 2) : False := by
 
 -- Check mdata is cleared:
 /--
-info: theorem extracted_1 (h : 1 = 2) : False := sorry
+info: theorem _example.extracted_1 (h : 1 = 2) : False := sorry
 ---
 warning: declaration uses 'sorry'
 -/
@@ -141,7 +140,7 @@ example : False := by
 
 -- Check that fvar elaboration is with respect to the main local context
 /--
-info: theorem extracted_1 (h : 1 = 2) : False := sorry
+info: theorem _example.extracted_1 (h : 1 = 2) : False := sorry
 ---
 warning: declaration uses 'sorry'
 -/
@@ -153,7 +152,7 @@ example : 1 = 2 → False := by
 
 -- Check that sets local context correctly
 /--
-info: theorem extracted_1 (m : ℕ) : m < m + 1 := sorry
+info: theorem _example.extracted_1 (m : ℕ) : m < m + 1 := sorry
 ---
 warning: declaration uses 'sorry'
 -/
@@ -165,7 +164,7 @@ example : ∀ n, n < n + 1 := by
 
 -- Throwing metavariables into the terms
 /--
-info: theorem extracted_1 (m : ℕ) (this : m < m.succ.succ) : m < m + 1 := sorry
+info: theorem _example.extracted_1 (m : ℕ) (this : m < m.succ.succ) : m < m + 1 := sorry
 ---
 warning: declaration uses 'sorry'
 -/

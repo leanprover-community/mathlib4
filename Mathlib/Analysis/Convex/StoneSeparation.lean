@@ -20,7 +20,8 @@ complement is convex.
 
 open Set
 
-variable {𝕜 E : Type*} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
+variable {𝕜 E : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
 
 /-- In a tetrahedron with vertices `x`, `y`, `p`, `q`, any segment `[u, v]` joining the opposite
 edges `[x, p]` and `[y, q]` passes through any triangle of vertices `p`, `q`, `z` where
@@ -57,7 +58,7 @@ theorem not_disjoint_segment_convexHull_triple {p q u v x y z : E} (hz : z ∈ s
       · exact mul_nonneg hau hav
     have hw : ∑ i, w i = az * av + bz * au := by
       trans az * av * bu + (bz * au * bv + au * av)
-      · simp [w, Fin.sum_univ_succ, Fin.sum_univ_zero]
+      · simp [w, Fin.sum_univ_succ]
       linear_combination (au * bv - 1 * au) * habz + (-(1 * az * au) + au) * habv + az * av * habu
     have hz : ∀ i, z i ∈ ({p, q, az • x + bz • y} : Set E) := fun i => by fin_cases i <;> simp [z]
     convert (Finset.centerMass_mem_convexHull (Finset.univ : Finset (Fin 3)) (fun i _ => hw₀ i)

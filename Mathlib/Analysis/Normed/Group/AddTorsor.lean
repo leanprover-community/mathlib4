@@ -6,6 +6,7 @@ Authors: Joseph Myers, Yury Kudryashov
 import Mathlib.Analysis.Normed.Group.Submodule
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Midpoint
+import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.MetricSpace.IsometricSMul
 import Mathlib.Topology.Metrizable.Uniformity
 import Mathlib.Topology.Sequences
@@ -179,7 +180,6 @@ def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [SeminormedAd
   dist_self x := by simp
   dist_comm x y := by simp only [← neg_vsub_eq_vsub_rev y x, norm_neg]
   dist_triangle x y z := by
-    change ‖x -ᵥ z‖ ≤ ‖x -ᵥ y‖ + ‖y -ᵥ z‖
     rw [← vsub_add_vsub_cancel]
     apply norm_add_le
 
@@ -192,7 +192,6 @@ def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [NormedAddCommGroup
   eq_of_dist_eq_zero h := by simpa using h
   dist_comm x y := by simp only [← neg_vsub_eq_vsub_rev y x, norm_neg]
   dist_triangle x y z := by
-    change ‖x -ᵥ z‖ ≤ ‖x -ᵥ y‖ + ‖y -ᵥ z‖
     rw [← vsub_add_vsub_cancel]
     apply norm_add_le
 

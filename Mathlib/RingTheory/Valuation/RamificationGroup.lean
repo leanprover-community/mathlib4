@@ -43,7 +43,7 @@ instance decompositionSubgroupMulSemiringAction (A : ValuationSubring L) :
 
 /-- The inertia subgroup defined as the kernel of the group homomorphism from
 the decomposition subgroup to the group of automorphisms of the residue field of `A`. -/
-def inertiaSubgroup (A : ValuationSubring L) : Subgroup (A.decompositionSubgroup K) :=
+noncomputable def inertiaSubgroup (A : ValuationSubring L) : Subgroup (A.decompositionSubgroup K) :=
   MonoidHom.ker <|
     MulSemiringAction.toRingAut (A.decompositionSubgroup K) (IsLocalRing.ResidueField A)
 

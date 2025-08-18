@@ -53,7 +53,7 @@ theorem evenOdd_mul_le (i j : ZMod 2) : evenOdd Q i * evenOdd Q j ≤ evenOdd Q 
   simp_rw [Set.iUnion_mul, Set.mul_iUnion, Set.iUnion_subset_iff, Set.mul_subset_iff]
   rintro ⟨xi, rfl⟩ ⟨yi, rfl⟩ x hx y hy
   refine Set.mem_iUnion.mpr ⟨⟨xi + yi, Nat.cast_add _ _⟩, ?_⟩
-  simp only [Subtype.coe_mk, Nat.cast_add, pow_add]
+  simp only [pow_add]
   exact Submodule.mul_mem_mul hx hy
 
 instance evenOdd.gradedMonoid : SetLike.GradedMonoid (evenOdd Q) where
@@ -75,8 +75,7 @@ nonrec theorem GradedAlgebra.ι_sq_scalar (m : M) :
   exact DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext rfl <| ι_sq_scalar _ _)
 
 theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
-    -- Porting note: added a second `by apply`
-    lift Q ⟨by apply GradedAlgebra.ι Q, by apply GradedAlgebra.ι_sq_scalar Q⟩ x' =
+    lift Q ⟨GradedAlgebra.ι Q, GradedAlgebra.ι_sq_scalar Q⟩ x' =
       DirectSum.of (fun i => evenOdd Q i) i' x' := by
   obtain ⟨x', hx'⟩ := x'
   dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
@@ -148,7 +147,7 @@ theorem evenOdd_induction (n : ZMod 2) {motive : ∀ x, x ∈ evenOdd Q n → Pr
           motive (ι Q m₁ * ι Q m₂ * x)
             (zero_add n ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q n) : motive x hx := by
-  apply Submodule.iSup_induction' (C := motive) _ _ (range_ι_pow 0 (Submodule.zero_mem _)) add
+  apply Submodule.iSup_induction' (motive := motive) _ _ (range_ι_pow 0 (Submodule.zero_mem _)) add
   refine Subtype.rec ?_
   simp_rw [ZMod.natCast_eq_iff, add_comm n.val]
   rintro n' ⟨k, rfl⟩ xv

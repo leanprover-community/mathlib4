@@ -192,9 +192,6 @@ theorem differentiableWithinAt_localInvariantProp :
       · ext y; simp only [mfld_simps]
       · intro y hy; simp only [mfld_simps] at hy; simpa only [hy, mfld_simps] using hs hy.1 }
 
-@[deprecated (since := "2024-10-10")]
-alias differentiable_within_at_localInvariantProp := differentiableWithinAt_localInvariantProp
-
 variable (I) in
 /-- Predicate ensuring that, at a point and within a set, a function can have at most one
 derivative. This is expressed using the preferred chart at the considered point. -/

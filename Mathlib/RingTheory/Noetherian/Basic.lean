@@ -187,8 +187,8 @@ theorem isNoetherian_of_range_eq_ker [IsNoetherian R M] [IsNoetherian R P]
   isNoetherian_mk <|
     wellFounded_gt_exact_sequence
       (LinearMap.range f)
-      (Submodule.map (f.ker.liftQ f le_rfl))
-      (Submodule.comap (f.ker.liftQ f le_rfl))
+      (Submodule.map ((LinearMap.ker f).liftQ f le_rfl))
+      (Submodule.comap ((LinearMap.ker f).liftQ f le_rfl))
       (Submodule.comap g.rangeRestrict) (Submodule.map g.rangeRestrict)
       (Submodule.gciMapComap <| LinearMap.ker_eq_bot.mp <| Submodule.ker_liftQ_eq_bot _ _ _ le_rfl)
       (Submodule.giMapComap g.surjective_rangeRestrict)
@@ -246,9 +246,6 @@ lemma Submodule.finite_ne_bot_of_iSupIndep {ι : Type*} {N : ι → Submodule R 
     (h : iSupIndep N) :
     Set.Finite {i | N i ≠ ⊥} :=
   WellFoundedGT.finite_ne_bot_of_iSupIndep h
-
-@[deprecated (since := "2024-11-24")]
-alias Submodule.finite_ne_bot_of_independent := Submodule.finite_ne_bot_of_iSupIndep
 
 /-- A linearly-independent family of vectors in a module over a non-trivial ring must be finite if
 the module is Noetherian. -/

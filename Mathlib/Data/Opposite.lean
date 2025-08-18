@@ -101,10 +101,8 @@ instance [Nonempty α] : Nonempty αᵒᵖ := Nonempty.map op ‹_›
 
 instance [Subsingleton α] : Subsingleton αᵒᵖ := unop_injective.subsingleton
 
-/-- A recursor for `Opposite`.
-The `@[induction_eliminator]` attribute makes it the default induction principle for `Opposite`
-so you don't need to use `induction x using Opposite.rec'`. -/
-@[simp, induction_eliminator]
+/-- A deprecated alias for `Opposite.rec`. -/
+@[deprecated Opposite.rec (since := "2025-04-04")]
 protected def rec' {F : αᵒᵖ → Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
 
 /-- If `X` is `u`-small, also `Xᵒᵖ` is `u`-small.

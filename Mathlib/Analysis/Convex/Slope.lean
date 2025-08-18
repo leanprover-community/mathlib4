@@ -17,7 +17,7 @@ of their slopes.
 The main use is to show convexity/concavity from monotonicity of the derivative.
 -/
 
-variable {𝕜 : Type*} [LinearOrderedField 𝕜] {s : Set 𝕜} {f : 𝕜 → 𝕜}
+variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] {s : Set 𝕜} {f : 𝕜 → 𝕜}
 
 /-- If `f : 𝕜 → 𝕜` is convex, then for any three points `x < y < z` the slope of the secant line of
 `f` on `[x, y]` is less than the slope of the secant line of `f` on `[y, z]`. -/
@@ -257,9 +257,9 @@ theorem ConvexOn.secant_mono (hf : ConvexOn 𝕜 s f) {a x y : 𝕜} (ha : a ∈
   · simp
   rcases lt_or_gt_of_ne hxa with hxa | hxa
   · rcases lt_or_gt_of_ne hya with hya | hya
-    · convert hf.secant_mono_aux3 hx ha hxy hya using 1 <;> rw [← neg_div_neg_eq] <;> field_simp
+    · convert hf.secant_mono_aux3 hx ha hxy hya using 1 <;> rw [← neg_div_neg_eq] <;> simp
     · convert hf.slope_mono_adjacent hx hy hxa hya using 1
-      rw [← neg_div_neg_eq]; field_simp
+      rw [← neg_div_neg_eq]; simp
   · exact hf.secant_mono_aux2 ha hy hxa hxy
 
 theorem StrictConvexOn.secant_strict_mono_aux1 (hf : StrictConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s)

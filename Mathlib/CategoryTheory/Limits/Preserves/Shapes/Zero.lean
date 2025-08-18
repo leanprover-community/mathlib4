@@ -115,6 +115,10 @@ instance (F : C ⥤ D ⥤ E) [∀ X, (F.obj X).PreservesZeroMorphisms] :
 instance (F : C ⥤ D ⥤ E) [F.PreservesZeroMorphisms] (Y : D) :
     (F.flip.obj Y).PreservesZeroMorphisms where
 
+omit [HasZeroMorphisms C] in
+@[simp] lemma whiskerRight_zero {F G : C ⥤ D} (H : D ⥤ E) [H.PreservesZeroMorphisms] :
+    whiskerRight (0 : F ⟶ G) H = 0 := by cat_disch
+
 end ZeroMorphisms
 
 section ZeroObject

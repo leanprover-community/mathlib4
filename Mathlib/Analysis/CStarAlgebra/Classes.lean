@@ -15,7 +15,7 @@ noncommutative) Banach algebra over `ℂ` with an antimultiplicative conjugate-l
 
 ## Notes
 
-These classes are not defined in `Mathlib.Analysis.CStarAlgebra.Basic` because they require
+These classes are not defined in `Mathlib/Analysis/CStarAlgebra/Basic.lean` because they require
 heavier imports.
 
 -/
@@ -68,7 +68,6 @@ noncomputable instance NonUnitalStarSubalgebra.nonUnitalCommCStarAlgebra {S A : 
   mul_comm _ _ := Subtype.ext <| mul_comm _ _
 
 noncomputable instance : CommCStarAlgebra ℂ where
-  mul_comm := mul_comm
 
 section Pi
 
@@ -77,12 +76,10 @@ variable {ι : Type*} {A : ι → Type*} [Fintype ι]
 instance [(i : ι) → NonUnitalCStarAlgebra (A i)] : NonUnitalCStarAlgebra (Π i, A i) where
 
 instance [(i : ι) → NonUnitalCommCStarAlgebra (A i)] : NonUnitalCommCStarAlgebra (Π i, A i) where
-  mul_comm := mul_comm
 
 noncomputable instance [(i : ι) → CStarAlgebra (A i)] : CStarAlgebra (Π i, A i) where
 
 noncomputable instance [(i : ι) → CommCStarAlgebra (A i)] : CommCStarAlgebra (Π i, A i) where
-  mul_comm := mul_comm
 
 end Pi
 
@@ -94,12 +91,10 @@ instance [NonUnitalCStarAlgebra A] [NonUnitalCStarAlgebra B] : NonUnitalCStarAlg
 
 instance [NonUnitalCommCStarAlgebra A] [NonUnitalCommCStarAlgebra B] :
     NonUnitalCommCStarAlgebra (A × B) where
-  mul_comm := mul_comm
 
 noncomputable instance [CStarAlgebra A] [CStarAlgebra B] : CStarAlgebra (A × B) where
 
 noncomputable instance [CommCStarAlgebra A] [CommCStarAlgebra B] : CommCStarAlgebra (A × B) where
-  mul_comm := mul_comm
 
 end Prod
 
