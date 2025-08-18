@@ -101,5 +101,13 @@ theorem isCompact_closure_of_totallyBounded_quasiComplete {E : Type*} {𝕜 : Ty
   isCompact_closure_of_totallyBounded_of_isComplete_closure ht
     (isComplete_closure_of_totallyBounded_quasiComplete (𝕜 := 𝕜) ht)
 
+theorem isCompact_closedAbsConvexHull_of_totallyBounded_quasiComplete {E : Type*}
+    [AddCommGroup E] [Module ℝ E] [UniformSpace E] [IsUniformAddGroup E] [ContinuousSMul ℝ E]
+    [LocallyConvexSpace ℝ E] [QuasiCompleteSpace ℝ E] {s : Set E}
+    (ht : TotallyBounded s) : IsCompact (closedAbsConvexHull ℝ s) := by
+  rw [closedAbsConvexHull_eq_closure_absConvexHull]
+  exact isCompact_closure_of_totallyBounded_quasiComplete (𝕜 := ℝ)
+    (totallyBounded_absConvexHull E ht)
+
 
 end QuasiCompleteSpace
