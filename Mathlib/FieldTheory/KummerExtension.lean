@@ -101,9 +101,9 @@ theorem X_pow_sub_C_irreducible_of_odd
     {n : ℕ} (hn : Odd n) {a : K} (ha : ∀ p : ℕ, p.Prime → p ∣ n → ∀ b : K, b ^ p ≠ a) :
     Irreducible (X ^ n - C a) := by
   induction n using induction_on_primes generalizing K a with
-  | h₀ => simp [← Nat.not_even_iff_odd] at hn
-  | h₁ => simpa using irreducible_X_sub_C a
-  | h p n hp IH =>
+  | zero => simp [← Nat.not_even_iff_odd] at hn
+  | one => simpa using irreducible_X_sub_C a
+  | prime_mul p n hp IH =>
     rw [mul_comm]
     apply X_pow_mul_sub_C_irreducible
       (X_pow_sub_C_irreducible_of_prime hp (ha p hp (dvd_mul_right _ _)))
@@ -176,9 +176,6 @@ theorem Polynomial.separable_X_pow_sub_C_of_irreducible : (X ^ n - C a).Separabl
     AdjoinRoot.algebraMap_eq,
     X_pow_sub_C_eq_prod (hζ.map_of_injective (algebraMap K _).injective) hn
     (root_X_pow_sub_C_pow n a), separable_prod_X_sub_C_iff']
-  #adaptation_note /-- https://github.com/leanprover/lean4/pull/5376
-  we need to provide this helper instance. -/
-  have : MonoidHomClass (K →+* K[n√a]) K K[n√a] := inferInstance
   exact (hζ.map_of_injective (algebraMap K K[n√a]).injective).injOn_pow_mul
     (root_X_pow_sub_C_ne_zero (lt_of_le_of_ne (show 1 ≤ n from hn) (Ne.symm hn')) _)
 
@@ -245,7 +242,7 @@ def autAdjoinRootXPowSubCEquiv [NeZero n] :
     apply (rootsOfUnityEquivOfPrimitiveRoots (algebraMap K K[n√a]).injective hζ).injective
     ext
     simp only [AdjoinRoot.algebraMap_eq, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-      autAdjoinRootXPowSubC_root, Algebra.smul_def, ne_eq, MulEquiv.apply_symm_apply,
+      autAdjoinRootXPowSubC_root, Algebra.smul_def, MulEquiv.apply_symm_apply,
       rootsOfUnity.val_mkOfPowEq_coe, val_rootsOfUnityEquivOfPrimitiveRoots_apply_coe,
       AdjoinRootXPowSubCEquivToRootsOfUnity]
     split_ifs with h
@@ -397,9 +394,9 @@ lemma autEquivRootsOfUnity_smul [NeZero n] (σ : L ≃ₐ[K] L) :
   rw [mem_primitiveRoots hn] at hζ'
   rw [← mem_nthRoots hn, (hζ'.map_of_injective (algebraMap K L).injective).nthRoots_eq
     (rootOfSplitsXPowSubC_pow a L)] at hα
-  simp only [Finset.range_val, Multiset.mem_map, Multiset.mem_range] at hα
+  simp only [Multiset.mem_map, Multiset.mem_range] at hα
   obtain ⟨i, _, rfl⟩ := hα
-  simp only [map_mul, ← map_pow, ← Algebra.smul_def, map_smul,
+  simp only [← map_pow, ← Algebra.smul_def, map_smul,
     autEquivRootsOfUnity_apply_rootOfSplit hζ H L]
   exact smul_comm _ _ _
 
@@ -442,8 +439,8 @@ lemma finrank_of_isSplittingField_X_pow_sub_C : Module.finrank K L = n := by
   have := isGalois_of_isSplittingField_X_pow_sub_C hζ H L
   have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
   have : NeZero n := ⟨ne_zero_of_irreducible_X_pow_sub_C H⟩
-  rw [← IsGalois.card_aut_eq_finrank, Fintype.card_congr ((autEquivZmod H L <|
-    (mem_primitiveRoots hn).mp hζ.choose_spec).toEquiv.trans Multiplicative.toAdd), ZMod.card]
+  rw [← IsGalois.card_aut_eq_finrank, Nat.card_congr ((autEquivZmod H L <|
+    (mem_primitiveRoots hn).mp hζ.choose_spec).toEquiv.trans Multiplicative.toAdd), Nat.card_zmod]
 
 end IsSplittingField
 
@@ -470,8 +467,9 @@ lemma exists_root_adjoin_eq_top_of_isCyclic [IsGalois K L] [IsCyclic (L ≃ₐ[K
   -- Since the minimal polynomial of `σ` over `K` is `Xⁿ - 1`,
   -- `σ` has an eigenvector `v` with eigenvalue `ζ`.
   have : IsRoot (minpoly K σ.toLinearMap) ζ := by
+    rw [IsGalois.card_aut_eq_finrank] at hσ'
     simpa [minpoly_algEquiv_toLinearMap σ (isOfFinOrder_of_finite σ), hσ',
-      sub_eq_zero, IsGalois.card_aut_eq_finrank] using hζ.pow_eq_one
+      sub_eq_zero] using hζ.pow_eq_one
   obtain ⟨v, hv⟩ := (Module.End.hasEigenvalue_of_isRoot this).exists_hasEigenvector
   have hv' := hv.pow_apply
   simp_rw [← AlgEquiv.pow_toLinearMap, AlgEquiv.toLinearMap_apply] at hv'
@@ -493,7 +491,7 @@ lemma exists_root_adjoin_eq_top_of_isCyclic [IsGalois K L] [IsCyclic (L ≃ₐ[K
     simp only [AlgEquiv.smul_def, hv'] at this
     conv_rhs at this => rw [← one_smul K v]
     obtain ⟨k, rfl⟩ := hζ.dvd_of_pow_eq_one n (smul_left_injective K hv.2 this)
-    rw [pow_mul, ← IsGalois.card_aut_eq_finrank, pow_card_eq_one, one_pow]
+    rw [pow_mul, ← IsGalois.card_aut_eq_finrank, pow_card_eq_one', one_pow]
     exact one_mem _
 
 variable {K L}

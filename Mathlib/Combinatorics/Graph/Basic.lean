@@ -167,19 +167,19 @@ is one or both of the ends of the edge `e`.
 In the `Inc` namespace, we use `edge` and `vertex` to refer to `e` and `x`. -/
 def Inc (G : Graph α β) (e : β) (x : α) : Prop := ∃ y, G.IsLink e x y
 
-@[simp]
+-- Cannot be @[simp] because `x` can not be inferred by `simp`.
 lemma Inc.edge_mem (h : G.Inc e x) : e ∈ E(G) :=
   h.choose_spec.edge_mem
 
-@[simp]
+-- Cannot be @[simp] because `e` can not be inferred by `simp`.
 lemma Inc.vertex_mem (h : G.Inc e x) : x ∈ V(G) :=
   h.choose_spec.left_mem
 
-@[simp]
+-- Cannot be @[simp] because `y` can not be inferred by `simp`.
 lemma IsLink.inc_left (h : G.IsLink e x y) : G.Inc e x :=
   ⟨y, h⟩
 
-@[simp]
+-- Cannot be @[simp] because `x` can not be inferred by `simp`.
 lemma IsLink.inc_right (h : G.IsLink e x y) : G.Inc e y :=
   ⟨x, h.symm⟩
 
@@ -234,11 +234,11 @@ lemma IsLoopAt.inc (h : G.IsLoopAt e x) : G.Inc e x :=
 lemma IsLoopAt.eq_of_inc (h : G.IsLoopAt e x) (h' : G.Inc e y) : x = y := by
   obtain rfl | rfl := h'.eq_or_eq_of_isLink h <;> rfl
 
-@[simp]
+-- Cannot be @[simp] because `x` can not be inferred by `simp`.
 lemma IsLoopAt.edge_mem (h : G.IsLoopAt e x) : e ∈ E(G) :=
   h.inc.edge_mem
 
-@[simp]
+-- Cannot be @[simp] because `e` can not be inferred by `simp`.
 lemma IsLoopAt.vertex_mem (h : G.IsLoopAt e x) : x ∈ V(G) :=
   h.inc.vertex_mem
 
@@ -250,11 +250,11 @@ def IsNonloopAt (G : Graph α β) (e : β) (x : α) : Prop := ∃ y ≠ x, G.IsL
 lemma IsNonloopAt.inc (h : G.IsNonloopAt e x) : G.Inc e x :=
   h.choose_spec.2.inc_left
 
-@[simp]
+-- Cannot be @[simp] because `x` can not be inferred by `simp`.
 lemma IsNonloopAt.edge_mem (h : G.IsNonloopAt e x) : e ∈ E(G) :=
   h.inc.edge_mem
 
-@[simp]
+-- Cannot be @[simp] because `e` can not be inferred by `simp`.
 lemma IsNonloopAt.vertex_mem (h : G.IsNonloopAt e x) : x ∈ V(G) :=
   h.inc.vertex_mem
 
@@ -286,11 +286,11 @@ protected lemma Adj.symm (h : G.Adj x y) : G.Adj y x :=
 lemma adj_comm (x y) : G.Adj x y ↔ G.Adj y x :=
   ⟨.symm, .symm⟩
 
-@[simp]
+-- Cannot be @[simp] because `y` can not be inferred by `simp`.
 lemma Adj.left_mem (h : G.Adj x y) : x ∈ V(G) :=
   h.choose_spec.left_mem
 
-@[simp]
+-- Cannot be @[simp] because `x` can not be inferred by `simp`.
 lemma Adj.right_mem (h : G.Adj x y) : y ∈ V(G) :=
   h.symm.left_mem
 
@@ -309,7 +309,7 @@ lemma mk_eq_self (G : Graph α β) {E : Set β} (hE : ∀ e, e ∈ E ↔ ∃ x y
     (fun _ _ _ _ _ h h' ↦ h.left_eq_or_eq h') hE
     (fun _ _ _ ↦ IsLink.left_mem) = G := by
   obtain rfl : E = E(G) := by simp [Set.ext_iff, hE, G.edge_mem_iff_exists_isLink]
-  cases G with | _ _ _ _ _ _ h _ => simp [← h]
+  cases G with | _ _ _ _ _ _ h _ => simp
 
 /-- Two graphs with the same vertex set and binary incidences are equal.
 (We use this as the default extensionality lemma rather than adding `@[ext]`

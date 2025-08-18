@@ -5,9 +5,9 @@ Authors: Adam Topaz, Junyan Xu, Jack McKoen
 -/
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Localization.AsSubring
+import Mathlib.Algebra.Algebra.Subalgebra.Tower
 import Mathlib.Algebra.Ring.Subring.Pointwise
 import Mathlib.Algebra.Ring.Action.Field
-import Mathlib.RingTheory.Spectrum.Prime.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
@@ -115,7 +115,7 @@ instance : ValuationRing A where
       right
       ext
       field_simp
-    · rw [show (a / b : K)⁻¹ = b / a by field_simp] at hh
+    · rw [show (a / b : K)⁻¹ = b / a by simp] at hh
       use ⟨b / a, hh⟩
       left
       ext
@@ -320,7 +320,7 @@ theorem ofPrime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) :
       change IsUnit (⟨x⁻¹, h hr⟩ : S)
       apply isUnit_of_mul_eq_one _ (⟨x, hx⟩ : S)
       ext; field_simp
-    · field_simp
+    · simp
 
 theorem ofPrime_le_of_le (P Q : Ideal A) [P.IsPrime] [Q.IsPrime] (h : P ≤ Q) :
     ofPrime A Q ≤ ofPrime A P := fun _x ⟨a, s, hs, he⟩ => ⟨a, s, fun c => hs (h c), he⟩
@@ -331,7 +331,7 @@ theorem idealOfLE_le_of_le (R S : ValuationSubring K) (hR : A ≤ R) (hS : A ≤
     (by
       by_contra c; push_neg at c; replace c := monotone_mapOfLE R S h c
       rw [(mapOfLE _ _ _).map_one, mapOfLE_valuation_apply] at c
-      apply not_le_of_lt ((valuation_lt_one_iff S _).1 hx) c)
+      apply not_le_of_gt ((valuation_lt_one_iff S _).1 hx) c)
 
 /-- The equivalence between coarsenings of a valuation ring and its prime ideals. -/
 @[simps apply]
@@ -402,6 +402,9 @@ theorem isEquiv_valuation_valuationSubring : v.IsEquiv v.valuationSubring.valuat
   rw [ValuationSubring.valuation_le_one_iff]
   rfl
 
+lemma valuationSubring.integers : v.Integers v.valuationSubring :=
+  Valuation.integer.integers _
+
 end Valuation
 
 namespace ValuationSubring
@@ -432,8 +435,6 @@ def unitGroupMulEquiv : A.unitGroup ≃* Aˣ where
       -- Porting note: was `Units.inv_mul x`
       inv_val := Subtype.ext (by simp) }
   invFun x := ⟨Units.map A.subtype.toMonoidHom x, A.valuation_unit x⟩
-  left_inv a := by ext; rfl
-  right_inv a := by ext; rfl
   map_mul' a b := by ext; rfl
 
 @[simp]
@@ -667,7 +668,7 @@ def unitsModPrincipalUnitsEquivResidueFieldUnits :
 
 /-- Porting note: Lean needs to be reminded of this instance -/
 local instance : MulOneClass ({ x // x ∈ unitGroup A } ⧸
-  Subgroup.comap (Subgroup.subtype (unitGroup A)) (principalUnitGroup A)) := inferInstance
+    Subgroup.comap (Subgroup.subtype (unitGroup A)) (principalUnitGroup A)) := inferInstance
 
 theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk :
     (A.unitsModPrincipalUnitsEquivResidueFieldUnits : _ ⧸ Subgroup.comap _ _ →* _).comp
@@ -688,8 +689,8 @@ the action is by a group. Notably this provides an instances when `G` is `K ≃+
 
 These instances are in the `Pointwise` locale.
 
-The lemmas in this section are copied from the file `Mathlib.Algebra.Ring.Subring.Pointwise`; try
-to keep these in sync.
+The lemmas in this section are copied from the file `Mathlib/Algebra/Ring/Subring/Pointwise.lean`;
+try to keep these in sync.
 -/
 
 
@@ -736,7 +737,7 @@ theorem smul_mem_pointwise_smul (g : G) (x : K) (S : ValuationSubring K) : x ∈
   (Set.smul_mem_smul_set : _ → _ ∈ g • (S : Set K))
 
 instance : CovariantClass G (ValuationSubring K) HSMul.hSMul LE.le :=
-  ⟨fun _ _ _ => Set.image_subset _⟩
+  ⟨fun _ _ _ => Set.image_mono⟩
 
 theorem mem_smul_pointwise_iff_exists (g : G) (x : K) (S : ValuationSubring K) :
     x ∈ g • S ↔ ∃ s : K, s ∈ S ∧ g • s = x :=

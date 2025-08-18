@@ -3,6 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Data.DFinsupp.Module
 import Mathlib.RingTheory.Ideal.Operations
 
 /-!
@@ -12,7 +13,7 @@ Main definitions include `Ideal.map`, `Ideal.comap`, `RingHom.ker`, `Module.anni
 and `Submodule.annihilator`.
 -/
 
-assert_not_exists Basis -- See `RingTheory.Ideal.Basis`
+assert_not_exists Module.Basis -- See `RingTheory.Ideal.Basis`
   Submodule.hasQuotient -- See `RingTheory.Ideal.Quotient.Operations`
 
 universe u v w x
@@ -58,7 +59,7 @@ lemma map_coe [RingHomClass F R S] (I : Ideal R) : I.map (f : R →+* S) = I.map
 variable {f}
 
 theorem map_mono (h : I ≤ J) : map f I ≤ map f J :=
-  span_mono <| Set.image_subset _ h
+  span_mono <| Set.image_mono h
 
 theorem mem_map_of_mem (f : F) {I : Ideal R} {x : R} (h : x ∈ I) : f x ∈ map f I :=
   subset_span ⟨x, h, rfl⟩
@@ -424,7 +425,6 @@ theorem comap_symm {I : Ideal R} (f : R ≃+* S) : I.comap f.symm = I.map f :=
 
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f.symm I = comap f I`. -/
 @[simp]
-
 theorem map_symm {I : Ideal S} (f : R ≃+* S) : I.map f.symm = I.comap f :=
   map_comap_of_equiv (RingEquiv.symm f)
 
@@ -495,10 +495,6 @@ instance comap_isMaximal_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass 
 theorem isMaximal_iff_of_bijective : (⊥ : Ideal R).IsMaximal ↔ (⊥ : Ideal S).IsMaximal :=
   ⟨fun h ↦ map_bot (f := f) ▸ h.map_bijective f hf, fun h ↦ have e := RingEquiv.ofBijective f hf
     map_bot (f := e.symm) ▸ h.map_bijective _ e.symm.bijective⟩
-
-@[deprecated (since := "2024-12-07")] alias map.isMaximal := IsMaximal.map_bijective
-@[deprecated (since := "2024-12-07")] alias comap.isMaximal := IsMaximal.comap_bijective
-@[deprecated (since := "2024-12-07")] alias RingEquiv.bot_maximal_iff := isMaximal_iff_of_bijective
 
 end Bijective
 
@@ -582,7 +578,7 @@ protected theorem map_mul {R} [Semiring R] [FunLike F R S] [RingHomClass F R S]
 def mapHom : Ideal R →+* Ideal S where
   toFun := map f
   map_mul' := Ideal.map_mul f
-  map_one' := by simp only [one_eq_top]; exact Ideal.map_top f
+  map_one' := by simp only [one_eq_top, Ideal.map_top f]
   map_add' I J := Ideal.map_sup f I J
   map_zero' := Ideal.map_bot
 
@@ -618,9 +614,8 @@ theorem le_comap_pow (n : ℕ) : K.comap f ^ n ≤ (K ^ n).comap f := by
 
 lemma disjoint_map_primeCompl_iff_comap_le {S : Type*} [Semiring S] {f : R →+* S}
     {p : Ideal R} {I : Ideal S} [p.IsPrime] :
-    Disjoint (I : Set S) (p.primeCompl.map f) ↔ I.comap f ≤ p := by
-  rw [disjoint_comm]
-  simp [Set.disjoint_iff, Set.ext_iff, Ideal.primeCompl, not_imp_not, SetLike.le_def]
+    Disjoint (I : Set S) (p.primeCompl.map f) ↔ I.comap f ≤ p :=
+  (@Set.disjoint_image_right _ _ f p.primeCompl I).trans disjoint_compl_right_iff
 
 /-- For a prime ideal `p` of `R`, `p` extended to `S` and
 restricted back to `R` is `p` if and only if `p` is the restriction of a prime in `S`. -/
@@ -671,12 +666,14 @@ theorem comap_ker (f : S →+* R) (g : T →+* S) : (ker f).comap g = ker (f.com
   rw [RingHom.ker_eq_comap_bot, Ideal.comap_comap, RingHom.ker_eq_comap_bot]
 
 /-- If the target is not the zero ring, then one is not in the kernel. -/
-theorem not_one_mem_ker [Nontrivial S] (f : F) : (1 : R) ∉ ker f := by
+theorem one_notMem_ker [Nontrivial S] (f : F) : (1 : R) ∉ ker f := by
   rw [mem_ker, map_one]
   exact one_ne_zero
 
+@[deprecated (since := "2025-05-23")] alias not_one_mem_ker := one_notMem_ker
+
 theorem ker_ne_top [Nontrivial S] (f : F) : ker f ≠ ⊤ :=
-  (Ideal.ne_top_iff_one _).mpr <| not_one_mem_ker f
+  (Ideal.ne_top_iff_one _).mpr <| one_notMem_ker f
 
 lemma _root_.Pi.ker_ringHom {ι : Type*} {R : ι → Type*} [∀ i, Semiring (R i)]
     (φ : ∀ i, S →+* R i) : ker (Pi.ringHom φ) = ⨅ i, ker (φ i) := by
@@ -806,6 +803,39 @@ theorem Module.annihilator_eq_top_iff : annihilator R M = ⊤ ↔ Subsingleton M
       rw [← one_smul R m, ← one_smul R m']
       simp_rw [mem_annihilator.mp (h ▸ Submodule.mem_top)]⟩,
     fun _ ↦ top_le_iff.mp fun _ _ ↦ mem_annihilator.mpr fun _ ↦ Subsingleton.elim _ _⟩
+
+theorem Module.annihilator_prod : annihilator R (M × M') = annihilator R M ⊓ annihilator R M' := by
+  ext
+  simp_rw [Ideal.mem_inf, mem_annihilator,
+    Prod.forall, Prod.smul_mk, Prod.mk_eq_zero, forall_and_left, ← forall_and_right]
+
+theorem Module.annihilator_finsupp {ι : Type*} [Nonempty ι] :
+    annihilator R (ι →₀ M) = annihilator R M := by
+  ext r; simp_rw [mem_annihilator]
+  constructor <;> intro h
+  · refine Nonempty.elim ‹_› fun i : ι ↦ ?_
+    simpa using fun m ↦ congr($(h (Finsupp.single i m)) i)
+  · intro m; ext i; exact h _
+
+section
+
+variable {ι : Type*} {M : ι → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+
+theorem Module.annihilator_dfinsupp : annihilator R (Π₀ i, M i) = ⨅ i, annihilator R (M i) := by
+  ext r; simp only [mem_annihilator, Ideal.mem_iInf]
+  constructor <;> intro h
+  · intro i m
+    classical simpa using DFunLike.congr_fun (h (DFinsupp.single i m)) i
+  · intro m; ext i; exact h i _
+
+theorem Module.annihilator_pi : annihilator R (Π i, M i) = ⨅ i, annihilator R (M i) := by
+  ext r; simp only [mem_annihilator, Ideal.mem_iInf]
+  constructor <;> intro h
+  · intro i m
+    classical simpa using congr_fun (h (Pi.single i m)) i
+  · intro m; ext i; exact h i _
+
+end
 
 namespace Submodule
 
@@ -1052,7 +1082,7 @@ def liftOfRightInverse (hf : Function.RightInverse f_inv f) :
   invFun φ := ⟨φ.comp f, fun x hx => mem_ker.mpr <| by simp [mem_ker.mp hx]⟩
   left_inv g := by
     ext
-    simp only [comp_apply, liftOfRightInverseAux_comp_apply, Subtype.coe_mk]
+    simp only [comp_apply, liftOfRightInverseAux_comp_apply]
   right_inv φ := by
     ext b
     simp [liftOfRightInverseAux, hf b]
@@ -1116,15 +1146,6 @@ end Algebra
 theorem FaithfulSMul.ker_algebraMap_eq_bot (R A : Type*) [CommSemiring R] [Semiring A]
     [Algebra R A] [FaithfulSMul R A] : RingHom.ker (algebraMap R A) = ⊥ := by
   ext; simp
-
-@[deprecated (since := "2025-01-31")]
-alias NoZeroSMulDivisors.iff_ker_algebraMap_eq_bot := FaithfulSMul.ker_algebraMap_eq_bot
-
-@[deprecated (since := "2025-01-31")]
-alias NoZeroSMulDivisors.of_ker_algebraMap_eq_bot := FaithfulSMul.ker_algebraMap_eq_bot
-
-@[deprecated (since := "2025-01-31")]
-alias NoZeroSMulDivisors.ker_algebraMap_eq_bot := FaithfulSMul.ker_algebraMap_eq_bot
 
 section PrincipalIdeal
 

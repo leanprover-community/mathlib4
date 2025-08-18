@@ -41,7 +41,7 @@ theorem Finset.card_biUnion_le_of_intersecting (s : Finset ι) (f : ι → Finse
   obtain hs | hs := le_total (Fintype.card α) #s
   · rw [tsub_eq_zero_of_le hs, pow_zero]
     refine (card_le_card <| biUnion_subset.2 fun i hi a ha ↦
-      mem_compl.2 <| not_mem_singleton.2 <| (hf _ hi).ne_bot ha).trans_eq ?_
+      mem_compl.2 <| notMem_singleton.2 <| (hf _ hi).ne_bot ha).trans_eq ?_
     rw [card_compl, Fintype.card_finset, card_singleton]
   induction s using Finset.cons_induction generalizing f with
   | empty => simp
