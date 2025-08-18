@@ -656,7 +656,7 @@ theorem lift_mk {α : Type*} (f : {a : M // a ≠ 1} → α)
 
 /-- Lift a function `{a : M // a ≠ 1} → α` that's monotone along archimedean classes to a
 monotone function `FiniteMulArchimedeanClass M →o α`. -/
-@[to_additive /-- Lift a function `{a : M // a ≠ 1} → α` that's monotone along archimedean 
+@[to_additive /-- Lift a function `{a : M // a ≠ 1} → α` that's monotone along archimedean
 classes to a monotone function `FiniteArchimedeanClass M₁ →o α`. -/]
 noncomputable
 def liftOrderHom {α : Type*} [PartialOrder α]
