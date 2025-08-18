@@ -98,9 +98,7 @@ lemma isComplex_iff_of_iso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂
   ⟨isComplex_of_iso e, isComplex_of_iso e.symm⟩
 
 lemma isComplex₀ (S : ComposableArrows C 0) : S.IsComplex where
-  -- See https://github.com/leanprover/lean4/issues/2862
-  -- Without `decide := true`, simp gets stuck at `hi : autoParam False _auto✝`
-  zero i hi := by simp +decide at hi
+  zero i hi := by simp at hi
 
 lemma isComplex₁ (S : ComposableArrows C 1) : S.IsComplex where
   zero i hi := by omega
@@ -186,7 +184,6 @@ lemma exact_iff_of_iso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂) :
 
 lemma exact₀ (S : ComposableArrows C 0) : S.Exact where
   toIsComplex := S.isComplex₀
-  -- See https://github.com/leanprover/lean4/issues/2862
   exact i hi := by simp at hi
 
 lemma exact₁ (S : ComposableArrows C 1) : S.Exact where
