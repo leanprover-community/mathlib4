@@ -23,15 +23,15 @@ section neg_mul
 
 variable {R S : Type*} [Mul R] [HasDistribNeg R] [SetLike S R] [MulMemClass S R] {s : S}
 
-@[aesop unsafe 80% (rule_sets := [SetLike])]
 /-- This lemma exists for `aesop`, as `aesop` simplifies `-x * y` to `-(x * y)` before applying
 unsafe rules like `mul_mem`, leading to a dead end in cases where `neg_mem` does not hold. -/
+@[aesop unsafe 80% (rule_sets := [SetLike])]
 theorem neg_mul_mem {x y : R} (hx : -x ∈ s) (hy : y ∈ s) : -(x * y) ∈ s := by
   simpa using mul_mem hx hy
 
-@[aesop unsafe 80% (rule_sets := [SetLike])]
 /-- This lemma exists for `aesop`, as `aesop` simplifies `x * -y` to `-(x * y)` before applying
 unsafe rules like `mul_mem`, leading to a dead end in cases where `neg_mem` does not hold. -/
+@[aesop unsafe 80% (rule_sets := [SetLike])]
 theorem mul_neg_mem {x y : R} (hx : x ∈ s) (hy : -y ∈ s) : -(x * y) ∈ s := by
   simpa using mul_mem hx hy
 
