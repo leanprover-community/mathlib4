@@ -208,8 +208,24 @@ In other words, it is a type with the following structures: additive commutative
 multiplication by zero law (`MulZeroClass`). -/
 class NonUnitalCommSemiring (α : Type u) extends NonUnitalSemiring α, CommSemigroup α
 
+/-- A non-associative commutative semiring is a `NonAssocSemiring` with commutative
+multiplication. -/
+class NonAssocCommSemiring (α : Type u)
+  extends NonAssocSemiring α, NonUnitalNonAssocCommSemiring α
+
 /-- A commutative semiring is a semiring with commutative multiplication. -/
 class CommSemiring (R : Type u) extends Semiring R, CommMonoid R
+
+attribute [instance 100] NonAssocCommSemiring.toNonAssocSemiring
+attribute [instance 100] NonAssocCommSemiring.toNonUnitalNonAssocCommSemiring
+
+-- see Note [lower instance priority]
+instance (priority := 100) NonUnitalCommSemiring.toNonUnitalNonAssocCommSemiring
+    [NonUnitalCommSemiring α] : NonUnitalNonAssocCommSemiring α where
+
+-- see Note [lower instance priority]
+instance (priority := 100) CommSemiring.toNonAssocCommSemiring [CommSemiring α] :
+    NonAssocCommSemiring α where
 
 -- see Note [lower instance priority]
 instance (priority := 100) CommSemiring.toNonUnitalCommSemiring [CommSemiring α] :
@@ -366,6 +382,14 @@ class NonUnitalNonAssocCommRing (α : Type u)
 /-- A non-unital commutative ring is a `NonUnitalRing` with commutative multiplication. -/
 class NonUnitalCommRing (α : Type u) extends NonUnitalRing α, NonUnitalNonAssocCommRing α
 
+/-- A non-associative commutative ring is a `NonAssocRing` with commutative multiplication. -/
+class NonAssocCommRing (α : Type u)
+  extends NonAssocRing α, NonUnitalNonAssocCommRing α, NonAssocCommSemiring α
+
+attribute [instance 100] NonAssocCommRing.toNonAssocRing
+attribute [instance 100] NonAssocCommRing.toNonUnitalNonAssocCommRing
+attribute [instance 100] NonAssocCommRing.toNonAssocCommSemiring
+
 -- see Note [lower instance priority]
 instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUnitalCommRing α] :
     NonUnitalCommSemiring α :=
@@ -373,6 +397,8 @@ instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUni
 
 /-- A commutative ring is a ring with commutative multiplication. -/
 class CommRing (α : Type u) extends Ring α, CommMonoid α
+
+instance (priority := 100) CommRing.toNonAssocCommRing [CommRing α] : NonAssocCommRing α where
 
 instance (priority := 100) CommRing.toCommSemiring [s : CommRing α] : CommSemiring α :=
   { s with }

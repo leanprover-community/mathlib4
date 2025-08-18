@@ -604,7 +604,9 @@ def evalNegProd {a : Q($α)} (rα : Q(Ring $α)) (va : ExProd sα a) :
       q(CommSemiring.toSemiring) rm ra
     let ⟨zb, hb⟩ := rb.toRatNZ.get!
     let ⟨b, (pb : Q((Int.negOfNat (nat_lit 1)).rawCast * $a = $b))⟩ := rb.toRawEq
-    return ⟨b, .const zb hb, (q(neg_one_mul (R := $α) $pb) : Expr)⟩
+    have eq : ($rα).toNonAssocRing.toNonUnitalNonAssocSemiring =Q
+      ($sα).toNonAssocCommSemiring.toNonUnitalNonAssocCommSemiring.toNonUnitalNonAssocSemiring := ⟨⟩
+    return ⟨b, .const zb hb, (q(neg_one_mul (R := $α) ($eq ▸ $pb)) : Expr)⟩
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃ =>
     let ⟨_, vb, pb⟩ ← evalNegProd rα va₃
     return ⟨_, .mul va₁ va₂ vb, (q(neg_mul $a₁ $a₂ $pb) : Expr)⟩
@@ -641,7 +643,9 @@ def evalSub {α : Q(Type u)} (sα : Q(CommSemiring $α)) {a b : Q($α)}
     MetaM <| Result (ExSum sα) q($a - $b) := do
   let ⟨_c, vc, pc⟩ ← evalNeg sα rα vb
   let ⟨d, vd, (pd : Q($a + $_c = $d))⟩ ← evalAdd sα va vc
-  return ⟨d, vd, (q(sub_pf $pc $pd) : Expr)⟩
+  have eq : ($rα).toNonAssocRing.toNonUnitalNonAssocSemiring =Q
+    ($sα).toNonAssocCommSemiring.toNonUnitalNonAssocCommSemiring.toNonUnitalNonAssocSemiring := ⟨⟩
+  return ⟨d, vd, (q(sub_pf $pc ($eq ▸ $pd)) : Expr)⟩
 
 theorem pow_prod_atom (a : R) (b) : a ^ b = (a + 0) ^ b * (nat_lit 1).rawCast := by simp
 
@@ -1022,7 +1026,9 @@ def ExProd.evalInv {a : Q($α)} (czα : Option Q(CharZero $α)) (va : ExProd sα
     let ⟨_b₃, vb₃, pb₃⟩ ← va₃.evalInv czα
     let ⟨c, vc, (pc : Q($_b₃ * ($_b₁ ^ $_a₂ * Nat.rawCast 1) = $c))⟩ ←
       evalMulProd sα vb₃ (vb₁.toProd va₂)
-    pure ⟨c, vc, (q(inv_mul $pb₁ $pb₃ $pc) : Expr)⟩
+    have : ($sα).toNonAssocCommSemiring.toNonUnitalNonAssocCommSemiring.toNonUnitalNonAssocSemiring
+      =Q ($dsα).toNonAssocSemiring.toNonUnitalNonAssocSemiring := ⟨⟩
+    pure ⟨c, vc, (q(inv_mul $pb₁ $pb₃ ($this ▸ $pc)) : Expr)⟩
 
 /-- Inverts a polynomial `va` to get a normalized result polynomial.
 
@@ -1054,7 +1060,8 @@ def evalDiv {a b : Q($α)} (rα : Q(DivisionSemiring $α)) (czα : Option Q(Char
     (va : ExSum sα a) (vb : ExSum sα b) : AtomM (Result (ExSum sα) q($a / $b)) := do
   let ⟨_c, vc, pc⟩ ← vb.evalInv sα rα czα
   let ⟨d, vd, (pd : Q($a * $_c = $d))⟩ ← evalMul sα va vc
-  pure ⟨d, vd, q(div_pf $pc $pd)⟩
+  have eq : ($rα).toNonAssocSemiring =Q ($sα).toNonAssocCommSemiring.toNonAssocSemiring := ⟨⟩
+  pure ⟨d, vd, q(div_pf $pc ($eq ▸ $pd))⟩
 
 theorem add_congr (_ : a = a') (_ : b = b') (_ : a' + b' = c) : (a + b : R) = c := by
   subst_vars; rfl
