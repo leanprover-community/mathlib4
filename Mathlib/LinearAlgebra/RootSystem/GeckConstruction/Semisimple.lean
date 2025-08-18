@@ -339,7 +339,7 @@ lemma coe_genWeightSpace_zero_eq_span_range_u :
     rintro - ⟨i, rfl⟩
     simp only [SetLike.mem_coe, LieSubmodule.mem_toSubmodule, mem_genWeightSpace]
     rintro ⟨⟨x, -⟩, hx⟩
-    exact ⟨1, funext fun j ↦ by simpa using apply_sum_inl_eq_zero_of_mem_span_range_h i j hx⟩
+    exact ⟨1, funext fun j ↦ by simpa using apply_sum_inl_eq_zero_of_mem_span_h i j hx⟩
 
 -- TODO Turn this `Fact` into a lemma: it is always true and may be proved via Perron-Frobenius
 -- See https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/Eigenvalues.20of.20Cartan.20matrices/near/516844801
