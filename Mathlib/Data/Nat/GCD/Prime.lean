@@ -20,6 +20,7 @@ namespace Nat
 
 namespace Prime
 variable {p a b : ℕ} (hp : Prime p)
+
 include hp
 
 theorem dvd_or_dvd_of_dvd_lcm (h : p ∣ lcm a b) : p ∣ a ∨ p ∣ b :=
