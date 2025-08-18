@@ -243,7 +243,7 @@ section SeminormedGroup
 variable [SeminormedGroup E] [SeminormedGroup F]
 
 /-- Product of seminormed groups, using the sup norm. -/
-@[to_additive "Product of seminormed groups, using the sup norm."]
+@[to_additive /-- Product of seminormed groups, using the sup norm. -/]
 instance Prod.seminormedGroup : SeminormedGroup (E × F) where
   dist_eq x y := by
     simp only [Prod.norm_def, Prod.dist_eq, dist_eq_norm_div, Prod.fst_div, Prod.snd_div]
@@ -262,20 +262,20 @@ end SeminormedGroup
 namespace Prod
 
 /-- Product of seminormed groups, using the sup norm. -/
-@[to_additive "Product of seminormed groups, using the sup norm."]
+@[to_additive /-- Product of seminormed groups, using the sup norm. -/]
 instance seminormedCommGroup [SeminormedCommGroup E] [SeminormedCommGroup F] :
     SeminormedCommGroup (E × F) :=
   { Prod.seminormedGroup with
     mul_comm := mul_comm }
 
 /-- Product of normed groups, using the sup norm. -/
-@[to_additive "Product of normed groups, using the sup norm."]
+@[to_additive /-- Product of normed groups, using the sup norm. -/]
 instance normedGroup [NormedGroup E] [NormedGroup F] : NormedGroup (E × F) :=
   { Prod.seminormedGroup with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 /-- Product of normed groups, using the sup norm. -/
-@[to_additive "Product of normed groups, using the sup norm."]
+@[to_additive /-- Product of normed groups, using the sup norm. -/]
 instance normedCommGroup [NormedCommGroup E] [NormedCommGroup F] : NormedCommGroup (E × F) :=
   { Prod.seminormedGroup with
     mul_comm := mul_comm
@@ -292,7 +292,7 @@ section SeminormedGroup
 variable [∀ i, SeminormedGroup (G i)] [SeminormedGroup E] (f : ∀ i, G i) {x : ∀ i, G i} {r : ℝ}
 
 /-- Finite product of seminormed groups, using the sup norm. -/
-@[to_additive "Finite product of seminormed groups, using the sup norm."]
+@[to_additive /-- Finite product of seminormed groups, using the sup norm. -/]
 instance Pi.seminormedGroup : SeminormedGroup (∀ i, G i) where
   norm f := ↑(Finset.univ.sup fun b => ‖f b‖₊)
   dist_eq x y :=
@@ -308,8 +308,8 @@ lemma Pi.nnnorm_def' : ‖f‖₊ = Finset.univ.sup fun b => ‖f b‖₊ := Sub
 
 /-- The seminorm of an element in a product space is `≤ r` if and only if the norm of each
 component is. -/
-@[to_additive pi_norm_le_iff_of_nonneg "The seminorm of an element in a product space is `≤ r` if
-and only if the norm of each component is."]
+@[to_additive pi_norm_le_iff_of_nonneg /-- The seminorm of an element in a product space is `≤ r` if
+and only if the norm of each component is. -/]
 lemma pi_norm_le_iff_of_nonneg' (hr : 0 ≤ r) : ‖x‖ ≤ r ↔ ∀ i, ‖x i‖ ≤ r := by
   simp only [← dist_one_right, dist_pi_le_iff hr, Pi.one_apply]
 
@@ -327,8 +327,8 @@ lemma pi_norm_le_iff_of_nonempty' [Nonempty ι] : ‖f‖ ≤ r ↔ ∀ b, ‖f 
 
 /-- The seminorm of an element in a product space is `< r` if and only if the norm of each
 component is. -/
-@[to_additive pi_norm_lt_iff "The seminorm of an element in a product space is `< r` if and only
-if the norm of each component is."]
+@[to_additive pi_norm_lt_iff /-- The seminorm of an element in a product space is `< r` if and only
+if the norm of each component is. -/]
 lemma pi_norm_lt_iff' (hr : 0 < r) : ‖x‖ < r ↔ ∀ i, ‖x i‖ < r := by
   simp only [← dist_one_right, dist_pi_lt_iff hr, Pi.one_apply]
 
@@ -361,33 +361,33 @@ lemma pi_nnnorm_const' [Nonempty ι] (a : E) : ‖fun _i : ι => a‖₊ = ‖a�
   NNReal.eq <| pi_norm_const' a
 
 /-- The $L^1$ norm is less than the $L^\infty$ norm scaled by the cardinality. -/
-@[to_additive Pi.sum_norm_apply_le_norm "The $L^1$ norm is less than the $L^\\infty$ norm scaled by
-the cardinality."]
+@[to_additive Pi.sum_norm_apply_le_norm /-- The $L^1$ norm is less than the $L^\infty$ norm scaled
+by the cardinality. -/]
 lemma Pi.sum_norm_apply_le_norm' : ∑ i, ‖f i‖ ≤ Fintype.card ι • ‖f‖ :=
   Finset.sum_le_card_nsmul _ _ _ fun i _hi => norm_le_pi_norm' _ i
 
 /-- The $L^1$ norm is less than the $L^\infty$ norm scaled by the cardinality. -/
-@[to_additive Pi.sum_nnnorm_apply_le_nnnorm "The $L^1$ norm is less than the $L^\\infty$ norm
-scaled by the cardinality."]
+@[to_additive Pi.sum_nnnorm_apply_le_nnnorm /-- The $L^1$ norm is less than the $L^\infty$ norm
+scaled by the cardinality. -/]
 lemma Pi.sum_nnnorm_apply_le_nnnorm' : ∑ i, ‖f i‖₊ ≤ Fintype.card ι • ‖f‖₊ :=
   (NNReal.coe_sum ..).trans_le <| Pi.sum_norm_apply_le_norm' _
 
 end SeminormedGroup
 
 /-- Finite product of seminormed groups, using the sup norm. -/
-@[to_additive "Finite product of seminormed groups, using the sup norm."]
+@[to_additive /-- Finite product of seminormed groups, using the sup norm. -/]
 instance Pi.seminormedCommGroup [∀ i, SeminormedCommGroup (G i)] : SeminormedCommGroup (∀ i, G i) :=
   { Pi.seminormedGroup with
     mul_comm := mul_comm }
 
 /-- Finite product of normed groups, using the sup norm. -/
-@[to_additive "Finite product of seminormed groups, using the sup norm."]
+@[to_additive /-- Finite product of seminormed groups, using the sup norm. -/]
 instance Pi.normedGroup [∀ i, NormedGroup (G i)] : NormedGroup (∀ i, G i) :=
   { Pi.seminormedGroup with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 /-- Finite product of normed groups, using the sup norm. -/
-@[to_additive "Finite product of seminormed groups, using the sup norm."]
+@[to_additive /-- Finite product of seminormed groups, using the sup norm. -/]
 instance Pi.normedCommGroup [∀ i, NormedCommGroup (G i)] : NormedCommGroup (∀ i, G i) :=
   { Pi.seminormedGroup with
     mul_comm := mul_comm
