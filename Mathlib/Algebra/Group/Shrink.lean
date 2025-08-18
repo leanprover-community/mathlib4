@@ -3,7 +3,7 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.TransferInstance
+import Mathlib.Algebra.Group.Action.TransferInstance
 import Mathlib.Logic.Small.Defs
 import Mathlib.Tactic.SuppressCompilation
 
