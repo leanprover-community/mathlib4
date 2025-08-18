@@ -607,7 +607,7 @@ theorem map_id_injective_of_flat_right {g : N₁ →ₗ[R] M₂ →ₗ[R] N} (hg
   linear maps, then the linear map `i : M ≅ M₁ ⊗[R] M₂ →ₗ[R] N₁ ⊗[R] N₂ ≅ N` induced by `i₁`
   and `i₂` is injective.
   See `IsTensorProduct.map_injective_of_flat'` for different flatness conditions. -/
-theorem map_injective_of_flat (h₁ : Function.Injective i₁) (h₂ : Function.Injective i₂)
+theorem map_injective_of_flat_right_left (h₁ : Function.Injective i₁) (h₂ : Function.Injective i₂)
     [Module.Flat R M₂] [Module.Flat R N₁] : Function.Injective (hf.map hg i₁ i₂) := by
   have h : hf.map hg i₁ i₂ = hg.equiv ∘ TensorProduct.map i₁ i₂ ∘ hf.equiv.symm :=
     funext fun x ↦ hf.inductionOn x (by simp) (by simp) (fun _ _ hx hy ↦ by simp [hx, hy])
