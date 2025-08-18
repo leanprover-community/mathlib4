@@ -323,9 +323,9 @@ theorem isMultiplyPretransitive_iff [IsPretransitive G α] {n : ℕ} {a b : α} 
   is equivalent to one less transitivity of stabilizer of a point
   (Wielandt, th. 9.1, 1st part) -/
  @[to_additive
-  "Multiple transitivity of a pretransitive action
+  /-- Multiple transitivity of a pretransitive action
   is equivalent to one less transitivity of stabilizer of a point
-  [Wielandt, th. 9.1, 1st part][Wielandt-1964]."]
+  [Wielandt, th. 9.1, 1st part][Wielandt-1964].-/]
 theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
     IsMultiplyPretransitive G α n.succ ↔
       IsMultiplyPretransitive (stabilizer G a) (SubMulAction.ofStabilizer G a) n := by
@@ -373,8 +373,8 @@ variable (G) in
 /-- The fixator of a finite subset of cardinal `d` in an `n`-transitive action
 acts `(n - d)`-transitively on the complement. -/
 @[to_additive
-"The fixator of a finite subset of cardinal `d` in an `n`-transitive additive action
-acts `(n - d)`-transitively on the complement."]
+/-- The fixator of a finite subset of cardinal `d` in an `n`-transitive additive action
+acts `(n - d)`-transitively on the complement.-/]
 theorem isMultiplyPretransitive {m n : ℕ} [Hn : IsMultiplyPretransitive G α n]
     (s : Set α) [Finite s] (hmn : s.ncard + m = n) :
     IsMultiplyPretransitive (fixingSubgroup G s) (ofFixingSubgroup G s) m where
@@ -400,8 +400,8 @@ theorem isMultiplyPretransitive {m n : ℕ} [Hn : IsMultiplyPretransitive G α n
 /-- The fixator of a finite subset of cardinal d in an n-transitive action
 acts m transitively on the complement if d + m ≤ n. -/
 @[to_additive
-"The fixator of a finite subset of cardinal d in an n-transitive additive action
-acts m transitively on the complement if d + m ≤ n."]
+/-- The fixator of a finite subset of cardinal d in an n-transitive additive action
+acts m transitively on the complement if d + m ≤ n.-/]
 theorem isMultiplyPretransitive'
     {m n : ℕ} [IsMultiplyPretransitive G α n]
     (s : Set α) [Finite s] (hmn : s.ncard + m ≤ n) (hn : (n : ENat) ≤ ENat.card α) :
