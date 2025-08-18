@@ -18,8 +18,8 @@ Results require `RCLike 𝕜`.
 
 ## Main results
 
-* `Matrix.posSemidef_gram` Gram matrices are positive semi-definite.
-* `Matrix.posDef_gram_iff_linearIndependent` Linear independence of `v` is
+* `Matrix.posSemidef_gram`: Gram matrices are positive semi-definite.
+* `Matrix.posDef_gram_iff_linearIndependent`: Linear independence of `v` is
   equivalent to positive definiteness of `gram 𝕜 v`.
 -/
 
@@ -30,6 +30,7 @@ open scoped InnerProductSpace ComplexOrder ComplexConjugate
 variable {E n : Type*}
 variable {α : Type*}
 variable {𝕜 : Type*}
+
 namespace Matrix
 
 /-- The entries of a Gram matrix are inner products of vectors in an inner product space. -/
@@ -78,20 +79,16 @@ theorem posSemidef_gram [Fintype n] (v : n → E) :
     PosSemidef (gram 𝕜 v) := by
   refine ⟨isHermitian_gram _ _, fun x ↦ ?_⟩
   rw [star_dotProduct_gram_mulVec, le_iff_re_im]
-  simp only [map_zero, inner_self_im, and_true, inner_self_nonneg]
+  simp [inner_self_nonneg]
 
-/-- In a seminormed space, positive definiteness of `gram 𝕜 v` implies linear independence of `v` -/
+/-- In a seminormed space, positive definiteness of `gram 𝕜 v` implies inear independence of `v` -/
 theorem linearIndependent_of_posDef_gram [Fintype n] {v : n → E} (h_gram : PosDef (gram 𝕜 v)) :
     LinearIndependent 𝕜 v := by
   rw [Fintype.linearIndependent_iff]
   intro y hy
   obtain ⟨h1, h2⟩ := h_gram
   specialize h2 y
-  rw [star_dotProduct_gram_mulVec, ← not_imp_not, ne_eq, Decidable.not_not, RCLike.pos_iff,
-    ← norm_sq_eq_re_inner, hy] at h2
-  apply funext_iff.mp
-  apply h2
-  simp
+  simp_all [star_dotProduct_gram_mulVec]
 
 end SemiInnerProductSpace
 
@@ -104,14 +101,8 @@ theorem posDef_gram_of_linearIndependent  [Fintype n]
   rw [Fintype.linearIndependent_iff] at h_li
   obtain ⟨h0, h1⟩ := posSemidef_gram (𝕜 := 𝕜) (v := v)
   refine ⟨h0, fun x hx ↦ (h1 x).lt_of_ne' ?_⟩
-  specialize h_li x
-  rw [← funext_iff, ← not_imp_not] at h_li
-  simp_rw [star_dotProduct_gram_mulVec]
-  intro hz
-  apply h_li hx
-  rw [← norm_eq_zero]
-  have j1 := congrArg re hz
-  rwa [map_zero, ← norm_sq_eq_re_inner, sq_eq_zero_iff] at j1
+  rw [star_dotProduct_gram_mulVec, inner_self_eq_zero.ne]
+  exact mt (h_li x) (mt funext hx)
 
 /-- In a normed space, linear independence of `v` is equivalent to positive definiteness of
 `gram 𝕜 v`. -/

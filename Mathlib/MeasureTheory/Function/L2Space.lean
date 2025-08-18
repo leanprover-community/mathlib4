@@ -256,21 +256,16 @@ theorem inner_indicatorConstLp_one (hs : MeasurableSet s) (hμs : μ s ≠ ∞) 
     ⟪indicatorConstLp 2 hs hμs (1 : 𝕜), f⟫ = ∫ x in s, f x ∂μ := by
   rw [L2.inner_indicatorConstLp_eq_inner_setIntegral 𝕜 hs hμs (1 : 𝕜) f]; simp
 
-/-- The inner product in `L2` of multiples `a` and `b` of indicators of two sets with finite measure
-is `a * b` times the measure of the intersection. -/
+/-- The inner product in `L2` of two `indicatorConstLp`s, i.e. functions which are constant `a : E`
+and `b : E` on measurable `s t : Set α` with finite measure, respectively, is `⟪a, b⟫` times the
+measure of `s ∩ t`. -/
 lemma inner_indicatorConstLp_indicatorConstLp [CompleteSpace E] [NormedSpace ℝ E]
     (hs : MeasurableSet s) (ht : MeasurableSet t) (hμs : μ s ≠ ∞ := by finiteness)
     (hμt : μ t ≠ ∞ := by finiteness) (a b : E) :
     ⟪indicatorConstLp 2 hs hμs a, indicatorConstLp 2 ht hμt b⟫ = μ.real (s ∩ t) • ⟪a, b⟫ := by
-  rw [inner_indicatorConstLp_eq_inner_setIntegral]
-  have h : ((indicatorConstLp 2 ht hμt (b : E)) : α → E) =ᶠ[ae μ] t.indicator fun x ↦ (b : E) :=
-    indicatorConstLp_coeFn (hs := ht) (hμs := hμt)
-  have g : ∀ᵐ (x : α) ∂μ, x ∈ s → ((indicatorConstLp 2 ht hμt (b : E)) : α → E) x =
-      t.indicator (fun x ↦ (b : E)) x := Filter.Eventually.mono h fun x a a_1 ↦ a
-  rw [setIntegral_congr_ae hs g, setIntegral_indicator ht]
-  rw [integral_const, measureReal_restrict_apply,
-    Set.univ_inter, inner_smul_right_eq_smul]
-  simp
+  rw [inner_indicatorConstLp_eq_inner_setIntegral, setIntegral_indicatorConstLp hs,
+    inner_smul_right_eq_smul, Set.inter_comm]
+
 
 /-- The inner product in `L2` of indicators of two sets with finite measure
 is the measure of the intersection. -/
@@ -284,7 +279,7 @@ lemma real_inner_indicatorConstLp_one_indicatorConstLp_one
     (hs : MeasurableSet s) (ht : MeasurableSet t)
     (hμs : μ s ≠ ∞ := by finiteness) (hμt : μ t ≠ ∞ := by finiteness) :
     ⟪indicatorConstLp 2 hs hμs (1 : ℝ), indicatorConstLp 2 ht hμt (1 : ℝ)⟫_ℝ = μ.real (s ∩ t) := by
-  simp [inner_indicatorConstLp_indicatorConstLp, RCLike.ofReal_alg]
+  simp [inner_indicatorConstLp_indicatorConstLp]
 
 end IndicatorConstLp
 
