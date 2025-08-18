@@ -153,4 +153,10 @@ theorem toNat_lift_add_lift {a : Cardinal.{u}} {b : Cardinal.{v}} (ha : a < ℵ�
     toNat (lift.{v} a + lift.{u} b) = toNat a + toNat b := by
   simp [*]
 
+@[simp]
+lemma natCast_toNat_le (a : Cardinal) : (toNat a : Cardinal) ≤ a := by
+  obtain h | h := lt_or_ge a ℵ₀
+  · simp [cast_toNat_of_lt_aleph0 h]
+  · simp [Cardinal.toNat_apply_of_aleph0_le h]
+
 end Cardinal
