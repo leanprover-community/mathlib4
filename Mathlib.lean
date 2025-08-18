@@ -394,6 +394,7 @@ import Mathlib.Algebra.Group.Pointwise.Set.Finite
 import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
 import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+import Mathlib.Algebra.Group.Pointwise.Set.Small
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Semiconj.Basic
 import Mathlib.Algebra.Group.Semiconj.Defs
@@ -965,6 +966,7 @@ import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 import Mathlib.Algebra.Order.Sub.Unbundled.Hom
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Algebra.Order.SuccPred
+import Mathlib.Algebra.Order.SuccPred.PartialSups
 import Mathlib.Algebra.Order.SuccPred.TypeTags
 import Mathlib.Algebra.Order.SuccPred.WithBot
 import Mathlib.Algebra.Order.Sum
