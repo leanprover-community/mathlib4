@@ -16,14 +16,14 @@ variable {α β : Type*} (s t : Set α)
 
 open Pointwise
 
-instance [Zero α] : Small.{u} (0 : Set α) := small_single _
-instance [One α] : Small.{u} (1 : Set α) := small_single _
+instance small_set_zero [Zero α] : Small.{u} (0 : Set α) := small_single _
+instance small_set_one [One α] : Small.{u} (1 : Set α) := small_single _
 
-instance [InvolutiveNeg α] [Small.{u} s] : Small.{u} (-s :) := by
+instance small_neg [InvolutiveNeg α] [Small.{u} s] : Small.{u} (-s :) := by
   rw [← Set.image_neg_eq_neg]
   infer_instance
 
-instance [Add α] [Small.{u} s] [Small.{u} t] : Small.{u} (s + t) := small_image2 ..
-instance [Sub α] [Small.{u} s] [Small.{u} t] : Small.{u} (s - t) := small_image2 ..
-instance [Mul α] [Small.{u} s] [Small.{u} t] : Small.{u} (s * t) := small_image2 ..
-instance [Div α] [Small.{u} s] [Small.{u} t] : Small.{u} (s / t) := small_image2 ..
+instance small_add [Add α] [Small.{u} s] [Small.{u} t] : Small.{u} (s + t) := small_image2 ..
+instance small_sub [Sub α] [Small.{u} s] [Small.{u} t] : Small.{u} (s - t) := small_image2 ..
+instance small_mul [Mul α] [Small.{u} s] [Small.{u} t] : Small.{u} (s * t) := small_image2 ..
+instance small_div [Div α] [Small.{u} s] [Small.{u} t] : Small.{u} (s / t) := small_image2 ..
