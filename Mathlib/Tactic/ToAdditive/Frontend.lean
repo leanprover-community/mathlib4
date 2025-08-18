@@ -445,6 +445,12 @@ initialize translations : NameMapExtension Name ← registerNameMapExtension _
 def findTranslation? (env : Environment) : Name → Option Name :=
   (ToAdditive.translations.getState env).find?
 
+/-- Get the multiplicative → additive translation for the given name,
+falling back to translating a prefix of the name if the full name can't be translated.
+This allows translating automatically generated declarations such as `IsRegular.casesOn`. -/
+def findPrefixTranslation? (env : Environment) (nm : Name) : Name :=
+  nm.mapPrefix (findTranslation? env)
+
 /-- Add a (multiplicative → additive) name translation to the translations map. -/
 def insertTranslation (src tgt : Name) (failIfExists := true) : CoreM Unit := do
   if let some tgt' := findTranslation? (← getEnv) src then
@@ -582,7 +588,7 @@ where /-- Implementation of `applyReplacementFun`. -/
       dbg_trace s!"replacing at {e}"
     match e with
     | .const n₀ ls₀ => do
-      let n₁ := n₀.mapPrefix <| findTranslation? env
+      let n₁ := findPrefixTranslation? env n₀
       let ls₁ : List Level := if 0 ∈ (reorderFn n₀).flatten then ls₀.swapFirstTwo else ls₀
       if trace then
         if n₀ != n₁ then
@@ -643,7 +649,7 @@ where /-- Implementation of `applyReplacementFun`. -/
           pure (← r gf, ← gAllArgs.mapM r)
       return some <| mkAppN gfAdditive gAllArgsAdditive
     | .proj n₀ idx e => do
-      let n₁ := n₀.mapPrefix <| findTranslation? env
+      let n₁ := findPrefixTranslation? env n₀
       if trace then
         dbg_trace s!"applyReplacementFun: in projection {e}.{idx} of type {n₀}, \
           replace type with {n₁}"
@@ -1155,7 +1161,7 @@ def targetName (cfg : Config) (src : Name) : CoreM Name := do
   trace[to_additive_detail] "The name {s} splits as {s.splitCase}"
   let tgt_auto := guessName s
   let depth := cfg.tgt.getNumParts
-  let pre := pre.mapPrefix <| findTranslation? (← getEnv)
+  let pre := findPrefixTranslation? (← getEnv) pre
   let (pre1, pre2) := pre.splitAt (depth - 1)
   let res := if cfg.tgt == .anonymous then pre.str tgt_auto else pre1 ++ cfg.tgt
   if res == src then
@@ -1176,20 +1182,17 @@ def targetName (cfg : Config) (src : Name) : CoreM Name := do
 /-- if `f src = #[a_1, ..., a_n]` and `f tgt = #[b_1, ... b_n]` then `proceedFieldsAux src tgt f`
 will insert translations from `src.a_i` to `tgt.b_i`
 (or from `a_i` to `b_i` if `prependName` is false). -/
-def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (Array Name))
-    (prependName := true) : CoreM Unit := do
+def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (Array Name)) : CoreM Unit := do
   let srcFields ← f src
   let tgtFields ← f tgt
   if srcFields.size != tgtFields.size then
     throwError "Failed to map fields of {src}, {tgt} with {srcFields} ↦ {tgtFields}.\n \
       Lengths do not match."
-  for (srcField, tgtField) in srcFields.zip tgtFields do
-    let srcName := if prependName then src ++ srcField else srcField
-    let tgtName := if prependName then tgt ++ tgtField else tgtField
-    if srcField != tgtField then
-      insertTranslation srcName tgtName
+  for srcField in srcFields, tgtField in tgtFields do
+    if findPrefixTranslation? (← getEnv) srcField != tgtField then
+      insertTranslation srcField tgtField
     else
-      trace[to_additive] "Translation {srcName} ↦ {tgtName} is automatic."
+      trace[to_additive] "Translation {srcField} ↦ {tgtField} is automatic."
 
 /-- Add the structure fields of `src` to the translations dictionary
 so that future uses of `to_additive` will map them to the corresponding `tgt` fields. -/
@@ -1198,11 +1201,12 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
   -- add translations for the structure fields
   aux fun declName ↦ do
     if isStructure (← getEnv) declName then
-      return getStructureFields (← getEnv) declName
+      let info := getStructureInfo (← getEnv) declName
+      return Array.ofFn (n := info.fieldNames.size) (info.getProjFn? · |>.get!)
     else
       return #[]
   -- add translations for the automatically generated instances with `extend`.
-  aux (prependName := false) fun declName ↦ do
+  aux fun declName ↦ do
     if isStructure (← getEnv) declName then
       return getStructureInfo (← getEnv) declName |>.parentInfo
         |>.filterMap fun c ↦ if !c.subobject then c.projFn else none
@@ -1210,8 +1214,7 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
       return #[]
   -- add translations for the constructors of an inductive type
   aux fun declName ↦ do match (← getEnv).find? declName with
-    | some (ConstantInfo.inductInfo {ctors := ctors, ..}) =>
-        return ctors.toArray.map (.mkSimple ·.lastComponentAsString)
+    | some (ConstantInfo.inductInfo { ctors, .. }) => return ctors.toArray
     | _ => pure #[]
 
 open Tactic.TryThis in

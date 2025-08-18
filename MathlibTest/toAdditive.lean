@@ -595,3 +595,20 @@ run_cmd
   let some doc ← findDocString? (← getEnv) ``addTrivial'
     | throwError "no `str` docstring found"
   logInfo doc
+
+/-! Test structures with a private constructor and private fields -/
+
+structure MyAdd where
+  private mk ::
+  private add : Nat
+
+@[to_additive]
+structure MyMul where
+  private mk ::
+  private mul : Nat
+
+@[to_additive]
+def MyMul.mk' (a : Nat) := MyMul.mk a
+
+@[to_additive]
+def MyMul.mul' (x : MyMul) := x.mul
