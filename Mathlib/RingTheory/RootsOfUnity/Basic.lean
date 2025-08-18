@@ -159,7 +159,7 @@ theorem coe_rootsOfUnity_to_set [NeZero k] :
 
 theorem rootsOfUnity_one_set : ((↑) : Rˣ → R) '' (rootsOfUnity 1 R) = {1} := by
   ext x
-  simp only [coe_rootsOfUnity_to_set, pow_one, Set.setOf_eq_eq_singleton, Set.mem_singleton_iff]
+  simp
 
 end CommMonoid
 
