@@ -51,15 +51,8 @@ open scoped Pointwise
 
 /-- A field which is both linearly ordered and conditionally complete with respect to the order.
 This axiomatizes the reals. -/
--- @[protect_proj] -- Porting note: does not exist anymore
 class ConditionallyCompleteLinearOrderedField (α : Type*) extends
-    Field α, ConditionallyCompleteLinearOrder α where
-  -- extends `IsStrictOrderedRing α` produces
-  -- (kernel) declaration has free variables
-  -- 'ConditionallyCompleteLinearOrderedField.toIsStrictOrderedRing'
-  [toIsStrictOrderedRing : IsStrictOrderedRing α]
-
-attribute [instance] ConditionallyCompleteLinearOrderedField.toIsStrictOrderedRing
+    Field α, ConditionallyCompleteLinearOrder α, IsStrictOrderedRing α where
 
 -- see Note [lower instance priority]
 /-- Any conditionally complete linearly ordered field is archimedean. -/
