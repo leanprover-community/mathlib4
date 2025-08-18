@@ -23,7 +23,7 @@ instance [InvolutiveNeg α] [Small.{u} s] : Small.{u} (-s :) := by
   rw [← Set.image_neg_eq_neg]
   infer_instance
 
-instance [Add α] [Small.{u} s] [Small.{u} t] : Small.{u} (s + t :) := small_image2 ..
-instance [Sub α] [Small.{u} s] [Small.{u} t] : Small.{u} (s - t :) := small_image2 ..
-instance [Mul α] [Small.{u} s] [Small.{u} t] : Small.{u} (s * t :) := small_image2 ..
-instance [Div α] [Small.{u} s] [Small.{u} t] : Small.{u} (s / t :) := small_image2 ..
+instance [Add α] [Small.{u} s] [Small.{u} t] : Small.{u} (s + t) := small_image2 ..
+instance [Sub α] [Small.{u} s] [Small.{u} t] : Small.{u} (s - t) := small_image2 ..
+instance [Mul α] [Small.{u} s] [Small.{u} t] : Small.{u} (s * t) := small_image2 ..
+instance [Div α] [Small.{u} s] [Small.{u} t] : Small.{u} (s / t) := small_image2 ..
