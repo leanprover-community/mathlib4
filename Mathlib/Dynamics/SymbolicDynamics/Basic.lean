@@ -4,145 +4,124 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: S. Gangloff
 -/
 
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Int.Basic
-import Mathlib.Algebra.Module.Basic
 import Mathlib.Topology.Basic
 import Mathlib.Topology.UniformSpace.Pi
-import Mathlib.Topology.UniformSpace.Basic
-import Mathlib.Topology.Sets.Opens
 import Mathlib.Topology.Instances.Discrete
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Data.Int.Interval
-import Mathlib.Data.Real.Basic
-import Mathlib.Order.Filter.Basic
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
-import Mathlib.Topology.Instances.EReal.Lemmas
 import Mathlib.Data.Finset.Basic
 import Mathlib.Logic.Equiv.Defs
 
 /-!
-# Symbolic dynamics over `ℤ^d`
+# Symbolic dynamics on groups
 
-We set up a minimal API for the full shift over a finite discrete alphabet, cylinders,
-patterns, and subshifts defined by forbidden patterns. We also define a language size on
-boxes and a (limsup-based) notion of topological entropy.
+This file develops a minimal API for symbolic dynamics over an arbitrary group `G`.
+The ambient space is the full shift
+`FullShift A G := G → A` (an `abbrev`), hence it inherits the product topology
+from the Π-type. We define the right-translation action, cylinders, finite patterns,
+their occurrences, forbidden sets, and subshifts (closed, shift-invariant subsets).
+Basic topological statements (e.g. cylinders are clopen, occurrence sets are clopen,
+forbidden sets are closed) are proved under discreteness assumptions on the alphabet.
+
+The file is group-generic. Geometry specific to `ℤ^d` (boxes/cubes and the
+box-based entropy) is kept in a separate specialization.
 
 ## Main definitions
 
-* `Zd d` : the lattice `ℤ^d` as functions `Fin d → ℤ`.
-* `FullShiftZd A d` : configurations `Zd d → A` with the product topology.
-* `FullShiftZd.shift` : the `ℤ^d`-action by translation.
-* `cylinder U x` : cylinder set fixing the coordinates in `U ⊆ Zd d` to those of `x`.
-* `Pattern A d` : finite patterns (support + values).
-* `Pattern.occursIn` : occurrence of a pattern at a position.
-* `forbids F` : configurations avoiding every pattern in `F`.
-* `Subshift` : closed, shift‑invariant subsets of the full shift.
-* `box n` : the cube `[-n,n]^d` as a finset of `Zd d`.
-* `languageCard` / `patternCount` : number of patterns seen on a box.
-* `limsupAtTop` : `limsup` of a real sequence along `atTop` (infimum of eventual upper bounds).
-* `entropy` : limsup language growth per unit volume.
+* `FullShift A G := G → A`.
+* `shift g x` — right translation: `(shift g x) h = x (h * g)`.
+* `cylinder U x` — configurations agreeing with `x` on a finite set `U ⊆ G`.
+* `Pattern A G` — finite support together with values on that support.
+* `Pattern.occursIn p x g` — occurrence of `p` in `x` at translate `g`.
+* `forbids F` — configurations avoiding every pattern in `F`.
+* `Subshift A G` — closed, shift-invariant subsets of the full shift.
 
-## Notation/Conventions
+## Conventions
 
-* The alphabet `A` is assumed finite, discrete, and inhabited throughout. The product topology
-  on configurations is used.
-* Cylinders are defined by equality on finitely many coordinates, hence are clopen.
+We use a **right** action of `G` on configurations:
+`(shift g x) h = x (h * g)`. In additive notation (e.g. for `ℤ^d`) this is
+`(shift v x) u = x (u + v)`.
 
+## Implementation notes
+
+* Since `FullShift A G` is an `abbrev` for `G → A`, instances such as
+  `TopologicalSpace (FullShift A G)` and `Inhabited (FullShift A G)` are inherited
+  automatically from the Π-type; no explicit instances are declared here.
+* Openness/closedness results for cylinders and occurrence sets use
+  `[DiscreteTopology A]`. The closedness proofs that enumerate values additionally
+  require `[Fintype A]`, `[DecidableEq A]`, and `[DecidableEq G]` (for `Finset` manipulations
+  and `Function.update`).
 -/
 
+-- TODO:
+-- In entropy, match the namespaces of basic2 ?
+-- 3. Rewrite documentation
+-- 4. CI checks
+-- 5. Rewrite the PR description ? Make comments ?
+
+noncomputable section
 open Set Topology
-open Filter
 
 namespace SymbolicDynamics
 
+variable {A : Type*} [Fintype A] [Fintype A] [DecidableEq A] [Inhabited A]
+variable {G : Type*}
+variable [TopologicalSpace A] [DiscreteTopology A]
+variable [Group G] [DecidableEq G]
 
-variable {A : Type*} [Fintype A] [DecidableEq A] [Inhabited A]
-  [TopologicalSpace A] [DiscreteTopology A]
+/-! ## Full shift and shift action -/
 
-variable {d : ℕ}
 
-/-- The lattice `ℤ^d` as functions `Fin d → ℤ`. -/
-def Zd (d : ℕ) := Fin d → ℤ
+/-- Full shift over a group `G` with alphabet `A` (product topology). -/
+abbrev FullShift (A G) := G → A
 
-/-- Decidable equality on `Zd d`. -/
-@[instance]
-def Zd.decidableEq (d : ℕ) : DecidableEq (Zd d) :=
-  inferInstanceAs (DecidableEq (Fin d → ℤ))
+/-- Right-translation shift: `(shift g x)(h) = x (h * g)`. -/
+def shift (g : G) (x : FullShift A G) : FullShift A G :=
+  fun h => x (h * g)
 
-/-- Pointwise addition on `ℤ^d`. -/
-instance : Add (Zd d) where
-  add := fun u v i ↦ u i + v i
+section ShiftAlgebra
+variable {A G : Type*} [Group G]
+@[simp] lemma shift_apply (g h : G) (x : FullShift A G) :
+  shift g x h = x (h * g) := rfl
 
-/-- `ℤ^d` is an additive commutative group (pointwise). -/
-instance : AddCommGroup (Zd d) := Pi.addCommGroup
+@[simp] lemma shift_one (x : FullShift A G) : shift (1 : G) x = x := by
+  ext h; simp [shift]
 
-/-! ## Full shift -/
+lemma shift_mul (g₁ g₂ : G) (x : FullShift A G) :
+  shift (g₁ * g₂) x = shift g₁ (shift g₂ x) := by
+  ext h; simp [shift, mul_assoc]
+end ShiftAlgebra
 
-/-- The full shift over `ℤ^d` with alphabet `A`. -/
-@[reducible]
-def FullShiftZd (A : Type*) (d : ℕ) := Zd d → A
-
-/-- Product topology on the full shift. -/
-instance : TopologicalSpace (FullShiftZd A d) := Pi.topologicalSpace
-
-/-- Default configuration: constantly `default`. -/
-instance : Inhabited (FullShiftZd A d) := ⟨fun _ ↦ default⟩
-
-namespace FullShiftZd
-
-/-! ### Shift action -/
-
-/-- Shift by `v`: translate a configuration by `v`. -/
-def shift (v : Zd d) (x : FullShiftZd A d) : FullShiftZd A d :=
-  fun u ↦ x (u + v)
-
-section
-variable {A : Type*} {d : ℕ}
-
-@[simp] lemma shift_zero (x : FullShiftZd A d) :
-    shift (0 : Zd d) x = x := by
-  ext u; simp [shift]
-
-/-- Compatibility of shifts with addition. -/
-lemma shift_add (v w : Zd d) (x : FullShiftZd A d) :
-    shift (v + w) x = shift v (shift w x) := by
-  ext u; simp [shift, add_assoc]
-end
-
-section
-variable {A : Type*} [TopologicalSpace A]
-variable {d : ℕ}
-
-/-- The shift map is continuous. -/
-lemma shift_continuous (v : Zd d) :
-  Continuous (shift v : FullShiftZd A d → FullShiftZd A d) := by
+section ShiftTopology  -- add only topology on A
+variable {A G : Type*} [Group G] [TopologicalSpace A]
+lemma shift_continuous (g : G) : Continuous (shift (A:=A) (G:=G) g) := by
+  -- coordinate projections are continuous; composition preserves continuity
   continuity
-end
+end ShiftTopology
 
-/-! ### Cylinders and clopen basis -/
 
-/-- Cylinder fixing `x` on a finite set `U`. -/
-@[reducible]
-def cylinder (U : Finset (Zd d)) (x : Zd d → A) : Set (FullShiftZd A d) :=
+
+/-! ## Cylinders -/
+
+section CylindersDefs
+variable {A G : Type*}
+
+/-- Cylinder fixing `x` on the finite set `U`. -/
+def cylinder (U : Finset G) (x : FullShift A G) : Set (FullShift A G) :=
   { y | ∀ i ∈ U, y i = x i }
 
-section
-variable {A : Type*} {d : ℕ}
+lemma cylinder_eq_set_pi (U : Finset (G)) (x : G → A) :
+  cylinder U x = Set.pi (↑U : Set (G)) (fun i => ({x i} : Set A)) := by
+  ext y; simp [cylinder, Set.pi, Finset.mem_coe]
 
-@[simp] lemma mem_cylinder {U : Finset (Zd d)} {x y : FullShiftZd A d} :
-  y ∈ cylinder U x ↔ ∀ i ∈ U, y i = x i := by rfl
-end
+@[simp] lemma mem_cylinder {U : Finset G} {x y : FullShift A G} :
+  y ∈ cylinder U x ↔ ∀ i ∈ U, y i = x i := Iff.rfl
+end CylindersDefs
 
-section
-variable {A : Type*} [TopologicalSpace A] [DiscreteTopology A]
-variable {d : ℕ}
-
-/-- Cylinders are open. -/
-lemma cylinder_is_open (U : Finset (Zd d)) (x : Zd d → A) :
+section CylindersOpen
+variable {A G : Type*} [TopologicalSpace A] [DiscreteTopology A]
+/-- Cylinders are open (and, dually, closed) when `A` is discrete. -/
+lemma cylinder_is_open (U : Finset (G)) (x : G → A) :
   IsOpen (cylinder U x) := by
-  let S : Set (FullShiftZd A d) := ⋂ i ∈ U, { y | y i = x i }
+  let S : Set (FullShift A G) := ⋂ i ∈ U, { y | y i = x i }
   have : cylinder U x = S := by
     ext y
     rw [cylinder, mem_setOf_eq]
@@ -151,20 +130,17 @@ lemma cylinder_is_open (U : Finset (Zd d)) (x : Zd d → A) :
   rw [this]
   apply isOpen_biInter_finset
   intro i _
-  have : { y : FullShiftZd A d | y i = x i } = (fun y ↦ y i) ⁻¹' {x i} := rfl
+  have : { y : FullShift A G | y i = x i } = (fun y ↦ y i) ⁻¹' {x i} := rfl
   rw [this]
   apply Continuous.isOpen_preimage
   · exact continuous_apply i
   · exact isOpen_discrete ({x i} : Set A)
-end
+end CylindersOpen
 
-section
-variable {A : Type*} [TopologicalSpace A] [DiscreteTopology A]
-variable [Fintype A] [DecidableEq A]
-variable {d : ℕ}
-
-/-- Cylinders are closed (hence clopen). -/
-lemma cylinder_is_closed (d : ℕ) (U : Finset (Zd d)) (x : Zd d → A) :
+section CylindersClosed
+variable {A G : Type*}
+[TopologicalSpace A] [DiscreteTopology A] [Fintype A] [DecidableEq A] [DecidableEq G]
+lemma cylinder_is_closed (U : Finset (G)) (x : G → A) :
     IsClosed (cylinder U x) := by
   have h : (cylinder U x)ᶜ = ⋃ (i ∈ U) (a ∈ (Finset.univ \ {x i} : Finset A)),
       cylinder {i} (Function.update x i a) := by
@@ -203,107 +179,108 @@ lemma cylinder_is_closed (d : ℕ) (U : Finset (Zd d)) (x : Zd d → A) :
     apply isOpen_iUnion; intro ha
     exact cylinder_is_open {i} (Function.update x i a)
   exact isOpen_compl_iff.mp this
-end
+end CylindersClosed
 
-/-! ## Subshifts and patterns -/
+/-! ## Patterns and occurrences -/
 
-/-- A subshift is a closed, shift‑invariant subset of the full shift. -/
-structure Subshift (A : Type*) [TopologicalSpace A] [Inhabited A] (d : ℕ) where
-  /-- The underlying set. -/
-  carrier : Set (FullShiftZd A d)
-  /-- Closedness of the carrier. -/
-  is_closed : IsClosed carrier
-  /-- Shift invariance. -/
-  shift_invariant : ∀ v : Zd d, ∀ x ∈ carrier, shift v x ∈ carrier
+/-- A subshift is a closed, shift-invariant subset. -/
+structure Subshift (A : Type*) [TopologicalSpace A] [Inhabited A] (G : Type*) [Group G] where
+  carrier : Set (FullShift A G)
+  isClosed : IsClosed carrier
+  shiftInvariant : ∀ g : G, ∀ x ∈ carrier, shift (A:=A) (G:=G) g x ∈ carrier
 
 /-- The full shift is a subshift. -/
-example : Subshift A d :=
+example : Subshift A G :=
 { carrier := Set.univ,
-  is_closed := isClosed_univ,
-  shift_invariant := by intro _ _ _; simp }
+  isClosed := isClosed_univ,
+  shiftInvariant := by intro _ _ _; simp }
 
-/-- A finite pattern: a finite support `U` together with values on `U`. -/
-structure Pattern (A : Type*) (d : ℕ) where
-  support : Finset (Zd d)
+
+/-- A finite pattern: finite support in `G` and values on it. -/
+structure Pattern (A : Type*) (G : Type*) [Group G] where
+  support : Finset G
   data : support → A
 
 /-- The domino supported on `{i,j}` with values `ai`,`aj`. -/
-def domino {A : Type*} {d : ℕ}
-    (i j : Zd d) (ai aj : A) : Pattern A d := by
+def domino {A : Type*}
+    (i j : G) (ai aj : A) : Pattern A G := by
   refine
-  { support := ({i, j} : Finset (Zd d))
+  { support := ({i, j} : Finset (G))
   , data := fun ⟨z, hz⟩ => if z = i then ai else aj }
 
-/-- `p` occurs in `x` at position `v`. -/
-def Pattern.occursIn (p : Pattern A d) (x : FullShiftZd A d) (v : Zd d) : Prop :=
-  ∀ u (hu : u ∈ p.support), x (u + v) = p.data ⟨u, hu⟩
+/-- Occurrence of a pattern `p` in `x` at position `g`. -/
+def Pattern.occursIn (p : Pattern A G) (x : FullShift A G) (g : G) : Prop :=
+  ∀ (h) (hh : h ∈ p.support), x (h * g) = p.data ⟨h, hh⟩
 
-/-! ### Forbidden patterns -/
+/-- Configurations avoiding every pattern in `F`. -/
+def forbids (F : Set (Pattern A G)) : Set (FullShift A G) :=
+  { x | ∀ p ∈ F, ∀ g : G, ¬ p.occursIn x g }
 
-/-- Configurations avoiding all patterns of `F`. -/
-def forbids (F : Set (Pattern A d)) : Set (FullShiftZd A d) :=
-  { x | ∀ p ∈ F, ∀ v : Zd d, ¬ p.occursIn x v }
 
-section
-variable {A : Type*} {d : ℕ}
+section ShiftInvariance
+variable {A G : Type*} [Group G]
+/-- Shifts move occurrences as expected. -/
+lemma occurs_shift (p : Pattern A G) (x : FullShift A G) (g h : G) :
+  p.occursIn (shift h x) g ↔ p.occursIn x (g * h) := by
+  constructor <;> intro H u hu <;> simpa [shift, mul_assoc] using H u hu
 
-lemma occurs_shift (p : Pattern A d) (x : FullShiftZd A d) (v w : Zd d) :
-  Pattern.occursIn p (shift w x) v ↔ Pattern.occursIn p x (v + w) := by
-  constructor
-  · intro h u hu; simpa [← add_assoc] using h u hu
-  · intro h u hu; simpa [shift, add_assoc] using h u hu
-
-/-- `forbids F` is shift invariant. -/
-lemma forbids_shift_invariant (F : Set (Pattern A d)) :
-    ∀ v : Zd d, ∀ x ∈ forbids F, shift v x ∈ forbids F := by
-  intro w x hx p hp v; specialize hx p hp (v + w); contrapose! hx; rwa [← occurs_shift]
-end
+lemma forbids_shift_invariant (F : Set (Pattern A G)) :
+  ∀ h : G, ∀ x ∈ forbids (A:=A) (G:=G) F, shift h x ∈ forbids F := by
+  intro h x hx p hp g
+  specialize hx p hp (g * h)
+  -- contraposition
+  contrapose! hx
+  simpa [occurs_shift] using hx
+end ShiftInvariance
 
 /-- Extend a pattern by `default` away from its support (anchored at the origin). -/
-def patternToOriginConfig (p : Pattern A d) : FullShiftZd A d :=
+def patternToOriginConfig (p : Pattern A G) : FullShift A G :=
   fun i ↦ if h : i ∈ p.support then p.data ⟨i, h⟩ else default
 
 /-- Translate a pattern to occur at `v`. -/
-def patternToConfig (p : Pattern A d) (v : Zd d) : FullShiftZd A d :=
-  shift (-v) (patternToOriginConfig p)
+def patternToConfig (p : Pattern A G) (v : G) : FullShift A G :=
+  shift (v⁻¹) (patternToOriginConfig p)
 
 /-- Restrict a configuration to a finite support, seen as a pattern. -/
-def patternFromConfig (x : Zd d → A) (U : Finset (Zd d)) : Pattern A d :=
+def patternFromConfig (x : G → A) (U : Finset (G)) : Pattern A G :=
   { support := U,
     data := fun i => x i.1 }
 
-set_option linter.unusedSectionVars false
-/-- Occurrences are cylinders translated by `v`. -/
-lemma occursAt_eq_cylinder (p : Pattern A d) (v : Zd d) :
-  { x | p.occursIn x v }
-    = cylinder (p.support.image (· + v)) (patternToConfig p v) := by
+section OccursAtEqCylinder
+variable {A G : Type*} [Group G] [Inhabited A] [DecidableEq G]
+/-- “Occurrence = cylinder translated by `g`”. -/
+lemma occursAt_eq_cylinder (p : Pattern A G) (g : G) :
+  { x | p.occursIn x g }
+    = cylinder (p.support.image (· * g)) (patternToConfig p g) := by
   ext x
   constructor
   · intro H u hu
     obtain ⟨w, hw, rfl⟩ := Finset.mem_image.mp hu
     dsimp [patternToConfig, patternToOriginConfig, shift]
-    simp [add_neg_cancel_right, dif_pos hw, H w hw]
+    simp [dif_pos hw, H w hw]
   · intro H u hu
-    have := H (u + v) (Finset.mem_image_of_mem _ hu)
+    have := H (u * g) (Finset.mem_image_of_mem _ hu)
     dsimp [patternToConfig, patternToOriginConfig, shift] at this
     simpa [add_neg_cancel_right, dif_pos hu] using this
+end OccursAtEqCylinder
 
-/-- Occurrence sets are closed. -/
-lemma occursAt_closed (p : Pattern A d) (v : Zd d) :
-    IsClosed { x | p.occursIn x v } := by
-  rw [occursAt_eq_cylinder]; exact cylinder_is_closed d _ _
+/-! ## Forbidden sets and subshifts -/
+
+section OccSetsOpen
+variable {A G : Type*} [Group G] [TopologicalSpace A] [DiscreteTopology A]
+           [Inhabited A] [DecidableEq G]
 
 /-- Occurrence sets are open. -/
-lemma occursAt_open (p : Pattern A d) (v : Zd d) :
-    IsOpen { x | p.occursIn x v } := by
+lemma occursAt_open (p : Pattern A G) (g : G) :
+    IsOpen { x | p.occursIn x g } := by
   rw [occursAt_eq_cylinder]; exact cylinder_is_open _ _
 
 /-- Avoiding a fixed set of patterns is a closed condition. -/
-lemma forbids_closed (F : Set (Pattern A d)) :
+lemma forbids_closed (F : Set (Pattern A G)) :
   IsClosed (forbids F) := by
   rw [forbids]
-  have : {x | ∀ p ∈ F, ∀ v : Zd d, ¬ p.occursIn x v}
-       = ⋂ (p : Pattern A d) (h : p ∈ F), ⋂ (v : Zd d), {x | ¬ p.occursIn x v} := by
+  have : {x | ∀ p ∈ F, ∀ v : G, ¬ p.occursIn x v}
+       = ⋂ (p : Pattern A G) (h : p ∈ F), ⋂ (v : G), {x | ¬ p.occursIn x v} := by
     ext x; simp
   rw [this]
   refine isClosed_iInter ?_;
@@ -312,85 +289,61 @@ lemma forbids_closed (F : Set (Pattern A d)) :
   intro v; have : {x | ¬p.occursIn x v} = {x | p.occursIn x v}ᶜ := by ext x; simp
   simpa [this, isClosed_compl_iff] using occursAt_open p v
 
+end OccSetsOpen
+
+section OccSetsClosed
+variable {A G : Type*} [Group G] [TopologicalSpace A] [DiscreteTopology A]
+           [Inhabited A] [DecidableEq G] [Fintype A] [DecidableEq A]
+
+/-- Occurrence sets are closed. -/
+lemma occursAt_closed (p : Pattern A G) (g : G) :
+    IsClosed { x | p.occursIn x g } := by
+  rw [occursAt_eq_cylinder]; exact cylinder_is_closed _ _
+
+end OccSetsClosed
+
 /-- Subshift defined by forbidden patterns. -/
-def X_F (F : Set (Pattern A d)) : Subshift A d :=
+def X_F (F : Set (Pattern A G)) : Subshift A G :=
 { carrier := forbids F,
-  is_closed := forbids_closed F,
-  shift_invariant := forbids_shift_invariant F }
+  isClosed := forbids_closed F,
+  shiftInvariant := forbids_shift_invariant F }
 
 /-- Subshift of finite type defined by a finite family of forbidden patterns. -/
-def SFT (F : Finset (Pattern A d)) : Subshift A d :=
-  X_F (F : Set (Pattern A d))
-
-/-! ## Boxes, language, and entropy -/
-
-/-- The box `[-n,n]^d` as a finset of `Zd d`. -/
-def box (n : ℕ) : Finset (Zd d) :=
-  Fintype.piFinset (fun _ ↦ Finset.Icc (-↑n : ℤ) ↑n)
-
-/-- Language on the box `[-n,n]^d`: patterns obtained by restricting some `x ∈ X`. -/
-def language_box (X : Set (Zd d → A)) (n : ℕ) : Set (Pattern A d) :=
-  { p | ∃ x ∈ X, patternFromConfig x (box n) = p }
+def SFT (F : Finset (Pattern A G)) : Subshift A G :=
+  X_F (F : Set (Pattern A G))
 
 /-- Patterns with fixed support `U`. -/
-def FixedSupport (A : Type*) (d : ℕ) (U : Finset (Zd d)) :=
-  { p : Pattern A d // p.support = U }
+def FixedSupport (A : Type*) (G : Type*) [Group G] (U : Finset G) :=
+  { p : Pattern A G // p.support = U }
 
-set_option linter.unnecessarySimpa false
-/-- Equivalence `FixedSupport A d U ≃ (U → A)`. -/
-def equivFun {U : Finset (Zd d)} : FixedSupport A d U ≃ (U → A) where
-  toFun := fun p => fun i =>
-    p.val.data ⟨i.1, by simpa [p.property] using i.2⟩
-  invFun := fun f => ⟨{ support := U, data := f }, rfl⟩
-  left_inv := by
-    rintro ⟨p, hp⟩; apply Subtype.ext; cases hp; rfl
+/-- `FixedSupport A G U ≃ (U → A)`; gives finiteness immediately. -/
+def equivFun {U : Finset G} :
+  FixedSupport A G U ≃ (U → A) where
+  toFun   := fun p i => p.1.data ⟨i.1, by simp [p.2]⟩
+  invFun  := fun f => ⟨{ support := U, data := f }, rfl⟩
+  left_inv := by rintro ⟨p,hU⟩; apply Subtype.ext; cases hU; rfl
   right_inv := by intro f; rfl
 
-/-- Finiteness of `FixedSupport A d U`. -/
-instance fintypeFixedSupport (U : Finset (Zd d)) :
-    Fintype (FixedSupport A d U) := by
-  classical
-  exact Fintype.ofEquiv (U → A) (equivFun (A:=A) (d:=d) (U:=U)).symm
+instance fintypeFixedSupport {U : Finset G} :
+    Fintype (FixedSupport A G U) := by
+  classical exact Fintype.ofEquiv (U → A) (equivFun (A:=A) (G:=G) (U:=U)).symm
 
-/-- Cardinality of the box language (as a finite set), defined via images into
-`FixedSupport`. This version is `noncomputable` since it goes through `Set.finite_univ`. -/
-noncomputable def languageCard (X : Set (Zd d → A)) (n : ℕ) : ℕ := by
+/-- Language on a finite set `U ⊆ G`: patterns obtained by restricting some `x ∈ X`. -/
+def languageOn (X : Set (G → A)) (U : Finset G) : Set (Pattern A G) :=
+  { p | ∃ x ∈ X, patternFromConfig x U = p }
+
+/-- Cardinality of the finite-support language. -/
+noncomputable def languageCardOn (X : Set (G → A)) (U : Finset G) : ℕ := by
   classical
-  let U : Finset (Zd d) := box (d:=d) n
-  let f : {x : Zd d → A // x ∈ X} → FixedSupport A d U :=
-    fun x => ⟨patternFromConfig (A:=A) (d:=d) x.1 U, rfl⟩
-  have hfin_univ : (Set.univ : Set (FixedSupport A d U)).Finite := Set.finite_univ
-  have hfin : (Set.range f).Finite := hfin_univ.subset (by intro y hy; simp)
+  -- Image of a map into the finite type `FixedSupport A G U`
+  let f : {x : G → A // x ∈ X} → FixedSupport A G U :=
+    fun x => ⟨patternFromConfig x.1 U, rfl⟩
+  have hfin : (Set.range f).Finite := (Set.finite_univ :
+    (Set.univ : Set (FixedSupport A G U)).Finite)
+    |>.subset (by intro y hy; simp)
   exact hfin.toFinset.card
 
-/-- Number of patterns of a subshift on the box of size `n`. -/
-noncomputable def patternCount (Y : Subshift A d) (n : ℕ) : ℕ :=
-  languageCard (A:=A) (d:=d) Y.carrier n
-
-/-- The box `[-n,n]^d` is nonempty. -/
-@[simp] lemma box_card_pos (d n : ℕ) : 0 < (box (d:=d) n).card := by
-  classical
-  have hcoord :
-      ∀ i : Fin d, (0 : ℤ) ∈ Finset.Icc (-(n : ℤ)) (n : ℤ) := by
-    intro i
-    have h0n : (0 : ℤ) ≤ (n : ℤ) := by exact_mod_cast (Nat.zero_le n)
-    have hneg : -(n : ℤ) ≤ 0 := neg_nonpos.mpr h0n
-    simp [Finset.mem_Icc, hneg]
-  have hmem : (0 : Zd d) ∈ box (d:=d) n :=
-    Fintype.mem_piFinset.mpr hcoord
-  exact Finset.card_pos.mpr ⟨0, hmem⟩
-
-/-- `limsup` along `atTop` as the infimum of eventual upper bounds. -/
-noncomputable def limsupAtTop (u : ℕ → ℝ) : ℝ :=
-  sInf { L : ℝ | ∀ᶠ n in Filter.atTop, u n ≤ L }
-
-/-- Topological entropy via limsup language growth on cubes.
-We use `+ 1` inside the logarithm to avoid `log 0`. -/
-noncomputable def entropy (Y : Subshift A d) : ℝ :=
-  limsupAtTop (fun n =>
-    (Real.log ((patternCount (A:=A) (d:=d) Y n + 1 : ℕ))) /
-    ((box (d:=d) n).card : ℝ))
-
-end FullShiftZd
+noncomputable def patternCountOn (Y : Subshift A G) (U : Finset G) : ℕ :=
+  languageCardOn (A:=A) (G:=G) Y.carrier U
 
 end SymbolicDynamics
