@@ -81,12 +81,6 @@ variable {R₁ R₂ R₃ M₁ M₂ M₃ : Type*}
   [RingHomInvPair σ₂₁ σ₁₂] [RingHomInvPair σ₃₂ σ₂₃] [RingHomInvPair σ₃₁ σ₁₃]
   [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₃₂ σ₂₁ σ₃₁]
 
-instance RingHomCompTriple.comp : RingHomCompTriple σ₁₂ σ₂₃ (σ₂₃.comp σ₁₂) := ⟨rfl⟩
-
-instance RingHomInvPair.comp : RingHomInvPair (σ₂₃.comp σ₁₂) (σ₂₁.comp σ₃₂) := ⟨by
-    ext; simp_rw [RingHom.comp_apply, RingHomInvPair.comp_apply_eq, RingHom.id_apply], by
-    ext; simp_rw [RingHom.comp_apply, RingHomInvPair.comp_apply_eq, RingHom.id_apply]⟩
-
 /-- A semilinear equivalence from `V` to `W` determines an isomorphism of general linear
 groups. -/
 def congrLinearEquiv (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) :
