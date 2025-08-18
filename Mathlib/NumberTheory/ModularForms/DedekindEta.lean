@@ -183,19 +183,11 @@ lemma tsum_eq_tsum_sigma (z : ℍ) : ∑' n : ℕ+,
   · simpa using
       pow_lt_one₀ (by simp) (UpperHalfPlane.norm_exp_two_pi_I_lt_one z) (by apply PNat.ne_zero)
 
-lemma summable_mul_tendsto_const {F ι : Type*} [NontriviallyNormedField F] [CompleteSpace F]
-    {f g : ι → F} (hf : Summable fun n => ‖f n‖) {c : F} (hg : Tendsto g cofinite (𝓝 c)) :
-    Summable fun n : ι ↦ f n * g n := by
-  apply summable_of_isBigO hf
-  have h0 : g =O[cofinite] fun _x ↦ (1 : F) := by
-    apply Filter.Tendsto.isBigO_one
-    exact hg
-  simpa using ((Asymptotics.isBigO_const_mul_self 1 f cofinite).mul h0)
-
-lemma logDeriv_q_expo_summable {F : Type*} [NontriviallyNormedField F]
-    [CompleteSpace F] {r : F} (hr : ‖r‖ < 1) : Summable fun n : ℕ => (n * r ^ n / (1 - r ^ n)) := by
-  rw [show (fun n : ℕ => (n * r ^ n / (1 - r ^ n))) =
-    fun n : ℕ => ((n * r ^ n) * (1 / (1 - r ^ n))) by grind]
+lemma summable_norm_pow_mul_geometric_div_one_sub {F : Type*} [NontriviallyNormedField F]
+    [CompleteSpace F] (k : ℕ) {r : F} (hr : ‖r‖ < 1) :
+    Summable fun n : ℕ => (n ^ k * r ^ n / (1 - r ^ n)) := by
+  rw [show (fun n : ℕ => (n ^ k * r ^ n / (1 - r ^ n))) =
+    fun n : ℕ => ((n ^ k * r ^ n) * (1 / (1 - r ^ n))) by grind]
   apply summable_mul_tendsto_const (c := 1 / (1 - 0))
   · rw [Nat.cofinite_eq_atTop]
     have : Tendsto (fun n : ℕ => 1 - r ^ n) atTop (𝓝 (1 - 0)) :=
@@ -203,8 +195,7 @@ lemma logDeriv_q_expo_summable {F : Type*} [NontriviallyNormedField F]
     have h1 : Tendsto (fun n : ℕ => (1 : F)) atTop (𝓝 1) := by simp only [tendsto_const_nhds_iff]
     apply (Filter.Tendsto.div h1 this (by simp)).congr
     simp
-  · simpa using (summable_norm_pow_mul_geometric_of_norm_lt_one 1 hr)
-
+  · simpa using (summable_norm_pow_mul_geometric_of_norm_lt_one k hr)
 
 lemma eta_logDeriv (z : ℍ) : logDeriv ModularForm.eta z = (π * Complex.I / 12) * E2 z := by
   unfold ModularForm.eta etaProdTerm
@@ -239,7 +230,7 @@ lemma eta_logDeriv (z : ℍ) : logDeriv ModularForm.eta z = (π * Complex.I / 12
     simp_rw [eta_q_eq_pow]
     fun_prop
   · simp only [mem_setOf_eq, one_sub_eta_logDeriv_eq]
-    apply ((summable_nat_add_iff 1).mpr ((logDeriv_q_expo_summable (r := 𝕢 1 z)
+    apply ((summable_nat_add_iff 1).mpr ((summable_norm_pow_mul_geometric_div_one_sub (r := 𝕢 1 z) 1
       (by simpa [Periodic.qParam] using UpperHalfPlane.norm_exp_two_pi_I_lt_one z)).mul_left
       (-2 * π * Complex.I))).congr
     intro b
