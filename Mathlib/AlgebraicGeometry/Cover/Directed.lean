@@ -3,7 +3,9 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
+import Mathlib.CategoryTheory.LocallyDirected
 import Mathlib.AlgebraicGeometry.PullbackCarrier
+import Mathlib.AlgebraicGeometry.Gluing
 
 /-!
 # Locally directed covers
@@ -13,7 +15,8 @@ on the indices and compatible transition maps `𝒰ᵢ ⟶ 𝒰ⱼ` for `i ≤ j
 every `x : 𝒰ᵢ ×[X] 𝒰ⱼ` comes from some `𝒰ₖ` for a `k ≤ i` and `k ≤ j`.
 
 Gluing along directed covers is easier, because the intersections `𝒰ᵢ ×[X] 𝒰ⱼ` can
-be covered by a subcover of `𝒰`.
+be covered by a subcover of `𝒰`. In particular, if `𝒰` is a Zariski cover,
+`X` naturally is the colimit of the `𝒰ᵢ`.
 
 Many natural covers are naturally directed, most importantly the cover of all affine
 opens of a scheme.
@@ -29,10 +32,12 @@ namespace AlgebraicGeometry.Scheme
 
 variable {P : MorphismProperty Scheme.{u}} {X : Scheme.{u}}
 
+namespace Cover
+
 /-- A directed `P`-cover of a scheme `X` is a cover `𝒰` with an ordering
 on the indices and compatible transition maps `𝒰ᵢ ⟶ 𝒰ⱼ` for `i ≤ j` such that
 every `x : 𝒰ᵢ ×[X] 𝒰ⱼ` comes from some `𝒰ₖ` for a `k ≤ i` and `k ≤ j`. -/
-class Cover.LocallyDirected (𝒰 : X.Cover P) [Category 𝒰.J] where
+class LocallyDirected (𝒰 : X.Cover P) [Category 𝒰.J] where
   /-- The transition map `𝒰ᵢ ⟶ 𝒰ⱼ` for `i ≤ j`. -/
   trans {i j : 𝒰.J} (hij : i ⟶ j) : 𝒰.obj i ⟶ 𝒰.obj j
   trans_id (i : 𝒰.J) : trans (𝟙 i) = 𝟙 (𝒰.obj i)
@@ -46,31 +51,31 @@ class Cover.LocallyDirected (𝒰 : X.Cover P) [Category 𝒰.J] where
 variable (𝒰 : X.Cover P) [Category 𝒰.J] [𝒰.LocallyDirected]
 
 /-- The transition maps of a directed cover. -/
-def Cover.trans {i j : 𝒰.J} (hij : i ⟶ j) : 𝒰.obj i ⟶ 𝒰.obj j := LocallyDirected.trans hij
+def trans {i j : 𝒰.J} (hij : i ⟶ j) : 𝒰.obj i ⟶ 𝒰.obj j := LocallyDirected.trans hij
 
 @[simp]
-lemma Cover.trans_map {i j : 𝒰.J} (hij : i ⟶ j) : 𝒰.trans hij ≫ 𝒰.map j = 𝒰.map i :=
+lemma trans_map {i j : 𝒰.J} (hij : i ⟶ j) : 𝒰.trans hij ≫ 𝒰.map j = 𝒰.map i :=
   LocallyDirected.w hij
 
 @[simp]
-lemma Cover.trans_id (i : 𝒰.J) : 𝒰.trans (𝟙 i) = 𝟙 (𝒰.obj i) := LocallyDirected.trans_id i
+lemma trans_id (i : 𝒰.J) : 𝒰.trans (𝟙 i) = 𝟙 (𝒰.obj i) := LocallyDirected.trans_id i
 
 @[simp]
-lemma Cover.trans_comp {i j k : 𝒰.J} (hij : i ⟶ j) (hjk : j ⟶ k) :
+lemma trans_comp {i j k : 𝒰.J} (hij : i ⟶ j) (hjk : j ⟶ k) :
     𝒰.trans (hij ≫ hjk) = 𝒰.trans hij ≫ 𝒰.trans hjk := LocallyDirected.trans_comp hij hjk
 
-lemma Cover.exists_lift_trans_eq {i j : 𝒰.J} (x : (pullback (𝒰.map i) (𝒰.map j)).carrier) :
+lemma exists_lift_trans_eq {i j : 𝒰.J} (x : (pullback (𝒰.map i) (𝒰.map j)).carrier) :
     ∃ (k : 𝒰.J) (hki : k ⟶ i) (hkj : k ⟶ j) (y : 𝒰.obj k),
       (pullback.lift (𝒰.trans hki) (𝒰.trans hkj) (by simp)).base y = x :=
   LocallyDirected.directed x
 
-lemma Cover.property_trans {i j : 𝒰.J} (hij : i ⟶ j) : P (𝒰.trans hij) :=
+lemma property_trans {i j : 𝒰.J} (hij : i ⟶ j) : P (𝒰.trans hij) :=
   LocallyDirected.property_trans hij
 
 /-- If `𝒰` is a directed cover of `X`, this is the cover of `𝒰ᵢ ×[X] 𝒰ⱼ` by `{𝒰ₖ}` where
 `k ≤ i` and `k ≤ j`. -/
 @[simps map]
-def Cover.intersectionOfLocallyDirected [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P]
+def intersectionOfLocallyDirected [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P]
     (i j : 𝒰.J) : (pullback (𝒰.map i) (𝒰.map j)).Cover P where
   J := Σ (k : 𝒰.J), (k ⟶ i) × (k ⟶ j)
   obj k := 𝒰.obj k.1
@@ -83,53 +88,40 @@ def Cover.intersectionOfLocallyDirected [P.IsStableUnderBaseChange] [P.HasOfPost
     rw [pullback.lift_fst]
     exact 𝒰.property_trans _
 
-/-- If `𝒰` is a directed open cover of `X`, to glue morphisms `{gᵢ : 𝒰ᵢ ⟶ Y}` it suffices
-to check compatibility with the transition maps. -/
-def OpenCover.glueMorphismsOfLocallyDirected (𝒰 : X.OpenCover) [Category 𝒰.J] [𝒰.LocallyDirected]
-    {Y : Scheme.{u}}
-    (g : ∀ i, 𝒰.obj i ⟶ Y) (h : ∀ {i j : 𝒰.J} (hij : i ⟶ j), 𝒰.trans hij ≫ g j = g i) :
-    X ⟶ Y :=
-  𝒰.glueMorphisms g <| fun i j ↦ by
-    apply (𝒰.intersectionOfLocallyDirected i j).hom_ext
-    intro k
-    simp [h]
+/-- The canonical diagram induced by a locally directed cover. -/
+@[simps]
+def functorOfLocallyDirected : 𝒰.J ⥤ Scheme.{u} where
+  obj := 𝒰.obj
+  map := 𝒰.trans
 
-@[reassoc (attr := simp)]
-lemma OpenCover.map_glueMorphismsOfLocallyDirected (𝒰 : X.OpenCover) [Category 𝒰.J]
-    [𝒰.LocallyDirected] {Y : Scheme.{u}} (g : ∀ i, 𝒰.obj i ⟶ Y)
-    (h : ∀ {i j : 𝒰.J} (hij : i ⟶ j), 𝒰.trans hij ≫ g j = g i) (i : 𝒰.J) :
-    𝒰.map i ≫ 𝒰.glueMorphismsOfLocallyDirected g h = g i := by
-  simp [glueMorphismsOfLocallyDirected]
+instance : (𝒰.functorOfLocallyDirected ⋙ Scheme.forget).IsLocallyDirected where
+  cond {i j k} fi fj xi xj hxij := by
+    simp only [Functor.comp_obj, Cover.functorOfLocallyDirected_obj, forget_obj, Functor.comp_map,
+      Cover.functorOfLocallyDirected_map, forget_map] at hxij
+    have : (𝒰.map i).base xi = (𝒰.map j).base xj := by
+      rw [← 𝒰.trans_map fi, ← 𝒰.trans_map fj, comp_base, comp_base, ConcreteCategory.comp_apply,
+        hxij, ConcreteCategory.comp_apply]
+    obtain ⟨z, rfl, rfl⟩ := Scheme.Pullback.exists_preimage_pullback xi xj this
+    obtain ⟨l, gi, gj, y, rfl⟩ := 𝒰.exists_lift_trans_eq z
+    refine ⟨l, gi, gj, y, ?_, ?_⟩ <;> simp [← Scheme.comp_base_apply]
 
-/-- If `𝒰` is a directed open cover of `X`, to glue morphisms `{gᵢ : 𝒰ᵢ ⟶ Y}` over `S` it suffices
-to check compatibility with the transition maps. -/
-def OpenCover.glueMorphismsOverOfLocallyDirected {S : Scheme.{u}} {X : Over S}
-    (𝒰 : X.left.OpenCover) [Category 𝒰.J] [𝒰.LocallyDirected] {Y : Over S}
-    (g : ∀ i, 𝒰.obj i ⟶ Y.left)
-    (h : ∀ {i j : 𝒰.J} (hij : i ⟶ j), 𝒰.trans hij ≫ g j = g i)
-    (w : ∀ i, g i ≫ Y.hom = 𝒰.map i ≫ X.hom) :
-    X ⟶ Y :=
-  Over.homMk (𝒰.glueMorphismsOfLocallyDirected g h) <| by
-    apply 𝒰.hom_ext
-    intro i
-    simp [w]
+/--
+The canonical cocone with point `X` on the functor induced by the locally directed cover `𝒰`.
+If `𝒰` is an open cover, this is colimiting (see `OpenCover.isColimitCoconeOfLocallyDirected`).
+-/
+@[simps]
+def coconeOfLocallyDirected : Cocone 𝒰.functorOfLocallyDirected where
+  pt := X
+  ι.app := 𝒰.map
 
-@[reassoc (attr := simp)]
-lemma OpenCover.map_glueMorphismsOverOfLocallyDirected_left {S : Scheme.{u}} {X : Over S}
-    (𝒰 : X.left.OpenCover) [Category 𝒰.J] [𝒰.LocallyDirected] {Y : Over S}
-    (g : ∀ i, 𝒰.obj i ⟶ Y.left) (h : ∀ {i j : 𝒰.J} (hij : i ⟶ j), 𝒰.trans hij ≫ g j = g i)
-    (w : ∀ i, g i ≫ Y.hom = 𝒰.map i ≫ X.hom) (i : 𝒰.J) :
-    𝒰.map i ≫ (𝒰.glueMorphismsOverOfLocallyDirected g h w).left = g i := by
-  simp [glueMorphismsOverOfLocallyDirected]
-
-section
+section BaseChange
 
 variable [P.IsStableUnderBaseChange] (𝒰 : X.Cover P)
     [Category 𝒰.J] [𝒰.LocallyDirected] {Y : Scheme.{u}} (f : Y ⟶ X)
 
 instance : Category (𝒰.pullbackCover f).J := inferInstanceAs <| Category 𝒰.J
 
-instance Cover.locallyDirectedPullbackCover : (𝒰.pullbackCover f).LocallyDirected where
+instance locallyDirectedPullbackCover : (𝒰.pullbackCover f).LocallyDirected where
   trans {i j} hij := pullback.map f (𝒰.map i) f (𝒰.map j) (𝟙 _) (𝒰.trans hij) (𝟙 _)
     (by simp) (by simp)
   trans_id i := by simp
@@ -164,7 +156,69 @@ instance Cover.locallyDirectedPullbackCover : (𝒰.pullbackCover f).LocallyDire
     convert P.pullback_fst _ _ (𝒰.property_trans hij)
     apply pullback.hom_ext <;> simp [pullback.condition]
 
-end
+end BaseChange
+
+end Cover
+
+namespace OpenCover
+
+variable (𝒰 : X.OpenCover) [Category 𝒰.J] [𝒰.LocallyDirected]
+
+instance {i j : 𝒰.J} (f : i ⟶ j) : IsOpenImmersion (𝒰.trans f) :=
+  𝒰.property_trans f
+
+instance {i j : 𝒰.J} (f : i ⟶ j) : IsOpenImmersion (𝒰.functorOfLocallyDirected.map f) :=
+  𝒰.property_trans f
+
+/--
+If `𝒰` is a directed open cover of `X`, to glue morphisms `{gᵢ : 𝒰ᵢ ⟶ Y}` it suffices
+to check compatibility with the transition maps.
+See `OpenCover.isColimitCoconeOfLocallyDirected` for this result stated in the language of
+colimits.
+-/
+def glueMorphismsOfLocallyDirected (𝒰 : X.OpenCover) [Category 𝒰.J] [𝒰.LocallyDirected]
+    {Y : Scheme.{u}}
+    (g : ∀ i, 𝒰.obj i ⟶ Y) (h : ∀ {i j : 𝒰.J} (hij : i ⟶ j), 𝒰.trans hij ≫ g j = g i) :
+    X ⟶ Y :=
+  𝒰.glueMorphisms g <| fun i j ↦ by
+    apply (𝒰.intersectionOfLocallyDirected i j).hom_ext
+    intro k
+    simp [h]
+
+@[reassoc (attr := simp)]
+lemma map_glueMorphismsOfLocallyDirected {Y : Scheme.{u}} (g : ∀ i, 𝒰.obj i ⟶ Y)
+    (h : ∀ {i j : 𝒰.J} (hij : i ⟶ j), 𝒰.trans hij ≫ g j = g i) (i : 𝒰.J) :
+    𝒰.map i ≫ 𝒰.glueMorphismsOfLocallyDirected g h = g i := by
+  simp [glueMorphismsOfLocallyDirected]
+
+/-- If `𝒰` is an open cover of `X` that is locally directed, `X` is
+the colimit of the components of `𝒰`. -/
+def isColimitCoconeOfLocallyDirected : IsColimit 𝒰.coconeOfLocallyDirected where
+  desc s := 𝒰.glueMorphismsOfLocallyDirected s.ι.app fun _ ↦ s.ι.naturality _
+  uniq s m hm := 𝒰.hom_ext _ _ fun j ↦ by simpa using hm j
+
+/-- If `𝒰` is a directed open cover of `X`, to glue morphisms `{gᵢ : 𝒰ᵢ ⟶ Y}` over `S` it suffices
+to check compatibility with the transition maps. -/
+def glueMorphismsOverOfLocallyDirected {S : Scheme.{u}} {X : Over S}
+    (𝒰 : X.left.OpenCover) [Category 𝒰.J] [𝒰.LocallyDirected] {Y : Over S}
+    (g : ∀ i, 𝒰.obj i ⟶ Y.left)
+    (h : ∀ {i j : 𝒰.J} (hij : i ⟶ j), 𝒰.trans hij ≫ g j = g i)
+    (w : ∀ i, g i ≫ Y.hom = 𝒰.map i ≫ X.hom) :
+    X ⟶ Y :=
+  Over.homMk (𝒰.glueMorphismsOfLocallyDirected g h) <| by
+    apply 𝒰.hom_ext
+    intro i
+    simp [w]
+
+@[reassoc (attr := simp)]
+lemma map_glueMorphismsOverOfLocallyDirected_left {S : Scheme.{u}} {X : Over S}
+    (𝒰 : X.left.OpenCover) [Category 𝒰.J] [𝒰.LocallyDirected] {Y : Over S}
+    (g : ∀ i, 𝒰.obj i ⟶ Y.left) (h : ∀ {i j : 𝒰.J} (hij : i ⟶ j), 𝒰.trans hij ≫ g j = g i)
+    (w : ∀ i, g i ≫ Y.hom = 𝒰.map i ≫ X.hom) (i : 𝒰.J) :
+    𝒰.map i ≫ (𝒰.glueMorphismsOverOfLocallyDirected g h w).left = g i := by
+  simp [glueMorphismsOverOfLocallyDirected]
+
+end OpenCover
 
 /-- If `𝒰` is an open cover such that the images of the components form a basis of the topology
 of `X`, `𝒰` is directed by the ordering of subset inclusion of the images. -/
@@ -186,6 +240,8 @@ def Cover.LocallyDirected.ofIsBasisOpensRange {𝒰 : X.OpenCover} [Preorder �
       exact Set.image_subset_range _ _
     · apply (pullback.fst (𝒰.map i) (𝒰.map j) ≫ 𝒰.map i).isOpenEmbedding.injective
       rw [← Scheme.comp_base_apply, pullback.lift_fst_assoc, IsOpenImmersion.lift_fac, hy]
+
+section Constructions
 
 section
 
@@ -228,5 +284,7 @@ instance : Scheme.Cover.LocallyDirected X.directedAffineCover :=
 @[simp]
 lemma directedAffineCover_trans {U V : X.affineOpens} (hUV : U ≤ V) :
     Cover.trans X.directedAffineCover (homOfLE hUV) = X.homOfLE hUV := rfl
+
+end Constructions
 
 end AlgebraicGeometry.Scheme
