@@ -5,6 +5,7 @@ Authors: Christian Merten
 -/
 import Mathlib.Data.Set.Card.Arithmetic
 import Mathlib.Topology.LocalAtTarget
+import Mathlib.Topology.Separation.Connected
 
 /-!
 # Cardinality of connected components under open and closed maps
@@ -52,7 +53,7 @@ lemma IsOpenMap.enatCard_connectedComponents_le_encard_preimage_singleton [Conne
   intro n U hU1 hU2 hU3 hU4
   have heq : f ⁻¹' {y} = ⋃ i, (U i ∩ f ⁻¹' {y}) := by
     conv_lhs => rw [← Set.univ_inter (f ⁻¹' {y}), ← hU4, Set.iUnion_inter]
-  rw [heq, Set.encard_iUnion fun i j hij ↦ .inter_left _ (.inter_right _ <| hU3 hij)]
+  rw [heq, Set.encard_iUnion_of_finite fun i j hij ↦ .inter_left _ (.inter_right _ <| hU3 hij)]
   trans ∑ i : Fin n, 1
   · simp
   · rw [finsum_eq_sum_of_fintype]

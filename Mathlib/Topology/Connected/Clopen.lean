@@ -570,15 +570,15 @@ noncomputable def equivOfIsClopen : ConnectedComponents α ≃ Σ i, ConnectedCo
       rw [Set.not_disjoint_iff]
       exact ⟨x, x.2, (hclopen j).connectedComponent_subset y.2 (hxy ▸ mem_connectedComponent)⟩
     subst this
-    simp [← Set.image_val_inj, heq, heq, hxy]
+    simp [← Set.image_val_inj, heq, hxy]
 
 include hclopen hdisj hunion in
 /-- If `ι` indexes a disjoint union decomposition of `α`, it is equivalent to the connected
 components of `α`. -/
 noncomputable def equivOfIsClopenOfIsConnected (hconn : ∀ i, IsConnected (U i)) :
     ConnectedComponents α ≃ ι :=
-  have (i) : ConnectedSpace (U i) := isConnected_iff_connectedSpace.mp (hconn i)
-  letI (i) : Unique (ConnectedComponents <| U i) := (nonempty_unique _).some
+  have _ (i) : ConnectedSpace (U i) := isConnected_iff_connectedSpace.mp (hconn i)
+  letI _ (i) : Unique (ConnectedComponents <| U i) := (nonempty_unique _).some
   (equivOfIsClopen hclopen hdisj hunion).trans (.sigmaUnique _ _)
 
 end
@@ -607,7 +607,7 @@ lemma exists_fun_isClopen_of_infinite [Infinite (ConnectedComponents α)] (n : �
       by_contra! h
       exact Infinite.not_finite <|
         .of_equiv _ (equivOfIsClopenOfIsConnected hU₁ hU₃ hU₄ fun i ↦ ⟨hU₂ i, h i⟩).symm
-    simp only [IsPreconnected, not_forall, Classical.not_imp, exists_and_left] at hi
+    simp only [IsPreconnected, not_forall] at hi
     obtain ⟨V, W, hV, hW, hle, hVU, hWU, h⟩ := hi
     rw [Set.not_nonempty_iff_eq_empty, ← Set.inter_assoc] at h
     have hunion : V ∩ U i ∪ W ∩ U i = U i := by rwa [← union_inter_distrib_right, inter_eq_right]
