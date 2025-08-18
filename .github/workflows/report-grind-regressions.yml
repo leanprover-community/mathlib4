@@ -68,7 +68,7 @@ jobs:
     - name: build mathlib (linarith)
       id: build-linarith
       run: |
-        delimiter=$(uuidgen)
+        delimiter=$(cat /proc/sys/kernel/random/uuid)
         echo "buildlog<<${delimiter}" >> $GITHUB_OUTPUT
         # Pipe to tee so we see the build results both on Zulip and in the log.
         lake build | tee -a $GITHUB_OUTPUT
@@ -105,7 +105,7 @@ jobs:
     - name: build mathlib (omega)
       id: build-omega
       run: |
-        delimiter=$(uuidgen)
+        delimiter=$(cat /proc/sys/kernel/random/uuid)
         echo "buildlog<<${delimiter}" >> $GITHUB_OUTPUT
         # Pipe to tee so we see the build results both on Zulip and in the log.
         lake build | tee -a $GITHUB_OUTPUT
@@ -142,7 +142,7 @@ jobs:
     - name: build mathlib (ring)
       id: build-ring
       run: |
-        delimiter=$(uuidgen)
+        delimiter=$(cat /proc/sys/kernel/random/uuid)
         echo "buildlog<<${delimiter}" >> $GITHUB_OUTPUT
         # Pipe to tee so we see the build results both on Zulip and in the log.
         lake build | tee -a $GITHUB_OUTPUT
