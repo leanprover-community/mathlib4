@@ -101,7 +101,7 @@ lemma congrLinearEquiv_trans (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ 
   rfl
 
 @[simp]
-lemma congrLinearEquiv_rfl :
+lemma congrLinearEquiv_refl :
     congrLinearEquiv (LinearEquiv.refl R₁ M₁) = MulEquiv.refl (GeneralLinearGroup R₁ M₁) :=
   rfl
 
