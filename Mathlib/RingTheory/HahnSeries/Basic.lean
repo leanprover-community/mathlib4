@@ -96,8 +96,6 @@ theorem coeff_zero' : (0 : HahnSeries Γ R).coeff = 0 :=
 theorem coeff_zero {a : Γ} : (0 : HahnSeries Γ R).coeff a = 0 :=
   rfl
 
-@[deprecated (since := "2025-01-31")] alias zero_coeff := coeff_zero
-
 @[simp]
 theorem coeff_fun_eq_zero_iff {x : HahnSeries Γ R} : x.coeff = 0 ↔ x = 0 :=
   coeff_injective.eq_iff' rfl
@@ -182,19 +180,13 @@ variable {a b : Γ} {r : R}
 theorem coeff_single_same (a : Γ) (r : R) : (single a r).coeff a = r := by
   classical exact Pi.single_eq_same (M := fun _ => R) a r
 
-@[deprecated (since := "2025-01-31")] alias single_coeff_same := coeff_single_same
-
 @[simp]
 theorem coeff_single_of_ne (h : b ≠ a) : (single a r).coeff b = 0 := by
   classical exact Pi.single_eq_of_ne (M := fun _ => R) h r
 
-@[deprecated (since := "2025-01-31")] alias single_coeff_of_ne := coeff_single_of_ne
-
 open Classical in
 theorem coeff_single : (single a r).coeff b = if b = a then r else 0 := by
   split_ifs with h <;> simp [h]
-
-@[deprecated (since := "2025-01-31")] alias single_coeff := coeff_single
 
 @[simp]
 theorem support_single_of_ne (h : r ≠ 0) : support (single a r) = {a} := by
@@ -536,5 +528,32 @@ theorem order_ofForallLtEqZero [Zero Γ] (f : Γ → R) (hf : f ≠ 0) (n : Γ)
   exact not_lt.mp (mt (hn m) hm)
 
 end LocallyFiniteLinearOrder
+
+section Truncate
+variable [Zero R]
+
+/-- Zeroes out coefficients of a `HahnSeries` at indices not less than `c`. -/
+def truncLT [PartialOrder Γ] [DecidableLT Γ] (c : Γ) :
+    ZeroHom (HahnSeries Γ R) (HahnSeries Γ R) where
+  toFun x :=
+    { coeff i := if i < c then x.coeff i else 0
+      isPWO_support' := Set.IsPWO.mono x.isPWO_support (by simp) }
+  map_zero' := by ext; simp
+
+@[simp]
+protected theorem coeff_truncLT [PartialOrder Γ] [DecidableLT Γ]
+    (c : Γ) (x : HahnSeries Γ R) (i : Γ) :
+    (truncLT c x).coeff i = if i < c then x.coeff i else 0  := rfl
+
+theorem coeff_truncLT_of_lt [PartialOrder Γ] [DecidableLT Γ]
+    {c i : Γ} (h : i < c) (x : HahnSeries Γ R) : (truncLT c x).coeff i = x.coeff i := by
+  simp [h]
+
+theorem coeff_truncLT_of_le [LinearOrder Γ]
+    {c i : Γ} (h : c ≤ i) (x : HahnSeries Γ R) :
+    (truncLT c x).coeff i = 0 := by
+  simp [h]
+
+end Truncate
 
 end HahnSeries
