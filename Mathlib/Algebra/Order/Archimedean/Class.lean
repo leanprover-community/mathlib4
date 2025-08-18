@@ -638,16 +638,13 @@ def lift {α : Type*} (f : {a : M // a ≠ 1} → α)
     (h : ∀ (a b : {a : M // a ≠ 1}), mk a.val a.prop = mk b.val b.prop → f a = f b) :
     FiniteMulArchimedeanClass M → α := fun ⟨A, hA⟩ ↦ by
   refine (MulArchimedeanClass.lift
-    (fun b ↦ if h : b = 1 then ⊤ else WithTop.some (f ⟨b, h⟩)) ?_ A).untop ?_
-  · intro a b h'
-    simp only
+    (fun b ↦ if h : b = 1 then ⊤ else WithTop.some (f ⟨b, h⟩)) (fun a b h' ↦ ?_) A).untop ?_
+  · simp only
     split_ifs with ha hb hb
     · rfl
-    · rw [ha] at h'
-      exact (hb (MulArchimedeanClass.mk_eq_top_iff.mp h'.symm)).elim
-    · rw [hb] at h'
-      exact (ha (MulArchimedeanClass.mk_eq_top_iff.mp h')).elim
-    · exact WithTop.coe_eq_coe.mpr <| h ⟨a, ha⟩ ⟨b, hb⟩ (by simpa [mk] using h')
+    · exact (hb (MulArchimedeanClass.mk_eq_top_iff.mp (ha ▸ h').symm)).elim
+    · exact (ha (MulArchimedeanClass.mk_eq_top_iff.mp (by apply hb ▸ h'))).elim
+    · rw [h ⟨a, ha⟩ ⟨b, hb⟩ (by simpa [mk] using h')]
   · induction A using MulArchimedeanClass.ind with | mk a
     simpa using MulArchimedeanClass.mk_eq_top_iff.not.mp hA
 
