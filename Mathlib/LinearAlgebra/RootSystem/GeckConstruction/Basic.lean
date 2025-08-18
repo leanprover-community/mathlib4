@@ -217,8 +217,7 @@ lemma span_range_h'_eq_top [Fintype ι] [DecidableEq ι] :
   rintro ⟨⟨x, -⟩, hx : x ∈ span R (range h)⟩ -
   let g : cartanSubalgebra' b →ₗ[R] Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
     (lieAlgebra b).subtype ∘ₗ (cartanSubalgebra' b).subtype
-  have hg : g '' range h' = range h := by
-    rw [← image_univ, ← image_comp, image_univ, show g ∘ h' = h from rfl]
+  have hg : g '' range h' = range h := (range_comp ..).symm
   rw [← SetLike.mem_coe, ← (injective_subtype _).mem_set_image,
       ← (injective_subtype _).mem_set_image, ← image_comp]
   change x ∈ (span R (range h')).map g
