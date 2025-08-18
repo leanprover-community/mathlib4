@@ -84,6 +84,17 @@ theorem Normal.of_algEquiv [h : Normal F E] (f : E ≃ₐ[F] E') : Normal F E' :
 theorem AlgEquiv.transfer_normal (f : E ≃ₐ[F] E') : Normal F E ↔ Normal F E' :=
   ⟨fun _ ↦ Normal.of_algEquiv f, fun _ ↦ Normal.of_algEquiv f.symm⟩
 
+theorem Normal.of_equiv_equiv {M N : Type*} [Field N] [Field M] [Algebra M N]
+    [Algebra.IsAlgebraic F E] [h : Normal F E] {f : F ≃+* M} {g : E ≃+* N}
+    (hcomp : (algebraMap M N).comp f = (g : E →+* N).comp (algebraMap F E)) :
+    Normal M N := by
+  rw [normal_iff] at h ⊢
+  intro x
+  rw [← g.apply_symm_apply x]
+  refine ⟨(h (g.symm x)).1.map_of_comp_eq _ _ hcomp, ?_⟩
+  rw [← minpoly.map_eq_of_equiv_equiv hcomp, Polynomial.splits_map_iff, hcomp]
+  exact Polynomial.splits_comp_of_splits _ _ (h (g.symm x)).2
+
 end NormalTower
 
 namespace IntermediateField

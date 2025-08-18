@@ -62,4 +62,4 @@ open Ideal
 /-- If all prime ideals in a commutative ring are principal, so are all other ideals. -/
 theorem IsPrincipalIdealRing.of_prime (H : ∀ P : Ideal R, P.IsPrime → P.IsPrincipal) :
     IsPrincipalIdealRing R :=
-  ⟨isOka_isPrincipal.forall_of_forall_prime_isOka exists_maximal_not_principal H⟩
+  ⟨isOka_isPrincipal.forall_of_forall_prime exists_maximal_not_principal H⟩
