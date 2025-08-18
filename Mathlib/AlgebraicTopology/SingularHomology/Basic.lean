@@ -63,10 +63,10 @@ def singularChainComplexFunctorIsoOfTotallyDisconnectedSpace :
 omit [CategoryWithHomology C] in
 lemma singularChainComplexFunctor_exactAt_of_totallyDisconnectedSpace
     (hn : n ≠ 0) :
-    (((singularChainComplexFunctor C).obj R).obj X).ExactAt n := by
+    (((singularChainComplexFunctor C).obj R).obj X).ExactAt n :=
   have := hasCoproducts_shrink.{0, w} (C := C)
   have : HasZeroObject C := ⟨_, initialIsInitial.isZero⟩
-  exact .of_iso (ChainComplex.alternatingConst_exactAt _ _ hn)
+  .of_iso (ChainComplex.alternatingConst_exactAt _ _ hn)
     (singularChainComplexFunctorIsoOfTotallyDisconnectedSpace C R X).symm
 
 lemma isZero_singularHomologyFunctor_of_totallyDisconnectedSpace (hn : n ≠ 0) :
