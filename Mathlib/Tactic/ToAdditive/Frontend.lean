@@ -481,17 +481,18 @@ Also returns the position of the multiplicative type-class, if available
 -/
 def firstMultiplicativeArg (nm : Name) : CoreM (Nat × Option Nat) := MetaM.run' do
   forallTelescopeReducing (← getConstInfo nm).type fun xs _ ↦ do
+    let env ← getEnv
     -- xs are the arguments to the constant
     let xs := xs.toList.mapIdx (·, ·)
     let l ← xs.filterMapM fun (n, x) ↦ do
-      -- write the type of `x` as `(y₀ : α₀) → ... → (yₙ : αₙ) → f a₀ ... aₙ`;
-      -- if `f` can be additivized, mark free variables in `a₀` as multiplicative arguments
+        -- write the type of `x` as `(y₀ : α₀) → ... → (yₙ : αₙ) → f a₀ ... aₙ`;
+        -- if `f` can be additivized, mark free variables in `a₀` as multiplicative arguments
       forallTelescopeReducing (← inferType x) fun _ys tgt ↦ do
-        if let some c := tgt.getAppFn.constName? then
-          if findTranslation? (← getEnv) c |>.isSome then
-            if let some arg := tgt.getArg? 0 then
-              return (xs.findIdx? (arg.containsFVar ·.2.fvarId!)).map (·, n)
-        return none
+          if let some c := tgt.getAppFn.constName? then
+            if (findTranslation? env c |>.isSome) && isClass env c then
+              if let some arg := tgt.getArg? 0 then
+                return (xs.findIdx? (arg.containsFVar ·.2.fvarId!)).map (·, n)
+          return none
     trace[to_additive_detail] "firstMultiplicativeArg: {l}"
     match l with
     | [] => return (0, none)
@@ -681,17 +682,14 @@ where
               {fxd}, so it is not changed"
           return mkAppN fn (args.map (r · |>.1))
       let args := args.map r
-      let fixedInstArg := match instanceArg? nm with
-        | some instArg => match args[instArg]? with
-          | some (arg, false) => if hasBVarHead arg then none else some arg
-          | _ => none
-        | _ => none
+      if let some instArg := instanceArg? nm then
+        if let some (arg, false) := args[instArg]? then
+          if !hasBVarHead arg then
+            if trace then
+              dbg_trace s!"The application of {nm} contains the fixed instance \
+                {arg}, so it is not changed"
+            return mkAppN fn (args.map (·.1))
       let mut args := args.map (·.1)
-      if let some fxd := fixedInstArg then
-        if trace then
-          dbg_trace s!"The application of {nm} contains the fixed instance \
-            {fxd}, so it is not changed"
-        return mkAppN fn args
       /- Test if arguments should be reordered. -/
       let reorder := reorderFn nm
       if !reorder.isEmpty then

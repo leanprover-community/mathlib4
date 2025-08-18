@@ -134,8 +134,12 @@ theorem liftNC_mul {g_hom : Type*}
     [FunLike g_hom (Multiplicative G) R] [MulHomClass g_hom (Multiplicative G) R]
     (f : k →+* R) (g : g_hom) (a b : k[G])
     (h_comm : ∀ {x y}, y ∈ a.support → Commute (f (b x)) (g <| Multiplicative.ofAdd y)) :
-    liftNC (f : k →+ R) g (a * b) = liftNC (f : k →+ R) g a * liftNC (f : k →+ R) g b :=
-  MonoidAlgebra.liftNC_mul f g _ _ @h_comm
+    liftNC (f : k →+ R) g (a * b) = liftNC (f : k →+ R) g a * liftNC (f : k →+ R) g b := by
+  conv_rhs => rw [← sum_single a, ← sum_single b]
+  -- Porting note: `(liftNC _ g).map_finsuppSum` → `map_finsuppSum`
+  simp_rw [mul_def, map_finsuppSum, liftNC_single, Finsupp.sum_mul, Finsupp.mul_sum]
+  refine Finset.sum_congr rfl fun y hy => Finset.sum_congr rfl fun x _hx => ?_
+  simp [mul_assoc, (h_comm hy).left_comm]
 
 end Mul
 
