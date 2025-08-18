@@ -134,6 +134,13 @@ lemma spanFinrank_span_le_ncard_of_finite {s : Set M} (hs : s.Finite) :
     simpa
   · exact Set.cast_ncard hs
 
+lemma spanFinrank_span_le_encard (s : Set M) : (span R s).spanFinrank ≤ s.encard := by
+  obtain h | h := s.finite_or_infinite
+  · refine le_trans ?_ s.ncard_le_encard
+    norm_cast
+    exact spanFinrank_span_le_ncard_of_finite h
+  · simp [h]
+
 /-- Constructs a generating set with cardinality equal to the `spanRank` of the submodule -/
 theorem exists_span_set_card_eq_spanRank (p : Submodule R M) :
     ∃ s : Set M, #s = p.spanRank ∧ span R s = p := by
@@ -176,6 +183,9 @@ lemma spanRank_eq_zero_iff_eq_bot {I : Submodule R M} : I.spanRank = 0 ↔ I = �
 @[simp]
 lemma spanRank_bot : (⊥ : Ideal R).spanRank = 0 := Submodule.spanRank_eq_zero_iff_eq_bot.mpr rfl
 
+@[simp]
+lemma spanFinrank_bot : (⊥ : Submodule R M).spanFinrank = 0 := by simp [spanFinrank]
+
 /-- Generating elements for the submodule of minimum cardinality. -/
 noncomputable def generators (p : Submodule R M) : Set M :=
   Classical.choose (exists_span_set_card_eq_spanRank p)
@@ -209,6 +219,18 @@ lemma spanRank_sup_le_sum_spanRank {p q : Submodule R M} :
   obtain ⟨sp, ⟨hp₁, rfl⟩⟩ := exists_span_set_card_eq_spanRank p
   obtain ⟨sq, ⟨hq₁, rfl⟩⟩ := exists_span_set_card_eq_spanRank q
   exact ⟨sp ∪ sq, ⟨hp₁ ▸ hq₁ ▸ (Cardinal.mk_union_le sp sq), span_union sp sq⟩⟩
+
+lemma spanFinrank_eq_zero_iff_eq_bot {p : Submodule R M} (h : p.FG) :
+    p.spanFinrank = 0 ↔ p = ⊥ := by
+  refine ⟨fun heq ↦ ?_, fun h ↦ h ▸ by simp⟩
+  rw [← Submodule.FG.generators_ncard h, Set.ncard_eq_zero h.finite_generators] at heq
+  rw [← p.span_generators, heq, span_empty]
+
+lemma spanFinrank_singleton {m : M} (hm : m ≠ 0) : (span R {m}).spanFinrank = 1 := by
+  apply le_antisymm ?_ ?_
+  · exact le_trans (Submodule.spanFinrank_span_le_ncard_of_finite (by simp)) (by simp)
+  · by_contra!
+    simp [Submodule.spanFinrank_eq_zero_iff_eq_bot (fg_span_singleton m), hm] at this
 
 end Defs
 end Submodule
