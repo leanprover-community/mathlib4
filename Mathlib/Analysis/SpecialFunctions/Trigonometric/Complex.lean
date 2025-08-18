@@ -34,7 +34,7 @@ theorem cos_eq_zero_iff {θ : ℂ} : cos θ = 0 ↔ ∃ k : ℤ, θ = (2 * k + 1
   rw [cos, h, ← exp_pi_mul_I, exp_eq_exp_iff_exists_int, mul_right_comm]
   refine exists_congr fun x => ?_
   refine (iff_of_eq <| congr_arg _ ?_).trans (mul_right_inj' <| mul_ne_zero two_ne_zero I_ne_zero)
-  field_simp; ring
+  ring
 
 theorem cos_ne_zero_iff {θ : ℂ} : cos θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ (2 * k + 1) * π / 2 := by
   rw [← not_exists, not_iff_not, cos_eq_zero_iff]
@@ -44,11 +44,11 @@ theorem sin_eq_zero_iff {θ : ℂ} : sin θ = 0 ↔ ∃ k : ℤ, θ = k * π := 
   constructor
   · rintro ⟨k, hk⟩
     use k + 1
-    field_simp [eq_add_of_sub_eq hk]
+    simp [eq_add_of_sub_eq hk]
     ring
   · rintro ⟨k, rfl⟩
     use k - 1
-    field_simp
+    simp
     ring
 
 theorem sin_ne_zero_iff {θ : ℂ} : sin θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ k * π := by
