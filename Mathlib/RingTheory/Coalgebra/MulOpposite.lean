@@ -20,8 +20,7 @@ open TensorProduct Coalgebra LinearMap
 
 variable {R A : Type*} [CommSemiring R] [AddCommMonoid A] [Module R A]
 
-noncomputable instance [CoalgebraStruct R A] :
-    CoalgebraStruct R Aᵐᵒᵖ where
+noncomputable instance [CoalgebraStruct R A] : CoalgebraStruct R Aᵐᵒᵖ where
   comul := map (opLinearEquiv R).toLinearMap (opLinearEquiv R).toLinearMap ∘ₗ
     comul ∘ₗ (opLinearEquiv R).symm.toLinearMap
   counit := counit ∘ₗ (opLinearEquiv R).symm.toLinearMap
