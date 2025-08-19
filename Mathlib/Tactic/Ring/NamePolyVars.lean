@@ -146,7 +146,7 @@ initialize notationTableExt : NotationTableExt ← registerSimpleScopedEnvExtens
 /-- Usage:
 
 ```lean
-register_poly_vars "[[" X "]]" Polynomial Polynomial.C Polynomial.X
+register_poly_vars "[[" X "]]" PowerSeries (PowerSeries.C _) PowerSeries.X
 register_poly_vars "[[" X, ... "]]" MvPowerSeries (MvPowerSeries.C _ _) MvPowerSeries.X
 ```
 -/
@@ -283,7 +283,10 @@ initialize declaredExt : DeclaredExt ← registerSimpleScopedEnvExtension <|
 /-- Given a declaration of polynomial-like notation (e.g. `(Fin 37)[x,y,z][[t]]`), parse it fully to
 return the head (e.g. `(Fin 37)`), the raw body (e.g. `"[x,y,z][[t]]`"), the total type generated
 (e.g. `PowerSeries (MvPolynomial (Fin 3) (Fin 37))`), and the terms corresponding to each declared
-identifier (e.g. `x := PowerSeries.C (MvPolynomial.X 0)`). -/
+identifier (e.g. `x := PowerSeries.C (MvPolynomial.X 0)`).
+
+The head and body are returned as strings here so that they can be stored in a table in the
+environment. -/
 def _root_.Lean.TSyntax.parsePolyesqueFull (p : Polyesque) :
     CoreM (String × String × Bool × Term × Array Term × Array (Ident × Term)) := do
   let `(polyesque| $head:term_decl$body:polyesque_notation*) := p
@@ -294,15 +297,15 @@ def _root_.Lean.TSyntax.parsePolyesqueFull (p : Polyesque) :
   let mut type : Term := head.term
   let mut funcs : Array Term := #[]
   let mut terms : Array (Ident × Term) := #[]
-  let mut raw : String := ""
+  let mut bodyStr : String := ""
   for p in body do
     let b ← p.polyesqueNotation
     let func ← b.mkFunctor
     type ← `($func $type)
     funcs := funcs ++ #[func]
     terms := (← terms.mapM fun it ↦ return (it.fst, ← b.mkC it.snd)) ++ (← b.mkX)
-    raw := raw ++ b.raw
-  return (head.rawTermDecl, raw, isHole, type, funcs, terms)
+    bodyStr := bodyStr ++ b.raw
+  return (head.rawTermDecl, bodyStr, isHole, type, funcs, terms)
 
 /-- Elaborate the command `name_poly_vars`. -/
 @[command_elab declare]
