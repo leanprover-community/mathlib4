@@ -10,7 +10,7 @@ import Mathlib.Data.Nat.Prime.Defs
 # Lemmas related to `Nat.Prime`
 
 This file contains lemmas related to `Nat.Prime`.
-These lemmas are kept separate from `Data.Nat.GCD.Basic` in order to minimize imports.
+These lemmas are kept separate from `Mathlib/Data/Nat/GCD/Basic.lean` in order to minimize imports.
 
 ## Main results
 
