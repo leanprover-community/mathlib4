@@ -362,6 +362,6 @@ end AddMonoid
 namespace AddGroup
 
 instance : FG ℤ where
-  out := ⟨{1}, by simp [Int.addSubgroupClosure_one]⟩
+  out := ⟨{1}, by simp⟩
 
 end AddGroup
