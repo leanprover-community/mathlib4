@@ -3,6 +3,7 @@ Copyright (c) 2023 Kyle Miller, Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Rémi Bottinelli
 -/
+import Mathlib.Combinatorics.SimpleGraph.Acyclic
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 import Mathlib.Data.Set.Card
 
@@ -264,6 +265,25 @@ theorem toSubgraph_adj_iff {u v u' v'} (w : G.Walk u v) :
 lemma mem_support_of_adj_toSubgraph {u v u' v' : V} {p : G.Walk u v} (hp : p.toSubgraph.Adj u' v') :
     u' ∈ p.support := p.mem_verts_toSubgraph.mp (p.toSubgraph.edge_vert hp)
 
+lemma verts_toSubgraph_toPath_subset {u v : V} {p : G.Walk u v} [DecidableEq V] :
+    (p.toPath : G.Walk u v).toSubgraph.verts ⊆ p.toSubgraph.verts := by
+  simp
+  exact p.support_toPath_subset
+
+lemma adj_toSubgraph_iff_mem_edges {u v u' v' : V} {p : G.Walk u v} :
+    p.toSubgraph.Adj u' v' ↔ s(u', v') ∈ p.edges := by
+  rw [← p.mem_edges_toSubgraph]
+  rfl
+
+lemma adj_toSubgraph_toPath {u v u' v' : V} {p : G.Walk u v} [DecidableEq V]
+    (hp : (p.toPath : G.Walk u v).toSubgraph.Adj u' v') : p.toSubgraph.Adj u' v' := by
+  simp_all [adj_toSubgraph_iff_mem_edges]
+  exact p.edges_toPath_subset hp
+
+lemma toSubgraph_toPath_le_toSubgraph {u v : V} {p : G.Walk u v} [DecidableEq V] :
+    (p.toPath : G.Walk u v).toSubgraph ≤ p.toSubgraph :=
+  ⟨verts_toSubgraph_toPath_subset, fun _ _ h ↦ adj_toSubgraph_toPath h⟩
+
 namespace IsPath
 
 lemma neighborSet_toSubgraph_startpoint {u v} {p : G.Walk u v}
@@ -435,6 +455,7 @@ lemma exists_mem_support_forall_mem_support_imp_eq (s : Finset V)
 end Walk
 
 namespace Subgraph
+
 lemma _root_.SimpleGraph.Walk.toSubgraph_connected {u v : V} (p : G.Walk u v) :
     p.toSubgraph.Connected := by
   induction p with
@@ -567,5 +588,69 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
       refine ⟨hw, Walk.connected_induce_support _ _ _⟩
 
 end induced_subgraphs
+
+namespace Subgraph
+
+lemma Connected.connected_deleteVerts_singleton_of_degree_eq_one_of_nontrivial [DecidableEq V]
+    {H : G.Subgraph} [Nontrivial H.verts] (hconn : H.Connected) {v : V}
+    [Fintype ↑(H.neighborSet v)] (hdeg : H.degree v = 1) : (H.deleteVerts {v}).Connected := by
+  obtain ⟨_, exists_walk_le_H⟩ := H.connected_iff_forall_exists_walk_subgraph.mp hconn
+  rw [connected_iff_forall_exists_walk_subgraph]
+  constructor
+  · have := @Nontrivial.exists_pair_ne H.verts _
+    apply Set.diff_nonempty.mpr
+    grind
+  /- There exists a walk between any two vertices w and x in H.deleteVerts {v}
+  via the unique vertex u adjacent to vertex v. -/
+  · intro w x w_mem_H' x_mem_H'
+    have existsUnique_H_adj_v_u := degree_eq_one_iff_unique_adj.mp hdeg
+    obtain ⟨u, H_adj_v_u⟩ := existsUnique_H_adj_v_u.exists
+    obtain ⟨puw, puw_le_H⟩ := exists_walk_le_H (H.edge_vert H_adj_v_u.symm)
+      (Set.mem_of_mem_inter_left w_mem_H')
+    obtain ⟨pux, pux_le_H⟩ := exists_walk_le_H (H.edge_vert H_adj_v_u.symm)
+      (Set.mem_of_mem_inter_left x_mem_H')
+    /- A path between vertex u and another vertex in H.deleteVerts {v}
+    is contained in H.deleteVerts {v}. -/
+    have p_le_H' {z : V} (z_mem_H' : z ∈ (H.deleteVerts {v}).verts) {p : G.Walk u z}
+        (p_le_H : p.toSubgraph ≤ H) : (p.toPath : G.Walk u z).toSubgraph ≤ H.deleteVerts {v} := by
+      have ⟨p_verts_subset_H_verts, H_adj_if_p_adj⟩ := p_le_H
+      have p_adj_if_p'_adj {a b : V} (hp : (p.toPath : G.Walk u z).toSubgraph.Adj a b) :=
+        p.adj_toSubgraph_toPath hp
+      have v_not_mem_p' : v ∉ (p.toPath : G.Walk u z).toSubgraph.verts := by
+        simp
+        by_contra v_mem_p'
+        obtain ⟨puv, pvz, p'_eq_puvz⟩ := Walk.mem_support_iff_exists_append.mp v_mem_p'
+        have not_nil_pvz : ¬pvz.Nil := by
+          apply Walk.not_nil_of_ne
+          by_contra v_eq_z
+          simp [v_eq_z] at z_mem_H'
+        simp [p'_eq_puvz] at p_adj_if_p'_adj
+        have : (p.toPath : G.Walk u z).support.Duplicate u := by
+          simp [p'_eq_puvz, Walk.support_append, List.duplicate_iff_two_le_count]
+          have := List.one_le_count_iff.mpr puv.start_mem_support
+          have pvz_tail_count := List.one_le_count_iff.mpr (Walk.snd_mem_tail_support not_nil_pvz)
+          rw [← existsUnique_H_adj_v_u.unique H_adj_v_u (H_adj_if_p_adj <| p_adj_if_p'_adj <|
+            Or.inr <| pvz.toSubgraph_adj_snd not_nil_pvz)] at pvz_tail_count
+          omega
+        have := List.nodup_iff_forall_not_duplicate.mp p.toPath.nodup_support u
+        contradiction
+      constructor
+      · exact Set.subset_diff_singleton
+          (.trans p.verts_toSubgraph_toPath_subset p_verts_subset_H_verts) v_not_mem_p'
+      · intro a b p'_adj_a_b
+        apply deleteVerts_adj.mpr
+        refine ⟨?_, ?_, ?_, ?_, ?_⟩
+        · exact H.edge_vert (H_adj_if_p_adj <| p.adj_toSubgraph_toPath p'_adj_a_b)
+        · have := (p.toPath : G.Walk u z).toSubgraph.edge_vert p'_adj_a_b
+          aesop
+        · exact H.edge_vert (H_adj_if_p_adj <| p.adj_toSubgraph_toPath p'_adj_a_b.symm)
+        · have := (p.toPath : G.Walk u z).toSubgraph.edge_vert p'_adj_a_b.symm
+          aesop
+        · exact H_adj_if_p_adj (p_adj_if_p'_adj p'_adj_a_b)
+    use .append puw.toPath.reverse (pux.toPath : G.Walk u x)
+    simp
+    exact ⟨p_le_H' w_mem_H' puw_le_H, p_le_H' x_mem_H' pux_le_H⟩
+
+end Subgraph
 
 end SimpleGraph
