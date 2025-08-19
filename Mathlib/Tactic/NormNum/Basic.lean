@@ -228,14 +228,14 @@ def Result.add {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (
     (inst : Q(AddMonoidWithOne $α) := by exact q(delta% inferInstance)) :
     MetaM (Result q($a + $b)) := do
   let rec intArm (rα : Q(Ring $α)) := do
-    assertInstancesCommute
+    assumeInstancesCommute
     let ⟨za, na, pa⟩ ← ra.toInt _; let ⟨zb, nb, pb⟩ ← rb.toInt _
     let zc := za + zb
     have c := mkRawIntLit zc
     haveI' : Int.add $na $nb =Q $c := ⟨⟩
     return .isInt rα c zc q(isInt_add (.refl _) $pa $pb (.refl $c))
   let rec nnratArm (dsα : Q(DivisionSemiring $α)) : MetaM (Result _) := do
-    assertInstancesCommute
+    assumeInstancesCommute
     let ⟨qa, na, da, pa⟩ ← ra.toNNRat' dsα; let ⟨qb, nb, db, pb⟩ ← rb.toNNRat' dsα
     let qc := qa + qb
     let dd := qa.den * qb.den
@@ -250,7 +250,7 @@ def Result.add {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (
     let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
     return .isNNRat' dsα qc nc dc q(isNNRat_add (.refl _) $pa $pb $r1 $r2)
   let rec ratArm (dα : Q(DivisionRing $α)) : MetaM (Result _) := do
-    assertInstancesCommute
+    assumeInstancesCommute
     let ⟨qa, na, da, pa⟩ ← ra.toRat' dα; let ⟨qb, nb, db, pb⟩ ← rb.toRat' dα
     let qc := qa + qb
     let dd := qa.den * qb.den
@@ -272,7 +272,7 @@ def Result.add {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (
     -- could alternatively try to combine `rα` and `dsα` here, but we'd have to do a defeq check
     -- so would still need to be in `MetaM`.
     let dα ← synthInstanceQ q(DivisionRing $α)
-    assertInstancesCommute
+    assumeInstancesCommute
     ratArm q($dα)
   | .isNNRat dsα .., _ | _, .isNNRat dsα .. => nnratArm dsα
   | .isNegNat rα .., _ | _, .isNegNat rα .. => intArm rα
@@ -369,14 +369,14 @@ def Result.sub {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (
     (inst : Q(Ring $α) := by exact q(delta% inferInstance)) :
     MetaM (Result q($a - $b)) := do
   let intArm (rα : Q(Ring $α)) := do
-    assertInstancesCommute
+    assumeInstancesCommute
     let ⟨za, na, pa⟩ ← ra.toInt rα; let ⟨zb, nb, pb⟩ ← rb.toInt rα
     let zc := za - zb
     have c := mkRawIntLit zc
     haveI' : Int.sub $na $nb =Q $c := ⟨⟩
     return Result.isInt rα c zc q(isInt_sub (.refl _) $pa $pb (.refl $c))
   let ratArm (dα : Q(DivisionRing $α)) : MetaM (Result _) := do
-    assertInstancesCommute
+    assumeInstancesCommute
     let ⟨qa, na, da, pa⟩ ← ra.toRat' dα; let ⟨qb, nb, db, pb⟩ ← rb.toRat' dα
     let qc := qa - qb
     let dd := qa.den * qb.den
