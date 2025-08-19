@@ -552,9 +552,10 @@ theorem _root_.ContinuousLinearMap.IsIdempotentElem.hasOrthogonalProjection_rang
 open LinearMap in
 theorem _root_.LinearMap.IsSymmetricProjection.hasOrthogonalProjection_range
     {p : E →ₗ[𝕜] E} (hp : p.IsSymmetricProjection) :
-    (range p).HasOrthogonalProjection := ⟨fun v => ⟨p v, by
-  simp [hp.isIdempotentElem.isSymmetric_iff_orthogonal_range.mp hp.isSymmetric,
-    ← Module.End.mul_apply, hp.isIdempotentElem.eq]⟩⟩
+    (range p).HasOrthogonalProjection :=
+  ⟨fun v => ⟨p v, by
+    simp [hp.isIdempotentElem.isSymmetric_iff_orthogonal_range.mp hp.isSymmetric,
+      ← Module.End.mul_apply, hp.isIdempotentElem.eq]⟩⟩
 
 /-- The orthogonal projection onto `(𝕜 ∙ v)ᗮ` of `v` is zero. -/
 theorem orthogonalProjection_orthogonalComplement_singleton_eq_zero (v : E) :
