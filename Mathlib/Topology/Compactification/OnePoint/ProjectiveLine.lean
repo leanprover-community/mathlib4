@@ -187,4 +187,28 @@ lemma IsParabolic.parabolicFixedPoint_pow {g : GL (Fin 2) K} (hg : IsParabolic g
   | zero => simp
   | succ n IH => rw [pow_succ, MulAction.mul_smul, hg.smul_eq_self_iff.mpr rfl, IH]
 
+/-- Elliptic elements have no fixed points in `OnePoint K`. -/
+lemma IsElliptic.smul_ne_self [LinearOrder K] [IsStrictOrderedRing K]
+    {g : GL (Fin 2) K} (hg : g.IsElliptic) (c : OnePoint K) :
+    g • c ≠ c := by
+  cases c with
+  | infty =>
+    rw [Ne, smul_infty_eq_self_iff]
+    refine fun h ↦ not_le_of_gt hg ?_
+    have : g.val.disc = (g 0 0 - g 1 1) ^ 2 := by
+      simp only [disc, trace_fin_two, det_fin_two]
+      grind
+    rw [this]
+    apply sq_nonneg
+  | coe c =>
+    refine fun h ↦ not_le_of_gt hg ?_
+    have : g.val.disc = (2 * g 1 0 * c + (g 1 1 + -g 0 0)) ^ 2 := by
+      replace h : g 1 0 * (c * c) + (g 1 1 + -g 0 0) * c + -g 0 1 = 0 := by
+        simpa [← fixpointPolynomial_aeval_eq_zero_iff, fixpointPolynomial, sq, sub_eq_add_neg]
+          using h
+      simp only [← discrim_eq_sq_of_quadratic_eq_zero h, disc, discrim, trace_fin_two, det_fin_two]
+      grind
+    rw [this]
+    apply sq_nonneg
+
 end Matrix.GeneralLinearGroup
