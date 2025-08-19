@@ -180,6 +180,16 @@ theorem _root_.Matrix.isPositive_toEuclideanLin_iff {n : Type*} [Fintype n] [Dec
   simp_rw [hA.im_star_dotProduct_mulVec_self, and_true]
   rfl
 
+/-- A symmetric projection is positive. -/
+@[aesop 10% apply, grind →]
+theorem IsPositive.of_isSymmetricProjection {p : E →ₗ[𝕜] E} (hp : p.IsSymmetricProjection) :
+    p.IsPositive :=
+  hp.isIdempotentElem.isPositive_iff_isSymmetric.mpr hp.isSymmetric
+
+/-- A star projection operator is positive. -/
+@[deprecated (since := "19-08-2025")]
+alias IsPositive.of_isStarProjection := IsPositive.of_isSymmetricProjection
+
 end LinearMap
 
 namespace ContinuousLinearMap
@@ -210,13 +220,13 @@ lemma _root_.LinearMap.isPositive_toContinuousLinearMap_iff
     [FiniteDimensional 𝕜 E] (T : E →ₗ[𝕜] E) :
     have : CompleteSpace E := FiniteDimensional.complete 𝕜 _
     T.toContinuousLinearMap.IsPositive ↔ T.IsPositive := by
-  simp_rw [IsPositive, LinearMap.IsPositive, reApplyInnerSelf, isSelfAdjoint_iff_isSymmetric]
-  rfl
+  simp only [IsPositive, isSelfAdjoint_iff_isSymmetric, coe_toContinuousLinearMap, reApplyInnerSelf,
+    coe_toContinuousLinearMap', LinearMap.IsPositive]
 
 lemma isPositive_toLinearMap_iff (T : E →L[𝕜] E) :
     (T : E →ₗ[𝕜] E).IsPositive ↔ T.IsPositive := by
-  rw [LinearMap.IsPositive, coe_coe, IsPositive, ← isSelfAdjoint_iff_isSymmetric]
-  rfl
+  simp only [LinearMap.IsPositive, ← isSelfAdjoint_iff_isSymmetric, coe_coe, IsPositive,
+    reApplyInnerSelf]
 
 alias ⟨_, IsPositive.toLinearMap⟩ := isPositive_toLinearMap_iff
 
@@ -398,15 +408,3 @@ theorem IsIdempotentElem.TFAE {p : E →L[𝕜] E} (hp : IsIdempotentElem p) :
   tfae_finish
 
 end ContinuousLinearMap
-
-namespace LinearMap
-
-/-- A star projection operator is positive. -/
-@[aesop 10% apply, grind →]
-theorem IsPositive.of_isStarProjection [FiniteDimensional 𝕜 E] {T : E →ₗ[𝕜] E}
-    (hT : IsStarProjection T) : T.IsPositive :=
-  have := FiniteDimensional.complete 𝕜 E
-  T.isPositive_toContinuousLinearMap_iff.mp (ContinuousLinearMap.IsPositive.of_isStarProjection
-    (isStarProjection_toContinuousLinearMap_iff.mpr hT))
-
-end LinearMap
