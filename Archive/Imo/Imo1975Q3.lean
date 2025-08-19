@@ -73,17 +73,23 @@ def A : Point := ⟨0⟩
 def B : Point := ⟨1⟩
 def C (z : ℂ) : Point := ⟨z⟩
 
-/-- `P`: from `B` towards `C`, rotate by `−45°`, scale by `shrink(30°,105°)`, then translate to `B`. -/
+/-- `P`: from `B` towards `C`,
+rotate by `−45°`, scale by `shrink(30°,105°)`, then translate to `B`. -/
 noncomputable def P (z : ℂ) : Point :=
-  ⟨((C z).z - B.z) * (Complex.exp (deg2rad (-45)*Complex.I))*shrink (deg2rad 30) (deg2rad 105) + B.z⟩
+  ⟨((C z).z - B.z) *
+    (Complex.exp (deg2rad (-45)*Complex.I))*shrink (deg2rad 30) (deg2rad 105) + B.z⟩
 
-/-- `Q`: from `A` towards `C`, rotate by `+45°`, scale by `shrink(30°,105°)`, then translate to `A`. -/
+/-- `Q`: from `A` towards `C`,
+rotate by `+45°`, scale by `shrink(30°,105°)`, then translate to `A`. -/
 noncomputable def Q (z : ℂ) : Point :=
-  ⟨((C z).z - A.z) * (Complex.exp ( (deg2rad (45)) * Complex.I)) * shrink (deg2rad 30) (deg2rad 105) + A.z⟩
+  ⟨((C z).z - A.z) *
+    (Complex.exp ( (deg2rad (45)) * Complex.I)) * shrink (deg2rad 30) (deg2rad 105) + A.z⟩
 
-/-- `R`: from `A` towards `B`, rotate by `−15°`, scale by `shrink(15°,150°)`, then translate to `A`. -/
+/-- `R`: from `A` towards `B`,
+rotate by `−15°`, scale by `shrink(15°,150°)`, then translate to `A`. -/
 noncomputable def R : Point :=
-  ⟨(B.z - A.z) * (Complex.exp (deg2rad (-15)*Complex.I ))*shrink (deg2rad 15) (deg2rad 150) + A.z⟩
+  ⟨(B.z - A.z) *
+    (Complex.exp (deg2rad (-15)*Complex.I ))*shrink (deg2rad 15) (deg2rad 150) + A.z⟩
 
 
 /-! ### Trigonometric helper lemmas -/
@@ -124,7 +130,8 @@ lemma sin_pi_div_twelve : Real.sin (π / 12) = (sqrt 6 - sqrt 2) / 4 := by
       linarith [Real.pi_pos]
     rw [h2]
   rw [h1]
-  have h2 : Real.sin (π / 3 - π / 4) = Real.sin (π / 3) * Real.cos (π / 4) - Real.cos (π / 3) * Real.sin (π / 4) := by
+  have h2 : Real.sin (π / 3 - π / 4) =
+    Real.sin (π / 3) * Real.cos (π / 4) - Real.cos (π / 3) * Real.sin (π / 4) := by
     rw [Real.sin_sub]
   rw [h2]
   have h3 : Real.sin (π / 3) = Real.sqrt 3 / 2 := by
@@ -141,7 +148,8 @@ lemma sin_pi_div_twelve : Real.sin (π / 12) = (sqrt 6 - sqrt 2) / 4 := by
       rw [Real.sqrt_mul (by norm_num)]
     rw [h8]
     all_goals norm_num
-  have h8 : (Real.sqrt 3 / 2 * (Real.sqrt 2 / 2) - (1 / 2) * (Real.sqrt 2 / 2)) = (Real.sqrt 6 - Real.sqrt 2) / 4 := by
+  have h8 : (Real.sqrt 3 / 2 * (Real.sqrt 2 / 2) - (1 / 2) *
+    (Real.sqrt 2 / 2)) = (Real.sqrt 6 - Real.sqrt 2) / 4 := by
     have h9 : Real.sqrt 3 * Real.sqrt 2 = Real.sqrt 6 := h7
     have eq1 : Real.sqrt 3 / 2 * (Real.sqrt 2 / 2) = (Real.sqrt 6) / 4 := by
       calc
@@ -163,7 +171,8 @@ lemma sin_seven_pi_div_twelve : Real.sin (7 * π / 12) = (sqrt 6 + sqrt 2) / 4 :
   have h1 : 7 * π / 12 = π / 3 + π / 4 := by
     linarith [Real.pi_pos]
   rw [h1]
-  have h2 : Real.sin (π / 3 + π / 4) = Real.sin (π / 3) * Real.cos (π / 4) + Real.cos (π / 3) * Real.sin (π / 4) := by
+  have h2 : Real.sin (π / 3 + π / 4) =
+    Real.sin (π / 3) * Real.cos (π / 4) + Real.cos (π / 3) * Real.sin (π / 4) := by
     rw [Real.sin_add]
   rw [h2]
   have h3 : Real.sin (π / 3) = Real.sqrt 3 / 2 := by
@@ -181,9 +190,11 @@ lemma sin_seven_pi_div_twelve : Real.sin (7 * π / 12) = (sqrt 6 + sqrt 2) / 4 :
     rw [h8]
     all_goals norm_num
   nlinarith [Real.sqrt_pos.mpr (show 0 < (2 : ℝ) by norm_num : (2 : ℝ) > 0),
-  Real.sqrt_pos.mpr (show 0 < (3 : ℝ) by norm_num : (3 : ℝ) > 0), Real.sq_sqrt (show (0 : ℝ) ≤ (2 : ℝ) by norm_num : (0 : ℝ) ≤ (2 : ℝ)),
+  Real.sqrt_pos.mpr (show 0 < (3 : ℝ) by norm_num : (3 : ℝ) > 0),
+  Real.sq_sqrt (show (0 : ℝ) ≤ (2 : ℝ) by norm_num : (0 : ℝ) ≤ (2 : ℝ)),
   Real.sq_sqrt (show (0 : ℝ) ≤ (3 : ℝ) by norm_num : (0 : ℝ) ≤ (3 : ℝ)),
-  Real.sqrt_nonneg 2, Real.sqrt_nonneg 3, Real.sqrt_nonneg 6, Real.sq_sqrt (show (0 : ℝ) ≤ (6 : ℝ) by norm_num : (0 : ℝ) ≤ (6 : ℝ)), h7]
+  Real.sqrt_nonneg 2, Real.sqrt_nonneg 3, Real.sqrt_nonneg 6,
+  Real.sq_sqrt (show (0 : ℝ) ≤ (6 : ℝ) by norm_num : (0 : ℝ) ≤ (6 : ℝ)), h7]
 
 /-- `cexp( (π/2) I ) = I`. -/
 lemma exp_pi_div_two_I : cexp (π / 2 * I) = I := by
@@ -192,13 +203,15 @@ lemma exp_pi_div_two_I : cexp (π / 2 * I) = I := by
   simp
 
 /-- Pull an `I` into the exponential: `I * e^{-iπ/4} = e^{+iπ/4}`. -/
-lemma I_mul_exp_neg_quarter_pi : I * exp (Real.pi * I * (-1 / 4)) = exp (Real.pi * I * (1 / 4)) := by
+lemma I_mul_exp_neg_quarter_pi :
+  I * exp (Real.pi * I * (-1 / 4)) = exp (Real.pi * I * (1 / 4)) := by
   have h1 : Real.pi * I * (-1 / 4 : ℂ) = (- (Real.pi / 4) : ℂ) * I := by
     ring_nf
   have h2 : Real.pi * I * (1 / 4 : ℂ) = (Real.pi / 4 : ℂ) * I := by
     ring_nf
   rw [h1, h2]
-  have h3 : exp ((- (Real.pi / 4) : ℂ) * I) = (Real.sqrt 2 / 2 : ℂ) - I * (Real.sqrt 2 / 2 : ℂ) := by
+  have h3 : exp ((- (Real.pi / 4) : ℂ) * I) =
+    (Real.sqrt 2 / 2 : ℂ) - I * (Real.sqrt 2 / 2 : ℂ) := by
     have h4 : (- (Real.pi / 4) : ℂ) * I = (- (Real.pi / 4 : ℝ) ) * I := by simp
     rw [h4]
     simp [Complex.ext_iff, Complex.exp_re, Complex.exp_im,  Complex.mul_re, Complex.mul_im,
@@ -206,8 +219,8 @@ lemma I_mul_exp_neg_quarter_pi : I * exp (Real.pi * I * (-1 / 4)) = exp (Real.pi
   have h4 : exp ((Real.pi / 4 : ℂ) * I) = (Real.sqrt 2 / 2 : ℂ) + I * (Real.sqrt 2 / 2 : ℂ) := by
     have h5 : (Real.pi / 4 : ℂ) * I = (Real.pi / 4 : ℝ) * I := by simp
     rw [h5]
-    simp [Complex.ext_iff, Complex.exp_re, Complex.exp_im, Complex.add_re, Complex.add_im, Complex.mul_re, Complex.mul_im,
-    Real.cos_pi_div_four, Real.sin_pi_div_four]
+    simp [Complex.ext_iff, Complex.exp_re, Complex.exp_im, Complex.add_re,
+    Complex.add_im, Complex.mul_re, Complex.mul_im, Real.cos_pi_div_four, Real.sin_pi_div_four]
   rw [h3, h4]
   ring_nf
   simp [pow_two, Complex.ext_iff, Complex.mul_re, Complex.mul_im]
@@ -240,19 +253,24 @@ lemma complex_sin_five_pi_div_six : Complex.sin (↑π * 5 / 6) = (1 / 2 : ℂ) 
   simp
 
 lemma complex_sin_pi_div_six : Complex.sin (π/6) = 1/2 := by
-  have h1 : Complex.sin (π / 6 : ℂ) = (Complex.exp (-( (π / 6 : ℂ) * Complex.I )) - Complex.exp ( (π / 6 : ℂ) * Complex.I )) * Complex.I / 2 := by
+  have h1 : Complex.sin (π / 6 : ℂ) =
+    (Complex.exp (-( (π / 6 : ℂ) * Complex.I )) - Complex.exp ( (π / 6 : ℂ) * Complex.I )) *
+    Complex.I / 2 := by
     simp [Complex.sin]
   rw [h1]
-  have h6 : Complex.exp ( (π / 6 : ℂ) * Complex.I ) = (Real.cos (π / 6 : ℝ) + Complex.I * Real.sin (π / 6 : ℝ)) := by
+  have h6 : Complex.exp ( (π / 6 : ℂ) * Complex.I ) =
+    (Real.cos (π / 6 : ℝ) + Complex.I * Real.sin (π / 6 : ℝ)) := by
     simp [Complex.ext_iff, Complex.add_re, Complex.add_im,
     Complex.mul_re, Complex.mul_im, Complex.I_re, Complex.I_im, Complex.exp_re, Complex.exp_im]
-  have h7 : Complex.exp (-( (π / 6 : ℂ) * Complex.I ) ) = (Real.cos (π / 6 : ℝ) - Complex.I * Real.sin (π / 6 : ℝ)) := by
+  have h7 : Complex.exp (-( (π / 6 : ℂ) * Complex.I ) ) =
+    (Real.cos (π / 6 : ℝ) - Complex.I * Real.sin (π / 6 : ℝ)) := by
     simp [Complex.ext_iff,  Complex.mul_re, Complex.mul_im,
     Complex.I_re, Complex.I_im, Complex.exp_re, Complex.exp_im]
   rw [h6, h7]
   have h8 : Real.sin (π / 6 : ℝ) = 1 / 2 := Real.sin_pi_div_six
   have h9 : Real.cos (π / 6 : ℝ) = Real.sqrt 3 / 2 := Real.cos_pi_div_six
-  simp [Complex.ext_iff, Complex.add_re, Complex.add_im, Complex.mul_re, Complex.mul_im, Complex.I_re, Complex.I_im, h8, h9]
+  simp [Complex.ext_iff, Complex.add_re, Complex.add_im,
+  Complex.mul_re, Complex.mul_im, Complex.I_re, Complex.I_im, h8, h9]
 
 
 /-- `cos(−π/12) = cos(π/12) = (√6 + √2)/4`. -/
@@ -287,9 +305,12 @@ lemma cos_neg_pi_div_twelve : Real.cos (-π / 12) = (sqrt 6 + sqrt 2) / 4 := by
     rw [h14]
     all_goals norm_num
   field_simp [h13]
-  all_goals nlinarith [Real.sqrt_nonneg 6, Real.sqrt_nonneg 2, Real.sqrt_nonneg 3, Real.sq_sqrt (show (0 : ℝ) ≤ (6 : ℝ) by norm_num),
-  Real.sq_sqrt (show (0 : ℝ) ≤ (2 : ℝ) by norm_num), Real.sq_sqrt (show (0 : ℝ) ≤ (3 : ℝ) by norm_num),
-  mul_nonneg (Real.sqrt_nonneg 6) (Real.sqrt_nonneg 2), mul_nonneg (Real.sqrt_nonneg 3) (Real.sqrt_nonneg 2)]
+  all_goals nlinarith [Real.sqrt_nonneg 6, Real.sqrt_nonneg 2,
+  Real.sqrt_nonneg 3, Real.sq_sqrt (show (0 : ℝ) ≤ (6 : ℝ) by norm_num),
+  Real.sq_sqrt (show (0 : ℝ) ≤ (2 : ℝ) by norm_num),
+  Real.sq_sqrt (show (0 : ℝ) ≤ (3 : ℝ) by norm_num),
+  mul_nonneg (Real.sqrt_nonneg 6) (Real.sqrt_nonneg 2),
+  mul_nonneg (Real.sqrt_nonneg 3) (Real.sqrt_nonneg 2)]
 
 
 /-- Algebraic identity used to rationalize and collect coefficients:
@@ -299,16 +320,20 @@ lemma sqrt_combo_rationalize :
   have h1 : Real.sqrt 6 > 0 := by positivity
   have h2 : Real.sqrt 2 > 0 := by positivity
   have h3 : Real.sqrt 6 - Real.sqrt 2 ≠ 0 := by
-    nlinarith [Real.sqrt_pos.mpr (show (6 : ℝ) > 0 by norm_num), Real.sqrt_pos.mpr (show (2 : ℝ) > 0 by norm_num),
-                Real.sq_sqrt (show (0 : ℝ) ≤ (6 : ℝ) by norm_num), Real.sq_sqrt (show (0 : ℝ) ≤ (2 : ℝ) by norm_num),
+    nlinarith [Real.sqrt_pos.mpr (show (6 : ℝ) > 0 by norm_num),
+                Real.sqrt_pos.mpr (show (2 : ℝ) > 0 by norm_num),
+                Real.sq_sqrt (show (0 : ℝ) ≤ (6 : ℝ) by norm_num),
+                Real.sq_sqrt (show (0 : ℝ) ≤ (2 : ℝ) by norm_num),
                 Real.sqrt_nonneg 6, Real.sqrt_nonneg 2,
                 sq_nonneg (Real.sqrt 6 - Real.sqrt 2), sq_nonneg (Real.sqrt 6 + Real.sqrt 2),
                 mul_nonneg (Real.sqrt_nonneg 6) (Real.sqrt_nonneg 2)
               ]
   have h4 : (8 / (Real.sqrt 6 - Real.sqrt 2) : ℝ) = 2 * Real.sqrt 6 + 2 * Real.sqrt 2 := by
     field_simp [h3]
-    ; nlinarith [Real.sqrt_pos.mpr (show (6 : ℝ) > 0 by norm_num), Real.sqrt_pos.mpr (show (2 : ℝ) > 0 by norm_num),
-                Real.sq_sqrt (show (0 : ℝ) ≤ (6 : ℝ) by norm_num), Real.sq_sqrt (show (0 : ℝ) ≤ (2 : ℝ) by norm_num),
+    ; nlinarith [Real.sqrt_pos.mpr (show (6 : ℝ) > 0 by norm_num),
+                Real.sqrt_pos.mpr (show (2 : ℝ) > 0 by norm_num),
+                Real.sq_sqrt (show (0 : ℝ) ≤ (6 : ℝ) by norm_num),
+                Real.sq_sqrt (show (0 : ℝ) ≤ (2 : ℝ) by norm_num),
                 Real.sqrt_nonneg 6, Real.sqrt_nonneg 2,
                 sq_nonneg (Real.sqrt 6 - Real.sqrt 2), sq_nonneg (Real.sqrt 6 + Real.sqrt 2),
                 mul_nonneg (Real.sqrt_nonneg 6) (Real.sqrt_nonneg 2),
@@ -321,7 +346,7 @@ lemma sqrt_combo_rationalize :
 
 /-- `(Q z).z − R.z = ((P z).z − R.z) · e^{iπ/2}`.
 Interpretation: the vector `QR` is a 90° CCW rotation of `PR`. -/
-lemma PQR_rot90(z : ℂ) :
+lemma PQR_rot90 (z : ℂ) :
     (Q z).z - R.z = ((P z).z - R.z) * (Complex.exp (Real.pi / 2 * I)) := by
   -- expand definitions and normalize
   simp [Q, P, R, deg2rad, shrink, A, B, C]
