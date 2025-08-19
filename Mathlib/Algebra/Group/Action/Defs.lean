@@ -488,7 +488,6 @@ lemma isScalarTower_iff_smulCommClass_of_commMonoid (R₁ R : Type*)
     SMulCommClass R₁ R R ↔ IsScalarTower R₁ R R :=
   ⟨fun _ ↦ IsScalarTower.of_commMonoid R₁ R, fun _ ↦ SMulCommClass.of_commMonoid R₁ R R⟩
 
-
 end
 
 section CompatibleScalar
@@ -515,6 +514,16 @@ lemma IsScalarTower.of_smul_one_mul {M N} [Monoid N] [SMul M N]
 lemma SMulCommClass.of_mul_smul_one {M N} [Monoid N] [SMul M N]
     (H : ∀ (x : M) (y : N), y * x • (1 : N) = x • y) : SMulCommClass M N N :=
   ⟨fun x y z ↦ by rw [← H x z, smul_eq_mul, ← H, smul_eq_mul, mul_assoc]⟩
+
+@[to_additive] lemma IsScalarTower.trans_left (M N P Q)
+    [SMul M N] [SMul M P] [SMul M Q] [SMul N P] [SMul N Q] [Monoid P] [MulAction P Q]
+    [IsScalarTower M N P] [IsScalarTower M P Q] [IsScalarTower N P Q] : IsScalarTower M N Q where
+  smul_assoc m n q := by rw [← smul_one_smul P, smul_assoc m, smul_assoc, smul_one_smul]
+
+@[to_additive] lemma IsScalarTower.trans_right (M N P Q)
+    [SMul M N] [SMul M P] [SMul M Q] [SMul P Q] [Monoid N] [MulAction N P] [MulAction N Q]
+    [IsScalarTower M N P] [IsScalarTower M N Q] [IsScalarTower N P Q] : IsScalarTower M P Q where
+  smul_assoc m p q := by rw [← smul_one_smul N m, smul_assoc, smul_one_smul]
 
 end CompatibleScalar
 
