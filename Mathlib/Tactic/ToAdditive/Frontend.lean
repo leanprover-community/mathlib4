@@ -1180,8 +1180,7 @@ def targetName (cfg : Config) (src : Name) : CoreM Name := do
   return res
 
 /-- if `f src = #[a_1, ..., a_n]` and `f tgt = #[b_1, ... b_n]` then `proceedFieldsAux src tgt f`
-will insert translations from `src.a_i` to `tgt.b_i`
-(or from `a_i` to `b_i` if `prependName` is false). -/
+will insert translations from `a_i` to `b_i`. -/
 def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (Array Name)) : CoreM Unit := do
   let srcFields ← f src
   let tgtFields ← f tgt
