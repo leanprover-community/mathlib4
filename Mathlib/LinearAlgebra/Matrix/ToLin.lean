@@ -701,8 +701,8 @@ variable {M₁ M₂ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R
 variable (v₁ : Basis n R M₁) (v₂ : Basis m R M₂)
 
 omit [DecidableEq n] in
-theorem LinearMap.toMatrix_lsmul_flip_apply [DecidableEq m] (b' : Module.Basis m R R) (x : M₁) :
-    ((lsmul R M₁).flip x).toMatrix b' v₁ = vecMulVec (v₁.repr x) b' := by
+theorem LinearMap.toMatrix_toSpanSingleton [DecidableEq m] (b' : Module.Basis m R R) (x : M₁) :
+    (toSpanSingleton R M₁ x).toMatrix b' v₁ = vecMulVec (v₁.repr x) b' := by
   ext; simp [toMatrix_apply, vecMulVec_apply, mul_comm]
 
 theorem Matrix.toLin_apply (M : Matrix m n R) (v : M₁) :
