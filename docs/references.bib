@@ -1,4 +1,16 @@
 
+# To normalize:
+# bibtool --preserve.key.case=on --preserve.keys=on --pass.comments=on --print.use.tab=off -s -i docs/references.bib -o docs/references.bib
+
+# WARNING: Please only use alphanumeric characters, '-', '_', and ':' for the key of bibliography items!
+# Currently doc-gen does not support characters outside them and will silently errors, causing incomplete reference pages.
+
+# https://www.zbmath.org/ and https://mathscinet.ams.org/mathscinet
+# (or the free tool https://mathscinet.ams.org/mrlookup)
+# are good sources of complete bibtex entries for mathematics
+
+# To link to an entry in `references.bib`, use the following formats:
+#   [Author, *Title* (optional location)][bibkey]
 @Book{            abramsky_gabbay_maibaum_1994,
   editor        = {Abramsky, S. and Gabbay, D. M. and Maibaum, T. S. E.},
   title         = {Handbook of logic in computer science. {Vol}. 3:
@@ -3552,18 +3564,6 @@
   url           = {https://doi.org/10.2307/2316897}
 }
 
-# To normalize:
-# bibtool --preserve.key.case=on --preserve.keys=on --pass.comments=on --print.use.tab=off -s -i docs/references.bib -o docs/references.bib
-
-# WARNING: Please only use alphanumeric characters, '-', '_', and ':' for the key of bibliography items!
-# Currently doc-gen does not support characters outside them and will silently errors, causing incomplete reference pages.
-
-# https://www.zbmath.org/ and https://mathscinet.ams.org/mathscinet
-# (or the free tool https://mathscinet.ams.org/mrlookup)
-# are good sources of complete bibtex entries for mathematics
-
-# To link to an entry in `references.bib`, use the following formats:
-#   [Author, *Title* (optional location)][bibkey]
 @Article{         oudom_guin_2008,
   author        = {Oudom, J.-M. and Guin, D.},
   title         = {On the {Lie} enveloping algebra of a pre-{Lie} algebra},
