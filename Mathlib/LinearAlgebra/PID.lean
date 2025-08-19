@@ -41,6 +41,6 @@ lemma trace_restrict_eq_of_forall_mem [IsDomain R] [IsPrincipalIdealRing R]
     contrapose! hi; exact snf.repr_eq_zero_of_notMem_range ⟨_, (hf _)⟩ hi
   change ∑ i, A i i = ∑ i, B i i
   rw [← Finset.sum_filter_of_ne (p := fun j ↦ j ∈ Set.range snf.f) (by simpa using aux)]
-  simp [A, B]
+  simp [A, B, hf]
 
 end LinearMap
