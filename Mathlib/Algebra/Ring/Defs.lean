@@ -226,8 +226,8 @@ instance (priority := 10) NonUnitalCommSemiring.toNonUnitalNonAssocCommSemiring
     [NonUnitalCommSemiring α] : NonUnitalNonAssocCommSemiring α where
 
 -- see Note [lower instance priority]
-/-instance (priority := 10) CommSemiring.toNonAssocCommSemiring [CommSemiring α] :
-    NonAssocCommSemiring α where-/
+instance (priority := 10) CommSemiring.toNonAssocCommSemiring [CommSemiring α] :
+    NonAssocCommSemiring α where
 
 -- see Note [lower instance priority]
 instance (priority := 100) CommSemiring.toNonUnitalCommSemiring [CommSemiring α] :
