@@ -206,8 +206,8 @@ open Submodule in
 theorem _root_.Submodule.coe_starProjection_le_coe_starProjection_iff (U V : Submodule 𝕜 E)
     [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
     U.starProjection.toLinearMap ≤ V.starProjection ↔ U ≤ V := by
-  simp_rw [starProjection_isSymmetricProjection.le_iff_comp_eq_right
-    isSymmetricProjection_starProjection, starProjection_coe_eq_isCompl_projection,
+  simp_rw [(isSymmetricProjection_starProjection _).le_iff_comp_eq_right
+    (isSymmetricProjection_starProjection _), starProjection_coe_eq_isCompl_projection,
     IsCompl.projection_isIdempotentElem _ |>.comp_eq_right_iff, IsCompl.projection_range]
 
 end LinearMap
