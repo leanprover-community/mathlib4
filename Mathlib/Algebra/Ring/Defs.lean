@@ -210,16 +210,16 @@ In other words, it is a type with the following structures: additive commutative
 multiplication by zero law (`MulZeroClass`). -/
 class NonUnitalCommSemiring (α : Type u) extends NonUnitalSemiring α, CommSemigroup α
 
-/- A non-associative commutative semiring is a `NonAssocSemiring` with commutative
-multiplication.
+/-- A non-associative commutative semiring is a `NonAssocSemiring` with commutative
+multiplication. -/
 class NonAssocCommSemiring (α : Type u)
-  extends NonAssocSemiring α, NonUnitalNonAssocCommSemiring α -/
+  extends NonAssocSemiring α, NonUnitalNonAssocCommSemiring α
 
 /-- A commutative semiring is a semiring with commutative multiplication. -/
 class CommSemiring (R : Type u) extends Semiring R, CommMonoid R
 
-/-attribute [instance 10] NonAssocCommSemiring.toNonAssocSemiring
-attribute [instance 10] NonAssocCommSemiring.toNonUnitalNonAssocCommSemiring-/
+attribute [instance 10] NonAssocCommSemiring.toNonAssocSemiring
+attribute [instance 10] NonAssocCommSemiring.toNonUnitalNonAssocCommSemiring
 
 -- see Note [lower instance priority]
 instance (priority := 10) NonUnitalCommSemiring.toNonUnitalNonAssocCommSemiring
