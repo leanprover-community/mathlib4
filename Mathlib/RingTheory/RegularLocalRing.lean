@@ -8,6 +8,7 @@ import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 import Mathlib.RingTheory.Regular.RegularSequence
 import Mathlib.RingTheory.KrullDimension.Field
+import Mathlib.Algebra.Polynomial.Basic
 /-!
 # Define Regular Local Ring
 -/
@@ -411,3 +412,35 @@ theorem isRegular_of_span_eq_maximalIdeal [IsRegularLocalRing R] (rs : List R)
   exact (mul_eq_zero_iff_left this).mp hx
 
 end
+
+class IsRegularRing : Prop where
+  localization_isRegular : ∀ p : Ideal R, ∀ (_ : p.IsPrime),
+    IsRegularLocalRing (Localization.AtPrime p)
+
+lemma isRegularRing_iff : IsRegularRing R ↔ ∀ p : Ideal R, ∀ (_ : p.IsPrime),
+    IsRegularLocalRing (Localization.AtPrime p) :=
+  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+
+lemma isRegularRing_of_ringEquiv {R R' : Type*} [CommRing R] [CommRing R']
+    (e : R ≃+* R') [reg : IsRegularRing R] : IsRegularRing R' := by
+  apply (isRegularRing_iff R').mpr (fun p' hp' ↦ ?_)
+  let p := p'.comap e
+  have : Submonoid.map e.toMonoidHom p.primeCompl = p'.primeCompl := by
+    ext x
+    have : (∃ y, e y ∉ p' ∧ e y = x) ↔ x ∉ p' := ⟨fun ⟨y, hy, eq⟩ ↦ by simpa [← eq],
+      fun h ↦ ⟨e.symm x, by simpa, RingEquiv.apply_symm_apply e x⟩⟩
+    simpa only [Ideal.primeCompl, p]
+  let _ := (isRegularRing_iff R).mp ‹_› p (Ideal.comap_isPrime e p')
+  exact isRegularLocalRing_of_ringEquiv
+    (IsLocalization.ringEquivOfRingEquiv (Localization.AtPrime p) (Localization.AtPrime p') e this)
+
+open Polynomial in
+lemma Polynomial.isRegularRing_of_isRegularRing [IsRegularRing R] : IsRegularRing R[X] := by
+  sorry
+
+lemma MvPolynomial.isRegularRing_of_isRegularRing [IsRegularRing R] (n : ℕ) :
+    IsRegularRing (MvPolynomial (Fin n) R) := by
+  induction' n with n ih
+  · exact isRegularRing_of_ringEquiv (isEmptyRingEquiv R (Fin 0)).symm
+  · let _ := Polynomial.isRegularRing_of_isRegularRing (MvPolynomial (Fin n) R)
+    exact isRegularRing_of_ringEquiv (MvPolynomial.finSuccEquiv R n).toRingEquiv.symm
