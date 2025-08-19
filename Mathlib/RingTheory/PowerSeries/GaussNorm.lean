@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
 
-import Mathlib.Analysis.Normed.Ring.Basic
+import Mathlib.Data.Real.Archimedean
 import Mathlib.RingTheory.PowerSeries.Order
 
 /-!

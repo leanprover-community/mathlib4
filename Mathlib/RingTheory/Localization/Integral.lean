@@ -102,8 +102,7 @@ theorem integerNormalization_eval₂_eq_zero (g : S →+* R') (p : S[X]) {x : R'
 
 theorem integerNormalization_aeval_eq_zero [Algebra R R'] [Algebra S R'] [IsScalarTower R S R']
     (p : S[X]) {x : R'} (hx : aeval x p = 0) : aeval x (integerNormalization M p) = 0 := by
-  rw [aeval_def, IsScalarTower.algebraMap_eq R S R',
-    integerNormalization_eval₂_eq_zero _ (algebraMap _ _) _ hx]
+  rwa [aeval_def, IsScalarTower.algebraMap_eq R S R', integerNormalization_eval₂_eq_zero]
 
 end IntegerNormalization
 
