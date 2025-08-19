@@ -92,10 +92,10 @@ theorem isInt_lcm : {x y nx ny : ℤ} → {z : ℕ} →
 and an equality proof. Panics if `ex` or `ey` aren't natural number literals. -/
 def proveNatGCD (ex ey : Q(ℕ)) : (ed : Q(ℕ)) × Q(Nat.gcd $ex $ey = $ed) :=
   match ex.natLit!, ey.natLit! with
-  | 0, _ => show (ed : Q(ℕ)) × Q(Nat.gcd 0 $ey = $ed) from ⟨ey, q(Nat.gcd_zero_left $ey)⟩
-  | _, 0 => show (ed : Q(ℕ)) × Q(Nat.gcd $ex 0 = $ed) from ⟨ex, q(Nat.gcd_zero_right $ex)⟩
-  | 1, _ => show (ed : Q(ℕ)) × Q(Nat.gcd 1 $ey = $ed) from ⟨q(nat_lit 1), q(Nat.gcd_one_left $ey)⟩
-  | _, 1 => show (ed : Q(ℕ)) × Q(Nat.gcd $ex 1 = $ed) from ⟨q(nat_lit 1), q(Nat.gcd_one_right $ex)⟩
+  | 0, _ => have : $ex =Q nat_lit 0 := ⟨⟩; ⟨ey, q(Nat.gcd_zero_left $ey)⟩
+  | _, 0 => have : $ey =Q nat_lit 0 := ⟨⟩; ⟨ex, q(Nat.gcd_zero_right $ex)⟩
+  | 1, _ => have : $ex =Q nat_lit 1 := ⟨⟩; ⟨q(nat_lit 1), q(Nat.gcd_one_left $ey)⟩
+  | _, 1 => have : $ey =Q nat_lit 1 := ⟨⟩;  from ⟨q(nat_lit 1), q(Nat.gcd_one_right $ex)⟩
   | x, y =>
     let (d, a, b) := Nat.xgcdAux x 1 0 y 0 1
     if d = x then

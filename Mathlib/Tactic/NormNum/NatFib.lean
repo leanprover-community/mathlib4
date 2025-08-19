@@ -42,10 +42,10 @@ theorem isFibAux_two_mul_add_one {n a b n' a' b' : ℕ} (H : IsFibAux n a b)
 partial def proveNatFibAux (en' : Q(ℕ)) : (ea' eb' : Q(ℕ)) × Q(IsFibAux $en' $ea' $eb') :=
   match en'.natLit! with
   | 0 =>
-    let : $en' =Q nat_lit 0 := ⟨⟩;
+    have : $en' =Q nat_lit 0 := ⟨⟩;
     ⟨q(nat_lit 0), q(nat_lit 1), q(isFibAux_zero)⟩
   | 1 =>
-    let : $en' =Q nat_lit 1 := ⟨⟩;
+    have : $en' =Q nat_lit 1 := ⟨⟩;
     ⟨q(nat_lit 1), q(nat_lit 1), q(isFibAux_one)⟩
   | n' =>
     have en : Q(ℕ) := mkRawNatLit <| n' / 2
@@ -79,9 +79,9 @@ theorem isFibAux_two_mul_add_one_done {n a b n' a' : ℕ} (H : IsFibAux n a b)
 and an equality proof. Panics if `ex` isn't a natural number literal. -/
 def proveNatFib (en' : Q(ℕ)) : (em : Q(ℕ)) × Q(Nat.fib $en' = $em) :=
   match en'.natLit! with
-  | 0 => show (em : Q(ℕ)) × Q(Nat.fib 0 = $em) from ⟨q(nat_lit 0), q(Nat.fib_zero)⟩
-  | 1 => show (em : Q(ℕ)) × Q(Nat.fib 1 = $em) from ⟨q(nat_lit 1), q(Nat.fib_one)⟩
-  | 2 => show (em : Q(ℕ)) × Q(Nat.fib 2 = $em) from ⟨q(nat_lit 1), q(Nat.fib_two)⟩
+  | 0 => have : $en' =Q nat_lit 0 := ⟨⟩; ⟨q(nat_lit 0), q(Nat.fib_zero)⟩
+  | 1 => have : $en' =Q nat_lit 1 := ⟨⟩; ⟨q(nat_lit 1), q(Nat.fib_one)⟩
+  | 2 => have : $en' =Q nat_lit 2 := ⟨⟩; ⟨q(nat_lit 1), q(Nat.fib_two)⟩
   | n' =>
     have en : Q(ℕ) := mkRawNatLit <| n' / 2
     let ⟨ea, eb, H⟩ := proveNatFibAux en
