@@ -270,28 +270,25 @@ noncomputable def basisOfBasisRight (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis
 @[simp]
 theorem algebraMap_basisOfBasisRight_apply (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis ι R B) (i : ι) :
     H.basisOfBasisRight H' b i = algebraMap B S (b i) := by
-  simp only [basisOfBasisRight, Basis.map_apply, Basis.baseChange_apply,
-    AlgEquiv.toLinearEquiv_apply, mulMapLeftOfSupEqTop_tmul, OneMemClass.coe_one, one_mul]
-  rfl
+  simp [basisOfBasisRight, Subalgebra.algebraMap_def]
+
+@[simp]
+theorem mulMapLeftOfSupEqTop_symm_apply (H' : A ⊔ B = ⊤) (x : B) :
+    (H.mulMapLeftOfSupEqTop H').symm x = 1 ⊗ₜ[R] x :=
+  (H.mulMapLeftOfSupEqTop H').symm_apply_eq.mpr (by simp)
 
 theorem algebraMap_basisOfBasisRight_repr_apply (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis ι R B)
     (x : B) (i : ι) :
     algebraMap A S ((H.basisOfBasisRight H' b).repr x i) = algebraMap R S (b.repr x i) := by
-  simp only [basisOfBasisRight, Basis.map_repr, LinearEquiv.trans_apply,
-    AlgEquiv.coe_symm_toLinearEquiv]
-  have : (H.mulMapLeftOfSupEqTop H').symm x = 1 ⊗ₜ[R] x :=
-    (H.mulMapLeftOfSupEqTop H').symm_apply_eq.mpr (by simp)
-  simp [this, Algebra.algebraMap_eq_smul_one]
+  simp [basisOfBasisRight, Algebra.algebraMap_eq_smul_one]
 
 theorem leftMulMatrix_basisOfBasisRight_algebraMap (H' : A ⊔ B = ⊤) {ι : Type*} [Fintype ι]
     [DecidableEq ι] (b : Basis ι R B) (x : B) :
     Algebra.leftMulMatrix (H.basisOfBasisRight H' b) (algebraMap B S x) =
       RingHom.mapMatrix (algebraMap R A) (Algebra.leftMulMatrix b x) := by
   ext
-  simp only [Algebra.leftMulMatrix_eq_repr_mul, algebraMap_basisOfBasisRight_apply,
-    RingHom.mapMatrix_apply, Matrix.map_apply, SubalgebraClass.coe_algebraMap,
-    ← H.algebraMap_basisOfBasisRight_repr_apply H', MulMemClass.coe_mul]
-  rfl
+  simp [Algebra.leftMulMatrix_eq_repr_mul, ← H.algebraMap_basisOfBasisRight_repr_apply H',
+    Subalgebra.algebraMap_def]
 
 /--
 If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, and if they are
@@ -536,7 +533,7 @@ variable {A B : Subalgebra R S}
 If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, and if they are
 linearly disjoint and such that `A ⊔ B = S`, then `trace` and `algebraMap` commutes.
 -/
-theorem trace_algebraMap_eq (H : A.LinearDisjoint B) (H' : A ⊔ B = ⊤) [Module.Free R B]
+theorem trace_algebraMap (H : A.LinearDisjoint B) (H' : A ⊔ B = ⊤) [Module.Free R B]
     [Module.Finite R B] (x : B) :
     Algebra.trace A S (algebraMap B S x) = algebraMap R A (Algebra.trace R B x) := by
   simp_rw [Algebra.trace_eq_matrix_trace (Module.Free.chooseBasis R B),
@@ -548,7 +545,7 @@ theorem trace_algebraMap_eq (H : A.LinearDisjoint B) (H' : A ⊔ B = ⊤) [Modul
 If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, and if they are
 linearly disjoint and such that `A ⊔ B = S`, then `norm` and `algebraMap` commutes.
 -/
-theorem norm_algebraMap_eq (H : A.LinearDisjoint B) (H' : A ⊔ B = ⊤) [Module.Free R B]
+theorem norm_algebraMap (H : A.LinearDisjoint B) (H' : A ⊔ B = ⊤) [Module.Free R B]
     [Module.Finite R B] (x : B) :
     Algebra.norm A (algebraMap B S x) = algebraMap R A (Algebra.norm R x) := by
   simp_rw [Algebra.norm_eq_matrix_det (Module.Free.chooseBasis R B),

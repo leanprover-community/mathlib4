@@ -273,7 +273,7 @@ theorem basisOfBasisRight_apply (H : A.LinearDisjoint B) (H' : A.toSubalgebra �
     H.basisOfBasisRight H' b i = algebraMap B E (b i) :=
   (linearDisjoint_iff'.mp H).algebraMap_basisOfBasisRight_apply H' b i
 
-theorem basisOfBasisRight_repr_apply (H : A.LinearDisjoint B)
+theorem algebraMap_basisOfBasisRight_repr_apply (H : A.LinearDisjoint B)
     (H' : A.toSubalgebra ⊔ B.toSubalgebra = ⊤) {ι : Type*} (b : Basis ι F B) (x : B) (i : ι) :
     algebraMap A E ((H.basisOfBasisRight H' b).repr x i) = algebraMap F E (b.repr x i) :=
   (linearDisjoint_iff'.mp H).algebraMap_basisOfBasisRight_repr_apply H' b x i
@@ -682,22 +682,22 @@ theorem algEquiv_of_isAlgebraic (H : A.LinearDisjoint L)
 /--
 If `A` and `B` are linearly disjoint, then `trace` and `algebraMap` commutes.
 -/
-theorem trace_algebraMap_eq [FiniteDimensional F E] (h₁ : A.LinearDisjoint B) (h₂ : A ⊔ B = ⊤)
+theorem trace_algebraMap [FiniteDimensional F E] (h₁ : A.LinearDisjoint B) (h₂ : A ⊔ B = ⊤)
     (x : B) :
     Algebra.trace A E (algebraMap B E x) = algebraMap F A (Algebra.trace F B x) := by
   rw [linearDisjoint_iff'] at h₁
-  refine h₁.trace_algebraMap_eq ?_ x
-  simpa [sup_toSubalgebra_of_isAlgebraic_right] using congr_arg IntermediateField.toSubalgebra h₂
+  refine h₁.trace_algebraMap ?_ x
+  simpa [sup_toSubalgebra_of_isAlgebraic_right] using congr_arg toSubalgebra h₂
 
 /--
 If `A` and `B` are linearly disjoint, then `norm` and `algebraMap` commutes.
 -/
-theorem norm_algebraMap_eq [FiniteDimensional F E] (h₁ : A.LinearDisjoint B) (h₂ : A ⊔ B = ⊤)
+theorem norm_algebraMap [FiniteDimensional F E] (h₁ : A.LinearDisjoint B) (h₂ : A ⊔ B = ⊤)
     (x : B) :
     Algebra.norm A (algebraMap B E x) = algebraMap F A (Algebra.norm F x) := by
   rw [linearDisjoint_iff'] at h₁
-  refine h₁.norm_algebraMap_eq ?_  x
-  simpa [sup_toSubalgebra_of_isAlgebraic_right] using congr_arg IntermediateField.toSubalgebra h₂
+  refine h₁.norm_algebraMap ?_  x
+  simpa [sup_toSubalgebra_of_isAlgebraic_right] using congr_arg toSubalgebra h₂
 
 end LinearDisjoint
 
