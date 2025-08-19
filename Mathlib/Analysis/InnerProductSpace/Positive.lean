@@ -169,23 +169,13 @@ theorem IsIdempotentElem.isPositive_iff_isSymmetric {T : E →ₗ[𝕜] E} (hT :
   rw [← hT.eq, Module.End.mul_apply, h]
   exact inner_self_nonneg
 
-section Matrix
-variable {n : Type*} [Fintype n] [DecidableEq n]
-
-open scoped ComplexOrder
-
-/-- `A.toEuclideanLin` is positive if and only if `A` is positive semi-definite. -/
-theorem _root_.Matrix.toEuclideanLin_isPositive_iff {A : Matrix n n 𝕜} :
-    A.toEuclideanLin.IsPositive ↔ A.PosSemidef := by
-  simp_rw [LinearMap.IsPositive, ← Matrix.isHermitian_iff_isSymmetric,
-    inner_re_symm, EuclideanSpace.inner_eq_star_dotProduct,
-    Matrix.piLp_ofLp_toEuclideanLin, Matrix.toLin'_apply,
-    dotProduct_comm (A.mulVec _), Matrix.PosSemidef, and_congr_right_iff]
-  intro hA
-  simp_rw [RCLike.nonneg_iff (K := 𝕜), hA.im_star_dotProduct_mulVec_self, and_true]
-  rfl
-
-end Matrix
+theorem isPositive_linearIsometryEquiv_conj_iff {T : E →ₗ[𝕜] E} (f : E ≃ₗᵢ[𝕜] F) :
+    IsPositive (f.toLinearMap ∘ₗ T ∘ₗ f.symm.toLinearMap) ↔ IsPositive T := by
+  simp_rw [IsPositive, isSymmetric_linearIsometryEquiv_conj_iff, and_congr_right_iff,
+    LinearIsometryEquiv.toLinearEquiv_symm, coe_comp, LinearEquiv.coe_coe,
+    LinearIsometryEquiv.coe_toLinearEquiv, LinearIsometryEquiv.coe_symm_toLinearEquiv,
+    Function.comp_apply, LinearIsometryEquiv.inner_map_eq_flip]
+  exact fun _ => ⟨fun h x => by simpa using h (f x), fun h x => h _⟩
 
 end LinearMap
 
@@ -283,23 +273,6 @@ theorem IsPositive.adjoint_conj {T : E →L[𝕜] E} (hT : T.IsPositive) (S : F 
   convert hT.conj_adjoint (S†)
   rw [adjoint_adjoint]
 
-theorem isPositive_conj_adjoint_iff {T : E →L[𝕜] E} (S : E ≃ₗᵢ[𝕜] F) :
-    IsPositive (S.toContinuousLinearEquiv.toContinuousLinearMap ∘L T
-    ∘L S.toContinuousLinearEquiv.toContinuousLinearMap †)
-    ↔ IsPositive T := by
-  simp_rw [IsPositive, isSelfAdjoint_conj_adjoint_iff, and_congr_right_iff,
-    reApplyInnerSelf_apply, comp_apply, ← adjoint_inner_right
-    S.toContinuousLinearEquiv.toContinuousLinearMap,
-    LinearIsometryEquiv.toContinuousLinearEquiv_adjoint_eq_symm]
-  exact fun _ => ⟨fun h x => by simpa using h (S x), fun h x => h _⟩
-
-theorem isPositive_adjoint_conj_iff {T : E →L[𝕜] E} (S : F ≃ₗᵢ[𝕜] E) :
-    IsPositive (S.toContinuousLinearEquiv.toContinuousLinearMap † ∘L T
-    ∘L S.toContinuousLinearEquiv.toContinuousLinearMap)
-    ↔ IsPositive T := by
-  have := isPositive_conj_adjoint_iff (T := T) S.symm
-  rwa [← LinearIsometryEquiv.toContinuousLinearEquiv_adjoint_eq_symm, adjoint_adjoint] at this
-
 section LinearMap
 
 omit [CompleteSpace E] [CompleteSpace F]
@@ -319,22 +292,6 @@ theorem _root_.LinearMap.IsPositive.adjoint_conj {T : E →ₗ[𝕜] E}
     (hT : T.IsPositive) (S : F →ₗ[𝕜] E) : (S.adjoint ∘ₗ T ∘ₗ S).IsPositive := by
   convert hT.conj_adjoint S.adjoint
   rw [LinearMap.adjoint_adjoint]
-
-theorem _root_.LinearMap.isPositive_conj_adjoint_iff {T : E →ₗ[𝕜] E} (S : E ≃ₗᵢ[𝕜] F) :
-    (S.toLinearMap ∘ₗ T ∘ₗ S.toLinearMap.adjoint).IsPositive ↔ T.IsPositive := by
-  have := FiniteDimensional.complete 𝕜 E
-  have := FiniteDimensional.complete 𝕜 F
-  simp only [← isPositive_toContinuousLinearMap_iff,
-    ← ContinuousLinearMap.isPositive_conj_adjoint_iff S]
-  exact Iff.rfl
-
-theorem _root_.LinearMap.isPositive_adjoint_conj_iff {T : E →ₗ[𝕜] E} (S : F ≃ₗᵢ[𝕜] E) :
-    (S.toLinearMap.adjoint ∘ₗ T ∘ₗ S.toLinearMap).IsPositive ↔ T.IsPositive := by
-  have := FiniteDimensional.complete 𝕜 E
-  have := FiniteDimensional.complete 𝕜 F
-  simp only [← isPositive_toContinuousLinearMap_iff,
-    ← ContinuousLinearMap.isPositive_adjoint_conj_iff S]
-  exact Iff.rfl
 
 omit [FiniteDimensional 𝕜 E] in
 open scoped ComplexOrder in
