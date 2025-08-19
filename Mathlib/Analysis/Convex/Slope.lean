@@ -30,14 +30,15 @@ theorem ConvexOn.slope_mono_adjacent (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx
     linarith
   set a := (z - y) / (z - x)
   set b := (y - x) / (z - x)
-  have hy : a • x + b • z = y := by field_simp [a, b]; ring
+  have hy : a • x + b • z = y := by simp [field, a, b]; ring
   have key :=
     hf.2 hx hz (show 0 ≤ a by apply div_nonneg <;> linarith)
       (show 0 ≤ b by apply div_nonneg <;> linarith)
-      (show a + b = 1 by field_simp [a, b])
+      (show a + b = 1 by simp [field, a, b])
   rw [hy] at key
   replace key := mul_le_mul_of_nonneg_left key hxz.le
-  field_simp [a, b, mul_comm (z - x) _] at key ⊢
+  simp [a, b] at key ⊢
+  field_simp at key ⊢
   rw [div_le_div_iff_of_pos_right]
   · linarith
   · positivity
@@ -64,13 +65,14 @@ theorem StrictConvexOn.slope_strict_mono_adjacent (hf : StrictConvexOn 𝕜 s f)
     linarith
   set a := (z - y) / (z - x)
   set b := (y - x) / (z - x)
-  have hy : a • x + b • z = y := by field_simp [a, b]; ring
+  have hy : a • x + b • z = y := by simp [field, a, b]; ring
   have key :=
     hf.2 hx hz hxz' (div_pos hyz hxz) (div_pos hxy hxz)
-      (show a + b = 1 by field_simp [a, b])
+      (show a + b = 1 by simp [field, a, b])
   rw [hy] at key
   replace key := mul_lt_mul_of_pos_left key hxz
-  field_simp [mul_comm (z - x) _] at key ⊢
+  simp at key ⊢
+  field_simp at key ⊢
   rw [div_lt_div_iff_of_pos_right]
   · linarith
   · positivity
@@ -232,6 +234,7 @@ theorem ConvexOn.secant_mono_aux1 (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : 
     field_simp
     ring
   · field_simp
+    ring
   · field_simp
 
 theorem ConvexOn.secant_mono_aux2 (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s) (hz : z ∈ s)
@@ -278,6 +281,7 @@ theorem StrictConvexOn.secant_strict_mono_aux1 (hf : StrictConvexOn 𝕜 s f) {x
     field_simp
     ring
   · field_simp
+    ring
   · field_simp
 
 theorem StrictConvexOn.secant_strict_mono_aux2 (hf : StrictConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s)
@@ -302,9 +306,9 @@ theorem StrictConvexOn.secant_strict_mono (hf : StrictConvexOn 𝕜 s f) {a x y 
   rcases lt_or_gt_of_ne hxa with hxa | hxa
   · rcases lt_or_gt_of_ne hya with hya | hya
     · convert hf.secant_strict_mono_aux3 hx ha hxy hya using 1 <;> rw [← neg_div_neg_eq] <;>
-        field_simp
+        simp
     · convert hf.slope_strict_mono_adjacent hx hy hxa hya using 1
-      rw [← neg_div_neg_eq]; field_simp
+      rw [← neg_div_neg_eq]; simp
   · exact hf.secant_strict_mono_aux2 ha hy hxa hxy
 
 /-- If `f : 𝕜 → 𝕜` is strictly concave, then for any point `a` the slope of the secant line of `f`

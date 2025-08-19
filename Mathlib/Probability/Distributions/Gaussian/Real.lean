@@ -111,8 +111,7 @@ lemma lintegral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
     mul_neg]
   simp_rw [← neg_mul]
   rw [neg_mul, integral_gaussian, ← Real.sqrt_inv, ← Real.sqrt_mul]
-  · field_simp
-    ring
+  · simp [field]
   · positivity
 
 /-- The Gaussian distribution pdf integrates to 1 when the variance is not zero. -/
@@ -138,18 +137,10 @@ lemma gaussianPDFReal_inv_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) 
     Real.sqrt_mul', mul_inv_rev, NNReal.coe_mul, NNReal.coe_mk]
   rw [← mul_assoc]
   refine congr_arg₂ _ ?_ ?_
-  · field_simp
+  · simp (disch := positivity) [field]
     rw [Real.sqrt_sq_eq_abs]
-    ring_nf
-    calc (√↑v)⁻¹ * (√2)⁻¹ * (√π)⁻¹
-      = (√↑v)⁻¹ * (√2)⁻¹ * (√π)⁻¹ * (|c| * |c|⁻¹) := by
-          rw [mul_inv_cancel₀, mul_one]
-          simp only [ne_eq, abs_eq_zero, hc, not_false_eq_true]
-    _ = (√↑v)⁻¹ * (√2)⁻¹ * (√π)⁻¹ * |c| * |c|⁻¹ := by ring
   · congr 1
     field_simp
-    congr 1
-    ring
 
 lemma gaussianPDFReal_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) (x : ℝ) :
     gaussianPDFReal μ v (c * x)
@@ -417,7 +408,7 @@ theorem complexMGF_id_gaussianReal (z : ℂ) :
       rw [integral_cexp_quadratic (by simpa using pos_iff_ne_zero.mpr hv), ← mul_assoc]
     _ = 1 * cexp (-μ ^ 2 / (2 * v) - (z + μ / v) ^ 2 / (4 * -(2 * v)⁻¹)) := by
       congr 1
-      field_simp [Real.sqrt_eq_rpow]
+      simp [field, Real.sqrt_eq_rpow, -mul_inv_rev]
       rw [Complex.ofReal_cpow (by positivity)]
       push_cast
       ring_nf
@@ -425,7 +416,7 @@ theorem complexMGF_id_gaussianReal (z : ℂ) :
       rw [one_mul]
       congr 1
       have : (v : ℂ) ≠ 0 := by simpa
-      field_simp
+      simp [field]
       ring
 
 /-- The complex moment-generating function of a random variable with Gaussian distribution
