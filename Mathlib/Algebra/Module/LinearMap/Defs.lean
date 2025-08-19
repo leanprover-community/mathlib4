@@ -51,7 +51,7 @@ linear map
 -/
 
 
-assert_not_exists Star DomMulAct Pi.module WCovBy.image Field
+assert_not_exists TrivialStar DomMulAct Pi.module WCovBy.image Field
 
 open Function
 
@@ -215,7 +215,7 @@ def toDistribMulActionHom (f : M →ₛₗ[σ] M₃) : DistribMulActionHom σ.to
 @[simp]
 theorem coe_toAddHom (f : M →ₛₗ[σ] M₃) : ⇑f.toAddHom = f := rfl
 
--- Porting note: no longer a `simp`
+@[simp]
 theorem toFun_eq_coe {f : M →ₛₗ[σ] M₃} : f.toFun = (f : M → M₃) := rfl
 
 @[ext]

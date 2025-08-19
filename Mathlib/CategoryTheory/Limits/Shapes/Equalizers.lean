@@ -82,7 +82,6 @@ def WalkingParallelPairHom.comp :
   | _, _, _, left, id one => left
   | _, _, _, right, id one => right
 
--- Porting note: adding these since they are simple and aesop couldn't directly prove them
 theorem WalkingParallelPairHom.id_comp
     {X Y : WalkingParallelPair} (g : WalkingParallelPairHom X Y) : comp (id X) g = g :=
   rfl

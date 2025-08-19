@@ -264,7 +264,7 @@ theorem bitwise_xor : bitwise xor = Int.xor := by
     <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.bne_eq_xor,
       cond_false, cond_true, negSucc.injEq, Bool.false_xor,
       Bool.true_xor, Bool.not_true,
-      Int.xor, HXor.hXor, Xor.xor, Nat.xor] <;> simp
+      Int.xor, HXor.hXor, XorOp.xor, Nat.xor] <;> simp
 
 @[simp]
 theorem bitwise_bit (f : Bool → Bool → Bool) (a m b n) :
