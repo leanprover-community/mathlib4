@@ -28,14 +28,9 @@ section Lattice
 /-! `C(α, β)`is a lattice ordered group -/
 
 @[to_additive]
-instance instMulLeftMono [PartialOrder β] [Mul β] [ContinuousMul β] [MulLeftMono β] :
-    MulLeftMono C(α, β) :=
-  ⟨fun _ _ _ hg₁₂ x => mul_le_mul_left' (hg₁₂ x) _⟩
-
-@[to_additive]
-instance instMulRightMono [PartialOrder β] [Mul β] [ContinuousMul β] [MulRightMono β] :
-    MulRightMono C(α, β) :=
-  ⟨fun _ _ _ hg₁₂ x => mul_le_mul_right' (hg₁₂ x) _⟩
+instance [PartialOrder β] [CommMonoid β] [IsOrderedMonoid β] [ContinuousMul β] :
+    IsOrderedMonoid C(α, β) where
+  mul_le_mul_left _ _ hfg c x := mul_le_mul_left' (hfg x) (c x)
 
 variable [Group β] [IsTopologicalGroup β] [Lattice β] [TopologicalLattice β]
 
@@ -46,14 +41,5 @@ lemma coe_mabs (f : C(α, β)) : ⇑|f|ₘ = |⇑f|ₘ := rfl
 lemma mabs_apply (f : C(α, β)) (x : α) : |f|ₘ x = |f x|ₘ := rfl
 
 end Lattice
-
-section IsOrderedAddMonoid
-
-variable [AddCommMonoid β] [ContinuousAdd β] [PartialOrder β] [IsOrderedAddMonoid β]
-
-instance : IsOrderedAddMonoid C(α, β) where
-  add_le_add_left _ _ hfg c := add_le_add_left hfg c
-
-end IsOrderedAddMonoid
 
 end ContinuousMap
