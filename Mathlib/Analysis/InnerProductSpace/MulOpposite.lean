@@ -42,26 +42,21 @@ noncomputable def _root_.OrthonormalBasis.mulOpposite {ι : Type*}
     [Fintype ι] (b : OrthonormalBasis ι 𝕜 H) :
     OrthonormalBasis ι 𝕜 Hᵐᵒᵖ := Module.Basis.toOrthonormalBasis b.toBasis.mulOpposite b.orthonormal
 
-/-- The adjoint of `MulOpposite.opContinuousLinearEquiv` is its inverse. -/
-theorem opContinuousLinearEquiv_adjoint [CompleteSpace H] :
-    ContinuousLinearMap.adjoint (opContinuousLinearEquiv 𝕜 (M:=H)).toContinuousLinearMap
-      = (opContinuousLinearEquiv 𝕜 (M:=H)).symm.toContinuousLinearMap := by
-  ext x
-  apply ext_inner_left 𝕜
-  intro y
-  simp only [ContinuousLinearMap.adjoint_inner_right, ContinuousLinearEquiv.coe_coe,
-    opContinuousLinearEquiv_apply, ← inner_unop, unop_op, opContinuousLinearEquiv_symm_apply]
+theorem isometry_opLinearEquiv {R M : Type*} [Semiring R] [SeminormedAddCommGroup M] [Module R M] :
+    Isometry (opLinearEquiv R (M:=M)) := fun _ _ => rfl
 
-theorem opContinuousLinearEquiv_isometry
-    {R M : Type*} [Semiring R] [SeminormedAddCommGroup M] [Module R M] :
-    Isometry (opContinuousLinearEquiv R (M:=M)) := fun _ _ => rfl
+variable (𝕜 H) in
+/-- The linear isometry equivalence version of `MulOpposite.opLinearEquiv`,
+i.e., `x ↦ op x`. -/
+@[simps!]
+def opLinearIsometryEquiv : H ≃ₗᵢ[𝕜] Hᵐᵒᵖ where
+  toLinearEquiv := opLinearEquiv 𝕜
+  norm_map' _ := rfl
 
-theorem opLinearEquiv_adjoint [FiniteDimensional 𝕜 H] :
-    LinearMap.adjoint (opLinearEquiv 𝕜 (M:=H)).toLinearMap
-      = (opLinearEquiv 𝕜 (M:=H)).symm.toLinearMap :=
-  have := FiniteDimensional.complete 𝕜 H
-  calc _ = (ContinuousLinearMap.adjoint
-      (opContinuousLinearEquiv 𝕜 (M:=H)).toContinuousLinearMap).toLinearMap := rfl
-    _ = _ := by rw [opContinuousLinearEquiv_adjoint]; rfl
+theorem toLinearEquiv_opLinearIsometryEquiv :
+    (opLinearIsometryEquiv 𝕜 H).toLinearEquiv = opLinearEquiv 𝕜 := rfl
+
+theorem toContinuousLinearEquiv_opLinearIsometryEquiv :
+    (opLinearIsometryEquiv 𝕜 H).toContinuousLinearEquiv = opContinuousLinearEquiv 𝕜 := rfl
 
 end MulOpposite
