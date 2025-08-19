@@ -545,6 +545,7 @@ section Map
 
 variable [Fintype V] {W : Type*} [Fintype W] [DecidableEq W]
 
+@[simp]
 theorem edgeFinset_map (f : V ↪ W) (G : SimpleGraph V) [DecidableRel G.Adj] :
     (G.map f).edgeFinset = G.edgeFinset.map f.sym2Map := by
   rw [Finset.map_eq_image, ← Set.toFinset_image, Set.toFinset_inj]
