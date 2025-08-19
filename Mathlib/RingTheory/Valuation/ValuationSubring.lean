@@ -78,11 +78,9 @@ instance : SubringClass (ValuationSubring K) K where
 theorem toSubring_injective : Function.Injective (toSubring : ValuationSubring K → Subring K) :=
   fun x y h => by cases x; cases y; congr
 
-instance : CommRing A :=
-  show CommRing A.toSubring by infer_instance
+instance : CommRing A := inferInstanceAs <| CommRing A.toSubring
 
-instance : IsDomain A :=
-  show IsDomain A.toSubring by infer_instance
+instance : IsDomain A := inferInstanceAs <| IsDomain A.toSubring
 
 instance : Top (ValuationSubring K) :=
   Top.mk <| { (⊤ : Subring K) with mem_or_inv_mem' := fun _ => Or.inl trivial }
@@ -115,14 +113,13 @@ instance : ValuationRing A where
       right
       ext
       field_simp
-    · rw [show (a / b : K)⁻¹ = b / a by field_simp] at hh
+    · rw [show (a / b : K)⁻¹ = b / a by simp] at hh
       use ⟨b / a, hh⟩
       left
       ext
       field_simp
 
-instance : Algebra A K :=
-  show Algebra A.toSubring K by infer_instance
+instance : Algebra A K := inferInstanceAs <| Algebra A.toSubring K
 
 -- Porting note: Somehow it cannot find this instance and I'm too lazy to debug. wrong prio?
 instance isLocalRing : IsLocalRing A := ValuationRing.isLocalRing A
@@ -144,12 +141,7 @@ instance : IsFractionRing A K where
 /-- The value group of the valuation associated to `A`. Note: it is actually a group with zero. -/
 def ValueGroup :=
   ValuationRing.ValueGroup A K
--- The `LinearOrderedCommGroupWithZero` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance : LinearOrderedCommGroupWithZero (ValueGroup A) := by
-  unfold ValueGroup
-  infer_instance
+deriving LinearOrderedCommGroupWithZero
 
 /-- Any valuation subring of `K` induces a natural valuation on `K`. -/
 def valuation : Valuation K A.ValueGroup :=
@@ -320,7 +312,7 @@ theorem ofPrime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) :
       change IsUnit (⟨x⁻¹, h hr⟩ : S)
       apply isUnit_of_mul_eq_one _ (⟨x, hx⟩ : S)
       ext; field_simp
-    · field_simp
+    · simp
 
 theorem ofPrime_le_of_le (P Q : Ideal A) [P.IsPrime] [Q.IsPrime] (h : P ≤ Q) :
     ofPrime A Q ≤ ofPrime A P := fun _x ⟨a, s, hs, he⟩ => ⟨a, s, fun c => hs (h c), he⟩

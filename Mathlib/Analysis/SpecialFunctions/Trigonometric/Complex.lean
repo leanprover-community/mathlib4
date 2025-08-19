@@ -34,7 +34,7 @@ theorem cos_eq_zero_iff {θ : ℂ} : cos θ = 0 ↔ ∃ k : ℤ, θ = (2 * k + 1
   rw [cos, h, ← exp_pi_mul_I, exp_eq_exp_iff_exists_int, mul_right_comm]
   refine exists_congr fun x => ?_
   refine (iff_of_eq <| congr_arg _ ?_).trans (mul_right_inj' <| mul_ne_zero two_ne_zero I_ne_zero)
-  field_simp; ring
+  ring
 
 theorem cos_ne_zero_iff {θ : ℂ} : cos θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ (2 * k + 1) * π / 2 := by
   rw [← not_exists, not_iff_not, cos_eq_zero_iff]
@@ -44,11 +44,11 @@ theorem sin_eq_zero_iff {θ : ℂ} : sin θ = 0 ↔ ∃ k : ℤ, θ = k * π := 
   constructor
   · rintro ⟨k, hk⟩
     use k + 1
-    field_simp [eq_add_of_sub_eq hk]
+    simp [eq_add_of_sub_eq hk]
     ring
   · rintro ⟨k, rfl⟩
     use k - 1
-    field_simp
+    simp
     ring
 
 theorem sin_ne_zero_iff {θ : ℂ} : sin θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ k * π := by
@@ -131,6 +131,31 @@ theorem tan_add' {x y : ℂ}
     (h : (∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) :
     tan (x + y) = (tan x + tan y) / (1 - tan x * tan y) :=
   tan_add (Or.inl h)
+
+theorem tan_sub {x y : ℂ}
+    (h : ((∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) ∨
+      (∃ k : ℤ, x = (2 * k + 1) * π / 2) ∧ ∃ l : ℤ, y = (2 * l + 1) * π / 2) :
+    tan (x - y) = (tan x - tan y) / (1 + tan x * tan y) := by
+  have := tan_add (x := x) (y := -y) <| by
+    rcases h with ⟨x_ne, minus_y_ne⟩ | ⟨x_eq, minus_y_eq⟩
+    · refine .inl ⟨x_ne, fun l => ?_⟩
+      rw [Ne, neg_eq_iff_eq_neg]
+      convert minus_y_ne (-l - 1) using 2
+      push_cast
+      ring
+    · refine .inr ⟨x_eq, ?_⟩
+      rcases minus_y_eq with ⟨l, rfl⟩
+      use -l - 1
+      push_cast
+      ring
+  rw [tan_neg] at this
+  convert this using 2
+  ring
+
+theorem tan_sub' {x y : ℂ}
+    (h : (∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) :
+    tan (x - y) = (tan x - tan y) / (1 + tan x * tan y) :=
+  tan_sub (Or.inl h)
 
 theorem tan_two_mul {z : ℂ} : tan (2 * z) = (2 : ℂ) * tan z / ((1 : ℂ) - tan z ^ 2) := by
   by_cases h : ∀ k : ℤ, z ≠ (2 * k + 1) * π / 2

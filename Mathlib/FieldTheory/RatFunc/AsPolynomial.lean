@@ -186,6 +186,16 @@ end Field
 
 end Eval
 
+section Algebra
+
+variable [CommRing K] [IsDomain K]
+
+lemma transcendental_X : Transcendental K (X : RatFunc K) := by
+  rw [← RatFunc.algebraMap_X, transcendental_algebraMap_iff (algebraMap_injective K)]
+  exact Polynomial.transcendental_X K
+
+end Algebra
+
 end RatFunc
 
 section AdicValuation
@@ -310,8 +320,8 @@ open Polynomial
 instance : Valued (RatFunc K) ℤᵐ⁰ := Valued.mk' ((idealX K).valuation _)
 
 @[simp]
-theorem WithZero.valued_def {x : RatFunc K} :
-    @Valued.v (RatFunc K) _ _ _ _ x = (idealX K).valuation _ x := rfl
+theorem v_def {x : RatFunc K} :
+    Valued.v x = (idealX K).valuation _ x := rfl
 
 end RatFunc
 
