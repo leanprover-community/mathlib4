@@ -189,7 +189,7 @@ private theorem nodupKeys (b o : Ordinal) : (map Prod.toSigma (CNF b o)).NodupKe
 open AList Finsupp
 
 /-- `CNF.coeff b o` is the finitely supported function returning the coefficient of `b ^ e` in the
-`CNF` of `o`, for each `e`. -/
+Cantor Normal Form (`CNF`) of `o`, for each `e`. -/
 @[pp_nodot]
 def coeff (b o : Ordinal) : Ordinal →₀ Ordinal :=
   lookupFinsupp ⟨_, nodupKeys b o⟩
