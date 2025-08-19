@@ -6,7 +6,6 @@ Authors: Kenny Lau
 import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
-import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Integral closure of a subring.
