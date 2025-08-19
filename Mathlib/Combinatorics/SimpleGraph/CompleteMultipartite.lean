@@ -209,12 +209,8 @@ lemma completeEquipartiteGraph_adj {v w} :
 The difference is that the former vertices are a product type whereas the latter vertices are a
 *dependent* product type. -/
 def completeEquipartiteGraph.completeMultipartiteGraph :
-    completeEquipartiteGraph r t ≃g completeMultipartiteGraph (Function.const (Fin r) (Fin t)) where
-  toFun := Prod.toSigma
-  invFun := fun p ↦ (p.1, p.2)
-  left_inv p := by simp
-  right_inv p := by simp
-  map_rel_iff' := by simp
+    completeEquipartiteGraph r t ≃g completeMultipartiteGraph (Function.const (Fin r) (Fin t)) :=
+  { (Equiv.sigmaEquivProd (Fin r) (Fin t)).symm with map_rel_iff' := by simp }
 
 /-- A `completeEquipartiteGraph` is isomorphic to a corresponding `turanGraph`.
 
