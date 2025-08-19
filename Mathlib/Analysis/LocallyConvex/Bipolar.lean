@@ -21,9 +21,9 @@ import Mathlib.Order.Closure
 ## Main definitions
 
 - `LinearMap.rightDualEquiv`: When `B` is right-separating, `F` is linearly equivalent to the
-  topological dual of `E` with the weak topology.
+  strong dual of `E` with the weak topology.
 - `LinearMap.leftDualEquiv`: When `B` is left-separating, `E` is linearly equivalent to the
-  topological dual of `F` with the weak topology.
+  strong dual of `F` with the weak topology.
 
 ## Main statements
 
