@@ -395,7 +395,7 @@ open Real Complex
 
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {p : Measure Ω} {μ : ℝ} {v : ℝ≥0} {X : Ω → ℝ}
 
-/-- The complex moment generating function of a Gaussian distribution with mean `μ` and variance `v`
+/-- The complex moment-generating function of a Gaussian distribution with mean `μ` and variance `v`
 is given by `z ↦ exp (z * μ + v * z ^ 2 / 2)`. -/
 theorem complexMGF_id_gaussianReal (z : ℂ) :
     complexMGF id (gaussianReal μ v) z = cexp (z * μ + v * z ^ 2 / 2) := by
@@ -428,7 +428,7 @@ theorem complexMGF_id_gaussianReal (z : ℂ) :
       field_simp
       ring
 
-/-- The complex moment generating function of a random variable with Gaussian distribution
+/-- The complex moment-generating function of a random variable with Gaussian distribution
 with mean `μ` and variance `v` is given by `z ↦ exp (z * μ + v * z ^ 2 / 2)`. -/
 theorem complexMGF_gaussianReal (hX : p.map X = gaussianReal μ v) (z : ℂ) :
     complexMGF X p z = cexp (z * μ + v * z ^ 2 / 2) := by
@@ -444,7 +444,7 @@ theorem charFun_gaussianReal (t : ℝ) :
   simp only [mul_pow, I_sq, mul_neg, mul_one, sub_eq_add_neg]
   ring_nf
 
-/-- The moment generating function of a random variable with Gaussian distribution
+/-- The moment-generating function of a random variable with Gaussian distribution
 with mean `μ` and variance `v` is given by `t ↦ exp (μ * t + v * t ^ 2 / 2)`. -/
 theorem mgf_gaussianReal (hX : p.map X = gaussianReal μ v) (t : ℝ) :
     mgf X p t = rexp (μ * t + v * t ^ 2 / 2) := by
@@ -462,7 +462,7 @@ theorem mgf_fun_id_gaussianReal :
 theorem mgf_id_gaussianReal : mgf id (gaussianReal μ v) = fun t ↦ rexp (μ * t + v * t ^ 2 / 2) :=
   mgf_fun_id_gaussianReal
 
-/-- The cumulant generating function of a random variable with Gaussian distribution
+/-- The cumulant-generating function of a random variable with Gaussian distribution
 with mean `μ` and variance `v` is given by `t ↦ μ * t + v * t ^ 2 / 2`. -/
 theorem cgf_gaussianReal (hX : p.map X = gaussianReal μ v) (t : ℝ) :
     cgf X p t = μ * t + v * t ^ 2 / 2 := by
