@@ -348,7 +348,7 @@ variable {R}
 @[simps!] def centerCongr {S} [NonUnitalNonAssocRing S] (e : R ≃+* S) : center R ≃+* center S :=
   NonUnitalSubsemiring.centerCongr e
 
-/-- The center of a (not necessarily uintal or associative) ring
+/-- The center of a (not necessarily unital or associative) ring
 is isomorphic to the center of its opposite. -/
 @[simps!] def centerToMulOpposite : center R ≃+* center Rᵐᵒᵖ :=
   NonUnitalSubsemiring.centerToMulOpposite
