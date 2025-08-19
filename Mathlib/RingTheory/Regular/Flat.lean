@@ -11,7 +11,7 @@ import Mathlib.RingTheory.Regular.RegularSequence
 # `RingTheory.Sequence.IsWeaklyRegular` is stable under flat base change
 
 ## Main results
-* `RingTheory.Sequence.IsWeaklyRegular.of_flat_isBaseChange`: Let `R` be a commutative ring,
+* `RingTheory.Sequence.IsWeaklyRegular.of_flat_of_isBaseChange`: Let `R` be a commutative ring,
   `M` be an `R`-module, `S` be a flat `R`-algebra, `N` be the base change of `M` to `S`.
   If `[r₁, …, rₙ]` is a weakly regular `M`-sequence, then its image in `N` is a weakly regular
   `N`-sequence.
