@@ -168,9 +168,15 @@ theorem IsIdempotentElem.isPositive_iff_isSymmetric {T : E →ₗ[𝕜] E} (hT :
   rw [← hT.eq, Module.End.mul_apply, h]
   exact inner_self_nonneg
 
+/-- A symmetric projection is positive. -/
+@[aesop 10% apply, grind →]
 theorem IsPositive.of_isSymmetricProjection {p : E →ₗ[𝕜] E} (hp : p.IsSymmetricProjection) :
     p.IsPositive :=
   hp.isIdempotentElem.isPositive_iff_isSymmetric.mpr hp.isSymmetric
+
+/-- A star projection operator is positive. -/
+@[deprecated (since := "19-08-2025")]
+alias IsPositive.of_isStarProjection := IsPositive.of_isSymmetricProjection
 
 theorem IsSymmetricProjection.sub_of_mul_eq_right {p q : E →ₗ[𝕜] E}
     (hp : p.IsSymmetricProjection) (hq : q.IsSymmetricProjection) (hqp : q ∘ₗ p = p) :
@@ -428,15 +434,3 @@ theorem _root_.Submodule.starProjection_le_starProjection_iff (U V : Submodule �
   coe_le_coe_iff (𝕜 := 𝕜) (E := E) _ _ |>.eq ▸ U.coe_starProjection_le_coe_starProjection_iff V
 
 end ContinuousLinearMap
-
-namespace LinearMap
-
-/-- A star projection operator is positive. -/
-@[aesop 10% apply, grind →]
-theorem IsPositive.of_isStarProjection [FiniteDimensional 𝕜 E] {T : E →ₗ[𝕜] E}
-    (hT : IsStarProjection T) : T.IsPositive :=
-  have := FiniteDimensional.complete 𝕜 E
-  T.isPositive_toContinuousLinearMap_iff.mp (ContinuousLinearMap.IsPositive.of_isStarProjection
-    (isStarProjection_toContinuousLinearMap_iff.mpr hT))
-
-end LinearMap
