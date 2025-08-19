@@ -298,8 +298,8 @@ theorem toAddSubmonoid_sSup (s : Set (Submodule R M)) :
           apply le_sSup
           rw [Subtype.range_coe_subtype]
           exact ⟨p, hp, rfl⟩
-        | one => simpa only [smul_zero] using zero_mem _
-        | mul _ _ _ _ mx my => revert mx my; simp_rw [smul_add]; exact add_mem }
+        | zero => simpa only [smul_zero] using zero_mem _
+        | add _ _ _ _ mx my => revert mx my; simp_rw [smul_add]; exact add_mem }
   refine le_antisymm (?_ : sSup s ≤ p) ?_
   · exact sSup_le fun q hq ↦ le_sSup <| Set.mem_image_of_mem toAddSubmonoid hq
   · exact sSup_le fun _ ⟨q, hq, hq'⟩ ↦ hq'.symm ▸ le_sSup hq
