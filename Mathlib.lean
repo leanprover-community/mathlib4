@@ -4252,7 +4252,6 @@ import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Relations
 import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Semisimple
 import Mathlib.LinearAlgebra.RootSystem.Hom
 import Mathlib.LinearAlgebra.RootSystem.Irreducible
-import Mathlib.LinearAlgebra.RootSystem.GeckConstruction
 import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 import Mathlib.LinearAlgebra.RootSystem.OfBilinear
 import Mathlib.LinearAlgebra.RootSystem.Reduced
@@ -6205,11 +6204,8 @@ import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 import Mathlib.Topology.Algebra.IsUniformGroup.Order
 import Mathlib.Topology.Algebra.LinearTopology
 import Mathlib.Topology.Algebra.Localization
-<<<<<<< HEAD
 import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
-=======
 import Mathlib.Topology.Algebra.IsUniformGroup.Order
->>>>>>> 6afe6111526 (Update Mathlib.lean)
 import Mathlib.Topology.Algebra.Module.Alternating.Basic
 import Mathlib.Topology.Algebra.Module.Alternating.Topology
 import Mathlib.Topology.Algebra.Module.Basic

@@ -136,11 +136,11 @@ lemma iff_isCompactSystem_of_or_univ : IsCompactSystem p ↔
         ext x
         simp only [mem_iInter]
         refine ⟨fun h i ↦ ?_, fun h i ↦ ?_⟩
-        · by_cases h' : p (s i) <;> simp only [h', ↓reduceIte, h, s', n]
+        · by_cases h' : p (s i) <;> simp only [h', ↓reduceIte, h, n]
         · specialize h' i
           specialize h i
           rcases h' with a | b
-          · simp only [a, ↓reduceIte, s', n] at h
+          · simp only [a, ↓reduceIte] at h
             exact h
           · simp only [b, Set.mem_univ]
       apply h₂ ▸ h s' h₁
@@ -162,7 +162,7 @@ lemma iff_isCompactSystem_of_or_univ : IsCompactSystem p ↔
             simp only [h₆, Set.mem_univ]
       have h₇ : Dissipate s' (max j n) = ∅ := by
         rw [← subset_empty_iff] at hj ⊢
-        exact le_trans (dissipate_antitone (Nat.le_max_left j n)) hj
+        exact le_trans (antitone_dissipate (Nat.le_max_left j n)) hj
       specialize h₂ (max j n) (Nat.le_max_right j n)
       specialize hd (max j n)
       rw [h₂, Set.nonempty_iff_ne_empty, h₇] at hd
@@ -253,13 +253,13 @@ theorem of_isCompact_isClosed :
       intro i
       by_cases g : s i ≠ univ
       · exact hx ⟨i, g⟩
-      · simp only [ne_eq, not_not, s'] at g
+      · simp only [ne_eq, not_not] at g
         rw [g]
         simp only [Set.mem_univ]
     apply g <| IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed s' hs'
       (fun j ↦ h2 j) htco htcl
-  · simp only [ne_eq, coe_setOf, nonempty_subtype, not_exists, not_not, s'] at h
-    simp [s', h]
+  · simp only [ne_eq, coe_setOf, nonempty_subtype, not_exists, not_not] at h
+    simp [h]
 
 /-- The set of sets which are either compact and closed, or `univ`, is a compact system. -/
 theorem of_isCompact_isClosed_or_univ :

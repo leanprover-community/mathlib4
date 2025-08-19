@@ -57,9 +57,9 @@ theorem biInter_dissipate [Preorder α] {s : α → Set β} {x : α} :
     ⋂ y, ⋂ (_ : y ≤ x), ⋂ y_1, ⋂ (_ : y_1 ≤ y), s y_1 = ⋂ y, ⋂ (_ : y ≤ x), s y := by
   apply Subset.antisymm
   · apply iInter_mono fun z y hy ↦ ?_
-    simp only [dissipate_def, mem_iInter] at *
+    simp only [mem_iInter] at *
     exact fun h ↦ hy h z <| le_refl z
-  · simp only [subset_iInter_iff, Dissipate]
+  · simp only [subset_iInter_iff]
     exact fun i hi z hz ↦ biInter_subset_of_mem <| le_trans hz hi
 
 @[simp]
@@ -79,10 +79,10 @@ theorem dissipate_succ (s : ℕ → Set α) (n : ℕ) :
     := by
   ext x
   refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
-  · simp only [mem_inter_iff, mem_iInter, Dissipate] at *
+  · simp only [mem_inter_iff, mem_iInter] at *
     exact ⟨fun i hi ↦ hx i <| le_trans hi <|
       le_add_right n 1, hx (n + 1) <| le_refl (n + 1)⟩
-  · simp only [Dissipate, mem_inter_iff, mem_iInter] at *
+  · simp only [mem_inter_iff, mem_iInter] at *
     intro i hi
     by_cases h : i ≤ n
     · exact hx.1 i h
