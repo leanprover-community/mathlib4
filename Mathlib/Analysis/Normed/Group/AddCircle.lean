@@ -91,7 +91,7 @@ theorem norm_eq' (hp : 0 < p) {x : ℝ} : ‖(x : AddCircle p)‖ = p * |p⁻¹ 
 theorem norm_le_half_period {x : AddCircle p} (hp : p ≠ 0) : ‖x‖ ≤ |p| / 2 := by
   obtain ⟨x⟩ := x
   change ‖(x : AddCircle p)‖ ≤ |p| / 2
-  rw [norm_eq, ← mul_le_mul_left (abs_pos.mpr (inv_ne_zero hp)), ← abs_mul, mul_sub, mul_left_comm,
+  rw [norm_eq, ← mul_le_mul_iff_right₀ (abs_pos.mpr (inv_ne_zero hp)), ← abs_mul, mul_sub, mul_left_comm,
     ← mul_div_assoc, ← abs_mul, inv_mul_cancel₀ hp, mul_one, abs_one]
   exact abs_sub_round (p⁻¹ * x)
 
@@ -119,7 +119,7 @@ theorem norm_coe_eq_abs_iff {x : ℝ} (hp : p ≠ 0) : ‖(x : AddCircle p)‖ =
   obtain ⟨hx₁, hx₂⟩ := abs_le.mp hx
   replace hx₂ := Ne.lt_of_le hx' hx₂
   constructor
-  · rwa [← mul_le_mul_left hp, ← mul_assoc, mul_inv_cancel₀ hp.ne.symm, one_mul, mul_neg, ←
+  · rwa [← mul_le_mul_iff_right₀ hp, ← mul_assoc, mul_inv_cancel₀ hp.ne.symm, one_mul, mul_neg, ←
       mul_div_assoc, mul_one]
   · rwa [← mul_lt_mul_left hp, ← mul_assoc, mul_inv_cancel₀ hp.ne.symm, one_mul, ← mul_div_assoc,
       mul_one]
@@ -146,7 +146,7 @@ theorem coe_real_preimage_closedBall_eq_iUnion (x ε : ℝ) :
     ← QuotientAddGroup.mk_sub, norm_eq, ← sub_sub]
   refine ⟨fun h => ⟨round (p⁻¹ * (y - x)), h⟩, ?_⟩
   rintro ⟨n, hn⟩
-  rw [← mul_le_mul_left (abs_pos.mpr <| inv_ne_zero hp), ← abs_mul, mul_sub, mul_comm _ p,
+  rw [← mul_le_mul_iff_right₀ (abs_pos.mpr <| inv_ne_zero hp), ← abs_mul, mul_sub, mul_comm _ p,
     inv_mul_cancel_left₀ hp] at hn ⊢
   exact (round_le (p⁻¹ * (y - x)) n).trans hn
 

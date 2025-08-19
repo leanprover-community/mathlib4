@@ -185,11 +185,11 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
     by_cases mm : size ml + size mr ≤ 1
     · have r1 :=
         le_antisymm
-          ((mul_le_mul_left (by decide)).1 (le_trans mr₁ (Nat.succ_le_succ mm) : _ ≤ ratio * 1)) r0
+          ((mul_le_mul_iff_right₀ (by decide)).1 (le_trans mr₁ (Nat.succ_le_succ mm) : _ ≤ ratio * 1)) r0
       rw [r1, add_assoc] at lr₁
       have l1 :=
         le_antisymm
-          ((mul_le_mul_left (by decide)).1 (le_trans lr₁ (add_le_add_right mm 2) : _ ≤ delta * 1))
+          ((mul_le_mul_iff_right₀ (by decide)).1 (le_trans lr₁ (add_le_add_right mm 2) : _ ≤ delta * 1))
           l0
       rw [l1, r1]
       revert mm; cases size ml <;> cases size mr <;> intro mm
@@ -207,9 +207,9 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
       rw [mul_left_comm, mul_add] at this
       have := le_trans this (add_le_add_left mr₁ _)
       rw [← Nat.succ_mul] at this
-      exact (mul_le_mul_left (by decide)).1 this
+      exact (mul_le_mul_iff_right₀ (by decide)).1 this
     refine ⟨Or.inr ⟨?_, ?_⟩, Or.inr ⟨?_, ?_⟩, Or.inr ⟨?_, ?_⟩⟩
-    · refine (mul_le_mul_left (by decide)).1 (le_trans this ?_)
+    · refine (mul_le_mul_iff_right₀ (by decide)).1 (le_trans this ?_)
       rw [two_mul, Nat.succ_le_iff]
       refine add_lt_add_of_lt_of_le ?_ mm₂
       simpa using (mul_lt_mul_right ml0).2 (by decide : 1 < 3)
@@ -242,7 +242,7 @@ theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : V
   have H3_0 : size l = 0 → size rl + size rr ≤ 2 := by
     intro l0; rw [l0] at H3
     exact
-      (or_iff_right_of_imp fun h => (mul_le_mul_left (by decide)).1 (le_trans h (by decide))).1 H3
+      (or_iff_right_of_imp fun h => (mul_le_mul_iff_right₀ (by decide)).1 (le_trans h (by decide))).1 H3
   have H3p : size l > 0 → 2 * (size rl + size rr) ≤ 9 * size l + 3 := fun l0 : 1 ≤ size l =>
     (or_iff_left_of_imp <| by omega).1 H3
   have ablem : ∀ {a b : ℕ}, 1 ≤ a → a + b ≤ 2 → b ≤ 1 := by omega

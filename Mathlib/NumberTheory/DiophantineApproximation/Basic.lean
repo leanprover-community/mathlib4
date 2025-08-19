@@ -411,8 +411,8 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
     rw [← lt_sub_iff_add_lt, ← mul_assoc, ← sub_mul] at h
     exact mod_cast
       h.trans_le
-        ((mul_le_mul_right <| hv₀').mpr <|
-          (sub_le_sub_iff_left (u : ℝ)).mpr ((mul_le_mul_right hv₀).mpr (floor_le ξ)))
+        ((mul_le_mul_iff_left₀ <| hv₀').mpr <|
+          (sub_le_sub_iff_left (u : ℝ)).mpr ((mul_le_mul_iff_left₀ hv₀).mpr (floor_le ξ)))
   have hu₁ : u - ⌊ξ⌋ * v ≤ v := by
     refine _root_.le_of_mul_le_mul_right (le_of_lt_add_one ?_) hv₁
     replace h := h.2

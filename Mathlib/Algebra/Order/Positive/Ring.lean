@@ -124,7 +124,7 @@ instance isOrderedMonoid [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing 
 ordered cancellative commutative monoid. -/
 instance isOrderedCancelMonoid [CommSemiring R] [LinearOrder R] [IsStrictOrderedRing R] :
     IsOrderedCancelMonoid { x : R // 0 < x } :=
-  { le_of_mul_le_mul_left := fun a _ _ h => Subtype.coe_le_coe.1 <| (mul_le_mul_left a.2).1 h }
+  { le_of_mul_le_mul_left := fun a _ _ h => Subtype.coe_le_coe.1 <| (mul_le_mul_iff_right₀ a.2).1 h }
 
 end mul_comm
 

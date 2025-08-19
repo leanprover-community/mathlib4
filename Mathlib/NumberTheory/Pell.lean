@@ -528,7 +528,7 @@ of any positive solution. -/
 theorem y_le_y {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 1 < a.x)
     (hay : 0 < a.y) : a₁.y ≤ a.y := by
   have H : d * (a₁.y ^ 2 - a.y ^ 2) = a₁.x ^ 2 - a.x ^ 2 := by rw [a.prop_x, a₁.prop_x]; ring
-  rw [← abs_of_pos hay, ← abs_of_pos h.2.1, ← sq_le_sq, ← mul_le_mul_left h.d_pos, ← sub_nonpos, ←
+  rw [← abs_of_pos hay, ← abs_of_pos h.2.1, ← sq_le_sq, ← mul_le_mul_iff_right₀ h.d_pos, ← sub_nonpos, ←
     mul_sub, H, sub_nonpos, sq_le_sq, abs_of_pos (zero_lt_one.trans h.1),
     abs_of_pos (zero_lt_one.trans hax)]
   exact h.x_le_x hax
@@ -557,7 +557,7 @@ theorem mul_inv_x_pos {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solut
   simp only [x_mul, x_inv, y_inv, mul_neg, lt_add_neg_iff_add_lt, zero_add]
   refine (mul_lt_mul_left <| zero_lt_one.trans hax).mp ?_
   rw [(by ring : a.x * (d * (a.y * a₁.y)) = d * a.y * (a.x * a₁.y))]
-  refine ((mul_le_mul_left <| mul_pos h.d_pos hay).mpr <| x_mul_y_le_y_mul_x h hax hay).trans_lt ?_
+  refine ((mul_le_mul_iff_right₀ <| mul_pos h.d_pos hay).mpr <| x_mul_y_le_y_mul_x h hax hay).trans_lt ?_
   rw [← mul_assoc, mul_assoc d, ← sq, a.prop_y, ← sub_pos]
   ring_nf
   exact zero_lt_one.trans h.1
@@ -570,18 +570,18 @@ theorem mul_inv_x_lt_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solu
   refine (mul_lt_mul_left h.2.1).mp ?_
   rw [(by ring : a₁.y * (a.x * a₁.x) = a.x * a₁.y * a₁.x)]
   refine
-    ((mul_le_mul_right <| zero_lt_one.trans h.1).mpr <| x_mul_y_le_y_mul_x h hax hay).trans_lt ?_
+    ((mul_le_mul_iff_left₀ <| zero_lt_one.trans h.1).mpr <| x_mul_y_le_y_mul_x h hax hay).trans_lt ?_
   rw [mul_assoc, ← sq, a₁.prop_x, ← sub_neg]
   suffices a.y - a.x * a₁.y < 0 by convert this using 1; ring
   rw [sub_neg, ← abs_of_pos hay, ← abs_of_pos h.2.1, ← abs_of_pos <| zero_lt_one.trans hax, ←
     abs_mul, ← sq_lt_sq, mul_pow, a.prop_x]
   calc
     a.y ^ 2 = 1 * a.y ^ 2 := (one_mul _).symm
-    _ ≤ d * a.y ^ 2 := (mul_le_mul_right <| sq_pos_of_pos hay).mpr h.d_pos
+    _ ≤ d * a.y ^ 2 := (mul_le_mul_iff_left₀ <| sq_pos_of_pos hay).mpr h.d_pos
     _ < d * a.y ^ 2 + 1 := lt_add_one _
     _ = (1 + d * a.y ^ 2) * 1 := by rw [add_comm, mul_one]
     _ ≤ (1 + d * a.y ^ 2) * a₁.y ^ 2 :=
-      (mul_le_mul_left (by have := h.d_pos; positivity)).mpr (sq_pos_of_pos h.2.1)
+      (mul_le_mul_iff_right₀ (by have := h.d_pos; positivity)).mpr (sq_pos_of_pos h.2.1)
 
 /-- Any nonnegative solution is a power with nonnegative exponent of a fundamental solution. -/
 theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 0 < a.x)
