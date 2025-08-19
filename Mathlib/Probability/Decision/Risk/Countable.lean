@@ -25,70 +25,70 @@ variable {Θ Θ' 𝓧 𝓧' 𝓨 : Type*} {mΘ : MeasurableSpace Θ} {mΘ' : Mea
   {m𝓧 : MeasurableSpace 𝓧} {m𝓧' : MeasurableSpace 𝓧'} {m𝓨 : MeasurableSpace 𝓨}
   {ℓ : Θ → 𝓨 → ℝ≥0∞} {P : Kernel Θ 𝓧} {κ : Kernel 𝓧 𝓨} {π : Measure Θ}
 
-lemma bayesianRisk_fintype [Fintype Θ] [MeasurableSingletonClass Θ] :
-    bayesianRisk ℓ P κ π = ∑ θ, (∫⁻ y, ℓ θ y ∂((κ ∘ₖ P) θ)) * π {θ} := by
-  simp [bayesianRisk, lintegral_fintype]
+lemma avgRisk_fintype [Fintype Θ] [MeasurableSingletonClass Θ] :
+    avgRisk ℓ P κ π = ∑ θ, (∫⁻ y, ℓ θ y ∂((κ ∘ₖ P) θ)) * π {θ} := by
+  simp [avgRisk, lintegral_fintype]
 
-lemma bayesianRisk_countable [Countable Θ] [MeasurableSingletonClass Θ] :
-    bayesianRisk ℓ P κ π = ∑' θ, (∫⁻ y, ℓ θ y ∂((κ ∘ₖ P) θ)) * π {θ} := by
-  simp [bayesianRisk, lintegral_countable']
+lemma avgRisk_countable [Countable Θ] [MeasurableSingletonClass Θ] :
+    avgRisk ℓ P κ π = ∑' θ, (∫⁻ y, ℓ θ y ∂((κ ∘ₖ P) θ)) * π {θ} := by
+  simp [avgRisk, lintegral_countable']
 
-lemma bayesianRisk_fintype' [Fintype 𝓨] [MeasurableSingletonClass 𝓨]
+lemma avgRisk_fintype' [Fintype 𝓨] [MeasurableSingletonClass 𝓨]
     (hl : Measurable (uncurry ℓ)) :
-    bayesianRisk ℓ P κ π = ∑ y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ P θ) {y} ∂π := by
-  simp only [bayesianRisk, lintegral_fintype]
+    avgRisk ℓ P κ π = ∑ y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ P θ) {y} ∂π := by
+  simp only [avgRisk, lintegral_fintype]
   rw [lintegral_finset_sum]
   · congr
   exact fun y _ ↦ Measurable.mul (by fun_prop) ((κ ∘ₖ P).measurable_coe (measurableSet_singleton y))
 
-lemma bayesianRisk_countable' [Countable 𝓨] [MeasurableSingletonClass 𝓨]
+lemma avgRisk_countable' [Countable 𝓨] [MeasurableSingletonClass 𝓨]
     (hl : Measurable (uncurry ℓ)) :
-    bayesianRisk ℓ P κ π = ∑' y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ P θ) {y} ∂π := by
-  simp only [bayesianRisk, lintegral_countable']
+    avgRisk ℓ P κ π = ∑' y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ P θ) {y} ∂π := by
+  simp only [avgRisk, lintegral_countable']
   rw [lintegral_tsum]
   · rfl
   · refine fun y ↦ Measurable.aemeasurable ?_
     exact Measurable.mul (by fun_prop) ((κ ∘ₖ P).measurable_coe (measurableSet_singleton y))
 
-lemma bayesRiskPrior_fintype [Fintype Θ] [MeasurableSingletonClass Θ] :
-    bayesRiskPrior ℓ P π
+lemma bayesRisk_fintype [Fintype Θ] [MeasurableSingletonClass Θ] :
+    bayesRisk ℓ P π
       = ⨅ (κ : Kernel 𝓧 𝓨) (_ : IsMarkovKernel κ), ∑ θ, (∫⁻ y, ℓ θ y ∂((κ ∘ₖ P) θ)) * π {θ} := by
-  simp [bayesRiskPrior, bayesianRisk_fintype]
+  simp [bayesRisk, avgRisk_fintype]
 
-lemma bayesRiskPrior_countable [Countable Θ] [MeasurableSingletonClass Θ] :
-    bayesRiskPrior ℓ P π
+lemma bayesRisk_countable [Countable Θ] [MeasurableSingletonClass Θ] :
+    bayesRisk ℓ P π
       = ⨅ (κ : Kernel 𝓧 𝓨) (_ : IsMarkovKernel κ), ∑' θ, (∫⁻ y, ℓ θ y ∂((κ ∘ₖ P) θ)) * π {θ} := by
-  simp [bayesRiskPrior, bayesianRisk_countable]
+  simp [bayesRisk, avgRisk_countable]
 
-lemma bayesRiskPrior_fintype' [Fintype 𝓨] [MeasurableSingletonClass 𝓨]
+lemma bayesRisk_fintype' [Fintype 𝓨] [MeasurableSingletonClass 𝓨]
     (hl : Measurable (uncurry ℓ)) :
-    bayesRiskPrior ℓ P π
+    bayesRisk ℓ P π
       = ⨅ (κ : Kernel 𝓧 𝓨) (_ : IsMarkovKernel κ), ∑ y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ P θ) {y} ∂π := by
-  simp [bayesRiskPrior, bayesianRisk_fintype' hl]
+  simp [bayesRisk, avgRisk_fintype' hl]
 
-lemma bayesRiskPrior_countable' [Countable 𝓨] [MeasurableSingletonClass 𝓨]
+lemma bayesRisk_countable' [Countable 𝓨] [MeasurableSingletonClass 𝓨]
     (hl : Measurable (uncurry ℓ)) :
-    bayesRiskPrior ℓ P π
+    bayesRisk ℓ P π
       = ⨅ (κ : Kernel 𝓧 𝓨) (_ : IsMarkovKernel κ), ∑' y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ P θ) {y} ∂π := by
-  simp [bayesRiskPrior, bayesianRisk_countable' hl]
+  simp [bayesRisk, avgRisk_countable' hl]
 
 section Const
 
-lemma bayesianRisk_const_of_fintype [Fintype 𝓨] [MeasurableSingletonClass 𝓨]
+lemma avgRisk_const_of_fintype [Fintype 𝓨] [MeasurableSingletonClass 𝓨]
     (hℓ : Measurable (uncurry ℓ)) (μ : Measure 𝓧) (κ : Kernel 𝓧 𝓨) (π : Measure Θ) :
-    bayesianRisk ℓ (Kernel.const Θ μ) κ π = ∑ y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ μ) {y} ∂π := by
-  simp [bayesianRisk_fintype' hℓ]
+    avgRisk ℓ (Kernel.const Θ μ) κ π = ∑ y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ μ) {y} ∂π := by
+  simp [avgRisk_fintype' hℓ]
 
-lemma bayesianRisk_const_of_countable [Countable 𝓨] [MeasurableSingletonClass 𝓨]
+lemma avgRisk_const_of_countable [Countable 𝓨] [MeasurableSingletonClass 𝓨]
     (hℓ : Measurable (uncurry ℓ)) (μ : Measure 𝓧) (κ : Kernel 𝓧 𝓨) (π : Measure Θ) :
-    bayesianRisk ℓ (Kernel.const Θ μ) κ π = ∑' y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ μ) {y} ∂π := by
-  simp [bayesianRisk_countable' hℓ]
+    avgRisk ℓ (Kernel.const Θ μ) κ π = ∑' y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ μ) {y} ∂π := by
+  simp [avgRisk_countable' hℓ]
 
-lemma bayesRiskPrior_const_of_fintype [Nonempty 𝓨] [Fintype 𝓨] [MeasurableSingletonClass 𝓨]
+lemma bayesRisk_const_of_fintype [Nonempty 𝓨] [Fintype 𝓨] [MeasurableSingletonClass 𝓨]
     (hℓ : Measurable (uncurry ℓ)) (μ : Measure 𝓧) (π : Measure Θ) :
-    bayesRiskPrior ℓ (Kernel.const Θ μ) π = ⨅ y, ∫⁻ θ, ℓ θ y * μ .univ ∂π := by
-  refine le_antisymm ((bayesRiskPrior_le_iInf' hℓ _ _).trans_eq (by simp)) ?_
-  simp only [bayesRiskPrior, bayesianRisk_const_of_fintype hℓ, le_iInf_iff]
+    bayesRisk ℓ (Kernel.const Θ μ) π = ⨅ y, ∫⁻ θ, ℓ θ y * μ .univ ∂π := by
+  refine le_antisymm ((bayesRisk_le_iInf' hℓ _ _).trans_eq (by simp)) ?_
+  simp only [bayesRisk, avgRisk_const_of_fintype hℓ, le_iInf_iff]
   intro κ hκ
   calc ⨅ y, ∫⁻ θ, ℓ θ y * μ Set.univ ∂π
   _ = (⨅ y, ∫⁻ θ, ℓ θ y ∂π) * (κ ∘ₘ μ) Set.univ := by

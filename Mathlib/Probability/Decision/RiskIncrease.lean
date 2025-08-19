@@ -48,18 +48,18 @@ variable {Θ 𝓧 𝓧' 𝓨 : Type*} {mΘ : MeasurableSpace Θ} {m𝓧 : Measur
 
 noncomputable
 def riskIncrease (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (π : Measure Θ) : ℝ≥0∞ :=
-  bayesRiskPrior ℓ (Kernel.discard 𝓧 ∘ₖ P) π - bayesRiskPrior ℓ P π
+  bayesRisk ℓ (Kernel.discard 𝓧 ∘ₖ P) π - bayesRisk ℓ P π
 
 lemma riskIncrease_eq_iInf_sub' [Nonempty 𝓨] (hl : Measurable (uncurry ℓ)) (P : Kernel Θ 𝓧)
     (π : Measure Θ) [SFinite π] :
-    riskIncrease ℓ P π = (⨅ z : 𝓨, ∫⁻ θ, P θ univ * ℓ θ z ∂π) - bayesRiskPrior ℓ P π := by
+    riskIncrease ℓ P π = (⨅ z : 𝓨, ∫⁻ θ, P θ univ * ℓ θ z ∂π) - bayesRisk ℓ P π := by
   simp_rw [riskIncrease]
-  simp [bayesRiskPrior_of_subsingleton' hl, mul_comm, Kernel.comp_discard']
+  simp [bayesRisk_of_subsingleton' hl, mul_comm, Kernel.comp_discard']
 
 lemma riskIncrease_eq_iInf_sub (hl : Measurable (uncurry ℓ)) (P : Kernel Θ 𝓧) [IsMarkovKernel P]
     (π : Measure Θ) [SFinite π] :
-    riskIncrease ℓ P π = (⨅ z : 𝓨, ∫⁻ θ, ℓ θ z ∂π) - bayesRiskPrior ℓ P π := by
-  simp_rw [riskIncrease, Kernel.comp_discard, bayesRiskPrior_discard hl]
+    riskIncrease ℓ P π = (⨅ z : 𝓨, ∫⁻ θ, ℓ θ z ∂π) - bayesRisk ℓ P π := by
+  simp_rw [riskIncrease, Kernel.comp_discard, bayesRisk_discard hl]
 
 @[simp] lemma riskIncrease_of_isEmpty_of_isEmpty [IsEmpty 𝓧] [IsEmpty 𝓨] :
     riskIncrease ℓ P π = ∞ := by
@@ -78,7 +78,7 @@ lemma riskIncrease_eq_iInf_sub (hl : Measurable (uncurry ℓ)) (P : Kernel Θ �
 @[simp] lemma riskIncrease_const (hl : Measurable (uncurry ℓ))
     [SFinite π] {μ : Measure 𝓧} [IsProbabilityMeasure μ] :
     riskIncrease ℓ (Kernel.const Θ μ) π = 0 := by
-  simp [riskIncrease, bayesRiskPrior_const hl]
+  simp [riskIncrease, bayesRisk_const hl]
 
 lemma riskIncrease_le_iInf' [Nonempty 𝓨] (hl : Measurable (uncurry ℓ)) [SFinite π] :
     riskIncrease ℓ P π ≤ ⨅ z : 𝓨, ∫⁻ θ, P θ univ * ℓ θ z ∂π :=
@@ -102,7 +102,7 @@ lemma riskIncrease_lt_top (hl : Measurable (uncurry ℓ)) [IsMarkovKernel P] [Is
 lemma riskIncrease_comp_le (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (π : Measure Θ)
     (η : Kernel 𝓧 𝓧') [IsMarkovKernel η] :
     riskIncrease ℓ (η ∘ₖ P) π ≤ riskIncrease ℓ P π := by
-  refine tsub_le_tsub ?_ (bayesRiskPrior_le_bayesRiskPrior_comp _ _ _ _)
+  refine tsub_le_tsub ?_ (bayesRisk_le_bayesRisk_comp _ _ _ _)
   rw [← Kernel.comp_assoc]
   simp
 
@@ -110,7 +110,7 @@ lemma riskIncrease_withDensity (hl : Measurable (uncurry ℓ))
     (P : Kernel Θ 𝓧) [IsSFiniteKernel P] (π : Measure Θ)
     {f : Θ → ℝ≥0∞} (hf : Measurable f) :
     riskIncrease ℓ (P.withDensity (fun θ _ ↦ f θ)) π = riskIncrease ℓ P (π.withDensity f) := by
-  rw [riskIncrease, ← Kernel.withDensity_comp hf, bayesRiskPrior_withDensity hl _ π hf,
-    bayesRiskPrior_withDensity hl _ π hf, riskIncrease]
+  rw [riskIncrease, ← Kernel.withDensity_comp hf, bayesRisk_withDensity hl _ π hf,
+    bayesRisk_withDensity hl _ π hf, riskIncrease]
 
 end ProbabilityTheory
