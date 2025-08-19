@@ -5,7 +5,7 @@ Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Opposites
-import Mathlib.Algebra.Notation.Pi
+import Mathlib.Algebra.Notation.Pi.Defs
 import Mathlib.Data.Set.NAry
 
 /-!
@@ -75,14 +75,14 @@ section SMul
 
 /-- The dilation of set `x • s` is defined as `{x • y | y ∈ s}` in locale `Pointwise`. -/
 @[to_additive
-"The translation of set `x +ᵥ s` is defined as `{x +ᵥ y | y ∈ s}` in locale `Pointwise`."]
+/-- The translation of set `x +ᵥ s` is defined as `{x +ᵥ y | y ∈ s}` in locale `Pointwise`. -/]
 protected def smulSet [SMul α β] : SMul α (Set β) where smul a := image (a • ·)
 
 /-- The pointwise scalar multiplication of sets `s • t` is defined as `{x • y | x ∈ s, y ∈ t}` in
 locale `Pointwise`. -/
 @[to_additive
-"The pointwise scalar addition of sets `s +ᵥ t` is defined as `{x +ᵥ y | x ∈ s, y ∈ t}` in locale
-`Pointwise`."]
+/-- The pointwise scalar addition of sets `s +ᵥ t` is defined as `{x +ᵥ y | x ∈ s, y ∈ t}` in locale
+`Pointwise`. -/]
 protected def smul [SMul α β] : SMul (Set α) (Set β) where smul := image2 (· • ·)
 
 scoped[Pointwise] attribute [instance] Set.smulSet Set.smul
@@ -175,7 +175,7 @@ lemma smul_set_nonempty : (a • s).Nonempty ↔ s.Nonempty := image_nonempty
 @[to_additive (attr := simp)]
 lemma smul_set_singleton : a • ({b} : Set β) = {a • b} := image_singleton
 
-@[to_additive (attr := gcongr)] lemma smul_set_mono : s ⊆ t → a • s ⊆ a • t := image_subset _
+@[to_additive (attr := gcongr)] lemma smul_set_mono : s ⊆ t → a • s ⊆ a • t := image_mono
 
 @[to_additive]
 lemma smul_set_subset_iff : a • s ⊆ t ↔ ∀ ⦃b⦄, b ∈ s → a • b ∈ t :=

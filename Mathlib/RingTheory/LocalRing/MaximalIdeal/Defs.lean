@@ -30,5 +30,3 @@ def maximalIdeal : Ideal R where
   smul_mem' _ _ := mul_mem_nonunits_right
 
 end IsLocalRing
-
-@[deprecated (since := "2024-11-11")] alias LocalRing.maximalIdeal := IsLocalRing.maximalIdeal
