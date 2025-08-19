@@ -181,7 +181,7 @@ respectively.  Then
   o(‖∫ x in ua..va, (1:ℝ) ∂μ‖ + ‖∫ x in ub..vb, (1:ℝ) ∂μ‖)`
 as `ua` and `va` tend to `la` while `ub` and `vb` tend to `lb`.
 
-This theorem is formulated with integral of constants instead of measures in the right hand sides
+This theorem is formulated with integral of constants instead of measures in the right-hand sides
 for two reasons: first, this way we avoid `min`/`max` in the statements; second, often it is
 possible to write better `simp` lemmas for these integrals, see `integral_const` and
 `integral_const_of_cdf`.
@@ -951,8 +951,8 @@ a real-valued function `g`, it suffices to show that `g b - g a ≤ (∫ x in a.
 positive `ε`. To prove this, choose a lower-semicontinuous function `G'` with `g' < G'` and with
 integral close to that of `g'` (its existence is guaranteed by the Vitali-Carathéodory theorem).
 It satisfies `g t - g a ≤ ∫ x in a..t, G' x` for all `t ∈ [a, b]`: this inequality holds at `a`,
-and if it holds at `t` then it holds for `u` close to `t` on its right, as the left hand side
-increases by `g u - g t ∼ (u -t) g' t`, while the right hand side increases by
+and if it holds at `t` then it holds for `u` close to `t` on its right, as the left-hand side
+increases by `g u - g t ∼ (u -t) g' t`, while the right-hand side increases by
 `∫ x in t..u, G' x` which is roughly at least `∫ x in t..u, G' t = (u - t) G' t`, by lower
 semicontinuity. As  `g' t < G' t`, this gives the conclusion. One can therefore push progressively
 this inequality to the right until the point `b`, where it gives the desired conclusion.
