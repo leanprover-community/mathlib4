@@ -67,7 +67,7 @@ theorem map_adj (f : V ↪ W) (G : SimpleGraph V) (u v : W) :
     (G.map f).Adj u v ↔ ∃ u' v' : V, G.Adj u' v' ∧ f u' = u ∧ f v' = v :=
   Iff.rfl
 
-theorem edgeSet_map_eq_image (f : V ↪ W) (G : SimpleGraph V) :
+theorem edgeSet_map (f : V ↪ W) (G : SimpleGraph V) :
     (G.map f).edgeSet = f.sym2Map '' G.edgeSet := by
   ext v
   induction v
@@ -94,7 +94,7 @@ theorem map_monotone (f : V ↪ W) : Monotone (SimpleGraph.map f) := by
 @[simp] lemma map_map (f : V ↪ W) (g : W ↪ X) : (G.map f).map g = G.map (f.trans g) :=
   SimpleGraph.ext <| Relation.map_map _ _ _ _ _
 
-theorem support_map_eq_image (f : V ↪ W) (G : SimpleGraph V) :
+theorem support_map (f : V ↪ W) (G : SimpleGraph V) :
     (G.map f).support = f '' G.support := by
   ext; simp [mem_support]; tauto
 
