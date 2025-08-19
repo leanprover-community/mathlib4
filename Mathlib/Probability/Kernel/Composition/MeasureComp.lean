@@ -193,12 +193,12 @@ lemma boolKernel_comp_measure (μ ν : Measure α) (π : Measure Bool) :
   rw [Measure.bind_apply hs (Kernel.aemeasurable _)]
   simp [lintegral_fintype, mul_comm]
 
-lemma absolutelyContinuous_boolKernel_comp_measure_left (μ ν : Measure α) (hπ : π {false} ≠ 0) :
+lemma absolutelyContinuous_boolKernel_comp_left (μ ν : Measure α) (hπ : π {false} ≠ 0) :
     μ ≪ Kernel.boolKernel μ ν ∘ₘ π :=
   boolKernel_comp_measure _ _ _ ▸ add_comm _ (π {true} • ν) ▸
     (Measure.absolutelyContinuous_smul hπ).add_right _
 
-lemma absolutelyContinuous_boolKernel_comp_measure_right (μ ν : Measure α) (hπ : π {true} ≠ 0) :
+lemma absolutelyContinuous_boolKernel_comp_right (μ ν : Measure α) (hπ : π {true} ≠ 0) :
     ν ≪ Kernel.boolKernel μ ν ∘ₘ π :=
   boolKernel_comp_measure _ _ _ ▸ (Measure.absolutelyContinuous_smul hπ).add_right _
 

@@ -422,9 +422,9 @@ def boolKernel (μ ν : Measure α) : Kernel Bool α where
   toFun := fun b ↦ if b then ν else μ
   measurable' := .of_discrete
 
-@[simp] lemma boolKernel_false : boolKernel μ ν false = μ := rfl
+lemma boolKernel_false : boolKernel μ ν false = μ := rfl
 
-@[simp] lemma boolKernel_true : boolKernel μ ν true = ν := rfl
+lemma boolKernel_true : boolKernel μ ν true = ν := rfl
 
 @[simp] lemma boolKernel_apply (b : Bool) : boolKernel μ ν b = if b then ν else μ := rfl
 
@@ -437,6 +437,13 @@ instance [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] : IsMarkovKernel (b
     cases b
       <;> simp only [boolKernel_apply, Bool.false_eq_true, ↓reduceIte]
       <;> infer_instance
+
+instance [SFinite μ] [SFinite ν] : IsSFiniteKernel (boolKernel μ ν) where
+  tsum_finite := by
+    refine ⟨fun n ↦ boolKernel (sfiniteSeq μ n) (sfiniteSeq ν n), fun n ↦ inferInstance, ?_⟩
+    ext b
+    rw [Kernel.sum_apply]
+    cases b <;> simp [sum_sfiniteSeq]
 
 lemma eq_boolKernel (κ : Kernel Bool α) : κ = boolKernel (κ false) (κ true) := by
   ext (_ | _) <;> simp
