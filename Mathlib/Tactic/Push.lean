@@ -146,7 +146,6 @@ where
 def pushSimpConfig : Simp.Config where
   zeta := false
   proj := false
-  congrConsts := false -- this is a workaround, and can hopefully be removed
 
 /-- Try to rewrite using a push lemma. -/
 def pushStep (head : Head) : Simp.Simproc := fun e => do
