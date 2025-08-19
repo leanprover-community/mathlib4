@@ -365,7 +365,7 @@ theorem Adapted.upcrossingStrat_adapted (hf : Adapted ℱ f) :
   change StronglyMeasurable[ℱ n] fun ω =>
     ∑ k ∈ Finset.range N, ({n | lowerCrossingTime a b f N k ω ≤ n} ∩
       {n | n < upperCrossingTime a b f N (k + 1) ω}).indicator 1 n
-  refine Finset.stronglyMeasurable_sum _ fun i _ =>
+  refine Finset.stronglyMeasurable_fun_sum _ fun i _ =>
     stronglyMeasurable_const.indicator ((hf.isStoppingTime_lowerCrossingTime n).inter ?_)
   simp_rw [← not_le]
   exact (hf.isStoppingTime_upperCrossingTime n).compl
@@ -740,7 +740,7 @@ theorem Adapted.measurable_upcrossingsBefore (hf : Adapted ℱ f) (hab : a < b) 
     ext ω
     exact upcrossingsBefore_eq_sum hab
   rw [this]
-  exact Finset.measurable_sum _ fun i _ => Measurable.indicator measurable_const <|
+  exact Finset.measurable_fun_sum _ fun i _ => Measurable.indicator measurable_const <|
     ℱ.le N _ (hf.isStoppingTime_upperCrossingTime.measurableSet_lt_of_pred N)
 
 theorem Adapted.integrable_upcrossingsBefore [IsFiniteMeasure μ] (hf : Adapted ℱ f) (hab : a < b) :
@@ -750,7 +750,7 @@ theorem Adapted.integrable_upcrossingsBefore [IsFiniteMeasure μ] (hf : Adapted 
     rw [Real.norm_eq_abs, Nat.abs_cast, Nat.cast_le]
     exact upcrossingsBefore_le _ _ hab
   ⟨Measurable.aestronglyMeasurable (measurable_from_top.comp (hf.measurable_upcrossingsBefore hab)),
-    hasFiniteIntegral_of_bounded this⟩
+    .of_bounded this⟩
 
 /-- The number of upcrossings of a realization of a stochastic process (`upcrossings` takes value
 in `ℝ≥0∞` and so is allowed to be `∞`). -/
