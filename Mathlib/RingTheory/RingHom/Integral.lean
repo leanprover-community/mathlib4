@@ -31,9 +31,8 @@ theorem isIntegral_respectsIso : RespectsIso fun f => f.IsIntegral := by
 theorem isIntegral_isStableUnderBaseChange : IsStableUnderBaseChange fun f => f.IsIntegral := by
   refine IsStableUnderBaseChange.mk isIntegral_respectsIso ?_
   introv int
-  change (algebraMap _ _).IsIntegral
   rw [algebraMap_isIntegral_iff] at int ⊢
-  exact .tensorProduct _ _ _
+  infer_instance
 
 open Polynomial in
 /-- `S` is an integral `R`-algebra if there exists a set `{ r }` that
