@@ -151,12 +151,6 @@ noncomputable def disc : R := m.trace ^ 2 - 4 * m.det
 /-- A `2 × 2` matrix is *parabolic* if it is non-scalar and its discriminant is 0. -/
 def IsParabolic : Prop := m ∉ Set.range (scalar _) ∧ m.disc = 0
 
-/-- A `2 × 2` matrix is *hyperbolic* if its discriminant is a non-zero square. -/
-def IsHyperbolic : Prop := m.disc ≠ 0 ∧ ∃ s, s ^ 2 = m.disc
-
-/-- A `2 × 2` matrix is *elliptic* if its discriminant is not a square. -/
-def IsElliptic : Prop := ¬∃ s, s ^ 2 = m.disc
-
 section conjugation
 
 variable {m}
@@ -176,18 +170,6 @@ lemma isParabolic_conj_iff : (g * m * g⁻¹).IsParabolic ↔ IsParabolic m := b
 
 lemma isParabolic_conj'_iff : (g⁻¹ * m * g).IsParabolic ↔ m.IsParabolic := by
   simpa using isParabolic_conj_iff g⁻¹
-
-lemma isHyperbolic_conj_iff : (g * m * g⁻¹).IsHyperbolic ↔ m.IsHyperbolic := by
-  simp only [IsHyperbolic, disc_conj]
-
-lemma isHyperbolic_conj'_iff : (g⁻¹ * m * g).IsHyperbolic ↔ m.IsHyperbolic := by
-  simpa using isHyperbolic_conj_iff g⁻¹
-
-lemma isElliptic_conj_iff : (g * m * g⁻¹).IsElliptic ↔ m.IsElliptic := by
-  simp only [IsElliptic, disc_conj]
-
-lemma isElliptic_conj'_iff : (g⁻¹ * m * g).IsElliptic ↔ m.IsElliptic := by
-  simpa using isElliptic_conj_iff g⁻¹
 
 end conjugation
 
@@ -245,12 +227,6 @@ variable {R n : Type*} [CommRing R] [Fintype n] [DecidableEq n]
 
 /-- Synonym of `Matrix.IsParabolic`, for dot-notation. -/
 @[reducible] def IsParabolic (g : GL (Fin 2) R) : Prop := g.val.IsParabolic
-
-/-- Synonym of `Matrix.IsElliptic`, for dot-notation. -/
-@[reducible] def IsElliptic (g : GL (Fin 2) R) : Prop := g.val.IsElliptic
-
-/-- Synonym of `Matrix.IsHyperbolic`, for dot-notation. -/
-@[reducible] def IsHyperbolic (g : GL (Fin 2) R) : Prop := g.val.IsHyperbolic
 
 /-- The center of `GL n R` consists of scalar matrices. -/
 lemma mem_center_iff_val_eq_scalar {g : GL n R} :
@@ -313,6 +289,7 @@ lemma parabolicEigenvalue_ne_zero {g : GL (Fin 2) K} [NeZero (2 : K)] (hg : IsPa
     sq_eq_zero_iff, not_or]
   exact ⟨NeZero.ne _, g.det_ne_zero⟩
 
+/-- A non-zero power of a parabolic element is parabolic. -/
 lemma IsParabolic.pow {g : GL (Fin 2) K} (hg : IsParabolic g) [CharZero K]
     {n : ℕ} (hn : n ≠ 0) : IsParabolic (g ^ n) := by
   rw [IsParabolic, isParabolic_iff_exists] at hg ⊢
@@ -380,19 +357,5 @@ lemma IsParabolic.parabolicFixedPoint_pow {g : GL (Fin 2) K} (hg : IsParabolic g
   induction n with
   | zero => simp
   | succ n IH => rw [pow_succ, MulAction.mul_smul, hg.smul_eq_self_iff.mpr rfl, IH]
-
-/-- Elliptic elements have no fixed points in `OnePoint K`. -/
-lemma IsElliptic.smul_ne_self {g : GL (Fin 2) K} (hg : g.IsElliptic) (c : OnePoint K) :
-    g • c ≠ c := by
-  cases c with
-  | infty =>
-    refine fun h ↦ hg ⟨g 0 0 - g 1 1, ?_⟩
-    simp only [disc, trace_fin_two, det_fin_two, smul_infty_eq_self_iff.mp h]
-    ring
-  | coe c =>
-    refine fun h ↦ hg ⟨2 * g 1 0 * c + (g 1 1 + -g 0 0), ?_⟩
-    simp [← fixpointPolynomial_aeval_eq_zero_iff, fixpointPolynomial, sq, sub_eq_add_neg] at h
-    simp only [← discrim_eq_sq_of_quadratic_eq_zero h, disc, discrim, trace_fin_two, det_fin_two]
-    ring
 
 end Matrix.GeneralLinearGroup
