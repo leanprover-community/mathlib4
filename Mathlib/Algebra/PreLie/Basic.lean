@@ -37,9 +37,7 @@ Perhaps one could be favored but there is no real reason to.
 pre-lie algebras
 
 -/
-open MulOpposite Ring Module
-
-universe u v
+open MulOpposite
 
 namespace NonUnitalNonAssocRing
 @[simp]
