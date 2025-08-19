@@ -118,9 +118,9 @@ lemma deGrootInfo_eq_min_sub_lintegral' {ζ : Measure 𝓧} [IsFiniteMeasure μ]
   by_cases h_true : π {true} = 0
   · simp [deGrootInfo_of_measure_true_eq_zero, h_true]
   have hμac : μ ≪ Kernel.boolKernel μ ν ∘ₘ π :=
-    absolutelyContinuous_boolKernel_comp_measure_left μ ν h_false
+    absolutelyContinuous_boolKernel_comp_left μ ν h_false
   have hνac : ν ≪ Kernel.boolKernel μ ν ∘ₘ π :=
-    absolutelyContinuous_boolKernel_comp_measure_right μ ν h_true
+    absolutelyContinuous_boolKernel_comp_right μ ν h_true
   have hacζ : Kernel.boolKernel μ ν ∘ₘ π ≪ ζ :=
     boolKernel_comp_measure μ ν π ▸ (hνζ.smul_left _).add_left (hμζ.smul_left _)
   rw [deGrootInfo_eq_min_sub_lintegral, ← lintegral_rnDeriv_mul hacζ (by fun_prop)]
