@@ -134,7 +134,7 @@ universe u v w u' v' w'
 
 namespace PartialEquiv
 
-/- This lemma is here in this file, because in PartialEquiv.basic it would
+/- This lemma is here in this file, because in `PartialEquiv.basic` it would
 have required to import some topology, and it did not look right. -/
 @[fun_prop]
 lemma Continuous.invFun {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
