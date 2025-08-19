@@ -7,7 +7,7 @@ Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
 import Std.Data.TreeMap.Basic
 import Mathlib.Data.String.Defs
 
-/-~
+/-!
 # Name generation APIs for `to_additive`
 -/
 
