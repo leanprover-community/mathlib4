@@ -103,31 +103,58 @@ theorem supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes {x : R}
   have hr : r < q.head := lt_of_le_of_ne hr (fun h ↦ hn q.head.1.1 (by rwa [← h]) hp.2)
   exact le_of_eq_of_le (by simp [q]) (le_iSup _ (q.cons r hr))
 
-@[stacks 0B52 "the equality case"]
-theorem supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_maximalIdeal {x : R}
-    (hn : ∀ p ∈ (annihilator R M).minimalPrimes, x ∉ p) (hx : x ∈ maximalIdeal R) :
+omit [IsLocalRing R] in
+theorem supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_jacobson {x : R}
+    (hn : ∀ p ∈ (annihilator R M).minimalPrimes, x ∉ p) (hx : x ∈ (annihilator R M).jacobson) :
     supportDim R (QuotSMulTop x M) + 1 = supportDim R M :=
   le_antisymm (supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes hn)
-    (supportDim_le_supportDim_quotSMulTop_succ hx)
+    (supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson hx)
 
-theorem supportDim_quotSMulTop_succ_eq_supportDim {x : R} (reg : IsSMulRegular M x)
-    (hx : x ∈ maximalIdeal R) : supportDim R (QuotSMulTop x M) + 1 = supportDim R M :=
-  supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_maximalIdeal
+omit [IsLocalRing R] in
+theorem supportDim_quotSMulTop_succ_eq_supportDim_mem_jacobson {x : R} (reg : IsSMulRegular M x)
+    (hx : x ∈ (annihilator R M).jacobson) : supportDim R (QuotSMulTop x M) + 1 = supportDim R M :=
+  supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_jacobson
     (fun _ ↦ reg.notMem_of_mem_minimalPrimes) hx
 
-lemma _root_.ringKrullDim_quotSMulTop_succ_eq_ringKrullDim {x : R} (reg : IsSMulRegular R x)
-    (hx : x ∈ maximalIdeal R) : ringKrullDim (QuotSMulTop x R) + 1 = ringKrullDim R := by
+omit [IsLocalRing R] in
+lemma _root_.ringKrullDim_quotSMulTop_succ_eq_ringKrullDim_of_mem_jacobson {x : R}
+    (reg : IsSMulRegular R x) (hx : x ∈ Ring.jacobson R) :
+    ringKrullDim (QuotSMulTop x R) + 1 = ringKrullDim R := by
   rw [← supportDim_quotient_eq_ringKrullDim, ← supportDim_self_eq_ringKrullDim]
-  exact supportDim_quotSMulTop_succ_eq_supportDim reg hx
+  exact supportDim_quotSMulTop_succ_eq_supportDim_mem_jacobson reg
+    ((annihilator R R).ringJacobson_le_jacobson hx)
 
-@[stacks 00KW]
-lemma _root_.ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim {x : R}
-    (reg : IsSMulRegular R x) (hx : x ∈ maximalIdeal R) :
+omit [IsLocalRing R] in
+lemma _root_.ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim_of_mem_jacobson {x : R}
+    (reg : IsSMulRegular R x) (hx : x ∈ Ring.jacobson R) :
     ringKrullDim (R ⧸ span {x}) + 1 = ringKrullDim R := by
   have h := Submodule.ideal_span_singleton_smul x (⊤ : Ideal R)
   simp only [smul_eq_mul, mul_top] at h
   rw [ringKrullDim_eq_of_ringEquiv (quotientEquivAlgOfEq R h).toRingEquiv,
-    ringKrullDim_quotSMulTop_succ_eq_ringKrullDim reg hx]
+    ringKrullDim_quotSMulTop_succ_eq_ringKrullDim_of_mem_jacobson reg hx]
+
+@[stacks 0B52 "the equality case"]
+theorem supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_maximalIdeal {x : R}
+    (hn : ∀ p ∈ (annihilator R M).minimalPrimes, x ∉ p) (hx : x ∈ maximalIdeal R) :
+    supportDim R (QuotSMulTop x M) + 1 = supportDim R M :=
+  supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_jacobson hn <|
+    (maximalIdeal_le_jacobson _) hx
+
+theorem supportDim_quotSMulTop_succ_eq_supportDim {x : R} (reg : IsSMulRegular M x)
+    (hx : x ∈ maximalIdeal R) : supportDim R (QuotSMulTop x M) + 1 = supportDim R M :=
+  supportDim_quotSMulTop_succ_eq_supportDim_mem_jacobson reg ((maximalIdeal_le_jacobson _) hx)
+
+lemma _root_.ringKrullDim_quotSMulTop_succ_eq_ringKrullDim {x : R} (reg : IsSMulRegular R x)
+    (hx : x ∈ maximalIdeal R) : ringKrullDim (QuotSMulTop x R) + 1 = ringKrullDim R :=
+  ringKrullDim_quotSMulTop_succ_eq_ringKrullDim_of_mem_jacobson reg <| by
+    rwa [ringJacobson_eq_maximalIdeal R]
+
+@[stacks 00KW]
+lemma _root_.ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim {x : R}
+    (reg : IsSMulRegular R x) (hx : x ∈ maximalIdeal R) :
+    ringKrullDim (R ⧸ span {x}) + 1 = ringKrullDim R :=
+  ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim_of_mem_jacobson reg <| by
+    rwa [ringJacobson_eq_maximalIdeal R]
 
 /-- If $M$ is a finite module over a Noetherian local ring $R$, $r_1, \dots, r_n$ is an
   $M$-sequence, then $\dim M/(r_1, \dots, r_n)M + n = \dim M$. -/
