@@ -13,15 +13,15 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 
 variable {M : Type*} [Monoid M] [LE M]
 
-section MulLeftMono
-variable [MulLeftMono M] (u : Mˣ) {a b c : M} (ha : IsUnit a)
-
 namespace Units
+
+section MulLeftMono
+variable [MulLeftMono M] (u : Mˣ) {a b : M}
 
 theorem mulLECancellable_val : MulLECancellable (↑u : M) := fun _ _ h ↦ by
   simpa using mul_le_mul_left' h ↑u⁻¹
 
-private theorem mul_le_mul_left : u * b ≤ u * c ↔ b ≤ c :=
+private theorem mul_le_mul_left : u * a ≤ u * b ↔ a ≤ b :=
   u.mulLECancellable_val.mul_le_mul_iff_left
 
 theorem inv_mul_le_iff : u⁻¹ * a ≤ b ↔ a ≤ u * b := by
@@ -49,28 +49,10 @@ alias ⟨le_of_inv_le_one, inv_le_one_of_le⟩ := inv_le_one
 alias ⟨le_of_one_le_inv_mul, one_le_inv_mul_of_le⟩ := one_le_inv_mul
 alias ⟨le_of_inv_mul_le_one, inv_mul_le_one_of_le⟩ := inv_mul_le_one
 
-end Units
-
-namespace IsUnit
-
-include ha
-
-theorem mulLECancellable : MulLECancellable a :=
-  ha.unit.mulLECancellable_val
-
-theorem mul_le_mul_left : a * b ≤ a * c ↔ b ≤ c :=
-  ha.unit.mul_le_mul_left
-
-alias ⟨le_of_mul_le_mul_left, _⟩ := mul_le_mul_left
-
-end IsUnit
-
 end MulLeftMono
 
 section MulRightMono
-variable [MulRightMono M] {a b c : M} (hc : IsUnit c) (u : Mˣ)
-
-namespace Units
+variable [MulRightMono M] {a b : M} (u : Mˣ)
 
 private theorem mul_le_mul_right : a * u ≤ b * u ↔ a ≤ b :=
   ⟨(by simpa using mul_le_mul_right' · ↑u⁻¹), (mul_le_mul_right' · _)⟩
@@ -100,9 +82,29 @@ alias ⟨le_of_inv_le_one', inv_le_one_of_le'⟩ := inv_le_one'
 alias ⟨le_of_one_le_mul_inv, one_le_mul_inv_of_le⟩ := one_le_mul_inv
 alias ⟨le_of_mul_inv_le_one, mul_inv_le_one_of_le⟩ := mul_inv_le_one
 
+end MulRightMono
+
 end Units
 
 namespace IsUnit
+
+section MulLeftMono
+variable [MulLeftMono M] {a b c : M} (ha : IsUnit a)
+
+include ha
+
+theorem mulLECancellable : MulLECancellable a :=
+  ha.unit.mulLECancellable_val
+
+theorem mul_le_mul_left : a * b ≤ a * c ↔ b ≤ c :=
+  ha.unit.mul_le_mul_left
+
+alias ⟨le_of_mul_le_mul_left, _⟩ := mul_le_mul_left
+
+end MulLeftMono
+
+section MulRightMono
+variable [MulRightMono M] {a b c : M} (hc : IsUnit c)
 
 include hc
 
@@ -111,6 +113,6 @@ theorem mul_le_mul_right : a * c ≤ b * c ↔ a ≤ b :=
 
 alias ⟨le_of_mul_le_mul_right, _⟩ := mul_le_mul_right
 
-end IsUnit
-
 end MulRightMono
+
+end IsUnit
