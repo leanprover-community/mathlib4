@@ -596,7 +596,7 @@ def evalNegProd {a : Q($α)} (rα : Q(Ring $α)) (va : ExProd sα a) :
   Lean.Core.checkSystem decl_name%.toString
   match va with
   | .const za ha =>
-    let lit : Q(ℕ) := mkRawNatLit 1
+    let lit : Q(ℕ) := q(nat_lit 1)
     let ⟨m1, _⟩ := ExProd.mkNegNat sα rα 1
     let rm := Result.isNegNat rα lit (q(IsInt.of_raw $α (.negOfNat $lit)) : Expr)
     let ra := Result.ofRawRat za a ha
