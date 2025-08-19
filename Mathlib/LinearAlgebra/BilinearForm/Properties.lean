@@ -89,7 +89,7 @@ theorem isSymm_def : IsSymm B ↔ ∀ x y, B x y = B y x where
   mpr h := ⟨h⟩
 
 theorem isSymm_iff : IsSymm B ↔ LinearMap.IsSymm B := by
-  simp [isSymm_def, LinearMap.IsSymm]
+  simp [isSymm_def, LinearMap.isSymm_def]
 
 namespace IsSymm
 

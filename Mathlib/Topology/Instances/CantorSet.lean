@@ -83,8 +83,7 @@ theorem preCantorSet_antitone : Antitone preCantorSet := by
     constructor <;> intro x <;>
       simp only [Set.mem_image, Set.mem_Icc, forall_exists_index, and_imp] <;>
       intro y _ _ _ <;> constructor <;> linarith
-  | succ m ih =>
-    grind [preCantorSet_succ, Set.image_union, Set.subset_def, Set.mem_union, Set.mem_image]
+  | succ m ih => grind [preCantorSet_succ, Set.image_union]
 
 lemma preCantorSet_subset_unitInterval {n : ℕ} : preCantorSet n ⊆ Set.Icc 0 1 := by
   rw [← preCantorSet_zero]

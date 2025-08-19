@@ -173,6 +173,37 @@ example : Int.natAbs 0 = 0 := by norm_num1
 
 end Int
 
+section NNRat
+open scoped NNRat
+
+variable [DivisionSemiring α] [CharZero α]
+
+-- Normalize to True
+example : (1 : ℚ≥0) = 1 := by norm_num1
+example : (1/2 : ℚ≥0) = 1/2 := by norm_num1
+example : (1 : α) = 1 := by norm_num1
+example : (1/2 : α) = 1/2 := by norm_num1
+example : (1 : ℚ≥0) ≠ 2 := by norm_num1
+example : (1/2 : ℚ≥0) ≠ 1 := by norm_num1
+example : (1/2 : ℚ≥0) ≠ 1/3 := by norm_num1
+example : (1/2 : ℚ≥0) ≠ 5/2 := by norm_num1
+example : (1/2 : α) ≠ 1/3 := by norm_num1
+example : (1/2 : α) ≠ 5/2 := by norm_num1
+example : (1 : α) / 3 ≠ 0 := by norm_num1
+example : (1 : α) / 3 ≠ 2 / 7 := by norm_num1
+
+-- Normalize to False
+example : ((1 : ℚ≥0) = 2) = False := by norm_num1
+example : ((1/2 : ℚ≥0) = 2) = False := by norm_num1
+example : ((1 : α) = 2) = False := by norm_num1
+example : ((1/2 : α) = 2) = False := by norm_num1
+
+example : ((1 : ℚ≥0) ≠ 1) = False := by norm_num1
+example : ((1/2 : ℚ≥0) ≠ 1/2) = False := by norm_num1
+example : ((1/2 : α) ≠ 1/2) = False := by norm_num1
+
+end NNRat
+
 section Rat
 
 variable [DivisionRing α] [CharZero α]
@@ -683,7 +714,7 @@ set_option linter.unusedTactic false in
 -- `simp` will continue even if given invalid theorem names (but generates an error)
 -- and this felicitously applies to `norm_num` too.
 -- Previous this was a `fail_if_success` test, but now we just check for the error.
-/-- error: unknown identifier 'this_doesnt_exist' -/
+/-- error: Unknown identifier `this_doesnt_exist` -/
 #guard_msgs in
 example : 1 + 1 = 2 := by
   norm_num [this_doesnt_exist]

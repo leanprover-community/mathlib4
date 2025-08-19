@@ -665,7 +665,7 @@ variable (adj₁ : l₁ ⊣ r₁) (adj₂ : l₂ ⊣ r₂) (adj₃ : l₃ ⊣ r�
 /-- Composition of a squares between left adjoints with a conjugate square. -/
 def leftAdjointSquareConjugate.vcomp (α : g ≫ l₂ ⟶ l₁ ≫ h) (β : l₃ ⟶ l₂) :
     g ≫ l₃ ⟶ l₁ ≫ h :=
-   g ◁ β ≫ α
+  g ◁ β ≫ α
 
 /-- Composition of a squares between right adjoints with a conjugate square. -/
 def rightAdjointSquareConjugate.vcomp (α : r₁ ≫ g ⟶ h ≫ r₂) (β : r₂ ⟶ r₃) :

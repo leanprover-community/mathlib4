@@ -198,8 +198,8 @@ protected lemma IsMatching.map {G' : SimpleGraph W} {M : Subgraph G} (f : G →g
 @[simp]
 lemma Iso.isMatching_map {G' : SimpleGraph W} {M : Subgraph G} (f : G ≃g G') :
     (M.map f.toHom).IsMatching ↔ M.IsMatching where
-   mp h := by simpa [← map_comp] using h.map f.symm.toHom f.symm.injective
-   mpr := .map f.toHom f.injective
+  mp h := by simpa [← map_comp] using h.map f.symm.toHom f.symm.injective
+  mpr := .map f.toHom f.injective
 
 /--
 The subgraph `M` of `G` is a perfect matching on `G` if it's a matching and every vertex `G` is
@@ -375,7 +375,7 @@ lemma IsCycles.toSimpleGraph (c : G.ConnectedComponent) (h : G.IsCycles) :
   intro v ⟨w, hw⟩
   rw [mem_neighborSet, c.adj_spanningCoe_toSimpleGraph] at hw
   rw [← h ⟨w, hw.2⟩]
-  congr
+  congr 1
   ext w'
   simp only [mem_neighborSet, c.adj_spanningCoe_toSimpleGraph, hw, true_and]
 
