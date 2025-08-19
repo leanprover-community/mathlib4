@@ -27,7 +27,7 @@ variable {R K M M' N N' : Type*} [AddCommGroup M] [AddCommGroup N] [AddCommGroup
   [AddCommGroup N']
 
 section CommRing
-variable [CommRing R] [Module R M] [Module R M'] [Module R N]  [Module R N']
+variable [CommRing R] [Module R M] [Module R M'] [Module R N] [Module R N']
   {p : M →ₗ[R] N →ₗ[R] R} {x : M} {y : N}
 
 /-- For a ring `R` and two modules `M` and `N`, a perfect pairing is a bilinear map `M × N → R`
