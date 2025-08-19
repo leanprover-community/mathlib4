@@ -96,7 +96,7 @@ lemma dualEmbedding_injective_of_separatingRight (hr : B.SeparatingRight) :
 weak topology. -/
 noncomputable def rightDualEquiv (hr : B.SeparatingRight) : F ≃ₗ[𝕜] StrongDual 𝕜 (WeakBilin B) :=
   LinearEquiv.ofBijective (WeakBilin.eval B)
-    ⟨dualEmbedding_isInjective_of_separatingRight B hr, dualEmbedding_isSurjective B⟩
+    ⟨dualEmbedding_injective_of_separatingRight B hr, dualEmbedding_surjective B⟩
 
 /-- When `B` is left-separating, `E` is linearly equivalent to the strong dual of `F` with the
 weak topology. -/
@@ -134,7 +134,7 @@ theorem flip_polar_polar_eq {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E}
       rw [fg, ContinuousLinearMap.coe_smul', Pi.smul_apply, RCLike.smul_re, one_div,
         ← (inv_mul_cancel₀ (lt_iff_le_and_ne.mp e3).2.symm)]
       exact mul_lt_mul_of_pos_left ((hf₁ _) ha) (inv_pos_of_pos e3)
-    obtain ⟨f₀, hf₀⟩ := B.dualEmbedding_isSurjective g
+    obtain ⟨f₀, hf₀⟩ := B.dualEmbedding_surjective g
     have hg₃ : f₀ ∈ (B.polar (E := WeakBilin B) s) := by
       simp [← hf₀, WeakBilin.eval] at hg₁
       intro x₂ hx₂
