@@ -11,7 +11,7 @@ import Mathlib.Analysis.SpecificLimits.Basic
 
 This file shows the existence of minimizers (also known as the Hilbert projection theorem).
 This is the key tool that is used to define `Submodule.orthogonalProjection` in
-`Mathlib/Analysis/InnerProductSpace/Projection/Basic`.
+`Mathlib/Analysis/InnerProductSpace/Projection/Basic.lean`.
 -/
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
@@ -23,9 +23,6 @@ local notation "absR" => @abs ℝ _ _
 
 open Topology RCLike Real Filter InnerProductSpace
 
--- FIXME this monolithic proof causes a deterministic timeout with `-T50000`
--- It should be broken in a sequence of more manageable pieces,
--- perhaps with individual statements for the three steps below.
 /-- **Existence of minimizers**, aka the **Hilbert projection theorem**.
 
 Let `u` be a point in a real inner product space, and let `K` be a nonempty complete convex subset.
