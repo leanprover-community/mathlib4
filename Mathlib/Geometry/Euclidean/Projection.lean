@@ -3,7 +3,8 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection
+import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
+import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
 import Mathlib.Analysis.Normed.Affine.ContinuousAffineMap
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
@@ -223,10 +224,8 @@ theorem orthogonalProjection_mem_subspace_eq_self {s : AffineSubspace ℝ P} [No
 /-- Orthogonal projection is idempotent. -/
 theorem orthogonalProjection_orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
     [s.direction.HasOrthogonalProjection] (p : P) :
-    orthogonalProjection s (orthogonalProjection s p) = orthogonalProjection s p := by
-  ext
-  rw [orthogonalProjection_eq_self_iff]
-  exact orthogonalProjection_mem p
+    orthogonalProjection s (orthogonalProjection s p) = orthogonalProjection s p :=
+  orthogonalProjection_mem_subspace_eq_self ((orthogonalProjection s) p)
 
 theorem eq_orthogonalProjection_of_eq_subspace {s s' : AffineSubspace ℝ P} [Nonempty s]
     [Nonempty s'] [s.direction.HasOrthogonalProjection] [s'.direction.HasOrthogonalProjection]

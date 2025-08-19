@@ -105,7 +105,7 @@ theorem cons_add (a : α) (s t : Multiset α) : a ::ₘ s + t = a ::ₘ (s + t) 
 theorem add_cons (a : α) (s t : Multiset α) : s + a ::ₘ t = a ::ₘ (s + t) := by
   rw [Multiset.add_comm, cons_add, Multiset.add_comm]
 
-@[simp]
+@[simp, grind =]
 theorem mem_add {a : α} {s t : Multiset α} : a ∈ s + t ↔ a ∈ s ∨ a ∈ t :=
   Quotient.inductionOn₂ s t fun _l₁ _l₂ => mem_append
 
