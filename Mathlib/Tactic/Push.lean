@@ -292,8 +292,11 @@ Push negations into the conclusion or a hypothesis.
 For instance, a hypothesis `h : ¬ ∀ x, ∃ y, x ≤ y` will be transformed by `push_neg at h` into
 `h : ∃ x, ∀ y, y < x`. Variable names are conserved.
 
-`push_neg` is a special case of the more general `push` tactic, for the constant `Not`.
-The `push` tactic can be extended using the `@[push]` attribute.
+`push_neg` is a special case of the more general `push` tactic, namely `push Not`.
+The `push` tactic can be extended using the `@[push]` attribute. `push` has special-casing
+built in for `push Not`, so that it can preserve binder names, and so that `¬ (p ∧ q)` can be
+transformed to either of `p → ¬ q` (the default) and `¬ p ∨ ¬ q`. To get `¬ p ∨ ¬ q`, use
+`set_option push_neg.use_distrib true`.
 
 Another example: given a hypothesis
 ```lean
@@ -307,9 +310,6 @@ Note that names are conserved by this tactic, contrary to what would happen with
 using the relevant lemmas. One can use this tactic at the goal using `push_neg`,
 at every hypothesis and the goal using `push_neg at *` or at selected hypotheses and the goal
 using say `push_neg at h h' ⊢`, as usual.
-
-This tactic has two modes: in standard mode, it transforms `¬(p ∧ q)` into `p → ¬q`, whereas in
-distrib mode it produces `¬p ∨ ¬q`. To use distrib mode, use `set_option push_neg.use_distrib true`.
 -/
 macro (name := push_neg) "push_neg" loc:(location)? : tactic => `(tactic| push Not $[$loc]?)
 
