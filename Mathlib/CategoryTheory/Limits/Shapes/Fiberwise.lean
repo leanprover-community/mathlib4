@@ -15,7 +15,8 @@ In this file, we consider a category `J` equipped with a functor `F : J ⥤ D` t
 `D`. Then the colimit of any diagram `diagram : J ⥤ C` can be computed fiberwise, using the
 following algorithm:
 
-1. For each `d : D`, construct a colimit cocone over the restricted diagram `fiberInclusion F d ⋙ diagram`.
+1. For each `d : D`, construct a colimit cocone over the restricted diagram
+   `fiberInclusion F d ⋙ diagram`.
 2. Take a colimit cofan of the values of these cocones over all `d : D`.
 
 ## Main Results
@@ -36,33 +37,6 @@ variable {J : Type u} {D : Type u₁}
 
 namespace CategoryTheory
 
-namespace Functor
-
-theorem fiberCongr {j₁ j₂ : J} (f : j₁ ⟶ j₂) : F.obj j₁ = F.obj j₂ :=
-  IsDiscrete.eq_of_hom (F.map f)
-
-instance (d : D) {j₁ j₂ : F.Fiber d} (f : j₁.1 ⟶ j₂.1) : F.IsHomLift (𝟙 d) f :=
-  IsHomLift.of_fac _ _ _ j₁.2 j₂.2 (Subsingleton.elim _ _)
-
-/-- Casting a morphism in `J` to a morphism in the category `F.Fiber d`. -/
-def fiberPreimage {d : D} (j₁ j₂ : F.Fiber d) (f : j₁.1 ⟶ j₂.1) : j₁ ⟶ j₂ :=
-  homMk F d f
-
-/-- The inclusion functor from `F.Fiber d` to `J` is fully faithful when `D` is discrete. -/
-def fullyFaithfulFiber (d : D) : FullyFaithful (fiberInclusion (p := F) (S := d)) where
-  preimage {j₁ j₂} := F.fiberPreimage j₁ j₂
-
-instance (d : D) : Full (fiberInclusion (p := F) (S := d)) :=
-  (fullyFaithfulFiber F d).full
-
-@[elab_as_elim] lemma fiber_inductionOn {motive : ∀ {j₁ j₂ : J}, (j₁ ⟶ j₂) → Prop}
-    {j₁ j₂ : J} (f : j₁ ⟶ j₂)
-    (ih : ∀ d : D, ∀ {j₁ j₂ : F.Fiber d} (f : j₁ ⟶ j₂), motive f.1) :
-    motive f :=
-  ih _ (F.fiberPreimage (.mk (F.fiberCongr f)) (.mk rfl) f)
-
-end Functor
-
 namespace Limits
 
 open Functor
@@ -74,16 +48,16 @@ variable (fiberwiseCocone : ∀ d : D, Cocone (fiberInclusion (p := F) (S := d) 
 we can construct a cocone over `diagram` using the following algorithm:
 
 1. For each `d : D`, construct a cocone over the restricted diagram `fiberInclusion F d ⋙ diagram`.
-2. Take a cofan of the values of these cocones over all `d : D`.
+2. Take a cofan on the cocone points of these cocones over all `d : D`.
 -/
-@[simps] def coconeOfFiber : Cocone diagram where
+@[simps] def coconeOfFiberOfIsDiscrete : Cocone diagram where
   pt := cofan.pt
   ι :=
   { app j := (fiberwiseCocone (F.obj j)).ι.app (.mk rfl) ≫ cofan.inj (F.obj j)
     naturality j₁ j₂ f := by
       simp only [const_obj_obj, const_obj_map, comp_id]
-      refine F.fiber_inductionOn f fun d j₁ j₂ f ↦ ?_
-      rw [← (fiberwiseCocone (F.obj j₁.1)).w (F.fiberPreimage (.mk rfl)
+      refine F.fiber_inductionOn_of_isDiscrete f fun d j₁ j₂ f ↦ ?_
+      rw [← (fiberwiseCocone (F.obj j₁.1)).w (F.fiberPreimageOfIsDiscrete (.mk rfl)
         (.mk (j₂.2.trans j₁.2.symm)) f.1), Functor.comp_map, assoc]
       congr 1
       grind }
@@ -97,31 +71,33 @@ be computed using this algorithm:
 1. For each `d : D`, compute the colimit of the restricted diagram `fiberInclusion F d ⋙ diagram`.
 2. Take the coproduct of these colimits over all `d : D`.
 -/
-@[simps] def colimitOfFiber : IsColimit (coconeOfFiber F diagram fiberwiseCocone cofan) where
+@[simps] def colimitOfFiberOfIsDiscrete :
+    IsColimit (coconeOfFiberOfIsDiscrete F diagram fiberwiseCocone cofan) where
   desc c := Cofan.IsColimit.desc colimitCofan fun d ↦ (fiberwiseColimit d).desc
     (c.whisker (fiberInclusion))
   uniq c s w := by
     refine Cofan.IsColimit.hom_ext colimitCofan _ _ fun d ↦
       (fiberwiseColimit d).hom_ext fun j ↦ ?_
     rw [Cofan.IsColimit.fac, IsColimit.fac, Cocone.whisker_ι, whiskerLeft_app, ← w,
-      coconeOfFiber_ι_app, assoc]
+      coconeOfFiberOfIsDiscrete_ι_app, assoc]
     obtain ⟨j, rfl⟩ := j
     rfl
 
 -- Not an instance because `D` cannot be inferred.
-theorem hasColimit_of_fiber [∀ d, HasColimit (fiberInclusion (p := F) (S := d) ⋙ diagram)]
+theorem hasColimit_of_fiber_of_isDiscrete
+    [∀ d, HasColimit (fiberInclusion (p := F) (S := d) ⋙ diagram)]
     [HasColimit (Discrete.functor fun d ↦
       colimit (fiberInclusion (p := F) (S := d) ⋙ diagram))] :
     HasColimit diagram :=
-  ⟨⟨⟨_, colimitOfFiber F diagram _ _
+  ⟨⟨⟨_, colimitOfFiberOfIsDiscrete F diagram _ _
     (fun d ↦ colimit.isColimit (fiberInclusion (p := F) (S := d) ⋙ diagram))
     (coproductIsCoproduct fun d ↦ colimit (fiberInclusion (p := F) (S := d) ⋙ diagram))⟩⟩⟩
 
 -- Not an instance because `D` cannot be inferred.
-theorem hasColimitOfShapes_of_fiber
+theorem hasColimitOfShapes_of_fiber_of_isDiscrete
     [∀ d, HasColimitsOfShape (F.Fiber d) C] [HasCoproductsOfShape D C] :
     HasColimitsOfShape J C :=
-  ⟨fun diagram ↦ hasColimit_of_fiber F diagram⟩
+  ⟨fun diagram ↦ hasColimit_of_fiber_of_isDiscrete F diagram⟩
 
 end Limits
 
