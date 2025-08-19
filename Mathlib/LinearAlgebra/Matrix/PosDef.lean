@@ -321,7 +321,7 @@ theorem kronecker [DecidableEq m] {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
   rw [hx.1.spectral_theorem, hy.1.spectral_theorem]
   simp_rw [mul_kronecker_mul, star_eq_conjTranspose, ← conjTranspose_kronecker,
    ← star_eq_conjTranspose]
-  have huu (U₁ U₂) : (⟨_, UnitaryGroup.kronecker_mem_unitaryGroup U₁ U₂⟩
+  have huu (U₁ U₂) : (⟨_, kronecker_mem_unitary (Subtype.mem U₁) (Subtype.mem U₂)⟩
     : unitaryGroup (n × m) 𝕜).1 = U₁ ⊗ₖ U₂ := rfl
   rw [← huu hx.1.eigenvectorUnitary hy.1.eigenvectorUnitary,
     UnitaryGroup.posSemidef_conjugate_iff, diagonal_kronecker_diagonal, posSemidef_diagonal_iff]
@@ -635,7 +635,7 @@ theorem kronecker [DecidableEq n] [DecidableEq m] {x : Matrix n n 𝕜} {y : Mat
   rw [hx.1.spectral_theorem, hy.1.spectral_theorem]
   simp_rw [mul_kronecker_mul, star_eq_conjTranspose, ← conjTranspose_kronecker,
    ← star_eq_conjTranspose]
-  have huu (U₁ U₂) : (⟨_, UnitaryGroup.kronecker_mem_unitaryGroup U₁ U₂⟩
+  have huu (U₁ U₂) : (⟨_, kronecker_mem_unitary (Subtype.mem U₁) (Subtype.mem U₂)⟩
     : unitaryGroup (n × m) 𝕜).1 = U₁ ⊗ₖ U₂ := rfl
   rw [← huu hx.1.eigenvectorUnitary hy.1.eigenvectorUnitary,
     UnitaryGroup.posDef_conjugate_iff, diagonal_kronecker_diagonal, posDef_diagonal_iff]
