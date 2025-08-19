@@ -10,7 +10,7 @@
       properties: ['wall-clock', 'task-clock', 'instructions:u', 'branches', 'branch-misses']
     rusage_properties: ['maxrss']
     cmd: |
-      bash -c 'set -eo pipefail; LAKE_OVERRIDE_LEAN=true LEAN=$(readlink -m ./scripts/bench/fake-root/bin/lean) lake build --no-cache -v | ./scripts/bench/accumulate_profile.py | grep -v took'
+      bash -c 'set -eo pipefail; LAKE_OVERRIDE_LEAN=true LEAN=$(readlink -m ./scripts/bench/fake-root/bin/lean) lakeprof record lake build --no-cache -v | ./scripts/bench/accumulate_profile.py | grep -v "packages|took"'
     parse_output: true
     runs: 1
 - attributes:
