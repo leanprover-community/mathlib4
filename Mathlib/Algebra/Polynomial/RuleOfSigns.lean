@@ -522,7 +522,7 @@ theorem roots_countP_pos_le_SignVariations : P.roots.countP (0 < ·) ≤ SignVar
       -- we can take a positive root, η, because the number of roots is positive
       obtain ⟨η, η_root, η_pos⟩ : ∃ x, x ∈ P.roots ∧ (fun x ↦ 0 < x) x := by
         simp only [← Multiset.countP_pos, h, Nat.zero_lt_succ]
-      -- (X - η) divies P(X), so write P(X) = (X - η) * Q(X)
+      -- (X - η) divides P(X), so write P(X) = (X - η) * Q(X)
       obtain ⟨Q, rfl⟩ := dvd_iff_isRoot.mpr (isRoot_of_mem_roots η_root)
       -- Q is nonzero
       have hq_nz : Q ≠ 0 := by
