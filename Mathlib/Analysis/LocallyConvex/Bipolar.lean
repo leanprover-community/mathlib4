@@ -67,20 +67,17 @@ variable [Module 𝕜 E] [Module 𝕜 F]
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 open TopologicalSpace in
-lemma top_eq : induced (fun x y => B x y) Pi.topologicalSpace =
-  ⨅ i, induced (B.flip i) inferInstance := induced_to_pi fun x y ↦ (B x) y
-
-open TopologicalSpace in
 open Topology in
 lemma dualEmbedding_surjective : Function.Surjective (WeakBilin.eval B) := by
   intro f₁
   have c1 : Continuous[⨅ i, induced (B.flip i) inferInstance, inferInstance] f₁ := by
     convert f₁.2
-    rw [← top_eq]
+    rw [WeakBilin.instTopologicalSpace, induced_to_pi]
     rfl
   have test5 :
     ↑f₁ ∈ Submodule.span 𝕜 (Set.range (WeakBilin.eval B).toLinearMap₂) := by
       rw [LinearMap.mem_span_iff_continuous _]
+      simp only [ContinuousLinearMap.coe_coe]
       exact c1
   rw [← Set.image_univ, Finsupp.mem_span_image_iff_linearCombination] at test5
   obtain ⟨l, _, hl2⟩ := test5
