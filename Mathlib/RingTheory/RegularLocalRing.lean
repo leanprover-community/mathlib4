@@ -347,8 +347,67 @@ theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
 
 open RingTheory.Sequence in
 theorem isRegular_of_span_eq_maximalIdeal [IsRegularLocalRing R] (rs : List R)
-    (eq : Ideal.ofList rs = maximalIdeal R) (len : rs.length = ringKrullDim R) :
+    (span : Ideal.ofList rs = maximalIdeal R) (len : rs.length = ringKrullDim R) :
     IsRegular R rs := by
-  sorry
+  refine ⟨⟨fun i hi ↦ ?_⟩, by simpa [span] using Ideal.IsPrime.ne_top'.symm⟩
+  rw [smul_eq_mul, Ideal.mul_top]
+  classical
+  have mem : (rs.toFinset : Set R) ⊆ maximalIdeal R := by
+    intro x hx
+    simp only [List.coe_toFinset, Set.mem_setOf_eq] at hx
+    exact Ideal.span_le.mp (le_of_eq span) hx
+  have sub : (List.take i rs).toFinset ⊆ rs.toFinset :=
+    fun x ↦ by simpa using fun a ↦ List.mem_of_mem_take a
+  have card : rs.toFinset.card = ringKrullDim R := by
+    apply le_antisymm (le_of_le_of_eq (Nat.cast_le.mpr rs.toFinset_card_le) len)
+    simp only [← (isRegularLocalRing_iff R).mp ‹_›, Nat.cast_le, ← span, Ideal.ofList,
+      ← List.coe_toFinset rs]
+    exact le_of_le_of_eq (Submodule.spanFinrank_span_le_ncard_of_finite rs.toFinset.finite_toSet)
+      (Set.ncard_coe_finset rs.toFinset)
+  have reg := ((quotient_isRegularLocalRing_tfae R (List.take i rs).toFinset
+    ((Finset.coe_subset.mpr sub).trans mem)).out 0 2).mp (by
+      use rs.toFinset
+      simpa [sub, card] using span)
+  have : IsDomain (R ⧸ Ideal.ofList (List.take i rs)) := by
+    refine @isDomain_of_isRegularLocalRing _ _ ?_
+    simp only [Ideal.ofList]
+    rw [← List.coe_toFinset (List.take i rs)]
+    exact reg.1
+  apply IsSMulRegular.of_right_eq_zero_of_smul (fun x hx ↦ ?_)
+  have : (Ideal.Quotient.mk (Ideal.ofList (List.take i rs))) rs[i] ≠ 0 := by
+    simp only [ne_eq, Ideal.Quotient.eq_zero_iff_mem]
+    by_contra mem
+    simp only [← (isRegularLocalRing_iff R).mp ‹_›, Nat.cast_inj] at len
+    let rs' := (List.take i rs) ++ (List.drop (i + 1) rs)
+    have span' : Ideal.ofList rs' = maximalIdeal R := by
+      simp only [← span, rs']
+      apply le_antisymm
+      · apply Ideal.span_mono (fun x ↦ ?_)
+        simpa [or_imp] using ⟨fun a ↦ List.mem_of_mem_take a, fun a ↦ List.mem_of_mem_drop a⟩
+      · apply Ideal.span_le.mpr
+        intro x hx
+        have : rs = List.take i rs ++ (rs[i] :: List.drop (i + 1) rs) := by
+          rw [List.cons_getElem_drop_succ, List.take_append_drop]
+        rw [this] at hx
+        simp only [List.mem_append, List.mem_cons] at hx
+        simp only [Ideal.ofList_append, SetLike.mem_coe]
+        rcases hx with l|eq|r
+        · apply Ideal.mem_sup_left
+          apply Ideal.subset_span
+          exact l
+        · apply Ideal.mem_sup_left
+          simpa [eq] using mem
+        · apply Ideal.mem_sup_right
+          apply Ideal.subset_span
+          exact r
+    have : Submodule.spanFinrank (maximalIdeal R) ≤ rs'.length := by
+      rw [← span']
+      apply le_trans (Submodule.spanFinrank_span_le_ncard_of_finite rs'.finite_toSet)
+      apply le_of_eq_of_le _ (List.toFinset_card_le rs')
+      simp [← (Set.ncard_coe_finset rs'.toFinset)]
+    simp only [← len, List.length_append, List.length_take, List.length_drop, rs'] at this
+    absurd this
+    omega
+  exact (mul_eq_zero_iff_left this).mp hx
 
 end
