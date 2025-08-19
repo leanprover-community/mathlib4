@@ -379,7 +379,7 @@ lemma cfcₙ_rpowIntegrand₀₁_eq_cfcₙ_rpowIntegrand₀₁_one {p t : ℝ} (
           congr! 1
           refine cfcₙ_comp_smul (R := ℝ) t⁻¹ (fun x => rpowIntegrand₀₁ p 1 x) a ?_
           exact continuousOn_rpowIntegrand₀₁_Ici hp zero_lt_one |>.mono <|
-            (h_mapsTo.mono_left hspec).image_subset 
+            (h_mapsTo.mono_left hspec).image_subset
 
 variable (A) in
 /-- The integral representation of the function `x ↦ x ^ p` (where `p ∈ (0, 1)`). -/
@@ -391,45 +391,39 @@ lemma exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₀₁ [CompleteSpac
   obtain ⟨μ, hμ⟩ := exists_measure_rpow_eq_integral hp
   refine ⟨μ, fun a (ha : 0 ≤ a) => ?_⟩
   nontriviality A
-    have p_pos : 0 < (p : ℝ) := by exact_mod_cast hp.1
-    let f t := rpowIntegrand₀₁ p t
-    let maxr := sSup (quasispectrum ℝ a)
-    have maxr_nonneg : 0 ≤ maxr :=
-      le_csSup_of_le (b := 0) (IsCompact.bddAbove (by grind)) (by simp) (by simp)
-    let bound (t : ℝ) := ‖f t maxr‖
-    have hf : ContinuousOn (Function.uncurry f) (Ioi (0 : ℝ) ×ˢ quasispectrum ℝ a) := by
-      refine continuousOn_rpowIntegrand₀₁_uncurry hp (quasispectrum ℝ a) ?_
-      grind [Set.subset_def]
-    have hbound : ∀ᵐ t ∂μ.restrict (Ioi 0), ∀ z ∈ quasispectrum ℝ a, ‖f t z‖ ≤ bound t := by
-      filter_upwards [ae_restrict_mem measurableSet_Ioi] with t ht
-      intro z hz
-      have hz' : 0 ≤ z := by grind
-      unfold bound f
-      rw [Real.norm_of_nonneg (rpowIntegrand₀₁_nonneg p_pos (le_of_lt ht) hz'),
-          Real.norm_of_nonneg (rpowIntegrand₀₁_nonneg p_pos (le_of_lt ht) maxr_nonneg)]
-      refine monotoneOn_rpowIntegrand₀₁ hp (le_of_lt ht) hz' maxr_nonneg ?_
-      exact le_csSup (IsCompact.bddAbove (quasispectrum.isCompact _)) hz
-    have hbound_finite_integral : HasFiniteIntegral bound (μ.restrict (Ioi 0)) := by
-      rw [hasFiniteIntegral_norm_iff]
-      exact (hμ maxr maxr_nonneg).1.2
-    have hmapzero : ∀ᵐ (x : ℝ) ∂μ.restrict (Ioi 0), rpowIntegrand₀₁ p x 0 = 0 := by
-      filter_upwards [ae_restrict_mem measurableSet_Ioi]
-      simp
-    refine ⟨?integrable, ?integral⟩
-    case integrable =>
-      exact integrableOn_cfcₙ measurableSet_Ioi _ bound a hf hmapzero hbound hbound_finite_integral
-    case integral =>
-      calc a ^ p = cfcₙ (fun r => ∫ t in Ioi 0, rpowIntegrand₀₁ p t r ∂μ) a := by
-                  have hp' : p ≠ 0 := by grind [= lt_iff_le_and_ne]
-                  rw [nnrpow_def, cfcₙ_nnreal_eq_real]
-                  refine cfcₙ_congr ?_
-                  intro r hr
-                  have hp' : (p : ℝ) ∈ Ioo 0 1 := by exact_mod_cast hp
-                  have hr' : 0 ≤ r := by grind
-                  simp only [sup_of_le_left hr', NNReal.nnrpow_def, NNReal.coe_rpow, coe_toNNReal']
-                  exact (hμ r hr').2
-        _ = _ := cfcₙ_setIntegral measurableSet_Ioi _ bound a hf hmapzero hbound
-                    hbound_finite_integral ha.isSelfAdjoint
+  have p_pos : 0 < (p : ℝ) := by exact_mod_cast hp.1
+  let f t := rpowIntegrand₀₁ p t
+  let maxr := sSup (quasispectrum ℝ a)
+  have maxr_nonneg : 0 ≤ maxr :=
+    le_csSup_of_le (b := 0) (IsCompact.bddAbove (by grind)) (by simp) (by simp)
+  let bound (t : ℝ) := ‖f t maxr‖
+  have hf : ContinuousOn (Function.uncurry f) (Ioi (0 : ℝ) ×ˢ quasispectrum ℝ a) := by
+    refine continuousOn_rpowIntegrand₀₁_uncurry hp (quasispectrum ℝ a) ?_
+    grind [Set.subset_def]
+  have hbound : ∀ᵐ t ∂μ.restrict (Ioi 0), ∀ z ∈ quasispectrum ℝ a, ‖f t z‖ ≤ bound t := by
+    filter_upwards [ae_restrict_mem measurableSet_Ioi] with t ht
+    intro z hz
+    have hz' : 0 ≤ z := by grind
+    unfold bound f
+    rw [Real.norm_of_nonneg (rpowIntegrand₀₁_nonneg p_pos (le_of_lt ht) hz'),
+        Real.norm_of_nonneg (rpowIntegrand₀₁_nonneg p_pos (le_of_lt ht) maxr_nonneg)]
+    refine rpowIntegrand₀₁_monotoneOn hp (le_of_lt ht) hz' maxr_nonneg ?_
+    exact le_csSup (IsCompact.bddAbove (quasispectrum.isCompact _)) hz
+  have hbound_finite_integral : HasFiniteIntegral bound (μ.restrict (Ioi 0)) := by
+    rw [hasFiniteIntegral_norm_iff]
+    exact (hμ maxr maxr_nonneg).1.2
+  have hmapzero : ∀ᵐ (x : ℝ) ∂μ.restrict (Ioi 0), rpowIntegrand₀₁ p x 0 = 0 := by
+    filter_upwards [ae_restrict_mem measurableSet_Ioi]
+    simp
+  refine ⟨?integrable, ?integral⟩
+  case integrable =>
+    exact integrableOn_cfcₙ measurableSet_Ioi _ bound a hf hmapzero hbound hbound_finite_integral
+  case integral => calc
+    a ^ p = cfcₙ (fun r => ∫ t in Ioi 0, rpowIntegrand₀₁ p t r ∂μ) a := by
+      rw [nnrpow_eq_cfcₙ_real _ _]
+      exact cfcₙ_congr fun r _ ↦ (hμ r (by grind)).2
+    _ = _ := cfcₙ_setIntegral measurableSet_Ioi _ bound a hf hmapzero hbound
+                hbound_finite_integral ha.isSelfAdjoint
 
 end NonUnitalCFC
 
