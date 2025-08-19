@@ -128,8 +128,8 @@ lemma BinaryCoproductDisjoint.of_binaryCofan {c : BinaryCofan X Y} (hc : IsColim
     BinaryCoproductDisjoint X Y := by
   have (i : WalkingPair) : Mono (Cofan.inj c i) := by
     cases i
-    exact inferInstanceAs <| Mono c.inl
-    exact inferInstanceAs <| Mono c.inr
+    · exact inferInstanceAs <| Mono c.inl
+    · exact inferInstanceAs <| Mono c.inr
   refine .of_cofan hc (fun {i j} hij ↦ ?_) (fun {i j} hij ↦ ?_) (fun {i j} hij ↦ ?_)
   · match i, j with
     | .left, .right => exact s
