@@ -300,14 +300,14 @@ instance algebraRight [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α]
     map_mul' c d := by
         ext a b
         obtain rfl | h := eq_or_ne a b
-        · simp only [one_apply, Algebra.id.smul_eq_mul, mul_apply, Algebra.mul_smul_comm,
-            boole_smul, constSMul_apply, ← ite_and, map_mul, Algebra.smul_mul_assoc,
-            if_pos rfl, eq_comm, and_self_iff, Icc_self]
+        · simp only [one_apply, Algebra.id.smul_eq_mul, mul_apply,
+            constSMul_apply, map_mul,
+            eq_comm, Icc_self]
           simp
-        · simp only [true_and, ite_self, le_rfl, one_apply, mul_one, Algebra.id.smul_eq_mul,
-            mul_apply, Algebra.mul_smul_comm, MulZeroClass.zero_mul, constSMul_apply,
-            ← ite_and, ite_mul, mul_ite, map_mul, mem_Icc, sum_ite_eq,
-            MulZeroClass.mul_zero, smul_zero, Algebra.smul_mul_assoc, if_pos rfl, if_neg h]
+        · simp only [one_apply, mul_one, Algebra.id.smul_eq_mul,
+            mul_apply, MulZeroClass.zero_mul, constSMul_apply,
+            ← ite_and, ite_mul, mul_ite, map_mul,
+            MulZeroClass.mul_zero, if_neg h]
           refine (sum_eq_zero fun x _ ↦ ?_).symm
           exact if_neg fun hx ↦ h <| hx.2.trans hx.1
     map_zero' := by rw [map_zero, zero_smul]
@@ -526,7 +526,7 @@ lemma mu_toDual (a b : α) : mu 𝕜 (toDual a) (toDual b) = mu 𝕜 b a := by
     simpa [mul_assoc, zeta_mul_mu] using this
   clear a b
   ext a b
-  simp only [mul_boole, one_apply, mul_apply, coe_mk, zeta_apply]
+  simp only [mul_boole, one_apply, mul_apply, zeta_apply]
   calc
     ∑ x ∈ Icc a b, (if x ≤ b then mud a x else 0) = ∑ x ∈ Icc a b, mud a x := by
       congr! with x hx; exact if_pos (mem_Icc.1 hx).2

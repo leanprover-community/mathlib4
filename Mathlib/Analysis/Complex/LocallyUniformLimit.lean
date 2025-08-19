@@ -185,7 +185,7 @@ theorem hasSum_deriv_of_summable_norm {u : ι → ℝ} (hu : Summable u)
   convert (hc.deriv (Eventually.of_forall fun s =>
     DifferentiableOn.fun_sum fun i _ => hf i) hU).tendsto_at hz using 1
   ext1 s
-  exact (deriv_sum fun i _ => (hf i).differentiableAt (hU.mem_nhds hz)).symm
+  exact (deriv_fun_sum fun i _ => (hf i).differentiableAt (hU.mem_nhds hz)).symm
 
 end Tsums
 
@@ -193,7 +193,7 @@ section LogDeriv
 
 /-- The logarithmic derivative of a sequence of functions converging locally uniformly to a
 function is the logarithmic derivative of the limit function. -/
-theorem logDeriv_tendsto {ι : Type*} {p : Filter ι} (f : ι → ℂ → ℂ) (g : ℂ → ℂ)
+theorem logDeriv_tendsto {ι : Type*} {p : Filter ι} {f : ι → ℂ → ℂ} {g : ℂ → ℂ}
     {s : Set ℂ} (hs : IsOpen s) (x : s) (hF : TendstoLocallyUniformlyOn f g p s)
     (hf : ∀ᶠ n : ι in p, DifferentiableOn ℂ (f n) s) (hg : g x ≠ 0) :
     Tendsto (fun n : ι => logDeriv (f n) x) p (𝓝 ((logDeriv g) x)) := by

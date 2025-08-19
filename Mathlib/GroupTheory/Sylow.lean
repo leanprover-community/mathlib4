@@ -385,23 +385,14 @@ theorem card_eq_card_quotient_normalizer [Fact p.Prime] [Finite (Sylow p G)]
     (P : Sylow p G) : Nat.card (Sylow p G) = Nat.card (G ⧸ P.normalizer) :=
   Nat.card_congr P.equivQuotientNormalizer
 
-@[deprecated (since := "2024-11-07")]
-alias _root_.card_sylow_eq_card_quotient_normalizer := card_eq_card_quotient_normalizer
-
 theorem card_eq_index_normalizer [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) :
     Nat.card (Sylow p G) = P.normalizer.index :=
   P.card_eq_card_quotient_normalizer
-
-@[deprecated (since := "2024-11-07")]
-alias _root_.card_sylow_eq_index_normalizer := card_eq_index_normalizer
 
 theorem card_dvd_index [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) :
     Nat.card (Sylow p G) ∣ P.index :=
   ((congr_arg _ P.card_eq_index_normalizer).mp dvd_rfl).trans
     (index_dvd_of_le le_normalizer)
-
-@[deprecated (since := "2024-11-07")]
-alias _root_.card_sylow_dvd_index := card_dvd_index
 
 /-- Auxiliary lemma for `Sylow.not_dvd_index` which is strictly stronger. -/
 private theorem not_dvd_index_aux [hp : Fact p.Prime] (P : Sylow p G) [P.Normal]
@@ -431,16 +422,10 @@ theorem not_dvd_index' [hp : Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
   replace hP := not_dvd_index_aux (P.subtype le_normalizer)
   exact hp.1.not_dvd_mul hP (not_dvd_card_sylow p G)
 
-@[deprecated (since := "2024-11-03")]
-alias _root_.not_dvd_index_sylow := not_dvd_index'
-
 /-- A Sylow p-subgroup has index indivisible by `p`. -/
 theorem not_dvd_index [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) [P.FiniteIndex] :
     ¬ p ∣ P.index :=
   P.not_dvd_index' Nat.card_pos.ne'
-
-@[deprecated (since := "2024-11-03")]
-alias _root_.not_dvd_index_sylow' := not_dvd_index
 
 section mapSurjective
 
@@ -621,7 +606,7 @@ theorem exists_subgroup_card_pow_succ [Finite G] {p : ℕ} {n : ℕ} [hp : Fact 
     exact Nat.card_congr
       (preimageMkEquivSubgroupProdSet (H.subgroupOf H.normalizer) (zpowers x)), by
     intro y hy
-    simp only [exists_prop, Subgroup.coe_subtype, mk'_apply, Subgroup.mem_map, Subgroup.mem_comap]
+    simp only [Subgroup.coe_subtype, mk'_apply, Subgroup.mem_map, Subgroup.mem_comap]
     refine ⟨⟨y, le_normalizer hy⟩, ⟨0, ?_⟩, rfl⟩
     dsimp only
     rw [zpow_zero, eq_comm, QuotientGroup.eq_one_iff]
@@ -727,20 +712,20 @@ noncomputable def unique_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)]
   rw [smul_eq_of_normal] at h1 h2
   rw [← h1, ← h2]
 
-section Pointwise
+instance characteristic_of_subsingleton {p : ℕ} [Subsingleton (Sylow p G)] (P : Sylow p G) :
+    P.Characteristic := by
+  refine Subgroup.characteristic_iff_map_eq.mpr fun ϕ ↦ ?_
+  have h := Subgroup.pointwise_smul_def (a := ϕ) (P : Subgroup G)
+  rwa [← pointwise_smul_def, Subsingleton.elim (ϕ • P) P, eq_comm] at h
 
-open Pointwise
+theorem normal_of_subsingleton {p : ℕ} [Subsingleton (Sylow p G)] (P : Sylow p G) :
+    P.Normal :=
+  Subgroup.normal_of_characteristic _
 
 theorem characteristic_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     (h : P.Normal) : P.Characteristic := by
-  haveI := unique_of_normal P h
-  rw [characteristic_iff_map_eq]
-  intro Φ
-  show (Φ • P).toSubgroup = P.toSubgroup
-  congr
-  simp [eq_iff_true_of_subsingleton]
-
-end Pointwise
+  have _ := unique_of_normal P h
+  exact characteristic_of_subsingleton _
 
 theorem normal_of_normalizer_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     (hn : P.normalizer.Normal) : P.Normal := by

@@ -82,7 +82,7 @@ variable {F : ℕᵒᵖ ⥤ Type u} {c : Cone F}
 private noncomputable def limitOfSurjectionsSurjective.preimage
     (a : F.obj ⟨0⟩) : (n : ℕ) → F.obj ⟨n⟩
     | 0 => a
-    | n+1 => (hF n (preimage a n)).choose
+    | n + 1 => (hF n (preimage a n)).choose
 
 include hF in
 open limitOfSurjectionsSurjective in

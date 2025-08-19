@@ -132,12 +132,7 @@ lemma shiftFunctorAdd_inv_app_f (K : CochainComplex C ℤ) (a b n : ℤ) :
 lemma shiftFunctorAdd_hom_app_f (K : CochainComplex C ℤ) (a b n : ℤ) :
     ((shiftFunctorAdd (CochainComplex C ℤ) a b).hom.app K).f n =
       (K.XIsoOfEq (by dsimp; rw [add_comm a, add_assoc])).hom := by
-  have : IsIso (((shiftFunctorAdd (CochainComplex C ℤ) a b).inv.app K).f n) := by
-    rw [shiftFunctorAdd_inv_app_f]
-    infer_instance
-  rw [← cancel_mono (((shiftFunctorAdd (CochainComplex C ℤ) a b).inv.app K).f n),
-    ← comp_f, Iso.hom_inv_id_app, id_f, shiftFunctorAdd_inv_app_f]
-  simp only [XIsoOfEq, eqToIso.hom, eqToHom_trans, eqToHom_refl]
+  tauto
 
 lemma shiftFunctorAdd'_inv_app_f' (K : CochainComplex C ℤ) (a b ab : ℤ) (h : a + b = ab) (n : ℤ) :
     ((CategoryTheory.shiftFunctorAdd' (CochainComplex C ℤ) a b ab h).inv.app K).f n =
@@ -158,12 +153,7 @@ lemma shiftFunctorZero_inv_app_f (K : CochainComplex C ℤ) (n : ℤ) :
 lemma shiftFunctorZero_hom_app_f (K : CochainComplex C ℤ) (n : ℤ) :
     ((CategoryTheory.shiftFunctorZero (CochainComplex C ℤ) ℤ).hom.app K).f n =
       (K.XIsoOfEq (by dsimp; rw [add_zero])).hom := by
-  have : IsIso (((shiftFunctorZero (CochainComplex C ℤ) ℤ).inv.app K).f n) := by
-    rw [shiftFunctorZero_inv_app_f]
-    infer_instance
-  rw [← cancel_mono (((shiftFunctorZero (CochainComplex C ℤ) ℤ).inv.app K).f n), ← comp_f,
-    Iso.hom_inv_id_app, id_f, shiftFunctorZero_inv_app_f]
-  simp only [XIsoOfEq, eqToIso.hom, eqToHom_trans, eqToHom_refl]
+  tauto
 
 lemma XIsoOfEq_shift (K : CochainComplex C ℤ) (n : ℤ) {p q : ℤ} (hpq : p = q) :
     (K⟦n⟧).XIsoOfEq hpq = K.XIsoOfEq (show p + n = q + n by rw [hpq]) := rfl
@@ -239,9 +229,8 @@ instance commShiftMapCochainComplex :
     ext
     rw [CommShift.isoZero_hom_app]
     dsimp
-    simp only [mapCochainComplexShiftIso_hom_app_f, CochainComplex.shiftFunctorZero_inv_app_f,
-       CochainComplex.shiftFunctorZero_hom_app_f, HomologicalComplex.XIsoOfEq, eqToIso,
-       eqToHom_map, eqToHom_trans, eqToHom_refl]
+    simp only [CochainComplex.shiftFunctorZero_inv_app_f, CochainComplex.shiftFunctorZero_hom_app_f,
+       HomologicalComplex.XIsoOfEq, eqToIso, eqToHom_map, eqToHom_trans, eqToHom_refl]
   add := fun a b => by
     ext
     rw [CommShift.isoAdd_hom_app]

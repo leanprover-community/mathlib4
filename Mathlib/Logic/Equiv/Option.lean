@@ -65,7 +65,7 @@ section RemoveNone
 variable (e : Option α ≃ Option β)
 
 /-- If we have a value on one side of an `Equiv` of `Option`
-    we also have a value on the other side of the equivalence
+we also have a value on the other side of the equivalence
 -/
 def removeNone_aux (x : α) : β :=
   if h : (e (some x)).isSome then Option.get _ h
@@ -130,11 +130,11 @@ theorem some_removeNone_iff {x : α} : some (removeNone e x) = e none ↔ e.symm
     have h1 := congr_arg e.symm h
     rw [symm_apply_apply] at h1
     simp only [apply_eq_iff_eq, reduceCtorEq]
-    simp [h1, apply_eq_iff_eq]
+    simp [h1]
 
 @[simp]
 theorem removeNone_optionCongr (e : α ≃ β) : removeNone e.optionCongr = e :=
-  Equiv.ext fun x => Option.some_injective _ <| removeNone_some _ ⟨e x, by simp [EquivFunctor.map]⟩
+  Equiv.ext fun x => Option.some_injective _ <| removeNone_some _ ⟨e x, by simp⟩
 
 end RemoveNone
 

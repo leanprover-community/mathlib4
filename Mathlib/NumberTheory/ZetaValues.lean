@@ -67,7 +67,7 @@ theorem hasDerivAt_bernoulliFun (k : ℕ) (x : ℝ) :
 theorem antideriv_bernoulliFun (k : ℕ) (x : ℝ) :
     HasDerivAt (fun x => bernoulliFun (k + 1) x / (k + 1)) (bernoulliFun k x) x := by
   convert (hasDerivAt_bernoulliFun (k + 1) x).div_const _ using 1
-  field_simp [Nat.cast_add_one_ne_zero k]
+  simp [Nat.cast_add_one_ne_zero k]
 
 theorem integral_bernoulliFun_eq_zero {k : ℕ} (hk : k ≠ 0) :
     ∫ x : ℝ in (0)..1, bernoulliFun k x = 0 := by
@@ -103,7 +103,7 @@ theorem bernoulliFourierCoeff_recurrence (k : ℕ) {n : ℤ} (hn : n ≠ 0) :
   rw [QuotientAddGroup.mk_zero, fourier_eval_zero, one_mul, ← ofReal_sub, bernoulliFun_eval_one,
     add_sub_cancel_left]
   congr 2
-  · split_ifs <;> simp only [ofReal_one, ofReal_zero, one_mul]
+  · split_ifs <;> simp only [ofReal_one, ofReal_zero]
   · simp_rw [ofReal_mul, ofReal_natCast, fourierCoeffOn.const_mul]
 
 /-- The Fourier coefficients of `B₀(x) = 1`. -/
@@ -123,8 +123,8 @@ theorem bernoulliFourierCoeff_eq {k : ℕ} (hk : k ≠ 0) (n : ℤ) :
       div_zero]
   refine Nat.le_induction ?_ (fun k hk h'k => ?_) k (Nat.one_le_iff_ne_zero.mpr hk)
   · rw [bernoulliFourierCoeff_recurrence 1 hn]
-    simp only [Nat.cast_one, tsub_self, neg_mul, one_mul, eq_self_iff_true, if_true,
-      Nat.factorial_one, pow_one, inv_I, mul_neg]
+    simp only [Nat.cast_one, tsub_self, neg_mul, one_mul, if_true,
+      Nat.factorial_one, pow_one]
     rw [bernoulli_zero_fourier_coeff hn, sub_zero, mul_one, div_neg, neg_div]
   · rw [bernoulliFourierCoeff_recurrence (k + 1) hn, Nat.add_sub_cancel k 1]
     split_ifs with h
@@ -359,7 +359,7 @@ theorem hasSum_L_function_mod_four_eval_three :
     left
     congr 1
     ring
-  · have : (1 / 4 : ℝ) = (algebraMap ℚ ℝ) (1 / 4 : ℚ) := by norm_num
+  · have : (1 / 4 : ℝ) = (algebraMap ℚ ℝ) (1 / 4 : ℚ) := by simp
     rw [this, mul_pow, Polynomial.eval_map, Polynomial.eval₂_at_apply, (by decide : 2 * 1 + 1 = 3),
       Polynomial.bernoulli_three_eval_one_quarter]
     norm_num [Nat.factorial]; field_simp; ring

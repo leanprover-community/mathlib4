@@ -3,7 +3,7 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Order.Atoms
 import Mathlib.LinearAlgebra.Span.Defs
 import Mathlib.LinearAlgebra.AffineSpace.Defs
 
@@ -706,6 +706,13 @@ theorem eq_bot_or_nonempty (Q : AffineSubspace k P) : Q = ⊥ ∨ (Q : Set P).No
   rw [nonempty_iff_ne_bot]
   apply eq_or_ne
 
+instance [Subsingleton P] : IsSimpleOrder (AffineSubspace k P) where
+  eq_bot_or_eq_top (s : AffineSubspace k P) := by
+    rw [← coe_eq_bot_iff, ← coe_eq_univ_iff]
+    rcases (s : Set P).eq_empty_or_nonempty with h | h
+    · exact .inl h
+    · exact .inr h.eq_univ
+
 /-- A nonempty affine subspace is `⊤` if and only if its direction is `⊤`. -/
 @[simp]
 theorem direction_eq_top_iff_of_nonempty {s : AffineSubspace k P} (h : (s : Set P).Nonempty) :
@@ -857,6 +864,11 @@ theorem affineSpan_eq_bot : affineSpan k s = ⊥ ↔ s = ∅ := by
 theorem bot_lt_affineSpan : ⊥ < affineSpan k s ↔ s.Nonempty := by
   rw [bot_lt_iff_ne_bot, nonempty_iff_ne_empty]
   exact (affineSpan_eq_bot _).not
+
+@[simp]
+lemma affineSpan_eq_top_iff_nonempty_of_subsingleton [Subsingleton P] :
+    affineSpan k s = ⊤ ↔ s.Nonempty := by
+  rw [← bot_lt_affineSpan k, IsSimpleOrder.bot_lt_iff_eq_top]
 
 end
 

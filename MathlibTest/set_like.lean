@@ -29,6 +29,11 @@ example [Ring R] (S : Set R) (hx : x ∈ S) (hy : y ∈ S) (hz : z ∈ S) (n m :
     n • x ^ 3 - y + z ^ m ∈ Subring.closure S := by
   aesop
 
+example [CommRing R] [Ring A] [Algebra R A]
+    (r : R) (a b c : A) (n : ℕ) :
+    -b + (algebraMap R A r) + a ^ n * c ∈ Algebra.adjoin R {a, b, c} := by
+  aesop
+
 example [CommRing R] [Ring A] [Algebra R A] [StarRing R] [StarRing A] [StarModule R A]
     (r : R) (a b c : A) (n : ℕ) :
     -b + star (algebraMap R A r) + a ^ n * c ∈ StarAlgebra.adjoin R {a, b, c} := by

@@ -21,7 +21,7 @@ The proof is loosely based on the strategy given in [D. Marcus, *Number Fields*]
 
 1. since `NormLeOne K` is norm-stable, in the sense that
   `normLeOne K = normAtAllPlaces⁻¹' (normAtAllPlaces '' (normLeOne K))`,
-  see `normLeOne_eq_primeage_image`, it's enough to study the subset
+  see `normLeOne_eq_preimage_image`, it's enough to study the subset
   `normAtAllPlaces '' (normLeOne K)` of `realSpace K`.
 
 2. A description of `normAtAllPlaces '' (normLeOne K)` is given by `normAtAllPlaces_normLeOne`, it
@@ -122,8 +122,8 @@ identify `realSpace K` with its image in `mixedSpace K`).
 
 variable (K : Type*) [Field K]
 
-open Finset NumberField NumberField.InfinitePlace NumberField.mixedEmbedding NumberField.Units
-  NumberField.Units.dirichletUnitTheorem
+open Finset Module NumberField NumberField.InfinitePlace NumberField.mixedEmbedding
+  NumberField.Units dirichletUnitTheorem
 
 namespace NumberField.mixedEmbedding.fundamentalCone
 
@@ -168,19 +168,22 @@ theorem measurableSet_normLeOne :
   (measurableSet_fundamentalCone K).inter <|
     measurableSet_le (mixedEmbedding.continuous_norm K).measurable measurable_const
 
-theorem normLeOne_eq_primeage_image :
-    normLeOne K = normAtAllPlaces⁻¹' (normAtAllPlaces '' (normLeOne K)) := by
+theorem normLeOne_eq_preimage_image :
+    normLeOne K = normAtAllPlaces ⁻¹' (normAtAllPlaces '' (normLeOne K)) := by
   refine subset_antisymm (Set.subset_preimage_image _ _) ?_
   rintro x ⟨y, hy₁, hy₂⟩
   rw [mem_normLeOne, ← normAtAllPlaces_mem_fundamentalCone_iff, ← norm_normAtAllPlaces,
     ← mem_normLeOne] at hy₁ ⊢
   rwa [← hy₂]
 
+@[deprecated (since := "2025-07-27")]
+alias normLeOne_eq_primeage_image := normLeOne_eq_preimage_image
+
 open scoped Classical in
 theorem normAtAllPlaces_normLeOne :
     normAtAllPlaces '' (normLeOne K) =
-    mixedSpaceOfRealSpace⁻¹'
-      (logMap⁻¹'
+    mixedSpaceOfRealSpace ⁻¹'
+      (logMap ⁻¹'
           ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ (unitLattice K))) ∩
       {x | (∀ w, 0 ≤ x w)} ∩
       {x | mixedEmbedding.norm (mixedSpaceOfRealSpace x) ≠ 0} ∩
@@ -257,7 +260,7 @@ theorem injective_expMap :
 
 theorem continuous_expMap :
     Continuous (expMap : realSpace K → realSpace K) :=
-  continuous_iff_continuousOn_univ.mpr <| (expMap_source K) ▸ expMap.continuousOn
+  continuousOn_univ.mp <| (expMap_source K) ▸ expMap.continuousOn
 
 variable {K}
 
@@ -307,7 +310,7 @@ abbrev fderiv_expMap (x : realSpace K) : realSpace K →L[ℝ] realSpace K :=
   .pi fun w ↦ (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (deriv_expMap_single w (x w))).comp
     (.proj w)
 
-theorem hasFDerivAt_expMap (x : realSpace K): HasFDerivAt expMap (fderiv_expMap x) x := by
+theorem hasFDerivAt_expMap (x : realSpace K) : HasFDerivAt expMap (fderiv_expMap x) x := by
   simpa [expMap, fderiv_expMap, hasFDerivAt_pi', PartialHomeomorph.pi_apply,
     ContinuousLinearMap.proj_pi] using
     fun w ↦ (hasDerivAt_expMap_single w _).hasFDerivAt.comp x (hasFDerivAt_apply w x)
@@ -675,11 +678,11 @@ theorem normAtAllPlaces_normLeOne_eq_image :
       exact (hx fun w ↦ expMapBasis_pos a w).elim
 
 theorem normLeOne_eq_preimage :
-    normLeOne K = normAtAllPlaces⁻¹' (expMapBasis '' (paramSet K)) := by
-  rw [normLeOne_eq_primeage_image, normAtAllPlaces_normLeOne_eq_image]
+    normLeOne K = normAtAllPlaces ⁻¹' (expMapBasis '' (paramSet K)) := by
+  rw [normLeOne_eq_preimage_image, normAtAllPlaces_normLeOne_eq_image]
 
 theorem subset_interior_normLeOne :
-    normAtAllPlaces⁻¹' (expMapBasis '' interior (paramSet K)) ⊆ interior (normLeOne K) := by
+    normAtAllPlaces ⁻¹' (expMapBasis '' interior (paramSet K)) ⊆ interior (normLeOne K) := by
   rw [normLeOne_eq_preimage]
   refine subset_trans (Set.preimage_mono ?_) <|
     preimage_interior_subset_interior_preimage (continuous_normAtAllPlaces K)
@@ -689,8 +692,7 @@ theorem subset_interior_normLeOne :
 
 open ENNReal MeasureTheory
 
-theorem closure_paramSet_ae_interior :
-  closure (paramSet K) =ᵐ[volume] interior (paramSet K) := by
+theorem closure_paramSet_ae_interior : closure (paramSet K) =ᵐ[volume] interior (paramSet K) := by
   rw [closure_paramSet, interior_paramSet, volume_pi]
   refine Measure.ae_eq_set_pi fun w _ ↦ ?_
   split_ifs
@@ -796,7 +798,7 @@ theorem expMapBasis_closure_subset_compactSet :
   exact Set.subset_union_left
 
 theorem closure_normLeOne_subset :
-    closure (normLeOne K) ⊆ normAtAllPlaces⁻¹' (compactSet K) := by
+    closure (normLeOne K) ⊆ normAtAllPlaces ⁻¹' (compactSet K) := by
   rw [normLeOne_eq_preimage]
   refine ((continuous_normAtAllPlaces K).closure_preimage_subset _).trans (Set.preimage_mono ?_)
   refine (isCompact_compactSet K).isClosed.closure_subset_iff.mpr ?_
@@ -834,7 +836,7 @@ theorem isBounded_normLeOne :
 open scoped Classical in
 theorem volume_normLeOne : volume (normLeOne K) =
     2 ^ nrRealPlaces K * NNReal.pi ^ nrComplexPlaces K * .ofReal (regulator K) := by
-  rw [volume_eq_two_pow_mul_two_pi_pow_mul_integral (normLeOne_eq_primeage_image K).symm
+  rw [volume_eq_two_pow_mul_two_pi_pow_mul_integral (normLeOne_eq_preimage_image K).symm
     (measurableSet_normLeOne K), normLeOne_eq_preimage,
     normAtAllPlaces_image_preimage_expMapBasis,
     setLIntegral_expMapBasis_image (measurableSet_paramSet K) (by fun_prop)]
@@ -852,7 +854,7 @@ theorem volume_interior_eq_volume_closure :
     volume (interior (normLeOne K)) = volume (closure (normLeOne K)) := by
   have h₁ : MeasurableSet (normAtAllPlaces ⁻¹' compactSet K) :=
     (isCompact_compactSet K).measurableSet.preimage (continuous_normAtAllPlaces K).measurable
-  have h₂ :  MeasurableSet (normAtAllPlaces ⁻¹' (expMapBasis '' interior (paramSet K))) := by
+  have h₂ : MeasurableSet (normAtAllPlaces ⁻¹' (expMapBasis '' interior (paramSet K))) := by
     refine MeasurableSet.preimage ?_ (continuous_normAtAllPlaces K).measurable
     refine MeasurableSet.image_of_continuousOn_injOn ?_ (continuous_expMapBasis K).continuousOn
       (injective_expMapBasis K).injOn

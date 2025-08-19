@@ -3,6 +3,7 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.LinearAlgebra.AffineSpace.Centroid
 import Mathlib.LinearAlgebra.AffineSpace.Independent
 import Mathlib.LinearAlgebra.AffineSpace.Pointwise
 import Mathlib.LinearAlgebra.Basis.SMul
@@ -39,7 +40,7 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 
 -/
 
-open Affine Set
+open Affine Module Set
 open scoped Pointwise
 
 universe u₁ u₂ u₃ u₄
@@ -47,6 +48,9 @@ universe u₁ u₂ u₃ u₄
 /-- An affine basis is a family of affine-independent points whose span is the top subspace. -/
 structure AffineBasis (ι : Type u₁) (k : Type u₂) {V : Type u₃} (P : Type u₄) [AddCommGroup V]
   [AffineSpace V P] [Ring k] [Module k V] where
+  /-- The underlying family of points.
+
+  Do NOT use directly. Use the coercion instead. -/
   protected toFun : ι → P
   protected ind' : AffineIndependent k toFun
   protected tot' : affineSpan k (range toFun) = ⊤
@@ -147,7 +151,7 @@ theorem coord_reindex (i : ι') : (b.reindex e).coord i = b.coord (e.symm i) := 
 
 @[simp]
 theorem coord_apply_eq (i : ι) : b.coord i (b i) = 1 := by
-  simp only [coord, Basis.coe_sumCoords, LinearEquiv.map_zero, LinearEquiv.coe_coe, sub_zero,
+  simp only [coord, Basis.coe_sumCoords, LinearEquiv.map_zero, sub_zero,
     AffineMap.coe_mk, Finsupp.sum_zero_index, vsub_self]
 
 @[simp]

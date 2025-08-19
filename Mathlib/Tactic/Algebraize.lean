@@ -58,7 +58,7 @@ def RingHom.Finite (f : A →+* B) : Prop :=
   letI : Algebra A B := f.toAlgebra
   Module.Finite A B
 ```
-An example with a constructor as parameter (as the two properties are not definitonally the same):
+An example with a constructor as parameter (as the two properties are not definitionally the same):
 ```
 @[algebraize Algebra.Flat.out]
 class RingHom.Flat {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+* S) : Prop where
@@ -170,15 +170,20 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
   let ctx ← getLCtx
   ctx.forM fun decl => do
     if decl.isImplementationDetail then return
-    let (nm, args) := decl.type.getAppFnArgs
+    let (nm, args) := (← instantiateMVars decl.type).getAppFnArgs
     -- Check if the type of the current hypothesis has been tagged with the `algebraize` attribute
     match Attr.algebraizeAttr.getParam? (← getEnv) nm with
     -- If it has, `p` will either be the name of the corresponding `Algebra` property, or a
     -- lemma/constructor.
     | some p =>
-      let cinfo ← try getConstInfo p catch _ => return
+      let cinfo ← try getConstInfo p catch _ =>
+        logWarning m!"Hypothesis {decl.toExpr} has type{indentD decl.type}.\n\
+          Its head symbol {.ofConstName nm} is (effectively) tagged with `@[algebraize {p}]`, \
+          but no constant{indentD p}\nhas been found.\n\
+          Check for missing imports, missing namespaces or typos."
+        return
       let p' ← mkConstWithFreshMVarLevels p
-      let (pargs,_,_) ← forallMetaTelescope (← inferType p')
+      let (pargs, _, _) ← forallMetaTelescope (← inferType p')
       let tp' := mkAppN p' pargs
 
       let getValType : MetaM (Option (Expr × Expr)) := do
@@ -201,11 +206,13 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
           let tp ← inferType val -- This should be the type `Algebra.Property A B`.
           return (val, tp)
       let .some (val,tp) ← getValType | return
-      /- Find all arguments to `Algebra.Property A B` which are of the form
-        `RingHom.toAlgebra x` or `Algebra.toModule (RingHom.toAlgebra x)`. -/
+      /- Find all arguments to `Algebra.Property A B` or `Module.Property A B` which are
+        of the form `RingHom.toAlgebra f`, `RingHom.toModule f`
+        or `Algebra.toModule (RingHom.toAlgebra f)`. -/
       let ringHom_args ← tp.getAppArgs.filterMapM <| fun x => liftMetaM do
         let y := (← whnfUntil x ``Algebra.toModule) >>= (·.getAppArgs.back?)
-        return (← whnfUntil (y.getD x) ``RingHom.toAlgebra) >>= (·.getAppArgs.back?)
+        return ((← whnfUntil (y.getD x) ``RingHom.toAlgebra) <|> (← whnfUntil x ``RingHom.toModule))
+          >>= (·.getAppArgs.back?)
       /- Check that we're not reproving a local hypothesis, and that all involved `RingHom`s are
         indeed arguments to the tactic. -/
       unless (← synthInstance? tp).isSome || !(← ringHom_args.allM (fun z => t.anyM
