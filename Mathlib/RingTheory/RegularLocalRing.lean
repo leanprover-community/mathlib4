@@ -7,7 +7,7 @@ import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 import Mathlib.RingTheory.Regular.RegularSequence
-
+import Mathlib.RingTheory.KrullDimension.Field
 /-!
 # Define Regular Local Ring
 -/
@@ -276,8 +276,74 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
       exact Submodule.spanFinrank_span_le_ncard_of_finite (Set.toFinite (S ∪ U))
   tfae_finish
 
+lemma quotient_span_singleton [IsRegularLocalRing R] {x : R} (mem : x ∈ maximalIdeal R)
+    (nmem : x ∉ (maximalIdeal R) ^ 2) : IsRegularLocalRing (R ⧸ Ideal.span {x}) ∧
+    (ringKrullDim (R ⧸ Ideal.span {x}) + 1 = ringKrullDim R) := by
+  have : ({x} : Finset R).toSet = {x} := by exact Finset.coe_singleton x
+  rw [← Nat.cast_one, ← Finset.card_singleton x, ← Finset.coe_singleton x]
+  apply ((quotient_isRegularLocalRing_tfae R {x} (by simpa)).out 1 2).mp
+  simpa [← LinearMap.mem_ker, Ideal.mem_toCotangent_ker] using nmem
+
+lemma exist_nat_eq [FiniteRingKrullDim R] : ∃ n : ℕ, ringKrullDim R = n := by
+  have : (ringKrullDim R).unbot ringKrullDim_ne_bot ≠ ⊤ := by
+    by_contra eq
+    rw [← WithBot.coe_inj, WithBot.coe_unbot, WithBot.coe_top] at eq
+    exact ringKrullDim_ne_top eq
+  use ((ringKrullDim R).unbot ringKrullDim_ne_bot).toNat
+  exact (WithBot.coe_unbot (ringKrullDim R) ringKrullDim_ne_bot).symm.trans
+    (WithBot.coe_inj.mpr (ENat.coe_toNat this).symm)
+
+open Pointwise in
 theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
-  sorry
+  obtain ⟨n, hn⟩ := exist_nat_eq R
+  induction' n with n ih generalizing R
+  · simp only [← (isRegularLocalRing_iff R).mp ‹_›, CharP.cast_eq_zero, Nat.cast_eq_zero] at hn
+    have : maximalIdeal R = ⊥ := by
+      rw [← Submodule.spanRank_eq_zero_iff_eq_bot, Submodule.fg_iff_spanRank_eq_spanFinrank.mpr
+        ((isNoetherianRing_iff_ideal_fg R).mp inferInstance _), hn, Nat.cast_zero]
+    exact (isField_iff_maximalIdeal_eq.mpr this).isDomain
+  · obtain ⟨x, xmem, xnmem⟩ : ∃ x ∈ maximalIdeal R,
+      x ∉ ⋃ I ∈ {(maximalIdeal R) ^ 2} ∪ minimalPrimes R, I := by
+      by_contra! h
+      have fin : ({(maximalIdeal R) ^ 2} ∪ minimalPrimes R).Finite :=
+        Set.Finite.union (Set.finite_singleton _) (minimalPrimes.finite_of_isNoetherianRing R)
+      rcases (Ideal.subset_union_prime_finite fin ((maximalIdeal R) ^ 2) ((maximalIdeal R) ^ 2)
+        (fun I hI ne _ ↦ Ideal.minimalPrimes_isPrime (by simpa [ne] using hI))).mp h with
+        ⟨I, hI, sub⟩
+      simp only [Set.singleton_union, Set.mem_insert_iff] at hI
+      rcases hI with eq|min
+      · have : IsField R := by
+          simp only [← subsingleton_cotangentSpace_iff, Ideal.cotangent_subsingleton_iff,
+            IsIdempotentElem]
+          exact le_antisymm Ideal.mul_le_right (le_of_le_of_eq sub (eq.trans (pow_two _)))
+        rw [ringKrullDim_eq_zero_of_isField this, ← Nat.cast_zero, Nat.cast_inj] at hn
+        exact Nat.zero_ne_add_one n hn
+      · let _ : I.IsPrime := Ideal.minimalPrimes_isPrime min
+        rw [← Ideal.primeHeight_eq_ringKrullDim_iff.mpr (le_antisymm (le_maximalIdeal_of_isPrime I)
+          sub), Ideal.primeHeight_eq_zero_iff.mpr min, ← Nat.cast_zero] at hn
+        exact Nat.zero_ne_add_one n (Nat.cast_inj.mp hn)
+    simp only [Set.singleton_union, Set.mem_insert_iff, Set.iUnion_iUnion_eq_or_left, Set.mem_union,
+      SetLike.mem_coe, Set.mem_iUnion, exists_prop, not_or, not_exists, not_and] at xnmem
+    obtain ⟨reg, dim⟩ := quotient_span_singleton R xmem xnmem.1
+    simp only [hn, Nat.cast_add, Nat.cast_one] at dim
+    have ih' := ih (R ⧸ Ideal.span {x}) ((withBotENat_add_coe_cancel _ _ 1).mp dim)
+    have : (Ideal.span {x}).IsPrime := (Ideal.Quotient.isDomain_iff_prime _).mp ih'
+    obtain ⟨p, min, hp⟩ := Ideal.exists_minimalPrimes_le (bot_le (a := Ideal.span {x}))
+    let _ : p.IsPrime := Ideal.minimalPrimes_isPrime min
+    have eq_smul : p = Ideal.span {x} • p := by
+      ext y
+      simp only [smul_eq_mul, Ideal.mem_span_singleton_mul]
+      refine ⟨fun h ↦ ?_, fun ⟨z, hz, eq⟩ ↦ by simpa [← eq] using Ideal.mul_mem_left p x hz⟩
+      rcases Ideal.mem_span_singleton'.mp (hp h) with ⟨z, hz⟩
+      use z
+      simp only [← hz, mul_comm, and_true]
+      have : z ∈ p ∨ x ∈ p := (Ideal.IsPrime.mem_or_mem ‹_›  (by simpa [hz]))
+      simpa [xnmem.2 p min] using this
+    have pfg : p.FG := (isNoetherianRing_iff_ideal_fg R).mp inferInstance _
+    have := Submodule.eq_bot_of_eq_ideal_smul_of_le_jacobson_annihilator pfg eq_smul
+        (le_trans ((Ideal.span_singleton_le_iff_mem _).mpr xmem) (maximalIdeal_le_jacobson _))
+    have : (⊥ : Ideal R).IsPrime := by simpa [← this]
+    exact IsDomain.of_bot_isPrime R
 
 open RingTheory.Sequence in
 theorem isRegular_of_span_eq_maximalIdeal [IsRegularLocalRing R] (rs : List R)
