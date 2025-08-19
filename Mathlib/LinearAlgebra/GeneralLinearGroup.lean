@@ -95,7 +95,16 @@ def congrLinearEquiv (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) :
     (congrLinearEquiv e₁₂).symm = congrLinearEquiv e₁₂.symm :=
   rfl
 
-lemma congrLinearEquiv_trans (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ₂₃] M₃) :
+@[simp]
+lemma congrLinearEquiv_trans
+    {N₁ N₂ N₃ : Type*} [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
+    [Module R N₁] [Module R N₂] [Module R N₃] (e₁₂ : N₁ ≃ₗ[R] N₂) (e₂₃ : N₂ ≃ₗ[R] N₃) :
+    (congrLinearEquiv e₁₂).trans (congrLinearEquiv e₂₃) = congrLinearEquiv (e₁₂.trans e₂₃) :=
+  rfl
+
+/-- Stronger form of `congrLinearEquiv.trans` applying to semilinear maps. Not a simp lemma as
+`σ₁₃` and `σ₃₁` cannot be inferred from the LHS. -/
+lemma congrLinearEquiv_trans' (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ₂₃] M₃) :
     (congrLinearEquiv e₁₂).trans (congrLinearEquiv e₂₃) =
       congrLinearEquiv (e₁₂.trans e₂₃) :=
   rfl
