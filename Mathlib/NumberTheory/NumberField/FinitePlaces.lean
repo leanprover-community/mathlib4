@@ -114,7 +114,7 @@ noncomputable instance instRankOneValuedAdicCompletion :
         RingOfIntegers.withValEquiv_symm_apply_coe]
     · apply ne_of_lt
       rw [RingOfIntegers.withValEquiv_symm_apply_coe, RingOfIntegers.withVal_coe_eq_algebraMap,
-        adicValued_apply', valuation_eq_intValuationDef, intValuation_lt_one_iff_dvd]
+        adicValued_apply', valuation_of_algebraMap, intValuation_lt_one_iff_dvd]
       exact dvd_span_singleton.mpr hx1
 
 /-- The `v`-adic completion of `K` is a normed field. -/
@@ -142,8 +142,7 @@ value. -/
 theorem FinitePlace.norm_def (x : K) : ‖embedding v x‖ = adicAbv v x := by
   simp_rw [embedding_apply, NormedField.toNorm, instNormedFieldValuedAdicCompletion,
     Valued.toNormedField, Valued.norm, Valuation.RankOne.hom, ← toNNReal_valued_eq_adicAbv]
-  simp [WithVal.equiv_symm_apply, valued_apply]
-
+  simp [valued_apply]
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation. -/
@@ -155,7 +154,8 @@ theorem FinitePlace.norm_def' (x : K) :
 to the power of the `v`-adic valuation for integers. -/
 theorem FinitePlace.norm_def_int (x : 𝓞 K) :
     ‖embedding v x‖ = toNNReal (absNorm_ne_zero v) (v.intValuationDef x) := by
-  rw [norm_def, adicAbv_def, valuation_eq_intValuationDef]
+  rw [norm_def, adicAbv_def, valuation_of_algebraMap]
+  rfl
 
 /-- The `v`-adic absolute value satisfies the ultrametric inequality. -/
 theorem RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max (x y : K) :
@@ -188,7 +188,7 @@ theorem FinitePlace.norm_le_one (x : 𝓞 K) : ‖embedding v x‖ ≤ 1 := by
 @[deprecated (since := "2025-02-28")] alias norm_le_one := FinitePlace.norm_le_one
 
 /-- The `v`-adic norm of an integer is 1 if and only if it is not in the ideal. -/
-theorem FinitePlace.norm_eq_one_iff_notMem (x : 𝓞 (WithVal (v.valuation K))) :
+theorem FinitePlace.norm_eq_one_iff_notMem (x : 𝓞 K) :
     ‖embedding v x‖ = 1 ↔ x ∉ v.asIdeal := by
   rw [norm_def]
   exact v.adicAbv_coe_eq_one_iff (one_lt_absNorm_nnreal v) x

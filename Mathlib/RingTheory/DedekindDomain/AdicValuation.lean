@@ -457,7 +457,7 @@ instance : Algebra R (v.adicCompletionIntegers K) where
       exact coe_algebraMap_mem _ _ v r⟩
   algebraMap :=
   { toFun r :=
-      ⟨(algebraMap R K r : adicCompletion K v), coe_algebraMap_mem _ _ v r⟩
+      ⟨(algebraMap R (WithVal (v.valuation K)) r), coe_algebraMap_mem _ _ v r⟩
     map_one' := by simp only [map_one]; rfl
     map_mul' x y := by
       ext
@@ -475,13 +475,15 @@ instance : Algebra R (v.adicCompletionIntegers K) where
 
 @[simp]
 lemma algebraMap_adicCompletionIntegers_apply (r : R) :
-    algebraMap R (v.adicCompletionIntegers K) r = (algebraMap R K r : v.adicCompletion K) :=
+    (algebraMap R (v.adicCompletionIntegers K) r : v.adicCompletion K) =
+      algebraMap R (WithVal (v.valuation K)) r :=
   rfl
 
 instance [FaithfulSMul R K] : FaithfulSMul R (v.adicCompletionIntegers K) := by
   rw [faithfulSMul_iff_algebraMap_injective]
   intro x y
-  simp [Subtype.ext_iff, (FaithfulSMul.algebraMap_injective R K).eq_iff]
+  simp_rw [Subtype.ext_iff, algebraMap_adicCompletionIntegers_apply]
+  exact fun h ↦ FaithfulSMul.algebraMap_injective R _ (UniformSpace.Completion.coe_inj.1 h)
 
 variable {R K} in
 open scoped algebraMap in -- to make the coercions from `R` fire
@@ -505,7 +507,7 @@ open scoped algebraMap in -- to make the coercion from `R` fire
 /-- A global integer is in the local integers. -/
 lemma coe_mem_adicCompletionIntegers (r : R) :
     (r : adicCompletion K v) ∈ adicCompletionIntegers K v := by
-  rw [mem_integers, valued_eq_valuation, valuation_eq_intValuationDef]
+  rw [mem_integers, valued_eq_valuation, valuation_of_algebraMap]
   exact intValuation_le_one v r
 
 @[simp]
@@ -528,7 +530,7 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
     (a : v.adicCompletion K) : ∃ b ∈ R⁰, a * b ∈ v.adicCompletionIntegers K := by
   by_cases ha : a ∈ v.adicCompletionIntegers K
   · use 1
-    simp [ha, Submonoid.one_mem]
+    simp [ha]
   · rw [not_mem_integers] at ha
     -- Let the additive valuation of a be -d with d>0
     obtain ⟨d, hd⟩ : ∃ d : ℤ, Valued.v a = ofAdd d :=
@@ -541,7 +543,7 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
     refine ⟨ϖ^d.natAbs, pow_mem (mem_nonZeroDivisors_of_ne_zero hϖ0) _, ?_⟩
     -- now manually translate the goal (an inequality in ℤₘ₀) to an inequality in ℤ
     rw [mem_integers, algebraMap.coe_pow, map_mul, hd, map_pow,
-      valued_eq_valuation, valuation_eq_intValuationDef, hϖ, ← WithZero.coe_pow,
+      valued_eq_valuation, valuation_of_algebraMap, hϖ, ← WithZero.coe_pow,
       ← WithZero.coe_mul, WithZero.coe_le_one, ← toAdd_le, toAdd_mul, toAdd_ofAdd, toAdd_pow,
       toAdd_ofAdd, toAdd_one,
       show d.natAbs • (-1) = (d.natAbs : ℤ) • (-1) by simp only [nsmul_eq_mul,
