@@ -3,6 +3,7 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Algebra.Central.Defs
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 import Mathlib.Analysis.NormedSpace.Multilinear.Basic
@@ -114,6 +115,18 @@ theorem exists_eq_one_ne_zero_of_ne_zero_pair {x y : V} (hx : x ≠ 0) (hy : y �
   · exact ⟨u + v, by simp [ux, vx], by simp [uy, vy]⟩
 
 variable [IsTopologicalAddGroup V]
+
+/-- The center of continuous linear maps on a topological vector space
+with separating dual is trivial, in other words, it is a central algebra. -/
+instance _root_.Algebra.IsCentral.continuousLinearMap [ContinuousSMul R V] :
+    Algebra.IsCentral R (V →L[R] V) where
+  out T hT := by
+    have h' (f : V →L[R] R) (y v : V) : f (T v) • y = f v • T y := by
+      simpa using congr($(Subalgebra.mem_center_iff.mp hT <| f.smulRight y) v)
+    nontriviality V
+    obtain ⟨x, hx⟩ := exists_ne (0 : V)
+    obtain ⟨f, hf⟩ := exists_eq_one (R := R) hx
+    exact ⟨f (T x), ContinuousLinearMap.ext fun _ => by simp [h', hf]⟩
 
 /-- In a topological vector space with separating dual, the group of continuous linear equivalences
 acts transitively on the set of nonzero vectors: given two nonzero vectors `x` and `y`, there

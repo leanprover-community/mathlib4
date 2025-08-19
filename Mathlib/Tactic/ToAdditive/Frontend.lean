@@ -795,9 +795,11 @@ def findAuxDecls (e : Expr) (pre : Name) : NameSet :=
     else
       l
 
-/-- transform the declaration `src` and all declarations `pre._proof_i` occurring in `src`
+/-- Transform the declaration `src` and all declarations `pre._proof_i` occurring in `src`
 using the transforms dictionary.
+
 `replace_all`, `trace`, `ignore` and `reorder` are configuration options.
+
 `pre` is the declaration that got the `@[to_additive]` attribute and `tgt_pre` is the target of this
 declaration. -/
 partial def transformDeclAux
@@ -858,11 +860,23 @@ partial def transformDeclAux
     | _ => panic! "unreachable"
   -- "Refold" all the aux lemmas that we unfolded.
   let trgDecl ← MetaM.run' <| declAbstractNestedProofs trgDecl
+  /- If `src` is explicitly marked as `noncomputable`, then add the new decl as a declaration but
+  do not compile it, and mark is as noncomputable. Otherwise, only log errors in compiling if `src`
+  has executable code.
+
+  Note that `noncomputable section` does not explicitly mark noncomputable definitions as
+  `noncomputable`, but simply abstains from logging compilation errors.
+
+  This is not a perfect solution, as ideally `to_additive` *should* complain when `src` should
+  produce executable code but fails to do so (e.g. outside of `noncomputable section`). However,
+  the `messages` and `infoState` are reset before this runs, so we cannot check for compilation
+  errors on `src`. The scope set by `noncomputable` section lives in the `CommandElabM` state
+  (which is inaccessible here), so we cannot test for `noncomputable section` directly. See [Zulip](https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/to_additive.20and.20noncomputable/with/310541981). -/
   if isNoncomputable env src then
     addDecl trgDecl.toDeclaration!
     setEnv <| addNoncomputable (← getEnv) tgt
   else
-    addAndCompile trgDecl.toDeclaration!
+    addAndCompile trgDecl.toDeclaration! (logCompileErrors := (IR.findEnvDecl env src).isSome)
   if let .defnDecl { hints := .abbrev, .. } := trgDecl.toDeclaration! then
     if (← getReducibilityStatus src) == .reducible then
       setReducibilityStatus tgt .reducible
