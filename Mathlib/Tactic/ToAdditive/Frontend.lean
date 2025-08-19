@@ -652,8 +652,7 @@ def expand (e : Expr) : MetaM Expr := do
 
 /-- Rename binder names in pi type. -/
 def renameBinderNames (src : Expr) : Expr :=
-  src.mapForallBinderNames
-    fun
+  src.mapForallBinderNames fun
     | .str p s => .str p (guessName s)
     | n => n
 
