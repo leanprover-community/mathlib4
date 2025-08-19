@@ -284,13 +284,13 @@ theorem intCoe_mul [Ring R] {f g : ArithmeticFunction ℤ} :
 @[simp, norm_cast]
 theorem natCoe_mul_intCoe [Ring R] {f : ArithmeticFunction ℕ} {g : ArithmeticFunction ℤ} :
     (↑(f * g) : ArithmeticFunction R) = ↑f * ↑g := by
-  ext n
+  push_cast
   simp
 
 @[simp, norm_cast]
 theorem intCoe_mul_natCoe [Ring R] {f : ArithmeticFunction ℤ} {g : ArithmeticFunction ℕ} :
     (↑(f * g) : ArithmeticFunction R) = ↑f * ↑g := by
-  ext n
+  push_cast
   simp
 
 section Module
@@ -1127,6 +1127,13 @@ theorem moebius_mul_coe_zeta : (μ * ζ : ArithmeticFunction ℤ) = 1 := by
 theorem coe_zeta_mul_moebius : (ζ * μ : ArithmeticFunction ℤ) = 1 := by
   rw [mul_comm, moebius_mul_coe_zeta]
 
+theorem moebius_mul_coe_sigma_eq_coe_pow (k : ℕ) : μ * σ k = pow k := by
+  rw [← zeta_mul_pow_eq_sigma]; push_cast
+  rw [← mul_assoc]; simp
+
+theorem coe_sigma_mul_moebius_eq_coe_pow (k : ℕ) : σ k * μ = pow k := by
+  rw [mul_comm, moebius_mul_coe_sigma_eq_coe_pow]
+
 @[simp]
 theorem coe_moebius_mul_coe_zeta [Ring R] : (μ * ζ : ArithmeticFunction R) = 1 := by
   rw [← coe_coe, ← intCoe_mul, moebius_mul_coe_zeta, intCoe_one]
@@ -1354,30 +1361,12 @@ theorem totient_mul_zeta : ϕ * ζ = id := by
 theorem zeta_mul_totient : ζ * ϕ = id := by
   rw [mul_comm, totient_mul_zeta]
 
-@[simp]
-theorem coe_totient_mul_coe_zeta [Ring R] : ϕ * ζ = (id : ArithmeticFunction R) := by
-  norm_cast
-  simp
+theorem moebius_mul_coe_id_eq_coe_totient : μ * id = ϕ := by
+  rw [← zeta_mul_totient]; push_cast
+  rw [← mul_assoc]; simp
 
-@[simp]
-theorem coe_zeta_mul_coe_totient [Ring R] : ζ * ϕ = (id : ArithmeticFunction R) := by
-  norm_cast
-  simp
-
-theorem moebius_mul_coe_id : μ * id = ϕ := by
-  rw [← coe_zeta_mul_coe_totient, ← mul_assoc]
-  simp
-
-theorem coe_id_mul_moebius : id * μ = ϕ := by
-  rw [mul_comm, moebius_mul_coe_id]
-
-theorem coe_moebius_mul_coe_id [Ring R] : μ * id = (ϕ : ArithmeticFunction R) := by
-  norm_cast
-  simp [moebius_mul_coe_id]
-
-theorem coe_id_mul_coe_moebius [Ring R] : id * μ = (ϕ : ArithmeticFunction R) := by
-  norm_cast
-  simp [coe_id_mul_moebius]
+theorem coe_id_mul_moebius_eq_coe_totient : id * μ = ϕ := by
+  rw [mul_comm, moebius_mul_coe_id_eq_coe_totient]
 
 end SpecialFunctions
 
