@@ -34,7 +34,7 @@ section definition
 /-- A set of sets is a compact system if, whenever a countable subfamily has empty intersection,
 then finitely many of them already have empty intersection. -/
 def IsCompactSystem (p : Set α → Prop) : Prop :=
-  ∀ C : ℕ → Set α, (∀ i, p (C i)) → ⋂ i, C i = ∅ → ∃ (n : ℕ), Dissipate C n = ∅
+  ∀ C : ℕ → Set α, (∀ i, p (C i)) → ⋂ i, C i = ∅ → ∃ (n : ℕ), dissipate C n = ∅
 
 end definition
 
@@ -51,12 +51,12 @@ def finite_of_empty (hp : IsCompactSystem p) (hC : ∀ i, p (C i))
 open Classical in
 lemma dissipate_eq_empty (hp : IsCompactSystem p) (hC : ∀ i, p (C i))
     (hC_empty : ⋂ i, C i = ∅) :
-    Dissipate C (hp.finite_of_empty hC hC_empty) = ∅ := by
+    dissipate C (hp.finite_of_empty hC hC_empty) = ∅ := by
   apply Nat.find_spec (hp C hC hC_empty)
 
 theorem iff_nonempty_iInter (p : Set α → Prop) :
     IsCompactSystem p ↔ (∀ C : ℕ → Set α, (∀ i, p (C i)) → (∀ (n : ℕ),
-      (Dissipate C n).Nonempty) → (⋂ i, C i).Nonempty) := by
+      (dissipate C n).Nonempty) → (⋂ i, C i).Nonempty) := by
   refine ⟨fun h C hC hn ↦ ?_, fun h C hC ↦ ?_⟩ <;> have h2 := not_imp_not.mpr <| h C hC
   · push_neg at h2
     exact h2 hn
@@ -76,7 +76,7 @@ lemma iff_nonempty_iInter_of_lt (p : Set α → Prop) : IsCompactSystem p ↔
     simp_rw [Set.nonempty_iff_ne_empty] at h' ⊢
     intro g
     apply h' n
-    simp_rw [← subset_empty_iff, Dissipate] at g ⊢
+    simp_rw [← subset_empty_iff, dissipate] at g ⊢
     apply le_trans _ g
     intro x
     rw [mem_iInter₂, mem_iInter₂]
@@ -106,7 +106,7 @@ lemma iff_isCompactSystem_of_or_empty : IsCompactSystem p ↔
     exact h s hj hd
 
 lemma of_IsEmpty (h : IsEmpty α) (p : Set α → Prop) : IsCompactSystem p :=
-  fun s _ _ ↦ ⟨0, Set.eq_empty_of_isEmpty (Dissipate s 0)⟩
+  fun s _ _ ↦ ⟨0, Set.eq_empty_of_isEmpty (dissipate s 0)⟩
 
 /-- A set system is a compact system iff adding `univ` gives a compact system. -/
 lemma iff_isCompactSystem_of_or_univ : IsCompactSystem p ↔
@@ -146,7 +146,7 @@ lemma iff_isCompactSystem_of_or_univ : IsCompactSystem p ↔
       apply h₂ ▸ h s' h₁
       by_contra! a
       obtain ⟨j, hj⟩ := a
-      have h₂ (v : ℕ) (hv : n ≤ v) : Dissipate s v = Dissipate s' v:= by
+      have h₂ (v : ℕ) (hv : n ≤ v) : dissipate s v = dissipate s' v:= by
         ext x
         refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩ <;> simp only [dissipate_def, mem_iInter] at h ⊢ <;>
           intro i hi
@@ -160,7 +160,7 @@ lemma iff_isCompactSystem_of_or_univ : IsCompactSystem p ↔
               simp only [h₅, false_or] at h'
               exact h'
             simp only [h₆, Set.mem_univ]
-      have h₇ : Dissipate s' (max j n) = ∅ := by
+      have h₇ : dissipate s' (max j n) = ∅ := by
         rw [← subset_empty_iff] at hj ⊢
         exact le_trans (antitone_dissipate (Nat.le_max_left j n)) hj
       specialize h₂ (max j n) (Nat.le_max_right j n)
@@ -189,21 +189,21 @@ theorem iff_directed (hpi : IsPiSystem p) :
         right
         rfl
     rw [← biInter_le_eq_iInter] at h2
-    obtain h' := h (Dissipate C) directed_dissipate
-    have h₀ : (∀ (n : ℕ), p (Dissipate C n) ∨ Dissipate C n = ∅) → ⋂ n, Dissipate C n = ∅ →
-      ∃ n, Dissipate C n = ∅ := by
+    obtain h' := h (dissipate C) directed_dissipate
+    have h₀ : (∀ (n : ℕ), p (dissipate C n) ∨ dissipate C n = ∅) → ⋂ n, dissipate C n = ∅ →
+      ∃ n, dissipate C n = ∅ := by
       intro h₀ h₁
-      by_cases f : ∀ n, p (Dissipate C n)
+      by_cases f : ∀ n, p (dissipate C n)
       · apply h' f h₁
       · push_neg at f
         obtain ⟨n, hn⟩ := f
         use n
         specialize h₀ n
         simp_all only [false_or]
-    obtain h'' := dissipate_of_piSystem hpi' h1
-    have h₁ :  ∀ (n : ℕ), p (Dissipate C n) ∨ Dissipate C n = ∅ := by
+    obtain h'' := IsPiSystem.dissipate_mem hpi' h1
+    have h₁ :  ∀ (n : ℕ), p (dissipate C n) ∨ dissipate C n = ∅ := by
       intro n
-      by_cases g : (Dissipate C n).Nonempty
+      by_cases g : (dissipate C n).Nonempty
       · exact h'' n g
       · right
         exact Set.not_nonempty_iff_eq_empty.mp g
