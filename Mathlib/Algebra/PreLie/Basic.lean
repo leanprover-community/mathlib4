@@ -9,7 +9,7 @@ import Mathlib.GroupTheory.GroupAction.Ring
 /-!
 # Pre-Lie rings and algebras
 
-In this file we introduce left and righ pre-Lie rings, defined as a `NonUnitalNonAssocRing` where
+In this file we introduce left and right pre-Lie rings, defined as a `NonUnitalNonAssocRing` where
 the associator `associator x y z := (x * y) * z - x * (y * z)` is left or right symmetric,
 respectively.
 
@@ -54,7 +54,7 @@ first two variables. -/
 class LeftPreLieRing (L : Type v) : Type (v + 1) extends NonUnitalNonAssocRing L where
   assoc_symm' (x y z : L) : associator x y z = associator y x z
 
-/-- `LeftPreLieRing`s are `NonUnitalNonAssocRing`s such that the `associator` is symmetric in the
+/-- `RightPreLieRing`s are `NonUnitalNonAssocRing`s such that the `associator` is symmetric in the
 last two variables. -/
 @[ext]
 class RightPreLieRing (L : Type v) : Type (v + 1) extends NonUnitalNonAssocRing L where
