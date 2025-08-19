@@ -181,7 +181,7 @@ alias IsPositive.of_isStarProjection := IsPositive.of_isSymmetricProjection
 theorem IsSymmetricProjection.le_iff_comp_eq_right {p q : E →ₗ[𝕜] E}
     (hp : p.IsSymmetricProjection) (hq : q.IsSymmetricProjection) : p ≤ q ↔ q ∘ₗ p = p := by
   refine ⟨fun ⟨h1, h2⟩ => ?_, fun hpq ↦
-    IsPositive.of_isSymmetricProjection <| hp.sub_of_mul_eq_right hq hpq⟩
+    IsPositive.of_isSymmetricProjection <| hp.sub_of_comp_eq_right hq hpq⟩
   rw [hq.isIdempotentElem.comp_eq_right_iff]
   intro a ha
   specialize h2 a

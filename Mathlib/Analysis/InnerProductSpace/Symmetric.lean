@@ -320,7 +320,7 @@ theorem IsSymmetricProjection.ext_iff {S T : E →ₗ[𝕜] E}
 
 alias ⟨_, IsSymmetricProjection.ext⟩ := IsSymmetricProjection.ext_iff
 
-theorem IsSymmetricProjection.sub_of_mul_eq_right {p q : E →ₗ[𝕜] E}
+theorem IsSymmetricProjection.sub_of_comp_eq_right {p q : E →ₗ[𝕜] E}
     (hp : p.IsSymmetricProjection) (hq : q.IsSymmetricProjection) (hqp : q ∘ₗ p = p) :
     (q - p).IsSymmetricProjection := by
   refine ⟨hp.isIdempotentElem.sub hq.isIdempotentElem (LinearMap.ext fun x => ext_inner_left 𝕜
