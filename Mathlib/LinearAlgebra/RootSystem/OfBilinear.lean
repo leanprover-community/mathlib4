@@ -112,7 +112,7 @@ open LinearMap IsReflective
 def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMap.Nondegenerate B)
     (hSB : LinearMap.IsSymm B) (h2 : IsRegular (2 : R)) :
     RootPairing {x : M | IsReflective B x} R M (Dual R M) where
-  toLinearMap := LinearMap.id.flip
+  toLinearMap := Dual.eval R M
   root := Embedding.subtype fun x ↦ IsReflective B x
   coroot :=
     { toFun := fun x => IsReflective.coroot B x.2
@@ -158,8 +158,8 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
   reflectionPerm_root x y := by
     simp [Module.reflection_apply]
   reflectionPerm_coroot x y := by
-    simp only [coe_setOf, mem_setOf_eq, Embedding.coeFn_mk, Embedding.subtype_apply, flip_apply,
-      id_coe, id_eq, Equiv.coe_fn_mk]
+    simp only [coe_setOf, mem_setOf_eq, Embedding.coeFn_mk, Embedding.subtype_apply,
+      Dual.eval_apply, Equiv.coe_fn_mk]
     ext z
     simp only [sub_apply, smul_apply, smul_eq_mul]
     refine y.2.1.1 ?_

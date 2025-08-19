@@ -79,6 +79,9 @@ protected instance IsPerfPair.id [IsReflexive R M] : IsPerfPair (.id (R := R) (M
   bijective_left := bijective_id
   bijective_right := bijective_dual_eval R M
 
+/-- A reflexive module has a perfect pairing with its dual. -/
+instance IsPerfPair.dualEval [IsReflexive R M] : IsPerfPair (Dual.eval R M) := .flip .id
+
 end CommRing
 
 section Field
