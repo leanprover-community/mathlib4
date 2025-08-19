@@ -318,7 +318,7 @@ theorem lintegral_Lp_mul_le_Lq_mul_Lr {α} [MeasurableSpace α] {p q r : ℝ} (h
         rw [mul_comm, ← div_eq_iff hp0_ne]
       have hpq2 : p * q2 = r := by
         rw [← inv_inv r, ← one_div, ← one_div, h_one_div_r]
-        field_simp [p2, q2, Real.conjExponent, hp0_ne, hq0_ne]
+        simp [field, p2, q2, Real.conjExponent]
       simp_rw [div_mul_div_comm, mul_one, mul_comm p2, mul_comm q2, hpp2, hpq2]
 
 theorem lintegral_mul_rpow_le_lintegral_rpow_mul_lintegral_rpow {p q : ℝ}

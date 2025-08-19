@@ -337,7 +337,7 @@ lemma deriv2_qaryEntropy :
         · have {q : ℝ} (p : ℝ) : DifferentiableAt ℝ (fun p => q - p) p := by fun_prop
           have d_oneminus (p : ℝ) : deriv (fun (y : ℝ) ↦ 1 - y) p = -1 := by
             rw [deriv_const_sub 1, deriv_id'']
-          field_simp [sub_ne_zero_of_ne xne1.symm, this, d_oneminus]
+          simp [field, sub_ne_zero_of_ne xne1.symm, this, d_oneminus]
           ring
       · apply DifferentiableAt.add
         simp only [differentiableAt_const]
@@ -376,7 +376,7 @@ lemma qaryEntropy_strictMonoOn (qLe2 : 2 ≤ q) :
       linarith
     simp only [one_div, interior_Icc, mem_Ioo] at hp
     rw [deriv_qaryEntropy (by linarith)]
-    · field_simp
+    · simp
       rw [← log_mul (by linarith) (by linarith)]
       apply Real.strictMonoOn_log (mem_Ioi.mpr hp.1)
       · simp_all only [mem_Ioi, mul_pos_iff_of_pos_left, show 0 < (q : ℝ) - 1 by linarith]

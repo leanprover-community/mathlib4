@@ -541,7 +541,7 @@ theorem inner_eq_norm_mul_norm_mul_cos_oangle (x y : V) :
   by_cases hy : y = 0; · simp [hy]
   rw [oangle, Real.Angle.cos_coe, Complex.cos_arg, o.norm_kahler]
   · simp only [kahler_apply_apply, real_smul, add_re, ofReal_re, mul_re, I_re, ofReal_im]
-    field_simp
+    simp [field]
   · exact o.kahler_ne_zero hx hy
 
 /-- The cosine of the oriented angle between two nonzero vectors is the inner product divided by
