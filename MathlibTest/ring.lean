@@ -242,3 +242,6 @@ example (x : ℝ) (f : ℝ → ℝ) : True := by
 -- Test that `ring_nf` doesn't get confused about bound variables
 example : (fun x : ℝ => x * x^2) = (fun y => y^2 * y) := by
   ring_nf
+
+-- Test that `ring` works for division without subtraction
+example {R : Type} [Semifield R] [CharZero R] {x : R} : x / 2 + x / 2 = x := by ring

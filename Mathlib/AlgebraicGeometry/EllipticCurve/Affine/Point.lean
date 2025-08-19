@@ -85,13 +85,6 @@ namespace Affine
 
 /-! ## The affine coordinate ring -/
 
--- Porting note: in Lean 3, this is a `def` under a `derive comm_ring` tag.
--- This generates a reducible instance of `comm_ring` for `coordinate_ring`. In certain
--- circumstances this might be extremely slow, because all instances in its definition are unified
--- exponentially many times. In this case, one solution is to manually add the local attribute
--- `local attribute [irreducible] coordinate_ring.comm_ring` to block this type-level unification.
--- In Lean 4, this is no longer an issue and is now an `abbrev`. See Zulip thread:
--- https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/.E2.9C.94.20class_group.2Emk
 /-- The affine coordinate ring `R[W] := R[X, Y] / ⟨W(X, Y)⟩` of a Weierstrass curve `W`. -/
 abbrev CoordinateRing : Type r :=
   AdjoinRoot W'.polynomial
