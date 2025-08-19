@@ -155,8 +155,13 @@ lemma isProbabilityMeasure_withDensity_cameronMartin (x : CameronMartin μ) :
 lemma todo_ae_eq (x : CameronMartin μ) (L : StrongDual ℝ E) (t : ℝ) :
     (cmIsometryEquiv μ (L - t • x) : E → ℝ)
       =ᵐ[μ] fun u ↦ L u - μ[L] - t * (cmIsometryEquiv μ x : E → ℝ) u := by
-  simp only [map_sub, map_smul, AddSubgroupClass.coe_sub, SetLike.val_smul]
-  sorry
+  simp only [map_sub, map_smul, AddSubgroupClass.coe_sub, cmIsometryEquiv_ofDual, SetLike.val_smul]
+  filter_upwards [centeredToLp_apply (μ := μ) memLp_two_id L,
+    AEEqFun.coeFn_sub (γ := ℝ) (StrongDual.centeredToLp μ 2 L) (t • (cmIsometryEquiv μ x)),
+    Lp.coeFn_smul (E := ℝ) t (cmIsometryEquiv μ x : Lp ℝ 2 μ)] with u h_toLp h_sub h_smul
+  simp only [SetLike.val_smul, Pi.sub_apply] at h_sub
+  rw [h_sub, h_toLp, h_smul, IsGaussian.integral_dual]
+  simp
 
 lemma some_equality_in_Real'' (x : CameronMartin μ) (L : StrongDual ℝ E) (t : ℝ) :
     ∫ u, Complex.exp ((L u - t * (cmIsometryEquiv μ x : E → ℝ) u) * Complex.I

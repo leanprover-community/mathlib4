@@ -881,6 +881,18 @@ def cmIsometryEquiv (μ : Measure E) [HasTwoMoments μ] :
       rw [CameronMartin.norm_coe, AddSubgroupClass.coe_norm]
       norm_cast
 
+omit [CompleteSpace E] in
+@[simp]
+lemma cmIsometryEquiv_coe (L : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) :
+    cmIsometryEquiv μ L = L := by simp [cmIsometryEquiv]
+
+omit [CompleteSpace E] in
+@[simp]
+lemma cmIsometryEquiv_ofDual (L : StrongDual ℝ E) :
+    cmIsometryEquiv μ L = StrongDual.centeredToLp μ 2 L := by
+  rw [CameronMartin.ofDual_apply, cmIsometryEquiv_coe]
+  rfl
+
 end RKHS
 
 end ProbabilityTheory
