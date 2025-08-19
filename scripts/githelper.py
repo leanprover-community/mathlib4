@@ -361,6 +361,9 @@ def gh_get_all_branches(repo: str) -> list[str]:
 
 
 def gh_get_all_branches_of_open_prs_from_fork(repo: str, fork: str) -> list[str]:
+    # I've tried different ways of getting this info, but even with GraphQL
+    # there doesn't seem to be a better way, so I'm using the simplest approach:
+    # Query all open PRs, then filter them by the repo they were opened from.
     return run_stdout(
         *("gh", "api", f"repos/{repo}/pulls"),
         "--paginate",
