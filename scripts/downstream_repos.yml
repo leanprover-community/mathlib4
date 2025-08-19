@@ -89,7 +89,7 @@
     release-tag: lean-release-tag.yml
 - github: https://github.com/YaelDillies/ForbiddenMatrix
   default_branch: master
-  name: Forbidden matrix theory
+  name: Forbidden Matrix Theory
   workflows:
     build: push.yml
     docs: push.yml
