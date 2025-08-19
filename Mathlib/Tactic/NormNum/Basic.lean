@@ -226,7 +226,7 @@ attribute [local instance] monadLiftOptionMetaM in
 /-- The result of adding two norm_num results. -/
 def Result.add {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (rb : Result q($b))
     (inst : Q(AddMonoidWithOne $α) := by exact q(delta% inferInstance)) :
-    MetaM (Result q($a + $b)) :=
+    MetaM (Result q($a + $b)) := do
   let rec intArm (rα : Q(Ring $α)) := do
     assertInstancesCommute
     let ⟨za, na, pa⟩ ← ra.toInt _; let ⟨zb, nb, pb⟩ ← rb.toInt _
@@ -264,24 +264,23 @@ def Result.add {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (
       (q(Eq.refl $t1) : Expr)
     let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
     return .isRat dα qc nc dc q(isRat_add (.refl _) $pa $pb $r1 $r2)
-  do
-    match ra, rb with
-    | .isBool .., _ | _, .isBool .. => failure
-    | .isNegNNRat dα .., _ | _, .isNegNNRat dα .. => ratArm dα
-    -- mixing positive rationals and negative naturals means we need to use the full rat handler
-    | .isNNRat dsα .., .isNegNat rα .. | .isNegNat rα .., .isNNRat dsα .. =>
-      -- could alternatively try to combine `rα` and `dsα` here, but we'd have to do a defeq check
-      -- so would still need to be in `MetaM`.
-      let dα ← synthInstanceQ q(DivisionRing $α)
-      assertInstancesCommute
-      ratArm q($dα)
-    | .isNNRat dsα .., _ | _, .isNNRat dsα .. => nnratArm dsα
-    | .isNegNat rα .., _ | _, .isNegNat rα .. => intArm rα
-    | .isNat _ na pa, .isNat sα nb pb =>
-      assumeInstancesCommute
-      have c : Q(ℕ) := mkRawNatLit (na.natLit! + nb.natLit!)
-      haveI' : Nat.add $na $nb =Q $c := ⟨⟩
-      return .isNat sα c q(isNat_add (.refl _) $pa $pb (.refl $c))
+  match ra, rb with
+  | .isBool .., _ | _, .isBool .. => failure
+  | .isNegNNRat dα .., _ | _, .isNegNNRat dα .. => ratArm dα
+  -- mixing positive rationals and negative naturals means we need to use the full rat handler
+  | .isNNRat _dsα .., .isNegNat _rα .. | .isNegNat _rα .., .isNNRat _dsα .. =>
+    -- could alternatively try to combine `rα` and `dsα` here, but we'd have to do a defeq check
+    -- so would still need to be in `MetaM`.
+    let dα ← synthInstanceQ q(DivisionRing $α)
+    assertInstancesCommute
+    ratArm q($dα)
+  | .isNNRat dsα .., _ | _, .isNNRat dsα .. => nnratArm dsα
+  | .isNegNat rα .., _ | _, .isNegNat rα .. => intArm rα
+  | .isNat _ na pa, .isNat sα nb pb =>
+    assumeInstancesCommute
+    have c : Q(ℕ) := mkRawNatLit (na.natLit! + nb.natLit!)
+    haveI' : Nat.add $na $nb =Q $c := ⟨⟩
+    return .isNat sα c q(isNat_add (.refl _) $pa $pb (.refl $c))
 
 attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a + b`,
@@ -397,7 +396,7 @@ def Result.sub {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (
     ratArm dα
   | _, .isNNRat _dsα .. | .isNNRat _dsα .., _ =>
     ratArm (← synthInstanceQ q(DivisionRing $α))
-  | .isNegNat rα .., _ | _, .isNegNat rα ..
+  | .isNegNat _rα .., _ | _, .isNegNat _rα ..
   | .isNat _ .., .isNat _ .. =>
     intArm inst
 
@@ -465,8 +464,8 @@ theorem isRat_mul {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
 attribute [local instance] monadLiftOptionMetaM in
 /-- The result of multiplying two norm_num results. -/
 def Result.mul {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (rb : Result q($b))
-      (inst : Q(Semiring $α) := by exact q(delta% inferInstance)) :
-      MetaM (Result q($a * $b)) :=
+    (inst : Q(Semiring $α) := by exact q(delta% inferInstance)) :
+    MetaM (Result q($a * $b)) := do
   let intArm (rα : Q(Ring $α)) := do
     assumeInstancesCommute
     let ⟨za, na, pa⟩ ← ra.toInt rα; let ⟨zb, nb, pb⟩ ← rb.toInt rα
@@ -502,7 +501,6 @@ def Result.mul {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (
     have t2 : Q(ℕ) := mkRawNatLit dd
     let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
     return .isRat dα qc nc dc q(isRat_mul (.refl _) $pa $pb $r1 $r2)
-  do
   match ra, rb with
   | .isBool .., _ | _, .isBool .. => failure
   | .isNegNNRat dα .., _ | _, .isNegNNRat dα .. =>
