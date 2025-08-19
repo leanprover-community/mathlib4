@@ -61,6 +61,7 @@ instance : LinearOrder (Lex (HahnSeries Γ R)) where
       · exact Or.inr (le_of_lt ⟨i, fun j hj ↦ (hji j hj).symm, hi⟩)
   toDecidableLE := Classical.decRel _
 
+@[simp]
 theorem leadingCoeff_pos_iff {x : Lex (HahnSeries Γ R)} : 0 < (ofLex x).leadingCoeff ↔ 0 < x := by
   rw [lt_iff]
   constructor
@@ -103,7 +104,7 @@ theorem leadingCoeff_neg_iff {x : Lex (HahnSeries Γ R)} : (ofLex x).leadingCoef
 
 theorem leadingCoeff_nonpos_iff {x : Lex (HahnSeries Γ R)} :
     (ofLex x).leadingCoeff ≤ 0 ↔ x ≤ 0 := by
-  simpa using (leadingCoeff_pos_iff (x := x)).not
+  simp [← not_lt]
 
 end LinearOrder
 
@@ -127,12 +128,14 @@ end OrderedMonoid
 section OrderedGroup
 variable [LinearOrder R] [AddCommGroup R] [IsOrderedAddMonoid R]
 
+@[simp]
 theorem support_abs (x : Lex (HahnSeries Γ R)) : (ofLex |x|).support = (ofLex x).support := by
   obtain hle | hge := le_total x 0
   · rw [abs_eq_neg_self.mpr hle]
     simp
   · rw [abs_eq_self.mpr hge]
 
+@[simp]
 theorem orderTop_abs (x : Lex (HahnSeries Γ R)) : (ofLex |x|).orderTop = (ofLex x).orderTop := by
   obtain hle | hge := le_total x 0
   · rw [abs_eq_neg_self.mpr hle, ofLex_neg, orderTop_neg]
