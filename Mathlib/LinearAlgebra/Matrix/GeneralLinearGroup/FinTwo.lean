@@ -94,12 +94,45 @@ lemma isParabolic_iff_exists [NeZero (2 : K)] :
 
 end Field
 
+section LinearOrderedRing
+
+variable {R : Type*} [CommRing R] [Preorder R]
+  (m : Matrix (Fin 2) (Fin 2) R) (g : GL (Fin 2) R)
+
+/-- A `2 × 2` matrix is *hyperbolic* if its discriminant is strictly positive. -/
+def IsHyperbolic : Prop := 0 < m.disc
+
+/-- A `2 × 2` matrix is *elliptic* if its  discriminant is strictly negative. -/
+def IsElliptic : Prop := m.disc < 0
+
+variable {m}
+
+lemma isHyperbolic_conj_iff : (g * m * g⁻¹).IsHyperbolic ↔ m.IsHyperbolic := by
+  simp only [IsHyperbolic, disc_conj]
+
+lemma isHyperbolic_conj'_iff : (g⁻¹ * m * g).IsHyperbolic ↔ m.IsHyperbolic := by
+  simpa using isHyperbolic_conj_iff g⁻¹
+
+lemma isElliptic_conj_iff : (g * m * g⁻¹).IsElliptic ↔ m.IsElliptic := by
+  simp only [IsElliptic, disc_conj]
+
+lemma isElliptic_conj'_iff : (g⁻¹ * m * g).IsElliptic ↔ m.IsElliptic := by
+  simpa using isElliptic_conj_iff g⁻¹
+
+end LinearOrderedRing
+
 namespace GeneralLinearGroup
 
 variable {R K : Type*} [CommRing R] [Field K]
 
 /-- Synonym of `Matrix.IsParabolic`, for dot-notation. -/
 @[reducible] def IsParabolic (g : GL (Fin 2) R) : Prop := g.val.IsParabolic
+
+/-- Synonym of `Matrix.IsElliptic`, for dot-notation. -/
+@[reducible] def IsElliptic [Preorder R] (g : GL (Fin 2) R) : Prop := g.val.IsElliptic
+
+/-- Synonym of `Matrix.IsHyperbolic`, for dot-notation. -/
+@[reducible] def IsHyperbolic [Preorder R] (g : GL (Fin 2) R) : Prop := g.val.IsHyperbolic
 
 /-- Polynomial whose roots are the fixed points of `g` considered as a Möbius transformation. -/
 noncomputable def fixpointPolynomial (g : GL (Fin 2) R) : R[X] :=
