@@ -187,7 +187,7 @@ theorem mem_integers {x : v.Completion} :
     x ∈ integers v ↔ Valued.v x ≤ 1 :=
   Iff.rfl
 
-theorem not_mem_integers {x : v.Completion} :
+theorem notMem_integers {x : v.Completion} :
     x ∉ integers v ↔ 1 < Valued.v x := by
   rw [not_congr <| mem_integers v]
   exact not_le
