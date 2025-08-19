@@ -10,6 +10,9 @@ import sys
 from typing import NoReturn
 
 
+# region Remote URLs
+
+
 def http_url(repo: str) -> str:
     return f"https://github.com/{repo}.git"
 
@@ -31,6 +34,12 @@ MATHLIB_REPO: str = "leanprover-community/mathlib4"
 MATHLIB_HTTP_URL: str = http_url(MATHLIB_REPO)
 MATHLIB_SSH_URL: str = ssh_url(MATHLIB_REPO)
 MATHLIB_URLS: set[str] = {MATHLIB_HTTP_URL, MATHLIB_SSH_URL}
+
+
+# endregion
+
+# region Colored output
+
 
 GRAY = "\033[37m"
 RED = "\033[91m"
@@ -72,6 +81,11 @@ def abort(msg: str, code: int = 1) -> NoReturn:
     sys.exit(code)
 
 
+# endregion
+
+# region Commands
+
+
 def run_cmd(*cmd: str) -> None:
     try:
         print(f"{GRAY}$ {shlex.join(cmd)}{END}")
@@ -111,9 +125,9 @@ def ask_yes_no(prompt: str) -> bool:
     return False  # Unreachable
 
 
-##################
-## Git commands ##
-##################
+# endregion
+
+# region Git commands
 
 
 def git_ensure_installed() -> None:
@@ -214,9 +228,9 @@ def git_set_branch_push_remote(branch: str, remote: str) -> str | None:
     run_cmd("git", "config", "--", f"branch.{branch}.pushRemote", remote)
 
 
-#################
-## Gh commands ##
-#################
+# endregion
+
+# region Gh commands
 
 
 def gh_ensure_installed() -> None:
@@ -321,9 +335,9 @@ def gh_fork() -> None:
     run_cmd("gh", "repo", "fork", "--default-branch-only", "--remote")
 
 
-##################
-## Command: fix ##
-##################
+# endregion
+
+# region Command: fix
 
 
 def cmd_fix_update_remote(
@@ -449,9 +463,9 @@ def cmd_fix() -> None:
     cmd_fix_update_master_remotes()
 
 
-##########
-## Main ##
-##########
+# endregion
+
+# region Main
 
 
 def main() -> None:
@@ -476,3 +490,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print()
         abort("Aborted by user")
+
+# endregion
