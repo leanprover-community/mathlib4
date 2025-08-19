@@ -145,36 +145,10 @@ theorem pointToPoint_zeroLocus_le (I : Ideal (MvPolynomial σ K)) :
 
 variable [IsAlgClosed K] [Finite σ]
 
-theorem isPrime_iff_eq_vanishingIdeal_singleton (I : Ideal (MvPolynomial σ k)) :
-    I.IsPrime ↔ ∃ x : σ → K, I = vanishingIdeal k {x} := by
-  cases nonempty_fintype σ
-  refine
-    ⟨fun hI => ?_, fun h =>
-      let ⟨x, hx⟩ := h
-      hx.symm ▸ MvPolynomial.vanishingIdeal_singleton_isPrime⟩
-  letI : I.IsPrime := hI
-  letI : IsDomain (MvPolynomial σ k ⧸ I) := Quotient.isDomain I
-  let ϕ : K →+* MvPolynomial σ k ⧸ I := (Ideal.Quotient.mk I).comp C
-  have hϕ : Function.Bijective ϕ :=
-    IsAlgClosed.ringHom_bijective_of_isIntegral ϕ
-      (MvPolynomial.comp_C_integral_of_surjective_of_isJacobsonRing _ Quotient.mk_surjective)
-  obtain ⟨φ, hφ⟩ := Function.Surjective.hasRightInverse hϕ.2
-  let x : σ → k := fun s => φ ((Ideal.Quotient.mk I) (X s))
-  have hx : ∀ s : σ, ϕ (x s) = (Ideal.Quotient.mk I) (X s) := fun s =>
-    hφ ((Ideal.Quotient.mk I) (X s))
-  refine ⟨x, (IsMaximal.eq_of_le (by infer_instance) hI.ne_top ?_).symm⟩
-  intro p hp
-  rw [← Quotient.eq_zero_iff_mem, map_mvPolynomial_eq_eval₂ (Ideal.Quotient.mk I) p, eval₂_eq']
-  rw [mem_vanishingIdeal_singleton_iff, eval_eq'] at hp
-  simpa only [map_sum ϕ, ϕ.map_mul, map_prod ϕ, ϕ.map_pow, ϕ.map_zero, hx] using congr_arg ϕ hp
-
 theorem isMaximal_iff_eq_vanishingIdeal_singleton (I : Ideal (MvPolynomial σ K)) :
     I.IsMaximal ↔ ∃ x : σ → K, I = vanishingIdeal K {x} := by
   cases nonempty_fintype σ
-  refine
-    ⟨fun hI => ?_, fun h =>
-      let ⟨x, hx⟩ := h
-      hx.symm ▸ MvPolynomial.vanishingIdeal_singleton_isMaximal⟩
+  refine ⟨fun hI => ?_, fun ⟨x, hx⟩ => hx.symm ▸ MvPolynomial.vanishingIdeal_singleton_isMaximal⟩
   letI : I.IsMaximal := hI
   letI : Field (MvPolynomial σ K ⧸ I) := Quotient.field I
   let ϕ : K →+* MvPolynomial σ K ⧸ I := (Ideal.Quotient.mk I).comp C
@@ -190,6 +164,25 @@ theorem isMaximal_iff_eq_vanishingIdeal_singleton (I : Ideal (MvPolynomial σ K)
   rw [← Quotient.eq_zero_iff_mem, map_mvPolynomial_eq_eval₂ (Ideal.Quotient.mk I) p, eval₂_eq']
   rw [mem_vanishingIdeal_singleton_iff] at hp
   simp only [aeval_eq_eval₂Hom, Algebra.algebraMap_self, coe_eval₂Hom, eval₂_id, eval_eq'] at hp
+  simpa only [map_sum ϕ, ϕ.map_mul, map_prod ϕ, ϕ.map_pow, ϕ.map_zero, hx] using congr_arg ϕ hp
+
+theorem isPrime_iff_eq_vanishingIdeal_singleton (I : Ideal (MvPolynomial σ k)) :
+    I.IsPrime ↔ ∃ x : σ → K, I = vanishingIdeal k {x} := by
+  refine ⟨fun hI => ?_, fun ⟨x, hx⟩ => hx.symm ▸ MvPolynomial.vanishingIdeal_singleton_isPrime⟩
+  letI : I.IsPrime := hI
+  letI : IsDomain (MvPolynomial σ k ⧸ I) := Quotient.isDomain I
+  let ϕ : K →+* MvPolynomial σ k ⧸ I := (Ideal.Quotient.mk I).comp C
+  have hϕ : Function.Bijective ϕ :=
+    IsAlgClosed.ringHom_bijective_of_isIntegral ϕ
+      (MvPolynomial.comp_C_integral_of_surjective_of_isJacobsonRing _ Quotient.mk_surjective)
+  obtain ⟨φ, hφ⟩ := Function.Surjective.hasRightInverse hϕ.2
+  let x : σ → k := fun s => φ ((Ideal.Quotient.mk I) (X s))
+  have hx : ∀ s : σ, ϕ (x s) = (Ideal.Quotient.mk I) (X s) := fun s =>
+    hφ ((Ideal.Quotient.mk I) (X s))
+  refine ⟨x, (IsMaximal.eq_of_le (by infer_instance) hI.ne_top ?_).symm⟩
+  intro p hp
+  rw [← Quotient.eq_zero_iff_mem, map_mvPolynomial_eq_eval₂ (Ideal.Quotient.mk I) p, eval₂_eq']
+  rw [mem_vanishingIdeal_singleton_iff, eval_eq'] at hp
   simpa only [map_sum ϕ, ϕ.map_mul, map_prod ϕ, ϕ.map_pow, ϕ.map_zero, hx] using congr_arg ϕ hp
 
 /-- Main statement of the Nullstellensatz -/
