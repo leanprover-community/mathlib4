@@ -201,6 +201,42 @@ theorem EisensteinSeries.qExpansion_identity_pnat {k : ℕ} (hk : 1 ≤ k) (z : 
   · apply (summable_pow_mul_cexp k 1 z).congr
     simp
 
+lemma natcast_norm {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormSMulClass ℤ 𝕜]
+    (a : ℕ) : ‖(a : 𝕜)‖ = a := by
+  have h0 := norm_natCast_eq_mul_norm_one 𝕜 a
+  simpa using h0
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [NormSMulClass ℤ 𝕜]
+
+theorem summable_divisorsAntidiagonal_aux2 (k : ℕ) (r : 𝕜) (hr : ‖r‖ < 1) :
+    Summable fun c : (n : ℕ+) × { x // x ∈ (n : ℕ).divisorsAntidiagonal } ↦
+    (c.2.1).1 ^ k * (r ^ (c.2.1.2 * c.2.1.1)) := by
+  apply Summable.of_norm
+  rw [summable_sigma_of_nonneg]
+  constructor
+  · apply fun n => (hasSum_fintype _).summable
+  · simp only [norm_mul, norm_pow, tsum_fintype, Finset.univ_eq_attach]
+    · apply Summable.of_nonneg_of_le (f := fun c : ℕ+ ↦ ‖(c : 𝕜) ^ (k + 1) * r ^ (c : ℕ)‖)
+        (fun b => Finset.sum_nonneg (fun _ _ => by apply mul_nonneg (by simp) (by simp))) ?_
+        (by apply (summable_norm_pow_mul_geometric_of_norm_lt_one (k + 1) hr).subtype)
+      intro b
+      apply le_trans (b := ∑ _ ∈ (b : ℕ).divisors, ‖(b : 𝕜)‖ ^ k * ‖r ^ (b : ℕ)‖)
+      · rw [Finset.sum_attach ((b : ℕ).divisorsAntidiagonal) (fun x ↦
+            ‖(x.1 : 𝕜)‖ ^ (k : ℕ) * ‖r‖^ (x.2 * x.1)), Nat.sum_divisorsAntidiagonal
+            ((fun x y ↦ ‖(x : 𝕜)‖ ^ k * ‖r‖ ^ (y * x))) (n := b)]
+        gcongr <;> rename_i i hi <;> simp [natcast_norm] at *
+        · exact Nat.le_of_dvd b.2 hi
+        · apply le_of_eq
+          nth_rw 2 [← Nat.mul_div_cancel' hi]
+          ring_nf
+      · simp only [norm_pow, Finset.sum_const, nsmul_eq_mul, ← mul_assoc, add_comm k 1, pow_add,
+          pow_one, norm_mul]
+        gcongr
+        simpa [natcast_norm] using (Nat.card_divisors_le_self b)
+  · intro a
+    simpa using mul_nonneg (by simp) (by simp)
+
+
 theorem summable_divisorsAntidiagonal_aux (k : ℕ) (z : ℍ) :
     Summable fun c : (n : ℕ+) × { x // x ∈ (n : ℕ).divisorsAntidiagonal } ↦
     (c.2.1).1 ^ k * cexp (2 * ↑π * Complex.I * c.2.1.2 * z) ^ c.2.1.1 := by
@@ -235,6 +271,54 @@ theorem summable_prod_aux (k : ℕ) (z : ℍ) : Summable fun c : ℕ+ × ℕ+ �
   simp only [sigmaAntidiagonalEquivProd, mapdiv, PNat.mk_coe, Equiv.coe_fn_mk]
   apply summable_divisorsAntidiagonal_aux k z
 
+theorem summable_auxerret (k : ℕ) (r : 𝕜) (hr : ‖r‖ < 1) :
+    Summable fun c : (ℕ+ × ℕ+) ↦ (c.1 : 𝕜) ^ k * (r ^ (c.2 * c.1 : ℕ)) :=by
+  rw [sigmaAntidiagonalEquivProd.summable_iff.symm]
+  simp only [sigmaAntidiagonalEquivProd, mapdiv, PNat.mk_coe, Equiv.coe_fn_mk]
+  apply summable_divisorsAntidiagonal_aux2 k r hr
+
+theorem tsum_prod_pow_cexp_eq_tsum_sigma2 (k : ℕ) (r : 𝕜) (hr : ‖r‖ < 1) :
+    ∑' d : ℕ+, ∑' (c : ℕ+), (c ^ k : 𝕜) * (r ^ (d * c : ℕ)) =
+    ∑' e : ℕ+, sigma k e * r ^ (e : ℕ) := by
+  suffices  ∑' (c : ℕ+ × ℕ+), (c.1 ^ k : 𝕜) * (r ^ ((c.2 : ℕ) * (c.1 : ℕ))) =
+      ∑' e : ℕ+, sigma k e * r ^ (e : ℕ) by
+    rw [Summable.tsum_prod (by apply summable_auxerret k r hr), Summable.tsum_comm] at this
+    · simpa using this
+    · apply (summable_auxerret k r hr).prod_symm.congr
+      simp
+  simp only [← sigmaAntidiagonalEquivProd.tsum_eq, sigmaAntidiagonalEquivProd, mapdiv, PNat.mk_coe,
+    Equiv.coe_fn_mk, sigma_eq_sum_div', Nat.cast_sum, Nat.cast_pow]
+  rw [Summable.tsum_sigma (summable_divisorsAntidiagonal_aux2 k r hr)]
+  apply tsum_congr
+  intro n
+  simp only [tsum_fintype, Finset.univ_eq_attach, Finset.sum_attach ((n : ℕ).divisorsAntidiagonal)
+    (fun (x : ℕ × ℕ) ↦ (x.1 : 𝕜) ^ k * r ^ (x.2 * x.1)),
+    Nat.sum_divisorsAntidiagonal' (fun x y ↦ (x : 𝕜) ^ k * r ^ (y * x)),
+    Finset.sum_mul]
+  refine Finset.sum_congr (rfl) fun i hi ↦ ?_
+  have hni : (n / i : ℕ) * (i : ℕ) = n := by
+    simp only [Nat.mem_divisors, ne_eq, PNat.ne_zero, not_false_eq_true, and_true] at *
+    have :=  Nat.div_mul_cancel hi
+    nth_rw 2 [← this]
+  simp
+  left
+  norm_cast at *
+  nth_rw 2 [← hni]
+  ring
+
+theorem tsum_prod_pow_cexp_eq_tsum_sigma3 (k : ℕ) (z : ℍ) :
+    ∑' d : ℕ+, ∑' (c : ℕ+), (c ^ k : ℂ) * cexp (2 * ↑π * Complex.I * d * z) ^ (c : ℕ) =
+    ∑' e : ℕ+, sigma k e * cexp (2 * ↑π * Complex.I * z) ^ (e : ℕ) := by
+  have := tsum_prod_pow_cexp_eq_tsum_sigma2 k (cexp (2 * ↑π * Complex.I * z))
+    (by apply UpperHalfPlane.norm_exp_two_pi_I_lt_one z)
+  simp_rw [← this, ← exp_nsmul]
+  congr
+  ext n
+  congr
+  ext m
+  ring_nf
+
+
 theorem tsum_prod_pow_cexp_eq_tsum_sigma (k : ℕ) (z : ℍ) :
     ∑' d : ℕ+, ∑' (c : ℕ+), (c ^ k : ℂ) * cexp (2 * ↑π * Complex.I * d * z) ^ (c : ℕ) =
     ∑' e : ℕ+, sigma k e * cexp (2 * ↑π * Complex.I * z) ^ (e : ℕ) := by
@@ -249,7 +333,7 @@ theorem tsum_prod_pow_cexp_eq_tsum_sigma (k : ℕ) (z : ℍ) :
   rw [Summable.tsum_sigma (summable_divisorsAntidiagonal_aux k z)]
   apply tsum_congr
   intro n
-  simp only [tsum_fintype, Finset.univ_eq_attach,Finset.sum_attach ((n : ℕ).divisorsAntidiagonal)
+  simp only [tsum_fintype, Finset.univ_eq_attach, Finset.sum_attach ((n : ℕ).divisorsAntidiagonal)
     (fun (x : ℕ × ℕ) ↦ (x.1 : ℂ) ^ k * cexp (2 * ↑π * Complex.I * x.2 * z) ^ x.1),
     Nat.sum_divisorsAntidiagonal' (fun x y ↦ (x : ℂ) ^ k * cexp (2 * ↑π * Complex.I * y * z) ^ x),
     Finset.sum_mul]
@@ -271,9 +355,9 @@ theorem summable_prod_eisSummand {k : ℕ} (hk : 3 ≤ k) (z : ℍ) :
   simp [EisensteinSeries.eisSummand]
 
 lemma tsum_prod_eisSummand_eq_sigma_cexp {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
-    ∑' (x : Fin 2 → ℤ), eisSummand k x z = 2 * riemannZeta ↑k +
-    2 * ((-2 * ↑π * Complex.I) ^ k / ↑(k - 1)!) *
-    ∑' (n : ℕ+), ↑((σ (k - 1)) ↑n) * cexp (2 * ↑π * Complex.I * ↑z) ^ (n : ℕ) := by
+    ∑' (x : Fin 2 → ℤ), eisSummand k x z = 2 * riemannZeta k +
+    2 * ((-2 * π * Complex.I) ^ k / (k - 1)!) *
+    ∑' (n : ℕ+), (σ (k - 1) n) * cexp (2 * π * Complex.I * z) ^ (n : ℕ) := by
   rw [← (piFinTwoEquiv fun _ ↦ ℤ).symm.tsum_eq, Summable.tsum_prod
     (by apply summable_prod_eisSummand hk), tsum_nat_eq_zero_two_pnat]
   · have (b : ℕ+) := EisensteinSeries.qExpansion_identity_pnat (k := k - 1) (by omega)
@@ -340,8 +424,8 @@ lemma tsum_prod_eisSummand_eq_riemannZeta_eisensteinSeries {k : ℕ} (hk : 3 ≤
 
 /-- The q-Expansion of normalised Eisenstein series of level one with `riemannZeta` term. -/
 lemma EisensteinSeries.q_expansion_riemannZeta {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
-    (E hk) z = 1 + (1 / (riemannZeta (k))) * ((-2 * ↑π * Complex.I) ^ k / (k - 1)!) *
-    ∑' n : ℕ+, sigma (k - 1) n * cexp (2 * ↑π * Complex.I * z) ^ (n : ℤ) := by
+    (E hk) z = 1 + (1 / (riemannZeta (k))) * ((-2 * π * Complex.I) ^ k / (k - 1)!) *
+    ∑' n : ℕ+, sigma (k - 1) n * cexp (2 * π * Complex.I * z) ^ (n : ℤ) := by
   have : (eisensteinSeries_MF (k := k) (by omega) standardcongruencecondition) z =
     (eisensteinSeries_SIF standardcongruencecondition k) z := rfl
   rw [E, ModularForm.smul_apply, this, eisensteinSeries_SIF_apply standardcongruencecondition k z,
@@ -366,7 +450,7 @@ theorem even_div_two_ne_zero {k : ℕ} (hk2 : Even k) (hkn0 : k ≠ 0) : k / 2 �
   refine (Int.two_le_iff_pos_of_even (m := k) (by simpa using hk2 )).mpr (by omega)
 
 lemma eisensteinSeries_coeff_identity {k : ℕ} (hk2 : Even k) (hkn0 : k ≠ 0) :
-  (1 / (riemannZeta (k))) * ((-2 * ↑π * Complex.I) ^ k / (k - 1)!) = -((2 * k) / bernoulli k) := by
+  (1 / (riemannZeta (k))) * ((-2 * π * Complex.I) ^ k / (k - 1)!) = -((2 * k) / bernoulli k) := by
   have hk0 := even_div_two_ne_zero hk2 hkn0
   have hk1 : 2 * (k / 2) = k := by apply Nat.two_mul_div_two_of_even hk2
   have hk11 : 2 * (((k / 2) : ℕ) : ℂ) = k := by norm_cast
