@@ -23,6 +23,11 @@ jobs:
           repository: leanprover-community/mathlib4-nightly-testing
           ref: nightly-testing
 
+      - name: Add upstream
+        run: |
+          # The nightly-testing branch should live on the nightly-testing remote, otherwise `lake exe cache` gets confused.
+          git remote add nightly-testing https://github.com/leanprover-community/mathlib4-nightly-testing.git
+
       - name: Build and lint the project.
         id: build-lean
         uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # v1.2.0

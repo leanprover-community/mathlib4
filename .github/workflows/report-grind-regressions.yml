@@ -69,8 +69,9 @@ jobs:
         echo "buildlog<<${delimiter}" >> $GITHUB_OUTPUT
         # Pipe to tee so we see the build results both on Zulip and in the log.
         # Zulip gives us a max of 10 000 characters.
-        # We cut off the build log after 9000 characters so we can add some descriptive comments.
+        # We cut off the build log after 9000 characters so we can add some info before and after.
         lake build | tee >(head --bytes=9000 >> $GITHUB_OUTPUT)
+        echo "..." >> $GITHUB_OUTPUT # This also ensures the output ends with a newline.
         echo "${delimiter}" >> $GITHUB_OUTPUT
 
     - name: Post output to Zulip (linarith)
@@ -109,8 +110,9 @@ jobs:
         echo "buildlog<<${delimiter}" >> $GITHUB_OUTPUT
         # Pipe to tee so we see the build results both on Zulip and in the log.
         # Zulip gives us a max of 10 000 characters.
-        # We cut off the build log after 9000 characters so we can add some descriptive comments.
+        # We cut off the build log after 9000 characters so we can add some info before and after.
         lake build | tee >(head --bytes=9000 >> $GITHUB_OUTPUT)
+        echo "..." >> $GITHUB_OUTPUT # This also ensures the output ends with a newline.
         echo "${delimiter}" >> $GITHUB_OUTPUT
 
     - name: Post output to Zulip (omega)
@@ -149,8 +151,9 @@ jobs:
         echo "buildlog<<${delimiter}" >> $GITHUB_OUTPUT
         # Pipe to tee so we see the build results both on Zulip and in the log.
         # Zulip gives us a max of 10 000 characters.
-        # We cut off the build log after 9000 characters so we can add some descriptive comments.
+        # We cut off the build log after 9000 characters so we can add some info before and after.
         lake build | tee >(head --bytes=9000 >> $GITHUB_OUTPUT)
+        echo "..." >> $GITHUB_OUTPUT # This also ensures the output ends with a newline.
         echo "${delimiter}" >> $GITHUB_OUTPUT
 
     - name: Remove GitHub problem matcher wrapper
