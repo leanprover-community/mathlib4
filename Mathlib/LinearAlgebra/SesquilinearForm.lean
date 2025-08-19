@@ -224,6 +224,41 @@ theorem isSymm_iff_eq_flip {B : LinearMap.BilinForm R M} : B.IsSymm ↔ B = B.fl
 
 end Symmetric
 
+/-! ### Positive semidefinite bilinear maps -/
+
+section PositiveSemidefinite
+
+variable [CommSemiring R] [AddCommMonoid M] [Module R M] {I₁ I₂ : R →+* R}
+
+/-- A sesquilinear map `B` is **positive** if for any `x` we have `0 ≤ B x x`. -/
+structure IsPos [LE R] (B : M →ₛₗ[I₁] M →ₛₗ[I₂] R) where
+  nonneg : ∀ x, 0 ≤ B x x
+
+lemma isPos_def [LE R] {B : M →ₛₗ[I₁] M →ₛₗ[I₂] R} : B.IsPos ↔ ∀ x, 0 ≤ B x x :=
+  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+
+@[simp]
+lemma isPos_zero [Preorder R] : IsPos (0 : M →ₛₗ[I₁] M →ₛₗ[I₂] R) := ⟨fun _ ↦ le_rfl⟩
+
+/-- A sesquilinear map `B` is **positive semidefinite** if it is symmetric and positive. -/
+structure IsPosSemidef [LE R] (B : M →ₛₗ[I₁] M →ₗ[R] R) extends B.IsSymm, B.IsPos
+
+variable {B : M →ₛₗ[I₁] M →ₗ[R] R}
+
+lemma IsPosSemidef.isSymm [LE R] (h : B.IsPosSemidef) : B.IsSymm := h.toIsSymm
+
+lemma IsPosSemidef.isPos [LE R] (h : B.IsPosSemidef) : B.IsPos := h.toIsPos
+
+lemma isPosSemidef_def [LE R] : B.IsPosSemidef ↔ B.IsSymm ∧ B.IsPos :=
+  ⟨fun h ↦ ⟨h.isSymm, h.isPos⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, h₂⟩⟩
+
+@[simp]
+lemma isPosSemidef_zero [Preorder R] : IsPosSemidef (0 : M →ₛₗ[I₁] M →ₗ[R] R) where
+  toIsSymm := isSymm_zero
+  toIsPos := isPos_zero
+
+end PositiveSemidefinite
+
 /-! ### Alternating bilinear maps -/
 
 
