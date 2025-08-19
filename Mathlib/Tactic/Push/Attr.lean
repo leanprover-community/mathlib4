@@ -81,7 +81,7 @@ The `push` attribute is used to tag lemmas that "push" a constant into an expres
 
 For example:
 ```lean
-@[push] theorem not_not (p : Prop) : ¬¬p ↔ p
+@[push] theorem not_not (p : Prop) : ¬ ¬p ↔ p
 
 @[push] theorem not_imp (p q : Prop) : ¬(p → q) ↔ p ∧ ¬q
 

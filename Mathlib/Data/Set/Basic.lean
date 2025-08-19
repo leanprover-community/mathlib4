@@ -513,6 +513,7 @@ theorem nonempty_iff_ne_empty' : Nonempty s ↔ s ≠ ∅ :=
 @[push ←]
 theorem nonempty_iff_empty_ne' : Nonempty s ↔ ∅ ≠ s :=
   nonempty_iff_ne_empty'.trans ne_comm
+
 alias ⟨Nonempty.ne_empty, _⟩ := nonempty_iff_ne_empty
 
 @[simp]

@@ -112,7 +112,7 @@ def elabHead (term : Term) : TermElabM Head := withRef term do
       return .name name
     | _ => throwError "Could not resolve `push` arugment {term}. \
       Expected either a constant as in `push Not`, \
-      or a function with `·` notation as in `push ¬.`"
+      or a function with `·` notation as in `push ¬ .`"
 
 end ElabHead
 
@@ -156,7 +156,7 @@ def pushStep (head : Head) : Simp.Simproc := fun e => do
   let thms := pushExt.getState (← getEnv)
   if let some r ← Simp.rewrite? e thms {} "push" false then
     -- We return `.visit r` instead of `.continue r`, because in the case of a triple negation,
-    -- after rewriting `¬¬¬p` into `¬p`, we want to rewrite again at `¬p`.
+    -- after rewriting `¬ ¬ ¬p` into `¬p`, we want to rewrite again at `¬p`.
     return Simp.Step.visit r
   if let some ex := e_whnf.not? then
     pushNegBuiltin ex
@@ -262,7 +262,7 @@ def throwNoProgress (tactic : Name) (head : Head) : TacticM Unit :=
 `push` pushes the given constant away from the root of the expression. For example
 - `push · ∈ ·` rewrites `x ∈ {y} ∪ zᶜ` into `x = y ∨ ¬ x ∈ z`.
 - `push (disch := positivity) Real.log` rewrites `log (a * b ^ 2)` into `log a + 2 * log b`.
-- `push ¬·` is the same as `push_neg` or `push Not`, and it rewrites
+- `push ¬ ·` is the same as `push_neg` or `push Not`, and it rewrites
   `¬∀ ε > 0, ∃ δ > 0, δ < ε` into `∃ ε > 0, ∀ δ > 0, ε ≤ δ`.
 
 In addition to constants, `push` can be used to push `∀` and `fun` binders:
