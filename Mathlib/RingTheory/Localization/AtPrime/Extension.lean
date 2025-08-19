@@ -64,7 +64,7 @@ theorem algebraMapSubmonoid_primeCompl_le_nonZeroDivisors [IsDomain R] [IsDomain
     [FaithfulSMul R S] [p.IsPrime] :
     algebraMapSubmonoid S p.primeCompl ≤ nonZeroDivisors S := by
   apply algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul
-  exact fun _ h ↦  mem_nonZeroDivisors_of_ne_zero <| not_zero_of_mem_primeCompl h
+  exact fun _ h ↦  mem_nonZeroDivisors_of_ne_zero <| ne_of_mem_of_not_mem h <| by simp
 
 theorem noZeroSMulDivisors_localization [IsDomain R] [IsDomain S] [FaithfulSMul R S] [p.IsPrime]
     [IsLocalization (algebraMapSubmonoid S p.primeCompl) Sₚ] :
@@ -376,7 +376,7 @@ theorem ramificationIdx_map_eq_ramificationIdx [Module.Finite R S] [NoZeroSMulDi
     [IsDedekindDomain Sₚ] [P.IsPrime] :
     (maximalIdeal Rₚ).ramificationIdx (algebraMap Rₚ Sₚ) (P.map (algebraMap S Sₚ)) =
       p.ramificationIdx (algebraMap R S) P := by
-  have : FaithfulSMul R Rₚ := faithfulSMul Rₚ p
+  have : FaithfulSMul R Rₚ := faithfulSMul Rₚ _ p
   have h₁ : maximalIdeal Rₚ ≠ ⊥ := by
     rw [← map_eq_maximalIdeal p Rₚ]
     exact map_ne_bot_of_ne_bot (NeZero.ne p)
