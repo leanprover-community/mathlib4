@@ -5489,7 +5489,6 @@ import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
 import Mathlib.RingTheory.LocalRing.Module
 import Mathlib.RingTheory.LocalRing.NonLocalRing
 import Mathlib.RingTheory.LocalRing.Quotient
-import Mathlib.RingTheory.LocalRing.ResidueField.Algebraic
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.LocalRing.ResidueField.Fiber

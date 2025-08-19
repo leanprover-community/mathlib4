@@ -20,8 +20,10 @@ An arithmetic-geometric sequence is a sequence defined by the recurrence relatio
 ## Main statements
 
 * `arithGeom_eq`: for `a ≠ 1`, `arithGeom a b u₀ n = a ^ n * (u₀ - (b / (1 - a))) + b / (1 - a)`
-* `tendsto_arithGeom_atTop`: if `1 < a` and `b / (1 - a) < u₀`, then `arithGeom a b u₀ n` tends to
-  `+∞` as `n` tends to `+∞`.
+* `tendsto_arithGeom_atTop_of_one_lt`: if `1 < a` and `b / (1 - a) < u₀`, then `arithGeom a b u₀ n`
+  tends to `+∞` as `n` tends to `+∞`.
+  `tendsto_arithGeom_nhds_of_lt_one`: if `0 ≤ a < 1`, then `arithGeom a b u₀ n` tends to
+  `b / (1 - a)` as `n` tends to `+∞`.
 * `arithGeom_strictMono`: if `1 < a` and `b / (1 - a) < u₀`, then `arithGeom a b u₀` is strictly
   monotone.
 
