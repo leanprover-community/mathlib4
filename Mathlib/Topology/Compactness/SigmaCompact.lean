@@ -319,7 +319,7 @@ structure CompactExhaustion (X : Type*) [TopologicalSpace X] where
   /-- The sets in the compact exhaustion are in fact compact. -/
   isCompact' : ∀ n, IsCompact (toFun n)
   /-- The sets in the compact exhaustion form a sequence:
-    each set is contained in the interior of the next. -/
+  each set is contained in the interior of the next. -/
   subset_interior_succ' : ∀ n, toFun n ⊆ interior (toFun (n + 1))
   /-- The union of all sets in a compact exhaustion equals the entire space. -/
   iUnion_eq' : ⋃ n, toFun n = univ

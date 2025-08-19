@@ -37,8 +37,7 @@ section Invariant
 
 variable {τ : Type*} {α : Type*}
 
-/-- A set `s ⊆ α` is invariant under `ϕ : τ → α → α` if
-    `ϕ t s ⊆ s` for all `t` in `τ`. -/
+/-- A set `s ⊆ α` is invariant under `ϕ : τ → α → α` if `ϕ t s ⊆ s` for all `t` in `τ`. -/
 def IsInvariant (ϕ : τ → α → α) (s : Set α) : Prop :=
   ∀ t, MapsTo (ϕ t) s s
 
@@ -47,8 +46,7 @@ variable (ϕ : τ → α → α) (s : Set α)
 theorem isInvariant_iff_image : IsInvariant ϕ s ↔ ∀ t, ϕ t '' s ⊆ s := by
   simp_rw [IsInvariant, mapsTo']
 
-/-- A set `s ⊆ α` is forward-invariant under `ϕ : τ → α → α` if
-    `ϕ t s ⊆ s` for all `t ≥ 0`. -/
+/-- A set `s ⊆ α` is forward-invariant under `ϕ : τ → α → α` if `ϕ t s ⊆ s` for all `t ≥ 0`. -/
 def IsFwInvariant [Preorder τ] [Zero τ] (ϕ : τ → α → α) (s : Set α) : Prop :=
   ∀ ⦃t⦄, 0 ≤ t → MapsTo (ϕ t) s s
 
@@ -75,7 +73,7 @@ end Invariant
 -/
 
 /-- A flow on a topological space `α` by an additive topological
-    monoid `τ` is a continuous monoid action of `τ` on `α`. -/
+monoid `τ` is a continuous monoid action of `τ` on `α`. -/
 structure Flow (τ : Type*) [TopologicalSpace τ] [AddMonoid τ] [ContinuousAdd τ] (α : Type*)
   [TopologicalSpace α] where
   /-- The map `τ → α → α` underlying a flow of `τ` on `α`. -/
@@ -119,7 +117,7 @@ theorem map_zero : ϕ 0 = id := funext ϕ.map_zero'
 theorem map_zero_apply (x : α) : ϕ 0 x = x := ϕ.map_zero' x
 
 /-- Iterations of a continuous function from a topological space `α`
-    to itself defines a semiflow by `ℕ` on `α`. -/
+to itself defines a semiflow by `ℕ` on `α`. -/
 def fromIter {g : α → α} (h : Continuous g) : Flow ℕ α where
   toFun n x := g^[n] x
   cont' := continuous_prod_of_discrete_left.mpr (Continuous.iterate h)
@@ -147,7 +145,7 @@ theorem isInvariant_iff_image_eq (s : Set α) : IsInvariant ϕ s ↔ ∀ t, ϕ t
       fun h t => by rw [h t])
 
 /-- The time-reversal of a flow `ϕ` by a (commutative, additive) group
-    is defined `ϕ.reverse t x = ϕ (-t) x`. -/
+is defined `ϕ.reverse t x = ϕ (-t) x`. -/
 def reverse : Flow τ α where
   toFun t := ϕ (-t)
   cont' := ϕ.continuous continuous_fst.neg continuous_snd
