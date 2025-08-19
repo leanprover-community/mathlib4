@@ -178,13 +178,6 @@ theorem IsPositive.of_isSymmetricProjection {p : E →ₗ[𝕜] E} (hp : p.IsSym
 @[deprecated (since := "19-08-2025")]
 alias IsPositive.of_isStarProjection := IsPositive.of_isSymmetricProjection
 
-theorem IsSymmetricProjection.sub_of_mul_eq_right {p q : E →ₗ[𝕜] E}
-    (hp : p.IsSymmetricProjection) (hq : q.IsSymmetricProjection) (hqp : q ∘ₗ p = p) :
-    (q - p).IsSymmetricProjection := by
-  refine ⟨hp.isIdempotentElem.sub hq.isIdempotentElem (LinearMap.ext fun x => ext_inner_left 𝕜
-    fun y => ?_) hqp, hq.isSymmetric.sub hp.isSymmetric⟩
-  simp_rw [Module.End.mul_apply, ← hp.isSymmetric _, ← hq.isSymmetric _, ← comp_apply, hqp]
-
 theorem IsSymmetricProjection.le_iff_comp_eq_right {p q : E →ₗ[𝕜] E}
     (hp : p.IsSymmetricProjection) (hq : q.IsSymmetricProjection) : p ≤ q ↔ q ∘ₗ p = p := by
   refine ⟨fun ⟨h1, h2⟩ => ?_, fun hpq ↦
