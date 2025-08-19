@@ -1016,7 +1016,7 @@ variable {𝕜} in
 @[simps!]
 def proj (i : ι) : PiLp p β →L[𝕜] β i where
   __ := projₗ p β i
-  cont := continuous_apply i
+  cont := continuous_apply ..
 
 end Fintype
 
