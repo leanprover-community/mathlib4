@@ -263,12 +263,12 @@ def findLinarithContradiction (cfg : LinarithConfig) (g : MVarId)
       withTraceNode `linarith (return m!"{exceptEmoji ·} running on type {α}") do
         let (pf, idxs) ←
           proveFalseByLinarith cfg.transparency cfg.oracle cfg.discharger g (L.map Prod.fst)
-        let idxs := idxs.map fun i => (L.get! i).2
+        let idxs := idxs.map fun i => L[i]!.2
         return (pf, idxs))
   catch e => throwError "linarith failed to find a contradiction\n{g}\n{e.toMessageData}"
 
-  /--
-  Given a list `hyps` of proofs of comparisons, `runLinarith cfg prefType g hyps` preprocesses
+/--
+Given a list `hyps` of proofs of comparisons, `runLinarith cfg prefType g hyps` preprocesses
 `hyps` according to the list of preprocessors in `cfg`. This results in a list of branches
 (typically only one), each of which must succeed in order to close the goal.
 
@@ -284,7 +284,8 @@ def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
     (hyps : List Expr) : MetaM (List Nat) := do
   let singleProcess (g : MVarId) (hyps : List (Expr × Nat)) : MetaM (Expr × List Nat) :=
     g.withContext do
-      linarithTraceProofs s!"after preprocessing, linarith has {hyps.length} facts:" (hyps.map Prod.fst)
+      linarithTraceProofs
+        s!"after preprocessing, linarith has {hyps.length} facts:" (hyps.map Prod.fst)
       let mut hyp_set ← partitionByTypeIdx hyps
       trace[linarith] "hypotheses appear in {hyp_set.size} different types"
       -- If we have a preferred type, strip it from `hyp_set` and prepare a handler with a custom
@@ -297,7 +298,7 @@ def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
             withTraceNode `linarith (return m!"{exceptEmoji ·} running on preferred type {t}") do
               let (pf, idxs) ←
                 proveFalseByLinarith cfg.transparency cfg.oracle cfg.discharger g (vs.map Prod.fst)
-              let idxs := idxs.map fun j => (vs.get! j).2
+              let idxs := idxs.map fun j => vs[j]!.2
               return (pf, idxs)
         else
           pure failure
@@ -329,8 +330,8 @@ def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
 --     | some (_, htype) => isDefEq htype restr_type
 --     | none => return false)
 
-  /--
-  `linarithUsedHyps only_on hyps cfg g` runs `linarith` with the supplied hypotheses. It
+/--
+`linarithUsedHyps only_on hyps cfg g` runs `linarith` with the supplied hypotheses. It
 fails if the goal cannot be closed. When successful, it returns the subset of `hyps` that
 were actually used (i.e. had a nonzero coefficient) in the final certificate.
 
@@ -381,7 +382,7 @@ partial def linarithUsedHyps (only_on : Bool) (hyps : List Expr)
 
     linarithTraceProofs "linarith is running on the following hypotheses:" hyps
     let usedIdxs ← runLinarith cfg target_type g hyps
-    let used := usedIdxs.filterMap hyps.get?
+    let used := usedIdxs.filterMap (hyps[·]?)
     let used := match new_var with
       | some nv => used.filter (fun h => !(h == nv))
       | none => used
