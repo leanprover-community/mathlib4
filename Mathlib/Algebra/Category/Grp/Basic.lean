@@ -71,8 +71,6 @@ structure Grp.Hom (A B : Grp.{u}) where
   /-- The underlying monoid homomorphism. -/
   hom' : A →* B
 
-attribute [to_additive existing AddGrp.Hom.mk] Grp.Hom.mk
-
 namespace Grp
 
 @[to_additive]
@@ -282,8 +280,6 @@ structure CommGrp.Hom (A B : CommGrp.{u}) where
   private mk ::
   /-- The underlying monoid homomorphism. -/
   hom' : A →* B
-
-attribute [to_additive existing AddCommGrp.Hom.mk] CommGrp.Hom.mk
 
 namespace CommGrp
 
