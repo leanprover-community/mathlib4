@@ -65,7 +65,7 @@ lemma isStandardOpenImmersion_algebraMap [Algebra R S] :
 
 namespace IsStandardOpenImmersion
 
-lemma algebraMap' [Algebra R S] (r : R) [IsLocalization.Away r S] :
+protected lemma algebraMap [Algebra R S] (r : R) [IsLocalization.Away r S] :
     (algebraMap R S).IsStandardOpenImmersion :=
   isStandardOpenImmersion_algebraMap.2 ⟨r, inferInstance⟩
 
@@ -107,7 +107,7 @@ theorem isStableUnderBaseChange : IsStableUnderBaseChange.{u} IsStandardOpenImme
 
 theorem holdsForLocalizationAway : HoldsForLocalizationAway.{u} IsStandardOpenImmersion := by
   introv R h
-  exact .algebraMap' r
+  exact .algebraMap r
 
 end IsStandardOpenImmersion
 
