@@ -72,7 +72,7 @@ lemma top_eq : induced (fun x y => B x y) Pi.topologicalSpace =
 
 open TopologicalSpace in
 open Topology in
-lemma dualEmbedding_isSurjective : Function.Surjective (WeakBilin.eval B) := by
+lemma dualEmbedding_surjective : Function.Surjective (WeakBilin.eval B) := by
   intro f₁
   have c1 : Continuous[⨅ i, induced (B.flip i) inferInstance, inferInstance] f₁ := by
     convert f₁.2
