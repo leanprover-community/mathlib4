@@ -38,7 +38,7 @@ namespace Name
 
 /-- Find the largest prefix `n` of a `Name` such that `f n != none`, then replace this prefix
 with the value of `f n`. -/
-def mapPrefix (f : Name → Option Name) (n : Name) : Name := Id.run do
+@[specialize] def mapPrefix (f : Name → Option Name) (n : Name) : Name := Id.run do
   if let some n' := f n then return n'
   match n with
   | anonymous => anonymous

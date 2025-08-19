@@ -74,8 +74,6 @@ structure MonCat.Hom (A B : MonCat.{u}) where
   /-- The underlying monoid homomorphism. -/
   hom' : A →* B
 
-attribute [to_additive existing AddMonCat.Hom.mk] MonCat.Hom.mk
-
 namespace MonCat
 
 @[to_additive]
@@ -257,8 +255,6 @@ structure CommMonCat.Hom (A B : CommMonCat.{u}) where
   private mk ::
   /-- The underlying monoid homomorphism. -/
   hom' : A →* B
-
-attribute [to_additive existing AddCommMonCat.Hom.mk] CommMonCat.Hom.mk
 
 namespace CommMonCat
 
