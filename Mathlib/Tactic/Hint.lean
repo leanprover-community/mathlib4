@@ -24,7 +24,6 @@ open Lean.Meta.Tactic.TryThis
 
 namespace Mathlib.Tactic.Hint
 
-
 /-- An environment extension for registering hint tactics with priorities. -/
 initialize hintExtension :
     SimplePersistentEnvExtension (Nat × TSyntax `tactic) (List (Nat × TSyntax `tactic)) ←
@@ -32,7 +31,6 @@ initialize hintExtension :
     addEntryFn := (·.cons)
     addImportedFn := mkStateFromImportedEntries (·.cons) {}
   }
-
 
 /-- Register a new hint tactic. -/
 def addHint (prio : Nat) (stx : TSyntax `tactic) : CoreM Unit := do
@@ -43,7 +41,6 @@ def getHints : CoreM (List (Nat × TSyntax `tactic)) :=
   return hintExtension.getState (← getEnv)
 
 open Lean.Elab.Command in
-
 /--
 Register a tactic for use with the `hint` tactic, e.g. `register_hint simp_all`.
 An optional priority can be provided with `register_hint (priority := n) tac`.
