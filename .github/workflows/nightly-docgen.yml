@@ -109,7 +109,7 @@ jobs:
           type: 'stream'
           topic: 'Mathlib status updates'
           content: |
-            ✅ The docgen run for Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) has [succeeded](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}) ([${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})).
+            ✅ The docgen run for Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) has [succeeded](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) ([${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})).
 
       - name: Send failure message on Zulip
         uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
@@ -122,5 +122,5 @@ jobs:
           type: 'stream'
           topic: 'Mathlib status updates'
           content: |
-            ❌ The docgen run for Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}) ([${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})).
-            You can `git fetch; git checkout nightly-testing` and push a fix.
+            ❌ The docgen run for Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) ([${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})).
+            This likely indicates an issue with the nightly Lean build, or a required update in doc-gen4.
