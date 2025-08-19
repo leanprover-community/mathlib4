@@ -83,24 +83,21 @@ def jointlySurjectivePretopology [IsJointlySurjectivePreserving ⊤] : Pretopolo
 /-- The jointly surjective topology on `Scheme` is defined by the same condition as the jointly
 surjective pretopology. -/
 def jointlySurjectiveTopology [IsJointlySurjectivePreserving ⊤] :
-    GrothendieckTopology Scheme.{u} where
-  sieves X s := jointlySurjectivePretopology X s
-  top_mem' X x := ⟨X, x, 𝟙 X, trivial, by simp⟩
-  pullback_stable' X B s b hs x := by
-    obtain ⟨-, y, -, ⟨Y, u, hu⟩, hyx⟩ := jointlySurjectivePretopology.pullbacks b s hs x
-    refine ⟨pullback u b, y, pullback.snd u b, ?_, hyx⟩
-    rw [Sieve.pullback_apply, ← pullback.condition]
-    exact s.downward_closed hu (pullback.fst u b)
-  transitive' X s hs t hst x :=
-    let ⟨Y, y, u, hsu, hyx⟩ := hs x
-    let ⟨Z, z, v, htv, hzy⟩ := hst hsu y
-    ⟨Z, z, v ≫ u, htv, by simp [hzy, hyx]⟩
+    GrothendieckTopology Scheme.{u} :=
+  jointlySurjectivePretopology.toGrothendieck.copy (fun X s ↦ jointlySurjectivePretopology X ↑s) <|
+    funext fun _ ↦ Set.ext fun s ↦
+      ⟨fun ⟨_, hp, hps⟩ x ↦ let ⟨Y, y, u, hu, hyx⟩ := hp x; ⟨Y, y, u, hps _ hu, hyx⟩,
+      fun hs ↦ ⟨s, hs, le_rfl⟩⟩
+
+theorem mem_jointlySurjectiveTopology_iff_jointlySurjectivePretopology
+    [IsJointlySurjectivePreserving ⊤] {X : Scheme.{u}} {s : Sieve X} :
+    s ∈ jointlySurjectiveTopology X ↔ jointlySurjectivePretopology X ↑s :=
+  Iff.rfl
 
 lemma jointlySurjectiveTopology_eq_toGrothendieck_jointlySurjectivePretopology
     [IsJointlySurjectivePreserving ⊤] :
     jointlySurjectiveTopology.{u} = jointlySurjectivePretopology.toGrothendieck :=
-  GrothendieckTopology.ext <| funext fun _ ↦ Set.ext fun s ↦ ⟨fun hs ↦ ⟨s, hs, le_rfl⟩,
-    fun ⟨_, hp, hps⟩ x ↦ let ⟨Y, y, u, hu, hyx⟩ := hp x; ⟨Y, y, u, hps _ hu, hyx⟩⟩
+  GrothendieckTopology.copy_eq
 
 lemma pretopology_le_inf [IsJointlySurjectivePreserving ⊤] :
     pretopology P ≤ jointlySurjectivePretopology ⊓ P.pretopology := by
