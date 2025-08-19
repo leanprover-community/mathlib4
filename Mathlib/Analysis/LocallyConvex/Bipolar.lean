@@ -166,8 +166,8 @@ theorem flip_polar_polar_eq {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E}
   · exact closedAbsConvexHull_min (subset_bipolar B s) (polar_AbsConvex _) (polar_isClosed B.flip _)
 
 /-
-When `s` is empty, `closedAbsConvexHull (E := WeakBilin B) 𝕜 s` is the empty set, but
-`B.polar_gc.closureOperator s` equals `{0}` when `B` is left separating.
+This fails when `s` is empty. Indeed, `closedAbsConvexHull (E := WeakBilin B) 𝕜 s` is the empty set,
+but `B.polar_gc.closureOperator s` equals `{0}` when `B` is left separating.
 -/
 lemma closureOperator_polar_gc_nonempty {s : Set E} [Nonempty s] :
     B.polar_gc.closureOperator s = closedAbsConvexHull (E := WeakBilin B) 𝕜 s := by
