@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Field.GeomSum
 import Mathlib.Order.Filter.AtTopBot.Archimedean
 import Mathlib.Order.Iterate
 import Mathlib.Topology.Algebra.Algebra
@@ -395,6 +395,12 @@ theorem ENNReal.tsum_geometric (r : ℝ≥0∞) : ∑' n : ℕ, r ^ n = (1 - r)�
 
 theorem ENNReal.tsum_geometric_add_one (r : ℝ≥0∞) : ∑' n : ℕ, r ^ (n + 1) = r * (1 - r)⁻¹ := by
   simp only [_root_.pow_succ', ENNReal.tsum_mul_left, ENNReal.tsum_geometric]
+
+lemma ENNReal.tsum_two_zpow_neg_add_one :
+    ∑' m : ℕ, 2 ^ (-1 - m  : ℤ) = (1 : ℝ≥0∞) := by
+  simp_rw [neg_sub_left, ENNReal.zpow_neg,← Nat.cast_one (R := ℤ), ← Nat.cast_add, zpow_natCast,
+    ENNReal.inv_pow, ENNReal.tsum_geometric_add_one, one_sub_inv_two, inv_inv]
+  exact ENNReal.inv_mul_cancel (Ne.symm (NeZero.ne' 2)) (Ne.symm top_ne_ofNat)
 
 end Geometric
 

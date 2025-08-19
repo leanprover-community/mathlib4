@@ -61,7 +61,13 @@ variable {α : Sort u} {β : Sort v} {γ : Sort w}
 
 /-- `α ≃ β` is the type of functions from `α → β` with a two-sided inverse. -/
 structure Equiv (α : Sort*) (β : Sort _) where
+  /-- The forward map of an equivalence.
+
+  Do NOT use directly. Use the coercion instead. -/
   protected toFun : α → β
+  /-- The backward map of an equivalence.
+
+  Do NOT use `e.invFun` directly. Use the coercion of `e.symm` instead. -/
   protected invFun : β → α
   protected left_inv : LeftInverse invFun toFun := by intro; first | rfl | ext <;> rfl
   protected right_inv : RightInverse invFun toFun := by intro; first |  rfl | ext <;> rfl
@@ -744,6 +750,9 @@ protected lemma exists_congr (h : ∀ a, p a ↔ q (e a)) : (∃ a, p a) ↔ ∃
 protected lemma exists_congr' (h : ∀ b, p (e.symm b) ↔ q b) : (∃ a, p a) ↔ ∃ b, q b :=
   e.exists_congr_left.trans <| by simp [h]
 
+protected lemma exists_subtype_congr (e : {a // p a} ≃ {b // q b}) : (∃ a, p a) ↔ ∃ b, q b := by
+  simp [← nonempty_subtype, nonempty_congr e]
+
 protected lemma existsUnique_congr_right : (∃! a, q (e a)) ↔ ∃! b, q b :=
   e.exists_congr <| by simpa using fun _ _ ↦ e.forall_congr (by simp)
 
@@ -755,6 +764,11 @@ protected lemma existsUnique_congr (h : ∀ a, p a ↔ q (e a)) : (∃! a, p a) 
 
 protected lemma existsUnique_congr' (h : ∀ b, p (e.symm b) ↔ q b) : (∃! a, p a) ↔ ∃! b, q b :=
   e.existsUnique_congr_left.trans <| by simp [h]
+
+protected lemma existsUnique_subtype_congr (e : {a // p a} ≃ {b // q b}) :
+    (∃! a, p a) ↔ ∃! b, q b := by
+  simp [← unique_subtype_iff_existsUnique, unique_iff_subsingleton_and_nonempty,
+        nonempty_congr e, subsingleton_congr e]
 
 -- We next build some higher arity versions of `Equiv.forall_congr`.
 -- Although they appear to just be repeated applications of `Equiv.forall_congr`,

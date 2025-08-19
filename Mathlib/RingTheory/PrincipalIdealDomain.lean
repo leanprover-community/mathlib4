@@ -47,7 +47,7 @@ open Submodule
 
 section
 
-variable [Semiring R] [AddCommGroup M] [Module R M]
+variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 instance bot_isPrincipal : (⊥ : Submodule R M).IsPrincipal :=
   ⟨⟨0, by simp⟩⟩
@@ -65,7 +65,7 @@ class IsBezout : Prop where
 instance (priority := 100) IsBezout.of_isPrincipalIdealRing [IsPrincipalIdealRing R] : IsBezout R :=
   ⟨fun I _ => IsPrincipalIdealRing.principal I⟩
 
-instance (priority := 100) DivisionRing.isPrincipalIdealRing (K : Type u) [DivisionRing K] :
+instance (priority := 100) DivisionSemiring.isPrincipalIdealRing (K : Type u) [DivisionSemiring K] :
     IsPrincipalIdealRing K where
   principal S := by
     rcases Ideal.eq_bot_or_top S with (rfl | rfl)
@@ -409,8 +409,6 @@ theorem isCoprime_of_dvd (x y : R) (nonzero : ¬(x = 0 ∧ y = 0))
 
 theorem dvd_or_isCoprime (x y : R) (h : Irreducible x) : x ∣ y ∨ IsCoprime x y :=
   h.dvd_or_isRelPrime.imp_right IsRelPrime.isCoprime
-
-@[deprecated (since := "2025-01-23")] alias dvd_or_coprime := dvd_or_isCoprime
 
 /-- See also `Irreducible.isRelPrime_iff_not_dvd`. -/
 theorem Irreducible.coprime_iff_not_dvd {p n : R} (hp : Irreducible p) :

@@ -213,6 +213,9 @@ lemma isSFiniteKernel_const [Nonempty α] {μβ : Measure β} :
     IsSFiniteKernel (const α μβ) ↔ SFinite μβ :=
   ⟨fun h ↦ h.sFinite (Classical.arbitrary α), fun _ ↦ inferInstance⟩
 
+instance [Nonempty β] : Nonempty {κ : Kernel α β // IsMarkovKernel κ} :=
+  nonempty_subtype.2 ⟨Kernel.const _ (Measure.dirac Classical.ofNonempty), inferInstance⟩
+
 @[simp]
 theorem lintegral_const {f : β → ℝ≥0∞} {μ : Measure β} {a : α} :
     ∫⁻ x, f x ∂const α μ a = ∫⁻ x, f x ∂μ := by rw [const_apply]
@@ -409,6 +412,43 @@ lemma exists_ae_eq_isMarkovKernel {μ : Measure α}
     by_cases hb : b ∈ s
     · simpa [hb, piecewise] using hs _ ha
     · simpa [hb, piecewise] using hs _ hb
+
+section Bool
+
+variable {μ ν : Measure α}
+
+/-- The kernel from `Bool` that sends `false` to `μ` and `true` to `ν`. -/
+def boolKernel (μ ν : Measure α) : Kernel Bool α where
+  toFun := fun b ↦ if b then ν else μ
+  measurable' := .of_discrete
+
+lemma boolKernel_false : boolKernel μ ν false = μ := rfl
+
+lemma boolKernel_true : boolKernel μ ν true = ν := rfl
+
+@[simp] lemma boolKernel_apply (b : Bool) : boolKernel μ ν b = if b then ν else μ := rfl
+
+instance [IsFiniteMeasure μ] [IsFiniteMeasure ν] : IsFiniteKernel (boolKernel μ ν) :=
+  ⟨max (μ .univ) (ν .univ), max_lt (measure_lt_top _ _) (measure_lt_top _ _),
+    fun b ↦ by cases b <;> simp⟩
+
+instance [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] : IsMarkovKernel (boolKernel μ ν) where
+  isProbabilityMeasure b := by
+    cases b
+      <;> simp only [boolKernel_apply, Bool.false_eq_true, ↓reduceIte]
+      <;> infer_instance
+
+instance [SFinite μ] [SFinite ν] : IsSFiniteKernel (boolKernel μ ν) where
+  tsum_finite := by
+    refine ⟨fun n ↦ boolKernel (sfiniteSeq μ n) (sfiniteSeq ν n), fun n ↦ inferInstance, ?_⟩
+    ext b
+    rw [Kernel.sum_apply]
+    cases b <;> simp [sum_sfiniteSeq]
+
+lemma eq_boolKernel (κ : Kernel Bool α) : κ = boolKernel (κ false) (κ true) := by
+  ext (_ | _) <;> simp
+
+end Bool
 
 end Kernel
 end ProbabilityTheory
