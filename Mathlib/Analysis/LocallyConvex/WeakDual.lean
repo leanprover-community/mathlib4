@@ -120,7 +120,7 @@ variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 /- A linear functional `φ` is in the span of a collection of linear functional if and only if `φ` is
 continuous with respect to the topology induced by the collection of linear functionals. See
 `LinearMap.mem_span_iff_continuous_of_finite` for a result about finite collections of linear
-functionals.-/
+functionals. -/
 theorem mem_span_iff_continuous {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜] 𝕜) :
     φ ∈ Submodule.span 𝕜 (Set.range f) ↔
     Continuous[⨅ i, induced (f i) inferInstance, inferInstance] φ := by
