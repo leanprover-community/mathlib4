@@ -45,7 +45,7 @@ instance : Inhabited CompHaus :=
   ⟨{ toTop := TopCat.of PEmpty, prop := trivial}⟩
 
 instance : CoeSort CompHaus Type* :=
-  ⟨fun X => X.toTop⟩
+  ⟨fun X ↦ X.toTop⟩
 
 instance {X : CompHaus} : CompactSpace X :=
   X.is_compact
@@ -103,7 +103,7 @@ noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
 left adjoint to the inclusion functor.
 -/
 noncomputable def topToCompHaus : TopCat.{u} ⥤ CompHaus.{u} :=
-  Adjunction.leftAdjointOfEquiv stoneCechEquivalence.{u} fun _ _ _ _ _ => rfl
+  Adjunction.leftAdjointOfEquiv stoneCechEquivalence.{u} fun _ _ _ _ _ ↦ rfl
 
 theorem topToCompHaus_obj (X : TopCat) : ↥(topToCompHaus.obj X) = StoneCech X :=
   rfl
@@ -155,7 +155,7 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
           inferInstance
       prop := trivial }
     π := {
-      app := fun j => (TopCat.limitCone FF).π.app j
+      app := fun j ↦ (TopCat.limitCone FF).π.app j
       naturality := by
         intro _ _ f
         ext ⟨x, hx⟩
@@ -166,9 +166,9 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
 def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) :
     Limits.IsLimit.{v} (limitCone.{v,u} F) :=
   letI FF : J ⥤ TopCat := F ⋙ compHausToTop
-  { lift := fun S => (TopCat.limitConeIsLimit FF).lift (compHausToTop.mapCone S)
-    fac := fun S => (TopCat.limitConeIsLimit FF).fac (compHausToTop.mapCone S)
-    uniq := fun S => (TopCat.limitConeIsLimit FF).uniq (compHausToTop.mapCone S) }
+  { lift := fun S ↦ (TopCat.limitConeIsLimit FF).lift (compHausToTop.mapCone S)
+    fac := fun S ↦ (TopCat.limitConeIsLimit FF).fac (compHausToTop.mapCone S)
+    uniq := fun S ↦ (TopCat.limitConeIsLimit FF).uniq (compHausToTop.mapCone S) }
 
 theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
@@ -188,15 +188,15 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
     haveI : T2Space (ULift.{u} <| Set.Icc (0 : ℝ) 1) := Homeomorph.ulift.symm.t2Space
     let Z := of (ULift.{u} <| Set.Icc (0 : ℝ) 1)
     let g : Y ⟶ Z := ofHom _
-      ⟨fun y' => ⟨⟨φ y', hφ01 y'⟩⟩,
-        continuous_uliftUp.comp (φ.continuous.subtype_mk fun y' => hφ01 y')⟩
+      ⟨fun y' ↦ ⟨⟨φ y', hφ01 y'⟩⟩,
+        continuous_uliftUp.comp (φ.continuous.subtype_mk fun y' ↦ hφ01 y')⟩
     let h : Y ⟶ Z := ofHom _
-      ⟨fun _ => ⟨⟨0, Set.left_mem_Icc.mpr zero_le_one⟩⟩, continuous_const⟩
+      ⟨fun _ ↦ ⟨⟨0, Set.left_mem_Icc.mpr zero_le_one⟩⟩, continuous_const⟩
     have H : h = g := by
       rw [← cancel_epi f]
       ext x : 4
       simp [g, h, Z, hφ0 (Set.mem_range_self x)]
-    apply_fun fun e => (e y).down.1 at H
+    apply_fun fun e ↦ (e y).down.1 at H
     dsimp [g, h, Z] at H
     simp only [hφ1 (Set.mem_singleton y), Pi.one_apply] at H
     exact zero_ne_one H

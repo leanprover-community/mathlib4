@@ -32,7 +32,7 @@ def count : Measure α :=
 theorem le_count_apply : ∑' _ : s, (1 : ℝ≥0∞) ≤ count s :=
   calc
     (∑' _ : s, 1 : ℝ≥0∞) = ∑' i, indicator s 1 i := tsum_subtype s 1
-    _ ≤ ∑' i, dirac i s := ENNReal.tsum_le_tsum fun _ => le_dirac_apply
+    _ ≤ ∑' i, dirac i s := ENNReal.tsum_le_tsum fun _ ↦ le_dirac_apply
     _ ≤ count s := le_sum_apply _ _
 
 theorem count_apply (hs : MeasurableSet s) : count s = s.encard := by
@@ -60,7 +60,7 @@ theorem count_apply_finite [MeasurableSingletonClass α] (s : Set α) (hs : s.Fi
 
 /-- `count` measure evaluates to infinity at infinite sets. -/
 theorem count_apply_infinite (hs : s.Infinite) : count s = ∞ := by
-  refine top_unique (le_of_tendsto' ENNReal.tendsto_nat_nhds_top fun n => ?_)
+  refine top_unique (le_of_tendsto' ENNReal.tendsto_nat_nhds_top fun n ↦ ?_)
   rcases hs.exists_subset_card_eq n with ⟨t, ht, rfl⟩
   calc
     (#t : ℝ≥0∞) = ∑ i ∈ t, 1 := by simp

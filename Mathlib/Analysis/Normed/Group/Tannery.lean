@@ -47,7 +47,7 @@ lemma tendsto_tsum_of_dominated_convergence {α β G : Type*} {𝓕 : Filter α}
   · simp only [tendsto_bot]
   -- Auxiliary lemmas
   have h_g_le (k : β) : ‖g k‖ ≤ bound k :=
-    le_of_tendsto (tendsto_norm.comp (hab k)) <| h_bound.mono (fun n h => h k)
+    le_of_tendsto (tendsto_norm.comp (hab k)) <| h_bound.mono (fun n h ↦ h k)
   have h_sumg : Summable (‖g ·‖) :=
     h_sum.of_norm_bounded (fun k ↦ (norm_norm (g k)).symm ▸ h_g_le k)
   have h_suma : ∀ᶠ n in 𝓕, Summable (‖f n ·‖) := by

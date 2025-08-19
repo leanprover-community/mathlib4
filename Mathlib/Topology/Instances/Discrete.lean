@@ -31,7 +31,7 @@ instance (priority := 100) DiscreteTopology.firstCountableTopology [DiscreteTopo
 
 instance (priority := 100) DiscreteTopology.secondCountableTopology_of_countable
     [hd : DiscreteTopology α] [Countable α] : SecondCountableTopology α :=
-  haveI : ∀ i : α, SecondCountableTopology (↥({i} : Set α)) := fun i =>
+  haveI : ∀ i : α, SecondCountableTopology (↥({i} : Set α)) := fun i ↦
     { is_open_generated_countable :=
         ⟨{univ}, countable_singleton _, by simp only [eq_iff_true_of_subsingleton]⟩ }
   secondCountableTopology_of_countable_cover (singletons_open_iff_discrete.mpr hd)

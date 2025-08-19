@@ -43,7 +43,7 @@ lemma measureReal_le_one {μ : Measure α} [IsZeroOrProbabilityMeasure μ] {s : 
 
 @[simp]
 theorem one_le_prob_iff {μ : Measure α} [IsZeroOrProbabilityMeasure μ] : 1 ≤ μ s ↔ μ s = 1 :=
-  ⟨fun h => le_antisymm prob_le_one h, fun h => h ▸ le_refl _⟩
+  ⟨fun h ↦ le_antisymm prob_le_one h, fun h ↦ h ▸ le_refl _⟩
 
 instance (priority := 100) IsZeroOrProbabilityMeasure.toIsFiniteMeasure (μ : Measure α)
     [IsZeroOrProbabilityMeasure μ] : IsFiniteMeasure μ :=

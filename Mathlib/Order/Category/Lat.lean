@@ -162,8 +162,8 @@ def dual : Lat ⥤ Lat where
 def dualEquiv : Lat ≌ Lat where
   functor := dual
   inverse := dual
-  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
-  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  unitIso := NatIso.ofComponents fun X ↦ Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X ↦ Iso.mk <| OrderIso.dualDual X
 
 end Lat
 

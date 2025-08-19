@@ -66,10 +66,10 @@ theorem cotangent_subsingleton_iff : Subsingleton I.Cotangent ↔ IsIdempotentEl
   constructor
   · intro H
     refine (pow_two I).symm.trans (le_antisymm (Ideal.pow_le_self two_ne_zero) ?_)
-    exact fun x hx => (I.toCotangent_eq_zero ⟨x, hx⟩).mp (Subsingleton.elim _ _)
-  · exact fun e =>
-      ⟨fun x y =>
-        Quotient.inductionOn₂' x y fun x y =>
+    exact fun x hx ↦ (I.toCotangent_eq_zero ⟨x, hx⟩).mp (Subsingleton.elim _ _)
+  · exact fun e ↦
+      ⟨fun x y ↦
+        Quotient.inductionOn₂' x y fun x y ↦
           I.toCotangent_eq.mpr <| ((pow_two I).trans e).symm ▸ I.sub_mem x.prop y.prop⟩
 
 /-- The inclusion map `I ⧸ I ^ 2` to `R ⧸ I ^ 2`. -/
@@ -81,7 +81,7 @@ def cotangentToQuotientSquare : I.Cotangent →ₗ[R] R ⧸ I ^ 2 :=
 
 theorem to_quotient_square_comp_toCotangent :
     I.cotangentToQuotientSquare.comp I.toCotangent = (I ^ 2).mkQ.comp (Submodule.subtype I) :=
-  LinearMap.ext fun _ => rfl
+  LinearMap.ext fun _ ↦ rfl
 
 @[simp]
 theorem toCotangent_to_quotient_square (x : I) :
@@ -130,7 +130,7 @@ ideal of `R / I ^ 2`. -/
 noncomputable def cotangentEquivIdeal : I.Cotangent ≃ₗ[R] I.cotangentIdeal := by
   refine
   { LinearMap.codRestrict (I.cotangentIdeal.restrictScalars R) I.cotangentToQuotientSquare
-      fun x => by rw [← range_cotangentToQuotientSquare]; exact LinearMap.mem_range_self _ _,
+      fun x ↦ by rw [← range_cotangentToQuotientSquare]; exact LinearMap.mem_range_self _ _,
     Equiv.ofBijective _ ⟨?_, ?_⟩ with }
   · rintro x y e
     replace e := congr_arg Subtype.val e

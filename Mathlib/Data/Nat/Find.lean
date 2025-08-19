@@ -26,28 +26,28 @@ variable [DecidablePred p] (H : ∃ n, p n)
 
 private def wf_lbp : WellFounded (@lbp p) :=
   ⟨let ⟨n, pn⟩ := H
-    suffices ∀ m k, n ≤ k + m → Acc lbp k from fun _ => this _ _ (Nat.le_add_left _ _)
-    fun m =>
+    suffices ∀ m k, n ≤ k + m → Acc lbp k from fun _ ↦ this _ _ (Nat.le_add_left _ _)
+    fun m ↦
     Nat.recOn m
-      (fun _ kn =>
-        ⟨_, fun y r =>
+      (fun _ kn ↦
+        ⟨_, fun y r ↦
           match y, r with
           | _, ⟨rfl, a⟩ => absurd pn (a _ kn)⟩)
-      fun m IH k kn =>
-      ⟨_, fun y r =>
+      fun m IH k kn ↦
+      ⟨_, fun y r ↦
         match y, r with
         | _, ⟨rfl, _a⟩ => IH _ (by rw [Nat.add_right_comm]; exact kn)⟩⟩
 
 /-- Find the smallest `n` satisfying `p n`. Returns a subtype. -/
 protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
-  @WellFounded.fix _ (fun k => (∀ n < k, ¬p n) → { n // p n ∧ ∀ m < n, ¬p m }) lbp (wf_lbp H)
-    (fun m IH al =>
+  @WellFounded.fix _ (fun k ↦ (∀ n < k, ¬p n) → { n // p n ∧ ∀ m < n, ¬p m }) lbp (wf_lbp H)
+    (fun m IH al ↦
       if pm : p m then ⟨m, pm, al⟩
       else
-        have : ∀ n ≤ m, ¬p n := fun n h =>
-          Or.elim (Nat.lt_or_eq_of_le h) (al n) fun e => by rw [e]; exact pm
-        IH _ ⟨rfl, this⟩ fun n h => this n <| Nat.le_of_succ_le_succ h)
-    0 fun _ h => absurd h (Nat.not_lt_zero _)
+        have : ∀ n ≤ m, ¬p n := fun n h ↦
+          Or.elim (Nat.lt_or_eq_of_le h) (al n) fun e ↦ by rw [e]; exact pm
+        IH _ ⟨rfl, this⟩ fun n h ↦ this n <| Nat.le_of_succ_le_succ h)
+    0 fun _ h ↦ absurd h (Nat.not_lt_zero _)
 
 /-- If `p` is a (decidable) predicate on `ℕ` and `hp : ∃ (n : ℕ), p n` is a proof that
 there exists some natural number satisfying `p`, then `Nat.find hp` is the
@@ -70,7 +70,7 @@ protected theorem find_min : ∀ {m : ℕ}, m < Nat.find H → ¬p m :=
   @(Nat.findX H).2.right
 
 protected theorem find_min' {m : ℕ} (h : p m) : Nat.find H ≤ m :=
-  Nat.le_of_not_gt fun l => Nat.find_min H l h
+  Nat.le_of_not_gt fun l ↦ Nat.find_min H l h
 
 lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m, ¬p n := by
   constructor
@@ -138,12 +138,12 @@ lemma find_pos (h : ∃ n : ℕ, p n) : 0 < Nat.find h ↔ ¬p 0 :=
 
 lemma find_add {hₘ : ∃ m, p (m + n)} {hₙ : ∃ n, p n} (hn : n ≤ Nat.find hₙ) :
     Nat.find hₘ + n = Nat.find hₙ := by
-  refine le_antisymm ((le_find_iff _ _).2 fun m hm hpm => Nat.not_le.2 hm ?_) ?_
+  refine le_antisymm ((le_find_iff _ _).2 fun m hm hpm ↦ Nat.not_le.2 hm ?_) ?_
   · have hnm : n ≤ m := le_trans hn (find_le hpm)
     refine Nat.add_le_of_le_sub hnm (find_le ?_)
     rwa [Nat.sub_add_cancel hnm]
   · rw [← Nat.sub_le_iff_le_add]
-    refine (le_find_iff _ _).2 fun m hm hpm => Nat.not_le.2 hm ?_
+    refine (le_find_iff _ _).2 fun m hm hpm ↦ Nat.not_le.2 hm ?_
     rw [Nat.sub_le_iff_le_add]
     exact find_le hpm
 
@@ -220,7 +220,7 @@ lemma findGreatest_le (n : ℕ) : Nat.findGreatest P n ≤ n :=
   (findGreatest_eq_iff.1 rfl).1
 
 lemma le_findGreatest (hmb : m ≤ n) (hm : P m) : m ≤ Nat.findGreatest P n :=
-  le_of_not_gt fun hlt => (findGreatest_eq_iff.1 rfl).2.2 hlt hmb hm
+  le_of_not_gt fun hlt ↦ (findGreatest_eq_iff.1 rfl).2.2 hlt hmb hm
 
 lemma findGreatest_mono_right (P : ℕ → Prop) [DecidablePred P] {m n} (hmn : m ≤ n) :
     Nat.findGreatest P m ≤ Nat.findGreatest P n := by

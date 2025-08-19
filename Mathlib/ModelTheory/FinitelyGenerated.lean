@@ -44,7 +44,7 @@ def FG (N : L.Substructure M) : Prop :=
   ∃ S : Finset M, closure L S = N
 
 theorem fg_def {N : L.Substructure M} : N.FG ↔ ∃ S : Set M, S.Finite ∧ closure L S = N :=
-  ⟨fun ⟨t, h⟩ => ⟨_, Finset.finite_toSet t, h⟩, by
+  ⟨fun ⟨t, h⟩ ↦ ⟨_, Finset.finite_toSet t, h⟩, by
     rintro ⟨t', h, rfl⟩
     rcases Finite.exists_finset_coe h with ⟨t, rfl⟩
     exact ⟨t, rfl⟩⟩
@@ -103,7 +103,7 @@ theorem FG.finite [L.IsRelational] {S : L.Substructure M} (h : S.FG) : Finite S 
   exact hs
 
 theorem fg_iff_finite [L.IsRelational] {S : L.Substructure M} : S.FG ↔ Finite S :=
-  ⟨FG.finite, fun _ => FG.of_finite⟩
+  ⟨FG.finite, fun _ ↦ FG.of_finite⟩
 
 /-- A substructure of `M` is countably generated if it is the closure of a countable subset of `M`.
 -/
@@ -172,7 +172,7 @@ theorem CG.of_map_embedding {N : Type*} [L.Structure N] (f : M ↪[L] N) {s : L.
 
 theorem cg_iff_countable [Countable (Σ l, L.Functions l)] {s : L.Substructure M} :
     s.CG ↔ Countable s := by
-  refine ⟨?_, fun h => ⟨s, h.to_set, s.closure_eq⟩⟩
+  refine ⟨?_, fun h ↦ ⟨s, h.to_set, s.closure_eq⟩⟩
   rintro ⟨s, h, rfl⟩
   exact h.substructure_closure L
 
@@ -198,7 +198,7 @@ class CG : Prop where
 variable {L M}
 
 theorem fg_def : FG L M ↔ (⊤ : L.Substructure M).FG :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
 
 /-- An equivalent expression of `Structure.FG` in terms of `Set.Finite` instead of `Finset`. -/
 theorem fg_iff : FG L M ↔ ∃ S : Set M, S.Finite ∧ closure L S = (⊤ : L.Substructure M) := by
@@ -246,10 +246,10 @@ theorem FG.finite [L.IsRelational] (h : FG L M) : Finite M :=
   Finite.of_finite_univ (Substructure.FG.finite (fg_def.1 h))
 
 theorem fg_iff_finite [L.IsRelational] : FG L M ↔ Finite M :=
-  ⟨FG.finite, fun _ => FG.of_finite⟩
+  ⟨FG.finite, fun _ ↦ FG.of_finite⟩
 
 theorem cg_def : CG L M ↔ (⊤ : L.Substructure M).CG :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
 
 /-- An equivalent expression of `Structure.cg`. -/
 theorem cg_iff : CG L M ↔ ∃ S : Set M, S.Countable ∧ closure L S = (⊤ : L.Substructure M) := by
@@ -281,12 +281,12 @@ end Structure
 
 theorem Equiv.fg_iff {N : Type*} [L.Structure N] (f : M ≃[L] N) :
     Structure.FG L M ↔ Structure.FG L N :=
-  ⟨fun h => h.map_of_surjective f.toHom f.toEquiv.surjective, fun h =>
+  ⟨fun h ↦ h.map_of_surjective f.toHom f.toEquiv.surjective, fun h ↦
     h.map_of_surjective f.symm.toHom f.toEquiv.symm.surjective⟩
 
 theorem Substructure.fg_iff_structure_fg (S : L.Substructure M) : S.FG ↔ Structure.FG L S := by
   rw [Structure.fg_def]
-  refine ⟨fun h => FG.of_map_embedding S.subtype ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ FG.of_map_embedding S.subtype ?_, fun h ↦ ?_⟩
   · rw [← Hom.range_eq_map, range_subtype]
     exact h
   · have h := h.map S.subtype.toHom
@@ -295,12 +295,12 @@ theorem Substructure.fg_iff_structure_fg (S : L.Substructure M) : S.FG ↔ Struc
 
 theorem Equiv.cg_iff {N : Type*} [L.Structure N] (f : M ≃[L] N) :
     Structure.CG L M ↔ Structure.CG L N :=
-  ⟨fun h => h.map_of_surjective f.toHom f.toEquiv.surjective, fun h =>
+  ⟨fun h ↦ h.map_of_surjective f.toHom f.toEquiv.surjective, fun h ↦
     h.map_of_surjective f.symm.toHom f.toEquiv.symm.surjective⟩
 
 theorem Substructure.cg_iff_structure_cg (S : L.Substructure M) : S.CG ↔ Structure.CG L S := by
   rw [Structure.cg_def]
-  refine ⟨fun h => CG.of_map_embedding S.subtype ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ CG.of_map_embedding S.subtype ?_, fun h ↦ ?_⟩
   · rw [← Hom.range_eq_map, range_subtype]
     exact h
   · have h := h.map S.subtype.toHom

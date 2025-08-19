@@ -55,7 +55,7 @@ theorem isIndObject_limit_comp_yoneda_comp_colim
   apply IsIndObject.map (HasLimit.isoOfNatIso (colimitFlipIsoCompColim G)).hom
   apply IsIndObject.map (colimitLimitIso G).hom
   apply isIndObject_colimit
-  exact fun i => IsIndObject.map (limitObjIsoLimitCompEvaluation _ _).inv (hF i)
+  exact fun i ↦ IsIndObject.map (limitObjIsoLimitCompEvaluation _ _).inv (hF i)
 
 end
 
@@ -74,6 +74,6 @@ theorem closedUnderLimitsOfShape_walkingParallelPair_isIndObject [HasEqualizers 
     (HasLimit.isoOfNatIso (P.parallelPairIsoParallelPairCompYoneda.symm ≪≫
       (diagramIsoParallelPair _).symm)).hom
     (isIndObject_limit_comp_yoneda_comp_colim (parallelPair P.φ P.ψ)
-      (fun i => isIndObject_limit_comp_yoneda _))
+      (fun i ↦ isIndObject_limit_comp_yoneda _))
 
 end CategoryTheory.Limits

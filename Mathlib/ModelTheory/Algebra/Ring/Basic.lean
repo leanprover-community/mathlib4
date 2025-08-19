@@ -56,7 +56,7 @@ inductive ringFunc : ℕ → Type
 /-- The language of rings contains the operations (+,*,-,0,1) -/
 def Language.ring : Language :=
   { Functions := ringFunc
-    Relations := fun _ => Empty }
+    Relations := fun _ ↦ Empty }
   deriving IsAlgebraic
 
 namespace Ring
@@ -217,18 +217,18 @@ commute by definition
 -/
 def compatibleRingOfRing (R : Type*) [Add R] [Mul R] [Neg R] [One R] [Zero R] :
     CompatibleRing R :=
-  { funMap := fun {n} f =>
+  { funMap := fun {n} f ↦
       match n, f with
-      | _, .add => fun x => x 0 + x 1
-      | _, .mul => fun x => x 0 * x 1
-      | _, .neg => fun x => -x 0
-      | _, .zero => fun _ => 0
-      | _, .one => fun _ => 1
-    funMap_add := fun _ => rfl,
-    funMap_mul := fun _ => rfl,
-    funMap_neg := fun _ => rfl,
-    funMap_zero := fun _ => rfl,
-    funMap_one := fun _ => rfl }
+      | _, .add => fun x ↦ x 0 + x 1
+      | _, .mul => fun x ↦ x 0 * x 1
+      | _, .neg => fun x ↦ -x 0
+      | _, .zero => fun _ ↦ 0
+      | _, .one => fun _ ↦ 1
+    funMap_add := fun _ ↦ rfl,
+    funMap_mul := fun _ ↦ rfl,
+    funMap_neg := fun _ ↦ rfl,
+    funMap_zero := fun _ ↦ rfl,
+    funMap_one := fun _ ↦ rfl }
 
 /-- An isomorphism in the language of rings is a ring isomorphism -/
 def languageEquivEquivRingEquiv {R S : Type*}
@@ -245,9 +245,9 @@ def languageEquivEquivRingEquiv {R S : Type*}
         simpa using f.map_fun mulFunc ![x, y] }
     invFun f :=
     { f with
-      map_fun' := fun {n} f => by
+      map_fun' := fun {n} f ↦ by
         cases f <;> simp
-      map_rel' := fun {n} f => by cases f } }
+      map_rel' := fun {n} f ↦ by cases f } }
 
 variable (R : Type*) [Language.ring.Structure R]
 
@@ -256,21 +256,21 @@ variable (R : Type*) [Language.ring.Structure R]
 To be used sparingly, usually only when defining a more useful definition like,
 `[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
 abbrev addOfRingStructure : Add R :=
-  { add := fun x y => funMap addFunc ![x, y] }
+  { add := fun x y ↦ funMap addFunc ![x, y] }
 
 /-- A def to put an `Mul` instance on a type with a `Language.ring.Structure` instance.
 
 To be used sparingly, usually only when defining a more useful definition like,
 `[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
 abbrev mulOfRingStructure : Mul R :=
-  { mul := fun x y => funMap mulFunc ![x, y] }
+  { mul := fun x y ↦ funMap mulFunc ![x, y] }
 
 /-- A def to put an `Neg` instance on a type with a `Language.ring.Structure` instance.
 
 To be used sparingly, usually only when defining a more useful definition like,
 `[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
 abbrev negOfRingStructure : Neg R :=
-  { neg := fun x => funMap negFunc ![x] }
+  { neg := fun x ↦ funMap negFunc ![x] }
 
 /-- A def to put an `Zero` instance on a type with a `Language.ring.Structure` instance.
 

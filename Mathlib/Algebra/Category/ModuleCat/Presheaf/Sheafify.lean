@@ -39,7 +39,7 @@ variable {R : Cᵒᵖ ⥤ RingCat.{u}} {M : PresheafOfModules.{v} R} {X : C} {P 
 
 /-- The scalar multiplication of family of elements of a presheaf of modules `M` over `R`
 by a family of elements of `R`. -/
-def smul : FamilyOfElements (M.presheaf ⋙ forget _) P := fun Y f hf =>
+def smul : FamilyOfElements (M.presheaf ⋙ forget _) P := fun Y f hf ↦
   HSMul.hSMul (α := R.obj (Opposite.op Y)) (β := M.obj (Opposite.op Y)) (r f hf) (m f hf)
 
 end smul
@@ -176,8 +176,8 @@ instance : Nonempty (SMulCandidate α φ r m) := ⟨by
   have hS : S ∈ J _ := by
     apply J.intersection_covering
     all_goals apply Presheaf.imageSieve_mem
-  have h₁ : S ≤ Presheaf.imageSieve α r := fun _ _ h => h.1
-  have h₂ : S ≤ Presheaf.imageSieve φ m := fun _ _ h => h.2
+  have h₁ : S ≤ Presheaf.imageSieve α r := fun _ _ h ↦ h.1
+  have h₂ : S ≤ Presheaf.imageSieve φ m := fun _ _ h ↦ h.2
   let r₀ := (Presieve.FamilyOfElements.localPreimage (whiskerRight α (forget _)) r).restrict h₁
   let m₀ := (Presieve.FamilyOfElements.localPreimage (whiskerRight φ (forget _)) m).restrict h₂
   have hr₀ : (r₀.map (whiskerRight α (forget _))).IsAmalgamation r := by

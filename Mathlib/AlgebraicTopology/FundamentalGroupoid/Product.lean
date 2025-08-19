@@ -53,10 +53,10 @@ groupoid of the pi product. This is actually an isomorphism (see `piIso`)
 -/
 @[simps]
 def piToPiTop : (∀ i, πₓ (X i)) ⥤ πₓ (TopCat.of (∀ i, X i)) where
-  obj g := ⟨fun i => (g i).as⟩
+  obj g := ⟨fun i ↦ (g i).as⟩
   map p := Path.Homotopic.pi p
   map_id x := by
-    change (Path.Homotopic.pi fun i => ⟦_⟧) = _
+    change (Path.Homotopic.pi fun i ↦ ⟦_⟧) = _
     simp only [Path.Homotopic.pi_lift]
     rfl
   map_comp f g := (Path.Homotopic.comp_pi_eq_pi_comp f g).symm
@@ -78,7 +78,7 @@ def piIso : CategoryTheory.Grpd.of (∀ i : I, πₓ (X i)) ≅ πₓ (TopCat.of
     apply CategoryTheory.Functor.ext
     · intro _ _ f
       suffices Path.Homotopic.pi ((CategoryTheory.Functor.pi' (proj X)).map f) = f by simpa
-      change Path.Homotopic.pi (fun i => (CategoryTheory.Functor.pi' (proj X)).map f i) = _
+      change Path.Homotopic.pi (fun i ↦ (CategoryTheory.Functor.pi' (proj X)).map f i) = _
       simp
     · intros; rfl
 
@@ -88,7 +88,7 @@ open CategoryTheory
 
 /-- Equivalence between the categories of cones over the objects `π Xᵢ` written in two ways -/
 def coneDiscreteComp :
-    Limits.Cone (Discrete.functor X ⋙ π) ≌ Limits.Cone (Discrete.functor fun i => πₓ (X i)) :=
+    Limits.Cone (Discrete.functor X ⋙ π) ≌ Limits.Cone (Discrete.functor fun i ↦ πₓ (X i)) :=
   Limits.Cones.postcomposeEquivalence (Discrete.compNatIsoDiscrete X π)
 
 theorem coneDiscreteComp_obj_mapCone :
@@ -98,7 +98,7 @@ theorem coneDiscreteComp_obj_mapCone :
 
 /-- This is `piIso.inv` as a cone morphism (in fact, isomorphism) -/
 def piTopToPiCone :
-    Limits.Fan.mk (πₓ (TopCat.of (∀ i, X i))) (proj X) ⟶ Grpd.piLimitFan fun i : I => πₓ (X i) where
+    Limits.Fan.mk (πₓ (TopCat.of (∀ i, X i))) (proj X) ⟶ Grpd.piLimitFan fun i : I ↦ πₓ (X i) where
   hom := CategoryTheory.Functor.pi' (proj X)
 
 instance : IsIso (piTopToPiCone X) :=

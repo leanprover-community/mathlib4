@@ -119,7 +119,7 @@ theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
 theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i < j) :
     X.δ j ≫ X.δ i =
       X.δ (Fin.castSucc i) ≫
-        X.δ (j.pred fun (hj : j = 0) => by simp [hj, Fin.not_lt_zero] at H) := by
+        X.δ (j.pred fun (hj : j = 0) ↦ by simp [hj, Fin.not_lt_zero] at H) := by
   dsimp [δ]
   simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_δ' H]
 @[reassoc]
@@ -183,7 +183,7 @@ theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.castSu
 @[reassoc]
 theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < i) :
     X.σ j ≫ X.δ i =
-      X.δ (i.pred fun (hi : i = 0) => by simp only [Fin.not_lt_zero, hi] at H) ≫
+      X.δ (i.pred fun (hi : i = 0) ↦ by simp only [Fin.not_lt_zero, hi] at H) ≫
         X.σ (j.castLT ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le))) := by
   dsimp [δ, σ]
   simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_σ_of_gt' H]
@@ -466,14 +466,14 @@ def whiskeringObj (D : Type*) [Category D] (F : C ⥤ D) : Augmented C ⥤ Augme
 def whiskering (D : Type u') [Category.{v'} D] : (C ⥤ D) ⥤ Augmented C ⥤ Augmented D where
   obj := whiskeringObj _ _
   map η :=
-    { app := fun A =>
+    { app := fun A ↦
         { left := whiskerLeft _ η
           right := η.app _
           w := by
             ext n
             dsimp
             rw [Category.comp_id, Category.comp_id, η.naturality] } }
-  map_comp := fun _ _ => by ext <;> rfl
+  map_comp := fun _ _ ↦ by ext <;> rfl
 
 variable {C}
 
@@ -499,7 +499,7 @@ def augment (X : SimplicialObject C) (X₀ : C) (f : X _⦋0⦌ ⟶ X₀)
   left := X
   right := X₀
   hom :=
-    { app := fun _ => X.map (SimplexCategory.const _ _ 0).op ≫ f
+    { app := fun _ ↦ X.map (SimplexCategory.const _ _ 0).op ≫ f
       naturality := by
         intro i j g
         dsimp
@@ -582,7 +582,7 @@ theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
 @[reassoc]
 theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i < j) :
     X.δ i ≫ X.δ j =
-      X.δ (j.pred fun (hj : j = 0) => by simp only [hj, Fin.not_lt_zero] at H) ≫
+      X.δ (j.pred fun (hj : j = 0) ↦ by simp only [hj, Fin.not_lt_zero] at H) ≫
         X.δ (Fin.castSucc i) := by
   dsimp [δ]
   simp only [← X.map_comp, SimplexCategory.δ_comp_δ' H]
@@ -650,7 +650,7 @@ theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < 
     X.δ i ≫ X.σ j =
       X.σ (j.castLT ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le))) ≫
         X.δ (i.pred <|
-          fun (hi : i = 0) => by simp only [Fin.not_lt_zero, hi] at H) := by
+          fun (hi : i = 0) ↦ by simp only [Fin.not_lt_zero, hi] at H) := by
   dsimp [δ, σ]
   simp only [← X.map_comp, SimplexCategory.δ_comp_σ_of_gt' H]
 
@@ -822,14 +822,14 @@ def whiskeringObj (D : Type*) [Category D] (F : C ⥤ D) : Augmented C ⥤ Augme
 def whiskering (D : Type u') [Category.{v'} D] : (C ⥤ D) ⥤ Augmented C ⥤ Augmented D where
   obj := whiskeringObj _ _
   map η :=
-    { app := fun A =>
+    { app := fun A ↦
         { left := η.app _
           right := whiskerLeft _ η
           w := by
             ext n
             dsimp
             rw [Category.id_comp, Category.id_comp, η.naturality] }
-      naturality := fun _ _ f => by ext <;> simp }
+      naturality := fun _ _ f ↦ by ext <;> simp }
 
 variable {C}
 
@@ -856,7 +856,7 @@ def augment (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj ⦋0⦌)
   left := X₀
   right := X
   hom :=
-    { app := fun _ => f ≫ X.map (SimplexCategory.const _ _ 0)
+    { app := fun _ ↦ f ≫ X.map (SimplexCategory.const _ _ 0)
       naturality := by
         intro i j g
         dsimp
@@ -952,12 +952,12 @@ def simplicialCosimplicialAugmentedEquiv :
     (SimplicialObject.Augmented C)ᵒᵖ ≌ CosimplicialObject.Augmented Cᵒᵖ where
   functor := simplicialToCosimplicialAugmented _
   inverse := cosimplicialToSimplicialAugmented _
-  unitIso := NatIso.ofComponents (fun X => X.unop.rightOpLeftOpIso.op) fun f => by
+  unitIso := NatIso.ofComponents (fun X ↦ X.unop.rightOpLeftOpIso.op) fun f ↦ by
       dsimp
       rw [← f.op_unop]
       simp_rw [← op_comp]
       congr 1
       cat_disch
-  counitIso := NatIso.ofComponents fun X => X.leftOpRightOpIso
+  counitIso := NatIso.ofComponents fun X ↦ X.leftOpRightOpIso
 
 end CategoryTheory

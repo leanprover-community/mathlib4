@@ -30,10 +30,10 @@ Under the additional assumption of `[DecidableEq α]`, this is available as
 `Multiset.toFinsupp : Multiset α ≃+ (α →₀ ℕ)`; the two declarations are separate as this assumption
 is only needed for one direction. -/
 def toMultiset : (α →₀ ℕ) →+ Multiset α where
-  toFun f := Finsupp.sum f fun a n => n • {a}
+  toFun f := Finsupp.sum f fun a n ↦ n • {a}
   -- Porting note: have to specify `h` or add a `dsimp only` before `sum_add_index'`.
   -- see also: https://github.com/leanprover-community/mathlib4/issues/12129
-  map_add' _f _g := sum_add_index' (h := fun _ n => n • _)
+  map_add' _f _g := sum_add_index' (h := fun _ n ↦ n • _)
     (fun _ ↦ zero_nsmul _) (fun _ ↦ add_nsmul _)
   map_zero' := sum_zero_index
 
@@ -43,7 +43,7 @@ theorem toMultiset_zero : toMultiset (0 : α →₀ ℕ) = 0 :=
 theorem toMultiset_add (m n : α →₀ ℕ) : toMultiset (m + n) = toMultiset m + toMultiset n :=
   toMultiset.map_add m n
 
-theorem toMultiset_apply (f : α →₀ ℕ) : toMultiset f = f.sum fun a n => n • {a} :=
+theorem toMultiset_apply (f : α →₀ ℕ) : toMultiset f = f.sum fun a n ↦ n • {a} :=
   rfl
 
 @[simp]
@@ -59,7 +59,7 @@ theorem toMultiset_sum_single (s : Finset ι) (n : ℕ) :
   simp_rw [toMultiset_sum, Finsupp.toMultiset_single, Finset.sum_nsmul, sum_multiset_singleton]
 
 @[simp]
-theorem card_toMultiset (f : α →₀ ℕ) : Multiset.card (toMultiset f) = f.sum fun _ => id := by
+theorem card_toMultiset (f : α →₀ ℕ) : Multiset.card (toMultiset f) = f.sum fun _ ↦ id := by
   simp [toMultiset_apply, Function.id_def]
 
 theorem toMultiset_map (f : α →₀ ℕ) (g : α → β) :
@@ -74,7 +74,7 @@ theorem toMultiset_map (f : α →₀ ℕ) (g : α → β) :
 
 @[to_additive (attr := simp)]
 theorem prod_toMultiset [CommMonoid α] (f : α →₀ ℕ) :
-    f.toMultiset.prod = f.prod fun a n => a ^ n := by
+    f.toMultiset.prod = f.prod fun a n ↦ a ^ n := by
   refine f.induction ?_ ?_
   · rw [toMultiset_zero, Multiset.prod_zero, Finsupp.prod_zero_index]
   · intro a n f _ _ ih
@@ -95,13 +95,13 @@ theorem toFinset_toMultiset [DecidableEq α] (f : α →₀ ℕ) : f.toMultiset.
 @[simp]
 theorem count_toMultiset [DecidableEq α] (f : α →₀ ℕ) (a : α) : (toMultiset f).count a = f a :=
   calc
-    (toMultiset f).count a = Finsupp.sum f (fun x n => (n • {x} : Multiset α).count a) := by
+    (toMultiset f).count a = Finsupp.sum f (fun x n ↦ (n • {x} : Multiset α).count a) := by
       rw [toMultiset_apply]; exact map_sum (Multiset.countAddMonoidHom a) _ f.support
-    _ = f.sum fun x n => n * ({x} : Multiset α).count a := by simp only [Multiset.count_nsmul]
+    _ = f.sum fun x n ↦ n * ({x} : Multiset α).count a := by simp only [Multiset.count_nsmul]
     _ = f a * ({a} : Multiset α).count a :=
       sum_eq_single _
-        (fun a' _ H => by simp only [Multiset.count_singleton, if_false, H.symm, mul_zero])
-        (fun _ => zero_mul _)
+        (fun a' _ H ↦ by simp only [Multiset.count_singleton, if_false, H.symm, mul_zero])
+        (fun _ ↦ zero_mul _)
     _ = f a := by rw [Multiset.count_singleton_self, mul_one]
 
 theorem toMultiset_sup [DecidableEq α] (f g : α →₀ ℕ) :
@@ -129,11 +129,11 @@ variable [DecidableEq α]
 the multiplicities of the elements of `s`. -/
 @[simps symm_apply]
 def toFinsupp : Multiset α ≃+ (α →₀ ℕ) where
-  toFun s := ⟨s.toFinset, fun a => s.count a, fun a => by simp⟩
+  toFun s := ⟨s.toFinset, fun a ↦ s.count a, fun a ↦ by simp⟩
   invFun f := Finsupp.toMultiset f
-  map_add' _ _ := Finsupp.ext fun _ => count_add _ _ _
+  map_add' _ _ := Finsupp.ext fun _ ↦ count_add _ _ _
   right_inv f :=
-    Finsupp.ext fun a => by
+    Finsupp.ext fun a ↦ by
       simp only [Finsupp.toMultiset_apply, Finsupp.sum, Multiset.count_sum',
         Multiset.count_singleton, mul_boole, Finsupp.coe_mk, Finsupp.mem_support_iff,
         Multiset.count_nsmul, Finset.sum_ite_eq, ite_not, ite_eq_right_iff]
@@ -207,7 +207,7 @@ theorem coe_orderIsoMultiset_symm [DecidableEq ι] :
 theorem toMultiset_strictMono : StrictMono (@toMultiset ι) := by
   classical exact (@orderIsoMultiset ι _).strictMono
 
-theorem sum_id_lt_of_lt (m n : ι →₀ ℕ) (h : m < n) : (m.sum fun _ => id) < n.sum fun _ => id := by
+theorem sum_id_lt_of_lt (m n : ι →₀ ℕ) (h : m < n) : (m.sum fun _ ↦ id) < n.sum fun _ ↦ id := by
   rw [← card_toMultiset, ← card_toMultiset]
   apply Multiset.card_lt_card
   exact toMultiset_strictMono h

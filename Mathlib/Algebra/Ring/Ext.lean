@@ -135,7 +135,7 @@ defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
   have h : inst₁.toNonUnitalNonAssocSemiring = inst₂.toNonUnitalNonAssocSemiring := by
     ext : 1 <;> assumption
   have h_zero : (inst₁.toMulZeroClass).toZero.zero = (inst₂.toMulZeroClass).toZero.zero :=
-    congrArg (fun inst => (inst.toMulZeroClass).toZero.zero) h
+    congrArg (fun inst ↦ (inst.toMulZeroClass).toZero.zero) h
   have h_one' : (inst₁.toMulZeroOneClass).toMulOneClass.toOne
                 = (inst₂.toMulZeroOneClass).toMulOneClass.toOne :=
     congrArg (@MulOneClass.toOne R) <| by ext : 1; exact h_mul

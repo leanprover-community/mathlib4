@@ -49,7 +49,7 @@ theorem preimage_univ {f : α → β} [Fintype α] [Fintype β] (hf) : preimage 
 @[simp]
 theorem preimage_inter [DecidableEq α] [DecidableEq β] {f : α → β} {s t : Finset β}
     (hs : Set.InjOn f (f ⁻¹' ↑s)) (ht : Set.InjOn f (f ⁻¹' ↑t)) :
-    (preimage (s ∩ t) f fun _ hx₁ _ hx₂ =>
+    (preimage (s ∩ t) f fun _ hx₁ _ hx₂ ↦
         hs (mem_of_mem_inter_left hx₁) (mem_of_mem_inter_left hx₂)) =
       preimage s f hs ∩ preimage t f ht :=
   Finset.coe_injective (by simp)
@@ -57,8 +57,8 @@ theorem preimage_inter [DecidableEq α] [DecidableEq β] {f : α → β} {s t : 
 @[simp]
 theorem preimage_union [DecidableEq α] [DecidableEq β] {f : α → β} {s t : Finset β} (hst) :
     preimage (s ∪ t) f hst =
-      (preimage s f fun _ hx₁ _ hx₂ => hst (mem_union_left _ hx₁) (mem_union_left _ hx₂)) ∪
-        preimage t f fun _ hx₁ _ hx₂ => hst (mem_union_right _ hx₁) (mem_union_right _ hx₂) :=
+      (preimage s f fun _ hx₁ _ hx₂ ↦ hst (mem_union_left _ hx₁) (mem_union_left _ hx₂)) ∪
+        preimage t f fun _ hx₁ _ hx₂ ↦ hst (mem_union_right _ hx₁) (mem_union_right _ hx₂) :=
   Finset.coe_injective (by simp)
 
 @[simp]
@@ -78,7 +78,7 @@ lemma preimage_map (f : α ↪ β) (s : Finset α) : (s.map f).preimage f f.inje
   coe_injective <| by simp only [coe_preimage, coe_map, Set.preimage_image_eq _ f.injective]
 
 theorem monotone_preimage {f : α → β} (h : Injective f) :
-    Monotone fun s => preimage s f h.injOn := fun _ _ H _ hx =>
+    Monotone fun s ↦ preimage s f h.injOn := fun _ _ H _ hx ↦
   mem_preimage.2 (H <| mem_preimage.1 hx)
 
 theorem image_subset_iff_subset_preimage [DecidableEq β] {f : α → β} {s : Finset α} {t : Finset β}
@@ -108,7 +108,7 @@ lemma preimage_subset_of_subset_image [DecidableEq β] {f : α → β} {s : Fins
   rw [← coe_subset, coe_preimage]; exact Set.preimage_subset (mod_cast hs) hf
 
 theorem preimage_subset {f : α ↪ β} {s : Finset β} {t : Finset α} (hs : s ⊆ t.map f) :
-    s.preimage f f.injective.injOn ⊆ t := fun _ h => (mem_map' f).1 (hs (mem_preimage.1 h))
+    s.preimage f f.injective.injOn ⊆ t := fun _ h ↦ (mem_map' f).1 (hs (mem_preimage.1 h))
 
 theorem subset_map_iff {f : α ↪ β} {s : Finset β} {t : Finset α} :
     s ⊆ t.map f ↔ ∃ u ⊆ t, s = u.map f := by
@@ -116,17 +116,17 @@ theorem subset_map_iff {f : α ↪ β} {s : Finset β} {t : Finset α} :
   simp_rw [map_eq_image, subset_image_iff, eq_comm]
 
 theorem sigma_preimage_mk {β : α → Type*} [DecidableEq α] (s : Finset (Σ a, β a)) (t : Finset α) :
-    t.sigma (fun a => s.preimage (Sigma.mk a) sigma_mk_injective.injOn) = {a ∈ s | a.1 ∈ t} := by
+    t.sigma (fun a ↦ s.preimage (Sigma.mk a) sigma_mk_injective.injOn) = {a ∈ s | a.1 ∈ t} := by
   ext x
   simp [and_comm]
 
 theorem sigma_preimage_mk_of_subset {β : α → Type*} [DecidableEq α] (s : Finset (Σ a, β a))
     {t : Finset α} (ht : s.image Sigma.fst ⊆ t) :
-    (t.sigma fun a => s.preimage (Sigma.mk a) sigma_mk_injective.injOn) = s := by
+    (t.sigma fun a ↦ s.preimage (Sigma.mk a) sigma_mk_injective.injOn) = s := by
   rw [sigma_preimage_mk, filter_true_of_mem <| image_subset_iff.1 ht]
 
 theorem sigma_image_fst_preimage_mk {β : α → Type*} [DecidableEq α] (s : Finset (Σ a, β a)) :
-    ((s.image Sigma.fst).sigma fun a => s.preimage (Sigma.mk a) sigma_mk_injective.injOn) =
+    ((s.image Sigma.fst).sigma fun a ↦ s.preimage (Sigma.mk a) sigma_mk_injective.injOn) =
       s :=
   s.sigma_preimage_mk_of_subset (Subset.refl _)
 

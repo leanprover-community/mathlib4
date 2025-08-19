@@ -42,7 +42,7 @@ theorem finRotate_last : finRotate (n + 1) (Fin.last _) = 0 :=
   finRotate_last'
 
 theorem Fin.snoc_eq_cons_rotate {α : Type*} (v : Fin n → α) (a : α) :
-    @Fin.snoc _ (fun _ => α) v a = fun i => @Fin.cons _ (fun _ => α) a v (finRotate _ i) := by
+    @Fin.snoc _ (fun _ ↦ α) v a = fun i ↦ @Fin.cons _ (fun _ ↦ α) a v (finRotate _ i) := by
   ext ⟨i, h⟩
   by_cases h' : i < n
   · rw [finRotate_of_lt h', Fin.snoc, Fin.cons, dif_pos h']

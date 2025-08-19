@@ -188,7 +188,7 @@ theorem zero_mass : (0 : FiniteMeasure Ω).mass = 0 := rfl
 
 @[simp]
 theorem mass_zero_iff (μ : FiniteMeasure Ω) : μ.mass = 0 ↔ μ = 0 := by
-  refine ⟨fun μ_mass => ?_, fun hμ => by simp only [hμ, zero_mass]⟩
+  refine ⟨fun μ_mass ↦ ?_, fun hμ ↦ by simp only [hμ, zero_mass]⟩
   apply toMeasure_injective
   apply Measure.measure_univ_eq_zero.mp
   rwa [← ennreal_mass, ENNReal.coe_eq_zero]
@@ -289,7 +289,7 @@ instance : MeasurableSpace (FiniteMeasure Ω) := Subtype.instMeasurableSpace
 
 /-- The set of all finite measures is a measurable set in the Giry monad. -/
 lemma measurableSet_isFiniteMeasure : MeasurableSet { μ : Measure Ω | IsFiniteMeasure μ } := by
-  suffices { μ : Measure Ω | IsFiniteMeasure μ } = (fun μ => μ univ) ⁻¹' (Set.Ico 0 ∞) by
+  suffices { μ : Measure Ω | IsFiniteMeasure μ } = (fun μ ↦ μ univ) ⁻¹' (Set.Ico 0 ∞) by
     rw [this]
     exact Measure.measurable_coe MeasurableSet.univ measurableSet_Ico
   ext μ
@@ -339,7 +339,7 @@ theorem ext_of_forall_integral_eq [HasOuterApproxClosed Ω] [BorelSpace Ω]
   apply (ENNReal.toReal_eq_toReal_iff' (lintegral_lt_top_of_nnreal μ f).ne
       (lintegral_lt_top_of_nnreal ν f).ne).mp
   rw [toReal_lintegral_coe_eq_integral f μ, toReal_lintegral_coe_eq_integral f ν]
-  exact h ⟨⟨fun x => (f x).toReal, Continuous.comp' NNReal.continuous_coe f.continuous⟩,
+  exact h ⟨⟨fun x ↦ (f x).toReal, Continuous.comp' NNReal.continuous_coe f.continuous⟩,
       f.map_bounded'⟩
 
 /-- The pairing of a finite (Borel) measure `μ` with a nonnegative bounded continuous

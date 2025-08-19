@@ -93,22 +93,22 @@ section congr
 variable {g : E → β}
 
 theorem ConvexOn.congr (hf : ConvexOn 𝕜 s f) (hfg : EqOn f g s) : ConvexOn 𝕜 s g :=
-  ⟨hf.1, fun x hx y hy a b ha hb hab => by
+  ⟨hf.1, fun x hx y hy a b ha hb hab ↦ by
     simpa only [← hfg hx, ← hfg hy, ← hfg (hf.1 hx hy ha hb hab)] using hf.2 hx hy ha hb hab⟩
 
 theorem ConcaveOn.congr (hf : ConcaveOn 𝕜 s f) (hfg : EqOn f g s) : ConcaveOn 𝕜 s g :=
-  ⟨hf.1, fun x hx y hy a b ha hb hab => by
+  ⟨hf.1, fun x hx y hy a b ha hb hab ↦ by
     simpa only [← hfg hx, ← hfg hy, ← hfg (hf.1 hx hy ha hb hab)] using hf.2 hx hy ha hb hab⟩
 
 theorem StrictConvexOn.congr (hf : StrictConvexOn 𝕜 s f) (hfg : EqOn f g s) :
     StrictConvexOn 𝕜 s g :=
-  ⟨hf.1, fun x hx y hy hxy a b ha hb hab => by
+  ⟨hf.1, fun x hx y hy hxy a b ha hb hab ↦ by
     simpa only [← hfg hx, ← hfg hy, ← hfg (hf.1 hx hy ha.le hb.le hab)] using
       hf.2 hx hy hxy ha hb hab⟩
 
 theorem StrictConcaveOn.congr (hf : StrictConcaveOn 𝕜 s f) (hfg : EqOn f g s) :
     StrictConcaveOn 𝕜 s g :=
-  ⟨hf.1, fun x hx y hy hxy a b ha hb hab => by
+  ⟨hf.1, fun x hx y hy hxy a b ha hb hab ↦ by
     simpa only [← hfg hx, ← hfg hy, ← hfg (hf.1 hx hy ha.le hb.le hab)] using
       hf.2 hx hy hxy ha hb hab⟩
 
@@ -116,23 +116,23 @@ end congr
 
 theorem ConvexOn.subset {t : Set E} (hf : ConvexOn 𝕜 t f) (hst : s ⊆ t) (hs : Convex 𝕜 s) :
     ConvexOn 𝕜 s f :=
-  ⟨hs, fun _ hx _ hy => hf.2 (hst hx) (hst hy)⟩
+  ⟨hs, fun _ hx _ hy ↦ hf.2 (hst hx) (hst hy)⟩
 
 theorem ConcaveOn.subset {t : Set E} (hf : ConcaveOn 𝕜 t f) (hst : s ⊆ t) (hs : Convex 𝕜 s) :
     ConcaveOn 𝕜 s f :=
-  ⟨hs, fun _ hx _ hy => hf.2 (hst hx) (hst hy)⟩
+  ⟨hs, fun _ hx _ hy ↦ hf.2 (hst hx) (hst hy)⟩
 
 theorem StrictConvexOn.subset {t : Set E} (hf : StrictConvexOn 𝕜 t f) (hst : s ⊆ t)
     (hs : Convex 𝕜 s) : StrictConvexOn 𝕜 s f :=
-  ⟨hs, fun _ hx _ hy => hf.2 (hst hx) (hst hy)⟩
+  ⟨hs, fun _ hx _ hy ↦ hf.2 (hst hx) (hst hy)⟩
 
 theorem StrictConcaveOn.subset {t : Set E} (hf : StrictConcaveOn 𝕜 t f) (hst : s ⊆ t)
     (hs : Convex 𝕜 s) : StrictConcaveOn 𝕜 s f :=
-  ⟨hs, fun _ hx _ hy => hf.2 (hst hx) (hst hy)⟩
+  ⟨hs, fun _ hx _ hy ↦ hf.2 (hst hx) (hst hy)⟩
 
 theorem ConvexOn.comp (hg : ConvexOn 𝕜 (f '' s) g) (hf : ConvexOn 𝕜 s f)
     (hg' : MonotoneOn g (f '' s)) : ConvexOn 𝕜 s (g ∘ f) :=
-  ⟨hf.1, fun _ hx _ hy _ _ ha hb hab =>
+  ⟨hf.1, fun _ hx _ hy _ _ ha hb hab ↦
     (hg' (mem_image_of_mem f <| hf.1 hx hy ha hb hab)
             (hg.1 (mem_image_of_mem f hx) (mem_image_of_mem f hy) ha hb hab) <|
           hf.2 hx hy ha hb hab).trans <|
@@ -140,7 +140,7 @@ theorem ConvexOn.comp (hg : ConvexOn 𝕜 (f '' s) g) (hf : ConvexOn 𝕜 s f)
 
 theorem ConcaveOn.comp (hg : ConcaveOn 𝕜 (f '' s) g) (hf : ConcaveOn 𝕜 s f)
     (hg' : MonotoneOn g (f '' s)) : ConcaveOn 𝕜 s (g ∘ f) :=
-  ⟨hf.1, fun _ hx _ hy _ _ ha hb hab =>
+  ⟨hf.1, fun _ hx _ hy _ _ ha hb hab ↦
     (hg.2 (mem_image_of_mem f hx) (mem_image_of_mem f hy) ha hb hab).trans <|
       hg' (hg.1 (mem_image_of_mem f hx) (mem_image_of_mem f hy) ha hb hab)
           (mem_image_of_mem f <| hf.1 hx hy ha hb hab) <|
@@ -156,7 +156,7 @@ theorem ConcaveOn.comp_convexOn (hg : ConcaveOn 𝕜 (f '' s) g) (hf : ConvexOn 
 
 theorem StrictConvexOn.comp (hg : StrictConvexOn 𝕜 (f '' s) g) (hf : StrictConvexOn 𝕜 s f)
     (hg' : StrictMonoOn g (f '' s)) (hf' : s.InjOn f) : StrictConvexOn 𝕜 s (g ∘ f) :=
-  ⟨hf.1, fun _ hx _ hy hxy _ _ ha hb hab =>
+  ⟨hf.1, fun _ hx _ hy hxy _ _ ha hb hab ↦
     (hg' (mem_image_of_mem f <| hf.1 hx hy ha.le hb.le hab)
             (hg.1 (mem_image_of_mem f hx) (mem_image_of_mem f hy) ha.le hb.le hab) <|
           hf.2 hx hy hxy ha hb hab).trans <|
@@ -164,7 +164,7 @@ theorem StrictConvexOn.comp (hg : StrictConvexOn 𝕜 (f '' s) g) (hf : StrictCo
 
 theorem StrictConcaveOn.comp (hg : StrictConcaveOn 𝕜 (f '' s) g) (hf : StrictConcaveOn 𝕜 s f)
     (hg' : StrictMonoOn g (f '' s)) (hf' : s.InjOn f) : StrictConcaveOn 𝕜 s (g ∘ f) :=
-  ⟨hf.1, fun _ hx _ hy hxy _ _ ha hb hab =>
+  ⟨hf.1, fun _ hx _ hy hxy _ _ ha hb hab ↦
     (hg.2 (mem_image_of_mem f hx) (mem_image_of_mem f hy) (mt (hf' hx hy) hxy) ha hb hab).trans <|
       hg' (hg.1 (mem_image_of_mem f hx) (mem_image_of_mem f hy) ha.le hb.le hab)
           (mem_image_of_mem f <| hf.1 hx hy ha.le hb.le hab) <|
@@ -187,7 +187,7 @@ section DistribMulAction
 variable [IsOrderedAddMonoid β] [SMul 𝕜 E] [DistribMulAction 𝕜 β] {s : Set E} {f g : E → β}
 
 theorem ConvexOn.add (hf : ConvexOn 𝕜 s f) (hg : ConvexOn 𝕜 s g) : ConvexOn 𝕜 s (f + g) :=
-  ⟨hf.1, fun x hx y hy a b ha hb hab =>
+  ⟨hf.1, fun x hx y hy a b ha hb hab ↦
     calc
       f (a • x + b • y) + g (a • x + b • y) ≤ a • f x + b • f y + (a • g x + b • g y) :=
         add_le_add (hf.2 hx hy ha hb hab) (hg.2 hx hy ha hb hab)
@@ -203,24 +203,24 @@ section Module
 
 variable [SMul 𝕜 E] [Module 𝕜 β] {s : Set E} {f : E → β}
 
-theorem convexOn_const (c : β) (hs : Convex 𝕜 s) : ConvexOn 𝕜 s fun _ : E => c :=
-  ⟨hs, fun _ _ _ _ _ _ _ _ hab => (Convex.combo_self hab c).ge⟩
+theorem convexOn_const (c : β) (hs : Convex 𝕜 s) : ConvexOn 𝕜 s fun _ : E ↦ c :=
+  ⟨hs, fun _ _ _ _ _ _ _ _ hab ↦ (Convex.combo_self hab c).ge⟩
 
-theorem concaveOn_const (c : β) (hs : Convex 𝕜 s) : ConcaveOn 𝕜 s fun _ => c :=
+theorem concaveOn_const (c : β) (hs : Convex 𝕜 s) : ConcaveOn 𝕜 s fun _ ↦ c :=
   convexOn_const (β := βᵒᵈ) _ hs
 
 theorem ConvexOn.add_const [IsOrderedAddMonoid β] (hf : ConvexOn 𝕜 s f) (b : β) :
-    ConvexOn 𝕜 s (f + fun _ => b) :=
+    ConvexOn 𝕜 s (f + fun _ ↦ b) :=
   hf.add (convexOn_const _ hf.1)
 
 theorem ConcaveOn.add_const [IsOrderedAddMonoid β] (hf : ConcaveOn 𝕜 s f) (b : β) :
-    ConcaveOn 𝕜 s (f + fun _ => b) :=
+    ConcaveOn 𝕜 s (f + fun _ ↦ b) :=
   hf.add (concaveOn_const _ hf.1)
 
 theorem convexOn_of_convex_epigraph (h : Convex 𝕜 { p : E × β | p.1 ∈ s ∧ f p.1 ≤ p.2 }) :
     ConvexOn 𝕜 s f :=
-  ⟨fun x hx y hy a b ha hb hab => (@h (x, f x) ⟨hx, le_rfl⟩ (y, f y) ⟨hy, le_rfl⟩ a b ha hb hab).1,
-    fun x hx y hy a b ha hb hab => (@h (x, f x) ⟨hx, le_rfl⟩ (y, f y) ⟨hy, le_rfl⟩ a b ha hb hab).2⟩
+  ⟨fun x hx y hy a b ha hb hab ↦ (@h (x, f x) ⟨hx, le_rfl⟩ (y, f y) ⟨hy, le_rfl⟩ a b ha hb hab).1,
+    fun x hx y hy a b ha hb hab ↦ (@h (x, f x) ⟨hx, le_rfl⟩ (y, f y) ⟨hy, le_rfl⟩ a b ha hb hab).2⟩
 
 theorem concaveOn_of_convex_hypograph (h : Convex 𝕜 { p : E × β | p.1 ∈ s ∧ p.2 ≤ f p.1 }) :
     ConcaveOn 𝕜 s f :=
@@ -233,7 +233,7 @@ section OrderedSMul
 variable [IsOrderedAddMonoid β] [SMul 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f : E → β}
 
 theorem ConvexOn.convex_le (hf : ConvexOn 𝕜 s f) (r : β) : Convex 𝕜 ({ x ∈ s | f x ≤ r }) :=
-  fun x hx y hy a b ha hb hab =>
+  fun x hx y hy a b ha hb hab ↦
   ⟨hf.1 hx.1 hy.1 ha hb hab,
     calc
       f (a • x + b • y) ≤ a • f x + b • f y := hf.2 hx.1 hy.1 ha hb hab
@@ -275,8 +275,8 @@ variable [Module 𝕜 E] [SMul 𝕜 β] {s : Set E} {f : E → β}
 
 /-- Right translation preserves convexity. -/
 theorem ConvexOn.translate_right (hf : ConvexOn 𝕜 s f) (c : E) :
-    ConvexOn 𝕜 ((fun z => c + z) ⁻¹' s) (f ∘ fun z => c + z) :=
-  ⟨hf.1.translate_preimage_right _, fun x hx y hy a b ha hb hab =>
+    ConvexOn 𝕜 ((fun z ↦ c + z) ⁻¹' s) (f ∘ fun z ↦ c + z) :=
+  ⟨hf.1.translate_preimage_right _, fun x hx y hy a b ha hb hab ↦
     calc
       f (c + (a • x + b • y)) = f (a • (c + x) + b • (c + y)) := by
         rw [smul_add, smul_add, add_add_add_comm, Convex.combo_self hab]
@@ -285,17 +285,17 @@ theorem ConvexOn.translate_right (hf : ConvexOn 𝕜 s f) (c : E) :
 
 /-- Right translation preserves concavity. -/
 theorem ConcaveOn.translate_right (hf : ConcaveOn 𝕜 s f) (c : E) :
-    ConcaveOn 𝕜 ((fun z => c + z) ⁻¹' s) (f ∘ fun z => c + z) :=
+    ConcaveOn 𝕜 ((fun z ↦ c + z) ⁻¹' s) (f ∘ fun z ↦ c + z) :=
   hf.dual.translate_right _
 
 /-- Left translation preserves convexity. -/
 theorem ConvexOn.translate_left (hf : ConvexOn 𝕜 s f) (c : E) :
-    ConvexOn 𝕜 ((fun z => c + z) ⁻¹' s) (f ∘ fun z => z + c) := by
+    ConvexOn 𝕜 ((fun z ↦ c + z) ⁻¹' s) (f ∘ fun z ↦ z + c) := by
   simpa only [add_comm c] using hf.translate_right c
 
 /-- Left translation preserves concavity. -/
 theorem ConcaveOn.translate_left (hf : ConcaveOn 𝕜 s f) (c : E) :
-    ConcaveOn 𝕜 ((fun z => c + z) ⁻¹' s) (f ∘ fun z => z + c) :=
+    ConcaveOn 𝕜 ((fun z ↦ c + z) ⁻¹' s) (f ∘ fun z ↦ z + c) :=
   hf.dual.translate_left _
 
 end Module
@@ -308,7 +308,7 @@ theorem convexOn_iff_forall_pos {s : Set E} {f : E → β} :
     ConvexOn 𝕜 s f ↔ Convex 𝕜 s ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b →
       a + b = 1 → f (a • x + b • y) ≤ a • f x + b • f y := by
   refine and_congr_right'
-    ⟨fun h x hx y hy a b ha hb hab => h hx hy ha.le hb.le hab, fun h x hx y hy a b ha hb hab => ?_⟩
+    ⟨fun h x hx y hy a b ha hb hab ↦ h hx hy ha.le hb.le hab, fun h x hx y hy a b ha hb hab ↦ ?_⟩
   obtain rfl | ha' := ha.eq_or_lt
   · rw [zero_add] at hab
     subst b
@@ -328,12 +328,12 @@ theorem concaveOn_iff_forall_pos {s : Set E} {f : E → β} :
 theorem convexOn_iff_pairwise_pos {s : Set E} {f : E → β} :
     ConvexOn 𝕜 s f ↔
       Convex 𝕜 s ∧
-        s.Pairwise fun x y =>
+        s.Pairwise fun x y ↦
           ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → f (a • x + b • y) ≤ a • f x + b • f y := by
   rw [convexOn_iff_forall_pos]
   refine
     and_congr_right'
-      ⟨fun h x hx y hy _ a b ha hb hab => h hx hy ha hb hab, fun h x hx y hy a b ha hb hab => ?_⟩
+      ⟨fun h x hx y hy _ a b ha hb hab ↦ h hx hy ha hb hab, fun h x hx y hy a b ha hb hab ↦ ?_⟩
   obtain rfl | hxy := eq_or_ne x y
   · rw [Convex.combo_self hab, Convex.combo_self hab]
   exact h hx hy hxy ha hb hab
@@ -341,22 +341,22 @@ theorem convexOn_iff_pairwise_pos {s : Set E} {f : E → β} :
 theorem concaveOn_iff_pairwise_pos {s : Set E} {f : E → β} :
     ConcaveOn 𝕜 s f ↔
       Convex 𝕜 s ∧
-        s.Pairwise fun x y =>
+        s.Pairwise fun x y ↦
           ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → a • f x + b • f y ≤ f (a • x + b • y) :=
   convexOn_iff_pairwise_pos (β := βᵒᵈ)
 
 /-- A linear map is convex. -/
 theorem LinearMap.convexOn (f : E →ₗ[𝕜] β) {s : Set E} (hs : Convex 𝕜 s) : ConvexOn 𝕜 s f :=
-  ⟨hs, fun _ _ _ _ _ _ _ _ _ => by rw [f.map_add, f.map_smul, f.map_smul]⟩
+  ⟨hs, fun _ _ _ _ _ _ _ _ _ ↦ by rw [f.map_add, f.map_smul, f.map_smul]⟩
 
 /-- A linear map is concave. -/
 theorem LinearMap.concaveOn (f : E →ₗ[𝕜] β) {s : Set E} (hs : Convex 𝕜 s) : ConcaveOn 𝕜 s f :=
-  ⟨hs, fun _ _ _ _ _ _ _ _ _ => by rw [f.map_add, f.map_smul, f.map_smul]⟩
+  ⟨hs, fun _ _ _ _ _ _ _ _ _ ↦ by rw [f.map_add, f.map_smul, f.map_smul]⟩
 
 theorem StrictConvexOn.convexOn {s : Set E} {f : E → β} (hf : StrictConvexOn 𝕜 s f) :
     ConvexOn 𝕜 s f :=
   convexOn_iff_pairwise_pos.mpr
-    ⟨hf.1, fun _ hx _ hy hxy _ _ ha hb hab => (hf.2 hx hy hxy ha hb hab).le⟩
+    ⟨hf.1, fun _ hx _ hy hxy _ _ ha hb hab ↦ (hf.2 hx hy hxy ha hb hab).le⟩
 
 theorem StrictConcaveOn.concaveOn {s : Set E} {f : E → β} (hf : StrictConcaveOn 𝕜 s f) :
     ConcaveOn 𝕜 s f :=
@@ -368,7 +368,7 @@ variable [IsOrderedAddMonoid β] [OrderedSMul 𝕜 β] {s : Set E} {f : E → β
 
 theorem StrictConvexOn.convex_lt (hf : StrictConvexOn 𝕜 s f) (r : β) :
     Convex 𝕜 ({ x ∈ s | f x < r }) :=
-  convex_iff_pairwise_pos.2 fun x hx y hy hxy a b ha hb hab =>
+  convex_iff_pairwise_pos.2 fun x hx y hy hxy a b ha hb hab ↦
     ⟨hf.1 hx.1 hy.1 ha.le hb.le hab,
       calc
         f (a • x + b • y) < a • f x + b • f y := hf.2 hx.1 hy.1 hxy ha hb hab
@@ -398,7 +398,7 @@ theorem LinearOrder.convexOn_of_lt (hs : Convex 𝕜 s)
     (hf : ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → x < y → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 →
       f (a • x + b • y) ≤ a • f x + b • f y) :
     ConvexOn 𝕜 s f := by
-  refine convexOn_iff_pairwise_pos.2 ⟨hs, fun x hx y hy hxy a b ha hb hab => ?_⟩
+  refine convexOn_iff_pairwise_pos.2 ⟨hs, fun x hx y hy hxy a b ha hb hab ↦ ?_⟩
   wlog h : x < y
   · rw [add_comm (a • x), add_comm (a • f x)]
     rw [add_comm] at hab
@@ -423,7 +423,7 @@ theorem LinearOrder.strictConvexOn_of_lt (hs : Convex 𝕜 s)
     (hf : ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → x < y → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 →
       f (a • x + b • y) < a • f x + b • f y) :
     StrictConvexOn 𝕜 s f := by
-  refine ⟨hs, fun x hx y hy hxy a b ha hb hab => ?_⟩
+  refine ⟨hs, fun x hx y hy hxy a b ha hb hab ↦ ?_⟩
   wlog h : x < y
   · rw [add_comm (a • x), add_comm (a • f x)]
     rw [add_comm] at hab
@@ -451,7 +451,7 @@ variable [Module 𝕜 E] [Module 𝕜 F] [SMul 𝕜 β]
 /-- If `f` is convex on `s`, so is `(f ∘ g)` on `g ⁻¹' s` for a linear `g`. -/
 theorem ConvexOn.comp_linearMap {f : F → β} {s : Set F} (hf : ConvexOn 𝕜 s f) (g : E →ₗ[𝕜] F) :
     ConvexOn 𝕜 (g ⁻¹' s) (f ∘ g) :=
-  ⟨hf.1.linear_preimage _, fun x hx y hy a b ha hb hab =>
+  ⟨hf.1.linear_preimage _, fun x hx y hy a b ha hb hab ↦
     calc
       f (g (a • x + b • y)) = f (a • g x + b • g y) := by rw [g.map_add, g.map_smul, g.map_smul]
       _ ≤ a • f (g x) + b • f (g y) := hf.2 hx hy ha hb hab⟩
@@ -475,7 +475,7 @@ variable [SMul 𝕜 E] [DistribMulAction 𝕜 β] {s : Set E} {f g : E → β}
 
 theorem StrictConvexOn.add_convexOn (hf : StrictConvexOn 𝕜 s f) (hg : ConvexOn 𝕜 s g) :
     StrictConvexOn 𝕜 s (f + g) :=
-  ⟨hf.1, fun x hx y hy hxy a b ha hb hab =>
+  ⟨hf.1, fun x hx y hy hxy a b ha hb hab ↦
     calc
       f (a • x + b • y) + g (a • x + b • y) < a • f x + b • f y + (a • g x + b • g y) :=
         add_lt_add_of_lt_of_le (hf.2 hx hy hxy ha hb hab) (hg.2 hx hy ha.le hb.le hab)
@@ -487,7 +487,7 @@ theorem ConvexOn.add_strictConvexOn (hf : ConvexOn 𝕜 s f) (hg : StrictConvexO
 
 theorem StrictConvexOn.add (hf : StrictConvexOn 𝕜 s f) (hg : StrictConvexOn 𝕜 s g) :
     StrictConvexOn 𝕜 s (f + g) :=
-  ⟨hf.1, fun x hx y hy hxy a b ha hb hab =>
+  ⟨hf.1, fun x hx y hy hxy a b ha hb hab ↦
     calc
       f (a • x + b • y) + g (a • x + b • y) < a • f x + b • f y + (a • g x + b • g y) :=
         add_lt_add (hf.2 hx hy hxy ha hb hab) (hg.2 hx hy hxy ha hb hab)
@@ -507,12 +507,12 @@ theorem StrictConcaveOn.add (hf : StrictConcaveOn 𝕜 s f) (hg : StrictConcaveO
 
 theorem StrictConvexOn.add_const {γ : Type*} {f : E → γ}
     [AddCommMonoid γ] [PartialOrder γ] [IsOrderedCancelAddMonoid γ]
-    [Module 𝕜 γ] (hf : StrictConvexOn 𝕜 s f) (b : γ) : StrictConvexOn 𝕜 s (f + fun _ => b) :=
+    [Module 𝕜 γ] (hf : StrictConvexOn 𝕜 s f) (b : γ) : StrictConvexOn 𝕜 s (f + fun _ ↦ b) :=
   hf.add_convexOn (convexOn_const _ hf.1)
 
 theorem StrictConcaveOn.add_const {γ : Type*} {f : E → γ}
     [AddCommMonoid γ] [PartialOrder γ] [IsOrderedCancelAddMonoid γ]
-    [Module 𝕜 γ] (hf : StrictConcaveOn 𝕜 s f) (b : γ) : StrictConcaveOn 𝕜 s (f + fun _ => b) :=
+    [Module 𝕜 γ] (hf : StrictConcaveOn 𝕜 s f) (b : γ) : StrictConcaveOn 𝕜 s (f + fun _ ↦ b) :=
   hf.add_concaveOn (concaveOn_const _ hf.1)
 
 end DistribMulAction
@@ -522,7 +522,7 @@ section Module
 variable [Module 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f : E → β}
 
 theorem ConvexOn.convex_lt (hf : ConvexOn 𝕜 s f) (r : β) : Convex 𝕜 ({ x ∈ s | f x < r }) :=
-  convex_iff_forall_pos.2 fun x hx y hy a b ha hb hab =>
+  convex_iff_forall_pos.2 fun x hx y hy a b ha hb hab ↦
     ⟨hf.1 hx.1 hy.1 ha.le hb.le hab,
       calc
         f (a • x + b • y) ≤ a • f x + b • f y := hf.2 hx.1 hy.1 ha.le hb.le hab
@@ -551,7 +551,7 @@ theorem ConcaveOn.openSegment_subset_strict_hypograph (hf : ConcaveOn 𝕜 s f) 
 
 theorem ConvexOn.convex_strict_epigraph [ZeroLEOneClass 𝕜] (hf : ConvexOn 𝕜 s f) :
     Convex 𝕜 { p : E × β | p.1 ∈ s ∧ f p.1 < p.2 } :=
-  convex_iff_openSegment_subset.mpr fun p hp q hq =>
+  convex_iff_openSegment_subset.mpr fun p hp q hq ↦
     hf.openSegment_subset_strict_epigraph p q hp ⟨hq.1, hq.2.le⟩
 
 theorem ConcaveOn.convex_strict_hypograph [ZeroLEOneClass 𝕜] (hf : ConcaveOn 𝕜 s f) :
@@ -570,7 +570,7 @@ variable [AddCommMonoid β] [LinearOrder β] [IsOrderedAddMonoid β]
 
 /-- The pointwise maximum of convex functions is convex. -/
 theorem ConvexOn.sup (hf : ConvexOn 𝕜 s f) (hg : ConvexOn 𝕜 s g) : ConvexOn 𝕜 s (f ⊔ g) := by
-  refine ⟨hf.left, fun x hx y hy a b ha hb hab => sup_le ?_ ?_⟩
+  refine ⟨hf.left, fun x hx y hy a b ha hb hab ↦ sup_le ?_ ?_⟩
   · calc
       f (a • x + b • y) ≤ a • f x + b • f y := hf.right hx hy ha hb hab
       _ ≤ a • (f x ⊔ g x) + b • (f y ⊔ g y) := by gcongr <;> apply le_sup_left
@@ -585,7 +585,7 @@ theorem ConcaveOn.inf (hf : ConcaveOn 𝕜 s f) (hg : ConcaveOn 𝕜 s g) : Conc
 /-- The pointwise maximum of strictly convex functions is strictly convex. -/
 theorem StrictConvexOn.sup (hf : StrictConvexOn 𝕜 s f) (hg : StrictConvexOn 𝕜 s g) :
     StrictConvexOn 𝕜 s (f ⊔ g) :=
-  ⟨hf.left, fun x hx y hy hxy a b ha hb hab =>
+  ⟨hf.left, fun x hx y hy hxy a b ha hb hab ↦
     max_lt
       (calc
         f (a • x + b • y) < a • f x + b • f y := hf.2 hx hy hxy ha hb hab
@@ -779,13 +779,13 @@ variable [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β] [SMul 𝕜 
 theorem neg_convexOn_iff : ConvexOn 𝕜 s (-f) ↔ ConcaveOn 𝕜 s f := by
   constructor
   · rintro ⟨hconv, h⟩
-    refine ⟨hconv, fun x hx y hy a b ha hb hab => ?_⟩
+    refine ⟨hconv, fun x hx y hy a b ha hb hab ↦ ?_⟩
     simp? [neg_apply, neg_le, add_comm] at h says
       simp only [Pi.neg_apply, smul_neg, le_add_neg_iff_add_le, add_comm,
         add_neg_le_iff_le_add] at h
     exact h hx hy ha hb hab
   · rintro ⟨hconv, h⟩
-    refine ⟨hconv, fun x hx y hy a b ha hb hab => ?_⟩
+    refine ⟨hconv, fun x hx y hy a b ha hb hab ↦ ?_⟩
     rw [← neg_le_neg_iff]
     simp_rw [neg_add, Pi.neg_apply, smul_neg, neg_neg]
     exact h hx hy ha hb hab
@@ -800,12 +800,12 @@ theorem neg_concaveOn_iff : ConcaveOn 𝕜 s (-f) ↔ ConvexOn 𝕜 s f := by
 theorem neg_strictConvexOn_iff : StrictConvexOn 𝕜 s (-f) ↔ StrictConcaveOn 𝕜 s f := by
   constructor
   · rintro ⟨hconv, h⟩
-    refine ⟨hconv, fun x hx y hy hxy a b ha hb hab => ?_⟩
+    refine ⟨hconv, fun x hx y hy hxy a b ha hb hab ↦ ?_⟩
     simp only [ne_eq, Pi.neg_apply, smul_neg, lt_add_neg_iff_add_lt, add_comm,
       add_neg_lt_iff_lt_add] at h
     exact h hx hy hxy ha hb hab
   · rintro ⟨hconv, h⟩
-    refine ⟨hconv, fun x hx y hy hxy a b ha hb hab => ?_⟩
+    refine ⟨hconv, fun x hx y hy hxy a b ha hb hab ↦ ?_⟩
     rw [← neg_lt_neg_iff]
     simp_rw [neg_add, Pi.neg_apply, smul_neg, neg_neg]
     exact h hx hy hxy ha hb hab
@@ -865,8 +865,8 @@ variable [AddCancelCommMonoid E] [AddCommMonoid β] [PartialOrder β] [Module �
 
 /-- Right translation preserves strict convexity. -/
 theorem StrictConvexOn.translate_right (hf : StrictConvexOn 𝕜 s f) (c : E) :
-    StrictConvexOn 𝕜 ((fun z => c + z) ⁻¹' s) (f ∘ fun z => c + z) :=
-  ⟨hf.1.translate_preimage_right _, fun x hx y hy hxy a b ha hb hab =>
+    StrictConvexOn 𝕜 ((fun z ↦ c + z) ⁻¹' s) (f ∘ fun z ↦ c + z) :=
+  ⟨hf.1.translate_preimage_right _, fun x hx y hy hxy a b ha hb hab ↦
     calc
       f (c + (a • x + b • y)) = f (a • (c + x) + b • (c + y)) := by
         rw [smul_add, smul_add, add_add_add_comm, Convex.combo_self hab]
@@ -874,17 +874,17 @@ theorem StrictConvexOn.translate_right (hf : StrictConvexOn 𝕜 s f) (c : E) :
 
 /-- Right translation preserves strict concavity. -/
 theorem StrictConcaveOn.translate_right (hf : StrictConcaveOn 𝕜 s f) (c : E) :
-    StrictConcaveOn 𝕜 ((fun z => c + z) ⁻¹' s) (f ∘ fun z => c + z) :=
+    StrictConcaveOn 𝕜 ((fun z ↦ c + z) ⁻¹' s) (f ∘ fun z ↦ c + z) :=
   hf.dual.translate_right _
 
 /-- Left translation preserves strict convexity. -/
 theorem StrictConvexOn.translate_left (hf : StrictConvexOn 𝕜 s f) (c : E) :
-    StrictConvexOn 𝕜 ((fun z => c + z) ⁻¹' s) (f ∘ fun z => z + c) := by
+    StrictConvexOn 𝕜 ((fun z ↦ c + z) ⁻¹' s) (f ∘ fun z ↦ z + c) := by
   simpa only [add_comm] using hf.translate_right c
 
 /-- Left translation preserves strict concavity. -/
 theorem StrictConcaveOn.translate_left (hf : StrictConcaveOn 𝕜 s f) (c : E) :
-    StrictConcaveOn 𝕜 ((fun z => c + z) ⁻¹' s) (f ∘ fun z => z + c) := by
+    StrictConcaveOn 𝕜 ((fun z ↦ c + z) ⁻¹' s) (f ∘ fun z ↦ z + c) := by
   simpa only [add_comm] using hf.translate_right c
 
 end AddCancelCommMonoid
@@ -903,15 +903,15 @@ section Module
 
 variable [SMul 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f : E → β}
 
-theorem ConvexOn.smul {c : 𝕜} (hc : 0 ≤ c) (hf : ConvexOn 𝕜 s f) : ConvexOn 𝕜 s fun x => c • f x :=
-  ⟨hf.1, fun x hx y hy a b ha hb hab =>
+theorem ConvexOn.smul {c : 𝕜} (hc : 0 ≤ c) (hf : ConvexOn 𝕜 s f) : ConvexOn 𝕜 s fun x ↦ c • f x :=
+  ⟨hf.1, fun x hx y hy a b ha hb hab ↦
     calc
       c • f (a • x + b • y) ≤ c • (a • f x + b • f y) :=
         smul_le_smul_of_nonneg_left (hf.2 hx hy ha hb hab) hc
       _ = a • c • f x + b • c • f y := by rw [smul_add, smul_comm c, smul_comm c]⟩
 
 theorem ConcaveOn.smul {c : 𝕜} (hc : 0 ≤ c) (hf : ConcaveOn 𝕜 s f) :
-    ConcaveOn 𝕜 s fun x => c • f x :=
+    ConcaveOn 𝕜 s fun x ↦ c • f x :=
   hf.dual.smul hc
 
 end Module
@@ -935,7 +935,7 @@ variable [Module 𝕜 E] [Module 𝕜 F] [SMul 𝕜 β]
 /-- If a function is convex on `s`, it remains convex when precomposed by an affine map. -/
 theorem ConvexOn.comp_affineMap {f : F → β} (g : E →ᵃ[𝕜] F) {s : Set F} (hf : ConvexOn 𝕜 s f) :
     ConvexOn 𝕜 (g ⁻¹' s) (f ∘ g) :=
-  ⟨hf.1.affine_preimage _, fun x hx y hy a b ha hb hab =>
+  ⟨hf.1.affine_preimage _, fun x hx y hy a b ha hb hab ↦
     calc
       (f ∘ g) (a • x + b • y) = f (g (a • x + b • y)) := rfl
       _ = f (a • g x + b • g y) := by rw [Convex.combo_affine_apply hab]
@@ -1013,7 +1013,7 @@ variable [Semiring 𝕜] [PartialOrder 𝕜]
 
 theorem OrderIso.strictConvexOn_symm (f : α ≃o β) (hf : StrictConcaveOn 𝕜 univ f) :
     StrictConvexOn 𝕜 univ f.symm := by
-  refine ⟨convex_univ, fun x _ y _ hxy a b ha hb hab => ?_⟩
+  refine ⟨convex_univ, fun x _ y _ hxy a b ha hb hab ↦ ?_⟩
   obtain ⟨x', hx''⟩ := f.surjective.exists.mp ⟨x, rfl⟩
   obtain ⟨y', hy''⟩ := f.surjective.exists.mp ⟨y, rfl⟩
   have hxy' : x' ≠ y' := by rw [← f.injective.ne_iff, ← hx'', ← hy'']; exact hxy
@@ -1023,7 +1023,7 @@ theorem OrderIso.strictConvexOn_symm (f : α ≃o β) (hf : StrictConcaveOn 𝕜
 
 theorem OrderIso.convexOn_symm (f : α ≃o β) (hf : ConcaveOn 𝕜 univ f) :
     ConvexOn 𝕜 univ f.symm := by
-  refine ⟨convex_univ, fun x _ y _ a b ha hb hab => ?_⟩
+  refine ⟨convex_univ, fun x _ y _ a b ha hb hab ↦ ?_⟩
   obtain ⟨x', hx''⟩ := f.surjective.exists.mp ⟨x, rfl⟩
   obtain ⟨y', hy''⟩ := f.surjective.exists.mp ⟨y, rfl⟩
   simp only [hx'', hy'', OrderIso.symm_apply_apply]
@@ -1032,7 +1032,7 @@ theorem OrderIso.convexOn_symm (f : α ≃o β) (hf : ConcaveOn 𝕜 univ f) :
 
 theorem OrderIso.strictConcaveOn_symm (f : α ≃o β) (hf : StrictConvexOn 𝕜 univ f) :
     StrictConcaveOn 𝕜 univ f.symm := by
-  refine ⟨convex_univ, fun x _ y _ hxy a b ha hb hab => ?_⟩
+  refine ⟨convex_univ, fun x _ y _ hxy a b ha hb hab ↦ ?_⟩
   obtain ⟨x', hx''⟩ := f.surjective.exists.mp ⟨x, rfl⟩
   obtain ⟨y', hy''⟩ := f.surjective.exists.mp ⟨y, rfl⟩
   have hxy' : x' ≠ y' := by rw [← f.injective.ne_iff, ← hx'', ← hy'']; exact hxy
@@ -1042,7 +1042,7 @@ theorem OrderIso.strictConcaveOn_symm (f : α ≃o β) (hf : StrictConvexOn 𝕜
 
 theorem OrderIso.concaveOn_symm (f : α ≃o β) (hf : ConvexOn 𝕜 univ f) :
     ConcaveOn 𝕜 univ f.symm := by
-  refine ⟨convex_univ, fun x _ y _ a b ha hb hab => ?_⟩
+  refine ⟨convex_univ, fun x _ y _ a b ha hb hab ↦ ?_⟩
   obtain ⟨x', hx''⟩ := f.surjective.exists.mp ⟨x, rfl⟩
   obtain ⟨y', hy''⟩ := f.surjective.exists.mp ⟨y, rfl⟩
   simp only [hx'', hy'', OrderIso.symm_apply_apply]
@@ -1086,12 +1086,12 @@ variable [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
 
 theorem ConvexOn.le_right_of_left_le'' (hf : ConvexOn 𝕜 s f) (hx : x ∈ s) (hz : z ∈ s) (hxy : x < y)
     (hyz : y ≤ z) (h : f x ≤ f y) : f y ≤ f z :=
-  hyz.eq_or_lt.elim (fun hyz => (congr_arg f hyz).le) fun hyz =>
+  hyz.eq_or_lt.elim (fun hyz ↦ (congr_arg f hyz).le) fun hyz ↦
     hf.le_right_of_left_le hx hz (Ioo_subset_openSegment ⟨hxy, hyz⟩) h
 
 theorem ConvexOn.le_left_of_right_le'' (hf : ConvexOn 𝕜 s f) (hx : x ∈ s) (hz : z ∈ s) (hxy : x ≤ y)
     (hyz : y < z) (h : f z ≤ f y) : f y ≤ f x :=
-  hxy.eq_or_lt.elim (fun hxy => (congr_arg f hxy).ge) fun hxy =>
+  hxy.eq_or_lt.elim (fun hxy ↦ (congr_arg f hxy).ge) fun hxy ↦
     hf.le_left_of_right_le hx hz (Ioo_subset_openSegment ⟨hxy, hyz⟩) h
 
 theorem ConcaveOn.right_le_of_le_left'' (hf : ConcaveOn 𝕜 s f) (hx : x ∈ s) (hz : z ∈ s)

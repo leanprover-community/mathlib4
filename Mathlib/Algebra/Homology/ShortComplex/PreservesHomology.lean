@@ -697,8 +697,8 @@ for a functor `F : C ⥤ D` which preserves homology. -/
 noncomputable def cyclesFunctorIso [F.PreservesHomology] :
     F.mapShortComplex ⋙ ShortComplex.cyclesFunctor D ≅
       ShortComplex.cyclesFunctor C ⋙ F :=
-  NatIso.ofComponents (fun S => S.mapCyclesIso F)
-    (fun f => ShortComplex.mapCyclesIso_hom_naturality f F)
+  NatIso.ofComponents (fun S ↦ S.mapCyclesIso F)
+    (fun f ↦ ShortComplex.mapCyclesIso_hom_naturality f F)
 
 /-- The natural isomorphism
 `F.mapShortComplex ⋙ leftHomologyFunctor D ≅ leftHomologyFunctor C ⋙ F`
@@ -706,8 +706,8 @@ for a functor `F : C ⥤ D` which preserves homology. -/
 noncomputable def leftHomologyFunctorIso [F.PreservesHomology] :
     F.mapShortComplex ⋙ ShortComplex.leftHomologyFunctor D ≅
       ShortComplex.leftHomologyFunctor C ⋙ F :=
-  NatIso.ofComponents (fun S => S.mapLeftHomologyIso F)
-    (fun f => ShortComplex.mapLeftHomologyIso_hom_naturality f F)
+  NatIso.ofComponents (fun S ↦ S.mapLeftHomologyIso F)
+    (fun f ↦ ShortComplex.mapLeftHomologyIso_hom_naturality f F)
 
 /-- The natural isomorphism
 `F.mapShortComplex ⋙ opcyclesFunctor D ≅ opcyclesFunctor C ⋙ F`
@@ -715,8 +715,8 @@ for a functor `F : C ⥤ D` which preserves homology. -/
 noncomputable def opcyclesFunctorIso [F.PreservesHomology] :
     F.mapShortComplex ⋙ ShortComplex.opcyclesFunctor D ≅
       ShortComplex.opcyclesFunctor C ⋙ F :=
-  NatIso.ofComponents (fun S => S.mapOpcyclesIso F)
-    (fun f => ShortComplex.mapOpcyclesIso_hom_naturality f F)
+  NatIso.ofComponents (fun S ↦ S.mapOpcyclesIso F)
+    (fun f ↦ ShortComplex.mapOpcyclesIso_hom_naturality f F)
 
 /-- The natural isomorphism
 `F.mapShortComplex ⋙ rightHomologyFunctor D ≅ rightHomologyFunctor C ⋙ F`
@@ -724,8 +724,8 @@ for a functor `F : C ⥤ D` which preserves homology. -/
 noncomputable def rightHomologyFunctorIso [F.PreservesHomology] :
     F.mapShortComplex ⋙ ShortComplex.rightHomologyFunctor D ≅
       ShortComplex.rightHomologyFunctor C ⋙ F :=
-  NatIso.ofComponents (fun S => S.mapRightHomologyIso F)
-    (fun f => ShortComplex.mapRightHomologyIso_hom_naturality f F)
+  NatIso.ofComponents (fun S ↦ S.mapRightHomologyIso F)
+    (fun f ↦ ShortComplex.mapRightHomologyIso_hom_naturality f F)
 
 end
 
@@ -736,8 +736,8 @@ noncomputable def homologyFunctorIso
     [CategoryWithHomology C] [CategoryWithHomology D] [F.PreservesHomology] :
     F.mapShortComplex ⋙ ShortComplex.homologyFunctor D ≅
       ShortComplex.homologyFunctor C ⋙ F :=
-  NatIso.ofComponents (fun S => S.mapHomologyIso F)
-    (fun f => ShortComplex.mapHomologyIso_hom_naturality f F)
+  NatIso.ofComponents (fun S ↦ S.mapHomologyIso F)
+    (fun f ↦ ShortComplex.mapHomologyIso_hom_naturality f F)
 
 section
 
@@ -821,7 +821,7 @@ variable (F : C ⥤ D) [F.PreservesZeroMorphisms] (S : ShortComplex C)
 by a functor `F`, then `F` preserves the left homology of `S`. -/
 lemma preservesLeftHomology_of_zero_f (hf : S.f = 0)
     [PreservesLimit (parallelPair S.g 0) F] :
-    F.PreservesLeftHomologyOf S := ⟨fun h =>
+    F.PreservesLeftHomologyOf S := ⟨fun h ↦
   { g := by infer_instance
     f' := Limits.preservesCokernel_zero' _ _
       (by rw [← cancel_mono h.i, h.f'_i, zero_comp, hf]) }⟩
@@ -830,7 +830,7 @@ lemma preservesLeftHomology_of_zero_f (hf : S.f = 0)
 by a functor `F`, then `F` preserves the right homology of `S`. -/
 lemma preservesRightHomology_of_zero_g (hg : S.g = 0)
     [PreservesColimit (parallelPair S.f 0) F] :
-    F.PreservesRightHomologyOf S := ⟨fun h =>
+    F.PreservesRightHomologyOf S := ⟨fun h ↦
   { f := by infer_instance
     g' := Limits.preservesKernel_zero' _ _
       (by rw [← cancel_epi h.p, h.p_g', comp_zero, hg]) }⟩
@@ -839,7 +839,7 @@ lemma preservesRightHomology_of_zero_g (hg : S.g = 0)
 by a functor `F`, then `F` preserves the left homology of `S`. -/
 lemma preservesLeftHomology_of_zero_g (hg : S.g = 0)
     [PreservesColimit (parallelPair S.f 0) F] :
-    F.PreservesLeftHomologyOf S := ⟨fun h =>
+    F.PreservesLeftHomologyOf S := ⟨fun h ↦
   { g := by
       rw [hg]
       infer_instance
@@ -853,7 +853,7 @@ lemma preservesLeftHomology_of_zero_g (hg : S.g = 0)
 by a functor `F`, then `F` preserves the right homology of `S`. -/
 lemma preservesRightHomology_of_zero_f (hf : S.f = 0)
     [PreservesLimit (parallelPair S.g 0) F] :
-    F.PreservesRightHomologyOf S := ⟨fun h =>
+    F.PreservesRightHomologyOf S := ⟨fun h ↦
   { f := by
       rw [hf]
       infer_instance

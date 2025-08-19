@@ -33,7 +33,7 @@ theorem iff_span_pair_isPrincipal :
     · intro H
       constructor
       apply Submodule.fg_induction
-      · exact fun _ => ⟨⟨_, rfl⟩⟩
+      · exact fun _ ↦ ⟨⟨_, rfl⟩⟩
       · rintro _ _ ⟨⟨x, rfl⟩⟩ ⟨⟨y, rfl⟩⟩; rw [← Submodule.span_insert]; exact H _ _
 
 theorem _root_.Function.Surjective.isBezout {S : Type v} [CommRing S] (f : R →+* S)
@@ -61,11 +61,11 @@ theorem TFAE [IsBezout R] [IsDomain R] :
       rw [isNoetherianRing_iff, isNoetherian_iff_fg_wellFounded]
       refine ⟨RelEmbedding.wellFounded ?_ h⟩
       have : ∀ I : { J : Ideal R // J.FG }, ∃ x : R, (I : Ideal R) = Ideal.span {x} :=
-        fun ⟨I, hI⟩ => (IsBezout.isPrincipal_of_FG I hI).1
+        fun ⟨I, hI⟩ ↦ (IsBezout.isPrincipal_of_FG I hI).1
       choose f hf using this
       exact
         { toFun := f
-          inj' := fun x y e => by ext1; rw [hf, hf, e]
+          inj' := fun x y e ↦ by ext1; rw [hf, hf, e]
           map_rel_iff' := by
             dsimp
             intro a b

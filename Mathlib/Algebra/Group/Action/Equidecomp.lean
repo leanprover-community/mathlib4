@@ -84,7 +84,7 @@ structure _root_.Equidecomp extends PartialEquiv X X where
 variable {X G}
 
 /-- Note that `Equidecomp X G` is not `FunLike`. -/
-instance : CoeFun (Equidecomp X G) fun _ => X → X := ⟨fun f => f.toFun⟩
+instance : CoeFun (Equidecomp X G) fun _ ↦ X → X := ⟨fun f ↦ f.toFun⟩
 
 /-- A finite set of group elements witnessing that `f` is an equidecomposition. -/
 noncomputable

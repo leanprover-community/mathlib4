@@ -102,8 +102,8 @@ implemented as flat sections of a pi type
 noncomputable def limitCone : Cone F where
   pt := Shrink F.sections
   π :=
-    { app := fun j u => ((equivShrink F.sections).symm u).val j
-      naturality := fun j j' f => by
+    { app := fun j u ↦ ((equivShrink F.sections).symm u).val j
+      naturality := fun j j' f ↦ by
         funext x
         simp }
 
@@ -116,9 +116,9 @@ lemma limitCone_pt_ext {x y : (limitCone F).pt}
 @[simps]
 noncomputable def limitConeIsLimit : IsLimit (limitCone.{v, u} F) where
   lift s v := equivShrink F.sections
-    { val := fun j => s.π.app j v
-      property := fun f => congr_fun (Cone.w s f) _ }
-  uniq := fun _ _ w => by
+    { val := fun j ↦ s.π.app j v
+      property := fun f ↦ congr_fun (Cone.w s f) _ }
+  uniq := fun _ _ w ↦ by
     ext x j
     simpa using congr_fun (w j) x
 
@@ -127,9 +127,9 @@ end
 end Small
 
 theorem hasLimit_iff_small_sections (F : J ⥤ Type u) : HasLimit F ↔ Small.{u} F.sections :=
-  ⟨fun _ => .mk ⟨_, ⟨(Equiv.ofBijective _
+  ⟨fun _ ↦ .mk ⟨_, ⟨(Equiv.ofBijective _
     ((isLimit_iff_bijective_sectionOfCone (limit.cone F)).mp ⟨limit.isLimit _⟩)).symm⟩⟩,
-   fun _ => ⟨_, Small.limitConeIsLimit F⟩⟩
+   fun _ ↦ ⟨_, Small.limitConeIsLimit F⟩⟩
 
 -- TODO: If `UnivLE` works out well, we will eventually want to deprecate these
 -- definitions, and probably as a first step put them in namespace or otherwise rename them.
@@ -142,8 +142,8 @@ implemented as flat sections of a pi type
 noncomputable def limitCone (F : J ⥤ Type max v u) : Cone F where
   pt := F.sections
   π :=
-    { app := fun j u => u.val j
-      naturality := fun j j' f => by
+    { app := fun j u ↦ u.val j
+      naturality := fun j j' f ↦ by
         funext x
         simp }
 
@@ -151,9 +151,9 @@ noncomputable def limitCone (F : J ⥤ Type max v u) : Cone F where
 @[simps]
 noncomputable def limitConeIsLimit (F : J ⥤ Type max v u) : IsLimit (limitCone F) where
   lift s v :=
-    { val := fun j => s.π.app j v
-      property := fun f => congr_fun (Cone.w s f) _ }
-  uniq := fun _ _ w => by
+    { val := fun j ↦ s.π.app j v
+      property := fun f ↦ congr_fun (Cone.w s f) _ }
+  uniq := fun _ _ w ↦ by
     funext x
     apply Subtype.ext
     funext j
@@ -237,7 +237,7 @@ theorem limit_ext' (F : J ⥤ Type v) (x y : limit F) (w : ∀ j, limit.π F j x
 
 theorem limit_ext_iff' (F : J ⥤ Type v) (x y : limit F) :
     x = y ↔ ∀ j, limit.π F j x = limit.π F j y :=
-  ⟨fun t _ => t ▸ rfl, limit_ext' _ _ _⟩
+  ⟨fun t _ ↦ t ▸ rfl, limit_ext' _ _ _⟩
 
 -- TODO: are there other limits lemmas that should have `_apply` versions?
 -- Can we generate these like with `@[reassoc]`?

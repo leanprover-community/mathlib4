@@ -32,18 +32,18 @@ mk_iff_of_inductive_prop List.Chain List.chain_iff
 
 theorem Chain.iff {S : α → α → Prop} (H : ∀ a b, R a b ↔ S a b) {a : α} {l : List α} :
     Chain R a l ↔ Chain S a l :=
-  ⟨Chain.imp fun a b => (H a b).1, Chain.imp fun a b => (H a b).2⟩
+  ⟨Chain.imp fun a b ↦ (H a b).1, Chain.imp fun a b ↦ (H a b).2⟩
 
 theorem Chain.iff_mem {a : α} {l : List α} :
-    Chain R a l ↔ Chain (fun x y => x ∈ a :: l ∧ y ∈ l ∧ R x y) a l :=
-  ⟨fun p => by
+    Chain R a l ↔ Chain (fun x y ↦ x ∈ a :: l ∧ y ∈ l ∧ R x y) a l :=
+  ⟨fun p ↦ by
     induction p with
     | nil => exact nil
     | @cons _ _ _ r _ IH =>
       constructor
       · exact ⟨mem_cons_self, mem_cons_self, r⟩
-      · exact IH.imp fun a b ⟨am, bm, h⟩ => ⟨mem_cons_of_mem _ am, mem_cons_of_mem _ bm, h⟩,
-    Chain.imp fun _ _ h => h.2.2⟩
+      · exact IH.imp fun a b ⟨am, bm, h⟩ ↦ ⟨mem_cons_of_mem _ am, mem_cons_of_mem _ bm, h⟩,
+    Chain.imp fun _ _ h ↦ h.2.2⟩
 
 theorem chain_singleton {a b : α} : Chain R a [b] ↔ R a b := by
   simp only [chain_cons, Chain.nil, and_true]
@@ -69,7 +69,7 @@ theorem chain_append_singleton_iff_forall₂ :
     Chain R a (l ++ [b]) ↔ Forall₂ R (a :: l) (l ++ [b]) := by simp [chain_iff_forall₂]
 
 theorem chain_map (f : β → α) {b : β} {l : List β} :
-    Chain R (f b) (map f l) ↔ Chain (fun a b : β => R (f a) (f b)) b l := by
+    Chain R (f b) (map f l) ↔ Chain (fun a b : β ↦ R (f a) (f b)) b l := by
   induction l generalizing b <;> simp only [map, Chain.nil, chain_cons, *]
 
 theorem chain_of_chain_map {S : β → β → Prop} (f : α → β) (H : ∀ a b : α, S (f a) (f b) → R a b)
@@ -101,7 +101,7 @@ protected theorem Chain.pairwise [IsTrans α R] :
     hb.pairwise.cons
       (by
         simp only [mem_cons, forall_eq_or_imp, h, true_and]
-        exact fun c hc => _root_.trans h (rel_of_pairwise_cons hb.pairwise hc))
+        exact fun c hc ↦ _root_.trans h (rel_of_pairwise_cons hb.pairwise hc))
 
 theorem chain_iff_pairwise [IsTrans α R] {a : α} {l : List α} : Chain R a l ↔ Pairwise R (a :: l) :=
   ⟨Chain.pairwise, Pairwise.chain⟩
@@ -119,7 +119,7 @@ theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
     (∀ h : 0 < length l, R a (get l ⟨0, h⟩)) ∧
       ∀ (i : ℕ) (h : i < l.length - 1),
         R (get l ⟨i, by omega⟩) (get l ⟨i+1, by omega⟩)
-  | a, [] => iff_of_true (by simp) ⟨fun h => by simp at h, fun _ h => by simp at h⟩
+  | a, [] => iff_of_true (by simp) ⟨fun h ↦ by simp at h, fun _ h ↦ by simp at h⟩
   | a, b :: t => by
     rw [chain_cons, @chain_iff_get _ _ t]
     constructor
@@ -157,13 +157,13 @@ theorem Chain'.imp {S : α → α → Prop} (H : ∀ a b, R a b → S a b) {l : 
 
 theorem Chain'.iff {S : α → α → Prop} (H : ∀ a b, R a b ↔ S a b) {l : List α} :
     Chain' R l ↔ Chain' S l :=
-  ⟨Chain'.imp fun a b => (H a b).1, Chain'.imp fun a b => (H a b).2⟩
+  ⟨Chain'.imp fun a b ↦ (H a b).1, Chain'.imp fun a b ↦ (H a b).2⟩
 
-theorem Chain'.iff_mem : ∀ {l : List α}, Chain' R l ↔ Chain' (fun x y => x ∈ l ∧ y ∈ l ∧ R x y) l
+theorem Chain'.iff_mem : ∀ {l : List α}, Chain' R l ↔ Chain' (fun x y ↦ x ∈ l ∧ y ∈ l ∧ R x y) l
   | [] => Iff.rfl
   | _ :: _ =>
-    ⟨fun h => (Chain.iff_mem.1 h).imp fun _ _ ⟨h₁, h₂, h₃⟩ => ⟨h₁, mem_cons.2 (Or.inr h₂), h₃⟩,
-      Chain'.imp fun _ _ h => h.2.2⟩
+    ⟨fun h ↦ (Chain.iff_mem.1 h).imp fun _ _ ⟨h₁, h₂, h₃⟩ ↦ ⟨h₁, mem_cons.2 (Or.inr h₂), h₃⟩,
+      Chain'.imp fun _ _ h ↦ h.2.2⟩
 
 @[simp]
 theorem chain'_nil : Chain' R [] :=
@@ -179,12 +179,12 @@ theorem chain'_cons_cons {x y l} : Chain' R (x :: y :: l) ↔ R x y ∧ Chain' R
 
 @[deprecated (since := "2025-08-12")] alias chain'_cons := chain'_cons_cons
 
-theorem chain'_isInfix : ∀ l : List α, Chain' (fun x y => [x, y] <:+: l) l
+theorem chain'_isInfix : ∀ l : List α, Chain' (fun x y ↦ [x, y] <:+: l) l
   | [] => chain'_nil
   | [_] => chain'_singleton _
   | a :: b :: l =>
     chain'_cons_cons.2
-      ⟨⟨[], l, by simp⟩, (chain'_isInfix (b :: l)).imp fun _ _ h => h.trans ⟨[a], [], by simp⟩⟩
+      ⟨⟨[], l, by simp⟩, (chain'_isInfix (b :: l)).imp fun _ _ h ↦ h.trans ⟨[a], [], by simp⟩⟩
 
 theorem chain'_split {a : α} :
     ∀ {l₁ l₂ : List α}, Chain' R (l₁ ++ a :: l₂) ↔ Chain' R (l₁ ++ [a]) ∧ Chain' R (a :: l₂)
@@ -198,19 +198,19 @@ theorem chain'_append_cons_cons {b c : α} {l₁ l₂ : List α} :
 
 theorem chain'_iff_forall_rel_of_append_cons_cons {l : List α} :
     Chain' R l ↔ ∀ ⦃a b l₁ l₂⦄, l = l₁ ++ a :: b :: l₂ → R a b := by
-  refine ⟨fun h _ _ _ _ eq => (chain'_append_cons_cons.mp (eq ▸ h)).2.1, ?_⟩
+  refine ⟨fun h _ _ _ _ eq ↦ (chain'_append_cons_cons.mp (eq ▸ h)).2.1, ?_⟩
   induction l with
   | nil => exact fun _ ↦ chain'_nil
   | cons head tail ih =>
     match tail with
     | nil => exact fun _ ↦ chain'_singleton head
     | cons head' tail =>
-      refine fun h ↦ chain'_cons_cons.mpr ⟨h (nil_append _).symm, ih fun ⦃a b l₁ l₂⦄ eq => ?_⟩
+      refine fun h ↦ chain'_cons_cons.mpr ⟨h (nil_append _).symm, ih fun ⦃a b l₁ l₂⦄ eq ↦ ?_⟩
       apply h
       rw [eq, cons_append]
 
 theorem chain'_map (f : β → α) {l : List β} :
-    Chain' R (map f l) ↔ Chain' (fun a b : β => R (f a) (f b)) l := by
+    Chain' R (map f l) ↔ Chain' (fun a b : β ↦ R (f a) (f b)) l := by
   cases l <;> [rfl; exact chain_map _]
 
 theorem chain'_of_chain'_map {S : β → β → Prop} (f : α → β) (H : ∀ a b : α, S (f a) (f b) → R a b)
@@ -261,7 +261,7 @@ lemma Chain'.cons_of_ne_nil {x : α} {l : List α} (l_ne_nil : l ≠ [])
   simpa [l.head?_eq_head l_ne_nil] using hy.symm
 
 theorem chain'_cons' {x l} : Chain' R (x :: l) ↔ (∀ y ∈ head? l, R x y) ∧ Chain' R l :=
-  ⟨fun h => ⟨h.rel_head?, h.tail⟩, fun ⟨h₁, h₂⟩ => h₂.cons' h₁⟩
+  ⟨fun h ↦ ⟨h.rel_head?, h.tail⟩, fun ⟨h₁, h₂⟩ ↦ h₂.cons' h₁⟩
 
 theorem chain'_append :
     ∀ {l₁ l₂ : List α},
@@ -307,7 +307,7 @@ theorem chain'_pair {x y} : Chain' R [x, y] ↔ R x y := by
 
 theorem Chain'.imp_head {x y} (h : ∀ {z}, R x z → R y z) {l} (hl : Chain' R (x :: l)) :
     Chain' R (y :: l) :=
-  hl.tail.cons' fun _ hz => h <| hl.rel_head? hz
+  hl.tail.cons' fun _ hz ↦ h <| hl.rel_head? hz
 
 theorem chain'_reverse : ∀ {l}, Chain' R (reverse l) ↔ Chain' (flip R) l
   | [] => Iff.rfl
@@ -319,8 +319,8 @@ theorem chain'_reverse : ∀ {l}, Chain' R (reverse l) ↔ Chain' (flip R) l
 theorem chain'_iff_get {R} : ∀ {l : List α}, Chain' R l ↔
     ∀ (i : ℕ) (h : i < length l - 1),
       R (get l ⟨i, by omega⟩) (get l ⟨i + 1, by omega⟩)
-  | [] => iff_of_true (by simp) (fun _ h => by simp at h)
-  | [a] => iff_of_true (by simp) (fun _ h => by simp at h)
+  | [] => iff_of_true (by simp) (fun _ h ↦ by simp at h)
+  | [a] => iff_of_true (by simp) (fun _ h ↦ by simp at h)
   | a :: b :: t => by
     rw [← and_forall_add_one, chain'_cons_cons, chain'_iff_get]
     simp
@@ -334,7 +334,7 @@ theorem Chain'.append_overlap {l₁ l₂ l₃ : List α} (h₁ : Chain' R (l₁ 
 
 lemma chain'_flatten : ∀ {L : List (List α)}, [] ∉ L →
     (Chain' R L.flatten ↔ (∀ l ∈ L, Chain' R l) ∧
-    L.Chain' (fun l₁ l₂ => ∀ᵉ (x ∈ l₁.getLast?) (y ∈ l₂.head?), R x y))
+    L.Chain' (fun l₁ l₂ ↦ ∀ᵉ (x ∈ l₁.getLast?) (y ∈ l₂.head?), R x y))
 | [], _ => by simp
 | [l], _ => by simp [flatten]
 | (l₁ :: l₂ :: L), hL => by
@@ -431,7 +431,7 @@ reflexive transitive closure of `r`. The converse of `exists_chain_of_relationRe
 -/
 theorem relationReflTransGen_of_exists_chain (l : List α) (hl₁ : Chain r a l)
     (hl₂ : getLast (a :: l) (cons_ne_nil _ _) = b) : Relation.ReflTransGen r a b :=
-  Chain.backwards_induction_head _ l hl₁ hl₂ (fun _ _ => Relation.ReflTransGen.head)
+  Chain.backwards_induction_head _ l hl₁ hl₂ (fun _ _ ↦ Relation.ReflTransGen.head)
     Relation.ReflTransGen.refl
 
 theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
@@ -538,7 +538,7 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
 /-- If `r` is well-founded, the lexicographic order on `r`-decreasing chains is also. -/
 theorem WellFounded.list_chain' (hwf : WellFounded r) :
     WellFounded (List.lex_chains r) :=
-  ⟨fun _ ↦ Acc.list_chain' (fun _ _ => hwf.apply _)⟩
+  ⟨fun _ ↦ Acc.list_chain' (fun _ _ ↦ hwf.apply _)⟩
 
 instance [hwf : IsWellFounded α r] :
     IsWellFounded (List.chains r) (List.lex_chains r) :=

@@ -57,8 +57,8 @@ protected abbrev hasDistribNeg (f : S → R) (hf : Injective f) [Mul R] [HasDist
     (neg : ∀ a, f (-a) = -f a)
     (mul : ∀ a b, f (a * b) = f a * f b) : HasDistribNeg S :=
   { hf.involutiveNeg _ neg, ‹Mul S› with
-    neg_mul := fun x y => hf <| by rw [neg, mul, neg, neg_mul, mul],
-    mul_neg := fun x y => hf <| by rw [neg, mul, neg, mul_neg, mul] }
+    neg_mul := fun x y ↦ hf <| by rw [neg, mul, neg, neg_mul, mul],
+    mul_neg := fun x y ↦ hf <| by rw [neg, mul, neg, mul_neg, mul] }
 
 /-- A type endowed with `0`, `1` and `+` is an additive monoid with one,
 if it admits an injective map that preserves `0`, `1` and `+` to an additive monoid with one.
@@ -70,7 +70,7 @@ protected abbrev addMonoidWithOne [Zero S] [One S] [Add S] [SMul ℕ S] [NatCast
   { hf.addMonoid f zero add (swap nsmul) with
     natCast := Nat.cast,
     natCast_zero := hf (by rw [natCast, Nat.cast_zero, zero]),
-    natCast_succ := fun n => hf (by rw [natCast, Nat.cast_succ, add, one, natCast]), one := 1 }
+    natCast_succ := fun n ↦ hf (by rw [natCast, Nat.cast_succ, add, one, natCast]), one := 1 }
 
 /-- A type endowed with `0`, `1` and `+` is an additive commutative monoid with one, if it admits an
 injective map that preserves `0`, `1` and `+` to an additive commutative monoid with one.
@@ -94,8 +94,8 @@ protected abbrev addGroupWithOne {S} [Zero S] [One S] [Add S] [SMul ℕ S] [Neg 
   { hf.addGroup f zero add neg sub (swap nsmul) (swap zsmul),
     hf.addMonoidWithOne f zero one add nsmul natCast with
     intCast := Int.cast,
-    intCast_ofNat := fun n => hf (by rw [natCast, intCast, Int.cast_natCast]),
-    intCast_negSucc := fun n => hf (by rw [intCast, neg, natCast, Int.cast_negSucc] ) }
+    intCast_ofNat := fun n ↦ hf (by rw [natCast, intCast, Int.cast_natCast]),
+    intCast_negSucc := fun n ↦ hf (by rw [intCast, neg, natCast, Int.cast_negSucc] ) }
 
 /-- A type endowed with `0`, `1` and `+` is an additive commutative group with one, if it admits an
 injective map that preserves `0`, `1` and `+` to an additive commutative group with one.
@@ -263,12 +263,12 @@ variable [Add S] [Mul S]
 /-- Pushforward a `LeftDistribClass` instance along a surjective function. -/
 theorem leftDistribClass [Mul R] [Add R] [LeftDistribClass R] (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) : LeftDistribClass S where
-  left_distrib := hf.forall₃.2 fun x y z => by simp only [← add, ← mul, left_distrib]
+  left_distrib := hf.forall₃.2 fun x y z ↦ by simp only [← add, ← mul, left_distrib]
 
 /-- Pushforward a `RightDistribClass` instance along a surjective function. -/
 theorem rightDistribClass [Mul R] [Add R] [RightDistribClass R] (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) : RightDistribClass S where
-  right_distrib := hf.forall₃.2 fun x y z => by simp only [← add, ← mul, right_distrib]
+  right_distrib := hf.forall₃.2 fun x y z ↦ by simp only [← add, ← mul, right_distrib]
 
 /-- Pushforward a `Distrib` instance along a surjective function. -/
 -- See note [reducible non-instances]
@@ -286,8 +286,8 @@ preserves `-` and `*` from a type which has distributive negation. -/
 protected abbrev hasDistribNeg [Mul R] [HasDistribNeg R]
     (neg : ∀ a, f (-a) = -f a) (mul : ∀ a b, f (a * b) = f a * f b) : HasDistribNeg S :=
   { hf.involutiveNeg _ neg, ‹Mul S› with
-    neg_mul := hf.forall₂.2 fun x y => by rw [← neg, ← mul, neg_mul, neg, mul]
-    mul_neg := hf.forall₂.2 fun x y => by rw [← neg, ← mul, mul_neg, neg, mul] }
+    neg_mul := hf.forall₂.2 fun x y ↦ by rw [← neg, ← mul, neg_mul, neg, mul]
+    mul_neg := hf.forall₂.2 fun x y ↦ by rw [← neg, ← mul, mul_neg, neg, mul] }
 
 
 /-- A type endowed with `0`, `1` and `+` is an additive monoid with one, if it admits a surjective
@@ -299,7 +299,7 @@ protected abbrev addMonoidWithOne [AddMonoidWithOne R] (zero : f 0 = 0) (one : f
   { hf.addMonoid f zero add (swap nsmul) with
     natCast := Nat.cast,
     natCast_zero := by rw [← natCast, Nat.cast_zero, zero]
-    natCast_succ := fun n => by rw [← natCast, Nat.cast_succ, add, one, natCast]
+    natCast_succ := fun n ↦ by rw [← natCast, Nat.cast_succ, add, one, natCast]
     one := 1 }
 
 /-- A type endowed with `0`, `1` and `+` is an additive monoid with one,
@@ -322,8 +322,8 @@ protected abbrev addGroupWithOne [AddGroupWithOne R]
   { hf.addMonoidWithOne f zero one add nsmul natCast,
     hf.addGroup f zero add neg sub (swap nsmul) (swap zsmul) with
     intCast := Int.cast,
-    intCast_ofNat := fun n => by rw [← intCast, Int.cast_natCast, natCast],
-    intCast_negSucc := fun n => by
+    intCast_ofNat := fun n ↦ by rw [← intCast, Int.cast_natCast, natCast],
+    intCast_negSucc := fun n ↦ by
       rw [← intCast, Int.cast_negSucc, neg, natCast] }
 
 /-- A type endowed with `0`, `1`, `+` is an additive commutative group with one, if it admits a

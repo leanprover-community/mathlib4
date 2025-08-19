@@ -51,7 +51,7 @@ variable {r r'}
 
 theorem directedOn_iff_directed {s} : @DirectedOn α r s ↔ Directed r (Subtype.val : s → α) := by
   simp only [DirectedOn, Directed, Subtype.exists, exists_and_left, exists_prop, Subtype.forall]
-  exact forall₂_congr fun x _ => by simp [And.comm, and_assoc]
+  exact forall₂_congr fun x _ ↦ by simp [And.comm, and_assoc]
 
 alias ⟨DirectedOn.directed_val, _⟩ := directedOn_iff_directed
 
@@ -66,7 +66,7 @@ theorem directedOn_image {s : Set β} {f : β → α} :
     forall_apply_eq_imp_iff₂, Order.Preimage]
 
 theorem DirectedOn.mono' {s : Set α} (hs : DirectedOn r s)
-    (h : ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → r a b → r' a b) : DirectedOn r' s := fun _ hx _ hy =>
+    (h : ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → r a b → r' a b) : DirectedOn r' s := fun _ hx _ hy ↦
   let ⟨z, hz, hxz, hyz⟩ := hs _ hx _ hy
   ⟨z, hz, h hx hz hxz, h hy hz hyz⟩
 
@@ -78,7 +78,7 @@ theorem directed_comp {ι} {f : ι → β} {g : β → α} : Directed r (g ∘ f
   Iff.rfl
 
 theorem Directed.mono {s : α → α → Prop} {ι} {f : ι → α} (H : ∀ a b, r a b → s a b)
-    (h : Directed r f) : Directed s f := fun a b =>
+    (h : Directed r f) : Directed s f := fun a b ↦
   let ⟨c, h₁, h₂⟩ := h a b
   ⟨c, H _ _ h₁, H _ _ h₂⟩
 
@@ -92,7 +92,7 @@ theorem DirectedOn.mono_comp {r : α → α → Prop} {rb : β → β → Prop} 
 
 /-- A set stable by supremum is `≤`-directed. -/
 theorem directedOn_of_sup_mem [SemilatticeSup α] {S : Set α}
-    (H : ∀ ⦃i j⦄, i ∈ S → j ∈ S → i ⊔ j ∈ S) : DirectedOn (· ≤ ·) S := fun a ha b hb =>
+    (H : ∀ ⦃i j⦄, i ∈ S → j ∈ S → i ⊔ j ∈ S) : DirectedOn (· ≤ ·) S := fun a ha b hb ↦
   ⟨a ⊔ b, H ha hb, le_sup_left, le_sup_right⟩
 
 theorem Directed.extend_bot [Preorder α] [OrderBot α] {e : ι → β} {f : ι → α}
@@ -114,8 +114,8 @@ theorem directedOn_of_inf_mem [SemilatticeInf α] {S : Set α}
     (H : ∀ ⦃i j⦄, i ∈ S → j ∈ S → i ⊓ j ∈ S) : DirectedOn (· ≥ ·) S :=
   directedOn_of_sup_mem (α := αᵒᵈ) H
 
-theorem IsTotal.directed [IsTotal α r] (f : ι → α) : Directed r f := fun i j =>
-  Or.casesOn (total_of r (f i) (f j)) (fun h => ⟨j, h, refl _⟩) fun h => ⟨i, refl _, h⟩
+theorem IsTotal.directed [IsTotal α r] (f : ι → α) : Directed r f := fun i j ↦
+  Or.casesOn (total_of r (f i) (f j)) (fun h ↦ ⟨j, h, refl _⟩) fun h ↦ ⟨i, refl _, h⟩
 
 /-- `IsDirected α r` states that for any elements `a`, `b` there exists an element `c` such that
 `r a c` and `r b c`. -/
@@ -135,15 +135,15 @@ theorem directed_of₃ (r : α → α → Prop) [IsDirected α r] [IsTrans α r]
 theorem directed_id [IsDirected α r] : Directed r id := directed_of r
 
 theorem directed_id_iff : Directed r id ↔ IsDirected α r :=
-  ⟨fun h => ⟨h⟩, @directed_id _ _⟩
+  ⟨fun h ↦ ⟨h⟩, @directed_id _ _⟩
 
-theorem directedOn_univ [IsDirected α r] : DirectedOn r Set.univ := fun a _ b _ =>
+theorem directedOn_univ [IsDirected α r] : DirectedOn r Set.univ := fun a _ b _ ↦
   let ⟨c, hc⟩ := directed_of r a b
   ⟨c, trivial, hc⟩
 
 theorem directedOn_univ_iff : DirectedOn r Set.univ ↔ IsDirected α r :=
-  ⟨fun h =>
-    ⟨fun a b =>
+  ⟨fun h ↦
+    ⟨fun a b ↦
       let ⟨c, _, hc⟩ := h a trivial b trivial
       ⟨c, hc⟩⟩,
     @directedOn_univ _ _⟩
@@ -153,7 +153,7 @@ instance (priority := 100) IsTotal.to_isDirected [IsTotal α r] : IsDirected α 
   directed_id_iff.1 <| IsTotal.directed _
 
 theorem isDirected_mono [IsDirected α r] (h : ∀ ⦃a b⦄, r a b → s a b) : IsDirected α s :=
-  ⟨fun a b =>
+  ⟨fun a b ↦
     let ⟨c, ha, hb⟩ := IsDirected.directed a b
     ⟨c, h ha, h hb⟩⟩
 
@@ -209,10 +209,10 @@ protected theorem DirectedOn.insert (h : Reflexive r) (a : α) {s : Set α} (hd 
     exact ⟨w, Set.mem_insert_of_mem _ hws, hwr⟩
 
 theorem directedOn_singleton (h : Reflexive r) (a : α) : DirectedOn r ({a} : Set α) :=
-  fun x hx _ hy => ⟨x, hx, h _, hx.symm ▸ hy.symm ▸ h _⟩
+  fun x hx _ hy ↦ ⟨x, hx, h _, hx.symm ▸ hy.symm ▸ h _⟩
 
 theorem directedOn_pair (h : Reflexive r) {a b : α} (hab : a ≼ b) : DirectedOn r ({a, b} : Set α) :=
-  (directedOn_singleton h _).insert h _ fun c hc => ⟨c, hc, hc.symm ▸ hab, h _⟩
+  (directedOn_singleton h _).insert h _ fun c hc ↦ ⟨c, hc, hc.symm ▸ hab, h _⟩
 
 theorem directedOn_pair' (h : Reflexive r) {a b : α} (hab : a ≼ b) :
     DirectedOn r ({b, a} : Set α) := by
@@ -225,7 +225,7 @@ section Preorder
 
 variable [Preorder α] {a : α}
 
-protected theorem IsMin.isBot [IsDirected α (· ≥ ·)] (h : IsMin a) : IsBot a := fun b =>
+protected theorem IsMin.isBot [IsDirected α (· ≥ ·)] (h : IsMin a) : IsBot a := fun b ↦
   let ⟨_, hca, hcb⟩ := exists_le_le a b
   (h hca).trans hcb
 
@@ -233,7 +233,7 @@ protected theorem IsMax.isTop [IsDirected α (· ≤ ·)] (h : IsMax a) : IsTop 
   h.toDual.isBot
 
 lemma DirectedOn.is_bot_of_is_min {s : Set α} (hd : DirectedOn (· ≥ ·) s)
-    {m} (hm : m ∈ s) (hmin : ∀ a ∈ s, a ≤ m → m ≤ a) : ∀ a ∈ s, m ≤ a := fun a as =>
+    {m} (hm : m ∈ s) (hmin : ∀ a ∈ s, a ≤ m → m ≤ a) : ∀ a ∈ s, m ≤ a := fun a as ↦
   let ⟨x, xs, xm, xa⟩ := hd m hm a as
   (hmin x xs xm).trans xa
 
@@ -316,20 +316,20 @@ end PartialOrder
 -- see Note [lower instance priority]
 instance (priority := 100) SemilatticeSup.to_isDirected_le [SemilatticeSup α] :
     IsDirected α (· ≤ ·) :=
-  ⟨fun a b => ⟨a ⊔ b, le_sup_left, le_sup_right⟩⟩
+  ⟨fun a b ↦ ⟨a ⊔ b, le_sup_left, le_sup_right⟩⟩
 
 -- see Note [lower instance priority]
 instance (priority := 100) SemilatticeInf.to_isDirected_ge [SemilatticeInf α] :
     IsDirected α (· ≥ ·) :=
-  ⟨fun a b => ⟨a ⊓ b, inf_le_left, inf_le_right⟩⟩
+  ⟨fun a b ↦ ⟨a ⊓ b, inf_le_left, inf_le_right⟩⟩
 
 -- see Note [lower instance priority]
 instance (priority := 100) OrderTop.to_isDirected_le [LE α] [OrderTop α] : IsDirected α (· ≤ ·) :=
-  ⟨fun _ _ => ⟨⊤, le_top _, le_top _⟩⟩
+  ⟨fun _ _ ↦ ⟨⊤, le_top _, le_top _⟩⟩
 
 -- see Note [lower instance priority]
 instance (priority := 100) OrderBot.to_isDirected_ge [LE α] [OrderBot α] : IsDirected α (· ≥ ·) :=
-  ⟨fun _ _ => ⟨⊥, bot_le _, bot_le _⟩⟩
+  ⟨fun _ _ ↦ ⟨⊥, bot_le _, bot_le _⟩⟩
 
 namespace DirectedOn
 
@@ -337,15 +337,15 @@ section Pi
 
 variable {ι : Type*} {α : ι → Type*} {r : (i : ι) → α i → α i → Prop}
 
-lemma proj {d : Set (Π i, α i)} (hd : DirectedOn (fun x y => ∀ i, r i (x i) (y i)) d) (i : ι) :
-    DirectedOn (r i) ((fun a => a i) '' d) :=
-  DirectedOn.mono_comp (fun _ _ h => h) (mono hd fun ⦃_ _⦄ h ↦ h i)
+lemma proj {d : Set (Π i, α i)} (hd : DirectedOn (fun x y ↦ ∀ i, r i (x i) (y i)) d) (i : ι) :
+    DirectedOn (r i) ((fun a ↦ a i) '' d) :=
+  DirectedOn.mono_comp (fun _ _ h ↦ h) (mono hd fun ⦃_ _⦄ h ↦ h i)
 
 lemma pi {d : (i : ι) → Set (α i)} (hd : ∀ (i : ι), DirectedOn (r i) (d i)) :
-    DirectedOn (fun x y => ∀ i, r i (x i) (y i)) (Set.pi Set.univ d) := by
+    DirectedOn (fun x y ↦ ∀ i, r i (x i) (y i)) (Set.pi Set.univ d) := by
   intro a ha b hb
-  choose f hfd haf hbf using fun i => hd i (a i) (ha i trivial) (b i) (hb i trivial)
-  exact ⟨f, fun i _ => hfd i, haf, hbf⟩
+  choose f hfd haf hbf using fun i ↦ hd i (a i) (ha i trivial) (b i) (hb i trivial)
+  exact ⟨f, fun i _ ↦ hfd i, haf, hbf⟩
 
 end Pi
 
@@ -367,7 +367,7 @@ lemma snd {d : Set (α × β)} (hd : DirectedOn (fun p q ↦ p.1 ≼₁ q.1 ∧ 
   DirectedOn.mono_comp (fun ⦃_ _⦄ h ↦ h) (mono hd fun ⦃_ _⦄ h ↦ h.2)
 
 lemma prod {d₁ : Set α} {d₂ : Set β} (h₁ : DirectedOn (· ≼₁ ·) d₁) (h₂ : DirectedOn (· ≼₂ ·) d₂) :
-    DirectedOn (fun p q ↦ p.1 ≼₁ q.1 ∧ p.2 ≼₂ q.2) (d₁ ×ˢ d₂) := fun _ hpd _ hqd => by
+    DirectedOn (fun p q ↦ p.1 ≼₁ q.1 ∧ p.2 ≼₂ q.2) (d₁ ×ˢ d₂) := fun _ hpd _ hqd ↦ by
   obtain ⟨r₁, hdr₁, hpr₁, hqr₁⟩ := h₁ _ hpd.1 _ hqd.1
   obtain ⟨r₂, hdr₂, hpr₂, hqr₂⟩ := h₂ _ hpd.2 _ hqd.2
   exact ⟨⟨r₁, r₂⟩, ⟨hdr₁, hdr₂⟩, ⟨hpr₁, hpr₂⟩, ⟨hqr₁, hqr₂⟩⟩

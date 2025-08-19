@@ -77,7 +77,7 @@ for adjacent vertices.
 -/
 protected def lift {β : Sort*} (f : ∀ ⦃v⦄ (_ : v ∉ K), β)
     (h : ∀ ⦃v w⦄ (hv : v ∉ K) (hw : w ∉ K), G.Adj v w → f hv = f hw) : G.ComponentCompl K → β :=
-  ConnectedComponent.lift (fun vv => f vv.prop) fun v w p => by
+  ConnectedComponent.lift (fun vv ↦ f vv.prop) fun v w p ↦ by
     induction p with
     | nil => rintro _; rfl
     | cons a q ih => rename_i u v w; rintro h'; exact (h u.prop v.prop a).trans (ih h'.of_cons)
@@ -86,7 +86,7 @@ protected def lift {β : Sort*} (f : ∀ ⦃v⦄ (_ : v ∉ K), β)
 protected theorem ind {β : G.ComponentCompl K → Prop}
     (f : ∀ ⦃v⦄ (hv : v ∉ K), β (G.componentComplMk hv)) : ∀ C : G.ComponentCompl K, β C := by
   apply ConnectedComponent.ind
-  exact fun ⟨v, vnK⟩ => f vnK
+  exact fun ⟨v, vnK⟩ ↦ f vnK
 
 /-- The induced graph on the vertices `C`. -/
 protected abbrev coeGraph (C : ComponentCompl G K) : SimpleGraph C :=
@@ -97,7 +97,7 @@ theorem coe_inj {C D : G.ComponentCompl K} : (C : Set V) = (D : Set V) ↔ C = D
 
 @[simp]
 protected theorem nonempty (C : G.ComponentCompl K) : (C : Set V).Nonempty :=
-  C.ind fun v vnK => ⟨v, vnK, rfl⟩
+  C.ind fun v vnK ↦ ⟨v, vnK, rfl⟩
 
 protected theorem exists_eq_mk (C : G.ComponentCompl K) :
     ∃ (v : _) (h : v ∉ K), G.componentComplMk h = C :=
@@ -105,23 +105,23 @@ protected theorem exists_eq_mk (C : G.ComponentCompl K) :
 
 protected theorem disjoint_right (C : G.ComponentCompl K) : Disjoint K C := by
   rw [Set.disjoint_iff]
-  exact fun v ⟨vK, vC⟩ => vC.choose vK
+  exact fun v ⟨vK, vC⟩ ↦ vC.choose vK
 
-theorem notMem_of_mem {C : G.ComponentCompl K} {c : V} (cC : c ∈ C) : c ∉ K := fun cK =>
+theorem notMem_of_mem {C : G.ComponentCompl K} {c : V} (cC : c ∈ C) : c ∉ K := fun cK ↦
   Set.disjoint_iff.mp C.disjoint_right ⟨cK, cC⟩
 
 @[deprecated (since := "2025-05-23")] alias not_mem_of_mem := notMem_of_mem
 
 protected theorem pairwise_disjoint :
-    Pairwise fun C D : G.ComponentCompl K => Disjoint (C : Set V) (D : Set V) := by
+    Pairwise fun C D : G.ComponentCompl K ↦ Disjoint (C : Set V) (D : Set V) := by
   rintro C D ne
   rw [Set.disjoint_iff]
-  exact fun u ⟨uC, uD⟩ => ne (uC.choose_spec.symm.trans uD.choose_spec)
+  exact fun u ⟨uC, uD⟩ ↦ ne (uC.choose_spec.symm.trans uD.choose_spec)
 
 /-- Any vertex adjacent to a vertex of `C` and not lying in `K` must lie in `C`.
 -/
 theorem mem_of_adj : ∀ {C : G.ComponentCompl K} (c d : V), c ∈ C → d ∉ K → G.Adj c d → d ∈ C :=
-  fun {C} c d ⟨cnK, h⟩ dnK cd =>
+  fun {C} c d ⟨cnK, h⟩ dnK cd ↦
   ⟨dnK, by
     rw [← h, ConnectedComponent.eq]
     exact Adj.reachable cd.symm⟩
@@ -132,7 +132,7 @@ there exists a vertex `k ∈ K` adjacent to a vertex `v ∈ C`.
 -/
 theorem exists_adj_boundary_pair (Gc : G.Preconnected) (hK : K.Nonempty) :
     ∀ C : G.ComponentCompl K, ∃ ck : V × V, ck.1 ∈ C ∧ ck.2 ∈ K ∧ G.Adj ck.1 ck.2 := by
-  refine ComponentCompl.ind fun v vnK => ?_
+  refine ComponentCompl.ind fun v vnK ↦ ?_
   let C : G.ComponentCompl K := G.componentComplMk vnK
   let dis := Set.disjoint_iff.mp C.disjoint_right
   by_contra! h
@@ -144,7 +144,7 @@ theorem exists_adj_boundary_pair (Gc : G.Preconnected) (hK : K.Nonempty) :
   obtain ⟨p⟩ := Gc v u
   obtain ⟨⟨⟨x, y⟩, xy⟩, -, xC, ynC⟩ :=
     p.exists_boundary_dart (C : Set V) (G.componentComplMk_mem vnK) unC
-  exact ynC (mem_of_adj x y xC (fun yK : y ∈ K => h ⟨x, y⟩ xC yK xy) xy)
+  exact ynC (mem_of_adj x y xC (fun yK : y ∈ K ↦ h ⟨x, y⟩ xC yK xy) xy)
 
 /--
 If `K ⊆ L`, the components outside of `L` are all contained in a single component outside of `K`.
@@ -154,7 +154,7 @@ abbrev hom (h : K ⊆ L) (C : G.ComponentCompl L) : G.ComponentCompl K :=
 
 theorem subset_hom (C : G.ComponentCompl L) (h : K ⊆ L) : (C : Set V) ⊆ (C.hom h : Set V) := by
   rintro c ⟨cL, rfl⟩
-  exact ⟨fun h' => cL (h h'), rfl⟩
+  exact ⟨fun h' ↦ cL (h h'), rfl⟩
 
 theorem _root_.SimpleGraph.componentComplMk_mem_hom
     (G : SimpleGraph V) {v : V} (vK : v ∉ K) (h : L ⊆ K) :
@@ -163,16 +163,16 @@ theorem _root_.SimpleGraph.componentComplMk_mem_hom
 
 theorem hom_eq_iff_le (C : G.ComponentCompl L) (h : K ⊆ L) (D : G.ComponentCompl K) :
     C.hom h = D ↔ (C : Set V) ⊆ (D : Set V) :=
-  ⟨fun h' => h' ▸ C.subset_hom h, C.ind fun _ vnL vD => (vD ⟨vnL, rfl⟩).choose_spec⟩
+  ⟨fun h' ↦ h' ▸ C.subset_hom h, C.ind fun _ vnL vD ↦ (vD ⟨vnL, rfl⟩).choose_spec⟩
 
 theorem hom_eq_iff_not_disjoint (C : G.ComponentCompl L) (h : K ⊆ L) (D : G.ComponentCompl K) :
     C.hom h = D ↔ ¬Disjoint (C : Set V) (D : Set V) := by
   rw [Set.not_disjoint_iff]
   constructor
   · rintro rfl
-    refine C.ind fun x xnL => ?_
-    exact ⟨x, ⟨xnL, rfl⟩, ⟨fun xK => xnL (h xK), rfl⟩⟩
-  · refine C.ind fun x xnL => ?_
+    refine C.ind fun x xnL ↦ ?_
+    exact ⟨x, ⟨xnL, rfl⟩, ⟨fun xK ↦ xnL (h xK), rfl⟩⟩
+  · refine C.ind fun x xnL ↦ ?_
     rintro ⟨x, ⟨_, e₁⟩, _, rfl⟩
     rw [← e₁]
     rfl
@@ -230,13 +230,13 @@ instance componentCompl_finite [LocallyFinite G] [Gpc : Fact G.Preconnected] (K 
       let p := C.exists_adj_boundary_pair Gpc.out h
       ⟨p.choose.1, p.choose.2, p.choose_spec.2.1, p.choose_spec.2.2.symm⟩
     -- `touch` is injective
-    have touch_inj : touch.Injective := fun C D h' => ComponentCompl.pairwise_disjoint.eq
+    have touch_inj : touch.Injective := fun C D h' ↦ ComponentCompl.pairwise_disjoint.eq
       (Set.not_disjoint_iff.mpr ⟨touch C, (C.exists_adj_boundary_pair Gpc.out h).choose_spec.1,
                                  h'.symm ▸ (D.exists_adj_boundary_pair Gpc.out h).choose_spec.1⟩)
     -- `touch` has finite range
     have : Finite (Set.range touch) := by
       refine @Subtype.finite _ (Set.Finite.to_subtype ?_) _
-      apply Set.Finite.ofFinset (K.biUnion (fun v => G.neighborFinset v))
+      apply Set.Finite.ofFinset (K.biUnion (fun v ↦ G.neighborFinset v))
       simp only [Finset.mem_biUnion, mem_neighborFinset, Set.mem_setOf_eq, implies_true]
     -- hence `touch` has a finite domain
     apply Finite.of_injective_finite_range touch_inj
@@ -254,8 +254,8 @@ The functor assigning, to a finite set in `V`, the set of connected components i
 def componentComplFunctor : (Finset V)ᵒᵖ ⥤ Type u where
   obj K := G.ComponentCompl K.unop
   map f := ComponentCompl.hom (le_of_op_hom f)
-  map_id _ := funext fun C => C.hom_refl
-  map_comp {_ Y Z} h h' := funext fun C => by
+  map_id _ := funext fun C ↦ C.hom_refl
+  map_comp {_ Y Z} h h' := funext fun C ↦ by
     convert C.hom_trans (le_of_op_hom h) (le_of_op_hom _)
     exact h'
 
@@ -274,7 +274,7 @@ theorem infinite_iff_in_eventualRange {K : (Finset V)ᵒᵖ} (C : G.componentCom
   simp only [C.infinite_iff_in_all_ranges, CategoryTheory.Functor.eventualRange, Set.mem_iInter,
     Set.mem_range, componentComplFunctor_map]
   exact
-    ⟨fun h Lop KL => h Lop.unop (le_of_op_hom KL), fun h L KL =>
+    ⟨fun h Lop KL ↦ h Lop.unop (le_of_op_hom KL), fun h L KL ↦
       h (Opposite.op L) (opHomOfLE KL)⟩
 
 end Ends

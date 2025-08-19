@@ -38,7 +38,7 @@ variable [Semigroup α] {a b c : α}
 /-- There are two possible conventions for divisibility, which coincide in a `CommMonoid`.
 This matches the convention for ordinals. -/
 instance (priority := 100) semigroupDvd : Dvd α :=
-  Dvd.mk fun a b => ∃ c, b = a * c
+  Dvd.mk fun a b ↦ ∃ c, b = a * c
 
 -- TODO: this used to not have `c` explicit, but that seems to be important
 --       for use with tactics, similar to `Exists.intro`
@@ -68,7 +68,7 @@ alias Dvd.dvd.trans := dvd_trans
 
 /-- Transitivity of `|` for use in `calc` blocks. -/
 instance : IsTrans α Dvd.dvd :=
-  ⟨fun _ _ _ => dvd_trans⟩
+  ⟨fun _ _ _ ↦ dvd_trans⟩
 
 @[simp]
 theorem dvd_mul_right (a b : α) : a ∣ a * b :=
@@ -114,7 +114,7 @@ variable [Monoid α] {a b c : α} {m n : ℕ}
 theorem dvd_refl (a : α) : a ∣ a :=
   Dvd.intro 1 (mul_one a)
 
-theorem dvd_rfl : ∀ {a : α}, a ∣ a := fun {a} => dvd_refl a
+theorem dvd_rfl : ∀ {a : α}, a ∣ a := fun {a} ↦ dvd_refl a
 
 instance : IsRefl α (· ∣ ·) :=
   ⟨dvd_refl⟩
@@ -150,7 +150,7 @@ theorem Dvd.intro_left (c : α) (h : c * a = b) : a ∣ b :=
 alias dvd_of_mul_left_eq := Dvd.intro_left
 
 theorem exists_eq_mul_left_of_dvd (h : a ∣ b) : ∃ c, b = c * a :=
-  Dvd.elim h fun c => fun H1 : b = a * c => Exists.intro c (Eq.trans H1 (mul_comm a c))
+  Dvd.elim h fun c ↦ fun H1 : b = a * c ↦ Exists.intro c (Eq.trans H1 (mul_comm a c))
 
 theorem dvd_iff_exists_eq_mul_left : a ∣ b ↔ ∃ c, b = c * a :=
   ⟨exists_eq_mul_left_of_dvd, by
@@ -158,7 +158,7 @@ theorem dvd_iff_exists_eq_mul_left : a ∣ b ↔ ∃ c, b = c * a :=
     exact ⟨c, mul_comm _ _⟩⟩
 
 theorem Dvd.elim_left {P : Prop} (h₁ : a ∣ b) (h₂ : ∀ c, b = c * a → P) : P :=
-  Exists.elim (exists_eq_mul_left_of_dvd h₁) fun c => fun h₃ : b = c * a => h₂ c h₃
+  Exists.elim (exists_eq_mul_left_of_dvd h₁) fun c ↦ fun h₃ : b = c * a ↦ h₂ c h₃
 
 @[simp]
 theorem dvd_mul_left (a b : α) : a ∣ b * a :=
@@ -176,7 +176,7 @@ theorem mul_dvd_mul : ∀ {a b c d : α}, a ∣ b → c ∣ d → a * c ∣ b * 
   | a, _, c, _, ⟨e, rfl⟩, ⟨f, rfl⟩ => ⟨e * f, by simp⟩
 
 theorem dvd_of_mul_left_dvd (h : a * b ∣ c) : b ∣ c :=
-  Dvd.elim h fun d ceq => Dvd.intro (a * d) (by simp [ceq])
+  Dvd.elim h fun d ceq ↦ Dvd.intro (a * d) (by simp [ceq])
 
 theorem dvd_mul [DecompositionMonoid α] {k m n : α} :
     k ∣ m * n ↔ ∃ d₁ d₂, d₁ ∣ m ∧ d₂ ∣ n ∧ k = d₁ * d₂ := by

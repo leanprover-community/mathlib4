@@ -71,13 +71,13 @@ attribute [local instance] nontrivial_of_hasRankNullity
 theorem LinearMap.lift_rank_range_add_rank_ker (f : M →ₗ[R] M') :
     lift.{u} (Module.rank R (LinearMap.range f)) + lift.{v} (Module.rank R (LinearMap.ker f)) =
       lift.{v} (Module.rank R M) := by
-  haveI := fun p : Submodule R M => Classical.decEq (M ⧸ p)
+  haveI := fun p : Submodule R M ↦ Classical.decEq (M ⧸ p)
   rw [← f.quotKerEquivRange.lift_rank_eq, ← lift_add, rank_quotient_add_rank]
 
 /-- The **rank-nullity theorem** -/
 theorem LinearMap.rank_range_add_rank_ker (f : M →ₗ[R] M₁) :
     Module.rank R (LinearMap.range f) + Module.rank R (LinearMap.ker f) = Module.rank R M := by
-  haveI := fun p : Submodule R M => Classical.decEq (M ⧸ p)
+  haveI := fun p : Submodule R M ↦ Classical.decEq (M ⧸ p)
   rw [← f.quotKerEquivRange.rank_eq, rank_quotient_add_rank]
 
 theorem LinearMap.lift_rank_eq_of_surjective {f : M →ₗ[R] M'} (h : Surjective f) :

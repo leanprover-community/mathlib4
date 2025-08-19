@@ -69,14 +69,14 @@ then these operations are commutative.
 
 In fact, they give a commutative monoid structure, see `eckmann_hilton.CommMonoid`. -/
 theorem mul_comm : Std.Commutative m₂ :=
-  ⟨fun a b => by simpa [mul h₁ h₂ distrib, h₂.left_id, h₂.right_id] using distrib e₂ a b e₂⟩
+  ⟨fun a b ↦ by simpa [mul h₁ h₂ distrib, h₂.left_id, h₂.right_id] using distrib e₂ a b e₂⟩
 
 /-- If a type carries two unital binary operations that distribute over each other,
 then these operations are associative.
 
 In fact, they give a commutative monoid structure, see `eckmann_hilton.CommMonoid`. -/
 theorem mul_assoc : Std.Associative m₂ :=
-  ⟨fun a b c => by simpa [mul h₁ h₂ distrib, h₂.left_id, h₂.right_id] using distrib a b e₂ c⟩
+  ⟨fun a b c ↦ by simpa [mul h₁ h₂ distrib, h₂.left_id, h₂.right_id] using distrib a b e₂ c⟩
 
 /-- If a type carries a unital magma structure that distributes over a unital binary
 operation, then the magma structure is a commutative monoid. -/

@@ -61,7 +61,7 @@ variable {M N : Type*} [Mul M] [Mul N]
 
 @[to_additive]
 instance instMul : Mul (M × N) :=
-  ⟨fun p q => ⟨p.1 * q.1, p.2 * q.2⟩⟩
+  ⟨fun p q ↦ ⟨p.1 * q.1, p.2 * q.2⟩⟩
 
 @[to_additive (attr := simp)]
 theorem fst_mul (p q : M × N) : (p * q).1 = p.1 * q.1 := rfl
@@ -86,7 +86,7 @@ variable {G H : Type*} [Inv G] [Inv H]
 
 @[to_additive]
 instance instInv : Inv (G × H) :=
-  ⟨fun p => (p.1⁻¹, p.2⁻¹)⟩
+  ⟨fun p ↦ (p.1⁻¹, p.2⁻¹)⟩
 
 @[to_additive (attr := simp)]
 theorem fst_inv (p : G × H) : p⁻¹.1 = p.1⁻¹ := rfl
@@ -108,7 +108,7 @@ variable {G H : Type*} [Div G] [Div H]
 
 @[to_additive]
 instance instDiv : Div (G × H) :=
-  ⟨fun p q => ⟨p.1 / q.1, p.2 / q.2⟩⟩
+  ⟨fun p q ↦ ⟨p.1 / q.1, p.2 / q.2⟩⟩
 
 @[to_additive (attr := simp)]
 theorem fst_div (a b : G × H) : (a / b).1 = a.1 / b.1 := rfl

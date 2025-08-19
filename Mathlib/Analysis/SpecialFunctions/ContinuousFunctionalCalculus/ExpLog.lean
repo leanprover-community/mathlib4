@@ -88,7 +88,7 @@ lemma _root_.IsSelfAdjoint.exp_nonneg {𝕜 : Type*} [Field 𝕜] [Algebra 𝕜 
     [PartialOrder A] [StarOrderedRing A] {a : A} (ha : IsSelfAdjoint a) :
     0 ≤ exp 𝕜 a := by
   rw [exp_eq_exp 𝕜 ℝ, ← real_exp_eq_normedSpace_exp]
-  exact cfc_nonneg fun x _ => Real.exp_nonneg x
+  exact cfc_nonneg fun x _ ↦ Real.exp_nonneg x
 
 end RealNormed
 
@@ -133,7 +133,7 @@ lemma log_smul {r : ℝ} (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, x ≠ 0) (hr
     log (r • a) = algebraMap ℝ A (Real.log r) + log a := by
   rw [log, ← cfc_smul_id (R := ℝ) r a, ← cfc_comp Real.log (r • ·) a, log]
   calc
-    _ = cfc (fun z => Real.log r + Real.log z) a :=
+    _ = cfc (fun z ↦ Real.log r + Real.log z) a :=
       cfc_congr (Real.log_mul hr <| ha₂ · ·)
     _ = _ := by rw [cfc_const_add _ _ _]
 

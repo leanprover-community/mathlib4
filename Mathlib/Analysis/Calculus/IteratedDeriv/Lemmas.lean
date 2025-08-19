@@ -50,14 +50,14 @@ theorem iteratedDerivWithin_fun_add
   simpa using iteratedDerivWithin_add hx h hf hg
 
 theorem iteratedDerivWithin_const_add (hn : 0 < n) (c : F) :
-    iteratedDerivWithin n (fun z => c + f z) s x = iteratedDerivWithin n f s x := by
+    iteratedDerivWithin n (fun z ↦ c + f z) s x = iteratedDerivWithin n f s x := by
   obtain ⟨n, rfl⟩ := n.exists_eq_succ_of_ne_zero hn.ne'
   rw [iteratedDerivWithin_succ', iteratedDerivWithin_succ']
   congr 1 with y
   exact derivWithin_const_add _
 
 theorem iteratedDerivWithin_const_sub (hn : 0 < n) (c : F) :
-    iteratedDerivWithin n (fun z => c - f z) s x = iteratedDerivWithin n (fun z => -f z) s x := by
+    iteratedDerivWithin n (fun z ↦ c - f z) s x = iteratedDerivWithin n (fun z ↦ -f z) s x := by
   obtain ⟨n, rfl⟩ := n.exists_eq_succ_of_ne_zero hn.ne'
   rw [iteratedDerivWithin_succ', iteratedDerivWithin_succ']
   congr 1 with y
@@ -73,7 +73,7 @@ theorem iteratedDerivWithin_const_smul (c : R) (hf : ContDiffWithinAt 𝕜 n f s
 
 include h hx in
 theorem iteratedDerivWithin_const_mul (c : 𝕜) {f : 𝕜 → 𝕜} (hf : ContDiffWithinAt 𝕜 n f s x) :
-    iteratedDerivWithin n (fun z => c * f z) s x = c * iteratedDerivWithin n f s x := by
+    iteratedDerivWithin n (fun z ↦ c * f z) s x = c * iteratedDerivWithin n f s x := by
   simpa using iteratedDerivWithin_const_smul (F := 𝕜) hx h c hf
 
 variable (f) in
@@ -90,7 +90,7 @@ theorem iteratedDerivWithin_neg :
 
 variable (f) in
 theorem iteratedDerivWithin_fun_neg :
-    iteratedDerivWithin n (fun z => -f z) s x = -iteratedDerivWithin n f s x :=
+    iteratedDerivWithin n (fun z ↦ -f z) s x = -iteratedDerivWithin n f s x :=
   iteratedDerivWithin_neg f
 
 @[deprecated (since := "2025-06-24")] alias iteratedDerivWithin_neg' := iteratedDerivWithin_fun_neg
@@ -106,18 +106,18 @@ theorem iteratedDerivWithin_sub
 
 theorem iteratedDerivWithin_comp_const_smul (hf : ContDiffOn 𝕜 n f s) (c : 𝕜)
     (hs : Set.MapsTo (c * ·) s s) :
-    iteratedDerivWithin n (fun x => f (c * x)) s x = c ^ n • iteratedDerivWithin n f s (c * x) := by
+    iteratedDerivWithin n (fun x ↦ f (c * x)) s x = c ^ n • iteratedDerivWithin n f s (c * x) := by
   induction n generalizing x with
   | zero => simp
   | succ n ih =>
     have hcx : c * x ∈ s := hs hx
     have h₀ : s.EqOn
         (iteratedDerivWithin n (fun x ↦ f (c * x)) s)
-        (fun x => c ^ n • iteratedDerivWithin n f s (c * x)) :=
-      fun x hx => ih hx hf.of_succ
+        (fun x ↦ c ^ n • iteratedDerivWithin n f s (c * x)) :=
+      fun x hx ↦ ih hx hf.of_succ
     have h₁ : DifferentiableWithinAt 𝕜 (iteratedDerivWithin n f s) s (c * x) :=
       hf.differentiableOn_iteratedDerivWithin (Nat.cast_lt.mpr n.lt_succ_self) h _ hcx
-    have h₂ : DifferentiableWithinAt 𝕜 (fun x => iteratedDerivWithin n f s (c * x)) s x := by
+    have h₂ : DifferentiableWithinAt 𝕜 (fun x ↦ iteratedDerivWithin n f s (c * x)) s x := by
       rw [← Function.comp_def]
       apply DifferentiableWithinAt.comp
       · exact hf.differentiableOn_iteratedDerivWithin (Nat.cast_lt.mpr n.lt_succ_self) h _ hcx
@@ -138,11 +138,11 @@ lemma iteratedDeriv_add (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x
     iteratedDerivWithin_add (Set.mem_univ _) uniqueDiffOn_univ hf hg
 
 theorem iteratedDeriv_const_add (hn : 0 < n) (c : F) :
-    iteratedDeriv n (fun z => c + f z) x = iteratedDeriv n f x := by
+    iteratedDeriv n (fun z ↦ c + f z) x = iteratedDeriv n f x := by
   simpa only [← iteratedDerivWithin_univ] using iteratedDerivWithin_const_add hn c
 
 theorem iteratedDeriv_const_sub (hn : 0 < n) (c : F) :
-    iteratedDeriv n (fun z => c - f z) x = iteratedDeriv n (-f) x := by
+    iteratedDeriv n (fun z ↦ c - f z) x = iteratedDeriv n (-f) x := by
   simpa only [← iteratedDerivWithin_univ] using iteratedDerivWithin_const_sub hn c
 
 lemma iteratedDeriv_fun_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
@@ -165,20 +165,20 @@ theorem iteratedDeriv_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiffAt 𝕜
       c (contDiffWithinAt_univ.mpr h)
 
 theorem iteratedDeriv_const_mul {n : ℕ} {f : 𝕜 → 𝕜} (h : ContDiffAt 𝕜 n f x) (c : 𝕜) :
-    iteratedDeriv n (fun z => c * f z) x = c * iteratedDeriv n f x := by
+    iteratedDeriv n (fun z ↦ c * f z) x = c * iteratedDeriv n f x := by
   simpa only [iteratedDerivWithin_univ] using
     iteratedDerivWithin_const_mul (Set.mem_univ x) uniqueDiffOn_univ
       c (contDiffWithinAt_univ.mpr h)
 
 theorem iteratedDeriv_comp_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiff 𝕜 n f) (c : 𝕜) :
-    iteratedDeriv n (fun x => f (c * x)) = fun x => c ^ n • iteratedDeriv n f (c * x) := by
+    iteratedDeriv n (fun x ↦ f (c * x)) = fun x ↦ c ^ n • iteratedDeriv n f (c * x) := by
   funext x
   simpa only [iteratedDerivWithin_univ] using
     iteratedDerivWithin_comp_const_smul (Set.mem_univ x) uniqueDiffOn_univ (contDiffOn_univ.mpr h)
       c (Set.mapsTo_univ _ _)
 
 theorem iteratedDeriv_comp_const_mul {n : ℕ} {f : 𝕜 → 𝕜} (h : ContDiff 𝕜 n f) (c : 𝕜) :
-    iteratedDeriv n (fun x => f (c * x)) = fun x => c ^ n * iteratedDeriv n f (c * x) := by
+    iteratedDeriv n (fun x ↦ f (c * x)) = fun x ↦ c ^ n * iteratedDeriv n f (c * x) := by
   simpa only [smul_eq_mul] using iteratedDeriv_comp_const_smul h c
 
 lemma iteratedDeriv_comp_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :

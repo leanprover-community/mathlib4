@@ -245,7 +245,7 @@ section DivisionRing
 variable [DivisionRing R] {p q : R[X]}
 
 theorem degree_pos_of_ne_zero_of_nonunit (hp0 : p ≠ 0) (hp : ¬IsUnit p) : 0 < degree p :=
-  lt_of_not_ge fun h => by
+  lt_of_not_ge fun h ↦ by
     rw [eq_C_of_degree_le_zero h] at hp0 hp
     exact hp (IsUnit.map C (IsUnit.mk0 (coeff p 0) (mt C_inj.2 (by simpa using hp0))))
 
@@ -284,9 +284,9 @@ section Field
 variable [Field R] {p q : R[X]}
 
 theorem isUnit_iff_degree_eq_zero : IsUnit p ↔ degree p = 0 :=
-  ⟨degree_eq_zero_of_isUnit, fun h =>
+  ⟨degree_eq_zero_of_isUnit, fun h ↦
     have : degree p ≤ 0 := by simp [*, le_refl]
-    have hc : coeff p 0 ≠ 0 := fun hc => by
+    have hc : coeff p 0 ≠ 0 := fun hc ↦ by
       rw [eq_C_of_degree_le_zero this, hc] at h; simp only [map_zero] at h; contradiction
     isUnit_iff_dvd_one.2
       ⟨C (coeff p 0)⁻¹, by
@@ -347,11 +347,11 @@ instance instEuclideanDomain : EuclideanDomain R[X] :=
     r := _
     r_wellFounded := degree_lt_wf
     quotient_mul_add_remainder_eq := quotient_mul_add_remainder_eq_aux
-    remainder_lt := fun _ _ hq => remainder_lt_aux _ hq
-    mul_left_not_lt := fun _ _ hq => not_lt_of_ge (degree_le_mul_left _ hq) }
+    remainder_lt := fun _ _ hq ↦ remainder_lt_aux _ hq
+    mul_left_not_lt := fun _ _ hq ↦ not_lt_of_ge (degree_le_mul_left _ hq) }
 
 theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
-  ⟨fun h => h ▸ EuclideanDomain.mod_lt _ hq0, fun h => by
+  ⟨fun h ↦ h ▸ EuclideanDomain.mod_lt _ hq0, fun h ↦ by
     classical
     have : ¬degree (q * C (leadingCoeff q)⁻¹) ≤ degree p :=
       not_le_of_gt <| by rwa [degree_mul_leadingCoeff_inv q hq0]
@@ -361,10 +361,10 @@ theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
     simp only [this, false_and, if_false]⟩
 
 protected theorem div_eq_zero_iff (hq0 : q ≠ 0) : p / q = 0 ↔ degree p < degree q :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     have := EuclideanDomain.div_add_mod p q
     rwa [h, mul_zero, zero_add, mod_eq_self_iff hq0] at this,
-  fun h => by
+  fun h ↦ by
     have hlt : degree p < degree (q * C (leadingCoeff q)⁻¹) := by
       rwa [degree_mul_leadingCoeff_inv q hq0]
     have hm : Monic (q * C (leadingCoeff q)⁻¹) := monic_mul_leadingCoeff_inv hq0
@@ -385,7 +385,7 @@ theorem degree_div_le (p q : R[X]) : degree (p / q) ≤ degree p := by
   · rw [div_def, mul_comm, degree_mul_leadingCoeff_inv _ hq]; exact degree_divByMonic_le _ _
 
 theorem degree_div_lt (hp : p ≠ 0) (hq : 0 < degree q) : degree (p / q) < degree p := by
-  have hq0 : q ≠ 0 := fun hq0 => by simp [hq0] at hq
+  have hq0 : q ≠ 0 := fun hq0 ↦ by simp [hq0] at hq
   rw [div_def, mul_comm, degree_mul_leadingCoeff_inv _ hq0]
   exact degree_divByMonic_lt _ (monic_mul_leadingCoeff_inv hq0) hp
     (by rw [degree_mul_leadingCoeff_inv _ hq0]; exact hq)
@@ -426,8 +426,8 @@ open EuclideanDomain
 
 theorem gcd_map [Field k] [DecidableEq R] [DecidableEq k] (f : R →+* k) :
     gcd (p.map f) (q.map f) = (gcd p q).map f :=
-  GCD.induction p q (fun x => by simp_rw [Polynomial.map_zero, EuclideanDomain.gcd_zero_left])
-    fun x y _ ih => by rw [gcd_val, ← map_mod, ih, ← gcd_val]
+  GCD.induction p q (fun x ↦ by simp_rw [Polynomial.map_zero, EuclideanDomain.gcd_zero_left])
+    fun x y _ ih ↦ by rw [gcd_val, ← map_mod, ih, ← gcd_val]
 
 end
 
@@ -454,7 +454,7 @@ theorem root_right_of_root_gcd [CommSemiring k] [DecidableEq R] {ϕ : R →+* k}
 theorem root_gcd_iff_root_left_right [CommSemiring k] [DecidableEq R]
     {ϕ : R →+* k} {f g : R[X]} {α : k} :
     (EuclideanDomain.gcd f g).eval₂ ϕ α = 0 ↔ f.eval₂ ϕ α = 0 ∧ g.eval₂ ϕ α = 0 :=
-  ⟨fun h => ⟨root_left_of_root_gcd h, root_right_of_root_gcd h⟩, fun h => eval₂_gcd_eq_zero h.1 h.2⟩
+  ⟨fun h ↦ ⟨root_left_of_root_gcd h, root_right_of_root_gcd h⟩, fun h ↦ eval₂_gcd_eq_zero h.1 h.2⟩
 
 theorem isRoot_gcd_iff_isRoot_left_right [DecidableEq R] {f g : R[X]} {α : R} :
     (EuclideanDomain.gcd f g).IsRoot α ↔ f.IsRoot α ∧ g.IsRoot α :=
@@ -547,17 +547,17 @@ lemma C_div : C (a / b) = C a / C b := by
   rw [div_C, ← C_mul, div_eq_mul_inv]
 
 theorem C_mul_dvd (ha : a ≠ 0) : C a * p ∣ q ↔ p ∣ q :=
-  ⟨fun h => dvd_trans (dvd_mul_left _ _) h, fun ⟨r, hr⟩ =>
+  ⟨fun h ↦ dvd_trans (dvd_mul_left _ _) h, fun ⟨r, hr⟩ ↦
     ⟨C a⁻¹ * r, by
       rw [mul_assoc, mul_left_comm p, ← mul_assoc, ← C.map_mul, mul_inv_cancel₀ ha, C.map_one,
         one_mul, hr]⟩⟩
 
 theorem dvd_C_mul (ha : a ≠ 0) : p ∣ Polynomial.C a * q ↔ p ∣ q :=
-  ⟨fun ⟨r, hr⟩ =>
+  ⟨fun ⟨r, hr⟩ ↦
     ⟨C a⁻¹ * r, by
       rw [mul_left_comm p, ← hr, ← mul_assoc, ← C.map_mul, inv_mul_cancel₀ ha, C.map_one,
         one_mul]⟩,
-    fun h => dvd_trans h (dvd_mul_left _ _)⟩
+    fun h ↦ dvd_trans h (dvd_mul_left _ _)⟩
 
 theorem coe_normUnit_of_ne_zero [DecidableEq R] (hp : p ≠ 0) :
     (normUnit p : R[X]) = C p.leadingCoeff⁻¹ := by
@@ -581,7 +581,7 @@ theorem prime_of_degree_eq_one (hp1 : degree p = 1) : Prime p := by
   classical
   have : Prime (normalize p) :=
     Monic.prime_of_degree_eq_one (hp1 ▸ degree_normalize)
-      (monic_normalize fun hp0 => absurd hp1 (hp0.symm ▸ by simp [degree_zero]))
+      (monic_normalize fun hp0 ↦ absurd hp1 (hp0.symm ▸ by simp [degree_zero]))
   exact (normalize_associated _).prime this
 
 theorem irreducible_of_degree_eq_one (hp1 : degree p = 1) : Irreducible p :=
@@ -591,10 +591,10 @@ theorem not_irreducible_C (x : R) : ¬Irreducible (C x) := by
   by_cases H : x = 0
   · rw [H, C_0]
     exact not_irreducible_zero
-  · exact fun hx => hx.not_isUnit <| isUnit_C.2 <| isUnit_iff_ne_zero.2 H
+  · exact fun hx ↦ hx.not_isUnit <| isUnit_C.2 <| isUnit_iff_ne_zero.2 H
 
 theorem degree_pos_of_irreducible (hp : Irreducible p) : 0 < p.degree :=
-  lt_of_not_ge fun hp0 =>
+  lt_of_not_ge fun hp0 ↦
     have := eq_C_of_degree_le_zero hp0
     not_irreducible_C (p.coeff 0) <| this ▸ hp
 

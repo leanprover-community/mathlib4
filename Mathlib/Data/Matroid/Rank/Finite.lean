@@ -101,11 +101,11 @@ lemma isRkFinite_of_finite (M : Matroid α) (hX : X.Finite) : M.IsRkFinite X :=
 
 lemma Indep.subset_finite_isBasis'_of_subset_of_isRkFinite (hI : M.Indep I) (hIX : I ⊆ X)
     (hX : M.IsRkFinite X) : ∃ J, M.IsBasis' J X ∧ I ⊆ J ∧ J.Finite :=
-  (hI.subset_isBasis'_of_subset hIX).imp fun _ hJ => ⟨hJ.1, hJ.2, hJ.1.finite_of_isRkFinite hX⟩
+  (hI.subset_isBasis'_of_subset hIX).imp fun _ hJ ↦ ⟨hJ.1, hJ.2, hJ.1.finite_of_isRkFinite hX⟩
 
 lemma Indep.subset_finite_isBasis_of_subset_of_isRkFinite (hI : M.Indep I) (hIX : I ⊆ X)
     (hX : M.IsRkFinite X) (hXE : X ⊆ M.E := by aesop_mat) : ∃ J, M.IsBasis J X ∧ I ⊆ J ∧ J.Finite :=
-  (hI.subset_isBasis_of_subset hIX).imp fun _ hJ => ⟨hJ.1, hJ.2, hJ.1.finite_of_isRkFinite hX⟩
+  (hI.subset_isBasis_of_subset hIX).imp fun _ hJ ↦ ⟨hJ.1, hJ.2, hJ.1.finite_of_isRkFinite hX⟩
 
 lemma isRkFinite_singleton : M.IsRkFinite {e} := by
   simp

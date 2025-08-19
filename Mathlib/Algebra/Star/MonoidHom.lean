@@ -119,7 +119,7 @@ variable [Monoid C] [Star C] [Monoid D] [Star D]
 /-- The composition of star monoid homomorphisms, as a star monoid homomorphism. -/
 def comp (f : B →⋆* C) (g : A →⋆* B) : A →⋆* C :=
   { f.toMonoidHom.comp g.toMonoidHom with
-    map_star' := fun a => by simp [map_star] }
+    map_star' := fun a ↦ by simp [map_star] }
 
 @[simp]
 theorem coe_comp (f : B →⋆* C) (g : A →⋆* B) : ⇑(comp f g) = f ∘ g :=
@@ -136,11 +136,11 @@ theorem comp_assoc (f : C →⋆* D) (g : B →⋆* C) (h : A →⋆* B) :
 
 @[simp]
 theorem id_comp (f : A →⋆* B) : (StarMonoidHom.id B).comp f = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem comp_id (f : A →⋆* B) : f.comp (.id _) = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 instance : Monoid (A →⋆* A) where
   mul := comp
@@ -205,7 +205,7 @@ variable (A) in
 @[refl]
 protected def refl : A ≃⋆* A :=
   { MulEquiv.refl A with
-    map_star' := fun _ => rfl }
+    map_star' := fun _ ↦ rfl }
 
 instance : Inhabited (A ≃⋆* A) :=
   ⟨.refl A⟩
@@ -218,7 +218,7 @@ theorem coe_refl : ⇑(.refl A : A ≃⋆* A) = id :=
 @[symm]
 nonrec def symm (e : A ≃⋆* B) : B ≃⋆* A :=
   { e.symm with
-    map_star' := fun b => by
+    map_star' := fun b ↦ by
       simpa only [EquivLike.apply_inv_apply, EquivLike.inv_apply_apply] using
         congr_arg (EquivLike.inv e) (map_star e (EquivLike.inv e b)).symm }
 
@@ -266,7 +266,7 @@ theorem refl_symm : (.refl A : A ≃⋆* A).symm = .refl A :=
 @[trans]
 def trans (e₁ : A ≃⋆* B) (e₂ : B ≃⋆* C) : A ≃⋆* C :=
   { e₁.toMulEquiv.trans e₂.toMulEquiv with
-    map_star' := fun a =>
+    map_star' := fun a ↦
       show e₂.toFun (e₁.toFun (star a)) = star (e₂.toFun (e₁.toFun a)) by
         rw [e₁.map_star', e₂.map_star'] }
 

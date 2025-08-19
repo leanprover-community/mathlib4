@@ -40,7 +40,7 @@ universe v
 variable {A : Type*} [Category A] [Abelian A] {X : SimplicialObject A}
 
 theorem HigherFacesVanish.inclusionOfMooreComplexMap (n : ℕ) :
-    HigherFacesVanish (n + 1) ((inclusionOfMooreComplexMap X).f (n + 1)) := fun j _ => by
+    HigherFacesVanish (n + 1) ((inclusionOfMooreComplexMap X).f (n + 1)) := fun j _ ↦ by
   dsimp [AlgebraicTopology.inclusionOfMooreComplexMap, NormalizedMooreComplex.objX]
   rw [← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ j
     (by simp only [Finset.mem_univ])), assoc, kernelSubobject_arrow_comp, comp_zero]
@@ -58,7 +58,7 @@ theorem factors_normalizedMooreComplex_PInfty (n : ℕ) :
 @[simps!]
 def PInftyToNormalizedMooreComplex (X : SimplicialObject A) : K[X] ⟶ N[X] :=
   ChainComplex.ofHom _ _ _ _ _ _
-    (fun n => factorThru _ _ (factors_normalizedMooreComplex_PInfty n)) fun n => by
+    (fun n ↦ factorThru _ _ (factors_normalizedMooreComplex_PInfty n)) fun n ↦ by
     rw [← cancel_mono (NormalizedMooreComplex.objX X n).arrow, assoc, assoc, factorThru_arrow,
       ← inclusionOfMooreComplexMap_f, ← normalizedMooreComplex_objD,
       ← (inclusionOfMooreComplexMap X).comm (n + 1) n, inclusionOfMooreComplexMap_f,
@@ -88,7 +88,7 @@ theorem inclusionOfMooreComplexMap_comp_PInfty (X : SimplicialObject A) :
   · exact (HigherFacesVanish.inclusionOfMooreComplexMap n).comp_P_eq_self
 
 instance : Mono (inclusionOfMooreComplexMap X) :=
-  ⟨fun _ _ hf => by
+  ⟨fun _ _ hf ↦ by
     ext n
     dsimp
     ext
@@ -111,9 +111,9 @@ using `PInfty` identifies to the composition of the normalized Moore complex fun
 and the inclusion in the Karoubi envelope. -/
 def N₁_iso_normalizedMooreComplex_comp_toKaroubi : N₁ ≅ normalizedMooreComplex A ⋙ toKaroubi _ where
   hom :=
-    { app := fun X => { f := PInftyToNormalizedMooreComplex X } }
+    { app := fun X ↦ { f := PInftyToNormalizedMooreComplex X } }
   inv :=
-    { app := fun X => { f := inclusionOfMooreComplexMap X } }
+    { app := fun X ↦ { f := inclusionOfMooreComplexMap X } }
   hom_inv_id := by
     ext X : 3
     simp only [PInftyToNormalizedMooreComplex_comp_inclusionOfMooreComplexMap,

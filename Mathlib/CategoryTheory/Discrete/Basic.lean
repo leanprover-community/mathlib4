@@ -178,7 +178,7 @@ composition of two discrete functors.
 @[simps!]
 def functorComp {I : Type u₁} {J : Type u₁'} (f : J → C) (g : I → J) :
     Discrete.functor (f ∘ g) ≅ Discrete.functor (Discrete.mk ∘ g) ⋙ Discrete.functor f :=
-  NatIso.ofComponents fun _ => Iso.refl _
+  NatIso.ofComponents fun _ ↦ Iso.refl _
 
 /-- For functors out of a discrete category,
 a natural transformation is just a collection of maps,
@@ -188,7 +188,7 @@ as the naturality squares are trivial.
 def natTrans {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.obj i ⟶ G.obj i) :
     F ⟶ G where
   app := f
-  naturality := fun {X Y} ⟨⟨g⟩⟩ => by
+  naturality := fun {X Y} ⟨⟨g⟩⟩ ↦ by
     discrete_cases
     rcases g
     change F.map (𝟙 _) ≫ _ = _ ≫ G.map (𝟙 _)
@@ -201,7 +201,7 @@ as the naturality squares are trivial.
 @[simps!]
 def natIso {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.obj i ≅ G.obj i) :
     F ≅ G :=
-  NatIso.ofComponents f fun ⟨⟨g⟩⟩ => by
+  NatIso.ofComponents f fun ⟨⟨g⟩⟩ ↦ by
     discrete_cases
     rcases g
     change F.map (𝟙 _) ≫ _ = _ ≫ G.map (𝟙 _)
@@ -209,7 +209,7 @@ def natIso {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.o
 
 instance {I : Type*} {F G : Discrete I ⥤ C} (f : ∀ i, F.obj i ⟶ G.obj i) [∀ i, IsIso (f i)] :
     IsIso (Discrete.natTrans f) := by
-  change IsIso (Discrete.natIso (fun i => asIso (f i))).hom
+  change IsIso (Discrete.natIso (fun i ↦ asIso (f i))).hom
   infer_instance
 
 @[simp]
@@ -220,13 +220,13 @@ theorem natIso_app {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discret
   `Discrete.functor (F.obj)`. -/
 @[simps!]
 def natIsoFunctor {I : Type u₁} {F : Discrete I ⥤ C} : F ≅ Discrete.functor (F.obj ∘ Discrete.mk) :=
-  natIso fun _ => Iso.refl _
+  natIso fun _ ↦ Iso.refl _
 
 /-- Composing `Discrete.functor F` with another functor `G` amounts to composing `F` with `G.obj` -/
 @[simps!]
 def compNatIsoDiscrete {I : Type u₁} {D : Type u₃} [Category.{v₃} D] (F : I → C) (G : C ⥤ D) :
     Discrete.functor F ⋙ G ≅ Discrete.functor (G.obj ∘ F) :=
-  natIso fun _ => Iso.refl _
+  natIso fun _ ↦ Iso.refl _
 
 /-- We can promote a type-level `Equiv` to
 an equivalence between the corresponding `discrete` categories.
@@ -236,9 +236,9 @@ def equivalence {I : Type u₁} {J : Type u₂} (e : I ≃ J) : Discrete I ≌ D
   functor := Discrete.functor (Discrete.mk ∘ (e : I → J))
   inverse := Discrete.functor (Discrete.mk ∘ (e.symm : J → I))
   unitIso :=
-    Discrete.natIso fun i => eqToIso (by simp)
+    Discrete.natIso fun i ↦ eqToIso (by simp)
   counitIso :=
-    Discrete.natIso fun j => eqToIso (by simp)
+    Discrete.natIso fun j ↦ eqToIso (by simp)
 
 /-- We can convert an equivalence of `discrete` categories to a type-level `Equiv`. -/
 @[simps]
@@ -259,11 +259,11 @@ open Opposite
 /-- A discrete category is equivalent to its opposite category. -/
 @[simps! functor_obj_as inverse_obj]
 protected def opposite (α : Type u₁) : (Discrete α)ᵒᵖ ≌ Discrete α :=
-  let F : Discrete α ⥤ (Discrete α)ᵒᵖ := Discrete.functor fun x => op (Discrete.mk x)
+  let F : Discrete α ⥤ (Discrete α)ᵒᵖ := Discrete.functor fun x ↦ op (Discrete.mk x)
   { functor := F.leftOp
     inverse := F
-    unitIso := NatIso.ofComponents fun ⟨_⟩ => Iso.refl _
-    counitIso := Discrete.natIso fun ⟨_⟩ => Iso.refl _ }
+    unitIso := NatIso.ofComponents fun ⟨_⟩ ↦ Iso.refl _
+    counitIso := Discrete.natIso fun ⟨_⟩ ↦ Iso.refl _ }
 
 variable {C : Type u₂} [Category.{v₂} C]
 
@@ -281,13 +281,13 @@ end Discrete
 def piEquivalenceFunctorDiscrete (J : Type u₂) (C : Type u₁) [Category.{v₁} C] :
     (J → C) ≌ (Discrete J ⥤ C) where
   functor :=
-    { obj := fun F => Discrete.functor F
-      map := fun f => Discrete.natTrans (fun j => f j.as) }
+    { obj := fun F ↦ Discrete.functor F
+      map := fun f ↦ Discrete.natTrans (fun j ↦ f j.as) }
   inverse :=
-    { obj := fun F j => F.obj ⟨j⟩
-      map := fun f j => f.app ⟨j⟩ }
+    { obj := fun F j ↦ F.obj ⟨j⟩
+      map := fun f j ↦ f.app ⟨j⟩ }
   unitIso := Iso.refl _
-  counitIso := NatIso.ofComponents (fun F => (NatIso.ofComponents (fun _ => Iso.refl _)
+  counitIso := NatIso.ofComponents (fun F ↦ (NatIso.ofComponents (fun _ ↦ Iso.refl _)
     (by
       rintro ⟨x⟩ ⟨y⟩ f
       obtain rfl : x = y := Discrete.eq_of_hom f

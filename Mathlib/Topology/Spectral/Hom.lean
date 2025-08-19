@@ -49,12 +49,12 @@ theorem IsSpectralMap.continuous {f : α → β} (hf : IsSpectralMap f) : Contin
   hf.toContinuous
 
 theorem isSpectralMap_id : IsSpectralMap (@id α) :=
-  ⟨continuous_id, fun _s _ => id⟩
+  ⟨continuous_id, fun _s _ ↦ id⟩
 
 @[stacks 005B]
 theorem IsSpectralMap.comp {f : β → γ} {g : α → β} (hf : IsSpectralMap f) (hg : IsSpectralMap g) :
     IsSpectralMap (f ∘ g) :=
-  ⟨hf.continuous.comp hg.continuous, fun _s hs₀ hs₁ =>
+  ⟨hf.continuous.comp hg.continuous, fun _s hs₀ hs₁ ↦
     ((hs₁.preimage_of_isOpen hf hs₀).preimage_of_isOpen hg) (hs₀.preimage hf.continuous)⟩
 
 theorem IsProperMap.isSpectralMap {f : α → β} (hf : IsProperMap f) : IsSpectralMap f :=
@@ -88,11 +88,11 @@ attribute [simp] map_spectral
 -- See note [lower instance priority]
 instance (priority := 100) SpectralMapClass.toContinuousMapClass [TopologicalSpace α]
     [TopologicalSpace β] [FunLike F α β] [SpectralMapClass F α β] : ContinuousMapClass F α β :=
-  { ‹SpectralMapClass F α β› with map_continuous := fun f => (map_spectral f).continuous }
+  { ‹SpectralMapClass F α β› with map_continuous := fun f ↦ (map_spectral f).continuous }
 
 instance [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β] [SpectralMapClass F α β] :
     CoeTC F (SpectralMap α β) :=
-  ⟨fun f => ⟨_, map_spectral f⟩⟩
+  ⟨fun f ↦ ⟨_, map_spectral f⟩⟩
 
 /-! ### Spectral maps -/
 
@@ -179,21 +179,21 @@ theorem comp_assoc (f : SpectralMap γ δ) (g : SpectralMap β γ) (h : Spectral
 
 @[simp]
 theorem comp_id (f : SpectralMap α β) : f.comp (SpectralMap.id α) = f :=
-  ext fun _a => rfl
+  ext fun _a ↦ rfl
 
 @[simp]
 theorem id_comp (f : SpectralMap α β) : (SpectralMap.id β).comp f = f :=
-  ext fun _a => rfl
+  ext fun _a ↦ rfl
 
 @[simp]
 theorem cancel_right {g₁ g₂ : SpectralMap β γ} {f : SpectralMap α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h,
-   fun a => of_eq (congrFun (congrArg comp a) f)⟩
+  ⟨fun h ↦ ext <| hf.forall.2 <| DFunLike.ext_iff.1 h,
+   fun a ↦ of_eq (congrFun (congrArg comp a) f)⟩
 
 @[simp]
 theorem cancel_left {g : SpectralMap β γ} {f₁ f₂ : SpectralMap α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+  ⟨fun h ↦ ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 end SpectralMap

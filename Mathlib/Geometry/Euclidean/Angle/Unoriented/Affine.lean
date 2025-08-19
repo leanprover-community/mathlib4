@@ -45,8 +45,8 @@ nonrec def angle (p₁ p₂ p₃ : P) : ℝ :=
 @[inherit_doc] scoped notation "∠" => EuclideanGeometry.angle
 
 theorem continuousAt_angle {x : P × P × P} (hx12 : x.1 ≠ x.2.1) (hx32 : x.2.2 ≠ x.2.1) :
-    ContinuousAt (fun y : P × P × P => ∠ y.1 y.2.1 y.2.2) x := by
-  let f : P × P × P → V × V := fun y => (y.1 -ᵥ y.2.1, y.2.2 -ᵥ y.2.1)
+    ContinuousAt (fun y : P × P × P ↦ ∠ y.1 y.2.1 y.2.2) x := by
+  let f : P × P × P → V × V := fun y ↦ (y.1 -ᵥ y.2.1, y.2.2 -ᵥ y.2.1)
   have hf1 : (f x).1 ≠ 0 := by simp [f, hx12]
   have hf2 : (f x).2 ≠ 0 := by simp [f, hx32]
   exact (InnerProductGeometry.continuousAt_angle hf1 hf2).comp (by fun_prop)
@@ -200,7 +200,7 @@ theorem dist_eq_add_dist_iff_angle_eq_pi {p₁ p₂ p₃ : P} (hp₁p₂ : p₁ 
     dist p₁ p₃ = dist p₁ p₂ + dist p₃ p₂ ↔ ∠ p₁ p₂ p₃ = π := by
   rw [dist_eq_norm_vsub V, dist_eq_norm_vsub V, dist_eq_norm_vsub V, ← vsub_sub_vsub_cancel_right]
   exact
-    norm_sub_eq_add_norm_iff_angle_eq_pi (fun he => hp₁p₂ (vsub_eq_zero_iff_eq.1 he)) fun he =>
+    norm_sub_eq_add_norm_iff_angle_eq_pi (fun he ↦ hp₁p₂ (vsub_eq_zero_iff_eq.1 he)) fun he ↦
       hp₃p₂ (vsub_eq_zero_iff_eq.1 he)
 
 /-- If ∠ABC = 0, then (dist A C) = abs ((dist A B) - (dist B C)). -/
@@ -214,8 +214,8 @@ theorem dist_eq_abs_sub_dist_iff_angle_eq_zero {p₁ p₂ p₃ : P} (hp₁p₂ :
     dist p₁ p₃ = |dist p₁ p₂ - dist p₃ p₂| ↔ ∠ p₁ p₂ p₃ = 0 := by
   rw [dist_eq_norm_vsub V, dist_eq_norm_vsub V, dist_eq_norm_vsub V, ← vsub_sub_vsub_cancel_right]
   exact
-    norm_sub_eq_abs_sub_norm_iff_angle_eq_zero (fun he => hp₁p₂ (vsub_eq_zero_iff_eq.1 he))
-      fun he => hp₃p₂ (vsub_eq_zero_iff_eq.1 he)
+    norm_sub_eq_abs_sub_norm_iff_angle_eq_zero (fun he ↦ hp₁p₂ (vsub_eq_zero_iff_eq.1 he))
+      fun he ↦ hp₃p₂ (vsub_eq_zero_iff_eq.1 he)
 
 /-- If M is the midpoint of the segment AB, then ∠AMB = π. -/
 theorem angle_midpoint_eq_pi (p₁ p₂ : P) (hp₁p₂ : p₁ ≠ p₂) : ∠ p₁ (midpoint ℝ p₁ p₂) p₂ = π := by
@@ -271,7 +271,7 @@ theorem _root_.Sbtw.angle₃₂₁_eq_pi {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁
 /-- The angle between three points is π if and only if the second point is strictly between the
 other two. -/
 theorem angle_eq_pi_iff_sbtw {p₁ p₂ p₃ : P} : ∠ p₁ p₂ p₃ = π ↔ Sbtw ℝ p₁ p₂ p₃ := by
-  refine ⟨?_, fun h => h.angle₁₂₃_eq_pi⟩
+  refine ⟨?_, fun h ↦ h.angle₁₂₃_eq_pi⟩
   rw [angle, angle_eq_pi_iff]
   rintro ⟨hp₁p₂, r, hr, hp₃p₂⟩
   refine ⟨⟨1 / (1 - r), ⟨div_nonneg zero_le_one (sub_nonneg.2 (hr.le.trans zero_le_one)),
@@ -370,7 +370,7 @@ theorem angle_eq_zero_iff_eq_and_ne_or_sbtw {p₁ p₂ p₃ : P} :
 angle between them is 0 or π. -/
 theorem collinear_iff_eq_or_eq_or_angle_eq_zero_or_angle_eq_pi {p₁ p₂ p₃ : P} :
     Collinear ℝ ({p₁, p₂, p₃} : Set P) ↔ p₁ = p₂ ∨ p₃ = p₂ ∨ ∠ p₁ p₂ p₃ = 0 ∨ ∠ p₁ p₂ p₃ = π := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · replace h := h.wbtw_or_wbtw_or_wbtw
     by_cases h₁₂ : p₁ = p₂
     · exact Or.inl h₁₂

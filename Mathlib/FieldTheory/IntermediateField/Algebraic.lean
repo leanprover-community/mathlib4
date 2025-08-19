@@ -138,7 +138,7 @@ end IntermediateField
 /-- If `L/K` is algebraic, the `K`-subalgebras of `L` are all fields. -/
 def subalgebraEquivIntermediateField [Algebra.IsAlgebraic K L] :
     Subalgebra K L ≃o IntermediateField K L where
-  toFun S := S.toIntermediateField fun x hx => S.inv_mem_of_algebraic
+  toFun S := S.toIntermediateField fun x hx ↦ S.inv_mem_of_algebraic
     (Algebra.IsAlgebraic.isAlgebraic ((⟨x, hx⟩ : S) : L))
   invFun S := S.toSubalgebra
   left_inv _ := toSubalgebra_toIntermediateField _ _

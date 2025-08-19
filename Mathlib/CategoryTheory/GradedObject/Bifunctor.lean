@@ -34,10 +34,10 @@ functor `GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject (I × J) C
 def mapBifunctor (I J : Type*) :
     GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject (I × J) C₃ where
   obj X :=
-    { obj := fun Y ij => (F.obj (X ij.1)).obj (Y ij.2)
-      map := fun φ ij => (F.obj (X ij.1)).map (φ ij.2) }
+    { obj := fun Y ij ↦ (F.obj (X ij.1)).obj (Y ij.2)
+      map := fun φ ij ↦ (F.obj (X ij.1)).map (φ ij.2) }
   map φ :=
-    { app := fun Y ij => (F.map (φ ij.1)).app (Y ij.2) }
+    { app := fun Y ij ↦ (F.map (φ ij.1)).app (Y ij.2) }
 
 section
 
@@ -98,7 +98,7 @@ noncomputable def mapBifunctorMapObjDesc
     [HasMap (((mapBifunctor F I J).obj X).obj Y) p]
     (f : ∀ (i : I) (j : J) (_ : p ⟨i, j⟩ = k), (F.obj (X i)).obj (Y j) ⟶ A) :
     mapBifunctorMapObj F p X Y k ⟶ A :=
-  descMapObj _ _ (fun ⟨i, j⟩ hij => f i j hij)
+  descMapObj _ _ (fun ⟨i, j⟩ hij ↦ f i j hij)
 
 @[reassoc (attr := simp)]
 lemma ι_mapBifunctorMapObjDesc {X : GradedObject I C₁} {Y : GradedObject J C₂} {A : C₃} {k : K}
@@ -140,11 +140,11 @@ functor `GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject K C₃` se
 noncomputable def mapBifunctorMap [∀ X Y, HasMap (((mapBifunctor F I J).obj X).obj Y) p] :
     GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject K C₃ where
   obj X :=
-    { obj := fun Y => mapBifunctorMapObj F p X Y
-      map := fun ψ => mapBifunctorMapMap F p (𝟙 X) ψ }
+    { obj := fun Y ↦ mapBifunctorMapObj F p X Y
+      map := fun ψ ↦ mapBifunctorMapMap F p (𝟙 X) ψ }
   map {X₁ X₂} φ :=
-    { app := fun Y => mapBifunctorMapMap F p φ (𝟙 Y)
-      naturality := fun {Y₁ Y₂} ψ => by
+    { app := fun Y ↦ mapBifunctorMapMap F p φ (𝟙 Y)
+      naturality := fun {Y₁ Y₂} ψ ↦ by
         dsimp
         simp only [Functor.map_id, NatTrans.id_app, id_comp, comp_id,
           ← mapMap_comp, NatTrans.naturality] }

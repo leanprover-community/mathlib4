@@ -135,7 +135,7 @@ theorem update_inr_apply_inr' {γ : α ⊕ β → Type*} [DecidableEq β] [Decid
 lemma rec_update_left {γ : α ⊕ β → Sort*} [DecidableEq α] [DecidableEq β]
     (f : ∀ a, γ (.inl a)) (g : ∀ b, γ (.inr b)) (a : α) (x : γ (.inl a)) :
     Sum.rec (update f a x) g = update (Sum.rec f g) (.inl a) x :=
-  Function.rec_update Sum.inl_injective (Sum.rec · g) (fun _ _ => rfl) (fun
+  Function.rec_update Sum.inl_injective (Sum.rec · g) (fun _ _ ↦ rfl) (fun
     | _, _, .inl _, h => (h _ rfl).elim
     | _, _, .inr _, _ => rfl) _ _ _
 
@@ -143,7 +143,7 @@ lemma rec_update_left {γ : α ⊕ β → Sort*} [DecidableEq α] [DecidableEq �
 lemma rec_update_right {γ : α ⊕ β → Sort*} [DecidableEq α] [DecidableEq β]
     (f : ∀ a, γ (.inl a)) (g : ∀ b, γ (.inr b)) (b : β) (x : γ (.inr b)) :
     Sum.rec f (update g b x) = update (Sum.rec f g) (.inr b) x :=
-  Function.rec_update Sum.inr_injective (Sum.rec f) (fun _ _ => rfl) (fun
+  Function.rec_update Sum.inr_injective (Sum.rec f) (fun _ _ ↦ rfl) (fun
     | _, _, .inr _, h => (h _ rfl).elim
     | _, _, .inl _, _ => rfl) _ _ _
 
@@ -251,7 +251,7 @@ open Function
 @[simp]
 theorem elim_injective {γ : Sort*} {f : α → γ} {g : β → γ} :
     Injective (Sum.elim f g) ↔ Injective f ∧ Injective g ∧ ∀ a b, f a ≠ g b where
-  mp h := ⟨h.comp inl_injective, h.comp inr_injective, fun _ _ => h.ne inl_ne_inr⟩
+  mp h := ⟨h.comp inl_injective, h.comp inr_injective, fun _ _ ↦ h.ne inl_ne_inr⟩
   mpr | ⟨hf, hg, hfg⟩ => hf.sumElim hg hfg
 
 @[simp]
@@ -264,11 +264,11 @@ theorem map_injective {f : α → γ} {g : β → δ} :
 theorem map_surjective {f : α → γ} {g : β → δ} :
     Surjective (Sum.map f g) ↔ Surjective f ∧ Surjective g where
   mp h := ⟨
-      (fun c => by
+      (fun c ↦ by
         obtain ⟨a | b, h⟩ := h (inl c)
         · exact ⟨a, inl_injective h⟩
         · cases h),
-      (fun d => by
+      (fun d ↦ by
         obtain ⟨a | b, h⟩ := h (inr d)
         · cases h
         · exact ⟨b, inr_injective h⟩)⟩

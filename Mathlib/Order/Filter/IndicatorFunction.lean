@@ -29,10 +29,10 @@ variable [One M] {s t : Set α} {f g : α → M} {a : α} {l : Filter α}
 @[to_additive]
 theorem mulIndicator_eventuallyEq (hf : f =ᶠ[l ⊓ 𝓟 s] g) (hs : s =ᶠ[l] t) :
     mulIndicator s f =ᶠ[l] mulIndicator t g :=
-  (eventually_inf_principal.1 hf).mp <| hs.mem_iff.mono fun x hst hfg =>
+  (eventually_inf_principal.1 hf).mp <| hs.mem_iff.mono fun x hst hfg ↦
     by_cases
-      (fun hxs : x ∈ s => by simp only [*, hst.1 hxs, mulIndicator_of_mem])
-      (fun hxs => by simp only [mulIndicator_of_notMem, hxs, mt hst.2 hxs, not_false_eq_true])
+      (fun hxs : x ∈ s ↦ by simp only [*, hst.1 hxs, mulIndicator_of_mem])
+      (fun hxs ↦ by simp only [mulIndicator_of_notMem, hxs, mt hst.2 hxs, not_false_eq_true])
 
 end One
 
@@ -43,7 +43,7 @@ variable [Monoid M] {s t : Set α} {f g : α → M} {a : α} {l : Filter α}
 @[to_additive]
 theorem mulIndicator_union_eventuallyEq (h : ∀ᶠ a in l, a ∉ s ∩ t) :
     mulIndicator (s ∪ t) f =ᶠ[l] mulIndicator s f * mulIndicator t f :=
-  h.mono fun _a ha => mulIndicator_union_of_notMem_inter ha _
+  h.mono fun _a ha ↦ mulIndicator_union_of_notMem_inter ha _
 
 end Monoid
 
@@ -54,37 +54,37 @@ variable [One β] [Preorder β] {s t : Set α} {f g : α → β} {a : α} {l : F
 @[to_additive]
 theorem mulIndicator_eventuallyLE_mulIndicator (h : f ≤ᶠ[l ⊓ 𝓟 s] g) :
     mulIndicator s f ≤ᶠ[l] mulIndicator s g :=
-  (eventually_inf_principal.1 h).mono fun _ => mulIndicator_rel_mulIndicator le_rfl
+  (eventually_inf_principal.1 h).mono fun _ ↦ mulIndicator_rel_mulIndicator le_rfl
 
 end Order
 
 @[to_additive]
 theorem Monotone.mulIndicator_eventuallyEq_iUnion {ι} [Preorder ι] [One β] (s : ι → Set α)
     (hs : Monotone s) (f : α → β) (a : α) :
-    (fun i => mulIndicator (s i) f a) =ᶠ[atTop] fun _ ↦ mulIndicator (⋃ i, s i) f a := by
+    (fun i ↦ mulIndicator (s i) f a) =ᶠ[atTop] fun _ ↦ mulIndicator (⋃ i, s i) f a := by
   classical exact hs.piecewise_eventually_eq_iUnion f 1 a
 
 @[to_additive]
 theorem Monotone.tendsto_mulIndicator {ι} [Preorder ι] [One β] (s : ι → Set α) (hs : Monotone s)
     (f : α → β) (a : α) :
-    Tendsto (fun i => mulIndicator (s i) f a) atTop (pure <| mulIndicator (⋃ i, s i) f a) :=
+    Tendsto (fun i ↦ mulIndicator (s i) f a) atTop (pure <| mulIndicator (⋃ i, s i) f a) :=
   tendsto_pure.2 <| hs.mulIndicator_eventuallyEq_iUnion s f a
 
 @[to_additive]
 theorem Antitone.mulIndicator_eventuallyEq_iInter {ι} [Preorder ι] [One β] (s : ι → Set α)
     (hs : Antitone s) (f : α → β) (a : α) :
-    (fun i => mulIndicator (s i) f a) =ᶠ[atTop] fun _ ↦ mulIndicator (⋂ i, s i) f a := by
+    (fun i ↦ mulIndicator (s i) f a) =ᶠ[atTop] fun _ ↦ mulIndicator (⋂ i, s i) f a := by
   classical exact hs.piecewise_eventually_eq_iInter f 1 a
 
 @[to_additive]
 theorem Antitone.tendsto_mulIndicator {ι} [Preorder ι] [One β] (s : ι → Set α) (hs : Antitone s)
     (f : α → β) (a : α) :
-    Tendsto (fun i => mulIndicator (s i) f a) atTop (pure <| mulIndicator (⋂ i, s i) f a) :=
+    Tendsto (fun i ↦ mulIndicator (s i) f a) atTop (pure <| mulIndicator (⋂ i, s i) f a) :=
   tendsto_pure.2 <| hs.mulIndicator_eventuallyEq_iInter s f a
 
 @[to_additive]
 theorem mulIndicator_biUnion_finset_eventuallyEq {ι} [One β] (s : ι → Set α) (f : α → β) (a : α) :
-    (fun n : Finset ι => mulIndicator (⋃ i ∈ n, s i) f a) =ᶠ[atTop]
+    (fun n : Finset ι ↦ mulIndicator (⋃ i ∈ n, s i) f a) =ᶠ[atTop]
       fun _ ↦ mulIndicator (iUnion s) f a := by
   rw [iUnion_eq_iUnion_finset s]
   apply Monotone.mulIndicator_eventuallyEq_iUnion
@@ -92,7 +92,7 @@ theorem mulIndicator_biUnion_finset_eventuallyEq {ι} [One β] (s : ι → Set �
 
 @[to_additive]
 theorem tendsto_mulIndicator_biUnion_finset {ι} [One β] (s : ι → Set α) (f : α → β) (a : α) :
-    Tendsto (fun n : Finset ι => mulIndicator (⋃ i ∈ n, s i) f a) atTop
+    Tendsto (fun n : Finset ι ↦ mulIndicator (⋃ i ∈ n, s i) f a) atTop
       (pure <| mulIndicator (iUnion s) f a) :=
   tendsto_pure.2 <| mulIndicator_biUnion_finset_eventuallyEq s f a
 

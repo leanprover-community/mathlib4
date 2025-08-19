@@ -39,7 +39,7 @@ variable [Fintype α]
 
 theorem Nonempty.eq_univ [Subsingleton α] : s.Nonempty → s = univ := by
   rintro ⟨x, hx⟩
-  exact eq_univ_of_forall fun y => by rwa [Subsingleton.elim y x]
+  exact eq_univ_of_forall fun y ↦ by rwa [Subsingleton.elim y x]
 
 theorem univ_nonempty_iff : (univ : Finset α).Nonempty ↔ Nonempty α := by
   rw [← coe_nonempty, coe_univ, Set.nonempty_iff_univ_nonempty]
@@ -65,7 +65,7 @@ theorem univ_eq_empty [IsEmpty α] : (univ : Finset α) = ∅ :=
 
 @[simp]
 theorem univ_unique [Unique α] : (univ : Finset α) = {default} :=
-  Finset.ext fun x => iff_of_true (mem_univ _) <| mem_singleton.2 <| Subsingleton.elim x default
+  Finset.ext fun x ↦ iff_of_true (mem_univ _) <| mem_singleton.2 <| Subsingleton.elim x default
 
 instance boundedOrder : BoundedOrder (Finset α) :=
   { inferInstanceAs (OrderBot (Finset α)) with
@@ -110,7 +110,7 @@ theorem notMem_compl : a ∉ sᶜ ↔ a ∈ s := by rw [mem_compl, not_not]
 
 @[simp, norm_cast]
 theorem coe_compl (s : Finset α) : ↑sᶜ = (↑s : Set α)ᶜ :=
-  Set.ext fun _ => mem_compl
+  Set.ext fun _ ↦ mem_compl
 
 @[simp] lemma compl_subset_compl : sᶜ ⊆ tᶜ ↔ t ⊆ s := @compl_le_compl_iff_le (Finset α) _ _ _
 @[simp] lemma compl_ssubset_compl : sᶜ ⊂ tᶜ ↔ t ⊂ s := @compl_lt_compl_iff_lt (Finset α) _ _ _
@@ -171,7 +171,7 @@ theorem insert_compl_self (x : α) : insert x ({x}ᶜ : Finset α) = univ := by
 
 @[simp]
 theorem compl_filter (p : α → Prop) [DecidablePred p] [∀ x, Decidable ¬p x] :
-    (univ.filter p)ᶜ = univ.filter fun x => ¬p x :=
+    (univ.filter p)ᶜ = univ.filter fun x ↦ ¬p x :=
   ext <| by simp
 
 theorem compl_ne_univ_iff_nonempty (s : Finset α) : sᶜ ≠ univ ↔ s.Nonempty := by
@@ -180,13 +180,13 @@ theorem compl_ne_univ_iff_nonempty (s : Finset α) : sᶜ ≠ univ ↔ s.Nonempt
 theorem compl_singleton (a : α) : ({a} : Finset α)ᶜ = univ.erase a := by
   rw [compl_eq_univ_sdiff, sdiff_singleton_eq_erase]
 
-theorem insert_inj_on' (s : Finset α) : Set.InjOn (fun a => insert a s) (sᶜ : Finset α) := by
+theorem insert_inj_on' (s : Finset α) : Set.InjOn (fun a ↦ insert a s) (sᶜ : Finset α) := by
   rw [coe_compl]
   exact s.insert_inj_on
 
 theorem image_univ_of_surjective [Fintype β] {f : β → α} (hf : Surjective f) :
     univ.image f = univ :=
-  eq_univ_of_forall <| hf.forall.2 fun _ => mem_image_of_mem _ <| mem_univ _
+  eq_univ_of_forall <| hf.forall.2 fun _ ↦ mem_image_of_mem _ <| mem_univ _
 
 @[simp]
 theorem image_univ_equiv [Fintype β] (f : β ≃ α) : univ.image f = univ :=
@@ -206,7 +206,7 @@ lemma singleton_eq_univ [Subsingleton α] (a : α) : ({a} : Finset α) = univ :=
 
 
 theorem map_univ_of_surjective [Fintype β] {f : β ↪ α} (hf : Surjective f) : univ.map f = univ :=
-  eq_univ_of_forall <| hf.forall.2 fun _ => mem_map_of_mem _ <| mem_univ _
+  eq_univ_of_forall <| hf.forall.2 fun _ ↦ mem_map_of_mem _ <| mem_univ _
 
 @[simp]
 theorem map_univ_equiv [Fintype β] (f : β ≃ α) : univ.map f.toEmbedding = univ :=
@@ -214,18 +214,18 @@ theorem map_univ_equiv [Fintype β] (f : β ≃ α) : univ.map f.toEmbedding = u
 
 theorem univ_map_equiv_to_embedding {α β : Type*} [Fintype α] [Fintype β] (e : α ≃ β) :
     univ.map e.toEmbedding = univ :=
-  eq_univ_iff_forall.mpr fun b => mem_map.mpr ⟨e.symm b, mem_univ _, by simp⟩
+  eq_univ_iff_forall.mpr fun b ↦ mem_map.mpr ⟨e.symm b, mem_univ _, by simp⟩
 
 @[simp]
-theorem univ_filter_exists (f : α → β) [Fintype β] [DecidablePred fun y => ∃ x, f x = y]
-    [DecidableEq β] : (Finset.univ.filter fun y => ∃ x, f x = y) = Finset.univ.image f := by
+theorem univ_filter_exists (f : α → β) [Fintype β] [DecidablePred fun y ↦ ∃ x, f x = y]
+    [DecidableEq β] : (Finset.univ.filter fun y ↦ ∃ x, f x = y) = Finset.univ.image f := by
   ext
   simp
 
 /-- Note this is a special case of `(Finset.image_preimage f univ _).symm`. -/
-theorem univ_filter_mem_range (f : α → β) [Fintype β] [DecidablePred fun y => y ∈ Set.range f]
-    [DecidableEq β] : (Finset.univ.filter fun y => y ∈ Set.range f) = Finset.univ.image f := by
-  letI : DecidablePred (fun y => ∃ x, f x = y) := by simpa using ‹_›
+theorem univ_filter_mem_range (f : α → β) [Fintype β] [DecidablePred fun y ↦ y ∈ Set.range f]
+    [DecidableEq β] : (Finset.univ.filter fun y ↦ y ∈ Set.range f) = Finset.univ.image f := by
+  letI : DecidablePred (fun y ↦ ∃ x, f x = y) := by simpa using ‹_›
   exact univ_filter_exists f
 
 theorem coe_filter_univ (p : α → Prop) [DecidablePred p] :

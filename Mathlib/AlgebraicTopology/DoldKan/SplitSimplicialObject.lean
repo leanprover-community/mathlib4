@@ -35,7 +35,7 @@ variable {C : Type*} [Category C] {X : SimplicialObject C}
 by a splitting of a simplicial object. -/
 noncomputable def πSummand [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) :
     X.obj Δ ⟶ s.N A.1.unop.len :=
-  s.desc Δ (fun B => by
+  s.desc Δ (fun B ↦ by
     by_cases h : B = A
     · exact eqToHom (by subst h; rfl)
     · exact 0)
@@ -174,8 +174,8 @@ noncomputable def toKaroubiNondegComplexIsoN₁ :
     (toKaroubi _).obj s.nondegComplex ≅ N₁.obj X where
   hom :=
     { f :=
-        { f := fun n => (s.cofan _).inj (IndexSet.id (op ⦋n⦌)) ≫ PInfty.f n
-          comm' := fun i j _ => by
+        { f := fun n ↦ (s.cofan _).inj (IndexSet.id (op ⦋n⦌)) ≫ PInfty.f n
+          comm' := fun i j _ ↦ by
             dsimp
             rw [assoc, assoc, assoc, πSummand_comp_cofan_inj_id_comp_PInfty_eq_PInfty,
               HomologicalComplex.Hom.comm] }
@@ -185,8 +185,8 @@ noncomputable def toKaroubiNondegComplexIsoN₁ :
         rw [id_comp, assoc, PInfty_f_idem] }
   inv :=
     { f :=
-        { f := fun n => s.πSummand (IndexSet.id (op ⦋n⦌))
-          comm' := fun i j _ => by
+        { f := fun n ↦ s.πSummand (IndexSet.id (op ⦋n⦌))
+          comm' := fun i j _ ↦ by
             dsimp
             slice_rhs 1 1 => rw [← id_comp (K[X].d i j)]
             dsimp only [AlternatingFaceMapComplex.obj_X]
@@ -222,7 +222,7 @@ noncomputable def nondegComplexFunctor : Split C ⥤ ChainComplex C ℕ where
   obj S := S.s.nondegComplex
   map {S₁ S₂} Φ :=
     { f := Φ.f
-      comm' := fun i j _ => by
+      comm' := fun i j _ ↦ by
         dsimp
         erw [← cofan_inj_naturality_symm_assoc Φ (Splitting.IndexSet.id (op ⦋i⦌)),
           ((alternatingFaceMapComplex C).map Φ.F).comm_assoc i j]
@@ -247,7 +247,7 @@ defined as a formal direct factor of the alternating face map complex. -/
 @[simps!]
 noncomputable def toKaroubiNondegComplexFunctorIsoN₁ :
     nondegComplexFunctor ⋙ toKaroubi (ChainComplex C ℕ) ≅ forget C ⋙ DoldKan.N₁ :=
-  NatIso.ofComponents (fun S => S.s.toKaroubiNondegComplexIsoN₁) fun Φ => by
+  NatIso.ofComponents (fun S ↦ S.s.toKaroubiNondegComplexIsoN₁) fun Φ ↦ by
     ext n
     dsimp
     simp only [assoc, PInfty_f_idem_assoc]

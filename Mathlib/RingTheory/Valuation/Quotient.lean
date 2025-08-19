@@ -23,8 +23,8 @@ variable (v : Valuation R Γ₀)
 
 /-- If `hJ : J ⊆ supp v` then `onQuotVal hJ` is the induced function on `R / J` as a function.
 Note: it's just the function; the valuation is `onQuot hJ`. -/
-def onQuotVal {J : Ideal R} (hJ : J ≤ supp v) : R ⧸ J → Γ₀ := fun q =>
-  Quotient.liftOn' q v fun a b h =>
+def onQuotVal {J : Ideal R} (hJ : J ≤ supp v) : R ⧸ J → Γ₀ := fun q ↦
+  Quotient.liftOn' q v fun a b h ↦
     calc
       v a = v (b + -(-a + b)) := by simp
       _ = v b :=
@@ -41,7 +41,7 @@ def onQuot {J : Ideal R} (hJ : J ≤ supp v) : Valuation (R ⧸ J) Γ₀ where
 @[simp]
 theorem onQuot_comap_eq {J : Ideal R} (hJ : J ≤ supp v) :
     (v.onQuot hJ).comap (Ideal.Quotient.mk J) = v :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 theorem self_le_supp_comap (J : Ideal R) (v : Valuation (R ⧸ J) Γ₀) :
     J ≤ (v.comap (Ideal.Quotient.mk J)).supp := by

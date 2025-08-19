@@ -30,7 +30,7 @@ namespace MeasurableSpace
     generateFrom {s} = MeasurableSpace.comap (· ∈ s) ⊤ := by
   classical
   letI : MeasurableSpace α := generateFrom {s}
-  refine le_antisymm (generateFrom_le fun t ht => ⟨{True}, trivial, by simp [ht.symm]⟩) ?_
+  refine le_antisymm (generateFrom_le fun t ht ↦ ⟨{True}, trivial, by simp [ht.symm]⟩) ?_
   rintro _ ⟨u, -, rfl⟩
   exact (show MeasurableSet s from GenerateMeasurable.basic _ <| mem_singleton s).mem trivial
 
@@ -99,10 +99,10 @@ class IsMeasurablyGenerated (f : Filter α) : Prop where
   exists_measurable_subset : ∀ ⦃s⦄, s ∈ f → ∃ t ∈ f, MeasurableSet t ∧ t ⊆ s
 
 instance isMeasurablyGenerated_bot : IsMeasurablyGenerated (⊥ : Filter α) :=
-  ⟨fun _ _ => ⟨∅, mem_bot, MeasurableSet.empty, empty_subset _⟩⟩
+  ⟨fun _ _ ↦ ⟨∅, mem_bot, MeasurableSet.empty, empty_subset _⟩⟩
 
 instance isMeasurablyGenerated_top : IsMeasurablyGenerated (⊤ : Filter α) :=
-  ⟨fun _s hs => ⟨univ, univ_mem, MeasurableSet.univ, fun x _ => hs x⟩⟩
+  ⟨fun _s hs ↦ ⟨univ, univ_mem, MeasurableSet.univ, fun x _ ↦ hs x⟩⟩
 
 theorem Eventually.exists_measurable_mem {f : Filter α} [IsMeasurablyGenerated f] {p : α → Prop}
     (h : ∀ᶠ x in f, p x) : ∃ s ∈ f, MeasurableSet s ∧ ∀ x ∈ s, p x :=
@@ -125,7 +125,7 @@ instance inf_isMeasurablyGenerated (f g : Filter α) [IsMeasurablyGenerated f]
 
 theorem principal_isMeasurablyGenerated_iff {s : Set α} :
     IsMeasurablyGenerated (𝓟 s) ↔ MeasurableSet s := by
-  refine ⟨?_, fun hs => ⟨fun t ht => ⟨s, mem_principal_self s, hs, ht⟩⟩⟩
+  refine ⟨?_, fun hs ↦ ⟨fun t ht ↦ ⟨s, mem_principal_self s, hs, ht⟩⟩⟩
   rintro ⟨hs⟩
   rcases hs (mem_principal_self s) with ⟨t, ht, htm, hts⟩
   have : t = s := hts.antisymm ht
@@ -136,16 +136,16 @@ alias ⟨_, _root_.MeasurableSet.principal_isMeasurablyGenerated⟩ :=
 
 instance iInf_isMeasurablyGenerated {f : ι → Filter α} [∀ i, IsMeasurablyGenerated (f i)] :
     IsMeasurablyGenerated (⨅ i, f i) := by
-  refine ⟨fun s hs => ?_⟩
+  refine ⟨fun s hs ↦ ?_⟩
   rw [← Equiv.plift.surjective.iInf_comp, mem_iInf] at hs
   rcases hs with ⟨t, ht, ⟨V, hVf, rfl⟩⟩
-  choose U hUf hU using fun i => IsMeasurablyGenerated.exists_measurable_subset (hVf i)
+  choose U hUf hU using fun i ↦ IsMeasurablyGenerated.exists_measurable_subset (hVf i)
   refine ⟨⋂ i : t, U i, ?_, ?_, ?_⟩
   · rw [← Equiv.plift.surjective.iInf_comp, mem_iInf]
     exact ⟨t, ht, U, hUf, rfl⟩
   · haveI := ht.countable.toEncodable.countable
-    exact MeasurableSet.iInter fun i => (hU i).1
-  · exact iInter_mono fun i => (hU i).2
+    exact MeasurableSet.iInter fun i ↦ (hU i).1
+  · exact iInter_mono fun i ↦ (hU i).2
 
 end Filter
 
@@ -199,7 +199,7 @@ protected theorem iInter_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (
 -/
 
 instance Subtype.instMembership : Membership α (Subtype (MeasurableSet : Set α → Prop)) :=
-  ⟨fun s a => a ∈ (s : Set α)⟩
+  ⟨fun s a ↦ a ∈ (s : Set α)⟩
 
 @[simp]
 theorem mem_coe (a : α) (s : Subtype (MeasurableSet : Set α → Prop)) : a ∈ (s : Set α) ↔ a ∈ s :=
@@ -214,7 +214,7 @@ theorem coe_empty : ↑(∅ : Subtype (MeasurableSet : Set α → Prop)) = (∅ 
 
 instance Subtype.instInsert [MeasurableSingletonClass α] :
     Insert α (Subtype (MeasurableSet : Set α → Prop)) :=
-  ⟨fun a s => ⟨insert a (s : Set α), s.prop.insert a⟩⟩
+  ⟨fun a s ↦ ⟨insert a (s : Set α), s.prop.insert a⟩⟩
 
 @[simp]
 theorem coe_insert [MeasurableSingletonClass α] (a : α)
@@ -224,7 +224,7 @@ theorem coe_insert [MeasurableSingletonClass α] (a : α)
 
 instance Subtype.instSingleton [MeasurableSingletonClass α] :
     Singleton α (Subtype (MeasurableSet : Set α → Prop)) :=
-  ⟨fun a => ⟨{a}, .singleton _⟩⟩
+  ⟨fun a ↦ ⟨{a}, .singleton _⟩⟩
 
 @[simp] theorem coe_singleton [MeasurableSingletonClass α] (a : α) :
     ↑({a} : Subtype (MeasurableSet : Set α → Prop)) = ({a} : Set α) :=
@@ -232,43 +232,43 @@ instance Subtype.instSingleton [MeasurableSingletonClass α] :
 
 instance Subtype.instLawfulSingleton [MeasurableSingletonClass α] :
     LawfulSingleton α (Subtype (MeasurableSet : Set α → Prop)) :=
-  ⟨fun _ => Subtype.eq <| insert_empty_eq _⟩
+  ⟨fun _ ↦ Subtype.eq <| insert_empty_eq _⟩
 
 instance Subtype.instHasCompl : HasCompl (Subtype (MeasurableSet : Set α → Prop)) :=
-  ⟨fun x => ⟨xᶜ, x.prop.compl⟩⟩
+  ⟨fun x ↦ ⟨xᶜ, x.prop.compl⟩⟩
 
 @[simp]
 theorem coe_compl (s : Subtype (MeasurableSet : Set α → Prop)) : ↑sᶜ = (sᶜ : Set α) :=
   rfl
 
 instance Subtype.instUnion : Union (Subtype (MeasurableSet : Set α → Prop)) :=
-  ⟨fun x y => ⟨(x : Set α) ∪ y, x.prop.union y.prop⟩⟩
+  ⟨fun x y ↦ ⟨(x : Set α) ∪ y, x.prop.union y.prop⟩⟩
 
 @[simp]
 theorem coe_union (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ∪ t) = (s ∪ t : Set α) :=
   rfl
 
 instance Subtype.instSup : Max (Subtype (MeasurableSet : Set α → Prop)) :=
-  ⟨fun x y => x ∪ y⟩
+  ⟨fun x y ↦ x ∪ y⟩
 
 @[simp]
 protected theorem sup_eq_union (s t : {s : Set α // MeasurableSet s}) : s ⊔ t = s ∪ t := rfl
 
 instance Subtype.instInter : Inter (Subtype (MeasurableSet : Set α → Prop)) :=
-  ⟨fun x y => ⟨x ∩ y, x.prop.inter y.prop⟩⟩
+  ⟨fun x y ↦ ⟨x ∩ y, x.prop.inter y.prop⟩⟩
 
 @[simp]
 theorem coe_inter (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ∩ t) = (s ∩ t : Set α) :=
   rfl
 
 instance Subtype.instInf : Min (Subtype (MeasurableSet : Set α → Prop)) :=
-  ⟨fun x y => x ∩ y⟩
+  ⟨fun x y ↦ x ∩ y⟩
 
 @[simp]
 protected theorem inf_eq_inter (s t : {s : Set α // MeasurableSet s}) : s ⊓ t = s ∩ t := rfl
 
 instance Subtype.instSDiff : SDiff (Subtype (MeasurableSet : Set α → Prop)) :=
-  ⟨fun x y => ⟨x \ y, x.prop.diff y.prop⟩⟩
+  ⟨fun x y ↦ ⟨x \ y, x.prop.diff y.prop⟩⟩
 
 -- TODO: Why does it complain that `x ⇨ y` is noncomputable?
 noncomputable instance Subtype.instHImp : HImp (Subtype (MeasurableSet : Set α → Prop)) where
@@ -303,22 +303,22 @@ noncomputable instance Subtype.instBooleanAlgebra :
 theorem measurableSet_blimsup {s : ℕ → Set α} {p : ℕ → Prop} (h : ∀ n, p n → MeasurableSet (s n)) :
     MeasurableSet <| blimsup s atTop p := by
   simp only [blimsup_eq_iInf_biSup_of_nat, iSup_eq_iUnion, iInf_eq_iInter]
-  exact .iInter fun _ => .iUnion fun m => .iUnion fun hm => h m hm.1
+  exact .iInter fun _ ↦ .iUnion fun m ↦ .iUnion fun hm ↦ h m hm.1
 
 @[measurability]
 theorem measurableSet_bliminf {s : ℕ → Set α} {p : ℕ → Prop} (h : ∀ n, p n → MeasurableSet (s n)) :
     MeasurableSet <| Filter.bliminf s Filter.atTop p := by
   simp only [Filter.bliminf_eq_iSup_biInf_of_nat, iInf_eq_iInter, iSup_eq_iUnion]
-  exact .iUnion fun n => .iInter fun m => .iInter fun hm => h m hm.1
+  exact .iUnion fun n ↦ .iInter fun m ↦ .iInter fun hm ↦ h m hm.1
 
 @[measurability]
 theorem measurableSet_limsup {s : ℕ → Set α} (hs : ∀ n, MeasurableSet <| s n) :
     MeasurableSet <| Filter.limsup s Filter.atTop := by
-  simpa only [← blimsup_true] using measurableSet_blimsup fun n _ => hs n
+  simpa only [← blimsup_true] using measurableSet_blimsup fun n _ ↦ hs n
 
 @[measurability]
 theorem measurableSet_liminf {s : ℕ → Set α} (hs : ∀ n, MeasurableSet <| s n) :
     MeasurableSet <| Filter.liminf s Filter.atTop := by
-  simpa only [← bliminf_true] using measurableSet_bliminf fun n _ => hs n
+  simpa only [← bliminf_true] using measurableSet_bliminf fun n _ ↦ hs n
 
 end MeasurableSet

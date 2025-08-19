@@ -133,8 +133,8 @@ protected def lift {α : Sort*} {X : C} (F : ∀ ⦃A : C⦄ (f : A ⟶ X) [Mono
     (h :
       ∀ ⦃A B : C⦄ (f : A ⟶ X) (g : B ⟶ X) [Mono f] [Mono g] (i : A ≅ B),
         i.hom ≫ g = f → F f = F g) :
-    Subobject X → α := fun P =>
-  Quotient.liftOn' P (fun m => F m.arrow) fun m n ⟨i⟩ =>
+    Subobject X → α := fun P ↦
+  Quotient.liftOn' P (fun m ↦ F m.arrow) fun m n ⟨i⟩ ↦
     h m.arrow n.arrow ((MonoOver.forget X ⋙ Over.forget X).mapIso i) (Over.w i.hom)
 
 @[simp]
@@ -195,7 +195,7 @@ instance arrow_mono {X : C} (Y : Subobject X) : Mono Y.arrow :=
 
 @[simp]
 theorem arrow_congr {A : C} (X Y : Subobject A) (h : X = Y) :
-    eqToHom (congr_arg (fun X : Subobject A => (X : C)) h) ≫ Y.arrow = X.arrow := by
+    eqToHom (congr_arg (fun X : Subobject A ↦ (X : C)) h) ≫ Y.arrow = X.arrow := by
   induction h
   simp
 
@@ -235,7 +235,7 @@ theorem mk_le_mk_of_comm {B A₁ A₂ : C} {f₁ : A₁ ⟶ B} {f₂ : A₂ ⟶ 
 
 @[simp]
 theorem mk_arrow (P : Subobject X) : mk P.arrow = P :=
-  Quotient.inductionOn' P fun Q => by
+  Quotient.inductionOn' P fun Q ↦ by
     obtain ⟨e⟩ := @Quotient.mk_out' _ (isIsomorphicSetoid _) Q
     exact Quotient.sound' ⟨MonoOver.isoMk (Iso.refl _) ≪≫ e⟩
 
@@ -666,7 +666,7 @@ def mapPullbackAdj [HasPullbacks C] (f : X ⟶ Y) [Mono f] : map f ⊣ pullback 
 theorem pullback_map_self [HasPullbacks C] (f : X ⟶ Y) [Mono f] (g : Subobject X) :
     (pullback f).obj ((map f).obj g) = g := by
   revert g
-  exact Quotient.ind (fun g' => Quotient.sound ⟨(MonoOver.pullbackMapSelf f).app _⟩)
+  exact Quotient.ind (fun g' ↦ Quotient.sound ⟨(MonoOver.pullbackMapSelf f).app _⟩)
 
 theorem map_pullback [HasPullbacks C] {X Y Z W : C} {f : X ⟶ Y} {g : X ⟶ Z} {h : Y ⟶ W} {k : Z ⟶ W}
     [Mono h] [Mono g] (comm : f ≫ h = g ≫ k) (t : IsLimit (PullbackCone.mk f g comm))

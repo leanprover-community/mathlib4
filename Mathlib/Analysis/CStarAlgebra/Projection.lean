@@ -32,4 +32,4 @@ theorem IsIdempotentElem.isSelfAdjoint_iff_isStarNormal {p : A} (hp : IsIdempote
 if and only if it is idempotent and normal. -/
 theorem isStarProjection_iff_isIdempotentElem_and_isStarNormal {p : A} :
     IsStarProjection p ↔ IsIdempotentElem p ∧ IsStarNormal p :=
-  (isStarProjection_iff p).eq ▸ and_congr_right_iff.eq ▸ fun h => h.isSelfAdjoint_iff_isStarNormal
+  (isStarProjection_iff p).eq ▸ and_congr_right_iff.eq ▸ fun h ↦ h.isSelfAdjoint_iff_isStarNormal

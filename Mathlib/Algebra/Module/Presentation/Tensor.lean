@@ -47,7 +47,7 @@ variable {relations₁ relations₂} (solution₁ : relations₁.Solution M₁)
 solution to the tensor product of these systems in `M₁ ⊗[A] M₂`. -/
 @[simps]
 noncomputable def tensor : (relations₁.tensor relations₂).Solution (M₁ ⊗[A] M₂) where
-  var := fun ⟨g₁, g₂⟩ => solution₁.var g₁ ⊗ₜ solution₂.var g₂
+  var := fun ⟨g₁, g₂⟩ ↦ solution₁.var g₁ ⊗ₜ solution₂.var g₂
   linearCombination_var_relation := by
     rintro (⟨r₁, g₂⟩ | ⟨g₁, r₂⟩)
     · dsimp

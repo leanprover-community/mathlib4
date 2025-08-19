@@ -15,4 +15,4 @@ instance : StarRing ℝ :=
   starRingOfComm
 
 instance : TrivialStar ℝ :=
-  ⟨fun _ => rfl⟩
+  ⟨fun _ ↦ rfl⟩

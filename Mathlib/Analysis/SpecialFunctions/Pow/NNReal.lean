@@ -367,16 +367,16 @@ theorem rpow_le_self_of_le_one {x : ℝ≥0} {z : ℝ} (hx : x ≤ 1) (h_one_le 
   nth_rw 2 [← NNReal.rpow_one x]
   exact NNReal.rpow_le_rpow_of_exponent_ge h hx h_one_le
 
-theorem rpow_left_injective {x : ℝ} (hx : x ≠ 0) : Function.Injective fun y : ℝ≥0 => y ^ x :=
-  fun y z hyz => by simpa only [rpow_inv_rpow_self hx] using congr_arg (fun y => y ^ (1 / x)) hyz
+theorem rpow_left_injective {x : ℝ} (hx : x ≠ 0) : Function.Injective fun y : ℝ≥0 ↦ y ^ x :=
+  fun y z hyz ↦ by simpa only [rpow_inv_rpow_self hx] using congr_arg (fun y ↦ y ^ (1 / x)) hyz
 
 theorem rpow_eq_rpow_iff {x y : ℝ≥0} {z : ℝ} (hz : z ≠ 0) : x ^ z = y ^ z ↔ x = y :=
   (rpow_left_injective hz).eq_iff
 
-theorem rpow_left_surjective {x : ℝ} (hx : x ≠ 0) : Function.Surjective fun y : ℝ≥0 => y ^ x :=
-  fun y => ⟨y ^ x⁻¹, by simp_rw [← rpow_mul, inv_mul_cancel₀ hx, rpow_one]⟩
+theorem rpow_left_surjective {x : ℝ} (hx : x ≠ 0) : Function.Surjective fun y : ℝ≥0 ↦ y ^ x :=
+  fun y ↦ ⟨y ^ x⁻¹, by simp_rw [← rpow_mul, inv_mul_cancel₀ hx, rpow_one]⟩
 
-theorem rpow_left_bijective {x : ℝ} (hx : x ≠ 0) : Function.Bijective fun y : ℝ≥0 => y ^ x :=
+theorem rpow_left_bijective {x : ℝ} (hx : x ≠ 0) : Function.Bijective fun y : ℝ≥0 ↦ y ^ x :=
   ⟨rpow_left_injective hx, rpow_left_surjective hx⟩
 
 theorem eq_rpow_inv_iff {x y : ℝ≥0} {z : ℝ} (hz : z ≠ 0) : x = y ^ z⁻¹ ↔ x ^ z = y := by
@@ -404,19 +404,19 @@ theorem _root_.Real.toNNReal_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) :
   nth_rw 1 [← Real.coe_toNNReal x hx]
   rw [← NNReal.coe_rpow, Real.toNNReal_coe]
 
-theorem strictMono_rpow_of_pos {z : ℝ} (h : 0 < z) : StrictMono fun x : ℝ≥0 => x ^ z :=
-  fun x y hxy => by simp only [NNReal.rpow_lt_rpow hxy h]
+theorem strictMono_rpow_of_pos {z : ℝ} (h : 0 < z) : StrictMono fun x : ℝ≥0 ↦ x ^ z :=
+  fun x y hxy ↦ by simp only [NNReal.rpow_lt_rpow hxy h]
 
-theorem monotone_rpow_of_nonneg {z : ℝ} (h : 0 ≤ z) : Monotone fun x : ℝ≥0 => x ^ z :=
-  h.eq_or_lt.elim (fun h0 => h0 ▸ by simp only [rpow_zero, monotone_const]) fun h0 =>
+theorem monotone_rpow_of_nonneg {z : ℝ} (h : 0 ≤ z) : Monotone fun x : ℝ≥0 ↦ x ^ z :=
+  h.eq_or_lt.elim (fun h0 ↦ h0 ▸ by simp only [rpow_zero, monotone_const]) fun h0 ↦
     (strictMono_rpow_of_pos h0).monotone
 
-/-- Bundles `fun x : ℝ≥0 => x ^ y` into an order isomorphism when `y : ℝ` is positive,
-where the inverse is `fun x : ℝ≥0 => x ^ (1 / y)`. -/
+/-- Bundles `fun x : ℝ≥0 ↦ x ^ y` into an order isomorphism when `y : ℝ` is positive,
+where the inverse is `fun x : ℝ≥0 ↦ x ^ (1 / y)`. -/
 @[simps! apply]
 def orderIsoRpow (y : ℝ) (hy : 0 < y) : ℝ≥0 ≃o ℝ≥0 :=
-  (strictMono_rpow_of_pos hy).orderIsoOfRightInverse (fun x => x ^ y) (fun x => x ^ (1 / y))
-    fun x => by
+  (strictMono_rpow_of_pos hy).orderIsoOfRightInverse (fun x ↦ x ^ y) (fun x ↦ x ^ (1 / y))
+    fun x ↦ by
       dsimp
       rw [← rpow_mul, one_div_mul_cancel hy.ne.symm, rpow_one]
 
@@ -513,7 +513,7 @@ theorem rpow_one (x : ℝ≥0∞) : x ^ (1 : ℝ) = x := by
   · exact dif_pos zero_lt_one
   · change ite _ _ _ = _
     simp only [NNReal.rpow_one, ite_eq_right_iff, top_ne_coe, and_imp]
-    exact fun _ => zero_le_one.not_gt
+    exact fun _ ↦ zero_le_one.not_gt
 
 @[simp]
 theorem one_rpow (x : ℝ) : (1 : ℝ≥0∞) ^ x = 1 := by
@@ -583,7 +583,7 @@ theorem rpow_add {x : ℝ≥0∞} (y z : ℝ) (hx : x ≠ 0) (h'x : x ≠ ⊤) :
   cases x with
   | top => exact (h'x rfl).elim
   | coe x =>
-    have : x ≠ 0 := fun h => by simp [h] at hx
+    have : x ≠ 0 := fun h ↦ by simp [h] at hx
     simp [← coe_rpow_of_ne_zero this, NNReal.rpow_add this]
 
 theorem rpow_add_of_nonneg {x : ℝ≥0∞} (y z : ℝ) (hy : 0 ≤ y) (hz : 0 ≤ z) :
@@ -725,7 +725,7 @@ theorem inv_rpow (x : ℝ≥0∞) (y : ℝ) : x⁻¹ ^ y = (x ^ y)⁻¹ := by
 theorem div_rpow_of_nonneg (x y : ℝ≥0∞) {z : ℝ} (hz : 0 ≤ z) : (x / y) ^ z = x ^ z / y ^ z := by
   rw [div_eq_mul_inv, mul_rpow_of_nonneg _ _ hz, inv_rpow, div_eq_mul_inv]
 
-theorem strictMono_rpow_of_pos {z : ℝ} (h : 0 < z) : StrictMono fun x : ℝ≥0∞ => x ^ z := by
+theorem strictMono_rpow_of_pos {z : ℝ} (h : 0 < z) : StrictMono fun x : ℝ≥0∞ ↦ x ^ z := by
   intro x y hxy
   lift x to ℝ≥0 using ne_top_of_lt hxy
   rcases eq_or_ne y ∞ with (rfl | hy)
@@ -733,16 +733,16 @@ theorem strictMono_rpow_of_pos {z : ℝ} (h : 0 < z) : StrictMono fun x : ℝ≥
   · lift y to ℝ≥0 using hy
     simp only [← coe_rpow_of_nonneg _ h.le, NNReal.rpow_lt_rpow (coe_lt_coe.1 hxy) h, coe_lt_coe]
 
-theorem monotone_rpow_of_nonneg {z : ℝ} (h : 0 ≤ z) : Monotone fun x : ℝ≥0∞ => x ^ z :=
-  h.eq_or_lt.elim (fun h0 => h0 ▸ by simp only [rpow_zero, monotone_const]) fun h0 =>
+theorem monotone_rpow_of_nonneg {z : ℝ} (h : 0 ≤ z) : Monotone fun x : ℝ≥0∞ ↦ x ^ z :=
+  h.eq_or_lt.elim (fun h0 ↦ h0 ▸ by simp only [rpow_zero, monotone_const]) fun h0 ↦
     (strictMono_rpow_of_pos h0).monotone
 
-/-- Bundles `fun x : ℝ≥0∞ => x ^ y` into an order isomorphism when `y : ℝ` is positive,
-where the inverse is `fun x : ℝ≥0∞ => x ^ (1 / y)`. -/
+/-- Bundles `fun x : ℝ≥0∞ ↦ x ^ y` into an order isomorphism when `y : ℝ` is positive,
+where the inverse is `fun x : ℝ≥0∞ ↦ x ^ (1 / y)`. -/
 @[simps! apply]
 def orderIsoRpow (y : ℝ) (hy : 0 < y) : ℝ≥0∞ ≃o ℝ≥0∞ :=
-  (strictMono_rpow_of_pos hy).orderIsoOfRightInverse (fun x => x ^ y) (fun x => x ^ (1 / y))
-    fun x => by
+  (strictMono_rpow_of_pos hy).orderIsoOfRightInverse (fun x ↦ x ^ y) (fun x ↦ x ^ (1 / y))
+    fun x ↦ by
     dsimp
     rw [← rpow_mul, one_div_mul_cancel hy.ne.symm, rpow_one]
 
@@ -953,10 +953,10 @@ lemma rpow_mul_intCast (x : ℝ≥0∞) (y : ℝ) (n : ℤ) : x ^ (y * n) = (x ^
 lemma rpow_left_injective {x : ℝ} (hx : x ≠ 0) : Injective fun y : ℝ≥0∞ ↦ y ^ x :=
   HasLeftInverse.injective ⟨fun y ↦ y ^ x⁻¹, rpow_rpow_inv hx⟩
 
-theorem rpow_left_surjective {x : ℝ} (hx : x ≠ 0) : Function.Surjective fun y : ℝ≥0∞ => y ^ x :=
+theorem rpow_left_surjective {x : ℝ} (hx : x ≠ 0) : Function.Surjective fun y : ℝ≥0∞ ↦ y ^ x :=
   HasRightInverse.surjective ⟨fun y ↦ y ^ x⁻¹, rpow_inv_rpow hx⟩
 
-theorem rpow_left_bijective {x : ℝ} (hx : x ≠ 0) : Function.Bijective fun y : ℝ≥0∞ => y ^ x :=
+theorem rpow_left_bijective {x : ℝ} (hx : x ≠ 0) : Function.Bijective fun y : ℝ≥0∞ ↦ y ^ x :=
   ⟨rpow_left_injective hx, rpow_left_surjective hx⟩
 
 lemma _root_.Real.enorm_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) :

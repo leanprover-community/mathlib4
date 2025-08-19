@@ -537,7 +537,7 @@ lemma part_subset (a : α) : P.part a ⊆ s := by
 @[simp]
 lemma mem_part_self : a ∈ P.part a ↔ a ∈ s := by
   by_cases ha : a ∈ s
-  · simp [part, ha, choose_property (p := fun s => a ∈ s) P.parts (P.existsUnique_mem ha)]
+  · simp [part, ha, choose_property (p := fun s ↦ a ∈ s) P.parts (P.existsUnique_mem ha)]
   · simp [P.part_eq_empty.2, ha]
 
 alias ⟨_, mem_part⟩ := mem_part_self

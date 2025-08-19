@@ -27,8 +27,8 @@ theorem periodic_tsum_comp_add_zsmul [AddCommGroup X] [ContinuousAdd X] [AddComm
     [ContinuousAdd Y] [T2Space Y] (f : C(X, Y)) (p : X) :
     Function.Periodic (⇑(∑' n : ℤ, f.comp (ContinuousMap.addRight (n • p)))) p := by
   intro x
-  by_cases h : Summable fun n : ℤ => f.comp (ContinuousMap.addRight (n • p))
-  · convert congr_arg (fun f : C(X, Y) => f x) ((Equiv.addRight (1 : ℤ)).tsum_eq _) using 1
+  by_cases h : Summable fun n : ℤ ↦ f.comp (ContinuousMap.addRight (n • p))
+  · convert congr_arg (fun f : C(X, Y) ↦ f x) ((Equiv.addRight (1 : ℤ)).tsum_eq _) using 1
     -- Porting note: in mathlib3 the proof from here was:
     -- simp_rw [← tsum_apply h, ← tsum_apply ((equiv.add_right (1 : ℤ)).summable_iff.mpr h),
     --   equiv.coe_add_right, comp_apply, coe_add_right, add_one_zsmul, add_comm (_ • p) p,

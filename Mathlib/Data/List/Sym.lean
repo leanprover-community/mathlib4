@@ -35,7 +35,7 @@ section Sym2
 If `xs` has no duplicates then neither does `xs.sym2`. -/
 protected def sym2 : List α → List (Sym2 α)
   | [] => []
-  | x :: xs => (x :: xs).map (fun y => s(x, y)) ++ xs.sym2
+  | x :: xs => (x :: xs).map (fun y ↦ s(x, y)) ++ xs.sym2
 
 theorem sym2_map (f : α → β) (xs : List α) :
     (xs.map f).sym2 = xs.sym2.map (Sym2.map f) := by
@@ -94,12 +94,12 @@ theorem mk_mem_sym2_iff {xs : List α} {a b : α} :
 
 theorem mem_sym2_iff {xs : List α} {z : Sym2 α} :
     z ∈ xs.sym2 ↔ ∀ y ∈ z, y ∈ xs := by
-  refine z.ind (fun a b => ?_)
+  refine z.ind (fun a b ↦ ?_)
   simp [mk_mem_sym2_iff]
 
 lemma setOf_mem_sym2 {xs : List α} :
     {z : Sym2 α | z ∈ xs.sym2} = {x : α | x ∈ xs}.sym2 :=
-  Set.ext fun z ↦ z.ind fun a b => by simp [mk_mem_sym2_iff]
+  Set.ext fun z ↦ z.ind fun a b ↦ by simp [mk_mem_sym2_iff]
 
 protected theorem Nodup.sym2 {xs : List α} (h : xs.Nodup) : xs.sym2.Nodup := by
   induction xs with
@@ -229,7 +229,7 @@ section Sym
 protected def sym : (n : ℕ) → List α → List (Sym α n)
   | 0, _ => [.nil]
   | _, [] => []
-  | n + 1, x :: xs => ((x :: xs).sym n |>.map fun p => x ::ₛ p) ++ xs.sym (n + 1)
+  | n + 1, x :: xs => ((x :: xs).sym n |>.map fun p ↦ x ::ₛ p) ++ xs.sym (n + 1)
 
 variable {xs ys : List α} {n : ℕ}
 

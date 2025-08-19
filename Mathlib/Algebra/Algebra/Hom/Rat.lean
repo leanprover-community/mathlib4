@@ -24,7 +24,7 @@ def toRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S
 @[simp]
 theorem toRatAlgHom_toRingHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S) :
     ↑f.toRatAlgHom = f :=
-  RingHom.ext fun _x => rfl
+  RingHom.ext fun _x ↦ rfl
 
 @[simp]
 theorem toRatAlgHom_apply [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S) (x : R) :
@@ -40,7 +40,7 @@ variable {R S : Type*}
 @[simp]
 theorem AlgHom.toRingHom_toRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S]
     (f : R →ₐ[ℚ] S) : (f : R →+* S).toRatAlgHom = f :=
-  AlgHom.ext fun _x => rfl
+  AlgHom.ext fun _x ↦ rfl
 
 /-- The equivalence between `RingHom` and `ℚ`-algebra homomorphisms. -/
 @[simps]

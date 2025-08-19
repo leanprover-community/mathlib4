@@ -208,14 +208,14 @@ lemma hasBasis_subbimodule [IsLinearTopology R M] [IsLinearTopology R' M] :
     _ = S := rfl
   set A : AddSubgroup M := .closure S
   have hRA : ∀ r : R, ∀ i ∈ A, r • i ∈ A := fun r i hi ↦ by
-    refine AddSubgroup.closure_induction (fun x hx => ?base) ?zero (fun x y _ _ hx hy ↦ ?add)
+    refine AddSubgroup.closure_induction (fun x hx ↦ ?base) ?zero (fun x y _ _ hx hy ↦ ?add)
       (fun x _ hx ↦ ?neg) hi
     case base => exact AddSubgroup.subset_closure <| hRS <| Set.smul_mem_smul trivial hx
     case zero => simp_rw [smul_zero]; exact zero_mem _
     case add => simp_rw [smul_add]; exact add_mem hx hy
     case neg => simp_rw [smul_neg]; exact neg_mem hx
   have hR'A : ∀ r' : R', ∀ i ∈ A, r' • i ∈ A := fun r' i hi ↦ by
-    refine AddSubgroup.closure_induction (fun x hx => ?base) ?zero (fun x y _ _ hx hy ↦ ?add)
+    refine AddSubgroup.closure_induction (fun x hx ↦ ?base) ?zero (fun x y _ _ hx hy ↦ ?add)
       (fun x _ hx ↦ ?neg) hi
     case base => exact AddSubgroup.subset_closure <| hR'S <| Set.smul_mem_smul trivial hx
     case zero => simp_rw [smul_zero]; exact zero_mem _

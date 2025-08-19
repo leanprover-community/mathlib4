@@ -50,11 +50,11 @@ def ScottContinuousOn (D : Set (Set α)) (f : α → β) : Prop :=
   ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
 
 lemma ScottContinuousOn.mono (hD : D₁ ⊆ D₂) (hf : ScottContinuousOn D₂ f) :
-    ScottContinuousOn D₁ f := fun _ hdD₁ hd₁ hd₂ _ hda => hf (hD hdD₁) hd₁ hd₂ hda
+    ScottContinuousOn D₁ f := fun _ hdD₁ hd₁ hd₂ _ hda ↦ hf (hD hdD₁) hd₁ hd₂ hda
 
 protected theorem ScottContinuousOn.monotone (D : Set (Set α)) (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
     (h : ScottContinuousOn D f) : Monotone f := by
-  refine fun a b hab =>
+  refine fun a b hab ↦
     (h (hD a b hab) (insert_nonempty _ _) (directedOn_pair le_refl hab) ?_).1
       (mem_image_of_mem _ <| mem_insert _ _)
   rw [IsLUB, upperBounds_insert, upperBounds_singleton,
@@ -67,7 +67,7 @@ variable {g : α → β}
 
 lemma ScottContinuousOn.prodMk (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
     (hf : ScottContinuousOn D f) (hg : ScottContinuousOn D g) :
-    ScottContinuousOn D fun x => (f x, g x) := fun d hd₁ hd₂ hd₃ a hda => by
+    ScottContinuousOn D fun x ↦ (f x, g x) := fun d hd₁ hd₂ hd₃ a hda ↦ by
   rw [IsLUB, IsLeast, upperBounds]
   constructor
   · simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_setOf_eq,
@@ -98,7 +98,7 @@ def ScottContinuous (f : α → β) : Prop :=
   simp [ScottContinuousOn, ScottContinuous]
 
 lemma ScottContinuous.scottContinuousOn {D : Set (Set α)} :
-    ScottContinuous f → ScottContinuousOn D f := fun h _ _ d₂ d₃ _ hda => h d₂ d₃ hda
+    ScottContinuous f → ScottContinuousOn D f := fun h _ _ d₂ d₃ _ hda ↦ h d₂ d₃ hda
 
 protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f :=
   h.scottContinuousOn.monotone univ (fun _ _ _ ↦ mem_univ _)
@@ -112,19 +112,19 @@ section SemilatticeSup
 variable [SemilatticeSup β]
 
 lemma ScottContinuous.sup₂ :
-    ScottContinuous fun b : β × β => (b.1 ⊔ b.2 : β) := fun d _ _ ⟨p₁, p₂⟩ hdp => by
+    ScottContinuous fun b : β × β ↦ (b.1 ⊔ b.2 : β) := fun d _ _ ⟨p₁, p₂⟩ hdp ↦ by
   simp only [IsLUB, IsLeast, upperBounds, Prod.forall, mem_setOf_eq, Prod.mk_le_mk] at hdp
   simp only [IsLUB, IsLeast, upperBounds, mem_image, Prod.exists, forall_exists_index, and_imp]
   have e1 : (p₁, p₂) ∈ lowerBounds {x | ∀ (b₁ b₂ : β), (b₁, b₂) ∈ d → (b₁, b₂) ≤ x} := hdp.2
   simp only [lowerBounds, mem_setOf_eq, Prod.forall, Prod.mk_le_mk] at e1
-  refine ⟨fun a b₁ b₂ hbd hba => ?_,fun b hb => ?_⟩
+  refine ⟨fun a b₁ b₂ hbd hba ↦ ?_,fun b hb ↦ ?_⟩
   · rw [← hba]
     exact sup_le_sup (hdp.1 _ _ hbd).1 (hdp.1 _ _ hbd).2
   · rw [sup_le_iff]
-    exact e1 _ _ fun b₁ b₂ hb' => sup_le_iff.mp (hb b₁ b₂ hb' rfl)
+    exact e1 _ _ fun b₁ b₂ hb' ↦ sup_le_iff.mp (hb b₁ b₂ hb' rfl)
 
 lemma ScottContinuousOn.sup₂ {D : Set (Set (β × β))} :
-    ScottContinuousOn D fun (a, b) => (a ⊔ b : β) :=
+    ScottContinuousOn D fun (a, b) ↦ (a ⊔ b : β) :=
   ScottContinuous.sup₂.scottContinuousOn
 
 end SemilatticeSup

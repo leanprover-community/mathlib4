@@ -78,27 +78,27 @@ instance : IsTopologicalGroup (ContinuousMonoidHom A E) :=
 
 @[to_additive]
 theorem continuous_of_continuous_uncurry {A : Type*} [TopologicalSpace A]
-    (f : A → ContinuousMonoidHom B C) (h : Continuous (Function.uncurry fun x y => f x y)) :
+    (f : A → ContinuousMonoidHom B C) (h : Continuous (Function.uncurry fun x y ↦ f x y)) :
     Continuous f :=
   (isInducing_toContinuousMap _ _).continuous_iff.mpr
     (ContinuousMap.continuous_of_continuous_uncurry _ h)
 
 @[to_additive]
 theorem continuous_comp [LocallyCompactSpace B] :
-    Continuous fun f : ContinuousMonoidHom A B × ContinuousMonoidHom B C => f.2.comp f.1 :=
+    Continuous fun f : ContinuousMonoidHom A B × ContinuousMonoidHom B C ↦ f.2.comp f.1 :=
   (isInducing_toContinuousMap A C).continuous_iff.2 <|
     ContinuousMap.continuous_comp'.comp
       ((isInducing_toContinuousMap A B).prodMap (isInducing_toContinuousMap B C)).continuous
 
 @[to_additive]
 theorem continuous_comp_left (f : ContinuousMonoidHom A B) :
-    Continuous fun g : ContinuousMonoidHom B C => g.comp f :=
+    Continuous fun g : ContinuousMonoidHom B C ↦ g.comp f :=
   (isInducing_toContinuousMap A C).continuous_iff.2 <|
     f.toContinuousMap.continuous_precomp.comp (isInducing_toContinuousMap B C).continuous
 
 @[to_additive]
 theorem continuous_comp_right (f : ContinuousMonoidHom B C) :
-    Continuous fun g : ContinuousMonoidHom A B => f.comp g :=
+    Continuous fun g : ContinuousMonoidHom A B ↦ f.comp g :=
   (isInducing_toContinuousMap A C).continuous_iff.2 <|
     f.toContinuousMap.continuous_postcomp.comp (isInducing_toContinuousMap A B).continuous
 
@@ -119,8 +119,8 @@ def compRight {B : Type*} [CommGroup B] [TopologicalSpace B] [IsTopologicalGroup
     (f : ContinuousMonoidHom B E) :
     ContinuousMonoidHom (ContinuousMonoidHom A B) (ContinuousMonoidHom A E) where
   toFun g := f.comp g
-  map_one' := ext fun _a => map_one f
-  map_mul' g h := ext fun a => map_mul f (g a) (h a)
+  map_one' := ext fun _a ↦ map_one f
+  map_mul' g h := ext fun a ↦ map_mul f (g a) (h a)
   continuous_toFun := f.continuous_comp_right
 
 section DiscreteTopology

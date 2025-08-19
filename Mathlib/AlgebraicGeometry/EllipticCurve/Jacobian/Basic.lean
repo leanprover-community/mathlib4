@@ -131,7 +131,7 @@ variable [CommRing R] [CommRing S] [CommRing A] [CommRing B] [Field F] [Field K]
 
 /-- The scalar multiplication for a Jacobian point representative on a Weierstrass curve. -/
 scoped instance : SMul R <| Fin 3 → R :=
-  ⟨fun u P => ![u ^ 2 * P x, u ^ 3 * P y, u * P z]⟩
+  ⟨fun u P ↦ ![u ^ 2 * P x, u ^ 3 * P y, u * P z]⟩
 
 lemma smul_fin3 (P : Fin 3 → R) (u : R) : u • P = ![u ^ 2 * P x, u ^ 3 * P y, u * P z] :=
   rfl
@@ -195,10 +195,10 @@ lemma Y_eq_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : P y * Q z ^ 3 = Q y * P 
   ring1
 
 lemma not_equiv_of_Z_eq_zero_left {P Q : Fin 3 → R} (hPz : P z = 0) (hQz : Q z ≠ 0) : ¬P ≈ Q :=
-  fun h => hQz <| (Z_eq_zero_of_equiv h).mp hPz
+  fun h ↦ hQz <| (Z_eq_zero_of_equiv h).mp hPz
 
 lemma not_equiv_of_Z_eq_zero_right {P Q : Fin 3 → R} (hPz : P z ≠ 0) (hQz : Q z = 0) : ¬P ≈ Q :=
-  fun h => hPz <| (Z_eq_zero_of_equiv h).mpr hQz
+  fun h ↦ hPz <| (Z_eq_zero_of_equiv h).mpr hQz
 
 lemma not_equiv_of_X_ne {P Q : Fin 3 → R} (hx : P x * Q z ^ 2 ≠ Q x * P z ^ 2) : ¬P ≈ Q :=
   hx.comp X_eq_of_equiv
@@ -269,7 +269,7 @@ lemma equation_smul (P : Fin 3 → R) {u : R} (hu : IsUnit u) : W'.Equation (u �
   have hP (u : R) {P : Fin 3 → R} (hP : W'.Equation P) : W'.Equation <| u • P := by
     rw [equation_iff] at hP ⊢
     linear_combination (norm := (simp only [smul_fin3_ext]; ring1)) u ^ 6 * hP
-  ⟨fun h => by convert hP ↑hu.unit⁻¹ h; rw [smul_smul, hu.val_inv_mul, one_smul], hP u⟩
+  ⟨fun h ↦ by convert hP ↑hu.unit⁻¹ h; rw [smul_smul, hu.val_inv_mul, one_smul], hP u⟩
 
 lemma equation_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W'.Equation P ↔ W'.Equation Q := by
   rcases h with ⟨u, rfl⟩
@@ -392,7 +392,7 @@ lemma nonsingular_smul (P : Fin 3 → R) {u : R} (hu : IsUnit u) :
     exact ⟨by linear_combination (norm := ring1) u ^ 4 * hP'.left,
       by linear_combination (norm := ring1) u ^ 3 * hP'.right.left,
       by linear_combination (norm := ring1) u ^ 5 * hP'.right.right⟩
-  ⟨hP hu, fun h => hP hu.unit⁻¹.isUnit <| by rwa [smul_smul, hu.val_inv_mul, one_smul]⟩
+  ⟨hP hu, fun h ↦ hP hu.unit⁻¹.isUnit <| by rwa [smul_smul, hu.val_inv_mul, one_smul]⟩
 
 lemma nonsingular_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W'.Nonsingular P ↔ W'.Nonsingular Q := by
   rcases h with ⟨u, rfl⟩
@@ -405,7 +405,7 @@ lemma nonsingular_of_Z_eq_zero {P : Fin 3 → R} (hPz : P z = 0) :
 
 lemma nonsingular_zero [Nontrivial R] : W'.Nonsingular ![1, 1, 0] := by
   simp only [nonsingular_of_Z_eq_zero, equation_zero, true_and, fin3_def_ext, ← not_and_or]
-  exact fun h => one_ne_zero <| by linear_combination (norm := ring1) h.1 - h.2.1
+  exact fun h ↦ one_ne_zero <| by linear_combination (norm := ring1) h.1 - h.2.1
 
 lemma nonsingular_some (a b : R) : W'.Nonsingular ![a, b, 1] ↔ W'.toAffine.Nonsingular a b := by
   simp_rw [nonsingular_iff, equation_some, fin3_def_ext, Affine.nonsingular_iff',
@@ -467,7 +467,7 @@ lemma equiv_zero_of_Z_eq_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P 
 
 lemma comp_equiv_comp (f : F →+* K) {P Q : Fin 3 → F} (hP : W.Nonsingular P)
     (hQ : W.Nonsingular Q) : f ∘ P ≈ f ∘ Q ↔ P ≈ Q := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · by_cases hz : f (P z) = 0
     · exact equiv_of_Z_eq_zero hP hQ ((map_eq_zero_iff f f.injective).mp hz) <|
         (map_eq_zero_iff f f.injective).mp <| (Z_eq_zero_of_equiv h).mp hz
@@ -486,7 +486,7 @@ equivalent to `W.Nonsingular P`.
 
 Note that this definition is only mathematically accurate for fields. -/
 def NonsingularLift (P : PointClass R) : Prop :=
-  P.lift W'.Nonsingular fun _ _ => propext ∘ nonsingular_of_equiv
+  P.lift W'.Nonsingular fun _ _ ↦ propext ∘ nonsingular_of_equiv
 
 lemma nonsingularLift_iff (P : Fin 3 → R) : W'.NonsingularLift ⟦P⟧ ↔ W'.Nonsingular P :=
   Iff.rfl

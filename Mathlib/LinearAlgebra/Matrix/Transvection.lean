@@ -223,7 +223,7 @@ theorem _root_.Matrix.mem_range_scalar_of_commute_transvectionStruct {M : Matrix
 
 theorem _root_.Matrix.mem_range_scalar_iff_commute_transvectionStruct {M : Matrix n n R} :
     M ∈ Set.range (Matrix.scalar n) ↔ ∀ t : TransvectionStruct n R, Commute t.toMatrix M := by
-  refine ⟨fun h t => ?_, mem_range_scalar_of_commute_transvectionStruct⟩
+  refine ⟨fun h t ↦ ?_, mem_range_scalar_of_commute_transvectionStruct⟩
   rw [mem_range_scalar_iff_commute_single] at h
   refine (Commute.one_left M).add_left ?_
   convert (h _ _ t.hij).smul_left t.c using 1
@@ -328,13 +328,13 @@ open Unit Sum Fin TransvectionStruct
 /-- A list of transvections such that multiplying on the left with these transvections will replace
 the last column with zeroes. -/
 def listTransvecCol : List (Matrix (Fin r ⊕ Unit) (Fin r ⊕ Unit) 𝕜) :=
-  List.ofFn fun i : Fin r =>
+  List.ofFn fun i : Fin r ↦
     transvection (inl i) (inr unit) <| -M (inl i) (inr unit) / M (inr unit) (inr unit)
 
 /-- A list of transvections such that multiplying on the right with these transvections will replace
 the last row with zeroes. -/
 def listTransvecRow : List (Matrix (Fin r ⊕ Unit) (Fin r ⊕ Unit) 𝕜) :=
-  List.ofFn fun i : Fin r =>
+  List.ofFn fun i : Fin r ↦
     transvection (inr unit) (inl i) <| -M (inr unit) (inl i) / M (inr unit) (inr unit)
 
 @[simp]
@@ -531,10 +531,10 @@ theorem exists_isTwoBlockDiagonal_of_ne_zero (hM : M (inr unit) (inr unit) ≠ 0
     ∃ L L' : List (TransvectionStruct (Fin r ⊕ Unit) 𝕜),
       IsTwoBlockDiagonal ((L.map toMatrix).prod * M * (L'.map toMatrix).prod) := by
   let L : List (TransvectionStruct (Fin r ⊕ Unit) 𝕜) :=
-    List.ofFn fun i : Fin r =>
+    List.ofFn fun i : Fin r ↦
       ⟨inl i, inr unit, by simp, -M (inl i) (inr unit) / M (inr unit) (inr unit)⟩
   let L' : List (TransvectionStruct (Fin r ⊕ Unit) 𝕜) :=
-    List.ofFn fun i : Fin r =>
+    List.ofFn fun i : Fin r ↦
       ⟨inr unit, inl i, by simp, -M (inr unit) (inl i) / M (inr unit) (inr unit)⟩
   refine ⟨L, L', ?_⟩
   have A : L.map toMatrix = listTransvecCol M := by simp [L, listTransvecCol, Function.comp_def]
@@ -600,11 +600,11 @@ theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal_induction
   set c := M' (inr unit) (inr unit)
   refine
     ⟨L₀.map (sumInl Unit) ++ L₁, L₁' ++ L₀'.map (sumInl Unit),
-      Sum.elim D₀ fun _ => M' (inr unit) (inr unit), ?_⟩
+      Sum.elim D₀ fun _ ↦ M' (inr unit) (inr unit), ?_⟩
   suffices (L₀.map (toMatrix ∘ sumInl Unit)).prod * M' * (L₀'.map (toMatrix ∘ sumInl Unit)).prod =
-      diagonal (Sum.elim D₀ fun _ => c) by
+      diagonal (Sum.elim D₀ fun _ ↦ c) by
     simpa [M', c, Matrix.mul_assoc]
-  have : M' = fromBlocks M'' 0 0 (diagonal fun _ => c) := by
+  have : M' = fromBlocks M'' 0 0 (diagonal fun _ ↦ c) := by
     rw [← fromBlocks_toBlocks M', hM.1, hM.2]
     rfl
   rw [this]
@@ -645,7 +645,7 @@ theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal_aux (n : Type) [F
   intro cn hn
   induction cn generalizing n M with
   | zero =>
-    refine ⟨List.nil, List.nil, fun _ => 1, ?_⟩
+    refine ⟨List.nil, List.nil, fun _ ↦ 1, ?_⟩
     ext i j
     rw [Fintype.card_eq_zero_iff] at hn
     exact hn.elim' i
@@ -657,7 +657,7 @@ theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal_aux (n : Type) [F
       simp
     apply reindex_exists_list_transvec_mul_mul_list_transvec_eq_diagonal M e
     apply
-      exists_list_transvec_mul_mul_list_transvec_eq_diagonal_induction fun N =>
+      exists_list_transvec_mul_mul_list_transvec_eq_diagonal_induction fun N ↦
         IH (Fin r) N (by simp)
 
 /-- Any matrix can be reduced to diagonal form by elementary operations. -/
@@ -729,7 +729,7 @@ theorem diagonal_transvection_induction_of_det_ne_zero (P : Matrix n n 𝕜 → 
     (hMdet : det M ≠ 0) (hdiag : ∀ D : n → 𝕜, det (diagonal D) ≠ 0 → P (diagonal D))
     (htransvec : ∀ t : TransvectionStruct n 𝕜, P t.toMatrix)
     (hmul : ∀ A B, det A ≠ 0 → det B ≠ 0 → P A → P B → P (A * B)) : P M := by
-  let Q : Matrix n n 𝕜 → Prop := fun N => det N ≠ 0 ∧ P N
+  let Q : Matrix n n 𝕜 → Prop := fun N ↦ det N ≠ 0 ∧ P N
   have : Q M := by
     apply diagonal_transvection_induction Q M
     · grind

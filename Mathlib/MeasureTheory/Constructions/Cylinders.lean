@@ -11,7 +11,7 @@ import Mathlib.Topology.Constructions
 # π-systems of cylinders and square cylinders
 
 The instance `MeasurableSpace.pi` on `∀ i, α i`, where each `α i` has a `MeasurableSpace` `m i`,
-is defined as `⨆ i, (m i).comap (fun a => a i)`.
+is defined as `⨆ i, (m i).comap (fun a ↦ a i)`.
 That is, a function `g : β → ∀ i, α i` is measurable iff for all `i`, the function `b ↦ g b i`
 is measurable.
 
@@ -410,7 +410,7 @@ lemma measurable_cylinderEvents_iff {g : α → ∀ i, X i} :
 
 @[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
 lemma measurable_cylinderEvent_apply (hi : i ∈ Δ) :
-    Measurable[cylinderEvents Δ] fun f : ∀ i, X i => f i :=
+    Measurable[cylinderEvents Δ] fun f : ∀ i, X i ↦ f i :=
   measurable_cylinderEvents_iff.1 measurable_id hi
 
 @[aesop safe 100 apply (rule_sets := [Measurable])]

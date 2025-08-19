@@ -153,7 +153,7 @@ namespace RingHomSurjective
 
 instance (priority := 100) invPair {σ₁ : R₁ →+* R₂} {σ₂ : R₂ →+* R₁} [RingHomInvPair σ₁ σ₂] :
     RingHomSurjective σ₁ :=
-  ⟨fun x => ⟨σ₂ x, RingHomInvPair.comp_apply_eq₂⟩⟩
+  ⟨fun x ↦ ⟨σ₂ x, RingHomInvPair.comp_apply_eq₂⟩⟩
 
 instance ids : RingHomSurjective (RingHom.id R₁) :=
   ⟨is_surjective⟩

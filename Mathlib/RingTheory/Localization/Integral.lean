@@ -88,7 +88,7 @@ theorem integerNormalization_map_to_map (p : S[X]) :
     ∃ b : M, (integerNormalization M p).map (algebraMap R S) = (b : R) • p :=
   let ⟨b, hb⟩ := integerNormalization_spec M p
   ⟨b,
-    Polynomial.ext fun i => by
+    Polynomial.ext fun i ↦ by
       rw [coeff_map, coeff_smul]
       exact hb i⟩
 
@@ -137,7 +137,7 @@ over the field of fractions of `A`.
 theorem isAlgebraic_iff [Algebra A C] [Algebra K C] [IsScalarTower A K C] {x : C} :
     IsAlgebraic A x ↔ IsAlgebraic K x := by
   constructor <;> rintro ⟨p, hp, px⟩
-  · refine ⟨p.map (algebraMap A K), fun h => hp (Polynomial.ext fun i => ?_), ?_⟩
+  · refine ⟨p.map (algebraMap A K), fun h ↦ hp (Polynomial.ext fun i ↦ ?_), ?_⟩
     · have : algebraMap A K (p.coeff i) = 0 :=
         _root_.trans (Polynomial.coeff_map _ _).symm (by simp [h])
       exact to_map_eq_zero_iff.mp this
@@ -152,8 +152,8 @@ variable {A K C}
 -/
 theorem comap_isAlgebraic_iff [Algebra A C] [Algebra K C] [IsScalarTower A K C] :
     Algebra.IsAlgebraic A C ↔ Algebra.IsAlgebraic K C :=
-  ⟨fun h => ⟨fun x => (isAlgebraic_iff A K C).mp (h.isAlgebraic x)⟩,
-   fun h => ⟨fun x => (isAlgebraic_iff A K C).mpr (h.isAlgebraic x)⟩⟩
+  ⟨fun h ↦ ⟨fun x ↦ (isAlgebraic_iff A K C).mp (h.isAlgebraic x)⟩,
+   fun h ↦ ⟨fun x ↦ (isAlgebraic_iff A K C).mpr (h.isAlgebraic x)⟩⟩
 
 end IsFractionRing
 
@@ -180,7 +180,7 @@ theorem RingHom.isIntegralElem_localization_at_leadingCoeff {R S : Type*} [CommS
   refine ⟨p.map (algebraMap R Rₘ) * C b, ⟨?_, ?_⟩⟩
   · refine monic_mul_C_of_leadingCoeff_mul_eq_one ?_
     rwa [leadingCoeff_map_of_leadingCoeff_ne_zero (algebraMap R Rₘ)]
-    refine fun hfp => zero_ne_one
+    refine fun hfp ↦ zero_ne_one
       (_root_.trans (zero_mul b).symm (hfp ▸ hb) : (0 : Rₘ) = 1)
   · refine eval₂_mul_eq_zero_of_left _ _ _ ?_
     rw [eval₂_map, IsLocalization.map_comp, ← hom_eval₂ _ f (algebraMap S Sₘ) x]
@@ -293,17 +293,17 @@ open Algebra
 the integral closure `C` of `A` in `L` has fraction field `L`. -/
 theorem isFractionRing_of_algebraic [Algebra.IsAlgebraic A L]
     (inj : ∀ x, algebraMap A L x = 0 → x = 0) : IsFractionRing C L :=
-  { map_units' := fun ⟨y, hy⟩ =>
+  { map_units' := fun ⟨y, hy⟩ ↦
       IsUnit.mk0 _
-        (show algebraMap C L y ≠ 0 from fun h =>
+        (show algebraMap C L y ≠ 0 from fun h ↦
           mem_nonZeroDivisors_iff_ne_zero.mp hy
             ((injective_iff_map_eq_zero (algebraMap C L)).mp (algebraMap_injective C A L) _ h))
-    surj' := fun z =>
+    surj' := fun z ↦
       let ⟨x, hx, int⟩ := (Algebra.IsAlgebraic.isAlgebraic z).exists_integral_multiple
       ⟨⟨mk' C _ int, algebraMap _ _ x, mem_nonZeroDivisors_of_ne_zero fun h ↦
         hx (inj _ <| by rw [IsScalarTower.algebraMap_apply A C L, h, RingHom.map_zero])⟩, by
         rw [algebraMap_mk', ← IsScalarTower.algebraMap_apply A C L, Algebra.smul_def, mul_comm]⟩
-    exists_of_eq := fun {x y} h => ⟨1, by simpa using algebraMap_injective C A L h⟩ }
+    exists_of_eq := fun {x y} h ↦ ⟨1, by simpa using algebraMap_injective C A L h⟩ }
 
 variable (K L)
 
@@ -314,7 +314,7 @@ theorem isFractionRing_of_finite_extension [IsDomain A] [Algebra K L] [IsScalarT
   have : Algebra.IsAlgebraic A L := IsFractionRing.comap_isAlgebraic_iff.mpr
     (inferInstanceAs (Algebra.IsAlgebraic K L))
   isFractionRing_of_algebraic A C
-    fun _ hx =>
+    fun _ hx ↦
     IsFractionRing.to_map_eq_zero_iff.mp
       ((map_eq_zero <| algebraMap K L).mp <| (IsScalarTower.algebraMap_apply _ _ _ _).symm.trans hx)
 

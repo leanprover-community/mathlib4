@@ -64,9 +64,9 @@ theorem norm_injOn_ray_right (hy : y ≠ 0) : { x | SameRay ℝ x y }.InjOn norm
   simpa only [SameRay.sameRay_comm] using norm_injOn_ray_left hy
 
 theorem sameRay_iff_norm_smul_eq : SameRay ℝ x y ↔ ‖x‖ • y = ‖y‖ • x :=
-  ⟨SameRay.norm_smul_eq, fun h =>
-    or_iff_not_imp_left.2 fun hx =>
-      or_iff_not_imp_left.2 fun hy => ⟨‖y‖, ‖x‖, norm_pos_iff.2 hy, norm_pos_iff.2 hx, h.symm⟩⟩
+  ⟨SameRay.norm_smul_eq, fun h ↦
+    or_iff_not_imp_left.2 fun hx ↦
+      or_iff_not_imp_left.2 fun hy ↦ ⟨‖y‖, ‖x‖, norm_pos_iff.2 hy, norm_pos_iff.2 hx, h.symm⟩⟩
 
 /-- Two nonzero vectors `x y` in a real normed space are on the same ray if and only if the unit
 vectors `‖x‖⁻¹ • x` and `‖y‖⁻¹ • y` are equal. -/
@@ -89,7 +89,7 @@ theorem sameRay_iff_of_norm_eq (h : ‖x‖ = ‖y‖) : SameRay ℝ x y ↔ x =
   obtain rfl | hy := eq_or_ne y 0
   · rw [norm_zero, norm_eq_zero] at h
     exact iff_of_true (SameRay.zero_right _) h
-  · exact ⟨fun hxy => norm_injOn_ray_right hy hxy SameRay.rfl h, fun hxy => hxy ▸ SameRay.rfl⟩
+  · exact ⟨fun hxy ↦ norm_injOn_ray_right hy hxy SameRay.rfl h, fun hxy ↦ hxy ▸ SameRay.rfl⟩
 
 theorem not_sameRay_iff_of_norm_eq (h : ‖x‖ = ‖y‖) : ¬SameRay ℝ x y ↔ x ≠ y :=
   (sameRay_iff_of_norm_eq h).not
@@ -100,4 +100,4 @@ theorem SameRay.eq_of_norm_eq (h : SameRay ℝ x y) (hn : ‖x‖ = ‖y‖) : x
 
 /-- The norms of two vectors on the same ray are equal if and only if they are equal. -/
 theorem SameRay.norm_eq_iff (h : SameRay ℝ x y) : ‖x‖ = ‖y‖ ↔ x = y :=
-  ⟨h.eq_of_norm_eq, fun h => h ▸ rfl⟩
+  ⟨h.eq_of_norm_eq, fun h ↦ h ▸ rfl⟩

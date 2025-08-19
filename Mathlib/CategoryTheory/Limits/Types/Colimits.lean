@@ -66,10 +66,10 @@ lemma CoconeTypes.isColimit_iff (c : CoconeTypes.{u} F) :
         obtain ⟨j, z, rfl⟩ := F.ιColimitType_jointly_surjective z
         exact congr_fun (hc.fac _ j) z
       simp only [← this, coconeTypesEquiv_apply_pt, Function.comp_apply, h]
-    · let f₁ : c.pt ⟶ ULift.{u} Bool := fun _ => ULift.up true
-      let f₂ : c.pt ⟶ ULift.{u} Bool := fun x => ULift.up (∃ a, F.descColimitType c a = x)
+    · let f₁ : c.pt ⟶ ULift.{u} Bool := fun _ ↦ ULift.up true
+      let f₂ : c.pt ⟶ ULift.{u} Bool := fun x ↦ ULift.up (∃ a, F.descColimitType c a = x)
       suffices f₁ = f₂ by simpa [f₁, f₂] using congrFun this x
-      refine hc.hom_ext fun j => funext fun x => ?_
+      refine hc.hom_ext fun j ↦ funext fun x ↦ ?_
       simpa [f₁, f₂] using ⟨F.ιColimitType j x, by simp⟩
 
 end Functor

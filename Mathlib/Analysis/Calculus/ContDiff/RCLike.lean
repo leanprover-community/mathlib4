@@ -81,8 +81,8 @@ theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith_of_nnnorm_lt {E F : Type*}
     {p : E → FormalMultilinearSeries ℝ E F} {s : Set E} {x : E}
     (hf : HasFTaylorSeriesUpToOn 1 f p (insert x s)) (hs : Convex ℝ s) (K : ℝ≥0)
     (hK : ‖p x 1‖₊ < K) : ∃ t ∈ 𝓝[s] x, LipschitzOnWith K f t := by
-  set f' := fun y => continuousMultilinearCurryFin1 ℝ E F (p y 1)
-  have hder : ∀ y ∈ s, HasFDerivWithinAt f (f' y) s y := fun y hy =>
+  set f' := fun y ↦ continuousMultilinearCurryFin1 ℝ E F (p y 1)
+  have hder : ∀ y ∈ s, HasFDerivWithinAt f (f' y) s y := fun y hy ↦
     (hf.hasFDerivWithinAt le_rfl (subset_insert x s hy)).mono (subset_insert x s)
   have hcont : ContinuousWithinAt f' s x :=
     (continuousMultilinearCurryFin1 ℝ E F).continuousAt.comp_continuousWithinAt

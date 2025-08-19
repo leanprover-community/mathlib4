@@ -53,13 +53,13 @@ attribute [nolint docBlame] ExponentialIdeal.exp_closed
 -/
 theorem ExponentialIdeal.mk' (h : ∀ (B : D) (A : C), i.essImage (A ⟹ i.obj B)) :
     ExponentialIdeal i :=
-  ⟨fun hB A => by
+  ⟨fun hB A ↦ by
     rcases hB with ⟨B', ⟨iB'⟩⟩
     exact Functor.essImage.ofIso ((exp A).mapIso iB') (h B' A)⟩
 
 /-- The entire category viewed as a subcategory is an exponential ideal. -/
 instance : ExponentialIdeal (𝟭 C) :=
-  ExponentialIdeal.mk' _ fun _ _ => ⟨_, ⟨Iso.refl _⟩⟩
+  ExponentialIdeal.mk' _ fun _ _ ↦ ⟨_, ⟨Iso.refl _⟩⟩
 
 open CartesianClosed
 
@@ -67,7 +67,7 @@ open CartesianClosed
 instance : ExponentialIdeal (subterminalInclusion C) := by
   apply ExponentialIdeal.mk'
   intro B A
-  refine ⟨⟨A ⟹ B.1, fun Z g h => ?_⟩, ⟨Iso.refl _⟩⟩
+  refine ⟨⟨A ⟹ B.1, fun Z g h ↦ ?_⟩, ⟨Iso.refl _⟩⟩
   exact uncurry_injective (B.2 (CartesianClosed.uncurry g) (CartesianClosed.uncurry h))
 
 /-- If `D` is a reflective subcategory, the property of being an exponential ideal is equivalent to
@@ -104,7 +104,7 @@ variable (i : D ⥤ C)
 -- now it can instead be used as a have when needed
 -- we assume HasFiniteProducts D as a hypothesis below
 theorem reflective_products [Limits.HasFiniteProducts C] [Reflective i] :
-    Limits.HasFiniteProducts D := ⟨fun _ => hasLimitsOfShape_of_reflective i⟩
+    Limits.HasFiniteProducts D := ⟨fun _ ↦ hasLimitsOfShape_of_reflective i⟩
 
 open CartesianClosed MonoidalCategory CartesianMonoidalCategory
 
@@ -187,13 +187,13 @@ variable [ExponentialIdeal i]
 itself cartesian closed.
 -/
 def cartesianClosedOfReflective : CartesianClosed D where
-  closed := fun B =>
+  closed := fun B ↦
     { rightAdj := i ⋙ exp (i.obj B) ⋙ reflector i
       adj := by
         apply (exp.adjunction (i.obj B)).restrictFullyFaithful i.fullyFaithfulOfReflective
           i.fullyFaithfulOfReflective
         · symm
-          refine NatIso.ofComponents (fun X => ?_) (fun f => ?_)
+          refine NatIso.ofComponents (fun X ↦ ?_) (fun f ↦ ?_)
           · haveI :=
               Adjunction.rightAdjoint_preservesLimits.{0, 0} (reflectorAdjunction i)
             apply asIso (prodComparison i B X)

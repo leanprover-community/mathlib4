@@ -86,10 +86,10 @@ instance yoneda_preservesLimit (F : J ⥤ Cᵒᵖ) (X : C) :
     rw [Types.isLimit_iff]
     intro s hs
     exact ⟨(hc.lift (Limits.coneOfSectionCompYoneda F X ⟨s, hs⟩)).unop,
-      fun j => Quiver.Hom.op_inj (hc.fac (Limits.coneOfSectionCompYoneda F X ⟨s, hs⟩) j),
-      fun m hm => Quiver.Hom.op_inj
+      fun j ↦ Quiver.Hom.op_inj (hc.fac (Limits.coneOfSectionCompYoneda F X ⟨s, hs⟩) j),
+      fun m hm ↦ Quiver.Hom.op_inj
         (hc.uniq (Limits.coneOfSectionCompYoneda F X ⟨s, hs⟩) _
-          (fun j => Quiver.Hom.unop_inj (hm j)))⟩
+          (fun j ↦ Quiver.Hom.unop_inj (hm j)))⟩
 
 variable (J) in
 noncomputable instance yoneda_preservesLimitsOfShape (X : C) :

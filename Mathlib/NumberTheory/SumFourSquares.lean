@@ -87,7 +87,7 @@ private theorem sum_four_squares_of_two_mul_sum_four_squares {m a b c d : ℤ}
       f i ^ 2 + f (swap i 0 1) ^ 2 = 0 ∧ f (swap i 0 2) ^ 2 + f (swap i 0 3) ^ 2 = 0 := by
     decide
   set f : Fin 4 → ℤ := ![a, b, c, d]
-  obtain ⟨i, hσ⟩ := this (fun x => ↑(f x)) <| by
+  obtain ⟨i, hσ⟩ := this (fun x ↦ ↑(f x)) <| by
     rw [← @zero_mul (ZMod 2) _ m, ← show ((2 : ℤ) : ZMod 2) = 0 from rfl, ← Int.cast_mul, ← h]
     simp only [Int.cast_add, Int.cast_pow]
     rfl

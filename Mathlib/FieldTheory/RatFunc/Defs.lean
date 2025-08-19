@@ -77,7 +77,7 @@ section Rec
 /-! ### Constructing `RatFunc`s and their induction principles -/
 
 theorem ofFractionRing_injective : Function.Injective (ofFractionRing : _ → RatFunc K) :=
-  fun _ _ => ofFractionRing.inj
+  fun _ _ ↦ ofFractionRing.inj
 
 theorem toFractionRing_injective : Function.Injective (toFractionRing : _ → FractionRing K[X])
   | ⟨x⟩, ⟨y⟩, xy => by subst xy; rfl
@@ -102,7 +102,7 @@ of `∀ {p q a : K[X]} (hq : q ≠ 0) (ha : a ≠ 0), f (a * p) (a * q) = f p q)
 protected irreducible_def liftOn {P : Sort v} (x : RatFunc K) (f : K[X] → K[X] → P)
     (H : ∀ {p q p' q'} (_hq : q ∈ K[X]⁰) (_hq' : q' ∈ K[X]⁰), q' * p = q * p' → f p q = f p' q') :
     P :=
-  Localization.liftOn (toFractionRing x) (fun p q => f p q) fun {_ _ q q'} h =>
+  Localization.liftOn (toFractionRing x) (fun p q ↦ f p q) fun {_ _ q q'} h ↦
     H q.2 q'.2 (let ⟨⟨_, _⟩, mul_eq⟩ := Localization.r_iff_exists.mp h
       mul_cancel_left_coe_nonZeroDivisors.mp mul_eq)
 
@@ -172,7 +172,7 @@ theorem mk_eq_mk {p q p' q' : K[X]} (hq : q ≠ 0) (hq' : q' ≠ 0) :
 theorem liftOn_mk {P : Sort v} (p q : K[X]) (f : K[X] → K[X] → P) (f0 : ∀ p, f p 0 = f 0 1)
     (H' : ∀ {p q p' q'} (_hq : q ≠ 0) (_hq' : q' ≠ 0), q' * p = q * p' → f p q = f p' q')
     (H : ∀ {p q p' q'} (_hq : q ∈ K[X]⁰) (_hq' : q' ∈ K[X]⁰), q' * p = q * p' → f p q = f p' q' :=
-      fun {_ _ _ _} hq hq' h => H' (nonZeroDivisors.ne_zero hq) (nonZeroDivisors.ne_zero hq') h) :
+      fun {_ _ _ _} hq hq' h ↦ H' (nonZeroDivisors.ne_zero hq) (nonZeroDivisors.ne_zero hq') h) :
     (RatFunc.mk p q).liftOn f @H = f p q := by
   by_cases hq : q = 0
   · subst hq
@@ -189,7 +189,7 @@ although many usages of `lift_on'` assume `f p 0 = f 0 1`.
 -/
 protected irreducible_def liftOn' {P : Sort v} (x : RatFunc K) (f : K[X] → K[X] → P)
   (H : ∀ {p q a} (_hq : q ≠ 0) (_ha : a ≠ 0), f (a * p) (a * q) = f p q) : P :=
-  x.liftOn f fun {_p _q _p' _q'} hq hq' =>
+  x.liftOn f fun {_p _q _p' _q'} hq hq' ↦
     liftOn_condition_of_liftOn'_condition (@H) (nonZeroDivisors.ne_zero hq)
       (nonZeroDivisors.ne_zero hq')
 
@@ -208,7 +208,7 @@ See also `induction_on`, which is a recursion principle defined in terms of `alg
 protected theorem induction_on' {P : RatFunc K → Prop} :
     ∀ (x : RatFunc K) (_pq : ∀ (p q : K[X]) (_ : q ≠ 0), P (RatFunc.mk p q)), P x
   | ⟨x⟩, f =>
-    Localization.induction_on x fun ⟨p, q⟩ => by
+    Localization.induction_on x fun ⟨p, q⟩ ↦ by
       simpa only [mk_coe_def, Localization.mk_eq_mk'] using
         f p q (mem_nonZeroDivisors_iff_ne_zero.mp q.2)
 

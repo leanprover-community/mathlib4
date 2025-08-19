@@ -1036,8 +1036,8 @@ theorem stepAux_read (f : Γ → Stmt Bool (Λ' Γ Λ σ) σ) (v : σ) (L R : Li
       stepAux (readAux i f) v (Tape.mk' (ListBlank.append l₁ L') (ListBlank.append l₂ R')) =
       stepAux (f ⟨l₂, h⟩) v (Tape.mk' (ListBlank.append (l₂.reverseAux l₁) L') R') by
     intro f
-    exact this n f (L.flatMap (fun x => (enc x).1.reverse) _)
-      (R.flatMap (fun x => (enc x).1) _) [] _ (enc a).2
+    exact this n f (L.flatMap (fun x ↦ (enc x).1.reverse) _)
+      (R.flatMap (fun x ↦ (enc x).1) _) [] _ (enc a).2
   clear f L a R
   intro i f L' R' l₁ l₂ _
   subst i

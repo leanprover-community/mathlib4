@@ -33,7 +33,7 @@ variable {R S : Type*} [Ring R] [Ring S]
 
 /-- The power series for `1 / (u - x)`. -/
 def invUnitsSub (u : Rˣ) : PowerSeries R :=
-  mk fun n => 1 /ₚ u ^ (n + 1)
+  mk fun n ↦ 1 /ₚ u ^ (n + 1)
 
 @[simp]
 theorem coeff_invUnitsSub (u : Rˣ) (n : ℕ) : coeff R n (invUnitsSub u) = 1 /ₚ u ^ (n + 1) :=
@@ -81,10 +81,10 @@ theorem mk_one_mul_one_sub_eq_one : (mk 1 : S⟦X⟧) * (1 - X) = 1 := by
 /--
 Note that `mk 1` is the constant function `1` so the power series `1 + X + X^2 + ...`. This theorem
 states that for any `d : ℕ`, `(1 + X + X^2 + ... : S⟦X⟧) ^ (d + 1)` is equal to the power series
-`mk fun n => Nat.choose (d + n) d : S⟦X⟧`.
+`mk fun n ↦ Nat.choose (d + n) d : S⟦X⟧`.
 -/
 theorem mk_one_pow_eq_mk_choose_add :
-    (mk 1 : S⟦X⟧) ^ (d + 1) = (mk fun n => Nat.choose (d + n) d : S⟦X⟧) := by
+    (mk 1 : S⟦X⟧) ^ (d + 1) = (mk fun n ↦ Nat.choose (d + n) d : S⟦X⟧) := by
   induction d with
   | zero => ext; simp
   | succ d hd =>
@@ -98,12 +98,12 @@ theorem mk_one_pow_eq_mk_choose_add :
 Given a natural number `d : ℕ` and a commutative ring `S`, `PowerSeries.invOneSubPow S d` is the
 multiplicative inverse of `(1 - X) ^ d` in `S⟦X⟧ˣ`. When `d` is `0`, `PowerSeries.invOneSubPow S d`
 will just be `1`. When `d` is positive, `PowerSeries.invOneSubPow S d` will be the power series
-`mk fun n => Nat.choose (d - 1 + n) (d - 1)`.
+`mk fun n ↦ Nat.choose (d - 1 + n) (d - 1)`.
 -/
 noncomputable def invOneSubPow : ℕ → S⟦X⟧ˣ
   | 0 => 1
   | d + 1 => {
-    val := mk fun n => Nat.choose (d + n) d
+    val := mk fun n ↦ Nat.choose (d + n) d
     inv := (1 - X) ^ (d + 1)
     val_inv := by
       rw [← mk_one_pow_eq_mk_choose_add, ← mul_pow, mk_one_mul_one_sub_eq_one, one_pow]
@@ -116,11 +116,11 @@ theorem invOneSubPow_zero : invOneSubPow S 0 = 1 := by
   simp only
 
 theorem invOneSubPow_val_eq_mk_sub_one_add_choose_of_pos (h : 0 < d) :
-    (invOneSubPow S d).val = (mk fun n => Nat.choose (d - 1 + n) (d - 1) : S⟦X⟧) := by
+    (invOneSubPow S d).val = (mk fun n ↦ Nat.choose (d - 1 + n) (d - 1) : S⟦X⟧) := by
   rw [← Nat.sub_one_add_one_eq_of_pos h, invOneSubPow, add_tsub_cancel_right]
 
 theorem invOneSubPow_val_succ_eq_mk_add_choose :
-    (invOneSubPow S (d + 1)).val = (mk fun n => Nat.choose (d + n) d : S⟦X⟧) := rfl
+    (invOneSubPow S (d + 1)).val = (mk fun n ↦ Nat.choose (d + n) d : S⟦X⟧) := rfl
 
 theorem invOneSubPow_val_one_eq_invUnitSub_one :
     (invOneSubPow S 1).val = invUnitsSub (1 : Sˣ) := by
@@ -179,15 +179,15 @@ open Nat
 
 /-- Power series for the exponential function at zero. -/
 def exp : PowerSeries A :=
-  mk fun n => algebraMap ℚ A (1 / n !)
+  mk fun n ↦ algebraMap ℚ A (1 / n !)
 
 /-- Power series for the sine function at zero. -/
 def sin : PowerSeries A :=
-  mk fun n => if Even n then 0 else algebraMap ℚ A ((-1) ^ (n / 2) / n !)
+  mk fun n ↦ if Even n then 0 else algebraMap ℚ A ((-1) ^ (n / 2) / n !)
 
 /-- Power series for the cosine function at zero. -/
 def cos : PowerSeries A :=
-  mk fun n => if Even n then algebraMap ℚ A ((-1) ^ (n / 2) / n !) else 0
+  mk fun n ↦ if Even n then algebraMap ℚ A ((-1) ^ (n / 2) / n !) else 0
 
 variable {A A'} (n : ℕ)
 
@@ -267,9 +267,9 @@ theorem exp_pow_eq_rescale_exp [Algebra ℚ A] (k : ℕ) : exp A ^ k = rescale (
 /-- Shows that
 $\sum_{k = 0}^{n - 1} (e^{X})^k = \sum_{p = 0}^{\infty} \sum_{k = 0}^{n - 1} \frac{k^p}{p!}X^p$. -/
 theorem exp_pow_sum [Algebra ℚ A] (n : ℕ) :
-    ((Finset.range n).sum fun k => exp A ^ k) =
-      PowerSeries.mk fun p => (Finset.range n).sum
-        fun k => (k ^ p : A) * algebraMap ℚ A p.factorial⁻¹ := by
+    ((Finset.range n).sum fun k ↦ exp A ^ k) =
+      PowerSeries.mk fun p ↦ (Finset.range n).sum
+        fun k ↦ (k ^ p : A) * algebraMap ℚ A p.factorial⁻¹ := by
   simp only [exp_pow_eq_rescale_exp, rescale]
   ext
   simp only [one_div, coeff_mk, coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,

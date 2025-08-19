@@ -31,10 +31,10 @@ variable {T : Type u₁} [SmallCategory T]
 
 private lemma isFiltered_of_isFiltered_costructuredArrow_small (L : A ⥤ T) (R : B ⥤ T)
     [IsFiltered B] [Final R] [∀ b, IsFiltered (CostructuredArrow L (R.obj b))] : IsFiltered A := by
-  refine isFiltered_of_nonempty_limit_colimit_to_colimit_limit fun J {_ _} F => ⟨?_⟩
+  refine isFiltered_of_nonempty_limit_colimit_to_colimit_limit fun J {_ _} F ↦ ⟨?_⟩
   let R' := Grothendieck.pre (CostructuredArrow.functor L) R
   haveI : ∀ b, PreservesLimitsOfShape J
-      (colim (J := (R ⋙ CostructuredArrow.functor L).obj b) (C := Type u₁)) := fun b => by
+      (colim (J := (R ⋙ CostructuredArrow.functor L).obj b) (C := Type u₁)) := fun b ↦ by
     simp only [comp_obj, CostructuredArrow.functor_obj, Cat.of_α]
     exact filtered_colim_preservesFiniteLimits
   refine lim.map ((colimitIsoColimitGrothendieck L F.flip).hom ≫
@@ -59,11 +59,11 @@ theorem isFiltered_of_isFiltered_costructuredArrow (L : A ⥤ T) (R : B ⥤ T)
   let sB : B ≌ AsSmall.{max u₁ u₂ u₃ v₁ v₂ v₃} B := AsSmall.equiv
   let sT : T ≌ AsSmall.{max u₁ u₂ u₃ v₁ v₂ v₃} T := AsSmall.equiv
   let sC : ∀ b, CostructuredArrow (sA.inverse ⋙ L ⋙ sT.functor)
-      ((sB.inverse ⋙ R ⋙ sT.functor).obj ⟨b⟩) ≌ CostructuredArrow L (R.obj b) := fun b =>
+      ((sB.inverse ⋙ R ⋙ sT.functor).obj ⟨b⟩) ≌ CostructuredArrow L (R.obj b) := fun b ↦
     (CostructuredArrow.pre sA.inverse (L ⋙ sT.functor) _).asEquivalence.trans
       (CostructuredArrow.post L sT.functor _).asEquivalence.symm
   haveI : ∀ b, IsFiltered (CostructuredArrow _ ((sB.inverse ⋙ R ⋙ sT.functor).obj b)) :=
-    fun b => IsFiltered.of_equivalence (sC b.1).symm
+    fun b ↦ IsFiltered.of_equivalence (sC b.1).symm
   haveI := isFiltered_of_isFiltered_costructuredArrow_small
     (sA.inverse ⋙ L ⋙ sT.functor) (sB.inverse ⋙ R ⋙ sT.functor)
   exact IsFiltered.of_equivalence sA.symm

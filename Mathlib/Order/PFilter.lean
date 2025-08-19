@@ -50,7 +50,7 @@ def IsPFilter [Preorder P] (F : Set P) : Prop :=
 theorem IsPFilter.of_def [Preorder P] {F : Set P} (nonempty : F.Nonempty)
     (directed : DirectedOn (· ≥ ·) F) (mem_of_le : ∀ {x y : P}, x ≤ y → x ∈ F → y ∈ F) :
     IsPFilter F :=
-  ⟨fun _ _ _ _ => mem_of_le ‹_› ‹_›, nonempty, directed⟩
+  ⟨fun _ _ _ _ ↦ mem_of_le ‹_› ‹_›, nonempty, directed⟩
 
 /-- Create an element of type `Order.PFilter` from a set satisfying the predicate
 `Order.IsPFilter`. -/
@@ -68,7 +68,7 @@ instance [Inhabited P] : Inhabited (PFilter P) := ⟨⟨default⟩⟩
 /-- A filter on `P` is a subset of `P`. -/
 instance : SetLike (PFilter P) P where
   coe F := toDual ⁻¹' F.dual.carrier
-  coe_injective' := fun ⟨_⟩ ⟨_⟩ h => congr_arg mk <| Ideal.ext h
+  coe_injective' := fun ⟨_⟩ ⟨_⟩ h ↦ congr_arg mk <| Ideal.ext h
 
 theorem isPFilter : IsPFilter (F : Set P) := F.dual.isIdeal
 
@@ -76,7 +76,7 @@ protected theorem nonempty : (F : Set P).Nonempty := F.dual.nonempty
 
 theorem directed : DirectedOn (· ≥ ·) (F : Set P) := F.dual.directed
 
-theorem mem_of_le {F : PFilter P} : x ≤ y → x ∈ F → y ∈ F := fun h => F.dual.lower h
+theorem mem_of_le {F : PFilter P} : x ≤ y → x ∈ F → y ∈ F := fun h ↦ F.dual.lower h
 
 /-- Two filters are equal when their underlying sets are equal. -/
 @[ext]
@@ -103,7 +103,7 @@ theorem principal_le_iff {F : PFilter P} : principal x ≤ F ↔ x ∈ F :=
 theorem principal_le_principal_iff {p q : P} : principal q ≤ principal p ↔ p ≤ q := by simp
 
 -- defeq abuse
-theorem antitone_principal : Antitone (principal : P → PFilter P) := fun _ _ =>
+theorem antitone_principal : Antitone (principal : P → PFilter P) := fun _ _ ↦
   principal_le_principal_iff.2
 
 end Preorder
@@ -146,13 +146,13 @@ section CompleteSemilatticeInf
 variable [CompleteSemilatticeInf P]
 
 theorem sInf_gc :
-    GaloisConnection (fun x => toDual (principal x)) fun F => sInf (ofDual F : PFilter P) :=
-  fun x F => by simp only [le_sInf_iff, SetLike.mem_coe, toDual_le, SetLike.le_def, mem_principal]
+    GaloisConnection (fun x ↦ toDual (principal x)) fun F ↦ sInf (ofDual F : PFilter P) :=
+  fun x F ↦ by simp only [le_sInf_iff, SetLike.mem_coe, toDual_le, SetLike.le_def, mem_principal]
 
 /-- If a poset `P` admits arbitrary `Inf`s, then `principal` and `Inf` form a Galois coinsertion. -/
 def infGi :
-    GaloisCoinsertion (fun x => toDual (principal x)) fun F => sInf (ofDual F : PFilter P) :=
-  sInf_gc.toGaloisCoinsertion fun _ => sInf_le <| mem_principal.2 le_rfl
+    GaloisCoinsertion (fun x ↦ toDual (principal x)) fun F ↦ sInf (ofDual F : PFilter P) :=
+  sInf_gc.toGaloisCoinsertion fun _ ↦ sInf_le <| mem_principal.2 le_rfl
 
 end CompleteSemilatticeInf
 

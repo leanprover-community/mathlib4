@@ -21,16 +21,16 @@ namespace CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C]
 
 instance unop_mono_of_epi {A B : Cᵒᵖ} (f : A ⟶ B) [Epi f] : Mono f.unop :=
-  ⟨fun _ _ eq => Quiver.Hom.op_inj ((cancel_epi f).1 (Quiver.Hom.unop_inj eq))⟩
+  ⟨fun _ _ eq ↦ Quiver.Hom.op_inj ((cancel_epi f).1 (Quiver.Hom.unop_inj eq))⟩
 
 instance unop_epi_of_mono {A B : Cᵒᵖ} (f : A ⟶ B) [Mono f] : Epi f.unop :=
-  ⟨fun _ _ eq => Quiver.Hom.op_inj ((cancel_mono f).1 (Quiver.Hom.unop_inj eq))⟩
+  ⟨fun _ _ eq ↦ Quiver.Hom.op_inj ((cancel_mono f).1 (Quiver.Hom.unop_inj eq))⟩
 
 instance op_mono_of_epi {A B : C} (f : A ⟶ B) [Epi f] : Mono f.op :=
-  ⟨fun _ _ eq => Quiver.Hom.unop_inj ((cancel_epi f).1 (Quiver.Hom.op_inj eq))⟩
+  ⟨fun _ _ eq ↦ Quiver.Hom.unop_inj ((cancel_epi f).1 (Quiver.Hom.op_inj eq))⟩
 
 instance op_epi_of_mono {A B : C} (f : A ⟶ B) [Mono f] : Epi f.op :=
-  ⟨fun _ _ eq => Quiver.Hom.unop_inj ((cancel_mono f).1 (Quiver.Hom.op_inj eq))⟩
+  ⟨fun _ _ eq ↦ Quiver.Hom.unop_inj ((cancel_mono f).1 (Quiver.Hom.op_inj eq))⟩
 
 /-- A split monomorphism is a morphism `f : X ⟶ Y` with a given retraction `retraction f : Y ⟶ X`
 such that `f ≫ retraction f = 𝟙 X`.
@@ -143,14 +143,14 @@ instance (priority := 100) IsSplitEpi.of_iso {X Y : C} (f : X ⟶ Y) [IsIso f] :
   IsSplitEpi.mk' { section_ := inv f }
 
 theorem SplitMono.mono {X Y : C} {f : X ⟶ Y} (sm : SplitMono f) : Mono f :=
-  { right_cancellation := fun g h w => by replace w := w =≫ sm.retraction; simpa using w }
+  { right_cancellation := fun g h w ↦ by replace w := w =≫ sm.retraction; simpa using w }
 
 /-- Every split mono is a mono. -/
 instance (priority := 100) IsSplitMono.mono {X Y : C} (f : X ⟶ Y) [hf : IsSplitMono f] : Mono f :=
   hf.exists_splitMono.some.mono
 
 theorem SplitEpi.epi {X Y : C} {f : X ⟶ Y} (se : SplitEpi f) : Epi f :=
-  { left_cancellation := fun g h w => by replace w := se.section_ ≫= w; simpa using w }
+  { left_cancellation := fun g h w ↦ by replace w := se.section_ ≫= w; simpa using w }
 
 /-- Every split epi is an epi. -/
 instance (priority := 100) IsSplitEpi.epi {X Y : C} (f : X ⟶ Y) [hf : IsSplitEpi f] : Epi f :=

@@ -65,7 +65,7 @@ lemma of_isMonoidalLeftDistrib [IsMonoidalLeftDistrib C] : IsCartesianDistributi
 
 /-- The coproduct coprojections are monic in a cartesian distributive category. -/
 instance monoCoprod [IsCartesianDistributive C] : MonoCoprod C :=
-  MonoCoprod.mk' fun A B =>
+  MonoCoprod.mk' fun A B ↦
     ⟨_, coprodIsCoprod A B, ⟨fun {Z} f g he ↦ by
       let ι := coprod.inl (X := A) (Y := B)
       have : Mono (Z ◁ ι) := SplitMono.mono

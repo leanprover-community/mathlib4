@@ -26,7 +26,7 @@ namespace EisensteinSeries
 /-- Auxiliary lemma showing that for any `k : ℤ` the function `z → 1/(c*z+d)^k` is
 differentiable on `{z : ℂ | 0 < z.im}`. -/
 lemma div_linear_zpow_differentiableOn (k : ℤ) (a : Fin 2 → ℤ) :
-    DifferentiableOn ℂ (fun z : ℂ => (a 0 * z + a 1) ^ (-k)) {z : ℂ | 0 < z.im} := by
+    DifferentiableOn ℂ (fun z : ℂ ↦ (a 0 * z + a 1) ^ (-k)) {z : ℂ | 0 < z.im} := by
   rcases ne_or_eq a 0 with ha | rfl
   · apply DifferentiableOn.zpow
     · fun_prop

@@ -103,7 +103,7 @@ local postfix:90 "/ₙ" => z
 @[simp]
 theorem probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) = 1 := by
   have := bernsteinPolynomial.sum ℝ n
-  apply_fun fun p => Polynomial.aeval (x : ℝ) p at this
+  apply_fun fun p ↦ Polynomial.aeval (x : ℝ) p at this
   simp? [map_sum, Finset.sum_range] at this says
     simp only [Finset.sum_range, map_sum, Polynomial.coe_aeval_eq_eval, Polynomial.eval_one] at this
   exact this
@@ -171,7 +171,7 @@ This is the proof given in [Richard Beals' *Analysis, an introduction*][beals-an
 and reproduced on wikipedia.
 -/
 theorem bernsteinApproximation_uniform [LocallyConvexSpace ℝ E] (f : C(I, E)) :
-    Tendsto (fun n : ℕ => bernsteinApproximation n f) atTop (𝓝 f) := by
+    Tendsto (fun n : ℕ ↦ bernsteinApproximation n f) atTop (𝓝 f) := by
   letI : UniformSpace E := IsTopologicalAddGroup.toUniformSpace E
   have : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   /- Topology on a locally convex TVS is given by a family of seminorms `‖x‖_U = gauge U x`,

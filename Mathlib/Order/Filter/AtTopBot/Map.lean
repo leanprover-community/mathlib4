@@ -48,12 +48,12 @@ theorem tendsto_atBot (e : α ≃o β) : Tendsto e atBot atBot :=
 
 @[simp]
 theorem tendsto_atTop_iff {l : Filter γ} {f : γ → α} (e : α ≃o β) :
-    Tendsto (fun x => e (f x)) l atTop ↔ Tendsto f l atTop := by
+    Tendsto (fun x ↦ e (f x)) l atTop ↔ Tendsto f l atTop := by
   rw [← e.comap_atTop, tendsto_comap_iff, Function.comp_def]
 
 @[simp]
 theorem tendsto_atBot_iff {l : Filter γ} {f : γ → α} (e : α ≃o β) :
-    Tendsto (fun x => e (f x)) l atBot ↔ Tendsto f l atBot :=
+    Tendsto (fun x ↦ e (f x)) l atBot ↔ Tendsto f l atBot :=
   e.dual.tendsto_atTop_iff
 
 end OrderIso

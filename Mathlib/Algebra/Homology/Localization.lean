@@ -33,7 +33,7 @@ variable (C : Type*) [Category C] {ι : Type*} (c : ComplexShape ι) [HasZeroMor
   [CategoryWithHomology C]
 
 lemma HomologicalComplex.homologyFunctor_inverts_quasiIso (i : ι) :
-    (quasiIso C c).IsInvertedBy (homologyFunctor C c i) := fun _ _ _ hf => by
+    (quasiIso C c).IsInvertedBy (homologyFunctor C c i) := fun _ _ _ hf ↦ by
   rw [mem_quasiIso_iff] at hf
   dsimp
   infer_instance
@@ -97,7 +97,7 @@ namespace HomotopyCategory
 
 /-- The class of quasi-isomorphisms in the homotopy category. -/
 def quasiIso : MorphismProperty (HomotopyCategory C c) :=
-  fun _ _ f => ∀ (i : ι), IsIso ((homologyFunctor C c i).map f)
+  fun _ _ f ↦ ∀ (i : ι), IsIso ((homologyFunctor C c i).map f)
 
 variable {C c}
 
@@ -107,7 +107,7 @@ lemma mem_quasiIso_iff {X Y : HomotopyCategory C c} (f : X ⟶ Y) :
 
 lemma quotient_map_mem_quasiIso_iff {K L : HomologicalComplex C c} (f : K ⟶ L) :
     quasiIso C c ((quotient C c).map f) ↔ HomologicalComplex.quasiIso C c f := by
-  have eq := fun (i : ι) => NatIso.isIso_map_iff (homologyFunctorFactors C c i) f
+  have eq := fun (i : ι) ↦ NatIso.isIso_map_iff (homologyFunctorFactors C c i) f
   dsimp at eq
   simp only [HomologicalComplex.mem_quasiIso_iff, mem_quasiIso_iff, quasiIso_iff,
     quasiIsoAt_iff_isIso_homologyMap, eq]
@@ -121,7 +121,7 @@ instance respectsIso_quasiIso : (quasiIso C c).RespectsIso := by
     ((homologyFunctor C c i).mapArrow.mapIso e)).1 (hf i)
 
 lemma homologyFunctor_inverts_quasiIso (i : ι) :
-    (quasiIso C c).IsInvertedBy (homologyFunctor C c i) := fun _ _ _ hf => hf i
+    (quasiIso C c).IsInvertedBy (homologyFunctor C c i) := fun _ _ _ hf ↦ hf i
 
 lemma quasiIso_eq_quasiIso_map_quotient :
     quasiIso C c = (HomologicalComplex.quasiIso C c).map (quotient C c) := by
@@ -250,12 +250,12 @@ variable (C : Type*) [Category C] {ι : Type*} [Preadditive C]
 
 instance : (HomotopyCategory.quotient C (ComplexShape.down ι)).IsLocalization
     (HomologicalComplex.homotopyEquivalences _ _) :=
-  (ComplexShape.down ι).quotient_isLocalization (fun _ => ⟨_, rfl⟩) C
+  (ComplexShape.down ι).quotient_isLocalization (fun _ ↦ ⟨_, rfl⟩) C
 
 variable [CategoryWithHomology C]
 
 instance : (ComplexShape.down ι).QFactorsThroughHomotopy C :=
-  (ComplexShape.down ι).QFactorsThroughHomotopy_of_exists_prev (fun _ => ⟨_, rfl⟩) C
+  (ComplexShape.down ι).QFactorsThroughHomotopy_of_exists_prev (fun _ ↦ ⟨_, rfl⟩) C
 
 example [(HomologicalComplex.quasiIso C (ComplexShape.down ι)).HasLocalization] :
     HomologicalComplexUpToQuasiIso.Qh.IsLocalization
@@ -275,12 +275,12 @@ variable (C : Type*) [Category C] {ι : Type*} [Preadditive C] [HasBinaryBiprodu
 
 instance : (HomotopyCategory.quotient C (ComplexShape.up ℤ)).IsLocalization
     (HomologicalComplex.homotopyEquivalences _ _) :=
-  (ComplexShape.up ℤ).quotient_isLocalization (fun n => ⟨n - 1, by simp⟩) C
+  (ComplexShape.up ℤ).quotient_isLocalization (fun n ↦ ⟨n - 1, by simp⟩) C
 
 variable [CategoryWithHomology C]
 
 instance : (ComplexShape.up ℤ).QFactorsThroughHomotopy C :=
-  (ComplexShape.up ℤ).QFactorsThroughHomotopy_of_exists_prev (fun n => ⟨n - 1, by simp⟩) C
+  (ComplexShape.up ℤ).QFactorsThroughHomotopy_of_exists_prev (fun n ↦ ⟨n - 1, by simp⟩) C
 
 /-- When we define the derived category as `HomologicalComplexUpToQuasiIso C (ComplexShape.up ℤ)`,
 i.e. as the localization of cochain complexes with respect to quasi-isomorphisms, this

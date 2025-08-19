@@ -30,9 +30,9 @@ variable (σ : Type u) (K : Type v)
 
 theorem quotient_mk_comp_C_injective [Field K] (I : Ideal (MvPolynomial σ K)) (hI : I ≠ ⊤) :
     Function.Injective ((Ideal.Quotient.mk I).comp MvPolynomial.C) := by
-  refine (injective_iff_map_eq_zero _).2 fun x hx => ?_
+  refine (injective_iff_map_eq_zero _).2 fun x hx ↦ ?_
   rw [RingHom.comp_apply, Ideal.Quotient.eq_zero_iff_mem] at hx
-  refine _root_.by_contradiction fun hx0 => absurd (I.eq_top_iff_one.2 ?_) hI
+  refine _root_.by_contradiction fun hx0 ↦ absurd (I.eq_top_iff_one.2 ?_) hI
   have := I.mul_mem_left (MvPolynomial.C x⁻¹) hx
   rwa [← MvPolynomial.C.map_mul, inv_mul_cancel₀ hx0, MvPolynomial.C_1] at this
 

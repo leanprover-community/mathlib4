@@ -43,7 +43,7 @@ lemma mulSingle_one (i : ι) : mulSingle i (1 : M i) = 1 := Function.update_eq_s
 
 @[to_additive (attr := simp)]
 lemma mulSingle_eq_one_iff : mulSingle i x = 1 ↔ x = 1 := by
-  refine ⟨fun h => ?_, fun h => h.symm ▸ mulSingle_one i⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ h.symm ▸ mulSingle_one i⟩
   rw [← mulSingle_eq_same i x, h, one_apply]
 
 @[to_additive]
@@ -66,7 +66,7 @@ lemma apply_mulSingle₂ (f' : ∀ i, M i → N i → O i) (hf' : ∀ i, f' i 1 
 
 @[to_additive]
 lemma mulSingle_op (op : ∀ i, M i → N i) (h : ∀ i, op i 1 = 1) (i : ι) (x : M i) :
-    mulSingle i (op i x) = fun j => op j (mulSingle i x j) :=
+    mulSingle i (op i x) = fun j ↦ op j (mulSingle i x j) :=
   .symm <| funext <| apply_mulSingle op h i x
 
 @[to_additive]

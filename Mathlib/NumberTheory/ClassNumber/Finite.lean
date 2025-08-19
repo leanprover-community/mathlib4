@@ -45,7 +45,7 @@ noncomputable def normBound : ℤ :=
   let i : ι := Nonempty.some bS.index_nonempty
   let m : ℤ :=
     Finset.max'
-      (Finset.univ.image fun ijk : ι × ι × ι =>
+      (Finset.univ.image fun ijk : ι × ι × ι ↦
         abv (Algebra.leftMulMatrix bS (bS ijk.1) ijk.2.1 ijk.2.2))
       ⟨_, Finset.mem_image.mpr ⟨⟨i, i, i⟩, Finset.mem_univ _, rfl⟩⟩
   Nat.factorial n • (n • m) ^ n
@@ -85,7 +85,7 @@ theorem norm_lt {T : Type*} [Ring T] [LinearOrder T] [IsStrictOrderedRing T] (a 
     (hy : ∀ k, (abv (bS.repr a k) : T) < y) :
     (abv (Algebra.norm R a) : T) < normBound abv bS * y ^ Fintype.card ι := by
   obtain ⟨i⟩ := bS.index_nonempty
-  have him : (Finset.univ.image fun k => abv (bS.repr a k)).Nonempty :=
+  have him : (Finset.univ.image fun k ↦ abv (bS.repr a k)).Nonempty :=
     ⟨_, Finset.mem_image.mpr ⟨i, Finset.mem_univ _, rfl⟩⟩
   set y' : ℤ := Finset.max' _ him with y'_def
   have hy' : ∀ k, abv (bS.repr a k) ≤ y' := by
@@ -93,7 +93,7 @@ theorem norm_lt {T : Type*} [Ring T] [LinearOrder T] [IsStrictOrderedRing T] (a 
     exact @Finset.le_max' ℤ _ _ _ (Finset.mem_image.mpr ⟨k, Finset.mem_univ _, rfl⟩)
   have : (y' : T) < y := by
     rw [y'_def, ←
-      Finset.max'_image (show Monotone (_ : ℤ → T) from fun x y h => Int.cast_le.mpr h)]
+      Finset.max'_image (show Monotone (_ : ℤ → T) from fun x y h ↦ Int.cast_le.mpr h)]
     apply (Finset.max'_lt_iff _ (him.image _)).mpr
     simp only [Finset.mem_image]
     rintro _ ⟨x, ⟨k, -, rfl⟩, rfl⟩
@@ -113,7 +113,7 @@ theorem exists_min (I : (Ideal S)⁰) :
       b ≠ 0 ∧ ∀ c ∈ (I : Ideal S), abv (Algebra.norm R c) < abv (Algebra.norm R b) → c =
       (0 : S) := by
   obtain ⟨_, ⟨b, b_mem, b_ne_zero, rfl⟩, min⟩ := @Int.exists_least_of_bdd
-      (fun a => ∃ b ∈ (I : Ideal S), b ≠ (0 : S) ∧ abv (Algebra.norm R b) = a)
+      (fun a ↦ ∃ b ∈ (I : Ideal S), b ≠ (0 : S) ∧ abv (Algebra.norm R b) = a)
     (by
       use 0
       rintro _ ⟨b, _, _, rfl⟩
@@ -152,7 +152,7 @@ variable [DecidableEq R]
 /-- `finsetApprox` is a finite set such that each fractional ideal in the integral closure
 contains an element close to `finsetApprox`. -/
 noncomputable def finsetApprox : Finset R :=
-  (Finset.univ.image fun xy : _ × _ => distinctElems bS adm xy.1 - distinctElems bS adm xy.2).erase
+  (Finset.univ.image fun xy : _ × _ ↦ distinctElems bS adm xy.1 - distinctElems bS adm xy.2).erase
     0
 
 theorem finsetApprox.zero_notMem : (0 : R) ∉ finsetApprox bS adm :=
@@ -173,7 +173,7 @@ theorem mem_finsetApprox {x : R} :
   · rintro ⟨i, j, hij, rfl⟩
     refine ⟨?_, ⟨i, j⟩, Finset.mem_univ _, rfl⟩
     rw [Ne, sub_eq_zero]
-    exact fun h => hij ((distinctElems bS adm).injective h)
+    exact fun h ↦ hij ((distinctElems bS adm).injective h)
 
 section Real
 
@@ -200,10 +200,10 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     · linarith
   set μ : Fin (cardM bS adm).succ ↪ R := distinctElems bS adm
   let s : ι →₀ R := bS.repr a
-  have s_eq : ∀ i, s i = bS.repr a i := fun i => rfl
-  let qs : Fin (cardM bS adm).succ → ι → R := fun j i => μ j * s i / b
-  let rs : Fin (cardM bS adm).succ → ι → R := fun j i => μ j * s i % b
-  have r_eq : ∀ j i, rs j i = μ j * s i % b := fun i j => rfl
+  have s_eq : ∀ i, s i = bS.repr a i := fun i ↦ rfl
+  let qs : Fin (cardM bS adm).succ → ι → R := fun j i ↦ μ j * s i / b
+  let rs : Fin (cardM bS adm).succ → ι → R := fun j i ↦ μ j * s i % b
+  have r_eq : ∀ j i, rs j i = μ j * s i % b := fun i j ↦ rfl
   have μ_eq : ∀ i j, μ j * s i = b * qs j i + rs j i := by
     intro i j
     rw [r_eq, EuclideanDomain.div_add_mod]
@@ -211,9 +211,9 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     intro j
     rw [← bS.sum_repr a]
     simp only [μ, qs, rs, Finset.smul_sum, ← Finset.sum_add_distrib]
-    refine Finset.sum_congr rfl fun i _ => ?_
+    refine Finset.sum_congr rfl fun i _ ↦ ?_
     rw [← s_eq, ← mul_smul, μ_eq, add_smul, mul_smul, ← μ_eq]
-  obtain ⟨j, k, j_ne_k, hjk⟩ := adm.exists_approx hε hb fun j i => μ j * s i
+  obtain ⟨j, k, j_ne_k, hjk⟩ := adm.exists_approx hε hb fun j i ↦ μ j * s i
   have hjk' : ∀ i, (abv (rs k i - rs j i) : ℝ) < abv b • ε := by simpa only [r_eq] using hjk
   let q := ∑ i, (qs k i - qs j i) • bS i
   set r := μ k - μ j with r_eq
@@ -222,10 +222,10 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
   have : r • a - b • q = ∑ x : ι, (rs k x • bS x - rs j x • bS x) := by
     simp only [q, r_eq, sub_smul, μ_mul_a_eq, Finset.smul_sum, ← Finset.sum_add_distrib,
       ← Finset.sum_sub_distrib, smul_sub]
-    refine Finset.sum_congr rfl fun x _ => ?_
+    refine Finset.sum_congr rfl fun x _ ↦ ?_
     ring
   rw [this, Algebra.norm_algebraMap_of_basis bS, abv.map_pow]
-  refine Int.cast_lt.mp ((norm_lt abv bS _ fun i => lt_of_le_of_lt ?_ (hjk' i)).trans_le ?_)
+  refine Int.cast_lt.mp ((norm_lt abv bS _ fun i ↦ lt_of_le_of_lt ?_ (hjk' i)).trans_le ?_)
   · apply le_of_eq
     congr
     simp_rw [map_sum, map_sub, map_smul, Finset.sum_apply',
@@ -329,7 +329,7 @@ noncomputable def fintypeOfAdmissibleOfAlgebraic [IsDedekindDomain S]
         (by
           rw [Ne, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
           exact prod_finsetApprox_ne_zero bS adm))
-      ((Equiv.refl _).subtypeEquiv fun I =>
+      ((Equiv.refl _).subtypeEquiv fun I ↦
         Ideal.dvd_iff_le.trans (by
           rw [Equiv.refl_apply, Ideal.span_le, Set.singleton_subset_iff]; rfl)))
     (ClassGroup.mkMMem bS adm) (ClassGroup.mkMMem_surjective bS adm)

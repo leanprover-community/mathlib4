@@ -53,7 +53,7 @@ variable {α : Type*}
 
 /-- UV-compression is injective on the elements it moves. See `UV.compress`. -/
 theorem sup_sdiff_injOn [GeneralizedBooleanAlgebra α] (u v : α) :
-    { x | Disjoint u x ∧ v ≤ x }.InjOn fun x => (x ⊔ u) \ v := by
+    { x | Disjoint u x ∧ v ≤ x }.InjOn fun x ↦ (x ⊔ u) \ v := by
   rintro a ha b hb hab
   have h : ((a ⊔ u) \ v) \ u ⊔ v = ((b ⊔ u) \ v) \ u ⊔ v := by
     dsimp at hab
@@ -337,7 +337,7 @@ theorem shadow_compression_subset_compression_shadow (u v : Finset α)
       · rw [← erase_sdiff_comm, sup_eq_union, erase_union_distrib, erase_eq_of_notMem hau]
   intro s hs𝒜' hs𝒜
   -- This is going to be useful a couple of times so let's name it.
-  have m : ∀ y, y ∉ s → insert y s ∉ 𝒜 := fun y h a => hs𝒜 (mem_shadow_iff_insert_mem.2 ⟨y, h, a⟩)
+  have m : ∀ y, y ∉ s → insert y s ∉ 𝒜 := fun y h a ↦ hs𝒜 (mem_shadow_iff_insert_mem.2 ⟨y, h, a⟩)
   obtain ⟨x, _, _⟩ := mem_shadow_iff_insert_mem.1 hs𝒜'
   have hus : u ⊆ insert x s := le_of_mem_compression_of_notMem ‹_ ∈ 𝒜'› (m _ ‹x ∉ s›)
   have hvs : Disjoint v (insert x s) := disjoint_of_mem_compression_of_notMem ‹_› (m _ ‹x ∉ s›)

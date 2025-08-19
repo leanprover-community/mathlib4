@@ -43,8 +43,8 @@ variable {m n : ℕ}
 /-! ### Instances -/
 
 instance instLinearOrder : LinearOrder (Fin n) :=
-  @LinearOrder.liftWithOrd (Fin n) _ _ ⟨fun x y => ⟨max x y, max_rec' (· < n) x.2 y.2⟩⟩
-    ⟨fun x y => ⟨min x y, min_rec' (· < n) x.2 y.2⟩⟩ _ Fin.val Fin.val_injective (fun _ _ ↦ rfl)
+  @LinearOrder.liftWithOrd (Fin n) _ _ ⟨fun x y ↦ ⟨max x y, max_rec' (· < n) x.2 y.2⟩⟩
+    ⟨fun x y ↦ ⟨min x y, min_rec' (· < n) x.2 y.2⟩⟩ _ Fin.val Fin.val_injective (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance instBoundedOrder [NeZero n] : BoundedOrder (Fin n) where
@@ -118,16 +118,16 @@ section ToFin
 variable {α : Type*} [Preorder α] {f : α → Fin (n + 1)}
 
 lemma strictMono_pred_comp (hf : ∀ a, f a ≠ 0) (hf₂ : StrictMono f) :
-    StrictMono (fun a => pred (f a) (hf a)) := fun _ _ h => pred_lt_pred_iff.2 (hf₂ h)
+    StrictMono (fun a ↦ pred (f a) (hf a)) := fun _ _ h ↦ pred_lt_pred_iff.2 (hf₂ h)
 
 lemma monotone_pred_comp (hf : ∀ a, f a ≠ 0) (hf₂ : Monotone f) :
-    Monotone (fun a => pred (f a) (hf a)) := fun _ _ h => pred_le_pred_iff.2 (hf₂ h)
+    Monotone (fun a ↦ pred (f a) (hf a)) := fun _ _ h ↦ pred_le_pred_iff.2 (hf₂ h)
 
 lemma strictMono_castPred_comp (hf : ∀ a, f a ≠ last n) (hf₂ : StrictMono f) :
-    StrictMono (fun a => castPred (f a) (hf a)) := fun _ _ h => castPred_lt_castPred_iff.2 (hf₂ h)
+    StrictMono (fun a ↦ castPred (f a) (hf a)) := fun _ _ h ↦ castPred_lt_castPred_iff.2 (hf₂ h)
 
 lemma monotone_castPred_comp (hf : ∀ a, f a ≠ last n) (hf₂ : Monotone f) :
-    Monotone (fun a => castPred (f a) (hf a)) := fun _ _ h => castPred_le_castPred_iff.2 (hf₂ h)
+    Monotone (fun a ↦ castPred (f a) (hf a)) := fun _ _ h ↦ castPred_le_castPred_iff.2 (hf₂ h)
 
 end ToFin
 
@@ -180,7 +180,7 @@ lemma strictMono_addNat (m) : StrictMono ((addNat · m) : Fin n → Fin (n + m))
 
 lemma strictMono_succAbove (p : Fin (n + 1)) : StrictMono (succAbove p) :=
   strictMono_castSucc.ite strictMono_succ
-    (fun _ _ hij hj => (castSucc_lt_castSucc_iff.mpr hij).trans hj) fun i =>
+    (fun _ _ hij hj ↦ (castSucc_lt_castSucc_iff.mpr hij).trans hj) fun i ↦
     (castSucc_lt_succ i).le
 
 variable {p : Fin (n + 1)} {i j : Fin n}
@@ -255,7 +255,7 @@ theorem castLE_lt_castLE_iff {i j : Fin n} (h : n ≤ m) : i.castLE h < j.castLE
 @[gcongr]
 alias ⟨_, _root_.GCongr.Fin.castLE_lt_castLE⟩ := castLE_lt_castLE_iff
 
-lemma predAbove_right_monotone (p : Fin n) : Monotone p.predAbove := fun a b H => by
+lemma predAbove_right_monotone (p : Fin n) : Monotone p.predAbove := fun a b H ↦ by
   dsimp [predAbove]
   split_ifs with ha hb hb
   all_goals simp only [le_iff_val_le_val, coe_pred]
@@ -408,7 +408,7 @@ map. In this lemma we state that for each `i : Fin n` we have `(e i : ℕ) = (i 
   rcases i with ⟨i, hi⟩
   dsimp only
   induction i using Nat.strong_induction_on with | _ i h
-  refine le_antisymm (forall_lt_iff_le.1 fun j hj => ?_) (forall_lt_iff_le.1 fun j hj => ?_)
+  refine le_antisymm (forall_lt_iff_le.1 fun j hj ↦ ?_) (forall_lt_iff_le.1 fun j hj ↦ ?_)
   · have := e.symm.lt_symm_apply.1 (mk_lt_of_lt_val hj)
     specialize h _ this (e.symm _).is_lt
     simp only [Fin.eta, OrderIso.apply_symm_apply] at h

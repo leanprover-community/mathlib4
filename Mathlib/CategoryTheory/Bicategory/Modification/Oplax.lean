@@ -124,10 +124,10 @@ def ModificationIso.ofComponents (app : ∀ a, η.app a ≅ θ.app a)
       ∀ {a b} (f : a ⟶ b),
         F.map f ◁ (app b).hom ≫ θ.naturality f = η.naturality f ≫ (app a).hom ▷ G.map f) :
     η ≅ θ where
-  hom := { app := fun a => (app a).hom }
+  hom := { app := fun a ↦ (app a).hom }
   inv :=
-    { app := fun a => (app a).inv
-      naturality := fun {a b} f => by
-        simpa using congr_arg (fun f => _ ◁ (app b).inv ≫ f ≫ (app a).inv ▷ _) (naturality f).symm }
+    { app := fun a ↦ (app a).inv
+      naturality := fun {a b} f ↦ by
+        simpa using congr_arg (fun f ↦ _ ◁ (app b).inv ≫ f ≫ (app a).inv ▷ _) (naturality f).symm }
 
 end CategoryTheory.Oplax.OplaxTrans

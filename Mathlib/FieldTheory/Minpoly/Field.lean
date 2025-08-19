@@ -156,7 +156,7 @@ theorem eq_of_irreducible [Nontrivial B] {p : A[X]} (hp1 : Irreducible p)
 theorem add_algebraMap {B : Type*} [CommRing B] [Algebra A B] (x : B)
     (a : A) : minpoly A (x + algebraMap A B a) = (minpoly A x).comp (X - C a) := by
   by_cases hx : IsIntegral A x
-  · refine (minpoly.unique _ _ ((minpoly.monic hx).comp_X_sub_C _) ?_ fun q qmo hq => ?_).symm
+  · refine (minpoly.unique _ _ ((minpoly.monic hx).comp_X_sub_C _) ?_ fun q qmo hq ↦ ?_).symm
     · simp [aeval_comp]
     · have : (Polynomial.aeval x) (q.comp (X + C a)) = 0 := by simpa [aeval_comp] using hq
       have H := minpoly.min A x (qmo.comp_X_add_C _) this
@@ -178,7 +178,7 @@ theorem neg {B : Type*} [Ring B] [Algebra A B] (x : B) :
     minpoly A (- x) = (-1) ^ (natDegree (minpoly A x)) * (minpoly A x).comp (- X) := by
   by_cases hx : IsIntegral A x
   · refine (minpoly.unique _ _ ((minpoly.monic hx).neg_one_pow_natDegree_mul_comp_neg_X)
-        ?_ fun q qmo hq => ?_).symm
+        ?_ fun q qmo hq ↦ ?_).symm
     · simp [aeval_comp]
     · have : (Polynomial.aeval x) ((-1) ^ q.natDegree * q.comp (- X)) = 0 := by
         simpa [aeval_comp] using hq
@@ -230,14 +230,14 @@ theorem aux_inj_roots_of_min_poly : Injective (rootsOfMinPolyPiType F E K) := by
   -- needs explicit coercion on the RHS
   suffices (f : E →ₗ[F] K) = (g : E →ₗ[F] K) by rwa [DFunLike.ext'_iff] at this ⊢
   rw [funext_iff] at h
-  exact LinearMap.ext_on (Module.finBasis F E).span_eq fun e he =>
+  exact LinearMap.ext_on (Module.finBasis F E).span_eq fun e he ↦
     Subtype.ext_iff.mp (h ⟨e, he⟩)
 
 /-- Given field extensions `E/F` and `K/F`, with `E/F` finite, there are finitely many `F`-algebra
   homomorphisms `E →ₐ[K] K`. -/
 noncomputable instance AlgHom.fintype : Fintype (E →ₐ[F] K) :=
   @Fintype.ofInjective _ _
-    (Fintype.subtypeProd (finite_range (Module.finBasis F E)) fun e =>
+    (Fintype.subtypeProd (finite_range (Module.finBasis F E)) fun e ↦
       (minpoly F e).aroots K)
     _ (aux_inj_roots_of_min_poly F E K)
 

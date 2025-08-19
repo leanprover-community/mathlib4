@@ -28,7 +28,7 @@ theorem eq_induced_by_maps_to_sierpinski (X : Type*) [t : TopologicalSpace X] :
     t = ⨅ u : Opens X, sierpinskiSpace.induced (· ∈ u) := by
   apply le_antisymm
   · rw [le_iInf_iff]
-    exact fun u => Continuous.le_induced (isOpen_iff_continuous_mem.mp u.2)
+    exact fun u ↦ Continuous.le_induced (isOpen_iff_continuous_mem.mp u.2)
   · intro u h
     rw [← generateFrom_iUnion_isOpen]
     apply isOpen_generateFrom_of_mem
@@ -42,10 +42,10 @@ open subset `u` of `X`). The `u` coordinate of `productOfMemOpens x` is given by
 -/
 def productOfMemOpens : C(X, Opens X → Prop) where
   toFun x u := x ∈ u
-  continuous_toFun := continuous_pi_iff.2 fun u => continuous_Prop.2 u.isOpen
+  continuous_toFun := continuous_pi_iff.2 fun u ↦ continuous_Prop.2 u.isOpen
 
 theorem productOfMemOpens_isInducing : IsInducing (productOfMemOpens X) := by
-  convert inducing_iInf_to_pi fun (u : Opens X) (x : X) => x ∈ u
+  convert inducing_iInf_to_pi fun (u : Opens X) (x : X) ↦ x ∈ u
   apply eq_induced_by_maps_to_sierpinski
 
 theorem productOfMemOpens_injective [T0Space X] : Function.Injective (productOfMemOpens X) := by

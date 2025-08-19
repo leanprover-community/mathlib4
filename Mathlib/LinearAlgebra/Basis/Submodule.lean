@@ -27,7 +27,7 @@ variable (b : Basis ι R M)
 
 /-- If the submodule `P` has a basis, `x ∈ P` iff it is a linear combination of basis vectors. -/
 theorem mem_submodule_iff {P : Submodule R M} (b : Basis ι R P) {x : M} :
-    x ∈ P ↔ ∃ c : ι →₀ R, x = Finsupp.sum c fun i x => x • (b i : M) := by
+    x ∈ P ↔ ∃ c : ι →₀ R, x = Finsupp.sum c fun i x ↦ x • (b i : M) := by
   conv_lhs =>
     rw [← P.range_subtype, ← Submodule.map_top, ← b.span_eq, Submodule.map_span, ← Set.range_comp,
         ← Finsupp.range_linearCombination]
@@ -39,7 +39,7 @@ theorem mem_submodule_iff' [Fintype ι] {P : Submodule R M} (b : Basis ι R P) {
     x ∈ P ↔ ∃ c : ι → R, x = ∑ i, c i • (b i : M) :=
   b.mem_submodule_iff.trans <|
     Finsupp.equivFunOnFinite.exists_congr_left.trans <|
-      exists_congr fun c => by simp [Finsupp.sum_fintype, Finsupp.equivFunOnFinite]
+      exists_congr fun c ↦ by simp [Finsupp.sum_fintype, Finsupp.equivFunOnFinite]
 
 end Basis
 
@@ -57,7 +57,7 @@ theorem Basis.eq_bot_of_rank_eq_zero [NoZeroDivisors R] (b : Basis ι R M) (N : 
   rw [Submodule.eq_bot_iff]
   intro x hx
   contrapose! rank_eq with x_ne
-  refine ⟨1, fun _ => ⟨x, hx⟩, ?_, one_ne_zero⟩
+  refine ⟨1, fun _ ↦ ⟨x, hx⟩, ?_, one_ne_zero⟩
   rw [Fintype.linearIndependent_iff]
   rintro g sum_eq i
   obtain ⟨_, hi⟩ := i
@@ -90,13 +90,13 @@ def Submodule.inductionOnRankAux (b : Basis ι R M) (P : Submodule R M → Sort*
   induction n generalizing N with
   | zero =>
     suffices N = ⊥ by rwa [this]
-    apply Basis.eq_bot_of_rank_eq_zero b _ fun m hv => Nat.le_zero.mp (rank_le _ hv)
+    apply Basis.eq_bot_of_rank_eq_zero b _ fun m hv ↦ Nat.le_zero.mp (rank_le _ hv)
   | succ n rank_ih =>
     apply ih
     intro N' N'_le x x_mem x_ortho
     apply rank_ih
     intro m v hli
-    refine Nat.succ_le_succ_iff.mp (rank_le (Fin.cons ⟨x, x_mem⟩ fun i => ⟨v i, N'_le (v i).2⟩) ?_)
+    refine Nat.succ_le_succ_iff.mp (rank_le (Fin.cons ⟨x, x_mem⟩ fun i ↦ ⟨v i, N'_le (v i).2⟩) ?_)
     convert hli.fin_cons' x _ ?_
     · ext i
       refine Fin.cases ?_ ?_ i <;> simp
@@ -176,7 +176,7 @@ theorem restrictScalars_repr_apply (m : span R (Set.range b)) (i : ι) :
     Finsupp.mapRange.linearMap (Algebra.linearMap R S) ∘ₗ (b.restrictScalars R).repr.toLinearMap =
       ((b.repr : M →ₗ[S] ι →₀ S).restrictScalars R).domRestrict _
     by exact DFunLike.congr_fun (LinearMap.congr_fun this m) i
-  refine Basis.ext (b.restrictScalars R) fun _ => ?_
+  refine Basis.ext (b.restrictScalars R) fun _ ↦ ?_
   simp only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply, map_one,
     Basis.repr_self, Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single,
     Algebra.linearMap_apply, LinearMap.domRestrict_apply,
@@ -187,10 +187,10 @@ coordinates of `m` on the basis `b` are in `R` (see `Basis.mem_span` for the cas
 theorem mem_span_iff_repr_mem (m : M) :
     m ∈ span R (Set.range b) ↔ ∀ i, b.repr m i ∈ Set.range (algebraMap R S) := by
   refine
-    ⟨fun hm i => ⟨(b.restrictScalars R).repr ⟨m, hm⟩ i, b.restrictScalars_repr_apply R ⟨m, hm⟩ i⟩,
-      fun h => ?_⟩
+    ⟨fun hm i ↦ ⟨(b.restrictScalars R).repr ⟨m, hm⟩ i, b.restrictScalars_repr_apply R ⟨m, hm⟩ i⟩,
+      fun h ↦ ?_⟩
   rw [← b.linearCombination_repr m, Finsupp.linearCombination_apply S _]
-  refine sum_mem fun i _ => ?_
+  refine sum_mem fun i _ ↦ ?_
   obtain ⟨_, h⟩ := h i
   simp_rw [← h, algebraMap_smul]
   exact smul_mem _ _ (subset_span (Set.mem_range_self i))

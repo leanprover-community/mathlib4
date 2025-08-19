@@ -48,14 +48,14 @@ lemma comp_eq_zero [Zero P] (h : Exact f g) : g.comp f = 0 :=
 
 lemma of_comp_of_mem_range [Zero P] (h1 : g ∘ f = 0)
     (h2 : ∀ x, g x = 0 → x ∈ Set.range f) : Exact f g :=
-  fun y => Iff.intro (h2 y) <|
+  fun y ↦ Iff.intro (h2 y) <|
     Exists.rec ((forall_apply_eq_imp_iff (p := (g · = 0))).mpr (congrFun h1) y)
 
 lemma comp_injective [Zero P] [Zero P'] (exact : Exact f g)
     (inj : Function.Injective g') (h0 : g' 0 = 0) :
     Exact f (g' ∘ g) := by
   intro x
-  refine ⟨fun H => exact x |>.mp <| inj <| h0 ▸ H, ?_⟩
+  refine ⟨fun H ↦ exact x |>.mp <| inj <| h0 ▸ H, ?_⟩
   intro H
   rw [Function.comp_apply, exact x |>.mpr H, h0]
 
@@ -273,12 +273,12 @@ lemma Exact.linearMap_comp_eq_zero (h : Exact f g) : g.comp f = 0 :=
 
 lemma Surjective.comp_exact_iff_exact {p : M' →ₗ[R] M} (h : Surjective p) :
     Exact (f ∘ₗ p) g ↔ Exact f g :=
-  iff_of_eq <| forall_congr fun x =>
+  iff_of_eq <| forall_congr fun x ↦
     congrArg (g x = 0 ↔ x ∈ ·) (h.range_comp f)
 
 lemma Injective.comp_exact_iff_exact {i : P →ₗ[R] P'} (h : Injective i) :
     Exact f (i ∘ₗ g) ↔ Exact f g :=
-  forall_congr' fun _ => iff_congr (LinearMap.map_eq_zero_iff _ h) Iff.rfl
+  forall_congr' fun _ ↦ iff_congr (LinearMap.map_eq_zero_iff _ h) Iff.rfl
 
 namespace Exact
 

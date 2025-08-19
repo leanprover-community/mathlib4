@@ -45,8 +45,8 @@ theorem mul_toSubmodule {R : Type*} {A : Type*} [CommSemiring R] [CommSemiring A
   refine le_antisymm (mul_toSubmodule_le _ _) ?_
   rintro x (hx : x ∈ Algebra.adjoin R (S ∪ T : Set A))
   refine
-    Algebra.adjoin_induction (fun x hx => ?_) (fun r => ?_) (fun _ _ _ _ => Submodule.add_mem _)
-      (fun x y _ _ hx hy => ?_) hx
+    Algebra.adjoin_induction (fun x hx ↦ ?_) (fun r ↦ ?_) (fun _ _ _ _ ↦ Submodule.add_mem _)
+      (fun x y _ _ hx hy ↦ ?_) hx
   · rcases hx with hxS | hxT
     · rw [← mul_one x]
       exact Submodule.mul_mem_mul hxS (show (1 : A) ∈ T from one_mem T)
@@ -66,9 +66,9 @@ variable {R' : Type*} [Semiring R'] [MulSemiringAction R' A] [SMulCommClass R' R
 This is available as an instance in the `Pointwise` locale. -/
 protected def pointwiseMulAction : MulAction R' (Subalgebra R A) where
   smul a S := S.map (MulSemiringAction.toAlgHom _ _ a)
-  one_smul S := (congr_arg (fun f => S.map f) (AlgHom.ext <| one_smul R')).trans S.map_id
+  one_smul S := (congr_arg (fun f ↦ S.map f) (AlgHom.ext <| one_smul R')).trans S.map_id
   mul_smul _a₁ _a₂ S :=
-    (congr_arg (fun f => S.map f) (AlgHom.ext <| mul_smul _ _)).trans (S.map_map _ _).symm
+    (congr_arg (fun f ↦ S.map f) (AlgHom.ext <| mul_smul _ _)).trans (S.map_map _ _).symm
 
 scoped[Pointwise] attribute [instance] Subalgebra.pointwiseMulAction
 
@@ -98,7 +98,7 @@ theorem smul_mem_pointwise_smul (m : R') (r : A) (S : Subalgebra R A) : r ∈ S 
   (Set.smul_mem_smul_set : _ → _ ∈ m • (S : Set A))
 
 instance : CovariantClass R' (Subalgebra R A) HSMul.hSMul LE.le :=
-  ⟨fun _ _ => map_mono⟩
+  ⟨fun _ _ ↦ map_mono⟩
 
 end Pointwise
 

@@ -79,8 +79,8 @@ lemma prod_lt_prod_of_ne_nil [Preorder M] [MulLeftStrictMono M]
     [MulLeftMono M] [MulRightStrictMono M]
     [MulRightMono M] {l : List ι} (hl : l ≠ []) (f g : ι → M)
     (hlt : ∀ i ∈ l, f i < g i) : (l.map f).prod < (l.map g).prod :=
-  (prod_lt_prod' f g fun i hi => (hlt i hi).le) <|
-    (exists_mem_of_ne_nil l hl).imp fun i hi => ⟨hi, hlt i hi⟩
+  (prod_lt_prod' f g fun i hi ↦ (hlt i hi).le) <|
+    (exists_mem_of_ne_nil l hl).imp fun i hi ↦ ⟨hi, hlt i hi⟩
 
 @[to_additive sum_le_card_nsmul]
 lemma prod_le_pow_card [Preorder M] [MulRightMono M]
@@ -117,7 +117,7 @@ lemma one_le_prod_of_one_le [Preorder M] [MulLeftMono M] {l : List M}
   induction' l with hd tl ih
   · rfl
   rw [prod_cons]
-  exact one_le_mul (hl₁ hd mem_cons_self) (ih fun x h => hl₁ x (mem_cons_of_mem hd h))
+  exact one_le_mul (hl₁ hd mem_cons_self) (ih fun x h ↦ hl₁ x (mem_cons_of_mem hd h))
 
 @[to_additive]
 lemma max_prod_le (l : List α) (f g : α → M) [LinearOrder M]
@@ -169,7 +169,7 @@ lemma single_le_prod [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M]
   simp_rw [prod_cons, forall_mem_cons] at hl₁ ⊢
   constructor
   case cons.left => exact le_mul_of_one_le_right' (one_le_prod_of_one_le hl₁.2)
-  case cons.right hd tl ih => exact fun x H => le_mul_of_one_le_of_le hl₁.1 (ih hl₁.right x H)
+  case cons.right hd tl ih => exact fun x H ↦ le_mul_of_one_le_of_le hl₁.1 (ih hl₁.right x H)
 
 @[to_additive all_zero_of_le_zero_le_of_sum_eq_zero]
 lemma all_one_of_le_one_le_of_prod_eq_one [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M]
@@ -180,13 +180,13 @@ section CanonicallyOrderedMul
 variable [CommMonoid M] [PartialOrder M] [CanonicallyOrderedMul M] {l : List M}
 
 @[to_additive] lemma prod_eq_one_iff [IsOrderedMonoid M] : l.prod = 1 ↔ ∀ x ∈ l, x = (1 : M) :=
-  ⟨all_one_of_le_one_le_of_prod_eq_one fun _ _ => one_le _, fun h => by
+  ⟨all_one_of_le_one_le_of_prod_eq_one fun _ _ ↦ one_le _, fun h ↦ by
     rw [List.eq_replicate_iff.2 ⟨_, h⟩, prod_replicate, one_pow]
     · exact (length l)
     · rfl⟩
 
-@[to_additive] lemma monotone_prod_take (L : List M) : Monotone fun i => (L.take i).prod := by
-  refine monotone_nat_of_le_succ fun n => ?_
+@[to_additive] lemma monotone_prod_take (L : List M) : Monotone fun i ↦ (L.take i).prod := by
+  refine monotone_nat_of_le_succ fun n ↦ ?_
   rcases lt_or_ge n L.length with h | h
   · rw [prod_take_succ _ _ h]
     exact le_self_mul

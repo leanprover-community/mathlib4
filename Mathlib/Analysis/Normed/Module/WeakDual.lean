@@ -166,7 +166,7 @@ theorem polar_def (s : Set E) : polar 𝕜 s = { f : WeakDual 𝕜 E | ∀ x ∈
 is used. -/
 theorem isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
   simp only [polar_def, setOf_forall]
-  exact isClosed_biInter fun x hx => isClosed_Iic.preimage (WeakBilin.eval_continuous _ _).norm
+  exact isClosed_biInter fun x hx ↦ isClosed_Iic.preimage (WeakBilin.eval_continuous _ _).norm
 
 end WeakDual
 
@@ -186,8 +186,8 @@ namespace NormedSpace
 
 namespace Dual
 
-theorem toWeakDual_continuous : Continuous fun x' : StrongDual 𝕜 E => StrongDual.toWeakDual x' :=
-  WeakBilin.continuous_of_continuous_eval _ fun z => (inclusionInDoubleDual 𝕜 E z).continuous
+theorem toWeakDual_continuous : Continuous fun x' : StrongDual 𝕜 E ↦ StrongDual.toWeakDual x' :=
+  WeakBilin.continuous_of_continuous_eval _ fun z ↦ (inclusionInDoubleDual 𝕜 E z).continuous
 
 /-- For a normed space `E`, according to `toWeakDual_continuous` the "identity mapping"
 `StrongDual 𝕜 E → WeakDual 𝕜 E` is continuous. This definition implements it as a continuous linear

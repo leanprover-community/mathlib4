@@ -71,7 +71,7 @@ theorem Ideal.finite_factors {I : Ideal R} (hI : I ≠ 0) :
   rw [← Set.finite_coe_iff, Set.coe_setOf]
   haveI h_fin := fintypeSubtypeDvd I hI
   refine
-    Finite.of_injective (fun v => (⟨(v : HeightOneSpectrum R).asIdeal, v.2⟩ : { x // x ∣ I })) ?_
+    Finite.of_injective (fun v ↦ (⟨(v : HeightOneSpectrum R).asIdeal, v.2⟩ : { x // x ∣ I })) ?_
   intro v w hvw
   simp? at hvw says simp only [Subtype.mk.injEq] at hvw
   exact Subtype.coe_injective (HeightOneSpectrum.ext hvw)
@@ -96,7 +96,7 @@ open scoped Classical in
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
   `v^(val_v(I))` is not the unit ideal. -/
 theorem finite_mulSupport {I : Ideal R} (hI : I ≠ 0) :
-    (mulSupport fun v : HeightOneSpectrum R => v.maxPowDividing I).Finite :=
+    (mulSupport fun v : HeightOneSpectrum R ↦ v.maxPowDividing I).Finite :=
   haveI h_subset : {v : HeightOneSpectrum R | v.maxPowDividing I ≠ 1} ⊆
       {v : HeightOneSpectrum R |
         ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ) ≠ 0} := by
@@ -111,7 +111,7 @@ open scoped Classical in
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
 `v^(val_v(I))`, regarded as a fractional ideal, is not `(1)`. -/
 theorem finite_mulSupport_coe {I : Ideal R} (hI : I ≠ 0) :
-    (mulSupport fun v : HeightOneSpectrum R => (v.asIdeal : FractionalIdeal R⁰ K) ^
+    (mulSupport fun v : HeightOneSpectrum R ↦ (v.asIdeal : FractionalIdeal R⁰ K) ^
       ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ)).Finite := by
   rw [mulSupport]
   simp_rw [Ne, zpow_natCast, ← FractionalIdeal.coeIdeal_pow, FractionalIdeal.coeIdeal_eq_one]
@@ -121,7 +121,7 @@ open scoped Classical in
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
 `v^-(val_v(I))` is not the unit ideal. -/
 theorem finite_mulSupport_inv {I : Ideal R} (hI : I ≠ 0) :
-    (mulSupport fun v : HeightOneSpectrum R => (v.asIdeal : FractionalIdeal R⁰ K) ^
+    (mulSupport fun v : HeightOneSpectrum R ↦ (v.asIdeal : FractionalIdeal R⁰ K) ^
       (-((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ))).Finite := by
   rw [mulSupport]
   simp_rw [zpow_neg, Ne, inv_eq_one]
@@ -276,7 +276,7 @@ open Classical in
 /-- If `I` is a nonzero fractional ideal, `a ∈ R`, and `J` is an ideal of `R` such that `I = a⁻¹J`,
 then we define `val_v(I)` as `(val_v(J) - val_v(a))`. If `I = 0`, we set `val_v(I) = 0`. -/
 def count (I : FractionalIdeal R⁰ K) : ℤ :=
-  dite (I = 0) (fun _ : I = 0 => 0) fun _ : ¬I = 0 =>
+  dite (I = 0) (fun _ : I = 0 ↦ 0) fun _ : ¬I = 0 ↦
     let a := choose (exists_eq_spanSingleton_mul I)
     let J := choose (choose_spec (exists_eq_spanSingleton_mul I))
     ((Associates.mk v.asIdeal).count (Associates.mk J).factors -
@@ -378,7 +378,7 @@ theorem count_prod {ι} (s : Finset ι) (I : ι → FractionalIdeal R⁰ K) (hS 
   classical
   induction' s using Finset.induction with i s hi hrec
   · rw [Finset.prod_empty, Finset.sum_empty, count_one]
-  · have hS' : ∀ i ∈ s, I i ≠ 0 := fun j hj => hS j (Finset.mem_insert_of_mem hj)
+  · have hS' : ∀ i ∈ s, I i ≠ 0 := fun j hj ↦ hS j (Finset.mem_insert_of_mem hj)
     have hS0 : ∏ i ∈ s, I i ≠ 0 := Finset.prod_ne_zero_iff.mpr hS'
     have hi0 : I i ≠ 0 := hS i (Finset.mem_insert_self i s)
     rw [Finset.prod_insert hi, Finset.sum_insert hi, count_mul K v hi0 hS0, hrec hS']
@@ -474,7 +474,7 @@ theorem count_maximal (w : HeightOneSpectrum R) [Decidable (w = v)] :
 theorem count_finprod_coprime (exps : HeightOneSpectrum R → ℤ) :
     count K v (∏ᶠ (w : HeightOneSpectrum R) (_ : w ≠ v),
       (w.asIdeal : (FractionalIdeal R⁰ K)) ^ exps w) = 0 := by
-  apply finprod_mem_induction fun I => count K v I = 0
+  apply finprod_mem_induction fun I ↦ count K v I = 0
   · exact count_one K v
   · intro I I' hI hI'
     classical

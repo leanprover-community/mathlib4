@@ -82,7 +82,7 @@ lemma preservesFiniteLimits_of_preservesFiniteLimitsOfSize (F : C ⥤ D)
 /-- The composition of two left exact functors is left exact. -/
 lemma comp_preservesFiniteLimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteLimits F]
     [PreservesFiniteLimits G] : PreservesFiniteLimits (F ⋙ G) :=
-  ⟨fun _ _ _ => inferInstance⟩
+  ⟨fun _ _ _ ↦ inferInstance⟩
 
 /-- Transfer preservation of finite limits along a natural isomorphism in the functor. -/
 lemma preservesFiniteLimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [PreservesFiniteLimits F] :
@@ -238,7 +238,7 @@ lemma preservesFiniteColimits_of_preservesFiniteColimitsOfSize (F : C ⥤ D)
 /-- The composition of two right exact functors is right exact. -/
 lemma comp_preservesFiniteColimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteColimits F]
     [PreservesFiniteColimits G] : PreservesFiniteColimits (F ⋙ G) :=
-  ⟨fun _ _ _ => inferInstance⟩
+  ⟨fun _ _ _ ↦ inferInstance⟩
 
 /-- Transfer preservation of finite colimits along a natural isomorphism in the functor. -/
 lemma preservesFiniteColimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [PreservesFiniteColimits F] :

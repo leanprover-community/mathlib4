@@ -67,7 +67,7 @@ theorem toFunLinear_mul_tmul_mul_aux_1 (p : R[X]) (k : ℕ) (h : Decidable ¬p.c
 
 theorem toFunLinear_mul_tmul_mul_aux_2 (k : ℕ) (a₁ a₂ : A) (p₁ p₂ : R[X]) :
     a₁ * a₂ * (algebraMap R A) ((p₁ * p₂).coeff k) =
-      (Finset.antidiagonal k).sum fun x =>
+      (Finset.antidiagonal k).sum fun x ↦
         a₁ * (algebraMap R A) (coeff p₁ x.1) * (a₂ * (algebraMap R A) (coeff p₂ x.2)) := by
   simp_rw [mul_assoc, Algebra.commutes, ← Finset.mul_sum, mul_assoc, ← Finset.mul_sum]
   congr
@@ -102,7 +102,7 @@ def toFunAlgHom : A ⊗[R] R[X] →ₐ[R] A[X] :=
     toFunAlgHom R A (a ⊗ₜ[R] p) = a • p.map (algebraMap R A) := rfl
 
 theorem toFunAlgHom_apply_tmul (a : A) (p : R[X]) :
-    toFunAlgHom R A (a ⊗ₜ[R] p) = p.sum fun n r => monomial n (a * (algebraMap R A) r) :=
+    toFunAlgHom R A (a ⊗ₜ[R] p) = p.sum fun n r ↦ monomial n (a * (algebraMap R A) r) :=
   toFunBilinear_apply_eq_sum R A _ _
 
 /-- (Implementation detail.)
@@ -176,7 +176,7 @@ theorem polyEquivTensor_symm_apply_tmul_eq_smul (a : A) (p : R[X]) :
     (polyEquivTensor R A).symm (a ⊗ₜ p) = a • p.map (algebraMap R A) := rfl
 
 theorem polyEquivTensor_symm_apply_tmul (a : A) (p : R[X]) :
-    (polyEquivTensor R A).symm (a ⊗ₜ p) = p.sum fun n r => monomial n (a * algebraMap R A r) :=
+    (polyEquivTensor R A).symm (a ⊗ₜ p) = p.sum fun n r ↦ monomial n (a * algebraMap R A r) :=
   toFunAlgHom_apply_tmul _ _ _ _
 
 section

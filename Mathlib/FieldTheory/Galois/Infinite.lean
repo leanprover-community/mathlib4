@@ -57,7 +57,7 @@ open Pointwise FiniteGaloisIntermediateField AlgEquiv
 
 lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :
     IsClosed (L.fixingSubgroup : Set (K ≃ₐ[k] K)) where
-  isOpen_compl := isOpen_iff_mem_nhds.mpr fun σ h => by
+  isOpen_compl := isOpen_iff_mem_nhds.mpr fun σ h ↦ by
     apply mem_nhds_iff.mpr
     rcases Set.not_subset.mp ((mem_fixingSubgroup_iff (K ≃ₐ[k] K)).not.mp h) with ⟨y, yL, ne⟩
     use σ • ((adjoin k {y}).1.fixingSubgroup : Set (K ≃ₐ[k] K))

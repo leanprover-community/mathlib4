@@ -105,7 +105,7 @@ lemma exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂) : ∃ C : ℝ≥0, ∀ a,
   simp only [forall_and] at hx
   obtain ⟨hx_nonneg, hx_norm, hx⟩ := hx
   -- `∑ n, 2 ^ (-n) • x n` converges
-  have x_summable : Summable fun n : ℕ => (2 : ℝ) ^ (-(n : ℤ)) • x n := by
+  have x_summable : Summable fun n : ℕ ↦ (2 : ℝ) ^ (-(n : ℤ)) • x n := by
     refine Summable.of_norm ?_
     have : (2 : ℝ)⁻¹ < 1 := by norm_num
     simp [norm_smul, hx_norm, ← inv_pow, this]
@@ -136,9 +136,9 @@ instance {F : Type*} [FunLike F A₁ A₂] [LinearMapClass F ℂ A₁ A₂] [Ord
     StarHomClass F A₁ A₂ where
   map_star f a := by
     obtain ⟨y, hy_nonneg, hy_norm, hy⟩ := CStarAlgebra.exists_sum_four_nonneg a
-    have hy' : ∀ x : Fin 4, star (y x) = y x := fun x => by
+    have hy' : ∀ x : Fin 4, star (y x) = y x := fun x ↦ by
       rw [IsSelfAdjoint.star_eq (hy_nonneg x).isSelfAdjoint]
-    have hy'' : ∀ x : Fin 4, star (f (y x)) = f (y x) := fun x => by
+    have hy'' : ∀ x : Fin 4, star (f (y x)) = f (y x) := fun x ↦ by
       rw [IsSelfAdjoint.star_eq (map_nonneg f (hy_nonneg x)).isSelfAdjoint]
     simp [hy, hy', hy'']
 

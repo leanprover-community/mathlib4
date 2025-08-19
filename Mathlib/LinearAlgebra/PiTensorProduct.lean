@@ -271,7 +271,7 @@ instance : IsScalarTower R R (⨂[R] i, s i) :=
 variable (R) in
 /-- The canonical `MultilinearMap R s (⨂[R] i, s i)`.
 
-`tprod R fun i => f i` has notation `⨂ₜ[R] i, f i`. -/
+`tprod R fun i ↦ f i` has notation `⨂ₜ[R] i, f i`. -/
 def tprod : MultilinearMap R s (⨂[R] i, s i) where
   toFun := tprodCoeff R 1
   map_update_add' {_ f} i x y := (add_tprodCoeff (1 : R) f i x y).symm
@@ -538,7 +538,7 @@ open Function in
 private theorem map_add_smul_aux [DecidableEq ι] (i : ι) (x : Π i, s i) (u : s i →ₗ[R] t i) :
     (fun j ↦ update f i u j (x j)) = update (fun j ↦ (f j) (x j)) i (u (x i)) := by
   ext j
-  exact apply_update (fun i F => F (x i)) f i u j
+  exact apply_update (fun i F ↦ F (x i)) f i u j
 
 open Function in
 protected theorem map_update_add [DecidableEq ι] (i : ι) (u v : s i →ₗ[R] t i) :
@@ -632,7 +632,7 @@ Then there is a function from `⨂ᵢ Hom(sᵢ, Hom(tᵢ, t'ᵢ))` to `Hom(⨂�
 defined by `⨂ᵢ fᵢ ↦ ⨂ᵢ aᵢ ↦ ⨂ᵢ bᵢ ↦ ⨂ᵢ fᵢ aᵢ bᵢ`. -/
 def piTensorHomMapFun₂ : (⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) →
     (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] (⨂[R] i, t' i) :=
-  fun φ => lift <| LinearMap.compMultilinearMap piTensorHomMap <|
+  fun φ ↦ lift <| LinearMap.compMultilinearMap piTensorHomMap <|
     (lift <| MultilinearMap.piLinearMap <| tprod R) φ
 
 theorem piTensorHomMapFun₂_add (φ ψ : ⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) :
@@ -756,7 +756,7 @@ theorem map_reindex (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) (x : ⨂[R]
   DFunLike.congr_fun (map_comp_reindex_eq _ _) _
 
 theorem map_comp_reindex_symm (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) :
-    map f ∘ₗ (reindex R s e).symm = (reindex R t e).symm ∘ₗ map (fun i => f (e.symm i)) := by
+    map f ∘ₗ (reindex R s e).symm = (reindex R t e).symm ∘ₗ map (fun i ↦ f (e.symm i)) := by
   ext m
   apply LinearEquiv.injective (reindex R t e)
   simp only [LinearMap.compMultilinearMap_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,
@@ -786,7 +786,7 @@ def isEmptyEquiv [IsEmpty ι] : (⨂[R] i : ι, s i) ≃ₗ[R] R where
       rw [map_add, add_smul, hx, hy]
   right_inv t := by simp
   map_add' := LinearMap.map_add _
-  map_smul' := fun r x => by
+  map_smul' := fun r x ↦ by
     exact LinearMap.map_smul _ r x
 
 @[simp]
@@ -817,7 +817,7 @@ def subsingletonEquiv [Subsingleton ι] (i₀ : ι) : (⨂[R] _ : ι, M) ≃ₗ[
         ← this 0 (lift _ _), hy]
   right_inv t := by simp only [ofSubsingleton_apply_apply, LinearMap.id_apply, lift.tprod]
   map_add' := LinearMap.map_add _
-  map_smul' := fun r x => by
+  map_smul' := fun r x ↦ by
     exact LinearMap.map_smul _ r x
 
 @[simp]

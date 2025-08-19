@@ -173,14 +173,14 @@ theorem Kernel.measure_le_bound (κ : Kernel α β) [h : IsFiniteKernel κ] (a :
 
 instance isFiniteKernel_zero (α β : Type*) {_ : MeasurableSpace α} {_ : MeasurableSpace β} :
     IsFiniteKernel (0 : Kernel α β) :=
-  ⟨⟨0, ENNReal.coe_lt_top, fun _ => by
+  ⟨⟨0, ENNReal.coe_lt_top, fun _ ↦ by
       simp only [Kernel.zero_apply, Measure.coe_zero, Pi.zero_apply, le_zero_iff]⟩⟩
 
 instance IsFiniteKernel.add (κ η : Kernel α β) [IsFiniteKernel κ] [IsFiniteKernel η] :
     IsFiniteKernel (κ + η) := by
   refine ⟨⟨IsFiniteKernel.bound κ + IsFiniteKernel.bound η,
     ENNReal.add_lt_top.mpr ⟨IsFiniteKernel.bound_lt_top κ, IsFiniteKernel.bound_lt_top η⟩,
-    fun a => ?_⟩⟩
+    fun a ↦ ?_⟩⟩
   exact add_le_add (Kernel.measure_le_bound _ _ _) (Kernel.measure_le_bound _ _ _)
 
 lemma isFiniteKernel_of_le {κ ν : Kernel α β} [hν : IsFiniteKernel ν] (hκν : κ ≤ ν) :
@@ -212,7 +212,7 @@ instance (priority := 100) IsZeroOrMarkovKernel.isFiniteKernel [h : IsZeroOrMark
     IsFiniteKernel κ := by
   rcases eq_zero_or_isMarkovKernel κ with rfl | _h'
   · infer_instance
-  · exact ⟨⟨1, ENNReal.one_lt_top, fun _ => prob_le_one⟩⟩
+  · exact ⟨⟨1, ENNReal.one_lt_top, fun _ ↦ prob_le_one⟩⟩
 
 namespace Kernel
 
@@ -225,12 +225,12 @@ theorem ext_iff' : κ = η ↔ ∀ a s, MeasurableSet s → κ a s = η a s := b
 theorem ext_fun (h : ∀ a f, Measurable f → ∫⁻ b, f b ∂κ a = ∫⁻ b, f b ∂η a) :
     κ = η := by
   ext a s hs
-  specialize h a (s.indicator fun _ => 1) (Measurable.indicator measurable_const hs)
+  specialize h a (s.indicator fun _ ↦ 1) (Measurable.indicator measurable_const hs)
   simp_rw [lintegral_indicator_const hs, one_mul] at h
   rw [h]
 
 theorem ext_fun_iff : κ = η ↔ ∀ a f, Measurable f → ∫⁻ b, f b ∂κ a = ∫⁻ b, f b ∂η a :=
-  ⟨fun h a f _ => by rw [h], ext_fun⟩
+  ⟨fun h a f _ ↦ by rw [h], ext_fun⟩
 
 section IsEmptyNonempty
 
@@ -255,7 +255,7 @@ lemma not_isMarkovKernel_zero [Nonempty α] : ¬ IsMarkovKernel (0 : Kernel α �
 end IsEmptyNonempty
 
 protected theorem measurable_coe (κ : Kernel α β) {s : Set β} (hs : MeasurableSet s) :
-    Measurable fun a => κ a s :=
+    Measurable fun a ↦ κ a s :=
   (Measure.measurable_coe hs).comp κ.measurable
 
 lemma apply_congr_of_mem_measurableAtom (κ : Kernel α β) {y' y : α} (hy' : y' ∈ measurableAtom y) :
@@ -277,27 +277,27 @@ section Sum
 
 /-- Sum of an indexed family of kernels. -/
 protected noncomputable def sum [Countable ι] (κ : ι → Kernel α β) : Kernel α β where
-  toFun a := Measure.sum fun n => κ n a
+  toFun a := Measure.sum fun n ↦ κ n a
   measurable' := by
-    refine Measure.measurable_of_measurable_coe _ fun s hs => ?_
+    refine Measure.measurable_of_measurable_coe _ fun s hs ↦ ?_
     simp_rw [Measure.sum_apply _ hs]
-    exact Measurable.ennreal_tsum fun n => Kernel.measurable_coe (κ n) hs
+    exact Measurable.ennreal_tsum fun n ↦ Kernel.measurable_coe (κ n) hs
 
 theorem sum_apply [Countable ι] (κ : ι → Kernel α β) (a : α) :
-    Kernel.sum κ a = Measure.sum fun n => κ n a :=
+    Kernel.sum κ a = Measure.sum fun n ↦ κ n a :=
   rfl
 
 theorem sum_apply' [Countable ι] (κ : ι → Kernel α β) (a : α) {s : Set β} (hs : MeasurableSet s) :
     Kernel.sum κ a s = ∑' n, κ n a s := by rw [sum_apply κ a, Measure.sum_apply _ hs]
 
 @[simp]
-theorem sum_zero [Countable ι] : (Kernel.sum fun _ : ι => (0 : Kernel α β)) = 0 := by
+theorem sum_zero [Countable ι] : (Kernel.sum fun _ : ι ↦ (0 : Kernel α β)) = 0 := by
   ext a s hs
   rw [sum_apply' _ a hs]
   simp only [zero_apply, Measure.coe_zero, Pi.zero_apply, tsum_zero]
 
 theorem sum_comm [Countable ι] (κ : ι → ι → Kernel α β) :
-    (Kernel.sum fun n => Kernel.sum (κ n)) = Kernel.sum fun m => Kernel.sum fun n => κ n m := by
+    (Kernel.sum fun n ↦ Kernel.sum (κ n)) = Kernel.sum fun m ↦ Kernel.sum fun n ↦ κ n m := by
   ext a s; simp_rw [sum_apply]; rw [Measure.sum_comm]
 
 @[simp]
@@ -306,7 +306,7 @@ theorem sum_fintype [Fintype ι] (κ : ι → Kernel α β) : Kernel.sum κ = �
   simp only [sum_apply' κ a hs, finset_sum_apply' _ κ a s, tsum_fintype]
 
 theorem sum_add [Countable ι] (κ η : ι → Kernel α β) :
-    (Kernel.sum fun n => κ n + η n) = Kernel.sum κ + Kernel.sum η := by
+    (Kernel.sum fun n ↦ κ n + η n) = Kernel.sum κ + Kernel.sum η := by
   ext a s hs
   simp only [coe_add, Pi.add_apply, sum_apply, Measure.sum_apply _ hs, Pi.add_apply,
     Measure.coe_add, ENNReal.summable.tsum_add ENNReal.summable]
@@ -321,13 +321,13 @@ class _root_.ProbabilityTheory.IsSFiniteKernel (κ : Kernel α β) : Prop where
 
 instance (priority := 100) IsFiniteKernel.isSFiniteKernel [h : IsFiniteKernel κ] :
     IsSFiniteKernel κ :=
-  ⟨⟨fun n => if n = 0 then κ else 0, fun n => by
+  ⟨⟨fun n ↦ if n = 0 then κ else 0, fun n ↦ by
       simp only; split_ifs
       · exact h
       · infer_instance, by
       ext a s hs
       rw [Kernel.sum_apply' _ _ hs]
-      have : (fun i => ((ite (i = 0) κ 0) a) s) = fun i => ite (i = 0) (κ a s) 0 := by
+      have : (fun i ↦ ((ite (i = 0) κ 0) a) s) = fun i ↦ ite (i = 0) (κ a s) 0 := by
         ext1 i; split_ifs <;> rfl
       rw [this, tsum_ite_eq]⟩⟩
 
@@ -340,7 +340,7 @@ theorem kernel_sum_seq (κ : Kernel α β) [h : IsSFiniteKernel κ] : Kernel.sum
   h.tsum_finite.choose_spec.2.symm
 
 theorem measure_sum_seq (κ : Kernel α β) [h : IsSFiniteKernel κ] (a : α) :
-    (Measure.sum fun n => seq κ n a) = κ a := by rw [← Kernel.sum_apply, kernel_sum_seq κ]
+    (Measure.sum fun n ↦ seq κ n a) = κ a := by rw [← Kernel.sum_apply, kernel_sum_seq κ]
 
 instance isFiniteKernel_seq (κ : Kernel α β) [h : IsSFiniteKernel κ] (n : ℕ) :
     IsFiniteKernel (Kernel.seq κ n) :=
@@ -352,7 +352,7 @@ instance _root_.ProbabilityTheory.IsSFiniteKernel.sFinite [IsSFiniteKernel κ] (
 
 instance IsSFiniteKernel.add (κ η : Kernel α β) [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     IsSFiniteKernel (κ + η) := by
-  refine ⟨⟨fun n => seq κ n + seq η n, fun n => inferInstance, ?_⟩⟩
+  refine ⟨⟨fun n ↦ seq κ n + seq η n, fun n ↦ inferInstance, ?_⟩⟩
   rw [sum_add, kernel_sum_seq κ, kernel_sum_seq η]
 
 theorem IsSFiniteKernel.finset_sum {κs : ι → Kernel α β} (I : Finset ι)
@@ -364,27 +364,27 @@ theorem IsSFiniteKernel.finset_sum {κs : ι → Kernel α β} (I : Finset ι)
     rw [Finset.sum_insert hi_notMem_I]
     haveI : IsSFiniteKernel (κs i) := h i (Finset.mem_insert_self _ _)
     have : IsSFiniteKernel (∑ x ∈ I, κs x) :=
-      h_ind fun i hiI => h i (Finset.mem_insert_of_mem hiI)
+      h_ind fun i hiI ↦ h i (Finset.mem_insert_of_mem hiI)
     exact IsSFiniteKernel.add _ _
 
 theorem isSFiniteKernel_sum_of_denumerable [Denumerable ι] {κs : ι → Kernel α β}
     (hκs : ∀ n, IsSFiniteKernel (κs n)) : IsSFiniteKernel (Kernel.sum κs) := by
   let e : ℕ ≃ ι × ℕ := (Denumerable.eqv (ι × ℕ)).symm
-  refine ⟨⟨fun n => seq (κs (e n).1) (e n).2, inferInstance, ?_⟩⟩
-  have hκ_eq : Kernel.sum κs = Kernel.sum fun n => Kernel.sum (seq (κs n)) := by
+  refine ⟨⟨fun n ↦ seq (κs (e n).1) (e n).2, inferInstance, ?_⟩⟩
+  have hκ_eq : Kernel.sum κs = Kernel.sum fun n ↦ Kernel.sum (seq (κs n)) := by
     simp_rw [kernel_sum_seq]
   ext a s hs
   rw [hκ_eq]
   simp_rw [Kernel.sum_apply' _ _ hs]
-  change (∑' i, ∑' m, seq (κs i) m a s) = ∑' n, (fun im : ι × ℕ => seq (κs im.fst) im.snd a s) (e n)
-  rw [e.tsum_eq (fun im : ι × ℕ => seq (κs im.fst) im.snd a s),
-    ENNReal.summable.tsum_prod' fun _ => ENNReal.summable]
+  change (∑' i, ∑' m, seq (κs i) m a s) = ∑' n, (fun im : ι × ℕ ↦ seq (κs im.fst) im.snd a s) (e n)
+  rw [e.tsum_eq (fun im : ι × ℕ ↦ seq (κs im.fst) im.snd a s),
+    ENNReal.summable.tsum_prod' fun _ ↦ ENNReal.summable]
 
 instance isSFiniteKernel_sum [Countable ι] {κs : ι → Kernel α β}
     [hκs : ∀ n, IsSFiniteKernel (κs n)] : IsSFiniteKernel (Kernel.sum κs) := by
   cases fintypeOrInfinite ι
   · rw [sum_fintype]
-    exact IsSFiniteKernel.finset_sum Finset.univ fun i _ => hκs i
+    exact IsSFiniteKernel.finset_sum Finset.univ fun i _ ↦ hκs i
   cases nonempty_denumerable ι
   exact isSFiniteKernel_sum_of_denumerable hκs
 

@@ -24,9 +24,9 @@ instance : Field (ZMod p) where
   mul_inv_cancel := mul_inv_cancel_aux p
   inv_zero := inv_zero p
   nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
+  nnqsmul_def := fun _ _ ↦ rfl
   qsmul := _
-  qsmul_def := fun _ _ => rfl
+  qsmul_def := fun _ _ ↦ rfl
 
 /-- `ZMod p` is an integral domain when `p` is prime. -/
 instance : IsDomain (ZMod p) := by constructor

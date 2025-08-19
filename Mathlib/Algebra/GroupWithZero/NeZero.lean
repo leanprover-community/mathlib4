@@ -41,7 +41,7 @@ section GroupWithZero
 
 variable {G₀ : Type*} [GroupWithZero G₀] {a : G₀}
 
-theorem inv_ne_zero (h : a ≠ 0) : a⁻¹ ≠ 0 := fun a_eq_0 => by
+theorem inv_ne_zero (h : a ≠ 0) : a⁻¹ ≠ 0 := fun a_eq_0 ↦ by
   simpa [a_eq_0] using mul_inv_cancel₀ h
 
 @[simp high] -- should take priority over `IsUnit.inv_mul_cancel`

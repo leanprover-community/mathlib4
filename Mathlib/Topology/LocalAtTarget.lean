@@ -65,7 +65,7 @@ theorem IsClosedMap.restrictPreimage (H : IsClosedMap f) (s : Set β) :
   suffices ∀ u, IsClosed u → Subtype.val ⁻¹' u = t →
     ∃ v, IsClosed v ∧ Subtype.val ⁻¹' v = s.restrictPreimage f '' t by
       simpa [isClosed_induced_iff]
-  exact fun u hu e => ⟨f '' u, H u hu, by simp [← e, image_restrictPreimage]⟩
+  exact fun u hu e ↦ ⟨f '' u, H u hu, by simp [← e, image_restrictPreimage]⟩
 
 theorem IsOpenMap.restrictPreimage (H : IsOpenMap f) (s : Set β) :
     IsOpenMap (s.restrictPreimage f) := by
@@ -73,7 +73,7 @@ theorem IsOpenMap.restrictPreimage (H : IsOpenMap f) (s : Set β) :
   suffices ∀ u, IsOpen u → Subtype.val ⁻¹' u = t →
     ∃ v, IsOpen v ∧ Subtype.val ⁻¹' v = s.restrictPreimage f '' t by
       simpa [isOpen_induced_iff]
-  exact fun u hu e => ⟨f '' u, H u hu, by simp [← e, image_restrictPreimage]⟩
+  exact fun u hu e ↦ ⟨f '' u, H u hu, by simp [← e, image_restrictPreimage]⟩
 
 lemma GeneralizingMap.restrictPreimage (H : GeneralizingMap f) (s : Set β) :
     GeneralizingMap (s.restrictPreimage f) := by
@@ -123,13 +123,13 @@ theorem isOpenMap_iff_restrictPreimage :
 
 theorem isClosedMap_iff_restrictPreimage :
     IsClosedMap f ↔ ∀ i, IsClosedMap ((U i).1.restrictPreimage f) := by
-  refine ⟨fun h i => h.restrictPreimage _, fun H s hs ↦ ?_⟩
+  refine ⟨fun h i ↦ h.restrictPreimage _, fun H s hs ↦ ?_⟩
   rw [hU.isClosed_iff_coe_preimage]
   intro i
   convert H i _ ⟨⟨_, hs.1, eq_compl_comm.mpr rfl⟩⟩
   ext ⟨x, hx⟩
   suffices (∃ y, y ∈ s ∧ f y = x) ↔ ∃ y, y ∈ s ∧ f y ∈ U i ∧ f y = x by simpa [← Subtype.coe_inj]
-  exact ⟨fun ⟨a, b, c⟩ => ⟨a, b, c.symm ▸ hx, c⟩, by tauto⟩
+  exact ⟨fun ⟨a, b, c⟩ ↦ ⟨a, b, c.symm ▸ hx, c⟩, by tauto⟩
 
 theorem isInducing_iff_restrictPreimage (h : Continuous f) :
     IsInducing f ↔ ∀ i, IsInducing ((U i).1.restrictPreimage f) := by

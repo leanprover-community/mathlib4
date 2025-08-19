@@ -58,8 +58,8 @@ def ConnectedComponents.functorToDiscrete (X : Type*)
 /-- Every functor to a discrete category gives a function from connected components -/
 def ConnectedComponents.liftFunctor (J) [Category J] {X : Type*} (F : J ⥤ Discrete X) :
     (ConnectedComponents J → X) :=
-  Quotient.lift (fun c => (F.obj c).as)
-    (fun _ _ h => eq_of_zigzag X (zigzag_obj_of_zigzag F h))
+  Quotient.lift (fun c ↦ (F.obj c).as)
+    (fun _ _ h ↦ eq_of_zigzag X (zigzag_obj_of_zigzag F h))
 
 /-- Functions from connected components and functors to discrete category are in bijection -/
 def ConnectedComponents.typeToCatHomEquiv (J) [Category J] (X : Type*) :
@@ -78,7 +78,7 @@ def ConnectedComponents.typeToCatHomEquiv (J) [Category J] (X : Type*) :
 /-- Given an index for a connected component, this is the property of the
 objects which belong to this component. -/
 def ConnectedComponents.objectProperty (j : ConnectedComponents J) :
-    ObjectProperty J := fun k => Quotient.mk'' k = j
+    ObjectProperty J := fun k ↦ Quotient.mk'' k = j
 
 /-- Given an index for a connected component, produce the actual component as a full subcategory. -/
 abbrev ConnectedComponents.Component (j : ConnectedComponents J) : Type u₁ :=
@@ -113,17 +113,17 @@ instance (j : ConnectedComponents J) : IsConnected j.Component := by
   rcases List.exists_chain_of_relationReflTransGen h₁₂ with ⟨l, hl₁, hl₂⟩
   -- Everything which has a zigzag to j₂ can be lifted to the same component as `j₂`.
   let f : ∀ x, Zigzag x j₂ → (ConnectedComponents.mk j₂).Component :=
-    fun x h => ⟨x, Quotient.sound' h⟩
+    fun x h ↦ ⟨x, Quotient.sound' h⟩
   -- Everything in our chosen zigzag from `j₁` to `j₂` has a zigzag to `j₂`.
   have hf : ∀ a : J, a ∈ l → Zigzag a j₂ := by
     intro i hi
-    apply hl₁.backwards_induction (fun t => Zigzag t j₂) _ hl₂ _ _ _ (List.mem_of_mem_tail hi)
+    apply hl₁.backwards_induction (fun t ↦ Zigzag t j₂) _ hl₂ _ _ _ (List.mem_of_mem_tail hi)
     · intro j k
       apply Relation.ReflTransGen.head
     · apply Relation.ReflTransGen.refl
   -- Now lift the zigzag from `j₁` to `j₂` in `J` to the same thing in `j.Component`.
   refine ⟨l.pmap f hf, ?_, by grind⟩
-  refine @List.chain_pmap_of_chain _ _ _ _ _ f (fun x y _ _ h => ?_) _ _ hl₁ h₁₂ _
+  refine @List.chain_pmap_of_chain _ _ _ _ _ f (fun x y _ _ h ↦ ?_) _ _ hl₁ h₁₂ _
   exact zag_of_zag_obj (ConnectedComponents.ι _) h
 
 /-- The disjoint union of `J`s connected components, written explicitly as a sigma-type with the

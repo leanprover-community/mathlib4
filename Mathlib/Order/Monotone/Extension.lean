@@ -26,16 +26,16 @@ theorem MonotoneOn.exists_monotone_extension (h : MonotoneOn f s) (hl : BddBelow
     /- The extension is defined by `f x = f a` for `x ≤ a`, and `f x` is the supremum of the values
       of `f` to the left of `x` for `x ≥ a`. -/
     rcases hl with ⟨a, ha⟩
-    have hu' : ∀ x, BddAbove (f '' (Iic x ∩ s)) := fun x =>
+    have hu' : ∀ x, BddAbove (f '' (Iic x ∩ s)) := fun x ↦
       hu.mono (image_mono inter_subset_right)
-    let g : α → β := fun x => if Disjoint (Iic x) s then a else sSup (f '' (Iic x ∩ s))
+    let g : α → β := fun x ↦ if Disjoint (Iic x) s then a else sSup (f '' (Iic x ∩ s))
     have hgs : EqOn f g s := by
       intro x hx
       simp only [g]
-      have : IsGreatest (Iic x ∩ s) x := ⟨⟨right_mem_Iic, hx⟩, fun y hy => hy.1⟩
+      have : IsGreatest (Iic x ∩ s) x := ⟨⟨right_mem_Iic, hx⟩, fun y hy ↦ hy.1⟩
       rw [if_neg this.nonempty.not_disjoint,
         ((h.mono inter_subset_right).map_isGreatest this).csSup_eq]
-    refine ⟨g, fun x y hxy => ?_, hgs⟩
+    refine ⟨g, fun x y hxy ↦ ?_, hgs⟩
     by_cases hx : Disjoint (Iic x) s <;> by_cases hy : Disjoint (Iic y) s <;>
       simp only [g, if_pos, if_neg, not_false_iff, *, refl]
     · rcases not_disjoint_iff_nonempty_inter.1 hy with ⟨z, hz⟩

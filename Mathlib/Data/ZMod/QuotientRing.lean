@@ -69,7 +69,7 @@ open scoped Function in -- required for scoped `on` notation
 `Mathlib/Data/ZMod/Basic.lean` for versions involving only two numbers. -/
 def ZMod.prodEquivPi {ι : Type*} [Fintype ι] (a : ι → ℕ)
     (coprime : Pairwise (Nat.Coprime on a)) : ZMod (∏ i, a i) ≃+* Π i, ZMod (a i) :=
-  have : Pairwise fun i j => IsCoprime (span {(a i : ℤ)}) (span {(a j : ℤ)}) :=
+  have : Pairwise fun i j ↦ IsCoprime (span {(a i : ℤ)}) (span {(a j : ℤ)}) :=
     fun _i _j h ↦ (isCoprime_span_singleton_iff _ _).mpr ((coprime h).cast (R := ℤ))
   Int.quotientSpanNatEquivZMod _ |>.symm.trans <|
   quotEquivOfEq (iInf_span_singleton_natCast (R := ℤ) coprime) |>.symm.trans <|

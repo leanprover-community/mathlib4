@@ -35,8 +35,8 @@ theorem exists_homeomorph_extension {E : Type*} [NormedAddCommGroup E] [NormedSp
   obtain ⟨u, hu, uf⟩ :
     ∃ u : E → F, LipschitzWith (lipschitzExtensionConstant F * c) u ∧ EqOn (f - ⇑f') u s :=
     hf.lipschitzOnWith.extend_finite_dimension
-  let g : E → F := fun x => f' x + u x
-  have fg : EqOn f g s := fun x hx => by simp_rw [g, ← uf hx, Pi.sub_apply, add_sub_cancel]
+  let g : E → F := fun x ↦ f' x + u x
+  have fg : EqOn f g s := fun x hx ↦ by simp_rw [g, ← uf hx, Pi.sub_apply, add_sub_cancel]
   have hg : ApproximatesLinearOn g (f' : E →L[ℝ] F) univ (lipschitzExtensionConstant F * c) := by
     apply LipschitzOnWith.approximatesLinearOn
     rw [lipschitzOnWith_univ]

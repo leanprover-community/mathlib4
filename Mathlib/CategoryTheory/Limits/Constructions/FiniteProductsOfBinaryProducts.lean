@@ -40,7 +40,7 @@ In `extendFanIsLimit` we show that if the two given fans are limits, then this f
 limit.
 -/
 @[simps!]
-def extendFan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Fan fun i : Fin n => f i.succ)
+def extendFan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Fan fun i : Fin n ↦ f i.succ)
     (c₂ : BinaryFan (f 0) c₁.pt) : Fan f :=
   Fan.mk c₂.pt
     (by
@@ -52,13 +52,13 @@ def extendFan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Fan fun i : Fin n => f i
 /-- Show that if the two given fans in `extendFan` are limits, then the constructed fan is also a
 limit.
 -/
-def extendFanIsLimit {n : ℕ} (f : Fin (n + 1) → C) {c₁ : Fan fun i : Fin n => f i.succ}
+def extendFanIsLimit {n : ℕ} (f : Fin (n + 1) → C) {c₁ : Fan fun i : Fin n ↦ f i.succ}
     {c₂ : BinaryFan (f 0) c₁.pt} (t₁ : IsLimit c₁) (t₂ : IsLimit c₂) :
     IsLimit (extendFan c₁ c₂) where
   lift s := by
     apply (BinaryFan.IsLimit.lift' t₂ (s.π.app ⟨0⟩) _).1
-    apply t₁.lift ⟨_, Discrete.natTrans fun ⟨i⟩ => s.π.app ⟨i.succ⟩⟩
-  fac := fun s ⟨j⟩ => by
+    apply t₁.lift ⟨_, Discrete.natTrans fun ⟨i⟩ ↦ s.π.app ⟨i.succ⟩⟩
+  fac := fun s ⟨j⟩ ↦ by
     refine Fin.inductionOn j ?_ ?_
     · apply (BinaryFan.IsLimit.lift' t₂ _ _).2.1
     · rintro i -
@@ -88,18 +88,18 @@ This is a helper lemma for `hasFiniteProductsOfHasBinaryAndTerminal`, which is m
 than this.
 -/
 private theorem hasProduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasProduct f
-  | 0 => fun _ =>
+  | 0 => fun _ ↦
     letI : HasLimitsOfShape (Discrete (Fin 0)) C :=
       hasLimitsOfShape_of_equivalence (Discrete.equivalence.{0} finZeroEquiv'.symm)
     inferInstance
-  | n + 1 => fun f =>
+  | n + 1 => fun f ↦
     haveI := hasProduct_fin n
     HasLimit.mk ⟨_, extendFanIsLimit f (limit.isLimit _) (limit.isLimit _)⟩
 
 /-- If `C` has a terminal object and binary products, then it has finite products. -/
 theorem hasFiniteProducts_of_has_binary_and_terminal : HasFiniteProducts C :=
-  ⟨fun n => ⟨fun K => by
-    let that : (Discrete.functor fun n => K.obj ⟨n⟩) ≅ K := Discrete.natIso fun ⟨_⟩ => Iso.refl _
+  ⟨fun n ↦ ⟨fun K ↦ by
+    let that : (Discrete.functor fun n ↦ K.obj ⟨n⟩) ≅ K := Discrete.natIso fun ⟨_⟩ ↦ Iso.refl _
     rw [← hasLimit_iff_of_iso that]
     apply hasProduct_fin⟩⟩
 
@@ -118,7 +118,7 @@ variable [HasFiniteProducts.{v} C]
 -/
 lemma preservesFinOfPreservesBinaryAndTerminal :
     ∀ (n : ℕ) (f : Fin n → C), PreservesLimit (Discrete.functor f) F
-  | 0 => fun f => by
+  | 0 => fun f ↦ by
     letI : PreservesLimitsOfShape (Discrete (Fin 0)) F :=
       preservesLimitsOfShape_of_equiv.{0, 0} (Discrete.equivalence finZeroEquiv'.symm) _
     infer_instance
@@ -130,7 +130,7 @@ lemma preservesFinOfPreservesBinaryAndTerminal :
         (extendFanIsLimit f (limit.isLimit _) (limit.isLimit _)) _
     apply (isLimitMapConeFanMkEquiv _ _ _).symm _
     let this :=
-      extendFanIsLimit (fun i => F.obj (f i)) (isLimitOfHasProductOfPreservesLimit F _)
+      extendFanIsLimit (fun i ↦ F.obj (f i)) (isLimitOfHasProductOfPreservesLimit F _)
         (isLimitOfHasBinaryProductOfPreservesLimit F _ _)
     refine IsLimit.ofIsoLimit this ?_
     apply Cones.ext _ _
@@ -149,8 +149,8 @@ lemma Limits.PreservesFiniteProducts.of_preserves_binary_and_terminal :
     PreservesFiniteProducts F where
   preserves n := by
     refine ⟨fun {K} ↦ ?_⟩
-    let that : (Discrete.functor fun n => K.obj ⟨n⟩) ≅ K := Discrete.natIso fun ⟨i⟩ => Iso.refl _
-    haveI := preservesFinOfPreservesBinaryAndTerminal F n fun n => K.obj ⟨n⟩
+    let that : (Discrete.functor fun n ↦ K.obj ⟨n⟩) ≅ K := Discrete.natIso fun ⟨i⟩ ↦ Iso.refl _
+    haveI := preservesFinOfPreservesBinaryAndTerminal F n fun n ↦ K.obj ⟨n⟩
     apply preservesLimit_of_iso_diagram F that
 
 @[deprecated (since := "2025-04-20")]
@@ -171,7 +171,7 @@ In `extendCofanIsColimit` we show that if the two given cofans are colimits,
 then this cofan is also a colimit.
 -/
 @[simps!]
-def extendCofan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Cofan fun i : Fin n => f i.succ)
+def extendCofan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Cofan fun i : Fin n ↦ f i.succ)
     (c₂ : BinaryCofan (f 0) c₁.pt) : Cofan f :=
   Cofan.mk c₂.pt
     (by
@@ -183,12 +183,12 @@ def extendCofan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Cofan fun i : Fin n =>
 /-- Show that if the two given cofans in `extendCofan` are colimits,
 then the constructed cofan is also a colimit.
 -/
-def extendCofanIsColimit {n : ℕ} (f : Fin (n + 1) → C) {c₁ : Cofan fun i : Fin n => f i.succ}
+def extendCofanIsColimit {n : ℕ} (f : Fin (n + 1) → C) {c₁ : Cofan fun i : Fin n ↦ f i.succ}
     {c₂ : BinaryCofan (f 0) c₁.pt} (t₁ : IsColimit c₁) (t₂ : IsColimit c₂) :
     IsColimit (extendCofan c₁ c₂) where
   desc s := by
     apply (BinaryCofan.IsColimit.desc' t₂ (s.ι.app ⟨0⟩) _).1
-    apply t₁.desc ⟨_, Discrete.natTrans fun i => s.ι.app ⟨i.as.succ⟩⟩
+    apply t₁.desc ⟨_, Discrete.natTrans fun i ↦ s.ι.app ⟨i.as.succ⟩⟩
   fac s := by
     rintro ⟨j⟩
     refine Fin.inductionOn j ?_ ?_
@@ -220,18 +220,18 @@ This is a helper lemma for `hasCofiniteProductsOfHasBinaryAndTerminal`, which is
 than this.
 -/
 private theorem hasCoproduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasCoproduct f
-  | 0 => fun _ =>
+  | 0 => fun _ ↦
     letI : HasColimitsOfShape (Discrete (Fin 0)) C :=
       hasColimitsOfShape_of_equivalence (Discrete.equivalence.{0} finZeroEquiv'.symm)
     inferInstance
-  | n + 1 => fun f =>
+  | n + 1 => fun f ↦
     haveI := hasCoproduct_fin n
     HasColimit.mk ⟨_, extendCofanIsColimit f (colimit.isColimit _) (colimit.isColimit _)⟩
 
 /-- If `C` has an initial object and binary coproducts, then it has finite coproducts. -/
 theorem hasFiniteCoproducts_of_has_binary_and_initial : HasFiniteCoproducts C :=
-  ⟨fun n => ⟨fun K => by
-    let that : K ≅ Discrete.functor fun n => K.obj ⟨n⟩ := Discrete.natIso fun ⟨_⟩ => Iso.refl _
+  ⟨fun n ↦ ⟨fun K ↦ by
+    let that : K ≅ Discrete.functor fun n ↦ K.obj ⟨n⟩ := Discrete.natIso fun ⟨_⟩ ↦ Iso.refl _
     rw [hasColimit_iff_of_iso that]
     apply hasCoproduct_fin⟩⟩
 
@@ -249,7 +249,7 @@ variable [HasFiniteCoproducts.{v} C]
 -/
 lemma preserves_fin_of_preserves_binary_and_initial :
     ∀ (n : ℕ) (f : Fin n → C), PreservesColimit (Discrete.functor f) F
-  | 0 => fun f => by
+  | 0 => fun f ↦ by
     letI : PreservesColimitsOfShape (Discrete (Fin 0)) F :=
       preservesColimitsOfShape_of_equiv.{0, 0} (Discrete.equivalence finZeroEquiv'.symm) _
     infer_instance
@@ -261,7 +261,7 @@ lemma preserves_fin_of_preserves_binary_and_initial :
         (extendCofanIsColimit f (colimit.isColimit _) (colimit.isColimit _)) _
     apply (isColimitMapCoconeCofanMkEquiv _ _ _).symm _
     let this :=
-      extendCofanIsColimit (fun i => F.obj (f i))
+      extendCofanIsColimit (fun i ↦ F.obj (f i))
         (isColimitOfHasCoproductOfPreservesColimit F _)
         (isColimitOfHasBinaryCoproductOfPreservesColimit F _ _)
     refine IsColimit.ofIsoColimit this ?_
@@ -280,8 +280,8 @@ lemma preserves_fin_of_preserves_binary_and_initial :
 lemma preservesShape_fin_of_preserves_binary_and_initial (n : ℕ) :
     PreservesColimitsOfShape (Discrete (Fin n)) F where
   preservesColimit {K} := by
-    let that : (Discrete.functor fun n => K.obj ⟨n⟩) ≅ K := Discrete.natIso fun ⟨i⟩ => Iso.refl _
-    haveI := preserves_fin_of_preserves_binary_and_initial F n fun n => K.obj ⟨n⟩
+    let that : (Discrete.functor fun n ↦ K.obj ⟨n⟩) ≅ K := Discrete.natIso fun ⟨i⟩ ↦ Iso.refl _
+    haveI := preserves_fin_of_preserves_binary_and_initial F n fun n ↦ K.obj ⟨n⟩
     apply preservesColimit_of_iso_diagram F that
 
 /-- If `F` preserves the initial object and binary coproducts then it preserves finite products. -/

@@ -41,7 +41,7 @@ theorem toFinset_some {a : α} [Decidable (some a).Dom] : (some a).toFinset = {a
 
 @[simp]
 theorem coe_toFinset (o : Part α) [Decidable o.Dom] : (o.toFinset : Set α) = { x | x ∈ o } :=
-  Set.ext fun _ => mem_toFinset
+  Set.ext fun _ ↦ mem_toFinset
 
 end Part
 
@@ -52,7 +52,7 @@ variable [DecidableEq β] {f g : α →. β} [∀ x, Decidable (f x).Dom] [∀ x
 
 /-- Image of `s : Finset α` under a partially defined function `f : α →. β`. -/
 def pimage (f : α →. β) [∀ x, Decidable (f x).Dom] (s : Finset α) : Finset β :=
-  s.biUnion fun x => (f x).toFinset
+  s.biUnion fun x ↦ (f x).toFinset
 
 @[simp]
 theorem mem_pimage : b ∈ s.pimage f ↔ ∃ a ∈ s, b ∈ f a := by
@@ -60,11 +60,11 @@ theorem mem_pimage : b ∈ s.pimage f ↔ ∃ a ∈ s, b ∈ f a := by
 
 @[simp, norm_cast]
 theorem coe_pimage : (s.pimage f : Set β) = f.image s :=
-  Set.ext fun _ => mem_pimage
+  Set.ext fun _ ↦ mem_pimage
 
 @[simp]
 theorem pimage_some (s : Finset α) (f : α → β) [∀ x, Decidable (Part.some <| f x).Dom] :
-    (s.pimage fun x => Part.some (f x)) = s.image f := by
+    (s.pimage fun x ↦ Part.some (f x)) = s.image f := by
   ext
   simp [eq_comm]
 
@@ -74,7 +74,7 @@ theorem pimage_congr (h₁ : s = t) (h₂ : ∀ x ∈ t, f x = g x) : s.pimage f
 /-- Rewrite `s.pimage f` in terms of `Finset.filter`, `Finset.attach`, and `Finset.image`. -/
 theorem pimage_eq_image_filter : s.pimage f =
     {x ∈ s | (f x).Dom}.attach.image
-      fun x : { x // x ∈ filter (fun x => (f x).Dom) s } =>
+      fun x : { x // x ∈ filter (fun x ↦ (f x).Dom) s } =>
         (f x).get (mem_filter.mp x.coe_prop).2 := by
   aesop (add simp Part.mem_eq)
 
@@ -92,7 +92,7 @@ theorem pimage_subset {t : Finset β} : s.pimage f ⊆ t ↔ ∀ x ∈ s, ∀ y 
 
 @[mono]
 theorem pimage_mono (h : s ⊆ t) : s.pimage f ⊆ t.pimage f :=
-  pimage_subset.2 fun x hx _ hy => mem_pimage.2 ⟨x, h hx, hy⟩
+  pimage_subset.2 fun x hx _ hy ↦ mem_pimage.2 ⟨x, h hx, hy⟩
 
 theorem pimage_inter [DecidableEq α] : (s ∩ t).pimage f ⊆ s.pimage f ∩ t.pimage f := by
   simp only [← coe_subset, coe_pimage, coe_inter, PFun.image_inter]

@@ -37,7 +37,7 @@ def dualProd : LinearMap.BilinForm R (Module.Dual R M × M) :=
     (applyₗ.comp (snd R (Module.Dual R M) M)).compl₂ (fst R (Module.Dual R M) M) +
       ((applyₗ.comp (snd R (Module.Dual R M) M)).compl₂ (fst R (Module.Dual R M) M)).flip
 
-theorem isSymm_dualProd : (dualProd R M).IsSymm := ⟨fun _x _y => add_comm _ _⟩
+theorem isSymm_dualProd : (dualProd R M).IsSymm := ⟨fun _x _y ↦ add_comm _ _⟩
 
 end Semiring
 
@@ -56,7 +56,7 @@ theorem separatingLeft_dualProd :
   rw [← LinearEquiv.coe_toLinearMap, ← coe_comp]
   change Function.Injective h_d ↔ _
   have : h_d = prodMap id (Module.Dual.eval R M) := by
-    refine ext fun x => Prod.ext ?_ ?_
+    refine ext fun x ↦ Prod.ext ?_ ?_
     · ext
       dsimp [e, h_d, Module.Dual.eval, LinearEquiv.prodComm]
       simp
@@ -87,7 +87,7 @@ def dualProd : QuadraticForm R (Module.Dual R M × M) where
     rw [Prod.smul_fst, Prod.smul_snd, LinearMap.smul_apply, LinearMap.map_smul, smul_eq_mul,
       smul_eq_mul, smul_eq_mul, mul_assoc]
   exists_companion' :=
-    ⟨LinearMap.dualProd R M, fun p q => by
+    ⟨LinearMap.dualProd R M, fun p q ↦ by
       rw [LinearMap.dualProd_apply_apply, Prod.fst_add, Prod.snd_add, LinearMap.add_apply, map_add,
         map_add, add_right_comm _ (q.1 q.2), add_comm (q.1 p.2) (p.1 q.2), ← add_assoc, ←
         add_assoc]⟩
@@ -95,7 +95,7 @@ def dualProd : QuadraticForm R (Module.Dual R M × M) where
 @[simp]
 theorem _root_.LinearMap.dualProd.toQuadraticForm :
     (LinearMap.dualProd R M).toQuadraticMap = 2 • dualProd R M :=
-  ext fun _a => (two_nsmul _).symm
+  ext fun _a ↦ (two_nsmul _).symm
 
 variable {R M N}
 

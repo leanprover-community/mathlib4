@@ -42,7 +42,7 @@ instance groupObj (j) : Group ((F ⋙ forget Grp).obj j) :=
 def sectionsSubgroup : Subgroup (∀ j, F.obj j) :=
   { MonCat.sectionsSubmonoid (F ⋙ forget₂ Grp MonCat) with
     carrier := (F ⋙ forget Grp).sections
-    inv_mem' := fun {a} ah j j' f => by
+    inv_mem' := fun {a} ah j j' f ↦ by
       simp only [Functor.comp_map, Pi.inv_apply]
       dsimp [Functor.sections] at ah ⊢
       rw [(F.map f).hom.map_inv (a j), ah f] }
@@ -85,7 +85,7 @@ noncomputable instance Forget₂.createsLimit :
   letI : (forget₂ Grp.{u} MonCat.{u}).ReflectsIsomorphisms :=
     CategoryTheory.reflectsIsomorphisms_forget₂ _ _
   createsLimitOfReflectsIso (K := F) (F := (forget₂ Grp.{u} MonCat.{u}))
-    fun c' t =>
+    fun c' t ↦
       have : Small.{u} (Functor.sections ((F ⋙ forget₂ Grp MonCat) ⋙ forget MonCat)) := by
         have : HasLimit (F ⋙ forget₂ Grp MonCat) := ⟨_, t⟩
         apply Concrete.small_sections_of_hasLimit (F ⋙ forget₂ Grp MonCat)
@@ -101,7 +101,7 @@ noncomputable instance Forget₂.createsLimit :
         validLift := by apply IsLimit.uniqueUpToIso (MonCat.HasLimits.limitConeIsLimit.{v, u} _) t
         makesLimit :=
          IsLimit.ofFaithful (forget₂ Grp MonCat.{u}) (MonCat.HasLimits.limitConeIsLimit _)
-          (fun _ => _) fun _ => rfl }
+          (fun _ ↦ _) fun _ ↦ rfl }
 
 /-- A choice of limit cone for a functor into `Grp`.
 (Generally, you'll just want to use `limit F`.)
@@ -249,7 +249,7 @@ and then reuse the existing limit.
   and then reuse the existing limit. -/]
 noncomputable instance Forget₂.createsLimit :
     CreatesLimit F (forget₂ CommGrp Grp.{u}) :=
-  createsLimitOfReflectsIso (fun c hc => by
+  createsLimitOfReflectsIso (fun c hc ↦ by
     have : HasLimit _ := ⟨_, hc⟩
     have : Small.{u} (F ⋙ forget CommGrp).sections :=
       Concrete.small_sections_of_hasLimit (F ⋙ forget₂ CommGrp Grp)
@@ -267,7 +267,7 @@ noncomputable instance Forget₂.createsLimit :
         validLift := by apply IsLimit.uniqueUpToIso (Grp.limitConeIsLimit _) hc
         makesLimit :=
           IsLimit.ofFaithful (forget₂ _ Grp.{u} ⋙ forget₂ _ MonCat.{u})
-            (by apply MonCat.HasLimits.limitConeIsLimit _) (fun s => _) fun s => rfl })
+            (by apply MonCat.HasLimits.limitConeIsLimit _) (fun s ↦ _) fun s ↦ rfl })
 
 section
 
@@ -452,11 +452,11 @@ agrees with the usual group-theoretical kernel.
 def kernelIsoKer {G H : AddCommGrp.{u}} (f : G ⟶ H) :
     kernel f ≅ AddCommGrp.of f.hom.ker where
   hom := ofHom
-    { toFun := fun g => ⟨kernel.ι f g, ConcreteCategory.congr_hom (kernel.condition f) g⟩
+    { toFun := fun g ↦ ⟨kernel.ι f g, ConcreteCategory.congr_hom (kernel.condition f) g⟩
       map_zero' := by
         refine Subtype.ext ?_
         simp only [map_zero, ZeroMemClass.coe_zero]
-      map_add' := fun g g' => by
+      map_add' := fun g g' ↦ by
         refine Subtype.ext ?_
         simp }
   inv := kernel.lift f (ofHom (AddSubgroup.subtype f.hom.ker)) <| by ext x; exact x.2

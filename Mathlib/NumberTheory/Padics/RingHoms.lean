@@ -100,7 +100,7 @@ theorem norm_sub_modPart_aux (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
     ↑p ∣ r.num - r.num * r.den.gcdA p % p * ↑r.den := by
   rw [← ZMod.intCast_zmod_eq_zero_iff_dvd]
   simp only [Int.cast_natCast, Int.cast_mul, Int.cast_sub]
-  have := congr_arg (fun x => x % p : ℤ → ZMod p) (gcd_eq_gcd_ab r.den p)
+  have := congr_arg (fun x ↦ x % p : ℤ → ZMod p) (gcd_eq_gcd_ab r.den p)
   simp only [Int.cast_natCast, CharP.cast_eq_zero, EuclideanDomain.mod_zero, Int.cast_add,
     Int.cast_mul, zero_mul, add_zero] at this
   push_cast
@@ -376,7 +376,7 @@ theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p :
 
 /-- A ring hom from `ℤ_[p]` to `ZMod (p^n)`, with underlying function `PadicInt.appr n`. -/
 def toZModPow (n : ℕ) : ℤ_[p] →+* ZMod (p ^ n) :=
-  toZModHom (p ^ n) (fun x => appr x n)
+  toZModHom (p ^ n) (fun x ↦ appr x n)
     (by
       intros
       rw [Nat.cast_pow]
@@ -465,7 +465,7 @@ variable {R : Type*} [NonAssocSemiring R] {p : Nat} (f : ∀ k : ℕ, R →+* ZM
 whose `n`th value is the unique integer `k` such that `0 ≤ k < p ^ n`
 and `f n r = (k : ZMod (p ^ n))`.
 -/
-def nthHom (r : R) : ℕ → ℤ := fun n => (f n r : ZMod (p ^ n)).val
+def nthHom (r : R) : ℕ → ℤ := fun n ↦ (f n r : ZMod (p ^ n)).val
 
 @[simp]
 theorem nthHom_zero : nthHom f 0 = 0 := by
@@ -487,7 +487,7 @@ theorem pow_dvd_nthHom_sub (r : R) (i j : ℕ) (h : i ≤ j) :
   rw [← f_compat, RingHom.comp_apply]
   simp only [ZMod.cast_id, ZMod.castHom_apply, sub_self, ZMod.natCast_val, ZMod.intCast_cast]
 
-theorem isCauSeq_nthHom (r : R) : IsCauSeq (padicNorm p) fun n => nthHom f r n := by
+theorem isCauSeq_nthHom (r : R) : IsCauSeq (padicNorm p) fun n ↦ nthHom f r n := by
   intro ε hε
   obtain ⟨k, hk⟩ : ∃ k : ℕ, (p : ℚ) ^ (-((k : ℕ) : ℤ)) < ε := exists_pow_neg_lt_rat p hε
   use k
@@ -505,7 +505,7 @@ as a Cauchy sequence of rationals with respect to the `p`-adic norm.
 The `n`th value of the sequence is `((f n r).val : ℚ)`.
 -/
 def nthHomSeq (r : R) : PadicSeq p :=
-  ⟨fun n => nthHom f r n, isCauSeq_nthHom f_compat r⟩
+  ⟨fun n ↦ nthHom f r n, isCauSeq_nthHom f_compat r⟩
 
 -- this lemma ran into issues after changing to `NeZero` and I'm not sure why.
 theorem nthHomSeq_one : nthHomSeq f_compat 1 ≈ 1 := by

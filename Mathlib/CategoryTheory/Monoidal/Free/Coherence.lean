@@ -114,20 +114,20 @@ associators and unitors map to the same normal form. -/
 @[simp]
 def normalizeMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (normalizeObj' X ⟶ normalizeObj' Y)
   | _, _, Hom.id _ => 𝟙 _
-  | _, _, α_hom X Y Z => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
-  | _, _, α_inv _ _ _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
-  | _, _, l_hom _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
-  | _, _, l_inv _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
-  | _, _, ρ_hom _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
-  | _, _, ρ_inv _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
+  | _, _, α_hom X Y Z => by dsimp; exact Discrete.natTrans (fun _ ↦ 𝟙 _)
+  | _, _, α_inv _ _ _ => by dsimp; exact Discrete.natTrans (fun _ ↦ 𝟙 _)
+  | _, _, l_hom _ => by dsimp; exact Discrete.natTrans (fun _ ↦ 𝟙 _)
+  | _, _, l_inv _ => by dsimp; exact Discrete.natTrans (fun _ ↦ 𝟙 _)
+  | _, _, ρ_hom _ => by dsimp; exact Discrete.natTrans (fun _ ↦ 𝟙 _)
+  | _, _, ρ_inv _ => by dsimp; exact Discrete.natTrans (fun _ ↦ 𝟙 _)
   | _, _, (@Hom.comp _ _ _ _ f g) => normalizeMapAux f ≫ normalizeMapAux g
   | _, _, (@Hom.tensor _ T _ _ W f g) =>
-    Discrete.natTrans <| fun ⟨X⟩ => (normalizeMapAux g).app ⟨normalizeObj T X⟩ ≫
+    Discrete.natTrans <| fun ⟨X⟩ ↦ (normalizeMapAux g).app ⟨normalizeObj T X⟩ ≫
       (normalizeObj' W).map ((normalizeMapAux f).app ⟨X⟩)
   | _, _, (@Hom.whiskerLeft _ T _ W f) =>
-    Discrete.natTrans <| fun ⟨X⟩ => (normalizeMapAux f).app ⟨normalizeObj T X⟩
+    Discrete.natTrans <| fun ⟨X⟩ ↦ (normalizeMapAux f).app ⟨normalizeObj T X⟩
   | _, _, (@Hom.whiskerRight _ T _ f W) =>
-    Discrete.natTrans <| fun X => (normalizeObj' W).map <| (normalizeMapAux f).app X
+    Discrete.natTrans <| fun X ↦ (normalizeObj' W).map <| (normalizeMapAux f).app X
 
 end
 
@@ -158,8 +158,8 @@ def fullNormalize : F C ⥤ N C where
 the tensor product `n ⊗ X` in the free monoidal category is functorial in both `X` and `n`. -/
 @[simp]
 def tensorFunc : F C ⥤ N C ⥤ F C where
-  obj X := Discrete.functor fun n => inclusion.obj ⟨n⟩ ⊗ X
-  map f := Discrete.natTrans (fun _ => _ ◁ f)
+  obj X := Discrete.functor fun n ↦ inclusion.obj ⟨n⟩ ⊗ X
+  map f := Discrete.natTrans (fun _ ↦ _ ◁ f)
 
 theorem tensorFunc_map_app {X Y : F C} (f : X ⟶ Y) (n) : ((tensorFunc C).map f).app n = _ ◁ f :=
   rfl
@@ -232,7 +232,7 @@ variable {C}
 theorem normalizeObj_congr (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶ Y) :
     normalizeObj X n = normalizeObj Y n := by
   rcases f with ⟨f'⟩
-  apply @congr_fun _ _ fun n => normalizeObj X n
+  apply @congr_fun _ _ fun n ↦ normalizeObj X n
   clear n f
   induction f' with
   | comp _ _ _ _ => apply Eq.trans <;> assumption
@@ -261,7 +261,7 @@ theorem normalize_naturality (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶
     dsimp only [normalizeObj_tensor, normalizeIsoApp', tensor_eq_tensor, Iso.trans_hom,
       Iso.symm_hom, whiskerRightIso_hom, Function.comp_apply, inclusion_obj]
     rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc, ih]
-    have := dcongr_arg (fun x => (normalizeIsoApp' C η' x).hom) (normalizeObj_congr n h)
+    have := dcongr_arg (fun x ↦ (normalizeIsoApp' C η' x).hom) (normalizeObj_congr n h)
     simp [this]
   all_goals simp
 
@@ -281,20 +281,20 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
 /-- The isomorphism between an object and its normal form is natural. -/
 def fullNormalizeIso : 𝟭 (F C) ≅ fullNormalize C ⋙ inclusion :=
   NatIso.ofComponents
-  (fun X => (λ_ X).symm ≪≫ ((normalizeIso C).app X).app ⟨NormalMonoidalObject.unit⟩)
+  (fun X ↦ (λ_ X).symm ≪≫ ((normalizeIso C).app X).app ⟨NormalMonoidalObject.unit⟩)
     (by
       intro X Y f
       dsimp
       rw [leftUnitor_inv_naturality_assoc, Category.assoc, Iso.cancel_iso_inv_left]
       exact
-        congr_arg (fun f => NatTrans.app f (Discrete.mk NormalMonoidalObject.unit))
+        congr_arg (fun f ↦ NatTrans.app f (Discrete.mk NormalMonoidalObject.unit))
           ((normalizeIso.{u} C).hom.naturality f))
 
 end
 
 /-- The monoidal coherence theorem. -/
-instance subsingleton_hom : Quiver.IsThin (F C) := fun X Y =>
-  ⟨fun f g => by
+instance subsingleton_hom : Quiver.IsThin (F C) := fun X Y ↦
+  ⟨fun f g ↦ by
     have hfg : (fullNormalize C).map f = (fullNormalize C).map g := Subsingleton.elim _ _
     have hf := NatIso.naturality_2 (fullNormalizeIso.{u} C) f
     have hg := NatIso.naturality_2 (fullNormalizeIso.{u} C) g
@@ -325,7 +325,7 @@ end
 
 instance : Groupoid.{u} (F C) :=
   { (inferInstance : Category (F C)) with
-    inv := Quotient.lift (fun f => ⟦inverseAux f⟧) (by cat_disch) }
+    inv := Quotient.lift (fun f ↦ ⟦inverseAux f⟧) (by cat_disch) }
 
 end Groupoid
 

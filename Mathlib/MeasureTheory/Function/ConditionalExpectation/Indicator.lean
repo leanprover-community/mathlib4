@@ -46,8 +46,8 @@ theorem condExp_ae_eq_restrict_zero (hs : MeasurableSet[m] s) (hf : f =ᵐ[μ.re
   by_cases hf_int : Integrable f μ
   swap; · rw [condExp_of_not_integrable hf_int]
   refine ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' hm ?_ ?_ ?_ ?_ ?_
-  · exact fun t _ _ => integrable_condExp.integrableOn.integrableOn
-  · exact fun t _ _ => (integrable_zero _ _ _).integrableOn
+  · exact fun t _ _ ↦ integrable_condExp.integrableOn.integrableOn
+  · exact fun t _ _ ↦ (integrable_zero _ _ _).integrableOn
   · intro t ht _
     rw [Measure.restrict_restrict (hm _ ht), setIntegral_condExp hm hf_int (ht.inter hs), ←
       Measure.restrict_restrict (hm _ ht)]
@@ -61,7 +61,7 @@ theorem condExp_indicator_aux (hs : MeasurableSet[m] s) (hf : f =ᵐ[μ.restrict
     μ[s.indicator f|m] =ᵐ[μ] s.indicator (μ[f|m]) := by
   by_cases hm : m ≤ m0
   swap; · simp_rw [condExp_of_not_le hm, Set.indicator_zero']; rfl
-  have hsf_zero : ∀ g : α → E, g =ᵐ[μ.restrict sᶜ] 0 → s.indicator g =ᵐ[μ] g := fun g =>
+  have hsf_zero : ∀ g : α → E, g =ᵐ[μ.restrict sᶜ] 0 → s.indicator g =ᵐ[μ] g := fun g ↦
     indicator_ae_eq_of_restrict_compl_ae_eq_zero (hm _ hs)
   refine ((hsf_zero (μ[f|m]) (condExp_ae_eq_restrict_zero hs.compl hf)).trans ?_).symm
   exact condExp_congr_ae (hsf_zero f hf).symm
@@ -145,12 +145,12 @@ theorem condExp_ae_eq_restrict_of_measurableSpace_eq_on {m m₂ m0 : MeasurableS
   swap; · simp_rw [condExp_of_not_integrable hf_int]; rfl
   refine ((condExp_indicator hf_int hs_m).symm.trans ?_).trans (condExp_indicator hf_int hs_m₂)
   refine ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' hm₂
-    (fun s _ _ => integrable_condExp.integrableOn)
-    (fun s _ _ => integrable_condExp.integrableOn) ?_ ?_
+    (fun s _ _ ↦ integrable_condExp.integrableOn)
+    (fun s _ _ ↦ integrable_condExp.integrableOn) ?_ ?_
     stronglyMeasurable_condExp.aestronglyMeasurable
   swap
   · have : StronglyMeasurable[m] (μ[s.indicator f|m]) := stronglyMeasurable_condExp
-    refine this.aestronglyMeasurable.of_measurableSpace_le_on hm hs_m (fun t => (hs t).mp) ?_
+    refine this.aestronglyMeasurable.of_measurableSpace_le_on hm hs_m (fun t ↦ (hs t).mp) ?_
     exact condExp_ae_eq_restrict_zero hs_m.compl (indicator_ae_eq_restrict_compl (hm _ hs_m))
   intro t ht _
   have : ∫ x in t, (μ[s.indicator f|m]) x ∂μ = ∫ x in s ∩ t, (μ[s.indicator f|m]) x ∂μ := by

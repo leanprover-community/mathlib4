@@ -98,7 +98,7 @@ lemma algebraMap_pi_surjective_of_isLocalization [∀ i, Ring.KrullDimLE 0 (R i)
     [∀ i, IsLocalRing (R i)] [IsLocalization M S']
     [Finite ι] : Surjective (algebraMap (Π i, R i) S') := by
   intro s
-  set S := fun (i : ι) => Localization (M.map (Pi.evalRingHom R i))
+  set S := fun (i : ι) ↦ Localization (M.map (Pi.evalRingHom R i))
   obtain ⟨r, hr⟩ :=
     surjective_piRingHom_algebraMap_comp_piEvalRingHom
     S M ((lift (isUnit_piRingHom_algebraMap_comp_piEvalRingHom R S M)) s)

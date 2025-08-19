@@ -72,11 +72,11 @@ theorem adjoin_algebraMap_image_union_eq_adjoin_adjoin (s : Set S) (t : Set A) :
     adjoin R (algebraMap S A '' s ∪ t) = (adjoin (adjoin R s) t).restrictScalars R :=
   le_antisymm
     (closure_mono <|
-      Set.union_subset (Set.range_subset_iff.2 fun r => Or.inl ⟨algebraMap R (adjoin R s) r,
+      Set.union_subset (Set.range_subset_iff.2 fun r ↦ Or.inl ⟨algebraMap R (adjoin R s) r,
         (IsScalarTower.algebraMap_apply _ _ _ _).symm⟩)
-        (Set.union_subset_union_left _ fun _ ⟨_x, hx, hxs⟩ => hxs ▸ ⟨⟨_, subset_adjoin hx⟩, rfl⟩))
+        (Set.union_subset_union_left _ fun _ ⟨_x, hx, hxs⟩ ↦ hxs ▸ ⟨⟨_, subset_adjoin hx⟩, rfl⟩))
     (closure_le.2 <|
-      Set.union_subset (Set.range_subset_iff.2 fun x => adjoin_mono Set.subset_union_left <|
+      Set.union_subset (Set.range_subset_iff.2 fun x ↦ adjoin_mono Set.subset_union_left <|
         Algebra.adjoin_algebraMap R A s ▸ ⟨x, x.prop, rfl⟩)
         (Set.Subset.trans Set.subset_union_right subset_adjoin))
 
@@ -103,11 +103,11 @@ theorem Subalgebra.restrictScalars_adjoin {s : Set A} :
 theorem adjoin_top {A} [Semiring A] [Algebra S A] (t : Set A) :
     adjoin (⊤ : Subalgebra R S) t = (adjoin S t).restrictScalars (⊤ : Subalgebra R S) :=
   let equivTop : Subalgebra (⊤ : Subalgebra R S) A ≃o Subalgebra S A :=
-    { toFun := fun s => { s with algebraMap_mem' := fun r => s.algebraMap_mem ⟨r, trivial⟩ }
-      invFun := fun s => s.restrictScalars _
-      left_inv := fun _ => SetLike.coe_injective rfl
-      right_inv := fun _ => SetLike.coe_injective rfl
-      map_rel_iff' := @fun _ _ => Iff.rfl }
+    { toFun := fun s ↦ { s with algebraMap_mem' := fun r ↦ s.algebraMap_mem ⟨r, trivial⟩ }
+      invFun := fun s ↦ s.restrictScalars _
+      left_inv := fun _ ↦ SetLike.coe_injective rfl
+      right_inv := fun _ ↦ SetLike.coe_injective rfl
+      map_rel_iff' := @fun _ _ ↦ Iff.rfl }
   le_antisymm
     (adjoin_le <| show t ⊆ adjoin S t from subset_adjoin)
     (equivTop.symm_apply_le.mpr <|
@@ -132,8 +132,8 @@ theorem pow_smul_mem_of_smul_subset_of_mem_adjoin [CommSemiring B] [Algebra R B]
     (hx : x ∈ adjoin R s) (hr : algebraMap A B r ∈ B') : ∃ n₀ : ℕ, ∀ n ≥ n₀, r ^ n • x ∈ B' := by
   change x ∈ Subalgebra.toSubmodule (adjoin R s) at hx
   rw [adjoin_eq_span, Finsupp.mem_span_iff_linearCombination] at hx
-  rcases hx with ⟨l, rfl : (l.sum fun (i : Submonoid.closure s) (c : R) => c • (i : B)) = x⟩
-  choose n₁ n₂ using fun x : Submonoid.closure s => Submonoid.pow_smul_mem_closure_smul r s x.prop
+  rcases hx with ⟨l, rfl : (l.sum fun (i : Submonoid.closure s) (c : R) ↦ c • (i : B)) = x⟩
+  choose n₁ n₂ using fun x : Submonoid.closure s ↦ Submonoid.pow_smul_mem_closure_smul r s x.prop
   use l.support.sup n₁
   intro n hn
   rw [Finsupp.smul_sum]

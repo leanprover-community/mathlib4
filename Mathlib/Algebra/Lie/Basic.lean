@@ -162,7 +162,7 @@ theorem lie_zero : ⁅x, 0⁆ = (0 : M) :=
 
 @[simp]
 theorem zero_lie : ⁅(0 : L), m⁆ = 0 :=
-  (AddMonoidHom.mk' (fun x : L => ⁅x, m⁆) fun x y => add_lie x y m).map_zero
+  (AddMonoidHom.mk' (fun x : L ↦ ⁅x, m⁆) fun x y ↦ add_lie x y m).map_zero
 
 @[simp]
 theorem lie_self : ⁅x, x⁆ = 0 :=
@@ -200,23 +200,23 @@ theorem lie_sub : ⁅x, m - n⁆ = ⁅x, m⁆ - ⁅x, n⁆ := by simp [sub_eq_ad
 @[simp]
 theorem nsmul_lie (n : ℕ) : ⁅n • x, m⁆ = n • ⁅x, m⁆ :=
   AddMonoidHom.map_nsmul
-    { toFun := fun x : L => ⁅x, m⁆, map_zero' := zero_lie m, map_add' := fun _ _ => add_lie _ _ _ }
+    { toFun := fun x : L ↦ ⁅x, m⁆, map_zero' := zero_lie m, map_add' := fun _ _ ↦ add_lie _ _ _ }
     _ _
 
 @[simp]
 theorem lie_nsmul (n : ℕ) : ⁅x, n • m⁆ = n • ⁅x, m⁆ :=
   AddMonoidHom.map_nsmul
-    { toFun := fun m : M => ⁅x, m⁆, map_zero' := lie_zero x, map_add' := fun _ _ => lie_add _ _ _}
+    { toFun := fun m : M ↦ ⁅x, m⁆, map_zero' := lie_zero x, map_add' := fun _ _ ↦ lie_add _ _ _}
     _ _
 
 theorem zsmul_lie (a : ℤ) : ⁅a • x, m⁆ = a • ⁅x, m⁆ :=
   AddMonoidHom.map_zsmul
-    { toFun := fun x : L => ⁅x, m⁆, map_zero' := zero_lie m, map_add' := fun _ _ => add_lie _ _ _ }
+    { toFun := fun x : L ↦ ⁅x, m⁆, map_zero' := zero_lie m, map_add' := fun _ _ ↦ add_lie _ _ _ }
     _ _
 
 theorem lie_zsmul (a : ℤ) : ⁅x, a • m⁆ = a • ⁅x, m⁆ :=
   AddMonoidHom.map_zsmul
-    { toFun := fun m : M => ⁅x, m⁆, map_zero' := lie_zero x, map_add' := fun _ _ => lie_add _ _ _ }
+    { toFun := fun m : M ↦ ⁅x, m⁆, map_zero' := lie_zero x, map_add' := fun _ _ ↦ lie_add _ _ _ }
     _ _
 
 @[simp]
@@ -243,11 +243,11 @@ instance : LieModule ℤ L M where
 
 instance LinearMap.instLieRingModule : LieRingModule L (M →ₗ[R] N) where
   bracket x f :=
-    { toFun := fun m => ⁅x, f m⁆ - f ⁅x, m⁆
-      map_add' := fun m n => by
+    { toFun := fun m ↦ ⁅x, f m⁆ - f ⁅x, m⁆
+      map_add' := fun m n ↦ by
         simp only [lie_add, LinearMap.map_add]
         abel
-      map_smul' := fun t m => by
+      map_smul' := fun t m ↦ by
         simp only [smul_sub, LinearMap.map_smul, lie_smul, RingHom.id_apply] }
   add_lie x y f := by
     ext n
@@ -500,9 +500,9 @@ theorem LieRingModule.compLieHom_apply (x : L₁) (m : M) :
 theorem LieModule.compLieHom [Module R M] [LieModule R L₂ M] :
     @LieModule R L₁ M _ _ _ _ _ (LieRingModule.compLieHom M f) :=
   { __ := LieRingModule.compLieHom M f
-    smul_lie := fun t x m => by
+    smul_lie := fun t x m ↦ by
       simp only [LieRingModule.compLieHom_apply, smul_lie, LieHom.map_smul]
-    lie_smul := fun t x m => by
+    lie_smul := fun t x m ↦ by
       simp only [LieRingModule.compLieHom_apply, lie_smul] }
 
 end ModulePullBack
@@ -861,8 +861,8 @@ theorem zsmul_apply (z : ℤ) (f : M →ₗ⁅R,L⁆ N) (m : M) : (z • f) m = 
   rfl
 
 instance : AddCommGroup (M →ₗ⁅R,L⁆ N) :=
-  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
-    (fun _ _ => coe_zsmul _ _)
+  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ ↦ coe_nsmul _ _)
+    (fun _ _ ↦ coe_zsmul _ _)
 
 variable [LieAlgebra R L] [LieModule R L N]
 
@@ -878,7 +878,7 @@ theorem smul_apply (t : R) (f : M →ₗ⁅R,L⁆ N) (m : M) : (t • f) m = t �
 
 instance : Module R (M →ₗ⁅R,L⁆ N) :=
   Function.Injective.module R
-    { toFun := fun f => f.toLinearMap.toFun, map_zero' := rfl, map_add' := coe_add }
+    { toFun := fun f ↦ f.toLinearMap.toFun, map_zero' := rfl, map_add' := coe_add }
     coe_injective coe_smul
 
 end LieModuleHom

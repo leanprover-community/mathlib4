@@ -77,7 +77,7 @@ theorem le_partialSups_of_le (f : ι → α) {i j : ι} (h : i ≤ j) :
 
 theorem le_partialSups (f : ι → α) :
     f ≤ partialSups f :=
-  fun _ => le_partialSups_of_le f le_rfl
+  fun _ ↦ le_partialSups_of_le f le_rfl
 
 theorem partialSups_le (f : ι → α) (i : ι) (a : α) (w : ∀ j ≤ i, f j ≤ a) :
     partialSups f i ≤ a :=

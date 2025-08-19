@@ -36,7 +36,7 @@ namespace TopologicalSpace
 
 /-- The type of open neighbourhoods of a point `x` in a (bundled) topological space. -/
 def OpenNhds (x : X) :=
-  ObjectProperty.FullSubcategory fun U : Opens X => x ∈ U
+  ObjectProperty.FullSubcategory fun U : Opens X ↦ x ∈ U
 
 namespace OpenNhds
 variable {x : X} {U V W : OpenNhds x}
@@ -49,14 +49,14 @@ instance partialOrder (x : X) : PartialOrder (OpenNhds x) where
 
 instance (x : X) : Lattice (OpenNhds x) :=
   { OpenNhds.partialOrder x with
-    inf := fun U V => ⟨U.1 ⊓ V.1, ⟨U.2, V.2⟩⟩
-    le_inf := fun U V W => @le_inf _ _ U.1.1 V.1.1 W.1.1
-    inf_le_left := fun U V => @inf_le_left _ _ U.1.1 V.1.1
-    inf_le_right := fun U V => @inf_le_right _ _ U.1.1 V.1.1
-    sup := fun U V => ⟨U.1 ⊔ V.1, Set.mem_union_left V.1.1 U.2⟩
-    sup_le := fun U V W => @sup_le _ _ U.1.1 V.1.1 W.1.1
-    le_sup_left := fun U V => @le_sup_left _ _ U.1.1 V.1.1
-    le_sup_right := fun U V => @le_sup_right _ _ U.1.1 V.1.1 }
+    inf := fun U V ↦ ⟨U.1 ⊓ V.1, ⟨U.2, V.2⟩⟩
+    le_inf := fun U V W ↦ @le_inf _ _ U.1.1 V.1.1 W.1.1
+    inf_le_left := fun U V ↦ @inf_le_left _ _ U.1.1 V.1.1
+    inf_le_right := fun U V ↦ @inf_le_right _ _ U.1.1 V.1.1
+    sup := fun U V ↦ ⟨U.1 ⊔ V.1, Set.mem_union_left V.1.1 U.2⟩
+    sup_le := fun U V W ↦ @sup_le _ _ U.1.1 V.1.1 W.1.1
+    le_sup_left := fun U V ↦ @le_sup_left _ _ U.1.1 V.1.1
+    le_sup_right := fun U V ↦ @le_sup_right _ _ U.1.1 V.1.1 }
 
 instance (x : X) : OrderTop (OpenNhds x) where
   top := ⟨⊤, trivial⟩
@@ -128,7 +128,7 @@ theorem op_map_id_obj (x : X) (U : (OpenNhds x)ᵒᵖ) : (map (𝟙 X) x).op.obj
 with the inclusion functors into `Opens X`. -/
 @[simps! hom_app inv_app]
 def inclusionMapIso (x : X) : inclusion (f x) ⋙ Opens.map f ≅ map f x ⋙ inclusion x :=
-  NatIso.ofComponents fun U => { hom := 𝟙 _, inv := 𝟙 _ }
+  NatIso.ofComponents fun U ↦ { hom := 𝟙 _, inv := 𝟙 _ }
 
 @[simp]
 theorem inclusionMapIso_hom (x : X) : (inclusionMapIso f x).hom = 𝟙 _ :=
@@ -156,8 +156,8 @@ def functorNhds (h : IsOpenMap f) (x : X) : OpenNhds x ⥤ OpenNhds (f x) where
 
 /-- An open map `f : X ⟶ Y` induces an adjunction between `OpenNhds x` and `OpenNhds (f x)`. -/
 def adjunctionNhds (h : IsOpenMap f) (x : X) : IsOpenMap.functorNhds h x ⊣ OpenNhds.map f x where
-  unit := { app := fun _ => homOfLE fun x hxU => ⟨x, hxU, rfl⟩ }
-  counit := { app := fun _ => homOfLE fun _ ⟨_, hfxV, hxy⟩ => hxy ▸ hfxV }
+  unit := { app := fun _ ↦ homOfLE fun x hxU ↦ ⟨x, hxU, rfl⟩ }
+  counit := { app := fun _ ↦ homOfLE fun _ ⟨_, hfxV, hxy⟩ ↦ hxy ▸ hfxV }
 
 end IsOpenMap
 
@@ -179,7 +179,7 @@ An inducing map `f : X ⟶ Y` induces an adjunction between `open_nhds x` and `o
 -/
 def adjunctionNhds (h : IsInducing f) (x : X) :
     OpenNhds.map f x ⊣ h.functorNhds x where
-  unit := { app := fun U => homOfLE (h.adjunction.unit.app U.1).le }
-  counit := { app := fun U => homOfLE (h.adjunction.counit.app U.1).le }
+  unit := { app := fun U ↦ homOfLE (h.adjunction.unit.app U.1).le }
+  counit := { app := fun U ↦ homOfLE (h.adjunction.counit.app U.1).le }
 
 end Topology.IsInducing

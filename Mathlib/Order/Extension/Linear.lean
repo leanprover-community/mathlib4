@@ -24,7 +24,7 @@ theorem extend_partialOrder {α : Type u} (r : α → α → Prop) [IsPartialOrd
   have hS : ∀ c, c ⊆ S → IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub ∈ S, ∀ z ∈ c, z ≤ ub := by
     rintro c hc₁ hc₂ s hs
     haveI := (hc₁ hs).1
-    refine ⟨sSup c, ?_, fun z hz => le_sSup hz⟩
+    refine ⟨sSup c, ?_, fun z hz ↦ le_sSup hz⟩
     refine
         { refl := ?_
           trans := ?_

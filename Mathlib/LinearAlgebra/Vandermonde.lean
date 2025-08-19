@@ -92,17 +92,17 @@ theorem vandermonde_apply (v : Fin n → R) (i j) : vandermonde v i j = v i ^ (j
 @[simp]
 theorem vandermonde_cons (v0 : R) (v : Fin n → R) :
     vandermonde (Fin.cons v0 v : Fin n.succ → R) =
-      Fin.cons (fun (j : Fin n.succ) => v0 ^ (j : ℕ)) fun i => Fin.cons 1
-      fun j => v i * vandermonde v i j := by
+      Fin.cons (fun (j : Fin n.succ) ↦ v0 ^ (j : ℕ)) fun i ↦ Fin.cons 1
+      fun j ↦ v i * vandermonde v i j := by
   ext i j
-  refine Fin.cases (by simp) (fun i => ?_) i
-  refine Fin.cases (by simp) (fun j => ?_) j
+  refine Fin.cases (by simp) (fun i ↦ ?_) i
+  refine Fin.cases (by simp) (fun j ↦ ?_) j
   simp [pow_succ']
 
 theorem vandermonde_succ (v : Fin n.succ → R) :
     vandermonde v = .of
-      Fin.cons (fun (j : Fin n.succ) => v 0 ^ (j : ℕ)) fun i =>
-        Fin.cons 1 fun j => v i.succ * vandermonde (Fin.tail v) i j := by
+      Fin.cons (fun (j : Fin n.succ) ↦ v 0 ^ (j : ℕ)) fun i ↦
+        Fin.cons 1 fun j ↦ v i.succ * vandermonde (Fin.tail v) i j := by
   conv_lhs => rw [← Fin.cons_self_tail v, vandermonde_cons]
   rfl
 
@@ -214,7 +214,7 @@ theorem det_vandermonde_eq_zero_iff [IsDomain R] {v : Fin n → R} :
     rintro i ⟨_, j, h₁, h₂⟩
     exact ⟨j, i, h₂, (mem_Ioi.mp h₁).ne'⟩
   · simp only [Ne, forall_exists_index, and_imp]
-    refine fun i j h₁ h₂ => Matrix.det_zero_of_row_eq h₂ (funext fun k => ?_)
+    refine fun i j h₁ h₂ ↦ Matrix.det_zero_of_row_eq h₂ (funext fun k ↦ ?_)
     rw [vandermonde_apply, vandermonde_apply, h₁]
 
 theorem det_vandermonde_ne_zero_iff [IsDomain R] {v : Fin n → R} :
@@ -252,20 +252,20 @@ open Polynomial
 
 theorem eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials (v : Fin n → R)
     (p : Fin n → R[X]) (h_deg : ∀ i, (p i).natDegree ≤ i) :
-    Matrix.of (fun i j => ((p j).eval (v i))) =
-    (Matrix.vandermonde v) * (Matrix.of (fun (i j : Fin n) => (p j).coeff i)) := by
+    Matrix.of (fun i j ↦ ((p j).eval (v i))) =
+    (Matrix.vandermonde v) * (Matrix.of (fun (i j : Fin n) ↦ (p j).coeff i)) := by
   ext i j
   rw [Matrix.mul_apply, eval, Matrix.of_apply, eval₂]
   simp only [Matrix.vandermonde]
   have : (p j).support ⊆ range n := supp_subset_range <| Nat.lt_of_le_of_lt (h_deg j) <| Fin.prop j
-  rw [sum_eq_of_subset _ (fun j => zero_mul ((v i) ^ j)) this, ← Fin.sum_univ_eq_sum_range]
+  rw [sum_eq_of_subset _ (fun j ↦ zero_mul ((v i) ^ j)) this, ← Fin.sum_univ_eq_sum_range]
   congr
   ext k
   rw [mul_comm, Matrix.of_apply, RingHom.id_apply, of_apply]
 
 theorem det_eval_matrixOfPolynomials_eq_det_vandermonde (v : Fin n → R) (p : Fin n → R[X])
     (h_deg : ∀ i, (p i).natDegree = i) (h_monic : ∀ i, Monic <| p i) :
-    (Matrix.vandermonde v).det = (Matrix.of (fun i j => ((p j).eval (v i)))).det := by
+    (Matrix.vandermonde v).det = (Matrix.of (fun i j ↦ ((p j).eval (v i)))).det := by
   rw [Matrix.eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials v p (fun i ↦
       Nat.le_of_eq (h_deg i)), Matrix.det_mul,
       Matrix.det_matrixOfPolynomials p h_deg h_monic, mul_one]

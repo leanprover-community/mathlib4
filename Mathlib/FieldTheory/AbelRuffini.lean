@@ -108,7 +108,7 @@ theorem gal_X_pow_sub_C_isSolvable_aux (n : ℕ) (a : F)
   have hn'' : X ^ n - C a ≠ 0 := X_pow_sub_C_ne_zero hn' a
   have hn''' : (X ^ n - 1 : F[X]) ≠ 0 := X_pow_sub_C_ne_zero hn' 1
   have mem_range : ∀ {c : (X ^ n - C a).SplittingField},
-      (c ^ n = 1 → (∃ d, algebraMap F (X ^ n - C a).SplittingField d = c)) := fun {c} hc =>
+      (c ^ n = 1 → (∃ d, algebraMap F (X ^ n - C a).SplittingField d = c)) := fun {c} hc ↦
     RingHom.mem_range.mp (minpoly.mem_range_of_degree_eq_one F c (h.def.resolve_left hn'''
       (minpoly.irreducible ((SplittingField.instNormal (X ^ n - C a)).isIntegral c))
       (minpoly.dvd F c (by rwa [map_id, map_sub, sub_eq_zero, aeval_X_pow, aeval_one]))))
@@ -151,7 +151,7 @@ theorem splits_X_pow_sub_one_of_X_pow_sub_C {F : Type*} [Field F] {E : Type*} [F
   have hs : _ = _ * (s.map _).prod := eq_prod_roots_of_splits h
   rw [leadingCoeff_X_pow_sub_C hn', RingHom.map_one, C_1, one_mul] at hs
   have hs' : Multiset.card s = n := (natDegree_eq_card_roots h).symm.trans natDegree_X_pow_sub_C
-  apply @splits_of_exists_multiset F E _ _ i (X ^ n - 1) (s.map fun c : E => c / b)
+  apply @splits_of_exists_multiset F E _ _ i (X ^ n - 1) (s.map fun c : E ↦ c / b)
   rw [leadingCoeff_X_pow_sub_one hn', RingHom.map_one, C_1, one_mul, Multiset.map_map]
   have C_mul_C : C (i a⁻¹) * C (i a) = 1 := by
     rw [← C_mul, ← i.map_mul, inv_mul_cancel₀ ha, i.map_one, C_1]
@@ -159,7 +159,7 @@ theorem splits_X_pow_sub_one_of_X_pow_sub_C {F : Type*} [Field F] {E : Type*} [F
     rw [Polynomial.map_sub, Polynomial.map_sub, Polynomial.map_pow, map_X, map_C,
       Polynomial.map_one, sub_comp, pow_comp, X_comp, C_comp, mul_pow, ← C_pow, hb, mul_sub, ←
       mul_assoc, C_mul_C, one_mul]
-  have key2 : ((fun q : E[X] => q.comp (C b * X)) ∘ fun c : E => X - C c) = fun c : E =>
+  have key2 : ((fun q : E[X] ↦ q.comp (C b * X)) ∘ fun c : E ↦ X - C c) = fun c : E ↦
       C b * (X - C (c / b)) := by
     ext1 c
     dsimp only [Function.comp_apply]
@@ -230,7 +230,7 @@ theorem induction (P : solvableByRad F E → Prop)
     convert Pα
     exact Subtype.ext hα₀.symm
   apply IsSolvableByRad.rec
-  · exact fun α => ⟨algebraMap F (solvableByRad F E) α, rfl, base α⟩
+  · exact fun α ↦ ⟨algebraMap F (solvableByRad F E) α, rfl, base α⟩
   · intro α β _ _ Pα Pβ
     obtain ⟨⟨α₀, hα₀, Pα⟩, β₀, hβ₀, Pβ⟩ := Pα, Pβ
     exact ⟨α₀ + β₀, by rw [← hα₀, ← hβ₀]; rfl, add α₀ β₀ Pα Pβ⟩
@@ -252,16 +252,16 @@ theorem induction (P : solvableByRad F E → Prop)
 theorem isIntegral (α : solvableByRad F E) : IsIntegral F α := by
   revert α
   apply solvableByRad.induction
-  · exact fun _ => isIntegral_algebraMap
-  · exact fun _ _ => IsIntegral.add
-  · exact fun _ => IsIntegral.neg
-  · exact fun _ _ => IsIntegral.mul
+  · exact fun _ ↦ isIntegral_algebraMap
+  · exact fun _ _ ↦ IsIntegral.add
+  · exact fun _ ↦ IsIntegral.neg
+  · exact fun _ _ ↦ IsIntegral.mul
   · intro α hα
     exact IsIntegral.inv hα
   · intro α n hn hα
     obtain ⟨p, h1, h2⟩ := hα.isAlgebraic
     refine IsAlgebraic.isIntegral ⟨p.comp (X ^ n),
-      ⟨fun h => h1 (leadingCoeff_eq_zero.mp ?_), by rw [aeval_comp, aeval_X_pow, h2]⟩⟩
+      ⟨fun h ↦ h1 (leadingCoeff_eq_zero.mp ?_), by rw [aeval_comp, aeval_X_pow, h2]⟩⟩
     rwa [← leadingCoeff_eq_zero, leadingCoeff_comp, leadingCoeff_X_pow, one_pow, mul_one] at h
     rwa [natDegree_X_pow]
 
@@ -334,14 +334,14 @@ theorem induction1 {α β : solvableByRad F E} (hβ : β ∈ F⟮α⟯) (hα : P
 theorem isSolvable (α : solvableByRad F E) : IsSolvable (minpoly F α).Gal := by
   revert α
   apply solvableByRad.induction
-  · exact fun α => by rw [minpoly.eq_X_sub_C (solvableByRad F E)]; exact gal_X_sub_C_isSolvable α
-  · exact fun α β => induction2 (add_mem (subset_adjoin F _ (Set.mem_insert α _))
+  · exact fun α ↦ by rw [minpoly.eq_X_sub_C (solvableByRad F E)]; exact gal_X_sub_C_isSolvable α
+  · exact fun α β ↦ induction2 (add_mem (subset_adjoin F _ (Set.mem_insert α _))
       (subset_adjoin F _ (Set.mem_insert_of_mem α (Set.mem_singleton β))))
-  · exact fun α => induction1 (neg_mem (mem_adjoin_simple_self F α))
-  · exact fun α β => induction2 (mul_mem (subset_adjoin F _ (Set.mem_insert α _))
+  · exact fun α ↦ induction1 (neg_mem (mem_adjoin_simple_self F α))
+  · exact fun α β ↦ induction2 (mul_mem (subset_adjoin F _ (Set.mem_insert α _))
       (subset_adjoin F _ (Set.mem_insert_of_mem α (Set.mem_singleton β))))
-  · exact fun α => induction1 (inv_mem (mem_adjoin_simple_self F α))
-  · exact fun α n => induction3
+  · exact fun α ↦ induction1 (inv_mem (mem_adjoin_simple_self F α))
+  · exact fun α n ↦ induction3
 
 /-- **Abel-Ruffini Theorem** (one direction): An irreducible polynomial with an
 `IsSolvableByRad` root has solvable Galois group -/

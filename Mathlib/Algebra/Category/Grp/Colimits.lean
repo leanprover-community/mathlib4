@@ -67,7 +67,7 @@ variable (c : Cocone F)
 /-- (implementation detail) Part of the universal property of the colimit cocone, but without
 assuming that `Quot F` lives in the correct universe. -/
 def Quot.desc [DecidableEq J] : Quot.{w} F →+ c.pt := by
-  refine QuotientAddGroup.lift _ (DFinsupp.sumAddHom fun x => (c.ι.app x).hom) ?_
+  refine QuotientAddGroup.lift _ (DFinsupp.sumAddHom fun x ↦ (c.ι.app x).hom) ?_
   dsimp
   rw [AddSubgroup.closure_le]
   intro _ ⟨_, _, _, _, eq⟩

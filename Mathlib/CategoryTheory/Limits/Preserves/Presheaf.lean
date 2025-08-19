@@ -59,7 +59,7 @@ theorem isFiltered_costructuredArrow_yoneda_of_preservesFiniteLimits
   suffices IsCofiltered A.Elements from
     IsFiltered.of_equivalence (CategoryOfElements.costructuredArrowYonedaEquivalence _)
   suffices HasFiniteLimits A.Elements from IsCofiltered.of_hasFiniteLimits A.Elements
-  exact ⟨fun J _ _ => inferInstance⟩
+  exact ⟨fun J _ _ ↦ inferInstance⟩
 
 end LargeCategory
 
@@ -134,7 +134,7 @@ theorem iso_hom [IsFiltered (CostructuredArrow yoneda A)] : (iso A K).hom = limi
   dsimp [iso, -Iso.app_hom]
   simp only [Category.assoc]
   rw [Eq.comm, ← Iso.inv_comp_eq, ← Iso.inv_comp_eq]
-  refine limit.hom_ext (fun j => colimit.hom_ext (fun i => ?_))
+  refine limit.hom_ext (fun j ↦ colimit.hom_ext (fun i ↦ ?_))
   simp only [Category.assoc]
   -- `simp` is not too helpful here because we will need to apply `NatTrans.comp_app_assoc`
   -- backwards at certain points, so we rewrite the term manually.
@@ -172,7 +172,7 @@ One direction of Proposition 3.3.13 of [Kashiwara2006].
 -/
 lemma preservesFiniteLimits_of_isFiltered_costructuredArrow_yoneda
     [IsFiltered (CostructuredArrow yoneda A)] : PreservesFiniteLimits A where
-  preservesFiniteLimits _ _ _ := ⟨fun {_} => preservesLimit_of_isIso_post _ _⟩
+  preservesFiniteLimits _ _ _ := ⟨fun {_} ↦ preservesLimit_of_isIso_post _ _⟩
 
 /-- If `C` is a small finitely cocomplete category and `A : Cᵒᵖ ⥤ Type u` is a presheaf, then
 `CostructuredArrow yoneda A` is filtered if and only if `A` preserves finite limits.
@@ -181,7 +181,7 @@ Proposition 3.3.13 of [Kashiwara2006].
 -/
 theorem isFiltered_costructuredArrow_yoneda_iff_nonempty_preservesFiniteLimits :
     IsFiltered (CostructuredArrow yoneda A) ↔ PreservesFiniteLimits A :=
-  ⟨fun _ => preservesFiniteLimits_of_isFiltered_costructuredArrow_yoneda A,
-   fun _ => isFiltered_costructuredArrow_yoneda_of_preservesFiniteLimits A⟩
+  ⟨fun _ ↦ preservesFiniteLimits_of_isFiltered_costructuredArrow_yoneda A,
+   fun _ ↦ isFiltered_costructuredArrow_yoneda_of_preservesFiniteLimits A⟩
 
 end CategoryTheory.Limits

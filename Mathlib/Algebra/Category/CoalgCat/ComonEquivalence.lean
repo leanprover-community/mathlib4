@@ -98,8 +98,8 @@ category of `R`-modules. -/
 def comonEquivalence : CoalgCat R ≌ Comon_ (ModuleCat R) where
   functor := toComon R
   inverse := ofComon R
-  unitIso := NatIso.ofComponents (fun _ => Iso.refl _) fun _ => by rfl
-  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) fun _ => by rfl
+  unitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _) fun _ ↦ by rfl
+  counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _) fun _ ↦ by rfl
 
 variable {R}
 

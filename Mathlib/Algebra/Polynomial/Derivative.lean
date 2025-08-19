@@ -40,7 +40,7 @@ variable [Semiring R]
 
 /-- `derivative p` is the formal derivative of the polynomial `p` -/
 def derivative : R[X] →ₗ[R] R[X] where
-  toFun p := p.sum fun n a => C (a * n) * X ^ (n - 1)
+  toFun p := p.sum fun n a ↦ C (a * n) * X ^ (n - 1)
   map_add' p q := by
     rw [sum_add_index] <;>
       simp only [add_mul, forall_const, RingHom.map_add, zero_mul, RingHom.map_zero]
@@ -49,7 +49,7 @@ def derivative : R[X] →ₗ[R] R[X] where
       simp only [mul_sum, ← C_mul', mul_assoc, RingHom.map_mul, forall_const, zero_mul,
         RingHom.map_zero, sum]
 
-theorem derivative_apply (p : R[X]) : derivative p = p.sum fun n a => C (a * n) * X ^ (n - 1) :=
+theorem derivative_apply (p : R[X]) : derivative p = p.sum fun n a ↦ C (a * n) * X ^ (n - 1) :=
   rfl
 
 theorem coeff_derivative (p : R[X]) (n : ℕ) :
@@ -154,11 +154,11 @@ theorem derivative_C_mul (a : R) (p : R[X]) :
 
 theorem of_mem_support_derivative {p : R[X]} {n : ℕ} (h : n ∈ p.derivative.support) :
     n + 1 ∈ p.support :=
-  mem_support_iff.2 fun h1 : p.coeff (n + 1) = 0 =>
+  mem_support_iff.2 fun h1 : p.coeff (n + 1) = 0 ↦
     mem_support_iff.1 h <| show p.derivative.coeff n = 0 by rw [coeff_derivative, h1, zero_mul]
 
 theorem degree_derivative_lt {p : R[X]} (hp : p ≠ 0) : p.derivative.degree < p.degree :=
-  (Finset.sup_lt_iff <| bot_lt_iff_ne_bot.2 <| mt degree_eq_bot.1 hp).2 fun n hp =>
+  (Finset.sup_lt_iff <| bot_lt_iff_ne_bot.2 <| mt degree_eq_bot.1 hp).2 fun n hp ↦
     lt_of_lt_of_le (WithBot.coe_lt_coe.2 n.lt_succ_self) <|
       Finset.le_sup <| of_mem_support_derivative hp
 
@@ -172,7 +172,7 @@ theorem natDegree_derivative_lt {p : R[X]} (hp : p.natDegree ≠ 0) :
   · rw [hp', Polynomial.natDegree_zero]
     exact hp.bot_lt
   · rw [natDegree_lt_natDegree_iff hp']
-    exact degree_derivative_lt fun h => hp (h.symm ▸ natDegree_zero)
+    exact degree_derivative_lt fun h ↦ hp (h.symm ▸ natDegree_zero)
 
 theorem natDegree_derivative_le (p : R[X]) : p.derivative.natDegree ≤ p.natDegree - 1 := by
   by_cases p0 : p.natDegree = 0
@@ -260,7 +260,7 @@ theorem derivative_mul {f g : R[X]} : derivative (f * g) = derivative f * g + f 
   rw [add_assoc, add_comm n 1]
 
 theorem derivative_eval (p : R[X]) (x : R) :
-    p.derivative.eval x = p.sum fun n a => a * n * x ^ (n - 1) := by
+    p.derivative.eval x = p.sum fun n a ↦ a * n * x ^ (n - 1) := by
   simp_rw [derivative_apply, eval_sum, eval_mul_X_pow, eval_C]
 
 @[simp]
@@ -383,7 +383,7 @@ theorem iterate_derivative_mul {n} (p q : R[X]) :
     congr
     refine (sum_range_succ' _ _).trans (congr_arg₂ (· + ·) ?_ ?_)
     · rw [sum_range_succ, Nat.choose_succ_self, zero_smul, add_zero]
-      refine sum_congr rfl fun k hk => ?_
+      refine sum_congr rfl fun k hk ↦ ?_
       rw [mem_range] at hk
       congr
       omega
@@ -443,13 +443,13 @@ variable [CommSemiring R]
 
 theorem derivative_pow_succ (p : R[X]) (n : ℕ) :
     derivative (p ^ (n + 1)) = C (n + 1 : R) * p ^ n * derivative p :=
-  Nat.recOn n (by simp) fun n ih => by
+  Nat.recOn n (by simp) fun n ih ↦ by
     rw [pow_succ, derivative_mul, ih, Nat.add_one, mul_right_comm, C_add,
       add_mul, add_mul, pow_succ, ← mul_assoc, C_1, one_mul]; simp [add_mul]
 
 theorem derivative_pow (p : R[X]) (n : ℕ) :
     derivative (p ^ n) = C (n : R) * p ^ (n - 1) * derivative p :=
-  Nat.casesOn n (by rw [pow_zero, derivative_one, Nat.cast_zero, C_0, zero_mul, zero_mul]) fun n =>
+  Nat.casesOn n (by rw [pow_zero, derivative_one, Nat.cast_zero, C_0, zero_mul, zero_mul]) fun n ↦
     by rw [p.derivative_pow_succ n, Nat.add_one_sub_one, n.cast_succ]
 
 theorem derivative_sq (p : R[X]) : derivative (p ^ 2) = C 2 * p * derivative p := by
@@ -525,24 +525,24 @@ theorem derivative_comp (p q : R[X]) :
 /-- Chain rule for formal derivative of polynomials. -/
 theorem derivative_eval₂_C (p q : R[X]) :
     derivative (p.eval₂ C q) = p.derivative.eval₂ C q * derivative q :=
-  Polynomial.induction_on p (fun r => by rw [eval₂_C, derivative_C, eval₂_zero, zero_mul])
-    (fun p₁ p₂ ih₁ ih₂ => by
+  Polynomial.induction_on p (fun r ↦ by rw [eval₂_C, derivative_C, eval₂_zero, zero_mul])
+    (fun p₁ p₂ ih₁ ih₂ ↦ by
       rw [eval₂_add, derivative_add, ih₁, ih₂, derivative_add, eval₂_add, add_mul])
-    fun n r ih => by
+    fun n r ih ↦ by
     rw [pow_succ, ← mul_assoc, eval₂_mul, eval₂_X, derivative_mul, ih, @derivative_mul _ _ _ X,
       derivative_X, mul_one, eval₂_add, @eval₂_mul _ _ _ _ X, eval₂_X, add_mul, mul_right_comm]
 
 theorem derivative_prod [DecidableEq ι] {s : Multiset ι} {f : ι → R[X]} :
     derivative (Multiset.map f s).prod =
-      (Multiset.map (fun i => (Multiset.map f (s.erase i)).prod * derivative (f i)) s).sum := by
-  refine Multiset.induction_on s (by simp) fun i s h => ?_
+      (Multiset.map (fun i ↦ (Multiset.map f (s.erase i)).prod * derivative (f i)) s).sum := by
+  refine Multiset.induction_on s (by simp) fun i s h ↦ ?_
   rw [Multiset.map_cons, Multiset.prod_cons, derivative_mul, Multiset.map_cons _ i s,
     Multiset.sum_cons, Multiset.erase_cons_head, mul_comm (derivative (f i))]
   congr
   rw [h, ← AddMonoidHom.coe_mulLeft, (AddMonoidHom.mulLeft (f i)).map_multiset_sum _,
     AddMonoidHom.coe_mulLeft]
   simp only [Function.comp_apply, Multiset.map_map]
-  refine congr_arg _ (Multiset.map_congr rfl fun j hj => ?_)
+  refine congr_arg _ (Multiset.map_congr rfl fun j hj ↦ ?_)
   rw [← mul_assoc, ← Multiset.prod_cons, ← Multiset.map_cons]
   by_cases hij : i = j
   · simp [hij, Multiset.cons_erase hj]
@@ -604,10 +604,10 @@ theorem iterate_derivative_comp_one_sub_X (p : R[X]) (k : ℕ) :
 
 theorem eval_multiset_prod_X_sub_C_derivative [DecidableEq R]
     {S : Multiset R} {r : R} (hr : r ∈ S) :
-    eval r (derivative (Multiset.map (fun a => X - C a) S).prod) =
-      (Multiset.map (fun a => r - a) (S.erase r)).prod := by
+    eval r (derivative (Multiset.map (fun a ↦ X - C a) S).prod) =
+      (Multiset.map (fun a ↦ r - a) (S.erase r)).prod := by
   nth_rw 1 [← Multiset.cons_erase hr]
-  have := (evalRingHom r).map_multiset_prod (Multiset.map (fun a => X - C a) (S.erase r))
+  have := (evalRingHom r).map_multiset_prod (Multiset.map (fun a ↦ X - C a) (S.erase r))
   simpa using this
 
 theorem derivative_X_sub_C_pow (c : R) (m : ℕ) :

@@ -37,7 +37,7 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
     (i : Δ' ⟶ ⦋n⦌) [hi : Mono i] (h₁ : Δ'.len ≠ n) (h₂ : ¬Isδ₀ i) :
     PInfty.f n ≫ X.map i.op = 0 := by
   induction' Δ' using SimplexCategory.rec with m
-  obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt (len_lt_of_mono i fun h => by
+  obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt (len_lt_of_mono i fun h ↦ by
         rw [← h] at h₁
         exact h₁ rfl)
   simp only [len_mk] at hk
@@ -54,11 +54,11 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
     clear h₂ hi
     subst hk
     obtain ⟨j₁ : Fin (_ + 1), i, rfl⟩ :=
-      eq_comp_δ_of_not_surjective i fun h => by
+      eq_comp_δ_of_not_surjective i fun h ↦ by
         rw [← SimplexCategory.epi_iff_surjective] at h
         grind [→ le_of_epi]
     obtain ⟨j₂, i, rfl⟩ :=
-      eq_comp_δ_of_not_surjective i fun h => by
+      eq_comp_δ_of_not_surjective i fun h ↦ by
         rw [← SimplexCategory.epi_iff_surjective] at h
         grind [→ le_of_epi]
     by_cases hj₁ : j₁ = 0
@@ -125,8 +125,8 @@ namespace Γ₂N₁
 def natTrans : (N₁ : SimplicialObject C ⥤ _) ⋙ Γ₂ ⟶ toKaroubi _ where
   app X :=
     { f :=
-        { app := fun Δ => (Γ₀.splitting K[X]).desc Δ fun A => PInfty.f A.1.unop.len ≫ X.map A.e.op
-          naturality := fun Δ Δ' θ => by
+        { app := fun Δ ↦ (Γ₀.splitting K[X]).desc Δ fun A ↦ PInfty.f A.1.unop.len ≫ X.map A.e.op
+          naturality := fun Δ Δ' θ ↦ by
             apply (Γ₀.splitting K[X]).hom_ext'
             intro A
             change _ ≫ (Γ₀.obj K[X]).map θ ≫ _ = _

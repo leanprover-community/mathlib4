@@ -126,11 +126,11 @@ theorem coe_monoidWithZeroHom (f : α →*₀o β) : ⇑(f : α →*₀ β) = f 
 theorem coe_orderMonoidHom (f : α →*₀o β) : ⇑(f : α →*o β) = f :=
   rfl
 
-theorem toOrderMonoidHom_injective : Injective (toOrderMonoidHom : _ → α →*o β) := fun f g h =>
+theorem toOrderMonoidHom_injective : Injective (toOrderMonoidHom : _ → α →*o β) := fun f g h ↦
   ext <| by convert DFunLike.ext_iff.1 h using 0
 
 theorem toMonoidWithZeroHom_injective : Injective (toMonoidWithZeroHom : _ → α →*₀ β) :=
-  fun f g h => ext <| by convert DFunLike.ext_iff.1 h using 0
+  fun f g h ↦ ext <| by convert DFunLike.ext_iff.1 h using 0
 
 /-- Copy of an `OrderMonoidWithZeroHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
@@ -193,12 +193,12 @@ theorem id_comp (f : α →*₀o β) : (OrderMonoidWithZeroHom.id β).comp f = f
 @[simp]
 theorem cancel_right {g₁ g₂ : β →*₀o γ} {f : α →*₀o β} (hf : Function.Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun _ => by congr⟩
+  ⟨fun h ↦ ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun _ ↦ by congr⟩
 
 @[simp]
 theorem cancel_left {g : β →*₀o γ} {f₁ f₂ : α →*₀o β} (hg : Function.Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+  ⟨fun h ↦ ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 end Preorder
 
@@ -210,7 +210,7 @@ variable [LinearOrderedCommMonoidWithZero α] [LinearOrderedCommMonoidWithZero �
 /-- For two ordered monoid morphisms `f` and `g`, their product is the ordered monoid morphism
 sending `a` to `f a * g a`. -/
 instance : Mul (α →*₀o β) :=
-  ⟨fun f g => { (f * g : α →*₀ β) with monotone' := f.monotone'.mul' g.monotone' }⟩
+  ⟨fun f g ↦ { (f * g : α →*₀ β) with monotone' := f.monotone'.mul' g.monotone' }⟩
 
 @[simp]
 theorem coe_mul (f g : α →*₀o β) : ⇑(f * g) = f * g :=
@@ -224,7 +224,7 @@ theorem mul_comp (g₁ g₂ : β →*₀o γ) (f : α →*₀o β) : (g₁ * g�
   rfl
 
 theorem comp_mul (g : β →*₀o γ) (f₁ f₂ : α →*₀o β) : g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ :=
-  ext fun _ => map_mul g _ _
+  ext fun _ ↦ map_mul g _ _
 
 end Mul
 

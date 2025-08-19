@@ -80,7 +80,7 @@ def mapDomainRingHom (k : Type*) {H F : Type*} [Semiring k] [Monoid G] [Monoid H
     [FunLike F G H] [MonoidHomClass F G H] (f : F) : MonoidAlgebra k G →+* MonoidAlgebra k H :=
   { (Finsupp.mapDomain.addMonoidHom f : MonoidAlgebra k G →+ MonoidAlgebra k H) with
     map_one' := mapDomain_one f
-    map_mul' := fun x y => mapDomain_mul f x y }
+    map_mul' := fun x y ↦ mapDomain_mul f x y }
 
 end MonoidAlgebra
 
@@ -138,7 +138,7 @@ def mapDomainRingHom (k : Type*) [Semiring k] {H F : Type*} [AddMonoid G] [AddMo
     [FunLike F G H] [AddMonoidHomClass F G H] (f : F) : k[G] →+* k[H] :=
   { (Finsupp.mapDomain.addMonoidHom f : MonoidAlgebra k G →+ MonoidAlgebra k H) with
     map_one' := mapDomain_one f
-    map_mul' := fun x y => mapDomain_mul f x y }
+    map_mul' := fun x y ↦ mapDomain_mul f x y }
 
 end MiscTheorems
 
@@ -161,7 +161,7 @@ protected def AddMonoidAlgebra.toMultiplicative [Semiring k] [Add G] :
   { Finsupp.domCongr
       Multiplicative.ofAdd with
     toFun := equivMapDomain Multiplicative.ofAdd
-    map_mul' := fun x y => by
+    map_mul' := fun x y ↦ by
       repeat' rw [equivMapDomain_eq_mapDomain (M := k)]
       dsimp [Multiplicative.ofAdd]
       exact MonoidAlgebra.mapDomain_mul (α := Multiplicative G) (β := k)
@@ -173,7 +173,7 @@ protected def MonoidAlgebra.toAdditive [Semiring k] [Mul G] :
     MonoidAlgebra k G ≃+* AddMonoidAlgebra k (Additive G) :=
   { Finsupp.domCongr Additive.ofMul with
     toFun := equivMapDomain Additive.ofMul
-    map_mul' := fun x y => by
+    map_mul' := fun x y ↦ by
       repeat' rw [equivMapDomain_eq_mapDomain (M := k)]
       dsimp [Additive.ofMul]
       convert MonoidAlgebra.mapDomain_mul (β := k) (MulHom.id G) x y }

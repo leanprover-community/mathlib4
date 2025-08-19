@@ -50,7 +50,7 @@ private lemma isLocallyBijective_iff_isIso' :
     intro X s
     have H := (isSheaf_iff_isSheaf_of_type J F.val).1 F.cond _ (Presheaf.imageSieve_mem J f.val s)
     let t : Presieve.FamilyOfElements F.val (Presheaf.imageSieve f.val s).arrows :=
-      fun Y g hg => Presheaf.localPreimage f.val s g hg
+      fun Y g hg ↦ Presheaf.localPreimage f.val s g hg
     have ht : t.Compatible := by
       intro Y₁ Y₂ W g₁ g₂ f₁ f₂ hf₁ hf₂ w
       apply h₁

@@ -202,7 +202,7 @@ lemma δ_comp_δ_apply {n} {i j : Fin (n + 2)} (H : i ≤ j) (x : S _⦋n + 2⦌
 
 lemma δ_comp_δ'_apply {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i < j)
     (x : S _⦋n + 2⦌) : S.δ i (S.δ j x) =
-      S.δ (j.pred fun (hj : j = 0) => by simp [hj, Fin.not_lt_zero] at H) (S.δ i.castSucc x) :=
+      S.δ (j.pred fun (hj : j = 0) ↦ by simp [hj, Fin.not_lt_zero] at H) (S.δ i.castSucc x) :=
   congr_fun (S.δ_comp_δ' H) x
 
 lemma δ_comp_δ''_apply {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : i ≤ Fin.castSucc j)
@@ -241,7 +241,7 @@ lemma δ_comp_σ_of_gt_apply {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.ca
 lemma δ_comp_σ_of_gt'_apply {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < i)
     (x : S _⦋n + 1⦌) : S.δ i (S.σ j x) =
       S.σ (j.castLT ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le)))
-        (S.δ (i.pred fun (hi : i = 0) => by simp only [Fin.not_lt_zero, hi] at H) x) :=
+        (S.δ (i.pred fun (hi : i = 0) ↦ by simp only [Fin.not_lt_zero, hi] at H) x) :=
   congr_fun (S.δ_comp_σ_of_gt' H) x
 
 lemma σ_comp_σ_apply {n} {i j : Fin (n + 1)} (H : i ≤ j) (x : S _⦋n⦌) :

@@ -197,8 +197,8 @@ lemma forget_map {M N : ModuleCat.{v} R} (f : M ⟶ N) :
 
 instance hasForgetToAddCommGroup : HasForget₂ (ModuleCat R) AddCommGrp where
   forget₂ :=
-    { obj := fun M => AddCommGrp.of M
-      map := fun f => AddCommGrp.ofHom f.hom.toAddMonoidHom }
+    { obj := fun M ↦ AddCommGrp.of M
+      map := fun f ↦ AddCommGrp.ofHom f.hom.toAddMonoidHom }
 
 @[simp]
 theorem forget₂_obj (X : ModuleCat R) :
@@ -229,11 +229,11 @@ def ofSelfIso (M : ModuleCat R) : ModuleCat.of R M ≅ M where
   inv := 𝟙 M
 
 theorem isZero_of_subsingleton (M : ModuleCat R) [Subsingleton M] : IsZero M where
-  unique_to X := ⟨⟨⟨ofHom (0 : M →ₗ[R] X)⟩, fun f => by
+  unique_to X := ⟨⟨⟨ofHom (0 : M →ₗ[R] X)⟩, fun f ↦ by
     ext x
     rw [Subsingleton.elim x (0 : M)]
     simp⟩⟩
-  unique_from X := ⟨⟨⟨ofHom (0 : X →ₗ[R] M)⟩, fun f => by
+  unique_from X := ⟨⟨⟨ofHom (0 : X →ₗ[R] M)⟩, fun f ↦ by
     ext x
     subsingleton⟩⟩
 
@@ -317,7 +317,7 @@ instance : SMul ℤ (M ⟶ N) where
 
 instance : AddCommGroup (M ⟶ N) :=
   Function.Injective.addCommGroup (Hom.hom) hom_injective
-    rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 @[simp] lemma hom_sum {ι : Type*} (f : ι → (M ⟶ N)) (s : Finset ι) :
     (∑ i ∈ s, f i).hom = ∑ i ∈ s, (f i).hom :=
@@ -333,7 +333,7 @@ instance forget₂_addCommGrp_additive :
 @[simps!]
 def homAddEquiv : (M ⟶ N) ≃+ (M →ₗ[R] N) :=
   { homEquiv with
-    map_add' := fun _ _ => rfl }
+    map_add' := fun _ _ ↦ rfl }
 
 theorem subsingleton_of_isZero (h : IsZero M) : Subsingleton M := by
   refine subsingleton_of_forall_eq 0 (fun x ↦ ?_)
@@ -369,13 +369,13 @@ instance Hom.instModule : Module S (M ⟶ N) :=
   Function.Injective.module S
     { toFun := Hom.hom, map_zero' := hom_zero, map_add' := hom_add }
     hom_injective
-    (fun _ _ => rfl)
+    (fun _ _ ↦ rfl)
 
 /-- `ModuleCat.Hom.hom` bundled as a linear equivalence. -/
 @[simps]
 def homLinearEquiv : (M ⟶ N) ≃ₗ[S] (M →ₗ[R] N) :=
   { homAddEquiv with
-    map_smul' := fun _ _ => rfl }
+    map_smul' := fun _ _ ↦ rfl }
 
 end Module
 
@@ -443,13 +443,13 @@ variable (M N : ModuleCat.{v} R)
 a morphism of rings from `R` to the endomorphisms of the underlying abelian group. -/
 def smul : R →+* End ((forget₂ (ModuleCat R) AddCommGrp).obj M) where
   toFun r := AddCommGrp.ofHom
-    { toFun := fun (m : M) => r • m
+    { toFun := fun (m : M) ↦ r • m
       map_zero' := by rw [smul_zero]
-      map_add' := fun x y => by rw [smul_add] }
-  map_one' := AddCommGrp.ext (fun x => by simp)
-  map_zero' := AddCommGrp.ext (fun x => by simp)
-  map_mul' r s := AddCommGrp.ext (fun (x : M) => (smul_smul r s x).symm)
-  map_add' r s := AddCommGrp.ext (fun (x : M) => add_smul r s x)
+      map_add' := fun x y ↦ by rw [smul_add] }
+  map_one' := AddCommGrp.ext (fun x ↦ by simp)
+  map_zero' := AddCommGrp.ext (fun x ↦ by simp)
+  map_mul' r s := AddCommGrp.ext (fun (x : M) ↦ (smul_smul r s x).symm)
+  map_add' r s := AddCommGrp.ext (fun (x : M) ↦ add_smul r s x)
 
 lemma smul_naturality {M N : ModuleCat.{v} R} (f : M ⟶ N) (r : R) :
     (forget₂ (ModuleCat R) AddCommGrp).map f ≫ N.smul r =
@@ -463,8 +463,8 @@ to the endomorphisms of the forgetful functor to `AddCommGrp)`. -/
 @[simps]
 def smulNatTrans : R →+* End (forget₂ (ModuleCat R) AddCommGrp) where
   toFun r :=
-    { app := fun M => M.smul r
-      naturality := fun _ _ _ => smul_naturality _ r }
+    { app := fun M ↦ M.smul r
+      naturality := fun _ _ _ ↦ smul_naturality _ r }
   map_one' := NatTrans.ext (by cat_disch)
   map_zero' := NatTrans.ext (by cat_disch)
   map_mul' _ _ := NatTrans.ext (by cat_disch)
@@ -483,7 +483,7 @@ instance : AddCommGroup (mkOfSMul' φ) := by
   dsimp only [mkOfSMul']
   infer_instance
 
-instance : SMul R (mkOfSMul' φ) := ⟨fun r (x : A) => (show A ⟶ A from φ r) x⟩
+instance : SMul R (mkOfSMul' φ) := ⟨fun r (x : A) ↦ (show A ⟶ A from φ r) x⟩
 
 @[simp]
 lemma mkOfSMul'_smul (r : R) (x : mkOfSMul' φ) :

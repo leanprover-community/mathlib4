@@ -53,7 +53,7 @@ instance category : Category (QuadraticModuleCat.{v} R) where
   comp f g := ⟨Isometry.comp g.toIsometry' f.toIsometry'⟩
 
 instance concreteCategory : ConcreteCategory (QuadraticModuleCat.{v} R)
-    fun V W => V.form →qᵢ W.form where
+    fun V W ↦ V.form →qᵢ W.form where
   hom f := f.toIsometry'
   ofHom f := ⟨f⟩
 
@@ -69,7 +69,7 @@ abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Modu
 
 lemma Hom.toIsometry_injective (V W : QuadraticModuleCat.{v} R) :
     Function.Injective (Hom.toIsometry : Hom V W → _) :=
-  fun ⟨f⟩ ⟨g⟩ _ => by congr
+  fun ⟨f⟩ ⟨g⟩ _ ↦ by congr
 
 @[ext]
 lemma hom_ext {M N : QuadraticModuleCat.{v} R} (f g : M ⟶ N) (h : f.toIsometry = g.toIsometry) :
@@ -86,8 +86,8 @@ lemma hom_ext {M N : QuadraticModuleCat.{v} R} (f g : M ⟶ N) (h : f.toIsometry
 
 instance hasForgetToModule : HasForget₂ (QuadraticModuleCat R) (ModuleCat R) where
   forget₂ :=
-    { obj := fun M => ModuleCat.of R M
-      map := fun f => ModuleCat.ofHom f.toIsometry.toLinearMap }
+    { obj := fun M ↦ ModuleCat.of R M
+      map := fun f ↦ ModuleCat.ofHom f.toIsometry.toLinearMap }
 
 @[simp]
 theorem forget₂_obj (X : QuadraticModuleCat R) :

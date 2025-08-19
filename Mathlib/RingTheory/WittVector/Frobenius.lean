@@ -63,7 +63,7 @@ in terms of the coefficients of `x`.
 These polynomials actually have integral coefficients,
 see `frobeniusPoly` and `map_frobeniusPoly`. -/
 def frobeniusPolyRat (n : ℕ) : MvPolynomial ℕ ℚ :=
-  bind₁ (wittPolynomial p ℚ ∘ fun n => n + 1) (xInTermsOfW p ℚ n)
+  bind₁ (wittPolynomial p ℚ ∘ fun n ↦ n + 1) (xInTermsOfW p ℚ n)
 
 theorem bind₁_frobeniusPolyRat_wittPolynomial (n : ℕ) :
     bind₁ (frobeniusPolyRat p) (wittPolynomial p ℚ n) = wittPolynomial p ℚ (n + 1) := by
@@ -195,7 +195,7 @@ variable {p}
 /-- `frobeniusFun` is the function underlying the ring endomorphism
 `frobenius : 𝕎 R →+* frobenius 𝕎 R`. -/
 def frobeniusFun (x : 𝕎 R) : 𝕎 R :=
-  mk p fun n => MvPolynomial.aeval x.coeff (frobeniusPoly p n)
+  mk p fun n ↦ MvPolynomial.aeval x.coeff (frobeniusPoly p n)
 
 omit hp in
 theorem coeff_frobeniusFun (x : 𝕎 R) (n : ℕ) :
@@ -206,7 +206,7 @@ variable (p) in
 /-- `frobeniusFun` is tautologically a polynomial function.
 
 See also `frobenius_isPoly`. -/
-instance frobeniusFun_isPoly : IsPoly p fun R _ Rcr => @frobeniusFun p R _ Rcr :=
+instance frobeniusFun_isPoly : IsPoly p fun R _ Rcr ↦ @frobeniusFun p R _ Rcr :=
   ⟨⟨frobeniusPoly p, by intros; funext n; apply coeff_frobeniusFun⟩⟩
 
 @[ghost_simps]
@@ -253,7 +253,7 @@ theorem ghostComponent_frobenius (n : ℕ) (x : 𝕎 R) :
 variable (p)
 
 /-- `frobenius` is tautologically a polynomial function. -/
-instance frobenius_isPoly : IsPoly p fun R _Rcr => @frobenius p R _ _Rcr :=
+instance frobenius_isPoly : IsPoly p fun R _Rcr ↦ @frobenius p R _ _Rcr :=
   frobeniusFun_isPoly _
 
 section CharP
@@ -266,10 +266,10 @@ theorem coeff_frobenius_charP (x : 𝕎 R) (n : ℕ) : coeff (frobenius x) n = x
   letI : Algebra (ZMod p) R := ZMod.algebra _ _
   -- outline of the calculation, proofs follow below
   calc
-    aeval (fun k => x.coeff k) (frobeniusPoly p n) =
-        aeval (fun k => x.coeff k)
+    aeval (fun k ↦ x.coeff k) (frobeniusPoly p n) =
+        aeval (fun k ↦ x.coeff k)
           (MvPolynomial.map (Int.castRingHom (ZMod p)) (frobeniusPoly p n)) := ?_
-    _ = aeval (fun k => x.coeff k) (X n ^ p : MvPolynomial ℕ (ZMod p)) := ?_
+    _ = aeval (fun k ↦ x.coeff k) (X n ^ p : MvPolynomial ℕ (ZMod p)) := ?_
     _ = x.coeff n ^ p := ?_
   · conv_rhs => rw [aeval_eq_eval₂Hom, eval₂Hom_map_hom]
     apply eval₂Hom_congr (RingHom.ext_int _ _) rfl rfl
@@ -293,10 +293,10 @@ def frobeniusEquiv [PerfectRing R p] : WittVector p R ≃+* WittVector p R :=
   { (WittVector.frobenius : WittVector p R →+* WittVector p R) with
     toFun := WittVector.frobenius
     invFun := map (_root_.frobeniusEquiv R p).symm
-    left_inv := fun f => ext fun n => by
+    left_inv := fun f ↦ ext fun n ↦ by
       rw [frobenius_eq_map_frobenius]
       exact frobeniusEquiv_symm_apply_frobenius R p _
-    right_inv := fun f => ext fun n => by
+    right_inv := fun f ↦ ext fun n ↦ by
       rw [frobenius_eq_map_frobenius]
       exact frobenius_apply_frobeniusEquiv_symm R p _ }
 

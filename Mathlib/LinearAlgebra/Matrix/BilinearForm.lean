@@ -68,7 +68,7 @@ theorem LinearMap.BilinForm.toMatrixAux_apply (B : BilinForm R₁ M₁) (b : n �
 variable [Fintype n] [Fintype o]
 
 theorem toBilin'Aux_toMatrixAux [DecidableEq n] (B₂ : BilinForm R₁ (n → R₁)) :
-    Matrix.toBilin'Aux (BilinForm.toMatrixAux (fun j => Pi.single j 1) B₂) = B₂ := by
+    Matrix.toBilin'Aux (BilinForm.toMatrixAux (fun j ↦ Pi.single j 1) B₂) = B₂ := by
   rw [BilinForm.toMatrixAux, Matrix.toBilin'Aux, toLinearMap₂'Aux_toMatrix₂Aux]
 
 section ToMatrix'
@@ -352,14 +352,14 @@ theorem _root_.Matrix.nondegenerate_toBilin'_iff_nondegenerate_toBilin {M : Matr
 
 -- Lemmas transferring nondegeneracy between a matrix and its associated bilinear form
 theorem _root_.Matrix.Nondegenerate.toBilin' {M : Matrix ι ι R₂} (h : M.Nondegenerate) :
-    M.toBilin'.Nondegenerate := fun x hx =>
-  h.eq_zero_of_ortho fun y => by simpa only [toBilin'_apply'] using hx y
+    M.toBilin'.Nondegenerate := fun x hx ↦
+  h.eq_zero_of_ortho fun y ↦ by simpa only [toBilin'_apply'] using hx y
 
 @[simp]
 theorem _root_.Matrix.nondegenerate_toBilin'_iff {M : Matrix ι ι R₂} :
     M.toBilin'.Nondegenerate ↔ M.Nondegenerate := by
   refine ⟨fun h ↦ Matrix.nondegenerate_def.mpr ?_, Matrix.Nondegenerate.toBilin'⟩
-  exact fun v hv => h v fun w => (M.toBilin'_apply' _ _).trans <| hv w
+  exact fun v hv ↦ h v fun w ↦ (M.toBilin'_apply' _ _).trans <| hv w
 
 theorem _root_.Matrix.Nondegenerate.toBilin {M : Matrix ι ι R₂} (h : M.Nondegenerate)
     (b : Basis ι R₂ M₂) : (Matrix.toBilin b M).Nondegenerate :=

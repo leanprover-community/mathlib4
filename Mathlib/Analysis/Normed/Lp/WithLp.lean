@@ -74,7 +74,7 @@ This unfortunately cannot be registered with `cases_eliminator`, but it can stil
 @[elab_as_elim]
 protected def rec {motive : WithLp p V → Sort*} (toLp : ∀ v : V, motive (toLp p v)) :
     ∀ v, motive v :=
-  fun v => toLp (ofLp v)
+  fun v ↦ toLp (ofLp v)
 
 /-! `WithLp p V` inherits various module-adjacent structures from `V`. -/
 

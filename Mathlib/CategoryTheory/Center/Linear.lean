@@ -30,7 +30,7 @@ variable (R : Type w) [Ring R] (C : Type u) [Category.{v} C] [Preadditive C]
 @[simps]
 def toCatCenter [Linear R C] : R →+* CatCenter C where
   toFun a :=
-    { app := fun X => a • 𝟙 X }
+    { app := fun X ↦ a • 𝟙 X }
   map_one' := by cat_disch
   map_mul' a b := by
     rw [mul_comm]
@@ -74,20 +74,20 @@ a category `C` equipped with a ring morphism `R →+* CatCenter C`. -/
 def homModuleOfRingMorphism : Module R (X ⟶ Y) := by
   letI := smulOfRingMorphism φ X Y
   exact
-  { one_smul := fun a => by
+  { one_smul := fun a ↦ by
       simp only [smulOfRingMorphism_smul_eq,
         Functor.id_obj, map_one, End.one_def, NatTrans.id_app, id_comp]
-    mul_smul := fun a b f => by
+    mul_smul := fun a b f ↦ by
       simp only [smulOfRingMorphism_smul_eq', Functor.id_obj, map_mul, End.mul_def,
         NatTrans.comp_app, assoc]
-    smul_zero := fun a => by
+    smul_zero := fun a ↦ by
       simp only [smulOfRingMorphism_smul_eq, Functor.id_obj, comp_zero]
-    zero_smul := fun a => by
+    zero_smul := fun a ↦ by
       simp only [smulOfRingMorphism_smul_eq, Functor.id_obj, map_zero,
         zero_app, zero_comp]
-    smul_add := fun a b => by
+    smul_add := fun a b ↦ by
       simp [smulOfRingMorphism_smul_eq]
-    add_smul := fun a b f => by
+    add_smul := fun a b f ↦ by
       simp only [smulOfRingMorphism_smul_eq]
       rw [map_add, NatTrans.app_add, Preadditive.add_comp] }
 
@@ -96,8 +96,8 @@ a ring morphism `R →+* CatCenter C`. -/
 def ofRingMorphism : Linear R C := by
   letI := homModuleOfRingMorphism φ
   exact
-    { smul_comp := fun X Y Z r f g => by simp only [smulOfRingMorphism_smul_eq, assoc]
-      comp_smul := fun X Y Z f r g => by simp only [smulOfRingMorphism_smul_eq', assoc] }
+    { smul_comp := fun X Y Z r f g ↦ by simp only [smulOfRingMorphism_smul_eq, assoc]
+      comp_smul := fun X Y Z f r g ↦ by simp only [smulOfRingMorphism_smul_eq', assoc] }
 
 end
 

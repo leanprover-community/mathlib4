@@ -58,14 +58,14 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
   clear h
   let s := {z ∈ t | 0 < g z}
   obtain ⟨i₀, mem, w⟩ : ∃ i₀ ∈ s, ∀ i ∈ s, f i₀ / g i₀ ≤ f i / g i := by
-    apply s.exists_min_image fun z => f z / g z
+    apply s.exists_min_image fun z ↦ f z / g z
     obtain ⟨x, hx, hgx⟩ : ∃ x ∈ t, 0 < g x := gpos
     exact ⟨x, mem_filter.mpr ⟨hx, hgx⟩⟩
   have hg : 0 < g i₀ := by
     rw [mem_filter] at mem
     exact mem.2
   have hi₀ : i₀ ∈ t := filter_subset _ _ mem
-  let k : E → 𝕜 := fun z => f z - f i₀ / g i₀ * g z
+  let k : E → 𝕜 := fun z ↦ f z - f i₀ / g i₀ * g z
   have hk : k i₀ = 0 := by simp [k, ne_of_gt hg]
   have ksum : ∑ e ∈ t.erase i₀, k e = 1 := by
     calc
@@ -168,13 +168,13 @@ theorem eq_pos_convex_span_of_mem_convexHull {x : E} (hx : x ∈ convexHull 𝕜
   refine ⟨t', t'.fintypeCoeSort, ((↑) : t' → E), w ∘ ((↑) : t' → E), ?_, ?_, ?_, ?_, ?_⟩
   · rw [Subtype.range_coe_subtype]
     exact Subset.trans (Finset.filter_subset _ t) ht₁
-  · exact ht₂.comp_embedding ⟨_, inclusion_injective (Finset.filter_subset (fun i => w i ≠ 0) t)⟩
-  · exact fun i =>
+  · exact ht₂.comp_embedding ⟨_, inclusion_injective (Finset.filter_subset (fun i ↦ w i ≠ 0) t)⟩
+  · exact fun i ↦
       (hw₁ _ (Finset.mem_filter.mp i.2).1).lt_of_ne (Finset.mem_filter.mp i.property).2.symm
   · simp only [univ_eq_attach, Function.comp_apply]
     rw [Finset.sum_attach, Finset.sum_filter_ne_zero, hw₂]
-  · change (∑ i ∈ t'.attach, (fun e => w e • e) ↑i) = x
-    rw [Finset.sum_attach (f := fun e => w e • e), Finset.sum_filter_of_ne]
+  · change (∑ i ∈ t'.attach, (fun e ↦ w e • e) ↑i) = x
+    rw [Finset.sum_attach (f := fun e ↦ w e • e), Finset.sum_filter_of_ne]
     · rw [t.centerMass_eq_of_sum_1 id hw₂] at hw₃
       exact hw₃
     · intro e _ hwe contra

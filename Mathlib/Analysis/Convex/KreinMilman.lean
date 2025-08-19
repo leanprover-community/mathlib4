@@ -63,26 +63,26 @@ theorem IsCompact.extremePoints_nonempty (hscomp : IsCompact s) (hsnemp : s.None
   rsuffices ⟨t, ht⟩ : ∃ t, Minimal (· ∈ S) t
   · obtain ⟨⟨x,hxt⟩, htclos, hst⟩ := ht.prop
     refine ⟨x, IsExtreme.mem_extremePoints ?_⟩
-    rwa [← eq_singleton_iff_unique_mem.2 ⟨hxt, fun y hyB => ?_⟩]
+    rwa [← eq_singleton_iff_unique_mem.2 ⟨hxt, fun y hyB ↦ ?_⟩]
     by_contra hyx
     obtain ⟨l, hl⟩ := geometric_hahn_banach_point_point hyx
     obtain ⟨z, hzt, hz⟩ :=
       (hscomp.of_isClosed_subset htclos hst.1).exists_isMaxOn ⟨x, hxt⟩
         l.continuous.continuousOn
-    have h : IsExposed ℝ t ({ z ∈ t | ∀ w ∈ t, l w ≤ l z }) := fun _ => ⟨l, rfl⟩
+    have h : IsExposed ℝ t ({ z ∈ t | ∀ w ∈ t, l w ≤ l z }) := fun _ ↦ ⟨l, rfl⟩
     rw [ht.eq_of_ge (y := ({ z ∈ t | ∀ w ∈ t, l w ≤ l z }))
       ⟨⟨z, hzt, hz⟩, h.isClosed htclos, hst.trans h.isExtreme⟩ (t.sep_subset _)] at hyB
     exact hl.not_ge (hyB.2 x hxt)
-  refine zorn_superset _ fun F hFS hF => ?_
+  refine zorn_superset _ fun F hFS hF ↦ ?_
   obtain rfl | hFnemp := F.eq_empty_or_nonempty
-  · exact ⟨s, ⟨hsnemp, hscomp.isClosed, IsExtreme.rfl⟩, fun _ => False.elim⟩
-  refine ⟨⋂₀ F, ⟨?_, isClosed_sInter fun t ht => (hFS ht).2.1,
-    isExtreme_sInter hFnemp fun t ht => (hFS ht).2.2⟩, fun t ht => sInter_subset_of_mem ht⟩
+  · exact ⟨s, ⟨hsnemp, hscomp.isClosed, IsExtreme.rfl⟩, fun _ ↦ False.elim⟩
+  refine ⟨⋂₀ F, ⟨?_, isClosed_sInter fun t ht ↦ (hFS ht).2.1,
+    isExtreme_sInter hFnemp fun t ht ↦ (hFS ht).2.2⟩, fun t ht ↦ sInter_subset_of_mem ht⟩
   haveI : Nonempty (↥F) := hFnemp.to_subtype
   rw [sInter_eq_iInter]
-  refine IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _ (fun t u => ?_)
-    (fun t => (hFS t.mem).1)
-    (fun t => hscomp.of_isClosed_subset (hFS t.mem).2.1 (hFS t.mem).2.2.1) fun t =>
+  refine IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _ (fun t u ↦ ?_)
+    (fun t ↦ (hFS t.mem).1)
+    (fun t ↦ hscomp.of_isClosed_subset (hFS t.mem).2.1 (hFS t.mem).2.2.1) fun t ↦
       (hFS t.mem).2.1
   obtain htu | hut := hF.total t.mem u.mem
   exacts [⟨t, Subset.rfl, htu⟩, ⟨u, hut, Subset.rfl⟩]
@@ -96,7 +96,7 @@ theorem closure_convexHull_extremePoints (hscomp : IsCompact s) (hAconv : Convex
   obtain ⟨x, hxA, hxt⟩ := not_subset.1 hs
   obtain ⟨l, r, hlr, hrx⟩ :=
     geometric_hahn_banach_closed_point (convex_convexHull _ _).closure isClosed_closure hxt
-  have h : IsExposed ℝ s ({ y ∈ s | ∀ z ∈ s, l z ≤ l y }) := fun _ => ⟨l, rfl⟩
+  have h : IsExposed ℝ s ({ y ∈ s | ∀ z ∈ s, l z ≤ l y }) := fun _ ↦ ⟨l, rfl⟩
   obtain ⟨z, hzA, hz⟩ := hscomp.exists_isMaxOn ⟨x, hxA⟩ l.continuous.continuousOn
   obtain ⟨y, hy⟩ := (h.isCompact hscomp).extremePoints_nonempty ⟨z, hzA, hz⟩
   linarith [hlr _ (subset_closure <| subset_convexHull _ _ <|

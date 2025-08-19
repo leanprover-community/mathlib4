@@ -18,7 +18,7 @@ namespace Nat.Primes
 
 /-- The canonical map from `Nat.Primes` to `ℕ+` -/
 @[coe] def toPNat : Nat.Primes → ℕ+ :=
-  fun p => ⟨(p : ℕ), p.property.pos⟩
+  fun p ↦ ⟨(p : ℕ), p.property.pos⟩
 
 instance coePNat : Coe Nat.Primes ℕ+ :=
   ⟨toPNat⟩
@@ -27,7 +27,7 @@ instance coePNat : Coe Nat.Primes ℕ+ :=
 theorem coe_pnat_nat (p : Nat.Primes) : ((p : ℕ+) : ℕ) = p :=
   rfl
 
-theorem coe_pnat_injective : Function.Injective ((↑) : Nat.Primes → ℕ+) := fun p q h =>
+theorem coe_pnat_injective : Function.Injective ((↑) : Nat.Primes → ℕ+) := fun p q h ↦
   Subtype.ext (by injection h)
 
 @[norm_cast]
@@ -135,7 +135,7 @@ theorem Prime.ne_one {p : ℕ+} : p.Prime → p ≠ 1 := by
 theorem not_prime_one : ¬(1 : ℕ+).Prime :=
   Nat.not_prime_one
 
-theorem Prime.not_dvd_one {p : ℕ+} : p.Prime → ¬p ∣ 1 := fun pp : p.Prime => by
+theorem Prime.not_dvd_one {p : ℕ+} : p.Prime → ¬p ∣ 1 := fun pp : p.Prime ↦ by
   rw [dvd_iff]
   apply Nat.Prime.not_dvd_one pp
 

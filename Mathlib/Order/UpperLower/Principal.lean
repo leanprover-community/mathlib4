@@ -114,11 +114,11 @@ variable [CompleteLattice α]
 
 @[simp]
 theorem Ici_sSup (S : Set α) : Ici (sSup S) = ⨆ a ∈ S, Ici a :=
-  SetLike.ext fun c => by simp only [mem_Ici_iff, mem_iSup_iff, sSup_le_iff]
+  SetLike.ext fun c ↦ by simp only [mem_Ici_iff, mem_iSup_iff, sSup_le_iff]
 
 @[simp]
 theorem Ici_iSup (f : ι → α) : Ici (⨆ i, f i) = ⨆ i, Ici (f i) :=
-  SetLike.ext fun c => by simp only [mem_Ici_iff, mem_iSup_iff, iSup_le_iff]
+  SetLike.ext fun c ↦ by simp only [mem_Ici_iff, mem_iSup_iff, iSup_le_iff]
 
 theorem Ici_iSup₂ (f : ∀ i, κ i → α) : Ici (⨆ (i) (j), f i j) = ⨆ (i) (j), Ici (f i j) := by
   simp
@@ -217,11 +217,11 @@ variable [CompleteLattice α]
 
 @[simp]
 theorem Iic_sInf (S : Set α) : Iic (sInf S) = ⨅ a ∈ S, Iic a :=
-  SetLike.ext fun c => by simp only [mem_Iic_iff, mem_iInf₂_iff, le_sInf_iff]
+  SetLike.ext fun c ↦ by simp only [mem_Iic_iff, mem_iInf₂_iff, le_sInf_iff]
 
 @[simp]
 theorem Iic_iInf (f : ι → α) : Iic (⨅ i, f i) = ⨅ i, Iic (f i) :=
-  SetLike.ext fun c => by simp only [mem_Iic_iff, mem_iInf_iff, le_iInf_iff]
+  SetLike.ext fun c ↦ by simp only [mem_Iic_iff, mem_iInf_iff, le_iInf_iff]
 
 theorem Iic_iInf₂ (f : ∀ i, κ i → α) : Iic (⨅ (i) (j), f i j) = ⨅ (i) (j), Iic (f i j) := by
   simp

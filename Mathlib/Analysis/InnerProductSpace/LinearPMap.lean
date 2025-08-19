@@ -70,7 +70,7 @@ variable {T : E →ₗ.[𝕜] F} {S : F →ₗ.[𝕜] E}
 
 @[symm]
 protected theorem IsFormalAdjoint.symm (h : T.IsFormalAdjoint S) :
-    S.IsFormalAdjoint T := fun y _ => by
+    S.IsFormalAdjoint T := fun y _ ↦ by
   rw [← inner_conj_symm, ← inner_conj_symm (y : F), h]
 
 variable (T)
@@ -120,11 +120,11 @@ the assumption that `T.domain` is dense. -/
 def adjointAux : T.adjointDomain →ₗ[𝕜] E where
   toFun y := (InnerProductSpace.toDual 𝕜 E).symm (adjointDomainMkCLMExtend hT y)
   map_add' x y :=
-    hT.eq_of_inner_left fun _ => by
+    hT.eq_of_inner_left fun _ ↦ by
       simp only [inner_add_left, Submodule.coe_add, InnerProductSpace.toDual_symm_apply,
         adjointDomainMkCLMExtend_apply]
   map_smul' _ _ :=
-    hT.eq_of_inner_left fun _ => by
+    hT.eq_of_inner_left fun _ ↦ by
       simp only [inner_smul_left, Submodule.coe_smul_of_tower, RingHom.id_apply,
         InnerProductSpace.toDual_symm_apply, adjointDomainMkCLMExtend_apply]
 
@@ -134,7 +134,7 @@ theorem adjointAux_inner (y : T.adjointDomain) (x : T.domain) :
 
 theorem adjointAux_unique (y : T.adjointDomain) {x₀ : E}
     (hx₀ : ∀ x : T.domain, ⟪x₀, x⟫ = ⟪(y : F), T x⟫) : adjointAux hT y = x₀ :=
-  hT.eq_of_inner_left fun v => (adjointAux_inner hT _ _).trans (hx₀ v).symm
+  hT.eq_of_inner_left fun v ↦ (adjointAux_inner hT _ _).trans (hx₀ v).symm
 
 variable (T)
 
@@ -158,7 +158,7 @@ theorem mem_adjoint_domain_of_exists (y : F) (h : ∃ w : E, ∀ x : T.domain, �
   rw [T.mem_adjoint_domain_iff]
   have : Continuous ((innerSL 𝕜 w).comp T.domain.subtypeL) := by fun_prop
   convert this using 1
-  exact funext fun x => (hw x).symm
+  exact funext fun x ↦ (hw x).symm
 
 theorem adjoint_apply_of_not_dense (hT : ¬Dense (T.domain : Set E)) (y : T†.domain) : T† y = 0 := by
   classical
@@ -177,18 +177,18 @@ theorem adjoint_apply_eq (y : T†.domain) {x₀ : E} (hx₀ : ∀ x : T.domain,
 
 include hT in
 /-- The fundamental property of the adjoint. -/
-theorem adjoint_isFormalAdjoint : T†.IsFormalAdjoint T := fun x =>
+theorem adjoint_isFormalAdjoint : T†.IsFormalAdjoint T := fun x ↦
   (adjoint_apply_of_dense hT x).symm ▸ adjointAux_inner hT x
 
 include hT in
 /-- The adjoint is maximal in the sense that it contains every formal adjoint. -/
 theorem IsFormalAdjoint.le_adjoint (h : T.IsFormalAdjoint S) : S ≤ T† :=
   ⟨-- Trivially, every `x : S.domain` is in `T.adjoint.domain`
-  fun x hx =>
+  fun x hx ↦
     mem_adjoint_domain_of_exists _
       ⟨S ⟨x, hx⟩, h.symm ⟨x, hx⟩⟩,-- Equality on `S.domain` follows from equality
   -- `⟪v, S x⟫ = ⟪v, T.adjoint y⟫` for all `v : T.domain`:
-  fun _ _ hxy => (adjoint_apply_eq hT _ fun _ => by rw [h.symm, hxy]).symm⟩
+  fun _ _ hxy ↦ (adjoint_apply_eq hT _ fun _ ↦ by rw [h.symm, hxy]).symm⟩
 
 end LinearPMap
 
@@ -205,7 +205,7 @@ theorem toPMap_adjoint_eq_adjoint_toPMap_of_dense (hp : Dense (p : Set E)) :
   · simp only [LinearMap.toPMap_domain, Submodule.mem_top, iff_true,
       LinearPMap.mem_adjoint_domain_iff, LinearMap.coe_comp, innerₛₗ_apply_coe]
     exact ((innerSL 𝕜 x).comp <| A.comp <| Submodule.subtypeL _).cont
-  refine LinearPMap.adjoint_apply_eq hp _ fun v => ?_
+  refine LinearPMap.adjoint_apply_eq hp _ fun v ↦ ?_
   simp only [adjoint_inner_left, LinearMap.toPMap_apply, coe_coe]
 
 end ContinuousLinearMap

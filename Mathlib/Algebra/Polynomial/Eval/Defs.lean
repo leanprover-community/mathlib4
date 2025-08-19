@@ -50,9 +50,9 @@ variable (f : R →+* S) (x : S)
 /-- Evaluate a polynomial `p` given a ring hom `f` from the scalar ring
   to the target and a value `x` for the variable in the target -/
 irreducible_def eval₂ (p : R[X]) : S :=
-  p.sum fun e a => f a * x ^ e
+  p.sum fun e a ↦ f a * x ^ e
 
-theorem eval₂_eq_sum {f : R →+* S} {x : S} : p.eval₂ f x = p.sum fun e a => f a * x ^ e := by
+theorem eval₂_eq_sum {f : R →+* S} {x : S} : p.eval₂ f x = p.sum fun e a ↦ f a * x ^ e := by
   rw [eval₂_def]
 
 theorem eval₂_congr {R S : Type*} [Semiring R] [Semiring S] {f g : R →+* S} {s t : S}
@@ -108,12 +108,12 @@ lemma eval₂_ofNat {S : Type*} [Semiring S] (n : ℕ) [n.AtLeastTwo] (f : R →
 variable [Semiring T]
 
 theorem eval₂_sum (p : T[X]) (g : ℕ → T → R[X]) (x : S) :
-    (p.sum g).eval₂ f x = p.sum fun n a => (g n a).eval₂ f x := by
+    (p.sum g).eval₂ f x = p.sum fun n a ↦ (g n a).eval₂ f x := by
   let T : R[X] →+ S :=
     { toFun := eval₂ f x
       map_zero' := eval₂_zero _ _
-      map_add' := fun p q => eval₂_add _ _ }
-  have A : ∀ y, eval₂ f x y = T y := fun y => rfl
+      map_add' := fun p q ↦ eval₂_add _ _ }
+  have A : ∀ y, eval₂ f x y = T y := fun y ↦ rfl
   simp only [A]
   rw [sum, map_sum, sum]
 
@@ -138,11 +138,11 @@ theorem eval₂_mul_noncomm (hf : ∀ k, Commute (f <| q.coeff k) x) :
   rcases p with ⟨p⟩; rcases q with ⟨q⟩
   simp only [coeff] at hf
   simp only [← ofFinsupp_mul, eval₂_ofFinsupp]
-  exact liftNC_mul _ _ p q fun {k n} _hn => (hf k).pow_right n
+  exact liftNC_mul _ _ p q fun {k n} _hn ↦ (hf k).pow_right n
 
 @[simp]
 theorem eval₂_mul_X : eval₂ f x (p * X) = eval₂ f x p * x := by
-  refine _root_.trans (eval₂_mul_noncomm _ _ fun k => ?_) (by rw [eval₂_X])
+  refine _root_.trans (eval₂_mul_noncomm _ _ fun k ↦ ?_) (by rw [eval₂_X])
   rcases em (k = 1) with (rfl | hk)
   · simp
   · simp [coeff_X_of_ne_one hk]
@@ -171,7 +171,7 @@ def eval₂RingHom' (f : R →+* S) (x : S) (hf : ∀ a, Commute (f a) x) : R[X]
   toFun := eval₂ f x
   map_add' _ _ := eval₂_add _ _
   map_zero' := eval₂_zero _ _
-  map_mul' _p q := eval₂_mul_noncomm f x fun k => hf <| coeff q k
+  map_mul' _p q := eval₂_mul_noncomm f x fun k ↦ hf <| coeff q k
   map_one' := eval₂_one _ _
 
 end
@@ -191,7 +191,7 @@ variable [CommSemiring S] (f : R →+* S) (x : S)
 
 @[simp]
 theorem eval₂_mul : (p * q).eval₂ f x = p.eval₂ f x * q.eval₂ f x :=
-  eval₂_mul_noncomm _ _ fun _k => Commute.all _ _
+  eval₂_mul_noncomm _ _ fun _k ↦ Commute.all _ _
 
 theorem eval₂_mul_eq_zero_of_left (q : R[X]) (hp : p.eval₂ f x = 0) : (p * q).eval₂ f x = 0 := by
   rw [eval₂_mul f x]
@@ -205,7 +205,7 @@ theorem eval₂_mul_eq_zero_of_right (p : R[X]) (hq : q.eval₂ f x = 0) : (p * 
 def eval₂RingHom (f : R →+* S) (x : S) : R[X] →+* S :=
   { eval₂AddMonoidHom f x with
     map_one' := eval₂_one _ _
-    map_mul' := fun _ _ => eval₂_mul _ _ }
+    map_mul' := fun _ _ ↦ eval₂_mul _ _ }
 
 @[simp]
 theorem coe_eval₂RingHom (f : R →+* S) (x) : ⇑(eval₂RingHom f x) = eval₂ f x :=
@@ -236,7 +236,7 @@ variable {x : R}
 def eval : R → R[X] → R :=
   eval₂ (RingHom.id _)
 
-theorem eval_eq_sum : p.eval x = p.sum fun e a => a * x ^ e := by
+theorem eval_eq_sum : p.eval x = p.sum fun e a ↦ a * x ^ e := by
   rw [eval, eval₂_eq_sum]
   rfl
 
@@ -319,7 +319,7 @@ theorem eval_mul_X_pow {k : ℕ} : (p * X ^ k).eval x = p.eval x * x ^ k := by
   | succ k ih => simp [pow_succ, ← mul_assoc, ih]
 
 theorem eval_sum (p : R[X]) (f : ℕ → R → R[X]) (x : R) :
-    (p.sum f).eval x = p.sum fun n a => (f n a).eval x :=
+    (p.sum f).eval x = p.sum fun n a ↦ (f n a).eval x :=
   eval₂_sum _ _ _ _
 
 theorem eval_finset_sum (s : Finset ι) (g : ι → R[X]) (x : R) :
@@ -346,7 +346,7 @@ theorem IsRoot.dvd {R : Type*} [CommSemiring R] {p q : R[X]} {x : R} (h : p.IsRo
 
 theorem not_isRoot_C (r a : R) (hr : r ≠ 0) : ¬IsRoot (C r) a := by simpa using hr
 
-theorem eval_surjective (x : R) : Function.Surjective <| eval x := fun y => ⟨C y, eval_C⟩
+theorem eval_surjective (x : R) : Function.Surjective <| eval x := fun y ↦ ⟨C y, eval_C⟩
 
 end Eval
 
@@ -356,7 +356,7 @@ section Comp
 def comp (p q : R[X]) : R[X] :=
   p.eval₂ C q
 
-theorem comp_eq_sum_left : p.comp q = p.sum fun e a => C a * q ^ e := by rw [comp, eval₂_eq_sum]
+theorem comp_eq_sum_left : p.comp q = p.sum fun e a ↦ C a * q ^ e := by rw [comp, eval₂_eq_sum]
 
 @[simp]
 theorem comp_X : p.comp X = p := by
@@ -441,7 +441,7 @@ theorem mul_comp {R : Type*} [CommSemiring R] (p q r : R[X]) :
 @[simp]
 theorem pow_comp {R : Type*} [CommSemiring R] (p q : R[X]) (n : ℕ) :
     (p ^ n).comp q = p.comp q ^ n :=
-  (MonoidHom.mk (OneHom.mk (fun r : R[X] => r.comp q) one_comp) fun r s => mul_comp r s q).map_pow
+  (MonoidHom.mk (OneHom.mk (fun r : R[X] ↦ r.comp q) one_comp) fun r s ↦ mul_comp r s q).map_pow
     p n
 
 theorem comp_assoc {R : Type*} [CommSemiring R] (φ ψ χ : R[X]) :
@@ -492,7 +492,7 @@ protected theorem map_one : (1 : R[X]).map f = 1 :=
 @[simp]
 protected theorem map_mul : (p * q).map f = p.map f * q.map f := by
   rw [map, eval₂_mul_noncomm]
-  exact fun k => (commute_X _).symm
+  exact fun k ↦ (commute_X _).symm
 
 -- `map` is a ring-hom unconditionally, and theoretically the definition could be replaced,
 -- but this turns out not to be easy because `p.map f` does not resolve to `Polynomial.map`
@@ -599,16 +599,16 @@ def compRingHom : R[X] → R[X] →+* R[X] :=
   eval₂RingHom C
 
 @[simp]
-theorem coe_compRingHom (q : R[X]) : (compRingHom q : R[X] → R[X]) = fun p => comp p q :=
+theorem coe_compRingHom (q : R[X]) : (compRingHom q : R[X] → R[X]) = fun p ↦ comp p q :=
   rfl
 
 theorem coe_compRingHom_apply (p q : R[X]) : (compRingHom q : R[X] → R[X]) p = comp p q :=
   rfl
 
-theorem root_mul_left_of_isRoot (p : R[X]) {q : R[X]} : IsRoot q a → IsRoot (p * q) a := fun H => by
+theorem root_mul_left_of_isRoot (p : R[X]) {q : R[X]} : IsRoot q a → IsRoot (p * q) a := fun H ↦ by
   rw [IsRoot, eval_mul, IsRoot.def.1 H, mul_zero]
 
-theorem root_mul_right_of_isRoot {p : R[X]} (q : R[X]) : IsRoot p a → IsRoot (p * q) a := fun H =>
+theorem root_mul_right_of_isRoot {p : R[X]} (q : R[X]) : IsRoot p a → IsRoot (p * q) a := fun H ↦
   by rw [IsRoot, eval_mul, IsRoot.def.1 H, zero_mul]
 
 theorem eval₂_multiset_prod (s : Multiset R[X]) (x : S) :
@@ -636,11 +636,11 @@ theorem eval_prod {ι : Type*} (s : Finset ι) (p : ι → R[X]) (x : R) :
   map_prod (evalRingHom x) _ _
 
 theorem list_prod_comp (l : List R[X]) (q : R[X]) :
-    l.prod.comp q = (l.map fun p : R[X] => p.comp q).prod :=
+    l.prod.comp q = (l.map fun p : R[X] ↦ p.comp q).prod :=
   map_list_prod (compRingHom q) _
 
 theorem multiset_prod_comp (s : Multiset R[X]) (q : R[X]) :
-    s.prod.comp q = (s.map fun p : R[X] => p.comp q).prod :=
+    s.prod.comp q = (s.map fun p : R[X] ↦ p.comp q).prod :=
   map_multiset_prod (compRingHom q) _
 
 theorem prod_comp {ι : Type*} (s : Finset ι) (p : ι → R[X]) (q : R[X]) :

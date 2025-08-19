@@ -49,7 +49,7 @@ theorem mul_left_cancel₀ (ha : a ≠ 0) (h : a * b = a * c) : b = c :=
   IsLeftCancelMulZero.mul_left_cancel_of_ne_zero ha h
 
 theorem mul_right_injective₀ (ha : a ≠ 0) : Function.Injective (a * ·) :=
-  fun _ _ => mul_left_cancel₀ ha
+  fun _ _ ↦ mul_left_cancel₀ ha
 
 end IsLeftCancelMulZero
 
@@ -65,8 +65,8 @@ variable [Mul M₀] [Zero M₀] [IsRightCancelMulZero M₀] {a b c : M₀}
 theorem mul_right_cancel₀ (hb : b ≠ 0) (h : a * b = c * b) : a = c :=
   IsRightCancelMulZero.mul_right_cancel_of_ne_zero hb h
 
-theorem mul_left_injective₀ (hb : b ≠ 0) : Function.Injective fun a => a * b :=
-  fun _ _ => mul_right_cancel₀ hb
+theorem mul_left_injective₀ (hb : b ≠ 0) : Function.Injective fun a ↦ a * b :=
+  fun _ _ ↦ mul_right_cancel₀ hb
 
 end IsRightCancelMulZero
 
@@ -142,12 +142,12 @@ variable [CommSemigroup M₀] [Zero M₀]
 lemma IsLeftCancelMulZero.to_isRightCancelMulZero [IsLeftCancelMulZero M₀] :
     IsRightCancelMulZero M₀ :=
 { mul_right_cancel_of_ne_zero :=
-    fun hb _ _ h => mul_left_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _)) }
+    fun hb _ _ h ↦ mul_left_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _)) }
 
 lemma IsRightCancelMulZero.to_isLeftCancelMulZero [IsRightCancelMulZero M₀] :
     IsLeftCancelMulZero M₀ :=
 { mul_left_cancel_of_ne_zero :=
-    fun hb _ _ h => mul_right_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _)) }
+    fun hb _ _ h ↦ mul_right_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _)) }
 
 lemma IsLeftCancelMulZero.to_isCancelMulZero [IsLeftCancelMulZero M₀] :
     IsCancelMulZero M₀ :=

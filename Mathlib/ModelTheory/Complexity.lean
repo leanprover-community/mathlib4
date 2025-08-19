@@ -48,20 +48,20 @@ inductive IsAtomic : L.BoundedFormula α n → Prop
   | rel {l : ℕ} (R : L.Relations l) (ts : Fin l → L.Term (α ⊕ (Fin n))) :
     IsAtomic (R.boundedFormula ts)
 
-theorem not_all_isAtomic (φ : L.BoundedFormula α (n + 1)) : ¬φ.all.IsAtomic := fun con => by
+theorem not_all_isAtomic (φ : L.BoundedFormula α (n + 1)) : ¬φ.all.IsAtomic := fun con ↦ by
   cases con
 
-theorem not_ex_isAtomic (φ : L.BoundedFormula α (n + 1)) : ¬φ.ex.IsAtomic := fun con => by cases con
+theorem not_ex_isAtomic (φ : L.BoundedFormula α (n + 1)) : ¬φ.ex.IsAtomic := fun con ↦ by cases con
 
 theorem IsAtomic.relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsAtomic)
     (f : α → β ⊕ (Fin n)) : (φ.relabel f).IsAtomic :=
-  IsAtomic.recOn h (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.rel _ _
+  IsAtomic.recOn h (fun _ _ ↦ IsAtomic.equal _ _) fun _ _ ↦ IsAtomic.rel _ _
 
 theorem IsAtomic.liftAt {k m : ℕ} (h : IsAtomic φ) : (φ.liftAt k m).IsAtomic :=
-  IsAtomic.recOn h (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.rel _ _
+  IsAtomic.recOn h (fun _ _ ↦ IsAtomic.equal _ _) fun _ _ ↦ IsAtomic.rel _ _
 
 theorem IsAtomic.castLE {h : l ≤ n} (hφ : IsAtomic φ) : (φ.castLE h).IsAtomic :=
-  IsAtomic.recOn hφ (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.rel _ _
+  IsAtomic.recOn hφ (fun _ _ ↦ IsAtomic.equal _ _) fun _ _ ↦ IsAtomic.rel _ _
 
 /-- A quantifier-free formula is a formula defined without quantifiers. These are all equivalent
 to boolean combinations of atomic formulas. -/
@@ -91,21 +91,21 @@ theorem inf {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ) (hψ : IsQF ψ) : Is
 
 protected theorem relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsQF) (f : α → β ⊕ (Fin n)) :
     (φ.relabel f).IsQF :=
-  IsQF.recOn h isQF_bot (fun h => (h.relabel f).isQF) fun _ _ h1 h2 => h1.imp h2
+  IsQF.recOn h isQF_bot (fun h ↦ (h.relabel f).isQF) fun _ _ h1 h2 ↦ h1.imp h2
 
 protected theorem liftAt {k m : ℕ} (h : IsQF φ) : (φ.liftAt k m).IsQF :=
-  IsQF.recOn h isQF_bot (fun ih => ih.liftAt.isQF) fun _ _ ih1 ih2 => ih1.imp ih2
+  IsQF.recOn h isQF_bot (fun ih ↦ ih.liftAt.isQF) fun _ _ ih1 ih2 ↦ ih1.imp ih2
 
 protected theorem castLE {h : l ≤ n} (hφ : IsQF φ) : (φ.castLE h).IsQF :=
-  IsQF.recOn hφ isQF_bot (fun ih => ih.castLE.isQF) fun _ _ ih1 ih2 => ih1.imp ih2
+  IsQF.recOn hφ isQF_bot (fun ih ↦ ih.castLE.isQF) fun _ _ ih1 ih2 ↦ ih1.imp ih2
 
 end IsQF
 
-theorem not_all_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.all.IsQF := fun con => by
+theorem not_all_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.all.IsQF := fun con ↦ by
   obtain - | con := con
   exact φ.not_all_isAtomic con
 
-theorem not_ex_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.ex.IsQF := fun con => by
+theorem not_ex_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.ex.IsQF := fun con ↦ by
   obtain - | con | con := con
   · exact φ.not_ex_isAtomic con
   · exact not_all_isQF _ con
@@ -128,22 +128,22 @@ theorem IsPrenex.induction_on_all_not {P : ∀ {n}, L.BoundedFormula α n → Pr
     (hq : ∀ {m} {ψ : L.BoundedFormula α m}, ψ.IsQF → P ψ)
     (ha : ∀ {m} {ψ : L.BoundedFormula α (m + 1)}, P ψ → P ψ.all)
     (hn : ∀ {m} {ψ : L.BoundedFormula α m}, P ψ → P ψ.not) : P φ :=
-  IsPrenex.recOn h hq (fun _ => ha) fun _ ih => hn (ha (hn ih))
+  IsPrenex.recOn h hq (fun _ ↦ ha) fun _ ih ↦ hn (ha (hn ih))
 
 theorem IsPrenex.relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsPrenex)
     (f : α → β ⊕ (Fin n)) : (φ.relabel f).IsPrenex :=
-  IsPrenex.recOn h (fun h => (h.relabel f).isPrenex) (fun _ h => by simp [h.all])
-    fun _ h => by simp [h.ex]
+  IsPrenex.recOn h (fun h ↦ (h.relabel f).isPrenex) (fun _ h ↦ by simp [h.all])
+    fun _ h ↦ by simp [h.ex]
 
 theorem IsPrenex.castLE (hφ : IsPrenex φ) : ∀ {n} {h : l ≤ n}, (φ.castLE h).IsPrenex :=
-  IsPrenex.recOn (motive := @fun l φ _ => ∀ (n : ℕ) (h : l ≤ n), (φ.castLE h).IsPrenex) hφ
-    (@fun _ _ ih _ _ => ih.castLE.isPrenex)
-    (@fun _ _ _ ih _ _ => (ih _ _).all)
-    (@fun _ _ _ ih _ _ => (ih _ _).ex) _ _
+  IsPrenex.recOn (motive := @fun l φ _ ↦ ∀ (n : ℕ) (h : l ≤ n), (φ.castLE h).IsPrenex) hφ
+    (@fun _ _ ih _ _ ↦ ih.castLE.isPrenex)
+    (@fun _ _ _ ih _ _ ↦ (ih _ _).all)
+    (@fun _ _ _ ih _ _ ↦ (ih _ _).ex) _ _
 
 theorem IsPrenex.liftAt {k m : ℕ} (h : IsPrenex φ) : (φ.liftAt k m).IsPrenex :=
-  IsPrenex.recOn h (fun ih => ih.liftAt.isPrenex) (fun _ ih => ih.castLE.all)
-    fun _ ih => ih.castLE.ex
+  IsPrenex.recOn h (fun ih ↦ ih.liftAt.isPrenex) (fun _ ih ↦ ih.castLE.all)
+    fun _ ih ↦ ih.castLE.ex
 
 /-- An auxiliary operation to `FirstOrder.Language.BoundedFormula.toPrenex`.
   If `φ` is quantifier-free and `ψ` is in prenex normal form, then `φ.toPrenexImpRight ψ`
@@ -205,9 +205,9 @@ def toPrenex : ∀ {n}, L.BoundedFormula α n → L.BoundedFormula α n
   | _, all f => f.toPrenex.all
 
 theorem toPrenex_isPrenex (φ : L.BoundedFormula α n) : φ.toPrenex.IsPrenex :=
-  BoundedFormula.recOn φ isQF_bot.isPrenex (fun _ _ => (IsAtomic.equal _ _).isPrenex)
-    (fun _ _ => (IsAtomic.rel _ _).isPrenex) (fun _ _ h1 h2 => isPrenex_toPrenexImp h1 h2)
-    fun _ => IsPrenex.all
+  BoundedFormula.recOn φ isQF_bot.isPrenex (fun _ _ ↦ (IsAtomic.equal _ _).isPrenex)
+    (fun _ _ ↦ (IsAtomic.rel _ _).isPrenex) (fun _ _ h1 h2 ↦ isPrenex_toPrenexImp h1 h2)
+    fun _ ↦ IsPrenex.all
 
 variable [Nonempty M]
 
@@ -217,22 +217,22 @@ theorem realize_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ)
   induction hψ with
   | of_isQF hψ => rw [hψ.toPrenexImpRight]
   | all _ ih =>
-    refine _root_.trans (forall_congr' fun _ => ih hφ.liftAt) ?_
+    refine _root_.trans (forall_congr' fun _ ↦ ih hφ.liftAt) ?_
     simp only [realize_imp, realize_liftAt_one_self, snoc_comp_castSucc, realize_all]
-    exact ⟨fun h1 a h2 => h1 h2 a, fun h1 h2 a => h1 a h2⟩
+    exact ⟨fun h1 a h2 ↦ h1 h2 a, fun h1 h2 a ↦ h1 a h2⟩
   | ex _ ih =>
     unfold toPrenexImpRight
     rw [realize_ex]
-    refine _root_.trans (exists_congr fun _ => ih hφ.liftAt) ?_
+    refine _root_.trans (exists_congr fun _ ↦ ih hφ.liftAt) ?_
     simp only [realize_imp, realize_liftAt_one_self, snoc_comp_castSucc, realize_ex]
-    refine ⟨?_, fun h' => ?_⟩
+    refine ⟨?_, fun h' ↦ ?_⟩
     · rintro ⟨a, ha⟩ h
       exact ⟨a, ha h⟩
     · by_cases h : φ.Realize v xs
       · obtain ⟨a, ha⟩ := h' h
-        exact ⟨a, fun _ => ha⟩
+        exact ⟨a, fun _ ↦ ha⟩
       · inhabit M
-        exact ⟨default, fun h'' => (h h'').elim⟩
+        exact ⟨default, fun h'' ↦ (h h'').elim⟩
 
 theorem realize_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ) (hψ : IsPrenex ψ)
     {v : α → M} {xs : Fin n → M} : (φ.toPrenexImp ψ).Realize v xs ↔ (φ.imp ψ).Realize v xs := by
@@ -246,12 +246,12 @@ theorem realize_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ) 
     intro ψ hψ
     unfold toPrenexImp
     rw [realize_ex]
-    refine _root_.trans (exists_congr fun _ => ih hψ.liftAt) ?_
+    refine _root_.trans (exists_congr fun _ ↦ ih hψ.liftAt) ?_
     simp only [realize_imp, realize_liftAt_one_self, snoc_comp_castSucc, realize_all]
     exact Iff.symm forall_imp_iff_exists_imp
   | ex _ ih =>
     intro ψ hψ
-    refine _root_.trans (forall_congr' fun _ => ih hψ.liftAt) ?_
+    refine _root_.trans (forall_congr' fun _ ↦ ih hψ.liftAt) ?_
     simp
 
 @[simp]
@@ -268,7 +268,7 @@ theorem realize_toPrenex (φ : L.BoundedFormula α n) {v : α → M} :
   | all _ h =>
     intros
     rw [realize_all, toPrenex, realize_all]
-    exact forall_congr' fun a => h
+    exact forall_congr' fun a ↦ h
 
 theorem IsQF.induction_on_sup_not {P : L.BoundedFormula α n → Prop} {φ : L.BoundedFormula α n}
     (h : IsQF φ) (hf : P (⊥ : L.BoundedFormula α n))
@@ -277,7 +277,7 @@ theorem IsQF.induction_on_sup_not {P : L.BoundedFormula α n → Prop} {φ : L.B
     (hse :
       ∀ {φ₁ φ₂ : L.BoundedFormula α n}, (φ₁ ⇔[∅] φ₂) → (P φ₁ ↔ P φ₂)) :
     P φ :=
-  IsQF.recOn h hf @(ha) fun {φ₁ φ₂} _ _ h1 h2 =>
+  IsQF.recOn h hf @(ha) fun {φ₁ φ₂} _ _ h1 h2 ↦
     (hse (φ₁.imp_iff_not_sup φ₂)).2 (hsup (hnot h1) h2)
 
 theorem IsQF.induction_on_inf_not {P : L.BoundedFormula α n → Prop} {φ : L.BoundedFormula α n}
@@ -288,12 +288,12 @@ theorem IsQF.induction_on_inf_not {P : L.BoundedFormula α n → Prop} {φ : L.B
       ∀ {φ₁ φ₂ : L.BoundedFormula α n}, (φ₁ ⇔[∅] φ₂) → (P φ₁ ↔ P φ₂)) :
     P φ :=
   h.induction_on_sup_not hf ha
-    (fun {φ₁ φ₂} h1 h2 =>
+    (fun {φ₁ φ₂} h1 h2 ↦
       (hse (φ₁.sup_iff_not_inf_not φ₂)).2 (hnot (hinf (hnot h1) (hnot h2))))
-    (fun {_} => hnot) fun {_ _} => hse
+    (fun {_} ↦ hnot) fun {_ _} ↦ hse
 
 theorem iff_toPrenex (φ : L.BoundedFormula α n) :
-    φ ⇔[∅] φ.toPrenex := fun M v xs => by
+    φ ⇔[∅] φ.toPrenex := fun M v xs ↦ by
   rw [realize_iff, realize_toPrenex]
 
 theorem induction_on_all_ex {P : ∀ {m}, L.BoundedFormula α m → Prop} (φ : L.BoundedFormula α n)
@@ -318,9 +318,9 @@ theorem induction_on_exists_not {P : ∀ {m}, L.BoundedFormula α m → Prop} (�
     (hse : ∀ {m} {φ₁ φ₂ : L.BoundedFormula α m},
       (φ₁ ⇔[∅] φ₂) → (P φ₁ ↔ P φ₂)) :
     P φ :=
-  φ.induction_on_all_ex (fun {_ _} => hqf)
-    (fun {_ φ} hφ => (hse φ.all_iff_not_ex_not).2 (hnot (hex (hnot hφ))))
-    (fun {_ _} => hex) fun {_ _ _} => hse
+  φ.induction_on_all_ex (fun {_ _} ↦ hqf)
+    (fun {_ φ} hφ ↦ (hse φ.all_iff_not_ex_not).2 (hnot (hex (hnot hφ))))
+    (fun {_ _} ↦ hex) fun {_ _ _} ↦ hse
 
 /-- A universal formula is a formula defined by applying only universal quantifiers to a
 quantifier-free formula. -/
@@ -359,7 +359,7 @@ lemma IsAtomic.realize_comp_of_injective {φ : L.BoundedFormula α n} (hA : φ.I
     imp_self]
   | rel R ts =>
     simp only [realize_rel, ← Sum.comp_elim, HomClass.realize_term]
-    exact HomClass.map_rel f R (fun i => Term.realize (Sum.elim v xs) (ts i))
+    exact HomClass.map_rel f R (fun i ↦ Term.realize (Sum.elim v xs) (ts i))
 
 lemma IsAtomic.realize_comp {φ : L.BoundedFormula α n} (hA : φ.IsAtomic)
     [EmbeddingLike F M N] [L.HomClass F M N] (f : F) {v : α → M} {xs : Fin n → M} :
@@ -378,7 +378,7 @@ lemma IsQF.realize_embedding {φ : L.BoundedFormula α n} (hQF : φ.IsQF)
         (EmbeddingLike.injective f).eq_iff]
     | rel R ts =>
       simp only [realize_rel, ← Sum.comp_elim, HomClass.realize_term]
-      exact StrongHomClass.map_rel f R (fun i => Term.realize (Sum.elim v xs) (ts i))
+      exact StrongHomClass.map_rel f R (fun i ↦ Term.realize (Sum.elim v xs) (ts i))
   | imp _ _ ihφ ihψ => simp only [realize_imp, ihφ, ihψ]
 
 lemma IsUniversal.realize_embedding {φ : L.BoundedFormula α n} (hU : φ.IsUniversal)
@@ -388,7 +388,7 @@ lemma IsUniversal.realize_embedding {φ : L.BoundedFormula α n} (hU : φ.IsUniv
   | of_isQF hQF => simp [hQF.realize_embedding]
   | all _ ih =>
     simp only [realize_all, Nat.succ_eq_add_one]
-    refine fun h a => ih ?_
+    refine fun h a ↦ ih ?_
     rw [Fin.comp_snoc]
     exact h (f a)
 
@@ -399,7 +399,7 @@ lemma IsExistential.realize_embedding {φ : L.BoundedFormula α n} (hE : φ.IsEx
   | of_isQF hQF => simp [hQF.realize_embedding]
   | ex _ ih =>
     simp only [realize_ex, Nat.succ_eq_add_one]
-    refine fun ⟨a, ha⟩ => ⟨f a, ?_⟩
+    refine fun ⟨a, ha⟩ ↦ ⟨f a, ?_⟩
     rw [← Fin.comp_snoc]
     exact ih ha
 
@@ -415,7 +415,7 @@ class Theory.IsUniversal (T : L.Theory) : Prop where
 lemma Theory.IsUniversal.models_of_embedding {T : L.Theory} [hT : T.IsUniversal]
     {N : Type*} [L.Structure N] [N ⊨ T] (f : M ↪[L] N) : M ⊨ T := by
   simp only [model_iff]
-  refine fun φ hφ => (hT.isUniversal_of_mem hφ).realize_embedding f (?_)
+  refine fun φ hφ ↦ (hT.isUniversal_of_mem hφ).realize_embedding f (?_)
   rw [Subsingleton.elim (f ∘ default) default, Subsingleton.elim (f ∘ default) default]
   exact Theory.realize_sentence_of_mem T hφ
 

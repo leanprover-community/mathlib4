@@ -57,14 +57,14 @@ open HomComplex
 
 /-- The left inclusion in the mapping cone, as a cochain of degree `-1`. -/
 noncomputable def inl : Cochain F (mappingCone φ) (-1) :=
-  Cochain.mk (fun p q hpq => homotopyCofiber.inlX φ p q (by dsimp; omega))
+  Cochain.mk (fun p q hpq ↦ homotopyCofiber.inlX φ p q (by dsimp; omega))
 
 /-- The right inclusion in the mapping cone. -/
 noncomputable def inr : G ⟶ mappingCone φ := homotopyCofiber.inr φ
 
 /-- The first projection from the mapping cone, as a cocyle of degree `1`. -/
 noncomputable def fst : Cocycle (mappingCone φ) F 1 :=
-  Cocycle.mk (Cochain.mk (fun p q hpq => homotopyCofiber.fstX φ p q hpq)) 2 (by omega) (by
+  Cocycle.mk (Cochain.mk (fun p q hpq ↦ homotopyCofiber.fstX φ p q hpq)) 2 (by omega) (by
     ext p _ rfl
     simp [δ_v 1 2 (by omega) _ p (p + 2) (by omega) (p + 1) (p + 1) (by omega) rfl,
       homotopyCofiber.d_fstX φ p (p + 1) (p + 2) rfl, mappingCone,

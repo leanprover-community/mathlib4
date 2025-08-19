@@ -789,7 +789,7 @@ theorem default_def : (default : M →ₛₗ[σ₁₂] M₂) = 0 :=
 
 instance uniqueOfLeft [Subsingleton M] : Unique (M →ₛₗ[σ₁₂] M₂) :=
   { inferInstanceAs (Inhabited (M →ₛₗ[σ₁₂] M₂)) with
-    uniq := fun f => ext fun x => by rw [Subsingleton.elim x 0, map_zero, map_zero] }
+    uniq := fun f ↦ ext fun x ↦ by rw [Subsingleton.elim x 0, map_zero, map_zero] }
 
 instance uniqueOfRight [Subsingleton M₂] : Unique (M →ₛₗ[σ₁₂] M₂) :=
   coe_injective.unique

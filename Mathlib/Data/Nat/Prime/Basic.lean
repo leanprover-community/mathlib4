@@ -38,11 +38,11 @@ theorem Prime.dvd_iff_eq {p a : ℕ} (hp : p.Prime) (a1 : a ≠ 1) : a ∣ p ↔
   · exact (a1 rfl).elim
 
 theorem Prime.eq_two_or_odd {p : ℕ} (hp : Prime p) : p = 2 ∨ p % 2 = 1 :=
-  p.mod_two_eq_zero_or_one.imp_left fun h =>
+  p.mod_two_eq_zero_or_one.imp_left fun h ↦
     ((hp.eq_one_or_self_of_dvd 2 (dvd_of_mod_eq_zero h)).resolve_left (by decide)).symm
 
 theorem Prime.eq_two_or_odd' {p : ℕ} (hp : Prime p) : p = 2 ∨ Odd p :=
-  Or.imp_right (fun h => ⟨p / 2, (div_add_mod p 2).symm.trans (congr_arg _ h)⟩) hp.eq_two_or_odd
+  Or.imp_right (fun h ↦ ⟨p / 2, (div_add_mod p 2).symm.trans (congr_arg _ h)⟩) hp.eq_two_or_odd
 
 section
 
@@ -70,16 +70,16 @@ theorem exists_dvd_of_not_prime2 {n : ℕ} (n2 : 2 ≤ n) (np : ¬Prime n) :
     (not_prime_iff_minFac_lt n2).1 np⟩
 
 theorem not_prime_of_dvd_of_ne {m n : ℕ} (h1 : m ∣ n) (h2 : m ≠ 1) (h3 : m ≠ n) : ¬Prime n :=
-  fun h => Or.elim (h.eq_one_or_self_of_dvd m h1) h2 h3
+  fun h ↦ Or.elim (h.eq_one_or_self_of_dvd m h1) h2 h3
 
 theorem not_prime_of_dvd_of_lt {m n : ℕ} (h1 : m ∣ n) (h2 : 2 ≤ m) (h3 : m < n) : ¬Prime n :=
   not_prime_of_dvd_of_ne h1 (ne_of_gt h2) (ne_of_lt h3)
 
 theorem not_prime_iff_exists_dvd_ne {n : ℕ} (h : 2 ≤ n) : (¬Prime n) ↔ ∃ m, m ∣ n ∧ m ≠ 1 ∧ m ≠ n :=
-  ⟨exists_dvd_of_not_prime h, fun ⟨_, h1, h2, h3⟩ => not_prime_of_dvd_of_ne h1 h2 h3⟩
+  ⟨exists_dvd_of_not_prime h, fun ⟨_, h1, h2, h3⟩ ↦ not_prime_of_dvd_of_ne h1 h2 h3⟩
 
 theorem not_prime_iff_exists_dvd_lt {n : ℕ} (h : 2 ≤ n) : (¬Prime n) ↔ ∃ m, m ∣ n ∧ 2 ≤ m ∧ m < n :=
-  ⟨exists_dvd_of_not_prime2 h, fun ⟨_, h1, h2, h3⟩ => not_prime_of_dvd_of_lt h1 h2 h3⟩
+  ⟨exists_dvd_of_not_prime2 h, fun ⟨_, h1, h2, h3⟩ ↦ not_prime_of_dvd_of_lt h1 h2 h3⟩
 
 theorem not_prime_iff_exists_mul_eq {n : ℕ} (h : 2 ≤ n) :
     (¬Prime n) ↔ ∃ a b, a < n ∧ b < n ∧ a * b = n := by
@@ -103,12 +103,12 @@ theorem Prime.even_sub_one {p : ℕ} (hp : p.Prime) (h2 : p ≠ 2) : Even (p - 1
 
 /-- A prime `p` satisfies `p % 2 = 1` if and only if `p ≠ 2`. -/
 theorem Prime.mod_two_eq_one_iff_ne_two {p : ℕ} [Fact p.Prime] : p % 2 = 1 ↔ p ≠ 2 := by
-  refine ⟨fun h hf => ?_, (Nat.Prime.eq_two_or_odd <| @Fact.out p.Prime _).resolve_left⟩
+  refine ⟨fun h hf ↦ ?_, (Nat.Prime.eq_two_or_odd <| @Fact.out p.Prime _).resolve_left⟩
   rw [hf] at h
   simp at h
 
 theorem coprime_of_dvd' {m n : ℕ} (H : ∀ k, Prime k → k ∣ m → k ∣ n → k ∣ 1) : Coprime m n :=
-  coprime_of_dvd fun k kp km kn => not_le_of_gt kp.one_lt <| le_of_dvd Nat.one_pos <| H k kp km kn
+  coprime_of_dvd fun k kp km kn ↦ not_le_of_gt kp.one_lt <| le_of_dvd Nat.one_pos <| H k kp km kn
 
 theorem Prime.dvd_iff_not_coprime {p n : ℕ} (pp : Prime p) : p ∣ n ↔ ¬Coprime p n :=
   iff_not_comm.2 pp.coprime_iff_not_dvd
@@ -158,13 +158,13 @@ theorem Prime.eq_one_of_pow {x n : ℕ} (h : (x ^ n).Prime) : n = 1 :=
   not_imp_not.mp Prime.not_prime_pow' h
 
 theorem Prime.pow_eq_iff {p a k : ℕ} (hp : p.Prime) : a ^ k = p ↔ a = p ∧ k = 1 := by
-  refine ⟨fun h => ?_, fun h => by rw [h.1, h.2, pow_one]⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h.1, h.2, pow_one]⟩
   rw [← h] at hp
   rw [← h, hp.eq_one_of_pow, eq_self_iff_true, _root_.and_true, pow_one]
 
 theorem Prime.mul_eq_prime_sq_iff {x y p : ℕ} (hp : p.Prime) (hx : x ≠ 1) (hy : y ≠ 1) :
     x * y = p ^ 2 ↔ x = p ∧ y = p := by
-  refine ⟨fun h => ?_, fun ⟨h₁, h₂⟩ => h₁.symm ▸ h₂.symm ▸ (sq _).symm⟩
+  refine ⟨fun h ↦ ?_, fun ⟨h₁, h₂⟩ ↦ h₁.symm ▸ h₂.symm ▸ (sq _).symm⟩
   have pdvdxy : p ∣ x * y := by rw [h]; simp [sq]
   -- Could be `wlog := hp.dvd_mul.1 pdvdxy using x y`, but that imports more than we want.
   suffices ∀ x' y' : ℕ, x' ≠ 1 → y' ≠ 1 → x' * y' = p ^ 2 → p ∣ x' → x' = p ∧ y' = p by
@@ -202,11 +202,11 @@ theorem coprime_or_dvd_of_prime {p} (pp : Prime p) (i : ℕ) : Coprime p i ∨ p
   rw [pp.dvd_iff_not_coprime]; apply em
 
 theorem coprime_of_lt_prime {n p} (n_pos : 0 < n) (hlt : n < p) (pp : Prime p) : Coprime p n :=
-  (coprime_or_dvd_of_prime pp n).resolve_right fun h => Nat.lt_le_asymm hlt (le_of_dvd n_pos h)
+  (coprime_or_dvd_of_prime pp n).resolve_right fun h ↦ Nat.lt_le_asymm hlt (le_of_dvd n_pos h)
 
 theorem eq_or_coprime_of_le_prime {n p} (n_pos : 0 < n) (hle : n ≤ p) (pp : Prime p) :
     p = n ∨ Coprime p n :=
-  hle.eq_or_lt.imp Eq.symm fun h => coprime_of_lt_prime n_pos h pp
+  hle.eq_or_lt.imp Eq.symm fun h ↦ coprime_of_lt_prime n_pos h pp
 
 theorem prime_eq_prime_of_dvd_pow {m p q} (pp : Prime p) (pq : Prime q) (h : p ∣ q ^ m) : p = q :=
   (prime_dvd_prime_iff_eq pp pq).mp (pp.dvd_of_dvd_pow h)
@@ -252,7 +252,7 @@ theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul {p : ℕ} (p_prime : Prime p) {
   have hpd5 : p ∣ m / p ^ k ∨ p ∣ n / p ^ l :=
     (Prime.dvd_mul p_prime).1 hpd4
   suffices p ^ k * p ∣ m ∨ p ^ l * p ∣ n by rwa [_root_.pow_succ, _root_.pow_succ]
-  exact hpd5.elim (fun h : p ∣ m / p ^ k => Or.inl <| mul_dvd_of_dvd_div hpm h)
-    fun h : p ∣ n / p ^ l => Or.inr <| mul_dvd_of_dvd_div hpn h
+  exact hpd5.elim (fun h : p ∣ m / p ^ k ↦ Or.inl <| mul_dvd_of_dvd_div hpm h)
+    fun h : p ∣ n / p ^ l ↦ Or.inr <| mul_dvd_of_dvd_div hpn h
 
 end Nat

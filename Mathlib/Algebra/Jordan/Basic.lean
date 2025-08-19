@@ -128,23 +128,23 @@ variable {A} [NonUnitalNonAssocRing A] [IsJordan A]
 
 @[simp]
 theorem commute_lmul_rmul (a : A) : Commute (L a) (R a) :=
-  AddMonoidHom.ext fun _ => (IsJordan.lmul_comm_rmul _ _).symm
+  AddMonoidHom.ext fun _ ↦ (IsJordan.lmul_comm_rmul _ _).symm
 
 @[simp]
 theorem commute_lmul_lmul_sq (a : A) : Commute (L a) (L (a * a)) :=
-  AddMonoidHom.ext fun _ => (IsJordan.lmul_lmul_comm_lmul _ _).symm
+  AddMonoidHom.ext fun _ ↦ (IsJordan.lmul_lmul_comm_lmul _ _).symm
 
 @[simp]
 theorem commute_lmul_rmul_sq (a : A) : Commute (L a) (R (a * a)) :=
-  AddMonoidHom.ext fun _ => (IsJordan.lmul_comm_rmul_rmul _ _).symm
+  AddMonoidHom.ext fun _ ↦ (IsJordan.lmul_comm_rmul_rmul _ _).symm
 
 @[simp]
 theorem commute_lmul_sq_rmul (a : A) : Commute (L (a * a)) (R a) :=
-  AddMonoidHom.ext fun _ => IsJordan.lmul_lmul_comm_rmul _ _
+  AddMonoidHom.ext fun _ ↦ IsJordan.lmul_lmul_comm_rmul _ _
 
 @[simp]
 theorem commute_rmul_rmul_sq (a : A) : Commute (R a) (R (a * a)) :=
-  AddMonoidHom.ext fun _ => (IsJordan.rmul_comm_rmul_rmul _ _).symm
+  AddMonoidHom.ext fun _ ↦ (IsJordan.rmul_comm_rmul_rmul _ _).symm
 
 end Commute
 

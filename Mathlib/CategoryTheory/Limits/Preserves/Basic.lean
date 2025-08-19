@@ -143,9 +143,9 @@ instance preservesColimitsOfSize_subsingleton (F : C ⥤ D) :
 instance id_preservesLimitsOfSize : PreservesLimitsOfSize.{w', w} (𝟭 C) where
   preservesLimitsOfShape {J} 𝒥 :=
     {
-      preservesLimit := fun {K} =>
-        ⟨fun {c} h =>
-          ⟨fun s => h.lift ⟨s.pt, fun j => s.π.app j, fun _ _ f => s.π.naturality f⟩, by
+      preservesLimit := fun {K} ↦
+        ⟨fun {c} h ↦
+          ⟨fun s ↦ h.lift ⟨s.pt, fun j ↦ s.π.app j, fun _ _ f ↦ s.π.naturality f⟩, by
             cases K; rcases c with ⟨_, _, _⟩; intro s j; cases s; exact h.fac _ j, by
             cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩;
               exact h.uniq _ m w⟩⟩ }
@@ -153,9 +153,9 @@ instance id_preservesLimitsOfSize : PreservesLimitsOfSize.{w', w} (𝟭 C) where
 instance id_preservesColimitsOfSize : PreservesColimitsOfSize.{w', w} (𝟭 C) where
   preservesColimitsOfShape {J} 𝒥 :=
     {
-      preservesColimit := fun {K} =>
-        ⟨fun {c} h =>
-          ⟨fun s => h.desc ⟨s.pt, fun j => s.ι.app j, fun _ _ f => s.ι.naturality f⟩, by
+      preservesColimit := fun {K} ↦
+        ⟨fun {c} h ↦
+          ⟨fun s ↦ h.desc ⟨s.pt, fun j ↦ s.ι.app j, fun _ _ f ↦ s.ι.naturality f⟩, by
             cases K; rcases c with ⟨_, _, _⟩; intro s j; cases s; exact h.fac _ j, by
             cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩;
               exact h.uniq _ m w⟩⟩ }
@@ -227,11 +227,11 @@ lemma preservesLimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [PreservesLimitsOf
 lemma preservesLimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
     [PreservesLimitsOfShape J F] : PreservesLimitsOfShape J' F where
   preservesLimit {K} :=
-    { preserves := fun {c} t => ⟨by
+    { preserves := fun {c} t ↦ ⟨by
         let equ := e.invFunIdAssoc (K ⋙ F)
         have := (isLimitOfPreserves F (t.whiskerEquivalence e)).whiskerEquivalence e.symm
         apply ((IsLimit.postcomposeHomEquiv equ _).symm this).ofIsoLimit
-        refine Cones.ext (Iso.refl _) fun j => ?_
+        refine Cones.ext (Iso.refl _) fun j ↦ ?_
         simp [equ, ← Functor.map_comp]⟩ }
 
 /-- A functor preserving larger limits also preserves smaller limits. -/
@@ -255,7 +255,7 @@ lemma preservesSmallestLimits_of_preservesLimits (F : C ⥤ D) [PreservesLimitsO
   then it preserves any colimit cocone for K. -/
 lemma preservesColimit_of_preserves_colimit_cocone {F : C ⥤ D} {t : Cocone K} (h : IsColimit t)
     (hF : IsColimit (F.mapCocone t)) : PreservesColimit K F :=
-  ⟨fun h' => ⟨IsColimit.ofIsoColimit hF (Functor.mapIso _ (IsColimit.uniqueUpToIso h h'))⟩⟩
+  ⟨fun h' ↦ ⟨IsColimit.ofIsoColimit hF (Functor.mapIso _ (IsColimit.uniqueUpToIso h h'))⟩⟩
 
 /-- Transfer preservation of colimits along a natural isomorphism in the shape. -/
 lemma preservesColimit_of_iso_diagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K₂)
@@ -286,11 +286,11 @@ lemma preservesColimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [PreservesColimi
 lemma preservesColimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
     [PreservesColimitsOfShape J F] : PreservesColimitsOfShape J' F where
   preservesColimit {K} :=
-    { preserves := fun {c} t => ⟨by
+    { preserves := fun {c} t ↦ ⟨by
         let equ := e.invFunIdAssoc (K ⋙ F)
         have := (isColimitOfPreserves F (t.whiskerEquivalence e)).whiskerEquivalence e.symm
         apply ((IsColimit.precomposeInvEquiv equ _).symm this).ofIsoColimit
-        refine Cocones.ext (Iso.refl _) fun j => ?_
+        refine Cocones.ext (Iso.refl _) fun j ↦ ?_
         simp [equ, ← Functor.map_comp]⟩ }
 
 /-- A functor preserving larger colimits also preserves smaller colimits. -/
@@ -444,18 +444,18 @@ instance (priority := 100) reflectsColimitsOfShape_of_reflectsColimits
 
 instance id_reflectsLimits : ReflectsLimitsOfSize.{w, w'} (𝟭 C) where
   reflectsLimitsOfShape {J} 𝒥 :=
-    { reflectsLimit := fun {K} =>
-        ⟨fun {c} h =>
-          ⟨fun s => h.lift ⟨s.pt, fun j => s.π.app j, fun _ _ f => s.π.naturality f⟩, by
+    { reflectsLimit := fun {K} ↦
+        ⟨fun {c} h ↦
+          ⟨fun s ↦ h.lift ⟨s.pt, fun j ↦ s.π.app j, fun _ _ f ↦ s.π.naturality f⟩, by
             cases K; rcases c with ⟨_, _, _⟩; intro s j; cases s; exact h.fac _ j, by
             cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩;
               exact h.uniq _ m w⟩⟩ }
 
 instance id_reflectsColimits : ReflectsColimitsOfSize.{w, w'} (𝟭 C) where
   reflectsColimitsOfShape {J} 𝒥 :=
-    { reflectsColimit := fun {K} =>
-        ⟨fun {c} h =>
-          ⟨fun s => h.desc ⟨s.pt, fun j => s.ι.app j, fun _ _ f => s.ι.naturality f⟩, by
+    { reflectsColimit := fun {K} ↦
+        ⟨fun {c} h ↦
+          ⟨fun s ↦ h.desc ⟨s.pt, fun j ↦ s.ι.app j, fun _ _ f ↦ s.ι.naturality f⟩, by
             cases K; rcases c with ⟨_, _, _⟩; intro s j; cases s; exact h.fac _ j, by
             cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩;
               exact h.uniq _ m w⟩⟩ }
@@ -467,7 +467,7 @@ variable (F : C ⥤ D) (G : D ⥤ E)
 
 instance comp_reflectsLimit [ReflectsLimit K F] [ReflectsLimit (K ⋙ F) G] :
     ReflectsLimit K (F ⋙ G) :=
-  ⟨fun h => ReflectsLimit.reflects (isLimitOfReflects G h)⟩
+  ⟨fun h ↦ ReflectsLimit.reflects (isLimitOfReflects G h)⟩
 
 instance comp_reflectsLimitsOfShape [ReflectsLimitsOfShape J F] [ReflectsLimitsOfShape J G] :
     ReflectsLimitsOfShape J (F ⋙ G) where
@@ -477,7 +477,7 @@ instance comp_reflectsLimits [ReflectsLimitsOfSize.{w', w} F] [ReflectsLimitsOfS
 
 instance comp_reflectsColimit [ReflectsColimit K F] [ReflectsColimit (K ⋙ F) G] :
     ReflectsColimit K (F ⋙ G) :=
-  ⟨fun h => ReflectsColimit.reflects (isColimitOfReflects G h)⟩
+  ⟨fun h ↦ ReflectsColimit.reflects (isColimitOfReflects G h)⟩
 
 instance comp_reflectsColimitsOfShape [ReflectsColimitsOfShape J F] [ReflectsColimitsOfShape J G] :
     ReflectsColimitsOfShape J (F ⋙ G) where
@@ -489,7 +489,7 @@ instance comp_reflectsColimits [ReflectsColimitsOfSize.{w', w} F]
 then `F` preserves limits for `K`. -/
 lemma preservesLimit_of_reflects_of_preserves [PreservesLimit K (F ⋙ G)] [ReflectsLimit (K ⋙ F) G] :
     PreservesLimit K F :=
-  ⟨fun h => ⟨by
+  ⟨fun h ↦ ⟨by
     apply isLimitOfReflects G
     apply isLimitOfPreserves (F ⋙ G) h⟩⟩
 
@@ -533,7 +533,7 @@ lemma reflectsLimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [ReflectsLimitsOfSi
 lemma reflectsLimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
     [ReflectsLimitsOfShape J F] : ReflectsLimitsOfShape J' F where
   reflectsLimit {K} :=
-    { reflects := fun {c} t => ⟨by
+    { reflects := fun {c} t ↦ ⟨by
         apply IsLimit.ofWhiskerEquivalence e
         apply isLimitOfReflects F
         apply IsLimit.ofIsoLimit _ (Functor.mapConeWhisker _).symm
@@ -592,7 +592,7 @@ then `F` preserves colimits for `K`. -/
 lemma preservesColimit_of_reflects_of_preserves
     [PreservesColimit K (F ⋙ G)] [ReflectsColimit (K ⋙ F) G] :
     PreservesColimit K F :=
-  ⟨fun {c} h => ⟨by
+  ⟨fun {c} h ↦ ⟨by
     apply isColimitOfReflects G
     apply isColimitOfPreserves (F ⋙ G) h⟩⟩
 
@@ -636,7 +636,7 @@ lemma reflectsColimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [ReflectsColimits
 lemma reflectsColimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
     [ReflectsColimitsOfShape J F] : ReflectsColimitsOfShape J' F where
   reflectsColimit :=
-    { reflects := fun {c} t => ⟨by
+    { reflects := fun {c} t ↦ ⟨by
         apply IsColimit.ofWhiskerEquivalence e
         apply isColimitOfReflects F
         apply IsColimit.ofIsoColimit _ (Functor.mapCoconeWhisker _).symm
@@ -699,11 +699,11 @@ variable (F : C ⥤ D)
 /-- A fully faithful functor reflects limits. -/
 instance fullyFaithful_reflectsLimits [F.Full] [F.Faithful] : ReflectsLimitsOfSize.{w, w'} F where
   reflectsLimitsOfShape {J} 𝒥₁ :=
-    { reflectsLimit := fun {K} =>
-        { reflects := fun {c} t =>
-            ⟨(IsLimit.mkConeMorphism fun _ =>
+    { reflectsLimit := fun {K} ↦
+        { reflects := fun {c} t ↦
+            ⟨(IsLimit.mkConeMorphism fun _ ↦
                 (Cones.functoriality K F).preimage (t.liftConeMorphism _)) <| by
-              apply fun s m => (Cones.functoriality K F).map_injective _
+              apply fun s m ↦ (Cones.functoriality K F).map_injective _
               intro s m
               rw [Functor.map_preimage]
               apply t.uniq_cone_morphism⟩ } }
@@ -711,11 +711,11 @@ instance fullyFaithful_reflectsLimits [F.Full] [F.Faithful] : ReflectsLimitsOfSi
 instance fullyFaithful_reflectsColimits [F.Full] [F.Faithful] :
     ReflectsColimitsOfSize.{w, w'} F where
   reflectsColimitsOfShape {J} 𝒥₁ :=
-    { reflectsColimit := fun {K} =>
-        { reflects := fun {c} t =>
-            ⟨(IsColimit.mkCoconeMorphism fun _ =>
+    { reflectsColimit := fun {K} ↦
+        { reflects := fun {c} t ↦
+            ⟨(IsColimit.mkCoconeMorphism fun _ ↦
                 (Cocones.functoriality K F).preimage (t.descCoconeMorphism _)) <| by
-              apply fun s m => (Cocones.functoriality K F).map_injective _
+              apply fun s m ↦ (Cocones.functoriality K F).map_injective _
               intro s m
               rw [Functor.map_preimage]
               apply t.uniq_cocone_morphism⟩ }}

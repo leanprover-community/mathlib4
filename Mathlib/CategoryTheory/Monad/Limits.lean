@@ -59,12 +59,12 @@ def conePoint : Algebra T where
   A := c.pt
   a := t.lift (newCone D c)
   unit :=
-    t.hom_ext fun j => by
+    t.hom_ext fun j ↦ by
       rw [Category.assoc, t.fac, newCone_π_app, ← T.η.naturality_assoc, Functor.id_map,
         (D.obj j).unit]
       simp
   assoc :=
-    t.hom_ext fun j => by
+    t.hom_ext fun j ↦ by
       rw [Category.assoc, Category.assoc, t.fac (newCone D c), newCone_π_app, ←
         Functor.map_comp_assoc, t.fac (newCone D c), newCone_π_app, ← T.μ.naturality_assoc,
         (D.obj j).assoc, Functor.map_comp, Category.assoc]
@@ -75,8 +75,8 @@ def conePoint : Algebra T where
 def liftedCone : Cone D where
   pt := conePoint D c t
   π :=
-    { app := fun j => { f := c.π.app j }
-      naturality := fun X Y f => by
+    { app := fun j ↦ { f := c.π.app j }
+      naturality := fun X Y f ↦ by
         ext1
         simpa using (c.w f).symm }
 
@@ -86,7 +86,7 @@ def liftedConeIsLimit : IsLimit (liftedCone D c t) where
   lift s :=
     { f := t.lift ((forget T).mapCone s)
       h :=
-        t.hom_ext fun j => by
+        t.hom_ext fun j ↦ by
           dsimp
           rw [Category.assoc, Category.assoc, t.fac, newCone_π_app, ← Functor.map_comp_assoc,
             t.fac, Functor.mapCone_π_app]
@@ -103,10 +103,10 @@ end ForgetCreatesLimits
 /-- The forgetful functor from the Eilenberg-Moore category creates limits. -/
 noncomputable instance forgetCreatesLimits : CreatesLimitsOfSize (forget T) where
   CreatesLimitsOfShape := {
-    CreatesLimit := fun {D} =>
-      createsLimitOfReflectsIso fun c t =>
+    CreatesLimit := fun {D} ↦
+      createsLimitOfReflectsIso fun c t ↦
         { liftedCone := ForgetCreatesLimits.liftedCone D c t
-          validLift := Cones.ext (Iso.refl _) fun _ => (id_comp _).symm
+          validLift := Cones.ext (Iso.refl _) fun _ ↦ (id_comp _).symm
           makesLimit := ForgetCreatesLimits.liftedConeIsLimit _ _ _ } }
 
 /-- `D ⋙ forget T` has a limit, then `D` has a limit. -/
@@ -177,7 +177,7 @@ noncomputable def coconePoint : Algebra T where
       commuting, Algebra.unit_assoc (D.obj j)]
     simp
   assoc := by
-    refine (isColimitOfPreserves _ (isColimitOfPreserves _ t)).hom_ext fun j => ?_
+    refine (isColimitOfPreserves _ (isColimitOfPreserves _ t)).hom_ext fun j ↦ ?_
     rw [Functor.mapCocone_ι_app, Functor.mapCocone_ι_app,
       show (T : C ⥤ C).map ((T : C ⥤ C).map _) ≫ _ ≫ _ = _ from T.μ.naturality_assoc _ _, ←
       Functor.map_comp_assoc, commuting, Functor.map_comp, Category.assoc, commuting]
@@ -188,10 +188,10 @@ noncomputable def coconePoint : Algebra T where
 noncomputable def liftedCocone : Cocone D where
   pt := coconePoint c t
   ι :=
-    { app := fun j =>
+    { app := fun j ↦
         { f := c.ι.app j
           h := commuting _ _ _ }
-      naturality := fun A B f => by
+      naturality := fun A B f ↦ by
         ext1
         dsimp
         rw [comp_id]
@@ -203,7 +203,7 @@ noncomputable def liftedCoconeIsColimit : IsColimit (liftedCocone c t) where
   desc s :=
     { f := t.desc ((forget T).mapCocone s)
       h :=
-        (isColimitOfPreserves (T : C ⥤ C) t).hom_ext fun j => by
+        (isColimitOfPreserves (T : C ⥤ C) t).hom_ext fun j ↦ by
           dsimp
           rw [← Functor.map_comp_assoc, ← Category.assoc, t.fac, commuting, Category.assoc, t.fac]
           apply Algebra.Hom.h }
@@ -224,14 +224,14 @@ which the monad itself preserves.
 noncomputable instance forgetCreatesColimit (D : J ⥤ Algebra T)
     [PreservesColimit (D ⋙ forget T) (T : C ⥤ C)]
     [PreservesColimit ((D ⋙ forget T) ⋙ ↑T) (T : C ⥤ C)] : CreatesColimit D (forget T) :=
-  createsColimitOfReflectsIso fun c t =>
+  createsColimitOfReflectsIso fun c t ↦
     { liftedCocone :=
         { pt := coconePoint c t
           ι :=
-            { app := fun j =>
+            { app := fun j ↦
                 { f := c.ι.app j
                   h := commuting _ _ _ }
-              naturality := fun A B f => by
+              naturality := fun A B f ↦ by
                 ext1
                 simpa using (c.w f) } }
       validLift := Cocones.ext (Iso.refl _)
@@ -324,17 +324,17 @@ theorem hasLimit_of_reflective (F : J ⥤ D) (R : D ⥤ C) [HasLimit (F ⋙ R)] 
 /-- If `C` has limits of shape `J` then any reflective subcategory has limits of shape `J`. -/
 theorem hasLimitsOfShape_of_reflective [HasLimitsOfShape J C] (R : D ⥤ C) [Reflective R] :
     HasLimitsOfShape J D :=
-  ⟨fun F => hasLimit_of_reflective F R⟩
+  ⟨fun F ↦ hasLimit_of_reflective F R⟩
 
 /-- If `C` has limits then any reflective subcategory has limits. -/
 theorem hasLimits_of_reflective (R : D ⥤ C) [HasLimitsOfSize.{v, u} C] [Reflective R] :
     HasLimitsOfSize.{v, u} D :=
-  ⟨fun _ => hasLimitsOfShape_of_reflective R⟩
+  ⟨fun _ ↦ hasLimitsOfShape_of_reflective R⟩
 
 /-- If `C` has colimits of shape `J` then any reflective subcategory has colimits of shape `J`. -/
 theorem hasColimitsOfShape_of_reflective (R : D ⥤ C) [Reflective R] [HasColimitsOfShape J C] :
     HasColimitsOfShape J D where
-  has_colimit := fun F => by
+  has_colimit := fun F ↦ by
       let c := (monadicLeftAdjoint R).mapCocone (colimit.cocone (F ⋙ R))
       letI : PreservesColimitsOfShape J _ :=
         (monadicAdjunction R).leftAdjoint_preservesColimits.1
@@ -346,7 +346,7 @@ theorem hasColimitsOfShape_of_reflective (R : D ⥤ C) [Reflective R] [HasColimi
 /-- If `C` has colimits then any reflective subcategory has colimits. -/
 theorem hasColimits_of_reflective (R : D ⥤ C) [Reflective R] [HasColimitsOfSize.{v, u} C] :
     HasColimitsOfSize.{v, u} D :=
-  ⟨fun _ => hasColimitsOfShape_of_reflective R⟩
+  ⟨fun _ ↦ hasColimitsOfShape_of_reflective R⟩
 
 /-- The reflector always preserves terminal objects. Note this in general doesn't apply to any other
 limit.
@@ -410,8 +410,8 @@ def coconePoint : Coalgebra T where
 def liftedCocone : Cocone D where
   pt := coconePoint D c t
   ι :=
-    { app := fun j => { f := c.ι.app j }
-      naturality := fun X Y f => by
+    { app := fun j ↦ { f := c.ι.app j }
+      naturality := fun X Y f ↦ by
         ext1
         simpa using (c.w f) }
 
@@ -421,7 +421,7 @@ def liftedCoconeIsColimit : IsColimit (liftedCocone D c t) where
   desc s :=
     { f := t.desc ((forget T).mapCocone s)
       h :=
-        t.hom_ext fun j => by
+        t.hom_ext fun j ↦ by
           dsimp
           rw [← Category.assoc, ← Category.assoc, t.fac, newCocone_ι_app, t.fac,
             Functor.mapCocone_ι_app, Category.assoc, ← Functor.map_comp, t.fac]
@@ -438,10 +438,10 @@ end ForgetCreatesColimits'
 /-- The forgetful functor from the Eilenberg-Moore category creates colimits. -/
 noncomputable instance forgetCreatesColimit : CreatesColimitsOfSize (forget T) where
   CreatesColimitsOfShape := {
-    CreatesColimit := fun {D} =>
-      createsColimitOfReflectsIso fun c t =>
+    CreatesColimit := fun {D} ↦
+      createsColimitOfReflectsIso fun c t ↦
         { liftedCocone := ForgetCreatesColimits'.liftedCocone D c t
-          validLift := Cocones.ext (Iso.refl _) fun _ => (comp_id _)
+          validLift := Cocones.ext (Iso.refl _) fun _ ↦ (comp_id _)
           makesColimit := ForgetCreatesColimits'.liftedCoconeIsColimit _ _ _ } }
 
 /-- If `D ⋙ forget T` has a colimit, then `D` has a colimit. -/
@@ -500,7 +500,7 @@ noncomputable def conePoint : Coalgebra T where
     rw [assoc, ← show _ = _ ≫ c.π.app j from T.ε.naturality _, ← assoc, commuting, assoc]
     simp [Coalgebra.counit (D.obj j)]
   coassoc := by
-    refine (isLimitOfPreserves _ (isLimitOfPreserves _ t)).hom_ext fun j => ?_
+    refine (isLimitOfPreserves _ (isLimitOfPreserves _ t)).hom_ext fun j ↦ ?_
     rw [Functor.mapCone_π_app, Functor.mapCone_π_app, assoc,
       ← show _ = _ ≫ T.map (T.map _) from T.δ.naturality _, assoc, ← Functor.map_comp, commuting,
       Functor.map_comp, ← assoc, commuting]
@@ -512,10 +512,10 @@ noncomputable def conePoint : Coalgebra T where
 noncomputable def liftedCone : Cone D where
   pt := conePoint c t
   π :=
-    { app := fun j =>
+    { app := fun j ↦
         { f := c.π.app j
           h := commuting _ _ _ }
-      naturality := fun A B f => by
+      naturality := fun A B f ↦ by
         ext1
         dsimp
         rw [id_comp, ← c.w]
@@ -527,7 +527,7 @@ noncomputable def liftedConeIsLimit : IsLimit (liftedCone c t) where
   lift s :=
     { f := t.lift ((forget T).mapCone s)
       h :=
-        (isLimitOfPreserves (T : C ⥤ C) t).hom_ext fun j => by
+        (isLimitOfPreserves (T : C ⥤ C) t).hom_ext fun j ↦ by
           dsimp
           rw [Category.assoc, ← t.fac, Category.assoc, t.fac, commuting, ← assoc, ← assoc, t.fac,
             assoc, ← Functor.map_comp, t.fac]
@@ -549,14 +549,14 @@ which the comonad itself preserves.
 noncomputable instance forgetCreatesLimit (D : J ⥤ Coalgebra T)
     [PreservesLimit (D ⋙ forget T) (T : C ⥤ C)]
     [PreservesLimit ((D ⋙ forget T) ⋙ ↑T) (T : C ⥤ C)] : CreatesLimit D (forget T) :=
-  createsLimitOfReflectsIso fun c t =>
+  createsLimitOfReflectsIso fun c t ↦
     { liftedCone :=
         { pt := conePoint c t
           π :=
-            { app := fun j =>
+            { app := fun j ↦
                 { f := c.π.app j
                   h := commuting _ _ _ }
-              naturality := fun A B f => by
+              naturality := fun A B f ↦ by
                 ext1
                 simpa using (c.w f).symm } }
       validLift := Cones.ext (Iso.refl _)
@@ -644,17 +644,17 @@ theorem hasColimit_of_coreflective (F : J ⥤ D) (R : D ⥤ C) [HasColimit (F �
 /-- If `C` has colimits of shape `J` then any coreflective subcategory has colimits of shape `J`. -/
 theorem hasColimitsOfShape_of_coreflective [HasColimitsOfShape J C] (R : D ⥤ C) [Coreflective R] :
     HasColimitsOfShape J D :=
-  ⟨fun F => hasColimit_of_coreflective F R⟩
+  ⟨fun F ↦ hasColimit_of_coreflective F R⟩
 
 /-- If `C` has colimits then any coreflective subcategory has colimits. -/
 theorem hasColimits_of_coreflective (R : D ⥤ C) [HasColimitsOfSize.{v, u} C] [Coreflective R] :
     HasColimitsOfSize.{v, u} D :=
-  ⟨fun _ => hasColimitsOfShape_of_coreflective R⟩
+  ⟨fun _ ↦ hasColimitsOfShape_of_coreflective R⟩
 
 /-- If `C` has limits of shape `J` then any coreflective subcategory has limits of shape `J`. -/
 theorem hasLimitsOfShape_of_coreflective (R : D ⥤ C) [Coreflective R] [HasLimitsOfShape J C] :
     HasLimitsOfShape J D where
-  has_limit := fun F => by
+  has_limit := fun F ↦ by
       let c := (comonadicRightAdjoint R).mapCone (limit.cone (F ⋙ R))
       letI : PreservesLimitsOfShape J _ :=
         (comonadicAdjunction R).rightAdjoint_preservesLimits.1
@@ -666,7 +666,7 @@ theorem hasLimitsOfShape_of_coreflective (R : D ⥤ C) [Coreflective R] [HasLimi
 /-- If `C` has limits then any coreflective subcategory has limits. -/
 theorem hasLimits_of_coreflective (R : D ⥤ C) [Coreflective R] [HasLimitsOfSize.{v, u} C] :
     HasLimitsOfSize.{v, u} D :=
-  ⟨fun _ => hasLimitsOfShape_of_coreflective R⟩
+  ⟨fun _ ↦ hasLimitsOfShape_of_coreflective R⟩
 
 /-- The coreflector always preserves initial objects. Note this in general doesn't apply to any
 other colimit.

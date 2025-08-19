@@ -34,20 +34,20 @@ namespace SMulInvariantMeasure
 
 @[to_additive]
 instance zero [MeasurableSpace α] [SMul M α] : SMulInvariantMeasure M α (0 : Measure α) :=
-  ⟨fun _ _ _ => rfl⟩
+  ⟨fun _ _ _ ↦ rfl⟩
 
 variable [SMul M α] {m : MeasurableSpace α} {μ ν : Measure α}
 
 @[to_additive]
 instance add [SMulInvariantMeasure M α μ] [SMulInvariantMeasure M α ν] :
     SMulInvariantMeasure M α (μ + ν) :=
-  ⟨fun c _s hs =>
+  ⟨fun c _s hs ↦
     show _ + _ = _ + _ from
       congr_arg₂ (· + ·) (measure_preimage_smul c hs) (measure_preimage_smul c hs)⟩
 
 @[to_additive]
 instance smul [SMulInvariantMeasure M α μ] (c : ℝ≥0∞) : SMulInvariantMeasure M α (c • μ) :=
-  ⟨fun a _s hs => show c • _ = c • _ from congr_arg (c • ·) (measure_preimage_smul a hs)⟩
+  ⟨fun a _s hs ↦ show c • _ = c • _ from congr_arg (c • ·) (measure_preimage_smul a hs)⟩
 
 @[to_additive]
 instance smul_nnreal [SMulInvariantMeasure M α μ] (c : ℝ≥0) : SMulInvariantMeasure M α (c • μ) :=
@@ -227,15 +227,15 @@ theorem smulInvariantMeasure_tfae :
         ∀ (c : G) (s), μ (c • s) = μ s,
         ∀ c : G, Measure.map (c • ·) μ = μ,
         ∀ c : G, MeasurePreserving (c • ·) μ μ] := by
-  tfae_have 1 ↔ 2 := ⟨fun h => h.1, fun h => ⟨h⟩⟩
-  tfae_have 1 → 6 := fun h c => (measurePreserving_smul c μ).map_eq
-  tfae_have 6 → 7 := fun H c => ⟨measurable_const_smul c, H c⟩
-  tfae_have 7 → 4 := fun H c => (H c).measure_preimage_emb (measurableEmbedding_const_smul c)
+  tfae_have 1 ↔ 2 := ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
+  tfae_have 1 → 6 := fun h c ↦ (measurePreserving_smul c μ).map_eq
+  tfae_have 6 → 7 := fun H c ↦ ⟨measurable_const_smul c, H c⟩
+  tfae_have 7 → 4 := fun H c ↦ (H c).measure_preimage_emb (measurableEmbedding_const_smul c)
   tfae_have 4 → 5
   | H, c, s => by
     rw [← preimage_smul_inv]
     apply H
-  tfae_have 5 → 3 := fun H c s _ => H c s
+  tfae_have 5 → 3 := fun H c s _ ↦ H c s
   tfae_have 3 → 2
   | H, c, s, hs => by
     rw [preimage_smul]
@@ -283,10 +283,10 @@ positive on any nonempty open set. In case of a regular measure, one can assume 
 theorem measure_isOpen_pos_of_smulInvariant_of_compact_ne_zero (hK : IsCompact K) (hμK : μ K ≠ 0)
     (hU : IsOpen U) (hne : U.Nonempty) : 0 < μ U :=
   let ⟨t, ht⟩ := hK.exists_finite_cover_smul G hU hne
-  pos_iff_ne_zero.2 fun hμU =>
+  pos_iff_ne_zero.2 fun hμU ↦
     hμK <|
       measure_mono_null ht <|
-        (measure_biUnion_null_iff t.countable_toSet).2 fun _ _ => by rwa [measure_smul]
+        (measure_biUnion_null_iff t.countable_toSet).2 fun _ _ ↦ by rwa [measure_smul]
 
 /-- If measure `μ` is invariant under an additive group action and is nonzero on a compact set `K`,
 then it is positive on any nonempty open set. In case of a regular measure, one can assume `μ ≠ 0`
@@ -298,7 +298,7 @@ include G
 @[to_additive]
 theorem isLocallyFiniteMeasure_of_smulInvariant (hU : IsOpen U) (hne : U.Nonempty) (hμU : μ U ≠ ∞) :
     IsLocallyFiniteMeasure μ :=
-  ⟨fun x =>
+  ⟨fun x ↦
     let ⟨g, hg⟩ := hU.exists_smul_mem G x hne
     ⟨(g • ·) ⁻¹' U, (hU.preimage (continuous_id.const_smul _)).mem_nhds hg,
       Ne.lt_top <| by rwa [measure_preimage_smul]⟩⟩
@@ -314,7 +314,7 @@ theorem measure_isOpen_pos_of_smulInvariant_of_ne_zero (hμ : μ ≠ 0) (hU : Is
 @[to_additive]
 theorem measure_pos_iff_nonempty_of_smulInvariant (hμ : μ ≠ 0) (hU : IsOpen U) :
     0 < μ U ↔ U.Nonempty :=
-  ⟨fun h => nonempty_of_measure_ne_zero h.ne',
+  ⟨fun h ↦ nonempty_of_measure_ne_zero h.ne',
     measure_isOpen_pos_of_smulInvariant_of_ne_zero G hμ hU⟩
 
 @[to_additive]

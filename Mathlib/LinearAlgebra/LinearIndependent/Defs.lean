@@ -92,7 +92,7 @@ open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Delaborator for `LinearIndependent` that suggests pretty printing with type hints
 in case the family of vectors is over a `Set`.
 
-Type hints look like `LinearIndependent fun (v : ↑s) => ↑v` or `LinearIndependent (ι := ↑s) f`,
+Type hints look like `LinearIndependent fun (v : ↑s) ↦ ↑v` or `LinearIndependent (ι := ↑s) f`,
 depending on whether the family is a lambda expression or not. -/
 @[app_delab LinearIndependent]
 def delabLinearIndependent : Delab :=
@@ -186,7 +186,7 @@ theorem linearIndependent_subsingleton_iff [Nontrivial R] [Subsingleton M] (f : 
   rw [Subsingleton.elim f 0, linearIndependent_zero_iff]
 
 variable (R M) in
-theorem linearIndependent_empty : LinearIndependent R (fun x => x : (∅ : Set M) → M) :=
+theorem linearIndependent_empty : LinearIndependent R (fun x ↦ x : (∅ : Set M) → M) :=
   linearIndependent_empty_type
 
 variable (R v) in
@@ -237,8 +237,8 @@ theorem linearIndependent_iff'ₛ :
           _ = ∑ j ∈ s, (Finsupp.lapply i : (ι →₀ R) →ₗ[R] R) (Finsupp.single j (f j)) :=
             Eq.symm <|
               Finset.sum_eq_single i
-                (fun j _hjs hji => by rw [Finsupp.lapply_apply, Finsupp.single_eq_of_ne hji])
-                fun hnis => hnis.elim his
+                (fun j _hjs hji ↦ by rw [Finsupp.lapply_apply, Finsupp.single_eq_of_ne hji])
+                fun hnis ↦ hnis.elim his
           _ = (∑ j ∈ s, Finsupp.single j (f j)) i := (map_sum ..).symm
       rw [this f, this g, h],
       fun hv f g hl ↦
@@ -344,7 +344,7 @@ protected theorem LinearMap.linearIndepOn_iff_of_injOn (f : M →ₗ[R] M')
 -- TODO : Rename this `LinearIndependent.of_subsingleton`.
 @[nontriviality]
 theorem linearIndependent_of_subsingleton [Subsingleton R] : LinearIndependent R v :=
-  linearIndependent_iffₛ.2 fun _l _l' _hl => Subsingleton.elim _ _
+  linearIndependent_iffₛ.2 fun _l _l' _hl ↦ Subsingleton.elim _ _
 
 @[nontriviality]
 theorem LinearIndepOn.of_subsingleton [Subsingleton R] : LinearIndepOn R v s :=
@@ -612,11 +612,11 @@ theorem LinearIndependent.maximal_iff {ι : Type w} {R : Type u} [Semiring R] [N
     exact range_eq_univ.mp (image_injective.mpr i'.injective p)
   · intro p w i' h
     specialize
-      p w ((↑) : w → M) i' (fun i => ⟨v i, range_subset_iff.mp h i⟩)
+      p w ((↑) : w → M) i' (fun i ↦ ⟨v i, range_subset_iff.mp h i⟩)
         (by
           ext
           simp)
-    have q := congr_arg (fun s => ((↑) : w → M) '' s) p.range_eq
+    have q := congr_arg (fun s ↦ ((↑) : w → M) '' s) p.range_eq
     dsimp at q
     rw [← image_univ, image_image] at q
     simpa using q
@@ -656,9 +656,9 @@ theorem linearIndependent_iff'' :
       ∀ (s : Finset ι) (g : ι → R), (∀ i ∉ s, g i = 0) → ∑ i ∈ s, g i • v i = 0 → ∀ i, g i = 0 := by
   classical
   exact linearIndependent_iff'.trans
-    ⟨fun H s g hg hv i => if his : i ∈ s then H s g hv i his else hg i his, fun H s g hg i hi => by
+    ⟨fun H s g hg hv i ↦ if his : i ∈ s then H s g hv i his else hg i his, fun H s g hg i hi ↦ by
       convert
-        H s (fun j => if j ∈ s then g j else 0) (fun j hj => if_neg hj)
+        H s (fun j ↦ if j ∈ s then g j else 0) (fun j hj ↦ if_neg hj)
           (by simp_rw [ite_smul, zero_smul, Finset.sum_extend_by_zero, hg]) i
       exact (if_pos hi).symm⟩
 
@@ -676,10 +676,10 @@ theorem not_linearIndependent_iff :
 theorem Fintype.linearIndependent_iff [Fintype ι] :
     LinearIndependent R v ↔ ∀ g : ι → R, ∑ i, g i • v i = 0 → ∀ i, g i = 0 := by
   refine
-    ⟨fun H g => by simpa using linearIndependent_iff'.1 H Finset.univ g, fun H =>
-      linearIndependent_iff''.2 fun s g hg hs i => H _ ?_ _⟩
+    ⟨fun H g ↦ by simpa using linearIndependent_iff'.1 H Finset.univ g, fun H ↦
+      linearIndependent_iff''.2 fun s g hg hs i ↦ H _ ?_ _⟩
   rw [← hs]
-  refine (Finset.sum_subset (Finset.subset_univ _) fun i _ hi => ?_).symm
+  refine (Finset.sum_subset (Finset.subset_univ _) fun i _ hi ↦ ?_).symm
   rw [hg i hi, zero_smul]
 
 theorem Fintype.not_linearIndependent_iff [Fintype ι] :
@@ -795,8 +795,8 @@ open LinearMap
 
 theorem linearIndependent_iff_eq_zero_of_smul_mem_span :
     LinearIndependent R v ↔ ∀ (i : ι) (a : R), a • v i ∈ span R (v '' (univ \ {i})) → a = 0 :=
-  ⟨fun hv ↦ hv.eq_zero_of_smul_mem_span, fun H =>
-    linearIndependent_iff.2 fun l hl => by
+  ⟨fun hv ↦ hv.eq_zero_of_smul_mem_span, fun H ↦
+    linearIndependent_iff.2 fun l hl ↦ by
       ext i; simp only [Finsupp.zero_apply]
       by_contra hn
       refine hn (H i _ ?_)
@@ -804,8 +804,8 @@ theorem linearIndependent_iff_eq_zero_of_smul_mem_span :
       · rw [Finsupp.mem_supported']
         intro j hj
         have hij : j = i :=
-          Classical.not_not.1 fun hij : j ≠ i =>
-            hj ((mem_diff _).2 ⟨mem_univ _, fun h => hij (eq_of_mem_singleton h)⟩)
+          Classical.not_not.1 fun hij : j ≠ i ↦
+            hj ((mem_diff _).2 ⟨mem_univ _, fun h ↦ hij (eq_of_mem_singleton h)⟩)
         simp [hij]
       · simp [hl]⟩
 

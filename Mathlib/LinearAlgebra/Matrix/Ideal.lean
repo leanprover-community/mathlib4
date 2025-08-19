@@ -51,15 +51,15 @@ theorem mem_matrix (I : Ideal R) (M : Matrix n n R) :
 @[deprecated (since := "2025-07-28")] alias mem_matricesOver := mem_matrix
 
 theorem matrix_monotone : Monotone (matrix (R := R) n) :=
-  fun _ _ IJ _ MI i j => IJ (MI i j)
+  fun _ _ IJ _ MI i j ↦ IJ (MI i j)
 
 @[deprecated (since := "2025-07-28")] alias matricesOver_monotone := matrix_monotone
 
 theorem matrix_strictMono_of_nonempty [Nonempty n] :
     StrictMono (matrix (R := R) n) :=
-  matrix_monotone n |>.strictMono_of_injective <| fun I J eq => by
+  matrix_monotone n |>.strictMono_of_injective <| fun I J eq ↦ by
     ext x
-    have : (∀ _ _, x ∈ I) ↔ (∀ _ _, x ∈ J) := congr((Matrix.of fun _ _ => x) ∈ $eq)
+    have : (∀ _ _, x ∈ I) ↔ (∀ _ _, x ∈ J) := congr((Matrix.of fun _ _ ↦ x) ∈ $eq)
     simpa only [forall_const] using this
 
 @[deprecated (since := "2025-07-28")] alias matricesOver_strictMono_of_nonempty :=
@@ -148,7 +148,7 @@ def matrix (c : RingCon R) : RingCon (Matrix n n R) where
   iseqv.symm h := fun _ _ ↦ c.symm <| h _ _
   iseqv.trans h₁ h₂ := fun _ _ ↦ c.trans (h₁ _ _) (h₂ _ _)
   add' h₁ h₂ := fun _ _ ↦ c.add (h₁ _ _) (h₂ _ _)
-  mul' h₁ h₂ := fun _ _ ↦ c.finset_sum _ fun _ _ => c.mul (h₁ _ _) (h₂ _ _)
+  mul' h₁ h₂ := fun _ _ ↦ c.finset_sum _ fun _ _ ↦ c.mul (h₁ _ _) (h₂ _ _)
 
 @[simp low]
 theorem matrix_apply {c : RingCon R} {M N : Matrix n n R} :
@@ -279,14 +279,14 @@ lemma mem_matrix (I : TwoSidedIdeal R) (M : Matrix n n R) :
 @[deprecated (since := "2025-07-28")] alias mem_matricesOver := mem_matrix
 
 theorem matrix_monotone : Monotone (matrix (R := R) n) :=
-  fun _ _ IJ _ MI i j => IJ (MI i j)
+  fun _ _ IJ _ MI i j ↦ IJ (MI i j)
 
 @[deprecated (since := "2025-07-28")] alias matricesOver_monotone := matrix_monotone
 
 theorem matrix_strictMono_of_nonempty [h : Nonempty n] :
     StrictMono (matrix (R := R) n) :=
   matrix_monotone n |>.strictMono_of_injective <|
-    .comp (fun _ _ => mk.inj) <| (RingCon.matrix_injective n).comp ringCon_injective
+    .comp (fun _ _ ↦ mk.inj) <| (RingCon.matrix_injective n).comp ringCon_injective
 
 @[deprecated (since := "2025-07-28")] alias matricesOver_strictMono_of_nonempty :=
 matrix_strictMono_of_nonempty
@@ -350,7 +350,7 @@ def orderIsoMatrix : TwoSidedIdeal R ≃o TwoSidedIdeal (Matrix n n R) where
     simp only [equivMatrix_apply]
     constructor
     · intro le x xI
-      specialize @le (of fun _ _ => x) (by simp [xI])
+      specialize @le (of fun _ _ ↦ x) (by simp [xI])
       simpa using le
     · intro IJ M MI i j
       exact IJ <| MI i j

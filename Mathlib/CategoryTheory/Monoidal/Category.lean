@@ -806,10 +806,10 @@ theorem rightAssocTensor_map {X Y} (f : X ⟶ Y) :
 @[simps]
 def curriedTensor : C ⥤ C ⥤ C where
   obj X :=
-    { obj := fun Y => X ⊗ Y
-      map := fun g => X ◁ g }
+    { obj := fun Y ↦ X ⊗ Y
+      map := fun g ↦ X ◁ g }
   map f :=
-    { app := fun Y => f ▷ Y }
+    { app := fun Y ↦ f ▷ Y }
 
 variable {C}
 
@@ -832,7 +832,7 @@ abbrev tensorUnitRight : C ⥤ C := tensorRight (𝟙_ C)
 /-- The associator as a natural isomorphism. -/
 @[simps!]
 def associatorNatIso : leftAssocTensor C ≅ rightAssocTensor C :=
-  NatIso.ofComponents (fun _ => MonoidalCategory.associator _ _ _)
+  NatIso.ofComponents (fun _ ↦ MonoidalCategory.associator _ _ _)
 
 /-- The left unitor as a natural isomorphism. -/
 @[simps!]
@@ -849,8 +849,8 @@ def rightUnitorNatIso : tensorUnitRight C ≅ 𝟭 C :=
 def curriedAssociatorNatIso :
     bifunctorComp₁₂ (curriedTensor C) (curriedTensor C) ≅
       bifunctorComp₂₃ (curriedTensor C) (curriedTensor C) :=
-  NatIso.ofComponents (fun X₁ => NatIso.ofComponents (fun X₂ => NatIso.ofComponents
-    (fun X₃ => α_ X₁ X₂ X₃)))
+  NatIso.ofComponents (fun X₁ ↦ NatIso.ofComponents (fun X₂ ↦ NatIso.ofComponents
+    (fun X₃ ↦ α_ X₁ X₂ X₃)))
 
 section
 
@@ -860,7 +860,7 @@ variable {C}
 tensoring on the left with `Y`, and then again with `X`.
 -/
 def tensorLeftTensor (X Y : C) : tensorLeft (X ⊗ Y) ≅ tensorLeft Y ⋙ tensorLeft X :=
-  NatIso.ofComponents (associator _ _) fun {Z} {Z'} f => by simp
+  NatIso.ofComponents (associator _ _) fun {Z} {Z'} f ↦ by simp
 
 @[simp]
 theorem tensorLeftTensor_hom_app (X Y Z : C) :
@@ -903,7 +903,7 @@ variable {C}
 tensoring on the right with `X`, and then again with `Y`.
 -/
 def tensorRightTensor (X Y : C) : tensorRight (X ⊗ Y) ≅ tensorRight X ⋙ tensorRight Y :=
-  NatIso.ofComponents (fun Z => (associator Z X Y).symm) fun {Z} {Z'} f => by simp
+  NatIso.ofComponents (fun Z ↦ (associator Z X Y).symm) fun {Z} {Z'} f ↦ by simp
 
 @[simp]
 theorem tensorRightTensor_hom_app (X Y Z : C) :
@@ -936,8 +936,8 @@ instance prodMonoidal : MonoidalCategory (C₁ × C₂) where
   tensorHom_def := by simp [tensorHom_def]
   tensorUnit := (𝟙_ C₁, 𝟙_ C₂)
   associator X Y Z := (α_ X.1 Y.1 Z.1).prod (α_ X.2 Y.2 Z.2)
-  leftUnitor := fun ⟨X₁, X₂⟩ => (λ_ X₁).prod (λ_ X₂)
-  rightUnitor := fun ⟨X₁, X₂⟩ => (ρ_ X₁).prod (ρ_ X₂)
+  leftUnitor := fun ⟨X₁, X₂⟩ ↦ (λ_ X₁).prod (λ_ X₂)
+  rightUnitor := fun ⟨X₁, X₂⟩ ↦ (ρ_ X₁).prod (ρ_ X₂)
 
 @[simp]
 theorem prodMonoidal_leftUnitor_hom_fst (X : C₁ × C₂) :

@@ -84,7 +84,7 @@ abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Modu
 
 lemma Hom.toCoalgHom_injective (V W : CoalgCat.{v} R) :
     Function.Injective (Hom.toCoalgHom' : Hom V W → _) :=
-  fun ⟨f⟩ ⟨g⟩ _ => by congr
+  fun ⟨f⟩ ⟨g⟩ _ ↦ by congr
 
 @[ext]
 lemma hom_ext {M N : CoalgCat.{v} R} (f g : M ⟶ N) (h : f.toCoalgHom = g.toCoalgHom) :
@@ -101,8 +101,8 @@ lemma hom_ext {M N : CoalgCat.{v} R} (f g : M ⟶ N) (h : f.toCoalgHom = g.toCoa
 
 instance hasForgetToModule : HasForget₂ (CoalgCat R) (ModuleCat R) where
   forget₂ :=
-    { obj := fun M => ModuleCat.of R M
-      map := fun f => ModuleCat.ofHom f.toCoalgHom.toLinearMap }
+    { obj := fun M ↦ ModuleCat.of R M
+      map := fun f ↦ ModuleCat.ofHom f.toCoalgHom.toLinearMap }
 
 @[simp]
 theorem forget₂_obj (X : CoalgCat R) :
@@ -158,8 +158,8 @@ variable {X Y Z : CoalgCat.{v} R}
 def toCoalgEquiv (i : X ≅ Y) : X ≃ₗc[R] Y :=
   { i.hom.toCoalgHom with
     invFun := i.inv.toCoalgHom
-    left_inv := fun x => CoalgHom.congr_fun (congr_arg CoalgCat.Hom.toCoalgHom i.3) x
-    right_inv := fun x => CoalgHom.congr_fun (congr_arg CoalgCat.Hom.toCoalgHom i.4) x }
+    left_inv := fun x ↦ CoalgHom.congr_fun (congr_arg CoalgCat.Hom.toCoalgHom i.3) x
+    right_inv := fun x ↦ CoalgHom.congr_fun (congr_arg CoalgCat.Hom.toCoalgHom i.4) x }
 
 @[simp] theorem toCoalgEquiv_toCoalgHom (i : X ≅ Y) :
     i.toCoalgEquiv = i.hom.toCoalgHom := rfl

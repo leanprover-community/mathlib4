@@ -96,7 +96,7 @@ structure PartitionOfUnity (ι X : Type*) [TopologicalSpace X] (s : Set X := uni
   /-- The collection of continuous functions underlying this partition of unity -/
   toFun : ι → C(X, ℝ)
   /-- the supports of the underlying functions are a locally finite family of sets -/
-  locallyFinite' : LocallyFinite fun i => support (toFun i)
+  locallyFinite' : LocallyFinite fun i ↦ support (toFun i)
   /-- the functions are non-negative -/
   nonneg' : 0 ≤ toFun
   /-- the functions sum up to one on `s` -/
@@ -123,7 +123,7 @@ structure BumpCovering (ι X : Type*) [TopologicalSpace X] (s : Set X := univ) w
   /-- The collections of continuous functions underlying this bump covering -/
   toFun : ι → C(X, ℝ)
   /-- the supports of the underlying functions are a locally finite family of sets -/
-  locallyFinite' : LocallyFinite fun i => support (toFun i)
+  locallyFinite' : LocallyFinite fun i ↦ support (toFun i)
   /-- the functions are non-negative -/
   nonneg' : 0 ≤ toFun
   /-- the functions are each at most one -/
@@ -142,10 +142,10 @@ instance : FunLike (PartitionOfUnity ι X s) ι C(X, ℝ) where
   coe := toFun
   coe_injective' f g h := by cases f; cases g; congr
 
-protected theorem locallyFinite : LocallyFinite fun i => support (f i) :=
+protected theorem locallyFinite : LocallyFinite fun i ↦ support (f i) :=
   f.locallyFinite'
 
-theorem locallyFinite_tsupport : LocallyFinite fun i => tsupport (f i) :=
+theorem locallyFinite_tsupport : LocallyFinite fun i ↦ tsupport (f i) :=
   f.locallyFinite.closure
 
 theorem nonneg (i : ι) (x : X) : 0 ≤ f i x :=
@@ -159,16 +159,16 @@ that `0 < f i x`. -/
 theorem exists_pos {x : X} (hx : x ∈ s) : ∃ i, 0 < f i x := by
   have H := f.sum_eq_one hx
   contrapose! H
-  simpa only [fun i => (H i).antisymm (f.nonneg i x), finsum_zero] using zero_ne_one
+  simpa only [fun i ↦ (H i).antisymm (f.nonneg i x), finsum_zero] using zero_ne_one
 
 theorem sum_le_one (x : X) : ∑ᶠ i, f i x ≤ 1 :=
   f.sum_le_one' x
 
 theorem sum_nonneg (x : X) : 0 ≤ ∑ᶠ i, f i x :=
-  finsum_nonneg fun i => f.nonneg i x
+  finsum_nonneg fun i ↦ f.nonneg i x
 
 theorem le_one (i : ι) (x : X) : f i x ≤ 1 :=
-  (single_le_finsum i (f.locallyFinite.point_finite x) fun j => f.nonneg j x).trans (f.sum_le_one x)
+  (single_le_finsum i (f.locallyFinite.point_finite x) fun j ↦ f.nonneg j x).trans (f.sum_le_one x)
 
 section finsupport
 
@@ -209,7 +209,7 @@ theorem sum_finsupport_smul_eq_finsum {M : Type*} [AddCommMonoid M] [Module ℝ 
     ∑ i ∈ ρ.finsupport x₀, ρ i x₀ • φ i x₀ = ∑ᶠ i, ρ i x₀ • φ i x₀ := by
   apply (finsum_eq_sum_of_support_subset _ _).symm
   have : (fun i ↦ (ρ i) x₀ • φ i x₀) = (fun i ↦ (ρ i) x₀) • (fun i ↦ φ i x₀) :=
-    funext fun _ => (Pi.smul_apply' _ _ _).symm
+    funext fun _ ↦ (Pi.smul_apply' _ _ _).symm
   rw [ρ.coe_finsupport x₀, this, support_smul]
   exact inter_subset_left
 
@@ -257,8 +257,8 @@ end fintsupport
 the topological support of some `f i`, then `fun x ↦ f i x • g x` is continuous on the whole space.
 -/
 theorem continuous_smul {g : X → E} {i : ι} (hg : ∀ x ∈ tsupport (f i), ContinuousAt g x) :
-    Continuous fun x => f i x • g x :=
-  continuous_of_tsupport fun x hx =>
+    Continuous fun x ↦ f i x • g x :=
+  continuous_of_tsupport fun x hx ↦
     ((f i).continuousAt x).smul <| hg x <| tsupport_smul_subset_left _ _ hx
 
 /-- If `f` is a partition of unity on a set `s : Set X` and `g : ι → X → E` is a family of functions
@@ -266,9 +266,9 @@ such that each `g i` is continuous at every point of the topological support of 
 `fun x ↦ ∑ᶠ i, f i x • g i x` is continuous on the whole space. -/
 theorem continuous_finsum_smul [ContinuousAdd E] {g : ι → X → E}
     (hg : ∀ (i), ∀ x ∈ tsupport (f i), ContinuousAt (g i) x) :
-    Continuous fun x => ∑ᶠ i, f i x • g i x :=
-  (continuous_finsum fun i => f.continuous_smul (hg i)) <|
-    f.locallyFinite.subset fun _ => support_smul_subset_left _ _
+    Continuous fun x ↦ ∑ᶠ i, f i x • g i x :=
+  (continuous_finsum fun i ↦ f.continuous_smul (hg i)) <|
+    f.locallyFinite.subset fun _ ↦ support_smul_subset_left _ _
 
 /-- A partition of unity `f i` is subordinate to a family of sets `U i` indexed by the same type if
 for each `i` the closure of the support of `f i` is a subset of `U i`. -/
@@ -308,8 +308,8 @@ alias exists_finset_nhd_support_subset := exists_finset_nhds_support_subset
 `fun x ↦ ∑ᶠ i, f i x • g i x` is a continuous function. -/
 theorem IsSubordinate.continuous_finsum_smul [ContinuousAdd E] {U : ι → Set X}
     (ho : ∀ i, IsOpen (U i)) (hf : f.IsSubordinate U) {g : ι → X → E}
-    (hg : ∀ i, ContinuousOn (g i) (U i)) : Continuous fun x => ∑ᶠ i, f i x • g i x :=
-  f.continuous_finsum_smul fun i _ hx => (hg i).continuousAt <| (ho i).mem_nhds <| hf i hx
+    (hg : ∀ i, ContinuousOn (g i) (U i)) : Continuous fun x ↦ ∑ᶠ i, f i x • g i x :=
+  f.continuous_finsum_smul fun i _ hx ↦ (hg i).continuousAt <| (ho i).mem_nhds <| hf i hx
 
 end PartitionOfUnity
 
@@ -323,10 +323,10 @@ instance : FunLike (BumpCovering ι X s) ι C(X, ℝ) where
 
 @[simp] lemma toFun_eq_coe : f.toFun = f := rfl
 
-protected theorem locallyFinite : LocallyFinite fun i => support (f i) :=
+protected theorem locallyFinite : LocallyFinite fun i ↦ support (f i) :=
   f.locallyFinite'
 
-theorem locallyFinite_tsupport : LocallyFinite fun i => tsupport (f i) :=
+theorem locallyFinite_tsupport : LocallyFinite fun i ↦ tsupport (f i) :=
   f.locallyFinite.closure
 
 protected theorem point_finite (x : X) : { i | f i x ≠ 0 }.Finite :=
@@ -349,8 +349,8 @@ protected def single (i : ι) (s : Set X) : BumpCovering ι X s where
     contrapose! hx
     rw [mem_singleton_iff] at hx
     simp [hx]
-  nonneg' := le_update_iff.2 ⟨fun _ => zero_le_one, fun _ _ => le_rfl⟩
-  le_one' := update_le_iff.2 ⟨le_rfl, fun _ _ _ => zero_le_one⟩
+  nonneg' := le_update_iff.2 ⟨fun _ ↦ zero_le_one, fun _ _ ↦ le_rfl⟩
+  le_one' := update_le_iff.2 ⟨le_rfl, fun _ _ _ ↦ zero_le_one⟩
   eventuallyEq_one' x _ := ⟨i, by rw [Pi.single_eq_same, ContinuousMap.coe_one]⟩
 
 open Classical in
@@ -368,7 +368,7 @@ def IsSubordinate (f : BumpCovering ι X s) (U : ι → Set X) : Prop :=
 
 theorem IsSubordinate.mono {f : BumpCovering ι X s} {U V : ι → Set X} (hU : f.IsSubordinate U)
     (hV : ∀ i, U i ⊆ V i) : f.IsSubordinate V :=
-  fun i => Subset.trans (hU i) (hV i)
+  fun i ↦ Subset.trans (hU i) (hV i)
 
 /-- If `X` is a normal topological space and `U i`, `i : ι`, is a locally finite open covering of a
 closed set `s`, then there exists a `BumpCovering ι X s` that is subordinate to `U`. If `X` is a
@@ -381,19 +381,19 @@ theorem exists_isSubordinate_of_locallyFinite_of_prop [NormalSpace X] (p : (X �
       ∃ f : C(X, ℝ), p f ∧ EqOn f 0 s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1)
     (hs : IsClosed s) (U : ι → Set X) (ho : ∀ i, IsOpen (U i)) (hf : LocallyFinite U)
     (hU : s ⊆ ⋃ i, U i) : ∃ f : BumpCovering ι X s, (∀ i, p (f i)) ∧ f.IsSubordinate U := by
-  rcases exists_subset_iUnion_closure_subset hs ho (fun x _ => hf.point_finite x) hU with
+  rcases exists_subset_iUnion_closure_subset hs ho (fun x _ ↦ hf.point_finite x) hU with
     ⟨V, hsV, hVo, hVU⟩
-  have hVU' : ∀ i, V i ⊆ U i := fun i => Subset.trans subset_closure (hVU i)
-  rcases exists_subset_iUnion_closure_subset hs hVo (fun x _ => (hf.subset hVU').point_finite x)
+  have hVU' : ∀ i, V i ⊆ U i := fun i ↦ Subset.trans subset_closure (hVU i)
+  rcases exists_subset_iUnion_closure_subset hs hVo (fun x _ ↦ (hf.subset hVU').point_finite x)
       hsV with
     ⟨W, hsW, hWo, hWV⟩
-  choose f hfp hf0 hf1 hf01 using fun i =>
+  choose f hfp hf0 hf1 hf01 using fun i ↦
     h01 _ _ (isClosed_compl_iff.2 <| hVo i) isClosed_closure
-      (disjoint_right.2 fun x hx => Classical.not_not.2 (hWV i hx))
-  have hsupp : ∀ i, support (f i) ⊆ V i := fun i => support_subset_iff'.2 (hf0 i)
-  refine ⟨⟨f, hf.subset fun i => Subset.trans (hsupp i) (hVU' i), fun i x => (hf01 i x).1,
-      fun i x => (hf01 i x).2, fun x hx => ?_⟩,
-    hfp, fun i => Subset.trans (closure_mono (hsupp i)) (hVU i)⟩
+      (disjoint_right.2 fun x hx ↦ Classical.not_not.2 (hWV i hx))
+  have hsupp : ∀ i, support (f i) ⊆ V i := fun i ↦ support_subset_iff'.2 (hf0 i)
+  refine ⟨⟨f, hf.subset fun i ↦ Subset.trans (hsupp i) (hVU' i), fun i x ↦ (hf01 i x).1,
+      fun i x ↦ (hf01 i x).2, fun x hx ↦ ?_⟩,
+    hfp, fun i ↦ Subset.trans (closure_mono (hsupp i)) (hVU i)⟩
   rcases mem_iUnion.1 (hsW hx) with ⟨i, hi⟩
   exact ⟨i, ((hf1 i).mono subset_closure).eventuallyEq_of_mem ((hWo i).mem_nhds hi)⟩
 
@@ -405,9 +405,9 @@ theorem exists_isSubordinate_of_locallyFinite [NormalSpace X] (hs : IsClosed s) 
     (ho : ∀ i, IsOpen (U i)) (hf : LocallyFinite U) (hU : s ⊆ ⋃ i, U i) :
     ∃ f : BumpCovering ι X s, f.IsSubordinate U :=
   let ⟨f, _, hfU⟩ :=
-    exists_isSubordinate_of_locallyFinite_of_prop (fun _ => True)
-      (fun _ _ hs ht hd =>
-        (exists_continuous_zero_one_of_isClosed hs ht hd).imp fun _ hf => ⟨trivial, hf⟩)
+    exists_isSubordinate_of_locallyFinite_of_prop (fun _ ↦ True)
+      (fun _ _ hs ht hd ↦
+        (exists_continuous_zero_one_of_isClosed hs ht hd).imp fun _ hf ↦ ⟨trivial, hf⟩)
       hs U ho hf hU
   ⟨f, hfU⟩
 
@@ -445,19 +445,19 @@ theorem exists_isSubordinate_of_locallyFinite_of_prop_t2space [LocallyCompactSpa
     (hU : s ⊆ ⋃ i, U i) :
     ∃ f : BumpCovering ι X s, (∀ i, p (f i)) ∧ f.IsSubordinate U ∧
       ∀ i, HasCompactSupport (f i) := by
-  rcases exists_subset_iUnion_closure_subset_t2space hs ho (fun x _ => hf.point_finite x) hU with
+  rcases exists_subset_iUnion_closure_subset_t2space hs ho (fun x _ ↦ hf.point_finite x) hU with
     ⟨V, hsV, hVo, hVU, hcp⟩
   have hVU' i : V i ⊆ U i := subset_closure.trans (hVU i)
   rcases exists_subset_iUnion_closure_subset_t2space hs hVo
-    (fun x _ => (hf.subset hVU').point_finite x) hsV with ⟨W, hsW, hWo, hWV, hWc⟩
-  choose f hfp hf0 hf1 hf01 using fun i =>
+    (fun x _ ↦ (hf.subset hVU').point_finite x) hsV with ⟨W, hsW, hWo, hWV, hWc⟩
+  choose f hfp hf0 hf1 hf01 using fun i ↦
     h01 _ _ (isClosed_compl_iff.2 <| hVo i) (hWc i)
-      (disjoint_right.2 fun x hx => Classical.not_not.2 (hWV i hx))
+      (disjoint_right.2 fun x hx ↦ Classical.not_not.2 (hWV i hx))
   have hsupp i : support (f i) ⊆ V i := support_subset_iff'.2 (hf0 i)
-  refine ⟨⟨f, hf.subset fun i => Subset.trans (hsupp i) (hVU' i), fun i x => (hf01 i x).1,
-      fun i x => (hf01 i x).2, fun x hx => ?_⟩,
-    hfp, fun i => Subset.trans (closure_mono (hsupp i)) (hVU i),
-    fun i => IsCompact.of_isClosed_subset (hcp i) isClosed_closure <| closure_mono (hsupp i)⟩
+  refine ⟨⟨f, hf.subset fun i ↦ Subset.trans (hsupp i) (hVU' i), fun i x ↦ (hf01 i x).1,
+      fun i x ↦ (hf01 i x).2, fun x hx ↦ ?_⟩,
+    hfp, fun i ↦ Subset.trans (closure_mono (hsupp i)) (hVU i),
+    fun i ↦ IsCompact.of_isClosed_subset (hcp i) isClosed_closure <| closure_mono (hsupp i)⟩
   rcases mem_iUnion.1 (hsW hx) with ⟨i, hi⟩
   exact ⟨i, ((hf1 i).mono subset_closure).eventuallyEq_of_mem ((hWo i).mem_nhds hi)⟩
 
@@ -472,9 +472,9 @@ theorem exists_isSubordinate_hasCompactSupport_of_locallyFinite_t2space [Locally
     ∃ f : BumpCovering ι X s, f.IsSubordinate U ∧ ∀ i, HasCompactSupport (f i) := by
   -- need to switch 0 and 1 in `exists_continuous_zero_one_of_isCompact`
   simpa using
-    exists_isSubordinate_of_locallyFinite_of_prop_t2space (fun _ => True)
-      (fun _ _ ht hs hd =>
-        (exists_continuous_zero_one_of_isCompact' hs ht hd.symm).imp fun _ hf => ⟨trivial, hf⟩)
+    exists_isSubordinate_of_locallyFinite_of_prop_t2space (fun _ ↦ True)
+      (fun _ _ ht hs hd ↦
+        (exists_continuous_zero_one_of_isCompact' hs ht hd.symm).imp fun _ hf ↦ ⟨trivial, hf⟩)
       hs U ho hf hU
 
 /-- Index of a bump function such that `fs i =ᶠ[𝓝 x] 1`. -/
@@ -504,13 +504,13 @@ theorem toPOUFun_zero_of_zero {i : ι} {x : X} (h : f i x = 0) : f.toPOUFun i x 
   rw [toPOUFun, h, zero_mul]
 
 theorem support_toPOUFun_subset (i : ι) : support (f.toPOUFun i) ⊆ support (f i) :=
-  fun _ => mt <| f.toPOUFun_zero_of_zero
+  fun _ ↦ mt <| f.toPOUFun_zero_of_zero
 
 open Classical in
 theorem toPOUFun_eq_mul_prod (i : ι) (x : X) (t : Finset ι)
     (ht : ∀ j, WellOrderingRel j i → f j x ≠ 0 → j ∈ t) :
     f.toPOUFun i x = f i x * ∏ j ∈ t with WellOrderingRel j i, (1 - f j x) := by
-  refine congr_arg _ (finprod_cond_eq_prod_of_cond_iff _ fun {j} hj => ?_)
+  refine congr_arg _ (finprod_cond_eq_prod_of_cond_iff _ fun {j} hj ↦ ?_)
   rw [Ne, sub_eq_self] at hj
   rw [Finset.mem_filter, Iff.comm, and_iff_right_iff_imp]
   exact flip (ht j) hj
@@ -518,18 +518,18 @@ theorem toPOUFun_eq_mul_prod (i : ι) (x : X) (t : Finset ι)
 theorem sum_toPOUFun_eq (x : X) : ∑ᶠ i, f.toPOUFun i x = 1 - ∏ᶠ i, (1 - f i x) := by
   set s := (f.point_finite x).toFinset
   have hs : (s : Set ι) = { i | f i x ≠ 0 } := Finite.coe_toFinset _
-  have A : (support fun i => toPOUFun f i x) ⊆ s := by
+  have A : (support fun i ↦ toPOUFun f i x) ⊆ s := by
     rw [hs]
-    exact fun i hi => f.support_toPOUFun_subset i hi
-  have B : (mulSupport fun i => 1 - f i x) ⊆ s := by
+    exact fun i hi ↦ f.support_toPOUFun_subset i hi
+  have B : (mulSupport fun i ↦ 1 - f i x) ⊆ s := by
     rw [hs, mulSupport_one_sub]
-    exact fun i => id
+    exact fun i ↦ id
   classical
   letI : LinearOrder ι := linearOrderOfSTO WellOrderingRel
   rw [finsum_eq_sum_of_support_subset _ A, finprod_eq_prod_of_mulSupport_subset _ B,
     Finset.prod_one_sub_ordered, sub_sub_cancel]
-  refine Finset.sum_congr rfl fun i _ => ?_
-  convert f.toPOUFun_eq_mul_prod _ _ _ fun j _ hj => _
+  refine Finset.sum_congr rfl fun i _ ↦ ?_
+  convert f.toPOUFun_eq_mul_prod _ _ _ fun j _ hj ↦ _
   rwa [Finite.mem_toFinset]
 
 open Classical in
@@ -545,7 +545,7 @@ theorem exists_finset_toPOUFun_eventuallyEq (i : ι) (x : X) : ∃ t : Finset ι
 
 theorem continuous_toPOUFun (i : ι) : Continuous (f.toPOUFun i) := by
   refine (f i).continuous.mul <|
-    continuous_finprod_cond (fun j _ => continuous_const.sub (f j).continuous) ?_
+    continuous_finprod_cond (fun j _ ↦ continuous_const.sub (f j).continuous) ?_
   simp only [mulSupport_one_sub]
   exact f.locallyFinite
 
@@ -561,16 +561,16 @@ def toPartitionOfUnity : PartitionOfUnity ι X s where
   toFun i := ⟨f.toPOUFun i, f.continuous_toPOUFun i⟩
   locallyFinite' := f.locallyFinite.subset f.support_toPOUFun_subset
   nonneg' i x :=
-    mul_nonneg (f.nonneg i x) (finprod_cond_nonneg fun j _ => sub_nonneg.2 <| f.le_one j x)
+    mul_nonneg (f.nonneg i x) (finprod_cond_nonneg fun j _ ↦ sub_nonneg.2 <| f.le_one j x)
   sum_eq_one' x hx := by
     simp only [ContinuousMap.coe_mk, sum_toPOUFun_eq, sub_eq_self]
-    apply finprod_eq_zero (fun i => 1 - f i x) (f.ind x hx)
+    apply finprod_eq_zero (fun i ↦ 1 - f i x) (f.ind x hx)
     · simp only [f.ind_apply x hx, sub_self]
     · rw [mulSupport_one_sub]
       exact f.point_finite x
   sum_le_one' x := by
     simp only [ContinuousMap.coe_mk, sum_toPOUFun_eq, sub_le_self_iff]
-    exact finprod_nonneg fun i => sub_nonneg.2 <| f.le_one i x
+    exact finprod_nonneg fun i ↦ sub_nonneg.2 <| f.le_one i x
 
 theorem toPartitionOfUnity_apply (i : ι) (x : X) :
     f.toPartitionOfUnity i x = f i x * ∏ᶠ (j) (_ : WellOrderingRel j i), (1 - f j x) := rfl
@@ -600,7 +600,7 @@ theorem sum_toPartitionOfUnity_eq (x : X) :
 
 theorem IsSubordinate.toPartitionOfUnity {f : BumpCovering ι X s} {U : ι → Set X}
     (h : f.IsSubordinate U) : f.toPartitionOfUnity.IsSubordinate U :=
-  fun i => Subset.trans (closure_mono <| f.support_toPartitionOfUnity_subset i) (h i)
+  fun i ↦ Subset.trans (closure_mono <| f.support_toPartitionOfUnity_subset i) (h i)
 
 end BumpCovering
 
@@ -637,7 +637,7 @@ theorem exists_isSubordinate_of_locallyFinite_t2space [LocallyCompactSpace X] [T
     ∃ f : PartitionOfUnity ι X s, f.IsSubordinate U ∧ ∀ i, HasCompactSupport (f i) :=
   let ⟨f, hfsub, hfcp⟩ :=
     BumpCovering.exists_isSubordinate_hasCompactSupport_of_locallyFinite_t2space hs U ho hf hU
-  ⟨f.toPartitionOfUnity, hfsub.toPartitionOfUnity, fun i => IsCompact.of_isClosed_subset (hfcp i)
+  ⟨f.toPartitionOfUnity, hfsub.toPartitionOfUnity, fun i ↦ IsCompact.of_isClosed_subset (hfcp i)
     isClosed_closure <| closure_mono (f.support_toPartitionOfUnity_subset i)⟩
 
 end PartitionOfUnity
@@ -656,12 +656,12 @@ theorem exists_continuous_sum_one_of_isOpen_isCompact [T2Space X] [LocallyCompac
   obtain ⟨f, hfsub, hfcp⟩ := PartitionOfUnity.exists_isSubordinate_of_locallyFinite_t2space htcp s
     hs (locallyFinite_of_finite _) hst
   use f
-  refine ⟨fun i ↦ hfsub i, ?_, ?_, fun i => hfcp i⟩
+  refine ⟨fun i ↦ hfsub i, ?_, ?_, fun i ↦ hfcp i⟩
   · intro x hx
     simp only [Finset.sum_apply, Pi.one_apply]
     have h := f.sum_eq_one' x hx
     simp at h
-    rw [finsum_eq_sum (fun i => (f.toFun i) x)
+    rw [finsum_eq_sum (fun i ↦ (f.toFun i) x)
       (Finite.subset finite_univ (subset_univ (support fun i ↦ (f.toFun i) x)))] at h
     rwa [Fintype.sum_subset (by simp)] at h
   intro i x

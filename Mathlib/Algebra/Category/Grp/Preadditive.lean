@@ -54,7 +54,7 @@ instance : SMul ℤ (M ⟶ N) where
 
 instance (P Q : AddCommGrp) : AddCommGroup (P ⟶ Q) :=
   Function.Injective.addCommGroup (Hom.hom) ConcreteCategory.hom_injective
-    rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance : Preadditive AddCommGrp where
 

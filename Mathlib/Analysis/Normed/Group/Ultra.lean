@@ -64,7 +64,7 @@ lemma isNonarchimedean_norm {R} [SeminormedAddCommGroup R] [IsUltrametricDist R]
 
 lemma isUltrametricDist_iff_isNonarchimedean_norm {R} [SeminormedAddCommGroup R] :
     IsUltrametricDist R ↔ IsNonarchimedean (‖·‖ : R → ℝ) :=
-  ⟨fun h => h.isNonarchimedean_norm, IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_norm⟩
+  ⟨fun h ↦ h.isNonarchimedean_norm, IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_norm⟩
 
 @[to_additive]
 lemma nnnorm_mul_le_max (x y : S) :
@@ -89,7 +89,7 @@ lemma isNonarchimedean_nnnorm {R} [SeminormedAddCommGroup R] [IsUltrametricDist 
 
 lemma isUltrametricDist_iff_isNonarchimedean_nnnorm {R} [SeminormedAddCommGroup R] :
     IsUltrametricDist R ↔ IsNonarchimedean (‖·‖₊ : R → ℝ) :=
-  ⟨fun h => h.isNonarchimedean_norm, IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_norm⟩
+  ⟨fun h ↦ h.isNonarchimedean_norm, IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_norm⟩
 
 /-- All triangles are isosceles in an ultrametric normed group. -/
 @[to_additive /-- All triangles are isosceles in an ultrametric normed additive group. -/]
@@ -279,7 +279,7 @@ theorem exists_norm_finset_prod_le (t : Finset ι) [Nonempty ι] (f : ι → M) 
     ∃ i : ι, (t.Nonempty → i ∈ t) ∧ ‖∏ j ∈ t, f j‖ ≤ ‖f i‖ := by
   rcases t.eq_empty_or_nonempty with rfl | ht
   · simp
-  exact (fun ⟨i, h, h'⟩ => ⟨i, fun _ ↦ h, h'⟩) <| exists_norm_finset_prod_le_of_nonempty ht f
+  exact (fun ⟨i, h, h'⟩ ↦ ⟨i, fun _ ↦ h, h'⟩) <| exists_norm_finset_prod_le_of_nonempty ht f
 
 /--
 Given a function `f : ι → M` and a multiset `t : Multiset ι`, we can always find `i : ι`, belonging

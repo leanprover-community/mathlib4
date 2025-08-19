@@ -49,7 +49,7 @@ variable [HasFiniteProducts C]
 theorem finiteSubproductsCocone_π_app_eq_sum {α : Type w} [DecidableEq α] (f : α → C) [HasProduct f]
     (S : (Finset (Discrete α))ᵒᵖ) :
     (finiteSubproductsCone f).π.app S =
-      ∑ a ∈ S.unop.attach, Pi.π f a.1.as ≫ Pi.ι (fun a => f a.1.as) a := by
+      ∑ a ∈ S.unop.attach, Pi.π f a.1.as ≫ Pi.ι (fun a ↦ f a.1.as) a := by
   dsimp only [finiteSubproductsCone_pt, Functor.const_obj_obj, liftToFinsetObj_obj,
     Discrete.functor_obj_eq_as, finiteSubproductsCone_π_app]
   ext v

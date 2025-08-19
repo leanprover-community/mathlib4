@@ -33,7 +33,7 @@ add_decl_doc BddLat.toLat
 namespace BddLat
 
 instance : CoeSort BddLat Type* :=
-  ⟨fun X => X.toLat⟩
+  ⟨fun X ↦ X.toLat⟩
 
 attribute [instance] BddLat.isBoundedOrder
 
@@ -171,8 +171,8 @@ def dual : BddLat ⥤ BddLat where
 def dualEquiv : BddLat ≌ BddLat where
   functor := dual
   inverse := dual
-  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
-  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  unitIso := NatIso.ofComponents fun X ↦ Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X ↦ Iso.mk <| OrderIso.dualDual X
 
 end BddLat
 
@@ -207,22 +207,22 @@ def latToBddLatForgetAdjunction : latToBddLat.{u} ⊣ forget₂ BddLat Lat :=
     { homEquiv X _ :=
         { toFun f := Lat.ofHom
             { toFun := f ∘ some ∘ some
-              map_sup' := fun a b => (congr_arg f <| by rfl).trans (f.hom.map_sup' _ _)
-              map_inf' := fun a b => (congr_arg f <| by rfl).trans (f.hom.map_inf' _ _) }
+              map_sup' := fun a b ↦ (congr_arg f <| by rfl).trans (f.hom.map_sup' _ _)
+              map_inf' := fun a b ↦ (congr_arg f <| by rfl).trans (f.hom.map_inf' _ _) }
           invFun f := BddLat.ofHom <| LatticeHom.withTopWithBot' f.hom
-          left_inv := fun f =>
-            BddLat.ext fun a =>
+          left_inv := fun f ↦
+            BddLat.ext fun a ↦
               match a with
               | none => f.hom.map_top'.symm
               | some none => f.hom.map_bot'.symm
               | some (some _) => rfl }
-      homEquiv_naturality_left_symm := fun _ _ =>
-        BddLat.ext fun a =>
+      homEquiv_naturality_left_symm := fun _ _ ↦
+        BddLat.ext fun a ↦
           match a with
           | none => rfl
           | some none => rfl
           | some (some _) => rfl
-      homEquiv_naturality_right := fun _ _ => Lat.ext fun _ => rfl }
+      homEquiv_naturality_right := fun _ _ ↦ Lat.ext fun _ ↦ rfl }
 
 /-- `latToBddLat` and `OrderDual` commute. -/
 def latToBddLatCompDualIsoDualCompLatToBddLat :

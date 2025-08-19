@@ -56,14 +56,14 @@ private def polyBinomAux1 (x y : R) (e : ℕ) (a : R) :
 
 private theorem poly_binom_aux2 (f : R[X]) (x y : R) :
     f.eval (x + y) =
-      f.sum fun e a => a * (x ^ e + e * x ^ (e - 1) * y + (polyBinomAux1 x y e a).val * y ^ 2) := by
+      f.sum fun e a ↦ a * (x ^ e + e * x ^ (e - 1) * y + (polyBinomAux1 x y e a).val * y ^ 2) := by
   unfold eval; rw [eval₂_eq_sum]; congr with (n z)
   apply (polyBinomAux1 x y _ _).property
 
 private theorem poly_binom_aux3 (f : R[X]) (x y : R) :
     f.eval (x + y) =
-      ((f.sum fun e a => a * x ^ e) + f.sum fun e a => a * e * x ^ (e - 1) * y) +
-        f.sum fun e a => a * (polyBinomAux1 x y e a).val * y ^ 2 := by
+      ((f.sum fun e a ↦ a * x ^ e) + f.sum fun e a ↦ a * e * x ^ (e - 1) * y) +
+        f.sum fun e a ↦ a * (polyBinomAux1 x y e a).val * y ^ 2 := by
   rw [poly_binom_aux2]
   simp [left_distrib, sum_add, mul_assoc]
 
@@ -73,7 +73,7 @@ plus some element `k : R` times `y^2`.
 -/
 def binomExpansion (f : R[X]) (x y : R) :
     { k : R // f.eval (x + y) = f.eval x + f.derivative.eval x * y + k * y ^ 2 } := by
-  exists f.sum fun e a => a * (polyBinomAux1 x y e a).val
+  exists f.sum fun e a ↦ a * (polyBinomAux1 x y e a).val
   rw [poly_binom_aux3]
   congr
   · rw [← eval_eq_sum]
@@ -95,7 +95,7 @@ def powSubPowFactor (x y : R) : ∀ i : ℕ, { z : R // x ^ i - y ^ i = z * (x -
 for some `z` in the ring.
 -/
 def evalSubFactor (f : R[X]) (x y : R) : { z : R // f.eval x - f.eval y = z * (x - y) } := by
-  refine ⟨f.sum fun i r => r * (powSubPowFactor x y i).val, ?_⟩
+  refine ⟨f.sum fun i r ↦ r * (powSubPowFactor x y i).val, ?_⟩
   delta eval; rw [eval₂_eq_sum, eval₂_eq_sum]
   simp only [sum, ← Finset.sum_sub_distrib, Finset.sum_mul]
   dsimp

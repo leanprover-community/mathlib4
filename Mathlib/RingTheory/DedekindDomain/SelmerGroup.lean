@@ -170,12 +170,12 @@ local notation K "⟮" S "," n "⟯" => @selmerGroup _ _ _ K _ _ _ S n
 
 namespace selmerGroup
 
-theorem monotone (hS : S ≤ S') : K⟮S,n⟯ ≤ K⟮S',n⟯ := fun _ hx v => hx v ∘ mt (@hS v)
+theorem monotone (hS : S ≤ S') : K⟮S,n⟯ ≤ K⟮S',n⟯ := fun _ hx v ↦ hx v ∘ mt (@hS v)
 
 /-- The multiplicative `v`-adic valuations on `K⟮S, n⟯` for all `v ∈ S`. -/
 def valuation : K⟮S,n⟯ →* S → Multiplicative (ZMod n) where
   toFun x v := (v : HeightOneSpectrum R).valuationOfNeZeroMod n (x : K/n)
-  map_one' := funext fun _ => map_one _
+  map_one' := funext fun _ ↦ map_one _
   map_mul' x y := by simp only [Subgroup.coe_mul, map_mul]; rfl
 
 theorem valuation_ker_eq :
@@ -186,12 +186,12 @@ theorem valuation_ker_eq :
     by_cases hv : v ∈ S
     · exact congr_fun hx' ⟨v, hv⟩
     · exact hx v hv
-  · exact fun hx' => funext fun v => hx' v <| Set.notMem_empty v
+  · exact fun hx' ↦ funext fun v ↦ hx' v <| Set.notMem_empty v
 
 /-- The natural homomorphism from `Rˣ` to `K⟮∅, n⟯`. -/
 def fromUnit {n : ℕ} : Rˣ →* K⟮(∅ : Set <| HeightOneSpectrum R),n⟯ where
   toFun x :=
-    ⟨QuotientGroup.mk <| Units.map (algebraMap R K).toMonoidHom x, fun v _ =>
+    ⟨QuotientGroup.mk <| Units.map (algebraMap R K).toMonoidHom x, fun v _ ↦
       v.valuation_of_unit_mod_eq n x⟩
   map_one' := by simp only [map_one, QuotientGroup.mk_one, Subgroup.mk_eq_one]
   map_mul' _ _ := by simp only [RingHom.toMonoidHom_eq_coe, map_mul, QuotientGroup.mk_mul,

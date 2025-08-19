@@ -64,7 +64,7 @@ theorem IsIntegralClosure.isLocalization [IsDomain A] [Algebra.IsAlgebraic K L] 
     (IsIntegralClosure.equiv A C L (integralClosure A L)).toMulEquiv.isDomain (integralClosure A L)
   haveI : NoZeroSMulDivisors A L := NoZeroSMulDivisors.trans_faithfulSMul A K L
   haveI : NoZeroSMulDivisors A C := IsIntegralClosure.noZeroSMulDivisors A L
-  refine ⟨?_, fun z => ?_, fun {x y} h => ⟨1, ?_⟩⟩
+  refine ⟨?_, fun z ↦ ?_, fun {x y} h ↦ ⟨1, ?_⟩⟩
   · rintro ⟨_, x, hx, rfl⟩
     rw [isUnit_iff_ne_zero, map_ne_zero_iff _ (IsIntegralClosure.algebraMap_injective C A L),
       Subtype.coe_mk, map_ne_zero_iff _ (FaithfulSMul.algebraMap_injective A C)]
@@ -132,8 +132,8 @@ theorem FiniteDimensional.exists_is_basis_integral :
     rw [IsScalarTower.algebraMap_eq A K L]
     exact (algebraMap K L).injective.comp (IsFractionRing.injective A K)
   refine ⟨s', bs'.map {Algebra.lmul _ _ (algebraMap A L y) with
-    toFun := fun x => algebraMap A L y * x
-    invFun := fun x => (algebraMap A L y)⁻¹ * x
+    toFun := fun x ↦ algebraMap A L y * x
+    invFun := fun x ↦ (algebraMap A L y)⁻¹ * x
     left_inv := ?_
     right_inv := ?_}, ?_⟩
   · intro x; simp only [inv_mul_cancel_left₀ hy']
@@ -220,7 +220,7 @@ theorem IsIntegralClosure.isDedekindDomain [IsDedekindDomain A] : IsDedekindDoma
   have : Algebra.IsIntegral A C := IsIntegralClosure.isIntegral_algebra A L
   { IsIntegralClosure.isNoetherianRing A K L C,
     Ring.DimensionLEOne.isIntegralClosure A L C,
-    (isIntegrallyClosed_iff L).mpr fun {x} hx =>
+    (isIntegrallyClosed_iff L).mpr fun {x} hx ↦
       ⟨IsIntegralClosure.mk' C x (isIntegral_trans (R := A) _ hx),
         IsIntegralClosure.algebraMap_mk' _ _ _⟩ with : IsDedekindDomain C }
 

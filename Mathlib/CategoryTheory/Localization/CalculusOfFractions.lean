@@ -338,7 +338,7 @@ namespace Localization
 /-- Composition of morphisms in the constructed localized category
 for a morphism property that has left calculus of fractions. -/
 noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : Hom W X Z := by
-  refine Quot.lift₂ (fun a b => a.comp b) ?_ ?_ z₁ z₂
+  refine Quot.lift₂ (fun a b ↦ a.comp b) ?_ ?_ z₁ z₂
   · rintro a b₁ b₂ ⟨U, t₁, t₂, hst, hft, ht⟩
     obtain ⟨z₁, fac₁⟩ := exists_leftFraction (RightFraction.mk a.s a.hs b₁.f)
     obtain ⟨z₂, fac₂⟩ := exists_leftFraction (RightFraction.mk a.s a.hs b₂.f)
@@ -550,7 +550,7 @@ variable {E : Type*} [Category E]
 /-- The image by a functor which inverts `W` of an equivalence class of left fractions. -/
 noncomputable def Hom.map {X Y : C} (f : Hom W X Y) (F : C ⥤ E) (hF : W.IsInvertedBy F) :
     F.obj X ⟶ F.obj Y :=
-  Quot.lift (fun f => f.map F hF) (by
+  Quot.lift (fun f ↦ f.map F hF) (by
     intro a₁ a₂ ⟨Z, t₁, t₂, hst, hft, h⟩
     dsimp
     have := hF _ h
@@ -566,7 +566,7 @@ namespace StrictUniversalPropertyFixedTarget
 
 variable (W)
 
-lemma inverts : W.IsInvertedBy (Q W) := fun _ _ s hs =>
+lemma inverts : W.IsInvertedBy (Q W) := fun _ _ s hs ↦
   (inferInstance : IsIso (Qiso s hs).hom)
 
 variable {W}
@@ -599,12 +599,12 @@ noncomputable def lift (F : C ⥤ E) (hF : W.IsInvertedBy F) :
     rw [F.map_comp, F.map_comp, map_comp_map_s_assoc]
 
 lemma fac (F : C ⥤ E) (hF : W.IsInvertedBy F) : Q W ⋙ lift F hF = F :=
-  Functor.ext (fun _ => rfl) (fun X Y f => by
+  Functor.ext (fun _ ↦ rfl) (fun X Y f ↦ by
     dsimp [lift]
     rw [Q_map, Hom.map_mk, id_comp, comp_id, map_ofHom])
 
 lemma uniq (F₁ F₂ : Localization W ⥤ E) (h : Q W ⋙ F₁ = Q W ⋙ F₂) : F₁ = F₂ :=
-  Functor.ext (fun X => Functor.congr_obj h X) (by
+  Functor.ext (fun X ↦ Functor.congr_obj h X) (by
     rintro (X Y : C) f
     obtain ⟨f, rfl⟩ := Hom.mk_surjective f
     rw [show Hom.mk f = homMk (mk f.f f.s f.hs) by rfl,
@@ -902,12 +902,12 @@ lemma LeftFractionRel.unop {W : MorphismProperty Cᵒᵖ} {X Y : Cᵒᵖ}
 lemma leftFractionRel_op_iff
     {X Y : C} (z₁ z₂ : W.RightFraction X Y) :
     LeftFractionRel z₁.op z₂.op ↔ RightFractionRel z₁ z₂ :=
-  ⟨fun h => h.unop, fun h => h.op⟩
+  ⟨fun h ↦ h.unop, fun h ↦ h.op⟩
 
 lemma rightFractionRel_op_iff
     {X Y : C} (z₁ z₂ : W.LeftFraction X Y) :
     RightFractionRel z₁.op z₂.op ↔ LeftFractionRel z₁ z₂ :=
-  ⟨fun h => h.unop, fun h => h.op⟩
+  ⟨fun h ↦ h.unop, fun h ↦ h.op⟩
 
 namespace RightFractionRel
 

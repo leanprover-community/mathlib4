@@ -467,7 +467,7 @@ namespace AddCommGrp
 def asHom {G : AddCommGrp.{0}} (g : G) : AddCommGrp.of ℤ ⟶ G :=
   ofHom (zmultiplesHom G g)
 
-theorem asHom_injective {G : AddCommGrp.{0}} : Function.Injective (@asHom G) := fun h k w => by
+theorem asHom_injective {G : AddCommGrp.{0}} : Function.Injective (@asHom G) := fun h k w ↦ by
   simpa using CategoryTheory.congr_fun w 1
 
 @[ext]
@@ -478,7 +478,7 @@ theorem int_hom_ext {G : AddCommGrp.{0}} (f g : AddCommGrp.of ℤ ⟶ G)
 -- TODO: this argument should be generalised to the situation where
 -- the forgetful functor is representable.
 theorem injective_of_mono {G H : AddCommGrp.{0}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
-  fun g₁ g₂ h => by
+  fun g₁ g₂ h ↦ by
   have t0 : asHom g₁ ≫ f = asHom g₂ ≫ f := by cat_disch
   have t1 : asHom g₁ = asHom g₂ := (cancel_mono _).1 t0
   apply asHom_injective t1
@@ -553,11 +553,11 @@ namespace CategoryTheory.Aut
 of permutations. -/
 def isoPerm {α : Type u} : Grp.of (Aut α) ≅ Grp.of (Equiv.Perm α) where
   hom := Grp.ofHom
-    { toFun := fun g => g.toEquiv
+    { toFun := fun g ↦ g.toEquiv
       map_one' := by aesop
       map_mul' := by aesop }
   inv := Grp.ofHom
-    { toFun := fun g => g.toIso
+    { toFun := fun g ↦ g.toIso
       map_one' := by aesop
       map_mul' := by aesop }
 

@@ -355,11 +355,11 @@ lemma descSigma_ext_iff {φ : F ⟶ G} {K : HomologicalComplex C c}
 a morphism `α : G ⟶ K` and a homotopy from `φ ≫ α` to `0`. -/
 noncomputable def descEquiv (K : HomologicalComplex C c) (hc : ∀ j, ∃ i, c.Rel i j) :
     (Σ (α : G ⟶ K), Homotopy (φ ≫ α) 0) ≃ (homotopyCofiber φ ⟶ K) where
-  toFun := fun ⟨α, hα⟩ => desc φ α hα
+  toFun := fun ⟨α, hα⟩ ↦ desc φ α hα
   invFun f := ⟨inr φ ≫ f, Homotopy.trans (Homotopy.ofEq (by simp))
     (((inrCompHomotopy φ hc).compRight f).trans (Homotopy.ofEq (by simp)))⟩
   right_inv f := (eq_desc φ f hc).symm
-  left_inv := fun ⟨α, hα⟩ => by
+  left_inv := fun ⟨α, hα⟩ ↦ by
     rw [descSigma_ext_iff]
     cat_disch
 
@@ -445,7 +445,7 @@ namespace πCompι₀Homotopy
 `π K ≫ ι₀ K - 𝟙 _`, see `nullHomotopicMap_eq`. -/
 noncomputable def nullHomotopicMap : K.cylinder ⟶ K.cylinder :=
   Homotopy.nullHomotopicMap'
-    (fun i j hij => homotopyCofiber.sndX (biprod.lift (𝟙 K) (-𝟙 K)) i ≫
+    (fun i j hij ↦ homotopyCofiber.sndX (biprod.lift (𝟙 K) (-𝟙 K)) i ≫
       (biprod.snd : K ⊞ K ⟶ K).f i ≫ inlX K i j hij)
 
 /-- The obvious homotopy from `nullHomotopicMap K` to zero. -/

@@ -93,8 +93,8 @@ theorem rtendsto_def (r : SetRel α β) (l₁ : Filter α) (l₂ : Filter β) :
 def rcomap (r : SetRel α β) (f : Filter β) : Filter α where
   sets := SetRel.image {(s, t) : _ × _ | r.core s ⊆ t} f.sets
   univ_sets := ⟨Set.univ, univ_mem, Set.subset_univ _⟩
-  sets_of_superset := fun ⟨a', ha', ma'a⟩ ab => ⟨a', ha', ma'a.trans ab⟩
-  inter_sets := fun ⟨a', ha₁, ha₂⟩ ⟨b', hb₁, hb₂⟩ =>
+  sets_of_superset := fun ⟨a', ha', ma'a⟩ ab ↦ ⟨a', ha', ma'a.trans ab⟩
+  inter_sets := fun ⟨a', ha₁, ha₂⟩ ⟨b', hb₁, hb₂⟩ ↦
     ⟨a' ∩ b', inter_mem ha₁ hb₁, (r.core_inter a' b').subset.trans (Set.inter_subset_inter ha₂ hb₂)⟩
 
 theorem rcomap_sets (r : SetRel α β) (f : Filter β) :
@@ -123,9 +123,9 @@ theorem rtendsto_iff_le_rcomap (r : SetRel α β) (l₁ : Filter α) (l₂ : Fil
   simp_rw [← l₂.mem_sets]
   constructor
   · simpa [Filter.le_def, rcomap, SetRel.mem_image]
-      using fun h s t tl₂ => mem_of_superset (h t tl₂)
+      using fun h s t tl₂ ↦ mem_of_superset (h t tl₂)
   · simpa [Filter.le_def, rcomap, SetRel.mem_image]
-      using fun h t tl₂ => h _ t tl₂ Set.Subset.rfl
+      using fun h t tl₂ ↦ h _ t tl₂ Set.Subset.rfl
 
 -- Interestingly, there does not seem to be a way to express this relation using a forward map.
 -- Given a filter `f` on `α`, we want a filter `f'` on `β` such that `r.preimage s ∈ f` if
@@ -135,8 +135,8 @@ to relations. -/
 def rcomap' (r : SetRel α β) (f : Filter β) : Filter α where
   sets := SetRel.image {(s, t) : _ × _ | r.preimage s ⊆ t} f.sets
   univ_sets := ⟨Set.univ, univ_mem, Set.subset_univ _⟩
-  sets_of_superset := fun ⟨a', ha', ma'a⟩ ab => ⟨a', ha', ma'a.trans ab⟩
-  inter_sets := fun ⟨a', ha₁, ha₂⟩ ⟨b', hb₁, hb₂⟩ =>
+  sets_of_superset := fun ⟨a', ha', ma'a⟩ ab ↦ ⟨a', ha', ma'a.trans ab⟩
+  inter_sets := fun ⟨a', ha₁, ha₂⟩ ⟨b', hb₁, hb₂⟩ ↦
     ⟨a' ∩ b', inter_mem ha₁ hb₁, r.preimage_inter_subset.trans (Set.inter_subset_inter ha₂ hb₂)⟩
 
 @[simp]
@@ -151,7 +151,7 @@ theorem rcomap'_sets (r : SetRel α β) (f : Filter β) :
 @[simp]
 theorem rcomap'_rcomap' (r : SetRel α β) (s : SetRel β γ) (l : Filter γ) :
     rcomap' r (rcomap' s l) = rcomap' (r.comp s) l :=
-  Filter.ext fun t => by
+  Filter.ext fun t ↦ by
     simp only [mem_rcomap', SetRel.preimage_comp]
     constructor
     · rintro ⟨u, ⟨v, vsets, hv⟩, h⟩
@@ -173,8 +173,8 @@ def RTendsto' (r : SetRel α β) (l₁ : Filter α) (l₂ : Filter β) :=
 theorem rtendsto'_def (r : SetRel α β) (l₁ : Filter α) (l₂ : Filter β) :
     RTendsto' r l₁ l₂ ↔ ∀ s ∈ l₂, r.preimage s ∈ l₁ := by
   unfold RTendsto' rcomap'; constructor
-  · simpa [le_def, SetRel.mem_image] using fun h s hs => h _ _ hs Set.Subset.rfl
-  · simpa [le_def, SetRel.mem_image] using fun h s t ht => mem_of_superset (h t ht)
+  · simpa [le_def, SetRel.mem_image] using fun h s hs ↦ h _ _ hs Set.Subset.rfl
+  · simpa [le_def, SetRel.mem_image] using fun h s t ht ↦ mem_of_superset (h t ht)
 
 theorem tendsto_iff_rtendsto (l₁ : Filter α) (l₂ : Filter β) (f : α → β) :
     Tendsto f l₁ l₂ ↔ RTendsto (Function.graph f) l₁ l₂ := by
@@ -243,7 +243,7 @@ theorem ptendsto'_def (f : α →. β) (l₁ : Filter α) (l₂ : Filter β) :
 theorem ptendsto_of_ptendsto' {f : α →. β} {l₁ : Filter α} {l₂ : Filter β} :
     PTendsto' f l₁ l₂ → PTendsto f l₁ l₂ := by
   rw [ptendsto_def, ptendsto'_def]
-  exact fun h s sl₂ => mem_of_superset (h s sl₂) (PFun.preimage_subset_core _ _)
+  exact fun h s sl₂ ↦ mem_of_superset (h s sl₂) (PFun.preimage_subset_core _ _)
 
 theorem ptendsto'_of_ptendsto {f : α →. β} {l₁ : Filter α} {l₂ : Filter β} (h : f.Dom ∈ l₁) :
     PTendsto f l₁ l₂ → PTendsto' f l₁ l₂ := by

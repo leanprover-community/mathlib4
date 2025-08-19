@@ -90,7 +90,7 @@ variable [CompleteSpace E]
 theorem mellin_inversion (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (hf : MellinConvergent f σ)
     (hFf : VerticalIntegrable (mellin f) σ) (hfx : ContinuousAt f x) :
     mellinInv σ (mellin f) x = f x := by
-  let g := fun (u : ℝ) => Real.exp (-σ * u) • f (Real.exp (-u))
+  let g := fun (u : ℝ) ↦ Real.exp (-σ * u) • f (Real.exp (-u))
   replace hf : Integrable g := by
     rw [MellinConvergent, ← rexp_neg_image_aux, integrableOn_image_iff_integrableOn_abs_deriv_smul
       MeasurableSet.univ rexp_neg_deriv_aux rexp_neg_injOn_aux] at hf

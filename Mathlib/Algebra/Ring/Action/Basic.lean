@@ -68,8 +68,8 @@ def MulSemiringAction.toRingHom [MulSemiringAction M R] (x : M) : R →+* R :=
   { MulDistribMulAction.toMonoidHom R x, DistribMulAction.toAddMonoidHom R x with }
 
 theorem toRingHom_injective [MulSemiringAction M R] [FaithfulSMul M R] :
-    Function.Injective (MulSemiringAction.toRingHom M R) := fun _ _ h =>
-  eq_of_smul_eq_smul fun r => RingHom.ext_iff.1 h r
+    Function.Injective (MulSemiringAction.toRingHom M R) := fun _ _ h ↦
+  eq_of_smul_eq_smul fun r ↦ RingHom.ext_iff.1 h r
 
 /-- The tautological action by `R →+* R` on `R`.
 
@@ -89,7 +89,7 @@ protected theorem RingHom.smul_def (f : R →+* R) (a : R) : f • a = f a :=
 
 /-- `RingHom.applyMulSemiringAction` is faithful. -/
 instance RingHom.applyFaithfulSMul : FaithfulSMul (R →+* R) R :=
-  ⟨fun {_ _} h => RingHom.ext h⟩
+  ⟨fun {_ _} h ↦ RingHom.ext h⟩
 
 section
 

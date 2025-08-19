@@ -175,7 +175,7 @@ theorem exponent_min (m : ℕ) (hpos : 0 < m) (hm : m < exponent G) : ∃ g : G,
 
 @[to_additive AddMonoid.exp_eq_one_iff]
 theorem exp_eq_one_iff : exponent G = 1 ↔ Subsingleton G := by
-  refine ⟨fun eq_one => ⟨fun a b => ?a_eq_b⟩, fun h => le_antisymm ?le ?ge⟩
+  refine ⟨fun eq_one ↦ ⟨fun a b ↦ ?a_eq_b⟩, fun h ↦ le_antisymm ?le ?ge⟩
   · rw [← pow_one a, ← pow_one b, ← eq_one, Monoid.pow_exponent_eq_one, Monoid.pow_exponent_eq_one]
   · apply exponent_min' _ Nat.one_pos
     simp [eq_iff_true_of_subsingleton]
@@ -236,7 +236,7 @@ theorem _root_.Nat.Prime.exists_orderOf_eq_pow_factorization_exponent {p : ℕ} 
   rcases eq_or_ne ((exponent G).factorization p) 0 with (h | h)
   · refine ⟨1, by rw [h, pow_zero, orderOf_one]⟩
   have he : 0 < exponent G :=
-    Ne.bot_lt fun ht => by
+    Ne.bot_lt fun ht ↦ by
       rw [ht] at h
       apply h
       rw [bot_eq_zero, Nat.factorization_zero, Finsupp.zero_apply]
@@ -244,7 +244,7 @@ theorem _root_.Nat.Prime.exists_orderOf_eq_pow_factorization_exponent {p : ℕ} 
   obtain ⟨g, hg⟩ : ∃ g : G, g ^ (exponent G / p) ≠ 1 := by
     suffices key : ¬exponent G ∣ exponent G / p by
       rwa [exponent_dvd_iff_forall_pow_eq_one, not_forall] at key
-    exact fun hd =>
+    exact fun hd ↦
       hp.one_lt.not_ge
         ((mul_le_iff_le_one_left he).mp <|
           Nat.le_of_dvd he <| Nat.mul_dvd_of_dvd_div (Nat.dvd_of_mem_primeFactors h) hd)
@@ -313,13 +313,13 @@ variable {G}
 @[to_additive]
 theorem exponent_ne_zero_iff_range_orderOf_finite (h : ∀ g : G, 0 < orderOf g) :
     exponent G ≠ 0 ↔ (Set.range (orderOf : G → ℕ)).Finite := by
-  refine ⟨fun he => ?_, fun he => ?_⟩
+  refine ⟨fun he ↦ ?_, fun he ↦ ?_⟩
   · by_contra h
     obtain ⟨m, ⟨t, rfl⟩, het⟩ := Set.Infinite.exists_gt h (exponent G)
     exact pow_ne_one_of_lt_orderOf he het (pow_exponent_eq_one t)
   · lift Set.range (orderOf (G := G)) to Finset ℕ using he with t ht
     have htpos : 0 < t.prod id := by
-      refine Finset.prod_pos fun a ha => ?_
+      refine Finset.prod_pos fun a ha ↦ ?_
       rw [← Finset.mem_coe, ht] at ha
       obtain ⟨k, rfl⟩ := ha
       exact h k
@@ -343,7 +343,7 @@ theorem exponent_eq_zero_iff_range_orderOf_infinite (h : ∀ g : G, 0 < orderOf 
 theorem lcm_orderOf_eq_exponent [Fintype G] : (Finset.univ : Finset G).lcm orderOf = exponent G :=
   Nat.dvd_antisymm
     (lcm_orderOf_dvd_exponent G)
-    (exponent_dvd.mpr fun g => Finset.dvd_lcm (Finset.mem_univ g))
+    (exponent_dvd.mpr fun g ↦ Finset.dvd_lcm (Finset.mem_univ g))
 
 variable {H : Type*} [Monoid H]
 
@@ -355,7 +355,7 @@ then the exponent of `G` divides the exponent of `H`.
 then the exponent of `G` divides the exponent of `H`. -/]
 theorem exponent_dvd_of_monoidHom (e : G →* H) (e_inj : Function.Injective e) :
     Monoid.exponent G ∣ Monoid.exponent H :=
-  exponent_dvd_of_forall_pow_eq_one fun g => e_inj (by
+  exponent_dvd_of_forall_pow_eq_one fun g ↦ e_inj (by
     rw [map_pow, pow_exponent_eq_one, map_one])
 
 /--
@@ -397,8 +397,8 @@ variable [LeftCancelMonoid G] [Finite G]
 theorem ExponentExists.of_finite : ExponentExists G := by
   let _inst := Fintype.ofFinite G
   simp only [Monoid.ExponentExists]
-  refine ⟨(Finset.univ : Finset G).lcm orderOf, ?_, fun g => ?_⟩
-  · simpa [pos_iff_ne_zero, Finset.lcm_eq_zero_iff] using fun x => (_root_.orderOf_pos x).ne'
+  refine ⟨(Finset.univ : Finset G).lcm orderOf, ?_, fun g ↦ ?_⟩
+  · simpa [pos_iff_ne_zero, Finset.lcm_eq_zero_iff] using fun x ↦ (_root_.orderOf_pos x).ne'
   · rw [← orderOf_dvd_iff_pow_eq_one, lcm_orderOf_eq_exponent]
     exact order_dvd_exponent g
 
@@ -487,7 +487,7 @@ theorem exponent_eq_iSup_orderOf' :
   · obtain ⟨g, hg⟩ := h
     exact exponent_eq_zero_of_order_zero hg
   · have := not_exists.mp h
-    exact exponent_eq_iSup_orderOf fun g => Ne.bot_lt <| this g
+    exact exponent_eq_iSup_orderOf fun g ↦ Ne.bot_lt <| this g
 
 end CommMonoid
 
@@ -511,7 +511,7 @@ variable [Group G] {n m : ℤ}
 
 @[to_additive]
 theorem Group.exponent_dvd_card [Fintype G] : Monoid.exponent G ∣ Fintype.card G :=
-  Monoid.exponent_dvd.mpr <| fun _ => orderOf_dvd_card
+  Monoid.exponent_dvd.mpr <| fun _ ↦ orderOf_dvd_card
 
 @[to_additive]
 theorem Group.exponent_dvd_nat_card : Monoid.exponent G ∣ Nat.card G :=
@@ -629,7 +629,7 @@ theorem Commute.of_orderOf_dvd_two [IsCancelMul G] (h : ∀ g : G, orderOf g ∣
 @[to_additive]
 lemma mul_comm_of_exponent_two [IsCancelMul G] (hG : Monoid.exponent G = 2) (a b : G) :
     a * b = b * a :=
-  Commute.of_orderOf_dvd_two (fun g => hG ▸ Monoid.order_dvd_exponent g) a b
+  Commute.of_orderOf_dvd_two (fun g ↦ hG ▸ Monoid.order_dvd_exponent g) a b
 
 /-- Any cancellative monoid of exponent two is abelian. -/
 @[to_additive /-- Any additive group of exponent two is abelian. -/]

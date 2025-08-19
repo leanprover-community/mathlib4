@@ -55,8 +55,8 @@ theorem basisAux_tmul (a : A) (m : M) :
 
 theorem basisAux_map_smul (a : A) (x : A ⊗[R] M) : basisAux A b (a • x) = a • basisAux A b x :=
   TensorProduct.induction_on x (by simp)
-    (fun x y => by simp only [TensorProduct.smul_tmul', basisAux_tmul, smul_assoc])
-    fun x y hx hy => by simp [hx, hy]
+    (fun x y ↦ by simp only [TensorProduct.smul_tmul', basisAux_tmul, smul_assoc])
+    fun x y hx hy ↦ by simp [hx, hy]
 
 variable (A) in
 /-- Given a `R`-algebra `A`, this is the `A`-basis of `A ⊗[R] M` induced by a `R`-basis of `M`. -/

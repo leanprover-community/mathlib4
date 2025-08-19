@@ -50,7 +50,7 @@ export ContinuousOpenMapClass (map_open)
 instance [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β]
     [ContinuousOpenMapClass F α β] :
     CoeTC F (α →CO β) :=
-  ⟨fun f => ⟨f, map_open f⟩⟩
+  ⟨fun f ↦ ⟨f, map_open f⟩⟩
 
 /-! ### Continuous open maps -/
 
@@ -131,20 +131,20 @@ theorem comp_assoc (f : γ →CO δ) (g : β →CO γ) (h : α →CO β) :
 
 @[simp]
 theorem comp_id (f : α →CO β) : f.comp (ContinuousOpenMap.id α) = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem id_comp (f : α →CO β) : (ContinuousOpenMap.id β).comp f = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem cancel_right {g₁ g₂ : β →CO γ} {f : α →CO β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
+  ⟨fun h ↦ ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun h ↦ congr_arg₂ _ h rfl⟩
 
 @[simp]
 theorem cancel_left {g : β →CO γ} {f₁ f₂ : α →CO β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+  ⟨fun h ↦ ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 end ContinuousOpenMap

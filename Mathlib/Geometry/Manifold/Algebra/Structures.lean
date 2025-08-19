@@ -26,7 +26,7 @@ If `R` is a ring, then negation is automatically `C^n`, as it is multiplication 
 class ContMDiffRing (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
     (R : Type*) [Semiring R] [TopologicalSpace R] [ChartedSpace H R] : Prop
     extends ContMDiffAdd I n R where
-  contMDiff_mul : ContMDiff (I.prod I) I n fun p : R × R => p.1 * p.2
+  contMDiff_mul : ContMDiff (I.prod I) I n fun p : R × R ↦ p.1 * p.2
 
 -- see Note [lower instance priority]
 instance (priority := 100) ContMDiffRing.toContMDiffMul (I : ModelWithCorners 𝕜 E H) (R : Type*)
@@ -50,7 +50,7 @@ instance (priority := 100) instFieldContMDiffRing
   { instNormedSpaceLieAddGroup with
     contMDiff_mul := by
       rw [contMDiff_iff]
-      refine ⟨continuous_mul, fun x y => ?_⟩
+      refine ⟨continuous_mul, fun x y ↦ ?_⟩
       simp only [mfld_simps]
       rw [contDiffOn_univ]
       exact contDiff_mul }

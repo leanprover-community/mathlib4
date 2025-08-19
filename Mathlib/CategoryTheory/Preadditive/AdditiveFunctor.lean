@@ -56,7 +56,7 @@ theorem map_add {X Y : C} {f g : X ⟶ Y} : F.map (f + g) = F.map f + F.map g :=
 /-- `F.mapAddHom` is an additive homomorphism whose underlying function is `F.map`. -/
 @[simps!]
 def mapAddHom {X Y : C} : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y) :=
-  AddMonoidHom.mk' (fun f => F.map f) fun _ _ => F.map_add
+  AddMonoidHom.mk' (fun f ↦ F.map f) fun _ _ ↦ F.map_add
 
 theorem coe_mapAddHom {X Y : C} : ⇑(F.mapAddHom : (X ⟶ Y) →+ _) = F.map :=
   rfl
@@ -154,10 +154,10 @@ open CategoryTheory.Preadditive
 
 instance (priority := 100) preservesFiniteBiproductsOfAdditive [Additive F] :
     PreservesFiniteBiproducts F where
-  preserves := fun {J} _ =>
+  preserves := fun {J} _ ↦
     let ⟨_⟩ := nonempty_fintype J
     { preserves :=
-      { preserves := fun hb =>
+      { preserves := fun hb ↦
           ⟨isBilimitOfTotal _ (by
             simp_rw [F.mapBicone_π, F.mapBicone_ι, ← F.map_comp]
             erw [← F.map_sum, ← F.map_id, IsBilimit.total hb])⟩ } }
@@ -205,7 +205,7 @@ variable (C D : Type*) [Category C] [Category D] [Preadditive C] [Preadditive D]
 
 /-- Bundled additive functors. -/
 def AdditiveFunctor :=
-  ObjectProperty.FullSubcategory fun F : C ⥤ D => F.Additive
+  ObjectProperty.FullSubcategory fun F : C ⥤ D ↦ F.Additive
 
 instance : Category (AdditiveFunctor C D) :=
   ObjectProperty.FullSubcategory.category _
@@ -271,7 +271,7 @@ attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryCoproduct
 
 /-- Turn a left exact functor into an additive functor. -/
 def AdditiveFunctor.ofLeftExact : (C ⥤ₗ D) ⥤ C ⥤+ D :=
-  ObjectProperty.ιOfLE fun F ⟨_⟩ =>
+  ObjectProperty.ιOfLE fun F ⟨_⟩ ↦
     Functor.additive_of_preservesBinaryBiproducts F
 
 instance : (AdditiveFunctor.ofLeftExact C D).Full := ObjectProperty.full_ιOfLE _
@@ -279,7 +279,7 @@ instance : (AdditiveFunctor.ofLeftExact C D).Faithful := ObjectProperty.faithful
 
 /-- Turn a right exact functor into an additive functor. -/
 def AdditiveFunctor.ofRightExact : (C ⥤ᵣ D) ⥤ C ⥤+ D :=
-  ObjectProperty.ιOfLE fun F ⟨_⟩ =>
+  ObjectProperty.ιOfLE fun F ⟨_⟩ ↦
     Functor.additive_of_preservesBinaryBiproducts F
 
 instance : (AdditiveFunctor.ofRightExact C D).Full := ObjectProperty.full_ιOfLE _
@@ -287,7 +287,7 @@ instance : (AdditiveFunctor.ofRightExact C D).Faithful := ObjectProperty.faithfu
 
 /-- Turn an exact functor into an additive functor. -/
 def AdditiveFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤+ D :=
-  ObjectProperty.ιOfLE fun F ⟨⟨_⟩, _⟩ =>
+  ObjectProperty.ιOfLE fun F ⟨⟨_⟩, _⟩ ↦
     Functor.additive_of_preservesBinaryBiproducts F
 
 instance : (AdditiveFunctor.ofExact C D).Full := ObjectProperty.full_ιOfLE _

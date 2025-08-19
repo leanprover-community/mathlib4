@@ -96,7 +96,7 @@ theorem coe_vanishingIdeal (t : Set (ProjectiveSpectrum 𝒜)) :
   ext f
   rw [vanishingIdeal, SetLike.mem_coe, ← HomogeneousIdeal.mem_iff, HomogeneousIdeal.toIdeal_iInf,
     Submodule.mem_iInf]
-  refine forall_congr' fun x => ?_
+  refine forall_congr' fun x ↦ ?_
   rw [HomogeneousIdeal.toIdeal_iInf, Submodule.mem_iInf, HomogeneousIdeal.mem_iff]
 
 theorem mem_vanishingIdeal (t : Set (ProjectiveSpectrum 𝒜)) (f : A) :
@@ -110,29 +110,29 @@ theorem vanishingIdeal_singleton (x : ProjectiveSpectrum 𝒜) :
 
 theorem subset_zeroLocus_iff_le_vanishingIdeal (t : Set (ProjectiveSpectrum 𝒜)) (I : Ideal A) :
     t ⊆ zeroLocus 𝒜 I ↔ I ≤ (vanishingIdeal t).toIdeal :=
-  ⟨fun h _ k => (mem_vanishingIdeal _ _).mpr fun _ j => (mem_zeroLocus _ _ _).mpr (h j) k, fun h =>
-    fun x j =>
-    (mem_zeroLocus _ _ _).mpr (le_trans h fun _ h => ((mem_vanishingIdeal _ _).mp h) x j)⟩
+  ⟨fun h _ k ↦ (mem_vanishingIdeal _ _).mpr fun _ j ↦ (mem_zeroLocus _ _ _).mpr (h j) k, fun h ↦
+    fun x j ↦
+    (mem_zeroLocus _ _ _).mpr (le_trans h fun _ h ↦ ((mem_vanishingIdeal _ _).mp h) x j)⟩
 
 variable (𝒜)
 
 /-- `zeroLocus` and `vanishingIdeal` form a galois connection. -/
 theorem gc_ideal :
     @GaloisConnection (Ideal A) (Set (ProjectiveSpectrum 𝒜))ᵒᵈ _ _
-      (fun I => zeroLocus 𝒜 I) fun t => (vanishingIdeal t).toIdeal :=
-  fun I t => subset_zeroLocus_iff_le_vanishingIdeal t I
+      (fun I ↦ zeroLocus 𝒜 I) fun t ↦ (vanishingIdeal t).toIdeal :=
+  fun I t ↦ subset_zeroLocus_iff_le_vanishingIdeal t I
 
 /-- `zeroLocus` and `vanishingIdeal` form a galois connection. -/
 theorem gc_set :
     @GaloisConnection (Set A) (Set (ProjectiveSpectrum 𝒜))ᵒᵈ _ _
-      (fun s => zeroLocus 𝒜 s) fun t => vanishingIdeal t := by
+      (fun s ↦ zeroLocus 𝒜 s) fun t ↦ vanishingIdeal t := by
   have ideal_gc : GaloisConnection Ideal.span _ := (Submodule.gi A _).gc
   simpa [zeroLocus_span, Function.comp_def] using GaloisConnection.compose ideal_gc (gc_ideal 𝒜)
 
 theorem gc_homogeneousIdeal :
     @GaloisConnection (HomogeneousIdeal 𝒜) (Set (ProjectiveSpectrum 𝒜))ᵒᵈ _ _
-      (fun I => zeroLocus 𝒜 I) fun t => vanishingIdeal t :=
-  fun I t => by
+      (fun I ↦ zeroLocus 𝒜 I) fun t ↦ vanishingIdeal t :=
+  fun I t ↦ by
   simpa [show I.toIdeal ≤ (vanishingIdeal t).toIdeal ↔ I ≤ vanishingIdeal t from Iff.rfl] using
     subset_zeroLocus_iff_le_vanishingIdeal t I.toIdeal
 
@@ -186,7 +186,7 @@ theorem vanishingIdeal_univ : vanishingIdeal (∅ : Set (ProjectiveSpectrum 𝒜
   simpa using (gc_ideal _).u_top
 
 theorem zeroLocus_empty_of_one_mem {s : Set A} (h : (1 : A) ∈ s) : zeroLocus 𝒜 s = ∅ :=
-  Set.eq_empty_iff_forall_notMem.mpr fun x hx =>
+  Set.eq_empty_iff_forall_notMem.mpr fun x hx ↦
     (inferInstance : x.asHomogeneousIdeal.toIdeal.IsPrime).ne_top <|
       x.asHomogeneousIdeal.toIdeal.eq_top_iff_one.mpr <| hx h
 
@@ -236,7 +236,7 @@ theorem vanishingIdeal_iUnion {γ : Sort*} (t : γ → Set (ProjectiveSpectrum �
 
 theorem zeroLocus_inf (I J : Ideal A) :
     zeroLocus 𝒜 ((I ⊓ J : Ideal A) : Set A) = zeroLocus 𝒜 I ∪ zeroLocus 𝒜 J :=
-  Set.ext fun x => x.isPrime.inf_le
+  Set.ext fun x ↦ x.isPrime.inf_le
 
 theorem union_zeroLocus (s s' : Set A) :
     zeroLocus 𝒜 s ∪ zeroLocus 𝒜 s' = zeroLocus 𝒜 (Ideal.span s ⊓ Ideal.span s' : Ideal A) := by
@@ -245,20 +245,20 @@ theorem union_zeroLocus (s s' : Set A) :
 
 theorem zeroLocus_mul_ideal (I J : Ideal A) :
     zeroLocus 𝒜 ((I * J : Ideal A) : Set A) = zeroLocus 𝒜 I ∪ zeroLocus 𝒜 J :=
-  Set.ext fun x => x.isPrime.mul_le
+  Set.ext fun x ↦ x.isPrime.mul_le
 
 theorem zeroLocus_mul_homogeneousIdeal (I J : HomogeneousIdeal 𝒜) :
     zeroLocus 𝒜 ((I * J : HomogeneousIdeal 𝒜) : Set A) = zeroLocus 𝒜 I ∪ zeroLocus 𝒜 J :=
-  Set.ext fun x => x.isPrime.mul_le
+  Set.ext fun x ↦ x.isPrime.mul_le
 
 theorem zeroLocus_singleton_mul (f g : A) :
     zeroLocus 𝒜 ({f * g} : Set A) = zeroLocus 𝒜 {f} ∪ zeroLocus 𝒜 {g} :=
-  Set.ext fun x => by simpa using x.isPrime.mul_mem_iff_mem_or_mem
+  Set.ext fun x ↦ by simpa using x.isPrime.mul_mem_iff_mem_or_mem
 
 @[simp]
 theorem zeroLocus_singleton_pow (f : A) (n : ℕ) (hn : 0 < n) :
     zeroLocus 𝒜 ({f ^ n} : Set A) = zeroLocus 𝒜 {f} :=
-  Set.ext fun x => by simpa using x.isPrime.pow_mem_iff_mem n hn
+  Set.ext fun x ↦ by simpa using x.isPrime.pow_mem_iff_mem n hn
 
 theorem sup_vanishingIdeal_le (t t' : Set (ProjectiveSpectrum 𝒜)) :
     vanishingIdeal t ⊔ vanishingIdeal t' ≤ vanishingIdeal (t ∩ t') := by
@@ -283,7 +283,7 @@ instance zariskiTopology : TopologicalSpace (ProjectiveSpectrum 𝒜) :=
     (by
       intro Zs h
       rw [Set.sInter_eq_iInter]
-      let f : Zs → Set _ := fun i => Classical.choose (h i.2)
+      let f : Zs → Set _ := fun i ↦ Classical.choose (h i.2)
       have H : (Set.iInter fun i ↦ zeroLocus 𝒜 (f i)) ∈ Set.range (zeroLocus 𝒜) :=
         ⟨_, zeroLocus_iUnion 𝒜 _⟩
       convert H using 2
@@ -329,7 +329,7 @@ section BasicOpen
 /-- `basicOpen r` is the open subset containing all prime ideals not containing `r`. -/
 def basicOpen (r : A) : TopologicalSpace.Opens (ProjectiveSpectrum 𝒜) where
   carrier := { x | r ∉ x.asHomogeneousIdeal }
-  is_open' := ⟨{r}, Set.ext fun _ => Set.singleton_subset_iff.trans <| Classical.not_not.symm⟩
+  is_open' := ⟨{r}, Set.ext fun _ ↦ Set.singleton_subset_iff.trans <| Classical.not_not.symm⟩
 
 @[simp]
 theorem mem_basicOpen (f : A) (x : ProjectiveSpectrum 𝒜) :
@@ -346,7 +346,7 @@ theorem isOpen_basicOpen {a : A} : IsOpen (basicOpen 𝒜 a : Set (ProjectiveSpe
 @[simp]
 theorem basicOpen_eq_zeroLocus_compl (r : A) :
     (basicOpen 𝒜 r : Set (ProjectiveSpectrum 𝒜)) = (zeroLocus 𝒜 {r})ᶜ :=
-  Set.ext fun x => by simp only [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff]; rfl
+  Set.ext fun x ↦ by simp only [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff]; rfl
 
 @[simp]
 theorem basicOpen_one : basicOpen 𝒜 (1 : A) = ⊤ :=
@@ -374,21 +374,21 @@ theorem basicOpen_pow (f : A) (n : ℕ) (hn : 0 < n) : basicOpen 𝒜 (f ^ n) = 
 theorem basicOpen_eq_union_of_projection (f : A) :
     basicOpen 𝒜 f = ⨆ i : ℕ, basicOpen 𝒜 (GradedAlgebra.proj 𝒜 i f) :=
   TopologicalSpace.Opens.ext <|
-    Set.ext fun z => by
+    Set.ext fun z ↦ by
       rw [mem_coe_basicOpen, mem_coe, iSup, TopologicalSpace.Opens.mem_sSup]
       constructor <;> intro hz
       · rcases show ∃ i, GradedAlgebra.proj 𝒜 i f ∉ z.asHomogeneousIdeal by
           contrapose! hz with H
           classical
           rw [← DirectSum.sum_support_decompose 𝒜 f]
-          apply Ideal.sum_mem _ fun i _ => H i with ⟨i, hi⟩
+          apply Ideal.sum_mem _ fun i _ ↦ H i with ⟨i, hi⟩
         exact ⟨basicOpen 𝒜 (GradedAlgebra.proj 𝒜 i f), ⟨i, rfl⟩, by rwa [mem_basicOpen]⟩
       · obtain ⟨_, ⟨i, rfl⟩, hz⟩ := hz
-        exact fun rid => hz (z.1.2 i rid)
+        exact fun rid ↦ hz (z.1.2 i rid)
 
 theorem isTopologicalBasis_basic_opens :
     TopologicalSpace.IsTopologicalBasis
-      (Set.range fun r : A => (basicOpen 𝒜 r : Set (ProjectiveSpectrum 𝒜))) := by
+      (Set.range fun r : A ↦ (basicOpen 𝒜 r : Set (ProjectiveSpectrum 𝒜))) := by
   apply TopologicalSpace.isTopologicalBasis_of_isOpen_of_nhds
   · rintro _ ⟨r, rfl⟩
     exact isOpen_basicOpen 𝒜
@@ -412,7 +412,7 @@ where `x ≤ y` if and only if `y ∈ closure {x}`.
 
 
 instance : PartialOrder (ProjectiveSpectrum 𝒜) :=
-  PartialOrder.lift asHomogeneousIdeal fun ⟨_, _, _⟩ ⟨_, _, _⟩ => by simp only [mk.injEq, imp_self]
+  PartialOrder.lift asHomogeneousIdeal fun ⟨_, _, _⟩ ⟨_, _, _⟩ ↦ by simp only [mk.injEq, imp_self]
 
 @[simp]
 theorem as_ideal_le_as_ideal (x y : ProjectiveSpectrum 𝒜) :

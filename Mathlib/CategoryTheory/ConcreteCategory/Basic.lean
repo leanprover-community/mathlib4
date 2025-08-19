@@ -125,7 +125,7 @@ theorem forget_map_eq_coe {X Y : C} (f : X ⟶ Y) : (forget C).map f = f := rfl
 when `h : f = g` is an equality between morphisms in a concrete category.
 -/
 theorem congr_hom {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x :=
-  congrFun (congrArg (fun k : X ⟶ Y => (k : X → Y)) h) x
+  congrFun (congrArg (fun k : X ⟶ Y ↦ (k : X → Y)) h) x
 
 theorem coe_id {X : C} : (𝟙 X : X → X) = id :=
   (forget _).map_id X
@@ -144,7 +144,7 @@ theorem comp_apply' {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     (forget C).map (f ≫ g) x = (forget C).map g ((forget C).map f x) := comp_apply f g x
 
 theorem ConcreteCategory.congr_hom {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x :=
-  congr_fun (congr_arg (fun f : X ⟶ Y => (f : X → Y)) h) x
+  congr_fun (congr_arg (fun f : X ⟶ Y ↦ (f : X → Y)) h) x
 
 theorem ConcreteCategory.congr_arg {X Y : C} (f : X ⟶ Y) {x x' : X} (h : x = x') : f x = f x' :=
   congrArg (f : X → Y) h
@@ -333,7 +333,7 @@ theorem ConcreteCategory.forget_map_eq_coe {X Y : C} (f : X ⟶ Y) : (forget C).
 when `h : f = g` is an equality between morphisms in a concrete category.
 -/
 protected theorem congr_fun {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : ToType X) : f x = g x :=
-  congrFun (congrArg (fun k : X ⟶ Y => (k : ToType X → ToType Y)) h) x
+  congrFun (congrArg (fun k : X ⟶ Y ↦ (k : ToType X → ToType Y)) h) x
 
 /-- Analogue of `congr_arg f h`,
 when `h : x = x'` is an equality between elements of objects in a concrete category.
@@ -352,7 +352,7 @@ theorem hom_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : ToType X �
 theorem coe_toHasForget_instFunLike {C : Type*} [Category C] {FC : C → C → Type*} {CC : C → Type*}
     [inst : ∀ X Y : C, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC] {X Y : C}
     (f : X ⟶ Y) :
-    @DFunLike.coe (X ⟶ Y) (ToType X) (fun _ => ToType Y) HasForget.instFunLike f = f := rfl
+    @DFunLike.coe (X ⟶ Y) (ToType X) (fun _ ↦ ToType Y) HasForget.instFunLike f = f := rfl
 
 lemma ConcreteCategory.forget₂_comp_apply {C : Type u} {D : Type u'} [Category.{v} C]
     {FC : C → C → Type*} {CC : C → Type w} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
@@ -432,7 +432,7 @@ This is not an instance (yet) because that would require a lot of downstream fix
 
 See note [reducible non-instances].
 -/
-abbrev Types.instConcreteCategory : ConcreteCategory (Type u) (fun X Y => X ⟶ Y) where
+abbrev Types.instConcreteCategory : ConcreteCategory (Type u) (fun X Y ↦ X ⟶ Y) where
   hom f := f
   ofHom f := f
 
@@ -443,7 +443,7 @@ open ConcreteCategory
 instance InducedCategory.concreteCategory {C : Type u} {D : Type u'} [Category.{v'} D]
     {FD : D → D → Type*} {CD : D → Type w} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
     [ConcreteCategory.{w} D FD] (f : C → D) :
-    ConcreteCategory (InducedCategory D f) (fun X Y => FD (f X) (f Y)) where
+    ConcreteCategory (InducedCategory D f) (fun X Y ↦ FD (f X) (f Y)) where
   hom := hom (C := D)
   ofHom := ofHom (C := D)
   hom_ofHom := hom_ofHom (C := D)
@@ -454,7 +454,7 @@ instance InducedCategory.concreteCategory {C : Type u} {D : Type u'} [Category.{
 instance FullSubcategory.concreteCategory {C : Type u} [Category.{v} C]
     {FC : C → C → Type*} {CC : C → Type w} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
     [ConcreteCategory.{w} C FC]
-    (P : ObjectProperty C) : ConcreteCategory P.FullSubcategory (fun X Y => FC X.1 Y.1) where
+    (P : ObjectProperty C) : ConcreteCategory P.FullSubcategory (fun X Y ↦ FC X.1 Y.1) where
   hom := hom (C := C)
   ofHom := ofHom (C := C)
   hom_ofHom := hom_ofHom (C := C)

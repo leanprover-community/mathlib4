@@ -43,8 +43,8 @@ theorem wellQuasiOrdered_of_isEmpty [IsEmpty α] (r : α → α → Prop) : Well
 
 theorem IsAntichain.finite_of_wellQuasiOrdered {s : Set α} (hs : IsAntichain r s)
     (hr : WellQuasiOrdered r) : s.Finite := by
-  refine Set.not_infinite.1 fun hi => ?_
-  obtain ⟨m, n, hmn, h⟩ := hr fun n => hi.natEmbedding _ n
+  refine Set.not_infinite.1 fun hi ↦ ?_
+  obtain ⟨m, n, hmn, h⟩ := hr fun n ↦ hi.natEmbedding _ n
   exact hmn.ne ((hi.natEmbedding _).injective <| Subtype.val_injective <|
     hs.eq (hi.natEmbedding _ m).2 (hi.natEmbedding _ n).2 h)
 
@@ -58,7 +58,7 @@ theorem Finite.wellQuasiOrdered (r : α → α → Prop) [Finite α] [IsRefl α 
 theorem WellQuasiOrdered.exists_monotone_subseq [IsPreorder α r] (h : WellQuasiOrdered r)
     (f : ℕ → α) : ∃ g : ℕ ↪o ℕ, ∀ m n, m ≤ n → r (f (g m)) (f (g n)) := by
   obtain ⟨g, h1 | h2⟩ := exists_increasing_or_nonincreasing_subseq r f
-  · refine ⟨g, fun m n hle => ?_⟩
+  · refine ⟨g, fun m n hle ↦ ?_⟩
     obtain hlt | rfl := hle.lt_or_eq
     exacts [h1 m n hlt, refl_of r _]
   · obtain ⟨m, n, hlt, hle⟩ := h (f ∘ g)
@@ -108,7 +108,7 @@ theorem WellQuasiOrdered.wellFounded {α : Type*} {r : α → α → Prop} [IsPr
   let _ : Preorder α :=
     { le := r
       le_refl := refl_of r
-      le_trans := fun _ _ _ => trans_of r }
+      le_trans := fun _ _ _ ↦ trans_of r }
   have : WellQuasiOrderedLE α := ⟨h⟩
   exact wellFounded_lt
 

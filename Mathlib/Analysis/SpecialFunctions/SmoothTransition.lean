@@ -111,7 +111,7 @@ theorem continuous_polynomial_eval_inv_mul (p : ℝ[X]) :
 
 theorem contDiff_polynomial_eval_inv_mul {n : ℕ∞} (p : ℝ[X]) :
     ContDiff ℝ n (fun x ↦ p.eval x⁻¹ * expNegInvGlue x) := by
-  apply contDiff_all_iff_nat.2 (fun m => ?_) n
+  apply contDiff_all_iff_nat.2 (fun m ↦ ?_) n
   induction m generalizing p with
   | zero => exact contDiff_zero.2 <| continuous_polynomial_eval_inv_mul _
   | succ m ihm =>
@@ -141,8 +141,8 @@ variable {x : ℝ}
 open expNegInvGlue
 
 theorem pos_denom (x) : 0 < expNegInvGlue x + expNegInvGlue (1 - x) :=
-  (zero_lt_one.gt_or_lt x).elim (fun hx => add_pos_of_pos_of_nonneg (pos_of_pos hx) (nonneg _))
-    fun hx => add_pos_of_nonneg_of_pos (nonneg _) (pos_of_pos <| sub_pos.2 hx)
+  (zero_lt_one.gt_or_lt x).elim (fun hx ↦ add_pos_of_pos_of_nonneg (pos_of_pos hx) (nonneg _))
+    fun hx ↦ add_pos_of_nonneg_of_pos (nonneg _) (pos_of_pos <| sub_pos.2 hx)
 
 theorem one_of_one_le (h : 1 ≤ x) : smoothTransition x = 1 :=
   (div_eq_one_iff_eq <| (pos_denom x).ne').2 <| by rw [zero_of_nonpos (sub_nonpos.2 h), add_zero]
@@ -167,7 +167,7 @@ projection of `x : ℝ` to $[0, 1]$ gives the same result as applying it to `x`.
 protected theorem projIcc :
     smoothTransition (projIcc (0 : ℝ) 1 zero_le_one x) = smoothTransition x := by
   refine congr_fun
-    (IccExtend_eq_self zero_le_one smoothTransition (fun x hx => ?_) fun x hx => ?_) x
+    (IccExtend_eq_self zero_le_one smoothTransition (fun x hx ↦ ?_) fun x hx ↦ ?_) x
   · rw [smoothTransition.zero, zero_of_nonpos hx.le]
   · rw [smoothTransition.one, one_of_one_le hx.le]
 
@@ -192,7 +192,7 @@ theorem pos_of_pos (h : 0 < x) : 0 < smoothTransition x :=
 protected theorem contDiff {n : ℕ∞} : ContDiff ℝ n smoothTransition :=
   expNegInvGlue.contDiff.div
     (expNegInvGlue.contDiff.add <| expNegInvGlue.contDiff.comp <| contDiff_const.sub contDiff_id)
-    fun x => (pos_denom x).ne'
+    fun x ↦ (pos_denom x).ne'
 
 @[fun_prop]
 protected theorem contDiffAt {x : ℝ} {n : ℕ∞} : ContDiffAt ℝ n smoothTransition x :=

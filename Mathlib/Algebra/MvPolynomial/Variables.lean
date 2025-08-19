@@ -105,7 +105,7 @@ theorem vars_add_subset [DecidableEq σ] (p q : MvPolynomial σ R) :
 
 theorem vars_add_of_disjoint [DecidableEq σ] (h : Disjoint p.vars q.vars) :
     (p + q).vars = p.vars ∪ q.vars := by
-  refine (vars_add_subset p q).antisymm fun x hx => ?_
+  refine (vars_add_subset p q).antisymm fun x hx ↦ ?_
   simp only [vars_def, Multiset.disjoint_toFinset] at h hx ⊢
   rwa [degrees_add_of_disjoint h, Multiset.toFinset_union]
 
@@ -132,7 +132,7 @@ theorem vars_pow (φ : MvPolynomial σ R) (n : ℕ) : (φ ^ n).vars ⊆ φ.vars 
 are a subset of the union of the sets of variables of each polynomial.
 -/
 theorem vars_prod {ι : Type*} [DecidableEq σ] {s : Finset ι} (f : ι → MvPolynomial σ R) :
-    (∏ i ∈ s, f i).vars ⊆ s.biUnion fun i => (f i).vars := by
+    (∏ i ∈ s, f i).vars ⊆ s.biUnion fun i ↦ (f i).vars := by
   classical
   induction s using Finset.induction_on with
   | empty => simp
@@ -163,7 +163,7 @@ section Sum
 variable {ι : Type*} (t : Finset ι) (φ : ι → MvPolynomial σ R)
 
 theorem vars_sum_subset [DecidableEq σ] :
-    (∑ i ∈ t, φ i).vars ⊆ Finset.biUnion t fun i => (φ i).vars := by
+    (∑ i ∈ t, φ i).vars ⊆ Finset.biUnion t fun i ↦ (φ i).vars := by
   classical
   induction t using Finset.induction_on with
   | empty => simp
@@ -173,8 +173,8 @@ theorem vars_sum_subset [DecidableEq σ] :
       (vars_add_subset _ _) (Finset.union_subset_union (Finset.Subset.refl _) ?_)
     assumption
 
-theorem vars_sum_of_disjoint [DecidableEq σ] (h : Pairwise <| (Disjoint on fun i => (φ i).vars)) :
-    (∑ i ∈ t, φ i).vars = Finset.biUnion t fun i => (φ i).vars := by
+theorem vars_sum_of_disjoint [DecidableEq σ] (h : Pairwise <| (Disjoint on fun i ↦ (φ i).vars)) :
+    (∑ i ∈ t, φ i).vars = Finset.biUnion t fun i ↦ (φ i).vars := by
   classical
   induction t using Finset.induction_on with
   | empty => simp
@@ -282,7 +282,7 @@ theorem hom_congr_vars {f₁ f₂ : MvPolynomial σ R →+* S} {p₁ p₂ : MvPo
 
 theorem exists_rename_eq_of_vars_subset_range (p : MvPolynomial σ R) (f : τ → σ) (hfi : Injective f)
     (hf : ↑p.vars ⊆ Set.range f) : ∃ q : MvPolynomial τ R, rename f q = p :=
-  ⟨aeval (fun i : σ => Option.elim' 0 X <| partialInv f i) p,
+  ⟨aeval (fun i : σ ↦ Option.elim' 0 X <| partialInv f i) p,
     by
       change (rename f).toRingHom.comp _ p = RingHom.id _ p
       refine hom_congr_vars ?_ ?_ ?_
@@ -328,7 +328,7 @@ lemma leadingCoeff_toLex : p.leadingCoeff toLex = p.coeff (ofLex <| p.supDegree 
 
 lemma supDegree_toLex_C (r : R) : supDegree toLex (C (σ := σ) r) = 0 := by
   classical
-    exact (supDegree_single _ r).trans (ite_eq_iff'.mpr ⟨fun _ => rfl, fun _ => rfl⟩)
+    exact (supDegree_single _ r).trans (ite_eq_iff'.mpr ⟨fun _ ↦ rfl, fun _ ↦ rfl⟩)
 
 lemma leadingCoeff_toLex_C (r : R) : leadingCoeff toLex (C (σ := σ) r) = r :=
   leadingCoeff_single toLex.injective _ r

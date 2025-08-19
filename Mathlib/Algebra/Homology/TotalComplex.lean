@@ -44,7 +44,7 @@ include e in
 variable {K L} in
 lemma hasTotal_of_iso [K.HasTotal c₁₂] : L.HasTotal c₁₂ :=
   GradedObject.hasMap_of_iso (GradedObject.isoMk K.toGradedObject L.toGradedObject
-    (fun ⟨i₁, i₂⟩ =>
+    (fun ⟨i₁, i₂⟩ ↦
       (HomologicalComplex.eval _ _ i₁ ⋙ HomologicalComplex.eval _ _ i₂).mapIso e)) _
 
 variable [DecidableEq I₁₂] [K.HasTotal c₁₂]
@@ -127,14 +127,14 @@ noncomputable def D₁ (i₁₂ i₁₂' : I₁₂) :
     K.toGradedObject.mapObj (ComplexShape.π c₁ c₂ c₁₂) i₁₂ ⟶
       K.toGradedObject.mapObj (ComplexShape.π c₁ c₂ c₁₂) i₁₂' :=
   GradedObject.descMapObj _ (ComplexShape.π c₁ c₂ c₁₂)
-    (fun ⟨i₁, i₂⟩ _ => K.d₁ c₁₂ i₁ i₂ i₁₂')
+    (fun ⟨i₁, i₂⟩ _ ↦ K.d₁ c₁₂ i₁ i₂ i₁₂')
 
 /-- The vertical differential in the total complex. -/
 noncomputable def D₂ (i₁₂ i₁₂' : I₁₂) :
     K.toGradedObject.mapObj (ComplexShape.π c₁ c₂ c₁₂) i₁₂ ⟶
       K.toGradedObject.mapObj (ComplexShape.π c₁ c₂ c₁₂) i₁₂' :=
   GradedObject.descMapObj _ (ComplexShape.π c₁ c₂ c₁₂)
-    (fun ⟨i₁, i₂⟩ _ => K.d₂ c₁₂ i₁ i₂ i₁₂')
+    (fun ⟨i₁, i₂⟩ _ ↦ K.d₂ c₁₂ i₁ i₂ i₁₂')
 
 namespace totalAux
 
@@ -331,7 +331,7 @@ variable {A : C} {i₁₂ : I₁₂}
 
 /-- Given a bicomplex `K`, this is a constructor for morphisms from `(K.total c₁₂).X i₁₂`. -/
 noncomputable def totalDesc : (K.total c₁₂).X i₁₂ ⟶ A :=
-  K.toGradedObject.descMapObj _ (fun ⟨i₁, i₂⟩ hi => f i₁ i₂ hi)
+  K.toGradedObject.descMapObj _ (fun ⟨i₁, i₂⟩ hi ↦ f i₁ i₂ hi)
 
 @[reassoc (attr := simp)]
 lemma ι_totalDesc (i₁ : I₁) (i₂ : I₂) (hi : ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂) = i₁₂) :

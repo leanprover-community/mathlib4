@@ -30,7 +30,7 @@ variable [SMul M α] [SMul N α] (a : M) (b : α) (x : Option α)
 
 @[to_additive Option.VAdd]
 instance : SMul M (Option α) :=
-  ⟨fun a => Option.map <| (a • ·)⟩
+  ⟨fun a ↦ Option.map <| (a • ·)⟩
 
 @[to_additive]
 theorem smul_def : a • x = x.map (a • ·) :=
@@ -46,23 +46,23 @@ theorem smul_some : a • some b = some (a • b) :=
 
 @[to_additive]
 instance instIsScalarTowerOfSMul [SMul M N] [IsScalarTower M N α] : IsScalarTower M N (Option α) :=
-  ⟨fun a b x => by
+  ⟨fun a b x ↦ by
     cases x
     exacts [rfl, congr_arg some (smul_assoc _ _ _)]⟩
 
 @[to_additive]
 instance [SMulCommClass M N α] : SMulCommClass M N (Option α) :=
-  ⟨fun _ _ => Function.Commute.option_map <| smul_comm _ _⟩
+  ⟨fun _ _ ↦ Function.Commute.option_map <| smul_comm _ _⟩
 
 @[to_additive]
 instance [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] : IsCentralScalar M (Option α) :=
-  ⟨fun a x => by
+  ⟨fun a x ↦ by
     cases x
     exacts [rfl, congr_arg some (op_smul_eq_smul _ _)]⟩
 
 @[to_additive]
 instance [FaithfulSMul M α] : FaithfulSMul M (Option α) :=
-  ⟨fun h => eq_of_smul_eq_smul fun b : α => by injection h (some b)⟩
+  ⟨fun h ↦ eq_of_smul_eq_smul fun b : α ↦ by injection h (some b)⟩
 
 end SMul
 

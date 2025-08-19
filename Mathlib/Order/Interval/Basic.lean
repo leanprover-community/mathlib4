@@ -40,7 +40,7 @@ section LE
 variable [LE α] {s t : NonemptyInterval α}
 
 theorem toProd_injective : Injective (toProd : NonemptyInterval α → α × α) :=
-  fun s t h => by cases s; cases t; congr
+  fun s t h ↦ by cases s; cases t; congr
 
 /-- The injection that induces the order on intervals. -/
 def toDualProd : NonemptyInterval α → αᵒᵈ × α :=
@@ -54,7 +54,7 @@ theorem toDualProd_injective : Injective (toDualProd : NonemptyInterval α → �
   toProd_injective
 
 instance [IsEmpty α] : IsEmpty (NonemptyInterval α) :=
-  ⟨fun s => isEmptyElim s.fst⟩
+  ⟨fun s ↦ isEmptyElim s.fst⟩
 
 instance [Subsingleton α] : Subsingleton (NonemptyInterval α) :=
   toDualProd_injective.subsingleton
@@ -63,13 +63,13 @@ instance [DecidableEq α] : DecidableEq (NonemptyInterval α) :=
   toDualProd_injective.decidableEq
 
 instance le : LE (NonemptyInterval α) :=
-  ⟨fun s t => t.fst ≤ s.fst ∧ s.snd ≤ t.snd⟩
+  ⟨fun s t ↦ t.fst ≤ s.fst ∧ s.snd ≤ t.snd⟩
 
 theorem le_def : s ≤ t ↔ t.fst ≤ s.fst ∧ s.snd ≤ t.snd :=
   Iff.rfl
 
 instance [DecidableLE α] : DecidableLE (NonemptyInterval α) :=
-  fun _ _ => decidable_of_iff' _ le_def
+  fun _ _ ↦ decidable_of_iff' _ le_def
 
 /-- `toDualProd` as an order embedding. -/
 @[simps]
@@ -100,15 +100,15 @@ variable [Preorder α] [Preorder β] [Preorder γ] {s : NonemptyInterval α} {x 
 instance : Preorder (NonemptyInterval α) :=
   Preorder.lift toDualProd
 
-theorem toDualProd_mono : Monotone (toDualProd : _ → αᵒᵈ × α) := fun _ _ => id
+theorem toDualProd_mono : Monotone (toDualProd : _ → αᵒᵈ × α) := fun _ _ ↦ id
 
-theorem toDualProd_strictMono : StrictMono (toDualProd : _ → αᵒᵈ × α) := fun _ _ => id
+theorem toDualProd_strictMono : StrictMono (toDualProd : _ → αᵒᵈ × α) := fun _ _ ↦ id
 
 instance : Coe (NonemptyInterval α) (Set α) :=
-  ⟨fun s => Icc s.fst s.snd⟩
+  ⟨fun s ↦ Icc s.fst s.snd⟩
 
 instance (priority := 100) : Membership α (NonemptyInterval α) :=
-  ⟨fun s a => a ∈ (s : Set α)⟩
+  ⟨fun s a ↦ a ∈ (s : Set α)⟩
 
 @[simp]
 theorem mem_mk {hx : x.1 ≤ x.2} : a ∈ mk x hx ↔ x.1 ≤ a ∧ a ≤ x.2 :=
@@ -128,7 +128,7 @@ def pure (a : α) : NonemptyInterval α :=
 theorem mem_pure_self (a : α) : a ∈ pure a :=
   ⟨le_rfl, le_rfl⟩
 
-theorem pure_injective : Injective (pure : α → NonemptyInterval α) := fun _ _ =>
+theorem pure_injective : Injective (pure : α → NonemptyInterval α) := fun _ _ ↦
   congr_arg <| Prod.fst ∘ toProd
 
 @[simp]
@@ -165,8 +165,8 @@ theorem dual_map (f : α →o β) (a : NonemptyInterval α) :
 
 /-- Binary pushforward of nonempty intervals. -/
 @[simps]
-def map₂ (f : α → β → γ) (h₀ : ∀ b, Monotone fun a => f a b) (h₁ : ∀ a, Monotone (f a)) :
-    NonemptyInterval α → NonemptyInterval β → NonemptyInterval γ := fun s t =>
+def map₂ (f : α → β → γ) (h₀ : ∀ b, Monotone fun a ↦ f a b) (h₁ : ∀ a, Monotone (f a)) :
+    NonemptyInterval α → NonemptyInterval β → NonemptyInterval γ := fun s t ↦
   ⟨(f s.fst t.fst, f s.snd t.snd), (h₀ _ s.fst_le_snd).trans <| h₁ _ t.fst_le_snd⟩
 
 @[simp]
@@ -177,8 +177,8 @@ theorem map₂_pure (f : α → β → γ) (h₀ h₁) (a : α) (b : β) :
 @[simp]
 theorem dual_map₂ (f : α → β → γ) (h₀ h₁ s t) :
     dual (map₂ f h₀ h₁ s t) =
-      map₂ (fun a b => toDual <| f (ofDual a) <| ofDual b) (fun _ => (h₀ _).dual)
-        (fun _ => (h₁ _).dual) (dual s) (dual t) :=
+      map₂ (fun a b ↦ toDual <| f (ofDual a) <| ofDual b) (fun _ ↦ (h₀ _).dual)
+        (fun _ ↦ (h₁ _).dual) (dual s) (dual t) :=
   rfl
 
 variable [BoundedOrder α]
@@ -201,11 +201,11 @@ instance : PartialOrder (NonemptyInterval α) :=
   PartialOrder.lift _ toDualProd_injective
 
 instance [DecidableLE α] : DecidableLE (NonemptyInterval α) :=
-  fun _ _ => decidable_of_iff' _ le_def
+  fun _ _ ↦ decidable_of_iff' _ le_def
 
 /-- Consider a nonempty interval `[a, b]` as the set `[a, b]`. -/
 def coeHom : NonemptyInterval α ↪o Set α :=
-  OrderEmbedding.ofMapLEIff (fun s => Icc s.fst s.snd) fun s _ => Icc_subset_Icc_iff s.fst_le_snd
+  OrderEmbedding.ofMapLEIff (fun s ↦ Icc s.fst s.snd) fun s _ ↦ Icc_subset_Icc_iff s.fst_le_snd
 
 instance setLike : SetLike (NonemptyInterval α) α where
   coe s := Icc s.fst s.snd
@@ -242,7 +242,7 @@ theorem coe_dual (s : NonemptyInterval α) : (dual s : Set αᵒᵈ) = ofDual �
   Icc_toDual
 
 theorem subset_coe_map (f : α →o β) (s : NonemptyInterval α) : f '' s ⊆ s.map f :=
-  image_subset_iff.2 fun _ ha => ⟨f.mono ha.1, f.mono ha.2⟩
+  image_subset_iff.2 fun _ ha ↦ ⟨f.mono ha.1, f.mono ha.2⟩
 
 end PartialOrder
 
@@ -251,10 +251,10 @@ section Lattice
 variable [Lattice α]
 
 instance : Max (NonemptyInterval α) :=
-  ⟨fun s t => ⟨⟨s.fst ⊓ t.fst, s.snd ⊔ t.snd⟩, inf_le_left.trans <| s.fst_le_snd.trans le_sup_left⟩⟩
+  ⟨fun s t ↦ ⟨⟨s.fst ⊓ t.fst, s.snd ⊔ t.snd⟩, inf_le_left.trans <| s.fst_le_snd.trans le_sup_left⟩⟩
 
 instance : SemilatticeSup (NonemptyInterval α) :=
-  toDualProd_injective.semilatticeSup _ fun _ _ => rfl
+  toDualProd_injective.semilatticeSup _ fun _ _ ↦ rfl
 
 @[simp]
 theorem fst_sup (s t : NonemptyInterval α) : (s ⊔ t).fst = s.fst ⊓ t.fst :=
@@ -292,7 +292,7 @@ instance : OrderBot (Interval α) := WithBot.orderBot
 instance : Coe (NonemptyInterval α) (Interval α) :=
   WithBot.coe
 
-instance canLift : CanLift (Interval α) (NonemptyInterval α) (↑) fun r => r ≠ ⊥ :=
+instance canLift : CanLift (Interval α) (NonemptyInterval α) (↑) fun r ↦ r ≠ ⊥ :=
   WithBot.canLift
 
 /-- Recursor for `Interval` using the preferred forms `⊥` and `↑a`. -/
@@ -397,15 +397,15 @@ instance partialOrder : PartialOrder (Interval α) :=
 /-- Consider an interval `[a, b]` as the set `[a, b]`. -/
 def coeHom : Interval α ↪o Set α :=
   OrderEmbedding.ofMapLEIff
-    (fun s =>
+    (fun s ↦
       match s with
       | ⊥ => ∅
       | some s => s)
-    fun s t =>
+    fun s t ↦
     match s, t with
     | ⊥, _ => iff_of_true bot_le bot_le
     | some s, ⊥ =>
-      iff_of_false (fun h => s.coe_nonempty.ne_empty <| le_bot_iff.1 h) (WithBot.not_coe_le_bot _)
+      iff_of_false (fun h ↦ s.coe_nonempty.ne_empty <| le_bot_iff.1 h) (WithBot.not_coe_le_bot _)
     | some _, some _ => (@NonemptyInterval.coeHom α _).le_iff_le.trans WithBot.coe_le_coe.symm
 
 instance setLike : SetLike (Interval α) α where
@@ -467,7 +467,7 @@ variable [DecidableLE α]
 
 instance lattice : Lattice (Interval α) :=
   { Interval.semilatticeSup with
-    inf := fun s t =>
+    inf := fun s t ↦
       match s, t with
       | ⊥, _ => ⊥
       | _, ⊥ => ⊥
@@ -477,7 +477,7 @@ instance lattice : Lattice (Interval α) :=
             ⟨⟨s.fst ⊔ t.fst, s.snd ⊓ t.snd⟩,
               sup_le (le_inf s.fst_le_snd h.1) <| le_inf h.2 t.fst_le_snd⟩
         else ⊥
-    inf_le_left := fun s t =>
+    inf_le_left := fun s t ↦
       match s, t with
       | ⊥, ⊥ => bot_le
       | ⊥, some _ => bot_le
@@ -487,7 +487,7 @@ instance lattice : Lattice (Interval α) :=
         split_ifs
         · exact WithBot.coe_le_coe.2 ⟨le_sup_left, inf_le_left⟩
         · exact bot_le
-    inf_le_right := fun s t =>
+    inf_le_right := fun s t ↦
       match s, t with
       | ⊥, ⊥ => bot_le
       | ⊥, some _ => bot_le
@@ -497,10 +497,10 @@ instance lattice : Lattice (Interval α) :=
         split_ifs
         · exact WithBot.coe_le_coe.2 ⟨le_sup_right, inf_le_right⟩
         · exact bot_le
-    le_inf := fun s t c =>
+    le_inf := fun s t c ↦
       match s, t, c with
-      | ⊥, _, _ => fun _ _ => bot_le
-      | (s : NonemptyInterval α), t, c => fun hb hc => by
+      | ⊥, _, _ => fun _ _ ↦ bot_le
+      | (s : NonemptyInterval α), t, c => fun hb hc ↦ by
         lift t to NonemptyInterval α using ne_bot_of_le_ne_bot WithBot.coe_ne_bot hb
         lift c to NonemptyInterval α using ne_bot_of_le_ne_bot WithBot.coe_ne_bot hc
         change _ ≤ dite _ _ _
@@ -590,7 +590,7 @@ noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Inter
   classical
   exact
       { Interval.lattice, Interval.boundedOrder with
-        sSup := fun S =>
+        sSup := fun S ↦
           if h : S ⊆ {⊥} then ⊥
           else
             WithBot.some
@@ -599,7 +599,7 @@ noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Inter
                 obtain ⟨s, hs, ha⟩ := not_subset.1 h
                 lift s to NonemptyInterval α using ha
                 exact iInf₂_le_of_le s hs (le_iSup₂_of_le s hs s.fst_le_snd)⟩
-        le_sSup := fun s s ha => by
+        le_sSup := fun s s ha ↦ by
           split_ifs with h
           · exact (h ha).le
           cases s
@@ -612,16 +612,16 @@ noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Inter
             · apply iInf₂_le
               exact ha
             · exact le_iSup₂_of_le _ ha le_rfl
-        sSup_le := fun s s ha => by
+        sSup_le := fun s s ha ↦ by
           split_ifs with h
           · exact bot_le
           obtain ⟨b, hs, hb⟩ := not_subset.1 h
           lift s to NonemptyInterval α using ne_bot_of_le_ne_bot hb (ha _ hs)
           exact
             WithBot.coe_le_coe.2
-              ⟨le_iInf₂ fun c hc => (WithBot.coe_le_coe.1 <| ha _ hc).1,
-                iSup₂_le fun c hc => (WithBot.coe_le_coe.1 <| ha _ hc).2⟩
-        sInf := fun S =>
+              ⟨le_iInf₂ fun c hc ↦ (WithBot.coe_le_coe.1 <| ha _ hc).1,
+                iSup₂_le fun c hc ↦ (WithBot.coe_le_coe.1 <| ha _ hc).2⟩
+        sInf := fun S ↦
           if h :
               ⊥ ∉ S ∧
                 ∀ ⦃s : NonemptyInterval α⦄,
@@ -629,14 +629,14 @@ noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Inter
             WithBot.some
               ⟨⟨⨆ (s : NonemptyInterval α) (_ : ↑s ∈ S), s.fst,
                   ⨅ (s : NonemptyInterval α) (_ : ↑s ∈ S), s.snd⟩,
-                iSup₂_le fun s hs => le_iInf₂ <| h.2 hs⟩
+                iSup₂_le fun s hs ↦ le_iInf₂ <| h.2 hs⟩
           else ⊥
-        sInf_le := fun s₁ s ha => by
+        sInf_le := fun s₁ s ha ↦ by
           split_ifs with h
           · lift s to NonemptyInterval α using ne_of_mem_of_not_mem ha h.1
             -- Porting note: Lean failed to figure out the function `f` by itself,
             -- so I added it through manually
-            let f := fun (s : NonemptyInterval α) (_ : ↑s ∈ s₁) => s.toProd.fst
+            let f := fun (s : NonemptyInterval α) (_ : ↑s ∈ s₁) ↦ s.toProd.fst
             exact WithBot.coe_le_coe.2 ⟨le_iSup₂ (f := f) s ha, iInf₂_le s ha⟩
           · exact bot_le
         le_sInf := by
@@ -646,14 +646,14 @@ noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Inter
           | coe s =>
             split_ifs with h
             · exact WithBot.coe_le_coe.2
-                ⟨iSup₂_le fun t hb => (WithBot.coe_le_coe.1 <| ha _ hb).1,
-                  le_iInf₂ fun t hb => (WithBot.coe_le_coe.1 <| ha _ hb).2⟩
+                ⟨iSup₂_le fun t hb ↦ (WithBot.coe_le_coe.1 <| ha _ hb).1,
+                  le_iInf₂ fun t hb ↦ (WithBot.coe_le_coe.1 <| ha _ hb).2⟩
             · rw [not_and_or, not_not] at h
               rcases h with h | h
               · exact ha _ h
               · -- Porting note: ungolfed, due to identification problems
                 -- between `toProd` and `toDualProd`. Original mathport output:
-                -- cases h fun t hb c hc =>
+                -- cases h fun t hb c hc ↦
                 --   (WithBot.coe_le_coe.1 <| ha _ hb).1.trans <|
                 --     s.fst_le_snd.trans (WithBot.coe_le_coe.1 <| ha _ hc).2 }
                 exfalso
@@ -679,7 +679,7 @@ theorem coe_sInf [DecidableLE α] (S : Set (Interval α)) : ↑(sInf S) = ⋂ s 
   · refine (not_nonempty_iff_eq_empty.1 ?_).symm
     rintro ⟨x, hx⟩
     rw [mem_iInter₂] at hx
-    exact h fun s ha t hb => (hx _ ha).1.trans (hx _ hb).2
+    exact h fun s ha t hb ↦ (hx _ ha).1.trans (hx _ hb).2
 
 @[simp, norm_cast]
 theorem coe_iInf [DecidableLE α] (f : ι → Interval α) :

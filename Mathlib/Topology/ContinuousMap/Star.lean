@@ -48,20 +48,20 @@ theorem star_apply (f : C(α, β)) (x : α) : star f x = star (f x) :=
   rfl
 
 instance instTrivialStar [TrivialStar β] : TrivialStar C(α, β) where
-  star_trivial _ := ext fun _ => star_trivial _
+  star_trivial _ := ext fun _ ↦ star_trivial _
 
 end Star
 
 instance [InvolutiveStar β] [ContinuousStar β] : InvolutiveStar C(α, β) where
-  star_involutive _ := ext fun _ => star_star _
+  star_involutive _ := ext fun _ ↦ star_star _
 
 instance starAddMonoid [AddMonoid β] [ContinuousAdd β] [StarAddMonoid β] [ContinuousStar β] :
     StarAddMonoid C(α, β) where
-  star_add _ _ := ext fun _ => star_add _ _
+  star_add _ _ := ext fun _ ↦ star_add _ _
 
 instance starMul [Mul β] [ContinuousMul β] [StarMul β] [ContinuousStar β] :
     StarMul C(α, β) where
-  star_mul _ _ := ext fun _ => star_mul _ _
+  star_mul _ _ := ext fun _ ↦ star_mul _ _
 
 instance [NonUnitalNonAssocSemiring β] [IsTopologicalSemiring β] [StarRing β] [ContinuousStar β] :
     StarRing C(α, β) :=
@@ -69,7 +69,7 @@ instance [NonUnitalNonAssocSemiring β] [IsTopologicalSemiring β] [StarRing β]
 
 instance [Star R] [Star β] [SMul R β] [StarModule R β] [ContinuousStar β]
     [ContinuousConstSMul R β] : StarModule R C(α, β) where
-  star_smul _ _ := ext fun _ => star_smul _ _
+  star_smul _ _ := ext fun _ ↦ star_smul _ _
 
 end StarStructure
 
@@ -98,12 +98,12 @@ def compStarAlgHom' (f : C(X, Y)) : C(Y, A) →⋆ₐ[𝕜] C(X, A) where
 /-- `ContinuousMap.compStarAlgHom'` sends the identity continuous map to the identity
 `StarAlgHom` -/
 theorem compStarAlgHom'_id : compStarAlgHom' 𝕜 A (ContinuousMap.id X) = StarAlgHom.id 𝕜 C(X, A) :=
-  StarAlgHom.ext fun _ => ContinuousMap.ext fun _ => rfl
+  StarAlgHom.ext fun _ ↦ ContinuousMap.ext fun _ ↦ rfl
 
 /-- `ContinuousMap.compStarAlgHom'` is functorial. -/
 theorem compStarAlgHom'_comp (g : C(Y, Z)) (f : C(X, Y)) :
     compStarAlgHom' 𝕜 A (g.comp f) = (compStarAlgHom' 𝕜 A f).comp (compStarAlgHom' 𝕜 A g) :=
-  StarAlgHom.ext fun _ => ContinuousMap.ext fun _ => rfl
+  StarAlgHom.ext fun _ ↦ ContinuousMap.ext fun _ ↦ rfl
 
 end Precomposition
 
@@ -123,12 +123,12 @@ between spaces of continuous maps. -/
 def compStarAlgHom (φ : A →⋆ₐ[𝕜] B) (hφ : Continuous φ) :
     C(X, A) →⋆ₐ[𝕜] C(X, B) where
   toFun f := (⟨φ, hφ⟩ : C(A, B)).comp f
-  map_one' := ext fun _ => map_one φ
-  map_mul' f g := ext fun x => map_mul φ (f x) (g x)
-  map_zero' := ext fun _ => map_zero φ
-  map_add' f g := ext fun x => map_add φ (f x) (g x)
-  commutes' r := ext fun _x => AlgHomClass.commutes φ r
-  map_star' f := ext fun x => map_star φ (f x)
+  map_one' := ext fun _ ↦ map_one φ
+  map_mul' f g := ext fun x ↦ map_mul φ (f x) (g x)
+  map_zero' := ext fun _ ↦ map_zero φ
+  map_add' f g := ext fun x ↦ map_add φ (f x) (g x)
+  commutes' r := ext fun _x ↦ AlgHomClass.commutes φ r
+  map_star' f := ext fun x ↦ map_star φ (f x)
 
 /-- `ContinuousMap.compStarAlgHom` sends the identity `StarAlgHom` on `A` to the identity
 `StarAlgHom` on `C(X, A)`. -/
@@ -158,13 +158,13 @@ def compStarAlgEquiv' (f : X ≃ₜ Y) : C(Y, A) ≃⋆ₐ[𝕜] C(X, A) :=
   { (f : C(X, Y)).compStarAlgHom' 𝕜 A with
     toFun := (f : C(X, Y)).compStarAlgHom' 𝕜 A
     invFun := (f.symm : C(Y, X)).compStarAlgHom' 𝕜 A
-    left_inv := fun g => by
+    left_inv := fun g ↦ by
       simp only [ContinuousMap.compStarAlgHom'_apply, ContinuousMap.comp_assoc,
         toContinuousMap_comp_symm, ContinuousMap.comp_id]
-    right_inv := fun g => by
+    right_inv := fun g ↦ by
       simp only [ContinuousMap.compStarAlgHom'_apply, ContinuousMap.comp_assoc,
         symm_comp_toContinuousMap, ContinuousMap.comp_id]
-    map_smul' := fun k a => map_smul ((f : C(X, Y)).compStarAlgHom' 𝕜 A) k a }
+    map_smul' := fun k a ↦ map_smul ((f : C(X, Y)).compStarAlgHom' 𝕜 A) k a }
 
 end Homeomorph
 
@@ -178,4 +178,4 @@ variable [Algebra S R] [TopologicalSpace R] [IsTopologicalSemiring R]
 def ContinuousMap.evalStarAlgHom [StarRing R] [ContinuousStar R] (x : X) :
     C(X, R) →⋆ₐ[S] R :=
   { ContinuousMap.evalAlgHom S R x with
-    map_star' := fun _ => rfl }
+    map_star' := fun _ ↦ rfl }

@@ -36,7 +36,7 @@ constructed inverse. When a better inverse is known, use `Equiv.ofLeftInverse'` 
 `Equiv.ofLeftInverse` instead. This is the computable version of `Equiv.ofInjective`.
 -/
 def Function.Embedding.toEquivRange : α ≃ Set.range f :=
-  ⟨fun a => ⟨f a, Set.mem_range_self a⟩, f.invOfMemRange, fun _ => by simp, fun _ => by simp⟩
+  ⟨fun a ↦ ⟨f a, Set.mem_range_self a⟩, f.invOfMemRange, fun _ ↦ by simp, fun _ ↦ by simp⟩
 
 @[simp]
 theorem Function.Embedding.toEquivRange_apply (a : α) :

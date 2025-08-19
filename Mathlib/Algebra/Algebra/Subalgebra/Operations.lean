@@ -45,8 +45,8 @@ theorem mem_of_finset_sum_eq_one_of_pow_smul_mem
     obtain ⟨x, rfl⟩ := this
     exact x.2
   choose n hn using H
-  let s' : ι → S' := fun x => ⟨s x, hs x⟩
-  let l' : ι → S' := fun x => ⟨l x, hl x⟩
+  let s' : ι → S' := fun x ↦ ⟨s x, hs x⟩
+  let l' : ι → S' := fun x ↦ ⟨l x, hl x⟩
   have e' : ∑ i ∈ ι', l' i * s' i = 1 := by
     ext
     change S'.subtype (∑ i ∈ ι', l' i * s' i) = 1
@@ -69,7 +69,7 @@ theorem mem_of_span_eq_top_of_smul_pow_mem
     (s : Set S) (l : s →₀ S) (hs : Finsupp.linearCombination S ((↑) : s → S) l = 1)
     (hs' : s ⊆ S') (hl : ∀ i, l i ∈ S') (x : S) (H : ∀ r : s, ∃ n : ℕ, (r : S) ^ n • x ∈ S') :
     x ∈ S' :=
-  mem_of_finset_sum_eq_one_of_pow_smul_mem S' l.support (↑) l hs (fun x => hs' x.2) hl x H
+  mem_of_finset_sum_eq_one_of_pow_smul_mem S' l.support (↑) l hs (fun x ↦ hs' x.2) hl x H
 
 end Subalgebra
 

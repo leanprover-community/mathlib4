@@ -14,7 +14,7 @@ import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 # Properties of the integral of `mulExpNegMulSq`
 
 The mapping `mulExpNegMulSq` can be used to transform a function `g : E → ℝ` into a bounded
-function `mulExpNegMulSq ε ∘ g : E → ℝ = fun x => g x * Real.exp (-ε * g x * g x)`. This file
+function `mulExpNegMulSq ε ∘ g : E → ℝ = fun x ↦ g x * Real.exp (-ε * g x * g x)`. This file
 contains results on the integral of `mulExpNegMulSq g ε` with respect to a finite measure `P`.
 
 ## Lemmas
@@ -24,7 +24,7 @@ contains results on the integral of `mulExpNegMulSq g ε` with respect to a fini
   finite measure `P` converges to the integral of `g`, as `ε → 0`;
 - `tendsto_integral_mul_one_add_inv_smul_sq_pow`: The integral of `mulExpNegMulSq ε ∘ g` with
   respect to a finite measure `P` can be approximated by the integral of the sequence approximating
-  the exponential function, `fun x => (g * (1 + (n : ℝ)⁻¹ • -(ε • g * g)) ^ n) x`. This allows to
+  the exponential function, `fun x ↦ (g * (1 + (n : ℝ)⁻¹ • -(ε • g * g)) ^ n) x`. This allows to
   transfer properties of a subalgebra of functions containing `g` to the function
   `mulExpNegMulSq ε ∘ g`, see e.g. `integral_mulExpNegMulSq_comp_eq`.
 
@@ -45,41 +45,41 @@ variable {E : Type*} [TopologicalSpace E] [MeasurableSpace E] [BorelSpace E]
     {P : Measure E} [IsFiniteMeasure P] {ε : ℝ}
 
 theorem integrable_mulExpNegMulSq_comp (f : C(E, ℝ)) (hε : 0 < ε) :
-    Integrable (fun x => mulExpNegMulSq ε (f x)) P := by
-  apply integrable P ⟨⟨fun x => mulExpNegMulSq ε (f x), by fun_prop⟩, ⟨2 * (√ε)⁻¹, _⟩⟩
-  exact fun x y => dist_mulExpNegMulSq_le_two_mul_sqrt hε (f x) (f y)
+    Integrable (fun x ↦ mulExpNegMulSq ε (f x)) P := by
+  apply integrable P ⟨⟨fun x ↦ mulExpNegMulSq ε (f x), by fun_prop⟩, ⟨2 * (√ε)⁻¹, _⟩⟩
+  exact fun x y ↦ dist_mulExpNegMulSq_le_two_mul_sqrt hε (f x) (f y)
 
 theorem integrable_mulExpNegMulSq_comp_restrict_of_isCompact {K : Set E} (hK : IsCompact K)
     (hKmeas : MeasurableSet K) (g : C(E, ℝ)) :
-    Integrable (fun x => mulExpNegMulSq ε (g x)) (P.restrict K) :=
+    Integrable (fun x ↦ mulExpNegMulSq ε (g x)) (P.restrict K) :=
   g.continuous.mulExpNegMulSq.continuousOn.integrableOn_compact' hK hKmeas
 
 /-- The integral of `mulExpNegMulSq ε ∘ g` with respect to a finite measure `P` converges to the
 integral of `g`, as `ε → 0` from above. -/
 theorem tendsto_integral_mulExpNegMulSq_comp (g : E →ᵇ ℝ) :
-    Tendsto (fun ε => ∫ x, mulExpNegMulSq ε (g x) ∂P) (𝓝[>] 0) (𝓝 (∫ x, g x ∂P)) := by
+    Tendsto (fun ε ↦ ∫ x, mulExpNegMulSq ε (g x) ∂P) (𝓝[>] 0) (𝓝 (∫ x, g x ∂P)) := by
   apply tendsto_of_seq_tendsto
   intro u hu
   obtain ⟨N, hupos⟩ := eventually_atTop.mp (tendsto_nhdsWithin_iff.mp hu).2
   apply tendsto_integral_filter_of_norm_le_const ?h_meas ?h_bound ?h_lim
-  · exact Eventually.of_forall (fun n => g.continuous.mulExpNegMulSq.aestronglyMeasurable)
+  · exact Eventually.of_forall (fun n ↦ g.continuous.mulExpNegMulSq.aestronglyMeasurable)
   · use norm g
     rw [eventually_atTop]
     use N
     intro n hn
     exact Eventually.of_forall
-      (fun _ => abs_mulExpNegMulSq_comp_le_norm g (le_of_lt (Set.mem_Ioi.mp (hupos n hn))))
-  · exact Eventually.of_forall (fun _ => (tendsto_nhdsWithin_of_tendsto_nhds
+      (fun _ ↦ abs_mulExpNegMulSq_comp_le_norm g (le_of_lt (Set.mem_Ioi.mp (hupos n hn))))
+  · exact Eventually.of_forall (fun _ ↦ (tendsto_nhdsWithin_of_tendsto_nhds
         tendsto_mulExpNegMulSq).comp hu)
 
 /-- The integral of `mulExpNegMulSq ε ∘ g` with respect to a finite measure `P` can be
 approximated by the integral of the sequence approximating the exponential function. -/
 theorem tendsto_integral_mul_one_add_inv_smul_sq_pow (g : E →ᵇ ℝ) (hε : 0 < ε) :
-    Tendsto (fun (n : ℕ) => ∫ x, (g * (1 + (n : ℝ)⁻¹ • -(ε • g * g)) ^ n) x ∂ P)
+    Tendsto (fun (n : ℕ) ↦ ∫ x, (g * (1 + (n : ℝ)⁻¹ • -(ε • g * g)) ^ n) x ∂ P)
     atTop (𝓝 (∫ x, mulExpNegMulSq ε (g x) ∂P)) := by
   apply tendsto_integral_filter_of_norm_le_const ?h_meas ?h_bound ?h_lim
   · apply Eventually.of_forall
-    exact fun n => StronglyMeasurable.aestronglyMeasurable (Continuous.stronglyMeasurable
+    exact fun n ↦ StronglyMeasurable.aestronglyMeasurable (Continuous.stronglyMeasurable
         (Continuous.mul g.continuous ((1 + ((n : ℝ)⁻¹ • -(ε • g * g))) ^ n).continuous))
   · obtain ⟨N, hgN⟩ := exists_nat_gt (ε * (norm g * norm g))
     use norm g
@@ -123,9 +123,9 @@ theorem integral_mulExpNegMulSq_comp_eq {P' : Measure E} [IsFiniteMeasure P']
     apply Subalgebra.mul_mem A hgA (Subalgebra.pow_mem A _ n)
     apply Subalgebra.add_mem A (Subalgebra.one_mem A) (Subalgebra.smul_mem A _ n⁻¹)
     exact Subalgebra.neg_mem A (Subalgebra.mul_mem A (Subalgebra.smul_mem A hgA ε) hgA)
-  have limP : Tendsto (fun n : ℕ => ∫ x, (g * (1 + (n : ℝ)⁻¹ • -(ε • g * g)) ^ n) x ∂P) atTop
+  have limP : Tendsto (fun n : ℕ ↦ ∫ x, (g * (1 + (n : ℝ)⁻¹ • -(ε • g * g)) ^ n) x ∂P) atTop
       (𝓝 (∫ x, mulExpNegMulSq ε (g x) ∂P')) := by
-    rw [funext fun n => heq _ (one_add_inv_mul_mem n)]
+    rw [funext fun n ↦ heq _ (one_add_inv_mul_mem n)]
     exact tendsto_integral_mul_one_add_inv_smul_sq_pow g hε
   exact tendsto_nhds_unique
     (tendsto_integral_mul_one_add_inv_smul_sq_pow g hε) limP
@@ -134,7 +134,7 @@ theorem abs_integral_sub_setIntegral_mulExpNegMulSq_comp_lt (f : C(E, ℝ))
     {K : Set E} (hK : MeasurableSet K) (hε : 0 < ε) (hKP : P Kᶜ < ε.toNNReal) :
     |∫ x, mulExpNegMulSq ε (f x) ∂P - ∫ x in K, mulExpNegMulSq ε (f x) ∂P| < √ε := by
   apply lt_of_le_of_lt (norm_integral_sub_setIntegral_le
-    (Eventually.of_forall (fun _ => abs_mulExpNegMulSq_le hε)) hK
+    (Eventually.of_forall (fun _ ↦ abs_mulExpNegMulSq_le hε)) hK
     (integrable_mulExpNegMulSq_comp f hε))
   rw [mul_inv_lt_iff₀ (sqrt_pos_of_pos hε), mul_self_sqrt (le_of_lt hε)]
   exact toReal_lt_of_lt_ofReal hKP
@@ -147,7 +147,7 @@ theorem abs_setIntegral_mulExpNegMulSq_comp_sub_le_mul_measure {K : Set E} (hK :
   rw [← (integral_sub (integrable_mulExpNegMulSq_comp_restrict_of_isCompact hK hKmeas g)
       (integrable_mulExpNegMulSq_comp_restrict_of_isCompact hK hKmeas f)), ← norm_eq_abs]
   exact norm_setIntegral_le_of_norm_le_const hK.measure_lt_top
-    (fun x hxK => le_trans (dist_mulExpNegMulSq_le_dist hε) (hfg x hxK).le)
+    (fun x hxK ↦ le_trans (dist_mulExpNegMulSq_le_dist hε) (hfg x hxK).le)
 
 variable {E : Type*} [MeasurableSpace E] [PseudoEMetricSpace E] [BorelSpace E] [CompleteSpace E]
     [SecondCountableTopology E]

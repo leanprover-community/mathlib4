@@ -31,11 +31,11 @@ protected structure Preconnected (H : G.Subgraph) : Prop where
 
 instance {H : G.Subgraph} : Coe H.Preconnected H.coe.Preconnected := ⟨Preconnected.coe⟩
 
-instance {H : G.Subgraph} : CoeFun H.Preconnected (fun _ => ∀ u v : H.verts, H.coe.Reachable u v) :=
-  ⟨fun h => h.coe⟩
+instance {H : G.Subgraph} : CoeFun H.Preconnected (fun _ ↦ ∀ u v : H.verts, H.coe.Reachable u v) :=
+  ⟨fun h ↦ h.coe⟩
 
 protected lemma preconnected_iff {H : G.Subgraph} :
-    H.Preconnected ↔ H.coe.Preconnected := ⟨fun ⟨h⟩ => h, .mk⟩
+    H.Preconnected ↔ H.coe.Preconnected := ⟨fun ⟨h⟩ ↦ h, .mk⟩
 
 /-- A subgraph is connected if it is connected when coerced to be a simple graph.
 
@@ -45,11 +45,11 @@ protected structure Connected (H : G.Subgraph) : Prop where
 
 instance {H : G.Subgraph} : Coe H.Connected H.coe.Connected := ⟨Connected.coe⟩
 
-instance {H : G.Subgraph} : CoeFun H.Connected (fun _ => ∀ u v : H.verts, H.coe.Reachable u v) :=
-  ⟨fun h => h.coe⟩
+instance {H : G.Subgraph} : CoeFun H.Connected (fun _ ↦ ∀ u v : H.verts, H.coe.Reachable u v) :=
+  ⟨fun h ↦ h.coe⟩
 
 protected lemma connected_iff' {H : G.Subgraph} :
-    H.Connected ↔ H.coe.Connected := ⟨fun ⟨h⟩ => h, .mk⟩
+    H.Connected ↔ H.coe.Connected := ⟨fun ⟨h⟩ ↦ h, .mk⟩
 
 protected lemma connected_iff {H : G.Subgraph} :
     H.Connected ↔ H.Preconnected ∧ H.verts.Nonempty := by
@@ -157,14 +157,14 @@ lemma end_mem_verts_toSubgraph (p : G.Walk u v) : v ∈ p.toSubgraph.verts := by
 
 @[simp]
 theorem verts_toSubgraph (p : G.Walk u v) : p.toSubgraph.verts = { w | w ∈ p.support } :=
-  Set.ext fun _ => p.mem_verts_toSubgraph
+  Set.ext fun _ ↦ p.mem_verts_toSubgraph
 
 theorem mem_edges_toSubgraph (p : G.Walk u v) {e : Sym2 V} :
     e ∈ p.toSubgraph.edgeSet ↔ e ∈ p.edges := by induction p <;> simp [*]
 
 @[simp]
 theorem edgeSet_toSubgraph (p : G.Walk u v) : p.toSubgraph.edgeSet = { e | e ∈ p.edges } :=
-  Set.ext fun _ => p.mem_edges_toSubgraph
+  Set.ext fun _ ↦ p.mem_edges_toSubgraph
 
 @[simp]
 theorem toSubgraph_append (p : G.Walk u v) (q : G.Walk v w) :
@@ -464,7 +464,7 @@ lemma preconnected_iff_forall_exists_walk_subgraph (H : G.Subgraph) :
     H.Preconnected ↔ ∀ {u v}, u ∈ H.verts → v ∈ H.verts → ∃ p : G.Walk u v, p.toSubgraph ≤ H := by
   constructor
   · intro hc u v hu hv
-    refine (hc ⟨_, hu⟩ ⟨_, hv⟩).elim fun p => ?_
+    refine (hc ⟨_, hu⟩ ⟨_, hv⟩).elim fun p ↦ ?_
     exists p.map (Subgraph.hom _)
     simp [coeSubgraph_le]
   · intro hw
@@ -550,7 +550,7 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
     ∃ (t' : Finset V), t ⊆ t' ∧ (G.induce (t' : Set V)).Connected := by
   classical
   obtain ⟨u, ut⟩ := tn
-  refine ⟨t.biUnion (fun v => (Gpc u v).some.support.toFinset), fun v vt => ?_, ?_⟩
+  refine ⟨t.biUnion (fun v ↦ (Gpc u v).some.support.toFinset), fun v vt ↦ ?_, ?_⟩
   · simp only [Finset.mem_biUnion, List.mem_toFinset]
     exact ⟨v, vt, Walk.end_mem_support _⟩
   · apply G.induce_connected_of_patches u
@@ -562,7 +562,7 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
     obtain ⟨w, wt, hw⟩ := hv
     refine ⟨{x | x ∈ (Gpc u w).some.support}, ?_, ?_⟩
     · simp only [Finset.coe_biUnion, Finset.mem_coe, List.coe_toFinset]
-      exact fun x xw => Set.mem_iUnion₂.mpr ⟨w,wt,xw⟩
+      exact fun x xw ↦ Set.mem_iUnion₂.mpr ⟨w,wt,xw⟩
     · simp only [Set.mem_setOf_eq, Walk.start_mem_support, exists_true_left]
       refine ⟨hw, Walk.connected_induce_support _ _ _⟩
 

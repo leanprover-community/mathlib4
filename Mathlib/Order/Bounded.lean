@@ -23,9 +23,9 @@ variable {α : Type*} {r : α → α → Prop} {s t : Set α}
 
 
 theorem Bounded.mono (hst : s ⊆ t) (hs : Bounded r t) : Bounded r s :=
-  hs.imp fun _ ha b hb => ha b (hst hb)
+  hs.imp fun _ ha b hb ↦ ha b (hst hb)
 
-theorem Unbounded.mono (hst : s ⊆ t) (hs : Unbounded r s) : Unbounded r t := fun a =>
+theorem Unbounded.mono (hst : s ⊆ t) (hs : Unbounded r s) : Unbounded r t := fun a ↦
   let ⟨b, hb, hb'⟩ := hs a
   ⟨b, hst hb, hb'⟩
 
@@ -33,17 +33,17 @@ theorem Unbounded.mono (hst : s ⊆ t) (hs : Unbounded r s) : Unbounded r t := f
 
 
 theorem unbounded_le_of_forall_exists_lt [Preorder α] (h : ∀ a, ∃ b ∈ s, a < b) :
-    Unbounded (· ≤ ·) s := fun a =>
+    Unbounded (· ≤ ·) s := fun a ↦
   let ⟨b, hb, hb'⟩ := h a
-  ⟨b, hb, fun hba => hba.not_gt hb'⟩
+  ⟨b, hb, fun hba ↦ hba.not_gt hb'⟩
 
 theorem unbounded_le_iff [LinearOrder α] : Unbounded (· ≤ ·) s ↔ ∀ a, ∃ b ∈ s, a < b := by
   simp only [Unbounded, not_le]
 
 theorem unbounded_lt_of_forall_exists_le [Preorder α] (h : ∀ a, ∃ b ∈ s, a ≤ b) :
-    Unbounded (· < ·) s := fun a =>
+    Unbounded (· < ·) s := fun a ↦
   let ⟨b, hb, hb'⟩ := h a
-  ⟨b, hb, fun hba => hba.not_ge hb'⟩
+  ⟨b, hb, fun hba ↦ hba.not_ge hb'⟩
 
 theorem unbounded_lt_iff [LinearOrder α] : Unbounded (· < ·) s ↔ ∀ a, ∃ b ∈ s, a ≤ b := by
   simp only [Unbounded, not_lt]
@@ -53,18 +53,18 @@ theorem unbounded_ge_of_forall_exists_gt [Preorder α] (h : ∀ a, ∃ b ∈ s, 
   @unbounded_le_of_forall_exists_lt αᵒᵈ _ _ h
 
 theorem unbounded_ge_iff [LinearOrder α] : Unbounded (· ≥ ·) s ↔ ∀ a, ∃ b ∈ s, b < a :=
-  ⟨fun h a =>
+  ⟨fun h a ↦
     let ⟨b, hb, hba⟩ := h a
     ⟨b, hb, lt_of_not_ge hba⟩,
     unbounded_ge_of_forall_exists_gt⟩
 
 theorem unbounded_gt_of_forall_exists_ge [Preorder α] (h : ∀ a, ∃ b ∈ s, b ≤ a) :
-    Unbounded (· > ·) s := fun a =>
+    Unbounded (· > ·) s := fun a ↦
   let ⟨b, hb, hb'⟩ := h a
-  ⟨b, hb, fun hba => not_le_of_gt hba hb'⟩
+  ⟨b, hb, fun hba ↦ not_le_of_gt hba hb'⟩
 
 theorem unbounded_gt_iff [LinearOrder α] : Unbounded (· > ·) s ↔ ∀ a, ∃ b ∈ s, b ≤ a :=
-  ⟨fun h a =>
+  ⟨fun h a ↦
     let ⟨b, hb, hba⟩ := h a
     ⟨b, hb, le_of_not_gt hba⟩,
     unbounded_gt_of_forall_exists_ge⟩
@@ -77,25 +77,25 @@ theorem unbounded_gt_iff [LinearOrder α] : Unbounded (· > ·) s ↔ ∀ a, ∃
 
 theorem Bounded.rel_mono {r' : α → α → Prop} (h : Bounded r s) (hrr' : r ≤ r') : Bounded r' s :=
   let ⟨a, ha⟩ := h
-  ⟨a, fun b hb => hrr' b a (ha b hb)⟩
+  ⟨a, fun b hb ↦ hrr' b a (ha b hb)⟩
 
 theorem bounded_le_of_bounded_lt [Preorder α] (h : Bounded (· < ·) s) : Bounded (· ≤ ·) s :=
-  h.rel_mono fun _ _ => le_of_lt
+  h.rel_mono fun _ _ ↦ le_of_lt
 
 theorem Unbounded.rel_mono {r' : α → α → Prop} (hr : r' ≤ r) (h : Unbounded r s) : Unbounded r' s :=
-  fun a =>
+  fun a ↦
   let ⟨b, hb, hba⟩ := h a
-  ⟨b, hb, fun hba' => hba (hr b a hba')⟩
+  ⟨b, hb, fun hba' ↦ hba (hr b a hba')⟩
 
 theorem unbounded_lt_of_unbounded_le [Preorder α] (h : Unbounded (· ≤ ·) s) : Unbounded (· < ·) s :=
-  h.rel_mono fun _ _ => le_of_lt
+  h.rel_mono fun _ _ ↦ le_of_lt
 
 theorem bounded_le_iff_bounded_lt [Preorder α] [NoMaxOrder α] :
     Bounded (· ≤ ·) s ↔ Bounded (· < ·) s := by
-  refine ⟨fun h => ?_, bounded_le_of_bounded_lt⟩
+  refine ⟨fun h ↦ ?_, bounded_le_of_bounded_lt⟩
   obtain ⟨a, ha⟩ := h
   obtain ⟨b, hb⟩ := exists_gt a
-  exact ⟨b, fun c hc => lt_of_le_of_lt (ha c hc) hb⟩
+  exact ⟨b, fun c hc ↦ lt_of_le_of_lt (ha c hc) hb⟩
 
 theorem unbounded_lt_iff_unbounded_le [Preorder α] [NoMaxOrder α] :
     Unbounded (· < ·) s ↔ Unbounded (· ≤ ·) s := by
@@ -106,12 +106,12 @@ theorem unbounded_lt_iff_unbounded_le [Preorder α] [NoMaxOrder α] :
 
 theorem bounded_ge_of_bounded_gt [Preorder α] (h : Bounded (· > ·) s) : Bounded (· ≥ ·) s :=
   let ⟨a, ha⟩ := h
-  ⟨a, fun b hb => le_of_lt (ha b hb)⟩
+  ⟨a, fun b hb ↦ le_of_lt (ha b hb)⟩
 
 theorem unbounded_gt_of_unbounded_ge [Preorder α] (h : Unbounded (· ≥ ·) s) : Unbounded (· > ·) s :=
-  fun a =>
+  fun a ↦
   let ⟨b, hb, hba⟩ := h a
-  ⟨b, hb, fun hba' => hba (le_of_lt hba')⟩
+  ⟨b, hb, fun hba' ↦ hba (le_of_lt hba')⟩
 
 theorem bounded_ge_iff_bounded_gt [Preorder α] [NoMinOrder α] :
     Bounded (· ≥ ·) s ↔ Bounded (· > ·) s :=
@@ -124,14 +124,14 @@ theorem unbounded_gt_iff_unbounded_ge [Preorder α] [NoMinOrder α] :
 /-! ### The universal set -/
 
 
-theorem unbounded_le_univ [LE α] [NoTopOrder α] : Unbounded (· ≤ ·) (@Set.univ α) := fun a =>
+theorem unbounded_le_univ [LE α] [NoTopOrder α] : Unbounded (· ≤ ·) (@Set.univ α) := fun a ↦
   let ⟨b, hb⟩ := exists_not_le a
   ⟨b, ⟨⟩, hb⟩
 
 theorem unbounded_lt_univ [Preorder α] [NoTopOrder α] : Unbounded (· < ·) (@Set.univ α) :=
   unbounded_lt_of_unbounded_le unbounded_le_univ
 
-theorem unbounded_ge_univ [LE α] [NoBotOrder α] : Unbounded (· ≥ ·) (@Set.univ α) := fun a =>
+theorem unbounded_ge_univ [LE α] [NoBotOrder α] : Unbounded (· ≥ ·) (@Set.univ α) := fun a ↦
   let ⟨b, hb⟩ := exists_not_ge a
   ⟨b, ⟨⟩, hb⟩
 
@@ -142,7 +142,7 @@ theorem unbounded_gt_univ [Preorder α] [NoBotOrder α] : Unbounded (· > ·) (@
 
 
 theorem bounded_self (a : α) : Bounded r { b | r b a } :=
-  ⟨a, fun _ => id⟩
+  ⟨a, fun _ ↦ id⟩
 
 /-! #### Half-open bounded intervals -/
 
@@ -226,7 +226,7 @@ theorem bounded_ge_Icc [Preorder α] (a b : α) : Bounded (· ≥ ·) (Icc a b) 
 
 
 theorem unbounded_le_Ioi [SemilatticeSup α] [NoMaxOrder α] (a : α) :
-    Unbounded (· ≤ ·) (Ioi a) := fun b =>
+    Unbounded (· ≤ ·) (Ioi a) := fun b ↦
   let ⟨c, hc⟩ := exists_gt (a ⊔ b)
   ⟨c, le_sup_left.trans_lt hc, (le_sup_right.trans_lt hc).not_ge⟩
 
@@ -238,7 +238,7 @@ theorem unbounded_lt_Ioi [SemilatticeSup α] [NoMaxOrder α] (a : α) :
     Unbounded (· < ·) (Ioi a) :=
   unbounded_lt_of_unbounded_le (unbounded_le_Ioi a)
 
-theorem unbounded_lt_Ici [SemilatticeSup α] (a : α) : Unbounded (· < ·) (Ici a) := fun b =>
+theorem unbounded_lt_Ici [SemilatticeSup α] (a : α) : Unbounded (· < ·) (Ici a) := fun b ↦
   ⟨a ⊔ b, le_sup_left, le_sup_right.not_gt⟩
 
 /-! ### Bounded initial segments -/
@@ -249,7 +249,7 @@ theorem bounded_inter_not (H : ∀ a b, ∃ m, ∀ c, r c a ∨ r c b → r c m)
   refine ⟨?_, Bounded.mono inter_subset_left⟩
   rintro ⟨b, hb⟩
   obtain ⟨m, hm⟩ := H a b
-  exact ⟨m, fun c hc => hm c (or_iff_not_imp_left.2 fun hca => hb c ⟨hc, hca⟩)⟩
+  exact ⟨m, fun c hc ↦ hm c (or_iff_not_imp_left.2 fun hca ↦ hb c ⟨hc, hca⟩)⟩
 
 theorem unbounded_inter_not (H : ∀ a b, ∃ m, ∀ c, r c a ∨ r c b → r c m) (a : α) :
     Unbounded r (s ∩ { b | ¬r b a }) ↔ Unbounded r s := by
@@ -260,7 +260,7 @@ theorem unbounded_inter_not (H : ∀ a b, ∃ m, ∀ c, r c a ∨ r c b → r c 
 
 theorem bounded_le_inter_not_le [SemilatticeSup α] (a : α) :
     Bounded (· ≤ ·) (s ∩ { b | ¬b ≤ a }) ↔ Bounded (· ≤ ·) s :=
-  bounded_inter_not (fun x y => ⟨x ⊔ y, fun _ h => h.elim le_sup_of_le_left le_sup_of_le_right⟩) a
+  bounded_inter_not (fun x y ↦ ⟨x ⊔ y, fun _ h ↦ h.elim le_sup_of_le_left le_sup_of_le_right⟩) a
 
 theorem unbounded_le_inter_not_le [SemilatticeSup α] (a : α) :
     Unbounded (· ≤ ·) (s ∩ { b | ¬b ≤ a }) ↔ Unbounded (· ≤ ·) s := by
@@ -280,7 +280,7 @@ theorem bounded_le_inter_le [LinearOrder α] (a : α) :
     Bounded (· ≤ ·) (s ∩ { b | a ≤ b }) ↔ Bounded (· ≤ ·) s := by
   refine ⟨?_, Bounded.mono Set.inter_subset_left⟩
   rw [← @bounded_le_inter_lt _ s _ a]
-  exact Bounded.mono fun x ⟨hx, hx'⟩ => ⟨hx, le_of_lt hx'⟩
+  exact Bounded.mono fun x ⟨hx, hx'⟩ ↦ ⟨hx, le_of_lt hx'⟩
 
 theorem unbounded_le_inter_le [LinearOrder α] (a : α) :
     Unbounded (· ≤ ·) (s ∩ { b | a ≤ b }) ↔ Unbounded (· ≤ ·) s := by
@@ -292,7 +292,7 @@ theorem unbounded_le_inter_le [LinearOrder α] (a : α) :
 
 theorem bounded_lt_inter_not_lt [SemilatticeSup α] (a : α) :
     Bounded (· < ·) (s ∩ { b | ¬b < a }) ↔ Bounded (· < ·) s :=
-  bounded_inter_not (fun x y => ⟨x ⊔ y, fun _ h => h.elim lt_sup_of_lt_left lt_sup_of_lt_right⟩) a
+  bounded_inter_not (fun x y ↦ ⟨x ⊔ y, fun _ h ↦ h.elim lt_sup_of_lt_left lt_sup_of_lt_right⟩) a
 
 theorem unbounded_lt_inter_not_lt [SemilatticeSup α] (a : α) :
     Unbounded (· < ·) (s ∩ { b | ¬b < a }) ↔ Unbounded (· < ·) s := by

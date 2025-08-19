@@ -128,11 +128,11 @@ def ofMulActionBasisAux :
   haveI e := (Rep.equivalenceModuleMonoidAlgebra.1.mapIso
     (Rep.diagonalSuccIsoTensorTrivial k G n).symm).toLinearEquiv
   { e with
-    map_smul' := fun r x => by
+    map_smul' := fun r x ↦ by
       rw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul e]
       congr 1
       /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
-      refine' x.induction_on _ (fun x y => _) fun y z hy hz => _
+      refine' x.induction_on _ (fun x y ↦ _) fun y z hy hz ↦ _
       · simp only [smul_zero]
       · simp only [TensorProduct.smul_tmul']
         show (r * x) ⊗ₜ y = _
@@ -140,7 +140,7 @@ def ofMulActionBasisAux :
       · rw [smul_add, hz, hy, smul_add] -/
       change _ = Representation.asAlgebraHom (tensorObj (Rep.leftRegular k G)
         (Rep.trivial k G ((Fin n → G) →₀ k))).ρ r _
-      refine x.induction_on ?_ (fun x y => ?_) fun y z hy hz => ?_
+      refine x.induction_on ?_ (fun x y ↦ ?_) fun y z hy hz ↦ ?_
       · rw [smul_zero, map_zero]
       · rw [TensorProduct.smul_tmul', smul_eq_mul, ← ofMulAction_self_smul_eq_mul]
         exact (smul_tprod_one_asModule (Representation.ofMulAction k G G) r x y).symm
@@ -168,8 +168,8 @@ def classifyingSpaceUniversalCover [Monoid G] :
     SimplicialObject (Action (Type u) G) where
   obj n := Action.ofMulAction G (Fin (n.unop.len + 1) → G)
   map f :=
-    { hom := fun x => x ∘ f.unop.toOrderHom
-      comm := fun _ => rfl }
+    { hom := fun x ↦ x ∘ f.unop.toOrderHom
+      comm := fun _ ↦ rfl }
   map_id _ := rfl
   map_comp _ _ := rfl
 
@@ -183,8 +183,8 @@ variable [Monoid G]
 isomorphic to `EG`, the universal cover of the classifying space of `G` as a simplicial `G`-set. -/
 def cechNerveTerminalFromIso :
     cechNerveTerminalFrom (Action.ofMulAction G G) ≅ classifyingSpaceUniversalCover G :=
-  NatIso.ofComponents (fun _ => limit.isoLimitCone (Action.ofMulActionLimitCone _ _)) fun f => by
-    refine IsLimit.hom_ext (Action.ofMulActionLimitCone.{u, 0} G fun _ => G).2 fun j => ?_
+  NatIso.ofComponents (fun _ ↦ limit.isoLimitCone (Action.ofMulActionLimitCone _ _)) fun f ↦ by
+    refine IsLimit.hom_ext (Action.ofMulActionLimitCone.{u, 0} G fun _ ↦ G).2 fun j ↦ ?_
     dsimp only [cechNerveTerminalFrom, Pi.lift]
     rw [Category.assoc, limit.isoLimitCone_hom_π, limit.lift_π, Category.assoc]
     exact (limit.isoLimitCone_hom_π _ _).symm
@@ -193,8 +193,8 @@ def cechNerveTerminalFromIso :
 cover of the classifying space of `G` as a simplicial set. -/
 def cechNerveTerminalFromIsoCompForget :
     cechNerveTerminalFrom G ≅ classifyingSpaceUniversalCover G ⋙ forget _ :=
-  NatIso.ofComponents (fun _ => Types.productIso _) fun _ =>
-    Matrix.ext fun _ _ => Types.Limit.lift_π_apply (Discrete.functor fun _ ↦ G) _ _ _
+  NatIso.ofComponents (fun _ ↦ Types.productIso _) fun _ ↦
+    Matrix.ext fun _ _ ↦ Types.Limit.lift_π_apply (Discrete.functor fun _ ↦ G) _ _ _
 
 variable (k)
 
@@ -204,14 +204,14 @@ open AlgebraicTopology SimplicialObject.Augmented SimplicialObject CategoryTheor
 from `Fin 1 → G` to the terminal object in `Type u`. -/
 def compForgetAugmented : SimplicialObject.Augmented (Type u) :=
   SimplicialObject.augment (classifyingSpaceUniversalCover G ⋙ forget _) (terminal _)
-    (terminal.from _) fun _ _ _ => Subsingleton.elim _ _
+    (terminal.from _) fun _ _ _ ↦ Subsingleton.elim _ _
 
 /-- The augmented Čech nerve of the map from `Fin 1 → G` to the terminal object in `Type u` has an
 extra degeneracy. -/
 def extraDegeneracyAugmentedCechNerve :
     ExtraDegeneracy (Arrow.mk <| terminal.from G).augmentedCechNerve :=
   AugmentedCechNerve.extraDegeneracy (Arrow.mk <| terminal.from G)
-    ⟨fun _ => (1 : G),
+    ⟨fun _ ↦ (1 : G),
       @Subsingleton.elim _ (@Unique.instSubsingleton _ (Limits.uniqueToTerminal _)) _ _⟩
 
 /-- The universal cover of the classifying space of `G` as a simplicial set, augmented by the map
@@ -260,8 +260,8 @@ variable [Monoid G]
 /-- The `k`-linear map underlying the differential in the standard resolution of `k` as a trivial
 `k`-linear `G`-representation. It sends `(g₀, ..., gₙ) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ)`. -/
 def d (G : Type u) (n : ℕ) : ((Fin (n + 1) → G) →₀ k) →ₗ[k] (Fin n → G) →₀ k :=
-  Finsupp.lift ((Fin n → G) →₀ k) k (Fin (n + 1) → G) fun g =>
-    (@Finset.univ (Fin (n + 1)) _).sum fun p =>
+  Finsupp.lift ((Fin n → G) →₀ k) k (Fin (n + 1) → G) fun g ↦
+    (@Finset.univ (Fin (n + 1)) _).sum fun p ↦
       Finsupp.single (g ∘ p.succAbove) ((-1 : k) ^ (p : ℕ))
 
 variable {k G}
@@ -269,7 +269,7 @@ variable {k G}
 @[simp]
 theorem d_of {G : Type u} {n : ℕ} (c : Fin (n + 1) → G) :
     d k G n (Finsupp.single c 1) =
-      Finset.univ.sum fun p : Fin (n + 1) =>
+      Finset.univ.sum fun p : Fin (n + 1) ↦
         Finsupp.single (c ∘ p.succAbove) ((-1 : k) ^ (p : ℕ)) := by
   simp [d]
 
@@ -288,7 +288,7 @@ instance x_projective (G : Type u) [Group G] [DecidableEq G] (n : ℕ) :
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
 theorem d_eq (n : ℕ) : ((standardComplex k G).d (n + 1) n).hom =
     ModuleCat.ofHom (d k G (n + 1)) := by
-  refine ModuleCat.hom_ext <| Finsupp.lhom_ext' fun (x : Fin (n + 2) → G) => LinearMap.ext_ring ?_
+  refine ModuleCat.hom_ext <| Finsupp.lhom_ext' fun (x : Fin (n + 2) → G) ↦ LinearMap.ext_ring ?_
   simp [Action.ofMulAction_V, standardComplex, SimplicialObject.δ,
     ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), SimplexCategory.δ, Fin.succAboveOrderEmb]
 
@@ -325,8 +325,8 @@ def forget₂ToModuleCatHomotopyEquiv :
 
 /-- The hom of `k`-linear `G`-representations `k[G¹] → k` sending `∑ nᵢgᵢ ↦ ∑ nᵢ`. -/
 def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k where
-  hom := ModuleCat.ofHom <| Finsupp.linearCombination _ fun _ => (1 : k)
-  comm _ := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext_ring
+  hom := ModuleCat.ofHom <| Finsupp.linearCombination _ fun _ ↦ (1 : k)
+  comm _ := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ ↦ LinearMap.ext_ring
     (by simp [ModuleCat.endRingEquiv])
 
 /-- The homotopy equivalence of complexes of `k`-modules between the standard resolution of `k` as
@@ -334,7 +334,7 @@ a trivial `G`-representation, and the complex which is `k` at 0 and 0 everywhere
 `∑ nᵢgᵢ ↦ ∑ nᵢ : k[G¹] → k` at 0. -/
 theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
     (forget₂ToModuleCatHomotopyEquiv k G).1.f 0 = (forget₂ (Rep k G) _).map (ε k G) := by
-  refine ModuleCat.hom_ext <| Finsupp.lhom_ext fun (x : Fin 1 → G) r => ?_
+  refine ModuleCat.hom_ext <| Finsupp.lhom_ext fun (x : Fin 1 → G) r ↦ ?_
   change mapDomain _ _ _ = Finsupp.linearCombination _ _ _
   simp only [HomotopyEquiv.ofIso, Iso.symm_hom, compForgetAugmented, compForgetAugmentedIso,
     eqToIso.inv, HomologicalComplex.eqToHom_f]
@@ -411,21 +411,21 @@ variable (n)
 `g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
 `j = 0, ... , n - 1`. -/
 def d : free k G Gⁿ⁺¹ ⟶ free k G Gⁿ :=
-  freeLift _ fun g => single (fun i => g i.succ) (single (g 0) 1) +
-    Finset.univ.sum fun j : Fin (n + 1) =>
+  freeLift _ fun g ↦ single (fun i ↦ g i.succ) (single (g 0) 1) +
+    Finset.univ.sum fun j : Fin (n + 1) ↦
       single (Fin.contractNth j (· * ·) g) (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1)))
 
 variable {k G} in
 lemma d_single (x : Gⁿ⁺¹) :
-    (d k G n).hom (single x (single 1 1)) = single (fun i => x i.succ) (Finsupp.single (x 0) 1) +
-      Finset.univ.sum fun j : Fin (n + 1) =>
+    (d k G n).hom (single x (single 1 1)) = single (fun i ↦ x i.succ) (Finsupp.single (x 0) 1) +
+      Finset.univ.sum fun j : Fin (n + 1) ↦
         single (Fin.contractNth j (· * ·) x)  (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1))) := by
   simp [d]
 
 lemma d_comp_diagonalSuccIsoFree_inv_eq :
     d k G n ≫ (diagonalSuccIsoFree k G n).inv =
       (diagonalSuccIsoFree k G (n + 1)).inv ≫ (standardComplex k G).d (n + 1) n :=
-  free_ext _ _ fun i => by
+  free_ext _ _ fun i ↦ by
     simpa [diagonalSuccIsoFree_inv_hom_single_single (k := k), d_single (k := k),
       standardComplex.d_eq, standardComplex.d_of (k := k) (Fin.partialProd i), Fin.sum_univ_succ,
       Fin.partialProd_contractNth] using
@@ -440,7 +440,7 @@ differential `(Gⁿ⁺¹ →₀ k[G]) → (Gⁿ →₀ k[G])` sending `(g₀, ..
 `g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
 `j = 0, ... , n - 1`. -/
 noncomputable abbrev barComplex : ChainComplex (Rep k G) ℕ :=
-  ChainComplex.of (fun n => free k G (Fin n → G)) (fun n => d k G n) fun _ => by
+  ChainComplex.of (fun n ↦ free k G (Fin n → G)) (fun n ↦ d k G n) fun _ ↦ by
     ext x
     simp [(diagonalSuccIsoFree k G _).comp_inv_eq.1 (d_comp_diagonalSuccIsoFree_inv_eq k G _)]
 
@@ -452,7 +452,7 @@ theorem d_def : (barComplex k G).d (n + 1) n = d k G n := ChainComplex.of_d _ _ 
 /-- Isomorphism between the bar resolution and standard resolution, with `n`th map
 `(Gⁿ →₀ k[G]) → k[Gⁿ⁺¹]` sending `(g₁, ..., gₙ) ↦ (1, g₁, g₁g₂, ..., g₁...gₙ)`. -/
 def isoStandardComplex : barComplex k G ≅ standardComplex k G :=
-  HomologicalComplex.Hom.isoOfComponents (fun i => (diagonalSuccIsoFree k G i).symm) fun i j => by
+  HomologicalComplex.Hom.isoOfComponents (fun i ↦ (diagonalSuccIsoFree k G i).symm) fun i j ↦ by
     rintro (rfl : j + 1 = i)
     simp only [ChainComplex.of_x, Iso.symm_hom, d_def, d_comp_diagonalSuccIsoFree_inv_eq]
 

@@ -55,13 +55,13 @@ instance bicategory : Bicategory.{max v u, max v u} Cat.{v, u} where
   Hom C D := C ⥤ D
   id C := 𝟭 C
   comp F G := F ⋙ G
-  homCategory := fun _ _ => Functor.category
+  homCategory := fun _ _ ↦ Functor.category
   whiskerLeft {_} {_} {_} F _ _ η := whiskerLeft F η
   whiskerRight {_} {_} {_} _ _ η H := whiskerRight η H
   associator {_} {_} {_} _ := Functor.associator
   leftUnitor {_} _ := Functor.leftUnitor
   rightUnitor {_} _ := Functor.rightUnitor
-  pentagon := fun {_} {_} {_} {_} {_}=> Functor.pentagon
+  pentagon := fun {_} {_} {_} {_} {_}↦ Functor.pentagon
   triangle {_} {_} {_} := Functor.triangle
 
 /-- `Cat` is a strict bicategory. -/
@@ -212,7 +212,7 @@ This ought to be modelled as a 2-functor!
 @[simps]
 def typeToCat : Type u ⥤ Cat where
   obj X := Cat.of (Discrete X)
-  map := fun f => Discrete.functor (Discrete.mk ∘ f)
+  map := fun f ↦ Discrete.functor (Discrete.mk ∘ f)
   map_id X := by
     apply Functor.ext
     · intro X Y f
@@ -225,7 +225,7 @@ def typeToCat : Type u ⥤ Cat where
 
 instance : Functor.Faithful typeToCat.{u} where
   map_injective {_X} {_Y} _f _g h :=
-    funext fun x => congr_arg Discrete.as (Functor.congr_obj h ⟨x⟩)
+    funext fun x ↦ congr_arg Discrete.as (Functor.congr_obj h ⟨x⟩)
 
 instance : Functor.Full typeToCat.{u} where
   map_surjective F := ⟨Discrete.as ∘ F.obj ∘ Discrete.mk, by

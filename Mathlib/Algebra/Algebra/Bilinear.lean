@@ -45,7 +45,7 @@ theorem mulLeft_toAddMonoidHom (a : A) : (mulLeft R a : A →+ A) = AddMonoidHom
 
 variable (A) in
 @[simp]
-theorem mulLeft_zero_eq_zero : mulLeft R (0 : A) = 0 := ext fun _ => zero_mul _
+theorem mulLeft_zero_eq_zero : mulLeft R (0 : A) = 0 := ext fun _ ↦ zero_mul _
 
 end left
 
@@ -71,7 +71,7 @@ theorem mulRight_toAddMonoidHom (a : A) : (mulRight R a : A →+ A) = AddMonoidH
 
 variable (A) in
 @[simp]
-theorem mulRight_zero_eq_zero : mulRight R (0 : A) = 0 := ext fun _ => mul_zero _
+theorem mulRight_zero_eq_zero : mulRight R (0 : A) = 0 := ext fun _ ↦ mul_zero _
 
 end right
 
@@ -173,11 +173,11 @@ variable {R A : Type*} [Semiring R] [NonAssocSemiring A] [Module R A]
 
 @[simp] lemma mulLeft_inj [SMulCommClass R A A] {a b : A} :
     mulLeft R a = mulLeft R b ↔ a = b :=
-  ⟨fun h => by simpa using LinearMap.ext_iff.mp h 1, fun h => h ▸ rfl⟩
+  ⟨fun h ↦ by simpa using LinearMap.ext_iff.mp h 1, fun h ↦ h ▸ rfl⟩
 
 @[simp] lemma mulRight_inj [IsScalarTower R A A] {a b : A} :
     mulRight R a = mulRight R b ↔ a = b :=
-  ⟨fun h => by simpa using LinearMap.ext_iff.mp h 1, fun h => h ▸ rfl⟩
+  ⟨fun h ↦ by simpa using LinearMap.ext_iff.mp h 1, fun h ↦ h ▸ rfl⟩
 
 end Injective
 
@@ -191,7 +191,7 @@ section left
 variable [Module R A] [SMulCommClass R A A]
 
 @[simp]
-theorem mulLeft_one : mulLeft R (1 : A) = LinearMap.id := ext fun _ => one_mul _
+theorem mulLeft_one : mulLeft R (1 : A) = LinearMap.id := ext fun _ ↦ one_mul _
 
 @[simp]
 theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 :=
@@ -209,7 +209,7 @@ section right
 variable [Module R A] [IsScalarTower R A A]
 
 @[simp]
-theorem mulRight_one : mulRight R (1 : A) = LinearMap.id := ext fun _ => mul_one _
+theorem mulRight_one : mulRight R (1 : A) = LinearMap.id := ext fun _ ↦ mul_one _
 
 @[simp]
 theorem mulRight_eq_zero_iff (a : A) : mulRight R a = 0 ↔ a = 0 :=
@@ -234,7 +234,7 @@ A weaker version of this for non-unital algebras exists as `NonUnitalAlgHom.lmul
 def _root_.Algebra.lmul : A →ₐ[R] End R A where
   __ := NonUnitalAlgHom.lmul R A
   map_one' := mulLeft_one _ _
-  commutes' r := ext fun a => (Algebra.smul_def r a).symm
+  commutes' r := ext fun a ↦ (Algebra.smul_def r a).symm
 
 variable {R A}
 

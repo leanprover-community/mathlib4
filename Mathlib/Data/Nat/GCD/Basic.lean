@@ -69,13 +69,13 @@ See also `Nat.coprime_of_dvd` and `Nat.coprime_of_dvd'` to prove `Nat.Coprime m 
 theorem Coprime.lcm_eq_mul {m n : ℕ} (h : Coprime m n) : lcm m n = m * n := by
   rw [← one_mul (lcm m n), ← h.gcd_eq_one, gcd_mul_lcm]
 
-theorem Coprime.symmetric : Symmetric Coprime := fun _ _ => Coprime.symm
+theorem Coprime.symmetric : Symmetric Coprime := fun _ _ ↦ Coprime.symm
 
 theorem Coprime.dvd_mul_right {m n k : ℕ} (H : Coprime k n) : k ∣ m * n ↔ k ∣ m :=
-  ⟨H.dvd_of_dvd_mul_right, fun h => dvd_mul_of_dvd_left h n⟩
+  ⟨H.dvd_of_dvd_mul_right, fun h ↦ dvd_mul_of_dvd_left h n⟩
 
 theorem Coprime.dvd_mul_left {m n k : ℕ} (H : Coprime k m) : k ∣ m * n ↔ k ∣ n :=
-  ⟨H.dvd_of_dvd_mul_left, fun h => dvd_mul_of_dvd_right h m⟩
+  ⟨H.dvd_of_dvd_mul_left, fun h ↦ dvd_mul_of_dvd_right h m⟩
 
 @[simp]
 theorem coprime_add_self_right {m n : ℕ} : Coprime m (n + m) ↔ Coprime m n := by
@@ -168,7 +168,7 @@ theorem coprime_pow_left_iff {n : ℕ} (hn : 0 < n) (a b : ℕ) :
     Nat.Coprime (a ^ n) b ↔ Nat.Coprime a b := by
   obtain ⟨n, rfl⟩ := exists_eq_succ_of_ne_zero (Nat.ne_of_gt hn)
   rw [Nat.pow_succ, Nat.coprime_mul_iff_left]
-  exact ⟨And.right, fun hab => ⟨hab.pow_left _, hab⟩⟩
+  exact ⟨And.right, fun hab ↦ ⟨hab.pow_left _, hab⟩⟩
 
 @[simp]
 theorem coprime_pow_right_iff {n : ℕ} (hn : 0 < n) (a b : ℕ) :
@@ -190,7 +190,7 @@ theorem gcd_mul_of_coprime_of_dvd {a b c : ℕ} (hac : Coprime a c) (b_dvd_c : b
 
 theorem Coprime.eq_of_mul_eq_zero {m n : ℕ} (h : m.Coprime n) (hmn : m * n = 0) :
     m = 0 ∧ n = 1 ∨ m = 1 ∧ n = 0 :=
-  (Nat.mul_eq_zero.mp hmn).imp (fun hm => ⟨hm, n.coprime_zero_left.mp <| hm ▸ h⟩) fun hn =>
+  (Nat.mul_eq_zero.mp hmn).imp (fun hm ↦ ⟨hm, n.coprime_zero_left.mp <| hm ▸ h⟩) fun hn ↦
     let eq := hn ▸ h.symm
     ⟨m.coprime_zero_left.mp <| eq, hn⟩
 

@@ -28,7 +28,7 @@ theorem Icc_mem_vitaliFamily_at_right {x y : ℝ} (hxy : x < y) :
   rw [dist_comm, Real.dist_eq, abs_of_nonneg] <;> linarith
 
 theorem tendsto_Icc_vitaliFamily_right (x : ℝ) :
-    Tendsto (fun y => Icc x y) (𝓝[>] x) ((vitaliFamily (volume : Measure ℝ) 1).filterAt x) := by
+    Tendsto (fun y ↦ Icc x y) (𝓝[>] x) ((vitaliFamily (volume : Measure ℝ) 1).filterAt x) := by
   refine (VitaliFamily.tendsto_filterAt_iff _).2 ⟨?_, ?_⟩
   · filter_upwards [self_mem_nhdsWithin] with y hy using Icc_mem_vitaliFamily_at_right hy
   · intro ε εpos
@@ -43,7 +43,7 @@ theorem Icc_mem_vitaliFamily_at_left {x y : ℝ} (hxy : x < y) :
   rw [Real.dist_eq, abs_of_nonneg] <;> linarith
 
 theorem tendsto_Icc_vitaliFamily_left (x : ℝ) :
-    Tendsto (fun y => Icc y x) (𝓝[<] x) ((vitaliFamily (volume : Measure ℝ) 1).filterAt x) := by
+    Tendsto (fun y ↦ Icc y x) (𝓝[<] x) ((vitaliFamily (volume : Measure ℝ) 1).filterAt x) := by
   refine (VitaliFamily.tendsto_filterAt_iff _).2 ⟨?_, ?_⟩
   · filter_upwards [self_mem_nhdsWithin] with y hy using Icc_mem_vitaliFamily_at_left hy
   · intro ε εpos

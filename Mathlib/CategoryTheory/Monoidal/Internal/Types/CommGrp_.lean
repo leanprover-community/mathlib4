@@ -25,7 +25,7 @@ namespace CommGrpTypeEquivalenceCommGrp
 
 instance commGrpCommGroup (A : Type u) [Grp_Class A] [IsCommMon A] : CommGroup A :=
   { GrpTypeEquivalenceGrp.grpGroup A with
-    mul_comm := fun x y => by convert congr_fun (IsCommMon.mul_comm A) (y, x) }
+    mul_comm := fun x y ↦ by convert congr_fun (IsCommMon.mul_comm A) (y, x) }
 
 /-- Converting a commutative group object in `Type u` into a group. -/
 noncomputable def functor : CommGrp_ (Type u) ⥤ CommGrp.{u} where
@@ -60,7 +60,7 @@ noncomputable def commGrpTypeEquivalenceCommGrp : CommGrp_ (Type u) ≌ CommGrp.
   inverse := CommGrpTypeEquivalenceCommGrp.inverse
   unitIso := Iso.refl _
   counitIso := NatIso.ofComponents
-    (fun A => MulEquiv.toCommGrpIso { Equiv.refl _ with map_mul' := fun _ _ => rfl })
+    (fun A ↦ MulEquiv.toCommGrpIso { Equiv.refl _ with map_mul' := fun _ _ ↦ rfl })
     (by cat_disch)
 
 /-- The equivalences `Grp_ (Type u) ≌ Grp.{u}` and `CommGrp_ (Type u) ≌ CommGrp.{u}`

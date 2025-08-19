@@ -54,7 +54,7 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
       intro S
       constructor; swap
       · exact ofHom
-          { toFun := fun x =>
+          { toFun := fun x ↦
               ⟨⟨S.fst x, S.snd x⟩, by simpa using ConcreteCategory.congr_hom S.condition x⟩
             continuous_toFun := by fun_prop }
       refine ⟨?_, ?_, ?_⟩
@@ -318,7 +318,7 @@ theorem fst_iso_of_right_embedding_range_subset {X Y S : TopCat} (f : X ⟶ S) {
   let esto : (pullback f g : TopCat) ≃ₜ X :=
     (fst_isEmbedding_of_right f hg).toHomeomorph.trans
       { toFun := Subtype.val
-        invFun := fun x =>
+        invFun := fun x ↦
           ⟨x, by
             rw [pullback_fst_range]
             exact ⟨_, (H (Set.mem_range_self x)).choose_spec.symm⟩⟩ }
@@ -329,7 +329,7 @@ theorem snd_iso_of_left_embedding_range_subset {X Y S : TopCat} {f : X ⟶ S} (h
   let esto : (pullback f g : TopCat) ≃ₜ Y :=
     (snd_isEmbedding_of_left hf g).toHomeomorph.trans
       { toFun := Subtype.val
-        invFun := fun x =>
+        invFun := fun x ↦
           ⟨x, by
             rw [pullback_snd_range]
             exact ⟨_, (H (Set.mem_range_self x)).choose_spec⟩⟩ }

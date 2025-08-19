@@ -75,14 +75,14 @@ def IsFraction {U : Opens (ProjectiveSpectrum.top 𝒜)} (f : ∀ x : U, at x.1)
 The predicate `IsFraction` is "prelocal", in the sense that if it holds on `U` it holds on any open
 subset `V` of `U`.
 -/
-def isFractionPrelocal : PrelocalPredicate fun x : ProjectiveSpectrum.top 𝒜 => at x where
+def isFractionPrelocal : PrelocalPredicate fun x : ProjectiveSpectrum.top 𝒜 ↦ at x where
   pred f := IsFraction f
   res := by rintro V U i f ⟨j, r, s, h, w⟩; exact ⟨j, r, s, (h <| i ·), (w <| i ·)⟩
 
 /-- We will define the structure sheaf as the subsheaf of all dependent functions in
 `Π x : U, HomogeneousLocalization 𝒜 x` consisting of those functions which can locally be expressed
 as a ratio of `A` of same grading. -/
-def isLocallyFraction : LocalPredicate fun x : ProjectiveSpectrum.top 𝒜 => at x :=
+def isLocallyFraction : LocalPredicate fun x : ProjectiveSpectrum.top 𝒜 ↦ at x :=
   (isFractionPrelocal 𝒜).sheafify
 
 namespace SectionSubring
@@ -92,16 +92,16 @@ variable {𝒜}
 open Submodule SetLike.GradedMonoid HomogeneousLocalization
 
 theorem zero_mem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) :
-    (isLocallyFraction 𝒜).pred (0 : ∀ x : U.unop, at x.1) := fun x =>
-  ⟨unop U, x.2, 𝟙 (unop U), ⟨0, ⟨0, zero_mem _⟩, ⟨1, one_mem_graded _⟩, _, fun _ => rfl⟩⟩
+    (isLocallyFraction 𝒜).pred (0 : ∀ x : U.unop, at x.1) := fun x ↦
+  ⟨unop U, x.2, 𝟙 (unop U), ⟨0, ⟨0, zero_mem _⟩, ⟨1, one_mem_graded _⟩, _, fun _ ↦ rfl⟩⟩
 
 theorem one_mem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) :
-    (isLocallyFraction 𝒜).pred (1 : ∀ x : U.unop, at x.1) := fun x =>
-  ⟨unop U, x.2, 𝟙 (unop U), ⟨0, ⟨1, one_mem_graded _⟩, ⟨1, one_mem_graded _⟩, _, fun _ => rfl⟩⟩
+    (isLocallyFraction 𝒜).pred (1 : ∀ x : U.unop, at x.1) := fun x ↦
+  ⟨unop U, x.2, 𝟙 (unop U), ⟨0, ⟨1, one_mem_graded _⟩, ⟨1, one_mem_graded _⟩, _, fun _ ↦ rfl⟩⟩
 
 theorem add_mem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x : U.unop, at x.1)
     (ha : (isLocallyFraction 𝒜).pred a) (hb : (isLocallyFraction 𝒜).pred b) :
-    (isLocallyFraction 𝒜).pred (a + b) := fun x => by
+    (isLocallyFraction 𝒜).pred (a + b) := fun x ↦ by
   rcases ha x with ⟨Va, ma, ia, ja, ⟨ra, ra_mem⟩, ⟨sa, sa_mem⟩, hwa, wa⟩
   rcases hb x with ⟨Vb, mb, ib, jb, ⟨rb, rb_mem⟩, ⟨sb, sb_mem⟩, hwb, wb⟩
   refine
@@ -116,21 +116,21 @@ theorem add_mem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x 
   simp [wa y hy.1, wb y hy.2, ext_iff_val, add_mk, add_comm (sa * rb)]
 
 theorem neg_mem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a : ∀ x : U.unop, at x.1)
-    (ha : (isLocallyFraction 𝒜).pred a) : (isLocallyFraction 𝒜).pred (-a) := fun x => by
+    (ha : (isLocallyFraction 𝒜).pred a) : (isLocallyFraction 𝒜).pred (-a) := fun x ↦ by
   rcases ha x with ⟨V, m, i, j, ⟨r, r_mem⟩, ⟨s, s_mem⟩, nin, hy⟩
-  refine ⟨V, m, i, j, ⟨-r, Submodule.neg_mem _ r_mem⟩, ⟨s, s_mem⟩, nin, fun y => ?_⟩
+  refine ⟨V, m, i, j, ⟨-r, Submodule.neg_mem _ r_mem⟩, ⟨s, s_mem⟩, nin, fun y ↦ ?_⟩
   simp only [ext_iff_val, val_mk] at hy
   simp only [Pi.neg_apply, ext_iff_val, val_neg, hy, val_mk, neg_mk]
 
 theorem mul_mem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x : U.unop, at x.1)
     (ha : (isLocallyFraction 𝒜).pred a) (hb : (isLocallyFraction 𝒜).pred b) :
-    (isLocallyFraction 𝒜).pred (a * b) := fun x => by
+    (isLocallyFraction 𝒜).pred (a * b) := fun x ↦ by
   rcases ha x with ⟨Va, ma, ia, ja, ⟨ra, ra_mem⟩, ⟨sa, sa_mem⟩, hwa, wa⟩
   rcases hb x with ⟨Vb, mb, ib, jb, ⟨rb, rb_mem⟩, ⟨sb, sb_mem⟩, hwb, wb⟩
   refine
     ⟨Va ⊓ Vb, ⟨ma, mb⟩, Opens.infLELeft _ _ ≫ ia, ja + jb,
       ⟨ra * rb, SetLike.mul_mem_graded ra_mem rb_mem⟩,
-      ⟨sa * sb, SetLike.mul_mem_graded sa_mem sb_mem⟩, fun y =>
+      ⟨sa * sb, SetLike.mul_mem_graded sa_mem sb_mem⟩, fun y ↦
       y.1.asHomogeneousIdeal.toIdeal.primeCompl.mul_mem (hwa ⟨y.1, y.2.1⟩) (hwb ⟨y.1, y.2.2⟩), ?_⟩
   rintro ⟨y, hy⟩
   simp only [Subtype.forall, Opens.apply_mk] at wa wb
@@ -174,15 +174,15 @@ def structurePresheafInCommRing : Presheaf CommRingCat (ProjectiveSpectrum.top �
   map i := CommRingCat.ofHom
     { toFun := (structureSheafInType 𝒜).1.map i
       map_zero' := rfl
-      map_add' := fun _ _ => rfl
+      map_add' := fun _ _ ↦ rfl
       map_one' := rfl
-      map_mul' := fun _ _ => rfl }
+      map_mul' := fun _ _ ↦ rfl }
 
 /-- Some glue, verifying that the structure presheaf valued in `CommRing` agrees with the `Type`
 valued structure presheaf. -/
 def structurePresheafCompForget :
     structurePresheafInCommRing 𝒜 ⋙ forget CommRingCat ≅ (structureSheafInType 𝒜).1 :=
-  NatIso.ofComponents (fun _ => Iso.refl _) (by cat_disch)
+  NatIso.ofComponents (fun _ ↦ Iso.refl _) (by cat_disch)
 
 end ProjectiveSpectrum.StructureSheaf
 
@@ -247,7 +247,7 @@ def stalkToFiberRingHom (x : ProjectiveSpectrum.top 𝒜) :
   Limits.colimit.desc ((OpenNhds.inclusion x).op ⋙ (Proj.structureSheaf 𝒜).1)
     { pt := _
       ι :=
-        { app := fun U =>
+        { app := fun U ↦
             openToLocalization 𝒜 ((OpenNhds.inclusion _).obj U.unop) x U.unop.2 } }
 
 @[simp]
@@ -275,17 +275,17 @@ basic open set `D(f.den)`. -/
 def sectionInBasicOpen (x : ProjectiveSpectrum.top 𝒜) :
     ∀ f : HomogeneousLocalization.NumDenSameDeg 𝒜 x.asHomogeneousIdeal.toIdeal.primeCompl,
     (Proj.structureSheaf 𝒜).1.obj (op (ProjectiveSpectrum.basicOpen 𝒜 f.den)) :=
-  fun f =>
-  ⟨fun y => HomogeneousLocalization.mk ⟨f.deg, f.num, f.den, y.2⟩, fun y =>
+  fun f ↦
+  ⟨fun y ↦ HomogeneousLocalization.mk ⟨f.deg, f.num, f.den, y.2⟩, fun y ↦
     ⟨ProjectiveSpectrum.basicOpen 𝒜 f.den, y.2,
-      ⟨𝟙 _, ⟨f.deg, ⟨f.num, f.den, _, fun _ => rfl⟩⟩⟩⟩⟩
+      ⟨𝟙 _, ⟨f.deg, ⟨f.num, f.den, _, fun _ ↦ rfl⟩⟩⟩⟩⟩
 
 open HomogeneousLocalization in
 /-- Given any point `x` and `f` in the homogeneous localization at `x`, there is an element in the
 stalk at `x` obtained by `sectionInBasicOpen`. This is the inverse of `stalkToFiberRingHom`.
 -/
 def homogeneousLocalizationToStalk (x : ProjectiveSpectrum.top 𝒜) (y : at x) :
-    (Proj.structureSheaf 𝒜).presheaf.stalk x := Quotient.liftOn' y (fun f =>
+    (Proj.structureSheaf 𝒜).presheaf.stalk x := Quotient.liftOn' y (fun f ↦
   (Proj.structureSheaf 𝒜).presheaf.germ _ x (mem_basicOpen_den _ x f) (sectionInBasicOpen _ x f))
   fun f g (e : f.embedding = g.embedding) ↦ by
     simp only [HomogeneousLocalization.NumDenSameDeg.embedding, Localization.mk_eq_mk',
@@ -352,7 +352,7 @@ theorem Proj.stalkIso'_symm_mk (x) (f) :
 /-- `Proj` of a graded ring as a `LocallyRingedSpace` -/
 def Proj.toLocallyRingedSpace : LocallyRingedSpace :=
   { Proj.toSheafedSpace 𝒜 with
-    isLocalRing := fun x =>
+    isLocalRing := fun x ↦
       @RingEquiv.isLocalRing _ _ _ (show IsLocalRing (at x) from inferInstance) _
         (Proj.stalkIso' 𝒜 x).symm }
 

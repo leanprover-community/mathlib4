@@ -79,7 +79,7 @@ instance [Semiring R] [Linear R C] (X : C) : Module R (End X) := by
   infer_instance
 
 instance [CommSemiring R] [Linear R C] (X : C) : Algebra R (End X) :=
-  Algebra.ofModule (fun _ _ _ => comp_smul _ _ _ _ _ _) fun _ _ _ => smul_comp _ _ _ _ _ _
+  Algebra.ofModule (fun _ _ _ ↦ comp_smul _ _ _ _ _ _) fun _ _ _ ↦ smul_comp _ _ _ _ _ _
 
 end End
 
@@ -122,14 +122,14 @@ def rightComp (X : C) {Y Z : C} (g : Y ⟶ Z) : (X ⟶ Y) →ₗ[R] X ⟶ Z wher
   map_smul' := by simp
 
 instance {X Y : C} (f : X ⟶ Y) [Epi f] (r : R) [Invertible r] : Epi (r • f) :=
-  ⟨fun g g' H => by
+  ⟨fun g g' H ↦ by
     rw [smul_comp, smul_comp, ← comp_smul, ← comp_smul, cancel_epi] at H
-    simpa [smul_smul] using congr_arg (fun f => ⅟r • f) H⟩
+    simpa [smul_smul] using congr_arg (fun f ↦ ⅟r • f) H⟩
 
 instance {X Y : C} (f : X ⟶ Y) [Mono f] (r : R) [Invertible r] : Mono (r • f) :=
-  ⟨fun g g' H => by
+  ⟨fun g g' H ↦ by
     rw [comp_smul, comp_smul, ← smul_comp, ← smul_comp, cancel_mono] at H
-    simpa [smul_smul] using congr_arg (fun f => ⅟r • f) H⟩
+    simpa [smul_smul] using congr_arg (fun f ↦ ⅟r • f) H⟩
 
 /-- Given isomorphic objects `X ≅ Y, W ≅ Z` in a `k`-linear category, we have a `k`-linear
 isomorphism between `Hom(X, W)` and `Hom(Y, Z).` -/
@@ -140,11 +140,11 @@ def homCongr (k : Type*) {C : Type*} [Category C] [Semiring k] [Preadditive C] [
       (leftComp k W
         f₁.symm.hom) with
     invFun := (leftComp k W f₁.hom).comp (rightComp k Y f₂.symm.hom)
-    left_inv := fun x => by
+    left_inv := fun x ↦ by
       simp only [Iso.symm_hom, LinearMap.toFun_eq_coe, LinearMap.coe_comp, Function.comp_apply,
         leftComp_apply, rightComp_apply, Category.assoc, Iso.hom_inv_id, Category.comp_id,
         Iso.hom_inv_id_assoc]
-    right_inv := fun x => by
+    right_inv := fun x ↦ by
       simp only [Iso.symm_hom, LinearMap.coe_comp, Function.comp_apply, rightComp_apply,
         leftComp_apply, LinearMap.toFun_eq_coe, Iso.inv_hom_id_assoc, Category.assoc,
         Iso.inv_hom_id, Category.comp_id] }

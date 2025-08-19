@@ -51,7 +51,7 @@ theorem mem_toFinset {s : Set α} [Fintype s] {a : α} : a ∈ s.toFinset ↔ a 
 Rewriting `s.toFinset` with `Set.toFinset_ofFinset` replaces the term with such a `Finset`. -/
 theorem toFinset_ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) :
     @Set.toFinset _ p (Fintype.ofFinset s H) = s :=
-  Finset.ext fun x => by rw [@mem_toFinset _ _ (id _), H]
+  Finset.ext fun x ↦ by rw [@mem_toFinset _ _ (id _), H]
 
 /-- Membership of a set with a `Fintype` instance is decidable.
 
@@ -62,7 +62,7 @@ def decidableMemOfFintype [DecidableEq α] (s : Set α) [Fintype s] (a) : Decida
 
 @[simp]
 theorem coe_toFinset (s : Set α) [Fintype s] : (↑s.toFinset : Set α) = s :=
-  Set.ext fun _ => mem_toFinset
+  Set.ext fun _ ↦ mem_toFinset
 
 @[simp]
 theorem toFinset_nonempty {s : Set α} [Fintype s] : s.toFinset.Nonempty ↔ s.Nonempty := by
@@ -73,7 +73,7 @@ alias ⟨_, Aesop.toFinset_nonempty_of_nonempty⟩ := toFinset_nonempty
 
 @[simp]
 theorem toFinset_inj {s t : Set α} [Fintype s] [Fintype t] : s.toFinset = t.toFinset ↔ s = t :=
-  ⟨fun h => by rw [← s.coe_toFinset, h, t.coe_toFinset], fun h => by simp [h]⟩
+  ⟨fun h ↦ by rw [← s.coe_toFinset, h, t.coe_toFinset], fun h ↦ by simp [h]⟩
 
 @[mono]
 theorem toFinset_subset_toFinset [Fintype s] [Fintype t] : s.toFinset ⊆ t.toFinset ↔ s ⊆ t := by
@@ -211,7 +211,7 @@ end Set
 
 @[simp]
 theorem Finset.toFinset_coe (s : Finset α) [Fintype (s : Set α)] : (s : Set α).toFinset = s :=
-  ext fun _ => Set.mem_toFinset
+  ext fun _ ↦ Set.mem_toFinset
 
 section Finset
 
@@ -259,7 +259,7 @@ instance Subtype.fintype (p : α → Prop) [DecidablePred p] [Fintype α] : Fint
 
 /-- A set on a fintype, when coerced to a type, is a fintype. -/
 def setFintype [Fintype α] (s : Set α) [DecidablePred (· ∈ s)] : Fintype s :=
-  Subtype.fintype fun x => x ∈ s
+  Subtype.fintype fun x ↦ x ∈ s
 
 namespace Fintype
 variable [Fintype α]
@@ -268,7 +268,7 @@ variable [Fintype α]
 sets on a finite type are finite.) -/
 noncomputable def finsetEquivSet : Finset α ≃ Set α where
   toFun := (↑)
-  invFun := by classical exact fun s => s.toFinset
+  invFun := by classical exact fun s ↦ s.toFinset
   left_inv s := by convert Finset.toFinset_coe s
   right_inv s := by classical exact s.coe_toFinset
 

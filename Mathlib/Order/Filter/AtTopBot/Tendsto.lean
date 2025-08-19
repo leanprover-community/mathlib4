@@ -22,11 +22,11 @@ open Set
 namespace Filter
 
 theorem not_tendsto_const_atTop [Preorder α] [NoTopOrder α] (x : α) (l : Filter β) [l.NeBot] :
-    ¬Tendsto (fun _ => x) l atTop :=
+    ¬Tendsto (fun _ ↦ x) l atTop :=
   tendsto_const_pure.not_tendsto (disjoint_pure_atTop x)
 
 theorem not_tendsto_const_atBot [Preorder α] [NoBotOrder α] (x : α) (l : Filter β) [l.NeBot] :
-    ¬Tendsto (fun _ => x) l atBot :=
+    ¬Tendsto (fun _ ↦ x) l atBot :=
   tendsto_const_pure.not_tendsto (disjoint_pure_atBot x)
 
 protected theorem Tendsto.eventually_gt_atTop [Preorder β] [NoTopOrder β] {f : α → β} {l : Filter α}
@@ -43,7 +43,7 @@ protected theorem Tendsto.eventually_ne_atTop [Preorder β] [NoTopOrder β] {f :
 
 protected theorem Tendsto.eventually_ne_atTop' [Preorder β] [NoTopOrder β] {f : α → β}
     {l : Filter α} (hf : Tendsto f l atTop) (c : α) : ∀ᶠ x in l, x ≠ c :=
-  (hf.eventually_ne_atTop (f c)).mono fun _ => ne_of_apply_ne f
+  (hf.eventually_ne_atTop (f c)).mono fun _ ↦ ne_of_apply_ne f
 
 protected theorem Tendsto.eventually_lt_atBot [Preorder β] [NoBotOrder β] {f : α → β} {l : Filter α}
     (hf : Tendsto f l atBot) (c : β) : ∀ᶠ x in l, f x < c :=
@@ -81,7 +81,7 @@ theorem tendsto_atBot [Preorder β] {m : α → β} {f : Filter α} :
 
 theorem tendsto_atTop_mono' [Preorder β] (l : Filter α) ⦃f₁ f₂ : α → β⦄ (h : f₁ ≤ᶠ[l] f₂)
     (h₁ : Tendsto f₁ l atTop) : Tendsto f₂ l atTop :=
-  tendsto_atTop.2 fun b => by filter_upwards [tendsto_atTop.1 h₁ b, h] with x using le_trans
+  tendsto_atTop.2 fun b ↦ by filter_upwards [tendsto_atTop.1 h₁ b, h] with x using le_trans
 
 theorem tendsto_atBot_mono' [Preorder β] (l : Filter α) ⦃f₁ f₂ : α → β⦄ (h : f₁ ≤ᶠ[l] f₂) :
     Tendsto f₂ l atBot → Tendsto f₁ l atBot :=
@@ -148,10 +148,10 @@ theorem _root_.Antitone.upperBounds_range_comp_tendsto_atBot [Preorder β] [Preo
 
 theorem tendsto_atTop_atTop_of_monotone [Preorder α] [Preorder β] {f : α → β} (hf : Monotone f)
     (h : ∀ b, ∃ a, b ≤ f a) : Tendsto f atTop atTop :=
-  tendsto_iInf.2 fun b =>
+  tendsto_iInf.2 fun b ↦
     tendsto_principal.2 <|
       let ⟨a, ha⟩ := h b
-      mem_of_superset (mem_atTop a) fun _a' ha' => le_trans ha (hf ha')
+      mem_of_superset (mem_atTop a) fun _a' ha' ↦ le_trans ha (hf ha')
 
 theorem tendsto_atTop_atBot_of_antitone [Preorder α] [Preorder β] {f : α → β} (hf : Antitone f)
     (h : ∀ b, ∃ a, f a ≤ b) : Tendsto f atTop atBot :=
@@ -159,8 +159,8 @@ theorem tendsto_atTop_atBot_of_antitone [Preorder α] [Preorder β] {f : α → 
 
 theorem tendsto_atBot_atBot_of_monotone [Preorder α] [Preorder β] {f : α → β} (hf : Monotone f)
     (h : ∀ b, ∃ a, f a ≤ b) : Tendsto f atBot atBot :=
-  tendsto_iInf.2 fun b => tendsto_principal.2 <|
-    let ⟨a, ha⟩ := h b; mem_of_superset (mem_atBot a) fun _a' ha' => le_trans (hf ha') ha
+  tendsto_iInf.2 fun b ↦ tendsto_principal.2 <|
+    let ⟨a, ha⟩ := h b; mem_of_superset (mem_atBot a) fun _a' ha' ↦ le_trans (hf ha') ha
 
 theorem tendsto_atBot_atTop_of_antitone [Preorder α] [Preorder β] {f : α → β} (hf : Antitone f)
     (h : ∀ b, ∃ a, b ≤ f a) : Tendsto f atBot atTop :=
@@ -173,9 +173,9 @@ alias _root_.Monotone.tendsto_atBot_atBot := tendsto_atBot_atBot_of_monotone
 theorem comap_embedding_atTop [Preorder β] [Preorder γ] {e : β → γ}
     (hm : ∀ b₁ b₂, e b₁ ≤ e b₂ ↔ b₁ ≤ b₂) (hu : ∀ c, ∃ b, c ≤ e b) : comap e atTop = atTop :=
   le_antisymm
-    (le_iInf fun b =>
-      le_principal_iff.2 <| mem_comap.2 ⟨Ici (e b), mem_atTop _, fun _ => (hm _ _).1⟩)
-    (tendsto_atTop_atTop_of_monotone (fun _ _ => (hm _ _).2) hu).le_comap
+    (le_iInf fun b ↦
+      le_principal_iff.2 <| mem_comap.2 ⟨Ici (e b), mem_atTop _, fun _ ↦ (hm _ _).1⟩)
+    (tendsto_atTop_atTop_of_monotone (fun _ _ ↦ (hm _ _).2) hu).le_comap
 
 theorem comap_embedding_atBot [Preorder β] [Preorder γ] {e : β → γ}
     (hm : ∀ b₁ b₂, e b₁ ≤ e b₂ ↔ b₁ ≤ b₂) (hu : ∀ c, ∃ b, e b ≤ c) : comap e atBot = atBot :=
@@ -211,7 +211,7 @@ theorem tendsto_atBot_atBot_of_monotone' [Preorder ι] [LinearOrder α] {u : ι 
 it tends to `atTop` along `atTop`. -/
 theorem tendsto_atTop_of_monotone_of_filter [Preorder ι] [Preorder α] {l : Filter ι} {u : ι → α}
     (h : Monotone u) [NeBot l] (hu : Tendsto u l atTop) : Tendsto u atTop atTop :=
-  h.tendsto_atTop_atTop fun b => (hu.eventually (mem_atTop b)).exists
+  h.tendsto_atTop_atTop fun b ↦ (hu.eventually (mem_atTop b)).exists
 
 /-- If a monotone function `u : ι → α` tends to `atBot` along *some* non-trivial filter `l`, then
 it tends to `atBot` along `atBot`. -/

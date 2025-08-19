@@ -43,14 +43,14 @@ lemma support_add [DecidableEq ι] : (g₁ + g₂).support ⊆ g₁.support ∪ 
 
 lemma support_add_eq [DecidableEq ι] (h : Disjoint g₁.support g₂.support) :
     (g₁ + g₂).support = g₁.support ∪ g₂.support :=
-  le_antisymm support_zipWith fun a ha => by
+  le_antisymm support_zipWith fun a ha ↦ by
     cases (Finset.mem_union_of_disjoint h).mp ha <;> simp_all
 
 instance instAddZeroClass : AddZeroClass (ι →₀ M) :=
   fast_instance% DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
 
 instance instIsLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd (ι →₀ M) where
-  add_left_cancel _ _ _ h := ext fun x => add_left_cancel <| DFunLike.congr_fun h x
+  add_left_cancel _ _ _ h := ext fun x ↦ add_left_cancel <| DFunLike.congr_fun h x
 
 /-- When ι is finite and M is an AddMonoid,
   then Finsupp.equivFunOnFinite gives an AddEquiv -/
@@ -70,7 +70,7 @@ lemma _root_.AddEquiv.finsuppUnique_apply {ι : Type*} [Unique ι] (v : ι →�
     AddEquiv.finsuppUnique v = Equiv.finsuppUnique v := rfl
 
 instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (ι →₀ M) where
-  add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| DFunLike.congr_fun h x
+  add_right_cancel _ _ _ h := ext fun x ↦ add_right_cancel <| DFunLike.congr_fun h x
 
 instance instIsCancelAdd [IsCancelAdd M] : IsCancelAdd (ι →₀ M) where
 
@@ -93,7 +93,7 @@ noncomputable def coeFnAddHom : (ι →₀ M) →+ ι → M where
 
 lemma mapRange_add {hf : f 0 = 0} (hf' : ∀ x y, f (x + y) = f x + f y) (v₁ v₂ : ι →₀ M) :
     mapRange f hf (v₁ + v₂) = mapRange f hf v₁ + mapRange f hf v₂ :=
-  ext fun _ => by simp only [hf', add_apply, mapRange_apply]
+  ext fun _ ↦ by simp only [hf', add_apply, mapRange_apply]
 
 lemma mapRange_add' [FunLike F M N] [AddMonoidHomClass F M N] {f : F} (g₁ g₂ : ι →₀ M) :
     mapRange f (map_zero f) (g₁ + g₂) = mapRange f (map_zero f) g₁ + mapRange f (map_zero f) g₂ :=
@@ -191,13 +191,13 @@ protected lemma induction {motive : (ι →₀ M) → Prop} (f : ι →₀ M) (z
     (single_add : ∀ (a b) (f : ι →₀ M),
       a ∉ f.support → b ≠ 0 → motive f → motive (single a b + f)) : motive f :=
   suffices ∀ (s) (f : ι →₀ M), f.support = s → motive f from this _ _ rfl
-  fun s =>
-  Finset.cons_induction_on s (fun f hf => by rwa [support_eq_empty.1 hf]) fun a s has ih f hf => by
+  fun s ↦
+  Finset.cons_induction_on s (fun f hf ↦ by rwa [support_eq_empty.1 hf]) fun a s has ih f hf ↦ by
     suffices motive (single a (f a) + f.erase a) by rwa [single_add_erase] at this
     classical
       apply single_add
       · rw [support_erase, mem_erase]
-        exact fun H => H.1 rfl
+        exact fun H ↦ H.1 rfl
       · rw [← mem_support_iff, hf]
         exact mem_cons_self _ _
       · apply ih _ _
@@ -208,13 +208,13 @@ lemma induction₂ {motive : (ι →₀ M) → Prop} (f : ι →₀ M) (zero : m
     (add_single : ∀ (a b) (f : ι →₀ M),
       a ∉ f.support → b ≠ 0 → motive f → motive (f + single a b)) : motive f :=
   suffices ∀ (s) (f : ι →₀ M), f.support = s → motive f from this _ _ rfl
-  fun s =>
-  Finset.cons_induction_on s (fun f hf => by rwa [support_eq_empty.1 hf]) fun a s has ih f hf => by
+  fun s ↦
+  Finset.cons_induction_on s (fun f hf ↦ by rwa [support_eq_empty.1 hf]) fun a s has ih f hf ↦ by
     suffices motive (f.erase a + single a (f a)) by rwa [erase_add_single] at this
     classical
       apply add_single
       · rw [support_erase, mem_erase]
-        exact fun H => H.1 rfl
+        exact fun H ↦ H.1 rfl
       · rw [← mem_support_iff, hf]
         exact mem_cons_self _ _
       · apply ih _ _
@@ -224,7 +224,7 @@ lemma induction₂ {motive : (ι →₀ M) → Prop} (f : ι →₀ M) (zero : m
 lemma induction_linear {motive : (ι →₀ M) → Prop} (f : ι →₀ M) (zero : motive 0)
     (add : ∀ f g : ι →₀ M, motive f → motive g → motive (f + g))
     (single : ∀ a b, motive (single a b)) : motive f :=
-  induction₂ f zero fun _a _b _f _ _ w => add _ _ w (single _ _)
+  induction₂ f zero fun _a _b _f _ _ w ↦ add _ _ w (single _ _)
 
 section LinearOrder
 
@@ -237,12 +237,12 @@ lemma induction_on_max (f : ι →₀ M) (h0 : p 0)
     (ha : ∀ (a b) (f : ι →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 → p f → p (single a b + f)) :
     p f := by
   suffices ∀ (s) (f : ι →₀ M), f.support = s → p f from this _ _ rfl
-  refine fun s => s.induction_on_max (fun f h => ?_) (fun a s hm hf f hs => ?_)
+  refine fun s ↦ s.induction_on_max (fun f h ↦ ?_) (fun a s hm hf f hs ↦ ?_)
   · rwa [support_eq_empty.1 h]
   · have hs' : (erase a f).support = s := by
-      rw [support_erase, hs, erase_insert (fun ha => (hm a ha).false)]
+      rw [support_erase, hs, erase_insert (fun ha ↦ (hm a ha).false)]
     rw [← single_add_erase a f]
-    refine ha _ _ _ (fun c hc => hm _ <| hs'.symm ▸ hc) ?_ (hf _ hs')
+    refine ha _ _ _ (fun c hc ↦ hm _ <| hs'.symm ▸ hc) ?_ (hf _ hs')
     rw [← mem_support_iff, hs]
     exact mem_insert_self a s
 
@@ -261,12 +261,12 @@ lemma induction_on_max₂ (f : ι →₀ M) (h0 : p 0)
     (ha : ∀ (a b) (f : ι →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 → p f → p (f + single a b)) :
     p f := by
   suffices ∀ (s) (f : ι →₀ M), f.support = s → p f from this _ _ rfl
-  refine fun s => s.induction_on_max (fun f h => ?_) (fun a s hm hf f hs => ?_)
+  refine fun s ↦ s.induction_on_max (fun f h ↦ ?_) (fun a s hm hf f hs ↦ ?_)
   · rwa [support_eq_empty.1 h]
   · have hs' : (erase a f).support = s := by
-      rw [support_erase, hs, erase_insert (fun ha => (hm a ha).false)]
+      rw [support_erase, hs, erase_insert (fun ha ↦ (hm a ha).false)]
     rw [← erase_add_single a f]
-    refine ha _ _ _ (fun c hc => hm _ <| hs'.symm ▸ hc) ?_ (hf _ hs')
+    refine ha _ _ _ (fun c hc ↦ hm _ <| hs'.symm ▸ hc) ?_ (hf _ hs')
     rw [← mem_support_iff, hs]
     exact mem_insert_self a s
 
@@ -294,7 +294,7 @@ instance instNatSMul : SMul ℕ (ι →₀ M) where smul n v := v.mapRange (n �
 lemma nsmul_apply (n : ℕ) (f : ι →₀ M) (x : ι) : (n • f) x = n • f x := rfl
 
 instance instAddMonoid : AddMonoid (ι →₀ M) :=
-  fast_instance% DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
+  fast_instance% DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ ↦ rfl
 
 end AddMonoid
 
@@ -303,7 +303,7 @@ variable [AddCommMonoid M]
 
 instance instAddCommMonoid : AddCommMonoid (ι →₀ M) :=
   fast_instance% DFunLike.coe_injective.addCommMonoid
-    DFunLike.coe coe_zero coe_add (fun _ _ => rfl)
+    DFunLike.coe coe_zero coe_add (fun _ _ ↦ rfl)
 
 lemma single_add_single_eq_single_add_single {k l m n : ι} {u v : M} (hu : u ≠ 0) (hv : v ≠ 0) :
     single k u + single l v = single m u + single n v ↔
@@ -323,7 +323,7 @@ lemma neg_apply [NegZeroClass G] (g : ι →₀ G) (a : ι) : (-g) a = -g a :=
 
 lemma mapRange_neg [NegZeroClass G] [NegZeroClass H] {f : G → H} {hf : f 0 = 0}
     (hf' : ∀ x, f (-x) = -f x) (v : ι →₀ G) : mapRange f hf (-v) = -mapRange f hf v :=
-  ext fun _ => by simp only [hf', neg_apply, mapRange_apply]
+  ext fun _ ↦ by simp only [hf', neg_apply, mapRange_apply]
 
 instance instSub [SubNegZeroMonoid G] : Sub (ι →₀ G) :=
   ⟨zipWith Sub.sub (sub_zero _)⟩
@@ -335,7 +335,7 @@ lemma sub_apply [SubNegZeroMonoid G] (g₁ g₂ : ι →₀ G) (a : ι) : (g₁ 
 lemma mapRange_sub [SubNegZeroMonoid G] [SubNegZeroMonoid H] {f : G → H} {hf : f 0 = 0}
     (hf' : ∀ x y, f (x - y) = f x - f y) (v₁ v₂ : ι →₀ G) :
     mapRange f hf (v₁ - v₂) = mapRange f hf v₁ - mapRange f hf v₂ :=
-  ext fun _ => by simp only [hf', sub_apply, mapRange_apply]
+  ext fun _ ↦ by simp only [hf', sub_apply, mapRange_apply]
 
 section AddGroup
 variable [AddGroup G] {p : ι → Prop} {v v' : ι →₀ G}
@@ -353,11 +353,11 @@ lemma mapRange_sub' [SubtractionMonoid H] [FunLike F G H] [AddMonoidHomClass F G
 /-- Note the general `SMul` instance for `Finsupp` doesn't apply as `ℤ` is not distributive
 unless `F i`'s addition is commutative. -/
 instance instIntSMul : SMul ℤ (ι →₀ G) :=
-  ⟨fun n v => v.mapRange (n • ·) (zsmul_zero _)⟩
+  ⟨fun n v ↦ v.mapRange (n • ·) (zsmul_zero _)⟩
 
 instance instAddGroup : AddGroup (ι →₀ G) :=
   fast_instance% DFunLike.coe_injective.addGroup DFunLike.coe coe_zero coe_add coe_neg coe_sub
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 @[simp]
 lemma support_neg (f : ι →₀ G) : support (-f) = support f :=
@@ -401,6 +401,6 @@ end AddGroup
 
 instance instAddCommGroup [AddCommGroup G] : AddCommGroup (ι →₀ G) :=
   fast_instance%  DFunLike.coe_injective.addCommGroup DFunLike.coe coe_zero coe_add coe_neg coe_sub
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 end Finsupp

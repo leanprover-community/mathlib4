@@ -29,16 +29,16 @@ theorem eigenvalue_mem_ball {μ : K} (hμ : Module.End.HasEigenvalue (Matrix.toL
   · exfalso
     exact hμ Submodule.eq_bot_of_subsingleton
   · obtain ⟨v, h_eg, h_nz⟩ := hμ.exists_hasEigenvector
-    obtain ⟨i, -, h_i⟩ := Finset.exists_mem_eq_sup' Finset.univ_nonempty (fun i => ‖v i‖)
+    obtain ⟨i, -, h_i⟩ := Finset.exists_mem_eq_sup' Finset.univ_nonempty (fun i ↦ ‖v i‖)
     have h_nz : v i ≠ 0 := by
       contrapose! h_nz
       ext j
       rw [Pi.zero_apply, ← norm_le_zero_iff]
-      refine (h_i ▸ Finset.le_sup' (fun i => ‖v i‖) (Finset.mem_univ j)).trans ?_
+      refine (h_i ▸ Finset.le_sup' (fun i ↦ ‖v i‖) (Finset.mem_univ j)).trans ?_
       exact norm_le_zero_iff.mpr h_nz
-    have h_le : ∀ j, ‖v j * (v i)⁻¹‖ ≤ 1 := fun j => by
+    have h_le : ∀ j, ‖v j * (v i)⁻¹‖ ≤ 1 := fun j ↦ by
       rw [norm_mul, norm_inv, mul_inv_le_iff₀ (norm_pos_iff.mpr h_nz), one_mul]
-      exact h_i ▸ Finset.le_sup' (fun i => ‖v i‖) (Finset.mem_univ j)
+      exact h_i ▸ Finset.le_sup' (fun i ↦ ‖v i‖) (Finset.mem_univ j)
     simp_rw [mem_closedBall_iff_norm']
     refine ⟨i, ?_⟩
     calc
@@ -53,7 +53,7 @@ theorem eigenvalue_mem_ball {μ : K} (hμ : Module.End.HasEigenvalue (Matrix.toL
                 rw [Finset.sum_mul]
                 exact (norm_sum_le _ _).trans (le_of_eq (by simp_rw [mul_assoc, norm_mul]))
       _ ≤ ∑ j ∈ Finset.univ.erase i, ‖A i j‖ :=
-                (Finset.sum_le_sum fun j _ => mul_le_of_le_one_right (norm_nonneg _) (h_le j))
+                (Finset.sum_le_sum fun j _ ↦ mul_le_of_le_one_right (norm_nonneg _) (h_le j))
 
 /-- If `A` is a row strictly dominant diagonal matrix, then it's determinant is nonzero. -/
 theorem det_ne_zero_of_sum_row_lt_diag (h : ∀ k, ∑ j ∈ Finset.univ.erase k, ‖A k j‖ < ‖A k k‖) :

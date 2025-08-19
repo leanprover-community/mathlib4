@@ -110,7 +110,7 @@ noncomputable abbrev fieldOfModelField (K : Type*) [Language.ring.Structure K]
   letI := compatibleRingOfRingStructure K
   have exists_inv : ∀ x : K, x ≠ 0 → ∃ y : K, x * y = 1 :=
     existsInv.toProp_of_model
-  letI : Inv K := ⟨fun x => if hx0 : x = 0 then 0 else Classical.choose (exists_inv x hx0)⟩
+  letI : Inv K := ⟨fun x ↦ if hx0 : x = 0 then 0 else Classical.choose (exists_inv x hx0)⟩
   Field.ofMinimalAxioms K
     addAssoc.toProp_of_model
     zeroAdd.toProp_of_model
@@ -118,7 +118,7 @@ noncomputable abbrev fieldOfModelField (K : Type*) [Language.ring.Structure K]
     mulAssoc.toProp_of_model
     mulComm.toProp_of_model
     oneMul.toProp_of_model
-    (fun x hx0 => show x * (dite _ _ _) = _ from
+    (fun x hx0 ↦ show x * (dite _ _ _) = _ from
         (dif_neg hx0).symm ▸ Classical.choose_spec (existsInv.toProp_of_model x hx0))
     (dif_pos rfl)
     leftDistrib.toProp_of_model
@@ -147,7 +147,7 @@ instance [Field K] [CompatibleRing K] : Theory.field.Model K :=
       rw [a.realize_toSentence_iff_toProp (K := K)]
       cases a with
       | existsPairNE => exact exists_pair_ne K
-      | existsInv => exact fun x hx0 => ⟨x⁻¹, mul_inv_cancel₀ hx0⟩
+      | existsInv => exact fun x hx0 ↦ ⟨x⁻¹, mul_inv_cancel₀ hx0⟩
       | addAssoc => exact add_assoc
       | zeroAdd => exact zero_add
       | negAddCancel => exact neg_add_cancel

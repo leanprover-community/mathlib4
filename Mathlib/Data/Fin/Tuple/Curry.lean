@@ -37,14 +37,14 @@ a function from a tuple.
 Note this can be used on raw functions if used. -/
 def uncurry : {n : ℕ} → {p : Fin n → Type u} → {τ : Type u} →
     (f : Function.FromTypes p τ) → ((i : Fin n) → p i) → τ
-  | 0    , _, _, f => fun _    => f
-  | _ + 1, _, _, f => fun args => (f (args 0)).uncurry (args ∘' Fin.succ)
+  | 0    , _, _, f => fun _    ↦ f
+  | _ + 1, _, _, f => fun args ↦ (f (args 0)).uncurry (args ∘' Fin.succ)
 
 /-- Curry all the arguments of `Function.FromTypes p τ` to get a function from a tuple. -/
 def curry : {n : ℕ} → {p : Fin n → Type u} → {τ : Type u} →
     (((i : Fin n) → p i) → τ) → Function.FromTypes p τ
   | 0    , _, _, f => f isEmptyElim
-  | _ + 1, _, _, f => fun a => curry (fun args => f (Fin.cons a args))
+  | _ + 1, _, _, f => fun a ↦ curry (fun args ↦ f (Fin.cons a args))
 
 @[simp]
 theorem uncurry_apply_cons {n : ℕ} {α} {p : Fin n → Type u} {τ : Type u}

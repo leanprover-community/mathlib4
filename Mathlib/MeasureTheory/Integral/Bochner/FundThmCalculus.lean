@@ -32,20 +32,20 @@ if `μ` is a measure that is finite at a filter `l` and
 Since `μ (s i)` is an `ℝ≥0∞` number, we use `μ.real (s i)` in the actual statement.
 
 Often there is a good formula for `μ.real (s i)`, so the formalization can take an optional
-argument `m` with this formula and a proof of `(fun i => μ.real (s i)) =ᶠ[li] m`. Without these
+argument `m` with this formula and a proof of `(fun i ↦ μ.real (s i)) =ᶠ[li] m`. Without these
 arguments, `m i = μ.real (s i)` is used in the output. -/
 theorem Filter.Tendsto.integral_sub_linear_isLittleO_ae
     {μ : Measure X} {l : Filter X} [l.IsMeasurablyGenerated] {f : X → E} {b : E}
     (h : Tendsto f (l ⊓ ae μ) (𝓝 b)) (hfm : StronglyMeasurableAtFilter f l μ)
     (hμ : μ.FiniteAtFilter l) {s : ι → Set X} {li : Filter ι} (hs : Tendsto s li l.smallSets)
-    (m : ι → ℝ := fun i => μ.real (s i))
-    (hsμ : (fun i => μ.real (s i)) =ᶠ[li] m := by rfl) :
-    (fun i => (∫ x in s i, f x ∂μ) - m i • b) =o[li] m := by
+    (m : ι → ℝ := fun i ↦ μ.real (s i))
+    (hsμ : (fun i ↦ μ.real (s i)) =ᶠ[li] m := by rfl) :
+    (fun i ↦ (∫ x in s i, f x ∂μ) - m i • b) =o[li] m := by
   suffices
-      (fun s => (∫ x in s, f x ∂μ) - μ.real s • b) =o[l.smallSets] fun s => μ.real s from
+      (fun s ↦ (∫ x in s, f x ∂μ) - μ.real s • b) =o[l.smallSets] fun s ↦ μ.real s from
     (this.comp_tendsto hs).congr'
-      (hsμ.mono fun a ha => by dsimp only [Function.comp_apply] at ha ⊢; rw [ha]) hsμ
-  refine isLittleO_iff.2 fun ε ε₀ => ?_
+      (hsμ.mono fun a ha ↦ by dsimp only [Function.comp_apply] at ha ⊢; rw [ha]) hsμ
+  refine isLittleO_iff.2 fun ε ε₀ ↦ ?_
   have : ∀ᶠ s in l.smallSets, ∀ᵐ x ∂μ, x ∈ s → f x ∈ closedBall b ε :=
     eventually_smallSets_eventually.2 (h.eventually <| closedBall_mem_nhds _ ε₀)
   filter_upwards [hμ.eventually, (hμ.integrableAtFilter_of_tendsto_ae hfm h).eventually,
@@ -64,15 +64,15 @@ provided that `s i` tends to `(𝓝[t] a).smallSets` along `li`.  Since `μ (s i
 number, we use `μ.real (s i)` in the actual statement.
 
 Often there is a good formula for `μ.real (s i)`, so the formalization can take an optional
-argument `m` with this formula and a proof of `(fun i => μ.real (s i)) =ᶠ[li] m`. Without these
+argument `m` with this formula and a proof of `(fun i ↦ μ.real (s i)) =ᶠ[li] m`. Without these
 arguments, `m i = μ.real (s i)` is used in the output. -/
 theorem ContinuousWithinAt.integral_sub_linear_isLittleO_ae [TopologicalSpace X]
     [OpensMeasurableSpace X] {μ : Measure X}
     [IsLocallyFiniteMeasure μ] {x : X} {t : Set X} {f : X → E} (hx : ContinuousWithinAt f t x)
     (ht : MeasurableSet t) (hfm : StronglyMeasurableAtFilter f (𝓝[t] x) μ) {s : ι → Set X}
-    {li : Filter ι} (hs : Tendsto s li (𝓝[t] x).smallSets) (m : ι → ℝ := fun i => μ.real (s i))
-    (hsμ : (fun i => μ.real (s i)) =ᶠ[li] m := by rfl) :
-    (fun i => (∫ x in s i, f x ∂μ) - m i • f x) =o[li] m :=
+    {li : Filter ι} (hs : Tendsto s li (𝓝[t] x).smallSets) (m : ι → ℝ := fun i ↦ μ.real (s i))
+    (hsμ : (fun i ↦ μ.real (s i)) =ᶠ[li] m := by rfl) :
+    (fun i ↦ (∫ x in s i, f x ∂μ) - m i • f x) =o[li] m :=
   haveI : (𝓝[t] x).IsMeasurablyGenerated := ht.nhdsWithin_isMeasurablyGenerated _
   (hx.mono_left inf_le_left).integral_sub_linear_isLittleO_ae hfm (μ.finiteAt_nhdsWithin x t) hs m
     hsμ
@@ -84,14 +84,14 @@ measure and `f` is an almost everywhere measurable function that is continuous a
 the actual statement.
 
 Often there is a good formula for `μ.real (s i)`, so the formalization can take an optional
-argument `m` with this formula and a proof of `(fun i => μ.real (s i)) =ᶠ[li] m`. Without these
+argument `m` with this formula and a proof of `(fun i ↦ μ.real (s i)) =ᶠ[li] m`. Without these
 arguments, `m i = μ.real (s i)` is used in the output. -/
 theorem ContinuousAt.integral_sub_linear_isLittleO_ae [TopologicalSpace X] [OpensMeasurableSpace X]
     {μ : Measure X} [IsLocallyFiniteMeasure μ] {x : X}
     {f : X → E} (hx : ContinuousAt f x) (hfm : StronglyMeasurableAtFilter f (𝓝 x) μ) {s : ι → Set X}
-    {li : Filter ι} (hs : Tendsto s li (𝓝 x).smallSets) (m : ι → ℝ := fun i => μ.real (s i))
-    (hsμ : (fun i => μ.real (s i)) =ᶠ[li] m := by rfl) :
-    (fun i => (∫ x in s i, f x ∂μ) - m i • f x) =o[li] m :=
+    {li : Filter ι} (hs : Tendsto s li (𝓝 x).smallSets) (m : ι → ℝ := fun i ↦ μ.real (s i))
+    (hsμ : (fun i ↦ μ.real (s i)) =ᶠ[li] m := by rfl) :
+    (fun i ↦ (∫ x in s i, f x ∂μ) - m i • f x) =o[li] m :=
   (hx.mono_left inf_le_left).integral_sub_linear_isLittleO_ae hfm (μ.finiteAt_nhds x) hs m hsμ
 
 /-- Fundamental theorem of calculus for set integrals, `nhdsWithin` version: if `μ` is a locally
@@ -100,14 +100,14 @@ finite measure, `f` is continuous on a measurable set `t`, and `a ∈ t`, then `
 Since `μ (s i)` is an `ℝ≥0∞` number, we use `μ.real (s i)` in the actual statement.
 
 Often there is a good formula for `μ.real (s i)`, so the formalization can take an optional
-argument `m` with this formula and a proof of `(fun i => μ.real (s i)) =ᶠ[li] m`. Without these
+argument `m` with this formula and a proof of `(fun i ↦ μ.real (s i)) =ᶠ[li] m`. Without these
 arguments, `m i = μ.real (s i)` is used in the output. -/
 theorem ContinuousOn.integral_sub_linear_isLittleO_ae [TopologicalSpace X] [OpensMeasurableSpace X]
     [SecondCountableTopologyEither X E] {μ : Measure X}
     [IsLocallyFiniteMeasure μ] {x : X} {t : Set X} {f : X → E} (hft : ContinuousOn f t) (hx : x ∈ t)
     (ht : MeasurableSet t) {s : ι → Set X} {li : Filter ι} (hs : Tendsto s li (𝓝[t] x).smallSets)
-    (m : ι → ℝ := fun i => μ.real (s i))
-    (hsμ : (fun i => μ.real (s i)) =ᶠ[li] m := by rfl) :
-    (fun i => (∫ x in s i, f x ∂μ) - m i • f x) =o[li] m :=
+    (m : ι → ℝ := fun i ↦ μ.real (s i))
+    (hsμ : (fun i ↦ μ.real (s i)) =ᶠ[li] m := by rfl) :
+    (fun i ↦ (∫ x in s i, f x ∂μ) - m i • f x) =o[li] m :=
   (hft x hx).integral_sub_linear_isLittleO_ae ht
     ⟨t, self_mem_nhdsWithin, hft.aestronglyMeasurable ht⟩ hs m hsμ

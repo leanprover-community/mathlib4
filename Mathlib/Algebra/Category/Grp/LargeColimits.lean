@@ -32,7 +32,7 @@ cocone of `F`.
 -/
 lemma isColimit_iff_bijective_desc [DecidableEq J] :
      Nonempty (IsColimit c) ↔ Function.Bijective (Quot.desc F c) := by
-  refine ⟨fun ⟨hc⟩ => ?_, fun h ↦ Nonempty.intro (isColimit_of_bijective_desc F c h)⟩
+  refine ⟨fun ⟨hc⟩ ↦ ?_, fun h ↦ Nonempty.intro (isColimit_of_bijective_desc F c h)⟩
   change Function.Bijective (Quot.desc F c).toIntLinearMap
   rw [← CharacterModule.dual_bijective_iff_bijective]
   refine ⟨fun χ ψ eq ↦ ?_, fun χ ↦ ?_⟩

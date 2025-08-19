@@ -58,11 +58,11 @@ theorem Definable.map_expansion {L' : FirstOrder.Language} [L'.Structure M] (h :
 theorem definable_iff_exists_formula_sum :
     A.Definable L s ↔ ∃ φ : L.Formula (A ⊕ α), s = {v | φ.Realize (Sum.elim (↑) v)} := by
   rw [Definable, Equiv.exists_congr_left (BoundedFormula.constantsVarsEquiv)]
-  refine exists_congr (fun φ => iff_iff_eq.2 (congr_arg (s = ·) ?_))
+  refine exists_congr (fun φ ↦ iff_iff_eq.2 (congr_arg (s = ·) ?_))
   ext
   simp only [BoundedFormula.constantsVarsEquiv, constantsOn,
     BoundedFormula.mapTermRelEquiv_symm_apply, mem_setOf_eq, Formula.Realize]
-  refine BoundedFormula.realize_mapTermRel_id ?_ (fun _ _ _ => rfl)
+  refine BoundedFormula.realize_mapTermRel_id ?_ (fun _ _ _ ↦ rfl)
   intros
   simp only [Term.constantsVarsEquivLeft_symm_apply, Term.realize_varsToConstants,
     coe_con, Term.realize_relabel]
@@ -115,14 +115,14 @@ theorem Definable.union {f g : Set (α → M)} (hf : A.Definable L f) (hg : A.De
 theorem definable_finset_inf {ι : Type*} {f : ι → Set (α → M)} (hf : ∀ i, A.Definable L (f i))
     (s : Finset ι) : A.Definable L (s.inf f) := by
   classical
-    refine Finset.induction definable_univ (fun i s _ h => ?_) s
+    refine Finset.induction definable_univ (fun i s _ h ↦ ?_) s
     rw [Finset.inf_insert]
     exact (hf i).inter h
 
 theorem definable_finset_sup {ι : Type*} {f : ι → Set (α → M)} (hf : ∀ i, A.Definable L (f i))
     (s : Finset ι) : A.Definable L (s.sup f) := by
   classical
-    refine Finset.induction definable_empty (fun i s _ h => ?_) s
+    refine Finset.induction definable_empty (fun i s _ h ↦ ?_) s
     rw [Finset.sup_insert]
     exact (hf i).union h
 
@@ -152,14 +152,14 @@ theorem Definable.sdiff {s t : Set (α → M)} (hs : A.Definable L s) (ht : A.De
     A.Definable L (s ⇨ t) := by rw [himp_eq]; exact ht.union hs.compl
 
 theorem Definable.preimage_comp (f : α → β) {s : Set (α → M)} (h : A.Definable L s) :
-    A.Definable L ((fun g : β → M => g ∘ f) ⁻¹' s) := by
+    A.Definable L ((fun g : β → M ↦ g ∘ f) ⁻¹' s) := by
   obtain ⟨φ, rfl⟩ := h
   refine ⟨φ.relabel f, ?_⟩
   ext
   simp only [Set.preimage_setOf_eq, mem_setOf_eq, Formula.realize_relabel]
 
 theorem Definable.image_comp_equiv {s : Set (β → M)} (h : A.Definable L s) (f : α ≃ β) :
-    A.Definable L ((fun g : β → M => g ∘ f) '' s) := by
+    A.Definable L ((fun g : β → M ↦ g ∘ f) '' s) := by
   refine (congr rfl ?_).mp (h.preimage_comp f.symm)
   rw [image_eq_preimage_of_inverse]
   · intro i
@@ -177,8 +177,8 @@ theorem definable_iff_finitely_definable :
   · simp only [definable_iff_exists_formula_sum]
     rintro ⟨φ, rfl⟩
     let A0 := (φ.freeVarFinset.toLeft).image Subtype.val
-    refine ⟨A0, by simp [A0], (φ.restrictFreeVar <| fun x => Sum.casesOn x.1
-        (fun x hx => Sum.inl ⟨x, by simp [A0, hx]⟩) (fun x _ => Sum.inr x) x.2), ?_⟩
+    refine ⟨A0, by simp [A0], (φ.restrictFreeVar <| fun x ↦ Sum.casesOn x.1
+        (fun x hx ↦ Sum.inl ⟨x, by simp [A0, hx]⟩) (fun x _ ↦ Sum.inr x) x.2), ?_⟩
     ext
     simp only [Formula.Realize, mem_setOf_eq, Finset.coe_sort_coe]
     exact iff_comm.1 <| BoundedFormula.realize_restrictFreeVar _ (by simp)
@@ -187,7 +187,7 @@ theorem definable_iff_finitely_definable :
 
 /-- This lemma is only intended as a helper for `Definable.image_comp`. -/
 theorem Definable.image_comp_sumInl_fin (m : ℕ) {s : Set (Sum α (Fin m) → M)}
-    (h : A.Definable L s) : A.Definable L ((fun g : Sum α (Fin m) → M => g ∘ Sum.inl) '' s) := by
+    (h : A.Definable L s) : A.Definable L ((fun g : Sum α (Fin m) → M ↦ g ∘ Sum.inl) '' s) := by
   obtain ⟨φ, rfl⟩ := h
   refine ⟨(BoundedFormula.relabel id φ).exs, ?_⟩
   ext x
@@ -205,22 +205,22 @@ Definable.image_comp_sum_inl_fin := Definable.image_comp_sumInl_fin
 
 /-- Shows that definability is closed under finite projections. -/
 theorem Definable.image_comp_embedding {s : Set (β → M)} (h : A.Definable L s) (f : α ↪ β)
-    [Finite β] : A.Definable L ((fun g : β → M => g ∘ f) '' s) := by
+    [Finite β] : A.Definable L ((fun g : β → M ↦ g ∘ f) '' s) := by
   classical
     cases nonempty_fintype β
     refine
-      (congr rfl (ext fun x => ?_)).mp
+      (congr rfl (ext fun x ↦ ?_)).mp
         (((h.image_comp_equiv (Equiv.Set.sumCompl (range f))).image_comp_equiv
               (Equiv.sumCongr (Equiv.ofInjective f f.injective)
                 (Fintype.equivFin (↥(range f)ᶜ)).symm)).image_comp_sumInl_fin
           _)
     simp only [mem_image, exists_exists_and_eq_and]
-    refine exists_congr fun y => and_congr_right fun _ => Eq.congr_left (funext fun a => ?_)
+    refine exists_congr fun y ↦ and_congr_right fun _ ↦ Eq.congr_left (funext fun a ↦ ?_)
     simp
 
 /-- Shows that definability is closed under finite projections. -/
 theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α → β) [Finite α]
-    [Finite β] : A.Definable L ((fun g : β → M => g ∘ f) '' s) := by
+    [Finite β] : A.Definable L ((fun g : β → M ↦ g ∘ f) '' s) := by
   classical
     cases nonempty_fintype α
     cases nonempty_fintype β
@@ -234,11 +234,11 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
       A.Definable L { x : α → M | ∀ a, x a = x (rangeSplitting f (rangeFactorization f a)) } := by
       have h' : ∀ a,
         A.Definable L { x : α → M | x a = x (rangeSplitting f (rangeFactorization f a)) } := by
-          refine fun a => ⟨(var a).equal (var (rangeSplitting f (rangeFactorization f a))), ext ?_⟩
+          refine fun a ↦ ⟨(var a).equal (var (rangeSplitting f (rangeFactorization f a))), ext ?_⟩
           simp
       refine (congr rfl (ext ?_)).mp (definable_finset_biInter h' Finset.univ)
       simp
-    refine (congr rfl (ext fun x => ?_)).mp (h.inter h')
+    refine (congr rfl (ext fun x ↦ ?_)).mp (h.inter h')
     simp only [mem_inter_iff, mem_preimage, mem_image, exists_exists_and_eq_and,
       mem_setOf_eq]
     constructor
@@ -248,7 +248,7 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
       rw [hx a, ← Function.comp_apply (f := x), ← hy]
       simp
     · rintro ⟨y, ys, rfl⟩
-      refine ⟨⟨y, ys, ?_⟩, fun a => ?_⟩
+      refine ⟨⟨y, ys, ?_⟩, fun a ↦ ?_⟩
       · ext
         simp [Set.apply_rangeSplitting f]
       · rw [Function.comp_apply, Function.comp_apply, apply_rangeSplitting f,
@@ -295,16 +295,16 @@ instance instBot : Bot (L.DefinableSet A α) :=
   ⟨⟨⊥, definable_empty⟩⟩
 
 instance instSup : Max (L.DefinableSet A α) :=
-  ⟨fun s t => ⟨s ∪ t, s.2.union t.2⟩⟩
+  ⟨fun s t ↦ ⟨s ∪ t, s.2.union t.2⟩⟩
 
 instance instInf : Min (L.DefinableSet A α) :=
-  ⟨fun s t => ⟨s ∩ t, s.2.inter t.2⟩⟩
+  ⟨fun s t ↦ ⟨s ∩ t, s.2.inter t.2⟩⟩
 
 instance instHasCompl : HasCompl (L.DefinableSet A α) :=
-  ⟨fun s => ⟨sᶜ, s.2.compl⟩⟩
+  ⟨fun s ↦ ⟨sᶜ, s.2.compl⟩⟩
 
 instance instSDiff : SDiff (L.DefinableSet A α) :=
-  ⟨fun s t => ⟨s \ t, s.2.sdiff t.2⟩⟩
+  ⟨fun s t ↦ ⟨s \ t, s.2.sdiff t.2⟩⟩
 
 -- Why does it complain that `s ⇨ t` is noncomputable?
 noncomputable instance instHImp : HImp (L.DefinableSet A α) where

@@ -68,7 +68,7 @@ instance : Zero (RegularExpression α) :=
   ⟨zero⟩
 
 instance : Pow (RegularExpression α) ℕ :=
-  ⟨fun n r => npowRec r n⟩
+  ⟨fun n r ↦ npowRec r n⟩
 
 @[simp]
 theorem zero_def : (zero : RegularExpression α) = 0 :=
@@ -256,8 +256,8 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
 theorem star_rmatch_iff (P : RegularExpression α) :
     ∀ x : List α, (star P).rmatch x ↔ ∃ S : List (List α), x
           = S.flatten ∧ ∀ t ∈ S, t ≠ [] ∧ P.rmatch t :=
-  fun x => by
-    have IH := fun t (_h : List.length t < List.length x) => star_rmatch_iff P t
+  fun x ↦ by
+    have IH := fun t (_h : List.length t < List.length x) ↦ star_rmatch_iff P t
     clear star_rmatch_iff
     constructor
     · rcases x with - | ⟨a, x⟩

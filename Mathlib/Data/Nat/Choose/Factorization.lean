@@ -49,7 +49,7 @@ theorem factorization_factorial {p : ℕ} (hp : p.Prime) :
           (lt_pow_of_log_lt hp.one_lt hb)
       _ = ∑ i ∈ Ico 1 b, (n / p ^ i + if p ^ i ∣ n + 1 then 1 else 0) := by
         simp [Nat.add_comm, sum_add_distrib, sum_boole]
-      _ = ∑ i ∈ Ico 1 b, (n + 1) / p ^ i := Finset.sum_congr rfl fun _ _ => Nat.succ_div.symm
+      _ = ∑ i ∈ Ico 1 b, (n + 1) / p ^ i := Finset.sum_congr rfl fun _ _ ↦ Nat.succ_div.symm
 
 /-- For a prime number `p`, taking `(p - 1)` times the factorization of `p` in `n!` equals `n` minus
 the sum of base `p` digits of `n`. -/
@@ -160,7 +160,7 @@ theorem factorization_choose_prime_pow_add_factorization (hp : p.Prime) (hkn : k
       hk0.bot_lt (lt_of_le_of_lt hkn <| Nat.pow_lt_pow_succ hp.one_lt), log_pow hp.one_lt,
       ← card_union_of_disjoint hdisj, filter_union_right]
     have filter_le_Ico := (Ico 1 n.succ).card_filter_le
-      fun x => p ^ x ≤ k % p ^ x + (p ^ n - k) % p ^ x ∨ p ^ x ∣ k
+      fun x ↦ p ^ x ≤ k % p ^ x + (p ^ n - k) % p ^ x ∨ p ^ x ∣ k
     rwa [card_Ico 1 n.succ] at filter_le_Ico
   · nth_rewrite 1 [← factorization_pow_self (n:=n) hp]
     exact factorization_le_factorization_choose_add hkn hk0
@@ -183,7 +183,7 @@ theorem factorization_choose_le_log : (choose n k).factorization p ≤ log p n :
   · simp [h]
   have hp : p.Prime := Not.imp_symm (choose n k).factorization_eq_zero_of_non_prime h
   have hkn : k ≤ n := by
-    refine le_of_not_gt fun hnk => h ?_
+    refine le_of_not_gt fun hnk ↦ h ?_
     simp [choose_eq_zero_of_lt hnk]
   rw [factorization_choose hp hkn (Nat.lt_add_one _)]
   exact (card_filter_le ..).trans_eq (Nat.card_Ico _ _)

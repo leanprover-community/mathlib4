@@ -58,10 +58,10 @@ The continuous functions from `α` to `β` are the same as the plain functions w
 -/
 @[simps]
 def equivFnOfDiscrete : C(α, β) ≃ (α → β) :=
-  ⟨fun f => f,
-    fun f => ⟨f, continuous_of_discreteTopology⟩,
-    fun _ => by ext; rfl,
-    fun _ => by ext; rfl⟩
+  ⟨fun f ↦ f,
+    fun f ↦ ⟨f, continuous_of_discreteTopology⟩,
+    fun _ ↦ by ext; rfl,
+    fun _ ↦ by ext; rfl⟩
 
 @[simp] lemma coe_equivFnOfDiscrete : ⇑equivFnOfDiscrete = (DFunLike.coe : C(α, β) → α → β) := rfl
 
@@ -81,7 +81,7 @@ theorem coe_id : ⇑(ContinuousMap.id α) = id :=
 
 /-- The constant map as a continuous map. -/
 def const (b : β) : C(α, β) where
-  toFun := fun _ : α => b
+  toFun := fun _ : α ↦ b
 
 @[simp]
 theorem coe_const (b : β) : ⇑(const α b) = Function.const α b :=
@@ -124,33 +124,33 @@ theorem comp_assoc (f : C(γ, δ)) (g : C(β, γ)) (h : C(α, β)) :
 
 @[simp]
 theorem id_comp (f : C(α, β)) : (ContinuousMap.id _).comp f = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem comp_id (f : C(α, β)) : f.comp (ContinuousMap.id _) = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem const_comp (c : γ) (f : C(α, β)) : (const β c).comp f = const α c :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem comp_const (f : C(β, γ)) (b : β) : f.comp (const α b) = const α (f b) :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem cancel_right {f₁ f₂ : C(β, γ)} {g : C(α, β)} (hg : Surjective g) :
     f₁.comp g = f₂.comp g ↔ f₁ = f₂ :=
-  ⟨fun h => ext <| hg.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (ContinuousMap.comp · g)⟩
+  ⟨fun h ↦ ext <| hg.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (ContinuousMap.comp · g)⟩
 
 @[simp]
 theorem cancel_left {f : C(β, γ)} {g₁ g₂ : C(α, β)} (hf : Injective f) :
     f.comp g₁ = f.comp g₂ ↔ g₁ = g₂ :=
-  ⟨fun h => ext fun a => hf <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+  ⟨fun h ↦ ext fun a ↦ hf <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 instance [Nonempty α] [Nontrivial β] : Nontrivial C(α, β) :=
   ⟨let ⟨b₁, b₂, hb⟩ := exists_pair_ne β
-  ⟨const _ b₁, const _ b₂, fun h => hb <| DFunLike.congr_fun h <| Classical.arbitrary α⟩⟩
+  ⟨const _ b₁, const _ b₂, fun h ↦ hb <| DFunLike.congr_fun h <| Classical.arbitrary α⟩⟩
 
 /-- The bijection `C(X₁, Y₁) ≃ C(X₂, Y₂)` induced by homeomorphisms
 `e : X₁ ≃ₜ X₂` and `e' : Y₁ ≃ₜ Y₂`. -/
@@ -238,7 +238,7 @@ def pi (f : ∀ i, C(A, X i)) : C(A, ∀ i, X i) where
   toFun (a : A) (i : I) := f i a
 
 @[simp]
-theorem pi_eval (f : ∀ i, C(A, X i)) (a : A) : (pi f) a = fun i : I => (f i) a :=
+theorem pi_eval (f : ∀ i, C(A, X i)) (a : A) : (pi f) a = fun i : I ↦ (f i) a :=
   rfl
 
 /-- Evaluation at point as a bundled continuous map. -/
@@ -385,9 +385,9 @@ variable (A : Set (Set α)) (F : ∀ s ∈ A, C(s, β))
 of sets in `α` which contain a neighbourhood of each point in `α` and (2) the functions `F s` agree
 pairwise on intersections, can be glued to construct a continuous map in `C(α, β)`. -/
 noncomputable def liftCover' : C(α, β) :=
-  let F : ∀ i : A, C(i, β) := fun i => F i i.prop
-  liftCover ((↑) : A → Set α) F (fun i j => hF i i.prop j j.prop)
-    fun x => let ⟨s, hs, hsx⟩ := hA x; ⟨⟨s, hs⟩, hsx⟩
+  let F : ∀ i : A, C(i, β) := fun i ↦ F i i.prop
+  liftCover ((↑) : A → Set α) F (fun i j ↦ hF i i.prop j j.prop)
+    fun x ↦ let ⟨s, hs, hsx⟩ := hA x; ⟨⟨s, hs⟩, hsx⟩
 
 variable {A F hF hA}
 

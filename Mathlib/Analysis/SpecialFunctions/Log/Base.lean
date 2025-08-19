@@ -61,7 +61,7 @@ lemma logb_self_eq_one (hb : 1 < b) : logb b b = 1 :=
   div_self (log_pos hb).ne'
 
 lemma logb_self_eq_one_iff : logb b b = 1 ↔ b ≠ 0 ∧ b ≠ 1 ∧ b ≠ -1 :=
-  Iff.trans ⟨fun h h' => by simp [logb, h'] at h, div_self⟩ log_ne_zero
+  Iff.trans ⟨fun h h' ↦ by simp [logb, h'] at h, div_self⟩ log_ne_zero
 
 @[simp]
 theorem logb_abs_base (b x : ℝ) : logb |b| x = logb b x := by rw [logb, logb, log_abs]
@@ -152,10 +152,10 @@ theorem logb_eq_iff_rpow_eq (hy : 0 < y) : logb b y = x ↔ b ^ x = y := by
   · exact rpow_logb b_pos b_ne_one hy
   · exact logb_rpow b_pos b_ne_one
 
-theorem surjOn_logb : SurjOn (logb b) (Ioi 0) univ := fun x _ =>
+theorem surjOn_logb : SurjOn (logb b) (Ioi 0) univ := fun x _ ↦
   ⟨b ^ x, rpow_pos_of_pos b_pos x, logb_rpow b_pos b_ne_one⟩
 
-theorem logb_surjective : Surjective (logb b) := fun x => ⟨b ^ x, logb_rpow b_pos b_ne_one⟩
+theorem logb_surjective : Surjective (logb b) := fun x ↦ ⟨b ^ x, logb_rpow b_pos b_ne_one⟩
 
 @[simp]
 theorem range_logb : range (logb b) = univ :=
@@ -243,7 +243,7 @@ theorem logb_nonpos_iff' (hx : 0 ≤ x) : logb b x ≤ 0 ↔ x ≤ 1 := by
 theorem logb_nonpos (hx : 0 ≤ x) (h'x : x ≤ 1) : logb b x ≤ 0 :=
   (logb_nonpos_iff' hb hx).2 h'x
 
-theorem strictMonoOn_logb : StrictMonoOn (logb b) (Set.Ioi 0) := fun _ hx _ _ hxy =>
+theorem strictMonoOn_logb : StrictMonoOn (logb b) (Set.Ioi 0) := fun _ hx _ _ hxy ↦
   logb_lt_logb hb hx hxy
 
 theorem strictAntiOn_logb : StrictAntiOn (logb b) (Set.Iio 0) := by
@@ -324,7 +324,7 @@ theorem logb_nonneg_of_base_lt_one (hx : 0 < x) (hx' : x ≤ 1) : 0 ≤ logb b x
 theorem logb_nonpos_iff_of_base_lt_one (hx : 0 < x) : logb b x ≤ 0 ↔ 1 ≤ x := by
   rw [← not_lt, logb_pos_iff_of_base_lt_one b_pos b_lt_one hx, not_lt]
 
-theorem strictAntiOn_logb_of_base_lt_one : StrictAntiOn (logb b) (Set.Ioi 0) := fun _ hx _ _ hxy =>
+theorem strictAntiOn_logb_of_base_lt_one : StrictAntiOn (logb b) (Set.Ioi 0) := fun _ hx _ _ hxy ↦
   logb_lt_logb_of_base_lt_one b_pos b_lt_one hx hxy
 
 theorem strictMonoOn_logb_of_base_lt_one : StrictMonoOn (logb b) (Set.Iio 0) := by
@@ -473,12 +473,12 @@ theorem continuousOn_logb : ContinuousOn (logb b) {0}ᶜ := continuousOn_log.div
 
 /-- The real logarithm base b is continuous as a function from nonzero reals. -/
 @[fun_prop]
-theorem continuous_logb : Continuous fun x : { x : ℝ // x ≠ 0 } => logb b x :=
+theorem continuous_logb : Continuous fun x : { x : ℝ // x ≠ 0 } ↦ logb b x :=
   continuous_log.div_const _
 
 /-- The real logarithm base b is continuous as a function from positive reals. -/
 @[fun_prop]
-theorem continuous_logb' : Continuous fun x : { x : ℝ // 0 < x } => logb b x :=
+theorem continuous_logb' : Continuous fun x : { x : ℝ // 0 < x } ↦ logb b x :=
   continuous_log'.div_const _
 
 theorem continuousAt_logb (hx : x ≠ 0) : ContinuousAt (logb b) x :=
@@ -507,26 +507,26 @@ protected theorem _root_.Finsupp.logb_prod {α β : Type*} [Zero β] (f : α →
   logb_prod _ _ fun _x hx h₀ ↦ Finsupp.mem_support_iff.1 hx <| hg _ h₀
 
 theorem logb_nat_eq_sum_factorization (n : ℕ) :
-    logb b n = n.factorization.sum fun p t => t * logb b p := by
+    logb b n = n.factorization.sum fun p t ↦ t * logb b p := by
   simp only [logb, mul_div_assoc', log_nat_eq_sum_factorization n, Finsupp.sum, Finset.sum_div]
 
 theorem tendsto_pow_logb_div_mul_add_atTop (a c : ℝ) (n : ℕ) (ha : a ≠ 0) :
-    Tendsto (fun x => logb b x ^ n / (a * x + c)) atTop (𝓝 0) := by
+    Tendsto (fun x ↦ logb b x ^ n / (a * x + c)) atTop (𝓝 0) := by
   cases eq_or_ne (log b) 0 with
   | inl h => simpa [logb, h] using ((tendsto_mul_add_inv_atTop_nhds_zero _ _ ha).const_mul _)
   | inr h => apply (tendsto_pow_log_div_mul_add_atTop (a * (log b) ^ n) (c * (log b) ^ n) n
                 (by positivity)).congr fun x ↦ by field_simp [logb]; ring
 
-theorem isLittleO_pow_logb_id_atTop {n : ℕ} : (fun x => logb b x ^ n) =o[atTop] id := by
+theorem isLittleO_pow_logb_id_atTop {n : ℕ} : (fun x ↦ logb b x ^ n) =o[atTop] id := by
   rw [Asymptotics.isLittleO_iff_tendsto']
   · simpa using tendsto_pow_logb_div_mul_add_atTop 1 0 n one_ne_zero
   · filter_upwards [eventually_ne_atTop (0 : ℝ)] with x h₁ h₂ using (h₁ h₂).elim
 
 theorem isLittleO_logb_id_atTop : logb b =o[atTop] id :=
-  isLittleO_pow_logb_id_atTop.congr_left fun _ => pow_one _
+  isLittleO_pow_logb_id_atTop.congr_left fun _ ↦ pow_one _
 
 theorem isLittleO_const_logb_atTop {c : ℝ} (hb : b ≠ -1 ∧ b ≠ 0 ∧ b ≠ 1) :
-    (fun _ => c) =o[atTop] logb b := by
+    (fun _ ↦ c) =o[atTop] logb b := by
   rw [Asymptotics.isLittleO_const_left, or_iff_not_imp_left]
   intro hc
   exact tendsto_abs_logb_atTop hb
@@ -542,28 +542,28 @@ variable {b : ℝ}
 
 theorem Filter.Tendsto.logb {f : α → ℝ} {l : Filter α} {x : ℝ}
     (h : Tendsto f l (𝓝 x)) (hx : x ≠ 0) :
-    Tendsto (fun y => logb b (f y)) l (𝓝 (logb b x)) :=
+    Tendsto (fun y ↦ logb b (f y)) l (𝓝 (logb b x)) :=
   (continuousAt_logb hx).tendsto.comp h
 
 variable [TopologicalSpace α] {f : α → ℝ} {s : Set α} {a : α}
 
 @[fun_prop]
 theorem Continuous.logb (hf : Continuous f) (h₀ : ∀ x, f x ≠ 0) :
-    Continuous fun x => logb b (f x) :=
+    Continuous fun x ↦ logb b (f x) :=
   continuousOn_logb.comp_continuous hf h₀
 
 @[fun_prop]
 nonrec theorem ContinuousAt.logb (hf : ContinuousAt f a) (h₀ : f a ≠ 0) :
-    ContinuousAt (fun x => logb b (f x)) a :=
+    ContinuousAt (fun x ↦ logb b (f x)) a :=
   hf.logb h₀
 
 nonrec theorem ContinuousWithinAt.logb (hf : ContinuousWithinAt f s a) (h₀ : f a ≠ 0) :
-    ContinuousWithinAt (fun x => logb b (f x)) s a :=
+    ContinuousWithinAt (fun x ↦ logb b (f x)) s a :=
   hf.logb h₀
 
 @[fun_prop]
 theorem ContinuousOn.logb (hf : ContinuousOn f s) (h₀ : ∀ x ∈ s, f x ≠ 0) :
-    ContinuousOn (fun x => logb b (f x)) s := fun x hx => (hf x hx).logb (h₀ x hx)
+    ContinuousOn (fun x ↦ logb b (f x)) s := fun x hx ↦ (hf x hx).logb (h₀ x hx)
 
 end Continuity
 
@@ -576,11 +576,11 @@ namespace Real
 variable {b : ℝ}
 
 theorem tendsto_logb_comp_add_sub_logb (y : ℝ) :
-    Tendsto (fun x : ℝ => logb b (x + y) - logb b x) atTop (𝓝 0) := by
+    Tendsto (fun x : ℝ ↦ logb b (x + y) - logb b x) atTop (𝓝 0) := by
   simpa [sub_div] using (tendsto_log_comp_add_sub_log y).div_const (log b)
 
 theorem tendsto_logb_nat_add_one_sub_logb :
-    Tendsto (fun k : ℕ => logb b (k + 1) - logb b k) atTop (𝓝 0) :=
+    Tendsto (fun k : ℕ ↦ logb b (k + 1) - logb b k) atTop (𝓝 0) :=
   (tendsto_logb_comp_add_sub_logb 1).comp tendsto_natCast_atTop_atTop
 
 end Real
@@ -608,6 +608,6 @@ lemma Real.induction_Ico_mul {P : ℝ → Prop} (x₀ r : ℝ) (hr : 1 < r) (hx�
   induction n with
   | zero => simpa using base
   | succ n ih =>
-    exact fun x hx => (Ico_subset_Ico_union_Ico hx).elim (ih x) (step (n + 1) (by simp) ih _)
+    exact fun x hx ↦ (Ico_subset_Ico_union_Ico hx).elim (ih x) (step (n + 1) (by simp) ih _)
 
 end Induction

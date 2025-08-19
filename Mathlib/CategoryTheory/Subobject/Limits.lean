@@ -63,7 +63,7 @@ theorem equalizerSubobject_factors {W : C} (h : W ⟶ X) (w : h ≫ f = h ≫ g)
 
 theorem equalizerSubobject_factors_iff {W : C} (h : W ⟶ X) :
     (equalizerSubobject f g).Factors h ↔ h ≫ f = h ≫ g :=
-  ⟨fun w => by
+  ⟨fun w ↦ by
     rw [← Subobject.factorThru_arrow _ _ w, Category.assoc, equalizerSubobject_arrow_comp,
       Category.assoc],
     equalizerSubobject_factors f g h⟩
@@ -104,7 +104,7 @@ theorem kernelSubobject_factors {W : C} (h : W ⟶ X) (w : h ≫ f = 0) :
 
 theorem kernelSubobject_factors_iff {W : C} (h : W ⟶ X) :
     (kernelSubobject f).Factors h ↔ h ≫ f = 0 :=
-  ⟨fun w => by
+  ⟨fun w ↦ by
     rw [← Subobject.factorThru_arrow _ _ w, Category.assoc, kernelSubobject_arrow_comp,
       comp_zero],
     kernelSubobject_factors f h⟩
@@ -212,7 +212,7 @@ of `X`. -/
 @[simps]
 def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op X))ᵒᵈ where
   toFun :=
-    Subobject.lift (fun _ f _ => Subobject.mk (cokernel.π f).op)
+    Subobject.lift (fun _ f _ ↦ Subobject.mk (cokernel.π f).op)
       (by
         rintro A B f g hf hg i rfl
         refine Subobject.mk_eq_mk_of_comm _ _ (Iso.op ?_) (Quiver.Hom.unop_inj ?_)
@@ -234,7 +234,7 @@ def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op 
 @[simps]
 def kernelOrderHom [HasKernels C] (X : C) : (Subobject (op X))ᵒᵈ →o Subobject X where
   toFun :=
-    Subobject.lift (fun _ f _ => Subobject.mk (kernel.ι f.unop))
+    Subobject.lift (fun _ f _ ↦ Subobject.mk (kernel.ι f.unop))
       (by
         rintro A B f g hf hg i rfl
         refine Subobject.mk_eq_mk_of_comm _ _ ?_ ?_

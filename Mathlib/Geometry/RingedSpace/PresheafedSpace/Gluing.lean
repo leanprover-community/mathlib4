@@ -116,7 +116,7 @@ local notation "π₂⁻¹ " i ", " j ", " k =>
 
 /-- The glue data of topological spaces associated to a family of glue data of PresheafedSpaces. -/
 abbrev toTopGlueData : TopCat.GlueData :=
-  { f_open := fun i j => (D.f_open i j).base_open
+  { f_open := fun i j ↦ (D.f_open i j).base_open
     toGlueData := 𝖣.mapGlueData (forget C) }
 
 theorem ι_isOpenEmbedding [HasLimits C] (i : D.J) : IsOpenEmbedding (𝖣.ι i).base := by
@@ -181,7 +181,7 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
     dsimp at this
     rw [this, Set.image_comp, Set.image_comp, Set.preimage_image_eq]
     swap
-    · refine Function.HasLeftInverse.injective ⟨(D.t i k).base, fun x => ?_⟩
+    · refine Function.HasLeftInverse.injective ⟨(D.t i k).base, fun x ↦ ?_⟩
       rw [← ConcreteCategory.comp_apply, ← comp_base, D.t_inv, id_base, ConcreteCategory.id_apply]
     refine congr_arg (_ '' ·) ?_
     refine congr_fun ?_ _
@@ -333,8 +333,8 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
   limit.lift (D.diagramOverOpen U)
     { pt := (D.U i).presheaf.obj (op U)
       π :=
-        { app := fun j => D.ιInvAppπApp U (unop j)
-          naturality := fun {X Y} f' => by
+        { app := fun j ↦ D.ιInvAppπApp U (unop j)
+          naturality := fun {X Y} f' ↦ by
             induction X with | op X => ?_
             induction Y with | op Y => ?_
             let f : Y ⟶ X := f'.unop; have : f' = f.op := rfl; clear_value f; subst this
@@ -385,7 +385,7 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
   -- Porting note: I don't know what the magic was in Lean3 proof, it just skipped the proof of `eq`
   · congr; ext1; change _ = _ ⁻¹' (_ '' _); ext1 x
     simp only [SetLike.mem_coe, unop_op, Set.mem_preimage, Set.mem_image]
-    refine ⟨fun h => ⟨_, h, rfl⟩, ?_⟩
+    refine ⟨fun h ↦ ⟨_, h, rfl⟩, ?_⟩
     rintro ⟨y, h1, h2⟩
     convert h1 using 1
     delta ι Multicoequalizer.π at h2
@@ -484,7 +484,7 @@ Vᵢⱼ ⟶ Uᵢ
  Uⱼ ⟶ X
 -/
 def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
-  PullbackCone.isLimitAux' _ fun s => by
+  PullbackCone.isLimitAux' _ fun s ↦ by
     refine ⟨?_, ?_, ?_, ?_⟩
     · refine PresheafedSpace.IsOpenImmersion.lift (D.f i j) s.fst ?_
       erw [← D.toTopGlueData.preimage_range j i]

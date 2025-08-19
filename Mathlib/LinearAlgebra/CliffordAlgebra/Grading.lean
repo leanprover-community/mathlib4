@@ -63,10 +63,10 @@ instance evenOdd.gradedMonoid : SetLike.GradedMonoid (evenOdd Q) where
 /-- A version of `CliffordAlgebra.ι` that maps directly into the graded structure. This is
 primarily an auxiliary construction used to provide `CliffordAlgebra.gradedAlgebra`. -/
 protected def GradedAlgebra.ι : M →ₗ[R] ⨁ i : ZMod 2, evenOdd Q i :=
-  DirectSum.lof R (ZMod 2) (fun i => ↥(evenOdd Q i)) 1 ∘ₗ (ι Q).codRestrict _ (ι_mem_evenOdd_one Q)
+  DirectSum.lof R (ZMod 2) (fun i ↦ ↥(evenOdd Q i)) 1 ∘ₗ (ι Q).codRestrict _ (ι_mem_evenOdd_one Q)
 
 theorem GradedAlgebra.ι_apply (m : M) :
-    GradedAlgebra.ι Q m = DirectSum.of (fun i => ↥(evenOdd Q i)) 1 ⟨ι Q m, ι_mem_evenOdd_one Q m⟩ :=
+    GradedAlgebra.ι Q m = DirectSum.of (fun i ↦ ↥(evenOdd Q i)) 1 ⟨ι Q m, ι_mem_evenOdd_one Q m⟩ :=
   rfl
 
 nonrec theorem GradedAlgebra.ι_sq_scalar (m : M) :
@@ -76,7 +76,7 @@ nonrec theorem GradedAlgebra.ι_sq_scalar (m : M) :
 
 theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
     lift Q ⟨GradedAlgebra.ι Q, GradedAlgebra.ι_sq_scalar Q⟩ x' =
-      DirectSum.of (fun i => evenOdd Q i) i' x' := by
+      DirectSum.of (fun i ↦ evenOdd Q i) i' x' := by
   obtain ⟨x', hx'⟩ := x'
   dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
   induction hx' using Submodule.iSup_induction' with
@@ -126,7 +126,7 @@ theorem iSup_ι_range_eq_top : ⨆ i : ℕ, LinearMap.range (ι Q) ^ i = ⊤ := 
         ⨆ i : Σ i : ZMod 2, { n : ℕ // ↑n = i }, LinearMap.range (ι Q) ^ (i.2 : ℕ) := by
       rw [iSup_sigma]
     _ = ⨆ i : ℕ, LinearMap.range (ι Q) ^ i :=
-      Function.Surjective.iSup_congr (fun i => i.2) (fun i => ⟨⟨_, i, rfl⟩, rfl⟩) fun _ => rfl
+      Function.Surjective.iSup_congr (fun i ↦ i.2) (fun i ↦ ⟨⟨_, i, rfl⟩, rfl⟩) fun _ ↦ rfl
 
 theorem evenOdd_isCompl : IsCompl (evenOdd Q 0) (evenOdd Q 1) :=
   (DirectSum.Decomposition.isInternal (evenOdd Q)).isCompl zero_ne_one <| by
@@ -190,7 +190,7 @@ theorem even_induction {motive : ∀ x, x ∈ evenOdd Q 0 → Prop}
           motive (ι Q m₁ * ι Q m₂ * x)
             (zero_add (0 : ZMod 2) ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q 0) : motive x hx := by
-  refine evenOdd_induction _ _ (motive := motive) (fun rx h => ?_) add ι_mul_ι_mul x hx
+  refine evenOdd_induction _ _ (motive := motive) (fun rx h ↦ ?_) add ι_mul_ι_mul x hx
   obtain ⟨r, rfl⟩ := Submodule.mem_one.mp h
   exact algebraMap r
 
@@ -206,7 +206,7 @@ theorem odd_induction {P : ∀ x, x ∈ evenOdd Q 1 → Prop}
           P (CliffordAlgebra.ι Q m₁ * CliffordAlgebra.ι Q m₂ * x)
             (zero_add (1 : ZMod 2) ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q 1) : P x hx := by
-  refine evenOdd_induction _ _ (motive := P) (fun ιv => ?_) add ι_mul_ι_mul x hx
+  refine evenOdd_induction _ _ (motive := P) (fun ιv ↦ ?_) add ι_mul_ι_mul x hx
   simp_rw [ZMod.val_one, pow_one]
   rintro ⟨v, rfl⟩
   exact ι v

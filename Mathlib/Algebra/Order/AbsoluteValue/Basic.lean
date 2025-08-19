@@ -56,13 +56,13 @@ instance zeroHomClass : ZeroHomClass (AbsoluteValue R S) R S where
   map_zero f := (f.eq_zero' _).2 rfl
 
 instance mulHomClass : MulHomClass (AbsoluteValue R S) R S :=
-  { AbsoluteValue.zeroHomClass (R := R) (S := S) with map_mul := fun f => f.map_mul' }
+  { AbsoluteValue.zeroHomClass (R := R) (S := S) with map_mul := fun f ↦ f.map_mul' }
 
 instance nonnegHomClass : NonnegHomClass (AbsoluteValue R S) R S :=
-  { AbsoluteValue.zeroHomClass (R := R) (S := S) with apply_nonneg := fun f => f.nonneg' }
+  { AbsoluteValue.zeroHomClass (R := R) (S := S) with apply_nonneg := fun f ↦ f.nonneg' }
 
 instance subadditiveHomClass : SubadditiveHomClass (AbsoluteValue R S) R S :=
-  { AbsoluteValue.zeroHomClass (R := R) (S := S) with map_add_le_add := fun f => f.add_le' }
+  { AbsoluteValue.zeroHomClass (R := R) (S := S) with map_add_le_add := fun f ↦ f.add_le' }
 
 @[simp]
 theorem coe_mk (f : R →ₙ* S) {h₁ h₂ h₃} : (AbsoluteValue.mk f h₁ h₂ h₃ : R → S) = f :=
@@ -150,8 +150,8 @@ protected theorem map_one : abv 1 = 1 :=
 
 instance monoidWithZeroHomClass : MonoidWithZeroHomClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.mulHomClass with
-    map_zero := fun f => f.map_zero
-    map_one := fun f => f.map_one }
+    map_zero := fun f ↦ f.map_zero
+    map_one := fun f ↦ f.map_one }
 
 /-- Absolute values from a nontrivial `R` to a linear ordered ring preserve `*`, `0` and `1`. -/
 def toMonoidWithZeroHom : R →*₀ S :=
@@ -235,8 +235,8 @@ lemma sub_le_add (a b : R) : abv (a - b) ≤ abv a + abv b := by
 instance [Nontrivial R] [IsDomain S] : MulRingNormClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.subadditiveHomClass,
     AbsoluteValue.monoidWithZeroHomClass with
-    map_neg_eq_map := fun f => f.map_neg
-    eq_zero_of_map_eq_zero := fun f _ => f.eq_zero.1 }
+    map_neg_eq_map := fun f ↦ f.map_neg
+    eq_zero_of_map_eq_zero := fun f _ ↦ f.eq_zero.1 }
 
 open Int in
 lemma apply_natAbs_eq (x : ℤ) : abv (natAbs x) = abv x := by

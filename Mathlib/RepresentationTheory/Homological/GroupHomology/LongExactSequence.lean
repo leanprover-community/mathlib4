@@ -38,7 +38,7 @@ include hX
 lemma map_chainsFunctor_shortExact :
     ShortExact (X.map (chainsFunctor k G)) :=
   letI := hX.mono_f
-  HomologicalComplex.shortExact_of_degreewise_shortExact _ fun i => {
+  HomologicalComplex.shortExact_of_degreewise_shortExact _ fun i ↦ {
     exact := by
       have : LinearMap.range X.f.hom.hom = LinearMap.ker X.g.hom.hom :=
         (hX.exact.map (forget₂ (Rep k G) (ModuleCat k))).moduleCat_range_eq_ker
@@ -133,8 +133,8 @@ theorem δ₀_apply
   simpa only [H1π, ModuleCat.hom_comp, LinearMap.coe_comp, Function.comp_apply, H0π,
     ← cyclesMk₀_eq X.X₁, ← cyclesMk₁_eq X.X₃]
   using δ_apply hX (i := 1) (j := 0) rfl ((chainsIso₁ X.X₃).inv z.1) (by simp)
-    ((chainsIso₁ X.X₂).inv y) (Finsupp.ext fun _ => by simp [chainsIso₁, ← hy])
-    ((chainsIso₀ X.X₁).inv x) (Finsupp.ext fun _ => by simp [chainsIso₀, ← hx])
+    ((chainsIso₁ X.X₂).inv y) (Finsupp.ext fun _ ↦ by simp [chainsIso₁, ← hy])
+    ((chainsIso₀ X.X₁).inv x) (Finsupp.ext fun _ ↦ by simp [chainsIso₀, ← hx])
 
 /-- Stated for readability of `δ₁_apply`. -/
 theorem mem_cycles₁_of_comp_eq_d₂₁
@@ -154,7 +154,7 @@ theorem δ₁_apply
   simpa only [H2π, ModuleCat.hom_comp, LinearMap.coe_comp, Function.comp_apply, H1π,
     ← cyclesMk₂_eq X.X₃, ← cyclesMk₁_eq X.X₁]
   using δ_apply hX (i := 2) (j := 1) rfl ((chainsIso₂ X.X₃).inv z.1) (by simp)
-    ((chainsIso₂ X.X₂).inv y) (Finsupp.ext fun _ => by simp [chainsIso₂, ← hy])
-    ((chainsIso₁ X.X₁).inv x) (Finsupp.ext fun _ => by simp [chainsIso₁, ← hx])
+    ((chainsIso₂ X.X₂).inv y) (Finsupp.ext fun _ ↦ by simp [chainsIso₂, ← hy])
+    ((chainsIso₁ X.X₁).inv x) (Finsupp.ext fun _ ↦ by simp [chainsIso₁, ← hx])
 
 end groupHomology

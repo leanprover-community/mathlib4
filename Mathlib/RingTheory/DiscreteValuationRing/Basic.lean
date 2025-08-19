@@ -79,14 +79,14 @@ theorem irreducible_of_span_eq_maximalIdeal {R : Type*} [CommSemiring R] [IsLoca
   rw [show a * ϖ * (b * ϖ) = ϖ * (ϖ * (a * b)) by ring] at hab
   apply hϖ
   apply eq_zero_of_mul_eq_self_right _ hab.symm
-  exact fun hh => h2 (isUnit_of_dvd_one ⟨_, hh.symm⟩)
+  exact fun hh ↦ h2 (isUnit_of_dvd_one ⟨_, hh.symm⟩)
 
 /-- An element of a DVR is irreducible iff it is a uniformizer, that is, generates the
   maximal ideal of `R`. -/
 theorem irreducible_iff_uniformizer (ϖ : R) : Irreducible ϖ ↔ maximalIdeal R = Ideal.span {ϖ} :=
-  ⟨fun hϖ => (eq_maximalIdeal (isMaximal_of_irreducible hϖ)).symm,
-    fun h => irreducible_of_span_eq_maximalIdeal ϖ
-      (fun e => not_a_field R <| by rwa [h, span_singleton_eq_bot]) h⟩
+  ⟨fun hϖ ↦ (eq_maximalIdeal (isMaximal_of_irreducible hϖ)).symm,
+    fun h ↦ irreducible_of_span_eq_maximalIdeal ϖ
+      (fun e ↦ not_a_field R <| by rwa [h, span_singleton_eq_bot]) h⟩
 
 theorem _root_.Irreducible.maximalIdeal_eq {ϖ : R} (h : Irreducible ϖ) :
     maximalIdeal R = Ideal.span {ϖ} :=
@@ -101,7 +101,7 @@ theorem exists_irreducible : ∃ ϖ : R, Irreducible ϖ := by
 
 /-- Uniformizers exist in a DVR. -/
 theorem exists_prime : ∃ ϖ : R, Prime ϖ :=
-  (exists_irreducible R).imp fun _ => irreducible_iff_prime.1
+  (exists_irreducible R).imp fun _ ↦ irreducible_iff_prime.1
 
 /-- An integral domain is a DVR iff it's a PID with a unique non-zero prime ideal. -/
 theorem iff_pid_with_one_nonzero_prime (R : Type u) [CommRing R] [IsDomain R] :
@@ -181,7 +181,7 @@ theorem toUniqueFactorizationMonoid (hR : HasUnitMulPowIrreducibleFactorization 
     UniqueFactorizationMonoid R :=
   let p := Classical.choose hR
   let spec := Classical.choose_spec hR
-  UniqueFactorizationMonoid.of_exists_prime_factors fun x hx => by
+  UniqueFactorizationMonoid.of_exists_prime_factors fun x hx ↦ by
     use Multiset.replicate (Classical.choose (spec.2 hx)) p
     constructor
     · intro q hq

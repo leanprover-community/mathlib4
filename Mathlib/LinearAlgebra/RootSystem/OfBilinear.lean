@@ -115,18 +115,18 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
   toLinearMap := Dual.eval R M
   root := Embedding.subtype fun x ↦ IsReflective B x
   coroot :=
-    { toFun := fun x => IsReflective.coroot B x.2
+    { toFun := fun x ↦ IsReflective.coroot B x.2
       inj' := by
         intro x y hxy
         simp only [mem_setOf_eq] at hxy -- x* = y*
         have h1 : ∀ z, IsReflective.coroot B x.2 z = IsReflective.coroot B y.2 z :=
-          fun z => congrFun (congrArg DFunLike.coe hxy) z
+          fun z ↦ congrFun (congrArg DFunLike.coe hxy) z
         have h2x : ∀ z, B x x * IsReflective.coroot B x.2 z =
             B x x * IsReflective.coroot B y.2 z :=
-          fun z => congrArg (HMul.hMul ((B x) x)) (h1 z)
+          fun z ↦ congrArg (HMul.hMul ((B x) x)) (h1 z)
         have h2y : ∀ z, B y y * IsReflective.coroot B x.2 z =
             B y y * IsReflective.coroot B y.2 z :=
-          fun z => congrArg (HMul.hMul ((B y) y)) (h1 z)
+          fun z ↦ congrArg (HMul.hMul ((B y) y)) (h1 z)
         simp_rw [apply_self_mul_coroot_apply B x.2] at h2x -- 2(x,z) = (x,x)y*(z)
         simp_rw [apply_self_mul_coroot_apply B y.2] at h2y -- (y,y)x*(z) = 2(y,z)
         have h2xy : B x x = B y y := by
@@ -138,16 +138,16 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
           rw [coroot_apply_self] at h2y
           rw [mul_comm, ← h2x, ← hSB.eq, RingHom.id_apply, ← h2y, mul_comm]
         rw [Subtype.ext_iff_val, ← sub_eq_zero]
-        refine hNB.1 _ (fun z => ?_)
+        refine hNB.1 _ (fun z ↦ ?_)
         rw [map_sub, LinearMap.sub_apply, sub_eq_zero]
         refine h2.1 ?_
         dsimp only
         rw [h2x z, ← h2y z, hxy, h2xy] }
   root_coroot_two x := coroot_apply_self B x.2
   reflectionPerm x :=
-    { toFun := fun y => ⟨(Module.reflection (coroot_apply_self B x.2) y),
+    { toFun := fun y ↦ ⟨(Module.reflection (coroot_apply_self B x.2) y),
         reflective_reflection B hSB x.2 y.2⟩
-      invFun := fun y => ⟨(Module.reflection (coroot_apply_self B x.2) y),
+      invFun := fun y ↦ ⟨(Module.reflection (coroot_apply_self B x.2) y),
         reflective_reflection B hSB x.2 y.2⟩
       left_inv := by
         intro y

@@ -163,13 +163,13 @@ theorem codRestrict_apply (p : Submodule R₂ M₂) (f : M →ₛₗ[σ₁₂] M
 
 @[simp]
 theorem comp_codRestrict (p : Submodule R₃ M₃) (h : ∀ b, g b ∈ p) :
-    ((codRestrict p g h).comp f : M →ₛₗ[σ₁₃] p) = codRestrict p (g.comp f) fun _ => h _ :=
-  ext fun _ => rfl
+    ((codRestrict p g h).comp f : M →ₛₗ[σ₁₃] p) = codRestrict p (g.comp f) fun _ ↦ h _ :=
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem subtype_comp_codRestrict (p : Submodule R₂ M₂) (h : ∀ b, f b ∈ p) :
     p.subtype.comp (codRestrict p f h) = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 section
 
@@ -245,12 +245,12 @@ theorem subtype_comp_restrict {f : M →ₗ[R] M₁} {p : Submodule R M} {q : Su
 
 theorem restrict_eq_codRestrict_domRestrict {f : M →ₗ[R] M₁} {p : Submodule R M}
     {q : Submodule R M₁} (hf : ∀ x ∈ p, f x ∈ q) :
-    f.restrict hf = (f.domRestrict p).codRestrict q fun x => hf x.1 x.2 :=
+    f.restrict hf = (f.domRestrict p).codRestrict q fun x ↦ hf x.1 x.2 :=
   rfl
 
 theorem restrict_eq_domRestrict_codRestrict {f : M →ₗ[R] M₁} {p : Submodule R M}
     {q : Submodule R M₁} (hf : ∀ x, f x ∈ q) :
-    (f.restrict fun x _ => hf x) = (f.codRestrict q hf).domRestrict p :=
+    (f.restrict fun x _ ↦ hf x) = (f.codRestrict q hf).domRestrict p :=
   rfl
 
 theorem sum_apply (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) (b : M) :
@@ -264,7 +264,7 @@ theorem coeFn_sum {ι : Type*} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂]
     (show AddMonoidHom (M →ₛₗ[σ₁₂] M₂) (M → M₂)
       from { toFun := DFunLike.coe,
              map_zero' := rfl
-             map_add' := fun _ _ => rfl }) _ _
+             map_add' := fun _ _ ↦ rfl }) _ _
 
 theorem _root_.Module.End.submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R M}
     {g : Module.End R N} {G : Module.End R M} (h : G.comp N.subtype = N.subtype.comp g) {k : ℕ}
@@ -328,7 +328,7 @@ variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] {p 
 /-- If two submodules `p` and `p'` satisfy `p ⊆ p'`, then `inclusion p p'` is the linear map version
 of this inclusion. -/
 def inclusion (h : p ≤ p') : p →ₗ[R] p' :=
-  p.subtype.codRestrict p' fun ⟨_, hx⟩ => h hx
+  p.subtype.codRestrict p' fun ⟨_, hx⟩ ↦ h hx
 
 @[simp]
 theorem coe_inclusion (h : p ≤ p') (x : p) : (inclusion h x : M) = x :=
@@ -337,7 +337,7 @@ theorem coe_inclusion (h : p ≤ p') (x : p) : (inclusion h x : M) = x :=
 theorem inclusion_apply (h : p ≤ p') (x : p) : inclusion h x = ⟨x, h x.2⟩ :=
   rfl
 
-theorem inclusion_injective (h : p ≤ p') : Function.Injective (inclusion h) := fun _ _ h =>
+theorem inclusion_injective (h : p ≤ p') : Function.Injective (inclusion h) := fun _ _ h ↦
   Subtype.val_injective (Subtype.mk.inj h)
 
 variable (p p')

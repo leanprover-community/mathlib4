@@ -135,5 +135,5 @@ end IsUltrametricDist
 
 theorem isUltrametricDist_iff_forall_norm_natCast_le_one {R : Type*}
     [NormedDivisionRing R] : IsUltrametricDist R ↔ ∀ n : ℕ, ‖(n : R)‖ ≤ 1 :=
-  ⟨fun _ => IsUltrametricDist.norm_natCast_le_one R,
+  ⟨fun _ ↦ IsUltrametricDist.norm_natCast_le_one R,
       IsUltrametricDist.isUltrametricDist_of_forall_norm_natCast_le_one⟩

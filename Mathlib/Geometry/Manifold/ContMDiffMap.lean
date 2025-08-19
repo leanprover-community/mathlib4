@@ -53,7 +53,7 @@ protected theorem contMDiff (f : C^n⟮I, M; I', M'⟯) : ContMDiff I I' n f :=
 
 -- Porting note: use generic instance instead
 -- instance : Coe C^n⟮I, M; I', M'⟯ C(M, M') :=
---   ⟨fun f => ⟨f, f.contMDiff.continuous⟩⟩
+--   ⟨fun f ↦ ⟨f, f.contMDiff.continuous⟩⟩
 
 attribute [to_additive_ignore_args 21] ContMDiffMap ContMDiffMap.instFunLike
 
@@ -88,11 +88,11 @@ theorem comp_apply (f : C^n⟮I', M'; I'', M''⟯) (g : C^n⟮I, M; I', M'⟯) (
   rfl
 
 instance [Inhabited M'] : Inhabited C^n⟮I, M; I', M'⟯ :=
-  ⟨⟨fun _ => default, contMDiff_const⟩⟩
+  ⟨⟨fun _ ↦ default, contMDiff_const⟩⟩
 
 /-- Constant map as a `C^n` map -/
 def const (y : M') : C^n⟮I, M; I', M'⟯ :=
-  ⟨fun _ => y, contMDiff_const⟩
+  ⟨fun _ ↦ y, contMDiff_const⟩
 
 /-- The first projection of a product, as a `C^n` map. -/
 def fst : C^n⟮I.prod I', M × M'; I, M⟯ :=
@@ -104,10 +104,10 @@ def snd : C^n⟮I.prod I', M × M'; I', M'⟯ :=
 
 /-- Given two `C^n` maps `f` and `g`, this is the `C^n` map `x ↦ (f x, g x)`. -/
 def prodMk (f : C^n⟮J, N; I, M⟯) (g : C^n⟮J, N; I', M'⟯) : C^n⟮J, N; I.prod I', M × M'⟯ :=
-  ⟨fun x => (f x, g x), f.2.prodMk g.2⟩
+  ⟨fun x ↦ (f x, g x), f.2.prodMk g.2⟩
 
 end ContMDiffMap
 
 instance ContinuousLinearMap.hasCoeToContMDiffMap :
     Coe (E →L[𝕜] E') C^n⟮𝓘(𝕜, E), E; 𝓘(𝕜, E'), E'⟯ :=
-  ⟨fun f => ⟨f, f.contMDiff⟩⟩
+  ⟨fun f ↦ ⟨f, f.contMDiff⟩⟩

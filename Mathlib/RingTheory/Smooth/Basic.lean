@@ -72,7 +72,7 @@ theorem exists_lift {B : Type u} [CommRing B] [_RB : Algebra R B]
       {
         (DoubleQuot.quotQuotEquivQuotSup I J).trans
           (Ideal.quotEquivOfEq (sup_eq_right.mpr hIJ)) with
-        commutes' := fun x => rfl }
+        commutes' := fun x ↦ rfl }
     obtain ⟨g', e⟩ := h₂ (this.symm.toAlgHom.comp g)
     obtain ⟨g', rfl⟩ := h₁ g'
     replace e := congr_arg this.toAlgHom.comp e
@@ -151,7 +151,7 @@ variable (R : Type u) [CommSemiring R]
 instance mvPolynomial (σ : Type u) : FormallySmooth R (MvPolynomial σ R) := by
   constructor
   intro C _ _ I _ f
-  have : ∀ s : σ, ∃ c : C, Ideal.Quotient.mk I c = f (MvPolynomial.X s) := fun s =>
+  have : ∀ s : σ, ∃ c : C, Ideal.Quotient.mk I c = f (MvPolynomial.X s) := fun s ↦
     Ideal.Quotient.mk_surjective _
   choose g hg using this
   refine ⟨MvPolynomial.aeval g, ?_⟩
@@ -178,7 +178,7 @@ theorem comp [FormallySmooth R A] [FormallySmooth A B] : FormallySmooth R B := b
   obtain ⟨f'', e'⟩ :=
     FormallySmooth.comp_surjective I hI { f.toRingHom with commutes' := AlgHom.congr_fun e.symm }
   apply_fun AlgHom.restrictScalars R at e'
-  exact ⟨f''.restrictScalars _, e'.trans (AlgHom.ext fun _ => rfl)⟩
+  exact ⟨f''.restrictScalars _, e'.trans (AlgHom.ext fun _ ↦ rfl)⟩
 
 
 end Comp
@@ -221,7 +221,7 @@ theorem iff_split_surjection [FormallySmooth R P] :
     FormallySmooth R A ↔ ∃ g, f.kerSquareLift.comp g = AlgHom.id R A := by
   constructor
   · intro
-    have surj : Function.Surjective f.kerSquareLift := fun x =>
+    have surj : Function.Surjective f.kerSquareLift := fun x ↦
       ⟨Submodule.Quotient.mk (hf x).choose, (hf x).choose_spec⟩
     have sqz : RingHom.ker f.kerSquareLift.toRingHom ^ 2 = 0 := by
       rw [AlgHom.ker_kerSquareLift, Ideal.cotangentIdeal_square, Ideal.zero_eq_bot]

@@ -35,7 +35,7 @@ theorem X_pow_sub_X_sub_one_irreducible_aux (z : ℂ) : ¬(z ^ n = z + 1 ∧ z ^
     have : n % 3 < 3 := Nat.mod_lt n zero_lt_three
     interval_cases n % 3 <;>
     simp only [pow_zero, pow_one, or_true, true_or]
-  have z_ne_zero : z ≠ 0 := fun h =>
+  have z_ne_zero : z ≠ 0 := fun h ↦
     zero_ne_one ((zero_pow three_ne_zero).symm.trans (show (0 : ℂ) ^ 3 = 1 from h ▸ h3))
   rcases key with (key | key | key)
   · exact z_ne_zero (by rwa [key, right_eq_add] at h1)

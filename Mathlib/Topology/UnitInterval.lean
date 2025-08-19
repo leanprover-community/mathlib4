@@ -66,7 +66,7 @@ theorem mul_le_right {x y : I} : x * y ≤ y :=
   Subtype.coe_le_coe.mp <| mul_le_of_le_one_left y.2.1 x.2.2
 
 /-- Unit interval central symmetry. -/
-def symm : I → I := fun t => ⟨1 - t, mem_iff_one_sub_mem.mp t.prop⟩
+def symm : I → I := fun t ↦ ⟨1 - t, mem_iff_one_sub_mem.mp t.prop⟩
 
 @[inherit_doc]
 scoped notation "σ" => unitInterval.symm

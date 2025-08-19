@@ -33,7 +33,7 @@ variable [DecidableEq N] [Zero N] (f g : α →₀ N)
 /-- Given two finitely supported functions `f g : α →₀ N`, `Finsupp.neLocus f g` is the `Finset`
 where `f` and `g` differ. This generalizes `(f - g).support` to situations without subtraction. -/
 def neLocus (f g : α →₀ N) : Finset α :=
-  (f.support ∪ g.support).filter fun x => f x ≠ g x
+  (f.support ∪ g.support).filter fun x ↦ f x ≠ g x
 
 @[simp]
 theorem mem_neLocus {f g : α →₀ N} {a : α} : a ∈ f.neLocus g ↔ f a ≠ g a := by
@@ -52,9 +52,9 @@ theorem coe_neLocus : ↑(f.neLocus g) = { x | f x ≠ g x } := by
 
 @[simp]
 theorem neLocus_eq_empty {f g : α →₀ N} : f.neLocus g = ∅ ↔ f = g :=
-  ⟨fun h =>
-    ext fun a => not_not.mp (mem_neLocus.not.mp (Finset.eq_empty_iff_forall_notMem.mp h a)),
-    fun h => h ▸ by simp only [neLocus, Ne, not_true, Finset.filter_False]⟩
+  ⟨fun h ↦
+    ext fun a ↦ not_not.mp (mem_neLocus.not.mp (Finset.eq_empty_iff_forall_notMem.mp h a)),
+    fun h ↦ h ▸ by simp only [neLocus, Ne, not_true, Finset.filter_False]⟩
 
 @[simp]
 theorem nonempty_neLocus_iff {f g : α →₀ N} : (f.neLocus g).Nonempty ↔ f ≠ g :=
@@ -78,18 +78,18 @@ section NeLocusAndMaps
 
 theorem subset_mapRange_neLocus [DecidableEq N] [Zero N] [DecidableEq M] [Zero M] (f g : α →₀ N)
     {F : N → M} (F0 : F 0 = 0) : (f.mapRange F F0).neLocus (g.mapRange F F0) ⊆ f.neLocus g :=
-  fun x => by simpa only [mem_neLocus, mapRange_apply, not_imp_not] using congr_arg F
+  fun x ↦ by simpa only [mem_neLocus, mapRange_apply, not_imp_not] using congr_arg F
 
 theorem zipWith_neLocus_eq_left [DecidableEq N] [Zero M] [DecidableEq P] [Zero P] [Zero N]
     {F : M → N → P} (F0 : F 0 0 = 0) (f : α →₀ M) (g₁ g₂ : α →₀ N)
-    (hF : ∀ f, Function.Injective fun g => F f g) :
+    (hF : ∀ f, Function.Injective fun g ↦ F f g) :
     (zipWith F F0 f g₁).neLocus (zipWith F F0 f g₂) = g₁.neLocus g₂ := by
   ext
   simpa only [mem_neLocus] using (hF _).ne_iff
 
 theorem zipWith_neLocus_eq_right [DecidableEq M] [Zero M] [DecidableEq P] [Zero P] [Zero N]
     {F : M → N → P} (F0 : F 0 0 = 0) (f₁ f₂ : α →₀ M) (g : α →₀ N)
-    (hF : ∀ g, Function.Injective fun f => F f g) :
+    (hF : ∀ g, Function.Injective fun f ↦ F f g) :
     (zipWith F F0 f₁ g).neLocus (zipWith F F0 f₂ g) = f₁.neLocus f₂ := by
   ext
   simpa only [mem_neLocus] using (hF _).ne_iff

@@ -104,7 +104,7 @@ theorem ExtensionOf.dExt {a b : ExtensionOf i f} (domain_eq : a.domain = b.domai
 theorem ExtensionOf.dExt_iff {a b : ExtensionOf i f} :
     a = b ↔ ∃ _ : a.domain = b.domain, ∀ ⦃x : a.domain⦄ ⦃y : b.domain⦄,
     (x : N) = y → a.toLinearPMap x = b.toLinearPMap y :=
-  ⟨fun r => r ▸ ⟨rfl, fun _ _ h => congr_arg a.toFun <| mod_cast h⟩, fun ⟨h1, h2⟩ =>
+  ⟨fun r ↦ r ▸ ⟨rfl, fun _ _ h ↦ congr_arg a.toFun <| mod_cast h⟩, fun ⟨h1, h2⟩ ↦
     ExtensionOf.dExt h1 h2⟩
 
 end Ext
@@ -112,13 +112,13 @@ end Ext
 instance : Min (ExtensionOf i f) where
   min X1 X2 :=
     { X1.toLinearPMap ⊓ X2.toLinearPMap with
-      le := fun x hx =>
+      le := fun x hx ↦
         (by
           rcases hx with ⟨x, rfl⟩
           refine ⟨X1.le (Set.mem_range_self _), X2.le (Set.mem_range_self _), ?_⟩
           rw [← X1.is_extension x, ← X2.is_extension x] :
           x ∈ X1.toLinearPMap.eqLocus X2.toLinearPMap)
-      is_extension := fun _ => X1.is_extension _ }
+      is_extension := fun _ ↦ X1.is_extension _ }
 
 instance : SemilatticeInf (ExtensionOf i f) :=
   Function.Injective.semilatticeInf ExtensionOf.toLinearPMap
@@ -127,13 +127,13 @@ instance : SemilatticeInf (ExtensionOf i f) :=
         rw [h]
         intros
         rfl)
-    fun X Y ↦ LinearPMap.ext rfl fun x y h => by congr
+    fun X Y ↦ LinearPMap.ext rfl fun x y h ↦ by congr
 
 variable {i f}
 
 theorem chain_linearPMap_of_chain_extensionOf {c : Set (ExtensionOf i f)}
     (hchain : IsChain (· ≤ ·) c) :
-    IsChain (· ≤ ·) <| (fun x : ExtensionOf i f => x.toLinearPMap) '' c := by
+    IsChain (· ≤ ·) <| (fun x : ExtensionOf i f ↦ x.toLinearPMap) '' c := by
   rintro _ ⟨a, a_mem, rfl⟩ _ ⟨b, b_mem, rfl⟩ neq
   exact hchain a_mem b_mem (ne_of_apply_ne _ neq)
 
@@ -146,7 +146,7 @@ def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
       refine le_trans hnonempty.some.le <|
         (LinearPMap.le_sSup _ <|
             (Set.mem_image _ _ _).mpr ⟨hnonempty.some, hnonempty.choose_spec, rfl⟩).1
-    is_extension := fun m => by
+    is_extension := fun m ↦ by
       refine Eq.trans (hnonempty.some.is_extension m) ?_
       symm
       generalize_proofs _ _ h1
@@ -166,19 +166,19 @@ instance ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
   default :=
     { domain := LinearMap.range i
       toFun :=
-        { toFun := fun x => f x.2.choose
-          map_add' := fun x y => by
+        { toFun := fun x ↦ f x.2.choose
+          map_add' := fun x y ↦ by
             have eq1 : _ + _ = (x + y).1 := congr_arg₂ (· + ·) x.2.choose_spec y.2.choose_spec
             rw [← map_add, ← (x + y).2.choose_spec] at eq1
             dsimp
             rw [← Fact.out (p := Function.Injective i) eq1, map_add]
-          map_smul' := fun r x => by
+          map_smul' := fun r x ↦ by
             have eq1 : r • _ = (r • x).1 := congr_arg (r • ·) x.2.choose_spec
             rw [← LinearMap.map_smul, ← (r • x).2.choose_spec] at eq1
             dsimp
             rw [← Fact.out (p := Function.Injective i) eq1, LinearMap.map_smul] }
       le := le_refl _
-      is_extension := fun m => by
+      is_extension := fun m ↦ by
         simp only [LinearPMap.mk_apply, LinearMap.coe_mk]
         dsimp
         apply congrArg
@@ -188,12 +188,12 @@ instance ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
 /-- Since every nonempty chain has a maximal element, by Zorn's lemma, there is a maximal
 `extension_of i f`. -/
 def extensionOfMax : ExtensionOf i f :=
-  (@zorn_le_nonempty (ExtensionOf i f) _ ⟨Inhabited.default⟩ fun _ hchain hnonempty =>
+  (@zorn_le_nonempty (ExtensionOf i f) _ ⟨Inhabited.default⟩ fun _ hchain hnonempty ↦
       ⟨ExtensionOf.max hchain hnonempty, ExtensionOf.le_max hchain hnonempty⟩).choose
 
 theorem extensionOfMax_is_max :
     ∀ (a : ExtensionOf i f), extensionOfMax i f ≤ a → a = extensionOfMax i f :=
-  fun _ ↦ (@zorn_le_nonempty (ExtensionOf i f) _ ⟨Inhabited.default⟩ fun _ hchain hnonempty =>
+  fun _ ↦ (@zorn_le_nonempty (ExtensionOf i f) _ ⟨Inhabited.default⟩ fun _ hchain hnonempty ↦
     ⟨ExtensionOf.max hchain hnonempty, ExtensionOf.le_max hchain hnonempty⟩).choose_spec.eq_of_ge
 
 -- Auxiliary definition: Lean looks for an instance of `Max (Type u)` if we would write
@@ -280,7 +280,7 @@ theorem ExtensionOfMaxAdjoin.extendIdealTo_eq (h : Module.Baer R Q) {y : N} (r :
 /-- We can finally define a linear map `M ⊔ ⟨y⟩ ⟶ Q` by `x + r • y ↦ f x + φ r`
 -/
 def ExtensionOfMaxAdjoin.extensionToFun (h : Module.Baer R Q) {y : N} :
-    supExtensionOfMaxSingleton i f y → Q := fun x =>
+    supExtensionOfMaxSingleton i f y → Q := fun x ↦
   (extensionOfMax i f).toLinearPMap (ExtensionOfMaxAdjoin.fst i x) +
     ExtensionOfMaxAdjoin.extendIdealTo i f h y (ExtensionOfMaxAdjoin.snd i x)
 
@@ -313,7 +313,7 @@ def extensionOfMaxAdjoin (h : Module.Baer R Q) (y : N) : ExtensionOf i f where
   le := le_trans (extensionOfMax i f).le le_sup_left
   toFun :=
     { toFun := ExtensionOfMaxAdjoin.extensionToFun i f h
-      map_add' := fun a b => by
+      map_add' := fun a b ↦ by
         have eq1 :
           ↑a + ↑b =
             ↑(ExtensionOfMaxAdjoin.fst i a + ExtensionOfMaxAdjoin.fst i b) +
@@ -324,7 +324,7 @@ def extensionOfMaxAdjoin (h : Module.Baer R Q) (y : N) : ExtensionOf i f where
           LinearPMap.map_add, map_add]
         unfold ExtensionOfMaxAdjoin.extensionToFun
         abel
-      map_smul' := fun r a => by
+      map_smul' := fun r a ↦ by
         dsimp
         have eq1 :
           r • (a : N) =
@@ -342,7 +342,7 @@ def extensionOfMaxAdjoin (h : Module.Baer R Q) (y : N) : ExtensionOf i f where
 
 theorem extensionOfMax_le (h : Module.Baer R Q) {y : N} :
     extensionOfMax i f ≤ extensionOfMaxAdjoin i f h y :=
-  ⟨le_sup_left, fun x x' EQ => by
+  ⟨le_sup_left, fun x x' EQ ↦ by
     symm
     change ExtensionOfMaxAdjoin.extensionToFun i f h _ = _
     rw [ExtensionOfMaxAdjoin.extensionToFun_wd i f h x' x 0 (by simp [EQ]), map_zero,
@@ -350,7 +350,7 @@ theorem extensionOfMax_le (h : Module.Baer R Q) {y : N} :
 
 theorem extensionOfMax_to_submodule_eq_top (h : Module.Baer R Q) :
     (extensionOfMax i f).domain = ⊤ := by
-  refine Submodule.eq_top_iff'.mpr fun y => ?_
+  refine Submodule.eq_top_iff'.mpr fun y ↦ ?_
   dsimp
   rw [← extensionOfMax_is_max i f _ (extensionOfMax_le i f h), extensionOfMaxAdjoin,
     Submodule.mem_sup]

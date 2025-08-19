@@ -52,7 +52,7 @@ def OnePoint (X : Type*) :=
 
 /-- The repr uses the notation from the `OnePoint` locale. -/
 instance [Repr X] : Repr (OnePoint X) :=
-  ⟨fun o _ =>
+  ⟨fun o _ ↦
     match o with
     | none => "∞"
     | some a => "↑" ++ repr a⟩
@@ -147,7 +147,7 @@ theorem compl_image_coe (s : Set X) : ((↑) '' s : Set (OnePoint X))ᶜ = (↑)
 theorem ne_infty_iff_exists {x : OnePoint X} : x ≠ ∞ ↔ ∃ y : X, (y : OnePoint X) = x := by
   induction x using OnePoint.rec <;> simp
 
-instance canLift : CanLift (OnePoint X) X (↑) fun x => x ≠ ∞ :=
+instance canLift : CanLift (OnePoint X) X (↑) fun x ↦ x ≠ ∞ :=
   WithTop.canLift
 
 theorem notMem_range_coe_iff {x : OnePoint X} : x ∉ range some ↔ x = ∞ := by
@@ -215,7 +215,7 @@ instance : TopologicalSpace (OnePoint X) where
       refine IsCompact.of_isClosed_subset ((ho s hsS).1 hs) this.isClosed_compl ?_
       exact compl_subset_compl.mpr (preimage_mono <| subset_sUnion_of_mem hsS)
     rw [preimage_sUnion]
-    exact isOpen_biUnion fun s hs => (ho s hs).2
+    exact isOpen_biUnion fun s hs ↦ (ho s hs).2
 
 variable {s : Set (OnePoint X)}
 
@@ -237,7 +237,7 @@ theorem isOpen_iff_of_notMem (h : ∞ ∉ s) : IsOpen s ↔ IsOpen ((↑) ⁻¹'
 @[deprecated (since := "2025-05-23")] alias isOpen_iff_of_not_mem := isOpen_iff_of_notMem
 
 theorem isClosed_iff_of_mem (h : ∞ ∈ s) : IsClosed s ↔ IsClosed ((↑) ⁻¹' s : Set X) := by
-  have : ∞ ∉ sᶜ := fun H => H h
+  have : ∞ ∉ sᶜ := fun H ↦ H h
   rw [← isOpen_compl_iff, isOpen_iff_of_notMem this, ← isOpen_compl_iff, preimage_compl]
 
 theorem isClosed_iff_of_notMem (h : ∞ ∉ s) :
@@ -271,9 +271,9 @@ theorem infty_mem_opensOfCompl {s : Set X} (h₁ : IsClosed s) (h₂ : IsCompact
 
 @[continuity]
 theorem continuous_coe : Continuous ((↑) : X → OnePoint X) :=
-  continuous_def.mpr fun _s hs => hs.right
+  continuous_def.mpr fun _s hs ↦ hs.right
 
-theorem isOpenMap_coe : IsOpenMap ((↑) : X → OnePoint X) := fun _ => isOpen_image_coe.2
+theorem isOpenMap_coe : IsOpenMap ((↑) : X → OnePoint X) := fun _ ↦ isOpen_image_coe.2
 
 theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : X → OnePoint X) :=
   .of_continuous_injective_isOpenMap continuous_coe coe_injective isOpenMap_coe
@@ -328,7 +328,7 @@ alias nhdsWithin_compl_infty_neBot := nhdsNE_infty_neBot
 
 instance (priority := 900) nhdsNE_neBot [∀ x : X, NeBot (𝓝[≠] x)] [NoncompactSpace X]
     (x : OnePoint X) : NeBot (𝓝[≠] x) :=
-  OnePoint.rec OnePoint.nhdsNE_infty_neBot (fun y => OnePoint.nhdsNE_coe_neBot y) x
+  OnePoint.rec OnePoint.nhdsNE_infty_neBot (fun y ↦ OnePoint.nhdsNE_coe_neBot y) x
 
 @[deprecated (since := "2025-03-02")]
 alias nhdsWithin_compl_neBot := nhdsNE_neBot
@@ -341,7 +341,7 @@ theorem tendsto_coe_infty : Tendsto (↑) (coclosedCompact X) (𝓝 (∞ : OnePo
   exact Filter.Tendsto.mono_right tendsto_map le_sup_left
 
 theorem hasBasis_nhds_infty :
-    (𝓝 (∞ : OnePoint X)).HasBasis (fun s : Set X => IsClosed s ∧ IsCompact s) fun s =>
+    (𝓝 (∞ : OnePoint X)).HasBasis (fun s : Set X ↦ IsClosed s ∧ IsCompact s) fun s ↦
       (↑) '' sᶜ ∪ {∞} := by
   rw [nhds_infty_eq]
   exact (hasBasis_coclosedCompact.map _).sup_pure _
@@ -423,7 +423,7 @@ noncomputable def continuousMapDiscreteEquiv (Y : Type*) [DiscreteTopology X] [T
     C(OnePoint X, Y) ≃ { f : X → Y // ∃ L, Tendsto (fun x : X ↦ f x) cofinite (𝓝 L) } where
   toFun f := ⟨(f ·), ⟨f ∞, continuous_iff_from_discrete _ |>.mp (map_continuous f)⟩⟩
   invFun f :=
-    { toFun := fun x => match x with
+    { toFun := fun x ↦ match x with
         | ∞ => Classical.choose f.2
         | some x => f.1 x
       continuous_toFun := continuous_iff_from_discrete _ |>.mpr <| Classical.choose_spec f.2 }
@@ -479,10 +479,10 @@ theorem inseparable_coe {x y : X} : Inseparable (x : OnePoint X) y ↔ Inseparab
 theorem not_specializes_infty_coe {x : X} : ¬Specializes ∞ (x : OnePoint X) :=
   isClosed_infty.not_specializes rfl (coe_ne_infty x)
 
-theorem not_inseparable_infty_coe {x : X} : ¬Inseparable ∞ (x : OnePoint X) := fun h =>
+theorem not_inseparable_infty_coe {x : X} : ¬Inseparable ∞ (x : OnePoint X) := fun h ↦
   not_specializes_infty_coe h.specializes
 
-theorem not_inseparable_coe_infty {x : X} : ¬Inseparable (x : OnePoint X) ∞ := fun h =>
+theorem not_inseparable_coe_infty {x : X} : ¬Inseparable (x : OnePoint X) ∞ := fun h ↦
   not_specializes_infty_coe h.specializes'
 
 theorem inseparable_iff {x y : OnePoint X} :
@@ -524,7 +524,7 @@ instance : CompactSpace (OnePoint X) where
 
 /-- The one point compactification of a `T0Space` space is a `T0Space`. -/
 instance [T0Space X] : T0Space (OnePoint X) := by
-  refine ⟨fun x y hxy => ?_⟩
+  refine ⟨fun x y hxy ↦ ?_⟩
   rcases inseparable_iff.1 hxy with (⟨rfl, rfl⟩ | ⟨x, rfl, y, rfl, h⟩)
   exacts [rfl, congr_arg some h.eq]
 

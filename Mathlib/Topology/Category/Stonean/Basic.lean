@@ -61,7 +61,7 @@ instance (X : CompHaus.{u}) [Projective X] : ExtremallyDisconnected X := by
   obtain ⟨h, hh⟩ := Projective.factors f' g'
   refine ⟨h, h.hom.2, ?_⟩
   ext t
-  apply_fun (fun e => e t) at hh
+  apply_fun (fun e ↦ e t) at hh
   exact hh
 
 /-- `Projective` implies `Stonean`. -/
@@ -117,7 +117,7 @@ A morphism in `Stonean` is an epi iff it is surjective.
 -/
 lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective f := by
-  refine ⟨?_, fun h => ConcreteCategory.epi_of_surjective f h⟩
+  refine ⟨?_, fun h ↦ ConcreteCategory.epi_of_surjective f h⟩
   dsimp [Function.Surjective]
   intro h y
   by_contra! hy
@@ -130,7 +130,7 @@ lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
   classical
   let g : Y ⟶ mkFinite (ULift (Fin 2)) := TopCat.ofHom
     ⟨(LocallyConstant.ofIsClopen hV).map ULift.up, LocallyConstant.continuous _⟩
-  let h : Y ⟶ mkFinite (ULift (Fin 2)) := TopCat.ofHom ⟨fun _ => ⟨1⟩, continuous_const⟩
+  let h : Y ⟶ mkFinite (ULift (Fin 2)) := TopCat.ofHom ⟨fun _ ↦ ⟨1⟩, continuous_const⟩
   have H : h = g := by
     rw [← cancel_epi f]
     ext x
@@ -140,7 +140,7 @@ lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
     refine mt (hVU ·) ?_ -- what would be an idiomatic tactic for this step?
     simpa only [U, Set.mem_compl_iff, Set.mem_range, not_exists, not_forall, not_not]
       using exists_apply_eq_apply f x
-  apply_fun fun e => (e y).down at H
+  apply_fun fun e ↦ (e y).down at H
   change 1 = ite _ _ _ at H -- why is `dsimp at H` not getting me here?
   rw [if_pos hyV] at H
   exact one_ne_zero H

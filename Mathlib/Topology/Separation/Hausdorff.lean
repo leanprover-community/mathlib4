@@ -79,7 +79,7 @@ section Separation
 @[mk_iff]
 class T2Space (X : Type u) [TopologicalSpace X] : Prop where
   /-- Every two points in a Hausdorff space admit disjoint open neighbourhoods. -/
-  t2 : Pairwise fun x y => ∃ u v : Set X, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ Disjoint u v
+  t2 : Pairwise fun x y ↦ ∃ u v : Set X, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ Disjoint u v
 
 /-- Two different points can be separated by open sets. -/
 theorem t2_separation [T2Space X] {x y : X} (h : x ≠ y) :
@@ -87,16 +87,16 @@ theorem t2_separation [T2Space X] {x y : X} (h : x ≠ y) :
   T2Space.t2 h
 
 -- todo: use this as a definition?
-theorem t2Space_iff_disjoint_nhds : T2Space X ↔ Pairwise fun x y : X => Disjoint (𝓝 x) (𝓝 y) := by
-  refine (t2Space_iff X).trans (forall₃_congr fun x y _ => ?_)
+theorem t2Space_iff_disjoint_nhds : T2Space X ↔ Pairwise fun x y : X ↦ Disjoint (𝓝 x) (𝓝 y) := by
+  refine (t2Space_iff X).trans (forall₃_congr fun x y _ ↦ ?_)
   simp only [(nhds_basis_opens x).disjoint_iff (nhds_basis_opens y), ← exists_and_left,
     and_assoc, and_comm, and_left_comm]
 
 @[simp]
 theorem disjoint_nhds_nhds [T2Space X] {x y : X} : Disjoint (𝓝 x) (𝓝 y) ↔ x ≠ y :=
-  ⟨fun hd he => by simp [he, nhds_neBot.ne] at hd, (t2Space_iff_disjoint_nhds.mp ‹_› ·)⟩
+  ⟨fun hd he ↦ by simp [he, nhds_neBot.ne] at hd, (t2Space_iff_disjoint_nhds.mp ‹_› ·)⟩
 
-theorem pairwise_disjoint_nhds [T2Space X] : Pairwise (Disjoint on (𝓝 : X → Filter X)) := fun _ _ =>
+theorem pairwise_disjoint_nhds [T2Space X] : Pairwise (Disjoint on (𝓝 : X → Filter X)) := fun _ _ ↦
   disjoint_nhds_nhds.2
 
 protected theorem Set.pairwiseDisjoint_nhds [T2Space X] (s : Set X) : s.PairwiseDisjoint 𝓝 :=
@@ -109,7 +109,7 @@ theorem Set.Finite.t2_separation [T2Space X] {s : Set X} (hs : s.Finite) :
 
 -- see Note [lower instance priority]
 instance (priority := 100) T2Space.t1Space [T2Space X] : T1Space X :=
-  t1Space_iff_disjoint_pure_nhds.mpr fun _ _ hne =>
+  t1Space_iff_disjoint_pure_nhds.mpr fun _ _ hne ↦
     (disjoint_nhds_nhds.2 hne).mono_left <| pure_le_nhds _
 
 -- see Note [lower instance priority]
@@ -139,7 +139,7 @@ theorem eq_of_nhds_neBot [T2Space X] {x y : X} (h : NeBot (𝓝 x ⊓ 𝓝 y)) :
   t2_iff_nhds.mp ‹_› h
 
 theorem t2Space_iff_nhds :
-    T2Space X ↔ Pairwise fun x y : X => ∃ U ∈ 𝓝 x, ∃ V ∈ 𝓝 y, Disjoint U V := by
+    T2Space X ↔ Pairwise fun x y : X ↦ ∃ U ∈ 𝓝 x, ∃ V ∈ 𝓝 y, Disjoint U V := by
   simp only [t2Space_iff_disjoint_nhds, Filter.disjoint_iff, Pairwise]
 
 theorem t2_separation_nhds [T2Space X] {x y : X} (h : x ≠ y) :
@@ -178,7 +178,7 @@ theorem tendsto_nhds_unique_of_eventuallyEq [T2Space X] {f g : Y → X} {l : Fil
 theorem tendsto_nhds_unique_of_frequently_eq [T2Space X] {f g : Y → X} {l : Filter Y} {a b : X}
     (ha : Tendsto f l (𝓝 a)) (hb : Tendsto g l (𝓝 b)) (hfg : ∃ᶠ x in l, f x = g x) : a = b :=
   have : ∃ᶠ z : X × X in 𝓝 (a, b), z.1 = z.2 := (ha.prodMk_nhds hb).frequently hfg
-  not_not.1 fun hne => this (isClosed_diagonal.isOpen_compl.mem_nhds hne)
+  not_not.1 fun hne ↦ this (isClosed_diagonal.isOpen_compl.mem_nhds hne)
 
 /-- If `s` and `t` are compact sets in a T₂ space, then the set neighborhoods filter of `s ∩ t`
 is the infimum of set neighborhoods filters for `s` and `t`.
@@ -264,16 +264,16 @@ theorem lim_eq {x : X} [NeBot f] (h : f ≤ 𝓝 x) : @lim _ _ ⟨x⟩ f = x :=
   tendsto_nhds_unique (le_nhds_lim ⟨x, h⟩) h
 
 theorem lim_eq_iff [NeBot f] (h : ∃ x : X, f ≤ 𝓝 x) {x} : @lim _ _ ⟨x⟩ f = x ↔ f ≤ 𝓝 x :=
-  ⟨fun c => c ▸ le_nhds_lim h, lim_eq⟩
+  ⟨fun c ↦ c ▸ le_nhds_lim h, lim_eq⟩
 
 theorem Ultrafilter.lim_eq_iff_le_nhds [CompactSpace X] {x : X} {F : Ultrafilter X} :
     F.lim = x ↔ ↑F ≤ 𝓝 x :=
-  ⟨fun h => h ▸ F.le_nhds_lim, lim_eq⟩
+  ⟨fun h ↦ h ▸ F.le_nhds_lim, lim_eq⟩
 
 theorem isOpen_iff_ultrafilter' [CompactSpace X] (U : Set X) :
     IsOpen U ↔ ∀ F : Ultrafilter X, F.lim ∈ U → U ∈ F.1 := by
   rw [isOpen_iff_ultrafilter]
-  refine ⟨fun h F hF => h F.lim hF F F.le_nhds_lim, ?_⟩
+  refine ⟨fun h F hF ↦ h F.lim hF F F.le_nhds_lim, ?_⟩
   intro cond x hx f h
   rw [← Ultrafilter.lim_eq_iff_le_nhds.2 h] at hx
   exact cond _ hx
@@ -284,7 +284,7 @@ theorem Filter.Tendsto.limUnder_eq {x : X} {f : Filter Y} [NeBot f] {g : Y → X
 
 theorem Filter.limUnder_eq_iff {f : Filter Y} [NeBot f] {g : Y → X} (h : ∃ x, Tendsto g f (𝓝 x))
     {x} : @limUnder _ _ _ ⟨x⟩ f g = x ↔ Tendsto g f (𝓝 x) :=
-  ⟨fun c => c ▸ tendsto_nhds_limUnder h, Filter.Tendsto.limUnder_eq⟩
+  ⟨fun c ↦ c ▸ tendsto_nhds_limUnder h, Filter.Tendsto.limUnder_eq⟩
 
 theorem Continuous.limUnder_eq [TopologicalSpace Y] {f : Y → X} (h : Continuous f) (y : Y) :
     @limUnder _ _ _ ⟨f y⟩ (𝓝 y) f = f y :=
@@ -329,7 +329,7 @@ Hausdorff spaces:
 -- see Note [lower instance priority]
 instance (priority := 100) DiscreteTopology.toT2Space
     [DiscreteTopology X] : T2Space X :=
-  ⟨fun x y h => ⟨{x}, {y}, isOpen_discrete _, isOpen_discrete _, rfl, rfl, disjoint_singleton.2 h⟩⟩
+  ⟨fun x y h ↦ ⟨{x}, {y}, isOpen_discrete _, isOpen_discrete _, rfl, rfl, disjoint_singleton.2 h⟩⟩
 
 theorem separated_by_continuous [TopologicalSpace Y] [T2Space Y]
     {f : X → Y} (hf : Continuous f) {x y : X} (h : f x ≠ f y) :
@@ -353,7 +353,7 @@ instance Prod.t2Space [T2Space X] [TopologicalSpace Y] [T2Space Y] : T2Space (X 
 domain. -/
 theorem T2Space.of_injective_continuous [TopologicalSpace Y] [T2Space Y] {f : X → Y}
     (hinj : Injective f) (hc : Continuous f) : T2Space X :=
-  ⟨fun _ _ h => separated_by_continuous hc (hinj.ne h)⟩
+  ⟨fun _ _ h ↦ separated_by_continuous hc (hinj.ne h)⟩
 
 /-- If the codomain of a topological embedding is a Hausdorff space, then so is its domain.
 See also `T2Space.of_continuous_injective`. -/
@@ -388,7 +388,7 @@ instance Sigma.t2Space {ι} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [
   · replace neq : x ≠ y := ne_of_apply_ne _ neq
     exact separated_by_isOpenEmbedding .sigmaMk neq
   · let _ := (⊥ : TopologicalSpace ι); have : DiscreteTopology ι := ⟨rfl⟩
-    exact separated_by_continuous (continuous_def.2 fun u _ => isOpen_sigma_fst_preimage u) h
+    exact separated_by_continuous (continuous_def.2 fun u _ ↦ isOpen_sigma_fst_preimage u) h
 
 section
 variable (X)
@@ -498,15 +498,15 @@ protected theorem Set.EqOn.closure [T2Space X] {s : Set Y} {f g : Y → X} (h : 
 /-- If two continuous functions are equal on a dense set, then they are equal. -/
 theorem Continuous.ext_on [T2Space X] {s : Set Y} (hs : Dense s) {f g : Y → X} (hf : Continuous f)
     (hg : Continuous g) (h : EqOn f g s) : f = g :=
-  funext fun x => h.closure hf hg (hs x)
+  funext fun x ↦ h.closure hf hg (hs x)
 
 theorem eqOn_closure₂' [T2Space Z] {s : Set X} {t : Set Y} {f g : X → Y → Z}
     (h : ∀ x ∈ s, ∀ y ∈ t, f x y = g x y) (hf₁ : ∀ x, Continuous (f x))
-    (hf₂ : ∀ y, Continuous fun x => f x y) (hg₁ : ∀ x, Continuous (g x))
-    (hg₂ : ∀ y, Continuous fun x => g x y) : ∀ x ∈ closure s, ∀ y ∈ closure t, f x y = g x y :=
+    (hf₂ : ∀ y, Continuous fun x ↦ f x y) (hg₁ : ∀ x, Continuous (g x))
+    (hg₂ : ∀ y, Continuous fun x ↦ g x y) : ∀ x ∈ closure s, ∀ y ∈ closure t, f x y = g x y :=
   suffices closure s ⊆ ⋂ y ∈ closure t, { x | f x y = g x y } by simpa only [subset_def, mem_iInter]
-  (closure_minimal fun x hx => mem_iInter₂.2 <| Set.EqOn.closure (h x hx) (hf₁ _) (hg₁ _)) <|
-    isClosed_biInter fun _ _ => isClosed_eq (hf₂ _) (hg₂ _)
+  (closure_minimal fun x hx ↦ mem_iInter₂.2 <| Set.EqOn.closure (h x hx) (hf₁ _) (hg₁ _)) <|
+    isClosed_biInter fun _ _ ↦ isClosed_eq (hf₂ _) (hg₂ _)
 
 theorem eqOn_closure₂ [T2Space Z] {s : Set X} {t : Set Y} {f g : X → Y → Z}
     (h : ∀ x ∈ s, ∀ y ∈ t, f x y = g x y) (hf : Continuous (uncurry f))
@@ -528,7 +528,7 @@ theorem Function.LeftInverse.isClosed_range [T2Space X] {f : X → Y} {g : Y →
     (h : Function.LeftInverse f g) (hf : Continuous f) (hg : Continuous g) : IsClosed (range g) :=
   have : EqOn (g ∘ f) id (closure <| range g) :=
     h.rightInvOn_range.eqOn.closure (hg.comp hf) continuous_id
-  isClosed_of_closure_subset fun x hx => ⟨f x, this hx⟩
+  isClosed_of_closure_subset fun x hx ↦ ⟨f x, this hx⟩
 
 theorem Function.LeftInverse.isClosedEmbedding [T2Space X] {f : X → Y} {g : Y → X}
     (h : Function.LeftInverse f g) (hf : Continuous f) (hg : Continuous g) : IsClosedEmbedding g :=
@@ -572,7 +572,7 @@ end SeparatedFinset
 
 /-- In a `T2Space`, every compact set is closed. -/
 theorem IsCompact.isClosed [T2Space X] {s : Set X} (hs : IsCompact s) : IsClosed s :=
-  isClosed_iff_forall_filter.2 fun _x _f _ hfs hfx =>
+  isClosed_iff_forall_filter.2 fun _x _f _ hfs hfx ↦
     let ⟨_y, hy, hfy⟩ := hs.exists_clusterPt hfs
     mem_of_eq_of_mem (eq_of_nhds_neBot (hfy.mono hfx).neBot).symm hy
 
@@ -599,7 +599,7 @@ assumed to be Hausdorff. -/
 theorem exists_subset_nhds_of_isCompact [T2Space X] {ι : Type*} [Nonempty ι] {V : ι → Set X}
     (hV : Directed (· ⊇ ·) V) (hV_cpct : ∀ i, IsCompact (V i)) {U : Set X}
     (hU : ∀ x ∈ ⋂ i, V i, U ∈ 𝓝 x) : ∃ i, V i ⊆ U :=
-  exists_subset_nhds_of_isCompact' hV hV_cpct (fun i => (hV_cpct i).isClosed) hU
+  exists_subset_nhds_of_isCompact' hV hV_cpct (fun i ↦ (hV_cpct i).isClosed) hU
 
 theorem CompactExhaustion.isClosed [T2Space X] (K : CompactExhaustion X) (n : ℕ) : IsClosed (K n) :=
   (K.isCompact n).isClosed
@@ -655,7 +655,7 @@ alias ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE :=
 
 /-- A continuous map from a compact space to a Hausdorff space is a closed map. -/
 protected theorem Continuous.isClosedMap [CompactSpace X] [T2Space Y] {f : X → Y}
-    (h : Continuous f) : IsClosedMap f := fun _s hs => (hs.isCompact.image h).isClosed
+    (h : Continuous f) : IsClosedMap f := fun _s hs ↦ (hs.isCompact.image h).isClosed
 
 /-- A continuous injective map from a compact space to a Hausdorff space is a closed embedding. -/
 theorem Continuous.isClosedEmbedding [CompactSpace X] [T2Space Y] {f : X → Y} (h : Continuous f)
@@ -669,7 +669,7 @@ theorem IsQuotientMap.of_surjective_continuous [CompactSpace X] [T2Space Y] {f :
 
 theorem isPreirreducible_iff_subsingleton [T2Space X] {S : Set X} :
     IsPreirreducible S ↔ S.Subsingleton := by
-  refine ⟨fun h x hx y hy => ?_, Set.Subsingleton.isPreirreducible⟩
+  refine ⟨fun h x hx y hy ↦ ?_, Set.Subsingleton.isPreirreducible⟩
   by_contra e
   obtain ⟨U, V, hU, hV, hxU, hyV, h'⟩ := t2_separation e
   exact ((h U V hU hV ⟨x, hx, hxU⟩ ⟨y, hy, hyV⟩).mono inter_subset_right).not_disjoint h'

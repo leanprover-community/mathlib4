@@ -83,7 +83,7 @@ theorem mem_takeWhile_imp {x : α} (hx : x ∈ takeWhile p l) : p x := by
       · exact IH hx
 
 theorem takeWhile_takeWhile (p q : α → Bool) (l : List α) :
-    takeWhile p (takeWhile q l) = takeWhile (fun a => p a ∧ q a) l := by
+    takeWhile p (takeWhile q l) = takeWhile (fun a ↦ p a ∧ q a) l := by
   induction l with
   | nil => simp
   | cons hd tl IH => by_cases hp : p hd <;> by_cases hq : q hd <;> simp [takeWhile, hp, hq, IH]

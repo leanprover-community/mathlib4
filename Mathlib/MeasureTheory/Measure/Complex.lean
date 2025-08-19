@@ -81,9 +81,9 @@ theorem _root_.MeasureTheory.SignedMeasure.im_toComplexMeasure (s t : SignedMeas
 @[simps]
 def equivSignedMeasure : ComplexMeasure α ≃ SignedMeasure α × SignedMeasure α where
   toFun c := ⟨ComplexMeasure.re c, ComplexMeasure.im c⟩
-  invFun := fun ⟨s, t⟩ => s.toComplexMeasure t
+  invFun := fun ⟨s, t⟩ ↦ s.toComplexMeasure t
   left_inv c := c.toComplexMeasure_to_signedMeasure
-  right_inv := fun ⟨s, t⟩ => Prod.ext (s.re_toComplexMeasure t) (s.im_toComplexMeasure t)
+  right_inv := fun ⟨s, t⟩ ↦ Prod.ext (s.re_toComplexMeasure t) (s.im_toComplexMeasure t)
 
 section
 
@@ -94,7 +94,7 @@ variable [ContinuousConstSMul R ℝ] [ContinuousConstSMul R ℂ]
 @[simps]
 def equivSignedMeasureₗ : ComplexMeasure α ≃ₗ[R] SignedMeasure α × SignedMeasure α :=
   { equivSignedMeasure with
-    map_add' := fun c d => by rfl
+    map_add' := fun c d ↦ by rfl
     map_smul' := by
       intro r c
       dsimp

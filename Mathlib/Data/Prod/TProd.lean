@@ -44,14 +44,14 @@ namespace List
 variable (α) in
 /-- The product of a family of types over a list. -/
 abbrev TProd (l : List ι) : Type v :=
-  l.foldr (fun i β => α i × β) PUnit
+  l.foldr (fun i β ↦ α i × β) PUnit
 
 namespace TProd
 
 /-- Turning a function `f : ∀ i, α i` into an element of the iterated product `TProd α l`. -/
 protected def mk : ∀ (l : List ι) (_f : ∀ i, α i), TProd α l
-  | [] => fun _ => PUnit.unit
-  | i :: is => fun f => (f i, TProd.mk is f)
+  | [] => fun _ ↦ PUnit.unit
+  | i :: is => fun f ↦ (f i, TProd.mk is f)
 
 instance [∀ i, Inhabited (α i)] : Inhabited (TProd α l) :=
   ⟨TProd.mk l default⟩
@@ -105,7 +105,7 @@ theorem ext :
   | i :: is, hl, v, w, hvw => by
     apply Prod.ext
     · rw [← elim_self v, hvw, elim_self]
-    refine ext (nodup_cons.mp hl).2 fun j hj => ?_
+    refine ext (nodup_cons.mp hl).2 fun j hj ↦ ?_
     rw [← elim_of_mem hl, hvw, elim_of_mem hl]
 
 /-- A version of `TProd.elim` when `l` contains all elements. In this case we get a function into
@@ -115,11 +115,11 @@ protected def elim' (h : ∀ i, i ∈ l) (v : TProd α l) (i : ι) : α i :=
   v.elim (h i)
 
 theorem mk_elim (hnd : l.Nodup) (h : ∀ i, i ∈ l) (v : TProd α l) : TProd.mk l (v.elim' h) = v :=
-  TProd.ext hnd fun i hi => by simp [elim_mk]
+  TProd.ext hnd fun i hi ↦ by simp [elim_mk]
 
 /-- Pi-types are equivalent to iterated products. -/
 def piEquivTProd (hnd : l.Nodup) (h : ∀ i, i ∈ l) : (∀ i, α i) ≃ TProd α l :=
-  ⟨TProd.mk l, TProd.elim' h, fun f => funext fun i => elim_mk l f (h i), mk_elim hnd h⟩
+  ⟨TProd.mk l, TProd.elim' h, fun f ↦ funext fun i ↦ elim_mk l f (h i), mk_elim hnd h⟩
 
 end TProd
 
@@ -145,7 +145,7 @@ theorem mk_preimage_tprod :
     rw [Set.tprod, TProd.mk, mem_preimage, mem_pi, prodMk_mem_set_prod_eq]
     simp_rw [mem_setOf_eq, mem_cons]
     rw [forall_eq_or_imp, and_congr_right_iff]
-    exact fun _ => h
+    exact fun _ ↦ h
 
 theorem elim_preimage_pi [DecidableEq ι] {l : List ι} (hnd : l.Nodup) (h : ∀ i, i ∈ l)
     (t : ∀ i, Set (α i)) : TProd.elim' h ⁻¹' pi univ t = Set.tprod l t := by

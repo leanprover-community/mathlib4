@@ -34,7 +34,7 @@ namespace Pi
 
 instance smulZeroClass (α) {n : ∀ i, Zero <| f i} [∀ i, SMulZeroClass α <| f i] :
     @SMulZeroClass α (∀ i : I, f i) (@Pi.instZero I f n) where
-  smul_zero _ := funext fun _ => smul_zero _
+  smul_zero _ := funext fun _ ↦ smul_zero _
 
 instance smulZeroClass' {g : I → Type*} {n : ∀ i, Zero <| g i} [∀ i, SMulZeroClass (f i) (g i)] :
     @SMulZeroClass (∀ i, f i) (∀ i : I, g i) (@Pi.instZero I g n) where
@@ -42,8 +42,8 @@ instance smulZeroClass' {g : I → Type*} {n : ∀ i, Zero <| g i} [∀ i, SMulZ
 
 instance distribSMul (α) {n : ∀ i, AddZeroClass <| f i} [∀ i, DistribSMul α <| f i] :
     @DistribSMul α (∀ i : I, f i) (@Pi.addZeroClass I f n) where
-  smul_zero _ := funext fun _ => smul_zero _
-  smul_add _ _ _ := funext fun _ => smul_add _ _ _
+  smul_zero _ := funext fun _ ↦ smul_zero _
+  smul_add _ _ _ := funext fun _ ↦ smul_add _ _ _
 
 instance distribSMul' {g : I → Type*} {n : ∀ i, AddZeroClass <| g i}
     [∀ i, DistribSMul (f i) (g i)] :
@@ -63,14 +63,14 @@ instance distribMulAction' {g : I → Type*} {m : ∀ i, Monoid (f i)} {n : ∀ 
 instance smulWithZero (α) [Zero α] [∀ i, Zero (f i)] [∀ i, SMulWithZero α (f i)] :
     SMulWithZero α (∀ i, f i) :=
   { Pi.instSMul with
-    smul_zero := fun _ => funext fun _ => smul_zero _
-    zero_smul := fun _ => funext fun _ => zero_smul _ _ }
+    smul_zero := fun _ ↦ funext fun _ ↦ smul_zero _
+    zero_smul := fun _ ↦ funext fun _ ↦ zero_smul _ _ }
 
 instance smulWithZero' {g : I → Type*} [∀ i, Zero (g i)] [∀ i, Zero (f i)]
     [∀ i, SMulWithZero (g i) (f i)] : SMulWithZero (∀ i, g i) (∀ i, f i) :=
   { Pi.smul' with
-    smul_zero := fun _ => funext fun _ => smul_zero _
-    zero_smul := fun _ => funext fun _ => zero_smul _ _ }
+    smul_zero := fun _ ↦ funext fun _ ↦ smul_zero _
+    zero_smul := fun _ ↦ funext fun _ ↦ zero_smul _ _ }
 
 instance mulActionWithZero (α) [MonoidWithZero α] [∀ i, Zero (f i)]
     [∀ i, MulActionWithZero α (f i)] : MulActionWithZero α (∀ i, f i) :=
@@ -82,25 +82,25 @@ instance mulActionWithZero' {g : I → Type*} [∀ i, MonoidWithZero (g i)] [∀
 
 theorem single_smul {α} [Monoid α] [∀ i, AddMonoid <| f i] [∀ i, DistribMulAction α <| f i]
     [DecidableEq I] (i : I) (r : α) (x : f i) : single i (r • x) = r • single i x :=
-  single_op (fun i : I => (r • · : f i → f i)) (fun _ => smul_zero _) _ _
+  single_op (fun i : I ↦ (r • · : f i → f i)) (fun _ ↦ smul_zero _) _ _
 
 /-- A version of `Pi.single_smul` for non-dependent functions. It is useful in cases where Lean
 fails to apply `Pi.single_smul`. -/
 theorem single_smul' {α β} [Monoid α] [AddMonoid β] [DistribMulAction α β] [DecidableEq I] (i : I)
-    (r : α) (x : β) : single (M := fun _ => β) i (r • x) = r • single (M := fun _ => β) i x :=
-  single_smul (f := fun _ => β) i r x
+    (r : α) (x : β) : single (M := fun _ ↦ β) i (r • x) = r • single (M := fun _ ↦ β) i x :=
+  single_smul (f := fun _ ↦ β) i r x
 
 theorem single_smul₀ {g : I → Type*} [∀ i, MonoidWithZero (f i)] [∀ i, AddMonoid (g i)]
     [∀ i, DistribMulAction (f i) (g i)] [DecidableEq I] (i : I) (r : f i) (x : g i) :
     single i (r • x) = single i r • single i x :=
-  single_op₂ (fun i : I => ((· • ·) : f i → g i → g i)) (fun _ => smul_zero _) _ _ _
+  single_op₂ (fun i : I ↦ ((· • ·) : f i → g i → g i)) (fun _ ↦ smul_zero _) _ _ _
 
 instance mulDistribMulAction (α) {m : Monoid α} {n : ∀ i, Monoid <| f i}
     [∀ i, MulDistribMulAction α <| f i] :
     @MulDistribMulAction α (∀ i : I, f i) m (@Pi.monoid I f n) :=
   { Pi.mulAction _ with
-    smul_one := fun _ => funext fun _ => smul_one _
-    smul_mul := fun _ _ _ => funext fun _ => smul_mul' _ _ _ }
+    smul_one := fun _ ↦ funext fun _ ↦ smul_one _
+    smul_mul := fun _ _ _ ↦ funext fun _ ↦ smul_mul' _ _ _ }
 
 instance mulDistribMulAction' {g : I → Type*} {m : ∀ i, Monoid (f i)} {n : ∀ i, Monoid <| g i}
     [∀ i, MulDistribMulAction (f i) (g i)] :

@@ -70,7 +70,7 @@ def Finsupp.toDFinsupp [Zero M] (f : ι →₀ M) : Π₀ _ : ι, M where
   toFun := f
   support' :=
     Trunc.mk
-      ⟨f.support.1, fun i => (Classical.em (f i = 0)).symm.imp_left Finsupp.mem_support_iff.mpr⟩
+      ⟨f.support.1, fun i ↦ (Classical.em (f i = 0)).symm.imp_left Finsupp.mem_support_iff.mpr⟩
 
 @[simp]
 theorem Finsupp.toDFinsupp_coe [Zero M] (f : ι →₀ M) : ⇑f.toDFinsupp = f :=
@@ -99,7 +99,7 @@ Note that the elaborator has a lot of trouble with this definition - it is often
 write `(DFinsupp.toFinsupp f : ι →₀ M)` instead of `f.toFinsupp`, as for some unknown reason
 using dot notation or omitting the type ascription prevents the type being resolved correctly. -/
 def DFinsupp.toFinsupp (f : Π₀ _ : ι, M) : ι →₀ M :=
-  ⟨f.support, f, fun i => by simp only [DFinsupp.mem_support_iff]⟩
+  ⟨f.support, f, fun i ↦ by simp only [DFinsupp.mem_support_iff]⟩
 
 @[simp]
 theorem DFinsupp.toFinsupp_coe (f : Π₀ _ : ι, M) : ⇑f.toFinsupp = f :=
@@ -249,14 +249,14 @@ open Finsupp
 
 /-- `Finsupp.split` is an equivalence between `(Σ i, η i) →₀ N` and `Π₀ i, (η i →₀ N)`. -/
 def sigmaFinsuppEquivDFinsupp [Zero N] : ((Σ i, η i) →₀ N) ≃ Π₀ i, η i →₀ N where
-  toFun f := ⟨split f, Trunc.mk ⟨(splitSupport f : Finset ι).val, fun i => by
+  toFun f := ⟨split f, Trunc.mk ⟨(splitSupport f : Finset ι).val, fun i ↦ by
           rw [← Finset.mem_def, mem_splitSupport_iff_nonzero]
           exact (em _).symm⟩⟩
   invFun f := by
     haveI := Classical.decEq ι
-    haveI := fun i => Classical.decEq (η i →₀ N)
+    haveI := fun i ↦ Classical.decEq (η i →₀ N)
     refine
-      onFinset (Finset.sigma f.support fun j => (f j).support) (fun ji => f ji.1 ji.2) fun g hg =>
+      onFinset (Finset.sigma f.support fun j ↦ (f j).support) (fun ji ↦ f ji.1 ji.2) fun g hg ↦
         Finset.mem_sigma.mpr ⟨?_, mem_support_iff.mpr hg⟩
     simp only [Ne, DFinsupp.mem_support_toFun]
     intro h
@@ -287,7 +287,7 @@ theorem sigmaFinsuppEquivDFinsupp_support [DecidableEq ι] [Zero N]
 @[simp]
 theorem sigmaFinsuppEquivDFinsupp_single [DecidableEq ι] [Zero N] (a : Σ i, η i) (n : N) :
     sigmaFinsuppEquivDFinsupp (Finsupp.single a n) =
-      @DFinsupp.single _ (fun i => η i →₀ N) _ _ a.1 (Finsupp.single a.2 n) := by
+      @DFinsupp.single _ (fun i ↦ η i →₀ N) _ _ a.1 (Finsupp.single a.2 n) := by
   obtain ⟨i, a⟩ := a
   ext j b
   by_cases h : i = j

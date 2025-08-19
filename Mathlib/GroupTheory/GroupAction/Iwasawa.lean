@@ -83,7 +83,7 @@ theorem isSimpleGroup [Nontrivial M] (is_perfect : commutator M = ⊤)
   intro N nN
   cases or_iff_not_imp_left.mpr (IwaS.commutator_le N) with
   | inl h =>
-    refine Or.inl (N.eq_bot_iff_forall.mpr fun n hn => ?_)
+    refine Or.inl (N.eq_bot_iff_forall.mpr fun n hn ↦ ?_)
     apply is_faithful.eq_of_smul_eq_smul
     intro x
     rw [one_smul]

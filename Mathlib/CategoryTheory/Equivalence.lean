@@ -342,7 +342,7 @@ protected def mk (F : C ⥤ D) (G : D ⥤ C) (η : 𝟭 C ≅ F ⋙ G) (ε : G �
 /-- Equivalence of categories is reflexive. -/
 @[refl, simps]
 def refl : C ≌ C :=
-  ⟨𝟭 C, 𝟭 C, Iso.refl _, Iso.refl _, fun _ => Category.id_comp _⟩
+  ⟨𝟭 C, 𝟭 C, Iso.refl _, Iso.refl _, fun _ ↦ Category.id_comp _⟩
 
 instance : Inhabited (C ≌ C) :=
   ⟨refl⟩
@@ -415,8 +415,8 @@ theorem invFunIdAssoc_inv_app (e : C ≌ D) (F : D ⥤ E) (X : D) :
 def congrLeft (e : C ≌ D) : C ⥤ E ≌ D ⥤ E where
   functor := (whiskeringLeft _ _ _).obj e.inverse
   inverse := (whiskeringLeft _ _ _).obj e.functor
-  unitIso := (NatIso.ofComponents fun F => (e.funInvIdAssoc F).symm)
-  counitIso := (NatIso.ofComponents fun F => e.invFunIdAssoc F)
+  unitIso := (NatIso.ofComponents fun F ↦ (e.funInvIdAssoc F).symm)
+  counitIso := (NatIso.ofComponents fun F ↦ e.invFunIdAssoc F)
   functor_unitIso_comp F := by
     ext X
     dsimp
@@ -429,9 +429,9 @@ def congrRight (e : C ≌ D) : E ⥤ C ≌ E ⥤ D where
   functor := (whiskeringRight _ _ _).obj e.functor
   inverse := (whiskeringRight _ _ _).obj e.inverse
   unitIso := NatIso.ofComponents
-      fun F => F.rightUnitor.symm ≪≫ isoWhiskerLeft F e.unitIso ≪≫ Functor.associator _ _ _
+      fun F ↦ F.rightUnitor.symm ≪≫ isoWhiskerLeft F e.unitIso ≪≫ Functor.associator _ _ _
   counitIso := NatIso.ofComponents
-      fun F => Functor.associator _ _ _ ≪≫ isoWhiskerLeft F e.counitIso ≪≫ F.rightUnitor
+      fun F ↦ Functor.associator _ _ _ ≪≫ isoWhiskerLeft F e.counitIso ≪≫ F.rightUnitor
 
 variable (E) in
 /-- Promoting `Equivalence.congrRight` to a functor. -/
@@ -528,7 +528,7 @@ end
 /-- The functor of an equivalence of categories is essentially surjective. -/
 @[stacks 02C3]
 instance essSurj_functor (e : C ≌ E) : e.functor.EssSurj :=
-  ⟨fun Y => ⟨e.inverse.obj Y, ⟨e.counitIso.app Y⟩⟩⟩
+  ⟨fun Y ↦ ⟨e.inverse.obj Y, ⟨e.counitIso.app Y⟩⟩⟩
 
 instance essSurj_inverse (e : C ≌ E) : e.inverse.EssSurj :=
   e.symm.essSurj_functor
@@ -627,8 +627,8 @@ noncomputable def asEquivalence (F : C ⥤ D) [F.IsEquivalence] : C ≌ D where
   functor := F
   inverse := F.inv
   unitIso := NatIso.ofComponents
-    (fun X => (F.preimageIso <| F.objObjPreimageIso <| F.obj X).symm)
-      (fun f => F.map_injective (by simp [inv]))
+    (fun X ↦ (F.preimageIso <| F.objObjPreimageIso <| F.obj X).symm)
+      (fun f ↦ F.map_injective (by simp [inv]))
   counitIso := NatIso.ofComponents F.objObjPreimageIso (by simp [inv])
 
 instance isEquivalence_refl : IsEquivalence (𝟭 C) :=
@@ -668,7 +668,7 @@ lemma isEquivalence_of_iso {F G : C ⥤ D} (e : F ≅ G) [F.IsEquivalence] : G.I
 
 lemma isEquivalence_iff_of_iso {F G : C ⥤ D} (e : F ≅ G) :
     F.IsEquivalence ↔ G.IsEquivalence :=
-  ⟨fun _ => isEquivalence_of_iso e, fun _ => isEquivalence_of_iso e.symm⟩
+  ⟨fun _ ↦ isEquivalence_of_iso e, fun _ ↦ isEquivalence_of_iso e.symm⟩
 
 /-- If `G` and `F ⋙ G` are equivalence of categories, then `F` is also an equivalence. -/
 lemma isEquivalence_of_comp_right {E : Type*} [Category E] (F : C ⥤ D) (G : D ⥤ E)

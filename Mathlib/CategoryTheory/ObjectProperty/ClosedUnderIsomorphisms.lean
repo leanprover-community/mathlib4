@@ -44,7 +44,7 @@ lemma prop_iff_of_isIso [IsClosedUnderIsomorphisms P] {X Y : C} (f : X ⟶ Y) [I
   prop_iff_of_iso P (asIso f)
 
 /-- The closure by isomorphisms of a predicate on objects in a category. -/
-def isoClosure : ObjectProperty C := fun X => ∃ (Y : C) (_ : P Y), Nonempty (X ≅ Y)
+def isoClosure : ObjectProperty C := fun X ↦ ∃ (Y : C) (_ : P Y), Nonempty (X ≅ Y)
 
 lemma prop_isoClosure_iff (X : C) :
     isoClosure P X ↔ ∃ (Y : C) (_ : P Y), Nonempty (X ≅ Y) := by rfl
@@ -54,7 +54,7 @@ lemma prop_isoClosure {X Y : C} (h : P X) (e : X ⟶ Y) [IsIso e] : isoClosure P
   ⟨X, h, ⟨(asIso e).symm⟩⟩
 
 lemma le_isoClosure : P ≤ isoClosure P :=
-  fun X hX => ⟨X, hX, ⟨Iso.refl X⟩⟩
+  fun X hX ↦ ⟨X, hX, ⟨Iso.refl X⟩⟩
 
 variable {P Q} in
 lemma monotone_isoClosure (h : P ≤ Q) : isoClosure P ≤ isoClosure Q := by
@@ -69,7 +69,7 @@ lemma isoClosure_eq_self [IsClosedUnderIsomorphisms P] : isoClosure P = P := by
 
 lemma isoClosure_le_iff [IsClosedUnderIsomorphisms Q] : isoClosure P ≤ Q ↔ P ≤ Q :=
   ⟨(le_isoClosure P).trans,
-    fun h => (monotone_isoClosure h).trans (by rw [isoClosure_eq_self])⟩
+    fun h ↦ (monotone_isoClosure h).trans (by rw [isoClosure_eq_self])⟩
 
 instance : IsClosedUnderIsomorphisms (isoClosure P) where
   of_iso := by

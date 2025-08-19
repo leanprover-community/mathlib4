@@ -24,7 +24,7 @@ namespace WithTop
 
 @[simp]
 theorem preimage_coe_top : (some : α → WithTop α) ⁻¹' {⊤} = (∅ : Set α) :=
-  eq_empty_of_subset_empty fun _ => coe_ne_top
+  eq_empty_of_subset_empty fun _ ↦ coe_ne_top
 
 variable [Preorder α] {a b : α}
 
@@ -34,19 +34,19 @@ theorem range_coe : range (some : α → WithTop α) = Iio ⊤ := by
 
 @[simp]
 theorem preimage_coe_Ioi : (some : α → WithTop α) ⁻¹' Ioi a = Ioi a :=
-  ext fun _ => coe_lt_coe
+  ext fun _ ↦ coe_lt_coe
 
 @[simp]
 theorem preimage_coe_Ici : (some : α → WithTop α) ⁻¹' Ici a = Ici a :=
-  ext fun _ => coe_le_coe
+  ext fun _ ↦ coe_le_coe
 
 @[simp]
 theorem preimage_coe_Iio : (some : α → WithTop α) ⁻¹' Iio a = Iio a :=
-  ext fun _ => coe_lt_coe
+  ext fun _ ↦ coe_lt_coe
 
 @[simp]
 theorem preimage_coe_Iic : (some : α → WithTop α) ⁻¹' Iic a = Iic a :=
-  ext fun _ => coe_le_coe
+  ext fun _ ↦ coe_le_coe
 
 @[simp]
 theorem preimage_coe_Icc : (some : α → WithTop α) ⁻¹' Icc a b = Icc a b := by simp [← Ici_inter_Iic]
@@ -121,19 +121,19 @@ theorem range_coe : range (some : α → WithBot α) = Ioi ⊥ :=
 
 @[simp]
 theorem preimage_coe_Ioi : (some : α → WithBot α) ⁻¹' Ioi a = Ioi a :=
-  ext fun _ => coe_lt_coe
+  ext fun _ ↦ coe_lt_coe
 
 @[simp]
 theorem preimage_coe_Ici : (some : α → WithBot α) ⁻¹' Ici a = Ici a :=
-  ext fun _ => coe_le_coe
+  ext fun _ ↦ coe_le_coe
 
 @[simp]
 theorem preimage_coe_Iio : (some : α → WithBot α) ⁻¹' Iio a = Iio a :=
-  ext fun _ => coe_lt_coe
+  ext fun _ ↦ coe_lt_coe
 
 @[simp]
 theorem preimage_coe_Iic : (some : α → WithBot α) ⁻¹' Iic a = Iic a :=
-  ext fun _ => coe_le_coe
+  ext fun _ ↦ coe_le_coe
 
 @[simp]
 theorem preimage_coe_Icc : (some : α → WithBot α) ⁻¹' Icc a b = Icc a b := by simp [← Ici_inter_Iic]

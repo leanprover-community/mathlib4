@@ -48,7 +48,7 @@ abbrev IsTrail.edgesFinset {u v : V} {p : G.Walk u v} (h : p.IsTrail) : Finset (
 variable [DecidableEq V]
 
 theorem IsTrail.even_countP_edges_iff {u v : V} {p : G.Walk u v} (ht : p.IsTrail) (x : V) :
-    Even (p.edges.countP fun e => x ∈ e) ↔ u ≠ v → x ≠ u ∧ x ≠ v := by
+    Even (p.edges.countP fun e ↦ x ∈ e) ↔ u ≠ v → x ≠ u ∧ x ≠ v := by
   induction p with
   | nil => simp
   | cons huv p ih =>
@@ -88,24 +88,24 @@ theorem IsEulerian.isTrail {u v : V} {p : G.Walk u v} (h : p.IsEulerian) : p.IsT
 
 theorem IsEulerian.mem_edges_iff {u v : V} {p : G.Walk u v} (h : p.IsEulerian) {e : Sym2 V} :
     e ∈ p.edges ↔ e ∈ G.edgeSet :=
-  ⟨ fun h => p.edges_subset_edgeSet h
-  , fun he => by simpa [Nat.succ_le] using (h e he).ge ⟩
+  ⟨ fun h ↦ p.edges_subset_edgeSet h
+  , fun he ↦ by simpa [Nat.succ_le] using (h e he).ge ⟩
 
 /-- The edge set of an Eulerian graph is finite. -/
 def IsEulerian.fintypeEdgeSet {u v : V} {p : G.Walk u v} (h : p.IsEulerian) :
     Fintype G.edgeSet :=
-  Fintype.ofFinset h.isTrail.edgesFinset fun e => by
+  Fintype.ofFinset h.isTrail.edgesFinset fun e ↦ by
     simp only [Finset.mem_mk, Multiset.mem_coe, h.mem_edges_iff]
 
 theorem IsTrail.isEulerian_of_forall_mem {u v : V} {p : G.Walk u v} (h : p.IsTrail)
-    (hc : ∀ e, e ∈ G.edgeSet → e ∈ p.edges) : p.IsEulerian := fun e he =>
+    (hc : ∀ e, e ∈ G.edgeSet → e ∈ p.edges) : p.IsEulerian := fun e he ↦
   List.count_eq_one_of_mem h.edges_nodup (hc e he)
 
 theorem isEulerian_iff {u v : V} (p : G.Walk u v) :
     p.IsEulerian ↔ p.IsTrail ∧ ∀ e, e ∈ G.edgeSet → e ∈ p.edges := by
   constructor
   · intro h
-    exact ⟨h.isTrail, fun _ => h.mem_edges_iff.mpr⟩
+    exact ⟨h.isTrail, fun _ ↦ h.mem_edges_iff.mpr⟩
   · rintro ⟨h, hl⟩
     exact h.isEulerian_of_forall_mem hl
 
@@ -135,7 +135,7 @@ theorem IsEulerian.even_degree_iff {x u v : V} {p : G.Walk u v} (ht : p.IsEuleri
 
 theorem IsEulerian.card_filter_odd_degree [Fintype V] [DecidableRel G.Adj] {u v : V}
     {p : G.Walk u v} (ht : p.IsEulerian) {s}
-    (h : s = (Finset.univ : Finset V).filter fun v => Odd (G.degree v)) :
+    (h : s = (Finset.univ : Finset V).filter fun v ↦ Odd (G.degree v)) :
     s.card = 0 ∨ s.card = 2 := by
   subst s
   simp only [← Nat.not_even_iff_odd, Finset.card_eq_zero]

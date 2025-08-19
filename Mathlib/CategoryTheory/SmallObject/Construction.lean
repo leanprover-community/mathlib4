@@ -89,7 +89,7 @@ abbrev functorObjLeftFamily (x : FunctorObjIndex f πX) :
 
 /-- The top morphism in the pushout square in the definition of `pushoutObj f πX`. -/
 noncomputable abbrev functorObjTop : ∐ functorObjSrcFamily f πX ⟶ X :=
-  Limits.Sigma.desc (fun x => x.t)
+  Limits.Sigma.desc (fun x ↦ x.t)
 
 /-- The left morphism in the pushout square in the definition of `pushoutObj f πX`. -/
 noncomputable abbrev functorObjLeft :
@@ -125,7 +125,7 @@ lemma FunctorObjIndex.comm (x : FunctorObjIndex f πX) :
   simpa using (Sigma.ι (functorObjSrcFamily f πX) x ≫= functorObj_comm f πX).symm
 
 /-- The canonical projection on the base object. -/
-noncomputable abbrev π'FunctorObj : ∐ functorObjTgtFamily f πX ⟶ S := Sigma.desc (fun x => x.b)
+noncomputable abbrev π'FunctorObj : ∐ functorObjTgtFamily f πX ⟶ S := Sigma.desc (fun x ↦ x.b)
 
 /-- The canonical projection on the base object. -/
 noncomputable def πFunctorObj : functorObj f πX ⟶ S :=
@@ -196,8 +196,8 @@ variable {S T X Y : C} {πX : X ⟶ S} {πY : Y ⟶ T} (τ : Arrow.mk πX ⟶ Ar
 induced by a morphism `Arrow.mk πX ⟶ Arrow.mk πY`. -/
 noncomputable def functorMapSrc :
     ∐ (functorObjSrcFamily f πX) ⟶ ∐ functorObjSrcFamily f πY :=
-  Sigma.map' (fun x => FunctorObjIndex.mk x.i (x.t ≫ τ.left) (x.b ≫ τ.right) (by simp))
-    (fun _ => 𝟙 _)
+  Sigma.map' (fun x ↦ FunctorObjIndex.mk x.i (x.t ≫ τ.left) (x.b ≫ τ.right) (by simp))
+    (fun _ ↦ 𝟙 _)
 
 @[reassoc]
 lemma ι_functorMapSrc (i : I) (t : A i ⟶ X) (b : B i ⟶ S) (w : t ≫ πX = f i ≫ b)
@@ -222,8 +222,8 @@ lemma functorMapSrc_functorObjTop :
 induced by a morphism `Arrow.mk πX ⟶ Arrow.mk πY`. -/
 noncomputable def functorMapTgt :
     ∐ functorObjTgtFamily f πX ⟶ ∐ functorObjTgtFamily f πY :=
-  Sigma.map' (fun x => FunctorObjIndex.mk x.i (x.t ≫ τ.left) (x.b ≫ τ.right) (by simp))
-    (fun _ => 𝟙 _)
+  Sigma.map' (fun x ↦ FunctorObjIndex.mk x.i (x.t ≫ τ.left) (x.b ≫ τ.right) (by simp))
+    (fun _ ↦ 𝟙 _)
 
 @[reassoc]
 lemma ι_functorMapTgt (i : I) (t : A i ⟶ X) (b : B i ⟶ S) (w : t ≫ πX = f i ≫ b)

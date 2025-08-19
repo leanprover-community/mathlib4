@@ -130,7 +130,7 @@ variable {D : Type*} [Category D]
 variable (F : C ⥤ D) {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
 theorem map_commSq (s : CommSq f g h i) : CommSq (F.map f) (F.map g) (F.map h) (F.map i) :=
-  ⟨by simpa using congr_arg (fun k : W ⟶ Z => F.map k) s.w⟩
+  ⟨by simpa using congr_arg (fun k : W ⟶ Z ↦ F.map k) s.w⟩
 
 end Functor
 
@@ -203,14 +203,14 @@ end LiftStruct
 
 instance subsingleton_liftStruct_of_epi (sq : CommSq f i p g) [Epi i] :
     Subsingleton (LiftStruct sq) :=
-  ⟨fun l₁ l₂ => by
+  ⟨fun l₁ l₂ ↦ by
     ext
     rw [← cancel_epi i]
     simp only [LiftStruct.fac_left]⟩
 
 instance subsingleton_liftStruct_of_mono (sq : CommSq f i p g) [Mono p] :
     Subsingleton (LiftStruct sq) :=
-  ⟨fun l₁ l₂ => by
+  ⟨fun l₁ l₂ ↦ by
     ext
     rw [← cancel_mono p]
     simp only [LiftStruct.fac_right]⟩
@@ -231,7 +231,7 @@ theorem mk' (l : sq.LiftStruct) : HasLift sq :=
 
 theorem iff : HasLift sq ↔ Nonempty sq.LiftStruct := by
   constructor
-  exacts [fun h => h.exists_lift, fun h => mk h]
+  exacts [fun h ↦ h.exists_lift, fun h ↦ mk h]
 
 theorem iff_op : HasLift sq ↔ HasLift sq.op := by
   rw [iff, iff]

@@ -106,11 +106,11 @@ variable [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F �
 
 @[to_additive (attr := aesop unsafe 90%)]
 lemma IsSquare.map {a : α} (f : F) : IsSquare a → IsSquare (f a) :=
-  fun ⟨r, _⟩ => ⟨f r, by simp [*]⟩
+  fun ⟨r, _⟩ ↦ ⟨f r, by simp [*]⟩
 
 @[to_additive]
 lemma isSquare_subset_image_isSquare {f : F} (hf : Function.Surjective f) :
-    {b | IsSquare b} ⊆ f '' {a | IsSquare a} := fun b ⟨s, _⟩ => by
+    {b | IsSquare b} ⊆ f '' {a | IsSquare a} := fun b ⟨s, _⟩ ↦ by
   rcases hf s with ⟨r, rfl⟩
   exact ⟨r * r, by simp [*]⟩
 
@@ -141,7 +141,7 @@ end Monoid
 
 @[to_additive (attr := aesop unsafe 90%)]
 lemma IsSquare.mul [CommSemigroup α] {a b : α} : IsSquare a → IsSquare b → IsSquare (a * b) :=
-  fun ⟨r, _⟩ ⟨s, _⟩ => ⟨r * s, by simp_all [mul_mul_mul_comm]⟩
+  fun ⟨r, _⟩ ⟨s, _⟩ ↦ ⟨r * s, by simp_all [mul_mul_mul_comm]⟩
 
 section DivisionMonoid
 variable [DivisionMonoid α] {a : α}

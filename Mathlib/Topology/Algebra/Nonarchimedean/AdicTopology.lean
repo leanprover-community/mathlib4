@@ -49,7 +49,7 @@ open Topology Pointwise
 
 namespace Ideal
 
-theorem adic_basis (I : Ideal R) : SubmodulesRingBasis fun n : ℕ => (I ^ n • ⊤ : Ideal R) :=
+theorem adic_basis (I : Ideal R) : SubmodulesRingBasis fun n : ℕ ↦ (I ^ n • ⊤ : Ideal R) :=
   { inter := by
       suffices ∀ i j : ℕ, ∃ k, I ^ k ≤ I ^ i ∧ I ^ k ≤ I ^ j by
         simpa only [smul_eq_mul, mul_top, Algebra.algebraMap_self, map_id, le_inf_iff] using this
@@ -84,7 +84,7 @@ theorem nonarchimedean (I : Ideal R) : @NonarchimedeanRing R _ I.adicTopology :=
 
 /-- For the `I`-adic topology, the neighborhoods of zero has basis given by the powers of `I`. -/
 theorem hasBasis_nhds_zero_adic (I : Ideal R) :
-    HasBasis (@nhds R I.adicTopology (0 : R)) (fun _n : ℕ => True) fun n =>
+    HasBasis (@nhds R I.adicTopology (0 : R)) (fun _n : ℕ ↦ True) fun n ↦
       ((I ^ n : Ideal R) : Set R) :=
   ⟨by
     intro U
@@ -97,23 +97,23 @@ theorem hasBasis_nhds_zero_adic (I : Ideal R) :
       exact ⟨(I ^ i : Ideal R), ⟨i, by simp⟩, h⟩⟩
 
 theorem hasBasis_nhds_adic (I : Ideal R) (x : R) :
-    HasBasis (@nhds R I.adicTopology x) (fun _n : ℕ => True) fun n =>
-      (fun y => x + y) '' (I ^ n : Ideal R) := by
+    HasBasis (@nhds R I.adicTopology x) (fun _n : ℕ ↦ True) fun n ↦
+      (fun y ↦ x + y) '' (I ^ n : Ideal R) := by
   letI := I.adicTopology
-  have := I.hasBasis_nhds_zero_adic.map fun y => x + y
+  have := I.hasBasis_nhds_zero_adic.map fun y ↦ x + y
   rwa [map_add_left_nhds_zero x] at this
 
 variable (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
 
 theorem adic_module_basis :
-    I.ringFilterBasis.SubmodulesBasis fun n : ℕ => I ^ n • (⊤ : Submodule R M) :=
-  { inter := fun i j =>
+    I.ringFilterBasis.SubmodulesBasis fun n : ℕ ↦ I ^ n • (⊤ : Submodule R M) :=
+  { inter := fun i j ↦
       ⟨max i j,
         le_inf_iff.mpr
           ⟨smul_mono_left <| pow_le_pow_right (le_max_left i j),
             smul_mono_left <| pow_le_pow_right (le_max_right i j)⟩⟩
-    smul := fun m i =>
-      ⟨(I ^ i • ⊤ : Ideal R), ⟨i, by simp⟩, fun a a_in => by
+    smul := fun m i ↦
+      ⟨(I ^ i • ⊤ : Ideal R), ⟨i, by simp⟩, fun a a_in ↦ by
         replace a_in : a ∈ I ^ i := by simpa [(I ^ i).mul_top] using a_in
         exact smul_mem_smul a_in mem_top⟩ }
 

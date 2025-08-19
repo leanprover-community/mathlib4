@@ -60,7 +60,7 @@ instance invOneClass [∀ i, InvOneClass (f i)] : InvOneClass (∀ i, f i) where
 instance monoid [∀ i, Monoid (f i)] : Monoid (∀ i, f i) where
   __ := semigroup
   __ := mulOneClass
-  npow := fun n x i => x i ^ n
+  npow := fun n x i ↦ x i ^ n
   npow_zero := by intros; ext; exact Monoid.npow_zero _
   npow_succ := by intros; ext; exact Monoid.npow_succ _ _
 
@@ -70,7 +70,7 @@ instance commMonoid [∀ i, CommMonoid (f i)] : CommMonoid (∀ i, f i) :=
 
 @[to_additive Pi.subNegMonoid]
 instance divInvMonoid [∀ i, DivInvMonoid (f i)] : DivInvMonoid (∀ i, f i) where
-  zpow := fun z x i => x i ^ z
+  zpow := fun z x i ↦ x i ^ z
   div_eq_mul_inv := by intros; ext; exact div_eq_mul_inv _ _
   zpow_zero' := by intros; ext; exact DivInvMonoid.zpow_zero' _
   zpow_succ' := by intros; ext; exact DivInvMonoid.zpow_succ' _ _
@@ -115,11 +115,11 @@ instance commGroup [∀ i, CommGroup (f i)] : CommGroup (∀ i, f i) := { group,
 
 @[to_additive]
 instance leftCancelSemigroup [∀ i, LeftCancelSemigroup (f i)] : LeftCancelSemigroup (∀ i, f i) :=
-  { semigroup with mul_left_cancel := fun _ _ _ => mul_left_cancel }
+  { semigroup with mul_left_cancel := fun _ _ _ ↦ mul_left_cancel }
 
 @[to_additive]
 instance rightCancelSemigroup [∀ i, RightCancelSemigroup (f i)] : RightCancelSemigroup (∀ i, f i) :=
-  { semigroup with mul_right_cancel := fun _ _ _ => mul_right_cancel }
+  { semigroup with mul_right_cancel := fun _ _ _ ↦ mul_right_cancel }
 
 @[to_additive]
 instance leftCancelMonoid [∀ i, LeftCancelMonoid (f i)] : LeftCancelMonoid (∀ i, f i) :=
@@ -145,7 +145,7 @@ section Extend
 
 @[to_additive]
 theorem extend_one [One γ] (f : α → β) : Function.extend f (1 : α → γ) (1 : β → γ) = 1 :=
-  funext fun _ => by apply ite_self
+  funext fun _ ↦ by apply ite_self
 
 @[to_additive]
 theorem extend_mul [Mul γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ : β → γ) :
@@ -194,8 +194,8 @@ def uniqueOfSurjectiveOne (α : Type*) {β : Type*} [One β] (h : Function.Surje
 
 @[to_additive]
 theorem Subsingleton.pi_mulSingle_eq {α : Type*} [DecidableEq I] [Subsingleton I] [One α]
-    (i : I) (x : α) : Pi.mulSingle i x = fun _ => x :=
-  funext fun j => by rw [Subsingleton.elim j i, Pi.mulSingle_eq_same]
+    (i : I) (x : α) : Pi.mulSingle i x = fun _ ↦ x :=
+  funext fun j ↦ by rw [Subsingleton.elim j i, Pi.mulSingle_eq_same]
 
 namespace Sum
 

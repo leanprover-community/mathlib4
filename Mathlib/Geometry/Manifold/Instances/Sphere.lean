@@ -135,12 +135,12 @@ theorem stereoInvFunAux_mem (hv : ‖v‖ = 1) {w : E} (hw : w ∈ (ℝ ∙ v)�
 
 theorem hasFDerivAt_stereoInvFunAux (v : E) :
     HasFDerivAt (stereoInvFunAux v) (ContinuousLinearMap.id ℝ E) 0 := by
-  have h₀ : HasFDerivAt (fun w : E => ‖w‖ ^ 2) (0 : E →L[ℝ] ℝ) 0 := by
+  have h₀ : HasFDerivAt (fun w : E ↦ ‖w‖ ^ 2) (0 : E →L[ℝ] ℝ) 0 := by
     convert (hasStrictFDerivAt_norm_sq (0 : E)).hasFDerivAt
     simp only [map_zero, smul_zero]
-  have h₁ : HasFDerivAt (fun w : E => (‖w‖ ^ 2 + 4)⁻¹) (0 : E →L[ℝ] ℝ) 0 := by
+  have h₁ : HasFDerivAt (fun w : E ↦ (‖w‖ ^ 2 + 4)⁻¹) (0 : E →L[ℝ] ℝ) 0 := by
     convert (hasFDerivAt_inv _).comp _ (h₀.add (hasFDerivAt_const 4 0)) <;> simp
-  have h₂ : HasFDerivAt (fun w => (4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v)
+  have h₂ : HasFDerivAt (fun w ↦ (4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v)
       ((4 : ℝ) • ContinuousLinearMap.id ℝ E) 0 := by
     convert ((hasFDerivAt_const (4 : ℝ) 0).smul (hasFDerivAt_id 0)).add
       ((h₀.sub (hasFDerivAt_const (4 : ℝ) 0)).smul (hasFDerivAt_const v 0)) using 1
@@ -157,12 +157,12 @@ theorem hasFDerivAt_stereoInvFunAux_comp_coe (v : E) :
   refine this.comp (0 : (ℝ ∙ v)ᗮ) (by apply ContinuousLinearMap.hasFDerivAt)
 
 theorem contDiff_stereoInvFunAux {m : WithTop ℕ∞} : ContDiff ℝ m (stereoInvFunAux v) := by
-  have h₀ : ContDiff ℝ ω fun w : E => ‖w‖ ^ 2 := contDiff_norm_sq ℝ
-  have h₁ : ContDiff ℝ ω fun w : E => (‖w‖ ^ 2 + 4)⁻¹ := by
+  have h₀ : ContDiff ℝ ω fun w : E ↦ ‖w‖ ^ 2 := contDiff_norm_sq ℝ
+  have h₁ : ContDiff ℝ ω fun w : E ↦ (‖w‖ ^ 2 + 4)⁻¹ := by
     refine (h₀.add contDiff_const).inv ?_
     intro x
     nlinarith
-  have h₂ : ContDiff ℝ ω fun w => (4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v := by
+  have h₂ : ContDiff ℝ ω fun w ↦ (4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v := by
     refine (contDiff_const.smul contDiff_id).add ?_
     exact (h₀.sub contDiff_const).smul contDiff_const
   exact (h₁.smul h₂).of_le le_top
@@ -249,8 +249,8 @@ def stereographic (hv : ‖v‖ = 1) : PartialHomeomorph (sphere (0 : E) 1) (ℝ
   source := {⟨v, by simp [hv]⟩}ᶜ
   target := Set.univ
   map_source' := by simp
-  map_target' {w} _ := fun h => (stereoInvFun_ne_north_pole hv w) (Set.eq_of_mem_singleton h)
-  left_inv' x hx := stereo_left_inv hv fun h => hx (by
+  map_target' {w} _ := fun h ↦ (stereoInvFun_ne_north_pole hv w) (Set.eq_of_mem_singleton h)
+  left_inv' x hx := stereo_left_inv hv fun h ↦ hx (by
     rw [← h] at hv
     apply Subtype.ext
     dsimp
@@ -259,7 +259,7 @@ def stereographic (hv : ‖v‖ = 1) : PartialHomeomorph (sphere (0 : E) 1) (ℝ
   open_source := isOpen_compl_singleton
   open_target := isOpen_univ
   continuousOn_toFun :=
-    continuousOn_stereoToFun.comp continuous_subtype_val.continuousOn fun w h => by
+    continuousOn_stereoToFun.comp continuous_subtype_val.continuousOn fun w h ↦ by
       dsimp
       exact
         h ∘ Subtype.ext ∘ Eq.symm ∘ (inner_eq_one_iff_of_norm_one hv (by simp)).mp
@@ -466,7 +466,7 @@ theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {f
 
 /-- The antipodal map is analytic. -/
 theorem contMDiff_neg_sphere {m : WithTop ℕ∞} {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
-    ContMDiff (𝓡 n) (𝓡 n) m fun x : sphere (0 : E) 1 => -x := by
+    ContMDiff (𝓡 n) (𝓡 n) m fun x : sphere (0 : E) 1 ↦ -x := by
   -- this doesn't elaborate well in term mode
   apply ContMDiff.codRestrict_sphere
   apply contDiff_neg.contMDiff.comp _
@@ -564,9 +564,9 @@ instance : LieGroup (𝓡 1) ω Circle where
   contMDiff_mul := by
     apply ContMDiff.codRestrict_sphere
     let c : Circle → ℂ := (↑)
-    have h₂ : ContMDiff (𝓘(ℝ, ℂ).prod 𝓘(ℝ, ℂ)) 𝓘(ℝ, ℂ) ω fun z : ℂ × ℂ => z.fst * z.snd := by
+    have h₂ : ContMDiff (𝓘(ℝ, ℂ).prod 𝓘(ℝ, ℂ)) 𝓘(ℝ, ℂ) ω fun z : ℂ × ℂ ↦ z.fst * z.snd := by
       rw [contMDiff_iff]
-      exact ⟨continuous_mul, fun x y => contDiff_mul.contDiffOn⟩
+      exact ⟨continuous_mul, fun x y ↦ contDiff_mul.contDiffOn⟩
     -- Porting note: needed to fill in first 3 arguments or could not figure out typeclasses
     suffices h₁ : ContMDiff ((𝓡 1).prod (𝓡 1)) (𝓘(ℝ, ℂ).prod 𝓘(ℝ, ℂ)) ω (Prod.map c c) from
       h₂.comp h₁

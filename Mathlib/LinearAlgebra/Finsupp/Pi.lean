@@ -32,8 +32,8 @@ variable (α : Type*) [Unique α]
 `R`-linearly equivalent to `M`. -/
 noncomputable def LinearEquiv.finsuppUnique : (α →₀ M) ≃ₗ[R] M :=
   { Finsupp.equivFunOnFinite.trans (Equiv.funUnique α M) with
-    map_add' := fun _ _ => rfl
-    map_smul' := fun _ _ => rfl }
+    map_add' := fun _ _ ↦ rfl
+    map_smul' := fun _ _ ↦ rfl }
 
 variable {R M}
 
@@ -87,7 +87,7 @@ open Finsupp Function
 /-- A surjective linear map to functions on a finite type has a splitting. -/
 def splittingOfFunOnFintypeSurjective [Finite α] (f : M →ₗ[R] α → R) (s : Surjective f) :
     (α → R) →ₗ[R] M :=
-  (Finsupp.lift _ _ _ fun x : α => (s (Finsupp.single x 1)).choose).comp
+  (Finsupp.lift _ _ _ fun x : α ↦ (s (Finsupp.single x 1)).choose).comp
     (linearEquivFunOnFinite R R α).symm.toLinearMap
 
 theorem splittingOfFunOnFintypeSurjective_splits [Finite α] (f : M →ₗ[R] α → R)
@@ -100,7 +100,7 @@ theorem splittingOfFunOnFintypeSurjective_splits [Finite α] (f : M →ₗ[R] α
   rw [zero_smul]
 
 theorem leftInverse_splittingOfFunOnFintypeSurjective [Finite α] (f : M →ₗ[R] α → R)
-    (s : Surjective f) : LeftInverse f (splittingOfFunOnFintypeSurjective f s) := fun g =>
+    (s : Surjective f) : LeftInverse f (splittingOfFunOnFintypeSurjective f s) := fun g ↦
   LinearMap.congr_fun (splittingOfFunOnFintypeSurjective_splits f s) g
 
 theorem splittingOfFunOnFintypeSurjective_injective [Finite α] (f : M →ₗ[R] α → R)
@@ -127,19 +127,19 @@ lemma mem_submodule_iff (S : α → Submodule R M) (x : α →₀ M) :
   rfl
 
 theorem ker_mapRange (f : M →ₗ[R] N) (I : Type*) :
-    LinearMap.ker (mapRange.linearMap (α := I) f) = submodule (fun _ => LinearMap.ker f) := by
+    LinearMap.ker (mapRange.linearMap (α := I) f) = submodule (fun _ ↦ LinearMap.ker f) := by
   ext x
   simp [Finsupp.ext_iff]
 
 theorem range_mapRange_linearMap (f : M →ₗ[R] N) (hf : LinearMap.ker f = ⊥) (I : Type*) :
-    LinearMap.range (mapRange.linearMap (α := I) f) = submodule (fun _ => LinearMap.range f) := by
+    LinearMap.range (mapRange.linearMap (α := I) f) = submodule (fun _ ↦ LinearMap.range f) := by
   ext x
   constructor
   · rintro ⟨y, hy⟩
     simp [← hy]
   · intro hx
     choose y hy using hx
-    refine ⟨⟨x.support, y, fun i => ?_⟩, by ext; simp_all⟩
+    refine ⟨⟨x.support, y, fun i ↦ ?_⟩, by ext; simp_all⟩
     constructor
     <;> contrapose!
     <;> simp_all (config := {contextual := true}) [← hy, map_zero, LinearMap.ker_eq_bot'.1 hf]

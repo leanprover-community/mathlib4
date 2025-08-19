@@ -130,15 +130,15 @@ namespace inhomogeneousChains
 
 /-- The differential in the complex of inhomogeneous chains used to calculate group homology. -/
 def d : ModuleCat.of k ((Fin (n + 1) → G) →₀ A) ⟶ ModuleCat.of k ((Fin n → G) →₀ A) :=
-  ModuleCat.ofHom <| lsum (R := k) k fun g => lsingle (fun i => g i.succ) ∘ₗ A.ρ (g 0)⁻¹ +
-    Finset.univ.sum fun j : Fin (n + 1) =>
+  ModuleCat.ofHom <| lsum (R := k) k fun g ↦ lsingle (fun i ↦ g i.succ) ∘ₗ A.ρ (g 0)⁻¹ +
+    Finset.univ.sum fun j : Fin (n + 1) ↦
       (-1 : k) ^ ((j : ℕ) + 1) • lsingle (Fin.contractNth j (· * ·) g)
 
 variable {A n} in
 @[simp]
 theorem d_single (n : ℕ) (g : Fin (n + 1) → G) (a : A) :
-    d A n (single g a) = single (fun i => g i.succ) (A.ρ (g 0)⁻¹ a) +
-      Finset.univ.sum fun j : Fin (n + 1) =>
+    d A n (single g a) = single (fun i ↦ g i.succ) (A.ρ (g 0)⁻¹ a) +
+      Finset.univ.sum fun j : Fin (n + 1) ↦
         (-1 : k) ^ ((j : ℕ) + 1) • single (Fin.contractNth j (· * ·) g) a := by
   simp [d]
 
@@ -160,8 +160,8 @@ $$\dots \to \bigoplus_{G^1} A \to \bigoplus_{G^0} A \to 0$$
 which calculates the group homology of `A`. -/
 noncomputable abbrev inhomogeneousChains :
     ChainComplex (ModuleCat k) ℕ :=
-  ChainComplex.of (fun n => ModuleCat.of k ((Fin n → G) →₀ A))
-    (fun n => inhomogeneousChains.d A n) fun n => by
+  ChainComplex.of (fun n ↦ ModuleCat.of k ((Fin n → G) →₀ A))
+    (fun n ↦ inhomogeneousChains.d A n) fun n ↦ by
     classical
     simp only [inhomogeneousChains.d_eq]
     slice_lhs 3 4 => { rw [Iso.hom_inv_id] }
@@ -174,7 +174,7 @@ variable {A n} in
 @[ext]
 theorem inhomogeneousChains.ext {M : ModuleCat k} {x y : (inhomogeneousChains A).X n ⟶ M}
     (h : ∀ g, ModuleCat.ofHom (lsingle g) ≫ x = ModuleCat.ofHom (lsingle g) ≫ y) :
-    x = y := ModuleCat.hom_ext <| lhom_ext' fun g => ModuleCat.hom_ext_iff.1 (h g)
+    x = y := ModuleCat.hom_ext <| lhom_ext' fun g ↦ ModuleCat.hom_ext_iff.1 (h g)
 
 theorem inhomogeneousChains.d_def (n : ℕ) :
     (inhomogeneousChains A).d (n + 1) n = d A n := by

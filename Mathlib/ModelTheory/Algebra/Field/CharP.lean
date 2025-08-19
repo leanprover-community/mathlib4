@@ -41,7 +41,7 @@ noncomputable def eqZero (n : ℕ) : Language.ring.Sentence :=
 def _root_.FirstOrder.Language.Theory.fieldOfChar (p : ℕ) : Language.ring.Theory :=
   Theory.field ∪
   if p = 0
-  then (fun q => ∼(eqZero q)) '' {q : ℕ | q.Prime}
+  then (fun q ↦ ∼(eqZero q)) '' {q : ℕ | q.Prime}
   else if p.Prime then {eqZero p}
   else {⊥}
 
@@ -67,7 +67,7 @@ theorem charP_iff_model_fieldOfChar [Field K] [CompatibleRing K] :
     simp only [Theory.model_iff, Set.mem_image, Set.mem_setOf_eq, Sentence.Realize,
       forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, Formula.realize_not,
       realize_eqZero, ← CharZero.charZero_iff_forall_prime_ne_zero]
-    exact ⟨fun _ => CharP.ofCharZero _, fun _ => CharP.charP_to_charZero K⟩
+    exact ⟨fun _ ↦ CharP.ofCharZero _, fun _ ↦ CharP.charP_to_charZero K⟩
   · simp only [Theory.model_iff, Set.mem_singleton_iff, Sentence.Realize, forall_eq,
       realize_eqZero, ← CharP.charP_iff_prime_eq_zero hp]
   · simp only [Theory.model_iff, Set.mem_singleton_iff, Sentence.Realize,

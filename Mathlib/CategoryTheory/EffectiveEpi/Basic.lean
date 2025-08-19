@@ -95,7 +95,7 @@ instance epiOfEffectiveEpi {X Y : C} (f : Y ⟶ X) [EffectiveEpi f] : Epi f := b
   constructor
   intro W m₁ m₂ h
   have : m₂ = EffectiveEpi.desc f (f ≫ m₂)
-    (fun {Z} g₁ g₂ h => by simp only [← Category.assoc, h]) := EffectiveEpi.uniq _ _ _ _ rfl
+    (fun {Z} g₁ g₂ h ↦ by simp only [← Category.assoc, h]) := EffectiveEpi.uniq _ _ _ _ rfl
   rw [this]
   exact EffectiveEpi.uniq _ _ _ _ h
 
@@ -166,8 +166,8 @@ lemma EffectiveEpiFamily.uniq {B W : C} {α : Type*} (X : α → C) (π : (a : �
 lemma EffectiveEpiFamily.hom_ext {B W : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
     [EffectiveEpiFamily X π] (m₁ m₂ : B ⟶ W) (h : ∀ a, π a ≫ m₁ = π a ≫ m₂) :
     m₁ = m₂ := by
-  have : m₂ = EffectiveEpiFamily.desc X π (fun a => π a ≫ m₂)
-      (fun a₁ a₂ g₁ g₂ h => by simp only [← Category.assoc, h]) := by
+  have : m₂ = EffectiveEpiFamily.desc X π (fun a ↦ π a ≫ m₂)
+      (fun a₁ a₂ g₁ g₂ h ↦ by simp only [← Category.assoc, h]) := by
     apply EffectiveEpiFamily.uniq; intro; rfl
   rw [this]
   exact EffectiveEpiFamily.uniq _ _ _ _ _ h
@@ -243,7 +243,7 @@ def effectiveEpiStructOfIsIso {X Y : C} (f : X ⟶ Y) [IsIso f] : EffectiveEpiSt
 
 instance {X Y : C} (f : X ⟶ Y) [IsIso f] : EffectiveEpi f := ⟨⟨effectiveEpiStructOfIsIso f⟩⟩
 
-example {X : C} : EffectiveEpiFamily (fun _ => X : Unit → C) (fun _ => 𝟙 X) := inferInstance
+example {X : C} : EffectiveEpiFamily (fun _ ↦ X : Unit → C) (fun _ ↦ 𝟙 X) := inferInstance
 
 /--
 Reindex the indexing type of an effective epi family struct.
@@ -253,13 +253,13 @@ def EffectiveEpiFamilyStruct.reindex
     (X : α → C)
     (π : (a : α) → (X a ⟶ B))
     (e : α' ≃ α)
-    (P : EffectiveEpiFamilyStruct (fun a => X (e a)) (fun a => π (e a))) :
+    (P : EffectiveEpiFamilyStruct (fun a ↦ X (e a)) (fun a ↦ π (e a))) :
     EffectiveEpiFamilyStruct X π where
-  desc := fun f h => P.desc (fun _ => f _) (fun _ _ => h _ _)
+  desc := fun f h ↦ P.desc (fun _ ↦ f _) (fun _ _ ↦ h _ _)
   fac _ _ a := by
     obtain ⟨a,rfl⟩ := e.surjective a
     apply P.fac
-  uniq _ _ _ hm := P.uniq _ _ _ fun _ => hm _
+  uniq _ _ _ hm := P.uniq _ _ _ fun _ ↦ hm _
 
 /--
 Reindex the indexing type of an effective epi family.
@@ -269,7 +269,7 @@ lemma EffectiveEpiFamily.reindex
     (X : α → C)
     (π : (a : α) → (X a ⟶ B))
     (e : α' ≃ α)
-    (h : EffectiveEpiFamily (fun a => X (e a)) (fun a => π (e a))) :
+    (h : EffectiveEpiFamily (fun a ↦ X (e a)) (fun a ↦ π (e a))) :
     EffectiveEpiFamily X π :=
   .mk <| .intro <| @EffectiveEpiFamily.getStruct _ _ _ _ _ _ h |>.reindex _ _ e
 

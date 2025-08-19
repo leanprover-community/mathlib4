@@ -45,7 +45,7 @@ theorem HasFDerivAtFilter.comp {g : F → G} {g' : F →L[𝕜] G} {L' : Filter 
     HasFDerivAtFilter (g ∘ f) (g'.comp f') x L := by
   let eq₁ := (g'.isBigO_comp _ _).trans_isLittleO hf.isLittleO
   let eq₂ := (hg.isLittleO.comp_tendsto hL).trans_isBigO hf.isBigO_sub
-  refine .of_isLittleO <| eq₂.triangle <| eq₁.congr_left fun x' => ?_
+  refine .of_isLittleO <| eq₂.triangle <| eq₁.congr_left fun x' ↦ ?_
   simp
 
 /- A readable version of the previous theorem, a general form of the chain rule. -/
@@ -53,15 +53,15 @@ example {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAtFilter g g' (f x) (
     (hf : HasFDerivAtFilter f f' x L) : HasFDerivAtFilter (g ∘ f) (g'.comp f') x L := by
   have :=
     calc
-      (fun x' => g (f x') - g (f x) - g' (f x' - f x)) =o[L] fun x' => f x' - f x :=
+      (fun x' ↦ g (f x') - g (f x) - g' (f x' - f x)) =o[L] fun x' ↦ f x' - f x :=
         hg.isLittleO.comp_tendsto le_rfl
-      _ =O[L] fun x' => x' - x := hf.isBigO_sub
+      _ =O[L] fun x' ↦ x' - x := hf.isBigO_sub
   refine .of_isLittleO <| this.triangle ?_
   calc
-    (fun x' : E => g' (f x' - f x) - g'.comp f' (x' - x))
-    _ =ᶠ[L] fun x' => g' (f x' - f x - f' (x' - x)) := Eventually.of_forall fun x' => by simp
-    _ =O[L] fun x' => f x' - f x - f' (x' - x) := g'.isBigO_comp _ _
-    _ =o[L] fun x' => x' - x := hf.isLittleO
+    (fun x' : E ↦ g' (f x' - f x) - g'.comp f' (x' - x))
+    _ =ᶠ[L] fun x' ↦ g' (f x' - f x - f' (x' - x)) := Eventually.of_forall fun x' ↦ by simp
+    _ =O[L] fun x' ↦ f x' - f x - f' (x' - x) := g'.isBigO_comp _ _
+    _ =o[L] fun x' ↦ x' - x := hf.isLittleO
 
 @[fun_prop]
 theorem HasFDerivWithinAt.comp {g : F → G} {g' : F →L[𝕜] G} {t : Set F}
@@ -189,22 +189,22 @@ theorem fderiv_comp_fderivWithin {g : F → G} (hg : DifferentiableAt 𝕜 g (f 
 theorem DifferentiableOn.fun_comp {g : F → G} {t : Set F} (hg : DifferentiableOn 𝕜 g t)
     (hf : DifferentiableOn 𝕜 f s) (st : MapsTo f s t) :
     DifferentiableOn 𝕜 (fun x ↦ g (f x)) s :=
-  fun x hx => DifferentiableWithinAt.comp x (hg (f x) (st hx)) (hf x hx) st
+  fun x hx ↦ DifferentiableWithinAt.comp x (hg (f x) (st hx)) (hf x hx) st
 
 @[fun_prop]
 theorem DifferentiableOn.comp {g : F → G} {t : Set F} (hg : DifferentiableOn 𝕜 g t)
     (hf : DifferentiableOn 𝕜 f s) (st : MapsTo f s t) : DifferentiableOn 𝕜 (g ∘ f) s :=
-  fun x hx => DifferentiableWithinAt.comp x (hg (f x) (st hx)) (hf x hx) st
+  fun x hx ↦ DifferentiableWithinAt.comp x (hg (f x) (st hx)) (hf x hx) st
 
 @[fun_prop]
 theorem Differentiable.fun_comp {g : F → G} (hg : Differentiable 𝕜 g) (hf : Differentiable 𝕜 f) :
     Differentiable 𝕜 (fun x ↦ g (f x)) :=
-  fun x => DifferentiableAt.comp x (hg (f x)) (hf x)
+  fun x ↦ DifferentiableAt.comp x (hg (f x)) (hf x)
 
 @[fun_prop]
 theorem Differentiable.comp {g : F → G} (hg : Differentiable 𝕜 g) (hf : Differentiable 𝕜 f) :
     Differentiable 𝕜 (g ∘ f) :=
-  fun x => DifferentiableAt.comp x (hg (f x)) (hf x)
+  fun x ↦ DifferentiableAt.comp x (hg (f x)) (hf x)
 
 @[fun_prop]
 theorem Differentiable.comp_differentiableOn {g : F → G} (hg : Differentiable 𝕜 g)
@@ -215,7 +215,7 @@ theorem Differentiable.comp_differentiableOn {g : F → G} (hg : Differentiable 
 @[fun_prop]
 protected theorem HasStrictFDerivAt.comp {g : F → G} {g' : F →L[𝕜] G}
     (hg : HasStrictFDerivAt g g' (f x)) (hf : HasStrictFDerivAt f f' x) :
-    HasStrictFDerivAt (fun x => g (f x)) (g'.comp f') x :=
+    HasStrictFDerivAt (fun x ↦ g (f x)) (g'.comp f') x :=
   .of_isLittleO <|
     ((hg.isLittleO.comp_tendsto (hf.continuousAt.prodMap' hf.continuousAt)).trans_isBigO
         hf.isBigO_sub).triangle <| by
@@ -224,12 +224,12 @@ protected theorem HasStrictFDerivAt.comp {g : F → G} {g' : F →L[𝕜] G}
 @[fun_prop]
 protected theorem Differentiable.iterate {f : E → E} (hf : Differentiable 𝕜 f) (n : ℕ) :
     Differentiable 𝕜 f^[n] :=
-  Nat.recOn n differentiable_id fun _ ihn => ihn.comp hf
+  Nat.recOn n differentiable_id fun _ ihn ↦ ihn.comp hf
 
 @[fun_prop]
 protected theorem DifferentiableOn.iterate {f : E → E} (hf : DifferentiableOn 𝕜 f s)
     (hs : MapsTo f s s) (n : ℕ) : DifferentiableOn 𝕜 f^[n] s :=
-  Nat.recOn n differentiableOn_id fun _ ihn => ihn.comp hf hs
+  Nat.recOn n differentiableOn_id fun _ ihn ↦ ihn.comp hf hs
 
 variable {x}
 

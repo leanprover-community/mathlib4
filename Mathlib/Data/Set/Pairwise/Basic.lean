@@ -37,15 +37,15 @@ section Pairwise
 variable {f g : ι → α} {s t : Set α} {a b : α}
 
 theorem pairwise_on_bool (hr : Symmetric r) {a b : α} :
-    Pairwise (r on fun c => cond c a b) ↔ r a b := by simpa [Pairwise, Function.onFun] using @hr a b
+    Pairwise (r on fun c ↦ cond c a b) ↔ r a b := by simpa [Pairwise, Function.onFun] using @hr a b
 
 theorem pairwise_disjoint_on_bool [PartialOrder α] [OrderBot α] {a b : α} :
-    Pairwise (Disjoint on fun c => cond c a b) ↔ Disjoint a b :=
+    Pairwise (Disjoint on fun c ↦ cond c a b) ↔ Disjoint a b :=
   pairwise_on_bool Disjoint.symm
 
 theorem Symmetric.pairwise_on [LinearOrder ι] (hr : Symmetric r) (f : ι → α) :
     Pairwise (r on f) ↔ ∀ ⦃m n⦄, m < n → r (f m) (f n) :=
-  ⟨fun h _m _n hmn => h hmn.ne, fun h _m _n hmn => hmn.lt_or_gt.elim (@h _ _) fun h' => hr (h h')⟩
+  ⟨fun h _m _n hmn ↦ h hmn.ne, fun h _m _n hmn ↦ hmn.lt_or_gt.elim (@h _ _) fun h' ↦ hr (h h')⟩
 
 theorem pairwise_disjoint_on [PartialOrder α] [OrderBot α] [LinearOrder ι] (f : ι → α) :
     Pairwise (Disjoint on f) ↔ ∀ ⦃m n⦄, m < n → Disjoint (f m) (f n) :=
@@ -53,7 +53,7 @@ theorem pairwise_disjoint_on [PartialOrder α] [OrderBot α] [LinearOrder ι] (f
 
 theorem pairwise_disjoint_mono [PartialOrder α] [OrderBot α] (hs : Pairwise (Disjoint on f))
     (h : g ≤ f) : Pairwise (Disjoint on g) :=
-  hs.mono fun i j hij => Disjoint.mono (h i) (h j) hij
+  hs.mono fun i j hij ↦ Disjoint.mono (h i) (h j) hij
 
 theorem Pairwise.disjoint_extend_bot [PartialOrder γ] [OrderBot γ]
     {e : α → β} {f : α → γ} (hf : Pairwise (Disjoint on f)) (he : FactorsThrough f e) :
@@ -68,16 +68,16 @@ theorem Pairwise.disjoint_extend_bot [PartialOrder γ] [OrderBot γ]
 namespace Set
 
 theorem Pairwise.mono (h : t ⊆ s) (hs : s.Pairwise r) : t.Pairwise r :=
-  fun _x xt _y yt => hs (h xt) (h yt)
+  fun _x xt _y yt ↦ hs (h xt) (h yt)
 
 theorem Pairwise.mono' (H : r ≤ p) (hr : s.Pairwise r) : s.Pairwise p :=
   hr.imp H
 
 theorem pairwise_top (s : Set α) : s.Pairwise ⊤ :=
-  pairwise_of_forall s _ fun _ _ => trivial
+  pairwise_of_forall s _ fun _ _ ↦ trivial
 
 protected theorem Subsingleton.pairwise (h : s.Subsingleton) (r : α → α → Prop) : s.Pairwise r :=
-  fun _x hx _y hy hne => (hne (h hx hy)).elim
+  fun _x hx _y hy hne ↦ (hne (h hx hy)).elim
 
 @[simp]
 theorem pairwise_empty (r : α → α → Prop) : (∅ : Set α).Pairwise r :=
@@ -88,7 +88,7 @@ theorem pairwise_singleton (a : α) (r : α → α → Prop) : Set.Pairwise {a} 
   subsingleton_singleton.pairwise r
 
 theorem pairwise_iff_of_refl [IsRefl α r] : s.Pairwise r ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → r a b :=
-  forall₄_congr fun _ _ _ _ => or_iff_not_imp_left.symm.trans <| or_iff_right_of_imp of_eq
+  forall₄_congr fun _ _ _ _ ↦ or_iff_not_imp_left.symm.trans <| or_iff_right_of_imp of_eq
 
 alias ⟨Pairwise.of_refl, _⟩ := pairwise_iff_of_refl
 
@@ -96,7 +96,7 @@ theorem Nonempty.pairwise_iff_exists_forall [IsEquiv α r] {s : Set ι} (hs : s.
     s.Pairwise (r on f) ↔ ∃ z, ∀ x ∈ s, r (f x) z := by
   constructor
   · rcases hs with ⟨y, hy⟩
-    refine fun H => ⟨f y, fun x hx => ?_⟩
+    refine fun H ↦ ⟨f y, fun x hx ↦ ?_⟩
     rcases eq_or_ne x y with (rfl | hne)
     · apply IsRefl.refl
     · exact H hx hy hne
@@ -108,7 +108,7 @@ for some `z` in the codomain, `f` takes value `z` on all `x ∈ s`. See also
 `Set.pairwise_eq_iff_exists_eq` for a version that assumes `[Nonempty ι]` instead of
 `Set.Nonempty s`. -/
 theorem Nonempty.pairwise_eq_iff_exists_eq {s : Set α} (hs : s.Nonempty) {f : α → ι} :
-    (s.Pairwise fun x y => f x = f y) ↔ ∃ z, ∀ x ∈ s, f x = z :=
+    (s.Pairwise fun x y ↦ f x = f y) ↔ ∃ z, ∀ x ∈ s, f x = z :=
   hs.pairwise_iff_exists_forall
 
 theorem pairwise_iff_exists_forall [Nonempty ι] (s : Set α) (f : α → ι) {r : ι → ι → Prop}
@@ -122,7 +122,7 @@ only if for some `z` in the codomain, `f` takes value `z` on all `x ∈ s`. See 
 `Set.Nonempty.pairwise_eq_iff_exists_eq` for a version that assumes `Set.Nonempty s` instead of
 `[Nonempty ι]`. -/
 theorem pairwise_eq_iff_exists_eq [Nonempty ι] (s : Set α) (f : α → ι) :
-    (s.Pairwise fun x y => f x = f y) ↔ ∃ z, ∀ x ∈ s, f x = z :=
+    (s.Pairwise fun x y ↦ f x = f y) ↔ ∃ z, ∀ x ∈ s, f x = z :=
   pairwise_iff_exists_forall s f
 
 theorem pairwise_union :
@@ -142,7 +142,7 @@ theorem pairwise_insert :
 theorem pairwise_insert_of_notMem (ha : a ∉ s) :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, r a b ∧ r b a :=
   pairwise_insert.trans <|
-    and_congr_right' <| forall₂_congr fun b hb => by simp [(ne_of_mem_of_not_mem hb ha).symm]
+    and_congr_right' <| forall₂_congr fun b hb ↦ by simp [(ne_of_mem_of_not_mem hb ha).symm]
 
 @[deprecated (since := "2025-05-23")] alias pairwise_insert_of_not_mem := pairwise_insert_of_notMem
 
@@ -189,7 +189,7 @@ theorem pairwise_univ : (univ : Set α).Pairwise r ↔ Pairwise r := by
 
 @[simp]
 theorem pairwise_bot_iff : s.Pairwise (⊥ : α → α → Prop) ↔ (s : Set α).Subsingleton :=
-  ⟨fun h _a ha _b hb => h.eq ha hb id, fun h => h.pairwise _⟩
+  ⟨fun h _a ha _b hb ↦ h.eq ha hb id, fun h ↦ h.pairwise _⟩
 
 alias ⟨Pairwise.subsingleton, _⟩ := pairwise_bot_iff
 
@@ -215,7 +215,7 @@ end Set
 end Pairwise
 
 theorem pairwise_subtype_iff_pairwise_set (s : Set α) (r : α → α → Prop) :
-    (Pairwise fun (x : s) (y : s) => r x y) ↔ s.Pairwise r := by
+    (Pairwise fun (x : s) (y : s) ↦ r x y) ↔ s.Pairwise r := by
   simp only [Pairwise, Set.Pairwise, SetCoe.forall, Ne, Subtype.ext_iff]
 
 alias ⟨Pairwise.set_of_subtype, Set.Pairwise.subtype⟩ := pairwise_subtype_iff_pairwise_set
@@ -239,10 +239,10 @@ theorem PairwiseDisjoint.subset (ht : t.PairwiseDisjoint f) (h : s ⊆ t) : s.Pa
   Pairwise.mono h ht
 
 theorem PairwiseDisjoint.mono_on (hs : s.PairwiseDisjoint f) (h : ∀ ⦃i⦄, i ∈ s → g i ≤ f i) :
-    s.PairwiseDisjoint g := fun _a ha _b hb hab => (hs ha hb hab).mono (h ha) (h hb)
+    s.PairwiseDisjoint g := fun _a ha _b hb hab ↦ (hs ha hb hab).mono (h ha) (h hb)
 
 theorem PairwiseDisjoint.mono (hs : s.PairwiseDisjoint f) (h : g ≤ f) : s.PairwiseDisjoint g :=
-  hs.mono_on fun i _ => h i
+  hs.mono_on fun i _ ↦ h i
 
 @[simp]
 theorem pairwiseDisjoint_empty : (∅ : Set ι).PairwiseDisjoint f :=
@@ -287,7 +287,7 @@ theorem InjOn.pairwiseDisjoint_image {g : ι' → ι} {s : Set ι'} (h : s.InjOn
 theorem PairwiseDisjoint.range (g : s → ι) (hg : ∀ i : s, f (g i) ≤ f i)
     (ht : s.PairwiseDisjoint f) : (range g).PairwiseDisjoint f := by
   rintro _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ hxy
-  exact ((ht x.2 y.2) fun h => hxy <| congr_arg g <| Subtype.ext h).mono (hg x) (hg y)
+  exact ((ht x.2 y.2) fun h ↦ hxy <| congr_arg g <| Subtype.ext h).mono (hg x) (hg y)
 
 theorem pairwiseDisjoint_union :
     (s ∪ t).PairwiseDisjoint f ↔
@@ -327,11 +327,11 @@ variable [SemilatticeInf α] [OrderBot α] {s : Set ι} {f : ι → α}
 -- classical
 theorem PairwiseDisjoint.elim' (hs : s.PairwiseDisjoint f) {i j : ι} (hi : i ∈ s) (hj : j ∈ s)
     (h : f i ⊓ f j ≠ ⊥) : i = j :=
-  (hs.elim hi hj) fun hij => h hij.eq_bot
+  (hs.elim hi hj) fun hij ↦ h hij.eq_bot
 
 theorem PairwiseDisjoint.eq_of_le (hs : s.PairwiseDisjoint f) {i j : ι} (hi : i ∈ s) (hj : j ∈ s)
     (hf : f i ≠ ⊥) (hij : f i ≤ f j) : i = j :=
-  (hs.elim' hi hj) fun h => hf <| (inf_of_le_left hij).symm.trans h
+  (hs.elim' hi hj) fun h ↦ hf <| (inf_of_le_left hij).symm.trans h
 
 end SemilatticeInfBot
 
@@ -341,10 +341,10 @@ variable {s : Set ι} {t : Set ι'}
 
 theorem pairwiseDisjoint_range_singleton :
     (range (singleton : ι → Set ι)).PairwiseDisjoint id :=
-  Pairwise.range_pairwise fun _ _ => disjoint_singleton.2
+  Pairwise.range_pairwise fun _ _ ↦ disjoint_singleton.2
 
-theorem pairwiseDisjoint_fiber (f : ι → α) (s : Set α) : s.PairwiseDisjoint fun a => f ⁻¹' {a} :=
-  fun _a _ _b _ h => disjoint_iff_inf_le.mpr fun _i ⟨hia, hib⟩ => h <| (Eq.symm hia).trans hib
+theorem pairwiseDisjoint_fiber (f : ι → α) (s : Set α) : s.PairwiseDisjoint fun a ↦ f ⁻¹' {a} :=
+  fun _a _ _b _ h ↦ disjoint_iff_inf_le.mpr fun _i ⟨hia, hib⟩ ↦ h <| (Eq.symm hia).trans hib
 
 -- classical
 theorem PairwiseDisjoint.elim_set {s : Set ι} {f : ι → Set α} (hs : s.PairwiseDisjoint f) {i j : ι}
@@ -353,26 +353,26 @@ theorem PairwiseDisjoint.elim_set {s : Set ι} {f : ι → Set α} (hs : s.Pairw
 
 theorem PairwiseDisjoint.prod {f : ι → Set α} {g : ι' → Set β} (hs : s.PairwiseDisjoint f)
     (ht : t.PairwiseDisjoint g) :
-    (s ×ˢ t : Set (ι × ι')).PairwiseDisjoint fun i => f i.1 ×ˢ g i.2 :=
-  fun ⟨_, _⟩ ⟨hi, hi'⟩ ⟨_, _⟩ ⟨hj, hj'⟩ hij =>
-  disjoint_left.2 fun ⟨_, _⟩ ⟨hai, hbi⟩ ⟨haj, hbj⟩ =>
+    (s ×ˢ t : Set (ι × ι')).PairwiseDisjoint fun i ↦ f i.1 ×ˢ g i.2 :=
+  fun ⟨_, _⟩ ⟨hi, hi'⟩ ⟨_, _⟩ ⟨hj, hj'⟩ hij ↦
+  disjoint_left.2 fun ⟨_, _⟩ ⟨hai, hbi⟩ ⟨haj, hbj⟩ ↦
     hij <| Prod.ext (hs.elim_set hi hj _ hai haj) <| ht.elim_set hi' hj' _ hbi hbj
 
 theorem pairwiseDisjoint_pi {ι' α : ι → Type*} {s : ∀ i, Set (ι' i)} {f : ∀ i, ι' i → Set (α i)}
     (hs : ∀ i, (s i).PairwiseDisjoint (f i)) :
-    ((univ : Set ι).pi s).PairwiseDisjoint fun I => (univ : Set ι).pi fun i => f _ (I i) :=
-  fun _ hI _ hJ hIJ =>
-  disjoint_left.2 fun a haI haJ =>
+    ((univ : Set ι).pi s).PairwiseDisjoint fun I ↦ (univ : Set ι).pi fun i ↦ f _ (I i) :=
+  fun _ hI _ hJ hIJ ↦
+  disjoint_left.2 fun a haI haJ ↦
     hIJ <|
-      funext fun i =>
+      funext fun i ↦
         (hs i).elim_set (hI i trivial) (hJ i trivial) (a i) (haI i trivial) (haJ i trivial)
 
 /-- The partial images of a binary function `f` whose partial evaluations are injective are pairwise
 disjoint iff `f` is injective . -/
 theorem pairwiseDisjoint_image_right_iff {f : α → β → γ} {s : Set α} {t : Set β}
     (hf : ∀ a ∈ s, Injective (f a)) :
-    (s.PairwiseDisjoint fun a => f a '' t) ↔ (s ×ˢ t).InjOn fun p => f p.1 p.2 := by
-  refine ⟨fun hs x hx y hy (h : f _ _ = _) => ?_, fun hs x hx y hy h => ?_⟩
+    (s.PairwiseDisjoint fun a ↦ f a '' t) ↔ (s ×ˢ t).InjOn fun p ↦ f p.1 p.2 := by
+  refine ⟨fun hs x hx y hy (h : f _ _ = _) ↦ ?_, fun hs x hx y hy h ↦ ?_⟩
   · suffices x.1 = y.1 by exact Prod.ext this (hf _ hx.1 <| h.trans <| by rw [this])
     refine hs.elim hx.1 hy.1 (not_disjoint_iff.2 ⟨_, mem_image_of_mem _ hx.2, ?_⟩)
     rw [h]
@@ -384,9 +384,9 @@ theorem pairwiseDisjoint_image_right_iff {f : α → β → γ} {s : Set α} {t 
 /-- The partial images of a binary function `f` whose partial evaluations are injective are pairwise
 disjoint iff `f` is injective . -/
 theorem pairwiseDisjoint_image_left_iff {f : α → β → γ} {s : Set α} {t : Set β}
-    (hf : ∀ b ∈ t, Injective fun a => f a b) :
-    (t.PairwiseDisjoint fun b => (fun a => f a b) '' s) ↔ (s ×ˢ t).InjOn fun p => f p.1 p.2 := by
-  refine ⟨fun ht x hx y hy (h : f _ _ = _) => ?_, fun ht x hx y hy h => ?_⟩
+    (hf : ∀ b ∈ t, Injective fun a ↦ f a b) :
+    (t.PairwiseDisjoint fun b ↦ (fun a ↦ f a b) '' s) ↔ (s ×ˢ t).InjOn fun p ↦ f p.1 p.2 := by
+  refine ⟨fun ht x hx y hy (h : f _ _ = _) ↦ ?_, fun ht x hx y hy h ↦ ?_⟩
   · suffices x.2 = y.2 by exact Prod.ext (hf _ hx.2 <| h.trans <| by rw [this]) this
     refine ht.elim hx.2 hy.2 (not_disjoint_iff.2 ⟨_, mem_image_of_mem _ hx.1, ?_⟩)
     rw [h]
@@ -430,7 +430,7 @@ lemma exists_lt_mem_inter_of_not_pairwise_disjoint [LinearOrder ι]
   obtain ⟨i, _hi, j, _hj, h⟩ := exists_lt_mem_inter_of_not_pairwiseDisjoint h
   exact ⟨i, j, h⟩
 
-theorem pairwise_disjoint_fiber (f : ι → α) : Pairwise (Disjoint on fun a : α => f ⁻¹' {a}) :=
+theorem pairwise_disjoint_fiber (f : ι → α) : Pairwise (Disjoint on fun a : α ↦ f ⁻¹' {a}) :=
   pairwise_univ.1 <| Set.pairwiseDisjoint_fiber f univ
 
 lemma subsingleton_setOf_mem_iff_pairwise_disjoint {f : ι → Set α} :

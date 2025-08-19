@@ -80,7 +80,7 @@ the left. -/
 def toLinHomFlip : BilinForm R M →ₗ[R] M →ₗ[R] M →ₗ[R] R :=
   flipHom.toLinearMap
 
-theorem toLin'Flip_apply (A : BilinForm R M) (x : M) : toLinHomFlip (M := M) A x = fun y => A y x :=
+theorem toLin'Flip_apply (A : BilinForm R M) (x : M) : toLinHomFlip (M := M) A x = fun y ↦ A y x :=
   rfl
 
 end ToLin'
@@ -212,7 +212,7 @@ theorem congr_symm (e : M ≃ₗ[R] M') : (congr e).symm = congr e.symm := by
 
 @[simp]
 theorem congr_refl : congr (LinearEquiv.refl R M) = LinearEquiv.refl R _ :=
-  LinearEquiv.ext fun _ => ext₂ fun _ _ => rfl
+  LinearEquiv.ext fun _ ↦ ext₂ fun _ _ ↦ rfl
 
 theorem congr_trans (e : M ≃ₗ[R] M') (f : M' ≃ₗ[R] M'') :
     (congr e).trans (congr f) = congr (e.trans f) :=
@@ -301,11 +301,11 @@ variable {ι : Type*} (b : Basis ι R M)
 
 /-- Two bilinear forms are equal when they are equal on all basis vectors. -/
 theorem ext_basis (h : ∀ i j, B (b i) (b j) = F₂ (b i) (b j)) : B = F₂ :=
-  b.ext fun i => b.ext fun j => h i j
+  b.ext fun i ↦ b.ext fun j ↦ h i j
 
 /-- Write out `B x y` as a sum over `B (b i) (b j)` if `b` is a basis. -/
 theorem sum_repr_mul_repr_mul (x y : M) :
-    ((b.repr x).sum fun i xi => (b.repr y).sum fun j yj => xi • yj • B (b i) (b j)) = B x y := by
+    ((b.repr x).sum fun i xi ↦ (b.repr y).sum fun j yj ↦ xi • yj • B (b i) (b j)) = B x y := by
   conv_rhs => rw [← b.linearCombination_repr x, ← b.linearCombination_repr y]
   simp_rw [Finsupp.linearCombination_apply, Finsupp.sum, sum_left, sum_right, smul_left, smul_right,
     smul_eq_mul]

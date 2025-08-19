@@ -119,8 +119,8 @@ alias IsCompl.closedComplemented_of_isClosed := ClosedComplemented.of_isCompl_is
 theorem closedComplemented_iff_isClosed_exists_isClosed_isCompl :
     p.ClosedComplemented ↔
       IsClosed (p : Set E) ∧ ∃ q : Submodule 𝕜 E, IsClosed (q : Set E) ∧ IsCompl p q :=
-  ⟨fun h => ⟨h.isClosed, h.exists_isClosed_isCompl⟩,
-    fun ⟨hp, ⟨_, hq, hpq⟩⟩ => .of_isCompl_isClosed hpq hp hq⟩
+  ⟨fun h ↦ ⟨h.isClosed, h.exists_isClosed_isCompl⟩,
+    fun ⟨hp, ⟨_, hq, hpq⟩⟩ ↦ .of_isCompl_isClosed hpq hp hq⟩
 
 theorem ClosedComplemented.of_quotient_finiteDimensional [CompleteSpace 𝕜]
     [FiniteDimensional 𝕜 (E ⧸ p)] (hp : IsClosed (p : Set E)) : p.ClosedComplemented := by

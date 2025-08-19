@@ -61,18 +61,18 @@ theorem Convex.integral_mem [IsProbabilityMeasure μ] (hs : Convex ℝ s) (hsc :
     exact ⟨f x₀, by simp only [h₀.2, mem_range_self], h₀.1⟩
   rw [integral_congr_ae hfg]; rw [integrable_congr hfg] at hfi
   have hg : ∀ᵐ x ∂μ, g x ∈ closure (range g ∩ s) := by
-    filter_upwards [hfg.rw (fun _ y => y ∈ s) hf] with x hx
+    filter_upwards [hfg.rw (fun _ y ↦ y ∈ s) hf] with x hx
     apply subset_closure
     exact ⟨mem_range_self _, hx⟩
   set G : ℕ → SimpleFunc α E := SimpleFunc.approxOn _ hgm.measurable (range g ∩ s) y₀ h₀
-  have : Tendsto (fun n => (G n).integral μ) atTop (𝓝 <| ∫ x, g x ∂μ) :=
+  have : Tendsto (fun n ↦ (G n).integral μ) atTop (𝓝 <| ∫ x, g x ∂μ) :=
     tendsto_integral_approxOn_of_measurable hfi _ hg _ (integrable_const _)
-  refine hsc.mem_of_tendsto this (Eventually.of_forall fun n => hs.sum_mem ?_ ?_ ?_)
-  · exact fun _ _ => ENNReal.toReal_nonneg
+  refine hsc.mem_of_tendsto this (Eventually.of_forall fun n ↦ hs.sum_mem ?_ ?_ ?_)
+  · exact fun _ _ ↦ ENNReal.toReal_nonneg
   · simp_rw [measureReal_def]
     rw [← ENNReal.toReal_sum, (G n).sum_range_measure_preimage_singleton, measure_univ,
       ENNReal.toReal_one]
-    exact fun _ _ => measure_ne_top _ _
+    exact fun _ _ ↦ measure_ne_top _ _
   · simp only [SimpleFunc.mem_range, forall_mem_range]
     intro x
     apply (range g).inter_subset_right
@@ -100,14 +100,14 @@ function sending `μ`-a.e. points to `s`, then the average value of `f` belongs 
 theorem Convex.set_average_mem_closure (hs : Convex ℝ s) (h0 : μ t ≠ 0) (ht : μ t ≠ ∞)
     (hfs : ∀ᵐ x ∂μ.restrict t, f x ∈ s) (hfi : IntegrableOn f t μ) :
     (⨍ x in t, f x ∂μ) ∈ closure s :=
-  hs.closure.set_average_mem isClosed_closure h0 ht (hfs.mono fun _ hx => subset_closure hx) hfi
+  hs.closure.set_average_mem isClosed_closure h0 ht (hfs.mono fun _ hx ↦ subset_closure hx) hfi
 
 theorem ConvexOn.average_mem_epigraph [IsFiniteMeasure μ] [NeZero μ] (hg : ConvexOn ℝ s g)
     (hgc : ContinuousOn g s) (hsc : IsClosed s) (hfs : ∀ᵐ x ∂μ, f x ∈ s)
     (hfi : Integrable f μ) (hgi : Integrable (g ∘ f) μ) :
     (⨍ x, f x ∂μ, ⨍ x, g (f x) ∂μ) ∈ {p : E × ℝ | p.1 ∈ s ∧ g p.1 ≤ p.2} := by
   have ht_mem : ∀ᵐ x ∂μ, (f x, g (f x)) ∈ {p : E × ℝ | p.1 ∈ s ∧ g p.1 ≤ p.2} :=
-    hfs.mono fun x hx => ⟨hx, le_rfl⟩
+    hfs.mono fun x hx ↦ ⟨hx, le_rfl⟩
   exact average_pair hfi hgi ▸
     hg.convex_epigraph.average_mem (hsc.epigraph hgc) ht_mem (hfi.prodMk hgi)
 
@@ -217,8 +217,8 @@ values of `f` over `t` and `tᶜ` are different. -/
 theorem ae_eq_const_or_exists_average_ne_compl [IsFiniteMeasure μ] (hfi : Integrable f μ) :
     f =ᵐ[μ] const α (⨍ x, f x ∂μ) ∨
       ∃ t, MeasurableSet t ∧ μ t ≠ 0 ∧ μ tᶜ ≠ 0 ∧ (⨍ x in t, f x ∂μ) ≠ ⨍ x in tᶜ, f x ∂μ := by
-  refine or_iff_not_imp_right.mpr fun H => ?_; push_neg at H
-  refine hfi.ae_eq_of_forall_setIntegral_eq _ _ (integrable_const _) fun t ht ht' => ?_; clear ht'
+  refine or_iff_not_imp_right.mpr fun H ↦ ?_; push_neg at H
+  refine hfi.ae_eq_of_forall_setIntegral_eq _ _ (integrable_const _) fun t ht ht' ↦ ?_; clear ht'
   simp only [const_apply, setIntegral_const]
   by_cases h₀ : μ t = 0
   · rw [restrict_eq_zero.2 h₀, integral_zero_measure, measureReal_def, h₀,
@@ -253,7 +253,7 @@ either it is a.e. equal to its average value, or its average value belongs to th
 theorem StrictConvex.ae_eq_const_or_average_mem_interior [IsFiniteMeasure μ] (hs : StrictConvex ℝ s)
     (hsc : IsClosed s) (hfs : ∀ᵐ x ∂μ, f x ∈ s) (hfi : Integrable f μ) :
     f =ᵐ[μ] const α (⨍ x, f x ∂μ) ∨ (⨍ x, f x ∂μ) ∈ interior s := by
-  have : ∀ {t}, μ t ≠ 0 → (⨍ x in t, f x ∂μ) ∈ s := fun ht =>
+  have : ∀ {t}, μ t ≠ 0 → (⨍ x in t, f x ∂μ) ∈ s := fun ht ↦
     hs.convex.set_average_mem hsc ht (measure_ne_top _ _) (ae_restrict_of_ae hfs) hfi.integrableOn
   refine (ae_eq_const_or_exists_average_ne_compl hfi).imp_right ?_
   rintro ⟨t, hm, h₀, h₀', hne⟩
@@ -269,7 +269,7 @@ theorem StrictConvexOn.ae_eq_const_or_map_average_lt [IsFiniteMeasure μ] (hg : 
     (hgi : Integrable (g ∘ f) μ) :
     f =ᵐ[μ] const α (⨍ x, f x ∂μ) ∨ g (⨍ x, f x ∂μ) < ⨍ x, g (f x) ∂μ := by
   have : ∀ {t}, μ t ≠ 0 → (⨍ x in t, f x ∂μ) ∈ s ∧ g (⨍ x in t, f x ∂μ) ≤ ⨍ x in t, g (f x) ∂μ :=
-    fun ht =>
+    fun ht ↦
     hg.convexOn.set_average_mem_epigraph hgc hsc ht (measure_ne_top _ _) (ae_restrict_of_ae hfs)
       hfi.integrableOn hgi.integrableOn
   refine (ae_eq_const_or_exists_average_ne_compl hfi).imp_right ?_
@@ -305,7 +305,7 @@ is strictly less than `C`. -/
 theorem ae_eq_const_or_norm_average_lt_of_norm_le_const [StrictConvexSpace ℝ E]
     (h_le : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : f =ᵐ[μ] const α (⨍ x, f x ∂μ) ∨ ‖⨍ x, f x ∂μ‖ < C := by
   rcases le_or_gt C 0 with hC0 | hC0
-  · have : f =ᵐ[μ] 0 := h_le.mono fun x hx => norm_le_zero_iff.1 (hx.trans hC0)
+  · have : f =ᵐ[μ] 0 := h_le.mono fun x hx ↦ norm_le_zero_iff.1 (hx.trans hC0)
     simp only [average_congr this, Pi.zero_apply, average_zero]
     exact Or.inl this
   by_cases hfi : Integrable f μ; swap
@@ -327,7 +327,7 @@ theorem ae_eq_const_or_norm_integral_lt_of_norm_le_const [StrictConvexSpace ℝ 
   rcases eq_or_ne μ 0 with h₀ | h₀; · left; simp [h₀, EventuallyEq]
   have hμ : 0 < μ.real univ := by
     simp [measureReal_def, ENNReal.toReal_pos_iff, pos_iff_ne_zero, h₀, measure_lt_top]
-  refine (ae_eq_const_or_norm_average_lt_of_norm_le_const h_le).imp_right fun H => ?_
+  refine (ae_eq_const_or_norm_average_lt_of_norm_le_const h_le).imp_right fun H ↦ ?_
   rwa [average_eq, norm_smul, norm_inv, Real.norm_eq_abs, abs_of_pos hμ, ← div_eq_inv_mul,
     div_lt_iff₀' hμ] at H
 

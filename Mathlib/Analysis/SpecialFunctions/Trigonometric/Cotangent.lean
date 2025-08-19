@@ -97,10 +97,10 @@ lemma euler_sineTerm_tprod (hx : x ∈ ℂ_ℤ) :
 
 private lemma sineTerm_bound_aux (hZ : IsCompact Z) :
     ∃ u : ℕ → ℝ, Summable u ∧ ∀ j z, z ∈ Z → ‖sineTerm z j‖ ≤ u j := by
-  have hf : ContinuousOn (fun x : ℂ => ‖-x ^ 2‖) Z := by
+  have hf : ContinuousOn (fun x : ℂ ↦ ‖-x ^ 2‖) Z := by
     fun_prop
   obtain ⟨s, hs⟩ := bddAbove_def.mp (IsCompact.bddAbove_image hZ hf)
-  refine ⟨fun n : ℕ => ‖(s : ℂ) / (n + 1) ^ 2‖, ?_, ?_⟩
+  refine ⟨fun n : ℕ ↦ ‖(s : ℂ) / (n + 1) ^ 2‖, ?_, ?_⟩
   · simpa using summable_pow_div_add (s : ℂ) 2 1 (Nat.one_lt_two)
   · simp only [norm_neg, norm_pow, Set.mem_image, forall_exists_index, and_imp,
       forall_apply_eq_imp_iff₂, sineTerm, norm_div, norm_real, norm_eq_abs] at *
@@ -109,7 +109,7 @@ private lemma sineTerm_bound_aux (hZ : IsCompact Z) :
     apply le_trans (hs x hx) (le_abs_self s)
 
 theorem multipliableUniformlyOn_euler_sin_prod_on_compact (hZC : IsCompact Z) :
-    MultipliableUniformlyOn (fun n : ℕ => fun z : ℂ => (1 + sineTerm z n)) {Z} := by
+    MultipliableUniformlyOn (fun n : ℕ ↦ fun z : ℂ ↦ (1 + sineTerm z n)) {Z} := by
   obtain ⟨u, hu, hu2⟩ := sineTerm_bound_aux hZC
   refine Summable.multipliableUniformlyOn_nat_one_add hZC hu ?_ ?_
   · filter_upwards with n z hz using hu2 n z hz
@@ -117,16 +117,16 @@ theorem multipliableUniformlyOn_euler_sin_prod_on_compact (hZC : IsCompact Z) :
 
 theorem HasProdUniformlyOn_sineTerm_prod_on_compact (hZ2 : Z ⊆ ℂ_ℤ)
     (hZC : IsCompact Z) :
-    HasProdUniformlyOn (fun n : ℕ => fun z : ℂ => (1 + sineTerm z n))
-    (fun x => (Complex.sin (↑π * x) / (↑π * x))) {Z} := by
+    HasProdUniformlyOn (fun n : ℕ ↦ fun z : ℂ ↦ (1 + sineTerm z n))
+    (fun x ↦ (Complex.sin (↑π * x) / (↑π * x))) {Z} := by
   apply (multipliableUniformlyOn_euler_sin_prod_on_compact hZC).hasProdUniformlyOn.congr_right
-  exact fun s hs x hx => euler_sineTerm_tprod (by aesop)
+  exact fun s hs x hx ↦ euler_sineTerm_tprod (by aesop)
 
 theorem HasProdLocallyUniformlyOn_euler_sin_prod :
-    HasProdLocallyUniformlyOn (fun n : ℕ => fun z : ℂ => (1 + sineTerm z n))
-    (fun x => (Complex.sin (π * x) / (π * x))) ℂ_ℤ := by
+    HasProdLocallyUniformlyOn (fun n : ℕ ↦ fun z : ℂ ↦ (1 + sineTerm z n))
+    (fun x ↦ (Complex.sin (π * x) / (π * x))) ℂ_ℤ := by
   apply hasProdLocallyUniformlyOn_of_forall_compact isOpen_compl_range_intCast
-  exact fun _ hZ hZC => HasProdUniformlyOn_sineTerm_prod_on_compact hZ hZC
+  exact fun _ hZ hZC ↦ HasProdUniformlyOn_sineTerm_prod_on_compact hZ hZC
 
 theorem sin_pi_z_ne_zero (hz : x ∈ ℂ_ℤ) : Complex.sin (π * x) ≠ 0 := by
   apply Complex.sin_ne_zero_iff.2
@@ -183,7 +183,7 @@ lemma logDeriv_prod_sineTerm_eq_sum_cotTerm (hx : x ∈ ℂ_ℤ) (n : ℕ) :
   · fun_prop
 
 theorem tendsto_logDeriv_euler_cot_sub (hx : x ∈ ℂ_ℤ) :
-    Tendsto (fun n : ℕ => ∑ j ∈ Finset.range n, cotTerm x j) atTop
+    Tendsto (fun n : ℕ ↦ ∑ j ∈ Finset.range n, cotTerm x j) atTop
     (𝓝 <| π * cot (π * x)- 1 / x) := by
   simp_rw [← logDeriv_sin_div_eq_cot hx, ← logDeriv_prod_sineTerm_eq_sum_cotTerm hx]
   simpa using tendsto_logDeriv_euler_sin_div hx

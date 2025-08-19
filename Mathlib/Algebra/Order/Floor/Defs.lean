@@ -159,16 +159,16 @@ instance : FloorRing ℤ where
 def FloorRing.ofFloor (α) [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (floor : α → ℤ)
     (gc_coe_floor : GaloisConnection (↑) floor) : FloorRing α :=
   { floor
-    ceil := fun a => -floor (-a)
+    ceil := fun a ↦ -floor (-a)
     gc_coe_floor
-    gc_ceil_coe := fun a z => by rw [neg_le, ← gc_coe_floor, Int.cast_neg, neg_le_neg_iff] }
+    gc_ceil_coe := fun a z ↦ by rw [neg_le, ← gc_coe_floor, Int.cast_neg, neg_le_neg_iff] }
 
 /-- A `FloorRing` constructor from the `ceil` function alone. -/
 def FloorRing.ofCeil (α) [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (ceil : α → ℤ)
     (gc_ceil_coe : GaloisConnection ceil (↑)) : FloorRing α :=
-  { floor := fun a => -ceil (-a)
+  { floor := fun a ↦ -ceil (-a)
     ceil
-    gc_coe_floor := fun a z => by rw [le_neg, gc_ceil_coe, Int.cast_neg, neg_le_neg_iff]
+    gc_coe_floor := fun a z ↦ by rw [le_neg, gc_ceil_coe, Int.cast_neg, neg_le_neg_iff]
     gc_ceil_coe }
 
 namespace Int
@@ -197,7 +197,7 @@ theorem ceil_int : (Int.ceil : ℤ → ℤ) = id :=
 
 @[simp]
 theorem fract_int : (Int.fract : ℤ → ℤ) = 0 :=
-  funext fun x => by simp [fract]
+  funext fun x ↦ by simp [fract]
 
 @[inherit_doc]
 notation "⌊" a "⌋" => Int.floor a

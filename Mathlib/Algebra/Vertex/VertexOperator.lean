@@ -79,8 +79,8 @@ we produce a vertex operator. -/
 noncomputable def of_coeff (f : ℤ → Module.End R V)
     (hf : ∀ (x : V), ∃ (n : ℤ), ∀ (m : ℤ), m < n → (f m) x = 0) : VertexOperator R V :=
   HVertexOperator.of_coeff f
-    (fun x => HahnSeries.suppBddBelow_supp_PWO (fun n => (f n) x)
-      (HahnSeries.forallLTEqZero_supp_BddBelow (fun n => (f n) x)
+    (fun x ↦ HahnSeries.suppBddBelow_supp_PWO (fun n ↦ (f n) x)
+      (HahnSeries.forallLTEqZero_supp_BddBelow (fun n ↦ (f n) x)
         (Exists.choose (hf x)) (Exists.choose_spec (hf x))))
 
 @[simp]

@@ -90,13 +90,13 @@ theorem isFiltered [IsFiltered I] (hF : ∀ i, IsIndObject (F.obj i)) :
   -- It suffices to show that for any functor `G : J ⥤ CostructuredArrow yoneda (colimit F)` with
   -- `J` finite there is some `X` such that the set
   -- `lim Hom_{CostructuredArrow yoneda (colimit F)}(G·, X)` is nonempty.
-  refine IsFiltered.iff_nonempty_limit.mpr (fun {J _ _} G => ?_)
+  refine IsFiltered.iff_nonempty_limit.mpr (fun {J _ _} G ↦ ?_)
   -- We begin by remarking that `lim Hom_{Over (colimit F)}(yG·, 𝟙 (colimit F))` is nonempty,
   -- simply because `𝟙 (colimit F)` is the terminal object. Here `y` is the functor
   -- `CostructuredArrow yoneda (colimit F) ⥤ Over (colimit F)` induced by `yoneda`.
   have h₁ : Nonempty (limit (G.op ⋙ (CostructuredArrow.toOver _ _).op ⋙
       yoneda.obj (Over.mk (𝟙 (colimit F))))) :=
-    ⟨Types.Limit.mk _ (fun j => Over.mkIdTerminal.from _) (by simp)⟩
+    ⟨Types.Limit.mk _ (fun j ↦ Over.mkIdTerminal.from _) (by simp)⟩
   -- `𝟙 (colimit F)` is the colimit of the diagram in `Over (colimit F)` given by the arrows of
   -- the form `Fi ⟶ colimit F`. Thus, pulling the colimit out of the hom functor and commuting
   -- the finite limit with the filtered colimit, we obtain
@@ -141,10 +141,10 @@ theorem isIndObject_colimit (I : Type v) [SmallCategory I] [IsFiltered I]
   -- we use that all the `CostructuredArrow yoneda (F.obj i)` have small weakly terminal sets.
   have : ∀ i, ∃ (s : Set (CostructuredArrow yoneda (F.obj i))) (_ : Small.{v} s),
       ∀ i, ∃ j ∈ s, Nonempty (i ⟶ j) :=
-    fun i => (hF i).finallySmall.exists_small_weakly_terminal_set
+    fun i ↦ (hF i).finallySmall.exists_small_weakly_terminal_set
   choose s hs j hjs hj using this
   refine finallySmall_of_small_weakly_terminal_set
-    (⋃ i, (map (colimit.ι F i)).obj '' (s i)) (fun A => ?_)
+    (⋃ i, (map (colimit.ι F i)).obj '' (s i)) (fun A ↦ ?_)
   obtain ⟨i, y, hy⟩ := FunctorToTypes.jointly_surjective'.{v, v} F _ (yonedaEquiv A.hom)
   let y' : CostructuredArrow yoneda (F.obj i) := mk (yonedaEquiv.symm y)
   obtain ⟨x⟩ := hj _ y'

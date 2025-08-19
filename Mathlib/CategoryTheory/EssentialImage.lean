@@ -38,7 +38,7 @@ isomorphic to an object in the image of the function `F.obj`. In other words, th
 under isomorphism of the function `F.obj`.
 This is the "non-evil" way of describing the image of a functor.
 -/
-def essImage (F : C ⥤ D) : ObjectProperty D := fun Y => ∃ X : C, Nonempty (F.obj X ≅ Y)
+def essImage (F : C ⥤ D) : ObjectProperty D := fun Y ↦ ∃ X : C, Nonempty (F.obj X ≅ Y)
 
 /-- Get the witnessing object that `Y` is in the subcategory given by `F`. -/
 def essImage.witness {Y : D} (h : F.essImage Y) : C :=
@@ -50,7 +50,7 @@ def essImage.getIso {Y : D} (h : F.essImage Y) : F.obj h.witness ≅ Y :=
 
 /-- Being in the essential image is a "hygienic" property: it is preserved under isomorphism. -/
 theorem essImage.ofIso {Y Y' : D} (h : Y ≅ Y') (hY : essImage F Y) : essImage F Y' :=
-  hY.imp fun _ => Nonempty.map (· ≪≫ h)
+  hY.imp fun _ ↦ Nonempty.map (· ≪≫ h)
 
 instance : F.essImage.IsClosedUnderIsomorphisms where
   of_iso e h := essImage.ofIso e h
@@ -60,11 +60,11 @@ instance : F.essImage.IsClosedUnderIsomorphisms where
 -/
 theorem essImage.ofNatIso {F' : C ⥤ D} (h : F ≅ F') {Y : D} (hY : essImage F Y) :
     essImage F' Y :=
-  hY.imp fun X => Nonempty.map fun t => h.symm.app X ≪≫ t
+  hY.imp fun X ↦ Nonempty.map fun t ↦ h.symm.app X ≪≫ t
 
 /-- Isomorphic functors have equal essential images. -/
 theorem essImage_eq_of_natIso {F' : C ⥤ D} (h : F ≅ F') : essImage F = essImage F' :=
-  funext fun _ => propext ⟨essImage.ofNatIso h, essImage.ofNatIso h.symm⟩
+  funext fun _ ↦ propext ⟨essImage.ofNatIso h, essImage.ofNatIso h.symm⟩
 
 /-- An object in the image is in the essential image. -/
 theorem obj_mem_essImage (F : D ⥤ C) (Y : D) : essImage F (F.obj Y) :=
@@ -108,7 +108,7 @@ class EssSurj (F : C ⥤ D) : Prop where
   mem_essImage (Y : D) : F.essImage Y
 
 instance EssSurj.toEssImage : EssSurj F.toEssImage where
-  mem_essImage := fun ⟨_, hY⟩ =>
+  mem_essImage := fun ⟨_, hY⟩ ↦
     ⟨_, ⟨⟨_, _, hY.getIso.hom_inv_id, hY.getIso.inv_hom_id⟩⟩⟩
 
 theorem essSurj_of_surj (h : Function.Surjective F.obj) : EssSurj F where

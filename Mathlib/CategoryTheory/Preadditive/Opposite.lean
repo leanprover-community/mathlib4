@@ -60,21 +60,21 @@ variable {C}
 /-- `unop` induces morphisms of monoids on hom groups of a preadditive category -/
 @[simps!]
 def unopHom (X Y : Cᵒᵖ) : (X ⟶ Y) →+ (Opposite.unop Y ⟶ Opposite.unop X) :=
-  AddMonoidHom.mk' (fun f => f.unop) fun f g => unop_add _ f g
+  AddMonoidHom.mk' (fun f ↦ f.unop) fun f g ↦ unop_add _ f g
 
 @[simp]
 theorem unop_sum (X Y : Cᵒᵖ) {ι : Type*} (s : Finset ι) (f : ι → (X ⟶ Y)) :
-    (s.sum f).unop = s.sum fun i => (f i).unop :=
+    (s.sum f).unop = s.sum fun i ↦ (f i).unop :=
   map_sum (unopHom X Y) _ _
 
 /-- `op` induces morphisms of monoids on hom groups of a preadditive category -/
 @[simps!]
 def opHom (X Y : C) : (X ⟶ Y) →+ (Opposite.op Y ⟶ Opposite.op X) :=
-  AddMonoidHom.mk' (fun f => f.op) fun f g => op_add _ f g
+  AddMonoidHom.mk' (fun f ↦ f.op) fun f g ↦ op_add _ f g
 
 @[simp]
 theorem op_sum (X Y : C) {ι : Type*} (s : Finset ι) (f : ι → (X ⟶ Y)) :
-    (s.sum f).op = s.sum fun i => (f i).op :=
+    (s.sum f).op = s.sum fun i ↦ (f i).op :=
   map_sum (opHom X Y) _ _
 
 /-- `G ⟶ G` and `(End G)ᵐᵒᵖ` are isomorphic as `(End G)ᵐᵒᵖ`-modules. -/
@@ -83,7 +83,7 @@ def Preadditive.homSelfLinearEquivEndMulOpposite (G : C) : (G ⟶ G) ≃ₗ[(End
   toFun f := ⟨f⟩
   map_add' := by cat_disch
   map_smul' := by cat_disch
-  invFun := fun ⟨f⟩ => f
+  invFun := fun ⟨f⟩ ↦ f
   left_inv := by cat_disch
   right_inv := by cat_disch
 

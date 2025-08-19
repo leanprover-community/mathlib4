@@ -46,7 +46,7 @@ namespace PGame
 `powHalf (n + 1) + powHalf (n + 1) ≈ powHalf n`. -/
 def powHalf : ℕ → PGame
   | 0 => 1
-  | n + 1 => ⟨PUnit, PUnit, 0, fun _ => powHalf n⟩
+  | n + 1 => ⟨PUnit, PUnit, 0, fun _ ↦ powHalf n⟩
 
 @[simp]
 theorem powHalf_zero : powHalf 0 = 1 :=
@@ -87,7 +87,7 @@ theorem numeric_powHalf (n) : (powHalf n).Numeric := by
   | succ n hn =>
     constructor
     · simpa using hn.moveLeft_lt default
-    · exact ⟨fun _ => numeric_zero, fun _ => hn⟩
+    · exact ⟨fun _ ↦ numeric_zero, fun _ ↦ hn⟩
 
 theorem powHalf_succ_lt_powHalf (n : ℕ) : powHalf (n + 1) < powHalf n :=
   (numeric_powHalf (n + 1)).lt_moveRight default
@@ -208,7 +208,7 @@ theorem dyadic_aux {m₁ m₂ : ℤ} {y₁ y₂ : ℕ} (h₂ : m₁ * 2 ^ y₁ =
 /-- The additive monoid morphism `dyadicMap` sends ⟦⟨m, 2^n⟩⟧ to m • half ^ n. -/
 noncomputable def dyadicMap : Localization.Away (2 : ℤ) →+ Surreal where
   toFun x :=
-    (Localization.liftOn x fun x y => x * powHalf (Submonoid.log y)) <| by
+    (Localization.liftOn x fun x y ↦ x * powHalf (Submonoid.log y)) <| by
       intro m₁ m₂ n₁ n₂ h₁
       obtain ⟨⟨n₃, y₃, hn₃⟩, h₂⟩ := Localization.r_iff_exists.mp h₁
       simp only [mul_eq_mul_left_iff] at h₂

@@ -85,7 +85,7 @@ definitional equalities in the proofs below, so lets make it semireducible. -/
 @[semireducible] private noncomputable def bundledAbstractFilteredClosure :
     ℕ → Σ t : Type (max v w), t → C
   | 0 => ⟨ULift.{v} α, f ∘ ULift.down⟩
-  | (n + 1) => ⟨_, inductiveStepRealization (n + 1) (fun m _ => bundledAbstractFilteredClosure m)⟩
+  | (n + 1) => ⟨_, inductiveStepRealization (n + 1) (fun m _ ↦ bundledAbstractFilteredClosure m)⟩
 
 /-- The small type modelling the filtered closure. -/
 private noncomputable def AbstractFilteredClosure : Type (max v w) :=
@@ -93,14 +93,14 @@ private noncomputable def AbstractFilteredClosure : Type (max v w) :=
 
 /-- The surjection from the abstract filtered closure to the actual filtered closure in `C`. -/
 private noncomputable def abstractFilteredClosureRealization : AbstractFilteredClosure f → C :=
-  fun x => (bundledAbstractFilteredClosure f x.1).2 x.2
+  fun x ↦ (bundledAbstractFilteredClosure f x.1).2 x.2
 
 end FilteredClosureSmall
 
 theorem small_fullSubcategory_filteredClosure :
     Small.{max v w} (filteredClosure f).FullSubcategory  := by
   refine small_of_injective_of_exists (FilteredClosureSmall.abstractFilteredClosureRealization f)
-    (fun _ _ => ObjectProperty.FullSubcategory.ext) ?_
+    (fun _ _ ↦ ObjectProperty.FullSubcategory.ext) ?_
   rintro ⟨j, h⟩
   induction h with
   | base x => exact ⟨⟨0, ⟨x⟩⟩, rfl⟩
@@ -220,7 +220,7 @@ definitional equalities in the proofs below, so lets make it semireducible. -/
 @[semireducible] private noncomputable def bundledAbstractCofilteredClosure :
     ℕ → Σ t : Type (max v w), t → C
   | 0 => ⟨ULift.{v} α, f ∘ ULift.down⟩
-  | (n + 1) => ⟨_, inductiveStepRealization (n + 1) (fun m _ => bundledAbstractCofilteredClosure m)⟩
+  | (n + 1) => ⟨_, inductiveStepRealization (n + 1) (fun m _ ↦ bundledAbstractCofilteredClosure m)⟩
 
 /-- Implementation detail for the instance
 `EssentiallySmall.{max v w} (FullSubcategory (cofilteredClosure f))`. -/
@@ -230,7 +230,7 @@ private noncomputable def AbstractCofilteredClosure : Type (max v w) :=
 /-- Implementation detail for the instance
 `EssentiallySmall.{max v w} (FullSubcategory (cofilteredClosure f))`. -/
 private noncomputable def abstractCofilteredClosureRealization : AbstractCofilteredClosure f → C :=
-  fun x => (bundledAbstractCofilteredClosure f x.1).2 x.2
+  fun x ↦ (bundledAbstractCofilteredClosure f x.1).2 x.2
 
 end CofilteredClosureSmall
 
@@ -238,7 +238,7 @@ theorem small_fullSubcategory_cofilteredClosure :
     Small.{max v w} (cofilteredClosure f).FullSubcategory := by
   refine small_of_injective_of_exists
     (CofilteredClosureSmall.abstractCofilteredClosureRealization f)
-    (fun _ _ => ObjectProperty.FullSubcategory.ext) ?_
+    (fun _ _ ↦ ObjectProperty.FullSubcategory.ext) ?_
   rintro ⟨j, h⟩
   induction h with
   | base x => exact ⟨⟨0, ⟨x⟩⟩, rfl⟩

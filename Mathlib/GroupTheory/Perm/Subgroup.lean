@@ -29,7 +29,7 @@ namespace Perm
 universe u
 
 instance sumCongrHom.decidableMemRange {α β : Type*} [DecidableEq α] [DecidableEq β] [Fintype α]
-    [Fintype β] : DecidablePred (· ∈ (sumCongrHom α β).range) := fun _ => inferInstance
+    [Fintype β] : DecidablePred (· ∈ (sumCongrHom α β).range) := fun _ ↦ inferInstance
 
 @[simp]
 theorem sumCongrHom.card_range {α β : Type*} [Fintype (sumCongrHom α β).range]
@@ -39,7 +39,7 @@ theorem sumCongrHom.card_range {α β : Type*} [Fintype (sumCongrHom α β).rang
 
 instance sigmaCongrRightHom.decidableMemRange {α : Type*} {β : α → Type*} [DecidableEq α]
     [∀ a, DecidableEq (β a)] [Fintype α] [∀ a, Fintype (β a)] :
-    DecidablePred (· ∈ (sigmaCongrRightHom β).range) := fun _ => inferInstance
+    DecidablePred (· ∈ (sigmaCongrRightHom β).range) := fun _ ↦ inferInstance
 
 @[simp]
 theorem sigmaCongrRightHom.card_range {α : Type*} {β : α → Type*}
@@ -49,7 +49,7 @@ theorem sigmaCongrRightHom.card_range {α : Type*} {β : α → Type*}
 
 instance subtypeCongrHom.decidableMemRange {α : Type*} (p : α → Prop) [DecidablePred p]
     [Fintype (Perm { a // p a } × Perm { a // ¬p a })] [DecidableEq (Perm α)] :
-    DecidablePred (· ∈ (subtypeCongrHom p).range) := fun _ => inferInstance
+    DecidablePred (· ∈ (subtypeCongrHom p).range) := fun _ ↦ inferInstance
 
 @[simp]
 theorem subtypeCongrHom.card_range {α : Type*} (p : α → Prop) [DecidablePred p]

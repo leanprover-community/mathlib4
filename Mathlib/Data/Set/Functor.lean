@@ -64,16 +64,16 @@ theorem image2_def {α β γ : Type u} (f : α → β → γ) (s : Set α) (t : 
 instance : LawfulMonad Set := LawfulMonad.mk'
   (id_map := image_id)
   (pure_bind := biUnion_singleton)
-  (bind_assoc := fun _ _ _ => by simp only [bind_def, biUnion_iUnion])
-  (bind_pure_comp := fun _ _ => (image_eq_iUnion _ _).symm)
-  (bind_map := fun _ _ => seq_def.symm)
+  (bind_assoc := fun _ _ _ ↦ by simp only [bind_def, biUnion_iUnion])
+  (bind_pure_comp := fun _ _ ↦ (image_eq_iUnion _ _).symm)
+  (bind_map := fun _ _ ↦ seq_def.symm)
 
 instance : CommApplicative (Set : Type u → Type u) :=
-  ⟨fun s t => prod_image_seq_comm s t⟩
+  ⟨fun s t ↦ prod_image_seq_comm s t⟩
 
 instance : Alternative Set :=
   { Set.monad with
-    orElse := fun s t => s ∪ (t ())
+    orElse := fun s t ↦ s ∪ (t ())
     failure := ∅ }
 
 /-! ### Monadic coercion lemmas -/
@@ -90,11 +90,11 @@ theorem mem_of_mem_coe {a : α} (ha : a ∈ (γ : Set α)) : ⟨a, coe_subset ha
   rcases ha with ⟨_, ⟨_, rfl⟩, _, ⟨ha, rfl⟩, _⟩; convert ha
 
 theorem eq_univ_of_coe_eq (hγ : (γ : Set α) = β) : γ = univ :=
-  eq_univ_of_forall fun ⟨_, ha⟩ => mem_of_mem_coe <| hγ.symm ▸ ha
+  eq_univ_of_forall fun ⟨_, ha⟩ ↦ mem_of_mem_coe <| hγ.symm ▸ ha
 
 theorem image_coe_eq_restrict_image {δ : Type*} {f : α → δ} : f '' γ = β.restrict f '' γ :=
-  ext fun _ =>
-    ⟨fun ⟨_, h, ha⟩ => ⟨_, mem_of_mem_coe h, ha⟩, fun ⟨_, h, ha⟩ => ⟨_, mem_coe_of_mem _ h, ha⟩⟩
+  ext fun _ ↦
+    ⟨fun ⟨_, h, ha⟩ ↦ ⟨_, mem_of_mem_coe h, ha⟩, fun ⟨_, h, ha⟩ ↦ ⟨_, mem_coe_of_mem _ h, ha⟩⟩
 
 end with_instance
 
@@ -122,7 +122,7 @@ theorem mem_of_mem_image_val (ha : a ∈ (γ : Set α)) : ⟨a, image_val_subset
   rcases ha with ⟨_, ha, rfl⟩; exact ha
 
 theorem eq_univ_of_image_val_eq (hγ : (γ : Set α) = β) : γ = univ :=
-  eq_univ_of_forall fun ⟨_, ha⟩ => mem_of_mem_image_val <| hγ.symm ▸ ha
+  eq_univ_of_forall fun ⟨_, ha⟩ ↦ mem_of_mem_image_val <| hγ.symm ▸ ha
 
 theorem image_image_val_eq_restrict_image {δ : Type*} {f : α → δ} : f '' γ = β.restrict f '' γ := by
   ext; simp

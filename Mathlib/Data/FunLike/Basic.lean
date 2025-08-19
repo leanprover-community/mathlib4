@@ -29,7 +29,7 @@ variable (A B : Type*) [MyClass A] [MyClass B]
 
 instance : FunLike (MyHom A B) A B where
   coe := MyHom.toFun
-  coe_injective' := fun f g h => by cases f; cases g; congr
+  coe_injective' := fun f g h ↦ by cases f; cases g; congr
 
 @[ext] theorem ext {f g : MyHom A B} (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g h
 
@@ -148,7 +148,7 @@ have an injective coercion to functions from `α` to `β`.
 This typeclass is used in the definition of the homomorphism typeclasses,
 such as `ZeroHomClass`, `MulHomClass`, `MonoidHomClass`, ....
 -/
-abbrev FunLike F α β := DFunLike F α fun _ => β
+abbrev FunLike F α β := DFunLike F α fun _ ↦ β
 
 section Dependent
 
@@ -167,7 +167,7 @@ run_cmd Lean.Elab.Command.liftTermElabM do
   Lean.Meta.registerCoercion ``DFunLike.coe
     (some { numArgs := 5, coercee := 4, type := .coeFun })
 
-theorem coe_eq_coe_fn : (DFunLike.coe (F := F)) = (fun f => ↑f) := rfl
+theorem coe_eq_coe_fn : (DFunLike.coe (F := F)) = (fun f ↦ ↑f) := rfl
 
 theorem coe_injective : Function.Injective (fun f : F ↦ (f : ∀ a : α, β a)) :=
   DFunLike.coe_injective'

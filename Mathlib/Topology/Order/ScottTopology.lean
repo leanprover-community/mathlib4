@@ -82,7 +82,7 @@ def DirSupInacc (s : Set α) : Prop :=
   simp [DirSupInaccOn, DirSupInacc]
 
 @[simp] lemma DirSupInacc.dirSupInaccOn {D : Set (Set α)} :
-    DirSupInacc s → DirSupInaccOn D s := fun h _ _ d₂ d₃ _ hda => h d₂ d₃ hda
+    DirSupInacc s → DirSupInaccOn D s := fun h _ _ d₂ d₃ _ hda ↦ h d₂ d₃ hda
 
 lemma DirSupInaccOn.mono {D₁ D₂ : Set (Set α)} (hD : D₁ ⊆ D₂) (hf : DirSupInaccOn D₂ s) :
     DirSupInaccOn D₁ s := fun ⦃_⦄ a ↦ hf (hD a)
@@ -422,7 +422,7 @@ end Scott
 variable [Preorder α]
 
 lemma scottHausdorff_le_lower : scottHausdorff α univ ≤ lower α :=
-  fun s h => IsScottHausdorff.isOpen_of_isLowerSet (t := scottHausdorff α univ)
+  fun s h ↦ IsScottHausdorff.isOpen_of_isLowerSet (t := scottHausdorff α univ)
       <| (@IsLower.isLowerSet_of_isOpen (Topology.WithLower α) _ _ _ s h)
 
 variable [TopologicalSpace α]

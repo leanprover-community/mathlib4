@@ -31,7 +31,7 @@ lemma not_irreducible_pow : ∀ {n : ℕ}, n ≠ 1 → ¬ Irreducible (x ^ n)
 @[to_additive]
 lemma irreducible_units_mul (u : Mˣ) : Irreducible (u * y) ↔ Irreducible y := by
   simp only [irreducible_iff, Units.isUnit_units_mul, and_congr_right_iff]
-  refine fun _ => ⟨fun h A B HAB => ?_, fun h A B HAB => ?_⟩
+  refine fun _ ↦ ⟨fun h A B HAB ↦ ?_, fun h A B HAB ↦ ?_⟩
   · rw [← u.isUnit_units_mul]
     apply h
     rw [mul_assoc, ← HAB]
@@ -47,7 +47,7 @@ lemma irreducible_isUnit_mul (h : IsUnit x) : Irreducible (x * y) ↔ Irreducibl
 @[to_additive]
 lemma irreducible_mul_units (u : Mˣ) : Irreducible (y * u) ↔ Irreducible y := by
   simp only [irreducible_iff, Units.isUnit_mul_units, and_congr_right_iff]
-  refine fun _ => ⟨fun h A B HAB => ?_, fun h A B HAB => ?_⟩
+  refine fun _ ↦ ⟨fun h A B HAB ↦ ?_, fun h A B HAB ↦ ?_⟩
   · rw [← u.isUnit_mul_units B]
     apply h
     rw [← mul_assoc, ← HAB]
@@ -64,7 +64,7 @@ lemma irreducible_mul_isUnit (h : IsUnit x) : Irreducible (y * x) ↔ Irreducibl
 lemma irreducible_mul_iff :
     Irreducible (x * y) ↔ Irreducible x ∧ IsUnit y ∨ Irreducible y ∧ IsUnit x := by
   constructor
-  · refine fun h => Or.imp (fun h' => ⟨?_, h'⟩) (fun h' => ⟨?_, h'⟩) (h.isUnit_or_isUnit rfl).symm
+  · refine fun h ↦ Or.imp (fun h' ↦ ⟨?_, h'⟩) (fun h' ↦ ⟨?_, h'⟩) (h.isUnit_or_isUnit rfl).symm
     · rwa [irreducible_mul_isUnit h'] at h
     · rwa [irreducible_isUnit_mul h'] at h
   · rintro (⟨ha, hb⟩ | ⟨hb, ha⟩)
@@ -106,6 +106,6 @@ set_option linter.existingAttributeWarning false in
 alias Irreducible.not_square := Irreducible.not_isSquare
 
 @[to_additive]
-lemma IsSquare.not_irreducible (ha : IsSquare x) : ¬Irreducible x := fun h => h.not_isSquare ha
+lemma IsSquare.not_irreducible (ha : IsSquare x) : ¬Irreducible x := fun h ↦ h.not_isSquare ha
 
 end Monoid

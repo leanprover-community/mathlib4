@@ -371,12 +371,12 @@ instance : AddCommGroup ρ.asModule :=
 `(ρ(g) - Id)(x + ρ(g)(x) + ... + ρ(gⁿ)(x)) = ρ(gⁿ⁺¹)(x) - x` for all `n : ℕ, g : G` and `x : V`. -/
 lemma apply_sub_id_partialSum_eq (n : ℕ) (g : G) (x : V) :
     (ρ g - LinearMap.id (R := k) (M := V)) ((Fin.last _).partialSum
-      (fun (j : Fin (n + 1)) => ρ (g ^ (j : ℕ)) x)) = ρ (g ^ (n + 1)) x - x := by
+      (fun (j : Fin (n + 1)) ↦ ρ (g ^ (j : ℕ)) x)) = ρ (g ^ (n + 1)) x - x := by
   induction n with
   | zero => simp [Fin.partialSum]
   | succ n h =>
-    have : Fin.init (fun (j : Fin (n + 2)) => ρ (g ^ (j : ℕ)) x) =
-      fun (j : Fin (n + 1)) => ρ (g ^ (j : ℕ)) x := by ext; simp [Fin.init]
+    have : Fin.init (fun (j : Fin (n + 2)) ↦ ρ (g ^ (j : ℕ)) x) =
+      fun (j : Fin (n + 1)) ↦ ρ (g ^ (j : ℕ)) x := by ext; simp [Fin.init]
     rw [← Fin.succ_eq_last_succ.2 rfl, Fin.partialSum_succ, ← Fin.partialSum_init, map_add,
       this, h]
     simp [pow_succ']
@@ -422,7 +422,7 @@ variable (k G A : Type*) [CommSemiring k] [Monoid G] [AddCommMonoid A] [Module k
 /-- Turns a `k`-module `A` with a compatible `DistribMulAction` of a monoid `G` into a
 `k`-linear `G`-representation on `A`. -/
 def ofDistribMulAction : Representation k G A where
-  toFun := fun m =>
+  toFun := fun m ↦
     { DistribMulAction.toAddMonoidEnd G A m with
       map_smul' := smul_comm _ }
   map_one' := by ext; exact one_smul _ _
@@ -484,14 +484,14 @@ noncomputable instance :
 theorem ofMulAction_self_smul_eq_mul (x : MonoidAlgebra k G) (y : (ofMulAction k G G).asModule) :
     x • y = (x * y : MonoidAlgebra k G) := -- by
   -- Porting note: trouble figuring out the motive
-  x.induction_on (p := fun z => z • y = z * y)
-    (fun g => by
+  x.induction_on (p := fun z ↦ z • y = z * y)
+    (fun g ↦ by
       change asAlgebraHom (ofMulAction k G G) _ _ = _
       ext
       -- Porting note: single_mul_apply not firing in simp without parentheses
       simp [(MonoidAlgebra.single_mul_apply)]
     )
-    (fun x y hx hy => by simp only [hx, hy, add_mul, add_smul]) fun r x hx => by
+    (fun x y hx hy ↦ by simp only [hx, hy, add_mul, add_smul]) fun r x hx ↦ by
     change asAlgebraHom (ofMulAction k G G) _ _ = _  -- Porting note: was simpa [← hx]
     simp only [map_smul, smul_apply, Algebra.smul_mul_assoc]
     rw [← hx]
@@ -523,13 +523,13 @@ open Finsupp
 lemma leftRegular_norm_apply :
     (leftRegular k G).norm =
       (LinearMap.lsmul k _).flip ((leftRegular k G).norm (single 1 1)) ∘ₗ
-      linearCombination _ (fun _ => 1) := by
+      linearCombination _ (fun _ ↦ 1) := by
   ext i : 2
   simpa [Representation.norm] using Finset.sum_bijective _
     (Group.mulRight_bijective i) (by aesop) (by aesop)
 
 lemma leftRegular_norm_eq_zero_iff (x : G →₀ k) :
-    (leftRegular k G).norm x = 0 ↔ x.linearCombination k (fun _ => (1 : k)) = 0 := by
+    (leftRegular k G).norm x = 0 ↔ x.linearCombination k (fun _ ↦ (1 : k)) = 0 := by
   rw [leftRegular_norm_apply]
   constructor
   · intro h
@@ -540,7 +540,7 @@ lemma leftRegular_norm_eq_zero_iff (x : G →₀ k) :
 
 lemma ker_leftRegular_norm_eq :
     LinearMap.ker (leftRegular k G).norm =
-      LinearMap.ker (linearCombination k (fun _ => (1 : k))) := by
+      LinearMap.ker (linearCombination k (fun _ ↦ (1 : k))) := by
   ext
   exact leftRegular_norm_eq_zero_iff _
 
@@ -575,7 +575,7 @@ natural representation of `G` on their direct sum `⨁ i, V i`.
 -/
 @[simps]
 noncomputable def directSum : Representation k G (⨁ i, V i) where
-  toFun g := DirectSum.lmap (fun _ => ρ _ g)
+  toFun g := DirectSum.lmap (fun _ ↦ ρ _ g)
   map_one' := by ext; simp
   map_mul' g h := by ext; simp
 
@@ -654,11 +654,11 @@ module `V →ₗ[k] W`, where `G` acts by conjugation.
 -/
 def linHom : Representation k G (V →ₗ[k] W) where
   toFun g :=
-    { toFun := fun f => ρW g ∘ₗ f ∘ₗ ρV g⁻¹
-      map_add' := fun f₁ f₂ => by simp_rw [add_comp, comp_add]
-      map_smul' := fun r f => by simp_rw [RingHom.id_apply, smul_comp, comp_smul] }
-  map_one' := ext fun x => by simp [Module.End.one_eq_id]
-  map_mul' g h := ext fun x => by simp [Module.End.mul_eq_comp, comp_assoc]
+    { toFun := fun f ↦ ρW g ∘ₗ f ∘ₗ ρV g⁻¹
+      map_add' := fun f₁ f₂ ↦ by simp_rw [add_comp, comp_add]
+      map_smul' := fun r f ↦ by simp_rw [RingHom.id_apply, smul_comp, comp_smul] }
+  map_one' := ext fun x ↦ by simp [Module.End.one_eq_id]
+  map_mul' g h := ext fun x ↦ by simp [Module.End.mul_eq_comp, comp_assoc]
 
 @[simp]
 theorem linHom_apply (g : G) (f : V →ₗ[k] W) : (linHom ρV ρW) g f = ρW g ∘ₗ f ∘ₗ ρV g⁻¹ :=
@@ -669,9 +669,9 @@ where `f : Module.Dual k V`.
 -/
 def dual : Representation k G (Module.Dual k V) where
   toFun g :=
-    { toFun := fun f => f ∘ₗ ρV g⁻¹
-      map_add' := fun f₁ f₂ => by simp only [add_comp]
-      map_smul' := fun r f => by
+    { toFun := fun f ↦ f ∘ₗ ρV g⁻¹
+      map_add' := fun f₁ f₂ ↦ by simp only [add_comp]
+      map_smul' := fun r f ↦ by
         ext
         simp only [coe_comp, Function.comp_apply, smul_apply, RingHom.id_apply] }
   map_one' := by ext; simp
@@ -706,9 +706,9 @@ open Finsupp
 @[simps -isSimp]
 noncomputable def finsupp (α : Type*) :
     Representation k G (α →₀ A) where
-  toFun g := lsum k fun i => (lsingle i).comp (ρ g)
-  map_one' := lhom_ext (fun _ _ => by simp)
-  map_mul' _ _ := lhom_ext (fun _ _ => by simp)
+  toFun g := lsum k fun i ↦ (lsingle i).comp (ρ g)
+  map_one' := lhom_ext (fun _ _ ↦ by simp)
+  map_mul' _ _ := lhom_ext (fun _ _ ↦ by simp)
 
 @[simp]
 lemma finsupp_single (g : G) (x : α) (a : A) :

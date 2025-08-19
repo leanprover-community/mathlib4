@@ -48,13 +48,13 @@ namespace HasLiftingProperty
 variable {i p}
 
 theorem op (h : HasLiftingProperty i p) : HasLiftingProperty p.op i.op :=
-  ⟨fun {f} {g} sq => by
+  ⟨fun {f} {g} sq ↦ by
     simp only [CommSq.HasLift.iff_unop, Quiver.Hom.unop_op]
     infer_instance⟩
 
 theorem unop {A B X Y : Cᵒᵖ} {i : A ⟶ B} {p : X ⟶ Y} (h : HasLiftingProperty i p) :
     HasLiftingProperty p.unop i.unop :=
-  ⟨fun {f} {g} sq => by
+  ⟨fun {f} {g} sq ↦ by
     rw [CommSq.HasLift.iff_op]
     simp only [Quiver.Hom.op_unop]
     infer_instance⟩
@@ -69,14 +69,14 @@ theorem iff_unop {A B X Y : Cᵒᵖ} (i : A ⟶ B) (p : X ⟶ Y) :
 variable (i p)
 
 instance (priority := 100) of_left_iso [IsIso i] : HasLiftingProperty i p :=
-  ⟨fun {f} {g} sq =>
+  ⟨fun {f} {g} sq ↦
     CommSq.HasLift.mk'
       { l := inv i ≫ f
         fac_left := by simp only [IsIso.hom_inv_id_assoc]
         fac_right := by simp only [sq.w, assoc, IsIso.inv_hom_id_assoc] }⟩
 
 instance (priority := 100) of_right_iso [IsIso p] : HasLiftingProperty i p :=
-  ⟨fun {f} {g} sq =>
+  ⟨fun {f} {g} sq ↦
     CommSq.HasLift.mk'
       { l := g ≫ inv p
         fac_left := by simp only [← sq.w_assoc, IsIso.hom_inv_id, comp_id]
@@ -84,7 +84,7 @@ instance (priority := 100) of_right_iso [IsIso p] : HasLiftingProperty i p :=
 
 instance of_comp_left [HasLiftingProperty i p] [HasLiftingProperty i' p] :
     HasLiftingProperty (i ≫ i') p :=
-  ⟨fun {f} {g} sq => by
+  ⟨fun {f} {g} sq ↦ by
     have fac := sq.w
     rw [assoc] at fac
     exact
@@ -95,7 +95,7 @@ instance of_comp_left [HasLiftingProperty i p] [HasLiftingProperty i' p] :
 
 instance of_comp_right [HasLiftingProperty i p] [HasLiftingProperty i p'] :
     HasLiftingProperty i (p ≫ p') :=
-  ⟨fun {f} {g} sq => by
+  ⟨fun {f} {g} sq ↦ by
     have fac := sq.w
     rw [← assoc] at fac
     let _ := (CommSq.mk (CommSq.mk fac).fac_left.symm).lift

@@ -60,22 +60,22 @@ variable [DecidableEq α] {s s₁ s₂ t t₁ t₂ u v : Finset α} {a : α}
 
 /-- `s ∪ t` is the set such that `a ∈ s ∪ t` iff `a ∈ s` or `a ∈ t`. -/
 instance : Union (Finset α) :=
-  ⟨fun s t => ⟨_, t.2.ndunion s.1⟩⟩
+  ⟨fun s t ↦ ⟨_, t.2.ndunion s.1⟩⟩
 
 /-- `s ∩ t` is the set such that `a ∈ s ∩ t` iff `a ∈ s` and `a ∈ t`. -/
 instance : Inter (Finset α) :=
-  ⟨fun s t => ⟨_, s.2.ndinter t.1⟩⟩
+  ⟨fun s t ↦ ⟨_, s.2.ndinter t.1⟩⟩
 
 instance : Lattice (Finset α) :=
   { Finset.partialOrder with
     sup := (· ∪ ·)
-    sup_le := fun _ _ _ hs ht _ ha => (mem_ndunion.1 ha).elim (fun h => hs h) fun h => ht h
-    le_sup_left := fun _ _ _ h => mem_ndunion.2 <| Or.inl h
-    le_sup_right := fun _ _ _ h => mem_ndunion.2 <| Or.inr h
+    sup_le := fun _ _ _ hs ht _ ha ↦ (mem_ndunion.1 ha).elim (fun h ↦ hs h) fun h ↦ ht h
+    le_sup_left := fun _ _ _ h ↦ mem_ndunion.2 <| Or.inl h
+    le_sup_right := fun _ _ _ h ↦ mem_ndunion.2 <| Or.inr h
     inf := (· ∩ ·)
-    le_inf := fun _ _ _ ht hu _ h => mem_ndinter.2 ⟨ht h, hu h⟩
-    inf_le_left := fun _ _ _ h => (mem_ndinter.1 h).1
-    inf_le_right := fun _ _ _ h => (mem_ndinter.1 h).2 }
+    le_inf := fun _ _ _ ht hu _ h ↦ mem_ndinter.2 ⟨ht h, hu h⟩
+    inf_le_left := fun _ _ _ h ↦ (mem_ndinter.1 h).1
+    inf_le_right := fun _ _ _ h ↦ (mem_ndinter.1 h).2 }
 
 @[simp]
 theorem sup_eq_union : (Max.max : Finset α → Finset α → Finset α) = Union.union :=
@@ -113,7 +113,7 @@ theorem notMem_union : a ∉ s ∪ t ↔ a ∉ s ∧ a ∉ t := by rw [mem_union
 
 @[simp, norm_cast]
 theorem coe_union (s₁ s₂ : Finset α) : ↑(s₁ ∪ s₂) = (s₁ ∪ s₂ : Set α) :=
-  Set.ext fun _ => mem_union
+  Set.ext fun _ ↦ mem_union
 
 theorem union_subset (hs : s ⊆ u) : t ⊆ u → s ∪ t ⊆ u :=
   sup_le <| le_iff_subset.2 hs
@@ -155,10 +155,10 @@ theorem union_subset_right {s t u : Finset α} (h : s ∪ t ⊆ u) : t ⊆ u :=
   Subset.trans subset_union_right h
 
 theorem union_left_comm (s t u : Finset α) : s ∪ (t ∪ u) = t ∪ (s ∪ u) :=
-  ext fun _ => by simp only [mem_union, or_left_comm]
+  ext fun _ ↦ by simp only [mem_union, or_left_comm]
 
 theorem union_right_comm (s t u : Finset α) : s ∪ t ∪ u = s ∪ u ∪ t :=
-  ext fun x => by simp only [mem_union, or_assoc, @or_comm (x ∈ t)]
+  ext fun x ↦ by simp only [mem_union, or_assoc, @or_comm (x ∈ t)]
 
 theorem union_self (s : Finset α) : s ∪ s = s :=
   union_idempotent s
@@ -210,7 +210,7 @@ theorem subset_inter {s₁ s₂ u : Finset α} : s₁ ⊆ s₂ → s₁ ⊆ u �
 
 @[simp, norm_cast]
 theorem coe_inter (s₁ s₂ : Finset α) : ↑(s₁ ∩ s₂) = (s₁ ∩ s₂ : Set α) :=
-  Set.ext fun _ => mem_inter
+  Set.ext fun _ ↦ mem_inter
 
 @[simp]
 theorem union_inter_cancel_left {s t : Finset α} : (s ∪ t) ∩ s = s := by grind
@@ -229,7 +229,7 @@ theorem inter_right_comm (s₁ s₂ s₃ : Finset α) : s₁ ∩ s₂ ∩ s₃ =
 
 @[simp]
 theorem inter_self (s : Finset α) : s ∩ s = s :=
-  ext fun _ => mem_inter.trans <| and_self_iff
+  ext fun _ ↦ mem_inter.trans <| and_self_iff
 
 @[simp]
 theorem inter_union_self (s t : Finset α) : s ∩ (t ∪ s) = s := by
@@ -248,7 +248,7 @@ theorem inter_subset_union : s ∩ t ⊆ s ∪ t :=
   le_iff_subset.1 inf_le_sup
 
 instance : DistribLattice (Finset α) :=
-  { le_sup_inf := fun a b c => by
+  { le_sup_inf := fun a b c ↦ by
       simp +contextual only
         [sup_eq_union, inf_eq_inter, le_eq_subset, subset_iff, mem_inter, mem_union, and_imp,
         or_imp, true_or, imp_true_iff, true_and, or_true] }

@@ -50,12 +50,12 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-- The `n`-th iterated derivative of a function from `𝕜` to `F`, as a function from `𝕜` to `F`. -/
 def iteratedDeriv (n : ℕ) (f : 𝕜 → F) (x : 𝕜) : F :=
-  (iteratedFDeriv 𝕜 n f x : (Fin n → 𝕜) → F) fun _ : Fin n => 1
+  (iteratedFDeriv 𝕜 n f x : (Fin n → 𝕜) → F) fun _ : Fin n ↦ 1
 
 /-- The `n`-th iterated derivative of a function from `𝕜` to `F` within a set `s`, as a function
 from `𝕜` to `F`. -/
 def iteratedDerivWithin (n : ℕ) (f : 𝕜 → F) (s : Set 𝕜) (x : 𝕜) : F :=
-  (iteratedFDerivWithin 𝕜 n f s x : (Fin n → 𝕜) → F) fun _ : Fin n => 1
+  (iteratedFDerivWithin 𝕜 n f s x : (Fin n → 𝕜) → F) fun _ : Fin n ↦ 1
 
 variable {n : ℕ} {f : 𝕜 → F} {s : Set 𝕜} {x : 𝕜}
 
@@ -71,7 +71,7 @@ theorem iteratedDerivWithin_eq_iteratedDeriv (hs : UniqueDiffOn 𝕜 s) (h : Con
 
 
 theorem iteratedDerivWithin_eq_iteratedFDerivWithin : iteratedDerivWithin n f s x =
-    (iteratedFDerivWithin 𝕜 n f s x : (Fin n → 𝕜) → F) fun _ : Fin n => 1 :=
+    (iteratedFDerivWithin 𝕜 n f s x : (Fin n → 𝕜) → F) fun _ : Fin n ↦ 1 :=
   rfl
 
 /-- Write the iterated derivative as the composition of a continuous linear equiv and the iterated
@@ -119,8 +119,8 @@ derivatives are differentiable, then the function is `C^n`. This is not an equiv
 but this is an equivalence when the set has unique derivatives, see
 `contDiffOn_iff_continuousOn_differentiableOn_deriv`. -/
 theorem contDiffOn_of_continuousOn_differentiableOn_deriv {n : ℕ∞}
-    (Hcont : ∀ m : ℕ, (m : ℕ∞) ≤ n → ContinuousOn (fun x => iteratedDerivWithin m f s x) s)
-    (Hdiff : ∀ m : ℕ, (m : ℕ∞) < n → DifferentiableOn 𝕜 (fun x => iteratedDerivWithin m f s x) s) :
+    (Hcont : ∀ m : ℕ, (m : ℕ∞) ≤ n → ContinuousOn (fun x ↦ iteratedDerivWithin m f s x) s)
+    (Hdiff : ∀ m : ℕ, (m : ℕ∞) < n → DifferentiableOn 𝕜 (fun x ↦ iteratedDerivWithin m f s x) s) :
     ContDiffOn 𝕜 n f s := by
   apply contDiffOn_of_continuousOn_differentiableOn
   · simpa only [iteratedFDerivWithin_eq_equiv_comp, LinearIsometryEquiv.comp_continuousOn_iff]
@@ -156,7 +156,7 @@ theorem ContDiffWithinAt.differentiableWithinAt_iteratedDerivWithin {n : WithTop
 differentiable. -/
 theorem ContDiffOn.differentiableOn_iteratedDerivWithin {n : WithTop ℕ∞} {m : ℕ}
     (h : ContDiffOn 𝕜 n f s) (hmn : m < n) (hs : UniqueDiffOn 𝕜 s) :
-    DifferentiableOn 𝕜 (iteratedDerivWithin m f s) s := fun x hx =>
+    DifferentiableOn 𝕜 (iteratedDerivWithin m f s) s := fun x hx ↦
   (h x hx).differentiableWithinAt_iteratedDerivWithin hmn <| by rwa [insert_eq_of_mem hx]
 
 /-- The property of being `C^n`, initially defined in terms of the Fréchet derivative, can be
@@ -185,7 +185,7 @@ theorem iteratedDerivWithin_succ {x : 𝕜} :
       iteratedFDerivWithin_eq_equiv_comp,
       LinearIsometryEquiv.comp_fderivWithin _ hxs.uniqueDiffWithinAt, derivWithin]
     change ((ContinuousMultilinearMap.mkPiRing 𝕜 (Fin n) ((fderivWithin 𝕜
-      (iteratedDerivWithin n f s) s x : 𝕜 → F) 1) : (Fin n → 𝕜) → F) fun _ : Fin n => 1) =
+      (iteratedDerivWithin n f s) s x : 𝕜 → F) 1) : (Fin n → 𝕜) → F) fun _ : Fin n ↦ 1) =
       (fderivWithin 𝕜 (iteratedDerivWithin n f s) s x : 𝕜 → F) 1
     simp
   · simp [derivWithin_zero_of_not_accPt hxs, iteratedDerivWithin, iteratedFDerivWithin,
@@ -194,12 +194,12 @@ theorem iteratedDerivWithin_succ {x : 𝕜} :
 /-- The `n`-th iterated derivative within a set with unique derivatives can be obtained by
 iterating `n` times the differentiation operation. -/
 theorem iteratedDerivWithin_eq_iterate {x : 𝕜} :
-    iteratedDerivWithin n f s x = (fun g : 𝕜 → F => derivWithin g s)^[n] f x := by
+    iteratedDerivWithin n f s x = (fun g : 𝕜 → F ↦ derivWithin g s)^[n] f x := by
   induction n generalizing x with
   | zero => simp
   | succ n IH =>
     rw [iteratedDerivWithin_succ, Function.iterate_succ']
-    exact derivWithin_congr (fun y hy => IH) IH
+    exact derivWithin_congr (fun y hy ↦ IH) IH
 
 /-- The `n+1`-th iterated derivative within a set with unique derivatives can be obtained by
 taking the `n`-th derivative of the derivative. -/
@@ -211,7 +211,7 @@ theorem iteratedDerivWithin_succ' {x : 𝕜} :
 
 
 theorem iteratedDeriv_eq_iteratedFDeriv :
-    iteratedDeriv n f x = (iteratedFDeriv 𝕜 n f x : (Fin n → 𝕜) → F) fun _ : Fin n => 1 :=
+    iteratedDeriv n f x = (iteratedFDeriv 𝕜 n f x : (Fin n → 𝕜) → F) fun _ : Fin n ↦ 1 :=
   rfl
 
 /-- Write the iterated derivative as the composition of a continuous linear equiv and the iterated
@@ -266,7 +266,7 @@ advantage of avoiding the discussion of continuity in the proof (and for `n = �
 -/
 theorem contDiff_of_differentiable_iteratedDeriv {n : ℕ∞}
     (h : ∀ m : ℕ, (m : ℕ∞) ≤ n → Differentiable 𝕜 (iteratedDeriv m f)) : ContDiff 𝕜 n f :=
-  contDiff_iff_iteratedDeriv.2 ⟨fun m hm => (h m hm).continuous, fun m hm => h m (le_of_lt hm)⟩
+  contDiff_iff_iteratedDeriv.2 ⟨fun m hm ↦ (h m hm).continuous, fun m hm ↦ h m (le_of_lt hm)⟩
 
 theorem ContDiff.continuous_iteratedDeriv {n : WithTop ℕ∞} (m : ℕ) (h : ContDiff 𝕜 n f)
     (hmn : m ≤ n) : Continuous (iteratedDeriv m f) :=

@@ -22,33 +22,33 @@ namespace Real
 variable {ι : Sort*} {f : ι → ℝ} {s : Set ℝ} {a : ℝ}
 
 instance instArchimedean : Archimedean ℝ :=
-  archimedean_iff_rat_le.2 fun x =>
-    Real.ind_mk x fun f =>
+  archimedean_iff_rat_le.2 fun x ↦
+    Real.ind_mk x fun f ↦
       let ⟨M, _, H⟩ := f.bounded' 0
-      ⟨M, mk_le_of_forall_le ⟨0, fun i _ => Rat.cast_le.2 <| le_of_lt (abs_lt.1 (H i)).2⟩⟩
+      ⟨M, mk_le_of_forall_le ⟨0, fun i _ ↦ Rat.cast_le.2 <| le_of_lt (abs_lt.1 (H i)).2⟩⟩
 
 noncomputable instance : FloorRing ℝ :=
   Archimedean.floorRing _
 
-theorem isCauSeq_iff_lift {f : ℕ → ℚ} : IsCauSeq abs f ↔ IsCauSeq abs fun i => (f i : ℝ) where
+theorem isCauSeq_iff_lift {f : ℕ → ℚ} : IsCauSeq abs f ↔ IsCauSeq abs fun i ↦ (f i : ℝ) where
   mp H ε ε0 :=
     let ⟨δ, δ0, δε⟩ := exists_pos_rat_lt ε0
-    (H _ δ0).imp fun i hi j ij => by dsimp; exact lt_trans (mod_cast hi _ ij) δε
+    (H _ δ0).imp fun i hi j ij ↦ by dsimp; exact lt_trans (mod_cast hi _ ij) δε
   mpr H ε ε0 :=
-    (H _ (Rat.cast_pos.2 ε0)).imp fun i hi j ij => by dsimp at hi; exact mod_cast hi _ ij
+    (H _ (Rat.cast_pos.2 ε0)).imp fun i hi j ij ↦ by dsimp at hi; exact mod_cast hi _ ij
 
 theorem of_near (f : ℕ → ℚ) (x : ℝ) (h : ∀ ε > 0, ∃ i, ∀ j ≥ i, |(f j : ℝ) - x| < ε) :
     ∃ h', Real.mk ⟨f, h'⟩ = x :=
   ⟨isCauSeq_iff_lift.2 (CauSeq.of_near _ (const abs x) h),
     sub_eq_zero.1 <|
       abs_eq_zero.1 <|
-        (eq_of_le_of_forall_lt_imp_le_of_dense (abs_nonneg _)) fun _ε ε0 =>
-          mk_near_of_forall_near <| (h _ ε0).imp fun _i h j ij => le_of_lt (h j ij)⟩
+        (eq_of_le_of_forall_lt_imp_le_of_dense (abs_nonneg _)) fun _ε ε0 ↦
+          mk_near_of_forall_near <| (h _ ε0).imp fun _i h j ij ↦ le_of_lt (h j ij)⟩
 
 theorem exists_floor (x : ℝ) : ∃ ub : ℤ, (ub : ℝ) ≤ x ∧ ∀ z : ℤ, (z : ℝ) ≤ x → z ≤ ub :=
   Int.exists_greatest_of_bdd
     (let ⟨n, hn⟩ := exists_int_gt x
-    ⟨n, fun _ h' => Int.cast_le.1 <| le_trans h' <| le_of_lt hn⟩)
+    ⟨n, fun _ h' ↦ Int.cast_le.1 <| le_trans h' <| le_of_lt hn⟩)
     (let ⟨n, hn⟩ := exists_int_lt x
     ⟨n, le_of_lt hn⟩)
 
@@ -56,14 +56,14 @@ theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x :
   rcases hne, hbdd with ⟨⟨L, hL⟩, ⟨U, hU⟩⟩
   have : ∀ d : ℕ, BddAbove { m : ℤ | ∃ y ∈ s, (m : ℝ) ≤ y * d } := by
     obtain ⟨k, hk⟩ := exists_int_gt U
-    refine fun d => ⟨k * d, fun z h => ?_⟩
+    refine fun d ↦ ⟨k * d, fun z h ↦ ?_⟩
     rcases h with ⟨y, yS, hy⟩
     refine Int.cast_le.1 (hy.trans ?_)
     push_cast
     exact mul_le_mul_of_nonneg_right ((hU yS).trans hk.le) d.cast_nonneg
-  choose f hf using fun d : ℕ =>
+  choose f hf using fun d : ℕ ↦
     Int.exists_greatest_of_bdd (this d) ⟨⌊L * d⌋, L, hL, Int.floor_le _⟩
-  have hf₁ : ∀ n > 0, ∃ y ∈ s, ((f n / n : ℚ) : ℝ) ≤ y := fun n n0 =>
+  have hf₁ : ∀ n > 0, ∃ y ∈ s, ((f n / n : ℚ) : ℝ) ≤ y := fun n n0 ↦
     let ⟨y, yS, hy⟩ := (hf n).1
     ⟨y, yS, by simpa using (div_le_iff₀ (Nat.cast_pos.2 n0 : (_ : ℝ) < _)).2 hy⟩
   have hf₂ : ∀ n > 0, ∀ y ∈ s, (y - ((n : ℕ) : ℝ)⁻¹) < (f n / n : ℚ) := by
@@ -72,10 +72,10 @@ theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x :
     simp only [Rat.cast_div, Rat.cast_intCast, Rat.cast_natCast, gt_iff_lt]
     rwa [lt_div_iff₀ (Nat.cast_pos.2 n0 : (_ : ℝ) < _), sub_mul, inv_mul_cancel₀]
     exact ne_of_gt (Nat.cast_pos.2 n0)
-  have hg : IsCauSeq abs (fun n => f n / n : ℕ → ℚ) := by
+  have hg : IsCauSeq abs (fun n ↦ f n / n : ℕ → ℚ) := by
     intro ε ε0
     suffices ∀ j ≥ ⌈ε⁻¹⌉₊, ∀ k ≥ ⌈ε⁻¹⌉₊, (f j / j - f k / k : ℚ) < ε by
-      refine ⟨_, fun j ij => abs_lt.2 ⟨?_, this _ ij _ le_rfl⟩⟩
+      refine ⟨_, fun j ij ↦ abs_lt.2 ⟨?_, this _ ij _ le_rfl⟩⟩
       rw [neg_lt, neg_sub]
       exact this _ le_rfl _ ij
     intro j ij k ik
@@ -86,11 +86,11 @@ theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x :
     rcases hf₁ _ j0 with ⟨y, yS, hy⟩
     refine lt_of_lt_of_le ((Rat.cast_lt (K := ℝ)).1 ?_) ((inv_le_comm₀ ε0 (Nat.cast_pos.2 k0)).1 ik)
     simpa using sub_lt_iff_lt_add'.2 (lt_of_le_of_lt hy <| sub_lt_iff_lt_add.1 <| hf₂ _ k0 _ yS)
-  let g : CauSeq ℚ abs := ⟨fun n => f n / n, hg⟩
-  refine ⟨mk g, ⟨fun x xS => ?_, fun y h => ?_⟩⟩
-  · refine le_of_forall_lt_imp_le_of_dense fun z xz => ?_
+  let g : CauSeq ℚ abs := ⟨fun n ↦ f n / n, hg⟩
+  refine ⟨mk g, ⟨fun x xS ↦ ?_, fun y h ↦ ?_⟩⟩
+  · refine le_of_forall_lt_imp_le_of_dense fun z xz ↦ ?_
     obtain ⟨K, hK⟩ := exists_nat_gt (x - z)⁻¹
-    refine le_mk_of_forall_le ⟨K, fun n nK => ?_⟩
+    refine le_mk_of_forall_le ⟨K, fun n nK ↦ ?_⟩
     replace xz := sub_pos.2 xz
     replace hK := hK.le.trans (Nat.cast_le.2 nK)
     have n0 : 0 < n := Nat.cast_pos.1 ((inv_pos.2 xz).trans_le hK)
@@ -98,7 +98,7 @@ theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x :
     rwa [le_sub_comm, inv_le_comm₀ (Nat.cast_pos.2 n0 : (_ : ℝ) < _) xz]
   · exact
       mk_le_of_forall_le
-        ⟨1, fun n n1 =>
+        ⟨1, fun n n1 ↦
           let ⟨x, xS, hx⟩ := hf₁ _ n1
           le_trans hx (h xS)⟩
 
@@ -112,7 +112,7 @@ theorem exists_isGLB (hne : s.Nonempty) (hbdd : BddBelow s) : ∃ x, IsGLB s x :
 
 open scoped Classical in
 noncomputable instance : SupSet ℝ :=
-  ⟨fun s => if h : s.Nonempty ∧ BddAbove s then Classical.choose (exists_isLUB h.1 h.2) else 0⟩
+  ⟨fun s ↦ if h : s.Nonempty ∧ BddAbove s then Classical.choose (exists_isLUB h.1 h.2) else 0⟩
 
 open scoped Classical in
 theorem sSup_def (s : Set ℝ) :
@@ -124,7 +124,7 @@ protected theorem isLUB_sSup (h₁ : s.Nonempty) (h₂ : BddAbove s) : IsLUB s (
   apply Classical.choose_spec
 
 noncomputable instance : InfSet ℝ :=
-  ⟨fun s => -sSup (-s)⟩
+  ⟨fun s ↦ -sSup (-s)⟩
 
 theorem sInf_def (s : Set ℝ) : sInf s = -sSup (-s) := rfl
 
@@ -159,7 +159,7 @@ theorem sInf_le_iff (h : BddBelow s) (h' : s.Nonempty) :
 theorem le_sSup_iff (h : BddAbove s) (h' : s.Nonempty) :
     a ≤ sSup s ↔ ∀ ε, ε < 0 → ∃ x ∈ s, a + ε < x := by
   rw [le_iff_forall_pos_lt_add]
-  refine ⟨fun H ε ε_neg => ?_, fun H ε ε_pos => ?_⟩
+  refine ⟨fun H ε ε_neg ↦ ?_, fun H ε ε_pos ↦ ?_⟩
   · exact exists_lt_of_lt_csSup h' (lt_sub_iff_add_lt.mp (H _ (neg_pos.mpr ε_neg)))
   · rcases H _ (neg_lt_zero.mpr ε_pos) with ⟨x, x_in, hx⟩
     exact sub_lt_iff_lt_add.mp (lt_csSup_of_lt h x_in hx)
@@ -183,7 +183,7 @@ theorem iSup_const_zero : ⨆ _ : ι, (0 : ℝ) = 0 := by
   · exact Real.iSup_of_isEmpty _
   · exact ciSup_const
 
-lemma sSup_of_not_bddAbove (hs : ¬BddAbove s) : sSup s = 0 := dif_neg fun h => hs h.2
+lemma sSup_of_not_bddAbove (hs : ¬BddAbove s) : sSup s = 0 := dif_neg fun h ↦ hs h.2
 lemma iSup_of_not_bddAbove (hf : ¬BddAbove (Set.range f)) : ⨆ i, f i = 0 := sSup_of_not_bddAbove hf
 
 theorem sSup_univ : sSup (@Set.univ ℝ) = 0 := Real.sSup_of_not_bddAbove not_bddAbove_univ
@@ -304,18 +304,18 @@ theorem sInf_le_sSup (s : Set ℝ) (h₁ : BddBelow s) (h₂ : BddAbove s) : sIn
 theorem cauSeq_converges (f : CauSeq ℝ abs) : ∃ x, f ≈ const abs x := by
   let s := {x : ℝ | const abs x < f}
   have lb : ∃ x, x ∈ s := exists_lt f
-  have ub' : ∀ x, f < const abs x → ∀ y ∈ s, y ≤ x := fun x h y yS =>
+  have ub' : ∀ x, f < const abs x → ∀ y ∈ s, y ≤ x := fun x h y yS ↦
     le_of_lt <| const_lt.1 <| CauSeq.lt_trans yS h
   have ub : ∃ x, ∀ y ∈ s, y ≤ x := (exists_gt f).imp ub'
-  refine ⟨sSup s, ((lt_total _ _).resolve_left fun h => ?_).resolve_right fun h => ?_⟩
+  refine ⟨sSup s, ((lt_total _ _).resolve_left fun h ↦ ?_).resolve_right fun h ↦ ?_⟩
   · rcases h with ⟨ε, ε0, i, ih⟩
     refine (csSup_le lb (ub' _ ?_)).not_gt (sub_lt_self _ (half_pos ε0))
-    refine ⟨_, half_pos ε0, i, fun j ij => ?_⟩
+    refine ⟨_, half_pos ε0, i, fun j ij ↦ ?_⟩
     rw [sub_apply, const_apply, sub_right_comm, le_sub_iff_add_le, add_halves]
     exact ih _ ij
   · rcases h with ⟨ε, ε0, i, ih⟩
     refine (le_csSup ub ?_).not_gt ((lt_add_iff_pos_left _).2 (half_pos ε0))
-    refine ⟨_, half_pos ε0, i, fun j ij => ?_⟩
+    refine ⟨_, half_pos ε0, i, fun j ij ↦ ?_⟩
     rw [sub_apply, const_apply, add_comm, ← sub_sub, le_sub_iff_add_le, add_halves]
     exact ih _ ij
 
@@ -330,16 +330,16 @@ theorem iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f ''
   · have : Nonempty { r' : ℚ // x < ↑r' } := by
       obtain ⟨r, hrx⟩ := exists_rat_gt x
       exact ⟨⟨r, hrx⟩⟩
-    refine le_ciInf fun r => ?_
+    refine le_ciInf fun r ↦ ?_
     obtain ⟨y, hxy, hyr⟩ := exists_rat_btwn r.prop
     refine ciInf_set_le hf (hxy.trans ?_)
     exact_mod_cast hyr
-  · refine le_ciInf fun q => ?_
+  · refine le_ciInf fun q ↦ ?_
     have hq := q.prop
     rw [mem_Ioi] at hq
     obtain ⟨y, hxy, hyq⟩ := exists_rat_btwn hq
     refine (ciInf_le ?_ ?_).trans ?_
-    · refine ⟨hf.some, fun z => ?_⟩
+    · refine ⟨hf.some, fun z ↦ ?_⟩
       rintro ⟨u, rfl⟩
       suffices hfu : f u ∈ f '' Ioi x from hf.choose_spec hfu
       exact ⟨u, u.prop, rfl⟩

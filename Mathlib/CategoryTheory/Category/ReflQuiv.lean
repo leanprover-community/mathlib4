@@ -83,7 +83,7 @@ def isoOfQuivIso {V W : Type u} [ReflQuiver V] [ReflQuiver W]
     ReflQuiv.of V ≅ ReflQuiv.of W where
   hom := ReflPrefunctor.mk e.hom h_id
   inv := ReflPrefunctor.mk e.inv
-    (fun Y => (Quiv.homEquivOfIso e).injective (by simp [Quiv.hom_map_inv_map_of_iso, h_id]))
+    (fun Y ↦ (Quiv.homEquivOfIso e).injective (by simp [Quiv.hom_map_inv_map_of_iso, h_id]))
   hom_inv_id := by
     apply forgetToQuiv.map_injective
     exact e.hom_inv_id
@@ -225,7 +225,7 @@ adjunction between categories and quivers with the map underlying the quotient f
 def adj.unit.app (V : Type u) [ReflQuiver V] :
     V ⥤rq forget.obj (Cat.freeRefl.obj (ReflQuiv.of V)) where
   toPrefunctor := Paths.of V ⋙q (Cat.FreeRefl.quotientFunctor V).toPrefunctor
-  map_id := fun _ => Quotient.sound _ ⟨⟩
+  map_id := fun _ ↦ Quotient.sound _ ⟨⟩
 
 /-- This is used in the proof of both triangle equalities. -/
 theorem adj.unit.map_app_eq (V : ReflQuiv.{max u v, u}) :

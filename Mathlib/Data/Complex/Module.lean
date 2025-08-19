@@ -94,11 +94,11 @@ instance (priority := 100) instModule [Semiring R] [Module R ℝ] : Module R ℂ
 instance (priority := 95) instAlgebraOfReal [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ where
   algebraMap := Complex.ofRealHom.comp (algebraMap R ℝ)
   smul := (· • ·)
-  smul_def' := fun r x => by ext <;> simp [smul_re, smul_im, Algebra.smul_def]
-  commutes' := fun r ⟨xr, xi⟩ => by ext <;> simp [Algebra.commutes]
+  smul_def' := fun r x ↦ by ext <;> simp [smul_re, smul_im, Algebra.smul_def]
+  commutes' := fun r ⟨xr, xi⟩ ↦ by ext <;> simp [Algebra.commutes]
 
 instance : StarModule ℝ ℂ :=
-  ⟨fun r x => by simp only [star_def, star_trivial, real_smul, map_mul, conj_ofReal]⟩
+  ⟨fun r x ↦ by simp only [star_def, star_trivial, real_smul, map_mul, conj_ofReal]⟩
 
 @[simp]
 theorem coe_algebraMap : (algebraMap ℝ ℂ : ℝ → ℂ) = ((↑) : ℝ → ℂ) :=
@@ -127,14 +127,14 @@ open Module Submodule
 /-- `ℂ` has a basis over `ℝ` given by `1` and `I`. -/
 noncomputable def basisOneI : Basis (Fin 2) ℝ ℂ :=
   .ofEquivFun
-    { toFun := fun z => ![z.re, z.im]
-      invFun := fun c => c 0 + c 1 • I
-      left_inv := fun z => by simp
-      right_inv := fun c => by
+    { toFun := fun z ↦ ![z.re, z.im]
+      invFun := fun c ↦ c 0 + c 1 • I
+      left_inv := fun z ↦ by simp
+      right_inv := fun c ↦ by
         ext i
         fin_cases i <;> simp
-      map_add' := fun z z' => by simp
-      map_smul' := fun c z => by simp }
+      map_add' := fun z z' ↦ by simp
+      map_smul' := fun c z ↦ by simp }
 
 @[simp]
 theorem coe_basisOneI_repr (z : ℂ) : ⇑(basisOneI.repr z) = ![z.re, z.im] :=
@@ -142,9 +142,9 @@ theorem coe_basisOneI_repr (z : ℂ) : ⇑(basisOneI.repr z) = ![z.re, z.im] :=
 
 @[simp]
 theorem coe_basisOneI : ⇑basisOneI = ![1, I] :=
-  funext fun i =>
+  funext fun i ↦
     Basis.apply_eq_iff.mpr <|
-      Finsupp.ext fun j => by
+      Finsupp.ext fun j ↦ by
         fin_cases i <;> fin_cases j <;> simp
 
 end Complex
@@ -197,7 +197,7 @@ example (E : Type*) [AddCommGroup E] [Module ℂ E] : IsScalarTower ℝ ℂ E :=
 
 instance (priority := 900) StarModule.complexToReal {E : Type*} [AddCommGroup E] [Star E]
     [Module ℂ E] [StarModule ℂ E] : StarModule ℝ E :=
-  ⟨fun r a => by rw [← smul_one_smul ℂ r a, star_smul, star_smul, star_one, smul_one_smul]⟩
+  ⟨fun r a ↦ by rw [← smul_one_smul ℂ r a, star_smul, star_smul, star_one, smul_one_smul]⟩
 
 namespace Complex
 
@@ -254,14 +254,14 @@ theorem toMatrix_conjAe :
 theorem real_algHom_eq_id_or_conj (f : ℂ →ₐ[ℝ] ℂ) : f = AlgHom.id ℝ ℂ ∨ f = conjAe := by
   refine
       (eq_or_eq_neg_of_sq_eq_sq (f I) I <| by rw [← map_pow, I_sq, map_neg, map_one]).imp ?_ ?_ <;>
-    refine fun h => algHom_ext ?_
+    refine fun h ↦ algHom_ext ?_
   exacts [h, conj_I.symm ▸ h]
 
 /-- The natural `LinearEquiv` from `ℂ` to `ℝ × ℝ`. -/
 @[simps! +simpRhs apply symm_apply_re symm_apply_im]
 def equivRealProdLm : ℂ ≃ₗ[ℝ] ℝ × ℝ :=
   { equivRealProdAddHom with
-    map_smul' := fun r c => by simp }
+    map_smul' := fun r c ↦ by simp }
 
 theorem equivRealProdLm_symm_apply (p : ℝ × ℝ) :
     Complex.equivRealProdLm.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
@@ -276,7 +276,7 @@ def liftAux (I' : A) (hf : I' * I' = -1) : ℂ →ₐ[ℝ] A :=
   AlgHom.ofLinearMap
     ((Algebra.linearMap ℝ A).comp reLm + (LinearMap.toSpanSingleton _ _ I').comp imLm)
     (show algebraMap ℝ A 1 + (0 : ℝ) • I' = 1 by rw [RingHom.map_one, zero_smul, add_zero])
-    fun ⟨x₁, y₁⟩ ⟨x₂, y₂⟩ =>
+    fun ⟨x₁, y₁⟩ ⟨x₂, y₂⟩ ↦
     show
       algebraMap ℝ A (x₁ * x₂ - y₁ * y₂) + (x₁ * y₂ + y₁ * x₂) • I' =
         (algebraMap ℝ A x₁ + y₁ • I') * (algebraMap ℝ A x₂ + y₂ • I') by
@@ -296,7 +296,7 @@ theorem liftAux_apply_I (I' : A) (hI') : liftAux I' hI' I = I' := by simp
 
 @[simp]
 theorem adjoin_I : Algebra.adjoin ℝ {I} = ⊤ := by
-  refine top_unique fun x hx => ?_; clear hx
+  refine top_unique fun x hx ↦ ?_; clear hx
   rw [← x.re_add_im, ← smul_eq_mul, ← Complex.coe_algebraMap]
   exact add_mem (algebraMap_mem _ _) (Subalgebra.smul_mem _ (Algebra.subset_adjoin <| by simp) _)
 

@@ -83,7 +83,7 @@ def IsInitial.ofStrict {X Y : C} (f : X ⟶ Y)
   hY.ofIso (asIso f).symm
 
 instance (priority := 100) initial_mono_of_strict_initial_objects : InitialMonoClass C where
-  isInitial_mono_from := fun _ hI => { right_cancellation := fun _ _ _ => hI.strict_hom_ext _ _ }
+  isInitial_mono_from := fun _ hI ↦ { right_cancellation := fun _ _ _ ↦ hI.strict_hom_ext _ _ }
 
 /-- If `I` is initial, then `X ⨯ I` is isomorphic to it. -/
 @[simps! hom]
@@ -149,7 +149,7 @@ end
 has strict initial objects. -/
 theorem hasStrictInitialObjects_of_initial_is_strict [HasInitial C]
     (h : ∀ (A) (f : A ⟶ ⊥_ C), IsIso f) : HasStrictInitialObjects C :=
-  { out := fun {I A} f hI =>
+  { out := fun {I A} f hI ↦
       haveI := h A (f ≫ hI.to _)
       ⟨⟨hI.to _ ≫ inv (f ≫ hI.to (⊥_ C)), by rw [← assoc, IsIso.hom_inv_id], hI.hom_ext _ _⟩⟩ }
 
@@ -198,10 +198,10 @@ theorem limit_π_isIso_of_is_strict_terminal (F : J ⥤ C) [HasLimit F] (i : J)
     (H : ∀ (j) (_ : j ≠ i), IsTerminal (F.obj j)) [Subsingleton (i ⟶ i)] : IsIso (limit.π F i) := by
   classical
     refine ⟨⟨limit.lift _ ⟨_, ⟨?_, ?_⟩⟩, ?_, ?_⟩⟩
-    · exact fun j =>
+    · exact fun j ↦
         dite (j = i)
-          (fun h => eqToHom (by cases h; rfl))
-          fun h => (H _ h).from _
+          (fun h ↦ eqToHom (by cases h; rfl))
+          fun h ↦ (H _ h).from _
     · intro j k f
       split_ifs with h h_1 h_1
       · cases h
@@ -245,7 +245,7 @@ end
 has strict terminal objects. -/
 theorem hasStrictTerminalObjects_of_terminal_is_strict (I : C) (h : ∀ (A) (f : I ⟶ A), IsIso f) :
     HasStrictTerminalObjects C :=
-  { out := fun {I' A} f hI' =>
+  { out := fun {I' A} f hI' ↦
       haveI := h A (hI'.from _ ≫ f)
       ⟨⟨inv (hI'.from I ≫ f) ≫ hI'.from I, hI'.hom_ext _ _, by rw [assoc, IsIso.inv_hom_id]⟩⟩ }
 

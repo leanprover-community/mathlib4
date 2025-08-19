@@ -90,7 +90,7 @@ def Monoid.Coprod M N := Monoid.CoprodI ![M, N]
 or
 
 ```
-def Monoid.Coprod M N := Monoid.CoprodI (fun b : Bool => cond b M N)
+def Monoid.Coprod M N := Monoid.CoprodI (fun b : Bool ↦ cond b M N)
 ```
 
 There are several reasons to build an API from scratch.
@@ -170,16 +170,16 @@ theorem mk_eq_mk {w₁ w₂ : FreeMonoid (M ⊕ N)} : mk w₁ = mk w₂ ↔ copr
 /-- The natural embedding `M →* M ∗ N`. -/
 @[to_additive /-- The natural embedding `M →+ AddMonoid.Coprod M N`. -/]
 def inl : M →* M ∗ N where
-  toFun := fun x => mk (of (.inl x))
-  map_one' := mk_eq_mk.2 fun _c hc => hc.2.2.1
-  map_mul' := fun x y => mk_eq_mk.2 fun _c hc => hc.1 x y
+  toFun := fun x ↦ mk (of (.inl x))
+  map_one' := mk_eq_mk.2 fun _c hc ↦ hc.2.2.1
+  map_mul' := fun x y ↦ mk_eq_mk.2 fun _c hc ↦ hc.1 x y
 
 /-- The natural embedding `N →* M ∗ N`. -/
 @[to_additive /-- The natural embedding `N →+ AddMonoid.Coprod M N`. -/]
 def inr : N →* M ∗ N where
-  toFun := fun x => mk (of (.inr x))
-  map_one' := mk_eq_mk.2 fun _c hc => hc.2.2.2
-  map_mul' := fun x y => mk_eq_mk.2 fun _c hc => hc.2.1 x y
+  toFun := fun x ↦ mk (of (.inr x))
+  map_one' := mk_eq_mk.2 fun _c hc ↦ hc.2.2.2
+  map_mul' := fun x y ↦ mk_eq_mk.2 fun _c hc ↦ hc.2.1 x y
 
 @[to_additive (attr := simp)]
 theorem mk_of_inl (x : M) : (mk (of (.inl x)) : M ∗ N) = inl x := rfl
@@ -292,8 +292,8 @@ def map (f : M →* M') (g : N →* N') : M ∗ N →* M' ∗ N' :=
   clift (mk.comp <| FreeMonoid.map <| Sum.map f g)
     (by simp only [MonoidHom.comp_apply, map_of, Sum.map_inl, map_one, mk_of_inl])
     (by simp only [MonoidHom.comp_apply, map_of, Sum.map_inr, map_one, mk_of_inr])
-    (fun x y => by simp only [MonoidHom.comp_apply, map_of, Sum.map_inl, map_mul, mk_of_inl])
-    fun x y => by simp only [MonoidHom.comp_apply, map_of, Sum.map_inr, map_mul, mk_of_inr]
+    (fun x y ↦ by simp only [MonoidHom.comp_apply, map_of, Sum.map_inl, map_mul, mk_of_inl])
+    fun x y ↦ by simp only [MonoidHom.comp_apply, map_of, Sum.map_inr, map_mul, mk_of_inr]
 
 @[to_additive (attr := simp)]
 theorem map_mk_ofList (f : M →* M') (g : N →* N') (l : List (M ⊕ N)) :
@@ -339,8 +339,8 @@ def swap : M ∗ N →* N ∗ M :=
   clift (mk.comp <| FreeMonoid.map Sum.swap)
     (by simp only [MonoidHom.comp_apply, map_of, Sum.swap_inl, mk_of_inr, map_one])
     (by simp only [MonoidHom.comp_apply, map_of, Sum.swap_inr, mk_of_inl, map_one])
-    (fun x y => by simp only [MonoidHom.comp_apply, map_of, Sum.swap_inl, mk_of_inr, map_mul])
-    (fun x y => by simp only [MonoidHom.comp_apply, map_of, Sum.swap_inr, mk_of_inl, map_mul])
+    (fun x y ↦ by simp only [MonoidHom.comp_apply, map_of, Sum.swap_inl, mk_of_inr, map_mul])
+    (fun x y ↦ by simp only [MonoidHom.comp_apply, map_of, Sum.swap_inr, mk_of_inl, map_mul])
 
 @[to_additive (attr := simp)]
 theorem swap_comp_swap : (swap M N).comp (swap N M) = .id _ := hom_ext rfl rfl
@@ -589,7 +589,7 @@ theorem fst_surjective : Surjective (fst : M ∗ N →* M) := LeftInverse.surjec
 theorem snd_surjective : Surjective (snd : M ∗ N →* N) := LeftInverse.surjective snd_apply_inr
 
 @[to_additive toProd_surjective]
-theorem toProd_surjective : Surjective (toProd : M ∗ N →* M × N) := fun x =>
+theorem toProd_surjective : Surjective (toProd : M ∗ N →* M × N) := fun x ↦
   ⟨inl x.1 * inr x.2, by rw [map_mul, toProd_apply_inl, toProd_apply_inr, Prod.fst_mul_snd]⟩
 
 @[deprecated (since := "2025-03-11")]
@@ -618,7 +618,7 @@ theorem con_inv_mul_cancel (x : FreeMonoid (G ⊕ H)) :
 
 @[to_additive]
 instance : Inv (G ∗ H) where
-  inv := Quotient.map' (fun w => ofList (w.toList.map (Sum.map Inv.inv Inv.inv)).reverse) fun _ _ ↦
+  inv := Quotient.map' (fun w ↦ ofList (w.toList.map (Sum.map Inv.inv Inv.inv)).reverse) fun _ _ ↦
     (coprodCon G H).map_of_mul_left_rel_one _ con_inv_mul_cancel
 
 @[to_additive]
@@ -628,7 +628,7 @@ theorem inv_def (w : FreeMonoid (G ⊕ H)) :
 
 @[to_additive]
 instance : Group (G ∗ H) where
-  inv_mul_cancel := mk_surjective.forall.2 fun x => mk_eq_mk.2 (con_inv_mul_cancel x)
+  inv_mul_cancel := mk_surjective.forall.2 fun x ↦ mk_eq_mk.2 (con_inv_mul_cancel x)
 
 @[to_additive (attr := simp)]
 theorem closure_range_inl_union_inr :

@@ -114,12 +114,12 @@ variable [EquivLike F α β]
 instance (priority := 100) OrderIsoClass.toTopHomClass [LE α] [OrderTop α]
     [PartialOrder β] [OrderTop β] [OrderIsoClass F α β] : TopHomClass F α β :=
   { show OrderHomClass F α β from inferInstance with
-    map_top := fun f => top_le_iff.1 <| (map_inv_le_iff f).1 le_top }
+    map_top := fun f ↦ top_le_iff.1 <| (map_inv_le_iff f).1 le_top }
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toBotHomClass [LE α] [OrderBot α]
     [PartialOrder β] [OrderBot β] [OrderIsoClass F α β] : BotHomClass F α β :=
-  { map_bot := fun f => le_bot_iff.1 <| (le_map_inv_iff f).1 bot_le }
+  { map_bot := fun f ↦ le_bot_iff.1 <| (le_map_inv_iff f).1 bot_le }
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toBoundedOrderHomClass [LE α] [BoundedOrder α]
@@ -210,7 +210,7 @@ theorem copy_eq (f : TopHom α β) (f' : α → β) (h : f' = f) : f.copy f' h =
   DFunLike.ext' h
 
 instance : Inhabited (TopHom α β) :=
-  ⟨⟨fun _ => ⊤, rfl⟩⟩
+  ⟨⟨fun _ ↦ ⊤, rfl⟩⟩
 
 variable (α)
 
@@ -249,21 +249,21 @@ theorem comp_assoc (f : TopHom γ δ) (g : TopHom β γ) (h : TopHom α β) :
 
 @[simp]
 theorem comp_id (f : TopHom α β) : f.comp (TopHom.id α) = f :=
-  TopHom.ext fun _ => rfl
+  TopHom.ext fun _ ↦ rfl
 
 @[simp]
 theorem id_comp (f : TopHom α β) : (TopHom.id β).comp f = f :=
-  TopHom.ext fun _ => rfl
+  TopHom.ext fun _ ↦ rfl
 
 @[simp]
 theorem cancel_right {g₁ g₂ : TopHom β γ} {f : TopHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => TopHom.ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (fun g => comp g f)⟩
+  ⟨fun h ↦ TopHom.ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (fun g ↦ comp g f)⟩
 
 @[simp]
 theorem cancel_left {g : TopHom β γ} {f₁ f₂ : TopHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => TopHom.ext fun a => hg <| by rw [← TopHom.comp_apply, h, TopHom.comp_apply],
+  ⟨fun h ↦ TopHom.ext fun a ↦ hg <| by rw [← TopHom.comp_apply, h, TopHom.comp_apply],
     congr_arg _⟩
 
 end Top
@@ -283,7 +283,7 @@ variable [LE β] [OrderTop β]
 
 instance : OrderTop (TopHom α β) where
   top := ⟨⊤, rfl⟩
-  le_top := fun _ => @le_top (α → β) _ _ _
+  le_top := fun _ ↦ @le_top (α → β) _ _ _
 
 @[simp]
 theorem coe_top : ⇑(⊤ : TopHom α β) = ⊤ :=
@@ -300,10 +300,10 @@ section SemilatticeInf
 variable [SemilatticeInf β] [OrderTop β] (f g : TopHom α β)
 
 instance : Min (TopHom α β) :=
-  ⟨fun f g => ⟨f ⊓ g, by rw [Pi.inf_apply, map_top, map_top, inf_top_eq]⟩⟩
+  ⟨fun f g ↦ ⟨f ⊓ g, by rw [Pi.inf_apply, map_top, map_top, inf_top_eq]⟩⟩
 
 instance : SemilatticeInf (TopHom α β) :=
-  (DFunLike.coe_injective.semilatticeInf _) fun _ _ => rfl
+  (DFunLike.coe_injective.semilatticeInf _) fun _ _ ↦ rfl
 
 @[simp]
 theorem coe_inf : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g :=
@@ -320,10 +320,10 @@ section SemilatticeSup
 variable [SemilatticeSup β] [OrderTop β] (f g : TopHom α β)
 
 instance : Max (TopHom α β) :=
-  ⟨fun f g => ⟨f ⊔ g, by rw [Pi.sup_apply, map_top, map_top, sup_top_eq]⟩⟩
+  ⟨fun f g ↦ ⟨f ⊔ g, by rw [Pi.sup_apply, map_top, map_top, sup_top_eq]⟩⟩
 
 instance : SemilatticeSup (TopHom α β) :=
-  (DFunLike.coe_injective.semilatticeSup _) fun _ _ => rfl
+  (DFunLike.coe_injective.semilatticeSup _) fun _ _ ↦ rfl
 
 @[simp]
 theorem coe_sup : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
@@ -336,10 +336,10 @@ theorem sup_apply (a : α) : (f ⊔ g) a = f a ⊔ g a :=
 end SemilatticeSup
 
 instance [Lattice β] [OrderTop β] : Lattice (TopHom α β) :=
-  DFunLike.coe_injective.lattice _ (fun _ _ => rfl) fun _ _ => rfl
+  DFunLike.coe_injective.lattice _ (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 instance [DistribLattice β] [OrderTop β] : DistribLattice (TopHom α β) :=
-  DFunLike.coe_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl
+  DFunLike.coe_injective.distribLattice _ (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 end TopHom
 
@@ -383,7 +383,7 @@ theorem copy_eq (f : BotHom α β) (f' : α → β) (h : f' = f) : f.copy f' h =
   DFunLike.ext' h
 
 instance : Inhabited (BotHom α β) :=
-  ⟨⟨fun _ => ⊥, rfl⟩⟩
+  ⟨⟨fun _ ↦ ⊥, rfl⟩⟩
 
 variable (α)
 
@@ -422,21 +422,21 @@ theorem comp_assoc (f : BotHom γ δ) (g : BotHom β γ) (h : BotHom α β) :
 
 @[simp]
 theorem comp_id (f : BotHom α β) : f.comp (BotHom.id α) = f :=
-  BotHom.ext fun _ => rfl
+  BotHom.ext fun _ ↦ rfl
 
 @[simp]
 theorem id_comp (f : BotHom α β) : (BotHom.id β).comp f = f :=
-  BotHom.ext fun _ => rfl
+  BotHom.ext fun _ ↦ rfl
 
 @[simp]
 theorem cancel_right {g₁ g₂ : BotHom β γ} {f : BotHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => BotHom.ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (comp · f)⟩
+  ⟨fun h ↦ BotHom.ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (comp · f)⟩
 
 @[simp]
 theorem cancel_left {g : BotHom β γ} {f₁ f₂ : BotHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => BotHom.ext fun a => hg <| by rw [← BotHom.comp_apply, h, BotHom.comp_apply],
+  ⟨fun h ↦ BotHom.ext fun a ↦ hg <| by rw [← BotHom.comp_apply, h, BotHom.comp_apply],
     congr_arg _⟩
 
 end Bot
@@ -456,7 +456,7 @@ variable [LE β] [OrderBot β]
 
 instance : OrderBot (BotHom α β) where
   bot := ⟨⊥, rfl⟩
-  bot_le := fun _ => @bot_le (α → β) _ _ _
+  bot_le := fun _ ↦ @bot_le (α → β) _ _ _
 
 @[simp]
 theorem coe_bot : ⇑(⊥ : BotHom α β) = ⊥ :=
@@ -473,10 +473,10 @@ section SemilatticeInf
 variable [SemilatticeInf β] [OrderBot β] (f g : BotHom α β)
 
 instance : Min (BotHom α β) :=
-  ⟨fun f g => ⟨f ⊓ g, by rw [Pi.inf_apply, map_bot, map_bot, inf_bot_eq]⟩⟩
+  ⟨fun f g ↦ ⟨f ⊓ g, by rw [Pi.inf_apply, map_bot, map_bot, inf_bot_eq]⟩⟩
 
 instance : SemilatticeInf (BotHom α β) :=
-  (DFunLike.coe_injective.semilatticeInf _) fun _ _ => rfl
+  (DFunLike.coe_injective.semilatticeInf _) fun _ _ ↦ rfl
 
 @[simp]
 theorem coe_inf : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g :=
@@ -493,10 +493,10 @@ section SemilatticeSup
 variable [SemilatticeSup β] [OrderBot β] (f g : BotHom α β)
 
 instance : Max (BotHom α β) :=
-  ⟨fun f g => ⟨f ⊔ g, by rw [Pi.sup_apply, map_bot, map_bot, sup_bot_eq]⟩⟩
+  ⟨fun f g ↦ ⟨f ⊔ g, by rw [Pi.sup_apply, map_bot, map_bot, sup_bot_eq]⟩⟩
 
 instance : SemilatticeSup (BotHom α β) :=
-  (DFunLike.coe_injective.semilatticeSup _) fun _ _ => rfl
+  (DFunLike.coe_injective.semilatticeSup _) fun _ _ ↦ rfl
 
 @[simp]
 theorem coe_sup : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
@@ -509,10 +509,10 @@ theorem sup_apply (a : α) : (f ⊔ g) a = f a ⊔ g a :=
 end SemilatticeSup
 
 instance [Lattice β] [OrderBot β] : Lattice (BotHom α β) :=
-  DFunLike.coe_injective.lattice _ (fun _ _ => rfl) fun _ _ => rfl
+  DFunLike.coe_injective.lattice _ (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 instance [DistribLattice β] [OrderBot β] : DistribLattice (BotHom α β) :=
-  DFunLike.coe_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl
+  DFunLike.coe_injective.distribLattice _ (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 end BotHom
 
@@ -613,23 +613,23 @@ theorem comp_assoc (f : BoundedOrderHom γ δ) (g : BoundedOrderHom β γ) (h : 
 
 @[simp]
 theorem comp_id (f : BoundedOrderHom α β) : f.comp (BoundedOrderHom.id α) = f :=
-  BoundedOrderHom.ext fun _ => rfl
+  BoundedOrderHom.ext fun _ ↦ rfl
 
 @[simp]
 theorem id_comp (f : BoundedOrderHom α β) : (BoundedOrderHom.id β).comp f = f :=
-  BoundedOrderHom.ext fun _ => rfl
+  BoundedOrderHom.ext fun _ ↦ rfl
 
 @[simp]
 theorem cancel_right {g₁ g₂ : BoundedOrderHom β γ} {f : BoundedOrderHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => BoundedOrderHom.ext <| hf.forall.2 <| DFunLike.ext_iff.1 h,
-   congr_arg (fun g => comp g f)⟩
+  ⟨fun h ↦ BoundedOrderHom.ext <| hf.forall.2 <| DFunLike.ext_iff.1 h,
+   congr_arg (fun g ↦ comp g f)⟩
 
 @[simp]
 theorem cancel_left {g : BoundedOrderHom β γ} {f₁ f₂ : BoundedOrderHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h =>
-    BoundedOrderHom.ext fun a =>
+  ⟨fun h ↦
+    BoundedOrderHom.ext fun a ↦
       hg <| by rw [← BoundedOrderHom.comp_apply, h, BoundedOrderHom.comp_apply],
     congr_arg _⟩
 

@@ -50,7 +50,7 @@ noncomputable def hermite : ℕ → Polynomial ℤ
 theorem hermite_succ (n : ℕ) : hermite (n + 1) = X * hermite n - derivative (hermite n) := by
   rw [hermite]
 
-theorem hermite_eq_iterate (n : ℕ) : hermite n = (fun p => X * p - derivative p)^[n] 1 := by
+theorem hermite_eq_iterate (n : ℕ) : hermite n = (fun p ↦ X * p - derivative p)^[n] 1 := by
   induction n with
   | zero => rfl
   | succ n ih => rw [Function.iterate_succ_apply', ← ih, hermite_succ]
@@ -147,7 +147,7 @@ theorem coeff_hermite_explicit :
     push_cast
     ring
   | n + 1, k + 1 => by
-    let hermite_explicit : ℕ → ℕ → ℤ := fun n k =>
+    let hermite_explicit : ℕ → ℕ → ℤ := fun n k ↦
       (-1) ^ n * (2 * n - 1)‼ * Nat.choose (2 * n + k) k
     have hermite_explicit_recur :
       ∀ n k : ℕ,

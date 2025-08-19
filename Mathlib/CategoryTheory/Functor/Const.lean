@@ -32,9 +32,9 @@ variable {C : Type u₂} [Category.{v₂} C]
 @[simps]
 def const : C ⥤ J ⥤ C where
   obj X :=
-    { obj := fun _ => X
-      map := fun _ => 𝟙 X }
-  map f := { app := fun _ => f }
+    { obj := fun _ ↦ X
+      map := fun _ ↦ 𝟙 X }
+  map f := { app := fun _ ↦ f }
 
 namespace const
 
@@ -47,16 +47,16 @@ is (naturally isomorphic to) the opposite of the constant functor `J ⥤ C` send
 -/
 @[simps]
 def opObjOp (X : C) : (const Jᵒᵖ).obj (op X) ≅ ((const J).obj X).op where
-  hom := { app := fun _ => 𝟙 _ }
-  inv := { app := fun _ => 𝟙 _ }
+  hom := { app := fun _ ↦ 𝟙 _ }
+  inv := { app := fun _ ↦ 𝟙 _ }
 
 /-- The constant functor `Jᵒᵖ ⥤ C` sending everything to `unop X`
 is (naturally isomorphic to) the opposite of
 the constant functor `J ⥤ Cᵒᵖ` sending everything to `X`.
 -/
 def opObjUnop (X : Cᵒᵖ) : (const Jᵒᵖ).obj (unop X) ≅ ((const J).obj X).leftOp where
-  hom := { app := fun _ => 𝟙 _ }
-  inv := { app := fun _ => 𝟙 _ }
+  hom := { app := fun _ ↦ 𝟙 _ }
+  inv := { app := fun _ ↦ 𝟙 _ }
 
 -- Lean needs some help with universes here.
 @[simp]
@@ -83,8 +83,8 @@ variable {D : Type u₃} [Category.{v₃} D]
   more convenient than an equality between functors (compare id_to_iso). -/
 @[simps]
 def constComp (X : C) (F : C ⥤ D) : (const J).obj X ⋙ F ≅ (const J).obj (F.obj X) where
-  hom := { app := fun _ => 𝟙 _ }
-  inv := { app := fun _ => 𝟙 _ }
+  hom := { app := fun _ ↦ 𝟙 _ }
+  inv := { app := fun _ ↦ 𝟙 _ }
 
 /-- If `J` is nonempty, then the constant functor over `J` is faithful. -/
 instance [Nonempty J] : Faithful (const J : C ⥤ J ⥤ C) where
@@ -96,7 +96,7 @@ instance [Nonempty J] : Faithful (const J : C ⥤ J ⥤ C) where
 def compConstIso (F : C ⥤ D) :
     F ⋙ Functor.const J ≅ Functor.const J ⋙ (whiskeringRight J C D).obj F :=
   NatIso.ofComponents
-    (fun X => NatIso.ofComponents (fun _ => Iso.refl _) (by simp))
+    (fun X ↦ NatIso.ofComponents (fun _ ↦ Iso.refl _) (by simp))
     (by cat_disch)
 
 /-- The canonical isomorphism
@@ -104,7 +104,7 @@ def compConstIso (F : C ⥤ D) :
 @[simps!]
 def constCompWhiskeringLeftIso (F : J ⥤ D) :
     const D ⋙ (whiskeringLeft J D C).obj F ≅ const J :=
-  NatIso.ofComponents fun X => NatIso.ofComponents fun Y => Iso.refl _
+  NatIso.ofComponents fun X ↦ NatIso.ofComponents fun Y ↦ Iso.refl _
 
 end
 

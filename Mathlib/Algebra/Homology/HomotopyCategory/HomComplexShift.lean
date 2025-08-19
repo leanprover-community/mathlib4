@@ -45,7 +45,7 @@ variable (γ γ₁ γ₂ : Cochain K L n)
 
 /-- The map `Cochain K L n → Cochain K (L⟦a⟧) n'` when `n' + a = n`. -/
 def rightShift (a n' : ℤ) (hn' : n' + a = n) : Cochain K (L⟦a⟧) n' :=
-  Cochain.mk (fun p q hpq => γ.v p (p + n) rfl ≫
+  Cochain.mk (fun p q hpq ↦ γ.v p (p + n) rfl ≫
     (L.shiftFunctorObjXIso a q (p + n) (by omega)).inv)
 
 lemma rightShift_v (a n' : ℤ) (hn' : n' + a = n) (p q : ℤ) (hpq : p + n' = q)
@@ -58,7 +58,7 @@ lemma rightShift_v (a n' : ℤ) (hn' : n' + a = n) (p q : ℤ) (hpq : p + n' = q
 
 /-- The map `Cochain K L n → Cochain (K⟦a⟧) L n'` when `n + a = n'`. -/
 def leftShift (a n' : ℤ) (hn' : n + a = n') : Cochain (K⟦a⟧) L n' :=
-  Cochain.mk (fun p q hpq => (a * n' + ((a * (a-1))/2)).negOnePow •
+  Cochain.mk (fun p q hpq ↦ (a * n' + ((a * (a-1))/2)).negOnePow •
     (K.shiftFunctorObjXIso a p (p + a) rfl).hom ≫ γ.v (p+a) q (by omega))
 
 lemma leftShift_v (a n' : ℤ) (hn' : n + a = n') (p q : ℤ) (hpq : p + n' = q)
@@ -73,7 +73,7 @@ lemma leftShift_v (a n' : ℤ) (hn' : n + a = n') (p q : ℤ) (hpq : p + n' = q)
 /-- The map `Cochain K (L⟦a⟧) n' → Cochain K L n` when `n' + a = n`. -/
 def rightUnshift {n' a : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn : n' + a = n) :
     Cochain K L n :=
-  Cochain.mk (fun p q hpq => γ.v p (p + n') rfl ≫
+  Cochain.mk (fun p q hpq ↦ γ.v p (p + n') rfl ≫
     (L.shiftFunctorObjXIso a (p + n') q (by rw [← hpq, add_assoc, hn])).hom)
 
 lemma rightUnshift_v {n' a : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn : n' + a = n)
@@ -87,7 +87,7 @@ lemma rightUnshift_v {n' a : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn :
 /-- The map `Cochain (K⟦a⟧) L n' → Cochain K L n` when `n + a = n'`. -/
 def leftUnshift {n' a : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : ℤ) (hn : n + a = n') :
     Cochain K L n :=
-  Cochain.mk (fun p q hpq => (a * n' + ((a * (a-1))/2)).negOnePow •
+  Cochain.mk (fun p q hpq ↦ (a * n' + ((a * (a-1))/2)).negOnePow •
     (K.shiftFunctorObjXIso a (p - a) p (by omega)).inv ≫ γ.v (p-a) q (by omega))
 
 lemma leftUnshift_v {n' a : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : ℤ) (hn : n + a = n')
@@ -99,7 +99,7 @@ lemma leftUnshift_v {n' a : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : ℤ) (hn : 
 
 /-- The map `Cochain K L n → Cochain (K⟦a⟧) (L⟦a⟧) n`. -/
 def shift (a : ℤ) : Cochain (K⟦a⟧) (L⟦a⟧) n :=
-  Cochain.mk (fun p q hpq => (K.shiftFunctorObjXIso a p _ rfl).hom ≫
+  Cochain.mk (fun p q hpq ↦ (K.shiftFunctorObjXIso a p _ rfl).hom ≫
     γ.v (p + a) (q + a) (by omega) ≫ (L.shiftFunctorObjXIso a q _ rfl).inv)
 
 lemma shift_v (a : ℤ) (p q : ℤ) (hpq : p + n = q) (p' q' : ℤ)
@@ -193,7 +193,7 @@ def leftShiftAddEquiv (n a n' : ℤ) (hn' : n + a = n') :
 /-- The additive map `Cochain K L n →+ Cochain (K⟦a⟧) (L⟦a⟧) n`. -/
 @[simps!]
 def shiftAddHom (n a : ℤ) : Cochain K L n →+ Cochain (K⟦a⟧) (L⟦a⟧) n :=
-  AddMonoidHom.mk' (fun γ => γ.shift a) (by intros; dsimp; simp only [shift_add])
+  AddMonoidHom.mk' (fun γ ↦ γ.shift a) (by intros; dsimp; simp only [shift_add])
 
 variable (n)
 
@@ -301,7 +301,7 @@ the category is `R`-linear. -/
 def rightShiftLinearEquiv (n a n' : ℤ) (hn' : n' + a = n) :
     Cochain K L n ≃ₗ[R] Cochain K (L⟦a⟧) n' :=
   (rightShiftAddEquiv K L n a n' hn').toLinearEquiv
-    (fun x γ => by dsimp; simp only [rightShift_smul])
+    (fun x γ ↦ by dsimp; simp only [rightShift_smul])
 
 /-- The additive equivalence `Cochain K L n ≃+ Cochain (K⟦a⟧) L n'` when `n + a = n'` and
 the category is `R`-linear. -/
@@ -309,7 +309,7 @@ the category is `R`-linear. -/
 def leftShiftLinearEquiv (n a n' : ℤ) (hn : n + a = n') :
     Cochain K L n ≃ₗ[R] Cochain (K⟦a⟧) L n' :=
   (leftShiftAddEquiv K L n a n' hn).toLinearEquiv
-    (fun x γ => by dsimp; simp only [leftShift_smul])
+    (fun x γ ↦ by dsimp; simp only [leftShift_smul])
 
 /-- The linear map `Cochain K L n ≃+ Cochain (K⟦a⟧) (L⟦a⟧) n` when the category is `R`-linear. -/
 @[simps!]
@@ -410,7 +410,7 @@ lemma δ_rightShift (a n' m' : ℤ) (hn' : n' + a = n) (m : ℤ) (hm' : m' + a =
     congr 1
     simp only [← hm', add_comm m', Int.negOnePow_add, ← mul_assoc,
       Int.units_mul_self, one_mul]
-  · have hnm' : ¬ n' + 1 = m' := fun _ => hnm (by omega)
+  · have hnm' : ¬ n' + 1 = m' := fun _ ↦ hnm (by omega)
     rw [δ_shape _ _ hnm', δ_shape _ _ hnm, rightShift_zero, smul_zero]
 
 lemma δ_rightUnshift {a n' : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn : n' + a = n)
@@ -441,7 +441,7 @@ lemma δ_leftShift (a n' m' : ℤ) (hn' : n + a = n') (m : ℤ) (hm' : m + a = m
     · simp only [← Int.negOnePow_add, ← hn', ← hm', ← hnm]
       congr 1
       linarith
-  · have hnm' : ¬ n' + 1 = m' := fun _ => hnm (by omega)
+  · have hnm' : ¬ n' + 1 = m' := fun _ ↦ hnm (by omega)
     rw [δ_shape _ _ hnm', δ_shape _ _ hnm, leftShift_zero, smul_zero]
 
 lemma δ_leftUnshift {a n' : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : ℤ) (hn : n + a = n')

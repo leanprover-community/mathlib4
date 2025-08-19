@@ -118,9 +118,9 @@ theorem measurable_cosh : Measurable cosh :=
 
 @[measurability]
 theorem measurable_arg : Measurable arg :=
-  have A : Measurable fun x : ℂ => Real.arcsin (x.im / ‖x‖) :=
+  have A : Measurable fun x : ℂ ↦ Real.arcsin (x.im / ‖x‖) :=
     Real.measurable_arcsin.comp (measurable_im.div measurable_norm)
-  have B : Measurable fun x : ℂ => Real.arcsin ((-x).im / ‖x‖) :=
+  have B : Measurable fun x : ℂ ↦ Real.arcsin ((-x).im / ‖x‖) :=
     Real.measurable_arcsin.comp ((measurable_im.comp measurable_neg).div measurable_norm)
   Measurable.ite (isClosed_le continuous_const continuous_re).measurableSet A <|
     Measurable.ite (isClosed_le continuous_const continuous_im).measurableSet (B.add_const _)
@@ -141,11 +141,11 @@ variable {α : Type*} {m : MeasurableSpace α} {f : α → ℝ} (hf : Measurable
 include hf
 
 @[measurability, fun_prop]
-protected theorem Measurable.exp : Measurable fun x => Real.exp (f x) :=
+protected theorem Measurable.exp : Measurable fun x ↦ Real.exp (f x) :=
   Real.measurable_exp.comp hf
 
 @[measurability, fun_prop]
-protected theorem Measurable.log : Measurable fun x => log (f x) :=
+protected theorem Measurable.log : Measurable fun x ↦ log (f x) :=
   measurable_log.comp hf
 
 @[measurability, fun_prop]
@@ -161,7 +161,7 @@ protected theorem Measurable.cosh : Measurable fun x ↦ cosh (f x) := measurabl
 protected theorem Measurable.sinh : Measurable fun x ↦ sinh (f x) := measurable_sinh.comp hf
 
 @[measurability, fun_prop]
-protected theorem Measurable.sqrt : Measurable fun x => √(f x) := continuous_sqrt.measurable.comp hf
+protected theorem Measurable.sqrt : Measurable fun x ↦ √(f x) := continuous_sqrt.measurable.comp hf
 
 end RealComposition
 
@@ -210,31 +210,31 @@ variable {α : Type*} {m : MeasurableSpace α} {f : α → ℂ} (hf : Measurable
 include hf
 
 @[measurability, fun_prop]
-protected theorem Measurable.cexp : Measurable fun x => Complex.exp (f x) :=
+protected theorem Measurable.cexp : Measurable fun x ↦ Complex.exp (f x) :=
   Complex.measurable_exp.comp hf
 
 @[measurability, fun_prop]
-protected theorem Measurable.ccos : Measurable fun x => Complex.cos (f x) :=
+protected theorem Measurable.ccos : Measurable fun x ↦ Complex.cos (f x) :=
   Complex.measurable_cos.comp hf
 
 @[measurability, fun_prop]
-protected theorem Measurable.csin : Measurable fun x => Complex.sin (f x) :=
+protected theorem Measurable.csin : Measurable fun x ↦ Complex.sin (f x) :=
   Complex.measurable_sin.comp hf
 
 @[measurability, fun_prop]
-protected theorem Measurable.ccosh : Measurable fun x => Complex.cosh (f x) :=
+protected theorem Measurable.ccosh : Measurable fun x ↦ Complex.cosh (f x) :=
   Complex.measurable_cosh.comp hf
 
 @[measurability, fun_prop]
-protected theorem Measurable.csinh : Measurable fun x => Complex.sinh (f x) :=
+protected theorem Measurable.csinh : Measurable fun x ↦ Complex.sinh (f x) :=
   Complex.measurable_sinh.comp hf
 
 @[measurability, fun_prop]
-protected theorem Measurable.carg : Measurable fun x => arg (f x) :=
+protected theorem Measurable.carg : Measurable fun x ↦ arg (f x) :=
   measurable_arg.comp hf
 
 @[measurability, fun_prop]
-protected theorem Measurable.clog : Measurable fun x => Complex.log (f x) :=
+protected theorem Measurable.clog : Measurable fun x ↦ Complex.log (f x) :=
   measurable_log.comp hf
 
 end ComplexComposition

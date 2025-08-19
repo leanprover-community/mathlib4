@@ -42,7 +42,7 @@ theorem exists_maximalIdeal_pow_eq_of_principal [IsNoetherianRing R] [IsLocalRin
   obtain ⟨x, hx : _ = Ideal.span _⟩ := h'
   by_cases hI' : I = ⊤
   · use 0; rw [pow_zero, hI', Ideal.one_eq_top]
-  have H : ∀ r : R, ¬IsUnit r ↔ x ∣ r := fun r =>
+  have H : ∀ r : R, ¬IsUnit r ↔ x ∣ r := fun r ↦
     (SetLike.ext_iff.mp hx r).trans Ideal.mem_span_singleton
   have : x ≠ 0 := by
     rintro rfl
@@ -62,7 +62,7 @@ theorem exists_maximalIdeal_pow_eq_of_principal [IsNoetherianRing R] [IsLocalRin
     · use 1
       rw [pow_one, Multiset.prod_cons, Multiset.empty_eq_zero, Multiset.prod_zero, mul_one]
       exact this _ (Multiset.mem_cons_self _ _)
-    · obtain ⟨n, hn⟩ := fh hf' fun b hb => this _ (Multiset.mem_cons_of_mem hb)
+    · obtain ⟨n, hn⟩ := fh hf' fun b hb ↦ this _ (Multiset.mem_cons_of_mem hb)
       use n + 1
       rw [pow_add, Multiset.prod_cons, mul_comm, pow_one]
       exact Associated.mul_mul (this _ (Multiset.mem_cons_self _ _)) hn
@@ -100,8 +100,8 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [IsLocalRing R] [IsDomain R
     apply le_antisymm
     · exact sInf_le ⟨hle, inferInstance⟩
     · refine
-        le_sInf fun I hI =>
-          (eq_maximalIdeal <| hI.2.isMaximal (fun e => ha₂ ?_)).ge
+        le_sInf fun I hI ↦
+          (eq_maximalIdeal <| hI.2.isMaximal (fun e ↦ ha₂ ?_)).ge
       rw [← Ideal.span_singleton_eq_bot, eq_bot_iff, ← e]; exact hI.1
   have : ∃ n, maximalIdeal R ^ n ≤ Ideal.span {a} := by
     rw [← this]; apply Ideal.exists_radical_pow_le_of_fg; exact IsNoetherian.noetherian _
@@ -110,7 +110,7 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [IsLocalRing R] [IsDomain R
     rw [hn, pow_zero, Ideal.one_eq_top] at this
     exact (Ideal.IsMaximal.ne_top inferInstance (eq_top_iff.mpr <| this.trans hle)).elim
   obtain ⟨b, hb₁, hb₂⟩ : ∃ b ∈ maximalIdeal R ^ n, b ∉ Ideal.span {a} := by
-    by_contra! h'; rw [Nat.find_eq_iff] at hn; exact hn.2 n n.lt_succ_self fun x hx => h' x hx
+    by_contra! h'; rw [Nat.find_eq_iff] at hn; exact hn.2 n n.lt_succ_self fun x hx ↦ h' x hx
   have hb₃ : ∀ m ∈ maximalIdeal R, ∃ k : R, k * a = b * m := by
     intro m hm; rw [← Ideal.mem_span_singleton']; apply Nat.find_spec this
     rw [hn, pow_succ]; exact Ideal.mul_mem_mul hb₁ hm

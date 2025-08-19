@@ -152,13 +152,13 @@ instance {S : AlgCat.{v} R} : Algebra R ((forget (AlgCat R)).obj S) :=
 
 instance hasForgetToRing : HasForget₂ (AlgCat.{v} R) RingCat.{v} where
   forget₂ :=
-    { obj := fun A => RingCat.of A
-      map := fun f => RingCat.ofHom f.hom.toRingHom }
+    { obj := fun A ↦ RingCat.of A
+      map := fun f ↦ RingCat.ofHom f.hom.toRingHom }
 
 instance hasForgetToModule : HasForget₂ (AlgCat.{v} R) (ModuleCat.{v} R) where
   forget₂ :=
-    { obj := fun M => ModuleCat.of R M
-      map := fun f => ModuleCat.ofHom f.hom.toLinearMap }
+    { obj := fun M ↦ ModuleCat.of R M
+      map := fun f ↦ ModuleCat.ofHom f.hom.toLinearMap }
 
 @[simp]
 lemma forget₂_module_obj (X : AlgCat.{v} R) :
@@ -187,7 +187,7 @@ def free : Type u ⥤ AlgCat.{u} R where
 /-- The free/forget adjunction for `R`-algebras. -/
 def adj : free.{u} R ⊣ forget (AlgCat.{u} R) :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun _ _ =>
+    { homEquiv := fun _ _ ↦
         { toFun := fun f ↦ (FreeAlgebra.lift _).symm f.hom
           invFun := fun f ↦ ofHom <| (FreeAlgebra.lift _) f
           left_inv := fun f ↦ by aesop

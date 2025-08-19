@@ -126,7 +126,7 @@ instance _root_.Algebra.IsCentral.continuousLinearMap [ContinuousSMul R V] :
     nontriviality V
     obtain ⟨x, hx⟩ := exists_ne (0 : V)
     obtain ⟨f, hf⟩ := exists_eq_one (R := R) hx
-    exact ⟨f (T x), ContinuousLinearMap.ext fun _ => by simp [h', hf]⟩
+    exact ⟨f (T x), ContinuousLinearMap.ext fun _ ↦ by simp [h', hf]⟩
 
 /-- In a topological vector space with separating dual, the group of continuous linear equivalences
 acts transitively on the set of nonzero vectors: given two nonzero vectors `x` and `y`, there
@@ -171,7 +171,7 @@ variable (𝕜 E F : Type*) [NontriviallyNormedField 𝕜] [NormedAddCommGroup E
 complete. -/
 lemma completeSpace_of_completeSpace_continuousLinearMap [CompleteSpace (E →L[𝕜] F)] :
     CompleteSpace F := by
-  refine Metric.complete_of_cauchySeq_tendsto fun f hf => ?_
+  refine Metric.complete_of_cauchySeq_tendsto fun f hf ↦ ?_
   obtain ⟨v, hv⟩ : ∃ (v : E), v ≠ 0 := exists_ne 0
   obtain ⟨φ, hφ⟩ : ∃ φ : E →L[𝕜] 𝕜, φ v = 1 := exists_eq_one hv
   let g : ℕ → (E →L[𝕜] F) := fun n ↦ ContinuousLinearMap.smulRightL 𝕜 E F φ (f n)
@@ -197,7 +197,7 @@ element, then `F` is complete. -/
 lemma completeSpace_of_completeSpace_continuousMultilinearMap
     [CompleteSpace (ContinuousMultilinearMap 𝕜 M F)]
     {m : ∀ i, M i} (hm : ∀ i, m i ≠ 0) : CompleteSpace F := by
-  refine Metric.complete_of_cauchySeq_tendsto fun f hf => ?_
+  refine Metric.complete_of_cauchySeq_tendsto fun f hf ↦ ?_
   have : ∀ i, ∃ φ : M i →L[𝕜] 𝕜, φ (m i) = 1 := fun i ↦ exists_eq_one (hm i)
   choose φ hφ using this
   cases nonempty_fintype ι

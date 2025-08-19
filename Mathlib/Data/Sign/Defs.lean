@@ -32,7 +32,7 @@ instance : One SignType :=
   ⟨pos⟩
 
 instance : Neg SignType :=
-  ⟨fun s =>
+  ⟨fun s ↦
     match s with
     | neg => pos
     | zero => zero
@@ -51,7 +51,7 @@ theorem pos_eq_one : pos = 1 :=
   rfl
 
 instance : Mul SignType :=
-  ⟨fun x y =>
+  ⟨fun x y ↦
     match x with
     | neg => -y
     | zero => zero
@@ -66,7 +66,7 @@ protected inductive LE : SignType → SignType → Prop
 instance : LE SignType :=
   ⟨SignType.LE⟩
 
-instance LE.decidableRel : DecidableRel SignType.LE := fun a b => by
+instance LE.decidableRel : DecidableRel SignType.LE := fun a b ↦ by
   cases a <;> cases b <;> first | exact isTrue (by constructor)| exact isFalse (by rintro ⟨_⟩)
 
 private lemma mul_comm : ∀ (a b : SignType), a * b = b * a := by rintro ⟨⟩ ⟨⟩ <;> rfl
@@ -260,7 +260,7 @@ variable [Zero α] [Preorder α] [DecidableLT α] {a : α}
 
 /-- The sign of an element is 1 if it's positive, -1 if negative, 0 otherwise. -/
 def SignType.sign : α →o SignType :=
-  ⟨fun a => if 0 < a then 1 else if a < 0 then -1 else 0, fun a b h => by
+  ⟨fun a ↦ if 0 < a then 1 else if a < 0 then -1 else 0, fun a b h ↦ by
     dsimp
     split_ifs with h₁ h₂ h₃ h₄ _ _ h₂ h₃ <;> try constructor
     · cases lt_irrefl 0 (h₁.trans <| h.trans_lt h₃)
@@ -280,13 +280,13 @@ theorem sign_pos (ha : 0 < a) : sign a = 1 := by rwa [sign_apply, if_pos]
 theorem sign_neg (ha : a < 0) : sign a = -1 := by rwa [sign_apply, if_neg <| asymm ha, if_pos]
 
 theorem sign_eq_one_iff : sign a = 1 ↔ 0 < a := by
-  refine ⟨fun h => ?_, fun h => sign_pos h⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ sign_pos h⟩
   by_contra hn
   rw [sign_apply, if_neg hn] at h
   split_ifs at h
 
 theorem sign_eq_neg_one_iff : sign a = -1 ↔ a < 0 := by
-  refine ⟨fun h => ?_, fun h => sign_neg h⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ sign_neg h⟩
   rw [sign_apply] at h
   split_ifs at h
   assumption
@@ -305,7 +305,7 @@ lemma StrictMono.sign_comp {β F : Type*} [Zero β] [Preorder β] [DecidableLT �
 
 @[simp]
 theorem sign_eq_zero_iff : sign a = 0 ↔ a = 0 := by
-  refine ⟨fun h => ?_, fun h => h.symm ▸ sign_zero⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ h.symm ▸ sign_zero⟩
   rw [sign_apply] at h
   split_ifs at h with h_1 h_2
   cases h

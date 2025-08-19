@@ -60,7 +60,7 @@ section Real
 `LinearMap.IsSelfAdjoint` with respect to the sesquilinear form given by the inner product. -/
 theorem isSymmetric_iff_sesqForm (T : E →ₗ[𝕜] E) :
     T.IsSymmetric ↔ LinearMap.IsSelfAdjoint (R := 𝕜) (M := E) sesqFormOfInner T :=
-  ⟨fun h x y => (h y x).symm, fun h x y => (h y x).symm⟩
+  ⟨fun h x y ↦ (h y x).symm, fun h x y ↦ (h y x).symm⟩
 
 end Real
 
@@ -73,11 +73,11 @@ theorem IsSymmetric.apply_clm {T : E →L[𝕜] E} (hT : IsSymmetric (T : E →�
   hT x y
 
 @[simp]
-protected theorem IsSymmetric.zero : (0 : E →ₗ[𝕜] E).IsSymmetric := fun x y =>
+protected theorem IsSymmetric.zero : (0 : E →ₗ[𝕜] E).IsSymmetric := fun x y ↦
   (inner_zero_right x : ⟪x, 0⟫ = 0).symm ▸ (inner_zero_left y : ⟪0, y⟫ = 0)
 
 @[simp]
-protected theorem IsSymmetric.id : (LinearMap.id : E →ₗ[𝕜] E).IsSymmetric := fun _ _ => rfl
+protected theorem IsSymmetric.id : (LinearMap.id : E →ₗ[𝕜] E).IsSymmetric := fun _ _ ↦ rfl
 
 @[aesop safe apply]
 theorem IsSymmetric.add {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :
@@ -97,10 +97,10 @@ theorem IsSymmetric.smul {c : 𝕜} (hc : conj c = c) {T : E →ₗ[𝕜] E} (hT
   intro x y
   simp only [smul_apply, inner_smul_left, hc, hT x y, inner_smul_right]
 
-theorem IsSymmetric.natCast (n : ℕ) : IsSymmetric (n : E →ₗ[𝕜] E) := fun x y => by
+theorem IsSymmetric.natCast (n : ℕ) : IsSymmetric (n : E →ₗ[𝕜] E) := fun x y ↦ by
   simp [← Nat.cast_smul_eq_nsmul 𝕜, inner_smul_left, inner_smul_right]
 
-theorem IsSymmetric.intCast (n : ℤ) : IsSymmetric (n : E →ₗ[𝕜] E) := fun x y => by
+theorem IsSymmetric.intCast (n : ℤ) : IsSymmetric (n : E →ₗ[𝕜] E) := fun x y ↦ by
   simp [← Int.cast_smul_eq_zsmul 𝕜, inner_smul_left, inner_smul_right]
 
 @[aesop 30% apply]
@@ -126,13 +126,13 @@ theorem IsSymmetric.coe_reApplyInnerSelf_apply {T : E →L[𝕜] E} (hT : IsSymm
 /-- If a symmetric operator preserves a submodule, its restriction to that submodule is
 symmetric. -/
 theorem IsSymmetric.restrict_invariant {T : E →ₗ[𝕜] E} (hT : IsSymmetric T) {V : Submodule 𝕜 E}
-    (hV : ∀ v ∈ V, T v ∈ V) : IsSymmetric (T.restrict hV) := fun v w => hT v w
+    (hV : ∀ v ∈ V, T v ∈ V) : IsSymmetric (T.restrict hV) := fun v w ↦ hT v w
 
 theorem IsSymmetric.restrictScalars {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
     letI := InnerProductSpace.rclikeToReal 𝕜 E
     letI : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower _ _ _
     (T.restrictScalars ℝ).IsSymmetric :=
-  fun x y => by simp [hT x y, real_inner_eq_re_inner, LinearMap.coe_restrictScalars ℝ]
+  fun x y ↦ by simp [hT x y, real_inner_eq_re_inner, LinearMap.coe_restrictScalars ℝ]
 
 @[simp]
 theorem IsSymmetric.im_inner_apply_self {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (x : E) :
@@ -219,7 +219,7 @@ namespace LinearMap
 theorem IsSymmetric.continuous [CompleteSpace E] {T : E →ₗ[𝕜] E} (hT : IsSymmetric T) :
     Continuous T := by
   -- We prove it by using the closed graph theorem
-  refine T.continuous_of_seq_closed_graph fun u x y hu hTu => ?_
+  refine T.continuous_of_seq_closed_graph fun u x y hu hTu ↦ ?_
   rw [← sub_eq_zero, ← @inner_self_eq_zero 𝕜]
   have hlhs : ∀ k : ℕ, ⟪T (u k) - T x, y - T x⟫ = ⟪u k - x, T (y - T x)⟫ := by
     intro k
@@ -236,7 +236,7 @@ See `inner_map_self_eq_zero` for the complex version without the symmetric assum
 theorem IsSymmetric.inner_map_self_eq_zero {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
     (∀ x, ⟪T x, x⟫ = 0) ↔ T = 0 := by
   simp_rw [LinearMap.ext_iff, zero_apply]
-  refine ⟨fun h x => ?_, fun h => by simp_rw [h, inner_zero_left, forall_const]⟩
+  refine ⟨fun h x ↦ ?_, fun h ↦ by simp_rw [h, inner_zero_left, forall_const]⟩
   rw [← @inner_self_eq_zero 𝕜, hT.inner_map_polarization]
   simp_rw [h _]
   ring
@@ -255,7 +255,7 @@ theorem _root_.Submodule.IsCompl.projection_isSymmetric_iff
     {U V : Submodule 𝕜 E} (hUV : IsCompl U V) :
     hUV.projection.IsSymmetric ↔ U ⟂ V := by
   rw [IsCompl.projection]
-  refine ⟨fun h u hu v hv => ?_, fun h x y => ?_⟩
+  refine ⟨fun h u hu v hv ↦ ?_, fun h x y ↦ ?_⟩
   · rw [← Subtype.coe_mk u hu, ← Subtype.coe_mk v hv,
       ← Submodule.linearProjOfIsCompl_apply_left hUV ⟨u, hu⟩, ← U.subtype_apply, ← comp_apply,
       ← h, comp_apply, linearProjOfIsCompl_apply_right hUV ⟨v, hv⟩,
@@ -282,7 +282,7 @@ theorem IsSymmetric.orthogonal_range {T : E →ₗ[𝕜] E} (hT : LinearMap.IsSy
 open Submodule LinearMap in
 theorem IsIdempotentElem.isSymmetric_iff_orthogonal_range {T : E →ₗ[𝕜] E}
     (h : IsIdempotentElem T) : T.IsSymmetric ↔ (LinearMap.range T)ᗮ = (LinearMap.ker T) :=
-  ⟨fun hT => hT.orthogonal_range, fun hT =>
+  ⟨fun hT ↦ hT.orthogonal_range, fun hT ↦
     h.isSymmetric_iff_isOrtho_range_ker.eq ▸ hT.symm ▸ isOrtho_orthogonal_right _⟩
 
 end LinearMap

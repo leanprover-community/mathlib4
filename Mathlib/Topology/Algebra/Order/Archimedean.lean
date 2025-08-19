@@ -29,7 +29,7 @@ open Set
 theorem Rat.denseRange_cast {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
     [TopologicalSpace 𝕜] [OrderTopology 𝕜]
     [Archimedean 𝕜] : DenseRange ((↑) : ℚ → 𝕜) :=
-  dense_of_exists_between fun _ _ h => Set.exists_range_iff.2 <| exists_rat_btwn h
+  dense_of_exists_between fun _ _ h ↦ Set.exists_range_iff.2 <| exists_rat_btwn h
 
 namespace Subgroup
 
@@ -46,10 +46,10 @@ the subgroup that is less than `ε`. -/]
 theorem dense_of_not_isolated_one (S : Subgroup G) (hS : ∀ ε > 1, ∃ g ∈ S, g ∈ Ioo 1 ε) :
     Dense (S : Set G) := by
   cases subsingleton_or_nontrivial G
-  · refine fun x => _root_.subset_closure ?_
+  · refine fun x ↦ _root_.subset_closure ?_
     rw [Subsingleton.elim x 1]
     exact one_mem S
-  refine dense_of_exists_between fun a b hlt => ?_
+  refine dense_of_exists_between fun a b hlt ↦ ?_
   rcases hS (b / a) (one_lt_div'.2 hlt) with ⟨g, hgS, hg0, hg⟩
   rcases (existsUnique_add_zpow_mem_Ioc hg0 1 a).exists with ⟨m, hm⟩
   rw [one_mul] at hm
@@ -64,7 +64,7 @@ additive commutative group `G` with order topology. If the set of positive eleme
 have a minimal element, then `S` is dense `G`. -/]
 theorem dense_of_no_min (S : Subgroup G) (hbot : S ≠ ⊥)
     (H : ¬∃ a : G, IsLeast { g : G | g ∈ S ∧ 1 < g } a) : Dense (S : Set G) := by
-  refine S.dense_of_not_isolated_one fun ε ε1 => ?_
+  refine S.dense_of_not_isolated_one fun ε ε1 ↦ ?_
   contrapose! H
   exact exists_isLeast_one_lt hbot ε1 (disjoint_left.2 H)
 
@@ -74,7 +74,7 @@ topology either is dense in `G` or is a cyclic subgroup. -/
 /-- An additive subgroup of an archimedean linear ordered additive commutative group `G`
 with order topology either is dense in `G` or is a cyclic subgroup. -/]
 theorem dense_or_cyclic (S : Subgroup G) : Dense (S : Set G) ∨ ∃ a : G, S = closure {a} := by
-  refine (em _).imp (dense_of_not_isolated_one S) fun h => ?_
+  refine (em _).imp (dense_of_not_isolated_one S) fun h ↦ ?_
   push_neg at h
   rcases h with ⟨ε, ε1, hε⟩
   exact cyclic_of_isolated_one ε1 (disjoint_left.2 hε)

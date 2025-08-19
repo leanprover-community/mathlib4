@@ -52,7 +52,7 @@ variable (R : Type*) {α : Type*} (G : SimpleGraph α)
 /-- `G.incMatrix R` is the `α × Sym2 α` matrix whose `(a, e)`-entry is `1` if `e` is incident to
 `a` and `0` otherwise. -/
 def incMatrix [Zero R] [One R] [DecidableEq α] [DecidableRel G.Adj] : Matrix α (Sym2 α) R :=
-  .of fun a e =>
+  .of fun a e ↦
     if e ∈ G.incidenceSet a then 1 else 0
 
 variable {R}
@@ -126,7 +126,7 @@ theorem sum_incMatrix_apply_of_mem_edgeSet [Fintype α] :
 
 theorem sum_incMatrix_apply_of_notMem_edgeSet [Fintype α] (h : e ∉ G.edgeSet) :
     ∑ a, G.incMatrix R a e = 0 :=
-  sum_eq_zero fun _ _ => G.incMatrix_of_notMem_incidenceSet fun he => h he.1
+  sum_eq_zero fun _ _ ↦ G.incMatrix_of_notMem_incidenceSet fun he ↦ h he.1
 
 @[deprecated (since := "2025-05-23")]
 alias sum_incMatrix_apply_of_not_mem_edgeSet := sum_incMatrix_apply_of_notMem_edgeSet
@@ -166,7 +166,7 @@ theorem incMatrix_mul_transpose_apply_of_adj (h : G.Adj a b) :
 
 theorem incMatrix_mul_transpose [∀ a, Fintype (neighborSet G a)] :
     G.incMatrix R * (G.incMatrix R)ᵀ =
-      of fun a b => if a = b then (G.degree a : R) else if G.Adj a b then 1 else 0 := by
+      of fun a b ↦ if a = b then (G.degree a : R) else if G.Adj a b then 1 else 0 := by
   ext a b
   dsimp
   split_ifs with h h'

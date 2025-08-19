@@ -177,7 +177,7 @@ open Module.Free
 theorem rank_finsupp (ι : Type w) :
     Module.rank R (ι →₀ M) = Cardinal.lift.{v} #ι * Cardinal.lift.{w} (Module.rank R M) := by
   obtain ⟨⟨_, bs⟩⟩ := Module.Free.exists_basis (R := R) (M := M)
-  rw [← bs.mk_eq_rank'', ← (Finsupp.basis fun _ : ι => bs).mk_eq_rank'', Cardinal.mk_sigma,
+  rw [← bs.mk_eq_rank'', ← (Finsupp.basis fun _ : ι ↦ bs).mk_eq_rank'', Cardinal.mk_sigma,
     Cardinal.sum_const]
 
 theorem rank_finsupp' (ι : Type v) : Module.rank R (ι →₀ M) = #ι * Module.rank R M := by
@@ -194,10 +194,10 @@ theorem rank_finsupp_self' {ι : Type u} : Module.rank R (ι →₀ R) = #ι := 
 @[simp]
 theorem rank_directSum {ι : Type v} (M : ι → Type w) [∀ i : ι, AddCommMonoid (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] :
-    Module.rank R (⨁ i, M i) = Cardinal.sum fun i => Module.rank R (M i) := by
+    Module.rank R (⨁ i, M i) = Cardinal.sum fun i ↦ Module.rank R (M i) := by
   let B i := chooseBasis R (M i)
-  let b : Basis _ R (⨁ i, M i) := DFinsupp.basis fun i => B i
-  simp [← b.mk_eq_rank'', fun i => (B i).mk_eq_rank'']
+  let b : Basis _ R (⨁ i, M i) := DFinsupp.basis fun i ↦ B i
+  simp [← b.mk_eq_rank'', fun i ↦ (B i).mk_eq_rank'']
 
 /-- If `m` and `n` are finite, the rank of `m × n` matrices over a module `M` is
 `(#m).lift * (#n).lift * rank R M`. -/
@@ -257,7 +257,7 @@ theorem finrank_directSum {ι : Type v} [Fintype ι] (M : ι → Type w) [∀ i 
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] [∀ i : ι, Module.Finite R (M i)] :
     finrank R (⨁ i, M i) = ∑ i, finrank R (M i) := by
   letI := nontrivial_of_invariantBasisNumber R
-  simp only [finrank, fun i => rank_eq_card_chooseBasisIndex R (M i), rank_directSum, ← mk_sigma,
+  simp only [finrank, fun i ↦ rank_eq_card_chooseBasisIndex R (M i), rank_directSum, ← mk_sigma,
     mk_toNat_eq_card, card_sigma]
 
 /-- If `m` and `n` are `Fintype`, the finrank of `m × n` matrices over a module `M` is
@@ -282,11 +282,11 @@ open LinearMap
 -- this result is not true without the freeness assumption
 @[simp]
 theorem rank_pi [Finite η] : Module.rank R (∀ i, φ i) =
-    Cardinal.sum fun i => Module.rank R (φ i) := by
+    Cardinal.sum fun i ↦ Module.rank R (φ i) := by
   cases nonempty_fintype η
   let B i := chooseBasis R (φ i)
-  let b : Basis _ R (∀ i, φ i) := Pi.basis fun i => B i
-  simp [← b.mk_eq_rank'', fun i => (B i).mk_eq_rank'']
+  let b : Basis _ R (∀ i, φ i) := Pi.basis fun i ↦ B i
+  simp [← b.mk_eq_rank'', fun i ↦ (B i).mk_eq_rank'']
 
 variable (R)
 
@@ -302,7 +302,7 @@ theorem Module.finrank_pi_fintype
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] [∀ i : ι, Module.Finite R (M i)] :
     finrank R (∀ i, M i) = ∑ i, finrank R (M i) := by
   letI := nontrivial_of_invariantBasisNumber R
-  simp only [finrank, fun i => rank_eq_card_chooseBasisIndex R (M i), rank_pi, ← mk_sigma,
+  simp only [finrank, fun i ↦ rank_eq_card_chooseBasisIndex R (M i), rank_pi, ← mk_sigma,
     mk_toNat_eq_card, Fintype.card_sigma]
 
 variable {R}
@@ -393,7 +393,7 @@ namespace Submodule
 
 theorem lt_of_le_of_finrank_lt_finrank {s t : Submodule R M} (le : s ≤ t)
     (lt : finrank R s < finrank R t) : s < t :=
-  lt_of_le_of_ne le fun h => ne_of_lt lt (by rw [h])
+  lt_of_le_of_ne le fun h ↦ ne_of_lt lt (by rw [h])
 
 theorem lt_top_of_finrank_lt_finrank {s : Submodule R M} (lt : finrank R s < finrank R M) :
     s < ⊤ := by

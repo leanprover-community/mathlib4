@@ -141,7 +141,7 @@ variable (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g
 theorem hom_ext {g₁ g₂ : DirectLimit G f →ₗ[R] P}
     (h : ∀ i, g₁ ∘ₗ of R ι G f i = g₂ ∘ₗ of R ι G f i) :
     g₁ = g₂ :=
-  LinearMap.toAddMonoidHom_injective <| AddCon.hom_ext <| DirectSum.addHom_ext' fun i =>
+  LinearMap.toAddMonoidHom_injective <| AddCon.hom_ext <| DirectSum.addHom_ext' fun i ↦
     congr($(h i).toAddMonoidHom)
 
 @[simp]

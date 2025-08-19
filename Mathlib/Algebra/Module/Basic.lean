@@ -105,7 +105,7 @@ lemma support_const_smul_of_ne_zero [Zero R] [Zero M] [SMulWithZero R M] [NoZero
 
 lemma support_smul [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M] (f : α → R)
     (g : α → M) : support (f • g) = support f ∩ support g :=
-  ext fun _ => smul_ne_zero_iff
+  ext fun _ ↦ smul_ne_zero_iff
 
 lemma support_const_smul_subset [Zero M] [SMulZeroClass R M] (a : R) (f : α → M) :
     support (a • f) ⊆ support f := support_smul_subset_right (fun _ ↦ a) f

@@ -169,11 +169,11 @@ instance [Subsingleton β] : Subsingleton (α →ᵤ[𝔖] β) :=
 
 /-- Reinterpret `f : α → β` as an element of `α →ᵤ β`. -/
 def UniformFun.ofFun : (α → β) ≃ (α →ᵤ β) :=
-  ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
+  ⟨fun x ↦ x, fun x ↦ x, fun _ ↦ rfl, fun _ ↦ rfl⟩
 
 /-- Reinterpret `f : α → β` as an element of `α →ᵤ[𝔖] β`. -/
 def UniformOnFun.ofFun (𝔖) : (α → β) ≃ (α →ᵤ[𝔖] β) :=
-  ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
+  ⟨fun x ↦ x, fun x ↦ x, fun _ ↦ rfl, fun _ ↦ rfl⟩
 
 /-- Reinterpret `f : α →ᵤ β` as an element of `α → β`. -/
 def UniformFun.toFun : (α →ᵤ β) ≃ (α → β) :=
@@ -209,9 +209,9 @@ protected def gen (V : Set (β × β)) : Set ((α →ᵤ β) × (α →ᵤ β)) 
 `β` is equipped with a `UniformSpace` structure, but it is useful to define it for any filter in
 order to be able to state that it has a lower adjoint (see `UniformFun.gc`). -/
 protected theorem isBasis_gen (𝓑 : Filter <| β × β) :
-    IsBasis (fun V : Set (β × β) => V ∈ 𝓑) (UniformFun.gen α β) :=
-  ⟨⟨univ, univ_mem⟩, @fun U V hU hV =>
-    ⟨U ∩ V, inter_mem hU hV, fun _ huv => ⟨fun x => (huv x).left, fun x => (huv x).right⟩⟩⟩
+    IsBasis (fun V : Set (β × β) ↦ V ∈ 𝓑) (UniformFun.gen α β) :=
+  ⟨⟨univ, univ_mem⟩, @fun U V hU hV ↦
+    ⟨U ∩ V, inter_mem hU hV, fun _ huv ↦ ⟨fun x ↦ (huv x).left, fun x ↦ (huv x).right⟩⟩⟩
 
 /-- For `𝓕 : Filter (β × β)`, this is the set of all `UniformFun.gen α β V` for
 `V ∈ 𝓕` as a bundled `FilterBasis` over `(α →ᵤ β) × (α →ᵤ β)`. This will only be applied to
@@ -227,7 +227,7 @@ convergence on `α`. -/
 protected def filter (𝓕 : Filter <| β × β) : Filter ((α →ᵤ β) × (α →ᵤ β)) :=
   (UniformFun.basis α β 𝓕).filter
 
---local notation "Φ" => fun (α β : Type*) (uvx : ((α →ᵤ β) × (α →ᵤ β)) × α) =>
+--local notation "Φ" => fun (α β : Type*) (uvx : ((α →ᵤ β) × (α →ᵤ β)) × α) ↦
   --(uvx.fst.fst uvx.2, uvx.1.2 uvx.2)
 
 protected def phi (α β : Type*) (uvx : ((α →ᵤ β) × (α →ᵤ β)) × α) : β × β :=
@@ -239,7 +239,7 @@ The exact definition of the lower adjoint `l` is not interesting; we will only u
 (in `UniformFun.mono` and `UniformFun.iInf_eq`) and that
 `l (Filter.map (Prod.map f f) 𝓕) = Filter.map (Prod.map ((∘) f) ((∘) f)) (l 𝓕)` for each
 `𝓕 : Filter (γ × γ)` and `f : γ → α` (in `UniformFun.comap_eq`). -/
-local notation "lowerAdjoint" => fun 𝓐 => map (UniformFun.phi α β) (𝓐 ×ˢ ⊤)
+local notation "lowerAdjoint" => fun 𝓐 ↦ map (UniformFun.phi α β) (𝓐 ×ˢ ⊤)
 
 /-- The function `UniformFun.filter α β : Filter (β × β) → Filter ((α →ᵤ β) × (α →ᵤ β))`
 has a lower adjoint `l` (in the sense of `GaloisConnection`). The exact definition of `l` is not
@@ -247,7 +247,7 @@ interesting; we will only use that it exists (in `UniformFun.mono` and
 `UniformFun.iInf_eq`) and that
 `l (Filter.map (Prod.map f f) 𝓕) = Filter.map (Prod.map ((∘) f) ((∘) f)) (l 𝓕)` for each
 `𝓕 : Filter (γ × γ)` and `f : γ → α` (in `UniformFun.comap_eq`). -/
-protected theorem gc : GaloisConnection lowerAdjoint fun 𝓕 => UniformFun.filter α β 𝓕 := by
+protected theorem gc : GaloisConnection lowerAdjoint fun 𝓕 ↦ UniformFun.filter α β 𝓕 := by
   intro 𝓐 𝓕
   symm
   calc
@@ -261,7 +261,7 @@ protected theorem gc : GaloisConnection lowerAdjoint fun 𝓕 => UniformFun.filt
     _ ↔ ∀ U ∈ 𝓕,
           { uvx : ((α →ᵤ β) × (α →ᵤ β)) × α | (uvx.1.1 uvx.2, uvx.1.2 uvx.2) ∈ U } ∈
             𝓐 ×ˢ (⊤ : Filter α) :=
-      forall₂_congr fun U _hU => mem_prod_top.symm
+      forall₂_congr fun U _hU ↦ mem_prod_top.symm
     _ ↔ lowerAdjoint 𝓐 ≤ 𝓕 := Iff.rfl
 
 variable [UniformSpace β]
@@ -269,15 +269,15 @@ variable [UniformSpace β]
 /-- Core of the uniform structure of uniform convergence. -/
 protected def uniformCore : UniformSpace.Core (α →ᵤ β) :=
   UniformSpace.Core.mkOfBasis (UniformFun.basis α β (𝓤 β))
-    (fun _ ⟨_, hV, hVU⟩ _ => hVU ▸ fun _ => refl_mem_uniformity hV)
-    (fun _ ⟨V, hV, hVU⟩ =>
+    (fun _ ⟨_, hV, hVU⟩ _ ↦ hVU ▸ fun _ ↦ refl_mem_uniformity hV)
+    (fun _ ⟨V, hV, hVU⟩ ↦
       hVU ▸
         ⟨UniformFun.gen α β (Prod.swap ⁻¹' V), ⟨Prod.swap ⁻¹' V, tendsto_swap_uniformity hV, rfl⟩,
-          fun _ huv x => huv x⟩)
-    fun _ ⟨_, hV, hVU⟩ =>
+          fun _ huv x ↦ huv x⟩)
+    fun _ ⟨_, hV, hVU⟩ ↦
     hVU ▸
       let ⟨W, hW, hWV⟩ := comp_mem_uniformity_sets hV
-      ⟨UniformFun.gen α β W, ⟨W, hW, rfl⟩, fun _ ⟨w, huw, hwv⟩ x => hWV ⟨w x, ⟨huw x, hwv x⟩⟩⟩
+      ⟨UniformFun.gen α β W, ⟨W, hW, rfl⟩, fun _ ⟨w, huw, hwv⟩ x ↦ hWV ⟨w x, ⟨huw x, hwv x⟩⟩⟩
 
 /-- Uniform structure of uniform convergence, declared as an instance on `α →ᵤ β`.
 We will denote it `𝒰(α, β, uβ)` in the rest of this file. -/
@@ -302,22 +302,22 @@ definition). -/
 protected theorem hasBasis_uniformity_of_basis {ι : Sort*} {p : ι → Prop} {s : ι → Set (β × β)}
     (h : (𝓤 β).HasBasis p s) : (𝓤 (α →ᵤ β)).HasBasis p (UniformFun.gen α β ∘ s) :=
   (UniformFun.hasBasis_uniformity α β).to_hasBasis
-    (fun _ hU =>
+    (fun _ hU ↦
       let ⟨i, hi, hiU⟩ := h.mem_iff.mp hU
-      ⟨i, hi, fun _ huv x => hiU (huv x)⟩)
-    fun i hi => ⟨s i, h.mem_of_mem hi, subset_refl _⟩
+      ⟨i, hi, fun _ huv x ↦ hiU (huv x)⟩)
+    fun i hi ↦ ⟨s i, h.mem_of_mem hi, subset_refl _⟩
 
 /-- For `f : α →ᵤ β`, `𝓝 f` admits the family `{g | ∀ x, (f x, g x) ∈ V}` for `V ∈ 𝓑` as a filter
 basis, for any basis `𝓑` of `𝓤 β`. -/
 protected theorem hasBasis_nhds_of_basis (f) {p : ι → Prop} {s : ι → Set (β × β)}
     (h : HasBasis (𝓤 β) p s) :
-    (𝓝 f).HasBasis p fun i => { g | (f, g) ∈ UniformFun.gen α β (s i) } :=
+    (𝓝 f).HasBasis p fun i ↦ { g | (f, g) ∈ UniformFun.gen α β (s i) } :=
   nhds_basis_uniformity' (UniformFun.hasBasis_uniformity_of_basis α β h)
 
 /-- For `f : α →ᵤ β`, `𝓝 f` admits the family `{g | ∀ x, (f x, g x) ∈ V}` for `V ∈ 𝓤 β` as a
 filter basis. -/
 protected theorem hasBasis_nhds (f) :
-    (𝓝 f).HasBasis (fun V => V ∈ 𝓤 β) fun V => { g | (f, g) ∈ UniformFun.gen α β V } :=
+    (𝓝 f).HasBasis (fun V ↦ V ∈ 𝓤 β) fun V ↦ { g | (f, g) ∈ UniformFun.gen α β V } :=
   UniformFun.hasBasis_nhds_of_basis α β f (Filter.basis_sets _)
 
 variable {α}
@@ -328,7 +328,7 @@ theorem uniformContinuous_eval (x : α) :
   change _ ≤ _
   rw [map_le_iff_le_comap,
     (UniformFun.hasBasis_uniformity α β).le_basis_iff ((𝓤 _).basis_sets.comap _)]
-  exact fun U hU => ⟨U, hU, fun uv huv => huv x⟩
+  exact fun U hU ↦ ⟨U, hU, fun uv huv ↦ huv x⟩
 
 variable {β}
 
@@ -339,7 +339,7 @@ protected lemma mem_gen {β} {f g : α →ᵤ β} {V : Set (β × β)} :
 
 /-- If `u₁` and `u₂` are two uniform structures on `γ` and `u₁ ≤ u₂`, then
 `𝒰(α, γ, u₁) ≤ 𝒰(α, γ, u₂)`. -/
-protected theorem mono : Monotone (@UniformFun.uniformSpace α γ) := fun _ _ hu =>
+protected theorem mono : Monotone (@UniformFun.uniformSpace α γ) := fun _ _ hu ↦
   (UniformFun.gc α γ).monotone_u hu
 
 /-- If `u` is a family of uniform structures on `γ`, then
@@ -359,7 +359,7 @@ protected theorem inf_eq {u₁ u₂ : UniformSpace γ} :
   -- This follows directly from the fact that the upper adjoint in a Galois connection maps
   -- infimas to infimas.
   rw [inf_eq_iInf, inf_eq_iInf, UniformFun.iInf_eq]
-  refine iInf_congr fun i => ?_
+  refine iInf_congr fun i ↦ ?_
   cases i <;> rfl
 
 /-- Post-composition by a uniform inducing function is
@@ -407,7 +407,7 @@ protected theorem postcomp_uniformContinuous [UniformSpace γ] {f : γ → β}
 /-- Turn a uniform isomorphism `γ ≃ᵤ β` into a uniform isomorphism `(α →ᵤ γ) ≃ᵤ (α →ᵤ β)` by
 post-composing. -/
 protected def congrRight [UniformSpace γ] (e : γ ≃ᵤ β) : (α →ᵤ γ) ≃ᵤ (α →ᵤ β) :=
-  { Equiv.piCongrRight fun _ => e.toEquiv with
+  { Equiv.piCongrRight fun _ ↦ e.toEquiv with
     uniformContinuous_toFun := UniformFun.postcomp_uniformContinuous e.uniformContinuous
     uniformContinuous_invFun := UniformFun.postcomp_uniformContinuous e.symm.uniformContinuous }
 
@@ -417,11 +417,11 @@ uniform convergence.
 More precisely, for any `f : γ → α`, the function `(· ∘ f) : (α →ᵤ β) → (γ →ᵤ β)` is uniformly
 continuous. -/
 protected theorem precomp_uniformContinuous {f : γ → α} :
-    UniformContinuous fun g : α →ᵤ β => ofFun (toFun g ∘ f) := by
+    UniformContinuous fun g : α →ᵤ β ↦ ofFun (toFun g ∘ f) := by
   -- Here we simply go back to filter bases.
   rw [UniformContinuous,
       (UniformFun.hasBasis_uniformity α β).tendsto_iff (UniformFun.hasBasis_uniformity γ β)]
-  exact fun U hU => ⟨U, hU, fun uv huv x => huv (f x)⟩
+  exact fun U hU ↦ ⟨U, hU, fun uv huv x ↦ huv (f x)⟩
 
 /-- Turn a bijection `γ ≃ α` into a uniform isomorphism
 `(γ →ᵤ β) ≃ᵤ (α →ᵤ β)` by pre-composing. -/
@@ -486,7 +486,7 @@ protected def uniformEquivPiComm : UniformEquiv (α →ᵤ ∀ i, δ i) (∀ i, 
     -- that some square commutes.
     @Equiv.toUniformEquivOfIsUniformInducing
     _ _ 𝒰(α, ∀ i, δ i, Pi.uniformSpace δ)
-    (@Pi.uniformSpace ι (fun i => α → δ i) fun i => 𝒰(α, δ i, _)) (Equiv.piComm _) <| by
+    (@Pi.uniformSpace ι (fun i ↦ α → δ i) fun i ↦ 𝒰(α, δ i, _)) (Equiv.piComm _) <| by
       refine @IsUniformInducing.mk ?_ ?_ ?_ ?_ ?_ ?_
       change comap (Prod.map Function.swap Function.swap) _ = _
       rw [← uniformity_comap]
@@ -494,7 +494,7 @@ protected def uniformEquivPiComm : UniformEquiv (α →ᵤ ∀ i, δ i) (∀ i, 
       unfold Pi.uniformSpace
       rw [UniformSpace.ofCoreEq_toCore, UniformSpace.ofCoreEq_toCore,
         UniformSpace.comap_iInf, UniformFun.iInf_eq]
-      refine iInf_congr fun i => ?_
+      refine iInf_congr fun i ↦ ?_
       rw [← UniformSpace.comap_comap, UniformFun.comap_eq]
       rfl
 
@@ -567,11 +567,11 @@ protected theorem gen_eq_preimage_restrict {𝔖} (S : Set α) (V : Set (β × �
       Prod.map (S.restrict ∘ UniformFun.toFun) (S.restrict ∘ UniformFun.toFun) ⁻¹'
         UniformFun.gen S β V := by
   ext uv
-  exact ⟨fun h ⟨x, hx⟩ => h x hx, fun h x hx => h ⟨x, hx⟩⟩
+  exact ⟨fun h ⟨x, hx⟩ ↦ h x hx, fun h x hx ↦ h ⟨x, hx⟩⟩
 
 /-- `UniformOnFun.gen` is antitone in the first argument and monotone in the second. -/
 protected theorem gen_mono {𝔖} {S S' : Set α} {V V' : Set (β × β)} (hS : S' ⊆ S) (hV : V ⊆ V') :
-    UniformOnFun.gen 𝔖 S V ⊆ UniformOnFun.gen 𝔖 S' V' := fun _uv h x hx => hV (h x <| hS hx)
+    UniformOnFun.gen 𝔖 S V ⊆ UniformOnFun.gen 𝔖 S' V' := fun _uv h x hx ↦ hV (h x <| hS hx)
 
 /-- If `𝔖 : Set (Set α)` is nonempty and directed and `𝓑` is a filter basis on `β × β`, then the
 family `UniformOnFun.gen 𝔖 S V` for `S ∈ 𝔖` and `V ∈ 𝓑` is a filter basis on
@@ -580,14 +580,14 @@ We will show in `has_basis_uniformity_of_basis` that, if `𝓑` is a basis for `
 corresponding filter is the uniformity of `α →ᵤ[𝔖] β`. -/
 protected theorem isBasis_gen (𝔖 : Set (Set α)) (h : 𝔖.Nonempty) (h' : DirectedOn (· ⊆ ·) 𝔖)
     (𝓑 : FilterBasis <| β × β) :
-    IsBasis (fun SV : Set α × Set (β × β) => SV.1 ∈ 𝔖 ∧ SV.2 ∈ 𝓑) fun SV =>
+    IsBasis (fun SV : Set α × Set (β × β) ↦ SV.1 ∈ 𝔖 ∧ SV.2 ∈ 𝓑) fun SV ↦
       UniformOnFun.gen 𝔖 SV.1 SV.2 :=
-  ⟨h.prod 𝓑.nonempty, fun {U₁V₁ U₂V₂} h₁ h₂ =>
+  ⟨h.prod 𝓑.nonempty, fun {U₁V₁ U₂V₂} h₁ h₂ ↦
     let ⟨U₃, hU₃, hU₁₃, hU₂₃⟩ := h' U₁V₁.1 h₁.1 U₂V₂.1 h₂.1
     let ⟨V₃, hV₃, hV₁₂₃⟩ := 𝓑.inter_sets h₁.2 h₂.2
     ⟨⟨U₃, V₃⟩,
-      ⟨⟨hU₃, hV₃⟩, fun _ H =>
-        ⟨fun x hx => (hV₁₂₃ <| H x <| hU₁₃ hx).1, fun x hx => (hV₁₂₃ <| H x <| hU₂₃ hx).2⟩⟩⟩⟩
+      ⟨⟨hU₃, hV₃⟩, fun _ H ↦
+        ⟨fun x hx ↦ (hV₁₂₃ <| H x <| hU₁₃ hx).1, fun x hx ↦ (hV₁₂₃ <| H x <| hU₂₃ hx).2⟩⟩⟩⟩
 
 variable (α β) [UniformSpace β] (𝔖 : Set (Set α))
 
@@ -618,7 +618,7 @@ protected theorem topologicalSpace_eq :
 
 protected theorem hasBasis_uniformity_of_basis_aux₁ {p : ι → Prop} {s : ι → Set (β × β)}
     (hb : HasBasis (𝓤 β) p s) (S : Set α) :
-    (@uniformity (α →ᵤ[𝔖] β) ((UniformFun.uniformSpace S β).comap S.restrict)).HasBasis p fun i =>
+    (@uniformity (α →ᵤ[𝔖] β) ((UniformFun.uniformSpace S β).comap S.restrict)).HasBasis p fun i ↦
       UniformOnFun.gen 𝔖 S (s i) := by
   simp_rw [UniformOnFun.gen_eq_preimage_restrict, uniformity_comap]
   exact (UniformFun.hasBasis_uniformity_of_basis S β hb).comap _
@@ -626,31 +626,31 @@ protected theorem hasBasis_uniformity_of_basis_aux₁ {p : ι → Prop} {s : ι 
 protected theorem hasBasis_uniformity_of_basis_aux₂ (h : DirectedOn (· ⊆ ·) 𝔖) {p : ι → Prop}
     {s : ι → Set (β × β)} (hb : HasBasis (𝓤 β) p s) :
     DirectedOn
-      ((fun s : Set α => (UniformFun.uniformSpace s β).comap (s.restrict : (α →ᵤ β) → s →ᵤ β)) ⁻¹'o
+      ((fun s : Set α ↦ (UniformFun.uniformSpace s β).comap (s.restrict : (α →ᵤ β) → s →ᵤ β)) ⁻¹'o
         GE.ge)
       𝔖 :=
-  h.mono fun _ _ hst =>
+  h.mono fun _ _ hst ↦
     ((UniformOnFun.hasBasis_uniformity_of_basis_aux₁ α β 𝔖 hb _).le_basis_iff
           (UniformOnFun.hasBasis_uniformity_of_basis_aux₁ α β 𝔖 hb _)).mpr
-      fun V hV => ⟨V, hV, UniformOnFun.gen_mono hst subset_rfl⟩
+      fun V hV ↦ ⟨V, hV, UniformOnFun.gen_mono hst subset_rfl⟩
 
 /-- If `𝔖 : Set (Set α)` is nonempty and directed and `𝓑` is a filter basis of `𝓤 β`, then the
 uniformity of `α →ᵤ[𝔖] β` admits the family `{(f, g) | ∀ x ∈ S, (f x, g x) ∈ V}` for `S ∈ 𝔖` and
 `V ∈ 𝓑` as a filter basis. -/
 protected theorem hasBasis_uniformity_of_basis (h : 𝔖.Nonempty) (h' : DirectedOn (· ⊆ ·) 𝔖)
     {p : ι → Prop} {s : ι → Set (β × β)} (hb : HasBasis (𝓤 β) p s) :
-    (𝓤 (α →ᵤ[𝔖] β)).HasBasis (fun Si : Set α × ι => Si.1 ∈ 𝔖 ∧ p Si.2) fun Si =>
+    (𝓤 (α →ᵤ[𝔖] β)).HasBasis (fun Si : Set α × ι ↦ Si.1 ∈ 𝔖 ∧ p Si.2) fun Si ↦
       UniformOnFun.gen 𝔖 Si.1 (s Si.2) := by
   simp only [iInf_uniformity]
   exact
-    hasBasis_biInf_of_directed h (fun S => UniformOnFun.gen 𝔖 S ∘ s) _
-      (fun S _hS => UniformOnFun.hasBasis_uniformity_of_basis_aux₁ α β 𝔖 hb S)
+    hasBasis_biInf_of_directed h (fun S ↦ UniformOnFun.gen 𝔖 S ∘ s) _
+      (fun S _hS ↦ UniformOnFun.hasBasis_uniformity_of_basis_aux₁ α β 𝔖 hb S)
       (UniformOnFun.hasBasis_uniformity_of_basis_aux₂ α β 𝔖 h' hb)
 
 /-- If `𝔖 : Set (Set α)` is nonempty and directed, then the uniformity of `α →ᵤ[𝔖] β` admits the
 family `{(f, g) | ∀ x ∈ S, (f x, g x) ∈ V}` for `S ∈ 𝔖` and `V ∈ 𝓤 β` as a filter basis. -/
 protected theorem hasBasis_uniformity (h : 𝔖.Nonempty) (h' : DirectedOn (· ⊆ ·) 𝔖) :
-    (𝓤 (α →ᵤ[𝔖] β)).HasBasis (fun SV : Set α × Set (β × β) => SV.1 ∈ 𝔖 ∧ SV.2 ∈ 𝓤 β) fun SV =>
+    (𝓤 (α →ᵤ[𝔖] β)).HasBasis (fun SV : Set α × Set (β × β) ↦ SV.1 ∈ 𝔖 ∧ SV.2 ∈ 𝓤 β) fun SV ↦
       UniformOnFun.gen 𝔖 SV.1 SV.2 :=
   UniformOnFun.hasBasis_uniformity_of_basis α β 𝔖 h h' (𝓤 β).basis_sets
 
@@ -706,7 +706,7 @@ family `{g | ∀ x ∈ S, (f x, g x) ∈ V}` for `S ∈ 𝔖` and `V ∈ 𝓑` a
 `𝓑` of `𝓤 β`. -/
 protected theorem hasBasis_nhds_of_basis (f : α →ᵤ[𝔖] β) (h : 𝔖.Nonempty)
     (h' : DirectedOn (· ⊆ ·) 𝔖) {p : ι → Prop} {s : ι → Set (β × β)} (hb : HasBasis (𝓤 β) p s) :
-    (𝓝 f).HasBasis (fun Si : Set α × ι => Si.1 ∈ 𝔖 ∧ p Si.2) fun Si =>
+    (𝓝 f).HasBasis (fun Si : Set α × ι ↦ Si.1 ∈ 𝔖 ∧ p Si.2) fun Si ↦
       { g | (g, f) ∈ UniformOnFun.gen 𝔖 Si.1 (s Si.2) } :=
   letI : UniformSpace (α → β) := UniformOnFun.uniformSpace α β 𝔖
   nhds_basis_uniformity (UniformOnFun.hasBasis_uniformity_of_basis α β 𝔖 h h' hb)
@@ -714,7 +714,7 @@ protected theorem hasBasis_nhds_of_basis (f : α →ᵤ[𝔖] β) (h : 𝔖.None
 /-- For `f : α →ᵤ[𝔖] β`, where `𝔖 : Set (Set α)` is nonempty and directed, `𝓝 f` admits the
 family `{g | ∀ x ∈ S, (f x, g x) ∈ V}` for `S ∈ 𝔖` and `V ∈ 𝓤 β` as a filter basis. -/
 protected theorem hasBasis_nhds (f : α →ᵤ[𝔖] β) (h : 𝔖.Nonempty) (h' : DirectedOn (· ⊆ ·) 𝔖) :
-    (𝓝 f).HasBasis (fun SV : Set α × Set (β × β) => SV.1 ∈ 𝔖 ∧ SV.2 ∈ 𝓤 β) fun SV =>
+    (𝓝 f).HasBasis (fun SV : Set α × Set (β × β) ↦ SV.1 ∈ 𝔖 ∧ SV.2 ∈ 𝓤 β) fun SV ↦
       { g | (g, f) ∈ UniformOnFun.gen 𝔖 SV.1 SV.2 } :=
   UniformOnFun.hasBasis_nhds_of_basis α β 𝔖 f h h' (Filter.basis_sets _)
 
@@ -812,7 +812,7 @@ protected theorem mono ⦃u₁ u₂ : UniformSpace γ⦄ (hu : u₁ ≤ u₂) �
     (h𝔖 : 𝔖₂ ⊆ 𝔖₁) : 𝒱(α, γ, 𝔖₁, u₁) ≤ 𝒱(α, γ, 𝔖₂, u₂) :=
   calc
     𝒱(α, γ, 𝔖₁, u₁) ≤ 𝒱(α, γ, 𝔖₂, u₁) := iInf_le_iInf_of_subset h𝔖
-    _ ≤ 𝒱(α, γ, 𝔖₂, u₂) := iInf₂_mono fun _i _hi => UniformSpace.comap_mono <| UniformFun.mono hu
+    _ ≤ 𝒱(α, γ, 𝔖₂, u₂) := iInf₂_mono fun _i _hi ↦ UniformSpace.comap_mono <| UniformFun.mono hu
 
 /-- If `x : α` is in some `S ∈ 𝔖`, then evaluation at `x` is uniformly continuous on
 `α →ᵤ[𝔖] β`. -/
@@ -838,14 +838,14 @@ protected theorem iInf_eq {u : ι → UniformSpace γ} :
     𝒱(α, γ, 𝔖, ⨅ i, u i) = ⨅ i, 𝒱(α, γ, 𝔖, u i) := by
   simp_rw [UniformOnFun.uniformSpace, UniformFun.iInf_eq, UniformSpace.comap_iInf]
   rw [iInf_comm]
-  exact iInf_congr fun s => iInf_comm
+  exact iInf_congr fun s ↦ iInf_comm
 
 /-- If `u₁` and `u₂` are two uniform structures on `γ`, then
 `𝒱(α, γ, 𝔖, u₁ ⊓ u₂) = 𝒱(α, γ, 𝔖, u₁) ⊓ 𝒱(α, γ, 𝔖, u₂)`. -/
 protected theorem inf_eq {u₁ u₂ : UniformSpace γ} :
     𝒱(α, γ, 𝔖, u₁ ⊓ u₂) = 𝒱(α, γ, 𝔖, u₁) ⊓ 𝒱(α, γ, 𝔖, u₂) := by
   rw [inf_eq_iInf, inf_eq_iInf, UniformOnFun.iInf_eq]
-  refine iInf_congr fun i => ?_
+  refine iInf_congr fun i ↦ ?_
   cases i <;> rfl
 
 /-- If `u` is a uniform structure on `β` and `f : γ → β`, then
@@ -899,7 +899,7 @@ protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
 /-- Turn a uniform isomorphism `γ ≃ᵤ β` into a uniform isomorphism `(α →ᵤ[𝔖] γ) ≃ᵤ (α →ᵤ[𝔖] β)`
 by post-composing. -/
 protected def congrRight [UniformSpace γ] (e : γ ≃ᵤ β) : (α →ᵤ[𝔖] γ) ≃ᵤ (α →ᵤ[𝔖] β) :=
-  { Equiv.piCongrRight fun _a => e.toEquiv with
+  { Equiv.piCongrRight fun _a ↦ e.toEquiv with
     uniformContinuous_toFun := UniformOnFun.postcomp_uniformContinuous e.uniformContinuous
     uniformContinuous_invFun := UniformOnFun.postcomp_uniformContinuous e.symm.uniformContinuous }
 
@@ -911,7 +911,7 @@ we will get this for free when we prove that `𝒱(α, β, 𝔖, uβ) = 𝒱(α,
 ***noncovering*** bornology generated by `𝔖`. -/
 protected theorem precomp_uniformContinuous {𝔗 : Set (Set γ)} {f : γ → α}
     (hf : MapsTo (f '' ·) 𝔗 𝔖) :
-    UniformContinuous fun g : α →ᵤ[𝔖] β => ofFun 𝔗 (toFun 𝔖 g ∘ f) := by
+    UniformContinuous fun g : α →ᵤ[𝔖] β ↦ ofFun 𝔗 (toFun 𝔖 g ∘ f) := by
   -- This follows from the fact that `(· ∘ f) × (· ∘ f)` maps `gen (f '' t) V` to `gen t V`.
   simp_rw [UniformContinuous, UniformOnFun.uniformity_eq, tendsto_iInf]
   refine fun t ht V hV ↦ tendsto_iInf' (f '' t) <| tendsto_iInf' (hf ht) <|
@@ -1062,7 +1062,7 @@ protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i : ι) → δ i)) ≃ᵤ 
     congr
     rw [Pi.uniformSpace, UniformSpace.ofCoreEq_toCore, Pi.uniformSpace,
       UniformSpace.ofCoreEq_toCore, UniformSpace.comap_iInf, UniformOnFun.iInf_eq]
-    refine iInf_congr fun i => ?_
+    refine iInf_congr fun i ↦ ?_
     rw [← UniformSpace.comap_comap, UniformOnFun.comap_eq]
     rfl
 -- Like in the previous lemma, the diagram actually commutes by definition
@@ -1141,7 +1141,7 @@ variable {α β γ ι : Type*} [UniformSpace β] [UniformSpace γ] {p : Filter �
 theorem UniformContinuousOn.comp_tendstoUniformly
     (hF : ∀ i x, F i x ∈ s) (hf : ∀ x, f x ∈ s) (hg : UniformContinuousOn g s)
     (h : TendstoUniformly F f p) :
-    TendstoUniformly (fun i x => g (F i x)) (fun x => g (f x)) p := by
+    TendstoUniformly (fun i x ↦ g (F i x)) (fun x ↦ g (f x)) p := by
   rw [uniformContinuousOn_iff_restrict] at hg
   lift F to ι → α → s using hF with F' hF'
   lift f to α → s using hf with f' hf'
@@ -1157,21 +1157,21 @@ theorem UniformContinuousOn.comp_tendstoUniformly_eventually
     TendstoUniformly (fun i x ↦ g (F i x)) (fun x ↦ g (f x)) p := by
   classical
   obtain ⟨s', hs', hs⟩ := eventually_iff_exists_mem.mp hF
-  let F' : ι → α → β := fun i x => if i ∈ s' then F i x else f x
+  let F' : ι → α → β := fun i x ↦ if i ∈ s' then F i x else f x
   have hF : F =ᶠ[p] F' :=  by
     rw [eventuallyEq_iff_exists_mem]
-    refine ⟨s', hs', fun y hy => by aesop⟩
+    refine ⟨s', hs', fun y hy ↦ by aesop⟩
   have h' : TendstoUniformly F' f p := by
     rwa [tendstoUniformly_congr hF] at h
   apply (tendstoUniformly_congr _).mpr
     (UniformContinuousOn.comp_tendstoUniformly (by aesop) hf hg h')
   rw [eventuallyEq_iff_exists_mem]
-  refine ⟨s', hs', fun i hi => by aesop⟩
+  refine ⟨s', hs', fun i hi ↦ by aesop⟩
 
 theorem UniformContinuousOn.comp_tendstoUniformlyOn_eventually {t : Set α}
     (hF : ∀ᶠ i in p, ∀ x ∈ t, F i x ∈ s) (hf : ∀ x ∈ t, f x ∈ s)
     {g : β → γ} (hg : UniformContinuousOn g s) (h : TendstoUniformlyOn F f p t) :
-    TendstoUniformlyOn (fun i x ↦ g (F i x)) (fun x => g (f x)) p t := by
+    TendstoUniformlyOn (fun i x ↦ g (F i x)) (fun x ↦ g (f x)) p t := by
   rw [tendstoUniformlyOn_iff_restrict]
   apply UniformContinuousOn.comp_tendstoUniformly_eventually (by simpa using hF)
      (by simpa using hf) hg (tendstoUniformlyOn_iff_restrict.mp h)

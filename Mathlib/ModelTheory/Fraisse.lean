@@ -99,7 +99,7 @@ def Hereditary : Prop :=
 /-- A class `K` has the joint embedding property when for every `M`, `N` in `K`, there is another
   structure in `K` into which both `M` and `N` embed. -/
 def JointEmbedding : Prop :=
-  DirectedOn (fun M N : Bundled.{w} L.Structure => Nonempty (M ↪[L] N)) K
+  DirectedOn (fun M N : Bundled.{w} L.Structure ↦ Nonempty (M ↪[L] N)) K
 
 /-- A class `K` has the amalgamation property when for any pair of embeddings of a structure `M` in
   `K` into other structures in `K`, those two structures can be embedded into a fourth structure in
@@ -124,12 +124,12 @@ variable {K} (L) (M : Type w) [Structure L M]
 theorem age.is_equiv_invariant (N P : Bundled.{w} L.Structure) (h : Nonempty (N ≃[L] P)) :
     N ∈ L.age M ↔ P ∈ L.age M :=
   and_congr h.some.fg_iff
-    ⟨Nonempty.map fun x => Embedding.comp x h.some.symm.toEmbedding,
-      Nonempty.map fun x => Embedding.comp x h.some.toEmbedding⟩
+    ⟨Nonempty.map fun x ↦ Embedding.comp x h.some.symm.toEmbedding,
+      Nonempty.map fun x ↦ Embedding.comp x h.some.toEmbedding⟩
 
 variable {L} {M} {N : Type w} [Structure L N]
 
-theorem Embedding.age_subset_age (MN : M ↪[L] N) : L.age M ⊆ L.age N := fun _ =>
+theorem Embedding.age_subset_age (MN : M ↪[L] N) : L.age M ⊆ L.age N := fun _ ↦
   And.imp_right (Nonempty.map MN.comp)
 
 theorem Equiv.age_eq_age (MN : M ≃[L] N) : L.age M = L.age N :=
@@ -142,8 +142,8 @@ theorem Structure.FG.mem_age_of_equiv {M N : Bundled L.Structure} (h : Structure
 theorem Hereditary.is_equiv_invariant_of_fg (h : Hereditary K)
     (fg : ∀ M : Bundled.{w} L.Structure, M ∈ K → Structure.FG L M) (M N : Bundled.{w} L.Structure)
     (hn : Nonempty (M ≃[L] N)) : M ∈ K ↔ N ∈ K :=
-  ⟨fun MK => h M MK ((fg M MK).mem_age_of_equiv hn),
-   fun NK => h N NK ((fg N NK).mem_age_of_equiv ⟨hn.some.symm⟩)⟩
+  ⟨fun MK ↦ h M MK ((fg M MK).mem_age_of_equiv hn),
+   fun NK ↦ h N NK ((fg N NK).mem_age_of_equiv ⟨hn.some.symm⟩)⟩
 
 theorem IsFraisse.is_equiv_invariant [h : IsFraisse K] {M N : Bundled.{w} L.Structure}
     (hn : Nonempty (M ≃[L] N)) : M ∈ K ↔ N ∈ K :=
@@ -155,9 +155,9 @@ theorem age.nonempty : (L.age M).Nonempty :=
   ⟨Bundled.of (Substructure.closure L (∅ : Set M)),
     (fg_iff_structure_fg _).1 (fg_closure Set.finite_empty), ⟨Substructure.subtype _⟩⟩
 
-theorem age.hereditary : Hereditary (L.age M) := fun _ hN _ hP => hN.2.some.age_subset_age hP
+theorem age.hereditary : Hereditary (L.age M) := fun _ hN _ hP ↦ hN.2.some.age_subset_age hP
 
-theorem age.jointEmbedding : JointEmbedding (L.age M) := fun _ hN _ hP =>
+theorem age.jointEmbedding : JointEmbedding (L.age M) := fun _ hN _ hP ↦
   ⟨Bundled.of (↥(hN.2.some.toHom.range ⊔ hP.2.some.toHom.range)),
     ⟨(fg_iff_structure_fg _).1 ((hN.1.range hN.2.some.toHom).sup (hP.1.range hP.2.some.toHom)),
       ⟨Substructure.subtype _⟩⟩,
@@ -181,8 +181,8 @@ theorem age.has_representative_as_substructure :
 classes). -/
 theorem age.countable_quotient [h : Countable M] : (Quotient.mk' '' L.age M).Countable := by
   classical
-  refine (congr_arg _ (Set.ext <| Quotient.forall.2 fun N => ?_)).mp
-    (countable_range fun s : Finset M => ⟦⟨closure L (s : Set M), inferInstance⟩⟧)
+  refine (congr_arg _ (Set.ext <| Quotient.forall.2 fun N ↦ ?_)).mp
+    (countable_range fun s : Finset M ↦ ⟦⟨closure L (s : Set M), inferInstance⟩⟧)
   constructor
   · rintro ⟨s, hs⟩
     use Bundled.of (closure L (s : Set M))
@@ -197,7 +197,7 @@ theorem age.countable_quotient [h : Countable M] : (Quotient.mk' '' L.age M).Cou
 /-- The age of a direct limit of structures is the union of the ages of the structures. -/
 theorem age_directLimit {ι : Type w} [Preorder ι] [IsDirected ι (· ≤ ·)] [Nonempty ι]
     (G : ι → Type max w w') [∀ i, L.Structure (G i)] (f : ∀ i j, i ≤ j → G i ↪[L] G j)
-    [DirectedSystem G fun i j h => f i j h] : L.age (DirectLimit G f) = ⋃ i : ι, L.age (G i) := by
+    [DirectedSystem G fun i j h ↦ f i j h] : L.age (DirectLimit G f) = ⋃ i : ι, L.age (G i) := by
   classical
   ext M
   simp only [mem_iUnion]
@@ -232,20 +232,20 @@ theorem exists_cg_is_age_of (hn : K.Nonempty)
     -- to `x ≈ a` in hF
     replace hP2 := Setoid.trans (Setoid.symm (Quotient.mk_out P)) hP2
     exact (hp.is_equiv_invariant_of_fg fg _ _ hP2).1 hP1
-  choose P hPK hP hFP using fun (N : K) (n : ℕ) => jep N N.2 (F (n + 1)).out (hF' _)
-  let G : ℕ → K := @Nat.rec (fun _ => K) ⟨(F 0).out, hF' 0⟩ fun n N => ⟨P N n, hPK N n⟩
+  choose P hPK hP hFP using fun (N : K) (n : ℕ) ↦ jep N N.2 (F (n + 1)).out (hF' _)
+  let G : ℕ → K := @Nat.rec (fun _ ↦ K) ⟨(F 0).out, hF' 0⟩ fun n N ↦ ⟨P N n, hPK N n⟩
   -- Porting note: was
-  -- let f : ∀ i j, i ≤ j → G i ↪[L] G j := DirectedSystem.natLeRec fun n => (hP _ n).some
+  -- let f : ∀ i j, i ≤ j → G i ↪[L] G j := DirectedSystem.natLeRec fun n ↦ (hP _ n).some
   let f : ∀ (i j : ℕ), i ≤ j → (G i).val ↪[L] (G j).val := by
-    refine DirectedSystem.natLERec (G' := fun i => (G i).val) (L := L) ?_
+    refine DirectedSystem.natLERec (G' := fun i ↦ (G i).val) (L := L) ?_
     dsimp only [G]
-    exact fun n => (hP _ n).some
+    exact fun n ↦ (hP _ n).some
   have : DirectedSystem (fun n ↦ (G n).val) fun i j h ↦ ↑(f i j h) := by
     dsimp [f, G]; infer_instance
   refine ⟨Bundled.of (@DirectLimit L _ _ (fun n ↦ (G n).val) _ f _ _), ?_, ?_⟩
-  · exact DirectLimit.cg _ (fun n => (fg _ (G n).2).cg)
+  · exact DirectLimit.cg _ (fun n ↦ (fg _ (G n).2).cg)
   · refine (age_directLimit (fun n ↦ (G n).val) f).trans
-      (subset_antisymm (iUnion_subset fun n N hN => hp (G n).val (G n).2 hN) fun N KN => ?_)
+      (subset_antisymm (iUnion_subset fun n N hN ↦ hp (G n).val (G n).2 hN) fun N KN ↦ ?_)
     have : Quotient.out (Quotient.mk' N) ≈ N := Quotient.eq_mk_iff_out.mp rfl
     obtain ⟨n, ⟨e⟩⟩ := (hF N).1 ⟨N, KN, this⟩
     refine mem_iUnion_of_mem n ⟨fg _ KN, ⟨Embedding.comp ?_ e.symm.toEmbedding⟩⟩
@@ -260,7 +260,7 @@ theorem exists_countable_is_age_of_iff [Countable (Σ l, L.Functions l)] :
       Hereditary K ∧ JointEmbedding K := by
   constructor
   · rintro ⟨M, h1, h2, rfl⟩
-    refine ⟨age.nonempty M, age.is_equiv_invariant L M, age.countable_quotient M, fun N hN => hN.1,
+    refine ⟨age.nonempty M, age.is_equiv_invariant L M, age.countable_quotient M, fun N hN ↦ hN.1,
       age.hereditary M, age.jointEmbedding M⟩
   · rintro ⟨Kn, _, cq, hfg, hp, jep⟩
     obtain ⟨M, hM, rfl⟩ := exists_cg_is_age_of Kn cq hfg hp jep
@@ -354,7 +354,7 @@ theorem IsUltrahomogeneous.amalgamation_age (h : L.IsUltrahomogeneous M) :
 
 theorem IsUltrahomogeneous.age_isFraisse [Countable M] (h : L.IsUltrahomogeneous M) :
     IsFraisse (L.age M) :=
-  ⟨age.nonempty M, fun _ hN => hN.1, age.countable_quotient M,
+  ⟨age.nonempty M, fun _ hN ↦ hN.1, age.countable_quotient M,
     age.hereditary M, age.jointEmbedding M, h.amalgamation_age⟩
 
 namespace IsFraisseLimit

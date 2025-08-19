@@ -227,7 +227,7 @@ in `C`.
 -/
 abbrev widePullbackDiagramOfDiagramOver (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
     WidePullbackShape J ⥤ C :=
-  WidePullbackShape.wideCospan B (fun j => (F.obj ⟨j⟩).left) fun j => (F.obj ⟨j⟩).hom
+  WidePullbackShape.wideCospan B (fun j ↦ (F.obj ⟨j⟩).left) fun j ↦ (F.obj ⟨j⟩).hom
 
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps]
@@ -235,9 +235,9 @@ def conesEquivInverseObj (B : C) {J : Type w} (F : Discrete J ⥤ Over B) (c : C
     Cone (widePullbackDiagramOfDiagramOver B F) where
   pt := c.pt.left
   π :=
-    { app := fun X => Option.casesOn X c.pt.hom fun j : J => (c.π.app ⟨j⟩).left
+    { app := fun X ↦ Option.casesOn X c.pt.hom fun j : J ↦ (c.π.app ⟨j⟩).left
       -- `tidy` can do this using `case_bash`, but let's try to be a good `-T50000` citizen:
-      naturality := fun X Y f => by
+      naturality := fun X Y f ↦ by
         dsimp; cases X <;> cases Y <;> cases f
         · rw [Category.id_comp, Category.comp_id]
         · rw [Over.w, Category.id_comp]
@@ -250,7 +250,7 @@ def conesEquivInverse (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
   obj := conesEquivInverseObj B F
   map f :=
     { hom := f.hom.left
-      w := fun j => by
+      w := fun j ↦ by
         obtain - | j := j
         · simp
         · dsimp
@@ -268,9 +268,9 @@ def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
   obj c :=
     { pt := Over.mk (c.π.app none)
       π :=
-        { app := fun ⟨j⟩ => Over.homMk (c.π.app (some j)) (c.w (WidePullbackShape.Hom.term j))
+        { app := fun ⟨j⟩ ↦ Over.homMk (c.π.app (some j)) (c.w (WidePullbackShape.Hom.term j))
           -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): added proof for `naturality`
-          naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨f⟩⟩ => by dsimp at f ⊢; cat_disch } }
+          naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨f⟩⟩ ↦ by dsimp at f ⊢; cat_disch } }
   map f := { hom := Over.homMk f.hom }
 
 -- Porting note: unfortunately `aesop` can't cope with a `cases` rule here for the type synonym
@@ -283,7 +283,7 @@ def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
 def conesEquivUnitIso (B : C) (F : Discrete J ⥤ Over B) :
     𝟭 (Cone (widePullbackDiagramOfDiagramOver B F)) ≅
       conesEquivFunctor B F ⋙ conesEquivInverse B F :=
-  NatIso.ofComponents fun _ => Cones.ext
+  NatIso.ofComponents fun _ ↦ Cones.ext
     { hom := 𝟙 _
       inv := 𝟙 _ }
     (by rintro (j | j) <;> cat_disch)
@@ -294,7 +294,7 @@ def conesEquivUnitIso (B : C) (F : Discrete J ⥤ Over B) :
 @[simps!]
 def conesEquivCounitIso (B : C) (F : Discrete J ⥤ Over B) :
     conesEquivInverse B F ⋙ conesEquivFunctor B F ≅ 𝟭 (Cone F) :=
-  NatIso.ofComponents fun _ => Cones.ext
+  NatIso.ofComponents fun _ ↦ Cones.ext
     { hom := Over.homMk (𝟙 _)
       inv := Over.homMk (𝟙 _) }
 
@@ -319,7 +319,7 @@ theorem has_over_limit_discrete_of_widePullback_limit {B : C} (F : Discrete J �
 /-- Given a wide pullback in `C`, construct a product in `C/B`. -/
 theorem over_product_of_widePullback [HasLimitsOfShape (WidePullbackShape J) C] {B : C} :
     HasLimitsOfShape (Discrete J) (Over B) :=
-  { has_limit := fun F => has_over_limit_discrete_of_widePullback_limit F }
+  { has_limit := fun F ↦ has_over_limit_discrete_of_widePullback_limit F }
 
 /-- Given a pullback in `C`, construct a binary product in `C/B`. -/
 theorem over_binaryProduct_of_pullback [HasPullbacks C] {B : C} : HasBinaryProducts (Over B) :=
@@ -328,12 +328,12 @@ theorem over_binaryProduct_of_pullback [HasPullbacks C] {B : C} : HasBinaryProdu
 /-- Given all wide pullbacks in `C`, construct products in `C/B`. -/
 theorem over_products_of_widePullbacks [HasWidePullbacks.{w} C] {B : C} :
     HasProducts.{w} (Over B) :=
-  fun _ => over_product_of_widePullback
+  fun _ ↦ over_product_of_widePullback
 
 /-- Given all finite wide pullbacks in `C`, construct finite products in `C/B`. -/
 theorem over_finiteProducts_of_finiteWidePullbacks [HasFiniteWidePullbacks C] {B : C} :
     HasFiniteProducts (Over B) :=
-  ⟨fun _ => over_product_of_widePullback⟩
+  ⟨fun _ ↦ over_product_of_widePullback⟩
 
 end ConstructProducts
 
@@ -347,11 +347,11 @@ theorem over_hasTerminal (B : C) : HasTerminal (Over B) where
     { cone :=
         { pt := Over.mk (𝟙 _)
           π :=
-            { app := fun p => p.as.elim } }
+            { app := fun p ↦ p.as.elim } }
       isLimit :=
-        { lift := fun s => Over.homMk s.pt.hom
-          fac := fun _ j => j.as.elim
-          uniq := fun s m _ => by
+        { lift := fun s ↦ Over.homMk s.pt.hom
+          fac := fun _ j ↦ j.as.elim
+          uniq := fun s m _ ↦ by
             simp only
             ext
             rw [Over.homMk_left _]

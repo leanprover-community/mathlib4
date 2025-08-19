@@ -172,7 +172,7 @@ def linearEquiv [Semiring R] [AddCommGroup E] [Module R E] : C⋆ᵐᵒᵈ(A, E)
 lemma map_top_submodule {R : Type*} [Semiring R] [AddCommGroup E] [Module R E] :
     (⊤ : Submodule R E).map (linearEquiv R A E).symm = ⊤ := by
   ext x
-  refine ⟨fun _  => trivial, fun _ => ?_⟩
+  refine ⟨fun _  ↦ trivial, fun _ ↦ ?_⟩
   rw [Submodule.mem_map]
   exact ⟨linearEquiv R A E x, by simp⟩
 

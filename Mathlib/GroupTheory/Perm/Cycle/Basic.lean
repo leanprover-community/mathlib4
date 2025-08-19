@@ -60,7 +60,7 @@ theorem SameCycle.rfl : SameCycle f x x :=
 protected theorem _root_.Eq.sameCycle (h : x = y) (f : Perm α) : f.SameCycle x y := by rw [h]
 
 @[symm]
-theorem SameCycle.symm : SameCycle f x y → SameCycle f y x := fun ⟨i, hi⟩ =>
+theorem SameCycle.symm : SameCycle f x y → SameCycle f y x := fun ⟨i, hi⟩ ↦
   ⟨-i, by rw [zpow_neg, ← hi, inv_apply_self]⟩
 
 theorem sameCycle_comm : SameCycle f x y ↔ SameCycle f y x :=
@@ -68,7 +68,7 @@ theorem sameCycle_comm : SameCycle f x y ↔ SameCycle f y x :=
 
 @[trans]
 theorem SameCycle.trans : SameCycle f x y → SameCycle f y z → SameCycle f x z :=
-  fun ⟨i, hi⟩ ⟨j, hj⟩ => ⟨j + i, by rw [zpow_add, mul_apply, hi, hj]⟩
+  fun ⟨i, hi⟩ ⟨j, hj⟩ ↦ ⟨j + i, by rw [zpow_add, mul_apply, hi, hj]⟩
 
 variable (f) in
 theorem SameCycle.equivalence : Equivalence (SameCycle f) :=
@@ -90,12 +90,12 @@ alias ⟨SameCycle.of_inv, SameCycle.inv⟩ := sameCycle_inv
 
 @[simp]
 theorem sameCycle_conj : SameCycle (g * f * g⁻¹) x y ↔ SameCycle f (g⁻¹ x) (g⁻¹ y) :=
-  exists_congr fun i => by simp [conj_zpow, eq_inv_iff_eq]
+  exists_congr fun i ↦ by simp [conj_zpow, eq_inv_iff_eq]
 
 theorem SameCycle.conj : SameCycle f x y → SameCycle (g * f * g⁻¹) (g x) (g y) := by
   simp [sameCycle_conj]
 
-theorem SameCycle.apply_eq_self_iff : SameCycle f x y → (f x = x ↔ f y = y) := fun ⟨i, hi⟩ => by
+theorem SameCycle.apply_eq_self_iff : SameCycle f x y → (f x = x ↔ f y = y) := fun ⟨i, hi⟩ ↦ by
   rw [← hi, ← mul_apply, ← zpow_one_add, add_comm, zpow_add_one, mul_apply,
     (f ^ i).injective.eq_iff]
 
@@ -155,23 +155,23 @@ alias ⟨SameCycle.of_zpow_left, SameCycle.zpow_left⟩ := sameCycle_zpow_left
 
 alias ⟨SameCycle.of_zpow_right, SameCycle.zpow_right⟩ := sameCycle_zpow_right
 
-theorem SameCycle.of_pow {n : ℕ} : SameCycle (f ^ n) x y → SameCycle f x y := fun ⟨m, h⟩ =>
+theorem SameCycle.of_pow {n : ℕ} : SameCycle (f ^ n) x y → SameCycle f x y := fun ⟨m, h⟩ ↦
   ⟨n * m, by simp [zpow_mul, h]⟩
 
-theorem SameCycle.of_zpow {n : ℤ} : SameCycle (f ^ n) x y → SameCycle f x y := fun ⟨m, h⟩ =>
+theorem SameCycle.of_zpow {n : ℤ} : SameCycle (f ^ n) x y → SameCycle f x y := fun ⟨m, h⟩ ↦
   ⟨n * m, by simp [zpow_mul, h]⟩
 
 @[simp]
 theorem sameCycle_subtypePerm {h} {x y : { x // p x }} :
     (f.subtypePerm h).SameCycle x y ↔ f.SameCycle x y :=
-  exists_congr fun n => by simp [Subtype.ext_iff]
+  exists_congr fun n ↦ by simp [Subtype.ext_iff]
 
 alias ⟨_, SameCycle.subtypePerm⟩ := sameCycle_subtypePerm
 
 @[simp]
 theorem sameCycle_extendDomain {p : β → Prop} [DecidablePred p] {f : α ≃ Subtype p} :
     SameCycle (g.extendDomain f) (f x) (f y) ↔ g.SameCycle x y :=
-  exists_congr fun n => by
+  exists_congr fun n ↦ by
     rw [← extendDomain_zpow, extendDomain_apply_image, Subtype.coe_inj, f.injective.eq_iff]
 
 alias ⟨_, SameCycle.extendDomain⟩ := sameCycle_extendDomain
@@ -204,10 +204,10 @@ theorem SameCycle.exists_nat_pow_eq [Finite α] (h : SameCycle f x y) :
   exact ⟨i, hi⟩
 
 instance (f : Perm α) [DecidableRel (SameCycle f)] :
-    DecidableRel (SameCycle f⁻¹) := fun x y =>
+    DecidableRel (SameCycle f⁻¹) := fun x y ↦
   decidable_of_iff (f.SameCycle x y) (sameCycle_inv).symm
 
-instance (priority := 100) [DecidableEq α] : DecidableRel (SameCycle (1 : Perm α)) := fun x y =>
+instance (priority := 100) [DecidableEq α] : DecidableRel (SameCycle (1 : Perm α)) := fun x y ↦
   decidable_of_iff (x = y) sameCycle_one.symm
 
 end SameCycle
@@ -225,10 +225,10 @@ related by repeated application of the permutation. -/
 def IsCycle (f : Perm α) : Prop :=
   ∃ x, f x ≠ x ∧ ∀ ⦃y⦄, f y ≠ y → SameCycle f x y
 
-theorem IsCycle.ne_one (h : IsCycle f) : f ≠ 1 := fun hf => by simp [hf, IsCycle] at h
+theorem IsCycle.ne_one (h : IsCycle f) : f ≠ 1 := fun hf ↦ by simp [hf, IsCycle] at h
 
 @[simp]
-theorem not_isCycle_one : ¬(1 : Perm α).IsCycle := fun H => H.ne_one rfl
+theorem not_isCycle_one : ¬(1 : Perm α).IsCycle := fun H ↦ H.ne_one rfl
 
 protected theorem IsCycle.sameCycle (hf : IsCycle f) (hx : f x ≠ x) (hy : f y ≠ y) :
     SameCycle f x y :=
@@ -241,23 +241,23 @@ theorem IsCycle.exists_zpow_eq : IsCycle f → f x ≠ x → f y ≠ y → ∃ i
   IsCycle.sameCycle
 
 theorem IsCycle.inv (hf : IsCycle f) : IsCycle f⁻¹ :=
-  hf.imp fun _ ⟨hx, h⟩ =>
-    ⟨inv_eq_iff_eq.not.2 hx.symm, fun _ hy => (h <| inv_eq_iff_eq.not.2 hy.symm).inv⟩
+  hf.imp fun _ ⟨hx, h⟩ ↦
+    ⟨inv_eq_iff_eq.not.2 hx.symm, fun _ hy ↦ (h <| inv_eq_iff_eq.not.2 hy.symm).inv⟩
 
 @[simp]
 theorem isCycle_inv : IsCycle f⁻¹ ↔ IsCycle f :=
-  ⟨fun h => h.inv, IsCycle.inv⟩
+  ⟨fun h ↦ h.inv, IsCycle.inv⟩
 
 theorem IsCycle.conj : IsCycle f → IsCycle (g * f * g⁻¹) := by
   rintro ⟨x, hx, h⟩
-  refine ⟨g x, by simp [coe_mul, inv_apply_self, hx], fun y hy => ?_⟩
+  refine ⟨g x, by simp [coe_mul, inv_apply_self, hx], fun y hy ↦ ?_⟩
   rw [← apply_inv_self g y]
   exact (h <| eq_inv_iff_eq.not.2 hy).conj
 
 protected theorem IsCycle.extendDomain {p : β → Prop} [DecidablePred p] (f : α ≃ Subtype p) :
     IsCycle g → IsCycle (g.extendDomain f) := by
   rintro ⟨a, ha, ha'⟩
-  refine ⟨f a, ?_, fun b hb => ?_⟩
+  refine ⟨f a, ?_, fun b hb ↦ ?_⟩
   · rw [extendDomain_apply_image]
     exact Subtype.coe_injective.ne (f.injective.ne ha)
   have h : b = f (f.symm ⟨b, of_not_not <| hb ∘ extendDomain_apply_not_subtype _ _⟩) := by
@@ -267,13 +267,13 @@ protected theorem IsCycle.extendDomain {p : β → Prop} [DecidablePred p] (f : 
   exact (ha' hb).extendDomain
 
 theorem isCycle_iff_sameCycle (hx : f x ≠ x) : IsCycle f ↔ ∀ {y}, SameCycle f x y ↔ f y ≠ y :=
-  ⟨fun hf y =>
-    ⟨fun ⟨i, hi⟩ hy =>
+  ⟨fun hf y ↦
+    ⟨fun ⟨i, hi⟩ hy ↦
       hx <| by
         rw [← zpow_apply_eq_self_of_apply_eq_self hy i, (f ^ i).injective.eq_iff] at hi
         rw [hi, hy],
       hf.exists_zpow_eq hx⟩,
-    fun h => ⟨x, hx, fun _ hy => h.2 hy⟩⟩
+    fun h ↦ ⟨x, hx, fun _ hy ↦ h.2 hy⟩⟩
 
 section Finite
 
@@ -292,7 +292,7 @@ end Finite
 variable [DecidableEq α]
 
 theorem isCycle_swap (hxy : x ≠ y) : IsCycle (swap x y) :=
-  ⟨y, by rwa [swap_apply_right], fun a (ha : ite (a = x) y (ite (a = y) x a) ≠ a) =>
+  ⟨y, by rwa [swap_apply_right], fun a (ha : ite (a = x) y (ite (a = y) x a) ≠ a) ↦
     if hya : y = a then ⟨0, hya⟩
     else
       ⟨1, by
@@ -312,7 +312,7 @@ theorem IsCycle.two_le_card_support (h : IsCycle f) : 2 ≤ #f.support :=
 noncomputable def IsCycle.zpowersEquivSupport {σ : Perm α} (hσ : IsCycle σ) :
     (Subgroup.zpowers σ) ≃ σ.support :=
   Equiv.ofBijective
-    (fun (τ : ↥ ((Subgroup.zpowers σ) : Set (Perm α))) =>
+    (fun (τ : ↥ ((Subgroup.zpowers σ) : Set (Perm α))) ↦
       ⟨(τ : Perm α) (Classical.choose hσ), by
         obtain ⟨τ, n, rfl⟩ := τ
         rw [Subtype.coe_mk, zpow_apply_mem_support, mem_support]
@@ -355,7 +355,7 @@ theorem isCycle_swap_mul_aux₁ {α : Type*} [DecidableEq α] :
       ∃ i : ℤ, ((swap x (f x) * f) ^ i) (f x) = b := by
   intro n
   induction n with
-  | zero => exact fun _ h => ⟨0, h⟩
+  | zero => exact fun _ h ↦ ⟨0, h⟩
   | succ n hn =>
     intro b x f hb h
     exact if hfbx : f x = b then ⟨0, hfbx⟩
@@ -403,7 +403,7 @@ theorem isCycle_swap_mul_aux₂ {α : Type*} [DecidableEq α] :
 
 theorem IsCycle.eq_swap_of_apply_apply_eq_self {α : Type*} [DecidableEq α] {f : Perm α}
     (hf : IsCycle f) {x : α} (hfx : f x ≠ x) (hffx : f (f x) = x) : f = swap x (f x) :=
-  Equiv.ext fun y =>
+  Equiv.ext fun y ↦
     let ⟨z, hz⟩ := hf
     let ⟨i, hi⟩ := hz.2 hfx
     if hyx : y = x then by simp [hyx]
@@ -411,7 +411,7 @@ theorem IsCycle.eq_swap_of_apply_apply_eq_self {α : Type*} [DecidableEq α] {f 
       if hfyx : y = f x then by simp [hfyx, hffx]
       else by
         rw [swap_apply_of_ne_of_ne hyx hfyx]
-        refine by_contradiction fun hy => ?_
+        refine by_contradiction fun hy ↦ ?_
         obtain ⟨j, hj⟩ := hz.2 hy
         rw [← sub_add_cancel j i, zpow_add, mul_apply, hi] at hj
         rcases zpow_apply_eq_of_apply_apply_eq_self hffx (j - i) with hji | hji
@@ -423,7 +423,7 @@ theorem IsCycle.eq_swap_of_apply_apply_eq_self {α : Type*} [DecidableEq α] {f 
 theorem IsCycle.swap_mul {α : Type*} [DecidableEq α] {f : Perm α} (hf : IsCycle f) {x : α}
     (hx : f x ≠ x) (hffx : f (f x) ≠ x) : IsCycle (swap x (f x) * f) :=
   ⟨f x, by simp [swap_apply_def, mul_apply, if_neg hffx, f.injective.eq_iff, hx],
-    fun y hy =>
+    fun y hy ↦
     let ⟨i, hi⟩ := hf.exists_zpow_eq hx (ne_and_ne_of_swap_mul_apply_ne_self hy).1
     have hi : (f ^ (i - 1)) (f x) = y :=
       calc
@@ -459,7 +459,7 @@ theorem IsCycle.of_pow {n : ℕ} (h1 : IsCycle (f ^ n)) (h2 : f.support ⊆ (f ^
     simp_rw [← mem_support, ← Finset.ext_iff]
     exact (support_pow_le _ n).antisymm h2
   obtain ⟨x, hx1, hx2⟩ := h1
-  refine ⟨x, (key x).mp hx1, fun y hy => ?_⟩
+  refine ⟨x, (key x).mp hx1, fun y hy ↦ ?_⟩
   obtain ⟨i, _⟩ := hx2 ((key y).mpr hy)
   exact ⟨n * i, by rwa [zpow_mul]⟩
 
@@ -474,7 +474,7 @@ theorem IsCycle.of_zpow {n : ℤ} (h1 : IsCycle (f ^ n)) (h2 : f.support ⊆ (f 
 
 theorem nodup_of_pairwise_disjoint_cycles {l : List (Perm β)} (h1 : ∀ f ∈ l, IsCycle f)
     (h2 : l.Pairwise Disjoint) : l.Nodup :=
-  nodup_of_pairwise_disjoint (fun h => (h1 1 h).ne_one rfl) h2
+  nodup_of_pairwise_disjoint (fun h ↦ (h1 1 h).ne_one rfl) h2
 
 /-- Unlike `support_congr`, which assumes that `∀ (x ∈ g.support), f x = g x)`, here
 we have the weaker assumption that `∀ (x ∈ f.support), f x = g x`. -/
@@ -551,7 +551,7 @@ theorem IsCycle.pow_iff [Finite β] {f : Perm β} (hf : IsCycle f) {n : ℕ} :
     · intro h
       obtain ⟨m, hm⟩ := exists_pow_eq_self_of_coprime h
       have hf' : IsCycle ((f ^ n) ^ m) := by rwa [hm]
-      refine hf'.of_pow fun x hx => ?_
+      refine hf'.of_pow fun x hx ↦ ?_
       rw [hm]
       exact support_pow_le _ n hx
 
@@ -575,12 +575,12 @@ theorem IsCycle.pow_eq_one_iff [Finite β] {f : Perm β} (hf : IsCycle f) {n : �
 -- TODO: Define a `Set`-valued support to get rid of the `Finite β` assumption
 theorem IsCycle.pow_eq_one_iff' [Finite β] {f : Perm β} (hf : IsCycle f) {n : ℕ} {x : β}
     (hx : f x ≠ x) : f ^ n = 1 ↔ (f ^ n) x = x :=
-  ⟨fun h => DFunLike.congr_fun h x, fun h => hf.pow_eq_one_iff.2 ⟨x, hx, h⟩⟩
+  ⟨fun h ↦ DFunLike.congr_fun h x, fun h ↦ hf.pow_eq_one_iff.2 ⟨x, hx, h⟩⟩
 
 -- TODO: Define a `Set`-valued support to get rid of the `Finite β` assumption
 theorem IsCycle.pow_eq_one_iff'' [Finite β] {f : Perm β} (hf : IsCycle f) {n : ℕ} :
     f ^ n = 1 ↔ ∀ x, f x ≠ x → (f ^ n) x = x :=
-  ⟨fun h _ hx => (hf.pow_eq_one_iff' hx).1 h, fun h =>
+  ⟨fun h _ hx ↦ (hf.pow_eq_one_iff' hx).1 h, fun h ↦
     let ⟨_, hx, _⟩ := id hf
     (hf.pow_eq_one_iff' hx).2 (h _ hx)⟩
 
@@ -628,10 +628,10 @@ end IsCycle
 open Equiv
 
 theorem _root_.Int.addLeft_one_isCycle : (Equiv.addLeft 1 : Perm ℤ).IsCycle :=
-  ⟨0, one_ne_zero, fun n _ => ⟨n, by simp⟩⟩
+  ⟨0, one_ne_zero, fun n _ ↦ ⟨n, by simp⟩⟩
 
 theorem _root_.Int.addRight_one_isCycle : (Equiv.addRight 1 : Perm ℤ).IsCycle :=
-  ⟨0, one_ne_zero, fun n _ => ⟨n, by simp⟩⟩
+  ⟨0, one_ne_zero, fun n _ ↦ ⟨n, by simp⟩⟩
 
 section Conjugation
 
@@ -653,7 +653,7 @@ theorem IsCycle.isConj_iff (hσ : IsCycle σ) (hτ : IsCycle τ) :
     IsConj σ τ ↔ #σ.support = #τ.support where
   mp h := by
     obtain ⟨π, rfl⟩ := (_root_.isConj_iff).1 h
-    refine Finset.card_bij (fun a _ => π a) (fun _ ha => ?_) (fun _ _ _ _ ab => π.injective ab)
+    refine Finset.card_bij (fun a _ ↦ π a) (fun _ ha ↦ ?_) (fun _ _ _ _ ab ↦ π.injective ab)
         fun b hb ↦ ⟨π⁻¹ b, ?_, π.apply_inv_self b⟩
     · simp [mem_support.1 ha]
     contrapose! hb
@@ -687,7 +687,7 @@ alias ⟨IsCycleOn.subsingleton, _root_.Set.Subsingleton.isCycleOn_one⟩ := isC
 theorem isCycleOn_singleton : f.IsCycleOn {a} ↔ f a = a := by simp [IsCycleOn, SameCycle.rfl]
 
 theorem isCycleOn_of_subsingleton [Subsingleton α] (f : Perm α) (s : Set α) : f.IsCycleOn s :=
-  ⟨s.bijOn_of_subsingleton _, fun x _ y _ => (Subsingleton.elim x y).sameCycle _⟩
+  ⟨s.bijOn_of_subsingleton _, fun x _ y _ ↦ (Subsingleton.elim x y).sameCycle _⟩
 
 @[simp]
 theorem isCycleOn_inv : f⁻¹.IsCycleOn s ↔ f.IsCycleOn s := by
@@ -697,12 +697,12 @@ theorem isCycleOn_inv : f⁻¹.IsCycleOn s ↔ f.IsCycleOn s := by
 alias ⟨IsCycleOn.of_inv, IsCycleOn.inv⟩ := isCycleOn_inv
 
 theorem IsCycleOn.conj (h : f.IsCycleOn s) : (g * f * g⁻¹).IsCycleOn ((g : Perm α) '' s) :=
-  ⟨(g.bijOn_image.comp h.1).comp g.bijOn_symm_image, fun x hx y hy => by
+  ⟨(g.bijOn_image.comp h.1).comp g.bijOn_symm_image, fun x hx y hy ↦ by
     rw [← preimage_inv] at hx hy
     convert Equiv.Perm.SameCycle.conj (h.2 hx hy) (g := g) <;> rw [apply_inv_self]⟩
 
 theorem isCycleOn_swap [DecidableEq α] (hab : a ≠ b) : (swap a b).IsCycleOn {a, b} :=
-  ⟨bijOn_swap (by simp) (by simp), fun x hx y hy => by
+  ⟨bijOn_swap (by simp) (by simp), fun x hx y hy ↦ by
     rw [Set.mem_insert_iff, Set.mem_singleton_iff] at hx hy
     obtain rfl | rfl := hx <;> obtain rfl | rfl := hy
     · exact ⟨0, by rw [zpow_zero, coe_one, id]⟩
@@ -714,44 +714,44 @@ protected theorem IsCycleOn.apply_ne (hf : f.IsCycleOn s) (hs : s.Nontrivial) (h
     f a ≠ a := by
   obtain ⟨b, hb, hba⟩ := hs.exists_ne a
   obtain ⟨n, rfl⟩ := hf.2 ha hb
-  exact fun h => hba (IsFixedPt.perm_zpow h n)
+  exact fun h ↦ hba (IsFixedPt.perm_zpow h n)
 
 protected theorem IsCycle.isCycleOn (hf : f.IsCycle) : f.IsCycleOn { x | f x ≠ x } :=
-  ⟨f.bijOn fun _ => f.apply_eq_iff_eq.not, fun _ ha _ => hf.sameCycle ha⟩
+  ⟨f.bijOn fun _ ↦ f.apply_eq_iff_eq.not, fun _ ha _ ↦ hf.sameCycle ha⟩
 
 /-- This lemma demonstrates the relation between `Equiv.Perm.IsCycle` and `Equiv.Perm.IsCycleOn`
 in non-degenerate cases. -/
 theorem isCycle_iff_exists_isCycleOn :
     f.IsCycle ↔ ∃ s : Set α, s.Nontrivial ∧ f.IsCycleOn s ∧ ∀ ⦃x⦄, ¬IsFixedPt f x → x ∈ s := by
-  refine ⟨fun hf => ⟨{ x | f x ≠ x }, ?_, hf.isCycleOn, fun _ => id⟩, ?_⟩
+  refine ⟨fun hf ↦ ⟨{ x | f x ≠ x }, ?_, hf.isCycleOn, fun _ ↦ id⟩, ?_⟩
   · obtain ⟨a, ha⟩ := hf
     exact ⟨f a, f.injective.ne ha.1, a, ha.1, ha.1⟩
   · rintro ⟨s, hs, hf, hsf⟩
     obtain ⟨a, ha⟩ := hs.nonempty
-    exact ⟨a, hf.apply_ne hs ha, fun b hb => hf.2 ha <| hsf hb⟩
+    exact ⟨a, hf.apply_ne hs ha, fun b hb ↦ hf.2 ha <| hsf hb⟩
 
 theorem IsCycleOn.apply_mem_iff (hf : f.IsCycleOn s) : f x ∈ s ↔ x ∈ s :=
-  ⟨fun hx => by
+  ⟨fun hx ↦ by
     convert hf.1.perm_inv.1 hx
-    rw [inv_apply_self], fun hx => hf.1.mapsTo hx⟩
+    rw [inv_apply_self], fun hx ↦ hf.1.mapsTo hx⟩
 
 /-- Note that the identity satisfies `IsCycleOn` for any subsingleton set, but not `IsCycle`. -/
 theorem IsCycleOn.isCycle_subtypePerm (hf : f.IsCycleOn s) (hs : s.Nontrivial) :
-    (f.subtypePerm fun _ => hf.apply_mem_iff : Perm s).IsCycle := by
+    (f.subtypePerm fun _ ↦ hf.apply_mem_iff : Perm s).IsCycle := by
   obtain ⟨a, ha⟩ := hs.nonempty
   exact
-    ⟨⟨a, ha⟩, ne_of_apply_ne ((↑) : s → α) (hf.apply_ne hs ha), fun b _ =>
+    ⟨⟨a, ha⟩, ne_of_apply_ne ((↑) : s → α) (hf.apply_ne hs ha), fun b _ ↦
       (hf.2 (⟨a, ha⟩ : s).2 b.2).subtypePerm⟩
 
 /-- Note that the identity is a cycle on any subsingleton set, but not a cycle. -/
 protected theorem IsCycleOn.subtypePerm (hf : f.IsCycleOn s) :
-    (f.subtypePerm fun _ => hf.apply_mem_iff : Perm s).IsCycleOn _root_.Set.univ := by
+    (f.subtypePerm fun _ ↦ hf.apply_mem_iff : Perm s).IsCycleOn _root_.Set.univ := by
   obtain hs | hs := s.subsingleton_or_nontrivial
   · haveI := hs.coe_sort
     exact isCycleOn_of_subsingleton _ _
   convert (hf.isCycle_subtypePerm hs).isCycleOn
   rw [eq_comm, Set.eq_univ_iff_forall]
-  exact fun x => ne_of_apply_ne ((↑) : s → α) (hf.apply_ne hs x.2)
+  exact fun x ↦ ne_of_apply_ne ((↑) : s → α) (hf.apply_ne hs x.2)
 
 -- TODO: Theory of order of an element under an action
 theorem IsCycleOn.pow_apply_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s) {n : ℕ} :
@@ -809,20 +809,20 @@ theorem IsCycleOn.exists_pow_eq' (hs : s.Finite) (hf : f.IsCycleOn s) (ha : a �
   exact ⟨n, hn⟩
 
 theorem IsCycleOn.range_pow (hs : s.Finite) (h : f.IsCycleOn s) (ha : a ∈ s) :
-    Set.range (fun n => (f ^ n) a : ℕ → α) = s :=
-  Set.Subset.antisymm (Set.range_subset_iff.2 fun _ => h.1.mapsTo.perm_pow _ ha) fun _ =>
+    Set.range (fun n ↦ (f ^ n) a : ℕ → α) = s :=
+  Set.Subset.antisymm (Set.range_subset_iff.2 fun _ ↦ h.1.mapsTo.perm_pow _ ha) fun _ ↦
     h.exists_pow_eq' hs ha
 
 theorem IsCycleOn.range_zpow (h : f.IsCycleOn s) (ha : a ∈ s) :
-    Set.range (fun n => (f ^ n) a : ℤ → α) = s :=
-  Set.Subset.antisymm (Set.range_subset_iff.2 fun _ => (h.1.perm_zpow _).mapsTo ha) <| h.2 ha
+    Set.range (fun n ↦ (f ^ n) a : ℤ → α) = s :=
+  Set.Subset.antisymm (Set.range_subset_iff.2 fun _ ↦ (h.1.perm_zpow _).mapsTo ha) <| h.2 ha
 
 theorem IsCycleOn.of_pow {n : ℕ} (hf : (f ^ n).IsCycleOn s) (h : Set.BijOn f s s) : f.IsCycleOn s :=
-  ⟨h, fun _ hx _ hy => (hf.2 hx hy).of_pow⟩
+  ⟨h, fun _ hx _ hy ↦ (hf.2 hx hy).of_pow⟩
 
 theorem IsCycleOn.of_zpow {n : ℤ} (hf : (f ^ n).IsCycleOn s) (h : Set.BijOn f s s) :
     f.IsCycleOn s :=
-  ⟨h, fun _ hx _ hy => (hf.2 hx hy).of_zpow⟩
+  ⟨h, fun _ hx _ hy ↦ (hf.2 hx hy).of_zpow⟩
 
 theorem IsCycleOn.extendDomain {p : β → Prop} [DecidablePred p] (f : α ≃ Subtype p)
     (h : g.IsCycleOn s) : (g.extendDomain f).IsCycleOn ((↑) ∘ f '' s) :=
@@ -833,7 +833,7 @@ theorem IsCycleOn.extendDomain {p : β → Prop} [DecidablePred p] (f : α ≃ S
 protected theorem IsCycleOn.countable (hs : f.IsCycleOn s) : s.Countable := by
   obtain rfl | ⟨a, ha⟩ := s.eq_empty_or_nonempty
   · exact Set.countable_empty
-  · exact (Set.countable_range fun n : ℤ => (⇑(f ^ n) : α → α) a).mono (hs.2 ha)
+  · exact (Set.countable_range fun n : ℤ ↦ (⇑(f ^ n) : α → α) a).mono (hs.2 ha)
 
 
 end IsCycleOn
@@ -848,7 +848,7 @@ variable [DecidableEq α] {l : List α}
 
 theorem Nodup.isCycleOn_formPerm (h : l.Nodup) :
     l.formPerm.IsCycleOn { a | a ∈ l } := by
-  refine ⟨l.formPerm.bijOn fun _ => List.formPerm_mem_iff_mem, fun a ha b hb => ?_⟩
+  refine ⟨l.formPerm.bijOn fun _ ↦ List.formPerm_mem_iff_mem, fun a ha b hb ↦ ?_⟩
   rw [Set.mem_setOf, ← List.idxOf_lt_length_iff] at ha hb
   rw [← List.getElem_idxOf ha, ← List.getElem_idxOf hb]
   refine ⟨l.idxOf b - l.idxOf a, ?_⟩
@@ -866,7 +866,7 @@ variable [DecidableEq α] [Fintype α]
 
 theorem exists_cycleOn (s : Finset α) :
     ∃ f : Perm α, f.IsCycleOn s ∧ f.support ⊆ s := by
-  refine ⟨s.toList.formPerm, ?_, fun x hx => by
+  refine ⟨s.toList.formPerm, ?_, fun x hx ↦ by
     simpa using List.mem_of_formPerm_apply_ne (Perm.mem_support.1 hx)⟩
   convert s.nodup_toList.isCycleOn_formPerm
   simp
@@ -881,25 +881,25 @@ theorem Countable.exists_cycleOn (hs : s.Countable) :
     ∃ f : Perm α, f.IsCycleOn s ∧ { x | f x ≠ x } ⊆ s := by
   classical
   obtain hs' | hs' := s.finite_or_infinite
-  · refine ⟨hs'.toFinset.toList.formPerm, ?_, fun x hx => by
+  · refine ⟨hs'.toFinset.toList.formPerm, ?_, fun x hx ↦ by
       simpa using List.mem_of_formPerm_apply_ne hx⟩
     convert hs'.toFinset.nodup_toList.isCycleOn_formPerm
     simp
   · haveI := hs.to_subtype
     haveI := hs'.to_subtype
     obtain ⟨f⟩ : Nonempty (ℤ ≃ s) := inferInstance
-    refine ⟨(Equiv.addRight 1).extendDomain f, ?_, fun x hx =>
-      of_not_not fun h => hx <| Perm.extendDomain_apply_not_subtype _ _ h⟩
+    refine ⟨(Equiv.addRight 1).extendDomain f, ?_, fun x hx ↦
+      of_not_not fun h ↦ hx <| Perm.extendDomain_apply_not_subtype _ _ h⟩
     convert Int.addRight_one_isCycle.isCycleOn.extendDomain f
     rw [Set.image_comp, Equiv.image_eq_preimage]
     ext
     simp
 
 theorem prod_self_eq_iUnion_perm (hf : f.IsCycleOn s) :
-    s ×ˢ s = ⋃ n : ℤ, (fun a => (a, (f ^ n) a)) '' s := by
+    s ×ˢ s = ⋃ n : ℤ, (fun a ↦ (a, (f ^ n) a)) '' s := by
   ext ⟨a, b⟩
   simp only [Set.mem_prod, Set.mem_iUnion, Set.mem_image]
-  refine ⟨fun hx => ?_, ?_⟩
+  refine ⟨fun hx ↦ ?_, ?_⟩
   · obtain ⟨n, rfl⟩ := hf.2 hx.1 hx.2
     exact ⟨_, _, hx.1, rfl⟩
   · rintro ⟨n, a, ha, ⟨⟩⟩
@@ -912,8 +912,8 @@ namespace Finset
 variable {f : Perm α} {s : Finset α}
 
 theorem product_self_eq_disjiUnion_perm_aux (hf : f.IsCycleOn s) :
-    (range #s : Set ℕ).PairwiseDisjoint fun k =>
-      s.map ⟨fun i => (i, (f ^ k) i), fun _ _ => congr_arg Prod.fst⟩ := by
+    (range #s : Set ℕ).PairwiseDisjoint fun k ↦
+      s.map ⟨fun i ↦ (i, (f ^ k) i), fun _ _ ↦ congr_arg Prod.fst⟩ := by
   obtain hs | _ := (s : Set α).subsingleton_or_nontrivial
   · refine Set.Subsingleton.pairwise ?_ _
     simp_rw [Set.Subsingleton, mem_coe, ← card_le_one] at hs ⊢
@@ -941,12 +941,12 @@ The diagonals are given by the cycle `f`.
 theorem product_self_eq_disjiUnion_perm (hf : f.IsCycleOn s) :
     s ×ˢ s =
       (range #s).disjiUnion
-        (fun k => s.map ⟨fun i => (i, (f ^ k) i), fun _ _ => congr_arg Prod.fst⟩)
+        (fun k ↦ s.map ⟨fun i ↦ (i, (f ^ k) i), fun _ _ ↦ congr_arg Prod.fst⟩)
         (product_self_eq_disjiUnion_perm_aux hf) := by
   ext ⟨a, b⟩
   simp only [mem_product, Equiv.Perm.coe_pow, mem_disjiUnion, mem_range, mem_map,
     Function.Embedding.coeFn_mk, Prod.mk_inj]
-  refine ⟨fun hx => ?_, ?_⟩
+  refine ⟨fun hx ↦ ?_, ?_⟩
   · obtain ⟨n, hn, rfl⟩ := hf.exists_pow_eq hx.1 hx.2
     exact ⟨n, hn, a, hx.1, rfl, by rw [f.iterate_eq_pow]⟩
   · rintro ⟨n, -, a, ha, rfl, rfl⟩
@@ -985,7 +985,7 @@ variable [Fintype α] [DecidableEq α]
 
 /-- Restrict a permutation to its support -/
 def subtypePermOfSupport (c : Perm α) : Perm c.support :=
-  subtypePerm c fun _ : α => apply_mem_support
+  subtypePerm c fun _ : α ↦ apply_mem_support
 
 /-- Restrict a permutation to a Finset containing its support -/
 def subtypePerm_of_support_le (c : Perm α) {s : Finset α}
@@ -1041,7 +1041,7 @@ theorem IsCycle.commute_iff {g c : Perm α} (hc : c.IsCycle) :
       ∃ hc' : ∀ x : α, g x ∈ c.support ↔ x ∈ c.support,
         ofSubtype (subtypePerm g hc') ∈ Subgroup.zpowers c := by
   simp_rw [hc.commute_iff', Subgroup.mem_zpowers_iff]
-  refine exists_congr fun hc' => exists_congr fun k => ?_
+  refine exists_congr fun hc' ↦ exists_congr fun k ↦ ?_
   rw [subtypePermOfSupport, subtypePerm_zpow c k]
   simp only [Perm.ext_iff, subtypePerm_apply, Subtype.mk.injEq, Subtype.forall]
   apply forall_congr'

@@ -104,7 +104,7 @@ lemma toList_chain' (x : RelSeries r) : x.toList.Chain' (· ~[r] ·) := by
   intros i h
   convert x.step ⟨i, by simpa [toList] using h⟩ <;> apply List.get_ofFn
 
-lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m =>
+lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m ↦
   List.eq_nil_iff_forall_not_mem.mp m (x 0) <| List.mem_ofFn.mpr ⟨_, rfl⟩
 
 /-- Every nonempty list satisfying the chain condition gives a relation series -/
@@ -121,7 +121,7 @@ protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' (· ~
   invFun x := fromListChain' _ x.2.1 x.2.2
   left_inv x := ext (by simp [toList]) <| by ext; dsimp; apply List.get_ofFn
   right_inv x := by
-    refine Subtype.ext (List.ext_get ?_ fun n hn1 _ => by dsimp; apply List.get_ofFn)
+    refine Subtype.ext (List.ext_get ?_ fun n hn1 _ ↦ by dsimp; apply List.get_ofFn)
     have := Nat.succ_pred_eq_of_pos <| List.length_pos_iff.mpr x.2.1
     simp_all [toList]
 
@@ -555,7 +555,7 @@ lemma mem_snoc {p : RelSeries r} {newLast : α} {rel : p.last ~[r] newLast} {x :
     Function.comp_id, mem_def, Set.mem_range]
   constructor
   · rintro ⟨i, rfl⟩
-    exact Fin.lastCases (Or.inr <| Fin.append_right _ _ 0) (fun i => Or.inl ⟨⟨i.1, i.2⟩,
+    exact Fin.lastCases (Or.inr <| Fin.append_right _ _ 0) (fun i ↦ Or.inl ⟨⟨i.1, i.2⟩,
       (Fin.append_left _ _ _).symm⟩) i
   · intro h
     rcases h with (⟨i, rfl⟩ | rfl)
@@ -758,8 +758,8 @@ lemma smash_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.len
 @[simps! length]
 def take {r : SetRel α α} (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
   length := i
-  toFun := fun ⟨j, h⟩ => p.toFun ⟨j, by omega⟩
-  step := fun ⟨j, h⟩ => p.step ⟨j, by omega⟩
+  toFun := fun ⟨j, h⟩ ↦ p.toFun ⟨j, by omega⟩
+  step := fun ⟨j, h⟩ ↦ p.step ⟨j, by omega⟩
 
 @[simp]
 lemma head_take (p : RelSeries r) (i : Fin (p.length + 1)) :
@@ -773,8 +773,8 @@ lemma last_take (p : RelSeries r) (i : Fin (p.length + 1)) :
 @[simps! length]
 def drop (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
   length := p.length - i
-  toFun := fun ⟨j, h⟩ => p.toFun ⟨j+i, by omega⟩
-  step := fun ⟨j, h⟩ => by
+  toFun := fun ⟨j, h⟩ ↦ p.toFun ⟨j+i, by omega⟩
+  step := fun ⟨j, h⟩ ↦ by
     convert p.step ⟨j+i.1, by omega⟩
     simp only [Fin.succ_mk]; omega
 
@@ -916,7 +916,7 @@ lemma longestOf_len_unique [FiniteDimensionalOrder α] (p : LTSeries α)
 
 
 lemma strictMono (x : LTSeries α) : StrictMono x :=
-  fun _ _ h => x.rel_of_lt h
+  fun _ _ h ↦ x.rel_of_lt h
 
 lemma monotone (x : LTSeries α) : Monotone x :=
   x.strictMono.monotone
@@ -982,7 +982,7 @@ noncomputable def comap (p : LTSeries β) (f : α → β)
 /-- The strict series `0 < … < n` in `ℕ`. -/
 def range (n : ℕ) : LTSeries ℕ where
   length := n
-  toFun := fun i => i
+  toFun := fun i ↦ i
   step i := Nat.lt_add_one i
 
 @[simp] lemma length_range (n : ℕ) : (range n).length = n := rfl

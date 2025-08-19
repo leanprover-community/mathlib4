@@ -56,14 +56,14 @@ lemma ofMatrix_apply {M : Matrix m n A} {i : m} : (ofMatrix M) i = M i := rfl
 lemma ofMatrix_symm_apply {M : CStarMatrix m n A} {i : m} : (ofMatrix.symm M) i = M i := rfl
 
 theorem ext_iff {M N : CStarMatrix m n A} : (∀ i j, M i j = N i j) ↔ M = N :=
-  ⟨fun h => funext fun i => funext <| h i, fun h => by simp [h]⟩
+  ⟨fun h ↦ funext fun i ↦ funext <| h i, fun h ↦ by simp [h]⟩
 
 @[ext]
 lemma ext {M₁ M₂ : CStarMatrix m n A} (h : ∀ i j, M₁ i j = M₂ i j) : M₁ = M₂ := ext_iff.mp h
 
 /-- `M.map f` is the matrix obtained by applying `f` to each entry of the matrix `M`. -/
 def map (M : CStarMatrix m n A) (f : A → B) : CStarMatrix m n B :=
-  ofMatrix fun i j => f (M i j)
+  ofMatrix fun i j ↦ f (M i j)
 
 @[simp]
 theorem map_apply {M : CStarMatrix m n A} {f : A → B} {i : m} {j : n} : M.map f i j = f (M i j) :=
@@ -81,12 +81,12 @@ theorem map_map {C : Type*} {M : Matrix m n A} {f : A → B} {g : B → C} :
     (M.map f).map g = M.map (g ∘ f) := by ext; rfl
 
 theorem map_injective {f : A → B} (hf : Function.Injective f) :
-    Function.Injective fun M : CStarMatrix m n A => M.map f := fun _ _ h =>
-  ext fun i j => hf <| ext_iff.mpr h i j
+    Function.Injective fun M : CStarMatrix m n A ↦ M.map f := fun _ _ h ↦
+  ext fun i j ↦ hf <| ext_iff.mpr h i j
 
 /-- The transpose of a matrix. -/
 def transpose (M : CStarMatrix m n A) : CStarMatrix n m A :=
-  ofMatrix fun x y => M y x
+  ofMatrix fun x y ↦ M y x
 
 @[simp]
 theorem transpose_apply (M : CStarMatrix m n A) (i j) : transpose M i j = M j i :=
@@ -246,7 +246,7 @@ def ofMatrixₗ [AddCommMonoid A] [Semiring R] [Module R A] :
 @[simps]
 def mapₗ [Semiring R] [Semiring S] {σ : R →+* S} [AddCommMonoid A] [AddCommMonoid B]
     [Module R A] [Module S B] (f : A →ₛₗ[σ] B) : CStarMatrix m n A →ₛₗ[σ] CStarMatrix m n B where
-  toFun := fun M => M.map f
+  toFun := fun M ↦ M.map f
   map_add' M N := by ext; simp
   map_smul' r M := by ext; simp
 
@@ -296,7 +296,7 @@ theorem mul_apply {l : Type*} [Fintype m] [Mul A] [AddCommMonoid A] {M : CStarMa
     {N : CStarMatrix m n A} {i k} : (M * N) i k = ∑ j, M i j * N j k := rfl
 
 theorem mul_apply' {l : Type*} [Fintype m] [Mul A] [AddCommMonoid A] {M : CStarMatrix l m A}
-    {N : CStarMatrix m n A} {i k} : (M * N) i k = (fun j => M i j) ⬝ᵥ fun j => N j k := rfl
+    {N : CStarMatrix m n A} {i k} : (M * N) i k = (fun j ↦ M i j) ⬝ᵥ fun j ↦ N j k := rfl
 
 @[simp]
 theorem smul_mul {l : Type*} [Fintype n] [Monoid R] [AddCommMonoid A] [Mul A] [DistribMulAction R A]
@@ -358,8 +358,8 @@ instance instRing [Fintype n] [DecidableEq n] [Ring A] : Ring (CStarMatrix n n A
 def ofMatrixRingEquiv [Fintype n] [Semiring A] :
     Matrix n n A ≃+* CStarMatrix n n A :=
   { ofMatrix with
-    map_mul' := fun _ _ => rfl
-    map_add' := fun _ _ => rfl }
+    map_mul' := fun _ _ ↦ rfl
+    map_add' := fun _ _ ↦ rfl }
 
 instance instStarRing [Fintype n] [NonUnitalSemiring A] [StarRing A] :
     StarRing (CStarMatrix n n A) := inferInstanceAs <| StarRing (Matrix n n A)
@@ -371,8 +371,8 @@ instance instAlgebra [Fintype n] [DecidableEq n] [CommSemiring R] [Semiring A] [
 def ofMatrixStarAlgEquiv [Fintype n] [SMul ℂ A] [Semiring A] [StarRing A] :
     Matrix n n A ≃⋆ₐ[ℂ] CStarMatrix n n A :=
   { ofMatrixRingEquiv with
-    map_star' := fun _ => rfl
-    map_smul' := fun _ _ => rfl }
+    map_star' := fun _ ↦ rfl
+    map_smul' := fun _ _ ↦ rfl }
 
 lemma ofMatrix_eq_ofMatrixStarAlgEquiv [Fintype n] [SMul ℂ A] [Semiring A] [StarRing A] :
     (ofMatrix : Matrix n n A → CStarMatrix n n A)
@@ -432,7 +432,7 @@ lemma reindexₐ_symm [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mu
 def mapₙₐ [Fintype n] [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
     [Star A] [NonUnitalNonAssocSemiring B] [Module R B] [Star B] (f : A →⋆ₙₐ[R] B) :
     CStarMatrix n n A →⋆ₙₐ[R] CStarMatrix n n B where
-  toFun := fun M => M.mapₗ (f : A →ₗ[R] B)
+  toFun := fun M ↦ M.mapₗ (f : A →ₗ[R] B)
   map_smul' := by simp
   map_zero' := by simp [map_zero]
   map_add' := by simp [map_add]
@@ -451,7 +451,7 @@ variable (n) (R) (A) in
 /-- The ⋆-algebra equivalence between `A` and 1×1 matrices with its entry in `A`. -/
 def toOneByOne [Unique n] [Semiring R] [AddCommMonoid A] [Mul A] [Star A] [Module R A] :
     A ≃⋆ₐ[R] CStarMatrix n n A where
-  toFun a := fun x y => a
+  toFun a := fun x y ↦ a
   invFun M := M default default
   left_inv := by intro; simp
   right_inv := by
@@ -491,7 +491,7 @@ lemma toCLM_apply {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ(A, m → A)} :
     toCLM M v = (WithCStarModule.equiv _ _).symm (M.vecMul v) := rfl
 
 lemma toCLM_apply_eq_sum {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ(A, m → A)} :
-    toCLM M v = (WithCStarModule.equiv _ _).symm (fun j => ∑ i, v i * M i j) := by
+    toCLM M v = (WithCStarModule.equiv _ _).symm (fun j ↦ ∑ i, v i * M i j) := by
   ext i
   simp [toCLM_apply, Matrix.vecMul, dotProduct]
 
@@ -517,7 +517,7 @@ lemma toCLMNonUnitalAlgHom_eq_toCLM [Fintype n] {M : CStarMatrix n n A} :
 open WithCStarModule in
 @[simp high]
 lemma toCLM_apply_single [DecidableEq m] {M : CStarMatrix m n A} {i : m} (a : A) :
-    (toCLM M) (equiv _ _ |>.symm <| Pi.single i a) = (equiv _ _).symm (fun j => a * M i j) := by
+    (toCLM M) (equiv _ _ |>.symm <| Pi.single i a) = (equiv _ _).symm (fun j ↦ a * M i j) := by
   ext
   simp [toCLM_apply, equiv, Equiv.refl]
 
@@ -633,12 +633,12 @@ open scoped Matrix.Norms.Elementwise
 
 private lemma nnnorm_le_of_forall_inner_le {M : CStarMatrix m n A} {C : ℝ≥0}
     (h : ∀ v w, ‖⟪w, CStarMatrix.toCLM M v⟫_A‖₊ ≤ C * ‖v‖₊ * ‖w‖₊) : ‖M‖₊ ≤ C :=
-  CStarMatrix.norm_le_of_forall_inner_le fun v w => h v w
+  CStarMatrix.norm_le_of_forall_inner_le fun v w ↦ h v w
 
 open Finset in
 private lemma lipschitzWith_toMatrixAux :
     LipschitzWith 1 (ofMatrixₗ.symm (R := ℂ) : CStarMatrix m n A → Matrix m n A) := by
-  refine AddMonoidHomClass.lipschitz_of_bound_nnnorm _ _ fun M => ?_
+  refine AddMonoidHomClass.lipschitz_of_bound_nnnorm _ _ fun M ↦ ?_
   rw [one_mul, ← NNReal.coe_le_coe, coe_nnnorm, coe_nnnorm, Matrix.norm_le_iff (norm_nonneg _)]
   exact fun _ _ ↦ CStarMatrix.norm_entry_le_norm
 
@@ -646,11 +646,11 @@ open CStarMatrix WithCStarModule in
 private lemma antilipschitzWith_toMatrixAux :
     AntilipschitzWith (Fintype.card n * Fintype.card m)
       (ofMatrixₗ.symm (R := ℂ) : CStarMatrix m n A → Matrix m n A) := by
-  refine AddMonoidHomClass.antilipschitz_of_bound _ fun M => ?_
+  refine AddMonoidHomClass.antilipschitz_of_bound _ fun M ↦ ?_
   calc
     ‖M‖ ≤ ∑ j, ∑ i, ‖M i j‖ := by
       rw [norm_def]
-      refine (toCLM M).opNorm_le_bound (by positivity) fun v => ?_
+      refine (toCLM M).opNorm_le_bound (by positivity) fun v ↦ ?_
       simp only [toCLM_apply_eq_sum, Finset.sum_mul]
       apply pi_norm_le_sum_norm _ |>.trans
       gcongr with i _
@@ -674,7 +674,7 @@ private lemma uniformity_eq_aux :
     𝓤 (CStarMatrix m n A) = (𝓤[Pi.uniformSpace _] :
       Filter (CStarMatrix m n A × CStarMatrix m n A)) := by
   have :
-    (fun x : CStarMatrix m n A × CStarMatrix m n A => ⟨ofMatrix.symm x.1, ofMatrix.symm x.2⟩)
+    (fun x : CStarMatrix m n A × CStarMatrix m n A ↦ ⟨ofMatrix.symm x.1, ofMatrix.symm x.2⟩)
       = id := by
     ext i <;> rfl
   rw [← uniformInducing_toMatrixAux.comap_uniformity, this, Filter.comap_id]
@@ -724,7 +724,7 @@ noncomputable instance instNormedAddCommGroup :
     NormedAddCommGroup (CStarMatrix m n A) :=
   .ofCoreReplaceAll CStarMatrix.normedSpaceCore
     CStarMatrix.uniformity_eq_aux.symm
-      fun _ => Filter.ext_iff.1 CStarMatrix.cobounded_eq_aux.symm _
+      fun _ ↦ Filter.ext_iff.1 CStarMatrix.cobounded_eq_aux.symm _
 
 noncomputable instance instNormedSpace : NormedSpace ℂ (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore

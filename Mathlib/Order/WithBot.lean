@@ -168,7 +168,7 @@ def unbot : ∀ x : WithBot α, x ≠ ⊥ → α | (x : α), _ => x
 theorem unbot_coe (x : α) (h : (x : WithBot α) ≠ ⊥ := coe_ne_bot) : (x : WithBot α).unbot h = x :=
   rfl
 
-instance canLift : CanLift (WithBot α) α (↑) fun r => r ≠ ⊥ where
+instance canLift : CanLift (WithBot α) α (↑) fun r ↦ r ≠ ⊥ where
   prf x h := ⟨x.unbot h, coe_unbot _ _⟩
 
 instance instTop [Top α] : Top (WithBot α) where
@@ -192,7 +192,7 @@ theorem eq_unbot_iff {a : α} {b : WithBot α} (h : b ≠ ⊥) :
 
 /-- The equivalence between the non-bottom elements of `WithBot α` and `α`. -/
 @[simps] def _root_.Equiv.withBotSubtypeNe : {y : WithBot α // y ≠ ⊥} ≃ α where
-  toFun := fun ⟨x,h⟩ => WithBot.unbot x h
+  toFun := fun ⟨x,h⟩ ↦ WithBot.unbot x h
   invFun x := ⟨x, WithBot.coe_ne_bot⟩
   left_inv _ := by simp
   right_inv _ := by simp
@@ -202,7 +202,7 @@ section LE
 variable [LE α] {x y : WithBot α}
 
 instance (priority := 10) le : LE (WithBot α) :=
-  ⟨fun o₁ o₂ => ∀ a : α, o₁ = ↑a → ∃ b : α, o₂ = ↑b ∧ a ≤ b⟩
+  ⟨fun o₁ o₂ ↦ ∀ a : α, o₁ = ↑a → ∃ b : α, o₂ = ↑b ∧ a ≤ b⟩
 
 lemma le_def : x ≤ y ↔ ∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a ≤ b := .rfl
 
@@ -246,7 +246,7 @@ section LT
 variable [LT α] {x y : WithBot α}
 
 instance (priority := 10) lt : LT (WithBot α) :=
-  ⟨fun o₁ o₂ : WithBot α => ∃ b : α, o₂ = ↑b ∧ ∀ a : α, o₁ = ↑a → a < b⟩
+  ⟨fun o₁ o₂ : WithBot α ↦ ∃ b : α, o₂ = ↑b ∧ ∀ a : α, o₁ = ↑a → a < b⟩
 
 lemma lt_def : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b := .rfl
 
@@ -283,17 +283,17 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {x y : WithBot α}
 
-theorem coe_strictMono : StrictMono (fun (a : α) => (a : WithBot α)) := fun _ _ => coe_lt_coe.2
+theorem coe_strictMono : StrictMono (fun (a : α) ↦ (a : WithBot α)) := fun _ _ ↦ coe_lt_coe.2
 
-theorem coe_mono : Monotone (fun (a : α) => (a : WithBot α)) := fun _ _ => coe_le_coe.2
+theorem coe_mono : Monotone (fun (a : α) ↦ (a : WithBot α)) := fun _ _ ↦ coe_le_coe.2
 
 theorem monotone_iff {f : WithBot α → β} :
     Monotone f ↔ Monotone (fun a ↦ f a : α → β) ∧ ∀ x : α, f ⊥ ≤ f x :=
   ⟨fun h ↦ ⟨h.comp WithBot.coe_mono, fun _ ↦ h bot_le⟩, fun h ↦
     WithBot.forall.2
-      ⟨WithBot.forall.2 ⟨fun _ => le_rfl, fun x _ => h.2 x⟩, fun _ =>
-        WithBot.forall.2 ⟨fun h => (not_coe_le_bot _ h).elim,
-          fun _ hle => h.1 (coe_le_coe.1 hle)⟩⟩⟩
+      ⟨WithBot.forall.2 ⟨fun _ ↦ le_rfl, fun x _ ↦ h.2 x⟩, fun _ ↦
+        WithBot.forall.2 ⟨fun h ↦ (not_coe_le_bot _ h).elim,
+          fun _ hle ↦ h.1 (coe_le_coe.1 hle)⟩⟩⟩
 
 @[simp]
 theorem monotone_map_iff {f : α → β} : Monotone (WithBot.map f) ↔ Monotone f :=
@@ -302,11 +302,11 @@ theorem monotone_map_iff {f : α → β} : Monotone (WithBot.map f) ↔ Monotone
 alias ⟨_, _root_.Monotone.withBot_map⟩ := monotone_map_iff
 
 theorem strictMono_iff {f : WithBot α → β} :
-    StrictMono f ↔ StrictMono (fun a => f a : α → β) ∧ ∀ x : α, f ⊥ < f x :=
-  ⟨fun h => ⟨h.comp WithBot.coe_strictMono, fun _ => h (bot_lt_coe _)⟩, fun h =>
+    StrictMono f ↔ StrictMono (fun a ↦ f a : α → β) ∧ ∀ x : α, f ⊥ < f x :=
+  ⟨fun h ↦ ⟨h.comp WithBot.coe_strictMono, fun _ ↦ h (bot_lt_coe _)⟩, fun h ↦
     WithBot.forall.2
-      ⟨WithBot.forall.2 ⟨flip absurd (lt_irrefl _), fun x _ => h.2 x⟩, fun _ =>
-        WithBot.forall.2 ⟨fun h => (not_lt_bot h).elim, fun _ hle => h.1 (coe_lt_coe.1 hle)⟩⟩⟩
+      ⟨WithBot.forall.2 ⟨flip absurd (lt_irrefl _), fun x _ ↦ h.2 x⟩, fun _ ↦
+        WithBot.forall.2 ⟨fun h ↦ (not_lt_bot h).elim, fun _ hle ↦ h.1 (coe_lt_coe.1 hle)⟩⟩⟩
 
 theorem strictAnti_iff {f : WithBot α → β} :
     StrictAnti f ↔ StrictAnti (fun a ↦ f a : α → β) ∧ ∀ x : α, f x < f ⊥ :=
@@ -334,9 +334,9 @@ lemma eq_bot_iff_forall_lt : x = ⊥ ↔ ∀ b : α, x < b := by
   cases x <;> simp; simpa using ⟨_, lt_irrefl _⟩
 
 lemma eq_bot_iff_forall_le [NoBotOrder α] : x = ⊥ ↔ ∀ b : α, x ≤ b := by
-  refine ⟨by simp +contextual, fun h ↦ (x.eq_bot_iff_forall_ne).2 fun y => ?_⟩
+  refine ⟨by simp +contextual, fun h ↦ (x.eq_bot_iff_forall_ne).2 fun y ↦ ?_⟩
   rintro rfl
-  exact not_isBot y fun z => coe_le_coe.1 (h z)
+  exact not_isBot y fun z ↦ coe_le_coe.1 (h z)
 
 @[deprecated (since := "2025-03-19")] alias forall_lt_iff_eq_bot := eq_bot_iff_forall_lt
 @[deprecated (since := "2025-03-19")] alias forall_le_iff_eq_bot := eq_bot_iff_forall_le
@@ -431,7 +431,7 @@ instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithBot �
 instance _root_.WithBot.instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithBot α) where
   wf :=
   have acc_some (a : α) : Acc ((· > ·) : WithBot α → WithBot α → Prop) a :=
-    (wellFounded_gt.1 a).rec fun _ _ ih =>
+    (wellFounded_gt.1 a).rec fun _ _ ih ↦
       .intro _ fun
         | (b : α), hlt => ih _ (coe_lt_coe.1 hlt)
   .intro fun
@@ -453,11 +453,11 @@ instance denselyOrdered [LT α] [DenselyOrdered α] [NoMinOrder α] : DenselyOrd
 
 theorem lt_iff_exists_coe_btwn [Preorder α] [DenselyOrdered α] [NoMinOrder α] {a b : WithBot α} :
     a < b ↔ ∃ x : α, a < ↑x ∧ ↑x < b :=
-  ⟨fun h =>
+  ⟨fun h ↦
     let ⟨_, hy⟩ := exists_between h
     let ⟨x, hx⟩ := lt_iff_exists_coe.1 hy.1
     ⟨x, hx.1 ▸ hy⟩,
-    fun ⟨_, hx⟩ => lt_trans hx.1 hx.2⟩
+    fun ⟨_, hx⟩ ↦ lt_trans hx.1 hx.2⟩
 
 instance noTopOrder [LE α] [NoTopOrder α] [Nonempty α] : NoTopOrder (WithBot α) where
   exists_not_le := fun
@@ -680,7 +680,7 @@ def untop : ∀ x : WithTop α, x ≠ ⊤ → α | (x : α), _ => x
 theorem untop_coe (x : α) (h : (x : WithTop α) ≠ ⊤ := coe_ne_top) : (x : WithTop α).untop h = x :=
   rfl
 
-instance canLift : CanLift (WithTop α) α (↑) fun r => r ≠ ⊤ where
+instance canLift : CanLift (WithTop α) α (↑) fun r ↦ r ≠ ⊤ where
   prf x h := ⟨x.untop h, coe_untop _ _⟩
 
 instance instBot [Bot α] : Bot (WithTop α) where
@@ -700,7 +700,7 @@ theorem eq_untop_iff {a : α} {b : WithTop α} (h : b ≠ ⊤) :
 
 /-- The equivalence between the non-top elements of `WithTop α` and `α`. -/
 @[simps] def _root_.Equiv.withTopSubtypeNe : {y : WithTop α // y ≠ ⊤} ≃ α where
-  toFun := fun ⟨x,h⟩ => WithTop.untop x h
+  toFun := fun ⟨x,h⟩ ↦ WithTop.untop x h
   invFun x := ⟨x, WithTop.coe_ne_top⟩
   left_inv _ := by simp
   right_inv _:= by simp
@@ -710,7 +710,7 @@ section LE
 variable [LE α] {x y : WithTop α}
 
 instance (priority := 10) le : LE (WithTop α) :=
-  ⟨fun o₁ o₂ => ∀ a : α, o₂ = ↑a → ∃ b : α, o₁ = ↑b ∧ b ≤ a⟩
+  ⟨fun o₁ o₂ ↦ ∀ a : α, o₂ = ↑a → ∃ b : α, o₁ = ↑b ∧ b ≤ a⟩
 
 lemma le_def : x ≤ y ↔ ∀ b : α, y = ↑b → ∃ a : α, x = ↑a ∧ a ≤ b := .rfl
 
@@ -754,7 +754,7 @@ section LT
 variable [LT α] {x y : WithTop α}
 
 instance (priority := 10) lt : LT (WithTop α) :=
-  ⟨fun o₁ o₂ : Option α => ∃ b ∈ o₁, ∀ a ∈ o₂, b < a⟩
+  ⟨fun o₁ o₂ : Option α ↦ ∃ b ∈ o₁, ∀ a ∈ o₂, b < a⟩
 
 lemma lt_def : x < y ↔ ∃ a : α, x = ↑a ∧ ∀ b : α, y = ↑b → a < b := .rfl
 
@@ -791,16 +791,16 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {x y : WithTop α}
 
-theorem coe_strictMono : StrictMono (fun a : α => (a : WithTop α)) := fun _ _ => coe_lt_coe.2
+theorem coe_strictMono : StrictMono (fun a : α ↦ (a : WithTop α)) := fun _ _ ↦ coe_lt_coe.2
 
-theorem coe_mono : Monotone (fun a : α => (a : WithTop α)) := fun _ _ => coe_le_coe.2
+theorem coe_mono : Monotone (fun a : α ↦ (a : WithTop α)) := fun _ _ ↦ coe_le_coe.2
 
 theorem monotone_iff {f : WithTop α → β} :
-    Monotone f ↔ Monotone (fun (a : α) => f a) ∧ ∀ x : α, f x ≤ f ⊤ :=
-  ⟨fun h => ⟨h.comp WithTop.coe_mono, fun _ => h le_top⟩, fun h =>
+    Monotone f ↔ Monotone (fun (a : α) ↦ f a) ∧ ∀ x : α, f x ≤ f ⊤ :=
+  ⟨fun h ↦ ⟨h.comp WithTop.coe_mono, fun _ ↦ h le_top⟩, fun h ↦
     WithTop.forall.2
-      ⟨WithTop.forall.2 ⟨fun _ => le_rfl, fun _ h => (not_top_le_coe _ h).elim⟩, fun x =>
-        WithTop.forall.2 ⟨fun _ => h.2 x, fun _ hle => h.1 (coe_le_coe.1 hle)⟩⟩⟩
+      ⟨WithTop.forall.2 ⟨fun _ ↦ le_rfl, fun _ h ↦ (not_top_le_coe _ h).elim⟩, fun x ↦
+        WithTop.forall.2 ⟨fun _ ↦ h.2 x, fun _ hle ↦ h.1 (coe_le_coe.1 hle)⟩⟩⟩
 
 @[simp]
 theorem monotone_map_iff {f : α → β} : Monotone (WithTop.map f) ↔ Monotone f :=
@@ -809,11 +809,11 @@ theorem monotone_map_iff {f : α → β} : Monotone (WithTop.map f) ↔ Monotone
 alias ⟨_, _root_.Monotone.withTop_map⟩ := monotone_map_iff
 
 theorem strictMono_iff {f : WithTop α → β} :
-    StrictMono f ↔ StrictMono (fun (a : α) => f a) ∧ ∀ x : α, f x < f ⊤ :=
-  ⟨fun h => ⟨h.comp WithTop.coe_strictMono, fun _ => h (coe_lt_top _)⟩, fun h =>
+    StrictMono f ↔ StrictMono (fun (a : α) ↦ f a) ∧ ∀ x : α, f x < f ⊤ :=
+  ⟨fun h ↦ ⟨h.comp WithTop.coe_strictMono, fun _ ↦ h (coe_lt_top _)⟩, fun h ↦
     WithTop.forall.2
-      ⟨WithTop.forall.2 ⟨flip absurd (lt_irrefl _), fun _ h => (not_top_lt h).elim⟩, fun x =>
-        WithTop.forall.2 ⟨fun _ => h.2 x, fun _ hle => h.1 (coe_lt_coe.1 hle)⟩⟩⟩
+      ⟨WithTop.forall.2 ⟨flip absurd (lt_irrefl _), fun _ h ↦ (not_top_lt h).elim⟩, fun x ↦
+        WithTop.forall.2 ⟨fun _ ↦ h.2 x, fun _ hle ↦ h.1 (coe_lt_coe.1 hle)⟩⟩⟩
 
 theorem strictAnti_iff {f : WithTop α → β} :
     StrictAnti f ↔ StrictAnti (fun a ↦ f a : α → β) ∧ ∀ x : α, f ⊤ < f x :=
@@ -966,11 +966,11 @@ instance [LT α] [DenselyOrdered α] [NoMaxOrder α] : DenselyOrdered (WithTop �
 
 theorem lt_iff_exists_coe_btwn [Preorder α] [DenselyOrdered α] [NoMaxOrder α] {a b : WithTop α} :
     a < b ↔ ∃ x : α, a < ↑x ∧ ↑x < b :=
-  ⟨fun h =>
+  ⟨fun h ↦
     let ⟨_, hy⟩ := exists_between h
     let ⟨x, hx⟩ := lt_iff_exists_coe.1 hy.2
     ⟨x, hx.1 ▸ hy⟩,
-    fun ⟨_, hx⟩ => lt_trans hx.1 hx.2⟩
+    fun ⟨_, hx⟩ ↦ lt_trans hx.1 hx.2⟩
 
 instance noBotOrder [LE α] [NoBotOrder α] [Nonempty α] : NoBotOrder (WithTop α) where
   exists_not_ge := fun

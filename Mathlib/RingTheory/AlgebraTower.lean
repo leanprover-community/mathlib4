@@ -63,7 +63,7 @@ variable (b : Basis ι R M) (h : Function.Bijective (algebraMap R A))
 then a basis for `M` as `R`-module is also a basis for `M` as `R'`-module. -/
 @[simps! repr_apply_toFun]
 noncomputable def algebraMapCoeffs : Basis ι A M :=
-  b.mapCoeffs (RingEquiv.ofBijective _ h) fun c x => by simp
+  b.mapCoeffs (RingEquiv.ofBijective _ h) fun c x ↦ by simp
 
 @[simp]
 theorem algebraMapCoeffs_repr (m : M) :
@@ -186,7 +186,7 @@ def AlgHom.restrictDomain : B →ₐ[A] D :=
   f.comp (IsScalarTower.toAlgHom A B C)
 
 -- Porting note: definition below used to be
---  { f with commutes' := fun _ => rfl }
+--  { f with commutes' := fun _ ↦ rfl }
 -- but it complains about not finding (Algebra B D), despite it being given in the header of the thm
 
 /-- Extend the scalars of an `AlgHom`. -/
@@ -218,7 +218,7 @@ def algHomEquivSigma :
     rfl
   right_inv := by
     rintro ⟨⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩, ⟨⟨⟨⟨g, _⟩, _⟩, _⟩, hg⟩⟩
-    obtain rfl : f = fun x => g (algebraMap B C x) := by
+    obtain rfl : f = fun x ↦ g (algebraMap B C x) := by
       ext x
       exact (hg x).symm
     rfl

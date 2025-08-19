@@ -35,7 +35,7 @@ instance (priority := 100) wfDvdMonoid : WfDvdMonoid R[X] where
     classical
       refine
         RelHomClass.wellFounded
-          (⟨fun p : R[X] =>
+          (⟨fun p : R[X] ↦
               ((if p = 0 then ⊤ else ↑p.degree : WithTop (WithBot ℕ)), p.leadingCoeff), ?_⟩ :
             DvdNotUnit →r Prod.Lex (· < ·) DvdNotUnit)
           (wellFounded_lt.prod_lex ‹WfDvdMonoid R›.wf)
@@ -50,7 +50,7 @@ instance (priority := 100) wfDvdMonoid : WfDvdMonoid R[X] where
       simp only [Polynomial.leadingCoeff_mul]
       by_cases hdeg : c.degree = (0 : ℕ)
       · simp only [hdeg, Nat.cast_zero, add_zero]
-        refine Prod.Lex.right _ ⟨?_, ⟨c.leadingCoeff, fun unit_c => not_unit_c ?_, rfl⟩⟩
+        refine Prod.Lex.right _ ⟨?_, ⟨c.leadingCoeff, fun unit_c ↦ not_unit_c ?_, rfl⟩⟩
         · rwa [Ne, Polynomial.leadingCoeff_eq_zero]
         rw [Polynomial.isUnit_iff, Polynomial.eq_C_of_degree_eq_zero hdeg]
         use c.leadingCoeff, unit_c
@@ -62,8 +62,8 @@ instance (priority := 100) wfDvdMonoid : WfDvdMonoid R[X] where
         exact lt_add_of_pos_right _ (Nat.pos_of_ne_zero hdeg)
 
 theorem exists_irreducible_of_degree_pos (hf : 0 < f.degree) : ∃ g, Irreducible g ∧ g ∣ f :=
-  WfDvdMonoid.exists_irreducible_factor (fun huf => ne_of_gt hf <| degree_eq_zero_of_isUnit huf)
-    fun hf0 => not_lt_of_gt hf <| hf0.symm ▸ (@degree_zero R _).symm ▸ WithBot.bot_lt_coe _
+  WfDvdMonoid.exists_irreducible_factor (fun huf ↦ ne_of_gt hf <| degree_eq_zero_of_isUnit huf)
+    fun hf0 ↦ not_lt_of_gt hf <| hf0.symm ▸ (@degree_zero R _).symm ▸ WithBot.bot_lt_coe _
 
 theorem exists_irreducible_of_natDegree_pos (hf : 0 < f.natDegree) : ∃ g, Irreducible g ∧ g ∣ f :=
   exists_irreducible_of_degree_pos <| by
@@ -123,10 +123,10 @@ instance (priority := 100) uniqueFactorizationMonoid :
   rw [iff_exists_prime_factors]
   intro a ha; obtain ⟨s, a', rfl⟩ := exists_finset_rename a
   obtain ⟨w, h, u, hw⟩ :=
-    iff_exists_prime_factors.1 (uniqueFactorizationMonoid_of_fintype s) a' fun h =>
+    iff_exists_prime_factors.1 (uniqueFactorizationMonoid_of_fintype s) a' fun h ↦
       ha <| by simp [h]
   exact
-    ⟨w.map (rename (↑)), fun b hb =>
+    ⟨w.map (rename (↑)), fun b hb ↦
       let ⟨b', hb', he⟩ := Multiset.mem_map.1 hb
       he ▸ (prime_rename_iff (σ := σ) ↑s).2 (h b' hb'),
       Units.map (@rename s σ D _ (↑)).toRingHom.toMonoidHom u, by

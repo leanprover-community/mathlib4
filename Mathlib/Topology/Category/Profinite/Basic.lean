@@ -104,13 +104,13 @@ def Profinite.toCompHausEquivalence (X : CompHaus.{u}) (Y : Profinite.{u}) :
   invFun g := TopCat.ofHom
     { toFun := Continuous.connectedComponentsLift g.hom.2
       continuous_toFun := Continuous.connectedComponentsLift_continuous g.hom.2 }
-  left_inv _ := TopCat.ext <| ConnectedComponents.surjective_coe.forall.2 fun _ => rfl
+  left_inv _ := TopCat.ext <| ConnectedComponents.surjective_coe.forall.2 fun _ ↦ rfl
 
 /-- The connected_components functor from compact Hausdorff spaces to profinite spaces,
 left adjoint to the inclusion functor.
 -/
 def CompHaus.toProfinite : CompHaus ⥤ Profinite :=
-  Adjunction.leftAdjointOfEquiv Profinite.toCompHausEquivalence fun _ _ _ _ _ => rfl
+  Adjunction.leftAdjointOfEquiv Profinite.toCompHausEquivalence fun _ _ _ _ _ ↦ rfl
 
 theorem CompHaus.toProfinite_obj' (X : CompHaus) :
     ↥(CompHaus.toProfinite.obj X) = ConnectedComponents X :=
@@ -224,16 +224,16 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
       let Z := of (ULift.{u} <| Fin 2)
       let g : Y ⟶ Z := ofHom _
         ⟨(LocallyConstant.ofIsClopen hV).map ULift.up, LocallyConstant.continuous _⟩
-      let h : Y ⟶ Z := ofHom _ ⟨fun _ => ⟨1⟩, continuous_const⟩
+      let h : Y ⟶ Z := ofHom _ ⟨fun _ ↦ ⟨1⟩, continuous_const⟩
       have H : h = g := by
         rw [← cancel_epi f]
         ext x
         dsimp [g, LocallyConstant.ofIsClopen]
         rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, ConcreteCategory.hom_ofHom,
           ContinuousMap.coe_mk, Function.comp_apply, if_neg]
-        refine mt (fun α => hVU α) ?_
+        refine mt (fun α ↦ hVU α) ?_
         simp [U, C]
-      apply_fun fun e => (e y).down at H
+      apply_fun fun e ↦ (e y).down at H
       dsimp [g, LocallyConstant.ofIsClopen] at H
       rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
       exact top_ne_bot H

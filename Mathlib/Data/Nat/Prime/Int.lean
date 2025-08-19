@@ -18,14 +18,14 @@ TODO: This file can probably be merged with `Mathlib/Data/Int/NatPrime.lean`.
 namespace Nat
 
 theorem prime_iff_prime_int {p : ℕ} : p.Prime ↔ _root_.Prime (p : ℤ) :=
-  ⟨fun hp =>
-    ⟨Int.natCast_ne_zero_iff_pos.2 hp.pos, mt Int.isUnit_iff_natAbs_eq.1 hp.ne_one, fun a b h => by
+  ⟨fun hp ↦
+    ⟨Int.natCast_ne_zero_iff_pos.2 hp.pos, mt Int.isUnit_iff_natAbs_eq.1 hp.ne_one, fun a b h ↦ by
       rw [← Int.dvd_natAbs, Int.natCast_dvd_natCast, Int.natAbs_mul, hp.dvd_mul] at h
       rwa [← Int.dvd_natAbs, Int.natCast_dvd_natCast, ← Int.dvd_natAbs, Int.natCast_dvd_natCast]⟩,
-    fun hp =>
+    fun hp ↦
     Nat.prime_iff.2
       ⟨Int.natCast_ne_zero.1 hp.1,
-        (mt Nat.isUnit_iff.1) fun h => by simp [h] at hp, fun a b => by
+        (mt Nat.isUnit_iff.1) fun h ↦ by simp [h] at hp, fun a b ↦ by
         simpa only [Int.natCast_dvd_natCast, (Int.natCast_mul _ _).symm] using hp.2.2 a b⟩⟩
 
 /-- Two prime powers with positive exponents are equal only when the primes and the

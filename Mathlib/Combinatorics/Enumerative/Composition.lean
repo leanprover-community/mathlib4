@@ -137,7 +137,7 @@ namespace Composition
 variable (c : Composition n)
 
 instance (n : ℕ) : ToString (Composition n) :=
-  ⟨fun c => toString c.blocks⟩
+  ⟨fun c ↦ toString c.blocks⟩
 
 /-- The length of a composition, i.e., the number of blocks in the composition. -/
 abbrev length : ℕ :=
@@ -189,7 +189,7 @@ theorem blocksFun_le {n} (c : Composition n) (i : Fin c.length) :
 @[simp]
 theorem length_le : c.length ≤ n := by
   conv_rhs => rw [← c.blocks_sum]
-  exact length_le_sum_of_one_le _ fun i hi => c.one_le_blocks hi
+  exact length_le_sum_of_one_le _ fun i hi ↦ c.one_le_blocks hi
 
 @[simp]
 theorem blocks_eq_nil : c.blocks = [] ↔ n = 0 := by
@@ -249,8 +249,8 @@ theorem monotone_sizeUpTo : Monotone c.sizeUpTo :=
 a virtual point at the right of the last block, to make for a nice equiv with
 `CompositionAsSet n`. -/
 def boundary : Fin (c.length + 1) ↪o Fin (n + 1) :=
-  (OrderEmbedding.ofStrictMono fun i => ⟨c.sizeUpTo i, Nat.lt_succ_of_le (c.sizeUpTo_le i)⟩) <|
-    Fin.strictMono_iff_lt_succ.2 fun ⟨_, hi⟩ => c.sizeUpTo_strict_mono hi
+  (OrderEmbedding.ofStrictMono fun i ↦ ⟨c.sizeUpTo i, Nat.lt_succ_of_le (c.sizeUpTo_le i)⟩) <|
+    Fin.strictMono_iff_lt_succ.2 fun ⟨_, hi⟩ ↦ c.sizeUpTo_strict_mono hi
 
 @[simp]
 theorem boundary_zero : c.boundary 0 = 0 := by simp [boundary]
@@ -283,7 +283,7 @@ exactly `c.boundary`. -/
 theorem orderEmbOfFin_boundaries :
     c.boundaries.orderEmbOfFin c.card_boundaries_eq_succ_length = c.boundary := by
   refine (Finset.orderEmbOfFin_unique' _ ?_).symm
-  exact fun i => (Finset.mem_map' _).2 (Finset.mem_univ _)
+  exact fun i ↦ (Finset.mem_map' _).2 (Finset.mem_univ _)
 
 /-- Embedding the `i`-th block of a composition (identified with `Fin (c.blocksFun i)`) into
 `Fin n` at the relevant position. -/
@@ -437,7 +437,7 @@ theorem blocksFun_congr {n₁ n₂ : ℕ} (c₁ : Composition n₁) (c₂ : Comp
 same sequence of blocks. -/
 theorem sigma_eq_iff_blocks_eq {c : Σ n, Composition n} {c' : Σ n, Composition n} :
     c = c' ↔ c.2.blocks = c'.2.blocks := by
-  refine ⟨fun H => by rw [H], fun H => ?_⟩
+  refine ⟨fun H ↦ by rw [H], fun H ↦ ?_⟩
   rcases c with ⟨n, c⟩
   rcases c' with ⟨n', c'⟩
   have : n = n' := by rw [← c.blocks_sum, ← c'.blocks_sum, H]
@@ -451,7 +451,7 @@ theorem sigma_eq_iff_blocks_eq {c : Σ n, Composition n} {c' : Σ n, Composition
 
 /-- The composition made of blocks all of size `1`. -/
 def ones (n : ℕ) : Composition n :=
-  ⟨replicate n (1 : ℕ), fun {i} hi => by simp [List.eq_of_mem_replicate hi], by simp⟩
+  ⟨replicate n (1 : ℕ), fun {i} hi ↦ by simp [List.eq_of_mem_replicate hi], by simp⟩
 
 instance {n : ℕ} : Inhabited (Composition n) :=
   ⟨Composition.ones n⟩
@@ -481,7 +481,7 @@ theorem ones_embedding (i : Fin (ones n).length) (h : 0 < (ones n).blocksFun i) 
 theorem eq_ones_iff {c : Composition n} : c = ones n ↔ ∀ i ∈ c.blocks, i = 1 := by
   constructor
   · rintro rfl
-    exact fun i => eq_of_mem_replicate
+    exact fun i ↦ eq_of_mem_replicate
   · intro H
     ext1
     have A : c.blocks = replicate c.blocks.length 1 := eq_replicate_of_mem H
@@ -492,7 +492,7 @@ theorem eq_ones_iff {c : Composition n} : c = ones n ↔ ∀ i ∈ c.blocks, i =
 
 theorem ne_ones_iff {c : Composition n} : c ≠ ones n ↔ ∃ i ∈ c.blocks, 1 < i := by
   refine (not_congr eq_ones_iff).trans ?_
-  have : ∀ j ∈ c.blocks, j = 1 ↔ j ≤ 1 := fun j hj => by simp [le_antisymm_iff, c.one_le_blocks hj]
+  have : ∀ j ∈ c.blocks, j = 1 ↔ j ≤ 1 := fun j hj ↦ by simp [le_antisymm_iff, c.one_le_blocks hj]
   simp +contextual [this]
 
 theorem eq_ones_iff_length {c : Composition n} : c = ones n ↔ c.length = n := by
@@ -510,7 +510,7 @@ theorem eq_ones_iff_length {c : Composition n} : c = ones n ↔ c.length = n := 
         rw [← ofFn_blocksFun, mem_ofFn' c.blocksFun, Set.mem_range] at hi
         obtain ⟨j : Fin c.length, hj : c.blocksFun j = i⟩ := hi
         rw [← hj] at i_blocks
-        exact Finset.sum_lt_sum (fun i _ => one_le_blocksFun c i) ⟨j, Finset.mem_univ _, i_blocks⟩
+        exact Finset.sum_lt_sum (fun i _ ↦ one_le_blocksFun c i) ⟨j, Finset.mem_univ _, i_blocks⟩
         }
       _ = n := c.sum_blocksFun
 
@@ -571,7 +571,7 @@ theorem ne_single_iff {n : ℕ} (hn : 0 < n) {c : Composition n} :
         ∑ k, c.blocksFun k ≤ c.blocksFun i := by simp only [c.sum_blocksFun, hi]
         _ < ∑ k, c.blocksFun k :=
           Finset.single_lt_sum ji (Finset.mem_univ _) (Finset.mem_univ _) (c.one_le_blocksFun j)
-            fun _ _ _ => zero_le _
+            fun _ _ _ ↦ zero_le _
     simpa using Fintype.card_eq_one_of_forall_eq this
 
 variable {m : ℕ}

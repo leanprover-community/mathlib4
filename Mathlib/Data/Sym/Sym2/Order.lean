@@ -35,11 +35,11 @@ protected theorem inf_le_sup [Lattice α] (s : Sym2 α) : s.inf ≤ s.sup := by
 def sortEquiv [LinearOrder α] : Sym2 α ≃ { p : α × α // p.1 ≤ p.2 } where
   toFun s := ⟨(s.inf, s.sup), Sym2.inf_le_sup _⟩
   invFun p := Sym2.mk p
-  left_inv := Sym2.ind fun a b => mk_eq_mk_iff.mpr <| by
+  left_inv := Sym2.ind fun a b ↦ mk_eq_mk_iff.mpr <| by
     cases le_total a b with
     | inl h => simp [h]
     | inr h => simp [h]
-  right_inv := Subtype.rec <| Prod.rec fun x y hxy =>
+  right_inv := Subtype.rec <| Prod.rec fun x y hxy ↦
     Subtype.ext <| Prod.ext (by simp [hxy]) (by simp [hxy])
 
 /-- In a linear order, two symmetric squares are equal if and only if

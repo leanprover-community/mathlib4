@@ -24,7 +24,7 @@ open Filter Metric Set Topology
 namespace Int
 
 instance : Dist ℤ :=
-  ⟨fun x y => dist (x : ℝ) y⟩
+  ⟨fun x y ↦ dist (x : ℝ) y⟩
 
 theorem dist_eq (x y : ℤ) : dist x y = |(x : ℝ) - y| := rfl
 
@@ -34,7 +34,7 @@ theorem dist_eq' (m n : ℤ) : dist m n = |m - n| := by rw [dist_eq]; norm_cast
 theorem dist_cast_real (x y : ℤ) : dist (x : ℝ) y = dist x y :=
   rfl
 
-theorem pairwise_one_le_dist : Pairwise fun m n : ℤ => 1 ≤ dist m n := by
+theorem pairwise_one_le_dist : Pairwise fun m n : ℤ ↦ 1 ≤ dist m n := by
   intro m n hne
   rw [dist_eq]; norm_cast; rwa [← zero_add (1 : ℤ), Int.add_one_le_iff, abs_pos, sub_ne_zero]
 
@@ -57,7 +57,7 @@ theorem closedBall_eq_Icc (x : ℤ) (r : ℝ) : closedBall x r = Icc ⌈↑x - r
   rw [← preimage_closedBall, Real.closedBall_eq_Icc, preimage_Icc]
 
 instance : ProperSpace ℤ :=
-  ⟨fun x r => by
+  ⟨fun x r ↦ by
     rw [closedBall_eq_Icc]
     exact (Set.finite_Icc _ _).isCompact⟩
 

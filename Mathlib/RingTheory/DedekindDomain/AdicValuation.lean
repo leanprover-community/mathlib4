@@ -294,12 +294,12 @@ variable (K) in
 where `r` and `s` are chosen so that `x = r/s`. -/
 def valuation (v : HeightOneSpectrum R) : Valuation K ℤᵐ⁰ :=
   v.intValuation.extendToLocalization
-    (fun r hr => Set.mem_compl <| v.intValuation_ne_zero' ⟨r, hr⟩) K
+    (fun r hr ↦ Set.mem_compl <| v.intValuation_ne_zero' ⟨r, hr⟩) K
 
 theorem valuation_def (x : K) :
     v.valuation K x =
       v.intValuation.extendToLocalization
-        (fun r hr => Set.mem_compl (v.intValuation_ne_zero' ⟨r, hr⟩)) K x :=
+        (fun r hr ↦ Set.mem_compl (v.intValuation_ne_zero' ⟨r, hr⟩)) K x :=
   rfl
 
 /-- The `v`-adic valuation of `r/s ∈ K` is the valuation of `r` divided by the valuation of `s`. -/
@@ -360,7 +360,7 @@ theorem mem_integers_of_valuation_le_one (x : K)
     obtain ⟨z, rfl⟩ := Ideal.span_singleton_le_span_singleton.1 (Ideal.le_of_dvd this)
     use z
     rw [map_mul, mul_comm, mul_eq_mul_left_iff] at hx
-    exact (hx.resolve_right fun h => by simp [hd0] at h).symm
+    exact (hx.resolve_right fun h ↦ by simp [hd0] at h).symm
   classical
   have ine {r : R} : r ≠ 0 → Ideal.span {r} ≠ ⊥ := mt Ideal.span_singleton_eq_bot.mp
   rw [← Associates.mk_le_mk_iff_dvd, ← Associates.factors_le, Associates.factors_mk _ (ine hn0),

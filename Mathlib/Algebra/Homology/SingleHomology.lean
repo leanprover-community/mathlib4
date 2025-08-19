@@ -181,8 +181,8 @@ variable (C)
 @[simps!]
 noncomputable def homologyFunctorSingleIso [CategoryWithHomology C] :
     single C c j ⋙ homologyFunctor C c j ≅ 𝟭 _ :=
-  NatIso.ofComponents (fun A => (singleObjHomologySelfIso c j A))
-    (fun f => singleObjHomologySelfIso_hom_naturality c j f)
+  NatIso.ofComponents (fun A ↦ (singleObjHomologySelfIso c j A))
+    (fun f ↦ singleObjHomologySelfIso_hom_naturality c j f)
 
 end HomologicalComplex
 

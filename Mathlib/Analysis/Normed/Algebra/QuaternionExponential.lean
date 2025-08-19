@@ -34,7 +34,7 @@ theorem exp_coe (r : ℝ) : exp ℝ (r : ℍ[ℝ]) = ↑(exp ℝ r) :=
 
 /-- The even terms of `expSeries` are real, and correspond to the series for $\cos ‖q‖$. -/
 theorem expSeries_even_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : ℕ) :
-    expSeries ℝ (Quaternion ℝ) (2 * n) (fun _ => q) =
+    expSeries ℝ (Quaternion ℝ) (2 * n) (fun _ ↦ q) =
       ↑((-1 : ℝ) ^ n * ‖q‖ ^ (2 * n) / (2 * n)!) := by
   rw [expSeries_apply_eq]
   have hq2 : q ^ 2 = -normSq q := sq_eq_neg_normSq.mpr hq
@@ -54,7 +54,7 @@ theorem expSeries_even_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : �
 /-- The odd terms of `expSeries` are real, and correspond to the series for
 $\frac{q}{‖q‖} \sin ‖q‖$. -/
 theorem expSeries_odd_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : ℕ) :
-    expSeries ℝ (Quaternion ℝ) (2 * n + 1) (fun _ => q) =
+    expSeries ℝ (Quaternion ℝ) (2 * n + 1) (fun _ ↦ q) =
       (((-1 : ℝ) ^ n * ‖q‖ ^ (2 * n + 1) / (2 * n + 1)!) / ‖q‖) • q := by
   rw [expSeries_apply_eq]
   obtain rfl | hq0 := eq_or_ne q 0
@@ -77,9 +77,9 @@ theorem expSeries_odd_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : ℕ
 /-- Auxiliary result; if the power series corresponding to `Real.cos` and `Real.sin` evaluated
 at `‖q‖` tend to `c` and `s`, then the exponential series tends to `c + (s / ‖q‖)`. -/
 theorem hasSum_expSeries_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) {c s : ℝ}
-    (hc : HasSum (fun n => (-1 : ℝ) ^ n * ‖q‖ ^ (2 * n) / (2 * n)!) c)
-    (hs : HasSum (fun n => (-1 : ℝ) ^ n * ‖q‖ ^ (2 * n + 1) / (2 * n + 1)!) s) :
-    HasSum (fun n => expSeries ℝ (Quaternion ℝ) n fun _ => q) (↑c + (s / ‖q‖) • q) := by
+    (hc : HasSum (fun n ↦ (-1 : ℝ) ^ n * ‖q‖ ^ (2 * n) / (2 * n)!) c)
+    (hs : HasSum (fun n ↦ (-1 : ℝ) ^ n * ‖q‖ ^ (2 * n + 1) / (2 * n + 1)!) s) :
+    HasSum (fun n ↦ expSeries ℝ (Quaternion ℝ) n fun _ ↦ q) (↑c + (s / ‖q‖) • q) := by
   replace hc := hasSum_coe.mpr hc
   replace hs := (hs.div_const ‖q‖).smul_const q
   refine HasSum.even_add_odd ?_ ?_

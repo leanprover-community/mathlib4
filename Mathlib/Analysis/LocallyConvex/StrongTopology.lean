@@ -65,7 +65,7 @@ variable [Module R F] [ContinuousConstSMul R F] [LocallyConvexSpace R F] [SMulCo
 
 instance instLocallyConvexSpace : LocallyConvexSpace R (E →SL[σ] F) :=
   UniformConvergenceCLM.locallyConvexSpace R _ ⟨∅, Bornology.isVonNBounded_empty 𝕜₁ E⟩
-    (directedOn_of_sup_mem fun _ _ => Bornology.IsVonNBounded.union)
+    (directedOn_of_sup_mem fun _ _ ↦ Bornology.IsVonNBounded.union)
 
 end ContinuousLinearMap
 

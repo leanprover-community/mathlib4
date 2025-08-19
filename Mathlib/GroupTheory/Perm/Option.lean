@@ -58,7 +58,7 @@ def Equiv.Perm.decomposeOption {α : Type*} [DecidableEq α] :
   toFun σ := (σ none, removeNone σ)
   invFun i := swap none i.1 * i.2.optionCongr
   left_inv σ := by simp
-  right_inv := fun ⟨x, σ⟩ => by
+  right_inv := fun ⟨x, σ⟩ ↦ by
     have : removeNone (swap none x * σ.optionCongr) = σ :=
       Equiv.optionCongr_injective (by simp [← mul_assoc])
     simp [this]

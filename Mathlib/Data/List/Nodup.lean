@@ -55,12 +55,12 @@ theorem not_nodup_pair (a : α) : ¬Nodup [a, a] :=
   not_nodup_cons_of_mem <| mem_singleton_self _
 
 theorem nodup_iff_sublist {l : List α} : Nodup l ↔ ∀ a, ¬[a, a] <+ l :=
-  ⟨fun d a h => not_nodup_pair a (d.sublist h),
+  ⟨fun d a h ↦ not_nodup_pair a (d.sublist h),
     by
       induction l <;> intro h; · exact nodup_nil
       case cons a l IH =>
-        exact (IH fun a s => h a <| sublist_cons_of_sublist _ s).cons
-          fun al => h a <| (singleton_sublist.2 al).cons_cons _⟩
+        exact (IH fun a s ↦ h a <| sublist_cons_of_sublist _ s).cons
+          fun al ↦ h a <| (singleton_sublist.2 al).cons_cons _⟩
 
 @[simp]
 theorem nodup_mergeSort {l : List α} {le : α → α → Bool} : (l.mergeSort le).Nodup ↔ l.Nodup :=
@@ -69,20 +69,20 @@ theorem nodup_mergeSort {l : List α} {le : α → α → Bool} : (l.mergeSort l
 protected alias ⟨_, Nodup.mergeSort⟩ := nodup_mergeSort
 
 theorem nodup_iff_injective_getElem {l : List α} :
-    Nodup l ↔ Function.Injective (fun i : Fin l.length => l[i.1]) :=
+    Nodup l ↔ Function.Injective (fun i : Fin l.length ↦ l[i.1]) :=
   pairwise_iff_getElem.trans
-    ⟨fun h i j hg => by
+    ⟨fun h i j hg ↦ by
       obtain ⟨i, hi⟩ := i; obtain ⟨j, hj⟩ := j
       rcases lt_trichotomy i j with (hij | rfl | hji)
       · exact (h i j hi hj hij hg).elim
       · rfl
       · exact (h j i hj hi hji hg.symm).elim,
-      fun hinj i j hi hj hij h => Nat.ne_of_lt hij (Fin.val_eq_of_eq (@hinj ⟨i, hi⟩ ⟨j, hj⟩ h))⟩
+      fun hinj i j hi hj hij h ↦ Nat.ne_of_lt hij (Fin.val_eq_of_eq (@hinj ⟨i, hi⟩ ⟨j, hj⟩ h))⟩
 
 theorem nodup_iff_injective_get {l : List α} :
     Nodup l ↔ Function.Injective l.get := by
   rw [nodup_iff_injective_getElem]
-  change _ ↔ Injective (fun i => l.get i)
+  change _ ↔ Injective (fun i ↦ l.get i)
   simp
 
 theorem Nodup.get_inj_iff {l : List α} (h : Nodup l) {i j : Fin l.length} :
@@ -129,7 +129,7 @@ theorem Nodup.ne_singleton_iff {l : List α} (h : Nodup l) (x : α) :
 theorem not_nodup_of_get_eq_of_ne (xs : List α) (n m : Fin xs.length)
     (h : xs.get n = xs.get m) (hne : n ≠ m) : ¬Nodup xs := by
   rw [nodup_iff_injective_get]
-  exact fun hinj => hne (hinj h)
+  exact fun hinj ↦ hne (hinj h)
 
 theorem idxOf_getElem [DecidableEq α] {l : List α} (H : Nodup l) (i : Nat) (h : i < l.length) :
     idxOf l[i] l = i :=
@@ -145,14 +145,14 @@ theorem get_idxOf [DecidableEq α] {l : List α} (H : Nodup l) (i : Fin l.length
 
 theorem nodup_iff_count_le_one [DecidableEq α] {l : List α} : Nodup l ↔ ∀ a, count a l ≤ 1 :=
   nodup_iff_sublist.trans <|
-    forall_congr' fun a =>
+    forall_congr' fun a ↦
       have : replicate 2 a <+ l ↔ 1 < count a l := replicate_sublist_iff ..
       (not_congr this).trans not_lt
 
 theorem nodup_iff_count_eq_one [DecidableEq α] : Nodup l ↔ ∀ a ∈ l, count a l = 1 :=
-  nodup_iff_count_le_one.trans <| forall_congr' fun _ =>
-    ⟨fun H h => H.antisymm (count_pos_iff.mpr h),
-     fun H => if h : _ then (H h).le else (count_eq_zero.mpr h).trans_le (Nat.zero_le 1)⟩
+  nodup_iff_count_le_one.trans <| forall_congr' fun _ ↦
+    ⟨fun H h ↦ H.antisymm (count_pos_iff.mpr h),
+     fun H ↦ if h : _ then (H h).le else (count_eq_zero.mpr h).trans_le (Nat.zero_le 1)⟩
 
 
 @[simp]
@@ -193,11 +193,11 @@ theorem nodup_middle {a : α} {l₁ l₂ : List α} :
     disjoint_cons_right]
 
 theorem Nodup.of_map (f : α → β) {l : List α} : Nodup (map f l) → Nodup l :=
-  (Pairwise.of_map f) fun _ _ => mt <| congr_arg f
+  (Pairwise.of_map f) fun _ _ ↦ mt <| congr_arg f
 
 theorem Nodup.map_on {f : α → β} (H : ∀ x ∈ l, ∀ y ∈ l, f x = f y → x = y) (d : Nodup l) :
     (map f l).Nodup :=
-  Pairwise.map _ (fun a b ⟨ma, mb, n⟩ e => n (H a ma b mb e)) (Pairwise.and_mem.1 d)
+  Pairwise.map _ (fun a b ⟨ma, mb, n⟩ e ↦ n (H a ma b mb e)) (Pairwise.and_mem.1 d)
 
 theorem inj_on_of_nodup_map {f : α → β} {l : List α} (d : Nodup (map f l)) :
     ∀ ⦃x⦄, x ∈ l → ∀ ⦃y⦄, y ∈ l → f x = f y → x = y := by
@@ -214,17 +214,17 @@ theorem inj_on_of_nodup_map {f : α → β} {l : List α} (d : Nodup (map f l)) 
 
 theorem nodup_map_iff_inj_on {f : α → β} {l : List α} (d : Nodup l) :
     Nodup (map f l) ↔ ∀ x ∈ l, ∀ y ∈ l, f x = f y → x = y :=
-  ⟨inj_on_of_nodup_map, fun h => d.map_on h⟩
+  ⟨inj_on_of_nodup_map, fun h ↦ d.map_on h⟩
 
 protected theorem Nodup.map {f : α → β} (hf : Injective f) : Nodup l → Nodup (map f l) :=
-  Nodup.map_on fun _ _ _ _ h => hf h
+  Nodup.map_on fun _ _ _ _ h ↦ hf h
 
 theorem nodup_map_iff {f : α → β} {l : List α} (hf : Injective f) : Nodup (map f l) ↔ Nodup l :=
   ⟨Nodup.of_map _, Nodup.map hf⟩
 
 @[simp]
 theorem nodup_attach {l : List α} : Nodup (attach l) ↔ Nodup l :=
-  ⟨fun h => attach_map_subtype_val l ▸ h.map fun _ _ => Subtype.eq, fun h =>
+  ⟨fun h ↦ attach_map_subtype_val l ▸ h.map fun _ _ ↦ Subtype.eq, fun h ↦
     Nodup.of_map Subtype.val ((attach_map_subtype_val l).symm ▸ h)⟩
 
 protected alias ⟨Nodup.of_attach, Nodup.attach⟩ := nodup_attach
@@ -232,7 +232,7 @@ protected alias ⟨Nodup.of_attach, Nodup.attach⟩ := nodup_attach
 theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {l : List α} {H}
     (hf : ∀ a ha b hb, f a ha = f b hb → a = b) (h : Nodup l) : Nodup (pmap f l H) := by
   rw [pmap_eq_map_attach]
-  exact h.attach.map fun ⟨a, ha⟩ ⟨b, hb⟩ h => by congr; exact hf a (H _ ha) b (H _ hb) h
+  exact h.attach.map fun ⟨a, ha⟩ ⟨b, hb⟩ h ↦ by congr; exact hf a (H _ ha) b (H _ hb) h
 
 theorem Nodup.filter (p : α → Bool) {l} : Nodup l → Nodup (filter p l) := by
   simpa using Pairwise.filter p
@@ -296,13 +296,13 @@ theorem nodup_flatMap {l₁ : List α} {f : α → List β} :
   simp only [List.flatMap, nodup_flatten, pairwise_map, and_comm, mem_map,
     exists_imp, and_imp]
   rw [show (∀ (l : List β) (x : α), f x = l → x ∈ l₁ → Nodup l) ↔ ∀ x : α, x ∈ l₁ → Nodup (f x)
-      from forall_swap.trans <| forall_congr' fun _ => forall_eq']
+      from forall_swap.trans <| forall_congr' fun _ ↦ forall_eq']
 
 protected theorem Nodup.product {l₂ : List β} (d₁ : l₁.Nodup) (d₂ : l₂.Nodup) :
     (l₁ ×ˢ l₂).Nodup :=
   nodup_flatMap.2
-    ⟨fun a _ => d₂.map <| LeftInverse.injective fun b => (rfl : (a, b).2 = b),
-      d₁.imp fun {a₁ a₂} n x h₁ h₂ => by
+    ⟨fun a _ ↦ d₂.map <| LeftInverse.injective fun b ↦ (rfl : (a, b).2 = b),
+      d₁.imp fun {a₁ a₂} n x h₁ h₂ ↦ by
         rcases mem_map.1 h₁ with ⟨b₁, _, rfl⟩
         rcases mem_map.1 h₂ with ⟨b₂, mb₂, ⟨⟩⟩
         exact n rfl⟩
@@ -310,15 +310,15 @@ protected theorem Nodup.product {l₂ : List β} (d₁ : l₁.Nodup) (d₂ : l�
 theorem Nodup.sigma {σ : α → Type*} {l₂ : ∀ a, List (σ a)} (d₁ : Nodup l₁)
     (d₂ : ∀ a, Nodup (l₂ a)) : (l₁.sigma l₂).Nodup :=
   nodup_flatMap.2
-    ⟨fun a _ => (d₂ a).map fun b b' h => by injection h with _ h,
-      d₁.imp fun {a₁ a₂} n x h₁ h₂ => by
+    ⟨fun a _ ↦ (d₂ a).map fun b b' h ↦ by injection h with _ h,
+      d₁.imp fun {a₁ a₂} n x h₁ h₂ ↦ by
         rcases mem_map.1 h₁ with ⟨b₁, _, rfl⟩
         rcases mem_map.1 h₂ with ⟨b₂, mb₂, ⟨⟩⟩
         exact n rfl⟩
 
 protected theorem Nodup.filterMap {f : α → Option β} (h : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a') :
     Nodup l → Nodup (filterMap f l) :=
-  (Pairwise.filterMap f) @fun a a' n b bm b' bm' e => n <| h a a' b' (by rw [← e]; exact bm) bm'
+  (Pairwise.filterMap f) @fun a a' n b bm b' bm' e ↦ n <| h a a' b' (by rw [← e]; exact bm) bm'
 
 protected theorem Nodup.concat (h : a ∉ l) (h' : l.Nodup) : (l.concat a).Nodup := by
   rw [concat_eq_append]; exact h'.append (nodup_singleton _) (disjoint_singleton.2 h)
@@ -351,8 +351,8 @@ protected theorem Nodup.set :
   | _ :: _, 0, _, hl, ha => nodup_cons.2 ⟨mt (mem_cons_of_mem _) ha, (nodup_cons.1 hl).2⟩
   | _ :: _, _ + 1, _, hl, ha =>
     nodup_cons.2
-      ⟨fun h =>
-        (mem_or_eq_of_mem_set h).elim (nodup_cons.1 hl).1 fun hba => ha (hba ▸ mem_cons_self),
+      ⟨fun h ↦
+        (mem_or_eq_of_mem_set h).elim (nodup_cons.1 hl).1 fun hba ↦ ha (hba ▸ mem_cons_self),
         hl.of_cons.set (mt (mem_cons_of_mem _) ha)⟩
 
 theorem Nodup.map_update [DecidableEq α] {l : List α} (hl : l.Nodup) (f : α → β) (x : α) (y : β) :
@@ -379,7 +379,7 @@ theorem Nodup.take_eq_filter_mem [DecidableEq α] :
     congr 1
     refine List.filter_congr ?_
     intro x hx
-    have : x ≠ b := fun h => (nodup_cons.1 hl).1 (h ▸ hx)
+    have : x ≠ b := fun h ↦ (nodup_cons.1 hl).1 (h ▸ hx)
     simp +contextual [List.mem_filter, this, hx]
 end List
 

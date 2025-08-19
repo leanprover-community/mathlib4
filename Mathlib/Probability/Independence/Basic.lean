@@ -522,7 +522,7 @@ theorem indep_iff_forall_indepSet (μ : Measure Ω) :
   Kernel.indep_iff_forall_indepSet m₁ m₂ _ _
 
 theorem iIndep_comap_mem_iff {f : ι → Set Ω} :
-    iIndep (fun i => MeasurableSpace.comap (· ∈ f i) ⊤) μ ↔ iIndepSet f μ :=
+    iIndep (fun i ↦ MeasurableSpace.comap (· ∈ f i) ⊤) μ ↔ iIndepSet f μ :=
   Kernel.iIndep_comap_mem_iff
 
 alias ⟨_, iIndepSet.iIndep_comap_mem⟩ := iIndep_comap_mem_iff
@@ -765,7 +765,7 @@ lemma iIndepFun.indepFun_finset₀ (S T : Finset ι) (hST : Disjoint S T) (hf_In
 
 lemma iIndepFun.indepFun_prodMk (hf_Indep : iIndepFun f μ) (hf_meas : ∀ i, Measurable (f i))
     (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
-    IndepFun (fun a => (f i a, f j a)) (f k) μ :=
+    IndepFun (fun a ↦ (f i a, f j a)) (f k) μ :=
   Kernel.iIndepFun.indepFun_prodMk hf_Indep hf_meas i j k hik hjk
 
 @[deprecated (since := "2025-03-05")]
@@ -773,7 +773,7 @@ alias iIndepFun.indepFun_prod_mk := iIndepFun.indepFun_prodMk
 
 lemma iIndepFun.indepFun_prodMk₀ (hf_Indep : iIndepFun f μ) (hf_meas : ∀ i, AEMeasurable (f i) μ)
     (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
-    IndepFun (fun a => (f i a, f j a)) (f k) μ :=
+    IndepFun (fun a ↦ (f i a, f j a)) (f k) μ :=
   Kernel.iIndepFun.indepFun_prodMk₀ hf_Indep (by simp [hf_meas]) i j k hik hjk
 
 lemma iIndepFun.indepFun_prodMk_prodMk (h_indep : iIndepFun f μ) (hf : ∀ i, Measurable (f i))
@@ -825,7 +825,7 @@ lemma iIndepFun.of_precomp {g : ι' → ι} (hg : g.Surjective)
     obtain ⟨j, hj, rfl⟩ := Finset.mem_image.mp hi
     simpa [A] using (A j).symm ▸ hs j hj
   have eq : ∏ i ∈ Finset.image (Function.invFun g) t, μ (s (g i)) = ∏ i ∈ t, μ (s i) := by
-    rw [Finset.prod_image (fun x hx y hy h => ?_), Finset.prod_congr rfl (fun x _ => by rw [A])]
+    rw [Finset.prod_image (fun x hx y hy h ↦ ?_), Finset.prod_congr rfl (fun x _ ↦ by rw [A])]
     rw [← A x, ← A y, h]
   simpa [A, eq] using h (t.image (Function.invFun g)) (f' := fun i ↦ s (g i)) this
 
@@ -964,7 +964,7 @@ end CommMonoid
 
 theorem iIndepSet.iIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β} {s : ι → Set Ω}
     (hs : iIndepSet s μ) :
-    iIndepFun (fun n => (s n).indicator fun _ω => (1 : β)) μ :=
+    iIndepFun (fun n ↦ (s n).indicator fun _ω ↦ (1 : β)) μ :=
   Kernel.iIndepSet.iIndepFun_indicator hs
 
 end IndepFun

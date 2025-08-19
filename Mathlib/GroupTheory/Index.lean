@@ -65,13 +65,13 @@ theorem index_comap_of_surjective {f : G' →* G} (hf : Function.Surjective f) :
   have key : ∀ x y : G',
       QuotientGroup.leftRel (H.comap f) x y ↔ QuotientGroup.leftRel H (f x) (f y) := by
     simp only [QuotientGroup.leftRel_apply]
-    exact fun x y => iff_of_eq (congr_arg (· ∈ H) (by rw [f.map_mul, f.map_inv]))
-  refine Cardinal.toNat_congr (Equiv.ofBijective (Quotient.map' f fun x y => (key x y).mp) ⟨?_, ?_⟩)
+    exact fun x y ↦ iff_of_eq (congr_arg (· ∈ H) (by rw [f.map_mul, f.map_inv]))
+  refine Cardinal.toNat_congr (Equiv.ofBijective (Quotient.map' f fun x y ↦ (key x y).mp) ⟨?_, ?_⟩)
   · simp_rw [← Quotient.eq''] at key
-    refine Quotient.ind' fun x => ?_
-    refine Quotient.ind' fun y => ?_
+    refine Quotient.ind' fun x ↦ ?_
+    refine Quotient.ind' fun y ↦ ?_
     exact (key x y).mpr
-  · refine Quotient.ind' fun x => ?_
+  · refine Quotient.ind' fun x ↦ ?_
     obtain ⟨y, hy⟩ := hf x
     exact ⟨y, (Quotient.map'_mk'' f _ y).trans (congr_arg Quotient.mk'' hy)⟩
 
@@ -117,7 +117,7 @@ variable (H K L)
 theorem relindex_mul_relindex (hHK : H ≤ K) (hKL : K ≤ L) :
     H.relindex K * K.relindex L = H.relindex L := by
   rw [← relindex_subgroupOf hKL]
-  exact relindex_mul_index fun x hx => hHK hx
+  exact relindex_mul_index fun x hx ↦ hHK hx
 
 @[to_additive]
 theorem inf_relindex_right : (H ⊓ K).relindex K = H.relindex K := by
@@ -158,8 +158,8 @@ theorem index_eq_two_iff : H.index = 2 ↔ ∃ a, ∀ b, Xor' (b * a ∈ H) (b �
   simp only [index, Nat.card_eq_two_iff' ((1 : G) : G ⧸ H), ExistsUnique, inv_mem_iff,
     QuotientGroup.exists_mk, QuotientGroup.forall_mk, Ne, QuotientGroup.eq, mul_one,
     xor_iff_iff_not]
-  refine exists_congr fun a =>
-    ⟨fun ha b => ⟨fun hba hb => ?_, fun hb => ?_⟩, fun ha => ⟨?_, fun b hb => ?_⟩⟩
+  refine exists_congr fun a ↦
+    ⟨fun ha b ↦ ⟨fun hba hb ↦ ?_, fun hb ↦ ?_⟩, fun ha ↦ ⟨?_, fun b hb ↦ ?_⟩⟩
   · exact ha.1 ((mul_mem_cancel_left hb).1 hba)
   · exact inv_inv b ▸ ha.2 _ (mt (inv_mem_iff (x := b)).1 hb)
   · rw [← inv_mem_iff (x := a), ← ha, inv_mul_cancel]
@@ -323,11 +323,11 @@ theorem relindex_le_of_le_left (hHK : H ≤ K) (hHL : H.relindex L ≠ 0) :
 @[to_additive]
 theorem relindex_le_of_le_right (hKL : K ≤ L) (hHL : H.relindex L ≠ 0) :
     H.relindex K ≤ H.relindex L :=
-  Finite.card_le_of_embedding' (quotientSubgroupOfEmbeddingOfLE H hKL) fun h => (hHL h).elim
+  Finite.card_le_of_embedding' (quotientSubgroupOfEmbeddingOfLE H hKL) fun h ↦ (hHL h).elim
 
 @[to_additive]
 theorem relindex_ne_zero_trans (hHK : H.relindex K ≠ 0) (hKL : K.relindex L ≠ 0) :
-    H.relindex L ≠ 0 := fun h =>
+    H.relindex L ≠ 0 := fun h ↦
   mul_ne_zero (mt (relindex_eq_zero_of_le_right (show K ⊓ L ≤ K from inf_le_left)) hHK) hKL
     ((relindex_inf_mul_relindex H K L).trans (relindex_eq_zero_of_le_left inf_le_left h))
 
@@ -369,7 +369,7 @@ theorem index_inf_le : (H ⊓ K).index ≤ H.index * K.index := by
 theorem relindex_iInf_ne_zero {ι : Type*} [_hι : Finite ι] {f : ι → Subgroup G}
     (hf : ∀ i, (f i).relindex L ≠ 0) : (⨅ i, f i).relindex L ≠ 0 :=
   haveI := Fintype.ofFinite ι
-  (Finset.prod_ne_zero_iff.mpr fun i _hi => hf i) ∘
+  (Finset.prod_ne_zero_iff.mpr fun i _hi ↦ hf i) ∘
     Nat.card_pi.symm.trans ∘
       Finite.card_eq_zero_of_embedding (quotientiInfSubgroupOfEmbedding f L)
 
@@ -377,7 +377,7 @@ theorem relindex_iInf_ne_zero {ι : Type*} [_hι : Finite ι] {f : ι → Subgro
 theorem relindex_iInf_le {ι : Type*} [Fintype ι] (f : ι → Subgroup G) :
     (⨅ i, f i).relindex L ≤ ∏ i, (f i).relindex L :=
   le_of_le_of_eq
-    (Finite.card_le_of_embedding' (quotientiInfSubgroupOfEmbedding f L) fun h =>
+    (Finite.card_le_of_embedding' (quotientiInfSubgroupOfEmbedding f L) fun h ↦
       let ⟨i, _hi, h⟩ := Finset.prod_eq_zero_iff.mp (Nat.card_pi.symm.trans h)
       relindex_eq_zero_of_le_left (iInf_le f i) h)
     Nat.card_pi
@@ -394,9 +394,9 @@ theorem index_iInf_le {ι : Type*} [Fintype ι] (f : ι → Subgroup G) :
 
 @[to_additive (attr := simp) index_eq_one]
 theorem index_eq_one : H.index = 1 ↔ H = ⊤ :=
-  ⟨fun h =>
+  ⟨fun h ↦
     QuotientGroup.subgroup_eq_top_of_subsingleton H (Nat.card_eq_one_iff_unique.mp h).1,
-    fun h => (congr_arg index h).trans index_top⟩
+    fun h ↦ (congr_arg index h).trans index_top⟩
 
 @[to_additive (attr := simp) relindex_eq_one]
 theorem relindex_eq_one : H.relindex K = 1 ↔ K ≤ H :=
@@ -623,19 +623,19 @@ instance [FiniteIndex H] [FiniteIndex K] : FiniteIndex (H ⊓ K) :=
 @[to_additive]
 theorem finiteIndex_iInf {ι : Type*} [Finite ι] {f : ι → Subgroup G}
     (hf : ∀ i, (f i).FiniteIndex) : (⨅ i, f i).FiniteIndex :=
-  ⟨index_iInf_ne_zero fun i => (hf i).index_ne_zero⟩
+  ⟨index_iInf_ne_zero fun i ↦ (hf i).index_ne_zero⟩
 
 @[to_additive]
 theorem finiteIndex_iInf' {ι : Type*} {s : Finset ι}
     (f : ι → Subgroup G) (hs : ∀ i ∈ s, (f i).FiniteIndex) :
     (⨅ i ∈ s, f i).FiniteIndex := by
   rw [iInf_subtype']
-  exact finiteIndex_iInf fun ⟨i, hi⟩ => hs i hi
+  exact finiteIndex_iInf fun ⟨i, hi⟩ ↦ hs i hi
 
 @[to_additive]
 instance instFiniteIndex_subgroupOf (H K : Subgroup G) [H.FiniteIndex] :
     (H.subgroupOf K).FiniteIndex :=
-  ⟨fun h => H.index_ne_zero_of_finite <| H.index_eq_zero_of_relindex_eq_zero h⟩
+  ⟨fun h ↦ H.index_ne_zero_of_finite <| H.index_eq_zero_of_relindex_eq_zero h⟩
 
 @[to_additive]
 theorem finiteIndex_of_le [FiniteIndex H] (h : H ≤ K) : FiniteIndex K :=

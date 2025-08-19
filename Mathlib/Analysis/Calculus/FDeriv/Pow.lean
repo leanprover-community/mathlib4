@@ -9,7 +9,7 @@ import Mathlib.Analysis.Calculus.FDeriv.Comp
 /-!
 # Fréchet Derivative of `f x ^ n`, `n : ℕ`
 
-In this file we prove that the Fréchet derivative of `fun x => f x ^ n`,
+In this file we prove that the Fréchet derivative of `fun x ↦ f x ^ n`,
 where `n` is a natural number, is `n • f x ^ (n - 1)) • f'`.
 Additionally, we prove the case for non-commutative rings (with primed names like `fderiv_pow'`),
 where the result is instead `∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> f' <• f x ^ i`.
@@ -102,7 +102,7 @@ theorem hasFDerivAt_pow' (n : ℕ) {x : 𝔸} :
 
 @[fun_prop]
 theorem DifferentiableWithinAt.fun_pow (hf : DifferentiableWithinAt 𝕜 f s x) (n : ℕ) :
-    DifferentiableWithinAt 𝕜 (fun x => f x ^ n) s x :=
+    DifferentiableWithinAt 𝕜 (fun x ↦ f x ^ n) s x :=
   let ⟨_, hf'⟩ := hf; ⟨_, hf'.pow' n⟩
 
 @[fun_prop]
@@ -111,42 +111,42 @@ theorem DifferentiableWithinAt.pow (hf : DifferentiableWithinAt 𝕜 f s x) :
   hf.fun_pow
 
 theorem differentiableWithinAt_pow (n : ℕ) {x : 𝔸} {s : Set 𝔸} :
-    DifferentiableWithinAt 𝕜 (fun x : 𝔸 => x ^ n) s x :=
+    DifferentiableWithinAt 𝕜 (fun x : 𝔸 ↦ x ^ n) s x :=
   differentiableWithinAt_id.pow _
 
 @[simp, fun_prop]
 theorem DifferentiableAt.fun_pow (hf : DifferentiableAt 𝕜 f x) (n : ℕ) :
-    DifferentiableAt 𝕜 (fun x => f x ^ n) x :=
+    DifferentiableAt 𝕜 (fun x ↦ f x ^ n) x :=
   differentiableWithinAt_univ.mp <| hf.differentiableWithinAt.pow n
 
 @[simp, fun_prop]
 theorem DifferentiableAt.pow (hf : DifferentiableAt 𝕜 f x) (n : ℕ) :
     DifferentiableAt 𝕜 (f ^ n) x := hf.fun_pow n
 
-theorem differentiableAt_pow (n : ℕ) {x : 𝔸} : DifferentiableAt 𝕜 (fun x : 𝔸 => x ^ n) x :=
+theorem differentiableAt_pow (n : ℕ) {x : 𝔸} : DifferentiableAt 𝕜 (fun x : 𝔸 ↦ x ^ n) x :=
   differentiableAt_id.pow _
 
 @[fun_prop]
 theorem DifferentiableOn.fun_pow (hf : DifferentiableOn 𝕜 f s) (n : ℕ) :
-    DifferentiableOn 𝕜 (fun x => f x ^ n) s := fun x h => (hf x h).pow n
+    DifferentiableOn 𝕜 (fun x ↦ f x ^ n) s := fun x h ↦ (hf x h).pow n
 
 @[fun_prop]
 theorem DifferentiableOn.pow (hf : DifferentiableOn 𝕜 f s) (n : ℕ) :
     DifferentiableOn 𝕜 (f ^ n) s := hf.fun_pow n
 
-theorem differentiableOn_pow (n : ℕ) {s : Set 𝔸} : DifferentiableOn 𝕜 (fun x : 𝔸 => x ^ n) s :=
+theorem differentiableOn_pow (n : ℕ) {s : Set 𝔸} : DifferentiableOn 𝕜 (fun x : 𝔸 ↦ x ^ n) s :=
   differentiableOn_id.pow n
 
 @[simp, fun_prop]
 theorem Differentiable.fun_pow (hf : Differentiable 𝕜 f) (n : ℕ) :
-    Differentiable 𝕜 fun x => f x ^ n :=
-  fun x => (hf x).pow n
+    Differentiable 𝕜 fun x ↦ f x ^ n :=
+  fun x ↦ (hf x).pow n
 
 @[simp, fun_prop]
 theorem Differentiable.pow (hf : Differentiable 𝕜 f) (n : ℕ) : Differentiable 𝕜 (f ^ n) :=
   hf.fun_pow n
 
-theorem differentiable_pow (n : ℕ) : Differentiable 𝕜 fun x : 𝔸 => x ^ n :=
+theorem differentiable_pow (n : ℕ) : Differentiable 𝕜 fun x : 𝔸 ↦ x ^ n :=
   differentiable_id.pow _
 
 theorem fderiv_fun_pow' (n : ℕ) (hf : DifferentiableAt 𝕜 f x) :

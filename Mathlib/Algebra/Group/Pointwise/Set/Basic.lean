@@ -236,7 +236,7 @@ theorem inv_insert (a : α) (s : Set α) : (insert a s)⁻¹ = insert a⁻¹ s�
   rw [insert_eq, union_inv, inv_singleton, insert_eq]
 
 @[to_additive]
-theorem inv_range {ι : Sort*} {f : ι → α} : (range f)⁻¹ = range fun i => (f i)⁻¹ := by
+theorem inv_range {ι : Sort*} {f : ι → α} : (range f)⁻¹ = range fun i ↦ (f i)⁻¹ := by
   rw [← image_inv_eq_inv]
   exact (range_comp ..).symm
 
@@ -282,7 +282,7 @@ theorem mul_mem_mul : a ∈ s → b ∈ t → a * b ∈ s * t :=
   mem_image2_of_mem
 
 @[to_additive add_image_prod]
-theorem image_mul_prod : (fun x : α × α => x.fst * x.snd) '' s ×ˢ t = s * t :=
+theorem image_mul_prod : (fun x : α × α ↦ x.fst * x.snd) '' s ×ˢ t = s * t :=
   image_prod _
 
 @[to_additive (attr := simp)]
@@ -427,7 +427,7 @@ theorem div_mem_div : a ∈ s → b ∈ t → a / b ∈ s / t :=
   mem_image2_of_mem
 
 @[to_additive sub_image_prod]
-theorem image_div_prod : (fun x : α × α => x.fst / x.snd) '' s ×ˢ t = s / t :=
+theorem image_div_prod : (fun x : α × α ↦ x.fst / x.snd) '' s ×ˢ t = s / t :=
   image_prod _
 
 @[to_additive (attr := simp)]
@@ -521,7 +521,7 @@ protected def NSMul [Zero α] [Add α] : SMul ℕ (Set α) :=
 `Set`. See note [pointwise nat action]. -/
 @[to_additive existing]
 protected def NPow [One α] [Mul α] : Pow (Set α) ℕ :=
-  ⟨fun s n => npowRec n s⟩
+  ⟨fun s n ↦ npowRec n s⟩
 
 /-- Repeated pointwise addition/subtraction (not the same as pointwise repeated
 addition/subtraction!) of a `Set`. See note [pointwise nat action]. -/
@@ -532,14 +532,14 @@ protected def ZSMul [Zero α] [Add α] [Neg α] : SMul ℤ (Set α) :=
 multiplication/division!) of a `Set`. See note [pointwise nat action]. -/
 @[to_additive existing]
 protected def ZPow [One α] [Mul α] [Inv α] : Pow (Set α) ℤ :=
-  ⟨fun s n => zpowRec npowRec n s⟩
+  ⟨fun s n ↦ zpowRec npowRec n s⟩
 
 scoped[Pointwise] attribute [instance] Set.NSMul Set.NPow Set.ZSMul Set.ZPow
 
 /-- `Set α` is a `Semigroup` under pointwise operations if `α` is. -/
 @[to_additive /-- `Set α` is an `AddSemigroup` under pointwise operations if `α` is. -/]
 protected def semigroup [Semigroup α] : Semigroup (Set α) :=
-  { Set.mul with mul_assoc := fun _ _ _ => image2_assoc mul_assoc }
+  { Set.mul with mul_assoc := fun _ _ _ ↦ image2_assoc mul_assoc }
 
 section CommSemigroup
 
@@ -548,7 +548,7 @@ variable [CommSemigroup α] {s t : Set α}
 /-- `Set α` is a `CommSemigroup` under pointwise operations if `α` is. -/
 @[to_additive /-- `Set α` is an `AddCommSemigroup` under pointwise operations if `α` is. -/]
 protected def commSemigroup : CommSemigroup (Set α) :=
-  { Set.semigroup with mul_comm := fun _ _ => image2_comm mul_comm }
+  { Set.semigroup with mul_comm := fun _ _ ↦ image2_comm mul_comm }
 
 @[to_additive]
 theorem inter_mul_union_subset : s ∩ t * (s ∪ t) ⊆ s * t :=
@@ -577,11 +577,11 @@ scoped[Pointwise]
     Set.addCommSemigroup
 
 @[to_additive]
-theorem subset_mul_left (s : Set α) {t : Set α} (ht : (1 : α) ∈ t) : s ⊆ s * t := fun x hx =>
+theorem subset_mul_left (s : Set α) {t : Set α} (ht : (1 : α) ∈ t) : s ⊆ s * t := fun x hx ↦
   ⟨x, hx, 1, ht, mul_one _⟩
 
 @[to_additive]
-theorem subset_mul_right {s : Set α} (t : Set α) (hs : (1 : α) ∈ s) : t ⊆ s * t := fun x hx =>
+theorem subset_mul_right {s : Set α} (t : Set α) (hs : (1 : α) ∈ s) : t ⊆ s * t := fun x hx ↦
   ⟨1, hs, x, hx, one_mul _⟩
 
 /-- The singleton operation as a `MonoidHom`. -/
@@ -669,11 +669,11 @@ lemma inter_pow_subset : (s ∩ t) ^ n ⊆ s ^ n ∩ t ^ n := by apply subset_in
 
 @[to_additive]
 theorem mul_univ_of_one_mem (hs : (1 : α) ∈ s) : s * univ = univ :=
-  eq_univ_iff_forall.2 fun _ => mem_mul.2 ⟨_, hs, _, mem_univ _, one_mul _⟩
+  eq_univ_iff_forall.2 fun _ ↦ mem_mul.2 ⟨_, hs, _, mem_univ _, one_mul _⟩
 
 @[to_additive]
 theorem univ_mul_of_one_mem (ht : (1 : α) ∈ t) : univ * t = univ :=
-  eq_univ_iff_forall.2 fun _ => mem_mul.2 ⟨_, mem_univ _, _, ht, mul_one _⟩
+  eq_univ_iff_forall.2 fun _ ↦ mem_mul.2 ⟨_, mem_univ _, _, ht, mul_one _⟩
 
 @[to_additive (attr := simp)]
 theorem univ_mul_univ : (univ : Set α) * univ = univ :=
@@ -681,9 +681,9 @@ theorem univ_mul_univ : (univ : Set α) * univ = univ :=
 
 @[to_additive (attr := simp) nsmul_univ]
 theorem univ_pow : ∀ {n : ℕ}, n ≠ 0 → (univ : Set α) ^ n = univ
-  | 0 => fun h => (h rfl).elim
-  | 1 => fun _ => pow_one _
-  | n + 2 => fun _ => by rw [pow_succ, univ_pow n.succ_ne_zero, univ_mul_univ]
+  | 0 => fun h ↦ (h rfl).elim
+  | 1 => fun _ ↦ pow_one _
+  | n + 2 => fun _ ↦ by rw [pow_succ, univ_pow n.succ_ne_zero, univ_mul_univ]
 
 @[to_additive]
 protected theorem _root_.IsUnit.set : IsUnit a → IsUnit ({a} : Set α) :=
@@ -747,13 +747,13 @@ variable [DivisionMonoid α] {s t : Set α} {n : ℤ}
 
 @[to_additive]
 protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} ∧ a * b = 1 := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · have hst : (s * t).Nonempty := h.symm.subst one_nonempty
     obtain ⟨a, ha⟩ := hst.of_image2_left
     obtain ⟨b, hb⟩ := hst.of_image2_right
-    have H : ∀ {a b}, a ∈ s → b ∈ t → a * b = (1 : α) := fun {a b} ha hb =>
+    have H : ∀ {a b}, a ∈ s → b ∈ t → a * b = (1 : α) := fun {a b} ha hb ↦
       h.subset <| mem_image2_of_mem ha hb
-    refine ⟨a, b, ?_, ?_, H ha hb⟩ <;> refine eq_singleton_iff_unique_mem.2 ⟨‹_›, fun x hx => ?_⟩
+    refine ⟨a, b, ?_, ?_, H ha hb⟩ <;> refine eq_singleton_iff_unique_mem.2 ⟨‹_›, fun x hx ↦ ?_⟩
     · exact (eq_inv_of_mul_eq_one_left <| H hx hb).trans (inv_eq_of_mul_eq_one_left <| H ha hb)
     · exact (eq_inv_of_mul_eq_one_right <| H ha hx).trans (inv_eq_of_mul_eq_one_right <| H ha hb)
   · rintro ⟨b, c, rfl, rfl, h⟩
@@ -764,13 +764,13 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
     /-- `Set α` is a subtraction monoid under pointwise operations if `α` is. -/]
 protected def divisionMonoid : DivisionMonoid (Set α) :=
   { Set.monoid, Set.involutiveInv, Set.div, @Set.ZPow α _ _ _ with
-    mul_inv_rev := fun s t => by
+    mul_inv_rev := fun s t ↦ by
       simp_rw [← image_inv_eq_inv]
       exact image_image2_antidistrib mul_inv_rev
-    inv_eq_of_mul := fun s t h => by
+    inv_eq_of_mul := fun s t h ↦ by
       obtain ⟨a, b, rfl, rfl, hab⟩ := Set.mul_eq_one_iff.1 h
       rw [inv_singleton, inv_eq_of_mul_eq_one_right hab]
-    div_eq_mul_inv := fun s t => by
+    div_eq_mul_inv := fun s t ↦ by
       rw [← image_id (s / t), ← image_inv_eq_inv]
       exact image_image2_distrib_right div_eq_mul_inv }
 
@@ -923,12 +923,12 @@ theorem preimage_mul_right_one' : (· * b⁻¹) ⁻¹' 1 = {b} := by simp
 @[to_additive (attr := simp)]
 theorem mul_univ (hs : s.Nonempty) : s * (univ : Set α) = univ :=
   let ⟨a, ha⟩ := hs
-  eq_univ_of_forall fun b => ⟨a, ha, a⁻¹ * b, trivial, mul_inv_cancel_left ..⟩
+  eq_univ_of_forall fun b ↦ ⟨a, ha, a⁻¹ * b, trivial, mul_inv_cancel_left ..⟩
 
 @[to_additive (attr := simp)]
 theorem univ_mul (ht : t.Nonempty) : (univ : Set α) * t = univ :=
   let ⟨a, ha⟩ := ht
-  eq_univ_of_forall fun b => ⟨b * a⁻¹, trivial, a, ha, inv_mul_cancel_right ..⟩
+  eq_univ_of_forall fun b ↦ ⟨b * a⁻¹, trivial, a, ha, inv_mul_cancel_right ..⟩
 
 @[to_additive]
 lemma image_inv [DivisionMonoid β] [FunLike F α β] [MonoidHomClass F α β] (f : F) (s : Set α) :
@@ -1027,18 +1027,18 @@ open scoped Pointwise
 @[to_additive]
 lemma MapsTo.mul [Mul β] {A : Set α} {B₁ B₂ : Set β} {f₁ f₂ : α → β}
     (h₁ : MapsTo f₁ A B₁) (h₂ : MapsTo f₂ A B₂) : MapsTo (f₁ * f₂) A (B₁ * B₂) :=
-  fun _ h => mul_mem_mul (h₁ h) (h₂ h)
+  fun _ h ↦ mul_mem_mul (h₁ h) (h₂ h)
 
 @[to_additive]
 lemma MapsTo.inv [InvolutiveInv β] {A : Set α} {B : Set β} {f : α → β} (h : MapsTo f A B) :
     MapsTo (f⁻¹) A (B⁻¹) :=
-  fun _ ha => inv_mem_inv.2 (h ha)
+  fun _ ha ↦ inv_mem_inv.2 (h ha)
 
 
 @[to_additive]
 lemma MapsTo.div [Div β] {A : Set α} {B₁ B₂ : Set β} {f₁ f₂ : α → β}
     (h₁ : MapsTo f₁ A B₁) (h₂ : MapsTo f₂ A B₂) : MapsTo (f₁ / f₂) A (B₁ / B₂) :=
-  fun _ ha => div_mem_div (h₁ ha) (h₂ ha)
+  fun _ ha ↦ div_mem_div (h₁ ha) (h₂ ha)
 
 end Pointwise
 

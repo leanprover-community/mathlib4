@@ -41,7 +41,7 @@ theorem eLpNorm'_add_le_of_le_one (hf : AEStronglyMeasurable f μ) (hq0 : 0 ≤ 
 
 theorem eLpNormEssSup_add_le :
     eLpNormEssSup (f + g) μ ≤ eLpNormEssSup f μ + eLpNormEssSup g μ := by
-  refine le_trans (essSup_mono_ae (Eventually.of_forall fun x => ?_)) (ENNReal.essSup_add_le _ _)
+  refine le_trans (essSup_mono_ae (Eventually.of_forall fun x ↦ ?_)) (ENNReal.essSup_add_le _ _)
   simp_rw [Pi.add_apply]
   exact enorm_add_le _ _
 
@@ -102,13 +102,13 @@ theorem exists_Lp_half (p : ℝ≥0∞) {δ : ℝ≥0∞} (hδ : δ ≠ 0) :
         ∀ (f g : α → ε), AEStronglyMeasurable f μ → AEStronglyMeasurable g μ →
           eLpNorm f p μ ≤ η → eLpNorm g p μ ≤ η → eLpNorm (f + g) p μ < δ := by
   have :
-    Tendsto (fun η : ℝ≥0∞ => LpAddConst p * (η + η)) (𝓝[>] 0) (𝓝 (LpAddConst p * (0 + 0))) :=
+    Tendsto (fun η : ℝ≥0∞ ↦ LpAddConst p * (η + η)) (𝓝[>] 0) (𝓝 (LpAddConst p * (0 + 0))) :=
     (ENNReal.Tendsto.const_mul (tendsto_id.add tendsto_id)
           (Or.inr (LpAddConst_lt_top p).ne)).mono_left
       nhdsWithin_le_nhds
   simp only [add_zero, mul_zero] at this
   rcases (((tendsto_order.1 this).2 δ hδ.bot_lt).and self_mem_nhdsWithin).exists with ⟨η, hη, ηpos⟩
-  refine ⟨η, ηpos, fun f g hf hg Hf Hg => ?_⟩
+  refine ⟨η, ηpos, fun f g hf hg Hf Hg ↦ ?_⟩
   calc
     eLpNorm (f + g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) := eLpNorm_add_le' hf hg p
     _ ≤ LpAddConst p * (η + η) := by gcongr
@@ -135,16 +135,16 @@ theorem eLpNorm_add_lt_top (hf : MemLp f p μ) (hg : MemLp g p μ) :
 theorem eLpNorm'_sum_le [ContinuousAdd ε'] {ι} {f : ι → α → ε'} {s : Finset ι}
     (hfs : ∀ i, i ∈ s → AEStronglyMeasurable (f i) μ) (hq1 : 1 ≤ q) :
     eLpNorm' (∑ i ∈ s, f i) q μ ≤ ∑ i ∈ s, eLpNorm' (f i) q μ :=
-  Finset.le_sum_of_subadditive_on_pred (fun f : α → ε' => eLpNorm' f q μ)
-    (fun f => AEStronglyMeasurable f μ) (eLpNorm'_zero (zero_lt_one.trans_le hq1))
-    (fun _f _g hf hg => eLpNorm'_add_le hf hg hq1) (fun _f _g hf hg => hf.add hg) _ hfs
+  Finset.le_sum_of_subadditive_on_pred (fun f : α → ε' ↦ eLpNorm' f q μ)
+    (fun f ↦ AEStronglyMeasurable f μ) (eLpNorm'_zero (zero_lt_one.trans_le hq1))
+    (fun _f _g hf hg ↦ eLpNorm'_add_le hf hg hq1) (fun _f _g hf hg ↦ hf.add hg) _ hfs
 
 theorem eLpNorm_sum_le [ContinuousAdd ε'] {ι} {f : ι → α → ε'} {s : Finset ι}
     (hfs : ∀ i, i ∈ s → AEStronglyMeasurable (f i) μ) (hp1 : 1 ≤ p) :
     eLpNorm (∑ i ∈ s, f i) p μ ≤ ∑ i ∈ s, eLpNorm (f i) p μ :=
-  Finset.le_sum_of_subadditive_on_pred (fun f : α → ε' => eLpNorm f p μ)
-    (fun f => AEStronglyMeasurable f μ) eLpNorm_zero (fun _f _g hf hg => eLpNorm_add_le hf hg hp1)
-    (fun _f _g hf hg => hf.add hg) _ hfs
+  Finset.le_sum_of_subadditive_on_pred (fun f : α → ε' ↦ eLpNorm f p μ)
+    (fun f ↦ AEStronglyMeasurable f μ) eLpNorm_zero (fun _f _g hf hg ↦ eLpNorm_add_le hf hg hp1)
+    (fun _f _g hf hg ↦ hf.add hg) _ hfs
 
 theorem MemLp.add [ContinuousAdd ε] (hf : MemLp f p μ) (hg : MemLp g p μ) : MemLp (f + g) p μ :=
   ⟨AEStronglyMeasurable.add hf.1 hg.1, eLpNorm_add_lt_top hf hg⟩
@@ -155,14 +155,14 @@ theorem MemLp.sub {f g : α → E} (hf : MemLp f p μ) (hg : MemLp g p μ) : Mem
 
 theorem memLp_finset_sum [ContinuousAdd ε']
     {ι} (s : Finset ι) {f : ι → α → ε'} (hf : ∀ i ∈ s, MemLp (f i) p μ) :
-    MemLp (fun a => ∑ i ∈ s, f i a) p μ := by
+    MemLp (fun a ↦ ∑ i ∈ s, f i a) p μ := by
   haveI : DecidableEq ι := Classical.decEq _
   revert hf
   refine Finset.induction_on s ?_ ?_
   · simp only [MemLp.zero', Finset.sum_empty, imp_true_iff]
   · intro i s his ih hf
     simp only [his, Finset.sum_insert, not_false_iff]
-    exact (hf i (s.mem_insert_self i)).add (ih fun j hj => hf j (Finset.mem_insert_of_mem hj))
+    exact (hf i (s.mem_insert_self i)).add (ih fun j hj ↦ hf j (Finset.mem_insert_of_mem hj))
 
 theorem memLp_finset_sum' [ContinuousAdd ε']
     {ι} (s : Finset ι) {f : ι → α → ε'} (hf : ∀ i ∈ s, MemLp (f i) p μ) :

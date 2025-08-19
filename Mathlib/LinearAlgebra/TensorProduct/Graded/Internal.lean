@@ -276,13 +276,13 @@ def includeLeft : A →ₐ[R] 𝒜 ᵍ⊗[R] ℬ where
 def includeRight : B →ₐ[R] (𝒜 ᵍ⊗[R] ℬ) :=
   AlgHom.ofLinearMap (R := R) (A := B) (B := 𝒜 ᵍ⊗[R] ℬ)
     (f := {
-       toFun := fun b => 1 ᵍ⊗ₜ b
+       toFun := fun b ↦ 1 ᵍ⊗ₜ b
        map_add' := by simp [tmul, TensorProduct.tmul_add]
        map_smul' := by simp [tmul, TensorProduct.tmul_smul] })
     (map_one := rfl)
     (map_mul := by
       rw [LinearMap.map_mul_iff]
-      refine DirectSum.decompose_lhom_ext ℬ fun i₁ => ?_
+      refine DirectSum.decompose_lhom_ext ℬ fun i₁ ↦ ?_
       ext b₁ b₂ : 2
       dsimp
       rw [tmul_coe_mul_one_tmul])
@@ -308,9 +308,9 @@ def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
     (by
       rw [LinearMap.map_mul_iff]
       ext a₁ : 3
-      refine DirectSum.decompose_lhom_ext ℬ fun j₁ => ?_
+      refine DirectSum.decompose_lhom_ext ℬ fun j₁ ↦ ?_
       ext b₁ : 3
-      refine DirectSum.decompose_lhom_ext 𝒜 fun i₂ => ?_
+      refine DirectSum.decompose_lhom_ext 𝒜 fun i₂ ↦ ?_
       ext a₂ b₂ : 2
       dsimp
       rw [tmul_coe_mul_coe_tmul]
@@ -335,7 +335,7 @@ def liftEquiv :
         ∀ ⦃i j⦄ (a : 𝒜 i) (b : ℬ j), fg.1 a * fg.2 b = (-1 : ℤˣ)^(j * i) • (fg.2 b * fg.1 a)} ≃
       ((𝒜 ᵍ⊗[R] ℬ) →ₐ[R] C) where
   toFun fg := lift 𝒜 ℬ _ _ fg.prop
-  invFun F := ⟨(F.comp (includeLeft 𝒜 ℬ), F.comp (includeRight 𝒜 ℬ)), fun i j a b => by
+  invFun F := ⟨(F.comp (includeLeft 𝒜 ℬ), F.comp (includeRight 𝒜 ℬ)), fun i j a b ↦ by
     dsimp
     rw [← map_mul, ← map_mul F, tmul_coe_mul_coe_tmul, one_mul, mul_one, AlgHom.map_smul_of_tower,
       tmul_one_mul_one_tmul, smul_smul, Int.units_mul_self, one_smul]⟩
@@ -362,7 +362,7 @@ def comm : (𝒜 ᵍ⊗[R] ℬ) ≃ₐ[R] (ℬ ᵍ⊗[R] 𝒜) :=
     (by
       dsimp
       simp_rw [auxEquiv_one, gradedComm_one, auxEquiv_symm_one])
-    (fun x y => by
+    (fun x y ↦ by
       dsimp
       simp_rw [auxEquiv_mul, gradedComm_gradedMul, LinearEquiv.symm_apply_eq,
         ← gradedComm_gradedMul, auxEquiv_mul, LinearEquiv.apply_symm_apply, gradedComm_gradedMul])

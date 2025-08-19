@@ -35,13 +35,13 @@ def Supports (s : Set α) (b : β) :=
 variable {s t : Set α} {a : α} {b : β}
 
 @[to_additive]
-theorem supports_of_mem (ha : a ∈ s) : Supports G s a := fun _ h => h ha
+theorem supports_of_mem (ha : a ∈ s) : Supports G s a := fun _ h ↦ h ha
 
 variable {G}
 
 @[to_additive]
-theorem Supports.mono (h : s ⊆ t) (hs : Supports G s b) : Supports G t b := fun _ hg =>
-  (hs _) fun _ ha => hg <| h ha
+theorem Supports.mono (h : s ⊆ t) (hs : Supports G s b) : Supports G t b := fun _ hg ↦
+  (hs _) fun _ ha ↦ hg <| h ha
 
 end SMul
 

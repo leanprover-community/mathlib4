@@ -160,13 +160,13 @@ def functorOfNatTrans {F G : C ⥤ C} (α : G ⟶ F) : Algebra F ⥤ Algebra G w
 /-- The identity transformation induces the identity endofunctor on the category of algebras. -/
 @[simps!]
 def functorOfNatTransId : functorOfNatTrans (𝟙 F) ≅ 𝟭 _ :=
-  NatIso.ofComponents fun X => isoMk (Iso.refl _)
+  NatIso.ofComponents fun X ↦ isoMk (Iso.refl _)
 
 /-- A composition of natural transformations gives the composition of corresponding functors. -/
 @[simps!]
 def functorOfNatTransComp {F₀ F₁ F₂ : C ⥤ C} (α : F₀ ⟶ F₁) (β : F₁ ⟶ F₂) :
     functorOfNatTrans (α ≫ β) ≅ functorOfNatTrans β ⋙ functorOfNatTrans α :=
-  NatIso.ofComponents fun X => isoMk (Iso.refl _)
+  NatIso.ofComponents fun X ↦ isoMk (Iso.refl _)
 
 /--
 If `α` and `β` are two equal natural transformations, then the functors of algebras induced by them
@@ -177,7 +177,7 @@ lemmas about.
 @[simps!]
 def functorOfNatTransEq {F G : C ⥤ C} {α β : F ⟶ G} (h : α = β) :
     functorOfNatTrans α ≅ functorOfNatTrans β :=
-  NatIso.ofComponents fun X => isoMk (Iso.refl _)
+  NatIso.ofComponents fun X ↦ isoMk (Iso.refl _)
 
 /-- Naturally isomorphic endofunctors give equivalent categories of algebras.
 Furthermore, they are equivalent as categories over `C`, that is,
@@ -352,13 +352,13 @@ def functorOfNatTrans {F G : C ⥤ C} (α : F ⟶ G) : Coalgebra F ⥤ Coalgebra
 /-- The identity transformation induces the identity endofunctor on the category of coalgebras. -/
 @[simps!]
 def functorOfNatTransId : functorOfNatTrans (𝟙 F) ≅ 𝟭 _ :=
-  NatIso.ofComponents fun X => isoMk (Iso.refl _)
+  NatIso.ofComponents fun X ↦ isoMk (Iso.refl _)
 
 /-- A composition of natural transformations gives the composition of corresponding functors. -/
 @[simps!]
 def functorOfNatTransComp {F₀ F₁ F₂ : C ⥤ C} (α : F₀ ⟶ F₁) (β : F₁ ⟶ F₂) :
     functorOfNatTrans (α ≫ β) ≅ functorOfNatTrans α ⋙ functorOfNatTrans β :=
-  NatIso.ofComponents fun X => isoMk (Iso.refl _)
+  NatIso.ofComponents fun X ↦ isoMk (Iso.refl _)
 
 /-- If `α` and `β` are two equal natural transformations, then the functors of coalgebras induced by
 them are isomorphic.
@@ -368,7 +368,7 @@ lemmas about.
 @[simps!]
 def functorOfNatTransEq {F G : C ⥤ C} {α β : F ⟶ G} (h : α = β) :
     functorOfNatTrans α ≅ functorOfNatTrans β :=
-  NatIso.ofComponents fun X => isoMk (Iso.refl _)
+  NatIso.ofComponents fun X ↦ isoMk (Iso.refl _)
 
 /-- Naturally isomorphic endofunctors give equivalent categories of coalgebras.
 Furthermore, they are equivalent as categories over `C`, that is,

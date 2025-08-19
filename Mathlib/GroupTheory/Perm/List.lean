@@ -267,7 +267,7 @@ theorem formPerm_pow_apply_head (x : α) (l : List α) (h : Nodup (x :: l)) (n :
 theorem formPerm_ext_iff {x y x' y' : α} {l l' : List α} (hd : Nodup (x :: y :: l))
     (hd' : Nodup (x' :: y' :: l')) :
     formPerm (x :: y :: l) = formPerm (x' :: y' :: l') ↔ (x :: y :: l) ~r (x' :: y' :: l') := by
-  refine ⟨fun h => ?_, fun hr => formPerm_eq_of_isRotated hd hr⟩
+  refine ⟨fun h ↦ ?_, fun hr ↦ formPerm_eq_of_isRotated hd hr⟩
   rw [Equiv.Perm.ext_iff] at h
   have hx : x' ∈ x :: y :: l := by
     have : x' ∈ { z | formPerm (x :: y :: l) z ≠ z } := by
@@ -325,7 +325,7 @@ theorem mem_of_formPerm_ne_self (l : List α) (x : α) (h : formPerm l x ≠ x) 
   simpa using h
 
 theorem formPerm_eq_self_of_notMem (l : List α) (x : α) (h : x ∉ l) : formPerm l x = x :=
-  by_contra fun H => h <| mem_of_formPerm_ne_self _ _ H
+  by_contra fun H ↦ h <| mem_of_formPerm_ne_self _ _ H
 
 @[deprecated (since := "2025-05-23")]
 alias formPerm_eq_self_of_not_mem := formPerm_eq_self_of_notMem
@@ -346,13 +346,13 @@ theorem formPerm_eq_formPerm_iff {l l' : List α} (hl : l.Nodup) (hl' : l'.Nodup
   rcases l with (_ | ⟨x, _ | ⟨y, l⟩⟩)
   · suffices l'.length ≤ 1 ↔ l' = nil ∨ l'.length ≤ 1 by
       simpa [eq_comm, formPerm_eq_one_iff, hl, hl', length_eq_zero_iff]
-    refine ⟨fun h => Or.inr h, ?_⟩
+    refine ⟨fun h ↦ Or.inr h, ?_⟩
     rintro (rfl | h)
     · simp
     · exact h
   · suffices l'.length ≤ 1 ↔ [x] ~r l' ∨ l'.length ≤ 1 by
       simpa [eq_comm, formPerm_eq_one_iff, hl, hl', length_eq_zero_iff, le_rfl]
-    refine ⟨fun h => Or.inr h, ?_⟩
+    refine ⟨fun h ↦ Or.inr h, ?_⟩
     rintro (h | h)
     · simp [← h.perm.length_eq]
     · exact h

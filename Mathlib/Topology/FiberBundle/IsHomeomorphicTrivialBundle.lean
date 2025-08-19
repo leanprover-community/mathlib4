@@ -62,9 +62,9 @@ end IsHomeomorphicTrivialFiberBundle
 /-- The first projection in a product is a trivial fiber bundle. -/
 theorem isHomeomorphicTrivialFiberBundle_fst :
     IsHomeomorphicTrivialFiberBundle F (Prod.fst : B × F → B) :=
-  ⟨Homeomorph.refl _, fun _x => rfl⟩
+  ⟨Homeomorph.refl _, fun _x ↦ rfl⟩
 
 /-- The second projection in a product is a trivial fiber bundle. -/
 theorem isHomeomorphicTrivialFiberBundle_snd :
     IsHomeomorphicTrivialFiberBundle F (Prod.snd : F × B → B) :=
-  ⟨Homeomorph.prodComm _ _, fun _x => rfl⟩
+  ⟨Homeomorph.prodComm _ _, fun _x ↦ rfl⟩

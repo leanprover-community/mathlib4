@@ -60,7 +60,7 @@ namespace AList
 theorem ext : ∀ {s t : AList β}, s.entries = t.entries → s = t
   | ⟨l₁, h₁⟩, ⟨l₂, _⟩, H => by congr
 
-instance [DecidableEq α] [∀ a, DecidableEq (β a)] : DecidableEq (AList β) := fun xs ys => by
+instance [DecidableEq α] [∀ a, DecidableEq (β a)] : DecidableEq (AList β) := fun xs ys ↦ by
   rw [AList.ext_iff]; infer_instance
 
 /-! ### keys -/
@@ -78,7 +78,7 @@ theorem keys_nodup (s : AList β) : s.keys.Nodup :=
 
 /-- The predicate `a ∈ s` means that `s` has a value associated to the key `a`. -/
 instance : Membership α (AList β) :=
-  ⟨fun s a => a ∈ s.keys⟩
+  ⟨fun s a ↦ a ∈ s.keys⟩
 
 theorem mem_keys {a : α} {s : AList β} : a ∈ s ↔ a ∈ s.keys :=
   Iff.rfl
@@ -194,7 +194,7 @@ end
 
 /-- Fold a function over the key-value pairs in the map. -/
 def foldl {δ : Type w} (f : δ → ∀ a, β a → δ) (d : δ) (m : AList β) : δ :=
-  m.entries.foldl (fun r a => f r a.1 a.2) d
+  m.entries.foldl (fun r a ↦ f r a.1 a.2) d
 
 /-! ### erase -/
 

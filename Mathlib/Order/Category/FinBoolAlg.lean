@@ -41,7 +41,7 @@ attribute [instance] FinBoolAlg.isFintype
 namespace FinBoolAlg
 
 instance : CoeSort FinBoolAlg Type* :=
-  ⟨fun X => X.carrier⟩
+  ⟨fun X ↦ X.carrier⟩
 
 /-- Construct a bundled `FinBoolAlg` from `BooleanAlgebra` + `Fintype`. -/
 abbrev of (α : Type*) [BooleanAlgebra α] [Fintype α] : FinBoolAlg where
@@ -102,8 +102,8 @@ def dual : FinBoolAlg ⥤ FinBoolAlg where
 def dualEquiv : FinBoolAlg ≌ FinBoolAlg where
   functor := dual
   inverse := dual
-  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
-  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  unitIso := NatIso.ofComponents fun X ↦ Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X ↦ Iso.mk <| OrderIso.dualDual X
 
 end FinBoolAlg
 

@@ -59,7 +59,7 @@ def TruncatedWittVector (_ : ℕ) (n : ℕ) (R : Type*) :=
   Fin n → R
 
 instance (p n : ℕ) (R : Type*) [Inhabited R] : Inhabited (TruncatedWittVector p n R) :=
-  ⟨fun _ => default⟩
+  ⟨fun _ ↦ default⟩
 
 variable {n R}
 
@@ -83,7 +83,7 @@ theorem coeff_mk (x : Fin n → R) (i : Fin n) : (mk p x).coeff i = x i :=
   rfl
 
 @[simp]
-theorem mk_coeff (x : TruncatedWittVector p n R) : (mk p fun i => x.coeff i) = x := by
+theorem mk_coeff (x : TruncatedWittVector p n R) : (mk p fun i ↦ x.coeff i) = x := by
   ext i; rw [coeff_mk]
 
 variable [CommRing R]
@@ -92,7 +92,7 @@ variable [CommRing R]
 by setting all coefficients after `x` to be 0.
 -/
 def out (x : TruncatedWittVector p n R) : 𝕎 R :=
-  @WittVector.mk' p _ fun i => if h : i < n then x.coeff ⟨i, h⟩ else 0
+  @WittVector.mk' p _ fun i ↦ if h : i < n then x.coeff ⟨i, h⟩ else 0
 
 @[simp]
 theorem coeff_out (x : TruncatedWittVector p n R) (i : Fin n) : x.out.coeff i = x.coeff i := by
@@ -116,7 +116,7 @@ section
 which has the same base `p` as `x`.
 This function is bundled into a ring homomorphism in `WittVector.truncate` -/
 def truncateFun (x : 𝕎 R) : TruncatedWittVector p n R :=
-  TruncatedWittVector.mk p fun i => x.coeff i
+  TruncatedWittVector.mk p fun i ↦ x.coeff i
 
 end
 
@@ -157,31 +157,31 @@ instance : One (TruncatedWittVector p n R) :=
   ⟨truncateFun n 1⟩
 
 instance : NatCast (TruncatedWittVector p n R) :=
-  ⟨fun i => truncateFun n i⟩
+  ⟨fun i ↦ truncateFun n i⟩
 
 instance : IntCast (TruncatedWittVector p n R) :=
-  ⟨fun i => truncateFun n i⟩
+  ⟨fun i ↦ truncateFun n i⟩
 
 instance : Add (TruncatedWittVector p n R) :=
-  ⟨fun x y => truncateFun n (x.out + y.out)⟩
+  ⟨fun x y ↦ truncateFun n (x.out + y.out)⟩
 
 instance : Mul (TruncatedWittVector p n R) :=
-  ⟨fun x y => truncateFun n (x.out * y.out)⟩
+  ⟨fun x y ↦ truncateFun n (x.out * y.out)⟩
 
 instance : Neg (TruncatedWittVector p n R) :=
-  ⟨fun x => truncateFun n (-x.out)⟩
+  ⟨fun x ↦ truncateFun n (-x.out)⟩
 
 instance : Sub (TruncatedWittVector p n R) :=
-  ⟨fun x y => truncateFun n (x.out - y.out)⟩
+  ⟨fun x y ↦ truncateFun n (x.out - y.out)⟩
 
 instance hasNatScalar : SMul ℕ (TruncatedWittVector p n R) :=
-  ⟨fun m x => truncateFun n (m • x.out)⟩
+  ⟨fun m x ↦ truncateFun n (m • x.out)⟩
 
 instance hasIntScalar : SMul ℤ (TruncatedWittVector p n R) :=
-  ⟨fun m x => truncateFun n (m • x.out)⟩
+  ⟨fun m x ↦ truncateFun n (m • x.out)⟩
 
 instance hasNatPow : Pow (TruncatedWittVector p n R) ℕ :=
-  ⟨fun x m => truncateFun n (x.out ^ m)⟩
+  ⟨fun x m ↦ truncateFun n (x.out ^ m)⟩
 
 @[simp]
 theorem coeff_zero (i : Fin n) : (0 : TruncatedWittVector p n R).coeff i = 0 := by
@@ -311,7 +311,7 @@ variable (p)
 
 @[simp]
 theorem truncate_mk' (f : ℕ → R) :
-    truncate n (@mk' p _ f) = TruncatedWittVector.mk _ fun k => f k := by
+    truncate n (@mk' p _ f) = TruncatedWittVector.mk _ fun k ↦ f k := by
   ext i
   simp only [coeff_truncate, TruncatedWittVector.coeff_mk]
 
@@ -413,7 +413,7 @@ variable (n)
 defining the `k`th entry to be the final entry of `fₖ s`.
 -/
 def liftFun (s : S) : 𝕎 R :=
-  @WittVector.mk' p _ fun k => TruncatedWittVector.coeff (Fin.last k) (f (k + 1) s)
+  @WittVector.mk' p _ fun k ↦ TruncatedWittVector.coeff (Fin.last k) (f (k + 1) s)
 
 variable {f} in
 include f_compat in
@@ -465,11 +465,11 @@ def liftEquiv : { f : ∀ k, S →+* TruncatedWittVector p k R // ∀ (k₁ k₂
     (TruncatedWittVector.truncate hk).comp (f k₂) = f k₁ } ≃ (S →+* 𝕎 R) where
   toFun f := lift f.1 f.2
   invFun g :=
-    ⟨fun k => (truncate k).comp g, by
+    ⟨fun k ↦ (truncate k).comp g, by
       intro _ _ h
       simp only [← RingHom.comp_assoc, truncate_comp_wittVector_truncate]⟩
   left_inv := by rintro ⟨f, hf⟩; simp only [truncate_comp_lift]
-  right_inv _ := lift_unique _ _ fun _ => rfl
+  right_inv _ := lift_unique _ _ fun _ ↦ rfl
 
 theorem hom_ext (g₁ g₂ : S →+* 𝕎 R) (h : ∀ k, (truncate k).comp g₁ = (truncate k).comp g₂) :
     g₁ = g₂ :=

@@ -155,7 +155,7 @@ protected def symm : PartialEquiv β α where
   left_inv' := e.right_inv'
   right_inv' := e.left_inv'
 
-instance : CoeFun (PartialEquiv α β) fun _ => α → β :=
+instance : CoeFun (PartialEquiv α β) fun _ ↦ α → β :=
   ⟨PartialEquiv.toFun⟩
 
 /-- See Note [custom simps projection] -/
@@ -201,16 +201,16 @@ theorem target_subset_range : e.target ⊆ range e :=
 
 theorem eq_symm_apply {x : α} {y : β} (hx : x ∈ e.source) (hy : y ∈ e.target) :
     x = e.symm y ↔ e x = y :=
-  ⟨fun h => by rw [← e.right_inv hy, h], fun h => by rw [← e.left_inv hx, h]⟩
+  ⟨fun h ↦ by rw [← e.right_inv hy, h], fun h ↦ by rw [← e.left_inv hx, h]⟩
 
-protected theorem mapsTo : MapsTo e e.source e.target := fun _ => e.map_source
+protected theorem mapsTo : MapsTo e e.source e.target := fun _ ↦ e.map_source
 
 theorem symm_mapsTo : MapsTo e.symm e.target e.source :=
   e.symm.mapsTo
 
-protected theorem leftInvOn : LeftInvOn e.symm e e.source := fun _ => e.left_inv
+protected theorem leftInvOn : LeftInvOn e.symm e e.source := fun _ ↦ e.left_inv
 
-protected theorem rightInvOn : RightInvOn e.symm e e.target := fun _ => e.right_inv
+protected theorem rightInvOn : RightInvOn e.symm e e.target := fun _ ↦ e.right_inv
 
 protected theorem invOn : InvOn e.symm e e.source e.target :=
   ⟨e.leftInvOn, e.rightInvOn⟩
@@ -274,8 +274,8 @@ theorem copy_eq (e : PartialEquiv α β) (f : α → β) (hf : ⇑e = f) (g : β
 protected def toEquiv : e.source ≃ e.target where
   toFun x := ⟨e x, e.map_source x.mem⟩
   invFun y := ⟨e.symm y, e.map_target y.mem⟩
-  left_inv := fun ⟨_, hx⟩ => Subtype.eq <| e.left_inv hx
-  right_inv := fun ⟨_, hy⟩ => Subtype.eq <| e.right_inv hy
+  left_inv := fun ⟨_, hx⟩ ↦ Subtype.eq <| e.left_inv hx
+  right_inv := fun ⟨_, hy⟩ ↦ Subtype.eq <| e.right_inv hy
 
 @[simp, mfld_simps]
 theorem symm_source : e.symm.source = e.target :=
@@ -319,17 +319,17 @@ theorem apply_mem_iff (h : e.IsImage s t) (hx : x ∈ e.source) : e x ∈ t ↔ 
   h hx
 
 theorem symm_apply_mem_iff (h : e.IsImage s t) : ∀ ⦃y⦄, y ∈ e.target → (e.symm y ∈ s ↔ y ∈ t) :=
-  e.forall_mem_target.mpr fun x hx => by rw [e.left_inv hx, h hx]
+  e.forall_mem_target.mpr fun x hx ↦ by rw [e.left_inv hx, h hx]
 
 protected theorem symm (h : e.IsImage s t) : e.symm.IsImage t s :=
   h.symm_apply_mem_iff
 
 @[simp]
 theorem symm_iff : e.symm.IsImage t s ↔ e.IsImage s t :=
-  ⟨fun h => h.symm, fun h => h.symm⟩
+  ⟨fun h ↦ h.symm, fun h ↦ h.symm⟩
 
 protected theorem mapsTo (h : e.IsImage s t) : MapsTo e (e.source ∩ s) (e.target ∩ t) :=
-  fun _ hx => ⟨e.mapsTo hx.1, (h hx.1).2 hx.2⟩
+  fun _ hx ↦ ⟨e.mapsTo hx.1, (h hx.1).2 hx.2⟩
 
 theorem symm_mapsTo (h : e.IsImage s t) : MapsTo e.symm (e.target ∩ t) (e.source ∩ s) :=
   h.symm.mapsTo
@@ -368,13 +368,13 @@ theorem of_image_eq (h : e '' (e.source ∩ s) = e.target ∩ t) : e.IsImage s t
 theorem of_symm_image_eq (h : e.symm '' (e.target ∩ t) = e.source ∩ s) : e.IsImage s t :=
   of_preimage_eq <| Eq.trans (iff_preimage_eq.2 rfl).symm_image_eq.symm h
 
-protected theorem compl (h : e.IsImage s t) : e.IsImage sᶜ tᶜ := fun _ hx => not_congr (h hx)
+protected theorem compl (h : e.IsImage s t) : e.IsImage sᶜ tᶜ := fun _ hx ↦ not_congr (h hx)
 
 protected theorem inter {s' t'} (h : e.IsImage s t) (h' : e.IsImage s' t') :
-    e.IsImage (s ∩ s') (t ∩ t') := fun _ hx => and_congr (h hx) (h' hx)
+    e.IsImage (s ∩ s') (t ∩ t') := fun _ hx ↦ and_congr (h hx) (h' hx)
 
 protected theorem union {s' t'} (h : e.IsImage s t) (h' : e.IsImage s' t') :
-    e.IsImage (s ∪ s') (t ∪ t') := fun _ hx => or_congr (h hx) (h' hx)
+    e.IsImage (s ∪ s') (t ∪ t') := fun _ hx ↦ or_congr (h hx) (h' hx)
 
 protected theorem diff {s' t'} (h : e.IsImage s t) (h' : e.IsImage s' t') :
     e.IsImage (s \ s') (t \ t') :=
@@ -402,7 +402,7 @@ theorem symm_eq_on_of_inter_eq_of_eqOn {e' : PartialEquiv α β} (h : e.IsImage 
 
 end IsImage
 
-theorem isImage_source_target : e.IsImage e.source e.target := fun x hx => by simp [hx]
+theorem isImage_source_target : e.IsImage e.source e.target := fun x hx ↦ by simp [hx]
 
 theorem isImage_source_target_of_disjoint (e' : PartialEquiv α β) (hs : Disjoint e.source e'.source)
     (ht : Disjoint e.target e'.target) : e.IsImage e'.source e'.target :=
@@ -432,12 +432,12 @@ theorem symm_image_target_inter_eq' (s : Set β) : e.symm '' (e.target ∩ s) = 
 
 theorem source_inter_preimage_inv_preimage (s : Set α) :
     e.source ∩ e ⁻¹' (e.symm ⁻¹' s) = e.source ∩ s :=
-  Set.ext fun x => and_congr_right_iff.2 fun hx =>
+  Set.ext fun x ↦ and_congr_right_iff.2 fun hx ↦
     by simp only [mem_preimage, e.left_inv hx]
 
 theorem source_inter_preimage_target_inter (s : Set β) :
     e.source ∩ e ⁻¹' (e.target ∩ s) = e.source ∩ e ⁻¹' s :=
-  ext fun _ => ⟨fun hx => ⟨hx.1, hx.2.2⟩, fun hx => ⟨hx.1, e.map_source hx.1, hx.2⟩⟩
+  ext fun _ ↦ ⟨fun hx ↦ ⟨hx.1, hx.2.2⟩, fun hx ↦ ⟨hx.1, e.map_source hx.1, hx.2⟩⟩
 
 theorem target_inter_inv_preimage_preimage (s : Set β) :
     e.target ∩ e.symm ⁻¹' (e ⁻¹' s) = e.target ∩ s :=
@@ -498,7 +498,7 @@ theorem restr_target (s : Set α) : (e.restr s).target = e.target ∩ e.symm ⁻
 
 theorem restr_eq_of_source_subset {e : PartialEquiv α β} {s : Set α} (h : e.source ⊆ s) :
     e.restr s = e :=
-  PartialEquiv.ext (fun _ => rfl) (fun _ => rfl) (by simp [inter_eq_self_of_subset_left h])
+  PartialEquiv.ext (fun _ ↦ rfl) (fun _ ↦ rfl) (by simp [inter_eq_self_of_subset_left h])
 
 @[simp, mfld_simps]
 theorem restr_univ {e : PartialEquiv α β} : e.restr univ = e :=
@@ -632,32 +632,32 @@ theorem inv_image_trans_target : e'.symm '' (e.trans e').target = e'.source ∩ 
   image_trans_source e'.symm e.symm
 
 theorem trans_assoc (e'' : PartialEquiv γ δ) : (e.trans e').trans e'' = e.trans (e'.trans e'') :=
-  PartialEquiv.ext (fun _ => rfl) (fun _ => rfl)
+  PartialEquiv.ext (fun _ ↦ rfl) (fun _ ↦ rfl)
     (by simp [trans_source, @preimage_comp α β γ, inter_assoc])
 
 @[simp, mfld_simps]
 theorem trans_refl : e.trans (PartialEquiv.refl β) = e :=
-  PartialEquiv.ext (fun _ => rfl) (fun _ => rfl) (by simp [trans_source])
+  PartialEquiv.ext (fun _ ↦ rfl) (fun _ ↦ rfl) (by simp [trans_source])
 
 @[simp, mfld_simps]
 theorem refl_trans : (PartialEquiv.refl α).trans e = e :=
-  PartialEquiv.ext (fun _ => rfl) (fun _ => rfl) (by simp [trans_source, preimage_id])
+  PartialEquiv.ext (fun _ ↦ rfl) (fun _ ↦ rfl) (by simp [trans_source, preimage_id])
 
 theorem trans_ofSet (s : Set β) : e.trans (ofSet s) = e.restr (e ⁻¹' s) :=
-  PartialEquiv.ext (fun _ => rfl) (fun _ => rfl) rfl
+  PartialEquiv.ext (fun _ ↦ rfl) (fun _ ↦ rfl) rfl
 
 theorem trans_refl_restr (s : Set β) :
     e.trans ((PartialEquiv.refl β).restr s) = e.restr (e ⁻¹' s) :=
-  PartialEquiv.ext (fun _ => rfl) (fun _ => rfl) (by simp [trans_source])
+  PartialEquiv.ext (fun _ ↦ rfl) (fun _ ↦ rfl) (by simp [trans_source])
 
 theorem trans_refl_restr' (s : Set β) :
     e.trans ((PartialEquiv.refl β).restr s) = e.restr (e.source ∩ e ⁻¹' s) :=
-  PartialEquiv.ext (fun _ => rfl) (fun _ => rfl) <| by
+  PartialEquiv.ext (fun _ ↦ rfl) (fun _ ↦ rfl) <| by
     simp only [trans_source, restr_source, refl_source, univ_inter]
     rw [← inter_assoc, inter_self]
 
 theorem restr_trans (s : Set α) : (e.restr s).trans e' = (e.trans e').restr s :=
-  PartialEquiv.ext (fun _ => rfl) (fun _ => rfl) <| by
+  PartialEquiv.ext (fun _ ↦ rfl) (fun _ ↦ rfl) <| by
     simp [trans_source, inter_comm, inter_assoc]
 
 /-- A lemma commonly useful when `e` and `e'` are charts of a manifold. -/
@@ -731,7 +731,7 @@ theorem EqOnSource.source_inter_preimage_eq {e e' : PartialEquiv α β} (he : e 
 the restriction of the identity to the source. -/
 theorem self_trans_symm : e.trans e.symm ≈ ofSet e.source := by
   have A : (e.trans e.symm).source = e.source := by mfld_set_tac
-  refine ⟨by rw [A, ofSet_source], fun x hx => ?_⟩
+  refine ⟨by rw [A, ofSet_source], fun x hx ↦ ?_⟩
   rw [A] at hx
   simp only [hx, mfld_simps]
 
@@ -743,7 +743,7 @@ theorem symm_trans_self : e.symm.trans e ≈ ofSet e.target :=
 /-- Two equivalent partial equivs are equal when the source and target are `univ`. -/
 theorem eq_of_eqOnSource_univ (e e' : PartialEquiv α β) (h : e ≈ e') (s : e.source = univ)
     (t : e.target = univ) : e = e' := by
-  refine PartialEquiv.ext (fun x => ?_) (fun x => ?_) h.1
+  refine PartialEquiv.ext (fun x ↦ ?_) (fun x ↦ ?_) h.1
   · apply h.2
     rw [s]
     exact mem_univ _
@@ -776,11 +776,11 @@ theorem prod_target (e : PartialEquiv α β) (e' : PartialEquiv γ δ) :
 
 @[simp, mfld_simps]
 theorem prod_coe (e : PartialEquiv α β) (e' : PartialEquiv γ δ) :
-    (e.prod e' : α × γ → β × δ) = fun p => (e p.1, e' p.2) :=
+    (e.prod e' : α × γ → β × δ) = fun p ↦ (e p.1, e' p.2) :=
   rfl
 
 theorem prod_coe_symm (e : PartialEquiv α β) (e' : PartialEquiv γ δ) :
-    ((e.prod e').symm : β × δ → α × γ) = fun p => (e.symm p.1, e'.symm p.2) :=
+    ((e.prod e').symm : β × δ → α × γ) = fun p ↦ (e.symm p.1, e'.symm p.2) :=
   rfl
 
 @[simp, mfld_simps]
@@ -852,12 +852,12 @@ variable {ι : Type*} {αi βi γi : ι → Type*}
 protected def pi (ei : ∀ i, PartialEquiv (αi i) (βi i)) : PartialEquiv (∀ i, αi i) (∀ i, βi i) where
   toFun := Pi.map fun i ↦ ei i
   invFun := Pi.map fun i ↦ (ei i).symm
-  source := pi univ fun i => (ei i).source
-  target := pi univ fun i => (ei i).target
+  source := pi univ fun i ↦ (ei i).source
+  target := pi univ fun i ↦ (ei i).target
   map_source' _ hf i hi := (ei i).map_source (hf i hi)
   map_target' _ hf i hi := (ei i).map_target (hf i hi)
-  left_inv' _ hf := funext fun i => (ei i).left_inv (hf i trivial)
-  right_inv' _ hf := funext fun i => (ei i).right_inv (hf i trivial)
+  left_inv' _ hf := funext fun i ↦ (ei i).left_inv (hf i trivial)
+  right_inv' _ hf := funext fun i ↦ (ei i).right_inv (hf i trivial)
 
 @[simp, mfld_simps]
 theorem pi_symm (ei : ∀ i, PartialEquiv (αi i) (βi i)) :
@@ -939,7 +939,7 @@ theorem symm_toPartialEquiv : e.symm.toPartialEquiv = e.toPartialEquiv.symm :=
 @[simp, mfld_simps]
 theorem trans_toPartialEquiv :
     (e.trans e').toPartialEquiv = e.toPartialEquiv.trans e'.toPartialEquiv :=
-  PartialEquiv.ext (fun _ => rfl) (fun _ => rfl)
+  PartialEquiv.ext (fun _ ↦ rfl) (fun _ ↦ rfl)
     (by simp [PartialEquiv.trans_source, Equiv.toPartialEquiv])
 
 /-- Precompose a partial equivalence with an equivalence.

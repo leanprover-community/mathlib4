@@ -46,11 +46,11 @@ theorem image2_mem_map₂ (hs : s ∈ f) (ht : t ∈ g) : image2 m s t ∈ map�
   ⟨_, hs, _, ht, Subset.rfl⟩
 
 theorem map_prod_eq_map₂ (m : α → β → γ) (f : Filter α) (g : Filter β) :
-    Filter.map (fun p : α × β => m p.1 p.2) (f ×ˢ g) = map₂ m f g := by
+    Filter.map (fun p : α × β ↦ m p.1 p.2) (f ×ˢ g) = map₂ m f g := by
   rw [map₂, copy_eq, uncurry_def]
 
 theorem map_prod_eq_map₂' (m : α × β → γ) (f : Filter α) (g : Filter β) :
-    Filter.map m (f ×ˢ g) = map₂ (fun a b => m (a, b)) f g :=
+    Filter.map m (f ×ˢ g) = map₂ (fun a b ↦ m (a, b)) f g :=
   map_prod_eq_map₂ m.curry f g
 
 @[simp]
@@ -62,7 +62,7 @@ theorem map₂_mk_eq_prod (f : Filter α) (g : Filter β) : map₂ Prod.mk f g =
 --   exact ⟨mem_of_superset hu h.1, mem_of_superset hv h.2⟩ }, fun h ↦ image2_mem_map₂ h.1 h.2⟩
 @[gcongr]
 theorem map₂_mono (hf : f₁ ≤ f₂) (hg : g₁ ≤ g₂) : map₂ m f₁ g₁ ≤ map₂ m f₂ g₂ :=
-  fun _ ⟨s, hs, t, ht, hst⟩ => ⟨s, hf hs, t, hg ht, hst⟩
+  fun _ ⟨s, hs, t, ht, hst⟩ ↦ ⟨s, hf hs, t, hg ht, hst⟩
 
 theorem map₂_mono_left (h : g₁ ≤ g₂) : map₂ m f g₁ ≤ map₂ m f g₂ :=
   map₂_mono Subset.rfl h
@@ -73,7 +73,7 @@ theorem map₂_mono_right (h : f₁ ≤ f₂) : map₂ m f₁ g ≤ map₂ m f�
 @[simp]
 theorem le_map₂_iff {h : Filter γ} :
     h ≤ map₂ m f g ↔ ∀ ⦃s⦄, s ∈ f → ∀ ⦃t⦄, t ∈ g → image2 m s t ∈ h :=
-  ⟨fun H _ hs _ ht => H <| image2_mem_map₂ hs ht, fun H _ ⟨_, hs, _, ht, hu⟩ =>
+  ⟨fun H _ hs _ ht ↦ H <| image2_mem_map₂ hs ht, fun H _ ⟨_, hs, _, ht, hu⟩ ↦
     mem_of_superset (H hs ht) hu⟩
 
 @[simp]
@@ -122,26 +122,26 @@ theorem map₂_pure_right : map₂ m f (pure b) = f.map (m · b) := by
 theorem map₂_pure : map₂ m (pure a) (pure b) = pure (m a b) := by rw [map₂_pure_right, map_pure]
 
 theorem map₂_swap (m : α → β → γ) (f : Filter α) (g : Filter β) :
-    map₂ m f g = map₂ (fun a b => m b a) g f := by
+    map₂ m f g = map₂ (fun a b ↦ m b a) g f := by
   rw [← map_prod_eq_map₂, prod_comm, map_map, ← map_prod_eq_map₂, Function.comp_def]
 
 @[simp]
-theorem map₂_left [NeBot g] : map₂ (fun x _ => x) f g = f := by
+theorem map₂_left [NeBot g] : map₂ (fun x _ ↦ x) f g = f := by
   rw [← map_prod_eq_map₂, map_fst_prod]
 
 @[simp]
-theorem map₂_right [NeBot f] : map₂ (fun _ y => y) f g = g := by rw [map₂_swap, map₂_left]
+theorem map₂_right [NeBot f] : map₂ (fun _ y ↦ y) f g = g := by rw [map₂_swap, map₂_left]
 
 theorem map_map₂ (m : α → β → γ) (n : γ → δ) :
-    (map₂ m f g).map n = map₂ (fun a b => n (m a b)) f g := by
+    (map₂ m f g).map n = map₂ (fun a b ↦ n (m a b)) f g := by
   rw [← map_prod_eq_map₂, ← map_prod_eq_map₂, map_map]; rfl
 
 theorem map₂_map_left (m : γ → β → δ) (n : α → γ) :
-    map₂ m (f.map n) g = map₂ (fun a b => m (n a) b) f g := by
+    map₂ m (f.map n) g = map₂ (fun a b ↦ m (n a) b) f g := by
   rw [← map_prod_eq_map₂, ← map_prod_eq_map₂, ← @map_id _ g, prod_map_map_eq, map_map, map_id]; rfl
 
 theorem map₂_map_right (m : α → γ → δ) (n : β → γ) :
-    map₂ m f (g.map n) = map₂ (fun a b => m a (n b)) f g := by
+    map₂ m f (g.map n) = map₂ (fun a b ↦ m a (n b)) f g := by
   rw [map₂_swap, map₂_map_left, map₂_swap]
 
 @[simp]
@@ -178,13 +178,13 @@ theorem map₂_left_comm {m : α → δ → ε} {n : β → γ → δ} {m' : α 
     (h_left_comm : ∀ a b c, m a (n b c) = n' b (m' a c)) :
     map₂ m f (map₂ n g h) = map₂ n' g (map₂ m' f h) := by
   rw [map₂_swap m', map₂_swap m]
-  exact map₂_assoc fun _ _ _ => h_left_comm _ _ _
+  exact map₂_assoc fun _ _ _ ↦ h_left_comm _ _ _
 
 theorem map₂_right_comm {m : δ → γ → ε} {n : α → β → δ} {m' : α → γ → δ'} {n' : δ' → β → ε}
     (h_right_comm : ∀ a b c, m (n a b) c = n' (m' a c) b) :
     map₂ m (map₂ n f g) h = map₂ n' (map₂ m' f h) g := by
   rw [map₂_swap n, map₂_swap n']
-  exact map₂_assoc fun _ _ _ => h_right_comm _ _ _
+  exact map₂_assoc fun _ _ _ ↦ h_right_comm _ _ _
 
 theorem map_map₂_distrib {n : γ → δ} {m' : α' → β' → δ} {n₁ : α → α'} {n₂ : β → β'}
     (h_distrib : ∀ a b, n (m a b) = m' (n₁ a) (n₂ b)) :
@@ -204,12 +204,12 @@ theorem map_map₂_distrib_right {n : γ → δ} {m' : α → β' → δ} {n' : 
 /-- Symmetric statement to `Filter.map_map₂_distrib_left`. -/
 theorem map₂_map_left_comm {m : α' → β → γ} {n : α → α'} {m' : α → β → δ} {n' : δ → γ}
     (h_left_comm : ∀ a b, m (n a) b = n' (m' a b)) : map₂ m (f.map n) g = (map₂ m' f g).map n' :=
-  (map_map₂_distrib_left fun a b => (h_left_comm a b).symm).symm
+  (map_map₂_distrib_left fun a b ↦ (h_left_comm a b).symm).symm
 
 /-- Symmetric statement to `Filter.map_map₂_distrib_right`. -/
 theorem map_map₂_right_comm {m : α → β' → γ} {n : β → β'} {m' : α → β → δ} {n' : δ → γ}
     (h_right_comm : ∀ a b, m a (n b) = n' (m' a b)) : map₂ m f (g.map n) = (map₂ m' f g).map n' :=
-  (map_map₂_distrib_right fun a b => (h_right_comm a b).symm).symm
+  (map_map₂_distrib_right fun a b ↦ (h_right_comm a b).symm).symm
 
 /-- The other direction does not hold because of the `f-f` cross terms on the RHS. -/
 theorem map₂_distrib_le_left {m : α → δ → ε} {n : β → γ → δ} {m₁ : α → β → β'} {m₂ : α → γ → γ'}
@@ -235,7 +235,7 @@ theorem map_map₂_antidistrib {n : γ → δ} {m' : β' → α' → δ} {n₁ :
     (h_antidistrib : ∀ a b, n (m a b) = m' (n₁ b) (n₂ a)) :
     (map₂ m f g).map n = map₂ m' (g.map n₁) (f.map n₂) := by
   rw [map₂_swap m]
-  exact map_map₂_distrib fun _ _ => h_antidistrib _ _
+  exact map_map₂_distrib fun _ _ ↦ h_antidistrib _ _
 
 /-- Symmetric statement to `Filter.map₂_map_left_anticomm`. -/
 theorem map_map₂_antidistrib_left {n : γ → δ} {m' : β' → α → δ} {n' : β → β'}
@@ -251,13 +251,13 @@ theorem map_map₂_antidistrib_right {n : γ → δ} {m' : β → α' → δ} {n
 theorem map₂_map_left_anticomm {m : α' → β → γ} {n : α → α'} {m' : β → α → δ} {n' : δ → γ}
     (h_left_anticomm : ∀ a b, m (n a) b = n' (m' b a)) :
     map₂ m (f.map n) g = (map₂ m' g f).map n' :=
-  (map_map₂_antidistrib_left fun a b => (h_left_anticomm b a).symm).symm
+  (map_map₂_antidistrib_left fun a b ↦ (h_left_anticomm b a).symm).symm
 
 /-- Symmetric statement to `Filter.map_map₂_antidistrib_right`. -/
 theorem map_map₂_right_anticomm {m : α → β' → γ} {n : β → β'} {m' : β → α → δ} {n' : δ → γ}
     (h_right_anticomm : ∀ a b, m a (n b) = n' (m' b a)) :
     map₂ m f (g.map n) = (map₂ m' g f).map n' :=
-  (map_map₂_antidistrib_right fun a b => (h_right_anticomm b a).symm).symm
+  (map_map₂_antidistrib_right fun a b ↦ (h_right_anticomm b a).symm).symm
 
 /-- If `a` is a left identity for `f : α → β → β`, then `pure a` is a left identity for
 `Filter.map₂ f`. -/

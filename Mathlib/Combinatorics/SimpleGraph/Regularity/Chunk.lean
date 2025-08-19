@@ -76,7 +76,7 @@ We estimate the density between parts of `chunk`.
 
 theorem biUnion_star_subset_nonuniformWitness :
     (star hP G ε hU V).biUnion id ⊆ G.nonuniformWitness ε U V :=
-  biUnion_subset_iff_forall_subset.2 fun _ hA => (mem_filter.1 hA).2
+  biUnion_subset_iff_forall_subset.2 fun _ hA ↦ (mem_filter.1 hA).2
 
 variable {hP G ε hU V} {𝒜 : Finset (Finset α)} {s : Finset α}
 
@@ -91,20 +91,20 @@ private theorem card_nonuniformWitness_sdiff_biUnion_star (hV : V ∈ P.parts) (
   have q : G.nonuniformWitness ε U V \ (star hP G ε hU V).biUnion id ⊆
       {B ∈ (atomise U <| P.nonuniformWitnesses G ε U).parts |
         B ⊆ G.nonuniformWitness ε U V ∧ B.Nonempty}.biUnion
-        fun B => B \ {A ∈ (chunk hP G ε hU).parts | A ⊆ B}.biUnion id := by
+        fun B ↦ B \ {A ∈ (chunk hP G ε hU).parts | A ⊆ B}.biUnion id := by
     intro x hx
     rw [← biUnion_filter_atomise hX (G.nonuniformWitness_subset h₂), star, mem_sdiff,
       mem_biUnion] at hx
     simp only [not_exists, mem_biUnion, and_imp, mem_filter,
       not_and, mem_sdiff, id, mem_sdiff] at hx ⊢
     obtain ⟨⟨B, hB₁, hB₂⟩, hx⟩ := hx
-    exact ⟨B, hB₁, hB₂, fun A hA AB => hx A hA <| AB.trans hB₁.2.1⟩
+    exact ⟨B, hB₁, hB₂, fun A hA AB ↦ hx A hA <| AB.trans hB₁.2.1⟩
   apply (card_le_card q).trans (card_biUnion_le.trans _)
   trans ∑ B ∈ (atomise U <| P.nonuniformWitnesses G ε U).parts with
     B ⊆ G.nonuniformWitness ε U V ∧ B.Nonempty, m
   · suffices ∀ B ∈ (atomise U <| P.nonuniformWitnesses G ε U).parts,
         #(B \ {A ∈ (chunk hP G ε hU).parts | A ⊆ B}.biUnion id) ≤ m by
-      exact sum_le_sum fun B hB => this B <| filter_subset _ _ hB
+      exact sum_le_sum fun B hB ↦ this B <| filter_subset _ _ hB
     intro B hB
     unfold chunk
     split_ifs with h₁
@@ -181,14 +181,14 @@ theorem card_eq_of_mem_parts_chunk (hs : s ∈ (chunk hP G ε hU).parts) :
   split_ifs at hs <;> exact card_eq_of_mem_parts_equitabilise hs
 
 theorem m_le_card_of_mem_chunk_parts (hs : s ∈ (chunk hP G ε hU).parts) : m ≤ #s :=
-  (card_eq_of_mem_parts_chunk hs).elim ge_of_eq fun i => by simp [i]
+  (card_eq_of_mem_parts_chunk hs).elim ge_of_eq fun i ↦ by simp [i]
 
 theorem card_le_m_add_one_of_mem_chunk_parts (hs : s ∈ (chunk hP G ε hU).parts) : #s ≤ m + 1 :=
-  (card_eq_of_mem_parts_chunk hs).elim (fun i => by simp [i]) fun i => i.le
+  (card_eq_of_mem_parts_chunk hs).elim (fun i ↦ by simp [i]) fun i ↦ i.le
 
 theorem card_biUnion_star_le_m_add_one_card_star_mul :
     (#((star hP G ε hU V).biUnion id) : ℝ) ≤ #(star hP G ε hU V) * (m + 1) :=
-  mod_cast card_biUnion_le_card_mul _ _ _ fun _ hs =>
+  mod_cast card_biUnion_le_card_mul _ _ _ fun _ hs ↦
     card_le_m_add_one_of_mem_chunk_parts <| star_subset_chunk hs
 
 private theorem le_sum_card_subset_chunk_parts (h𝒜 : 𝒜 ⊆ (chunk hP G ε hU).parts) (hs : s ∈ 𝒜) :
@@ -196,7 +196,7 @@ private theorem le_sum_card_subset_chunk_parts (h𝒜 : 𝒜 ⊆ (chunk hP G ε 
   rw [mul_div_assoc', div_le_iff₀ coe_m_add_one_pos, mul_right_comm]
   gcongr
   · rw [← (ofSubset _ h𝒜 rfl).sum_card_parts, ofSubset_parts, ← cast_mul, cast_le]
-    exact card_nsmul_le_sum _ _ _ fun x hx => m_le_card_of_mem_chunk_parts <| h𝒜 hx
+    exact card_nsmul_le_sum _ _ _ fun x hx ↦ m_le_card_of_mem_chunk_parts <| h𝒜 hx
   · exact mod_cast card_le_m_add_one_of_mem_chunk_parts (h𝒜 hs)
 
 private theorem sum_card_subset_chunk_parts_le (m_pos : (0 : ℝ) < m)
@@ -205,7 +205,7 @@ private theorem sum_card_subset_chunk_parts_le (m_pos : (0 : ℝ) < m)
   rw [sup_eq_biUnion, mul_div_assoc', le_div_iff₀ m_pos, mul_right_comm]
   gcongr
   · norm_cast
-    refine card_biUnion_le_card_mul _ _ _ fun x hx => ?_
+    refine card_biUnion_le_card_mul _ _ _ fun x hx ↦ ?_
     apply card_le_m_add_one_of_mem_chunk_parts (h𝒜 hx)
   · exact mod_cast m_le_card_of_mem_chunk_parts (h𝒜 hs)
 
@@ -366,7 +366,7 @@ private theorem abs_density_star_sub_density_le_eps (hPε : ↑100 ≤ ↑4 ^ #P
     (biUnion_star_subset_nonuniformWitness hP G ε hU V)
     (biUnion_star_subset_nonuniformWitness hP G ε hV U) (by sz_positivity)
     (one_sub_eps_mul_card_nonuniformWitness_le_card_star hV hUV' hUV hPε hε₁)
-    (one_sub_eps_mul_card_nonuniformWitness_le_card_star hU hUV'.symm (fun hVU => hUV hVU.symm)
+    (one_sub_eps_mul_card_nonuniformWitness_le_card_star hU hUV'.symm (fun hVU ↦ hUV hVU.symm)
       hPε hε₁) using 1
   linarith
 
@@ -468,7 +468,7 @@ theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : #P.parts * 16 ^ #P.p
       have Ul : 4 / 5 * ε ≤ #(star hP G ε hU V) / _ :=
         eps_le_card_star_div hPα hPε hε₁ hU hV hUVne hUV
       have Vl : 4 / 5 * ε ≤ #(star hP G ε hV U) / _ :=
-        eps_le_card_star_div hPα hPε hε₁ hV hU hUVne.symm fun h => hUV h.symm
+        eps_le_card_star_div hPα hPε hε₁ hV hU hUVne.symm fun h ↦ hUV h.symm
       rw [show (16 : ℝ) = ↑4 ^ 2 by norm_num, pow_right_comm, sq ((4 : ℝ) ^ _), ←
         _root_.div_mul_div_comm, mul_assoc]
       have : 0 < ε := by sz_positivity
@@ -488,8 +488,8 @@ theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : #P.parts * 16 ^ #P.p
           (chunk hP G ε hU).parts.product (chunk hP G ε hV).parts :=
         product_subset_product star_subset_chunk star_subset_chunk
       have hε : 0 ≤ ε := by sz_positivity
-      have sp : ∀ (a b : Finset (Finset α)), a.product b = a ×ˢ b := fun a b => rfl
-      have := add_div_le_sum_sq_div_card t (fun x => (G.edgeDensity x.1 x.2 : ℝ))
+      have sp : ∀ (a b : Finset (Finset α)), a.product b = a ×ˢ b := fun a b ↦ rfl
+      have := add_div_le_sum_sq_div_card t (fun x ↦ (G.edgeDensity x.1 x.2 : ℝ))
         ((G.edgeDensity U V : ℝ) ^ 2 - ε ^ 5 / ↑25) (show 0 ≤ 3 / 4 * ε by linarith) ?_ ?_
       · simp_rw [sp, card_product, card_chunk (m_pos hPα).ne', ← mul_pow, cast_pow, mul_pow,
           div_pow, ← mul_assoc] at this

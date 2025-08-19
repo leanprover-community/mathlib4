@@ -103,8 +103,8 @@ open EquivEven
 
 /-- The embedding from the smaller algebra into the new larger one. -/
 def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
-  refine CliffordAlgebra.lift Q ⟨?_, fun m => ?_⟩
-  · refine LinearMap.codRestrict _ ?_ fun m => Submodule.mem_iSup_of_mem ⟨2, rfl⟩ ?_
+  refine CliffordAlgebra.lift Q ⟨?_, fun m ↦ ?_⟩
+  · refine LinearMap.codRestrict _ ?_ fun m ↦ Submodule.mem_iSup_of_mem ⟨2, rfl⟩ ?_
     · exact (LinearMap.mulLeft R <| e0 Q).comp (v Q)
     rw [Subtype.coe_mk, pow_two]
     exact Submodule.mul_mem_mul (LinearMap.mem_range_self _ _) (LinearMap.mem_range_self _ _)
@@ -135,7 +135,7 @@ def ofEven : CliffordAlgebra.even (Q' Q) →ₐ[R] CliffordAlgebra Q := by
             (Algebra.linearMap R _).comp (LinearMap.snd _ _ _)).compl₂
       ((ι Q).comp (LinearMap.fst _ _ _) - (Algebra.linearMap R _).comp (LinearMap.snd _ _ _))
   haveI f_apply : ∀ x y, f x y = (ι Q x.1 + algebraMap R _ x.2) * (ι Q y.1 - algebraMap R _ y.2) :=
-    fun x y => by rfl
+    fun x y ↦ by rfl
   haveI hc : ∀ (r : R) (x : CliffordAlgebra Q), Commute (algebraMap _ _ r) x := Algebra.commutes
   haveI hm :
     ∀ m : M × R,
@@ -157,8 +157,8 @@ theorem ofEven_ι (x y : M × R) :
 theorem toEven_comp_ofEven : (toEven Q).comp (ofEven Q) = AlgHom.id R _ :=
   even.algHom_ext (Q' Q) <|
     EvenHom.ext <|
-      LinearMap.ext fun m₁ =>
-        LinearMap.ext fun m₂ =>
+      LinearMap.ext fun m₁ ↦
+        LinearMap.ext fun m₂ ↦
           Subtype.ext <|
             let ⟨m₁, r₁⟩ := m₁
             let ⟨m₂, r₂⟩ := m₂
@@ -188,7 +188,7 @@ theorem toEven_comp_ofEven : (toEven Q).comp (ofEven Q) = AlgHom.id R _ :=
 
 theorem ofEven_comp_toEven : (ofEven Q).comp (toEven Q) = AlgHom.id R _ :=
   CliffordAlgebra.hom_ext <|
-    LinearMap.ext fun m =>
+    LinearMap.ext fun m ↦
       calc
         ofEven Q (toEven Q (ι Q m)) = ofEven Q ⟨_, (toEven Q (ι Q m)).prop⟩ := by
           rw [Subtype.coe_eta]
@@ -223,9 +223,9 @@ def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
     CliffordAlgebra.even Q →ₐ[R] CliffordAlgebra.even Q' :=
   even.lift Q <|
     { bilin := -(even.ι Q' :).bilin
-      contract := fun m => by
+      contract := fun m ↦ by
         simp_rw [LinearMap.neg_apply, EvenHom.contract, h, QuadraticMap.neg_apply, map_neg, neg_neg]
-      contract_mid := fun m₁ m₂ m₃ => by
+      contract_mid := fun m₁ m₂ m₃ ↦ by
         simp_rw [LinearMap.neg_apply, neg_mul_neg, EvenHom.contract_mid, h,
           QuadraticMap.neg_apply, smul_neg, neg_smul] }
 

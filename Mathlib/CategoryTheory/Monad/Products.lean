@@ -41,8 +41,8 @@ variable [HasBinaryProducts C]
 @[simps!]
 def prodComonad : Comonad C where
   toFunctor := prod.functor.obj X
-  ε := { app := fun _ => Limits.prod.snd }
-  δ := { app := fun _ => prod.lift Limits.prod.fst (𝟙 _) }
+  ε := { app := fun _ ↦ Limits.prod.snd }
+  δ := { app := fun _ ↦ prod.lift Limits.prod.fst (𝟙 _) }
 
 /-- The forward direction of the equivalence from coalgebras for the product comonad to the over
 category.
@@ -71,9 +71,9 @@ def overToCoalgebra : Over X ⥤ Coalgebra (prodComonad X) where
 def coalgebraEquivOver : Coalgebra (prodComonad X) ≌ Over X where
   functor := coalgebraToOver X
   inverse := overToCoalgebra X
-  unitIso := NatIso.ofComponents fun A =>
+  unitIso := NatIso.ofComponents fun A ↦
     Coalgebra.isoMk (Iso.refl _) (Limits.prod.hom_ext (by simp) (by simpa using A.counit))
-  counitIso := NatIso.ofComponents fun f => Over.isoMk (Iso.refl _)
+  counitIso := NatIso.ofComponents fun f ↦ Over.isoMk (Iso.refl _)
 
 end
 
@@ -87,8 +87,8 @@ variable [HasBinaryCoproducts C]
 @[simps!]
 def coprodMonad : Monad C where
   toFunctor := coprod.functor.obj X
-  η := { app := fun _ => coprod.inr }
-  μ := { app := fun _ => coprod.desc coprod.inl (𝟙 _) }
+  η := { app := fun _ ↦ coprod.inr }
+  μ := { app := fun _ ↦ coprod.desc coprod.inl (𝟙 _) }
 
 /-- The forward direction of the equivalence from algebras for the coproduct monad to the under
 category.
@@ -118,10 +118,10 @@ def underToAlgebra : Under X ⥤ Monad.Algebra (coprodMonad X) where
 def algebraEquivUnder : Monad.Algebra (coprodMonad X) ≌ Under X where
   functor := algebraToUnder X
   inverse := underToAlgebra X
-  unitIso := NatIso.ofComponents fun A =>
+  unitIso := NatIso.ofComponents fun A ↦
     Monad.Algebra.isoMk (Iso.refl _) (coprod.hom_ext (by simp) (by simpa using A.unit.symm))
   counitIso :=
-    NatIso.ofComponents fun f => Under.isoMk (Iso.refl _)
+    NatIso.ofComponents fun f ↦ Under.isoMk (Iso.refl _)
 
 end
 

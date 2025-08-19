@@ -342,7 +342,7 @@ instance {X Y Z : C} (f : X ⟶ Y) [IsIso f] (g : Y ⟶ Z) [HasImage g] : HasIma
             m := image.ι g
             e := f ≫ factorThruImage g }
         isImage :=
-          { lift := fun F' => image.lift
+          { lift := fun F' ↦ image.lift
                 { I := F'.I
                   m := F'.m
                   e := inv f ≫ F'.e } } }⟩
@@ -410,7 +410,7 @@ theorem image.ext [HasImage f] {W : C} {g h : image f ⟶ W} [HasLimit (parallel
 
 instance [HasImage f] [∀ {Z : C} (g h : image f ⟶ Z), HasLimit (parallelPair g h)] :
     Epi (factorThruImage f) :=
-  ⟨fun _ _ w => image.ext f w⟩
+  ⟨fun _ _ w ↦ image.ext f w⟩
 
 theorem epi_image_of_epi {X Y : C} (f : X ⟶ Y) [HasImage f] [E : Epi f] : Epi (image.ι f) := by
   rw [← image.fac f] at E
@@ -529,8 +529,8 @@ instance image.preComp_epi_of_epi [HasImage g] [HasImage (f ≫ g)] [Epi f] :
 instance hasImage_iso_comp [IsIso f] [HasImage g] : HasImage (f ≫ g) :=
   HasImage.mk
     { F := (Image.monoFactorisation g).isoComp f
-      isImage := { lift := fun F' => image.lift (F'.ofIsoComp f)
-                   lift_fac := fun F' => by
+      isImage := { lift := fun F' ↦ image.lift (F'.ofIsoComp f)
+                   lift_fac := fun F' ↦ by
                     dsimp
                     have : (MonoFactorisation.ofIsoComp f F').m = F'.m := rfl
                     rw [← this,image.lift_fac (MonoFactorisation.ofIsoComp f F')] } }
@@ -555,8 +555,8 @@ instance hasImage_comp_iso [HasImage f] [IsIso g] : HasImage (f ≫ g) :=
   HasImage.mk
     { F := (Image.monoFactorisation f).compMono g
       isImage :=
-      { lift := fun F' => image.lift F'.ofCompIso
-        lift_fac := fun F' => by
+      { lift := fun F' ↦ image.lift F'.ofCompIso
+        lift_fac := fun F' ↦ by
           rw [← Category.comp_id (image.lift (MonoFactorisation.ofCompIso F') ≫ F'.m),
             ← IsIso.inv_hom_id g,← Category.assoc]
           refine congrArg (· ≫ g) ?_
@@ -698,7 +698,7 @@ theorem ImageMap.mk.injEq' {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] {sq
   apply ImageMap.map_uniq_aux _ map_ι _ map_ι'
 
 instance : Subsingleton (ImageMap sq) :=
-  Subsingleton.intro fun a b =>
+  Subsingleton.intro fun a b ↦
     ImageMap.ext <| ImageMap.map_uniq a b
 
 end
@@ -814,7 +814,7 @@ variable {C}
 theorem HasStrongEpiMonoFactorisations.mk
     (d : ∀ {X Y : C} (f : X ⟶ Y), StrongEpiMonoFactorisation f) :
     HasStrongEpiMonoFactorisations C :=
-  ⟨fun f => Nonempty.intro <| d f⟩
+  ⟨fun f ↦ Nonempty.intro <| d f⟩
 
 instance (priority := 100) hasImages_of_hasStrongEpiMonoFactorisations
     [HasStrongEpiMonoFactorisations C] : HasImages C where
@@ -884,7 +884,7 @@ images. -/
 instance (priority := 100) hasStrongEpiImages_of_hasPullbacks_of_hasEqualizers [HasPullbacks C]
     [HasEqualizers C] : HasStrongEpiImages C where
   strong_factorThruImage f :=
-    StrongEpi.mk' fun {A} {B} h h_mono x y sq =>
+    StrongEpi.mk' fun {A} {B} h h_mono x y sq ↦
       CommSq.HasLift.mk'
         { l :=
             image.lift
@@ -932,8 +932,8 @@ variable (C)
 noncomputable def functorialEpiMonoFactorizationData :
     FunctorialFactorizationData (epimorphisms C) (monomorphisms C) where
   Z := im
-  i := { app := fun f => factorThruImage f.hom }
-  p := { app := fun f => image.ι f.hom }
+  i := { app := fun f ↦ factorThruImage f.hom }
+  p := { app := fun f ↦ image.ι f.hom }
   hi _ := epimorphisms.infer_property _
   hp _ := monomorphisms.infer_property _
 
@@ -947,7 +947,7 @@ variable {C D : Type*} [Category C] [Category D]
 
 theorem hasStrongEpiMonoFactorisations_imp_of_isEquivalence (F : C ⥤ D) [IsEquivalence F]
     [h : HasStrongEpiMonoFactorisations C] : HasStrongEpiMonoFactorisations D :=
-  ⟨fun {X} {Y} f => by
+  ⟨fun {X} {Y} f ↦ by
     let em : StrongEpiMonoFactorisation (F.inv.map f) :=
       (HasStrongEpiMonoFactorisations.has_fac (F.inv.map f)).some
     haveI : Mono (F.map em.m ≫ F.asEquivalence.counitIso.hom.app Y) := mono_comp _ _

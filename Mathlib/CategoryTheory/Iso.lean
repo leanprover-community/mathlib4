@@ -104,7 +104,7 @@ theorem symm_eq_iff {X Y : C} {α β : X ≅ Y} : α.symm = β.symm ↔ α = β 
   symm_bijective.injective.eq_iff
 
 theorem nonempty_iso_symm (X Y : C) : Nonempty (X ≅ Y) ↔ Nonempty (Y ≅ X) :=
-  ⟨fun h => ⟨h.some.symm⟩, fun h => ⟨h.some.symm⟩⟩
+  ⟨fun h ↦ ⟨h.some.symm⟩, fun h ↦ ⟨h.some.symm⟩⟩
 
 /-- Identity isomorphism. -/
 @[refl, simps]
@@ -175,19 +175,19 @@ theorem self_symm_id_assoc (α : X ≅ Y) (β : X ≅ Z) : α ≪≫ α.symm ≪
   rw [← trans_assoc, self_symm_id, refl_trans]
 
 theorem inv_comp_eq (α : X ≅ Y) {f : X ⟶ Z} {g : Y ⟶ Z} : α.inv ≫ f = g ↔ f = α.hom ≫ g :=
-  ⟨fun H => by simp [H.symm], fun H => by simp [H]⟩
+  ⟨fun H ↦ by simp [H.symm], fun H ↦ by simp [H]⟩
 
 theorem eq_inv_comp (α : X ≅ Y) {f : X ⟶ Z} {g : Y ⟶ Z} : g = α.inv ≫ f ↔ α.hom ≫ g = f :=
   (inv_comp_eq α.symm).symm
 
 theorem comp_inv_eq (α : X ≅ Y) {f : Z ⟶ Y} {g : Z ⟶ X} : f ≫ α.inv = g ↔ f = g ≫ α.hom :=
-  ⟨fun H => by simp [H.symm], fun H => by simp [H]⟩
+  ⟨fun H ↦ by simp [H.symm], fun H ↦ by simp [H]⟩
 
 theorem eq_comp_inv (α : X ≅ Y) {f : Z ⟶ Y} {g : Z ⟶ X} : g = f ≫ α.inv ↔ g ≫ α.hom = f :=
   (comp_inv_eq α.symm).symm
 
 theorem inv_eq_inv (f g : X ≅ Y) : f.inv = g.inv ↔ f.hom = g.hom :=
-  have : ∀ {X Y : C} (f g : X ≅ Y), f.hom = g.hom → f.inv = g.inv := fun f g h => by rw [ext h]
+  have : ∀ {X Y : C} (f g : X ≅ Y), f.hom = g.hom → f.inv = g.inv := fun f g h ↦ by rw [ext h]
   ⟨this f.symm g.symm, this f g⟩
 
 theorem hom_comp_eq_id (α : X ≅ Y) {f : Y ⟶ X} : α.hom ≫ f = 𝟙 X ↔ f = α.inv := by

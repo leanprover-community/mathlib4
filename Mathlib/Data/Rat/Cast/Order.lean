@@ -29,7 +29,7 @@ theorem cast_pos_of_pos (hq : 0 < q) : (0 : K) < q := by
   exact div_pos (Int.cast_pos.2 <| num_pos.2 hq) (Nat.cast_pos.2 q.pos)
 
 @[mono]
-theorem cast_strictMono : StrictMono ((↑) : ℚ → K) := fun p q => by
+theorem cast_strictMono : StrictMono ((↑) : ℚ → K) := fun p q ↦ by
   simpa only [sub_pos, cast_sub] using cast_pos_of_pos (K := K) (q := q - p)
 
 @[mono]
@@ -145,7 +145,7 @@ namespace NNRat
 
 variable {K} [Semifield K] [LinearOrder K] [IsStrictOrderedRing K] {p q : ℚ≥0}
 
-theorem cast_strictMono : StrictMono ((↑) : ℚ≥0 → K) := fun p q h => by
+theorem cast_strictMono : StrictMono ((↑) : ℚ≥0 → K) := fun p q h ↦ by
   rwa [NNRat.cast_def, NNRat.cast_def, div_lt_div_iff₀, ← Nat.cast_mul, ← Nat.cast_mul,
     Nat.cast_lt (α := K), ← NNRat.lt_def]
   · simp

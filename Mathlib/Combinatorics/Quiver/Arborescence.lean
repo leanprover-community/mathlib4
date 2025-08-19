@@ -108,11 +108,11 @@ theorem shortest_path_spec {a : V} (p : Path r a) : (shortestPath r a).length �
   not_lt.mp (WellFounded.not_lt_min (measure _).wf Set.univ _ trivial)
 
 /-- A subquiver which by construction is an arborescence. -/
-def geodesicSubtree : WideSubquiver V := fun a b =>
+def geodesicSubtree : WideSubquiver V := fun a b ↦
   { e | ∃ p : Path r a, shortestPath r b = p.cons e }
 
 noncomputable instance geodesicArborescence : Arborescence (geodesicSubtree r) :=
-  arborescenceMk r (fun a => (shortestPath r a).length)
+  arborescenceMk r (fun a ↦ (shortestPath r a).length)
     (by
       rintro a b ⟨e, p, h⟩
       simp_rw [h, Path.length_cons, Nat.lt_succ_iff]

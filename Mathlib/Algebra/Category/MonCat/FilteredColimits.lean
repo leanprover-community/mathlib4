@@ -140,7 +140,7 @@ theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
 /-- Multiplication in the colimit. See also `colimitMulAux`. -/
 @[to_additive /-- Addition in the colimit. See also `colimitAddAux`. -/]
 noncomputable instance colimitMul : Mul (M.{v, u} F) :=
-{ mul := fun x y => by
+{ mul := fun x y ↦ by
     refine Quot.lift₂ (colimitMulAux F) ?_ ?_ x y
     · intro x y y' h
       apply colimitMulAux_eq_of_rel_right
@@ -178,17 +178,17 @@ lemma colimit_mul_mk_eq' {j : J} (x y : F.obj j) :
 noncomputable instance colimitMulOneClass : MulOneClass (M.{v, u} F) :=
   { colimitOne F,
     colimitMul F with
-    one_mul := fun x => by
+    one_mul := fun x ↦ by
       obtain ⟨j, x, rfl⟩ := x.mk_surjective
       rw [colimit_one_eq F j, colimit_mul_mk_eq', one_mul]
-    mul_one := fun x => by
+    mul_one := fun x ↦ by
       obtain ⟨j, x, rfl⟩ := x.mk_surjective
       rw [colimit_one_eq F j, colimit_mul_mk_eq', mul_one] }
 
 @[to_additive]
 noncomputable instance colimitMonoid : Monoid (M.{v, u} F) :=
   { colimitMulOneClass F with
-    mul_assoc := fun x y z => by
+    mul_assoc := fun x y z ↦ by
       obtain ⟨j₁, x₁, rfl⟩ := x.mk_surjective
       obtain ⟨j₂, y₂, rfl⟩ := y.mk_surjective
       obtain ⟨j₃, z₃, rfl⟩ := z.mk_surjective
@@ -220,7 +220,7 @@ noncomputable def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
 @[to_additive (attr := simp)]
 theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
     F.map f ≫ coconeMorphism.{v, u} F j' = coconeMorphism F j :=
-  MonCat.ext fun x =>
+  MonCat.ext fun x ↦
     congr_fun ((Types.TypeMax.colimitCocone (F ⋙ forget MonCat)).ι.naturality f) x
 
 /-- The cocone over the proposed colimit monoid. -/
@@ -267,7 +267,7 @@ noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) wh
 instance forget_preservesFilteredColimits :
     PreservesFilteredColimits (forget MonCat.{u}) where
   preserves_filtered_colimits _ _ _ :=
-    ⟨fun {F} => preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
+    ⟨fun {F} ↦ preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
       (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget MonCat.{u}))⟩
 end
 
@@ -295,7 +295,7 @@ noncomputable abbrev M : MonCat.{max v u} :=
 @[to_additive]
 noncomputable instance colimitCommMonoid : CommMonoid.{max v u} (M.{v, u} F) :=
   { (M.{v, u} F) with
-    mul_comm := fun x y => by
+    mul_comm := fun x y ↦ by
       obtain ⟨i, x, rfl⟩ := x.mk_surjective
       obtain ⟨j, y, rfl⟩ := y.mk_surjective
       let k := max' i j
@@ -332,7 +332,7 @@ noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) :=
 noncomputable instance forget₂Mon_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ CommMonCat MonCat.{u}) where
   preserves_filtered_colimits _ _ _ :=
-    ⟨fun {F} => preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
+    ⟨fun {F} ↦ preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
       (MonCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ CommMonCat MonCat.{u}))⟩
 
 @[to_additive]

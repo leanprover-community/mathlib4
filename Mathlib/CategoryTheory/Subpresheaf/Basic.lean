@@ -42,7 +42,7 @@ structure Subpresheaf (F : Cᵒᵖ ⥤ Type w) where
 variable {F F' F'' : Cᵒᵖ ⥤ Type w} (G G' : Subpresheaf F)
 
 instance : PartialOrder (Subpresheaf F) :=
-  PartialOrder.lift Subpresheaf.obj (fun _ _ => Subpresheaf.ext)
+  PartialOrder.lift Subpresheaf.obj (fun _ _ ↦ Subpresheaf.ext)
 
 instance : CompleteLattice (Subpresheaf F) where
   sup F G :=
@@ -138,12 +138,12 @@ instance : Nonempty (Subpresheaf F) :=
 @[simps!]
 def toPresheaf : Cᵒᵖ ⥤ Type w where
   obj U := G.obj U
-  map := @fun _ _ i x => ⟨F.map i x, G.map i x.prop⟩
+  map := @fun _ _ i x ↦ ⟨F.map i x, G.map i x.prop⟩
   map_id X := by
     ext ⟨x, _⟩
     dsimp
     simp only [FunctorToTypes.map_id_apply]
-  map_comp := @fun X Y Z i j => by
+  map_comp := @fun X Y Z i j ↦ by
     ext ⟨x, _⟩
     dsimp
     simp only [FunctorToTypes.map_comp_apply]
@@ -156,9 +156,9 @@ instance {U} : CoeHead (G.toPresheaf.obj U) (F.obj U) where
 def ι : G.toPresheaf ⟶ F where app _ x := x
 
 instance : Mono G.ι :=
-  ⟨@fun _ _ _ e =>
+  ⟨@fun _ _ _ e ↦
     NatTrans.ext <|
-      funext fun U => funext fun x => Subtype.ext <| congr_fun (congr_app e U) x⟩
+      funext fun U ↦ funext fun x ↦ Subtype.ext <| congr_fun (congr_app e U) x⟩
 
 /-- The inclusion of a subpresheaf to a larger subpresheaf -/
 @[simps]
@@ -166,10 +166,10 @@ def homOfLe {G G' : Subpresheaf F} (h : G ≤ G') : G.toPresheaf ⟶ G'.toPreshe
   app U x := ⟨x, h U x.prop⟩
 
 instance {G G' : Subpresheaf F} (h : G ≤ G') : Mono (Subpresheaf.homOfLe h) :=
-  ⟨fun _ _ e =>
+  ⟨fun _ _ e ↦
     NatTrans.ext <|
-      funext fun U =>
-        funext fun x =>
+      funext fun U ↦
+        funext fun x ↦
           Subtype.ext <| (congr_arg Subtype.val <| (congr_fun (congr_app e U) x :) :)⟩
 
 @[reassoc (attr := simp)]
@@ -182,7 +182,7 @@ instance : IsIso (Subpresheaf.ι (⊤ : Subpresheaf F)) := by
   refine @NatIso.isIso_of_isIso_app _ _ _ _ _ _ _ ?_
   intro X
   rw [isIso_iff_bijective]
-  exact ⟨Subtype.coe_injective, fun x => ⟨⟨x, _root_.trivial⟩, rfl⟩⟩
+  exact ⟨Subtype.coe_injective, fun x ↦ ⟨⟨x, _root_.trivial⟩, rfl⟩⟩
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 theorem eq_top_iff_isIso : G = ⊤ ↔ IsIso G.ι := by

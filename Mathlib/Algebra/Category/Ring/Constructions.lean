@@ -66,11 +66,11 @@ theorem pushoutCocone_pt :
 
 /-- Verify that the `pushout_cocone` is indeed the colimit. -/
 def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone R A B) :=
-  Limits.PushoutCocone.isColimitAux' _ fun s => by
+  Limits.PushoutCocone.isColimitAux' _ fun s ↦ by
     letI := RingHom.toAlgebra (s.inl.hom.comp (algebraMap R A))
     let f' : A →ₐ[R] s.pt :=
       { s.inl.hom with
-        commutes' := fun r => rfl }
+        commutes' := fun r ↦ rfl }
     let g' : B →ₐ[R] s.pt :=
       { s.inr.hom with
         commutes' := DFunLike.congr_fun <| congrArg Hom.hom
@@ -89,7 +89,7 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone R A B) :=
     intro h eq1 eq2
     let h' : A ⊗[R] B →ₐ[R] s.pt :=
       { h.hom with
-        commutes' := fun r => by
+        commutes' := fun r ↦ by
           change h (algebraMap R A r ⊗ₜ[R] 1) = s.inl (algebraMap R A r)
           rw [← eq1]
           simp only [pushoutCocone_pt, coe_of]
@@ -190,8 +190,8 @@ theorem coproductCocone_inr :
 def coproductCoconeIsColimit : IsColimit (coproductCocone A B) where
   desc (s : BinaryCofan A B) :=
     ofHom (Algebra.TensorProduct.lift s.inl.hom.toIntAlgHom s.inr.hom.toIntAlgHom
-      (fun _ _ => by apply Commute.all)).toRingHom
-  fac (s : BinaryCofan A B) := fun ⟨j⟩ => by cases j <;> ext a <;> simp
+      (fun _ _ ↦ by apply Commute.all)).toRingHom
+  fac (s : BinaryCofan A B) := fun ⟨j⟩ ↦ by cases j <;> ext a <;> simp
   uniq (s : BinaryCofan A B) := by
     rintro ⟨m : A ⊗[ℤ] B →+* s.pt⟩ hm
     apply CommRingCat.hom_ext
@@ -239,8 +239,8 @@ theorem subsingleton_of_isTerminal {X : CommRingCat} (hX : IsTerminal X) : Subsi
 
 /-- `ℤ` is the initial object of `CommRingCat`. -/
 def zIsInitial : IsInitial (CommRingCat.of ℤ) :=
-  IsInitial.ofUnique (h := fun R => ⟨⟨ofHom <| Int.castRingHom R⟩,
-    fun a => hom_ext <| a.hom.ext_int _⟩)
+  IsInitial.ofUnique (h := fun R ↦ ⟨⟨ofHom <| Int.castRingHom R⟩,
+    fun a ↦ hom_ext <| a.hom.ext_int _⟩)
 
 /-- `ULift.{u} ℤ` is initial in `CommRingCat`. -/
 def isInitial : IsInitial (CommRingCat.of (ULift.{u} ℤ)) :=
@@ -330,7 +330,7 @@ def equalizerFork : Fork f g :=
 def equalizerForkIsLimit : IsLimit (equalizerFork f g) := by
   fapply Fork.IsLimit.mk'
   intro s
-  use ofHom <| s.ι.hom.codRestrict _ fun x => (ConcreteCategory.congr_hom s.condition x :)
+  use ofHom <| s.ι.hom.codRestrict _ fun x ↦ (ConcreteCategory.congr_hom s.condition x :)
   constructor
   · ext
     rfl
@@ -403,7 +403,7 @@ def pullbackConeIsLimit {A B C : CommRingCat.{u}} (f : A ⟶ C) (g : B ⟶ C) :
   · intro s
     refine ofHom ((s.fst.hom.prod s.snd.hom).codRestrict _ ?_)
     intro x
-    exact congr_arg (fun f : s.pt →+* C => f x) (congrArg Hom.hom s.condition)
+    exact congr_arg (fun f : s.pt →+* C ↦ f x) (congrArg Hom.hom s.condition)
   · intro s
     ext x
     rfl
@@ -411,10 +411,10 @@ def pullbackConeIsLimit {A B C : CommRingCat.{u}} (f : A ⟶ C) (g : B ⟶ C) :
     ext x
     rfl
   · intro s m e₁ e₂
-    refine hom_ext <| RingHom.ext fun (x : s.pt) => Subtype.ext ?_
+    refine hom_ext <| RingHom.ext fun (x : s.pt) ↦ Subtype.ext ?_
     change (m x).1 = (_, _)
-    have eq1 := (congr_arg (fun f : s.pt →+* A => f x) (congrArg Hom.hom e₁) :)
-    have eq2 := (congr_arg (fun f : s.pt →+* B => f x) (congrArg Hom.hom e₂) :)
+    have eq1 := (congr_arg (fun f : s.pt →+* A ↦ f x) (congrArg Hom.hom e₁) :)
+    have eq2 := (congr_arg (fun f : s.pt →+* B ↦ f x) (congrArg Hom.hom e₂) :)
     rw [← eq1, ← eq2]
     rfl
 

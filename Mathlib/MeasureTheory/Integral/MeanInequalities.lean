@@ -65,7 +65,7 @@ theorem lintegral_mul_le_one_of_lintegral_rpow_eq_one {p q : ℝ} (hpq : p.Holde
   calc
     (∫⁻ a : α, (f * g) a ∂μ) ≤
         ∫⁻ a : α, f a ^ p / ENNReal.ofReal p + g a ^ q / ENNReal.ofReal q ∂μ :=
-      lintegral_mono fun a => young_inequality (f a) (g a) hpq
+      lintegral_mono fun a ↦ young_inequality (f a) (g a) hpq
     _ = 1 := by
       simp only [div_eq_mul_inv]
       rw [lintegral_add_left']
@@ -75,7 +75,7 @@ theorem lintegral_mul_le_one_of_lintegral_rpow_eq_one {p q : ℝ} (hpq : p.Holde
       · exact (hf.pow_const _).mul_const _
 
 /-- Function multiplied by the inverse of its p-seminorm `(∫⁻ f^p ∂μ) ^ 1/p` -/
-def funMulInvSnorm (f : α → ℝ≥0∞) (p : ℝ) (μ : Measure α) : α → ℝ≥0∞ := fun a =>
+def funMulInvSnorm (f : α → ℝ≥0∞) (p : ℝ) (μ : Measure α) : α → ℝ≥0∞ := fun a ↦
   f a * ((∫⁻ c, f c ^ p ∂μ) ^ (1 / p))⁻¹
 
 theorem fun_eq_funMulInvSnorm_mul_eLpNorm {p : ℝ} (f : α → ℝ≥0∞)
@@ -108,7 +108,7 @@ theorem lintegral_mul_le_Lp_mul_Lq_of_ne_zero_of_ne_top {p q : ℝ} (hpq : p.Hol
   calc
     (∫⁻ a : α, (f * g) a ∂μ) =
         ∫⁻ a : α, (funMulInvSnorm f p μ * funMulInvSnorm g q μ) a * (npf * nqg) ∂μ := by
-      refine lintegral_congr fun a => ?_
+      refine lintegral_congr fun a ↦ ?_
       rw [Pi.mul_apply, fun_eq_funMulInvSnorm_mul_eLpNorm f hf_nonzero hf_nontop,
         fun_eq_funMulInvSnorm_mul_eLpNorm g hg_nonzero hg_nontop, Pi.mul_apply]
       ring
@@ -125,7 +125,7 @@ theorem ae_eq_zero_of_lintegral_rpow_eq_zero {p : ℝ} (hp0 : 0 ≤ p) {f : α �
   rw [lintegral_eq_zero_iff' (hf.pow_const p)] at hf_zero
   filter_upwards [hf_zero] with x
   rw [Pi.zero_apply, ← not_imp_not]
-  exact fun hx => (rpow_pos_of_nonneg (pos_iff_ne_zero.2 hx) hp0).ne'
+  exact fun hx ↦ (rpow_pos_of_nonneg (pos_iff_ne_zero.2 hx) hp0).ne'
 
 theorem lintegral_mul_eq_zero_of_lintegral_rpow_eq_zero {p : ℝ} (hp0 : 0 ≤ p) {f g : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hf_zero : ∫⁻ a, f a ^ p ∂μ = 0) : (∫⁻ a, (f * g) a ∂μ) = 0 := by
@@ -264,7 +264,7 @@ theorem lintegral_rpow_add_lt_top_of_lintegral_rpow_lt_top {p : ℝ} {f g : α �
   calc
     (∫⁻ a : α, (f a + g a) ^ p ∂μ) ≤
         ∫⁻ a, (2 : ℝ≥0∞) ^ (p - 1) * f a ^ p + (2 : ℝ≥0∞) ^ (p - 1) * g a ^ p ∂μ := by
-      refine lintegral_mono fun a => ?_
+      refine lintegral_mono fun a ↦ ?_
       dsimp only
       have h_zero_lt_half_rpow : (0 : ℝ≥0∞) < (1 / 2 : ℝ≥0∞) ^ p := by
         rw [← ENNReal.zero_rpow_of_pos hp0_lt]
@@ -359,7 +359,7 @@ theorem lintegral_rpow_add_le_add_eLpNorm_mul_lintegral_rpow_add {p q : ℝ}
       nth_rw 2 [← ENNReal.rpow_one ((f + g) a)]
       rw [← ENNReal.rpow_add _ _ h_zero h_top, add_sub_cancel]
     _ = (∫⁻ a : α, f a * (f + g) a ^ (p - 1) ∂μ) + ∫⁻ a : α, g a * (f + g) a ^ (p - 1) ∂μ := by
-      have h_add_m : AEMeasurable (fun a : α => (f + g) a ^ (p - 1 : ℝ)) μ :=
+      have h_add_m : AEMeasurable (fun a : α ↦ (f + g) a ^ (p - 1 : ℝ)) μ :=
         (hf.add hg).pow_const _
       have h_add_apply :
         (∫⁻ a : α, (f + g) a * (f + g) a ^ (p - 1) ∂μ) =

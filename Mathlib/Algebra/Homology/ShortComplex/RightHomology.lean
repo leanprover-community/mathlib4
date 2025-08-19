@@ -80,9 +80,9 @@ attribute [reassoc (attr := simp)] wp wι
 variable {S}
 variable (h : S.RightHomologyData) {A : C}
 
-instance : Epi h.p := ⟨fun _ _ => Cofork.IsColimit.hom_ext h.hp⟩
+instance : Epi h.p := ⟨fun _ _ ↦ Cofork.IsColimit.hom_ext h.hp⟩
 
-instance : Mono h.ι := ⟨fun _ _ => Fork.IsLimit.hom_ext h.hι⟩
+instance : Mono h.ι := ⟨fun _ _ ↦ Fork.IsLimit.hom_ext h.hι⟩
 
 /-- Any morphism `k : S.X₂ ⟶ A` such that `S.f ≫ k = 0` descends
 to a morphism `Q ⟶ A` -/
@@ -334,11 +334,11 @@ instance [S.HasRightHomology] : HasLeftHomology S.op :=
 
 lemma hasLeftHomology_iff_op (S : ShortComplex C) :
     S.HasLeftHomology ↔ S.op.HasRightHomology :=
-  ⟨fun _ => inferInstance, fun _ => HasLeftHomology.mk' S.op.rightHomologyData.unop⟩
+  ⟨fun _ ↦ inferInstance, fun _ ↦ HasLeftHomology.mk' S.op.rightHomologyData.unop⟩
 
 lemma hasRightHomology_iff_op (S : ShortComplex C) :
     S.HasRightHomology ↔ S.op.HasLeftHomology :=
-  ⟨fun _ => inferInstance, fun _ => HasRightHomology.mk' S.op.leftHomologyData.unop⟩
+  ⟨fun _ ↦ inferInstance, fun _ ↦ HasRightHomology.mk' S.op.leftHomologyData.unop⟩
 
 lemma hasLeftHomology_iff_unop (S : ShortComplex Cᵒᵖ) :
     S.HasLeftHomology ↔ S.unop.HasRightHomology :=
@@ -395,7 +395,7 @@ def comp {φ : S₁ ⟶ S₂} {φ' : S₂ ⟶ S₃} {h₁ : S₁.RightHomologyDa
   φH := ψ.φH ≫ ψ'.φH
 
 instance : Subsingleton (RightHomologyMapData φ h₁ h₂) :=
-  ⟨fun ψ₁ ψ₂ => by
+  ⟨fun ψ₁ ψ₂ ↦ by
     have hQ : ψ₁.φQ = ψ₂.φQ := by rw [← cancel_epi h₁.p, commp, commp]
     have hH : ψ₁.φH = ψ₂.φH := by rw [← cancel_mono h₂.ι, commι, commι, hQ]
     cases ψ₁
@@ -891,7 +891,7 @@ noncomputable def opcyclesFunctor :
 noncomputable def rightHomologyιNatTrans :
     rightHomologyFunctor C ⟶ opcyclesFunctor C where
   app S := rightHomologyι S
-  naturality := fun _ _ φ => rightHomologyι_naturality φ
+  naturality := fun _ _ φ ↦ rightHomologyι_naturality φ
 
 /-- The natural transformation `S.X₂ ⟶ S.opcycles` for all short complexes `S`. -/
 @[simps]
@@ -904,7 +904,7 @@ noncomputable def pOpcyclesNatTrans :
 noncomputable def fromOpcyclesNatTrans :
     opcyclesFunctor C ⟶ π₃ where
   app S := S.fromOpcycles
-  naturality := fun _ _  φ => fromOpcycles_naturality φ
+  naturality := fun _ _  φ ↦ fromOpcycles_naturality φ
 
 end
 
@@ -1207,14 +1207,14 @@ variable [HasKernels C] [HasCokernels C] [HasKernels Cᵒᵖ] [HasCokernels Cᵒ
 @[simps!]
 noncomputable def rightHomologyFunctorOpNatIso :
     (rightHomologyFunctor C).op ≅ opFunctor C ⋙ leftHomologyFunctor Cᵒᵖ :=
-  NatIso.ofComponents (fun S => (leftHomologyOpIso S.unop).symm)
+  NatIso.ofComponents (fun S ↦ (leftHomologyOpIso S.unop).symm)
     (by simp [rightHomologyMap_op])
 
 /-- The opposite of the left homology functor is the right homology functor. -/
 @[simps!]
 noncomputable def leftHomologyFunctorOpNatIso :
     (leftHomologyFunctor C).op ≅ opFunctor C ⋙ rightHomologyFunctor Cᵒᵖ :=
-  NatIso.ofComponents (fun S => (rightHomologyOpIso S.unop).symm)
+  NatIso.ofComponents (fun S ↦ (rightHomologyOpIso S.unop).symm)
     (by simp [leftHomologyMap_op])
 
 end

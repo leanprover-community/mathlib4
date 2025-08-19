@@ -141,7 +141,7 @@ def ofDigits {α : Type*} [Semiring α] (b : α) : List ℕ → α
   | h :: t => h + b * ofDigits b t
 
 theorem ofDigits_eq_foldr {α : Type*} [Semiring α] (b : α) (L : List ℕ) :
-    ofDigits b L = List.foldr (fun x y => ↑x + b * y) 0 L := by
+    ofDigits b L = List.foldr (fun x y ↦ ↑x + b * y) 0 L := by
   induction' L with d L ih
   · rfl
   · dsimp [ofDigits]
@@ -374,7 +374,7 @@ theorem ofDigits_lt_base_pow_length' {b : ℕ} {l : List ℕ} (hl : ∀ x ∈ l,
   · simp [ofDigits]
   · rw [ofDigits, List.length_cons, pow_succ]
     have : (ofDigits (b + 2) tl + 1) * (b + 2) ≤ (b + 2) ^ tl.length * (b + 2) :=
-      mul_le_mul (IH fun x hx => hl _ (List.mem_cons_of_mem _ hx)) (by rfl) (by simp only [zero_le])
+      mul_le_mul (IH fun x hx ↦ hl _ (List.mem_cons_of_mem _ hx)) (by rfl) (by simp only [zero_le])
         (Nat.zero_le _)
     suffices ↑hd < b + 2 by linarith
     exact hl hd List.mem_cons_self
@@ -387,7 +387,7 @@ theorem ofDigits_lt_base_pow_length {b : ℕ} {l : List ℕ} (hb : 1 < b) (hl : 
 
 /-- Any number m is less than (b+2)^(number of digits in the base b + 2 representation of m) -/
 theorem lt_base_pow_length_digits' {b m : ℕ} : m < (b + 2) ^ (digits (b + 2) m).length := by
-  convert @ofDigits_lt_base_pow_length' b (digits (b + 2) m) fun _ => digits_lt_base'
+  convert @ofDigits_lt_base_pow_length' b (digits (b + 2) m) fun _ ↦ digits_lt_base'
   rw [ofDigits_digits (b + 2) m]
 
 /-- Any number m is less than b^(number of digits in the base b representation of m) -/

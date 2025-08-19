@@ -51,7 +51,7 @@ namespace Quiver
 
 /-- `Vᵒᵖ` reverses the direction of all arrows of `V`. -/
 instance opposite {V} [Quiver V] : Quiver Vᵒᵖ :=
-  ⟨fun a b => (unop b ⟶ unop a)ᵒᵖ⟩
+  ⟨fun a b ↦ (unop b ⟶ unop a)ᵒᵖ⟩
 
 /-- The opposite of an arrow in `V`. -/
 def Hom.op {V} [Quiver V] {X Y : V} (f : X ⟶ Y) : op Y ⟶ op X := ⟨f⟩
@@ -69,7 +69,7 @@ def Hom.opEquiv {V} [Quiver V] {X Y : V} :
 /-- A type synonym for a quiver with no arrows. -/
 def Empty (V : Type u) : Type u := V
 
-instance emptyQuiver (V : Type u) : Quiver.{u} (Empty V) := ⟨fun _ _ => PEmpty⟩
+instance emptyQuiver (V : Type u) : Quiver.{u} (Empty V) := ⟨fun _ _ ↦ PEmpty⟩
 
 @[simp]
 theorem empty_arrow {V : Type u} (a b : Empty V) : (a ⟶ b) = PEmpty := rfl

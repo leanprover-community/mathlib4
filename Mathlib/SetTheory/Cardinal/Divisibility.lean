@@ -38,7 +38,7 @@ variable {a b : Cardinal.{u}} {n m : ℕ}
 /-- Alias of `isUnit_iff_eq_one` for discoverability. -/
 theorem isUnit_iff : IsUnit a ↔ a = 1 := by
   refine
-    ⟨fun h => ?_, by
+    ⟨fun h ↦ ?_, by
       rintro rfl
       exact isUnit_one⟩
   rcases eq_or_ne a 0 with (rfl | ha)
@@ -60,14 +60,14 @@ instance : Unique Cardinal.{u}ˣ where
 theorem le_of_dvd : ∀ {a b : Cardinal}, b ≠ 0 → a ∣ b → a ≤ b
   | a, x, b0, ⟨b, hab⟩ => by
     simpa only [hab, mul_one] using
-      mul_le_mul_left' (one_le_iff_ne_zero.2 fun h : b = 0 => b0 (by rwa [h, mul_zero] at hab)) a
+      mul_le_mul_left' (one_le_iff_ne_zero.2 fun h : b = 0 ↦ b0 (by rwa [h, mul_zero] at hab)) a
 
 theorem dvd_of_le_of_aleph0_le (ha : a ≠ 0) (h : a ≤ b) (hb : ℵ₀ ≤ b) : a ∣ b :=
   ⟨b, (mul_eq_right hb h ha).symm⟩
 
 @[simp]
 theorem prime_of_aleph0_le (ha : ℵ₀ ≤ a) : Prime a := by
-  refine ⟨(aleph0_pos.trans_le ha).ne', ?_, fun b c hbc => ?_⟩
+  refine ⟨(aleph0_pos.trans_le ha).ne', ?_, fun b c hbc ↦ ?_⟩
   · rw [isUnit_iff]
     exact (one_lt_aleph0.trans_le ha).ne'
   rcases eq_or_ne (b * c) 0 with hz | hz
@@ -83,13 +83,13 @@ theorem prime_of_aleph0_le (ha : ℵ₀ ≤ a) : Prime a := by
 
 theorem not_irreducible_of_aleph0_le (ha : ℵ₀ ≤ a) : ¬Irreducible a := by
   rw [irreducible_iff, not_and_or]
-  refine Or.inr fun h => ?_
+  refine Or.inr fun h ↦ ?_
   simpa [mul_aleph0_eq ha, isUnit_iff, (one_lt_aleph0.trans_le ha).ne', one_lt_aleph0.ne'] using
     @h a ℵ₀
 
 @[simp, norm_cast]
 theorem nat_coe_dvd_iff : (n : Cardinal) ∣ m ↔ n ∣ m := by
-  refine ⟨?_, fun ⟨h, ht⟩ => ⟨h, mod_cast ht⟩⟩
+  refine ⟨?_, fun ⟨h, ht⟩ ↦ ⟨h, mod_cast ht⟩⟩
   rintro ⟨k, hk⟩
   have : ↑m < ℵ₀ := nat_lt_aleph0 m
   rw [hk, mul_lt_aleph0_iff] at this
@@ -101,7 +101,7 @@ theorem nat_coe_dvd_iff : (n : Cardinal) ∣ m ↔ n ∣ m := by
 @[simp]
 theorem nat_is_prime_iff : Prime (n : Cardinal) ↔ n.Prime := by
   simp only [Prime, Nat.prime_iff]
-  refine and_congr (by simp) (and_congr ?_ ⟨fun h b c hbc => ?_, fun h b c hbc => ?_⟩)
+  refine and_congr (by simp) (and_congr ?_ ⟨fun h b c hbc ↦ ?_, fun h b c hbc ↦ ?_⟩)
   · simp only [isUnit_iff, Nat.isUnit_iff]
     exact mod_cast Iff.rfl
   · exact mod_cast h b c (mod_cast hbc)
@@ -136,7 +136,7 @@ theorem isPrimePow_iff {a : Cardinal} : IsPrimePow a ↔ ℵ₀ ≤ a ∨ ∃ n 
   lift a to ℕ using not_le.mp h
   rw [isPrimePow_def]
   refine
-    ⟨?_, fun ⟨n, han, p, k, hp, hk, h⟩ =>
+    ⟨?_, fun ⟨n, han, p, k, hp, hk, h⟩ ↦
           ⟨p, k, nat_is_prime_iff.2 hp, hk, by rw [han]; exact mod_cast h⟩⟩
   rintro ⟨p, k, hp, hk, hpk⟩
   have key : p ^ (1 : Cardinal) ≤ ↑a := by

@@ -108,15 +108,15 @@ theorem IsPrimitiveRoot.arg_ext {n m : ℕ} {ζ μ : ℂ} (hζ : IsPrimitiveRoot
 
 theorem IsPrimitiveRoot.arg_eq_zero_iff {n : ℕ} {ζ : ℂ} (hζ : IsPrimitiveRoot ζ n) (hn : n ≠ 0) :
     ζ.arg = 0 ↔ ζ = 1 :=
-  ⟨fun h => hζ.arg_ext IsPrimitiveRoot.one hn one_ne_zero (h.trans Complex.arg_one.symm), fun h =>
+  ⟨fun h ↦ hζ.arg_ext IsPrimitiveRoot.one hn one_ne_zero (h.trans Complex.arg_one.symm), fun h ↦
     h.symm ▸ Complex.arg_one⟩
 
 theorem IsPrimitiveRoot.arg_eq_pi_iff {n : ℕ} {ζ : ℂ} (hζ : IsPrimitiveRoot ζ n) (hn : n ≠ 0) :
     ζ.arg = Real.pi ↔ ζ = -1 :=
-  ⟨fun h =>
+  ⟨fun h ↦
     hζ.arg_ext (IsPrimitiveRoot.neg_one 0 two_ne_zero.symm) hn two_ne_zero
       (h.trans Complex.arg_neg_one.symm),
-    fun h => h.symm ▸ Complex.arg_neg_one⟩
+    fun h ↦ h.symm ▸ Complex.arg_neg_one⟩
 
 theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn : n ≠ 0) :
     ∃ i : ℤ, ζ.arg = i / n * (2 * Real.pi) ∧ IsCoprime i n ∧ i.natAbs < n := by

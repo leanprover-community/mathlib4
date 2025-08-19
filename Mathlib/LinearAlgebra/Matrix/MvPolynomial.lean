@@ -28,7 +28,7 @@ variable (m n R)
 
 /-- The matrix with variable `X (i,j)` at location `(i,j)`. -/
 noncomputable def mvPolynomialX [CommSemiring R] : Matrix m n (MvPolynomial (m × n) R) :=
-  of fun i j => MvPolynomial.X (i, j)
+  of fun i j ↦ MvPolynomial.X (i, j)
 
 -- TODO: set as an equation lemma for `mv_polynomial_X`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
@@ -44,13 +44,13 @@ This is of particular use when `MvPolynomial (m × n) R` is an integral domain b
 not, as if the `MvPolynomial.eval₂` can be pulled to the outside of a goal, it can be solved in
 under cancellative assumptions. -/
 theorem mvPolynomialX_map_eval₂ [CommSemiring R] [CommSemiring S] (f : R →+* S) (A : Matrix m n S) :
-    (mvPolynomialX m n R).map (MvPolynomial.eval₂ f fun p : m × n => A p.1 p.2) = A :=
-  ext fun i j => MvPolynomial.eval₂_X _ (fun p : m × n => A p.1 p.2) (i, j)
+    (mvPolynomialX m n R).map (MvPolynomial.eval₂ f fun p : m × n ↦ A p.1 p.2) = A :=
+  ext fun i j ↦ MvPolynomial.eval₂_X _ (fun p : m × n ↦ A p.1 p.2) (i, j)
 
 /-- A variant of `Matrix.mvPolynomialX_map_eval₂` with a bundled `RingHom` on the LHS. -/
 theorem mvPolynomialX_mapMatrix_eval [Fintype m] [DecidableEq m] [CommSemiring R]
     (A : Matrix m m R) :
-    (MvPolynomial.eval fun p : m × m => A p.1 p.2).mapMatrix (mvPolynomialX m m R) = A :=
+    (MvPolynomial.eval fun p : m × m ↦ A p.1 p.2).mapMatrix (mvPolynomialX m m R) = A :=
   mvPolynomialX_map_eval₂ _ A
 
 variable (R)
@@ -58,7 +58,7 @@ variable (R)
 /-- A variant of `Matrix.mvPolynomialX_map_eval₂` with a bundled `AlgHom` on the LHS. -/
 theorem mvPolynomialX_mapMatrix_aeval [Fintype m] [DecidableEq m] [CommSemiring R] [CommSemiring S]
     [Algebra R S] (A : Matrix m m S) :
-    (MvPolynomial.aeval fun p : m × m => A p.1 p.2).mapMatrix (mvPolynomialX m m R) = A :=
+    (MvPolynomial.aeval fun p : m × m ↦ A p.1 p.2).mapMatrix (mvPolynomialX m m R) = A :=
   mvPolynomialX_map_eval₂ _ A
 
 variable (m)

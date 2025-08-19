@@ -99,12 +99,12 @@ theorem mul_one_add_self : a * (1 + a) = 0 := by rw [mul_add, mul_one, mul_self,
 -- Note [lower instance priority]
 instance (priority := 100) toCommRing : CommRing α :=
   { (inferInstance : BooleanRing α) with
-    mul_comm := fun a b => by rw [← add_eq_zero', mul_add_mul] }
+    mul_comm := fun a b ↦ by rw [← add_eq_zero', mul_add_mul] }
 
 end BooleanRing
 
 instance : BooleanRing PUnit :=
-  ⟨fun _ => Subsingleton.elim _ _⟩
+  ⟨fun _ ↦ Subsingleton.elim _ _⟩
 
 /-! ### Turning a Boolean ring into a Boolean algebra -/
 
@@ -154,7 +154,7 @@ namespace BooleanRing
 
 /-- The join operation in a Boolean ring is `x + y + x * y`. -/
 def sup : Max α :=
-  ⟨fun x y => x + y + x * y⟩
+  ⟨fun x y ↦ x + y + x * y⟩
 
 /-- The meet operation in a Boolean ring is `x * y`. -/
 def inf : Min α :=
@@ -214,14 +214,14 @@ def toBooleanAlgebra : BooleanAlgebra α :=
   { Lattice.mk' sup_comm sup_assoc inf_comm inf_assoc sup_inf_self inf_sup_self with
     le_sup_inf := le_sup_inf
     top := 1
-    le_top := fun a => show a + 1 + a * 1 = 1 by rw [mul_one, add_comm a 1,
+    le_top := fun a ↦ show a + 1 + a * 1 = 1 by rw [mul_one, add_comm a 1,
                                                      add_assoc, add_self, add_zero]
     bot := 0
-    bot_le := fun a => show 0 + a + 0 * a = a by rw [zero_mul, zero_add, add_zero]
-    compl := fun a => 1 + a
-    inf_compl_le_bot := fun a =>
+    bot_le := fun a ↦ show 0 + a + 0 * a = a by rw [zero_mul, zero_add, add_zero]
+    compl := fun a ↦ 1 + a
+    inf_compl_le_bot := fun a ↦
       show a * (1 + a) + 0 + a * (1 + a) * 0 = 0 by simp [mul_add, mul_self, add_self]
-    top_le_sup_compl := fun a => by
+    top_le_sup_compl := fun a ↦ by
       change
         1 + (a + (1 + a) + a * (1 + a)) + 1 * (a + (1 + a) + a * (1 + a)) =
           a + (1 + a) + a * (1 + a)
@@ -500,7 +500,7 @@ def OrderIso.asBoolAlgAsBoolRing (α : Type*) [BooleanAlgebra α] : AsBoolAlg (A
 @[simps!]
 def RingEquiv.asBoolRingAsBoolAlg (α : Type*) [BooleanRing α] : AsBoolRing (AsBoolAlg α) ≃+* α :=
   { ofBoolRing.trans ofBoolAlg with
-    map_mul' := fun _a _b => rfl
+    map_mul' := fun _a _b ↦ rfl
     map_add' := ofBoolAlg_symmDiff }
 
 open Bool

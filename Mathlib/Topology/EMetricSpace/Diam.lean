@@ -51,7 +51,7 @@ theorem diam_le {d : ℝ≥0∞} (h : ∀ x ∈ s, ∀ y ∈ s, edist x y ≤ d)
 
 /-- The diameter of a subsingleton vanishes. -/
 theorem diam_subsingleton (hs : s.Subsingleton) : diam s = 0 :=
-  nonpos_iff_eq_zero.1 <| diam_le fun _x hx y hy => (hs hx hy).symm ▸ edist_self y ▸ le_rfl
+  nonpos_iff_eq_zero.1 <| diam_le fun _x hx y hy ↦ (hs hx hy).symm ▸ edist_self y ▸ le_rfl
 
 /-- The diameter of the empty set vanishes -/
 @[simp]
@@ -71,7 +71,7 @@ theorem diam_iUnion_mem_option {ι : Type*} (o : Option ι) (s : ι → Set α) 
     diam (⋃ i ∈ o, s i) = ⨆ i ∈ o, diam (s i) := by cases o <;> simp
 
 theorem diam_insert : diam (insert x s) = max (⨆ y ∈ s, edist x y) (diam s) :=
-  eq_of_forall_ge_iff fun d => by
+  eq_of_forall_ge_iff fun d ↦ by
     simp only [diam_le_iff, forall_mem_insert, edist_self, edist_comm x, max_le_iff, iSup_le_iff,
       zero_le, true_and, forall_and, and_self_iff, ← and_assoc]
 
@@ -84,18 +84,18 @@ theorem diam_triple : diam ({x, y, z} : Set α) = max (max (edist x y) (edist x 
 /-- The diameter is monotonous with respect to inclusion -/
 @[gcongr]
 theorem diam_mono {s t : Set α} (h : s ⊆ t) : diam s ≤ diam t :=
-  diam_le fun _x hx _y hy => edist_le_diam_of_mem (h hx) (h hy)
+  diam_le fun _x hx _y hy ↦ edist_le_diam_of_mem (h hx) (h hy)
 
 /-- The diameter of a union is controlled by the diameter of the sets, and the edistance
 between two points in the sets. -/
 theorem diam_union {t : Set α} (xs : x ∈ s) (yt : y ∈ t) :
     diam (s ∪ t) ≤ diam s + edist x y + diam t := by
-  have A : ∀ a ∈ s, ∀ b ∈ t, edist a b ≤ diam s + edist x y + diam t := fun a ha b hb =>
+  have A : ∀ a ∈ s, ∀ b ∈ t, edist a b ≤ diam s + edist x y + diam t := fun a ha b hb ↦
     calc
       edist a b ≤ edist a x + edist x y + edist y b := edist_triangle4 _ _ _ _
       _ ≤ diam s + edist x y + diam t :=
         add_le_add (add_le_add (edist_le_diam_of_mem ha xs) le_rfl) (edist_le_diam_of_mem yt hb)
-  refine diam_le fun a ha b hb => ?_
+  refine diam_le fun a ha b hb ↦ ?_
   rcases (mem_union _ _ _).1 ha with h'a | h'a <;> rcases (mem_union _ _ _).1 hb with h'b | h'b
   · calc
       edist a b ≤ diam s := edist_le_diam_of_mem h'a h'b
@@ -113,7 +113,7 @@ theorem diam_union' {t : Set α} (h : (s ∩ t).Nonempty) : diam (s ∪ t) ≤ d
   simpa using diam_union xs xt
 
 theorem diam_closedBall {r : ℝ≥0∞} : diam (closedBall x r) ≤ 2 * r :=
-  diam_le fun a ha b hb =>
+  diam_le fun a ha b hb ↦
     calc
       edist a b ≤ edist a x + edist b x := edist_triangle_right _ _ _
       _ ≤ r + r := add_le_add ha hb
@@ -124,9 +124,9 @@ theorem diam_ball {r : ℝ≥0∞} : diam (ball x r) ≤ 2 * r :=
 
 theorem diam_pi_le_of_le {X : β → Type*} [Fintype β] [∀ b, PseudoEMetricSpace (X b)]
     {s : ∀ b : β, Set (X b)} {c : ℝ≥0∞} (h : ∀ b, diam (s b) ≤ c) : diam (Set.pi univ s) ≤ c := by
-  refine diam_le fun x hx y hy => edist_pi_le_iff.mpr ?_
+  refine diam_le fun x hx y hy ↦ edist_pi_le_iff.mpr ?_
   rw [mem_univ_pi] at hx hy
-  exact fun b => diam_le_iff.1 (h b) (x b) (hx b) (y b) (hy b)
+  exact fun b ↦ diam_le_iff.1 (h b) (x b) (hx b) (y b) (hy b)
 
 end
 
@@ -134,7 +134,7 @@ section
 variable [EMetricSpace β] {s : Set β}
 
 theorem diam_eq_zero_iff : diam s = 0 ↔ s.Subsingleton :=
-  ⟨fun h _x hx _y hy => edist_le_zero.1 <| h ▸ edist_le_diam_of_mem hx hy, diam_subsingleton⟩
+  ⟨fun h _x hx _y hy ↦ edist_le_zero.1 <| h ▸ edist_le_diam_of_mem hx hy, diam_subsingleton⟩
 
 theorem diam_pos_iff : 0 < diam s ↔ s.Nontrivial := by
   simp only [pos_iff_ne_zero, Ne, diam_eq_zero_iff, Set.not_subsingleton_iff]

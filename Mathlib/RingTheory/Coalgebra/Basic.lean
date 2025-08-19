@@ -298,9 +298,9 @@ variable [CommSemiring R] [∀ i, AddCommMonoid (A i)] [∀ i, Module R (A i)] [
 open LinearMap
 
 instance instCoalgebraStruct : CoalgebraStruct R (Π₀ i, A i) where
-  comul := DFinsupp.lsum R fun i =>
+  comul := DFinsupp.lsum R fun i ↦
     TensorProduct.map (DFinsupp.lsingle i) (DFinsupp.lsingle i) ∘ₗ comul
-  counit := DFinsupp.lsum R fun _ => counit
+  counit := DFinsupp.lsum R fun _ ↦ counit
 
 @[simp]
 theorem comul_single (i : ι) (a : A i) :
@@ -367,9 +367,9 @@ variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
 open LinearMap
 
 noncomputable instance instCoalgebraStruct : CoalgebraStruct R (ι →₀ A) where
-  comul := Finsupp.lsum R fun i =>
+  comul := Finsupp.lsum R fun i ↦
     TensorProduct.map (Finsupp.lsingle i) (Finsupp.lsingle i) ∘ₗ comul
-  counit := Finsupp.lsum R fun _ => counit
+  counit := Finsupp.lsum R fun _ ↦ counit
 
 @[simp]
 theorem comul_single (i : ι) (a : A) :

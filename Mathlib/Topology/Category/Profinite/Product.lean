@@ -103,7 +103,7 @@ instance isIso_indexCone_lift :
     (by
       refine ⟨fun a b h ↦ ?_, fun a ↦ ?_⟩
       · refine eq_of_forall_π_app_eq a b (fun J ↦ ?_)
-        apply_fun fun f : (limitCone.{u, u} (indexFunctor hC)).pt => f.val (op J) at h
+        apply_fun fun f : (limitCone.{u, u} (indexFunctor hC)).pt ↦ f.val (op J) at h
         exact h
       · rsuffices ⟨b, hb⟩ : ∃ (x : C), ∀ (J : Finset ι), π_app C (· ∈ J) x = a.val (op J)
         · use b
@@ -126,9 +126,9 @@ instance isIso_indexCone_lift :
         obtain ⟨x, hx⟩ :
             Set.Nonempty (⋂ (J : Finset ι), π_app C (· ∈ J) ⁻¹' {a.val (op J)}) :=
           IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
-            (fun J : Finset ι => π_app C (· ∈ J) ⁻¹' {a.val (op J)}) (directed_of_isDirected_le H₁)
-            (fun J => (Set.singleton_nonempty _).preimage (surjective_π_app _))
-            (fun J => (hc J (a.val (op J))).isCompact) fun J => hc J (a.val (op J))
+            (fun J : Finset ι ↦ π_app C (· ∈ J) ⁻¹' {a.val (op J)}) (directed_of_isDirected_le H₁)
+            (fun J ↦ (Set.singleton_nonempty _).preimage (surjective_π_app _))
+            (fun J ↦ (hc J (a.val (op J))).isCompact) fun J ↦ hc J (a.val (op J))
         exact ⟨x, Set.mem_iInter.1 hx⟩)
 
 /-- The canonical map from `C` to the explicit limit as an isomorphism. -/
@@ -141,7 +141,7 @@ def isoindexConeLift :
 /-- The isomorphism of cones induced by `isoindexConeLift`. -/
 noncomputable
 def asLimitindexConeIso : indexCone hC ≅ Profinite.limitCone.{u, u} _ :=
-  Limits.Cones.ext (isoindexConeLift hC) fun _ => rfl
+  Limits.Cones.ext (isoindexConeLift hC) fun _ ↦ rfl
 
 /-- `indexCone` is a limit cone. -/
 noncomputable

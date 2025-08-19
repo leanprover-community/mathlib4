@@ -107,7 +107,7 @@ instance : Category ProfiniteGrp where
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
 @[to_additive]
-instance : ConcreteCategory ProfiniteGrp (fun X Y => X →ₜ* Y) where
+instance : ConcreteCategory ProfiniteGrp (fun X Y ↦ X →ₜ* Y) where
   hom f := f.hom'
   ofHom f := ⟨f⟩
 
@@ -204,7 +204,7 @@ abbrev ofProfinite (G : Profinite) [Group G] [IsTopologicalGroup G] :
 @[to_additive /-- The pi-type of profinite additive groups is a
 profinite additive group. -/]
 def pi {α : Type u} (β : α → ProfiniteGrp) : ProfiniteGrp :=
-  let pitype := Profinite.pi fun (a : α) => (β a).toProfinite
+  let pitype := Profinite.pi fun (a : α) ↦ (β a).toProfinite
   letI (a : α): Group (β a).toProfinite := (β a).group
   letI : Group pitype := Pi.group
   letI : IsTopologicalGroup pitype := Pi.topologicalGroup
@@ -223,7 +223,7 @@ def ofFiniteGrp (G : FiniteGrp) : ProfiniteGrp :=
 instance : HasForget₂ FiniteGrp ProfiniteGrp where
   forget₂ :=
   { obj := ofFiniteGrp
-    map := fun f => ⟨f.hom, by continuity⟩ }
+    map := fun f ↦ ⟨f.hom, by continuity⟩ }
 
 @[to_additive]
 instance : HasForget₂ ProfiniteGrp Grp where
@@ -260,7 +260,7 @@ instance : HasForget₂ ProfiniteGrp Profinite where
 
 @[to_additive]
 instance : (forget₂ ProfiniteGrp Profinite).Faithful := {
-  map_injective := fun {_ _} _ _ h =>
+  map_injective := fun {_ _} _ _ h ↦
     ConcreteCategory.hom_ext _ _ (CategoryTheory.congr_fun h) }
 
 instance : (forget₂ ProfiniteGrp Profinite).ReflectsIsomorphisms where
@@ -317,17 +317,17 @@ instance : IsTopologicalGroup (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGr
 abbrev limitCone : Limits.Cone F where
   pt := ofProfinite (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt
   π :=
-  { app := fun j => ⟨{
-      toFun := fun x => x.1 j
+  { app := fun j ↦ ⟨{
+      toFun := fun x ↦ x.1 j
       map_one' := rfl
-      map_mul' := fun x y => rfl
+      map_mul' := fun x y ↦ rfl
       continuous_toFun := by
-        exact (continuous_apply j).comp (continuous_iff_le_induced.mpr fun U a => a) }⟩
-    naturality := fun i j f => by
+        exact (continuous_apply j).comp (continuous_iff_le_induced.mpr fun U a ↦ a) }⟩
+    naturality := fun i j f ↦ by
       simp only [Functor.const_obj_obj, Functor.comp_obj,
         Functor.const_obj_map, Category.id_comp, Functor.comp_map]
       congr
-      exact funext fun x => (x.2 f).symm }
+      exact funext fun x ↦ (x.2 f).symm }
 
 /-- `ProfiniteGrp.limitCone` is a limit cone. -/
 def limitConeIsLimit : Limits.IsLimit (limitCone F) where

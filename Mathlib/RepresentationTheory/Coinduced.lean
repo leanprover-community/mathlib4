@@ -68,7 +68,7 @@ See also `Rep.coind` and `Representation.coind'` for variants involving the cate
 -/
 @[simps]
 def coind : Representation k H (coindV φ ρ) where
-  toFun h := (LinearMap.funLeft _ _ (· * h)).restrict fun x hx g h₁ => by
+  toFun h := (LinearMap.funLeft _ _ (· * h)).restrict fun x hx g h₁ ↦ by
     simpa [mul_assoc] using hx g (h₁ * h)
   map_one' := by ext; simp
   map_mul' _ _ := by ext; simp [mul_assoc]
@@ -95,7 +95,7 @@ is a natural `H`-representation morphism `coind φ A ⟶ coind φ B`, given by p
 @[simps]
 noncomputable def coindMap {A B : Rep k G} (f : A ⟶ B) : coind φ A ⟶ coind φ B where
   hom := ModuleCat.ofHom <| (f.hom.hom.compLeft H).restrict
-    fun x h y z => by simp [h y z, hom_comm_apply]
+    fun x h y z ↦ by simp [h y z, hom_comm_apply]
   comm _ := by ext; simp [ModuleCat.endRingEquiv]
 
 variable (k) in
@@ -108,7 +108,7 @@ noncomputable def coindFunctor : Rep k G ⥤ Rep k H where
 
 instance {G : Type u} [Group G] (S : Subgroup G) :
     (coindFunctor k S.subtype).PreservesEpimorphisms where
-  preserves {X Y} f := (Rep.epi_iff_surjective _).2 fun y => by
+  preserves {X Y} f := (Rep.epi_iff_surjective _).2 fun y ↦ by
     letI := QuotientGroup.rightRel S
     choose! s hs using (Rep.epi_iff_surjective f).1 ‹_›
     choose! i hi using Quotient.mk'_surjective (α := G)
@@ -118,7 +118,7 @@ instance {G : Type u} [Group G] (S : Subgroup G) :
       Quotient.eq'.2 (QuotientGroup.rightRel_apply.2 (by simp))
     have hγ (s : S) (g : G) : γ (s.1 * g) = s * γ g := by ext; simp [mul_assoc, γ, hmk]
     let x (g : G) : X := X.ρ (γ g) (s (y.1 (i (Quotient.mk' g))))
-    refine ⟨⟨x, fun _ _ => ?_⟩, Subtype.ext <| funext fun g => ?_⟩
+    refine ⟨⟨x, fun _ _ ↦ ?_⟩, Subtype.ext <| funext fun g ↦ ?_⟩
     · simp [x, ← Module.End.mul_apply, ← map_mul, hmk, hγ]
     · simp_all [x, hom_comm_apply, ← y.2 (γ g), γ]
 
@@ -139,11 +139,11 @@ noncomputable def _root_.Representation.coind' :
     map_smul' _ _ := by rfl }
   map_one' := by
     ext x : 3
-    refine lhom_ext' fun _ => LinearMap.ext_ring ?_
+    refine lhom_ext' fun _ ↦ LinearMap.ext_ring ?_
     simp [leftRegularHomEquiv_symm_apply (leftRegular k H)]
   map_mul' _ _ := by
     ext x : 3
-    refine lhom_ext' fun _ => LinearMap.ext_ring ?_
+    refine lhom_ext' fun _ ↦ LinearMap.ext_ring ?_
     simp [leftRegularHomEquiv_symm_apply (leftRegular k H), mul_assoc]
 
 /--
@@ -157,7 +157,7 @@ variable {A} in
 @[ext]
 lemma coind'_ext {f g : coind' φ A}
     (hfg : ∀ h, f.hom (single h 1) = g.hom (single h 1)) : f = g :=
-  Action.Hom.ext <| ModuleCat.hom_ext <| lhom_ext' fun h => LinearMap.ext_ring <| hfg h
+  Action.Hom.ext <| ModuleCat.hom_ext <| lhom_ext' fun h ↦ LinearMap.ext_ring <| hfg h
 
 /-- Given a monoid morphism `φ : G →* H` and a morphism of `G`-representations `f : A ⟶ B`, there
 is a natural `H`-representation morphism `coind' φ A ⟶ coind' φ B`, given by postcomposition
@@ -188,21 +188,21 @@ noncomputable def coindVEquiv :
     A.ρ.coindV φ ≃ₗ[k] ((Action.res _ φ).obj (leftRegular k H) ⟶ A) where
   toFun f := {
     hom := ModuleCat.ofHom <| linearCombination _ f.1
-    comm g := ModuleCat.hom_ext <| lhom_ext' fun _ => LinearMap.ext_ring <| by
+    comm g := ModuleCat.hom_ext <| lhom_ext' fun _ ↦ LinearMap.ext_ring <| by
       simp [ModuleCat.endRingEquiv, f.2 g] }
-  map_add' _ _ := coind'_ext φ fun _ => by simp
-  map_smul' _ _ := coind'_ext φ fun _ => by simp
+  map_add' _ _ := coind'_ext φ fun _ ↦ by simp
+  map_smul' _ _ := coind'_ext φ fun _ ↦ by simp
   invFun f := {
     val h := f.hom (single h 1)
     property g h := by have := (hom_comm_apply f g (single h 1)).symm; simp_all [Rep.res_obj_ρ φ] }
   left_inv x := by simp
-  right_inv x := coind'_ext φ fun _ => by simp
+  right_inv x := coind'_ext φ fun _ ↦ by simp
 
 /-- `coind φ A` and `coind' φ A` are isomorphic representations, with the underlying
 `k`-linear equivalence given by `coindVEquiv`. -/
 @[simps! hom_hom_hom inv_hom_hom]
 noncomputable def coindIso : coind φ A ≅ coind' φ A :=
-  Action.mkIso (coindVEquiv φ A).toModuleIso fun h => by
+  Action.mkIso (coindVEquiv φ A).toModuleIso fun h ↦ by
     ext
     simp [ModuleCat.endRingEquiv, leftRegularHomEquiv_symm_apply (leftRegular k H)]
 
@@ -211,7 +211,7 @@ noncomputable def coindIso : coind φ A ≅ coind' φ A :=
 given by `coindIso φ`. -/
 @[simps!]
 noncomputable def coindFunctorIso : coindFunctor k φ ≅ coindFunctor' k φ :=
-  NatIso.ofComponents (coindIso φ) fun _ => by
+  NatIso.ofComponents (coindIso φ) fun _ ↦ by
     simp only [coindFunctor_obj, coindFunctor'_obj]
     ext
     simp
@@ -226,8 +226,8 @@ section Adjunction
 noncomputable def resCoindHomEquiv (B : Rep k H) (A : Rep k G) :
     ((Action.res _ φ).obj B ⟶ A) ≃ₗ[k] (B ⟶ coind φ A) where
   toFun f := {
-    hom := ModuleCat.ofHom <| (LinearMap.pi fun h => f.hom.hom ∘ₗ Rep.ρ B h).codRestrict _
-      fun _ _ _ => by simpa using hom_comm_apply f _ _
+    hom := ModuleCat.ofHom <| (LinearMap.pi fun h ↦ f.hom.hom ∘ₗ Rep.ρ B h).codRestrict _
+      fun _ _ _ ↦ by simpa using hom_comm_apply f _ _
     comm _ := by ext; simp [ModuleCat.endRingEquiv] }
   map_add' _ _ := rfl
   map_smul' _ _ := rfl

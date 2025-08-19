@@ -98,7 +98,7 @@ a family of continuous functions `F i` tends to `f` in the compact-open topology
 if and only if the `F i` tends to `f` uniformly on all compact sets. -/
 theorem tendsto_iff_forall_isCompact_tendstoUniformlyOn
     {ι : Type u₃} {p : Filter ι} {F : ι → C(α, β)} {f} :
-    Tendsto F p (𝓝 f) ↔ ∀ K, IsCompact K → TendstoUniformlyOn (fun i a => F i a) f p K := by
+    Tendsto F p (𝓝 f) ↔ ∀ K, IsCompact K → TendstoUniformlyOn (fun i a ↦ F i a) f p K := by
   rw [tendsto_nhds_compactOpen]
   constructor
   · -- Let us prove that convergence in the compact-open topology
@@ -187,14 +187,14 @@ theorem continuous_iff_continuous_uniformOnFun {X : Type*} [TopologicalSpace X] 
 
 theorem _root_.Filter.HasBasis.compactConvergenceUniformity {ι : Type*} {pi : ι → Prop}
     {s : ι → Set (β × β)} (h : (𝓤 β).HasBasis pi s) :
-    HasBasis (𝓤 C(α, β)) (fun p : Set α × ι => IsCompact p.1 ∧ pi p.2) fun p =>
+    HasBasis (𝓤 C(α, β)) (fun p : Set α × ι ↦ IsCompact p.1 ∧ pi p.2) fun p ↦
       { fg : C(α, β) × C(α, β) | ∀ x ∈ p.1, (fg.1 x, fg.2 x) ∈ s p.2 } := by
   rw [← isUniformEmbedding_toUniformOnFunIsCompact.comap_uniformity]
   exact .comap _ <| UniformOnFun.hasBasis_uniformity_of_basis _ _ {K | IsCompact K}
     ⟨∅, isCompact_empty⟩ (directedOn_of_sup_mem fun _ _ ↦ IsCompact.union) h
 
 theorem hasBasis_compactConvergenceUniformity :
-    HasBasis (𝓤 C(α, β)) (fun p : Set α × Set (β × β) => IsCompact p.1 ∧ p.2 ∈ 𝓤 β) fun p =>
+    HasBasis (𝓤 C(α, β)) (fun p : Set α × Set (β × β) ↦ IsCompact p.1 ∧ p.2 ∈ 𝓤 β) fun p ↦
       { fg : C(α, β) × C(α, β) | ∀ x ∈ p.1, (fg.1 x, fg.2 x) ∈ p.2 } :=
   (basis_sets _).compactConvergenceUniformity
 
@@ -235,7 +235,7 @@ instance [WeaklyLocallyCompactSpace α] [SigmaCompactSpace α] [IsCountablyGener
 variable {ι : Type u₃} {p : Filter ι} {F : ι → C(α, β)} {f}
 
 /-- Locally uniform convergence implies convergence in the compact-open topology. -/
-theorem tendsto_of_tendstoLocallyUniformly (h : TendstoLocallyUniformly (fun i a => F i a) f p) :
+theorem tendsto_of_tendstoLocallyUniformly (h : TendstoLocallyUniformly (fun i a ↦ F i a) f p) :
     Tendsto F p (𝓝 f) := by
   rw [tendsto_iff_forall_isCompact_tendstoUniformlyOn]
   intro K hK
@@ -248,7 +248,7 @@ convergence in the compact-open topology is the same as locally uniform converge
 The right-to-left implication holds in any topological space,
 see `ContinuousMap.tendsto_of_tendstoLocallyUniformly`. -/
 theorem tendsto_iff_tendstoLocallyUniformly [WeaklyLocallyCompactSpace α] :
-    Tendsto F p (𝓝 f) ↔ TendstoLocallyUniformly (fun i a => F i a) f p := by
+    Tendsto F p (𝓝 f) ↔ TendstoLocallyUniformly (fun i a ↦ F i a) f p := by
   refine ⟨fun h V hV x ↦ ?_, tendsto_of_tendstoLocallyUniformly⟩
   rw [tendsto_iff_forall_isCompact_tendstoUniformlyOn] at h
   obtain ⟨n, hn₁, hn₂⟩ := exists_compact_mem_nhds x
@@ -302,11 +302,11 @@ section CompactDomain
 variable [CompactSpace α]
 
 theorem hasBasis_compactConvergenceUniformity_of_compact :
-    HasBasis (𝓤 C(α, β)) (fun V : Set (β × β) => V ∈ 𝓤 β) fun V ↦
+    HasBasis (𝓤 C(α, β)) (fun V : Set (β × β) ↦ V ∈ 𝓤 β) fun V ↦
       {fg : C(α, β) × C(α, β) | ∀ x, (fg.1 x, fg.2 x) ∈ V} :=
   hasBasis_compactConvergenceUniformity.to_hasBasis
-    (fun p hp => ⟨p.2, hp.2, fun _fg hfg x _hx => hfg x⟩) fun V hV ↦
-    ⟨⟨univ, V⟩, ⟨isCompact_univ, hV⟩, fun _fg hfg x => hfg x (mem_univ x)⟩
+    (fun p hp ↦ ⟨p.2, hp.2, fun _fg hfg x _hx ↦ hfg x⟩) fun V hV ↦
+    ⟨⟨univ, V⟩, ⟨isCompact_univ, hV⟩, fun _fg hfg x ↦ hfg x (mem_univ x)⟩
 
 theorem _root_.Filter.HasBasis.compactConvergenceUniformity_of_compact
     {ι : Sort*} {p : ι → Prop} {V : ι → Set (β × β)} (h : (𝓤 β).HasBasis p V) :
@@ -326,7 +326,7 @@ theorem isUniformEmbedding_uniformFunOfFun :
 /-- Convergence in the compact-open topology is the same as uniform convergence for sequences of
 continuous functions on a compact space. -/
 theorem tendsto_iff_tendstoUniformly :
-    Tendsto F p (𝓝 f) ↔ TendstoUniformly (fun i a => F i a) f p := by
+    Tendsto F p (𝓝 f) ↔ TendstoUniformly (fun i a ↦ F i a) f p := by
   simp [isUniformEmbedding_uniformFunOfFun.isInducing.tendsto_nhds_iff,
     UniformFun.tendsto_iff_tendstoUniformly, Function.comp_def]
 

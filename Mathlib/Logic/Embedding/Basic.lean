@@ -172,7 +172,7 @@ protected def ofIsEmpty {α β} [IsEmpty α] : α ↪ β :=
 is already occupied by some `f a'`, then swap the values at these two points. -/
 def setValue {α β : Sort*} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = a)]
     [∀ a', Decidable (f a' = b)] : α ↪ β :=
-  ⟨fun a' => if a' = a then b else if f a' = b then f a else f a', by
+  ⟨fun a' ↦ if a' = a then b else if f a' = b then f a else f a', by
     intro x y h
     simp only at h
     split_ifs at h <;> (try subst b) <;> (try simp only [f.injective.eq_iff] at *) <;> grind⟩
@@ -208,7 +208,7 @@ def optionMap {α β} (f : α ↪ β) : Option α ↪ Option β :=
 
 /-- Embedding of a `Subtype`. -/
 def subtype {α} (p : α → Prop) : Subtype p ↪ α :=
-  ⟨Subtype.val, fun _ _ => Subtype.ext⟩
+  ⟨Subtype.val, fun _ _ ↦ Subtype.ext⟩
 
 @[simp]
 theorem subtype_apply {α} {p : α → Prop} (x : Subtype p) : subtype p x = x :=
@@ -231,7 +231,7 @@ theorem coe_quotientOut (α) [Setoid α] : ↑(quotientOut α) = Quotient.out :=
 
 /-- Choosing an element `b : β` gives an embedding of `PUnit` into `β`. -/
 def punit {β : Sort*} (b : β) : PUnit ↪ β :=
-  ⟨fun _ => b, by
+  ⟨fun _ ↦ b, by
     rintro ⟨⟩ ⟨⟩ _
     rfl⟩
 
@@ -246,12 +246,12 @@ def oneEmbeddingEquiv {one α : Type*} [Unique one] : (one ↪ α) ≃ α where
 /-- Fixing an element `b : β` gives an embedding `α ↪ α × β`. -/
 @[simps]
 def sectL (α : Sort _) {β : Sort _} (b : β) : α ↪ α × β :=
-  ⟨fun a => (a, b), fun _ _ h => congr_arg Prod.fst h⟩
+  ⟨fun a ↦ (a, b), fun _ _ h ↦ congr_arg Prod.fst h⟩
 
 /-- Fixing an element `a : α` gives an embedding `β ↪ α × β`. -/
 @[simps]
 def sectR {α : Sort _} (a : α) (β : Sort _) : β ↪ α × β :=
-  ⟨fun b => (a, b), fun _ _ h => congr_arg Prod.snd h⟩
+  ⟨fun b ↦ (a, b), fun _ _ h ↦ congr_arg Prod.snd h⟩
 
 /-- If `e₁` and `e₂` are embeddings, then so is `Prod.map e₁ e₂ : (a, b) ↦ (e₁ a, e₂ b)`. -/
 def prodMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : α × γ ↪ β × δ :=
@@ -265,7 +265,7 @@ theorem coe_prodMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) 
 /-- If `e₁` and `e₂` are embeddings,
   then so is `fun ⟨a, b⟩ ↦ ⟨e₁ a, e₂ b⟩ : PProd α γ → PProd β δ`. -/
 def pprodMap {α β γ δ : Sort*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : PProd α γ ↪ PProd β δ :=
-  ⟨fun x => ⟨e₁ x.1, e₂ x.2⟩, e₁.injective.pprod_map e₂.injective⟩
+  ⟨fun x ↦ ⟨e₁ x.1, e₂ x.2⟩, e₁.injective.pprod_map e₂.injective⟩
 
 section Sum
 
@@ -282,12 +282,12 @@ theorem coe_sumMap {α β γ δ} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : sumMap 
 /-- The embedding of `α` into the sum `α ⊕ β`. -/
 @[simps]
 def inl {α β : Type*} : α ↪ α ⊕ β :=
-  ⟨Sum.inl, fun _ _ => Sum.inl.inj⟩
+  ⟨Sum.inl, fun _ _ ↦ Sum.inl.inj⟩
 
 /-- The embedding of `β` into the sum `α ⊕ β`. -/
 @[simps]
 def inr {α β : Type*} : β ↪ α ⊕ β :=
-  ⟨Sum.inr, fun _ _ => Sum.inr.inj⟩
+  ⟨Sum.inr, fun _ _ ↦ Sum.inr.inj⟩
 
 end Sum
 
@@ -304,7 +304,7 @@ def sigmaMk (a : α) : β a ↪ Σ x, β x :=
 of embeddings, then `Sigma.map f g` is an embedding. -/
 @[simps apply]
 def sigmaMap (f : α ↪ α') (g : ∀ a, β a ↪ β' (f a)) : (Σ a, β a) ↪ Σ a', β' a' :=
-  ⟨Sigma.map f fun a => g a, f.injective.sigma_map fun a => (g a).injective⟩
+  ⟨Sigma.map f fun a ↦ g a, f.injective.sigma_map fun a ↦ (g a).injective⟩
 
 end Sigma
 
@@ -312,12 +312,12 @@ end Sigma
 `e : Π a, (β a ↪ γ a)`. This embedding sends `f` to `fun a ↦ e a (f a)`. -/
 @[simps]
 def piCongrRight {α : Sort*} {β γ : α → Sort*} (e : ∀ a, β a ↪ γ a) : (∀ a, β a) ↪ ∀ a, γ a :=
-  ⟨fun f a => e a (f a), fun _ _ h => funext fun a => (e a).injective (congr_fun h a)⟩
+  ⟨fun f a ↦ e a (f a), fun _ _ h ↦ funext fun a ↦ (e a).injective (congr_fun h a)⟩
 
 /-- An embedding `e : α ↪ β` defines an embedding `(γ → α) ↪ (γ → β)` that sends each `f`
 to `e ∘ f`. -/
 def arrowCongrRight {α : Sort u} {β : Sort v} {γ : Sort w} (e : α ↪ β) : (γ → α) ↪ γ → β :=
-  piCongrRight fun _ => e
+  piCongrRight fun _ ↦ e
 
 @[simp]
 theorem arrowCongrRight_apply {α : Sort u} {β : Sort v} {γ : Sort w} (e : α ↪ β) (f : γ → α) :
@@ -329,8 +329,8 @@ This embedding sends each `f : α → γ` to a function `g : β → γ` such tha
 `g y = default` whenever `y ∉ range e`. -/
 noncomputable def arrowCongrLeft {α : Sort u} {β : Sort v} {γ : Sort w} [Inhabited γ] (e : α ↪ β) :
     (α → γ) ↪ β → γ :=
-  ⟨fun f => extend e f default, fun f₁ f₂ h =>
-    funext fun x => by simpa only [e.injective.extend_apply] using congr_fun h (e x)⟩
+  ⟨fun f ↦ extend e f default, fun f₁ f₂ h ↦
+    funext fun x ↦ by simpa only [e.injective.extend_apply] using congr_fun h (e x)⟩
 
 -- `simps` would generate this over-applied
 @[simp]
@@ -446,7 +446,7 @@ variable {α : Type*}
 into a sum of subtypes `{x // p x} ⊕ {x // q x}` such that `¬ p x` is sent to the right. -/
 def subtypeOrLeftEmbedding (p q : α → Prop) [DecidablePred p] :
     { x // p x ∨ q x } ↪ { x // p x } ⊕ { x // q x } :=
-  ⟨fun x => if h : p x then Sum.inl ⟨x, h⟩ else Sum.inr ⟨x, x.prop.resolve_left h⟩, by
+  ⟨fun x ↦ if h : p x then Sum.inl ⟨x, h⟩ else Sum.inr ⟨x, x.prop.resolve_left h⟩, by
     intro x y
     dsimp only
     split_ifs <;> simp [Subtype.ext_iff]⟩
@@ -465,6 +465,6 @@ theorem subtypeOrLeftEmbedding_apply_right {p q : α → Prop} [DecidablePred p]
 if `p x → q x` for all `x : α`. -/
 @[simps]
 def Subtype.impEmbedding (p q : α → Prop) (h : ∀ x, p x → q x) : { x // p x } ↪ { x // q x } :=
-  ⟨fun x => ⟨x, h x x.prop⟩, fun x y => by simp [Subtype.ext_iff]⟩
+  ⟨fun x ↦ ⟨x, h x x.prop⟩, fun x y ↦ by simp [Subtype.ext_iff]⟩
 
 end Subtype

@@ -143,7 +143,7 @@ theorem erase_insert_of_ne {a b : α} {s : Finset α} (h : a ≠ b) :
     erase (insert a s) b = insert a (erase s b) := by grind
 
 theorem erase_cons_of_ne {a b : α} {s : Finset α} (ha : a ∉ s) (hb : a ≠ b) :
-    erase (cons a s ha) b = cons a (erase s b) fun h => ha <| erase_subset _ _ h := by grind
+    erase (cons a s ha) b = cons a (erase s b) fun h ↦ ha <| erase_subset _ _ h := by grind
 
 @[simp] theorem insert_erase (h : a ∈ s) : insert a (erase s a) = s := by grind
 
@@ -182,8 +182,8 @@ alias subset_insert_iff_of_not_mem := subset_insert_iff_of_notMem
 theorem erase_subset_iff_of_mem (h : a ∈ t) : s.erase a ⊆ t ↔ s ⊆ t := by
   rw [← subset_insert_iff, insert_eq_of_mem h]
 
-theorem erase_injOn' (a : α) : { s : Finset α | a ∈ s }.InjOn fun s => erase s a :=
-  fun s hs t ht (h : s.erase a = _) => by rw [← insert_erase hs, ← insert_erase ht, h]
+theorem erase_injOn' (a : α) : { s : Finset α | a ∈ s }.InjOn fun s ↦ erase s a :=
+  fun s hs t ht (h : s.erase a = _) ↦ by rw [← insert_erase hs, ← insert_erase ht, h]
 
 end Erase
 
@@ -278,7 +278,7 @@ theorem erase_eq_empty_iff (s : Finset α) (a : α) : s.erase a = ∅ ↔ s = �
 
 --TODO@Yaël: Kill lemmas duplicate with `BooleanAlgebra`
 theorem sdiff_disjoint : Disjoint (t \ s) s :=
-  disjoint_left.2 fun _a ha => (mem_sdiff.1 ha).2
+  disjoint_left.2 fun _a ha ↦ (mem_sdiff.1 ha).2
 
 theorem disjoint_sdiff : Disjoint s (t \ s) :=
   sdiff_disjoint.symm
@@ -334,7 +334,7 @@ theorem disjoint_filter_filter' (s t : Finset α)
 
 theorem disjoint_filter_filter_neg (s t : Finset α) (p : α → Prop)
     [DecidablePred p] [∀ x, Decidable (¬p x)] :
-    Disjoint (s.filter p) (t.filter fun a => ¬p a) :=
+    Disjoint (s.filter p) (t.filter fun a ↦ ¬p a) :=
   disjoint_filter_filter' s t disjoint_compl_right
 
 theorem filter_disjUnion (s : Finset α) (t : Finset α) (h : Disjoint s t) :
@@ -355,13 +355,13 @@ theorem filter_union (s₁ s₂ : Finset α) : (s₁ ∪ s₂).filter p = s₁.f
   grind
 
 theorem filter_union_right (s : Finset α) :
-    s.filter p ∪ s.filter q = s.filter fun x => p x ∨ q x := by grind
+    s.filter p ∪ s.filter q = s.filter fun x ↦ p x ∨ q x := by grind
 
 theorem filter_mem_eq_inter {s t : Finset α} [∀ i, Decidable (i ∈ t)] :
-    (s.filter fun i => i ∈ t) = s ∩ t := by grind
+    (s.filter fun i ↦ i ∈ t) = s ∩ t := by grind
 
 theorem filter_notMem_eq_sdiff {s t : Finset α} [∀ i, Decidable (i ∉ t)] :
-    (s.filter fun i => i ∉ t) = s \ t := by grind
+    (s.filter fun i ↦ i ∉ t) = s \ t := by grind
 
 theorem filter_inter_distrib (s t : Finset α) : (s ∩ t).filter p = s.filter p ∩ t.filter p := by
   grind
@@ -376,13 +376,13 @@ theorem filter_insert (a : α) (s : Finset α) :
 theorem filter_erase (a : α) (s : Finset α) : filter p (erase s a) = erase (filter p s) a := by
   grind
 
-theorem filter_or (s : Finset α) : (s.filter fun a => p a ∨ q a) = s.filter p ∪ s.filter q := by
+theorem filter_or (s : Finset α) : (s.filter fun a ↦ p a ∨ q a) = s.filter p ∪ s.filter q := by
   grind
 
-theorem filter_and (s : Finset α) : (s.filter fun a => p a ∧ q a) = s.filter p ∩ s.filter q := by
+theorem filter_and (s : Finset α) : (s.filter fun a ↦ p a ∧ q a) = s.filter p ∩ s.filter q := by
   grind
 
-theorem filter_not (s : Finset α) : (s.filter fun a => ¬p a) = s \ s.filter p := by
+theorem filter_not (s : Finset α) : (s.filter fun a ↦ ¬p a) = s \ s.filter p := by
   grind
 
 lemma filter_and_not (s : Finset α) (p q : α → Prop) [DecidablePred p] [DecidablePred q] :
@@ -415,20 +415,20 @@ theorem filter_eq [DecidableEq β] (s : Finset β) (b : β) :
   This is equivalent to `filter_eq` with the equality the other way.
 -/
 theorem filter_eq' [DecidableEq β] (s : Finset β) (b : β) :
-    (s.filter fun a => a = b) = ite (b ∈ s) {b} ∅ := by grind
+    (s.filter fun a ↦ a = b) = ite (b ∈ s) {b} ∅ := by grind
 
 theorem filter_ne [DecidableEq β] (s : Finset β) (b : β) :
-    (s.filter fun a => b ≠ a) = s.erase b := by grind
+    (s.filter fun a ↦ b ≠ a) = s.erase b := by grind
 
-theorem filter_ne' [DecidableEq β] (s : Finset β) (b : β) : (s.filter fun a => a ≠ b) = s.erase b :=
-  _root_.trans (filter_congr fun _ _ => by simp_rw [@ne_comm _ b]) (filter_ne s b)
+theorem filter_ne' [DecidableEq β] (s : Finset β) (b : β) : (s.filter fun a ↦ a ≠ b) = s.erase b :=
+  _root_.trans (filter_congr fun _ _ ↦ by simp_rw [@ne_comm _ b]) (filter_ne s b)
 
 theorem filter_union_filter_of_codisjoint (s : Finset α) (h : Codisjoint p q) :
     s.filter p ∪ s.filter q = s :=
-  (filter_or _ _ _).symm.trans <| filter_true_of_mem fun x _ => h.top_le x trivial
+  (filter_or _ _ _).symm.trans <| filter_true_of_mem fun x _ ↦ h.top_le x trivial
 
 theorem filter_union_filter_neg_eq [∀ x, Decidable (¬p x)] (s : Finset α) :
-    (s.filter p ∪ s.filter fun a => ¬p a) = s :=
+    (s.filter p ∪ s.filter fun a ↦ ¬p a) = s :=
   filter_union_filter_of_codisjoint _ _ _ <| @codisjoint_hnot_right _ _ p
 
 end

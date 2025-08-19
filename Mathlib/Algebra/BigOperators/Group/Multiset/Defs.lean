@@ -85,11 +85,11 @@ theorem pow_count [DecidableEq M] (a : M) : a ^ s.count a = (s.filter (Eq a)).pr
 theorem prod_hom_rel (s : Multiset ι) {r : M → N → Prop} {f : ι → M} {g : ι → N}
     (h₁ : r 1 1) (h₂ : ∀ ⦃a b c⦄, r b c → r (f a * b) (g a * c)) :
     r (s.map f).prod (s.map g).prod :=
-  Quotient.inductionOn s fun l => by
+  Quotient.inductionOn s fun l ↦ by
     simp only [l.prod_hom_rel h₁ h₂, quot_mk_to_coe, map_coe, prod_coe]
 
 @[to_additive]
-theorem prod_map_one : prod (m.map fun _ => (1 : M)) = 1 := by
+theorem prod_map_one : prod (m.map fun _ ↦ (1 : M)) = 1 := by
   rw [map_const', prod_replicate, one_pow]
 
 @[to_additive]
@@ -107,7 +107,7 @@ theorem prod_induction_nonempty (p : M → Prop) (p_mul : ∀ a b, p a → p b �
     rw [prod_cons]
     by_cases hs_empty : s = ∅
     · simp [hs_empty, p_s a]
-    have hps : ∀ x, x ∈ s → p x := fun x hxs => p_s x (mem_cons_of_mem hxs)
+    have hps : ∀ x, x ∈ s → p x := fun x hxs ↦ p_s x (mem_cons_of_mem hxs)
     exact p_mul a s.prod (p_s a (mem_cons_self a s)) (hsa hs_empty hps)
 
 end CommMonoid

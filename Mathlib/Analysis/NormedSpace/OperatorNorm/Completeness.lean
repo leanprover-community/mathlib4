@@ -41,14 +41,14 @@ def ofMemClosureImageCoeBounded (f : E' → F) {s : Set (E' →SL[σ₁₂] F)} 
     (hf : f ∈ closure (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s)) : E' →SL[σ₁₂] F := by
   -- `f` is a linear map due to `linearMapOfMemClosureRangeCoe`
   refine (linearMapOfMemClosureRangeCoe f ?_).mkContinuousOfExistsBound ?_
-  · refine closure_mono (image_subset_iff.2 fun g _ => ?_) hf
+  · refine closure_mono (image_subset_iff.2 fun g _ ↦ ?_) hf
     exact ⟨g, rfl⟩
   · -- We need to show that `f` has bounded norm. Choose `C` such that `‖g‖ ≤ C` for all `g ∈ s`.
     rcases isBounded_iff_forall_norm_le.1 hs with ⟨C, hC⟩
     -- Then `‖g x‖ ≤ C * ‖x‖` for all `g ∈ s`, `x : E`, hence `‖f x‖ ≤ C * ‖x‖` for all `x`.
-    have : ∀ x, IsClosed { g : E' → F | ‖g x‖ ≤ C * ‖x‖ } := fun x =>
-      isClosed_Iic.preimage (@continuous_apply E' (fun _ => F) _ x).norm
-    refine ⟨C, fun x => (this x).closure_subset_iff.2 (image_subset_iff.2 fun g hg => ?_) hf⟩
+    have : ∀ x, IsClosed { g : E' → F | ‖g x‖ ≤ C * ‖x‖ } := fun x ↦
+      isClosed_Iic.preimage (@continuous_apply E' (fun _ ↦ F) _ x).norm
+    refine ⟨C, fun x ↦ (this x).closure_subset_iff.2 (image_subset_iff.2 fun g hg ↦ ?_) hf⟩
     exact g.le_of_opNorm_le (hC _ hg) _
 
 /-- Let `f : E → F` be a map, let `g : α → E →SL[σ₁₂] F` be a family of continuous (semi)linear maps
@@ -56,29 +56,29 @@ that takes values in a bounded set and converges to `f` pointwise along a nontri
 `f` is a continuous (semi)linear map. -/
 @[simps! -fullyApplied apply]
 def ofTendstoOfBoundedRange {α : Type*} {l : Filter α} [l.NeBot] (f : E' → F)
-    (g : α → E' →SL[σ₁₂] F) (hf : Tendsto (fun a x => g a x) l (𝓝 f))
+    (g : α → E' →SL[σ₁₂] F) (hf : Tendsto (fun a x ↦ g a x) l (𝓝 f))
     (hg : IsBounded (Set.range g)) : E' →SL[σ₁₂] F :=
   ofMemClosureImageCoeBounded f hg <| mem_closure_of_tendsto hf <|
-    Eventually.of_forall fun _ => mem_image_of_mem _ <| Set.mem_range_self _
+    Eventually.of_forall fun _ ↦ mem_image_of_mem _ <| Set.mem_range_self _
 
 /-- If a Cauchy sequence of continuous linear map converges to a continuous linear map pointwise,
 then it converges to the same map in norm. This lemma is used to prove that the space of continuous
 linear maps is complete provided that the codomain is a complete space. -/
 theorem tendsto_of_tendsto_pointwise_of_cauchySeq {f : ℕ → E' →SL[σ₁₂] F} {g : E' →SL[σ₁₂] F}
-    (hg : Tendsto (fun n x => f n x) atTop (𝓝 g)) (hf : CauchySeq f) : Tendsto f atTop (𝓝 g) := by
+    (hg : Tendsto (fun n x ↦ f n x) atTop (𝓝 g)) (hf : CauchySeq f) : Tendsto f atTop (𝓝 g) := by
   /- Since `f` is a Cauchy sequence, there exists `b → 0` such that `‖f n - f m‖ ≤ b N` for any
     `m, n ≥ N`. -/
   rcases cauchySeq_iff_le_tendsto_0.1 hf with ⟨b, hb₀, hfb, hb_lim⟩
   -- Since `b → 0`, it suffices to show that `‖f n x - g x‖ ≤ b n * ‖x‖` for all `n` and `x`.
   suffices ∀ n x, ‖f n x - g x‖ ≤ b n * ‖x‖ from
     tendsto_iff_norm_sub_tendsto_zero.2
-    (squeeze_zero (fun n => norm_nonneg _) (fun n => opNorm_le_bound _ (hb₀ n) (this n)) hb_lim)
+    (squeeze_zero (fun n ↦ norm_nonneg _) (fun n ↦ opNorm_le_bound _ (hb₀ n) (this n)) hb_lim)
   intro n x
   -- Note that `f m x → g x`, hence `‖f n x - f m x‖ → ‖f n x - g x‖` as `m → ∞`
-  have : Tendsto (fun m => ‖f n x - f m x‖) atTop (𝓝 ‖f n x - g x‖) :=
+  have : Tendsto (fun m ↦ ‖f n x - f m x‖) atTop (𝓝 ‖f n x - g x‖) :=
     (tendsto_const_nhds.sub <| tendsto_pi_nhds.1 hg _).norm
   -- Thus it suffices to verify `‖f n x - f m x‖ ≤ b n * ‖x‖` for `m ≥ n`.
-  refine le_of_tendsto this (eventually_atTop.2 ⟨n, fun m hm => ?_⟩)
+  refine le_of_tendsto this (eventually_atTop.2 ⟨n, fun m hm ↦ ?_⟩)
   -- This inequality follows from `‖f n - f m‖ ≤ b n`.
   exact (f n - f m).le_of_opNorm_le (hfb _ _ _ le_rfl hm) _
 
@@ -87,10 +87,10 @@ in a proper space. Then `s` interpreted as a set in the space of maps `E → F` 
 pointwise convergence is precompact: its closure is a compact set. -/
 theorem isCompact_closure_image_coe_of_bounded [ProperSpace F] {s : Set (E' →SL[σ₁₂] F)}
     (hb : IsBounded s) : IsCompact (closure (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s)) :=
-  have : ∀ x, IsCompact (closure (apply' F σ₁₂ x '' s)) := fun x =>
+  have : ∀ x, IsCompact (closure (apply' F σ₁₂ x '' s)) := fun x ↦
     ((apply' F σ₁₂ x).lipschitz.isBounded_image hb).isCompact_closure
   (isCompact_pi_infinite this).closure_of_subset
-    (image_subset_iff.2 fun _ hg _ => subset_closure <| mem_image_of_mem _ hg)
+    (image_subset_iff.2 fun _ hg _ ↦ subset_closure <| mem_image_of_mem _ hg)
 
 /-- Let `s` be a bounded set in the space of continuous (semi)linear maps `E →SL[σ] F` taking values
 in a proper space. If `s` interpreted as a set in the space of maps `E → F` with topology of
@@ -111,7 +111,7 @@ theorem isClosed_image_coe_of_bounded_of_weak_closed {s : Set (E' →SL[σ₁₂
     (hc : ∀ f : E' →SL[σ₁₂] F,
       (⇑f : E' → F) ∈ closure (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s) → f ∈ s) :
     IsClosed (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s) :=
-  isClosed_of_closure_subset fun f hf =>
+  isClosed_of_closure_subset fun f hf ↦
     ⟨ofMemClosureImageCoeBounded f hb hf, hc (ofMemClosureImageCoeBounded f hb hf) hf, rfl⟩
 
 /-- If a set `s` of semilinear functions is bounded and is closed in the weak-* topology, then its
@@ -131,10 +131,10 @@ theorem is_weak_closed_closedBall (f₀ : E' →SL[σ₁₂] F) (r : ℝ) ⦃f :
     (hf : ⇑f ∈ closure (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' closedBall f₀ r)) :
     f ∈ closedBall f₀ r := by
   have hr : 0 ≤ r := nonempty_closedBall.1 (closure_nonempty_iff.1 ⟨_, hf⟩).of_image
-  refine mem_closedBall_iff_norm.2 (opNorm_le_bound _ hr fun x => ?_)
+  refine mem_closedBall_iff_norm.2 (opNorm_le_bound _ hr fun x ↦ ?_)
   have : IsClosed { g : E' → F | ‖g x - f₀ x‖ ≤ r * ‖x‖ } :=
-    isClosed_Iic.preimage ((@continuous_apply E' (fun _ => F) _ x).sub continuous_const).norm
-  refine this.closure_subset_iff.2 (image_subset_iff.2 fun g hg => ?_) hf
+    isClosed_Iic.preimage ((@continuous_apply E' (fun _ ↦ F) _ x).sub continuous_const).norm
+  refine this.closure_subset_iff.2 (image_subset_iff.2 fun g hg ↦ ?_) hf
   exact (g - f₀).le_of_opNorm_le (mem_closedBall_iff_norm.1 hg) _
 
 /-- The set of functions `f : E → F` that represent continuous linear maps `f : E →SL[σ₁₂] F`
@@ -181,8 +181,8 @@ def extend : Fₗ →SL[σ₁₂] F :=
       · intro x y
         simp only [eq, ← e.map_add]
         exact f.map_add _ _
-    map_smul' := fun k => by
-      refine fun b => h_dense.induction_on b ?_ ?_
+    map_smul' := fun k ↦ by
+      refine fun b ↦ h_dense.induction_on b ?_ ?_
       · exact isClosed_eq (cont.comp (continuous_const_smul _))
           ((continuous_const_smul _).comp cont)
       · intro x

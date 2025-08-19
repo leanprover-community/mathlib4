@@ -47,7 +47,7 @@ variable {f₂ : E → G} {f₂' : E →L[𝕜] G}
 
 protected theorem HasStrictFDerivAt.prodMk (hf₁ : HasStrictFDerivAt f₁ f₁' x)
     (hf₂ : HasStrictFDerivAt f₂ f₂' x) :
-    HasStrictFDerivAt (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') x :=
+    HasStrictFDerivAt (fun x ↦ (f₁ x, f₂ x)) (f₁'.prod f₂') x :=
   .of_isLittleO <| hf₁.isLittleO.prod_left hf₂.isLittleO
 
 @[deprecated (since := "2025-03-09")]
@@ -55,7 +55,7 @@ alias HasStrictFDerivAt.prod := HasStrictFDerivAt.prodMk
 
 theorem HasFDerivAtFilter.prodMk (hf₁ : HasFDerivAtFilter f₁ f₁' x L)
     (hf₂ : HasFDerivAtFilter f₂ f₂' x L) :
-    HasFDerivAtFilter (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') x L :=
+    HasFDerivAtFilter (fun x ↦ (f₁ x, f₂ x)) (f₁'.prod f₂') x L :=
   .of_isLittleO <| hf₁.isLittleO.prod_left hf₂.isLittleO
 
 @[deprecated (since := "2025-03-09")]
@@ -64,7 +64,7 @@ alias HasFDerivAtFilter.prod := HasFDerivAtFilter.prodMk
 @[fun_prop]
 nonrec theorem HasFDerivWithinAt.prodMk (hf₁ : HasFDerivWithinAt f₁ f₁' s x)
     (hf₂ : HasFDerivWithinAt f₂ f₂' s x) :
-    HasFDerivWithinAt (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') s x :=
+    HasFDerivWithinAt (fun x ↦ (f₁ x, f₂ x)) (f₁'.prod f₂') s x :=
   hf₁.prodMk hf₂
 
 @[deprecated (since := "2025-03-09")]
@@ -72,7 +72,7 @@ alias HasFDerivWithinAt.prod := HasFDerivWithinAt.prodMk
 
 @[fun_prop]
 nonrec theorem HasFDerivAt.prodMk (hf₁ : HasFDerivAt f₁ f₁' x) (hf₂ : HasFDerivAt f₂ f₂' x) :
-    HasFDerivAt (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') x :=
+    HasFDerivAt (fun x ↦ (f₁ x, f₂ x)) (f₁'.prod f₂') x :=
   hf₁.prodMk hf₂
 
 @[deprecated (since := "2025-03-09")]
@@ -80,7 +80,7 @@ alias HasFDerivAt.prod := HasFDerivAt.prodMk
 
 @[fun_prop]
 theorem hasFDerivAt_prodMk_left (e₀ : E) (f₀ : F) :
-    HasFDerivAt (fun e : E => (e, f₀)) (inl 𝕜 E F) e₀ :=
+    HasFDerivAt (fun e : E ↦ (e, f₀)) (inl 𝕜 E F) e₀ :=
   (hasFDerivAt_id e₀).prodMk (hasFDerivAt_const f₀ e₀)
 
 @[deprecated (since := "2025-03-09")]
@@ -88,7 +88,7 @@ alias hasFDerivAt_prod_mk_left := hasFDerivAt_prodMk_left
 
 @[fun_prop]
 theorem hasFDerivAt_prodMk_right (e₀ : E) (f₀ : F) :
-    HasFDerivAt (fun f : F => (e₀, f)) (inr 𝕜 E F) f₀ :=
+    HasFDerivAt (fun f : F ↦ (e₀, f)) (inr 𝕜 E F) f₀ :=
   (hasFDerivAt_const e₀ f₀).prodMk (hasFDerivAt_id f₀)
 
 @[deprecated (since := "2025-03-09")]
@@ -97,7 +97,7 @@ alias hasFDerivAt_prod_mk_right := hasFDerivAt_prodMk_right
 @[fun_prop]
 theorem DifferentiableWithinAt.prodMk (hf₁ : DifferentiableWithinAt 𝕜 f₁ s x)
     (hf₂ : DifferentiableWithinAt 𝕜 f₂ s x) :
-    DifferentiableWithinAt 𝕜 (fun x : E => (f₁ x, f₂ x)) s x :=
+    DifferentiableWithinAt 𝕜 (fun x : E ↦ (f₁ x, f₂ x)) s x :=
   (hf₁.hasFDerivWithinAt.prodMk hf₂.hasFDerivWithinAt).differentiableWithinAt
 
 @[deprecated (since := "2025-03-09")]
@@ -105,7 +105,7 @@ alias DifferentiableWithinAt.prod := DifferentiableWithinAt.prodMk
 
 @[simp, fun_prop]
 theorem DifferentiableAt.prodMk (hf₁ : DifferentiableAt 𝕜 f₁ x) (hf₂ : DifferentiableAt 𝕜 f₂ x) :
-    DifferentiableAt 𝕜 (fun x : E => (f₁ x, f₂ x)) x :=
+    DifferentiableAt 𝕜 (fun x : E ↦ (f₁ x, f₂ x)) x :=
   (hf₁.hasFDerivAt.prodMk hf₂.hasFDerivAt).differentiableAt
 
 @[deprecated (since := "2025-03-09")]
@@ -113,14 +113,14 @@ alias DifferentiableAt.prod := DifferentiableAt.prodMk
 
 @[fun_prop]
 theorem DifferentiableOn.prodMk (hf₁ : DifferentiableOn 𝕜 f₁ s) (hf₂ : DifferentiableOn 𝕜 f₂ s) :
-    DifferentiableOn 𝕜 (fun x : E => (f₁ x, f₂ x)) s := fun x hx => (hf₁ x hx).prodMk (hf₂ x hx)
+    DifferentiableOn 𝕜 (fun x : E ↦ (f₁ x, f₂ x)) s := fun x hx ↦ (hf₁ x hx).prodMk (hf₂ x hx)
 
 @[deprecated (since := "2025-03-09")]
 alias DifferentiableOn.prod := DifferentiableOn.prodMk
 
 @[simp, fun_prop]
 theorem Differentiable.prodMk (hf₁ : Differentiable 𝕜 f₁) (hf₂ : Differentiable 𝕜 f₂) :
-    Differentiable 𝕜 fun x : E => (f₁ x, f₂ x) := fun x ↦
+    Differentiable 𝕜 fun x : E ↦ (f₁ x, f₂ x) := fun x ↦
   (hf₁ x).prodMk (hf₂ x)
 
 @[deprecated (since := "2025-03-09")]
@@ -128,7 +128,7 @@ alias Differentiable.prod := Differentiable.prodMk
 
 theorem DifferentiableAt.fderiv_prodMk (hf₁ : DifferentiableAt 𝕜 f₁ x)
     (hf₂ : DifferentiableAt 𝕜 f₂ x) :
-    fderiv 𝕜 (fun x : E => (f₁ x, f₂ x)) x = (fderiv 𝕜 f₁ x).prod (fderiv 𝕜 f₂ x) :=
+    fderiv 𝕜 (fun x : E ↦ (f₁ x, f₂ x)) x = (fderiv 𝕜 f₁ x).prod (fderiv 𝕜 f₂ x) :=
   (hf₁.hasFDerivAt.prodMk hf₂.hasFDerivAt).fderiv
 
 @[deprecated (since := "2025-03-09")]
@@ -136,7 +136,7 @@ alias DifferentiableAt.fderiv_prod := DifferentiableAt.fderiv_prodMk
 
 theorem DifferentiableWithinAt.fderivWithin_prodMk (hf₁ : DifferentiableWithinAt 𝕜 f₁ s x)
     (hf₂ : DifferentiableWithinAt 𝕜 f₂ s x) (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    fderivWithin 𝕜 (fun x : E => (f₁ x, f₂ x)) s x =
+    fderivWithin 𝕜 (fun x : E ↦ (f₁ x, f₂ x)) s x =
       (fderivWithin 𝕜 f₁ s x).prod (fderivWithin 𝕜 f₂ s x) :=
   (hf₁.hasFDerivWithinAt.prodMk hf₂.hasFDerivWithinAt).fderivWithin hxs
 
@@ -155,7 +155,7 @@ theorem hasStrictFDerivAt_fst : HasStrictFDerivAt (@Prod.fst E F) (fst 𝕜 E F)
 
 @[fun_prop]
 protected theorem HasStrictFDerivAt.fst (h : HasStrictFDerivAt f₂ f₂' x) :
-    HasStrictFDerivAt (fun x => (f₂ x).1) ((fst 𝕜 F G).comp f₂') x :=
+    HasStrictFDerivAt (fun x ↦ (f₂ x).1) ((fst 𝕜 F G).comp f₂') x :=
   hasStrictFDerivAt_fst.comp x h
 
 theorem hasFDerivAtFilter_fst {L : Filter (E × F)} :
@@ -163,7 +163,7 @@ theorem hasFDerivAtFilter_fst {L : Filter (E × F)} :
   (fst 𝕜 E F).hasFDerivAtFilter
 
 protected theorem HasFDerivAtFilter.fst (h : HasFDerivAtFilter f₂ f₂' x L) :
-    HasFDerivAtFilter (fun x => (f₂ x).1) ((fst 𝕜 F G).comp f₂') x L :=
+    HasFDerivAtFilter (fun x ↦ (f₂ x).1) ((fst 𝕜 F G).comp f₂') x L :=
   hasFDerivAtFilter_fst.comp x h tendsto_map
 
 @[fun_prop]
@@ -172,7 +172,7 @@ theorem hasFDerivAt_fst : HasFDerivAt (@Prod.fst E F) (fst 𝕜 E F) p :=
 
 @[fun_prop]
 protected nonrec theorem HasFDerivAt.fst (h : HasFDerivAt f₂ f₂' x) :
-    HasFDerivAt (fun x => (f₂ x).1) ((fst 𝕜 F G).comp f₂') x :=
+    HasFDerivAt (fun x ↦ (f₂ x).1) ((fst 𝕜 F G).comp f₂') x :=
   h.fst
 
 @[fun_prop]
@@ -182,7 +182,7 @@ theorem hasFDerivWithinAt_fst {s : Set (E × F)} :
 
 @[fun_prop]
 protected nonrec theorem HasFDerivWithinAt.fst (h : HasFDerivWithinAt f₂ f₂' s x) :
-    HasFDerivWithinAt (fun x => (f₂ x).1) ((fst 𝕜 F G).comp f₂') s x :=
+    HasFDerivWithinAt (fun x ↦ (f₂ x).1) ((fst 𝕜 F G).comp f₂') s x :=
   h.fst
 
 @[fun_prop]
@@ -191,16 +191,16 @@ theorem differentiableAt_fst : DifferentiableAt 𝕜 Prod.fst p :=
 
 @[simp, fun_prop]
 protected theorem DifferentiableAt.fst (h : DifferentiableAt 𝕜 f₂ x) :
-    DifferentiableAt 𝕜 (fun x => (f₂ x).1) x :=
+    DifferentiableAt 𝕜 (fun x ↦ (f₂ x).1) x :=
   differentiableAt_fst.comp x h
 
 @[fun_prop]
-theorem differentiable_fst : Differentiable 𝕜 (Prod.fst : E × F → E) := fun _ =>
+theorem differentiable_fst : Differentiable 𝕜 (Prod.fst : E × F → E) := fun _ ↦
   differentiableAt_fst
 
 @[simp, fun_prop]
 protected theorem Differentiable.fst (h : Differentiable 𝕜 f₂) :
-    Differentiable 𝕜 fun x => (f₂ x).1 :=
+    Differentiable 𝕜 fun x ↦ (f₂ x).1 :=
   differentiable_fst.comp h
 
 @[fun_prop]
@@ -209,7 +209,7 @@ theorem differentiableWithinAt_fst {s : Set (E × F)} : DifferentiableWithinAt �
 
 @[fun_prop]
 protected theorem DifferentiableWithinAt.fst (h : DifferentiableWithinAt 𝕜 f₂ s x) :
-    DifferentiableWithinAt 𝕜 (fun x => (f₂ x).1) s x :=
+    DifferentiableWithinAt 𝕜 (fun x ↦ (f₂ x).1) s x :=
   differentiableAt_fst.comp_differentiableWithinAt x h
 
 @[fun_prop]
@@ -218,14 +218,14 @@ theorem differentiableOn_fst {s : Set (E × F)} : DifferentiableOn 𝕜 Prod.fst
 
 @[fun_prop]
 protected theorem DifferentiableOn.fst (h : DifferentiableOn 𝕜 f₂ s) :
-    DifferentiableOn 𝕜 (fun x => (f₂ x).1) s :=
+    DifferentiableOn 𝕜 (fun x ↦ (f₂ x).1) s :=
   differentiable_fst.comp_differentiableOn h
 
 theorem fderiv_fst : fderiv 𝕜 Prod.fst p = fst 𝕜 E F :=
   hasFDerivAt_fst.fderiv
 
 theorem fderiv.fst (h : DifferentiableAt 𝕜 f₂ x) :
-    fderiv 𝕜 (fun x => (f₂ x).1) x = (fst 𝕜 F G).comp (fderiv 𝕜 f₂ x) :=
+    fderiv 𝕜 (fun x ↦ (f₂ x).1) x = (fst 𝕜 F G).comp (fderiv 𝕜 f₂ x) :=
   h.hasFDerivAt.fst.fderiv
 
 theorem fderivWithin_fst {s : Set (E × F)} (hs : UniqueDiffWithinAt 𝕜 s p) :
@@ -233,7 +233,7 @@ theorem fderivWithin_fst {s : Set (E × F)} (hs : UniqueDiffWithinAt 𝕜 s p) :
   hasFDerivWithinAt_fst.fderivWithin hs
 
 theorem fderivWithin.fst (hs : UniqueDiffWithinAt 𝕜 s x) (h : DifferentiableWithinAt 𝕜 f₂ s x) :
-    fderivWithin 𝕜 (fun x => (f₂ x).1) s x = (fst 𝕜 F G).comp (fderivWithin 𝕜 f₂ s x) :=
+    fderivWithin 𝕜 (fun x ↦ (f₂ x).1) s x = (fst 𝕜 F G).comp (fderivWithin 𝕜 f₂ s x) :=
   h.hasFDerivWithinAt.fst.fderivWithin hs
 
 end Fst
@@ -248,7 +248,7 @@ theorem hasStrictFDerivAt_snd : HasStrictFDerivAt (@Prod.snd E F) (snd 𝕜 E F)
 
 @[fun_prop]
 protected theorem HasStrictFDerivAt.snd (h : HasStrictFDerivAt f₂ f₂' x) :
-    HasStrictFDerivAt (fun x => (f₂ x).2) ((snd 𝕜 F G).comp f₂') x :=
+    HasStrictFDerivAt (fun x ↦ (f₂ x).2) ((snd 𝕜 F G).comp f₂') x :=
   hasStrictFDerivAt_snd.comp x h
 
 theorem hasFDerivAtFilter_snd {L : Filter (E × F)} :
@@ -256,7 +256,7 @@ theorem hasFDerivAtFilter_snd {L : Filter (E × F)} :
   (snd 𝕜 E F).hasFDerivAtFilter
 
 protected theorem HasFDerivAtFilter.snd (h : HasFDerivAtFilter f₂ f₂' x L) :
-    HasFDerivAtFilter (fun x => (f₂ x).2) ((snd 𝕜 F G).comp f₂') x L :=
+    HasFDerivAtFilter (fun x ↦ (f₂ x).2) ((snd 𝕜 F G).comp f₂') x L :=
   hasFDerivAtFilter_snd.comp x h tendsto_map
 
 @[fun_prop]
@@ -265,7 +265,7 @@ theorem hasFDerivAt_snd : HasFDerivAt (@Prod.snd E F) (snd 𝕜 E F) p :=
 
 @[fun_prop]
 protected nonrec theorem HasFDerivAt.snd (h : HasFDerivAt f₂ f₂' x) :
-    HasFDerivAt (fun x => (f₂ x).2) ((snd 𝕜 F G).comp f₂') x :=
+    HasFDerivAt (fun x ↦ (f₂ x).2) ((snd 𝕜 F G).comp f₂') x :=
   h.snd
 
 @[fun_prop]
@@ -275,7 +275,7 @@ theorem hasFDerivWithinAt_snd {s : Set (E × F)} :
 
 @[fun_prop]
 protected nonrec theorem HasFDerivWithinAt.snd (h : HasFDerivWithinAt f₂ f₂' s x) :
-    HasFDerivWithinAt (fun x => (f₂ x).2) ((snd 𝕜 F G).comp f₂') s x :=
+    HasFDerivWithinAt (fun x ↦ (f₂ x).2) ((snd 𝕜 F G).comp f₂') s x :=
   h.snd
 
 @[fun_prop]
@@ -284,16 +284,16 @@ theorem differentiableAt_snd : DifferentiableAt 𝕜 Prod.snd p :=
 
 @[simp, fun_prop]
 protected theorem DifferentiableAt.snd (h : DifferentiableAt 𝕜 f₂ x) :
-    DifferentiableAt 𝕜 (fun x => (f₂ x).2) x :=
+    DifferentiableAt 𝕜 (fun x ↦ (f₂ x).2) x :=
   differentiableAt_snd.comp x h
 
 @[fun_prop]
-theorem differentiable_snd : Differentiable 𝕜 (Prod.snd : E × F → F) := fun _ =>
+theorem differentiable_snd : Differentiable 𝕜 (Prod.snd : E × F → F) := fun _ ↦
   differentiableAt_snd
 
 @[simp, fun_prop]
 protected theorem Differentiable.snd (h : Differentiable 𝕜 f₂) :
-    Differentiable 𝕜 fun x => (f₂ x).2 :=
+    Differentiable 𝕜 fun x ↦ (f₂ x).2 :=
   differentiable_snd.comp h
 
 @[fun_prop]
@@ -302,7 +302,7 @@ theorem differentiableWithinAt_snd {s : Set (E × F)} : DifferentiableWithinAt �
 
 @[fun_prop]
 protected theorem DifferentiableWithinAt.snd (h : DifferentiableWithinAt 𝕜 f₂ s x) :
-    DifferentiableWithinAt 𝕜 (fun x => (f₂ x).2) s x :=
+    DifferentiableWithinAt 𝕜 (fun x ↦ (f₂ x).2) s x :=
   differentiableAt_snd.comp_differentiableWithinAt x h
 
 @[fun_prop]
@@ -311,14 +311,14 @@ theorem differentiableOn_snd {s : Set (E × F)} : DifferentiableOn 𝕜 Prod.snd
 
 @[fun_prop]
 protected theorem DifferentiableOn.snd (h : DifferentiableOn 𝕜 f₂ s) :
-    DifferentiableOn 𝕜 (fun x => (f₂ x).2) s :=
+    DifferentiableOn 𝕜 (fun x ↦ (f₂ x).2) s :=
   differentiable_snd.comp_differentiableOn h
 
 theorem fderiv_snd : fderiv 𝕜 Prod.snd p = snd 𝕜 E F :=
   hasFDerivAt_snd.fderiv
 
 theorem fderiv.snd (h : DifferentiableAt 𝕜 f₂ x) :
-    fderiv 𝕜 (fun x => (f₂ x).2) x = (snd 𝕜 F G).comp (fderiv 𝕜 f₂ x) :=
+    fderiv 𝕜 (fun x ↦ (f₂ x).2) x = (snd 𝕜 F G).comp (fderiv 𝕜 f₂ x) :=
   h.hasFDerivAt.snd.fderiv
 
 theorem fderivWithin_snd {s : Set (E × F)} (hs : UniqueDiffWithinAt 𝕜 s p) :
@@ -326,7 +326,7 @@ theorem fderivWithin_snd {s : Set (E × F)} (hs : UniqueDiffWithinAt 𝕜 s p) :
   hasFDerivWithinAt_snd.fderivWithin hs
 
 theorem fderivWithin.snd (hs : UniqueDiffWithinAt 𝕜 s x) (h : DifferentiableWithinAt 𝕜 f₂ s x) :
-    fderivWithin 𝕜 (fun x => (f₂ x).2) s x = (snd 𝕜 F G).comp (fderivWithin 𝕜 f₂ s x) :=
+    fderivWithin 𝕜 (fun x ↦ (f₂ x).2) s x = (snd 𝕜 F G).comp (fderivWithin 𝕜 f₂ s x) :=
   h.hasFDerivWithinAt.snd.fderivWithin hs
 
 end Snd
@@ -347,7 +347,7 @@ protected theorem HasFDerivAt.prodMap (hf : HasFDerivAt f f' p.1) (hf₂ : HasFD
 
 @[simp, fun_prop]
 protected theorem DifferentiableAt.prodMap (hf : DifferentiableAt 𝕜 f p.1)
-    (hf₂ : DifferentiableAt 𝕜 f₂ p.2) : DifferentiableAt 𝕜 (fun p : E × G => (f p.1, f₂ p.2)) p :=
+    (hf₂ : DifferentiableAt 𝕜 f₂ p.2) : DifferentiableAt 𝕜 (fun p : E × G ↦ (f p.1, f₂ p.2)) p :=
   (hf.comp p differentiableAt_fst).prodMk (hf₂.comp p differentiableAt_snd)
 
 @[deprecated (since := "2025-03-09")]
@@ -378,152 +378,152 @@ variable {ι : Type*} [Fintype ι] {F' : ι → Type*} [∀ i, NormedAddCommGrou
 
 @[simp]
 theorem hasStrictFDerivAt_pi' :
-    HasStrictFDerivAt Φ Φ' x ↔ ∀ i, HasStrictFDerivAt (fun x => Φ x i) ((proj i).comp Φ') x := by
+    HasStrictFDerivAt Φ Φ' x ↔ ∀ i, HasStrictFDerivAt (fun x ↦ Φ x i) ((proj i).comp Φ') x := by
   simp only [hasStrictFDerivAt_iff_isLittleO]
   exact isLittleO_pi
 
 @[fun_prop]
-theorem hasStrictFDerivAt_pi'' (hφ : ∀ i, HasStrictFDerivAt (fun x => Φ x i) ((proj i).comp Φ') x) :
+theorem hasStrictFDerivAt_pi'' (hφ : ∀ i, HasStrictFDerivAt (fun x ↦ Φ x i) ((proj i).comp Φ') x) :
     HasStrictFDerivAt Φ Φ' x := hasStrictFDerivAt_pi'.2 hφ
 
 @[fun_prop]
 theorem hasStrictFDerivAt_apply (i : ι) (f : ∀ i, F' i) :
-    HasStrictFDerivAt (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) (proj i) f := by
+    HasStrictFDerivAt (𝕜 := 𝕜) (fun f : ∀ i, F' i ↦ f i) (proj i) f := by
   let id' := ContinuousLinearMap.id 𝕜 (∀ i, F' i)
   have h := ((hasStrictFDerivAt_pi'
-             (Φ := fun (f : ∀ i, F' i) (i' : ι) => f i') (Φ' := id') (x := f))).1
+             (Φ := fun (f : ∀ i, F' i) (i' : ι) ↦ f i') (Φ' := id') (x := f))).1
   have h' : comp (proj i) id' = proj i := by ext; simp [id']
   rw [← h']; apply h; apply hasStrictFDerivAt_id
 
 @[simp 1100] -- Porting note: increased priority to make lint happy
 theorem hasStrictFDerivAt_pi :
-    HasStrictFDerivAt (fun x i => φ i x) (ContinuousLinearMap.pi φ') x ↔
+    HasStrictFDerivAt (fun x i ↦ φ i x) (ContinuousLinearMap.pi φ') x ↔
       ∀ i, HasStrictFDerivAt (φ i) (φ' i) x :=
   hasStrictFDerivAt_pi'
 
 @[simp]
 theorem hasFDerivAtFilter_pi' :
     HasFDerivAtFilter Φ Φ' x L ↔
-      ∀ i, HasFDerivAtFilter (fun x => Φ x i) ((proj i).comp Φ') x L := by
+      ∀ i, HasFDerivAtFilter (fun x ↦ Φ x i) ((proj i).comp Φ') x L := by
   simp only [hasFDerivAtFilter_iff_isLittleO]
   exact isLittleO_pi
 
 theorem hasFDerivAtFilter_pi :
-    HasFDerivAtFilter (fun x i => φ i x) (ContinuousLinearMap.pi φ') x L ↔
+    HasFDerivAtFilter (fun x i ↦ φ i x) (ContinuousLinearMap.pi φ') x L ↔
       ∀ i, HasFDerivAtFilter (φ i) (φ' i) x L :=
   hasFDerivAtFilter_pi'
 
 @[simp]
 theorem hasFDerivAt_pi' :
-    HasFDerivAt Φ Φ' x ↔ ∀ i, HasFDerivAt (fun x => Φ x i) ((proj i).comp Φ') x :=
+    HasFDerivAt Φ Φ' x ↔ ∀ i, HasFDerivAt (fun x ↦ Φ x i) ((proj i).comp Φ') x :=
   hasFDerivAtFilter_pi'
 
 @[fun_prop]
-theorem hasFDerivAt_pi'' (hφ : ∀ i, HasFDerivAt (fun x => Φ x i) ((proj i).comp Φ') x) :
+theorem hasFDerivAt_pi'' (hφ : ∀ i, HasFDerivAt (fun x ↦ Φ x i) ((proj i).comp Φ') x) :
     HasFDerivAt Φ Φ' x := hasFDerivAt_pi'.2 hφ
 
 @[fun_prop]
 theorem hasFDerivAt_apply (i : ι) (f : ∀ i, F' i) :
-    HasFDerivAt (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) (proj i) f := by
+    HasFDerivAt (𝕜 := 𝕜) (fun f : ∀ i, F' i ↦ f i) (proj i) f := by
   apply HasStrictFDerivAt.hasFDerivAt
   apply hasStrictFDerivAt_apply
 
 theorem hasFDerivAt_pi :
-    HasFDerivAt (fun x i => φ i x) (ContinuousLinearMap.pi φ') x ↔
+    HasFDerivAt (fun x i ↦ φ i x) (ContinuousLinearMap.pi φ') x ↔
       ∀ i, HasFDerivAt (φ i) (φ' i) x :=
   hasFDerivAtFilter_pi
 
 @[simp]
 theorem hasFDerivWithinAt_pi' :
-    HasFDerivWithinAt Φ Φ' s x ↔ ∀ i, HasFDerivWithinAt (fun x => Φ x i) ((proj i).comp Φ') s x :=
+    HasFDerivWithinAt Φ Φ' s x ↔ ∀ i, HasFDerivWithinAt (fun x ↦ Φ x i) ((proj i).comp Φ') s x :=
   hasFDerivAtFilter_pi'
 
 @[fun_prop]
 theorem hasFDerivWithinAt_pi''
-    (hφ : ∀ i, HasFDerivWithinAt (fun x => Φ x i) ((proj i).comp Φ') s x) :
+    (hφ : ∀ i, HasFDerivWithinAt (fun x ↦ Φ x i) ((proj i).comp Φ') s x) :
     HasFDerivWithinAt Φ Φ' s x := hasFDerivWithinAt_pi'.2 hφ
 
 @[fun_prop]
 theorem hasFDerivWithinAt_apply (i : ι) (f : ∀ i, F' i) (s' : Set (∀ i, F' i)) :
-    HasFDerivWithinAt (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) (proj i) s' f := by
+    HasFDerivWithinAt (𝕜 := 𝕜) (fun f : ∀ i, F' i ↦ f i) (proj i) s' f := by
   let id' := ContinuousLinearMap.id 𝕜 (∀ i, F' i)
   have h := ((hasFDerivWithinAt_pi'
-             (Φ := fun (f : ∀ i, F' i) (i' : ι) => f i') (Φ' := id') (x := f) (s := s'))).1
+             (Φ := fun (f : ∀ i, F' i) (i' : ι) ↦ f i') (Φ' := id') (x := f) (s := s'))).1
   have h' : comp (proj i) id' = proj i := by rfl
   rw [← h']; apply h; apply hasFDerivWithinAt_id
 
 theorem hasFDerivWithinAt_pi :
-    HasFDerivWithinAt (fun x i => φ i x) (ContinuousLinearMap.pi φ') s x ↔
+    HasFDerivWithinAt (fun x i ↦ φ i x) (ContinuousLinearMap.pi φ') s x ↔
       ∀ i, HasFDerivWithinAt (φ i) (φ' i) s x :=
   hasFDerivAtFilter_pi
 
 @[simp]
 theorem differentiableWithinAt_pi :
-    DifferentiableWithinAt 𝕜 Φ s x ↔ ∀ i, DifferentiableWithinAt 𝕜 (fun x => Φ x i) s x :=
-  ⟨fun h i => (hasFDerivWithinAt_pi'.1 h.hasFDerivWithinAt i).differentiableWithinAt, fun h =>
-    (hasFDerivWithinAt_pi.2 fun i => (h i).hasFDerivWithinAt).differentiableWithinAt⟩
+    DifferentiableWithinAt 𝕜 Φ s x ↔ ∀ i, DifferentiableWithinAt 𝕜 (fun x ↦ Φ x i) s x :=
+  ⟨fun h i ↦ (hasFDerivWithinAt_pi'.1 h.hasFDerivWithinAt i).differentiableWithinAt, fun h ↦
+    (hasFDerivWithinAt_pi.2 fun i ↦ (h i).hasFDerivWithinAt).differentiableWithinAt⟩
 
 @[fun_prop]
-theorem differentiableWithinAt_pi'' (hφ : ∀ i, DifferentiableWithinAt 𝕜 (fun x => Φ x i) s x) :
+theorem differentiableWithinAt_pi'' (hφ : ∀ i, DifferentiableWithinAt 𝕜 (fun x ↦ Φ x i) s x) :
     DifferentiableWithinAt 𝕜 Φ s x := differentiableWithinAt_pi.2 hφ
 
 @[fun_prop]
 theorem differentiableWithinAt_apply (i : ι) (f : ∀ i, F' i) (s' : Set (∀ i, F' i)) :
-    DifferentiableWithinAt (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) s' f := by
+    DifferentiableWithinAt (𝕜 := 𝕜) (fun f : ∀ i, F' i ↦ f i) s' f := by
   apply HasFDerivWithinAt.differentiableWithinAt
   fun_prop
 
 @[simp]
-theorem differentiableAt_pi : DifferentiableAt 𝕜 Φ x ↔ ∀ i, DifferentiableAt 𝕜 (fun x => Φ x i) x :=
-  ⟨fun h i => (hasFDerivAt_pi'.1 h.hasFDerivAt i).differentiableAt, fun h =>
-    (hasFDerivAt_pi.2 fun i => (h i).hasFDerivAt).differentiableAt⟩
+theorem differentiableAt_pi : DifferentiableAt 𝕜 Φ x ↔ ∀ i, DifferentiableAt 𝕜 (fun x ↦ Φ x i) x :=
+  ⟨fun h i ↦ (hasFDerivAt_pi'.1 h.hasFDerivAt i).differentiableAt, fun h ↦
+    (hasFDerivAt_pi.2 fun i ↦ (h i).hasFDerivAt).differentiableAt⟩
 
 @[fun_prop]
-theorem differentiableAt_pi'' (hφ : ∀ i, DifferentiableAt 𝕜 (fun x => Φ x i) x) :
+theorem differentiableAt_pi'' (hφ : ∀ i, DifferentiableAt 𝕜 (fun x ↦ Φ x i) x) :
     DifferentiableAt 𝕜 Φ x := differentiableAt_pi.2 hφ
 
 @[fun_prop]
 theorem differentiableAt_apply (i : ι) (f : ∀ i, F' i) :
-    DifferentiableAt (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) f := by
+    DifferentiableAt (𝕜 := 𝕜) (fun f : ∀ i, F' i ↦ f i) f := by
   have h := ((differentiableAt_pi (𝕜 := 𝕜)
-             (Φ := fun (f : ∀ i, F' i) (i' : ι) => f i') (x := f))).1
+             (Φ := fun (f : ∀ i, F' i) (i' : ι) ↦ f i') (x := f))).1
   apply h; apply differentiableAt_id
 
-theorem differentiableOn_pi : DifferentiableOn 𝕜 Φ s ↔ ∀ i, DifferentiableOn 𝕜 (fun x => Φ x i) s :=
-  ⟨fun h i x hx => differentiableWithinAt_pi.1 (h x hx) i, fun h x hx =>
-    differentiableWithinAt_pi.2 fun i => h i x hx⟩
+theorem differentiableOn_pi : DifferentiableOn 𝕜 Φ s ↔ ∀ i, DifferentiableOn 𝕜 (fun x ↦ Φ x i) s :=
+  ⟨fun h i x hx ↦ differentiableWithinAt_pi.1 (h x hx) i, fun h x hx ↦
+    differentiableWithinAt_pi.2 fun i ↦ h i x hx⟩
 
 @[fun_prop]
-theorem differentiableOn_pi'' (hφ : ∀ i, DifferentiableOn 𝕜 (fun x => Φ x i) s) :
+theorem differentiableOn_pi'' (hφ : ∀ i, DifferentiableOn 𝕜 (fun x ↦ Φ x i) s) :
     DifferentiableOn 𝕜 Φ s := differentiableOn_pi.2 hφ
 
 @[fun_prop]
 theorem differentiableOn_apply (i : ι) (s' : Set (∀ i, F' i)) :
-    DifferentiableOn (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) s' := by
+    DifferentiableOn (𝕜 := 𝕜) (fun f : ∀ i, F' i ↦ f i) s' := by
   have h := ((differentiableOn_pi (𝕜 := 𝕜)
-             (Φ := fun (f : ∀ i, F' i) (i' : ι) => f i') (s := s'))).1
+             (Φ := fun (f : ∀ i, F' i) (i' : ι) ↦ f i') (s := s'))).1
   apply h; apply differentiableOn_id
 
-theorem differentiable_pi : Differentiable 𝕜 Φ ↔ ∀ i, Differentiable 𝕜 fun x => Φ x i :=
-  ⟨fun h i x => differentiableAt_pi.1 (h x) i, fun h x => differentiableAt_pi.2 fun i => h i x⟩
+theorem differentiable_pi : Differentiable 𝕜 Φ ↔ ∀ i, Differentiable 𝕜 fun x ↦ Φ x i :=
+  ⟨fun h i x ↦ differentiableAt_pi.1 (h x) i, fun h x ↦ differentiableAt_pi.2 fun i ↦ h i x⟩
 
 @[fun_prop]
-theorem differentiable_pi'' (hφ : ∀ i, Differentiable 𝕜 fun x => Φ x i) :
+theorem differentiable_pi'' (hφ : ∀ i, Differentiable 𝕜 fun x ↦ Φ x i) :
     Differentiable 𝕜 Φ := differentiable_pi.2 hφ
 
 @[fun_prop]
 theorem differentiable_apply (i : ι) :
-    Differentiable (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) := by intro x; apply differentiableAt_apply
+    Differentiable (𝕜 := 𝕜) (fun f : ∀ i, F' i ↦ f i) := by intro x; apply differentiableAt_apply
 
 -- TODO: find out which version (`φ` or `Φ`) works better with `rw`/`simp`
 theorem fderivWithin_pi (h : ∀ i, DifferentiableWithinAt 𝕜 (φ i) s x)
     (hs : UniqueDiffWithinAt 𝕜 s x) :
-    fderivWithin 𝕜 (fun x i => φ i x) s x = pi fun i => fderivWithin 𝕜 (φ i) s x :=
-  (hasFDerivWithinAt_pi.2 fun i => (h i).hasFDerivWithinAt).fderivWithin hs
+    fderivWithin 𝕜 (fun x i ↦ φ i x) s x = pi fun i ↦ fderivWithin 𝕜 (φ i) s x :=
+  (hasFDerivWithinAt_pi.2 fun i ↦ (h i).hasFDerivWithinAt).fderivWithin hs
 
 theorem fderiv_pi (h : ∀ i, DifferentiableAt 𝕜 (φ i) x) :
-    fderiv 𝕜 (fun x i => φ i x) x = pi fun i => fderiv 𝕜 (φ i) x :=
-  (hasFDerivAt_pi.2 fun i => (h i).hasFDerivAt).fderiv
+    fderiv 𝕜 (fun x i ↦ φ i x) x = pi fun i ↦ fderiv 𝕜 (φ i) x :=
+  (hasFDerivAt_pi.2 fun i ↦ (h i).hasFDerivAt).fderiv
 
 end Pi
 
@@ -540,7 +540,7 @@ variable [∀ i, NormedAddCommGroup (F' i)] [∀ i, NormedSpace 𝕜 (F' i)]
 variable {φ : E → F' 0} {φs : E → ∀ i, F' (Fin.succ i)}
 
 theorem hasStrictFDerivAt_finCons {φ' : E →L[𝕜] Π i, F' i} :
-    HasStrictFDerivAt (fun x => Fin.cons (φ x) (φs x)) φ' x ↔
+    HasStrictFDerivAt (fun x ↦ Fin.cons (φ x) (φs x)) φ' x ↔
       HasStrictFDerivAt φ (.proj 0 ∘L φ') x ∧
       HasStrictFDerivAt φs (Pi.compRightL 𝕜 F' Fin.succ ∘L φ') x := by
   rw [hasStrictFDerivAt_pi', Fin.forall_fin_succ, hasStrictFDerivAt_pi']
@@ -551,7 +551,7 @@ theorem hasStrictFDerivAt_finCons {φ' : E →L[𝕜] Π i, F' i} :
 instead. -/
 theorem hasStrictFDerivAt_finCons'
     {φ' : E →L[𝕜] F' 0} {φs' : E →L[𝕜] Π i, F' (Fin.succ i)} :
-    HasStrictFDerivAt (fun x => Fin.cons (φ x) (φs x)) (φ'.finCons φs') x ↔
+    HasStrictFDerivAt (fun x ↦ Fin.cons (φ x) (φs x)) (φ'.finCons φs') x ↔
       HasStrictFDerivAt φ φ' x ∧ HasStrictFDerivAt φs φs' x :=
   hasStrictFDerivAt_finCons
 
@@ -559,12 +559,12 @@ theorem hasStrictFDerivAt_finCons'
 theorem HasStrictFDerivAt.finCons
     {φ' : E →L[𝕜] F' 0} {φs' : E →L[𝕜] Π i, F' (Fin.succ i)}
     (h : HasStrictFDerivAt φ φ' x) (hs : HasStrictFDerivAt φs φs' x) :
-    HasStrictFDerivAt (fun x => Fin.cons (φ x) (φs x)) (φ'.finCons φs') x :=
+    HasStrictFDerivAt (fun x ↦ Fin.cons (φ x) (φs x)) (φ'.finCons φs') x :=
   hasStrictFDerivAt_finCons'.mpr ⟨h, hs⟩
 
 theorem hasFDerivAtFilter_finCons
     {φ' : E →L[𝕜] Π i, F' i} {l : Filter E} :
-    HasFDerivAtFilter (fun x => Fin.cons (φ x) (φs x)) φ' x l ↔
+    HasFDerivAtFilter (fun x ↦ Fin.cons (φ x) (φs x)) φ' x l ↔
       HasFDerivAtFilter φ (.proj 0 ∘L φ') x l ∧
       HasFDerivAtFilter φs (Pi.compRightL 𝕜 F' Fin.succ ∘L φ') x l := by
   rw [hasFDerivAtFilter_pi', Fin.forall_fin_succ, hasFDerivAtFilter_pi']
@@ -575,19 +575,19 @@ theorem hasFDerivAtFilter_finCons
 instead. -/
 theorem hasFDerivAtFilter_finCons'
     {φ' : E →L[𝕜] F' 0} {φs' : E →L[𝕜] Π i, F' (Fin.succ i)} {l : Filter E} :
-    HasFDerivAtFilter (fun x => Fin.cons (φ x) (φs x)) (φ'.finCons φs') x l ↔
+    HasFDerivAtFilter (fun x ↦ Fin.cons (φ x) (φs x)) (φ'.finCons φs') x l ↔
       HasFDerivAtFilter φ φ' x l ∧ HasFDerivAtFilter φs φs' x l :=
   hasFDerivAtFilter_finCons
 
 theorem HasFDerivAtFilter.finCons
     {φ' : E →L[𝕜] F' 0} {φs' : E →L[𝕜] Π i, F' (Fin.succ i)} {l : Filter E}
     (h : HasFDerivAtFilter φ φ' x l) (hs : HasFDerivAtFilter φs φs' x l) :
-    HasFDerivAtFilter (fun x => Fin.cons (φ x) (φs x)) (φ'.finCons φs') x l :=
+    HasFDerivAtFilter (fun x ↦ Fin.cons (φ x) (φs x)) (φ'.finCons φs') x l :=
   hasFDerivAtFilter_finCons'.mpr ⟨h, hs⟩
 
 theorem hasFDerivAt_finCons
     {φ' : E →L[𝕜] Π i, F' i} :
-    HasFDerivAt (fun x => Fin.cons (φ x) (φs x)) φ' x ↔
+    HasFDerivAt (fun x ↦ Fin.cons (φ x) (φs x)) φ' x ↔
       HasFDerivAt φ (.proj 0 ∘L φ') x ∧ HasFDerivAt φs (Pi.compRightL 𝕜 F' Fin.succ ∘L φ') x :=
   hasFDerivAtFilter_finCons
 
@@ -595,7 +595,7 @@ theorem hasFDerivAt_finCons
 instead. -/
 theorem hasFDerivAt_finCons'
     {φ' : E →L[𝕜] F' 0} {φs' : E →L[𝕜] Π i, F' (Fin.succ i)} :
-    HasFDerivAt (fun x => Fin.cons (φ x) (φs x)) (φ'.finCons φs') x ↔
+    HasFDerivAt (fun x ↦ Fin.cons (φ x) (φs x)) (φ'.finCons φs') x ↔
       HasFDerivAt φ φ' x ∧ HasFDerivAt φs φs' x :=
   hasFDerivAt_finCons
 
@@ -603,12 +603,12 @@ theorem hasFDerivAt_finCons'
 theorem HasFDerivAt.finCons
     {φ' : E →L[𝕜] F' 0} {φs' : E →L[𝕜] Π i, F' (Fin.succ i)}
     (h : HasFDerivAt φ φ' x) (hs : HasFDerivAt φs φs' x) :
-    HasFDerivAt (fun x => Fin.cons (φ x) (φs x)) (φ'.finCons φs') x :=
+    HasFDerivAt (fun x ↦ Fin.cons (φ x) (φs x)) (φ'.finCons φs') x :=
   hasFDerivAt_finCons'.mpr ⟨h, hs⟩
 
 theorem hasFDerivWithinAt_finCons
     {φ' : E →L[𝕜] Π i, F' i} :
-    HasFDerivWithinAt (fun x => Fin.cons (φ x) (φs x)) φ' s x ↔
+    HasFDerivWithinAt (fun x ↦ Fin.cons (φ x) (φs x)) φ' s x ↔
       HasFDerivWithinAt φ (.proj 0 ∘L φ') s x ∧
       HasFDerivWithinAt φs (Pi.compRightL 𝕜 F' Fin.succ ∘L φ') s x :=
   hasFDerivAtFilter_finCons
@@ -617,7 +617,7 @@ theorem hasFDerivWithinAt_finCons
 instead. -/
 theorem hasFDerivWithinAt_finCons'
     {φ' : E →L[𝕜] F' 0} {φs' : E →L[𝕜] Π i, F' (Fin.succ i)} :
-    HasFDerivWithinAt (fun x => Fin.cons (φ x) (φs x)) (φ'.finCons φs') s x ↔
+    HasFDerivWithinAt (fun x ↦ Fin.cons (φ x) (φs x)) (φ'.finCons φs') s x ↔
       HasFDerivWithinAt φ φ' s x ∧ HasFDerivWithinAt φs φs' s x :=
   hasFDerivAtFilter_finCons
 
@@ -625,11 +625,11 @@ theorem hasFDerivWithinAt_finCons'
 theorem HasFDerivWithinAt.finCons
     {φ' : E →L[𝕜] F' 0} {φs' : E →L[𝕜] Π i, F' (Fin.succ i)}
     (h : HasFDerivWithinAt φ φ' s x) (hs : HasFDerivWithinAt φs φs' s x) :
-    HasFDerivWithinAt (fun x => Fin.cons (φ x) (φs x)) (φ'.finCons φs') s x :=
+    HasFDerivWithinAt (fun x ↦ Fin.cons (φ x) (φs x)) (φ'.finCons φs') s x :=
   hasFDerivWithinAt_finCons'.mpr ⟨h, hs⟩
 
 theorem differentiableWithinAt_finCons :
-    DifferentiableWithinAt 𝕜 (fun x => Fin.cons (φ x) (φs x)) s x ↔
+    DifferentiableWithinAt 𝕜 (fun x ↦ Fin.cons (φ x) (φs x)) s x ↔
       DifferentiableWithinAt 𝕜 φ s x ∧ DifferentiableWithinAt 𝕜 φs s x := by
   rw [differentiableWithinAt_pi, Fin.forall_fin_succ, differentiableWithinAt_pi]
   simp only [Fin.cons_zero, Fin.cons_succ]
@@ -637,18 +637,18 @@ theorem differentiableWithinAt_finCons :
 /-- A variant of `differentiableWithinAt_finCons` where the derivative variables are free on the RHS
 instead. -/
 theorem differentiableWithinAt_finCons' :
-    DifferentiableWithinAt 𝕜 (fun x => Fin.cons (φ x) (φs x)) s x ↔
+    DifferentiableWithinAt 𝕜 (fun x ↦ Fin.cons (φ x) (φs x)) s x ↔
       DifferentiableWithinAt 𝕜 φ s x ∧ DifferentiableWithinAt 𝕜 φs s x :=
   differentiableWithinAt_finCons
 
 @[fun_prop]
 theorem DifferentiableWithinAt.finCons
     (h : DifferentiableWithinAt 𝕜 φ s x) (hs : DifferentiableWithinAt 𝕜 φs s x) :
-    DifferentiableWithinAt 𝕜 (fun x => Fin.cons (φ x) (φs x)) s x :=
+    DifferentiableWithinAt 𝕜 (fun x ↦ Fin.cons (φ x) (φs x)) s x :=
   differentiableWithinAt_finCons'.mpr ⟨h, hs⟩
 
 theorem differentiableAt_finCons :
-    DifferentiableAt 𝕜 (fun x => Fin.cons (φ x) (φs x)) x ↔
+    DifferentiableAt 𝕜 (fun x ↦ Fin.cons (φ x) (φs x)) x ↔
       DifferentiableAt 𝕜 φ x ∧ DifferentiableAt 𝕜 φs x := by
   rw [differentiableAt_pi, Fin.forall_fin_succ, differentiableAt_pi]
   simp only [Fin.cons_zero, Fin.cons_succ]
@@ -656,18 +656,18 @@ theorem differentiableAt_finCons :
 /-- A variant of `differentiableAt_finCons` where the derivative variables are free on the RHS
 instead. -/
 theorem differentiableAt_finCons' :
-    DifferentiableAt 𝕜 (fun x => Fin.cons (φ x) (φs x)) x ↔
+    DifferentiableAt 𝕜 (fun x ↦ Fin.cons (φ x) (φs x)) x ↔
       DifferentiableAt 𝕜 φ x ∧ DifferentiableAt 𝕜 φs x :=
   differentiableAt_finCons
 
 @[fun_prop]
 theorem DifferentiableAt.finCons
     (h : DifferentiableAt 𝕜 φ x) (hs : DifferentiableAt 𝕜 φs x) :
-    DifferentiableAt 𝕜 (fun x => Fin.cons (φ x) (φs x)) x :=
+    DifferentiableAt 𝕜 (fun x ↦ Fin.cons (φ x) (φs x)) x :=
   differentiableAt_finCons'.mpr ⟨h, hs⟩
 
 theorem differentiableOn_finCons :
-    DifferentiableOn 𝕜 (fun x => Fin.cons (φ x) (φs x)) s ↔
+    DifferentiableOn 𝕜 (fun x ↦ Fin.cons (φ x) (φs x)) s ↔
       DifferentiableOn 𝕜 φ s ∧ DifferentiableOn 𝕜 φs s := by
   rw [differentiableOn_pi, Fin.forall_fin_succ, differentiableOn_pi]
   simp only [Fin.cons_zero, Fin.cons_succ]
@@ -675,18 +675,18 @@ theorem differentiableOn_finCons :
 /-- A variant of `differentiableOn_finCons` where the derivative variables are free on the RHS
 instead. -/
 theorem differentiableOn_finCons' :
-    DifferentiableOn 𝕜 (fun x => Fin.cons (φ x) (φs x)) s ↔
+    DifferentiableOn 𝕜 (fun x ↦ Fin.cons (φ x) (φs x)) s ↔
       DifferentiableOn 𝕜 φ s ∧ DifferentiableOn 𝕜 φs s :=
   differentiableOn_finCons
 
 @[fun_prop]
 theorem DifferentiableOn.finCons
     (h : DifferentiableOn 𝕜 φ s) (hs : DifferentiableOn 𝕜 φs s) :
-    DifferentiableOn 𝕜 (fun x => Fin.cons (φ x) (φs x)) s :=
+    DifferentiableOn 𝕜 (fun x ↦ Fin.cons (φ x) (φs x)) s :=
   differentiableOn_finCons'.mpr ⟨h, hs⟩
 
 theorem differentiable_finCons :
-    Differentiable 𝕜 (fun x => Fin.cons (φ x) (φs x)) ↔
+    Differentiable 𝕜 (fun x ↦ Fin.cons (φ x) (φs x)) ↔
       Differentiable 𝕜 φ ∧ Differentiable 𝕜 φs := by
   rw [differentiable_pi, Fin.forall_fin_succ, differentiable_pi]
   simp only [Fin.cons_zero, Fin.cons_succ]
@@ -694,14 +694,14 @@ theorem differentiable_finCons :
 /-- A variant of `differentiable_finCons` where the derivative variables are free on the RHS
 instead. -/
 theorem differentiable_finCons' :
-    Differentiable 𝕜 (fun x => Fin.cons (φ x) (φs x)) ↔
+    Differentiable 𝕜 (fun x ↦ Fin.cons (φ x) (φs x)) ↔
       Differentiable 𝕜 φ ∧ Differentiable 𝕜 φs :=
   differentiable_finCons
 
 @[fun_prop]
 theorem Differentiable.finCons
     (h : Differentiable 𝕜 φ) (hs : Differentiable 𝕜 φs) :
-    Differentiable 𝕜 (fun x => Fin.cons (φ x) (φs x)) :=
+    Differentiable 𝕜 (fun x ↦ Fin.cons (φ x) (φs x)) :=
   differentiable_finCons'.mpr ⟨h, hs⟩
 
 -- TODO: write the `Fin.cons` versions of `fderivWithin_pi` and `fderiv_pi`

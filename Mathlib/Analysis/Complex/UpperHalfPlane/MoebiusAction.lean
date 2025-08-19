@@ -29,7 +29,7 @@ This notation is scoped in namespace `UpperHalfPlane`. -/
 scoped notation:1024 "↑ₘ" A:1024 =>
   (((A : GL(2, ℝ)⁺) : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) _)
 
-instance instCoeFun : CoeFun GL(2, ℝ)⁺ fun _ => Fin 2 → Fin 2 → ℝ where coe A := ↑ₘA
+instance instCoeFun : CoeFun GL(2, ℝ)⁺ fun _ ↦ Fin 2 → Fin 2 → ℝ where coe A := ↑ₘA
 
 /-- The coercion into an element of  `GL(2, R)` and finally a 2 × 2 matrix over `R`. This is
 similar to `↑ₘ`, but without positivity requirements, and allows the user to specify the ring `R`,
@@ -346,7 +346,7 @@ lemma coe_one : coe 1 = 1 := by
   simp only [coe, map_one]
 
 instance SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
-  ⟨fun s g => s * g⟩
+  ⟨fun s g ↦ s * g⟩
 
 theorem SLOnGLPos_smul_apply (s : SL(2, ℤ)) (g : GL(2, ℝ)⁺) (z : ℍ) :
     (s • g) • z = ((s : GL(2, ℝ)⁺) * g) • z :=

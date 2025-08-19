@@ -39,7 +39,7 @@ abbrev monoidOfSkeletalMonoidal (hC : Skeletal C) : Monoid C where
 
 /-- If `C` is braided and skeletal, it is a commutative monoid. -/
 def commMonoidOfSkeletalBraided [BraidedCategory C] (hC : Skeletal C) : CommMonoid C :=
-  { monoidOfSkeletalMonoidal hC with mul_comm := fun X Y => hC ⟨β_ X Y⟩ }
+  { monoidOfSkeletalMonoidal hC with mul_comm := fun X Y ↦ hC ⟨β_ X Y⟩ }
 
 namespace Skeleton
 

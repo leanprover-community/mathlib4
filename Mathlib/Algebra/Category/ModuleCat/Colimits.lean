@@ -41,15 +41,15 @@ variable [HasColimit (F ⋙ forget₂ _ AddCommGrp)]
 noncomputable def coconePointSMul :
     R →+* End (colimit (F ⋙ forget₂ _ AddCommGrp)) where
   toFun r := colimMap
-    { app := fun j => (F.obj j).smul r
-      naturality := fun _ _ _ => smul_naturality _ _ }
+    { app := fun j ↦ (F.obj j).smul r
+      naturality := fun _ _ _ ↦ smul_naturality _ _ }
   map_zero' := colimit.hom_ext (by simp)
   map_one' := colimit.hom_ext (by simp)
-  map_add' r s := colimit.hom_ext (fun j => by
+  map_add' r s := colimit.hom_ext (fun j ↦ by
     simp only [Functor.comp_obj, forget₂_obj, map_add, ι_colimMap]
     rw [Preadditive.add_comp, Preadditive.comp_add]
     simp only [ι_colimMap, Functor.comp_obj, forget₂_obj])
-  map_mul' r s := colimit.hom_ext (fun j => by simp)
+  map_mul' r s := colimit.hom_ext (fun j ↦ by simp)
 
 /-- The cocone for `F` constructed from the colimit of
 `(F ⋙ forget₂ (ModuleCat R) AddCommGrp)`. -/
@@ -57,12 +57,12 @@ noncomputable def coconePointSMul :
 noncomputable def colimitCocone : Cocone F where
   pt := mkOfSMul (coconePointSMul F)
   ι :=
-    { app := fun j => homMk (colimit.ι (F ⋙ forget₂ _ AddCommGrp)  j) (fun r => by
+    { app := fun j ↦ homMk (colimit.ι (F ⋙ forget₂ _ AddCommGrp)  j) (fun r ↦ by
         dsimp
         -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
         erw [mkOfSMul_smul]
         simp)
-      naturality := fun i j f => by
+      naturality := fun i j f ↦ by
         apply (forget₂ _ AddCommGrp).map_injective
         simp only [Functor.map_comp, forget₂_map_homMk]
         dsimp
@@ -71,7 +71,7 @@ noncomputable def colimitCocone : Cocone F where
 /-- The cocone for `F` constructed from the colimit of
 `(F ⋙ forget₂ (ModuleCat R) AddCommGrp)` is a colimit cocone. -/
 noncomputable def isColimitColimitCocone : IsColimit (colimitCocone F) where
-  desc s := homMk (colimit.desc _ ((forget₂ _ AddCommGrp).mapCocone s)) (fun r => by
+  desc s := homMk (colimit.desc _ ((forget₂ _ AddCommGrp).mapCocone s)) (fun r ↦ by
     apply colimit.hom_ext
     intro j
     dsimp

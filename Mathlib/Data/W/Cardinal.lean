@@ -40,7 +40,7 @@ theorem cardinalMk_eq_sum_lift : #(WType β) = sum fun a ↦ #(WType β) ^ lift.
 
 /-- `#(WType β)` is the least cardinal `κ` such that `sum (fun a : α ↦ κ ^ #(β a)) ≤ κ` -/
 theorem cardinalMk_le_of_le' {κ : Cardinal.{max u v}}
-    (hκ : (sum fun a : α => κ ^ lift.{u} #(β a)) ≤ κ) :
+    (hκ : (sum fun a : α ↦ κ ^ lift.{u} #(β a)) ≤ κ) :
     #(WType β) ≤ κ := by
   induction' κ using Cardinal.inductionOn with γ
   simp_rw [← lift_umax.{v, u}] at hκ
@@ -58,16 +58,16 @@ theorem cardinalMk_le_max_aleph0_of_finite' [∀ a, Finite (β a)] :
       intro h
       rw [Cardinal.mk_eq_zero (WType β)]
       exact zero_le _)
-    fun hn =>
+    fun hn ↦
     let m := max (lift.{v} #α) ℵ₀
     cardinalMk_le_of_le' <|
       calc
-        (Cardinal.sum fun a => m ^ lift.{u} #(β a)) ≤ lift.{v} #α * ⨆ a, m ^ lift.{u} #(β a) :=
+        (Cardinal.sum fun a ↦ m ^ lift.{u} #(β a)) ≤ lift.{v} #α * ⨆ a, m ^ lift.{u} #(β a) :=
           Cardinal.sum_le_iSup_lift _
         _ ≤ m * ⨆ a, m ^ lift.{u} #(β a) := mul_le_mul' (le_max_left _ _) le_rfl
         _ = m :=
           mul_eq_left (le_max_right _ _)
-              (ciSup_le' fun _ => pow_le (le_max_right _ _) (lt_aleph0_of_finite _)) <|
+              (ciSup_le' fun _ ↦ pow_le (le_max_right _ _) (lt_aleph0_of_finite _)) <|
             pos_iff_ne_zero.1 <|
               Order.succ_le_iff.1
                 (by
@@ -81,11 +81,11 @@ theorem cardinalMk_le_max_aleph0_of_finite' [∀ a, Finite (β a)] :
 
 variable {β : α → Type u}
 
-theorem cardinalMk_eq_sum : #(WType β) = sum (fun a : α => #(WType β) ^ #(β a)) :=
+theorem cardinalMk_eq_sum : #(WType β) = sum (fun a : α ↦ #(WType β) ^ #(β a)) :=
   cardinalMk_eq_sum_lift.trans <| by simp_rw [lift_id]
 
 /-- `#(WType β)` is the least cardinal `κ` such that `sum (fun a : α ↦ κ ^ #(β a)) ≤ κ` -/
-theorem cardinalMk_le_of_le {κ : Cardinal.{u}} (hκ : (sum fun a : α => κ ^ #(β a)) ≤ κ) :
+theorem cardinalMk_le_of_le {κ : Cardinal.{u}} (hκ : (sum fun a : α ↦ κ ^ #(β a)) ≤ κ) :
     #(WType β) ≤ κ := cardinalMk_le_of_le' <| by simp_rw [lift_id]; exact hκ
 
 /-- If, for any `a : α`, `β a` is finite, then the cardinality of `WType β`

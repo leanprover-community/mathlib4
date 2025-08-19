@@ -88,7 +88,7 @@ theorem basis_repr_norm_le_const_mul_house (α : 𝓞 K) (i : K →+* ℂ) :
     _ ≤ ∑ j, ‖((basisMatrix K).transpose)⁻¹‖ * ‖σ (algebraMap (𝓞 K) K α) j‖ := by
       gcongr
       exact norm_entry_le_entrywise_sup_norm ((basisMatrix K).transpose)⁻¹
-    _ ≤ ∑ _ : K →+* ℂ, ‖fun i j => ((basisMatrix K).transpose)⁻¹ i j‖
+    _ ≤ ∑ _ : K →+* ℂ, ‖fun i j ↦ ((basisMatrix K).transpose)⁻¹ i j‖
         * house (algebraMap (𝓞 K) K α) := by
       gcongr with j
       exact norm_le_pi_norm (σ ((algebraMap (𝓞 K) K) α)) j
@@ -117,12 +117,12 @@ variable {α : Type*} {β : Type*} (a : Matrix α β (𝓞 K))
 
 /-- `a' K a` returns the integer coefficients of the basis vector in the
   expansion of the product of an algebraic integer and a basis vectors. -/
-private def a' : α → β → (K →+* ℂ) → (K →+* ℂ) → ℤ := fun k l r =>
+private def a' : α → β → (K →+* ℂ) → (K →+* ℂ) → ℤ := fun k l r ↦
   (newBasis K).repr (a k l * (newBasis K) r)
 
 /-- `asiegel K a` is the integer matrix of the coefficients of the
 product of matrix elements and basis vectors. -/
-private def asiegel : Matrix (α × (K →+* ℂ)) (β × (K →+* ℂ)) ℤ := fun k l => a' K a k.1 l.1 l.2 k.2
+private def asiegel : Matrix (α × (K →+* ℂ)) (β × (K →+* ℂ)) ℤ := fun k l ↦ a' K a k.1 l.1 l.2 k.2
 
 variable (ha : a ≠ 0)
 
@@ -148,7 +148,7 @@ private theorem asiegel_ne_0 : asiegel K a ≠ 0 := by
 variable {p q : ℕ} (h0p : 0 < p) (hpq : p < q) (x : β × (K →+* ℂ) → ℤ) (hxl : x ≠ 0)
 
 /-- `ξ` is the product of `x (l, r)` and the `r`-th basis element of the newBasis of `K`. -/
-private def ξ : β → 𝓞 K := fun l => ∑ r : K →+* ℂ, x (l, r) * (newBasis K r)
+private def ξ : β → 𝓞 K := fun l ↦ ∑ r : K →+* ℂ, x (l, r) * (newBasis K r)
 
 include hxl in
 private theorem ξ_ne_0 : ξ K x ≠ 0 := by

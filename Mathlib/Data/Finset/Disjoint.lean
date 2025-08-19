@@ -43,9 +43,9 @@ section Disjoint
 variable {f : α → β} {s t u : Finset α} {a b : α}
 
 theorem disjoint_left : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → a ∉ t :=
-  ⟨fun h a hs ht => notMem_empty a <|
+  ⟨fun h a hs ht ↦ notMem_empty a <|
     singleton_subset_iff.mp (h (singleton_subset_iff.mpr hs) (singleton_subset_iff.mpr ht)),
-    fun h _ hs ht _ ha => (h (hs ha) (ht ha)).elim⟩
+    fun h _ hs ht _ ha ↦ (h (hs ha) (ht ha)).elim⟩
 
 alias ⟨_root_.Disjoint.notMem_of_mem_left_finset, _⟩ := disjoint_left
 
@@ -71,14 +71,14 @@ theorem _root_.Disjoint.forall_ne_finset (h : Disjoint s t) (ha : a ∈ s) (hb :
   disjoint_iff_ne.1 h _ ha _ hb
 
 theorem not_disjoint_iff : ¬Disjoint s t ↔ ∃ a, a ∈ s ∧ a ∈ t :=
-  disjoint_left.not.trans <| not_forall.trans <| exists_congr fun _ => by
+  disjoint_left.not.trans <| not_forall.trans <| exists_congr fun _ ↦ by
     rw [Classical.not_imp, not_not]
 
 theorem disjoint_of_subset_left (h : s ⊆ u) (d : Disjoint u t) : Disjoint s t :=
-  disjoint_left.2 fun _x m₁ => (disjoint_left.1 d) (h m₁)
+  disjoint_left.2 fun _x m₁ ↦ (disjoint_left.1 d) (h m₁)
 
 theorem disjoint_of_subset_right (h : t ⊆ u) (d : Disjoint s u) : Disjoint s t :=
-  disjoint_right.2 fun _x m₁ => (disjoint_right.1 d) (h m₁)
+  disjoint_right.2 fun _x m₁ ↦ (disjoint_right.1 d) (h m₁)
 
 @[simp]
 theorem disjoint_empty_left (s : Finset α) : Disjoint ∅ s :=
@@ -109,8 +109,8 @@ theorem disjoint_coe : Disjoint (s : Set α) t ↔ Disjoint s t := by
 
 @[simp, norm_cast]
 theorem pairwiseDisjoint_coe {ι : Type*} {s : Set ι} {f : ι → Finset α} :
-    s.PairwiseDisjoint (fun i => f i : ι → Set α) ↔ s.PairwiseDisjoint f :=
-  forall₅_congr fun _ _ _ _ _ => disjoint_coe
+    s.PairwiseDisjoint (fun i ↦ f i : ι → Set α) ↔ s.PairwiseDisjoint f :=
+  forall₅_congr fun _ _ _ _ _ ↦ disjoint_coe
 
 variable [DecidableEq α]
 

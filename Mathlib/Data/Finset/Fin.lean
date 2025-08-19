@@ -95,7 +95,7 @@ theorem mem_fin {s : Finset ℕ} : ∀ a : Fin n, a ∈ s.fin n ↔ (a : ℕ) �
 theorem coe_fin (n : ℕ) (s : Finset ℕ) : (s.fin n : Set (Fin n)) = Fin.val ⁻¹' s := by ext; simp
 
 @[mono, deprecated attachFin_subset_attachFin (since := "2025-04-08")]
-theorem fin_mono : Monotone (Finset.fin n) := fun s t h x => by simpa using @h x
+theorem fin_mono : Monotone (Finset.fin n) := fun s t h x ↦ by simpa using @h x
 
 @[gcongr, deprecated attachFin_subset_attachFin (since := "2025-04-08")]
 theorem fin_subset_fin (n : ℕ) {s t : Finset ℕ} (h : s ⊆ t) : s.fin n ⊆ t.fin n := fin_mono h

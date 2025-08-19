@@ -32,7 +32,7 @@ section Preorder
 variable [Preorder α]
 
 instance [SemilatticeSup β] : Max (α →o β) where
-  max f g := ⟨fun a => f a ⊔ g a, f.mono.sup g.mono⟩
+  max f g := ⟨fun a ↦ f a ⊔ g a, f.mono.sup g.mono⟩
 
 @[simp] lemma coe_sup [SemilatticeSup β] (f g : α →o β) :
     ((f ⊔ g : α →o β) : α → β) = (f : α → β) ⊔ g := rfl
@@ -40,12 +40,12 @@ instance [SemilatticeSup β] : Max (α →o β) where
 instance [SemilatticeSup β] : SemilatticeSup (α →o β) :=
   { (_ : PartialOrder (α →o β)) with
     sup := Max.max
-    le_sup_left := fun _ _ _ => le_sup_left
-    le_sup_right := fun _ _ _ => le_sup_right
-    sup_le := fun _ _ _ h₀ h₁ x => sup_le (h₀ x) (h₁ x) }
+    le_sup_left := fun _ _ _ ↦ le_sup_left
+    le_sup_right := fun _ _ _ ↦ le_sup_right
+    sup_le := fun _ _ _ h₀ h₁ x ↦ sup_le (h₀ x) (h₁ x) }
 
 instance [SemilatticeInf β] : Min (α →o β) where
-  min f g := ⟨fun a => f a ⊓ g a, f.mono.inf g.mono⟩
+  min f g := ⟨fun a ↦ f a ⊓ g a, f.mono.inf g.mono⟩
 
 @[simp] lemma coe_inf [SemilatticeInf β] (f g : α →o β) :
     ((f ⊓ g : α →o β) : α → β) = (f : α → β) ⊓ g := rfl
@@ -74,7 +74,7 @@ instance orderTop [Preorder β] [OrderTop β] : OrderTop (α →o β) where
   le_top _ _ := le_top
 
 instance [CompleteLattice β] : InfSet (α →o β) where
-  sInf s := ⟨fun x => ⨅ f ∈ s, (f :) x, fun _ _ h => iInf₂_mono fun f _ => f.mono h⟩
+  sInf s := ⟨fun x ↦ ⨅ f ∈ s, (f :) x, fun _ _ h ↦ iInf₂_mono fun f _ ↦ f.mono h⟩
 
 @[simp]
 theorem sInf_apply [CompleteLattice β] (s : Set (α →o β)) (x : α) :
@@ -91,7 +91,7 @@ theorem coe_iInf {ι : Sort*} [CompleteLattice β] (f : ι → α →o β) :
   funext x; simp [iInf_apply]
 
 instance [CompleteLattice β] : SupSet (α →o β) where
-  sSup s := ⟨fun x => ⨆ f ∈ s, (f :) x, fun _ _ h => iSup₂_mono fun f _ => f.mono h⟩
+  sSup s := ⟨fun x ↦ ⨆ f ∈ s, (f :) x, fun _ _ h ↦ iSup₂_mono fun f _ ↦ f.mono h⟩
 
 @[simp]
 theorem sSup_apply [CompleteLattice β] (s : Set (α →o β)) (x : α) :
@@ -109,11 +109,11 @@ theorem coe_iSup {ι : Sort*} [CompleteLattice β] (f : ι → α →o β) :
 
 instance [CompleteLattice β] : CompleteLattice (α →o β) :=
   { (_ : Lattice (α →o β)), OrderHom.orderTop, OrderHom.orderBot with
-    -- Porting note: Added `by apply`, was `fun s f hf x => le_iSup_of_le f (le_iSup _ hf)`
-    le_sSup := fun s f hf x => le_iSup_of_le f (by apply le_iSup _ hf)
-    sSup_le := fun _ _ hf x => iSup₂_le fun g hg => hf g hg x
-    le_sInf := fun _ _ hf x => le_iInf₂ fun g hg => hf g hg x
-    sInf_le := fun _ f hf _ => iInf_le_of_le f (iInf_le _ hf) }
+    -- Porting note: Added `by apply`, was `fun s f hf x ↦ le_iSup_of_le f (le_iSup _ hf)`
+    le_sSup := fun s f hf x ↦ le_iSup_of_le f (by apply le_iSup _ hf)
+    sSup_le := fun _ _ hf x ↦ iSup₂_le fun g hg ↦ hf g hg x
+    le_sInf := fun _ _ hf x ↦ le_iInf₂ fun g hg ↦ hf g hg x
+    sInf_le := fun _ f hf _ ↦ iInf_le_of_le f (iInf_le _ hf) }
 
 theorem iterate_sup_le_sup_iff {α : Type*} [SemilatticeSup α] (f : α →o α) :
     (∀ n₁ n₂ a₁ a₂, f^[n₁ + n₂] (a₁ ⊔ a₂) ≤ f^[n₁] a₁ ⊔ f^[n₂] a₂) ↔

@@ -36,9 +36,9 @@ variable [DecidableEq α] (s t : Multiset α)
 
 instance instLocallyFiniteOrder : LocallyFiniteOrder (Multiset α) :=
   LocallyFiniteOrder.ofIcc (Multiset α)
-    (fun s t => (Finset.Icc (toDFinsupp s) (toDFinsupp t)).map
+    (fun s t ↦ (Finset.Icc (toDFinsupp s) (toDFinsupp t)).map
       Multiset.equivDFinsupp.toEquiv.symm.toEmbedding)
-    fun s t x => by simp
+    fun s t x ↦ by simp
 
 theorem Icc_eq :
     Finset.Icc s t = (Finset.Icc (toDFinsupp s) (toDFinsupp t)).map

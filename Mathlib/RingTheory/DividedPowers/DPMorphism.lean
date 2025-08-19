@@ -162,7 +162,7 @@ def fromGens {f : A →+* B} {S : Set A} (hS : I = span S) (hf : I.map f ≤ J)
   dpow_comp {n} x hx := by
     have hS' : S ⊆ ideal_from_ringHom hI hJ hf := fun y hy ↦ by
       simp only [mem_coe, ideal_from_ringHom, Submodule.mem_mk]
-      exact ⟨hS ▸ subset_span hy, fun n => h y hy⟩
+      exact ⟨hS ▸ subset_span hy, fun n ↦ h y hy⟩
     rw [← span_le, ← hS] at hS'
     exact ((hS' hx).2 n).symm
 

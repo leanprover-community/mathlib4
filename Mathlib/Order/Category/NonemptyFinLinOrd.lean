@@ -114,8 +114,8 @@ def dual : NonemptyFinLinOrd ⥤ NonemptyFinLinOrd where
 def dualEquiv : NonemptyFinLinOrd ≌ NonemptyFinLinOrd where
   functor := dual
   inverse := dual
-  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
-  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  unitIso := NatIso.ofComponents fun X ↦ Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X ↦ Iso.mk <| OrderIso.dualDual X
 
 theorem mono_iff_injective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
     Mono f ↔ Function.Injective f := by
@@ -123,8 +123,8 @@ theorem mono_iff_injective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
   intro
   intro a₁ a₂ h
   let X := of (ULift (Fin 1))
-  let g₁ : X ⟶ A := ofHom ⟨fun _ => a₁, fun _ _ _ => by rfl⟩
-  let g₂ : X ⟶ A := ofHom ⟨fun _ => a₂, fun _ _ _ => by rfl⟩
+  let g₁ : X ⟶ A := ofHom ⟨fun _ ↦ a₁, fun _ _ _ ↦ by rfl⟩
+  let g₂ : X ⟶ A := ofHom ⟨fun _ ↦ a₂, fun _ _ _ ↦ by rfl⟩
   change g₁ (ULift.up (0 : Fin 1)) = g₂ (ULift.up (0 : Fin 1))
   have eq : g₁ ≫ f = g₂ ≫ f := by
     ext
@@ -141,7 +141,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
     rcases hf' with ⟨m, hm⟩
     let Y := of (ULift (Fin 2))
     let p₁ : B ⟶ Y := ofHom
-      ⟨fun b => if b < m then ULift.up 0 else ULift.up 1, fun x₁ x₂ h => by
+      ⟨fun b ↦ if b < m then ULift.up 0 else ULift.up 1, fun x₁ x₂ h ↦ by
         simp only
         split_ifs with h₁ h₂ h₂
         any_goals apply Fin.zero_le
@@ -149,7 +149,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
           exact h₁ (lt_of_le_of_lt h h₂)
         · rfl⟩
     let p₂ : B ⟶ Y := ofHom
-      ⟨fun b => if b ≤ m then ULift.up 0 else ULift.up 1, fun x₁ x₂ h => by
+      ⟨fun b ↦ if b ≤ m then ULift.up 0 else ULift.up 1, fun x₁ x₂ h ↦ by
         simp only
         split_ifs with h₁ h₂ h₂
         any_goals apply Fin.zero_le
@@ -173,13 +173,13 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
     exact ConcreteCategory.epi_of_surjective f h
 
 instance : SplitEpiCategory NonemptyFinLinOrd.{u} :=
-  ⟨fun {X Y} f hf => by
+  ⟨fun {X Y} f hf ↦ by
     have H : ∀ y : Y, Nonempty (f ⁻¹' {y}) := by
       rw [epi_iff_surjective] at hf
       intro y
       exact Nonempty.intro ⟨(hf y).choose, (hf y).choose_spec⟩
-    let φ : Y → X := fun y => (H y).some.1
-    have hφ : ∀ y : Y, f (φ y) = y := fun y => (H y).some.2
+    let φ : Y → X := fun y ↦ (H y).some.1
+    have hφ : ∀ y : Y, f (φ y) = y := fun y ↦ (H y).some.2
     refine IsSplitEpi.mk' ⟨ofHom ⟨φ, ?_⟩, ?_⟩
     swap
     · ext b
@@ -197,16 +197,16 @@ instance : SplitEpiCategory NonemptyFinLinOrd.{u} :=
       simpa only [hφ] using H⟩
 
 instance : HasStrongEpiMonoFactorisations NonemptyFinLinOrd.{u} :=
-  ⟨fun {X Y} f => by
+  ⟨fun {X Y} f ↦ by
     let I := of (Set.image f ⊤)
-    let e : X ⟶ I := ofHom ⟨fun x => ⟨f x, ⟨x, by tauto⟩⟩, fun x₁ x₂ h => f.hom.monotone h⟩
-    let m : I ⟶ Y := ofHom ⟨fun y => y.1, by tauto⟩
+    let e : X ⟶ I := ofHom ⟨fun x ↦ ⟨f x, ⟨x, by tauto⟩⟩, fun x₁ x₂ h ↦ f.hom.monotone h⟩
+    let m : I ⟶ Y := ofHom ⟨fun y ↦ y.1, by tauto⟩
     haveI : Epi e := by
       rw [epi_iff_surjective]
       rintro ⟨_, y, h, rfl⟩
       exact ⟨y, rfl⟩
     haveI : StrongEpi e := strongEpi_of_epi e
-    haveI : Mono m := ConcreteCategory.mono_of_injective _ (fun x y h => Subtype.ext h)
+    haveI : Mono m := ConcreteCategory.mono_of_injective _ (fun x y h ↦ Subtype.ext h)
     exact ⟨⟨I, m, e, rfl⟩⟩⟩
 
 end NonemptyFinLinOrd

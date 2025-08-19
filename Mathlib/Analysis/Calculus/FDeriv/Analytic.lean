@@ -82,7 +82,7 @@ theorem HasFPowerSeriesWithinAt.hasStrictFDerivWithinAt (h : HasFPowerSeriesWith
     (fun y ↦ f y.1 - f y.2 - (continuousMultilinearCurryFin1 𝕜 E F (p 1)) (y.1 - y.2))
       =o[𝓝[insert x s ×ˢ insert x s] (x, x)] fun y ↦ y.1 - y.2 := by
   refine h.isBigO_image_sub_norm_mul_norm_sub.trans_isLittleO (IsLittleO.of_norm_right ?_)
-  refine isLittleO_iff_exists_eq_mul.2 ⟨fun y => ‖y - (x, x)‖, ?_, EventuallyEq.rfl⟩
+  refine isLittleO_iff_exists_eq_mul.2 ⟨fun y ↦ ‖y - (x, x)‖, ?_, EventuallyEq.rfl⟩
   apply Tendsto.mono_left _ nhdsWithin_le_nhds
   refine (continuous_id.sub continuous_const).norm.tendsto' _ _ ?_
   rw [_root_.id, sub_self, norm_zero]
@@ -153,7 +153,7 @@ theorem HasFPowerSeriesWithinOnBall.differentiableOn [CompleteSpace F]
     exact self_mem_nhdsWithin
 
 theorem HasFPowerSeriesOnBall.differentiableOn [CompleteSpace F]
-    (h : HasFPowerSeriesOnBall f p x r) : DifferentiableOn 𝕜 f (EMetric.ball x r) := fun _ hy =>
+    (h : HasFPowerSeriesOnBall f p x r) : DifferentiableOn 𝕜 f (EMetric.ball x r) := fun _ hy ↦
   (h.analyticAt_of_mem hy).differentiableWithinAt
 
 theorem HasFPowerSeriesAt.eventually_differentiableAt
@@ -418,15 +418,15 @@ variable {p : FormalMultilinearSeries 𝕜 𝕜 F} {r : ℝ≥0∞}
 variable {f : 𝕜 → F} {x : 𝕜} {s : Set 𝕜}
 
 protected theorem HasFPowerSeriesAt.hasStrictDerivAt (h : HasFPowerSeriesAt f p x) :
-    HasStrictDerivAt f (p 1 fun _ => 1) x :=
+    HasStrictDerivAt f (p 1 fun _ ↦ 1) x :=
   h.hasStrictFDerivAt.hasStrictDerivAt
 
 protected theorem HasFPowerSeriesAt.hasDerivAt (h : HasFPowerSeriesAt f p x) :
-    HasDerivAt f (p 1 fun _ => 1) x :=
+    HasDerivAt f (p 1 fun _ ↦ 1) x :=
   h.hasStrictDerivAt.hasDerivAt
 
 protected theorem HasFPowerSeriesAt.deriv (h : HasFPowerSeriesAt f p x) :
-    deriv f x = p 1 fun _ => 1 :=
+    deriv f x = p 1 fun _ ↦ 1 :=
   h.hasDerivAt.deriv
 
 /-- If a function is analytic on a set `s` in a complete space, so is its derivative. -/

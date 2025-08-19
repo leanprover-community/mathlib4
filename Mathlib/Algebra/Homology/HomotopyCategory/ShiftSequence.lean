@@ -38,7 +38,7 @@ def shiftShortComplexFunctor' (n i j k i' j' k' : ℤ)
     (hi : n + i = i') (hj : n + j = j') (hk : n + k = k') :
     (CategoryTheory.shiftFunctor (CochainComplex C ℤ) n) ⋙ shortComplexFunctor' C _ i j k ≅
       shortComplexFunctor' C _ i' j' k' :=
-  NatIso.ofComponents (fun K => ShortComplex.isoMk
+  NatIso.ofComponents (fun K ↦ ShortComplex.isoMk
       (n.negOnePow • ((shiftEval C n i i' hi).app K))
       ((shiftEval C n j j' hj).app K) (n.negOnePow • ((shiftEval C n k k' hk).app K))
       (by simp) (by simp))

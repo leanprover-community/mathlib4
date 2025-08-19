@@ -42,13 +42,13 @@ def ofList [DecidableEq α] (l : List α) (H : ∀ x : α, x ∈ l) : Fintype α
 
 /-- If `f : α → β` is a bijection and `α` is a fintype, then `β` is also a fintype. -/
 def ofBijective [Fintype α] (f : α → β) (H : Function.Bijective f) : Fintype β :=
-  ⟨univ.map ⟨f, H.1⟩, fun b =>
+  ⟨univ.map ⟨f, H.1⟩, fun b ↦
     let ⟨_, e⟩ := H.2 b
     e ▸ mem_map_of_mem _ (mem_univ _)⟩
 
 /-- If `f : α → β` is a surjection and `α` is a fintype, then `β` is also a fintype. -/
 def ofSurjective [DecidableEq β] [Fintype α] (f : α → β) (H : Function.Surjective f) : Fintype β :=
-  ⟨univ.image f, fun b =>
+  ⟨univ.image f, fun b ↦
     let ⟨_, e⟩ := H b
     e ▸ mem_image_of_mem _ (mem_univ _)⟩
 
@@ -60,7 +60,7 @@ noncomputable def ofInjective [Fintype β] (f : α → β) (H : Function.Injecti
   if hα : Nonempty α then
     letI := Classical.inhabited_of_nonempty hα
     ofSurjective (invFun f) (invFun_surjective H)
-  else ⟨∅, fun x => (hα ⟨x⟩).elim⟩
+  else ⟨∅, fun x ↦ (hα ⟨x⟩).elim⟩
 
 /-- If `f : α ≃ β` and `α` is a fintype, then `β` is also a fintype. -/
 def ofEquiv (α : Type*) [Fintype α] (f : α ≃ β) : Fintype β :=
@@ -68,7 +68,7 @@ def ofEquiv (α : Type*) [Fintype α] (f : α ≃ β) : Fintype β :=
 
 /-- Any subsingleton type with a witness is a fintype (with one term). -/
 def ofSubsingleton (a : α) [Subsingleton α] : Fintype α :=
-  ⟨{a}, fun _ => Finset.mem_singleton.2 (Subsingleton.elim _ _)⟩
+  ⟨{a}, fun _ ↦ Finset.mem_singleton.2 (Subsingleton.elim _ _)⟩
 
 -- In principle, this could be a `simp` theorem but it applies to any occurrence of `univ` and
 -- required unification of the (possibly very complex) `Fintype` instances.

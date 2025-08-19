@@ -46,7 +46,7 @@ class CardinalInterFilter (l : Filter α) (c : Cardinal.{u}) : Prop where
 variable {l : Filter α}
 
 theorem cardinal_sInter_mem {S : Set (Set α)} [CardinalInterFilter l c] (hSc : #S < c) :
-    ⋂₀ S ∈ l ↔ ∀ s ∈ S, s ∈ l := ⟨fun hS _s hs => mem_of_superset hS (sInter_subset_of_mem hs),
+    ⋂₀ S ∈ l ↔ ∀ s ∈ S, s ∈ l := ⟨fun hS _s hs ↦ mem_of_superset hS (sInter_subset_of_mem hs),
   CardinalInterFilter.cardinal_sInter_mem _ hSc⟩
 
 /-- Every filter is a CardinalInterFilter with c = ℵ₀ -/
@@ -113,47 +113,47 @@ theorem eventually_cardinal_ball {S : Set ι} (hS : #S < c)
 
 theorem EventuallyLE.cardinal_iUnion {s t : ι → Set α} (hic : #ι < c)
     (h : ∀ i, s i ≤ᶠ[l] t i) : ⋃ i, s i ≤ᶠ[l] ⋃ i, t i :=
-  ((eventually_cardinal_forall hic).2 h).mono fun _ hst hs => mem_iUnion.2 <|
+  ((eventually_cardinal_forall hic).2 h).mono fun _ hst hs ↦ mem_iUnion.2 <|
     (mem_iUnion.1 hs).imp hst
 
 theorem EventuallyEq.cardinal_iUnion {s t : ι → Set α} (hic : #ι < c)
     (h : ∀ i, s i =ᶠ[l] t i) : ⋃ i, s i =ᶠ[l] ⋃ i, t i :=
-  (EventuallyLE.cardinal_iUnion hic fun i => (h i).le).antisymm
-    (EventuallyLE.cardinal_iUnion hic fun i => (h i).symm.le)
+  (EventuallyLE.cardinal_iUnion hic fun i ↦ (h i).le).antisymm
+    (EventuallyLE.cardinal_iUnion hic fun i ↦ (h i).symm.le)
 
 theorem EventuallyLE.cardinal_bUnion {S : Set ι} (hS : #S < c)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
     ⋃ i ∈ S, s i ‹_› ≤ᶠ[l] ⋃ i ∈ S, t i ‹_› := by
   simp only [biUnion_eq_iUnion]
-  exact EventuallyLE.cardinal_iUnion hS fun i => h i i.2
+  exact EventuallyLE.cardinal_iUnion hS fun i ↦ h i i.2
 
 theorem EventuallyEq.cardinal_bUnion {S : Set ι} (hS : #S < c)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠ[l] t i hi) :
     ⋃ i ∈ S, s i ‹_› =ᶠ[l] ⋃ i ∈ S, t i ‹_› :=
-  (EventuallyLE.cardinal_bUnion hS fun i hi => (h i hi).le).antisymm
-    (EventuallyLE.cardinal_bUnion hS fun i hi => (h i hi).symm.le)
+  (EventuallyLE.cardinal_bUnion hS fun i hi ↦ (h i hi).le).antisymm
+    (EventuallyLE.cardinal_bUnion hS fun i hi ↦ (h i hi).symm.le)
 
 theorem EventuallyLE.cardinal_iInter {s t : ι → Set α} (hic : #ι < c)
     (h : ∀ i, s i ≤ᶠ[l] t i) : ⋂ i, s i ≤ᶠ[l] ⋂ i, t i :=
-  ((eventually_cardinal_forall hic).2 h).mono fun _ hst hs =>
-    mem_iInter.2 fun i => hst _ (mem_iInter.1 hs i)
+  ((eventually_cardinal_forall hic).2 h).mono fun _ hst hs ↦
+    mem_iInter.2 fun i ↦ hst _ (mem_iInter.1 hs i)
 
 theorem EventuallyEq.cardinal_iInter {s t : ι → Set α} (hic : #ι < c)
     (h : ∀ i, s i =ᶠ[l] t i) : ⋂ i, s i =ᶠ[l] ⋂ i, t i :=
-  (EventuallyLE.cardinal_iInter hic fun i => (h i).le).antisymm
-    (EventuallyLE.cardinal_iInter hic fun i => (h i).symm.le)
+  (EventuallyLE.cardinal_iInter hic fun i ↦ (h i).le).antisymm
+    (EventuallyLE.cardinal_iInter hic fun i ↦ (h i).symm.le)
 
 theorem EventuallyLE.cardinal_bInter {S : Set ι} (hS : #S < c)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
     ⋂ i ∈ S, s i ‹_› ≤ᶠ[l] ⋂ i ∈ S, t i ‹_› := by
   simp only [biInter_eq_iInter]
-  exact EventuallyLE.cardinal_iInter hS fun i => h i i.2
+  exact EventuallyLE.cardinal_iInter hS fun i ↦ h i i.2
 
 theorem EventuallyEq.cardinal_bInter {S : Set ι} (hS : #S < c)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠ[l] t i hi) :
     ⋂ i ∈ S, s i ‹_› =ᶠ[l] ⋂ i ∈ S, t i ‹_› :=
-  (EventuallyLE.cardinal_bInter hS fun i hi => (h i hi).le).antisymm
-    (EventuallyLE.cardinal_bInter hS fun i hi => (h i hi).symm.le)
+  (EventuallyLE.cardinal_bInter hS fun i hi ↦ (h i hi).le).antisymm
+    (EventuallyLE.cardinal_bInter hS fun i hi ↦ (h i hi).symm.le)
 
 /-- Construct a filter with cardinal `c` intersection property. This constructor deduces
 `Filter.univ_sets` and `Filter.inter_sets` from the cardinal `c` intersection property. -/
@@ -213,7 +213,7 @@ theorem mem_ofCardinalUnion {l : Set (Set α)} (hc : 2 < c) {hunion hmono s} :
   Iff.rfl
 
 instance cardinalInterFilter_principal (s : Set α) : CardinalInterFilter (𝓟 s) c :=
-  ⟨fun _ _ hS => subset_sInter hS⟩
+  ⟨fun _ _ hS ↦ subset_sInter hS⟩
 
 instance cardinalInterFilter_bot : CardinalInterFilter (⊥ : Filter α) c := by
   rw [← principal_empty]
@@ -225,14 +225,14 @@ instance cardinalInterFilter_top : CardinalInterFilter (⊤ : Filter α) c := by
 
 instance (l : Filter β) [CardinalInterFilter l c] (f : α → β) :
     CardinalInterFilter (comap f l) c := by
-  refine ⟨fun S hSc hS => ?_⟩
+  refine ⟨fun S hSc hS ↦ ?_⟩
   choose! t htl ht using hS
   refine ⟨_, (cardinal_bInter_mem hSc).2 htl, ?_⟩
   simpa [preimage_iInter] using iInter₂_mono ht
 
 instance (l : Filter α) [CardinalInterFilter l c] (f : α → β) :
     CardinalInterFilter (map f l) c := by
-  refine ⟨fun S hSc hS => ?_⟩
+  refine ⟨fun S hSc hS ↦ ?_⟩
   simp only [mem_map, sInter_eq_biInter, preimage_iInter₂] at hS ⊢
   exact (cardinal_bInter_mem hSc).2 hS
 
@@ -240,11 +240,11 @@ instance (l : Filter α) [CardinalInterFilter l c] (f : α → β) :
 to automatically get an instance for `residual α ⊓ 𝓟 s`. -/
 instance cardinalInterFilter_inf_eq (l₁ l₂ : Filter α) [CardinalInterFilter l₁ c]
     [CardinalInterFilter l₂ c] : CardinalInterFilter (l₁ ⊓ l₂) c := by
-  refine ⟨fun S hSc hS => ?_⟩
+  refine ⟨fun S hSc hS ↦ ?_⟩
   choose s hs t ht hst using hS
   replace hs : (⋂ i ∈ S, s i ‹_›) ∈ l₁ := (cardinal_bInter_mem hSc).2 hs
   replace ht : (⋂ i ∈ S, t i ‹_›) ∈ l₂ := (cardinal_bInter_mem hSc).2 ht
-  refine mem_of_superset (inter_mem_inf hs ht) (subset_sInter fun i hi => ?_)
+  refine mem_of_superset (inter_mem_inf hs ht) (subset_sInter fun i hi ↦ ?_)
   rw [hst i hi]
   apply inter_subset_inter <;> exact iInter_subset_of_subset i (iInter_subset _ _)
 
@@ -260,7 +260,7 @@ instance cardinalInterFilter_inf (l₁ l₂ : Filter α) {c₁ c₂ : Cardinal.{
 /-- Supremum of two `CardinalInterFilter`s is a `CardinalInterFilter`. -/
 instance cardinalInterFilter_sup_eq (l₁ l₂ : Filter α) [CardinalInterFilter l₁ c]
     [CardinalInterFilter l₂ c] : CardinalInterFilter (l₁ ⊔ l₂) c := by
-  refine ⟨fun S hSc hS => ⟨?_, ?_⟩⟩ <;> refine (cardinal_sInter_mem hSc).2 fun s hs => ?_
+  refine ⟨fun S hSc hS ↦ ⟨?_, ?_⟩⟩ <;> refine (cardinal_sInter_mem hSc).2 fun s hs ↦ ?_
   exacts [(hS s hs).1, (hS s hs).2]
 
 instance cardinalInterFilter_sup (l₁ l₂ : Filter α) {c₁ c₂ : Cardinal.{u}}
@@ -285,7 +285,7 @@ inductive CardinalGenerateSets : Set α → Prop
 
 /-- `Filter.cardinalGenerate c g` is the greatest `cardinalInterFilter c` containing `g`. -/
 def cardinalGenerate (hc : 2 < c) : Filter α :=
-  ofCardinalInter (CardinalGenerateSets g) hc (fun _ => CardinalGenerateSets.sInter) fun _ _ =>
+  ofCardinalInter (CardinalGenerateSets g) hc (fun _ ↦ CardinalGenerateSets.sInter) fun _ _ ↦
     CardinalGenerateSets.superset
 
 lemma cardinalInter_ofCardinalGenerate (hc : 2 < c) :
@@ -313,17 +313,17 @@ theorem mem_cardinaleGenerate_iff {s : Set α} {hreg : c.IsRegular} :
       refine ⟨⋃ (s) (H : s ∈ S), T s H, by simpa,
         (Cardinal.card_biUnion_lt_iff_forall_of_isRegular hreg Sct).2 Tct, ?_⟩
       apply subset_sInter
-      apply fun s H => subset_trans (sInter_subset_sInter (subset_iUnion₂ s H)) (hT s H)
+      apply fun s H ↦ subset_trans (sInter_subset_sInter (subset_iUnion₂ s H)) (hT s H)
   rcases h with ⟨S, Sg, Sct, hS⟩
   have : CardinalInterFilter (cardinalGenerate g (IsRegular.nat_lt hreg 2)) c :=
     cardinalInter_ofCardinalGenerate _ _
   exact mem_of_superset ((cardinal_sInter_mem Sct).mpr
-    (fun s H => CardinalGenerateSets.basic (Sg H))) hS
+    (fun s H ↦ CardinalGenerateSets.basic (Sg H))) hS
 
 theorem le_cardinalGenerate_iff_of_cardinalInterFilter {f : Filter α} [CardinalInterFilter f c]
     (hc : 2 < c) : f ≤ cardinalGenerate g hc ↔ g ⊆ f.sets := by
   constructor <;> intro h
-  · exact subset_trans (fun s => CardinalGenerateSets.basic) h
+  · exact subset_trans (fun s ↦ CardinalGenerateSets.basic) h
   intro s hs
   induction hs with
   | basic hs => exact h hs
@@ -334,7 +334,7 @@ theorem le_cardinalGenerate_iff_of_cardinalInterFilter {f : Filter α} [Cardinal
 /-- `cardinalGenerate g hc` is the greatest `cardinalInterFilter c` containing `g`. -/
 theorem cardinalGenerate_isGreatest (hc : 2 < c) :
     IsGreatest { f : Filter α | CardinalInterFilter f c ∧ g ⊆ f.sets } (cardinalGenerate g hc) := by
-  refine ⟨⟨cardinalInter_ofCardinalGenerate _ _, fun s => CardinalGenerateSets.basic⟩, ?_⟩
+  refine ⟨⟨cardinalInter_ofCardinalGenerate _ _, fun s ↦ CardinalGenerateSets.basic⟩, ?_⟩
   rintro f ⟨fct, hf⟩
   rwa [le_cardinalGenerate_iff_of_cardinalInterFilter]
 

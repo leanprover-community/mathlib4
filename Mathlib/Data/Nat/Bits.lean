@@ -149,18 +149,18 @@ lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by
 /-- `size n` : Returns the size of a natural number in
 bits i.e. the length of its binary representation -/
 def size : ℕ → ℕ :=
-  binaryRec 0 fun _ _ => succ
+  binaryRec 0 fun _ _ ↦ succ
 
 /-- `bits n` returns a list of Bools which correspond to the binary representation of n, where
 the head of the list represents the least significant bit -/
 def bits : ℕ → List Bool :=
-  binaryRec [] fun b _ IH => b :: IH
+  binaryRec [] fun b _ IH ↦ b :: IH
 
 /-- `ldiff a b` performs bitwise set difference. For each corresponding
   pair of bits taken as booleans, say `aᵢ` and `bᵢ`, it applies the
   boolean operation `aᵢ ∧ ¬bᵢ` to obtain the `iᵗʰ` bit of the result. -/
 def ldiff : ℕ → ℕ → ℕ :=
-  bitwise fun a b => a && not b
+  bitwise fun a b ↦ a && not b
 
 /-! bitwise ops -/
 
@@ -187,7 +187,7 @@ lemma shiftLeft'_sub (b m) : ∀ {n k}, k ≤ n → shiftLeft' b m (n - k) = (sh
     simp [← div2_val, div2_bit]
 
 lemma shiftLeft_sub : ∀ (m : Nat) {n k}, k ≤ n → m <<< (n - k) = (m <<< n) >>> k :=
-  fun _ _ _ hk => by simp only [← shiftLeft'_false, shiftLeft'_sub false _ hk]
+  fun _ _ _ hk ↦ by simp only [← shiftLeft'_false, shiftLeft'_sub false _ hk]
 
 lemma bodd_eq_one_and_ne_zero : ∀ n, bodd n = (1 &&& n != 0)
   | 0 => rfl
@@ -240,14 +240,14 @@ theorem bitCasesOn_bit1 {motive : ℕ → Sort u} (H : ∀ b n, motive (bit b n)
   bitCasesOn_bit H true n
 
 theorem bit_cases_on_injective {motive : ℕ → Sort u} :
-    Function.Injective fun H : ∀ b n, motive (bit b n) => fun n => bitCasesOn n H := by
+    Function.Injective fun H : ∀ b n, motive (bit b n) ↦ fun n ↦ bitCasesOn n H := by
   intro H₁ H₂ h
   ext b n
   simpa only [bitCasesOn_bit] using congr_fun h (bit b n)
 
 @[simp]
 theorem bit_cases_on_inj {motive : ℕ → Sort u} (H₁ H₂ : ∀ b n, motive (bit b n)) :
-    ((fun n => bitCasesOn n H₁) = fun n => bitCasesOn n H₂) ↔ H₁ = H₂ :=
+    ((fun n ↦ bitCasesOn n H₁) = fun n ↦ bitCasesOn n H₂) ↔ H₁ = H₂ :=
   bit_cases_on_injective.eq_iff
 
 lemma bit_le : ∀ (b : Bool) {m n : ℕ}, m ≤ n → bit b m ≤ bit b n
@@ -269,11 +269,11 @@ theorem bits_append_bit (n : ℕ) (b : Bool) (hn : n = 0 → b = true) :
 
 @[simp]
 theorem bit0_bits (n : ℕ) (hn : n ≠ 0) : (2 * n).bits = false :: n.bits :=
-  bits_append_bit n false fun hn' => absurd hn' hn
+  bits_append_bit n false fun hn' ↦ absurd hn' hn
 
 @[simp]
 theorem bit1_bits (n : ℕ) : (2 * n + 1).bits = true :: n.bits :=
-  bits_append_bit n true fun _ => rfl
+  bits_append_bit n true fun _ ↦ rfl
 
 @[simp]
 theorem one_bits : Nat.bits 1 = [true] := by

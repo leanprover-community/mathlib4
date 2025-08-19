@@ -76,7 +76,7 @@ local macro_rules | `($t:term$n:superscript) => `(Fin $n → $t)
 /-- The n dimensional exponential map $θ_i ↦ c + R e^{θ_i*I}, θ ∈ ℝⁿ$ representing
 a torus in `ℂⁿ` with center `c ∈ ℂⁿ` and generalized radius `R ∈ ℝⁿ`, so we can adjust
 it to every n axis. -/
-def torusMap (c : ℂⁿ) (R : ℝⁿ) : ℝⁿ → ℂⁿ := fun θ i => c i + R i * exp (θ i * I)
+def torusMap (c : ℂⁿ) (R : ℝⁿ) : ℝⁿ → ℂⁿ := fun θ i ↦ c i + R i * exp (θ i * I)
 
 theorem torusMap_sub_center (c : ℂⁿ) (R : ℝⁿ) (θ : ℝⁿ) : torusMap c R θ - c = torusMap 0 R θ := by
   ext1 i; simp [torusMap]
@@ -95,14 +95,14 @@ theorem torusMap_zero_radius (c : ℂⁿ) : torusMap c 0 = const ℝⁿ c :=
 /-- A function `f : ℂⁿ → E` is integrable on the generalized torus if the function
 `f ∘ torusMap c R θ` is integrable on `Icc (0 : ℝⁿ) (fun _ ↦ 2 * π)`. -/
 def TorusIntegrable (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) : Prop :=
-  IntegrableOn (fun θ : ℝⁿ => f (torusMap c R θ)) (Icc (0 : ℝⁿ) fun _ => 2 * π) volume
+  IntegrableOn (fun θ : ℝⁿ ↦ f (torusMap c R θ)) (Icc (0 : ℝⁿ) fun _ ↦ 2 * π) volume
 
 namespace TorusIntegrable
 
 variable {f g : ℂⁿ → E} {c : ℂⁿ} {R : ℝⁿ}
 
 /-- Constant functions are torus integrable -/
-theorem torusIntegrable_const (a : E) (c : ℂⁿ) (R : ℝⁿ) : TorusIntegrable (fun _ => a) c R := by
+theorem torusIntegrable_const (a : E) (c : ℂⁿ) (R : ℝⁿ) : TorusIntegrable (fun _ ↦ a) c R := by
   simp [TorusIntegrable, measure_Icc_lt_top]
 
 /-- If `f` is torus integrable then `-f` is torus integrable. -/
@@ -124,8 +124,8 @@ theorem torusIntegrable_zero_radius {f : ℂⁿ → E} {c : ℂⁿ} : TorusInteg
 
 /-- The function given in the definition of `torusIntegral` is integrable. -/
 theorem function_integrable [NormedSpace ℂ E] (hf : TorusIntegrable f c R) :
-    IntegrableOn (fun θ : ℝⁿ => (∏ i, R i * exp (θ i * I) * I : ℂ) • f (torusMap c R θ))
-      (Icc (0 : ℝⁿ) fun _ => 2 * π) volume := by
+    IntegrableOn (fun θ : ℝⁿ ↦ (∏ i, R i * exp (θ i * I) * I : ℂ) • f (torusMap c R θ))
+      (Icc (0 : ℝⁿ) fun _ ↦ 2 * π) volume := by
   refine (hf.norm.const_mul (∏ i, |R i|)).mono' ?_ ?_
   · refine (Continuous.aestronglyMeasurable ?_).smul hf.1; fun_prop
   simp [norm_smul]
@@ -137,7 +137,7 @@ variable [NormedSpace ℂ E] {f g : ℂⁿ → E} {c : ℂⁿ} {R : ℝⁿ}
 /-- The integral over a generalized torus with center `c ∈ ℂⁿ` and radius `R ∈ ℝⁿ`, defined
 as the `•`-product of the derivative of `torusMap` and `f (torusMap c R θ)` -/
 def torusIntegral (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) :=
-  ∫ θ : ℝⁿ in Icc (0 : ℝⁿ) fun _ => 2 * π, (∏ i, R i * exp (θ i * I) * I : ℂ) • f (torusMap c R θ)
+  ∫ θ : ℝⁿ in Icc (0 : ℝⁿ) fun _ ↦ 2 * π, (∏ i, R i * exp (θ i * I) * I : ℂ) • f (torusMap c R θ)
 
 @[inherit_doc torusIntegral]
 notation3 "∯ " (...) " in " "T(" c ", " R ")" ", " r:(scoped f => torusIntegral f c R) => r
@@ -172,29 +172,29 @@ theorem torusIntegral_const_mul (a : ℂ) (f : ℂⁿ → ℂ) (c : ℂⁿ) (R :
 theorem norm_torusIntegral_le_of_norm_le_const {C : ℝ} (hf : ∀ θ, ‖f (torusMap c R θ)‖ ≤ C) :
     ‖∯ x in T(c, R), f x‖ ≤ ((2 * π) ^ (n : ℕ) * ∏ i, |R i|) * C :=
   calc
-    ‖∯ x in T(c, R), f x‖ ≤ (∏ i, |R i|) * C * (volume (Icc (0 : ℝⁿ) fun _ => 2 * π)).toReal :=
-      norm_setIntegral_le_of_norm_le_const measure_Icc_lt_top fun θ _ =>
+    ‖∯ x in T(c, R), f x‖ ≤ (∏ i, |R i|) * C * (volume (Icc (0 : ℝⁿ) fun _ ↦ 2 * π)).toReal :=
+      norm_setIntegral_le_of_norm_le_const measure_Icc_lt_top fun θ _ ↦
         calc
           ‖(∏ i : Fin n, R i * exp (θ i * I) * I : ℂ) • f (torusMap c R θ)‖ =
               (∏ i : Fin n, |R i|) * ‖f (torusMap c R θ)‖ := by simp [norm_smul]
           _ ≤ (∏ i : Fin n, |R i|) * C := mul_le_mul_of_nonneg_left (hf _) <| by positivity
     _ = ((2 * π) ^ (n : ℕ) * ∏ i, |R i|) * C := by
-      simp only [Pi.zero_def, Real.volume_Icc_pi_toReal fun _ => Real.two_pi_pos.le, sub_zero,
+      simp only [Pi.zero_def, Real.volume_Icc_pi_toReal fun _ ↦ Real.two_pi_pos.le, sub_zero,
         Fin.prod_const, mul_assoc, mul_comm ((2 * π) ^ (n : ℕ))]
 
 @[simp]
 theorem torusIntegral_dim0 [CompleteSpace E]
     (f : ℂ⁰ → E) (c : ℂ⁰) (R : ℝ⁰) : (∯ x in T(c, R), f x) = f c := by
   simp only [torusIntegral, Fin.prod_univ_zero, one_smul,
-    Subsingleton.elim (fun _ : Fin 0 => 2 * π) 0, Icc_self, Measure.restrict_singleton, volume_pi,
+    Subsingleton.elim (fun _ : Fin 0 ↦ 2 * π) 0, Icc_self, Measure.restrict_singleton, volume_pi,
     integral_dirac, Measure.pi_of_empty (fun _ : Fin 0 ↦ volume) 0,
     Measure.dirac_apply_of_mem (mem_singleton _), Subsingleton.elim (torusMap c R 0) c]
 
 /-- In dimension one, `torusIntegral` is the same as `circleIntegral`
 (up to the natural equivalence between `ℂ` and `Fin 1 → ℂ`). -/
 theorem torusIntegral_dim1 (f : ℂ¹ → E) (c : ℂ¹) (R : ℝ¹) :
-    (∯ x in T(c, R), f x) = ∮ z in C(c 0, R 0), f fun _ => z := by
-  have H₁ : (((MeasurableEquiv.funUnique _ _).symm) ⁻¹' Icc 0 fun _ => 2 * π) = Icc 0 (2 * π) :=
+    (∯ x in T(c, R), f x) = ∮ z in C(c 0, R 0), f fun _ ↦ z := by
+  have H₁ : (((MeasurableEquiv.funUnique _ _).symm) ⁻¹' Icc 0 fun _ ↦ 2 * π) = Icc 0 (2 * π) :=
     (OrderIso.funUnique (Fin 1) ℝ).symm.preimage_Icc _ _
   have H₂ : torusMap c R = fun θ _ ↦ circleMap (c 0) (R 0) (θ 0) := by
     ext θ i : 2
@@ -211,17 +211,17 @@ theorem torusIntegral_succAbove
     (i : Fin (n + 1)) :
     (∯ x in T(c, R), f x) =
       ∮ x in C(c i, R i), ∯ y in T(c ∘ i.succAbove, R ∘ i.succAbove), f (i.insertNth x y) := by
-  set e : ℝ × ℝⁿ ≃ᵐ ℝⁿ⁺¹ := (MeasurableEquiv.piFinSuccAbove (fun _ => ℝ) i).symm
+  set e : ℝ × ℝⁿ ≃ᵐ ℝⁿ⁺¹ := (MeasurableEquiv.piFinSuccAbove (fun _ ↦ ℝ) i).symm
   have hem : MeasurePreserving e :=
-    (volume_preserving_piFinSuccAbove (fun _ : Fin (n + 1) => ℝ) i).symm _
-  have heπ : (e ⁻¹' Icc 0 fun _ => 2 * π) = Icc 0 (2 * π) ×ˢ Icc (0 : ℝⁿ) fun _ => 2 * π :=
-    ((Fin.insertNthOrderIso (fun _ => ℝ) i).preimage_Icc _ _).trans (Icc_prod_eq _ _)
+    (volume_preserving_piFinSuccAbove (fun _ : Fin (n + 1) ↦ ℝ) i).symm _
+  have heπ : (e ⁻¹' Icc 0 fun _ ↦ 2 * π) = Icc 0 (2 * π) ×ˢ Icc (0 : ℝⁿ) fun _ ↦ 2 * π :=
+    ((Fin.insertNthOrderIso (fun _ ↦ ℝ) i).preimage_Icc _ _).trans (Icc_prod_eq _ _)
   rw [torusIntegral, ← hem.map_eq, setIntegral_map_equiv, heπ, Measure.volume_eq_prod,
     setIntegral_prod, circleIntegral_def_Icc]
-  · refine setIntegral_congr_fun measurableSet_Icc fun θ _ => ?_
+  · refine setIntegral_congr_fun measurableSet_Icc fun θ _ ↦ ?_
     simp +unfoldPartialApp only [e, torusIntegral, ← integral_smul,
       deriv_circleMap, i.prod_univ_succAbove _, smul_smul, torusMap, circleMap_zero]
-    refine setIntegral_congr_fun measurableSet_Icc fun Θ _ => ?_
+    refine setIntegral_congr_fun measurableSet_Icc fun Θ _ ↦ ?_
     simp only [MeasurableEquiv.piFinSuccAbove_symm_apply, i.insertNth_apply_same,
       i.insertNth_apply_succAbove, (· ∘ ·), Fin.insertNthEquiv, Equiv.coe_fn_mk]
     congr 2

@@ -33,14 +33,14 @@ namespace Semiquot
 variable {α : Type*} {β : Type*}
 
 instance : Membership α (Semiquot α) :=
-  ⟨fun q a => a ∈ q.s⟩
+  ⟨fun q a ↦ a ∈ q.s⟩
 
 /-- Construct a `Semiquot α` from `h : a ∈ s` where `s : Set α`. -/
 def mk {a : α} {s : Set α} (h : a ∈ s) : Semiquot α :=
   ⟨s, Trunc.mk ⟨a, h⟩⟩
 
 theorem ext_s {q₁ q₂ : Semiquot α} : q₁ = q₂ ↔ q₁.s = q₂.s := by
-  refine ⟨congr_arg _, fun h => ?_⟩
+  refine ⟨congr_arg _, fun h ↦ ?_⟩
   obtain ⟨_, v₁⟩ := q₁; obtain ⟨_, v₂⟩ := q₂; congr
   exact Subsingleton.helim (congrArg Trunc (congrArg Set.Elem h)) v₁ v₂
 
@@ -67,7 +67,7 @@ theorem mem_pure' {a b : α} : a ∈ Semiquot.pure b ↔ a = b :=
 
 /-- Replace `s` in a `Semiquot` with a superset. -/
 def blur' (q : Semiquot α) {s : Set α} (h : q.s ⊆ s) : Semiquot α :=
-  ⟨s, Trunc.lift (fun a : q.s => Trunc.mk ⟨a.1, h a.2⟩) (fun _ _ => Trunc.eq _ _) q.2⟩
+  ⟨s, Trunc.lift (fun a : q.s ↦ Trunc.mk ⟨a.1, h a.2⟩) (fun _ _ ↦ Trunc.eq _ _) q.2⟩
 
 /-- Replace `s` in a `q : Semiquot α` with a union `s ∪ q.s` -/
 def blur (s : Set α) (q : Semiquot α) : Semiquot α :=
@@ -82,7 +82,7 @@ theorem mem_blur' (q : Semiquot α) {s : Set α} (h : q.s ⊆ s) {a : α} : a �
 
 /-- Convert a `Trunc α` to a `Semiquot α`. -/
 def ofTrunc (q : Trunc α) : Semiquot α :=
-  ⟨Set.univ, q.map fun a => ⟨a, trivial⟩⟩
+  ⟨Set.univ, q.map fun a ↦ ⟨a, trivial⟩⟩
 
 /-- Convert a `Semiquot α` to a `Trunc α`. -/
 def toTrunc (q : Semiquot α) : Trunc α :=
@@ -91,7 +91,7 @@ def toTrunc (q : Semiquot α) : Trunc α :=
 /-- If `f` is a constant on `q.s`, then `q.liftOn f` is the value of `f`
 at any point of `q`. -/
 def liftOn (q : Semiquot α) (f : α → β) (h : ∀ a ∈ q, ∀ b ∈ q, f a = f b) : β :=
-  Trunc.liftOn q.2 (fun x => f x.1) fun x y => h _ x.2 _ y.2
+  Trunc.liftOn q.2 (fun x ↦ f x.1) fun x y ↦ h _ x.2 _ y.2
 
 theorem liftOn_ofMem (q : Semiquot α) (f : α → β)
     (h : ∀ a ∈ q, ∀ b ∈ q, f a = f b) (a : α) (aq : a ∈ q) : liftOn q f h = f a := by
@@ -99,7 +99,7 @@ theorem liftOn_ofMem (q : Semiquot α) (f : α → β)
 
 /-- Apply a function to the unknown value stored in a `Semiquot α`. -/
 def map (f : α → β) (q : Semiquot α) : Semiquot β :=
-  ⟨f '' q.1, q.2.map fun x => ⟨f x.1, Set.mem_image_of_mem _ x.2⟩⟩
+  ⟨f '' q.1, q.2.map fun x ↦ ⟨f x.1, Set.mem_image_of_mem _ x.2⟩⟩
 
 @[simp]
 theorem mem_map (f : α → β) (q : Semiquot α) (b : β) : b ∈ map f q ↔ ∃ a, a ∈ q ∧ f a = b :=
@@ -107,7 +107,7 @@ theorem mem_map (f : α → β) (q : Semiquot α) (b : β) : b ∈ map f q ↔ �
 
 /-- Apply a function returning a `Semiquot` to a `Semiquot`. -/
 def bind (q : Semiquot α) (f : α → Semiquot β) : Semiquot β :=
-  ⟨⋃ a ∈ q.1, (f a).1, q.2.bind fun a => (f a.1).2.map fun b => ⟨b.1, Set.mem_biUnion a.2 b.2⟩⟩
+  ⟨⋃ a ∈ q.1, (f a).1, q.2.bind fun a ↦ (f a.1).2.map fun b ↦ ⟨b.1, Set.mem_biUnion a.2 b.2⟩⟩
 
 @[simp]
 theorem mem_bind (q : Semiquot α) (f : α → Semiquot β) (b : β) :
@@ -138,17 +138,17 @@ theorem pure_inj {a b : α} : (pure a : Semiquot α) = pure b ↔ a = b :=
   ext_s.trans Set.singleton_eq_singleton_iff
 
 instance : LawfulMonad Semiquot := LawfulMonad.mk'
-  (pure_bind := fun {α β} x f => ext.2 <| by simp)
-  (bind_assoc := fun {α β} γ s f g =>
+  (pure_bind := fun {α β} x f ↦ ext.2 <| by simp)
+  (bind_assoc := fun {α β} γ s f g ↦
     ext.2 <| by
     simp only [bind_def, mem_bind]
-    exact fun c => ⟨fun ⟨b, ⟨a, as, bf⟩, cg⟩ => ⟨a, as, b, bf, cg⟩,
-      fun ⟨a, as, b, bf, cg⟩ => ⟨b, ⟨a, as, bf⟩, cg⟩⟩)
-  (id_map := fun {α} q => ext.2 <| by simp)
-  (bind_pure_comp := fun {α β} f s => ext.2 <| by simp [eq_comm])
+    exact fun c ↦ ⟨fun ⟨b, ⟨a, as, bf⟩, cg⟩ ↦ ⟨a, as, b, bf, cg⟩,
+      fun ⟨a, as, b, bf, cg⟩ ↦ ⟨b, ⟨a, as, bf⟩, cg⟩⟩)
+  (id_map := fun {α} q ↦ ext.2 <| by simp)
+  (bind_pure_comp := fun {α β} f s ↦ ext.2 <| by simp [eq_comm])
 
 instance : LE (Semiquot α) :=
-  ⟨fun s t => s.s ⊆ t.s⟩
+  ⟨fun s t ↦ s.s ⊆ t.s⟩
 
 instance partialOrder : PartialOrder (Semiquot α) where
   le s t := ∀ ⦃x⦄, x ∈ s → x ∈ t
@@ -158,10 +158,10 @@ instance partialOrder : PartialOrder (Semiquot α) where
 
 instance : SemilatticeSup (Semiquot α) :=
   { Semiquot.partialOrder with
-    sup := fun s => blur s.s
-    le_sup_left := fun _ _ => Set.subset_union_left
-    le_sup_right := fun _ _ => Set.subset_union_right
-    sup_le := fun _ _ _ => Set.union_subset }
+    sup := fun s ↦ blur s.s
+    le_sup_left := fun _ _ ↦ Set.subset_union_left
+    le_sup_right := fun _ _ ↦ Set.subset_union_right
+    sup_le := fun _ _ _ ↦ Set.union_subset }
 
 @[simp]
 theorem pure_le {a : α} {s : Semiquot α} : pure a ≤ s ↔ a ∈ s :=
@@ -180,7 +180,7 @@ theorem get_mem {q : Semiquot α} (p) : get q p ∈ q := by
   unfold get; rw [liftOn_ofMem q _ _ a h]; exact h
 
 theorem eq_pure {q : Semiquot α} (p) : q = pure (get q p) :=
-  ext.2 fun a => by simpa using ⟨fun h => p _ h _ (get_mem _), fun e => e.symm ▸ get_mem _⟩
+  ext.2 fun a ↦ by simpa using ⟨fun h ↦ p _ h _ (get_mem _), fun e ↦ e.symm ▸ get_mem _⟩
 
 @[simp]
 theorem pure_isPure (a : α) : IsPure (pure a)
@@ -189,13 +189,13 @@ theorem pure_isPure (a : α) : IsPure (pure a)
     rwa [← ac] at ab
 
 theorem isPure_iff {s : Semiquot α} : IsPure s ↔ ∃ a, s = pure a :=
-  ⟨fun h => ⟨_, eq_pure h⟩, fun ⟨_, e⟩ => e.symm ▸ pure_isPure _⟩
+  ⟨fun h ↦ ⟨_, eq_pure h⟩, fun ⟨_, e⟩ ↦ e.symm ▸ pure_isPure _⟩
 
 theorem IsPure.mono {s t : Semiquot α} (st : s ≤ t) (h : IsPure t) : IsPure s
   | _, as, _, bs => h _ (st as) _ (st bs)
 
 theorem IsPure.min {s t : Semiquot α} (h : IsPure t) : s ≤ t ↔ s = t :=
-  ⟨fun st =>
+  ⟨fun st ↦
     le_antisymm st <| by
       rw [eq_pure h, eq_pure (h.mono st)]; simpa using h _ (get_mem _) _ (st <| get_mem _),
     le_of_eq⟩
@@ -216,11 +216,11 @@ theorem mem_univ [Inhabited α] : ∀ a, a ∈ @univ α _ :=
 
 @[congr]
 theorem univ_unique (I J : Inhabited α) : @univ _ I = @univ _ J :=
-  ext.2 fun a => refl (a ∈ univ)
+  ext.2 fun a ↦ refl (a ∈ univ)
 
 @[simp]
 theorem isPure_univ [Inhabited α] : @IsPure α univ ↔ Subsingleton α :=
-  ⟨fun h => ⟨fun a b => h a trivial b trivial⟩, fun ⟨h⟩ a _ b _ => h a b⟩
+  ⟨fun h ↦ ⟨fun a b ↦ h a trivial b trivial⟩, fun ⟨h⟩ a _ b _ ↦ h a b⟩
 
 instance [Inhabited α] : OrderTop (Semiquot α) where
   top := univ

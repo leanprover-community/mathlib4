@@ -29,22 +29,22 @@ open CategoryTheory.Limits Preadditive
 @[simps]
 instance Monad.algebraPreadditive : Preadditive (Monad.Algebra T) where
   homGroup F G :=
-    { add := fun α β =>
+    { add := fun α β ↦
         { f := α.f + β.f
           h := by simp only [Functor.map_add, add_comp, Monad.Algebra.Hom.h, comp_add] }
       zero :=
         { f := 0
           h := by simp only [Functor.map_zero, zero_comp, comp_zero] }
-      nsmul := fun n α =>
+      nsmul := fun n α ↦
         { f := n • α.f
           h := by rw [Functor.map_nsmul, nsmul_comp, Monad.Algebra.Hom.h, comp_nsmul] }
-      neg := fun α =>
+      neg := fun α ↦
         { f := -α.f
           h := by simp only [Functor.map_neg, neg_comp, Monad.Algebra.Hom.h, comp_neg] }
-      sub := fun α β =>
+      sub := fun α β ↦
         { f := α.f - β.f
           h := by simp only [Functor.map_sub, sub_comp, Monad.Algebra.Hom.h, comp_sub] }
-      zsmul := fun r α =>
+      zsmul := fun r α ↦
         { f := r • α.f
           h := by rw [Functor.map_zsmul, zsmul_comp, Monad.Algebra.Hom.h, comp_zsmul] }
       add_assoc := by
@@ -109,22 +109,22 @@ variable (U : Comonad C) [Functor.Additive (U : C ⥤ C)]
 @[simps]
 instance Comonad.coalgebraPreadditive : Preadditive (Comonad.Coalgebra U) where
   homGroup F G :=
-    { add := fun α β =>
+    { add := fun α β ↦
         { f := α.f + β.f
           h := by simp only [Functor.map_add, comp_add, Comonad.Coalgebra.Hom.h, add_comp] }
       zero :=
         { f := 0
           h := by simp only [Functor.map_zero, comp_zero, zero_comp] }
-      nsmul := fun n α =>
+      nsmul := fun n α ↦
         { f := n • α.f
           h := by rw [Functor.map_nsmul, comp_nsmul, Comonad.Coalgebra.Hom.h, nsmul_comp] }
-      neg := fun α =>
+      neg := fun α ↦
         { f := -α.f
           h := by simp only [Functor.map_neg, comp_neg, Comonad.Coalgebra.Hom.h, neg_comp] }
-      sub := fun α β =>
+      sub := fun α β ↦
         { f := α.f - β.f
           h := by simp only [Functor.map_sub, comp_sub, Comonad.Coalgebra.Hom.h, sub_comp] }
-      zsmul := fun r α =>
+      zsmul := fun r α ↦
         { f := r • α.f
           h := by rw [Functor.map_zsmul, comp_zsmul, Comonad.Coalgebra.Hom.h, zsmul_comp] }
       add_assoc := by

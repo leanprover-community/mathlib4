@@ -56,7 +56,7 @@ variable (S : IntermediateField K L)
 namespace IntermediateField
 
 instance : SetLike (IntermediateField K L) L :=
-  ⟨fun S => S.toSubalgebra.carrier, by
+  ⟨fun S ↦ S.toSubalgebra.carrier, by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp ⟩
 
@@ -259,13 +259,13 @@ theorem toSubalgebra_toIntermediateField (S : Subalgebra K L) (inv_mem : ∀ x �
 
 @[simp]
 theorem toIntermediateField_toSubalgebra (S : IntermediateField K L) :
-    (S.toSubalgebra.toIntermediateField fun _ => S.inv_mem) = S := by
+    (S.toSubalgebra.toIntermediateField fun _ ↦ S.inv_mem) = S := by
   ext
   rfl
 
 /-- Turn a subalgebra satisfying `IsField` into an intermediate field. -/
 def Subalgebra.toIntermediateField' (S : Subalgebra K L) (hS : IsField S) : IntermediateField K L :=
-  S.toIntermediateField fun x hx => by
+  S.toIntermediateField fun x hx ↦ by
     by_cases hx0 : x = 0
     · rw [hx0, inv_zero]
       exact S.zero_mem
@@ -595,7 +595,7 @@ variable (S)
 theorem set_range_subset : Set.range (algebraMap K L) ⊆ S :=
   S.toSubalgebra.range_subset
 
-theorem fieldRange_le : (algebraMap K L).fieldRange ≤ S.toSubfield := fun x hx =>
+theorem fieldRange_le : (algebraMap K L).fieldRange ≤ S.toSubfield := fun x hx ↦
   S.toSubalgebra.range_subset (by rwa [Set.mem_range, ← RingHom.mem_fieldRange])
 
 @[simp]
@@ -673,7 +673,7 @@ theorem mem_restrictScalars {E : IntermediateField L' L} {x : L} :
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars K : IntermediateField L' L → IntermediateField K L) :=
-  fun U V H => ext fun x => by rw [← mem_restrictScalars K, H, mem_restrictScalars]
+  fun U V H ↦ ext fun x ↦ by rw [← mem_restrictScalars K, H, mem_restrictScalars]
 
 end RestrictScalars
 

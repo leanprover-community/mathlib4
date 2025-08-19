@@ -24,7 +24,7 @@ instance isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMo
 instance canonicallyOrderedAdd [Add α] [Preorder α] [CanonicallyOrderedAdd α] :
     CanonicallyOrderedAdd (WithTop α) :=
   { WithTop.existsAddOfLE with
-    le_self_add := fun a b =>
+    le_self_add := fun a b ↦
       match a, b with
       | ⊤, ⊤ => le_rfl
       | (a : α), ⊤ => le_top
@@ -37,7 +37,7 @@ namespace WithBot
 
 instance isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] :
     IsOrderedAddMonoid (WithBot α) :=
-  { add_le_add_left := fun _ _ h c => add_le_add_left h c }
+  { add_le_add_left := fun _ _ h c ↦ add_le_add_left h c }
 
 protected theorem le_self_add [Add α] [LE α] [CanonicallyOrderedAdd α]
     {x : WithBot α} (hx : x ≠ ⊥) (y : WithBot α) :

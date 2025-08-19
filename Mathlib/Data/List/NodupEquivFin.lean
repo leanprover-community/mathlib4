@@ -38,8 +38,8 @@ for a version giving an equivalence when there is decidable equality. -/
 @[simps]
 def getBijectionOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ l) :
     { f : Fin l.length → α // Function.Bijective f } :=
-  ⟨fun i => l.get i, fun _ _ h => nd.get_inj_iff.1 h,
-   fun x =>
+  ⟨fun i ↦ l.get i, fun _ _ h ↦ nd.get_inj_iff.1 h,
+   fun x ↦
     let ⟨i, hl⟩ := List.mem_iff_get.1 (h x)
     ⟨i, hl⟩⟩
 
@@ -73,9 +73,9 @@ namespace Sorted
 
 variable [Preorder α] {l : List α}
 
-theorem get_mono (h : l.Sorted (· ≤ ·)) : Monotone l.get := fun _ _ => h.rel_get_of_le
+theorem get_mono (h : l.Sorted (· ≤ ·)) : Monotone l.get := fun _ _ ↦ h.rel_get_of_le
 
-theorem get_strictMono (h : l.Sorted (· < ·)) : StrictMono l.get := fun _ _ => h.rel_get_of_lt
+theorem get_strictMono (h : l.Sorted (· < ·)) : StrictMono l.get := fun _ _ ↦ h.rel_get_of_lt
 
 variable [DecidableEq α]
 
@@ -111,7 +111,7 @@ theorem sublist_of_orderEmbedding_getElem?_eq {l l' : List α} (f : ℕ ↪o ℕ
   rw [eq_comm, List.getElem?_eq_some_iff] at this
   obtain ⟨w, h⟩ := this
   let f' : ℕ ↪o ℕ :=
-    OrderEmbedding.ofMapLEIff (fun i => f (i + 1) - (f 0 + 1)) fun a b => by
+    OrderEmbedding.ofMapLEIff (fun i ↦ f (i + 1) - (f 0 + 1)) fun a b ↦ by
       dsimp only
       rw [Nat.sub_le_sub_iff_right, OrderEmbedding.le_iff_le, Nat.succ_le_succ_iff]
       rw [Nat.succ_le_iff, OrderEmbedding.lt_iff_lt]
@@ -142,12 +142,12 @@ theorem sublist_iff_exists_orderEmbedding_getElem?_eq {l l' : List α} :
     | slnil => simp
     | cons _ _ IH =>
       obtain ⟨f, hf⟩ := IH
-      refine ⟨f.trans (OrderEmbedding.ofStrictMono (· + 1) fun _ => by simp), ?_⟩
+      refine ⟨f.trans (OrderEmbedding.ofStrictMono (· + 1) fun _ ↦ by simp), ?_⟩
       simpa using hf
     | cons₂ _ _ IH =>
       obtain ⟨f, hf⟩ := IH
       refine
-        ⟨OrderEmbedding.ofMapLEIff (fun ix : ℕ => if ix = 0 then 0 else (f ix.pred).succ) ?_, ?_⟩
+        ⟨OrderEmbedding.ofMapLEIff (fun ix : ℕ ↦ if ix = 0 then 0 else (f ix.pred).succ) ?_, ?_⟩
       · rintro ⟨_ | a⟩ ⟨_ | b⟩ <;> simp [Nat.succ_le_succ_iff]
       · rintro ⟨_ | i⟩
         · simp
@@ -175,14 +175,14 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
       rw [getElem?_eq_getElem hi, eq_comm, getElem?_eq_some_iff] at hf
       obtain ⟨h, -⟩ := hf
       exact h
-    refine ⟨OrderEmbedding.ofMapLEIff (fun ix => ⟨f ix, h ix.is_lt⟩) ?_, ?_⟩
+    refine ⟨OrderEmbedding.ofMapLEIff (fun ix ↦ ⟨f ix, h ix.is_lt⟩) ?_, ?_⟩
     · simp
     · intro i
       apply Option.some_injective
       simpa [getElem?_eq_getElem i.2, getElem?_eq_getElem (h i.2)] using hf i
   · rintro ⟨f, hf⟩
     refine
-      ⟨OrderEmbedding.ofStrictMono (fun i => if hi : i < l.length then f ⟨i, hi⟩ else i + l'.length)
+      ⟨OrderEmbedding.ofStrictMono (fun i ↦ if hi : i < l.length then f ⟨i, hi⟩ else i + l'.length)
           ?_,
         ?_⟩
     · intro i j h
@@ -216,7 +216,7 @@ theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
       refine ⟨f ⟨0, by simp⟩, f ⟨1, by simp⟩, f.lt_iff_lt.2 (Nat.zero_lt_one), ?_⟩
       rw [← hf, ← hf]; simp
     · rintro ⟨n, m, hnm, h, h'⟩
-      refine ⟨OrderEmbedding.ofStrictMono (fun i => if (i : ℕ) = 0 then n else m) ?_, ?_⟩
+      refine ⟨OrderEmbedding.ofStrictMono (fun i ↦ if (i : ℕ) = 0 then n else m) ?_, ?_⟩
       · rintro ⟨⟨_ | i⟩, hi⟩ ⟨⟨_ | j⟩, hj⟩
         · simp
         · simp [hnm]

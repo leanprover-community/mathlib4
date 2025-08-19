@@ -52,11 +52,11 @@ instance _root_.OrderDual.instIsCountablyGeneratedAtBot [Preorder α]
     [IsCountablyGenerated (atTop : Filter α)] : IsCountablyGenerated (atBot : Filter αᵒᵈ) := ‹_›
 
 lemma atTop_countable_basis [Preorder α] [IsDirected α (· ≤ ·)] [Nonempty α] [Countable α] :
-    HasCountableBasis (atTop : Filter α) (fun _ => True) Ici :=
+    HasCountableBasis (atTop : Filter α) (fun _ ↦ True) Ici :=
   { atTop_basis with countable := to_countable _ }
 
 lemma atBot_countable_basis [Preorder α] [IsDirected α (· ≥ ·)] [Nonempty α] [Countable α] :
-    HasCountableBasis (atBot : Filter α) (fun _ => True) Iic :=
+    HasCountableBasis (atBot : Filter α) (fun _ ↦ True) Iic :=
   { atBot_basis with countable := to_countable _ }
 
 /-- If `f` is a nontrivial countably generated filter, then there exists a sequence that converges
@@ -64,7 +64,7 @@ to `f`. -/
 theorem exists_seq_tendsto (f : Filter α) [IsCountablyGenerated f] [NeBot f] :
     ∃ x : ℕ → α, Tendsto x atTop f := by
   obtain ⟨B, h⟩ := f.exists_antitone_basis
-  choose x hx using fun n => Filter.nonempty_of_mem (h.mem n)
+  choose x hx using fun n ↦ Filter.nonempty_of_mem (h.mem n)
   exact ⟨x, h.tendsto hx⟩
 
 theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type*) [Preorder α] [Nonempty α]
@@ -72,7 +72,7 @@ theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type*) [Preorder α] [None
     ∃ xs : ℕ → α, Monotone xs ∧ Tendsto xs atTop atTop := by
   obtain ⟨ys, h⟩ := exists_seq_tendsto (atTop : Filter α)
   choose c hleft hright using exists_ge_ge (α := α)
-  set xs : ℕ → α := fun n => (List.range n).foldl (fun x n ↦ c x (ys n)) (ys 0)
+  set xs : ℕ → α := fun n ↦ (List.range n).foldl (fun x n ↦ c x (ys n)) (ys 0)
   have hsucc (n : ℕ) : xs (n + 1) = c (xs n) (ys n) := by simp [xs, List.range_succ]
   refine ⟨xs, ?_, ?_⟩
   · refine monotone_nat_of_le_succ fun n ↦ ?_
@@ -92,12 +92,12 @@ if a filter `k` is countably generated then `Tendsto f k l` iff for every sequen
 converging to `k`, `f ∘ u` tends to `l`. -/
 theorem tendsto_iff_seq_tendsto {f : α → β} {k : Filter α} {l : Filter β} [k.IsCountablyGenerated] :
     Tendsto f k l ↔ ∀ x : ℕ → α, Tendsto x atTop k → Tendsto (f ∘ x) atTop l := by
-  refine ⟨fun h x hx => h.comp hx, fun H s hs => ?_⟩
+  refine ⟨fun h x hx ↦ h.comp hx, fun H s hs ↦ ?_⟩
   contrapose! H
   have : NeBot (k ⊓ 𝓟 (f ⁻¹' sᶜ)) := by simpa [neBot_iff, inf_principal_eq_bot]
   rcases (k ⊓ 𝓟 (f ⁻¹' sᶜ)).exists_seq_tendsto with ⟨x, hx⟩
   rw [tendsto_inf, tendsto_principal] at hx
-  refine ⟨x, hx.1, fun h => ?_⟩
+  refine ⟨x, hx.1, fun h ↦ ?_⟩
   rcases (hx.2.and (h hs)).exists with ⟨N, hnotMem, hmem⟩
   exact hnotMem hmem
 
@@ -134,7 +134,7 @@ lemma frequently_iff_seq_forall {ι : Type*} {l : Filter ι} {p : ι → Prop}
 theorem tendsto_of_subseq_tendsto {ι : Type*} {x : ι → α} {f : Filter α} {l : Filter ι}
     [l.IsCountablyGenerated]
     (hxy : ∀ ns : ℕ → ι, Tendsto ns atTop l →
-      ∃ ms : ℕ → ℕ, Tendsto (fun n => x (ns <| ms n)) atTop f) :
+      ∃ ms : ℕ → ℕ, Tendsto (fun n ↦ x (ns <| ms n)) atTop f) :
     Tendsto x l f := by
   contrapose! hxy
   obtain ⟨s, hs, hfreq⟩ : ∃ s ∈ f, ∃ᶠ n in l, x n ∉ s := by

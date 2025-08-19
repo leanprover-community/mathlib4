@@ -56,9 +56,9 @@ instance _root_.ULift.algebra : Algebra R (ULift A) :=
   { ULift.module' with
     algebraMap :=
     { (ULift.ringEquiv : ULift A ≃+* A).symm.toRingHom.comp (algebraMap R A) with
-      toFun := fun r => ULift.up (algebraMap R A r) }
-    commutes' := fun r x => ULift.down_injective <| Algebra.commutes r x.down
-    smul_def' := fun r x => ULift.down_injective <| Algebra.smul_def' r x.down }
+      toFun := fun r ↦ ULift.up (algebraMap R A r) }
+    commutes' := fun r x ↦ ULift.down_injective <| Algebra.commutes r x.down
+    smul_def' := fun r x ↦ ULift.down_injective <| Algebra.smul_def' r x.down }
 
 theorem _root_.ULift.algebraMap_eq (r : R) :
     algebraMap R (ULift A) r = ULift.up (algebraMap R A r) :=
@@ -146,9 +146,9 @@ See note [reducible non-instances]. -/
 abbrev semiringToRing (R : Type*) [CommRing R] [Semiring A] [Algebra R A] : Ring A :=
   { __ := (inferInstance : Semiring A)
     __ := Module.addCommMonoidToAddCommGroup R
-    intCast := fun z => algebraMap R A z
-    intCast_ofNat := fun z => by simp only [Int.cast_natCast, map_natCast]
-    intCast_negSucc := fun z => by simp }
+    intCast := fun z ↦ algebraMap R A z
+    intCast_ofNat := fun z ↦ by simp only [Int.cast_natCast, map_natCast]
+    intCast_negSucc := fun z ↦ by simp }
 
 instance {R : Type*} [Ring R] : Algebra (Subring.center R) R where
   algebraMap :=
@@ -173,7 +173,7 @@ variable [CommSemiring R] [Semiring S] [AddCommMonoid M] [Module R M] [Module S 
 variable [SMulCommClass S R M] [SMul R S] [IsScalarTower R S M]
 
 instance End.instAlgebra : Algebra R (Module.End S M) :=
-  Algebra.ofModule smul_mul_assoc fun r f g => (smul_comm r f g).symm
+  Algebra.ofModule smul_mul_assoc fun r f g ↦ (smul_comm r f g).symm
 
 -- to prove this is a special case of the above
 example : Algebra R (Module.End R M) := End.instAlgebra _ _ _
@@ -253,7 +253,7 @@ instance (priority := 99) Semiring.toNatAlgebra : Algebra ℕ R where
   algebraMap := Nat.castRingHom R
 
 instance nat_algebra_subsingleton : Subsingleton (Algebra ℕ R) :=
-  ⟨fun P Q => by ext; simp⟩
+  ⟨fun P Q ↦ by ext; simp⟩
 
 @[simp]
 lemma algebraMap_comp_natCast (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] :
@@ -283,7 +283,7 @@ theorem algebraMap_int_eq : algebraMap ℤ R = Int.castRingHom R :=
 variable {R}
 
 instance int_algebra_subsingleton : Subsingleton (Algebra ℤ R) :=
-  ⟨fun P Q => Algebra.algebra_ext P Q <| RingHom.congr_fun <| Subsingleton.elim _ _⟩
+  ⟨fun P Q ↦ Algebra.algebra_ext P Q <| RingHom.congr_fun <| Subsingleton.elim _ _⟩
 
 @[simp]
 lemma algebraMap_comp_intCast (R A : Type*) [CommRing R] [Ring A] [Algebra R A] :
@@ -340,7 +340,7 @@ namespace NoZeroSMulDivisors
 instance (priority := 100) instOfFaithfulSMul {R A : Type*}
     [CommSemiring R] [Semiring A] [Algebra R A] [NoZeroDivisors A] [FaithfulSMul R A] :
     NoZeroSMulDivisors R A :=
-  ⟨fun hcx => (mul_eq_zero.mp ((Algebra.smul_def _ _).symm.trans hcx)).imp_left
+  ⟨fun hcx ↦ (mul_eq_zero.mp ((Algebra.smul_def _ _).symm.trans hcx)).imp_left
     (map_eq_zero_iff (algebraMap R A) <| FaithfulSMul.algebraMap_injective R A).mp⟩
 
 variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
@@ -388,7 +388,7 @@ variable {A}
 -- see Note [lower instance priority]
 -- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980, as it is a very common path
 instance (priority := 120) IsScalarTower.to_smulCommClass : SMulCommClass R A M :=
-  ⟨fun r a m => by
+  ⟨fun r a m ↦ by
     rw [algebra_compatible_smul A r (a • m), smul_smul, Algebra.commutes, mul_smul, ←
       algebra_compatible_smul]⟩
 

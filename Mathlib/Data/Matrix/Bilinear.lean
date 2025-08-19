@@ -41,7 +41,7 @@ theorem mulLeftLinearMap_eq_mulLeft :
 /-- A version of `LinearMap.mulLeft_zero_eq_zero` for matrix multiplication. -/
 @[simp]
 theorem mulLeftLinearMap_zero_eq_zero : mulLeftLinearMap n R (0 : Matrix l m A) = 0 :=
-  LinearMap.ext fun _ => Matrix.zero_mul _
+  LinearMap.ext fun _ ↦ Matrix.zero_mul _
 
 end left
 
@@ -63,7 +63,7 @@ theorem mulRightLinearMap_eq_mulRight :
 /-- A version of `LinearMap.mulLeft_zero_eq_zero` for matrix multiplication. -/
 @[simp]
 theorem mulRightLinearMap_zero_eq_zero : mulRightLinearMap l R (0 : Matrix m n A) = 0 :=
-  LinearMap.ext fun _ => Matrix.mul_zero _
+  LinearMap.ext fun _ ↦ Matrix.mul_zero _
 
 end right
 
@@ -76,8 +76,8 @@ variable [SMulCommClass R A A] [IsScalarTower R A A]
 @[simps!]
 def mulLinearMap : Matrix l m A →ₗ[R] Matrix m n A →ₗ[R] Matrix l n A where
   toFun := mulLeftLinearMap n R
-  map_add' _ _ := LinearMap.ext fun _ => Matrix.add_mul _ _ _
-  map_smul' _ _ := LinearMap.ext fun _ => Matrix.smul_mul _ _ _
+  map_add' _ _ := LinearMap.ext fun _ ↦ Matrix.add_mul _ _ _
+  map_smul' _ _ := LinearMap.ext fun _ ↦ Matrix.smul_mul _ _ _
 
 /-- On square matrices, `Matrix.mulLinearMap` and `LinearMap.mul` coincide. -/
 theorem mulLinearMap_eq_mul :
@@ -129,7 +129,7 @@ variable [Module R A] [SMulCommClass R A A]
 /-- A version of `LinearMap.mulLeft_one` for matrix multiplication. -/
 @[simp]
 theorem mulLeftLinearMap_one : mulLeftLinearMap n R (1 : Matrix m m A) = LinearMap.id :=
-  LinearMap.ext fun _ => Matrix.one_mul _
+  LinearMap.ext fun _ ↦ Matrix.one_mul _
 
 omit [DecidableEq m] in
 /-- A version of `LinearMap.mulLeft_eq_zero_iff` for matrix multiplication. -/
@@ -162,7 +162,7 @@ variable [Module R A] [IsScalarTower R A A]
 /-- A version of `LinearMap.mulRight_one` for matrix multiplication. -/
 @[simp]
 theorem mulRightLinearMap_one : mulRightLinearMap l R (1 : Matrix m m A) = LinearMap.id :=
-  LinearMap.ext fun _ => Matrix.mul_one _
+  LinearMap.ext fun _ ↦ Matrix.mul_one _
 
 omit [DecidableEq m] in
 /-- A version of `LinearMap.mulRight_eq_zero_iff` for matrix multiplication. -/

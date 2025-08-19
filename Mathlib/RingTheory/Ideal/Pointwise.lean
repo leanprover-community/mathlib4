@@ -64,10 +64,10 @@ theorem pointwise_smul_def {a : M} (S : Ideal R) :
 -- note: unlike with `Subring`, `pointwise_smul_toAddSubgroup` wouldn't be true
 
 theorem smul_mem_pointwise_smul (m : M) (r : R) (S : Ideal R) : r ∈ S → m • r ∈ m • S :=
-  fun h => subset_span <| Set.smul_mem_smul_set h
+  fun h ↦ subset_span <| Set.smul_mem_smul_set h
 
 instance : CovariantClass M (Ideal R) HSMul.hSMul LE.le :=
-  ⟨fun _ _ => map_mono⟩
+  ⟨fun _ _ ↦ map_mono⟩
 
 -- note: unlike with `Subring`, `mem_smul_pointwise_iff_exists` wouldn't be true
 
@@ -83,18 +83,18 @@ theorem smul_closure (a : M) (s : Set R) : a • span s = span (a • s) :=
 
 instance pointwise_central_scalar [MulSemiringAction Mᵐᵒᵖ R] [IsCentralScalar M R] :
     IsCentralScalar M (Ideal R) :=
-  ⟨fun _ S => (congr_arg fun f => S.map f) <| RingHom.ext <| op_smul_eq_smul _⟩
+  ⟨fun _ S ↦ (congr_arg fun f ↦ S.map f) <| RingHom.ext <| op_smul_eq_smul _⟩
 
 @[simp]
 theorem pointwise_smul_toAddSubmonoid (a : M) (S : Ideal R)
-    (ha : Function.Surjective fun r : R => a • r) :
+    (ha : Function.Surjective fun r : R ↦ a • r) :
     (a • S).toAddSubmonoid = a • S.toAddSubmonoid := by
   ext
   exact Ideal.mem_map_iff_of_surjective _ <| by exact ha
 
 @[simp]
 theorem pointwise_smul_toAddSubgroup {R : Type*} [Ring R] [MulSemiringAction M R]
-    (a : M) (S : Ideal R) (ha : Function.Surjective fun r : R => a • r)  :
+    (a : M) (S : Ideal R) (ha : Function.Surjective fun r : R ↦ a • r)  :
     (a • S).toAddSubgroup = a • S.toAddSubgroup := by
   ext
   exact Ideal.mem_map_iff_of_surjective _ <| by exact ha
@@ -118,19 +118,19 @@ theorem pointwise_smul_eq_comap {a : M} (S : Ideal R) :
 
 @[simp]
 theorem smul_mem_pointwise_smul_iff {a : M} {S : Ideal R} {x : R} : a • x ∈ a • S ↔ x ∈ S :=
-  ⟨fun h => by simpa using smul_mem_pointwise_smul a⁻¹ _ _ h, smul_mem_pointwise_smul _ _ _⟩
+  ⟨fun h ↦ by simpa using smul_mem_pointwise_smul a⁻¹ _ _ h, smul_mem_pointwise_smul _ _ _⟩
 
 theorem mem_pointwise_smul_iff_inv_smul_mem {a : M} {S : Ideal R} {x : R} :
     x ∈ a • S ↔ a⁻¹ • x ∈ S :=
-  ⟨fun h => by simpa using smul_mem_pointwise_smul a⁻¹ _ _ h,
-    fun h => by simpa using smul_mem_pointwise_smul a _ _ h⟩
+  ⟨fun h ↦ by simpa using smul_mem_pointwise_smul a⁻¹ _ _ h,
+    fun h ↦ by simpa using smul_mem_pointwise_smul a _ _ h⟩
 
 theorem mem_inv_pointwise_smul_iff {a : M} {S : Ideal R} {x : R} : x ∈ a⁻¹ • S ↔ a • x ∈ S := by
   rw [mem_pointwise_smul_iff_inv_smul_mem, inv_inv]
 
 @[simp]
 theorem pointwise_smul_le_pointwise_smul_iff {a : M} {S T : Ideal R} : a • S ≤ a • T ↔ S ≤ T :=
-  ⟨fun h => by simpa using smul_mono_right a⁻¹ h, fun h => smul_mono_right a h⟩
+  ⟨fun h ↦ by simpa using smul_mono_right a⁻¹ h, fun h ↦ smul_mono_right a h⟩
 
 theorem pointwise_smul_subset_iff {a : M} {S T : Ideal R} : a • S ≤ T ↔ S ≤ a⁻¹ • T := by
   rw [← pointwise_smul_le_pointwise_smul_iff (a := a⁻¹), inv_smul_smul]

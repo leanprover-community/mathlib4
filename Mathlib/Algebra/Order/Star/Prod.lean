@@ -18,7 +18,7 @@ instance Prod.instStarOrderedRing
     [NonUnitalSemiring α] [NonUnitalSemiring β] [PartialOrder α] [PartialOrder β]
     [StarRing α] [StarRing β] [StarOrderedRing α] [StarOrderedRing β] :
     StarOrderedRing (α × β) where
-  le_iff := Prod.forall.2 fun xa xy => Prod.forall.2 fun ya yb => by
+  le_iff := Prod.forall.2 fun xa xy ↦ Prod.forall.2 fun ya yb ↦ by
     have :
         closure (Set.range fun s : α × β ↦ star s * s) =
           (closure <| Set.range fun s : α ↦ star s * s).prod

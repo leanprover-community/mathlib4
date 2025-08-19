@@ -26,7 +26,7 @@ In Lean 4, `StateT` doesn't require a constructor, but it appears confusing to d
 following theorem as a simp theorem.
 ```lean
 @[simp]
-theorem run_fun (f : σ → m (α × σ)) (st : σ) : StateT.run (fun s => f s) st = f st :=
+theorem run_fun (f : σ → m (α × σ)) (st : σ) : StateT.run (fun s ↦ f s) st = f st :=
   rfl
 ```
 If we declare this theorem as a simp theorem, `StateT.run f st` is simplified to `f st` by eta
@@ -77,7 +77,7 @@ In Lean 4, `ReaderT` doesn't require a constructor, but it appears confusing to 
 following theorem as a simp theorem.
 ```lean
 @[simp]
-theorem run_fun (f : σ → m α) (r : σ) : ReaderT.run (fun r' => f r') r = f r :=
+theorem run_fun (f : σ → m α) (r : σ) : ReaderT.run (fun r' ↦ f r') r = f r :=
   rfl
 ```
 If we declare this theorem as a simp theorem, `ReaderT.run f st` is simplified to `f st` by eta

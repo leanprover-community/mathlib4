@@ -54,19 +54,19 @@ theorem ofMulAction_apply {G H : Type*} [Monoid G] [MulAction G H] (g : G) (x : 
 product of `F` as types is a product in the category of `G`-sets. -/
 def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι → Type max v u)
     [∀ i : ι, MulAction G (F i)] :
-    LimitCone (Discrete.functor fun i : ι => Action.ofMulAction G (F i)) where
+    LimitCone (Discrete.functor fun i : ι ↦ Action.ofMulAction G (F i)) where
   cone :=
     { pt := Action.ofMulAction G (∀ i : ι, F i)
-      π := Discrete.natTrans (fun i => ⟨fun x => x i.as, fun _ => rfl⟩) }
+      π := Discrete.natTrans (fun i ↦ ⟨fun x ↦ x i.as, fun _ ↦ rfl⟩) }
   isLimit :=
-    { lift := fun s =>
-        { hom := fun x i => (s.π.app ⟨i⟩).hom x
-          comm := fun g => by
+    { lift := fun s ↦
+        { hom := fun x i ↦ (s.π.app ⟨i⟩).hom x
+          comm := fun g ↦ by
             ext x
             funext j
             exact congr_fun ((s.π.app ⟨j⟩).comm g) x }
-      fac := fun _ _ => rfl
-      uniq := fun s f h => by
+      fac := fun _ _ ↦ rfl
+      uniq := fun s f h ↦ by
         ext x
         funext j
         dsimp at *
@@ -83,7 +83,7 @@ abbrev diagonal (G : Type u) [Monoid G] (n : ℕ) : Action (Type u) G :=
 
 /-- We have `Fin 1 → G ≅ G` as `G`-sets, with `G` acting by left multiplication. -/
 def diagonalOneIsoLeftRegular (G : Type*) [Monoid G] : diagonal G 1 ≅ leftRegular G :=
-  Action.mkIso (Equiv.funUnique _ _).toIso fun _ => rfl
+  Action.mkIso (Equiv.funUnique _ _).toIso fun _ ↦ rfl
 
 namespace FintypeCat
 

@@ -48,10 +48,10 @@ theorem exists_irreducible_factor {a : α} (ha : ¬IsUnit a) (ha0 : a ≠ 0) :
     ∃ i, Irreducible i ∧ i ∣ a :=
   let ⟨b, hs, hr⟩ := wellFounded_dvdNotUnit.has_min { b | b ∣ a ∧ ¬IsUnit b } ⟨a, dvd_rfl, ha⟩
   ⟨b,
-    ⟨hs.2, fun c d he =>
+    ⟨hs.2, fun c d he ↦
       let h := dvd_trans ⟨d, he⟩ hs.1
-      or_iff_not_imp_left.2 fun hc =>
-        of_not_not fun hd => hr c ⟨h, hc⟩ ⟨ne_zero_of_dvd_ne_zero ha0 h, d, hd, he⟩⟩,
+      or_iff_not_imp_left.2 fun hc ↦
+        of_not_not fun hd ↦ hr c ⟨h, hc⟩ ⟨ne_zero_of_dvd_ne_zero ha0 h, d, hd, he⟩⟩,
     hs.1⟩
 
 @[elab_as_elim]
@@ -60,7 +60,7 @@ theorem induction_on_irreducible {motive : α → Prop} (a : α)
     (mul : ∀ a i : α, a ≠ 0 → Irreducible i → motive a → motive (i * a)) : motive a :=
   haveI := Classical.dec
   wellFounded_dvdNotUnit.fix
-    (fun a ih =>
+    (fun a ih ↦
       if ha0 : a = 0 then ha0.substr zero
       else
         if hau : IsUnit a then unit a hau
@@ -72,25 +72,25 @@ theorem induction_on_irreducible {motive : α → Prop} (a : α)
 
 theorem exists_factors (a : α) :
     a ≠ 0 → ∃ f : Multiset α, (∀ b ∈ f, Irreducible b) ∧ Associated f.prod a :=
-  induction_on_irreducible a (fun h => (h rfl).elim)
-    (fun _ hu _ => ⟨0, fun _ h => False.elim (Multiset.notMem_zero _ h), hu.unit, one_mul _⟩)
-    fun a i ha0 hi ih _ =>
+  induction_on_irreducible a (fun h ↦ (h rfl).elim)
+    (fun _ hu _ ↦ ⟨0, fun _ h ↦ False.elim (Multiset.notMem_zero _ h), hu.unit, one_mul _⟩)
+    fun a i ha0 hi ih _ ↦
     let ⟨s, hs⟩ := ih ha0
-    ⟨i ::ₘ s, fun b H => (Multiset.mem_cons.1 H).elim (fun h => h.symm ▸ hi) (hs.1 b), by
+    ⟨i ::ₘ s, fun b H ↦ (Multiset.mem_cons.1 H).elim (fun h ↦ h.symm ▸ hi) (hs.1 b), by
       rw [s.prod_cons i]
       exact hs.2.mul_left i⟩
 
 theorem not_unit_iff_exists_factors_eq (a : α) (hn0 : a ≠ 0) :
     ¬IsUnit a ↔ ∃ f : Multiset α, (∀ b ∈ f, Irreducible b) ∧ f.prod = a ∧ f ≠ ∅ :=
-  ⟨fun hnu => by
+  ⟨fun hnu ↦ by
     obtain ⟨f, hi, u, rfl⟩ := exists_factors a hn0
-    obtain ⟨b, h⟩ := Multiset.exists_mem_of_ne_zero fun h : f = 0 => hnu <| by simp [h]
+    obtain ⟨b, h⟩ := Multiset.exists_mem_of_ne_zero fun h : f = 0 ↦ hnu <| by simp [h]
     classical
-      refine ⟨(f.erase b).cons (b * u), fun a ha => ?_, ?_, Multiset.cons_ne_zero⟩
+      refine ⟨(f.erase b).cons (b * u), fun a ha ↦ ?_, ?_, Multiset.cons_ne_zero⟩
       · obtain rfl | ha := Multiset.mem_cons.1 ha
         exacts [Associated.irreducible ⟨u, rfl⟩ (hi b h), hi a (Multiset.mem_of_mem_erase ha)]
       · rw [Multiset.prod_cons, mul_comm b, mul_assoc, Multiset.prod_erase h, mul_comm],
-    fun ⟨_, hi, he, hne⟩ =>
+    fun ⟨_, hi, he, hne⟩ ↦
     let ⟨b, h⟩ := Multiset.exists_mem_of_ne_zero hne
     not_isUnit_of_not_isUnit_dvd (hi b h).not_isUnit <| he ▸ Multiset.dvd_prod h⟩
 
@@ -192,7 +192,7 @@ theorem prime_of_factor {a : α} (x : α) (hx : x ∈ factors a) : Prime x := by
   rw [factors, dif_neg ane0] at hx
   exact (Classical.choose_spec (UniqueFactorizationMonoid.exists_prime_factors a ane0)).1 x hx
 
-theorem irreducible_of_factor {a : α} : ∀ x : α, x ∈ factors a → Irreducible x := fun x h =>
+theorem irreducible_of_factor {a : α} : ∀ x : α, x ∈ factors a → Irreducible x := fun x h ↦
   (prime_of_factor x h).irreducible
 
 end UniqueFactorizationMonoid

@@ -38,7 +38,7 @@ Every polynomial with coefficients in a topological semiring gives a (bundled) c
 -/
 @[simps]
 def toContinuousMap (p : R[X]) : C(R, R) :=
-  ⟨fun x : R => p.eval x, by fun_prop⟩
+  ⟨fun x : R ↦ p.eval x, by fun_prop⟩
 
 open ContinuousMap in
 lemma toContinuousMap_X_eq_id : X.toContinuousMap = .id R := by
@@ -51,7 +51,7 @@ with domain restricted to some subset of the semiring of coefficients.
 -/
 @[simps]
 def toContinuousMapOn (p : R[X]) (X : Set R) : C(X, R) :=
-  ⟨fun x : X => p.toContinuousMap x, by fun_prop⟩
+  ⟨fun x : X ↦ p.toContinuousMap x, by fun_prop⟩
 
 open ContinuousMap in
 lemma toContinuousMapOn_X_eq_restrict_id (s : Set R) :
@@ -151,11 +151,11 @@ theorem polynomialFunctions_coe (X : Set R) :
 -- induces a normed algebra isomorphism between `polynomialFunctions X` and
 -- `polynomialFunctions (f ⁻¹' X)`, intertwining the pullback along `f` of `C(R, R)` to itself.
 theorem polynomialFunctions_separatesPoints (X : Set R) : (polynomialFunctions X).SeparatesPoints :=
-  fun x y h => by
+  fun x y h ↦ by
   -- We use `Polynomial.X`, then clean up.
   refine ⟨_, ⟨⟨_, ⟨⟨Polynomial.X, ⟨Algebra.mem_top, rfl⟩⟩, rfl⟩⟩, ?_⟩⟩
   dsimp; simp only [Polynomial.eval_X]
-  exact fun h' => h (Subtype.ext h')
+  exact fun h' ↦ h (Subtype.ext h')
 
 open unitInterval
 
@@ -206,10 +206,10 @@ theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a <
 theorem polynomialFunctions.eq_adjoin_X (s : Set R) :
     polynomialFunctions s = Algebra.adjoin R {toContinuousMapOnAlgHom s X} := by
   refine le_antisymm ?_
-    (Algebra.adjoin_le fun _ h => ⟨X, trivial, (Set.mem_singleton_iff.1 h).symm⟩)
+    (Algebra.adjoin_le fun _ h ↦ ⟨X, trivial, (Set.mem_singleton_iff.1 h).symm⟩)
   rintro - ⟨p, -, rfl⟩
   rw [AlgHom.coe_toRingHom]
-  refine p.induction_on (fun r => ?_) (fun f g hf hg => ?_) fun n r hn => ?_
+  refine p.induction_on (fun r ↦ ?_) (fun f g hf hg ↦ ?_) fun n r hn ↦ ?_
   · rw [Polynomial.C_eq_algebraMap, AlgHomClass.commutes]
     exact Subalgebra.algebraMap_mem _ r
   · rw [map_add]
@@ -222,7 +222,7 @@ theorem polynomialFunctions.le_equalizer {A : Type*} [Semiring A] [Algebra R A] 
     (h : φ (toContinuousMapOnAlgHom s X) = ψ (toContinuousMapOnAlgHom s X)) :
     polynomialFunctions s ≤ AlgHom.equalizer φ ψ := by
   rw [polynomialFunctions.eq_adjoin_X s]
-  exact φ.adjoin_le_equalizer ψ fun x hx => (Set.mem_singleton_iff.1 hx).symm ▸ h
+  exact φ.adjoin_le_equalizer ψ fun x hx ↦ (Set.mem_singleton_iff.1 hx).symm ▸ h
 
 open StarAlgebra
 
@@ -235,6 +235,6 @@ theorem polynomialFunctions.starClosure_le_equalizer {A : Type*} [StarRing R] [C
     (h : φ (toContinuousMapOnAlgHom s X) = ψ (toContinuousMapOnAlgHom s X)) :
     (polynomialFunctions s).starClosure ≤ StarAlgHom.equalizer φ ψ := by
   rw [polynomialFunctions.starClosure_eq_adjoin_X s]
-  exact StarAlgHom.adjoin_le_equalizer φ ψ fun x hx => (Set.mem_singleton_iff.1 hx).symm ▸ h
+  exact StarAlgHom.adjoin_le_equalizer φ ψ fun x hx ↦ (Set.mem_singleton_iff.1 hx).symm ▸ h
 
 end

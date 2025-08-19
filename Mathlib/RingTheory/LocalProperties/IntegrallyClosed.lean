@@ -75,5 +75,5 @@ theorem IsIntegrallyClosed.of_localization_maximal [IsDomain R]
     rw [subalgebra.ofField_eq, MaximalSpectrum.toPrimeSpectrum]
 
 theorem isIntegrallyClosed_ofLocalizationMaximal :
-    OfLocalizationMaximal fun R _ => ([IsDomain R] → IsIntegrallyClosed R) :=
+    OfLocalizationMaximal fun R _ ↦ ([IsDomain R] → IsIntegrallyClosed R) :=
   fun _ _ h _ ↦ IsIntegrallyClosed.of_localization_maximal fun p _ hpm ↦ h p hpm

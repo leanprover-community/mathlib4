@@ -84,8 +84,8 @@ include adj in
 lemma leftAdjoint_preservesColimits : PreservesColimitsOfSize.{v, u} F where
   preservesColimitsOfShape :=
     { preservesColimit :=
-        { preserves := fun hc =>
-            ⟨IsColimit.isoUniqueCoconeMorphism.inv fun _ =>
+        { preserves := fun hc ↦
+            ⟨IsColimit.isoUniqueCoconeMorphism.inv fun _ ↦
               @Equiv.unique _ _ (IsColimit.isoUniqueCoconeMorphism.hom hc _)
                 ((adj.functorialityAdjunction _).homEquiv _ _)⟩ } }
 
@@ -107,7 +107,7 @@ noncomputable instance (priority := 100)
     ReflectsColimitsOfSize.{v, u} E where
   reflectsColimitsOfShape :=
     { reflectsColimit :=
-        { reflects := fun t =>
+        { reflects := fun t ↦
           ⟨(isColimitOfPreserves E.inv t).mapCoconeEquiv E.asEquivalence.unitIso.symm⟩ } }
 
 -- see Note [lower instance priority]
@@ -117,7 +117,7 @@ noncomputable instance (priority := 100)
     CreatesColimitsOfSize.{v, u} H where
   CreatesColimitsOfShape :=
     { CreatesColimit :=
-        { lifts := fun c _ =>
+        { lifts := fun c _ ↦
             { liftedCocone := mapCoconeInv H c
               validLift := mapCoconeMapCoconeInv H c } } }
 
@@ -142,12 +142,12 @@ theorem hasColimit_of_comp_equivalence (E : C ⥤ D) [E.IsEquivalence] [HasColim
 /-- Transport a `HasColimitsOfShape` instance across an equivalence. -/
 theorem hasColimitsOfShape_of_equivalence (E : C ⥤ D) [E.IsEquivalence] [HasColimitsOfShape J D] :
     HasColimitsOfShape J C :=
-  ⟨fun F => hasColimit_of_comp_equivalence F E⟩
+  ⟨fun F ↦ hasColimit_of_comp_equivalence F E⟩
 
 /-- Transport a `HasColimitsOfSize` instance across an equivalence. -/
 theorem has_colimits_of_equivalence (E : C ⥤ D) [E.IsEquivalence] [HasColimitsOfSize.{v, u} D] :
     HasColimitsOfSize.{v, u} C :=
-  ⟨fun _ _ => hasColimitsOfShape_of_equivalence E⟩
+  ⟨fun _ _ ↦ hasColimitsOfShape_of_equivalence E⟩
 
 end PreservationColimits
 
@@ -194,8 +194,8 @@ include adj in
 lemma rightAdjoint_preservesLimits : PreservesLimitsOfSize.{v, u} G where
   preservesLimitsOfShape :=
     { preservesLimit :=
-        { preserves := fun hc =>
-            ⟨IsLimit.isoUniqueConeMorphism.inv fun _ =>
+        { preserves := fun hc ↦
+            ⟨IsLimit.isoUniqueConeMorphism.inv fun _ ↦
               @Equiv.unique _ _ (IsLimit.isoUniqueConeMorphism.hom hc _)
                 ((adj.functorialityAdjunction' _).homEquiv _ _).symm⟩ } }
 
@@ -216,7 +216,7 @@ noncomputable instance (priority := 100)
     ReflectsLimitsOfSize.{v, u} E where
   reflectsLimitsOfShape :=
     { reflectsLimit :=
-        { reflects := fun t =>
+        { reflects := fun t ↦
             ⟨(isLimitOfPreserves E.inv t).mapConeEquiv E.asEquivalence.unitIso.symm⟩ } }
 
 -- see Note [lower instance priority]
@@ -225,7 +225,7 @@ noncomputable instance (priority := 100)
     CreatesLimitsOfSize.{v, u} H where
   CreatesLimitsOfShape :=
     { CreatesLimit :=
-        { lifts := fun c _ =>
+        { lifts := fun c _ ↦
             { liftedCone := mapConeInv H c
               validLift := mapConeMapConeInv H c } } }
 
@@ -249,12 +249,12 @@ theorem hasLimit_of_comp_equivalence (E : D ⥤ C) [E.IsEquivalence] [HasLimit (
 /-- Transport a `HasLimitsOfShape` instance across an equivalence. -/
 theorem hasLimitsOfShape_of_equivalence (E : D ⥤ C) [E.IsEquivalence] [HasLimitsOfShape J C] :
     HasLimitsOfShape J D :=
-  ⟨fun F => hasLimit_of_comp_equivalence F E⟩
+  ⟨fun F ↦ hasLimit_of_comp_equivalence F E⟩
 
 /-- Transport a `HasLimitsOfSize` instance across an equivalence. -/
 theorem has_limits_of_equivalence (E : D ⥤ C) [E.IsEquivalence] [HasLimitsOfSize.{v, u} C] :
     HasLimitsOfSize.{v, u} D :=
-  ⟨fun _ _ => hasLimitsOfShape_of_equivalence E⟩
+  ⟨fun _ _ ↦ hasLimitsOfShape_of_equivalence E⟩
 
 end PreservationLimits
 
@@ -308,7 +308,7 @@ the functor associating to each `Y` the cocones over `K` with cone point `G.obj 
 -/
 def coconesIso {J : Type u} [Category.{v} J] {K : J ⥤ C} :
     (cocones J D).obj (op (K ⋙ F)) ≅ G ⋙ (cocones J C).obj (op K) :=
-  NatIso.ofComponents fun Y =>
+  NatIso.ofComponents fun Y ↦
     { hom := coconesIsoComponentHom adj Y
       inv := coconesIsoComponentInv adj Y }
 
@@ -320,7 +320,7 @@ the functor associating to each `X` the cones over `K ⋙ G` with cone point `X`
 -/
 def conesIso {J : Type u} [Category.{v} J] {K : J ⥤ D} :
     F.op ⋙ (cones J D).obj K ≅ (cones J C).obj (K ⋙ G) :=
-  NatIso.ofComponents fun X =>
+  NatIso.ofComponents fun X ↦
     { hom := conesIsoComponentHom adj X
       inv := conesIsoComponentInv adj X }
 

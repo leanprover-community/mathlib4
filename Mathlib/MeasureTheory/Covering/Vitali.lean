@@ -75,19 +75,19 @@ theorem exists_disjoint_subfamily_covering_enlargement (B : ι → Set α) (t : 
     ∀ a ∈ t, ∀ b ∈ u, (B a ∩ B b).Nonempty → ∃ c ∈ u, (B a ∩ B c).Nonempty ∧ δ a ≤ τ * δ c }
   -- By Zorn, choose a maximal family in the good set `T` of disjoint families.
   obtain ⟨u, hu⟩ : ∃ m, Maximal (fun x ↦ x ∈ T) m := by
-    refine zorn_subset _ fun U UT hU => ?_
-    refine ⟨⋃₀ U, ?_, fun s hs => subset_sUnion_of_mem hs⟩
+    refine zorn_subset _ fun U UT hU ↦ ?_
+    refine ⟨⋃₀ U, ?_, fun s hs ↦ subset_sUnion_of_mem hs⟩
     simp only [T, Set.sUnion_subset_iff, and_imp, forall_exists_index, mem_sUnion,
       Set.mem_setOf_eq]
     refine
-      ⟨fun u hu => (UT hu).1, (pairwiseDisjoint_sUnion hU.directedOn).2 fun u hu => (UT hu).2.1,
-        fun a hat b u uU hbu hab => ?_⟩
+      ⟨fun u hu ↦ (UT hu).1, (pairwiseDisjoint_sUnion hU.directedOn).2 fun u hu ↦ (UT hu).2.1,
+        fun a hat b u uU hbu hab ↦ ?_⟩
     obtain ⟨c, cu, ac, hc⟩ : ∃ c, c ∈ u ∧ (B a ∩ B c).Nonempty ∧ δ a ≤ τ * δ c :=
       (UT uU).2.2 a hat b hbu hab
     exact ⟨c, ⟨u, uU, cu⟩, ac, hc⟩
   -- The only nontrivial bit is to check that every `a ∈ t` intersects an element `b ∈ u` with
   -- comparatively large `δ b`. Assume this is not the case, then we will contradict the maximality.
-  refine ⟨u, hu.prop.1, hu.prop.2.1, fun a hat => ?_⟩
+  refine ⟨u, hu.prop.1, hu.prop.2.1, fun a hat ↦ ?_⟩
   by_contra! hcon
   have a_disj : ∀ c ∈ u, Disjoint (B a) (B c) := by
     intro c hc
@@ -102,7 +102,7 @@ theorem exists_disjoint_subfamily_covering_enlargement (B : ι → Set α) (t : 
   have Anonempty : A.Nonempty := ⟨a, hat, a_disj⟩
   let m := sSup (δ '' A)
   have bddA : BddAbove (δ '' A) := by
-    refine ⟨R, fun x xA => ?_⟩
+    refine ⟨R, fun x xA ↦ ?_⟩
     rcases (mem_image _ _ _).1 xA with ⟨a', ha', rfl⟩
     exact δle a' ha'.1
   obtain ⟨a', a'A, ha'⟩ : ∃ a' ∈ A, m / τ ≤ δ a' := by
@@ -118,7 +118,7 @@ theorem exists_disjoint_subfamily_covering_enlargement (B : ι → Set α) (t : 
       rcases (mem_image _ _ _).1 xA with ⟨a', ha', rfl⟩
       exact ⟨a', ha', hx.le⟩
   clear hat hcon a_disj a
-  have a'_ne_u : a' ∉ u := fun H => (hne _ a'A.1).ne_empty (disjoint_self.1 (a'A.2 _ H))
+  have a'_ne_u : a' ∉ u := fun H ↦ (hne _ a'A.1).ne_empty (disjoint_self.1 (a'A.2 _ H))
   -- we claim that `u ∪ {a'}` still belongs to `T`, contradicting the maximality of `u`.
   refine a'_ne_u (hu.mem_of_prop_insert ⟨?_, ?_, ?_⟩)
   · -- check that `u ∪ {a'}` is made of elements of `t`.
@@ -126,7 +126,7 @@ theorem exists_disjoint_subfamily_covering_enlargement (B : ι → Set α) (t : 
     exact ⟨a'A.1, hu.prop.1⟩
   · -- Check that `u ∪ {a'}` is a disjoint family. This follows from the fact that `a'` does not
     -- intersect `u`.
-    exact hu.prop.2.1.insert fun b bu _ => a'A.2 b bu
+    exact hu.prop.2.1.insert fun b bu _ ↦ a'A.2 b bu
   · -- check that every element `c` of `t` intersecting `u ∪ {a'}` intersects an element of this
     -- family with large `δ`.
     intro c ct b ba'u hcb
@@ -157,18 +157,18 @@ theorem exists_disjoint_subfamily_covering_enlargement_closedBall
     [PseudoMetricSpace α] (t : Set ι)
     (x : ι → α) (r : ι → ℝ) (R : ℝ) (hr : ∀ a ∈ t, r a ≤ R) (τ : ℝ) (hτ : 3 < τ) :
     ∃ u ⊆ t,
-      (u.PairwiseDisjoint fun a => closedBall (x a) (r a)) ∧
+      (u.PairwiseDisjoint fun a ↦ closedBall (x a) (r a)) ∧
         ∀ a ∈ t, ∃ b ∈ u, closedBall (x a) (r a) ⊆ closedBall (x b) (τ * r b) := by
   rcases eq_empty_or_nonempty t with (rfl | _)
   · exact ⟨∅, Subset.refl _, pairwiseDisjoint_empty, by simp⟩
   by_cases ht : ∀ a ∈ t, r a < 0
-  · exact ⟨t, Subset.rfl, fun a ha b _ _ => by
+  · exact ⟨t, Subset.rfl, fun a ha b _ _ ↦ by
       simp only [closedBall_eq_empty.2 (ht a ha), empty_disjoint, Function.onFun],
-      fun a ha => ⟨a, ha, by simp only [closedBall_eq_empty.2 (ht a ha), empty_subset]⟩⟩
+      fun a ha ↦ ⟨a, ha, by simp only [closedBall_eq_empty.2 (ht a ha), empty_subset]⟩⟩
   push_neg at ht
   let t' := { a ∈ t | 0 ≤ r a }
-  rcases exists_disjoint_subfamily_covering_enlargement (fun a => closedBall (x a) (r a)) t' r
-      ((τ - 1) / 2) (by linarith) (fun a ha => ha.2) R (fun a ha => hr a ha.1) fun a ha =>
+  rcases exists_disjoint_subfamily_covering_enlargement (fun a ↦ closedBall (x a) (r a)) t' r
+      ((τ - 1) / 2) (by linarith) (fun a ha ↦ ha.2) R (fun a ha ↦ hr a ha.1) fun a ha ↦
       ⟨x a, mem_closedBall_self ha.2⟩ with
     ⟨u, ut', u_disj, hu⟩
   have A : ∀ a ∈ t', ∃ b ∈ u, closedBall (x a) (r a) ⊆ closedBall (x b) (τ * r b) := by
@@ -178,7 +178,7 @@ theorem exists_disjoint_subfamily_covering_enlargement_closedBall
     have : dist (x a) (x b) ≤ r a + r b := dist_le_add_of_nonempty_closedBall_inter_closedBall hb
     apply closedBall_subset_closedBall'
     linarith
-  refine ⟨u, ut'.trans fun a ha => ha.1, u_disj, fun a ha => ?_⟩
+  refine ⟨u, ut'.trans fun a ha ↦ ha.1, u_disj, fun a ha ↦ ?_⟩
   rcases le_or_gt 0 (r a) with (h'a | h'a)
   · exact A a ⟨ha, h'a⟩
   · rcases ht with ⟨b, rb⟩
@@ -239,21 +239,21 @@ theorem exists_disjoint_covering_ae
       intro a ha
       apply ha.2.trans (hR1 (c a))
     have A' : ∀ a ∈ t', (B a).Nonempty :=
-      fun a hat' => Set.Nonempty.mono interior_subset (ht a hat'.1)
+      fun a hat' ↦ Set.Nonempty.mono interior_subset (ht a hat'.1)
     refine exists_disjoint_subfamily_covering_enlargement
-      B t' r 2 one_lt_two (fun a ha => ?_) 1 A A'
+      B t' r 2 one_lt_two (fun a ha ↦ ?_) 1 A A'
     exact nonempty_closedBall.1 ((A' a ha).mono (hB a ha.1))
-  have ut : u ⊆ t := fun a hau => (ut' hau).1
+  have ut : u ⊆ t := fun a hau ↦ (ut' hau).1
   -- As the space is second countable, the family is countable since all its sets have nonempty
   -- interior.
-  have u_count : u.Countable := u_disj.countable_of_nonempty_interior fun a ha => ht a (ut ha)
+  have u_count : u.Countable := u_disj.countable_of_nonempty_interior fun a ha ↦ ht a (ut ha)
   -- the family `u` will be the desired family
-  refine ⟨u, fun a hat' => (ut' hat').1, u_count, u_disj, ?_⟩
+  refine ⟨u, fun a hat' ↦ (ut' hat').1, u_count, u_disj, ?_⟩
   -- it suffices to show that it covers almost all `s` locally around each point `x`.
-  refine measure_null_of_locally_null _ fun x _ => ?_
+  refine measure_null_of_locally_null _ fun x _ ↦ ?_
   -- let `v` be the subfamily of `u` made of those sets intersecting the small ball `ball x (r x)`
   let v := { a ∈ u | (B a ∩ ball x (R x)).Nonempty }
-  have vu : v ⊆ u := fun a ha => ha.1
+  have vu : v ⊆ u := fun a ha ↦ ha.1
   -- they are all contained in a fixed ball of finite measure, thanks to our choice of `t'`
   obtain ⟨K, μK, hK⟩ : ∃ K, μ (closedBall x K) < ∞ ∧
       ∀ a ∈ u, (B a ∩ ball x (R x)).Nonempty → B a ⊆ closedBall x K := by
@@ -265,11 +265,11 @@ theorem exists_disjoint_covering_ae
       exact hB a (ut (vu hav))
     set R0 := sSup (r '' v) with R0_def
     have R0_bdd : BddAbove (r '' v) := by
-      refine ⟨1, fun r' hr' => ?_⟩
+      refine ⟨1, fun r' hr' ↦ ?_⟩
       rcases (mem_image _ _ _).1 hr' with ⟨b, hb, rfl⟩
       exact le_trans (ut' (vu hb)).2 (hR1 (c b))
     rcases le_total R0 (R x) with (H | H)
-    · refine ⟨20 * R x, hRμ x, fun a au hax => ?_⟩
+    · refine ⟨20 * R x, hRμ x, fun a au hax ↦ ?_⟩
       refine (hB a (ut au)).trans ?_
       apply closedBall_subset_closedBall'
       have : r a ≤ R0 := le_csSup R0_bdd (mem_image_of_mem _ ⟨au, hax⟩)
@@ -297,15 +297,15 @@ theorem exists_disjoint_covering_ae
         linarith [Idist_v b ⟨bu, hbx⟩]
   -- we will show that, in `ball x (R x)`, almost all `s` is covered by the family `u`.
   refine ⟨_ ∩ ball x (R x), inter_mem_nhdsWithin _ (ball_mem_nhds _ (hR0 _)),
-    nonpos_iff_eq_zero.mp (le_of_forall_gt_imp_ge_of_dense fun ε εpos => ?_)⟩
+    nonpos_iff_eq_zero.mp (le_of_forall_gt_imp_ge_of_dense fun ε εpos ↦ ?_)⟩
   -- the elements of `v` are disjoint and all contained in a finite volume ball, hence the sum
   -- of their measures is finite.
   have I : (∑' a : v, μ (B a)) < ∞ := by
     calc
       (∑' a : v, μ (B a)) = μ (⋃ a ∈ v, B a) := by
-        rw [measure_biUnion (u_count.mono vu) _ fun a ha => (h't _ (vu.trans ut ha)).measurableSet]
+        rw [measure_biUnion (u_count.mono vu) _ fun a ha ↦ (h't _ (vu.trans ut ha)).measurableSet]
         exact u_disj.subset vu
-      _ ≤ μ (closedBall x K) := (measure_mono (iUnion₂_subset fun a ha => hK a (vu ha) ha.2))
+      _ ≤ μ (closedBall x K) := (measure_mono (iUnion₂_subset fun a ha ↦ hK a (vu ha) ha.2))
       _ < ∞ := μK
   -- we can obtain a finite subfamily of `v`, such that the measures of the remaining elements
   -- add up to an arbitrarily small number, say `ε / C`.
@@ -320,7 +320,7 @@ theorem exists_disjoint_covering_ae
       ball x (R x) ⊆ ⋃ a : { a // a ∉ w }, closedBall (c a) (3 * r a) := by
     intro z hz
     set k := ⋃ (a : v) (_ : a ∈ w), B a
-    have k_closed : IsClosed k := isClosed_biUnion_finset fun i _ => h't _ (ut (vu i.2))
+    have k_closed : IsClosed k := isClosed_biUnion_finset fun i _ ↦ h't _ (ut (vu i.2))
     have z_notmem_k : z ∉ k := by
       simp only [k, not_exists, exists_prop, mem_iUnion, forall_exists_index,
         SetCoe.exists, not_and, exists_and_right]
@@ -354,7 +354,7 @@ theorem exists_disjoint_covering_ae
     -- contrary to `b`
     have b'_notmem_w : b' ∉ w := by
       intro b'w
-      have b'k : B b' ⊆ k := @Finset.subset_set_biUnion_of_mem _ _ _ (fun y : v => B y) _ b'w
+      have b'k : B b' ⊆ k := @Finset.subset_set_biUnion_of_mem _ _ _ (fun y : v ↦ B y) _ b'w
       have : (ball x (R x) \ k ∩ k).Nonempty := by
         apply ab.mono (inter_subset_inter _ b'k)
         refine ((hB _ hat).trans ?_).trans hd
@@ -371,7 +371,7 @@ theorem exists_disjoint_covering_ae
       linarith only [dist_triangle (c a) e (c b), A, B, bdiam]
     suffices H : closedBall (c b'') (3 * r b'')
         ⊆ ⋃ a : { a // a ∉ w }, closedBall (c a) (3 * r a) from H zb
-    exact subset_iUnion (fun a : { a // a ∉ w } => closedBall (c a) (3 * r a)) b''
+    exact subset_iUnion (fun a : { a // a ∉ w } ↦ closedBall (c a) (3 * r a)) b''
   -- now that we have proved our main inclusion, we can use it to estimate the measure of the points
   -- in `ball x (r x)` not covered by `u`.
   haveI : Countable v := (u_count.mono vu).to_subtype
@@ -379,7 +379,7 @@ theorem exists_disjoint_covering_ae
     μ ((s \ ⋃ a ∈ u, B a) ∩ ball x (R x)) ≤ μ (⋃ a : { a // a ∉ w }, closedBall (c a) (3 * r a)) :=
       measure_mono M
     _ ≤ ∑' a : { a // a ∉ w }, μ (closedBall (c a) (3 * r a)) := measure_iUnion_le _
-    _ ≤ ∑' a : { a // a ∉ w }, C * μ (B a) := (ENNReal.tsum_le_tsum fun a => μB a (ut (vu a.1.2)))
+    _ ≤ ∑' a : { a // a ∉ w }, C * μ (B a) := (ENNReal.tsum_le_tsum fun a ↦ μB a (ut (vu a.1.2)))
     _ = C * ∑' a : { a // a ∉ w }, μ (B a) := ENNReal.tsum_mul_left
     _ ≤ C * (ε / C) := by gcongr
     _ ≤ ε := ENNReal.mul_div_le
@@ -417,10 +417,10 @@ protected def vitaliFamily [PseudoMetricSpace α] [MeasurableSpace α] [OpensMea
       · apply le_trans ?_ μr
         gcongr
         apply min_le_left
-    rcases exists_disjoint_covering_ae μ s t C (fun p => p.1) (fun p => p.2.1) (fun p => p.2.2)
-        (fun p hp => hp.1) (fun p hp => hp.2.1) (fun p hp => hp.2.2.1) (fun p hp => hp.2.2.2.1) A
+    rcases exists_disjoint_covering_ae μ s t C (fun p ↦ p.1) (fun p ↦ p.2.1) (fun p ↦ p.2.2)
+        (fun p hp ↦ hp.1) (fun p hp ↦ hp.2.1) (fun p hp ↦ hp.2.2.1) (fun p hp ↦ hp.2.2.2.1) A
       with ⟨t', t't, _, t'_disj, μt'⟩
-    refine ⟨(fun p : ℝ × α × Set α => p.2) '' t', ?_, ?_, ?_, ?_⟩
+    refine ⟨(fun p : ℝ × α × Set α ↦ p.2) '' t', ?_, ?_, ?_, ?_⟩
     · rintro - ⟨q, hq, rfl⟩
       exact (t't hq).2.2.2.2.2
     · rintro p ⟨q, hq, rfl⟩ p' ⟨q', hq', rfl⟩ hqq'

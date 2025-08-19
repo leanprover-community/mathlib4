@@ -121,7 +121,7 @@ theorem trace_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type*}
     Matrix.trace, Matrix.trace, Matrix.trace, ← Finset.univ_product_univ, Finset.sum_product]
   refine Finset.sum_congr rfl fun i _ ↦ ?_
   simp only [map_sum, smulTower_leftMulMatrix, Finset.sum_apply, Matrix.diag,
-    Finset.sum_apply i (Finset.univ : Finset κ) fun y => leftMulMatrix b (leftMulMatrix c x y y)]
+    Finset.sum_apply i (Finset.univ : Finset κ) fun y ↦ leftMulMatrix b (leftMulMatrix c x y y)]
 
 theorem trace_comp_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type*} [Finite ι]
     [Finite κ] (b : Basis ι R S) (c : Basis κ S T) :
@@ -155,7 +155,7 @@ theorem trace_prod_apply [Module.Free R S] [Module.Free R T] [Module.Finite R S]
 
 theorem trace_prod [Module.Free R S] [Module.Free R T] [Module.Finite R S] [Module.Finite R T] :
     trace R (S × T) = (trace R S).coprod (trace R T) :=
-  LinearMap.ext fun p => by rw [coprod_apply, trace_prod_apply]
+  LinearMap.ext fun p ↦ by rw [coprod_apply, trace_prod_apply]
 
 section TraceForm
 
@@ -175,7 +175,7 @@ theorem traceForm_apply (x y : S) : traceForm R S x y = trace R S (x * y) :=
   rfl
 
 theorem traceForm_isSymm : (traceForm R S).IsSymm :=
-  ⟨fun _ _ => congr_arg (trace R S) (mul_comm _ _)⟩
+  ⟨fun _ _ ↦ congr_arg (trace R S) (mul_comm _ _)⟩
 
 theorem traceForm_toMatrix [DecidableEq ι] (b : Basis ι R S) (i j) :
     BilinForm.toMatrix b (traceForm R S) i j = trace R S (b i * b j) := by

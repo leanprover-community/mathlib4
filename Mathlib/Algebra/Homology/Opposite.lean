@@ -109,22 +109,22 @@ variable (V c)
 def opFunctor : (HomologicalComplex V c)ᵒᵖ ⥤ HomologicalComplex Vᵒᵖ c.symm where
   obj X := (unop X).op
   map f :=
-    { f := fun i => (f.unop.f i).op
-      comm' := fun i j _ => by simp only [op_d, ← op_comp, f.unop.comm] }
+    { f := fun i ↦ (f.unop.f i).op
+      comm' := fun i j _ ↦ by simp only [op_d, ← op_comp, f.unop.comm] }
 
 /-- Auxiliary definition for `opEquivalence`. -/
 @[simps]
 def opInverse : HomologicalComplex Vᵒᵖ c.symm ⥤ (HomologicalComplex V c)ᵒᵖ where
   obj X := op X.unopSymm
   map f := Quiver.Hom.op
-    { f := fun i => (f.f i).unop
-      comm' := fun i j _ => by simp only [unopSymm_d, ← unop_comp, f.comm] }
+    { f := fun i ↦ (f.f i).unop
+      comm' := fun i j _ ↦ by simp only [unopSymm_d, ← unop_comp, f.comm] }
 
 /-- Auxiliary definition for `opEquivalence`. -/
 def opUnitIso : 𝟭 (HomologicalComplex V c)ᵒᵖ ≅ opFunctor V c ⋙ opInverse V c :=
   NatIso.ofComponents
-    (fun X =>
-      (HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _) fun i j _ => by
+    (fun X ↦
+      (HomologicalComplex.Hom.isoOfComponents (fun _ ↦ Iso.refl _) fun i j _ ↦ by
             simp only [Iso.refl_hom, Category.id_comp, unopSymm_d, op_d, Quiver.Hom.unop_op,
               Category.comp_id] :
           (Opposite.unop X).op.unopSymm ≅ unop X).op)
@@ -137,7 +137,7 @@ def opUnitIso : 𝟭 (HomologicalComplex V c)ᵒᵖ ≅ opFunctor V c ⋙ opInve
 /-- Auxiliary definition for `opEquivalence`. -/
 def opCounitIso : opInverse V c ⋙ opFunctor V c ≅ 𝟭 (HomologicalComplex Vᵒᵖ c.symm) :=
   NatIso.ofComponents
-    fun X => HomologicalComplex.Hom.isoOfComponents fun _ => Iso.refl _
+    fun X ↦ HomologicalComplex.Hom.isoOfComponents fun _ ↦ Iso.refl _
 
 /-- Given a category of complexes with objects in `V`, there is a natural equivalence between its
 opposite category and a category of complexes with objects in `Vᵒᵖ`. -/
@@ -158,22 +158,22 @@ def opEquivalence : (HomologicalComplex V c)ᵒᵖ ≌ HomologicalComplex Vᵒ�
 def unopFunctor : (HomologicalComplex Vᵒᵖ c)ᵒᵖ ⥤ HomologicalComplex V c.symm where
   obj X := (unop X).unop
   map f :=
-    { f := fun i => (f.unop.f i).unop
-      comm' := fun i j _ => by simp only [unop_d, ← unop_comp, f.unop.comm] }
+    { f := fun i ↦ (f.unop.f i).unop
+      comm' := fun i j _ ↦ by simp only [unop_d, ← unop_comp, f.unop.comm] }
 
 /-- Auxiliary definition for `unopEquivalence`. -/
 @[simps]
 def unopInverse : HomologicalComplex V c.symm ⥤ (HomologicalComplex Vᵒᵖ c)ᵒᵖ where
   obj X := op X.opSymm
   map f := Quiver.Hom.op
-    { f := fun i => (f.f i).op
-      comm' := fun i j _ => by simp only [opSymm_d, ← op_comp, f.comm] }
+    { f := fun i ↦ (f.f i).op
+      comm' := fun i j _ ↦ by simp only [opSymm_d, ← op_comp, f.comm] }
 
 /-- Auxiliary definition for `unopEquivalence`. -/
 def unopUnitIso : 𝟭 (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≅ unopFunctor V c ⋙ unopInverse V c :=
   NatIso.ofComponents
-    (fun X =>
-      (HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _) fun i j _ => by
+    (fun X ↦
+      (HomologicalComplex.Hom.isoOfComponents (fun _ ↦ Iso.refl _) fun i j _ ↦ by
             simp only [Iso.refl_hom, Category.id_comp, unopSymm_d, op_d, Quiver.Hom.unop_op,
               Category.comp_id] :
           (Opposite.unop X).op.unopSymm ≅ unop X).op)
@@ -186,7 +186,7 @@ def unopUnitIso : 𝟭 (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≅ unopFunctor V c 
 /-- Auxiliary definition for `unopEquivalence`. -/
 def unopCounitIso : unopInverse V c ⋙ unopFunctor V c ≅ 𝟭 (HomologicalComplex V c.symm) :=
   NatIso.ofComponents
-    fun X => HomologicalComplex.Hom.isoOfComponents fun _ => Iso.refl _
+    fun X ↦ HomologicalComplex.Hom.isoOfComponents fun _ ↦ Iso.refl _
 
 /-- Given a category of complexes with objects in `Vᵒᵖ`, there is a natural equivalence between its
 opposite category and a category of complexes with objects in `V`. -/

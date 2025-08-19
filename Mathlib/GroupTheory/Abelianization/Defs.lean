@@ -81,9 +81,9 @@ theorem commutator_subset_ker : commutator G ≤ f.ker := by
 /-- If `f : G → A` is a group homomorphism to an abelian group, then `lift f` is the unique map
   from the abelianization of a `G` to `A` that factors through `f`. -/
 def lift : (G →* A) ≃ (Abelianization G →* A) where
-  toFun f := QuotientGroup.lift _ f fun _ h => MonoidHom.mem_ker.2 <| commutator_subset_ker _ h
+  toFun f := QuotientGroup.lift _ f fun _ h ↦ MonoidHom.mem_ker.2 <| commutator_subset_ker _ h
   invFun F := F.comp of
-  right_inv _ := MonoidHom.ext fun x => QuotientGroup.induction_on x fun _ => rfl
+  right_inv _ := MonoidHom.ext fun x ↦ QuotientGroup.induction_on x fun _ ↦ rfl
 
 @[simp]
 theorem lift_apply_of (x : G) : lift f (of x) = f x :=
@@ -116,7 +116,7 @@ variable {A : Type v} [Monoid A]
 /-- See note [partially-applied ext lemmas]. -/
 @[ext]
 theorem hom_ext (φ ψ : Abelianization G →* A) (h : φ.comp of = ψ.comp of) : φ = ψ :=
-  MonoidHom.ext fun x => QuotientGroup.induction_on x <| DFunLike.congr_fun h
+  MonoidHom.ext fun x ↦ QuotientGroup.induction_on x <| DFunLike.congr_fun h
 
 section Map
 

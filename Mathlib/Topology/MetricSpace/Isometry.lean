@@ -71,21 +71,21 @@ theorem edist_eq (hf : Isometry f) (x y : α) : edist (f x) (f y) = edist x y :=
   hf x y
 
 theorem lipschitz (h : Isometry f) : LipschitzWith 1 f :=
-  LipschitzWith.of_edist_le fun x y => (h x y).le
+  LipschitzWith.of_edist_le fun x y ↦ (h x y).le
 
-theorem antilipschitz (h : Isometry f) : AntilipschitzWith 1 f := fun x y => by
+theorem antilipschitz (h : Isometry f) : AntilipschitzWith 1 f := fun x y ↦ by
   simp only [h x y, ENNReal.coe_one, one_mul, le_refl]
 
 /-- Any map on a subsingleton is an isometry -/
 @[nontriviality]
-theorem _root_.isometry_subsingleton [Subsingleton α] : Isometry f := fun x y => by
+theorem _root_.isometry_subsingleton [Subsingleton α] : Isometry f := fun x y ↦ by
   rw [Subsingleton.elim x y]; simp
 
 /-- The identity is an isometry -/
-theorem _root_.isometry_id : Isometry (id : α → α) := fun _ _ => rfl
+theorem _root_.isometry_id : Isometry (id : α → α) := fun _ _ ↦ rfl
 
 theorem prodMap {δ} [PseudoEMetricSpace δ] {f : α → β} {g : γ → δ} (hf : Isometry f)
-    (hg : Isometry g) : Isometry (Prod.map f g) := fun x y => by
+    (hg : Isometry g) : Isometry (Prod.map f g) := fun x y ↦ by
   simp only [Prod.edist_eq, Prod.map_fst, hf.edist_eq, Prod.map_snd, hg.edist_eq]
 
 @[deprecated (since := "2025-04-18")]
@@ -93,7 +93,7 @@ alias prod_map := prodMap
 
 protected theorem piMap {ι} [Fintype ι] {α β : ι → Type*} [∀ i, PseudoEMetricSpace (α i)]
     [∀ i, PseudoEMetricSpace (β i)] (f : ∀ i, α i → β i) (hf : ∀ i, Isometry (f i)) :
-    Isometry (Pi.map f) := fun x y => by
+    Isometry (Pi.map f) := fun x y ↦ by
   simp only [edist_pi_def, (hf _).edist_eq, Pi.map_apply]
 
 protected lemma single [Fintype ι] [DecidableEq ι] {E : ι → Type*} [∀ i, PseudoEMetricSpace (E i)]
@@ -118,7 +118,7 @@ protected lemma inr [AddZeroClass α] [AddZeroClass β] : Isometry (AddMonoidHom
 
 /-- The composition of isometries is an isometry. -/
 theorem comp {g : β → γ} {f : α → β} (hg : Isometry g) (hf : Isometry f) : Isometry (g ∘ f) :=
-  fun _ _ => (hg _ _).trans (hf _ _)
+  fun _ _ ↦ (hg _ _).trans (hf _ _)
 
 /-- An isometry from a metric space is a uniform continuous map -/
 protected theorem uniformContinuous (hf : Isometry f) : UniformContinuous f :=
@@ -138,7 +138,7 @@ protected theorem continuous (hf : Isometry f) : Continuous f :=
 
 /-- The right inverse of an isometry is an isometry. -/
 theorem right_inv {f : α → β} {g : β → α} (h : Isometry f) (hg : RightInverse g f) : Isometry g :=
-  fun x y => by rw [← h, hg _, hg _]
+  fun x y ↦ by rw [← h, hg _, hg _]
 
 theorem preimage_emetric_closedBall (h : Isometry f) (x : α) (r : ℝ≥0∞) :
     f ⁻¹' EMetric.closedBall (f x) r = EMetric.closedBall x r := by
@@ -152,7 +152,7 @@ theorem preimage_emetric_ball (h : Isometry f) (x : α) (r : ℝ≥0∞) :
 
 /-- Isometries preserve the diameter in pseudoemetric spaces. -/
 theorem ediam_image (hf : Isometry f) (s : Set α) : EMetric.diam (f '' s) = EMetric.diam s :=
-  eq_of_forall_ge_iff fun d => by simp only [EMetric.diam_le_iff, forall_mem_image, hf.edist_eq]
+  eq_of_forall_ge_iff fun d ↦ by simp only [EMetric.diam_le_iff, forall_mem_image, hf.edist_eq]
 
 theorem ediam_range (hf : Isometry f) : EMetric.diam (range f) = EMetric.diam (univ : Set α) := by
   rw [← image_univ]
@@ -167,7 +167,7 @@ theorem mapsTo_emetric_closedBall (hf : Isometry f) (x : α) (r : ℝ≥0∞) :
   (hf.preimage_emetric_closedBall x r).ge
 
 /-- The injection from a subtype is an isometry -/
-theorem _root_.isometry_subtype_coe {s : Set α} : Isometry ((↑) : s → α) := fun _ _ => rfl
+theorem _root_.isometry_subtype_coe {s : Set α} : Isometry ((↑) : s → α) := fun _ _ ↦ rfl
 
 theorem comp_continuousOn_iff {γ} [TopologicalSpace γ] (hf : Isometry f) {g : γ → α} {s : Set γ} :
     ContinuousOn (f ∘ g) s ↔ ContinuousOn g s :=
@@ -255,14 +255,14 @@ induced metric space structure on the source space. -/
 theorem IsUniformEmbedding.to_isometry {α β} [UniformSpace α] [MetricSpace β] {f : α → β}
     (h : IsUniformEmbedding f) : (letI := h.comapMetricSpace f; Isometry f) :=
   let _ := h.comapMetricSpace f
-  Isometry.of_dist_eq fun _ _ => rfl
+  Isometry.of_dist_eq fun _ _ ↦ rfl
 
 /-- An embedding from a topological space to a metric space is an isometry with respect to the
 induced metric space structure on the source space. -/
 theorem Topology.IsEmbedding.to_isometry {α β} [TopologicalSpace α] [MetricSpace β] {f : α → β}
     (h : IsEmbedding f) : (letI := h.comapMetricSpace f; Isometry f) :=
   let _ := h.comapMetricSpace f
-  Isometry.of_dist_eq fun _ _ => rfl
+  Isometry.of_dist_eq fun _ _ ↦ rfl
 
 theorem PseudoEMetricSpace.isometry_induced (f : α → β) [m : PseudoEMetricSpace β] :
     letI := m.induced f; Isometry f := fun _ _ ↦ rfl
@@ -549,8 +549,8 @@ instance : Group (α ≃ᵢ α) where
   mul e₁ e₂ := e₂.trans e₁
   inv := IsometryEquiv.symm
   mul_assoc _ _ _ := rfl
-  one_mul _ := ext fun _ => rfl
-  mul_one _ := ext fun _ => rfl
+  one_mul _ := ext fun _ ↦ rfl
+  mul_one _ := ext fun _ ↦ rfl
   inv_mul_cancel e := ext e.symm_apply_apply
 
 @[simp] theorem coe_one : ⇑(1 : α ≃ᵢ α) = id := rfl

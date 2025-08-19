@@ -29,8 +29,8 @@ variable [SemilatticeSup α] [OrderBot α]
 
 @[simp]
 theorem sup_biUnion [DecidableEq β] (s : Finset γ) (t : γ → Finset β) :
-    (s.biUnion t).sup f = s.sup fun x => (t x).sup f :=
-  eq_of_forall_ge_iff fun c => by simp [@forall_swap _ β]
+    (s.biUnion t).sup f = s.sup fun x ↦ (t x).sup f :=
+  eq_of_forall_ge_iff fun c ↦ by simp [@forall_swap _ β]
 
 end Sup
 
@@ -39,7 +39,7 @@ section Inf
 variable [SemilatticeInf α] [OrderTop α]
 
 @[simp] theorem inf_biUnion [DecidableEq β] (s : Finset γ) (t : γ → Finset β) :
-    (s.biUnion t).inf f = s.inf fun x => (t x).inf f :=
+    (s.biUnion t).inf f = s.inf fun x ↦ (t x).inf f :=
   @sup_biUnion αᵒᵈ _ _ _ _ _ _ _ _
 
 end Inf
@@ -52,8 +52,8 @@ variable {s : Finset β} (H : s.Nonempty) (f : β → α)
 
 theorem sup'_biUnion [DecidableEq β] {s : Finset γ} (Hs : s.Nonempty) {t : γ → Finset β}
     (Ht : ∀ b, (t b).Nonempty) :
-    (s.biUnion t).sup' (Hs.biUnion fun b _ => Ht b) f = s.sup' Hs (fun b => (t b).sup' (Ht b) f) :=
-  eq_of_forall_ge_iff fun c => by simp [@forall_swap _ β]
+    (s.biUnion t).sup' (Hs.biUnion fun b _ ↦ Ht b) f = s.sup' Hs (fun b ↦ (t b).sup' (Ht b) f) :=
+  eq_of_forall_ge_iff fun c ↦ by simp [@forall_swap _ β]
 
 end Sup'
 
@@ -65,7 +65,7 @@ variable {s : Finset β} (H : s.Nonempty) (f : β → α)
 
 theorem inf'_biUnion [DecidableEq β] {s : Finset γ} (Hs : s.Nonempty) {t : γ → Finset β}
     (Ht : ∀ b, (t b).Nonempty) :
-    (s.biUnion t).inf' (Hs.biUnion fun b _ => Ht b) f = s.inf' Hs (fun b => (t b).inf' (Ht b) f) :=
+    (s.biUnion t).inf' (Hs.biUnion fun b _ ↦ Ht b) f = s.inf' Hs (fun b ↦ (t b).inf' (Ht b) f) :=
   sup'_biUnion (α := αᵒᵈ) _ Hs Ht
 
 end Inf'

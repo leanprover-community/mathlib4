@@ -119,7 +119,7 @@ def algebraMapInv : SymmetricAlgebra R M →ₐ[R] R :=
 variable (M)
 
 theorem algebraMap_leftInverse :
-    Function.LeftInverse algebraMapInv (algebraMap R <| SymmetricAlgebra R M) := fun x => by
+    Function.LeftInverse algebraMapInv (algebraMap R <| SymmetricAlgebra R M) := fun x ↦ by
   simp [algebraMapInv]
 
 @[simp]

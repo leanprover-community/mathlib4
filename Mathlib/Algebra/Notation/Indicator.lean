@@ -51,7 +51,7 @@ noncomputable def mulIndicator (s : Set α) (f : α → M) (x : α) : M :=
 
 @[to_additive (attr := simp)]
 lemma piecewise_eq_mulIndicator [DecidablePred (· ∈ s)] : s.piecewise f 1 = s.mulIndicator f :=
-  funext fun _ => @if_congr _ _ _ _ (id _) _ _ _ _ Iff.rfl rfl rfl
+  funext fun _ ↦ @if_congr _ _ _ _ (id _) _ _ _ _ Iff.rfl rfl rfl
 
 @[to_additive]
 lemma mulIndicator_apply (s : Set α) (f : α → M) (a : α) [Decidable (a ∈ s)] :
@@ -99,7 +99,7 @@ lemma mulIndicator_apply_eq_one : mulIndicator s f a = 1 ↔ a ∈ s → f a = 1
   ite_eq_right_iff
 
 @[to_additive (attr := simp)]
-lemma mulIndicator_eq_one : (mulIndicator s f = fun _ => 1) ↔ Disjoint (mulSupport f) s := by
+lemma mulIndicator_eq_one : (mulIndicator s f = fun _ ↦ 1) ↔ Disjoint (mulSupport f) s := by
   simp only [funext_iff, mulIndicator_apply_eq_one, Set.disjoint_left, mem_mulSupport,
     not_imp_not]
 
@@ -114,7 +114,7 @@ lemma mulIndicator_apply_ne_one {a : α} : s.mulIndicator f a ≠ 1 ↔ a ∈ s 
 @[to_additive (attr := simp)]
 lemma mulSupport_mulIndicator :
     Function.mulSupport (s.mulIndicator f) = s ∩ Function.mulSupport f :=
-  ext fun x => by simp [Function.mem_mulSupport, mulIndicator_apply_eq_one]
+  ext fun x ↦ by simp [Function.mem_mulSupport, mulIndicator_apply_eq_one]
 
 /-- If a multiplicative indicator function is not equal to `1` at a point, then that point is in the
 set. -/
@@ -122,20 +122,20 @@ set. -/
 /-- If an additive indicator function is not equal to `0` at a point, then that point is in the set.
 -/]
 lemma mem_of_mulIndicator_ne_one (h : mulIndicator s f a ≠ 1) : a ∈ s :=
-  not_imp_comm.1 (fun hn => mulIndicator_of_notMem hn f) h
+  not_imp_comm.1 (fun hn ↦ mulIndicator_of_notMem hn f) h
 
 /-- See `Set.eqOn_mulIndicator'` for the version with `sᶜ`. -/
 @[to_additive /-- See `Set.eqOn_indicator'` for the version with `sᶜ`. -/]
-lemma eqOn_mulIndicator : EqOn (mulIndicator s f) f s := fun _ hx => mulIndicator_of_mem hx f
+lemma eqOn_mulIndicator : EqOn (mulIndicator s f) f s := fun _ hx ↦ mulIndicator_of_mem hx f
 
 /-- See `Set.eqOn_mulIndicator` for the version with `s`. -/
 @[to_additive /-- See `Set.eqOn_indicator` for the version with `s`. -/]
 lemma eqOn_mulIndicator' : EqOn (mulIndicator s f) 1 sᶜ :=
-  fun _ hx => mulIndicator_of_notMem hx f
+  fun _ hx ↦ mulIndicator_of_notMem hx f
 
 @[to_additive]
-lemma mulSupport_mulIndicator_subset : mulSupport (s.mulIndicator f) ⊆ s := fun _ hx =>
-  hx.imp_symm fun h => mulIndicator_of_notMem h f
+lemma mulSupport_mulIndicator_subset : mulSupport (s.mulIndicator f) ⊆ s := fun _ hx ↦
+  hx.imp_symm fun h ↦ mulIndicator_of_notMem h f
 
 @[to_additive (attr := simp)]
 lemma mulIndicator_mulSupport : mulIndicator (mulSupport f) f = f :=
@@ -149,7 +149,7 @@ lemma mulIndicator_range_comp {ι : Sort*} (f : ι → α) (g : α → M) :
 
 @[to_additive]
 lemma mulIndicator_congr (h : EqOn f g s) : mulIndicator s f = mulIndicator s g :=
-  funext fun x => by
+  funext fun x ↦ by
     simp only [mulIndicator]
     split_ifs with h_1
     · exact h h_1
@@ -171,7 +171,7 @@ lemma mulIndicator_univ (f : α → M) : mulIndicator (univ : Set α) f = f :=
   mulIndicator_eq_self.2 <| subset_univ _
 
 @[to_additive (attr := simp)]
-lemma mulIndicator_empty (f : α → M) : mulIndicator (∅ : Set α) f = fun _ => 1 :=
+lemma mulIndicator_empty (f : α → M) : mulIndicator (∅ : Set α) f = fun _ ↦ 1 :=
   mulIndicator_eq_one.2 <| disjoint_empty _
 
 @[to_additive]
@@ -181,7 +181,7 @@ lemma mulIndicator_empty' (f : α → M) : mulIndicator (∅ : Set α) f = 1 :=
 variable (M)
 
 @[to_additive (attr := simp)]
-lemma mulIndicator_one (s : Set α) : (mulIndicator s fun _ => (1 : M)) = fun _ => (1 : M) :=
+lemma mulIndicator_one (s : Set α) : (mulIndicator s fun _ ↦ (1 : M)) = fun _ ↦ (1 : M) :=
   mulIndicator_eq_one.2 <| by simp only [mulSupport_fun_one, empty_disjoint]
 
 @[to_additive (attr := simp)]
@@ -193,7 +193,7 @@ variable {M}
 @[to_additive]
 lemma mulIndicator_mulIndicator (s t : Set α) (f : α → M) :
     mulIndicator s (mulIndicator t f) = mulIndicator (s ∩ t) f :=
-  funext fun x => by
+  funext fun x ↦ by
     simp only [mulIndicator]
     split_ifs <;> simp_all +contextual
 
@@ -206,7 +206,7 @@ lemma mulIndicator_inter_mulSupport (s : Set α) (f : α → M) :
 lemma comp_mulIndicator (h : M → β) (f : α → M) {s : Set α} {x : α} [DecidablePred (· ∈ s)] :
     h (s.mulIndicator f x) = s.piecewise (h ∘ f) (const α (h 1)) x := by
   letI := Classical.decPred (· ∈ s)
-  convert s.apply_piecewise f (const α 1) (fun _ => h) (x := x) using 2
+  convert s.apply_piecewise f (const α 1) (fun _ ↦ h) (x := x) using 2
 
 @[to_additive]
 lemma mulIndicator_comp_right {s : Set α} (f : β → α) {g : α → M} {x : β} :
@@ -227,7 +227,7 @@ lemma mulIndicator_comp_of_one {g : M → N} (hg : g 1 = 1) :
 
 @[to_additive]
 lemma comp_mulIndicator_const (c : M) (f : M → N) (hf : f 1 = 1) :
-    (fun x => f (s.mulIndicator (fun _ => c) x)) = s.mulIndicator fun _ => f c :=
+    (fun x ↦ f (s.mulIndicator (fun _ ↦ c) x)) = s.mulIndicator fun _ ↦ f c :=
   (mulIndicator_comp_of_one hf).symm
 
 @[to_additive]
@@ -245,14 +245,14 @@ lemma mulIndicator_one_preimage (s : Set M) :
 
 @[to_additive]
 lemma mulIndicator_const_preimage_eq_union (U : Set α) (s : Set M) (a : M) [Decidable (a ∈ s)]
-    [Decidable ((1 : M) ∈ s)] : (U.mulIndicator fun _ => a) ⁻¹' s =
+    [Decidable ((1 : M) ∈ s)] : (U.mulIndicator fun _ ↦ a) ⁻¹' s =
       (if a ∈ s then U else ∅) ∪ if (1 : M) ∈ s then Uᶜ else ∅ := by
   rw [mulIndicator_preimage, Pi.one_def, Set.preimage_const, preimage_const]
   split_ifs <;> simp [← compl_eq_univ_diff]
 
 @[to_additive]
 lemma mulIndicator_const_preimage (U : Set α) (s : Set M) (a : M) :
-    (U.mulIndicator fun _ => a) ⁻¹' s ∈ ({Set.univ, U, Uᶜ, ∅} : Set (Set α)) := by
+    (U.mulIndicator fun _ ↦ a) ⁻¹' s ∈ ({Set.univ, U, Uᶜ, ∅} : Set (Set α)) := by
   classical
     rw [mulIndicator_const_preimage_eq_union]
     split_ifs <;> simp

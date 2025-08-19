@@ -233,8 +233,8 @@ def rec {p : Localization S → Sort u} (f : ∀ (a : M) (b : S), p (mk a b))
 def recOnSubsingleton₂ {r : Localization S → Localization S → Sort u}
     [h : ∀ (a c : M) (b d : S), Subsingleton (r (mk a b) (mk c d))] (x y : Localization S)
     (f : ∀ (a c : M) (b d : S), r (mk a b) (mk c d)) : r x y :=
-  @Quotient.recOnSubsingleton₂' _ _ _ _ r (Prod.rec fun _ _ => Prod.rec fun _ _ => h _ _ _ _) x y
-    (Prod.rec fun _ _ => Prod.rec fun _ _ => f _ _ _ _)
+  @Quotient.recOnSubsingleton₂' _ _ _ _ r (Prod.rec fun _ _ ↦ Prod.rec fun _ _ ↦ h _ _ _ _) x y
+    (Prod.rec fun _ _ ↦ Prod.rec fun _ _ ↦ f _ _ _ _)
 
 @[to_additive]
 theorem mk_mul (a c : M) (b d : S) : mk a b * mk c d = mk (a * c) (b * d) :=
@@ -1330,7 +1330,7 @@ namespace Localization
 variable {α : Type*} [CommMonoid α] [IsCancelMul α] {s : Submonoid α} {a₁ b₁ : α} {a₂ b₂ : s}
 
 @[to_additive]
-theorem mk_left_injective (b : s) : Injective fun a => mk a b := fun c d h => by
+theorem mk_left_injective (b : s) : Injective fun a ↦ mk a b := fun c d h ↦ by
   simpa [mk_eq_mk_iff, r_iff_exists] using h
 
 @[to_additive]
@@ -1338,8 +1338,8 @@ theorem mk_eq_mk_iff' : mk a₁ a₂ = mk b₁ b₂ ↔ ↑b₂ * a₁ = a₂ * 
   simp_rw [mk_eq_mk_iff, r_iff_exists, mul_left_cancel_iff, exists_const]
 
 @[to_additive]
-instance decidableEq [DecidableEq α] : DecidableEq (Localization s) := fun a b =>
-  Localization.recOnSubsingleton₂ a b fun _ _ _ _ => decidable_of_iff' _ mk_eq_mk_iff'
+instance decidableEq [DecidableEq α] : DecidableEq (Localization s) := fun a b ↦
+  Localization.recOnSubsingleton₂ a b fun _ _ _ _ ↦ decidable_of_iff' _ mk_eq_mk_iff'
 
 end Localization
 

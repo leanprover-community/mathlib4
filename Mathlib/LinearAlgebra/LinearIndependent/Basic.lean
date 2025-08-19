@@ -70,7 +70,7 @@ theorem LinearIndependent.restrict_scalars [Semiring K] [SMulWithZero R K] [Modu
     [IsScalarTower R K M] (hinj : Injective fun r : R ↦ r • (1 : K))
     (li : LinearIndependent K v) : LinearIndependent R v := by
   intro x y hxy
-  let f := fun r : R => r • (1 : K)
+  let f := fun r : R ↦ r • (1 : K)
   have := @li (x.mapRange f (by simp [f])) (y.mapRange f (by simp [f])) ?_
   · ext i
     exact hinj congr($this i)
@@ -321,7 +321,7 @@ theorem surjective_of_linearIndependent_of_span [Nontrivial R] (hv : LinearIndep
 theorem eq_of_linearIndepOn_id_of_span_subtype [Nontrivial R] {s t : Set M}
     (hs : LinearIndepOn R id s) (h : t ⊆ s) (hst : s ⊆ span R t) : s = t := by
   let f : t ↪ s :=
-    ⟨fun x => ⟨x.1, h x.2⟩, fun a b hab => Subtype.coe_injective (Subtype.mk.inj hab)⟩
+    ⟨fun x ↦ ⟨x.1, h x.2⟩, fun a b hab ↦ Subtype.coe_injective (Subtype.mk.inj hab)⟩
   have h_surj : Surjective f := by
     apply surjective_of_linearIndependent_of_span hs f _
     convert hst <;> simp [f, comp_def]
@@ -415,7 +415,7 @@ theorem LinearIndependent.fin_cons' {m : ℕ} (x : M) (v : Fin m → M) (hli : L
   simp_rw [Fin.sum_univ_succ, Fin.cons_zero, Fin.cons_succ] at total_eq
   have : g 0 = 0 := by
     refine x_ortho (g 0) ⟨∑ i : Fin m, g i.succ • v i, ?_⟩ total_eq
-    exact sum_mem fun i _ => smul_mem _ _ (subset_span ⟨i, rfl⟩)
+    exact sum_mem fun i _ ↦ smul_mem _ _ (subset_span ⟨i, rfl⟩)
   rw [this, zero_smul, zero_add] at total_eq
   exact Fin.cases this (hli _ total_eq) j
 
@@ -446,19 +446,19 @@ theorem linearIndependent_sum {v : ι ⊕ ι' → M} :
   rw [linearIndependent_iff'] at *
   intro s g hg i hi
   have :
-    ((∑ i ∈ s.preimage Sum.inl Sum.inl_injective.injOn, (fun x => g x • v x) (Sum.inl i)) +
-        ∑ i ∈ s.preimage Sum.inr Sum.inr_injective.injOn, (fun x => g x • v x) (Sum.inr i)) =
+    ((∑ i ∈ s.preimage Sum.inl Sum.inl_injective.injOn, (fun x ↦ g x • v x) (Sum.inl i)) +
+        ∑ i ∈ s.preimage Sum.inr Sum.inr_injective.injOn, (fun x ↦ g x • v x) (Sum.inr i)) =
       0 := by
     -- Porting note: `g` must be specified.
-    rw [Finset.sum_preimage' (g := fun x => g x • v x),
-      Finset.sum_preimage' (g := fun x => g x • v x), ← Finset.sum_union, ← Finset.filter_or]
+    rw [Finset.sum_preimage' (g := fun x ↦ g x • v x),
+      Finset.sum_preimage' (g := fun x ↦ g x • v x), ← Finset.sum_union, ← Finset.filter_or]
     · simpa only [← mem_union, range_inl_union_range_inr, mem_univ, Finset.filter_True]
-    · exact Finset.disjoint_filter.2 fun x _ hx =>
+    · exact Finset.disjoint_filter.2 fun x _ hx ↦
         disjoint_left.1 isCompl_range_inl_range_inr.disjoint hx
   rw [← eq_neg_iff_add_eq_zero] at this
   rw [disjoint_def'] at hlr
   have A := by
-    refine hlr _ (sum_mem fun i _ => ?_) _ (neg_mem <| sum_mem fun i _ => ?_) this
+    refine hlr _ (sum_mem fun i _ ↦ ?_) _ (neg_mem <| sum_mem fun i _ ↦ ?_) this
     · exact smul_mem _ _ (subset_span ⟨Sum.inl i, mem_range_self _, rfl⟩)
     · exact smul_mem _ _ (subset_span ⟨Sum.inr i, mem_range_self _, rfl⟩)
   rcases i with i | i
@@ -517,7 +517,7 @@ theorem LinearIndepOn.image {s : Set M} {f : M →ₗ[R] M'}
 /-- Dedekind's linear independence of characters -/
 @[stacks 0CKL]
 theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [CommRing L]
-    [NoZeroDivisors L] : LinearIndependent L (M := G → L) (fun f => f : (G →* L) → G → L) := by
+    [NoZeroDivisors L] : LinearIndependent L (M := G → L) (fun f ↦ f : (G →* L) → G → L) := by
   -- Porting note: Some casts are required.
   letI := Classical.decEq (G →* L)
   letI : MulAction L L := DistribMulAction.toMulAction
@@ -539,7 +539,7 @@ theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [Com
   have h1 (i) (his : i ∈ s) : (g i • (i : G → L)) = g i • (a : G → L) := by
     ext x
     rw [← sub_eq_zero]
-    apply ih (fun j => g j * j x - g j * a x) _ i his
+    apply ih (fun j ↦ g j * j x - g j * a x) _ i his
     ext y
     -- After that, it's just a chase scene.
     calc
@@ -592,7 +592,7 @@ variable {s t : Set M}
 theorem linearIndependent_unique_iff (v : ι → M) [Unique ι] :
     LinearIndependent R v ↔ v default ≠ 0 := by
   simp only [linearIndependent_iff, Finsupp.linearCombination_unique, smul_eq_zero]
-  refine ⟨fun h hv => ?_, fun hv l hl => Finsupp.unique_ext <| hl.resolve_right hv⟩
+  refine ⟨fun h hv ↦ ?_, fun hv l hl ↦ Finsupp.unique_ext <| hl.resolve_right hv⟩
   have := h (Finsupp.single default 1) (Or.inr hv)
   exact one_ne_zero (Finsupp.single_eq_zero.1 this)
 

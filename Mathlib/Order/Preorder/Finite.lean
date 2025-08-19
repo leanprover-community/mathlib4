@@ -96,7 +96,7 @@ lemma infinite_of_forall_exists_gt (h : ∀ a, ∃ b ∈ s, a < b) : s.Infinite 
   let f (n : ℕ) : α := Nat.recOn n (h default).choose fun _ a ↦ (h a).choose
   have hf : ∀ n, f n ∈ s := by rintro (_ | _) <;> exact (h _).choose_spec.1
   exact infinite_of_injective_forall_mem
-    (strictMono_nat_of_lt_succ fun n => (h _).choose_spec.2).injective hf
+    (strictMono_nat_of_lt_succ fun n ↦ (h _).choose_spec.2).injective hf
 
 lemma infinite_of_forall_exists_lt (h : ∀ a, ∃ b ∈ s, b < a) : s.Infinite :=
   infinite_of_forall_exists_gt (α := αᵒᵈ) h
@@ -117,7 +117,7 @@ variable [LinearOrder α] {s : Set α} {t : Set β} {f : α → β}
 lemma Infinite.exists_lt_map_eq_of_mapsTo (hs : s.Infinite) (hf : MapsTo f s t) (ht : t.Finite) :
     ∃ x ∈ s, ∃ y ∈ s, x < y ∧ f x = f y :=
   let ⟨x, hx, y, hy, hxy, hf⟩ := hs.exists_ne_map_eq_of_mapsTo hf ht
-  hxy.lt_or_gt.elim (fun hxy => ⟨x, hx, y, hy, hxy, hf⟩) fun hyx => ⟨y, hy, x, hx, hyx, hf.symm⟩
+  hxy.lt_or_gt.elim (fun hxy ↦ ⟨x, hx, y, hy, hxy, hf⟩) fun hyx ↦ ⟨y, hy, x, hx, hyx, hf.symm⟩
 
 lemma Finite.exists_lt_map_eq_of_forall_mem [Infinite α] (hf : ∀ a, f a ∈ t) (ht : t.Finite) :
     ∃ a b, a < b ∧ f a = f b := by

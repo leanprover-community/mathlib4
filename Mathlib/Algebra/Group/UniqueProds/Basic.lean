@@ -365,7 +365,7 @@ open MulOpposite in
     obtain ⟨g1, h1, g2, h2, hu⟩ := h (hB.mul hA)
     obtain ⟨b1, hb1, a1, ha1, rfl⟩ := mem_mul.mp h1
     obtain ⟨b2, hb2, a2, ha2, rfl⟩ := mem_mul.mp h2
-    refine ⟨a1, ha1, b2, hb2, fun a b ha hb he => ?_⟩
+    refine ⟨a1, ha1, b2, hb2, fun a b ha hb he ↦ ?_⟩
     specialize hu (mul_mem_mul hb1 ha) (mul_mem_mul hb ha2) _
     · rw [mul_assoc b1, ← mul_assoc a, he, mul_assoc a1, ← mul_assoc b1]
     exact ⟨mul_left_cancel hu.1, mul_right_cancel hu.2⟩
@@ -389,7 +389,7 @@ open MulOpposite in
       obtain ⟨c, hc, d, hd, hne, hu'⟩ := this
       obtain ⟨a0, ha0, rfl⟩ := mem_map.mp hc
       obtain ⟨b0, hb0, rfl⟩ := mem_map.mp hd
-      refine ⟨(_, _), ⟨ha0, hb0⟩, (a, b), ⟨ha, hb⟩, ?_, fun a' b' ha' hb' he => ?_, hu⟩
+      refine ⟨(_, _), ⟨ha0, hb0⟩, (a, b), ⟨ha, hb⟩, ?_, fun a' b' ha' hb' he ↦ ?_, hu⟩
       · simp_rw [Function.Embedding.coeFn_mk, Ne, inv_mul_eq_one, mul_inv_eq_one] at hne
         rwa [Ne, Prod.mk_inj, not_and_or, eq_comm]
       specialize hu' (mem_map_of_mem _ ha') (mem_map_of_mem _ hb')
@@ -405,13 +405,13 @@ open MulOpposite in
       obtain ⟨_, ⟨d1, hd1, rfl⟩, c1, hc1, rfl⟩ := he
       obtain ⟨d2, hd2, _, ⟨c2, hc2, rfl⟩, rfl⟩ := hf
       by_cases h12 : c1 ≠ 1 ∨ d2 ≠ 1
-      · refine ⟨c1, hc1, d2, hd2, h12, fun c3 d3 hc3 hd3 he => ?_⟩
+      · refine ⟨c1, hc1, d2, hd2, h12, fun c3 d3 hc3 hd3 he ↦ ?_⟩
         specialize hu ⟨_, ⟨_, hd1, rfl⟩, _, hc3, rfl⟩ ⟨_, hd3, _, ⟨_, hc2, rfl⟩, rfl⟩
         rw [mul_left_cancel_iff, mul_right_cancel_iff,
             mul_assoc, ← mul_assoc c3, he, mul_assoc, mul_assoc] at hu; exact hu rfl
       push_neg at h12; obtain ⟨rfl, rfl⟩ := h12
       by_cases h21 : c2 ≠ 1 ∨ d1 ≠ 1
-      · refine ⟨c2, hc2, d1, hd1, h21, fun c4 d4 hc4 hd4 he => ?_⟩
+      · refine ⟨c2, hc2, d1, hd1, h21, fun c4 d4 hc4 hd4 he ↦ ?_⟩
         specialize hu ⟨_, ⟨_, hd4, rfl⟩, _, hC, rfl⟩ ⟨_, hD, _, ⟨_, hc4, rfl⟩, rfl⟩
         simpa only [mul_one, one_mul, ← mul_inv_rev, he, true_imp_iff, inv_inj, and_comm] using hu
       push_neg at h21; obtain ⟨rfl, rfl⟩ := h21
@@ -453,7 +453,7 @@ open ULift in
     UniqueProds (G × H) := by
   have : ∀ b, UniqueProds (I G H b) := Bool.rec ?_ ?_
   · exact of_injective_mulHom (downMulHom H) down_injective ‹_›
-  · refine of_injective_mulHom (Prod.upMulHom G H) (fun x y he => Prod.ext ?_ ?_)
+  · refine of_injective_mulHom (Prod.upMulHom G H) (fun x y he ↦ Prod.ext ?_ ?_)
       (UniqueProds.instForall <| I G H) <;> apply up_injective
     exacts [congr_fun he false, congr_fun he true]
   · exact of_injective_mulHom (downMulHom G) down_injective ‹_›

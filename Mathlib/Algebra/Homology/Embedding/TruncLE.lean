@@ -177,7 +177,7 @@ noncomputable def ιTruncLE : K.truncLE e ⟶ K :=
 instance (i' : ι') : Mono ((K.ιTruncLE e).f i') :=
   inferInstanceAs (Mono ((K.op.πTruncGE e.op).f i').unop)
 
-instance : Mono (K.ιTruncLE e) := mono_of_mono_f _ (fun _ => inferInstance)
+instance : Mono (K.ιTruncLE e) := mono_of_mono_f _ (fun _ ↦ inferInstance)
 
 instance : (K.truncLE e).IsStrictlySupported e := by
   rw [← isStrictlySupported_op_iff]

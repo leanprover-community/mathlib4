@@ -128,7 +128,7 @@ variable [NonUnitalNonAssocSemiring T] (f : R →ₙ+* S) (g : R →ₙ+* T)
 `f.prod g : R →ₙ+* S × T` given by `(f.prod g) x = (f x, g x)` -/
 protected def prod (f : R →ₙ+* S) (g : R →ₙ+* T) : R →ₙ+* S × T :=
   { MulHom.prod (f : MulHom R S) (g : MulHom R T), AddMonoidHom.prod (f : R →+ S) (g : R →+ T) with
-    toFun := fun x => (f x, g x) }
+    toFun := fun x ↦ (f x, g x) }
 
 @[simp]
 theorem prod_apply (x) : f.prod g x = (f x, g x) :=
@@ -136,14 +136,14 @@ theorem prod_apply (x) : f.prod g x = (f x, g x) :=
 
 @[simp]
 theorem fst_comp_prod : (fst S T).comp (f.prod g) = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem snd_comp_prod : (snd S T).comp (f.prod g) = g :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 theorem prod_unique (f : R →ₙ+* S × T) : ((fst S T).comp f).prod ((snd S T).comp f) = f :=
-  ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply]
+  ext fun x ↦ by simp only [prod_apply, coe_fst, coe_snd, comp_apply]
 
 end Prod
 
@@ -204,7 +204,7 @@ variable [NonAssocSemiring T] (f : R →+* S) (g : R →+* T)
 given by `(f.prod g) x = (f x, g x)` -/
 protected def prod (f : R →+* S) (g : R →+* T) : R →+* S × T :=
   { MonoidHom.prod (f : R →* S) (g : R →* T), AddMonoidHom.prod (f : R →+ S) (g : R →+ T) with
-    toFun := fun x => (f x, g x) }
+    toFun := fun x ↦ (f x, g x) }
 
 @[simp]
 theorem prod_apply (x) : f.prod g x = (f x, g x) :=
@@ -212,14 +212,14 @@ theorem prod_apply (x) : f.prod g x = (f x, g x) :=
 
 @[simp]
 theorem fst_comp_prod : (fst S T).comp (f.prod g) = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem snd_comp_prod : (snd S T).comp (f.prod g) = g :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 theorem prod_unique (f : R →+* S × T) : ((fst S T).comp f).prod ((snd S T).comp f) = f :=
-  ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply]
+  ext fun x ↦ by simp only [prod_apply, coe_fst, coe_snd, comp_apply]
 
 end Prod
 
@@ -266,12 +266,12 @@ theorem coe_prodComm_symm : ⇑(prodComm : R × S ≃+* S × R).symm = Prod.swap
 @[simp]
 theorem fst_comp_coe_prodComm :
     (RingHom.fst S R).comp ↑(prodComm : R × S ≃+* S × R) = RingHom.snd R S :=
-  RingHom.ext fun _ => rfl
+  RingHom.ext fun _ ↦ rfl
 
 @[simp]
 theorem snd_comp_coe_prodComm :
     (RingHom.snd S R).comp ↑(prodComm : R × S ≃+* S × R) = RingHom.fst R S :=
-  RingHom.ext fun _ => rfl
+  RingHom.ext fun _ ↦ rfl
 
 section
 
@@ -281,8 +281,8 @@ variable (R R' S S')
 @[simps apply]
 def prodProdProdComm : (R × R') × S × S' ≃+* (R × S) × R' × S' :=
   { AddEquiv.prodProdProdComm R R' S S', MulEquiv.prodProdProdComm R R' S S' with
-    toFun := fun rrss => ((rrss.1.1, rrss.2.1), (rrss.1.2, rrss.2.2))
-    invFun := fun rsrs => ((rsrs.1.1, rsrs.2.1), (rsrs.1.2, rsrs.2.2)) }
+    toFun := fun rrss ↦ ((rrss.1.1, rrss.2.1), (rrss.1.2, rrss.2.2))
+    invFun := fun rsrs ↦ ((rsrs.1.1, rsrs.2.1), (rsrs.1.2, rsrs.2.2)) }
 
 @[simp]
 theorem prodProdProdComm_symm : (prodProdProdComm R R' S S').symm = prodProdProdComm R S R' S' :=

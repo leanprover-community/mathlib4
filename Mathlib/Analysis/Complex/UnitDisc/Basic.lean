@@ -133,7 +133,7 @@ instance isScalarTower_closedBall : IsScalarTower (closedBall (0 : ℂ) 1) 𝔻 
   isScalarTower_closedBall_ball_ball
 
 instance instSMulCommClass_closedBall : SMulCommClass (closedBall (0 : ℂ) 1) 𝔻 𝔻 :=
-  ⟨fun _ _ _ => Subtype.ext <| mul_left_comm _ _ _⟩
+  ⟨fun _ _ _ ↦ Subtype.ext <| mul_left_comm _ _ _⟩
 
 instance instSMulCommClass_closedBall' : SMulCommClass 𝔻 (closedBall (0 : ℂ) 1) 𝔻 :=
   SMulCommClass.symm _ _ _

@@ -66,13 +66,13 @@ instance : HasCokernels SemiNormedGrp₁.{u} where
       { cocone := cokernelCocone f
         isColimit :=
           isColimitAux _ (cokernelLift f)
-            (fun s => by
+            (fun s ↦ by
               ext
               apply NormedAddGroupHom.lift_mk f.1.range
               rintro _ ⟨b, rfl⟩
               change (f ≫ s.π) b = 0
               simp)
-            fun _ _ w =>
+            fun _ _ w ↦
             SemiNormedGrp₁.hom_ext <| Subtype.eq
               (NormedAddGroupHom.lift_unique f.1.range _ _ _
                 (congr_arg Subtype.val (congr_arg Hom.hom w))) }
@@ -107,18 +107,18 @@ instance hasLimit_parallelPair {V W : SemiNormedGrp.{u}} (f g : V ⟶ W) :
     Nonempty.intro
       { cone := fork f g
         isLimit :=
-          have this := fun (c : Fork f g) =>
+          have this := fun (c : Fork f g) ↦
             show NormedAddGroupHom.compHom (f - g).hom c.ι.hom = 0 by
               rw [hom_sub, AddMonoidHom.map_sub, AddMonoidHom.sub_apply, sub_eq_zero]
               exact congr_arg Hom.hom c.condition
           Fork.IsLimit.mk _
-            (fun c => ofHom <|
+            (fun c ↦ ofHom <|
               NormedAddGroupHom.ker.lift (Fork.ι c).hom _ <| this c)
-            (fun _ => SemiNormedGrp.hom_ext <| NormedAddGroupHom.ker.incl_comp_lift _ _ (this _))
-            fun c g h => by ext x; dsimp; simp_rw [← h]; rfl}
+            (fun _ ↦ SemiNormedGrp.hom_ext <| NormedAddGroupHom.ker.incl_comp_lift _ _ (this _))
+            fun c g h ↦ by ext x; dsimp; simp_rw [← h]; rfl}
 
 instance : Limits.HasEqualizers.{u, u + 1} SemiNormedGrp :=
-  @hasEqualizers_of_hasLimit_parallelPair SemiNormedGrp _ fun {_ _ f g} =>
+  @hasEqualizers_of_hasLimit_parallelPair SemiNormedGrp _ fun {_ _ f g} ↦
     SemiNormedGrp.hasLimit_parallelPair f g
 
 end EqualizersAndKernels
@@ -149,13 +149,13 @@ noncomputable
 def isColimitCokernelCocone {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) :
     IsColimit (cokernelCocone f) :=
   isColimitAux _ (cokernelLift f)
-    (fun s => by
+    (fun s ↦ by
       ext
       apply NormedAddGroupHom.lift_mk f.hom.range
       rintro _ ⟨b, rfl⟩
       change (f ≫ s.π) b = 0
       simp)
-    fun _ _ w => SemiNormedGrp.hom_ext <| NormedAddGroupHom.lift_unique f.hom.range _ _ _ <|
+    fun _ _ w ↦ SemiNormedGrp.hom_ext <| NormedAddGroupHom.lift_unique f.hom.range _ _ _ <|
       congr_arg Hom.hom w
 
 instance : HasCokernels SemiNormedGrp.{u} where

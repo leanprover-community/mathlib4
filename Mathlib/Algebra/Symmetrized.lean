@@ -217,10 +217,10 @@ instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup αˢʸᵐ :=
   unsym_injective.addCommSemigroup _ unsym_add
 
 instance addMonoid [AddMonoid α] : AddMonoid αˢʸᵐ :=
-  unsym_injective.addMonoid _ unsym_zero unsym_add fun _ _ => rfl
+  unsym_injective.addMonoid _ unsym_zero unsym_add fun _ _ ↦ rfl
 
 instance addGroup [AddGroup α] : AddGroup αˢʸᵐ :=
-  unsym_injective.addGroup _ unsym_zero unsym_add unsym_neg unsym_sub (fun _ _ => rfl) fun _ _ =>
+  unsym_injective.addGroup _ unsym_zero unsym_add unsym_neg unsym_sub (fun _ _ ↦ rfl) fun _ _ ↦
     rfl
 
 instance addCommMonoid [AddCommMonoid α] : AddCommMonoid αˢʸᵐ :=
@@ -249,22 +249,22 @@ instance nonAssocSemiring [Semiring α] [Invertible (2 : α)] : NonAssocSemiring
   { SymAlg.addCommMonoid with
     one := 1
     mul := (· * ·)
-    zero_mul := fun _ => by
+    zero_mul := fun _ ↦ by
       rw [mul_def, unsym_zero, zero_mul, mul_zero, add_zero,
         mul_zero, sym_zero]
-    mul_zero := fun _ => by
+    mul_zero := fun _ ↦ by
       rw [mul_def, unsym_zero, zero_mul, mul_zero, add_zero,
         mul_zero, sym_zero]
-    mul_one := fun _ => by
+    mul_one := fun _ ↦ by
       rw [mul_def, unsym_one, mul_one, one_mul, ← two_mul, invOf_mul_cancel_left, sym_unsym]
-    one_mul := fun _ => by
+    one_mul := fun _ ↦ by
       rw [mul_def, unsym_one, mul_one, one_mul, ← two_mul, invOf_mul_cancel_left, sym_unsym]
-    left_distrib := fun a b c => by
+    left_distrib := fun a b c ↦ by
       rw [mul_def, mul_def, mul_def, ← sym_add, ← mul_add, unsym_add, add_mul]
       congr 2
       rw [mul_add]
       abel
-    right_distrib := fun a b c => by
+    right_distrib := fun a b c ↦ by
       rw [mul_def, mul_def, mul_def, ← sym_add, ← mul_add, unsym_add, add_mul]
       congr 2
       rw [mul_add]
@@ -293,7 +293,7 @@ instance [Ring α] [Invertible (2 : α)] : CommMagma αˢʸᵐ where
 
 instance [Ring α] [Invertible (2 : α)] : IsCommJordan αˢʸᵐ where
   lmul_comm_rmul_rmul a b := by
-    have commute_half_left := fun a : α => by
+    have commute_half_left := fun a : α ↦ by
       have := (Commute.one_left a).add_left (Commute.one_left a)
       rw [one_add_one_eq_two] at this
       exact this.invOf_left.eq

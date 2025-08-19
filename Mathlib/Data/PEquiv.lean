@@ -130,7 +130,7 @@ theorem symm_injective : Function.Injective (@PEquiv.symm α β) :=
 
 theorem trans_assoc (f : α ≃. β) (g : β ≃. γ) (h : γ ≃. δ) :
     (f.trans g).trans h = f.trans (g.trans h) :=
-  ext fun _ => Option.bind_assoc _ _ _
+  ext fun _ ↦ Option.bind_assoc _ _ _
 
 theorem mem_trans (f : α ≃. β) (g : β ≃. γ) (a : α) (c : γ) :
     c ∈ f.trans g a ↔ ∃ b, b ∈ f a ∧ c ∈ g b :=
@@ -161,7 +161,7 @@ protected theorem inj (f : α ≃. β) {a₁ a₂ : α} {b : β} (h₁ : b ∈ f
 theorem injective_of_forall_ne_isSome (f : α ≃. β) (a₂ : α)
     (h : ∀ a₁ : α, a₁ ≠ a₂ → isSome (f a₁)) : Injective f :=
   HasLeftInverse.injective
-    ⟨fun b => Option.recOn b a₂ fun b' => Option.recOn (f.symm b') a₂ id, fun x => by
+    ⟨fun b ↦ Option.recOn b a₂ fun b' ↦ Option.recOn (f.symm b') a₂ id, fun x ↦ by
       classical
         cases hfx : f x
         · have : x = a₂ := not_imp_comm.1 (h x) (hfx.symm ▸ by simp)
@@ -173,7 +173,7 @@ theorem injective_of_forall_ne_isSome (f : α ≃. β) (a₂ : α)
 /-- If the domain of a `PEquiv` is all of `α`, its forward direction is injective. -/
 theorem injective_of_forall_isSome {f : α ≃. β} (h : ∀ a : α, isSome (f a)) : Injective f :=
   (Classical.em (Nonempty α)).elim
-    (fun hn => injective_of_forall_ne_isSome f (Classical.choice hn) fun a _ => h a) fun hn x =>
+    (fun hn ↦ injective_of_forall_ne_isSome f (Classical.choice hn) fun a _ ↦ h a) fun hn x ↦
     (hn ⟨x⟩).elim
 
 section OfSet
@@ -226,11 +226,11 @@ theorem ofSet_univ : ofSet Set.univ = PEquiv.refl α :=
 @[simp]
 theorem ofSet_eq_refl {s : Set α} [DecidablePred (· ∈ s)] :
     ofSet s = PEquiv.refl α ↔ s = Set.univ :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [Set.eq_univ_iff_forall]
     intro
     rw [← mem_ofSet_self_iff, h]
-    exact rfl, fun h => by simp only [← ofSet_univ, h]⟩
+    exact rfl, fun h ↦ by simp only [← ofSet_univ, h]⟩
 
 end OfSet
 
@@ -255,8 +255,8 @@ theorem trans_symm_eq_iff_forall_isSome {f : α ≃. β} :
   rw [self_trans_symm, ofSet_eq_refl, Set.eq_univ_iff_forall]; rfl
 
 instance instBotPEquiv : Bot (α ≃. β) :=
-  ⟨{  toFun := fun _ => none
-      invFun := fun _ => none
+  ⟨{  toFun := fun _ ↦ none
+      invFun := fun _ ↦ none
       inv := by simp }⟩
 
 instance : Inhabited (α ≃. β) :=
@@ -368,21 +368,21 @@ instance instPartialOrderPEquiv : PartialOrder (α ≃. β) where
       (by
         intro a
         rcases h : g a with _ | b
-        · exact eq_none_iff_forall_not_mem.2 fun b hb => Option.not_mem_none b <| h ▸ fg a b hb
+        · exact eq_none_iff_forall_not_mem.2 fun b hb ↦ Option.not_mem_none b <| h ▸ fg a b hb
         · exact gf _ _ h)
 
 theorem le_def {f g : α ≃. β} : f ≤ g ↔ ∀ (a : α) (b : β), b ∈ f a → b ∈ g a :=
   Iff.rfl
 
 instance : OrderBot (α ≃. β) :=
-  { instBotPEquiv with bot_le := fun _ _ _ h => (not_mem_none _ h).elim }
+  { instBotPEquiv with bot_le := fun _ _ _ h ↦ (not_mem_none _ h).elim }
 
 instance [DecidableEq α] [DecidableEq β] : SemilatticeInf (α ≃. β) :=
   { instPartialOrderPEquiv with
-    inf := fun f g =>
-      { toFun := fun a => if f a = g a then f a else none
-        invFun := fun b => if f.symm b = g.symm b then f.symm b else none
-        inv := fun a b => by
+    inf := fun f g ↦
+      { toFun := fun a ↦ if f a = g a then f a else none
+        invFun := fun b ↦ if f.symm b = g.symm b then f.symm b else none
+        inv := fun a b ↦ by
           have hf := @mem_iff_mem _ _ f a b
           have hg := @mem_iff_mem _ _ g a b
           simp only [Option.mem_def] at *
@@ -397,9 +397,9 @@ instance [DecidableEq α] [DecidableEq β] : SemilatticeInf (α ≃. β) :=
             rw [← h2] at hg
             simp only [iff_true] at hf hg
             rw [hf, hg] }
-    inf_le_left := fun _ _ _ _ => by simp only [coe_mk, mem_def]; split_ifs <;> simp [*]
-    inf_le_right := fun _ _ _ _ => by simp only [coe_mk, mem_def]; split_ifs <;> simp [*]
-    le_inf := fun f g h fg gh a b => by
+    inf_le_left := fun _ _ _ _ ↦ by simp only [coe_mk, mem_def]; split_ifs <;> simp [*]
+    inf_le_right := fun _ _ _ _ ↦ by simp only [coe_mk, mem_def]; split_ifs <;> simp [*]
+    le_inf := fun f g h fg gh a b ↦ by
       intro H
       have hf := fg a b H
       have hg := gh a b H

@@ -98,7 +98,7 @@ theorem norm_eq_of_angle_sub_eq_angle_sub_rev_of_angle_ne_pi {x y : V}
   · rw [← norm_neg (y - x), neg_sub, mul_comm, mul_comm ‖y‖, div_eq_mul_inv, div_eq_mul_inv,
       mul_inv_rev, mul_inv_rev, ← mul_assoc, ← mul_assoc] at h
     replace h :=
-      mul_right_cancel₀ (inv_ne_zero fun hz => hxy (eq_of_sub_eq_zero (norm_eq_zero.1 hz))) h
+      mul_right_cancel₀ (inv_ne_zero fun hz ↦ hxy (eq_of_sub_eq_zero (norm_eq_zero.1 hz))) h
     rw [inner_sub_right, inner_sub_right, real_inner_comm x y, real_inner_self_eq_norm_mul_norm,
       real_inner_self_eq_norm_mul_norm, mul_sub_right_distrib, mul_sub_right_distrib,
       mul_self_mul_inv, mul_self_mul_inv, sub_eq_sub_iff_sub_eq_sub, ← mul_sub_left_distrib] at h
@@ -108,7 +108,7 @@ theorem norm_eq_of_angle_sub_eq_angle_sub_rev_of_angle_ne_pi {x y : V}
     · by_cases hy0 : y = 0
       · rw [hy0, norm_zero, inner_zero_right, zero_mul, sub_zero] at h
         rw [hy0, norm_zero, h]
-      · rw [inv_sub_inv (fun hz => hx0 (norm_eq_zero.1 hz)) fun hz => hy0 (norm_eq_zero.1 hz), ←
+      · rw [inv_sub_inv (fun hz ↦ hx0 (norm_eq_zero.1 hz)) fun hz ↦ hy0 (norm_eq_zero.1 hz), ←
           neg_sub, ← mul_div_assoc, mul_comm, mul_div_assoc, ← mul_neg_one] at h
         symm
         by_contra hyx
@@ -124,9 +124,9 @@ theorem cos_angle_sub_add_angle_sub_rev_eq_neg_cos_angle {x y : V} (hx : x ≠ 0
   · rw [hxy, angle_self hy]
     simp
   · rw [Real.cos_add, cos_angle, cos_angle, cos_angle]
-    have hxn : ‖x‖ ≠ 0 := fun h => hx (norm_eq_zero.1 h)
-    have hyn : ‖y‖ ≠ 0 := fun h => hy (norm_eq_zero.1 h)
-    have hxyn : ‖x - y‖ ≠ 0 := fun h => hxy (eq_of_sub_eq_zero (norm_eq_zero.1 h))
+    have hxn : ‖x‖ ≠ 0 := fun h ↦ hx (norm_eq_zero.1 h)
+    have hyn : ‖y‖ ≠ 0 := fun h ↦ hy (norm_eq_zero.1 h)
+    have hxyn : ‖x - y‖ ≠ 0 := fun h ↦ hxy (eq_of_sub_eq_zero (norm_eq_zero.1 h))
     apply mul_right_cancel₀ hxn
     apply mul_right_cancel₀ hyn
     apply mul_right_cancel₀ hxyn
@@ -165,9 +165,9 @@ theorem sin_angle_sub_add_angle_sub_rev_eq_sin_angle {x y : V} (hx : x ≠ 0) (h
   · rw [hxy, angle_self hy]
     simp
   · rw [Real.sin_add, cos_angle, cos_angle]
-    have hxn : ‖x‖ ≠ 0 := fun h => hx (norm_eq_zero.1 h)
-    have hyn : ‖y‖ ≠ 0 := fun h => hy (norm_eq_zero.1 h)
-    have hxyn : ‖x - y‖ ≠ 0 := fun h => hxy (eq_of_sub_eq_zero (norm_eq_zero.1 h))
+    have hxn : ‖x‖ ≠ 0 := fun h ↦ hx (norm_eq_zero.1 h)
+    have hyn : ‖y‖ ≠ 0 := fun h ↦ hy (norm_eq_zero.1 h)
+    have hxyn : ‖x - y‖ ≠ 0 := fun h ↦ hxy (eq_of_sub_eq_zero (norm_eq_zero.1 h))
     apply mul_right_cancel₀ hxn
     apply mul_right_cancel₀ hyn
     apply mul_right_cancel₀ hxyn
@@ -340,7 +340,7 @@ theorem angle_add_angle_add_angle_eq_pi {p₁ p₂ : P} (p₃ : P) (h : p₂ ≠
   rw [← angle_neg_neg (p₁ -ᵥ p₃), ← angle_neg_neg (p₁ -ᵥ p₂), neg_vsub_eq_vsub_rev,
     neg_vsub_eq_vsub_rev, neg_vsub_eq_vsub_rev, neg_vsub_eq_vsub_rev, ←
     vsub_sub_vsub_cancel_right p₃ p₂ p₁, ← vsub_sub_vsub_cancel_right p₂ p₃ p₁]
-  exact angle_add_angle_sub_add_angle_sub_eq_pi _ fun he => h (vsub_eq_zero_iff_eq.1 he)
+  exact angle_add_angle_sub_add_angle_sub_eq_pi _ fun he ↦ h (vsub_eq_zero_iff_eq.1 he)
 
 /-- The **sum of the angles of a triangle** (possibly degenerate, where the triangle is a line),
 oriented angles at point. -/

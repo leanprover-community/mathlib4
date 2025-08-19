@@ -23,11 +23,11 @@ we can define `P` for all natural numbers. -/
 def recOnPrimePow {motive : ℕ → Sort*} (zero : motive 0) (one : motive 1)
     (prime_pow_mul : ∀ a p n : ℕ, p.Prime → ¬p ∣ a → 0 < n → motive a → motive (p ^ n * a))
     (a : ℕ) : motive a :=
-  Nat.strongRecOn' a fun n =>
+  Nat.strongRecOn' a fun n ↦
     match n with
-    | 0 => fun _ => zero
-    | 1 => fun _ => one
-    | k + 2 => fun hk => by
+    | 0 => fun _ ↦ zero
+    | 1 => fun _ ↦ one
+    | k + 2 => fun hk ↦ by
       letI p := (k + 2).minFac
       haveI hp : Prime p := minFac_prime (succ_succ_ne_one k)
       letI t := (k + 2).factorization p
@@ -65,7 +65,7 @@ def recOnPrimeCoprime {motive : ℕ → Sort*} (zero : motive 0)
     (prime_pow : ∀ p n : ℕ, Prime p → motive (p ^ n))
     (coprime : ∀ a b, 1 < a → 1 < b → Coprime a b → motive a → motive b → motive (a * b)) :
     ∀ a, motive a :=
-  recOnPosPrimePosCoprime (fun p n h _ => prime_pow p n h) zero (prime_pow 2 0 prime_two) coprime
+  recOnPosPrimePosCoprime (fun p n h _ ↦ prime_pow p n h) zero (prime_pow 2 0 prime_two) coprime
 
 /-- Given `P 0`, `P 1`, `P p` for all primes, and a way to extend `P a` and `P b` to
 `P (a * b)`, we can define `P` for all natural numbers. -/
@@ -74,8 +74,8 @@ def recOnMul {motive : ℕ → Sort*} (zero : motive 0) (one : motive 1)
     (prime : ∀ p, Prime p → motive p)
     (mul : ∀ a b, motive a → motive b → motive (a * b)) : ∀ a, motive a :=
   recOnPrimeCoprime zero
-    (fun p n hp' => Nat.rec one (fun _ ih => mul _ _ ih (prime p hp')) n)
-    (fun a b _ _ _ => mul a b)
+    (fun p n hp' ↦ Nat.rec one (fun _ ih ↦ mul _ _ ih (prime p hp')) n)
+    (fun a b _ _ _ ↦ mul a b)
 
 lemma _root_.induction_on_primes {motive : ℕ → Prop} (zero : motive 0) (one : motive 1)
     (prime_mul : ∀ p a : ℕ, p.Prime → motive a → motive (p * a)) : ∀ n, motive n := by
@@ -102,7 +102,7 @@ lemma prime_composite_induction {motive : ℕ → Prop} (zero : motive 0) (one :
 we can evaluate `f n` by evaluating `f` at `p ^ k` over the factorization of `n` -/
 theorem multiplicative_factorization {β : Type*} [CommMonoid β] (f : ℕ → β)
     (h_mult : ∀ x y : ℕ, Coprime x y → f (x * y) = f x * f y) (hf : f 1 = 1) :
-    ∀ {n : ℕ}, n ≠ 0 → f n = n.factorization.prod fun p k => f (p ^ k) := by
+    ∀ {n : ℕ}, n ≠ 0 → f n = n.factorization.prod fun p k ↦ f (p ^ k) := by
   apply Nat.recOnPosPrimePosCoprime
   · rintro p k hp - -
     simp [Prime.factorization_pow hp, Finsupp.prod_single_index _, hf]
@@ -119,7 +119,7 @@ theorem multiplicative_factorization {β : Type*} [CommMonoid β] (f : ℕ → �
 we can evaluate `f n` by evaluating `f` at `p ^ k` over the factorization of `n` -/
 theorem multiplicative_factorization' {β : Type*} [CommMonoid β] (f : ℕ → β)
     (h_mult : ∀ x y : ℕ, Coprime x y → f (x * y) = f x * f y) (hf0 : f 0 = 1) (hf1 : f 1 = 1) :
-    f n = n.factorization.prod fun p k => f (p ^ k) := by
+    f n = n.factorization.prod fun p k ↦ f (p ^ k) := by
   obtain rfl | hn := eq_or_ne n 0
   · simpa
   · exact multiplicative_factorization _ h_mult hf1 hn

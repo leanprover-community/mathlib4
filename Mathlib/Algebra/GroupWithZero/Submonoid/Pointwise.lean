@@ -58,9 +58,9 @@ This is available as an instance in the `Pointwise` locale. -/
 protected def pointwiseMulAction : MulAction M (AddSubmonoid A) where
   smul a S := S.map (DistribMulAction.toAddMonoidEnd _ A a)
   one_smul S :=
-    (congr_arg (fun f : AddMonoid.End A => S.map f) (MonoidHom.map_one _)).trans S.map_id
+    (congr_arg (fun f : AddMonoid.End A ↦ S.map f) (MonoidHom.map_one _)).trans S.map_id
   mul_smul _ _ S :=
-    (congr_arg (fun f : AddMonoid.End A => S.map f) (MonoidHom.map_mul _ _ _)).trans
+    (congr_arg (fun f : AddMonoid.End A ↦ S.map f) (MonoidHom.map_mul _ _ _)).trans
       (S.map_map _ _).symm
 
 scoped[Pointwise] attribute [instance] AddSubmonoid.pointwiseMulAction
@@ -87,8 +87,8 @@ lemma smul_closure (m : M) (s : Set A) : m • closure s = closure (m • s) :=
 
 lemma pointwise_isCentralScalar [DistribMulAction Mᵐᵒᵖ A] [IsCentralScalar M A] :
     IsCentralScalar M (AddSubmonoid A) :=
-  ⟨fun _ S =>
-    (congr_arg fun f : AddMonoid.End A => S.map f) <| AddMonoidHom.ext <| op_smul_eq_smul _⟩
+  ⟨fun _ S ↦
+    (congr_arg fun f : AddMonoid.End A ↦ S.map f) <| AddMonoidHom.ext <| op_smul_eq_smul _⟩
 
 scoped[Pointwise] attribute [instance] AddSubmonoid.pointwise_isCentralScalar
 

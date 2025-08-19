@@ -44,7 +44,7 @@ variable {ι : Type*} (𝕜)
 
 /-- An orthonormal set of vectors in an `InnerProductSpace` -/
 def Orthonormal (v : ι → E) : Prop :=
-  (∀ i, ‖v i‖ = 1) ∧ Pairwise fun i j => ⟪v i, v j⟫ = 0
+  (∀ i, ‖v i‖ = 1) ∧ Pairwise fun i j ↦ ⟪v i, v j⟫ = 0
 
 variable {𝕜}
 
@@ -140,13 +140,13 @@ theorem Orthonormal.inner_left_fintype [Fintype ι] {v : ι → E} (hv : Orthono
 /-- The inner product of two linear combinations of a set of orthonormal vectors, expressed as
 a sum over the first `Finsupp`. -/
 theorem Orthonormal.inner_finsupp_eq_sum_left {v : ι → E} (hv : Orthonormal 𝕜 v) (l₁ l₂ : ι →₀ 𝕜) :
-    ⟪linearCombination 𝕜 v l₁, linearCombination 𝕜 v l₂⟫ = l₁.sum fun i y => conj y * l₂ i := by
+    ⟪linearCombination 𝕜 v l₁, linearCombination 𝕜 v l₂⟫ = l₁.sum fun i y ↦ conj y * l₂ i := by
   simp only [l₁.linearCombination_apply _, Finsupp.sum_inner, hv.inner_right_finsupp, smul_eq_mul]
 
 /-- The inner product of two linear combinations of a set of orthonormal vectors, expressed as
 a sum over the second `Finsupp`. -/
 theorem Orthonormal.inner_finsupp_eq_sum_right {v : ι → E} (hv : Orthonormal 𝕜 v) (l₁ l₂ : ι →₀ 𝕜) :
-    ⟪linearCombination 𝕜 v l₁, linearCombination 𝕜 v l₂⟫ = l₂.sum fun i y => conj (l₁ i) * y := by
+    ⟪linearCombination 𝕜 v l₁, linearCombination 𝕜 v l₂⟫ = l₂.sum fun i y ↦ conj (l₁ i) * y := by
   simp only [l₂.linearCombination_apply _, Finsupp.inner_sum, hv.inner_left_finsupp, mul_comm,
              smul_eq_mul]
 
@@ -155,7 +155,7 @@ a sum. -/
 protected theorem Orthonormal.inner_sum {v : ι → E} (hv : Orthonormal 𝕜 v) (l₁ l₂ : ι → 𝕜)
     (s : Finset ι) : ⟪∑ i ∈ s, l₁ i • v i, ∑ i ∈ s, l₂ i • v i⟫ = ∑ i ∈ s, conj (l₁ i) * l₂ i := by
   simp_rw [sum_inner, inner_smul_left]
-  refine Finset.sum_congr rfl fun i hi => ?_
+  refine Finset.sum_congr rfl fun i hi ↦ ?_
   rw [hv.inner_right_sum l₂ hi]
 
 /--
@@ -191,7 +191,7 @@ orthonormal. -/
 theorem orthonormal_subtype_range {v : ι → E} (hv : Function.Injective v) :
     Orthonormal 𝕜 (Subtype.val : Set.range v → E) ↔ Orthonormal 𝕜 v := by
   let f : ι ≃ Set.range v := Equiv.ofInjective v hv
-  refine ⟨fun h => h.comp f f.injective, fun h => ?_⟩
+  refine ⟨fun h ↦ h.comp f f.injective, fun h ↦ ?_⟩
   rw [← Equiv.self_comp_ofInjective_symm hv]
   exact h.comp f.symm f.symm.injective
 
@@ -226,26 +226,26 @@ adapted from the corresponding development of the theory of linearly independent
 `exists_linearIndependent` in particular. -/
 variable (𝕜 E)
 
-theorem orthonormal_empty : Orthonormal 𝕜 (fun x => x : (∅ : Set E) → E) := by
+theorem orthonormal_empty : Orthonormal 𝕜 (fun x ↦ x : (∅ : Set E) → E) := by
   classical
   simp
 
 variable {𝕜 E}
 
 theorem orthonormal_iUnion_of_directed {η : Type*} {s : η → Set E} (hs : Directed (· ⊆ ·) s)
-    (h : ∀ i, Orthonormal 𝕜 (fun x => x : s i → E)) :
-    Orthonormal 𝕜 (fun x => x : (⋃ i, s i) → E) := by
+    (h : ∀ i, Orthonormal 𝕜 (fun x ↦ x : s i → E)) :
+    Orthonormal 𝕜 (fun x ↦ x : (⋃ i, s i) → E) := by
   classical
   rw [orthonormal_subtype_iff_ite]
   rintro x ⟨_, ⟨i, rfl⟩, hxi⟩ y ⟨_, ⟨j, rfl⟩, hyj⟩
   obtain ⟨k, hik, hjk⟩ := hs i j
-  have h_orth : Orthonormal 𝕜 (fun x => x : s k → E) := h k
+  have h_orth : Orthonormal 𝕜 (fun x ↦ x : s k → E) := h k
   rw [orthonormal_subtype_iff_ite] at h_orth
   exact h_orth x (hik hxi) y (hjk hyj)
 
 theorem orthonormal_sUnion_of_directed {s : Set (Set E)} (hs : DirectedOn (· ⊆ ·) s)
-    (h : ∀ a ∈ s, Orthonormal 𝕜 (fun x => ((x : a) : E))) :
-    Orthonormal 𝕜 (fun x => x : ⋃₀ s → E) := by
+    (h : ∀ a ∈ s, Orthonormal 𝕜 (fun x ↦ ((x : a) : E))) :
+    Orthonormal 𝕜 (fun x ↦ x : ⋃₀ s → E) := by
   rw [Set.sUnion_eq_iUnion]; exact orthonormal_iUnion_of_directed hs.directed_val (by simpa using h)
 
 /-- Given an orthonormal set `v` of vectors in `E`, there exists a maximal orthonormal set
@@ -255,10 +255,10 @@ theorem exists_maximal_orthonormal {s : Set E} (hs : Orthonormal 𝕜 (Subtype.v
       ∀ u ⊇ w, Orthonormal 𝕜 (Subtype.val : u → E) → u = w := by
   have := zorn_subset_nonempty { b | Orthonormal 𝕜 (Subtype.val : b → E) } ?_ _ hs
   · obtain ⟨b, hb⟩ := this
-    exact ⟨b, hb.1, hb.2.1, fun u hus hu => hb.2.eq_of_ge hu hus⟩
-  · refine fun c hc cc _c0 => ⟨⋃₀ c, ?_, ?_⟩
-    · exact orthonormal_sUnion_of_directed cc.directedOn fun x xc => hc xc
-    · exact fun _ => Set.subset_sUnion_of_mem
+    exact ⟨b, hb.1, hb.2.1, fun u hus hu ↦ hb.2.eq_of_ge hu hus⟩
+  · refine fun c hc cc _c0 ↦ ⟨⋃₀ c, ?_, ?_⟩
+    · exact orthonormal_sUnion_of_directed cc.directedOn fun x xc ↦ hc xc
+    · exact fun _ ↦ Set.subset_sUnion_of_mem
 
 open Module
 
@@ -318,7 +318,7 @@ theorem Orthonormal.mapLinearIsometryEquiv {v : Basis ι 𝕜 E} (hv : Orthonorm
 /-- A linear map that sends an orthonormal basis to orthonormal vectors is a linear isometry. -/
 def LinearMap.isometryOfOrthonormal (f : E →ₗ[𝕜] E') {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v)
     (hf : Orthonormal 𝕜 (f ∘ v)) : E →ₗᵢ[𝕜] E' :=
-  f.isometryOfInner fun x y => by
+  f.isometryOfInner fun x y ↦ by
     classical rw [← v.linearCombination_repr x, ← v.linearCombination_repr y,
       Finsupp.apply_linearCombination, Finsupp.apply_linearCombination,
       hv.inner_finsupp_eq_sum_left, hf.inner_finsupp_eq_sum_left]
@@ -338,7 +338,7 @@ theorem LinearMap.isometryOfOrthonormal_toLinearMap (f : E →ₗ[𝕜] E') {v :
 isometric equivalence. -/
 def LinearEquiv.isometryOfOrthonormal (f : E ≃ₗ[𝕜] E') {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v)
     (hf : Orthonormal 𝕜 (f ∘ v)) : E ≃ₗᵢ[𝕜] E' :=
-  f.isometryOfInner fun x y => by
+  f.isometryOfInner fun x y ↦ by
     rw [← LinearEquiv.coe_coe] at hf
     classical rw [← v.linearCombination_repr x, ← v.linearCombination_repr y,
       ← LinearEquiv.coe_coe f, Finsupp.apply_linearCombination,
@@ -382,7 +382,7 @@ theorem Orthonormal.equiv_apply {ι' : Type*} {v : Basis ι 𝕜 E} (hv : Orthon
 theorem Orthonormal.equiv_trans {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v) {v' : Basis ι' 𝕜 E'}
     (hv' : Orthonormal 𝕜 v') (e : ι ≃ ι') {v'' : Basis ι'' 𝕜 E''} (hv'' : Orthonormal 𝕜 v'')
     (e' : ι' ≃ ι'') : (hv.equiv hv' e).trans (hv'.equiv hv'' e') = hv.equiv hv'' (e.trans e') :=
-  v.ext_linearIsometryEquiv fun i => by
+  v.ext_linearIsometryEquiv fun i ↦ by
     simp only [LinearIsometryEquiv.trans_apply, Orthonormal.equiv_apply, e.coe_trans,
       Function.comp_apply]
 
@@ -400,13 +400,13 @@ variable {ι : Type*} {ι' : Type*} {E' : Type*} [SeminormedAddCommGroup E'] [In
 @[simp]
 theorem Orthonormal.equiv_refl {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v) :
     hv.equiv hv (Equiv.refl ι) = LinearIsometryEquiv.refl 𝕜 E :=
-  v.ext_linearIsometryEquiv fun i => by
+  v.ext_linearIsometryEquiv fun i ↦ by
     simp only [Orthonormal.equiv_apply, Equiv.coe_refl, id, LinearIsometryEquiv.coe_refl]
 
 @[simp]
 theorem Orthonormal.equiv_symm {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v) {v' : Basis ι' 𝕜 E'}
     (hv' : Orthonormal 𝕜 v') (e : ι ≃ ι') : (hv.equiv hv' e).symm = hv'.equiv hv e.symm :=
-  v'.ext_linearIsometryEquiv fun i =>
+  v'.ext_linearIsometryEquiv fun i ↦
     (hv.equiv hv' e).injective <| by
       simp only [LinearIsometryEquiv.apply_symm_apply, Orthonormal.equiv_apply, e.apply_symm_apply]
 
@@ -444,12 +444,12 @@ theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜
 /-- Bessel's inequality. -/
 theorem Orthonormal.tsum_inner_products_le (hv : Orthonormal 𝕜 v) :
     ∑' i, ‖⟪v i, x⟫‖ ^ 2 ≤ ‖x‖ ^ 2 := by
-  refine tsum_le_of_sum_le' ?_ fun s => hv.sum_inner_products_le x
+  refine tsum_le_of_sum_le' ?_ fun s ↦ hv.sum_inner_products_le x
   simp only [norm_nonneg, pow_nonneg]
 
 /-- The sum defined in Bessel's inequality is summable. -/
 theorem Orthonormal.inner_products_summable (hv : Orthonormal 𝕜 v) :
-    Summable fun i => ‖⟪v i, x⟫‖ ^ 2 := by
+    Summable fun i ↦ ‖⟪v i, x⟫‖ ^ 2 := by
   use ⨆ s : Finset ι, ∑ i ∈ s, ‖⟪v i, x⟫‖ ^ 2
   apply hasSum_of_isLUB_of_nonneg
   · intro b

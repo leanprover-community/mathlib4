@@ -82,11 +82,11 @@ which is close to the deterministic timeout limit.
 def rootSpaceWeightSpaceProductAux {χ₁ χ₂ χ₃ : H → R} (hχ : χ₁ + χ₂ = χ₃) :
     rootSpace H χ₁ →ₗ[R] genWeightSpace M χ₂ →ₗ[R] genWeightSpace M χ₃ where
   toFun x :=
-    { toFun := fun m =>
+    { toFun := fun m ↦
         ⟨⁅(x : L), (m : M)⁆,
           hχ ▸ lie_mem_genWeightSpace_of_mem_genWeightSpace x.property m.property⟩
-      map_add' := fun m n => by simp only [LieSubmodule.coe_add, lie_add, AddMemClass.mk_add_mk]
-      map_smul' := fun t m => by simp }
+      map_add' := fun m n ↦ by simp only [LieSubmodule.coe_add, lie_add, AddMemClass.mk_add_mk]
+      map_smul' := fun t m ↦ by simp }
   map_add' x y := by
     ext m
     simp only [LieSubmodule.coe_add, add_lie, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.add_apply,
@@ -103,7 +103,7 @@ def rootSpaceWeightSpaceProduct (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ�
     rootSpace H χ₁ ⊗[R] genWeightSpace M χ₂ →ₗ⁅R,H⁆ genWeightSpace M χ₃ :=
   liftLie R H (rootSpace H χ₁) (genWeightSpace M χ₂) (genWeightSpace M χ₃)
     { toLinearMap := rootSpaceWeightSpaceProductAux R L H M hχ
-      map_lie' := fun {x y} => by
+      map_lie' := fun {x y} ↦ by
         ext m
         simp only [rootSpaceWeightSpaceProductAux]
         dsimp
@@ -142,7 +142,7 @@ theorem rootSpaceProduct_tmul
 subalgebra of `L`. -/
 def zeroRootSubalgebra : LieSubalgebra R L :=
   { toSubmodule := (rootSpace H 0 : Submodule R L)
-    lie_mem' := fun {x y hx hy} => by
+    lie_mem' := fun {x y hx hy} ↦ by
       let xy : rootSpace H 0 ⊗[R] rootSpace H 0 := ⟨x, hx⟩ ⊗ₜ ⟨y, hy⟩
       suffices (rootSpaceProduct R L H 0 0 0 (add_zero 0) xy : L) ∈ rootSpace H 0 by
         rwa [rootSpaceProduct_tmul, Subtype.coe_mk, Subtype.coe_mk] at this
@@ -218,7 +218,7 @@ theorem is_cartan_of_zeroRootSubalgebra_eq (h : zeroRootSubalgebra R L H = H) :
 theorem zeroRootSubalgebra_eq_of_is_cartan (H : LieSubalgebra R L) [H.IsCartanSubalgebra]
     [IsNoetherian R L] : zeroRootSubalgebra R L H = H := by
   refine le_antisymm ?_ (le_zeroRootSubalgebra R L H)
-  suffices rootSpace H 0 ≤ H.toLieSubmodule by exact fun x hx => this hx
+  suffices rootSpace H 0 ≤ H.toLieSubmodule by exact fun x hx ↦ this hx
   obtain ⟨k, hk⟩ := (rootSpace H 0).isNilpotent_iff_exists_self_le_ucs.mp (by infer_instance)
   exact hk.trans (LieSubmodule.ucs_le_of_normalizer_eq_self (by simp) k)
 

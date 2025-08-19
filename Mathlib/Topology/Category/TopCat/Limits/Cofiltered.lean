@@ -42,12 +42,12 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
     IsTopologicalBasis
       {U : Set C.pt | ∃ (j : _) (V : Set (F.obj j)), V ∈ T j ∧ U = C.π.app j ⁻¹' V} := by
   classical
-  convert IsTopologicalBasis.iInf_induced hT fun j (x : C.pt) => C.π.app j x using 1
+  convert IsTopologicalBasis.iInf_induced hT fun j (x : C.pt) ↦ C.π.app j x using 1
   · exact induced_of_isLimit C hC
   ext U0
   constructor
   · rintro ⟨j, V, hV, rfl⟩
-    let U : ∀ i, Set (F.obj i) := fun i => if h : i = j then by rw [h]; exact V else Set.univ
+    let U : ∀ i, Set (F.obj i) := fun i ↦ if h : i = j then by rw [h]; exact V else Set.univ
     refine ⟨U, {j}, ?_, ?_⟩
     · simp only [Finset.mem_singleton]
       rintro i rfl
@@ -55,8 +55,8 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
     · simp [U]
   · rintro ⟨U, G, h1, h2⟩
     obtain ⟨j, hj⟩ := IsCofiltered.inf_objs_exists G
-    let g : ∀ e ∈ G, j ⟶ e := fun _ he => (hj he).some
-    let Vs : J → Set (F.obj j) := fun e => if h : e ∈ G then F.map (g e h) ⁻¹' U e else Set.univ
+    let g : ∀ e ∈ G, j ⟶ e := fun _ he ↦ (hj he).some
+    let Vs : J → Set (F.obj j) := fun e ↦ if h : e ∈ G then F.map (g e h) ⁻¹' U e else Set.univ
     let V : Set (F.obj j) := ⋂ (e : J) (_he : e ∈ G), Vs e
     refine ⟨j, V, ?_, ?_⟩
     · -- An intermediate claim used to apply induction along `G : Finset J` later on.

@@ -157,7 +157,7 @@ theorem ext {f g : α →+*o β} (h : ∀ a, f a = g a) : f = g :=
 
 @[simp]
 theorem toRingHom_eq_coe (f : α →+*o β) : f.toRingHom = f :=
-  RingHom.ext fun _ => rfl
+  RingHom.ext fun _ ↦ rfl
 
 @[simp]
 theorem toOrderAddMonoidHom_eq_coe (f : α →+*o β) : f.toOrderAddMonoidHom = f :=
@@ -262,12 +262,12 @@ theorem id_comp (f : α →+*o β) : (OrderRingHom.id β).comp f = f :=
 @[simp]
 theorem cancel_right {f₁ f₂ : β →+*o γ} {g : α →+*o β} (hg : Surjective g) :
     f₁.comp g = f₂.comp g ↔ f₁ = f₂ :=
-  ⟨fun h => ext <| hg.forall.2 <| DFunLike.ext_iff.1 h, fun h => by rw [h]⟩
+  ⟨fun h ↦ ext <| hg.forall.2 <| DFunLike.ext_iff.1 h, fun h ↦ by rw [h]⟩
 
 @[simp]
 theorem cancel_left {f : β →+*o γ} {g₁ g₂ : α →+*o β} (hf : Injective f) :
     f.comp g₁ = f.comp g₂ ↔ g₁ = g₂ :=
-  ⟨fun h => ext fun a => hf <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+  ⟨fun h ↦ ext fun a ↦ hf <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 end Preorder
 
@@ -325,11 +325,11 @@ theorem coe_mk (e : α ≃+* β) (h) : ⇑(⟨e, h⟩ : α ≃+*o β) = e :=
 
 @[simp]
 theorem mk_coe (e : α ≃+*o β) (h) : (⟨e, h⟩ : α ≃+*o β) = e :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem toRingEquiv_eq_coe (f : α ≃+*o β) : f.toRingEquiv = f :=
-  RingEquiv.ext fun _ => rfl
+  RingEquiv.ext fun _ ↦ rfl
 
 @[simp]
 theorem toOrderIso_eq_coe (f : α ≃+*o β) : f.toOrderIso = f :=
@@ -422,7 +422,7 @@ variable [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β] [Preorder β]
 
 /-- Reinterpret an ordered ring isomorphism as an ordered ring homomorphism. -/
 def toOrderRingHom (f : α ≃+*o β) : α →+*o β :=
-  ⟨f.toRingEquiv.toRingHom, fun _ _ => (map_le_map_iff f).2⟩
+  ⟨f.toRingEquiv.toRingHom, fun _ _ ↦ (map_le_map_iff f).2⟩
 
 @[simp]
 theorem toOrderRingHom_eq_coe (f : α ≃+*o β) : f.toOrderRingHom = f :=
@@ -437,7 +437,7 @@ theorem coe_toOrderRingHom_refl : (OrderRingIso.refl α : α →+*o α) = OrderR
   rfl
 
 theorem toOrderRingHom_injective : Injective (toOrderRingHom : α ≃+*o β → α →+*o β) :=
-  fun f g h => DFunLike.coe_injective <| by convert DFunLike.ext'_iff.1 h using 0
+  fun f g h ↦ DFunLike.coe_injective <| by convert DFunLike.ext'_iff.1 h using 0
 
 end NonAssocSemiring
 

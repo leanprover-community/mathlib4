@@ -101,7 +101,7 @@ theorem norm_eq_zero_iff [IsDomain R] [IsDomain S] [Module.Free R S] [Module.Fin
     rintro ⟨v, v_ne, hv⟩
     rw [← b.equivFun.apply_symm_apply v, b.equivFun_symm_apply, b.equivFun_apply,
       leftMulMatrix_mulVec_repr] at hv
-    refine (mul_eq_zero.mp (b.ext_elem fun i => ?_)).resolve_right (show ∑ i, v i • b i ≠ 0 from ?_)
+    refine (mul_eq_zero.mp (b.ext_elem fun i ↦ ?_)).resolve_right (show ∑ i, v i • b i ≠ 0 from ?_)
     · simpa only [LinearEquiv.map_zero, Pi.zero_apply] using congr_fun hv i
     · contrapose! v_ne with sum_eq
       apply b.equivFun.symm.injective
@@ -175,11 +175,11 @@ variable (F) (E : Type*) [Field E] [Algebra K E]
 theorem norm_eq_prod_embeddings_gen [Algebra R F] (pb : PowerBasis R S)
     (hE : (minpoly R pb.gen).Splits (algebraMap R F)) (hfx : IsSeparable R pb.gen) :
     algebraMap R F (norm R pb.gen) =
-      (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).prod fun σ => σ pb.gen := by
+      (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).prod fun σ ↦ σ pb.gen := by
   letI := Classical.decEq F
   rw [PowerBasis.norm_gen_eq_prod_roots pb hE]
   rw [@Fintype.prod_equiv (S →ₐ[R] F) _ _ (PowerBasis.AlgHom.fintype pb) _ _ pb.liftEquiv'
-    (fun σ => σ pb.gen) (fun x => x) ?_]
+    (fun σ ↦ σ pb.gen) (fun x ↦ x) ?_]
   · rw [Finset.prod_mem_multiset, Finset.prod_eq_multiset_prod, Multiset.toFinset_val,
       Multiset.dedup_eq_self.mpr, Multiset.map_id]
     · exact nodup_roots (.map hfx)
@@ -196,13 +196,13 @@ theorem prod_embeddings_eq_finrank_pow [Algebra L F] [IsScalarTower K L F] [IsAl
     [Algebra.IsSeparable K F] [FiniteDimensional K F] (pb : PowerBasis K L) :
     ∏ σ : F →ₐ[K] E, σ (algebraMap L F pb.gen) =
       ((@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).prod
-        fun σ : L →ₐ[K] E => σ pb.gen) ^ finrank L F := by
+        fun σ : L →ₐ[K] E ↦ σ pb.gen) ^ finrank L F := by
   haveI : FiniteDimensional L F := FiniteDimensional.right K L F
   haveI : Algebra.IsSeparable L F := Algebra.isSeparable_tower_top_of_isSeparable K L F
   letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
-  rw [Fintype.prod_equiv algHomEquivSigma (fun σ : F →ₐ[K] E => _) fun σ => σ.1 pb.gen,
+  rw [Fintype.prod_equiv algHomEquivSigma (fun σ : F →ₐ[K] E ↦ _) fun σ ↦ σ.1 pb.gen,
     ← Finset.univ_sigma_univ, Finset.prod_sigma, ← Finset.prod_pow]
-  · refine Finset.prod_congr rfl fun σ _ => ?_
+  · refine Finset.prod_congr rfl fun σ _ ↦ ?_
     letI : Algebra L E := σ.toRingHom.toAlgebra
     simp_rw [Finset.prod_const]
     congr
@@ -239,7 +239,7 @@ theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] [Algeb
     [FiniteDimensional K L] {x : L} (hx : IsIntegral R x) : IsIntegral R (norm K x) := by
   have hx' : IsIntegral K x := hx.tower_top
   rw [← isIntegral_algebraMap_iff (algebraMap K (AlgebraicClosure L)).injective, norm_eq_prod_roots]
-  · refine (IsIntegral.multiset_prod fun y hy => ?_).pow _
+  · refine (IsIntegral.multiset_prod fun y hy ↦ ?_).pow _
     rw [mem_roots_map (minpoly.ne_zero hx')] at hy
     use minpoly R x, minpoly.monic hx
     rw [← aeval_def] at hy ⊢

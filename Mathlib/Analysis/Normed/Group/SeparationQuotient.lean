@@ -51,7 +51,7 @@ noncomputable def normedMk : NormedAddGroupHom M (SeparationQuotient M) where
 
 /-- The operator norm of the projection is at most `1`. -/
 theorem norm_normedMk_le : ‖normedMk (M := M)‖ ≤ 1 :=
-  NormedAddGroupHom.opNorm_le_bound _ zero_le_one fun m => by simp
+  NormedAddGroupHom.opNorm_le_bound _ zero_le_one fun m ↦ by simp
 
 lemma apply_eq_apply_of_inseparable {F : Type*} [FunLike F M N] [AddMonoidHomClass F M N] (f : F)
     (hf : ∀ x, ‖x‖ = 0 → f x = 0) : ∀ x y, Inseparable x y → f x = f y :=
@@ -107,7 +107,7 @@ theorem liftNormedAddGroupHom_norm_le {N : Type*} [SeminormedAddCommGroup N]
 
 theorem liftNormedAddGroupHom_normNoninc {N : Type*} [SeminormedAddCommGroup N]
     (f : NormedAddGroupHom M N) (hf : ∀ s, ‖s‖ = 0 → f s = 0) (fb : f.NormNoninc) :
-    (liftNormedAddGroupHom f hf).NormNoninc := fun x => by
+    (liftNormedAddGroupHom f hf).NormNoninc := fun x ↦ by
   have fb' : ‖f‖ ≤ 1 := NormedAddGroupHom.NormNoninc.normNoninc_iff_norm_le_one.mp fb
   exact le_trans (norm_liftNormedAddGroupHom_apply_le f hf x)
     (mul_le_of_le_one_left (norm_nonneg x) fb')

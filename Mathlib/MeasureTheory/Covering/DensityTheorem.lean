@@ -55,7 +55,7 @@ irreducible_def vitaliFamily (K : ℝ) : VitaliFamily μ := by
   have A : ∀ x : α, ∃ᶠ r in 𝓝[>] (0 : ℝ),
       μ (closedBall x (3 * r)) ≤ scalingConstantOf μ (max (4 * K + 3) 3) * μ (closedBall x r) := by
     intro x
-    apply frequently_iff.2 fun {U} hU => ?_
+    apply frequently_iff.2 fun {U} hU ↦ ?_
     obtain ⟨ε, εpos, hε⟩ := mem_nhdsGT_iff_exists_Ioc_subset.1 hU
     refine ⟨min ε R, hε ⟨lt_min εpos Rpos, min_le_left _ _⟩, ?_⟩
     exact measure_mul_le_scalingConstantOf_mul μ
@@ -107,8 +107,8 @@ theorem closedBall_mem_vitaliFamily_of_dist_le_mul {K : ℝ} {x y : α} {r : ℝ
 
 theorem tendsto_closedBall_filterAt {K : ℝ} {x : α} {ι : Type*} {l : Filter ι} (w : ι → α)
     (δ : ι → ℝ) (δlim : Tendsto δ l (𝓝[>] 0)) (xmem : ∀ᶠ j in l, x ∈ closedBall (w j) (K * δ j)) :
-    Tendsto (fun j => closedBall (w j) (δ j)) l ((vitaliFamily μ K).filterAt x) := by
-  refine (vitaliFamily μ K).tendsto_filterAt_iff.mpr ⟨?_, fun ε hε => ?_⟩
+    Tendsto (fun j ↦ closedBall (w j) (δ j)) l ((vitaliFamily μ K).filterAt x) := by
+  refine (vitaliFamily μ K).tendsto_filterAt_iff.mpr ⟨?_, fun ε hε ↦ ?_⟩
   · filter_upwards [xmem, δlim self_mem_nhdsWithin] with j hj h'j
     exact closedBall_mem_vitaliFamily_of_dist_le_mul μ hj h'j
   · rcases l.eq_or_neBot with rfl | h
@@ -141,7 +141,7 @@ See also `Besicovitch.ae_tendsto_measure_inter_div`. -/
 theorem ae_tendsto_measure_inter_div (S : Set α) (K : ℝ) : ∀ᵐ x ∂μ.restrict S,
     ∀ {ι : Type*} {l : Filter ι} (w : ι → α) (δ : ι → ℝ) (_ : Tendsto δ l (𝓝[>] 0))
       (_ : ∀ᶠ j in l, x ∈ closedBall (w j) (K * δ j)),
-      Tendsto (fun j => μ (S ∩ closedBall (w j) (δ j)) / μ (closedBall (w j) (δ j))) l (𝓝 1) := by
+      Tendsto (fun j ↦ μ (S ∩ closedBall (w j) (δ j)) / μ (closedBall (w j) (δ j))) l (𝓝 1) := by
   filter_upwards [(vitaliFamily μ K).ae_tendsto_measure_inter_div S] with x hx ι l w δ δlim
     xmem using hx.comp (tendsto_closedBall_filterAt μ _ _ δlim xmem)
 
@@ -150,7 +150,7 @@ centers are not required to be fixed. -/
 theorem ae_tendsto_average_norm_sub {f : α → E} (hf : LocallyIntegrable f μ) (K : ℝ) : ∀ᵐ x ∂μ,
     ∀ {ι : Type*} {l : Filter ι} (w : ι → α) (δ : ι → ℝ) (_ : Tendsto δ l (𝓝[>] 0))
       (_ : ∀ᶠ j in l, x ∈ closedBall (w j) (K * δ j)),
-      Tendsto (fun j => ⨍ y in closedBall (w j) (δ j), ‖f y - f x‖ ∂μ) l (𝓝 0) := by
+      Tendsto (fun j ↦ ⨍ y in closedBall (w j) (δ j), ‖f y - f x‖ ∂μ) l (𝓝 0) := by
   filter_upwards [(vitaliFamily μ K).ae_tendsto_average_norm_sub hf] with x hx ι l w δ δlim
     xmem using hx.comp (tendsto_closedBall_filterAt μ _ _ δlim xmem)
 
@@ -160,7 +160,7 @@ theorem ae_tendsto_average [NormedSpace ℝ E] [CompleteSpace E]
     {f : α → E} (hf : LocallyIntegrable f μ) (K : ℝ) : ∀ᵐ x ∂μ,
       ∀ {ι : Type*} {l : Filter ι} (w : ι → α) (δ : ι → ℝ) (_ : Tendsto δ l (𝓝[>] 0))
         (_ : ∀ᶠ j in l, x ∈ closedBall (w j) (K * δ j)),
-        Tendsto (fun j => ⨍ y in closedBall (w j) (δ j), f y ∂μ) l (𝓝 (f x)) := by
+        Tendsto (fun j ↦ ⨍ y in closedBall (w j) (δ j), f y ∂μ) l (𝓝 (f x)) := by
   filter_upwards [(vitaliFamily μ K).ae_tendsto_average hf] with x hx ι l w δ δlim xmem using
     hx.comp (tendsto_closedBall_filterAt μ _ _ δlim xmem)
 

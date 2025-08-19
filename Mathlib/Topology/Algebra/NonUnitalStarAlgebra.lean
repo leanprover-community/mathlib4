@@ -126,7 +126,7 @@ instance [T2Space A] {x : A} [IsStarNormal x] : NonUnitalCommSemiring (elemental
         rw [Set.mem_singleton_iff] at hy hz
         rw [hy, hz]
       exact (star_comm_self' x).symm
-    exact fun _ _ => mul_comm _ _
+    exact fun _ _ ↦ mul_comm _ _
 
 instance {R A : Type*} [CommRing R] [StarRing R] [NonUnitalRing A] [StarRing A]
     [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A]

@@ -80,7 +80,7 @@ theorem IsQuasiSeparated.image_of_isEmbedding {s : Set α} (H : IsQuasiSeparated
 
 theorem Topology.IsOpenEmbedding.isQuasiSeparated_iff (h : IsOpenEmbedding f) {s : Set α} :
     IsQuasiSeparated s ↔ IsQuasiSeparated (f '' s) := by
-  refine ⟨fun hs => hs.image_of_isEmbedding h.isEmbedding, ?_⟩
+  refine ⟨fun hs ↦ hs.image_of_isEmbedding h.isEmbedding, ?_⟩
   intro H U V hU hU' hU'' hV hV' hV''
   rw [h.isEmbedding.isCompact_iff, Set.image_inter h.injective]
   exact
@@ -99,11 +99,11 @@ theorem IsQuasiSeparated.of_subset {s t : Set α} (ht : IsQuasiSeparated t) (h :
   exact ht U V (hU.trans h) hU' hU'' (hV.trans h) hV' hV''
 
 instance (priority := 100) T2Space.to_quasiSeparatedSpace [T2Space α] : QuasiSeparatedSpace α :=
-  ⟨fun _ _ _ hU' _ hV' => hU'.inter hV'⟩
+  ⟨fun _ _ _ hU' _ hV' ↦ hU'.inter hV'⟩
 
 instance (priority := 100) NoetherianSpace.to_quasiSeparatedSpace [NoetherianSpace α] :
     QuasiSeparatedSpace α :=
-  ⟨fun _ _ _ _ _ _ => NoetherianSpace.isCompact _⟩
+  ⟨fun _ _ _ _ _ _ ↦ NoetherianSpace.isCompact _⟩
 
 lemma QuasiSeparatedSpace.of_isTopologicalBasis {ι : Type*} {b : ι → Set α}
     (basis : IsTopologicalBasis (range b)) (isCompact_inter : ∀ i j, IsCompact (b i ∩ b j)) :

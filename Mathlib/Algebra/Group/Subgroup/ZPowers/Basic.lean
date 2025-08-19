@@ -84,7 +84,7 @@ theorem MonoidHom.map_zpowers (f : G →* N) (x : G) :
   rw [Subgroup.zpowers_eq_closure, Subgroup.zpowers_eq_closure, f.map_closure, Set.image_singleton]
 
 theorem Int.mem_zmultiples_iff {a b : ℤ} : b ∈ AddSubgroup.zmultiples a ↔ a ∣ b :=
-  exists_congr fun k => by rw [mul_comm, eq_comm, ← smul_eq_mul]
+  exists_congr fun k ↦ by rw [mul_comm, eq_comm, ← smul_eq_mul]
 
 @[simp]
 lemma Int.zmultiples_one : AddSubgroup.zmultiples (1 : ℤ) = ⊤ := by
@@ -109,7 +109,7 @@ variable {s : Set G} {g : G}
 
 @[to_additive]
 instance zpowers_isMulCommutative (g : G) : IsMulCommutative (zpowers g) :=
-  ⟨⟨fun ⟨_, _, h₁⟩ ⟨_, _, h₂⟩ => by
+  ⟨⟨fun ⟨_, _, h₁⟩ ⟨_, _, h₂⟩ ↦ by
       rw [Subtype.ext_iff, coe_mul, coe_mul, Subtype.coe_mk, Subtype.coe_mk, ← h₁, ← h₂,
         zpow_mul_comm]⟩⟩
 

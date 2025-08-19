@@ -35,14 +35,14 @@ variable {ι l m n p R S}
 /-- All the matrix entries, arranged into one column. -/
 @[simp]
 def vec (A : Matrix m n R) : n × m → R :=
-  fun ij => A ij.2 ij.1
+  fun ij ↦ A ij.2 ij.1
 
 @[simp]
 theorem vec_of (f : m → n → R) : vec (of f) = Function.uncurry (flip f) := rfl
 
 theorem vec_transpose (A : Matrix m n R) : vec Aᵀ = vec A ∘ Prod.swap := rfl
 
-theorem vec_eq_uncurry (A : Matrix m n R) : vec A = Function.uncurry fun i j => A j i := rfl
+theorem vec_eq_uncurry (A : Matrix m n R) : vec A = Function.uncurry fun i j ↦ A j i := rfl
 
 theorem vec_inj {A B : Matrix m n R} : A.vec = B.vec ↔ A = B := by
   simp_rw [← Matrix.ext_iff, funext_iff, Prod.forall, @forall_comm m n, vec]
@@ -122,11 +122,11 @@ variable [NonUnitalCommSemiring R] [Fintype m] [Fintype n]
 
 theorem kronecker_mulVec_vec (A : Matrix l m R) (X : Matrix m n R) (B : Matrix p n R) :
     (B ⊗ₖ A) *ᵥ vec X = vec (A * X * Bᵀ) :=
-  kronecker_mulVec_vec_of_commute _ _ _ fun _ _ _ => Commute.all _ _
+  kronecker_mulVec_vec_of_commute _ _ _ fun _ _ _ ↦ Commute.all _ _
 
 theorem vec_vecMul_kronecker (A : Matrix m l R) (X : Matrix m n R) (B : Matrix n p R) :
     vec X ᵥ* (B ⊗ₖ A) = vec (Aᵀ * X * B) :=
-  vec_vecMul_kronecker_of_commute _ _ _ fun _ _ _=> Commute.all _ _
+  vec_vecMul_kronecker_of_commute _ _ _ fun _ _ _↦ Commute.all _ _
 
 end NonUnitalCommSemiring
 

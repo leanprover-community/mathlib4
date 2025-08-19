@@ -57,14 +57,14 @@ theorem specializes_TFAE (x y : X) :
       closure ({ y } : Set X) ⊆ closure { x },
       ClusterPt y (pure x)] := by
   tfae_have 1 → 2 := (pure_le_nhds _).trans
-  tfae_have 2 → 3 := fun h s hso hy => h (hso.mem_nhds hy)
-  tfae_have 3 → 4 := fun h s hsc hx => of_not_not fun hy => h sᶜ hsc.isOpen_compl hy hx
-  tfae_have 4 → 5 := fun h => h _ isClosed_closure (subset_closure <| mem_singleton _)
+  tfae_have 2 → 3 := fun h s hso hy ↦ h (hso.mem_nhds hy)
+  tfae_have 3 → 4 := fun h s hsc hx ↦ of_not_not fun hy ↦ h sᶜ hsc.isOpen_compl hy hx
+  tfae_have 4 → 5 := fun h ↦ h _ isClosed_closure (subset_closure <| mem_singleton _)
   tfae_have 6 ↔ 5 := isClosed_closure.closure_subset_iff.trans singleton_subset_iff
   tfae_have 5 ↔ 7 := by
     rw [mem_closure_iff_clusterPt, principal_singleton]
   tfae_have 5 → 1 := by
-    refine fun h => (nhds_basis_opens _).ge_iff.2 ?_
+    refine fun h ↦ (nhds_basis_opens _).ge_iff.2 ?_
     rintro s ⟨hy, ho⟩
     rcases mem_closure_iff.1 h s ho hy with ⟨z, hxs, rfl : z = x⟩
     exact ho.mem_nhds hxs
@@ -92,7 +92,7 @@ theorem specializes_iff_forall_open : x ⤳ y ↔ ∀ s : Set X, IsOpen s → y 
 theorem Specializes.mem_open (h : x ⤳ y) (hs : IsOpen s) (hy : y ∈ s) : x ∈ s :=
   specializes_iff_forall_open.1 h s hs hy
 
-theorem IsOpen.not_specializes (hs : IsOpen s) (hx : x ∉ s) (hy : y ∈ s) : ¬x ⤳ y := fun h =>
+theorem IsOpen.not_specializes (hs : IsOpen s) (hx : x ∉ s) (hy : y ∈ s) : ¬x ⤳ y := fun h ↦
   hx <| h.mem_open hs hy
 
 theorem specializes_iff_forall_closed : x ⤳ y ↔ ∀ s : Set X, IsClosed s → x ∈ s → y ∈ s :=
@@ -101,7 +101,7 @@ theorem specializes_iff_forall_closed : x ⤳ y ↔ ∀ s : Set X, IsClosed s �
 theorem Specializes.mem_closed (h : x ⤳ y) (hs : IsClosed s) (hx : x ∈ s) : y ∈ s :=
   specializes_iff_forall_closed.1 h s hs hx
 
-theorem IsClosed.not_specializes (hs : IsClosed s) (hx : x ∈ s) (hy : y ∉ s) : ¬x ⤳ y := fun h =>
+theorem IsClosed.not_specializes (hs : IsClosed s) (hx : x ∈ s) (hy : y ∉ s) : ¬x ⤳ y := fun h ↦
   hy <| h.mem_closed hs hx
 
 theorem specializes_iff_mem_closure : x ⤳ y ↔ y ∈ closure ({x} : Set X) :=
@@ -213,7 +213,7 @@ attribute [local instance] specializationPreorder
 /-- A continuous function is monotone with respect to the specialization preorders on the domain and
 the codomain. -/
 theorem Continuous.specialization_monotone (hf : Continuous f) : Monotone f :=
-  fun _ _ h => h.map hf
+  fun _ _ h ↦ h.map hf
 
 lemma closure_singleton_eq_Iic (x : X) : closure {x} = Iic x :=
   Set.ext fun _ ↦ specializes_iff_mem_closure.symm
@@ -523,10 +523,10 @@ theorem map (h : x ~ᵢ y) (hf : Continuous f) : f x ~ᵢ f y :=
 
 end Inseparable
 
-theorem IsClosed.not_inseparable (hs : IsClosed s) (hx : x ∈ s) (hy : y ∉ s) : ¬(x ~ᵢ y) := fun h =>
+theorem IsClosed.not_inseparable (hs : IsClosed s) (hx : x ∈ s) (hy : y ∉ s) : ¬(x ~ᵢ y) := fun h ↦
   hy <| (h.mem_closed_iff hs).1 hx
 
-theorem IsOpen.not_inseparable (hs : IsOpen s) (hx : x ∈ s) (hy : y ∉ s) : ¬(x ~ᵢ y) := fun h =>
+theorem IsOpen.not_inseparable (hs : IsOpen s) (hx : x ∈ s) (hy : y ∉ s) : ¬(x ~ᵢ y) := fun h ↦
   hy <| (h.mem_open_iff hs).1 hx
 
 /-!
@@ -581,7 +581,7 @@ theorem preimage_image_mk_open (hs : IsOpen s) : mk ⁻¹' (mk '' s) = s := by
   rintro x ⟨y, hys, hxy⟩
   exact ((mk_eq_mk.1 hxy).mem_open_iff hs).1 hys
 
-theorem isOpenMap_mk : IsOpenMap (mk : X → SeparationQuotient X) := fun s hs =>
+theorem isOpenMap_mk : IsOpenMap (mk : X → SeparationQuotient X) := fun s hs ↦
   isQuotientMap_mk.isOpen_preimage.1 <| by rwa [preimage_image_mk_open hs]
 
 theorem isOpenQuotientMap_mk : IsOpenQuotientMap (mk : X → SeparationQuotient X) :=
@@ -593,7 +593,7 @@ theorem preimage_image_mk_closed (hs : IsClosed s) : mk ⁻¹' (mk '' s) = s := 
   exact ((mk_eq_mk.1 hxy).mem_closed_iff hs).1 hys
 
 theorem isInducing_mk : IsInducing (mk : X → SeparationQuotient X) :=
-  ⟨le_antisymm (continuous_iff_le_induced.1 continuous_mk) fun s hs =>
+  ⟨le_antisymm (continuous_iff_le_induced.1 continuous_mk) fun s hs ↦
       ⟨mk '' s, isOpenMap_mk s hs, preimage_image_mk_open hs⟩⟩
 
 theorem isClosedMap_mk : IsClosedMap (mk : X → SeparationQuotient X) :=
@@ -648,7 +648,7 @@ theorem isQuotientMap_prodMap_mk : IsQuotientMap (Prod.map mk mk : X × Y → _)
 
 /-- Lift a map `f : X → α` such that `Inseparable x y → f x = f y` to a map
 `SeparationQuotient X → α`. -/
-def lift (f : X → α) (hf : ∀ x y, (x ~ᵢ y) → f x = f y) : SeparationQuotient X → α := fun x =>
+def lift (f : X → α) (hf : ∀ x y, (x ~ᵢ y) → f x = f y) : SeparationQuotient X → α := fun x ↦
   Quotient.liftOn' x f hf
 
 @[simp]
@@ -694,7 +694,7 @@ theorem continuous_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y} :
 /-- Lift a map `f : X → Y → α` such that `Inseparable a b → Inseparable c d → f a c = f b d` to a
 map `SeparationQuotient X → SeparationQuotient Y → α`. -/
 def lift₂ (f : X → Y → α) (hf : ∀ a b c d, (a ~ᵢ c) → (b ~ᵢ d) → f a b = f c d) :
-    SeparationQuotient X → SeparationQuotient Y → α := fun x y => Quotient.liftOn₂' x y f hf
+    SeparationQuotient X → SeparationQuotient Y → α := fun x y ↦ Quotient.liftOn₂' x y f hf
 
 @[simp]
 theorem lift₂_mk {f : X → Y → α} (hf : ∀ a b c d, (a ~ᵢ c) → (b ~ᵢ d) → f a b = f c d) (x : X)

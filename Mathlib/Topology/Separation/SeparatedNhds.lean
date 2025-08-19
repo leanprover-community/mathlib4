@@ -37,7 +37,7 @@ section Separation
 `SeparatedNhds` is a predicate on pairs of sub`Set`s of a topological space.  It holds if the two
 sub`Set`s are contained in disjoint open sets.
 -/
-def SeparatedNhds : Set X → Set X → Prop := fun s t : Set X =>
+def SeparatedNhds : Set X → Set X → Prop := fun s t : Set X ↦
   ∃ U V : Set X, IsOpen U ∧ IsOpen V ∧ s ⊆ U ∧ t ⊆ V ∧ Disjoint U V
 
 theorem separatedNhds_iff_disjoint {s t : Set X} : SeparatedNhds s t ↔ Disjoint (𝓝ˢ s) (𝓝ˢ t) := by
@@ -118,7 +118,7 @@ namespace SeparatedNhds
 variable {s s₁ s₂ t t₁ t₂ u : Set X}
 
 @[symm]
-theorem symm : SeparatedNhds s t → SeparatedNhds t s := fun ⟨U, V, oU, oV, aU, bV, UV⟩ =>
+theorem symm : SeparatedNhds s t → SeparatedNhds t s := fun ⟨U, V, oU, oV, aU, bV, UV⟩ ↦
   ⟨V, U, oV, oU, bV, aU, Disjoint.symm UV⟩
 
 theorem comm (s t : Set X) : SeparatedNhds s t ↔ SeparatedNhds t s :=
@@ -141,7 +141,7 @@ theorem disjoint_closure_right (h : SeparatedNhds s t) : Disjoint s (closure t) 
   h.symm.disjoint_closure_left.symm
 
 @[simp] theorem empty_right (s : Set X) : SeparatedNhds s ∅ :=
-  ⟨_, _, isOpen_univ, isOpen_empty, fun a _ => mem_univ a, Subset.rfl, disjoint_empty _⟩
+  ⟨_, _, isOpen_univ, isOpen_empty, fun a _ ↦ mem_univ a, Subset.rfl, disjoint_empty _⟩
 
 @[simp] theorem empty_left (s : Set X) : SeparatedNhds ∅ s :=
   (empty_right _).symm

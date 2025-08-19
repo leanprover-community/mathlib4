@@ -42,7 +42,7 @@ theorem StrictMonoOn.continuousWithinAt_right_of_exists_between {f : α → β} 
     ContinuousWithinAt f (Ici a) a := by
   have ha : a ∈ Ici a := left_mem_Ici
   have has : a ∈ s := mem_of_mem_nhdsWithin ha hs
-  refine tendsto_order.2 ⟨fun b hb => ?_, fun b hb => ?_⟩
+  refine tendsto_order.2 ⟨fun b hb ↦ ?_, fun b hb ↦ ?_⟩
   · filter_upwards [hs, @self_mem_nhdsWithin _ _ a (Ici a)] with _ hxs hxa using hb.trans_le
       ((h_mono.le_iff_le has hxs).2 hxa)
   · rcases hfs b hb with ⟨c, hcs, hac, hcb⟩
@@ -62,11 +62,11 @@ theorem continuousWithinAt_right_of_monotoneOn_of_exists_between {f : α → β}
     ContinuousWithinAt f (Ici a) a := by
   have ha : a ∈ Ici a := left_mem_Ici
   have has : a ∈ s := mem_of_mem_nhdsWithin ha hs
-  refine tendsto_order.2 ⟨fun b hb => ?_, fun b hb => ?_⟩
+  refine tendsto_order.2 ⟨fun b hb ↦ ?_, fun b hb ↦ ?_⟩
   · filter_upwards [hs, @self_mem_nhdsWithin _ _ a (Ici a)] with _ hxs hxa using hb.trans_le
       (h_mono has hxs hxa)
   · rcases hfs b hb with ⟨c, hcs, hac, hcb⟩
-    have : a < c := not_le.1 fun h => hac.not_ge <| h_mono hcs has h
+    have : a < c := not_le.1 fun h ↦ hac.not_ge <| h_mono hcs has h
     filter_upwards [hs, Ico_mem_nhdsGE this]
     rintro x hx ⟨_, hxc⟩
     exact (h_mono hx hcs hxc.le).trans_lt hcb
@@ -77,7 +77,7 @@ is continuous at `a` from the right. -/
 theorem continuousWithinAt_right_of_monotoneOn_of_closure_image_mem_nhdsWithin [DenselyOrdered β]
     {f : α → β} {s : Set α} {a : α} (h_mono : MonotoneOn f s) (hs : s ∈ 𝓝[≥] a)
     (hfs : closure (f '' s) ∈ 𝓝[≥] f a) : ContinuousWithinAt f (Ici a) a := by
-  refine continuousWithinAt_right_of_monotoneOn_of_exists_between h_mono hs fun b hb => ?_
+  refine continuousWithinAt_right_of_monotoneOn_of_exists_between h_mono hs fun b hb ↦ ?_
   rcases (mem_nhdsGE_iff_exists_mem_Ioc_Ico_subset hb).1 hfs with ⟨b', ⟨hab', hbb'⟩, hb'⟩
   rcases exists_between hab' with ⟨c', hc'⟩
   rcases mem_closure_iff.1 (hb' ⟨hc'.1.le, hc'.2⟩) (Ioo (f a) b') isOpen_Ioo hc' with
@@ -100,7 +100,7 @@ theorem StrictMonoOn.continuousWithinAt_right_of_closure_image_mem_nhdsWithin [D
     {f : α → β} {s : Set α} {a : α} (h_mono : StrictMonoOn f s) (hs : s ∈ 𝓝[≥] a)
     (hfs : closure (f '' s) ∈ 𝓝[≥] f a) : ContinuousWithinAt f (Ici a) a :=
   continuousWithinAt_right_of_monotoneOn_of_closure_image_mem_nhdsWithin
-    (fun _ hx _ hy => (h_mono.le_iff_le hx hy).2) hs hfs
+    (fun _ hx _ hy ↦ (h_mono.le_iff_le hx hy).2) hs hfs
 
 /-- If a function `f` with a densely ordered codomain is strictly monotone on a right neighborhood
 of `a` and the image of this neighborhood under `f` is a right neighborhood of `f a`, then `f` is
@@ -116,7 +116,7 @@ neighborhood under `f` includes `Ioi (f a)`, then `f` is continuous at `a` from 
 theorem StrictMonoOn.continuousWithinAt_right_of_surjOn {f : α → β} {s : Set α} {a : α}
     (h_mono : StrictMonoOn f s) (hs : s ∈ 𝓝[≥] a) (hfs : SurjOn f s (Ioi (f a))) :
     ContinuousWithinAt f (Ici a) a :=
-  h_mono.continuousWithinAt_right_of_exists_between hs fun _ hb =>
+  h_mono.continuousWithinAt_right_of_exists_between hs fun _ hb ↦
     let ⟨c, hcs, hcb⟩ := hfs hb
     ⟨c, hcs, hcb.symm ▸ hb, hcb.le⟩
 
@@ -130,7 +130,7 @@ function `f : ℝ → ℝ` given by `f x = if x < 0 then x else x + 1` would be 
 theorem StrictMonoOn.continuousWithinAt_left_of_exists_between {f : α → β} {s : Set α} {a : α}
     (h_mono : StrictMonoOn f s) (hs : s ∈ 𝓝[≤] a) (hfs : ∀ b < f a, ∃ c ∈ s, f c ∈ Ico b (f a)) :
     ContinuousWithinAt f (Iic a) a :=
-  h_mono.dual.continuousWithinAt_right_of_exists_between hs fun b hb =>
+  h_mono.dual.continuousWithinAt_right_of_exists_between hs fun b hb ↦
     let ⟨c, hcs, hcb, hca⟩ := hfs b hb
     ⟨c, hcs, hca, hcb⟩
 
@@ -144,7 +144,7 @@ theorem continuousWithinAt_left_of_monotoneOn_of_exists_between {f : α → β} 
     (hf : MonotoneOn f s) (hs : s ∈ 𝓝[≤] a) (hfs : ∀ b < f a, ∃ c ∈ s, f c ∈ Ioo b (f a)) :
     ContinuousWithinAt f (Iic a) a :=
   @continuousWithinAt_right_of_monotoneOn_of_exists_between αᵒᵈ βᵒᵈ _ _ _ _ _ _ f s a hf.dual hs
-    fun b hb =>
+    fun b hb ↦
     let ⟨c, hcs, hcb, hca⟩ := hfs b hb
     ⟨c, hcs, hca, hcb⟩
 
@@ -252,8 +252,8 @@ theorem continuousAt_of_monotoneOn_of_image_mem_nhds [DenselyOrdered β] {f : α
 /-- A monotone function with densely ordered codomain and a dense range is continuous. -/
 theorem Monotone.continuous_of_denseRange [DenselyOrdered β] {f : α → β} (h_mono : Monotone f)
     (h_dense : DenseRange f) : Continuous f :=
-  continuous_iff_continuousAt.mpr fun a =>
-    continuousAt_of_monotoneOn_of_closure_image_mem_nhds (fun _ _ _ _ hxy => h_mono hxy)
+  continuous_iff_continuousAt.mpr fun a ↦
+    continuousAt_of_monotoneOn_of_closure_image_mem_nhds (fun _ _ _ _ hxy ↦ h_mono hxy)
         univ_mem <|
       by simp only [image_univ, h_dense.closure_eq, univ_mem]
 

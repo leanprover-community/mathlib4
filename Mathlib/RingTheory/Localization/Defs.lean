@@ -315,7 +315,7 @@ variable (S)
 /-- The localization of a `Fintype` is a `Fintype`. Cannot be an instance. -/
 noncomputable def fintype' [Fintype R] : Fintype S :=
   have := Classical.propDecidable
-  Fintype.ofSurjective (Function.uncurry <| IsLocalization.mk' S) fun a =>
+  Fintype.ofSurjective (Function.uncurry <| IsLocalization.mk' S) fun a ↦
     Prod.exists'.mpr <| IsLocalization.mk'_surjective M a
 
 variable {M S}
@@ -602,7 +602,7 @@ such that `g(M) ⊆ T`.
 We send `z : S` to `algebraMap P Q (g x) * (algebraMap P Q (g y))⁻¹`, where
 `(x, y) : R × M` are such that `z = f x * (f y)⁻¹`. -/
 noncomputable def map (g : R →+* P) (hy : M ≤ T.comap g) : S →+* Q :=
-  lift (M := M) (g := (algebraMap P Q).comp g) fun y => map_units _ ⟨g y, hy y.2⟩
+  lift (M := M) (g := (algebraMap P Q).comp g) fun y ↦ map_units _ ⟨g y, hy y.2⟩
 
 end
 
@@ -613,34 +613,34 @@ include hy
 -- Porting note: added `simp` attribute, since it proves very similar lemmas marked `simp`
 @[simp]
 theorem map_eq (x) : map Q g hy ((algebraMap R S) x) = algebraMap P Q (g x) :=
-  lift_eq (fun y => map_units _ ⟨g y, hy y.2⟩) x
+  lift_eq (fun y ↦ map_units _ ⟨g y, hy y.2⟩) x
 
 @[simp]
 theorem map_comp : (map Q g hy).comp (algebraMap R S) = (algebraMap P Q).comp g :=
-  lift_comp fun y => map_units _ ⟨g y, hy y.2⟩
+  lift_comp fun y ↦ map_units _ ⟨g y, hy y.2⟩
 
 theorem map_mk' (x) (y : M) : map Q g hy (mk' S x y) = mk' Q (g x) ⟨g y, hy y.2⟩ :=
   Submonoid.LocalizationMap.map_mk' (toLocalizationMap M S) (g := g.toMonoidHom)
-    (fun y => hy y.2) (k := toLocalizationMap T Q) ..
+    (fun y ↦ hy y.2) (k := toLocalizationMap T Q) ..
 
 theorem map_unique (j : S →+* Q) (hj : ∀ x : R, j (algebraMap R S x) = algebraMap P Q (g x)) :
     map Q g hy = j :=
-  lift_unique (fun y => map_units _ ⟨g y, hy y.2⟩) hj
+  lift_unique (fun y ↦ map_units _ ⟨g y, hy y.2⟩) hj
 
 /-- If `CommSemiring` homs `g : R →+* P, l : P →+* A` induce maps of localizations, the composition
 of the induced maps equals the map of localizations induced by `l ∘ g`. -/
 theorem map_comp_map {A : Type*} [CommSemiring A] {U : Submonoid A} {W} [CommSemiring W]
     [Algebra A W] [IsLocalization U W] {l : P →+* A} (hl : T ≤ U.comap l) :
-    (map W l hl).comp (map Q g hy : S →+* _) = map W (l.comp g) fun _ hx => hl (hy hx) :=
-  RingHom.ext fun x =>
-    Submonoid.LocalizationMap.map_map (P := P) (toLocalizationMap M S) (fun y => hy y.2)
-      (toLocalizationMap U W) (fun w => hl w.2) x
+    (map W l hl).comp (map Q g hy : S →+* _) = map W (l.comp g) fun _ hx ↦ hl (hy hx) :=
+  RingHom.ext fun x ↦
+    Submonoid.LocalizationMap.map_map (P := P) (toLocalizationMap M S) (fun y ↦ hy y.2)
+      (toLocalizationMap U W) (fun w ↦ hl w.2) x
 
 /-- If `CommSemiring` homs `g : R →+* P, l : P →+* A` induce maps of localizations, the composition
 of the induced maps equals the map of localizations induced by `l ∘ g`. -/
 theorem map_map {A : Type*} [CommSemiring A] {U : Submonoid A} {W} [CommSemiring W] [Algebra A W]
     [IsLocalization U W] {l : P →+* A} (hl : T ≤ U.comap l) (x : S) :
-    map W l hl (map Q g hy x) = map W (l.comp g) (fun _ hx => hl (hy hx)) x := by
+    map W l hl (map Q g hy x) = map W (l.comp g) (fun _ hx ↦ hl (hy hx)) x := by
   rw [← map_comp_map (Q := Q) hy hl]; rfl
 
 protected theorem map_smul (x : S) (z : R) : map Q g hy (z • x : S) = g z • map Q g hy x := by
@@ -675,10 +675,10 @@ noncomputable def ringEquivOfRingEquiv (h : R ≃+* P) (H : M.map h.toMonoidHom 
   { map Q (h : R →+* P) (M.le_comap_of_map_le (le_of_eq H)) with
     toFun := map Q (h : R →+* P) (M.le_comap_of_map_le (le_of_eq H))
     invFun := map S (h.symm : P →+* R) (T.le_comap_of_map_le (le_of_eq H'))
-    left_inv := fun x => by
+    left_inv := fun x ↦ by
       rw [map_map, map_unique _ (RingHom.id _), RingHom.id_apply]
       simp
-    right_inv := fun x => by
+    right_inv := fun x ↦ by
       rw [map_map, map_unique _ (RingHom.id _), RingHom.id_apply]
       simp }
 
@@ -762,7 +762,7 @@ theorem isLocalization_iff_of_base_ringEquiv (h : R ≃+* P) :
       haveI := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
       IsLocalization (M.map h) S := by
   letI : Algebra P S := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
-  refine ⟨fun _ => isLocalization_of_base_ringEquiv M S h, ?_⟩
+  refine ⟨fun _ ↦ isLocalization_of_base_ringEquiv M S h, ?_⟩
   intro (H : IsLocalization (Submonoid.map (h : R ≃* P) M) S)
   convert isLocalization_of_base_ringEquiv (Submonoid.map (h : R ≃* P) M) S h.symm
   · rw [← Submonoid.map_coe_toMulEquiv, RingEquiv.coe_toMulEquiv_symm, ←
@@ -807,7 +807,7 @@ section
 instance instUniqueLocalization [Subsingleton R] : Unique (Localization M) where
   uniq a := by
     with_unfolding_all change a = mk 1 1
-    exact Localization.induction_on a fun _ => by
+    exact Localization.induction_on a fun _ ↦ by
       congr <;> apply Subsingleton.elim
 
 theorem add_mk (a b c d) : (mk a b : Localization M) + mk c d =
@@ -833,10 +833,10 @@ theorem mk_sum {ι : Type*} (f : ι → R) (s : Finset ι) (b : M) :
     mk (∑ i ∈ s, f i) b = ∑ i ∈ s, mk (f i) b :=
   map_sum (mkAddMonoidHom b) f s
 
-theorem mk_list_sum (l : List R) (b : M) : mk l.sum b = (l.map fun a => mk a b).sum :=
+theorem mk_list_sum (l : List R) (b : M) : mk l.sum b = (l.map fun a ↦ mk a b).sum :=
   map_list_sum (mkAddMonoidHom b) l
 
-theorem mk_multiset_sum (l : Multiset R) (b : M) : mk l.sum b = (l.map fun a => mk a b).sum :=
+theorem mk_multiset_sum (l : Multiset R) (b : M) : mk l.sum b = (l.map fun a ↦ mk a b).sum :=
   (mkAddMonoidHom b).map_multiset_sum l
 
 instance isLocalization : IsLocalization M (Localization M) where
@@ -946,7 +946,7 @@ theorem isDomain_of_le_nonZeroDivisors [Algebra A S] {M : Submonoid A} [IsLocali
     (hM : M ≤ nonZeroDivisors A) : IsDomain S := by
   apply @NoZeroDivisors.to_isDomain _ _ (id _) (id _)
   · exact
-      ⟨⟨(algebraMap A S) 0, (algebraMap A S) 1, fun h =>
+      ⟨⟨(algebraMap A S) 0, (algebraMap A S) 1, fun h ↦
           zero_ne_one (IsLocalization.injective S hM h)⟩⟩
   · exact noZeroDivisors M
 

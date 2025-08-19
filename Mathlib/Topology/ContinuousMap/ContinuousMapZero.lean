@@ -345,7 +345,7 @@ def coeFnAddMonoidHom : C(X, R)₀ →+ X → R where
 lemma coeFnAddMonoidHom_apply (f : C(X, R)₀) : coeFnAddMonoidHom f = f := rfl
 
 @[simp] lemma coe_sum {ι : Type*} (s : Finset ι)
-    (f : ι → C(X, R)₀) : ⇑(s.sum f) = s.sum (fun i => ⇑(f i)) :=
+    (f : ι → C(X, R)₀) : ⇑(s.sum f) = s.sum (fun i ↦ ⇑(f i)) :=
   map_sum coeFnAddMonoidHom f s
 
 end Semiring

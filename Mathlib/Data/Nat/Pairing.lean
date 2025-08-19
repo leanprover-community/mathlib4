@@ -71,7 +71,7 @@ theorem unpair_pair (a b : ℕ) : unpair (pair a b) = (a, b) := by
 /-- An equivalence between `ℕ × ℕ` and `ℕ`. -/
 @[simps -fullyApplied]
 def pairEquiv : ℕ × ℕ ≃ ℕ :=
-  ⟨uncurry pair, unpair, fun ⟨a, b⟩ => unpair_pair a b, pair_unpair⟩
+  ⟨uncurry pair, unpair, fun ⟨a, b⟩ ↦ unpair_pair a b, pair_unpair⟩
 
 theorem surjective_unpair : Surjective unpair :=
   pairEquiv.symm.surjective
@@ -174,7 +174,7 @@ namespace Set
 theorem iUnion_unpair_prod {α β} {s : ℕ → Set α} {t : ℕ → Set β} :
     ⋃ n : ℕ, s n.unpair.fst ×ˢ t n.unpair.snd = (⋃ n, s n) ×ˢ ⋃ n, t n := by
   rw [← Set.iUnion_prod]
-  exact surjective_unpair.iUnion_comp (fun x => s x.fst ×ˢ t x.snd)
+  exact surjective_unpair.iUnion_comp (fun x ↦ s x.fst ×ˢ t x.snd)
 
 theorem iUnion_unpair {α} (f : ℕ → ℕ → Set α) :
     ⋃ n : ℕ, f n.unpair.1 n.unpair.2 = ⋃ (i : ℕ) (j : ℕ), f i j :=

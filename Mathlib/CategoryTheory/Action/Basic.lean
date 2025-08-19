@@ -149,7 +149,7 @@ def mkIso {M N : Action V G} (f : M.V ≅ N.V)
       comm := comm }
   inv :=
     { hom := f.inv
-      comm := fun g => by have w := comm g =≫ f.inv; simp at w; simp [w] }
+      comm := fun g ↦ by have w := comm g =≫ f.inv; simp at w; simp [w] }
 
 instance (priority := 100) isIso_of_hom_isIso {M N : Action V G} (f : M ⟶ N) [IsIso f.hom] :
     IsIso f := (mkIso (asIso f.hom) f.comm).isIso_hom
@@ -170,13 +170,13 @@ namespace FunctorCategoryEquivalence
 @[simps]
 def functor : Action V G ⥤ SingleObj G ⥤ V where
   obj M :=
-    { obj := fun _ => M.V
-      map := fun g => M.ρ g
-      map_id := fun _ => M.ρ.map_one
-      map_comp := fun g h => M.ρ.map_mul h g }
+    { obj := fun _ ↦ M.V
+      map := fun g ↦ M.ρ g
+      map_id := fun _ ↦ M.ρ.map_one
+      map_comp := fun g h ↦ M.ρ.map_mul h g }
   map f :=
-    { app := fun _ => f.hom
-      naturality := fun _ _ g => f.comm g }
+    { app := fun _ ↦ f.hom
+      naturality := fun _ _ g ↦ f.comm g }
 
 /-- Auxiliary definition for `functorCategoryEquivalence`. -/
 @[simps]
@@ -184,22 +184,22 @@ def inverse : (SingleObj G ⥤ V) ⥤ Action V G where
   obj F :=
     { V := F.obj PUnit.unit
       ρ :=
-        { toFun := fun g => F.map g
+        { toFun := fun g ↦ F.map g
           map_one' := F.map_id PUnit.unit
-          map_mul' := fun g h => F.map_comp h g } }
+          map_mul' := fun g h ↦ F.map_comp h g } }
   map f :=
     { hom := f.app PUnit.unit
-      comm := fun g => f.naturality g }
+      comm := fun g ↦ f.naturality g }
 
 /-- Auxiliary definition for `functorCategoryEquivalence`. -/
 @[simps!]
 def unitIso : 𝟭 (Action V G) ≅ functor ⋙ inverse :=
-  NatIso.ofComponents fun M => mkIso (Iso.refl _)
+  NatIso.ofComponents fun M ↦ mkIso (Iso.refl _)
 
 /-- Auxiliary definition for `functorCategoryEquivalence`. -/
 @[simps!]
 def counitIso : inverse ⋙ functor ≅ 𝟭 (SingleObj G ⥤ V) :=
-  NatIso.ofComponents fun M => NatIso.ofComponents fun _ => Iso.refl _
+  NatIso.ofComponents fun M ↦ NatIso.ofComponents fun _ ↦ Iso.refl _
 
 end FunctorCategoryEquivalence
 
@@ -260,10 +260,10 @@ instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) 
 
 instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
     [ConcreteCategory V FV] : ConcreteCategory (Action V G) (HomSubtype V G) where
-  hom f := ⟨ConcreteCategory.hom (C := V) f.1, fun g => by
+  hom f := ⟨ConcreteCategory.hom (C := V) f.1, fun g ↦ by
     ext
     simpa using CategoryTheory.congr_fun (f.2 g) _⟩
-  ofHom f := ⟨ConcreteCategory.ofHom (C := V) f, fun g => ConcreteCategory.ext_apply fun x => by
+  ofHom f := ⟨ConcreteCategory.ofHom (C := V) f, fun g ↦ ConcreteCategory.ext_apply fun x ↦ by
     simpa [ConcreteCategory.hom_ofHom] using congr_fun (f.2 g) x⟩
   hom_ofHom _ := by dsimp; ext; simp [ConcreteCategory.hom_ofHom]
   ofHom_hom _ := by ext; simp [ConcreteCategory.ofHom_hom]
@@ -297,14 +297,14 @@ theorem Iso.conj_ρ {M N : Action V G} (f : M ≅ N) (g : G) :
 def actionPunitEquivalence : Action V PUnit ≌ V where
   functor := forget V _
   inverse :=
-    { obj := fun X => ⟨X, 1⟩
-      map := fun f => ⟨f, fun ⟨⟩ => by simp⟩ }
+    { obj := fun X ↦ ⟨X, 1⟩
+      map := fun f ↦ ⟨f, fun ⟨⟩ ↦ by simp⟩ }
   unitIso :=
-    NatIso.ofComponents fun X => mkIso (Iso.refl _) fun ⟨⟩ => by
+    NatIso.ofComponents fun X ↦ mkIso (Iso.refl _) fun ⟨⟩ ↦ by
       simp only [Functor.id_obj, MonoidHom.one_apply, End.one_def, Functor.comp_obj,
         forget_obj, Iso.refl_hom, Category.comp_id]
       exact ρ_one X
-  counitIso := NatIso.ofComponents fun _ => Iso.refl _
+  counitIso := NatIso.ofComponents fun _ ↦ Iso.refl _
 
 variable (V)
 
@@ -320,14 +320,14 @@ def res {G H : Type*} [Monoid G] [Monoid H] (f : G →* H) : Action V H ⥤ Acti
       ρ := M.ρ.comp f }
   map p :=
     { hom := p.hom
-      comm := fun g => p.comm (f g) }
+      comm := fun g ↦ p.comm (f g) }
 
 /-- The natural isomorphism from restriction along the identity homomorphism to
 the identity functor on `Action V G`.
 -/
 @[simps!]
 def resId {G : Type*} [Monoid G] : res V (MonoidHom.id G) ≅ 𝟭 (Action V G) :=
-  NatIso.ofComponents fun M => mkIso (Iso.refl _)
+  NatIso.ofComponents fun M ↦ mkIso (Iso.refl _)
 
 /-- The natural isomorphism from the composition of restrictions along homomorphisms
 to the restriction along the composition of homomorphism.
@@ -335,7 +335,7 @@ to the restriction along the composition of homomorphism.
 @[simps!]
 def resComp {G H K : Type*} [Monoid G] [Monoid H] [Monoid K]
     (f : G →* H) (g : H →* K) : res V g ⋙ res V f ≅ res V (g.comp f) :=
-  NatIso.ofComponents fun M => mkIso (Iso.refl _)
+  NatIso.ofComponents fun M ↦ mkIso (Iso.refl _)
 
 /-- Restricting scalars along equal maps is naturally isomorphic. -/
 @[simps! hom inv]
@@ -389,14 +389,14 @@ def mapAction (F : V ⥤ W) (G : Type*) [Monoid G] : Action V G ⥤ Action W G w
   obj M :=
     { V := F.obj M.V
       ρ :=
-        { toFun := fun g => F.map (M.ρ g)
+        { toFun := fun g ↦ F.map (M.ρ g)
           map_one' := by simp
-          map_mul' := fun g h => by
+          map_mul' := fun g h ↦ by
             dsimp
             rw [map_mul, End.mul_def, F.map_comp] } }
   map f :=
     { hom := F.map f.hom
-      comm := fun g => by dsimp; rw [← F.map_comp, f.comm, F.map_comp] }
+      comm := fun g ↦ by dsimp; rw [← F.map_comp, f.comm, F.map_comp] }
   map_id M := by ext; simp only [Action.id_hom, F.map_id]
   map_comp f g := by ext; simp only [Action.comp_hom, F.map_comp]
 

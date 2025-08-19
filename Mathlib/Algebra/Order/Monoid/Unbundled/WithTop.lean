@@ -217,11 +217,11 @@ end Add
 
 instance addSemigroup [AddSemigroup α] : AddSemigroup (WithTop α) :=
   { WithTop.add with
-    add_assoc := fun _ _ _ => Option.map₂_assoc add_assoc }
+    add_assoc := fun _ _ _ ↦ Option.map₂_assoc add_assoc }
 
 instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (WithTop α) :=
   { WithTop.addSemigroup with
-    add_comm := fun _ _ => Option.map₂_comm add_comm }
+    add_comm := fun _ _ ↦ Option.map₂_comm add_comm }
 
 instance addZeroClass [AddZeroClass α] : AddZeroClass (WithTop α) :=
   { WithTop.zero, WithTop.add with
@@ -261,10 +261,10 @@ variable [AddMonoidWithOne α]
 
 instance addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
   { WithTop.one, WithTop.addMonoid with
-    natCast := fun n => ↑(n : α),
+    natCast := fun n ↦ ↑(n : α),
     natCast_zero := by
       simp only [Nat.cast_zero, WithTop.coe_zero],
-    natCast_succ := fun n => by
+    natCast_succ := fun n ↦ by
       simp only [Nat.cast_add_one, WithTop.coe_add, WithTop.coe_one] }
 
 @[simp, norm_cast] lemma coe_natCast (n : ℕ) : ((n : α) : WithTop α) = n := rfl
@@ -308,7 +308,7 @@ end AddMonoidWithOne
 
 instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithTop α) :=
   { cast_injective := Function.Injective.comp (f := Nat.cast (R := α))
-      (fun _ _ => WithTop.coe_eq_coe.1) Nat.cast_injective}
+      (fun _ _ ↦ WithTop.coe_eq_coe.1) Nat.cast_injective}
 
 instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithTop α) :=
   { WithTop.addMonoidWithOne, WithTop.addCommMonoid with }
@@ -322,19 +322,19 @@ instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (
 --     top_add' := WithTop.top_add }
 --
 instance existsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (WithTop α) :=
-  ⟨fun {a} {b} =>
+  ⟨fun {a} {b} ↦
     match a, b with
     | ⊤, ⊤ => by simp
-    | (a : α), ⊤ => fun _ => ⟨⊤, rfl⟩
-    | (a : α), (b : α) => fun h => by
+    | (a : α), ⊤ => fun _ ↦ ⟨⊤, rfl⟩
+    | (a : α), (b : α) => fun h ↦ by
       obtain ⟨c, rfl⟩ := exists_add_of_le (WithTop.coe_le_coe.1 h)
       exact ⟨c, rfl⟩
-    | ⊤, (b : α) => fun h => (not_top_le_coe _ h).elim⟩
+    | ⊤, (b : α) => fun h ↦ (not_top_le_coe _ h).elim⟩
 
 -- instance canonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
 --     CanonicallyOrderedAddCommMonoid (WithTop α) :=
 --   { WithTop.orderBot, WithTop.orderedAddCommMonoid, WithTop.existsAddOfLE with
---     le_self_add := fun a b =>
+--     le_self_add := fun a b ↦
 --       match a, b with
 --       | ⊤, ⊤ => le_rfl
 --       | (a : α), ⊤ => le_top
@@ -671,7 +671,7 @@ protected def _root_.AddMonoidHom.withBotMap {M N : Type*} [AddZeroClass M] [Add
 
 -- instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (WithBot α) :=
 --   { WithBot.partialOrder, WithBot.addCommMonoid with
---     add_le_add_left := fun _ _ h c => add_le_add_left h c }
+--     add_le_add_left := fun _ _ h c ↦ add_le_add_left h c }
 --
 -- instance linearOrderedAddCommMonoid [LinearOrderedAddCommMonoid α] :
 --     LinearOrderedAddCommMonoid (WithBot α) :=

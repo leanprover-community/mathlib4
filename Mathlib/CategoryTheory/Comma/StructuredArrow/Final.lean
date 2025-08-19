@@ -35,7 +35,7 @@ private lemma final_of_final_costructuredArrowToOver_small (L : A ⥤ T) (R : B 
     [∀ b : B, Final (CostructuredArrow.toOver L (R.obj b))] : Final L := by
   rw [final_iff_isIso_colimit_pre]
   intro G
-  have : ∀ (b : B), Final ((whiskerLeft R (preFunctor L (𝟭 T))).app b) := fun b =>
+  have : ∀ (b : B), Final ((whiskerLeft R (preFunctor L (𝟭 T))).app b) := fun b ↦
     inferInstanceAs (Final (CostructuredArrow.toOver L (R.obj b)))
   let i : colimit (L ⋙ G) ≅ colimit G :=
     calc colimit (L ⋙ G) ≅ colimit <| grothendieckProj L ⋙ L ⋙ G :=
@@ -44,7 +44,7 @@ private lemma final_of_final_costructuredArrowToOver_small (L : A ⥤ T) (R : B 
             (Final.colimitIso (Grothendieck.pre (functor L) R) (grothendieckProj L ⋙ L ⋙ G)).symm
       _ ≅ colimit <| Grothendieck.map (whiskerLeft _ (preFunctor L (𝟭 T))) ⋙
             grothendieckPrecompFunctorToComma (𝟭 T) R ⋙ Comma.fst (𝟭 T) R ⋙ G :=
-              HasColimit.isoOfNatIso (NatIso.ofComponents (fun _ => Iso.refl _))
+              HasColimit.isoOfNatIso (NatIso.ofComponents (fun _ ↦ Iso.refl _))
       _ ≅ colimit <| grothendieckPrecompFunctorToComma (𝟭 T) R ⋙ Comma.fst (𝟭 T) R ⋙ G :=
             Final.colimitIso _ _
       _ ≅ colimit <| Grothendieck.pre (functor (𝟭 T)) R ⋙ grothendieckProj (𝟭 T) ⋙ G :=
@@ -56,7 +56,7 @@ private lemma final_of_final_costructuredArrowToOver_small (L : A ⥤ T) (R : B 
   simp only [Iso.trans_def, comp_obj, grothendieckProj_obj, Grothendieck.pre_obj_base,
     Grothendieck.pre_obj_fiber, Iso.trans_assoc, Iso.trans_hom, Iso.symm_hom, i]
   rw [← Iso.inv_comp_eq, Iso.eq_inv_comp]
-  apply colimit.hom_ext (fun _ => by simp)
+  apply colimit.hom_ext (fun _ ↦ by simp)
 
 end Small
 
@@ -80,7 +80,7 @@ theorem final_of_final_costructuredArrowToOver (L : A ⥤ T) (R : B ⥤ T) [Fina
       pre L (𝟭 T) (R.obj _) ⋙ map₂ (F := sT.functor) (G := sT.functor) (𝟙 _) (𝟙 _)
     apply final_of_natIso (F := F'')
     have hsT (X) : sT.counitInv.app X = 𝟙 _ := rfl
-    exact NatIso.ofComponents (fun X => CostructuredArrow.isoMk (Iso.refl _) (by simp [F'', hsT]))
+    exact NatIso.ofComponents (fun X ↦ CostructuredArrow.isoMk (Iso.refl _) (by simp [F'', hsT]))
   have := final_of_final_costructuredArrowToOver_small L' R'
   apply final_of_natIso (F := (sA.functor ⋙ L' ⋙ sT.inverse))
   exact (sA.functor.associator (sA.inverse ⋙ L ⋙ sT.functor) sT.inverse).symm ≪≫

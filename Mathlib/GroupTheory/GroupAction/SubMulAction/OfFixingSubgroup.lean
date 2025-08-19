@@ -164,7 +164,7 @@ theorem mem_ofFixingSubgroup_insert_iff {a : α} {s : Set (ofStabilizer M a)} {x
 def fixingSubgroupInsertEquiv (a : α) (s : Set (ofStabilizer M a)) :
     fixingSubgroup M (insert a (Subtype.val '' s)) ≃* fixingSubgroup (stabilizer M a) s where
   toFun m := ⟨⟨(m : M), (mem_fixingSubgroup_iff M).mp m.prop a (Set.mem_insert _ _)⟩,
-      fun ⟨x, hx⟩ => by
+      fun ⟨x, hx⟩ ↦ by
         simp only [← SetLike.coe_eq_coe]
         refine (mem_fixingSubgroup_iff M).mp m.prop _ (Set.mem_insert_of_mem a ?_)
         exact ⟨⟨x, (SubMulAction.mem_ofStabilizer_iff  M a).mp x.prop⟩, hx, rfl⟩⟩
@@ -261,12 +261,12 @@ the fixing subgroup of a subset and that of a translate. -/
 the fixing subgroup of a subset and that of a translate. -/]
 def conjMap_ofFixingSubgroup (hg : g • t = s) :
     ofFixingSubgroup M t →ₑ[fixingSubgroupEquivFixingSubgroup hg] ofFixingSubgroup M s where
-  toFun := fun ⟨x, hx⟩ =>
+  toFun := fun ⟨x, hx⟩ ↦
     ⟨g • x, by
       intro hgxt; apply hx
       rw [← hg] at hgxt
       exact Set.smul_mem_smul_set_iff.mp hgxt⟩
-  map_smul' := fun ⟨m, hm⟩ ⟨x, hx⟩ => by
+  map_smul' := fun ⟨m, hm⟩ ⟨x, hx⟩ ↦ by
     simp only [← SetLike.coe_eq_coe, subgroup_smul_def,
       SetLike.val_smul,
       fixingSubgroupEquivFixingSubgroup_coe_apply,
@@ -334,11 +334,11 @@ def map_ofFixingSubgroupUnion :
     ofFixingSubgroup M (s ∪ t) →ₑ[ψ]
       ofFixingSubgroup (fixingSubgroup M s) (Subtype.val ⁻¹' t : Set (ofFixingSubgroup M s)) where
   toFun x :=
-    ⟨⟨x, fun hx => x.prop (Set.mem_union_left t hx)⟩,
-        fun hx => x.prop (by
+    ⟨⟨x, fun hx ↦ x.prop (Set.mem_union_left t hx)⟩,
+        fun hx ↦ x.prop (by
           apply Set.mem_union_right s
           simpa only [Set.mem_preimage, Subtype.coe_mk] using hx)⟩
-  map_smul' := fun ⟨m, hm⟩ ⟨x, hx⟩ => by
+  map_smul' := fun ⟨m, hm⟩ ⟨x, hx⟩ ↦ by
     rw [← SetLike.coe_eq_coe, ← SetLike.coe_eq_coe]
     exact subgroup_smul_def ⟨m, hm⟩ x
 
@@ -370,7 +370,7 @@ def ofFixingSubgroup_of_inclusion (hst : t ⊆ s) :
     ofFixingSubgroup M s
       →ₑ[Subgroup.inclusion (fixingSubgroup_antitone M α hst)]
         ofFixingSubgroup M t where
-  toFun y := ⟨y.val, fun h => y.prop (hst h)⟩
+  toFun y := ⟨y.val, fun h ↦ y.prop (hst h)⟩
   map_smul' _ _ := rfl
 
 @[to_additive]
@@ -386,7 +386,7 @@ and `ofFixingSubgroup M {a}`. -/
 @[to_additive /-- The equivariant map between `SubAddAction.ofStabilizer M a`
 and `ofFixingAddSubgroup M {a}`. -/]
 def ofFixingSubgroup_of_singleton (a : α) :
-    let φ : fixingSubgroup M ({a} : Set α) → stabilizer M a := fun ⟨m, hm⟩ =>
+    let φ : fixingSubgroup M ({a} : Set α) → stabilizer M a := fun ⟨m, hm⟩ ↦
       ⟨m, ((mem_fixingSubgroup_iff M).mp hm) a (Set.mem_singleton a)⟩
     ofFixingSubgroup M ({a} : Set α) →ₑ[φ] ofStabilizer M a where
   toFun x := ⟨x, by simp⟩
@@ -406,8 +406,8 @@ def ofFixingSubgroup_of_eq (hst : s = t) :
     let φ : fixingSubgroup M s ≃* fixingSubgroup M t :=
       MulEquiv.subgroupCongr (congrArg₂ _ rfl hst)
     ofFixingSubgroup M s →ₑ[φ] ofFixingSubgroup M t where
-  toFun := fun ⟨x, hx⟩ => ⟨x, by rw [← hst]; exact hx⟩
-  map_smul' := fun ⟨m, hm⟩ ⟨x, hx⟩ => rfl
+  toFun := fun ⟨x, hx⟩ ↦ ⟨x, by rw [← hst]; exact hx⟩
+  map_smul' := fun ⟨m, hm⟩ ⟨x, hx⟩ ↦ rfl
 
 @[to_additive (attr := simp)]
 theorem ofFixingSubgroup_of_eq_apply {hst : s = t}

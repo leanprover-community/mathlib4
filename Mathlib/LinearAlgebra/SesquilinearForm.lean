@@ -213,7 +213,7 @@ theorem domRestrict (H : B.IsSymm) (p : Submodule R M) : (B.domRestrict₁₂ p 
 end IsSymm
 
 @[simp]
-theorem isSymm_zero : (0 : M →ₛₗ[I] M →ₗ[R] R).IsSymm := ⟨fun _ _ => map_zero _⟩
+theorem isSymm_zero : (0 : M →ₛₗ[I] M →ₗ[R] R).IsSymm := ⟨fun _ _ ↦ map_zero _⟩
 
 theorem BilinMap.isSymm_iff_eq_flip {N : Type*} [AddCommMonoid N] [Module R N]
     {B : LinearMap.BilinMap R M N} : (∀ x y, B x y = B y x) ↔ B = B.flip := by

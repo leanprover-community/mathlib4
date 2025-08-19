@@ -83,7 +83,7 @@ theorem swap_mem_antidiagonal [AddCommMonoid A] [HasAntidiagonal A] {n : A} {xy 
 
 @[simp] theorem map_prodComm_antidiagonal [AddCommMonoid A] [HasAntidiagonal A] {n : A} :
     (antidiagonal n).map (Equiv.prodComm A A) = antidiagonal n :=
-  Finset.ext fun ⟨a, b⟩ => by simp [add_comm]
+  Finset.ext fun ⟨a, b⟩ ↦ by simp [add_comm]
 
 /-- See also `Finset.map_prodComm_antidiagonal`. -/
 @[simp] theorem map_swap_antidiagonal [AddCommMonoid A] [HasAntidiagonal A] {n : A} :

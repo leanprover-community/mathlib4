@@ -69,8 +69,8 @@ def Units.rightOfMul (u : Mˣ) (a b : M) (hu : a * b = u) (hc : Commute a b) : M
 
 @[to_additive]
 theorem Commute.isUnit_mul_iff (h : Commute a b) : IsUnit (a * b) ↔ IsUnit a ∧ IsUnit b :=
-  ⟨fun ⟨u, hu⟩ => ⟨(u.leftOfMul a b hu.symm h).isUnit, (u.rightOfMul a b hu.symm h).isUnit⟩,
-  fun H => H.1.mul H.2⟩
+  ⟨fun ⟨u, hu⟩ ↦ ⟨(u.leftOfMul a b hu.symm h).isUnit, (u.rightOfMul a b hu.symm h).isUnit⟩,
+  fun H ↦ H.1.mul H.2⟩
 
 @[to_additive (attr := simp)]
 theorem isUnit_mul_self_iff : IsUnit (a * a) ↔ IsUnit a :=

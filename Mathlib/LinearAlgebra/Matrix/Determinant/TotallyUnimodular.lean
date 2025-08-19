@@ -69,7 +69,7 @@ lemma isTotallyUnimodular_iff_fintype.{w} (A : Matrix m n R) : A.IsTotallyUnimod
 lemma IsTotallyUnimodular.apply {A : Matrix m n R} (hA : A.IsTotallyUnimodular) (i : m) (j : n) :
     A i j ∈ Set.range SignType.cast := by
   rw [isTotallyUnimodular_iff] at hA
-  simpa using hA 1 (fun _ => i) (fun _ => j)
+  simpa using hA 1 (fun _ ↦ i) (fun _ ↦ j)
 
 lemma IsTotallyUnimodular.submatrix {A : Matrix m n R} (f : m' → m) (g : n' → n)
     (hA : A.IsTotallyUnimodular) :
@@ -95,8 +95,8 @@ lemma IsTotallyUnimodular.reindex {A : Matrix m n R} (em : m ≃ m') (en : n ≃
 
 lemma reindex_isTotallyUnimodular (A : Matrix m n R) (em : m ≃ m') (en : n ≃ n') :
     (A.reindex em en).IsTotallyUnimodular ↔ A.IsTotallyUnimodular :=
-  ⟨fun hA => by simpa [Equiv.symm_apply_eq] using hA.reindex em.symm en.symm,
-   fun hA => hA.reindex _ _⟩
+  ⟨fun hA ↦ by simpa [Equiv.symm_apply_eq] using hA.reindex em.symm en.symm,
+   fun hA ↦ hA.reindex _ _⟩
 
 /-- If `A` is totally unimodular and each row of `B` is all zeros except for at most a single `1` or
 a single `-1` then `fromRows A B` is totally unimodular. -/
@@ -122,7 +122,7 @@ lemma IsTotallyUnimodular.fromRows_unitlike [DecidableEq n] {A : Matrix m n R} {
       · simp only [hj'] at hAB
         by_cases hj'' : ∃ x, g x = j'
         · obtain ⟨x, rfl⟩ := hj''
-          rw [Fintype.sum_eq_single x fun y hxy => ?_, Pi.single_eq_same] at hAB
+          rw [Fintype.sum_eq_single x fun y hxy ↦ ?_, Pi.single_eq_same] at hAB
           · rw [hAB]
             change _ ∈ MonoidHom.mrange SignType.castHom.toMonoidHom
             refine mul_mem (mul_mem ?_ (Set.mem_range_self s)) ?_
@@ -143,7 +143,7 @@ then `fromRows A B` is totally unimodular. -/
 lemma fromRows_isTotallyUnimodular_iff_rows [DecidableEq n] {A : Matrix m n R} {B : Matrix m' n R}
     (hB : Nonempty n → ∀ i : m', ∃ j : n, ∃ s : SignType, B i = Pi.single j s.cast) :
     (fromRows A B).IsTotallyUnimodular ↔ A.IsTotallyUnimodular :=
-  ⟨.submatrix Sum.inl id, fun hA => hA.fromRows_unitlike hB⟩
+  ⟨.submatrix Sum.inl id, fun hA ↦ hA.fromRows_unitlike hB⟩
 
 lemma fromRows_one_isTotallyUnimodular_iff [DecidableEq n] (A : Matrix m n R) :
     (fromRows A (1 : Matrix n n R)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular :=
@@ -176,7 +176,7 @@ alias ⟨_, IsTotallyUnimodular.one_fromCols⟩ := one_fromCols_isTotallyUnimodu
 lemma fromRows_replicateRow0_isTotallyUnimodular_iff (A : Matrix m n R) :
     (fromRows A (replicateRow m' 0)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
   classical
-  refine fromRows_isTotallyUnimodular_iff_rows <| fun _ _ => ?_
+  refine fromRows_isTotallyUnimodular_iff_rows <| fun _ _ ↦ ?_
   inhabit n
   refine ⟨default, 0, ?_⟩
   ext x

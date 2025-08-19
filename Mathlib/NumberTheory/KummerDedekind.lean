@@ -70,13 +70,13 @@ def conductor (x : S) : Ideal S where
 variable {R} {x : S}
 
 theorem conductor_eq_of_eq {y : S} (h : (R<x> : Set S) = R<y>) : conductor R x = conductor R y :=
-  Ideal.ext fun _ => forall_congr' fun _ => Set.ext_iff.mp h _
+  Ideal.ext fun _ ↦ forall_congr' fun _ ↦ Set.ext_iff.mp h _
 
-theorem conductor_subset_adjoin : (conductor R x : Set S) ⊆ R<x> := fun y hy => by
+theorem conductor_subset_adjoin : (conductor R x : Set S) ⊆ R<x> := fun y hy ↦ by
   simpa only [mul_one] using hy 1
 
 theorem mem_conductor_iff {y : S} : y ∈ conductor R x ↔ ∀ b : S, y * b ∈ R<x> :=
-  ⟨fun h => h, fun h => h⟩
+  ⟨fun h ↦ h, fun h ↦ h⟩
 
 theorem conductor_eq_top_of_adjoin_eq_top (h : R<x> = ⊤) : conductor R x = ⊤ := by
   simp only [Ideal.eq_top_iff_one, mem_conductor_iff, h, mem_top, forall_const]
@@ -141,8 +141,8 @@ theorem prod_mem_ideal_map_of_mem_conductor {p : R} {z : S}
         apply Ideal.mul_mem_left (I.map (algebraMap R R<x>)) _ (Ideal.mem_map_of_mem _ ha)
       · simp only [RingHom.map_mul, mul_comm (algebraMap R S p) (l a)]
         rfl
-  refine Finset.sum_induction _ (fun u => u ∈ algebraMap R<x> S '' I.map (algebraMap R R<x>))
-      (fun a b => ?_) ?_ ?_
+  refine Finset.sum_induction _ (fun u ↦ u ∈ algebraMap R<x> S '' I.map (algebraMap R R<x>))
+      (fun a b ↦ ?_) ?_ ?_
   · rintro ⟨z, hz, rfl⟩ ⟨y, hy, rfl⟩
     rw [← RingHom.map_add]
     exact ⟨z + y, Ideal.add_mem _ (SetLike.mem_coe.mp hz) hy, rfl⟩
@@ -174,8 +174,8 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
           simp only [ha.right, map_add, map_mul, add_right_inj]; rfl⟩
       rw [mul_comm]
       exact Ideal.mul_mem_left (I.map (algebraMap R R<x>)) _ (Ideal.mem_map_of_mem _ hq)
-    refine ⟨fun h => ?_,
-      fun h => (Set.mem_image _ _ _).mpr (Exists.intro ⟨z, hz⟩ ⟨by simp [h], rfl⟩)⟩
+    refine ⟨fun h ↦ ?_,
+      fun h ↦ (Set.mem_image _ _ _).mpr (Exists.intro ⟨z, hz⟩ ⟨by simp [h], rfl⟩)⟩
     obtain ⟨x₁, hx₁, hx₂⟩ := (Set.mem_image _ _ _).mp h
     have : x₁ = ⟨z, hz⟩ := by
       apply h_alg
@@ -194,19 +194,19 @@ noncomputable def quotAdjoinEquivQuotMap (hx : (conductor R x).comap (algebraMap
     R<x> ⧸ I.map (algebraMap R R<x>) ≃+* S ⧸ I.map (algebraMap R S) := by
   let f : R<x> ⧸ I.map (algebraMap R R<x>) →+* S ⧸ I.map (algebraMap R S) :=
     (Ideal.Quotient.lift (I.map (algebraMap R R<x>))
-      ((Ideal.Quotient.mk (I.map (algebraMap R S))).comp (algebraMap R<x> S)) (fun r hr => by
+      ((Ideal.Quotient.mk (I.map (algebraMap R S))).comp (algebraMap R<x> S)) (fun r hr ↦ by
       have : algebraMap R S = (algebraMap R<x> S).comp (algebraMap R R<x>) := by ext; rfl
       rw [RingHom.comp_apply, Ideal.Quotient.eq_zero_iff_mem, this, ← Ideal.map_map]
       exact Ideal.mem_map_of_mem _ hr))
   refine RingEquiv.ofBijective f ⟨?_, ?_⟩
   · --the kernel of the map is clearly `(I * S) ∩ R<x>`. To get injectivity, we need to show that
     --this is contained in `I * R<x>`, which is the content of the previous lemma.
-    refine RingHom.lift_injective_of_ker_le_ideal _ _ fun u hu => ?_
+    refine RingHom.lift_injective_of_ker_le_ideal _ _ fun u hu ↦ ?_
     rwa [RingHom.mem_ker, RingHom.comp_apply, Ideal.Quotient.eq_zero_iff_mem, ← Ideal.mem_comap,
       comap_map_eq_map_adjoin_of_coprime_conductor hx h_alg] at hu
   · -- Surjectivity follows from the surjectivity of the canonical map `R<x> → S ⧸ (I * S)`,
     -- which in turn follows from the fact that `I * S + (conductor R x) = S`.
-    refine Ideal.Quotient.lift_surjective_of_surjective _ _ fun y => ?_
+    refine Ideal.Quotient.lift_surjective_of_surjective _ _ fun y ↦ ?_
     obtain ⟨z, hz⟩ := Ideal.Quotient.mk_surjective y
     have : z ∈ conductor R x ⊔ I.map (algebraMap R S) := by
       suffices conductor R x ⊔ I.map (algebraMap R S) = ⊤ by simp only [this, Submodule.mem_top]
@@ -303,7 +303,7 @@ theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : I
     (hI' : I ≠ ⊥) (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤) (hx' : IsIntegral R x) :
     normalizedFactors (I.map (algebraMap R S)) =
       Multiset.map
-        (fun f =>
+        (fun f ↦
           ((normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx').symm f : Ideal S))
         (normalizedFactors (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x))).attach := by
   ext J
@@ -329,7 +329,7 @@ theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : I
       rw [← hJ', Equiv.symm_apply_apply _ _, Subtype.coe_mk]
     subst this
     -- Get rid of the `attach` by applying the subtype `coe` to both sides.
-    rw [Multiset.count_map_eq_count' fun f =>
+    rw [Multiset.count_map_eq_count' fun f ↦
         ((normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx').symm f :
           Ideal S),
       Multiset.count_attach]

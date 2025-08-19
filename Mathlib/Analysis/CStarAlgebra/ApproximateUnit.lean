@@ -84,8 +84,8 @@ lemma norm_cfcₙ_one_sub_one_add_inv_lt_one (a : A) :
 set_option linter.style.multiGoal false in
 lemma CStarAlgebra.directedOn_nonneg_ball :
     DirectedOn (· ≤ ·) ({x : A | 0 ≤ x} ∩ Metric.ball 0 1) := by
-  let f : ℝ≥0 → ℝ≥0 := fun x => 1 - (1 + x)⁻¹
-  let g : ℝ≥0 → ℝ≥0 := fun x => x * (1 - x)⁻¹
+  let f : ℝ≥0 → ℝ≥0 := fun x ↦ 1 - (1 + x)⁻¹
+  let g : ℝ≥0 → ℝ≥0 := fun x ↦ x * (1 - x)⁻¹
   suffices ∀ a b : A, 0 ≤ a → 0 ≤ b → ‖a‖ < 1 → ‖b‖ < 1 →
       a ≤ cfcₙ f (cfcₙ g a + cfcₙ g b) by
     rintro a ⟨(ha₁ : 0 ≤ a), ha₂⟩ b ⟨(hb₁ : 0 ≤ b), hb₂⟩

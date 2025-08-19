@@ -153,7 +153,7 @@ instance : Star (∀ i, R i) where star x i := star (x i)
 @[simp]
 theorem star_apply (x : ∀ i, R i) (i : ι) : star x i = star (x i) := rfl
 
-theorem star_def (x : ∀ i, R i) : star x = fun i => star (x i) := rfl
+theorem star_def (x : ∀ i, R i) : star x = fun i ↦ star (x i) := rfl
 
 end Star
 

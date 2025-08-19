@@ -129,7 +129,7 @@ theorem mul_im : ∀ z w : K, im (z * w) = re z * im w + im z * re w :=
   RCLike.mul_im_ax
 
 theorem ext_iff {z w : K} : z = w ↔ re z = re w ∧ im z = im w :=
-  ⟨fun h => h ▸ ⟨rfl, rfl⟩, fun ⟨h₁, h₂⟩ => re_add_im z ▸ re_add_im w ▸ h₁ ▸ h₂ ▸ rfl⟩
+  ⟨fun h ↦ h ▸ ⟨rfl, rfl⟩, fun ⟨h₁, h₂⟩ ↦ re_add_im z ▸ re_add_im w ▸ h₁ ▸ h₂ ▸ rfl⟩
 
 theorem ext {z w : K} (hre : re z = re w) (him : im z = im w) : z = w :=
   ext_iff.2 ⟨hre, him⟩
@@ -191,7 +191,7 @@ theorem ofReal_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
 
 @[simp, rclike_simps, norm_cast]
 theorem ofReal_finsupp_sum {α M : Type*} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
-    ((f.sum fun a b => g a b : ℝ) : K) = f.sum fun a b => (g a b : K) :=
+    ((f.sum fun a b ↦ g a b : ℝ) : K) = f.sum fun a b ↦ (g a b : K) :=
   map_finsuppSum (algebraMap ℝ K) f g
 
 @[rclike_simps, norm_cast]
@@ -209,7 +209,7 @@ theorem ofReal_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
 
 @[simp, rclike_simps, norm_cast]
 theorem ofReal_finsuppProd {α M : Type*} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
-    ((f.prod fun a b => g a b : ℝ) : K) = f.prod fun a b => (g a b : K) :=
+    ((f.prod fun a b ↦ g a b : ℝ) : K) = f.prod fun a b ↦ (g a b : K) :=
   map_finsuppProd _ f g
 
 @[deprecated (since := "2025-04-06")] alias ofReal_finsupp_prod := ofReal_finsuppProd
@@ -343,10 +343,10 @@ theorem is_real_TFAE (z : K) :
   tfae_have 4 → 3
   | h => by
     conv_rhs => rw [← re_add_im z, h, ofReal_zero, zero_mul, add_zero]
-  tfae_have 3 → 2 := fun h => ⟨_, h⟩
-  tfae_have 2 → 1 := fun ⟨r, hr⟩ => hr ▸ conj_ofReal _
-  tfae_have 1 → 5 := fun _ => by rwa [isSelfAdjoint_iff]
-  tfae_have 5 → 1 := fun hz => by rwa [isSelfAdjoint_iff] at hz
+  tfae_have 3 → 2 := fun h ↦ ⟨_, h⟩
+  tfae_have 2 → 1 := fun ⟨r, hr⟩ ↦ hr ▸ conj_ofReal _
+  tfae_have 1 → 5 := fun _ ↦ by rwa [isSelfAdjoint_iff]
+  tfae_have 5 → 1 := fun hz ↦ by rwa [isSelfAdjoint_iff] at hz
   tfae_finish
 
 theorem conj_eq_iff_real {z : K} : conj z = z ↔ ∃ r : ℝ, z = (r : K) :=
@@ -682,7 +682,7 @@ theorem im_le_norm (z : K) : im z ≤ ‖z‖ :=
 
 theorem im_eq_zero_of_le {a : K} (h : ‖a‖ ≤ re a) : im a = 0 := by
   simpa only [mul_self_norm a, normSq_apply, left_eq_add, mul_self_eq_zero]
-    using congr_arg (fun z => z * z) ((re_le_norm a).antisymm h)
+    using congr_arg (fun z ↦ z * z) ((re_le_norm a).antisymm h)
 
 theorem re_eq_self_of_le {a : K} (h : ‖a‖ ≤ re a) : (re a : K) = a := by
   rw [← conj_eq_iff_re, conj_eq_iff_im, im_eq_zero_of_le h]
@@ -716,12 +716,12 @@ instance : NormSMulClass ℤ K where
 
 /-! ### Cauchy sequences -/
 
-theorem isCauSeq_re (f : CauSeq K norm) : IsCauSeq abs fun n => re (f n) := fun _ ε0 =>
-  (f.cauchy ε0).imp fun i H j ij =>
+theorem isCauSeq_re (f : CauSeq K norm) : IsCauSeq abs fun n ↦ re (f n) := fun _ ε0 ↦
+  (f.cauchy ε0).imp fun i H j ij ↦
     lt_of_le_of_lt (by simpa only [map_sub] using abs_re_le_norm (f j - f i)) (H _ ij)
 
-theorem isCauSeq_im (f : CauSeq K norm) : IsCauSeq abs fun n => im (f n) := fun _ ε0 =>
-  (f.cauchy ε0).imp fun i H j ij =>
+theorem isCauSeq_im (f : CauSeq K norm) : IsCauSeq abs fun n ↦ im (f n) := fun _ ε0 ↦
+  (f.cauchy ε0).imp fun i H j ij ↦
     lt_of_le_of_lt (by simpa only [map_sub] using abs_im_le_norm (f j - f i)) (H _ ij)
 
 /-- The real part of a K Cauchy sequence, as a real Cauchy sequence. -/
@@ -732,9 +732,9 @@ noncomputable def cauSeqRe (f : CauSeq K norm) : CauSeq ℝ abs :=
 noncomputable def cauSeqIm (f : CauSeq K norm) : CauSeq ℝ abs :=
   ⟨_, isCauSeq_im f⟩
 
-theorem isCauSeq_norm {f : ℕ → K} (hf : IsCauSeq norm f) : IsCauSeq abs (norm ∘ f) := fun ε ε0 =>
+theorem isCauSeq_norm {f : ℕ → K} (hf : IsCauSeq norm f) : IsCauSeq abs (norm ∘ f) := fun ε ε0 ↦
   let ⟨i, hi⟩ := hf ε ε0
-  ⟨i, fun j hj => lt_of_le_of_lt (abs_norm_sub_norm_le _ _) (hi j hj)⟩
+  ⟨i, fun j hj ↦ lt_of_le_of_lt (abs_norm_sub_norm_le _ _) (hi j hj)⟩
 
 end RCLike
 
@@ -773,7 +773,7 @@ theorem lt_iff_re_im : z < w ↔ re z < re w ∧ im z = im w := by
   simp_rw [lt_iff_le_and_ne, @RCLike.le_iff_re_im K]
   constructor
   · rintro ⟨⟨hr, hi⟩, heq⟩
-    exact ⟨⟨hr, mt (fun hreq => ext hreq hi) heq⟩, hi⟩
+    exact ⟨⟨hr, mt (fun hreq ↦ ext hreq hi) heq⟩, hi⟩
   · rintro ⟨⟨hr, hrn⟩, hi⟩
     exact ⟨⟨hr, hi⟩, ne_of_apply_ne _ hrn⟩
 
@@ -852,7 +852,7 @@ lemma re_le_re {x y : K} (h : x ≤ y) : re x ≤ re y := by
   exact h.1
 
 lemma re_monotone : Monotone (re : K → ℝ) :=
-  fun _ _ => re_le_re
+  fun _ _ ↦ re_le_re
 
 protected lemma inv_pos_of_pos (hz : 0 < z) : 0 < z⁻¹ := by
   rw [pos_iff_exists_ofReal] at hz
@@ -861,7 +861,7 @@ protected lemma inv_pos_of_pos (hz : 0 < z) : 0 < z⁻¹ := by
   exact inv_pos_of_pos hx
 
 protected lemma inv_pos : 0 < z⁻¹ ↔ 0 < z := by
-  refine ⟨fun h => ?_, fun h => RCLike.inv_pos_of_pos h⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ RCLike.inv_pos_of_pos h⟩
   rw [← inv_inv z]
   exact RCLike.inv_pos_of_pos h
 
@@ -871,10 +871,10 @@ protected lemma inv_pos : 0 < z⁻¹ ↔ 0 < z := by
 Note this is only an instance with `open scoped ComplexOrder`. -/
 lemma toStarOrderedRing : StarOrderedRing K :=
   StarOrderedRing.of_nonneg_iff'
-    (h_add := fun {x y} hxy z => by
+    (h_add := fun {x y} hxy z ↦ by
       rw [RCLike.le_iff_re_im] at *
       simpa [map_add, add_le_add_iff_left, add_right_inj] using hxy)
-    (h_nonneg_iff := fun x => by
+    (h_nonneg_iff := fun x ↦ by
       rw [nonneg_iff]
       refine ⟨fun h ↦ ⟨√(re x), by simp [ext_iff (K := K), h.1, h.2]⟩, ?_⟩
       rintro ⟨s, rfl⟩
@@ -903,11 +903,11 @@ lemma toIsStrictOrderedRing : IsStrictOrderedRing K :=
 scoped[ComplexOrder] attribute [instance] RCLike.toIsStrictOrderedRing
 
 theorem toOrderedSMul : OrderedSMul ℝ K :=
-  OrderedSMul.mk' fun a b r hab hr => by
+  OrderedSMul.mk' fun a b r hab hr ↦ by
     replace hab := hab.le
     rw [RCLike.le_iff_re_im] at hab
     rw [RCLike.le_iff_re_im, smul_re, smul_re, smul_im, smul_im]
-    exact hab.imp (fun h => mul_le_mul_of_nonneg_left h hr.le) (congr_arg _)
+    exact hab.imp (fun h ↦ mul_le_mul_of_nonneg_left h hr.le) (congr_arg _)
 
 scoped[ComplexOrder] attribute [instance] RCLike.toOrderedSMul
 
@@ -1002,7 +1002,7 @@ theorem reLm_coe : (reLm : K → ℝ) = re :=
 
 /-- The real part in an `RCLike` field, as a continuous linear map. -/
 noncomputable def reCLM : K →L[ℝ] ℝ :=
-  reLm.mkContinuous 1 fun x => by
+  reLm.mkContinuous 1 fun x ↦ by
     rw [one_mul]
     exact abs_re_le_norm x
 
@@ -1028,7 +1028,7 @@ theorem imLm_coe : (imLm : K → ℝ) = im :=
 
 /-- The imaginary part in an `RCLike` field, as a continuous linear map. -/
 noncomputable def imCLM : K →L[ℝ] ℝ :=
-  imLm.mkContinuous 1 fun x => by
+  imLm.mkContinuous 1 fun x ↦ by
     rw [one_mul]
     exact abs_im_le_norm x
 

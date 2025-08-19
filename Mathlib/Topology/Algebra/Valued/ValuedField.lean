@@ -105,11 +105,11 @@ instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : T0Space K := 
   suffices T2Space K by infer_instance
   apply IsTopologicalAddGroup.t2Space_of_zero_sep
   intro x x_ne
-  refine ⟨{ k | v k < v x }, ?_, fun h => lt_irrefl _ h⟩
+  refine ⟨{ k | v k < v x }, ?_, fun h ↦ lt_irrefl _ h⟩
   rw [Valued.mem_nhds]
   have vx_ne := (Valuation.ne_zero_iff <| v).mpr x_ne
   let γ' := Units.mk0 _ vx_ne
-  exact ⟨γ', fun y hy => by simpa using hy⟩
+  exact ⟨γ', fun y hy ↦ by simpa using hy⟩
 
 section
 
@@ -164,7 +164,7 @@ instance (priority := 100) completable : CompletableTopField K :=
       intro γ
       rcases hF (min (γ * γ₀ * γ₀) γ₀) with ⟨M₁, M₁_in, H₁⟩
       clear hF
-      use (fun x : K => x⁻¹) '' (M₀ ∩ M₁)
+      use (fun x : K ↦ x⁻¹) '' (M₀ ∩ M₁)
       constructor
       · rw [mem_map]
         apply mem_of_superset (Filter.inter_mem M₀_in M₁_in)
@@ -228,7 +228,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
       rwa [Completion.isDenseInducing_coe.nhds_eq_comap, mem_comap] at preimage_one
     have : ∃ V' ∈ 𝓝 (1 : hat K), (0 : hat K) ∉ V' ∧ ∀ (x) (_ : x ∈ V') (y) (_ : y ∈ V'),
       x * y⁻¹ ∈ V := by
-      have : Tendsto (fun p : hat K × hat K => p.1 * p.2⁻¹) ((𝓝 1) ×ˢ (𝓝 1)) (𝓝 1) := by
+      have : Tendsto (fun p : hat K × hat K ↦ p.1 * p.2⁻¹) ((𝓝 1) ×ˢ (𝓝 1)) (𝓝 1) := by
         rw [← nhds_prod_eq]
         conv =>
           congr
@@ -250,14 +250,14 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
       · rintro x ⟨hx, _⟩ y ⟨hy, _⟩
         apply hU <;> assumption
     rcases this with ⟨V', V'_in, zeroV', hV'⟩
-    have nhds_right : (fun x => x * x₀) '' V' ∈ 𝓝 x₀ := by
-      have l : Function.LeftInverse (fun x : hat K => x * x₀⁻¹) fun x : hat K => x * x₀ := by
+    have nhds_right : (fun x ↦ x * x₀) '' V' ∈ 𝓝 x₀ := by
+      have l : Function.LeftInverse (fun x : hat K ↦ x * x₀⁻¹) fun x : hat K ↦ x * x₀ := by
         intro x
         simp only [mul_assoc, mul_inv_cancel₀ h, mul_one]
-      have r : Function.RightInverse (fun x : hat K => x * x₀⁻¹) fun x : hat K => x * x₀ := by
+      have r : Function.RightInverse (fun x : hat K ↦ x * x₀⁻¹) fun x : hat K ↦ x * x₀ := by
         intro x
         simp only [mul_assoc, inv_mul_cancel₀ h, mul_one]
-      have c : Continuous fun x : hat K => x * x₀⁻¹ := continuous_id.mul continuous_const
+      have c : Continuous fun x : hat K ↦ x * x₀⁻¹ := continuous_id.mul continuous_const
       rw [image_eq_preimage_of_inverse l r]
       rw [← mul_inv_cancel₀ h] at V'_in
       exact c.continuousAt V'_in
@@ -300,10 +300,10 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
     exact Valuation.map_one _
   map_mul' x y := by
     apply Completion.induction_on₂ x y
-      (p := fun x y => extension (x * y) = extension x * extension y)
-    · have c1 : Continuous fun x : hat K × hat K => Valued.extension (x.1 * x.2) :=
+      (p := fun x y ↦ extension (x * y) = extension x * extension y)
+    · have c1 : Continuous fun x : hat K × hat K ↦ Valued.extension (x.1 * x.2) :=
         Valued.continuous_extension.comp (continuous_fst.mul continuous_snd)
-      have c2 : Continuous fun x : hat K × hat K => Valued.extension x.1 * Valued.extension x.2 :=
+      have c2 : Continuous fun x : hat K × hat K ↦ Valued.extension x.1 * Valued.extension x.2 :=
         (Valued.continuous_extension.comp continuous_fst).mul
           (Valued.continuous_extension.comp continuous_snd)
       exact isClosed_eq c1 c2
@@ -313,7 +313,7 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
   map_add_le_max' x y := by
     rw [le_max_iff]
     apply Completion.induction_on₂ x y
-      (p := fun x y => extension (x + y) ≤ extension x ∨ extension (x + y) ≤ extension y)
+      (p := fun x y ↦ extension (x + y) ≤ extension x ∨ extension (x + y) ≤ extension y)
     · have cont : Continuous (Valued.extension : hat K → Γ₀) := Valued.continuous_extension
       exact
         (isClosed_le (cont.comp continuous_add) <| cont.comp continuous_fst).union
@@ -363,7 +363,7 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
     continuous_extension.continuousAt.preimage_mem_nhds
       (WithZeroTopology.singleton_mem_nhds_of_ne_zero h)
   rw [mem_closure_iff_nhds']
-  refine ⟨fun hx => ?_, fun hx s hs => ?_⟩
+  refine ⟨fun hx ↦ ?_, fun hx s hs ↦ ?_⟩
   · obtain ⟨⟨-, y, hy₁ : v y < (γ : Γ₀), rfl⟩, hy₂⟩ := hx _ hγ₀
     replace hy₂ : v y = γ₀ := by simpa using hy₂
     rwa [← hy₂]
@@ -383,9 +383,9 @@ noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
   v := extensionValuation
   is_topological_valuation s := by
     suffices
-      HasBasis (𝓝 (0 : hat K)) (fun _ => True) fun γ : Γ₀ˣ => { x | extensionValuation x < γ } by
+      HasBasis (𝓝 (0 : hat K)) (fun _ ↦ True) fun γ : Γ₀ˣ ↦ { x | extensionValuation x < γ } by
       rw [this.mem_iff]
-      exact exists_congr fun γ => by simp
+      exact exists_congr fun γ ↦ by simp
     simp_rw [← closure_coe_completion_v_lt]
     exact (hasBasis_nhds_zero K Γ₀).hasBasis_of_isDenseInducing Completion.isDenseInducing_coe
 

@@ -41,8 +41,8 @@ theorem mem_nhdsSet_iff_forall : s ∈ 𝓝ˢ t ↔ ∀ x : X, x ∈ t → s ∈
 lemma nhdsSet_le : 𝓝ˢ s ≤ f ↔ ∀ x ∈ s, 𝓝 x ≤ f := by simp [nhdsSet]
 
 theorem bUnion_mem_nhdsSet {t : X → Set X} (h : ∀ x ∈ s, t x ∈ 𝓝 x) : (⋃ x ∈ s, t x) ∈ 𝓝ˢ s :=
-  mem_nhdsSet_iff_forall.2 fun x hx => mem_of_superset (h x hx) <|
-    subset_iUnion₂ (s := fun x _ => t x) x hx
+  mem_nhdsSet_iff_forall.2 fun x hx ↦ mem_of_superset (h x hx) <|
+    subset_iUnion₂ (s := fun x _ ↦ t x) x hx
 
 theorem subset_interior_iff_mem_nhdsSet : s ⊆ interior t ↔ t ∈ 𝓝ˢ s := by
   simp_rw [mem_nhdsSet_iff_forall, subset_interior_iff_nhds]
@@ -68,8 +68,8 @@ theorem eventually_nhdsSet_iff_forall {p : X → Prop} :
     (∀ᶠ x in 𝓝ˢ s, p x) ↔ ∀ x, x ∈ s → ∀ᶠ y in 𝓝 x, p y :=
   mem_nhdsSet_iff_forall
 
-theorem hasBasis_nhdsSet (s : Set X) : (𝓝ˢ s).HasBasis (fun U => IsOpen U ∧ s ⊆ U) fun U => U :=
-  ⟨fun t => by simp [mem_nhdsSet_iff_exists, and_assoc]⟩
+theorem hasBasis_nhdsSet (s : Set X) : (𝓝ˢ s).HasBasis (fun U ↦ IsOpen U ∧ s ⊆ U) fun U ↦ U :=
+  ⟨fun t ↦ by simp [mem_nhdsSet_iff_exists, and_assoc]⟩
 
 @[simp]
 lemma lift'_nhdsSet_interior (s : Set X) : (𝓝ˢ s).lift' interior = 𝓝ˢ s :=
@@ -85,7 +85,7 @@ theorem IsOpen.mem_nhdsSet (hU : IsOpen s) : s ∈ 𝓝ˢ t ↔ t ⊆ s := by
 /-- An open set belongs to its own set neighborhoods filter. -/
 theorem IsOpen.mem_nhdsSet_self (ho : IsOpen s) : s ∈ 𝓝ˢ s := ho.mem_nhdsSet.mpr Subset.rfl
 
-theorem principal_le_nhdsSet : 𝓟 s ≤ 𝓝ˢ s := fun _s hs =>
+theorem principal_le_nhdsSet : 𝓟 s ≤ 𝓝ˢ s := fun _s hs ↦
   (subset_interior_iff_mem_nhdsSet.mpr hs).trans interior_subset
 
 theorem subset_of_mem_nhdsSet (h : t ∈ 𝓝ˢ s) : s ⊆ t := principal_le_nhdsSet h
@@ -126,7 +126,7 @@ theorem nhdsSet_univ : 𝓝ˢ (univ : Set X) = ⊤ := by rw [isOpen_univ.nhdsSet
 theorem nhdsSet_mono (h : s ⊆ t) : 𝓝ˢ s ≤ 𝓝ˢ t :=
   sSup_le_sSup <| image_mono h
 
-theorem monotone_nhdsSet : Monotone (𝓝ˢ : Set X → Filter X) := fun _ _ => nhdsSet_mono
+theorem monotone_nhdsSet : Monotone (𝓝ˢ : Set X → Filter X) := fun _ _ ↦ nhdsSet_mono
 
 theorem nhds_le_nhdsSet (h : x ∈ s) : 𝓝 x ≤ 𝓝ˢ s :=
   le_sSup <| mem_image_of_mem _ h

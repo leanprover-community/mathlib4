@@ -35,7 +35,7 @@ theorem Bornology.IsBounded.mul (hs : IsBounded s) (ht : IsBounded t) : IsBounde
 
 @[to_additive]
 theorem Bornology.IsBounded.of_mul (hst : IsBounded (s * t)) : IsBounded s ∨ IsBounded t :=
-  AntilipschitzWith.isBounded_of_image2_left _ (fun x => (isometry_mul_right x).antilipschitz) hst
+  AntilipschitzWith.isBounded_of_image2_left _ (fun x ↦ (isometry_mul_right x).antilipschitz) hst
 
 @[to_additive]
 theorem Bornology.IsBounded.inv : IsBounded s → IsBounded s⁻¹ := by
@@ -67,7 +67,7 @@ theorem infEdist_inv (x : E) (s : Set E) : infEdist x⁻¹ s = infEdist x s⁻¹
 @[to_additive]
 theorem ediam_mul_le (x y : Set E) : EMetric.diam (x * y) ≤ EMetric.diam x + EMetric.diam y :=
   (LipschitzOnWith.ediam_image2_le (· * ·) _ _
-        (fun _ _ => (isometry_mul_right _).lipschitz.lipschitzOnWith) fun _ _ =>
+        (fun _ _ ↦ (isometry_mul_right _).lipschitz.lipschitzOnWith) fun _ _ ↦
         (isometry_mul_left _).lipschitz.lipschitzOnWith).trans_eq <|
     by simp only [ENNReal.coe_one, one_mul]
 
@@ -161,7 +161,7 @@ theorem smul_closedBall_one : x • closedBall (1 : E) δ = closedBall x δ := b
 @[to_additive]
 theorem mul_ball_one : s * ball 1 δ = thickening δ s := by
   rw [thickening_eq_biUnion_ball]
-  convert iUnion₂_mul (fun x (_ : x ∈ s) => {x}) (ball (1 : E) δ)
+  convert iUnion₂_mul (fun x (_ : x ∈ s) ↦ {x}) (ball (1 : E) δ)
   · exact s.biUnion_of_singleton.symm
   ext x
   simp_rw [singleton_mul_ball, mul_one]

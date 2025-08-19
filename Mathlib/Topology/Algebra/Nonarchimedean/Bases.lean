@@ -52,7 +52,7 @@ variable {A ι : Type*} [Ring A]
 
 theorem of_comm {A ι : Type*} [CommRing A] (B : ι → AddSubgroup A)
     (inter : ∀ i j, ∃ k, B k ≤ B i ⊓ B j) (mul : ∀ i, ∃ j, (B j : Set A) * B j ⊆ B i)
-    (leftMul : ∀ x : A, ∀ i, ∃ j, (B j : Set A) ⊆ (fun y : A => x * y) ⁻¹' B i) :
+    (leftMul : ∀ x : A, ∀ i, ∃ j, (B j : Set A) ⊆ (fun y : A ↦ x * y) ⁻¹' B i) :
     RingSubgroupsBasis B :=
   { inter
     mul
@@ -132,7 +132,7 @@ of neighborhoods of zero. -/
 def topology : TopologicalSpace A :=
   hB.toRingFilterBasis.toAddGroupFilterBasis.topology
 
-theorem hasBasis_nhds_zero : HasBasis (@nhds A hB.topology 0) (fun _ => True) fun i => B i :=
+theorem hasBasis_nhds_zero : HasBasis (@nhds A hB.topology 0) (fun _ ↦ True) fun i ↦ B i :=
   ⟨by
     intro s
     rw [hB.toRingFilterBasis.toAddGroupFilterBasis.nhds_zero_hasBasis.mem_iff]
@@ -143,7 +143,7 @@ theorem hasBasis_nhds_zero : HasBasis (@nhds A hB.topology 0) (fun _ => True) fu
       exact ⟨B i, ⟨i, rfl⟩, hi⟩⟩
 
 theorem hasBasis_nhds (a : A) :
-    HasBasis (@nhds A hB.topology a) (fun _ => True) fun i => { b | b - a ∈ B i } :=
+    HasBasis (@nhds A hB.topology a) (fun _ ↦ True) fun i ↦ { b | b - a ∈ B i } :=
   ⟨by
     intro s
     rw [(hB.toRingFilterBasis.toAddGroupFilterBasis.nhds_hasBasis a).mem_iff]
@@ -151,7 +151,7 @@ theorem hasBasis_nhds (a : A) :
     constructor
     · rintro ⟨-, ⟨i, rfl⟩, hi⟩
       use i
-      suffices h : { b : A | b - a ∈ B i } = (fun y => a + y) '' ↑(B i) by
+      suffices h : { b : A | b - a ∈ B i } = (fun y ↦ a + y) '' ↑(B i) by
         rw [h]
         assumption
       simp only [image_add_left, neg_add_eq_sub]
@@ -209,8 +209,8 @@ namespace SubmodulesRingBasis
 variable {B : ι → Submodule R A} (hB : SubmodulesRingBasis B)
 
 theorem toRing_subgroups_basis (hB : SubmodulesRingBasis B) :
-    RingSubgroupsBasis fun i => (B i).toAddSubgroup := by
-  apply RingSubgroupsBasis.of_comm (fun i => (B i).toAddSubgroup) hB.inter hB.mul
+    RingSubgroupsBasis fun i ↦ (B i).toAddSubgroup := by
+  apply RingSubgroupsBasis.of_comm (fun i ↦ (B i).toAddSubgroup) hB.inter hB.mul
   intro a i
   rcases hB.leftMul a i with ⟨j, hj⟩
   use j

@@ -30,11 +30,11 @@ theorem mem_mulAntidiagonal : x ∈ mulAntidiagonal s t a ↔ x.1 ∈ s ∧ x.2 
 
 @[to_additive]
 theorem mulAntidiagonal_mono_left (h : s₁ ⊆ s₂) : mulAntidiagonal s₁ t a ⊆ mulAntidiagonal s₂ t a :=
-  fun _ hx => ⟨h hx.1, hx.2.1, hx.2.2⟩
+  fun _ hx ↦ ⟨h hx.1, hx.2.1, hx.2.2⟩
 
 @[to_additive]
 theorem mulAntidiagonal_mono_right (h : t₁ ⊆ t₂) :
-    mulAntidiagonal s t₁ a ⊆ mulAntidiagonal s t₂ a := fun _ hx => ⟨hx.1, h hx.2.1, hx.2.2⟩
+    mulAntidiagonal s t₁ a ⊆ mulAntidiagonal s t₂ a := fun _ hx ↦ ⟨hx.1, h hx.2.1, hx.2.2⟩
 
 end Mul
 
@@ -61,12 +61,12 @@ variable [CommMonoid α] [IsCancelMul α] {s t : Set α} {a : α} {x y : mulAnti
 -- does not match the declaration `mulAntidiagonal` that has the `to_additive` attribute.
 @[to_additive Set.AddAntidiagonal.fst_eq_fst_iff_snd_eq_snd]
 theorem fst_eq_fst_iff_snd_eq_snd : (x : α × α).1 = (y : α × α).1 ↔ (x : α × α).2 = (y : α × α).2 :=
-  ⟨fun h =>
+  ⟨fun h ↦
     mul_left_cancel
       (y.2.2.2.trans <| by
           rw [← h]
           exact x.2.2.2.symm).symm,
-    fun h =>
+    fun h ↦
     mul_right_cancel
       (y.2.2.2.trans <| by
           rw [← h]
@@ -91,7 +91,7 @@ variable [CommMonoid α] [PartialOrder α] [IsCancelMul α] [MulLeftMono α] [Mu
 theorem eq_of_fst_le_fst_of_snd_le_snd (h₁ : (x : α × α).1 ≤ (y : α × α).1)
     (h₂ : (x : α × α).2 ≤ (y : α × α).2) : x = y :=
   eq_of_fst_eq_fst <|
-    h₁.eq_of_not_lt fun hlt =>
+    h₁.eq_of_not_lt fun hlt ↦
       (mul_lt_mul_of_lt_of_le hlt h₂).ne <|
         (mem_mulAntidiagonal.1 x.2).2.2.trans (mem_mulAntidiagonal.1 y.2).2.2.symm
 
@@ -99,7 +99,7 @@ variable {s t}
 
 @[to_additive Set.AddAntidiagonal.finite_of_isPWO]
 theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (mulAntidiagonal s t a).Finite := by
-  refine not_infinite.1 fun h => ?_
+  refine not_infinite.1 fun h ↦ ?_
   have h1 : (mulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.fst ⁻¹'o (· ≤ ·)) :=
     fun f ↦ hs fun n ↦ ⟨_, (mem_mulAntidiagonal.1 (f n).2).1⟩
   have h2 : (mulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.snd ⁻¹'o (· ≤ ·)) :=

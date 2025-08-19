@@ -39,8 +39,8 @@ theorem tmul_comp_tensorMap
     {Q₃ : QuadraticForm R M₃} {Q₄ : QuadraticForm R M₄}
     (f : Q₁ →qᵢ Q₂) (g : Q₃ →qᵢ Q₄) :
     (Q₂.tmul Q₄).comp (TensorProduct.map f.toLinearMap g.toLinearMap) = Q₁.tmul Q₃ := by
-  have h₁ : Q₁ = Q₂.comp f.toLinearMap := QuadraticMap.ext fun x => (f.map_app x).symm
-  have h₃ : Q₃ = Q₄.comp g.toLinearMap := QuadraticMap.ext fun x => (g.map_app x).symm
+  have h₁ : Q₁ = Q₂.comp f.toLinearMap := QuadraticMap.ext fun x ↦ (f.map_app x).symm
+  have h₃ : Q₃ = Q₄.comp g.toLinearMap := QuadraticMap.ext fun x ↦ (g.map_app x).symm
   refine (QuadraticMap.associated_rightInverse R).injective ?_
   ext m₁ m₃ m₁' m₃'
   simp [-associated_apply, h₁, h₃, associated_tmul]

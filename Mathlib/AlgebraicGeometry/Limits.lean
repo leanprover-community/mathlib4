@@ -66,8 +66,8 @@ section Initial
 /-- The map from the empty scheme. -/
 @[simps]
 def Scheme.emptyTo (X : Scheme.{u}) : ∅ ⟶ X :=
-  ⟨{  base := TopCat.ofHom ⟨fun x => PEmpty.elim x, by fun_prop⟩
-      c := { app := fun _ => CommRingCat.punitIsTerminal.from _ } }, fun x => PEmpty.elim x⟩
+  ⟨{  base := TopCat.ofHom ⟨fun x ↦ PEmpty.elim x, by fun_prop⟩
+      c := { app := fun _ ↦ CommRingCat.punitIsTerminal.from _ } }, fun x ↦ PEmpty.elim x⟩
 
 @[ext]
 theorem Scheme.empty_ext {X : Scheme.{u}} (f g : ∅ ⟶ X) : f = g :=
@@ -77,7 +77,7 @@ theorem Scheme.eq_emptyTo {X : Scheme.{u}} (f : ∅ ⟶ X) : f = Scheme.emptyTo 
   Scheme.empty_ext f (Scheme.emptyTo X)
 
 instance Scheme.hom_unique_of_empty_source (X : Scheme.{u}) : Unique (∅ ⟶ X) :=
-  ⟨⟨Scheme.emptyTo _⟩, fun _ => Scheme.empty_ext _ _⟩
+  ⟨⟨Scheme.emptyTo _⟩, fun _ ↦ Scheme.empty_ext _ _⟩
 
 /-- The empty scheme is the initial object in the category of schemes. -/
 def emptyIsInitial : IsInitial (∅ : Scheme.{u}) :=
@@ -122,13 +122,13 @@ instance : HasInitial Scheme.{u} :=
   hasInitial_of_unique ∅
 
 instance initial_isEmpty : IsEmpty (⊥_ Scheme) :=
-  ⟨fun x => ((initial.to Scheme.empty :).base x).elim⟩
+  ⟨fun x ↦ ((initial.to Scheme.empty :).base x).elim⟩
 
 theorem isAffineOpen_bot (X : Scheme) : IsAffineOpen (⊥ : X.Opens) :=
   @isAffine_of_isEmpty _ (inferInstanceAs (IsEmpty (∅ : Set X)))
 
 instance : HasStrictInitialObjects Scheme :=
-  hasStrictInitialObjects_of_initial_is_strict fun A f => by infer_instance
+  hasStrictInitialObjects_of_initial_is_strict fun A f ↦ by infer_instance
 
 instance {X : Scheme} [IsEmpty X] (U : X.Opens) : Subsingleton Γ(X, U) := by
   obtain rfl : U = ⊥ := Subsingleton.elim _ _; infer_instance

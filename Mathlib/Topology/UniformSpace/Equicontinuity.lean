@@ -302,10 +302,10 @@ theorem equicontinuousWithinAt_iff_pair {F : ι → X → α} {S : Set X} {x₀ 
       ∀ U ∈ 𝓤 α, ∃ V ∈ 𝓝[S] x₀, ∀ x ∈ V, ∀ y ∈ V, ∀ i, (F i x, F i y) ∈ U := by
   constructor <;> intro H U hU
   · rcases comp_symm_mem_uniformity_sets hU with ⟨V, hV, hVsymm, hVU⟩
-    refine ⟨_, H V hV, fun x hx y hy i => hVU (prodMk_mem_compRel ?_ (hy i))⟩
+    refine ⟨_, H V hV, fun x hx y hy i ↦ hVU (prodMk_mem_compRel ?_ (hy i))⟩
     exact hVsymm.mk_mem_comm.mp (hx i)
   · rcases H U hU with ⟨V, hV, hVU⟩
-    filter_upwards [hV] using fun x hx i => hVU x₀ (mem_of_mem_nhdsWithin hx₀ hV) x hx i
+    filter_upwards [hV] using fun x hx i ↦ hVU x₀ (mem_of_mem_nhdsWithin hx₀ hV) x hx i
 
 /-- Reformulation of equicontinuity at `x₀` comparing two variables near `x₀` instead of comparing
 only one with `x₀`. -/
@@ -349,7 +349,7 @@ protected theorem Set.EquicontinuousWithinAt.continuousWithinAt_of_mem {H : Set 
 /-- Each function of an equicontinuous family is continuous. -/
 theorem Equicontinuous.continuous {F : ι → X → α} (h : Equicontinuous F) (i : ι) :
     Continuous (F i) :=
-  continuous_iff_continuousAt.mpr fun x => (h x).continuousAt i
+  continuous_iff_continuousAt.mpr fun x ↦ (h x).continuousAt i
 
 /-- Each function of a family equicontinuous on `S` is continuous on `S`. -/
 theorem EquicontinuousOn.continuousOn {F : ι → X → α} {S : Set X} (h : EquicontinuousOn F S)
@@ -366,14 +366,14 @@ protected theorem Set.EquicontinuousOn.continuousOn_of_mem {H : Set <| X → α}
 
 /-- Each function of a uniformly equicontinuous family is uniformly continuous. -/
 theorem UniformEquicontinuous.uniformContinuous {F : ι → β → α} (h : UniformEquicontinuous F)
-    (i : ι) : UniformContinuous (F i) := fun U hU =>
-  mem_map.mpr (mem_of_superset (h U hU) fun _ hxy => hxy i)
+    (i : ι) : UniformContinuous (F i) := fun U hU ↦
+  mem_map.mpr (mem_of_superset (h U hU) fun _ hxy ↦ hxy i)
 
 /-- Each function of a family uniformly equicontinuous on `S` is uniformly continuous on `S`. -/
 theorem UniformEquicontinuousOn.uniformContinuousOn {F : ι → β → α} {S : Set β}
     (h : UniformEquicontinuousOn F S) (i : ι) :
-    UniformContinuousOn (F i) S := fun U hU =>
-  mem_map.mpr (mem_of_superset (h U hU) fun _ hxy => hxy i)
+    UniformContinuousOn (F i) S := fun U hU ↦
+  mem_map.mpr (mem_of_superset (h U hU) fun _ hxy ↦ hxy i)
 
 protected theorem Set.UniformEquicontinuous.uniformContinuous_of_mem {H : Set <| β → α}
     (h : H.UniformEquicontinuous) {f : β → α} (hf : f ∈ H) : UniformContinuous f :=
@@ -386,13 +386,13 @@ protected theorem Set.UniformEquicontinuousOn.uniformContinuousOn_of_mem {H : Se
 
 /-- Taking sub-families preserves equicontinuity at a point. -/
 theorem EquicontinuousAt.comp {F : ι → X → α} {x₀ : X} (h : EquicontinuousAt F x₀) (u : κ → ι) :
-    EquicontinuousAt (F ∘ u) x₀ := fun U hU => (h U hU).mono fun _ H k => H (u k)
+    EquicontinuousAt (F ∘ u) x₀ := fun U hU ↦ (h U hU).mono fun _ H k ↦ H (u k)
 
 /-- Taking sub-families preserves equicontinuity at a point within a subset. -/
 theorem EquicontinuousWithinAt.comp {F : ι → X → α} {S : Set X} {x₀ : X}
     (h : EquicontinuousWithinAt F S x₀) (u : κ → ι) :
     EquicontinuousWithinAt (F ∘ u) S x₀ :=
-  fun U hU ↦ (h U hU).mono fun _ H k => H (u k)
+  fun U hU ↦ (h U hU).mono fun _ H k ↦ H (u k)
 
 protected theorem Set.EquicontinuousAt.mono {H H' : Set <| X → α} {x₀ : X}
     (h : H.EquicontinuousAt x₀) (hH : H' ⊆ H) : H'.EquicontinuousAt x₀ :=
@@ -404,7 +404,7 @@ protected theorem Set.EquicontinuousWithinAt.mono {H H' : Set <| X → α} {S : 
 
 /-- Taking sub-families preserves equicontinuity. -/
 theorem Equicontinuous.comp {F : ι → X → α} (h : Equicontinuous F) (u : κ → ι) :
-    Equicontinuous (F ∘ u) := fun x => (h x).comp u
+    Equicontinuous (F ∘ u) := fun x ↦ (h x).comp u
 
 /-- Taking sub-families preserves equicontinuity on a subset. -/
 theorem EquicontinuousOn.comp {F : ι → X → α} {S : Set X} (h : EquicontinuousOn F S) (u : κ → ι) :
@@ -420,12 +420,12 @@ protected theorem Set.EquicontinuousOn.mono {H H' : Set <| X → α} {S : Set X}
 
 /-- Taking sub-families preserves uniform equicontinuity. -/
 theorem UniformEquicontinuous.comp {F : ι → β → α} (h : UniformEquicontinuous F) (u : κ → ι) :
-    UniformEquicontinuous (F ∘ u) := fun U hU => (h U hU).mono fun _ H k => H (u k)
+    UniformEquicontinuous (F ∘ u) := fun U hU ↦ (h U hU).mono fun _ H k ↦ H (u k)
 
 /-- Taking sub-families preserves uniform equicontinuity on a subset. -/
 theorem UniformEquicontinuousOn.comp {F : ι → β → α} {S : Set β} (h : UniformEquicontinuousOn F S)
     (u : κ → ι) : UniformEquicontinuousOn (F ∘ u) S :=
-  fun U hU ↦ (h U hU).mono fun _ H k => H (u k)
+  fun U hU ↦ (h U hU).mono fun _ H k ↦ H (u k)
 
 protected theorem Set.UniformEquicontinuous.mono {H H' : Set <| β → α} (h : H.UniformEquicontinuous)
     (hH : H' ⊆ H) : H'.UniformEquicontinuous :=
@@ -451,7 +451,7 @@ theorem equicontinuousWithinAt_iff_range {F : ι → X → α} {S : Set X} {x₀
 i.e the family `(↑) : range F → X → α` is equicontinuous. -/
 theorem equicontinuous_iff_range {F : ι → X → α} :
     Equicontinuous F ↔ Equicontinuous ((↑) : range F → X → α) :=
-  forall_congr' fun _ => equicontinuousAt_iff_range
+  forall_congr' fun _ ↦ equicontinuousAt_iff_range
 
 /-- A family `𝓕 : ι → X → α` is equicontinuous on `S` iff `range 𝓕` is equicontinuous on `S`,
 i.e the family `(↑) : range F → X → α` is equicontinuous on `S`. -/
@@ -463,14 +463,14 @@ theorem equicontinuousOn_iff_range {F : ι → X → α} {S : Set X} :
 i.e the family `(↑) : range F → β → α` is uniformly equicontinuous. -/
 theorem uniformEquicontinuous_iff_range {F : ι → β → α} :
     UniformEquicontinuous F ↔ UniformEquicontinuous ((↑) : range F → β → α) :=
-  ⟨fun h => by rw [← comp_rangeSplitting F]; exact h.comp _, fun h =>
+  ⟨fun h ↦ by rw [← comp_rangeSplitting F]; exact h.comp _, fun h ↦
     h.comp (rangeFactorization F)⟩
 
 /-- A family `𝓕 : ι → β → α` is uniformly equicontinuous on `S` iff `range 𝓕` is uniformly
 equicontinuous on `S`, i.e the family `(↑) : range F → β → α` is uniformly equicontinuous on `S`. -/
 theorem uniformEquicontinuousOn_iff_range {F : ι → β → α} {S : Set β} :
     UniformEquicontinuousOn F S ↔ UniformEquicontinuousOn ((↑) : range F → β → α) S :=
-  ⟨fun h => by rw [← comp_rangeSplitting F]; exact h.comp _, fun h =>
+  ⟨fun h ↦ by rw [← comp_rangeSplitting F]; exact h.comp _, fun h ↦
     h.comp (rangeFactorization F)⟩
 
 section
@@ -772,7 +772,7 @@ theorem EquicontinuousWithinAt.closure' {A : Set Y} {u : Y → X → α} {S : Se
   rcases mem_uniformity_isClosed hU with ⟨V, hV, hVclosed, hVU⟩
   filter_upwards [hA V hV, eventually_mem_nhdsWithin] with x hx hxS
   rw [SetCoe.forall] at *
-  change A ⊆ (fun f => (u f x₀, u f x)) ⁻¹' V at hx
+  change A ⊆ (fun f ↦ (u f x₀, u f x)) ⁻¹' V at hx
   refine (closure_minimal hx <| hVclosed.preimage <| hu₂.prodMk ?_).trans (preimage_mono hVU)
   exact (continuous_apply ⟨x, hxS⟩).comp hu₁
 
@@ -843,7 +843,7 @@ theorem UniformEquicontinuousOn.closure' {A : Set Y} {u : Y → β → α} {S : 
   filter_upwards [hA V hV, mem_inf_of_right (mem_principal_self _)]
   rintro ⟨x, y⟩ hxy ⟨hxS, hyS⟩
   rw [SetCoe.forall] at *
-  change A ⊆ (fun f => (u f x, u f y)) ⁻¹' V at hxy
+  change A ⊆ (fun f ↦ (u f x, u f y)) ⁻¹' V at hxy
   refine (closure_minimal hxy <| hVclosed.preimage <| .prodMk ?_ ?_).trans (preimage_mono hVU)
   · exact (continuous_apply ⟨x, hxS⟩).comp hu
   · exact (continuous_apply ⟨y, hyS⟩).comp hu
@@ -919,7 +919,7 @@ theorem Filter.Tendsto.continuousAt_of_equicontinuousAt {l : Filter ι} [l.NeBot
 family `𝓕` is equicontinuous, then the limit is continuous. -/
 theorem Filter.Tendsto.continuous_of_equicontinuous {l : Filter ι} [l.NeBot] {F : ι → X → α}
     {f : X → α} (h₁ : Tendsto F l (𝓝 f)) (h₂ : Equicontinuous F) : Continuous f :=
-  continuous_iff_continuousAt.mpr fun x => h₁.continuousAt_of_equicontinuousAt (h₂ x)
+  continuous_iff_continuousAt.mpr fun x ↦ h₁.continuousAt_of_equicontinuousAt (h₂ x)
 
 /-- If `𝓕 : ι → X → α` tends to `f : X → α` *pointwise on `S : Set X`* along some nontrivial
 filter, and if the family `𝓕` is equicontinuous, then the limit is continuous on `S`. -/

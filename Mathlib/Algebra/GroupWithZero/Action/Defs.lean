@@ -85,7 +85,7 @@ abbrev Function.Surjective.smulZeroClassLeft {R S M : Type*} [Zero M] [SMulZeroC
     (hsmul : ∀ (c) (x : M), f c • x = c • x) :
     SMulZeroClass S M where
   smul := (· • ·)
-  smul_zero := hf.forall.mpr fun c => by rw [hsmul, smul_zero]
+  smul_zero := hf.forall.mpr fun c ↦ by rw [hsmul, smul_zero]
 
 variable (A)
 
@@ -209,7 +209,7 @@ protected lemma MulActionWithZero.subsingleton [MulActionWithZero M₀ A] [Subsi
 
 protected lemma MulActionWithZero.nontrivial
     [MulActionWithZero M₀ A] [Nontrivial A] : Nontrivial M₀ :=
-  (subsingleton_or_nontrivial M₀).resolve_left fun _ =>
+  (subsingleton_or_nontrivial M₀).resolve_left fun _ ↦
     not_subsingleton A <| MulActionWithZero.subsingleton M₀ A
 
 variable {M₀ A} [MulActionWithZero M₀ A] [Zero A'] [SMul M₀ A'] (p : Prop) [Decidable p]
@@ -281,7 +281,7 @@ See note [reducible non-instances]. -/
 protected abbrev Function.Injective.distribSMul [AddZeroClass B] [SMul M B] (f : B →+ A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribSMul M B :=
   { hf.smulZeroClass f.toZeroHom smul with
-    smul_add := fun c x y => hf <| by simp only [smul, map_add, smul_add] }
+    smul_add := fun c x y ↦ hf <| by simp only [smul, map_add, smul_add] }
 
 /-- Pushforward a distributive scalar multiplication along a surjective additive monoid
 homomorphism.
@@ -289,7 +289,7 @@ See note [reducible non-instances]. -/
 protected abbrev Function.Surjective.distribSMul [AddZeroClass B] [SMul M B] (f : A →+ B)
     (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribSMul M B :=
   { f.toZeroHom.smulZeroClass smul with
-    smul_add := fun c x y => by
+    smul_add := fun c x y ↦ by
       rcases hf x with ⟨x, rfl⟩
       rcases hf y with ⟨y, rfl⟩
       simp only [smul_add, ← smul, ← map_add] }
@@ -302,7 +302,7 @@ abbrev Function.Surjective.distribSMulLeft {R S M : Type*} [AddZeroClass M] [Dis
     [SMul S M] (f : R → S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) : DistribSMul S M :=
   { hf.smulZeroClassLeft f hsmul with
-    smul_add := hf.forall.mpr fun c x y => by simp only [hsmul, smul_add] }
+    smul_add := hf.forall.mpr fun c x y ↦ by simp only [hsmul, smul_add] }
 
 variable (A)
 
@@ -310,7 +310,7 @@ variable (A)
 See note [reducible non-instances]. -/
 abbrev DistribSMul.compFun (f : N → M) : DistribSMul N A :=
   { SMulZeroClass.compFun A f with
-    smul_add := fun x => smul_add (f x) }
+    smul_add := fun x ↦ smul_add (f x) }
 
 /-- Each element of the scalars defines an additive monoid homomorphism. -/
 @[simps]
@@ -418,7 +418,7 @@ section Group
 variable [Group α] [AddMonoid β] [DistribMulAction α β]
 
 lemma smul_eq_zero_iff_eq (a : α) {x : β} : a • x = 0 ↔ x = 0 :=
-  ⟨fun h => by rw [← inv_smul_smul a x, h, smul_zero], fun h => h.symm ▸ smul_zero _⟩
+  ⟨fun h ↦ by rw [← inv_smul_smul a x, h, smul_zero], fun h ↦ h.symm ▸ smul_zero _⟩
 
 lemma smul_ne_zero_iff_ne (a : α) {x : β} : a • x ≠ 0 ↔ x ≠ 0 :=
   not_congr <| smul_eq_zero_iff_eq a

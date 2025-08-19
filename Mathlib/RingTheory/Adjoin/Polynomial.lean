@@ -36,10 +36,10 @@ variable {p q : R[X]} (x : A)
 
 @[simp]
 theorem adjoin_X : adjoin R ({X} : Set R[X]) = ⊤ := by
-  refine top_unique fun p _hp => ?_
+  refine top_unique fun p _hp ↦ ?_
   set S := adjoin R ({X} : Set R[X])
   rw [← sum_monomial_eq p]; simp only [← smul_X_eq_monomial]
-  exact S.sum_mem fun n _hn => S.smul_mem (S.pow_mem (subset_adjoin rfl) _) _
+  exact S.sum_mem fun n _hn ↦ S.smul_mem (S.pow_mem (subset_adjoin rfl) _) _
 
 variable (R)
 theorem _root_.Algebra.adjoin_singleton_eq_range_aeval (x : A) :

@@ -110,7 +110,7 @@ theorem edgeFinset_card : #G.edgeFinset = Fintype.card G.edgeSet :=
 
 @[simp]
 theorem edgeSet_univ_card : #(univ : Finset G.edgeSet) = #G.edgeFinset :=
-  Fintype.card_of_subtype G.edgeFinset fun _ => mem_edgeFinset
+  Fintype.card_of_subtype G.edgeFinset fun _ ↦ mem_edgeFinset
 
 variable [Fintype V]
 
@@ -242,7 +242,7 @@ variable {G v}
 lemma degree_le_of_le {H : SimpleGraph V} [Fintype (H.neighborSet v)] (hle : G ≤ H) :
     G.degree v ≤ H.degree v := by
   simp_rw [← card_neighborSet_eq_degree]
-  exact Set.card_le_card fun v hv => hle hv
+  exact Set.card_le_card fun v hv ↦ hle hv
 
 end FiniteAt
 
@@ -309,19 +309,19 @@ theorem IsRegularOfDegree.top [DecidableEq V] :
 The key properties of this are given in `exists_minimal_degree_vertex`, `minDegree_le_degree`
 and `le_minDegree_of_forall_le_degree`. -/
 def minDegree [DecidableRel G.Adj] : ℕ :=
-  WithTop.untopD 0 (univ.image fun v => G.degree v).min
+  WithTop.untopD 0 (univ.image fun v ↦ G.degree v).min
 
 /-- There exists a vertex of minimal degree. Note the assumption of being nonempty is necessary, as
 the lemma implies there exists a vertex. -/
 theorem exists_minimal_degree_vertex [DecidableRel G.Adj] [Nonempty V] :
     ∃ v, G.minDegree = G.degree v := by
-  obtain ⟨t, ht : _ = _⟩ := min_of_nonempty (univ_nonempty.image fun v => G.degree v)
+  obtain ⟨t, ht : _ = _⟩ := min_of_nonempty (univ_nonempty.image fun v ↦ G.degree v)
   obtain ⟨v, _, rfl⟩ := mem_image.mp (mem_of_min ht)
   exact ⟨v, by simp [minDegree, ht]⟩
 
 /-- The minimum degree in the graph is at most the degree of any particular vertex. -/
 theorem minDegree_le_degree [DecidableRel G.Adj] (v : V) : G.minDegree ≤ G.degree v := by
-  obtain ⟨t, ht⟩ := Finset.min_of_mem (mem_image_of_mem (fun v => G.degree v) (mem_univ v))
+  obtain ⟨t, ht⟩ := Finset.min_of_mem (mem_image_of_mem (fun v ↦ G.degree v) (mem_univ v))
   have := Finset.min_le_of_eq (mem_image_of_mem _ (mem_univ v)) ht
   rwa [minDegree, ht]
 
@@ -365,13 +365,13 @@ theorem minDegree_lt_card [DecidableRel G.Adj] [Nonempty V] :
 The key properties of this are given in `exists_maximal_degree_vertex`, `degree_le_maxDegree`
 and `maxDegree_le_of_forall_degree_le`. -/
 def maxDegree [DecidableRel G.Adj] : ℕ :=
-  Option.getD (univ.image fun v => G.degree v).max 0
+  Option.getD (univ.image fun v ↦ G.degree v).max 0
 
 /-- There exists a vertex of maximal degree. Note the assumption of being nonempty is necessary, as
 the lemma implies there exists a vertex. -/
 theorem exists_maximal_degree_vertex [DecidableRel G.Adj] [Nonempty V] :
     ∃ v, G.maxDegree = G.degree v := by
-  obtain ⟨t, ht⟩ := max_of_nonempty (univ_nonempty.image fun v => G.degree v)
+  obtain ⟨t, ht⟩ := max_of_nonempty (univ_nonempty.image fun v ↦ G.degree v)
   have ht₂ := mem_of_max ht
   simp only [mem_image, mem_univ] at ht₂
   rcases ht₂ with ⟨v, _, rfl⟩
@@ -381,7 +381,7 @@ theorem exists_maximal_degree_vertex [DecidableRel G.Adj] [Nonempty V] :
 
 /-- The maximum degree in the graph is at least the degree of any particular vertex. -/
 theorem degree_le_maxDegree [DecidableRel G.Adj] (v : V) : G.degree v ≤ G.maxDegree := by
-  obtain ⟨t, ht : _ = _⟩ := Finset.max_of_mem (mem_image_of_mem (fun v => G.degree v) (mem_univ v))
+  obtain ⟨t, ht : _ = _⟩ := Finset.max_of_mem (mem_image_of_mem (fun v ↦ G.degree v) (mem_univ v))
   have := Finset.le_max_of_eq (mem_image_of_mem _ (mem_univ v)) ht
   rwa [maxDegree, ht]
 

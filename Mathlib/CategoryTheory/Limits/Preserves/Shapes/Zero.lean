@@ -184,13 +184,13 @@ include hG
 
 /-- A zero functor preserves limits. -/
 lemma preservesLimitsOfShape_of_isZero : PreservesLimitsOfShape J G where
-  preservesLimit {K} := ⟨fun _ => ⟨by
+  preservesLimit {K} := ⟨fun _ ↦ ⟨by
     rw [Functor.isZero_iff] at hG
     exact IsLimit.ofIsZero _ ((K ⋙ G).isZero (fun X ↦ hG _)) (hG _)⟩⟩
 
 /-- A zero functor preserves colimits. -/
 lemma preservesColimitsOfShape_of_isZero : PreservesColimitsOfShape J G where
-  preservesColimit {K} := ⟨fun _ => ⟨by
+  preservesColimit {K} := ⟨fun _ ↦ ⟨by
     rw [Functor.isZero_iff] at hG
     exact IsColimit.ofIsZero _ ((K ⋙ G).isZero (fun X ↦ hG _)) (hG _)⟩⟩
 

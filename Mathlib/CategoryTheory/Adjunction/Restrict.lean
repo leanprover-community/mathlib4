@@ -37,7 +37,7 @@ natural isomorphism) with the proposed restrictions.
 -/
 noncomputable def restrictFullyFaithful : L ⊣ R :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Y =>
+    { homEquiv := fun X Y ↦
         calc
           (L.obj X ⟶ Y) ≃ (iD.obj (L.obj X) ⟶ iD.obj Y) := hiD.homEquiv
           _ ≃ (L'.obj (iC.obj X) ⟶ iD.obj Y) := Iso.homCongr (comm1.symm.app X) (Iso.refl _)
@@ -45,10 +45,10 @@ noncomputable def restrictFullyFaithful : L ⊣ R :=
           _ ≃ (iC.obj X ⟶ iC.obj (R.obj Y)) := Iso.homCongr (Iso.refl _) (comm2.app Y)
           _ ≃ (X ⟶ R.obj Y) := hiC.homEquiv.symm
 
-      homEquiv_naturality_left_symm := fun {X' X Y} f g => by
+      homEquiv_naturality_left_symm := fun {X' X Y} f g ↦ by
         apply hiD.map_injective
         simpa [Trans.trans] using (comm1.inv.naturality_assoc f _).symm
-      homEquiv_naturality_right := fun {X Y' Y} f g => by
+      homEquiv_naturality_right := fun {X Y' Y} f g ↦ by
         apply hiC.map_injective
         suffices R'.map (iD.map g) ≫ comm2.hom.app Y = comm2.hom.app Y' ≫ iC.map (R.map g) by
           simp [Trans.trans, this]

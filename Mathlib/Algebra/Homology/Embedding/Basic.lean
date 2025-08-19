@@ -174,7 +174,7 @@ variable {A : Type*} [AddCommSemigroup A] [IsRightCancelAdd A] [One A]
 @[simps!]
 def embeddingUp'Add (a b : A) : Embedding (up' a) (up' a) :=
   Embedding.mk' _ _ (· + b)
-    (fun _ _ h => by simpa using h)
+    (fun _ _ h ↦ by simpa using h)
     (by dsimp; simp_rw [add_right_comm _ b a, add_right_cancel_iff, implies_true])
 
 instance (a b : A) : (embeddingUp'Add a b).IsRelIff := by dsimp [embeddingUp'Add]; infer_instance
@@ -186,7 +186,7 @@ instance (a b : A) : (embeddingUp'Add a b).IsTruncGE where
 @[simps!]
 def embeddingDown'Add (a b : A) : Embedding (down' a) (down' a) :=
   Embedding.mk' _ _ (· + b)
-    (fun _ _ h => by simpa using h)
+    (fun _ _ h ↦ by simpa using h)
     (by dsimp; simp_rw [add_right_comm _ b a, add_right_cancel_iff, implies_true])
 
 instance (a b : A) : (embeddingDown'Add a b).IsRelIff := by
@@ -200,8 +200,8 @@ end
 /-- The obvious embedding from `up ℕ` to `up ℤ`. -/
 @[simps!]
 def embeddingUpNat : Embedding (up ℕ) (up ℤ) :=
-  Embedding.mk' _ _ (fun n => n)
-    (fun _ _ h => by simpa using h)
+  Embedding.mk' _ _ (fun n ↦ n)
+    (fun _ _ h ↦ by simpa using h)
     (by dsimp; omega)
 
 instance : embeddingUpNat.IsRelIff := by dsimp [embeddingUpNat]; infer_instance
@@ -212,8 +212,8 @@ instance : embeddingUpNat.IsTruncGE where
 /-- The embedding from `down ℕ` to `up ℤ` with sends `n` to `-n`. -/
 @[simps!]
 def embeddingDownNat : Embedding (down ℕ) (up ℤ) :=
-  Embedding.mk' _ _ (fun n => -n)
-    (fun _ _ h => by simpa using h)
+  Embedding.mk' _ _ (fun n ↦ -n)
+    (fun _ _ h ↦ by simpa using h)
     (by dsimp; omega)
 
 instance : embeddingDownNat.IsRelIff := by dsimp [embeddingDownNat]; infer_instance
@@ -226,8 +226,8 @@ variable (p : ℤ)
 /-- The embedding from `up ℕ` to `up ℤ` which sends `n : ℕ` to `p + n`. -/
 @[simps!]
 def embeddingUpIntGE : Embedding (up ℕ) (up ℤ) :=
-  Embedding.mk' _ _ (fun n => p + n)
-    (fun _ _ h => by dsimp at h; omega)
+  Embedding.mk' _ _ (fun n ↦ p + n)
+    (fun _ _ h ↦ by dsimp at h; omega)
     (by dsimp; omega)
 
 instance : (embeddingUpIntGE p).IsRelIff := by dsimp [embeddingUpIntGE]; infer_instance
@@ -238,8 +238,8 @@ instance : (embeddingUpIntGE p).IsTruncGE where
 /-- The embedding from `down ℕ` to `up ℤ` which sends `n : ℕ` to `p - n`. -/
 @[simps!]
 def embeddingUpIntLE : Embedding (down ℕ) (up ℤ) :=
-  Embedding.mk' _ _ (fun n => p - n)
-    (fun _ _ h => by dsimp at h; omega)
+  Embedding.mk' _ _ (fun n ↦ p - n)
+    (fun _ _ h ↦ by dsimp at h; omega)
     (by dsimp; omega)
 
 instance : (embeddingUpIntLE p).IsRelIff := by dsimp [embeddingUpIntLE]; infer_instance

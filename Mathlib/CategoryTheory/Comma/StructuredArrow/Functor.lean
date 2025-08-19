@@ -29,8 +29,8 @@ functorial way, inducing a functor `Dᵒᵖ ⥤ Cat`. -/
 def functor (T : C ⥤ D) : Dᵒᵖ ⥤ Cat where
   obj d := .of <| StructuredArrow d.unop T
   map f := map f.unop
-  map_id d := Functor.ext (fun ⟨_, _, _⟩ => by simp)
-  map_comp f g := Functor.ext (fun _ => by simp)
+  map_id d := Functor.ext (fun ⟨_, _, _⟩ ↦ by simp)
+  map_comp f g := Functor.ext (fun _ ↦ by simp)
 
 end StructuredArrow
 
@@ -42,8 +42,8 @@ in a functorial way, inducing a functor `D ⥤ Cat`. -/
 def functor (T : C ⥤ D) : D ⥤ Cat where
   obj d := .of <| CostructuredArrow T d
   map f := CostructuredArrow.map f
-  map_id d := Functor.ext (fun ⟨_, _, _⟩ => by simp [CostructuredArrow.map, Comma.mapRight])
-  map_comp f g := Functor.ext (fun _ => by simp [CostructuredArrow.map, Comma.mapRight])
+  map_id d := Functor.ext (fun ⟨_, _, _⟩ ↦ by simp [CostructuredArrow.map, Comma.mapRight])
+  map_comp f g := Functor.ext (fun _ ↦ by simp [CostructuredArrow.map, Comma.mapRight])
 
 variable {E : Type u₃} [Category.{v₃} E]
 variable (L : C ⥤ D) (R : E ⥤ D)
@@ -61,7 +61,7 @@ to the projection `proj L (R.obj X)`. -/
 def ιCompGrothendieckPrecompFunctorToCommaCompFst (X : E) :
     Grothendieck.ι (R ⋙ functor L) X ⋙ grothendieckPrecompFunctorToComma L R ⋙ Comma.fst _ _ ≅
     proj L (R.obj X) :=
-  NatIso.ofComponents (fun X => Iso.refl _) (fun _ => by simp)
+  NatIso.ofComponents (fun X ↦ Iso.refl _) (fun _ ↦ by simp)
 
 /-- The inverse functor used to establish the equivalence `grothendieckPrecompFunctorEquivalence`
 between the Grothendieck construction on `CostructuredArrow.functor` and the comma category. -/
@@ -79,8 +79,8 @@ the comma category `Comma L R`. -/
 def grothendieckPrecompFunctorEquivalence : Grothendieck (R ⋙ functor L) ≌ Comma L R where
   functor := grothendieckPrecompFunctorToComma _ _
   inverse := commaToGrothendieckPrecompFunctor _ _
-  unitIso := NatIso.ofComponents (fun _ => Iso.refl _)
-  counitIso := NatIso.ofComponents (fun _ => Iso.refl _)
+  unitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
+  counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
 /-- The functor projecting out the domain of arrows from the Grothendieck construction on
 costructured arrows. -/

@@ -70,7 +70,7 @@ section Homomorphism
 theorem mapRange_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] (p : MvPolynomial σ R)
     (f : R →+* S) : Finsupp.mapRange f f.map_zero p = map f p := by
   rw [p.as_sum, Finsupp.mapRange_finset_sum, map_sum (map f)]
-  refine Finset.sum_congr rfl fun n _ => ?_
+  refine Finset.sum_congr rfl fun n _ ↦ ?_
   rw [map_monomial, ← single_eq_monomial, Finsupp.mapRange_single, single_eq_monomial]
 
 end Homomorphism
@@ -94,7 +94,7 @@ variable (σ)
 
 /-- The submodule of polynomials of total degree less than or equal to `m`. -/
 def restrictTotalDegree (m : ℕ) : Submodule R (MvPolynomial σ R) :=
-  restrictSupport R { n | (n.sum fun _ e => e) ≤ m }
+  restrictSupport R { n | (n.sum fun _ e ↦ e) ≤ m }
 
 /-- The submodule of polynomials such that the degree with respect to each individual variable is
 less than or equal to `m`. -/
@@ -117,7 +117,7 @@ theorem mem_restrictDegree_iff_sup [DecidableEq σ] (p : MvPolynomial σ R) (n :
     p ∈ restrictDegree σ R n ↔ ∀ i, p.degrees.count i ≤ n := by
   simp only [mem_restrictDegree, degrees_def, Multiset.count_finset_sup, Finsupp.count_toMultiset,
     Finset.sup_le_iff]
-  exact ⟨fun h n s hs => h s hs n, fun h s hs n => h n s hs⟩
+  exact ⟨fun h n s hs ↦ h s hs n, fun h s hs n ↦ h n s hs⟩
 
 variable (R)
 
@@ -132,7 +132,7 @@ def basisMonomials : Basis (σ →₀ ℕ) R (MvPolynomial σ R) :=
 
 @[simp]
 theorem coe_basisMonomials :
-    (basisMonomials σ R : (σ →₀ ℕ) → MvPolynomial σ R) = fun s => monomial s 1 :=
+    (basisMonomials σ R : (σ →₀ ℕ) → MvPolynomial σ R) = fun s ↦ monomial s 1 :=
   rfl
 
 /-- The `R`-module `MvPolynomial σ R` is free. -/
@@ -140,7 +140,7 @@ instance : Module.Free R (MvPolynomial σ R) :=
   Module.Free.of_basis (MvPolynomial.basisMonomials σ R)
 
 theorem linearIndependent_X : LinearIndependent R (X : σ → MvPolynomial σ R) :=
-  (basisMonomials σ R).linearIndependent.comp (fun s : σ => Finsupp.single s 1)
+  (basisMonomials σ R).linearIndependent.comp (fun s : σ ↦ Finsupp.single s 1)
     (Finsupp.single_left_injective one_ne_zero)
 
 private lemma finite_setOf_bounded (α) [Finite α] (n : ℕ) : Finite {f : α →₀ ℕ | ∀ a, f a ≤ n} :=

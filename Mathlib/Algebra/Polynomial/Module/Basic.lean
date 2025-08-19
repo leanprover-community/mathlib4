@@ -147,7 +147,7 @@ theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
     ext
     rw [coeff_add, add_smul]
   | monomial f_n f_a =>
-    rw [Finset.Nat.sum_antidiagonal_eq_sum_range_succ fun i j => (monomial f_n f_a).coeff i • g j,
+    rw [Finset.Nat.sum_antidiagonal_eq_sum_range_succ fun i j ↦ (monomial f_n f_a).coeff i • g j,
       monomial_smul_apply]
     simp_rw [Polynomial.coeff_monomial, ← Finset.mem_range_succ_iff]
     simp
@@ -155,7 +155,7 @@ theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
 /-- `PolynomialModule R R` is isomorphic to `R[X]` as an `R[X]` module. -/
 noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :=
   { (Polynomial.toFinsuppIso R).symm with
-    map_smul' := fun r x => by
+    map_smul' := fun r x ↦ by
       dsimp
       rw [← RingEquiv.coe_toEquiv_symm, RingEquiv.coe_toEquiv]
       induction x using induction_linear with
@@ -188,7 +188,7 @@ noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :
 /-- `PolynomialModule R S` is isomorphic to `S[X]` as an `R` module. -/
 noncomputable def equivPolynomial {S : Type*} [CommRing S] [Algebra R S] :
     PolynomialModule R S ≃ₗ[R] S[X] :=
-  { (Polynomial.toFinsuppIso S).symm with map_smul' := fun _ _ => rfl }
+  { (Polynomial.toFinsuppIso S).symm with map_smul' := fun _ _ ↦ rfl }
 
 @[simp]
 lemma equivPolynomialSelf_apply_eq (p : PolynomialModule R R) :
@@ -225,11 +225,11 @@ theorem map_smul (f : M →ₗ[R] M') (p : R[X]) (q : PolynomialModule R M) :
 /-- Evaluate a polynomial `p : PolynomialModule R M` at `r : R`. -/
 @[simps! -isSimp]
 noncomputable def eval (r : R) : PolynomialModule R M →ₗ[R] M where
-  toFun p := p.sum fun i m => r ^ i • m
-  map_add' _ _ := Finsupp.sum_add_index' (fun _ => smul_zero _) fun _ _ _ => smul_add _ _ _
+  toFun p := p.sum fun i m ↦ r ^ i • m
+  map_add' _ _ := Finsupp.sum_add_index' (fun _ ↦ smul_zero _) fun _ _ _ ↦ smul_add _ _ _
   map_smul' s m := by
     refine (Finsupp.sum_smul_index' ?_).trans ?_
-    · exact fun i => smul_zero _
+    · exact fun i ↦ smul_zero _
     · simp_rw [RingHom.id_apply, Finsupp.smul_sum]
       congr
       ext i c

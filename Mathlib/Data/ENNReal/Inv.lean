@@ -46,11 +46,11 @@ protected theorem div_eq_inv_mul : a / b = b⁻¹ * a := by rw [div_eq_mul_inv, 
   show sInf { b : ℝ≥0∞ | 1 ≤ 0 * b } = ∞ by simp
 
 @[simp] theorem inv_top : ∞⁻¹ = 0 :=
-  bot_unique <| le_of_forall_gt_imp_ge_of_dense fun a (h : 0 < a) => sInf_le <| by
+  bot_unique <| le_of_forall_gt_imp_ge_of_dense fun a (h : 0 < a) ↦ sInf_le <| by
     simp [*, h.ne', top_mul]
 
 theorem coe_inv_le : (↑r⁻¹ : ℝ≥0∞) ≤ (↑r)⁻¹ :=
-  le_sInf fun b (hb : 1 ≤ ↑r * b) =>
+  le_sInf fun b (hb : 1 ≤ ↑r * b) ↦
     coe_le_iff.2 <| by
       rintro b rfl
       apply NNReal.inv_le_of_le_mul
@@ -448,7 +448,7 @@ theorem mul_le_iff_le_inv {a b r : ℝ≥0∞} (hr₀ : r ≠ 0) (hr₁ : r ≠ 
     one_mul]
 
 theorem le_of_forall_nnreal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r < x → ↑r ≤ y) : x ≤ y := by
-  refine le_of_forall_lt_imp_le_of_dense fun r hr => ?_
+  refine le_of_forall_lt_imp_le_of_dense fun r hr ↦ ?_
   lift r to ℝ≥0 using ne_top_of_lt hr
   exact h r hr
 
@@ -457,11 +457,11 @@ lemma eq_of_forall_nnreal_iff {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r ≤ 
     (le_of_forall_nnreal_lt fun _r hr ↦ (h _).2 hr.le)
 
 theorem le_of_forall_pos_nnreal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, 0 < r → ↑r < x → ↑r ≤ y) : x ≤ y :=
-  le_of_forall_nnreal_lt fun r hr =>
-    (zero_le r).eq_or_lt.elim (fun h => h ▸ zero_le _) fun h0 => h r h0 hr
+  le_of_forall_nnreal_lt fun r hr ↦
+    (zero_le r).eq_or_lt.elim (fun h ↦ h ▸ zero_le _) fun h0 ↦ h r h0 hr
 
 theorem eq_top_of_forall_nnreal_le {x : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r ≤ x) : x = ∞ :=
-  top_unique <| le_of_forall_nnreal_lt fun r _ => h r
+  top_unique <| le_of_forall_nnreal_lt fun r _ ↦ h r
 
 protected theorem add_div : (a + b) / c = a / c + b / c :=
   right_distrib a b c⁻¹
@@ -476,7 +476,7 @@ theorem mul_div_le : a * (b / a) ≤ b :=
   mul_le_of_le_div' le_rfl
 
 theorem eq_div_iff (ha : a ≠ 0) (ha' : a ≠ ∞) : b = c / a ↔ a * b = c :=
-  ⟨fun h => by rw [h, ENNReal.mul_div_cancel ha ha'], fun h => by
+  ⟨fun h ↦ by rw [h, ENNReal.mul_div_cancel ha ha'], fun h ↦ by
     rw [← h, mul_div_assoc, ENNReal.mul_div_cancel ha ha']⟩
 
 protected theorem div_eq_div_iff (ha : a ≠ 0) (ha' : a ≠ ∞) (hb : b ≠ 0) (hb' : b ≠ ∞) :
@@ -486,7 +486,7 @@ protected theorem div_eq_div_iff (ha : a ≠ 0) (ha' : a ≠ ∞) (hb : b ≠ 0)
   rw [← eq_div_iff hb hb', mul_div_assoc, eq_comm]
 
 theorem div_eq_one_iff {a b : ℝ≥0∞} (hb₀ : b ≠ 0) (hb₁ : b ≠ ∞) : a / b = 1 ↔ a = b :=
-  ⟨fun h => by rw [← (eq_div_iff hb₀ hb₁).mp h.symm, mul_one], fun h =>
+  ⟨fun h ↦ by rw [← (eq_div_iff hb₀ hb₁).mp h.symm, mul_one], fun h ↦
     h.symm ▸ ENNReal.div_self hb₀ hb₁⟩
 
 theorem inv_two_add_inv_two : (2 : ℝ≥0∞)⁻¹ + 2⁻¹ = 1 := by
@@ -570,8 +570,8 @@ lemma le_mul_of_forall_lt {a b c : ℝ≥0∞} (h₁ : a ≠ 0 ∨ b ≠ ∞) (h
 @[simps! apply_coe]
 def orderIsoIicOneBirational : ℝ≥0∞ ≃o Iic (1 : ℝ≥0∞) := by
   refine StrictMono.orderIsoOfRightInverse
-    (fun x => ⟨(x⁻¹ + 1)⁻¹, ENNReal.inv_le_one.2 <| le_add_self⟩)
-    (fun x y hxy => ?_) (fun x => (x.1⁻¹ - 1)⁻¹) fun x => Subtype.ext ?_
+    (fun x ↦ ⟨(x⁻¹ + 1)⁻¹, ENNReal.inv_le_one.2 <| le_add_self⟩)
+    (fun x y hxy ↦ ?_) (fun x ↦ (x.1⁻¹ - 1)⁻¹) fun x ↦ Subtype.ext ?_
   · simpa only [Subtype.mk_lt_mk, ENNReal.inv_lt_inv, ENNReal.add_lt_add_iff_right one_ne_top]
   · have : (1 : ℝ≥0∞) ≤ x.1⁻¹ := ENNReal.one_le_inv.2 x.2
     simp only [inv_inv, tsub_add_cancel_of_le this]
@@ -585,11 +585,11 @@ theorem orderIsoIicOneBirational_symm_apply (x : Iic (1 : ℝ≥0∞)) :
 @[simps! apply_coe]
 def orderIsoIicCoe (a : ℝ≥0) : Iic (a : ℝ≥0∞) ≃o Iic a :=
   OrderIso.symm
-    { toFun := fun x => ⟨x, coe_le_coe.2 x.2⟩
-      invFun := fun x => ⟨ENNReal.toNNReal x, coe_le_coe.1 <| coe_toNNReal_le_self.trans x.2⟩
-      left_inv := fun _ => Subtype.ext <| toNNReal_coe _
-      right_inv := fun x => Subtype.ext <| coe_toNNReal (ne_top_of_le_ne_top coe_ne_top x.2)
-      map_rel_iff' := fun {_ _} => by
+    { toFun := fun x ↦ ⟨x, coe_le_coe.2 x.2⟩
+      invFun := fun x ↦ ⟨ENNReal.toNNReal x, coe_le_coe.1 <| coe_toNNReal_le_self.trans x.2⟩
+      left_inv := fun _ ↦ Subtype.ext <| toNNReal_coe _
+      right_inv := fun x ↦ Subtype.ext <| coe_toNNReal (ne_top_of_le_ne_top coe_ne_top x.2)
+      map_rel_iff' := fun {_ _} ↦ by
         simp only [Equiv.coe_fn_mk, Subtype.mk_le_mk, coe_le_coe, Subtype.coe_le_coe] }
 
 @[simp]
@@ -615,7 +615,7 @@ theorem exists_nat_pos_mul_gt (ha : a ≠ 0) (hb : b ≠ ∞) : ∃ n > 0, b < (
     rwa [← ENNReal.div_lt_iff (Or.inl ha) (Or.inr hb)]⟩
 
 theorem exists_nat_mul_gt (ha : a ≠ 0) (hb : b ≠ ∞) : ∃ n : ℕ, b < n * a :=
-  (exists_nat_pos_mul_gt ha hb).imp fun _ => And.right
+  (exists_nat_pos_mul_gt ha hb).imp fun _ ↦ And.right
 
 theorem exists_nat_pos_inv_mul_lt (ha : a ≠ ∞) (hb : b ≠ 0) :
     ∃ n > 0, ((n : ℕ) : ℝ≥0∞)⁻¹ * a < b := by
@@ -715,7 +715,7 @@ theorem zpow_le_of_le {x : ℝ≥0∞} (hx : 1 ≤ x) {a b : ℤ} (h : a ≤ b) 
     apply pow_right_mono₀ hx
     simpa only [← Int.ofNat_le, neg_le_neg_iff, Int.natCast_add, Int.ofNat_one] using h
 
-theorem monotone_zpow {x : ℝ≥0∞} (hx : 1 ≤ x) : Monotone ((x ^ ·) : ℤ → ℝ≥0∞) := fun _ _ h =>
+theorem monotone_zpow {x : ℝ≥0∞} (hx : 1 ≤ x) : Monotone ((x ^ ·) : ℤ → ℝ≥0∞) := fun _ _ h ↦
   zpow_le_of_le hx h
 
 protected theorem zpow_add {x : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) (m n : ℤ) :
@@ -780,7 +780,7 @@ lemma mul_iSup (a : ℝ≥0∞) (f : ι → ℝ≥0∞) : a * ⨆ i, f i = ⨆ i
   obtain rfl | ha := eq_or_ne a ∞
   · obtain ⟨i, hi⟩ := not_forall.1 hf
     simpa [iSup_eq_zero.not.2 hf, eq_comm (a := ⊤)]
-      using le_iSup_of_le (f := fun i => ⊤ * f i) i (top_mul hi).ge
+      using le_iSup_of_le (f := fun i ↦ ⊤ * f i) i (top_mul hi).ge
   · exact (mulLeftOrderIso _ <| isUnit_iff.2 ⟨ha₀, ha⟩).map_iSup _
 
 lemma iSup_mul (f : ι → ℝ≥0∞) (a : ℝ≥0∞) : (⨆ i, f i) * a = ⨆ i, f i * a := by

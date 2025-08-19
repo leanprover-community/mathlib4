@@ -19,7 +19,7 @@ variable {R S : Type*}
 
 @[to_additive]
 instance smul : SMul R PUnit :=
-  ⟨fun _ _ => unit⟩
+  ⟨fun _ _ ↦ unit⟩
 
 @[to_additive (attr := simp)]
 theorem smul_eq {R : Type*} (y : PUnit) (r : R) : r • y = unit :=
@@ -27,15 +27,15 @@ theorem smul_eq {R : Type*} (y : PUnit) (r : R) : r • y = unit :=
 
 @[to_additive]
 instance : IsCentralScalar R PUnit :=
-  ⟨fun _ _ => rfl⟩
+  ⟨fun _ _ ↦ rfl⟩
 
 @[to_additive]
 instance : SMulCommClass R S PUnit :=
-  ⟨fun _ _ _ => rfl⟩
+  ⟨fun _ _ _ ↦ rfl⟩
 
 @[to_additive]
 instance instIsScalarTowerOfSMul [SMul R S] : IsScalarTower R S PUnit :=
-  ⟨fun _ _ _ => rfl⟩
+  ⟨fun _ _ _ ↦ rfl⟩
 
 instance smulWithZero [Zero R] : SMulWithZero R PUnit where
   __ := PUnit.smul

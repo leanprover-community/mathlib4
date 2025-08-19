@@ -66,7 +66,7 @@ theorem nondegenerate_of_det_ne_zero [DecidableEq m] {M : Matrix m m A} (hM : M.
 
 theorem eq_zero_of_vecMul_eq_zero [DecidableEq m] {M : Matrix m m A} (hM : M.det ≠ 0) {v : m → A}
     (hv : v ᵥ* M = 0) : v = 0 :=
-  (nondegenerate_of_det_ne_zero hM).eq_zero_of_ortho fun w => by
+  (nondegenerate_of_det_ne_zero hM).eq_zero_of_ortho fun w ↦ by
     rw [dotProduct_mulVec, hv, zero_dotProduct]
 
 theorem eq_zero_of_mulVec_eq_zero [DecidableEq m] {M : Matrix m m A} (hM : M.det ≠ 0) {v : m → A}

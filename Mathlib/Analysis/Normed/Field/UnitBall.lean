@@ -44,7 +44,7 @@ instance Metric.unitBall.instCommSemigroup [SeminormedCommRing 𝕜] :
 
 instance Metric.unitBall.instHasDistribNeg [NonUnitalSeminormedRing 𝕜] :
     HasDistribNeg (ball (0 : 𝕜) 1) :=
-  Subtype.coe_injective.hasDistribNeg ((↑) : ball (0 : 𝕜) 1 → 𝕜) (fun _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.hasDistribNeg ((↑) : ball (0 : 𝕜) 1 → 𝕜) (fun _ ↦ rfl) fun _ _ ↦ rfl
 
 @[simp, norm_cast]
 protected theorem Metric.unitBall.coe_mul [NonUnitalSeminormedRing 𝕜] (x y : ball (0 : 𝕜) 1) :
@@ -100,7 +100,7 @@ instance Metric.unitClosedBall.instSemigroup [NonUnitalSeminormedRing 𝕜] :
 
 instance Metric.unitClosedBall.instHasDistribNeg [NonUnitalSeminormedRing 𝕜] :
     HasDistribNeg (closedBall (0 : 𝕜) 1) :=
-  Subtype.coe_injective.hasDistribNeg ((↑) : closedBall (0 : 𝕜) 1 → 𝕜) (fun _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.hasDistribNeg ((↑) : closedBall (0 : 𝕜) 1 → 𝕜) (fun _ ↦ rfl) fun _ _ ↦ rfl
 
 instance Metric.unitClosedBall.instContinuousMul [NonUnitalSeminormedRing 𝕜] :
     ContinuousMul (closedBall (0 : 𝕜) 1) :=
@@ -261,7 +261,7 @@ alias coe_pow_unitSphere := Metric.unitSphere.coe_pow
 /-- Monoid homomorphism from the unit sphere in a normed division ring to the group of units. -/
 def unitSphereToUnits (𝕜 : Type*) [NormedDivisionRing 𝕜] : sphere (0 : 𝕜) 1 →* Units 𝕜 :=
   Units.liftRight (Submonoid.unitSphere 𝕜).subtype
-    (fun x => Units.mk0 x <| ne_zero_of_mem_unit_sphere _) fun _x => rfl
+    (fun x ↦ Units.mk0 x <| ne_zero_of_mem_unit_sphere _) fun _x ↦ rfl
 
 @[simp]
 theorem unitSphereToUnits_apply_coe [NormedDivisionRing 𝕜] (x : sphere (0 : 𝕜) 1) :
@@ -269,19 +269,19 @@ theorem unitSphereToUnits_apply_coe [NormedDivisionRing 𝕜] (x : sphere (0 : �
   rfl
 
 theorem unitSphereToUnits_injective [NormedDivisionRing 𝕜] :
-    Function.Injective (unitSphereToUnits 𝕜) := fun x y h =>
+    Function.Injective (unitSphereToUnits 𝕜) := fun x y h ↦
   Subtype.eq <| by convert congr_arg Units.val h
 
 instance Metric.unitSphere.instGroup [NormedDivisionRing 𝕜] : Group (sphere (0 : 𝕜) 1) :=
   unitSphereToUnits_injective.group (unitSphereToUnits 𝕜) (Units.ext rfl)
-    (fun _x _y => Units.ext rfl)
-    (fun _x => Units.ext rfl) (fun _x _y => Units.ext <| div_eq_mul_inv _ _)
-    (fun x n => Units.ext (Units.val_pow_eq_pow_val (unitSphereToUnits 𝕜 x) n).symm) fun x n =>
+    (fun _x _y ↦ Units.ext rfl)
+    (fun _x ↦ Units.ext rfl) (fun _x _y ↦ Units.ext <| div_eq_mul_inv _ _)
+    (fun x n ↦ Units.ext (Units.val_pow_eq_pow_val (unitSphereToUnits 𝕜 x) n).symm) fun x n ↦
     Units.ext (Units.val_zpow_eq_zpow_val (unitSphereToUnits 𝕜 x) n).symm
 
 instance Metric.sphere.instHasDistribNeg [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
     HasDistribNeg (sphere (0 : 𝕜) 1) :=
-  Subtype.coe_injective.hasDistribNeg ((↑) : sphere (0 : 𝕜) 1 → 𝕜) (fun _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.hasDistribNeg ((↑) : sphere (0 : 𝕜) 1 → 𝕜) (fun _ ↦ rfl) fun _ _ ↦ rfl
 
 instance Metric.sphere.instContinuousMul [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
     ContinuousMul (sphere (0 : 𝕜) 1) :=

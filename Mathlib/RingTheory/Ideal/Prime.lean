@@ -39,7 +39,7 @@ class IsPrime (I : Ideal α) : Prop where
   mem_or_mem' : ∀ {x y : α}, x * y ∈ I → x ∈ I ∨ y ∈ I
 
 theorem isPrime_iff {I : Ideal α} : IsPrime I ↔ I ≠ ⊤ ∧ ∀ {x y : α}, x * y ∈ I → x ∈ I ∨ y ∈ I :=
-  ⟨fun h => ⟨h.1, h.2⟩, fun h => ⟨h.1, h.2⟩⟩
+  ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
 
 theorem IsPrime.ne_top {I : Ideal α} (hI : I.IsPrime) : I ≠ ⊤ :=
   hI.1
@@ -78,22 +78,22 @@ theorem not_isPrime_iff {I : Ideal α} :
   simp_rw [Ideal.isPrime_iff, not_and_or, Ne, Classical.not_not, not_forall, not_or]
   exact
     or_congr Iff.rfl
-      ⟨fun ⟨x, y, hxy, hx, hy⟩ => ⟨x, hx, y, hy, hxy⟩, fun ⟨x, hx, y, hy, hxy⟩ =>
+      ⟨fun ⟨x, y, hxy, hx, hy⟩ ↦ ⟨x, hx, y, hy, hxy⟩, fun ⟨x, hx, y, hy, hxy⟩ ↦
         ⟨x, y, hxy, hx, hy⟩⟩
 
 theorem bot_prime [Nontrivial α] [NoZeroDivisors α] : (⊥ : Ideal α).IsPrime :=
-  ⟨fun h => one_ne_zero (α := α) (by rwa [Ideal.eq_top_iff_one, Submodule.mem_bot] at h), fun h =>
+  ⟨fun h ↦ one_ne_zero (α := α) (by rwa [Ideal.eq_top_iff_one, Submodule.mem_bot] at h), fun h ↦
     mul_eq_zero.mp (by simpa only [Submodule.mem_bot] using h)⟩
 
 theorem IsPrime.mul_mem_iff_mem_or_mem {I : Ideal α} [I.IsTwoSided] (hI : I.IsPrime) :
-    ∀ {x y : α}, x * y ∈ I ↔ x ∈ I ∨ y ∈ I := @fun x y =>
+    ∀ {x y : α}, x * y ∈ I ↔ x ∈ I ∨ y ∈ I := @fun x y ↦
   ⟨hI.mem_or_mem, by
     rintro (h | h)
     exacts [I.mul_mem_right y h, I.mul_mem_left x h]⟩
 
 theorem IsPrime.pow_mem_iff_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : ℕ) (hn : 0 < n) :
     r ^ n ∈ I ↔ r ∈ I :=
-  ⟨hI.mem_of_pow_mem n, fun hr => I.pow_mem_of_mem hr n hn⟩
+  ⟨hI.mem_of_pow_mem n, fun hr ↦ I.pow_mem_of_mem hr n hn⟩
 
 /-- The complement of a prime ideal `P ⊆ R` is a submonoid of `R`. -/
 def primeCompl (P : Ideal α) [hp : P.IsPrime] : Submonoid α where
@@ -112,7 +112,7 @@ end Semiring
 section Ring
 
 theorem IsDomain.of_bot_isPrime (A : Type*) [Ring A] [hbp : (⊥ : Ideal A).IsPrime] : IsDomain A :=
-  @NoZeroDivisors.to_isDomain A _ ⟨1, 0, fun h => hbp.one_notMem h⟩ ⟨fun h => hbp.2 h⟩
+  @NoZeroDivisors.to_isDomain A _ ⟨1, 0, fun h ↦ hbp.one_notMem h⟩ ⟨fun h ↦ hbp.2 h⟩
 
 end Ring
 

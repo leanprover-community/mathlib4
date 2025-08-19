@@ -207,22 +207,22 @@ variable (Φ)
 lemma nonempty_leftResolution_iff_op (X₂ : C₂) :
     Nonempty (Φ.LeftResolution X₂) ↔ Nonempty (Φ.op.RightResolution (Opposite.op X₂)) :=
   Equiv.nonempty_congr
-    { toFun := fun L => L.op
-      invFun := fun R => R.unop }
+    { toFun := fun L ↦ L.op
+      invFun := fun R ↦ R.unop }
 
 lemma nonempty_rightResolution_iff_op (X₂ : C₂) :
     Nonempty (Φ.RightResolution X₂) ↔ Nonempty (Φ.op.LeftResolution (Opposite.op X₂)) :=
   Equiv.nonempty_congr
-    { toFun := fun R => R.op
-      invFun := fun L => L.unop }
+    { toFun := fun R ↦ R.op
+      invFun := fun L ↦ L.unop }
 
 lemma hasLeftResolutions_iff_op : Φ.HasLeftResolutions ↔ Φ.op.HasRightResolutions :=
-  ⟨fun _ X₂ => ⟨(Classical.arbitrary (Φ.LeftResolution X₂.unop)).op⟩,
-    fun _ X₂ => ⟨(Classical.arbitrary (Φ.op.RightResolution (Opposite.op X₂))).unop⟩⟩
+  ⟨fun _ X₂ ↦ ⟨(Classical.arbitrary (Φ.LeftResolution X₂.unop)).op⟩,
+    fun _ X₂ ↦ ⟨(Classical.arbitrary (Φ.op.RightResolution (Opposite.op X₂))).unop⟩⟩
 
 lemma hasRightResolutions_iff_op : Φ.HasRightResolutions ↔ Φ.op.HasLeftResolutions :=
-  ⟨fun _ X₂ => ⟨(Classical.arbitrary (Φ.RightResolution X₂.unop)).op⟩,
-    fun _ X₂ => ⟨(Classical.arbitrary (Φ.op.LeftResolution (Opposite.op X₂))).unop⟩⟩
+  ⟨fun _ X₂ ↦ ⟨(Classical.arbitrary (Φ.RightResolution X₂.unop)).op⟩,
+    fun _ X₂ ↦ ⟨(Classical.arbitrary (Φ.op.LeftResolution (Opposite.op X₂))).unop⟩⟩
 
 instance [Φ.HasRightResolutions] : Φ.op.HasLeftResolutions := by
   rwa [← hasRightResolutions_iff_op]
@@ -274,7 +274,7 @@ lemma isIso_iff_of_hasRightResolutions [Φ.HasRightResolutions] {F G : D₂ ⥤ 
   · intros
     infer_instance
   · intro hα
-    have : ∀ (X₂ : D₂), IsIso (α.app X₂) := fun X₂ => by
+    have : ∀ (X₂ : D₂), IsIso (α.app X₂) := fun X₂ ↦ by
       have := Φ.essSurj_of_hasRightResolutions L₂
       rw [← NatTrans.isIso_app_iff_of_iso α ((Φ.functor ⋙ L₂).objObjPreimageIso X₂)]
       apply hα
@@ -292,7 +292,7 @@ lemma isIso_iff_of_hasLeftResolutions [Φ.HasLeftResolutions] {F G : D₂ ⥤ H}
   · intros
     infer_instance
   · intro hα
-    have : ∀ (X₂ : D₂), IsIso (α.app X₂) := fun X₂ => by
+    have : ∀ (X₂ : D₂), IsIso (α.app X₂) := fun X₂ ↦ by
       have := Φ.essSurj_of_hasLeftResolutions L₂
       rw [← NatTrans.isIso_app_iff_of_iso α ((Φ.functor ⋙ L₂).objObjPreimageIso X₂)]
       apply hα

@@ -123,7 +123,7 @@ variable [Preorder α] [Mul α] [MulLeftMono α] [MulRightMono α]
 
 @[to_additive]
 instance : Mul (NonemptyInterval α) :=
-  ⟨fun s t => ⟨s.toProd * t.toProd, mul_le_mul' s.fst_le_snd t.fst_le_snd⟩⟩
+  ⟨fun s t ↦ ⟨s.toProd * t.toProd, mul_le_mul' s.fst_le_snd t.fst_le_snd⟩⟩
 
 @[to_additive]
 instance : Mul (Interval α) :=
@@ -180,7 +180,7 @@ end Mul
 -- TODO: if `to_additive` gets improved sufficiently, derive this from `hasPow`
 instance NonemptyInterval.hasNSMul [AddMonoid α] [Preorder α] [AddLeftMono α]
     [AddRightMono α] : SMul ℕ (NonemptyInterval α) :=
-  ⟨fun n s => ⟨(n • s.fst, n • s.snd), nsmul_le_nsmul_right s.fst_le_snd _⟩⟩
+  ⟨fun n s ↦ ⟨(n • s.fst, n • s.snd), nsmul_le_nsmul_right s.fst_le_snd _⟩⟩
 
 section Pow
 
@@ -189,7 +189,7 @@ variable [Monoid α] [Preorder α]
 @[to_additive existing]
 instance NonemptyInterval.hasPow [MulLeftMono α] [MulRightMono α] :
     Pow (NonemptyInterval α) ℕ :=
-  ⟨fun s n => ⟨s.toProd ^ n, pow_le_pow_left' s.fst_le_snd _⟩⟩
+  ⟨fun s n ↦ ⟨s.toProd ^ n, pow_le_pow_left' s.fst_le_snd _⟩⟩
 
 namespace NonemptyInterval
 
@@ -241,8 +241,8 @@ instance Interval.mulOneClass [CommMonoid α] [PartialOrder α] [IsOrderedMonoid
 instance Interval.commMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
     CommMonoid (Interval α) :=
   { Interval.mulOneClass with
-    mul_comm := fun _ _ => Option.map₂_comm mul_comm
-    mul_assoc := fun _ _ _ => Option.map₂_assoc mul_assoc }
+    mul_comm := fun _ _ ↦ Option.map₂_comm mul_comm
+    mul_assoc := fun _ _ _ ↦ Option.map₂_assoc mul_assoc }
 
 namespace NonemptyInterval
 
@@ -299,7 +299,7 @@ namespace NonemptyInterval
 instance [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α] :
     CommSemiring (NonemptyInterval α) :=
   NonemptyInterval.toProd_injective.commSemiring _
-    toProd_zero toProd_one toProd_add toProd_mul (swap toProd_nsmul) toProd_pow (fun _ => rfl)
+    toProd_zero toProd_one toProd_add toProd_mul (swap toProd_nsmul) toProd_pow (fun _ ↦ rfl)
 
 end NonemptyInterval
 
@@ -318,7 +318,7 @@ section Sub
 variable [Preorder α] [AddCommSemigroup α] [Sub α] [OrderedSub α] [AddLeftMono α]
 
 instance : Sub (NonemptyInterval α) :=
-  ⟨fun s t => ⟨(s.fst - t.snd, s.snd - t.fst), tsub_le_tsub s.fst_le_snd t.fst_le_snd⟩⟩
+  ⟨fun s t ↦ ⟨(s.fst - t.snd, s.snd - t.fst), tsub_le_tsub s.fst_le_snd t.fst_le_snd⟩⟩
 
 instance : Sub (Interval α) :=
   ⟨Option.map₂ Sub.sub⟩
@@ -376,7 +376,7 @@ section Div
 variable [Preorder α] [CommGroup α] [MulLeftMono α]
 
 instance : Div (NonemptyInterval α) :=
-  ⟨fun s t => ⟨(s.fst / t.snd, s.snd / t.fst), div_le_div'' s.fst_le_snd t.fst_le_snd⟩⟩
+  ⟨fun s t ↦ ⟨(s.fst / t.snd, s.snd / t.fst), div_le_div'' s.fst_le_snd t.fst_le_snd⟩⟩
 
 instance : Div (Interval α) :=
   ⟨Option.map₂ (· / ·)⟩
@@ -431,7 +431,7 @@ variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
 
 @[to_additive]
 instance : Inv (NonemptyInterval α) :=
-  ⟨fun s => ⟨(s.snd⁻¹, s.fst⁻¹), inv_le_inv' s.fst_le_snd⟩⟩
+  ⟨fun s ↦ ⟨(s.snd⁻¹, s.fst⁻¹), inv_le_inv' s.fst_le_snd⟩⟩
 
 @[to_additive]
 instance : Inv (Interval α) :=
@@ -475,7 +475,7 @@ variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] {s t : NonemptyIn
 
 @[to_additive]
 protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pure b ∧ a * b = 1 := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · rw [NonemptyInterval.ext_iff, Prod.ext_iff] at h
     have := (mul_le_mul_iff_of_ge s.fst_le_snd t.fst_le_snd).1 (h.2.trans h.1.symm).le
     refine ⟨s.fst, t.fst, ?_, ?_, h.1⟩ <;> apply NonemptyInterval.ext <;> dsimp [pure]
@@ -490,14 +490,14 @@ instance subtractionCommMonoid {α : Type u}
   { NonemptyInterval.addCommMonoid with
     neg := Neg.neg
     sub := Sub.sub
-    sub_eq_add_neg := fun s t => by
+    sub_eq_add_neg := fun s t ↦ by
       refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
       exact sub_eq_add_neg _ _
-    neg_neg := fun s => by apply NonemptyInterval.ext; exact neg_neg _
-    neg_add_rev := fun s t => by
+    neg_neg := fun s ↦ by apply NonemptyInterval.ext; exact neg_neg _
+    neg_add_rev := fun s t ↦ by
       refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
       exact neg_add_rev _ _
-    neg_eq_of_add := fun s t h => by
+    neg_eq_of_add := fun s t h ↦ by
       obtain ⟨a, b, rfl, rfl, hab⟩ := NonemptyInterval.add_eq_zero_iff.1 h
       rw [neg_pure, neg_eq_of_add_eq_zero_right hab]
     -- TODO: use a better defeq
@@ -508,14 +508,14 @@ instance divisionCommMonoid : DivisionCommMonoid (NonemptyInterval α) :=
   { NonemptyInterval.commMonoid with
     inv := Inv.inv
     div := (· / ·)
-    div_eq_mul_inv := fun s t => by
+    div_eq_mul_inv := fun s t ↦ by
       refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
       exact div_eq_mul_inv _ _
-    inv_inv := fun s => by apply NonemptyInterval.ext; exact inv_inv _
-    mul_inv_rev := fun s t => by
+    inv_inv := fun s ↦ by apply NonemptyInterval.ext; exact inv_inv _
+    mul_inv_rev := fun s t ↦ by
       refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
       exact mul_inv_rev _ _
-    inv_eq_of_mul := fun s t h => by
+    inv_eq_of_mul := fun s t h ↦ by
       obtain ⟨a, b, rfl, rfl, hab⟩ := NonemptyInterval.mul_eq_one_iff.1 h
       rw [inv_pure, inv_eq_of_mul_eq_one_right hab] }
 

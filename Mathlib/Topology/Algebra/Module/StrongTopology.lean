@@ -144,7 +144,7 @@ theorem coe_zero [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set
 instance instIsUniformAddGroup [UniformSpace F] [IsUniformAddGroup F] (𝔖 : Set (Set E)) :
     IsUniformAddGroup (UniformConvergenceCLM σ F 𝔖) := by
   let φ : (UniformConvergenceCLM σ F 𝔖) →+ E →ᵤ[𝔖] F :=
-    ⟨⟨(DFunLike.coe : (UniformConvergenceCLM σ F 𝔖) → E →ᵤ[𝔖] F), rfl⟩, fun _ _ => rfl⟩
+    ⟨⟨(DFunLike.coe : (UniformConvergenceCLM σ F 𝔖) → E →ᵤ[𝔖] F), rfl⟩, fun _ _ ↦ rfl⟩
   exact (isUniformEmbedding_coeFn _ _ _).isUniformAddGroup φ
 
 instance instIsTopologicalAddGroup [TopologicalSpace F] [IsTopologicalAddGroup F]
@@ -184,16 +184,16 @@ theorem continuousSMul [RingHomSurjective σ] [RingHomIsometric σ]
   letI : UniformSpace F := IsTopologicalAddGroup.toUniformSpace F
   haveI : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
   let φ : (UniformConvergenceCLM σ F 𝔖) →ₗ[𝕜₂] E → F :=
-    ⟨⟨DFunLike.coe, fun _ _ => rfl⟩, fun _ _ => rfl⟩
+    ⟨⟨DFunLike.coe, fun _ _ ↦ rfl⟩, fun _ _ ↦ rfl⟩
   exact UniformOnFun.continuousSMul_induced_of_image_bounded 𝕜₂ E F (UniformConvergenceCLM σ F 𝔖) φ
-    ⟨rfl⟩ fun u s hs => (h𝔖₃ s hs).image u
+    ⟨rfl⟩ fun u s hs ↦ (h𝔖₃ s hs).image u
 
 theorem hasBasis_nhds_zero_of_basis [TopologicalSpace F] [IsTopologicalAddGroup F]
     {ι : Type*} (𝔖 : Set (Set E)) (h𝔖₁ : 𝔖.Nonempty) (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) {p : ι → Prop}
     {b : ι → Set F} (h : (𝓝 0 : Filter F).HasBasis p b) :
     (𝓝 (0 : UniformConvergenceCLM σ F 𝔖)).HasBasis
-      (fun Si : Set E × ι => Si.1 ∈ 𝔖 ∧ p Si.2)
-      fun Si => { f : E →SL[σ] F | ∀ x ∈ Si.1, f x ∈ b Si.2 } := by
+      (fun Si : Set E × ι ↦ Si.1 ∈ 𝔖 ∧ p Si.2)
+      fun Si ↦ { f : E →SL[σ] F | ∀ x ∈ Si.1, f x ∈ b Si.2 } := by
   letI : UniformSpace F := IsTopologicalAddGroup.toUniformSpace F
   haveI : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
   rw [(isEmbedding_coeFn σ F 𝔖).isInducing.nhds_eq_comap]
@@ -202,7 +202,7 @@ theorem hasBasis_nhds_zero_of_basis [TopologicalSpace F] [IsTopologicalAddGroup 
 theorem hasBasis_nhds_zero [TopologicalSpace F] [IsTopologicalAddGroup F]
     (𝔖 : Set (Set E)) (h𝔖₁ : 𝔖.Nonempty) (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) :
     (𝓝 (0 : UniformConvergenceCLM σ F 𝔖)).HasBasis
-      (fun SV : Set E × Set F => SV.1 ∈ 𝔖 ∧ SV.2 ∈ (𝓝 0 : Filter F)) fun SV =>
+      (fun SV : Set E × Set F ↦ SV.1 ∈ 𝔖 ∧ SV.2 ∈ (𝓝 0 : Filter F)) fun SV ↦
       { f : UniformConvergenceCLM σ F 𝔖 | ∀ x ∈ SV.1, f x ∈ SV.2 } :=
   hasBasis_nhds_zero_of_basis σ F 𝔖 h𝔖₁ h𝔖₂ (𝓝 0).basis_sets
 
@@ -350,7 +350,7 @@ instance topologicalAddGroup [TopologicalSpace F] [IsTopologicalAddGroup F] :
 
 instance continuousSMul [RingHomSurjective σ] [RingHomIsometric σ] [TopologicalSpace F]
     [IsTopologicalAddGroup F] [ContinuousSMul 𝕜₂ F] : ContinuousSMul 𝕜₂ (E →SL[σ] F) :=
-  UniformConvergenceCLM.continuousSMul σ F { S | IsVonNBounded 𝕜₁ S } fun _ hs => hs
+  UniformConvergenceCLM.continuousSMul σ F { S | IsVonNBounded 𝕜₁ S } fun _ hs ↦ hs
 
 instance uniformSpace [UniformSpace F] [IsUniformAddGroup F] : UniformSpace (E →SL[σ] F) :=
   UniformConvergenceCLM.instUniformSpace σ F { S | IsVonNBounded 𝕜₁ S }
@@ -369,16 +369,16 @@ instance instT2Space [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousS
 
 protected theorem hasBasis_nhds_zero_of_basis [TopologicalSpace F] [IsTopologicalAddGroup F]
     {ι : Type*} {p : ι → Prop} {b : ι → Set F} (h : (𝓝 0 : Filter F).HasBasis p b) :
-    (𝓝 (0 : E →SL[σ] F)).HasBasis (fun Si : Set E × ι => IsVonNBounded 𝕜₁ Si.1 ∧ p Si.2)
-      fun Si => { f : E →SL[σ] F | ∀ x ∈ Si.1, f x ∈ b Si.2 } :=
+    (𝓝 (0 : E →SL[σ] F)).HasBasis (fun Si : Set E × ι ↦ IsVonNBounded 𝕜₁ Si.1 ∧ p Si.2)
+      fun Si ↦ { f : E →SL[σ] F | ∀ x ∈ Si.1, f x ∈ b Si.2 } :=
   UniformConvergenceCLM.hasBasis_nhds_zero_of_basis σ F { S | IsVonNBounded 𝕜₁ S }
     ⟨∅, isVonNBounded_empty 𝕜₁ E⟩
-    (directedOn_of_sup_mem fun _ _ => IsVonNBounded.union) h
+    (directedOn_of_sup_mem fun _ _ ↦ IsVonNBounded.union) h
 
 protected theorem hasBasis_nhds_zero [TopologicalSpace F] [IsTopologicalAddGroup F] :
     (𝓝 (0 : E →SL[σ] F)).HasBasis
-      (fun SV : Set E × Set F => IsVonNBounded 𝕜₁ SV.1 ∧ SV.2 ∈ (𝓝 0 : Filter F))
-      fun SV => { f : E →SL[σ] F | ∀ x ∈ SV.1, f x ∈ SV.2 } :=
+      (fun SV : Set E × Set F ↦ IsVonNBounded 𝕜₁ SV.1 ∧ SV.2 ∈ (𝓝 0 : Filter F))
+      fun SV ↦ { f : E →SL[σ] F | ∀ x ∈ SV.1, f x ∈ SV.2 } :=
   ContinuousLinearMap.hasBasis_nhds_zero_of_basis (𝓝 0).basis_sets
 
 theorem isUniformEmbedding_toUniformOnFun [UniformSpace F] [IsUniformAddGroup F] :
@@ -467,7 +467,7 @@ def precomp [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] [RingHomSu
     letI : UniformSpace G := IsTopologicalAddGroup.toUniformSpace G
     haveI : IsUniformAddGroup G := isUniformAddGroup_of_addCommGroup
     rw [(UniformConvergenceCLM.isEmbedding_coeFn _ _ _).continuous_iff]
-    apply (UniformOnFun.precomp_uniformContinuous fun S hS => hS.image L).continuous.comp
+    apply (UniformOnFun.precomp_uniformContinuous fun S hS ↦ hS.image L).continuous.comp
         (UniformConvergenceCLM.isEmbedding_coeFn _ _ _).continuous
 
 variable (E) {G}
@@ -605,11 +605,11 @@ def arrowCongrSL (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G)
     (E →SL[σ₁₄] H) ≃SL[σ₄₃] F →SL[σ₂₃] G :=
 { e₁₂.arrowCongrEquiv e₄₃ with
     -- given explicitly to help `simps`
-    toFun := fun L => (e₄₃ : H →SL[σ₄₃] G).comp (L.comp (e₁₂.symm : F →SL[σ₂₁] E))
+    toFun := fun L ↦ (e₄₃ : H →SL[σ₄₃] G).comp (L.comp (e₁₂.symm : F →SL[σ₂₁] E))
     -- given explicitly to help `simps`
-    invFun := fun L => (e₄₃.symm : G →SL[σ₃₄] H).comp (L.comp (e₁₂ : E →SL[σ₁₂] F))
-    map_add' := fun f g => by simp only [add_comp, comp_add]
-    map_smul' := fun t f => by simp only [smul_comp, comp_smulₛₗ]
+    invFun := fun L ↦ (e₄₃.symm : G →SL[σ₃₄] H).comp (L.comp (e₁₂ : E →SL[σ₁₂] F))
+    map_add' := fun f g ↦ by simp only [add_comp, comp_add]
+    map_smul' := fun t f ↦ by simp only [smul_comp, comp_smulₛₗ]
     continuous_toFun := ((postcomp F e₄₃.toContinuousLinearMap).comp
       (precomp H e₁₂.symm.toContinuousLinearMap)).continuous
     continuous_invFun := ((precomp H e₁₂.toContinuousLinearMap).comp

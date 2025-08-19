@@ -48,4 +48,4 @@ variable {f}
 /-- If a function has a non-zero strict derivative at all points, then it is an open map. -/
 theorem isOpenMap_of_hasStrictDerivAt {f' : 𝕜 → 𝕜}
     (hf : ∀ x, HasStrictDerivAt f (f' x) x) (h0 : ∀ x, f' x ≠ 0) : IsOpenMap f :=
-  isOpenMap_iff_nhds_le.2 fun x => ((hf x).map_nhds_eq (h0 x)).ge
+  isOpenMap_iff_nhds_le.2 fun x ↦ ((hf x).map_nhds_eq (h0 x)).ge

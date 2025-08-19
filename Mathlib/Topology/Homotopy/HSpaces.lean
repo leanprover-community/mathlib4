@@ -74,13 +74,13 @@ open HSpaces
 
 instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] [HSpace X]
     [HSpace Y] : HSpace (X × Y) where
-  hmul := ⟨fun p => (p.1.1 ⋀ p.2.1, p.1.2 ⋀ p.2.2), by fun_prop⟩
+  hmul := ⟨fun p ↦ (p.1.1 ⋀ p.2.1, p.1.2 ⋀ p.2.2), by fun_prop⟩
   e := (HSpace.e, HSpace.e)
   hmul_e_e := by
     simp only [ContinuousMap.coe_mk, Prod.mk_inj]
     exact ⟨HSpace.hmul_e_e, HSpace.hmul_e_e⟩
   eHmul := by
-    let G : I × X × Y → X × Y := fun p => (HSpace.eHmul (p.1, p.2.1), HSpace.eHmul (p.1, p.2.2))
+    let G : I × X × Y → X × Y := fun p ↦ (HSpace.eHmul (p.1, p.2.1), HSpace.eHmul (p.1, p.2.2))
     have hG : Continuous G := by fun_prop
     use! ⟨G, hG⟩
     · rintro ⟨x, y⟩
@@ -91,7 +91,7 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
       replace h := Prod.mk_inj.mp h
       exact Prod.ext (HSpace.eHmul.2 t x h.1) (HSpace.eHmul.2 t y h.2)
   hmulE := by
-    let G : I × X × Y → X × Y := fun p => (HSpace.hmulE (p.1, p.2.1), HSpace.hmulE (p.1, p.2.2))
+    let G : I × X × Y → X × Y := fun p ↦ (HSpace.hmulE (p.1, p.2.1), HSpace.hmulE (p.1, p.2.2))
     have hG : Continuous G := by fun_prop
     use! ⟨G, hG⟩
     · rintro ⟨x, y⟩
@@ -195,7 +195,7 @@ def delayReflRight (θ : I) (γ : Path x y) : Path x y where
   target' := by
     rw [qRight_one_left, γ.target]
 
-theorem continuous_delayReflRight : Continuous fun p : I × Path x y => delayReflRight p.1 p.2 :=
+theorem continuous_delayReflRight : Continuous fun p : I × Path x y ↦ delayReflRight p.1 p.2 :=
   continuous_uncurry_iff.mp <|
     (continuous_snd.comp continuous_fst).eval <|
       continuous_qRight.comp <| continuous_snd.prodMk <| continuous_fst.comp continuous_fst
@@ -218,7 +218,7 @@ product path `e ∧ γ`. -/
 def delayReflLeft (θ : I) (γ : Path x y) : Path x y :=
   (delayReflRight θ γ.symm).symm
 
-theorem continuous_delayReflLeft : Continuous fun p : I × Path x y => delayReflLeft p.1 p.2 :=
+theorem continuous_delayReflLeft : Continuous fun p : I × Path x y ↦ delayReflLeft p.1 p.2 :=
   Path.continuous_symm.comp <|
     continuous_delayReflRight.comp <|
       continuous_fst.prodMk <| Path.continuous_symm.comp continuous_snd
@@ -234,7 +234,7 @@ theorem delayReflLeft_one (γ : Path x y) : delayReflLeft 1 γ = γ := by
 (resp. `Path.Homotopy.transRefl`).
 -/
 instance (x : X) : HSpace (Path x x) where
-  hmul := ⟨fun ρ => ρ.1.trans ρ.2, continuous_trans⟩
+  hmul := ⟨fun ρ ↦ ρ.1.trans ρ.2, continuous_trans⟩
   e := refl x
   hmul_e_e := refl_trans_refl
   eHmul :=

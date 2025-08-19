@@ -30,7 +30,7 @@ abbrev RingAut := RingEquiv R R
 namespace RingAut
 
 /-- The group operation on automorphisms of a ring is defined by
-`fun g h => RingEquiv.trans h g`.
+`fun g h ↦ RingEquiv.trans h g`.
 This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`. -/
 instance : Group (RingAut R) where
   mul g h := RingEquiv.trans h g

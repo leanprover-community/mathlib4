@@ -47,11 +47,11 @@ local notation3 "n" => Fintype.card β
 local notation3 "e" => m / ((n : ℝ) - m) -- exponent
 local notation3 "B" => Nat.floor (((n : ℝ) * max 1 ‖A‖) ^ e)
 -- B' is the vector with all components = B
-local notation3 "B'" => fun _ : β => (B : ℤ)
+local notation3 "B'" => fun _ : β ↦ (B : ℤ)
 -- T is the box [0 B]^n
 local notation3 "T" => Finset.Icc 0 B'
-local notation3 "P" => fun i : α => ∑ j : β, B * posPart (A i j)
-local notation3 "N" => fun i : α => ∑ j : β, B * (-negPart (A i j))
+local notation3 "P" => fun i : α ↦ ∑ j : β, B * posPart (A i j)
+local notation3 "N" => fun i : α ↦ ∑ j : β, B * (-negPart (A i j))
 -- S is the box where the image of T goes
 local notation3 "S" => Finset.Icc N P
 

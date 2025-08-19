@@ -45,14 +45,14 @@ lemma self_mem_principalOpen (x : X) : x ∈ principalOpen x := le_refl _
 @[simp]
 lemma principalOpen_le_iff {x : X} (U : Opens X) :
     principalOpen x ≤ U ↔ x ∈ U := by
-  refine ⟨fun h => h <| self_mem_principalOpen _, fun hx y hy => ?_⟩
+  refine ⟨fun h ↦ h <| self_mem_principalOpen _, fun hx y hy ↦ ?_⟩
   · have := U.isOpen
     rw [IsUpperSet.isOpen_iff_isUpperSet] at this
     exact this hy hx
 
 lemma principalOpen_le {x y : X} (h : x ≤ y) :
     principalOpen y ≤ principalOpen x :=
-  fun _ hc => le_trans h hc
+  fun _ hc ↦ le_trans h hc
 
 variable (X) in
 /-- The functor sending `x : X` to the principal open associated with `x`. -/
@@ -90,7 +90,7 @@ This definition is primarily meant to be used in `lowerCone`, and `isLimit` belo
 @[simps]
 def projSup {ι : Type v} (Us : ι → Opens X) :
     StructuredArrow (.op <| iSup Us) (principals X) ⥤
-      (ObjectProperty.FullSubcategory fun V => ∃ i, V ≤ Us i)ᵒᵖ where
+      (ObjectProperty.FullSubcategory fun V ↦ ∃ i, V ≤ Us i)ᵒᵖ where
   obj f := .op <| .mk (principalOpen f.right) <| exists_le_of_le_sup Us f.hom.unop.le
   map e := .op <| LE.le.hom <| principalOpen_le <| e.right.le
 
@@ -99,11 +99,11 @@ variable {F} in
 @[simps]
 def lowerCone
     {α : Type v} (Us : α → Opens X)
-    (S : Cone ((ObjectProperty.ι fun V => ∃ i, V ≤ Us i).op ⋙ principalsKanExtension F)) :
+    (S : Cone ((ObjectProperty.ι fun V ↦ ∃ i, V ≤ Us i).op ⋙ principalsKanExtension F)) :
     Cone (generator (iSup Us) ⋙ F) where
   pt := S.pt
   π := {
-    app := fun f =>
+    app := fun f ↦
       S.π.app ((projSup Us).obj f) ≫ limit.π (generator (principalOpen f.right) ⋙ F)
         ⟨.mk .unit, f.right, 𝟙 _⟩
     naturality := by
@@ -147,8 +147,8 @@ def isLimit {X : TopCat.{v}} [Preorder X] [Topology.IsUpperSet X]
       lowerCone_π_app, const_obj_obj, projSup_obj, StructuredArrow.map_obj_right, op_obj,
       ObjectProperty.ι_obj, pointwiseRightKanExtension_obj]
     have e : principalOpen x ≤ V := f.unop.le
-    let VV : (ObjectProperty.FullSubcategory fun V => ∃ i, V ≤ Us i) := ⟨V, i, hV⟩
-    let xx : (ObjectProperty.FullSubcategory fun V => ∃ i, V ≤ Us i) :=
+    let VV : (ObjectProperty.FullSubcategory fun V ↦ ∃ i, V ≤ Us i) := ⟨V, i, hV⟩
+    let xx : (ObjectProperty.FullSubcategory fun V ↦ ∃ i, V ≤ Us i) :=
       ⟨principalOpen x, i, le_trans e hV⟩
     let ee : xx ⟶ VV := e.hom
     rw [← S.w ee.op, Category.assoc]

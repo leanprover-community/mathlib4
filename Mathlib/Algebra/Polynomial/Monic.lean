@@ -41,7 +41,7 @@ theorem monic_zero_iff_subsingleton' :
   Polynomial.monic_zero_iff_subsingleton.trans
     ⟨by
       intro
-      simp [eq_iff_true_of_subsingleton], fun h => subsingleton_iff.mpr h.2⟩
+      simp [eq_iff_true_of_subsingleton], fun h ↦ subsingleton_iff.mpr h.2⟩
 
 theorem Monic.as_sum (hp : p.Monic) :
     p = X ^ p.natDegree + ∑ i ∈ range p.natDegree, C (p.coeff i) * X ^ i := by
@@ -79,8 +79,8 @@ theorem monic_mul_C_of_leadingCoeff_mul_eq_one {b : R} (hp : p.leadingCoeff * b 
 
 theorem monic_of_degree_le (n : ℕ) (H1 : degree p ≤ n) (H2 : coeff p n = 1) : Monic p :=
   Decidable.byCases
-    (fun H : degree p < n => eq_of_zero_eq_one (H2 ▸ (coeff_eq_zero_of_degree_lt H).symm) _ _)
-    fun H : ¬degree p < n => by
+    (fun H : degree p < n ↦ eq_of_zero_eq_one (H2 ▸ (coeff_eq_zero_of_degree_lt H).symm) _ _)
+    fun H : ¬degree p < n ↦ by
     rwa [Monic, Polynomial.leadingCoeff, natDegree, (lt_or_eq_of_le H1).resolve_left H]
 
 theorem monic_X_pow_add {n : ℕ} (H : degree p < n) : Monic (X ^ n + p) :=
@@ -234,7 +234,7 @@ theorem Monic.eq_one_of_isUnit (hm : Monic p) (hpu : IsUnit p) : p = 1 := by
   exact hm.natDegree_eq_zero_iff_eq_one.mp this.1
 
 theorem Monic.isUnit_iff (hm : p.Monic) : IsUnit p ↔ p = 1 :=
-  ⟨hm.eq_one_of_isUnit, fun h => h.symm ▸ isUnit_one⟩
+  ⟨hm.eq_one_of_isUnit, fun h ↦ h.symm ▸ isUnit_one⟩
 
 theorem eq_of_monic_of_associated (hp : p.Monic) (hq : q.Monic) (hpq : Associated p q) : p = q := by
   obtain ⟨u, rfl⟩ := hpq
@@ -252,7 +252,7 @@ theorem monic_multiset_prod_of_monic (t : Multiset ι) (f : ι → R[X]) (ht : �
   refine t.induction_on ?_ ?_; · simp
   intro a t ih ht
   rw [Multiset.map_cons, Multiset.prod_cons]
-  exact (ht _ (Multiset.mem_cons_self _ _)).mul (ih fun _ hi => ht _ (Multiset.mem_cons_of_mem hi))
+  exact (ht _ (Multiset.mem_cons_self _ _)).mul (ih fun _ hi ↦ ht _ (Multiset.mem_cons_of_mem hi))
 
 theorem monic_prod_of_monic (s : Finset ι) (f : ι → R[X]) (hs : ∀ i ∈ s, Monic (f i)) :
     Monic (∏ i ∈ s, f i) :=
@@ -264,21 +264,21 @@ theorem monic_finprod_of_monic (α : Type*) (f : α → R[X])
   classical
   rw [finprod_def]
   split_ifs
-  · exact monic_prod_of_monic _ _ fun a ha => hf a ((Set.Finite.mem_toFinset _).mp ha)
+  · exact monic_prod_of_monic _ _ fun a ha ↦ hf a ((Set.Finite.mem_toFinset _).mp ha)
   · exact monic_one
 
 theorem Monic.nextCoeff_multiset_prod (t : Multiset ι) (f : ι → R[X]) (h : ∀ i ∈ t, Monic (f i)) :
-    nextCoeff (t.map f).prod = (t.map fun i => nextCoeff (f i)).sum := by
+    nextCoeff (t.map f).prod = (t.map fun i ↦ nextCoeff (f i)).sum := by
   revert h
-  refine Multiset.induction_on t ?_ fun a t ih ht => ?_
+  refine Multiset.induction_on t ?_ fun a t ih ht ↦ ?_
   · simp only [Multiset.notMem_zero, forall_prop_of_true, forall_prop_of_false, Multiset.map_zero,
       Multiset.prod_zero, Multiset.sum_zero, not_false_iff, forall_true_iff]
     rw [← C_1]
     rw [nextCoeff_C_eq_zero]
   · rw [Multiset.map_cons, Multiset.prod_cons, Multiset.map_cons, Multiset.sum_cons,
       Monic.nextCoeff_mul, ih]
-    exacts [fun i hi => ht i (Multiset.mem_cons_of_mem hi), ht a (Multiset.mem_cons_self _ _),
-      monic_multiset_prod_of_monic _ _ fun b bs => ht _ (Multiset.mem_cons_of_mem bs)]
+    exacts [fun i hi ↦ ht i (Multiset.mem_cons_of_mem hi), ht a (Multiset.mem_cons_self _ _),
+      monic_multiset_prod_of_monic _ _ fun b bs ↦ ht _ (Multiset.mem_cons_of_mem bs)]
 
 theorem Monic.nextCoeff_prod (s : Finset ι) (f : ι → R[X]) (h : ∀ i ∈ s, Monic (f i)) :
     nextCoeff (∏ i ∈ s, f i) = ∑ i ∈ s, nextCoeff (f i) :=
@@ -289,8 +289,8 @@ variable [NoZeroDivisors R] {p q : R[X]}
 lemma irreducible_of_monic (hp : p.Monic) (hp1 : p ≠ 1) :
     Irreducible p ↔ ∀ f g : R[X], f.Monic → g.Monic → f * g = p → f = 1 ∨ g = 1 := by
   refine
-    ⟨fun h f g hf hg hp => (h.2 hp.symm).imp hf.eq_one_of_isUnit hg.eq_one_of_isUnit, fun h =>
-      ⟨hp1 ∘ hp.eq_one_of_isUnit, fun f g hfg =>
+    ⟨fun h f g hf hg hp ↦ (h.2 hp.symm).imp hf.eq_one_of_isUnit hg.eq_one_of_isUnit, fun h ↦
+      ⟨hp1 ∘ hp.eq_one_of_isUnit, fun f g hfg ↦
         (h (g * C f.leadingCoeff) (f * C g.leadingCoeff) ?_ ?_ ?_).symm.imp
           (isUnit_of_mul_eq_one f _)
           (isUnit_of_mul_eq_one g _)⟩⟩
@@ -305,7 +305,7 @@ lemma Monic.irreducible_iff_natDegree (hp : p.Monic) :
       p ≠ 1 ∧ ∀ f g : R[X], f.Monic → g.Monic → f * g = p → f.natDegree = 0 ∨ g.natDegree = 0 := by
   by_cases hp1 : p = 1; · simp [hp1]
   rw [irreducible_of_monic hp hp1, and_iff_right hp1]
-  refine forall₄_congr fun a b ha hb => ?_
+  refine forall₄_congr fun a b ha hb ↦ ?_
   rw [ha.natDegree_eq_zero_iff_eq_one, hb.natDegree_eq_zero_iff_eq_one]
 
 lemma Monic.irreducible_iff_natDegree' (hp : p.Monic) : Irreducible p ↔ p ≠ 1 ∧
@@ -314,7 +314,7 @@ lemma Monic.irreducible_iff_natDegree' (hp : p.Monic) : Irreducible p ↔ p ≠ 
   apply and_congr_right'
   constructor <;> intro h f g hf hg he <;> subst he
   · rw [hf.natDegree_mul hg, add_le_add_iff_right]
-    exact fun ha => (h f g hf hg rfl).elim (ha.1.trans_le ha.2).ne' ha.1.ne'
+    exact fun ha ↦ (h f g hf hg rfl).elim (ha.1.trans_le ha.2).ne' ha.1.ne'
   · simp_rw [hf.natDegree_mul hg, pos_iff_ne_zero] at h
     contrapose! h
     obtain hl | hl := le_total f.natDegree g.natDegree
@@ -498,7 +498,7 @@ theorem Monic.mul_natDegree_lt_iff (h : Monic p) {q : R[X]} :
     (p * q).natDegree < p.natDegree ↔ p ≠ 1 ∧ q = 0 := by
   by_cases hq : q = 0
   · suffices 0 < p.natDegree ↔ p.natDegree ≠ 0 by simpa [hq, ← h.natDegree_eq_zero_iff_eq_one]
-    exact ⟨fun h => h.ne', fun h => lt_of_le_of_ne (Nat.zero_le _) h.symm⟩
+    exact ⟨fun h ↦ h.ne', fun h ↦ lt_of_le_of_ne (Nat.zero_le _) h.symm⟩
   · simp [h.natDegree_mul', hq]
 
 theorem Monic.mul_right_eq_zero_iff (h : Monic p) {q : R[X]} : p * q = 0 ↔ q = 0 := by
@@ -559,7 +559,7 @@ theorem isUnit_leadingCoeff_mul_right_eq_zero_iff (h : IsUnit p.leadingCoeff) {q
     have : h.unit⁻¹ • (p * q) = h.unit⁻¹ • p * q := by
       ext
       simp only [Units.smul_def, coeff_smul, coeff_mul, smul_eq_mul, mul_sum]
-      refine sum_congr rfl fun x _ => ?_
+      refine sum_congr rfl fun x _ ↦ ?_
       rw [← mul_assoc]
     rwa [this, Monic.mul_right_eq_zero_iff] at hp
     exact monic_of_isUnit_leadingCoeff_inv_smul _

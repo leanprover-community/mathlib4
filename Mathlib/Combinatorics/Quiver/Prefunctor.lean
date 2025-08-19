@@ -59,7 +59,7 @@ theorem ext' {V W : Type u} [Quiver V] [Quiver W] {F G : Prefunctor V W}
 /-- The identity morphism between quivers. -/
 @[simps]
 def id (V : Type*) [Quiver V] : Prefunctor V V where
-  obj := fun X => X
+  obj := fun X ↦ X
   map f := f
 
 instance (V : Type*) [Quiver V] : Inhabited (Prefunctor V V) :=

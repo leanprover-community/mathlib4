@@ -45,7 +45,7 @@ variable {L : Type*} (K : Type*) [Field K] [Field L] [Algebra K L] [FiniteDimens
 noncomputable def norm [Algebra.IsSeparable K L] : 𝓞 L →* 𝓞 K :=
   RingOfIntegers.restrict_monoidHom
     ((Algebra.norm K).comp (algebraMap (𝓞 L) L : (𝓞 L) →* L))
-    fun x => isIntegral_norm K x.2
+    fun x ↦ isIntegral_norm K x.2
 
 @[simp] lemma coe_norm [Algebra.IsSeparable K L] (x : 𝓞 L) : norm K x = Algebra.norm K (x : L) :=
   rfl
@@ -66,14 +66,14 @@ theorem norm_algebraMap [Algebra.IsSeparable K L] (x : 𝓞 K) :
 
 theorem isUnit_norm_of_isGalois [IsGalois K L] {x : 𝓞 L} : IsUnit (norm K x) ↔ IsUnit x := by
   classical
-  refine ⟨fun hx => ?_, IsUnit.map _⟩
+  refine ⟨fun hx ↦ ?_, IsUnit.map _⟩
   replace hx : IsUnit (algebraMap (𝓞 K) (𝓞 L) <| norm K x) := hx.map (algebraMap (𝓞 K) <| 𝓞 L)
   refine @isUnit_of_mul_isUnit_right (𝓞 L) _
-    ⟨(univ \ {AlgEquiv.refl}).prod fun σ : L ≃ₐ[K] L => σ x,
-      prod_mem fun σ _ => x.2.map (σ : L →+* L).toIntAlgHom⟩ _ ?_
+    ⟨(univ \ {AlgEquiv.refl}).prod fun σ : L ≃ₐ[K] L ↦ σ x,
+      prod_mem fun σ _ ↦ x.2.map (σ : L →+* L).toIntAlgHom⟩ _ ?_
   convert hx using 1
   ext
-  convert_to ((univ \ {AlgEquiv.refl}).prod fun σ : L ≃ₐ[K] L => σ x) *
+  convert_to ((univ \ {AlgEquiv.refl}).prod fun σ : L ≃ₐ[K] L ↦ σ x) *
     ∏ σ ∈ {(AlgEquiv.refl : L ≃ₐ[K] L)}, σ x = _
   · rw [prod_singleton, AlgEquiv.coe_refl, _root_.id, RingOfIntegers.coe_eq_algebraMap, map_mul,
       RingOfIntegers.map_mk]
@@ -85,7 +85,7 @@ theorem dvd_norm [IsGalois K L] (x : 𝓞 L) : x ∣ algebraMap (𝓞 K) (𝓞 L
   classical
   have hint :
     IsIntegral ℤ (∏ σ ∈ univ.erase (AlgEquiv.refl : L ≃ₐ[K] L), σ x) :=
-    IsIntegral.prod _ (fun σ _ =>
+    IsIntegral.prod _ (fun σ _ ↦
       ((RingOfIntegers.isIntegral_coe x).map σ))
   refine ⟨⟨_, hint⟩, ?_⟩
   ext

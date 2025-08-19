@@ -35,11 +35,11 @@ inductive ChainClosure (r : α → α → Prop) : Set α → Prop
 def maxChain (r : α → α → Prop) : Set α := ⋃₀ setOf (ChainClosure r)
 
 lemma chainClosure_empty : ChainClosure r ∅ := by
-  have : ChainClosure r (⋃₀ ∅) := ChainClosure.union fun a h => (notMem_empty _ h).elim
+  have : ChainClosure r (⋃₀ ∅) := ChainClosure.union fun a h ↦ (notMem_empty _ h).elim
   simpa using this
 
 lemma chainClosure_maxChain : ChainClosure r (maxChain r) :=
-  ChainClosure.union fun _ => id
+  ChainClosure.union fun _ ↦ id
 
 private lemma chainClosure_succ_total_aux (hc₁ : ChainClosure r c₁)
     (h : ∀ ⦃c₃⦄, ChainClosure r c₃ → c₃ ⊆ c₂ → c₂ = c₃ ∨ SuccChain r c₃ ⊆ c₂) :
@@ -48,16 +48,16 @@ private lemma chainClosure_succ_total_aux (hc₁ : ChainClosure r c₁)
   | @succ c₃ hc₃ ih =>
     obtain ih | ih := ih
     · exact Or.inl (ih.trans subset_succChain)
-    · exact (h hc₃ ih).imp_left fun (h : c₂ = c₃) => h ▸ Subset.rfl
+    · exact (h hc₃ ih).imp_left fun (h : c₂ = c₃) ↦ h ▸ Subset.rfl
   | union _ ih =>
-    refine or_iff_not_imp_left.2 fun hn => sUnion_subset fun a ha => ?_
-    exact (ih a ha).resolve_left fun h => hn <| h.trans <| subset_sUnion_of_mem ha
+    refine or_iff_not_imp_left.2 fun hn ↦ sUnion_subset fun a ha ↦ ?_
+    exact (ih a ha).resolve_left fun h ↦ hn <| h.trans <| subset_sUnion_of_mem ha
 
 private lemma chainClosure_succ_total (hc₁ : ChainClosure r c₁) (hc₂ : ChainClosure r c₂)
     (h : c₁ ⊆ c₂) : c₂ = c₁ ∨ SuccChain r c₁ ⊆ c₂ := by
   induction hc₂ generalizing c₁ hc₁ with
   | succ _ ih =>
-    refine ((chainClosure_succ_total_aux hc₁) fun c₁ => ih).imp h.antisymm' fun h₁ => ?_
+    refine ((chainClosure_succ_total_aux hc₁) fun c₁ ↦ ih).imp h.antisymm' fun h₁ ↦ ?_
     obtain rfl | h₂ := ih hc₁ h₁
     · exact Subset.rfl
     · exact h₂.trans subset_succChain
@@ -66,7 +66,7 @@ private lemma chainClosure_succ_total (hc₁ : ChainClosure r c₁) (hc₂ : Cha
     apply by_contradiction
     simp only [sUnion_subset_iff, not_or, not_forall, exists_prop, and_imp, forall_exists_index]
     intro c₃ hc₃ h₁ h₂
-    obtain h | h := chainClosure_succ_total_aux hc₁ fun c₄ => ih _ hc₃
+    obtain h | h := chainClosure_succ_total_aux hc₁ fun c₄ ↦ ih _ hc₃
     · exact h₁ (subset_succChain.trans h)
     obtain h' | h' := ih c₃ hc₃ hc₁ h
     · exact h₁ h'.subset
@@ -74,26 +74,26 @@ private lemma chainClosure_succ_total (hc₁ : ChainClosure r c₁) (hc₂ : Cha
 
 lemma ChainClosure.total (hc₁ : ChainClosure r c₁) (hc₂ : ChainClosure r c₂) :
     c₁ ⊆ c₂ ∨ c₂ ⊆ c₁ :=
-  ((chainClosure_succ_total_aux hc₂) fun _ hc₃ => chainClosure_succ_total hc₃ hc₁).imp_left
+  ((chainClosure_succ_total_aux hc₂) fun _ hc₃ ↦ chainClosure_succ_total hc₃ hc₁).imp_left
     subset_succChain.trans
 
 lemma ChainClosure.succ_fixpoint (hc₁ : ChainClosure r c₁) (hc₂ : ChainClosure r c₂)
     (hc : SuccChain r c₂ = c₂) : c₁ ⊆ c₂ := by
   induction hc₁ with
-  | succ hc₁ h => exact (chainClosure_succ_total hc₁ hc₂ h).elim (fun h => h ▸ hc.subset) id
+  | succ hc₁ h => exact (chainClosure_succ_total hc₁ hc₂ h).elim (fun h ↦ h ▸ hc.subset) id
   | union _ ih => exact sUnion_subset ih
 
 lemma ChainClosure.succ_fixpoint_iff (hc : ChainClosure r c) :
     SuccChain r c = c ↔ c = maxChain r :=
-  ⟨fun h => (subset_sUnion_of_mem hc).antisymm <| chainClosure_maxChain.succ_fixpoint hc h,
-    fun h => subset_succChain.antisymm' <| (subset_sUnion_of_mem hc.succ).trans h.symm.subset⟩
+  ⟨fun h ↦ (subset_sUnion_of_mem hc).antisymm <| chainClosure_maxChain.succ_fixpoint hc h,
+    fun h ↦ subset_succChain.antisymm' <| (subset_sUnion_of_mem hc.succ).trans h.symm.subset⟩
 
 lemma ChainClosure.isChain (hc : ChainClosure r c) : IsChain r c := by
   induction hc with
   | succ _ h => exact h.succ
   | union hs h =>
-    exact fun c₁ ⟨t₁, ht₁, (hc₁ : c₁ ∈ t₁)⟩ c₂ ⟨t₂, ht₂, (hc₂ : c₂ ∈ t₂)⟩ hneq =>
-      ((hs _ ht₁).total <| hs _ ht₂).elim (fun ht => h t₂ ht₂ (ht hc₁) hc₂ hneq) fun ht =>
+    exact fun c₁ ⟨t₁, ht₁, (hc₁ : c₁ ∈ t₁)⟩ c₂ ⟨t₂, ht₂, (hc₂ : c₂ ∈ t₂)⟩ hneq ↦
+      ((hs _ ht₁).total <| hs _ ht₂).elim (fun ht ↦ h t₂ ht₂ (ht hc₁) hc₂ hneq) fun ht ↦
         h t₁ ht₁ hc₁ (ht hc₂) hneq
 
 /-- **Hausdorff's maximality principle**
@@ -101,6 +101,6 @@ lemma ChainClosure.isChain (hc : ChainClosure r c) : IsChain r c := by
 There exists a maximal totally ordered set of `α`.
 Note that we do not require `α` to be partially ordered by `r`. -/
 theorem maxChain_spec : IsMaxChain r (maxChain r) :=
-  by_contradiction fun h =>
+  by_contradiction fun h ↦
     let ⟨_, H⟩ := chainClosure_maxChain.isChain.superChain_succChain h
     H.ne (chainClosure_maxChain.succ_fixpoint_iff.mpr rfl).symm

@@ -50,8 +50,8 @@ attribute [coe] Filtration.seq
 
 variable {Ω β ι : Type*} {m : MeasurableSpace Ω}
 
-instance [Preorder ι] : CoeFun (Filtration ι m) fun _ => ι → MeasurableSpace Ω :=
-  ⟨fun f => f.seq⟩
+instance [Preorder ι] : CoeFun (Filtration ι m) fun _ ↦ ι → MeasurableSpace Ω :=
+  ⟨fun f ↦ f.seq⟩
 
 namespace Filtration
 
@@ -70,7 +70,7 @@ protected theorem ext {f g : Filtration ι m} (h : (f : ι → MeasurableSpace �
 variable (ι) in
 /-- The constant filtration which is equal to `m` for all `i : ι`. -/
 def const (m' : MeasurableSpace Ω) (hm' : m' ≤ m) : Filtration ι m :=
-  ⟨fun _ => m', monotone_const, fun _ => hm'⟩
+  ⟨fun _ ↦ m', monotone_const, fun _ ↦ hm'⟩
 
 @[simp]
 theorem const_apply {m' : MeasurableSpace Ω} {hm' : m' ≤ m} (i : ι) : const ι m' hm' i = m' :=
@@ -80,7 +80,7 @@ instance : Inhabited (Filtration ι m) :=
   ⟨const ι m le_rfl⟩
 
 instance : LE (Filtration ι m) :=
-  ⟨fun f g => ∀ i, f i ≤ g i⟩
+  ⟨fun f g ↦ ∀ i, f i ≤ g i⟩
 
 instance : Bot (Filtration ι m) :=
   ⟨const ι ⊥ bot_le⟩
@@ -89,62 +89,62 @@ instance : Top (Filtration ι m) :=
   ⟨const ι m le_rfl⟩
 
 instance : Max (Filtration ι m) :=
-  ⟨fun f g =>
-    { seq := fun i => f i ⊔ g i
-      mono' := fun _ _ hij =>
+  ⟨fun f g ↦
+    { seq := fun i ↦ f i ⊔ g i
+      mono' := fun _ _ hij ↦
         sup_le ((f.mono hij).trans le_sup_left) ((g.mono hij).trans le_sup_right)
-      le' := fun i => sup_le (f.le i) (g.le i) }⟩
+      le' := fun i ↦ sup_le (f.le i) (g.le i) }⟩
 
 @[norm_cast]
 theorem coeFn_sup {f g : Filtration ι m} : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
   rfl
 
 instance : Min (Filtration ι m) :=
-  ⟨fun f g =>
-    { seq := fun i => f i ⊓ g i
-      mono' := fun _ _ hij =>
+  ⟨fun f g ↦
+    { seq := fun i ↦ f i ⊓ g i
+      mono' := fun _ _ hij ↦
         le_inf (inf_le_left.trans (f.mono hij)) (inf_le_right.trans (g.mono hij))
-      le' := fun i => inf_le_left.trans (f.le i) }⟩
+      le' := fun i ↦ inf_le_left.trans (f.le i) }⟩
 
 @[norm_cast]
 theorem coeFn_inf {f g : Filtration ι m} : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g :=
   rfl
 
 instance : SupSet (Filtration ι m) :=
-  ⟨fun s =>
-    { seq := fun i => sSup ((fun f : Filtration ι m => f i) '' s)
-      mono' := fun i j hij => by
-        refine sSup_le fun m' hm' => ?_
+  ⟨fun s ↦
+    { seq := fun i ↦ sSup ((fun f : Filtration ι m ↦ f i) '' s)
+      mono' := fun i j hij ↦ by
+        refine sSup_le fun m' hm' ↦ ?_
         rw [Set.mem_image] at hm'
         obtain ⟨f, hf_mem, hfm'⟩ := hm'
         rw [← hfm']
         refine (f.mono hij).trans ?_
-        have hfj_mem : f j ∈ (fun g : Filtration ι m => g j) '' s := ⟨f, hf_mem, rfl⟩
+        have hfj_mem : f j ∈ (fun g : Filtration ι m ↦ g j) '' s := ⟨f, hf_mem, rfl⟩
         exact le_sSup hfj_mem
-      le' := fun i => by
-        refine sSup_le fun m' hm' => ?_
+      le' := fun i ↦ by
+        refine sSup_le fun m' hm' ↦ ?_
         rw [Set.mem_image] at hm'
         obtain ⟨f, _, hfm'⟩ := hm'
         rw [← hfm']
         exact f.le i }⟩
 
 theorem sSup_def (s : Set (Filtration ι m)) (i : ι) :
-    sSup s i = sSup ((fun f : Filtration ι m => f i) '' s) :=
+    sSup s i = sSup ((fun f : Filtration ι m ↦ f i) '' s) :=
   rfl
 
 open scoped Classical in
 noncomputable instance : InfSet (Filtration ι m) :=
-  ⟨fun s =>
-    { seq := fun i => if Set.Nonempty s then sInf ((fun f : Filtration ι m => f i) '' s) else m
-      mono' := fun i j hij => by
+  ⟨fun s ↦
+    { seq := fun i ↦ if Set.Nonempty s then sInf ((fun f : Filtration ι m ↦ f i) '' s) else m
+      mono' := fun i j hij ↦ by
         by_cases h_nonempty : Set.Nonempty s
         swap; · simp only [h_nonempty, if_false, le_refl]
         simp only [h_nonempty, if_true, le_sInf_iff, Set.mem_image, forall_exists_index, and_imp,
           forall_apply_eq_imp_iff₂]
-        refine fun f hf_mem => le_trans ?_ (f.mono hij)
-        have hfi_mem : f i ∈ (fun g : Filtration ι m => g i) '' s := ⟨f, hf_mem, rfl⟩
+        refine fun f hf_mem ↦ le_trans ?_ (f.mono hij)
+        have hfi_mem : f i ∈ (fun g : Filtration ι m ↦ g i) '' s := ⟨f, hf_mem, rfl⟩
         exact sInf_le hfi_mem
-      le' := fun i => by
+      le' := fun i ↦ by
         by_cases h_nonempty : Set.Nonempty s
         swap; · simp only [h_nonempty, if_false, le_refl]
         simp only [h_nonempty, if_true]
@@ -153,14 +153,14 @@ noncomputable instance : InfSet (Filtration ι m) :=
 
 open scoped Classical in
 theorem sInf_def (s : Set (Filtration ι m)) (i : ι) :
-    sInf s i = if Set.Nonempty s then sInf ((fun f : Filtration ι m => f i) '' s) else m :=
+    sInf s i = if Set.Nonempty s then sInf ((fun f : Filtration ι m ↦ f i) '' s) else m :=
   rfl
 
 noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) where
   le := (· ≤ ·)
   le_refl _ _ := le_rfl
   le_trans _ _ _ h_fg h_gh i := (h_fg i).trans (h_gh i)
-  le_antisymm _ _ h_fg h_gf := Filtration.ext <| funext fun i => (h_fg i).antisymm (h_gf i)
+  le_antisymm _ _ h_fg h_gf := Filtration.ext <| funext fun i ↦ (h_fg i).antisymm (h_gf i)
   sup := (· ⊔ ·)
   le_sup_left _ _ _ := le_sup_left
   le_sup_right _ _ _ := le_sup_right
@@ -172,7 +172,7 @@ noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) w
   sSup := sSup
   le_sSup _ f hf_mem _ := le_sSup ⟨f, hf_mem, rfl⟩
   sSup_le s f h_forall i :=
-    sSup_le fun m' hm' => by
+    sSup_le fun m' hm' ↦ by
       obtain ⟨g, hg_mem, hfm'⟩ := hm'
       rw [← hfm']
       exact h_forall g hg_mem i
@@ -186,7 +186,7 @@ noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) w
     swap; · simp only [sInf_def, hs, if_false]; exact f.le i
     simp only [sInf_def, hs, if_true, le_sInf_iff, Set.mem_image, forall_exists_index, and_imp,
       forall_apply_eq_imp_iff₂]
-    exact fun g hg_mem => h_forall g hg_mem i
+    exact fun g hg_mem ↦ h_forall g hg_mem i
   top := ⊤
   bot := ⊥
   le_top f i := f.le' i
@@ -209,13 +209,13 @@ instance sigmaFinite_of_sigmaFiniteFiltration [Preorder ι] (μ : Measure Ω) (f
 
 instance (priority := 100) IsFiniteMeasure.sigmaFiniteFiltration [Preorder ι] (μ : Measure Ω)
     (f : Filtration ι m) [IsFiniteMeasure μ] : SigmaFiniteFiltration μ f :=
-  ⟨fun n => by infer_instance⟩
+  ⟨fun n ↦ by infer_instance⟩
 
 /-- Given an integrable function `g`, the conditional expectations of `g` with respect to a
 filtration is uniformly integrable. -/
 theorem Integrable.uniformIntegrable_condExp_filtration [Preorder ι] {μ : Measure Ω}
     [IsFiniteMeasure μ] {f : Filtration ι m} {g : Ω → ℝ} (hg : Integrable g μ) :
-    UniformIntegrable (fun i => μ[g|f i]) 1 μ :=
+    UniformIntegrable (fun i ↦ μ[g|f i]) 1 μ :=
   hg.uniformIntegrable_condExp f.le
 
 theorem Filtration.condExp_condExp [Preorder ι] {E : Type*} [NormedAddCommGroup E]
@@ -231,8 +231,8 @@ variable [Preorder ι]
 such that `sₙ` is measurable with respect to the `n`-th sub-σ-algebra in `filtrationOfSet`. -/
 def filtrationOfSet {s : ι → Set Ω} (hsm : ∀ i, MeasurableSet (s i)) : Filtration ι m where
   seq i := MeasurableSpace.generateFrom {t | ∃ j ≤ i, s j = t}
-  mono' _ _ hnm := MeasurableSpace.generateFrom_mono fun _ ⟨k, hk₁, hk₂⟩ => ⟨k, hk₁.trans hnm, hk₂⟩
-  le' _ := MeasurableSpace.generateFrom_le fun _ ⟨k, _, hk₂⟩ => hk₂ ▸ hsm k
+  mono' _ _ hnm := MeasurableSpace.generateFrom_mono fun _ ⟨k, hk₁, hk₂⟩ ↦ ⟨k, hk₁.trans hnm, hk₂⟩
+  le' _ := MeasurableSpace.generateFrom_le fun _ ⟨k, _, hk₂⟩ ↦ hk₂ ▸ hsm k
 
 theorem measurableSet_filtrationOfSet {s : ι → Set Ω} (hsm : ∀ i, MeasurableSet[m] (s i)) (i : ι)
     {j : ι} (hj : j ≤ i) : MeasurableSet[filtrationOfSet hsm i] (s j) :=
@@ -254,7 +254,7 @@ of σ-algebras such that that sequence of functions is measurable with respect t
 the filtration. -/
 def natural (u : ι → Ω → β) (hum : ∀ i, StronglyMeasurable (u i)) : Filtration ι m where
   seq i := ⨆ j ≤ i, MeasurableSpace.comap (u j) mβ
-  mono' _ _ hij := biSup_mono fun _ => ge_trans hij
+  mono' _ _ hij := biSup_mono fun _ ↦ ge_trans hij
   le' i := by
     refine iSup₂_le ?_
     rintro j _ s ⟨t, ht, rfl⟩
@@ -266,7 +266,7 @@ open MeasurableSpace
 
 theorem filtrationOfSet_eq_natural [MulZeroOneClass β] [Nontrivial β] {s : ι → Set Ω}
     (hsm : ∀ i, MeasurableSet[m] (s i)) :
-    filtrationOfSet hsm = natural (fun i => (s i).indicator (fun _ => 1 : Ω → β)) fun i =>
+    filtrationOfSet hsm = natural (fun i ↦ (s i).indicator (fun _ ↦ 1 : Ω → β)) fun i ↦
       stronglyMeasurable_one.indicator (hsm i) := by
   simp only [filtrationOfSet, natural, measurableSpace_iSup_eq, exists_prop, mk.injEq]
   ext1 i
@@ -279,7 +279,7 @@ theorem filtrationOfSet_eq_natural [MulZeroOneClass β] [Nontrivial β] {s : ι 
     simp
   · rintro t ⟨n, ht⟩
     suffices MeasurableSpace.generateFrom {t | n ≤ i ∧
-      MeasurableSet[MeasurableSpace.comap ((s n).indicator (fun _ => 1 : Ω → β)) mβ] t} ≤
+      MeasurableSet[MeasurableSpace.comap ((s n).indicator (fun _ ↦ 1 : Ω → β)) mβ] t} ≤
         MeasurableSpace.generateFrom {t | ∃ (j : ι), j ≤ i ∧ s j = t} by
       exact this _ ht
     refine generateFrom_le ?_
@@ -307,7 +307,7 @@ converges to `limitProcess f ℱ μ` `μ`-almost everywhere. -/
 noncomputable def limitProcess (f : ι → Ω → E) (ℱ : Filtration ι m)
     (μ : Measure Ω) :=
   if h : ∃ g : Ω → E,
-    StronglyMeasurable[⨆ n, ℱ n] g ∧ ∀ᵐ ω ∂μ, Tendsto (fun n => f n ω) atTop (𝓝 (g ω)) then
+    StronglyMeasurable[⨆ n, ℱ n] g ∧ ∀ᵐ ω ∂μ, Tendsto (fun n ↦ f n ω) atTop (𝓝 (g ω)) then
   Classical.choose h else 0
 
 theorem stronglyMeasurable_limitProcess : StronglyMeasurable[⨆ n, ℱ n] (limitProcess f ℱ μ) := by
@@ -316,7 +316,7 @@ theorem stronglyMeasurable_limitProcess : StronglyMeasurable[⨆ n, ℱ n] (limi
   exacts [(Classical.choose_spec h).1, stronglyMeasurable_zero]
 
 theorem stronglyMeasurable_limit_process' : StronglyMeasurable[m] (limitProcess f ℱ μ) :=
-  stronglyMeasurable_limitProcess.mono (sSup_le fun _ ⟨_, hn⟩ => hn ▸ ℱ.le _)
+  stronglyMeasurable_limitProcess.mono (sSup_le fun _ ⟨_, hn⟩ ↦ hn ▸ ℱ.le _)
 
 theorem memLp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Type*} [NormedAddCommGroup F]
     {ℱ : Filtration ℕ m} {f : ℕ → Ω → F} (hfm : ∀ n, AEStronglyMeasurable (f n) μ)
@@ -324,11 +324,11 @@ theorem memLp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Ty
   rw [limitProcess]
   split_ifs with h
   · refine ⟨StronglyMeasurable.aestronglyMeasurable
-      ((Classical.choose_spec h).1.mono (sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _)),
+      ((Classical.choose_spec h).1.mono (sSup_le fun m ⟨n, hn⟩ ↦ hn ▸ ℱ.le _)),
       lt_of_le_of_lt (Lp.eLpNorm_lim_le_liminf_eLpNorm hfm _ (Classical.choose_spec h).2)
         (lt_of_le_of_lt ?_ (ENNReal.coe_lt_top : ↑R < ∞))⟩
     simp_rw [liminf_eq, eventually_atTop]
-    exact sSup_le fun b ⟨a, ha⟩ => (ha a le_rfl).trans (hbdd _)
+    exact sSup_le fun b ⟨a, ha⟩ ↦ (ha a le_rfl).trans (hbdd _)
   · exact MemLp.zero
 
 @[deprecated (since := "2025-02-21")]

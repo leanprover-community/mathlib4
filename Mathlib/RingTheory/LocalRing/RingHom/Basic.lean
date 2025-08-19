@@ -37,7 +37,7 @@ theorem RingHom.isLocalHom_comp (g : S →+* T) (f : R →+* S) [IsLocalHom g]
 
 theorem isLocalHom_of_comp (f : R →+* S) (g : S →+* T) [IsLocalHom (g.comp f)] :
     IsLocalHom f :=
-  ⟨fun _ ha => (isUnit_map_iff (g.comp f) _).mp (g.isUnit_map ha)⟩
+  ⟨fun _ ha ↦ (isUnit_map_iff (g.comp f) _).mp (g.isUnit_map ha)⟩
 
 /-- If `f : R →+* S` is a local ring hom, then `R` is a local ring if `S` is. -/
 theorem RingHom.domain_isLocalRing {R S : Type*} [Semiring R] [CommSemiring S] [IsLocalRing S]
@@ -60,7 +60,7 @@ variable [CommSemiring R] [IsLocalRing R] [CommSemiring S] [IsLocalRing S]
 The image of the maximal ideal of the source is contained within the maximal ideal of the target.
 -/
 theorem map_nonunit (f : R →+* S) [IsLocalHom f] (a : R) (h : a ∈ maximalIdeal R) :
-    f a ∈ maximalIdeal S := fun H => h <| isUnit_of_map_unit f a H
+    f a ∈ maximalIdeal S := fun H ↦ h <| isUnit_of_map_unit f a H
 
 end
 
@@ -82,7 +82,7 @@ theorem local_hom_TFAE (f : R →+* S) :
   | _, _, ⟨a, ha, rfl⟩ => map_nonunit f a ha
   tfae_have 2 → 4 := Set.image_subset_iff.1
   tfae_have 3 ↔ 4 := Ideal.map_le_iff_le_comap
-  tfae_have 4 → 1 := fun h ↦ ⟨fun x => not_imp_not.1 (@h x)⟩
+  tfae_have 4 → 1 := fun h ↦ ⟨fun x ↦ not_imp_not.1 (@h x)⟩
   tfae_have 1 → 5
   | _ => by ext; exact not_iff_not.2 (isUnit_map_iff f _)
   tfae_have 5 → 4 := fun h ↦ le_of_eq h.symm

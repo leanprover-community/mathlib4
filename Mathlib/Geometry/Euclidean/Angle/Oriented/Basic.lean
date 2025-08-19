@@ -54,7 +54,7 @@ def oangle (x y : V) : Real.Angle :=
 /-- Oriented angles are continuous when the vectors involved are nonzero. -/
 @[fun_prop]
 theorem continuousAt_oangle {x : V × V} (hx1 : x.1 ≠ 0) (hx2 : x.2 ≠ 0) :
-    ContinuousAt (fun y : V × V => o.oangle y.1 y.2) x := by
+    ContinuousAt (fun y : V × V ↦ o.oangle y.1 y.2) x := by
   refine (Complex.continuousAt_arg_coe_angle ?_).comp ?_
   · exact o.kahler_ne_zero hx1 hx2
   exact ((continuous_ofReal.comp continuous_inner).add
@@ -384,7 +384,7 @@ or the second is a multiple of the first. -/
 theorem oangle_eq_zero_or_eq_pi_iff_right_eq_smul {x y : V} :
     o.oangle x y = 0 ∨ o.oangle x y = π ↔ x = 0 ∨ ∃ r : ℝ, y = r • x := by
   rw [oangle_eq_zero_iff_sameRay, oangle_eq_pi_iff_sameRay_neg]
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with (h | ⟨-, -, h⟩)
     · by_cases hx : x = 0; · simp [hx]
       obtain ⟨r, -, rfl⟩ := h.exists_nonneg_left hx
@@ -427,12 +427,12 @@ theorem eq_iff_norm_eq_and_oangle_eq_zero (x y : V) : x = y ↔ ‖x‖ = ‖y�
 
 /-- Two vectors with equal norms are equal if and only if they have zero angle between them. -/
 theorem eq_iff_oangle_eq_zero_of_norm_eq {x y : V} (h : ‖x‖ = ‖y‖) : x = y ↔ o.oangle x y = 0 :=
-  ⟨fun he => ((o.eq_iff_norm_eq_and_oangle_eq_zero x y).1 he).2, fun ha =>
+  ⟨fun he ↦ ((o.eq_iff_norm_eq_and_oangle_eq_zero x y).1 he).2, fun ha ↦
     (o.eq_iff_norm_eq_and_oangle_eq_zero x y).2 ⟨h, ha⟩⟩
 
 /-- Two vectors with zero angle between them are equal if and only if they have equal norms. -/
 theorem eq_iff_norm_eq_of_oangle_eq_zero {x y : V} (h : o.oangle x y = 0) : x = y ↔ ‖x‖ = ‖y‖ :=
-  ⟨fun he => ((o.eq_iff_norm_eq_and_oangle_eq_zero x y).1 he).1, fun hn =>
+  ⟨fun he ↦ ((o.eq_iff_norm_eq_and_oangle_eq_zero x y).1 he).1, fun hn ↦
     (o.eq_iff_norm_eq_and_oangle_eq_zero x y).2 ⟨hn, h⟩⟩
 
 /-- Given three nonzero vectors, the angle between the first and the second plus the angle
@@ -629,7 +629,7 @@ theorem angle_eq_iff_oangle_eq_of_sign_eq {w x y z : V} (hw : w ≠ 0) (hx : x �
     (hz : z ≠ 0) (hs : (o.oangle w x).sign = (o.oangle y z).sign) :
     InnerProductGeometry.angle w x = InnerProductGeometry.angle y z ↔
     o.oangle w x = o.oangle y z := by
-  refine ⟨fun h => o.oangle_eq_of_angle_eq_of_sign_eq h hs, fun h => ?_⟩
+  refine ⟨fun h ↦ o.oangle_eq_of_angle_eq_of_sign_eq h hs, fun h ↦ ?_⟩
   rw [o.angle_eq_abs_oangle_toReal hw hx, o.angle_eq_abs_oangle_toReal hy hz, h]
 
 /-- The oriented angle between two vectors equals the unoriented angle if the sign is positive. -/
@@ -659,7 +659,7 @@ theorem oangle_eq_neg_angle_of_sign_eq_neg_one {x y : V} (h : (o.oangle x y).sig
 is zero. -/
 theorem oangle_eq_zero_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     o.oangle x y = 0 ↔ InnerProductGeometry.angle x y = 0 := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · simpa [o.angle_eq_abs_oangle_toReal hx hy]
   · have ha := o.oangle_eq_angle_or_eq_neg_angle hx hy
     rw [h] at ha
@@ -674,7 +674,7 @@ theorem oangle_eq_pi_iff_angle_eq_pi {x y : V} :
   by_cases hy : y = 0
   · simp [hy, Real.Angle.pi_ne_zero.symm, div_eq_mul_inv,
       Real.pi_ne_zero]
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [o.angle_eq_abs_oangle_toReal hx hy, h]
     simp [Real.pi_pos.le]
   · have ha := o.oangle_eq_angle_or_eq_neg_angle hx hy
@@ -688,7 +688,7 @@ theorem eq_zero_or_oangle_eq_iff_inner_eq_zero {x y : V} :
   by_cases hx : x = 0; · simp [hx]
   by_cases hy : y = 0; · simp [hy]
   rw [InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two, or_iff_right hx, or_iff_right hy]
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rwa [o.angle_eq_abs_oangle_toReal hx hy, Real.Angle.abs_toReal_eq_pi_div_two_iff]
   · convert o.oangle_eq_angle_or_eq_neg_angle hx hy using 2 <;> rw [h]
     simp only [neg_div, Real.Angle.coe_neg]
@@ -750,13 +750,13 @@ theorem oangle_smul_add_right_eq_zero_or_eq_pi_iff {x y : V} (r : ℝ) :
     o.oangle x y = 0 ∨ o.oangle x y = π := by
   simp_rw [oangle_eq_zero_or_eq_pi_iff_not_linearIndependent, Fintype.not_linearIndependent_iff,
     Fin.sum_univ_two, Fin.exists_fin_two]
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨m, h, hm⟩
     change m 0 • x + m 1 • (r • x + y) = 0 at h
     refine ⟨![m 0 + m 1 * r, m 1], ?_⟩
     change (m 0 + m 1 * r) • x + m 1 • y = 0 ∧ (m 0 + m 1 * r ≠ 0 ∨ m 1 ≠ 0)
     rw [smul_add, smul_smul, ← add_assoc, ← add_smul] at h
-    refine ⟨h, not_and_or.1 fun h0 => ?_⟩
+    refine ⟨h, not_and_or.1 fun h0 ↦ ?_⟩
     obtain ⟨h0, h1⟩ := h0
     rw [h1] at h0 hm
     rw [zero_mul, add_zero] at h0
@@ -766,7 +766,7 @@ theorem oangle_smul_add_right_eq_zero_or_eq_pi_iff {x y : V} (r : ℝ) :
     refine ⟨![m 0 - m 1 * r, m 1], ?_⟩
     change (m 0 - m 1 * r) • x + m 1 • (r • x + y) = 0 ∧ (m 0 - m 1 * r ≠ 0 ∨ m 1 ≠ 0)
     rw [sub_smul, smul_add, smul_smul, ← add_assoc, sub_add_cancel]
-    refine ⟨h, not_and_or.1 fun h0 => ?_⟩
+    refine ⟨h, not_and_or.1 fun h0 ↦ ?_⟩
     obtain ⟨h0, h1⟩ := h0
     rw [h1] at h0 hm
     rw [zero_mul, sub_zero] at h0
@@ -783,10 +783,10 @@ theorem oangle_sign_smul_add_right (x y : V) (r : ℝ) :
   have h' : ∀ r' : ℝ, o.oangle x (r' • x + y) ≠ 0 ∧ o.oangle x (r' • x + y) ≠ π := by
     intro r'
     rwa [← o.oangle_smul_add_right_eq_zero_or_eq_pi_iff r', not_or] at h
-  let s : Set (V × V) := (fun r' : ℝ => (x, r' • x + y)) '' Set.univ
+  let s : Set (V × V) := (fun r' : ℝ ↦ (x, r' • x + y)) '' Set.univ
   have hc : IsConnected s := isConnected_univ.image _ (by fun_prop)
-  have hf : ContinuousOn (fun z : V × V => o.oangle z.1 z.2) s := by
-    refine continuousOn_of_forall_continuousAt fun z hz => o.continuousAt_oangle ?_ ?_
+  have hf : ContinuousOn (fun z : V × V ↦ o.oangle z.1 z.2) s := by
+    refine continuousOn_of_forall_continuousAt fun z hz ↦ o.continuousAt_oangle ?_ ?_
     all_goals
       simp_rw [s, Set.mem_image] at hz
       obtain ⟨r', -, rfl⟩ := hz
@@ -796,7 +796,7 @@ theorem oangle_sign_smul_add_right (x y : V) (r : ℝ) :
     · simpa [hz] using (h' r').1
   have hs : ∀ z : V × V, z ∈ s → o.oangle z.1 z.2 ≠ 0 ∧ o.oangle z.1 z.2 ≠ π := by grind
   have hx : (x, y) ∈ s := by
-    convert Set.mem_image_of_mem (fun r' : ℝ => (x, r' • x + y)) (Set.mem_univ 0)
+    convert Set.mem_image_of_mem (fun r' : ℝ ↦ (x, r' • x + y)) (Set.mem_univ 0)
     simp
   have hy : (x, r • x + y) ∈ s := Set.mem_image_of_mem _ (Set.mem_univ _)
   convert Real.Angle.sign_eq_of_continuousOn hc hf hs hx hy

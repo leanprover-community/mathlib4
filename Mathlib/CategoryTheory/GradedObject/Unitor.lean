@@ -55,7 +55,7 @@ this is the (colimit) cofan which shall be used to construct the isomorphism
 `mapBifunctorMapObj F p ((single₀ I).obj X) Y ≅ Y`, see `mapBifunctorLeftUnitor`. -/
 noncomputable def mapBifunctorLeftUnitorCofan (hp : ∀ (j : J), p ⟨0, j⟩ = j) (Y) (j : J) :
     (((mapBifunctor F I J).obj ((single₀ I).obj X)).obj Y).CofanMapObjFun p j :=
-  CofanMapObjFun.mk _ _ _ (Y j) (fun a ha =>
+  CofanMapObjFun.mk _ _ _ (Y j) (fun a ha ↦
     if ha : a.1 = 0 then
       (mapBifunctorObjSingle₀ObjIso F X e Y a ha).hom ≫ eqToHom (by aesop)
     else
@@ -71,9 +71,9 @@ lemma mapBifunctorLeftUnitorCofan_inj (j : J) :
 noncomputable def mapBifunctorLeftUnitorCofanIsColimit (j : J) :
     IsColimit (mapBifunctorLeftUnitorCofan F X e p hp Y j) :=
   mkCofanColimit _
-    (fun s => e.inv.app (Y j) ≫
+    (fun s ↦ e.inv.app (Y j) ≫
       (F.map (singleObjApplyIso (0 : I) X).inv).app (Y j) ≫ s.inj ⟨⟨0, j⟩, hp j⟩)
-    (fun s => by
+    (fun s ↦ by
       rintro ⟨⟨i, j'⟩, h⟩
       by_cases hi : i = 0
       · subst hi
@@ -82,7 +82,7 @@ noncomputable def mapBifunctorLeftUnitorCofanIsColimit (j : J) :
         simp
       · apply IsInitial.hom_ext
         exact mapBifunctorObjSingle₀ObjIsInitial _ _ _ _ hi)
-    (fun s m hm => by simp [← hm ⟨⟨0, j⟩, hp j⟩])
+    (fun s m hm ↦ by simp [← hm ⟨⟨0, j⟩, hp j⟩])
 
 include e hp in
 lemma mapBifunctorLeftUnitor_hasMap :
@@ -96,7 +96,7 @@ variable [HasMap (((mapBifunctor F I J).obj ((single₀ I).obj X)).obj Y) p]
 `p : I × J → J` such that `p ⟨0, j⟩ = j` for all `j`,
 this is the left unitor isomorphism `mapBifunctorMapObj F p ((single₀ I).obj X) Y ≅ Y`. -/
 noncomputable def mapBifunctorLeftUnitor : mapBifunctorMapObj F p ((single₀ I).obj X) Y ≅ Y :=
-  isoMk _ _ (fun j => (CofanMapObjFun.iso
+  isoMk _ _ (fun j ↦ (CofanMapObjFun.iso
     (mapBifunctorLeftUnitorCofanIsColimit F X e p hp Y j)).symm)
 
 @[reassoc (attr := simp)]
@@ -167,7 +167,7 @@ this is the (colimit) cofan which shall be used to construct the isomorphism
 `mapBifunctorMapObj F p X ((single₀ I).obj Y) ≅ X`, see `mapBifunctorRightUnitor`. -/
 noncomputable def mapBifunctorRightUnitorCofan (hp : ∀ (j : J), p ⟨j, 0⟩ = j) (X) (j : J) :
     (((mapBifunctor F J I).obj X).obj ((single₀ I).obj Y)).CofanMapObjFun p j :=
-  CofanMapObjFun.mk _ _ _ (X j) (fun a ha =>
+  CofanMapObjFun.mk _ _ _ (X j) (fun a ha ↦
     if ha : a.2 = 0 then
       (mapBifunctorObjObjSingle₀Iso F Y e X a ha).hom ≫ eqToHom (by aesop)
     else
@@ -183,9 +183,9 @@ lemma mapBifunctorRightUnitorCofan_inj (j : J) :
 noncomputable def mapBifunctorRightUnitorCofanIsColimit (j : J) :
     IsColimit (mapBifunctorRightUnitorCofan F Y e p hp X j) :=
   mkCofanColimit _
-    (fun s => e.inv.app (X j) ≫
+    (fun s ↦ e.inv.app (X j) ≫
       (F.obj (X j)).map (singleObjApplyIso (0 : I) Y).inv ≫ s.inj ⟨⟨j, 0⟩, hp j⟩)
-    (fun s => by
+    (fun s ↦ by
       rintro ⟨⟨j', i⟩, h⟩
       by_cases hi : i = 0
       · subst hi
@@ -196,7 +196,7 @@ noncomputable def mapBifunctorRightUnitorCofanIsColimit (j : J) :
           ← Functor.map_comp_assoc, Iso.hom_inv_id, Functor.map_id, id_comp]
       · apply IsInitial.hom_ext
         exact mapBifunctorObjObjSingle₀IsInitial _ _ _ _ hi)
-    (fun s m hm => by
+    (fun s m hm ↦ by
       dsimp
       rw [← hm ⟨⟨j, 0⟩, hp j⟩, mapBifunctorRightUnitorCofan_inj, assoc, ← Functor.map_comp_assoc,
         Iso.inv_hom_id, Functor.map_id, id_comp, Iso.inv_hom_id_app_assoc])
@@ -213,7 +213,7 @@ variable [HasMap (((mapBifunctor F J I).obj X).obj ((single₀ I).obj Y)) p]
 `p : J × I → J` such that `p ⟨j, 0⟩ = j` for all `j`,
 this is the right unitor isomorphism `mapBifunctorMapObj F p X ((single₀ I).obj Y) ≅ X`. -/
 noncomputable def mapBifunctorRightUnitor : mapBifunctorMapObj F p X ((single₀ I).obj Y) ≅ X :=
-  isoMk _ _ (fun j => (CofanMapObjFun.iso
+  isoMk _ _ (fun j ↦ (CofanMapObjFun.iso
     (mapBifunctorRightUnitorCofanIsColimit F Y e p hp X j)).symm)
 
 @[reassoc (attr := simp)]

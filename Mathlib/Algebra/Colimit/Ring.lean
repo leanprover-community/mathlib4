@@ -159,7 +159,7 @@ variable (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x
 @[ext]
 theorem hom_ext {g₁ g₂ : DirectLimit G f →+* P} (h : ∀ i, g₁.comp (of G f i) = g₂.comp (of G f i)) :
     g₁ = g₂ :=
-  Ideal.Quotient.ringHom_ext <| FreeCommRing.hom_ext fun ⟨i, x⟩ => congr($(h i) x)
+  Ideal.Quotient.ringHom_ext <| FreeCommRing.hom_ext fun ⟨i, x⟩ ↦ congr($(h i) x)
 
 @[simp]
 theorem lift_comp_of (F : DirectLimit G f →+* P) :

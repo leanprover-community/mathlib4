@@ -78,7 +78,7 @@ theorem prod_one_cons : (1 :: l).prod = l.prod := by
 
 @[to_additive]
 theorem prod_map_one {l : List ι} :
-    (l.map fun _ => (1 : M)).prod = 1 := by
+    (l.map fun _ ↦ (1 : M)).prod = 1 := by
   induction l with
   | nil => rfl
   | cons hd tl ih => rw [map_cons, prod_one_cons, ih]
@@ -105,7 +105,7 @@ theorem prod_eq_pow_card (l : List M) (m : M) (h : ∀ x ∈ l, x = m) : l.prod 
 @[to_additive]
 theorem prod_hom_rel (l : List ι) {r : M → N → Prop} {f : ι → M} {g : ι → N} (h₁ : r 1 1)
     (h₂ : ∀ ⦃i a b⦄, r a b → r (f i * a) (g i * b)) : r (l.map f).prod (l.map g).prod :=
-  List.recOn l h₁ fun a l hl => by simp only [map_cons, prod_cons, h₂ hl]
+  List.recOn l h₁ fun a l hl ↦ by simp only [map_cons, prod_cons, h₂ hl]
 
 end Monoid
 

@@ -92,7 +92,7 @@ homomorphism `G →* N`. -/
       /-- The canonical surjective `AddGroup` homomorphism `G →+ f(G)` induced by a group
       homomorphism `G →+ N`. -/]
 def rangeRestrict (f : G →* N) : G →* f.range :=
-  codRestrict f _ fun x => ⟨x, rfl⟩
+  codRestrict f _ fun x ↦ ⟨x, rfl⟩
 
 @[to_additive (attr := simp)]
 theorem coe_rangeRestrict (f : G →* N) (g : G) : (f.rangeRestrict g : N) = f g :=
@@ -109,7 +109,7 @@ theorem subtype_comp_rangeRestrict (f : G →* N) : f.range.subtype.comp f.range
 
 @[to_additive]
 theorem rangeRestrict_surjective (f : G →* N) : Function.Surjective f.rangeRestrict :=
-  fun ⟨_, g, rfl⟩ => ⟨g, rfl⟩
+  fun ⟨_, g, rfl⟩ ↦ ⟨g, rfl⟩
 
 @[to_additive (attr := simp)]
 lemma rangeRestrict_injective_iff {f : G →* N} : Injective f.rangeRestrict ↔ Injective f := by
@@ -136,7 +136,7 @@ theorem range_eq_top_of_surjective {N} [Group N] (f : G →* N) (hf : Function.S
 
 @[to_additive (attr := simp)]
 theorem range_one : (1 : G →* N).range = ⊥ :=
-  SetLike.ext fun x => by simpa using @comm _ (· = ·) _ 1 x
+  SetLike.ext fun x ↦ by simpa using @comm _ (· = ·) _ 1 x
 
 @[to_additive (attr := simp)]
 theorem _root_.Subgroup.range_subtype (H : Subgroup G) : H.subtype.range = H :=
@@ -148,12 +148,12 @@ alias _root_.Subgroup.subtype_range := Subgroup.range_subtype
 @[to_additive (attr := simp)]
 theorem _root_.Subgroup.inclusion_range {H K : Subgroup G} (h_le : H ≤ K) :
     (inclusion h_le).range = H.subgroupOf K :=
-  Subgroup.ext fun g => Set.ext_iff.mp (Set.range_inclusion h_le) g
+  Subgroup.ext fun g ↦ Set.ext_iff.mp (Set.range_inclusion h_le) g
 
 @[to_additive]
 theorem subgroupOf_range_eq_of_le {G₁ G₂ : Type*} [Group G₁] [Group G₂] {K : Subgroup G₂}
     (f : G₁ →* G₂) (h : f.range ≤ K) :
-    f.range.subgroupOf K = (f.codRestrict K fun x => h ⟨x, rfl⟩).range := by
+    f.range.subgroupOf K = (f.codRestrict K fun x ↦ h ⟨x, rfl⟩).range := by
   ext k
   refine exists_congr ?_
   simp [Subtype.ext_iff]
@@ -183,8 +183,8 @@ theorem ofLeftInverse_symm_apply {f : G →* N} {g : N →* G} (h : Function.Lef
 @[to_additive /-- The range of an injective additive group homomorphism is isomorphic to its
 domain. -/]
 noncomputable def ofInjective {f : G →* N} (hf : Function.Injective f) : G ≃* f.range :=
-  MulEquiv.ofBijective (f.codRestrict f.range fun x => ⟨x, rfl⟩)
-    ⟨fun _ _ h => hf (Subtype.ext_iff.mp h), by
+  MulEquiv.ofBijective (f.codRestrict f.range fun x ↦ ⟨x, rfl⟩)
+    ⟨fun _ _ h ↦ hf (Subtype.ext_iff.mp h), by
       rintro ⟨x, y, rfl⟩
       exact ⟨y, rfl⟩⟩
 
@@ -217,7 +217,7 @@ variable {M : Type*} [MulOneClass M]
       such that `f x = 0` -/]
 def ker (f : G →* M) : Subgroup G :=
   { MonoidHom.mker f with
-    inv_mem' := fun {x} (hx : f x = 1) =>
+    inv_mem' := fun {x} (hx : f x = 1) ↦
       calc
         f x⁻¹ = f x * f x⁻¹ := by rw [hx, one_mul]
         _ = 1 := by rw [← map_mul, mul_inv_cancel, map_one] }
@@ -249,7 +249,7 @@ theorem eq_iff (f : G →* M) {x y : G} : f x = f y ↔ y⁻¹ * x ∈ f.ker := 
   · rw [← one_mul x, ← mul_inv_cancel y, mul_assoc, map_mul, mem_ker.1 h, mul_one]
 
 @[to_additive]
-instance decidableMemKer [DecidableEq M] (f : G →* M) : DecidablePred (· ∈ f.ker) := fun x =>
+instance decidableMemKer [DecidableEq M] (f : G →* M) : DecidablePred (· ∈ f.ker) := fun x ↦
   decidable_of_iff (f x = 1) f.mem_ker
 
 @[to_additive]
@@ -268,7 +268,7 @@ theorem ker_restrict (f : G →* N) : (f.restrict K).ker = f.ker.subgroupOf K :=
 @[to_additive (attr := simp)]
 theorem ker_codRestrict {S} [SetLike S N] [SubmonoidClass S N] (f : G →* N) (s : S)
     (h : ∀ x, f x ∈ s) : (f.codRestrict s h).ker = f.ker :=
-  SetLike.ext fun _x => Subtype.ext_iff
+  SetLike.ext fun _x ↦ Subtype.ext_iff
 
 @[to_additive (attr := simp)]
 theorem ker_rangeRestrict (f : G →* N) : ker (rangeRestrict f) = ker f :=
@@ -276,7 +276,7 @@ theorem ker_rangeRestrict (f : G →* N) : ker (rangeRestrict f) = ker f :=
 
 @[to_additive (attr := simp)]
 theorem ker_one : (1 : G →* M).ker = ⊤ :=
-  SetLike.ext fun _x => eq_self_iff_true _
+  SetLike.ext fun _x ↦ eq_self_iff_true _
 
 @[to_additive (attr := simp)]
 theorem ker_id : (MonoidHom.id G).ker = ⊥ :=
@@ -290,8 +290,8 @@ theorem ker_id : (MonoidHom.id G).ker = ⊥ :=
 
 @[to_additive]
 theorem ker_eq_bot_iff (f : G →* M) : f.ker = ⊥ ↔ Function.Injective f :=
-  ⟨fun h x y hxy => by rwa [eq_iff, h, mem_bot, inv_mul_eq_one, eq_comm] at hxy, fun h =>
-    bot_unique fun _ hx => h (hx.trans f.map_one.symm)⟩
+  ⟨fun h x y hxy ↦ by rwa [eq_iff, h, mem_bot, inv_mul_eq_one, eq_comm] at hxy, fun h ↦
+    bot_unique fun _ hx ↦ h (hx.trans f.map_one.symm)⟩
 
 @[to_additive (attr := simp)]
 theorem _root_.Subgroup.ker_subtype (H : Subgroup G) : H.subtype.ker = ⊥ :=
@@ -304,18 +304,18 @@ theorem _root_.Subgroup.ker_inclusion {H K : Subgroup G} (h : H ≤ K) : (inclus
 @[to_additive ker_prod]
 theorem ker_prod {M N : Type*} [MulOneClass M] [MulOneClass N] (f : G →* M) (g : G →* N) :
     (f.prod g).ker = f.ker ⊓ g.ker :=
-  SetLike.ext fun _ => Prod.mk_eq_one
+  SetLike.ext fun _ ↦ Prod.mk_eq_one
 
 @[deprecated (since := "2025-03-11")]
 alias _root_.AddMonoidHom.ker_sum := AddMonoidHom.ker_prod
 
 @[to_additive]
 theorem range_le_ker_iff (f : G →* G') (g : G' →* G'') : f.range ≤ g.ker ↔ g.comp f = 1 :=
-  ⟨fun h => ext fun x => h ⟨x, rfl⟩, by rintro h _ ⟨y, rfl⟩; exact DFunLike.congr_fun h y⟩
+  ⟨fun h ↦ ext fun x ↦ h ⟨x, rfl⟩, by rintro h _ ⟨y, rfl⟩; exact DFunLike.congr_fun h y⟩
 
 @[to_additive]
 instance (priority := 100) normal_ker (f : G →* M) : f.ker.Normal :=
-  ⟨fun x hx y => by
+  ⟨fun x hx y ↦ by
     rw [mem_ker, map_mul, map_mul, mem_ker.1 hx, mul_one, map_mul_eq_one f (mul_inv_cancel y)]⟩
 
 @[simp]
@@ -339,7 +339,7 @@ def eqLocus (f g : G →* M) : Subgroup G :=
 
 @[to_additive (attr := simp)]
 theorem eqLocus_same (f : G →* N) : f.eqLocus f = ⊤ :=
-  SetLike.ext fun _ => eq_self_iff_true _
+  SetLike.ext fun _ ↦ eq_self_iff_true _
 
 /-- If two monoid homomorphisms are equal on a set, then they are equal on its subgroup closure. -/
 @[to_additive
@@ -350,7 +350,7 @@ theorem eqOn_closure {f g : G →* M} {s : Set G} (h : Set.EqOn f g s) : Set.EqO
 
 @[to_additive]
 theorem eq_of_eqOn_top {f g : G →* M} (h : Set.EqOn f g (⊤ : Subgroup G)) : f = g :=
-  ext fun _x => h trivial
+  ext fun _x ↦ h trivial
 
 @[to_additive]
 theorem eq_of_eqOn_dense {s : Set G} (hs : closure s = ⊤) {f g : G →* M} (h : s.EqOn f g) : f = g :=
@@ -427,7 +427,7 @@ theorem comap_lt_comap_of_surjective {f : G →* N} {K L : Subgroup N} (hf : Fun
 
 @[to_additive]
 theorem comap_injective {f : G →* N} (h : Function.Surjective f) : Function.Injective (comap f) :=
-  fun K L => by simp only [le_antisymm_iff, comap_le_comap_of_surjective h, imp_self]
+  fun K L ↦ by simp only [le_antisymm_iff, comap_le_comap_of_surjective h, imp_self]
 
 @[to_additive]
 theorem comap_map_eq_self {f : G →* N} {H : Subgroup G} (h : f.ker ≤ H) :

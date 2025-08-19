@@ -49,7 +49,7 @@ is a unit.
 -/
 noncomputable def inverseCoeff (a : Units k) (A : 𝕎 k) : ℕ → k
   | 0 => ↑a⁻¹
-  | n + 1 => succNthValUnits n a A fun i => inverseCoeff a A i.val
+  | n + 1 => succNthValUnits n a A fun i ↦ inverseCoeff a A i.val
 
 /--
 Upgrade a Witt vector `A` whose first entry `A.coeff 0` is a unit to be, itself, a unit in `𝕎 k`.
@@ -60,7 +60,7 @@ def mkUnit {a : Units k} {A : 𝕎 k} (hA : A.coeff 0 = a) : Units (𝕎 k) :=
     induction' n with n _
     · simp [WittVector.mul_coeff_zero, inverseCoeff, hA]
     let H_coeff := A.coeff (n + 1) * ↑(a⁻¹ ^ p ^ (n + 1)) +
-      nthRemainder p n (truncateFun (n + 1) A) fun i : Fin (n + 1) => inverseCoeff a A i
+      nthRemainder p n (truncateFun (n + 1) A) fun i : Fin (n + 1) ↦ inverseCoeff a A i
     have H := Units.mul_inv (a ^ p ^ (n + 1))
     linear_combination (norm := skip) -H_coeff * H
     have ha : (a : k) ^ p ^ (n + 1) = ↑(a ^ p ^ (n + 1)) := by norm_cast
@@ -91,7 +91,7 @@ theorem irreducible : Irreducible (p : 𝕎 k) := by
     intro hp
     simpa only [constantCoeff_apply, coeff_p_zero, not_isUnit_zero] using
       (constantCoeff : WittVector p k →+* _).isUnit_map hp
-  refine ⟨hp, fun a b hab => ?_⟩
+  refine ⟨hp, fun a b hab ↦ ?_⟩
   obtain ⟨ha0, hb0⟩ : a ≠ 0 ∧ b ≠ 0 := by
     rw [← mul_ne_zero_iff]; intro h; rw [h] at hab; exact p_nonzero p k hab
   obtain ⟨m, a, ha, rfl⟩ := verschiebung_nonzero ha0
@@ -99,7 +99,7 @@ theorem irreducible : Irreducible (p : 𝕎 k) := by
   cases m; · exact Or.inl (isUnit_of_coeff_zero_ne_zero a ha)
   rcases n with - | n; · exact Or.inr (isUnit_of_coeff_zero_ne_zero b hb)
   rw [iterate_verschiebung_mul] at hab
-  apply_fun fun x => coeff x 1 at hab
+  apply_fun fun x ↦ coeff x 1 at hab
   simp only [coeff_p_one, Nat.add_succ, add_comm _ n, Function.iterate_succ', Function.comp_apply,
     verschiebung_coeff_add_one, verschiebung_coeff_zero] at hab
   exact (one_ne_zero hab).elim
@@ -149,7 +149,7 @@ https://github.com/leanprover/lean4/issues/1102
 -/
 theorem isDiscreteValuationRing : IsDiscreteValuationRing (𝕎 k) :=
   IsDiscreteValuationRing.ofHasUnitMulPowIrreducibleFactorization (by
-    refine ⟨p, irreducible p, fun {x} hx => ?_⟩
+    refine ⟨p, irreducible p, fun {x} hx ↦ ?_⟩
     obtain ⟨n, b, hb⟩ := exists_eq_pow_p_mul' x hx
     exact ⟨n, b, hb.symm⟩)
 

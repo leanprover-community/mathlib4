@@ -62,7 +62,7 @@ def IsCompactOperator {M₁ M₂ : Type*} [Zero M₁] [TopologicalSpace M₁] [T
 
 theorem isCompactOperator_zero {M₁ M₂ : Type*} [Zero M₁] [TopologicalSpace M₁]
     [TopologicalSpace M₂] [Zero M₂] : IsCompactOperator (0 : M₁ → M₂) :=
-  ⟨{0}, isCompact_singleton, mem_of_superset univ_mem fun _ _ => rfl⟩
+  ⟨{0}, isCompact_singleton, mem_of_superset univ_mem fun _ _ ↦ rfl⟩
 
 section Characterizations
 
@@ -73,15 +73,15 @@ variable {R₁ : Type*} [Semiring R₁] {M₁ M₂ : Type*}
 
 theorem isCompactOperator_iff_exists_mem_nhds_image_subset_compact (f : M₁ → M₂) :
     IsCompactOperator f ↔ ∃ V ∈ (𝓝 0 : Filter M₁), ∃ K : Set M₂, IsCompact K ∧ f '' V ⊆ K :=
-  ⟨fun ⟨K, hK, hKf⟩ => ⟨f ⁻¹' K, hKf, K, hK, image_preimage_subset _ _⟩, fun ⟨_, hV, K, hK, hVK⟩ =>
+  ⟨fun ⟨K, hK, hKf⟩ ↦ ⟨f ⁻¹' K, hKf, K, hK, image_preimage_subset _ _⟩, fun ⟨_, hV, K, hK, hVK⟩ ↦
     ⟨K, hK, mem_of_superset hV (image_subset_iff.mp hVK)⟩⟩
 
 theorem isCompactOperator_iff_exists_mem_nhds_isCompact_closure_image [T2Space M₂] (f : M₁ → M₂) :
     IsCompactOperator f ↔ ∃ V ∈ (𝓝 0 : Filter M₁), IsCompact (closure <| f '' V) := by
   rw [isCompactOperator_iff_exists_mem_nhds_image_subset_compact]
   exact
-    ⟨fun ⟨V, hV, K, hK, hKV⟩ => ⟨V, hV, hK.closure_of_subset hKV⟩,
-      fun ⟨V, hV, hVc⟩ => ⟨V, hV, closure (f '' V), hVc, subset_closure⟩⟩
+    ⟨fun ⟨V, hV, K, hK, hKV⟩ ↦ ⟨V, hV, hK.closure_of_subset hKV⟩,
+      fun ⟨V, hV, hVc⟩ ↦ ⟨V, hV, closure (f '' V), hVc, subset_closure⟩⟩
 
 end
 
@@ -147,28 +147,28 @@ theorem IsCompactOperator.isCompact_closure_image_closedBall [ContinuousConstSMu
 theorem isCompactOperator_iff_image_ball_subset_compact [ContinuousConstSMul 𝕜₂ M₂]
     (f : M₁ →ₛₗ[σ₁₂] M₂) {r : ℝ} (hr : 0 < r) :
     IsCompactOperator f ↔ ∃ K : Set M₂, IsCompact K ∧ f '' Metric.ball 0 r ⊆ K :=
-  ⟨fun hf => hf.image_ball_subset_compact r, fun ⟨K, hK, hKr⟩ =>
+  ⟨fun hf ↦ hf.image_ball_subset_compact r, fun ⟨K, hK, hKr⟩ ↦
     (isCompactOperator_iff_exists_mem_nhds_image_subset_compact f).mpr
       ⟨Metric.ball 0 r, ball_mem_nhds _ hr, K, hK, hKr⟩⟩
 
 theorem isCompactOperator_iff_image_closedBall_subset_compact [ContinuousConstSMul 𝕜₂ M₂]
     (f : M₁ →ₛₗ[σ₁₂] M₂) {r : ℝ} (hr : 0 < r) :
     IsCompactOperator f ↔ ∃ K : Set M₂, IsCompact K ∧ f '' Metric.closedBall 0 r ⊆ K :=
-  ⟨fun hf => hf.image_closedBall_subset_compact r, fun ⟨K, hK, hKr⟩ =>
+  ⟨fun hf ↦ hf.image_closedBall_subset_compact r, fun ⟨K, hK, hKr⟩ ↦
     (isCompactOperator_iff_exists_mem_nhds_image_subset_compact f).mpr
       ⟨Metric.closedBall 0 r, closedBall_mem_nhds _ hr, K, hK, hKr⟩⟩
 
 theorem isCompactOperator_iff_isCompact_closure_image_ball [ContinuousConstSMul 𝕜₂ M₂] [T2Space M₂]
     (f : M₁ →ₛₗ[σ₁₂] M₂) {r : ℝ} (hr : 0 < r) :
     IsCompactOperator f ↔ IsCompact (closure <| f '' Metric.ball 0 r) :=
-  ⟨fun hf => hf.isCompact_closure_image_ball r, fun hf =>
+  ⟨fun hf ↦ hf.isCompact_closure_image_ball r, fun hf ↦
     (isCompactOperator_iff_exists_mem_nhds_isCompact_closure_image f).mpr
       ⟨Metric.ball 0 r, ball_mem_nhds _ hr, hf⟩⟩
 
 theorem isCompactOperator_iff_isCompact_closure_image_closedBall [ContinuousConstSMul 𝕜₂ M₂]
     [T2Space M₂] (f : M₁ →ₛₗ[σ₁₂] M₂) {r : ℝ} (hr : 0 < r) :
     IsCompactOperator f ↔ IsCompact (closure <| f '' Metric.closedBall 0 r) :=
-  ⟨fun hf => hf.isCompact_closure_image_closedBall r, fun hf =>
+  ⟨fun hf ↦ hf.isCompact_closure_image_closedBall r, fun hf ↦
     (isCompactOperator_iff_exists_mem_nhds_isCompact_closure_image f).mpr
       ⟨Metric.closedBall 0 r, closedBall_mem_nhds _ hr, hf⟩⟩
 
@@ -188,19 +188,19 @@ theorem IsCompactOperator.smul {S : Type*} [Monoid S] [DistribMulAction S M₂]
     IsCompactOperator (c • f) :=
   let ⟨K, hK, hKf⟩ := hf
   ⟨c • K, hK.image <| continuous_id.const_smul c,
-    mem_of_superset hKf fun _ hx => smul_mem_smul_set hx⟩
+    mem_of_superset hKf fun _ hx ↦ smul_mem_smul_set hx⟩
 
 theorem IsCompactOperator.add [ContinuousAdd M₂] {f g : M₁ → M₂} (hf : IsCompactOperator f)
     (hg : IsCompactOperator g) : IsCompactOperator (f + g) :=
   let ⟨A, hA, hAf⟩ := hf
   let ⟨B, hB, hBg⟩ := hg
   ⟨A + B, hA.add hB,
-    mem_of_superset (inter_mem hAf hBg) fun _ ⟨hxA, hxB⟩ => Set.add_mem_add hxA hxB⟩
+    mem_of_superset (inter_mem hAf hBg) fun _ ⟨hxA, hxB⟩ ↦ Set.add_mem_add hxA hxB⟩
 
 theorem IsCompactOperator.neg [ContinuousNeg M₄] {f : M₁ → M₄} (hf : IsCompactOperator f) :
     IsCompactOperator (-f) :=
   let ⟨K, hK, hKf⟩ := hf
-  ⟨-K, hK.neg, mem_of_superset hKf fun x (hx : f x ∈ K) => Set.neg_mem_neg.mpr hx⟩
+  ⟨-K, hK.neg, mem_of_superset hKf fun x (hx : f x ∈ K) ↦ Set.neg_mem_neg.mpr hx⟩
 
 theorem IsCompactOperator.sub [IsTopologicalAddGroup M₄] {f g : M₁ → M₄} (hf : IsCompactOperator f)
     (hg : IsCompactOperator g) : IsCompactOperator (f - g) := by
@@ -308,7 +308,7 @@ theorem IsCompactOperator.continuous {f : M₁ →ₛₗ[σ₁₂] M₂} (hf : I
   haveI : IsUniformAddGroup M₂ := isUniformAddGroup_of_addCommGroup
   -- Since `f` is linear, we only need to show that it is continuous at zero.
   -- Let `U` be a neighborhood of `0` in `M₂`.
-  refine continuous_of_continuousAt_zero f fun U hU => ?_
+  refine continuous_of_continuousAt_zero f fun U hU ↦ ?_
   rw [map_zero] at hU
   -- The compactness of `f` gives us a compact set `K : Set M₂` such that `f ⁻¹' K` is a
   -- neighborhood of `0` in `M₁`.

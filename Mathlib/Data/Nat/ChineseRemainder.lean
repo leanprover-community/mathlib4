@@ -37,7 +37,7 @@ lemma modEq_list_prod_iff {a b} {l : List ℕ} (co : l.Pairwise Coprime) :
     constructor
     · rintro ⟨h0, hs⟩ i
       cases i using Fin.cases <;> simp_all
-    · intro h; exact ⟨h 0, fun i => h i.succ⟩
+    · intro h; exact ⟨h 0, fun i ↦ h i.succ⟩
 
 lemma modEq_list_map_prod_iff {a b} {s : ι → ℕ} {l : List ι} (co : l.Pairwise (Coprime on s)) :
     a ≡ b [MOD (l.map s).prod] ↔ ∀ i ∈ l, a ≡ b [MOD s i] := by
@@ -106,7 +106,7 @@ theorem chineseRemainderOfList_modEq_unique (l : List ι)
       intro j hj
       exact (List.pairwise_cons.mp co).1 j hj
     exact chineseRemainder_modEq_unique this
-      (hz i List.mem_cons_self) (ih co.of_cons (fun j hj => hz j (List.mem_cons_of_mem _ hj)))
+      (hz i List.mem_cons_self) (ih co.of_cons (fun j hj ↦ hz j (List.mem_cons_of_mem _ hj)))
 
 theorem chineseRemainderOfList_perm {l l' : List ι} (hl : l.Perm l')
     (hs : ∀ i ∈ l, s i ≠ 0) (co : l.Pairwise (Coprime on s)) :
@@ -115,7 +115,7 @@ theorem chineseRemainderOfList_perm {l l' : List ι} (hl : l.Perm l')
   let z := chineseRemainderOfList a s l' (co.perm hl coprime_comm.mpr)
   have hlp : (l.map s).prod = (l'.map s).prod := List.Perm.prod_eq (List.Perm.map s hl)
   exact (chineseRemainderOfList_modEq_unique a s l co (z := z)
-    (fun i hi => z.prop i (hl.symm.mem_iff.mpr hi))).symm.eq_of_lt_of_lt
+    (fun i hi ↦ z.prop i (hl.symm.mem_iff.mpr hi))).symm.eq_of_lt_of_lt
       (chineseRemainderOfList_lt_prod _ _ _ _ hs)
       (by rw [hlp]
           exact chineseRemainderOfList_lt_prod _ _ _ _
@@ -127,12 +127,12 @@ def chineseRemainderOfMultiset {m : Multiset ι} :
     m.Nodup → (∀ i ∈ m, s i ≠ 0) → Set.Pairwise {x | x ∈ m} (Coprime on s) →
     { k // ∀ i ∈ m, k ≡ a i [MOD s i] } :=
   Quotient.recOn m
-    (fun l nod _ co =>
+    (fun l nod _ co ↦
       chineseRemainderOfList a s l (List.Nodup.pairwise_of_forall_ne nod co))
     (fun l l' (pp : l.Perm l') ↦
-      funext fun nod' : l'.Nodup =>
+      funext fun nod' : l'.Nodup ↦
       have nod : l.Nodup := pp.symm.nodup_iff.mp nod'
-      funext fun hs' : ∀ i ∈ l', s i ≠ 0 =>
+      funext fun hs' : ∀ i ∈ l', s i ≠ 0 ↦
       have hs : ∀ i ∈ l, s i ≠ 0  := by simpa [List.Perm.mem_iff pp] using hs'
       funext fun co' : Set.Pairwise {x | x ∈ l'} (Coprime on s) =>
       have co : Set.Pairwise {x | x ∈ l} (Coprime on s) := by simpa [List.Perm.mem_iff pp] using co'

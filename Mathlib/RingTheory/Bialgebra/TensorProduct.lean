@@ -41,7 +41,7 @@ lemma comul_eq_algHom_toLinearMap :
 noncomputable instance _root_.TensorProduct.instBialgebra : Bialgebra S (A ⊗[R] B) := by
   have hcounit := congr(DFunLike.coe $(counit_eq_algHom_toLinearMap R S A B))
   have hcomul := congr(DFunLike.coe $(comul_eq_algHom_toLinearMap R S A B))
-  refine Bialgebra.mk' S (A ⊗[R] B) ?_ (fun {x y} => ?_) ?_ (fun {x y} => ?_) <;>
+  refine Bialgebra.mk' S (A ⊗[R] B) ?_ (fun {x y} ↦ ?_) ?_ (fun {x y} ↦ ?_) <;>
   simp_all only [AlgHom.toLinearMap_apply] <;>
   simp only [map_one, map_mul]
 

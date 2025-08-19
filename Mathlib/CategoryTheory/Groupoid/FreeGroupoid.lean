@@ -114,13 +114,13 @@ instance : Category (FreeGroupoid V) :=
 
 /-- The inverse of an arrow in the free groupoid -/
 def quotInv {X Y : FreeGroupoid V} (f : X ⟶ Y) : Y ⟶ X :=
-  Quot.liftOn f (fun pp => Quot.mk _ <| pp.reverse) fun pp qq con =>
+  Quot.liftOn f (fun pp ↦ Quot.mk _ <| pp.reverse) fun pp qq con ↦
     Quot.sound <| congr_reverse pp qq con
 
 instance _root_.CategoryTheory.FreeGroupoid.instGroupoid : Groupoid (FreeGroupoid V) where
   inv := quotInv
-  inv_comp p := Quot.inductionOn p fun pp => congr_reverse_comp pp
-  comp_inv p := Quot.inductionOn p fun pp => congr_comp_reverse pp
+  inv_comp p := Quot.inductionOn p fun pp ↦ congr_reverse_comp pp
+  comp_inv p := Quot.inductionOn p fun pp ↦ congr_comp_reverse pp
 
 /-- The inclusion of the quiver on `V` to the underlying quiver on `FreeGroupoid V` -/
 def of (V) [Quiver V] : V ⥤q FreeGroupoid V where

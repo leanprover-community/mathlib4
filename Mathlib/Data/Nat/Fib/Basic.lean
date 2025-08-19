@@ -60,7 +60,7 @@ implementation.
 -/
 @[pp_nodot]
 def fib (n : ℕ) : ℕ :=
-  ((fun p : ℕ × ℕ => (p.snd, p.fst + p.snd))^[n] (0, 1)).fst
+  ((fun p : ℕ × ℕ ↦ (p.snd, p.fst + p.snd))^[n] (0, 1)).fst
 
 @[simp]
 theorem fib_zero : fib 0 = 0 :=
@@ -85,7 +85,7 @@ theorem fib_le_fib_succ {n : ℕ} : fib n ≤ fib (n + 1) := by cases n <;> simp
 
 @[mono]
 theorem fib_mono : Monotone fib :=
-  monotone_nat_of_le_succ fun _ => fib_le_fib_succ
+  monotone_nat_of_le_succ fun _ ↦ fib_le_fib_succ
 
 @[simp] lemma fib_eq_zero : ∀ {n}, fib n = 0 ↔ n = 0
 | 0 => Iff.rfl
@@ -103,8 +103,8 @@ theorem fib_lt_fib_succ {n : ℕ} (hn : 2 ≤ n) : fib n < fib (n + 1) := by
   exact succ_pos n
 
 /-- `fib (n + 2)` is strictly monotone. -/
-theorem fib_add_two_strictMono : StrictMono fun n => fib (n + 2) := by
-  refine strictMono_nat_of_lt_succ fun n => ?_
+theorem fib_add_two_strictMono : StrictMono fun n ↦ fib (n + 2) := by
+  refine strictMono_nat_of_lt_succ fun n ↦ ?_
   rw [add_right_comm]
   exact fib_lt_fib_succ (self_le_add_left _ _)
 
@@ -172,7 +172,7 @@ theorem fib_two_mul_add_two (n : ℕ) :
 /-- Computes `(Nat.fib n, Nat.fib (n + 1))` using the binary representation of `n`.
 Supports `Nat.fastFib`. -/
 def fastFibAux : ℕ → ℕ × ℕ :=
-  Nat.binaryRec (fib 0, fib 1) fun b _ p =>
+  Nat.binaryRec (fib 0, fib 1) fun b _ p ↦
     if b then (p.2 ^ 2 + p.1 ^ 2, p.2 * (2 * p.1 + p.2))
     else (p.1 * (2 * p.2 - p.1), p.2 ^ 2 + p.1 ^ 2)
 
@@ -241,7 +241,7 @@ theorem fib_dvd (m n : ℕ) (h : m ∣ n) : fib m ∣ fib n := by
 
 theorem fib_succ_eq_sum_choose :
     ∀ n : ℕ, fib (n + 1) = ∑ p ∈ Finset.antidiagonal n, choose p.1 p.2 :=
-  twoStepInduction rfl rfl fun n h1 h2 => by
+  twoStepInduction rfl rfl fun n h1 h2 ↦ by
     rw [fib_add_two, h1, h2, Finset.Nat.antidiagonal_succ_succ', Finset.Nat.antidiagonal_succ']
     simp [choose_succ_succ, Finset.sum_add_distrib, add_left_comm]
 

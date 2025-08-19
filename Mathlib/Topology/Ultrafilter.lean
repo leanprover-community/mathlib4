@@ -16,7 +16,7 @@ variable {X : Type u} {Y : Type v} {ι : Sort w} {α β : Type*} {x : X} {s s₁
     {p p₁ p₂ : X → Prop} [TopologicalSpace X] [TopologicalSpace Y] {F : Filter α} {u : α → X}
 
 theorem Ultrafilter.clusterPt_iff {f : Ultrafilter X} : ClusterPt x f ↔ ↑f ≤ 𝓝 x :=
-  ⟨f.le_of_inf_neBot', fun h => ClusterPt.of_le_nhds h⟩
+  ⟨f.le_of_inf_neBot', fun h ↦ ClusterPt.of_le_nhds h⟩
 
 theorem clusterPt_iff_ultrafilter {f : Filter X} : ClusterPt x f ↔
     ∃ u : Ultrafilter X, u ≤ f ∧ u ≤ 𝓝 x := by

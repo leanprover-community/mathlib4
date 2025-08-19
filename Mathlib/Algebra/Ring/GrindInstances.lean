@@ -20,7 +20,7 @@ instance (priority := 100) Semiring.toGrindSemiring [s : Semiring α] :
     Grind.Semiring α :=
   { s with
     nsmul := ⟨s.nsmul⟩
-    npow := ⟨fun a n => a^n⟩
+    npow := ⟨fun a n ↦ a^n⟩
     ofNat | 0 | 1 | n + 2 => inferInstance
     natCast := inferInstance
     add_zero := by simp [add_zero]
@@ -52,7 +52,7 @@ instance (priority := 100) Ring.toGrindRing [s : Ring α] :
     Grind.Ring α :=
   { s, Semiring.toGrindSemiring α with
     nsmul := ⟨s.nsmul⟩
-    npow := ⟨fun a n => a^n⟩
+    npow := ⟨fun a n ↦ a^n⟩
     zsmul := ⟨s.zsmul⟩
     natCast := inferInstance
     intCast := inferInstance

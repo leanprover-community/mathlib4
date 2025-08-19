@@ -22,8 +22,8 @@ family of sets, then `f i ∩ s` is nonempty only for a finitely many `i`. -/
 theorem finite_nonempty_inter_compact {f : ι → Set X}
     (hf : LocallyFinite f) (hs : IsCompact s) : { i | (f i ∩ s).Nonempty }.Finite := by
   choose U hxU hUf using hf
-  rcases hs.elim_nhds_subcover U fun x _ => hxU x with ⟨t, -, hsU⟩
-  refine (t.finite_toSet.biUnion fun x _ => hUf x).subset ?_
+  rcases hs.elim_nhds_subcover U fun x _ ↦ hxU x with ⟨t, -, hsU⟩
+  refine (t.finite_toSet.biUnion fun x _ ↦ hUf x).subset ?_
   rintro i ⟨x, hx⟩
   rcases mem_iUnion₂.1 (hsU hx.2) with ⟨c, hct, hcx⟩
   exact mem_biUnion hct ⟨x, hx.1, hcx⟩

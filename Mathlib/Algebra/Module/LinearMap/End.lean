@@ -41,7 +41,7 @@ variable [Semiring R] [AddCommMonoid M] [AddCommGroup N₁] [Module R M] [Module
 
 instance : One (Module.End R M) := ⟨LinearMap.id⟩
 
-instance : Mul (Module.End R M) := ⟨fun f g => LinearMap.comp f g⟩
+instance : Mul (Module.End R M) := ⟨fun f g ↦ LinearMap.comp f g⟩
 
 theorem one_eq_id : (1 : Module.End R M) = .id := rfl
 
@@ -59,7 +59,7 @@ theorem coe_mul (f g : Module.End R M) : ⇑(f * g) = f ∘ g := rfl
 
 instance instNontrivial [Nontrivial M] : Nontrivial (Module.End R M) := by
   obtain ⟨m, ne⟩ := exists_ne (0 : M)
-  exact nontrivial_of_ne 1 0 fun p => ne (LinearMap.congr_fun p m)
+  exact nontrivial_of_ne 1 0 fun p ↦ ne (LinearMap.congr_fun p m)
 
 instance instMonoid : Monoid (Module.End R M) where
   mul_assoc _ _ _ := LinearMap.ext fun _ ↦ rfl
@@ -311,7 +311,7 @@ def smulRight (f : M₁ →ₗ[R] S) (x : M) : M₁ →ₗ[R] M where
   map_smul' b y := by rw [RingHom.id_apply, map_smul, smul_assoc]
 
 @[simp]
-theorem coe_smulRight (f : M₁ →ₗ[R] S) (x : M) : (smulRight f x : M₁ → M) = fun c => f c • x :=
+theorem coe_smulRight (f : M₁ →ₗ[R] S) (x : M) : (smulRight f x : M₁ → M) = fun c ↦ f c • x :=
   rfl
 
 theorem smulRight_apply (f : M₁ →ₗ[R] S) (x : M) (c : M₁) : smulRight f x c = f c • x :=
@@ -350,11 +350,11 @@ See `LinearMap.applyₗ` for a version where `S = R`. -/
 @[simps]
 def applyₗ' : M →+ (M →ₗ[R] M₂) →ₗ[S] M₂ where
   toFun v :=
-    { toFun := fun f => f v
-      map_add' := fun f g => f.add_apply g v
-      map_smul' := fun x f => f.smul_apply x v }
-  map_zero' := LinearMap.ext fun f => f.map_zero
-  map_add' _ _ := LinearMap.ext fun f => f.map_add _ _
+    { toFun := fun f ↦ f v
+      map_add' := fun f g ↦ f.add_apply g v
+      map_smul' := fun x f ↦ f.smul_apply x v }
+  map_zero' := LinearMap.ext fun f ↦ f.map_zero
+  map_add' _ _ := LinearMap.ext fun f ↦ f.map_add _ _
 
 end Module
 
@@ -368,8 +368,8 @@ variable (f : M →ₗ[R] M₂)
 to the space of linear maps `M → M₃`. -/
 def compRight (f : M₂ →ₗ[R] M₃) : (M →ₗ[R] M₂) →ₗ[R] M →ₗ[R] M₃ where
   toFun g := f.comp g
-  map_add' _ _ := LinearMap.ext fun _ => map_add f _ _
-  map_smul' _ _ := LinearMap.ext fun _ => map_smul f _ _
+  map_add' _ _ := LinearMap.ext fun _ ↦ map_add f _ _
+  map_smul' _ _ := LinearMap.ext fun _ ↦ map_smul f _ _
 
 @[simp]
 theorem compRight_apply (f : M₂ →ₗ[R] M₃) (g : M →ₗ[R] M₂) : compRight f g = f.comp g :=
@@ -382,8 +382,8 @@ This is the `LinearMap` version of `toAddMonoidHom.eval`. -/
 @[simps]
 def applyₗ : M →ₗ[R] (M →ₗ[R] M₂) →ₗ[R] M₂ :=
   { applyₗ' R with
-    toFun := fun v => { applyₗ' R v with toFun := fun f => f v }
-    map_smul' := fun _ _ => LinearMap.ext fun f => map_smul f _ _ }
+    toFun := fun v ↦ { applyₗ' R v with toFun := fun f ↦ f v }
+    map_smul' := fun _ _ ↦ LinearMap.ext fun f ↦ map_smul f _ _ }
 
 /--
 The family of linear maps `M₂ → M` parameterised by `f ∈ M₂ → R`, `x ∈ M`, is linear in `f`, `x`.
@@ -391,10 +391,10 @@ The family of linear maps `M₂ → M` parameterised by `f ∈ M₂ → R`, `x �
 def smulRightₗ : (M₂ →ₗ[R] R) →ₗ[R] M →ₗ[R] M₂ →ₗ[R] M where
   toFun f :=
     { toFun := LinearMap.smulRight f
-      map_add' := fun m m' => by
+      map_add' := fun m m' ↦ by
         ext
         apply smul_add
-      map_smul' := fun c m => by
+      map_smul' := fun c m ↦ by
         ext
         apply smul_comm }
   map_add' f f' := by

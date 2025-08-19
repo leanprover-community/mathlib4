@@ -39,7 +39,7 @@ namespace FractionalIdeal
 variable {R₁ : Type*} [CommRing R₁] [IsDomain R₁] [Algebra R₁ K] [IsFractionRing R₁ K]
 variable {I J : FractionalIdeal R₁⁰ K}
 
-noncomputable instance : Inv (FractionalIdeal R₁⁰ K) := ⟨fun I => 1 / I⟩
+noncomputable instance : Inv (FractionalIdeal R₁⁰ K) := ⟨fun I ↦ 1 / I⟩
 
 theorem inv_eq : I⁻¹ = 1 / I := rfl
 
@@ -62,7 +62,7 @@ theorem inv_anti_mono (hI : I ≠ 0) (hJ : J ≠ 0) (hIJ : I ≤ J) : J⁻¹ ≤
   --  in Lean4, it goes all the way down to the subtypes
   intro x
   simp only [val_eq_coe, mem_coe, mem_inv_iff hJ, mem_inv_iff hI]
-  exact fun h y hy => h y (hIJ hy)
+  exact fun h y hy ↦ h y (hIJ hy)
 
 theorem le_self_mul_inv {I : FractionalIdeal R₁⁰ K} (hI : I ≤ (1 : FractionalIdeal R₁⁰ K)) :
     I ≤ I * I⁻¹ :=
@@ -92,7 +92,7 @@ theorem right_inverse_eq (I J : FractionalIdeal R₁⁰ K) (h : I * J = 1) : J =
   exact mul_mem_mul hy hx
 
 theorem mul_inv_cancel_iff {I : FractionalIdeal R₁⁰ K} : I * I⁻¹ = 1 ↔ ∃ J, I * J = 1 :=
-  ⟨fun h => ⟨I⁻¹, h⟩, fun ⟨J, hJ⟩ => by rwa [← right_inverse_eq K I J hJ]⟩
+  ⟨fun h ↦ ⟨I⁻¹, h⟩, fun ⟨J, hJ⟩ ↦ by rwa [← right_inverse_eq K I J hJ]⟩
 
 theorem mul_inv_cancel_iff_isUnit {I : FractionalIdeal R₁⁰ K} : I * I⁻¹ = 1 ↔ IsUnit I :=
   (mul_inv_cancel_iff K).trans isUnit_iff_exists_inv.symm

@@ -167,15 +167,15 @@ theorem map_pt_mem_toPartialHomeomorph_target :
 
 theorem prod_map_implicitFunction :
     ∀ᶠ p : F × G in 𝓝 (φ.prodFun φ.pt), φ.prodFun (φ.implicitFunction p.1 p.2) = p :=
-  φ.hasStrictFDerivAt.eventually_right_inverse.mono fun ⟨_, _⟩ h => h
+  φ.hasStrictFDerivAt.eventually_right_inverse.mono fun ⟨_, _⟩ h ↦ h
 
 theorem left_map_implicitFunction :
     ∀ᶠ p : F × G in 𝓝 (φ.prodFun φ.pt), φ.leftFun (φ.implicitFunction p.1 p.2) = p.1 :=
-  φ.prod_map_implicitFunction.mono fun _ => congr_arg Prod.fst
+  φ.prod_map_implicitFunction.mono fun _ ↦ congr_arg Prod.fst
 
 theorem right_map_implicitFunction :
     ∀ᶠ p : F × G in 𝓝 (φ.prodFun φ.pt), φ.rightFun (φ.implicitFunction p.1 p.2) = p.2 :=
-  φ.prod_map_implicitFunction.mono fun _ => congr_arg Prod.snd
+  φ.prod_map_implicitFunction.mono fun _ ↦ congr_arg Prod.snd
 
 theorem implicitFunction_apply_image :
     ∀ᶠ x in 𝓝 φ.pt, φ.implicitFunction (φ.leftFun x) (φ.rightFun x) = x :=
@@ -298,7 +298,7 @@ theorem map_implicitFunctionOfComplemented_eq (hf : HasStrictFDerivAt f f' a) (h
       f (hf.implicitFunctionOfComplemented f f' hf' hker p.1 p.2) = p.1 :=
   ((hf.implicitToPartialHomeomorphOfComplemented f f' hf' hker).eventually_right_inverse <|
         hf.mem_implicitToPartialHomeomorphOfComplemented_target hf' hker).mono
-    fun ⟨_, _⟩ h => congr_arg Prod.fst h
+    fun ⟨_, _⟩ h ↦ congr_arg Prod.fst h
 
 /-- Any point in some neighborhood of `a` can be represented as
 `HasStrictFDerivAt.implicitFunctionOfComplemented` of some point. -/
@@ -403,7 +403,7 @@ theorem mem_implicitToPartialHomeomorph_target (hf : HasStrictFDerivAt f f' a)
 theorem tendsto_implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) {α : Type*}
     {l : Filter α} {g₁ : α → F} {g₂ : α → ker f'} (h₁ : Tendsto g₁ l (𝓝 <| f a))
     (h₂ : Tendsto g₂ l (𝓝 0)) :
-    Tendsto (fun t => hf.implicitFunction f f' hf' (g₁ t) (g₂ t)) l (𝓝 a) := by
+    Tendsto (fun t ↦ hf.implicitFunction f f' hf' (g₁ t) (g₂ t)) l (𝓝 a) := by
   refine ((hf.implicitToPartialHomeomorph f f' hf').tendsto_symm
     (hf.mem_implicitToPartialHomeomorph_source hf')).comp ?_
   rw [implicitToPartialHomeomorph_self]

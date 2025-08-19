@@ -44,12 +44,12 @@ variable [CompleteLattice α] (f : α →o α)
 /-- Least fixed point of a monotone function -/
 def lfp : (α →o α) →o α where
   toFun f := sInf { a | f a ≤ a }
-  monotone' _ _ hle := sInf_le_sInf fun a ha => (hle a).trans ha
+  monotone' _ _ hle := sInf_le_sInf fun a ha ↦ (hle a).trans ha
 
 /-- Greatest fixed point of a monotone function -/
 def gfp : (α →o α) →o α where
   toFun f := sSup { a | a ≤ f a }
-  monotone' _ _ hle := sSup_le_sSup fun a ha => le_trans ha (hle a)
+  monotone' _ _ hle := sSup_le_sSup fun a ha ↦ le_trans ha (hle a)
 
 theorem lfp_le {a : α} (h : f a ≤ a) : f.lfp ≤ a :=
   sInf_le h
@@ -61,7 +61,7 @@ theorem le_lfp {a : α} (h : ∀ b, f b ≤ b → a ≤ b) : a ≤ f.lfp :=
   le_sInf h
 
 theorem map_le_lfp {a : α} (ha : a ≤ f.lfp) : f a ≤ f.lfp :=
-  f.le_lfp fun _ hb => (f.mono <| le_sInf_iff.1 ha _ hb).trans hb
+  f.le_lfp fun _ hb ↦ (f.mono <| le_sInf_iff.1 ha _ hb).trans hb
 
 @[simp]
 theorem map_lfp : f f.lfp = f.lfp :=
@@ -77,17 +77,17 @@ theorem lfp_le_map {a : α} (ha : f.lfp ≤ a) : f.lfp ≤ f a :=
     _ ≤ f a := f.mono ha
 
 theorem isLeast_lfp_le : IsLeast { a | f a ≤ a } f.lfp :=
-  ⟨f.map_lfp.le, fun _ => f.lfp_le⟩
+  ⟨f.map_lfp.le, fun _ ↦ f.lfp_le⟩
 
 theorem isLeast_lfp : IsLeast (fixedPoints f) f.lfp :=
-  ⟨f.isFixedPt_lfp, fun _ => f.lfp_le_fixed⟩
+  ⟨f.isFixedPt_lfp, fun _ ↦ f.lfp_le_fixed⟩
 
 theorem lfp_induction {p : α → Prop} (step : ∀ a, p a → a ≤ f.lfp → p (f a))
     (hSup : ∀ s, (∀ a ∈ s, p a) → p (sSup s)) : p f.lfp := by
   set s := { a | a ≤ f.lfp ∧ p a }
-  specialize hSup s fun a => And.right
+  specialize hSup s fun a ↦ And.right
   suffices sSup s = f.lfp from this ▸ hSup
-  have h : sSup s ≤ f.lfp := sSup_le fun b => And.left
+  have h : sSup s ≤ f.lfp := sSup_le fun b ↦ And.left
   have hmem : f (sSup s) ∈ s := ⟨f.map_le_lfp h, step _ hSup h⟩
   exact h.antisymm (f.lfp_le <| le_sSup hmem)
 
@@ -155,7 +155,7 @@ section PrevNext
 variable [CompleteLattice α] (f : α →o α)
 
 theorem gfp_const_inf_le (x : α) : (const α x ⊓ f).gfp ≤ x :=
-  (gfp_le _) fun _ hb => hb.trans inf_le_left
+  (gfp_le _) fun _ hb ↦ hb.trans inf_le_left
 
 /-- Previous fixed point of a monotone map. If `f` is a monotone self-map of a complete lattice and
 `x` is a point such that `f x ≤ x`, then `f.prevFixed x hx` is the greatest fixed point of `f`
@@ -187,7 +187,7 @@ theorem nextFixed_le {x : α} (hx : x ≤ f x) {y : fixedPoints f} (h : x ≤ y)
 @[simp]
 theorem nextFixed_le_iff {x : α} (hx : x ≤ f x) {y : fixedPoints f} :
     f.nextFixed x hx ≤ y ↔ x ≤ y :=
-  ⟨fun h => (f.le_nextFixed hx).trans h, f.nextFixed_le hx⟩
+  ⟨fun h ↦ (f.le_nextFixed hx).trans h, f.nextFixed_le hx⟩
 
 @[simp]
 theorem le_prevFixed_iff {x : α} (hx : f x ≤ x) {y : fixedPoints f} :
@@ -209,11 +209,11 @@ theorem map_inf_fixedPoints_le (x y : fixedPoints f) : f (x ⊓ y) ≤ x.val ⊓
 
 theorem le_map_sSup_subset_fixedPoints (A : Set α) (hA : A ⊆ fixedPoints f) :
     sSup A ≤ f (sSup A) :=
-  sSup_le fun _ hx => hA hx ▸ (f.mono <| le_sSup hx)
+  sSup_le fun _ hx ↦ hA hx ▸ (f.mono <| le_sSup hx)
 
 theorem map_sInf_subset_fixedPoints_le (A : Set α) (hA : A ⊆ fixedPoints f) :
     f (sInf A) ≤ sInf A :=
-  le_sInf fun _ hx => hA hx ▸ (f.mono <| sInf_le hx)
+  le_sInf fun _ hx ↦ hA hx ▸ (f.mono <| sInf_le hx)
 
 end PrevNext
 
@@ -227,32 +227,32 @@ variable [CompleteLattice α] (f : α →o α)
 
 instance : SemilatticeSup (fixedPoints f) :=
   { Subtype.partialOrder _ with
-    sup := fun x y => f.nextFixed (x ⊔ y) (f.le_map_sup_fixedPoints x y)
-    le_sup_left := fun _ _ => Subtype.coe_le_coe.1 <| le_sup_left.trans (f.le_nextFixed _)
-    le_sup_right := fun _ _ => Subtype.coe_le_coe.1 <| le_sup_right.trans (f.le_nextFixed _)
-    sup_le := fun _ _ _ hxz hyz => f.nextFixed_le _ <| sup_le hxz hyz }
+    sup := fun x y ↦ f.nextFixed (x ⊔ y) (f.le_map_sup_fixedPoints x y)
+    le_sup_left := fun _ _ ↦ Subtype.coe_le_coe.1 <| le_sup_left.trans (f.le_nextFixed _)
+    le_sup_right := fun _ _ ↦ Subtype.coe_le_coe.1 <| le_sup_right.trans (f.le_nextFixed _)
+    sup_le := fun _ _ _ hxz hyz ↦ f.nextFixed_le _ <| sup_le hxz hyz }
 
 instance : SemilatticeInf (fixedPoints f) :=
   { OrderDual.instSemilatticeInf (fixedPoints f.dual) with
-    inf := fun x y => f.prevFixed (x ⊓ y) (f.map_inf_fixedPoints_le x y) }
+    inf := fun x y ↦ f.prevFixed (x ⊓ y) (f.map_inf_fixedPoints_le x y) }
 
 instance : CompleteSemilatticeSup (fixedPoints f) :=
   { Subtype.partialOrder _ with
-    sSup := fun s =>
+    sSup := fun s ↦
       f.nextFixed (sSup (Subtype.val '' s))
         (f.le_map_sSup_subset_fixedPoints (Subtype.val '' s)
-          fun _ ⟨x, hx⟩ => hx.2 ▸ x.2)
-    le_sSup := fun _ _ hx =>
+          fun _ ⟨x, hx⟩ ↦ hx.2 ▸ x.2)
+    le_sSup := fun _ _ hx ↦
       Subtype.coe_le_coe.1 <| le_trans (le_sSup <| Set.mem_image_of_mem _ hx) (f.le_nextFixed _)
-    sSup_le := fun _ _ hx => f.nextFixed_le _ <| sSup_le <| Set.forall_mem_image.2 hx }
+    sSup_le := fun _ _ hx ↦ f.nextFixed_le _ <| sSup_le <| Set.forall_mem_image.2 hx }
 
 instance : CompleteSemilatticeInf (fixedPoints f) :=
   { Subtype.partialOrder _ with
-    sInf := fun s =>
+    sInf := fun s ↦
       f.prevFixed (sInf (Subtype.val '' s))
-        (f.map_sInf_subset_fixedPoints_le (Subtype.val '' s) fun _ ⟨x, hx⟩ => hx.2 ▸ x.2)
-    le_sInf := fun _ _ hx => f.le_prevFixed _ <| le_sInf <| Set.forall_mem_image.2 hx
-    sInf_le := fun _ _ hx =>
+        (f.map_sInf_subset_fixedPoints_le (Subtype.val '' s) fun _ ⟨x, hx⟩ ↦ hx.2 ▸ x.2)
+    le_sInf := fun _ _ hx ↦ f.le_prevFixed _ <| le_sInf <| Set.forall_mem_image.2 hx
+    sInf_le := fun _ _ hx ↦
       Subtype.coe_le_coe.1 <| le_trans (f.prevFixed_le _) (sInf_le <| Set.mem_image_of_mem _ hx) }
 
 /-- **Knaster-Tarski Theorem**: The fixed points of `f` form a complete lattice. -/

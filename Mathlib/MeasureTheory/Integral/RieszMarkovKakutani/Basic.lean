@@ -66,7 +66,7 @@ end Monotone
 with values in `ℝ≥0`, for `K ⊆ X` compact define `λ(K) = inf {Λf | 1≤f on K}`.
 When `X` is a locally compact T2 space, this will be shown to be a
 content, and will be shown to agree with the Riesz measure on the compact subsets `K ⊆ X`. -/
-def rieszContentAux : Compacts X → ℝ≥0 := fun K =>
+def rieszContentAux : Compacts X → ℝ≥0 := fun K ↦
   sInf (Λ '' { f : C_c(X, ℝ≥0) | ∀ x ∈ K, (1 : ℝ≥0) ≤ f x })
 
 section RieszMonotone
@@ -162,7 +162,7 @@ lemma exists_continuous_add_one_of_isCompact_nnreal
     {s₀ s₁ : Set X} {t : Set X} (s₀_compact : IsCompact s₀) (s₁_compact : IsCompact s₁)
     (t_compact : IsCompact t) (disj : Disjoint s₀ s₁) (hst : s₀ ∪ s₁ ⊆ t) :
     ∃ (f₀ f₁ : C_c(X, ℝ≥0)), EqOn f₀ 1 s₀ ∧ EqOn f₁ 1 s₁ ∧ EqOn (f₀ + f₁) 1 t := by
-  set so : Fin 2 → Set X := fun j => if j = 0 then s₀ᶜ else s₁ᶜ with hso
+  set so : Fin 2 → Set X := fun j ↦ if j = 0 then s₀ᶜ else s₁ᶜ with hso
   have soopen (j : Fin 2) : IsOpen (so j) := by
     fin_cases j
     · simp only [hso, Fin.zero_eta, Fin.isValue, ↓reduceIte, isOpen_compl_iff]

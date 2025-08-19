@@ -33,16 +33,16 @@ variable {C : Type*} [Category C] [Preadditive C]
 open MorphComponents
 
 instance : (N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)).ReflectsIsomorphisms :=
-  ⟨fun {X Y} f => by
+  ⟨fun {X Y} f ↦ by
     intro
     -- restating the result in a way that allows induction on the degree n
     suffices ∀ n : ℕ, IsIso (f.app (op ⦋n⦌)) by
-      haveI : ∀ Δ : SimplexCategoryᵒᵖ, IsIso (f.app Δ) := fun Δ => this Δ.unop.len
+      haveI : ∀ Δ : SimplexCategoryᵒᵖ, IsIso (f.app Δ) := fun Δ ↦ this Δ.unop.len
       apply NatIso.isIso_of_isIso_app
     -- restating the assumption in a more practical form
     have h₁ := HomologicalComplex.congr_hom (Karoubi.hom_ext_iff.mp (IsIso.hom_inv_id (N₁.map f)))
     have h₂ := HomologicalComplex.congr_hom (Karoubi.hom_ext_iff.mp (IsIso.inv_hom_id (N₁.map f)))
-    have h₃ := fun n =>
+    have h₃ := fun n ↦
       Karoubi.HomologicalComplex.p_comm_f_assoc (inv (N₁.map f)) n (f.app (op ⦋n⦌))
     simp only [N₁_map_f, Karoubi.comp_f, HomologicalComplex.comp_f,
       AlternatingFaceMapComplex.map_f, N₁_obj_p, Karoubi.id_f, assoc] at h₁ h₂ h₃
@@ -59,7 +59,7 @@ instance : (N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)).Reflects
       tauto
     | succ n hn =>
       use φ { a := PInfty.f (n + 1) ≫ (inv (N₁.map f)).f.f (n + 1)
-              b := fun i => inv (f.app (op ⦋n⦌)) ≫ X.σ i }
+              b := fun i ↦ inv (f.app (op ⦋n⦌)) ≫ X.σ i }
       simp only [MorphComponents.id, ← id_φ, ← preComp_φ, preComp, ← postComp_φ, postComp,
         PInfty_f_naturality_assoc, IsIso.hom_inv_id_assoc, assoc, IsIso.inv_hom_id_assoc,
         SimplicialObject.σ_naturality, h₁, h₂, h₃, and_self]⟩
@@ -69,7 +69,7 @@ theorem compatibility_N₂_N₁_karoubi :
       karoubiFunctorCategoryEmbedding SimplexCategoryᵒᵖ C ⋙
         N₁ ⋙ (karoubiChainComplexEquivalence (Karoubi C) ℕ).functor ⋙
             Functor.mapHomologicalComplex (KaroubiKaroubi.equivalence C).inverse _ := by
-  refine CategoryTheory.Functor.ext (fun P => ?_) fun P Q f => ?_
+  refine CategoryTheory.Functor.ext (fun P ↦ ?_) fun P Q f ↦ ?_
   · refine HomologicalComplex.ext ?_ ?_
     · ext n
       · rfl
@@ -94,7 +94,7 @@ theorem compatibility_N₂_N₁_karoubi :
 reflects isomorphisms from the fact that
 `N₁ : SimplicialObject (Karoubi C) ⥤ Karoubi (ChainComplex (Karoubi C) ℕ)` does. -/
 instance : (N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)).ReflectsIsomorphisms :=
-  ⟨fun f => by
+  ⟨fun f ↦ by
     intro
     -- The following functor `F` reflects isomorphism because it is
     -- a composition of four functors which reflects isomorphisms.

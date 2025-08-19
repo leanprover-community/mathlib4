@@ -35,35 +35,35 @@ namespace IsInvertedBy
 
 lemma of_le (P Q : MorphismProperty C) (F : C ⥤ D) (hQ : Q.IsInvertedBy F) (h : P ≤ Q) :
     P.IsInvertedBy F :=
-  fun _ _ _ hf => hQ _ (h _ hf)
+  fun _ _ _ hf ↦ hQ _ (h _ hf)
 
 theorem of_comp {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
     (W : MorphismProperty C₁) (F : C₁ ⥤ C₂) (hF : W.IsInvertedBy F) (G : C₂ ⥤ C₃) :
-    W.IsInvertedBy (F ⋙ G) := fun X Y f hf => by
+    W.IsInvertedBy (F ⋙ G) := fun X Y f hf ↦ by
   haveI := hF f hf
   dsimp
   infer_instance
 
 theorem op {W : MorphismProperty C} {L : C ⥤ D} (h : W.IsInvertedBy L) : W.op.IsInvertedBy L.op :=
-  fun X Y f hf => by
+  fun X Y f hf ↦ by
   haveI := h f.unop hf
   dsimp
   infer_instance
 
 theorem rightOp {W : MorphismProperty C} {L : Cᵒᵖ ⥤ D} (h : W.op.IsInvertedBy L) :
-    W.IsInvertedBy L.rightOp := fun X Y f hf => by
+    W.IsInvertedBy L.rightOp := fun X Y f hf ↦ by
   haveI := h f.op hf
   dsimp
   infer_instance
 
 theorem leftOp {W : MorphismProperty C} {L : C ⥤ Dᵒᵖ} (h : W.IsInvertedBy L) :
-    W.op.IsInvertedBy L.leftOp := fun X Y f hf => by
+    W.op.IsInvertedBy L.leftOp := fun X Y f hf ↦ by
   haveI := h f.unop hf
   dsimp
   infer_instance
 
 theorem unop {W : MorphismProperty C} {L : Cᵒᵖ ⥤ Dᵒᵖ} (h : W.op.IsInvertedBy L) :
-    W.IsInvertedBy L.unop := fun X Y f hf => by
+    W.IsInvertedBy L.unop := fun X Y f hf ↦ by
   haveI := h f.op hf
   dsimp
   infer_instance
@@ -72,7 +72,7 @@ lemma prod {C₁ C₂ : Type*} [Category C₁] [Category C₂]
     {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
     {E₁ E₂ : Type*} [Category E₁] [Category E₂] {F₁ : C₁ ⥤ E₁} {F₂ : C₂ ⥤ E₂}
     (h₁ : W₁.IsInvertedBy F₁) (h₂ : W₂.IsInvertedBy F₂) :
-    (W₁.prod W₂).IsInvertedBy (F₁.prod F₂) := fun _ _ f hf => by
+    (W₁.prod W₂).IsInvertedBy (F₁.prod F₂) := fun _ _ f hf ↦ by
   rw [isIso_prod_iff]
   exact ⟨h₁ _ hf.1, h₂ _ hf.2⟩
 
@@ -90,7 +90,7 @@ end IsInvertedBy
 
 /-- The full subcategory of `C ⥤ D` consisting of functors inverting morphisms in `W` -/
 def FunctorsInverting (W : MorphismProperty C) (D : Type*) [Category D] :=
-  ObjectProperty.FullSubcategory fun F : C ⥤ D => W.IsInvertedBy F
+  ObjectProperty.FullSubcategory fun F : C ⥤ D ↦ W.IsInvertedBy F
 
 @[ext]
 lemma FunctorsInverting.ext {W : MorphismProperty C} {F₁ F₂ : FunctorsInverting W D}

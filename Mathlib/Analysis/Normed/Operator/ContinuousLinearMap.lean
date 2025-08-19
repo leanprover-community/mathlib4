@@ -133,7 +133,7 @@ variable [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 is generalized to the case of any finite dimensional domain
 in `LinearMap.toContinuousLinearMap`. -/
 def LinearMap.toContinuousLinearMap₁ (f : 𝕜 →ₗ[𝕜] E) : 𝕜 →L[𝕜] E :=
-  f.mkContinuous ‖f 1‖ fun x => by
+  f.mkContinuous ‖f 1‖ fun x ↦ by
     conv_lhs => rw [← mul_one x]
     rw [← smul_eq_mul, f.map_smul, mul_comm]; exact norm_smul_le _ _
 
@@ -175,7 +175,7 @@ for the other theorems about homotheties in this file.
 -/
 def ContinuousLinearMap.ofHomothety (f : E →ₛₗ[σ] F) (a : ℝ) (hf : ∀ x, ‖f x‖ = a * ‖x‖) :
     E →SL[σ] F :=
-  f.mkContinuous a fun x => le_of_eq (hf x)
+  f.mkContinuous a fun x ↦ le_of_eq (hf x)
 
 variable {σ₂₁ : 𝕜₂ →+* 𝕜} [RingHomInvPair σ σ₂₁] [RingHomInvPair σ₂₁ σ]
 
@@ -191,7 +191,7 @@ theorem ContinuousLinearEquiv.homothety_inverse (a : ℝ) (ha : 0 < a) (f : E �
 /-- A linear equivalence which is a homothety is a continuous linear equivalence. -/
 noncomputable def ContinuousLinearEquiv.ofHomothety (f : E ≃ₛₗ[σ] F) (a : ℝ) (ha : 0 < a)
     (hf : ∀ x, ‖f x‖ = a * ‖x‖) : E ≃SL[σ] F :=
-  LinearEquiv.toContinuousLinearEquivOfBounds f a a⁻¹ (fun x => (hf x).le) fun x =>
+  LinearEquiv.toContinuousLinearEquivOfBounds f a a⁻¹ (fun x ↦ (hf x).le) fun x ↦
     (ContinuousLinearEquiv.homothety_inverse a ha f hf x).le
 
 end Seminormed

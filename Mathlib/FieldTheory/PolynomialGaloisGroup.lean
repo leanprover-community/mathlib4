@@ -60,7 +60,7 @@ instance applyMulSemiringAction : MulSemiringAction p.Gal p.SplittingField :=
 @[ext]
 theorem ext {σ τ : p.Gal} (h : ∀ x ∈ p.rootSet p.SplittingField, σ x = τ x) : σ = τ := by
   refine
-    AlgEquiv.ext fun x =>
+    AlgEquiv.ext fun x ↦
       (AlgHom.mem_equalizer σ.toAlgHom τ.toAlgHom x).mp
         ((SetLike.ext_iff.mp ?_ x).mpr Algebra.mem_top)
   rwa [eq_top_iff, ← SplittingField.adjoin_rootSet, Algebra.adjoin_le_iff]
@@ -69,7 +69,7 @@ theorem ext {σ τ : p.Gal} (h : ∀ x ∈ p.rootSet p.SplittingField, σ x = τ
 def uniqueGalOfSplits (h : p.Splits (RingHom.id F)) : Unique p.Gal where
   default := 1
   uniq f :=
-    AlgEquiv.ext fun x => by
+    AlgEquiv.ext fun x ↦ by
       obtain ⟨y, rfl⟩ :=
         Algebra.mem_bot.mp
           ((SetLike.ext_iff.mp ((IsSplittingField.splits_iff _ p).mp h) x).mp Algebra.mem_top)
@@ -100,7 +100,7 @@ instance [h : Fact (p.Splits (algebraMap F E))] : Algebra p.SplittingField E :=
   (IsSplittingField.lift p.SplittingField p h.1).toRingHom.toAlgebra
 
 instance [h : Fact (p.Splits (algebraMap F E))] : IsScalarTower F p.SplittingField E :=
-  IsScalarTower.of_algebraMap_eq fun x =>
+  IsScalarTower.of_algebraMap_eq fun x ↦
     ((IsSplittingField.lift p.SplittingField p h.1).commutes x).symm
 
 -- The `Algebra p.SplittingField E` instance above behaves badly when
@@ -127,7 +127,7 @@ def mapRoots [Fact (p.Splits (algebraMap F E))] : rootSet p p.SplittingField →
 theorem mapRoots_bijective [h : Fact (p.Splits (algebraMap F E))] :
     Function.Bijective (mapRoots p E) := by
   constructor
-  · exact fun _ _ h => Subtype.ext (RingHom.injective _ (Subtype.ext_iff.mp h))
+  · exact fun _ _ h ↦ Subtype.ext (RingHom.injective _ (Subtype.ext_iff.mp h))
   · intro y
     -- this is just an equality of two different ways to write the roots of `p` as an `E`-polynomial
     have key :=
@@ -244,7 +244,7 @@ def restrictProd : (p * q).Gal →* p.Gal × q.Gal :=
 theorem restrictProd_injective : Function.Injective (restrictProd p q) := by
   by_cases hpq : p * q = 0
   · have : Unique (p * q).Gal := by rw [hpq]; infer_instance
-    exact fun f g _ => Eq.trans (Unique.eq_default f) (Unique.eq_default g).symm
+    exact fun f g _ ↦ Eq.trans (Unique.eq_default f) (Unique.eq_default g).symm
   intro f g hfg
   classical
   simp only [restrictProd, restrictDvd_def] at hfg
@@ -292,13 +292,13 @@ theorem mul_splits_in_splittingField_of_mul {p₁ q₁ p₂ q₂ : F[X]} (hq₁ 
 /-- `p` splits in the splitting field of `p ∘ q`, for `q` non-constant. -/
 theorem splits_in_splittingField_of_comp (hq : q.natDegree ≠ 0) :
     p.Splits (algebraMap F (p.comp q).SplittingField) := by
-  let P : F[X] → Prop := fun r => r.Splits (algebraMap F (r.comp q).SplittingField)
+  let P : F[X] → Prop := fun r ↦ r.Splits (algebraMap F (r.comp q).SplittingField)
   have key1 : ∀ {r : F[X]}, Irreducible r → P r := by
     intro r hr
     by_cases hr' : natDegree r = 0
     · exact splits_of_natDegree_le_one _ (le_trans (le_of_eq hr') zero_le_one)
     obtain ⟨x, hx⟩ :=
-      exists_root_of_splits _ (SplittingField.splits (r.comp q)) fun h =>
+      exists_root_of_splits _ (SplittingField.splits (r.comp q)) fun h ↦
         hr'
           ((mul_eq_zero.mp
                 (natDegree_comp.symm.trans (natDegree_eq_of_degree_eq_some h))).resolve_right
@@ -324,8 +324,8 @@ theorem splits_in_splittingField_of_comp (hq : q.natDegree ≠ 0) :
     have key := mul_splits_in_splittingField_of_mul h₁ h₂ hp₁ hp₂
     rwa [← mul_comp] at key
   exact
-    WfDvdMonoid.induction_on_irreducible p (splits_zero _) (fun _ => splits_of_isUnit _)
-      fun _ _ _ h => key2 (key1 h)
+    WfDvdMonoid.induction_on_irreducible p (splits_zero _) (fun _ ↦ splits_of_isUnit _)
+      fun _ _ _ h ↦ key2 (key1 h)
 
 /-- `Polynomial.Gal.restrict` for the composition of polynomials. -/
 def restrictComp (hq : q.natDegree ≠ 0) : (p.comp q).Gal →* p.Gal :=
@@ -352,7 +352,7 @@ theorem card_of_separable (hp : p.Separable) : Nat.card p.Gal = finrank F p.Spli
 theorem prime_degree_dvd_card [CharZero F] (p_irr : Irreducible p) (p_deg : p.natDegree.Prime) :
     p.natDegree ∣ Nat.card p.Gal := by
   rw [Gal.card_of_separable p_irr.separable]
-  have hp : p.degree ≠ 0 := fun h =>
+  have hp : p.degree ≠ 0 := fun h ↦
     Nat.Prime.ne_zero p_deg (natDegree_eq_zero_iff_degree_le_zero.mpr (le_of_eq h))
   let α : p.SplittingField :=
     rootOfSplits (algebraMap F p.SplittingField) (SplittingField.splits p) hp

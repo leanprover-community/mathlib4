@@ -62,9 +62,9 @@ theorem partialSections.nonempty [IsCofilteredOrEmpty J] [h : ∀ j : J, Nonempt
     {G : Finset J} (H : Finset (FiniteDiagramArrow G)) : (partialSections F H).Nonempty := by
   classical
   cases isEmpty_or_nonempty J
-  · exact ⟨isEmptyElim, fun {j} => IsEmpty.elim' inferInstance j.1⟩
+  · exact ⟨isEmptyElim, fun {j} ↦ IsEmpty.elim' inferInstance j.1⟩
   haveI : IsCofiltered J := ⟨⟩
-  use fun j : J =>
+  use fun j : J ↦
     if hj : j ∈ G then F.map (IsCofiltered.infTo G H hj) (h (IsCofiltered.inf G H)).some
     else (h _).some
   rintro ⟨X, Y, hX, hY, f⟩ hf
@@ -72,12 +72,12 @@ theorem partialSections.nonempty [IsCofilteredOrEmpty J] [h : ∀ j : J, Nonempt
   rwa [dif_pos hX, dif_pos hY, ← comp_app, ← F.map_comp, @IsCofiltered.infTo_commutes _ _ _ G H]
 
 theorem partialSections.directed :
-    Directed Superset fun G : FiniteDiagram J => partialSections F G.2 := by
+    Directed Superset fun G : FiniteDiagram J ↦ partialSections F G.2 := by
   classical
   intro A B
-  let ιA : FiniteDiagramArrow A.1 → FiniteDiagramArrow (A.1 ⊔ B.1) := fun f =>
+  let ιA : FiniteDiagramArrow A.1 → FiniteDiagramArrow (A.1 ⊔ B.1) := fun f ↦
     ⟨f.1, f.2.1, Finset.mem_union_left _ f.2.2.1, Finset.mem_union_left _ f.2.2.2.1, f.2.2.2.2⟩
-  let ιB : FiniteDiagramArrow B.1 → FiniteDiagramArrow (A.1 ⊔ B.1) := fun f =>
+  let ιB : FiniteDiagramArrow B.1 → FiniteDiagramArrow (A.1 ⊔ B.1) := fun f ↦
     ⟨f.1, f.2.1, Finset.mem_union_right _ f.2.2.1, Finset.mem_union_right _ f.2.2.2.1, f.2.2.2.2⟩
   refine ⟨⟨A.1 ⊔ B.1, A.2.image ιA ⊔ B.2.image ιB⟩, ?_, ?_⟩
   · rintro u hu f hf
@@ -114,9 +114,9 @@ theorem nonempty_limitCone_of_compact_t2_cofiltered_system (F : J ⥤ TopCat.{ma
     Nonempty (TopCat.limitCone F).pt := by
   classical
   obtain ⟨u, hu⟩ :=
-    IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed (fun G => partialSections F _)
-      (partialSections.directed F) (fun G => partialSections.nonempty F _)
-      (fun G => IsClosed.isCompact (partialSections.closed F _)) fun G =>
+    IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed (fun G ↦ partialSections F _)
+      (partialSections.directed F) (fun G ↦ partialSections.nonempty F _)
+      (fun G ↦ IsClosed.isCompact (partialSections.closed F _)) fun G ↦
       partialSections.closed F _
   use u
   intro X Y f

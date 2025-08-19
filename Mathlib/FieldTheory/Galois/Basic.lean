@@ -57,7 +57,7 @@ class IsGalois : Prop where
 variable {F E}
 
 theorem isGalois_iff : IsGalois F E ↔ Algebra.IsSeparable F E ∧ Normal F E :=
-  ⟨fun h => ⟨h.1, h.2⟩, fun h =>
+  ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦
     { to_isSeparable := h.1
       to_normal := h.2 }⟩
 
@@ -106,11 +106,11 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
     Nat.card (E ≃ₐ[F] E) = finrank F E := by
   obtain ⟨α, hα⟩ := Field.exists_primitive_element F E
   let iso : F⟮α⟯ ≃ₐ[F] E :=
-    { toFun := fun e => e.val
-      invFun := fun e => ⟨e, by rw [hα]; exact IntermediateField.mem_top⟩
-      map_mul' := fun _ _ => rfl
-      map_add' := fun _ _ => rfl
-      commutes' := fun _ => rfl }
+    { toFun := fun e ↦ e.val
+      invFun := fun e ↦ ⟨e, by rw [hα]; exact IntermediateField.mem_top⟩
+      map_mul' := fun _ _ ↦ rfl
+      map_add' := fun _ _ ↦ rfl
+      commutes' := fun _ ↦ rfl }
   have H : IsIntegral F α := IsGalois.integral F α
   have h_sep : IsSeparable F α := IsGalois.separable F α
   have h_splits : (minpoly F α).Splits (algebraMap F E) := IsGalois.splits F α
@@ -120,7 +120,7 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
   rw [← LinearEquiv.finrank_eq iso.toLinearEquiv]
   rw [← IntermediateField.AdjoinSimple.card_aut_eq_finrank F E H h_sep h_splits]
   apply Nat.card_congr
-  exact Equiv.mk (fun ϕ => iso.trans (ϕ.trans iso.symm)) fun ϕ => iso.symm.trans (ϕ.trans iso)
+  exact Equiv.mk (fun ϕ ↦ iso.trans (ϕ.trans iso.symm)) fun ϕ ↦ iso.symm.trans (ϕ.trans iso)
 
 end IsGalois
 
@@ -156,7 +156,7 @@ theorem IsGalois.of_algEquiv [IsGalois F E] (f : E ≃ₐ[F] E') : IsGalois F E'
     to_normal := Normal.of_algEquiv f }
 
 theorem AlgEquiv.transfer_galois (f : E ≃ₐ[F] E') : IsGalois F E ↔ IsGalois F E' :=
-  ⟨fun _ => IsGalois.of_algEquiv f, fun _ => IsGalois.of_algEquiv f.symm⟩
+  ⟨fun _ ↦ IsGalois.of_algEquiv f, fun _ ↦ IsGalois.of_algEquiv f.symm⟩
 
 theorem isGalois_iff_isGalois_top : IsGalois F (⊤ : IntermediateField F E) ↔ IsGalois F E :=
   (IntermediateField.topEquiv : (⊤ : IntermediateField F E) ≃ₐ[F] E).transfer_galois
@@ -183,7 +183,7 @@ def FixedPoints.intermediateField (M : Type*) [Monoid M] [MulSemiringAction M E]
     [SMulCommClass M F E] : IntermediateField F E :=
   { FixedPoints.subfield M E with
     carrier := MulAction.fixedPoints M E
-    algebraMap_mem' := fun a g => smul_algebraMap g a }
+    algebraMap_mem' := fun a g ↦ smul_algebraMap g a }
 
 namespace IntermediateField
 
@@ -211,7 +211,7 @@ nonrec def fixingSubgroup : Subgroup (E ≃ₐ[F] E) :=
   fixingSubgroup (E ≃ₐ[F] E) (K : Set E)
 
 theorem le_iff_le : K ≤ fixedField H ↔ H ≤ fixingSubgroup K :=
-  ⟨fun h g hg x => h (Subtype.mem x) ⟨g, hg⟩, fun h x hx g => h (Subtype.mem g) ⟨x, hx⟩⟩
+  ⟨fun h g hg x ↦ h (Subtype.mem x) ⟨g, hg⟩, fun h x hx g ↦ h (Subtype.mem g) ⟨x, hx⟩⟩
 
 /-- The map `K ↦ Gal(E/K)` is inclusion-reversing. -/
 theorem fixingSubgroup_le {K1 K2 : IntermediateField F E} (h12 : K1 ≤ K2) :
@@ -269,12 +269,12 @@ def subgroupEquivAlgEquiv [FiniteDimensional F E] (H : Subgroup (E ≃ₐ[F] E))
  (MulEquiv.subgroupCongr (fixingSubgroup_fixedField H).symm).trans (fixingSubgroupEquiv _)
 
 instance fixedField.smul : SMul K (fixedField (fixingSubgroup K)) where
-  smul x y := ⟨x * y, fun ϕ => by
+  smul x y := ⟨x * y, fun ϕ ↦ by
     rw [smul_mul', show ϕ • (x : E) = ↑x from ϕ.2 x, show ϕ • (y : E) = ↑y from y.2 ϕ]⟩
 
 instance fixedField.algebra : Algebra K (fixedField (fixingSubgroup K)) where
   algebraMap :=
-  { toFun x := ⟨x, fun ϕ => Subtype.mem ϕ x⟩
+  { toFun x := ⟨x, fun ϕ ↦ Subtype.mem ϕ x⟩
     map_zero' := rfl
     map_add' _ _ := rfl
     map_one' := rfl
@@ -283,7 +283,7 @@ instance fixedField.algebra : Algebra K (fixedField (fixingSubgroup K)) where
   smul_def' _ _ := rfl
 
 instance fixedField.isScalarTower : IsScalarTower K (fixedField (fixingSubgroup K)) E :=
-  ⟨fun _ _ _ => mul_assoc _ _ _⟩
+  ⟨fun _ _ _ ↦ mul_assoc _ _ _⟩
 
 end IntermediateField
 
@@ -451,7 +451,7 @@ theorem of_card_aut_eq_finrank [FiniteDimensional F E]
   rw [← IntermediateField.finrank_eq_one_iff, ← mul_left_inj' (ne_of_lt p).symm,
     finrank_mul_finrank, ← h, one_mul, IntermediateField.finrank_fixedField_eq_card]
   apply Nat.card_congr
-  exact { toFun := fun g => ⟨g, Subgroup.mem_top g⟩, invFun := (↑) }
+  exact { toFun := fun g ↦ ⟨g, Subgroup.mem_top g⟩, invFun := (↑) }
 
 variable {F} {E}
 variable {p : F[X]}
@@ -461,7 +461,7 @@ theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.I
     {x : E} (hx : x ∈ p.aroots E) :
     Nat.card (K⟮x⟯.restrictScalars F →ₐ[F] E) = Nat.card (K →ₐ[F] E) * finrank K K⟮x⟯ := by
   have h : IsIntegral K x := (isIntegral_of_noetherian (IsNoetherian.iff_fg.2 hFE) x).tower_top
-  have h1 : p ≠ 0 := fun hp => by
+  have h1 : p ≠ 0 := fun hp ↦ by
     rw [hp, Polynomial.aroots_zero] at hx
     exact Multiset.notMem_zero x hx
   have h2 : minpoly K x ∣ p.map (algebraMap F K) := by
@@ -473,9 +473,9 @@ theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.I
       Σ f : K →ₐ[F] E, @AlgHom K K⟮x⟯ E _ _ _ _ (RingHom.toAlgebra f) := by
     change (K⟮x⟯ →ₐ[F] E) ≃ Σ f : K →ₐ[F] E, _
     exact algHomEquivSigma
-  haveI : ∀ f : K →ₐ[F] E, Finite (@AlgHom K K⟮x⟯ E _ _ _ _ (RingHom.toAlgebra f)) := fun f => by
+  haveI : ∀ f : K →ₐ[F] E, Finite (@AlgHom K K⟮x⟯ E _ _ _ _ (RingHom.toAlgebra f)) := fun f ↦ by
     have := Finite.of_equiv _ key_equiv
-    apply Finite.of_injective (Sigma.mk f) fun _ _ H => eq_of_heq (Sigma.ext_iff.mp H).2
+    apply Finite.of_injective (Sigma.mk f) fun _ _ H ↦ eq_of_heq (Sigma.ext_iff.mp H).2
   have : FiniteDimensional F K := FiniteDimensional.left F K E
   rw [Nat.card_congr key_equiv, Nat.card_sigma, IntermediateField.adjoin.finrank h,
     Nat.card_eq_fintype_card]
@@ -497,7 +497,7 @@ theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separ
     apply IntermediateField.toSubalgebra_injective
     rw [IntermediateField.top_toSubalgebra, ← top_le_iff, ← sp.adjoin_rootSet]
     apply IntermediateField.algebra_adjoin_le_adjoin
-  let P : IntermediateField F E → Prop := fun K => Nat.card (K →ₐ[F] E) = finrank F K
+  let P : IntermediateField F E → Prop := fun K ↦ Nat.card (K →ₐ[F] E) = finrank F K
   suffices P (IntermediateField.adjoin F s) by
     rw [adjoin_root] at this
     apply of_card_aut_eq_finrank

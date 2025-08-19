@@ -152,7 +152,7 @@ variable [PartialOrder A] [StarOrderedRing A]
 lemma IsSelfAdjoint.le_algebraMap_norm_self {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :
     a ≤ algebraMap ℝ A ‖a‖ := by
   by_cases nontriv : Nontrivial A
-  · refine le_algebraMap_of_spectrum_le fun r hr => ?_
+  · refine le_algebraMap_of_spectrum_le fun r hr ↦ ?_
     calc r ≤ ‖r‖ := Real.le_norm_self r
       _ ≤ ‖a‖ := spectrum.norm_le_norm_of_mem hr
   · rw [not_nontrivial_iff_subsingleton] at nontriv
@@ -400,15 +400,15 @@ lemma norm_le_norm_of_nonneg_of_le {a b : A} (ha : 0 ≤ a := by cfc_tac) (hab :
   have hb : 0 ≤ b := ha.trans hab
   -- these two `have`s are just for performance
   have := IsSelfAdjoint.of_nonneg ha; have := IsSelfAdjoint.of_nonneg hb
-  have h₂ : cfc (id : ℝ → ℝ) a ≤ cfc (fun _ => ‖b‖) a := by
+  have h₂ : cfc (id : ℝ → ℝ) a ≤ cfc (fun _ ↦ ‖b‖) a := by
     calc _ = a := by rw [cfc_id ℝ a]
       _ ≤ cfc id b := (cfc_id ℝ b) ▸ hab
-      _ ≤ cfc (fun _ => ‖b‖) b := by
-          refine cfc_mono fun x hx => ?_
+      _ ≤ cfc (fun _ ↦ ‖b‖) b := by
+          refine cfc_mono fun x hx ↦ ?_
           calc x = ‖x‖ := (Real.norm_of_nonneg (spectrum_nonneg_of_nonneg hb hx)).symm
             _ ≤ ‖b‖ := spectrum.norm_le_norm_of_mem hx
       _ = _ := by rw [cfc_const _ _, cfc_const _ _]
-  rw [cfc_le_iff id (fun _ => ‖b‖) a] at h₂
+  rw [cfc_le_iff id (fun _ ↦ ‖b‖) a] at h₂
   exact h₂ ‖a‖ <| norm_mem_spectrum_of_nonneg ha
 
 theorem nnnorm_le_nnnorm_of_nonneg_of_le {a : A} {b : A} (ha : 0 ≤ a := by cfc_tac) (hab : a ≤ b) :

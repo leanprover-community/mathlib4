@@ -83,14 +83,14 @@ theorem exists_integer_multiple (a : S) : ∃ b : M, IsInteger R ((b : R) • a)
 theorem exist_integer_multiples {ι : Type*} (s : Finset ι) (f : ι → S) :
     ∃ b : M, ∀ i ∈ s, IsLocalization.IsInteger R ((b : R) • f i) := by
   haveI := Classical.propDecidable
-  refine ⟨∏ i ∈ s, (sec M (f i)).2, fun i hi => ⟨?_, ?_⟩⟩
+  refine ⟨∏ i ∈ s, (sec M (f i)).2, fun i hi ↦ ⟨?_, ?_⟩⟩
   · exact (∏ j ∈ s.erase i, (sec M (f j)).2) * (sec M (f i)).1
   rw [RingHom.map_mul, sec_spec', ← mul_assoc, ← (algebraMap R S).map_mul, ← Algebra.smul_def]
   congr 2
   refine _root_.trans ?_ (map_prod (Submonoid.subtype M) _ _).symm
   rw [mul_comm,Submonoid.coe_finset_prod,
     -- Porting note: explicitly supplied `f`
-    ← Finset.prod_insert (f := fun i => ((sec M (f i)).snd : R)) (s.notMem_erase i),
+    ← Finset.prod_insert (f := fun i ↦ ((sec M (f i)).snd : R)) (s.notMem_erase i),
     Finset.insert_erase hi]
   rfl
 
@@ -99,7 +99,7 @@ theorem exist_integer_multiples_of_finite {ι : Type*} [Finite ι] (f : ι → S
     ∃ b : M, ∀ i, IsLocalization.IsInteger R ((b : R) • f i) := by
   cases nonempty_fintype ι
   obtain ⟨b, hb⟩ := exist_integer_multiples M Finset.univ f
-  exact ⟨b, fun i => hb i (Finset.mem_univ _)⟩
+  exact ⟨b, fun i ↦ hb i (Finset.mem_univ _)⟩
 
 /-- We can clear the denominators of a finite set of fractions. -/
 theorem exist_integer_multiples_of_finset (s : Finset S) :
@@ -126,7 +126,7 @@ noncomputable def commonDenomOfFinset (s : Finset S) : M :=
 
 /-- The finset of numerators after clearing the denominators of a finite set of fractions. -/
 noncomputable def finsetIntegerMultiple [DecidableEq R] (s : Finset S) : Finset R :=
-  s.attach.image fun t => integerMultiple M s id t
+  s.attach.image fun t ↦ integerMultiple M s id t
 
 open Pointwise
 

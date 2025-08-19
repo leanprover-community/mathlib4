@@ -182,7 +182,7 @@ lemma universal_property {R' : 𝒮} {a' : 𝒳} (g : R' ⟶ R) (f' : R' ⟶ S) 
   apply IsStronglyCartesian.universal_property' f
 
 instance isCartesian_of_isStronglyCartesian [p.IsStronglyCartesian f φ] : p.IsCartesian f φ where
-  universal_property := fun φ' => universal_property p f φ (𝟙 R) f (by simp) φ'
+  universal_property := fun φ' ↦ universal_property p f φ (𝟙 R) f (by simp) φ'
 
 section
 

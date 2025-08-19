@@ -48,7 +48,7 @@ def AbsolutelyContinuous {_m0 : MeasurableSpace α} (μ ν : Measure α) : Prop 
 @[inherit_doc MeasureTheory.Measure.AbsolutelyContinuous]
 scoped[MeasureTheory] infixl:50 " ≪ " => MeasureTheory.Measure.AbsolutelyContinuous
 
-theorem absolutelyContinuous_of_le (h : μ ≤ ν) : μ ≪ ν := fun s hs =>
+theorem absolutelyContinuous_of_le (h : μ ≤ ν) : μ ≪ ν := fun s hs ↦
   nonpos_iff_eq_zero.1 <| hs ▸ le_iff'.1 h s
 
 alias _root_.LE.le.absolutelyContinuous := absolutelyContinuous_of_le
@@ -69,23 +69,23 @@ theorem mk (h : ∀ ⦃s : Set α⦄, MeasurableSet s → ν s = 0 → μ s = 0)
 protected theorem refl {_m0 : MeasurableSpace α} (μ : Measure α) : μ ≪ μ :=
   rfl.absolutelyContinuous
 
-protected theorem rfl : μ ≪ μ := fun _s hs => hs
+protected theorem rfl : μ ≪ μ := fun _s hs ↦ hs
 
 instance instIsRefl {_ : MeasurableSpace α} : IsRefl (Measure α) (· ≪ ·) :=
-  ⟨fun _ => AbsolutelyContinuous.rfl⟩
+  ⟨fun _ ↦ AbsolutelyContinuous.rfl⟩
 
 @[simp]
 protected lemma zero (μ : Measure α) : 0 ≪ μ := fun _ _ ↦ by simp
 
 @[trans]
-protected theorem trans (h1 : μ₁ ≪ μ₂) (h2 : μ₂ ≪ μ₃) : μ₁ ≪ μ₃ := fun _s hs => h1 <| h2 hs
+protected theorem trans (h1 : μ₁ ≪ μ₂) (h2 : μ₂ ≪ μ₃) : μ₁ ≪ μ₃ := fun _s hs ↦ h1 <| h2 hs
 
 @[mono]
 protected theorem map (h : μ ≪ ν) {f : α → β} (hf : Measurable f) : μ.map f ≪ ν.map f :=
-  AbsolutelyContinuous.mk fun s hs => by simpa [hf, hs] using @h _
+  AbsolutelyContinuous.mk fun s hs ↦ by simpa [hf, hs] using @h _
 
 protected theorem smul_left [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (h : μ ≪ ν) (c : R) :
-    c • μ ≪ ν := fun s hνs => by
+    c • μ ≪ ν := fun s hνs ↦ by
   simp only [h hνs, smul_apply, smul_zero, ← smul_one_smul ℝ≥0∞ c (0 : ℝ≥0∞)]
 
 /-- If `μ ≪ ν`, then `c • μ ≪ c • ν`.
@@ -156,9 +156,9 @@ lemma absolutelyContinuous_smul {c : ℝ≥0∞} (hc : c ≠ 0) : μ ≪ c • �
   simp [AbsolutelyContinuous, hc]
 
 theorem ae_le_iff_absolutelyContinuous : ae μ ≤ ae ν ↔ μ ≪ ν :=
-  ⟨fun h s => by
+  ⟨fun h s ↦ by
     rw [measure_zero_iff_ae_notMem, measure_zero_iff_ae_notMem]
-    exact fun hs => h hs, fun h _ hs => h hs⟩
+    exact fun hs ↦ h hs, fun h _ hs ↦ h hs⟩
 
 alias ⟨_root_.LE.le.absolutelyContinuous_of_ae, AbsolutelyContinuous.ae_le⟩ :=
   ae_le_iff_absolutelyContinuous

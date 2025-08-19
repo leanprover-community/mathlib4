@@ -18,8 +18,8 @@ variable {α β : Type*} [Preorder α] [Preorder β] (f : α ≃o β)
 
 theorem upperBounds_image {s : Set α} : upperBounds (f '' s) = f '' upperBounds s :=
   Subset.antisymm
-    (fun x hx =>
-      ⟨f.symm x, fun _ hy => f.le_symm_apply.2 (hx <| mem_image_of_mem _ hy), f.apply_symm_apply x⟩)
+    (fun x hx ↦
+      ⟨f.symm x, fun _ hy ↦ f.le_symm_apply.2 (hx <| mem_image_of_mem _ hy), f.apply_symm_apply x⟩)
     f.monotone.image_upperBounds_subset_upperBounds_image
 
 theorem lowerBounds_image {s : Set α} : lowerBounds (f '' s) = f '' lowerBounds s :=
@@ -27,7 +27,7 @@ theorem lowerBounds_image {s : Set α} : lowerBounds (f '' s) = f '' lowerBounds
 
 @[simp]
 theorem isLUB_image {s : Set α} {x : β} : IsLUB (f '' s) x ↔ IsLUB s (f.symm x) :=
-  ⟨fun h => IsLUB.of_image (by simp) ((f.apply_symm_apply x).symm ▸ h), fun h =>
+  ⟨fun h ↦ IsLUB.of_image (by simp) ((f.apply_symm_apply x).symm ▸ h), fun h ↦
     (IsLUB.of_image (by simp)) <| (f.symm_image_image s).symm ▸ h⟩
 
 theorem isLUB_image' {s : Set α} {x : α} : IsLUB (f '' s) (f x) ↔ IsLUB s x := by

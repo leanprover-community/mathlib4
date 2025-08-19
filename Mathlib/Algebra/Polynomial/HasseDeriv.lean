@@ -53,10 +53,10 @@ variable {R : Type*} [Semiring R] (k : ℕ) (f : R[X])
 /-- The `k`th Hasse derivative of a polynomial `∑ a_i X^i` is `∑ (i.choose k) a_i X^(i-k)`.
 It satisfies `k! * (hasse_deriv k f) = derivative^[k] f`. -/
 def hasseDeriv (k : ℕ) : R[X] →ₗ[R] R[X] :=
-  lsum fun i => monomial (i - k) ∘ₗ DistribMulAction.toLinearMap R R (i.choose k)
+  lsum fun i ↦ monomial (i - k) ∘ₗ DistribMulAction.toLinearMap R R (i.choose k)
 
 theorem hasseDeriv_apply :
-    hasseDeriv k f = f.sum fun i r => monomial (i - k) (↑(i.choose k) * r) := by
+    hasseDeriv k f = f.sum fun i r ↦ monomial (i - k) (↑(i.choose k) * r) := by
   dsimp [hasseDeriv]
   simp
 
@@ -86,7 +86,7 @@ theorem hasseDeriv_zero : @hasseDeriv R _ 0 = LinearMap.id :=
 theorem hasseDeriv_eq_zero_of_lt_natDegree (p : R[X]) (n : ℕ) (h : p.natDegree < n) :
     hasseDeriv n p = 0 := by
   rw [hasseDeriv_apply, sum_def]
-  refine Finset.sum_eq_zero fun x hx => ?_
+  refine Finset.sum_eq_zero fun x hx ↦ ?_
   simp [Nat.choose_eq_zero_of_lt ((le_natDegree_of_mem_supp _ hx).trans_lt h)]
 
 theorem hasseDeriv_one' : hasseDeriv 1 f = derivative f := by
@@ -193,7 +193,7 @@ theorem natDegree_hasseDeriv [NoZeroSMulDivisors ℕ R] (p : R[X]) (n : ℕ) :
   rcases lt_or_ge p.natDegree n with hn | hn
   · simpa [hasseDeriv_eq_zero_of_lt_natDegree, hn] using (tsub_eq_zero_of_le hn.le).symm
   · refine map_natDegree_eq_sub ?_ ?_
-    · exact fun h => hasseDeriv_eq_zero_of_lt_natDegree _ _
+    · exact fun h ↦ hasseDeriv_eq_zero_of_lt_natDegree _ _
     · classical
         simp only [ite_eq_right_iff, Ne, natDegree_monomial, hasseDeriv_monomial]
         intro k c c0 hh

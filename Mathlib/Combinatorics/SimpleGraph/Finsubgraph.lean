@@ -56,10 +56,10 @@ instance : OrderBot G.Finsubgraph where
   bot_le _ := bot_le (α := G.Subgraph)
 
 instance : Max G.Finsubgraph :=
-  ⟨fun G₁ G₂ => ⟨G₁ ⊔ G₂, G₁.2.union G₂.2⟩⟩
+  ⟨fun G₁ G₂ ↦ ⟨G₁ ⊔ G₂, G₁.2.union G₂.2⟩⟩
 
 instance : Min G.Finsubgraph :=
-  ⟨fun G₁ G₂ => ⟨G₁ ⊓ G₂, G₁.2.subset inter_subset_left⟩⟩
+  ⟨fun G₁ G₂ ↦ ⟨G₁ ⊓ G₂, G₁.2.subset inter_subset_left⟩⟩
 
 instance instSDiff : SDiff G.Finsubgraph where
   sdiff G₁ G₂ := ⟨G₁ \ G₂, G₁.2.subset (Subgraph.verts_mono sdiff_le)⟩
@@ -135,7 +135,7 @@ theorem singletonFinsubgraph_le_adj_right {u v : V} {e : G.Adj u v} :
 
 /-- Given a homomorphism from a subgraph to `F`, construct its restriction to a sub-subgraph. -/
 def FinsubgraphHom.restrict {G' G'' : G.Finsubgraph} (h : G'' ≤ G') (f : G' →fg F) : G'' →fg F := by
-  refine ⟨fun ⟨v, hv⟩ => f.toFun ⟨v, h.1 hv⟩, ?_⟩
+  refine ⟨fun ⟨v, hv⟩ ↦ f.toFun ⟨v, h.1 hv⟩, ?_⟩
   rintro ⟨u, hu⟩ ⟨v, hv⟩ huv
   exact f.map_rel' (h.2 huv)
 
@@ -152,16 +152,16 @@ theorem nonempty_hom_of_forall_finite_subgraph_hom [Finite W]
   -- Obtain a `Fintype` instance for `W`.
   cases nonempty_fintype W
   -- Establish the required interface instances.
-  haveI : ∀ G' : G.Finsubgraphᵒᵖ, Nonempty ((finsubgraphHomFunctor G F).obj G') := fun G' =>
+  haveI : ∀ G' : G.Finsubgraphᵒᵖ, Nonempty ((finsubgraphHomFunctor G F).obj G') := fun G' ↦
     ⟨h G'.unop G'.unop.property⟩
   haveI : ∀ G' : G.Finsubgraphᵒᵖ, Fintype ((finsubgraphHomFunctor G F).obj G') := by
     intro G'
     haveI : Fintype (G'.unop.val.verts : Type u) := G'.unop.property.fintype
     haveI : Fintype (↥G'.unop.val.verts → W) := by classical exact Pi.instFintype
-    exact Fintype.ofInjective (fun f => f.toFun) RelHom.coe_fn_injective
+    exact Fintype.ofInjective (fun f ↦ f.toFun) RelHom.coe_fn_injective
   -- Use compactness to obtain a section.
   obtain ⟨u, hu⟩ := nonempty_sections_of_finite_inverse_system (finsubgraphHomFunctor G F)
-  refine ⟨⟨fun v => ?_, ?_⟩⟩
+  refine ⟨⟨fun v ↦ ?_, ?_⟩⟩
   · -- Map each vertex using the homomorphism provided for its singleton subgraph.
     exact
       (u (Opposite.op (singletonFinsubgraph v))).toFun

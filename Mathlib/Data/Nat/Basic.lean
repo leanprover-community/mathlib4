@@ -100,7 +100,7 @@ lemma leRecOn_surjective {C : ℕ → Sort*} {n m} (hnm : n ≤ m) (next : ∀ {
 /-- A subset of `ℕ` containing `k : ℕ` and closed under `Nat.succ` contains every `n ≥ k`. -/
 lemma set_induction_bounded {S : Set ℕ} (hk : k ∈ S) (h_ind : ∀ k : ℕ, k ∈ S → k + 1 ∈ S)
     (hnk : k ≤ n) : n ∈ S :=
-  @leRecOn (fun n => n ∈ S) k n hnk @h_ind hk
+  @leRecOn (fun n ↦ n ∈ S) k n hnk @h_ind hk
 
 /-- A subset of `ℕ` containing zero and closed under `Nat.succ` contains all of `ℕ`. -/
 lemma set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S → k + 1 ∈ S) (n : ℕ) :
@@ -112,7 +112,7 @@ lemma set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S �
 @[deprecated (since := "2025-04-01")] alias dvd_sub' := dvd_sub
 
 /-- `dvd` is injective in the left argument -/
-lemma dvd_left_injective : Function.Injective ((· ∣ ·) : ℕ → ℕ → Prop) := fun _ _ h =>
-  dvd_right_iff_eq.mp fun a => iff_of_eq (congr_fun h a)
+lemma dvd_left_injective : Function.Injective ((· ∣ ·) : ℕ → ℕ → Prop) := fun _ _ h ↦
+  dvd_right_iff_eq.mp fun a ↦ iff_of_eq (congr_fun h a)
 
 end Nat

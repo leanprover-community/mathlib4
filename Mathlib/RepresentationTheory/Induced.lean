@@ -63,7 +63,7 @@ noncomputable abbrev IndV.mk (h : H) : A →ₗ[k] IndV φ ρ :=
 @[ext]
 lemma IndV.hom_ext {f g : IndV φ ρ →ₗ[k] B}
     (hfg : ∀ h : H, f ∘ₗ IndV.mk φ ρ h = g ∘ₗ IndV.mk φ ρ h) : f = g :=
-  Coinvariants.hom_ext <| TensorProduct.ext <| Finsupp.lhom_ext' fun h =>
+  Coinvariants.hom_ext <| TensorProduct.ext <| Finsupp.lhom_ext' fun h ↦
     LinearMap.ext_ring <| hfg h
 
 /-- Given a group homomorphism `φ : G →* H` and a `G`-representation `A`, this is
@@ -71,8 +71,8 @@ lemma IndV.hom_ext {f g : IndV φ ρ →ₗ[k] B}
 to `⟦h₁h⁻¹ ⊗ₜ a⟧`. -/
 @[simps]
 noncomputable def ind : Representation k H (IndV φ ρ) where
-  toFun h := Coinvariants.map _ _ ((lmapDomain k k fun x => x * h⁻¹).rTensor _)
-    fun _ => by ext; simp [mul_assoc]
+  toFun h := Coinvariants.map _ _ ((lmapDomain k k fun x ↦ x * h⁻¹).rTensor _)
+    fun _ ↦ by ext; simp [mul_assoc]
   map_one' := by ext; simp
   map_mul' _ _ := by ext; simp [IndV, mul_assoc]
 
@@ -100,7 +100,7 @@ a morphism of `H`-representations `(k[H] ⊗[k] A)_G ⟶ (k[H] ⊗[k] B)_G`. -/
 @[simps]
 noncomputable def indMap {A B : Rep k G} (f : A ⟶ B) : ind φ A ⟶ ind φ B where
   hom := ModuleCat.ofHom <| Representation.Coinvariants.map _ _
-    (LinearMap.lTensor (H →₀ k) f.hom.hom) fun g => by ext; simp [hom_comm_apply]
+    (LinearMap.lTensor (H →₀ k) f.hom.hom) fun g ↦ by ext; simp [hom_comm_apply]
   comm _ := by
     ext
     simp [ModuleCat.endRingEquiv]
@@ -138,7 +138,7 @@ noncomputable def indResHomEquiv :
   map_smul' _ _ := rfl
   invFun f := {
     hom := ModuleCat.ofHom <| Representation.Coinvariants.lift _ (TensorProduct.lift <|
-      lift _ _ _ fun h => B.ρ h⁻¹ ∘ₗ f.hom.hom) fun _ => by ext; have := hom_comm_apply f; simp_all
+      lift _ _ _ fun h ↦ B.ρ h⁻¹ ∘ₗ f.hom.hom) fun _ ↦ by ext; have := hom_comm_apply f; simp_all
     comm _ := by ext; simp [ModuleCat.endRingEquiv] }
   left_inv f := by
     ext h a
@@ -153,7 +153,7 @@ noncomputable def indResAdjunction : indFunctor k φ ⊣ Action.res _ φ :=
   Adjunction.mkOfHomEquiv {
     homEquiv A B := (indResHomEquiv φ A B).toEquiv
     homEquiv_naturality_left_symm _ _ :=
-      Action.hom_ext _ _ <| ModuleCat.hom_ext <| IndV.hom_ext _ _ fun _ => by ext; simp
+      Action.hom_ext _ _ <| ModuleCat.hom_ext <| IndV.hom_ext _ _ fun _ ↦ by ext; simp
     homEquiv_naturality_right := by intros; rfl }
 
 open Finsupp
@@ -180,10 +180,10 @@ noncomputable def coinvariantsTensorIndHom :
       ((coinvariantsTensor k G).obj A).obj ((Action.res _ φ).obj B) :=
   ModuleCat.ofHom <| Coinvariants.lift _ (TensorProduct.lift <|
     Coinvariants.lift _ (TensorProduct.lift <| Finsupp.lift _ _ _
-      fun g => ((coinvariantsTensorMk A ((Action.res _ φ).obj B)).compl₂ (B.ρ g)))
-      fun s => by ext; simpa [coinvariantsTensorMk, Coinvariants.mk_eq_iff]
+      fun g ↦ ((coinvariantsTensorMk A ((Action.res _ φ).obj B)).compl₂ (B.ρ g)))
+      fun s ↦ by ext; simpa [coinvariantsTensorMk, Coinvariants.mk_eq_iff]
         using Coinvariants.sub_mem_ker s _)
-      fun _ => by
+      fun _ ↦ by
         simp only [MonoidalCategory.curriedTensor_obj_obj, Action.tensorObj_V,
           tensorObj_def, tensorObj]
         ext
@@ -204,7 +204,7 @@ noncomputable def coinvariantsTensorIndInv :
       ((coinvariantsTensor k H).obj (ind φ A)).obj B :=
   ModuleCat.ofHom <| Coinvariants.lift _ (TensorProduct.lift <|
       (coinvariantsTensorMk (ind φ A) B) ∘ₗ IndV.mk _ _ 1)
-    fun s => by
+    fun s ↦ by
       simp only [MonoidalCategory.curriedTensor_obj_obj, tensorObj_def,
         tensorObj, Action.tensorObj_V]
       ext x y
@@ -243,7 +243,7 @@ noncomputable def coinvariantsTensorIndIso :
 @[simps! hom_app inv_app]
 noncomputable def coinvariantsTensorIndNatIso :
     (coinvariantsTensor k H).obj (ind φ A) ≅ Action.res _ φ ⋙ (coinvariantsTensor k G).obj A :=
-  NatIso.ofComponents (fun B => coinvariantsTensorIndIso φ A B) fun {X Y} f => by
+  NatIso.ofComponents (fun B ↦ coinvariantsTensorIndIso φ A B) fun {X Y} f ↦ by
     ext
     simp [tensorObj_def, tensorObj, coinvariantsTensorIndHom, coinvariantsTensorMk,
       whiskerLeft_def, ModuleCat.MonoidalCategory.whiskerLeft, hom_comm_apply]

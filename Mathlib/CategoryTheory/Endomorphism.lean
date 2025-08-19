@@ -39,7 +39,7 @@ protected instance inhabited : Inhabited (End X) := ⟨𝟙 X⟩
 
 /-- Multiplication of endomorphisms agrees with `Function.comp`, not with
 `CategoryTheory.CategoryStruct.comp`. -/
-protected instance mul : Mul (End X) := ⟨fun x y => y ≫ x⟩
+protected instance mul : Mul (End X) := ⟨fun x y ↦ y ≫ x⟩
 
 variable {X}
 
@@ -62,7 +62,7 @@ end Struct
 instance monoid {C : Type u} [Category.{v} C] {X : C} : Monoid (End X) where
   mul_one := Category.id_comp
   one_mul := Category.comp_id
-  mul_assoc := fun x y z => (Category.assoc z y x).symm
+  mul_assoc := fun x y z ↦ (Category.assoc z y x).symm
 
 section MulAction
 
@@ -97,7 +97,7 @@ end End
 
 theorem isUnit_iff_isIso {C : Type u} [Category.{v} C] {X : C} (f : End X) :
     IsUnit (f : End X) ↔ IsIso f :=
-  ⟨fun h => { out := ⟨h.unit.inv, ⟨h.unit.inv_val, h.unit.val_inv⟩⟩ }, fun h =>
+  ⟨fun h ↦ { out := ⟨h.unit.inv, ⟨h.unit.inv_val, h.unit.val_inv⟩⟩ }, fun h ↦
     ⟨⟨f, inv f, by simp, by simp⟩, rfl⟩⟩
 
 variable {C : Type u} [Category.{v} C] (X : C)

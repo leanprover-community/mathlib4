@@ -67,7 +67,7 @@ instance : Inhabited (ConjAct G) :=
 def ofConjAct : ConjAct G ≃* G where
   toFun := id
   invFun := id
-  map_mul' := fun _ _ => rfl
+  map_mul' := fun _ _ ↦ rfl
 
 /-- Reinterpret `g : G` as an element of `ConjAct G`. -/
 def toConjAct : G ≃* ConjAct G :=
@@ -195,7 +195,7 @@ theorem mem_orbit_conjAct {g h : G} : g ∈ orbit (ConjAct G) h ↔ IsConj g h :
   rw [isConj_comm, isConj_iff, mem_orbit_iff]; rfl
 
 theorem orbitRel_conjAct : ⇑(orbitRel (ConjAct G) G) = IsConj :=
-  funext₂ fun g h => by rw [orbitRel_apply, mem_orbit_conjAct]
+  funext₂ fun g h ↦ by rw [orbitRel_apply, mem_orbit_conjAct]
 
 theorem orbit_eq_carrier_conjClasses (g : G) :
     orbit (ConjAct G) g = (ConjClasses.mk g).carrier := by
@@ -204,7 +204,7 @@ theorem orbit_eq_carrier_conjClasses (g : G) :
 
 theorem stabilizer_eq_centralizer (g : G) :
     stabilizer (ConjAct G) g = centralizer (zpowers (toConjAct g) : Set (ConjAct G)) :=
-  le_antisymm (le_centralizer_iff.mp (zpowers_le.mpr fun _ => mul_inv_eq_iff_eq_mul.mp)) fun _ h =>
+  le_antisymm (le_centralizer_iff.mp (zpowers_le.mpr fun _ ↦ mul_inv_eq_iff_eq_mul.mp)) fun _ h ↦
     mul_inv_eq_of_eq_mul (h g (mem_zpowers g)).symm
 
 theorem _root_.Subgroup.centralizer_eq_comap_stabilizer (g : G) :
@@ -220,7 +220,7 @@ theorem _root_.Subgroup.centralizer_eq_comap_stabilizer (g : G) :
 /-- As normal subgroups are closed under conjugation, they inherit the conjugation action
   of the underlying group. -/
 instance Subgroup.conjAction {H : Subgroup G} [hH : H.Normal] : SMul (ConjAct G) H :=
-  ⟨fun g h => ⟨g • (h : G), hH.conj_mem h.1 h.2 (ofConjAct g)⟩⟩
+  ⟨fun g h ↦ ⟨g • (h : G), hH.conj_mem h.1 h.2 (ofConjAct g)⟩⟩
 
 theorem Subgroup.val_conj_smul {H : Subgroup G} [H.Normal] (g : ConjAct G) (h : H) :
     ↑(g • h) = g • (h : G) :=
@@ -252,11 +252,11 @@ theorem _root_.MulAut.conjNormal_inv_apply {H : Subgroup G} [H.Normal] (g : G) (
 
 theorem _root_.MulAut.conjNormal_val {H : Subgroup G} [H.Normal] {h : H} :
     MulAut.conjNormal ↑h = MulAut.conj h :=
-  MulEquiv.ext fun _ => rfl
+  MulEquiv.ext fun _ ↦ rfl
 
 instance normal_of_characteristic_of_normal {H : Subgroup G} [hH : H.Normal] {K : Subgroup H}
     [h : K.Characteristic] : (K.map H.subtype).Normal :=
-  ⟨fun a ha b => by
+  ⟨fun a ha b ↦ by
     obtain ⟨a, ha, rfl⟩ := ha
     exact K.apply_coe_mem_map H.subtype
       ⟨_, (SetLike.ext_iff.mp (h.fixed (MulAut.conjNormal b)) a).mpr ha⟩⟩

@@ -47,7 +47,7 @@ instance {Y Y' : C} (π : Y ⟶ X) [EffectiveEpi π]
   suffices h₂ : (Sieve.generate (Presieve.ofArrows _ _)) ∈ (regularTopology C) X by
     change Nonempty _
     rw [← Sieve.forallYonedaIsSheaf_iff_colimit]
-    exact fun W => regularTopology.isSheaf_yoneda_obj W _ h₂
+    exact fun W ↦ regularTopology.isSheaf_yoneda_obj W _ h₂
   apply Coverage.Saturate.transitive X (Sieve.generate (Presieve.ofArrows (fun () ↦ Y)
       (fun () ↦ π)))
   · apply Coverage.Saturate.of

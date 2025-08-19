@@ -45,26 +45,26 @@ instance IterateMulAct.instDiscreteMeasurableSpace {α : Type*} {f : α → α} 
 
 instance (priority := 100) Subsingleton.measurableSingletonClass
     {α} [MeasurableSpace α] [Subsingleton α] : MeasurableSingletonClass α := by
-  refine ⟨fun i => ?_⟩
+  refine ⟨fun i ↦ ?_⟩
   convert MeasurableSet.univ
   simp [Set.eq_univ_iff_forall, eq_iff_true_of_subsingleton]
 
-instance Bool.instMeasurableSingletonClass : MeasurableSingletonClass Bool := ⟨fun _ => trivial⟩
+instance Bool.instMeasurableSingletonClass : MeasurableSingletonClass Bool := ⟨fun _ ↦ trivial⟩
 
-instance Prop.instMeasurableSingletonClass : MeasurableSingletonClass Prop := ⟨fun _ => trivial⟩
+instance Prop.instMeasurableSingletonClass : MeasurableSingletonClass Prop := ⟨fun _ ↦ trivial⟩
 
-instance Nat.instMeasurableSingletonClass : MeasurableSingletonClass ℕ := ⟨fun _ => trivial⟩
+instance Nat.instMeasurableSingletonClass : MeasurableSingletonClass ℕ := ⟨fun _ ↦ trivial⟩
 
 instance ENat.instDiscreteMeasurableSpace : DiscreteMeasurableSpace ℕ∞ := ⟨fun _ ↦ trivial⟩
 
 instance ENat.instMeasurableSingletonClass : MeasurableSingletonClass ℕ∞ := inferInstance
 
 instance Fin.instMeasurableSingletonClass (n : ℕ) : MeasurableSingletonClass (Fin n) :=
-  ⟨fun _ => trivial⟩
+  ⟨fun _ ↦ trivial⟩
 
 instance ZMod.instMeasurableSingletonClass (n : ℕ) : MeasurableSingletonClass (ZMod n) :=
-  ⟨fun _ => trivial⟩
+  ⟨fun _ ↦ trivial⟩
 
-instance Int.instMeasurableSingletonClass : MeasurableSingletonClass ℤ := ⟨fun _ => trivial⟩
+instance Int.instMeasurableSingletonClass : MeasurableSingletonClass ℤ := ⟨fun _ ↦ trivial⟩
 
-instance Rat.instMeasurableSingletonClass : MeasurableSingletonClass ℚ := ⟨fun _ => trivial⟩
+instance Rat.instMeasurableSingletonClass : MeasurableSingletonClass ℚ := ⟨fun _ ↦ trivial⟩

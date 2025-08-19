@@ -28,12 +28,12 @@ section product
 
 /-- The product cone induced by the concrete product. -/
 def productCone : Fan Z :=
-  Fan.mk (ModuleCat.of R (∀ i : ι, Z i)) fun i =>
+  Fan.mk (ModuleCat.of R (∀ i : ι, Z i)) fun i ↦
     ofHom (LinearMap.proj i : (∀ i : ι, Z i) →ₗ[R] Z i)
 
 /-- The concrete product cone is limiting. -/
 def productConeIsLimit : IsLimit (productCone Z) where
-  lift s := ofHom (LinearMap.pi fun j => (s.π.app ⟨j⟩).hom : s.pt →ₗ[R] ∀ i : ι, Z i)
+  lift s := ofHom (LinearMap.pi fun j ↦ (s.π.app ⟨j⟩).hom : s.pt →ₗ[R] ∀ i : ι, Z i)
   uniq s m w := by
     ext x
     funext i
@@ -70,7 +70,7 @@ variable [DecidableEq ι]
 
 /-- The coproduct cone induced by the concrete coproduct. -/
 def coproductCocone : Cofan Z :=
-  Cofan.mk (ModuleCat.of R (⨁ i : ι, Z i)) fun i => ofHom (DirectSum.lof R ι (fun i ↦ Z i) i)
+  Cofan.mk (ModuleCat.of R (⨁ i : ι, Z i)) fun i ↦ ofHom (DirectSum.lof R ι (fun i ↦ Z i) i)
 
 /-- The concrete coproduct cone is colimiting. -/
 def coproductCoconeIsColimit : IsColimit (coproductCocone Z) where

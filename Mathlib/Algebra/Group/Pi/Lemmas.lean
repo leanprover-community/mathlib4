@@ -53,7 +53,7 @@ namespace MulHom
 
 @[to_additive]
 theorem coe_mul {M N} {_ : Mul M} {_ : CommSemigroup N} (f g : M →ₙ* N) : (f * g : M → N) =
-    fun x => f x * g x := rfl
+    fun x ↦ f x * g x := rfl
 
 end MulHom
 
@@ -66,11 +66,11 @@ given by `Pi.mulHom f x b = f b x`. -/
   `Pi.addHom f x b = f b x`. -/]
 def Pi.mulHom {γ : Type w} [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i) : γ →ₙ* ∀ i, f i where
   toFun x i := g i x
-  map_mul' x y := funext fun i => (g i).map_mul x y
+  map_mul' x y := funext fun i ↦ (g i).map_mul x y
 
 @[to_additive]
 theorem Pi.mulHom_injective {γ : Type w} [Nonempty I] [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i)
-    (hg : ∀ i, Function.Injective (g i)) : Function.Injective (Pi.mulHom g) := fun _ _ h =>
+    (hg : ∀ i, Function.Injective (g i)) : Function.Injective (Pi.mulHom g) := fun _ _ h ↦
   let ⟨i⟩ := ‹Nonempty I›
   hg i ((funext_iff.mp h :) i)
 
@@ -81,15 +81,15 @@ theorem Pi.mulHom_injective {γ : Type w} [Nonempty I] [∀ i, Mul (f i)] [Mul �
   `Pi.addMonoidHom f : γ →+ Π a, β a` given by `Pi.addMonoidHom f x b = f b x`. -/]
 def Pi.monoidHom {γ : Type w} [∀ i, MulOneClass (f i)] [MulOneClass γ] (g : ∀ i, γ →* f i) :
     γ →* ∀ i, f i :=
-  { Pi.mulHom fun i => (g i).toMulHom with
-    toFun := fun x i => g i x
-    map_one' := funext fun i => (g i).map_one }
+  { Pi.mulHom fun i ↦ (g i).toMulHom with
+    toFun := fun x i ↦ g i x
+    map_one' := funext fun i ↦ (g i).map_one }
 
 @[to_additive]
 theorem Pi.monoidHom_injective {γ : Type w} [Nonempty I] [∀ i, MulOneClass (f i)] [MulOneClass γ]
     (g : ∀ i, γ →* f i) (hg : ∀ i, Function.Injective (g i)) :
     Function.Injective (Pi.monoidHom g) :=
-  Pi.mulHom_injective (fun i => (g i).toMulHom) hg
+  Pi.mulHom_injective (fun i ↦ (g i).toMulHom) hg
 
 variable (f)
 variable [(i : I) → Mul (f i)]
@@ -223,7 +223,7 @@ This is the `MonoidHom` version of `Pi.mulSingle`. -/
 
   This is the `AddMonoidHom` version of `Pi.single`. -/]
 def MonoidHom.mulSingle [∀ i, MulOneClass <| f i] (i : I) : f i →* ∀ i, f i :=
-  { OneHom.mulSingle f i with map_mul' := mulSingle_op₂ (fun _ => (· * ·)) (fun _ => one_mul _) _ }
+  { OneHom.mulSingle f i with map_mul' := mulSingle_op₂ (fun _ ↦ (· * ·)) (fun _ ↦ one_mul _) _ }
 
 @[to_additive (attr := simp)]
 theorem MonoidHom.mulSingle_apply [∀ i, MulOneClass <| f i] (i : I) (x : f i) :
@@ -277,7 +277,7 @@ For injections of commuting elements at the same index, see `Commute.map` -/
 
   For injections of commuting elements at the same index, see `AddCommute.map` -/]
 theorem Pi.mulSingle_commute [∀ i, MulOneClass <| f i] :
-    Pairwise fun i j => ∀ (x : f i) (y : f j), Commute (mulSingle i x) (mulSingle j y) := by
+    Pairwise fun i j ↦ ∀ (x : f i) (y : f j), Commute (mulSingle i x) (mulSingle j y) := by
   intro i j hij x y; ext k
   by_cases h1 : i = k
   · subst h1
@@ -305,14 +305,14 @@ theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommM
     {k l m n : I} {u v : M} (hu : u ≠ 1) (hv : v ≠ 1) :
     (mulSingle k u : I → M) * mulSingle l v = mulSingle m u * mulSingle n v ↔
       k = m ∧ l = n ∨ u = v ∧ k = n ∧ l = m ∨ u * v = 1 ∧ k = l ∧ m = n := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · have hk := congr_fun h k
     have hl := congr_fun h l
     have hm := (congr_fun h m).symm
     have hn := (congr_fun h n).symm
     simp only [mul_apply, mulSingle_apply] at hk hl hm hn
     rcases eq_or_ne k m with (rfl | hkm)
-    · refine Or.inl ⟨rfl, not_ne_iff.mp fun hln => (hv ?_).elim⟩
+    · refine Or.inl ⟨rfl, not_ne_iff.mp fun hln ↦ (hv ?_).elim⟩
       rcases eq_or_ne k l with (rfl | hkl)
       · rwa [if_neg hln.symm, if_neg hln.symm, one_mul, one_mul] at hn
       · rwa [if_neg hkl.symm, if_neg hln, one_mul, one_mul] at hl
@@ -364,17 +364,17 @@ theorem update_one [∀ i, One (f i)] [DecidableEq I] (i : I) : update (1 : ∀ 
 @[to_additive]
 theorem update_mul [∀ i, Mul (f i)] [DecidableEq I] (f₁ f₂ : ∀ i, f i) (i : I) (x₁ : f i)
     (x₂ : f i) : update (f₁ * f₂) i (x₁ * x₂) = update f₁ i x₁ * update f₂ i x₂ :=
-  funext fun j => (apply_update₂ (fun _ => (· * ·)) f₁ f₂ i x₁ x₂ j).symm
+  funext fun j ↦ (apply_update₂ (fun _ ↦ (· * ·)) f₁ f₂ i x₁ x₂ j).symm
 
 @[to_additive]
 theorem update_inv [∀ i, Inv (f i)] [DecidableEq I] (f₁ : ∀ i, f i) (i : I) (x₁ : f i) :
     update f₁⁻¹ i x₁⁻¹ = (update f₁ i x₁)⁻¹ :=
-  funext fun j => (apply_update (fun _ => Inv.inv) f₁ i x₁ j).symm
+  funext fun j ↦ (apply_update (fun _ ↦ Inv.inv) f₁ i x₁ j).symm
 
 @[to_additive]
 theorem update_div [∀ i, Div (f i)] [DecidableEq I] (f₁ f₂ : ∀ i, f i) (i : I) (x₁ : f i)
     (x₂ : f i) : update (f₁ / f₂) i (x₁ / x₂) = update f₁ i x₁ / update f₂ i x₂ :=
-  funext fun j => (apply_update₂ (fun _ => (· / ·)) f₁ f₂ i x₁ x₂ j).symm
+  funext fun j ↦ (apply_update₂ (fun _ ↦ (· / ·)) f₁ f₂ i x₁ x₂ j).symm
 
 variable [One α] [Nonempty ι] {a : α}
 
@@ -394,18 +394,18 @@ section Piecewise
 theorem Set.piecewise_mul [∀ i, Mul (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)]
     (f₁ f₂ g₁ g₂ : ∀ i, f i) :
     s.piecewise (f₁ * f₂) (g₁ * g₂) = s.piecewise f₁ g₁ * s.piecewise f₂ g₂ :=
-  s.piecewise_op₂ f₁ _ _ _ fun _ => (· * ·)
+  s.piecewise_op₂ f₁ _ _ _ fun _ ↦ (· * ·)
 
 @[to_additive]
 theorem Set.piecewise_inv [∀ i, Inv (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)] (f₁ g₁ : ∀ i, f i) :
     s.piecewise f₁⁻¹ g₁⁻¹ = (s.piecewise f₁ g₁)⁻¹ :=
-  s.piecewise_op f₁ g₁ fun _ x => x⁻¹
+  s.piecewise_op f₁ g₁ fun _ x ↦ x⁻¹
 
 @[to_additive]
 theorem Set.piecewise_div [∀ i, Div (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)]
     (f₁ f₂ g₁ g₂ : ∀ i, f i) :
     s.piecewise (f₁ / f₂) (g₁ / g₂) = s.piecewise f₁ g₁ / s.piecewise f₂ g₂ :=
-  s.piecewise_op₂ f₁ _ _ _ fun _ => (· / ·)
+  s.piecewise_op₂ f₁ _ _ _ fun _ ↦ (· / ·)
 
 end Piecewise
 

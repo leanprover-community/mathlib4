@@ -83,12 +83,12 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
     summability of the series and of its successive derivatives follows. -/
   rcases eq_empty_or_nonempty s with (rfl | h's)
   · exact
-      ⟨fun _ => 0, Function.support_zero, contDiff_const, by
+      ⟨fun _ ↦ 0, Function.support_zero, contDiff_const, by
         simp only [range_const, singleton_subset_iff, left_mem_Icc, zero_le_one]⟩
   let ι := { f : E → ℝ // f.support ⊆ s ∧ HasCompactSupport f ∧ ContDiff ℝ ∞ f ∧ range f ⊆ Icc 0 1 }
   obtain ⟨T, T_count, hT⟩ : ∃ T : Set ι, T.Countable ∧ ⋃ f ∈ T, support (f : E → ℝ) = s := by
     have : ⋃ f : ι, (f : E → ℝ).support = s := by
-      refine Subset.antisymm (iUnion_subset fun f => f.2.1) ?_
+      refine Subset.antisymm (iUnion_subset fun f ↦ f.2.1) ?_
       intro x hx
       rcases exists_smooth_tsupport_subset (hs.mem_nhds hx) with ⟨f, hf⟩
       let g : ι := ⟨f, (subset_tsupport f).trans hf.1, hf.2.1, hf.2.2.1, hf.2.2.2.1⟩
@@ -107,30 +107,30 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       simp only [← hT, mem_empty_iff_false, iUnion_of_empty, iUnion_empty, Set.not_nonempty_empty]
           at h's
     · exact hT
-  let g : ℕ → E → ℝ := fun n => (g0 n).1
-  have g_s : ∀ n, support (g n) ⊆ s := fun n => (g0 n).2.1
+  let g : ℕ → E → ℝ := fun n ↦ (g0 n).1
+  have g_s : ∀ n, support (g n) ⊆ s := fun n ↦ (g0 n).2.1
   have s_g : ∀ x ∈ s, ∃ n, x ∈ support (g n) := fun x hx ↦ by
     rw [← hT] at hx
     obtain ⟨i, iT, hi⟩ : ∃ i ∈ T, x ∈ support (i : E → ℝ) := by
       simpa only [mem_iUnion, exists_prop] using hx
     grind
-  have g_smooth : ∀ n, ContDiff ℝ ∞ (g n) := fun n => (g0 n).2.2.2.1
-  have g_comp_supp : ∀ n, HasCompactSupport (g n) := fun n => (g0 n).2.2.1
-  have g_nonneg : ∀ n x, 0 ≤ g n x := fun n x => ((g0 n).2.2.2.2 (mem_range_self x)).1
+  have g_smooth : ∀ n, ContDiff ℝ ∞ (g n) := fun n ↦ (g0 n).2.2.2.1
+  have g_comp_supp : ∀ n, HasCompactSupport (g n) := fun n ↦ (g0 n).2.2.1
+  have g_nonneg : ∀ n x, 0 ≤ g n x := fun n x ↦ ((g0 n).2.2.2.2 (mem_range_self x)).1
   obtain ⟨δ, δpos, c, δc, c_lt⟩ :
       ∃ δ : ℕ → ℝ≥0, (∀ i : ℕ, 0 < δ i) ∧ ∃ c : NNReal, HasSum δ c ∧ c < 1 :=
     NNReal.exists_pos_sum_of_countable one_ne_zero ℕ
   have : ∀ n : ℕ, ∃ r : ℝ, 0 < r ∧ ∀ i ≤ n, ∀ x, ‖iteratedFDeriv ℝ i (r • g n) x‖ ≤ δ n := by
     intro n
-    have : ∀ i, ∃ R, ∀ x, ‖iteratedFDeriv ℝ i (fun x => g n x) x‖ ≤ R := by
+    have : ∀ i, ∃ R, ∀ x, ‖iteratedFDeriv ℝ i (fun x ↦ g n x) x‖ ≤ R := by
       intro i
-      have : BddAbove (range fun x => ‖iteratedFDeriv ℝ i (fun x : E => g n x) x‖) := by
+      have : BddAbove (range fun x ↦ ‖iteratedFDeriv ℝ i (fun x : E ↦ g n x) x‖) := by
         apply ((g_smooth n).continuous_iteratedFDeriv
           (mod_cast le_top)).norm.bddAbove_range_of_hasCompactSupport
         apply HasCompactSupport.comp_left _ norm_zero
         apply (g_comp_supp n).iteratedFDeriv
       rcases this with ⟨R, hR⟩
-      exact ⟨R, fun x => hR (mem_range_self _)⟩
+      exact ⟨R, fun x ↦ hR (mem_range_self _)⟩
     choose R hR using this
     let M := max (((Finset.range (n + 1)).image R).max' (by simp)) 1
     have δnpos : 0 < δ n := δpos n
@@ -141,7 +141,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       apply Finset.mem_image_of_mem
       simp only [Finset.mem_range]
       omega
-    refine ⟨M⁻¹ * δ n, by positivity, fun i hi x => ?_⟩
+    refine ⟨M⁻¹ * δ n, by positivity, fun i hi x ↦ ?_⟩
     calc
       ‖iteratedFDeriv ℝ i ((M⁻¹ * δ n) • g n) x‖ = ‖(M⁻¹ * δ n) • iteratedFDeriv ℝ i (g n) x‖ := by
         rw [iteratedFDeriv_const_smul_apply]
@@ -151,11 +151,11 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       _ ≤ M⁻¹ * δ n * M := by gcongr; exact (hR i x).trans (IR i hi)
       _ = δ n := by field_simp
   choose r rpos hr using this
-  have S : ∀ x, Summable fun n => (r n • g n) x := fun x ↦ by
-    refine .of_nnnorm_bounded δc.summable fun n => ?_
+  have S : ∀ x, Summable fun n ↦ (r n • g n) x := fun x ↦ by
+    refine .of_nnnorm_bounded δc.summable fun n ↦ ?_
     rw [← NNReal.coe_le_coe, coe_nnnorm]
     simpa only [norm_iteratedFDeriv_zero] using hr n 0 (zero_le n) x
-  refine ⟨fun x => ∑' n, (r n • g n) x, ?_, ?_, ?_⟩
+  refine ⟨fun x ↦ ∑' n, (r n • g n) x, ?_, ?_, ?_⟩
   · apply Subset.antisymm
     · intro x hx
       simp only [Pi.smul_apply, Algebra.id.smul_eq_mul, mem_support, Ne] at hx
@@ -168,17 +168,17 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
     · intro x hx
       obtain ⟨n, hn⟩ : ∃ n, x ∈ support (g n) := s_g x hx
       have I : 0 < r n * g n x := mul_pos (rpos n) (lt_of_le_of_ne (g_nonneg n x) (Ne.symm hn))
-      exact ne_of_gt ((S x).tsum_pos (fun i => mul_nonneg (rpos i).le (g_nonneg i x)) n I)
+      exact ne_of_gt ((S x).tsum_pos (fun i ↦ mul_nonneg (rpos i).le (g_nonneg i x)) n I)
   · refine
-      contDiff_tsum_of_eventually (fun n => (g_smooth n).const_smul (r n))
-        (fun k _ => (NNReal.hasSum_coe.2 δc).summable) ?_
+      contDiff_tsum_of_eventually (fun n ↦ (g_smooth n).const_smul (r n))
+        (fun k _ ↦ (NNReal.hasSum_coe.2 δc).summable) ?_
     intro i _
     simp only [Nat.cofinite_eq_atTop,
       Filter.eventually_atTop]
-    exact ⟨i, fun n hn x => hr _ _ hn _⟩
+    exact ⟨i, fun n hn x ↦ hr _ _ hn _⟩
   · rintro - ⟨y, rfl⟩
-    refine ⟨tsum_nonneg fun n => mul_nonneg (rpos n).le (g_nonneg n y), le_trans ?_ c_lt.le⟩
-    have A : HasSum (fun n => (δ n : ℝ)) c := NNReal.hasSum_coe.2 δc
+    refine ⟨tsum_nonneg fun n ↦ mul_nonneg (rpos n).le (g_nonneg n y), le_trans ?_ c_lt.le⟩
+    have A : HasSum (fun n ↦ (δ n : ℝ)) c := NNReal.hasSum_coe.2 δc
     simp only [Pi.smul_apply, smul_eq_mul, NNReal.val_eq_coe, ← A.tsum_eq]
     apply Summable.tsum_le_tsum _ (S y) A.summable
     intro n
@@ -194,7 +194,7 @@ namespace ExistsContDiffBumpBase
 /-- An auxiliary function to construct partitions of unity on finite-dimensional real vector spaces.
 It is the characteristic function of the closed unit ball. -/
 def φ : E → ℝ :=
-  (closedBall (0 : E) 1).indicator fun _ => (1 : ℝ)
+  (closedBall (0 : E) 1).indicator fun _ ↦ (1 : ℝ)
 
 variable [NormedSpace ℝ E] [FiniteDimensional ℝ E]
 
@@ -209,15 +209,15 @@ theorem u_exists :
   obtain ⟨f, f_support, f_smooth, f_range⟩ :
       ∃ f : E → ℝ, f.support = ball (0 : E) 1 ∧ ContDiff ℝ ∞ f ∧ Set.range f ⊆ Set.Icc 0 1 :=
     A.exists_smooth_support_eq
-  have B : ∀ x, f x ∈ Icc (0 : ℝ) 1 := fun x => f_range (mem_range_self x)
-  refine ⟨fun x => (f x + f (-x)) / 2, ?_, ?_, ?_, ?_⟩
+  have B : ∀ x, f x ∈ Icc (0 : ℝ) 1 := fun x ↦ f_range (mem_range_self x)
+  refine ⟨fun x ↦ (f x + f (-x)) / 2, ?_, ?_, ?_, ?_⟩
   · exact (f_smooth.add (f_smooth.comp contDiff_neg)).div_const _
   · intro x
     simp only [mem_Icc]
     constructor
     · linarith [(B x).1, (B (-x)).1]
     · linarith [(B x).2, (B (-x)).2]
-  · refine support_eq_iff.2 ⟨fun x hx => ?_, fun x hx => ?_⟩
+  · refine support_eq_iff.2 ⟨fun x hx ↦ ?_, fun x hx ↦ ?_⟩
     · apply ne_of_gt
       have : 0 < f x := by
         apply lt_of_le_of_ne (B x).1 (Ne.symm _)
@@ -277,7 +277,7 @@ def w (D : ℝ) (x : E) : ℝ :=
   ((∫ x : E, u x ∂μ) * |D| ^ finrank ℝ E)⁻¹ • u (D⁻¹ • x)
 
 theorem w_def (D : ℝ) :
-    (w D : E → ℝ) = fun x => ((∫ x : E, u x ∂μ) * |D| ^ finrank ℝ E)⁻¹ • u (D⁻¹ • x) := by
+    (w D : E → ℝ) = fun x ↦ ((∫ x : E, u x ∂μ) * |D| ^ finrank ℝ E)⁻¹ • u (D⁻¹ • x) := by
   ext1 x; rfl
 
 theorem w_nonneg (D : ℝ) (x : E) : 0 ≤ w D x := by
@@ -370,12 +370,12 @@ theorem y_nonneg (D : ℝ) (x : E) : 0 ≤ y D x :=
 theorem y_le_one {D : ℝ} (x : E) (Dpos : 0 < D) : y D x ≤ 1 := by
   have A : (w D ⋆[lsmul ℝ ℝ, μ] φ) x ≤ (w D ⋆[lsmul ℝ ℝ, μ] 1) x := by
     apply
-      convolution_mono_right_of_nonneg _ (w_nonneg D) (indicator_le_self' fun x _ => zero_le_one)
-        fun _ => zero_le_one
+      convolution_mono_right_of_nonneg _ (w_nonneg D) (indicator_le_self' fun x _ ↦ zero_le_one)
+        fun _ ↦ zero_le_one
     refine ((w_compact_support E Dpos).convolutionExists_left _ ?_
       (locallyIntegrable_const (1 : ℝ)) x).integrable
     exact continuous_const.mul ((u_continuous E).comp (continuous_id.const_smul _))
-  have B : (w D ⋆[lsmul ℝ ℝ, μ] fun _ => (1 : ℝ)) x = 1 := by
+  have B : (w D ⋆[lsmul ℝ ℝ, μ] fun _ ↦ (1 : ℝ)) x = 1 := by
     simp only [convolution, mul_one, lsmul_apply, Algebra.id.smul_eq_mul, w_integral E Dpos]
   exact A.trans (le_of_eq B)
 
@@ -391,7 +391,7 @@ theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
     exact (F_comp.convolutionExists_left (lsmul ℝ ℝ : ℝ →L[ℝ] ℝ →L[ℝ] ℝ) C B x).integrable
   · set z := (D / (1 + D)) • x with hz
     have B : 0 < 1 + D := by linarith
-    have C : ball z (D * (1 + D - ‖x‖) / (1 + D)) ⊆ support fun y : E => w D y * φ (x - y) := by
+    have C : ball z (D * (1 + D - ‖x‖) / (1 + D)) ⊆ support fun y : E ↦ w D y * φ (x - y) := by
       intro y hy
       simp only [support_mul, w_support E Dpos]
       simp only [φ, mem_inter_iff, mem_support, Ne, indicator_apply_eq_zero,
@@ -438,7 +438,7 @@ theorem y_smooth : ContDiffOn ℝ ∞ (uncurry y) (Ioo (0 : ℝ) 1 ×ˢ (univ : 
   · apply ContDiffOn.mul
     · norm_cast
       refine
-        (contDiffOn_const.mul ?_).inv fun x hx =>
+        (contDiffOn_const.mul ?_).inv fun x hx ↦
           ne_of_gt (mul_pos (u_int_pos E) (pow_pos (abs_pos_of_pos hx.1.1) (finrank ℝ E)))
       apply ContDiffOn.pow
       simp_rw [← Real.norm_eq_abs]
@@ -446,12 +446,12 @@ theorem y_smooth : ContDiffOn ℝ ∞ (uncurry y) (Ioo (0 : ℝ) 1 ×ˢ (univ : 
       · exact contDiffOn_fst
       · intro x hx; exact ne_of_gt hx.1.1
     · apply (u_smooth E).comp_contDiffOn
-      exact ContDiffOn.smul (contDiffOn_fst.inv fun x hx => ne_of_gt hx.1.1) contDiffOn_snd
+      exact ContDiffOn.smul (contDiffOn_fst.inv fun x hx ↦ ne_of_gt hx.1.1) contDiffOn_snd
 
 theorem y_support {D : ℝ} (Dpos : 0 < D) (D_lt_one : D < 1) :
     support (y D : E → ℝ) = ball (0 : E) (1 + D) :=
   support_eq_iff.2
-    ⟨fun _ hx => (y_pos_of_mem_ball Dpos D_lt_one hx).ne', fun _ hx =>
+    ⟨fun _ hx ↦ (y_pos_of_mem_ball Dpos D_lt_one hx).ne', fun _ hx ↦
       y_eq_zero_of_notMem_ball Dpos hx⟩
 
 variable {E}
@@ -464,20 +464,20 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
   borelize E
   have IR : ∀ R : ℝ, 1 < R → 0 < (R - 1) / (R + 1) := by intro R hR; apply div_pos <;> linarith
   exact
-    { toFun := fun R x => if 1 < R then y ((R - 1) / (R + 1)) (((R + 1) / 2)⁻¹ • x) else 0
-      mem_Icc := fun R x => by
+    { toFun := fun R x ↦ if 1 < R then y ((R - 1) / (R + 1)) (((R + 1) / 2)⁻¹ • x) else 0
+      mem_Icc := fun R x ↦ by
         simp only [mem_Icc]
         split_ifs with h
         · refine ⟨y_nonneg _ _, y_le_one _ (IR R h)⟩
         · simp only [le_refl, zero_le_one, and_self]
-      symmetric := fun R x => by
+      symmetric := fun R x ↦ by
         split_ifs
         · simp only [y_neg, smul_neg]
         · rfl
       smooth := by
         suffices
           ContDiffOn ℝ ∞
-            (uncurry y ∘ fun p : ℝ × E => ((p.1 - 1) / (p.1 + 1), ((p.1 + 1) / 2)⁻¹ • p.2))
+            (uncurry y ∘ fun p : ℝ × E ↦ ((p.1 - 1) / (p.1 + 1), ((p.1 + 1) / 2)⁻¹ • p.2))
             (Ioi 1 ×ˢ univ) by
           apply this.congr
           rintro ⟨R, x⟩ ⟨hR : 1 < R, _⟩
@@ -500,7 +500,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
           have A : 0 < (R - 1) / (R + 1) := by apply div_pos <;> linarith
           have B : (R - 1) / (R + 1) < 1 := by apply (div_lt_one _).2 <;> linarith
           simp only [prodMk_mem_set_prod_eq, mem_Ioo, mem_univ, and_true, A, B]
-      eq_one := fun R hR x hx => by
+      eq_one := fun R hR x hx ↦ by
         have A : 0 < R + 1 := by linarith
         simp only [hR, if_true]
         apply y_eq_one_of_mem_closedBall (IR R hR)
@@ -509,7 +509,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
         calc
           2 / (R + 1) * ‖x‖ ≤ 2 / (R + 1) := mul_le_of_le_one_right (by positivity) hx
           _ = 1 - (R - 1) / (R + 1) := by field_simp; ring
-      support := fun R hR => by
+      support := fun R hR ↦ by
         have A : 0 < (R + 1) / 2 := by linarith
         have C : (R - 1) / (R + 1) < 1 := by apply (div_lt_one _).2 <;> linarith
         simp only [hR, if_true, support_comp_inv_smul₀ A.ne', y_support _ (IR R hR) C,

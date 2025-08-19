@@ -54,7 +54,7 @@ instance Rat.instZeroLEOneClass : ZeroLEOneClass ℚ where
   zero_le_one := rfl
 
 instance Rat.instPosMulMono : PosMulMono ℚ where
-  elim := fun r p q h => by
+  elim := fun r p q h ↦ by
     simp only [mul_comm]
     simpa [sub_mul, sub_nonneg] using Rat.mul_nonneg (sub_nonneg.2 h) r.2
 
@@ -229,7 +229,7 @@ theorem abs_coe (q : ℚ≥0) : |(q : ℚ)| = q :=
 -- See note [specialised high priority simp lemma]
 @[simp high]
 theorem nonpos_iff_eq_zero (q : ℚ≥0) : q ≤ 0 ↔ q = 0 :=
-  ⟨fun h => le_antisymm h q.2, fun h => h.symm ▸ q.2⟩
+  ⟨fun h ↦ le_antisymm h q.2, fun h ↦ h.symm ▸ q.2⟩
 
 end NNRat
 

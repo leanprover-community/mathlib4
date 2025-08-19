@@ -223,7 +223,7 @@ lemma cfcₙ_apply : cfcₙ f a = cfcₙHom (a := a) ha ⟨⟨_, hf.restrict⟩,
 lemma cfcₙ_apply_pi {ι : Type*} (f : ι → R → R) (a : A) (ha := by cfc_tac)
     (hf : ∀ i, ContinuousOn (f i) (σₙ R a) := by cfc_cont_tac)
     (hf0 : ∀ i, f i 0 = 0 := by cfc_zero_tac) :
-    (fun i => cfcₙ (f i) a) = (fun i => cfcₙHom (a := a) ha ⟨⟨_, (hf i).restrict⟩, hf0 i⟩) := by
+    (fun i ↦ cfcₙ (f i) a) = (fun i ↦ cfcₙHom (a := a) ha ⟨⟨_, (hf i).restrict⟩, hf0 i⟩) := by
   ext i
   simp only [cfcₙ_apply (f i) a (hf i) (hf0 i)]
 
@@ -378,12 +378,12 @@ lemma cfcₙ_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
     (hf0 : ∀ i ∈ s, f i 0 = 0 := by cfc_zero_tac) :
     cfcₙ (∑ i ∈ s, f i) a = ∑ i ∈ s, cfcₙ (f i) a := by
   by_cases ha : p a
-  · have hsum : s.sum f = fun z => ∑ i ∈ s, f i z := by ext; simp
+  · have hsum : s.sum f = fun z ↦ ∑ i ∈ s, f i z := by ext; simp
     have hf' : ContinuousOn (∑ i : s, f i) (σₙ R a) := by
       rw [sum_coe_sort s, hsum]
-      exact continuousOn_finset_sum s fun i hi => hf i hi
+      exact continuousOn_finset_sum s fun i hi ↦ hf i hi
     rw [← sum_coe_sort s, ← sum_coe_sort s]
-    rw [cfcₙ_apply_pi _ a _ (fun ⟨i, hi⟩ => hf i hi), ← map_sum, cfcₙ_apply _ a hf']
+    rw [cfcₙ_apply_pi _ a _ (fun ⟨i, hi⟩ ↦ hf i hi), ← map_sum, cfcₙ_apply _ a hf']
     congr 1
     ext
     simp

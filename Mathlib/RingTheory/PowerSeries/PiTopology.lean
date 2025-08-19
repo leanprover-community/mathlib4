@@ -87,7 +87,7 @@ theorem continuous_constantCoeff [Semiring R] : Continuous (constantCoeff R) :=
 theorem tendsto_iff_coeff_tendsto [Semiring R] {ι : Type*}
     (f : ι → PowerSeries R) (u : Filter ι) (g : PowerSeries R) :
     Tendsto f u (nhds g) ↔
-    ∀ d : ℕ, Tendsto (fun i => coeff R d (f i)) u (nhds (coeff R d g)) := by
+    ∀ d : ℕ, Tendsto (fun i ↦ coeff R d (f i)) u (nhds (coeff R d g)) := by
   rw [MvPowerSeries.WithPiTopology.tendsto_iff_coeff_tendsto]
   apply (Finsupp.LinearEquiv.finsuppUnique ℕ ℕ Unit).toEquiv.forall_congr
   intro d
@@ -106,7 +106,7 @@ theorem tendsto_trunc_atTop [CommSemiring R] (f : R⟦X⟧) :
 
 /-- The inclusion of polynomials into power series has dense image -/
 theorem denseRange_toPowerSeries [CommSemiring R] :
-    DenseRange (Polynomial.toPowerSeries (R := R)) := fun f =>
+    DenseRange (Polynomial.toPowerSeries (R := R)) := fun f ↦
   mem_closure_of_tendsto (tendsto_trunc_atTop R f) <| .of_forall fun _ ↦ Set.mem_range_self _
 
 /-- The semiring topology on `PowerSeries` of a topological semiring -/
@@ -173,12 +173,12 @@ theorem continuous_C [Semiring R] : Continuous (C R) :=
 
 theorem isTopologicallyNilpotent_of_constantCoeff_isNilpotent [CommSemiring R]
     {f : PowerSeries R} (hf : IsNilpotent (constantCoeff R f)) :
-    Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) :=
+    Tendsto (fun n : ℕ ↦ f ^ n) atTop (nhds 0) :=
   MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_of_constantCoeff_isNilpotent hf
 
 theorem isTopologicallyNilpotent_of_constantCoeff_zero [CommSemiring R]
     {f : PowerSeries R} (hf : constantCoeff R f = 0) :
-    Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) :=
+    Tendsto (fun n : ℕ ↦ f ^ n) atTop (nhds 0) :=
   MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_of_constantCoeff_zero hf
 
 /-- Assuming the base ring has a discrete topology, the powers of a `PowerSeries` converge to 0
@@ -186,7 +186,7 @@ iff its constant coefficient is nilpotent.
 [N. Bourbaki, *Algebra {II}*, Chapter 4, §4, n°2, corollary of prop. 3][bourbaki1981] -/
 theorem isTopologicallyNilpotent_iff_constantCoeff_isNilpotent
     [CommRing R] [DiscreteTopology R] (f : PowerSeries R) :
-    Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) ↔
+    Tendsto (fun n : ℕ ↦ f ^ n) atTop (nhds 0) ↔
       IsNilpotent (constantCoeff R f) :=
   MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_iff_constantCoeff_isNilpotent f
 
@@ -205,7 +205,7 @@ variable {R}
 -- NOTE : one needs an API to apply `Finsupp.LinearEquiv.finsuppUnique`
 /-- A power series is the sum (in the sense of summable families) of its monomials -/
 theorem hasSum_of_monomials_self (f : PowerSeries R) :
-    HasSum (fun d : ℕ => monomial R d (coeff R d f)) f := by
+    HasSum (fun d : ℕ ↦ monomial R d (coeff R d f)) f := by
   rw [← (Finsupp.LinearEquiv.finsuppUnique ℕ ℕ Unit).toEquiv.hasSum_iff]
   convert MvPowerSeries.WithPiTopology.hasSum_of_monomials_self f
   simp only [LinearEquiv.coe_toEquiv, comp_apply, monomial, coeff,
@@ -215,7 +215,7 @@ theorem hasSum_of_monomials_self (f : PowerSeries R) :
 
 /-- If the coefficient space is T2, then the power series is `tsum` of its monomials -/
 theorem as_tsum [T2Space R] (f : PowerSeries R) :
-    f = tsum fun d : ℕ => monomial R d (coeff R d f) :=
+    f = tsum fun d : ℕ ↦ monomial R d (coeff R d f) :=
   (HasSum.tsum_eq (hasSum_of_monomials_self f)).symm
 
 end Summable

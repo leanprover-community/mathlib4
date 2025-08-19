@@ -324,7 +324,7 @@ instance to_initial_isIso [HasInitial C] (f : A ⟶ ⊥_ C) : IsIso f :=
 
 /-- If an initial object `0` exists in a CCC then every morphism from it is monic. -/
 theorem initial_mono {I : C} (B : C) (t : IsInitial I) [CartesianClosed C] : Mono (t.to B) :=
-  ⟨fun g h _ => by
+  ⟨fun g h _ ↦ by
     haveI := strict_initial t g
     haveI := strict_initial t h
     exact eq_of_inv_eq_inv (t.hom_ext _ _)⟩

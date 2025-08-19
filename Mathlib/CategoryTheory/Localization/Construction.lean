@@ -123,7 +123,7 @@ abbrev wInv {X Y : C} (w : X ⟶ Y) (hw : W w) :=
   (wIso w hw).inv
 
 variable (W) in
-theorem _root_.CategoryTheory.MorphismProperty.Q_inverts : W.IsInvertedBy W.Q := fun _ _ w hw =>
+theorem _root_.CategoryTheory.MorphismProperty.Q_inverts : W.IsInvertedBy W.Q := fun _ _ w hw ↦
   (Localization.Construction.wIso w hw).isIso_hom
 
 variable (G : C ⥤ D) (hG : W.IsInvertedBy G)
@@ -132,7 +132,7 @@ variable (G : C ⥤ D) (hG : W.IsInvertedBy G)
 @[simps!]
 def liftToPathCategory : Paths (LocQuiver W) ⥤ D :=
   Quiv.lift
-    { obj := fun X => G.obj X.obj
+    { obj := fun X ↦ G.obj X.obj
       map := by
         intros X Y
         rintro (f | ⟨g, hg⟩)
@@ -150,7 +150,7 @@ def lift : W.Localization ⥤ D :=
 
 @[simp]
 theorem fac : W.Q ⋙ lift G hG = G :=
-  Functor.ext (fun _ => rfl)
+  Functor.ext (fun _ ↦ rfl)
     (by
       intro X Y f
       simp only [Functor.comp_map, eqToHom_refl, comp_id, id_comp]
@@ -225,7 +225,7 @@ and if the property is stable by passing to inverses. -/
 theorem morphismProperty_is_top' (P : MorphismProperty W.Localization)
     [P.IsStableUnderComposition] (hP₁ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), P (W.Q.map f))
     (hP₂ : ∀ ⦃X Y : W.Localization⦄ (e : X ≅ Y) (_ : P e.hom), P e.inv) : P = ⊤ :=
-  morphismProperty_is_top P hP₁ (fun _ _ w _ => hP₂ _ (hP₁ w))
+  morphismProperty_is_top P hP₁ (fun _ _ w _ ↦ hP₂ _ (hP₁ w))
 
 namespace NatTransExtension
 
@@ -284,7 +284,7 @@ namespace WhiskeringLeftEquivalence
 composition with `W.Q : C ⥤ W.Localization`. -/
 @[simps!]
 def functor : (W.Localization ⥤ D) ⥤ W.FunctorsInverting D :=
-  ObjectProperty.lift _ ((whiskeringLeft _ _ D).obj W.Q) fun _ =>
+  ObjectProperty.lift _ ((whiskeringLeft _ _ D).obj W.Q) fun _ ↦
     MorphismProperty.IsInvertedBy.of_comp W W.Q W.Q_inverts _
 
 /-- The function `(W.FunctorsInverting D) ⥤ (W.Localization ⥤ D)` induced by
@@ -315,7 +315,7 @@ def inverse : W.FunctorsInverting D ⥤ W.Localization ⥤ D where
 def unitIso : 𝟭 (W.Localization ⥤ D) ≅ functor W D ⋙ inverse W D :=
   eqToIso
     (by
-      refine Functor.ext (fun G => ?_) fun G₁ G₂ τ => ?_
+      refine Functor.ext (fun G ↦ ?_) fun G₁ G₂ τ ↦ ?_
       · apply uniq
         dsimp [Functor]
         erw [fac]

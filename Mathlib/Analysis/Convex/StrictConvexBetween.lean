@@ -137,14 +137,14 @@ codomain, is an affine isometry.  Unlike Mazur-Ulam, this does not require the i
 surjective. -/
 noncomputable def affineIsometryOfStrictConvexSpace (hi : Isometry f) : PF →ᵃⁱ[ℝ] PE :=
   { AffineMap.ofMapMidpoint f
-      (fun x y => by
+      (fun x y ↦ by
         apply eq_midpoint_of_dist_eq_half
         · rw [hi.dist_eq, hi.dist_eq]
           simp only [dist_left_midpoint, Real.norm_of_nonneg zero_le_two, div_eq_inv_mul]
         · rw [hi.dist_eq, hi.dist_eq]
           simp only [dist_midpoint_right, Real.norm_of_nonneg zero_le_two, div_eq_inv_mul])
       hi.continuous with
-    norm_map := fun x => by simp [AffineMap.ofMapMidpoint, ← dist_eq_norm_vsub E, hi.dist_eq] }
+    norm_map := fun x ↦ by simp [AffineMap.ofMapMidpoint, ← dist_eq_norm_vsub E, hi.dist_eq] }
 
 @[simp] lemma coe_affineIsometryOfStrictConvexSpace (hi : Isometry f) :
     ⇑hi.affineIsometryOfStrictConvexSpace = f := rfl

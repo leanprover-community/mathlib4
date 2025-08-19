@@ -33,8 +33,8 @@ iff `α` has decidable equality. -/
 @[to_additive
 /-- The maximal reduction of a word. It is computable iff `α` has decidable equality. -/]
 def reduce : (L : List (α × Bool)) -> List (α × Bool) :=
-  List.rec [] fun hd1 _tl1 ih =>
-    List.casesOn ih [hd1] fun hd2 tl2 =>
+  List.rec [] fun hd1 _tl1 ih ↦
+    List.casesOn ih [hd1] fun hd2 tl2 ↦
       if hd1.1 = hd2.1 ∧ hd1.2 = not hd2.2 then tl2 else hd1 :: hd2 :: tl2
 
 @[to_additive (attr := simp)] lemma reduce_nil : reduce ([] : List (α × Bool)) = [] := rfl
@@ -43,7 +43,7 @@ def reduce : (L : List (α × Bool)) -> List (α × Bool) :=
 @[to_additive (attr := simp)]
 theorem reduce.cons (x) :
     reduce (x :: L) =
-      List.casesOn (reduce L) [x] fun hd tl =>
+      List.casesOn (reduce L) [x] fun hd tl ↦
         if x.1 = hd.1 ∧ x.2 = not hd.2 then tl else x :: hd :: tl :=
   rfl
 
@@ -87,7 +87,7 @@ theorem reduce.red : Red L (reduce L) := by
 @[to_additive]
 theorem reduce.not {p : Prop} :
     ∀ {L₁ L₂ L₃ : List (α × Bool)} {x b}, reduce L₁ = L₂ ++ (x, b) :: (x, !b) :: L₃ → p
-  | [], L2, L3, _, _ => fun h => by cases L2 <;> injections
+  | [], L2, L3, _, _ => fun h ↦ by cases L2 <;> injections
   | (x, b) :: L1, L2, L3, x', b' => by
     dsimp
     cases r : reduce L1 with
@@ -187,7 +187,7 @@ theorem reduce.rev (H : Red L₁ L₂) : Red L₂ (reduce L₁) :=
 @[to_additive /-- The function that sends an element of the additive free group to its maximal
   reduction. -/]
 def toWord : FreeGroup α → List (α × Bool) :=
-  Quot.lift reduce fun _L₁ _L₂ H => reduce.Step.eq H
+  Quot.lift reduce fun _L₁ _L₂ H ↦ reduce.Step.eq H
 
 @[to_additive]
 theorem mk_toWord : ∀ {x : FreeGroup α}, mk (toWord x) = x := by rintro ⟨L⟩; exact reduce.self
@@ -287,20 +287,20 @@ instance : DecidableEq (FreeGroup α) :=
 --    of equation lemmas.
 instance Red.decidableRel : DecidableRel (@Red α)
   | [], [] => isTrue Red.refl
-  | [], _hd2 :: _tl2 => isFalse fun H => List.noConfusion (Red.nil_iff.1 H)
+  | [], _hd2 :: _tl2 => isFalse fun H ↦ List.noConfusion (Red.nil_iff.1 H)
   | (x, b) :: tl, [] =>
     match Red.decidableRel tl [(x, not b)] with
     | isTrue H => isTrue <| Red.trans (Red.cons_cons H) <| (@Red.Step.not _ [] [] _ _).to_red
-    | isFalse H => isFalse fun H2 => H <| Red.cons_nil_iff_singleton.1 H2
+    | isFalse H => isFalse fun H2 ↦ H <| Red.cons_nil_iff_singleton.1 H2
   | (x1, b1) :: tl1, (x2, b2) :: tl2 =>
     if h : (x1, b1) = (x2, b2) then
       match Red.decidableRel tl1 tl2 with
       | isTrue H => isTrue <| h ▸ Red.cons_cons H
-      | isFalse H => isFalse fun H2 => H <| (Red.cons_cons_iff _).1 <| h.symm ▸ H2
+      | isFalse H => isFalse fun H2 ↦ H <| (Red.cons_cons_iff _).1 <| h.symm ▸ H2
     else
       match Red.decidableRel tl1 ((x1, ! b1) :: (x2, b2) :: tl2) with
       | isTrue H => isTrue <| (Red.cons_cons H).tail Red.Step.cons_not
-      | isFalse H => isFalse fun H2 => H <| Red.inv_of_red_of_ne h H2
+      | isFalse H => isFalse fun H2 ↦ H <| Red.inv_of_red_of_ne h H2
 
 /-- A list containing every word that `w₁` reduces to. -/
 def Red.enum (L₁ : List (α × Bool)) : List (List (α × Bool)) :=
@@ -313,8 +313,8 @@ theorem Red.enum.complete (H : Red L₁ L₂) : L₂ ∈ Red.enum L₁ :=
   List.mem_filter_of_mem (List.mem_sublists.2 <| Red.sublist H) (decide_eq_true H)
 
 instance (L₁ : List (α × Bool)) : Fintype { L₂ // Red L₁ L₂ } :=
-  Fintype.subtype (List.toFinset <| Red.enum L₁) fun _L₂ =>
-    ⟨fun H => Red.enum.sound <| List.mem_toFinset.1 H, fun H =>
+  Fintype.subtype (List.toFinset <| Red.enum L₁) fun _L₂ ↦
+    ⟨fun H ↦ Red.enum.sound <| List.mem_toFinset.1 H, fun H ↦
       List.mem_toFinset.2 <| Red.enum.complete H⟩
 
 @[to_additive]

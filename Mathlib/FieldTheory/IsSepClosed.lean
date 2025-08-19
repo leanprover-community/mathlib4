@@ -129,7 +129,7 @@ instance (priority := 100) isAlgClosed_of_perfectField [IsSepClosed k] [PerfectF
 
 theorem exists_pow_nat_eq [IsSepClosed k] (x : k) (n : ℕ) [hn : NeZero (n : k)] :
     ∃ z, z ^ n = x := by
-  have hn' : 0 < n := Nat.pos_of_ne_zero fun h => by
+  have hn' : 0 < n := Nat.pos_of_ne_zero fun h ↦ by
     rw [h, Nat.cast_zero] at hn
     exact hn.out rfl
   have : degree (X ^ n - C x) ≠ 0 := by
@@ -147,7 +147,7 @@ theorem exists_eq_mul_self [IsSepClosed k] (x : k) [h2 : NeZero (2 : k)] : ∃ z
 
 theorem roots_eq_zero_iff [IsSepClosed k] {p : k[X]} (hsep : p.Separable) :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
-  refine ⟨fun h => ?_, fun hp => by rw [hp, roots_C]⟩
+  refine ⟨fun h ↦ ?_, fun hp ↦ by rw [hp, roots_C]⟩
   rcases le_or_gt (degree p) 0 with hd | hd
   · exact eq_C_of_degree_le_zero hd
   · obtain ⟨z, hz⟩ := IsSepClosed.exists_root p hd.ne' hsep
@@ -194,7 +194,7 @@ variable (K)
 theorem algebraMap_surjective
     [IsSepClosed k] [Algebra k K] [Algebra.IsSeparable k K] :
     Function.Surjective (algebraMap k K) := by
-  refine fun x => ⟨-(minpoly k x).coeff 0, ?_⟩
+  refine fun x ↦ ⟨-(minpoly k x).coeff 0, ?_⟩
   have hq : (minpoly k x).leadingCoeff = 1 := minpoly.monic (Algebra.IsSeparable.isIntegral k x)
   have hsep : IsSeparable k x := Algebra.IsSeparable.isSeparable k x
   have h : (minpoly k x).degree = 1 :=

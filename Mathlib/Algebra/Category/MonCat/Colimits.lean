@@ -123,11 +123,11 @@ instance : Inhabited (ColimitType F) := by
 
 instance monoidColimitType : Monoid (ColimitType F) where
   one := Quotient.mk _ one
-  mul := Quotient.map₂ mul fun _ x' rx y _ ry =>
+  mul := Quotient.map₂ mul fun _ x' rx y _ ry ↦
     Setoid.trans (Relation.mul_1 _ _ y rx) (Relation.mul_2 x' _ _ ry)
-  one_mul := Quotient.ind fun _ => Quotient.sound <| Relation.one_mul _
-  mul_one := Quotient.ind fun _ => Quotient.sound <| Relation.mul_one _
-  mul_assoc := Quotient.ind fun _ => Quotient.ind₂ fun _ _ =>
+  one_mul := Quotient.ind fun _ ↦ Quotient.sound <| Relation.one_mul _
+  mul_one := Quotient.ind fun _ ↦ Quotient.sound <| Relation.mul_one _
+  mul_assoc := Quotient.ind fun _ ↦ Quotient.ind₂ fun _ _ ↦
     Quotient.sound <| Relation.mul_assoc _ _ _
 
 @[simp]
@@ -228,7 +228,7 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
 
 instance hasColimits_monCat : HasColimits MonCat where
   has_colimits_of_shape _ _ :=
-    { has_colimit := fun F =>
+    { has_colimit := fun F ↦
         HasColimit.mk
           { cocone := colimitCocone F
             isColimit := colimitIsColimit F } }

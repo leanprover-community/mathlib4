@@ -22,7 +22,7 @@ section ConditionallyCompleteLinearOrder
 variable [ConditionallyCompleteLinearOrder α] {s t : Set α} {a b : α}
 
 theorem Finset.Nonempty.csSup_eq_max' {s : Finset α} (h : s.Nonempty) : sSup ↑s = s.max' h :=
-  eq_of_forall_ge_iff fun _ => (csSup_le_iff s.bddAbove h.to_set).trans (s.max'_le_iff h).symm
+  eq_of_forall_ge_iff fun _ ↦ (csSup_le_iff s.bddAbove h.to_set).trans (s.max'_le_iff h).symm
 
 theorem Finset.Nonempty.csInf_eq_min' {s : Finset α} (h : s.Nonempty) : sInf ↑s = s.min' h :=
   @Finset.Nonempty.csSup_eq_max' αᵒᵈ _ s h
@@ -42,7 +42,7 @@ theorem Set.Nonempty.csInf_mem (h : s.Nonempty) (hs : s.Finite) : sInf s ∈ s :
   @Set.Nonempty.csSup_mem αᵒᵈ _ _ h hs
 
 theorem Set.Finite.csSup_lt_iff (hs : s.Finite) (h : s.Nonempty) : sSup s < a ↔ ∀ x ∈ s, x < a :=
-  ⟨fun h _ hx => (le_csSup hs.bddAbove hx).trans_lt h, fun H => H _ <| h.csSup_mem hs⟩
+  ⟨fun h _ hx ↦ (le_csSup hs.bddAbove hx).trans_lt h, fun H ↦ H _ <| h.csSup_mem hs⟩
 
 theorem Set.Finite.lt_csInf_iff (hs : s.Finite) (h : s.Nonempty) : a < sInf s ↔ ∀ x ∈ s, a < x :=
   @Set.Finite.csSup_lt_iff αᵒᵈ _ _ _ hs h
@@ -205,7 +205,7 @@ variable [ConditionallyCompleteLattice α]
 
 theorem sup'_eq_csSup_image (s : Finset ι) (H : s.Nonempty) (f : ι → α) :
     s.sup' H f = sSup (f '' s) :=
-  eq_of_forall_ge_iff fun a => by
+  eq_of_forall_ge_iff fun a ↦ by
     simp [csSup_le_iff (s.finite_toSet.image f).bddAbove (H.to_set.image f)]
 
 theorem inf'_eq_csInf_image (s : Finset ι) (H : s.Nonempty) (f : ι → α) :
@@ -233,8 +233,8 @@ variable [ConditionallyCompleteLinearOrderBot α]
 
 lemma sup_univ_eq_ciSup [Fintype ι] (f : ι → α) : univ.sup f = ⨆ i, f i :=
   le_antisymm
-    (Finset.sup_le fun _ _ => le_ciSup (finite_range _).bddAbove _)
-    (ciSup_le' fun _ => Finset.le_sup (mem_univ _))
+    (Finset.sup_le fun _ _ ↦ le_ciSup (finite_range _).bddAbove _)
+    (ciSup_le' fun _ ↦ Finset.le_sup (mem_univ _))
 
 end ConditionallyCompleteLinearOrderBot
 

@@ -33,17 +33,17 @@ theorem integral_compLp (L : E →L[𝕜] F) (φ : Lp E p μ) :
 
 theorem setIntegral_compLp (L : E →L[𝕜] F) (φ : Lp E p μ) {s : Set X} (hs : MeasurableSet s) :
     ∫ x in s, (L.compLp φ) x ∂μ = ∫ x in s, L (φ x) ∂μ :=
-  setIntegral_congr_ae hs ((L.coeFn_compLp φ).mono fun _x hx _ => hx)
+  setIntegral_congr_ae hs ((L.coeFn_compLp φ).mono fun _x hx _ ↦ hx)
 
 theorem continuous_integral_comp_L1 (L : E →L[𝕜] F) :
-    Continuous fun φ : X →₁[μ] E => ∫ x : X, L (φ x) ∂μ := by
+    Continuous fun φ : X →₁[μ] E ↦ ∫ x : X, L (φ x) ∂μ := by
   rw [← funext L.integral_compLp]; exact continuous_integral.comp (L.compLpL 1 μ).continuous
 
 variable [CompleteSpace F] [NormedSpace ℝ E]
 
 theorem integral_comp_comm [CompleteSpace E] (L : E →L[𝕜] F) {φ : X → E} (φ_int : Integrable φ μ) :
     ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) := by
-  apply φ_int.induction (P := fun φ => ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ))
+  apply φ_int.induction (P := fun φ ↦ ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ))
   · intro e s s_meas _
     rw [integral_indicator_const e s_meas, ← @smul_one_smul E ℝ 𝕜 _ _ _ _ _ (μ.real s) e,
       ContinuousLinearMap.map_smul, @smul_one_smul F ℝ 𝕜 _ _ _ _ _ (μ.real s) (L e), ←
@@ -89,7 +89,7 @@ theorem integral_comp_comm' (L : E →L[𝕜] F) {K} (hL : AntilipschitzWith K L
     ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) := by
   by_cases h : Integrable φ μ
   · exact integral_comp_comm L h
-  have : ¬Integrable (fun x => L (φ x)) μ := by
+  have : ¬Integrable (fun x ↦ L (φ x)) μ := by
     rwa [← Function.comp_def,
       LipschitzWith.integrable_comp_iff_of_antilipschitz L.lipschitz hL L.map_zero]
   simp [integral_undef, h, this]
@@ -238,13 +238,13 @@ lemma integral_mul_const_of_integrable {A : Type*} [NonUnitalNormedRing A] [Norm
   · simp [integral, hA]
 
 theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Measurable f) (g : X → E) :
-    ∫ x, g x ∂μ.withDensity (fun x => f x) = ∫ x, f x • g x ∂μ := by
+    ∫ x, g x ∂μ.withDensity (fun x ↦ f x) = ∫ x, f x • g x ∂μ := by
   by_cases hE : CompleteSpace E; swap; · simp [integral, hE]
-  by_cases hg : Integrable g (μ.withDensity fun x => f x); swap
+  by_cases hg : Integrable g (μ.withDensity fun x ↦ f x); swap
   · rw [integral_undef hg, integral_undef]
     rwa [← integrable_withDensity_iff_integrable_smul f_meas]
   refine Integrable.induction
-    (P := fun g => ∫ x, g x ∂μ.withDensity (fun x => f x) = ∫ x, f x • g x ∂μ) ?_ ?_ ?_ ?_ hg
+    (P := fun g ↦ ∫ x, g x ∂μ.withDensity (fun x ↦ f x) = ∫ x, f x • g x ∂μ) ?_ ?_ ?_ ?_ hg
   · intro c s s_meas hs
     rw [integral_indicator s_meas]
     simp_rw [← Set.indicator_smul_apply, integral_indicator s_meas]
@@ -252,22 +252,22 @@ theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Meas
       measureReal_def]
     rw [lintegral_coe_eq_integral, ENNReal.toReal_ofReal, ← integral_smul_const]
     · rfl
-    · exact integral_nonneg fun x => NNReal.coe_nonneg _
+    · exact integral_nonneg fun x ↦ NNReal.coe_nonneg _
     · refine ⟨f_meas.coe_nnreal_real.aemeasurable.aestronglyMeasurable, ?_⟩
       simpa [withDensity_apply _ s_meas, hasFiniteIntegral_iff_enorm] using hs
   · intro u u' _ u_int u'_int h h'
     change
-      (∫ x : X, u x + u' x ∂μ.withDensity fun x : X => ↑(f x)) = ∫ x : X, f x • (u x + u' x) ∂μ
+      (∫ x : X, u x + u' x ∂μ.withDensity fun x : X ↦ ↑(f x)) = ∫ x : X, f x • (u x + u' x) ∂μ
     simp_rw [smul_add]
     rw [integral_add u_int u'_int, h, h', integral_add]
     · exact (integrable_withDensity_iff_integrable_smul f_meas).1 u_int
     · exact (integrable_withDensity_iff_integrable_smul f_meas).1 u'_int
   · have C1 :
-      Continuous fun u : Lp E 1 (μ.withDensity fun x => f x) =>
-        ∫ x, u x ∂μ.withDensity fun x => f x :=
+      Continuous fun u : Lp E 1 (μ.withDensity fun x ↦ f x) =>
+        ∫ x, u x ∂μ.withDensity fun x ↦ f x :=
       continuous_integral
-    have C2 : Continuous fun u : Lp E 1 (μ.withDensity fun x => f x) => ∫ x, f x • u x ∂μ := by
-      have : Continuous ((fun u : Lp E 1 μ => ∫ x, u x ∂μ) ∘ withDensitySMulLI (E := E) μ f_meas) :=
+    have C2 : Continuous fun u : Lp E 1 (μ.withDensity fun x ↦ f x) => ∫ x, f x • u x ∂μ := by
+      have : Continuous ((fun u : Lp E 1 μ ↦ ∫ x, u x ∂μ) ∘ withDensitySMulLI (E := E) μ f_meas) :=
         continuous_integral.comp (withDensitySMulLI (E := E) μ f_meas).continuous
       convert this with u
       simp only [Function.comp_apply, withDensitySMulLI_apply]
@@ -283,10 +283,10 @@ theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Meas
       simpa only [Ne, ENNReal.coe_eq_zero] using h'x
 
 theorem integral_withDensity_eq_integral_smul₀ {f : X → ℝ≥0} (hf : AEMeasurable f μ) (g : X → E) :
-    ∫ x, g x ∂μ.withDensity (fun x => f x) = ∫ x, f x • g x ∂μ := by
+    ∫ x, g x ∂μ.withDensity (fun x ↦ f x) = ∫ x, f x • g x ∂μ := by
   let f' := hf.mk _
   calc
-    ∫ x, g x ∂μ.withDensity (fun x => f x) = ∫ x, g x ∂μ.withDensity fun x => f' x := by
+    ∫ x, g x ∂μ.withDensity (fun x ↦ f x) = ∫ x, g x ∂μ.withDensity fun x ↦ f' x := by
       congr 1
       apply withDensity_congr_ae
       filter_upwards [hf.ae_eq_mk] with x hx
@@ -311,28 +311,28 @@ theorem integral_withDensity_eq_integral_toReal_smul {f : X → ℝ≥0∞} (f_m
 
 theorem setIntegral_withDensity_eq_setIntegral_smul₀ {f : X → ℝ≥0} {s : Set X}
     (hf : AEMeasurable f (μ.restrict s)) (g : X → E) (hs : MeasurableSet s) :
-    ∫ x in s, g x ∂μ.withDensity (fun x => f x) = ∫ x in s, f x • g x ∂μ := by
+    ∫ x in s, g x ∂μ.withDensity (fun x ↦ f x) = ∫ x in s, f x • g x ∂μ := by
   rw [restrict_withDensity hs, integral_withDensity_eq_integral_smul₀ hf]
 
 theorem setIntegral_withDensity_eq_setIntegral_toReal_smul₀ {f : X → ℝ≥0∞} {s : Set X}
     (hf : AEMeasurable f (μ.restrict s)) (hf_top : ∀ᵐ x ∂μ.restrict s, f x < ∞) (g : X → E)
     (hs : MeasurableSet s) :
-    ∫ x in s, g x ∂μ.withDensity (fun x => f x) = ∫ x in s, (f x).toReal • g x ∂μ := by
+    ∫ x in s, g x ∂μ.withDensity (fun x ↦ f x) = ∫ x in s, (f x).toReal • g x ∂μ := by
   rw [restrict_withDensity hs, integral_withDensity_eq_integral_toReal_smul₀ hf hf_top]
 
 theorem setIntegral_withDensity_eq_setIntegral_smul {f : X → ℝ≥0} (f_meas : Measurable f)
     (g : X → E) {s : Set X} (hs : MeasurableSet s) :
-    ∫ x in s, g x ∂μ.withDensity (fun x => f x) = ∫ x in s, f x • g x ∂μ :=
+    ∫ x in s, g x ∂μ.withDensity (fun x ↦ f x) = ∫ x in s, f x • g x ∂μ :=
   setIntegral_withDensity_eq_setIntegral_smul₀ f_meas.aemeasurable _ hs
 
 theorem setIntegral_withDensity_eq_setIntegral_toReal_smul {f : X → ℝ≥0∞} {s : Set X}
     (hf : Measurable f) (hf_top : ∀ᵐ x ∂μ.restrict s, f x < ∞) (g : X → E) (hs : MeasurableSet s) :
-    ∫ x in s, g x ∂μ.withDensity (fun x => f x) = ∫ x in s, (f x).toReal • g x ∂μ :=
+    ∫ x in s, g x ∂μ.withDensity (fun x ↦ f x) = ∫ x in s, (f x).toReal • g x ∂μ :=
   setIntegral_withDensity_eq_setIntegral_toReal_smul₀ hf.aemeasurable hf_top g hs
 
 theorem setIntegral_withDensity_eq_setIntegral_smul₀' [SFinite μ] {f : X → ℝ≥0} (s : Set X)
     (hf : AEMeasurable f (μ.restrict s)) (g : X → E) :
-    ∫ x in s, g x ∂μ.withDensity (fun x => f x) = ∫ x in s, f x • g x ∂μ := by
+    ∫ x in s, g x ∂μ.withDensity (fun x ↦ f x) = ∫ x in s, f x • g x ∂μ := by
   rw [restrict_withDensity' s, integral_withDensity_eq_integral_smul₀ hf]
 
 theorem setIntegral_withDensity_eq_setIntegral_toReal_smul₀' [SFinite μ] {f : X → ℝ≥0∞} (s : Set X)

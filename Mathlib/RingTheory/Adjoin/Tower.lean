@@ -95,9 +95,9 @@ theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).FG) (hBC : (⊤ : 
   let s : Finset B := Finset.image₂ f (x ∪ y * y) y
   have hxy :
     ∀ xi ∈ x, xi ∈ span (Algebra.adjoin A (↑s : Set B)) (↑(insert 1 y : Finset C) : Set C) :=
-    fun xi hxi =>
+    fun xi hxi ↦
     hf xi ▸
-      sum_mem fun yj hyj =>
+      sum_mem fun yj hyj ↦
         smul_mem (span (Algebra.adjoin A (↑s : Set B)) (↑(insert 1 y : Finset C) : Set C))
           ⟨f xi yj, Algebra.subset_adjoin <| mem_image₂_of_mem (mem_union_left _ hxi) hyj⟩
           (subset_span <| mem_insert_of_mem hyj)
@@ -116,7 +116,7 @@ theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).FG) (hBC : (⊤ : 
     · rw [← hf (yi * yj)]
       exact
         SetLike.mem_coe.2
-          (sum_mem fun yk hyk =>
+          (sum_mem fun yk hyk ↦
             smul_mem (span (Algebra.adjoin A (↑s : Set B)) (insert 1 ↑y : Set C))
               ⟨f (yi * yj) yk,
                 Algebra.subset_adjoin <|
@@ -126,9 +126,9 @@ theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).FG) (hBC : (⊤ : 
   convert restrictScalars_injective A (Algebra.adjoin A (s : Set B)) C _
   rw [restrictScalars_top, eq_top_iff, ← Algebra.top_toSubmodule, ← hx, Algebra.adjoin_eq_span,
     span_le]
-  refine fun r hr =>
-    Submonoid.closure_induction (fun c hc => hxy c hc) (subset_span <| mem_insert_self _ _)
-      (fun p q _ _ hp hq => hyy <| Submodule.mul_mem_mul hp hq) hr
+  refine fun r hr ↦
+    Submonoid.closure_induction (fun c hc ↦ hxy c hc) (subset_span <| mem_insert_self _ _)
+      (fun p q _ _ hp hq ↦ hyy <| Submodule.mul_mem_mul hp hq) hr
 
 end Semiring
 

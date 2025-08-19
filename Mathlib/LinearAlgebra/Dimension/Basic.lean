@@ -93,7 +93,7 @@ theorem cardinal_le_rank {ι : Type v} {v : ι → M}
   simpa using hv.cardinal_lift_le_rank
 
 theorem cardinal_le_rank' {s : Set M}
-    (hs : LinearIndependent R (fun x => x : s → M)) : #s ≤ Module.rank R M :=
+    (hs : LinearIndependent R (fun x ↦ x : s → M)) : #s ≤ Module.rank R M :=
   hs.cardinal_le_rank
 
 theorem _root_.LinearIndepOn.encard_le_toENat_rank {ι : Type*} {v : ι → M} {s : Set ι}
@@ -311,7 +311,7 @@ theorem rank_map_le (f : M →ₗ[R] M₁) (p : Submodule R M) :
     Module.rank R (p.map f) ≤ Module.rank R p := by simpa using lift_rank_map_le f p
 
 lemma Submodule.rank_mono {s t : Submodule R M} (h : s ≤ t) : Module.rank R s ≤ Module.rank R t :=
-  (Submodule.inclusion h).rank_le_of_injective fun ⟨x, _⟩ ⟨y, _⟩ eq =>
+  (Submodule.inclusion h).rank_le_of_injective fun ⟨x, _⟩ ⟨y, _⟩ eq ↦
     Subtype.eq <| show x = y from Subtype.ext_iff_val.1 eq
 
 /-- Two linearly equivalent vector spaces have the same dimension, a version with different

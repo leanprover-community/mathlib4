@@ -60,7 +60,7 @@ instance LieIdeal.isLieAbelian_of_trivial (R : Type u) (L : Type v) [CommRing R]
 theorem Function.Injective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Type w} [CommRing R]
     [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlgebra R L₂] {f : L₁ →ₗ⁅R⁆ L₂}
     (h₁ : Function.Injective f) (_ : IsLieAbelian L₂) : IsLieAbelian L₁ :=
-  { trivial := fun x y => h₁ <|
+  { trivial := fun x y ↦ h₁ <|
       calc
         f ⁅x, y⁆ = ⁅f x, f y⁆ := LieHom.map_lie f x y
         _ = 0 := trivial_lie_zero _ _ _ _
@@ -69,7 +69,7 @@ theorem Function.Injective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Typ
 theorem Function.Surjective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Type w} [CommRing R]
     [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlgebra R L₂] {f : L₁ →ₗ⁅R⁆ L₂}
     (h₁ : Function.Surjective f) (h₂ : IsLieAbelian L₁) : IsLieAbelian L₂ :=
-  { trivial := fun x y => by
+  { trivial := fun x y ↦ by
       obtain ⟨u, rfl⟩ := h₁ x
       obtain ⟨v, rfl⟩ := h₁ y
       rw [← LieHom.map_lie, trivial_lie_zero, LieHom.map_zero] }
@@ -82,8 +82,8 @@ theorem lie_abelian_iff_equiv_lie_abelian {R : Type u} {L₁ : Type v} {L₂ : T
 theorem commutative_ring_iff_abelian_lie_ring {A : Type v} [Ring A] :
     Std.Commutative (α := A) (· * ·) ↔ IsLieAbelian A := by
   have h₁ : Std.Commutative (α := A) (· * ·) ↔ ∀ a b : A, a * b = b * a :=
-    ⟨fun h => h.1, fun h => ⟨h⟩⟩
-  have h₂ : IsLieAbelian A ↔ ∀ a b : A, ⁅a, b⁆ = 0 := ⟨fun h => h.1, fun h => ⟨h⟩⟩
+    ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
+  have h₂ : IsLieAbelian A ↔ ∀ a b : A, ⁅a, b⁆ = 0 := ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
   simp only [h₁, h₂, LieRing.of_associative_ring_bracket, sub_eq_zero]
 
 @[simp] theorem LieSubalgebra.isLieAbelian_lieSpan_iff
@@ -170,17 +170,17 @@ theorem ideal_oper_maxTrivSubmodule_eq_bot (I : LieIdeal R L) :
 
 theorem le_max_triv_iff_bracket_eq_bot {N : LieSubmodule R L M} :
     N ≤ maxTrivSubmodule R L M ↔ ⁅(⊤ : LieIdeal R L), N⁆ = ⊥ := by
-  refine ⟨fun h => ?_, fun h m hm => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h m hm ↦ ?_⟩
   · rw [← le_bot_iff, ← ideal_oper_maxTrivSubmodule_eq_bot R L M ⊤]
     exact LieSubmodule.mono_lie_right ⊤ h
   · rw [mem_maxTrivSubmodule]
     rw [LieSubmodule.lie_eq_bot_iff] at h
-    exact fun x => h x (LieSubmodule.mem_top x) m hm
+    exact fun x ↦ h x (LieSubmodule.mem_top x) m hm
 
 theorem trivial_iff_le_maximal_trivial (N : LieSubmodule R L M) :
     IsTrivial L N ↔ N ≤ maxTrivSubmodule R L M :=
-  ⟨fun h m hm x => IsTrivial.casesOn h fun h => Subtype.ext_iff.mp (h x ⟨m, hm⟩), fun h =>
-    { trivial := fun x m => Subtype.ext (h m.2 x) }⟩
+  ⟨fun h m hm x ↦ IsTrivial.casesOn h fun h ↦ Subtype.ext_iff.mp (h x ⟨m, hm⟩), fun h ↦
+    { trivial := fun x m ↦ Subtype.ext (h m.2 x) }⟩
 
 theorem isTrivial_iff_max_triv_eq_top : IsTrivial L M ↔ maxTrivSubmodule R L M = ⊤ := by
   constructor
@@ -192,7 +192,7 @@ variable {R L M N}
 
 /-- `maxTrivSubmodule` is functorial. -/
 def maxTrivHom (f : M →ₗ⁅R,L⁆ N) : maxTrivSubmodule R L M →ₗ⁅R,L⁆ maxTrivSubmodule R L N where
-  toFun m := ⟨f m, fun x =>
+  toFun m := ⟨f m, fun x ↦
     (LieModuleHom.map_lie _ _ _).symm.trans <|
       (congr_arg f (m.property x)).trans (LieModuleHom.map_zero _)⟩
   map_add' m n := by ext; simp
@@ -209,8 +209,8 @@ def maxTrivEquiv (e : M ≃ₗ⁅R,L⁆ N) : maxTrivSubmodule R L M ≃ₗ⁅R,L
   { maxTrivHom (e : M →ₗ⁅R,L⁆ N) with
     toFun := maxTrivHom (e : M →ₗ⁅R,L⁆ N)
     invFun := maxTrivHom (e.symm : N →ₗ⁅R,L⁆ M)
-    left_inv := fun m => by ext; simp
-    right_inv := fun n => by ext; simp }
+    left_inv := fun m ↦ by ext; simp
+    right_inv := fun n ↦ by ext; simp }
 
 @[norm_cast, simp]
 theorem coe_maxTrivEquiv_apply (e : M ≃ₗ⁅R,L⁆ N) (m : maxTrivSubmodule R L M) :
@@ -232,12 +232,12 @@ on it is trivial. -/
 def maxTrivLinearMapEquivLieModuleHom : maxTrivSubmodule R L (M →ₗ[R] N) ≃ₗ[R] M →ₗ⁅R,L⁆ N where
   toFun f :=
     { toLinearMap := f.val
-      map_lie' := fun {x m} => by
+      map_lie' := fun {x m} ↦ by
         have hf : ⁅x, f.val⁆ m = 0 := by rw [f.property x, LinearMap.zero_apply]
         rw [LieHom.lie_apply, sub_eq_zero, ← LinearMap.toFun_eq_coe] at hf; exact hf.symm}
   map_add' f g := by ext; simp
   map_smul' F G := by ext; simp
-  invFun F := ⟨F, fun x => by ext; simp⟩
+  invFun F := ⟨F, fun x ↦ by ext; simp⟩
   left_inv f := by simp
   right_inv F := by simp
 
@@ -335,11 +335,11 @@ theorem LieSubmodule.lie_abelian_iff_lie_self_eq_bot : IsLieAbelian I ↔ ⁅I, 
   simp only [_root_.eq_bot_iff, lieIdeal_oper_eq_span, LieSubmodule.lieSpan_le,
     LieSubmodule.bot_coe, Set.subset_singleton_iff, Set.mem_setOf_eq, exists_imp]
   refine
-    ⟨fun h z x y hz =>
+    ⟨fun h z x y hz ↦
       hz.symm.trans
         (((I : LieSubalgebra R L).coe_bracket x y).symm.trans
           ((coe_zero_iff_zero _ _).mpr (by apply h.trivial))),
-      fun h => ⟨fun x y => ((I : LieSubalgebra R L).coe_zero_iff_zero _).mp (h _ x y rfl)⟩⟩
+      fun h ↦ ⟨fun x y ↦ ((I : LieSubalgebra R L).coe_zero_iff_zero _).mp (h _ x y rfl)⟩⟩
 
 variable {I N} in
 lemma lie_eq_self_of_isAtom_of_ne_bot (hN : IsAtom N) (h : ⁅I, N⁆ ≠ ⊥) : ⁅I, N⁆ = N :=

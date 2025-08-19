@@ -28,13 +28,13 @@ variable {k E PE : Type*} [Field k] [AddCommGroup E] [Module k E] [AddTorsor E P
 def slope (f : k → PE) (a b : k) : E :=
   (b - a)⁻¹ • (f b -ᵥ f a)
 
-theorem slope_fun_def (f : k → PE) : slope f = fun a b => (b - a)⁻¹ • (f b -ᵥ f a) :=
+theorem slope_fun_def (f : k → PE) : slope f = fun a b ↦ (b - a)⁻¹ • (f b -ᵥ f a) :=
   rfl
 
 theorem slope_def_field (f : k → k) (a b : k) : slope f a b = (f b - f a) / (b - a) :=
   (div_eq_inv_mul _ _).symm
 
-theorem slope_fun_def_field (f : k → k) (a : k) : slope f a = fun b => (f b - f a) / (b - a) :=
+theorem slope_fun_def_field (f : k → k) (a : k) : slope f a = fun b ↦ (f b - f a) / (b - a) :=
   (div_eq_inv_mul _ _).symm
 
 @[simp]
@@ -54,13 +54,13 @@ theorem sub_smul_slope_vadd (f : k → PE) (a b : k) : (b - a) • slope f a b +
   rw [sub_smul_slope, vsub_vadd]
 
 @[simp]
-theorem slope_vadd_const (f : k → E) (c : PE) : (slope fun x => f x +ᵥ c) = slope f := by
+theorem slope_vadd_const (f : k → E) (c : PE) : (slope fun x ↦ f x +ᵥ c) = slope f := by
   ext a b
   simp only [slope, vadd_vsub_vadd_cancel_right, vsub_eq_sub]
 
 @[simp]
 theorem slope_sub_smul (f : k → E) {a b : k} (h : a ≠ b) :
-    slope (fun x => (x - a) • f x) a b = f b := by
+    slope (fun x ↦ (x - a) • f x) a b = f b := by
   simp [slope, inv_smul_smul₀ (sub_ne_zero.2 h.symm)]
 
 theorem eq_of_slope_eq_zero {f : k → PE} {a b : k} (h : slope f a b = (0 : E)) : f a = f b := by

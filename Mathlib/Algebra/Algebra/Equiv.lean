@@ -56,7 +56,7 @@ instance (priority := 100) toAlgHomClass (F R A B : Type*) [CommSemiring R] [Sem
 instance (priority := 100) toLinearEquivClass (F R A B : Type*) [CommSemiring R]
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
     [EquivLike F A B] [h : AlgEquivClass F R A B] : LinearEquivClass F R A B :=
-  { h with map_smulₛₗ := fun f => map_smulₛₗ f }
+  { h with map_smulₛₗ := fun f ↦ map_smulₛₗ f }
 
 /-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` into an actual `AlgEquiv`.
 This is declared as the default coercion from `F` to `A ≃ₐ[R] B`. -/
@@ -125,7 +125,7 @@ theorem coe_mk {toEquiv map_mul map_add commutes} :
 @[simp]
 theorem mk_coe (e : A₁ ≃ₐ[R] A₂) (e' h₁ h₂ h₃ h₄ h₅) :
     (⟨⟨e, e', h₁, h₂⟩, h₃, h₄, h₅⟩ : A₁ ≃ₐ[R] A₂) = e :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem toEquiv_eq_coe : e.toEquiv = e :=
@@ -136,7 +136,7 @@ protected theorem coe_coe {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R
     ⇑(f : A₁ ≃ₐ[R] A₂) = f :=
   rfl
 
-theorem coe_fun_injective : @Function.Injective (A₁ ≃ₐ[R] A₂) (A₁ → A₂) fun e => (e : A₁ → A₂) :=
+theorem coe_fun_injective : @Function.Injective (A₁ ≃ₐ[R] A₂) (A₁ → A₂) fun e ↦ (e : A₁ → A₂) :=
   DFunLike.coe_injective
 
 instance hasCoeToRingEquiv : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ ≃+* A₂) :=
@@ -162,7 +162,7 @@ theorem coe_ringEquiv' : (e.toRingEquiv : A₁ → A₂) = e :=
   rfl
 
 theorem coe_ringEquiv_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ ≃+* A₂) :=
-  fun _ _ h => ext <| RingEquiv.congr_fun h
+  fun _ _ h ↦ ext <| RingEquiv.congr_fun h
 
 /-- Interpret an algebra equivalence as an algebra homomorphism.
 
@@ -183,7 +183,7 @@ theorem coe_algHom : DFunLike.coe (e.toAlgHom) = DFunLike.coe e :=
   rfl
 
 theorem coe_algHom_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ →ₐ[R] A₂) :=
-  fun _ _ h => ext <| AlgHom.congr_fun h
+  fun _ _ h ↦ ext <| AlgHom.congr_fun h
 
 @[simp, norm_cast]
 lemma toAlgHom_toRingHom : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = e :=
@@ -217,7 +217,7 @@ section refl
 /-- Algebra equivalences are reflexive. -/
 @[refl]
 def refl : A₁ ≃ₐ[R] A₁ :=
-  { (.refl _ : A₁ ≃+* A₁) with commutes' := fun _ => rfl }
+  { (.refl _ : A₁ ≃+* A₁) with commutes' := fun _ ↦ rfl }
 
 instance : Inhabited (A₁ ≃ₐ[R] A₁) :=
   ⟨refl⟩
@@ -238,7 +238,7 @@ section symm
 @[symm]
 def symm (e : A₁ ≃ₐ[R] A₂) : A₂ ≃ₐ[R] A₁ :=
   { e.toRingEquiv.symm with
-    commutes' := fun r => by
+    commutes' := fun r ↦ by
       rw [← e.toRingEquiv.symm_apply_apply (algebraMap R A₁ r)]
       congr
       simp }
@@ -272,7 +272,7 @@ theorem symm_bijective : Function.Bijective (symm : (A₁ ≃ₐ[R] A₂) → A�
 @[simp]
 theorem mk_coe' (e : A₁ ≃ₐ[R] A₂) (f h₁ h₂ h₃ h₄ h₅) :
     (⟨⟨f, e, h₁, h₂⟩, h₃, h₄, h₅⟩ : A₂ ≃ₐ[R] A₁) = e.symm :=
-  symm_bijective.injective <| ext fun _ => rfl
+  symm_bijective.injective <| ext fun _ ↦ rfl
 
 /-- Auxiliary definition to avoid looping in `dsimp` with `AlgEquiv.symm_mk`. -/
 protected def symm_mk.aux (f f') (h₁ h₂ h₃ h₄ h₅) :=
@@ -362,7 +362,7 @@ section trans
 @[trans]
 def trans (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) : A₁ ≃ₐ[R] A₃ :=
   { e₁.toRingEquiv.trans e₂.toRingEquiv with
-    commutes' := fun r => show e₂.toFun (e₁.toFun _) = _ by rw [e₁.commutes', e₂.commutes'] }
+    commutes' := fun r ↦ show e₂.toFun (e₁.toFun _) = _ by rw [e₁.commutes', e₂.commutes'] }
 
 @[simp]
 theorem coe_trans (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) : ⇑(e₁.trans e₂) = e₂ ∘ e₁ :=
@@ -461,7 +461,7 @@ theorem coe_algHom_ofAlgHom (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) 
 @[simp]
 theorem ofAlgHom_coe_algHom (f : A₁ ≃ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :
     ofAlgHom (↑f) g h₁ h₂ = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 theorem ofAlgHom_symm (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :
     (ofAlgHom f g h₁ h₂).symm = ofAlgHom g f h₂ h₁ :=
@@ -495,7 +495,7 @@ theorem toLinearEquiv_trans (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] 
   rfl
 
 theorem toLinearEquiv_injective : Function.Injective (toLinearEquiv : _ → A₁ ≃ₗ[R] A₂) :=
-  fun _ _ h => ext <| LinearEquiv.congr_fun h
+  fun _ _ h ↦ ext <| LinearEquiv.congr_fun h
 
 /-- Interpret an algebra equivalence as a linear map. -/
 def toLinearMap : A₁ →ₗ[R] A₂ :=
@@ -507,7 +507,7 @@ theorem toAlgHom_toLinearMap : (e : A₁ →ₐ[R] A₂).toLinearMap = e.toLinea
 
 theorem toLinearMap_ofAlgHom (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :
     (ofAlgHom f g h₁ h₂).toLinearMap = f.toLinearMap :=
-  LinearMap.ext fun _ => rfl
+  LinearMap.ext fun _ ↦ rfl
 
 @[simp]
 theorem toLinearEquiv_toLinearMap : e.toLinearEquiv.toLinearMap = e.toLinearMap :=
@@ -517,7 +517,7 @@ theorem toLinearEquiv_toLinearMap : e.toLinearEquiv.toLinearMap = e.toLinearMap 
 theorem toLinearMap_apply (x : A₁) : e.toLinearMap x = e x :=
   rfl
 
-theorem toLinearMap_injective : Function.Injective (toLinearMap : _ → A₁ →ₗ[R] A₂) := fun _ _ h =>
+theorem toLinearMap_injective : Function.Injective (toLinearMap : _ → A₁ →ₗ[R] A₂) := fun _ _ h ↦
   ext <| LinearMap.congr_fun h
 
 @[simp]
@@ -596,8 +596,8 @@ instance aut : Group (A₁ ≃ₐ[R] A₁) where
   mul ϕ ψ := ψ.trans ϕ
   mul_assoc _ _ _ := rfl
   one := refl
-  one_mul _ := ext fun _ => rfl
-  mul_one _ := ext fun _ => rfl
+  one_mul _ := ext fun _ ↦ rfl
+  mul_one _ := ext fun _ ↦ rfl
   inv := symm
   inv_mul_cancel ϕ := ext <| symm_apply_apply ϕ
 
@@ -666,11 +666,11 @@ instance apply_smulCommClass' {S} [SMul S R] [SMul S A₁] [IsScalarTower S R A�
   SMulCommClass.symm _ _ _
 
 instance : MulDistribMulAction (A₁ ≃ₐ[R] A₁) A₁ˣ where
-  smul := fun f => Units.map f
-  one_smul := fun x => by ext; rfl
-  mul_smul := fun x y z => by ext; rfl
-  smul_mul := fun x y z => by ext; exact map_mul x _ _
-  smul_one := fun x => by ext; exact map_one x
+  smul := fun f ↦ Units.map f
+  one_smul := fun x ↦ by ext; rfl
+  mul_smul := fun x y z ↦ by ext; rfl
+  smul_mul := fun x y z ↦ by ext; exact map_mul x _ _
+  smul_one := fun x ↦ by ext; exact map_one x
 
 @[simp]
 theorem smul_units_def (f : A₁ ≃ₐ[R] A₁) (x : A₁ˣ) :
@@ -683,7 +683,7 @@ lemma _root_.MulSemiringAction.toRingEquiv_algEquiv (σ : A₁ ≃ₐ[R] A₁) :
 @[simp]
 theorem algebraMap_eq_apply (e : A₁ ≃ₐ[R] A₂) {y : R} {x : A₁} :
     algebraMap R A₂ y = e x ↔ algebraMap R A₁ y = x :=
-  ⟨fun h => by simpa using e.symm.toAlgHom.algebraMap_eq_apply h, fun h =>
+  ⟨fun h ↦ by simpa using e.symm.toAlgHom.algebraMap_eq_apply h, fun h ↦
     e.toAlgHom.algebraMap_eq_apply h⟩
 
 /-- `AlgEquiv.toAlgHom` as a `MonoidHom`. -/
@@ -745,8 +745,8 @@ def toAlgEquiv (g : G) : A ≃ₐ[R] A :=
   { MulSemiringAction.toRingEquiv _ _ g, MulSemiringAction.toAlgHom R A g with }
 
 theorem toAlgEquiv_injective [FaithfulSMul G A] :
-    Function.Injective (MulSemiringAction.toAlgEquiv R A : G → A ≃ₐ[R] A) := fun _ _ h =>
-  eq_of_smul_eq_smul fun r => AlgEquiv.ext_iff.1 h r
+    Function.Injective (MulSemiringAction.toAlgEquiv R A : G → A ≃ₐ[R] A) := fun _ _ h ↦
+  eq_of_smul_eq_smul fun r ↦ AlgEquiv.ext_iff.1 h r
 
 variable (G)
 

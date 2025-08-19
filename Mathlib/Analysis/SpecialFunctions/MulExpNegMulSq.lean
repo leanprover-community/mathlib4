@@ -10,9 +10,9 @@ import Mathlib.Topology.ContinuousMap.Bounded.Normed
 /-!
 # Definition of `mulExpNegMulSq` and properties
 
-`mulExpNegMulSq` is the mapping `fun (ε : ℝ) (x : ℝ) => x * Real.exp (- (ε * x * x))`. By
+`mulExpNegMulSq` is the mapping `fun (ε : ℝ) (x : ℝ) ↦ x * Real.exp (- (ε * x * x))`. By
 composition, it can be used to transform a function `g : E → ℝ` into a bounded function
-`mulExpNegMulSq ε ∘ g : E → ℝ = fun x => g x * Real.exp (-ε * g x * g x)` with useful
+`mulExpNegMulSq ε ∘ g : E → ℝ = fun x ↦ g x * Real.exp (-ε * g x * g x)` with useful
 boundedness and convergence properties.
 
 ## Main Properties
@@ -33,10 +33,10 @@ open scoped Topology
 
 namespace Real
 
-/-! ### Definition and properties of `fun x => x * Real.exp (- (ε * x * x))` -/
+/-! ### Definition and properties of `fun x ↦ x * Real.exp (- (ε * x * x))` -/
 
 /--
-Mapping `fun ε x => x * Real.exp (- (ε * x * x))`. By composition, it can be used to transform
+Mapping `fun ε x ↦ x * Real.exp (- (ε * x * x))`. By composition, it can be used to transform
 functions into bounded functions.
 -/
 noncomputable
@@ -63,12 +63,12 @@ theorem abs_mulExpNegMulSq_one_le_one (x : ℝ) : |mulExpNegMulSq 1 x| ≤ 1 :=
 variable {ε : ℝ}
 
 @[continuity, fun_prop]
-theorem continuous_mulExpNegMulSq : Continuous (fun x => mulExpNegMulSq ε x) :=
+theorem continuous_mulExpNegMulSq : Continuous (fun x ↦ mulExpNegMulSq ε x) :=
   Continuous.mul continuous_id (by fun_prop)
 
 @[continuity, fun_prop]
 theorem _root_.Continuous.mulExpNegMulSq {α : Type*} [TopologicalSpace α] {f : α → ℝ}
-    (hf : Continuous f) : Continuous (fun x => mulExpNegMulSq ε (f x)) :=
+    (hf : Continuous f) : Continuous (fun x ↦ mulExpNegMulSq ε (f x)) :=
   continuous_mulExpNegMulSq.comp hf
 
 theorem differentiableAt_mulExpNegMulSq (y : ℝ) :
@@ -76,7 +76,7 @@ theorem differentiableAt_mulExpNegMulSq (y : ℝ) :
   DifferentiableAt.mul differentiableAt_fun_id (by fun_prop)
 
 @[fun_prop] theorem differentiable_mulExpNegMulSq : Differentiable ℝ (mulExpNegMulSq ε) :=
-  fun _ => differentiableAt_mulExpNegMulSq _
+  fun _ ↦ differentiableAt_mulExpNegMulSq _
 
 theorem hasDerivAt_mulExpNegMulSq (y : ℝ) :
     HasDerivAt (mulExpNegMulSq ε)
@@ -148,8 +148,8 @@ theorem dist_mulExpNegMulSq_le_dist (hε : 0 < ε) {x y : ℝ} :
 
 /-- For fixed `x : ℝ`, the mapping `mulExpNegMulSq ε x` converges pointwise to `x` as `ε → 0` -/
 theorem tendsto_mulExpNegMulSq {x : ℝ} :
-    Tendsto (fun ε => mulExpNegMulSq ε x) (𝓝 0) (𝓝 x) := by
-  have : x = (fun ε : ℝ => mulExpNegMulSq ε x) 0 := by
+    Tendsto (fun ε ↦ mulExpNegMulSq ε x) (𝓝 0) (𝓝 x) := by
+  have : x = (fun ε : ℝ ↦ mulExpNegMulSq ε x) 0 := by
     simp only [mulExpNegMulSq, zero_mul, neg_zero, exp_zero, mul_one]
   nth_rw 2 [this]
   apply Continuous.tendsto (Continuous.mul continuous_const (by fun_prop))

@@ -50,9 +50,9 @@ variable [Semiring R] [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid M₃] 
 /-- `pi` construction for linear functions. From a family of linear functions it produces a linear
 function into a family of modules. -/
 def pi (f : (i : ι) → M₂ →ₗ[R] φ i) : M₂ →ₗ[R] (i : ι) → φ i :=
-  { Pi.addHom fun i => (f i).toAddHom with
-    toFun := fun c i => f i c
-    map_smul' := fun _ _ => funext fun i => (f i).map_smul _ _ }
+  { Pi.addHom fun i ↦ (f i).toAddHom with
+    toFun := fun c i ↦ f i c
+    map_smul' := fun _ _ ↦ funext fun i ↦ (f i).map_smul _ _ }
 
 @[simp]
 theorem pi_apply (f : (i : ι) → M₂ →ₗ[R] φ i) (c : M₂) (i : ι) : pi f c i = f i c :=
@@ -63,12 +63,12 @@ theorem ker_pi (f : (i : ι) → M₂ →ₗ[R] φ i) : ker (pi f) = ⨅ i : ι,
 
 theorem pi_eq_zero (f : (i : ι) → M₂ →ₗ[R] φ i) : pi f = 0 ↔ ∀ i, f i = 0 := by
   simp only [LinearMap.ext_iff, pi_apply, funext_iff]
-  exact ⟨fun h a b => h b a, fun h a b => h b a⟩
+  exact ⟨fun h a b ↦ h b a, fun h a b ↦ h b a⟩
 
-theorem pi_zero : pi (fun _ => 0 : (i : ι) → M₂ →ₗ[R] φ i) = 0 := by ext; rfl
+theorem pi_zero : pi (fun _ ↦ 0 : (i : ι) → M₂ →ₗ[R] φ i) = 0 := by ext; rfl
 
 theorem pi_comp (f : (i : ι) → M₂ →ₗ[R] φ i) (g : M₃ →ₗ[R] M₂) :
-    (pi f).comp g = pi fun i => (f i).comp g :=
+    (pi f).comp g = pi fun i ↦ (f i).comp g :=
   rfl
 
 /-- The constant linear map, taking `x` to `Function.const ι x`. -/
@@ -111,9 +111,9 @@ theorem proj_surjective (i : ι) : Surjective (proj i : ((i : ι) → φ i) →�
 theorem iInf_ker_proj : (⨅ i, ker (proj i : ((i : ι) → φ i) →ₗ[R] φ i) :
     Submodule R ((i : ι) → φ i)) = ⊥ :=
   bot_unique <|
-    SetLike.le_def.2 fun a h => by
+    SetLike.le_def.2 fun a h ↦ by
       simp only [mem_iInf, mem_ker, proj_apply] at h
-      exact (mem_bot _).2 (funext fun i => h i)
+      exact (mem_bot _).2 (funext fun i ↦ h i)
 
 instance CompatibleSMul.pi (R S M N ι : Type*) [Semiring S]
     [AddCommMonoid M] [AddCommMonoid N] [SMul R M] [SMul R N] [Module S M] [Module S N]
@@ -125,14 +125,14 @@ between `M₂` and `M₃`. -/
 @[simps]
 protected def compLeft (f : M₂ →ₗ[R] M₃) (I : Type*) : (I → M₂) →ₗ[R] I → M₃ :=
   { f.toAddMonoidHom.compLeft I with
-    toFun := fun h => f ∘ h
-    map_smul' := fun c h => by
+    toFun := fun h ↦ f ∘ h
+    map_smul' := fun c h ↦ by
       ext x
       exact f.map_smul' c (h x) }
 
 theorem apply_single [AddCommMonoid M] [Module R M] [DecidableEq ι] (f : (i : ι) → φ i →ₗ[R] M)
     (i j : ι) (x : φ i) : f j (Pi.single i x j) = (Pi.single i (f i x) : ι → M) j :=
-  Pi.apply_single (fun i => f i) (fun i => (f i).map_zero) _ _ _
+  Pi.apply_single (fun i ↦ f i) (fun i ↦ (f i).map_zero) _ _ _
 
 variable (R φ)
 
@@ -161,7 +161,7 @@ theorem proj_comp_single_ne (i j : ι) (h : i ≠ j) : (proj i).comp (single R �
 
 theorem iSup_range_single_le_iInf_ker_proj (I J : Set ι) (h : Disjoint I J) :
     ⨆ i ∈ I, range (single R φ i) ≤ ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
-  refine iSup_le fun i => iSup_le fun hi => range_le_iff_comap.2 ?_
+  refine iSup_le fun i ↦ iSup_le fun hi ↦ range_le_iff_comap.2 ?_
   simp only [← ker_comp, eq_top_iff, SetLike.le_def, mem_ker, comap_iInf, mem_iInf]
   rintro b - j hj
   rw [proj_comp_single_ne R φ j i, zero_apply]
@@ -178,25 +178,25 @@ theorem iInf_ker_proj_le_iSup_range_single {I : Finset ι} {J : Set ι} (hu : Se
         show (∑ i ∈ I, Pi.single i (b i)) = b by
           ext i
           rw [Finset.sum_apply, ← Pi.single_eq_same i (b i)]
-          refine Finset.sum_eq_single i (fun j _ ne => Pi.single_eq_of_ne ne.symm _) ?_
+          refine Finset.sum_eq_single i (fun j _ ne ↦ Pi.single_eq_of_ne ne.symm _) ?_
           intro hiI
           rw [Pi.single_eq_same]
           exact hb _ ((hu trivial).resolve_left hiI)]
-      exact sum_mem_biSup fun i _ => mem_range_self (single R φ i) (b i))
+      exact sum_mem_biSup fun i _ ↦ mem_range_self (single R φ i) (b i))
 
 theorem iSup_range_single_eq_iInf_ker_proj {I J : Set ι} (hd : Disjoint I J)
     (hu : Set.univ ⊆ I ∪ J) (hI : Set.Finite I) :
     ⨆ i ∈ I, range (single R φ i) = ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
   refine le_antisymm (iSup_range_single_le_iInf_ker_proj _ _ _ _ hd) ?_
   have : Set.univ ⊆ ↑hI.toFinset ∪ J := by rwa [hI.coe_toFinset]
-  refine le_trans (iInf_ker_proj_le_iSup_range_single R φ this) (iSup_mono fun i => ?_)
+  refine le_trans (iInf_ker_proj_le_iSup_range_single R φ this) (iSup_mono fun i ↦ ?_)
   rw [Set.Finite.mem_toFinset]
 
 theorem iSup_range_single [Finite ι] : ⨆ i, range (single R φ i) = ⊤ := by
   cases nonempty_fintype ι
   convert top_unique (iInf_emptyset.ge.trans <| iInf_ker_proj_le_iSup_range_single R φ _)
   · rename_i i
-    exact ((@iSup_pos _ _ _ fun _ => range <| single R φ i) <| Finset.mem_univ i).symm
+    exact ((@iSup_pos _ _ _ fun _ ↦ range <| single R φ i) <| Finset.mem_univ i).symm
   · rw [Finset.coe_univ, Set.union_empty]
 
 theorem disjoint_single_single (I J : Set ι) (h : Disjoint I J) :
@@ -245,7 +245,7 @@ theorem lsum_piSingle (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring 
 theorem lsum_single (S) [Fintype ι] [Semiring S]
     [∀ i, Module S (φ i)] [∀ i, SMulCommClass R S (φ i)] :
     LinearMap.lsum R φ S (LinearMap.single R φ) = LinearMap.id :=
-  LinearMap.ext fun x => by simp [Finset.univ_sum_single]
+  LinearMap.ext fun x ↦ by simp [Finset.univ_sum_single]
 
 variable {R φ}
 
@@ -257,13 +257,13 @@ theorem pi_ext (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) : f = g :=
   toAddMonoidHom_injective <| AddMonoidHom.functions_ext _ _ _ h
 
 theorem pi_ext_iff : f = g ↔ ∀ i x, f (Pi.single i x) = g (Pi.single i x) :=
-  ⟨fun h _ _ => h ▸ rfl, pi_ext⟩
+  ⟨fun h _ _ ↦ h ▸ rfl, pi_ext⟩
 
 /-- This is used as the ext lemma instead of `LinearMap.pi_ext` for reasons explained in
 note [partially-applied ext lemmas]. -/
 @[ext]
 theorem pi_ext' (h : ∀ i, f.comp (single R φ i) = g.comp (single R φ i)) : f = g := by
-  refine pi_ext fun i x => ?_
+  refine pi_ext fun i x ↦ ?_
   convert LinearMap.congr_fun (h i) x
 
 end Ext
@@ -274,17 +274,17 @@ variable (R φ)
 
 /-- If `I` and `J` are disjoint index sets, the product of the kernels of the `J`th projections of
 `φ` is linearly equivalent to the product over `I`. -/
-def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjoint I J)
+def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i ↦ i ∈ I] (hd : Disjoint I J)
     (hu : Set.univ ⊆ I ∪ J) :
     (⨅ i ∈ J, ker (proj i : ((i : ι) → φ i) →ₗ[R] φ i) :
     Submodule R ((i : ι) → φ i)) ≃ₗ[R] (i : I) → φ i := by
   refine
-    LinearEquiv.ofLinear (pi fun i => (proj (i : ι)).comp (Submodule.subtype _))
-      (codRestrict _ (pi fun i => if h : i ∈ I then proj (⟨i, h⟩ : I) else 0) ?_) ?_ ?_
+    LinearEquiv.ofLinear (pi fun i ↦ (proj (i : ι)).comp (Submodule.subtype _))
+      (codRestrict _ (pi fun i ↦ if h : i ∈ I then proj (⟨i, h⟩ : I) else 0) ?_) ?_ ?_
   · intro b
     simp only [mem_iInf, mem_ker, proj_apply, pi_apply]
     intro j hjJ
-    have : j ∉ I := fun hjI => hd.le_bot ⟨hjI, hjJ⟩
+    have : j ∉ I := fun hjI ↦ hd.le_bot ⟨hjI, hjJ⟩
     rw [dif_neg this, zero_apply]
   · simp only [pi_comp, comp_assoc, subtype_comp_codRestrict, proj_pi, Subtype.coe_prop]
     ext b ⟨j, hj⟩
@@ -307,10 +307,10 @@ section
 
 /-- `diag i j` is the identity map if `i = j`. Otherwise it is the constant 0 map. -/
 def diag (i j : ι) : φ i →ₗ[R] φ j :=
-  @Function.update ι (fun j => φ i →ₗ[R] φ j) _ 0 i id j
+  @Function.update ι (fun j ↦ φ i →ₗ[R] φ j) _ 0 i id j
 
 theorem update_apply (f : (i : ι) → M₂ →ₗ[R] φ i) (c : M₂) (i j : ι) (b : M₂ →ₗ[R] φ i) :
-    (update f i b j) c = update (fun i => f i c) i (b c) j := by
+    (update f i b j) c = update (fun i ↦ f i c) i (b c) j := by
   by_cases h : j = i
   · rw [h, update_self, update_self]
   · rw [update_of_ne h, update_of_ne h]
@@ -333,9 +333,9 @@ end
 /-- A linear map `f` applied to `x : ι → R` can be computed using the image under `f` of elements
 of the canonical basis. -/
 theorem pi_apply_eq_sum_univ [Fintype ι] (f : (ι → R) →ₗ[R] M₂) (x : ι → R) :
-    f x = ∑ i, x i • f fun j => if i = j then 1 else 0 := by
+    f x = ∑ i, x i • f fun j ↦ if i = j then 1 else 0 := by
   conv_lhs => rw [pi_eq_sum_univ x, map_sum]
-  refine Finset.sum_congr rfl (fun _ _ => ?_)
+  refine Finset.sum_congr rfl (fun _ _ ↦ ?_)
   rw [map_smul]
 
 end LinearMap
@@ -351,7 +351,7 @@ open LinearMap
 `f : (i : ι) → φ i` such that `f i` belongs to `p a` whenever `i ∈ I`. -/
 @[simps]
 def pi (I : Set ι) (p : (i : ι) → Submodule R (φ i)) : Submodule R ((i : ι) → φ i) where
-  carrier := Set.pi I fun i => p i
+  carrier := Set.pi I fun i ↦ p i
   zero_mem' i _ := (p i).zero_mem
   add_mem' {_ _} hx hy i hi := (p i).add_mem (hx i hi) (hy i hi)
   smul_mem' c _ hx i hi := (p i).smul_mem c (hx i hi)
@@ -399,14 +399,14 @@ theorem le_comap_single_pi [DecidableEq ι] (p : (i : ι) → Submodule R (φ i)
 
 theorem iSup_map_single_le [DecidableEq ι] :
     ⨆ i, map (LinearMap.single R φ i) (p i) ≤ pi I p :=
-  iSup_le fun _ => map_le_iff_le_comap.mpr <| le_comap_single_pi _
+  iSup_le fun _ ↦ map_le_iff_le_comap.mpr <| le_comap_single_pi _
 
 theorem iSup_map_single [DecidableEq ι] [Finite ι] :
     ⨆ i, map (LinearMap.single R φ i : φ i →ₗ[R] (i : ι) → φ i) (p i) = pi Set.univ p := by
   cases nonempty_fintype ι
-  refine iSup_map_single_le.antisymm fun x hx => ?_
+  refine iSup_map_single_le.antisymm fun x hx ↦ ?_
   rw [← Finset.univ_sum_single x]
-  exact sum_mem_iSup fun i => mem_map_of_mem (hx i trivial)
+  exact sum_mem_iSup fun i ↦ mem_map_of_mem (hx i trivial)
 
 end Submodule
 
@@ -416,17 +416,17 @@ variable [Semiring R]
 
 lemma ker_compLeft [AddCommMonoid M] [AddCommMonoid M₂]
     [Module R M] [Module R M₂] (f : M →ₗ[R] M₂) (I : Type*) :
-    LinearMap.ker (f.compLeft I) = Submodule.pi (Set.univ : Set I) (fun _ => LinearMap.ker f) :=
-  Submodule.ext fun _ => ⟨fun (hx : _ = _) i _ => congr_fun hx i,
-    fun hx => funext fun i => hx i trivial⟩
+    LinearMap.ker (f.compLeft I) = Submodule.pi (Set.univ : Set I) (fun _ ↦ LinearMap.ker f) :=
+  Submodule.ext fun _ ↦ ⟨fun (hx : _ = _) i _ ↦ congr_fun hx i,
+    fun hx ↦ funext fun i ↦ hx i trivial⟩
 
 lemma range_compLeft [AddCommMonoid M] [AddCommMonoid M₂]
     [Module R M] [Module R M₂] (f : M →ₗ[R] M₂) (I : Type*) :
     LinearMap.range (f.compLeft I) =
-      Submodule.pi (Set.univ : Set I) (fun _ => LinearMap.range f) :=
-  Submodule.ext fun _ => ⟨fun ⟨y, hy⟩ i _ => ⟨y i, congr_fun hy i⟩, fun hx => by
+      Submodule.pi (Set.univ : Set I) (fun _ ↦ LinearMap.range f) :=
+  Submodule.ext fun _ ↦ ⟨fun ⟨y, hy⟩ i _ ↦ ⟨y i, congr_fun hy i⟩, fun hx ↦ by
     choose y hy using hx
-    exact ⟨fun i => y i trivial, funext fun i => hy i trivial⟩⟩
+    exact ⟨fun i ↦ y i trivial, funext fun i ↦ hy i trivial⟩⟩
 
 end LinearMap
 
@@ -441,27 +441,27 @@ variable [(i : ι) → AddCommMonoid (χ i)] [(i : ι) → Module R (χ i)]
 
 This is `Equiv.piCongrRight` as a `LinearEquiv` -/
 def piCongrRight (e : (i : ι) → φ i ≃ₗ[R] ψ i) : ((i : ι) → φ i) ≃ₗ[R] (i : ι) → ψ i :=
-  { AddEquiv.piCongrRight fun j => (e j).toAddEquiv with
-    toFun := fun f i => e i (f i)
-    invFun := fun f i => (e i).symm (f i)
-    map_smul' := fun c f => by ext; simp }
+  { AddEquiv.piCongrRight fun j ↦ (e j).toAddEquiv with
+    toFun := fun f i ↦ e i (f i)
+    invFun := fun f i ↦ (e i).symm (f i)
+    map_smul' := fun c f ↦ by ext; simp }
 
 @[simp]
 theorem piCongrRight_apply (e : (i : ι) → φ i ≃ₗ[R] ψ i) (f i) :
     piCongrRight e f i = e i (f i) := rfl
 
 @[simp]
-theorem piCongrRight_refl : (piCongrRight fun j => refl R (φ j)) = refl _ _ :=
+theorem piCongrRight_refl : (piCongrRight fun j ↦ refl R (φ j)) = refl _ _ :=
   rfl
 
 @[simp]
 theorem piCongrRight_symm (e : (i : ι) → φ i ≃ₗ[R] ψ i) :
-    (piCongrRight e).symm = piCongrRight fun i => (e i).symm :=
+    (piCongrRight e).symm = piCongrRight fun i ↦ (e i).symm :=
   rfl
 
 @[simp]
 theorem piCongrRight_trans (e : (i : ι) → φ i ≃ₗ[R] ψ i) (f : (i : ι) → ψ i ≃ₗ[R] χ i) :
-    (piCongrRight e).trans (piCongrRight f) = piCongrRight fun i => (e i).trans (f i) :=
+    (piCongrRight e).trans (piCongrRight f) = piCongrRight fun i ↦ (e i).trans (f i) :=
   rfl
 
 variable (R φ)
@@ -472,8 +472,8 @@ This is `Equiv.piCongrLeft'` as a `LinearEquiv`. -/
 @[simps +simpRhs]
 def piCongrLeft' (e : ι ≃ ι') : ((i' : ι) → φ i') ≃ₗ[R] (i : ι') → φ <| e.symm i :=
   { Equiv.piCongrLeft' φ e with
-    map_add' := fun _ _ => rfl
-    map_smul' := fun _ _ => rfl }
+    map_add' := fun _ _ ↦ rfl
+    map_smul' := fun _ _ ↦ rfl }
 
 /-- Transporting dependent functions through an equivalence of the base,
 expressed as a "simplification".
@@ -521,8 +521,8 @@ When `R` is commutative, we can take this to be the usual action with `S = R`.
 Otherwise, `S = ℕ` shows that the equivalence is additive.
 See note [bundled maps over different rings]. -/
 def piRing : ((ι → R) →ₗ[R] M) ≃ₗ[S] ι → M :=
-  (LinearMap.lsum R (fun _ : ι => R) S).symm.trans
-    (piCongrRight fun _ => LinearMap.ringLmapEquivSelf R S M)
+  (LinearMap.lsum R (fun _ : ι ↦ R) S).symm.trans
+    (piCongrRight fun _ ↦ LinearMap.ringLmapEquivSelf R S M)
 
 variable {ι R M}
 
@@ -573,8 +573,8 @@ theorem sumArrowLequivProdArrow_symm_apply_inr {α β} (f : α → M) (g : β �
 def funUnique (ι R M : Type*) [Unique ι] [Semiring R] [AddCommMonoid M] [Module R M] :
     (ι → M) ≃ₗ[R] M :=
   { Equiv.funUnique ι M with
-    map_add' := fun _ _ => rfl
-    map_smul' := fun _ _ => rfl }
+    map_add' := fun _ _ ↦ rfl
+    map_smul' := fun _ _ ↦ rfl }
 
 @[simp]
 theorem funUnique_apply (ι R M : Type*) [Unique ι] [Semiring R] [AddCommMonoid M] [Module R M] :
@@ -588,18 +588,18 @@ def piFinTwo (M : Fin 2 → Type v)
     [(i : Fin 2) → AddCommMonoid (M i)] [(i : Fin 2) → Module R (M i)] :
     ((i : Fin 2) → M i) ≃ₗ[R] M 0 × M 1 :=
   { piFinTwoEquiv M with
-    map_add' := fun _ _ => rfl
-    map_smul' := fun _ _ => rfl }
+    map_add' := fun _ _ ↦ rfl
+    map_smul' := fun _ _ ↦ rfl }
 
 @[simp]
 theorem piFinTwo_apply (M : Fin 2 → Type v)
     [(i : Fin 2) → AddCommMonoid (M i)] [(i : Fin 2) → Module R (M i)] :
-    (piFinTwo R M : ((i : Fin 2) → M i) → M 0 × M 1) = fun f => (f 0, f 1) := rfl
+    (piFinTwo R M : ((i : Fin 2) → M i) → M 0 × M 1) = fun f ↦ (f 0, f 1) := rfl
 
 /-- Linear equivalence between vectors in `M² = Fin 2 → M` and `M × M`. -/
 @[simps! -fullyApplied]
 def finTwoArrow : (Fin 2 → M) ≃ₗ[R] M × M :=
-  { finTwoArrowEquiv M, piFinTwo R fun _ => M with }
+  { finTwoArrowEquiv M, piFinTwo R fun _ ↦ M with }
 
 end LinearEquiv
 
@@ -627,8 +627,8 @@ variable (R) {η : Type x} [Semiring R] (s : ι → η)
 @[simps]
 noncomputable def Function.ExtendByZero.linearMap : (ι → R) →ₗ[R] η → R :=
   { Function.ExtendByZero.hom R s with
-    toFun := fun f => Function.extend s f 0
-    map_smul' := fun r f => by simpa using Function.extend_smul r s f 0 }
+    toFun := fun f ↦ Function.extend s f 0
+    map_smul' := fun r f ↦ by simpa using Function.extend_smul r s f 0 }
 
 end Extend
 
@@ -677,7 +677,7 @@ theorem LinearMap.vecEmpty_apply (m : M) : (LinearMap.vecEmpty : M →ₗ[R] Fin
 /-- A linear map into `Fin n.succ → M₃` can be built out of a map into `M₃` and a map into
 `Fin n → M₃`. -/
 def LinearMap.vecCons {n} (f : M →ₗ[R] M₂) (g : M →ₗ[R] Fin n → M₂) : M →ₗ[R] Fin n.succ → M₂ :=
-  Fin.consLinearEquiv R (fun _ : Fin n.succ => M₂) ∘ₗ f.prod g
+  Fin.consLinearEquiv R (fun _ : Fin n.succ ↦ M₂) ∘ₗ f.prod g
 
 @[simp]
 theorem LinearMap.vecCons_apply {n} (f : M →ₗ[R] M₂) (g : M →ₗ[R] Fin n → M₂) (m : M) :
@@ -728,8 +728,8 @@ variable [Module R M] [Module R M₂] [Module R M₃]
 @[simps]
 def LinearMap.vecEmpty₂ : M →ₗ[R] M₂ →ₗ[R] Fin 0 → M₃ where
   toFun _ := LinearMap.vecEmpty
-  map_add' _ _ := LinearMap.ext fun _ => Subsingleton.elim _ _
-  map_smul' _ _ := LinearMap.ext fun _ => Subsingleton.elim _ _
+  map_add' _ _ := LinearMap.ext fun _ ↦ Subsingleton.elim _ _
+  map_smul' _ _ := LinearMap.ext fun _ ↦ Subsingleton.elim _ _
 
 /-- A bilinear map into `Fin n.succ → M₃` can be built out of a map into `M₃` and a map into
 `Fin n → M₃` -/
@@ -738,10 +738,10 @@ def LinearMap.vecCons₂ {n} (f : M →ₗ[R] M₂ →ₗ[R] M₃) (g : M →ₗ
     M →ₗ[R] M₂ →ₗ[R] Fin n.succ → M₃ where
   toFun m := LinearMap.vecCons (f m) (g m)
   map_add' x y :=
-    LinearMap.ext fun z => by
+    LinearMap.ext fun z ↦ by
       simp only [f.map_add, g.map_add, LinearMap.add_apply, LinearMap.vecCons_apply,
         Matrix.cons_add_cons (f x z)]
-  map_smul' r x := LinearMap.ext fun z => by simp [Matrix.smul_cons r (f x z)]
+  map_smul' r x := LinearMap.ext fun z ↦ by simp [Matrix.smul_cons r (f x z)]
 
 end CommSemiring
 

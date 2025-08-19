@@ -38,7 +38,7 @@ theorem sup_orthogonal_inf_of_hasOrthogonalProjection {K₁ K₂ : Submodule �
   constructor
   · rintro ⟨y, hy, z, hz, rfl⟩
     exact K₂.add_mem (h hy) hz.2
-  · exact fun hx => ⟨v, v.prop, x - v, ⟨hvm, K₂.sub_mem hx (h v.prop)⟩, add_sub_cancel _ _⟩
+  · exact fun hx ↦ ⟨v, v.prop, x - v, ⟨hvm, K₂.sub_mem hx (h v.prop)⟩, add_sub_cancel _ _⟩
 
 @[deprecated (since := "2025-07-27")] alias sup_orthogonal_inf_of_completeSpace :=
   sup_orthogonal_inf_of_hasOrthogonalProjection
@@ -110,7 +110,7 @@ theorem orthogonalComplement_eq_orthogonalComplement {L : Submodule 𝕜 E} [K.H
 
 @[simp]
 theorem orthogonal_eq_bot_iff [K.HasOrthogonalProjection] : Kᗮ = ⊥ ↔ K = ⊤ := by
-  refine ⟨?_, fun h => by rw [h, Submodule.top_orthogonal_eq_bot]⟩
+  refine ⟨?_, fun h ↦ by rw [h, Submodule.top_orthogonal_eq_bot]⟩
   intro h
   have : K ⊔ Kᗮ = ⊤ := Submodule.sup_orthogonal_of_hasOrthogonalProjection
   rwa [h, sup_comm, bot_sup_eq] at this
@@ -123,12 +123,12 @@ the orthogonal projection of `x` on `U i` tends to the orthogonal projection of 
 theorem starProjection_tendsto_closure_iSup {ι : Type*} [Preorder ι]
     (U : ι → Submodule 𝕜 E) [∀ i, (U i).HasOrthogonalProjection]
     [(⨆ i, U i).topologicalClosure.HasOrthogonalProjection] (hU : Monotone U) (x : E) :
-    Filter.Tendsto (fun i => (U i).starProjection x) atTop
+    Filter.Tendsto (fun i ↦ (U i).starProjection x) atTop
       (𝓝 ((⨆ i, U i).topologicalClosure.starProjection x)) := by
   refine .of_neBot_imp fun h ↦ ?_
   cases atTop_neBot_iff.mp h
   let y := (⨆ i, U i).topologicalClosure.starProjection x
-  have proj_x : ∀ i, (U i).orthogonalProjection x = (U i).orthogonalProjection y := fun i =>
+  have proj_x : ∀ i, (U i).orthogonalProjection x = (U i).orthogonalProjection y := fun i ↦
     (orthogonalProjection_starProjection_of_le
         ((le_iSup U i).trans (iSup U).le_topologicalClosure) _).symm
   suffices ∀ ε > 0, ∃ I, ∀ i ≥ I, ‖(U i).starProjection y - y‖ < ε by
@@ -140,11 +140,11 @@ theorem starProjection_tendsto_closure_iSup {ι : Type*} [Preorder ι]
     exact y_mem ε hε
   rw [dist_eq_norm] at hay
   obtain ⟨I, hI⟩ : ∃ I, a ∈ U I := by rwa [Submodule.mem_iSup_of_directed _ hU.directed_le] at ha
-  refine ⟨I, fun i (hi : I ≤ i) => ?_⟩
+  refine ⟨I, fun i (hi : I ≤ i) ↦ ?_⟩
   rw [norm_sub_rev, starProjection_minimal]
   refine lt_of_le_of_lt ?_ hay
   change _ ≤ ‖y - (⟨a, hU hi hI⟩ : U i)‖
-  exact ciInf_le ⟨0, Set.forall_mem_range.mpr fun _ => norm_nonneg _⟩ _
+  exact ciInf_le ⟨0, Set.forall_mem_range.mpr fun _ ↦ norm_nonneg _⟩ _
 
 @[deprecated (since := "2025-07-07")] alias orthogonalProjection_tendsto_closure_iSup :=
   starProjection_tendsto_closure_iSup
@@ -154,7 +154,7 @@ and a fixed `x : E`, the orthogonal projection of `x` on `U i` tends to `x` alon
 theorem starProjection_tendsto_self {ι : Type*} [Preorder ι]
     (U : ι → Submodule 𝕜 E) [∀ t, (U t).HasOrthogonalProjection] (hU : Monotone U) (x : E)
     (hU' : ⊤ ≤ (⨆ t, U t).topologicalClosure) :
-    Filter.Tendsto (fun t => (U t).starProjection x) atTop (𝓝 x) := by
+    Filter.Tendsto (fun t ↦ (U t).starProjection x) atTop (𝓝 x) := by
   have : (⨆ i, U i).topologicalClosure.HasOrthogonalProjection := by
     rw [top_unique hU']
     infer_instance
@@ -230,6 +230,6 @@ theorem eq_of_inner_right (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪(v : E), x
   hK.eq_of_sub_mem_orthogonal (Submodule.sub_mem_orthogonal_of_inner_right h)
 
 theorem eq_zero_of_inner_right (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪(v : E), x⟫ = 0) : x = 0 :=
-  hK.eq_of_inner_right fun v => by rw [inner_zero_right, h v]
+  hK.eq_of_inner_right fun v ↦ by rw [inner_zero_right, h v]
 
 end Dense

@@ -30,10 +30,10 @@ def ringEquiv (e : α ≃ β) [Add β] [Mul β] : by
   intros
   exact
     { e with
-      map_add' := fun x y => by
+      map_add' := fun x y ↦ by
         apply e.symm.injective
         simp [add_def]
-      map_mul' := fun x y => by
+      map_mul' := fun x y ↦ by
         apply e.symm.injective
         simp [mul_def] }
 
@@ -65,17 +65,17 @@ protected abbrev nonUnitalSemiring [NonUnitalSemiring β] : NonUnitalSemiring α
 /-- Transfer `AddMonoidWithOne` across an `Equiv` -/
 protected abbrev addMonoidWithOne [AddMonoidWithOne β] : AddMonoidWithOne α :=
   { e.addMonoid, e.one with
-    natCast := fun n => e.symm n
+    natCast := fun n ↦ e.symm n
     natCast_zero := e.injective (by simp [zero_def])
-    natCast_succ := fun n => e.injective (by simp [add_def, one_def]) }
+    natCast_succ := fun n ↦ e.injective (by simp [add_def, one_def]) }
 
 /-- Transfer `AddGroupWithOne` across an `Equiv` -/
 protected abbrev addGroupWithOne [AddGroupWithOne β] : AddGroupWithOne α :=
   { e.addMonoidWithOne,
     e.addGroup with
-    intCast := fun n => e.symm n
-    intCast_ofNat := fun n => by simp only [Int.cast_natCast]; rfl
-    intCast_negSucc := fun _ =>
+    intCast := fun n ↦ e.symm n
+    intCast_ofNat := fun n ↦ by simp only [Int.cast_natCast]; rfl
+    intCast_negSucc := fun _ ↦
       congr_arg e.symm <| (Int.cast_negSucc _).trans <| congr_arg _ (e.apply_symm_apply _).symm }
 
 /-- Transfer `NonAssocSemiring` across an `Equiv` -/

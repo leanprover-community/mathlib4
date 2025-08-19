@@ -90,14 +90,14 @@ theorem add_mul_self (x y : R) : (x + y) * (x + y) = x * x + y * y := by
 theorem list_sum_sq (l : List R) : l.sum ^ 2 = (l.map (· ^ 2)).sum :=
   list_sum_pow_char _ _
 
-theorem list_sum_mul_self (l : List R) : l.sum * l.sum = (List.map (fun x => x * x) l).sum := by
+theorem list_sum_mul_self (l : List R) : l.sum * l.sum = (List.map (fun x ↦ x * x) l).sum := by
   simp_rw [← pow_two, list_sum_sq]
 
 theorem multiset_sum_sq (l : Multiset R) : l.sum ^ 2 = (l.map (· ^ 2)).sum :=
   multiset_sum_pow_char _ _
 
 theorem multiset_sum_mul_self (l : Multiset R) :
-    l.sum * l.sum = (Multiset.map (fun x => x * x) l).sum := by simp_rw [← pow_two, multiset_sum_sq]
+    l.sum * l.sum = (Multiset.map (fun x ↦ x * x) l).sum := by simp_rw [← pow_two, multiset_sum_sq]
 
 theorem sum_sq (s : Finset ι) (f : ι → R) : (∑ i ∈ s, f i) ^ 2 = ∑ i ∈ s, f i ^ 2 :=
   sum_pow_char _ _ _
@@ -114,7 +114,7 @@ section ringChar
 variable [Ring R]
 
 theorem neg_one_eq_one_iff [Nontrivial R] : (-1 : R) = 1 ↔ ringChar R = 2 := by
-  refine ⟨fun h => ?_, fun h => @CharTwo.neg_eq _ _ (ringChar.of_eq h) 1⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ @CharTwo.neg_eq _ _ (ringChar.of_eq h) 1⟩
   rw [eq_comm, ← sub_eq_zero, sub_neg_eq_add, ← Nat.cast_one, ← Nat.cast_add] at h
   exact ((Nat.dvd_prime Nat.prime_two).mp (ringChar.dvd h)).resolve_left CharP.ringChar_ne_one
 

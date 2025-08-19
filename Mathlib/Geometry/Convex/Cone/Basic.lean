@@ -91,8 +91,8 @@ protected lemma add_mem ⦃x⦄ (hx : x ∈ C) ⦃y⦄ (hy : y ∈ C) : x + y �
 instance : AddMemClass (ConvexCone R M) M where add_mem ha hb := add_mem' _ ha hb
 
 instance : Min (ConvexCone R M) :=
-  ⟨fun S T =>
-    ⟨S ∩ T, fun _ hc _ hx => ⟨S.smul_mem hc hx.1, T.smul_mem hc hx.2⟩, fun _ hx _ hy =>
+  ⟨fun S T ↦
+    ⟨S ∩ T, fun _ hc _ hx ↦ ⟨S.smul_mem hc hx.1, T.smul_mem hc hx.2⟩, fun _ hx _ hy ↦
       ⟨S.add_mem hx.1 hy.1, T.add_mem hx.2 hy.2⟩⟩⟩
 
 variable (C₁ C₂) in
@@ -120,7 +120,7 @@ lemma mem_iInf {ι : Sort*} {f : ι → ConvexCone R M} : x ∈ iInf f ↔ ∀ i
   mem_iInter₂.trans <| by simp
 
 instance : Bot (ConvexCone R M) :=
-  ⟨⟨∅, fun _ _ _ => False.elim, fun _ => False.elim⟩⟩
+  ⟨⟨∅, fun _ _ _ ↦ False.elim, fun _ ↦ False.elim⟩⟩
 
 @[simp] lemma notMem_bot : x ∉ (⊥ : ConvexCone R M) := id
 
@@ -134,7 +134,7 @@ theorem mem_bot (x : M) : (x ∈ (⊥ : ConvexCone R M)) = False :=
 lemma coe_eq_empty : (C : Set M) = ∅ ↔ C = ⊥ := by rw [← coe_bot (R := R)]; norm_cast
 
 instance : Top (ConvexCone R M) :=
-  ⟨⟨univ, fun _ _ _ _ => mem_univ _, fun _ _ _ _ => mem_univ _⟩⟩
+  ⟨⟨univ, fun _ _ _ _ ↦ mem_univ _, fun _ _ _ _ ↦ mem_univ _⟩⟩
 
 @[simp] lemma mem_top : x ∈ (⊤ : ConvexCone R M) := mem_univ x
 
@@ -145,23 +145,23 @@ instance : CompleteLattice (ConvexCone R M) :=
     le := (· ≤ ·)
     lt := (· < ·)
     bot := ⊥
-    bot_le := fun _ _ => False.elim
+    bot_le := fun _ _ ↦ False.elim
     top := ⊤
     le_top _ _ _ := mem_top
     inf := (· ⊓ ·)
     sInf := InfSet.sInf
-    sup := fun a b => sInf { x | a ≤ x ∧ b ≤ x }
-    sSup := fun s => sInf { T | ∀ S ∈ s, S ≤ T }
-    le_sup_left := fun _ _ => fun _ hx => mem_sInf.2 fun _ hs => hs.1 hx
-    le_sup_right := fun _ _ => fun _ hx => mem_sInf.2 fun _ hs => hs.2 hx
-    sup_le := fun _ _ c ha hb _ hx => mem_sInf.1 hx c ⟨ha, hb⟩
-    le_inf := fun _ _ _ ha hb _ hx => ⟨ha hx, hb hx⟩
-    inf_le_left := fun _ _ _ => And.left
-    inf_le_right := fun _ _ _ => And.right
-    le_sSup := fun _ p hs _ hx => mem_sInf.2 fun _ ht => ht p hs hx
-    sSup_le := fun _ p hs _ hx => mem_sInf.1 hx p hs
-    le_sInf := fun _ _ ha _ hx => mem_sInf.2 fun t ht => ha t ht hx
-    sInf_le := fun _ _ ha _ hx => mem_sInf.1 hx _ ha }
+    sup := fun a b ↦ sInf { x | a ≤ x ∧ b ≤ x }
+    sSup := fun s ↦ sInf { T | ∀ S ∈ s, S ≤ T }
+    le_sup_left := fun _ _ ↦ fun _ hx ↦ mem_sInf.2 fun _ hs ↦ hs.1 hx
+    le_sup_right := fun _ _ ↦ fun _ hx ↦ mem_sInf.2 fun _ hs ↦ hs.2 hx
+    sup_le := fun _ _ c ha hb _ hx ↦ mem_sInf.1 hx c ⟨ha, hb⟩
+    le_inf := fun _ _ _ ha hb _ hx ↦ ⟨ha hx, hb hx⟩
+    inf_le_left := fun _ _ _ ↦ And.left
+    inf_le_right := fun _ _ _ ↦ And.right
+    le_sSup := fun _ p hs _ hx ↦ mem_sInf.2 fun _ ht ↦ ht p hs hx
+    sSup_le := fun _ p hs _ hx ↦ mem_sInf.1 hx p hs
+    le_sInf := fun _ _ ha _ hx ↦ mem_sInf.2 fun t ht ↦ ha t ht hx
+    sInf_le := fun _ _ ha _ hx ↦ mem_sInf.1 hx _ ha }
 
 instance : Inhabited (ConvexCone R M) := ⟨⊥⟩
 
@@ -184,8 +184,8 @@ variable [Module R M] [Module R N] [Module R O]
 /-- The image of a convex cone under a `R`-linear map is a convex cone. -/
 def map (f : M →ₗ[R] N) (C : ConvexCone R M) : ConvexCone R N where
   carrier := f '' C
-  smul_mem' := fun c hc _ ⟨x, hx, hy⟩ => hy ▸ f.map_smul c x ▸ mem_image_of_mem f (C.smul_mem hc hx)
-  add_mem' := fun _ ⟨x₁, hx₁, hy₁⟩ _ ⟨x₂, hx₂, hy₂⟩ =>
+  smul_mem' := fun c hc _ ⟨x, hx, hy⟩ ↦ hy ▸ f.map_smul c x ▸ mem_image_of_mem f (C.smul_mem hc hx)
+  add_mem' := fun _ ⟨x₁, hx₁, hy₁⟩ _ ⟨x₂, hx₂, hy₂⟩ ↦
     hy₁ ▸ hy₂ ▸ f.map_add x₁ x₂ ▸ mem_image_of_mem f (add_mem hx₁ hx₂)
 
 @[simp, norm_cast]
@@ -244,7 +244,7 @@ variable [AddCommMonoid M]
 variable [MulAction 𝕜 M] (C : ConvexCone 𝕜 M)
 
 theorem smul_mem_iff {c : 𝕜} (hc : 0 < c) {x : M} : c • x ∈ C ↔ x ∈ C :=
-  ⟨fun h => inv_smul_smul₀ hc.ne' x ▸ C.smul_mem (inv_pos.2 hc) h, C.smul_mem hc⟩
+  ⟨fun h ↦ inv_smul_smul₀ hc.ne' x ▸ C.smul_mem (inv_pos.2 hc) h, C.smul_mem hc⟩
 
 end MulAction
 
@@ -304,7 +304,7 @@ theorem Flat.mono (h : C₁ ≤ C₂) : C₁.Flat → C₂.Flat
   | ⟨x, hxS, hx, hnxS⟩ => ⟨x, h hxS, hx, h hnxS⟩
 
 theorem Salient.anti (h : C₂ ≤ C₁) : C₁.Salient → C₂.Salient :=
-  fun hS x hxT hx hnT => hS x (h hxT) hx (h hnT)
+  fun hS x hxT hx hnT ↦ hS x (h hxT) hx (h hnT)
 
 /-- A flat cone is always pointed (contains `0`). -/
 theorem Flat.pointed (hC : C.Flat) : C.Pointed := by
@@ -329,7 +329,7 @@ def toPartialOrder (C : ConvexCone R G) (h₁ : C.Pointed) (h₂ : C.Salient) : 
     le_antisymm := by
       intro a b ab ba
       by_contra h
-      have h' : b - a ≠ 0 := fun h'' => h (eq_of_sub_eq_zero h'').symm
+      have h' : b - a ≠ 0 := fun h'' ↦ h (eq_of_sub_eq_zero h'').symm
       have H := h₂ (b - a) ab h'
       rw [neg_sub b a] at H
       exact H ba }
@@ -354,7 +354,7 @@ section Module
 variable [AddCommMonoid M] [Module R M] {C₁ C₂ : ConvexCone R M} {x : M}
 
 instance : Zero (ConvexCone R M) :=
-  ⟨⟨0, fun _ _ => by simp, fun _ => by simp⟩⟩
+  ⟨⟨0, fun _ _ ↦ by simp, fun _ ↦ by simp⟩⟩
 
 @[simp] lemma mem_zero : x ∈ (0 : ConvexCone R M) ↔ x = 0 := .rfl
 
@@ -495,7 +495,7 @@ variable (R M) in
 theorem coe_strictlyPositive : ↑(strictlyPositive R M) = Set.Ioi (0 : M) :=
   rfl
 
-lemma strictlyPositive_le_positive : strictlyPositive R M ≤ positive R M := fun _ => le_of_lt
+lemma strictlyPositive_le_positive : strictlyPositive R M ≤ positive R M := fun _ ↦ le_of_lt
 
 @[deprecated (since := "2025-05-29")]
 alias positive_le_strictlyPositive := strictlyPositive_le_positive
@@ -543,12 +543,12 @@ theorem mem_toCone' : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ c • x ∈ 
   · rintro ⟨c, hc, hcx⟩
     exact ⟨c⁻¹, inv_pos.2 hc, _, hcx, by rw [smul_smul, inv_mul_cancel₀ hc.ne', one_smul]⟩
 
-theorem subset_toCone : s ⊆ hs.toCone s := fun x hx =>
+theorem subset_toCone : s ⊆ hs.toCone s := fun x hx ↦
   hs.mem_toCone'.2 ⟨1, zero_lt_one, by rwa [one_smul]⟩
 
 /-- `hs.toCone s` is the least cone that includes `s`. -/
 theorem toCone_isLeast : IsLeast { t : ConvexCone 𝕜 M | s ⊆ t } (hs.toCone s) := by
-  refine ⟨hs.subset_toCone, fun t ht x hx => ?_⟩
+  refine ⟨hs.subset_toCone, fun t ht x hx ↦ ?_⟩
   rcases hs.mem_toCone.1 hx with ⟨c, hc, y, hy, rfl⟩
   exact t.smul_mem hc (ht hy)
 
@@ -561,7 +561,7 @@ theorem convexHull_toCone_isLeast (s : Set M) :
     IsLeast { t : ConvexCone 𝕜 M | s ⊆ t } ((convex_convexHull 𝕜 s).toCone _) := by
   convert (convex_convexHull 𝕜 s).toCone_isLeast using 1
   ext t
-  exact ⟨fun h => convexHull_min h t.convex, (subset_convexHull 𝕜 s).trans⟩
+  exact ⟨fun h ↦ convexHull_min h t.convex, (subset_convexHull 𝕜 s).trans⟩
 
 theorem convexHull_toCone_eq_sInf (s : Set M) :
     (convex_convexHull 𝕜 s).toCone _ = sInf { t : ConvexCone 𝕜 M | s ⊆ t } :=

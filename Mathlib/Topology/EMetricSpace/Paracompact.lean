@@ -38,14 +38,14 @@ Formalization is based on [MR0236876]. -/
 instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : ParacompactSpace α := by
   /- We start with trivial observations about `1 / 2 ^ k`. Here and below we use `1 / 2 ^ k` in
     the comments and `2⁻¹ ^ k` in the code. -/
-  have pow_pos : ∀ k : ℕ, (0 : ℝ≥0∞) < 2⁻¹ ^ k := fun k =>
+  have pow_pos : ∀ k : ℕ, (0 : ℝ≥0∞) < 2⁻¹ ^ k := fun k ↦
     ENNReal.pow_pos (ENNReal.inv_pos.2 ENNReal.ofNat_ne_top) _
-  have hpow_le : ∀ {m n : ℕ}, m ≤ n → (2⁻¹ : ℝ≥0∞) ^ n ≤ 2⁻¹ ^ m := @fun m n h =>
+  have hpow_le : ∀ {m n : ℕ}, m ≤ n → (2⁻¹ : ℝ≥0∞) ^ n ≤ 2⁻¹ ^ m := @fun m n h ↦
     pow_le_pow_right_of_le_one' (ENNReal.inv_le_one.2 ENNReal.one_lt_two.le) h
-  have h2pow : ∀ n : ℕ, 2 * (2⁻¹ : ℝ≥0∞) ^ (n + 1) = 2⁻¹ ^ n := fun n => by
+  have h2pow : ∀ n : ℕ, 2 * (2⁻¹ : ℝ≥0∞) ^ (n + 1) = 2⁻¹ ^ n := fun n ↦ by
     simp [pow_succ', ← mul_assoc, ENNReal.mul_inv_cancel two_ne_zero ofNat_ne_top]
   -- Consider an open covering `S : Set (Set α)`
-  refine ⟨fun ι s ho hcov => ?_⟩
+  refine ⟨fun ι s ho hcov ↦ ?_⟩
   simp only [iUnion_eq_univ_iff] at hcov
   -- choose a well founded order on `S`
   obtain ⟨_, wf⟩ := exists_wellOrder ι
@@ -63,8 +63,8 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
 
     We define this sequence using `Nat.strongRecOn'`, then restate it as `Dn` and `memD`.
   -/
-  set D : ℕ → ι → Set α := fun n =>
-    Nat.strongRecOn' n fun n D' i =>
+  set D : ℕ → ι → Set α := fun n ↦
+    Nat.strongRecOn' n fun n D' i ↦
       ⋃ (x : α) (hxs : ind x = i) (hb : ball x (3 * 2⁻¹ ^ n) ⊆ s i) (hlt :
         ∀ (m : ℕ) (H : m < n), ∀ (j : ι), x ∉ D' m H j), ball x (2⁻¹ ^ n) with hD
   have Dn (n i) : D n i = ⋃ (x : α) (hxs : ind x = i) (hb : ball x (3 * 2⁻¹ ^ n) ⊆ s i)
@@ -88,21 +88,21 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
       simpa only [div_eq_mul_inv, mul_comm] using (ENNReal.mul_lt_of_lt_div hn).le
     by_contra! h
     apply h n (ind x)
-    exact memD.2 ⟨x, rfl, hn, fun _ _ _ => h _ _, mem_ball_self (pow_pos _)⟩
+    exact memD.2 ⟨x, rfl, hn, fun _ _ _ ↦ h _ _, mem_ball_self (pow_pos _)⟩
   -- Each `D n i` is a union of open balls, hence it is an open set
   have Dopen (n i) : IsOpen (D n i) := by
     rw [Dn]
-    iterate 4 refine isOpen_iUnion fun _ => ?_
+    iterate 4 refine isOpen_iUnion fun _ ↦ ?_
     exact isOpen_ball
   -- the covering `D n i` is a refinement of the original covering: `D n i ⊆ s i`
-  have HDS (n i) : D n i ⊆ s i := fun x => by
+  have HDS (n i) : D n i ⊆ s i := fun x ↦ by
     rw [memD]
     rintro ⟨y, rfl, hsub, -, hyx⟩
     refine hsub (hyx.trans_le <| le_mul_of_one_le_left' ?_)
     norm_num1
   -- Let us show the rest of the properties. Since the definition expects a family indexed
   -- by a single parameter, we use `ℕ × ι` as the domain.
-  refine ⟨ℕ × ι, fun ni => D ni.1 ni.2, fun _ => Dopen _ _, ?_, ?_, fun ni => ⟨ni.2, HDS _ _⟩⟩
+  refine ⟨ℕ × ι, fun ni ↦ D ni.1 ni.2, fun _ ↦ Dopen _ _, ?_, ?_, fun ni ↦ ⟨ni.2, HDS _ _⟩⟩
   -- The sets `D n i` cover the whole space as we proved earlier
   · refine iUnion_eq_univ_iff.2 fun x ↦ ?_
     rcases Dcov x with ⟨n, i, h⟩
@@ -122,7 +122,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
       rw [disjoint_iff_inf_le]
       rintro y ⟨hym, hyx⟩
       rcases memD.1 hym with ⟨z, rfl, _hzi, H, hz⟩
-      have : z ∉ ball x (2⁻¹ ^ k) := fun hz' => H n (by omega) i (hsub hz')
+      have : z ∉ ball x (2⁻¹ ^ k) := fun hz' ↦ H n (by omega) i (hsub hz')
       apply this
       calc
         edist z x ≤ edist y z + edist y x := edist_triangle_left _ _ _
@@ -152,12 +152,12 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
           rw [mul_add, h2pow, ← two_add_one_eq_three, add_mul, one_mul]
     -- Finally, we glue `Hgt` and `Hle`
     have : (⋃ (m ≤ n + k) (i ∈ { i : ι | (D m i ∩ B).Nonempty }), {(m, i)}).Finite :=
-      (finite_le_nat _).biUnion' fun i hi =>
-        (Hle i hi).finite.biUnion' fun _ _ => finite_singleton _
-    refine this.subset fun I hI => ?_
+      (finite_le_nat _).biUnion' fun i hi ↦
+        (Hle i hi).finite.biUnion' fun _ _ ↦ finite_singleton _
+    refine this.subset fun I hI ↦ ?_
     simp only [mem_iUnion]
     refine ⟨I.1, ?_, I.2, hI, rfl⟩
-    exact not_lt.1 fun hlt => (Hgt I.1 hlt I.2).le_bot hI.choose_spec
+    exact not_lt.1 fun hlt ↦ (Hgt I.1 hlt I.2).le_bot hI.choose_spec
 
 theorem t4Space [EMetricSpace α] : T4Space α := inferInstance
 

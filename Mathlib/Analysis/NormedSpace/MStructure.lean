@@ -87,17 +87,17 @@ namespace IsLprojection
 
 -- TODO: The literature always uses uppercase 'L' for L-projections
 theorem Lcomplement {P : M} (h : IsLprojection X P) : IsLprojection X (1 - P) :=
-  ⟨h.proj.one_sub, fun x => by
+  ⟨h.proj.one_sub, fun x ↦ by
     rw [add_comm, sub_sub_cancel]
     exact h.Lnorm x⟩
 
 theorem Lcomplement_iff (P : M) : IsLprojection X P ↔ IsLprojection X (1 - P) :=
-  ⟨Lcomplement, fun h => sub_sub_cancel 1 P ▸ h.Lcomplement⟩
+  ⟨Lcomplement, fun h ↦ sub_sub_cancel 1 P ▸ h.Lcomplement⟩
 
 theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLprojection X Q) :
     Commute P Q := by
-  have PR_eq_RPR : ∀ R : M, IsLprojection X R → P * R = R * P * R := fun R h₃ => by
-    refine @eq_of_smul_eq_smul _ X _ _ _ _ fun x => by
+  have PR_eq_RPR : ∀ R : M, IsLprojection X R → P * R = R * P * R := fun R h₃ ↦ by
+    refine @eq_of_smul_eq_smul _ X _ _ _ _ fun x ↦ by
       rw [← norm_sub_eq_zero_iff]
       have e1 : ‖R • x‖ ≥ ‖R • x‖ + 2 • ‖(P * R) • x - (R * P * R) • x‖ :=
         calc
@@ -155,14 +155,14 @@ theorem join [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsL
   noncomm_ring
 
 instance Subtype.hasCompl : HasCompl { f : M // IsLprojection X f } :=
-  ⟨fun P => ⟨1 - P, P.prop.Lcomplement⟩⟩
+  ⟨fun P ↦ ⟨1 - P, P.prop.Lcomplement⟩⟩
 
 @[simp]
 theorem coe_compl (P : { P : M // IsLprojection X P }) : ↑Pᶜ = (1 : M) - ↑P :=
   rfl
 
 instance Subtype.inf [FaithfulSMul M X] : Min { P : M // IsLprojection X P } :=
-  ⟨fun P Q => ⟨P * Q, P.prop.mul Q.prop⟩⟩
+  ⟨fun P Q ↦ ⟨P * Q, P.prop.mul Q.prop⟩⟩
 
 @[simp]
 theorem coe_inf [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
@@ -170,7 +170,7 @@ theorem coe_inf [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
   rfl
 
 instance Subtype.sup [FaithfulSMul M X] : Max { P : M // IsLprojection X P } :=
-  ⟨fun P Q => ⟨P + Q - P * Q, P.prop.join Q.prop⟩⟩
+  ⟨fun P Q ↦ ⟨P + Q - P * Q, P.prop.join Q.prop⟩⟩
 
 @[simp]
 theorem coe_sup [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
@@ -178,7 +178,7 @@ theorem coe_sup [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
   rfl
 
 instance Subtype.sdiff [FaithfulSMul M X] : SDiff { P : M // IsLprojection X P } :=
-  ⟨fun P Q => ⟨P * (1 - Q), P.prop.mul Q.prop.Lcomplement⟩⟩
+  ⟨fun P Q ↦ ⟨P * (1 - Q), P.prop.mul Q.prop.Lcomplement⟩⟩
 
 @[simp]
 theorem coe_sdiff [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
@@ -199,7 +199,7 @@ theorem le_def [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
   Iff.rfl
 
 instance Subtype.zero : Zero { P : M // IsLprojection X P } :=
-  ⟨⟨0, ⟨by rw [IsIdempotentElem, zero_mul], fun x => by
+  ⟨⟨0, ⟨by rw [IsIdempotentElem, zero_mul], fun x ↦ by
         simp only [zero_smul, norm_zero, sub_zero, one_smul, zero_add]⟩⟩⟩
 
 @[simp]
@@ -293,13 +293,13 @@ instance Subtype.BooleanAlgebra [FaithfulSMul M X] :
   { IsLprojection.Subtype.hasCompl,
     IsLprojection.Subtype.sdiff,
     IsLprojection.Subtype.boundedOrder with
-    inf_compl_le_bot := fun P =>
+    inf_compl_le_bot := fun P ↦
       (Subtype.ext (by rw [coe_inf, coe_compl, coe_bot, ← coe_compl, mul_compl_self])).le
-    top_le_sup_compl := fun P =>
+    top_le_sup_compl := fun P ↦
       (Subtype.ext
         (by
           rw [coe_top, coe_sup, coe_compl, add_sub_cancel, ← coe_compl, mul_compl_self,
             sub_zero])).le
-    sdiff_eq := fun P Q => Subtype.ext <| by rw [coe_sdiff, ← coe_compl, coe_inf] }
+    sdiff_eq := fun P Q ↦ Subtype.ext <| by rw [coe_sdiff, ← coe_compl, coe_inf] }
 
 end IsLprojection

@@ -288,7 +288,7 @@ noncomputable def stdSimplex : SimplexCategory ⥤ SSet.Augmented.{u} where
   obj Δ :=
     { left := SSet.stdSimplex.obj Δ
       right := terminal _
-      hom := { app := fun _ => terminal.from _ } }
+      hom := { app := fun _ ↦ terminal.from _ } }
   map θ :=
     { left := SSet.stdSimplex.map θ
       right := terminal.from _ }

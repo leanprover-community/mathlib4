@@ -77,7 +77,7 @@ def summand (Δ : SimplexCategoryᵒᵖ) (A : Splitting.IndexSet Δ) : C :=
 /-- The functor `Γ₀` sends a chain complex `K` to the simplicial object which
 sends `Δ` to the direct sum of the objects `summand K Δ A` for all `A : Splitting.IndexSet Δ` -/
 def obj₂ (K : ChainComplex C ℕ) (Δ : SimplexCategoryᵒᵖ) [HasFiniteCoproducts C] : C :=
-  ∐ fun A : Splitting.IndexSet Δ => summand K Δ A
+  ∐ fun A : Splitting.IndexSet Δ ↦ summand K Δ A
 
 namespace Termwise
 
@@ -165,7 +165,7 @@ a morphism `Δ' → Δ` in `SimplexCategory` is defined on each summand
 associated to an `A : Splitting.IndexSet Δ` in terms of the epi-mono factorisation
 of `θ ≫ A.e`. -/
 def map (K : ChainComplex C ℕ) {Δ' Δ : SimplexCategoryᵒᵖ} (θ : Δ ⟶ Δ') : obj₂ K Δ ⟶ obj₂ K Δ' :=
-  Sigma.desc fun A =>
+  Sigma.desc fun A ↦
     Termwise.mapMono K (image.ι (θ.unop ≫ A.e)) ≫ Sigma.ι (summand K Δ') (A.pull θ)
 
 @[reassoc]
@@ -198,14 +198,14 @@ variable [HasFiniteCoproducts C]
 def obj (K : ChainComplex C ℕ) : SimplicialObject C where
   obj Δ := Obj.obj₂ K Δ
   map θ := Obj.map K θ
-  map_id Δ := colimit.hom_ext (fun ⟨A⟩ => by
+  map_id Δ := colimit.hom_ext (fun ⟨A⟩ ↦ by
     dsimp
     have fac : A.e ≫ 𝟙 A.1.unop = (𝟙 Δ).unop ≫ A.e := by rw [unop_id, comp_id, id_comp]
     rw [Obj.map_on_summand₀ K A fac, Obj.Termwise.mapMono_id, id_comp]
     dsimp only [Obj.obj₂]
     rw [comp_id]
     rfl)
-  map_comp {Δ'' Δ' Δ} θ' θ := colimit.hom_ext (fun ⟨A⟩ => by
+  map_comp {Δ'' Δ' Δ} θ' θ := colimit.hom_ext (fun ⟨A⟩ ↦ by
     have fac : θ.unop ≫ θ'.unop ≫ A.e = (θ' ≫ θ).unop ≫ A.e := by rw [unop_comp, assoc]
     rw [← image.fac (θ'.unop ≫ A.e), ← assoc, ←
       image.fac (θ.unop ≫ factorThruImage (θ'.unop ≫ A.e)), assoc] at fac
@@ -270,7 +270,7 @@ theorem Obj.map_epi_on_summand_id {Δ Δ' : SimplexCategory} (e : Δ' ⟶ Δ) [E
 /-- The functor `Γ₀ : ChainComplex C ℕ ⥤ SimplicialObject C`, on morphisms. -/
 @[simps]
 def map {K K' : ChainComplex C ℕ} (f : K ⟶ K') : obj K ⟶ obj K' where
-  app Δ := (Γ₀.splitting K).desc Δ fun A => f.f A.1.unop.len ≫
+  app Δ := (Γ₀.splitting K).desc Δ fun A ↦ f.f A.1.unop.len ≫
     ((Γ₀.splitting K').cofan _).inj A
   naturality {Δ' Δ} θ := by
     apply (Γ₀.splitting K).hom_ext'
@@ -293,7 +293,7 @@ def Γ₀' : ChainComplex C ℕ ⥤ SimplicialObject.Split C where
   map {K K'} f :=
     { F := Γ₀.map f
       f := f.f
-      comm := fun n => by
+      comm := fun n ↦ by
         dsimp
         simp only [← Splitting.cofan_inj_id, (Γ₀.splitting K).ι_desc]
         rfl }
@@ -320,7 +320,7 @@ theorem HigherFacesVanish.on_Γ₀_summand_id (K : ChainComplex C ℕ) (n : ℕ)
   rw [Γ₀.Obj.Termwise.mapMono_eq_zero K, zero_comp] at eq; rotate_left
   · intro h
     exact (Nat.succ_ne_self n) (congr_arg SimplexCategory.len h)
-  · exact fun h => Fin.succ_ne_zero j (by simpa only [Isδ₀.iff] using h)
+  · exact fun h ↦ Fin.succ_ne_zero j (by simpa only [Isδ₀.iff] using h)
   exact eq
 
 @[reassoc (attr := simp)]

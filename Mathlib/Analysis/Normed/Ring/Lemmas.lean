@@ -27,13 +27,13 @@ variable [NonUnitalSeminormedRing α]
 
 theorem Filter.Tendsto.zero_mul_isBoundedUnder_le {f g : ι → α} {l : Filter ι}
     (hf : Tendsto f l (𝓝 0)) (hg : IsBoundedUnder (· ≤ ·) l ((‖·‖) ∘ g)) :
-    Tendsto (fun x => f x * g x) l (𝓝 0) :=
+    Tendsto (fun x ↦ f x * g x) l (𝓝 0) :=
   hf.op_zero_isBoundedUnder_le hg (· * ·) norm_mul_le
 
 theorem Filter.isBoundedUnder_le_mul_tendsto_zero {f g : ι → α} {l : Filter ι}
     (hf : IsBoundedUnder (· ≤ ·) l (norm ∘ f)) (hg : Tendsto g l (𝓝 0)) :
-    Tendsto (fun x => f x * g x) l (𝓝 0) :=
-  hg.op_zero_isBoundedUnder_le hf (flip (· * ·)) fun x y =>
+    Tendsto (fun x ↦ f x * g x) l (𝓝 0) :=
+  hg.op_zero_isBoundedUnder_le hf (flip (· * ·)) fun x y ↦
     (norm_mul_le y x).trans_eq (mul_comm _ _)
 
 open Finset in
@@ -62,7 +62,7 @@ instance Pi.seminormedRing {R : ι → Type*} [Fintype ι] [∀ i, SeminormedRin
 
 lemma RingHom.isometry {𝕜₁ 𝕜₂ : Type*} [SeminormedRing 𝕜₁] [SeminormedRing 𝕜₂]
     (σ : 𝕜₁ →+* 𝕜₂) [RingHomIsometric σ] :
-    Isometry σ := AddMonoidHomClass.isometry_of_norm _ fun _ => RingHomIsometric.norm_map
+    Isometry σ := AddMonoidHomClass.isometry_of_norm _ fun _ ↦ RingHomIsometric.norm_map
 
 /-- If `σ` and `σ'` are mutually inverse, then one is `RingHomIsometric` if the other is. Not an
 instance, as it would cause loops. -/
@@ -147,7 +147,7 @@ end NormedCommRing
 -- see Note [lower instance priority]
 instance (priority := 100) NonUnitalSeminormedRing.toContinuousMul [NonUnitalSeminormedRing α] :
     ContinuousMul α :=
-  ⟨continuous_iff_continuousAt.2 fun x =>
+  ⟨continuous_iff_continuousAt.2 fun x ↦
       tendsto_iff_norm_sub_tendsto_zero.2 <| by
         have : ∀ e : α × α,
             ‖e.1 * e.2 - x.1 * x.2‖ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ := by
@@ -157,7 +157,7 @@ instance (priority := 100) NonUnitalSeminormedRing.toContinuousMul [NonUnitalSem
               rw [mul_sub, sub_mul, sub_add_sub_cancel]
             _ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ :=
               norm_add_le_of_le (norm_mul_le _ _) (norm_mul_le _ _)
-        refine squeeze_zero (fun e => norm_nonneg _) this ?_
+        refine squeeze_zero (fun e ↦ norm_nonneg _) this ?_
         convert
           ((continuous_fst.tendsto x).norm.mul
                 ((continuous_snd.tendsto x).sub tendsto_const_nhds).norm).add

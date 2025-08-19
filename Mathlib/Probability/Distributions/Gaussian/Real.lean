@@ -315,7 +315,7 @@ lemma gaussianReal_map_const_mul (c : ℝ) :
       NNReal.mk_zero]
   let e : ℝ ≃ᵐ ℝ := (Homeomorph.mulLeft₀ c hc).symm.toMeasurableEquiv
   have he' : ∀ x, HasDerivAt e ((fun _ ↦ c⁻¹) x) x := by
-    suffices ∀ x, HasDerivAt (fun x => c⁻¹ * x) (c⁻¹ * 1) x by rwa [mul_one] at this
+    suffices ∀ x, HasDerivAt (fun x ↦ c⁻¹ * x) (c⁻¹ * 1) x by rwa [mul_one] at this
     exact fun _ ↦ HasDerivAt.const_mul _ (hasDerivAt_id _)
   change (gaussianReal μ v).map e.symm = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v)
   ext s' hs'

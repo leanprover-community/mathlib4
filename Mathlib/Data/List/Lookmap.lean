@@ -47,7 +47,7 @@ theorem lookmap_some : ∀ l : List α, l.lookmap some = l
   | [] => rfl
   | _ :: _ => rfl
 
-theorem lookmap_none : ∀ l : List α, (l.lookmap fun _ => none) = l
+theorem lookmap_none : ∀ l : List α, (l.lookmap fun _ ↦ none) = l
   | [] => rfl
   | a :: l => (lookmap_cons_none _ l rfl).trans (congr_arg (cons a) (lookmap_none l))
 
@@ -75,11 +75,11 @@ theorem lookmap_id' (h : ∀ (a), ∀ b ∈ f a, a = b) (l : List α) : l.lookma
   rw [← map_id (l.lookmap f), lookmap_map_eq, map_id]; exact h
 
 theorem length_lookmap (l : List α) : length (l.lookmap f) = length l := by
-  rw [← length_map, lookmap_map_eq _ fun _ => (), length_map]; simp
+  rw [← length_map, lookmap_map_eq _ fun _ ↦ (), length_map]; simp
 
 open Perm in
 theorem perm_lookmap (f : α → Option α) {l₁ l₂ : List α}
-    (H : Pairwise (fun a b => ∀ c ∈ f a, ∀ d ∈ f b, a = b ∧ c = d) l₁) (p : l₁ ~ l₂) :
+    (H : Pairwise (fun a b ↦ ∀ c ∈ f a, ∀ d ∈ f b, a = b ∧ c = d) l₁) (p : l₁ ~ l₂) :
     lookmap f l₁ ~ lookmap f l₂ := by
   induction p with
   | nil => simp

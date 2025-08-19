@@ -29,7 +29,7 @@ namespace Abelian
 /-- The class of morphisms in an abelian category that are epimorphisms
 and have an injective kernel. -/
 def epiWithInjectiveKernel : MorphismProperty C :=
-  fun _ _ f => Epi f ∧ Injective (kernel f)
+  fun _ _ f ↦ Epi f ∧ Injective (kernel f)
 
 /-- A morphism `g : X ⟶ Y` is epi with an injective kernel iff there exists a morphism
 `f : I ⟶ X` with `I` injective such that `f ≫ g = 0` and

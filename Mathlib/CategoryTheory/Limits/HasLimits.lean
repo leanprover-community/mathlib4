@@ -500,18 +500,18 @@ is natural in `F`.
 -/
 def limYoneda :
     lim ⋙ yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} ≅ CategoryTheory.cones J C :=
-  NatIso.ofComponents fun F => NatIso.ofComponents fun W => limit.homIso F (unop W)
+  NatIso.ofComponents fun F ↦ NatIso.ofComponents fun W ↦ limit.homIso F (unop W)
 
 /-- The constant functor and limit functor are adjoint to each other -/
 def constLimAdj : (const J : C ⥤ J ⥤ C) ⊣ lim := Adjunction.mk' {
   homEquiv := fun c g ↦
-    { toFun := fun f => limit.lift _ ⟨c, f⟩
-      invFun := fun f =>
-        { app := fun _ => f ≫ limit.π _ _ }
+    { toFun := fun f ↦ limit.lift _ ⟨c, f⟩
+      invFun := fun f ↦
+        { app := fun _ ↦ f ≫ limit.π _ _ }
       left_inv := by cat_disch
       right_inv := by cat_disch }
-  unit := { app := fun _ => limit.lift _ ⟨_, 𝟙 _⟩ }
-  counit := { app := fun g => { app := limit.π _ } } }
+  unit := { app := fun _ ↦ limit.lift _ ⟨_, 𝟙 _⟩ }
+  counit := { app := fun g ↦ { app := limit.π _ } } }
 
 instance : IsRightAdjoint (lim : (J ⥤ C) ⥤ C) :=
   ⟨_, ⟨constLimAdj⟩⟩
@@ -523,8 +523,8 @@ instance limMap_mono' {F G : J ⥤ C} [HasLimitsOfShape J C] (α : F ⟶ G) [Mon
 
 instance limMap_mono {F G : J ⥤ C} [HasLimit F] [HasLimit G] (α : F ⟶ G) [∀ j, Mono (α.app j)] :
     Mono (limMap α) :=
-  ⟨fun {Z} u v h =>
-    limit.hom_ext fun j => (cancel_mono (α.app j)).1 <| by simpa using h =≫ limit.π _ j⟩
+  ⟨fun {Z} u v h ↦
+    limit.hom_ext fun j ↦ (cancel_mono (α.app j)).1 <| by simpa using h =≫ limit.π _ j⟩
 
 section Adjunction
 
@@ -1044,19 +1044,19 @@ is natural in `F`.
 -/
 def colimCoyoneda : colim.op ⋙ coyoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁}
     ≅ CategoryTheory.cocones J C :=
-  NatIso.ofComponents fun F => NatIso.ofComponents fun W => colimit.homIso (unop F) W
+  NatIso.ofComponents fun F ↦ NatIso.ofComponents fun W ↦ colimit.homIso (unop F) W
 
 /-- The colimit functor and constant functor are adjoint to each other
 -/
 def colimConstAdj : (colim : (J ⥤ C) ⥤ C) ⊣ const J := Adjunction.mk' {
   homEquiv := fun f c ↦
-    { toFun := fun g =>
-        { app := fun _ => colimit.ι _ _ ≫ g }
-      invFun := fun g => colimit.desc _ ⟨_, g⟩
+    { toFun := fun g ↦
+        { app := fun _ ↦ colimit.ι _ _ ≫ g }
+      invFun := fun g ↦ colimit.desc _ ⟨_, g⟩
       left_inv := by cat_disch
       right_inv := by cat_disch }
-  unit := { app := fun g => { app := colimit.ι _ } }
-  counit := { app := fun _ => colimit.desc _ ⟨_, 𝟙 _⟩ } }
+  unit := { app := fun g ↦ { app := colimit.ι _ } }
+  counit := { app := fun _ ↦ colimit.desc _ ⟨_, 𝟙 _⟩ } }
 
 instance : IsLeftAdjoint (colim : (J ⥤ C) ⥤ C) :=
   ⟨_, ⟨colimConstAdj⟩⟩
@@ -1069,8 +1069,8 @@ instance colimMap_epi' {F G : J ⥤ C} [HasColimitsOfShape J C] (α : F ⟶ G) [
 
 instance colimMap_epi {F G : J ⥤ C} [HasColimit F] [HasColimit G] (α : F ⟶ G) [∀ j, Epi (α.app j)] :
     Epi (colimMap α) :=
-  ⟨fun {Z} u v h =>
-    colimit.hom_ext fun j => (cancel_epi (α.app j)).1 <| by simpa using colimit.ι _ j ≫= h⟩
+  ⟨fun {Z} u v h ↦
+    colimit.hom_ext fun j ↦ (cancel_epi (α.app j)).1 <| by simpa using colimit.ι _ j ≫= h⟩
 
 /-- We can transport colimits of shape `J` along an equivalence `J ≌ J'`.
 -/

@@ -45,7 +45,7 @@ theorem splitOnP_cons (x : α) (xs : List α) :
 /-- The original list `L` can be recovered by flattening the lists produced by `splitOnP p L`,
 interspersed with the elements `L.filter p`. -/
 theorem splitOnP_spec (as : List α) :
-    flatten (zipWith (· ++ ·) (splitOnP p as) (((as.filter p).map fun x => [x]) ++ [[]])) = as := by
+    flatten (zipWith (· ++ ·) (splitOnP p as) (((as.filter p).map fun x ↦ [x]) ++ [[]])) = as := by
   induction as with
   | nil => rfl
   | cons a as' ih =>

@@ -93,7 +93,7 @@ theorem discr_zero_of_not_linearIndependent [IsDomain A] {b : ι → B}
     have : ∀ j, (trace A B) (b i * b j) * g j = (trace A B) (g j • b j * b i) := by
       intro j
       simp [mul_comm]
-    simp only [mulVec, dotProduct, traceMatrix_apply, Pi.zero_apply, traceForm_apply, fun j =>
+    simp only [mulVec, dotProduct, traceMatrix_apply, Pi.zero_apply, traceForm_apply, fun j ↦
       this j, ← map_sum, ← sum_mul, hg, zero_mul, LinearMap.map_zero]
   by_contra h
   rw [discr_def] at h
@@ -171,7 +171,7 @@ theorem discr_powerBasis_eq_prod'' [Algebra.IsSeparable K L] (e : Fin pb.dim ≃
       (-1) ^ (n * (n - 1) / 2) *
         ∏ i : Fin pb.dim, ∏ j ∈ Ioi i, (e j pb.gen - e i pb.gen) * (e i pb.gen - e j pb.gen) := by
   rw [discr_powerBasis_eq_prod' _ _ _ e]
-  simp_rw [fun i j => neg_eq_neg_one_mul ((e j pb.gen - e i pb.gen) * (e i pb.gen - e j pb.gen)),
+  simp_rw [fun i j ↦ neg_eq_neg_one_mul ((e j pb.gen - e i pb.gen) * (e i pb.gen - e j pb.gen)),
     prod_mul_distrib]
   congr
   simp only [prod_pow_eq_pow_sum, prod_const]
@@ -181,7 +181,7 @@ theorem discr_powerBasis_eq_prod'' [Algebra.IsSeparable K L] (e : Fin pb.dim ≃
   simp_rw [Fin.card_Ioi, Nat.sub_sub, add_comm 1]
   simp only [Nat.cast_sub, this, Finset.card_fin, nsmul_eq_mul, sum_const, sum_sub_distrib,
     Nat.cast_add, Nat.cast_one, sum_add_distrib, mul_one]
-  rw [← Nat.cast_sum, ← @Finset.sum_range ℕ _ pb.dim fun i => i, sum_range_id]
+  rw [← Nat.cast_sum, ← @Finset.sum_range ℕ _ pb.dim fun i ↦ i, sum_range_id]
   have hn : n = pb.dim := by
     rw [← AlgHom.card K L E, ← Fintype.card_fin pb.dim]
     -- FIXME: Without the `Fintype` namespace, why does it complain about `Finset.card_congr` being
@@ -203,7 +203,7 @@ theorem discr_powerBasis_eq_norm [Algebra.IsSeparable K L] :
       (-1) ^ (n * (n - 1) / 2) *
       norm K (aeval pb.gen (derivative (R := K) (minpoly K pb.gen))) := by
   let E := AlgebraicClosure L
-  letI := fun a b : E => Classical.propDecidable (Eq a b)
+  letI := fun a b : E ↦ Classical.propDecidable (Eq a b)
   have e : Fin pb.dim ≃ (L →ₐ[K] E) := by
     refine equivOfCardEq ?_
     rw [Fintype.card_fin, AlgHom.card]
@@ -265,12 +265,12 @@ theorem discr_mul_isIntegral_mem_adjoin [Algebra.IsSeparable K L] [IsIntegrallyC
     simpa [← discr_def] using discr_isUnit_of_basis _ B.basis
   have H :
     (traceMatrix K B.basis).det • (traceMatrix K B.basis) *ᵥ (B.basis.equivFun z) =
-      (traceMatrix K B.basis).det • fun i => trace K L (z * B.basis i) := by
+      (traceMatrix K B.basis).det • fun i ↦ trace K L (z * B.basis i) := by
     congr; exact traceMatrix_of_basis_mulVec _ _
-  have cramer := mulVec_cramer (traceMatrix K B.basis) fun i => trace K L (z * B.basis i)
+  have cramer := mulVec_cramer (traceMatrix K B.basis) fun i ↦ trace K L (z * B.basis i)
   suffices ∀ i, ((traceMatrix K B.basis).det • B.basis.equivFun z) i ∈ (⊥ : Subalgebra R K) by
     rw [← B.basis.sum_repr z, Finset.smul_sum]
-    refine Subalgebra.sum_mem _ fun i _ => ?_
+    refine Subalgebra.sum_mem _ fun i _ ↦ ?_
     replace this := this i
     rw [← discr_def, Pi.smul_apply, mem_bot] at this
     obtain ⟨r, hr⟩ := this
@@ -286,7 +286,7 @@ theorem discr_mul_isIntegral_mem_adjoin [Algebra.IsSeparable K L] [IsIntegrallyC
     one_mulVec] at cramer
   rw [← congr_fun cramer i, cramer_apply, det_apply]
   refine
-    Subalgebra.sum_mem _ fun σ _ => Subalgebra.zsmul_mem _ (Subalgebra.prod_mem _ fun j _ => ?_) _
+    Subalgebra.sum_mem _ fun σ _ ↦ Subalgebra.zsmul_mem _ (Subalgebra.prod_mem _ fun j _ ↦ ?_) _
   by_cases hji : j = i
   · simp only [updateCol_apply, hji, PowerBasis.coe_basis]
     exact mem_bot.2 (IsIntegrallyClosed.isIntegral_iff.1 <| isIntegral_trace (hz.mul <| hint.pow _))

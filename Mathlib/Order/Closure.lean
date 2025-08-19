@@ -144,7 +144,7 @@ witnessing minimality of `f x` among closed elements greater than `x`. -/
 @[simps!]
 def ofPred (f : α → α) (p : α → Prop) (hf : ∀ x, x ≤ f x) (hfp : ∀ x, p (f x))
     (hmin : ∀ ⦃x y⦄, x ≤ y → p y → f x ≤ y) : ClosureOperator α where
-  __ := mk₂ f hf fun _ y hxy => hmin hxy (hfp y)
+  __ := mk₂ f hf fun _ y hxy ↦ hmin hxy (hfp y)
   IsClosed := p
   isClosed_iff := ⟨fun hx ↦ (hmin le_rfl hx).antisymm <| hf _, fun hx ↦ hx ▸ hfp _⟩
 
@@ -195,7 +195,7 @@ lemma closure_isGLB (x : α) : IsGLB { y | x ≤ y ∧ c.IsClosed y } (c x) wher
 
 theorem ext_isClosed (c₁ c₂ : ClosureOperator α)
     (h : ∀ x, c₁.IsClosed x ↔ c₂.IsClosed x) : c₁ = c₂ :=
-  ext c₁ c₂ <| fun x => IsGLB.unique (c₁.closure_isGLB x) <|
+  ext c₁ c₂ <| fun x ↦ IsGLB.unique (c₁.closure_isGLB x) <|
     (Set.ext (and_congr_right' <| h ·)).substr (c₂.closure_isGLB x)
 
 /-- A closure operator is equal to the closure operator obtained by feeding `c.closed` into the
@@ -264,14 +264,14 @@ theorem sInf_isClosed {c : ClosureOperator α} {S : Set α}
 
 @[simp]
 theorem closure_iSup_closure (f : ι → α) : c (⨆ i, c (f i)) = c (⨆ i, f i) :=
-  le_antisymm (le_closure_iff.1 <| iSup_le fun i => c.monotone <| le_iSup f i) <|
-    c.monotone <| iSup_mono fun _ => c.le_closure _
+  le_antisymm (le_closure_iff.1 <| iSup_le fun i ↦ c.monotone <| le_iSup f i) <|
+    c.monotone <| iSup_mono fun _ ↦ c.le_closure _
 
 @[simp]
 theorem closure_iSup₂_closure (f : ∀ i, κ i → α) :
     c (⨆ (i) (j), c (f i j)) = c (⨆ (i) (j), f i j) :=
-  le_antisymm (le_closure_iff.1 <| iSup₂_le fun i j => c.monotone <| le_iSup₂ i j) <|
-    c.monotone <| iSup₂_mono fun _ _ => c.le_closure _
+  le_antisymm (le_closure_iff.1 <| iSup₂_le fun i j ↦ c.monotone <| le_iSup₂ i j) <|
+    c.monotone <| iSup₂_mono fun _ _ ↦ c.le_closure _
 
 end CompleteLattice
 
@@ -322,7 +322,7 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {u : β → α} (l : LowerAdjoint u)
 
-instance : CoeFun (LowerAdjoint u) fun _ => α → β where coe := toFun
+instance : CoeFun (LowerAdjoint u) fun _ ↦ α → β where coe := toFun
 
 theorem gc : GaloisConnection l u :=
   l.gc'
@@ -451,7 +451,7 @@ variable [SetLike α β] (l : LowerAdjoint ((↑) : α → Set β))
 theorem subset_closure (s : Set β) : s ⊆ l s :=
   l.le_closure s
 
-theorem notMem_of_notMem_closure {s : Set β} {P : β} (hP : P ∉ l s) : P ∉ s := fun h =>
+theorem notMem_of_notMem_closure {s : Set β} {P : β} (hP : P ∉ l s) : P ∉ s := fun h ↦
   hP (subset_closure _ s h)
 
 @[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
@@ -461,7 +461,7 @@ theorem le_iff_subset (s : Set β) (S : α) : l s ≤ S ↔ s ⊆ S :=
 
 theorem mem_iff (s : Set β) (x : β) : x ∈ l s ↔ ∀ S : α, s ⊆ S → x ∈ S := by
   simp_rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← l.le_iff_subset]
-  exact ⟨fun h S => h.trans, fun h => h _ le_rfl⟩
+  exact ⟨fun h S ↦ h.trans, fun h ↦ h _ le_rfl⟩
 
 theorem eq_of_le {s : Set β} {S : α} (h₁ : s ⊆ S) (h₂ : S ≤ l s) : l s = S :=
   ((l.le_iff_subset _ _).2 h₁).antisymm h₂

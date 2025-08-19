@@ -234,7 +234,7 @@ exactly `v`.
 -/
 theorem of_correctness_of_terminates (terminates : (of v).Terminates) :
     ∃ n : ℕ, v = (of v).convs n :=
-  Exists.elim terminates fun n terminatedAt_n =>
+  Exists.elim terminates fun n terminatedAt_n ↦
     Exists.intro n (of_correctness_of_terminatedAt terminatedAt_n)
 
 open Filter

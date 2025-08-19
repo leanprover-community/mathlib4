@@ -51,9 +51,9 @@ theorem exists_pair_mem_lattice_not_disjoint_vadd [AddGroup L] [Countable L] [Ad
     ∃ x y : L, x ≠ y ∧ ¬Disjoint (x +ᵥ s) (y +ᵥ s) := by
   contrapose! h
   exact ((fund.measure_eq_tsum _).trans (measure_iUnion₀
-    (Pairwise.mono h fun i j hij => (hij.mono inf_le_left inf_le_left).aedisjoint)
-      fun _ => (hS.vadd _).inter fund.nullMeasurableSet).symm).trans_le
-      (measure_mono <| Set.iUnion_subset fun _ => Set.inter_subset_right)
+    (Pairwise.mono h fun i j hij ↦ (hij.mono inf_le_left inf_le_left).aedisjoint)
+      fun _ ↦ (hS.vadd _).inter fund.nullMeasurableSet).symm).trans_le
+      (measure_mono <| Set.iUnion_subset fun _ ↦ Set.inter_subset_right)
 
 /-- The **Minkowski Convex Body Theorem**. If `s` is a convex symmetric domain of `E` whose volume
 is large enough compared to the covolume of a lattice `L` of `E`, then it contains a non-zero
@@ -99,8 +99,8 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
   have h_nemp : s.Nonempty := nonempty_of_measure_ne_zero h_mes
   let u : ℕ → ℝ≥0 := (exists_seq_strictAnti_tendsto 0).choose
   let K : ConvexBody E := ⟨s, h_conv, h_cpt, h_nemp⟩
-  let S : ℕ → ConvexBody E := fun n => (1 + u n) • K
-  let Z : ℕ → Set E := fun n => (S n) ∩ (L \ {0})
+  let S : ℕ → ConvexBody E := fun n ↦ (1 + u n) • K
+  let Z : ℕ → Set E := fun n ↦ (S n) ∩ (L \ {0})
   -- The convex bodies `S n` have volume strictly larger than `μ s` and thus we can apply
   -- `exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure` to them and obtain that
   -- `S n` contains a nonzero point of `L`. Since the intersection of the `S n` is equal to `s`,
@@ -116,8 +116,8 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
     · rw [sdiff_eq_sdiff_iff_inf_eq_inf (z := U).mpr (by simp [Set.inter_comm .. ▸ hU.2, zero_mem])]
       exact AddSubgroup.isClosed_of_discrete.sdiff hU.1
     exact isOpen_inter_eq_singleton_of_mem_discrete (zero_mem L)
-  refine IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed Z (fun n => ?_)
-    (fun n => ?_) ((S 0).isCompact.inter_right h_clos) (fun n => (S n).isClosed.inter h_clos)
+  refine IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed Z (fun n ↦ ?_)
+    (fun n ↦ ?_) ((S 0).isCompact.inter_right h_clos) (fun n ↦ (S n).isClosed.inter h_clos)
   · refine Set.inter_subset_inter_left _ (SetLike.coe_subset_coe.mpr ?_)
     refine ConvexBody.smul_le_of_le K h_zero ?_
     rw [add_le_add_iff_left]

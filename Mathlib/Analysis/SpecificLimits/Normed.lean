@@ -190,7 +190,7 @@ theorem tendsto_pow_const_mul_const_pow_of_abs_lt_one (k : ℕ) {r : ℝ} (hr : 
 
 /-- For `k ≠ 0` and a constant `r` the function `r / n ^ k` tends to zero. -/
 lemma tendsto_const_div_pow (r : ℝ) (k : ℕ) (hk : k ≠ 0) :
-    Tendsto (fun n : ℕ => r / n ^ k) atTop (𝓝 0) := by
+    Tendsto (fun n : ℕ ↦ r / n ^ k) atTop (𝓝 0) := by
   simpa using Filter.Tendsto.const_div_atTop (tendsto_natCast_atTop_atTop (R := ℝ).comp
     (tendsto_pow_atTop hk) ) r
 
@@ -466,7 +466,7 @@ lemma summable_descFactorial_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr 
 open Polynomial in
 theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
     Summable (fun n ↦ (n : R) ^ k * r ^ n : ℕ → R) := by
-  refine Nat.strong_induction_on k fun k hk => ?_
+  refine Nat.strong_induction_on k fun k hk ↦ ?_
   obtain ⟨a, ha⟩ : ∃ (a : ℕ → ℕ), ∀ n, (n + k).descFactorial k
       = n ^ k + ∑ i ∈ range k, a i * n ^ i := by
     let P : Polynomial ℕ := (ascPochhammer ℕ k).comp (Polynomial.X + C 1)

@@ -30,12 +30,12 @@ theorem toTensorAlgebra_tprod {n} (x : Fin n → M) :
 
 @[simp]
 theorem toTensorAlgebra_gOne :
-    TensorPower.toTensorAlgebra (@GradedMonoid.GOne.one _ (fun n => ⨂[R]^n M) _ _) = 1 := by
+    TensorPower.toTensorAlgebra (@GradedMonoid.GOne.one _ (fun n ↦ ⨂[R]^n M) _ _) = 1 := by
   simp [GradedMonoid.GOne.one, TensorPower.toTensorAlgebra_tprod]
 
 @[simp]
 theorem toTensorAlgebra_gMul {i j} (a : (⨂[R]^i) M) (b : (⨂[R]^j) M) :
-    TensorPower.toTensorAlgebra (@GradedMonoid.GMul.mul _ (fun n => ⨂[R]^n M) _ _ _ _ a b) =
+    TensorPower.toTensorAlgebra (@GradedMonoid.GMul.mul _ (fun n ↦ ⨂[R]^n M) _ _ _ _ a b) =
       TensorPower.toTensorAlgebra a * TensorPower.toTensorAlgebra b := by
   -- change `a` and `b` to `tprod R a` and `tprod R b`
   rw [TensorPower.gMul_eq_coe_linearMap, ← LinearMap.compr₂_apply, ← @LinearMap.mul_apply' R, ←
@@ -56,7 +56,7 @@ theorem toTensorAlgebra_gMul {i j} (a : (⨂[R]^i) M) (b : (⨂[R]^j) M) :
 
 @[simp]
 theorem toTensorAlgebra_galgebra_toFun (r : R) :
-    TensorPower.toTensorAlgebra (DirectSum.GAlgebra.toFun (R := R) (A := fun n => ⨂[R]^n M) r) =
+    TensorPower.toTensorAlgebra (DirectSum.GAlgebra.toFun (R := R) (A := fun n ↦ ⨂[R]^n M) r) =
       algebraMap _ _ r := by
   rw [TensorPower.galgebra_toFun_def, TensorPower.algebraMap₀_eq_smul_one, LinearMap.map_smul,
     TensorPower.toTensorAlgebra_gOne, Algebra.algebraMap_eq_smul_one]
@@ -67,8 +67,8 @@ namespace TensorAlgebra
 
 /-- The canonical map from a direct sum of tensor powers to the tensor algebra. -/
 def ofDirectSum : (⨁ n, ⨂[R]^n M) →ₐ[R] TensorAlgebra R M :=
-  DirectSum.toAlgebra _ _ (fun _ => TensorPower.toTensorAlgebra) TensorPower.toTensorAlgebra_gOne
-    (fun {_ _} => TensorPower.toTensorAlgebra_gMul)
+  DirectSum.toAlgebra _ _ (fun _ ↦ TensorPower.toTensorAlgebra) TensorPower.toTensorAlgebra_gOne
+    (fun {_ _} ↦ TensorPower.toTensorAlgebra_gMul)
 
 @[simp]
 theorem ofDirectSum_of_tprod {n} (x : Fin n → M) :
@@ -80,13 +80,13 @@ theorem ofDirectSum_of_tprod {n} (x : Fin n → M) :
 /-- The canonical map from the tensor algebra to a direct sum of tensor powers. -/
 def toDirectSum : TensorAlgebra R M →ₐ[R] ⨁ n, ⨂[R]^n M :=
   TensorAlgebra.lift R <|
-    DirectSum.lof R ℕ (fun n => ⨂[R]^n M) _ ∘ₗ
+    DirectSum.lof R ℕ (fun n ↦ ⨂[R]^n M) _ ∘ₗ
       (LinearEquiv.symm <| PiTensorProduct.subsingletonEquiv (0 : Fin 1) : M ≃ₗ[R] _).toLinearMap
 
 @[simp]
 theorem toDirectSum_ι (x : M) :
     toDirectSum (ι R x) =
-      DirectSum.of (fun n => ⨂[R]^n M) _ (PiTensorProduct.tprod R fun _ : Fin 1 => x) :=
+      DirectSum.of (fun n ↦ ⨂[R]^n M) _ (PiTensorProduct.tprod R fun _ : Fin 1 ↦ x) :=
   TensorAlgebra.lift_ι_apply _ _
 
 theorem ofDirectSum_comp_toDirectSum :
@@ -101,23 +101,23 @@ theorem ofDirectSum_toDirectSum (x : TensorAlgebra R M) :
 
 @[simp]
 theorem mk_reindex_cast {n m : ℕ} (h : n = m) (x : ⨂[R]^n M) :
-    GradedMonoid.mk (A := fun i => (⨂[R]^i) M) m
+    GradedMonoid.mk (A := fun i ↦ (⨂[R]^i) M) m
     (PiTensorProduct.reindex R (fun _ ↦ M) (Equiv.cast <| congr_arg Fin h) x) =
     GradedMonoid.mk n x :=
   Eq.symm (PiTensorProduct.gradedMonoid_eq_of_reindex_cast h rfl)
 
 @[simp]
 theorem mk_reindex_fin_cast {n m : ℕ} (h : n = m) (x : ⨂[R]^n M) :
-    GradedMonoid.mk (A := fun i => (⨂[R]^i) M) m
+    GradedMonoid.mk (A := fun i ↦ (⨂[R]^i) M) m
     (PiTensorProduct.reindex R (fun _ ↦ M) (finCongr h) x) = GradedMonoid.mk n x := by
   rw [finCongr_eq_equivCast, mk_reindex_cast h]
 
 /-- The product of tensor products made of a single vector is the same as a single product of
 all the vectors. -/
 theorem _root_.TensorPower.list_prod_gradedMonoid_mk_single (n : ℕ) (x : Fin n → M) :
-    ((List.finRange n).map fun a =>
-          (GradedMonoid.mk _ (PiTensorProduct.tprod R fun _ : Fin 1 => x a) :
-            GradedMonoid fun n => ⨂[R]^n M)).prod =
+    ((List.finRange n).map fun a ↦
+          (GradedMonoid.mk _ (PiTensorProduct.tprod R fun _ : Fin 1 ↦ x a) :
+            GradedMonoid fun n ↦ ⨂[R]^n M)).prod =
       GradedMonoid.mk n (PiTensorProduct.tprod R x) := by
   refine Fin.consInduction ?_ ?_ x <;> clear x
   · rw [List.finRange_zero, List.map_nil, List.prod_nil]

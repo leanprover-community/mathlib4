@@ -18,17 +18,17 @@ namespace PNat
 
 variable {p q : ℕ+ → Prop} [DecidablePred p] [DecidablePred q] (h : ∃ n, p n)
 
-instance decidablePredExistsNat : DecidablePred fun n' : ℕ => ∃ (n : ℕ+) (_ : n' = n), p n :=
-  fun n' =>
+instance decidablePredExistsNat : DecidablePred fun n' : ℕ ↦ ∃ (n : ℕ+) (_ : n' = n), p n :=
+  fun n' ↦
   decidable_of_iff' (∃ h : 0 < n', p ⟨n', h⟩) <|
     Subtype.exists.trans <| by
       simp_rw [mk_coe, @exists_comm (_ < _) (_ = _), exists_prop, exists_eq_left']
 
 /-- The `PNat` version of `Nat.findX` -/
 protected def findX : { n // p n ∧ ∀ m : ℕ+, m < n → ¬p m } := by
-  have : ∃ (n' : ℕ) (n : ℕ+) (_ : n' = n), p n := Exists.elim h fun n hn => ⟨n, n, rfl, hn⟩
+  have : ∃ (n' : ℕ) (n : ℕ+) (_ : n' = n), p n := Exists.elim h fun n hn ↦ ⟨n, n, rfl, hn⟩
   have n := Nat.findX this
-  refine ⟨⟨n, ?_⟩, ?_, fun m hm pm => ?_⟩
+  refine ⟨⟨n, ?_⟩, ?_, fun m hm pm ↦ ?_⟩
   · obtain ⟨n', hn', -⟩ := n.prop.1
     rw [hn']
     exact n'.prop
@@ -57,20 +57,20 @@ protected theorem find_min : ∀ {m : ℕ+}, m < PNat.find h → ¬p m :=
   @(PNat.findX h).prop.right
 
 protected theorem find_min' {m : ℕ+} (hm : p m) : PNat.find h ≤ m :=
-  le_of_not_gt fun l => PNat.find_min h l hm
+  le_of_not_gt fun l ↦ PNat.find_min h l hm
 
 variable {n m : ℕ+}
 
 theorem find_eq_iff : PNat.find h = m ↔ p m ∧ ∀ n < m, ¬p n := by
   constructor
   · rintro rfl
-    exact ⟨PNat.find_spec h, fun _ => PNat.find_min h⟩
+    exact ⟨PNat.find_spec h, fun _ ↦ PNat.find_min h⟩
   · rintro ⟨hm, hlt⟩
     exact le_antisymm (PNat.find_min' h hm) (not_lt.1 <| imp_not_comm.1 (hlt _) <| PNat.find_spec h)
 
 @[simp]
 theorem find_lt_iff (n : ℕ+) : PNat.find h < n ↔ ∃ m < n, p m :=
-  ⟨fun h2 => ⟨PNat.find h, h2, PNat.find_spec h⟩, fun ⟨_, hmn, hm⟩ =>
+  ⟨fun h2 ↦ ⟨PNat.find h, h2, PNat.find_spec h⟩, fun ⟨_, hmn, hm⟩ ↦
     (PNat.find_min' h hm).trans_lt hmn⟩
 
 @[simp]

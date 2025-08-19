@@ -153,7 +153,7 @@ protected alias ⟨of_algebraMap_mem, algebraMap_mem⟩ := spectrum.algebraMap_m
 theorem preimage_algebraMap (S : Type*) {R A : Type*} [CommSemiring R] [CommSemiring S]
     [Ring A] [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] {a : A} :
     algebraMap R S ⁻¹' spectrum S a = spectrum R a :=
-  Set.ext fun _ => spectrum.algebraMap_mem_iff _
+  Set.ext fun _ ↦ spectrum.algebraMap_mem_iff _
 
 @[simp]
 theorem resolventSet_of_subsingleton [Subsingleton A] (a : A) : resolventSet R a = Set.univ := by
@@ -172,7 +172,7 @@ theorem units_smul_resolvent {r : Rˣ} {s : R} {a : A} :
   · rw [mem_iff] at h
     simp only [resolvent, Algebra.algebraMap_eq_smul_one] at *
     rw [smul_assoc, ← smul_sub]
-    have h' : ¬IsUnit (r⁻¹ • (s • (1 : A) - a)) := fun hu =>
+    have h' : ¬IsUnit (r⁻¹ • (s • (1 : A) - a)) := fun hu ↦
       h (by simpa only [smul_inv_smul] using IsUnit.smul r hu)
     simp only [Ring.inverse_non_unit _ h, Ring.inverse_non_unit _ h', smul_zero]
   · simp only [resolvent]
@@ -208,7 +208,7 @@ theorem inv_mem_iff {r : Rˣ} {a : Aˣ} : (r : R) ∈ σ (a : A) ↔ (↑r⁻¹ 
 theorem zero_mem_resolventSet_of_unit (a : Aˣ) : 0 ∈ resolventSet R (a : A) := by
   simpa only [mem_resolventSet_iff, ← notMem_iff, zero_notMem_iff] using a.isUnit
 
-theorem ne_zero_of_mem_of_unit {a : Aˣ} {r : R} (hr : r ∈ σ (a : A)) : r ≠ 0 := fun hn =>
+theorem ne_zero_of_mem_of_unit {a : Aˣ} {r : R} (hr : r ∈ σ (a : A)) : r ≠ 0 := fun hn ↦
   (hn ▸ hr) (zero_mem_resolventSet_of_unit a)
 
 theorem add_mem_iff {a : A} {r s : R} : r + s ∈ σ a ↔ r ∈ σ (-↑ₐ s + a) := by
@@ -226,14 +226,14 @@ theorem unit_smul_eq_smul (a : A) (r : Rˣ) : σ (r • a) = r • σ a := by
   nth_rw 1 [x_eq]
   rw [smul_mem_smul_iff]
   constructor
-  · exact fun h => ⟨r⁻¹ • x, ⟨h, show r • r⁻¹ • x = x by simp⟩⟩
+  · exact fun h ↦ ⟨r⁻¹ • x, ⟨h, show r • r⁻¹ • x = x by simp⟩⟩
   · rintro ⟨w, _, (x'_eq : r • w = x)⟩
     simpa [← x'_eq ]
 
 -- `r ∈ σ(a*b) ↔ r ∈ σ(b*a)` for any `r : Rˣ`
 theorem unit_mem_mul_comm {a b : A} {r : Rˣ} : ↑r ∈ σ (a * b) ↔ ↑r ∈ σ (b * a) := by
   have h₁ : ∀ x y : A, IsUnit (1 - x * y) → IsUnit (1 - y * x) := by
-    refine fun x y h => ⟨⟨1 - y * x, 1 + y * h.unit.inv * x, ?_, ?_⟩, rfl⟩
+    refine fun x y h ↦ ⟨⟨1 - y * x, 1 + y * h.unit.inv * x, ?_, ?_⟩, rfl⟩
     · calc
         (1 - y * x) * (1 + y * (IsUnit.unit h).inv * x) =
             1 - y * x + y * ((1 - x * y) * h.unit.inv) * x := by noncomm_ring
@@ -249,7 +249,7 @@ theorem unit_mem_mul_comm {a b : A} {r : Rˣ} : ↑r ∈ σ (a * b) ↔ ↑r ∈
 
 theorem preimage_units_mul_comm (a b : A) :
     ((↑) : Rˣ → R) ⁻¹' σ (a * b) = (↑) ⁻¹' σ (b * a) :=
-  Set.ext fun _ => unit_mem_mul_comm
+  Set.ext fun _ ↦ unit_mem_mul_comm
 
 theorem setOf_isUnit_inter_mul_comm (a b : A) :
     {r | IsUnit r} ∩ σ (a * b) = {r | IsUnit r} ∩ σ (b * a) := by
@@ -262,7 +262,7 @@ variable [InvolutiveStar R] [StarRing A] [StarModule R A]
 
 theorem star_mem_resolventSet_iff {r : R} {a : A} :
     star r ∈ resolventSet R a ↔ r ∈ resolventSet R (star a) := by
-  refine ⟨fun h => ?_, fun h => ?_⟩ <;>
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩ <;>
     simpa only [mem_resolventSet_iff, Algebra.algebraMap_eq_smul_one, star_sub, star_smul,
       star_star, star_one] using IsUnit.star h
 
@@ -289,7 +289,7 @@ theorem subset_subalgebra {S R A : Type*} [CommSemiring R] [Ring A] [Algebra R A
   Set.compl_subset_compl.mpr fun _ ↦ IsUnit.map (SubalgebraClass.val s)
 
 theorem singleton_add_eq (a : A) (r : R) : {r} + σ a = σ (↑ₐ r + a) :=
-  ext fun x => by
+  ext fun x ↦ by
     rw [singleton_add, image_add_left, mem_preimage, add_comm, add_mem_iff, map_neg, neg_neg]
 
 theorem add_singleton_eq (a : A) (r : R) : σ a + {r} = σ (a + ↑ₐ r) :=
@@ -299,7 +299,7 @@ theorem vadd_eq (a : A) (r : R) : r +ᵥ σ a = σ (↑ₐ r + a) :=
   singleton_add.symm.trans <| singleton_add_eq a r
 
 theorem neg_eq (a : A) : -σ a = σ (-a) :=
-  Set.ext fun x => by
+  Set.ext fun x ↦ by
     simp only [mem_neg, mem_iff, map_neg, ← neg_add', IsUnit.neg_iff, sub_neg_eq_add]
 
 theorem singleton_sub_eq (a : A) (r : R) : {r} - σ a = σ (↑ₐ r - a) := by
@@ -398,7 +398,7 @@ theorem mem_resolventSet_apply (φ : F) {a : A} {r : R} (h : r ∈ resolventSet 
     r ∈ resolventSet R ((φ : A → B) a) := by
   simpa only [map_sub, AlgHomClass.commutes] using h.map φ
 
-theorem spectrum_apply_subset (φ : F) (a : A) : σ ((φ : A → B) a) ⊆ σ a := fun _ =>
+theorem spectrum_apply_subset (φ : F) (a : A) : σ ((φ : A → B) a) ⊆ σ a := fun _ ↦
   mt (mem_resolventSet_apply φ)
 
 end CommSemiring

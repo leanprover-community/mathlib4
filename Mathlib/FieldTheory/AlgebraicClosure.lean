@@ -171,7 +171,7 @@ algebraic elements. -/
 theorem IntermediateField.isAlgebraic_adjoin_iff_isAlgebraic {S : Set E} :
     Algebra.IsAlgebraic F (adjoin F S) ↔ ∀ x ∈ S, IsAlgebraic F x :=
   ((le_algebraicClosure_iff F E _).symm.trans (adjoin_le_iff.trans <| forall_congr' <|
-    fun _ => Iff.imp Iff.rfl mem_algebraicClosure_iff))
+    fun _ ↦ Iff.imp Iff.rfl mem_algebraicClosure_iff))
 
 namespace algebraicClosure
 

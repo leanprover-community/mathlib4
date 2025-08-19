@@ -118,7 +118,7 @@ theorem integral_cpow {r : ℂ} (h : -1 < r.re ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[
       exact h.ne'
     · rw [Ne, ← add_eq_zero_iff_eq_neg] at h; exact h.1
   by_cases hab : (0 : ℝ) ∉ [[a, b]]
-  · apply integral_eq_sub_of_hasDerivAt (fun x hx => ?_)
+  · apply integral_eq_sub_of_hasDerivAt (fun x hx ↦ ?_)
       (intervalIntegrable_cpow (r := r) <| Or.inr hab)
     refine hasDerivAt_ofReal_cpow_const' (ne_of_mem_of_not_mem hx hab) ?_
     contrapose! hr; rwa [add_eq_zero_iff_eq_neg]
@@ -132,7 +132,7 @@ theorem integral_cpow {r : ℂ} (h : -1 < r.re ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[
   apply integral_eq_sub_of_hasDeriv_right
   · refine ((Complex.continuous_ofReal_cpow_const ?_).div_const _).continuousOn
     rwa [Complex.add_re, Complex.one_re, ← neg_lt_iff_pos_add]
-  · refine fun x hx => (hasDerivAt_ofReal_cpow_const' ?_ ?_).hasDerivWithinAt
+  · refine fun x hx ↦ (hasDerivAt_ofReal_cpow_const' ?_ ?_).hasDerivWithinAt
     · rcases le_total c 0 with (hc | hc)
       · rw [max_eq_left hc] at hx; exact hx.2.ne
       · rw [min_eq_left hc] at hx; exact hx.1.ne'
@@ -176,8 +176,8 @@ theorem integral_pow_abs_sub_uIoc : ∫ x in Ι a b, |x - a| ^ n = |b - a| ^ (n 
       ∫ x in Ι a b, |x - a| ^ n = ∫ x in a..b, |x - a| ^ n := by
         rw [uIoc_of_le hab, ← integral_of_le hab]
       _ = ∫ x in (0)..(b - a), x ^ n := by
-        simp only [integral_comp_sub_right fun x => |x| ^ n, sub_self]
-        refine integral_congr fun x hx => congr_arg₂ Pow.pow (abs_of_nonneg <| ?_) rfl
+        simp only [integral_comp_sub_right fun x ↦ |x| ^ n, sub_self]
+        refine integral_congr fun x hx ↦ congr_arg₂ Pow.pow (abs_of_nonneg <| ?_) rfl
         rw [uIcc_of_le (sub_nonneg.2 hab)] at hx
         exact hx.1
       _ = |b - a| ^ (n + 1) / (n + 1) := by simp [abs_of_nonneg (sub_nonneg.2 hab)]
@@ -185,12 +185,12 @@ theorem integral_pow_abs_sub_uIoc : ∫ x in Ι a b, |x - a| ^ n = |b - a| ^ (n 
       ∫ x in Ι a b, |x - a| ^ n = ∫ x in b..a, |x - a| ^ n := by
         rw [uIoc_of_ge hab.le, ← integral_of_le hab.le]
       _ = ∫ x in b - a..0, (-x) ^ n := by
-        simp only [integral_comp_sub_right fun x => |x| ^ n, sub_self]
-        refine integral_congr fun x hx => congr_arg₂ Pow.pow (abs_of_nonpos <| ?_) rfl
+        simp only [integral_comp_sub_right fun x ↦ |x| ^ n, sub_self]
+        refine integral_congr fun x hx ↦ congr_arg₂ Pow.pow (abs_of_nonpos <| ?_) rfl
         rw [uIcc_of_le (sub_nonpos.2 hab.le)] at hx
         exact hx.2
       _ = |b - a| ^ (n + 1) / (n + 1) := by
-        simp [integral_comp_neg fun x => x ^ n, abs_of_neg (sub_neg.2 hab)]
+        simp [integral_comp_neg fun x ↦ x ^ n, abs_of_neg (sub_neg.2 hab)]
 
 @[simp]
 theorem integral_id : ∫ x in a..b, x = (b ^ 2 - a ^ 2) / 2 := by
@@ -205,8 +205,8 @@ theorem integral_const_on_unit_interval : ∫ _ in a..a + 1, b = b := by simp
 
 @[simp]
 theorem integral_inv (h : (0 : ℝ) ∉ [[a, b]]) : ∫ x in a..b, x⁻¹ = log (b / a) := by
-  have h' := fun x (hx : x ∈ [[a, b]]) => ne_of_mem_of_not_mem hx h
-  rw [integral_deriv_eq_sub' _ deriv_log' (fun x hx => differentiableAt_log (h' x hx))
+  have h' := fun x (hx : x ∈ [[a, b]]) ↦ ne_of_mem_of_not_mem hx h
+  rw [integral_deriv_eq_sub' _ deriv_log' (fun x hx ↦ differentiableAt_log (h' x hx))
       (continuousOn_inv₀.mono <| subset_compl_singleton_iff.mpr h),
     log_div (h' b right_mem_uIcc) (h' a left_mem_uIcc)]
 
@@ -231,18 +231,18 @@ theorem integral_one_div_of_neg (ha : a < 0) (hb : b < 0) :
 theorem integral_exp : ∫ x in a..b, exp x = exp b - exp a := by
   rw [integral_deriv_eq_sub']
   · simp
-  · exact fun _ _ => differentiableAt_exp
+  · exact fun _ _ ↦ differentiableAt_exp
   · exact continuousOn_exp
 
 theorem integral_exp_mul_complex {c : ℂ} (hc : c ≠ 0) :
     (∫ x in a..b, Complex.exp (c * x)) = (Complex.exp (c * b) - Complex.exp (c * a)) / c := by
-  have D : ∀ x : ℝ, HasDerivAt (fun y : ℝ => Complex.exp (c * y) / c) (Complex.exp (c * x)) x := by
+  have D : ∀ x : ℝ, HasDerivAt (fun y : ℝ ↦ Complex.exp (c * y) / c) (Complex.exp (c * x)) x := by
     intro x
     conv => congr
     rw [← mul_div_cancel_right₀ (Complex.exp (c * x)) hc]
     apply ((Complex.hasDerivAt_exp _).comp x _).div_const c
     simpa only [mul_one] using ((hasDerivAt_id (x : ℂ)).const_mul _).comp_ofReal
-  rw [integral_deriv_eq_sub' _ (funext fun x => (D x).deriv) fun x _ => (D x).differentiableAt]
+  rw [integral_deriv_eq_sub' _ (funext fun x ↦ (D x).deriv) fun x _ ↦ (D x).differentiableAt]
   · ring
   · fun_prop
 
@@ -304,7 +304,7 @@ theorem integral_log : ∫ s in a..b, log s = b * log b - a * log a - b + a := b
 
 @[simp]
 theorem integral_sin : ∫ x in a..b, sin x = cos a - cos b := by
-  rw [integral_deriv_eq_sub' fun x => -cos x]
+  rw [integral_deriv_eq_sub' fun x ↦ -cos x]
   · ring
   · norm_num
   · simp only [differentiableAt_fun_neg_iff, differentiableAt_cos, implies_true]
@@ -325,8 +325,8 @@ theorem integral_cos_mul_complex {z : ℂ} (hz : z ≠ 0) (a b : ℝ) :
     exact Complex.continuous_cos.comp (continuous_const.mul Complex.continuous_ofReal)
   intro x _
   have a := Complex.hasDerivAt_sin (↑x * z)
-  have b : HasDerivAt (fun y => y * z : ℂ → ℂ) z ↑x := hasDerivAt_mul_const _
-  have c : HasDerivAt (Complex.sin ∘ fun y : ℂ => (y * z)) _ ↑x := HasDerivAt.comp (𝕜 := ℂ) x a b
+  have b : HasDerivAt (fun y ↦ y * z : ℂ → ℂ) z ↑x := hasDerivAt_mul_const _
+  have c : HasDerivAt (Complex.sin ∘ fun y : ℂ ↦ (y * z)) _ ↑x := HasDerivAt.comp (𝕜 := ℂ) x a b
   have d := HasDerivAt.comp_ofReal (c.div_const z)
   simp only [mul_comm] at d
   convert d using 1
@@ -336,13 +336,13 @@ theorem integral_cos_mul_complex {z : ℂ} (hz : z ≠ 0) (a b : ℝ) :
 theorem integral_cos_sq_sub_sin_sq :
     ∫ x in a..b, cos x ^ 2 - sin x ^ 2 = sin b * cos b - sin a * cos a := by
   simpa only [sq, sub_eq_add_neg, neg_mul_eq_mul_neg] using
-    integral_deriv_mul_eq_sub (fun x _ => hasDerivAt_sin x) (fun x _ => hasDerivAt_cos x)
+    integral_deriv_mul_eq_sub (fun x _ ↦ hasDerivAt_sin x) (fun x _ ↦ hasDerivAt_cos x)
       continuousOn_cos.intervalIntegrable continuousOn_sin.neg.intervalIntegrable
 
 theorem integral_one_div_one_add_sq :
     (∫ x : ℝ in a..b, ↑1 / (↑1 + x ^ 2)) = arctan b - arctan a := by
-  refine integral_deriv_eq_sub' _ Real.deriv_arctan (fun _ _ => differentiableAt_arctan _)
-    (continuous_const.div ?_ fun x => ?_).continuousOn
+  refine integral_deriv_eq_sub' _ Real.deriv_arctan (fun _ _ ↦ differentiableAt_arctan _)
+    (continuous_const.div ?_ fun x ↦ ?_).continuousOn
   · fun_prop
   · nlinarith
 
@@ -361,11 +361,11 @@ theorem integral_mul_cpow_one_add_sq {t : ℂ} (ht : t ≠ -1) :
   have : t + 1 ≠ 0 := by contrapose! ht; rwa [add_eq_zero_iff_eq_neg] at ht
   apply integral_eq_sub_of_hasDerivAt
   · intro x _
-    have f : HasDerivAt (fun y : ℂ => 1 + y ^ 2) (2 * x : ℂ) x := by
+    have f : HasDerivAt (fun y : ℂ ↦ 1 + y ^ 2) (2 * x : ℂ) x := by
       convert (hasDerivAt_pow 2 (x : ℂ)).const_add 1
       simp
     have g :
-      ∀ {z : ℂ}, 0 < z.re → HasDerivAt (fun z => z ^ (t + 1) / (2 * (t + 1))) (z ^ t / 2) z := by
+      ∀ {z : ℂ}, 0 < z.re → HasDerivAt (fun z ↦ z ^ (t + 1) / (2 * (t + 1))) (z ^ t / 2) z := by
       intro z hz
       convert (HasDerivAt.cpow_const (c := t + 1) (hasDerivAt_id _)
         (Or.inl hz)).div_const (2 * (t + 1)) using 1
@@ -412,11 +412,11 @@ theorem integral_sin_pow_aux :
       (sin a ^ (n + 1) * cos a - sin b ^ (n + 1) * cos b + (↑n + 1) * ∫ x in a..b, sin x ^ n) -
         (↑n + 1) * ∫ x in a..b, sin x ^ (n + 2) := by
   let C := sin a ^ (n + 1) * cos a - sin b ^ (n + 1) * cos b
-  have h : ∀ α β γ : ℝ, β * α * γ * α = β * (α * α * γ) := fun α β γ => by ring
+  have h : ∀ α β γ : ℝ, β * α * γ * α = β * (α * α * γ) := fun α β γ ↦ by ring
   have hu : ∀ x ∈ [[a, b]],
-      HasDerivAt (fun y => sin y ^ (n + 1)) ((n + 1 : ℕ) * cos x * sin x ^ n) x :=
-    fun x _ => by simpa only [mul_right_comm] using (hasDerivAt_sin x).pow (n + 1)
-  have hv : ∀ x ∈ [[a, b]], HasDerivAt (-cos) (sin x) x := fun x _ => by
+      HasDerivAt (fun y ↦ sin y ^ (n + 1)) ((n + 1 : ℕ) * cos x * sin x ^ n) x :=
+    fun x _ ↦ by simpa only [mul_right_comm] using (hasDerivAt_sin x).pow (n + 1)
+  have hv : ∀ x ∈ [[a, b]], HasDerivAt (-cos) (sin x) x := fun x _ ↦ by
     simpa only [neg_neg] using (hasDerivAt_cos x).neg
   have H := integral_mul_deriv_eq_deriv_mul hu hv ?_ ?_
   · calc
@@ -460,7 +460,7 @@ theorem integral_sin_pow_even :
 theorem integral_sin_pow_pos : 0 < ∫ x in (0)..π, sin x ^ n := by
   rcases even_or_odd' n with ⟨k, rfl | rfl⟩ <;>
   simp only [integral_sin_pow_even, integral_sin_pow_odd] <;>
-  refine mul_pos (by simp [pi_pos]) (prod_pos fun n _ => div_pos ?_ ?_) <;>
+  refine mul_pos (by simp [pi_pos]) (prod_pos fun n _ ↦ div_pos ?_ ?_) <;>
   norm_cast <;>
   omega
 
@@ -468,7 +468,7 @@ theorem integral_sin_pow_succ_le : (∫ x in (0)..π, sin x ^ (n + 1)) ≤ ∫ x
   let H x h := pow_le_pow_of_le_one (sin_nonneg_of_mem_Icc h) (sin_le_one x) (n.le_add_right 1)
   refine integral_mono_on pi_pos.le ?_ ?_ H <;> exact (continuous_sin.pow _).intervalIntegrable 0 π
 
-theorem integral_sin_pow_antitone : Antitone fun n : ℕ => ∫ x in (0)..π, sin x ^ n :=
+theorem integral_sin_pow_antitone : Antitone fun n : ℕ ↦ ∫ x in (0)..π, sin x ^ n :=
   antitone_nat_of_succ_le integral_sin_pow_succ_le
 
 /-! ### Integral of `cos x ^ n` -/
@@ -479,12 +479,12 @@ theorem integral_cos_pow_aux :
       (cos b ^ (n + 1) * sin b - cos a ^ (n + 1) * sin a + (n + 1) * ∫ x in a..b, cos x ^ n) -
         (n + 1) * ∫ x in a..b, cos x ^ (n + 2) := by
   let C := cos b ^ (n + 1) * sin b - cos a ^ (n + 1) * sin a
-  have h : ∀ α β γ : ℝ, β * α * γ * α = β * (α * α * γ) := fun α β γ => by ring
+  have h : ∀ α β γ : ℝ, β * α * γ * α = β * (α * α * γ) := fun α β γ ↦ by ring
   have hu : ∀ x ∈ [[a, b]],
-      HasDerivAt (fun y => cos y ^ (n + 1)) (-(n + 1 : ℕ) * sin x * cos x ^ n) x :=
-    fun x _ => by
+      HasDerivAt (fun y ↦ cos y ^ (n + 1)) (-(n + 1 : ℕ) * sin x * cos x ^ n) x :=
+    fun x _ ↦ by
       simpa only [mul_right_comm, neg_mul, mul_neg] using (hasDerivAt_cos x).pow (n + 1)
-  have hv : ∀ x ∈ [[a, b]], HasDerivAt sin (cos x) x := fun x _ => hasDerivAt_sin x
+  have hv : ∀ x ∈ [[a, b]], HasDerivAt sin (cos x) x := fun x _ ↦ hasDerivAt_sin x
   have H := integral_mul_deriv_eq_deriv_mul hu hv ?_ ?_
   · calc
       (∫ x in a..b, cos x ^ (n + 2)) = ∫ x in a..b, cos x ^ (n + 1) * cos x := by
@@ -516,7 +516,7 @@ theorem integral_cos_sq : ∫ x in a..b, cos x ^ 2 = (cos b * sin b - cos a * si
 /-- Simplification of the integral of `sin x ^ m * cos x ^ n`, case `n` is odd. -/
 theorem integral_sin_pow_mul_cos_pow_odd (m n : ℕ) :
     (∫ x in a..b, sin x ^ m * cos x ^ (2 * n + 1)) = ∫ u in sin a..sin b, u^m * (↑1 - u ^ 2) ^ n :=
-  have hc : Continuous fun u : ℝ => u ^ m * (↑1 - u ^ 2) ^ n := by fun_prop
+  have hc : Continuous fun u : ℝ ↦ u ^ m * (↑1 - u ^ 2) ^ n := by fun_prop
   calc
     (∫ x in a..b, sin x ^ m * cos x ^ (2 * n + 1)) =
         ∫ x in a..b, sin x ^ m * (↑1 - sin x ^ 2) ^ n * cos x := by
@@ -524,7 +524,7 @@ theorem integral_sin_pow_mul_cos_pow_odd (m n : ℕ) :
       congr! 5
       rw [← sq, ← sq, cos_sq']
     _ = ∫ u in sin a..sin b, u ^ m * (1 - u ^ 2) ^ n :=
-      integral_comp_mul_deriv (fun x _ => hasDerivAt_sin x) continuousOn_cos hc
+      integral_comp_mul_deriv (fun x _ ↦ hasDerivAt_sin x) continuousOn_cos hc
 
 /-- The integral of `sin x * cos x`, given in terms of sin².
   See `integral_sin_mul_cos₂` below for the integral given in terms of cos². -/
@@ -547,7 +547,7 @@ theorem integral_cos_pow_three :
 /-- Simplification of the integral of `sin x ^ m * cos x ^ n`, case `m` is odd. -/
 theorem integral_sin_pow_odd_mul_cos_pow (m n : ℕ) :
     (∫ x in a..b, sin x ^ (2 * m + 1) * cos x ^ n) = ∫ u in cos b..cos a, u^n * (↑1 - u ^ 2) ^ m :=
-  have hc : Continuous fun u : ℝ => u ^ n * (↑1 - u ^ 2) ^ m := by fun_prop
+  have hc : Continuous fun u : ℝ ↦ u ^ n * (↑1 - u ^ 2) ^ m := by fun_prop
   calc
     (∫ x in a..b, sin x ^ (2 * m + 1) * cos x ^ n) =
         -∫ x in b..a, sin x ^ (2 * m + 1) * cos x ^ n := by rw [integral_symm]
@@ -558,7 +558,7 @@ theorem integral_sin_pow_odd_mul_cos_pow (m n : ℕ) :
       rw [← sq, ← sq, sin_sq]
     _ = ∫ x in b..a, cos x ^ n * (↑1 - cos x ^ 2) ^ m * -sin x := by congr; ext; ring
     _ = ∫ u in cos b..cos a, u ^ n * (↑1 - u ^ 2) ^ m :=
-      integral_comp_mul_deriv (fun x _ => hasDerivAt_cos x) continuousOn_sin.neg hc
+      integral_comp_mul_deriv (fun x _ ↦ hasDerivAt_cos x) continuousOn_sin.neg hc
 
 /-- The integral of `sin x * cos x`, given in terms of cos².
 See `integral_sin_mul_cos₁` above for the integral given in terms of sin². -/
@@ -587,11 +587,11 @@ theorem integral_sin_pow_even_mul_cos_pow_even (m n : ℕ) :
 theorem integral_sin_sq_mul_cos_sq :
     ∫ x in a..b, sin x ^ 2 * cos x ^ 2 = (b - a) / 8 - (sin (4 * b) - sin (4 * a)) / 32 := by
   convert integral_sin_pow_even_mul_cos_pow_even 1 1 using 1
-  have h1 : ∀ c : ℝ, (↑1 - c) / ↑2 * ((↑1 + c) / ↑2) = (↑1 - c ^ 2) / 4 := fun c => by ring
-  have h2 : Continuous fun x => cos (2 * x) ^ 2 := by fun_prop
+  have h1 : ∀ c : ℝ, (↑1 - c) / ↑2 * ((↑1 + c) / ↑2) = (↑1 - c ^ 2) / 4 := fun c ↦ by ring
+  have h2 : Continuous fun x ↦ cos (2 * x) ^ 2 := by fun_prop
   have h3 : ∀ x, cos x * sin x = sin (2 * x) / 2 := by intro; rw [sin_two_mul]; ring
-  have h4 : ∀ d : ℝ, 2 * (2 * d) = 4 * d := fun d => by ring
-  simp [h1, h2.intervalIntegrable, integral_comp_mul_left fun x => cos x ^ 2, h3, h4]
+  have h4 : ∀ d : ℝ, 2 * (2 * d) = 4 * d := fun d ↦ by ring
+  simp [h1, h2.intervalIntegrable, integral_comp_mul_left fun x ↦ cos x ^ 2, h3, h4]
   ring
 
 /-! ### Integral of miscellaneous functions -/
@@ -600,10 +600,10 @@ theorem integral_sqrt_one_sub_sq : ∫ x in (-1 : ℝ)..1, √(1 - x ^ 2 : ℝ) 
   calc
     _ = ∫ x in sin (-(π / 2)).. sin (π / 2), √(1 - x ^ 2 : ℝ) := by rw [sin_neg, sin_pi_div_two]
     _ = ∫ x in (-(π / 2))..(π / 2), √(1 - sin x ^ 2 : ℝ) * cos x :=
-          (integral_comp_mul_deriv (fun x _ => hasDerivAt_sin x) continuousOn_cos
+          (integral_comp_mul_deriv (fun x _ ↦ hasDerivAt_sin x) continuousOn_cos
             (by fun_prop)).symm
     _ = ∫ x in (-(π / 2))..(π / 2), cos x ^ 2 := by
-          refine integral_congr_ae (MeasureTheory.ae_of_all _ fun _ h => ?_)
+          refine integral_congr_ae (MeasureTheory.ae_of_all _ fun _ h ↦ ?_)
           rw [uIoc_of_le (neg_le_self (le_of_lt (half_pos Real.pi_pos))), Set.mem_Ioc] at h
           rw [← Real.cos_eq_sqrt_one_sub_sin_sq (le_of_lt h.1) h.2, pow_two]
     _ = π / 2 := by simp

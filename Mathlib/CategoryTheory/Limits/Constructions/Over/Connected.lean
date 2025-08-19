@@ -45,7 +45,7 @@ def raiseCone [IsConnected J] {B : C} {F : J ⥤ Over B} (c : Cone (F ⋙ forget
     Cone F where
   pt := Over.mk (c.π.app (Classical.arbitrary J) ≫ (F.obj (Classical.arbitrary J)).hom)
   π :=
-    { app := fun j =>
+    { app := fun j ↦
         Over.homMk (c.π.app j) (nat_trans_from_is_connected (c.π ≫ natTransInOver F) j _)
       naturality := by
         intro X Y f
@@ -74,7 +74,7 @@ end CreatesConnected
 instance forgetCreatesConnectedLimits [IsConnected J] {B : C} :
     CreatesLimitsOfShape J (forget B) where
   CreatesLimit :=
-    createsLimitOfReflectsIso fun c t =>
+    createsLimitOfReflectsIso fun c t ↦
       { liftedCone := CreatesConnected.raiseCone c
         validLift := eqToIso (CreatesConnected.raised_cone_lowers_to_original c)
         makesLimit := CreatesConnected.raisedConeIsLimit t }

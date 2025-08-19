@@ -52,11 +52,11 @@ theorem IsIrreducible.nonempty (h : IsIrreducible s) : s.Nonempty :=
 theorem IsIrreducible.isPreirreducible (h : IsIrreducible s) : IsPreirreducible s :=
   h.2
 
-theorem isPreirreducible_empty : IsPreirreducible (∅ : Set X) := fun _ _ _ _ _ ⟨_, h1, _⟩ =>
+theorem isPreirreducible_empty : IsPreirreducible (∅ : Set X) := fun _ _ _ _ _ ⟨_, h1, _⟩ ↦
   h1.elim
 
 theorem Set.Subsingleton.isPreirreducible (hs : s.Subsingleton) : IsPreirreducible s :=
-  fun _u _v _ _ ⟨_x, hxs, hxu⟩ ⟨y, hys, hyv⟩ => ⟨y, hys, hs hxs hys ▸ hxu, hyv⟩
+  fun _u _v _ _ ⟨_x, hxs, hxu⟩ ⟨y, hys, hyv⟩ ↦ ⟨y, hys, hs hxs hys ▸ hxu, hyv⟩
 
 theorem isPreirreducible_singleton {x} : IsPreirreducible ({x} : Set X) :=
   subsingleton_singleton.isPreirreducible
@@ -65,7 +65,7 @@ theorem isIrreducible_singleton {x} : IsIrreducible ({x} : Set X) :=
   ⟨singleton_nonempty x, isPreirreducible_singleton⟩
 
 theorem isPreirreducible_iff_closure : IsPreirreducible (closure s) ↔ IsPreirreducible s :=
-  forall₄_congr fun u v hu hv => by
+  forall₄_congr fun u v hu hv ↦ by
     iterate 3 rw [closure_inter_open_nonempty_iff]
     exacts [hu.inter hv, hv, hu]
 
@@ -81,20 +81,20 @@ theorem exists_preirreducible (s : Set X) (H : IsPreirreducible s) :
     ∃ t : Set X, IsPreirreducible t ∧ s ⊆ t ∧ ∀ u, IsPreirreducible u → t ⊆ u → u = t :=
   let ⟨m, hsm, hm⟩ :=
     zorn_subset_nonempty { t : Set X | IsPreirreducible t }
-      (fun c hc hcc _ =>
-        ⟨⋃₀ c, fun u v hu hv ⟨y, hy, hyu⟩ ⟨x, hx, hxv⟩ =>
+      (fun c hc hcc _ ↦
+        ⟨⋃₀ c, fun u v hu hv ⟨y, hy, hyu⟩ ⟨x, hx, hxv⟩ ↦
           let ⟨p, hpc, hyp⟩ := mem_sUnion.1 hy
           let ⟨q, hqc, hxq⟩ := mem_sUnion.1 hx
           Or.casesOn (hcc.total hpc hqc)
-            (fun hpq : p ⊆ q =>
+            (fun hpq : p ⊆ q ↦
               let ⟨x, hxp, hxuv⟩ := hc hqc u v hu hv ⟨y, hpq hyp, hyu⟩ ⟨x, hxq, hxv⟩
               ⟨x, mem_sUnion_of_mem hxp hqc, hxuv⟩)
-            fun hqp : q ⊆ p =>
+            fun hqp : q ⊆ p ↦
             let ⟨x, hxp, hxuv⟩ := hc hpc u v hu hv ⟨y, hyp, hyu⟩ ⟨x, hqp hxq, hxv⟩
             ⟨x, mem_sUnion_of_mem hxp hpc, hxuv⟩,
-          fun _ hxc => subset_sUnion_of_mem hxc⟩)
+          fun _ hxc ↦ subset_sUnion_of_mem hxc⟩)
       s H
-  ⟨m, hm.prop, hsm, fun _u hu hmu => (hm.eq_of_subset hu hmu).symm⟩
+  ⟨m, hm.prop, hsm, fun _u hu hmu ↦ (hm.eq_of_subset hu hmu).symm⟩
 
 /-- The set of irreducible components of a topological space. -/
 @[stacks 004V "(2)"]
@@ -112,9 +112,9 @@ theorem irreducibleComponents_eq_maximals_closed (X : Type*) [TopologicalSpace X
   ext s
   constructor
   · intro H
-    exact ⟨⟨isClosed_of_mem_irreducibleComponents _ H, H.1⟩, fun x h e => H.2 h.2 e⟩
+    exact ⟨⟨isClosed_of_mem_irreducibleComponents _ H, H.1⟩, fun x h e ↦ H.2 h.2 e⟩
   · intro H
-    refine ⟨H.1.2, fun x h e => ?_⟩
+    refine ⟨H.1.2, fun x h e ↦ ?_⟩
     have : closure x ≤ s := H.2 ⟨isClosed_closure, h.closure⟩ (e.trans subset_closure)
     exact le_trans subset_closure this
 
@@ -122,7 +122,7 @@ theorem irreducibleComponents_eq_maximals_closed (X : Type*) [TopologicalSpace X
 lemma exists_mem_irreducibleComponents_subset_of_isIrreducible (s : Set X) (hs : IsIrreducible s) :
     ∃ u ∈ irreducibleComponents X, s ⊆ u := by
   obtain ⟨u,hu⟩ := exists_preirreducible s hs.isPreirreducible
-  use u, ⟨⟨hs.left.mono hu.right.left,hu.left⟩,fun _ h hl => (hu.right.right _ h.right hl).le⟩
+  use u, ⟨⟨hs.left.mono hu.right.left,hu.left⟩,fun _ h hl ↦ (hu.right.right _ h.right hl).le⟩
   exact hu.right.left
 
 /-- A maximal irreducible set that contains a given point. -/
@@ -149,7 +149,7 @@ theorem eq_irreducibleComponent {x : X} :
 
 theorem irreducibleComponent_mem_irreducibleComponents (x : X) :
     irreducibleComponent x ∈ irreducibleComponents X :=
-  ⟨isIrreducible_irreducibleComponent, fun _ h₁ h₂ => (eq_irreducibleComponent h₁.2 h₂).le⟩
+  ⟨isIrreducible_irreducibleComponent, fun _ h₁ h₂ ↦ (eq_irreducibleComponent h₁.2 h₂).le⟩
 
 theorem isClosed_irreducibleComponent {x : X} : IsClosed (irreducibleComponent x) :=
   isClosed_of_mem_irreducibleComponents _ (irreducibleComponent_mem_irreducibleComponents x)
@@ -174,7 +174,7 @@ theorem IrreducibleSpace.isIrreducible_univ (X : Type*) [TopologicalSpace X] [Ir
 
 theorem irreducibleSpace_def (X : Type*) [TopologicalSpace X] :
     IrreducibleSpace X ↔ IsIrreducible (⊤ : Set X) :=
-  ⟨@IrreducibleSpace.isIrreducible_univ X _, fun h =>
+  ⟨@IrreducibleSpace.isIrreducible_univ X _, fun h ↦
     haveI : PreirreducibleSpace X := ⟨h.2⟩
     ⟨⟨h.1.some⟩⟩⟩
 
@@ -186,7 +186,7 @@ theorem nonempty_preirreducible_inter [PreirreducibleSpace X] :
 /-- In a (pre)irreducible space, a nonempty open set is dense. -/
 protected theorem IsOpen.dense [PreirreducibleSpace X] (ho : IsOpen s) (hne : s.Nonempty) :
     Dense s :=
-  dense_iff_inter_open.2 fun _t hto htne => nonempty_preirreducible_inter hto ho htne hne
+  dense_iff_inter_open.2 fun _t hto htne ↦ nonempty_preirreducible_inter hto ho htne hne
 
 theorem IsPreirreducible.image (H : IsPreirreducible s) (f : X → Y) (hf : ContinuousOn f s) :
     IsPreirreducible (f '' s) := by
@@ -247,7 +247,7 @@ theorem isIrreducible_iff_sInter :
       ∀ (U : Finset (Set X)), (∀ u ∈ U, IsOpen u) → (∀ u ∈ U, (s ∩ u).Nonempty) →
         (s ∩ ⋂₀ ↑U).Nonempty := by
   classical
-  refine ⟨fun h U hu hU => ?_, fun h => ⟨?_, ?_⟩⟩
+  refine ⟨fun h U hu hU ↦ ?_, fun h ↦ ⟨?_, ?_⟩⟩
   · induction U using Finset.induction_on with
     | empty => simpa using h.nonempty
     | insert u U _ IH =>
@@ -263,10 +263,10 @@ for every cover by two closed sets, it is contained in one of the two covering s
 theorem isPreirreducible_iff_isClosed_union_isClosed :
     IsPreirreducible s ↔
       ∀ z₁ z₂ : Set X, IsClosed z₁ → IsClosed z₂ → s ⊆ z₁ ∪ z₂ → s ⊆ z₁ ∨ s ⊆ z₂ := by
-  refine compl_surjective.forall.trans <| forall_congr' fun z₁ => compl_surjective.forall.trans <|
-    forall_congr' fun z₂ => ?_
+  refine compl_surjective.forall.trans <| forall_congr' fun z₁ ↦ compl_surjective.forall.trans <|
+    forall_congr' fun z₂ ↦ ?_
   simp only [isOpen_compl_iff, ← compl_union, inter_compl_nonempty_iff]
-  refine forall₂_congr fun _ _ => ?_
+  refine forall₂_congr fun _ _ ↦ ?_
   rw [← and_imp, ← not_or, not_imp_not]
 
 /-- A set is irreducible if and only if for every cover by a finite collection of closed sets, it is
@@ -275,11 +275,11 @@ theorem isIrreducible_iff_sUnion_isClosed :
     IsIrreducible s ↔
       ∀ t : Finset (Set X), (∀ z ∈ t, IsClosed z) → (s ⊆ ⋃₀ ↑t) → ∃ z ∈ t, s ⊆ z := by
   simp only [isIrreducible_iff_sInter]
-  refine ((@compl_involutive (Set X) _).toPerm _).finsetCongr.forall_congr fun {t} => ?_
+  refine ((@compl_involutive (Set X) _).toPerm _).finsetCongr.forall_congr fun {t} ↦ ?_
   simp_rw [Equiv.finsetCongr_apply, Finset.forall_mem_map, Finset.mem_map, Finset.coe_map,
     sUnion_image, Equiv.coe_toEmbedding, Function.Involutive.coe_toPerm, isClosed_compl_iff,
     exists_exists_and_eq_and]
-  refine forall_congr' fun _ => Iff.trans ?_ not_imp_not
+  refine forall_congr' fun _ ↦ Iff.trans ?_ not_imp_not
   simp only [not_exists, not_and, ← compl_iInter₂, ← sInter_eq_biInter,
     subset_compl_iff_disjoint_right, not_disjoint_iff_nonempty_inter]
 
@@ -311,8 +311,8 @@ theorem IsPreirreducible.subset_irreducible {S U : Set X} (ht : IsPreirreducible
 
 theorem IsPreirreducible.open_subset {U : Set X} (ht : IsPreirreducible t) (hU : IsOpen U)
     (hU' : U ⊆ t) : IsPreirreducible U :=
-  U.eq_empty_or_nonempty.elim (fun h => h.symm ▸ isPreirreducible_empty) fun h =>
-    (ht.subset_irreducible h hU (fun _ => id) hU').2
+  U.eq_empty_or_nonempty.elim (fun h ↦ h.symm ▸ isPreirreducible_empty) fun h ↦
+    (ht.subset_irreducible h hU (fun _ ↦ id) hU').2
 
 theorem IsPreirreducible.interior (ht : IsPreirreducible t) : IsPreirreducible (interior t) :=
   ht.open_subset isOpen_interior interior_subset

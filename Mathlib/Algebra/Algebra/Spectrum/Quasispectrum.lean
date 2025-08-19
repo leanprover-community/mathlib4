@@ -450,7 +450,7 @@ theorem quasispectrum.preimage_algebraMap (S : Type*) {R A : Type*} [Semifield R
     [NonUnitalRing A] [Algebra R S] [Module S A] [IsScalarTower S A A]
     [SMulCommClass S A A] [Module R A] [IsScalarTower R S A] {a : A} :
     algebraMap R S ⁻¹' quasispectrum S a = quasispectrum R a :=
-  Set.ext fun _ => quasispectrum.algebraMap_mem_iff _
+  Set.ext fun _ ↦ quasispectrum.algebraMap_mem_iff _
 
 namespace QuasispectrumRestricts
 
@@ -464,7 +464,7 @@ protected theorem map_zero (h : QuasispectrumRestricts a f) : f 0 = 0 := by
 
 theorem of_subset_range_algebraMap (hf : f.LeftInverse (algebraMap R S))
     (h : quasispectrum S a ⊆ Set.range (algebraMap R S)) : QuasispectrumRestricts a f where
-  rightInvOn := fun s hs => by obtain ⟨r, rfl⟩ := h hs; rw [hf r]
+  rightInvOn := fun s hs ↦ by obtain ⟨r, rfl⟩ := h hs; rw [hf r]
   left_inv := hf
 
 lemma of_quasispectrum_eq {a b : A} {f : S → R} (ha : QuasispectrumRestricts a f)
@@ -484,7 +484,7 @@ variable [IsScalarTower R S A]
 
 theorem algebraMap_image (h : QuasispectrumRestricts a f) :
     algebraMap R S '' quasispectrum R a = quasispectrum S a := by
-  refine Set.eq_of_subset_of_subset ?_ fun s hs => ⟨f s, ?_⟩
+  refine Set.eq_of_subset_of_subset ?_ fun s hs ↦ ⟨f s, ?_⟩
   · simpa only [quasispectrum.preimage_algebraMap] using
       (quasispectrum S a).image_preimage_subset (algebraMap R S)
   exact ⟨quasispectrum.of_algebraMap_mem S ((h.rightInvOn hs).symm ▸ hs), h.rightInvOn hs⟩
@@ -551,7 +551,7 @@ lemma _root_.spectrumRestricts_iff :
 
 theorem of_subset_range_algebraMap (hf : f.LeftInverse (algebraMap R S))
     (h : spectrum S a ⊆ Set.range (algebraMap R S)) : SpectrumRestricts a f where
-  rightInvOn := fun s hs => by
+  rightInvOn := fun s hs ↦ by
     rw [mem_quasispectrum_iff] at hs
     obtain (rfl | hs) := hs
     · simpa using hf 0
@@ -577,7 +577,7 @@ variable [IsScalarTower R S A]
 
 theorem algebraMap_image (h : SpectrumRestricts a f) :
     algebraMap R S '' spectrum R a = spectrum S a := by
-  refine Set.eq_of_subset_of_subset ?_ fun s hs => ⟨f s, ?_⟩
+  refine Set.eq_of_subset_of_subset ?_ fun s hs ↦ ⟨f s, ?_⟩
   · simpa only [spectrum.preimage_algebraMap] using
       (spectrum S a).image_preimage_subset (algebraMap R S)
   exact ⟨spectrum.of_algebraMap_mem S ((h.rightInvOn hs).symm ▸ hs), h.rightInvOn hs⟩

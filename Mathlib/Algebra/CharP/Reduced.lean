@@ -33,7 +33,7 @@ theorem isSquare_of_charTwo' {R : Type*} [Finite R] [CommRing R] [IsReduced R] [
     (a : R) : IsSquare a := by
   cases nonempty_fintype R
   exact
-    Exists.imp (fun b h => pow_two b ▸ Eq.symm h)
+    Exists.imp (fun b h ↦ pow_two b ▸ Eq.symm h)
       (((Fintype.bijective_iff_injective_and_card _).mpr ⟨frobenius_inj R 2, rfl⟩).surjective a)
 
 variable {R : Type*} [CommRing R] [IsReduced R]

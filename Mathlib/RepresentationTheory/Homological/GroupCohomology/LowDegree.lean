@@ -81,7 +81,7 @@ def cochainsIso₁ : (inhomogeneousCochains A).X 1 ≅ ModuleCat.of k (G → A) 
 /-- The 2nd object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
 to `Fun(G², A)` as a `k`-module. -/
 def cochainsIso₂ : (inhomogeneousCochains A).X 2 ≅ ModuleCat.of k (G × G → A) :=
-  (LinearEquiv.funCongrLeft k A <| (piFinTwoEquiv fun _ => G)).toModuleIso.symm
+  (LinearEquiv.funCongrLeft k A <| (piFinTwoEquiv fun _ ↦ G)).toModuleIso.symm
 
 @[deprecated (since := "2025-06-25")] noncomputable alias twoCochainsIso := cochainsIso₂
 @[deprecated (since := "2025-05-09")] noncomputable alias twoCochainsLequiv := twoCochainsIso
@@ -90,7 +90,7 @@ def cochainsIso₂ : (inhomogeneousCochains A).X 2 ≅ ModuleCat.of k (G × G �
 to `Fun(G³, A)` as a `k`-module. -/
 def cochainsIso₃ : (inhomogeneousCochains A).X 3 ≅ ModuleCat.of k (G × G × G → A) :=
   (LinearEquiv.funCongrLeft k A <| ((Fin.consEquiv _).symm.trans
-    ((Equiv.refl G).prodCongr (piFinTwoEquiv fun _ => G)))).toModuleIso.symm
+    ((Equiv.refl G).prodCongr (piFinTwoEquiv fun _ ↦ G)))).toModuleIso.symm
 
 @[deprecated (since := "2025-06-25")] noncomputable alias threeCochainsIso := cochainsIso₃
 @[deprecated (since := "2025-05-09")] noncomputable alias threeCochainsLequiv := threeCochainsIso
@@ -105,8 +105,8 @@ section Differentials
 def d₀₁ : A.V ⟶ ModuleCat.of k (G → A) :=
   ModuleCat.ofHom
   { toFun m g := A.ρ g m - m
-    map_add' x y := funext fun g => by simp only [map_add, add_sub_add_comm]; rfl
-    map_smul' r x := funext fun g => by dsimp; rw [map_smul, smul_sub] }
+    map_add' x y := funext fun g ↦ by simp only [map_add, add_sub_add_comm]; rfl
+    map_smul' r x := funext fun g ↦ by dsimp; rw [map_smul, smul_sub] }
 
 @[deprecated (since := "2025-06-25")] noncomputable alias dZero := d₀₁
 
@@ -141,8 +141,8 @@ lemma subtype_comp_d₀₁ : ModuleCat.ofHom (A.ρ.invariants.subtype) ≫ d₀�
 def d₁₂ : ModuleCat.of k (G → A) ⟶ ModuleCat.of k (G × G → A) :=
   ModuleCat.ofHom
   { toFun f g := A.ρ g.1 (f g.2) - f (g.1 * g.2) + f g.1
-    map_add' x y := funext fun g => by dsimp; rw [map_add, add_add_add_comm, add_sub_add_comm]
-    map_smul' r x := funext fun g => by dsimp; rw [map_smul, smul_add, smul_sub] }
+    map_add' x y := funext fun g ↦ by dsimp; rw [map_add, add_add_add_comm, add_sub_add_comm]
+    map_smul' r x := funext fun g ↦ by dsimp; rw [map_smul, smul_add, smul_sub] }
 
 @[deprecated (since := "2025-06-25")] noncomputable alias dOne := d₁₂
 
@@ -155,11 +155,11 @@ def d₂₃ : ModuleCat.of k (G × G → A) ⟶ ModuleCat.of k (G × G × G → 
   { toFun f g :=
       A.ρ g.1 (f (g.2.1, g.2.2)) - f (g.1 * g.2.1, g.2.2) + f (g.1, g.2.1 * g.2.2) - f (g.1, g.2.1)
     map_add' x y :=
-      funext fun g => by
+      funext fun g ↦ by
         dsimp
         rw [map_add, add_sub_add_comm (A.ρ _ _), add_sub_assoc, add_sub_add_comm, add_add_add_comm,
           add_sub_assoc, add_sub_assoc]
-    map_smul' r x := funext fun g => by dsimp; simp only [map_smul, smul_add, smul_sub] }
+    map_smul' r x := funext fun g ↦ by dsimp; simp only [map_smul, smul_add, smul_sub] }
 
 @[deprecated (since := "2025-06-25")] noncomputable alias dTwo := d₂₃
 
@@ -271,7 +271,7 @@ theorem eq_d₂₃_comp_inv :
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem d₀₁_comp_d₁₂ : d₀₁ A ≫ d₁₂ A = 0 := by
   ext
-  simp [Pi.zero_apply (M := fun _ => A)]
+  simp [Pi.zero_apply (M := fun _ ↦ A)]
 
 @[deprecated (since := "2025-06-25")] alias dZero_comp_dOne := d₀₁_comp_d₁₂
 
@@ -280,7 +280,7 @@ theorem d₀₁_comp_d₁₂ : d₀₁ A ≫ d₁₂ A = 0 := by
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem d₁₂_comp_d₂₃ : d₁₂ A ≫ d₂₃ A = 0 := by
   ext f g
-  simp [mul_assoc, Pi.zero_apply (M := fun _ => A)]
+  simp [mul_assoc, Pi.zero_apply (M := fun _ ↦ A)]
   abel
 
 @[deprecated (since := "2025-06-25")] alias dOne_comp_dTwo := d₁₂_comp_d₂₃
@@ -389,7 +389,7 @@ alias oneCocycles_map_mul_of_isTrivial := cocycles₁_map_mul_of_isTrivial
 
 theorem mem_cocycles₁_of_addMonoidHom [A.IsTrivial] (f : Additive G →+ A) :
     f ∘ Additive.ofMul ∈ cocycles₁ A :=
-  (mem_cocycles₁_iff _).2 fun g h => by
+  (mem_cocycles₁_iff _).2 fun g h ↦ by
     simp only [Function.comp_apply, ofMul_mul, map_add,
       isTrivial_apply A.ρ g (f (Additive.ofMul h)), add_comm (f (Additive.ofMul g))]
 
@@ -712,7 +712,7 @@ def cocyclesOfIsCocycle₁ {f : G → A} (hf : IsCocycle₁ f) :
 theorem isCocycle₁_of_mem_cocycles₁
     (f : G → A) (hf : f ∈ cocycles₁ (Rep.ofDistribMulAction k G A)) :
     IsCocycle₁ f :=
-  fun _ _ => (mem_cocycles₁_iff (A := Rep.ofDistribMulAction k G A) f).1 hf _ _
+  fun _ _ ↦ (mem_cocycles₁_iff (A := Rep.ofDistribMulAction k G A) f).1 hf _ _
 
 @[deprecated (since := "2025-07-02")]
 alias isOneCocycle_of_mem_oneCocycles := isCocycle₁_of_mem_cocycles₁
@@ -732,7 +732,7 @@ theorem isCoboundary₁_of_mem_coboundaries₁
     (f : G → A) (hf : f ∈ coboundaries₁ (Rep.ofDistribMulAction k G A)) :
     IsCoboundary₁ f := by
   rcases hf with ⟨a, rfl⟩
-  exact ⟨a, fun _ => rfl⟩
+  exact ⟨a, fun _ ↦ rfl⟩
 
 @[deprecated (since := "2025-07-02")]
 alias isOneCoboundary_of_mem_oneCoboundaries := isCoboundary₁_of_mem_coboundaries₁
@@ -769,7 +769,7 @@ theorem isCoboundary₂_of_mem_coboundaries₂
     (f : G × G → A) (hf : f ∈ coboundaries₂ (Rep.ofDistribMulAction k G A)) :
     IsCoboundary₂ f := by
   rcases hf with ⟨a, rfl⟩
-  exact ⟨a, fun _ _ => rfl⟩
+  exact ⟨a, fun _ _ ↦ rfl⟩
 
 @[deprecated (since := "2025-07-02")]
 alias isTwoCoboundary_of_mem_twoCoboundaries := isCoboundary₂_of_mem_coboundaries₂
@@ -907,7 +907,7 @@ theorem isMulCoboundary₁_of_mem_coboundaries₁
     (f : G → M) (hf : f ∈ coboundaries₁ (Rep.ofMulDistribMulAction G M)) :
     IsMulCoboundary₁ (M := M) (Additive.ofMul ∘ f) := by
   rcases hf with ⟨x, rfl⟩
-  exact ⟨x, fun _ =>  rfl⟩
+  exact ⟨x, fun _ ↦  rfl⟩
 
 @[deprecated (since := "2025-07-02")]
 alias isMulOneCoboundary_of_mem_oneCoboundaries := isMulCoboundary₁_of_mem_coboundaries₁
@@ -944,7 +944,7 @@ theorem isMulCoboundary₂_of_mem_coboundaries₂
     (f : G × G → M) (hf : f ∈ coboundaries₂ (Rep.ofMulDistribMulAction G M)) :
     IsMulCoboundary₂ (M := M) (Additive.toMul ∘ f) := by
   rcases hf with ⟨x, rfl⟩
-  exact ⟨x, fun _ _ => rfl⟩
+  exact ⟨x, fun _ _ ↦ rfl⟩
 
 @[deprecated (since := "2025-07-02")]
 alias isMulTwoCoboundary_of_mem_twoCoboundaries := isMulCoboundary₂_of_mem_coboundaries₂
@@ -964,7 +964,7 @@ instance : Mono (shortComplexH0 A).f := by
 lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
   rw [ShortComplex.moduleCat_exact_iff]
   intro (x : A) (hx : d₀₁ _ x = 0)
-  refine ⟨⟨x, fun g => ?_⟩, rfl⟩
+  refine ⟨⟨x, fun g ↦ ?_⟩, rfl⟩
   rw [← sub_eq_zero]
   exact congr_fun hx g
 
@@ -1013,7 +1013,7 @@ alias isoZeroCocycles_inv_comp_iCocycles := zeroCocyclesIso_inv_comp_iCocycles
 variable {A} in
 lemma cocyclesMk₀_eq (x : A.ρ.invariants) :
     cocyclesMk ((cochainsIso₀ A).inv x.1) (by ext g; simp [cochainsIso₀, x.2 (g 0),
-      inhomogeneousCochains.d, Pi.zero_apply (M := fun _ => A)]) = (cocyclesIso₀ A).inv x :=
+      inhomogeneousCochains.d, Pi.zero_apply (M := fun _ ↦ A)]) = (cocyclesIso₀ A).inv x :=
   (ModuleCat.mono_iff_injective <| iCocycles A 0).1 inferInstance <| by
     rw [iCocycles_mk]
     exact (cocyclesIso₀_inv_comp_iCocycles_apply A x).symm
@@ -1245,7 +1245,7 @@ lemma H1π_eq_iff (x y : cocycles₁ A) :
 @[elab_as_elim]
 theorem H1_induction_on {C : H1 A → Prop} (x : H1 A) (h : ∀ x : cocycles₁ A, C (H1π A x)) :
     C x :=
-  groupCohomology_induction_on x fun y => by simpa [H1π] using h ((isoCocycles₁ A).hom y)
+  groupCohomology_induction_on x fun y ↦ by simpa [H1π] using h ((isoCocycles₁ A).hom y)
 
 variable (A)
 
@@ -1276,7 +1276,7 @@ def H1IsoOfIsTrivial :
     H1 A ≅ ModuleCat.of k (Additive G →+ A) :=
   (HomologicalComplex.isoHomologyπ _ 0 1 (CochainComplex.prev_nat_succ 0) <| by
     ext; simp [inhomogeneousCochains.d_def, inhomogeneousCochains.d,
-      Unique.eq_default (α := Fin 0 → G), Pi.zero_apply (M := fun _ => A)]).symm ≪≫
+      Unique.eq_default (α := Fin 0 → G), Pi.zero_apply (M := fun _ ↦ A)]).symm ≪≫
   isoCocycles₁ A ≪≫ cocycles₁IsoOfIsTrivial A
 
 @[deprecated (since := "2025-05-09")]
@@ -1339,7 +1339,7 @@ lemma H2π_eq_iff (x y : cocycles₂ A) :
 @[elab_as_elim]
 theorem H2_induction_on {C : H2 A → Prop} (x : H2 A) (h : ∀ x : cocycles₂ A, C (H2π A x)) :
     C x :=
-  groupCohomology_induction_on x fun y => by simpa [H2π] using h ((isoCocycles₂ A).hom y)
+  groupCohomology_induction_on x fun y ↦ by simpa [H2π] using h ((isoCocycles₂ A).hom y)
 
 variable (A)
 

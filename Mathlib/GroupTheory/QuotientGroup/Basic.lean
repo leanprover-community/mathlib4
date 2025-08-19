@@ -60,7 +60,7 @@ local notation " Q " => G ⧸ N
 
 @[to_additive (attr := simp)]
 theorem mk_prod {G ι : Type*} [CommGroup G] (N : Subgroup G) (s : Finset ι) {f : ι → G} :
-    ((Finset.prod s f : G) : G ⧸ N) = Finset.prod s (fun i => (f i : G ⧸ N)) :=
+    ((Finset.prod s f : G) : G ⧸ N) = Finset.prod s (fun i ↦ (f i : G ⧸ N)) :=
   map_prod (QuotientGroup.mk' N) _ _
 
 @[to_additive QuotientAddGroup.strictMono_comap_prod_map]
@@ -75,7 +75,7 @@ open MonoidHom
 /-- The induced map from the quotient by the kernel to the codomain. -/
 @[to_additive /-- The induced map from the quotient by the kernel to the codomain. -/]
 def kerLift : G ⧸ ker φ →* H :=
-  lift _ φ fun _g => mem_ker.mp
+  lift _ φ fun _g ↦ mem_ker.mp
 
 @[to_additive (attr := simp)]
 theorem kerLift_mk (g : G) : (kerLift φ) g = φ g :=
@@ -86,8 +86,8 @@ theorem kerLift_mk' (g : G) : (kerLift φ) (mk g) = φ g :=
   lift_mk' _ _ _
 
 @[to_additive]
-theorem kerLift_injective : Injective (kerLift φ) := fun a b =>
-  Quotient.inductionOn₂' a b fun a b (h : φ a = φ b) =>
+theorem kerLift_injective : Injective (kerLift φ) := fun a b ↦
+  Quotient.inductionOn₂' a b fun a b (h : φ a = φ b) ↦
     Quotient.sound' <| by rw [leftRel_apply, mem_ker, φ.map_mul, ← h, φ.map_inv, inv_mul_cancel]
 
 -- Note that `ker φ` isn't definitionally `ker (φ.rangeRestrict)`
@@ -95,11 +95,11 @@ theorem kerLift_injective : Injective (kerLift φ) := fun a b =>
 /-- The induced map from the quotient by the kernel to the range. -/
 @[to_additive /-- The induced map from the quotient by the kernel to the range. -/]
 def rangeKerLift : G ⧸ ker φ →* φ.range :=
-  lift _ φ.rangeRestrict fun g hg => mem_ker.mp <| by rwa [ker_rangeRestrict]
+  lift _ φ.rangeRestrict fun g hg ↦ mem_ker.mp <| by rwa [ker_rangeRestrict]
 
 @[to_additive]
-theorem rangeKerLift_injective : Injective (rangeKerLift φ) := fun a b =>
-  Quotient.inductionOn₂' a b fun a b (h : φ.rangeRestrict a = φ.rangeRestrict b) =>
+theorem rangeKerLift_injective : Injective (rangeKerLift φ) := fun a b ↦
+  Quotient.inductionOn₂' a b fun a b (h : φ.rangeRestrict a = φ.rangeRestrict b) ↦
     Quotient.sound' <| by
       rw [leftRel_apply, ← ker_rangeRestrict, mem_ker, φ.rangeRestrict.map_mul, ← h,
         φ.rangeRestrict.map_inv, inv_mul_cancel]
@@ -125,13 +125,13 @@ def quotientKerEquivOfRightInverse (ψ : H → G) (hφ : RightInverse ψ φ) : G
   { kerLift φ with
     toFun := kerLift φ
     invFun := mk ∘ ψ
-    left_inv := fun x => kerLift_injective φ (by rw [Function.comp_apply, kerLift_mk', hφ])
+    left_inv := fun x ↦ kerLift_injective φ (by rw [Function.comp_apply, kerLift_mk', hφ])
     right_inv := hφ }
 
 /-- The canonical isomorphism `G/⊥ ≃* G`. -/
 @[to_additive (attr := simps!) /-- The canonical isomorphism `G/⊥ ≃+ G`. -/]
 def quotientBot : G ⧸ (⊥ : Subgroup G) ≃* G :=
-  quotientKerEquivOfRightInverse (MonoidHom.id G) id fun _x => rfl
+  quotientKerEquivOfRightInverse (MonoidHom.id G) id fun _x ↦ rfl
 
 /-- The canonical isomorphism `G/(ker φ) ≃* H` induced by a surjection `φ : G →* H`.
 
@@ -148,7 +148,7 @@ isomorphic. -/
 isomorphic. -/]
 def quotientMulEquivOfEq {M N : Subgroup G} [M.Normal] [N.Normal] (h : M = N) : G ⧸ M ≃* G ⧸ N :=
   { Subgroup.quotientEquivOfEq h with
-    map_mul' := fun q r => Quotient.inductionOn₂' q r fun _g _h => rfl }
+    map_mul' := fun q r ↦ Quotient.inductionOn₂' q r fun _g _h ↦ rfl }
 
 @[to_additive (attr := simp)]
 theorem quotientMulEquivOfEq_mk {M N : Subgroup G} [M.Normal] [N.Normal] (h : M = N) (x : G) :
@@ -197,7 +197,7 @@ variable (f : A →* B) (g : B →* A) (e : A ≃* B) (d : B ≃* C) (n : ℤ)
 homomorphism. -/]
 def homQuotientZPowOfHom :
     A ⧸ (zpowGroupHom n : A →* A).range →* B ⧸ (zpowGroupHom n : B →* B).range :=
-  lift _ ((mk' _).comp f) fun g ⟨h, (hg : h ^ n = g)⟩ =>
+  lift _ ((mk' _).comp f) fun g ⟨h, (hg : h ^ n = g)⟩ ↦
     (eq_one_iff _).mpr ⟨f h, by
       simp only [← hg, map_zpow, zpowGroupHom_apply]⟩
 
@@ -214,7 +214,7 @@ theorem homQuotientZPowOfHom_comp :
 @[to_additive (attr := simp)]
 theorem homQuotientZPowOfHom_comp_of_rightInverse (i : Function.RightInverse g f) :
     (homQuotientZPowOfHom f n).comp (homQuotientZPowOfHom g n) = MonoidHom.id _ :=
-  monoidHom_ext _ <| MonoidHom.ext fun x => congrArg _ <| i x
+  monoidHom_ext _ <| MonoidHom.ext fun x ↦ congrArg _ <| i x
 
 /-- The equivalence of quotients by powers of an integer induced by a group isomorphism. -/
 @[to_additive /-- The equivalence of quotients by multiples of an integer induced by an additive
@@ -271,7 +271,7 @@ noncomputable def quotientInfEquivProdNormalizerQuotient (H N : Subgroup G)
       H →*
       _ ⧸ N.subgroupOf (H ⊔ N) :=
     (mk' <| N.subgroupOf (H ⊔ N)).comp (inclusion le_sup_left)
-  have φ_surjective : Surjective φ := fun x =>
+  have φ_surjective : Surjective φ := fun x ↦
     x.inductionOn' <| by
       rintro ⟨y, hy : y ∈ (H ⊔ N)⟩
       rw [← SetLike.mem_coe] at hy
@@ -364,7 +364,7 @@ def comapMk'OrderIso (N : Subgroup G) [hn : N.Normal] :
   toFun H' := ⟨Subgroup.comap (mk' N) H', le_comap_mk' N _⟩
   invFun H := Subgroup.map (mk' N) H
   left_inv H' := Subgroup.map_comap_eq_self <| by simp
-  right_inv := fun ⟨H, hH⟩ => Subtype.ext_val <| by simpa
+  right_inv := fun ⟨H, hH⟩ ↦ Subtype.ext_val <| by simpa
   map_rel_iff' := Subgroup.comap_le_comap_of_surjective <| mk'_surjective _
 
 end CorrespTheorem
@@ -381,7 +381,7 @@ theorem subsingleton_quotient_top : Subsingleton (G ⧸ (⊤ : Subgroup G)) := b
 @[to_additive /-- If the quotient by an additive subgroup gives a singleton then the additive
 subgroup is the whole additive group. -/]
 theorem subgroup_eq_top_of_subsingleton (H : Subgroup G) (h : Subsingleton (G ⧸ H)) : H = ⊤ :=
-  top_unique fun x _ => by
+  top_unique fun x _ ↦ by
     have this : 1⁻¹ * x ∈ H := QuotientGroup.eq.1 (Subsingleton.elim _ _)
     rwa [inv_one, one_mul] at this
 

@@ -27,7 +27,7 @@ variable {J : Type u} [SmallCategory J] [IsFiltered J]
 noncomputable instance :
     (colim (J := J) (C := AddCommGrp.{u})).PreservesHomology :=
   Functor.preservesHomology_of_map_exact _ (fun S hS ↦ by
-    replace hS := fun j => hS.map ((evaluation _ _).obj j)
+    replace hS := fun j ↦ hS.map ((evaluation _ _).obj j)
     simp only [ShortComplex.ab_exact_iff_ker_le_range] at hS ⊢
     intro x (hx : _ = _)
     dsimp at hx

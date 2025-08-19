@@ -176,7 +176,7 @@ lemma opcycles_right_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.E
   have : Epi (ShortComplex.map S (eval C c i)).g := by dsimp; infer_instance
   have hj := (hS.map (HomologicalComplex.eval C c i)).gIsCokernel
   apply ShortComplex.exact_of_g_is_cokernel
-  refine CokernelCofork.IsColimit.ofπ' _ _  (fun {A} k hk => by
+  refine CokernelCofork.IsColimit.ofπ' _ _  (fun {A} k hk ↦ by
     dsimp at k hk ⊢
     have H := CokernelCofork.IsColimit.desc' hj (S.X₂.pOpcycles i ≫ k) (by
       dsimp
@@ -198,7 +198,7 @@ lemma cycles_left_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.Exac
   have : Mono (ShortComplex.map S (eval C c i)).f := by dsimp; infer_instance
   have hi := (hS.map (HomologicalComplex.eval C c i)).fIsKernel
   apply ShortComplex.exact_of_f_is_kernel
-  exact KernelFork.IsLimit.ofι' _ _ (fun {A} k hk => by
+  exact KernelFork.IsLimit.ofι' _ _ (fun {A} k hk ↦ by
     dsimp at k hk ⊢
     have H := KernelFork.IsLimit.lift' hi (k ≫ S.X₂.iCycles i) (by
       dsimp
@@ -297,7 +297,7 @@ lemma homology_exact₂ : (ShortComplex.mk (HomologicalComplex.homologyMap S.f i
   · exact (snakeInput hS i _ h).L₀_exact
   · have := hS.epi_g
     have : ∀ (K : HomologicalComplex C c), IsIso (K.homologyι i) :=
-      fun K => ShortComplex.isIso_homologyι (K.sc i) (K.shape _ _ h)
+      fun K ↦ ShortComplex.isIso_homologyι (K.sc i) (K.shape _ _ h)
     have e : S.map (HomologicalComplex.homologyFunctor C c i) ≅
         S.map (HomologicalComplex.opcyclesFunctor C c i) :=
       ShortComplex.isoMk (asIso (S.X₁.homologyι i))

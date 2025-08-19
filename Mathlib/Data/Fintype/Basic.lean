@@ -96,7 +96,7 @@ theorem Fin.univ_succAbove (n : ℕ) (p : Fin (n + 1)) :
   simp [univ_image_def]
 
 @[simp] theorem Fin.univ_image_getElem' [DecidableEq β] (l : List α) (f : α → β) :
-    Finset.univ.image (fun i : Fin l.length => f <| l[(i : Nat)]) = (l.map f).toFinset := by
+    Finset.univ.image (fun i : Fin l.length ↦ f <| l[(i : Nat)]) = (l.map f).toFinset := by
   simp only [univ_image_def, List.ofFn_getElem_eq_map]
 
 theorem Fin.univ_image_get' [DecidableEq β] (l : List α) (f : α → β) :
@@ -141,11 +141,11 @@ theorem Fintype.univ_bool : @univ Bool _ = {true, false} :=
 
 /-- Given that `α × β` is a fintype, `α` is also a fintype. -/
 def Fintype.prodLeft {α β} [DecidableEq α] [Fintype (α × β)] [Nonempty β] : Fintype α :=
-  ⟨(@univ (α × β) _).image Prod.fst, fun a => by simp⟩
+  ⟨(@univ (α × β) _).image Prod.fst, fun a ↦ by simp⟩
 
 /-- Given that `α × β` is a fintype, `β` is also a fintype. -/
 def Fintype.prodRight {α β} [DecidableEq β] [Fintype (α × β)] [Nonempty α] : Fintype β :=
-  ⟨(@univ (α × β) _).image Prod.snd, fun b => by simp⟩
+  ⟨(@univ (α × β) _).image Prod.snd, fun b ↦ by simp⟩
 
 instance ULift.fintype (α : Type*) [Fintype α] : Fintype (ULift α) :=
   Fintype.ofEquiv _ Equiv.ulift.symm
@@ -154,7 +154,7 @@ instance PLift.fintype (α : Type*) [Fintype α] : Fintype (PLift α) :=
   Fintype.ofEquiv _ Equiv.plift.symm
 
 instance PLift.fintypeProp (p : Prop) [Decidable p] : Fintype (PLift p) :=
-  ⟨if h : p then {⟨h⟩} else ∅, fun ⟨h⟩ => by simp [h]⟩
+  ⟨if h : p then {⟨h⟩} else ∅, fun ⟨h⟩ ↦ by simp [h]⟩
 
 instance Quotient.fintype [Fintype α] (s : Setoid α) [DecidableRel ((· ≈ ·) : α → α → Prop)] :
     Fintype (Quotient s) :=
@@ -162,31 +162,31 @@ instance Quotient.fintype [Fintype α] (s : Setoid α) [DecidableRel ((· ≈ ·
 
 instance PSigma.fintypePropLeft {α : Prop} {β : α → Type*} [Decidable α] [∀ a, Fintype (β a)] :
     Fintype (Σ' a, β a) :=
-  if h : α then Fintype.ofEquiv (β h) ⟨fun x => ⟨h, x⟩, PSigma.snd, fun _ => rfl, fun ⟨_, _⟩ => rfl⟩
-  else ⟨∅, fun x => (h x.1).elim⟩
+  if h : α then Fintype.ofEquiv (β h) ⟨fun x ↦ ⟨h, x⟩, PSigma.snd, fun _ ↦ rfl, fun ⟨_, _⟩ ↦ rfl⟩
+  else ⟨∅, fun x ↦ (h x.1).elim⟩
 
 instance PSigma.fintypePropRight {α : Type*} {β : α → Prop} [∀ a, Decidable (β a)] [Fintype α] :
     Fintype (Σ' a, β a) :=
   Fintype.ofEquiv { a // β a }
-    ⟨fun ⟨x, y⟩ => ⟨x, y⟩, fun ⟨x, y⟩ => ⟨x, y⟩, fun ⟨_, _⟩ => rfl, fun ⟨_, _⟩ => rfl⟩
+    ⟨fun ⟨x, y⟩ ↦ ⟨x, y⟩, fun ⟨x, y⟩ ↦ ⟨x, y⟩, fun ⟨_, _⟩ ↦ rfl, fun ⟨_, _⟩ ↦ rfl⟩
 
 instance PSigma.fintypePropProp {α : Prop} {β : α → Prop} [Decidable α] [∀ a, Decidable (β a)] :
     Fintype (Σ' a, β a) :=
-  if h : ∃ a, β a then ⟨{⟨h.fst, h.snd⟩}, fun ⟨_, _⟩ => by simp⟩ else ⟨∅, fun ⟨x, y⟩ =>
+  if h : ∃ a, β a then ⟨{⟨h.fst, h.snd⟩}, fun ⟨_, _⟩ ↦ by simp⟩ else ⟨∅, fun ⟨x, y⟩ ↦
     (h ⟨x, y⟩).elim⟩
 
 instance pfunFintype (p : Prop) [Decidable p] (α : p → Type*) [∀ hp, Fintype (α hp)] :
     Fintype (∀ hp : p, α hp) :=
-  if hp : p then Fintype.ofEquiv (α hp) ⟨fun a _ => a, fun f => f hp, fun _ => rfl, fun _ => rfl⟩
-  else ⟨singleton fun h => (hp h).elim, fun h => mem_singleton.2
-    (funext fun x => by contradiction)⟩
+  if hp : p then Fintype.ofEquiv (α hp) ⟨fun a _ ↦ a, fun f ↦ f hp, fun _ ↦ rfl, fun _ ↦ rfl⟩
+  else ⟨singleton fun h ↦ (hp h).elim, fun h ↦ mem_singleton.2
+    (funext fun x ↦ by contradiction)⟩
 
 section Trunc
 
 /-- For `s : Multiset α`, we can lift the existential statement that `∃ x, x ∈ s` to a `Trunc α`.
 -/
 def truncOfMultisetExistsMem {α} (s : Multiset α) : (∃ x, x ∈ s) → Trunc α :=
-  Quotient.recOnSubsingleton s fun l h =>
+  Quotient.recOnSubsingleton s fun l h ↦
     match l, h with
     | [], _ => False.elim (by tauto)
     | a :: _, _ => Trunc.mk a
@@ -201,7 +201,7 @@ to `Trunc (Σ' a, P a)`, containing data.
 -/
 def truncSigmaOfExists {α} [Fintype α] {P : α → Prop} [DecidablePred P] (h : ∃ a, P a) :
     Trunc (Σ' a, P a) :=
-  @truncOfNonemptyFintype (Σ' a, P a) ((Exists.elim h) fun a ha => ⟨⟨a, ha⟩⟩) _
+  @truncOfNonemptyFintype (Σ' a, P a) ((Exists.elim h) fun a ha ↦ ⟨⟨a, ha⟩⟩) _
 
 end Trunc
 
@@ -235,7 +235,7 @@ noncomputable def seqOfForallFinsetExistsAux {α : Type*} [DecidableEq α] (P : 
   | n =>
     Classical.choose
       (h
-        (Finset.image (fun i : Fin n => seqOfForallFinsetExistsAux P r h i)
+        (Finset.image (fun i : Fin n ↦ seqOfForallFinsetExistsAux P r h i)
           (Finset.univ : Finset (Fin n))))
 
 /-- Induction principle to build a sequence, by adding one point at a time satisfying a given
@@ -253,23 +253,23 @@ theorem exists_seq_of_forall_finset_exists {α : Type*} (P : α → Prop) (r : �
       rcases h ∅ (by simp) with ⟨y, _⟩
       exact ⟨y⟩
     choose! F hF using h
-    have h' : ∀ s : Finset α, ∃ y, (∀ x ∈ s, P x) → P y ∧ ∀ x ∈ s, r x y := fun s => ⟨F s, hF s⟩
+    have h' : ∀ s : Finset α, ∃ y, (∀ x ∈ s, P x) → P y ∧ ∀ x ∈ s, r x y := fun s ↦ ⟨F s, hF s⟩
     set f := seqOfForallFinsetExistsAux P r h' with hf
     have A : ∀ n : ℕ, P (f n) := by
       intro n
       induction' n using Nat.strong_induction_on with n IH
-      have IH' : ∀ x : Fin n, P (f x) := fun n => IH n.1 n.2
+      have IH' : ∀ x : Fin n, P (f x) := fun n ↦ IH n.1 n.2
       rw [hf, seqOfForallFinsetExistsAux]
       exact
         (Classical.choose_spec
-            (h' (Finset.image (fun i : Fin n => f i) (Finset.univ : Finset (Fin n))))
+            (h' (Finset.image (fun i : Fin n ↦ f i) (Finset.univ : Finset (Fin n))))
             (by simp [IH'])).1
-    refine ⟨f, A, fun m n hmn => ?_⟩
+    refine ⟨f, A, fun m n hmn ↦ ?_⟩
     conv_rhs => rw [hf]
     rw [seqOfForallFinsetExistsAux]
     apply
       (Classical.choose_spec
-          (h' (Finset.image (fun i : Fin n => f i) (Finset.univ : Finset (Fin n)))) (by simp [A])).2
+          (h' (Finset.image (fun i : Fin n ↦ f i) (Finset.univ : Finset (Fin n)))) (by simp [A])).2
     exact Finset.mem_image.2 ⟨⟨m, hmn⟩, Finset.mem_univ _, rfl⟩
 
 /-- Induction principle to build a sequence, by adding one point at a time satisfying a given
@@ -283,7 +283,7 @@ theorem exists_seq_of_forall_finset_exists' {α : Type*} (P : α → Prop) (r : 
     [IsSymm α r] (h : ∀ s : Finset α, (∀ x ∈ s, P x) → ∃ y, P y ∧ ∀ x ∈ s, r x y) :
     ∃ f : ℕ → α, (∀ n, P (f n)) ∧ Pairwise (r on f) := by
   rcases exists_seq_of_forall_finset_exists P r h with ⟨f, hf, hf'⟩
-  refine ⟨f, hf, fun m n hmn => ?_⟩
+  refine ⟨f, hf, fun m n hmn ↦ ?_⟩
   rcases lt_trichotomy m n with (h | rfl | h)
   · exact hf' m n h
   · exact (hmn rfl).elim

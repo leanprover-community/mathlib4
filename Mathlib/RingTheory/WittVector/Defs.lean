@@ -86,7 +86,7 @@ theorem coeff_mk (x : ℕ → R) : (mk p x).coeff = x :=
 but it is interesting to establish early on that `WittVector p` is a lawful functor. -/
 instance : Functor (WittVector p) where
   map f v := mk p (f ∘ v.coeff)
-  mapConst a _ := mk p fun _ => a
+  mapConst a _ := mk p fun _ ↦ a
 
 instance : LawfulFunctor (WittVector p) where
   map_const := rfl
@@ -156,7 +156,7 @@ ring operations on `𝕎 R`. For example, `WittVector.wittAdd` is such a `φ` wi
 evaluating this at `(x₀, x₁)` gives us the sum of two Witt vectors `x₀ + x₁`.
 -/
 def eval {k : ℕ} (φ : ℕ → MvPolynomial (Fin k × ℕ) ℤ) (x : Fin k → 𝕎 R) : 𝕎 R :=
-  mk p fun n => peval (φ n) fun i => (x i).coeff
+  mk p fun n ↦ peval (φ n) fun i ↦ (x i).coeff
 
 instance : Zero (𝕎 R) :=
   ⟨eval (wittZero p) ![]⟩
@@ -168,25 +168,25 @@ instance : One (𝕎 R) :=
   ⟨eval (wittOne p) ![]⟩
 
 instance : Add (𝕎 R) :=
-  ⟨fun x y => eval (wittAdd p) ![x, y]⟩
+  ⟨fun x y ↦ eval (wittAdd p) ![x, y]⟩
 
 instance : Sub (𝕎 R) :=
-  ⟨fun x y => eval (wittSub p) ![x, y]⟩
+  ⟨fun x y ↦ eval (wittSub p) ![x, y]⟩
 
 instance hasNatScalar : SMul ℕ (𝕎 R) :=
-  ⟨fun n x => eval (wittNSMul p n) ![x]⟩
+  ⟨fun n x ↦ eval (wittNSMul p n) ![x]⟩
 
 instance hasIntScalar : SMul ℤ (𝕎 R) :=
-  ⟨fun n x => eval (wittZSMul p n) ![x]⟩
+  ⟨fun n x ↦ eval (wittZSMul p n) ![x]⟩
 
 instance : Mul (𝕎 R) :=
-  ⟨fun x y => eval (wittMul p) ![x, y]⟩
+  ⟨fun x y ↦ eval (wittMul p) ![x, y]⟩
 
 instance : Neg (𝕎 R) :=
-  ⟨fun x => eval (wittNeg p) ![x]⟩
+  ⟨fun x ↦ eval (wittNeg p) ![x]⟩
 
 instance hasNatPow : Pow (𝕎 R) ℕ :=
-  ⟨fun x n => eval (wittPow p n) ![x]⟩
+  ⟨fun x n ↦ eval (wittPow p n) ![x]⟩
 
 instance : NatCast (𝕎 R) :=
   ⟨Nat.unaryCast⟩

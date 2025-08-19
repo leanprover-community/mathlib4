@@ -158,7 +158,7 @@ theorem equalizerCondition_iff_of_equivalence (P : Cᵒᵖ ⥤ D)
 open WalkingParallelPair WalkingParallelPairHom in
 theorem parallelPair_pullback_initial {X B : C} (π : X ⟶ B)
     (c : PullbackCone π π) (hc : IsLimit c) :
-    (parallelPair (C := (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows.categoryᵒᵖ)
+    (parallelPair (C := (Sieve.ofArrows (fun (_ : Unit) ↦ X) (fun _ ↦ π)).arrows.categoryᵒᵖ)
     (Y := op ((Presieve.categoryMk _ (c.fst ≫ π) ⟨_, c.fst, π, ofArrows.mk (), rfl⟩)))
     (X := op ((Presieve.categoryMk _ π (Sieve.ofArrows_mk _ _ Unit.unit))))
     (Quiver.Hom.op (Over.homMk c.fst))
@@ -184,7 +184,7 @@ noncomputable def isLimit_forkOfι_equiv (P : Cᵒᵖ ⥤ D) {X B : C} (π : X �
     (c : PullbackCone π π) (hc : IsLimit c) :
     IsLimit (Fork.ofι (P.map π.op) (equalizerCondition_w P c)) ≃
     IsLimit (P.mapCone (Sieve.ofArrows (fun (_ : Unit) ↦ X) fun _ ↦ π).arrows.cocone.op) := by
-  let S := (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows
+  let S := (Sieve.ofArrows (fun (_ : Unit) ↦ X) (fun _ ↦ π)).arrows
   let X' := S.categoryMk π ⟨_, 𝟙 _, π, ofArrows.mk (), Category.id_comp _⟩
   let P' := S.categoryMk (c.fst ≫ π) ⟨_, c.fst, π, ofArrows.mk (), rfl⟩
   let fst : P' ⟶ X' := Over.homMk c.fst
@@ -202,7 +202,7 @@ noncomputable def isLimit_forkOfι_equiv (P : Cᵒᵖ ⥤ D) {X B : C} (π : X �
 lemma equalizerConditionMap_iff_nonempty_isLimit (P : Cᵒᵖ ⥤ D) ⦃X B : C⦄ (π : X ⟶ B)
     [HasPullback π π] : SingleEqualizerCondition P π ↔
       Nonempty (IsLimit (P.mapCone
-        (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows.cocone.op)) := by
+        (Sieve.ofArrows (fun (_ : Unit) ↦ X) (fun _ ↦ π)).arrows.cocone.op)) := by
   constructor
   · intro h
     exact ⟨isLimit_forkOfι_equiv _ _ _ (pullbackIsPullback π π) (h _ (pullbackIsPullback π π)).some⟩

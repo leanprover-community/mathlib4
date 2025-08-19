@@ -58,7 +58,7 @@ theorem pureTransformation_apply {α} (x : id α) : PureTransformation F x = pur
 variable {F G}
 
 theorem map_eq_traverse_id : map (f := t) f = Id.run ∘ traverse (pure ∘ f) :=
-  funext fun y => (traverse_eq_map_id f y).symm
+  funext fun y ↦ (traverse_eq_map_id f y).symm
 
 theorem map_traverse (x : t α) : map f <$> traverse g x = traverse (map f ∘ g) x := by
   rw [map_eq_traverse_id f]

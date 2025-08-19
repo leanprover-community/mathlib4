@@ -402,7 +402,7 @@ theorem prod_le_prod_of_ne_one' (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
 @[to_additive sum_pos_iff]
 lemma one_lt_prod_iff : 1 < ∏ x ∈ s, f x ↔ ∃ x ∈ s, 1 < f x :=
   have := CanonicallyOrderedMul.toIsOrderedMonoid (α := M)
-  Finset.one_lt_prod_iff_of_one_le <| fun _ _ => one_le _
+  Finset.one_lt_prod_iff_of_one_le <| fun _ _ ↦ one_le _
 
 end CanonicallyOrderedMul
 
@@ -586,17 +586,17 @@ theorem finset_sum_eq_sup_iff_disjoint [DecidableEq α] {i : Finset β} {f : β 
   · simp_rw [Finset.sum_cons hz, Finset.sup_cons, Finset.mem_cons, Multiset.sup_eq_union,
       forall_eq_or_imp, Ne, not_true_eq_false, IsEmpty.forall_iff, true_and,
       imp_and, forall_and, ← hr, @eq_comm _ z]
-    have := fun x (H : x ∈ i) => ne_of_mem_of_not_mem H hz
+    have := fun x (H : x ∈ i) ↦ ne_of_mem_of_not_mem H hz
     simp +contextual only [this, not_false_iff, true_imp_iff]
     simp_rw [← disjoint_finset_sum_left, ← disjoint_finset_sum_right, disjoint_comm, ← and_assoc,
       and_self_iff]
-    exact add_eq_union_left_of_le (Finset.sup_le fun x hx => le_sum_of_mem (mem_map_of_mem f hx))
+    exact add_eq_union_left_of_le (Finset.sup_le fun x hx ↦ le_sum_of_mem (mem_map_of_mem f hx))
 
 theorem sup_powerset_len [DecidableEq α] (x : Multiset α) :
-    (Finset.sup (Finset.range (card x + 1)) fun k => x.powersetCard k) = x.powerset := by
+    (Finset.sup (Finset.range (card x + 1)) fun k ↦ x.powersetCard k) = x.powerset := by
   convert bind_powerset_len x using 1
   rw [Multiset.bind, Multiset.join, ← Finset.range_val, ← Finset.sum_eq_multiset_sum]
   exact
-    Eq.symm (finset_sum_eq_sup_iff_disjoint.mpr fun _ _ _ _ h => pairwise_disjoint_powersetCard x h)
+    Eq.symm (finset_sum_eq_sup_iff_disjoint.mpr fun _ _ _ _ h ↦ pairwise_disjoint_powersetCard x h)
 
 end Multiset

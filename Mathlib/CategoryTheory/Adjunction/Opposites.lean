@@ -75,8 +75,8 @@ We use this in combination with `fullyFaithfulCancelRight` to show left adjoints
 -/
 def leftAdjointsCoyonedaEquiv {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G) :
     F.op ⋙ coyoneda ≅ F'.op ⋙ coyoneda :=
-  NatIso.ofComponents fun X =>
-    NatIso.ofComponents fun Y =>
+  NatIso.ofComponents fun X ↦
+    NatIso.ofComponents fun Y ↦
       ((adj1.homEquiv X.unop Y).trans (adj2.homEquiv X.unop Y).symm).toIso
 
 /-- Given two adjunctions, if the right adjoints are naturally isomorphic, then so are the left

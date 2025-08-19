@@ -59,13 +59,13 @@ variable (X : SimplicialObject C)
 -/
 def objX : ∀ n : ℕ, Subobject (X.obj (op ⦋n⦌))
   | 0 => ⊤
-  | n + 1 => Finset.univ.inf fun k : Fin (n + 1) => kernelSubobject (X.δ k.succ)
+  | n + 1 => Finset.univ.inf fun k : Fin (n + 1) ↦ kernelSubobject (X.δ k.succ)
 
 @[simp] theorem objX_zero : objX X 0 = ⊤ :=
   rfl
 
 @[simp] theorem objX_add_one (n) :
-    objX X (n + 1) = Finset.univ.inf fun k : Fin (n + 1) => kernelSubobject (X.δ k.succ) :=
+    objX X (n + 1) = Finset.univ.inf fun k : Fin (n + 1) ↦ kernelSubobject (X.δ k.succ) :=
   rfl
 
 /-- The differentials in the normalized Moore complex.
@@ -79,7 +79,7 @@ def objD : ∀ n : ℕ, (objX X (n + 1) : C) ⟶ (objX X n : C)
     refine factorThru _ (arrow _ ≫ X.δ (0 : Fin (n + 3))) ?_
     -- We now need to show that it factors!
     -- A morphism factors through an intersection of subobjects if it factors through each.
-    refine (finset_inf_factors _).mpr fun i _ => ?_
+    refine (finset_inf_factors _).mpr fun i _ ↦ ?_
     -- A morphism `f` factors through the kernel of `g` exactly if `f ≫ g = 0`.
     apply kernelSubobject_factors
     dsimp [objX]
@@ -108,7 +108,7 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
 -/
 @[simps!]
 def obj (X : SimplicialObject C) : ChainComplex C ℕ :=
-  ChainComplex.of (fun n => (objX X n : C))
+  ChainComplex.of (fun n ↦ (objX X n : C))
     (-- the coercion here picks a representative of the subobject
       objD X) (d_squared X)
 
@@ -119,16 +119,16 @@ variable {X} {Y : SimplicialObject C} (f : X ⟶ Y)
 @[simps!]
 def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
   ChainComplex.ofHom _ _ _ _ _ _
-    (fun n => factorThru _ (arrow _ ≫ f.app (op ⦋n⦌)) (by
+    (fun n ↦ factorThru _ (arrow _ ≫ f.app (op ⦋n⦌)) (by
       cases n <;> dsimp
       · apply top_factors
-      · refine (finset_inf_factors _).mpr fun i _ => kernelSubobject_factors _ _ ?_
+      · refine (finset_inf_factors _).mpr fun i _ ↦ kernelSubobject_factors _ _ ?_
         rw [Category.assoc, SimplicialObject.δ, ← f.naturality,
           ← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ i (by simp)),
           Category.assoc]
         erw [kernelSubobject_arrow_comp_assoc]
         rw [zero_comp, comp_zero]))
-    fun n => by
+    fun n ↦ by
     cases n <;> dsimp [objD, objX] <;> cat_disch
 
 end NormalizedMooreComplex

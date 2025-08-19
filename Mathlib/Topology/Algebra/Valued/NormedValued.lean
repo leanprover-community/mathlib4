@@ -52,11 +52,11 @@ def toValued : Valued K ℝ≥0 :=
   { hK.toUniformSpace,
     inferInstanceAs (IsUniformAddGroup K) with
     v := valuation
-    is_topological_valuation := fun U => by
+    is_topological_valuation := fun U ↦ by
       rw [Metric.mem_nhds_iff]
-      exact ⟨fun ⟨ε, hε, h⟩  =>
+      exact ⟨fun ⟨ε, hε, h⟩  ↦
           ⟨Units.mk0 ⟨ε, le_of_lt hε⟩ (ne_of_gt hε), fun x hx ↦ h (mem_ball_zero_iff.mpr hx)⟩,
-        fun ⟨ε, hε⟩ => ⟨(ε : ℝ), NNReal.coe_pos.mpr (Units.zero_lt _),
+        fun ⟨ε, hε⟩ ↦ ⟨(ε : ℝ), NNReal.coe_pos.mpr (Units.zero_lt _),
           fun x hx ↦ hε (mem_ball_zero_iff.mp hx)⟩⟩ }
 
 instance {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
@@ -77,7 +77,7 @@ variable {L : Type*} [Field L] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero �
   [val : Valued L Γ₀] [hv : RankOne val.v]
 
 /-- The norm function determined by a rank one valuation on a field `L`. -/
-def norm : L → ℝ := fun x : L => hv.hom (Valued.v x)
+def norm : L → ℝ := fun x : L ↦ hv.hom (Valued.v x)
 
 theorem norm_def {x : L} : Valued.norm x = hv.hom (Valued.v x) := rfl
 
@@ -101,24 +101,24 @@ variable (L) (Γ₀)
 def toNormedField : NormedField L :=
   { (inferInstance : Field L) with
     norm := norm
-    dist := fun x y => norm (x - y)
-    dist_self := fun x => by
+    dist := fun x y ↦ norm (x - y)
+    dist_self := fun x ↦ by
       simp only [sub_self, norm, Valuation.map_zero, hv.hom.map_zero, NNReal.coe_zero]
-    dist_comm := fun x y => by simp only [norm]; rw [← neg_sub, Valuation.map_neg]
-    dist_triangle := fun x y z => by
+    dist_comm := fun x y ↦ by simp only [norm]; rw [← neg_sub, Valuation.map_neg]
+    dist_triangle := fun x y z ↦ by
       simp only [← sub_add_sub_cancel x y z]
       exact le_trans (norm_add_le _ _)
         (max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _))
-    eq_of_dist_eq_zero := fun hxy => eq_of_sub_eq_zero (norm_eq_zero hxy)
-    dist_eq := fun x y => rfl
-    norm_mul := fun x y => by simp only [norm, ← NNReal.coe_mul, map_mul]
+    eq_of_dist_eq_zero := fun hxy ↦ eq_of_sub_eq_zero (norm_eq_zero hxy)
+    dist_eq := fun x y ↦ rfl
+    norm_mul := fun x y ↦ by simp only [norm, ← NNReal.coe_mul, map_mul]
     toUniformSpace := Valued.toUniformSpace
     uniformity_dist := by
       haveI : Nonempty { ε : ℝ // ε > 0 } := nonempty_Ioi_subtype
       ext U
       rw [hasBasis_iff.mp (Valued.hasBasis_uniformity L Γ₀), iInf_subtype', mem_iInf_of_directed]
       · simp only [true_and, mem_principal, Subtype.exists, gt_iff_lt, exists_prop]
-        refine ⟨fun ⟨ε, hε⟩ => ?_, fun ⟨r, hr_pos, hr⟩ => ?_⟩
+        refine ⟨fun ⟨ε, hε⟩ ↦ ?_, fun ⟨r, hr_pos, hr⟩ ↦ ?_⟩
         · set δ : ℝ≥0 := hv.hom ε with hδ
           have hδ_pos : 0 < δ := by
             rw [hδ, ← map_zero hv.hom]
@@ -143,7 +143,7 @@ def toNormedField : NormedField L :=
         intro x y
         use min x y
         simp only [le_principal_iff, mem_principal, setOf_subset_setOf, Prod.forall]
-        exact ⟨fun a b hab => lt_of_lt_of_le hab (min_le_left _ _), fun a b hab =>
+        exact ⟨fun a b hab ↦ lt_of_lt_of_le hab (min_le_left _ _), fun a b hab ↦
             lt_of_lt_of_le hab (min_le_right _ _)⟩ }
 
 -- When a field is valued, one inherits a `NormedField`.

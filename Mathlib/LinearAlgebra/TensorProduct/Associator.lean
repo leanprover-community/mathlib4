@@ -35,8 +35,8 @@ variable (R M)
 /-- The base ring is a left identity for the tensor product of modules, up to linear equivalence.
 -/
 protected def lid : R ⊗[R] M ≃ₗ[R] M :=
-  LinearEquiv.ofLinear (lift <| LinearMap.lsmul R M) (mk R R M 1) (LinearMap.ext fun _ => by simp)
-    (ext' fun r m => by simp; rw [← tmul_smul, ← smul_tmul, smul_eq_mul, mul_one])
+  LinearEquiv.ofLinear (lift <| LinearMap.lsmul R M) (mk R R M 1) (LinearMap.ext fun _ ↦ by simp)
+    (ext' fun r m ↦ by simp; rw [← tmul_smul, ← smul_tmul, smul_eq_mul, mul_one])
 
 end
 
@@ -141,7 +141,7 @@ with `M ⊗ (N ⊗ P)` and `(Q ⊗ S) ⊗ T` with `Q ⊗ (S ⊗ T)`, then this l
 lemma map_map_comp_assoc_eq (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R] T) :
     map f (map g h) ∘ₗ TensorProduct.assoc R M N P =
       TensorProduct.assoc R Q S T ∘ₗ map (map f g) h :=
-  ext <| ext <| LinearMap.ext fun _ => LinearMap.ext fun _ => LinearMap.ext fun _ => rfl
+  ext <| ext <| LinearMap.ext fun _ ↦ LinearMap.ext fun _ ↦ LinearMap.ext fun _ ↦ rfl
 
 lemma map_map_assoc (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R] T) (x : M ⊗[R] N ⊗[R] P) :
     map f (map g h) (TensorProduct.assoc R M N P x) =
@@ -154,7 +154,7 @@ with `(M ⊗ N) ⊗ P` and `Q ⊗ (S ⊗ T)` with `(Q ⊗ S) ⊗ T`, then this l
 lemma map_map_comp_assoc_symm_eq (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R] T) :
     map (map f g) h ∘ₗ (TensorProduct.assoc R M N P).symm =
       (TensorProduct.assoc R Q S T).symm ∘ₗ map f (map g h) :=
-  ext <| LinearMap.ext fun _ => ext <| LinearMap.ext fun _ => LinearMap.ext fun _ => rfl
+  ext <| LinearMap.ext fun _ ↦ ext <| LinearMap.ext fun _ ↦ LinearMap.ext fun _ ↦ rfl
 
 lemma map_map_assoc_symm (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R] T) (x : M ⊗[R] (N ⊗[R] P)) :
     map (map f g) h ((TensorProduct.assoc R M N P).symm x) =
@@ -239,7 +239,7 @@ theorem tensorTensorTensorComm_comp_map {V W : Type*}
     (f : M →ₗ[R] S) (g : N →ₗ[R] T) (h : P →ₗ[R] V) (j : Q →ₗ[R] W) :
     tensorTensorTensorComm R S T V W ∘ₗ map (map f g) (map h j) =
       map (map f h) (map g j) ∘ₗ tensorTensorTensorComm R M N P Q :=
-  ext_fourfold' fun _ _ _ _ => rfl
+  ext_fourfold' fun _ _ _ _ ↦ rfl
 
 variable (M N P Q)
 

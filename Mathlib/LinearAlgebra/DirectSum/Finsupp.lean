@@ -253,7 +253,7 @@ open scoped Classical in
 def finsuppTensorFinsupp : (ι →₀ M) ⊗[R] (κ →₀ N) ≃ₗ[S] ι × κ →₀ M ⊗[R] N :=
   TensorProduct.AlgebraTensorModule.congr
     (finsuppLEquivDirectSum S M ι) (finsuppLEquivDirectSum R N κ) ≪≫ₗ
-    ((TensorProduct.directSum R S (fun _ : ι => M) fun _ : κ => N) ≪≫ₗ
+    ((TensorProduct.directSum R S (fun _ : ι ↦ M) fun _ : κ ↦ N) ≪≫ₗ
       (finsuppLEquivDirectSum S (M ⊗[R] N) (ι × κ)).symm)
 
 @[simp]
@@ -281,7 +281,7 @@ theorem finsuppTensorFinsupp_apply (f : ι →₀ M) (g : κ →₀ N) (i : ι) 
 theorem finsuppTensorFinsupp_symm_single (i : ι × κ) (m : M) (n : N) :
     (finsuppTensorFinsupp R S M N ι κ).symm (Finsupp.single i (m ⊗ₜ n)) =
       Finsupp.single i.1 m ⊗ₜ Finsupp.single i.2 n :=
-  Prod.casesOn i fun _ _ =>
+  Prod.casesOn i fun _ _ ↦
     (LinearEquiv.symm_apply_eq _).2 (finsuppTensorFinsupp_single _ _ _ _ _ _ _ _ _ _).symm
 
 /-- A variant of `finsuppTensorFinsupp` where the first module is the ground ring. -/
@@ -303,7 +303,7 @@ theorem finsuppTensorFinsuppLid_single_tmul_single (a : ι) (b : κ) (r : R) (n 
 theorem finsuppTensorFinsuppLid_symm_single_smul (i : ι × κ) (r : R) (n : N) :
     (finsuppTensorFinsuppLid R N ι κ).symm (Finsupp.single i (r • n)) =
       Finsupp.single i.1 r ⊗ₜ Finsupp.single i.2 n :=
-  Prod.casesOn i fun _ _ =>
+  Prod.casesOn i fun _ _ ↦
     (LinearEquiv.symm_apply_eq _).2 (finsuppTensorFinsuppLid_single_tmul_single ..).symm
 
 /-- A variant of `finsuppTensorFinsupp` where the second module is the ground ring. -/
@@ -325,7 +325,7 @@ theorem finsuppTensorFinsuppRid_single_tmul_single (a : ι) (b : κ) (m : M) (r 
 theorem finsuppTensorFinsuppRid_symm_single_smul (i : ι × κ) (m : M) (r : R) :
     (finsuppTensorFinsuppRid R M ι κ).symm (Finsupp.single i (r • m)) =
       Finsupp.single i.1 m ⊗ₜ Finsupp.single i.2 r :=
-  Prod.casesOn i fun _ _ =>
+  Prod.casesOn i fun _ _ ↦
     (LinearEquiv.symm_apply_eq _).2 (finsuppTensorFinsuppRid_single_tmul_single ..).symm
 
 /-- A variant of `finsuppTensorFinsupp` where both modules are the ground ring. -/

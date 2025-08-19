@@ -85,7 +85,7 @@ theorem ContMDiffWithinAt.comp_of_eq {t : Set M'} {g : M' → M''} {x : M} {y : 
 
 /-- The composition of `C^n` functions on domains is `C^n`. -/
 theorem ContMDiffOn.comp {t : Set M'} {g : M' → M''} (hg : ContMDiffOn I' I'' n g t)
-    (hf : ContMDiffOn I I' n f s) (st : s ⊆ f ⁻¹' t) : ContMDiffOn I I'' n (g ∘ f) s := fun x hx =>
+    (hf : ContMDiffOn I I' n f s) (st : s ⊆ f ⁻¹' t) : ContMDiffOn I I'' n (g ∘ f) s := fun x hx ↦
   (hg _ (st hx)).comp x (hf x hx) st
 
 /-- The composition of `C^n` functions on domains is `C^n`. -/
@@ -135,7 +135,7 @@ theorem ContMDiff.comp_contMDiffOn {f : M → M'} {g : M' → M''} {s : Set M}
 
 theorem ContMDiffOn.comp_contMDiff {t : Set M'} {g : M' → M''} (hg : ContMDiffOn I' I'' n g t)
     (hf : ContMDiff I I' n f) (ht : ∀ x, f x ∈ t) : ContMDiff I I'' n (g ∘ f) :=
-  contMDiffOn_univ.mp <| hg.comp hf.contMDiffOn fun x _ => ht x
+  contMDiffOn_univ.mp <| hg.comp hf.contMDiffOn fun x _ ↦ ht x
 
 end Composition
 
@@ -163,7 +163,7 @@ end id
 section const
 variable {c : M'}
 
-theorem contMDiff_const : ContMDiff I I' n fun _ : M => c := by
+theorem contMDiff_const : ContMDiff I I' n fun _ : M ↦ c := by
   intro x
   refine ⟨continuousWithinAt_const, ?_⟩
   simp only [ContDiffWithinAtProp, Function.comp_def]
@@ -173,21 +173,21 @@ theorem contMDiff_const : ContMDiff I I' n fun _ : M => c := by
 theorem contMDiff_one [One M'] : ContMDiff I I' n (1 : M → M') := by
   simp only [Pi.one_def, contMDiff_const]
 
-theorem contMDiffOn_const : ContMDiffOn I I' n (fun _ : M => c) s :=
+theorem contMDiffOn_const : ContMDiffOn I I' n (fun _ : M ↦ c) s :=
   contMDiff_const.contMDiffOn
 
 @[to_additive]
 theorem contMDiffOn_one [One M'] : ContMDiffOn I I' n (1 : M → M') s :=
   contMDiff_one.contMDiffOn
 
-theorem contMDiffAt_const : ContMDiffAt I I' n (fun _ : M => c) x :=
+theorem contMDiffAt_const : ContMDiffAt I I' n (fun _ : M ↦ c) x :=
   contMDiff_const.contMDiffAt
 
 @[to_additive]
 theorem contMDiffAt_one [One M'] : ContMDiffAt I I' n (1 : M → M') x :=
   contMDiff_one.contMDiffAt
 
-theorem contMDiffWithinAt_const : ContMDiffWithinAt I I' n (fun _ : M => c) s x :=
+theorem contMDiffWithinAt_const : ContMDiffWithinAt I I' n (fun _ : M ↦ c) s x :=
   contMDiffAt_const.contMDiffWithinAt
 
 @[to_additive]
@@ -197,7 +197,7 @@ theorem contMDiffWithinAt_one [One M'] : ContMDiffWithinAt I I' n (1 : M → M')
 @[nontriviality]
 theorem contMDiff_of_subsingleton [Subsingleton M'] : ContMDiff I I' n f := by
   intro x
-  rw [Subsingleton.elim f fun _ => (f x)]
+  rw [Subsingleton.elim f fun _ ↦ (f x)]
   exact contMDiffAt_const
 
 @[nontriviality]

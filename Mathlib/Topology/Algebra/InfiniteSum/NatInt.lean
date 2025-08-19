@@ -541,7 +541,7 @@ section pnat
 
 @[to_additive]
 theorem pnat_multipliable_iff_multipliable_succ {α : Type*} [TopologicalSpace α] [CommMonoid α]
-    {f : ℕ → α} : Multipliable (fun x : ℕ+ => f x) ↔ Multipliable fun x : ℕ => f (x + 1) :=
+    {f : ℕ → α} : Multipliable (fun x : ℕ+ ↦ f x) ↔ Multipliable fun x : ℕ ↦ f (x + 1) :=
   Equiv.pnatEquivNat.symm.multipliable_iff.symm
 
 @[to_additive]

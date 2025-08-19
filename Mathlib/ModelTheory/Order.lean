@@ -68,24 +68,24 @@ inductive orderRel : ℕ → Type
   deriving DecidableEq
 
 /-- The relational language consisting of a single relation representing `≤`. -/
-protected def order : Language := ⟨fun _ => Empty, orderRel⟩
+protected def order : Language := ⟨fun _ ↦ Empty, orderRel⟩
   deriving IsRelational
 
 namespace order
 
 @[simp]
 lemma forall_relations {P : ∀ (n) (_ : Language.order.Relations n), Prop} :
-    (∀ {n} (R), P n R) ↔ P 2 .le := ⟨fun h => h _, fun h n R =>
+    (∀ {n} (R), P n R) ↔ P 2 .le := ⟨fun h ↦ h _, fun h n R ↦
       match n, R with
       | 2, .le => h⟩
 
 instance instSubsingleton : Subsingleton (Language.order.Relations n) :=
   ⟨by rintro ⟨⟩ ⟨⟩; rfl⟩
 
-instance : IsEmpty (Language.order.Relations 0) := ⟨fun x => by cases x⟩
+instance : IsEmpty (Language.order.Relations 0) := ⟨fun x ↦ by cases x⟩
 
 instance : Unique (Σ n, Language.order.Relations n) :=
-  ⟨⟨⟨2, .le⟩⟩, fun ⟨n, R⟩ =>
+  ⟨⟨⟨2, .le⟩⟩, fun ⟨n, R⟩ ↦
       match n, R with
       | 2, .le => rfl⟩
 
@@ -202,7 +202,7 @@ variable (L M)
 /-- Any linearly-ordered type is naturally a structure in the language `Language.order`.
 This is not an instance, because sometimes the `Language.order.Structure` is defined first. -/
 def orderStructure [LE M] : Language.order.Structure M where
-  RelMap | .le => (fun x => x 0 ≤ x 1)
+  RelMap | .le => (fun x ↦ x 0 ≤ x 1)
 
 /-- A structure is ordered if its language has a `≤` symbol whose interpretation is `≤`. -/
 class OrderedStructure [L.IsOrdered] [LE M] [L.Structure M] : Prop where
@@ -233,7 +233,7 @@ instance [Language.order.Structure M] [Language.order.OrderedStructure M] :
     LHom.IsExpansionOn (orderLHom L) M where
   map_onRelation := by simp [order.relation_eq_leSymb]
 
-instance (S : L.Substructure M) : L.OrderedStructure S := ⟨fun x => relMap_leSymb (S.subtype ∘ x)⟩
+instance (S : L.Substructure M) : L.OrderedStructure S := ⟨fun x ↦ relMap_leSymb (S.subtype ∘ x)⟩
 
 @[simp]
 theorem Term.realize_le {t₁ t₂ : L.Term (α ⊕ (Fin n))} {v : α → M}
@@ -244,14 +244,14 @@ theorem Term.realize_le {t₁ t₂ : L.Term (α ⊕ (Fin n))} {v : α → M}
 theorem realize_noTopOrder_iff : M ⊨ L.noTopOrderSentence ↔ NoTopOrder M := by
   simp only [noTopOrderSentence, Sentence.Realize, Formula.Realize, BoundedFormula.realize_all,
     BoundedFormula.realize_ex, BoundedFormula.realize_not, Term.realize_le]
-  refine ⟨fun h => ⟨fun a => h a⟩, ?_⟩
+  refine ⟨fun h ↦ ⟨fun a ↦ h a⟩, ?_⟩
   intro h a
   exact exists_not_le a
 
 theorem realize_noBotOrder_iff : M ⊨ L.noBotOrderSentence ↔ NoBotOrder M := by
   simp only [noBotOrderSentence, Sentence.Realize, Formula.Realize, BoundedFormula.realize_all,
     BoundedFormula.realize_ex, BoundedFormula.realize_not, Term.realize_le]
-  refine ⟨fun h => ⟨fun a => h a⟩, ?_⟩
+  refine ⟨fun h ↦ ⟨fun a ↦ h a⟩, ?_⟩
   intro h a
   exact exists_not_ge a
 
@@ -279,7 +279,7 @@ end LE
 theorem orderedStructure_iff
     [LE M] [Language.order.Structure M] [Language.order.OrderedStructure M] :
     L.OrderedStructure M ↔ LHom.IsExpansionOn (orderLHom L) M :=
-  ⟨fun _ => inferInstance, fun _ => inferInstance⟩
+  ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
 
 section Preorder
 
@@ -288,7 +288,7 @@ variable [Preorder M] [L.OrderedStructure M]
 instance model_preorder : M ⊨ L.preorderTheory := by
   simp only [preorderTheory, Theory.model_insert_iff, Relations.realize_reflexive, relMap_leSymb,
     Theory.model_singleton_iff, Relations.realize_transitive]
-  exact ⟨le_refl, fun _ _ _ => le_trans⟩
+  exact ⟨le_refl, fun _ _ _ ↦ le_trans⟩
 
 @[simp]
 theorem Term.realize_lt {t₁ t₂ : L.Term (α ⊕ (Fin n))}
@@ -301,7 +301,7 @@ theorem realize_denselyOrdered_iff :
   simp only [denselyOrderedSentence, Sentence.Realize, Formula.Realize,
     BoundedFormula.realize_imp, BoundedFormula.realize_all, Term.realize_lt,
     BoundedFormula.realize_ex, BoundedFormula.realize_inf]
-  refine ⟨fun h => ⟨fun a b ab => h a b ab⟩, ?_⟩
+  refine ⟨fun h ↦ ⟨fun a b ab ↦ h a b ab⟩, ?_⟩
   intro h a b ab
   exact exists_between ab
 
@@ -323,7 +323,7 @@ instance model_partialOrder [PartialOrder M] [L.OrderedStructure M] :
   simp only [partialOrderTheory, Theory.model_insert_iff, Relations.realize_antisymmetric,
     relMap_leSymb, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
     model_preorder, and_true]
-  exact fun _ _ => le_antisymm
+  exact fun _ _ ↦ le_antisymm
 
 section LinearOrder
 
@@ -363,7 +363,7 @@ instance : @OrderedStructure L M _ (L.leOfStructure M) _ := by
 -- because it will match with any `LE` typeclass search
 @[local instance]
 def decidableLEOfStructure
-    [h : DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a, b])] :
+    [h : DecidableRel (fun (a b : M) ↦ Structure.RelMap (leSymb : L.Relations 2) ![a, b])] :
     letI := L.leOfStructure M
     DecidableLE M := h
 
@@ -383,7 +383,7 @@ def partialOrderOfModels [h : M ⊨ L.partialOrderTheory] : PartialOrder M where
 
 /-- Any model of a theory of linear orders is a linear order. -/
 def linearOrderOfModels [h : M ⊨ L.linearOrderTheory]
-    [DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a, b])] :
+    [DecidableRel (fun (a b : M) ↦ Structure.RelMap (leSymb : L.Relations 2) ![a, b])] :
     LinearOrder M where
   __ := L.partialOrderOfModels M
   le_total := Relations.realize_total.1 ((Theory.model_iff _).1 h _
@@ -399,19 +399,19 @@ variable [Language.order.Structure M] [LE M] [Language.order.OrderedStructure M]
   {F : Type*}
 
 instance [FunLike F M N] [OrderHomClass F M N] : Language.order.HomClass F M N :=
-  ⟨fun _ => isEmptyElim, by
+  ⟨fun _ ↦ isEmptyElim, by
     simp only [forall_relations, relation_eq_leSymb, relMap_leSymb, Fin.isValue,
       Function.comp_apply]
-    exact fun φ x => map_rel φ⟩
+    exact fun φ x ↦ map_rel φ⟩
 
 -- If `OrderEmbeddingClass` or `RelEmbeddingClass` is defined, this should be generalized.
 instance : Language.order.StrongHomClass (M ↪o N) M N :=
-  ⟨fun _ => isEmptyElim,
+  ⟨fun _ ↦ isEmptyElim,
     by simp only [order.forall_relations, order.relation_eq_leSymb, relMap_leSymb, Fin.isValue,
     Function.comp_apply, RelEmbedding.map_rel_iff, implies_true]⟩
 
 instance [EquivLike F M N] [OrderIsoClass F M N] : Language.order.StrongHomClass F M N :=
-  ⟨fun _ => isEmptyElim,
+  ⟨fun _ ↦ isEmptyElim,
     by simp only [order.forall_relations, order.relation_eq_leSymb, relMap_leSymb, Fin.isValue,
       Function.comp_apply, map_le_map_iff, implies_true]⟩
 
@@ -423,7 +423,7 @@ variable [L.IsOrdered] [L.Structure M] {N : Type*} [L.Structure N]
   {F : Type*} [FunLike F M N] [L.HomClass F M N]
 
 lemma monotone [Preorder M] [L.OrderedStructure M] [Preorder N] [L.OrderedStructure N] (f : F) :
-    Monotone f := fun a b => by
+    Monotone f := fun a b ↦ by
   have h := HomClass.map_rel f leSymb ![a, b]
   simp only [relMap_leSymb, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
     Function.comp_apply] at h
@@ -497,8 +497,8 @@ lemma dlo_age [Language.order.Structure M] [Mdlo : M ⊨ Language.order.dlo] [No
   classical
   rw [age]
   ext N
-  refine ⟨fun ⟨hF, h⟩ => ⟨hF.finite, Theory.IsUniversal.models_of_embedding h.some⟩,
-    fun ⟨hF, h⟩ => ⟨FG.of_finite, ?_⟩⟩
+  refine ⟨fun ⟨hF, h⟩ ↦ ⟨hF.finite, Theory.IsUniversal.models_of_embedding h.some⟩,
+    fun ⟨hF, h⟩ ↦ ⟨FG.of_finite, ?_⟩⟩
   letI := Language.order.linearOrderOfModels M
   letI := Language.order.linearOrderOfModels N
   exact ⟨StrongHomClass.toEmbedding (nonempty_orderEmbedding_of_finite_infinite N M).some⟩
@@ -521,7 +521,7 @@ theorem isFraisse_finite_linear_order :
 open Cardinal
 
 /-- The theory of dense linear orders is `ℵ₀`-categorical. -/
-theorem aleph0_categorical_dlo : (ℵ₀).Categorical Language.order.dlo := fun M₁ M₂ h₁ h₂ => by
+theorem aleph0_categorical_dlo : (ℵ₀).Categorical Language.order.dlo := fun M₁ M₂ h₁ h₂ ↦ by
   obtain ⟨_⟩ := denumerable_iff.2 h₁
   obtain ⟨_⟩ := denumerable_iff.2 h₂
   exact (isFraisseLimit_of_countable_nonempty_dlo M₁).nonempty_equiv
@@ -533,7 +533,7 @@ theorem dlo_isComplete : Language.order.dlo.IsComplete :=
     ⟨by
       letI : Language.order.Structure ℚ := orderStructure ℚ
       exact Theory.ModelType.of _ ℚ⟩
-    fun _ => inferInstance
+    fun _ ↦ inferInstance
 
 end Fraisse
 

@@ -48,7 +48,7 @@ variable (Q)
 
 /-- The even submodule `CliffordAlgebra.evenOdd Q 0` is also a subalgebra. -/
 def even : Subalgebra R (CliffordAlgebra Q) :=
-  (evenOdd Q 0).toSubalgebra (SetLike.one_mem_graded _) fun _x _y hx hy =>
+  (evenOdd Q 0).toSubalgebra (SetLike.one_mem_graded _) fun _x _y hx hy ↦
     add_zero (0 : ZMod 2) ▸ SetLike.mul_mem_graded hx hy
 
 @[simp]
@@ -79,10 +79,10 @@ variable (Q)
 /-- The embedding of pairs of vectors into the even subalgebra, as a bilinear map. -/
 nonrec def even.ι : EvenHom Q (even Q) where
   bilin :=
-    LinearMap.mk₂ R (fun m₁ m₂ => ⟨ι Q m₁ * ι Q m₂, ι_mul_ι_mem_evenOdd_zero Q _ _⟩)
-      (fun _ _ _ => by simp only [LinearMap.map_add, add_mul]; rfl)
-      (fun _ _ _ => by simp only [LinearMap.map_smul, smul_mul_assoc]; rfl)
-      (fun _ _ _ => by simp only [LinearMap.map_add, mul_add]; rfl) fun _ _ _ => by
+    LinearMap.mk₂ R (fun m₁ m₂ ↦ ⟨ι Q m₁ * ι Q m₂, ι_mul_ι_mem_evenOdd_zero Q _ _⟩)
+      (fun _ _ _ ↦ by simp only [LinearMap.map_add, add_mul]; rfl)
+      (fun _ _ _ ↦ by simp only [LinearMap.map_smul, smul_mul_assoc]; rfl)
+      (fun _ _ _ ↦ by simp only [LinearMap.map_add, mul_add]; rfl) fun _ _ _ ↦ by
       simp only [LinearMap.map_smul, mul_smul_comm]; rfl
   contract m := Subtype.ext <| ι_sq_scalar Q m
   contract_mid m₁ m₂ m₃ :=
@@ -130,7 +130,7 @@ is stored in the `A` part of the accumulator, while auxiliary recursion state is
 part. -/
 private def fFold : M →ₗ[R] A × S f →ₗ[R] A × S f :=
   LinearMap.mk₂ R
-    (fun m acc =>
+    (fun m acc ↦
       /- We could write this `snd` term in a point-free style as follows, but it wouldn't help as we
         don't have any prod or subtype combinators to deal with n-linear maps of this degree.
         ```lean
@@ -140,20 +140,20 @@ private def fFold : M →ₗ[R] A × S f →ₗ[R] A × S f :=
         -/
       (acc.2.val m,
         ⟨(LinearMap.mulRight R acc.1).comp (f.bilin.flip m), Submodule.subset_span <| ⟨_, _, rfl⟩⟩))
-    (fun m₁ m₂ a =>
+    (fun m₁ m₂ a ↦
       Prod.ext (LinearMap.map_add _ m₁ m₂)
         (Subtype.ext <|
-          LinearMap.ext fun m₃ =>
+          LinearMap.ext fun m₃ ↦
             show f.bilin m₃ (m₁ + m₂) * a.1 = f.bilin m₃ m₁ * a.1 + f.bilin m₃ m₂ * a.1 by
               rw [map_add, add_mul]))
-    (fun c m a =>
+    (fun c m a ↦
       Prod.ext (LinearMap.map_smul _ c m)
         (Subtype.ext <|
-          LinearMap.ext fun m₃ =>
+          LinearMap.ext fun m₃ ↦
             show f.bilin m₃ (c • m) * a.1 = c • (f.bilin m₃ m * a.1) by
               rw [LinearMap.map_smul, smul_mul_assoc]))
-    (fun _ _ _ => Prod.ext rfl (Subtype.ext <| LinearMap.ext fun _ => mul_add _ _ _))
-    fun _ _ _ => Prod.ext rfl (Subtype.ext <| LinearMap.ext fun _ => mul_smul_comm _ _ _)
+    (fun _ _ _ ↦ Prod.ext rfl (Subtype.ext <| LinearMap.ext fun _ ↦ mul_add _ _ _))
+    fun _ _ _ ↦ Prod.ext rfl (Subtype.ext <| LinearMap.ext fun _ ↦ mul_smul_comm _ _ _)
 
 @[simp]
 private theorem fst_fFold_fFold (m₁ m₂ : M) (x : A × S f) :

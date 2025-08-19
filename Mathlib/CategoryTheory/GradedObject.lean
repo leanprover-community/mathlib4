@@ -43,7 +43,7 @@ def GradedObject (β : Type w) (C : Type u) : Type max w u :=
 -- Satisfying the inhabited linter...
 instance inhabitedGradedObject (β : Type w) (C : Type u) [Inhabited C] :
     Inhabited (GradedObject β C) :=
-  ⟨fun _ => Inhabited.default⟩
+  ⟨fun _ ↦ Inhabited.default⟩
 
 -- `s` is here to distinguish type synonyms asking for different shifts
 /-- A type synonym for `β → C`, used for `β`-graded objects in a category `C`
@@ -59,7 +59,7 @@ variable {C : Type u} [Category.{v} C]
 
 @[simps!]
 instance categoryOfGradedObjects (β : Type w) : Category.{max w v} (GradedObject β C) :=
-  CategoryTheory.pi fun _ => C
+  CategoryTheory.pi fun _ ↦ C
 
 @[ext]
 lemma hom_ext {β : Type*} {X Y : GradedObject β C} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g := by
@@ -87,7 +87,7 @@ variable {X Y}
 -- this lemma is not an instance as it may create a loop with `isIso_apply_of_isIso`
 lemma isIso_of_isIso_apply (f : X ⟶ Y) [hf : ∀ i, IsIso (f i)] :
     IsIso f := by
-  change IsIso (isoMk X Y (fun i => asIso (f i))).hom
+  change IsIso (isoMk X Y (fun i ↦ asIso (f i))).hom
   infer_instance
 
 instance isIso_apply_of_isIso (f : X ⟶ Y) [IsIso f] (i : β) : IsIso (f i) := by
@@ -151,7 +151,7 @@ variable (C)
 
 /-- Pull back an `I`-graded object in `C` to a `J`-graded object along a function `J → I`. -/
 abbrev comap {I J : Type*} (h : J → I) : GradedObject I C ⥤ GradedObject J C :=
-  Pi.comap (fun _ => C) h
+  Pi.comap (fun _ ↦ C) h
 
 @[simp]
 theorem eqToHom_proj {I : Type*} {x x' : GradedObject I C} (h : x = x') (i : I) :
@@ -164,8 +164,8 @@ pulling back along two propositionally equal functions.
 -/
 @[simps]
 def comapEq {β γ : Type w} {f g : β → γ} (h : f = g) : comap C f ≅ comap C g where
-  hom := { app := fun X b => eqToHom (by dsimp; simp only [h]) }
-  inv := { app := fun X b => eqToHom (by dsimp; simp only [h]) }
+  hom := { app := fun X b ↦ eqToHom (by dsimp; simp only [h]) }
+  inv := { app := fun X b ↦ eqToHom (by dsimp; simp only [h]) }
 
 theorem comapEq_symm {β γ : Type w} {f g : β → γ} (h : f = g) :
     comapEq C h.symm = (comapEq C h).symm := by cat_disch
@@ -186,7 +186,7 @@ def comapEquiv {β γ : Type w} (e : β ≃ γ) : GradedObject β C ≌ GradedOb
   functor := comap C (e.symm : γ → β)
   inverse := comap C (e : β → γ)
   counitIso :=
-    (Pi.comapComp (fun _ => C) _ _).trans (comapEq C (by ext; simp))
+    (Pi.comapComp (fun _ ↦ C) _ _).trans (comapEq C (by ext; simp))
   unitIso :=
     (comapEq C (by ext; simp)).trans (Pi.comapComp _ _ _).symm
 
@@ -194,9 +194,9 @@ end
 
 instance hasShift {β : Type*} [AddCommGroup β] (s : β) : HasShift (GradedObjectWithShift s C) ℤ :=
   hasShiftMk _ _
-    { F := fun n => comap C fun b : β => b + n • s
-      zero := comapEq C (by cat_disch) ≪≫ Pi.comapId β fun _ => C
-      add := fun m n => comapEq C (by ext; dsimp; rw [add_comm m n, add_zsmul, add_assoc]) ≪≫
+    { F := fun n ↦ comap C fun b : β ↦ b + n • s
+      zero := comapEq C (by cat_disch) ≪≫ Pi.comapId β fun _ ↦ C
+      add := fun m n ↦ comapEq C (by ext; dsimp; rw [add_comm m n, add_zsmul, add_assoc]) ≪≫
           (Pi.comapComp _ _ _).symm }
 
 @[simp]
@@ -211,7 +211,7 @@ theorem shiftFunctor_map_apply {β : Type*} [AddCommGroup β] (s : β)
   rfl
 
 instance [HasZeroMorphisms C] (β : Type w) (X Y : GradedObject β C) : Zero (X ⟶ Y) :=
-  ⟨fun _ => 0⟩
+  ⟨fun _ ↦ 0⟩
 
 @[simp]
 theorem zero_apply [HasZeroMorphisms C] (β : Type w) (X Y : GradedObject β C) (b : β) :
@@ -227,8 +227,8 @@ open ZeroObject
 
 instance hasZeroObject [HasZeroObject C] [HasZeroMorphisms C] (β : Type w) :
     HasZeroObject.{max w v} (GradedObject β C) := by
-  refine ⟨⟨fun _ => 0, fun X => ⟨⟨⟨fun b => 0⟩, fun f => ?_⟩⟩, fun X =>
-    ⟨⟨⟨fun b => 0⟩, fun f => ?_⟩⟩⟩⟩ <;> cat_disch
+  refine ⟨⟨fun _ ↦ 0, fun X ↦ ⟨⟨⟨fun b ↦ 0⟩, fun f ↦ ?_⟩⟩, fun X ↦
+    ⟨⟨⟨fun b ↦ 0⟩, fun f ↦ ?_⟩⟩⟩⟩ <;> cat_disch
 
 end
 
@@ -248,8 +248,8 @@ section
 /-- The total object of a graded object is the coproduct of the graded components.
 -/
 noncomputable def total : GradedObject β C ⥤ C where
-  obj X := ∐ fun i : β => X i
-  map f := Limits.Sigma.map fun i => f i
+  obj X := ∐ fun i : β ↦ X i
+  map f := Limits.Sigma.map fun i ↦ f i
 
 end
 
@@ -263,7 +263,7 @@ which follows from the fact we have zero morphisms and decidable equality for th
 instance : (total β C).Faithful where
   map_injective {X Y} f g w := by
     ext i
-    replace w := Sigma.ι (fun i : β => X i) i ≫= w
+    replace w := Sigma.ι (fun i : β ↦ X i) i ≫= w
     erw [colimit.ι_map, colimit.ι_map] at w
     simp? at * says simp only [Discrete.functor_obj_eq_as, Discrete.natTrans_app] at *
     exact Mono.right_cancellation _ _ w
@@ -302,9 +302,9 @@ for all `j : J`, the coproduct of all `X i` such `p i = j` exists. -/
 abbrev HasMap : Prop := ∀ (j : J), HasCoproduct (X.mapObjFun p j)
 
 variable {X Y} in
-lemma hasMap_of_iso (e : X ≅ Y) (p : I → J) [HasMap X p] : HasMap Y p := fun j => by
+lemma hasMap_of_iso (e : X ≅ Y) (p : I → J) [HasMap X p] : HasMap Y p := fun j ↦ by
   have α : Discrete.functor (X.mapObjFun p j) ≅ Discrete.functor (Y.mapObjFun p j) :=
-    Discrete.natIso (fun ⟨i, _⟩ => (GradedObject.eval i).mapIso e)
+    Discrete.natIso (fun ⟨i, _⟩ ↦ (GradedObject.eval i).mapIso e)
   exact hasColimit_of_iso α.symm
 
 section
@@ -312,7 +312,7 @@ variable [X.HasMap p] [Y.HasMap p]
 
 /-- Given `X : GradedObject I C` and `p : I → J`, `X.mapObj p` is the graded object by `J`
 which in degree `j` consists of the coproduct of the `X i` such that `p i = j`. -/
-noncomputable def mapObj : GradedObject J C := fun j => ∐ (X.mapObjFun p j)
+noncomputable def mapObj : GradedObject J C := fun j ↦ ∐ (X.mapObjFun p j)
 
 /-- The canonical inclusion `X i ⟶ X.mapObj p j` when `i : I` and `j : J` are such
 that `p i = j`. -/
@@ -330,12 +330,12 @@ abbrev CofanMapObjFun (j : J) : Type _ := Cofan (X.mapObjFun p j)
 @[simp]
 def CofanMapObjFun.mk (j : J) (pt : C) (ι' : ∀ (i : I) (_ : p i = j), X i ⟶ pt) :
     CofanMapObjFun X p j :=
-  Cofan.mk pt (fun ⟨i, hi⟩ => ι' i hi)
+  Cofan.mk pt (fun ⟨i, hi⟩ ↦ ι' i hi)
 
 /-- The tautological cofan corresponding to the coproduct decomposition of `X.mapObj p j`. -/
 @[simp]
 noncomputable def cofanMapObj (j : J) : CofanMapObjFun X p j :=
-  CofanMapObjFun.mk X p j (X.mapObj p j) (fun i hi => X.ιMapObj p i j hi)
+  CofanMapObjFun.mk X p j (X.mapObj p j) (fun i hi ↦ X.ιMapObj p i j hi)
 
 /-- Given `X : GradedObject I C`, `p : I → J` and `j : J`, `X.mapObj p j` satisfies
 the universal property of the coproduct of those `X i` such that `p i = j`. -/
@@ -346,13 +346,13 @@ noncomputable def isColimitCofanMapObj (j : J) : IsColimit (X.cofanMapObj p j) :
 lemma mapObj_ext {A : C} {j : J} (f g : X.mapObj p j ⟶ A)
     (hfg : ∀ (i : I) (hij : p i = j), X.ιMapObj p i j hij ≫ f = X.ιMapObj p i j hij ≫ g) :
     f = g :=
-  Cofan.IsColimit.hom_ext (X.isColimitCofanMapObj p j) _ _ (fun ⟨i, hij⟩ => hfg i hij)
+  Cofan.IsColimit.hom_ext (X.isColimitCofanMapObj p j) _ _ (fun ⟨i, hij⟩ ↦ hfg i hij)
 
 /-- This is the morphism `X.mapObj p j ⟶ A` constructed from a family of
 morphisms `X i ⟶ A` for all `i : I` such that `p i = j`. -/
 noncomputable def descMapObj {A : C} {j : J} (φ : ∀ (i : I) (_ : p i = j), X i ⟶ A) :
     X.mapObj p j ⟶ A :=
-  Cofan.IsColimit.desc (X.isColimitCofanMapObj p j) (fun ⟨i, hi⟩ => φ i hi)
+  Cofan.IsColimit.desc (X.isColimitCofanMapObj p j) (fun ⟨i, hi⟩ ↦ φ i hi)
 
 @[reassoc (attr := simp)]
 lemma ι_descMapObj {A : C} {j : J}
@@ -364,7 +364,7 @@ end
 namespace CofanMapObjFun
 
 lemma hasMap (c : ∀ j, CofanMapObjFun X p j) (hc : ∀ j, IsColimit (c j)) :
-    X.HasMap p := fun j => ⟨_, hc j⟩
+    X.HasMap p := fun j ↦ ⟨_, hc j⟩
 
 variable {j X p}
 variable [X.HasMap p]
@@ -392,8 +392,8 @@ variable [X.HasMap p] [Y.HasMap p]
 
 /-- The canonical morphism of `J`-graded objects `X.mapObj p ⟶ Y.mapObj p` induced by
 a morphism `X ⟶ Y` of `I`-graded objects and a map `p : I → J`. -/
-noncomputable def mapMap : X.mapObj p ⟶ Y.mapObj p := fun j =>
-  X.descMapObj p (fun i hi => φ i ≫ Y.ιMapObj p i j hi)
+noncomputable def mapMap : X.mapObj p ⟶ Y.mapObj p := fun j ↦
+  X.descMapObj p (fun i hi ↦ φ i ≫ Y.ιMapObj p i j hi)
 
 @[reassoc (attr := simp)]
 lemma ι_mapMap (i : I) (j : J) (hij : p i = j) :
@@ -439,7 +439,7 @@ section
 
 variable (k : K) (c : ∀ (j : J), q j = k → X.CofanMapObjFun p j)
   (hc : ∀ j hj, IsColimit (c j hj))
-  (c' : Cofan (fun (j : q ⁻¹' {k}) => (c j.1 j.2).pt)) (hc' : IsColimit c')
+  (c' : Cofan (fun (j : q ⁻¹' {k}) ↦ (c j.1 j.2).pt)) (hc' : IsColimit c')
 
 /-- Given maps `p : I → J`, `q : J → K` and `r : I → K` such that `q.comp p = r`,
 `X : GradedObject I C`, `k : K`, the datum of cofans `X.CofanMapObjFun p j` for all
@@ -448,7 +448,7 @@ type `X.CofanMapObjFun r k`, which is a colimit (see `isColimitCofanMapObjComp`)
 given cofans are. -/
 @[simp]
 def cofanMapObjComp : X.CofanMapObjFun r k :=
-  CofanMapObjFun.mk _ _ _ c'.pt (fun i hi =>
+  CofanMapObjFun.mk _ _ _ c'.pt (fun i hi ↦
     (c (p i) (by rw [hpqr, hi])).inj ⟨i, rfl⟩ ≫ c'.inj (⟨p i, by
       rw [Set.mem_preimage, Set.mem_singleton_iff, hpqr, hi]⟩))
 
@@ -462,12 +462,12 @@ the point of this latter cofan computes the coproduct of the `X i` such that `r 
 def isColimitCofanMapObjComp :
     IsColimit (cofanMapObjComp X p q r hpqr k c c') :=
   mkCofanColimit _
-    (fun s => Cofan.IsColimit.desc hc'
-      (fun ⟨j, (hj : q j = k)⟩ => Cofan.IsColimit.desc (hc j hj)
-        (fun ⟨i, (hi : p i = j)⟩ => s.inj ⟨i, by
+    (fun s ↦ Cofan.IsColimit.desc hc'
+      (fun ⟨j, (hj : q j = k)⟩ ↦ Cofan.IsColimit.desc (hc j hj)
+        (fun ⟨i, (hi : p i = j)⟩ ↦ s.inj ⟨i, by
           simp only [Set.mem_preimage, Set.mem_singleton_iff, ← hpqr, hi, hj]⟩)))
-    (fun s ⟨i, (hi : r i = k)⟩ => by simp)
-    (fun s m hm => by
+    (fun s ⟨i, (hi : r i = k)⟩ ↦ by simp)
+    (fun s m hm ↦ by
       apply Cofan.IsColimit.hom_ext hc'
       rintro ⟨j, rfl : q j = k⟩
       apply Cofan.IsColimit.hom_ext (hc j rfl)
@@ -479,8 +479,8 @@ def isColimitCofanMapObjComp :
 
 include hpqr in
 lemma hasMap_comp [(X.mapObj p).HasMap q] : X.HasMap r :=
-  fun k => ⟨_, isColimitCofanMapObjComp X p q r hpqr k _
-    (fun j _ => X.isColimitCofanMapObj p j) _ ((X.mapObj p).isColimitCofanMapObj q k)⟩
+  fun k ↦ ⟨_, isColimitCofanMapObjComp X p q r hpqr k _
+    (fun j _ ↦ X.isColimitCofanMapObj p j) _ ((X.mapObj p).isColimitCofanMapObj q k)⟩
 
 end
 

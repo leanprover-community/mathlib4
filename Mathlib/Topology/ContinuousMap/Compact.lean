@@ -42,9 +42,9 @@ equivalent to `C(α, β)`.
 -/
 @[simps -fullyApplied]
 def equivBoundedOfCompact : C(α, β) ≃ (α →ᵇ β) :=
-  ⟨mkOfCompact, BoundedContinuousFunction.toContinuousMap, fun f => by
+  ⟨mkOfCompact, BoundedContinuousFunction.toContinuousMap, fun f ↦ by
     ext
-    rfl, fun f => by
+    rfl, fun f ↦ by
     ext
     rfl⟩
 
@@ -52,13 +52,13 @@ theorem isUniformInducing_equivBoundedOfCompact : IsUniformInducing (equivBounde
   IsUniformInducing.mk'
     (by
       simp only [hasBasis_compactConvergenceUniformity.mem_iff, uniformity_basis_dist_le.mem_iff]
-      exact fun s =>
-        ⟨fun ⟨⟨a, b⟩, ⟨_, ⟨ε, hε, hb⟩⟩, hs⟩ =>
-          ⟨{ p | ∀ x, (p.1 x, p.2 x) ∈ b }, ⟨ε, hε, fun _ h x => hb ((dist_le hε.le).mp h x)⟩,
-            fun f g h => hs fun x _ => h x⟩,
-          fun ⟨_, ⟨ε, hε, ht⟩, hs⟩ =>
-          ⟨⟨Set.univ, { p | dist p.1 p.2 ≤ ε }⟩, ⟨isCompact_univ, ⟨ε, hε, fun _ h => h⟩⟩,
-            fun ⟨f, g⟩ h => hs _ _ (ht ((dist_le hε.le).mpr fun x => h x (mem_univ x)))⟩⟩)
+      exact fun s ↦
+        ⟨fun ⟨⟨a, b⟩, ⟨_, ⟨ε, hε, hb⟩⟩, hs⟩ ↦
+          ⟨{ p | ∀ x, (p.1 x, p.2 x) ∈ b }, ⟨ε, hε, fun _ h x ↦ hb ((dist_le hε.le).mp h x)⟩,
+            fun f g h ↦ hs fun x _ ↦ h x⟩,
+          fun ⟨_, ⟨ε, hε, ht⟩, hs⟩ ↦
+          ⟨⟨Set.univ, { p | dist p.1 p.2 ≤ ε }⟩, ⟨isCompact_univ, ⟨ε, hε, fun _ h ↦ h⟩⟩,
+            fun ⟨f, g⟩ h ↦ hs _ _ (ht ((dist_le hε.le).mpr fun x ↦ h x (mem_univ x)))⟩⟩)
 
 theorem isUniformEmbedding_equivBoundedOfCompact : IsUniformEmbedding (equivBoundedOfCompact α β) :=
   { isUniformInducing_equivBoundedOfCompact α β with
@@ -232,7 +232,7 @@ instance {X : Type*} [TopologicalSpace X] (K : TopologicalSpace.Compacts X) :
 
 theorem norm_restrict_mono_set {X : Type*} [TopologicalSpace X] (f : C(X, E))
     {K L : TopologicalSpace.Compacts X} (hKL : K ≤ L) : ‖f.restrict K‖ ≤ ‖f.restrict L‖ :=
-  (norm_le _ (norm_nonneg _)).mpr fun x => norm_coe_le_norm (f.restrict L) <| Set.inclusion hKL x
+  (norm_le _ (norm_nonneg _)).mpr fun x ↦ norm_coe_le_norm (f.restrict L) <| Set.inclusion hKL x
 
 end
 
@@ -292,10 +292,10 @@ the `𝕜`-algebra of bounded continuous maps `α →ᵇ β` is
 -/
 def linearIsometryBoundedOfCompact : C(α, E) ≃ₗᵢ[𝕜] α →ᵇ E :=
   { addEquivBoundedOfCompact α E with
-    map_smul' := fun c f => by
+    map_smul' := fun c f ↦ by
       ext
       norm_cast
-    norm_map' := fun _ => rfl }
+    norm_map' := fun _ ↦ rfl }
 
 end
 
@@ -412,9 +412,9 @@ variable {X : Type*} [TopologicalSpace X] [LocallyCompactSpace X]
 variable {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
 
 theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
-    (hF : ∀ K : Compacts X, Summable fun i => ‖(F i).restrict K‖) : Summable F := by
+    (hF : ∀ K : Compacts X, Summable fun i ↦ ‖(F i).restrict K‖) : Summable F := by
   classical
-  refine (ContinuousMap.exists_tendsto_compactOpen_iff_forall _).2 fun K hK => ?_
+  refine (ContinuousMap.exists_tendsto_compactOpen_iff_forall _).2 fun K hK ↦ ?_
   lift K to Compacts X using hK
   have A : ∀ s : Finset ι, restrict K (∑ i ∈ s, F i) = ∑ i ∈ s, restrict K (F i) := by
     intro s

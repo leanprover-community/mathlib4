@@ -45,19 +45,19 @@ instance may be not definitionally equal to some other “natural” instance. S
 `[NormedSpace ℝ E]`.
 -/
 theorem _root_.isBoundedBilinearMap_inner [NormedSpace ℝ E] [IsScalarTower ℝ 𝕜 E] :
-    IsBoundedBilinearMap ℝ fun p : E × E => ⟪p.1, p.2⟫ :=
+    IsBoundedBilinearMap ℝ fun p : E × E ↦ ⟪p.1, p.2⟫ :=
   { add_left := inner_add_left
-    smul_left := fun r x y => by
+    smul_left := fun r x y ↦ by
       simp only [← algebraMap_smul 𝕜 r x, algebraMap_eq_ofReal, inner_smul_real_left]
     add_right := inner_add_right
-    smul_right := fun r x y => by
+    smul_right := fun r x y ↦ by
       simp only [← algebraMap_smul 𝕜 r y, algebraMap_eq_ofReal, inner_smul_real_right]
     bound :=
-      ⟨1, zero_lt_one, fun x y => by
+      ⟨1, zero_lt_one, fun x y ↦ by
         rw [one_mul]
         exact norm_inner_le_norm x y⟩ }
 
-theorem continuous_inner : Continuous fun p : E × E => ⟪p.1, p.2⟫ :=
+theorem continuous_inner : Continuous fun p : E × E ↦ ⟪p.1, p.2⟫ :=
   letI : InnerProductSpace ℝ E := InnerProductSpace.rclikeToReal 𝕜 E
   letI : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower _ _ _
   isBoundedBilinearMap_inner.continuous
@@ -65,26 +65,26 @@ theorem continuous_inner : Continuous fun p : E × E => ⟪p.1, p.2⟫ :=
 variable {α : Type*}
 
 theorem Filter.Tendsto.inner {f g : α → E} {l : Filter α} {x y : E} (hf : Tendsto f l (𝓝 x))
-    (hg : Tendsto g l (𝓝 y)) : Tendsto (fun t => ⟪f t, g t⟫) l (𝓝 ⟪x, y⟫) :=
+    (hg : Tendsto g l (𝓝 y)) : Tendsto (fun t ↦ ⟪f t, g t⟫) l (𝓝 ⟪x, y⟫) :=
   (continuous_inner.tendsto _).comp (hf.prodMk_nhds hg)
 
 variable [TopologicalSpace α] {f g : α → E} {x : α} {s : Set α}
 
 theorem ContinuousWithinAt.inner (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
-    ContinuousWithinAt (fun t => ⟪f t, g t⟫) s x :=
+    ContinuousWithinAt (fun t ↦ ⟪f t, g t⟫) s x :=
   Filter.Tendsto.inner hf hg
 
 @[fun_prop]
 theorem ContinuousAt.inner (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
-    ContinuousAt (fun t => ⟪f t, g t⟫) x :=
+    ContinuousAt (fun t ↦ ⟪f t, g t⟫) x :=
   Filter.Tendsto.inner hf hg
 
 @[fun_prop]
 theorem ContinuousOn.inner (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
-    ContinuousOn (fun t => ⟪f t, g t⟫) s := fun x hx => (hf x hx).inner (hg x hx)
+    ContinuousOn (fun t ↦ ⟪f t, g t⟫) s := fun x hx ↦ (hf x hx).inner (hg x hx)
 
 @[continuity, fun_prop]
-theorem Continuous.inner (hf : Continuous f) (hg : Continuous g) : Continuous fun t => ⟪f t, g t⟫ :=
-  continuous_iff_continuousAt.2 fun _x => by fun_prop
+theorem Continuous.inner (hf : Continuous f) (hg : Continuous g) : Continuous fun t ↦ ⟪f t, g t⟫ :=
+  continuous_iff_continuousAt.2 fun _x ↦ by fun_prop
 
 end Continuous

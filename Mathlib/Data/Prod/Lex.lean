@@ -154,7 +154,7 @@ instance instPartialOrder (α β : Type*) [PartialOrder α] [PartialOrder β] :
 instance instOrdLexProd [Ord α] [Ord β] : Ord (α ×ₗ β) := lexOrd
 
 theorem compare_def [Ord α] [Ord β] : @compare (α ×ₗ β) _ =
-    compareLex (compareOn fun x => (ofLex x).1) (compareOn fun x => (ofLex x).2) := rfl
+    compareLex (compareOn fun x ↦ (ofLex x).1) (compareOn fun x ↦ (ofLex x).2) := rfl
 
 theorem _root_.lexOrd_eq [Ord α] [Ord β] : @lexOrd α β _ _ = instOrdLexProd := rfl
 
@@ -173,7 +173,7 @@ instance instLinearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : Lin
     toDecidableLE := Prod.Lex.decidable _ _
     toDecidableLT := Prod.Lex.decidable _ _
     toDecidableEq := instDecidableEqLex _
-    compare_eq_compareOfLessAndEq := fun a b => by
+    compare_eq_compareOfLessAndEq := fun a b ↦ by
       have : DecidableLT (α ×ₗ β) := Prod.Lex.decidable _ _
       have : Std.LawfulBEqOrd (α ×ₗ β) := ⟨by
         simp [compare_def, compareLex, compareOn, Ordering.then_eq_eq]⟩

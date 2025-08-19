@@ -67,7 +67,7 @@ is just multiplication with `-1`. -/
 theorem IsTopologicalSemiring.continuousNeg_of_mul [TopologicalSpace R] [NonAssocRing R]
     [ContinuousMul R] : ContinuousNeg R where
   continuous_neg := by
-    simpa using (continuous_const.mul continuous_id : Continuous fun x : R => -1 * x)
+    simpa using (continuous_const.mul continuous_id : Continuous fun x : R ↦ -1 * x)
 
 /-- If `R` is a ring which is a topological semiring, then it is automatically a topological
 ring. This exists so that one can place a topological ring structure on `R` without explicitly
@@ -219,7 +219,7 @@ instance [NonUnitalNonAssocSemiring R] [TopologicalSpace R] [IsTopologicalSemiri
     IsTopologicalSemiring Rᵐᵒᵖ := ⟨⟩
 
 instance [NonUnitalNonAssocRing R] [TopologicalSpace R] [ContinuousNeg R] : ContinuousNeg Rᵐᵒᵖ :=
-  opHomeomorph.symm.isInducing.continuousNeg fun _ => rfl
+  opHomeomorph.symm.isInducing.continuousNeg fun _ ↦ rfl
 
 instance [NonUnitalNonAssocRing R] [TopologicalSpace R] [IsTopologicalRing R] :
     IsTopologicalRing Rᵐᵒᵖ := ⟨⟩
@@ -248,19 +248,19 @@ variable {R : Type*} [NonUnitalNonAssocRing R] [TopologicalSpace R]
 
 theorem IsTopologicalRing.of_addGroup_of_nhds_zero [IsTopologicalAddGroup R]
     (hmul : Tendsto (uncurry ((· * ·) : R → R → R)) (𝓝 0 ×ˢ 𝓝 0) <| 𝓝 0)
-    (hmul_left : ∀ x₀ : R, Tendsto (fun x : R => x₀ * x) (𝓝 0) <| 𝓝 0)
-    (hmul_right : ∀ x₀ : R, Tendsto (fun x : R => x * x₀) (𝓝 0) <| 𝓝 0) : IsTopologicalRing R where
+    (hmul_left : ∀ x₀ : R, Tendsto (fun x : R ↦ x₀ * x) (𝓝 0) <| 𝓝 0)
+    (hmul_right : ∀ x₀ : R, Tendsto (fun x : R ↦ x * x₀) (𝓝 0) <| 𝓝 0) : IsTopologicalRing R where
   continuous_mul := by
     refine continuous_of_continuousAt_zero₂ (AddMonoidHom.mul (R := R)) ?_ ?_ ?_ <;>
       simpa only [ContinuousAt, mul_zero, zero_mul, nhds_prod_eq, AddMonoidHom.mul_apply]
 
 theorem IsTopologicalRing.of_nhds_zero
     (hadd : Tendsto (uncurry ((· + ·) : R → R → R)) (𝓝 0 ×ˢ 𝓝 0) <| 𝓝 0)
-    (hneg : Tendsto (fun x => -x : R → R) (𝓝 0) (𝓝 0))
+    (hneg : Tendsto (fun x ↦ -x : R → R) (𝓝 0) (𝓝 0))
     (hmul : Tendsto (uncurry ((· * ·) : R → R → R)) (𝓝 0 ×ˢ 𝓝 0) <| 𝓝 0)
-    (hmul_left : ∀ x₀ : R, Tendsto (fun x : R => x₀ * x) (𝓝 0) <| 𝓝 0)
-    (hmul_right : ∀ x₀ : R, Tendsto (fun x : R => x * x₀) (𝓝 0) <| 𝓝 0)
-    (hleft : ∀ x₀ : R, 𝓝 x₀ = map (fun x => x₀ + x) (𝓝 0)) : IsTopologicalRing R :=
+    (hmul_left : ∀ x₀ : R, Tendsto (fun x : R ↦ x₀ * x) (𝓝 0) <| 𝓝 0)
+    (hmul_right : ∀ x₀ : R, Tendsto (fun x : R ↦ x * x₀) (𝓝 0) <| 𝓝 0)
+    (hleft : ∀ x₀ : R, 𝓝 x₀ = map (fun x ↦ x₀ + x) (𝓝 0)) : IsTopologicalRing R :=
   have := IsTopologicalAddGroup.of_comm_of_nhds_zero hadd hneg hleft
   IsTopologicalRing.of_addGroup_of_nhds_zero hmul hmul_left hmul_right
 
@@ -394,11 +394,11 @@ instance : PartialOrder (RingTopology R) :=
 
 private def def_sInf (S : Set (RingTopology R)) : RingTopology R :=
   let _ := sInf (toTopologicalSpace '' S)
-  { toContinuousAdd := continuousAdd_sInf <| forall_mem_image.2 fun t _ =>
+  { toContinuousAdd := continuousAdd_sInf <| forall_mem_image.2 fun t _ ↦
       let _ := t.1; t.toContinuousAdd
-    toContinuousMul := continuousMul_sInf <| forall_mem_image.2 fun t _ =>
+    toContinuousMul := continuousMul_sInf <| forall_mem_image.2 fun t _ ↦
       let _ := t.1; t.toContinuousMul
-    toContinuousNeg := continuousNeg_sInf <| forall_mem_image.2 fun t _ =>
+    toContinuousNeg := continuousNeg_sInf <| forall_mem_image.2 fun t _ ↦
       let _ := t.1; t.toContinuousNeg }
 
 /-- Ring topologies on `R` form a complete lattice, with `⊥` the discrete topology and `⊤` the
@@ -411,8 +411,8 @@ The supremum of two ring topologies `s` and `t` is the infimum of the family of 
 contained in the intersection of `s` and `t`. -/
 instance : CompleteSemilatticeInf (RingTopology R) where
   sInf := def_sInf
-  sInf_le := fun _ a haS => sInf_le (α := TopologicalSpace R) ⟨a, ⟨haS, rfl⟩⟩
-  le_sInf := fun _ _ h => le_sInf (α := TopologicalSpace R) <| forall_mem_image.2 h
+  sInf_le := fun _ a haS ↦ sInf_le (α := TopologicalSpace R) ⟨a, ⟨haS, rfl⟩⟩
+  le_sInf := fun _ _ h ↦ le_sInf (α := TopologicalSpace R) <| forall_mem_image.2 h
 
 instance : CompleteLattice (RingTopology R) :=
   completeLatticeOfCompleteSemilatticeInf _
@@ -424,7 +424,7 @@ def coinduced {R S : Type*} [t : TopologicalSpace R] [Ring S] (f : R → S) : Ri
 
 theorem coinduced_continuous {R S : Type*} [t : TopologicalSpace R] [Ring S] (f : R → S) :
     Continuous[t, (coinduced f).toTopologicalSpace] f :=
-  continuous_sInf_rng.2 <| forall_mem_image.2 fun _ => continuous_iff_coinduced_le.2
+  continuous_sInf_rng.2 <| forall_mem_image.2 fun _ ↦ continuous_iff_coinduced_le.2
 
 /-- The forgetful functor from ring topologies on `a` to additive group topologies on `a`. -/
 def toAddGroupTopology (t : RingTopology R) : AddGroupTopology R where
@@ -434,7 +434,7 @@ def toAddGroupTopology (t : RingTopology R) : AddGroupTopology R where
 
 /-- The order embedding from ring topologies on `a` to additive group topologies on `a`. -/
 def toAddGroupTopology.orderEmbedding : OrderEmbedding (RingTopology R) (AddGroupTopology R) :=
-  OrderEmbedding.ofMapLEIff toAddGroupTopology fun _ _ => Iff.rfl
+  OrderEmbedding.ofMapLEIff toAddGroupTopology fun _ _ ↦ Iff.rfl
 
 end RingTopology
 

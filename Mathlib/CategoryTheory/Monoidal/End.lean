@@ -99,7 +99,7 @@ variable [MonoidalCategory C]
 instance : (tensoringRight C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := (rightUnitorNatIso C).symm
-      μIso := fun X Y => (Functor.isoWhiskerRight (curriedAssociatorNatIso C)
+      μIso := fun X Y ↦ (Functor.isoWhiskerRight (curriedAssociatorNatIso C)
       ((evaluation C (C ⥤ C)).obj X ⋙ (evaluation C C).obj Y)) }
 
 @[simp] lemma tensoringRight_ε :

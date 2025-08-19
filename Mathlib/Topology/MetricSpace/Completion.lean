@@ -189,7 +189,7 @@ open UniformSpace Completion NNReal
 
 theorem LipschitzWith.completion_extension [MetricSpace β] [CompleteSpace β] {f : α → β}
     {K : ℝ≥0} (h : LipschitzWith K f) : LipschitzWith K (Completion.extension f) :=
-  LipschitzWith.of_dist_le_mul fun x y => induction_on₂ x y
+  LipschitzWith.of_dist_le_mul fun x y ↦ induction_on₂ x y
     (isClosed_le (by fun_prop) (by fun_prop)) <| by
       simpa only [extension_coe h.uniformContinuous, Completion.dist_eq] using h.dist_le_mul
 
@@ -199,7 +199,7 @@ theorem LipschitzWith.completion_map [PseudoMetricSpace β] {f : α → β} {K :
 
 theorem Isometry.completion_extension [MetricSpace β] [CompleteSpace β] {f : α → β}
     (h : Isometry f) : Isometry (Completion.extension f) :=
-  Isometry.of_dist_eq fun x y => induction_on₂ x y
+  Isometry.of_dist_eq fun x y ↦ induction_on₂ x y
     (isClosed_eq (by fun_prop) (by fun_prop)) fun _ _ ↦ by
       simp only [extension_coe h.uniformContinuous, Completion.dist_eq, h.dist_eq]
 

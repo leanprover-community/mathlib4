@@ -65,7 +65,7 @@ noncomputable def Triangle.shiftFunctor (n : ℤ) : Triangle C ⥤ Triangle C wh
 @[simps!]
 noncomputable def Triangle.shiftFunctorZero : Triangle.shiftFunctor C 0 ≅ 𝟭 _ :=
   NatIso.ofComponents
-    (fun T => Triangle.isoMk _ _ ((CategoryTheory.shiftFunctorZero C ℤ).app _)
+    (fun T ↦ Triangle.isoMk _ _ ((CategoryTheory.shiftFunctorZero C ℤ).app _)
       ((CategoryTheory.shiftFunctorZero C ℤ).app _) ((CategoryTheory.shiftFunctorZero C ℤ).app _)
       (by simp) (by simp) (by
         dsimp
@@ -81,7 +81,7 @@ when `a + b = n`. -/
 noncomputable def Triangle.shiftFunctorAdd' (a b n : ℤ) (h : a + b = n) :
     Triangle.shiftFunctor C n ≅ Triangle.shiftFunctor C a ⋙ Triangle.shiftFunctor C b :=
   NatIso.ofComponents
-    (fun T => Triangle.isoMk _ _
+    (fun T ↦ Triangle.isoMk _ _
       ((CategoryTheory.shiftFunctorAdd' C a b n h).app _)
       ((CategoryTheory.shiftFunctorAdd' C a b n h).app _)
       ((CategoryTheory.shiftFunctorAdd' C a b n h).app _)
@@ -110,7 +110,7 @@ noncomputable def Triangle.shiftFunctorAdd' (a b n : ℤ) (h : a + b = n) :
 noncomputable def rotateRotateRotateIso :
     rotate C ⋙ rotate C ⋙ rotate C ≅ Triangle.shiftFunctor C 1 :=
   NatIso.ofComponents
-    (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
+    (fun T ↦ Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
       (by simp) (by simp) (by simp))
     (by cat_disch)
 
@@ -118,7 +118,7 @@ noncomputable def rotateRotateRotateIso :
 noncomputable def invRotateInvRotateInvRotateIso :
     invRotate C ⋙ invRotate C ⋙ invRotate C ≅ Triangle.shiftFunctor C (-1) :=
   NatIso.ofComponents
-    (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
+    (fun T ↦ Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
       (by simp)
       (by simp)
       (by
@@ -151,8 +151,8 @@ noncomputable instance : HasShift (Triangle C) ℤ :=
   hasShiftMk (Triangle C) ℤ
     { F := Triangle.shiftFunctor C
       zero := Triangle.shiftFunctorZero C
-      add := fun a b => Triangle.shiftFunctorAdd' C a b _ rfl
-      assoc_hom_app := fun a b c T => by
+      add := fun a b ↦ Triangle.shiftFunctorAdd' C a b _ rfl
+      assoc_hom_app := fun a b c T ↦ by
         ext
         all_goals
           dsimp

@@ -19,9 +19,9 @@ namespace Int
 
 -- so that Lean reads `Int.succ` through `SuccOrder.succ`
 @[instance] abbrev instSuccOrder : SuccOrder ℤ :=
-  { SuccOrder.ofSuccLeIff succ fun {_ _} => Iff.rfl with succ := succ }
+  { SuccOrder.ofSuccLeIff succ fun {_ _} ↦ Iff.rfl with succ := succ }
 
-instance instSuccAddOrder : SuccAddOrder ℤ := ⟨fun _ => rfl⟩
+instance instSuccAddOrder : SuccAddOrder ℤ := ⟨fun _ ↦ rfl⟩
 
 -- so that Lean reads `Int.pred` through `PredOrder.pred`
 @[instance] abbrev instPredOrder : PredOrder ℤ where
@@ -30,7 +30,7 @@ instance instSuccAddOrder : SuccAddOrder ℤ := ⟨fun _ => rfl⟩
   min_of_le_pred ha := ((sub_one_lt_of_le le_rfl).not_ge ha).elim
   le_pred_of_lt {_ _} := le_sub_one_of_lt
 
-instance instPredSubOrder : PredSubOrder ℤ := ⟨fun _ => rfl⟩
+instance instPredSubOrder : PredSubOrder ℤ := ⟨fun _ ↦ rfl⟩
 
 @[simp]
 theorem succ_eq_succ : Order.succ = succ :=
@@ -41,11 +41,11 @@ theorem pred_eq_pred : Order.pred = pred :=
   rfl
 
 instance : IsSuccArchimedean ℤ :=
-  ⟨fun {a b} h =>
+  ⟨fun {a b} h ↦
     ⟨(b - a).toNat, by rw [succ_iterate, toNat_sub_of_le h, ← add_sub_assoc, add_sub_cancel_left]⟩⟩
 
 instance : IsPredArchimedean ℤ :=
-  ⟨fun {a b} h =>
+  ⟨fun {a b} h ↦
     ⟨(b - a).toNat, by rw [pred_iterate, toNat_sub_of_le h, sub_sub_cancel]⟩⟩
 
 /-! ### Covering relation -/

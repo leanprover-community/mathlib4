@@ -343,12 +343,12 @@ variable {s t : Cₛ^n⟮I; F, V⟯}
 
 @[simp]
 theorem coeFn_mk (s : ∀ x, V x)
-    (hs : ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x => TotalSpace.mk x (s x)) :
+    (hs : ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x ↦ TotalSpace.mk x (s x)) :
     (mk s hs : ∀ x, V x) = s :=
   rfl
 
 protected theorem contMDiff (s : Cₛ^n⟮I; F, V⟯) :
-    ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x => TotalSpace.mk' F x (s x : V x) :=
+    ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x ↦ TotalSpace.mk' F x (s x : V x) :=
   s.contMDiff_toFun
 
 theorem coe_inj ⦃s t : Cₛ^n⟮I; F, V⟯⦄ (h : (s : ∀ x, V x) = t) : s = t :=
@@ -378,7 +378,7 @@ theorem coe_sub (s t : Cₛ^n⟮I; F, V⟯) : ⇑(s - t) = s - t :=
   rfl
 
 instance instZero : Zero Cₛ^n⟮I; F, V⟯ :=
-  ⟨⟨fun _ => 0, (contMDiff_zeroSection 𝕜 V).of_le le_top⟩⟩
+  ⟨⟨fun _ ↦ 0, (contMDiff_zeroSection 𝕜 V).of_le le_top⟩⟩
 
 instance inhabited : Inhabited Cₛ^n⟮I; F, V⟯ :=
   ⟨0⟩
@@ -440,15 +440,15 @@ instance instModule : Module 𝕜 Cₛ^n⟮I; F, V⟯ :=
 end
 
 protected theorem mdifferentiable' (s : Cₛ^n⟮I; F, V⟯) (hn : 1 ≤ n) :
-    MDifferentiable I (I.prod 𝓘(𝕜, F)) fun x => TotalSpace.mk' F x (s x : V x) :=
+    MDifferentiable I (I.prod 𝓘(𝕜, F)) fun x ↦ TotalSpace.mk' F x (s x : V x) :=
   s.contMDiff.mdifferentiable hn
 
 protected theorem mdifferentiable (s : Cₛ^∞⟮I; F, V⟯) :
-    MDifferentiable I (I.prod 𝓘(𝕜, F)) fun x => TotalSpace.mk' F x (s x : V x) :=
+    MDifferentiable I (I.prod 𝓘(𝕜, F)) fun x ↦ TotalSpace.mk' F x (s x : V x) :=
   s.contMDiff.mdifferentiable (mod_cast le_top)
 
 protected theorem mdifferentiableAt (s : Cₛ^∞⟮I; F, V⟯) {x} :
-    MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x => TotalSpace.mk' F x (s x : V x)) x :=
+    MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x : V x)) x :=
   s.mdifferentiable x
 
 end ContMDiffSection

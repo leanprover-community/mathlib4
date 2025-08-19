@@ -50,18 +50,18 @@ instance (priority := 100) _root_.MetricSpace.toEMetricSpace : EMetricSpace γ :
   .ofT0PseudoEMetricSpace γ
 
 theorem isClosed_of_pairwise_le_dist {s : Set γ} {ε : ℝ} (hε : 0 < ε)
-    (hs : s.Pairwise fun x y => ε ≤ dist x y) : IsClosed s :=
+    (hs : s.Pairwise fun x y ↦ ε ≤ dist x y) : IsClosed s :=
   isClosed_of_spaced_out (dist_mem_uniformity hε) <| by simpa using hs
 
 theorem isClosedEmbedding_of_pairwise_le_dist {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
-    {ε : ℝ} (hε : 0 < ε) {f : α → γ} (hf : Pairwise fun x y => ε ≤ dist (f x) (f y)) :
+    {ε : ℝ} (hε : 0 < ε) {f : α → γ} (hf : Pairwise fun x y ↦ ε ≤ dist (f x) (f y)) :
     IsClosedEmbedding f :=
   isClosedEmbedding_of_spaced_out (dist_mem_uniformity hε) <| by simpa using hf
 
 /-- If `f : β → α` sends any two distinct points to points at distance at least `ε > 0`, then
 `f` is a uniform embedding with respect to the discrete uniformity on `β`. -/
 theorem isUniformEmbedding_bot_of_pairwise_le_dist {β : Type*} {ε : ℝ} (hε : 0 < ε) {f : β → α}
-    (hf : Pairwise fun x y => ε ≤ dist (f x) (f y)) :
+    (hf : Pairwise fun x y ↦ ε ≤ dist (f x) (f y)) :
     @IsUniformEmbedding _ _ ⊥ (by infer_instance) f :=
   isUniformEmbedding_of_spaced_out (dist_mem_uniformity hε) <| by simpa using hf
 
@@ -83,14 +83,14 @@ is everywhere finite, by pushing the edistance to reals. We set it up so that th
 uniformity are defeq in the metric space and the emetric space. -/
 def EMetricSpace.toMetricSpace {α : Type u} [EMetricSpace α] (h : ∀ x y : α, edist x y ≠ ⊤) :
     MetricSpace α :=
-  EMetricSpace.toMetricSpaceOfDist (fun x y => ENNReal.toReal (edist x y)) h fun _ _ => rfl
+  EMetricSpace.toMetricSpaceOfDist (fun x y ↦ ENNReal.toReal (edist x y)) h fun _ _ ↦ rfl
 
 /-- Metric space structure pulled back by an injective function. Injectivity is necessary to
 ensure that `dist x y = 0` only if `x = y`. -/
 abbrev MetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m : MetricSpace β) :
     MetricSpace γ :=
   { PseudoMetricSpace.induced f m.toPseudoMetricSpace with
-    eq_of_dist_eq_zero := fun h => hf (dist_eq_zero.1 h) }
+    eq_of_dist_eq_zero := fun h ↦ hf (dist_eq_zero.1 h) }
 
 /-- Pull back a metric space structure by a uniform embedding. This is a version of
 `MetricSpace.induced` useful in case if the domain already has a `UniformSpace` structure. -/
@@ -160,10 +160,10 @@ theorem secondCountable_of_countable_discretization {α : Type u} [PseudoMetricS
     (H : ∀ ε > (0 : ℝ), ∃ (β : Type*) (_ : Encodable β) (F : α → β),
       ∀ x y, F x = F y → dist x y ≤ ε) :
     SecondCountableTopology α := by
-  refine secondCountable_of_almost_dense_set fun ε ε0 => ?_
+  refine secondCountable_of_almost_dense_set fun ε ε0 ↦ ?_
   rcases H ε ε0 with ⟨β, fβ, F, hF⟩
   let Finv := rangeSplitting F
-  refine ⟨range Finv, ⟨countable_range _, fun x => ?_⟩⟩
+  refine ⟨range Finv, ⟨countable_range _, fun x ↦ ?_⟩⟩
   let x' := Finv ⟨F x, mem_range_self _⟩
   have : F x' = F x := apply_rangeSplitting F _
   exact ⟨x', mem_range_self _, hF _ _ this.symm⟩

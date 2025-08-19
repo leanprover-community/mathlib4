@@ -585,7 +585,7 @@ namespace Subtype
 
 -- todo: add `OrderEmbedding.orderClosedTopology`
 instance {p : α → Prop} : OrderClosedTopology (Subtype p) :=
-  have this : Continuous fun p : Subtype p × Subtype p => ((p.fst : α), (p.snd : α)) :=
+  have this : Continuous fun p : Subtype p × Subtype p ↦ ((p.fst : α), (p.snd : α)) :=
     continuous_subtype_val.prodMap continuous_subtype_val
   OrderClosedTopology.mk (t.isClosed_le'.preimage this)
 
@@ -635,7 +635,7 @@ theorem closure_le_eq [TopologicalSpace β] {f g : β → α} (hf : Continuous f
 
 theorem closure_lt_subset_le [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : closure { b | f b < g b } ⊆ { b | f b ≤ g b } :=
-  (closure_minimal fun _ => le_of_lt) <| isClosed_le hf hg
+  (closure_minimal fun _ ↦ le_of_lt) <| isClosed_le hf hg
 
 theorem ContinuousWithinAt.closure_le [TopologicalSpace β] {f g : β → α} {s : Set β} {x : β}
     (hx : x ∈ closure s) (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x)
@@ -652,7 +652,7 @@ theorem IsClosed.isClosed_le [TopologicalSpace β] {f g : β → α} {s : Set β
 theorem le_on_closure [TopologicalSpace β] {f g : β → α} {s : Set β} (h : ∀ x ∈ s, f x ≤ g x)
     (hf : ContinuousOn f (closure s)) (hg : ContinuousOn g (closure s)) ⦃x⦄ (hx : x ∈ closure s) :
     f x ≤ g x :=
-  have : s ⊆ { y ∈ closure s | f y ≤ g y } := fun y hy => ⟨subset_closure hy, h y hy⟩
+  have : s ⊆ { y ∈ closure s | f y ≤ g y } := fun y hy ↦ ⟨subset_closure hy, h y hy⟩
   (closure_minimal this (isClosed_closure.isClosed_le hf hg) hx).2
 
 theorem IsClosed.epigraph [TopologicalSpace β] {f : β → α} {s : Set β} (hs : IsClosed s)
@@ -756,7 +756,7 @@ variable [TopologicalSpace β]
 
 theorem lt_subset_interior_le (hf : Continuous f) (hg : Continuous g) :
     { b | f b < g b } ⊆ interior { b | f b ≤ g b } :=
-  (interior_maximal fun _ => le_of_lt) <| isOpen_lt hf hg
+  (interior_maximal fun _ ↦ le_of_lt) <| isOpen_lt hf hg
 
 theorem frontier_le_subset_eq (hf : Continuous f) (hg : Continuous g) :
     frontier { b | f b ≤ g b } ⊆ { b | f b = g b } := by
@@ -778,21 +778,21 @@ theorem frontier_lt_subset_eq (hf : Continuous f) (hg : Continuous g) :
 theorem continuous_if_le [TopologicalSpace γ] [∀ x, Decidable (f x ≤ g x)] {f' g' : β → γ}
     (hf : Continuous f) (hg : Continuous g) (hf' : ContinuousOn f' { x | f x ≤ g x })
     (hg' : ContinuousOn g' { x | g x ≤ f x }) (hfg : ∀ x, f x = g x → f' x = g' x) :
-    Continuous fun x => if f x ≤ g x then f' x else g' x := by
-  refine continuous_if (fun a ha => hfg _ (frontier_le_subset_eq hf hg ha)) ?_ (hg'.mono ?_)
+    Continuous fun x ↦ if f x ≤ g x then f' x else g' x := by
+  refine continuous_if (fun a ha ↦ hfg _ (frontier_le_subset_eq hf hg ha)) ?_ (hg'.mono ?_)
   · rwa [(isClosed_le hf hg).closure_eq]
   · simp only [not_le]
     exact closure_lt_subset_le hg hf
 
 theorem Continuous.if_le [TopologicalSpace γ] [∀ x, Decidable (f x ≤ g x)] {f' g' : β → γ}
     (hf' : Continuous f') (hg' : Continuous g') (hf : Continuous f) (hg : Continuous g)
-    (hfg : ∀ x, f x = g x → f' x = g' x) : Continuous fun x => if f x ≤ g x then f' x else g' x :=
+    (hfg : ∀ x, f x = g x → f' x = g' x) : Continuous fun x ↦ if f x ≤ g x then f' x else g' x :=
   continuous_if_le hf hg hf'.continuousOn hg'.continuousOn hfg
 
 theorem Filter.Tendsto.eventually_lt {l : Filter γ} {f g : γ → α} {y z : α} (hf : Tendsto f l (𝓝 y))
     (hg : Tendsto g l (𝓝 z)) (hyz : y < z) : ∀ᶠ x in l, f x < g x :=
   let ⟨_a, ha, _b, hb, h⟩ := hyz.exists_disjoint_Iio_Ioi
-  (hg.eventually (Ioi_mem_nhds hb)).mp <| (hf.eventually (Iio_mem_nhds ha)).mono fun _ h₁ h₂ =>
+  (hg.eventually (Ioi_mem_nhds hb)).mp <| (hf.eventually (Iio_mem_nhds ha)).mono fun _ h₁ h₂ ↦
     h _ h₁ _ h₂
 
 nonrec theorem ContinuousAt.eventually_lt {x₀ : β} (hf : ContinuousAt f x₀) (hg : ContinuousAt g x₀)
@@ -801,64 +801,64 @@ nonrec theorem ContinuousAt.eventually_lt {x₀ : β} (hf : ContinuousAt f x₀)
 
 @[continuity, fun_prop]
 protected theorem Continuous.min (hf : Continuous f) (hg : Continuous g) :
-    Continuous fun b => min (f b) (g b) := by
+    Continuous fun b ↦ min (f b) (g b) := by
   simp only [min_def]
-  exact hf.if_le hg hf hg fun x => id
+  exact hf.if_le hg hf hg fun x ↦ id
 
 @[continuity, fun_prop]
 protected theorem Continuous.max (hf : Continuous f) (hg : Continuous g) :
-    Continuous fun b => max (f b) (g b) :=
+    Continuous fun b ↦ max (f b) (g b) :=
   Continuous.min (α := αᵒᵈ) hf hg
 
 end
 
-theorem continuous_min : Continuous fun p : α × α => min p.1 p.2 :=
+theorem continuous_min : Continuous fun p : α × α ↦ min p.1 p.2 :=
   continuous_fst.min continuous_snd
 
-theorem continuous_max : Continuous fun p : α × α => max p.1 p.2 :=
+theorem continuous_max : Continuous fun p : α × α ↦ max p.1 p.2 :=
   continuous_fst.max continuous_snd
 
 protected theorem Filter.Tendsto.max {b : Filter β} {a₁ a₂ : α} (hf : Tendsto f b (𝓝 a₁))
-    (hg : Tendsto g b (𝓝 a₂)) : Tendsto (fun b => max (f b) (g b)) b (𝓝 (max a₁ a₂)) :=
+    (hg : Tendsto g b (𝓝 a₂)) : Tendsto (fun b ↦ max (f b) (g b)) b (𝓝 (max a₁ a₂)) :=
   (continuous_max.tendsto (a₁, a₂)).comp (hf.prodMk_nhds hg)
 
 protected theorem Filter.Tendsto.min {b : Filter β} {a₁ a₂ : α} (hf : Tendsto f b (𝓝 a₁))
-    (hg : Tendsto g b (𝓝 a₂)) : Tendsto (fun b => min (f b) (g b)) b (𝓝 (min a₁ a₂)) :=
+    (hg : Tendsto g b (𝓝 a₂)) : Tendsto (fun b ↦ min (f b) (g b)) b (𝓝 (min a₁ a₂)) :=
   (continuous_min.tendsto (a₁, a₂)).comp (hf.prodMk_nhds hg)
 
 protected theorem Filter.Tendsto.max_right {l : Filter β} {a : α} (h : Tendsto f l (𝓝 a)) :
-    Tendsto (fun i => max a (f i)) l (𝓝 a) := by
+    Tendsto (fun i ↦ max a (f i)) l (𝓝 a) := by
   simpa only [sup_idem] using (tendsto_const_nhds (x := a)).max h
 
 protected theorem Filter.Tendsto.max_left {l : Filter β} {a : α} (h : Tendsto f l (𝓝 a)) :
-    Tendsto (fun i => max (f i) a) l (𝓝 a) := by
+    Tendsto (fun i ↦ max (f i) a) l (𝓝 a) := by
   simp_rw [max_comm _ a]
   exact h.max_right
 
 theorem Filter.tendsto_nhds_max_right {l : Filter β} {a : α} (h : Tendsto f l (𝓝[>] a)) :
-    Tendsto (fun i => max a (f i)) l (𝓝[>] a) := by
+    Tendsto (fun i ↦ max a (f i)) l (𝓝[>] a) := by
   obtain ⟨h₁ : Tendsto f l (𝓝 a), h₂ : ∀ᶠ i in l, f i ∈ Ioi a⟩ := tendsto_nhdsWithin_iff.mp h
-  exact tendsto_nhdsWithin_iff.mpr ⟨h₁.max_right, h₂.mono fun i hi => lt_max_of_lt_right hi⟩
+  exact tendsto_nhdsWithin_iff.mpr ⟨h₁.max_right, h₂.mono fun i hi ↦ lt_max_of_lt_right hi⟩
 
 theorem Filter.tendsto_nhds_max_left {l : Filter β} {a : α} (h : Tendsto f l (𝓝[>] a)) :
-    Tendsto (fun i => max (f i) a) l (𝓝[>] a) := by
+    Tendsto (fun i ↦ max (f i) a) l (𝓝[>] a) := by
   simp_rw [max_comm _ a]
   exact Filter.tendsto_nhds_max_right h
 
 theorem Filter.Tendsto.min_right {l : Filter β} {a : α} (h : Tendsto f l (𝓝 a)) :
-    Tendsto (fun i => min a (f i)) l (𝓝 a) :=
+    Tendsto (fun i ↦ min a (f i)) l (𝓝 a) :=
   Filter.Tendsto.max_right (α := αᵒᵈ) h
 
 theorem Filter.Tendsto.min_left {l : Filter β} {a : α} (h : Tendsto f l (𝓝 a)) :
-    Tendsto (fun i => min (f i) a) l (𝓝 a) :=
+    Tendsto (fun i ↦ min (f i) a) l (𝓝 a) :=
   Filter.Tendsto.max_left (α := αᵒᵈ) h
 
 theorem Filter.tendsto_nhds_min_right {l : Filter β} {a : α} (h : Tendsto f l (𝓝[<] a)) :
-    Tendsto (fun i => min a (f i)) l (𝓝[<] a) :=
+    Tendsto (fun i ↦ min a (f i)) l (𝓝[<] a) :=
   Filter.tendsto_nhds_max_right (α := αᵒᵈ) h
 
 theorem Filter.tendsto_nhds_min_left {l : Filter β} {a : α} (h : Tendsto f l (𝓝[<] a)) :
-    Tendsto (fun i => min (f i) a) l (𝓝[<] a) :=
+    Tendsto (fun i ↦ min (f i) a) l (𝓝[<] a) :=
   Filter.tendsto_nhds_max_left (α := αᵒᵈ) h
 
 theorem Dense.exists_between [DenselyOrdered α] {s : Set α} (hs : Dense s) {x y : α} (h : x < y) :
@@ -888,7 +888,7 @@ instance {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, Topol
     [∀ i, OrderClosedTopology (α i)] : OrderClosedTopology (∀ i, α i) := by
   constructor
   simp only [Pi.le_def, setOf_forall]
-  exact isClosed_iInter fun i => isClosed_le (continuous_apply i).fst' (continuous_apply i).snd'
+  exact isClosed_iInter fun i ↦ isClosed_le (continuous_apply i).fst' (continuous_apply i).snd'
 
 instance Pi.orderClosedTopology' [Preorder β] [TopologicalSpace β] [OrderClosedTopology β] :
     OrderClosedTopology (α → β) :=

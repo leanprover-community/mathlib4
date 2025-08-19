@@ -51,13 +51,13 @@ variable [Countable ι]
 
 theorem measurableSet_coe : MeasurableSet (I : Set (ι → ℝ)) := by
   rw [coe_eq_pi]
-  exact MeasurableSet.univ_pi fun i => measurableSet_Ioc
+  exact MeasurableSet.univ_pi fun i ↦ measurableSet_Ioc
 
 theorem measurableSet_Icc : MeasurableSet (Box.Icc I) :=
   _root_.measurableSet_Icc
 
 theorem measurableSet_Ioo : MeasurableSet (Box.Ioo I) :=
-  MeasurableSet.univ_pi fun _ => _root_.measurableSet_Ioo
+  MeasurableSet.univ_pi fun _ ↦ _root_.measurableSet_Ioo
 
 end Countable
 
@@ -76,10 +76,10 @@ theorem Prepartition.measure_iUnion_toReal [Finite ι] {I : Box ι} (π : Prepar
     (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] :
     μ.real π.iUnion = ∑ J ∈ π.boxes, μ.real J := by
   simp only [measureReal_def]
-  rw [← ENNReal.toReal_sum (fun J _ => (J.measure_coe_lt_top μ).ne), π.iUnion_def]
+  rw [← ENNReal.toReal_sum (fun J _ ↦ (J.measure_coe_lt_top μ).ne), π.iUnion_def]
   simp only [← mem_boxes]
   rw [measure_biUnion_finset π.pairwiseDisjoint]
-  exact fun J _ => J.measurableSet_coe
+  exact fun J _ ↦ J.measurableSet_coe
 
 end BoxIntegral
 

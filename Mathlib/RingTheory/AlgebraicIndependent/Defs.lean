@@ -93,8 +93,8 @@ open AlgebraicIndependent
 
 theorem algebraicIndependent_equiv (e : ι ≃ ι') {f : ι' → A} :
     AlgebraicIndependent R (f ∘ e) ↔ AlgebraicIndependent R f :=
-  ⟨fun h => Function.comp_id f ▸ e.self_comp_symm ▸ h.comp _ e.symm.injective,
-    fun h => h.comp _ e.injective⟩
+  ⟨fun h ↦ Function.comp_id f ▸ e.self_comp_symm ▸ h.comp _ e.symm.injective,
+    fun h ↦ h.comp _ e.injective⟩
 
 theorem algebraicIndependent_equiv' (e : ι ≃ ι') {f : ι' → A} {g : ι → A} (h : f ∘ e = g) :
     AlgebraicIndependent R g ↔ AlgebraicIndependent R f :=
@@ -107,7 +107,7 @@ theorem algebraicIndependent_subtype_range {ι} {f : ι → A} (hf : Injective f
 alias ⟨AlgebraicIndependent.of_subtype_range, _⟩ := algebraicIndependent_subtype_range
 
 theorem algebraicIndependent_image {ι} {s : Set ι} {f : ι → A} (hf : Set.InjOn f s) :
-    (AlgebraicIndependent R fun x : s => f x) ↔ AlgebraicIndependent R fun x : f '' s => (x : A) :=
+    (AlgebraicIndependent R fun x : s ↦ f x) ↔ AlgebraicIndependent R fun x : f '' s ↦ (x : A) :=
   algebraicIndependent_equiv' (Equiv.Set.imageOfInjOn _ _ hf) rfl
 
 namespace AlgebraicIndependent

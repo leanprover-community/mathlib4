@@ -47,7 +47,7 @@ variable (b : Basis ι R M)
 /-- The linear map from a vector space equipped with basis to its dual vector space,
 taking basis elements to corresponding dual basis elements. -/
 def toDual : M →ₗ[R] Module.Dual R M :=
-  b.constr ℕ fun v => b.constr ℕ fun w => if w = v then (1 : R) else 0
+  b.constr ℕ fun v ↦ b.constr ℕ fun w ↦ if w = v then (1 : R) else 0
 
 theorem toDual_apply (i j : ι) : b.toDual (b i) (b j) = if i = j then 1 else 0 := by
   erw [constr_basis b, constr_basis b]
@@ -105,9 +105,9 @@ theorem toDual_ker : LinearMap.ker b.toDual = ⊥ :=
   ker_eq_bot'.mpr b.toDual_inj
 
 theorem toDual_range [Finite ι] : LinearMap.range b.toDual = ⊤ := by
-  refine eq_top_iff'.2 fun f => ?_
-  let lin_comb : ι →₀ R := Finsupp.equivFunOnFinite.symm fun i => f (b i)
-  refine ⟨Finsupp.linearCombination R b lin_comb, b.ext fun i => ?_⟩
+  refine eq_top_iff'.2 fun f ↦ ?_
+  let lin_comb : ι →₀ R := Finsupp.equivFunOnFinite.symm fun i ↦ f (b i)
+  refine ⟨Finsupp.linearCombination R b lin_comb, b.ext fun i ↦ ?_⟩
   rw [b.toDual_eq_repr _ i, repr_linearCombination b]
   rfl
 
@@ -164,7 +164,7 @@ theorem coe_dualBasis : ⇑b.dualBasis = b.coord := by
 
 @[simp]
 theorem toDual_toDual : b.dualBasis.toDual.comp b.toDual = Dual.eval R M := by
-  refine b.ext fun i => b.dualBasis.ext fun j => ?_
+  refine b.ext fun i ↦ b.dualBasis.ext fun j ↦ ?_
   rw [LinearMap.comp_apply, toDual_apply_left, coe_toDual_self, ← coe_dualBasis,
     Dual.eval_apply, Basis.repr_self, Finsupp.single_apply, dualBasis_apply_self]
 
@@ -250,7 +250,7 @@ theorem coeffs_apply (h : DualBases e ε) (m : M) (i : ι) : h.coeffs m i = ε i
 /-- linear combinations of elements of `e`.
 This is a convenient abbreviation for `Finsupp.linearCombination R e l` -/
 def lc {ι} (e : ι → M) (l : ι →₀ R) : M :=
-  l.sum fun (i : ι) (a : R) => a • e i
+  l.sum fun (i : ι) (a : R) ↦ a • e i
 
 theorem lc_def (e : ι → M) (l : ι →₀ R) : lc e l = Finsupp.linearCombination R e l :=
   rfl
@@ -284,10 +284,10 @@ def basis : Basis ι R M :=
       invFun := lc e
       left_inv := lc_coeffs h
       right_inv := coeffs_lc h
-      map_add' := fun v w => by
+      map_add' := fun v w ↦ by
         ext i
         exact (ε i).map_add v w
-      map_smul' := fun c v => by
+      map_smul' := fun c v ↦ by
         ext i
         exact (ε i).map_smul c v }
 
@@ -308,6 +308,6 @@ theorem mem_of_mem_span {H : Set ι} {x : M} (hmem : x ∈ Submodule.span R (e '
   rwa [← lc_def, h.dual_lc] at hi
 
 theorem coe_dualBasis [DecidableEq ι] [Finite ι] : ⇑h.basis.dualBasis = ε :=
-  funext fun i => h.basis.ext fun j => by simp
+  funext fun i ↦ h.basis.ext fun j ↦ by simp
 
 end Module.DualBases

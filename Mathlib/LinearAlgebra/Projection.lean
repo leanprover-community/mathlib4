@@ -43,10 +43,10 @@ theorem ker_id_sub_eq_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) :
     ker (id - p.subtype.comp f) = p := by
   ext x
   simp only [comp_apply, mem_ker, subtype_apply, sub_apply, id_apply, sub_eq_zero]
-  exact ⟨fun h => h.symm ▸ Submodule.coe_mem _, fun hx => by rw [hf ⟨x, hx⟩, Subtype.coe_mk]⟩
+  exact ⟨fun h ↦ h.symm ▸ Submodule.coe_mem _, fun hx ↦ by rw [hf ⟨x, hx⟩, Subtype.coe_mk]⟩
 
 theorem range_eq_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) : range f = ⊤ :=
-  range_eq_top.2 fun x => ⟨x, hf x⟩
+  range_eq_top.2 fun x ↦ ⟨x, hf x⟩
 
 theorem isCompl_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) : IsCompl p (ker f) := by
   constructor
@@ -132,7 +132,7 @@ theorem prodEquivOfIsCompl_symm_apply_snd_eq_zero (h : IsCompl p q) {x : E} :
 @[simp]
 theorem prodComm_trans_prodEquivOfIsCompl (h : IsCompl p q) :
     LinearEquiv.prodComm R q p ≪≫ₗ prodEquivOfIsCompl p q h = prodEquivOfIsCompl q p h.symm :=
-  LinearEquiv.ext fun _ => add_comm _ _
+  LinearEquiv.ext fun _ ↦ add_comm _ _
 
 /-- Projection to a submodule along a complement. It is the unique
 linear map `f : E → p` such that `f x = x` for `x ∈ p` and `f x = 0` for `x ∈ q`.
@@ -201,7 +201,7 @@ theorem linearProjOfIsCompl_apply_right (h : IsCompl p q) (x : q) :
 
 @[simp]
 theorem linearProjOfIsCompl_ker (h : IsCompl p q) : ker (linearProjOfIsCompl p q h) = q :=
-  ext fun _ => mem_ker.trans (linearProjOfIsCompl_apply_eq_zero_iff h)
+  ext fun _ ↦ mem_ker.trans (linearProjOfIsCompl_apply_eq_zero_iff h)
 
 @[simp]
 theorem IsCompl.projection_ker (hpq : IsCompl p q) :
@@ -228,7 +228,7 @@ theorem existsUnique_add_of_isCompl_prod (hc : IsCompl p q) (x : E) :
 theorem existsUnique_add_of_isCompl (hc : IsCompl p q) (x : E) :
     ∃ (u : p) (v : q), (u : E) + v = x ∧ ∀ (r : p) (s : q), (r : E) + s = x → r = u ∧ s = v :=
   let ⟨u, hu₁, hu₂⟩ := existsUnique_add_of_isCompl_prod hc x
-  ⟨u.1, u.2, hu₁, fun r s hrs => Prod.eq_iff_fst_eq_snd_eq.1 (hu₂ ⟨r, s⟩ hrs)⟩
+  ⟨u.1, u.2, hu₁, fun r s hrs ↦ Prod.eq_iff_fst_eq_snd_eq.1 (hu₂ ⟨r, s⟩ hrs)⟩
 
 theorem linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self (hpq : IsCompl p q) (x : E) :
     (p.linearProjOfIsCompl q hpq x + q.linearProjOfIsCompl p hpq.symm x : E) = x := by
@@ -302,7 +302,7 @@ theorem ofIsCompl_eq (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F}
 
 theorem ofIsCompl_eq' (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} {χ : E →ₗ[R] F}
     (hφ : φ = χ.comp p.subtype) (hψ : ψ = χ.comp q.subtype) : ofIsCompl h φ ψ = χ :=
-  ofIsCompl_eq h (fun _ => hφ.symm ▸ rfl) fun _ => hψ.symm ▸ rfl
+  ofIsCompl_eq h (fun _ ↦ hφ.symm ▸ rfl) fun _ ↦ hψ.symm ▸ rfl
 
 theorem ofIsCompl_eq_add (hpq : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} :
     ofIsCompl hpq φ ψ = (φ ∘ₗ p.linearProjOfIsCompl q hpq)
@@ -313,7 +313,7 @@ theorem ofIsCompl_eq_add (hpq : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ
 
 @[simp]
 theorem ofIsCompl_zero (h : IsCompl p q) : (ofIsCompl h 0 0 : E →ₗ[R] F) = 0 :=
-  ofIsCompl_eq _ (fun _ => rfl) fun _ => rfl
+  ofIsCompl_eq _ (fun _ ↦ rfl) fun _ ↦ rfl
 
 @[simp]
 theorem ofIsCompl_add (h : IsCompl p q) {φ₁ φ₂ : p →ₗ[R] F} {ψ₁ ψ₂ : q →ₗ[R] F} :
@@ -365,7 +365,7 @@ theorem ofIsComplProd_apply {p q : Submodule R₁ E} (h : IsCompl p q)
 def ofIsComplProdEquiv {p q : Submodule R₁ E} (h : IsCompl p q) :
     ((p →ₗ[R₁] F) × (q →ₗ[R₁] F)) ≃ₗ[R₁] E →ₗ[R₁] F :=
   { ofIsComplProd h with
-    invFun := fun φ => ⟨φ.domRestrict p, φ.domRestrict q⟩
+    invFun := fun φ ↦ ⟨φ.domRestrict p, φ.domRestrict q⟩
     left_inv := fun φ ↦ by
       ext x
       · exact ofIsCompl_left_apply h x
@@ -416,8 +416,8 @@ such that `∀ x : p, f x = x`. -/
 def isComplEquivProj : { q // IsCompl p q } ≃ { f : E →ₗ[R] p // ∀ x : p, f x = x } where
   toFun q := ⟨linearProjOfIsCompl p q q.2, linearProjOfIsCompl_apply_left q.2⟩
   invFun f := ⟨ker (f : E →ₗ[R] p), isCompl_of_proj f.2⟩
-  left_inv := fun ⟨q, hq⟩ => by simp only [linearProjOfIsCompl_ker]
-  right_inv := fun ⟨f, hf⟩ => Subtype.eq <| f.linearProjOfIsCompl_of_proj hf
+  left_inv := fun ⟨q, hq⟩ ↦ by simp only [linearProjOfIsCompl_ker]
+  right_inv := fun ⟨f, hf⟩ ↦ Subtype.eq <| f.linearProjOfIsCompl_of_proj hf
 
 @[simp]
 theorem coe_isComplEquivProj_apply (q : { q // IsCompl p q }) :
@@ -458,8 +458,8 @@ structure IsProj {F : Type*} [FunLike F M M] (f : F) : Prop where
 
 theorem isProj_range_iff_isIdempotentElem (f : M →ₗ[S] M) :
     IsProj (range f) f ↔ IsIdempotentElem f := by
-  refine ⟨fun ⟨h1, h2⟩ => ?_, fun hf =>
-    ⟨fun x => mem_range_self f x, fun x ⟨y, hy⟩ => by rw [← hy, ← Module.End.mul_apply, hf.eq]⟩⟩
+  refine ⟨fun ⟨h1, h2⟩ ↦ ?_, fun hf ↦
+    ⟨fun x ↦ mem_range_self f x, fun x ⟨y, hy⟩ ↦ by rw [← hy, ← Module.End.mul_apply, hf.eq]⟩⟩
   ext x
   exact h2 (f x) (h1 x)
 
@@ -467,7 +467,7 @@ alias ⟨_, IsIdempotentElem.isProj_range⟩ := isProj_range_iff_isIdempotentEle
 
 theorem isProj_iff_isIdempotentElem (f : M →ₗ[S] M) :
     (∃ p : Submodule S M, IsProj p f) ↔ IsIdempotentElem f := by
-  refine ⟨fun ⟨p, hp⟩ => ?_, fun h => ⟨_, IsIdempotentElem.isProj_range _ h⟩⟩
+  refine ⟨fun ⟨p, hp⟩ ↦ ?_, fun h ↦ ⟨_, IsIdempotentElem.isProj_range _ h⟩⟩
   ext x
   exact hp.map_id (f x) (hp.map_mem x)
 
@@ -573,8 +573,8 @@ open LinearMap in
 onto its range along its kernel. -/
 theorem isIdempotentElem_iff_eq_isCompl_projection_range_ker {T : E →ₗ[R] E} :
     IsIdempotentElem T ↔ ∃ (h : IsCompl (range T) (ker T)), T = h.projection :=
-  ⟨fun hT => ⟨hT.isProj_range.isCompl, hT.eq_isCompl_projection⟩,
-   fun ⟨hT, h⟩ => h.symm ▸ hT.projection_isIdempotentElem⟩
+  ⟨fun hT ↦ ⟨hT.isProj_range.isCompl, hT.eq_isCompl_projection⟩,
+   fun ⟨hT, h⟩ ↦ h.symm ▸ hT.projection_isIdempotentElem⟩
 
 open LinearMap in
 /-- Given an idempotent linear operator `q`,
@@ -590,7 +590,7 @@ open LinearMap in
 lemma IsIdempotentElem.ext_iff {p q : E →ₗ[R] E}
     (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
     p = q ↔ range p = range q ∧ ker p = ker q := by
-  refine ⟨fun h => ⟨congrArg range h, congrArg ker h⟩, fun ⟨hr, hk⟩ => ?_⟩
+  refine ⟨fun h ↦ ⟨congrArg range h, congrArg ker h⟩, fun ⟨hr, hk⟩ ↦ ?_⟩
   ext x
   obtain ⟨⟨v, hv⟩, ⟨w, hw⟩, rfl, _⟩ :=
     (ker p).existsUnique_add_of_isCompl hp.isCompl.symm x
@@ -667,7 +667,7 @@ both `range f` and `ker f` are invariant under `T`. -/
 lemma commute_iff (hf : IsIdempotentElem f) :
     Commute f T ↔ (range f ∈ Module.End.invtSubmodule T ∧ ker f ∈ Module.End.invtSubmodule T) := by
   simp_rw [hf.range_mem_invtSubmodule_iff, hf.ker_mem_invtSubmodule_iff, ← Module.End.mul_eq_comp]
-  exact ⟨fun h => (by simp [← h.eq, ← mul_assoc, hf.eq]), fun ⟨h1, h2⟩ => h2.symm.trans h1⟩
+  exact ⟨fun h ↦ (by simp [← h.eq, ← mul_assoc, hf.eq]), fun ⟨h1, h2⟩ ↦ h2.symm.trans h1⟩
 
 /-- An idempotent operator `f` commutes with an unit operator `T` if and only if
 `T (range f) = range f` and `T (ker f) = ker f`. -/

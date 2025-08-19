@@ -73,7 +73,7 @@ def boxProdComm : G □ H ≃g H □ G := ⟨Equiv.prodComm _ _, or_comm⟩
 /-- The box product is associative up to isomorphism. `Equiv.prodAssoc` as a graph isomorphism. -/
 @[simps!]
 def boxProdAssoc (I : SimpleGraph γ) : G □ H □ I ≃g G □ (H □ I) :=
-  ⟨Equiv.prodAssoc _ _ _, fun {x y} => by
+  ⟨Equiv.prodAssoc _ _ _, fun {x y} ↦ by
     simp only [boxProd_adj, Equiv.prodAssoc_apply, or_and_right, or_assoc, Prod.ext_iff,
       and_assoc, @and_comm (x.fst.fst = _)]⟩
 
@@ -113,8 +113,8 @@ def ofBoxProdLeft [DecidableEq β] [DecidableRel G.Adj] {x y : α × β} :
   | nil => nil
   | cons h w =>
     Or.by_cases h
-      (fun hG => w.ofBoxProdLeft.cons hG.1)
-      (fun hH => hH.2 ▸ w.ofBoxProdLeft)
+      (fun hG ↦ w.ofBoxProdLeft.cons hG.1)
+      (fun hH ↦ hH.2 ▸ w.ofBoxProdLeft)
 
 /-- Project a walk on `G □ H` to a walk on `H` by discarding the moves in the direction of `G`. -/
 def ofBoxProdRight [DecidableEq α] [DecidableRel H.Adj] {x y : α × β} :
@@ -122,8 +122,8 @@ def ofBoxProdRight [DecidableEq α] [DecidableRel H.Adj] {x y : α × β} :
   | nil => nil
   | cons h w =>
     (Or.symm h).by_cases
-      (fun hH => w.ofBoxProdRight.cons hH.1)
-      (fun hG => hG.2 ▸ w.ofBoxProdRight)
+      (fun hH ↦ w.ofBoxProdRight.cons hH.1)
+      (fun hG ↦ hG.2 ▸ w.ofBoxProdRight)
 
 @[simp]
 theorem ofBoxProdLeft_boxProdLeft [DecidableEq β] [DecidableRel G.Adj] {a₁ a₂ : α} {b : β} :
@@ -205,7 +205,7 @@ protected theorem Connected.ofBoxProdRight (h : (G □ H).Connected) : H.Connect
 
 @[simp]
 theorem connected_boxProd : (G □ H).Connected ↔ G.Connected ∧ H.Connected :=
-  ⟨fun h => ⟨h.ofBoxProdLeft, h.ofBoxProdRight⟩, fun h => h.1.boxProd h.2⟩
+  ⟨fun h ↦ ⟨h.ofBoxProdLeft, h.ofBoxProdRight⟩, fun h ↦ h.1.boxProd h.2⟩
 
 @[deprecated (since := "2025-05-08")] alias boxProd_connected := connected_boxProd
 
@@ -215,7 +215,7 @@ instance boxProdFintypeNeighborSet (x : α × β)
   Fintype.ofEquiv
     ((G.neighborFinset x.1 ×ˢ {x.2}).disjUnion ({x.1} ×ˢ H.neighborFinset x.2) <|
         Finset.disjoint_product.mpr <| Or.inl <| neighborFinset_disjoint_singleton _ _)
-    ((Equiv.refl _).subtypeEquiv fun y => by
+    ((Equiv.refl _).subtypeEquiv fun y ↦ by
       simp_rw [Finset.mem_disjUnion, Finset.mem_product, Finset.mem_singleton, mem_neighborFinset,
         mem_neighborSet, Equiv.refl_apply, boxProd_adj]
       simp only [eq_comm, and_comm])

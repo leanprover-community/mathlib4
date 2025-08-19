@@ -67,14 +67,14 @@ lemma exists_orderEmbedding_insert [DenselyOrdered β] [NoMinOrder β] [NoMaxOrd
       g ∘ (Set.inclusion ((S.subset_insert a) : ↑S ⊆ ↑(insert a S))) = f := by
   let Slt := {x ∈ S.attach | x.val < a}.image f
   let Sgt := {x ∈ S.attach | a < x.val}.image f
-  obtain ⟨b, hb, hb'⟩ := Order.exists_between_finsets Slt Sgt (fun x hx y hy => by
+  obtain ⟨b, hb, hb'⟩ := Order.exists_between_finsets Slt Sgt (fun x hx y hy ↦ by
     simp only [Finset.mem_image, Finset.mem_filter, Finset.mem_attach, true_and, Subtype.exists,
       exists_and_left, Slt, Sgt] at hx hy
     obtain ⟨_, hx, _, rfl⟩ := hx
     obtain ⟨_, hy, _, rfl⟩ := hy
     exact f.strictMono (hx.trans hy))
   refine ⟨OrderEmbedding.ofStrictMono
-    (fun (x : (insert a S : Finset α)) => if hx : x.1 ∈ S then f ⟨x.1, hx⟩ else b) ?_, ?_⟩
+    (fun (x : (insert a S : Finset α)) ↦ if hx : x.1 ∈ S then f ⟨x.1, hx⟩ else b) ?_, ?_⟩
   · rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
     if hxS : x ∈ S
     then if hyS : y ∈ S

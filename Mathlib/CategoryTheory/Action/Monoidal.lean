@@ -204,7 +204,7 @@ each factor. -/
 @[simps!]
 noncomputable def diagonalSuccIsoTensorDiagonal [Monoid G] (n : ℕ) :
     diagonal G (n + 1) ≅ leftRegular G ⊗ diagonal G n :=
-  mkIso (Fin.consEquiv _).symm.toIso fun _ => rfl
+  mkIso (Fin.consEquiv _).symm.toIso fun _ ↦ rfl
 
 @[deprecated (since := "2025-06-02")] alias diagonalSucc := diagonalSuccIsoTensorDiagonal
 
@@ -221,7 +221,7 @@ noncomputable def leftRegularTensorIso (X : Action (Type u) G) :
     toFun g := ⟨g.1, (X.ρ (g.1⁻¹ : G) g.2 : X.V)⟩
     invFun g := ⟨g.1, X.ρ g.1 g.2⟩
     left_inv _ := Prod.ext rfl <| by simp
-    right_inv _ := Prod.ext rfl <| by simp }) <| fun _ => by
+    right_inv _ := Prod.ext rfl <| by simp }) <| fun _ ↦ by
       ext _
       simp only [tensorObj_V, tensor_ρ, types_comp_apply, tensor_apply, ofMulAction_apply]
       simp
@@ -239,17 +239,17 @@ noncomputable def diagonalSuccIsoTensorTrivial :
       tensorIso (Iso.refl _) (diagonalSuccIsoTensorTrivial n) ≪≫
         leftRegularTensorIso _ _ ≪≫
           tensorIso (Iso.refl _)
-            (mkIso (Fin.insertNthEquiv (fun _ => G) 0).toIso fun _ => rfl)
+            (mkIso (Fin.insertNthEquiv (fun _ ↦ G) 0).toIso fun _ ↦ rfl)
 
 variable {G}
 
 @[simp]
 theorem diagonalSuccIsoTensorTrivial_hom_hom_apply {n : ℕ} (f : Fin (n + 1) → G) :
     (diagonalSuccIsoTensorTrivial G n).hom.hom f =
-      (f 0, fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) := by
+      (f 0, fun i ↦ (f (Fin.castSucc i))⁻¹ * f i.succ) := by
   induction' n with n hn
-  · exact Prod.ext rfl (funext fun x => Fin.elim0 x)
-  · refine Prod.ext rfl (funext fun x => ?_)
+  · exact Prod.ext rfl (funext fun x ↦ Fin.elim0 x)
+  · refine Prod.ext rfl (funext fun x ↦ ?_)
     induction' x using Fin.cases
     <;> simp_all only [tensorObj_V, diagonalSuccIsoTensorTrivial, Iso.trans_hom, tensorIso_hom,
       Iso.refl_hom, id_tensorHom, comp_hom, whiskerLeft_hom, types_comp_apply, whiskerLeft_apply,
@@ -289,12 +289,12 @@ the categories of `G`-actions within those categories. -/
 instance [F.LaxMonoidal] : (F.mapAction G).LaxMonoidal where
   ε :=
     { hom := ε F
-      comm := fun g => by
+      comm := fun g ↦ by
         dsimp [FunctorCategoryEquivalence.inverse, Functor.mapAction]
         rw [Category.id_comp, F.map_id, Category.comp_id] }
   μ X Y :=
     { hom := μ F X.V Y.V
-      comm := fun g => μ_natural F (X.ρ g) (Y.ρ g) }
+      comm := fun g ↦ μ_natural F (X.ρ g) (Y.ρ g) }
   μ_natural_left _ _ := by ext; simp
   μ_natural_right _ _ := by ext; simp
   associativity _ _ _ := by ext; simp
@@ -313,12 +313,12 @@ the categories of `G`-actions within those categories. -/
 instance [F.OplaxMonoidal] : (F.mapAction G).OplaxMonoidal where
   η :=
     { hom := η F
-      comm := fun g => by
+      comm := fun g ↦ by
         dsimp [FunctorCategoryEquivalence.inverse, Functor.mapAction]
         rw [map_id, Category.id_comp, Category.comp_id] }
   δ X Y :=
     { hom := δ F X.V Y.V
-      comm := fun g => (δ_natural F (X.ρ g) (Y.ρ g)).symm }
+      comm := fun g ↦ (δ_natural F (X.ρ g) (Y.ρ g)).symm }
   δ_natural_left _ _ := by ext; simp
   δ_natural_right _ _ := by ext; simp
   oplax_associativity _ _ _ := by ext; simp

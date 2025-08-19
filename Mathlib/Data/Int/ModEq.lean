@@ -81,7 +81,7 @@ theorem modEq_iff_dvd : a ≡ b [ZMOD n] ↔ n ∣ b - a := by
 
 theorem modEq_iff_add_fac {a b n : ℤ} : a ≡ b [ZMOD n] ↔ ∃ t, b = a + n * t := by
   rw [modEq_iff_dvd]
-  exact exists_congr fun t => sub_eq_iff_eq_add'
+  exact exists_congr fun t ↦ sub_eq_iff_eq_add'
 
 alias ⟨ModEq.dvd, modEq_of_dvd⟩ := modEq_iff_dvd
 
@@ -234,13 +234,13 @@ theorem add_modEq_right : a + n ≡ a [ZMOD n] := ModEq.symm <| modEq_iff_dvd.2 
 
 theorem modEq_and_modEq_iff_modEq_mul {a b m n : ℤ} (hmn : m.natAbs.Coprime n.natAbs) :
     a ≡ b [ZMOD m] ∧ a ≡ b [ZMOD n] ↔ a ≡ b [ZMOD m * n] :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [modEq_iff_dvd, modEq_iff_dvd] at h
     rw [modEq_iff_dvd, ← natAbs_dvd, ← dvd_natAbs, natCast_dvd_natCast, natAbs_mul]
     refine hmn.mul_dvd_of_dvd_of_dvd ?_ ?_ <;>
       rw [← natCast_dvd_natCast, natAbs_dvd, dvd_natAbs] <;>
       tauto,
-    fun h => ⟨h.of_mul_right _, h.of_mul_left _⟩⟩
+    fun h ↦ ⟨h.of_mul_right _, h.of_mul_left _⟩⟩
 
 theorem gcd_a_modEq (a b : ℕ) : (a : ℤ) * Nat.gcdA a b ≡ Nat.gcd a b [ZMOD b] := by
   rw [← add_zero ((a : ℤ) * _), Nat.gcd_eq_gcd_ab]

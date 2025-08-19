@@ -52,7 +52,7 @@ theorem rotation_apply (a : Circle) (z : ℂ) : rotation a z = a * z :=
 
 @[simp]
 theorem rotation_symm (a : Circle) : (rotation a).symm = rotation a⁻¹ :=
-  LinearIsometryEquiv.ext fun _ => rfl
+  LinearIsometryEquiv.ext fun _ ↦ rfl
 
 @[simp]
 theorem rotation_trans (a b : Circle) : (rotation a).trans (rotation b) = rotation (b * a) := by
@@ -95,7 +95,7 @@ theorem LinearIsometry.im_apply_eq_im_or_neg_of_re_apply_eq_re {f : ℂ →ₗ�
 theorem LinearIsometry.im_apply_eq_im {f : ℂ →ₗᵢ[ℝ] ℂ} (h : f 1 = 1) (z : ℂ) :
     z + conj z = f z + conj (f z) := by
   have : ‖f z - 1‖ = ‖z - 1‖ := by rw [← f.norm_map (z - 1), f.map_sub, h]
-  apply_fun fun x => x ^ 2 at this
+  apply_fun fun x ↦ x ^ 2 at this
   simp only [← normSq_eq_norm_sq] at this
   rw [← ofReal_inj, ← mul_conj, ← mul_conj] at this
   rw [RingHom.map_sub, RingHom.map_sub] at this
@@ -121,7 +121,7 @@ theorem linear_isometry_complex_aux {f : ℂ ≃ₗᵢ[ℝ] ℂ} (h : f 1 = 1) :
     · apply @LinearIsometry.im_apply_eq_im_or_neg_of_re_apply_eq_re f.toLinearIsometry
       intro z
       rw [@LinearIsometry.re_apply_eq_re f.toLinearIsometry h]
-  refine h0.imp (fun h' : f I = I => ?_) fun h' : f I = -I => ?_ <;>
+  refine h0.imp (fun h' : f I = I ↦ ?_) fun h' : f I = -I ↦ ?_ <;>
     · apply LinearIsometryEquiv.toLinearEquiv_injective
       apply Complex.basisOneI.ext'
       intro i
@@ -132,7 +132,7 @@ theorem linear_isometry_complex (f : ℂ ≃ₗᵢ[ℝ] ℂ) :
   let a : Circle := ⟨f 1, by simp [Submonoid.unitSphere, f.norm_map]⟩
   use a
   have : (f.trans (rotation a).symm) 1 = 1 := by simpa [a] using rotation_apply a⁻¹ (f 1)
-  refine (linear_isometry_complex_aux this).imp (fun h₁ => ?_) fun h₂ => ?_
+  refine (linear_isometry_complex_aux this).imp (fun h₁ ↦ ?_) fun h₂ ↦ ?_
   · simpa using eq_mul_of_inv_mul_eq h₁
   · exact eq_mul_of_inv_mul_eq h₂
 

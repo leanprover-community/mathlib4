@@ -73,7 +73,7 @@ theorem LinearMap.bound_of_sphere_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f :
 It produces a less precise bound so we keep both versions. -/
 theorem LinearMap.bound_of_ball_bound' {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[𝕜] 𝕜)
     (h : ∀ z ∈ closedBall (0 : E) r, ‖f z‖ ≤ c) (z : E) : ‖f z‖ ≤ c / r * ‖z‖ :=
-  f.bound_of_sphere_bound r_pos c (fun z hz => h z hz.le) z
+  f.bound_of_sphere_bound r_pos c (fun z hz ↦ h z hz.le) z
 
 theorem ContinuousLinearMap.opNorm_bound_of_ball_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ)
     (f : E →L[𝕜] 𝕜) (h : ∀ z ∈ closedBall (0 : E) r, ‖f z‖ ≤ c) : ‖f‖ ≤ c / r := by
@@ -83,7 +83,7 @@ theorem ContinuousLinearMap.opNorm_bound_of_ball_bound {r : ℝ} (r_pos : 0 < r)
       (norm_nonneg _).trans
         (h 0 (by simp only [norm_zero, mem_closedBall, dist_zero_left, r_pos.le]))
   apply LinearMap.bound_of_ball_bound' r_pos
-  exact fun z hz => h z hz
+  exact fun z hz ↦ h z hz
 
 variable (𝕜)
 include 𝕜 in

@@ -38,7 +38,7 @@ variable (𝕜 : Type*) (B : Type*) (F : Type*) [NontriviallyNormedField 𝕜] [
   [NormedSpace 𝕜 F] [TopologicalSpace B]
 
 instance trivialization.isLinear : (trivialization B F).IsLinear 𝕜 where
-  linear _ _ := ⟨fun _ _ => rfl, fun _ _ => rfl⟩
+  linear _ _ := ⟨fun _ _ ↦ rfl, fun _ _ ↦ rfl⟩
 
 variable {𝕜} in
 theorem trivialization.coordChangeL (b : B) :
@@ -100,7 +100,7 @@ variable [∀ x, AddCommMonoid (E₁ x)] [∀ x, Module 𝕜 (E₁ x)]
   (e₂ e₂' : Trivialization F₂ (π F₂ E₂))
 
 instance prod.isLinear [e₁.IsLinear 𝕜] [e₂.IsLinear 𝕜] : (e₁.prod e₂).IsLinear 𝕜 where
-  linear := fun _ ⟨h₁, h₂⟩ =>
+  linear := fun _ ⟨h₁, h₂⟩ ↦
     (((e₁.linear 𝕜 h₁).mk' _).prodMap ((e₂.linear 𝕜 h₂).mk' _)).isLinear
 
 @[simp]
@@ -196,7 +196,7 @@ instance VectorBundle.pullback [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
   continuousOn_coordChange' := by
     rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
     refine ((continuousOn_coordChange 𝕜 e e').comp
-      (map_continuous f).continuousOn fun b hb => hb).congr ?_
+      (map_continuous f).continuousOn fun b hb ↦ hb).congr ?_
     rintro b (hb : f b ∈ e.baseSet ∩ e'.baseSet); ext v
     change ((e.pullback f).coordChangeL 𝕜 (e'.pullback f) b) v = (e.coordChangeL 𝕜 e' (f b)) v
     rw [e.coordChangeL_apply e' hb, (e.pullback f).coordChangeL_apply' _]

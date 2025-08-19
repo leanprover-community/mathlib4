@@ -76,11 +76,11 @@ theorem disjSum_eq_empty : s.disjSum t = ∅ ↔ s = ∅ ∧ t = ∅ := by simp 
 theorem disjSum_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : s₁.disjSum t₁ ⊆ s₂.disjSum t₂ :=
   val_le_iff.1 <| Multiset.disjSum_mono (val_le_iff.2 hs) (val_le_iff.2 ht)
 
-theorem disjSum_mono_left (t : Finset β) : Monotone fun s : Finset α => s.disjSum t :=
-  fun _ _ hs => disjSum_mono hs Subset.rfl
+theorem disjSum_mono_left (t : Finset β) : Monotone fun s : Finset α ↦ s.disjSum t :=
+  fun _ _ hs ↦ disjSum_mono hs Subset.rfl
 
 theorem disjSum_mono_right (s : Finset α) : Monotone (s.disjSum : Finset β → Finset (α ⊕ β)) :=
-  fun _ _ => disjSum_mono Subset.rfl
+  fun _ _ ↦ disjSum_mono Subset.rfl
 
 theorem disjSum_ssubset_disjSum_of_ssubset_of_subset (hs : s₁ ⊂ s₂) (ht : t₁ ⊆ t₂) :
     s₁.disjSum t₁ ⊂ s₂.disjSum t₂ :=
@@ -90,11 +90,11 @@ theorem disjSum_ssubset_disjSum_of_subset_of_ssubset (hs : s₁ ⊆ s₂) (ht : 
     s₁.disjSum t₁ ⊂ s₂.disjSum t₂ :=
   val_lt_iff.1 <| disjSum_lt_disjSum_of_le_of_lt (val_le_iff.2 hs) (val_lt_iff.2 ht)
 
-theorem disjSum_strictMono_left (t : Finset β) : StrictMono fun s : Finset α => s.disjSum t :=
-  fun _ _ hs => disjSum_ssubset_disjSum_of_ssubset_of_subset hs Subset.rfl
+theorem disjSum_strictMono_left (t : Finset β) : StrictMono fun s : Finset α ↦ s.disjSum t :=
+  fun _ _ hs ↦ disjSum_ssubset_disjSum_of_ssubset_of_subset hs Subset.rfl
 
 theorem disjSum_strictMono_right (s : Finset α) :
-    StrictMono (s.disjSum : Finset β → Finset (α ⊕ β)) := fun _ _ =>
+    StrictMono (s.disjSum : Finset β → Finset (α ⊕ β)) := fun _ _ ↦
   disjSum_ssubset_disjSum_of_subset_of_ssubset Subset.rfl
 
 @[deprecated (since := "2025-06-11")]
@@ -105,7 +105,7 @@ alias disj_sum_strictMono_right := disjSum_strictMono_right
   simp [Finset.ext_iff]
 
 lemma Injective2_disjSum {α β : Type*} : Function.Injective2 (@disjSum α β) :=
-  fun _ _ _ _ => by simp [Finset.ext_iff]
+  fun _ _ _ _ ↦ by simp [Finset.ext_iff]
 
 /--
 Given a finset of elements `α ⊕ β`, extract all the elements of the form `α`. This
@@ -114,7 +114,7 @@ forms a quasi-inverse to `disjSum`, in that it recovers its left input.
 See also `List.partitionMap`.
 -/
 def toLeft (u : Finset (α ⊕ β)) : Finset α :=
-  u.filterMap (Sum.elim some fun _ => none) (by clear x; aesop)
+  u.filterMap (Sum.elim some fun _ ↦ none) (by clear x; aesop)
 
 /--
 Given a finset of elements `α ⊕ β`, extract all the elements of the form `β`. This
@@ -123,7 +123,7 @@ forms a quasi-inverse to `disjSum`, in that it recovers its right input.
 See also `List.partitionMap`.
 -/
 def toRight (u : Finset (α ⊕ β)) : Finset β :=
-  u.filterMap (Sum.elim (fun _ => none) some) (by clear x; aesop)
+  u.filterMap (Sum.elim (fun _ ↦ none) some) (by clear x; aesop)
 
 variable {u v : Finset (α ⊕ β)} {a : α} {b : β}
 
@@ -132,14 +132,14 @@ variable {u v : Finset (α ⊕ β)} {a : α} {b : β}
 
 @[gcongr]
 lemma toLeft_subset_toLeft : u ⊆ v → u.toLeft ⊆ v.toLeft :=
-  fun h _ => by simpa only [mem_toLeft] using @h _
+  fun h _ ↦ by simpa only [mem_toLeft] using @h _
 
 @[gcongr]
 lemma toRight_subset_toRight : u ⊆ v → u.toRight ⊆ v.toRight :=
-  fun h _ => by simpa only [mem_toRight] using @h _
+  fun h _ ↦ by simpa only [mem_toRight] using @h _
 
-lemma toLeft_monotone : Monotone (@toLeft α β) := fun _ _ => toLeft_subset_toLeft
-lemma toRight_monotone : Monotone (@toRight α β) := fun _ _ => toRight_subset_toRight
+lemma toLeft_monotone : Monotone (@toLeft α β) := fun _ _ ↦ toLeft_subset_toLeft
+lemma toRight_monotone : Monotone (@toRight α β) := fun _ _ ↦ toRight_subset_toRight
 
 lemma toLeft_disjSum_toRight : u.toLeft.disjSum u.toRight = u := by
   ext (x | x) <;> simp
@@ -158,10 +158,10 @@ lemma card_toRight_le : #u.toRight ≤ #u :=
 @[simp] lemma toRight_disjSum : (s.disjSum t).toRight = t := by ext x; simp
 
 lemma disjSum_eq_iff : s.disjSum t = u ↔ s = u.toLeft ∧ t = u.toRight :=
-  ⟨fun h => by simp [← h], fun h => by simp [h, toLeft_disjSum_toRight]⟩
+  ⟨fun h ↦ by simp [← h], fun h ↦ by simp [h, toLeft_disjSum_toRight]⟩
 
 lemma eq_disjSum_iff : u = s.disjSum t ↔ u.toLeft = s ∧ u.toRight = t :=
-  ⟨fun h => by simp [h], fun h => by simp [← h, toLeft_disjSum_toRight]⟩
+  ⟨fun h ↦ by simp [h], fun h ↦ by simp [← h, toLeft_disjSum_toRight]⟩
 
 lemma disjSum_subset : s.disjSum t ⊆ u ↔ s ⊆ u.toLeft ∧ t ⊆ u.toRight := by simp [subset_iff]
 lemma subset_disjSum : u ⊆ s.disjSum t ↔ u.toLeft ⊆ s ∧ u.toRight ⊆ t := by simp [subset_iff]

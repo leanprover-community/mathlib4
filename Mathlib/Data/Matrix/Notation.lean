@@ -53,7 +53,7 @@ open Qq in
 /-- `Matrix.mkLiteralQ !![a, b; c, d]` produces the term `q(!![$a, $b; $c, $d])`. -/
 def mkLiteralQ {u : Level} {α : Q(Type u)} {m n : Nat} (elems : Matrix (Fin m) (Fin n) Q($α)) :
     Q(Matrix (Fin $m) (Fin $n) $α) :=
-  let elems := PiFin.mkLiteralQ (α := q(Fin $n → $α)) fun i => PiFin.mkLiteralQ fun j => elems i j
+  let elems := PiFin.mkLiteralQ (α := q(Fin $n → $α)) fun i ↦ PiFin.mkLiteralQ fun j ↦ elems i j
   q(Matrix.of $elems)
 
 /-- Matrices can be reflected whenever their entries can. We insert a `Matrix.of` to
@@ -66,7 +66,7 @@ protected instance toExpr [ToLevel.{u}] [ToLevel.{uₘ}] [ToLevel.{uₙ}]
   have en' : Q(Type $(toLevel.{uₙ})) := toTypeExpr n'
   { toTypeExpr :=
     q(Matrix $eα $em' $en')
-    toExpr := fun M =>
+    toExpr := fun M ↦
       have eM : Q($em' → $en' → $eα) := toExpr (show m' → n' → α from M)
       q(Matrix.of $eM) }
 
@@ -104,7 +104,7 @@ macro_rules
   | `(!![$[$[$rows],*];*]) => do
     let m := rows.size
     let n := if h : 0 < m then rows[0].size else 0
-    let rowVecs ← rows.mapM fun row : Array Term => do
+    let rowVecs ← rows.mapM fun row : Array Term ↦ do
       unless row.size = n do
         Macro.throwErrorAt (mkNullNode row) s!"\
           Rows must be of equal length; this row has {row.size} items, \
@@ -113,7 +113,7 @@ macro_rules
     `(@Matrix.of (Fin $(quote m)) (Fin $(quote n)) _ ![$rowVecs,*])
   | `(!![$[;%$semicolons]*]) => do
     let emptyVec ← `(![])
-    let emptyVecs := semicolons.map (fun _ => emptyVec)
+    let emptyVecs := semicolons.map (fun _ ↦ emptyVec)
     `(@Matrix.of (Fin $(quote semicolons.size)) (Fin 0) _ ![$emptyVecs,*])
   | `(!![$[,%$commas]*]) => `(@Matrix.of (Fin 0) (Fin $(quote commas.size)) _ ![])
 
@@ -152,22 +152,22 @@ instance repr [Repr α] : Repr (Matrix (Fin m) (Fin n) α) where
   reprPrec f _p :=
     (Std.Format.bracket "!![" · "]") <|
       (Std.Format.joinSep · (";" ++ Std.Format.line)) <|
-        (List.finRange m).map fun i =>
+        (List.finRange m).map fun i ↦
           Std.Format.fill <|  -- wrap line in a single place rather than all at once
             (Std.Format.joinSep · ("," ++ Std.Format.line)) <|
-            (List.finRange n).map fun j => _root_.repr (f i j)
+            (List.finRange n).map fun j ↦ _root_.repr (f i j)
 
 @[simp]
 theorem cons_val' (v : n' → α) (B : Fin m → n' → α) (i j) :
-    vecCons v B i j = vecCons (v j) (fun i => B i j) i := by refine Fin.cases ?_ ?_ i <;> simp
+    vecCons v B i j = vecCons (v j) (fun i ↦ B i j) i := by refine Fin.cases ?_ ?_ i <;> simp
 
 @[simp]
-theorem head_val' (B : Fin m.succ → n' → α) (j : n') : (vecHead fun i => B i j) = vecHead B j :=
+theorem head_val' (B : Fin m.succ → n' → α) (j : n') : (vecHead fun i ↦ B i j) = vecHead B j :=
   rfl
 
 @[simp]
 theorem tail_val' (B : Fin m.succ → n' → α) (j : n') :
-    (vecTail fun i => B i j) = fun i => vecTail B i j := rfl
+    (vecTail fun i ↦ B i j) = fun i ↦ vecTail B i j := rfl
 
 section DotProduct
 
@@ -204,20 +204,20 @@ theorem replicateCol_empty (v : Fin 0 → α) : replicateCol ι v = vecEmpty :=
 
 @[simp]
 theorem replicateCol_cons (x : α) (u : Fin m → α) :
-    replicateCol ι (vecCons x u) = of (vecCons (fun _ => x) (replicateCol ι u)) := by
+    replicateCol ι (vecCons x u) = of (vecCons (fun _ ↦ x) (replicateCol ι u)) := by
   ext i j
   refine Fin.cases ?_ ?_ i <;> simp
 
 @[deprecated (since := "2025-03-20")] alias col_cons := replicateCol_cons
 
 @[simp]
-theorem replicateRow_empty : replicateRow ι (vecEmpty : Fin 0 → α) = of fun _ => vecEmpty := rfl
+theorem replicateRow_empty : replicateRow ι (vecEmpty : Fin 0 → α) = of fun _ ↦ vecEmpty := rfl
 
 @[deprecated (since := "2025-03-20")] alias row_empty := replicateRow_empty
 
 @[simp]
 theorem replicateRow_cons (x : α) (u : Fin m → α) :
-    replicateRow ι (vecCons x u) = of fun _ => vecCons x u :=
+    replicateRow ι (vecCons x u) = of fun _ ↦ vecCons x u :=
   rfl
 
 @[deprecated (since := "2025-03-20")] alias row_cons := replicateRow_cons
@@ -231,12 +231,12 @@ theorem transpose_empty_rows (A : Matrix m' (Fin 0) α) : Aᵀ = of ![] :=
   empty_eq _
 
 @[simp]
-theorem transpose_empty_cols (A : Matrix (Fin 0) m' α) : Aᵀ = of fun _ => ![] :=
-  funext fun _ => empty_eq _
+theorem transpose_empty_cols (A : Matrix (Fin 0) m' α) : Aᵀ = of fun _ ↦ ![] :=
+  funext fun _ ↦ empty_eq _
 
 @[simp]
 theorem cons_transpose (v : n' → α) (A : Matrix (Fin m) n' α) :
-    (of (vecCons v A))ᵀ = of fun i => vecCons (v i) (Aᵀ i) := by
+    (of (vecCons v A))ᵀ = of fun i ↦ vecCons (v i) (Aᵀ i) := by
   ext i j
   refine Fin.cases ?_ ?_ j <;> simp
 
@@ -266,8 +266,8 @@ theorem empty_mul_empty (A : Matrix m' (Fin 0) α) (B : Matrix (Fin 0) o' α) : 
 
 @[simp]
 theorem mul_empty [Fintype n'] (A : Matrix m' n' α) (B : Matrix n' (Fin 0) α) :
-    A * B = of fun _ => ![] :=
-  funext fun _ => empty_eq _
+    A * B = of fun _ ↦ ![] :=
+  funext fun _ ↦ empty_eq _
 
 theorem mul_val_succ [Fintype n'] (A : Matrix (Fin m.succ) n' α) (B : Matrix n' o' α) (i : Fin m)
     (j : o') : (A * B) i.succ j = (of (vecTail (of.symm A)) * B) i j :=
@@ -347,8 +347,8 @@ theorem empty_vecMulVec (v : Fin 0 → α) (w : n' → α) : vecMulVec v w = ![]
   empty_eq _
 
 @[simp]
-theorem vecMulVec_empty (v : m' → α) (w : Fin 0 → α) : vecMulVec v w = of fun _ => ![] :=
-  funext fun _ => empty_eq _
+theorem vecMulVec_empty (v : m' → α) (w : Fin 0 → α) : vecMulVec v w = of fun _ ↦ ![] :=
+  funext fun _ ↦ empty_eq _
 
 @[simp]
 theorem cons_vecMulVec (x : α) (v : Fin m → α) (w : n' → α) :
@@ -358,7 +358,7 @@ theorem cons_vecMulVec (x : α) (v : Fin m → α) (w : n' → α) :
 
 @[simp]
 theorem vecMulVec_cons (v : m' → α) (x : α) (w : Fin n → α) :
-    vecMulVec v (vecCons x w) = of fun i => v i • vecCons x w := rfl
+    vecMulVec v (vecCons x w) = of fun i ↦ v i • vecCons x w := rfl
 
 end VecMulVec
 
@@ -385,7 +385,7 @@ theorem submatrix_empty (A : Matrix m' n' α) (row : Fin 0 → m') (col : o' →
 
 @[simp]
 theorem submatrix_cons_row (A : Matrix m' n' α) (i : m') (row : Fin m → m') (col : o' → n') :
-    submatrix A (vecCons i row) col = vecCons (fun j => A i (col j)) (submatrix A row col) := by
+    submatrix A (vecCons i row) col = vecCons (fun j ↦ A i (col j)) (submatrix A row col) := by
   ext i j
   refine Fin.cases ?_ ?_ i <;> simp [submatrix]
 
@@ -393,13 +393,13 @@ theorem submatrix_cons_row (A : Matrix m' n' α) (i : m') (row : Fin m → m') (
 @[simp]
 theorem submatrix_updateRow_succAbove (A : Matrix (Fin m.succ) n' α) (v : n' → α) (f : o' → n')
     (i : Fin m.succ) : (A.updateRow i v).submatrix i.succAbove f = A.submatrix i.succAbove f :=
-  ext fun r s => (congr_fun (updateRow_ne (Fin.succAbove_ne i r) : _ = A _) (f s) :)
+  ext fun r s ↦ (congr_fun (updateRow_ne (Fin.succAbove_ne i r) : _ = A _) (f s) :)
 
 /-- Updating a column then removing it is the same as removing it. -/
 @[simp]
 theorem submatrix_updateCol_succAbove (A : Matrix m' (Fin n.succ) α) (v : m' → α) (f : o' → m')
     (i : Fin n.succ) : (A.updateCol i v).submatrix f i.succAbove = A.submatrix f i.succAbove :=
-  ext fun _r s => updateCol_ne (Fin.succAbove_ne i s)
+  ext fun _r s ↦ updateCol_ne (Fin.succAbove_ne i s)
 
 end Submatrix
 

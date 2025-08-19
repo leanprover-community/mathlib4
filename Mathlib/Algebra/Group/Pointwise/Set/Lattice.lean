@@ -107,11 +107,11 @@ theorem mul_iInter_subset (s : Set α) (t : ι → Set α) : (s * ⋂ i, t i) �
 
 @[to_additive]
 lemma mul_sInter_subset (s : Set α) (T : Set (Set α)) :
-    s * ⋂₀ T ⊆ ⋂ t ∈ T, s * t := image2_sInter_right_subset s T (fun a b => a * b)
+    s * ⋂₀ T ⊆ ⋂ t ∈ T, s * t := image2_sInter_right_subset s T (fun a b ↦ a * b)
 
 @[to_additive]
 lemma sInter_mul_subset (S : Set (Set α)) (t : Set α) :
-    ⋂₀ S * t ⊆ ⋂ s ∈ S, s * t := image2_sInter_left_subset S t (fun a b => a * b)
+    ⋂₀ S * t ⊆ ⋂ s ∈ S, s * t := image2_sInter_left_subset S t (fun a b ↦ a * b)
 
 @[to_additive]
 theorem iInter₂_mul_subset (s : ∀ i, κ i → Set α) (t : Set α) :
@@ -240,11 +240,11 @@ lemma smul_iInter_subset (s : Set α) (t : ι → Set β) : (s • ⋂ i, t i) �
 
 @[to_additive]
 lemma sInter_smul_subset (S : Set (Set α)) (t : Set β) : ⋂₀ S • t ⊆ ⋂ s ∈ S, s • t :=
-  image2_sInter_left_subset S t (fun a x => a • x)
+  image2_sInter_left_subset S t (fun a x ↦ a • x)
 
 @[to_additive]
 lemma smul_sInter_subset (s : Set α) (T : Set (Set β)) : s • ⋂₀ T ⊆ ⋂ t ∈ T, s • t :=
-  image2_sInter_right_subset s T (fun a x => a • x)
+  image2_sInter_right_subset s T (fun a x ↦ a • x)
 
 @[to_additive]
 lemma iInter₂_smul_subset (s : ∀ i, κ i → Set α) (t : Set β) :

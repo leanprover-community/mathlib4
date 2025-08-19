@@ -104,7 +104,7 @@ lemma uIcc_subset_Icc (ha : a₁ ∈ Icc a₂ b₂) (hb : b₁ ∈ Icc a₂ b₂
 
 lemma uIcc_subset_uIcc_iff_mem :
     [[a₁, b₁]] ⊆ [[a₂, b₂]] ↔ a₁ ∈ [[a₂, b₂]] ∧ b₁ ∈ [[a₂, b₂]] :=
-  Iff.intro (fun h => ⟨h left_mem_uIcc, h right_mem_uIcc⟩) fun h =>
+  Iff.intro (fun h ↦ ⟨h left_mem_uIcc, h right_mem_uIcc⟩) fun h ↦
     uIcc_subset_uIcc h.1 h.2
 
 lemma uIcc_subset_uIcc_iff_le' :
@@ -120,7 +120,7 @@ lemma uIcc_subset_uIcc_left (h : x ∈ [[a, b]]) : [[a, x]] ⊆ [[a, b]] :=
 lemma bdd_below_bdd_above_iff_subset_uIcc (s : Set α) :
     BddBelow s ∧ BddAbove s ↔ ∃ a b, s ⊆ [[a, b]] :=
   bddBelow_bddAbove_iff_subset_Icc.trans
-    ⟨fun ⟨a, b, h⟩ => ⟨a, b, fun _ hx => Icc_subset_uIcc (h hx)⟩, fun ⟨_, _, h⟩ => ⟨_, _, h⟩⟩
+    ⟨fun ⟨a, b, h⟩ ↦ ⟨a, b, fun _ hx ↦ Icc_subset_uIcc (h hx)⟩, fun ⟨_, _, h⟩ ↦ ⟨_, _, h⟩⟩
 
 section Prod
 
@@ -147,7 +147,7 @@ lemma eq_of_mem_uIcc_of_mem_uIcc (ha : a ∈ [[b, c]]) (hb : b ∈ [[a, c]]) : a
 lemma eq_of_mem_uIcc_of_mem_uIcc' : b ∈ [[a, c]] → c ∈ [[a, b]] → b = c := by
   simpa only [uIcc_comm a] using eq_of_mem_uIcc_of_mem_uIcc
 
-lemma uIcc_injective_right (a : α) : Injective fun b => uIcc b a := fun b c h => by
+lemma uIcc_injective_right (a : α) : Injective fun b ↦ uIcc b a := fun b c h ↦ by
   rw [Set.ext_iff] at h
   exact eq_of_mem_uIcc_of_mem_uIcc ((h _).1 left_mem_uIcc) ((h _).2 left_mem_uIcc)
 
@@ -219,7 +219,7 @@ lemma uIcc_subset_uIcc_iff_le :
   uIcc_subset_uIcc_iff_le'
 
 /-- A sort of triangle inequality. -/
-lemma uIcc_subset_uIcc_union_uIcc : [[a, c]] ⊆ [[a, b]] ∪ [[b, c]] := fun x => by
+lemma uIcc_subset_uIcc_union_uIcc : [[a, c]] ⊆ [[a, b]] ∪ [[b, c]] := fun x ↦ by
   simp only [mem_uIcc, mem_union]
   rcases le_total x b with h2 | h2 <;> tauto
 
@@ -227,12 +227,12 @@ lemma monotone_or_antitone_iff_uIcc :
     Monotone f ∨ Antitone f ↔ ∀ a b c, c ∈ [[a, b]] → f c ∈ [[f a, f b]] := by
   constructor
   · rintro (hf | hf) a b c <;> simp_rw [← Icc_min_max, ← hf.map_min, ← hf.map_max]
-    exacts [fun hc => ⟨hf hc.1, hf hc.2⟩, fun hc => ⟨hf hc.2, hf hc.1⟩]
+    exacts [fun hc ↦ ⟨hf hc.1, hf hc.2⟩, fun hc ↦ ⟨hf hc.2, hf hc.1⟩]
   contrapose!
   rw [not_monotone_not_antitone_iff_exists_le_le]
   rintro ⟨a, b, c, hab, hbc, ⟨hfab, hfcb⟩ | ⟨hfba, hfbc⟩⟩
-  · exact ⟨a, c, b, Icc_subset_uIcc ⟨hab, hbc⟩, fun h => h.2.not_gt <| max_lt hfab hfcb⟩
-  · exact ⟨a, c, b, Icc_subset_uIcc ⟨hab, hbc⟩, fun h => h.1.not_gt <| lt_min hfba hfbc⟩
+  · exact ⟨a, c, b, Icc_subset_uIcc ⟨hab, hbc⟩, fun h ↦ h.2.not_gt <| max_lt hfab hfcb⟩
+  · exact ⟨a, c, b, Icc_subset_uIcc ⟨hab, hbc⟩, fun h ↦ h.1.not_gt <| lt_min hfba hfbc⟩
 
 lemma monotoneOn_or_antitoneOn_iff_uIcc :
     MonotoneOn f s ∨ AntitoneOn f s ↔
@@ -241,7 +241,7 @@ lemma monotoneOn_or_antitoneOn_iff_uIcc :
     mem_uIcc]
 
 /-- The open-closed uIcc with unordered bounds. -/
-def uIoc : α → α → Set α := fun a b => Ioc (min a b) (max a b)
+def uIoc : α → α → Set α := fun a b ↦ Ioc (min a b) (max a b)
 
 -- Below is a capital iota
 /-- `Ι a b` denotes the open-closed interval with unordered bounds. Here, `Ι` is a capital iota,
@@ -301,14 +301,14 @@ lemma eq_of_notMem_uIoc_of_notMem_uIoc (ha : a ≤ c) (hb : b ≤ c) :
 @[deprecated (since := "2025-05-23")]
 alias eq_of_not_mem_uIoc_of_not_mem_uIoc := eq_of_notMem_uIoc_of_notMem_uIoc
 
-lemma uIoc_injective_right (a : α) : Injective fun b => Ι b a := by
+lemma uIoc_injective_right (a : α) : Injective fun b ↦ Ι b a := by
   rintro b c h
   rw [Set.ext_iff] at h
   obtain ha | ha := le_or_gt b a
   · have hb := (h b).not
     simp only [ha, left_mem_uIoc, true_iff, notMem_uIoc, ← not_le,
       and_true, not_true, false_and, not_false_iff, or_false] at hb
-    refine hb.eq_of_not_lt fun hc => ?_
+    refine hb.eq_of_not_lt fun hc ↦ ?_
     simpa [ha, and_iff_right hc, ← @not_le _ _ _ a, iff_not_self, -not_le] using h c
   · refine
       eq_of_mem_uIoc_of_mem_uIoc ((h _).1 <| left_mem_uIoc.2 ha)

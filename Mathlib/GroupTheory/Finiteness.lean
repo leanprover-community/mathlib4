@@ -50,7 +50,7 @@ add_decl_doc AddSubmonoid.FG
 `Finset`. -/]
 theorem Submonoid.fg_iff (P : Submonoid M) :
     Submonoid.FG P ↔ ∃ S : Set M, Submonoid.closure S = P ∧ S.Finite :=
-  ⟨fun ⟨S, hS⟩ => ⟨S, hS, Finset.finite_toSet S⟩, fun ⟨S, hS, hf⟩ =>
+  ⟨fun ⟨S, hS⟩ ↦ ⟨S, hS, Finset.finite_toSet S⟩, fun ⟨S, hS, hf⟩ ↦
     ⟨Set.Finite.toFinset hf, by simp [hS]⟩⟩
 
 /-- A finitely generated submonoid has a minimal generating set. -/
@@ -59,11 +59,11 @@ lemma Submonoid.FG.exists_minimal_closure_eq (hP : P.FG) :
     ∃ S : Finset M, Minimal (closure ·.toSet = P) S := exists_minimal_of_wellFoundedLT _ hP
 
 theorem Submonoid.fg_iff_add_fg (P : Submonoid M) : P.FG ↔ P.toAddSubmonoid.FG :=
-  ⟨fun h =>
+  ⟨fun h ↦
     let ⟨S, hS, hf⟩ := (Submonoid.fg_iff _).1 h
     (AddSubmonoid.fg_iff _).mpr
       ⟨Additive.toMul ⁻¹' S, by simp [← Submonoid.toAddSubmonoid_closure, hS], hf⟩,
-    fun h =>
+    fun h ↦
     let ⟨T, hT, hf⟩ := (AddSubmonoid.fg_iff _).1 h
     (Submonoid.fg_iff _).mpr
       ⟨Additive.ofMul ⁻¹' T, by simp [← AddSubmonoid.toSubmonoid'_closure, hT], hf⟩⟩
@@ -100,14 +100,14 @@ class Monoid.FG : Prop where
 
 @[to_additive]
 theorem Monoid.fg_def : Monoid.FG M ↔ (⊤ : Submonoid M).FG :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
 
 /-- An equivalent expression of `Monoid.FG` in terms of `Set.Finite` instead of `Finset`. -/
 @[to_additive
 /-- An equivalent expression of `AddMonoid.FG` in terms of `Set.Finite` instead of `Finset`. -/]
 theorem Monoid.fg_iff :
     Monoid.FG M ↔ ∃ S : Set M, Submonoid.closure S = (⊤ : Submonoid M) ∧ S.Finite :=
-  ⟨fun _ => (Submonoid.fg_iff ⊤).1 FG.fg_top, fun h => ⟨(Submonoid.fg_iff ⊤).2 h⟩⟩
+  ⟨fun _ ↦ (Submonoid.fg_iff ⊤).1 FG.fg_top, fun h ↦ ⟨(Submonoid.fg_iff ⊤).2 h⟩⟩
 
 variable (M) in
 /-- A finitely generated monoid has a minimal generating set. -/
@@ -163,7 +163,7 @@ theorem Submonoid.FG.map_injective {M' : Type*} [Monoid M'] {P : Submonoid M} (e
 @[to_additive (attr := simp)]
 theorem Monoid.fg_iff_submonoid_fg (N : Submonoid M) : Monoid.FG N ↔ N.FG := by
   conv_rhs => rw [← N.mrange_subtype, MonoidHom.mrange_eq_map]
-  exact ⟨fun h ↦ h.fg_top.map N.subtype, fun h => ⟨h.map_injective N.subtype Subtype.coe_injective⟩⟩
+  exact ⟨fun h ↦ h.fg_top.map N.subtype, fun h ↦ ⟨h.map_injective N.subtype Subtype.coe_injective⟩⟩
 
 @[to_additive]
 theorem Monoid.fg_of_surjective {M' : Type*} [Monoid M'] [Monoid.FG M] (f : M →* M')
@@ -218,7 +218,7 @@ add_decl_doc AddSubgroup.FG
 `Finset`. -/]
 theorem Subgroup.fg_iff (P : Subgroup G) :
     Subgroup.FG P ↔ ∃ S : Set G, Subgroup.closure S = P ∧ S.Finite :=
-  ⟨fun ⟨S, hS⟩ => ⟨S, hS, Finset.finite_toSet S⟩, fun ⟨S, hS, hf⟩ =>
+  ⟨fun ⟨S, hS⟩ ↦ ⟨S, hS, Finset.finite_toSet S⟩, fun ⟨S, hS, hf⟩ ↦
     ⟨Set.Finite.toFinset hf, by simp [hS]⟩⟩
 
 /-- A subgroup is finitely generated if and only if it is finitely generated as a submonoid. -/
@@ -265,27 +265,27 @@ attribute [to_additive] Group.FG
 variable {G H}
 
 theorem Group.fg_def : Group.FG G ↔ (⊤ : Subgroup G).FG :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
 
 theorem AddGroup.fg_def : AddGroup.FG H ↔ (⊤ : AddSubgroup H).FG :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
 
 /-- An equivalent expression of `Group.FG` in terms of `Set.Finite` instead of `Finset`. -/
 @[to_additive
 /-- An equivalent expression of `AddGroup.fg` in terms of `Set.Finite` instead of `Finset`. -/]
 theorem Group.fg_iff : Group.FG G ↔ ∃ S : Set G, Subgroup.closure S = (⊤ : Subgroup G) ∧ S.Finite :=
-  ⟨fun h => (Subgroup.fg_iff ⊤).1 h.out, fun h => ⟨(Subgroup.fg_iff ⊤).2 h⟩⟩
+  ⟨fun h ↦ (Subgroup.fg_iff ⊤).1 h.out, fun h ↦ ⟨(Subgroup.fg_iff ⊤).2 h⟩⟩
 
 @[to_additive]
 theorem Group.fg_iff' :
     Group.FG G ↔ ∃ (n : _) (S : Finset G), S.card = n ∧ Subgroup.closure (S : Set G) = ⊤ :=
-  Group.fg_def.trans ⟨fun ⟨S, hS⟩ => ⟨S.card, S, rfl, hS⟩, fun ⟨_n, S, _hn, hS⟩ => ⟨S, hS⟩⟩
+  Group.fg_def.trans ⟨fun ⟨S, hS⟩ ↦ ⟨S.card, S, rfl, hS⟩, fun ⟨_n, S, _hn, hS⟩ ↦ ⟨S, hS⟩⟩
 
 /-- A group is finitely generated if and only if it is finitely generated as a monoid. -/
 @[to_additive /-- An additive group is finitely generated if and only
 if it is finitely generated as an additive monoid. -/]
 theorem Group.fg_iff_monoid_fg : Group.FG G ↔ Monoid.FG G :=
-  ⟨fun h => Monoid.fg_def.2 <| (Subgroup.fg_iff_submonoid_fg ⊤).1 (Group.fg_def.1 h), fun h =>
+  ⟨fun h ↦ Monoid.fg_def.2 <| (Subgroup.fg_iff_submonoid_fg ⊤).1 (Group.fg_def.1 h), fun h ↦
     Group.fg_def.2 <| (Subgroup.fg_iff_submonoid_fg ⊤).2 (Monoid.fg_def.1 h)⟩
 
 @[to_additive]
@@ -298,10 +298,10 @@ theorem Group.fg_iff_subgroup_fg (H : Subgroup G) : Group.FG H ↔ H.FG :=
     (Subgroup.fg_iff_submonoid_fg _).symm
 
 theorem GroupFG.iff_add_fg : Group.FG G ↔ AddGroup.FG (Additive G) :=
-  ⟨fun h => ⟨(Subgroup.fg_iff_add_fg ⊤).1 h.out⟩, fun h => ⟨(Subgroup.fg_iff_add_fg ⊤).2 h.out⟩⟩
+  ⟨fun h ↦ ⟨(Subgroup.fg_iff_add_fg ⊤).1 h.out⟩, fun h ↦ ⟨(Subgroup.fg_iff_add_fg ⊤).2 h.out⟩⟩
 
 theorem AddGroup.fg_iff_mul_fg : AddGroup.FG H ↔ Group.FG (Multiplicative H) :=
-  ⟨fun h => ⟨(AddSubgroup.fg_iff_mul_fg ⊤).1 h.out⟩, fun h =>
+  ⟨fun h ↦ ⟨(AddSubgroup.fg_iff_mul_fg ⊤).1 h.out⟩, fun h ↦
     ⟨(AddSubgroup.fg_iff_mul_fg ⊤).2 h.out⟩⟩
 
 instance AddGroup.fg_of_group_fg [Group.FG G] : AddGroup.FG (Additive G) :=

@@ -35,9 +35,9 @@ variable [Monoid M] [Semiring R] [MulSemiringAction M R]
 This is available as an instance in the `Pointwise` locale. -/
 protected def pointwiseMulAction : MulAction M (Subsemiring R) where
   smul a S := S.map (MulSemiringAction.toRingHom _ _ a)
-  one_smul S := (congr_arg (fun f => S.map f) (RingHom.ext <| one_smul M)).trans S.map_id
+  one_smul S := (congr_arg (fun f ↦ S.map f) (RingHom.ext <| one_smul M)).trans S.map_id
   mul_smul _a₁ _a₂ S :=
-    (congr_arg (fun f => S.map f) (RingHom.ext <| mul_smul _ _)).trans (S.map_map _ _).symm
+    (congr_arg (fun f ↦ S.map f) (RingHom.ext <| mul_smul _ _)).trans (S.map_map _ _).symm
 
 scoped[Pointwise] attribute [instance] Subsemiring.pointwiseMulAction
 
@@ -60,7 +60,7 @@ theorem smul_mem_pointwise_smul (m : M) (r : R) (S : Subsemiring R) : r ∈ S �
   (Set.smul_mem_smul_set : _ → _ ∈ m • (S : Set R))
 
 instance : CovariantClass M (Subsemiring R) HSMul.hSMul LE.le :=
-  ⟨fun _ _ => image_mono⟩
+  ⟨fun _ _ ↦ image_mono⟩
 
 theorem mem_smul_pointwise_iff_exists (m : M) (r : R) (S : Subsemiring R) :
     r ∈ m • S ↔ ∃ s : R, s ∈ S ∧ m • s = r :=
@@ -78,7 +78,7 @@ theorem smul_closure (a : M) (s : Set R) : a • closure s = closure (a • s) :
 
 instance pointwise_central_scalar [MulSemiringAction Mᵐᵒᵖ R] [IsCentralScalar M R] :
     IsCentralScalar M (Subsemiring R) :=
-  ⟨fun _a S => (congr_arg fun f => S.map f) <| RingHom.ext <| op_smul_eq_smul _⟩
+  ⟨fun _a S ↦ (congr_arg fun f ↦ S.map f) <| RingHom.ext <| op_smul_eq_smul _⟩
 
 end Monoid
 

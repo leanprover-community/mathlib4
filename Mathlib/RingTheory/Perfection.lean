@@ -43,14 +43,14 @@ def Ring.perfectionSubsemiring (R : Type u₁) [CommSemiring R] (p : ℕ) [hp : 
     [CharP R p] : Subsemiring (ℕ → R) :=
   { Monoid.perfection R p with
     zero_mem' := fun _ ↦ zero_pow hp.1.ne_zero
-    add_mem' := fun hf hg n => (frobenius_add R p _ _).trans <| congr_arg₂ _ (hf n) (hg n) }
+    add_mem' := fun hf hg n ↦ (frobenius_add R p _ _).trans <| congr_arg₂ _ (hf n) (hg n) }
 
 /-- The perfection of a ring `R` with characteristic `p`, as a subring,
 defined to be the projective limit of `R` using the Frobenius maps `R → R`
 indexed by the natural numbers, implemented as `{ f : ℕ → R | ∀ n, f (n + 1) ^ p = f n }`. -/
 def Ring.perfectionSubring (R : Type u₁) [CommRing R] (p : ℕ) [hp : Fact p.Prime] [CharP R p] :
     Subring (ℕ → R) :=
-  (Ring.perfectionSubsemiring R p).toSubring fun n => by
+  (Ring.perfectionSubsemiring R p).toSubring fun n ↦ by
     simp_rw [← frobenius_def, Pi.neg_apply, Pi.one_apply, RingHom.map_neg, RingHom.map_one]
 
 /-- The perfection of a ring `R` with characteristic `p`,
@@ -95,7 +95,7 @@ variable (R p)
 
 /-- The `p`-th root of an element of the perfection. -/
 def pthRoot : Ring.Perfection R p →+* Ring.Perfection R p where
-  toFun f := ⟨fun n => coeff R p (n + 1) f, fun _ => f.2 _⟩
+  toFun f := ⟨fun n ↦ coeff R p (n + 1) f, fun _ ↦ f.2 _⟩
   map_one' := rfl
   map_mul' _ _ := rfl
   map_zero' := rfl
@@ -121,7 +121,7 @@ theorem coeff_frobenius (f : Ring.Perfection R p) (n : ℕ) :
 -- `coeff_pow_p f n` also works but is slow!
 theorem coeff_iterate_frobenius (f : Ring.Perfection R p) (n m : ℕ) :
     coeff R p (n + m) ((frobenius _ p)^[m] f) = coeff R p n f :=
-  Nat.recOn m rfl fun m ih => by
+  Nat.recOn m rfl fun m ih ↦ by
     rw [Function.iterate_succ_apply', Nat.add_succ, coeff_frobenius, ih]
 
 theorem coeff_iterate_frobenius' (f : Ring.Perfection R p) (n m : ℕ) (hmn : m ≤ n) :
@@ -129,18 +129,18 @@ theorem coeff_iterate_frobenius' (f : Ring.Perfection R p) (n m : ℕ) (hmn : m 
   Eq.symm <| (coeff_iterate_frobenius _ _ m).symm.trans <| (tsub_add_cancel_of_le hmn).symm ▸ rfl
 
 theorem pthRoot_frobenius : (pthRoot R p).comp (frobenius _ p) = RingHom.id _ :=
-  RingHom.ext fun x =>
-    ext fun n => by rw [RingHom.comp_apply, RingHom.id_apply, coeff_pthRoot, coeff_frobenius]
+  RingHom.ext fun x ↦
+    ext fun n ↦ by rw [RingHom.comp_apply, RingHom.id_apply, coeff_pthRoot, coeff_frobenius]
 
 theorem frobenius_pthRoot : (frobenius _ p).comp (pthRoot R p) = RingHom.id _ :=
-  RingHom.ext fun x =>
-    ext fun n => by
+  RingHom.ext fun x ↦
+    ext fun n ↦ by
       rw [RingHom.comp_apply, RingHom.id_apply, RingHom.map_frobenius, coeff_pthRoot,
         ← @RingHom.map_frobenius (Ring.Perfection R p) _ R, coeff_frobenius]
 
 theorem coeff_add_ne_zero {f : Ring.Perfection R p} {n : ℕ} (hfn : coeff R p n f ≠ 0) (k : ℕ) :
     coeff R p (n + k) f ≠ 0 :=
-  Nat.recOn k hfn fun k ih h => ih <| by
+  Nat.recOn k hfn fun k ih h ↦ ih <| by
     rw [Nat.add_succ] at h
     rw [← coeff_pow_p, RingHom.map_pow, h, zero_pow hp.1.ne_zero]
 
@@ -163,17 +163,17 @@ any homomorphism `R →+* S` can be lifted to a homomorphism `R →+* Perfection
 noncomputable def lift (R : Type u₁) [CommSemiring R] [CharP R p] [PerfectRing R p]
     (S : Type u₂) [CommSemiring S] [CharP S p] : (R →+* S) ≃ (R →+* Ring.Perfection S p) where
   toFun f :=
-    { toFun := fun r => ⟨fun n => f (((frobeniusEquiv R p).symm : R →+* R)^[n] r),
-        fun n => by rw [← f.map_pow, Function.iterate_succ_apply', RingHom.coe_coe,
+    { toFun := fun r ↦ ⟨fun n ↦ f (((frobeniusEquiv R p).symm : R →+* R)^[n] r),
+        fun n ↦ by rw [← f.map_pow, Function.iterate_succ_apply', RingHom.coe_coe,
           frobeniusEquiv_symm_pow_p]⟩
-      map_one' := ext fun _ => (congr_arg f <| iterate_map_one _ _).trans f.map_one
-      map_mul' := fun _ _ =>
-        ext fun _ => (congr_arg f <| iterate_map_mul _ _ _ _).trans <| f.map_mul _ _
-      map_zero' := ext fun _ => (congr_arg f <| iterate_map_zero _ _).trans f.map_zero
-      map_add' := fun _ _ =>
-        ext fun _ => (congr_arg f <| iterate_map_add _ _ _ _).trans <| f.map_add _ _ }
+      map_one' := ext fun _ ↦ (congr_arg f <| iterate_map_one _ _).trans f.map_one
+      map_mul' := fun _ _ ↦
+        ext fun _ ↦ (congr_arg f <| iterate_map_mul _ _ _ _).trans <| f.map_mul _ _
+      map_zero' := ext fun _ ↦ (congr_arg f <| iterate_map_zero _ _).trans f.map_zero
+      map_add' := fun _ _ ↦
+        ext fun _ ↦ (congr_arg f <| iterate_map_add _ _ _ _).trans <| f.map_add _ _ }
   invFun := RingHom.comp <| coeff S p 0
-  right_inv f := RingHom.ext fun r => ext fun n =>
+  right_inv f := RingHom.ext fun r ↦ ext fun n ↦
     show coeff S p 0 (f (((frobeniusEquiv R p).symm)^[n] r)) = coeff S p n (f r) by
       rw [← coeff_iterate_frobenius _ 0 n, zero_add, ← RingHom.map_iterate_frobenius,
         Function.RightInverse.iterate (frobenius_apply_frobeniusEquiv_symm R p) n]
@@ -188,11 +188,11 @@ variable {R} {S : Type u₂} [CommSemiring S] [CharP S p]
 /-- A ring homomorphism `R →+* S` induces `Perfection R p →+* Perfection S p`. -/
 @[simps]
 def map (φ : R →+* S) : Ring.Perfection R p →+* Ring.Perfection S p where
-  toFun f := ⟨fun n => φ (coeff R p n f), fun n => by rw [← φ.map_pow, coeff_pow_p']⟩
-  map_one' := Subtype.eq <| funext fun _ => φ.map_one
-  map_mul' _ _ := Subtype.eq <| funext fun _ => φ.map_mul _ _
-  map_zero' := Subtype.eq <| funext fun _ => φ.map_zero
-  map_add' _ _ := Subtype.eq <| funext fun _ => φ.map_add _ _
+  toFun f := ⟨fun n ↦ φ (coeff R p n f), fun n ↦ by rw [← φ.map_pow, coeff_pow_p']⟩
+  map_one' := Subtype.eq <| funext fun _ ↦ φ.map_one
+  map_mul' _ _ := Subtype.eq <| funext fun _ ↦ φ.map_mul _ _
+  map_zero' := Subtype.eq <| funext fun _ ↦ φ.map_zero
+  map_add' _ _ := Subtype.eq <| funext fun _ ↦ φ.map_add _ _
 
 theorem coeff_map (φ : R →+* S) (f : Ring.Perfection R p) (n : ℕ) :
     coeff S p n (map p φ f) = φ (coeff R p n f) := rfl
@@ -218,13 +218,13 @@ variable {P : Type u₃} [CommSemiring P] [CharP P p] [PerfectRing P p]
 @[simps]
 theorem mk' {f : P →+* R} (g : P ≃+* Ring.Perfection R p) (hfg : Perfection.lift p P R f = g) :
     PerfectionMap p f :=
-  { injective := fun x y hxy =>
+  { injective := fun x y hxy ↦
       g.injective <|
         (RingHom.ext_iff.1 hfg x).symm.trans <|
-          Eq.symm <| (RingHom.ext_iff.1 hfg y).symm.trans <| Perfection.ext fun n => (hxy n).symm
-    surjective := fun y hy =>
+          Eq.symm <| (RingHom.ext_iff.1 hfg y).symm.trans <| Perfection.ext fun n ↦ (hxy n).symm
+    surjective := fun y hy ↦
       let ⟨x, hx⟩ := g.surjective ⟨y, hy⟩
-      ⟨x, fun n =>
+      ⟨x, fun n ↦
         show Perfection.coeff R p n (Perfection.lift p P R f x) = Perfection.coeff R p n ⟨y, hy⟩ by
           simp [hfg, hx]⟩ }
 
@@ -236,11 +236,11 @@ theorem of : PerfectionMap p (Perfection.coeff R p 0) :=
 
 /-- For a perfect ring, it itself is the perfection. -/
 theorem id [PerfectRing R p] : PerfectionMap p (RingHom.id R) :=
-  { injective := fun _ _ hxy => hxy 0
-    surjective := fun f hf =>
-      ⟨f 0, fun n =>
+  { injective := fun _ _ hxy ↦ hxy 0
+    surjective := fun f hf ↦
+      ⟨f 0, fun n ↦
         show ((frobeniusEquiv R p).symm)^[n] (f 0) = f n from
-          Nat.recOn n rfl fun n ih => injective_pow_p R p <| by
+          Nat.recOn n rfl fun n ih ↦ injective_pow_p R p <| by
             rw [Function.iterate_succ_apply', frobeniusEquiv_symm_pow_p, ih, hf]⟩ }
 
 variable {p R P}
@@ -248,7 +248,7 @@ variable {p R P}
 /-- A perfection map induces an isomorphism to the perfection. -/
 noncomputable def equiv {π : P →+* R} (m : PerfectionMap p π) : P ≃+* Ring.Perfection R p :=
   RingEquiv.ofBijective (Perfection.lift p P R π)
-    ⟨fun _ _ hxy => m.injective fun n => (congr_arg (Perfection.coeff R p n) hxy :), fun f =>
+    ⟨fun _ _ hxy ↦ m.injective fun n ↦ (congr_arg (Perfection.coeff R p n) hxy :), fun f ↦
       let ⟨x, hx⟩ := m.surjective f.1 f.2
       ⟨x, Perfection.ext <| hx⟩⟩
 
@@ -260,7 +260,7 @@ theorem comp_equiv {π : P →+* R} (m : PerfectionMap p π) (x : P) :
 
 theorem comp_equiv' {π : P →+* R} (m : PerfectionMap p π) :
     (Perfection.coeff R p 0).comp ↑m.equiv = π :=
-  RingHom.ext fun _ => rfl
+  RingHom.ext fun _ ↦ rfl
 
 theorem comp_symm_equiv {π : P →+* R} (m : PerfectionMap p π) (f : Ring.Perfection R p) :
     π (m.equiv.symm f) = Perfection.coeff R p 0 f :=
@@ -285,7 +285,7 @@ noncomputable def lift [PerfectRing R p] (S : Type u₂) [CommSemiring S] [CharP
     simp_rw [← RingHom.comp_assoc, comp_symm_equiv']
     exact (Perfection.lift p R S).symm_apply_apply f
   right_inv f := by
-    exact RingHom.ext fun x => m.equiv.injective <| (m.equiv.apply_symm_apply _).trans
+    exact RingHom.ext fun x ↦ m.equiv.injective <| (m.equiv.apply_symm_apply _).trans
       <| show Perfection.lift p R S (π.comp f) x = RingHom.comp (↑m.equiv) f x from
         RingHom.ext_iff.1 (by rw [Equiv.apply_eq_iff_eq_symm_apply]; rfl) _
 
@@ -315,7 +315,7 @@ theorem map_map {π : P →+* R} (m : PerfectionMap p π) {σ : Q →+* S} (n : 
   RingHom.ext_iff.1 (comp_map p m n φ) x
 
 theorem map_eq_map (φ : R →+* S) : map p (of p R) (of p S) φ = Perfection.map p φ :=
-  hom_ext _ (of p S) fun f => by rw [map_map, Perfection.coeff_map]
+  hom_ext _ (of p S) fun f ↦ by rw [map_map, Perfection.coeff_map]
 
 end PerfectionMap
 
@@ -372,7 +372,7 @@ theorem preVal_mk {x : O} (hx : (Ideal.Quotient.mk _ x : ModP O p) ≠ 0) :
     Ideal.mem_span_singleton'.1 <| Ideal.Quotient.eq.1 <| Quotient.sound' <| Quotient.mk_out' _
   refine (if_neg hx).trans (v.map_eq_of_sub_lt <| lt_of_not_ge ?_)
   rw [← RingHom.map_sub, ← hr, hv.le_iff_dvd]
-  exact fun hprx =>
+  exact fun hprx ↦
     hx (Ideal.Quotient.eq_zero_iff_mem.2 <| Ideal.mem_span_singleton.2 <| dvd_of_mul_left_dvd hprx)
 
 theorem preVal_mul {x y : ModP O p} (hxy0 : x * y ≠ 0) :
@@ -398,18 +398,18 @@ theorem preVal_add (x y : ModP O p) :
   rw [preVal_mk hv hx0, preVal_mk hv hy0, preVal_mk hv hxy0, RingHom.map_add]; exact v.map_add _ _
 
 theorem v_p_lt_preVal {x : ModP O p} : v p < preVal K v O p x ↔ x ≠ 0 := by
-  refine ⟨fun h hx => by rw [hx, preVal_zero] at h; exact not_lt_zero' h,
-    fun h => lt_of_not_ge fun hp => h ?_⟩
+  refine ⟨fun h hx ↦ by rw [hx, preVal_zero] at h; exact not_lt_zero' h,
+    fun h ↦ lt_of_not_ge fun hp ↦ h ?_⟩
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
   rw [preVal_mk hv h, ← map_natCast (algebraMap O K) p, hv.le_iff_dvd] at hp
   · rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton]; exact hp
 
 theorem preVal_eq_zero {x : ModP O p} : preVal K v O p x = 0 ↔ x = 0 :=
-  ⟨fun hvx =>
-    by_contradiction fun hx0 : x ≠ 0 => by
+  ⟨fun hvx ↦
+    by_contradiction fun hx0 : x ≠ 0 ↦ by
       rw [← v_p_lt_preVal (hv := hv), hvx] at hx0
       exact not_lt_zero' hx0,
-    fun hx => hx.symm ▸ preVal_zero⟩
+    fun hx ↦ hx.symm ▸ preVal_zero⟩
 
 theorem v_p_lt_val {x : O} :
     v p < v (algebraMap O K x) ↔ (Ideal.Quotient.mk _ x : ModP O p) ≠ 0 := by
@@ -478,7 +478,7 @@ theorem coeff_nat_find_add_ne_zero {f : PreTilt O p} {h : ∃ n, coeff _ _ n f �
   coeff_add_ne_zero (Nat.find_spec h) k
 
 theorem valAux_zero : valAux K v O p 0 = 0 :=
-  dif_neg fun ⟨_, hn⟩ => hn rfl
+  dif_neg fun ⟨_, hn⟩ ↦ hn rfl
 
 include hv
 
@@ -513,8 +513,8 @@ theorem valAux_mul (f g : PreTilt O p) :
   · rw [hf, zero_mul, valAux_zero, zero_mul]
   by_cases hg : g = 0
   · rw [hg, mul_zero, valAux_zero, mul_zero]
-  obtain ⟨m, hm⟩ : ∃ n, coeff _ _ n f ≠ 0 := not_forall.1 fun h => hf <| Perfection.ext h
-  obtain ⟨n, hn⟩ : ∃ n, coeff _ _ n g ≠ 0 := not_forall.1 fun h => hg <| Perfection.ext h
+  obtain ⟨m, hm⟩ : ∃ n, coeff _ _ n f ≠ 0 := not_forall.1 fun h ↦ hf <| Perfection.ext h
+  obtain ⟨n, hn⟩ : ∃ n, coeff _ _ n g ≠ 0 := not_forall.1 fun h ↦ hg <| Perfection.ext h
   replace hm := coeff_ne_zero_of_le hm (le_max_left m n)
   replace hn := coeff_ne_zero_of_le hn (le_max_right m n)
   have hfg : coeff _ _ (max m n + 1) (f * g) ≠ 0 := by
@@ -534,9 +534,9 @@ theorem valAux_add (f g : PreTilt O p) :
   · rw [hg, add_zero, valAux_zero, max_eq_left]; exact zero_le _
   by_cases hfg : f + g = 0
   · rw [hfg, valAux_zero]; exact zero_le _
-  replace hf : ∃ n, coeff _ _ n f ≠ 0 := not_forall.1 fun h => hf <| Perfection.ext h
-  replace hg : ∃ n, coeff _ _ n g ≠ 0 := not_forall.1 fun h => hg <| Perfection.ext h
-  replace hfg : ∃ n, coeff _ _ n (f + g) ≠ 0 := not_forall.1 fun h => hfg <| Perfection.ext h
+  replace hf : ∃ n, coeff _ _ n f ≠ 0 := not_forall.1 fun h ↦ hf <| Perfection.ext h
+  replace hg : ∃ n, coeff _ _ n g ≠ 0 := not_forall.1 fun h ↦ hg <| Perfection.ext h
+  replace hfg : ∃ n, coeff _ _ n (f + g) ≠ 0 := not_forall.1 fun h ↦ hfg <| Perfection.ext h
   obtain ⟨m, hm⟩ := hf; obtain ⟨n, hn⟩ := hg; obtain ⟨k, hk⟩ := hfg
   replace hm := coeff_ne_zero_of_le hm (le_trans (le_max_left m n) (le_max_left _ k))
   replace hn := coeff_ne_zero_of_le hn (le_trans (le_max_right m n) (le_max_left _ k))
@@ -565,8 +565,8 @@ variable {K v O p}
 theorem map_eq_zero {f : PreTilt O p} : val K v O hv p f = 0 ↔ f = 0 := by
   by_cases hf0 : f = 0
   · rw [hf0]; exact iff_of_true (Valuation.map_zero _) rfl
-  obtain ⟨n, hn⟩ : ∃ n, coeff _ _ n f ≠ 0 := not_forall.1 fun h => hf0 <| Perfection.ext h
-  change valAux K v O p f = 0 ↔ f = 0; refine iff_of_false (fun hvf => hn ?_) hf0
+  obtain ⟨n, hn⟩ : ∃ n, coeff _ _ n f ≠ 0 := not_forall.1 fun h ↦ hf0 <| Perfection.ext h
+  change valAux K v O p f = 0 ↔ f = 0; refine iff_of_false (fun hvf ↦ hn ?_) hf0
   rw [valAux_eq hv hn] at hvf; replace hvf := pow_eq_zero hvf; rwa [ModP.preVal_eq_zero hv] at hvf
 
 end Classical
@@ -577,7 +577,7 @@ theorem isDomain : IsDomain (PreTilt O p) := by
   have hp : Nat.Prime p := Fact.out
   haveI : Nontrivial (PreTilt O p) := ⟨(CharP.nontrivial_of_char_ne_one hp.ne_one).1⟩
   haveI : NoZeroDivisors (PreTilt O p) :=
-    ⟨fun hfg => by
+    ⟨fun hfg ↦ by
       simp_rw [← map_eq_zero hv] at hfg ⊢; contrapose! hfg; rw [Valuation.map_mul]
       exact mul_ne_zero hfg.1 hfg.2⟩
   exact NoZeroDivisors.to_isDomain _

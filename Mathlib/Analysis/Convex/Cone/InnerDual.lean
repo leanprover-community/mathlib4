@@ -72,7 +72,7 @@ lemma innerDual_singleton (x : E) :
 
 lemma innerDual_union (s t : Set E) : innerDual (s ∪ t) = innerDual s ⊓ innerDual t :=
   le_antisymm (le_inf (fun _ hx _ hy ↦ hx <| .inl hy) fun _ hx _ hy ↦ hx <| .inr hy)
-    fun _ hx _ => Or.rec (fun h ↦ hx.1 h) (fun h ↦ hx.2 h)
+    fun _ hx _ ↦ Or.rec (fun h ↦ hx.1 h) (fun h ↦ hx.2 h)
 
 lemma innerDual_insert (x : E) (s : Set E) :
     innerDual (insert x s) = innerDual {x} ⊓ innerDual s := by
@@ -165,12 +165,12 @@ theorem mem_innerDualCone (y : H) (s : Set H) : y ∈ s.innerDualCone ↔ ∀ x 
 set_option linter.deprecated false in
 @[deprecated ProperCone.innerDual_empty (since := "2025-07-06")]
 theorem innerDualCone_empty : (∅ : Set H).innerDualCone = ⊤ :=
-  eq_top_iff.mpr fun _ _ _ => False.elim
+  eq_top_iff.mpr fun _ _ _ ↦ False.elim
 
 set_option linter.deprecated false in
 @[deprecated ProperCone.innerDual_zero (since := "2025-07-06")]
 theorem innerDualCone_zero : (0 : Set H).innerDualCone = ⊤ :=
-  eq_top_iff.mpr fun _ _ y (hy : y = 0) => hy.symm ▸ (inner_zero_left _).ge
+  eq_top_iff.mpr fun _ _ y (hy : y = 0) ↦ hy.symm ▸ (inner_zero_left _).ge
 
 set_option linter.deprecated false in
 /-- Dual cone of the total space is the convex cone {0}. -/
@@ -178,18 +178,18 @@ set_option linter.deprecated false in
 theorem innerDualCone_univ : (univ : Set H).innerDualCone = 0 := by
   suffices ∀ x : H, x ∈ (univ : Set H).innerDualCone → x = 0 by
     apply SetLike.coe_injective
-    exact eq_singleton_iff_unique_mem.mpr ⟨fun x _ => (inner_zero_right _).ge, this⟩
-  exact fun x hx => by simpa [← real_inner_self_nonpos] using hx (-x) (mem_univ _)
+    exact eq_singleton_iff_unique_mem.mpr ⟨fun x _ ↦ (inner_zero_right _).ge, this⟩
+  exact fun x hx ↦ by simpa [← real_inner_self_nonpos] using hx (-x) (mem_univ _)
 
 variable {s t} in
 set_option linter.deprecated false in
 @[deprecated ProperCone.innerDual_le_innerDual (since := "2025-07-06")]
 theorem innerDualCone_le_innerDualCone (h : t ⊆ s) : s.innerDualCone ≤ t.innerDualCone :=
-  fun _ hy x hx => hy x (h hx)
+  fun _ hy x hx ↦ hy x (h hx)
 
 set_option linter.deprecated false in
 @[deprecated ProperCone.pointed_toConvexCone (since := "2025-07-06")]
-theorem pointed_innerDualCone : s.innerDualCone.Pointed := fun x _ => by rw [inner_zero_right]
+theorem pointed_innerDualCone : s.innerDualCone.Pointed := fun x _ ↦ by rw [inner_zero_right]
 
 set_option linter.deprecated false in
 /-- The inner dual cone of a singleton is given by the preimage of the positive cone under the
@@ -197,14 +197,14 @@ linear map `fun y ↦ ⟪x, y⟫`. -/
 @[deprecated ProperCone.innerDual_singleton (since := "2025-07-06")]
 theorem innerDualCone_singleton (x : H) :
     ({x} : Set H).innerDualCone = (ConvexCone.positive ℝ ℝ).comap (innerₛₗ ℝ x) :=
-  ConvexCone.ext fun _ => forall_eq
+  ConvexCone.ext fun _ ↦ forall_eq
 
 set_option linter.deprecated false in
 @[deprecated ProperCone.innerDual_union (since := "2025-07-06")]
 theorem innerDualCone_union (s t : Set H) :
     (s ∪ t).innerDualCone = s.innerDualCone ⊓ t.innerDualCone :=
-  le_antisymm (le_inf (fun _ hx _ hy => hx _ <| Or.inl hy) fun _ hx _ hy => hx _ <| Or.inr hy)
-    fun _ hx _ => Or.rec (hx.1 _) (hx.2 _)
+  le_antisymm (le_inf (fun _ hx _ hy ↦ hx _ <| Or.inl hy) fun _ hx _ hy ↦ hx _ <| Or.inr hy)
+    fun _ hx _ ↦ Or.rec (hx.1 _) (hx.2 _)
 
 set_option linter.deprecated false in
 @[deprecated ProperCone.innerDual_insert (since := "2025-07-06")]
@@ -216,7 +216,7 @@ set_option linter.deprecated false in
 @[deprecated ProperCone.innerDual_iUnion (since := "2025-07-06")]
 theorem innerDualCone_iUnion {ι : Sort*} (f : ι → Set H) :
     (⋃ i, f i).innerDualCone = ⨅ i, (f i).innerDualCone := by
-  refine le_antisymm (le_iInf fun i x hx y hy => hx _ <| mem_iUnion_of_mem _ hy) ?_
+  refine le_antisymm (le_iInf fun i x hx y hy ↦ hx _ <| mem_iUnion_of_mem _ hy) ?_
   intro x hx y hy
   rw [ConvexCone.mem_iInf] at hx
   obtain ⟨j, hj⟩ := mem_iUnion.mp hy

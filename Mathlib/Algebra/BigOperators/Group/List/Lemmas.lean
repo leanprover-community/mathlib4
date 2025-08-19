@@ -37,17 +37,17 @@ theorem prod_isUnit : ∀ {L : List M}, (∀ m ∈ L, IsUnit m) → IsUnit L.pro
   | [], _ => by simp
   | h :: t, u => by
     simp only [List.prod_cons]
-    exact IsUnit.mul (u h mem_cons_self) (prod_isUnit fun m mt => u m (mem_cons_of_mem h mt))
+    exact IsUnit.mul (u h mem_cons_self) (prod_isUnit fun m mt ↦ u m (mem_cons_of_mem h mt))
 
 @[to_additive]
 theorem prod_isUnit_iff {M : Type*} [CommMonoid M] {L : List M} :
     IsUnit L.prod ↔ ∀ m ∈ L, IsUnit m := by
-  refine ⟨fun h => ?_, prod_isUnit⟩
+  refine ⟨fun h ↦ ?_, prod_isUnit⟩
   induction L with
-  | nil => exact fun m' h' => False.elim (not_mem_nil h')
+  | nil => exact fun m' h' ↦ False.elim (not_mem_nil h')
   | cons m L ih =>
     rw [prod_cons, IsUnit.mul_iff] at h
-    exact fun m' h' ↦ Or.elim (eq_or_mem_of_mem_cons h') (fun H => H.substr h.1) fun H => ih h.2 _ H
+    exact fun m' h' ↦ Or.elim (eq_or_mem_of_mem_cons h') (fun H ↦ H.substr h.1) fun H ↦ ih h.2 _ H
 
 /-- If elements of a list commute with each other, then their product does not
 depend on the order of elements. -/
@@ -84,7 +84,7 @@ variable [DecidableEq α]
 
 /-- Summing the count of `x` over a list filtered by some `p` is just `countP` applied to `p` -/
 theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
-    ((l.dedup.filter p).map fun x => l.count x).sum = l.countP p := by
+    ((l.dedup.filter p).map fun x ↦ l.count x).sum = l.countP p := by
   induction l with
   | nil => simp
   | cons a as h =>
@@ -99,13 +99,13 @@ theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
         | false => simp only
     · simp only [beq_iff_eq]
       by_cases hp : p a
-      · refine _root_.trans (sum_map_eq_nsmul_single a _ fun _ h _ => by simp [h.symm]) ?_
+      · refine _root_.trans (sum_map_eq_nsmul_single a _ fun _ h _ ↦ by simp [h.symm]) ?_
         simp [hp, count_dedup]
-      · exact _root_.trans (List.sum_eq_zero fun n hn => by grind) (by simp [hp])
+      · exact _root_.trans (List.sum_eq_zero fun n hn ↦ by grind) (by simp [hp])
 
 theorem sum_map_count_dedup_eq_length (l : List α) :
-    (l.dedup.map fun x => l.count x).sum = l.length := by
-  simpa using sum_map_count_dedup_filter_eq_countP (fun _ => True) l
+    (l.dedup.map fun x ↦ l.count x).sum = l.length := by
+  simpa using sum_map_count_dedup_filter_eq_countP (fun _ ↦ True) l
 
 end List
 

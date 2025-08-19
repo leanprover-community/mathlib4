@@ -149,7 +149,7 @@ variable (A)
 
 /-- The identity as a non-unital ⋆-ring homomorphism. -/
 protected def id : A →⋆ₙ+* A :=
-  { (1 : A →ₙ+* A) with map_star' := fun _ => rfl }
+  { (1 : A →ₙ+* A) with map_star' := fun _ ↦ rfl }
 
 @[simp, norm_cast]
 theorem coe_id : ⇑(NonUnitalStarRingHom.id A) = id :=
@@ -160,7 +160,7 @@ end
 /-- The composition of non-unital ⋆-ring homomorphisms, as a non-unital ⋆-ring homomorphism. -/
 def comp (f : B →⋆ₙ+* C) (g : A →⋆ₙ+* B) : A →⋆ₙ+* C :=
   { f.toNonUnitalRingHom.comp g.toNonUnitalRingHom with
-    map_star' := fun a => by simp [map_star, map_star] }
+    map_star' := fun a ↦ by simp [map_star, map_star] }
 
 @[simp]
 theorem coe_comp (f : B →⋆ₙ+* C) (g : A →⋆ₙ+* B) : ⇑(comp f g) = f ∘ g :=
@@ -177,11 +177,11 @@ theorem comp_assoc (f : C →⋆ₙ+* D) (g : B →⋆ₙ+* C) (h : A →⋆ₙ+
 
 @[simp]
 theorem id_comp (f : A →⋆ₙ+* B) : (NonUnitalStarRingHom.id _).comp f = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem comp_id (f : A →⋆ₙ+* B) : f.comp (NonUnitalStarRingHom.id _) = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 instance : Monoid (A →⋆ₙ+* A) where
   mul := comp
@@ -213,8 +213,8 @@ instance : Inhabited (A →⋆ₙ+* B) :=
   ⟨0⟩
 
 instance : MonoidWithZero (A →⋆ₙ+* A) where
-  zero_mul := fun _ => ext fun _ => rfl
-  mul_zero := fun f => ext fun _ => map_zero f
+  zero_mul := fun _ ↦ ext fun _ ↦ rfl
+  mul_zero := fun f ↦ ext fun _ ↦ map_zero f
 
 @[simp]
 theorem coe_zero : ((0 : A →⋆ₙ+* B) : A → B) = 0 :=
@@ -323,7 +323,7 @@ theorem ext {f g : A ≃⋆+* B} (h : ∀ a, f a = g a) : f = g :=
 @[refl]
 def refl : A ≃⋆+* A :=
   { RingEquiv.refl A with
-    map_star' := fun _ => rfl }
+    map_star' := fun _ ↦ rfl }
 
 instance : Inhabited (A ≃⋆+* A) :=
   ⟨refl⟩
@@ -336,7 +336,7 @@ theorem coe_refl : ⇑(refl : A ≃⋆+* A) = id :=
 @[symm]
 nonrec def symm (e : A ≃⋆+* B) : B ≃⋆+* A :=
   { e.symm with
-    map_star' := fun b => by
+    map_star' := fun b ↦ by
       simpa only [apply_inv_apply, inv_apply_apply] using
         congr_arg (inv e) (map_star e (inv e b)).symm }
 
@@ -363,7 +363,7 @@ theorem coe_mk (e h₁) : ⇑(⟨e, h₁⟩ : A ≃⋆+* B) = e := rfl
 
 @[simp]
 theorem mk_coe (e : A ≃⋆+* B) (e' h₁ h₂ h₃ h₄ h₅) :
-    (⟨⟨⟨e, e', h₁, h₂⟩, h₃, h₄⟩, h₅⟩ : A ≃⋆+* B) = e := ext fun _ => rfl
+    (⟨⟨⟨e, e', h₁, h₂⟩, h₃, h₄⟩, h₅⟩ : A ≃⋆+* B) = e := ext fun _ ↦ rfl
 
 /-- Auxiliary definition to avoid looping in `dsimp` with `StarRingEquiv.symm_mk`. -/
 protected def symm_mk.aux (f f') (h₁ h₂ h₃ h₄ h₅) :=
@@ -385,7 +385,7 @@ theorem refl_symm : (StarRingEquiv.refl : A ≃⋆+* A).symm = StarRingEquiv.ref
 @[trans]
 def trans (e₁ : A ≃⋆+* B) (e₂ : B ≃⋆+* C) : A ≃⋆+* C :=
   { e₁.toRingEquiv.trans e₂.toRingEquiv with
-    map_star' := fun a =>
+    map_star' := fun a ↦
       show e₂.toFun (e₁.toFun (star a)) = star (e₂.toFun (e₁.toFun a)) by
         rw [e₁.map_star', e₂.map_star'] }
 

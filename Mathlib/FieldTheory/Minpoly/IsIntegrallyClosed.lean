@@ -86,7 +86,7 @@ theorem isIntegrallyClosed_dvd {s : S} (hs : IsIntegral R s) {p : R[X]}
 
 theorem isIntegrallyClosed_dvd_iff {s : S} (hs : IsIntegral R s) (p : R[X]) :
     Polynomial.aeval s p = 0 ↔ minpoly R s ∣ p :=
-  ⟨fun hp => isIntegrallyClosed_dvd hs hp, fun hp => by
+  ⟨fun hp ↦ isIntegrallyClosed_dvd hs hp, fun hp ↦ by
     simpa only [RingHom.mem_ker, RingHom.coe_comp, coe_evalRingHom, coe_mapRingHom,
       Function.comp_apply, eval_map, ← aeval_def] using
       aeval_eq_zero_of_dvd_aeval_eq_zero hp (minpoly.aeval R s)⟩
@@ -126,8 +126,8 @@ theorem _root_.IsIntegrallyClosed.minpoly.unique {s : S} {P : R[X]} (hmo : P.Mon
 theorem prime_of_isIntegrallyClosed {x : S} (hx : IsIntegral R x) : Prime (minpoly R x) := by
   refine
     ⟨(minpoly.monic hx).ne_zero,
-      ⟨fun h_contra => (ne_of_lt (minpoly.degree_pos hx)) (degree_eq_zero_of_isUnit h_contra).symm,
-        fun a b h => or_iff_not_imp_left.mpr fun h' => ?_⟩⟩
+      ⟨fun h_contra ↦ (ne_of_lt (minpoly.degree_pos hx)) (degree_eq_zero_of_isUnit h_contra).symm,
+        fun a b h ↦ or_iff_not_imp_left.mpr fun h' ↦ ?_⟩⟩
   rw [← minpoly.isIntegrallyClosed_dvd_iff hx] at h' h ⊢
   rw [aeval_mul] at h
   exact eq_zero_of_ne_zero_of_mul_left_eq_zero h' h
@@ -139,7 +139,7 @@ open Algebra Polynomial AdjoinRoot
 variable {x : S}
 
 theorem ToAdjoin.injective (hx : IsIntegral R x) : Function.Injective (Minpoly.toAdjoin R x) := by
-  refine (injective_iff_map_eq_zero _).2 fun P₁ hP₁ => ?_
+  refine (injective_iff_map_eq_zero _).2 fun P₁ hP₁ ↦ ?_
   obtain ⟨P, rfl⟩ := mk_surjective P₁
   simp_all [← Subalgebra.coe_eq_zero, isIntegrallyClosed_dvd_iff hx]
 

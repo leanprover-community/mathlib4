@@ -95,10 +95,10 @@ instance NormalSpace.instCompletelyRegularSpace [NormalSpace X] [R0Space X] :
     intro a ⟨hax, haK⟩
     exact hx ((specializes_iff_mem_closure.mpr hax).symm.mem_closed hK haK)
   let ⟨⟨f, cf⟩, hfx, hfK, hficc⟩ := exists_continuous_zero_one_of_isClosed cx hK d
-  let g : X → I := fun x => ⟨f x, hficc x⟩
+  let g : X → I := fun x ↦ ⟨f x, hficc x⟩
   have cg : Continuous g := cf.subtype_mk hficc
   have hgx : g x = 0 := Subtype.ext (hfx (subset_closure (mem_singleton x)))
-  have hgK : EqOn g 1 K := fun k hk => Subtype.ext (hfK hk)
+  have hgK : EqOn g 1 K := fun k hk ↦ Subtype.ext (hfK hk)
   exact ⟨g, cg, hgx, hgK⟩
 
 lemma Topology.IsInducing.completelyRegularSpace
@@ -131,7 +131,7 @@ lemma completelyRegularSpace_iInf {ι X : Type*} {t : ι → TopologicalSpace X}
   obtain ⟨I', V, hV, rfl⟩ := hxK
   simp only [mem_nhds_iff] at hV
   choose U hUV hU hxU using hV
-  replace hU := fun (i : ↥I') =>
+  replace hU := fun (i : ↥I') ↦
     @CompletelyRegularSpace.completely_regular_isOpen _ (t i) (ht i) x (U i) (hU i) (hxU i)
   clear hxU
   choose fs hfs hxfs hfsU using hU
@@ -152,7 +152,7 @@ lemma completelyRegularSpace_inf {X : Type*} {t₁ t₂ : TopologicalSpace X}
 
 instance {ι : Type*} {X : ι → Type*} [t : Π (i : ι), TopologicalSpace (X i)]
     [ht : Π (i : ι), CompletelyRegularSpace (X i)] : CompletelyRegularSpace (Π i, X i) :=
-  completelyRegularSpace_iInf (fun i => completelyRegularSpace_induced (ht i) _)
+  completelyRegularSpace_iInf (fun i ↦ completelyRegularSpace_induced (ht i) _)
 
 instance {X Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
     [htX : CompletelyRegularSpace X] [htY : CompletelyRegularSpace Y] :

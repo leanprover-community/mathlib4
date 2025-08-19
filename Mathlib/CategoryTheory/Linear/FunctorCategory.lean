@@ -23,8 +23,8 @@ variable {C D : Type*} [Category C] [Category D] [Preadditive D] [Linear R D]
 
 instance functorCategoryLinear : Linear R (C ⥤ D) where
   homModule F G :=
-    { smul := fun r α =>
-        { app := fun X => r • α.app X
+    { smul := fun r α ↦
+        { app := fun X ↦ r • α.app X
           naturality := by
             intros
             rw [comp_smul, smul_comp, α.naturality] }

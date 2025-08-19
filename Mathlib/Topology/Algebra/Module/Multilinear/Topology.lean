@@ -192,18 +192,18 @@ instance instContinuousSMul [ContinuousSMul 𝕜 F] :
 theorem hasBasis_nhds_zero_of_basis {ι : Type*} {p : ι → Prop} {b : ι → Set F}
     (h : (𝓝 (0 : F)).HasBasis p b) :
     (𝓝 (0 : ContinuousMultilinearMap 𝕜 E F)).HasBasis
-      (fun Si : Set (Π i, E i) × ι => IsVonNBounded 𝕜 Si.1 ∧ p Si.2)
-      fun Si => { f | MapsTo f Si.1 (b Si.2) } := by
+      (fun Si : Set (Π i, E i) × ι ↦ IsVonNBounded 𝕜 Si.1 ∧ p Si.2)
+      fun Si ↦ { f | MapsTo f Si.1 (b Si.2) } := by
   letI : UniformSpace F := IsTopologicalAddGroup.toUniformSpace F
   haveI : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
   rw [nhds_induced]
   refine (UniformOnFun.hasBasis_nhds_zero_of_basis _ ?_ ?_ h).comap DFunLike.coe
   · exact ⟨∅, isVonNBounded_empty _ _⟩
-  · exact directedOn_of_sup_mem fun _ _ => Bornology.IsVonNBounded.union
+  · exact directedOn_of_sup_mem fun _ _ ↦ Bornology.IsVonNBounded.union
 
 theorem hasBasis_nhds_zero :
     (𝓝 (0 : ContinuousMultilinearMap 𝕜 E F)).HasBasis
-      (fun SV : Set (Π i, E i) × Set F => IsVonNBounded 𝕜 SV.1 ∧ SV.2 ∈ 𝓝 0) fun SV =>
+      (fun SV : Set (Π i, E i) × Set F ↦ IsVonNBounded 𝕜 SV.1 ∧ SV.2 ∈ 𝓝 0) fun SV ↦
       { f | MapsTo f SV.1 SV.2 } :=
   hasBasis_nhds_zero_of_basis (Filter.basis_sets _)
 
@@ -267,7 +267,7 @@ lemma apply_apply [ContinuousConstSMul 𝕜 F] {m : Π i, E i} {c : ContinuousMu
 
 theorem hasSum_eval {α : Type*} {p : α → ContinuousMultilinearMap 𝕜 E F}
     {q : ContinuousMultilinearMap 𝕜 E F} (h : HasSum p q) (m : Π i, E i) :
-    HasSum (fun a => p a m) (q m) :=
+    HasSum (fun a ↦ p a m) (q m) :=
   h.map (applyAddHom m) (continuous_eval_const m)
 
 theorem tsum_eval [T2Space F] {α : Type*} {p : α → ContinuousMultilinearMap 𝕜 E F} (hp : Summable p)

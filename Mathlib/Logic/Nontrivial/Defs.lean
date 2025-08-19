@@ -74,7 +74,7 @@ theorem not_nontrivial (α) [Subsingleton α] : ¬Nontrivial α :=
   fun ⟨⟨x, y, h⟩⟩ ↦ h <| Subsingleton.elim x y
 
 theorem not_subsingleton (α) [Nontrivial α] : ¬Subsingleton α :=
-  fun _ => not_nontrivial _ ‹_›
+  fun _ ↦ not_nontrivial _ ‹_›
 
 lemma not_subsingleton_iff_nontrivial : ¬Subsingleton α ↔ Nontrivial α := by
   rw [← not_nontrivial_iff_subsingleton, Classical.not_not]

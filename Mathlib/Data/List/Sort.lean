@@ -47,7 +47,7 @@ protected theorem Sorted.le_of_lt [Preorder α] {l : List α} (h : l.Sorted (· 
 
 protected theorem Sorted.lt_of_le [PartialOrder α] {l : List α} (h₁ : l.Sorted (· ≤ ·))
     (h₂ : l.Nodup) : l.Sorted (· < ·) :=
-  h₁.imp₂ (fun _ _ => lt_of_le_of_ne) h₂
+  h₁.imp₂ (fun _ _ ↦ lt_of_le_of_ne) h₂
 
 protected theorem Sorted.ge_of_gt [Preorder α] {l : List α} (h : l.Sorted (· > ·)) :
     l.Sorted (· ≥ ·) :=
@@ -55,7 +55,7 @@ protected theorem Sorted.ge_of_gt [Preorder α] {l : List α} (h : l.Sorted (· 
 
 protected theorem Sorted.gt_of_ge [PartialOrder α] {l : List α} (h₁ : l.Sorted (· ≥ ·))
     (h₂ : l.Nodup) : l.Sorted (· > ·) :=
-  h₁.imp₂ (fun _ _ => lt_of_le_of_ne) <| by simp_rw [ne_comm]; exact h₂
+  h₁.imp₂ (fun _ _ ↦ lt_of_le_of_ne) <| by simp_rw [ne_comm]; exact h₂
 
 @[simp]
 theorem sorted_nil : Sorted r [] :=
@@ -72,7 +72,7 @@ theorem rel_of_sorted_cons {a : α} {l : List α} : Sorted r (a :: l) → ∀ b 
 
 nonrec theorem Sorted.cons {r : α → α → Prop} [IsTrans α r] {l : List α} {a b : α}
     (hab : r a b) (h : Sorted r (b :: l)) : Sorted r (a :: b :: l) :=
-  h.cons <| forall_mem_cons.2 ⟨hab, fun _ hx => _root_.trans hab <| rel_of_sorted_cons h _ hx⟩
+  h.cons <| forall_mem_cons.2 ⟨hab, fun _ hx ↦ _root_.trans hab <| rel_of_sorted_cons h _ hx⟩
 
 theorem sorted_cons_cons {r : α → α → Prop} [IsTrans α r] {l : List α} {a b : α} :
     Sorted r (b :: a :: l) ↔ r b a ∧ Sorted r (a :: l) := by
@@ -120,7 +120,7 @@ theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ 
     change a :: u₂ ++ v₂ = u₂ ++ ([a] ++ v₂)
     rw [← append_assoc]
     congr
-    have : ∀ x ∈ u₂, x = a := fun x m =>
+    have : ∀ x ∈ u₂, x = a := fun x m ↦
       antisymm ((pairwise_append.1 hs₂).2.2 _ m a mem_cons_self) (h₁ _ (by simp [m]))
     rw [(@eq_replicate_iff _ a (length u₂ + 1) (a :: u₂)).2,
         (@eq_replicate_iff _ a (length u₂ + 1) (u₂ ++ [a])).2] <;>
@@ -191,8 +191,8 @@ If a list is sorted with respect to a decidable relation,
 then it is sorted with respect to the corresponding Bool-valued relation.
 -/
 theorem Sorted.decide [DecidableRel r] (l : List α) (h : Sorted r l) :
-    Sorted (fun a b => decide (r a b) = true) l := by
-  refine h.imp fun {a b} h => by simpa using h
+    Sorted (fun a b ↦ decide (r a b) = true) l := by
+  refine h.imp fun {a b} h ↦ by simpa using h
 
 end Sorted
 
@@ -392,7 +392,7 @@ def insertionSort : List α → List α
 
 -- A quick check that insertionSort is stable:
 example :
-    insertionSort (fun m n => m / 10 ≤ n / 10) [5, 27, 221, 95, 17, 43, 7, 2, 98, 567, 23, 12] =
+    insertionSort (fun m n ↦ m / 10 ≤ n / 10) [5, 27, 221, 95, 17, 43, 7, 2, 98, 567, 23, 12] =
       [5, 7, 2, 17, 12, 27, 23, 43, 95, 98, 221, 567] := rfl
 
 @[simp]
@@ -408,7 +408,7 @@ theorem orderedInsert_length : ∀ (L : List α) (a : α), (L.orderedInsert r a)
 /-- An alternative definition of `orderedInsert` using `takeWhile` and `dropWhile`. -/
 theorem orderedInsert_eq_take_drop (a : α) :
     ∀ l : List α,
-      l.orderedInsert r a = (l.takeWhile fun b => ¬a ≼ b) ++ a :: l.dropWhile fun b => ¬a ≼ b
+      l.orderedInsert r a = (l.takeWhile fun b ↦ ¬a ≼ b) ++ a :: l.dropWhile fun b ↦ ¬a ≼ b
   | [] => rfl
   | b :: l => by
     dsimp only [orderedInsert]
@@ -416,8 +416,8 @@ theorem orderedInsert_eq_take_drop (a : α) :
 
 theorem insertionSort_cons_eq_take_drop (a : α) (l : List α) :
     insertionSort r (a :: l) =
-      ((insertionSort r l).takeWhile fun b => ¬a ≼ b) ++
-        a :: (insertionSort r l).dropWhile fun b => ¬a ≼ b :=
+      ((insertionSort r l).takeWhile fun b ↦ ¬a ≼ b) ++
+        a :: (insertionSort r l).dropWhile fun b ↦ ¬a ≼ b :=
   orderedInsert_eq_take_drop r a _
 
 @[simp]
@@ -441,7 +441,7 @@ theorem map_orderedInsert (f : α → β) (l : List α) (x : α)
     simp only [List.map, List.orderedInsert, ← hl₂.1]
     split_ifs
     · rw [List.map, List.map]
-    · rw [List.map, ih (fun _ ha => hl₁.2 _ ha) (fun _ ha => hl₂.2 _ ha)]
+    · rw [List.map, ih (fun _ ha ↦ hl₁.2 _ ha) (fun _ ha ↦ hl₂.2 _ ha)]
 
 section Correctness
 
@@ -540,7 +540,7 @@ theorem orderedInsert_erase [DecidableEq α] [IsAntisymm α r] (x : α) (xs : Li
     · rw [mem_cons] at hx
       replace hx := hx.resolve_left hxy
       rw [erase_cons_tail (not_beq_of_ne hxy.symm), orderedInsert, ih _ hx hxs.2, if_neg]
-      refine mt (fun hrxy => ?_) hxy
+      refine mt (fun hrxy ↦ ?_) hxy
       exact antisymm hrxy (hxs.1 _ hx)
 
 theorem sublist_orderedInsert (x : α) (xs : List α) : xs <+ xs.orderedInsert r x := by
@@ -590,7 +590,7 @@ theorem Sorted.orderedInsert (a : α) : ∀ l, Sorted r l → Sorted r (orderedI
   | [], _ => sorted_singleton a
   | b :: l, h => by
     by_cases h' : a ≼ b
-    · simpa [orderedInsert, h', h] using fun b' bm => _root_.trans h' (rel_of_sorted_cons h _ bm)
+    · simpa [orderedInsert, h', h] using fun b' bm ↦ _root_.trans h' (rel_of_sorted_cons h _ bm)
     · suffices ∀ b' : α, b' ∈ List.orderedInsert r a l → r b b' by
         simpa [orderedInsert, h', h.of_cons.orderedInsert a l]
       intro b' bm
@@ -673,7 +673,7 @@ use Mathlib order typeclasses instead.
 -/
 
 example :
-    mergeSort [5, 27, 221, 95, 17, 43, 7, 2, 98, 567, 23, 12] (fun m n => m / 10 ≤ n / 10) =
+    mergeSort [5, 27, 221, 95, 17, 43, 7, 2, 98, 567, 23, 12] (fun m n ↦ m / 10 ≤ n / 10) =
       [5, 7, 2, 17, 12, 27, 23, 43, 95, 98, 221, 567] := by simp [mergeSort]
 
 section MergeSort
@@ -687,8 +687,8 @@ variable {r} [IsTotal α r] [IsTrans α r]
 theorem Sorted.merge {l l' : List α} (h : Sorted r l) (h' : Sorted r l') :
     Sorted r (merge l l' (r · ·)) := by
   simpa using sorted_merge (le := (r · ·))
-    (fun a b c h₁ h₂ => by simpa using _root_.trans (by simpa using h₁) (by simpa using h₂))
-    (fun a b => by simpa using IsTotal.total a b)
+    (fun a b c h₁ h₂ ↦ by simpa using _root_.trans (by simpa using h₁) (by simpa using h₂))
+    (fun a b ↦ by simpa using IsTotal.total a b)
     l l' (by simpa using h) (by simpa using h')
 
 variable (r)
@@ -696,7 +696,7 @@ variable (r)
 /-- Variant of `sorted_mergeSort` using relation typeclasses. -/
 theorem sorted_mergeSort' (l : List α) : Sorted r (mergeSort l (r · ·)) := by
   simpa using sorted_mergeSort (le := (r · ·))
-    (fun _ _ _ => by simpa using trans_of r)
+    (fun _ _ _ ↦ by simpa using trans_of r)
     (by simpa using total_of r)
     l
 

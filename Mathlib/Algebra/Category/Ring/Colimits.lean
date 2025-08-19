@@ -108,7 +108,7 @@ def ColimitType : Type v :=
 instance ColimitType.instZero : Zero (ColimitType F) where zero := Quotient.mk _ zero
 
 instance ColimitType.instAdd : Add (ColimitType F) where
-  add := Quotient.map₂ add <| fun _x x' rx y _y' ry =>
+  add := Quotient.map₂ add <| fun _x x' rx y _y' ry ↦
     Setoid.trans (Relation.add_1 _ _ y rx) (Relation.add_2 x' _ _ ry)
 
 instance ColimitType.instNeg : Neg (ColimitType F) where
@@ -116,10 +116,10 @@ instance ColimitType.instNeg : Neg (ColimitType F) where
 
 instance ColimitType.AddGroup : AddGroup (ColimitType F) where
   neg := Quotient.map neg Relation.neg_1
-  zero_add := Quotient.ind <| fun _ => Quotient.sound <| Relation.zero_add _
-  add_zero := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_zero _
-  neg_add_cancel := Quotient.ind <| fun _ => Quotient.sound <| Relation.neg_add_cancel _
-  add_assoc := Quotient.ind <| fun _ => Quotient.ind₂ <| fun _ _ =>
+  zero_add := Quotient.ind <| fun _ ↦ Quotient.sound <| Relation.zero_add _
+  add_zero := Quotient.ind <| fun _ ↦ Quotient.sound <| Relation.add_zero _
+  neg_add_cancel := Quotient.ind <| fun _ ↦ Quotient.sound <| Relation.neg_add_cancel _
+  add_assoc := Quotient.ind <| fun _ ↦ Quotient.ind₂ <| fun _ _ ↦
     Quotient.sound <| Relation.add_assoc _ _ _
   nsmul := nsmulRec
   zsmul := zsmulRec
@@ -133,18 +133,18 @@ instance ColimitType.AddGroupWithOne : AddGroupWithOne (ColimitType F) :=
 instance : Ring (ColimitType.{v} F) :=
   { ColimitType.AddGroupWithOne F with
     mul := Quot.map₂ Prequotient.mul Relation.mul_2 Relation.mul_1
-    one_mul := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.one_mul _
-    mul_one := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.mul_one _
-    add_comm := fun x y => Quot.induction_on₂ x y fun _ _ => Quot.sound <| Relation.add_comm _ _
-    mul_assoc := fun x y z => Quot.induction_on₃ x y z fun x y z => by
+    one_mul := fun x ↦ Quot.inductionOn x fun _ ↦ Quot.sound <| Relation.one_mul _
+    mul_one := fun x ↦ Quot.inductionOn x fun _ ↦ Quot.sound <| Relation.mul_one _
+    add_comm := fun x y ↦ Quot.induction_on₂ x y fun _ _ ↦ Quot.sound <| Relation.add_comm _ _
+    mul_assoc := fun x y z ↦ Quot.induction_on₃ x y z fun x y z ↦ by
       simp only [(· * ·)]
       exact Quot.sound (Relation.mul_assoc _ _ _)
-    mul_zero := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.mul_zero _
-    zero_mul := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.zero_mul _
-    left_distrib := fun x y z => Quot.induction_on₃ x y z fun x y z => by
+    mul_zero := fun x ↦ Quot.inductionOn x fun _ ↦ Quot.sound <| Relation.mul_zero _
+    zero_mul := fun x ↦ Quot.inductionOn x fun _ ↦ Quot.sound <| Relation.zero_mul _
+    left_distrib := fun x y z ↦ Quot.induction_on₃ x y z fun x y z ↦ by
       simp only [(· + ·), (· * ·), Add.add]
       exact Quot.sound (Relation.left_distrib _ _ _)
-    right_distrib := fun x y z => Quot.induction_on₃ x y z fun x y z => by
+    right_distrib := fun x y z ↦ Quot.induction_on₃ x y z fun x y z ↦ by
       simp only [(· + ·), (· * ·), Add.add]
       exact Quot.sound (Relation.right_distrib _ _ _) }
 
@@ -258,16 +258,16 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt := ofHom
     map_one' := rfl
     map_zero' := rfl
     map_add' := fun x y ↦ by
-      refine Quot.induction_on₂ x y fun a b => ?_
+      refine Quot.induction_on₂ x y fun a b ↦ ?_
       dsimp [descFun]
       rw [← quot_add]
       rfl
-    map_mul' := fun x y ↦ by exact Quot.induction_on₂ x y fun a b => rfl }
+    map_mul' := fun x y ↦ by exact Quot.induction_on₂ x y fun a b ↦ rfl }
 
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s
-  uniq s m w := hom_ext <| RingHom.ext fun x => by
+  uniq s m w := hom_ext <| RingHom.ext fun x ↦ by
     refine Quot.inductionOn x ?_
     intro x
     induction x with
@@ -275,13 +275,13 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
     | one => simp
     | neg x ih => simp [ih]
     | of j x =>
-      exact congr_fun (congr_arg (fun f : F.obj j ⟶ s.pt => (f : F.obj j → s.pt)) (w j)) x
+      exact congr_fun (congr_arg (fun f : F.obj j ⟶ s.pt ↦ (f : F.obj j → s.pt)) (w j)) x
     | add x y ih_x ih_y => simp [ih_x, ih_y]
     | mul x y ih_x ih_y => simp [ih_x, ih_y]
 
 instance hasColimits_ringCat : HasColimits RingCat where
   has_colimits_of_shape _ _ :=
-    { has_colimit := fun F =>
+    { has_colimit := fun F ↦
         HasColimit.mk
           { cocone := colimitCocone F
             isColimit := colimitIsColimit F } }
@@ -402,7 +402,7 @@ def ColimitType : Type v :=
 instance ColimitType.instZero : Zero (ColimitType F) where zero := Quotient.mk _ zero
 
 instance ColimitType.instAdd : Add (ColimitType F) where
-  add := Quotient.map₂ add <| fun _x x' rx y _y' ry =>
+  add := Quotient.map₂ add <| fun _x x' rx y _y' ry ↦
     Setoid.trans (Relation.add_1 _ _ y rx) (Relation.add_2 x' _ _ ry)
 
 instance ColimitType.instNeg : Neg (ColimitType F) where
@@ -410,10 +410,10 @@ instance ColimitType.instNeg : Neg (ColimitType F) where
 
 instance ColimitType.AddGroup : AddGroup (ColimitType F) where
   neg := Quotient.map neg Relation.neg_1
-  zero_add := Quotient.ind <| fun _ => Quotient.sound <| Relation.zero_add _
-  add_zero := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_zero _
-  neg_add_cancel := Quotient.ind <| fun _ => Quotient.sound <| Relation.neg_add_cancel _
-  add_assoc := Quotient.ind <| fun _ => Quotient.ind₂ <| fun _ _ =>
+  zero_add := Quotient.ind <| fun _ ↦ Quotient.sound <| Relation.zero_add _
+  add_zero := Quotient.ind <| fun _ ↦ Quotient.sound <| Relation.add_zero _
+  neg_add_cancel := Quotient.ind <| fun _ ↦ Quotient.sound <| Relation.neg_add_cancel _
+  add_assoc := Quotient.ind <| fun _ ↦ Quotient.ind₂ <| fun _ _ ↦
     Quotient.sound <| Relation.add_assoc _ _ _
   nsmul := nsmulRec
   zsmul := zsmulRec
@@ -427,19 +427,19 @@ instance ColimitType.AddGroupWithOne : AddGroupWithOne (ColimitType F) :=
 instance : CommRing (ColimitType.{v} F) :=
   { ColimitType.AddGroupWithOne F with
     mul := Quot.map₂ Prequotient.mul Relation.mul_2 Relation.mul_1
-    one_mul := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.one_mul _
-    mul_one := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.mul_one _
-    add_comm := fun x y => Quot.induction_on₂ x y fun _ _ => Quot.sound <| Relation.add_comm _ _
-    mul_comm := fun x y => Quot.induction_on₂ x y fun _ _ => Quot.sound <| Relation.mul_comm _ _
-    mul_assoc := fun x y z => Quot.induction_on₃ x y z fun x y z => by
+    one_mul := fun x ↦ Quot.inductionOn x fun _ ↦ Quot.sound <| Relation.one_mul _
+    mul_one := fun x ↦ Quot.inductionOn x fun _ ↦ Quot.sound <| Relation.mul_one _
+    add_comm := fun x y ↦ Quot.induction_on₂ x y fun _ _ ↦ Quot.sound <| Relation.add_comm _ _
+    mul_comm := fun x y ↦ Quot.induction_on₂ x y fun _ _ ↦ Quot.sound <| Relation.mul_comm _ _
+    mul_assoc := fun x y z ↦ Quot.induction_on₃ x y z fun x y z ↦ by
       simp only [(· * ·)]
       exact Quot.sound (Relation.mul_assoc _ _ _)
-    mul_zero := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.mul_zero _
-    zero_mul := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.zero_mul _
-    left_distrib := fun x y z => Quot.induction_on₃ x y z fun x y z => by
+    mul_zero := fun x ↦ Quot.inductionOn x fun _ ↦ Quot.sound <| Relation.mul_zero _
+    zero_mul := fun x ↦ Quot.inductionOn x fun _ ↦ Quot.sound <| Relation.zero_mul _
+    left_distrib := fun x y z ↦ Quot.induction_on₃ x y z fun x y z ↦ by
       simp only [(· + ·), (· * ·), Add.add]
       exact Quot.sound (Relation.left_distrib _ _ _)
-    right_distrib := fun x y z => Quot.induction_on₃ x y z fun x y z => by
+    right_distrib := fun x y z ↦ Quot.induction_on₃ x y z fun x y z ↦ by
       simp only [(· + ·), (· * ·), Add.add]
       exact Quot.sound (Relation.right_distrib _ _ _) }
 
@@ -558,16 +558,16 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt := ofHom
     map_one' := rfl
     map_zero' := rfl
     map_add' := fun x y ↦ by
-      refine Quot.induction_on₂ x y fun a b => ?_
+      refine Quot.induction_on₂ x y fun a b ↦ ?_
       dsimp [descFun]
       rw [← quot_add]
       rfl
-    map_mul' := fun x y ↦ by exact Quot.induction_on₂ x y fun a b => rfl }
+    map_mul' := fun x y ↦ by exact Quot.induction_on₂ x y fun a b ↦ rfl }
 
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitIsColimit : IsColimit (colimitCocone F) where
   desc := fun s ↦ descMorphism F s
-  uniq := fun s m w ↦ hom_ext <| RingHom.ext fun x => by
+  uniq := fun s m w ↦ hom_ext <| RingHom.ext fun x ↦ by
     refine Quot.inductionOn x ?_
     intro x
     induction x with
@@ -575,13 +575,13 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
     | one => simp
     | neg x ih => simp [ih]
     | of j x =>
-      exact congr_fun (congr_arg (fun f : F.obj j ⟶ s.pt => (f : F.obj j → s.pt)) (w j)) x
+      exact congr_fun (congr_arg (fun f : F.obj j ⟶ s.pt ↦ (f : F.obj j → s.pt)) (w j)) x
     | add x y ih_x ih_y => simp [ih_x, ih_y]
     | mul x y ih_x ih_y => simp [ih_x, ih_y]
 
 instance hasColimits_commRingCat : HasColimits CommRingCat where
   has_colimits_of_shape _ _ :=
-    { has_colimit := fun F =>
+    { has_colimit := fun F ↦
         HasColimit.mk
           { cocone := colimitCocone F
             isColimit := colimitIsColimit F } }

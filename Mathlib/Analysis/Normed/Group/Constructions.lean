@@ -64,21 +64,21 @@ instance seminormedGroup [SeminormedGroup E] : SeminormedGroup (ULift E) :=
   SeminormedGroup.induced _ _
   { toFun := ULift.down,
     map_one' := rfl,
-    map_mul' := fun _ _ => rfl : ULift E →* E }
+    map_mul' := fun _ _ ↦ rfl : ULift E →* E }
 
 @[to_additive]
 instance seminormedCommGroup [SeminormedCommGroup E] : SeminormedCommGroup (ULift E) :=
   SeminormedCommGroup.induced _ _
   { toFun := ULift.down,
     map_one' := rfl,
-    map_mul' := fun _ _ => rfl : ULift E →* E }
+    map_mul' := fun _ _ ↦ rfl : ULift E →* E }
 
 @[to_additive]
 instance normedGroup [NormedGroup E] : NormedGroup (ULift E) :=
   NormedGroup.induced _ _
   { toFun := ULift.down,
     map_one' := rfl,
-    map_mul' := fun _ _ => rfl : ULift E →* E }
+    map_mul' := fun _ _ ↦ rfl : ULift E →* E }
   down_injective
 
 @[to_additive]
@@ -86,7 +86,7 @@ instance normedCommGroup [NormedCommGroup E] : NormedCommGroup (ULift E) :=
   NormedCommGroup.induced _ _
   { toFun := ULift.down,
     map_one' := rfl,
-    map_mul' := fun _ _ => rfl : ULift E →* E }
+    map_mul' := fun _ _ ↦ rfl : ULift E →* E }
   down_injective
 
 end ULift
@@ -294,17 +294,17 @@ variable [∀ i, SeminormedGroup (G i)] [SeminormedGroup E] (f : ∀ i, G i) {x 
 /-- Finite product of seminormed groups, using the sup norm. -/
 @[to_additive /-- Finite product of seminormed groups, using the sup norm. -/]
 instance Pi.seminormedGroup : SeminormedGroup (∀ i, G i) where
-  norm f := ↑(Finset.univ.sup fun b => ‖f b‖₊)
+  norm f := ↑(Finset.univ.sup fun b ↦ ‖f b‖₊)
   dist_eq x y :=
     congr_arg (toReal : ℝ≥0 → ℝ) <|
       congr_arg (Finset.sup Finset.univ) <|
-        funext fun a => show nndist (x a) (y a) = ‖x a / y a‖₊ from nndist_eq_nnnorm_div (x a) (y a)
+        funext fun a ↦ show nndist (x a) (y a) = ‖x a / y a‖₊ from nndist_eq_nnnorm_div (x a) (y a)
 
 @[to_additive Pi.norm_def]
-lemma Pi.norm_def' : ‖f‖ = ↑(Finset.univ.sup fun b => ‖f b‖₊) := rfl
+lemma Pi.norm_def' : ‖f‖ = ↑(Finset.univ.sup fun b ↦ ‖f b‖₊) := rfl
 
 @[to_additive Pi.nnnorm_def]
-lemma Pi.nnnorm_def' : ‖f‖₊ = Finset.univ.sup fun b => ‖f b‖₊ := Subtype.eta _ _
+lemma Pi.nnnorm_def' : ‖f‖₊ = Finset.univ.sup fun b ↦ ‖f b‖₊ := Subtype.eta _ _
 
 /-- The seminorm of an element in a product space is `≤ r` if and only if the norm of each
 component is. -/
@@ -322,7 +322,7 @@ lemma pi_norm_le_iff_of_nonempty' [Nonempty ι] : ‖f‖ ≤ r ↔ ∀ b, ‖f 
   by_cases hr : 0 ≤ r
   · exact pi_norm_le_iff_of_nonneg' hr
   · exact
-      iff_of_false (fun h => hr <| (norm_nonneg' _).trans h) fun h =>
+      iff_of_false (fun h ↦ hr <| (norm_nonneg' _).trans h) fun h ↦
         hr <| (norm_nonneg' _).trans <| h <| Classical.arbitrary _
 
 /-- The seminorm of an element in a product space is `< r` if and only if the norm of each
@@ -345,26 +345,26 @@ lemma nnnorm_le_pi_nnnorm' (i : ι) : ‖f i‖₊ ≤ ‖f‖₊ :=
   norm_le_pi_norm' _ i
 
 @[to_additive pi_norm_const_le]
-lemma pi_norm_const_le' (a : E) : ‖fun _ : ι => a‖ ≤ ‖a‖ :=
-  (pi_norm_le_iff_of_nonneg' <| norm_nonneg' _).2 fun _ => le_rfl
+lemma pi_norm_const_le' (a : E) : ‖fun _ : ι ↦ a‖ ≤ ‖a‖ :=
+  (pi_norm_le_iff_of_nonneg' <| norm_nonneg' _).2 fun _ ↦ le_rfl
 
 @[to_additive pi_nnnorm_const_le]
-lemma pi_nnnorm_const_le' (a : E) : ‖fun _ : ι => a‖₊ ≤ ‖a‖₊ :=
+lemma pi_nnnorm_const_le' (a : E) : ‖fun _ : ι ↦ a‖₊ ≤ ‖a‖₊ :=
   pi_norm_const_le' _
 
 @[to_additive (attr := simp) pi_norm_const]
-lemma pi_norm_const' [Nonempty ι] (a : E) : ‖fun _i : ι => a‖ = ‖a‖ := by
+lemma pi_norm_const' [Nonempty ι] (a : E) : ‖fun _i : ι ↦ a‖ = ‖a‖ := by
   simpa only [← dist_one_right] using dist_pi_const a 1
 
 @[to_additive (attr := simp) pi_nnnorm_const]
-lemma pi_nnnorm_const' [Nonempty ι] (a : E) : ‖fun _i : ι => a‖₊ = ‖a‖₊ :=
+lemma pi_nnnorm_const' [Nonempty ι] (a : E) : ‖fun _i : ι ↦ a‖₊ = ‖a‖₊ :=
   NNReal.eq <| pi_norm_const' a
 
 /-- The $L^1$ norm is less than the $L^\infty$ norm scaled by the cardinality. -/
 @[to_additive Pi.sum_norm_apply_le_norm /-- The $L^1$ norm is less than the $L^\infty$ norm scaled
 by the cardinality. -/]
 lemma Pi.sum_norm_apply_le_norm' : ∑ i, ‖f i‖ ≤ Fintype.card ι • ‖f‖ :=
-  Finset.sum_le_card_nsmul _ _ _ fun i _hi => norm_le_pi_norm' _ i
+  Finset.sum_le_card_nsmul _ _ _ fun i _hi ↦ norm_le_pi_norm' _ i
 
 /-- The $L^1$ norm is less than the $L^\infty$ norm scaled by the cardinality. -/
 @[to_additive Pi.sum_nnnorm_apply_le_nnnorm /-- The $L^1$ norm is less than the $L^\infty$ norm

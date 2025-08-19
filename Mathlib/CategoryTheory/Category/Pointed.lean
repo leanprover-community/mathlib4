@@ -85,7 +85,7 @@ instance (X Y : Pointed) : FunLike { f : X → Y // f X.point = Y.point } X Y wh
   coe f := f
   coe_injective' _ _ := Subtype.ext
 
-instance hasForget : ConcreteCategory Pointed fun X Y => { f : X → Y // f X.point = Y.point } where
+instance hasForget : ConcreteCategory Pointed fun X Y ↦ { f : X → Y // f X.point = Y.point } where
   hom f := ⟨f.1, f.2⟩
   ofHom f := ⟨f.1, f.2⟩
 
@@ -111,16 +111,16 @@ def typeToPointed : Type u ⥤ Pointed.{u} where
 /-- `typeToPointed` is the free functor. -/
 def typeToPointedForgetAdjunction : typeToPointed ⊣ forget Pointed :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Y =>
-        { toFun := fun f => f.toFun ∘ Option.some
-          invFun := fun f => ⟨fun o => o.elim Y.point f, rfl⟩
-          left_inv := fun f => by
+    { homEquiv := fun X Y ↦
+        { toFun := fun f ↦ f.toFun ∘ Option.some
+          invFun := fun f ↦ ⟨fun o ↦ o.elim Y.point f, rfl⟩
+          left_inv := fun f ↦ by
             apply Pointed.Hom.ext
             funext x
             cases x
             · exact f.map_point.symm
             · rfl }
-      homEquiv_naturality_left_symm := fun f g => by
+      homEquiv_naturality_left_symm := fun f g ↦ by
         apply Pointed.Hom.ext
         funext x
         cases x <;> rfl }

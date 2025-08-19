@@ -218,7 +218,7 @@ theorem one_le_padicValNat_of_dvd {n : ℕ} [hp : Fact p.Prime] (hn : n ≠ 0) (
 
 theorem dvd_iff_padicValNat_ne_zero {p n : ℕ} [Fact p.Prime] (hn0 : n ≠ 0) :
     p ∣ n ↔ padicValNat p n ≠ 0 :=
-  ⟨fun h => one_le_iff_ne_zero.mp (one_le_padicValNat_of_dvd hn0 h), fun h =>
+  ⟨fun h ↦ one_le_iff_ne_zero.mp (one_le_padicValNat_of_dvd hn0 h), fun h ↦
     Classical.not_not.1 (mt padicValNat.eq_zero_of_not_dvd h)⟩
 
 end padicValNat
@@ -335,8 +335,8 @@ theorem le_padicValRat_add_of_le {q r : ℚ} (hqr : q + r ≠ 0)
 theorem min_le_padicValRat_add {q r : ℚ} (hqr : q + r ≠ 0) :
     min (padicValRat p q) (padicValRat p r) ≤ padicValRat p (q + r) :=
   (le_total (padicValRat p q) (padicValRat p r)).elim
-  (fun h => by rw [min_eq_left h]; exact le_padicValRat_add_of_le hqr h)
-  (fun h => by rw [min_eq_right h, add_comm]; exact le_padicValRat_add_of_le (by rwa [add_comm]) h)
+  (fun h ↦ by rw [min_eq_left h]; exact le_padicValRat_add_of_le hqr h)
+  (fun h ↦ by rw [min_eq_right h, add_comm]; exact le_padicValRat_add_of_le (by rwa [add_comm]) h)
 
 /-- Ultrametric property of a p-adic valuation. -/
 lemma add_eq_min {q r : ℚ} (hqr : q + r ≠ 0) (hq : q ≠ 0) (hr : r ≠ 0)
@@ -376,7 +376,7 @@ theorem sum_pos_of_pos {n : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i < n → 0 < pa
     · rw [h, zero_add]
       exact hF d (lt_add_one _)
     · refine lt_of_lt_of_le ?_ (min_le_padicValRat_add hn0)
-      refine lt_min (hd (fun i hi => ?_) h) (hF d (lt_add_one _))
+      refine lt_min (hd (fun i hi ↦ ?_) h) (hF d (lt_add_one _))
       exact hF _ (lt_trans hi (lt_add_one _))
 
 /-- If the p-adic valuation of a finite set of positive rationals is greater than a given rational
@@ -391,9 +391,9 @@ theorem lt_sum_of_lt {p j : ℕ} [hp : Fact (Nat.Prime p)] {F : ℕ → ℚ} {S 
   | cons s S' Hnot Hne Hind =>
     rw [Finset.cons_eq_insert, Finset.sum_insert Hnot]
     exact padicValRat.lt_add_of_lt
-      (ne_of_gt (add_pos (hn1 s) (Finset.sum_pos (fun i _ => hn1 i) Hne)))
+      (ne_of_gt (add_pos (hn1 s) (Finset.sum_pos (fun i _ ↦ hn1 i) Hne)))
       (hF _ (by simp [Finset.mem_insert, true_or]))
-      (Hind (fun i hi => hF _ (by rw [Finset.cons_eq_insert,Finset.mem_insert]; exact Or.inr hi)))
+      (Hind (fun i hi ↦ hF _ (by rw [Finset.cons_eq_insert,Finset.mem_insert]; exact Or.inr hi)))
 
 end padicValRat
 
@@ -499,7 +499,7 @@ lemma padicValNat_le_nat_log (n : ℕ) : padicValNat p n ≤ Nat.log p n := by
 lemma nat_log_eq_padicValNat_iff {n : ℕ} [hp : Fact (Nat.Prime p)] (hn : n ≠ 0) :
     Nat.log p n = padicValNat p n ↔ n < p ^ (padicValNat p n + 1) := by
   rw [Nat.log_eq_iff (Or.inr ⟨(Nat.Prime.one_lt' p).out, by omega⟩), and_iff_right_iff_imp]
-  exact fun _ => Nat.le_of_dvd (Nat.pos_iff_ne_zero.mpr hn) pow_padicValNat_dvd
+  exact fun _ ↦ Nat.le_of_dvd (Nat.pos_iff_ne_zero.mpr hn) pow_padicValNat_dvd
 
 /-- This is false for prime numbers other than 2:
 for `p = 3`, `n = 1`, one has `log 3 1 = padicValNat 3 2 = 0`. -/
@@ -531,7 +531,7 @@ theorem range_pow_padicValNat_subset_divisors {n : ℕ} (hn : n ≠ 0) :
   exact ⟨(pow_dvd_pow p <| by omega).trans pow_padicValNat_dvd, hn⟩
 
 theorem range_pow_padicValNat_subset_divisors' {n : ℕ} [hp : Fact p.Prime] :
-    ((Finset.range (padicValNat p n)).image fun t => p ^ (t + 1)) ⊆ n.divisors.erase 1 := by
+    ((Finset.range (padicValNat p n)).image fun t ↦ p ^ (t + 1)) ⊆ n.divisors.erase 1 := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
   intro t ht

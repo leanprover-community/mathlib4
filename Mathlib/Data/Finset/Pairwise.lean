@@ -45,7 +45,7 @@ theorem PairwiseDisjoint.image_finset_of_le [DecidableEq ι] {s : Finset ι} {f 
   exact hs.image_of_le hf
 
 theorem PairwiseDisjoint.attach (hs : (s : Set ι).PairwiseDisjoint f) :
-    (s.attach : Set { x // x ∈ s }).PairwiseDisjoint (f ∘ Subtype.val) := fun i _ j _ hij =>
+    (s.attach : Set { x // x ∈ s }).PairwiseDisjoint (f ∘ Subtype.val) := fun i _ j _ hij ↦
   hs i.2 j.2 <| mt Subtype.ext_val hij
 
 end SemilatticeInf
@@ -55,7 +55,7 @@ variable [Lattice α] [OrderBot α]
 /-- Bind operation for `Set.PairwiseDisjoint`. In a complete lattice, you can use
 `Set.PairwiseDisjoint.biUnion`. -/
 theorem PairwiseDisjoint.biUnion_finset {s : Set ι'} {g : ι' → Finset ι} {f : ι → α}
-    (hs : s.PairwiseDisjoint fun i' : ι' => (g i').sup f)
+    (hs : s.PairwiseDisjoint fun i' : ι' ↦ (g i').sup f)
     (hg : ∀ i ∈ s, (g i : Set ι).PairwiseDisjoint f) : (⋃ i ∈ s, ↑(g i)).PairwiseDisjoint f := by
   rintro a ha b hb hab
   simp_rw [Set.mem_iUnion] at ha hb

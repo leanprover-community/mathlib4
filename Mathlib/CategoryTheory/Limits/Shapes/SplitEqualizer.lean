@@ -113,10 +113,10 @@ is more convenient to show a given fork is an equalizer by showing it is split.
 -/
 def IsSplitEqualizer.isEqualizer {W : C} {h : W ⟶ X} (t : IsSplitEqualizer f g h) :
     IsLimit t.asFork :=
-  Fork.IsLimit.mk' _ fun s =>
+  Fork.IsLimit.mk' _ fun s ↦
     ⟨ s.ι ≫ t.leftRetraction,
       by simp [- top_rightRetraction, ← t.top_rightRetraction, s.condition_assoc],
-      fun hm => by simp [← hm] ⟩
+      fun hm ↦ by simp [← hm] ⟩
 
 end
 variable (f g)

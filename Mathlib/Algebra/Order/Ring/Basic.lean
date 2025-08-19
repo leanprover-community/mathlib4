@@ -185,7 +185,7 @@ lemma Odd.pow_pos_iff (hn : Odd n) : 0 < a ^ n ↔ 0 < a := lt_iff_lt_of_le_iff_
 alias ⟨_, Odd.pow_nonpos⟩ := Odd.pow_nonpos_iff
 alias ⟨_, Odd.pow_neg⟩ := Odd.pow_neg_iff
 
-lemma Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
+lemma Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R ↦ a ^ n := by
   have hn₀ : n ≠ 0 := by rintro rfl; simp [Odd, eq_comm (a := 0)] at hn
   intro a b hab
   obtain ha | ha := le_total 0 a

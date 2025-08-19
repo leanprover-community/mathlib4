@@ -184,11 +184,11 @@ instance (H : Type u) [TopologicalSpace H] :
   coe_injective' N O h := by cases N; cases O; congr
 
 instance : Min (StructureGroupoid H) :=
-  ⟨fun G G' => StructureGroupoid.mk
+  ⟨fun G G' ↦ StructureGroupoid.mk
     (members := G.members ∩ G'.members)
-    (trans' := fun e e' he he' =>
+    (trans' := fun e e' he he' ↦
       ⟨G.trans' e e' he.left he'.left, G'.trans' e e' he.right he'.right⟩)
-    (symm' := fun e he => ⟨G.symm' e he.left, G'.symm' e he.right⟩)
+    (symm' := fun e he ↦ ⟨G.symm' e he.left, G'.symm' e he.right⟩)
     (id_mem' := ⟨G.id_mem', G'.id_mem'⟩)
     (locality' := by
       intro e hx
@@ -201,11 +201,11 @@ instance : Min (StructureGroupoid H) :=
         refine And.intro hs.left (And.intro hs.right.left ?_)
       · exact hs.right.right.left
       · exact hs.right.right.right)
-    (mem_of_eqOnSource' := fun e e' he hee' =>
+    (mem_of_eqOnSource' := fun e e' he hee' ↦
       ⟨G.mem_of_eqOnSource' e e' he.left hee', G'.mem_of_eqOnSource' e e' he.right hee'⟩)⟩
 
 instance : InfSet (StructureGroupoid H) :=
-  ⟨fun S => StructureGroupoid.mk
+  ⟨fun S ↦ StructureGroupoid.mk
     (members := ⋂ s ∈ S, s.members)
     (trans' := by
       simp only [mem_iInter]
@@ -229,7 +229,7 @@ instance : InfSet (StructureGroupoid H) :=
     (mem_of_eqOnSource' := by
       simp only [mem_iInter]
       intro e e' he he'e
-      exact fun i hi => i.mem_of_eqOnSource' e e' (he i hi) he'e)⟩
+      exact fun i hi ↦ i.mem_of_eqOnSource' e e' (he i hi) he'e)⟩
 
 theorem StructureGroupoid.trans (G : StructureGroupoid H) {e e' : PartialHomeomorph H H}
     (he : e ∈ G) (he' : e' ∈ G) : e ≫ₕ e' ∈ G :=
@@ -435,9 +435,9 @@ instance instStructureGroupoidOrderTop : OrderTop (StructureGroupoid H) where
 instance : CompleteLattice (StructureGroupoid H) :=
   { SetLike.instPartialOrder,
     completeLatticeOfInf _ (by
-      exact fun s =>
-      ⟨fun S Ss F hF => mem_iInter₂.mp hF S Ss,
-      fun T Tl F fT => mem_iInter₂.mpr (fun i his => Tl his fT)⟩) with
+      exact fun s ↦
+      ⟨fun S Ss F hF ↦ mem_iInter₂.mp hF S Ss,
+      fun T Tl F fT ↦ mem_iInter₂.mpr (fun i his ↦ Tl his fT)⟩) with
     le := (· ≤ ·)
     lt := (· < ·)
     bot := instStructureGroupoidOrderBot.bot

@@ -129,7 +129,7 @@ and nothing on the other. -/
 def BalancedSz (l r : ℕ) : Prop :=
   l + r ≤ 1 ∨ l ≤ delta * r ∧ r ≤ delta * l
 
-instance BalancedSz.dec : DecidableRel BalancedSz := fun _ _ => inferInstanceAs (Decidable (_ ∨ _))
+instance BalancedSz.dec : DecidableRel BalancedSz := fun _ _ ↦ inferInstanceAs (Decidable (_ ∨ _))
 
 /-- The `Balanced t` asserts that the tree `t` satisfies the balance invariants
 (at every level). -/
@@ -156,7 +156,7 @@ theorem balancedSz_zero {l : ℕ} : BalancedSz l 0 ↔ l ≤ 1 := by
 
 theorem balancedSz_up {l r₁ r₂ : ℕ} (h₁ : r₁ ≤ r₂) (h₂ : l + r₂ ≤ 1 ∨ r₂ ≤ delta * l)
     (H : BalancedSz l r₁) : BalancedSz l r₂ := by
-  refine or_iff_not_imp_left.2 fun h => ?_
+  refine or_iff_not_imp_left.2 fun h ↦ ?_
   refine ⟨?_, h₂.resolve_left h⟩
   cases H with
   | inl H =>
@@ -168,8 +168,8 @@ theorem balancedSz_up {l r₁ r₂ : ℕ} (h₁ : r₁ ≤ r₂) (h₂ : l + r�
 
 theorem balancedSz_down {l r₁ r₂ : ℕ} (h₁ : r₁ ≤ r₂) (h₂ : l + r₂ ≤ 1 ∨ l ≤ delta * r₁)
     (H : BalancedSz l r₂) : BalancedSz l r₁ :=
-  have : l + r₂ ≤ 1 → BalancedSz l r₁ := fun H => Or.inl (le_trans (Nat.add_le_add_left h₁ _) H)
-  Or.casesOn H this fun H => Or.casesOn h₂ this fun h₂ => Or.inr ⟨h₂, le_trans h₁ H.2⟩
+  have : l + r₂ ≤ 1 → BalancedSz l r₁ := fun H ↦ Or.inl (le_trans (Nat.add_le_add_left h₁ _) H)
+  Or.casesOn H this fun H ↦ Or.casesOn h₂ this fun h₂ ↦ Or.inr ⟨h₂, le_trans h₁ H.2⟩
 
 theorem Balanced.dual : ∀ {t : Ordnode α}, Balanced t → Balanced (dual t)
   | nil, _ => ⟨⟩
@@ -331,7 +331,7 @@ theorem Sized.dual : ∀ {t : Ordnode α}, Sized t → Sized (dual t)
   | node _ l _ r, ⟨rfl, sl, sr⟩ => ⟨by simp [size_dual, add_comm], Sized.dual sr, Sized.dual sl⟩
 
 theorem Sized.dual_iff {t : Ordnode α} : Sized (.dual t) ↔ Sized t :=
-  ⟨fun h => by rw [← dual_dual t]; exact h.dual, Sized.dual⟩
+  ⟨fun h ↦ by rw [← dual_dual t]; exact h.dual, Sized.dual⟩
 
 theorem Sized.rotateL {l x r} (hl : @Sized α l) (hr : Sized r) : Sized (rotateL l x r) := by
   cases r; · exact hl.node' hr
@@ -379,15 +379,15 @@ theorem Any.imp {P Q : α → Prop} (H : ∀ a, P a → Q a) : ∀ {t}, Any P t 
   | node _ _ _ _ => Or.imp (Any.imp H) <| Or.imp (H _) (Any.imp H)
 
 theorem all_singleton {P : α → Prop} {x : α} : All P (singleton x) ↔ P x :=
-  ⟨fun h => h.2.1, fun h => ⟨⟨⟩, h, ⟨⟩⟩⟩
+  ⟨fun h ↦ h.2.1, fun h ↦ ⟨⟨⟩, h, ⟨⟩⟩⟩
 
 theorem any_singleton {P : α → Prop} {x : α} : Any P (singleton x) ↔ P x :=
-  ⟨by rintro (⟨⟨⟩⟩ | h | ⟨⟨⟩⟩); exact h, fun h => Or.inr (Or.inl h)⟩
+  ⟨by rintro (⟨⟨⟩⟩ | h | ⟨⟨⟩⟩); exact h, fun h ↦ Or.inr (Or.inl h)⟩
 
 theorem all_dual {P : α → Prop} : ∀ {t : Ordnode α}, All P (dual t) ↔ All P t
   | nil => Iff.rfl
   | node _ _l _x _r =>
-    ⟨fun ⟨hr, hx, hl⟩ => ⟨all_dual.1 hl, hx, all_dual.1 hr⟩, fun ⟨hl, hx, hr⟩ =>
+    ⟨fun ⟨hr, hx, hl⟩ ↦ ⟨all_dual.1 hl, hx, all_dual.1 hr⟩, fun ⟨hl, hx, hr⟩ ↦
       ⟨all_dual.2 hr, hx, all_dual.2 hl⟩⟩
 
 theorem all_iff_forall {P : α → Prop} : ∀ {t}, All P t ↔ ∀ x, Emem x t → P x
@@ -399,7 +399,7 @@ theorem any_iff_exists {P : α → Prop} : ∀ {t}, Any P t ↔ ∃ x, Emem x t 
   | node _ l x r => by simp only [Emem]; simp [Any, any_iff_exists, or_and_right, exists_or]
 
 theorem emem_iff_all {x : α} {t} : Emem x t ↔ ∀ P, All P t → P x :=
-  ⟨fun h _ al => all_iff_forall.1 al _ h, fun H => H _ <| all_iff_forall.2 fun _ => id⟩
+  ⟨fun h _ al ↦ all_iff_forall.1 al _ h, fun H ↦ H _ <| all_iff_forall.2 fun _ ↦ id⟩
 
 theorem all_node' {P l x r} : @All α P (node' l x r) ↔ All P l ∧ P x ∧ All P r :=
   Iff.rfl
@@ -461,7 +461,7 @@ theorem length_toList {t : Ordnode α} (h : Sized t) : (toList t).length = t.siz
 
 theorem equiv_iff {t₁ t₂ : Ordnode α} (h₁ : Sized t₁) (h₂ : Sized t₂) :
     Equiv t₁ t₂ ↔ toList t₁ = toList t₂ :=
-  and_iff_right_of_imp fun h => by rw [← length_toList h₁, h, length_toList h₂]
+  and_iff_right_of_imp fun h ↦ by rw [← length_toList h₁, h, length_toList h₂]
 
 /-! ### `mem` -/
 
@@ -712,8 +712,8 @@ theorem balance_sz_dual {l r}
       ∃ r', Raised (size (dual l)) r' ∧ BalancedSz (size (dual r)) r' := by
   rw [size_dual, size_dual]
   exact
-    H.symm.imp (Exists.imp fun _ => And.imp_right BalancedSz.symm)
-      (Exists.imp fun _ => And.imp_right BalancedSz.symm)
+    H.symm.imp (Exists.imp fun _ ↦ And.imp_right BalancedSz.symm)
+      (Exists.imp fun _ ↦ And.imp_right BalancedSz.symm)
 
 theorem size_balanceL {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Sized l) (sr : Sized r)
     (H : (∃ l', Raised l' (size l) ∧ BalancedSz l' (size r)) ∨
@@ -769,7 +769,7 @@ theorem Bounded.dual :
 
 theorem Bounded.dual_iff {t : Ordnode α} {o₁ o₂} :
     Bounded t o₁ o₂ ↔ @Bounded αᵒᵈ _ (.dual t) o₂ o₁ :=
-  ⟨Bounded.dual, fun h => by
+  ⟨Bounded.dual, fun h ↦ by
     have := Bounded.dual h; rwa [dual_dual, OrderDual.Preorder.dual_dual] at this⟩
 
 theorem Bounded.weak_left : ∀ {t : Ordnode α} {o₁ o₂}, Bounded t o₁ o₂ → Bounded t ⊥ o₂
@@ -817,11 +817,11 @@ theorem Bounded.trans_right {t₁ t₂ : Ordnode α} {x : α} :
 theorem Bounded.mem_lt : ∀ {t o} {x : α}, Bounded t o x → All (· < x) t
   | nil, _, _, _ => ⟨⟩
   | node _ _ _ _, _, _, ⟨h₁, h₂⟩ =>
-    ⟨h₁.mem_lt.imp fun _ h => lt_trans h h₂.to_lt, h₂.to_lt, h₂.mem_lt⟩
+    ⟨h₁.mem_lt.imp fun _ h ↦ lt_trans h h₂.to_lt, h₂.to_lt, h₂.mem_lt⟩
 
 theorem Bounded.mem_gt : ∀ {t o} {x : α}, Bounded t x o → All (· > x) t
   | nil, _, _, _ => ⟨⟩
-  | node _ _ _ _, _, _, ⟨h₁, h₂⟩ => ⟨h₁.mem_gt, h₁.to_lt, h₂.mem_gt.imp fun _ => lt_trans h₁.to_lt⟩
+  | node _ _ _ _, _, _, ⟨h₁, h₂⟩ => ⟨h₁.mem_gt, h₁.to_lt, h₂.mem_gt.imp fun _ ↦ lt_trans h₁.to_lt⟩
 
 theorem Bounded.of_lt :
     ∀ {t o₁ o₂} {x : α}, Bounded t o₁ o₂ → Bounded nil o₁ x → All (· < x) t → Bounded t o₁ x
@@ -835,9 +835,9 @@ theorem Bounded.of_gt :
 
 theorem Bounded.to_sep {t₁ t₂ o₁ o₂} {x : α}
     (h₁ : Bounded t₁ o₁ (x : WithTop α)) (h₂ : Bounded t₂ (x : WithBot α) o₂) :
-    t₁.All fun y => t₂.All fun z : α => y < z := by
-  refine h₁.mem_lt.imp fun y yx => ?_
-  exact h₂.mem_gt.imp fun z xz => lt_trans yx xz
+    t₁.All fun y ↦ t₂.All fun z : α ↦ y < z := by
+  refine h₁.mem_lt.imp fun y yx ↦ ?_
+  exact h₂.mem_gt.imp fun z xz ↦ lt_trans yx xz
 
 end Bounded
 

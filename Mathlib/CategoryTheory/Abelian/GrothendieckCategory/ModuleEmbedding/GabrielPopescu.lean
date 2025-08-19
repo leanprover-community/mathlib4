@@ -60,8 +60,8 @@ open CoproductsFromFiniteFiltered
 
 /-- This is the map `⨁ₘ G ⟶ A` induced by `M ⟶ Hom(G, A)`. -/
 noncomputable def d {G A : C} {M : ModuleCat (End G)ᵐᵒᵖ}
-    (g : M ⟶ ModuleCat.of (End G)ᵐᵒᵖ (G ⟶ A)) : ∐ (fun (_ : M) => G) ⟶ A :=
-  Sigma.desc fun (m : M) => g m
+    (g : M ⟶ ModuleCat.of (End G)ᵐᵒᵖ (G ⟶ A)) : ∐ (fun (_ : M) ↦ G) ⟶ A :=
+  Sigma.desc fun (m : M) ↦ g m
 
 @[reassoc]
 theorem ι_d {G A : C} {M : ModuleCat (End G)ᵐᵒᵖ} (g : M ⟶ ModuleCat.of (End G)ᵐᵒᵖ (G ⟶ A)) (m : M) :
@@ -74,12 +74,12 @@ theorem kernel_ι_d_comp_d {G : C} (hG : IsSeparator G) {A B : C} {M : ModuleCat
     (g : M ⟶ ModuleCat.of (End G)ᵐᵒᵖ (G ⟶ A)) (hg : Mono g)
     (f : M ⟶ ModuleCat.of (End G)ᵐᵒᵖ (G ⟶ B)) :
     kernel.ι (d g) ≫ d f = 0 := by
-  refine (isColimitFiniteSubproductsCocone (fun (_ : M) => G)).pullback_zero_ext (fun F => ?_)
+  refine (isColimitFiniteSubproductsCocone (fun (_ : M) ↦ G)).pullback_zero_ext (fun F ↦ ?_)
   dsimp only [liftToFinsetObj_obj, Discrete.functor_obj_eq_as, finiteSubcoproductsCocone_pt,
     Functor.const_obj_obj]
   classical
   rw [finiteSubcoproductsCocone_ι_app_eq_sum, ← pullback.condition_assoc]
-  refine (Preadditive.isSeparator_iff G).1 hG _ (fun h => ?_)
+  refine (Preadditive.isSeparator_iff G).1 hG _ (fun h ↦ ?_)
   rw [Preadditive.comp_sum_assoc, Preadditive.comp_sum_assoc, Preadditive.sum_comp]
   simp only [Category.assoc, ι_d]
   let r (x : F) : (End G)ᵐᵒᵖ := MulOpposite.op (h ≫ pullback.fst _ _ ≫ Sigma.π _ x)
@@ -122,9 +122,9 @@ theorem GabrielPopescu.preservesInjectiveObjects (G : C) (hG : IsSeparator G) :
     rw [← Module.injective_iff_injective_object]
     simp only [preadditiveCoyonedaObj_obj_carrier, preadditiveCoyonedaObj_obj_isAddCommGroup,
       preadditiveCoyonedaObj_obj_isModule]
-    refine Module.Baer.injective (fun M g => ?_)
+    refine Module.Baer.injective (fun M g ↦ ?_)
     have h := exists_d_comp_eq_d hG B (ModuleCat.ofHom
-      ⟨⟨fun i => i.1.unop, by cat_disch⟩, by cat_disch⟩) ?_ (ModuleCat.ofHom g)
+      ⟨⟨fun i ↦ i.1.unop, by cat_disch⟩, by cat_disch⟩) ?_ (ModuleCat.ofHom g)
     · obtain ⟨l, hl⟩ := h
       refine ⟨((preadditiveCoyonedaObj G).map l).hom ∘ₗ
         (Preadditive.homSelfLinearEquivEndMulOpposite G).symm.toLinearMap, ?_⟩

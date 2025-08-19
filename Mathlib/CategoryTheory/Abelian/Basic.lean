@@ -153,8 +153,8 @@ def imageFactorisation {X Y : C} (f : X ⟶ Y) [IsIso (Abelian.coimageImageCompa
     ImageFactorisation f where
   F := imageMonoFactorisation f
   isImage :=
-    { lift := fun F => inv (Abelian.coimageImageComparison f) ≫ cokernel.desc _ F.e F.kernel_ι_comp
-      lift_fac := fun F => by
+    { lift := fun F ↦ inv (Abelian.coimageImageComparison f) ≫ cokernel.desc _ F.e F.kernel_ι_comp
+      lift_fac := fun F ↦ by
         rw [imageMonoFactorisation_m]
         simp only [Category.assoc]
         rw [IsIso.inv_comp_eq]
@@ -174,7 +174,7 @@ variable [∀ {X Y : C} (f : X ⟶ Y), IsIso (Abelian.coimageImageComparison f)]
 
 /-- A category in which coimage-image comparisons are all isomorphisms has images. -/
 theorem hasImages : HasImages C :=
-  { has_image := fun {_} {_} f => { exists_image := ⟨imageFactorisation f⟩ } }
+  { has_image := fun {_} {_} f ↦ { exists_image := ⟨imageFactorisation f⟩ } }
 
 variable [Limits.HasFiniteProducts C]
 
@@ -195,7 +195,7 @@ lemma isNormalMonoCategory : IsNormalMonoCategory C where
         have aux : ∀ (s : KernelFork (cokernel.π f)), (limit.lift (parallelPair (cokernel.π f) 0) s
           ≫ inv (imageMonoFactorisation f).e) ≫ Fork.ι (KernelFork.ofι f (by simp))
             = Fork.ι s := ?_
-        · refine isLimitAux _ (fun A => limit.lift _ _ ≫ inv (imageMonoFactorisation f).e) aux ?_
+        · refine isLimitAux _ (fun A ↦ limit.lift _ _ ≫ inv (imageMonoFactorisation f).e) aux ?_
           intro A g hg
           rw [KernelFork.ι_ofι] at hg
           rw [← cancel_mono f, hg, ← aux, KernelFork.ι_ofι]
@@ -220,7 +220,7 @@ lemma isNormalEpiCategory : IsNormalEpiCategory C where
         have aux : ∀ (s : CokernelCofork (kernel.ι f)), Cofork.π (CokernelCofork.ofπ f (by simp)) ≫
           inv (imageMonoFactorisation f).m ≫ inv (Abelian.coimageImageComparison f) ≫
           colimit.desc (parallelPair (kernel.ι f) 0) s = Cofork.π s := ?_
-        · refine isColimitAux _ (fun A => inv (imageMonoFactorisation f).m ≫
+        · refine isColimitAux _ (fun A ↦ inv (imageMonoFactorisation f).m ≫
                   inv (Abelian.coimageImageComparison f) ≫ colimit.desc _ _) aux ?_
           intro A g hg
           rw [CokernelCofork.π_ofπ] at hg
@@ -354,7 +354,7 @@ section HasStrongEpiMonoFactorisations
 
 /-- An abelian category has strong epi-mono factorisations. -/
 instance (priority := 100) : HasStrongEpiMonoFactorisations C :=
-  HasStrongEpiMonoFactorisations.mk fun f => imageStrongEpiMonoFactorisation f
+  HasStrongEpiMonoFactorisations.mk fun f ↦ imageStrongEpiMonoFactorisation f
 
 -- In particular, this means that it has well-behaved images.
 example : HasImages C := by infer_instance
@@ -555,16 +555,16 @@ abbrev pullbackToBiproductFork : KernelFork (biprod.desc f (-g)) :=
     `(f, -g)`. -/
 def isLimitPullbackToBiproduct : IsLimit (pullbackToBiproductFork f g) :=
   Fork.IsLimit.mk _
-    (fun s =>
+    (fun s ↦
       pullback.lift (Fork.ι s ≫ biprod.fst) (Fork.ι s ≫ biprod.snd) <|
         sub_eq_zero.1 <| by
           rw [Category.assoc, Category.assoc, ← comp_sub, sub_eq_add_neg, ← comp_neg, ←
             biprod.desc_eq, KernelFork.condition s])
-    (fun s => by
+    (fun s ↦ by
       apply biprod.hom_ext <;> rw [Fork.ι_ofι, Category.assoc]
       · rw [biprod.lift_fst, pullback.lift_fst]
       · rw [biprod.lift_snd, pullback.lift_snd])
-    fun s m h => by apply pullback.hom_ext <;> simp [← h]
+    fun s m h ↦ by apply pullback.hom_ext <;> simp [← h]
 
 end PullbackToBiproductIsKernel
 
@@ -586,13 +586,13 @@ abbrev biproductToPushoutCofork : CokernelCofork (biprod.lift f (-g)) :=
     cofork. -/
 def isColimitBiproductToPushout : IsColimit (biproductToPushoutCofork f g) :=
   Cofork.IsColimit.mk _
-    (fun s =>
+    (fun s ↦
       pushout.desc (biprod.inl ≫ Cofork.π s) (biprod.inr ≫ Cofork.π s) <|
         sub_eq_zero.1 <| by
           rw [← Category.assoc, ← Category.assoc, ← sub_comp, sub_eq_add_neg, ← neg_comp, ←
             biprod.lift_eq, Cofork.condition s, zero_comp])
-    (fun s => by apply biprod.hom_ext' <;> simp)
-    fun s m h => by apply pushout.hom_ext <;> simp [← h]
+    (fun s ↦ by apply biprod.hom_ext' <;> simp)
+    fun s m h ↦ by apply pushout.hom_ext <;> simp [← h]
 
 end BiproductToPushoutIsCokernel
 
@@ -605,7 +605,7 @@ variable [Limits.HasPullbacks C] {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
 instance epi_pullback_of_epi_f [Epi f] : Epi (pullback.snd f g) :=
   -- It will suffice to consider some morphism e : Y ⟶ R such that
     -- pullback.snd f g ≫ e = 0 and show that e = 0.
-    epi_of_cancel_zero _ fun {R} e h => by
+    epi_of_cancel_zero _ fun {R} e h ↦ by
     -- Consider the morphism u := (0, e) : X ⊞ Y⟶ R.
     let u := biprod.desc (0 : X ⟶ R) e
     -- The composite pullback f g ⟶ X ⊞ Y ⟶ R is zero by assumption.
@@ -637,7 +637,7 @@ instance epi_pullback_of_epi_f [Epi f] : Epi (pullback.snd f g) :=
 instance epi_pullback_of_epi_g [Epi g] : Epi (pullback.fst f g) :=
   -- It will suffice to consider some morphism e : X ⟶ R such that
   -- pullback.fst f g ≫ e = 0 and show that e = 0.
-  epi_of_cancel_zero _ fun {R} e h => by
+  epi_of_cancel_zero _ fun {R} e h ↦ by
     -- Consider the morphism u := (e, 0) : X ⊞ Y ⟶ R.
     let u := biprod.desc e (0 : Y ⟶ R)
     -- The composite pullback f g ⟶ X ⊞ Y ⟶ R is zero by assumption.
@@ -690,7 +690,7 @@ section MonoPushout
 variable [Limits.HasPushouts C] {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
 
 instance mono_pushout_of_mono_f [Mono f] : Mono (pushout.inr _ _ : Z ⟶ pushout f g) :=
-  mono_of_cancel_zero _ fun {R} e h => by
+  mono_of_cancel_zero _ fun {R} e h ↦ by
     let u := biprod.lift (0 : R ⟶ Y) e
     have hu : u ≫ BiproductToPushoutIsCokernel.biproductToPushout f g = 0 := by simpa [u]
     have :=
@@ -712,7 +712,7 @@ instance mono_pushout_of_mono_f [Mono f] : Mono (pushout.inr _ _ : Z ⟶ pushout
       _ = 0 := zero_comp
 
 instance mono_pushout_of_mono_g [Mono g] : Mono (pushout.inl f g) :=
-  mono_of_cancel_zero _ fun {R} e h => by
+  mono_of_cancel_zero _ fun {R} e h ↦ by
     let u := biprod.lift e (0 : R ⟶ Z)
     have hu : u ≫ BiproductToPushoutIsCokernel.biproductToPushout f g = 0 := by simpa [u]
     have :=

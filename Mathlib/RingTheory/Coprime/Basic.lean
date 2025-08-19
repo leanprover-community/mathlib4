@@ -50,12 +50,12 @@ theorem isCoprime_comm : IsCoprime x y ↔ IsCoprime y x :=
   ⟨IsCoprime.symm, IsCoprime.symm⟩
 
 theorem isCoprime_self : IsCoprime x x ↔ IsUnit x :=
-  ⟨fun ⟨a, b, h⟩ => isUnit_of_mul_eq_one x (a + b) <| by rwa [mul_comm, add_mul], fun h =>
+  ⟨fun ⟨a, b, h⟩ ↦ isUnit_of_mul_eq_one x (a + b) <| by rwa [mul_comm, add_mul], fun h ↦
     let ⟨b, hb⟩ := isUnit_iff_exists_inv'.1 h
     ⟨b, 0, by rwa [zero_mul, add_zero]⟩⟩
 
 theorem isCoprime_zero_left : IsCoprime 0 x ↔ IsUnit x :=
-  ⟨fun ⟨a, b, H⟩ => isUnit_of_mul_eq_one x b <| by rwa [mul_zero, zero_add, mul_comm] at H, fun H =>
+  ⟨fun ⟨a, b, H⟩ ↦ isUnit_of_mul_eq_one x b <| by rwa [mul_zero, zero_add, mul_comm] at H, fun H ↦
     let ⟨b, hb⟩ := isUnit_iff_exists_inv'.1 H
     ⟨1, b, by rwa [one_mul, zero_add]⟩⟩
 
@@ -137,7 +137,7 @@ theorem IsCoprime.of_mul_right_right (H : IsCoprime x (y * z)) : IsCoprime x z :
   exact H.of_mul_right_left
 
 theorem IsCoprime.mul_left_iff : IsCoprime (x * y) z ↔ IsCoprime x z ∧ IsCoprime y z :=
-  ⟨fun H => ⟨H.of_mul_left_left, H.of_mul_left_right⟩, fun ⟨H1, H2⟩ => H1.mul_left H2⟩
+  ⟨fun H ↦ ⟨H.of_mul_left_left, H.of_mul_left_right⟩, fun ⟨H1, H2⟩ ↦ H1.mul_left H2⟩
 
 theorem IsCoprime.mul_right_iff : IsCoprime x (y * z) ↔ IsCoprime x y ∧ IsCoprime x z := by
   rw [isCoprime_comm, IsCoprime.mul_left_iff, isCoprime_comm, @isCoprime_comm _ _ z]
@@ -232,7 +232,7 @@ variable {R G : Type*} [CommSemiring R] [Group G] [MulAction G R] [SMulCommClass
   [IsScalarTower G R R] (x : G) (y z : R)
 
 theorem isCoprime_group_smul_left : IsCoprime (x • y) z ↔ IsCoprime y z :=
-  ⟨fun ⟨a, b, h⟩ => ⟨x • a, b, by rwa [smul_mul_assoc, ← mul_smul_comm]⟩, fun ⟨a, b, h⟩ =>
+  ⟨fun ⟨a, b, h⟩ ↦ ⟨x • a, b, by rwa [smul_mul_assoc, ← mul_smul_comm]⟩, fun ⟨a, b, h⟩ ↦
     ⟨x⁻¹ • a, b, by rwa [smul_mul_smul_comm, inv_mul_cancel, one_smul]⟩⟩
 
 theorem isCoprime_group_smul_right : IsCoprime y (x • z) ↔ IsCoprime y z :=
@@ -325,28 +325,28 @@ theorem mul_add_right_right {x y : R} (h : IsCoprime x y) (z : R) : IsCoprime x 
   exact h.add_mul_right_right z
 
 theorem add_mul_left_left_iff {x y z : R} : IsCoprime (x + y * z) y ↔ IsCoprime x y :=
-  ⟨of_add_mul_left_left, fun h => h.add_mul_left_left z⟩
+  ⟨of_add_mul_left_left, fun h ↦ h.add_mul_left_left z⟩
 
 theorem add_mul_right_left_iff {x y z : R} : IsCoprime (x + z * y) y ↔ IsCoprime x y :=
-  ⟨of_add_mul_right_left, fun h => h.add_mul_right_left z⟩
+  ⟨of_add_mul_right_left, fun h ↦ h.add_mul_right_left z⟩
 
 theorem add_mul_left_right_iff {x y z : R} : IsCoprime x (y + x * z) ↔ IsCoprime x y :=
-  ⟨of_add_mul_left_right, fun h => h.add_mul_left_right z⟩
+  ⟨of_add_mul_left_right, fun h ↦ h.add_mul_left_right z⟩
 
 theorem add_mul_right_right_iff {x y z : R} : IsCoprime x (y + z * x) ↔ IsCoprime x y :=
-  ⟨of_add_mul_right_right, fun h => h.add_mul_right_right z⟩
+  ⟨of_add_mul_right_right, fun h ↦ h.add_mul_right_right z⟩
 
 theorem mul_add_left_left_iff {x y z : R} : IsCoprime (y * z + x) y ↔ IsCoprime x y :=
-  ⟨of_mul_add_left_left, fun h => h.mul_add_left_left z⟩
+  ⟨of_mul_add_left_left, fun h ↦ h.mul_add_left_left z⟩
 
 theorem mul_add_right_left_iff {x y z : R} : IsCoprime (z * y + x) y ↔ IsCoprime x y :=
-  ⟨of_mul_add_right_left, fun h => h.mul_add_right_left z⟩
+  ⟨of_mul_add_right_left, fun h ↦ h.mul_add_right_left z⟩
 
 theorem mul_add_left_right_iff {x y z : R} : IsCoprime x (x * z + y) ↔ IsCoprime x y :=
-  ⟨of_mul_add_left_right, fun h => h.mul_add_left_right z⟩
+  ⟨of_mul_add_left_right, fun h ↦ h.mul_add_left_right z⟩
 
 theorem mul_add_right_right_iff {x y z : R} : IsCoprime x (z * x + y) ↔ IsCoprime x y :=
-  ⟨of_mul_add_right_right, fun h => h.mul_add_right_right z⟩
+  ⟨of_mul_add_right_right, fun h ↦ h.mul_add_right_right z⟩
 
 theorem neg_left {x y : R} (h : IsCoprime x y) : IsCoprime (-x) y := by
   obtain ⟨a, b, h⟩ := h
@@ -354,13 +354,13 @@ theorem neg_left {x y : R} (h : IsCoprime x y) : IsCoprime (-x) y := by
   rwa [neg_mul_neg]
 
 theorem neg_left_iff (x y : R) : IsCoprime (-x) y ↔ IsCoprime x y :=
-  ⟨fun h => neg_neg x ▸ h.neg_left, neg_left⟩
+  ⟨fun h ↦ neg_neg x ▸ h.neg_left, neg_left⟩
 
 theorem neg_right {x y : R} (h : IsCoprime x y) : IsCoprime x (-y) :=
   h.symm.neg_left.symm
 
 theorem neg_right_iff (x y : R) : IsCoprime x (-y) ↔ IsCoprime x y :=
-  ⟨fun h => neg_neg y ▸ h.neg_right, neg_right⟩
+  ⟨fun h ↦ neg_neg y ▸ h.neg_right, neg_right⟩
 
 theorem neg_neg {x y : R} (h : IsCoprime x y) : IsCoprime (-x) (-y) :=
   h.neg_left.neg_right
@@ -407,7 +407,7 @@ end IsCoprime
 /-- `IsCoprime` is not a useful definition for `Nat`; consider using `Nat.Coprime` instead. -/
 @[simp]
 lemma Nat.isCoprime_iff {m n : ℕ} : IsCoprime m n ↔ m = 1 ∨ n = 1 := by
-  refine ⟨fun ⟨a, b, H⟩ => ?_, fun h => ?_⟩
+  refine ⟨fun ⟨a, b, H⟩ ↦ ?_, fun h ↦ ?_⟩
   · simp_rw [Nat.add_eq_one_iff, mul_eq_one, mul_eq_zero] at H
     exact H.symm.imp (·.1.2) (·.2.2)
   · obtain rfl | rfl := h

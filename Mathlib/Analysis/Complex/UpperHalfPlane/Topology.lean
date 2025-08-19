@@ -55,7 +55,7 @@ instance : ContractibleSpace ℍ :=
 instance : LocPathConnectedSpace ℍ := isOpenEmbedding_coe.locPathConnectedSpace
 
 instance : NoncompactSpace ℍ := by
-  refine ⟨fun h => ?_⟩
+  refine ⟨fun h ↦ ?_⟩
   have : IsCompact (Complex.im ⁻¹' Ioi 0) := isCompact_iff_isCompact_univ.2 h
   replace := this.isClosed.closure_eq
   rw [closure_preimage_im, closure_Ioi, Set.ext_iff] at this

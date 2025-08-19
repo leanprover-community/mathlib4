@@ -121,18 +121,18 @@ instance nonempty_commRing [Nonempty α] : Nonempty (CommRing α) := by
 
 @[simp]
 theorem nonempty_commRing_iff : Nonempty (CommRing α) ↔ Nonempty α :=
-  ⟨Nonempty.map (·.zero), fun _ => nonempty_commRing _⟩
+  ⟨Nonempty.map (·.zero), fun _ ↦ nonempty_commRing _⟩
 
 @[simp]
 theorem nonempty_ring_iff : Nonempty (Ring α) ↔ Nonempty α :=
-  ⟨Nonempty.map (·.zero), fun _ => (nonempty_commRing _).map (·.toRing)⟩
+  ⟨Nonempty.map (·.zero), fun _ ↦ (nonempty_commRing _).map (·.toRing)⟩
 
 @[simp]
 theorem nonempty_commSemiring_iff : Nonempty (CommSemiring α) ↔ Nonempty α :=
-  ⟨Nonempty.map (·.zero), fun _ => (nonempty_commRing _).map (·.toCommSemiring)⟩
+  ⟨Nonempty.map (·.zero), fun _ ↦ (nonempty_commRing _).map (·.toCommSemiring)⟩
 
 @[simp]
 theorem nonempty_semiring_iff : Nonempty (Semiring α) ↔ Nonempty α :=
-  ⟨Nonempty.map (·.zero), fun _ => (nonempty_commRing _).map (·.toSemiring)⟩
+  ⟨Nonempty.map (·.zero), fun _ ↦ (nonempty_commRing _).map (·.toSemiring)⟩
 
 end Nonempty

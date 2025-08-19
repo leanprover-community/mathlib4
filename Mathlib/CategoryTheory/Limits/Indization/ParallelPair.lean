@@ -107,7 +107,7 @@ def ϕ : F₁ f g P₁ P₂ ⟶ F₂ f g P₁ P₂ where
 
 theorem hf : f = IsColimit.map (isColimit₁ f g P₁ P₂)
     (Cocone.mk B (ι₂ f g P₁ P₂)) (whiskerRight (ϕ f g P₁ P₂) yoneda) := by
-  refine (isColimit₁ f g P₁ P₂).hom_ext (fun i => ?_)
+  refine (isColimit₁ f g P₁ P₂).hom_ext (fun i ↦ ?_)
   rw [IsColimit.ι_map]
   simpa using i.hom.1.w.symm
 
@@ -124,7 +124,7 @@ def ψ : F₁ f g P₁ P₂ ⟶ F₂ f g P₁ P₂ where
 
 theorem hg : g = IsColimit.map (isColimit₁ f g P₁ P₂)
     (Cocone.mk B (ι₂ f g P₁ P₂)) (whiskerRight (ψ f g P₁ P₂) yoneda) := by
-  refine (isColimit₁ f g P₁ P₂).hom_ext (fun i => ?_)
+  refine (isColimit₁ f g P₁ P₂).hom_ext (fun i ↦ ?_)
   rw [IsColimit.ι_map]
   simpa using i.hom.2.w.symm
 
@@ -159,10 +159,10 @@ noncomputable def parallelPairIsoParallelPairCompYoneda {A B : Cᵒᵖ ⥤ Type 
   parallelPair.ext
     (P.isColimit₁.coconePointUniqueUpToIso (colimit.isColimit _))
     (P.isColimit₂.coconePointUniqueUpToIso (colimit.isColimit _))
-    (P.isColimit₁.hom_ext (fun j => by
+    (P.isColimit₁.hom_ext (fun j ↦ by
       simp [P.hf, P.isColimit₁.ι_map_assoc, P.isColimit₁.comp_coconePointUniqueUpToIso_hom_assoc,
         P.isColimit₂.comp_coconePointUniqueUpToIso_hom]))
-    (P.isColimit₁.hom_ext (fun j => by
+    (P.isColimit₁.hom_ext (fun j ↦ by
       simp [P.hg, P.isColimit₁.ι_map_assoc, P.isColimit₁.comp_coconePointUniqueUpToIso_hom_assoc,
         P.isColimit₂.comp_coconePointUniqueUpToIso_hom]))
 

@@ -99,11 +99,11 @@ variable {M}
 /-- The canonical linear map `M →ₗ[R] TensorAlgebra R M`.
 -/
 irreducible_def ι : M →ₗ[R] TensorAlgebra R M :=
-  { toFun := fun m => RingQuot.mkAlgHom R _ (FreeAlgebra.ι R m)
-    map_add' := fun x y => by
+  { toFun := fun m ↦ RingQuot.mkAlgHom R _ (FreeAlgebra.ι R m)
+    map_add' := fun x y ↦ by
       rw [← map_add (RingQuot.mkAlgHom R (Rel R M))]
       exact RingQuot.mkAlgHom_rel R Rel.add
-    map_smul' := fun r x => by
+    map_smul' := fun r x ↦ by
       rw [← map_smul (RingQuot.mkAlgHom R (Rel R M))]
       exact RingQuot.mkAlgHom_rel R Rel.smul }
 
@@ -118,20 +118,20 @@ of `f` to a morphism of `R`-algebras `TensorAlgebra R M → A`.
 @[simps symm_apply]
 def lift {A : Type*} [Semiring A] [Algebra R A] : (M →ₗ[R] A) ≃ (TensorAlgebra R M →ₐ[R] A) :=
   { toFun :=
-      RingQuot.liftAlgHom R ∘ fun f =>
-        ⟨FreeAlgebra.lift R (⇑f), fun x y (h : Rel R M x y) => by
+      RingQuot.liftAlgHom R ∘ fun f ↦
+        ⟨FreeAlgebra.lift R (⇑f), fun x y (h : Rel R M x y) ↦ by
           induction h <;>
             simp only [Algebra.smul_def, FreeAlgebra.lift_ι_apply, LinearMap.map_smulₛₗ,
               RingHom.id_apply, map_mul, AlgHom.commutes, map_add]⟩
-    invFun := fun F => F.toLinearMap.comp (ι R)
-    left_inv := fun f => by
+    invFun := fun F ↦ F.toLinearMap.comp (ι R)
+    left_inv := fun f ↦ by
       rw [ι]
       ext1 x
       exact (RingQuot.liftAlgHom_mkAlgHom_apply _ _ _ _).trans (FreeAlgebra.lift_ι_apply f x)
-    right_inv := fun F =>
+    right_inv := fun F ↦
       RingQuot.ringQuot_ext' _ _ _ <|
         FreeAlgebra.hom_ext <|
-          funext fun x => by
+          funext fun x ↦ by
             rw [ι]
             exact
               (RingQuot.liftAlgHom_mkAlgHom_apply _ _ _ _).trans (FreeAlgebra.lift_ι_apply _ _) }
@@ -200,7 +200,7 @@ theorem induction {C : TensorAlgebra R M → Prop}
 
 @[simp]
 theorem adjoin_range_ι : Algebra.adjoin R (Set.range (ι R (M := M))) = ⊤ := by
-  refine top_unique fun x hx => ?_; clear hx
+  refine top_unique fun x hx ↦ ?_; clear hx
   induction x using induction with
   | algebraMap => exact algebraMap_mem _ _
   | add x y hx hy => exact add_mem hx hy
@@ -220,7 +220,7 @@ def algebraMapInv : TensorAlgebra R M →ₐ[R] R :=
 variable (M)
 
 theorem algebraMap_leftInverse :
-    Function.LeftInverse algebraMapInv (algebraMap R <| TensorAlgebra R M) := fun x => by
+    Function.LeftInverse algebraMapInv (algebraMap R <| TensorAlgebra R M) := fun x ↦ by
   simp [algebraMapInv]
 
 @[simp]
@@ -259,7 +259,7 @@ As an implementation detail, we implement this using `TrivSqZeroExt` which has a
 algebra structure. -/
 def ιInv : TensorAlgebra R M →ₗ[R] M := by
   letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
-  haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
+  haveI : IsCentralScalar R M := ⟨fun r m ↦ rfl⟩
   exact (TrivSqZeroExt.sndHom R M).comp toTrivSqZeroExt.toLinearMap
 
 theorem ι_leftInverse : Function.LeftInverse ιInv (ι R : M → TensorAlgebra R M) := fun x ↦ by
@@ -278,9 +278,9 @@ variable {R}
 
 @[simp]
 theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x = 0 ∧ r = 0 := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
-    haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
+    haveI : IsCentralScalar R M := ⟨fun r m ↦ rfl⟩
     have hf0 : toTrivSqZeroExt (ι R x) = (0, x) := lift_ι_apply _ _
     rw [h, AlgHom.commutes] at hf0
     have : r = 0 ∧ 0 = x := Prod.ext_iff.1 hf0
@@ -307,11 +307,11 @@ variable (R M)
 /-- Construct a product of `n` elements of the module within the tensor algebra.
 
 See also `PiTensorProduct.tprod`. -/
-def tprod (n : ℕ) : MultilinearMap R (fun _ : Fin n => M) (TensorAlgebra R M) :=
-  (MultilinearMap.mkPiAlgebraFin R n (TensorAlgebra R M)).compLinearMap fun _ => ι R
+def tprod (n : ℕ) : MultilinearMap R (fun _ : Fin n ↦ M) (TensorAlgebra R M) :=
+  (MultilinearMap.mkPiAlgebraFin R n (TensorAlgebra R M)).compLinearMap fun _ ↦ ι R
 
 @[simp]
-theorem tprod_apply {n : ℕ} (x : Fin n → M) : tprod R M n x = (List.ofFn fun i => ι R (x i)).prod :=
+theorem tprod_apply {n : ℕ} (x : Fin n → M) : tprod R M n x = (List.ofFn fun i ↦ ι R (x i)).prod :=
   rfl
 
 variable {R M}

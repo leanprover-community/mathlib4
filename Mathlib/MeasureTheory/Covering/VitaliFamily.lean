@@ -106,10 +106,10 @@ include h
 theorem exists_disjoint_covering_ae :
     ∃ t : Set (X × Set X),
       (∀ p : X × Set X, p ∈ t → p.1 ∈ s) ∧
-      (t.PairwiseDisjoint fun p => p.2) ∧
+      (t.PairwiseDisjoint fun p ↦ p.2) ∧
       (∀ p : X × Set X, p ∈ t → p.2 ∈ v.setsAt p.1 ∩ f p.1) ∧
       μ (s \ ⋃ (p : X × Set X) (_ : p ∈ t), p.2) = 0 :=
-  v.covering s (fun x => v.setsAt x ∩ f x) (fun _ _ => inter_subset_left) h
+  v.covering s (fun x ↦ v.setsAt x ∩ f x) (fun _ _ ↦ inter_subset_left) h
 
 /-- Given `h : v.FineSubfamilyOn f s`, then `h.index` is a set parametrizing a disjoint
 covering of almost every `s`. -/
@@ -120,7 +120,7 @@ protected def index : Set (X × Set X) :=
 for `p ∈ h.index`, such that these sets form a disjoint covering of almost every `s`. -/
 @[nolint unusedArguments]
 protected def covering (_h : FineSubfamilyOn v f s) : X × Set X → Set X :=
-  fun p => p.2
+  fun p ↦ p.2
 
 theorem index_subset : ∀ p : X × Set X, p ∈ h.index → p.1 ∈ s :=
   h.exists_disjoint_covering_ae.choose_spec.1
@@ -129,7 +129,7 @@ theorem covering_disjoint : h.index.PairwiseDisjoint h.covering :=
   h.exists_disjoint_covering_ae.choose_spec.2.1
 
 open scoped Function in -- required for scoped `on` notation
-theorem covering_disjoint_subtype : Pairwise (Disjoint on fun x : h.index => h.covering x) :=
+theorem covering_disjoint_subtype : Pairwise (Disjoint on fun x : h.index ↦ h.covering x) :=
   (pairwise_subtype_iff_pairwise_set _ _).2 h.covering_disjoint
 
 theorem covering_mem {p : X × Set X} (hp : p ∈ h.index) : h.covering p ∈ f p.1 :=
@@ -142,7 +142,7 @@ theorem measure_diff_biUnion : μ (s \ ⋃ p ∈ h.index, h.covering p) = 0 :=
   h.exists_disjoint_covering_ae.choose_spec.2.2.2
 
 theorem index_countable [SecondCountableTopology X] : h.index.Countable :=
-  h.covering_disjoint.countable_of_nonempty_interior fun _ hx =>
+  h.covering_disjoint.countable_of_nonempty_interior fun _ hx ↦
     v.nonempty_interior _ _ (h.covering_mem_family hx)
 
 protected theorem measurableSet_u {p : X × Set X} (hp : p ∈ h.index) :
@@ -158,7 +158,7 @@ theorem measure_le_tsum_of_absolutelyContinuous [SecondCountableTopology X] {ρ 
       (measure_union_le _ _)
     _ = ∑' p : h.index, ρ (h.covering p) := by
       rw [hρ h.measure_diff_biUnion, zero_add,
-        measure_biUnion h.index_countable h.covering_disjoint fun x hx => h.measurableSet_u hx]
+        measure_biUnion h.index_countable h.covering_disjoint fun x hx ↦ h.measurableSet_u hx]
 
 theorem measure_le_tsum [SecondCountableTopology X] : μ s ≤ ∑' x : h.index, μ (h.covering x) :=
   h.measure_le_tsum_of_absolutelyContinuous Measure.AbsolutelyContinuous.rfl
@@ -182,7 +182,7 @@ def enlarge (v : VitaliFamily μ) (δ : ℝ) (δpos : 0 < δ) : VitaliFamily μ 
     exact ⟨s, mem_union_left _ hs, h's⟩
   covering := by
     intro s f fset ffine
-    let g : X → Set (Set X) := fun x => f x ∩ v.setsAt x
+    let g : X → Set (Set X) := fun x ↦ f x ∩ v.setsAt x
     have : ∀ x ∈ s, ∀ ε : ℝ, ε > 0 → ∃ t ∈ g x, t ⊆ closedBall x ε := by
       intro x hx ε εpos
       obtain ⟨t, tf, ht⟩ : ∃ t ∈ f x, t ⊆ closedBall x (min ε δ) :=
@@ -191,8 +191,8 @@ def enlarge (v : VitaliFamily μ) (δ : ℝ) (δpos : 0 < δ) : VitaliFamily μ 
       · exact ⟨t, ⟨tf, h't⟩, ht.trans (closedBall_subset_closedBall (min_le_left _ _))⟩
       · refine False.elim (h't.2.2 ?_)
         exact ht.trans (closedBall_subset_closedBall (min_le_right _ _))
-    rcases v.covering s g (fun x _ => inter_subset_right) this with ⟨t, ts, tdisj, tg, μt⟩
-    exact ⟨t, ts, tdisj, fun p hp => (tg p hp).1, μt⟩
+    rcases v.covering s g (fun x _ ↦ inter_subset_right) this with ⟨t, ts, tdisj, tg, μt⟩
+    exact ⟨t, ts, tdisj, fun p hp ↦ (tg p hp).1, μt⟩
 
 variable (v : VitaliFamily μ)
 

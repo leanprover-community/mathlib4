@@ -55,7 +55,7 @@ instance instCoe : Coe (L.ElementarySubstructure M) (L.Substructure M) :=
   ⟨ElementarySubstructure.toSubstructure⟩
 
 instance instSetLike : SetLike (L.ElementarySubstructure M) M :=
-  ⟨fun x => x.toSubstructure.carrier, fun ⟨⟨s, hs1⟩, hs2⟩ ⟨⟨t, ht1⟩, _⟩ _ => by
+  ⟨fun x ↦ x.toSubstructure.carrier, fun ⟨⟨s, hs1⟩, hs2⟩ ⟨⟨t, ht1⟩, _⟩ _ ↦ by
     congr⟩
 
 instance inducedStructure (S : L.ElementarySubstructure M) : L.Structure S :=
@@ -86,7 +86,7 @@ alias coeSubtype := coe_subtype
 
 /-- The substructure `M` of the structure `M` is elementary. -/
 instance instTop : Top (L.ElementarySubstructure M) :=
-  ⟨⟨⊤, fun _ _ _ => Substructure.realize_formula_top.symm⟩⟩
+  ⟨⟨⊤, fun _ _ _ ↦ Substructure.realize_formula_top.symm⟩⟩
 
 instance instInhabited : Inhabited (L.ElementarySubstructure M) :=
   ⟨⊤⟩
@@ -126,7 +126,7 @@ theorem isElementary_of_exists (S : L.Substructure M)
       ∀ (n : ℕ) (φ : L.BoundedFormula Empty (n + 1)) (x : Fin n → S) (a : M),
         φ.Realize default (Fin.snoc ((↑) ∘ x) a : _ → M) →
           ∃ b : S, φ.Realize default (Fin.snoc ((↑) ∘ x) b : _ → M)) :
-    S.IsElementary := fun _ => S.subtype.isElementary_of_exists htv
+    S.IsElementary := fun _ ↦ S.subtype.isElementary_of_exists htv
 
 /-- Bundles a substructure satisfying the Tarski-Vaught test as an elementary substructure. -/
 @[simps]

@@ -31,7 +31,7 @@ section Ext
 variable {M N : DMatrix m n α}
 
 theorem ext_iff : (∀ i j, M i j = N i j) ↔ M = N :=
-  ⟨fun h => funext fun i => funext <| h i, fun h => by simp [h]⟩
+  ⟨fun h ↦ funext fun i ↦ funext <| h i, fun h ↦ by simp [h]⟩
 
 @[ext]
 theorem ext : (∀ i j, M i j = N i j) → M = N :=
@@ -41,7 +41,7 @@ end Ext
 
 /-- `M.map f` is the DMatrix obtained by applying `f` to each entry of the matrix `M`. -/
 def map (M : DMatrix m n α) {β : m → n → Type w} (f : ∀ ⦃i j⦄, α i j → β i j) : DMatrix m n β :=
-  fun i j => f (M i j)
+  fun i j ↦ f (M i j)
 
 @[simp]
 theorem map_apply {M : DMatrix m n α} {β : m → n → Type w} {f : ∀ ⦃i j⦄, α i j → β i j} {i : m}
@@ -50,21 +50,21 @@ theorem map_apply {M : DMatrix m n α} {β : m → n → Type w} {f : ∀ ⦃i j
 @[simp]
 theorem map_map {M : DMatrix m n α} {β : m → n → Type w} {γ : m → n → Type z}
     {f : ∀ ⦃i j⦄, α i j → β i j} {g : ∀ ⦃i j⦄, β i j → γ i j} :
-    (M.map f).map g = M.map fun _ _ x => g (f x) := by ext; simp
+    (M.map f).map g = M.map fun _ _ x ↦ g (f x) := by ext; simp
 
 /-- The transpose of a dmatrix. -/
-def transpose (M : DMatrix m n α) : DMatrix n m fun j i => α i j
+def transpose (M : DMatrix m n α) : DMatrix n m fun j i ↦ α i j
   | x, y => M y x
 
 @[inherit_doc]
 scoped postfix:1024 "ᵀ" => DMatrix.transpose
 
 /-- `DMatrix.col u` is the column matrix whose entries are given by `u`. -/
-def col {α : m → Type v} (w : ∀ i, α i) : DMatrix m Unit fun i _j => α i
+def col {α : m → Type v} (w : ∀ i, α i) : DMatrix m Unit fun i _j ↦ α i
   | x, _y => w x
 
 /-- `DMatrix.row u` is the row matrix whose entries are given by `u`. -/
-def row {α : n → Type v} (v : ∀ j, α j) : DMatrix Unit n fun _i j => α j
+def row {α : n → Type v} (v : ∀ j, α j) : DMatrix Unit n fun _i j ↦ α j
   | _x, y => v y
 
 instance [∀ i j, Inhabited (α i j)] : Inhabited (DMatrix m n α) :=
@@ -127,21 +127,21 @@ theorem map_zero [∀ i j, Zero (α i j)] {β : m → n → Type w} [∀ i j, Ze
 
 theorem map_add [∀ i j, AddMonoid (α i j)] {β : m → n → Type w} [∀ i j, AddMonoid (β i j)]
     (f : ∀ ⦃i j⦄, α i j →+ β i j) (M N : DMatrix m n α) :
-    ((M + N).map fun i j => @f i j) = (M.map fun i j => @f i j) + N.map fun i j => @f i j := by
+    ((M + N).map fun i j ↦ @f i j) = (M.map fun i j ↦ @f i j) + N.map fun i j ↦ @f i j := by
   ext; simp
 
 theorem map_sub [∀ i j, AddGroup (α i j)] {β : m → n → Type w} [∀ i j, AddGroup (β i j)]
     (f : ∀ ⦃i j⦄, α i j →+ β i j) (M N : DMatrix m n α) :
-    ((M - N).map fun i j => @f i j) = (M.map fun i j => @f i j) - N.map fun i j => @f i j := by
+    ((M - N).map fun i j ↦ @f i j) = (M.map fun i j ↦ @f i j) - N.map fun i j ↦ @f i j := by
   ext; simp
 
 instance subsingleton_of_empty_left [IsEmpty m] : Subsingleton (DMatrix m n α) :=
-  ⟨fun M N => by
+  ⟨fun M N ↦ by
     ext i
     exact isEmptyElim i⟩
 
 instance subsingleton_of_empty_right [IsEmpty n] : Subsingleton (DMatrix m n α) :=
-  ⟨fun M N => by ext i j; exact isEmptyElim j⟩
+  ⟨fun M N ↦ by ext i j; exact isEmptyElim j⟩
 
 end DMatrix
 
@@ -149,11 +149,11 @@ end DMatrix
 induced by an `AddMonoidHom` between their coefficients. -/
 def AddMonoidHom.mapDMatrix [∀ i j, AddMonoid (α i j)] {β : m → n → Type w}
     [∀ i j, AddMonoid (β i j)] (f : ∀ ⦃i j⦄, α i j →+ β i j) : DMatrix m n α →+ DMatrix m n β where
-  toFun M := M.map fun i j => @f i j
+  toFun M := M.map fun i j ↦ @f i j
   map_zero' := by simp
   map_add' := DMatrix.map_add f
 
 @[simp]
 theorem AddMonoidHom.mapDMatrix_apply [∀ i j, AddMonoid (α i j)] {β : m → n → Type w}
     [∀ i j, AddMonoid (β i j)] (f : ∀ ⦃i j⦄, α i j →+ β i j) (M : DMatrix m n α) :
-    AddMonoidHom.mapDMatrix f M = M.map fun i j => @f i j := rfl
+    AddMonoidHom.mapDMatrix f M = M.map fun i j ↦ @f i j := rfl

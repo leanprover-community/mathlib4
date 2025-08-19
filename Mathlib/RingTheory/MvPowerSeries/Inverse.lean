@@ -101,7 +101,7 @@ theorem constantCoeff_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) :
 @[simp]
 theorem mul_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ R φ = u) :
     φ * invOfUnit φ u = 1 :=
-  ext fun n =>
+  ext fun n ↦
     letI := Classical.decEq (σ →₀ ℕ)
     if H : n = 0 then by
       rw [H]
@@ -214,8 +214,8 @@ theorem constantCoeff_inv (φ : MvPowerSeries σ k) :
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_inv, if_pos rfl]
 
 theorem inv_eq_zero {φ : MvPowerSeries σ k} : φ⁻¹ = 0 ↔ constantCoeff σ k φ = 0 :=
-  ⟨fun h => by simpa using congr_arg (constantCoeff σ k) h, fun h =>
-    ext fun n => by
+  ⟨fun h ↦ by simpa using congr_arg (constantCoeff σ k) h, fun h ↦
+    ext fun n ↦ by
       classical
       rw [coeff_inv]
       split_ifs <;>
@@ -248,7 +248,7 @@ protected theorem inv_mul_cancel (φ : MvPowerSeries σ k) (h : constantCoeff σ
 
 protected theorem eq_mul_inv_iff_mul_eq {φ₁ φ₂ φ₃ : MvPowerSeries σ k}
     (h : constantCoeff σ k φ₃ ≠ 0) : φ₁ = φ₂ * φ₃⁻¹ ↔ φ₁ * φ₃ = φ₂ :=
-  ⟨fun k => by simp [k, mul_assoc, MvPowerSeries.inv_mul_cancel _ h], fun k => by
+  ⟨fun k ↦ by simp [k, mul_assoc, MvPowerSeries.inv_mul_cancel _ h], fun k ↦ by
     simp [← k, mul_assoc, MvPowerSeries.mul_inv_cancel _ h]⟩
 
 protected theorem eq_inv_iff_mul_eq_one {φ ψ : MvPowerSeries σ k} (h : constantCoeff σ k ψ ≠ 0) :

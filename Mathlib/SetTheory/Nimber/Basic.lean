@@ -127,7 +127,7 @@ theorem succ_def (a : Nimber) : succ a = ∗(toOrdinal a + 1) :=
 
 /-- A recursor for `Nimber`. Use as `induction x`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
-protected def rec {β : Nimber → Sort*} (h : ∀ a, β (∗a)) : ∀ a, β a := fun a =>
+protected def rec {β : Nimber → Sort*} (h : ∀ a, β (∗a)) : ∀ a, β a := fun a ↦
   h (toOrdinal a)
 
 /-- `Ordinal.induction` but for `Nimber`. -/
@@ -260,16 +260,16 @@ instance : IsLeftCancelAdd Nimber := by
   intro a b c h
   apply le_antisymm <;>
   apply le_of_not_gt
-  · exact fun hc => (add_ne_of_lt a b).2 c hc h.symm
-  · exact fun hb => (add_ne_of_lt a c).2 b hb h
+  · exact fun hc ↦ (add_ne_of_lt a b).2 c hc h.symm
+  · exact fun hb ↦ (add_ne_of_lt a c).2 b hb h
 
 instance : IsRightCancelAdd Nimber := by
   constructor
   intro a b c h
   apply le_antisymm <;>
   apply le_of_not_gt
-  · exact fun hc => (add_ne_of_lt b a).1 c hc h.symm
-  · exact fun ha => (add_ne_of_lt c a).1 b ha h
+  · exact fun hc ↦ (add_ne_of_lt b a).1 c hc h.symm
+  · exact fun ha ↦ (add_ne_of_lt c a).1 b ha h
 
 protected theorem add_comm (a b : Nimber) : a + b = b + a := by
   rw [add_def, add_def]

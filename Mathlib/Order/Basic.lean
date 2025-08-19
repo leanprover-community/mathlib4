@@ -464,29 +464,29 @@ lemma ltByCases_eq (h : x = y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ :
 set_option linter.deprecated false in
 @[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltByCases_not_lt (h : ¬ x < y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
-    (p : ¬ y < x → x = y := fun h' => (le_antisymm (le_of_not_gt h') (le_of_not_gt h))) :
+    (p : ¬ y < x → x = y := fun h' ↦ (le_antisymm (le_of_not_gt h') (le_of_not_gt h))) :
     ltByCases x y h₁ h₂ h₃ = if h' : y < x then h₃ h' else h₂ (p h') := dif_neg h
 
 set_option linter.deprecated false in
 @[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltByCases_not_gt (h : ¬ y < x) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
-    (p : ¬ x < y → x = y := fun h' => (le_antisymm (le_of_not_gt h) (le_of_not_gt h'))) :
+    (p : ¬ x < y → x = y := fun h' ↦ (le_antisymm (le_of_not_gt h) (le_of_not_gt h'))) :
     ltByCases x y h₁ h₂ h₃ = if h' : x < y then h₁ h' else h₂ (p h') :=
-  dite_congr rfl (fun _ => rfl) (fun _ => dif_neg h)
+  dite_congr rfl (fun _ ↦ rfl) (fun _ ↦ dif_neg h)
 
 set_option linter.deprecated false in
 @[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltByCases_ne (h : x ≠ y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
-    (p : ¬ x < y → y < x := fun h' => h.lt_or_gt.resolve_left h') :
+    (p : ¬ x < y → y < x := fun h' ↦ h.lt_or_gt.resolve_left h') :
     ltByCases x y h₁ h₂ h₃ = if h' : x < y then h₁ h' else h₃ (p h') :=
-  dite_congr rfl (fun _ => rfl) (fun _ => dif_pos _)
+  dite_congr rfl (fun _ ↦ rfl) (fun _ ↦ dif_pos _)
 
 set_option linter.deprecated false in
 @[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltByCases_comm {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
-    (p : y = x → x = y := fun h' => h'.symm) :
+    (p : y = x → x = y := fun h' ↦ h'.symm) :
     ltByCases x y h₁ h₂ h₃ = ltByCases y x h₃ (h₂ ∘ p) h₁ := by
-  refine ltByCases x y (fun h => ?_) (fun h => ?_) (fun h => ?_)
+  refine ltByCases x y (fun h ↦ ?_) (fun h ↦ ?_) (fun h ↦ ?_)
   · rw [ltByCases_lt h, ltByCases_gt h]
   · rw [ltByCases_eq h, ltByCases_eq h.symm, comp_apply]
   · rw [ltByCases_lt h, ltByCases_gt h]
@@ -502,15 +502,15 @@ lemma ltByCases_rec {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → 
     (hgt : (h : y < x) → h₃ h = p) :
     ltByCases x y h₁ h₂ h₃ = p :=
   ltByCases x y
-    (fun h => ltByCases_lt h ▸ hlt h)
-    (fun h => ltByCases_eq h ▸ heq h)
-    (fun h => ltByCases_gt h ▸ hgt h)
+    (fun h ↦ ltByCases_lt h ▸ hlt h)
+    (fun h ↦ ltByCases_eq h ▸ heq h)
+    (fun h ↦ ltByCases_gt h ▸ hgt h)
 
 set_option linter.deprecated false in
 @[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltByCases_eq_iff {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P} {p : P} :
     ltByCases x y h₁ h₂ h₃ = p ↔ (∃ h, h₁ h = p) ∨ (∃ h, h₂ h = p) ∨ (∃ h, h₃ h = p) := by
-  refine ltByCases x y (fun h => ?_) (fun h => ?_) (fun h => ?_)
+  refine ltByCases x y (fun h ↦ ?_) (fun h ↦ ?_) (fun h ↦ ?_)
   · simp only [ltByCases_lt, exists_prop_of_true, h, h.not_gt, not_false_eq_true,
     exists_prop_of_false, or_false, h.ne]
   · simp only [h, lt_self_iff_false, ltByCases_eq, not_false_eq_true,
@@ -526,7 +526,7 @@ lemma ltByCases_congr {x' y' : α} {h₁ : x < y → P} {h₂ : x = y → P} {h�
     (hh'₂ : ∀ (h : x' = y'), h₂ ((eq_iff_eq_of_lt_iff_lt_of_gt_iff_gt ltc gtc).mpr h) = h₂' h)
     (hh'₃ : ∀ (h : y' < x'), h₃ (gtc.mpr h) = h₃' h) :
     ltByCases x y h₁ h₂ h₃ = ltByCases x' y' h₁' h₂' h₃' := by
-  refine ltByCases_rec _ (fun h => ?_) (fun h => ?_) (fun h => ?_)
+  refine ltByCases_rec _ (fun h ↦ ?_) (fun h ↦ ?_) (fun h ↦ ?_)
   · rw [ltByCases_lt (ltc.mp h), hh'₁]
   · rw [eq_iff_eq_of_lt_iff_lt_of_gt_iff_gt ltc gtc] at h
     rw [ltByCases_eq h, hh'₂]
@@ -536,7 +536,7 @@ set_option linter.deprecated false in
 /-- Perform a case-split on the ordering of `x` and `y` in a decidable linear order,
 non-dependently. -/
 @[deprecated lt_trichotomy (since := "2025-04-21")]
-abbrev ltTrichotomy (x y : α) (p q r : P) := ltByCases x y (fun _ => p) (fun _ => q) (fun _ => r)
+abbrev ltTrichotomy (x y : α) (p q r : P) := ltByCases x y (fun _ ↦ p) (fun _ ↦ q) (fun _ ↦ r)
 
 variable {p q r s : P}
 
@@ -574,13 +574,13 @@ lemma ltTrichotomy_comm : ltTrichotomy x y p q r = ltTrichotomy y x r q p := ltB
 set_option linter.deprecated false in
 @[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltTrichotomy_self {p : P} : ltTrichotomy x y p p p = p :=
-  ltByCases_rec p (fun _ => rfl) (fun _ => rfl) (fun _ => rfl)
+  ltByCases_rec p (fun _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 set_option linter.deprecated false in
 @[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltTrichotomy_eq_iff : ltTrichotomy x y p q r = s ↔
     (x < y ∧ p = s) ∨ (x = y ∧ q = s) ∨ (y < x ∧ r = s) := by
-  refine ltByCases x y (fun h => ?_) (fun h => ?_) (fun h => ?_)
+  refine ltByCases x y (fun h ↦ ?_) (fun h ↦ ?_) (fun h ↦ ?_)
   · simp only [ltTrichotomy_lt, false_and, true_and, or_false, h, h.not_gt, h.ne]
   · simp only [ltTrichotomy_eq, false_and, true_and, or_false, false_or, h, lt_irrefl]
   · simp only [ltTrichotomy_gt, false_and, true_and, false_or, h, h.not_gt, h.ne']
@@ -769,7 +769,7 @@ instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ wh
 def _root_.LinearOrder.swap (α : Type*) (_ : LinearOrder α) : LinearOrder α :=
   inferInstanceAs <| LinearOrder (OrderDual α)
 
-instance : ∀ [Inhabited α], Inhabited αᵒᵈ := fun [x : Inhabited α] => x
+instance : ∀ [Inhabited α], Inhabited αᵒᵈ := fun [x : Inhabited α] ↦ x
 
 theorem Ord.dual_dual (α : Type*) [H : Ord α] : OrderDual.instOrd αᵒᵈ = H :=
   rfl

@@ -46,7 +46,7 @@ theorem lintegral_map_le (f : β → ℝ≥0∞) (g : α → β) :
     ∫⁻ a, f a ∂Measure.map g μ ≤ ∫⁻ a, f (g a) ∂μ := by
   by_cases hg : AEMeasurable g μ
   · rw [← iSup_lintegral_measurable_le_eq_lintegral]
-    refine iSup₂_le fun i hi => iSup_le fun h'i => ?_
+    refine iSup₂_le fun i hi ↦ iSup_le fun h'i ↦ ?_
     rw [lintegral_map' hi.aemeasurable hg]
     exact lintegral_mono fun _ ↦ h'i _
   · simp [map_of_not_aemeasurable hg]
@@ -62,7 +62,7 @@ theorem setLIntegral_map {f : β → ℝ≥0∞} {g : α → β} {s : Set β}
 
 theorem lintegral_indicator_const_comp {f : α → β} {s : Set β}
     (hf : Measurable f) (hs : MeasurableSet s) (c : ℝ≥0∞) :
-    ∫⁻ a, s.indicator (fun _ => c) (f a) ∂μ = c * μ (f ⁻¹' s) := by
+    ∫⁻ a, s.indicator (fun _ ↦ c) (f a) ∂μ = c * μ (f ⁻¹' s) := by
   erw [lintegral_comp (measurable_const.indicator hs) hf]
   rw [lintegral_indicator_const hs, Measure.map_apply hf hs]
 
@@ -72,13 +72,13 @@ applies to any measurable `g : α → β` but requires that `f` is measurable as
 theorem _root_.MeasurableEmbedding.lintegral_map {g : α → β}
     (hg : MeasurableEmbedding g) (f : β → ℝ≥0∞) : ∫⁻ a, f a ∂map g μ = ∫⁻ a, f (g a) ∂μ := by
   rw [lintegral, lintegral]
-  refine le_antisymm (iSup₂_le fun f₀ hf₀ => ?_) (iSup₂_le fun f₀ hf₀ => ?_)
+  refine le_antisymm (iSup₂_le fun f₀ hf₀ ↦ ?_) (iSup₂_le fun f₀ hf₀ ↦ ?_)
   · rw [SimpleFunc.lintegral_map _ hg.measurable]
-    have : (f₀.comp g hg.measurable : α → ℝ≥0∞) ≤ f ∘ g := fun x => hf₀ (g x)
+    have : (f₀.comp g hg.measurable : α → ℝ≥0∞) ≤ f ∘ g := fun x ↦ hf₀ (g x)
     exact le_iSup_of_le (comp f₀ g hg.measurable) (by exact le_iSup (α := ℝ≥0∞) _ this)
   · rw [← f₀.extend_comp_eq hg (const _ 0), ← SimpleFunc.lintegral_map, ←
       SimpleFunc.lintegral_eq_lintegral, ← lintegral]
-    refine lintegral_mono_ae (hg.ae_map_iff.2 <| Eventually.of_forall fun x => ?_)
+    refine lintegral_mono_ae (hg.ae_map_iff.2 <| Eventually.of_forall fun x ↦ ?_)
     exact (extend_apply _ _ _ _).trans_le (hf₀ _)
 
 /-- The `lintegral` transforms appropriately under a measurable equivalence `g : α ≃ᵐ β`.

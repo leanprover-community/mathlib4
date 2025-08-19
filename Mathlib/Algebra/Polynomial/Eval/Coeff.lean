@@ -41,7 +41,7 @@ theorem eval₂_at_zero : p.eval₂ f 0 = f (coeff p 0) := by
 
 @[simp]
 theorem eval₂_C_X : eval₂ C X p = p :=
-  Polynomial.induction_on' p (fun p q hp hq => by simp [hp, hq]) fun n x => by
+  Polynomial.induction_on' p (fun p q hp hq ↦ by simp [hp, hq]) fun n x ↦ by
     rw [eval₂_monomial, ← smul_X_eq_monomial, C_mul']
 
 end
@@ -56,7 +56,7 @@ theorem coeff_zero_eq_eval_zero (p : R[X]) : coeff p 0 = p.eval 0 :=
     _ = p.eval 0 := by
       symm
       rw [eval_eq_sum]
-      exact Finset.sum_eq_single _ (fun b _ hb => by simp [zero_pow hb]) (by simp)
+      exact Finset.sum_eq_single _ (fun b _ hb ↦ by simp [zero_pow hb]) (by simp)
 
 theorem zero_isRoot_of_coeff_zero_eq_zero {p : R[X]} (hp : p.coeff 0 = 0) : IsRoot p 0 := by
   rwa [coeff_zero_eq_eval_zero] at hp
@@ -93,13 +93,13 @@ def piEquiv {ι} [Finite ι] (R : ι → Type*) [∀ i, Semiring (R i)] :
           simp only [Set.mem_iUnion, Finset.mem_coe, mem_support_iff, Function.mem_support] at hn ⊢
           contrapose! hn; exact funext hn), by ext i n; exact coeff_map _ _⟩⟩
 
-theorem map_injective (hf : Function.Injective f) : Function.Injective (map f) := fun p q h =>
-  ext fun m => hf <| by rw [← coeff_map f, ← coeff_map f, h]
+theorem map_injective (hf : Function.Injective f) : Function.Injective (map f) := fun p q h ↦
+  ext fun m ↦ hf <| by rw [← coeff_map f, ← coeff_map f, h]
 
 theorem map_injective_iff : Function.Injective (map f) ↔ Function.Injective f :=
   ⟨fun h r r' eq ↦ by simpa using h (a₁ := C r) (a₂ := C r') (by simpa), map_injective f⟩
 
-theorem map_surjective (hf : Function.Surjective f) : Function.Surjective (map f) := fun p =>
+theorem map_surjective (hf : Function.Surjective f) : Function.Surjective (map f) := fun p ↦
   p.induction_on'
     (by rintro _ _ ⟨p, rfl⟩ ⟨q, rfl⟩; exact ⟨p + q, Polynomial.map_add f⟩)
     fun n s ↦
@@ -121,7 +121,7 @@ variable (f)
 
 @[simp]
 theorem mapRingHom_id : mapRingHom (RingHom.id R) = RingHom.id R[X] :=
-  RingHom.ext fun _x => map_id
+  RingHom.ext fun _x ↦ map_id
 
 @[simp]
 theorem mapRingHom_comp [Semiring T] (f : S →+* T) (g : R →+* S) :
@@ -187,7 +187,7 @@ section
 variable [CommSemiring R] {p q : R[X]} {x : R} [CommSemiring S] (f : R →+* S)
 
 theorem evalRingHom_zero : evalRingHom 0 = constantCoeff :=
-  DFunLike.ext _ _ fun p => p.coeff_zero_eq_eval_zero.symm
+  DFunLike.ext _ _ fun p ↦ p.coeff_zero_eq_eval_zero.symm
 
 end
 
@@ -217,7 +217,7 @@ theorem IsRoot.of_map {R} [Ring R] {f : R →+* S} {x : R} {p : R[X]} (h : IsRoo
 
 theorem isRoot_map_iff {R : Type*} [CommRing R] {f : R →+* S} {x : R} {p : R[X]}
     (hf : Function.Injective f) : IsRoot (p.map f) (f x) ↔ IsRoot p x :=
-  ⟨fun h => h.of_map hf, fun h => h.map⟩
+  ⟨fun h ↦ h.of_map hf, fun h ↦ h.map⟩
 
 end Map
 

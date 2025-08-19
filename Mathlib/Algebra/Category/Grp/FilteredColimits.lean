@@ -104,7 +104,7 @@ theorem colimit_inv_mk_eq (x : Σ j, F.obj j) : (G.mk.{v, u} F x)⁻¹ = G.mk F 
 @[to_additive]
 noncomputable instance colimitGroup : Group (G.{v, u} F) :=
   { colimitInv.{v, u} F, (G.{v, u} F).str with
-    inv_mul_cancel := fun x => by
+    inv_mul_cancel := fun x ↦ by
       refine Quot.inductionOn x ?_; clear x; intro x
       change (G.mk _ _)⁻¹ * G.mk _ _ = _
       obtain ⟨j, x⟩ := x
@@ -136,7 +136,7 @@ noncomputable instance forget₂Mon_preservesFilteredColimits :
     PreservesFilteredColimits.{u} (forget₂ Grp.{u} MonCat.{u}) where
       preserves_filtered_colimits x hx1 _ :=
       letI : Category.{u, u} x := hx1
-      ⟨fun {F} => preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
+      ⟨fun {F} ↦ preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
           (MonCat.FilteredColimits.colimitCoconeIsColimit.{u, u} _)⟩
 
 @[to_additive]
@@ -197,7 +197,7 @@ noncomputable instance forget₂Group_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ CommGrp Grp.{u}) where
   preserves_filtered_colimits J hJ1 _ :=
     letI : Category J := hJ1
-    { preservesColimit := fun {F} =>
+    { preservesColimit := fun {F} ↦
         preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
           (Grp.FilteredColimits.colimitCoconeIsColimit.{u, u}
             (F ⋙ forget₂ CommGrp Grp.{u})) }

@@ -21,8 +21,8 @@ open Matrix TrivSqZeroExt
 /-- Matrices over dual numbers and dual numbers over matrices are isomorphic. -/
 @[simps]
 def Matrix.dualNumberEquiv : Matrix n n (DualNumber R) ≃ₐ[R] DualNumber (Matrix n n R) where
-  toFun A := ⟨of fun i j => (A i j).fst, of fun i j => (A i j).snd⟩
-  invFun d := of fun i j => (d.fst i j, d.snd i j)
+  toFun A := ⟨of fun i j ↦ (A i j).fst, of fun i j ↦ (A i j).snd⟩
+  invFun d := of fun i j ↦ (d.fst i j, d.snd i j)
   map_mul' A B := by
     ext
     · dsimp [mul_apply]

@@ -161,8 +161,8 @@ theorem comp_base {X Y Z : PresheafedSpace C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).base = f.base ≫ g.base :=
   rfl
 
-instance (X Y : PresheafedSpace C) : CoeFun (X ⟶ Y) fun _ => (↑X → ↑Y) :=
-  ⟨fun f => f.base⟩
+instance (X Y : PresheafedSpace C) : CoeFun (X ⟶ Y) fun _ ↦ (↑X → ↑Y) :=
+  ⟨fun f ↦ f.base⟩
 
 /-!
 Note that we don't include a `ConcreteCategory` instance, since equality of morphisms `X ⟶ Y`
@@ -231,7 +231,7 @@ def sheafIsoOfIso (H : X ≅ Y) : Y.2 ≅ H.hom.base _* X.2 where
   hom_inv_id := by
     ext U
     rw [NatTrans.comp_app]
-    simpa using congr_arg (fun f => f ≫ eqToHom _) (congr_app H.inv_hom_id (op U))
+    simpa using congr_arg (fun f ↦ f ≫ eqToHom _) (congr_app H.inv_hom_id (op U))
   inv_hom_id := by
     ext U
     dsimp
@@ -275,8 +275,8 @@ def ofRestrict {U : TopCat} (X : PresheafedSpace C) {f : U ⟶ (X : TopCat)}
     (h : IsOpenEmbedding f) : X.restrict h ⟶ X where
   base := f
   c :=
-    { app := fun V => X.presheaf.map (h.isOpenMap.adjunction.counit.app V.unop).op
-      naturality := fun U V f =>
+    { app := fun V ↦ X.presheaf.map (h.isOpenMap.adjunction.counit.app V.unop).op
+      naturality := fun U V f ↦
         show _ = _ ≫ X.presheaf.map _ by
           rw [← map_comp, ← map_comp]
           rfl }
@@ -303,7 +303,7 @@ instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1)
     rw [PresheafedSpace.comp_c_app, PresheafedSpace.comp_c_app,
       PresheafedSpace.ofRestrict_c_app, Category.assoc, cancel_epi] at this
     have h : _ ≫ _ = _ ≫ _ ≫ _ :=
-      congr_arg (fun f => (X.restrict hf).presheaf.map (eqToHom hV).op ≫ f) this
+      congr_arg (fun f ↦ (X.restrict hf).presheaf.map (eqToHom hV).op ≫ f) this
     simp only [g₁.c.naturality, g₂.c.naturality_assoc] at h
     simp only [eqToHom_op, eqToHom_map, eqToHom_trans,
       ← IsIso.comp_inv_eq, inv_eqToHom, Category.assoc] at h

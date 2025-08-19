@@ -32,6 +32,6 @@ all of whose entries `m i j` belong to `S`. -/
 def matrix (S : Subalgebra R A) : Subalgebra R (Matrix n n A) where
   __ := S.toSubsemiring.matrix
   algebraMap_mem' _ :=
-    (diagonal_mem_matrix_iff (Subalgebra.zero_mem _)).mpr (fun _ => Subalgebra.algebraMap_mem _ _)
+    (diagonal_mem_matrix_iff (Subalgebra.zero_mem _)).mpr (fun _ ↦ Subalgebra.algebraMap_mem _ _)
 
 end Subalgebra

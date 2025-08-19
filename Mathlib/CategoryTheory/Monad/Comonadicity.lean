@@ -113,7 +113,7 @@ def rightAdjointComparison
     adj.toComonad.Coalgebra ⥤ C := by
   refine
     Adjunction.rightAdjointOfEquiv (F := comparison adj)
-      (G_obj := fun A => comparisonRightAdjointObj adj A) (fun A B => ?_) ?_
+      (G_obj := fun A ↦ comparisonRightAdjointObj adj A) (fun A B ↦ ?_) ?_
   · apply comparisonRightAdjointHomEquiv
   · intro A B B' g h
     apply equalizer.hom_ext
@@ -236,7 +236,7 @@ class HasEqualizerOfIsCosplitPair (F : C ⥤ D) : Prop where
 instance [HasEqualizerOfIsCosplitPair F] : ∀ (A : Coalgebra adj.toComonad),
     HasEqualizer (G.map A.a)
       (adj.unit.app (G.obj A.A)) :=
-  fun _ => HasEqualizerOfIsCosplitPair.out F _ _
+  fun _ ↦ HasEqualizerOfIsCosplitPair.out F _ _
 
 /-- Dual to `Monad.PreservesColimitOfIsSplitPair`. -/
 class PreservesLimitOfIsCosplitPair (F : C ⥤ D) where
@@ -248,7 +248,7 @@ instance {A B} (f g : A ⟶ B) [F.IsCosplitPair f g] [PreservesLimitOfIsCosplitP
 
 instance [PreservesLimitOfIsCosplitPair F] : ∀ (A : Coalgebra adj.toComonad),
     PreservesLimit (parallelPair (G.map A.a) (NatTrans.app adj.unit (G.obj A.A))) F :=
-  fun _ => PreservesLimitOfIsCosplitPair.out _ _
+  fun _ ↦ PreservesLimitOfIsCosplitPair.out _ _
 
 /-- Dual to `Monad.ReflectsColimitOfIsSplitPair`. -/
 class ReflectsLimitOfIsCosplitPair (F : C ⥤ D) where
@@ -261,7 +261,7 @@ instance {A B} (f g : A ⟶ B) [F.IsCosplitPair f g] [ReflectsLimitOfIsCosplitPa
 instance [ReflectsLimitOfIsCosplitPair F] : ∀ (A : Coalgebra adj.toComonad),
     ReflectsLimit (parallelPair (G.map A.a)
       (NatTrans.app adj.unit (G.obj A.A))) F :=
-  fun _ => ReflectsLimitOfIsCosplitPair.out _ _
+  fun _ ↦ ReflectsLimitOfIsCosplitPair.out _ _
 
 /-- To show `F` is a comonadic left adjoint, we can show it preserves and reflects `F`-split
 equalizers, and `C` has them.
@@ -306,7 +306,7 @@ instance {A B} (f g : A ⟶ B) [F.IsCosplitPair f g] [CreatesLimitOfIsCosplitPai
 instance [CreatesLimitOfIsCosplitPair F] : ∀ (A : Coalgebra adj.toComonad),
     CreatesLimit (parallelPair (G.map A.a)
       (NatTrans.app adj.unit (G.obj A.A))) F :=
-  fun _ => CreatesLimitOfIsCosplitPair.out _ _
+  fun _ ↦ CreatesLimitOfIsCosplitPair.out _ _
 
 /--
 Beck's comonadicity theorem. If `F` has a right adjoint and creates equalizers of `F`-cosplit pairs,
@@ -318,7 +318,7 @@ def comonadicOfCreatesFSplitEqualizers [CreatesLimitOfIsCosplitPair F] :
   have I {A B} (f g : A ⟶ B) [F.IsCosplitPair f g] : HasLimit (parallelPair f g ⋙ F) := by
     rw [hasLimit_iff_of_iso (diagramIsoParallelPair _)]
     exact inferInstanceAs <| HasEqualizer (F.map f) (F.map g)
-  have : HasEqualizerOfIsCosplitPair F := ⟨fun _ _ => hasLimit_of_created (parallelPair _ _) F⟩
+  have : HasEqualizerOfIsCosplitPair F := ⟨fun _ _ ↦ hasLimit_of_created (parallelPair _ _) F⟩
   have : PreservesLimitOfIsCosplitPair F := ⟨by intros; infer_instance⟩
   have : ReflectsLimitOfIsCosplitPair F := ⟨by intros; infer_instance⟩
   exact comonadicOfHasPreservesReflectsFSplitEqualizers adj
@@ -329,7 +329,7 @@ equalizers of `F`-cosplit pairs and `C` has equalizers of `F`-cosplit pairs, the
 def comonadicOfHasPreservesFSplitEqualizersOfReflectsIsomorphisms [F.ReflectsIsomorphisms]
     [HasEqualizerOfIsCosplitPair F] [PreservesLimitOfIsCosplitPair F] :
     ComonadicLeftAdjoint F := by
-  have : ReflectsLimitOfIsCosplitPair F := ⟨fun f g _ => by
+  have : ReflectsLimitOfIsCosplitPair F := ⟨fun f g _ ↦ by
     have := HasEqualizerOfIsCosplitPair.out F f g
     apply reflectsLimit_of_reflectsIsomorphisms⟩
   apply comonadicOfHasPreservesReflectsFSplitEqualizers adj
@@ -351,7 +351,7 @@ instance {A B} (f g : A ⟶ B) [IsCoreflexivePair f g] [PreservesLimitOfIsCorefl
 instance [PreservesLimitOfIsCoreflexivePair F] : ∀ X : Coalgebra adj.toComonad,
     PreservesLimit (parallelPair (G.map X.a)
       (NatTrans.app adj.unit (G.obj X.A))) F :=
-  fun _ => PreservesLimitOfIsCoreflexivePair.out _ _
+  fun _ ↦ PreservesLimitOfIsCoreflexivePair.out _ _
 
 variable [PreservesLimitOfIsCoreflexivePair F]
 

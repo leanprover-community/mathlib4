@@ -46,7 +46,7 @@ theorem MemLp.finStronglyMeasurable_of_stronglyMeasurable (hf : MemLp f p μ)
   refine ⟨fs, ?_, ?_⟩
   · have h_fs_Lp : ∀ n, MemLp (fs n) p μ :=
       SimpleFunc.memLp_approxOn_range hf_meas.measurable hf
-    exact fun n => (fs n).measure_support_lt_top_of_memLp (h_fs_Lp n) hp_ne_zero hp_ne_top
+    exact fun n ↦ (fs n).measure_support_lt_top_of_memLp (h_fs_Lp n) hp_ne_zero hp_ne_top
   · intro x
     apply SimpleFunc.tendsto_approxOn
     apply subset_closure

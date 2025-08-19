@@ -154,7 +154,7 @@ The corresponding Coxeter-Dynkin diagram is:
 ```
 -/
 def I₂ₘ (m : ℕ) : CoxeterMatrix (Fin 2) where
-  M := Matrix.of fun i j => if i = j then 1 else m + 2
+  M := Matrix.of fun i j ↦ if i = j then 1 else m + 2
   isSymm := by unfold Matrix.IsSymm; aesop
   diagonal := by simp
   off_diagonal := by simp

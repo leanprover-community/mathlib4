@@ -91,7 +91,7 @@ attribute [local instance] OreLocalization.oreEqv
 private def add' (r₂ : X) (s₂ : S) : X[S⁻¹] → X[S⁻¹] :=
   (--plus tilde
       Quotient.lift
-      fun r₁s₁ : X × S => add'' r₁s₁.1 r₁s₁.2 r₂ s₂) <| by
+      fun r₁s₁ : X × S ↦ add'' r₁s₁.1 r₁s₁.2 r₂ s₂) <| by
     -- Porting note: `assoc_rw` & `noncomm_ring` were not ported yet
     rintro ⟨r₁', s₁'⟩ ⟨r₁, s₁⟩ ⟨sb, rb, hb, hb'⟩
     -- s*, r*
@@ -112,8 +112,8 @@ private def add' (r₂ : X) (s₂ : S) : X[S⁻¹] → X[S⁻¹] :=
 
 /-- The addition on the Ore localization. -/
 @[irreducible]
-private def add : X[S⁻¹] → X[S⁻¹] → X[S⁻¹] := fun x =>
-  Quotient.lift (fun rs : X × S => add' rs.1 rs.2 x)
+private def add : X[S⁻¹] → X[S⁻¹] → X[S⁻¹] := fun x ↦
+  Quotient.lift (fun rs : X × S ↦ add' rs.1 rs.2 x)
     (by
       rintro ⟨r₁, s₁⟩ ⟨r₂, s₂⟩ ⟨sb, rb, hb, hb'⟩
       induction' x with r₃ s₃
@@ -250,7 +250,7 @@ variable {X : Type*} [AddGroup X] [DistribMulAction R X]
 /-- Negation on the Ore localization is defined via negation on the numerator. -/
 @[irreducible]
 protected def neg : X[S⁻¹] → X[S⁻¹] :=
-  liftExpand (fun (r : X) (s : S) => -r /ₒ s) fun r t s ht => by
+  liftExpand (fun (r : X) (s : S) ↦ -r /ₒ s) fun r t s ht ↦ by
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
     beta_reduce
     rw [← smul_neg, ← OreLocalization.expand]

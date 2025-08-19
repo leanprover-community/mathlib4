@@ -41,12 +41,12 @@ variable (P : PFunctor.{uA, uB}) {α : Type v₁} {β : Type v₂} {γ : Type v�
 def Obj (α : Type v) : Type (max v uA uB) :=
   Σ x : P.A, P.B x → α
 
-instance : CoeFun PFunctor.{uA, uB} (fun _ => Type v → Type (max v uA uB)) where
+instance : CoeFun PFunctor.{uA, uB} (fun _ ↦ Type v → Type (max v uA uB)) where
   coe := Obj
 
 /-- Applying `P` to a morphism of `Type` -/
 def map (f : α → β) : P α → P β :=
-  fun ⟨a, g⟩ => ⟨a, f ∘ g⟩
+  fun ⟨a, g⟩ ↦ ⟨a, f ∘ g⟩
 
 instance Obj.inhabited [Inhabited P.A] [Inhabited α] : Inhabited (P α) :=
   ⟨⟨default, default⟩⟩
@@ -64,11 +64,11 @@ protected theorem map_eq (f : α → β) (a : P.A) (g : P.B a → α) :
   rfl
 
 @[simp]
-protected theorem id_map : ∀ x : P α, P.map id x = x := fun ⟨_, _⟩ => rfl
+protected theorem id_map : ∀ x : P α, P.map id x = x := fun ⟨_, _⟩ ↦ rfl
 
 @[simp]
 protected theorem map_map (f : α → β) (g : β → γ) :
-    ∀ x : P α, P.map g (P.map f x) = P.map (g ∘ f) x := fun ⟨_, _⟩ => rfl
+    ∀ x : P α, P.map g (P.map f x) = P.map (g ∘ f) x := fun ⟨_, _⟩ ↦ rfl
 
 instance : LawfulFunctor (Obj.{v} P) where
   map_const := rfl
@@ -143,17 +143,17 @@ namespace PFunctor
 /-- Composition for polynomial functors -/
 def comp (P₂ : PFunctor.{uA₂, uB₂}) (P₁ : PFunctor.{uA₁, uB₁}) :
     PFunctor.{max uA₁ uA₂ uB₂, max uB₁ uB₂} :=
-  ⟨Σ a₂ : P₂.1, P₂.2 a₂ → P₁.1, fun a₂a₁ => Σ u : P₂.2 a₂a₁.1, P₁.2 (a₂a₁.2 u)⟩
+  ⟨Σ a₂ : P₂.1, P₂.2 a₂ → P₁.1, fun a₂a₁ ↦ Σ u : P₂.2 a₂a₁.1, P₁.2 (a₂a₁.2 u)⟩
 
 /-- Constructor for composition -/
 def comp.mk (P₂ : PFunctor.{uA₂, uB₂}) (P₁ : PFunctor.{uA₁, uB₁}) {α : Type v} (x : P₂ (P₁ α)) :
     comp P₂ P₁ α :=
-  ⟨⟨x.1, Sigma.fst ∘ x.2⟩, fun a₂a₁ => (x.2 a₂a₁.1).2 a₂a₁.2⟩
+  ⟨⟨x.1, Sigma.fst ∘ x.2⟩, fun a₂a₁ ↦ (x.2 a₂a₁.1).2 a₂a₁.2⟩
 
 /-- Destructor for composition -/
 def comp.get (P₂ : PFunctor.{uA₂, uB₂}) (P₁ : PFunctor.{uA₁, uB₁}) {α : Type v} (x : comp P₂ P₁ α) :
     P₂ (P₁ α) :=
-  ⟨x.1.1, fun a₂ => ⟨x.1.2 a₂, fun a₁ => x.2 ⟨a₂, a₁⟩⟩⟩
+  ⟨x.1.1, fun a₂ ↦ ⟨x.1.2 a₂, fun a₁ ↦ x.2 ⟨a₂, a₁⟩⟩⟩
 
 end PFunctor
 
@@ -171,11 +171,11 @@ theorem liftp_iff {α : Type u} (p : α → Prop) (x : P α) :
   constructor
   · rintro ⟨y, hy⟩
     rcases h : y with ⟨a, f⟩
-    refine ⟨a, fun i => (f i).val, ?_, fun i => (f i).property⟩
+    refine ⟨a, fun i ↦ (f i).val, ?_, fun i ↦ (f i).property⟩
     rw [← hy, h, map_eq_map, PFunctor.map_eq]
     congr
   rintro ⟨a, f, xeq, pf⟩
-  use ⟨a, fun i => ⟨f i, pf i⟩⟩
+  use ⟨a, fun i ↦ ⟨f i, pf i⟩⟩
   rw [xeq]; rfl
 
 theorem liftp_iff' {α : Type u} (p : α → Prop) (a : P.A) (f : P.B a → α) :
@@ -191,7 +191,7 @@ theorem liftr_iff {α : Type u} (r : α → α → Prop) (x y : P α) :
   constructor
   · rintro ⟨u, xeq, yeq⟩
     rcases h : u with ⟨a, f⟩
-    use a, fun i => (f i).val.fst, fun i => (f i).val.snd
+    use a, fun i ↦ (f i).val.fst, fun i ↦ (f i).val.snd
     constructor
     · rw [← xeq, h]
       rfl
@@ -201,7 +201,7 @@ theorem liftr_iff {α : Type u} (r : α → α → Prop) (x y : P α) :
     intro i
     exact (f i).property
   rintro ⟨a, f₀, f₁, xeq, yeq, h⟩
-  use ⟨a, fun i => ⟨(f₀ i, f₁ i), h i⟩⟩
+  use ⟨a, fun i ↦ ⟨(f₀ i, f₁ i), h i⟩⟩
   constructor
   · rw [xeq]
     rfl
@@ -213,7 +213,7 @@ theorem supp_eq {α : Type u} (a : P.A) (f : P.B a → α) :
     @supp.{u} P.Obj _ α (⟨a, f⟩ : P α) = f '' univ := by
   ext x; simp only [supp, image_univ, mem_range, mem_setOf_eq]
   constructor <;> intro h
-  · apply @h fun x => ∃ y : P.B a, f y = x
+  · apply @h fun x ↦ ∃ y : P.B a, f y = x
     rw [liftp_iff']
     intro
     exact ⟨_, rfl⟩

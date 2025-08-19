@@ -317,7 +317,7 @@ The canonical isomorphism `𝒰.gluedCover.glued ⟶ X` is provided by `𝒰.fro
 def gluedCover : Scheme.GlueData.{u} where
   J := 𝒰.J
   U := 𝒰.obj
-  V := fun ⟨x, y⟩ => pullback (𝒰.map x) (𝒰.map y)
+  V := fun ⟨x, y⟩ ↦ pullback (𝒰.map x) (𝒰.map y)
   f _ _ := pullback.fst _ _
   f_id _ := inferInstance
   t _ _ := (pullbackSymmetry _ _).hom
@@ -332,7 +332,7 @@ def gluedCover : Scheme.GlueData.{u} where
 This is an isomorphism, as witnessed by an `IsIso` instance. -/
 def fromGlued : 𝒰.gluedCover.glued ⟶ X := by
   fapply Multicoequalizer.desc
-  · exact fun x => 𝒰.map x
+  · exact fun x ↦ 𝒰.map x
   rintro ⟨x, y⟩
   change pullback.fst _ _ ≫ _ = ((pullbackSymmetry _ _).hom ≫ pullback.fst _ _) ≫ _
   simpa using pullback.condition

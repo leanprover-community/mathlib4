@@ -158,9 +158,9 @@ def Cover.copy [P.RespectsIso] {X : Scheme.{u}} (𝒰 : X.Cover P)
 def Cover.pushforwardIso [P.RespectsIso] [P.ContainsIdentities] [P.IsStableUnderComposition]
     {X Y : Scheme.{u}} (𝒰 : Cover.{v} P X) (f : X ⟶ Y) [IsIso f] :
     Cover.{v} P Y :=
-  ((coverOfIsIso.{v, u} f).bind fun _ => 𝒰).copy 𝒰.J _ _
-    ((Equiv.punitProd _).symm.trans (Equiv.sigmaEquivProd PUnit 𝒰.J).symm) (fun _ => Iso.refl _)
-    fun _ => (Category.id_comp _).symm
+  ((coverOfIsIso.{v, u} f).bind fun _ ↦ 𝒰).copy 𝒰.J _ _
+    ((Equiv.punitProd _).symm.trans (Equiv.sigmaEquivProd PUnit 𝒰.J).symm) (fun _ ↦ Iso.refl _)
+    fun _ ↦ (Category.id_comp _).symm
 
 /-- Adding map satisfying `P` into a cover gives another cover. -/
 @[simps]

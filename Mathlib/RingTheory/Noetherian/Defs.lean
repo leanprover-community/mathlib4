@@ -70,14 +70,14 @@ open IsNoetherian
 
 /-- An R-module is Noetherian iff all its submodules are finitely-generated. -/
 theorem isNoetherian_def : IsNoetherian R M ↔ ∀ s : Submodule R M, s.FG :=
-  ⟨fun h => h.noetherian, IsNoetherian.mk⟩
+  ⟨fun h ↦ h.noetherian, IsNoetherian.mk⟩
 
 theorem isNoetherian_submodule {N : Submodule R M} :
     IsNoetherian R N ↔ ∀ s : Submodule R M, s ≤ N → s.FG := by
-  refine ⟨fun ⟨hn⟩ => fun s hs =>
+  refine ⟨fun ⟨hn⟩ ↦ fun s hs ↦
     have : s ≤ LinearMap.range N.subtype := N.range_subtype.symm ▸ hs
     Submodule.map_comap_eq_self this ▸ (hn _).map _,
-    fun h => ⟨fun s => ?_⟩⟩
+    fun h ↦ ⟨fun s ↦ ?_⟩⟩
   have f := (Submodule.equivMapOfInjective N.subtype Subtype.val_injective s).symm
   have h₁ := h (s.map N.subtype) (Submodule.map_subtype_le N s)
   have h₂ : (⊤ : Submodule R (s.map N.subtype)).map f = ⊤ := by simp
@@ -86,18 +86,18 @@ theorem isNoetherian_submodule {N : Submodule R M} :
 
 theorem isNoetherian_submodule_left {N : Submodule R M} :
     IsNoetherian R N ↔ ∀ s : Submodule R M, (N ⊓ s).FG :=
-  isNoetherian_submodule.trans ⟨fun H _ => H _ inf_le_left, fun H _ hs => inf_of_le_right hs ▸ H _⟩
+  isNoetherian_submodule.trans ⟨fun H _ ↦ H _ inf_le_left, fun H _ hs ↦ inf_of_le_right hs ▸ H _⟩
 
 theorem isNoetherian_submodule_right {N : Submodule R M} :
     IsNoetherian R N ↔ ∀ s : Submodule R M, (s ⊓ N).FG :=
-  isNoetherian_submodule.trans ⟨fun H _ => H _ inf_le_right, fun H _ hs => inf_of_le_left hs ▸ H _⟩
+  isNoetherian_submodule.trans ⟨fun H _ ↦ H _ inf_le_right, fun H _ hs ↦ inf_of_le_left hs ▸ H _⟩
 
 instance isNoetherian_submodule' [IsNoetherian R M] (N : Submodule R M) : IsNoetherian R N :=
-  isNoetherian_submodule.2 fun _ _ => IsNoetherian.noetherian _
+  isNoetherian_submodule.2 fun _ _ ↦ IsNoetherian.noetherian _
 
 theorem isNoetherian_of_le {s t : Submodule R M} [ht : IsNoetherian R t] (h : s ≤ t) :
     IsNoetherian R s :=
-  isNoetherian_submodule.mpr fun _ hs' => isNoetherian_submodule.mp ht _ (le_trans hs' h)
+  isNoetherian_submodule.mpr fun _ hs' ↦ isNoetherian_submodule.mp ht _ (le_trans hs' h)
 
 end
 
@@ -115,8 +115,8 @@ theorem isNoetherian_iff' : IsNoetherian R M ↔ WellFoundedGT (Submodule R M) :
   -- Porting note: inlining this makes rw complain about it being a metavariable
   rw [this]
   exact
-    ⟨fun ⟨h⟩ => fun k => (fg_iff_compact k).mp (h k), fun h =>
-      ⟨fun k => (fg_iff_compact k).mpr (h k)⟩⟩
+    ⟨fun ⟨h⟩ ↦ fun k ↦ (fg_iff_compact k).mp (h k), fun h ↦
+      ⟨fun k ↦ (fg_iff_compact k).mpr (h k)⟩⟩
 
 theorem isNoetherian_iff :
     IsNoetherian R M ↔ WellFounded ((· > ·) : Submodule R M → Submodule R M → Prop) := by

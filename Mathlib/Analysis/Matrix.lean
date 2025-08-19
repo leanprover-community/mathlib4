@@ -76,14 +76,14 @@ protected def seminormedAddCommGroup : SeminormedAddCommGroup (Matrix m n α) :=
 
 attribute [local instance] Matrix.seminormedAddCommGroup
 
-theorem norm_def (A : Matrix m n α) : ‖A‖ = ‖fun i j => A i j‖ := rfl
+theorem norm_def (A : Matrix m n α) : ‖A‖ = ‖fun i j ↦ A i j‖ := rfl
 
 /-- The norm of a matrix is the sup of the sup of the nnnorm of the entries -/
 lemma norm_eq_sup_sup_nnnorm (A : Matrix m n α) :
     ‖A‖ = Finset.sup Finset.univ fun i ↦ Finset.sup Finset.univ fun j ↦ ‖A i j‖₊ := by
   simp_rw [Matrix.norm_def, Pi.norm_def, Pi.nnnorm_def]
 
-theorem nnnorm_def (A : Matrix m n α) : ‖A‖₊ = ‖fun i j => A i j‖₊ := rfl
+theorem nnnorm_def (A : Matrix m n α) : ‖A‖₊ = ‖fun i j ↦ A i j‖₊ := rfl
 
 theorem norm_le_iff {r : ℝ} (hr : 0 ≤ r) {A : Matrix m n α} : ‖A‖ ≤ r ↔ ∀ i j, ‖A i j‖ ≤ r := by
   simp_rw [norm_def, pi_norm_le_iff_of_nonneg hr]
@@ -111,7 +111,7 @@ theorem nnnorm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a, ‖f a‖
 
 @[simp]
 theorem norm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a, ‖f a‖ = ‖a‖) : ‖A.map f‖ = ‖A‖ :=
-  (congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_map_eq A f fun a => Subtype.ext <| hf a :)
+  (congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_map_eq A f fun a ↦ Subtype.ext <| hf a :)
 
 @[simp]
 theorem nnnorm_transpose (A : Matrix m n α) : ‖Aᵀ‖₊ = ‖A‖₊ :=
@@ -161,7 +161,7 @@ theorem norm_replicateRow (v : n → α) : ‖replicateRow ι v‖ = ‖v‖ :=
 theorem nnnorm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖₊ = ‖v‖₊ := by
   simp_rw [nnnorm_def, Pi.nnnorm_def]
   congr 1 with i : 1
-  refine le_antisymm (Finset.sup_le fun j hj => ?_) ?_
+  refine le_antisymm (Finset.sup_le fun j hj ↦ ?_) ?_
   · obtain rfl | hij := eq_or_ne i j
     · rw [diagonal_apply_eq]
     · rw [diagonal_apply_ne _ hij, nnnorm_zero]
@@ -242,7 +242,7 @@ matrix. -/
 @[local instance]
 protected def linftyOpSeminormedAddCommGroup [SeminormedAddCommGroup α] :
     SeminormedAddCommGroup (Matrix m n α) :=
-  (by infer_instance : SeminormedAddCommGroup (m → PiLp 1 fun j : n => α))
+  (by infer_instance : SeminormedAddCommGroup (m → PiLp 1 fun j : n ↦ α))
 
 /-- Normed group instance (using sup norm of L1 norm) for matrices over a normed ring.  Not
 declared as an instance because there are several natural choices for defining the norm of a
@@ -250,21 +250,21 @@ matrix. -/
 @[local instance]
 protected def linftyOpNormedAddCommGroup [NormedAddCommGroup α] :
     NormedAddCommGroup (Matrix m n α) :=
-  (by infer_instance : NormedAddCommGroup (m → PiLp 1 fun j : n => α))
+  (by infer_instance : NormedAddCommGroup (m → PiLp 1 fun j : n ↦ α))
 
 /-- This applies to the sup norm of L1 norm. -/
 @[local instance]
 protected theorem linftyOpIsBoundedSMul
     [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α] [IsBoundedSMul R α] :
     IsBoundedSMul R (Matrix m n α) :=
-  (by infer_instance : IsBoundedSMul R (m → PiLp 1 fun j : n => α))
+  (by infer_instance : IsBoundedSMul R (m → PiLp 1 fun j : n ↦ α))
 
 /-- This applies to the sup norm of L1 norm. -/
 @[local instance]
 protected theorem linftyOpNormSMulClass
     [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α] [NormSMulClass R α] :
     NormSMulClass R (Matrix m n α) :=
-  (by infer_instance : NormSMulClass R (m → PiLp 1 fun j : n => α))
+  (by infer_instance : NormSMulClass R (m → PiLp 1 fun j : n ↦ α))
 
 /-- Normed space instance (using sup norm of L1 norm) for matrices over a normed space.  Not
 declared as an instance because there are several natural choices for defining the norm of a
@@ -272,20 +272,20 @@ matrix. -/
 @[local instance]
 protected def linftyOpNormedSpace [NormedField R] [SeminormedAddCommGroup α] [NormedSpace R α] :
     NormedSpace R (Matrix m n α) :=
-  (by infer_instance : NormedSpace R (m → PiLp 1 fun j : n => α))
+  (by infer_instance : NormedSpace R (m → PiLp 1 fun j : n ↦ α))
 
 section SeminormedAddCommGroup
 
 variable [SeminormedAddCommGroup α]
 
 theorem linfty_opNorm_def (A : Matrix m n α) :
-    ‖A‖ = ((Finset.univ : Finset m).sup fun i : m => ∑ j : n, ‖A i j‖₊ : ℝ≥0) := by
+    ‖A‖ = ((Finset.univ : Finset m).sup fun i : m ↦ ∑ j : n, ‖A i j‖₊ : ℝ≥0) := by
   -- Porting note: added
-  change ‖fun i => toLp 1 (A i)‖ = _
+  change ‖fun i ↦ toLp 1 (A i)‖ = _
   simp [Pi.norm_def, PiLp.nnnorm_eq_of_L1]
 
 theorem linfty_opNNNorm_def (A : Matrix m n α) :
-    ‖A‖₊ = (Finset.univ : Finset m).sup fun i : m => ∑ j : n, ‖A i j‖₊ :=
+    ‖A‖₊ = (Finset.univ : Finset m).sup fun i : m ↦ ∑ j : n, ‖A i j‖₊ :=
   Subtype.ext <| linfty_opNorm_def A
 
 @[simp]
@@ -317,7 +317,7 @@ theorem linfty_opNorm_replicateRow (v : n → α) : ‖replicateRow ι v‖ = �
 theorem linfty_opNNNorm_diagonal [DecidableEq m] (v : m → α) : ‖diagonal v‖₊ = ‖v‖₊ := by
   rw [linfty_opNNNorm_def, Pi.nnnorm_def]
   congr 1 with i : 1
-  refine (Finset.sum_eq_single_of_mem _ (Finset.mem_univ i) fun j _hj hij => ?_).trans ?_
+  refine (Finset.sum_eq_single_of_mem _ (Finset.mem_univ i) fun j _hj hij ↦ ?_).trans ?_
   · rw [diagonal_apply_ne' _ hij, nnnorm_zero]
   · rw [diagonal_apply_eq]
 
@@ -334,17 +334,17 @@ variable [NonUnitalSeminormedRing α]
 theorem linfty_opNNNorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ := by
   simp_rw [linfty_opNNNorm_def, Matrix.mul_apply]
   calc
-    (Finset.univ.sup fun i => ∑ k, ‖∑ j, A i j * B j k‖₊) ≤
-        Finset.univ.sup fun i => ∑ k, ∑ j, ‖A i j‖₊ * ‖B j k‖₊ :=
-      Finset.sup_mono_fun fun i _hi =>
-        Finset.sum_le_sum fun k _hk => nnnorm_sum_le_of_le _ fun j _hj => nnnorm_mul_le _ _
-    _ = Finset.univ.sup fun i => ∑ j, ‖A i j‖₊ * ∑ k, ‖B j k‖₊ := by
+    (Finset.univ.sup fun i ↦ ∑ k, ‖∑ j, A i j * B j k‖₊) ≤
+        Finset.univ.sup fun i ↦ ∑ k, ∑ j, ‖A i j‖₊ * ‖B j k‖₊ :=
+      Finset.sup_mono_fun fun i _hi ↦
+        Finset.sum_le_sum fun k _hk ↦ nnnorm_sum_le_of_le _ fun j _hj ↦ nnnorm_mul_le _ _
+    _ = Finset.univ.sup fun i ↦ ∑ j, ‖A i j‖₊ * ∑ k, ‖B j k‖₊ := by
       simp_rw [@Finset.sum_comm m, Finset.mul_sum]
-    _ ≤ Finset.univ.sup fun i => ∑ j, ‖A i j‖₊ * Finset.univ.sup fun i => ∑ j, ‖B i j‖₊ := by
-      refine Finset.sup_mono_fun fun i _hi => ?_
+    _ ≤ Finset.univ.sup fun i ↦ ∑ j, ‖A i j‖₊ * Finset.univ.sup fun i ↦ ∑ j, ‖B i j‖₊ := by
+      refine Finset.sup_mono_fun fun i _hi ↦ ?_
       gcongr with j hj
       exact Finset.le_sup (f := fun i ↦ ∑ k : n, ‖B i k‖₊) hj
-    _ ≤ (Finset.univ.sup fun i => ∑ j, ‖A i j‖₊) * Finset.univ.sup fun i => ∑ j, ‖B i j‖₊ := by
+    _ ≤ (Finset.univ.sup fun i ↦ ∑ j, ‖A i j‖₊) * Finset.univ.sup fun i ↦ ∑ j, ‖B i j‖₊ := by
       simp_rw [← Finset.sum_mul, ← NNReal.finset_sup_mul]
       rfl
 
@@ -439,13 +439,13 @@ variable [NontriviallyNormedField α] [NormedAlgebra ℝ α]
 
 lemma linfty_opNNNorm_eq_opNNNorm (A : Matrix m n α) :
     ‖A‖₊ = ‖ContinuousLinearMap.mk (Matrix.mulVecLin A)‖₊ := by
-  rw [ContinuousLinearMap.opNNNorm_eq_of_bounds _ (linfty_opNNNorm_mulVec _) fun N hN => ?_]
+  rw [ContinuousLinearMap.opNNNorm_eq_of_bounds _ (linfty_opNNNorm_mulVec _) fun N hN ↦ ?_]
   rw [linfty_opNNNorm_def]
-  refine Finset.sup_le fun i _ => ?_
+  refine Finset.sup_le fun i _ ↦ ?_
   cases isEmpty_or_nonempty n
   · simp
   classical
-  let x : n → α := fun j => unitOf (A i j)
+  let x : n → α := fun j ↦ unitOf (A i j)
   have hxn : ‖x‖₊ = 1 := by
     simp_rw [x, Pi.nnnorm_def, norm_unitOf, Finset.sup_const Finset.univ_nonempty]
   specialize hN x
@@ -506,28 +506,28 @@ matrix. -/
 @[local instance]
 def frobeniusSeminormedAddCommGroup [SeminormedAddCommGroup α] :
     SeminormedAddCommGroup (Matrix m n α) :=
-  inferInstanceAs (SeminormedAddCommGroup (PiLp 2 fun _i : m => PiLp 2 fun _j : n => α))
+  inferInstanceAs (SeminormedAddCommGroup (PiLp 2 fun _i : m ↦ PiLp 2 fun _j : n ↦ α))
 
 /-- Normed group instance (using the Frobenius norm) for matrices over a normed group.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
 def frobeniusNormedAddCommGroup [NormedAddCommGroup α] : NormedAddCommGroup (Matrix m n α) :=
-  (by infer_instance : NormedAddCommGroup (PiLp 2 fun i : m => PiLp 2 fun j : n => α))
+  (by infer_instance : NormedAddCommGroup (PiLp 2 fun i : m ↦ PiLp 2 fun j : n ↦ α))
 
 /-- This applies to the Frobenius norm. -/
 @[local instance]
 theorem frobeniusIsBoundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
     [IsBoundedSMul R α] :
     IsBoundedSMul R (Matrix m n α) :=
-  (by infer_instance : IsBoundedSMul R (PiLp 2 fun i : m => PiLp 2 fun j : n => α))
+  (by infer_instance : IsBoundedSMul R (PiLp 2 fun i : m ↦ PiLp 2 fun j : n ↦ α))
 
 /-- This applies to the Frobenius norm. -/
 @[local instance]
 theorem frobeniusNormSMulClass [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
     [NormSMulClass R α] :
     NormSMulClass R (Matrix m n α) :=
-  (by infer_instance : NormSMulClass R (PiLp 2 fun i : m => PiLp 2 fun j : n => α))
+  (by infer_instance : NormSMulClass R (PiLp 2 fun i : m ↦ PiLp 2 fun j : n ↦ α))
 
 @[deprecated (since := "2025-03-10")] alias frobeniusBoundedSMul := frobeniusIsBoundedSMul
 
@@ -537,7 +537,7 @@ matrix. -/
 @[local instance]
 def frobeniusNormedSpace [NormedField R] [SeminormedAddCommGroup α] [NormedSpace R α] :
     NormedSpace R (Matrix m n α) :=
-  (by infer_instance : NormedSpace R (PiLp 2 fun i : m => PiLp 2 fun j : n => α))
+  (by infer_instance : NormedSpace R (PiLp 2 fun i : m ↦ PiLp 2 fun j : n ↦ α))
 
 section SeminormedAddCommGroup
 
@@ -546,7 +546,7 @@ variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
 theorem frobenius_nnnorm_def (A : Matrix m n α) :
     ‖A‖₊ = (∑ i, ∑ j, ‖A i j‖₊ ^ (2 : ℝ)) ^ (1 / 2 : ℝ) := by
   -- Porting note: added, along with `WithLp.equiv_symm_pi_apply` below
-  change ‖toLp 2 fun i => toLp 2 fun j => A i j‖₊ = _
+  change ‖toLp 2 fun i ↦ toLp 2 fun j ↦ A i j‖₊ = _
   simp_rw [PiLp.nnnorm_eq_of_L2, NNReal.sq_sqrt, NNReal.sqrt_eq_rpow, NNReal.rpow_two,
     PiLp.toLp_apply]
 
@@ -561,7 +561,7 @@ theorem frobenius_nnnorm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a,
 @[simp]
 theorem frobenius_norm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a, ‖f a‖ = ‖a‖) :
     ‖A.map f‖ = ‖A‖ :=
-  (congr_arg ((↑) : ℝ≥0 → ℝ) <| frobenius_nnnorm_map_eq A f fun a => Subtype.ext <| hf a :)
+  (congr_arg ((↑) : ℝ≥0 → ℝ) <| frobenius_nnnorm_map_eq A f fun a ↦ Subtype.ext <| hf a :)
 
 @[simp]
 theorem frobenius_nnnorm_transpose (A : Matrix m n α) : ‖Aᵀ‖₊ = ‖A‖₊ := by
@@ -615,8 +615,8 @@ lemma frobenius_nnnorm_replicateCol (v : n → α) : ‖replicateCol ι v‖₊ 
 lemma frobenius_nnnorm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖₊ = ‖toLp 2 v‖₊ := by
   simp_rw [frobenius_nnnorm_def, ← Finset.sum_product', Finset.univ_product_univ,
     PiLp.nnnorm_eq_of_L2]
-  let s := (Finset.univ : Finset n).map ⟨fun i : n => (i, i), fun i j h => congr_arg Prod.fst h⟩
-  rw [← Finset.sum_subset (Finset.subset_univ s) fun i _hi his => ?_]
+  let s := (Finset.univ : Finset n).map ⟨fun i : n ↦ (i, i), fun i j h ↦ congr_arg Prod.fst h⟩
+  rw [← Finset.sum_subset (Finset.subset_univ s) fun i _hi his ↦ ?_]
   · rw [Finset.sum_map, NNReal.sqrt_eq_rpow]
     dsimp
     simp_rw [diagonal_apply_eq, NNReal.rpow_two]

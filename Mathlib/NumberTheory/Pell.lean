@@ -221,10 +221,10 @@ theorem eq_one_of_x_eq_one (h₀ : d ≠ 0) {a : Solution₁ d} (ha : a.x = 1) :
 
 /-- A solution is `1` or `-1` if and only if `y = 0`. -/
 theorem eq_one_or_neg_one_iff_y_eq_zero {a : Solution₁ d} : a = 1 ∨ a = -1 ↔ a.y = 0 := by
-  refine ⟨fun H => H.elim (fun h => by simp [h]) fun h => by simp [h], fun H => ?_⟩
+  refine ⟨fun H ↦ H.elim (fun h ↦ by simp [h]) fun h ↦ by simp [h], fun H ↦ ?_⟩
   have prop := a.prop
   rw [H, sq (0 : ℤ), mul_zero, mul_zero, sub_zero, sq_eq_one_iff] at prop
-  exact prop.imp (fun h => ext h H) fun h => ext h H
+  exact prop.imp (fun h ↦ ext h H) fun h ↦ ext h H
 
 /-- The set of solutions with `x > 0` is closed under multiplication. -/
 theorem x_mul_pos {a b : Solution₁ d} (ha : 0 < a.x) (hb : 0 < b.x) : 0 < (a * b).x := by
@@ -295,8 +295,8 @@ theorem exists_pos_variant (h₀ : 0 < d) (a : Solution₁ d) :
     ∃ b : Solution₁ d, 0 < b.x ∧ 0 ≤ b.y ∧ a ∈ ({b, b⁻¹, -b, -b⁻¹} : Set (Solution₁ d)) := by
   refine
         (lt_or_gt_of_ne (a.x_ne_zero h₀.le)).elim
-          ((le_total 0 a.y).elim (fun hy hx => ⟨-a⁻¹, ?_, ?_, ?_⟩) fun hy hx => ⟨-a, ?_, ?_, ?_⟩)
-          ((le_total 0 a.y).elim (fun hy hx => ⟨a, hx, hy, ?_⟩) fun hy hx => ⟨a⁻¹, hx, ?_, ?_⟩) <;>
+          ((le_total 0 a.y).elim (fun hy hx ↦ ⟨-a⁻¹, ?_, ?_, ?_⟩) fun hy hx ↦ ⟨-a, ?_, ?_, ?_⟩)
+          ((le_total 0 a.y).elim (fun hy hx ↦ ⟨a, hx, hy, ?_⟩) fun hy hx ↦ ⟨a⁻¹, hx, ?_, ?_⟩) <;>
       simp only [neg_neg, inv_inv, neg_inv, Set.mem_insert_iff, Set.mem_singleton_iff, true_or,
         x_neg, x_inv, y_neg, y_inv, neg_pos, neg_nonneg, or_true] <;>
     assumption
@@ -326,7 +326,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     rw [← sq_sqrt <| Int.cast_nonneg.mpr h₀.le, Int.cast_mul, ← hx, sq]
   obtain ⟨M, hM₁⟩ := exists_int_gt (2 * |ξ| + 1)
   have hM : {q : ℚ | |q.1 ^ 2 - d * (q.2 : ℤ) ^ 2| < M}.Infinite := by
-    refine Infinite.mono (fun q h => ?_) (infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational hξ)
+    refine Infinite.mono (fun q h ↦ ?_) (infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational hξ)
     have h0 : 0 < (q.2 : ℝ) ^ 2 := pow_pos (Nat.cast_pos.mpr q.pos) 2
     have h1 : (q.num : ℝ) / (q.den : ℝ) = q := mod_cast q.num_div_den
     rw [mem_setOf, abs_sub_comm, ← @Int.cast_lt ℝ,
@@ -343,7 +343,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
   obtain ⟨m, hm⟩ : ∃ m : ℤ, {q : ℚ | q.1 ^ 2 - d * (q.den : ℤ) ^ 2 = m}.Infinite := by
     contrapose! hM
     simp only [not_infinite] at hM ⊢
-    refine (congr_arg _ (ext fun x => ?_)).mp (Finite.biUnion (finite_Ioo (-M) M) fun m _ => hM m)
+    refine (congr_arg _ (ext fun x ↦ ?_)).mp (Finite.biUnion (finite_Ioo (-M) M) fun m _ ↦ hM m)
     simp only [abs_lt, mem_setOf, mem_Ioo, mem_iUnion, exists_prop, exists_eq_right']
   have hm₀ : m ≠ 0 := by
     rintro rfl
@@ -353,7 +353,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     rw [ha, mul_pow, mul_right_inj' (pow_pos (Int.natCast_pos.mpr q.pos) 2).ne'] at hq
     exact hd ⟨a, sq a ▸ hq.symm⟩
   haveI := neZero_iff.mpr (Int.natAbs_ne_zero.mpr hm₀)
-  let f : ℚ → ZMod m.natAbs × ZMod m.natAbs := fun q => (q.num, q.den)
+  let f : ℚ → ZMod m.natAbs × ZMod m.natAbs := fun q ↦ (q.num, q.den)
   obtain ⟨q₁, h₁ : q₁.num ^ 2 - d * (q₁.den : ℤ) ^ 2 = m,
       q₂, h₂ : q₂.num ^ 2 - d * (q₂.den : ℤ) ^ 2 = m, hne, hqf⟩ :=
     hm.exists_ne_map_eq_of_mapsTo (mapsTo_univ f _) finite_univ
@@ -396,7 +396,7 @@ to the Pell equation `x^2 - d*y^2 = 1`. -/
 theorem exists_nontrivial_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     ∃ a : Solution₁ d, a ≠ 1 ∧ a ≠ -1 := by
   obtain ⟨x, y, prop, hy⟩ := exists_of_not_isSquare h₀ hd
-  refine ⟨mk x y prop, fun H => ?_, fun H => ?_⟩ <;> apply_fun Solution₁.y at H <;>
+  refine ⟨mk x y prop, fun H ↦ ?_, fun H ↦ ?_⟩ <;> apply_fun Solution₁.y at H <;>
     simp [hy] at H
 
 /-- If `d` is a positive integer that is not a square, then there exists a solution
@@ -464,7 +464,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
   -- to avoid having to show that the predicate is decidable
   let x₁ := Nat.find P
   obtain ⟨hx, y₁, hy₀, hy₁⟩ := Nat.find_spec P
-  refine ⟨mk x₁ y₁ hy₁, by rw [x_mk]; exact mod_cast hx, hy₀, fun {b} hb => ?_⟩
+  refine ⟨mk x₁ y₁ hy₁, by rw [x_mk]; exact mod_cast hx, hy₀, fun {b} hb ↦ ?_⟩
   rw [x_mk]
   have hb' := (Int.toNat_of_nonneg <| zero_le_one.trans hb.le).symm
   have hb'' := hb
@@ -477,7 +477,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
 /-- The map sending an integer `n` to the `y`-coordinate of `a^n` for a fundamental
 solution `a` is strictly increasing. -/
 theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
-    StrictMono fun n : ℤ => (a ^ n).y := by
+    StrictMono fun n : ℤ ↦ (a ^ n).y := by
   have H : ∀ n : ℤ, 0 ≤ n → (a ^ n).y < (a ^ (n + 1)).y := by
     intro n hn
     rw [← sub_pos, zpow_add, zpow_one, y_mul, add_sub_assoc]
@@ -488,7 +488,7 @@ theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
     rcases hn.eq_or_lt with (rfl | hn)
     · simp only [zpow_zero, y_one, le_refl]
     · exact (y_zpow_pos h.x_pos h.2.1 hn).le
-  refine strictMono_int_of_lt_succ fun n => ?_
+  refine strictMono_int_of_lt_succ fun n ↦ ?_
   rcases le_or_gt 0 n with hn | hn
   · exact H n hn
   · let m : ℤ := -n - 1
@@ -499,14 +499,14 @@ theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
 /-- If `a` is a fundamental solution, then `(a^m).y < (a^n).y` if and only if `m < n`. -/
 theorem zpow_y_lt_iff_lt {a : Solution₁ d} (h : IsFundamental a) (m n : ℤ) :
     (a ^ m).y < (a ^ n).y ↔ m < n := by
-  refine ⟨fun H => ?_, fun H => h.y_strictMono H⟩
+  refine ⟨fun H ↦ ?_, fun H ↦ h.y_strictMono H⟩
   contrapose! H
   exact h.y_strictMono.monotone H
 
 /-- The `n`th power of a fundamental solution is trivial if and only if `n = 0`. -/
 theorem zpow_eq_one_iff {a : Solution₁ d} (h : IsFundamental a) (n : ℤ) : a ^ n = 1 ↔ n = 0 := by
   rw [← zpow_zero a]
-  exact ⟨fun H => h.y_strictMono.injective (congr_arg Solution₁.y H), fun H => H ▸ rfl⟩
+  exact ⟨fun H ↦ h.y_strictMono.injective (congr_arg Solution₁.y H), fun H ↦ H ▸ rfl⟩
 
 /-- A power of a fundamental solution is never equal to the negative of a power of this
 fundamental solution. -/
@@ -596,7 +596,7 @@ theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : So
     · have prop := a.prop
       rw [← hy, sq (0 : ℤ), zero_mul, mul_zero, sub_zero,
         sq_eq_one_iff] at prop
-      refine prop.resolve_right fun hf => ?_
+      refine prop.resolve_right fun hf ↦ ?_
       have := (hax.trans_eq hax').le.trans_eq hf
       norm_num at this
     · exact hy.symm
@@ -632,7 +632,7 @@ theorem existsUnique_pos_generator (h₀ : 0 < d) (hd : ¬IsSquare d) :
     ∃! a₁ : Solution₁ d,
       1 < a₁.x ∧ 0 < a₁.y ∧ ∀ a : Solution₁ d, ∃ n : ℤ, a = a₁ ^ n ∨ a = -a₁ ^ n := by
   obtain ⟨a₁, ha₁⟩ := IsFundamental.exists_of_not_isSquare h₀ hd
-  refine ⟨a₁, ⟨ha₁.1, ha₁.2.1, ha₁.eq_zpow_or_neg_zpow⟩, fun a (H : 1 < _ ∧ _) => ?_⟩
+  refine ⟨a₁, ⟨ha₁.1, ha₁.2.1, ha₁.eq_zpow_or_neg_zpow⟩, fun a (H : 1 < _ ∧ _) ↦ ?_⟩
   obtain ⟨Hx, Hy, H⟩ := H
   obtain ⟨n₁, hn₁⟩ := H a₁
   obtain ⟨n₂, hn₂⟩ := ha₁.eq_zpow_or_neg_zpow a
@@ -657,7 +657,7 @@ theorem existsUnique_pos_generator (h₀ : 0 < d) (hd : ¬IsSquare d) :
 Pell equation `x^2 - d*y^2 = 1` if and only if it is a fundamental solution. -/
 theorem pos_generator_iff_fundamental (a : Solution₁ d) :
     (1 < a.x ∧ 0 < a.y ∧ ∀ b : Solution₁ d, ∃ n : ℤ, b = a ^ n ∨ b = -a ^ n) ↔ IsFundamental a := by
-  refine ⟨fun h => ?_, fun H => ⟨H.1, H.2.1, H.eq_zpow_or_neg_zpow⟩⟩
+  refine ⟨fun h ↦ ?_, fun H ↦ ⟨H.1, H.2.1, H.eq_zpow_or_neg_zpow⟩⟩
   have h₀ := d_pos_of_one_lt_x h.1
   have hd := d_nonsquare_of_one_lt_x h.1
   obtain ⟨a₁, ha₁⟩ := IsFundamental.exists_of_not_isSquare h₀ hd

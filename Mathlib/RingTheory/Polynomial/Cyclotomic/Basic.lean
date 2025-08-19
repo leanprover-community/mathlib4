@@ -78,13 +78,13 @@ theorem cyclotomic'_two (R : Type*) [CommRing R] [IsDomain R] (p : ℕ) [CharP R
   rw [cyclotomic']
   have prim_root_two : primitiveRoots 2 R = {(-1 : R)} := by
     simp only [Finset.eq_singleton_iff_unique_mem, mem_primitiveRoots two_pos]
-    exact ⟨IsPrimitiveRoot.neg_one p hp, fun x => IsPrimitiveRoot.eq_neg_one_of_two_right⟩
+    exact ⟨IsPrimitiveRoot.neg_one p hp, fun x ↦ IsPrimitiveRoot.eq_neg_one_of_two_right⟩
   simp only [prim_root_two, Finset.prod_singleton, RingHom.map_neg, RingHom.map_one, sub_neg_eq_add]
 
 /-- `cyclotomic' n R` is monic. -/
 theorem cyclotomic'.monic (n : ℕ) (R : Type*) [CommRing R] [IsDomain R] :
     (cyclotomic' n R).Monic :=
-  monic_prod_of_monic _ _ fun _ _ => monic_X_sub_C _
+  monic_prod_of_monic _ _ fun _ _ ↦ monic_X_sub_C _
 
 /-- `cyclotomic' n R` is different from `0`. -/
 theorem cyclotomic'_ne_zero (n : ℕ) (R : Type*) [CommRing R] [IsDomain R] : cyclotomic' n R ≠ 0 :=
@@ -95,7 +95,7 @@ unity in `R`. -/
 theorem natDegree_cyclotomic' {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
     (cyclotomic' n R).natDegree = Nat.totient n := by
   rw [cyclotomic']
-  rw [natDegree_prod (primitiveRoots n R) fun z : R => X - C z]
+  rw [natDegree_prod (primitiveRoots n R) fun z : R ↦ X - C z]
   · simp only [IsPrimitiveRoot.card_primitiveRoots h, mul_one, natDegree_X_sub_C, Nat.cast_id,
       Finset.sum_const, nsmul_eq_mul]
   intro z _
@@ -148,8 +148,8 @@ theorem prod_cyclotomic'_eq_X_pow_sub_one {K : Type*} [CommRing K] [IsDomain K] 
     (hpos : 0 < n) (h : IsPrimitiveRoot ζ n) :
     ∏ i ∈ Nat.divisors n, cyclotomic' i K = X ^ n - 1 := by
   classical
-  have hd : (n.divisors : Set ℕ).PairwiseDisjoint fun k => primitiveRoots k K :=
-    fun x _ y _ hne => IsPrimitiveRoot.disjoint hne
+  have hd : (n.divisors : Set ℕ).PairwiseDisjoint fun k ↦ primitiveRoots k K :=
+    fun x _ y _ hne ↦ IsPrimitiveRoot.disjoint hne
   simp only [X_pow_sub_one_eq_prod hpos h, cyclotomic', ← Finset.prod_biUnion hd,
     IsPrimitiveRoot.nthRoots_one_eq_biUnion_primitiveRoots]
 
@@ -213,7 +213,7 @@ theorem unique_int_coeff_of_cycl {K : Type*} [CommRing K] [IsDomain K] [CharZero
     {n : ℕ+} (h : IsPrimitiveRoot ζ n) :
     ∃! P : ℤ[X], map (Int.castRingHom K) P = cyclotomic' n K := by
   obtain ⟨P, hP⟩ := int_coeff_of_cyclotomic' h
-  refine ⟨P, hP.1, fun Q hQ => ?_⟩
+  refine ⟨P, hP.1, fun Q hQ ↦ ?_⟩
   apply map_injective (Int.castRingHom K) Int.cast_injective
   rw [hP.1, hQ]
 
@@ -397,7 +397,7 @@ theorem X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd (R) [CommRing R] {
     ← Nat.insert_self_properDivisors, Finset.insert_sdiff_of_notMem,
     Finset.prod_insert, mul_assoc]
   · exact Finset.notMem_sdiff_of_notMem_left Nat.self_notMem_properDivisors
-  · exact fun hk => h.2.not_ge <| Nat.divisor_le hk
+  · exact fun hk ↦ h.2.not_ge <| Nat.divisor_le hk
   · exact h.2.ne_bot
 
 section ArithmeticFunction
@@ -417,7 +417,7 @@ theorem cyclotomic_eq_prod_X_pow_sub_one_pow_moebius {n : ℕ} (R : Type*) [Comm
       algebraMap _ _ (X ^ n - 1 : R[X]) := by
     intro n hn
     rw [← prod_cyclotomic_eq_X_pow_sub_one hn R, map_prod]
-  rw [(prod_eq_iff_prod_pow_moebius_eq_of_nonzero (fun n hn => _) fun n hn => _).1 h n hpos] <;>
+  rw [(prod_eq_iff_prod_pow_moebius_eq_of_nonzero (fun n hn ↦ _) fun n hn ↦ _).1 h n hpos] <;>
     simp_rw [Ne, IsFractionRing.to_map_eq_zero_iff]
   · simp [cyclotomic_ne_zero]
   · intro n hn
@@ -478,7 +478,7 @@ theorem eq_cyclotomic_iff {R : Type*} [CommRing R] {n : ℕ} (hpos : 0 < n) (P :
     P = cyclotomic n R ↔
     (P * ∏ i ∈ Nat.properDivisors n, Polynomial.cyclotomic i R) = X ^ n - 1 := by
   nontriviality R
-  refine ⟨fun hcycl => ?_, fun hP => ?_⟩
+  refine ⟨fun hcycl ↦ ?_, fun hP ↦ ?_⟩
   · rw [hcycl, ← prod_cyclotomic_eq_X_pow_sub_one hpos R, ← Nat.cons_self_properDivisors hpos.ne',
       Finset.prod_cons]
   · have prod_monic : (∏ i ∈ Nat.properDivisors n, cyclotomic i R).Monic := by

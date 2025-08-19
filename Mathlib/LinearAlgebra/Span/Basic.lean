@@ -276,11 +276,11 @@ alias not_mem_span_of_apply_not_mem_span_image := notMem_span_of_apply_notMem_sp
 
 theorem iSup_toAddSubmonoid {ι : Sort*} (p : ι → Submodule R M) :
     (⨆ i, p i).toAddSubmonoid = ⨆ i, (p i).toAddSubmonoid := by
-  refine le_antisymm (fun x => ?_) (iSup_le fun i => toAddSubmonoid_mono <| le_iSup _ i)
+  refine le_antisymm (fun x ↦ ?_) (iSup_le fun i ↦ toAddSubmonoid_mono <| le_iSup _ i)
   simp_rw [iSup_eq_span, AddSubmonoid.iSup_eq_closure, mem_toAddSubmonoid, coe_toAddSubmonoid]
   intro hx
-  refine Submodule.span_induction (fun x hx => ?_) ?_ (fun x y _ _ hx hy => ?_)
-    (fun r x _ hx => ?_) hx
+  refine Submodule.span_induction (fun x hx ↦ ?_) ?_ (fun x y _ _ hx hy ↦ ?_)
+    (fun r x _ hx ↦ ?_) hx
   · exact AddSubmonoid.subset_closure hx
   · exact AddSubmonoid.zero_mem _
   · exact AddSubmonoid.add_mem _ hx hy
@@ -310,9 +310,9 @@ theorem iSup_induction' {ι : Sort*} (p : ι → Submodule R M) {motive : ∀ x,
     (mem : ∀ (i) (x) (hx : x ∈ p i), motive x (mem_iSup_of_mem i hx)) (zero : motive 0 (zero_mem _))
     (add : ∀ x y hx hy, motive x hx → motive y hy → motive (x + y) (add_mem ‹_› ‹_›)) {x : M}
     (hx : x ∈ ⨆ i, p i) : motive x hx := by
-  refine Exists.elim ?_ fun (hx : x ∈ ⨆ i, p i) (hc : motive x hx) => hc
+  refine Exists.elim ?_ fun (hx : x ∈ ⨆ i, p i) (hc : motive x hx) ↦ hc
   refine iSup_induction p (motive := fun x : M ↦ ∃ (hx : x ∈ ⨆ i, p i), motive x hx) hx
-    (fun i x hx => ?_) ?_ fun x y => ?_
+    (fun i x hx ↦ ?_) ?_ fun x y ↦ ?_
   · exact ⟨_, mem _ _ hx⟩
   · exact ⟨_, zero⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
@@ -333,7 +333,7 @@ theorem finset_span_isCompactElement (S : Finset M) :
   simp only [Finset.mem_coe]
   rw [← Finset.sup_eq_iSup]
   exact
-    CompleteLattice.isCompactElement_finsetSup S fun x _ => singleton_span_isCompactElement x
+    CompleteLattice.isCompactElement_finsetSup S fun x _ ↦ singleton_span_isCompactElement x
 
 /-- The span of a finite subset is compact in the lattice of submodules. -/
 theorem finite_span_isCompactElement (S : Set M) (h : S.Finite) :
@@ -341,9 +341,9 @@ theorem finite_span_isCompactElement (S : Set M) (h : S.Finite) :
   Finite.coe_toFinset h ▸ finset_span_isCompactElement h.toFinset
 
 instance : IsCompactlyGenerated (Submodule R M) :=
-  ⟨fun s =>
-    ⟨(fun x => span R {x}) '' s,
-      ⟨fun t ht => by
+  ⟨fun s ↦
+    ⟨(fun x ↦ span R {x}) '' s,
+      ⟨fun t ht ↦ by
         rcases (Set.mem_image _ _ _).1 ht with ⟨x, _, rfl⟩
         apply singleton_span_isCompactElement, by
         rw [sSup_eq_iSup, iSup_image, ← span_eq_iSup_of_singleton_spans, span_eq]⟩⟩⟩
@@ -447,7 +447,7 @@ theorem span_neg (s : Set M) : span R (-s) = span R s :=
     _ = span R s := by simp
 
 instance : IsModularLattice (Submodule R M) :=
-  ⟨fun y z xz a ha => by
+  ⟨fun y z xz a ha ↦ by
     rw [mem_inf, mem_sup] at ha
     rcases ha with ⟨⟨b, hb, c, hc, rfl⟩, haz⟩
     rw [mem_sup]
@@ -612,7 +612,7 @@ theorem covBy_span_singleton_sup {x : V} {s : Submodule K V} (h : x ∉ s) : Cov
   ⟨by simpa, (wcovBy_span_singleton_sup _ _).2⟩
 
 theorem disjoint_span_singleton : Disjoint s (K ∙ x) ↔ x ∈ s → x = 0 := by
-  refine disjoint_def.trans ⟨fun H hx => H x hx <| subset_span <| mem_singleton x, ?_⟩
+  refine disjoint_def.trans ⟨fun H hx ↦ H x hx <| subset_span <| mem_singleton x, ?_⟩
   intro H y hy hyx
   obtain ⟨c, rfl⟩ := mem_span_singleton.1 hyx
   by_cases hc : c = 0
@@ -621,7 +621,7 @@ theorem disjoint_span_singleton : Disjoint s (K ∙ x) ↔ x ∈ s → x = 0 := 
     rw [H hy, smul_zero]
 
 theorem disjoint_span_singleton' (x0 : x ≠ 0) : Disjoint s (K ∙ x) ↔ x ∉ s :=
-  disjoint_span_singleton.trans ⟨fun h₁ h₂ => x0 (h₁ h₂), fun h₁ h₂ => (h₁ h₂).elim⟩
+  disjoint_span_singleton.trans ⟨fun h₁ h₂ ↦ x0 (h₁ h₂), fun h₁ h₂ ↦ (h₁ h₂).elim⟩
 
 lemma disjoint_span_singleton_of_notMem (hx : x ∉ s) : Disjoint s (K ∙ x) := by
   rw [disjoint_span_singleton]
@@ -662,7 +662,7 @@ protected theorem map_le_map_iff (f : F) {p p'} : map f p ≤ map f p' ↔ p ≤
 theorem map_le_map_iff' {f : F} (hf : ker f = ⊥) {p p'} : map f p ≤ map f p' ↔ p ≤ p' := by
   rw [LinearMap.map_le_map_iff, hf, sup_bot_eq]
 
-theorem map_injective {f : F} (hf : ker f = ⊥) : Injective (map f) := fun _ _ h =>
+theorem map_injective {f : F} (hf : ker f = ⊥) : Injective (map f) := fun _ _ h ↦
   le_antisymm ((map_le_map_iff' hf).1 (le_of_eq h)) ((map_le_map_iff' hf).1 (ge_of_eq h))
 
 theorem map_eq_top_iff {f : F} (hf : range f = ⊤) {p : Submodule R M} :
@@ -683,7 +683,7 @@ def toSpanSingleton (x : M) : R →ₗ[R] M :=
 
 /-- The range of `toSpanSingleton x` is the span of `x`. -/
 theorem span_singleton_eq_range (x : M) : (R ∙ x) = range (toSpanSingleton R M x) :=
-  Submodule.ext fun y => by
+  Submodule.ext fun y ↦ by
     refine Iff.trans ?_ LinearMap.mem_range.symm
     exact mem_span_singleton
 
@@ -757,7 +757,7 @@ theorem eqOn_span {s : Set M} {f g : F} (H : Set.EqOn f g s) ⦃x⦄ (h : x ∈ 
 /-- If `s` generates the whole module and linear maps `f`, `g` are equal on `s`, then they are
 equal. -/
 theorem ext_on {s : Set M} {f g : F} (hv : span R s = ⊤) (h : Set.EqOn f g s) : f = g :=
-  DFunLike.ext _ _ fun _ => eqOn_span h (eq_top_iff'.1 hv _)
+  DFunLike.ext _ _ fun _ ↦ eqOn_span h (eq_top_iff'.1 hv _)
 
 /-- If the range of `v : ι → M` generates the whole module and linear maps `f`, `g` are equal at
 each `v i`, then they are equal. -/
@@ -773,7 +773,7 @@ variable (R M)
 variable [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
 
 theorem ker_toSpanSingleton {x : M} (h : x ≠ 0) : LinearMap.ker (toSpanSingleton R M x) = ⊥ :=
-  SetLike.ext fun _ => smul_eq_zero.trans <| or_iff_left_of_imp fun h' => (h h').elim
+  SetLike.ext fun _ ↦ smul_eq_zero.trans <| or_iff_left_of_imp fun h' ↦ (h h').elim
 
 end NoZeroDivisors
 
@@ -783,7 +783,7 @@ variable [Field K] [AddCommGroup V] [Module K V]
 
 theorem span_singleton_sup_ker_eq_top (f : V →ₗ[K] K) {x : V} (hx : f x ≠ 0) :
     (K ∙ x) ⊔ ker f = ⊤ :=
-  top_unique fun y _ =>
+  top_unique fun y _ ↦
     Submodule.mem_sup.2
       ⟨(f y * (f x)⁻¹) • x, Submodule.mem_span_singleton.2 ⟨f y * (f x)⁻¹, rfl⟩,
         ⟨y - (f y * (f x)⁻¹) • x, by simp [hx]⟩⟩

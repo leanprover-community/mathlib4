@@ -130,7 +130,7 @@ but we reuse all the names from `SemilatticeInf` because they will be used to co
 def inf {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A where
   obj f := pullback f.arrow ⋙ map f.arrow
   map k :=
-    { app := fun g => by
+    { app := fun g ↦ by
         apply homMk _ _
         · apply pullback.lift (pullback.fst _ _) (pullback.snd _ _ ≫ k.left) _
           rw [pullback.condition, assoc, w k]
@@ -197,7 +197,7 @@ section OrderTop
 instance orderTop {X : C} : OrderTop (Subobject X) where
   top := Quotient.mk'' ⊤
   le_top := by
-    refine Quotient.ind' fun f => ?_
+    refine Quotient.ind' fun f ↦ ?_
     exact ⟨MonoOver.leTop f⟩
 
 instance {X : C} : Inhabited (Subobject X) :=
@@ -227,7 +227,7 @@ theorem top_factors {A B : C} (f : A ⟶ B) : (⊤ : Subobject B).Factors f :=
   ⟨f, comp_id _⟩
 
 theorem isIso_iff_mk_eq_top {X Y : C} (f : X ⟶ Y) [Mono f] : IsIso f ↔ mk f = ⊤ :=
-  ⟨fun _ => mk_eq_mk_of_comm _ _ (asIso f) (Category.comp_id _), fun h => by
+  ⟨fun _ ↦ mk_eq_mk_of_comm _ _ (asIso f) (Category.comp_id _), fun h ↦ by
     rw [← ofMkLEMk_comp h.le, Category.comp_id]
     exact (isoOfMkEqMk _ _ h).isIso_hom⟩
 
@@ -268,7 +268,7 @@ variable [HasInitial C] [InitialMonoClass C]
 instance orderBot {X : C} : OrderBot (Subobject X) where
   bot := Quotient.mk'' ⊥
   bot_le := by
-    refine Quotient.ind' fun f => ?_
+    refine Quotient.ind' fun f ↦ ?_
     exact ⟨MonoOver.botLE f⟩
 
 theorem bot_eq_initial_to {B : C} : (⊥ : Subobject B) = Subobject.mk (initial.to B) :=
@@ -313,7 +313,7 @@ theorem bot_factors_iff_zero {A B : C} (f : A ⟶ B) : (⊥ : Subobject B).Facto
     exact ⟨0, by simp⟩⟩
 
 theorem mk_eq_bot_iff_zero {f : X ⟶ Y} [Mono f] : Subobject.mk f = ⊥ ↔ f = 0 :=
-  ⟨fun h => by simpa [h, bot_factors_iff_zero] using mk_factors_self f, fun h =>
+  ⟨fun h ↦ by simpa [h, bot_factors_iff_zero] using mk_factors_self f, fun h ↦
     mk_eq_mk_of_comm _ _ ((isoZeroOfMonoEqZero h).trans HasZeroObject.zeroIsoInitial) (by simp [h])⟩
 
 end ZeroOrderBot
@@ -341,10 +341,10 @@ def inf {A : C} : Subobject A ⥤ Subobject A ⥤ Subobject A :=
   ThinSkeleton.map₂ MonoOver.inf
 
 theorem inf_le_left {A : C} (f g : Subobject A) : (inf.obj f).obj g ≤ f :=
-  Quotient.inductionOn₂' f g fun _ _ => ⟨MonoOver.infLELeft _ _⟩
+  Quotient.inductionOn₂' f g fun _ _ ↦ ⟨MonoOver.infLELeft _ _⟩
 
 theorem inf_le_right {A : C} (f g : Subobject A) : (inf.obj f).obj g ≤ g :=
-  Quotient.inductionOn₂' f g fun _ _ => ⟨MonoOver.infLERight _ _⟩
+  Quotient.inductionOn₂' f g fun _ _ ↦ ⟨MonoOver.infLERight _ _⟩
 
 theorem le_inf {A : C} (h f g : Subobject A) : h ≤ f → h ≤ g → h ≤ (inf.obj f).obj g :=
   Quotient.inductionOn₃' h f g
@@ -353,7 +353,7 @@ theorem le_inf {A : C} (h f g : Subobject A) : h ≤ f → h ≤ g → h ≤ (in
       exact ⟨MonoOver.leInf _ _ _ k l⟩)
 
 instance semilatticeInf {B : C} : SemilatticeInf (Subobject B) where
-  inf := fun m n => (inf.obj m).obj n
+  inf := fun m n ↦ (inf.obj m).obj n
   inf_le_left := inf_le_left
   inf_le_right := inf_le_right
   le_inf := le_inf
@@ -369,7 +369,7 @@ theorem factors_right_of_inf_factors {A B : C} {X Y : Subobject B} {f : A ⟶ B}
 @[simp]
 theorem inf_factors {A B : C} {X Y : Subobject B} (f : A ⟶ B) :
     (X ⊓ Y).Factors f ↔ X.Factors f ∧ Y.Factors f :=
-  ⟨fun h => ⟨factors_left_of_inf_factors h, factors_right_of_inf_factors h⟩, by
+  ⟨fun h ↦ ⟨factors_left_of_inf_factors h, factors_right_of_inf_factors h⟩, by
     revert X Y
     apply Quotient.ind₂'
     rintro X Y ⟨⟨g₁, rfl⟩, ⟨g₂, hg₂⟩⟩
@@ -459,11 +459,11 @@ def sup {A : C} : Subobject A ⥤ Subobject A ⥤ Subobject A :=
   ThinSkeleton.map₂ MonoOver.sup
 
 instance semilatticeSup {B : C} : SemilatticeSup (Subobject B) where
-  sup := fun m n => (sup.obj m).obj n
-  le_sup_left := fun m n => Quotient.inductionOn₂' m n fun _ _ => ⟨MonoOver.leSupLeft _ _⟩
-  le_sup_right := fun m n => Quotient.inductionOn₂' m n fun _ _ => ⟨MonoOver.leSupRight _ _⟩
-  sup_le := fun m n k =>
-    Quotient.inductionOn₃' m n k fun _ _ _ ⟨i⟩ ⟨j⟩ => ⟨MonoOver.supLe _ _ _ i j⟩
+  sup := fun m n ↦ (sup.obj m).obj n
+  le_sup_left := fun m n ↦ Quotient.inductionOn₂' m n fun _ _ ↦ ⟨MonoOver.leSupLeft _ _⟩
+  le_sup_right := fun m n ↦ Quotient.inductionOn₂' m n fun _ _ ↦ ⟨MonoOver.leSupRight _ _⟩
+  sup_le := fun m n k ↦
+    Quotient.inductionOn₃' m n k fun _ _ _ ⟨i⟩ ⟨j⟩ ↦ ⟨MonoOver.supLe _ _ _ i j⟩
 
 theorem sup_factors_of_factors_left {A B : C} {X Y : Subobject B} {f : A ⟶ B} (P : X.Factors f) :
     (X ⊔ Y).Factors f :=
@@ -513,7 +513,7 @@ to make the diagram small.)
 -/
 def wideCospan {A : C} (s : Set (Subobject A)) : WidePullbackShape (equivShrink _ '' s) ⥤ C :=
   WidePullbackShape.wideCospan A
-    (fun j : equivShrink _ '' s => ((equivShrink (Subobject A)).symm j : C)) fun j =>
+    (fun j : equivShrink _ '' s ↦ ((equivShrink (Subobject A)).symm j : C)) fun j ↦
     ((equivShrink (Subobject A)).symm j).arrow
 
 @[simp]
@@ -526,7 +526,7 @@ theorem wideCospan_map_term {A : C} (s : Set (Subobject A)) (j) :
 def leInfCone {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, f ≤ g) :
     Cone (wideCospan s) :=
   WidePullbackShape.mkCone f.arrow
-    (fun j =>
+    (fun j ↦
       underlying.map
         (homOfLE
           (k _
@@ -553,8 +553,8 @@ def widePullbackι {A : C} (s : Set (Subobject A)) : widePullback s ⟶ A :=
   Limits.limit.π (wideCospan s) none
 
 instance widePullbackι_mono {A : C} (s : Set (Subobject A)) : Mono (widePullbackι s) :=
-  ⟨fun u v h =>
-    limit.hom_ext fun j => by
+  ⟨fun u v h ↦
+    limit.hom_ext fun j ↦ by
       cases j
       · exact h
       · apply (cancel_mono ((equivShrink (Subobject A)).symm _).arrow).1
@@ -573,7 +573,7 @@ theorem sInf_le {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : sInf s ≤ 
       Limits.limit.π (wideCospan s)
         (some ⟨equivShrink (Subobject A) f,
           Set.mem_image_of_mem (equivShrink (Subobject A)) hf⟩) ≫
-      eqToHom (congr_arg (fun X : Subobject A => (X : C)) (Equiv.symm_apply_apply _ _))
+      eqToHom (congr_arg (fun X : Subobject A ↦ (X : C)) (Equiv.symm_apply_apply _ _))
   · dsimp [sInf]
     simp only [Category.assoc, ← underlyingIso_hom_comp_eq_mk,
       Iso.cancel_iso_hom_left]
@@ -602,7 +602,7 @@ variable [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C]
 after using `[WellPowered C]` to reindex by a small type.
 -/
 def smallCoproductDesc {A : C} (s : Set (Subobject A)) :=
-  Limits.Sigma.desc fun j : equivShrink _ '' s => ((equivShrink (Subobject A)).symm j).arrow
+  Limits.Sigma.desc fun j : equivShrink _ '' s ↦ ((equivShrink (Subobject A)).symm j).arrow
 
 variable [HasImages C]
 
@@ -615,12 +615,12 @@ theorem le_sSup {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : f ≤ sSup 
   fapply le_of_comm
   · refine eqToHom ?_ ≫ Sigma.ι _ ⟨equivShrink (Subobject A) f, by simpa [Set.mem_image] using hf⟩
       ≫ factorThruImage _ ≫ (underlyingIso _).inv
-    exact (congr_arg (fun X : Subobject A => (X : C)) (Equiv.symm_apply_apply _ _).symm)
+    exact (congr_arg (fun X : Subobject A ↦ (X : C)) (Equiv.symm_apply_apply _ _).symm)
   · simp [sSup, smallCoproductDesc]
 
 theorem symm_apply_mem_iff_mem_image {α β : Type*} (e : α ≃ β) (s : Set α) (x : β) :
     e.symm x ∈ s ↔ x ∈ e '' s :=
-  ⟨fun h => ⟨e.symm x, h, by simp⟩, by
+  ⟨fun h ↦ ⟨e.symm x, h, by simp⟩, by
     rintro ⟨a, m, rfl⟩
     simpa using m⟩
 
@@ -681,7 +681,7 @@ open ZeroObject
 
 /-- A nonzero object has nontrivial subobject lattice. -/
 theorem nontrivial_of_not_isZero {X : C} (h : ¬IsZero X) : Nontrivial (Subobject X) :=
-  ⟨⟨mk (0 : 0 ⟶ X), mk (𝟙 X), fun w => h (IsZero.of_iso (isZero_zero C) (isoOfMkEqMk _ _ w).symm)⟩⟩
+  ⟨⟨mk (0 : 0 ⟶ X), mk (𝟙 X), fun w ↦ h (IsZero.of_iso (isZero_zero C) (isoOfMkEqMk _ _ w).symm)⟩⟩
 
 end ZeroObject
 

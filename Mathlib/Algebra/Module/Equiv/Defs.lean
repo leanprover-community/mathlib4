@@ -429,13 +429,13 @@ theorem toLinearMap_symm_comp_eq (f : M₃ →ₛₗ[σ₃₁] M₁) (g : M₃ �
 @[simp]
 theorem comp_toLinearMap_eq_iff (f g : M₃ →ₛₗ[σ₃₁] M₁) :
     e₁₂.toLinearMap.comp f = e₁₂.toLinearMap.comp g ↔ f = g := by
-  refine ⟨fun h => ?_, congrArg e₁₂.comp⟩
+  refine ⟨fun h ↦ ?_, congrArg e₁₂.comp⟩
   rw [← (toLinearMap_symm_comp_eq g (e₁₂.toLinearMap.comp f)).mpr h, eq_toLinearMap_symm_comp]
 
 @[simp]
 theorem eq_comp_toLinearMap_iff (f g : M₂ →ₛₗ[σ₂₃] M₃) :
     f.comp e₁₂.toLinearMap = g.comp e₁₂.toLinearMap ↔ f = g := by
-  refine ⟨fun h => ?_, fun a ↦ congrFun (congrArg LinearMap.comp a) e₁₂.toLinearMap⟩
+  refine ⟨fun h ↦ ?_, fun a ↦ congrFun (congrArg LinearMap.comp a) e₁₂.toLinearMap⟩
   rw [(eq_comp_toLinearMap_symm g (f.comp e₁₂.toLinearMap)).mpr h.symm, eq_comp_toLinearMap_symm]
 
 lemma comp_symm_cancel_left (e : M₁ ≃ₛₗ[σ₁₂] M₂) (f : M₃ →ₛₗ[σ₃₂] M₂) :

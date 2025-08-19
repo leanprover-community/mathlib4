@@ -73,8 +73,8 @@ protected lemma add_nonneg : 0 ≤ a → 0 ≤ b → 0 ≤ a + b :=
     apply Int.add_nonneg <;> apply Int.mul_nonneg <;> · first | assumption | apply Int.ofNat_zero_le
 
 protected lemma mul_nonneg : 0 ≤ a → 0 ≤ b → 0 ≤ a * b :=
-  numDenCasesOn' a fun n₁ d₁ h₁ =>
-    numDenCasesOn' b fun n₂ d₂ h₂ => by
+  numDenCasesOn' a fun n₁ d₁ h₁ ↦
+    numDenCasesOn' b fun n₂ d₂ h₂ ↦ by
       have d₁0 : 0 < (d₁ : ℤ) := mod_cast Nat.pos_of_ne_zero h₁
       have d₂0 : 0 < (d₂ : ℤ) := mod_cast Nat.pos_of_ne_zero h₂
       simp only [d₁0, d₂0, Int.mul_pos, divInt_nonneg_iff_of_pos_right,
@@ -87,8 +87,8 @@ protected theorem not_lt {a b : ℚ} : ¬a < b ↔ b ≤ a := by
   rw [← Rat.not_le, not_not]
 
 protected theorem lt_iff (a b : ℚ) : a < b ↔ a.num * b.den < b.num * a.den :=
-  numDenCasesOn'' a fun na da ha hared =>
-    numDenCasesOn'' b fun nb db hb hbred => by
+  numDenCasesOn'' a fun na da ha hared ↦
+    numDenCasesOn'' b fun nb db hb hbred ↦ by
       change Rat.blt _ _ = true ↔ _
       suffices
         (na < 0 ∧ 0 ≤ nb ∨ if na = 0 then 0 < nb else (na ≤ 0 ∨ 0 < nb) ∧ na * ↑db < nb * da) ↔
@@ -108,8 +108,8 @@ protected theorem le_iff (a b : ℚ) : a ≤ b ↔ a.num * b.den ≤ b.num * a.d
   simpa only [Rat.not_lt, not_lt] using (Rat.lt_iff b a).not
 
 protected theorem le_iff_sub_nonneg (a b : ℚ) : a ≤ b ↔ 0 ≤ b - a :=
-  numDenCasesOn'' a fun na da ha hared =>
-    numDenCasesOn'' b fun nb db hb hbred => by
+  numDenCasesOn'' a fun na da ha hared ↦
+    numDenCasesOn'' b fun nb db hb hbred ↦ by
       rw [Rat.le_iff, sub_def, normalize_eq, ← num_nonneg, ← Int.sub_nonneg]
       dsimp only
       refine ⟨(Int.ediv_nonneg · (Int.natCast_nonneg _)), fun H ↦ ?_⟩
@@ -215,7 +215,7 @@ protected theorem add_le_add_left {a b c : ℚ} : c + a ≤ c + b ↔ a ≤ b :=
   rw [Rat.le_iff_sub_nonneg, add_sub_add_left_eq_sub, ← Rat.le_iff_sub_nonneg]
 
 instance : AddLeftMono ℚ where
-  elim := fun _ _ _ h => Rat.add_le_add_left.2 h
+  elim := fun _ _ _ h ↦ Rat.add_le_add_left.2 h
 
 @[simp] lemma num_nonpos {a : ℚ} : a.num ≤ 0 ↔ a ≤ 0 := by
   simp [Int.le_iff_lt_or_eq, instLE, Rat.blt]

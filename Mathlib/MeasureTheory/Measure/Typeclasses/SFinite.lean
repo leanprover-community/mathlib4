@@ -94,7 +94,7 @@ class SigmaFinite {m0 : MeasurableSpace α} (μ : Measure α) : Prop where
   out' : Nonempty (μ.FiniteSpanningSetsIn univ)
 
 theorem sigmaFinite_iff : SigmaFinite μ ↔ Nonempty (μ.FiniteSpanningSetsIn univ) :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
 
 theorem SigmaFinite.out (h : SigmaFinite μ) : Nonempty (μ.FiniteSpanningSetsIn univ) :=
   h.1
@@ -107,7 +107,7 @@ def Measure.toFiniteSpanningSetsIn (μ : Measure α) [h : SigmaFinite μ] :
   finite n := by
     rw [measure_toMeasurable]
     exact h.out.some.finite n
-  spanning := eq_univ_of_subset (iUnion_mono fun _ => subset_toMeasurable _ _) h.out.some.spanning
+  spanning := eq_univ_of_subset (iUnion_mono fun _ ↦ subset_toMeasurable _ _) h.out.some.spanning
 
 /-- A noncomputable way to get a monotone collection of sets that span `univ` and have finite
   measure using `Classical.choose`. This definition satisfies monotonicity in addition to all other
@@ -124,11 +124,11 @@ lemma spanningSets_mono [SigmaFinite μ] {m n : ℕ} (hmn : m ≤ n) :
 
 theorem measurableSet_spanningSets (μ : Measure α) [SigmaFinite μ] (i : ℕ) :
     MeasurableSet (spanningSets μ i) :=
-  MeasurableSet.iUnion fun j => MeasurableSet.iUnion fun _ => μ.toFiniteSpanningSetsIn.set_mem j
+  MeasurableSet.iUnion fun j ↦ MeasurableSet.iUnion fun _ ↦ μ.toFiniteSpanningSetsIn.set_mem j
 
 theorem measure_spanningSets_lt_top (μ : Measure α) [SigmaFinite μ] (i : ℕ) :
     μ (spanningSets μ i) < ∞ :=
-  measure_biUnion_lt_top (finite_le_nat i) fun j _ => μ.toFiniteSpanningSetsIn.finite j
+  measure_biUnion_lt_top (finite_le_nat i) fun j _ ↦ μ.toFiniteSpanningSetsIn.finite j
 
 @[simp]
 theorem iUnion_spanningSets (μ : Measure α) [SigmaFinite μ] : ⋃ i : ℕ, spanningSets μ i = univ := by
@@ -171,7 +171,7 @@ theorem mem_spanningSets_of_index_le (μ : Measure α) [SigmaFinite μ] (x : α)
 
 theorem eventually_mem_spanningSets (μ : Measure α) [SigmaFinite μ] (x : α) :
     ∀ᶠ n in atTop, x ∈ spanningSets μ n :=
-  eventually_atTop.2 ⟨spanningSetsIndex μ x, fun _ => mem_spanningSets_of_index_le μ x⟩
+  eventually_atTop.2 ⟨spanningSetsIndex μ x, fun _ ↦ mem_spanningSets_of_index_le μ x⟩
 
 lemma measure_singleton_lt_top [SigmaFinite μ] : μ {a} < ∞ :=
   measure_lt_top_mono (singleton_subset_iff.2 <| mem_spanningSetsIndex ..)
@@ -247,15 +247,15 @@ theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top₀ {ι : Type*} {_ 
   set posmeas := { i : ι | 0 < μ (As i) } with posmeas_def
   rcases exists_seq_strictAnti_tendsto' (zero_lt_one : (0 : ℝ≥0∞) < 1) with
     ⟨as, _, as_mem, as_lim⟩
-  set fairmeas := fun n : ℕ => { i : ι | as n ≤ μ (As i) }
+  set fairmeas := fun n : ℕ ↦ { i : ι | as n ≤ μ (As i) }
   have countable_union : posmeas = ⋃ n, fairmeas n := by
-    have fairmeas_eq : ∀ n, fairmeas n = (fun i => μ (As i)) ⁻¹' Ici (as n) := fun n => by
+    have fairmeas_eq : ∀ n, fairmeas n = (fun i ↦ μ (As i)) ⁻¹' Ici (as n) := fun n ↦ by
       simp only [fairmeas]
       rfl
     simpa only [fairmeas_eq, posmeas_def, ← preimage_iUnion,
-      iUnion_Ici_eq_Ioi_of_lt_of_tendsto (fun n => (as_mem n).1) as_lim]
+      iUnion_Ici_eq_Ioi_of_lt_of_tendsto (fun n ↦ (as_mem n).1) as_lim]
   rw [countable_union]
-  refine countable_iUnion fun n => Finite.countable ?_
+  refine countable_iUnion fun n ↦ Finite.countable ?_
   exact finite_const_le_meas_of_disjoint_iUnion₀ μ (as_mem n).1 As_mble As_disj Union_As_finite
 
 /-- If the union of disjoint measurable sets has finite measure, then there are only
@@ -301,10 +301,10 @@ theorem countable_meas_pos_of_disjoint_iUnion {ι : Type*} {_ : MeasurableSpace 
 theorem countable_meas_level_set_pos₀ {α β : Type*} {_ : MeasurableSpace α} {μ : Measure α}
     [SFinite μ] [MeasurableSpace β] [MeasurableSingletonClass β] {g : α → β}
     (g_mble : NullMeasurable g μ) : Set.Countable { t : β | 0 < μ { a : α | g a = t } } := by
-  have level_sets_disjoint : Pairwise (Disjoint on fun t : β => { a : α | g a = t }) :=
-    fun s t hst => Disjoint.preimage g (disjoint_singleton.mpr hst)
+  have level_sets_disjoint : Pairwise (Disjoint on fun t : β ↦ { a : α | g a = t }) :=
+    fun s t hst ↦ Disjoint.preimage g (disjoint_singleton.mpr hst)
   exact Measure.countable_meas_pos_of_disjoint_iUnion₀
-    (fun b => g_mble (‹MeasurableSingletonClass β›.measurableSet_singleton b))
+    (fun b ↦ g_mble (‹MeasurableSingletonClass β›.measurableSet_singleton b))
     ((fun _ _ h ↦ Disjoint.aedisjoint (level_sets_disjoint h)))
 
 theorem countable_meas_level_set_pos {α β : Type*} {_ : MeasurableSpace α} {μ : Measure α}
@@ -370,8 +370,8 @@ theorem measure_toMeasurable_inter_of_cover {s : Set α} (hs : MeasurableSet s) 
           have : x ∈ t ∩ v n := ⟨hx, hn⟩
           exact ⟨hx, subset_toMeasurable μ _ this⟩
         _ ⊆ ⋃ n, toMeasurable μ (t ∩ disjointed w n) :=
-          iUnion_mono fun n => subset_toMeasurable _ _
-    refine ⟨t', tt', MeasurableSet.iUnion fun n => measurableSet_toMeasurable μ _, fun u hu => ?_⟩
+          iUnion_mono fun n ↦ subset_toMeasurable _ _
+    refine ⟨t', tt', MeasurableSet.iUnion fun n ↦ measurableSet_toMeasurable μ _, fun u hu ↦ ?_⟩
     apply le_antisymm _ (by gcongr)
     calc
       μ (t' ∩ u) ≤ ∑' n, μ (toMeasurable μ (t ∩ disjointed w n) ∩ u) := by
@@ -392,13 +392,13 @@ theorem measure_toMeasurable_inter_of_cover {s : Set α} (hs : MeasurableSet s) 
         congr 1
         ext1 n
         rw [restrict_apply, inter_comm t _, inter_assoc]
-        refine MeasurableSet.disjointed (fun n => ?_) n
+        refine MeasurableSet.disjointed (fun n ↦ ?_) n
         exact measurableSet_toMeasurable _ _
       _ = μ.restrict (t ∩ u) (⋃ n, disjointed w n) := by
         rw [measure_iUnion]
         · exact disjoint_disjointed _
         · intro i
-          refine MeasurableSet.disjointed (fun n => ?_) i
+          refine MeasurableSet.disjointed (fun n ↦ ?_) i
           exact measurableSet_toMeasurable _ _
       _ ≤ μ.restrict (t ∩ u) univ := measure_mono (subset_univ _)
       _ = μ (t ∩ u) := by rw [restrict_apply MeasurableSet.univ, univ_inter]
@@ -412,7 +412,7 @@ theorem measure_toMeasurable_inter_of_cover {s : Set α} (hs : MeasurableSet s) 
 
 theorem restrict_toMeasurable_of_cover {s : Set α} {v : ℕ → Set α} (hv : s ⊆ ⋃ n, v n)
     (h'v : ∀ n, μ (s ∩ v n) ≠ ∞) : μ.restrict (toMeasurable μ s) = μ.restrict s :=
-  ext fun t ht => by
+  ext fun t ht ↦ by
     simp only [restrict_apply ht, inter_comm t, measure_toMeasurable_inter_of_cover ht hv h'v]
 
 /-- The measurable superset `toMeasurable μ t` of `t` (which has the same measure as `t`)
@@ -426,7 +426,7 @@ theorem measure_toMeasurable_inter_of_sFinite [SFinite μ] {s : Set α} (hs : Me
 @[simp]
 theorem restrict_toMeasurable_of_sFinite [SFinite μ] (s : Set α) :
     μ.restrict (toMeasurable μ s) = μ.restrict s :=
-  ext fun t ht => by
+  ext fun t ht ↦ by
     rw [restrict_apply ht, inter_comm t, measure_toMeasurable_inter_of_sFinite ht,
       restrict_apply ht, inter_comm t]
 
@@ -451,7 +451,7 @@ finite measure `> r`. -/
 theorem exists_subset_measure_lt_top [SigmaFinite μ] {r : ℝ≥0∞} (hs : MeasurableSet s)
     (h's : r < μ s) : ∃ t, MeasurableSet t ∧ t ⊆ s ∧ r < μ t ∧ μ t < ∞ := by
   rw [← iSup_restrict_spanningSets,
-    @lt_iSup_iff _ _ _ r fun i : ℕ => μ.restrict (spanningSets μ i) s] at h's
+    @lt_iSup_iff _ _ _ r fun i : ℕ ↦ μ.restrict (spanningSets μ i) s] at h's
   rcases h's with ⟨n, hn⟩
   simp only [restrict_apply hs] at hn
   refine
@@ -466,11 +466,11 @@ variable {C D : Set (Set α)}
 sets in `D`. -/
 protected def mono' (h : μ.FiniteSpanningSetsIn C) (hC : C ∩ { s | μ s < ∞ } ⊆ D) :
     μ.FiniteSpanningSetsIn D :=
-  ⟨h.set, fun i => hC ⟨h.set_mem i, h.finite i⟩, h.finite, h.spanning⟩
+  ⟨h.set, fun i ↦ hC ⟨h.set_mem i, h.finite i⟩, h.finite, h.spanning⟩
 
 /-- If `μ` has finite spanning sets in `C` and `C ⊆ D` then `μ` has finite spanning sets in `D`. -/
 protected def mono (h : μ.FiniteSpanningSetsIn C) (hC : C ⊆ D) : μ.FiniteSpanningSetsIn D :=
-  h.mono' fun _s hs => hC hs.1
+  h.mono' fun _s hs ↦ hC hs.1
 
 /-- If `μ` has finite spanning sets in the collection of measurable sets `C`, then `μ` is σ-finite.
 -/
@@ -481,7 +481,7 @@ protected theorem sigmaFinite (h : μ.FiniteSpanningSetsIn C) : SigmaFinite μ :
 `FiniteSpanningSetsIn`. -/
 protected theorem ext {ν : Measure α} {C : Set (Set α)} (hA : ‹_› = generateFrom C)
     (hC : IsPiSystem C) (h : μ.FiniteSpanningSetsIn C) (h_eq : ∀ s ∈ C, μ s = ν s) : μ = ν :=
-  ext_of_generateFrom_of_iUnion C _ hA hC h.spanning h.set_mem (fun i => (h.finite i).ne) h_eq
+  ext_of_generateFrom_of_iUnion C _ hA hC h.spanning h.set_mem (fun i ↦ (h.finite i).ne) h_eq
 
 protected theorem isCountablySpanning (h : μ.FiniteSpanningSetsIn C) : IsCountablySpanning C :=
   ⟨h.set, h.set_mem, h.spanning⟩
@@ -491,8 +491,8 @@ end FiniteSpanningSetsIn
 theorem sigmaFinite_of_countable {S : Set (Set α)} (hc : S.Countable) (hμ : ∀ s ∈ S, μ s < ∞)
     (hU : ⋃₀ S = univ) : SigmaFinite μ := by
   obtain ⟨s, hμ, hs⟩ : ∃ s : ℕ → Set α, (∀ n, μ (s n) < ∞) ∧ ⋃ n, s n = univ :=
-    (@exists_seq_cover_iff_countable _ (fun x => μ x < ∞) ⟨∅, by simp⟩).2 ⟨S, hc, hμ, hU⟩
-  exact ⟨⟨⟨fun n => s n, fun _ => trivial, hμ, hs⟩⟩⟩
+    (@exists_seq_cover_iff_countable _ (fun x ↦ μ x < ∞) ⟨∅, by simp⟩).2 ⟨S, hc, hμ, hU⟩
+  exact ⟨⟨⟨fun n ↦ s n, fun _ ↦ trivial, hμ, hs⟩⟩⟩
 
 /-- Given measures `μ`, `ν` where `ν ≤ μ`, `FiniteSpanningSetsIn.ofLe` provides the induced
 `FiniteSpanningSet` with respect to `ν` from a `FiniteSpanningSet` with respect to `μ`. -/
@@ -525,7 +525,7 @@ end Measure
 /-- Every finite measure is σ-finite. -/
 instance (priority := 100) IsFiniteMeasure.toSigmaFinite {_m0 : MeasurableSpace α} (μ : Measure α)
     [IsFiniteMeasure μ] : SigmaFinite μ :=
-  ⟨⟨⟨fun _ => univ, fun _ => trivial, fun _ => measure_lt_top μ _, iUnion_const _⟩⟩⟩
+  ⟨⟨⟨fun _ ↦ univ, fun _ ↦ trivial, fun _ ↦ measure_lt_top μ _, iUnion_const _⟩⟩⟩
 
 /-- A measure on a countable space is sigma-finite iff it gives finite mass to every singleton.
 
@@ -541,7 +541,7 @@ lemma Measure.sigmaFinite_iff_measure_singleton_lt_top [Countable α] :
       exact ⟨⟨⟨fun n ↦ {f n}, by simp, by simpa [hf.forall] using hμ, by simp [hf.range_eq]⟩⟩⟩
 
 theorem sigmaFinite_bot_iff (μ : @Measure α ⊥) : SigmaFinite μ ↔ IsFiniteMeasure μ := by
-  refine ⟨fun h => ⟨?_⟩, fun h => by infer_instance⟩
+  refine ⟨fun h ↦ ⟨?_⟩, fun h ↦ by infer_instance⟩
   haveI : SigmaFinite μ := h
   let s := spanningSets μ
   have hs_univ : ⋃ i, s i = Set.univ := iUnion_spanningSets μ
@@ -560,22 +560,22 @@ theorem sigmaFinite_bot_iff (μ : @Measure α ⊥) : SigmaFinite μ ↔ IsFinite
 
 instance Restrict.sigmaFinite (μ : Measure α) [SigmaFinite μ] (s : Set α) :
     SigmaFinite (μ.restrict s) := by
-  refine ⟨⟨⟨spanningSets μ, fun _ => trivial, fun i => ?_, iUnion_spanningSets μ⟩⟩⟩
+  refine ⟨⟨⟨spanningSets μ, fun _ ↦ trivial, fun i ↦ ?_, iUnion_spanningSets μ⟩⟩⟩
   rw [Measure.restrict_apply (measurableSet_spanningSets μ i)]
   exact (measure_mono inter_subset_left).trans_lt (measure_spanningSets_lt_top μ i)
 
 instance sum.sigmaFinite {ι} [Finite ι] (μ : ι → Measure α) [∀ i, SigmaFinite (μ i)] :
     SigmaFinite (sum μ) := by
   cases nonempty_fintype ι
-  have : ∀ n, MeasurableSet (⋂ i : ι, spanningSets (μ i) n) := fun n =>
-    MeasurableSet.iInter fun i => measurableSet_spanningSets (μ i) n
-  refine ⟨⟨⟨fun n => ⋂ i, spanningSets (μ i) n, fun _ => trivial, fun n => ?_, ?_⟩⟩⟩
+  have : ∀ n, MeasurableSet (⋂ i : ι, spanningSets (μ i) n) := fun n ↦
+    MeasurableSet.iInter fun i ↦ measurableSet_spanningSets (μ i) n
+  refine ⟨⟨⟨fun n ↦ ⋂ i, spanningSets (μ i) n, fun _ ↦ trivial, fun n ↦ ?_, ?_⟩⟩⟩
   · rw [sum_apply _ (this n), tsum_fintype, ENNReal.sum_lt_top]
     rintro i -
     exact (measure_mono <| iInter_subset _ i).trans_lt (measure_spanningSets_lt_top (μ i) n)
   · rw [iUnion_iInter_of_monotone]
     · simp_rw [iUnion_spanningSets, iInter_univ]
-    exact fun i => monotone_spanningSets (μ i)
+    exact fun i ↦ monotone_spanningSets (μ i)
 
 instance Add.sigmaFinite (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν] :
     SigmaFinite (μ + ν) := by
@@ -604,7 +604,7 @@ instance [SigmaFinite (μ.restrict t)] : SigmaFinite (μ.restrict (s ∩ t)) :=
 
 theorem SigmaFinite.of_map (μ : Measure α) {f : α → β} (hf : AEMeasurable f μ)
     (h : SigmaFinite (μ.map f)) : SigmaFinite μ :=
-  ⟨⟨⟨fun n => f ⁻¹' spanningSets (μ.map f) n, fun _ => trivial, fun n => by
+  ⟨⟨⟨fun n ↦ f ⁻¹' spanningSets (μ.map f) n, fun _ ↦ trivial, fun n ↦ by
         simp only [← map_apply_of_aemeasurable hf, measurableSet_spanningSets,
           measure_spanningSets_lt_top],
         by rw [← preimage_iUnion, iUnion_spanningSets, preimage_univ]⟩⟩⟩
@@ -641,13 +641,13 @@ theorem ae_of_forall_measure_lt_top_ae_restrict' {μ : Measure α} (ν : Measure
   this holds almost everywhere in sets where the measure has finite value. -/
 theorem ae_of_forall_measure_lt_top_ae_restrict {μ : Measure α} [SigmaFinite μ] (P : α → Prop)
     (h : ∀ s, MeasurableSet s → μ s < ∞ → ∀ᵐ x ∂μ.restrict s, P x) : ∀ᵐ x ∂μ, P x :=
-  ae_of_forall_measure_lt_top_ae_restrict' μ P fun s hs h2s _ => h s hs h2s
+  ae_of_forall_measure_lt_top_ae_restrict' μ P fun s hs h2s _ ↦ h s hs h2s
 
 instance (priority := 100) SigmaFinite.of_isFiniteMeasureOnCompacts [TopologicalSpace α]
     [SigmaCompactSpace α] (μ : Measure α) [IsFiniteMeasureOnCompacts μ] : SigmaFinite μ :=
   ⟨⟨{   set := compactCovering α
-        set_mem := fun _ => trivial
-        finite := fun n => (isCompact_compactCovering α n).measure_lt_top
+        set_mem := fun _ ↦ trivial
+        finite := fun n ↦ (isCompact_compactCovering α n).measure_lt_top
         spanning := iUnion_compactCovering α }⟩⟩
 
 -- see Note [lower instance priority]
@@ -655,7 +655,7 @@ instance (priority := 100) sigmaFinite_of_locallyFinite [TopologicalSpace α]
     [SecondCountableTopology α] [IsLocallyFiniteMeasure μ] : SigmaFinite μ := by
   choose s hsx hsμ using μ.finiteAt_nhds
   rcases TopologicalSpace.countable_cover_nhds hsx with ⟨t, htc, htU⟩
-  refine Measure.sigmaFinite_of_countable (htc.image s) (forall_mem_image.2 fun x _ => hsμ x) ?_
+  refine Measure.sigmaFinite_of_countable (htc.image s) (forall_mem_image.2 fun x _ ↦ hsμ x) ?_
   rwa [sUnion_image]
 
 namespace Measure
@@ -668,7 +668,7 @@ such that its underlying sets are pairwise disjoint. -/
 protected def FiniteSpanningSetsIn.disjointed {μ : Measure α}
     (S : μ.FiniteSpanningSetsIn { s | MeasurableSet s }) :
     μ.FiniteSpanningSetsIn { s | MeasurableSet s } :=
-  ⟨disjointed S.set, MeasurableSet.disjointed S.set_mem, fun n =>
+  ⟨disjointed S.set, MeasurableSet.disjointed S.set_mem, fun n ↦
     lt_of_le_of_lt (measure_mono (disjointed_subset S.set n)) (S.finite _),
     S.spanning ▸ iUnion_disjointed⟩
 

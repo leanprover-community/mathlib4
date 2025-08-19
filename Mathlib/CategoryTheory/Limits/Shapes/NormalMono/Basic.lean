@@ -218,9 +218,9 @@ def normalEpiOfNormalMonoUnop {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : NormalMono f.un
   w := congrArg Quiver.Hom.op m.w
   isColimit :=
     CokernelCofork.IsColimit.ofπ _ _
-      (fun g' w' =>
+      (fun g' w' ↦
         (KernelFork.IsLimit.lift' m.isLimit g'.unop (congrArg Quiver.Hom.unop w')).1.op)
-      (fun g' w' =>
+      (fun g' w' ↦
         congrArg Quiver.Hom.op
           (KernelFork.IsLimit.lift' m.isLimit g'.unop (congrArg Quiver.Hom.unop w')).2)
       (by
@@ -236,9 +236,9 @@ def normalMonoOfNormalEpiUnop {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : NormalEpi f.uno
   w := congrArg Quiver.Hom.op m.w
   isLimit :=
     KernelFork.IsLimit.ofι _ _
-      (fun g' w' =>
+      (fun g' w' ↦
         (CokernelCofork.IsColimit.desc' m.isColimit g'.unop (congrArg Quiver.Hom.unop w')).1.op)
-      (fun g' w' =>
+      (fun g' w' ↦
         congrArg Quiver.Hom.op
           (CokernelCofork.IsColimit.desc' m.isColimit g'.unop (congrArg Quiver.Hom.unop w')).2)
       (by

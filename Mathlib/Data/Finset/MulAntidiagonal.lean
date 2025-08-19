@@ -81,7 +81,7 @@ theorem swap_mem_mulAntidiagonal :
 
 @[to_additive]
 theorem support_mulAntidiagonal_subset_mul : { a | (mulAntidiagonal hs ht a).Nonempty } ⊆ s * t :=
-  fun a ⟨b, hb⟩ => by
+  fun a ⟨b, hb⟩ ↦ by
   rw [mem_mulAntidiagonal] at hb
   exact ⟨b.1, hb.1, b.2, hb.2⟩
 
@@ -98,7 +98,7 @@ theorem mulAntidiagonal_min_mul_min {α} [CommMonoid α] [LinearOrder α] [IsOrd
   constructor
   · rintro ⟨has, hat, hst⟩
     obtain rfl :=
-      (hs.min_le hns has).eq_of_not_lt fun hlt =>
+      (hs.min_le hns has).eq_of_not_lt fun hlt ↦
         (mul_lt_mul_of_lt_of_le hlt <| ht.min_le hnt hat).ne' hst
     exact ⟨rfl, mul_left_cancel hst⟩
   · rintro ⟨rfl, rfl⟩

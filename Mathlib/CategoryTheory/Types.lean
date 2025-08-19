@@ -123,7 +123,7 @@ variable (J)
 @[simps]
 def sectionsFunctor : (J ⥤ Type w) ⥤ Type max u w where
   obj F := F.sections
-  map {F G} φ x := ⟨fun j => φ.app j (x.1 j), fun {j j'} f =>
+  map {F G} φ x := ⟨fun j ↦ φ.app j (x.1 j), fun {j j'} f ↦
     (congr_fun (φ.naturality f) (x.1 j)).symm.trans (by simp [x.2 f])⟩
 
 end Functor
@@ -200,7 +200,7 @@ Write this as `uliftFunctor.{5, 2}` to get `Type 2 ⥤ Type 5`.
 @[pp_with_univ]
 def uliftFunctor : Type u ⥤ Type max u v where
   obj X := ULift.{v} X
-  map {X} {_} f := fun x : ULift.{v} X => ULift.up (f x.down)
+  map {X} {_} f := fun x : ULift.{v} X ↦ ULift.up (f x.down)
 
 @[simp]
 theorem uliftFunctor_obj {X : Type u} : uliftFunctor.obj.{v} X = ULift.{v} X :=
@@ -229,10 +229,10 @@ def uliftFunctorTrivial : uliftFunctor.{u, u} ≅ 𝟭 _ :=
 -- TODO We should connect this to a general story about concrete categories
 -- whose forgetful functor is representable.
 /-- Any term `x` of a type `X` corresponds to a morphism `PUnit ⟶ X`. -/
-def homOfElement {X : Type u} (x : X) : PUnit ⟶ X := fun _ => x
+def homOfElement {X : Type u} (x : X) : PUnit ⟶ X := fun _ ↦ x
 
 theorem homOfElement_eq_iff {X : Type u} (x y : X) : homOfElement x = homOfElement y ↔ x = y :=
-  ⟨fun H => congr_fun H PUnit.unit, by aesop⟩
+  ⟨fun H ↦ congr_fun H PUnit.unit, by aesop⟩
 
 /-- A morphism in `Type` is a monomorphism if and only if it is injective. -/
 @[stacks 003C]
@@ -241,7 +241,7 @@ theorem mono_iff_injective {X Y : Type u} (f : X ⟶ Y) : Mono f ↔ Function.In
   · intro H x x' h
     rw [← homOfElement_eq_iff] at h ⊢
     exact (cancel_mono f).mp h
-  · exact fun H => ⟨fun g g' h => H.comp_left h⟩
+  · exact fun H ↦ ⟨fun g g' h ↦ H.comp_left h⟩
 
 theorem injective_of_mono {X Y : Type u} (f : X ⟶ Y) [hf : Mono f] : Function.Injective f :=
   (mono_iff_injective f).1 hf
@@ -251,12 +251,12 @@ theorem injective_of_mono {X Y : Type u} (f : X ⟶ Y) [hf : Mono f] : Function.
 theorem epi_iff_surjective {X Y : Type u} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
   · rintro ⟨H⟩
-    refine Function.surjective_of_right_cancellable_Prop fun g₁ g₂ hg => ?_
+    refine Function.surjective_of_right_cancellable_Prop fun g₁ g₂ hg ↦ ?_
     rw [← Equiv.ulift.symm.injective.comp_left.eq_iff]
     apply H
     change ULift.up ∘ g₁ ∘ f = ULift.up ∘ g₂ ∘ f
     rw [hg]
-  · exact fun H => ⟨fun g g' h => H.injective_comp_right h⟩
+  · exact fun H ↦ ⟨fun g g' h ↦ H.injective_comp_right h⟩
 
 theorem surjective_of_epi {X Y : Type u} (f : X ⟶ Y) [hf : Epi f] : Function.Surjective f :=
   (epi_iff_surjective f).1 hf
@@ -268,7 +268,7 @@ allows us to use these functors in category theory. -/
 def ofTypeFunctor (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m] : Type u ⥤ Type v where
   obj := m
   map f := _root_.Functor.map f
-  map_id := fun α => by funext X; apply id_map
+  map_id := fun α ↦ by funext X; apply id_map
 
 variable (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m]
 
@@ -349,7 +349,7 @@ namespace CategoryTheory
 
 /-- A morphism in `Type u` is an isomorphism if and only if it is bijective. -/
 theorem isIso_iff_bijective {X Y : Type u} (f : X ⟶ Y) : IsIso f ↔ Function.Bijective f :=
-  Iff.intro (fun _ => (asIso f : X ≅ Y).toEquiv.bijective) fun b =>
+  Iff.intro (fun _ ↦ (asIso f : X ≅ Y).toEquiv.bijective) fun b ↦
     (Equiv.ofBijective f b).toIso.isIso_hom
 
 instance : SplitEpiCategory (Type u) where

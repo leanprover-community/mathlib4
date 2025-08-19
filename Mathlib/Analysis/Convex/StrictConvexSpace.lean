@@ -80,7 +80,7 @@ variable [NormedSpace ℝ E]
 /-- A real normed vector space is strictly convex provided that the unit ball is strictly convex. -/
 theorem StrictConvexSpace.of_strictConvex_unitClosedBall [LinearMap.CompatibleSMul E E 𝕜 ℝ]
     (h : StrictConvex 𝕜 (closedBall (0 : E) 1)) : StrictConvexSpace 𝕜 E :=
-  ⟨fun r hr => by simpa only [smul_unitClosedBall_of_nonneg hr.le] using h.smul r⟩
+  ⟨fun r hr ↦ by simpa only [smul_unitClosedBall_of_nonneg hr.le] using h.smul r⟩
 
 /-- Strict convexity is equivalent to `‖a • x + b • y‖ < 1` for all `x` and `y` of norm at most `1`
 and all strictly positive `a` and `b` such that `a + b = 1`. This lemma shows that it suffices to
@@ -90,7 +90,7 @@ theorem StrictConvexSpace.of_norm_combo_lt_one
     StrictConvexSpace ℝ E := by
   refine
     StrictConvexSpace.of_strictConvex_unitClosedBall ℝ
-      ((convex_closedBall _ _).strictConvex' fun x hx y hy hne => ?_)
+      ((convex_closedBall _ _).strictConvex' fun x hx y hy hne ↦ ?_)
   rw [interior_closedBall (0 : E) one_ne_zero, closedBall_diff_ball,
     mem_sphere_zero_iff_norm] at hx hy
   rcases h x y hx hy hne with ⟨a, b, hab, hlt⟩
@@ -114,22 +114,22 @@ theorem StrictConvexSpace.of_norm_combo_ne_one
 theorem StrictConvexSpace.of_norm_add_ne_two
     (h : ∀ ⦃x y : E⦄, ‖x‖ = 1 → ‖y‖ = 1 → x ≠ y → ‖x + y‖ ≠ 2) : StrictConvexSpace ℝ E := by
   refine
-    StrictConvexSpace.of_norm_combo_ne_one fun x y hx hy hne =>
+    StrictConvexSpace.of_norm_combo_ne_one fun x y hx hy hne ↦
       ⟨1 / 2, 1 / 2, one_half_pos.le, one_half_pos.le, add_halves _, ?_⟩
   rw [← smul_add, norm_smul, Real.norm_of_nonneg one_half_pos.le, one_div, ← div_eq_inv_mul, Ne,
     div_eq_one_iff_eq (two_ne_zero' ℝ)]
   exact h hx hy hne
 
 theorem StrictConvexSpace.of_pairwise_sphere_norm_ne_two
-    (h : (sphere (0 : E) 1).Pairwise fun x y => ‖x + y‖ ≠ 2) : StrictConvexSpace ℝ E :=
-  StrictConvexSpace.of_norm_add_ne_two fun _ _ hx hy =>
+    (h : (sphere (0 : E) 1).Pairwise fun x y ↦ ‖x + y‖ ≠ 2) : StrictConvexSpace ℝ E :=
+  StrictConvexSpace.of_norm_add_ne_two fun _ _ hx hy ↦
     h (mem_sphere_zero_iff_norm.2 hx) (mem_sphere_zero_iff_norm.2 hy)
 
 /-- If `‖x + y‖ = ‖x‖ + ‖y‖` implies that `x y : E` are in the same ray, then `E` is a strictly
 convex space. See also a more -/
 theorem StrictConvexSpace.of_norm_add
     (h : ∀ x y : E, ‖x‖ = 1 → ‖y‖ = 1 → ‖x + y‖ = 2 → SameRay ℝ x y) : StrictConvexSpace ℝ E := by
-  refine StrictConvexSpace.of_pairwise_sphere_norm_ne_two fun x hx y hy => mt fun h₂ => ?_
+  refine StrictConvexSpace.of_pairwise_sphere_norm_ne_two fun x hx y hy ↦ mt fun h₂ ↦ ?_
   rw [mem_sphere_zero_iff_norm] at hx hy
   exact (sameRay_iff_of_norm_eq (hx.trans hy.symm)).1 (h x y hx hy h₂)
 
@@ -149,7 +149,7 @@ theorem combo_mem_ball_of_ne (hx : x ∈ closedBall z r) (hy : y ∈ closedBall 
 included in the corresponding open ball. -/
 theorem openSegment_subset_ball_of_ne (hx : x ∈ closedBall z r) (hy : y ∈ closedBall z r)
     (hne : x ≠ y) : openSegment ℝ x y ⊆ ball z r :=
-  (openSegment_subset_iff _).2 fun _ _ => combo_mem_ball_of_ne hx hy hne
+  (openSegment_subset_iff _).2 fun _ _ ↦ combo_mem_ball_of_ne hx hy hne
 
 /-- If `x` and `y` are two distinct vectors of norm at most `r`, then a convex combination of `x`
 and `y` with positive coefficients has norm strictly less than `r`. -/
@@ -175,7 +175,7 @@ theorem norm_add_lt_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x + y‖ < ‖x�
 
 theorem lt_norm_sub_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x‖ - ‖y‖ < ‖x - y‖ := by
   nth_rw 1 [← sub_add_cancel x y] at h ⊢
-  exact sub_lt_iff_lt_add.2 (norm_add_lt_of_not_sameRay fun H' => h <| H'.add_left SameRay.rfl)
+  exact sub_lt_iff_lt_add.2 (norm_add_lt_of_not_sameRay fun H' ↦ h <| H'.add_left SameRay.rfl)
 
 theorem abs_lt_norm_sub_of_not_sameRay (h : ¬SameRay ℝ x y) : |‖x‖ - ‖y‖| < ‖x - y‖ := by
   refine abs_sub_lt_iff.2 ⟨lt_norm_sub_of_not_sameRay h, ?_⟩
@@ -185,7 +185,7 @@ theorem abs_lt_norm_sub_of_not_sameRay (h : ¬SameRay ℝ x y) : |‖x‖ - ‖y
 /-- In a strictly convex space, two vectors `x`, `y` are in the same ray if and only if the triangle
 inequality for `x` and `y` becomes an equality. -/
 theorem sameRay_iff_norm_add : SameRay ℝ x y ↔ ‖x + y‖ = ‖x‖ + ‖y‖ :=
-  ⟨SameRay.norm_add, fun h => Classical.not_not.1 fun h' => (norm_add_lt_of_not_sameRay h').ne h⟩
+  ⟨SameRay.norm_add, fun h ↦ Classical.not_not.1 fun h' ↦ (norm_add_lt_of_not_sameRay h').ne h⟩
 
 /-- If `x` and `y` are two vectors in a strictly convex space have the same norm and the norm of
 their sum is equal to the sum of their norms, then they are equal. -/
@@ -198,8 +198,8 @@ theorem not_sameRay_iff_norm_add_lt : ¬SameRay ℝ x y ↔ ‖x + y‖ < ‖x�
   sameRay_iff_norm_add.not.trans (norm_add_le _ _).lt_iff_ne.symm
 
 theorem sameRay_iff_norm_sub : SameRay ℝ x y ↔ ‖x - y‖ = |‖x‖ - ‖y‖| :=
-  ⟨SameRay.norm_sub, fun h =>
-    Classical.not_not.1 fun h' => (abs_lt_norm_sub_of_not_sameRay h').ne' h⟩
+  ⟨SameRay.norm_sub, fun h ↦
+    Classical.not_not.1 fun h' ↦ (abs_lt_norm_sub_of_not_sameRay h').ne' h⟩
 
 theorem not_sameRay_iff_abs_lt_norm_sub : ¬SameRay ℝ x y ↔ |‖x‖ - ‖y‖| < ‖x - y‖ :=
   sameRay_iff_norm_sub.not.trans <| ne_comm.trans (abs_norm_sub_norm_le _ _).lt_iff_ne.symm

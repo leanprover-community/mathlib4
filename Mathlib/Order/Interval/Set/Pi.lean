@@ -113,7 +113,7 @@ theorem image_update_Icc (f : ∀ i, α i) (i : ι) (a b : α i) :
     update f i '' Icc a b = Icc (update f i a) (update f i b) := by
   ext x
   rw [← Set.pi_univ_Icc]
-  refine ⟨?_, fun h => ⟨x i, ?_, ?_⟩⟩
+  refine ⟨?_, fun h ↦ ⟨x i, ?_, ?_⟩⟩
   · rintro ⟨c, hc, rfl⟩
     simpa [update_le_update_iff]
   · simpa only [Function.update_self] using h i (mem_univ i)
@@ -230,7 +230,7 @@ section PiLattice
 variable [∀ i, Lattice (α i)]
 
 @[simp]
-theorem pi_univ_uIcc (a b : ∀ i, α i) : (pi univ fun i => uIcc (a i) (b i)) = uIcc a b :=
+theorem pi_univ_uIcc (a b : ∀ i, α i) : (pi univ fun i ↦ uIcc (a i) (b i)) = uIcc a b :=
   pi_univ_Icc _ _
 
 variable [DecidableEq ι]

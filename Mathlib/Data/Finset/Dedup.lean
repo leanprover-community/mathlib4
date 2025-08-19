@@ -118,13 +118,13 @@ theorem mem_toFinset : a ∈ l.toFinset ↔ a ∈ l :=
 
 @[simp, norm_cast]
 theorem coe_toFinset (l : List α) : (l.toFinset : Set α) = { a | a ∈ l } :=
-  Set.ext fun _ => List.mem_toFinset
+  Set.ext fun _ ↦ List.mem_toFinset
 
 theorem toFinset_surj_on : Set.SurjOn toFinset { l : List α | l.Nodup } Set.univ := by
   rintro ⟨⟨l⟩, hl⟩ _
   exact ⟨l, hl, (toFinset_eq hl).symm⟩
 
-theorem toFinset_surjective : Surjective (toFinset : List α → Finset α) := fun s =>
+theorem toFinset_surjective : Surjective (toFinset : List α → Finset α) := fun s ↦
   let ⟨l, _, hls⟩ := toFinset_surj_on (Set.mem_univ s)
   ⟨l, hls⟩
 
@@ -187,7 +187,7 @@ theorem exists_list_nodup_eq [DecidableEq α] (s : Finset α) :
 
 @[simp]
 protected theorem perm_toList {f₁ f₂ : Finset α} : f₁.toList.Perm f₂.toList ↔ f₁ = f₂ where
-  mp h := Finset.ext fun x => by simp [← Finset.mem_toList, h.mem_iff]
+  mp h := Finset.ext fun x ↦ by simp [← Finset.mem_toList, h.mem_iff]
   mpr h := .of_eq <| congrArg Finset.toList h
 
 @[deprecated (since := "2025-08-05")] alias _root_.perm_toList := Finset.perm_toList

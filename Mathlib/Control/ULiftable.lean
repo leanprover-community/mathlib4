@@ -120,7 +120,7 @@ instance instULiftableId : ULiftable Id Id where
 def StateT.uliftable' {m : Type u₀ → Type v₀} {m' : Type u₁ → Type v₁} [ULiftable m m']
     (F : s ≃ s') : ULiftable (StateT s m) (StateT s' m') where
   congr G :=
-    StateT.equiv <| Equiv.piCongr F fun _ => ULiftable.congr <| Equiv.prodCongr G F
+    StateT.equiv <| Equiv.piCongr F fun _ ↦ ULiftable.congr <| Equiv.prodCongr G F
 
 instance {m m'} [ULiftable m m'] : ULiftable (StateT s m) (StateT (ULift s) m') :=
   StateT.uliftable' Equiv.ulift.symm
@@ -132,7 +132,7 @@ instance StateT.instULiftableULiftULift {m m'} [ULiftable m m'] :
 /-- for specific reader monads, this function helps to create a uliftable instance -/
 def ReaderT.uliftable' {m m'} [ULiftable m m'] (F : s ≃ s') :
     ULiftable (ReaderT s m) (ReaderT s' m') where
-  congr G := ReaderT.equiv <| Equiv.piCongr F fun _ => ULiftable.congr G
+  congr G := ReaderT.equiv <| Equiv.piCongr F fun _ ↦ ULiftable.congr G
 
 instance {m m'} [ULiftable m m'] : ULiftable (ReaderT s m) (ReaderT (ULift s) m') :=
   ReaderT.uliftable' Equiv.ulift.symm
@@ -169,12 +169,12 @@ instance Except.instULiftable {ε : Type u₀} : ULiftable (Except.{u₀,v₁} �
   congr e :=
     { toFun := Except.map e
       invFun := Except.map e.symm
-      left_inv := fun f => by cases f <;> simp [Except.map]
-      right_inv := fun f => by cases f <;> simp [Except.map] }
+      left_inv := fun f ↦ by cases f <;> simp [Except.map]
+      right_inv := fun f ↦ by cases f <;> simp [Except.map] }
 
 instance Option.instULiftable : ULiftable Option.{u₀} Option.{u₁} where
   congr e :=
     { toFun := Option.map e
       invFun := Option.map e.symm
-      left_inv := fun f => by cases f <;> simp
-      right_inv := fun f => by cases f <;> simp }
+      left_inv := fun f ↦ by cases f <;> simp
+      right_inv := fun f ↦ by cases f <;> simp }

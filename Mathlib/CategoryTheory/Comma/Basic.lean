@@ -293,7 +293,7 @@ theorem map_fst : map α β ⋙ fst L' R' = fst L R ⋙ F₁ :=
 where `α : F₁ ⋙ L' ⟶ L ⋙ F`. -/
 @[simps!]
 def mapFst : map α β ⋙ fst L' R' ≅ fst L R ⋙ F₁ :=
-  NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
+  NatIso.ofComponents (fun _ ↦ Iso.refl _) (by simp)
 
 /-- The equality between `map α β ⋙ snd L' R'` and `snd L R ⋙ F₂`,
 where `β : R ⋙ F ⟶ F₂ ⋙ R'`. -/
@@ -305,7 +305,7 @@ theorem map_snd : map α β ⋙ snd L' R' = snd L R ⋙ F₂ :=
 where `β : R ⋙ F ⟶ F₂ ⋙ R'`. -/
 @[simps!]
 def mapSnd : map α β ⋙ snd L' R' ≅ snd L R ⋙ F₂ :=
-  NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
+  NatIso.ofComponents (fun _ ↦ Iso.refl _) (by simp)
 
 end
 
@@ -324,7 +324,7 @@ def mapLeft (l : L₁ ⟶ L₂) : Comma L₂ R ⥤ Comma L₁ R where
 naturally isomorphic to the identity functor. -/
 @[simps!]
 def mapLeftId : mapLeft R (𝟙 L) ≅ 𝟭 _ :=
-  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
+  NatIso.ofComponents (fun X ↦ isoMk (Iso.refl _) (Iso.refl _))
 
 /-- The functor `Comma L₁ R ⥤ Comma L₃ R` induced by the composition of two natural transformations
 `l : L₁ ⟶ L₂` and `l' : L₂ ⟶ L₃` is naturally isomorphic to the composition of the two functors
@@ -332,13 +332,13 @@ induced by these natural transformations. -/
 @[simps!]
 def mapLeftComp (l : L₁ ⟶ L₂) (l' : L₂ ⟶ L₃) :
     mapLeft R (l ≫ l') ≅ mapLeft R l' ⋙ mapLeft R l :=
-  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
+  NatIso.ofComponents (fun X ↦ isoMk (Iso.refl _) (Iso.refl _))
 
 /-- Two equal natural transformations `L₁ ⟶ L₂` yield naturally isomorphic functors
 `Comma L₁ R ⥤ Comma L₂ R`. -/
 @[simps!]
 def mapLeftEq (l l' : L₁ ⟶ L₂) (h : l = l') : mapLeft R l ≅ mapLeft R l' :=
-  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
+  NatIso.ofComponents (fun X ↦ isoMk (Iso.refl _) (Iso.refl _))
 
 /-- A natural isomorphism `L₁ ≅ L₂` induces an equivalence of categories
 `Comma L₁ R ≌ Comma L₂ R`. -/
@@ -364,7 +364,7 @@ def mapRight (r : R₁ ⟶ R₂) : Comma L R₁ ⥤ Comma L R₂ where
 naturally isomorphic to the identity functor. -/
 @[simps!]
 def mapRightId : mapRight L (𝟙 R) ≅ 𝟭 _ :=
-  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
+  NatIso.ofComponents (fun X ↦ isoMk (Iso.refl _) (Iso.refl _))
 
 /-- The functor `Comma L R₁ ⥤ Comma L R₃` induced by the composition of the natural transformations
 `r : R₁ ⟶ R₂` and `r' : R₂ ⟶ R₃` is naturally isomorphic to the composition of the functors
@@ -372,13 +372,13 @@ induced by these natural transformations. -/
 @[simps!]
 def mapRightComp (r : R₁ ⟶ R₂) (r' : R₂ ⟶ R₃) :
     mapRight L (r ≫ r') ≅ mapRight L r ⋙ mapRight L r' :=
-  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
+  NatIso.ofComponents (fun X ↦ isoMk (Iso.refl _) (Iso.refl _))
 
 /-- Two equal natural transformations `R₁ ⟶ R₂` yield naturally isomorphic functors
 `Comma L R₁ ⥤ Comma L R₂`. -/
 @[simps!]
 def mapRightEq (r r' : R₁ ⟶ R₂) (h : r = r') : mapRight L r ≅ mapRight L r' :=
-  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
+  NatIso.ofComponents (fun X ↦ isoMk (Iso.refl _) (Iso.refl _))
 
 /-- A natural isomorphism `R₁ ≅ R₂` induces an equivalence of categories
 `Comma L R₁ ≌ Comma L R₂`. -/
@@ -411,7 +411,7 @@ def preLeft (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) : Comma (F ⋙ L) R ⥤ Co
 but with better definitional properties. -/
 def preLeftIso (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) :
     preLeft F L R ≅ map (F ⋙ L).rightUnitor.inv (R.rightUnitor.hom ≫ R.leftUnitor.inv) :=
-  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
+  NatIso.ofComponents (fun X ↦ isoMk (Iso.refl _) (Iso.refl _))
 
 instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.Faithful] : (preLeft F L R).Faithful :=
   Functor.Faithful.of_iso (preLeftIso F L R).symm
@@ -441,7 +441,7 @@ def preRight (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) : Comma L (F ⋙ R) ⥤ C
 but with better definitional properties. -/
 def preRightIso (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) :
     preRight L F R ≅ map (L.leftUnitor.hom ≫ L.rightUnitor.inv) (F ⋙ R).rightUnitor.hom :=
-  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
+  NatIso.ofComponents (fun X ↦ isoMk (Iso.refl _) (Iso.refl _))
 
 instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.Faithful] : (preRight L F R).Faithful :=
   Functor.Faithful.of_iso (preRightIso L F R).symm
@@ -471,7 +471,7 @@ def post (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) : Comma L R ⥤ Comma (L ⋙ 
 /-- `Comma.post` is a particular case of `Comma.map`, but with better definitional properties. -/
 def postIso (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) :
     post L R F ≅ map (F₁ := 𝟭 _) (F₂ := 𝟭 _) (L ⋙ F).leftUnitor.hom (R ⋙ F).leftUnitor.inv :=
-  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
+  NatIso.ofComponents (fun X ↦ isoMk (Iso.refl _) (Iso.refl _))
 
 instance (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) : (post L R F).Faithful :=
   Functor.Faithful.of_iso (postIso L R F).symm
@@ -580,8 +580,8 @@ def unopFunctorCompSnd : unopFunctor L R ⋙ (snd _ _).op ≅ fst _ _ :=
 def opEquiv : Comma L R ≌ (Comma R.op L.op)ᵒᵖ where
   functor := opFunctor L R
   inverse := (unopFunctor R L).leftOp
-  unitIso := NatIso.ofComponents (fun X => Iso.refl _)
-  counitIso := NatIso.ofComponents (fun X => Iso.refl _)
+  unitIso := NatIso.ofComponents (fun X ↦ Iso.refl _)
+  counitIso := NatIso.ofComponents (fun X ↦ Iso.refl _)
 
 end Opposite
 

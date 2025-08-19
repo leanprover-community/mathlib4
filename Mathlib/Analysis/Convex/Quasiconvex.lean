@@ -71,14 +71,14 @@ theorem QuasilinearOn.dual : QuasilinearOn 𝕜 s f → QuasilinearOn 𝕜 s (to
   And.symm
 
 theorem Convex.quasiconvexOn_of_convex_le (hs : Convex 𝕜 s) (h : ∀ r, Convex 𝕜 { x | f x ≤ r }) :
-    QuasiconvexOn 𝕜 s f := fun r => hs.inter (h r)
+    QuasiconvexOn 𝕜 s f := fun r ↦ hs.inter (h r)
 
 theorem Convex.quasiconcaveOn_of_convex_ge (hs : Convex 𝕜 s) (h : ∀ r, Convex 𝕜 { x | r ≤ f x }) :
     QuasiconcaveOn 𝕜 s f :=
   Convex.quasiconvexOn_of_convex_le (β := βᵒᵈ) hs h
 
 theorem QuasiconvexOn.convex [IsDirected β (· ≤ ·)] (hf : QuasiconvexOn 𝕜 s f) : Convex 𝕜 s :=
-  fun x hx y hy _ _ ha hb hab =>
+  fun x hx y hy _ _ ha hb hab ↦
   let ⟨_, hxz, hyz⟩ := exists_ge_ge (f x) (f y)
   (hf _ ⟨hx, hxz⟩ ⟨hy, hyz⟩ ha hb hab).1
 
@@ -109,10 +109,10 @@ variable [LinearOrder β] [SMul 𝕜 E] {s : Set E} {f : E → β}
 
 theorem quasiconvexOn_iff_le_max : QuasiconvexOn 𝕜 s f ↔ Convex 𝕜 s ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄,
     y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → a + b = 1 → f (a • x + b • y) ≤ max (f x) (f y) :=
-  ⟨fun hf =>
-    ⟨hf.convex, fun _ hx _ hy _ _ ha hb hab =>
+  ⟨fun hf ↦
+    ⟨hf.convex, fun _ hx _ hy _ _ ha hb hab ↦
       (hf _ ⟨hx, le_max_left _ _⟩ ⟨hy, le_max_right _ _⟩ ha hb hab).2⟩,
-    fun hf _ _ hx _ hy _ _ ha hb hab =>
+    fun hf _ _ hx _ hy _ _ ha hb hab ↦
     ⟨hf.1 hx.1 hy.1 ha hb hab, (hf.2 hx.1 hy.1 ha hb hab).trans <| max_le hx.2 hy.2⟩⟩
 
 theorem quasiconcaveOn_iff_min_le : QuasiconcaveOn 𝕜 s f ↔ Convex 𝕜 s ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄,
@@ -128,7 +128,7 @@ theorem quasilinearOn_iff_mem_uIcc : QuasilinearOn 𝕜 s f ↔ Convex 𝕜 s �
 
 theorem QuasiconvexOn.convex_lt (hf : QuasiconvexOn 𝕜 s f) (r : β) :
     Convex 𝕜 ({ x ∈ s | f x < r }) := by
-  refine fun x hx y hy a b ha hb hab => ?_
+  refine fun x hx y hy a b ha hb hab ↦ ?_
   have h := hf _ ⟨hx.1, le_max_left _ _⟩ ⟨hy.1, le_max_right _ _⟩ ha hb hab
   exact ⟨h.1, h.2.trans_lt <| max_lt hx.2 hy.2⟩
 
@@ -212,7 +212,7 @@ theorem QuasilinearOn.monotoneOn_or_antitoneOn [LinearOrder β] (hf : Quasilinea
 
 theorem quasilinearOn_iff_monotoneOn_or_antitoneOn [LinearOrder β]
     (hs : Convex 𝕜 s) : QuasilinearOn 𝕜 s f ↔ MonotoneOn f s ∨ AntitoneOn f s :=
-  ⟨fun h => h.monotoneOn_or_antitoneOn, fun h =>
-    h.elim (fun h => h.quasilinearOn hs) fun h => h.quasilinearOn hs⟩
+  ⟨fun h ↦ h.monotoneOn_or_antitoneOn, fun h ↦
+    h.elim (fun h ↦ h.quasilinearOn hs) fun h ↦ h.quasilinearOn hs⟩
 
 end LinearOrderedField

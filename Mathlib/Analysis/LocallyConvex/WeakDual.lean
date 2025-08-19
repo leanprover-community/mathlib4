@@ -14,11 +14,11 @@ import Mathlib.Topology.Algebra.Module.WeakBilin
 
 We prove that the weak topology induced by a bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜` is locally
 convex and we explicitly give a neighborhood basis in terms of the family of seminorms
-`fun x => ‖B x y‖` for `y : F`.
+`fun x ↦ ‖B x y‖` for `y : F`.
 
 ## Main definitions
 
-* `LinearMap.toSeminorm`: turn a linear form `f : E →ₗ[𝕜] 𝕜` into a seminorm `fun x => ‖f x‖`.
+* `LinearMap.toSeminorm`: turn a linear form `f : E →ₗ[𝕜] 𝕜` into a seminorm `fun x ↦ ‖f x‖`.
 * `LinearMap.toSeminormFamily`: turn a bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜` into a map
   `F → Seminorm 𝕜 E`.
 
@@ -52,11 +52,11 @@ namespace LinearMap
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
 
 /-- Construct a seminorm from a linear form `f : E →ₗ[𝕜] 𝕜` over a normed field `𝕜` by
-`fun x => ‖f x‖` -/
+`fun x ↦ ‖f x‖` -/
 def toSeminorm (f : E →ₗ[𝕜] 𝕜) : Seminorm 𝕜 E :=
   (normSeminorm 𝕜 𝕜).comp f
 
-theorem coe_toSeminorm {f : E →ₗ[𝕜] 𝕜} : ⇑f.toSeminorm = fun x => ‖f x‖ :=
+theorem coe_toSeminorm {f : E →ₗ[𝕜] 𝕜} : ⇑f.toSeminorm = fun x ↦ ‖f x‖ :=
   rfl
 
 @[simp]
@@ -73,7 +73,7 @@ theorem toSeminorm_comp (f : F →ₗ[𝕜] 𝕜) (g : E →ₗ[𝕜] F) :
   simp only [Seminorm.comp_apply, toSeminorm_apply, coe_comp, Function.comp_apply]
 
 /-- Construct a family of seminorms from a bilinear form. -/
-def toSeminormFamily (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : SeminormFamily 𝕜 E F := fun y =>
+def toSeminormFamily (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : SeminormFamily 𝕜 E F := fun y ↦
   (B.flip y).toSeminorm
 
 @[simp]

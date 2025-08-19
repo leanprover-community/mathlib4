@@ -59,9 +59,9 @@ attribute [local ext] Complex.ext
 lemma «forall» {p : ℂ → Prop} : (∀ x, p x) ↔ ∀ a b, p ⟨a, b⟩ := by aesop
 lemma «exists» {p : ℂ → Prop} : (∃ x, p x) ↔ ∃ a b, p ⟨a, b⟩ := by aesop
 
-theorem re_surjective : Surjective re := fun x => ⟨⟨x, 0⟩, rfl⟩
+theorem re_surjective : Surjective re := fun x ↦ ⟨⟨x, 0⟩, rfl⟩
 
-theorem im_surjective : Surjective im := fun y => ⟨⟨0, y⟩, rfl⟩
+theorem im_surjective : Surjective im := fun y ↦ ⟨⟨0, y⟩, rfl⟩
 
 @[simp]
 theorem range_re : range re = univ :=
@@ -93,9 +93,9 @@ theorem ofReal_def (r : ℝ) : (r : ℂ) = ⟨r, 0⟩ :=
 theorem ofReal_inj {z w : ℝ} : (z : ℂ) = w ↔ z = w :=
   ⟨congrArg re, by apply congrArg⟩
 
-theorem ofReal_injective : Function.Injective ((↑) : ℝ → ℂ) := fun _ _ => congrArg re
+theorem ofReal_injective : Function.Injective ((↑) : ℝ → ℂ) := fun _ _ ↦ congrArg re
 
-instance canLift : CanLift ℂ ℝ (↑) fun z => z.im = 0 where
+instance canLift : CanLift ℂ ℝ (↑) fun z ↦ z.im = 0 where
   prf z hz := ⟨z.re, ext rfl hz.symm⟩
 
 /-- The product of a set on the real axis and a set on the imaginary axis of the complex plane,
@@ -157,7 +157,7 @@ theorem ofReal_ne_one {z : ℝ} : (z : ℂ) ≠ 1 ↔ z ≠ 1 :=
   not_congr ofReal_eq_one
 
 instance : Add ℂ :=
-  ⟨fun z w => ⟨z.re + w.re, z.im + w.im⟩⟩
+  ⟨fun z w ↦ ⟨z.re + w.re, z.im + w.im⟩⟩
 
 @[simp]
 theorem add_re (z w : ℂ) : (z + w).re = z.re + w.re :=
@@ -177,7 +177,7 @@ theorem ofReal_add (r s : ℝ) : ((r + s : ℝ) : ℂ) = r + s :=
 -- replaced by `Complex.ofReal_ofNat`
 
 instance : Neg ℂ :=
-  ⟨fun z => ⟨-z.re, -z.im⟩⟩
+  ⟨fun z ↦ ⟨-z.re, -z.im⟩⟩
 
 @[simp]
 theorem neg_re (z : ℂ) : (-z).re = -z.re :=
@@ -192,10 +192,10 @@ theorem ofReal_neg (r : ℝ) : ((-r : ℝ) : ℂ) = -r :=
   Complex.ext_iff.2 <| by simp [ofReal]
 
 instance : Sub ℂ :=
-  ⟨fun z w => ⟨z.re - w.re, z.im - w.im⟩⟩
+  ⟨fun z w ↦ ⟨z.re - w.re, z.im - w.im⟩⟩
 
 instance : Mul ℂ :=
-  ⟨fun z w => ⟨z.re * w.re - z.im * w.im, z.re * w.im + z.im * w.re⟩⟩
+  ⟨fun z w ↦ ⟨z.re * w.re - z.im * w.im, z.re * w.im + z.im * w.re⟩⟩
 
 @[simp]
 theorem mul_re (z w : ℂ) : (z * w).re = z.re * w.re - z.im * w.im :=
@@ -314,8 +314,8 @@ instance addCommGroup : AddCommGroup ℂ :=
     add := (· + ·)
     neg := Neg.neg
     sub := Sub.sub
-    nsmul := fun n z => n • z
-    zsmul := fun n z => n • z
+    nsmul := fun n z ↦ n • z
+    zsmul := fun n z ↦ n • z
     zsmul_zero' := by intros; ext <;> simp [smul_re, smul_im]
     nsmul_zero := by intros; ext <;> simp [smul_re, smul_im]
     nsmul_succ := by intros; ext <;> simp [smul_re, smul_im] <;> ring
@@ -458,14 +458,14 @@ theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (ofNat(n) : ℂ) = ofNat(n) :
 theorem conj_neg_I : conj (-I) = I := by simp
 
 theorem conj_eq_iff_real {z : ℂ} : conj z = z ↔ ∃ r : ℝ, z = r :=
-  ⟨fun h => ⟨z.re, ext rfl <| eq_zero_of_neg_eq (congr_arg im h)⟩, fun ⟨h, e⟩ => by
+  ⟨fun h ↦ ⟨z.re, ext rfl <| eq_zero_of_neg_eq (congr_arg im h)⟩, fun ⟨h, e⟩ ↦ by
     rw [e, conj_ofReal]⟩
 
 theorem conj_eq_iff_re {z : ℂ} : conj z = z ↔ (z.re : ℂ) = z :=
-  conj_eq_iff_real.trans ⟨by rintro ⟨r, rfl⟩; simp [ofReal], fun h => ⟨_, h.symm⟩⟩
+  conj_eq_iff_real.trans ⟨by rintro ⟨r, rfl⟩; simp [ofReal], fun h ↦ ⟨_, h.symm⟩⟩
 
 theorem conj_eq_iff_im {z : ℂ} : conj z = z ↔ z.im = 0 :=
-  ⟨fun h => add_self_eq_zero.mp (neg_eq_iff_add_eq_zero.mp (congr_arg im h)), fun h =>
+  ⟨fun h ↦ add_self_eq_zero.mp (neg_eq_iff_add_eq_zero.mp (congr_arg im h)), fun h ↦
     ext rfl (neg_eq_iff_add_eq_zero.mpr (add_self_eq_zero.mpr h))⟩
 
 @[simp]
@@ -527,10 +527,10 @@ theorem normSq_nonneg (z : ℂ) : 0 ≤ normSq z :=
   add_nonneg (mul_self_nonneg _) (mul_self_nonneg _)
 
 theorem normSq_eq_zero {z : ℂ} : normSq z = 0 ↔ z = 0 :=
-  ⟨fun h =>
+  ⟨fun h ↦
     ext (eq_zero_of_mul_self_add_mul_self_eq_zero h)
       (eq_zero_of_mul_self_add_mul_self_eq_zero <| (add_comm _ _).trans h),
-    fun h => h.symm ▸ normSq_zero⟩
+    fun h ↦ h.symm ▸ normSq_zero⟩
 
 @[simp]
 theorem normSq_pos {z : ℂ} : 0 < normSq z ↔ z ≠ 0 :=
@@ -634,7 +634,7 @@ theorem normSq_sub (z w : ℂ) : normSq (z - w) = normSq z + normSq w - 2 * (z *
 
 
 noncomputable instance : Inv ℂ :=
-  ⟨fun z => conj z * ((normSq z)⁻¹ : ℝ)⟩
+  ⟨fun z ↦ conj z * ((normSq z)⁻¹ : ℝ)⟩
 
 theorem inv_def (z : ℂ) : z⁻¹ = conj z * ((normSq z)⁻¹ : ℝ) :=
   rfl
@@ -740,7 +740,7 @@ lemma div_ofNat_im (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
 
 
 instance instCharZero : CharZero ℂ :=
-  charZero_of_inj_zero fun n h => by rwa [← ofReal_natCast, ofReal_eq_zero, Nat.cast_eq_zero] at h
+  charZero_of_inj_zero fun n h ↦ by rwa [← ofReal_natCast, ofReal_eq_zero, Nat.cast_eq_zero] at h
 
 /-- A complex number `z` plus its conjugate `conj z` is `2` times its real part. -/
 theorem re_eq_add_conj (z : ℂ) : (z.re : ℂ) = (z + conj z) / 2 := by

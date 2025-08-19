@@ -339,18 +339,18 @@ then the functor `tensorLeft Y'` is left adjoint to `tensorLeft Y`.
 -/
 def tensorLeftAdjunction (Y Y' : C) [ExactPairing Y Y'] : tensorLeft Y' ⊣ tensorLeft Y :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Z => tensorLeftHomEquiv X Y Y' Z
-      homEquiv_naturality_left_symm := fun f g => tensorLeftHomEquiv_symm_naturality f g
-      homEquiv_naturality_right := fun f g => tensorLeftHomEquiv_naturality f g }
+    { homEquiv := fun X Z ↦ tensorLeftHomEquiv X Y Y' Z
+      homEquiv_naturality_left_symm := fun f g ↦ tensorLeftHomEquiv_symm_naturality f g
+      homEquiv_naturality_right := fun f g ↦ tensorLeftHomEquiv_naturality f g }
 
 /-- If `Y Y'` have an exact pairing,
 then the functor `tensor_right Y` is left adjoint to `tensor_right Y'`.
 -/
 def tensorRightAdjunction (Y Y' : C) [ExactPairing Y Y'] : tensorRight Y ⊣ tensorRight Y' :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Z => tensorRightHomEquiv X Y Y' Z
-      homEquiv_naturality_left_symm := fun f g => tensorRightHomEquiv_symm_naturality f g
-      homEquiv_naturality_right := fun f g => tensorRightHomEquiv_naturality f g }
+    { homEquiv := fun X Z ↦ tensorRightHomEquiv X Y Y' Z
+      homEquiv_naturality_left_symm := fun f g ↦ tensorRightHomEquiv_symm_naturality f g
+      homEquiv_naturality_right := fun f g ↦ tensorRightHomEquiv_naturality f g }
 
 /--
 If `Y` has a left dual `ᘁY`, then it is a closed object, with the internal hom functor `Y ⟶[C] -`

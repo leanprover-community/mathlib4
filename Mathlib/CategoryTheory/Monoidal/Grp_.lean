@@ -204,17 +204,17 @@ theorem isPullback (A : C) [Grp_Class A] :
     IsPullback (μ ▷ A) ((α_ A A A).hom ≫ (A ◁ μ)) μ μ where
   w := by simp
   isLimit' := Nonempty.intro <| PullbackCone.IsLimit.mk _
-    (fun s => lift
+    (fun s ↦ lift
       (lift
         (s.snd ≫ fst _ _)
         (lift (s.snd ≫ fst _ _ ≫ ι) (s.fst ≫ fst _ _) ≫ μ))
       (s.fst ≫ snd _ _))
     (by
-      refine fun s => CartesianMonoidalCategory.hom_ext _ _ ?_ (by simp)
+      refine fun s ↦ CartesianMonoidalCategory.hom_ext _ _ ?_ (by simp)
       simp only [lift_whiskerRight, lift_fst]
       rw [← lift_lift_assoc, ← assoc, lift_comp_inv_right, lift_comp_one_left])
     (by
-      refine fun s => CartesianMonoidalCategory.hom_ext _ _ (by simp) ?_
+      refine fun s ↦ CartesianMonoidalCategory.hom_ext _ _ (by simp) ?_
       simp only [lift_lift_associator_hom_assoc, lift_whiskerLeft, lift_snd]
       have : lift (s.snd ≫ fst _ _ ≫ ι) (s.fst ≫ fst _ _) ≫ μ =
           lift (s.snd ≫ snd _ _) (s.fst ≫ snd _ _ ≫ ι) ≫ μ := by

@@ -48,16 +48,16 @@ variable {α' : Type*} {M' : Type*} [AddCommMonoid M'] [Module R M'] (v : α →
 /-- Interprets (l : α →₀ R) as a linear combination of the elements in the family (v : α → M) and
     evaluates this linear combination. -/
 def linearCombination : (α →₀ R) →ₗ[R] M :=
-  Finsupp.lsum ℕ fun i => LinearMap.id.smulRight (v i)
+  Finsupp.lsum ℕ fun i ↦ LinearMap.id.smulRight (v i)
 
 variable {v}
 
-theorem linearCombination_apply (l : α →₀ R) : linearCombination R v l = l.sum fun i a => a • v i :=
+theorem linearCombination_apply (l : α →₀ R) : linearCombination R v l = l.sum fun i a ↦ a • v i :=
   rfl
 
 theorem linearCombination_apply_of_mem_supported {l : α →₀ R} {s : Finset α}
-    (hs : l ∈ supported R R (↑s : Set α)) : linearCombination R v l = s.sum fun i => l i • v i :=
-  Finset.sum_subset hs fun x _ hxg =>
+    (hs : l ∈ supported R R (↑s : Set α)) : linearCombination R v l = s.sum fun i ↦ l i • v i :=
+  Finset.sum_subset hs fun x _ hxg ↦
     show l x • v x = 0 by rw [notMem_support_iff.1 hxg, zero_smul]
 
 @[simp]
@@ -124,7 +124,7 @@ theorem range_linearCombination : LinearMap.range (linearCombination R v) = span
     rcases hx with ⟨l, hl⟩
     rw [← hl]
     rw [linearCombination_apply]
-    exact sum_mem fun i _ => Submodule.smul_mem _ _ (subset_span (mem_range_self i))
+    exact sum_mem fun i _ ↦ Submodule.smul_mem _ _ (subset_span (mem_range_self i))
   · apply span_le.2
     intro x hx
     rcases hx with ⟨i, hi⟩
@@ -169,7 +169,7 @@ theorem mem_span_iff_linearCombination (s : Set M) (x : M) :
 
 variable {R} in
 theorem mem_span_range_iff_exists_finsupp {v : α → M} {x : M} :
-    x ∈ span R (range v) ↔ ∃ c : α →₀ R, (c.sum fun i a => a • v i) = x := by
+    x ∈ span R (range v) ↔ ∃ c : α →₀ R, (c.sum fun i a ↦ a • v i) = x := by
   simp only [← Finsupp.range_linearCombination, LinearMap.mem_range, linearCombination_apply]
 
 theorem span_image_eq_map_linearCombination (s : Set α) :
@@ -180,10 +180,10 @@ theorem span_image_eq_map_linearCombination (s : Set α) :
     apply Exists.elim hx
     intro i hi
     exact ⟨_, Finsupp.single_mem_supported R 1 hi.1, by simp [hi.2]⟩
-  · refine map_le_iff_le_comap.2 fun z hz => ?_
+  · refine map_le_iff_le_comap.2 fun z hz ↦ ?_
     have : ∀ i, z i • v i ∈ span R (v '' s) := by
       intro c
-      haveI := Classical.decPred fun x => x ∈ s
+      haveI := Classical.decPred fun x ↦ x ∈ s
       by_cases h : c ∈ s
       · exact smul_mem _ _ (subset_span (Set.mem_image_of_mem _ h))
       · simp [(Finsupp.mem_supported' R _).1 hz _ h]
@@ -203,7 +203,7 @@ theorem linearCombination_option (v : Option α → M) (f : Option α →₀ R) 
 
 theorem linearCombination_linearCombination {α β : Type*} (A : α → M) (B : β → α →₀ R)
     (f : β →₀ R) : linearCombination R A (linearCombination R B f) =
-      linearCombination R (fun b => linearCombination R A (B b)) f := by
+      linearCombination R (fun b ↦ linearCombination R A (B b)) f := by
   classical
   simp only [linearCombination_apply]
   induction f using induction_linear with
@@ -231,7 +231,7 @@ The subset is indicated by a set `s : Set α` of indices.
 -/
 def linearCombinationOn (s : Set α) : supported R R s →ₗ[R] span R (v '' s) :=
   LinearMap.codRestrict _ ((linearCombination _ v).comp (Submodule.subtype (supported R R s)))
-    fun ⟨l, hl⟩ => (mem_span_image_iff_linearCombination _).2 ⟨l, hl, rfl⟩
+    fun ⟨l, hl⟩ ↦ (mem_span_image_iff_linearCombination _).2 ⟨l, hl, rfl⟩
 
 variable {α} {M} {v}
 
@@ -254,12 +254,12 @@ theorem linearCombination_comp (f : α' → α) :
 
 theorem linearCombination_comapDomain (f : α → α') (l : α' →₀ R)
     (hf : Set.InjOn f (f ⁻¹' ↑l.support)) : linearCombination R v (Finsupp.comapDomain f l hf) =
-      (l.support.preimage f hf).sum fun i => l (f i) • v i := by
+      (l.support.preimage f hf).sum fun i ↦ l (f i) • v i := by
   rw [linearCombination_apply]; rfl
 
 theorem linearCombination_onFinset {s : Finset α} {f : α → R} (g : α → M)
     (hf : ∀ a, f a ≠ 0 → a ∈ s) :
-    linearCombination R g (Finsupp.onFinset s f hf) = Finset.sum s fun x : α => f x • g x := by
+    linearCombination R g (Finsupp.onFinset s f hf) = Finset.sum s fun x : α ↦ f x • g x := by
   classical
   simp only [linearCombination_apply, Finsupp.sum, Finsupp.onFinset_apply, Finsupp.support_onFinset]
   rw [Finset.sum_filter_of_ne]
@@ -369,7 +369,7 @@ theorem Submodule.mem_span_range_iff_exists_fun :
     x ∈ span R (range v) ↔ ∃ c : α → R, ∑ i, c i • v i = x := by
   rw [Finsupp.equivFunOnFinite.surjective.exists]
   simp only [Finsupp.mem_span_range_iff_exists_finsupp, Finsupp.equivFunOnFinite_apply]
-  exact exists_congr fun c => Eq.congr_left <| Finsupp.sum_fintype _ _ fun i => zero_smul _ _
+  exact exists_congr fun c ↦ Eq.congr_left <| Finsupp.sum_fintype _ _ fun i ↦ zero_smul _ _
 
 /-- A family `v : α → V` is generating `V` iff every element `(x : V)`
 can be written as sum `∑ cᵢ • vᵢ = x`.
@@ -377,7 +377,7 @@ can be written as sum `∑ cᵢ • vᵢ = x`.
 theorem Submodule.top_le_span_range_iff_forall_exists_fun :
     ⊤ ≤ span R (range v) ↔ ∀ x, ∃ c : α → R, ∑ i, c i • v i = x := by
   simp_rw [← mem_span_range_iff_exists_fun]
-  exact ⟨fun h x => h trivial, fun h x _ => h x⟩
+  exact ⟨fun h x ↦ h trivial, fun h x _ ↦ h x⟩
 
 omit [Fintype α]
 
@@ -456,7 +456,7 @@ lemma Submodule.mem_span_finset' {s : Finset M} {x : M} :
 The implementation uses `Finsupp.sum`. -/
 theorem Submodule.mem_span_set {m : M} {s : Set M} :
     m ∈ Submodule.span R s ↔
-      ∃ c : M →₀ R, (c.support : Set M) ⊆ s ∧ (c.sum fun mi r => r • mi) = m := by
+      ∃ c : M →₀ R, (c.support : Set M) ⊆ s ∧ (c.sum fun mi r ↦ r • mi) = m := by
   conv_lhs => rw [← Set.image_id s]
   exact Finsupp.mem_span_image_iff_linearCombination R (v := _root_.id (α := M))
 

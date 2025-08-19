@@ -80,10 +80,10 @@ theorem ext (A₁ A₂ : IndexSet Δ) (h₁ : A₁.1 = A₂.1) (h₂ : A₁.e �
 
 instance : Fintype (IndexSet Δ) :=
   Fintype.ofInjective
-    (fun A =>
+    (fun A ↦
       ⟨⟨A.1.unop.len, Nat.lt_succ_iff.mpr (len_le_of_epi A.e)⟩,
         A.e.toOrderHom⟩ :
-      IndexSet Δ → Sigma fun k : Fin (Δ.unop.len + 1) => Fin (Δ.unop.len + 1) → Fin (k + 1))
+      IndexSet Δ → Sigma fun k : Fin (Δ.unop.len + 1) ↦ Fin (Δ.unop.len + 1) → Fin (k + 1))
     (by
       rintro ⟨Δ₁, α₁⟩ ⟨Δ₂, α₂⟩ h₁
       induction' Δ₁ using Opposite.rec with Δ₁
@@ -193,7 +193,7 @@ def summand (A : IndexSet Δ) : C :=
 
 /-- The cofan for `summand N Δ` induced by morphisms `N n ⟶ X _⦋n⦌` for all `n : ℕ`. -/
 def cofan' (Δ : SimplexCategoryᵒᵖ) : Cofan (summand N Δ) :=
-  Cofan.mk (X.obj Δ) (fun A => φ A.1.unop.len ≫ X.map A.e.op)
+  Cofan.mk (X.obj Δ) (fun A ↦ φ A.1.unop.len ≫ X.map A.e.op)
 
 end Splitting
 
@@ -216,7 +216,7 @@ variable {X Y : SimplicialObject C} (s : Splitting X)
 
 /-- The cofan for `summand s.N Δ` induced by a splitting of a simplicial object. -/
 def cofan (Δ : SimplexCategoryᵒᵖ) : Cofan (summand s.N Δ) :=
-  Cofan.mk (X.obj Δ) (fun A => s.ι A.1.unop.len ≫ X.map A.e.op)
+  Cofan.mk (X.obj Δ) (fun A ↦ s.ι A.1.unop.len ≫ X.map A.e.op)
 
 /-- The cofan `s.cofan Δ` is colimit. -/
 def isColimit (Δ : SimplexCategoryᵒᵖ) : IsColimit (s.cofan Δ) := s.isColimit' Δ
@@ -271,7 +271,7 @@ def ofIso (e : X ≅ Y) : Splitting Y where
   N := s.N
   ι n := s.ι n ≫ e.hom.app (op ⦋n⦌)
   isColimit' Δ := IsColimit.ofIsoColimit (s.isColimit Δ ) (Cofan.ext (e.app Δ)
-    (fun A => by simp [cofan, cofan']))
+    (fun A ↦ by simp [cofan, cofan']))
 
 @[reassoc]
 theorem cofan_inj_epi_naturality {Δ₁ Δ₂ : SimplexCategoryᵒᵖ} (A : IndexSet Δ₁) (p : Δ₁ ⟶ Δ₂)
@@ -335,11 +335,11 @@ instance : Category (Split C) where
   Hom := Split.Hom
   id S :=
     { F := 𝟙 _
-      f := fun _ => 𝟙 _ }
+      f := fun _ ↦ 𝟙 _ }
   comp Φ₁₂ Φ₂₃ :=
     { F := Φ₁₂.F ≫ Φ₂₃.F
-      f := fun n => Φ₁₂.f n ≫ Φ₂₃.f n
-      comm := fun n => by
+      f := fun n ↦ Φ₁₂.f n ≫ Φ₂₃.f n
+      comm := fun n ↦ by
         dsimp
         simp only [assoc, Split.Hom.comm_assoc, Split.Hom.comm] }
 

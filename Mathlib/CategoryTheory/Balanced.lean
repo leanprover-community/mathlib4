@@ -37,14 +37,14 @@ theorem isIso_of_mono_of_epi [Balanced C] {X Y : C} (f : X ⟶ Y) [Mono f] [Epi 
   Balanced.isIso_of_mono_of_epi _
 
 theorem isIso_iff_mono_and_epi [Balanced C] {X Y : C} (f : X ⟶ Y) : IsIso f ↔ Mono f ∧ Epi f :=
-  ⟨fun _ => ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ => isIso_of_mono_of_epi _⟩
+  ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ isIso_of_mono_of_epi _⟩
 
 section
 
 attribute [local instance] isIso_of_mono_of_epi
 
 instance balanced_opposite [Balanced C] : Balanced Cᵒᵖ :=
-  { isIso_of_mono_of_epi := fun f fmono fepi => by
+  { isIso_of_mono_of_epi := fun f fmono fepi ↦ by
       rw [← Quiver.Hom.op_unop f]
       exact isIso_of_op _ }
 

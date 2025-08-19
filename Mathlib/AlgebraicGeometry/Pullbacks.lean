@@ -196,7 +196,7 @@ theorem cocycle (i j k : 𝒰.J) : t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i ≫ t
 def gluing : Scheme.GlueData.{u} where
   J := 𝒰.J
   U i := pullback (𝒰.map i ≫ f) g
-  V := fun ⟨i, j⟩ => v 𝒰 f g i j
+  V := fun ⟨i, j⟩ ↦ v 𝒰 f g i j
   -- `p⁻¹(Uᵢ ∩ Uⱼ)` where `p : Uᵢ ×[Z] Y ⟶ Uᵢ ⟶ X`.
   f _ _ := pullback.fst _ _
   f_id _ := inferInstance
@@ -435,7 +435,7 @@ theorem affine_affine_hasPullback {B C : CommRingCat} {X : Scheme}
 instance base_affine_hasPullback {C : CommRingCat} {X Y : Scheme} (f : X ⟶ Spec C)
     (g : Y ⟶ Spec C) : HasPullback f g :=
   @hasPullback_symmetry _ _ _ _ _ _ _
-    (@hasPullback_of_cover _ _ _ Y.affineCover g f fun _ =>
+    (@hasPullback_of_cover _ _ _ Y.affineCover g f fun _ ↦
       @hasPullback_symmetry _ _ _ _ _ _ _ <| affine_affine_hasPullback _ _)
 
 instance left_affine_comp_pullback_hasPullback {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z)
@@ -470,9 +470,9 @@ def openCoverOfLeft (𝒰 : OpenCover X) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover
   fapply
     ((gluing 𝒰 f g).openCover.pushforwardIso
           (limit.isoLimitCone ⟨_, gluedIsLimit 𝒰 f g⟩).inv).copy
-      𝒰.J (fun i => pullback (𝒰.map i ≫ f) g)
-      (fun i => pullback.map _ _ _ _ (𝒰.map i) (𝟙 _) (𝟙 _) (Category.comp_id _) (by simp))
-      (Equiv.refl 𝒰.J) fun _ => Iso.refl _
+      𝒰.J (fun i ↦ pullback (𝒰.map i ≫ f) g)
+      (fun i ↦ pullback.map _ _ _ _ (𝒰.map i) (𝟙 _) (𝟙 _) (Category.comp_id _) (by simp))
+      (Equiv.refl 𝒰.J) fun _ ↦ Iso.refl _
   rintro (i : 𝒰.J)
   simp_rw [Cover.pushforwardIso_J, Cover.pushforwardIso_map, GlueData.openCover_map,
     GlueData.openCover_J, gluing_J]
@@ -483,9 +483,9 @@ def openCoverOfLeft (𝒰 : OpenCover X) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover
 def openCoverOfRight (𝒰 : OpenCover Y) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover (pullback f g) := by
   fapply
     ((openCoverOfLeft 𝒰 g f).pushforwardIso (pullbackSymmetry _ _).hom).copy 𝒰.J
-      (fun i => pullback f (𝒰.map i ≫ g))
-      (fun i => pullback.map _ _ _ _ (𝟙 _) (𝒰.map i) (𝟙 _) (by simp) (Category.comp_id _))
-      (Equiv.refl _) fun i => pullbackSymmetry _ _
+      (fun i ↦ pullback f (𝒰.map i ≫ g))
+      (fun i ↦ pullback.map _ _ _ _ (𝟙 _) (𝒰.map i) (𝟙 _) (by simp) (Category.comp_id _))
+      (Equiv.refl _) fun i ↦ pullbackSymmetry _ _
   intro i
   dsimp [Cover.bind]
   apply pullback.hom_ext <;> simp
@@ -496,12 +496,12 @@ def openCoverOfRight (𝒰 : OpenCover Y) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
 def openCoverOfLeftRight (𝒰X : X.OpenCover) (𝒰Y : Y.OpenCover) (f : X ⟶ Z) (g : Y ⟶ Z) :
     (pullback f g).OpenCover := by
   fapply
-    ((openCoverOfLeft 𝒰X f g).bind fun x => openCoverOfRight 𝒰Y (𝒰X.map x ≫ f) g).copy
-      (𝒰X.J × 𝒰Y.J) (fun ij => pullback (𝒰X.map ij.1 ≫ f) (𝒰Y.map ij.2 ≫ g))
-      (fun ij =>
+    ((openCoverOfLeft 𝒰X f g).bind fun x ↦ openCoverOfRight 𝒰Y (𝒰X.map x ≫ f) g).copy
+      (𝒰X.J × 𝒰Y.J) (fun ij ↦ pullback (𝒰X.map ij.1 ≫ f) (𝒰Y.map ij.2 ≫ g))
+      (fun ij ↦
         pullback.map _ _ _ _ (𝒰X.map ij.1) (𝒰Y.map ij.2) (𝟙 _) (Category.comp_id _)
           (Category.comp_id _))
-      (Equiv.sigmaEquivProd _ _).symm fun _ => Iso.refl _
+      (Equiv.sigmaEquivProd _ _).symm fun _ ↦ Iso.refl _
   rintro ⟨i, j⟩
   apply pullback.hom_ext <;> simp
 
@@ -526,13 +526,13 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
 def openCoverOfBase (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover (pullback f g) := by
   apply
     (openCoverOfBase'.{u, u} 𝒰 f g).copy 𝒰.J
-      (fun i =>
+      (fun i ↦
         pullback (pullback.snd _ _ : pullback f (𝒰.map i) ⟶ _)
           (pullback.snd _ _ : pullback g (𝒰.map i) ⟶ _))
-      (fun i =>
+      (fun i ↦
         pullback.map _ _ _ _ (pullback.fst _ _) (pullback.fst _ _) (𝒰.map i)
           pullback.condition.symm pullback.condition.symm)
-      ((Equiv.prodPUnit 𝒰.J).symm.trans (Equiv.sigmaEquivProd 𝒰.J PUnit).symm) fun _ => Iso.refl _
+      ((Equiv.prodPUnit 𝒰.J).symm.trans (Equiv.sigmaEquivProd 𝒰.J PUnit).symm) fun _ ↦ Iso.refl _
   intro i
   rw [Iso.refl_hom, Category.id_comp, openCoverOfBase'_map]
   ext : 1 <;>

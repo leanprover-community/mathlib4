@@ -34,7 +34,7 @@ of the functors `evaluation R X` for all `X`. -/
 def evaluationJointlyReflectsLimits (c : Cone F)
     (hc : ∀ (X : Cᵒᵖ), IsLimit ((evaluation R X).mapCone c)) : IsLimit c where
   lift s :=
-    { app := fun X => (hc X).lift ((evaluation R X).mapCone s)
+    { app := fun X ↦ (hc X).lift ((evaluation R X).mapCone s)
       naturality := fun {X Y} f ↦ by
         apply (isLimitOfPreserves (ModuleCat.restrictScalars (R.map f).hom) (hc Y)).hom_ext
         intro j
@@ -118,7 +118,7 @@ noncomputable def limitCone : Cone F where
 
 /-- The cone `limitCone F` is limit for any `F : J ⥤ PresheafOfModules.{v} R`. -/
 noncomputable def isLimitLimitCone : IsLimit (limitCone F) :=
-  evaluationJointlyReflectsLimits _ _ (fun _ => limit.isLimit _)
+  evaluationJointlyReflectsLimits _ _ (fun _ ↦ limit.isLimit _)
 
 instance hasLimit : HasLimit F := ⟨_, isLimitLimitCone F⟩
 
@@ -130,7 +130,7 @@ noncomputable instance toPresheaf_preservesLimit :
     PreservesLimit F (toPresheaf R) :=
   preservesLimit_of_preserves_limit_cone (isLimitLimitCone F)
     (Limits.evaluationJointlyReflectsLimits _
-      (fun X => isLimitOfPreserves (evaluation R X ⋙ forget₂ _ AddCommGrp)
+      (fun X ↦ isLimitOfPreserves (evaluation R X ⋙ forget₂ _ AddCommGrp)
         (isLimitLimitCone F)))
 
 end Limits
@@ -156,7 +156,7 @@ end Small
 section Finite
 
 instance hasFiniteLimits : HasFiniteLimits (PresheafOfModules.{v} R) :=
-  ⟨fun _ => inferInstance⟩
+  ⟨fun _ ↦ inferInstance⟩
 
 noncomputable instance evaluation_preservesFiniteLimits (X : Cᵒᵖ) :
     PreservesFiniteLimits (evaluation.{v} R X) where

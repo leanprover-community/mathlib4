@@ -87,7 +87,7 @@ if `K` is given by a long formula, and we want to reuse this value. -/
 protected def k (_hf : AntilipschitzWith K f) : ℝ≥0 := K
 
 protected theorem injective {α : Type*} {β : Type*} [EMetricSpace α] [PseudoEMetricSpace β]
-    {K : ℝ≥0} {f : α → β} (hf : AntilipschitzWith K f) : Function.Injective f := fun x y h => by
+    {K : ℝ≥0} {f : α → β} (hf : AntilipschitzWith K f) : Function.Injective f := fun x y h ↦ by
   simpa only [h, edist_self, mul_zero, edist_le_zero] using hf x y
 
 theorem mul_le_edist (hf : AntilipschitzWith K f) (x y : α) :
@@ -96,31 +96,31 @@ theorem mul_le_edist (hf : AntilipschitzWith K f) (x y : α) :
   exact ENNReal.div_le_of_le_mul' (hf x y)
 
 theorem ediam_preimage_le (hf : AntilipschitzWith K f) (s : Set β) : diam (f ⁻¹' s) ≤ K * diam s :=
-  diam_le fun x hx y hy => (hf x y).trans <|
+  diam_le fun x hx y hy ↦ (hf x y).trans <|
     mul_le_mul_left' (edist_le_diam_of_mem (mem_preimage.1 hx) hy) K
 
 theorem le_mul_ediam_image (hf : AntilipschitzWith K f) (s : Set α) : diam s ≤ K * diam (f '' s) :=
   (diam_mono (subset_preimage_image _ _)).trans (hf.ediam_preimage_le (f '' s))
 
-protected theorem id : AntilipschitzWith 1 (id : α → α) := fun x y => by
+protected theorem id : AntilipschitzWith 1 (id : α → α) := fun x y ↦ by
   simp only [ENNReal.coe_one, one_mul, id, le_refl]
 
 theorem comp {Kg : ℝ≥0} {g : β → γ} (hg : AntilipschitzWith Kg g) {Kf : ℝ≥0} {f : α → β}
-    (hf : AntilipschitzWith Kf f) : AntilipschitzWith (Kf * Kg) (g ∘ f) := fun x y =>
+    (hf : AntilipschitzWith Kf f) : AntilipschitzWith (Kf * Kg) (g ∘ f) := fun x y ↦
   calc
     edist x y ≤ Kf * edist (f x) (f y) := hf x y
     _ ≤ Kf * (Kg * edist (g (f x)) (g (f y))) := mul_left_mono (hg _ _)
     _ = _ := by rw [ENNReal.coe_mul, mul_assoc]; rfl
 
 theorem restrict (hf : AntilipschitzWith K f) (s : Set α) : AntilipschitzWith K (s.restrict f) :=
-  fun x y => hf x y
+  fun x y ↦ hf x y
 
 theorem codRestrict (hf : AntilipschitzWith K f) {s : Set β} (hs : ∀ x, f x ∈ s) :
-    AntilipschitzWith K (s.codRestrict f hs) := fun x y => hf x y
+    AntilipschitzWith K (s.codRestrict f hs) := fun x y ↦ hf x y
 
 theorem to_rightInvOn' {s : Set α} (hf : AntilipschitzWith K (s.restrict f)) {g : β → α}
     {t : Set β} (g_maps : MapsTo g t s) (g_inv : RightInvOn g f t) :
-    LipschitzWith K (t.restrict g) := fun x y => by
+    LipschitzWith K (t.restrict g) := fun x y ↦ by
   simpa only [restrict_apply, g_inv x.mem, g_inv y.mem, Subtype.edist_mk_mk]
     using hf ⟨g x, g_maps x.mem⟩ ⟨g y, g_maps y.mem⟩
 
@@ -135,9 +135,9 @@ theorem to_rightInverse (hf : AntilipschitzWith K f) {g : β → α} (hg : Funct
   rwa [hg x, hg y] at this
 
 theorem comap_uniformity_le (hf : AntilipschitzWith K f) : (𝓤 β).comap (Prod.map f f) ≤ 𝓤 α := by
-  refine ((uniformity_basis_edist.comap _).le_basis_iff uniformity_basis_edist).2 fun ε h₀ => ?_
+  refine ((uniformity_basis_edist.comap _).le_basis_iff uniformity_basis_edist).2 fun ε h₀ ↦ ?_
   refine ⟨(↑K)⁻¹ * ε, ENNReal.mul_pos (ENNReal.inv_ne_zero.2 ENNReal.coe_ne_top) h₀.ne', ?_⟩
-  refine fun x hx => (hf x.1 x.2).trans_lt ?_
+  refine fun x hx ↦ (hf x.1 x.2).trans_lt ?_
   rw [mul_comm, ← div_eq_mul_inv] at hx
   rw [mul_comm]
   exact ENNReal.mul_lt_of_lt_div hx
@@ -168,13 +168,13 @@ theorem subtype_coe (s : Set α) : AntilipschitzWith 1 ((↑) : s → α) :=
   AntilipschitzWith.id.restrict s
 
 @[nontriviality]
-theorem of_subsingleton [Subsingleton α] {K : ℝ≥0} : AntilipschitzWith K f := fun x y => by
+theorem of_subsingleton [Subsingleton α] {K : ℝ≥0} : AntilipschitzWith K f := fun x y ↦ by
   simp only [Subsingleton.elim x y, edist_self, zero_le]
 
 /-- If `f : α → β` is `0`-antilipschitz, then `α` is a `subsingleton`. -/
 protected theorem subsingleton {α β} [EMetricSpace α] [PseudoEMetricSpace β] {f : α → β}
     (h : AntilipschitzWith 0 f) : Subsingleton α :=
-  ⟨fun x y => edist_le_zero.1 <| (h x y).trans_eq <| zero_mul _⟩
+  ⟨fun x y ↦ edist_le_zero.1 <| (h x y).trans_eq <| zero_mul _⟩
 
 end AntilipschitzWith
 
@@ -197,7 +197,7 @@ theorem tendsto_cobounded (hf : AntilipschitzWith K f) : Tendsto f (cobounded α
 protected theorem properSpace {α : Type*} [MetricSpace α] {K : ℝ≥0} {f : α → β} [ProperSpace α]
     (hK : AntilipschitzWith K f) (f_cont : Continuous f) (hf : Function.Surjective f) :
     ProperSpace β := by
-  refine ⟨fun x₀ r => ?_⟩
+  refine ⟨fun x₀ r ↦ ?_⟩
   let K := f ⁻¹' closedBall x₀ r
   have A : IsClosed K := isClosed_closedBall.preimage f_cont
   have B : IsBounded K := hK.isBounded_preimage isBounded_closedBall
@@ -206,7 +206,7 @@ protected theorem properSpace {α : Type*} [MetricSpace α] {K : ℝ≥0} {f : �
   exact (hf.image_preimage _).symm
 
 theorem isBounded_of_image2_left (f : α → β → γ) {K₁ : ℝ≥0}
-    (hf : ∀ b, AntilipschitzWith K₁ fun a => f a b) {s : Set α} {t : Set β}
+    (hf : ∀ b, AntilipschitzWith K₁ fun a ↦ f a b) {s : Set α} {t : Set β}
     (hst : IsBounded (Set.image2 f s t)) : IsBounded s ∨ IsBounded t := by
   contrapose! hst
   obtain ⟨b, hb⟩ : t.Nonempty := nonempty_of_not_isBounded hst.2
@@ -226,4 +226,4 @@ end AntilipschitzWith
 
 theorem LipschitzWith.to_rightInverse [PseudoEMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0}
     {f : α → β} (hf : LipschitzWith K f) {g : β → α} (hg : Function.RightInverse g f) :
-    AntilipschitzWith K g := fun x y => by simpa only [hg _] using hf (g x) (g y)
+    AntilipschitzWith K g := fun x y ↦ by simpa only [hg _] using hf (g x) (g y)

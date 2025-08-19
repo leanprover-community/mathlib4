@@ -34,7 +34,7 @@ by inserting 0 as the 0th coefficient.
 `verschiebungFun` is the underlying function of the additive monoid hom `WittVector.verschiebung`.
 -/
 def verschiebungFun (x : 𝕎 R) : 𝕎 R :=
-  @mk' p _ fun n => if n = 0 then 0 else x.coeff (n - 1)
+  @mk' p _ fun n ↦ if n = 0 then 0 else x.coeff (n - 1)
 
 theorem verschiebungFun_coeff (x : 𝕎 R) (n : ℕ) :
     (verschiebungFun x).coeff n = if n = 0 then 0 else x.coeff (n - 1) := by
@@ -84,7 +84,7 @@ variable (p)
 
 /-- `WittVector.verschiebung` has polynomial structure given by `WittVector.verschiebungPoly`.
 -/
-instance verschiebungFun_isPoly : IsPoly p fun R _Rcr => @verschiebungFun p R _Rcr := by
+instance verschiebungFun_isPoly : IsPoly p fun R _Rcr ↦ @verschiebungFun p R _Rcr := by
   use verschiebungPoly
   simp only [aeval_verschiebung_poly', forall₃_true_iff]
 
@@ -114,7 +114,7 @@ noncomputable def verschiebung : 𝕎 R →+ 𝕎 R where
 
 /-- `WittVector.verschiebung` is a polynomial function. -/
 @[is_poly]
-theorem verschiebung_isPoly : IsPoly p fun _ _ => verschiebung (p := p) :=
+theorem verschiebung_isPoly : IsPoly p fun _ _ ↦ verschiebung (p := p) :=
   verschiebungFun_isPoly p
 
 /-- verschiebung is a natural transformation -/

@@ -47,7 +47,7 @@ variable {D}
 
 instance InducedWideCategory.hasCoeToSort {α : Sort*} [CoeSort D α] :
     CoeSort (InducedWideCategory D F P) α :=
-  ⟨fun c => F c⟩
+  ⟨fun c ↦ F c⟩
 
 @[simps!]
 instance InducedWideCategory.category :

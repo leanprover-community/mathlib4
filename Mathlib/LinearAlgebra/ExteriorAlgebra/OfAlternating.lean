@@ -47,8 +47,8 @@ def liftAlternating : (∀ i, M [⋀^Fin i]→ₗ[R] N) →ₗ[R] ExteriorAlgebr
     exact AlternatingMap.constLinearEquivOfIsEmpty.symm
   refine CliffordAlgebra.foldl _ ?_ ?_
   · refine
-      LinearMap.mk₂ R (fun m f i => (f i.succ).curryLeft m) (fun m₁ m₂ f => ?_) (fun c m f => ?_)
-        (fun m f₁ f₂ => ?_) fun c m f => ?_
+      LinearMap.mk₂ R (fun m f i ↦ (f i.succ).curryLeft m) (fun m₁ m₂ f ↦ ?_) (fun c m f ↦ ?_)
+        (fun m f₁ f₂ ↦ ?_) fun c m f ↦ ?_
     all_goals
       ext i : 1
       simp only [map_smul, map_add, Pi.add_apply, Pi.smul_apply, AlternatingMap.curryLeft_add,
@@ -68,7 +68,7 @@ theorem liftAlternating_ι (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (m : M) :
 theorem liftAlternating_ι_mul (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (m : M)
     (x : ExteriorAlgebra R M) :
     liftAlternating (R := R) (M := M) (N := N) f (ι R m * x) =
-    liftAlternating (R := R) (M := M) (N := N) (fun i => (f i.succ).curryLeft m) x := by
+    liftAlternating (R := R) (M := M) (N := N) (fun i ↦ (f i.succ).curryLeft m) x := by
   dsimp [liftAlternating]
   rw [foldl_mul, foldl_ι]
   rfl
@@ -104,7 +104,7 @@ theorem liftAlternating_comp_ιMulti {n : ℕ} (f : ∀ i, M [⋀^Fin i]→ₗ[R
 
 @[simp]
 theorem liftAlternating_comp (g : N →ₗ[R] N') (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) :
-    (liftAlternating (R := R) (M := M) (N := N') fun i => g.compAlternatingMap (f i)) =
+    (liftAlternating (R := R) (M := M) (N := N') fun i ↦ g.compAlternatingMap (f i)) =
     g ∘ₗ liftAlternating (R := R) (M := M) (N := N) f := by
   ext v
   rw [LinearMap.comp_apply]
@@ -136,7 +136,7 @@ def liftAlternatingEquiv : (∀ i, M [⋀^Fin i]→ₗ[R] N) ≃ₗ[R] ExteriorA
   map_add' := map_add _
   map_smul' := map_smul _
   invFun F i := F.compAlternatingMap (ιMulti R i)
-  left_inv _ := funext fun _ => liftAlternating_comp_ιMulti _
+  left_inv _ := funext fun _ ↦ liftAlternating_comp_ιMulti _
   right_inv F :=
     (liftAlternating_comp _ _).trans <| by rw [liftAlternating_ιMulti, LinearMap.comp_id]
 

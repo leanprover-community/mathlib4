@@ -39,7 +39,7 @@ variable [CommRing R] [BinomialRing R]
 
 /-- The power series for `(1 + X) ^ r`. -/
 def binomialSeries (A) [One A] [SMul R A] (r : R) : PowerSeries A :=
-  mk fun n => Ring.choose r n • 1
+  mk fun n ↦ Ring.choose r n • 1
 
 @[simp]
 lemma binomialSeries_coeff [Semiring A] [SMul R A] (r : R) (n : ℕ) :
@@ -57,7 +57,7 @@ lemma binomialSeries_add [Ring A] [Algebra R A] (r s : R) :
   ext n
   simp only [binomialSeries_coeff, Ring.add_choose_eq n (Commute.all r s), coeff_mul,
     Algebra.mul_smul_comm, mul_one, sum_smul]
-  refine sum_congr rfl fun ab hab => ?_
+  refine sum_congr rfl fun ab hab ↦ ?_
   rw [mul_comm, mul_smul]
 
 @[simp]

@@ -155,11 +155,11 @@ theorem cardQuot_pow_of_prime [IsDedekindDomain S] (hP : P ≠ ⊥) {i : ℕ} :
       card_quotient_mul_card_quotient (P ^ i) (P ^ i.succ) this.le, cardQuot_apply (P ^ i),
       cardQuot_apply P, Nat.card_congr hquot]
   choose a a_mem a_notMem using SetLike.exists_of_lt this
-  choose f g hg hf using fun c (hc : c ∈ P ^ i) =>
+  choose f g hg hf using fun c (hc : c ∈ P ^ i) ↦
     Ideal.exists_mul_add_mem_pow_succ hP a c a_mem a_notMem hc
-  choose k hk_mem hk_eq using fun c' (hc' : c' ∈ map (mkQ (P ^ i.succ)) (P ^ i)) =>
+  choose k hk_mem hk_eq using fun c' (hc' : c' ∈ map (mkQ (P ^ i.succ)) (P ^ i)) ↦
     Submodule.mem_map.mp hc'
-  refine Equiv.ofBijective (fun c' => Quotient.mk'' (f (k c' c'.prop) (hk_mem c' c'.prop))) ⟨?_, ?_⟩
+  refine Equiv.ofBijective (fun c' ↦ Quotient.mk'' (f (k c' c'.prop) (hk_mem c' c'.prop))) ⟨?_, ?_⟩
   · rintro ⟨c₁', hc₁'⟩ ⟨c₂', hc₂'⟩ h
     rw [Subtype.mk_eq_mk, ← hk_eq _ hc₁', ← hk_eq _ hc₂', mkQ_apply, mkQ_apply,
       Submodule.Quotient.eq, ← hf _ (hk_mem _ hc₁'), ← hf _ (hk_mem _ hc₂')]
@@ -167,7 +167,7 @@ theorem cardQuot_pow_of_prime [IsDedekindDomain S] (hP : P ≠ ⊥) {i : ℕ} :
     simpa only [Submodule.Quotient.mk''_eq_mk, Submodule.Quotient.mk''_eq_mk,
       Submodule.Quotient.eq] using h
   · intro d'
-    refine Quotient.inductionOn' d' fun d => ?_
+    refine Quotient.inductionOn' d' fun d ↦ ?_
     have hd' := (mem_map (f := mkQ (P ^ i.succ))).mpr ⟨a * d, Ideal.mul_mem_right d _ a_mem, rfl⟩
     refine ⟨⟨_, hd'⟩, ?_⟩
     simp only [Submodule.Quotient.mk''_eq_mk, Ideal.Quotient.mk_eq_mk, Ideal.Quotient.eq]
@@ -184,11 +184,11 @@ theorem cardQuot_mul [IsDedekindDomain S] [Module.Free ℤ S] (I J : Ideal S) :
   let b := Module.Free.chooseBasis ℤ S
   haveI : Infinite S := Infinite.of_surjective _ b.repr.toEquiv.surjective
   exact UniqueFactorizationMonoid.multiplicative_of_coprime cardQuot I J (cardQuot_bot _ _)
-      (fun {I J} hI => by simp [Ideal.isUnit_iff.mp hI, Ideal.mul_top])
-      (fun {I} i hI =>
+      (fun {I J} hI ↦ by simp [Ideal.isUnit_iff.mp hI, Ideal.mul_top])
+      (fun {I} i hI ↦
         have : Ideal.IsPrime I := Ideal.isPrime_of_prime hI
         cardQuot_pow_of_prime hI.ne_zero)
-      fun {I J} hIJ => cardQuot_mul_of_coprime <| Ideal.isCoprime_iff_sup_eq.mpr
+      fun {I J} hIJ ↦ cardQuot_mul_of_coprime <| Ideal.isCoprime_iff_sup_eq.mpr
         (Ideal.isUnit_iff.mp
           (hIJ (Ideal.dvd_iff_le.mpr le_sup_left) (Ideal.dvd_iff_le.mpr le_sup_right)))
 
@@ -219,7 +219,7 @@ theorem absNorm_eq_one_iff {I : Ideal S} : absNorm I = 1 ↔ I = ⊤ := by
   rw [absNorm_apply, cardQuot_eq_one_iff]
 
 theorem absNorm_ne_zero_iff (I : Ideal S) : Ideal.absNorm I ≠ 0 ↔ Finite (S ⧸ I) :=
-  ⟨fun h => Nat.finite_of_card_ne_zero h, fun h =>
+  ⟨fun h ↦ Nat.finite_of_card_ne_zero h, fun h ↦
     (@AddSubgroup.finiteIndex_of_finite_quotient _ _ _ h).index_ne_zero⟩
 
 theorem absNorm_dvd_absNorm_of_le {I J : Ideal S} (h : J ≤ I) : Ideal.absNorm I ∣ Ideal.absNorm J :=
@@ -228,7 +228,7 @@ theorem absNorm_dvd_absNorm_of_le {I J : Ideal S} (h : J ≤ I) : Ideal.absNorm 
 theorem irreducible_of_irreducible_absNorm {I : Ideal S} (hI : Irreducible (Ideal.absNorm I)) :
     Irreducible I :=
   irreducible_iff.mpr
-    ⟨fun h =>
+    ⟨fun h ↦
       hI.not_isUnit (by simpa only [Ideal.isUnit_iff, Nat.isUnit_iff, absNorm_eq_one_iff] using h),
       by
       rintro a b rfl
@@ -299,7 +299,7 @@ theorem absNorm_span_singleton (r : S) :
   let b := Module.Free.chooseBasis ℤ S
   rw [← natAbs_det_equiv _ (b.equiv (basisSpanSingleton b hr) (Equiv.refl _))]
   congr
-  refine b.ext fun i => ?_
+  refine b.ext fun i ↦ ?_
   simp
 
 theorem absNorm_dvd_norm_of_mem {I : Ideal S} {x : S} (h : x ∈ I) :
@@ -346,7 +346,7 @@ theorem finite_setOf_absNorm_eq [CharZero S] (n : ℕ) :
     {I : Ideal S | Ideal.absNorm I = n}.Finite := by
   obtain hn | hn := Nat.eq_zero_or_pos n
   · simp only [hn, absNorm_eq_zero_iff, Set.setOf_eq_eq_singleton, Set.finite_singleton]
-  · let f := fun I : Ideal S => Ideal.map (Ideal.Quotient.mk (@Ideal.span S _ {↑n})) I
+  · let f := fun I : Ideal S ↦ Ideal.map (Ideal.Quotient.mk (@Ideal.span S _ {↑n})) I
     refine Set.Finite.of_finite_image (f := f) ?_ ?_
     · suffices Finite (S ⧸ @Ideal.span S _ {↑n}) by
         let g := ((↑) : Ideal (S ⧸ @Ideal.span S _ {↑n}) → Set (S ⧸ @Ideal.span S _ {↑n}))
@@ -364,7 +364,7 @@ theorem finite_setOf_absNorm_le [CharZero S] (n : ℕ) :
     {I : Ideal S | Ideal.absNorm I ≤ n}.Finite := by
   rw [show {I : Ideal S | Ideal.absNorm I ≤ n} =
     (⋃ i ∈ Set.Icc 0 n, {I : Ideal S | Ideal.absNorm I = i}) by ext; simp]
-  refine Set.Finite.biUnion (Set.finite_Icc 0 n) (fun i _ => Ideal.finite_setOf_absNorm_eq i)
+  refine Set.Finite.biUnion (Set.finite_Icc 0 n) (fun i _ ↦ Ideal.finite_setOf_absNorm_eq i)
 
 theorem finite_setOf_absNorm_le₀ [CharZero S] (n : ℕ) :
     {I : (Ideal S)⁰ | Ideal.absNorm (I : Ideal S) ≤ n}.Finite := by

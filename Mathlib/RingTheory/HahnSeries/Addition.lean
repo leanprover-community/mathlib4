@@ -40,7 +40,7 @@ section SMulZeroClass
 variable [PartialOrder Γ] {V : Type*} [Zero V] [SMulZeroClass R V]
 
 instance : SMul R (HahnSeries Γ V) :=
-  ⟨fun r x =>
+  ⟨fun r x ↦
     { coeff := r • x.coeff
       isPWO_support' := x.isPWO_support.mono (Function.support_const_smul_subset r x.coeff) }⟩
 
@@ -65,13 +65,13 @@ theorem orderTop_smul_not_lt (r : R) (x : HahnSeries Γ V) : ¬ (r • x).orderT
     exact not_top_lt
   · simp only [orderTop_of_ne hrx, orderTop_of_ne <| right_ne_zero_of_smul hrx, WithTop.coe_lt_coe]
     exact Set.IsWF.min_of_subset_not_lt_min
-      (Function.support_smul_subset_right (fun _ => r) x.coeff)
+      (Function.support_smul_subset_right (fun _ ↦ r) x.coeff)
 
 theorem order_smul_not_lt [Zero Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
     ¬ (r • x).order < x.order := by
   have hx : x ≠ 0 := right_ne_zero_of_smul h
   simp_all only [order, dite_false]
-  exact Set.IsWF.min_of_subset_not_lt_min (Function.support_smul_subset_right (fun _ => r) x.coeff)
+  exact Set.IsWF.min_of_subset_not_lt_min (Function.support_smul_subset_right (fun _ ↦ r) x.coeff)
 
 theorem le_order_smul {Γ} [Zero Γ] [LinearOrder Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
     x.order ≤ (r • x).order :=
@@ -104,11 +104,11 @@ theorem coeff_add {x y : HahnSeries Γ R} {a : Γ} : (x + y).coeff a = x.coeff a
 
 @[simp] theorem single_add (a : Γ) (r s : R) : single a (r + s) = single a r + single a s := by
   classical
-  ext : 1; exact Pi.single_add (f := fun _ => R) a r s
+  ext : 1; exact Pi.single_add (f := fun _ ↦ R) a r s
 
 instance : AddMonoid (HahnSeries Γ R) := fast_instance%
   coeff_injective.addMonoid _
-    coeff_zero' coeff_add' (fun _ _ => coeff_smul' _ _)
+    coeff_zero' coeff_add' (fun _ _ ↦ coeff_smul' _ _)
 
 theorem coeff_nsmul {x : HahnSeries Γ R} {n : ℕ} : (n • x).coeff = n • x.coeff := coeff_smul' _ _
 
@@ -178,7 +178,7 @@ lemma addOppositeEquiv_symm_leadingCoeff (x : (HahnSeries Γ R)ᵃᵒᵖ) :
   rw [← addOppositeEquiv_leadingCoeff, AddEquiv.apply_symm_apply, AddOpposite.unop_op]
 
 theorem support_add_subset {x y : HahnSeries Γ R} : support (x + y) ⊆ support x ∪ support y :=
-  fun a ha => by
+  fun a ha ↦ by
   rw [mem_support, coeff_add] at ha
   rw [Set.mem_union, mem_support, mem_support]
   contrapose! ha
@@ -325,14 +325,14 @@ variable [AddCommMonoid R]
 
 instance : AddCommMonoid (HahnSeries Γ R) :=
   { inferInstanceAs (AddMonoid (HahnSeries Γ R)) with
-    add_comm := fun x y => by
+    add_comm := fun x y ↦ by
       ext
       apply add_comm }
 
 @[simp]
 theorem coeff_sum {s : Finset α} {x : α → HahnSeries Γ R} (g : Γ) :
     (∑ i ∈ s, x i).coeff g = ∑ i ∈ s, (x i).coeff g :=
-  cons_induction rfl (fun i s his hsum => by rw [sum_cons, sum_cons, coeff_add, hsum]) s
+  cons_induction rfl (fun i s his hsum ↦ by rw [sum_cons, sum_cons, coeff_add, hsum]) s
 
 end AddCommMonoid
 
@@ -342,7 +342,7 @@ variable [AddGroup R]
 
 instance : Neg (HahnSeries Γ R) where
   neg x :=
-    { coeff := fun a => -x.coeff a
+    { coeff := fun a ↦ -x.coeff a
       isPWO_support' := by
         rw [Function.support_fun_neg]
         exact x.isPWO_support }
@@ -369,7 +369,7 @@ theorem coeff_sub {x y : HahnSeries Γ R} {a : Γ} : (x - y).coeff a = x.coeff a
 instance : AddGroup (HahnSeries Γ R) := fast_instance%
   coeff_injective.addGroup _
     coeff_zero' coeff_add' (coeff_neg') (coeff_sub')
-    (fun _ _ => coeff_smul' _ _) (fun _ _ => coeff_smul' _ _)
+    (fun _ _ ↦ coeff_smul' _ _) (fun _ _ ↦ coeff_smul' _ _)
 
 @[simp]
 theorem single_sub (a : Γ) (r s : R) : single a (r - s) = single a r - single a s :=
@@ -457,12 +457,12 @@ instance : DistribMulAction R (HahnSeries Γ V) where
 variable {S : Type*} [Monoid S] [DistribMulAction S V]
 
 instance [SMul R S] [IsScalarTower R S V] : IsScalarTower R S (HahnSeries Γ V) :=
-  ⟨fun r s a => by
+  ⟨fun r s a ↦ by
     ext
     simp⟩
 
 instance [SMulCommClass R S V] : SMulCommClass R S (HahnSeries Γ V) :=
-  ⟨fun r s a => by
+  ⟨fun r s a ↦ by
     ext
     simp [smul_comm]⟩
 
@@ -474,10 +474,10 @@ variable [PartialOrder Γ] [Semiring R] [AddCommMonoid V] [Module R V]
 
 instance : Module R (HahnSeries Γ V) :=
   { inferInstanceAs (DistribMulAction R (HahnSeries Γ V)) with
-    zero_smul := fun _ => by
+    zero_smul := fun _ ↦ by
       ext
       simp
-    add_smul := fun _ _ _ => by
+    add_smul := fun _ _ _ ↦ by
       ext
       simp [add_smul] }
 
@@ -485,14 +485,14 @@ instance : Module R (HahnSeries Γ V) :=
 @[simps]
 def single.linearMap (a : Γ) : V →ₗ[R] HahnSeries Γ V :=
   { single.addMonoidHom a with
-    map_smul' := fun r s => by
+    map_smul' := fun r s ↦ by
       ext b
       by_cases h : b = a <;> simp [h] }
 
 /-- `coeff g` as a linear map -/
 @[simps]
 def coeff.linearMap (g : Γ) : HahnSeries Γ V →ₗ[R] V :=
-  { coeff.addMonoidHom g with map_smul' := fun _ _ => rfl }
+  { coeff.addMonoidHom g with map_smul' := fun _ _ ↦ rfl }
 
 @[simp]
 protected lemma map_smul [AddCommMonoid U] [Module R U] (f : U →ₗ[R] V) {r : R}

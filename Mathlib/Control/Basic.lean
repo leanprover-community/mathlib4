@@ -40,7 +40,7 @@ def zipWithM' (f : α → β → F γ) : List α → List β → F PUnit
 variable [LawfulApplicative F]
 
 @[simp]
-theorem pure_id'_seq (x : F α) : (pure fun x => x) <*> x = x :=
+theorem pure_id'_seq (x : F α) : (pure fun x ↦ x) <*> x = x :=
   pure_id_seq x
 
 @[functor_norm]
@@ -201,7 +201,7 @@ class CommApplicative (m : Type u → Type v) [Applicative m] : Prop extends Law
   /-- Computations performed first on `a : α` and then on `b : β` are equal to those performed in
   the reverse order. -/
   commutative_prod : ∀ {α β} (a : m α) (b : m β),
-    Prod.mk <$> a <*> b = (fun (b : β) a => (a, b)) <$> b <*> a
+    Prod.mk <$> a <*> b = (fun (b : β) a ↦ (a, b)) <$> b <*> a
 
 open Functor
 
@@ -209,9 +209,9 @@ theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative
     [CommApplicative m] {α β γ} (a : m α) (b : m β) {f : α → β → γ} :
     f <$> a <*> b = flip f <$> b <*> a :=
   calc
-    f <$> a <*> b = (fun p : α × β => f p.1 p.2) <$> (Prod.mk <$> a <*> b) := by
+    f <$> a <*> b = (fun p : α × β ↦ f p.1 p.2) <$> (Prod.mk <$> a <*> b) := by
       simp only [map_seq, map_map, Function.comp_def]
-    _ = (fun b a => f a b) <$> b <*> a := by
+    _ = (fun b a ↦ f a b) <$> b <*> a := by
       rw [@CommApplicative.commutative_prod m h]
       simp [map_seq, map_map]
       rfl

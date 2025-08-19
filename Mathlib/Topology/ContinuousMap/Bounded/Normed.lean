@@ -50,7 +50,7 @@ theorem norm_eq_of_nonempty [h : Nonempty α] : ‖f‖ = sInf { C : ℝ | ∀ x
   congr
   ext
   simp only [and_iff_right_iff_imp]
-  exact fun h' => le_trans (norm_nonneg (f a)) (h' a)
+  exact fun h' ↦ le_trans (norm_nonneg (f a)) (h' a)
 
 @[simp]
 theorem norm_eq_zero_of_empty [IsEmpty α] : ‖f‖ = 0 :=
@@ -103,17 +103,17 @@ variable (f)
 /-- Norm of `const α b` is less than or equal to `‖b‖`. If `α` is nonempty,
 then it is equal to `‖b‖`. -/
 theorem norm_const_le (b : β) : ‖const α b‖ ≤ ‖b‖ :=
-  (norm_le (norm_nonneg b)).2 fun _ => le_rfl
+  (norm_le (norm_nonneg b)).2 fun _ ↦ le_rfl
 
 @[simp]
 theorem norm_const_eq [h : Nonempty α] (b : β) : ‖const α b‖ = ‖b‖ :=
-  le_antisymm (norm_const_le b) <| h.elim fun x => (const α b).norm_coe_le_norm x
+  le_antisymm (norm_const_le b) <| h.elim fun x ↦ (const α b).norm_coe_le_norm x
 
 /-- Constructing a bounded continuous function from a uniformly bounded continuous
 function taking values in a normed group. -/
 def ofNormedAddCommGroup {α : Type u} {β : Type v} [TopologicalSpace α] [SeminormedAddCommGroup β]
     (f : α → β) (Hf : Continuous f) (C : ℝ) (H : ∀ x, ‖f x‖ ≤ C) : α →ᵇ β :=
-  ⟨⟨fun n => f n, Hf⟩, ⟨_, dist_le_two_norm' H⟩⟩
+  ⟨⟨fun n ↦ f n, Hf⟩, ⟨_, dist_le_two_norm' H⟩⟩
 
 @[simp]
 theorem coe_ofNormedAddCommGroup {α : Type u} {β : Type v} [TopologicalSpace α]
@@ -159,8 +159,8 @@ instance instNormOneClass [Nonempty α] [One β] [NormOneClass β] : NormOneClas
 
 /-- The pointwise opposite of a bounded continuous function is again bounded continuous. -/
 instance : Neg (α →ᵇ β) :=
-  ⟨fun f =>
-    ofNormedAddCommGroup (-f) f.continuous.neg ‖f‖ fun x =>
+  ⟨fun f ↦
+    ofNormedAddCommGroup (-f) f.continuous.neg ‖f‖ fun x ↦
       norm_neg ((⇑f) x) ▸ f.norm_coe_le_norm x⟩
 
 @[simp]
@@ -192,8 +192,8 @@ theorem coe_zsmul (r : ℤ) (f : α →ᵇ β) : ⇑(r • f) = r • ⇑f := rf
 theorem zsmul_apply (r : ℤ) (f : α →ᵇ β) (v : α) : (r • f) v = r • f v := rfl
 
 instance instAddCommGroup : AddCommGroup (α →ᵇ β) :=
-  DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
-    fun _ _ => coe_zsmul _ _
+  DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ ↦ coe_nsmul _ _)
+    fun _ _ ↦ coe_zsmul _ _
 
 instance instSeminormedAddCommGroup : SeminormedAddCommGroup (α →ᵇ β) where
   dist_eq f g := by simp only [norm_eq, dist_eq, dist_eq_norm, sub_apply]
@@ -249,9 +249,9 @@ variable [TopologicalSpace α] [SeminormedAddCommGroup β]
 variable {f g : α →ᵇ β} {x : α} {C : ℝ}
 
 instance instNormedSpace [NormedField 𝕜] [NormedSpace 𝕜 β] : NormedSpace 𝕜 (α →ᵇ β) :=
-  ⟨fun c f => by
+  ⟨fun c f ↦ by
     refine norm_ofNormedAddCommGroup_le _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) ?_
-    exact fun x =>
+    exact fun x ↦
       norm_smul c (f x) ▸ mul_le_mul_of_nonneg_left (f.norm_coe_le_norm _) (norm_nonneg _)⟩
 
 variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 β]
@@ -265,13 +265,13 @@ Upgraded version of `ContinuousLinearMap.compLeftContinuous`, similar to `Linear
 protected def _root_.ContinuousLinearMap.compLeftContinuousBounded (g : β →L[𝕜] γ) :
     (α →ᵇ β) →L[𝕜] α →ᵇ γ :=
   LinearMap.mkContinuous
-    { toFun := fun f =>
-        ofNormedAddCommGroup (g ∘ f) (g.continuous.comp f.continuous) (‖g‖ * ‖f‖) fun x =>
+    { toFun := fun f ↦
+        ofNormedAddCommGroup (g ∘ f) (g.continuous.comp f.continuous) (‖g‖ * ‖f‖) fun x ↦
           g.le_opNorm_of_le (f.norm_coe_le_norm x)
-      map_add' := fun f g => by ext; simp
-      map_smul' := fun c f => by ext; simp } ‖g‖ fun f =>
+      map_add' := fun f g ↦ by ext; simp
+      map_smul' := fun c f ↦ by ext; simp } ‖g‖ fun f ↦
         norm_ofNormedAddCommGroup_le _ (mul_nonneg (norm_nonneg g) (norm_nonneg f))
-          (fun x => by exact g.le_opNorm_of_le (f.norm_coe_le_norm x))
+          (fun x ↦ by exact g.le_opNorm_of_le (f.norm_coe_le_norm x))
 
 @[simp]
 theorem _root_.ContinuousLinearMap.compLeftContinuousBounded_apply (g : β →L[𝕜] γ) (f : α →ᵇ β)
@@ -291,7 +291,7 @@ variable [NonUnitalSeminormedRing R]
 
 instance instNonUnitalRing : NonUnitalRing (α →ᵇ R) :=
   DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub
-    (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
+    (fun _ _ ↦ coe_nsmul _ _) fun _ _ ↦ coe_zsmul _ _
 
 instance instNonUnitalSeminormedRing : NonUnitalSeminormedRing (α →ᵇ R) where
   __ := instSeminormedAddCommGroup
@@ -331,7 +331,7 @@ instance hasNatPow : Pow (α →ᵇ R) ℕ where
       map_bounded' := by simpa [coe_npowRec] using (npowRec n f).map_bounded' }
 
 instance : NatCast (α →ᵇ R) :=
-  ⟨fun n => BoundedContinuousFunction.const _ n⟩
+  ⟨fun n ↦ BoundedContinuousFunction.const _ n⟩
 
 @[simp, norm_cast]
 theorem coe_natCast (n : ℕ) : ((n : α →ᵇ R) : α → R) = n := rfl
@@ -342,14 +342,14 @@ theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
   rfl
 
 instance : IntCast (α →ᵇ R) :=
-  ⟨fun n => BoundedContinuousFunction.const _ n⟩
+  ⟨fun n ↦ BoundedContinuousFunction.const _ n⟩
 
 @[simp, norm_cast]
 theorem coe_intCast (n : ℤ) : ((n : α →ᵇ R) : α → R) = n := rfl
 
 instance instRing : Ring (α →ᵇ R) :=
   DFunLike.coe_injective.ring _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub
-    (fun _ _ => coe_nsmul _ _) (fun _ _ => coe_zsmul _ _) (fun _ _ => coe_pow _ _) coe_natCast
+    (fun _ _ ↦ coe_nsmul _ _) (fun _ _ ↦ coe_zsmul _ _) (fun _ _ ↦ coe_pow _ _) coe_natCast
     coe_intCast
 
 instance instSeminormedRing : SeminormedRing (α →ᵇ R) where
@@ -416,11 +416,11 @@ variable {f g : α →ᵇ γ} {x : α} {c : 𝕜}
 
 /-- `BoundedContinuousFunction.const` as a `RingHom`. -/
 def C : 𝕜 →+* α →ᵇ γ where
-  toFun := fun c : 𝕜 => const α ((algebraMap 𝕜 γ) c)
-  map_one' := ext fun _ => (algebraMap 𝕜 γ).map_one
-  map_mul' _ _ := ext fun _ => (algebraMap 𝕜 γ).map_mul _ _
-  map_zero' := ext fun _ => (algebraMap 𝕜 γ).map_zero
-  map_add' _ _ := ext fun _ => (algebraMap 𝕜 γ).map_add _ _
+  toFun := fun c : 𝕜 ↦ const α ((algebraMap 𝕜 γ) c)
+  map_one' := ext fun _ ↦ (algebraMap 𝕜 γ).map_one
+  map_mul' _ _ := ext fun _ ↦ (algebraMap 𝕜 γ).map_mul _ _
+  map_zero' := ext fun _ ↦ (algebraMap 𝕜 γ).map_zero
+  map_add' _ _ := ext fun _ ↦ (algebraMap 𝕜 γ).map_add _ _
 
 instance instAlgebra : Algebra 𝕜 (α →ᵇ γ) where
   algebraMap := C
@@ -444,7 +444,7 @@ protected def AlgHom.compLeftContinuousBounded
     [NormedRing β] [NormedAlgebra 𝕜 β] [NormedRing γ] [NormedAlgebra 𝕜 γ]
     (g : β →ₐ[𝕜] γ) {C : NNReal} (hg : LipschitzWith C g) : (α →ᵇ β) →ₐ[𝕜] (α →ᵇ γ) :=
   { g.toRingHom.compLeftContinuousBounded α hg with
-    commutes' := fun _ => DFunLike.ext _ _ fun _ => g.commutes' _ }
+    commutes' := fun _ ↦ DFunLike.ext _ _ fun _ ↦ g.commutes' _ }
 
 /-- The algebra-homomorphism forgetting that a bounded continuous function is bounded. -/
 @[simps]
@@ -469,7 +469,7 @@ functions from `α` to `𝕜`. -/
 
 instance instSMul' : SMul (α →ᵇ 𝕜) (α →ᵇ β) where
   smul f g :=
-    ofNormedAddCommGroup (fun x => f x • g x) (f.continuous.smul g.continuous) (‖f‖ * ‖g‖) fun x =>
+    ofNormedAddCommGroup (fun x ↦ f x • g x) (f.continuous.smul g.continuous) (‖f‖ * ‖g‖) fun x ↦
       calc
         ‖f x • g x‖ ≤ ‖f x‖ * ‖g x‖ := norm_smul_le _ _
         _ ≤ ‖f‖ * ‖g‖ :=
@@ -477,16 +477,16 @@ instance instSMul' : SMul (α →ᵇ 𝕜) (α →ᵇ β) where
 
 instance instModule' : Module (α →ᵇ 𝕜) (α →ᵇ β) :=
   Module.ofMinimalAxioms
-      (fun c _ _ => ext fun a => smul_add (c a) _ _)
-      (fun _ _ _ => ext fun _ => add_smul _ _ _)
-      (fun _ _ _ => ext fun _ => mul_smul _ _ _)
-      (fun f => ext fun x => one_smul 𝕜 (f x))
+      (fun c _ _ ↦ ext fun a ↦ smul_add (c a) _ _)
+      (fun _ _ _ ↦ ext fun _ ↦ add_smul _ _ _)
+      (fun _ _ _ ↦ ext fun _ ↦ mul_smul _ _ _)
+      (fun f ↦ ext fun x ↦ one_smul 𝕜 (f x))
 
 /- TODO: When `NormedModule` has been added to `Analysis.Normed.Module.Basic`, this
 shows that the space of bounded continuous functions from `α` to `β` is naturally a normed
 module over the algebra of bounded continuous functions from `α` to `𝕜`. -/
 instance : IsBoundedSMul (α →ᵇ 𝕜) (α →ᵇ β) :=
-  IsBoundedSMul.of_norm_smul_le fun _ _ =>
+  IsBoundedSMul.of_norm_smul_le fun _ _ ↦
     norm_ofNormedAddCommGroup_le _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) _
 
 end NormedAlgebra
@@ -497,7 +497,7 @@ variable [TopologicalSpace α]
   [NormedAddCommGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
 
 instance instPartialOrder : PartialOrder (α →ᵇ β) :=
-  PartialOrder.lift (fun f => f.toFun) (by simp [Injective])
+  PartialOrder.lift (fun f ↦ f.toFun) (by simp [Injective])
 
 instance instSup : Max (α →ᵇ β) where
   max f g :=
@@ -540,9 +540,9 @@ instance instLattice : Lattice (α →ᵇ β) := DFunLike.coe_injective.lattice 
 instance instHasSolidNorm : HasSolidNorm (α →ᵇ β) :=
   { solid := by
       intro f g h
-      have i1 : ∀ t, ‖f t‖ ≤ ‖g t‖ := fun t => HasSolidNorm.solid (h t)
+      have i1 : ∀ t, ‖f t‖ ≤ ‖g t‖ := fun t ↦ HasSolidNorm.solid (h t)
       rw [norm_le (norm_nonneg _)]
-      exact fun t => (i1 t).trans (norm_coe_le_norm g t) }
+      exact fun t ↦ (i1 t).trans (norm_coe_le_norm g t) }
 
 instance instIsOrderedAddMonoid : IsOrderedAddMonoid (α →ᵇ β) :=
   { add_le_add_left := by
@@ -569,7 +569,7 @@ theorem nnrealPart_coeFn_eq (f : α →ᵇ ℝ) : ⇑f.nnrealPart = Real.toNNRea
 continuous `ℝ≥0`-valued function. -/
 def nnnorm (f : α →ᵇ ℝ) : α →ᵇ ℝ≥0 :=
   BoundedContinuousFunction.comp _
-    (show LipschitzWith 1 fun x : ℝ => ‖x‖₊ from lipschitzWith_one_norm) f
+    (show LipschitzWith 1 fun x : ℝ ↦ ‖x‖₊ from lipschitzWith_one_norm) f
 
 @[simp]
 theorem nnnorm_coeFn_eq (f : α →ᵇ ℝ) : ⇑f.nnnorm = NNNorm.nnnorm ∘ ⇑f := rfl

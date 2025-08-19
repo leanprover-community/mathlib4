@@ -72,7 +72,7 @@ theorem extensive_regular_generate_coherent [Preregular C] [FinitaryPreExtensive
     | of Y T hT =>
       obtain ⟨I, _, X, f, rfl, hT⟩ := hT
       apply Coverage.Saturate.transitive Y (generate (Presieve.ofArrows
-        (fun (_ : Unit) ↦ (∐ fun (i : I) => X i)) (fun (_ : Unit) ↦ Sigma.desc f)))
+        (fun (_ : Unit) ↦ (∐ fun (i : I) ↦ X i)) (fun (_ : Unit) ↦ Sigma.desc f)))
       · apply Coverage.Saturate.of
         simp only [Coverage.sup_covering, extensiveCoverage, regularCoverage, Set.mem_union,
           Set.mem_setOf_eq]

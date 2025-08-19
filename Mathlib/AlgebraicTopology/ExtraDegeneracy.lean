@@ -175,7 +175,7 @@ the monotone map which sends `0` to `0` and `i.succ` to `f.toOrderHom i`. -/
 def shift {n : ℕ} {Δ : SimplexCategory} (f : ⦋n⦌ ⟶ Δ) : ⦋n + 1⦌ ⟶ Δ :=
   SimplexCategory.Hom.mk
     { toFun := shiftFun f.toOrderHom
-      monotone' := fun i₁ i₂ hi => by
+      monotone' := fun i₁ i₂ hi ↦ by
         by_cases h₁ : i₁ = 0
         · subst h₁
           simp only [shiftFun_zero, Fin.zero_le]
@@ -247,7 +247,7 @@ namespace Arrow
 namespace AugmentedCechNerve
 
 variable {C : Type*} [Category C] (f : Arrow C)
-  [∀ n : ℕ, HasWidePullback f.right (fun _ : Fin (n + 1) => f.left) fun _ => f.hom]
+  [∀ n : ℕ, HasWidePullback f.right (fun _ : Fin (n + 1) ↦ f.left) fun _ ↦ f.hom]
   (S : SplitEpi f.hom)
 
 /-- The extra degeneracy map on the Čech nerve of a split epi. It is
@@ -257,7 +257,7 @@ noncomputable def ExtraDegeneracy.s (n : ℕ) :
     f.cechNerve.obj (op ⦋n⦌) ⟶ f.cechNerve.obj (op ⦋n + 1⦌) :=
   WidePullback.lift (WidePullback.base _)
     (Fin.cases (WidePullback.base _ ≫ S.section_) (WidePullback.π _))
-    fun i => by
+    fun i ↦ by
       cases i using Fin.cases <;> simp
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as the linter complains the LHS is not in normal form
@@ -265,7 +265,7 @@ noncomputable def ExtraDegeneracy.s (n : ℕ) :
 -- in the proofs below.
 theorem ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
     ExtraDegeneracy.s f S n ≫ WidePullback.π _ 0 =
-      @WidePullback.base _ _ _ f.right (fun _ : Fin (n + 1) => f.left) (fun _ => f.hom) _ ≫
+      @WidePullback.base _ _ _ f.right (fun _ : Fin (n + 1) ↦ f.left) (fun _ ↦ f.hom) _ ≫
         S.section_ := by
   dsimp [ExtraDegeneracy.s]
   simp
@@ -273,7 +273,7 @@ theorem ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as the linter complains the LHS is not in normal form
 theorem ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :
     ExtraDegeneracy.s f S n ≫ WidePullback.π _ i.succ =
-      @WidePullback.π _ _ _ f.right (fun _ : Fin (n + 1) => f.left) (fun _ => f.hom) _ i := by
+      @WidePullback.π _ _ _ f.right (fun _ : Fin (n + 1) ↦ f.left) (fun _ ↦ f.hom) _ i := by
   simp [ExtraDegeneracy.s]
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as the linter complains the LHS is not in normal form
@@ -284,7 +284,7 @@ theorem ExtraDegeneracy.s_comp_base (n : ℕ) :
 /-- The augmented Čech nerve associated to a split epimorphism has an extra degeneracy. -/
 noncomputable def extraDegeneracy :
     SimplicialObject.Augmented.ExtraDegeneracy f.augmentedCechNerve where
-  s' := S.section_ ≫ WidePullback.lift f.hom (fun _ => 𝟙 _) fun i => by rw [id_comp]
+  s' := S.section_ ≫ WidePullback.lift f.hom (fun _ ↦ 𝟙 _) fun i ↦ by rw [id_comp]
   s n := ExtraDegeneracy.s f S n
   s'_comp_ε := by
     dsimp

@@ -36,13 +36,13 @@ def energy : ℚ :=
   ((∑ uv ∈ P.parts.offDiag, G.edgeDensity uv.1 uv.2 ^ 2) : ℚ) / (#P.parts : ℚ) ^ 2
 
 theorem energy_nonneg : 0 ≤ P.energy G := by
-  exact div_nonneg (Finset.sum_nonneg fun _ _ => sq_nonneg _) <| sq_nonneg _
+  exact div_nonneg (Finset.sum_nonneg fun _ _ ↦ sq_nonneg _) <| sq_nonneg _
 
 theorem energy_le_one : P.energy G ≤ 1 :=
   div_le_of_le_mul₀ (sq_nonneg _) zero_le_one <|
     calc
       ∑ uv ∈ P.parts.offDiag, G.edgeDensity uv.1 uv.2 ^ 2 ≤ #P.parts.offDiag • (1 : ℚ) :=
-        sum_le_card_nsmul _ _ 1 fun _ _ =>
+        sum_le_card_nsmul _ _ 1 fun _ _ ↦
           (sq_le_one_iff₀ <| G.edgeDensity_nonneg _ _).2 <| G.edgeDensity_le_one _ _
       _ = #P.parts.offDiag := Nat.smul_one_eq_cast _
       _ ≤ _ := by

@@ -33,10 +33,10 @@ variable [∀ a b : C, HasCoproductsOfShape (a ⟶ b) D]
 @[simps]
 def evaluationLeftAdjoint (c : C) : D ⥤ C ⥤ D where
   obj d :=
-    { obj := fun t => ∐ fun _ : c ⟶ t => d
-      map := fun f => Sigma.desc fun g => (Sigma.ι fun _ => d) <| g ≫ f}
+    { obj := fun t ↦ ∐ fun _ : c ⟶ t ↦ d
+      map := fun f ↦ Sigma.desc fun g ↦ (Sigma.ι fun _ ↦ d) <| g ≫ f}
   map {_ d₂} f :=
-    { app := fun _ => Sigma.desc fun h => f ≫ Sigma.ι (fun _ => d₂) h
+    { app := fun _ ↦ Sigma.desc fun h ↦ f ≫ Sigma.ι (fun _ ↦ d₂) h
       naturality := by
         intros
         dsimp
@@ -47,10 +47,10 @@ def evaluationLeftAdjoint (c : C) : D ⥤ C ⥤ D where
 @[simps! unit_app counit_app_app]
 def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluation _ _).obj c :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun d F =>
-        { toFun := fun f => Sigma.ι (fun _ => d) (𝟙 _) ≫ f.app c
-          invFun := fun f =>
-            { app := fun _ => Sigma.desc fun h => f ≫ F.map h
+    { homEquiv := fun d F ↦
+        { toFun := fun f ↦ Sigma.ι (fun _ ↦ d) (𝟙 _) ≫ f.app c
+          invFun := fun f ↦
+            { app := fun _ ↦ Sigma.desc fun h ↦ f ≫ F.map h
               naturality := by
                 intros
                 dsimp
@@ -64,7 +64,7 @@ def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluatio
             simp only [colimit.ι_desc, Cofan.mk_ι_app, Category.assoc, ← f.naturality,
               evaluationLeftAdjoint_obj_map, colimit.ι_desc_assoc,
               Discrete.functor_obj, Cofan.mk_pt, Category.id_comp]
-          right_inv := fun f => by
+          right_inv := fun f ↦ by
             simp }
       -- This used to be automatic before https://github.com/leanprover/lean4/pull/2644
       homEquiv_naturality_right := by intros; simp }
@@ -91,10 +91,10 @@ variable [∀ a b : C, HasProductsOfShape (a ⟶ b) D]
 @[simps]
 def evaluationRightAdjoint (c : C) : D ⥤ C ⥤ D where
   obj d :=
-    { obj := fun t => ∏ᶜ fun _ : t ⟶ c => d
-      map := fun f => Pi.lift fun g => Pi.π _ <| f ≫ g }
+    { obj := fun t ↦ ∏ᶜ fun _ : t ⟶ c ↦ d
+      map := fun f ↦ Pi.lift fun g ↦ Pi.π _ <| f ≫ g }
   map f :=
-    { app := fun _ => Pi.lift fun g => Pi.π _ g ≫ f
+    { app := fun _ ↦ Pi.lift fun g ↦ Pi.π _ g ≫ f
       naturality := by
         intros
         dsimp
@@ -105,16 +105,16 @@ def evaluationRightAdjoint (c : C) : D ⥤ C ⥤ D where
 @[simps! unit_app_app counit_app]
 def evaluationAdjunctionLeft (c : C) : (evaluation _ _).obj c ⊣ evaluationRightAdjoint D c :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun F d =>
-        { toFun := fun f =>
-            { app := fun _ => Pi.lift fun g => F.map g ≫ f
+    { homEquiv := fun F d ↦
+        { toFun := fun f ↦
+            { app := fun _ ↦ Pi.lift fun g ↦ F.map g ≫ f
               naturality := by
                 intros
                 dsimp
                 ext
                 simp }
-          invFun := fun f => f.app _ ≫ Pi.π _ (𝟙 _)
-          left_inv := fun f => by simp
+          invFun := fun f ↦ f.app _ ≫ Pi.π _ (𝟙 _)
+          left_inv := fun f ↦ by simp
           right_inv := by
             intro f
             ext x

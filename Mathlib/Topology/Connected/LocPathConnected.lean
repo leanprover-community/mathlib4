@@ -50,7 +50,7 @@ section LocPathConnectedSpace
 neighborhoods form a neighborhood basis. -/
 class LocPathConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- Each neighborhood filter has a basis of path-connected neighborhoods. -/
-  path_connected_basis : ∀ x : X, (𝓝 x).HasBasis (fun s : Set X => s ∈ 𝓝 x ∧ IsPathConnected s) id
+  path_connected_basis : ∀ x : X, (𝓝 x).HasBasis (fun s : Set X ↦ s ∈ 𝓝 x ∧ IsPathConnected s) id
 
 export LocPathConnectedSpace (path_connected_basis)
 
@@ -104,7 +104,7 @@ theorem pathComponent_eq_connectedComponent (x : X) : pathComponent x = connecte
     (IsClopen.pathComponent x).connectedComponent_subset (mem_pathComponent_self _)
 
 theorem pathConnected_subset_basis {U : Set X} (h : IsOpen U) (hx : x ∈ U) :
-    (𝓝 x).HasBasis (fun s : Set X => s ∈ 𝓝 x ∧ IsPathConnected s ∧ s ⊆ U) id :=
+    (𝓝 x).HasBasis (fun s : Set X ↦ s ∈ 𝓝 x ∧ IsPathConnected s ∧ s ⊆ U) id :=
   (path_connected_basis x).hasBasis_self_subset (IsOpen.mem_nhds h hx)
 
 theorem isOpen_isPathConnected_basis (x : X) :

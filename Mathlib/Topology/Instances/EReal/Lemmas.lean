@@ -42,20 +42,20 @@ theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℝ → EReal) :=
 
 @[norm_cast]
 theorem tendsto_coe {α : Type*} {f : Filter α} {m : α → ℝ} {a : ℝ} :
-    Tendsto (fun a => (m a : EReal)) f (𝓝 ↑a) ↔ Tendsto m f (𝓝 a) :=
+    Tendsto (fun a ↦ (m a : EReal)) f (𝓝 ↑a) ↔ Tendsto m f (𝓝 a) :=
   isEmbedding_coe.tendsto_nhds_iff.symm
 
 theorem _root_.continuous_coe_real_ereal : Continuous ((↑) : ℝ → EReal) :=
   isEmbedding_coe.continuous
 
-theorem continuous_coe_iff {f : α → ℝ} : (Continuous fun a => (f a : EReal)) ↔ Continuous f :=
+theorem continuous_coe_iff {f : α → ℝ} : (Continuous fun a ↦ (f a : EReal)) ↔ Continuous f :=
   isEmbedding_coe.continuous_iff.symm
 
 theorem nhds_coe {r : ℝ} : 𝓝 (r : EReal) = (𝓝 r).map (↑) :=
   (isOpenEmbedding_coe.map_nhds_eq r).symm
 
 theorem nhds_coe_coe {r p : ℝ} :
-    𝓝 ((r : EReal), (p : EReal)) = (𝓝 (r, p)).map fun p : ℝ × ℝ => (↑p.1, ↑p.2) :=
+    𝓝 ((r : EReal), (p : EReal)) = (𝓝 (r, p)).map fun p : ℝ × ℝ ↦ (↑p.1, ↑p.2) :=
   ((isOpenEmbedding_coe.prodMap isOpenEmbedding_coe).map_nhds_eq (r, p)).symm
 
 theorem tendsto_toReal {a : EReal} (ha : a ≠ ⊤) (h'a : a ≠ ⊥) :
@@ -64,7 +64,7 @@ theorem tendsto_toReal {a : EReal} (ha : a ≠ ⊤) (h'a : a ≠ ⊥) :
   rw [nhds_coe, tendsto_map'_iff]
   exact tendsto_id
 
-theorem continuousOn_toReal : ContinuousOn EReal.toReal ({⊥, ⊤}ᶜ : Set EReal) := fun _a ha =>
+theorem continuousOn_toReal : ContinuousOn EReal.toReal ({⊥, ⊤}ᶜ : Set EReal) := fun _a ha ↦
   ContinuousAt.continuousWithinAt (tendsto_toReal (mt Or.inr ha) (mt Or.inl ha))
 
 /-- The set of finite `EReal` numbers is homeomorphic to `ℝ`. -/
@@ -84,14 +84,14 @@ theorem isClosedEmbedding_coe_ennreal : IsClosedEmbedding ((↑) : ℝ≥0∞ �
 
 @[norm_cast]
 theorem tendsto_coe_ennreal {α : Type*} {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :
-    Tendsto (fun a => (m a : EReal)) f (𝓝 ↑a) ↔ Tendsto m f (𝓝 a) :=
+    Tendsto (fun a ↦ (m a : EReal)) f (𝓝 ↑a) ↔ Tendsto m f (𝓝 a) :=
   isEmbedding_coe_ennreal.tendsto_nhds_iff.symm
 
 theorem _root_.continuous_coe_ennreal_ereal : Continuous ((↑) : ℝ≥0∞ → EReal) :=
   isEmbedding_coe_ennreal.continuous
 
 theorem continuous_coe_ennreal_iff {f : α → ℝ≥0∞} :
-    (Continuous fun a => (f a : EReal)) ↔ Continuous f :=
+    (Continuous fun a ↦ (f a : EReal)) ↔ Continuous f :=
   isEmbedding_coe_ennreal.continuous_iff.symm
 
 /-! ### Neighborhoods of infinity -/
@@ -100,7 +100,7 @@ theorem nhds_top : 𝓝 (⊤ : EReal) = ⨅ (a) (_ : a ≠ ⊤), 𝓟 (Ioi a) :=
   nhds_top_order.trans <| by simp only [lt_top_iff_ne_top]
 
 nonrec theorem nhds_top_basis : (𝓝 (⊤ : EReal)).HasBasis (fun _ : ℝ ↦ True) (Ioi ·) := by
-  refine (nhds_top_basis (α := EReal)).to_hasBasis (fun x hx => ?_)
+  refine (nhds_top_basis (α := EReal)).to_hasBasis (fun x hx ↦ ?_)
     fun _ _ ↦ ⟨_, coe_lt_top _, Subset.rfl⟩
   rcases exists_rat_btwn_of_lt hx with ⟨y, hxy, -⟩
   exact ⟨_, trivial, Ioi_subset_Ioi hxy.le⟩
@@ -118,7 +118,7 @@ theorem nhds_bot : 𝓝 (⊥ : EReal) = ⨅ (a) (_ : a ≠ ⊥), 𝓟 (Iio a) :=
   nhds_bot_order.trans <| by simp only [bot_lt_iff_ne_bot]
 
 theorem nhds_bot_basis : (𝓝 (⊥ : EReal)).HasBasis (fun _ : ℝ ↦ True) (Iio ·) := by
-  refine (_root_.nhds_bot_basis (α := EReal)).to_hasBasis (fun x hx => ?_)
+  refine (_root_.nhds_bot_basis (α := EReal)).to_hasBasis (fun x hx ↦ ?_)
     fun _ _ ↦ ⟨_, bot_lt_coe _, Subset.rfl⟩
   rcases exists_rat_btwn_of_lt hx with ⟨y, -, hxy⟩
   exact ⟨_, trivial, Iio_subset_Iio hxy.le⟩
@@ -210,7 +210,7 @@ lemma continuous_toENNReal : Continuous EReal.toENNReal := by
 @[fun_prop]
 lemma _root_.Continuous.ereal_toENNReal {α : Type*} [TopologicalSpace α] {f : α → EReal}
     (hf : Continuous f) :
-    Continuous fun x => (f x).toENNReal :=
+    Continuous fun x ↦ (f x).toENNReal :=
   continuous_toENNReal.comp hf
 
 @[deprecated (since := "2025-03-05")] alias _root_.Continous.ereal_toENNReal :=
@@ -219,19 +219,19 @@ lemma _root_.Continuous.ereal_toENNReal {α : Type*} [TopologicalSpace α] {f : 
 @[fun_prop]
 lemma _root_.ContinuousOn.ereal_toENNReal {α : Type*} [TopologicalSpace α] {s : Set α}
     {f : α → EReal} (hf : ContinuousOn f s) :
-    ContinuousOn (fun x => (f x).toENNReal) s :=
+    ContinuousOn (fun x ↦ (f x).toENNReal) s :=
   continuous_toENNReal.comp_continuousOn hf
 
 @[fun_prop]
 lemma _root_.ContinuousWithinAt.ereal_toENNReal {α : Type*} [TopologicalSpace α] {f : α → EReal}
     {s : Set α} {x : α} (hf : ContinuousWithinAt f s x) :
-    ContinuousWithinAt (fun x => (f x).toENNReal) s x :=
+    ContinuousWithinAt (fun x ↦ (f x).toENNReal) s x :=
   continuous_toENNReal.continuousAt.comp_continuousWithinAt hf
 
 @[fun_prop]
 lemma _root_.ContinuousAt.ereal_toENNReal {α : Type*} [TopologicalSpace α] {f : α → EReal}
     {x : α} (hf : ContinuousAt f x) :
-    ContinuousAt (fun x => (f x).toENNReal) x :=
+    ContinuousAt (fun x ↦ (f x).toENNReal) x :=
   continuous_toENNReal.continuousAt.comp hf
 
 /-! ### Infs and Sups -/
@@ -358,41 +358,41 @@ end LimInfSup
 /-! ### Continuity of addition -/
 
 theorem continuousAt_add_coe_coe (a b : ℝ) :
-    ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (a, b) := by
+    ContinuousAt (fun p : EReal × EReal ↦ p.1 + p.2) (a, b) := by
   simp only [ContinuousAt, nhds_coe_coe, ← coe_add, tendsto_map'_iff, Function.comp_def,
     tendsto_coe, tendsto_add]
 
 theorem continuousAt_add_top_coe (a : ℝ) :
-    ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (⊤, a) := by
+    ContinuousAt (fun p : EReal × EReal ↦ p.1 + p.2) (⊤, a) := by
   simp only [ContinuousAt, tendsto_nhds_top_iff_real, top_add_coe]
   refine fun r ↦ ((lt_mem_nhds (coe_lt_top (r - (a - 1)))).prod_nhds
     (lt_mem_nhds <| EReal.coe_lt_coe_iff.2 <| sub_one_lt _)).mono fun _ h ↦ ?_
   simpa only [← coe_add, _root_.sub_add_cancel] using add_lt_add h.1 h.2
 
 theorem continuousAt_add_coe_top (a : ℝ) :
-    ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (a, ⊤) := by
+    ContinuousAt (fun p : EReal × EReal ↦ p.1 + p.2) (a, ⊤) := by
   simpa only [add_comm, Function.comp_def, ContinuousAt, Prod.swap]
     using Tendsto.comp (continuousAt_add_top_coe a) (continuous_swap.tendsto ((a : EReal), ⊤))
 
-theorem continuousAt_add_top_top : ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (⊤, ⊤) := by
+theorem continuousAt_add_top_top : ContinuousAt (fun p : EReal × EReal ↦ p.1 + p.2) (⊤, ⊤) := by
   simp only [ContinuousAt, tendsto_nhds_top_iff_real, top_add_top]
   refine fun r ↦ ((lt_mem_nhds (coe_lt_top 0)).prod_nhds
     (lt_mem_nhds <| coe_lt_top r)).mono fun _ h ↦ ?_
   simpa only [coe_zero, zero_add] using add_lt_add h.1 h.2
 
 theorem continuousAt_add_bot_coe (a : ℝ) :
-    ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (⊥, a) := by
+    ContinuousAt (fun p : EReal × EReal ↦ p.1 + p.2) (⊥, a) := by
   simp only [ContinuousAt, tendsto_nhds_bot_iff_real, bot_add]
   refine fun r ↦ ((gt_mem_nhds (bot_lt_coe (r - (a + 1)))).prod_nhds
     (gt_mem_nhds <| EReal.coe_lt_coe_iff.2 <| lt_add_one _)).mono fun _ h ↦ ?_
   simpa only [← coe_add, _root_.sub_add_cancel] using add_lt_add h.1 h.2
 
 theorem continuousAt_add_coe_bot (a : ℝ) :
-    ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (a, ⊥) := by
+    ContinuousAt (fun p : EReal × EReal ↦ p.1 + p.2) (a, ⊥) := by
   simpa only [add_comm, Function.comp_def, ContinuousAt, Prod.swap]
     using Tendsto.comp (continuousAt_add_bot_coe a) (continuous_swap.tendsto ((a : EReal), ⊥))
 
-theorem continuousAt_add_bot_bot : ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (⊥, ⊥) := by
+theorem continuousAt_add_bot_bot : ContinuousAt (fun p : EReal × EReal ↦ p.1 + p.2) (⊥, ⊥) := by
   simp only [ContinuousAt, tendsto_nhds_bot_iff_real, bot_add]
   refine fun r ↦ ((gt_mem_nhds (bot_lt_coe 0)).prod_nhds
     (gt_mem_nhds <| bot_lt_coe r)).mono fun _ h ↦ ?_
@@ -401,7 +401,7 @@ theorem continuousAt_add_bot_bot : ContinuousAt (fun p : EReal × EReal => p.1 +
 /-- The addition on `EReal` is continuous except where it doesn't make sense (i.e., at `(⊥, ⊤)`
 and at `(⊤, ⊥)`). -/
 theorem continuousAt_add {p : EReal × EReal} (h : p.1 ≠ ⊤ ∨ p.2 ≠ ⊥) (h' : p.1 ≠ ⊥ ∨ p.2 ≠ ⊤) :
-    ContinuousAt (fun p : EReal × EReal => p.1 + p.2) p := by
+    ContinuousAt (fun p : EReal × EReal ↦ p.1 + p.2) p := by
   rcases p with ⟨x, y⟩
   induction x <;> induction y
   · exact continuousAt_add_bot_bot
@@ -550,8 +550,8 @@ protected theorem Tendsto.mul {f : Filter α} {ma : α → EReal} {mb : α → E
 protected theorem Tendsto.const_mul {f : Filter α} {m : α → EReal} {a b : EReal}
     (hm : Tendsto m f (𝓝 b)) (h₁ : a ≠ ⊥ ∨ b ≠ 0) (h₂ : a ≠ ⊤ ∨ b ≠ 0) :
     Tendsto (fun b ↦ a * m b) f (𝓝 (a * b)) :=
-  by_cases (fun (this : a = 0) => by simp [this, tendsto_const_nhds])
-    fun ha : a ≠ 0 => EReal.Tendsto.mul tendsto_const_nhds hm (Or.inl ha) (Or.inl ha) h₁ h₂
+  by_cases (fun (this : a = 0) ↦ by simp [this, tendsto_const_nhds])
+    fun ha : a ≠ 0 ↦ EReal.Tendsto.mul tendsto_const_nhds hm (Or.inl ha) (Or.inl ha) h₁ h₂
 
 protected theorem Tendsto.mul_const {f : Filter α} {m : α → EReal} {a b : EReal}
     (hm : Tendsto m f (𝓝 a)) (h₁ : a ≠ 0 ∨ b ≠ ⊥) (h₂ : a ≠ 0 ∨ b ≠ ⊤) :

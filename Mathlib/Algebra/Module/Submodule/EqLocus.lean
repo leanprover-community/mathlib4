@@ -43,7 +43,7 @@ variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
 def eqLocus (f g : F) : Submodule R M :=
   { (f : M →+ M₂).eqLocusM g with
     carrier := { x | f x = g x }
-    smul_mem' := fun {r} {x} (hx : _ = _) => show _ = _ by
+    smul_mem' := fun {r} {x} (hx : _ = _) ↦ show _ = _ by
       -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 changed `map_smulₛₗ` into `map_smulₛₗ _`
       simpa only [map_smulₛₗ _] using congr_arg (τ₁₂ r • ·) hx }
 
@@ -89,7 +89,7 @@ variable {τ₁₂ : R →+* R₂}
 open Submodule
 
 theorem eqLocus_eq_ker_sub (f g : M →ₛₗ[τ₁₂] M₂) : eqLocus f g = ker (f - g) :=
-  SetLike.ext fun _ => sub_eq_zero.symm
+  SetLike.ext fun _ ↦ sub_eq_zero.symm
 
 end Ring
 

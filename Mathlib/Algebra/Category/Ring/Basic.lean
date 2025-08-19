@@ -65,7 +65,7 @@ instance : Category SemiRingCat where
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-instance : ConcreteCategory.{u} SemiRingCat (fun R S => R →+* S) where
+instance : ConcreteCategory.{u} SemiRingCat (fun R S ↦ R →+* S) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
 
@@ -215,7 +215,7 @@ instance : Category RingCat where
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-instance : ConcreteCategory.{u} RingCat (fun R S => R →+* S) where
+instance : ConcreteCategory.{u} RingCat (fun R S ↦ R →+* S) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
 
@@ -377,7 +377,7 @@ instance : Category CommSemiRingCat where
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-instance : ConcreteCategory.{u} CommSemiRingCat (fun R S => R →+* S) where
+instance : ConcreteCategory.{u} CommSemiRingCat (fun R S ↦ R →+* S) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
 
@@ -538,7 +538,7 @@ instance : Category CommRingCat where
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-instance : ConcreteCategory.{u} CommRingCat (fun R S => R →+* S) where
+instance : ConcreteCategory.{u} CommRingCat (fun R S ↦ R →+* S) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
 

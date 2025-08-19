@@ -38,22 +38,22 @@ attribute [local instance] subtype_val_mono
 @[simps]
 noncomputable def Types.monoOverEquivalenceSet (α : Type u) : MonoOver α ≌ Set α where
   functor :=
-    { obj := fun f => Set.range f.1.hom
-      map := fun {f g} t =>
+    { obj := fun f ↦ Set.range f.1.hom
+      map := fun {f g} t ↦
         homOfLE
           (by
             rintro a ⟨x, rfl⟩
             exact ⟨t.1 x, congr_fun t.w x⟩) }
   inverse :=
-    { obj := fun s => MonoOver.mk' (Subtype.val : s → α)
-      map := fun {s t} b => MonoOver.homMk (fun w => ⟨w.1, Set.mem_of_mem_of_subset w.2 b.le⟩) }
+    { obj := fun s ↦ MonoOver.mk' (Subtype.val : s → α)
+      map := fun {s t} b ↦ MonoOver.homMk (fun w ↦ ⟨w.1, Set.mem_of_mem_of_subset w.2 b.le⟩) }
   unitIso :=
-    NatIso.ofComponents fun f =>
+    NatIso.ofComponents fun f ↦
       MonoOver.isoMk (Equiv.ofInjective f.1.hom ((mono_iff_injective _).mp f.2)).toIso
-  counitIso := NatIso.ofComponents fun _ => eqToIso Subtype.range_val
+  counitIso := NatIso.ofComponents fun _ ↦ eqToIso Subtype.range_val
 
 instance : WellPowered.{u} (Type u) :=
-  wellPowered_of_essentiallySmall_monoOver fun α =>
+  wellPowered_of_essentiallySmall_monoOver fun α ↦
     EssentiallySmall.mk' (Types.monoOverEquivalenceSet α)
 
 /-- For `α : Type u`, `Subobject α` is order isomorphic to `Set α`.

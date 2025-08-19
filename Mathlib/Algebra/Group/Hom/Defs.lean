@@ -582,15 +582,15 @@ end MonoidHom
 
 @[to_additive (attr := simp)]
 theorem OneHom.mk_coe [One M] [One N] (f : OneHom M N) (h1) : OneHom.mk f h1 = f :=
-  OneHom.ext fun _ => rfl
+  OneHom.ext fun _ ↦ rfl
 
 @[to_additive (attr := simp)]
 theorem MulHom.mk_coe [Mul M] [Mul N] (f : M →ₙ* N) (hmul) : MulHom.mk f hmul = f :=
-  MulHom.ext fun _ => rfl
+  MulHom.ext fun _ ↦ rfl
 
 @[to_additive (attr := simp)]
 theorem MonoidHom.mk_coe [MulOneClass M] [MulOneClass N] (f : M →* N) (hmul) :
-    MonoidHom.mk f hmul = f := MonoidHom.ext fun _ => rfl
+    MonoidHom.mk f hmul = f := MonoidHom.ext fun _ ↦ rfl
 
 end Coes
 
@@ -786,36 +786,36 @@ theorem MonoidHom.comp_assoc {Q : Type*} [MulOneClass M] [MulOneClass N] [MulOne
 @[to_additive]
 theorem OneHom.cancel_right [One M] [One N] [One P] {g₁ g₂ : OneHom N P} {f : OneHom M N}
     (hf : Function.Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => OneHom.ext <| hf.forall.2 (DFunLike.ext_iff.1 h), fun h => h ▸ rfl⟩
+  ⟨fun h ↦ OneHom.ext <| hf.forall.2 (DFunLike.ext_iff.1 h), fun h ↦ h ▸ rfl⟩
 
 @[to_additive]
 theorem MulHom.cancel_right [Mul M] [Mul N] [Mul P] {g₁ g₂ : N →ₙ* P} {f : M →ₙ* N}
     (hf : Function.Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => MulHom.ext <| hf.forall.2 (DFunLike.ext_iff.1 h), fun h => h ▸ rfl⟩
+  ⟨fun h ↦ MulHom.ext <| hf.forall.2 (DFunLike.ext_iff.1 h), fun h ↦ h ▸ rfl⟩
 
 @[to_additive]
 theorem MonoidHom.cancel_right [MulOneClass M] [MulOneClass N] [MulOneClass P]
     {g₁ g₂ : N →* P} {f : M →* N} (hf : Function.Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => MonoidHom.ext <| hf.forall.2 (DFunLike.ext_iff.1 h), fun h => h ▸ rfl⟩
+  ⟨fun h ↦ MonoidHom.ext <| hf.forall.2 (DFunLike.ext_iff.1 h), fun h ↦ h ▸ rfl⟩
 
 @[to_additive]
 theorem OneHom.cancel_left [One M] [One N] [One P] {g : OneHom N P} {f₁ f₂ : OneHom M N}
     (hg : Function.Injective g) : g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => OneHom.ext fun x => hg <| by rw [← OneHom.comp_apply, h, OneHom.comp_apply],
-    fun h => h ▸ rfl⟩
+  ⟨fun h ↦ OneHom.ext fun x ↦ hg <| by rw [← OneHom.comp_apply, h, OneHom.comp_apply],
+    fun h ↦ h ▸ rfl⟩
 
 @[to_additive]
 theorem MulHom.cancel_left [Mul M] [Mul N] [Mul P] {g : N →ₙ* P} {f₁ f₂ : M →ₙ* N}
     (hg : Function.Injective g) : g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => MulHom.ext fun x => hg <| by rw [← MulHom.comp_apply, h, MulHom.comp_apply],
-    fun h => h ▸ rfl⟩
+  ⟨fun h ↦ MulHom.ext fun x ↦ hg <| by rw [← MulHom.comp_apply, h, MulHom.comp_apply],
+    fun h ↦ h ▸ rfl⟩
 
 @[to_additive]
 theorem MonoidHom.cancel_left [MulOneClass M] [MulOneClass N] [MulOneClass P]
     {g : N →* P} {f₁ f₂ : M →* N} (hg : Function.Injective g) : g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => MonoidHom.ext fun x => hg <| by rw [← MonoidHom.comp_apply, h, MonoidHom.comp_apply],
-    fun h => h ▸ rfl⟩
+  ⟨fun h ↦ MonoidHom.ext fun x ↦ hg <| by rw [← MonoidHom.comp_apply, h, MonoidHom.comp_apply],
+    fun h ↦ h ▸ rfl⟩
 
 section
 
@@ -833,27 +833,27 @@ end
 
 @[to_additive (attr := simp)]
 theorem OneHom.comp_id [One M] [One N] (f : OneHom M N) : f.comp (OneHom.id M) = f :=
-  OneHom.ext fun _ => rfl
+  OneHom.ext fun _ ↦ rfl
 
 @[to_additive (attr := simp)]
 theorem MulHom.comp_id [Mul M] [Mul N] (f : M →ₙ* N) : f.comp (MulHom.id M) = f :=
-  MulHom.ext fun _ => rfl
+  MulHom.ext fun _ ↦ rfl
 
 @[to_additive (attr := simp)]
 theorem MonoidHom.comp_id [MulOneClass M] [MulOneClass N] (f : M →* N) :
-    f.comp (MonoidHom.id M) = f := MonoidHom.ext fun _ => rfl
+    f.comp (MonoidHom.id M) = f := MonoidHom.ext fun _ ↦ rfl
 
 @[to_additive (attr := simp)]
 theorem OneHom.id_comp [One M] [One N] (f : OneHom M N) : (OneHom.id N).comp f = f :=
-  OneHom.ext fun _ => rfl
+  OneHom.ext fun _ ↦ rfl
 
 @[to_additive (attr := simp)]
 theorem MulHom.id_comp [Mul M] [Mul N] (f : M →ₙ* N) : (MulHom.id N).comp f = f :=
-  MulHom.ext fun _ => rfl
+  MulHom.ext fun _ ↦ rfl
 
 @[to_additive (attr := simp)]
 theorem MonoidHom.id_comp [MulOneClass M] [MulOneClass N] (f : M →* N) :
-    (MonoidHom.id N).comp f = f := MonoidHom.ext fun _ => rfl
+    (MonoidHom.id N).comp f = f := MonoidHom.ext fun _ ↦ rfl
 
 @[to_additive]
 protected theorem MonoidHom.map_pow [Monoid M] [Monoid N] (f : M →* N) (a : M) (n : ℕ) :
@@ -959,17 +959,17 @@ end End
 
 /-- `1` is the homomorphism sending all elements to `1`. -/
 @[to_additive /-- `0` is the homomorphism sending all elements to `0`. -/]
-instance [One M] [One N] : One (OneHom M N) := ⟨⟨fun _ => 1, rfl⟩⟩
+instance [One M] [One N] : One (OneHom M N) := ⟨⟨fun _ ↦ 1, rfl⟩⟩
 
 /-- `1` is the multiplicative homomorphism sending all elements to `1`. -/
 @[to_additive /-- `0` is the additive homomorphism sending all elements to `0` -/]
 instance [Mul M] [MulOneClass N] : One (M →ₙ* N) :=
-  ⟨⟨fun _ => 1, fun _ _ => (one_mul 1).symm⟩⟩
+  ⟨⟨fun _ ↦ 1, fun _ _ ↦ (one_mul 1).symm⟩⟩
 
 /-- `1` is the monoid homomorphism sending all elements to `1`. -/
 @[to_additive /-- `0` is the additive monoid homomorphism sending all elements to `0`. -/]
 instance [MulOneClass M] [MulOneClass N] : One (M →* N) :=
-  ⟨⟨⟨fun _ => 1, rfl⟩, fun _ _ => (one_mul 1).symm⟩⟩
+  ⟨⟨⟨fun _ ↦ 1, rfl⟩, fun _ _ ↦ (one_mul 1).symm⟩⟩
 
 @[to_additive (attr := simp)]
 theorem OneHom.one_apply [One M] [One N] (x : M) : (1 : OneHom M N) x = 1 := rfl

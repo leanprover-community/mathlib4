@@ -36,11 +36,11 @@ variable (S : ShortComplex (CochainComplex C ℤ))
 /-- The `1`-cocycle attached to a degreewise split short exact sequence of cochain complexes. -/
 def cocycleOfDegreewiseSplit : Cocycle S.X₃ S.X₁ 1 :=
   Cocycle.mk
-    (Cochain.mk (fun p q _ => (σ p).s ≫ S.X₂.d p q ≫ (σ q).r)) 2 (by omega) (by
+    (Cochain.mk (fun p q _ ↦ (σ p).s ≫ S.X₂.d p q ≫ (σ q).r)) 2 (by omega) (by
       ext p _ rfl
       have := mono_of_mono_fac (σ (p + 2)).f_r
-      have r_f := fun n => (σ n).r_f
-      have s_g := fun n => (σ n).s_g
+      have r_f := fun n ↦ (σ n).r_f
+      have s_g := fun n ↦ (σ n).s_g
       dsimp at this r_f s_g ⊢
       rw [δ_v 1 2 (by omega) _ p (p + 2) (by omega) (p + 1) (p + 1)
         (by omega) (by omega), Cochain.mk_v, Cochain.mk_v,
@@ -116,7 +116,7 @@ noncomputable def mappingConeHomOfDegreewiseSplitXIso (p q : ℤ) (hpq : p + 1 =
 @[simps!]
 noncomputable def mappingConeHomOfDegreewiseSplitIso :
     mappingCone (homOfDegreewiseSplit S σ) ≅ S.X₂⟦(1 : ℤ)⟧ :=
-  Hom.isoOfComponents (fun p => mappingConeHomOfDegreewiseSplitXIso S σ p _ rfl) (by
+  Hom.isoOfComponents (fun p ↦ mappingConeHomOfDegreewiseSplitXIso S σ p _ rfl) (by
     rintro p _ rfl
     have r_f := (σ (p + 1 + 1)).r_f
     have s_g := (σ (p + 1)).s_g

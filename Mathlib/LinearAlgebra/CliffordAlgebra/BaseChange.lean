@@ -45,7 +45,7 @@ variable (A)
 def ofBaseChangeAux (Q : QuadraticForm R V) :
     CliffordAlgebra Q →ₐ[R] CliffordAlgebra (Q.baseChange A) :=
   CliffordAlgebra.lift Q <| by
-    refine ⟨(ι (Q.baseChange A)).restrictScalars R ∘ₗ TensorProduct.mk R A V 1, fun v => ?_⟩
+    refine ⟨(ι (Q.baseChange A)).restrictScalars R ∘ₗ TensorProduct.mk R A V 1, fun v ↦ ?_⟩
     refine (CliffordAlgebra.ι_sq_scalar (Q.baseChange A) (1 ⊗ₜ v)).trans ?_
     rw [QuadraticForm.baseChange_tmul, one_mul, ← Algebra.algebraMap_eq_smul_one,
       ← IsScalarTower.algebraMap_apply]
@@ -59,7 +59,7 @@ module. -/
 def ofBaseChange (Q : QuadraticForm R V) :
     A ⊗[R] CliffordAlgebra Q →ₐ[A] CliffordAlgebra (Q.baseChange A) :=
   Algebra.TensorProduct.lift (Algebra.ofId _ _) (ofBaseChangeAux A Q)
-    fun _a _x => Algebra.commutes _ _
+    fun _a _x ↦ Algebra.commutes _ _
 
 @[simp] theorem ofBaseChange_tmul_ι (Q : QuadraticForm R V) (z : A) (v : V) :
     ofBaseChange A Q (z ⊗ₜ ι Q v) = ι (Q.baseChange A) (z ⊗ₜ v) := by

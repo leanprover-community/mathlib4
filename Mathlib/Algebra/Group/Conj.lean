@@ -46,16 +46,16 @@ theorem IsConj.pow {a b : α} (n : ℕ) : IsConj a b → IsConj (a ^ n) (b ^ n)
 
 @[simp]
 theorem isConj_iff_eq {α : Type*} [CommMonoid α] {a b : α} : IsConj a b ↔ a = b :=
-  ⟨fun ⟨c, hc⟩ => by
+  ⟨fun ⟨c, hc⟩ ↦ by
     rw [SemiconjBy, mul_comm, ← Units.mul_inv_eq_iff_eq_mul, mul_assoc, c.mul_inv, mul_one] at hc
-    exact hc, fun h => by rw [h]⟩
+    exact hc, fun h ↦ by rw [h]⟩
 
 protected theorem MonoidHom.map_isConj (f : α →* β) {a b : α} : IsConj a b → IsConj (f a) (f b)
   | ⟨c, hc⟩ => ⟨Units.map f c, by rw [Units.coe_map, SemiconjBy, ← f.map_mul, hc.eq, f.map_mul]⟩
 
 @[simp]
 theorem isConj_one_right {a : α} : IsConj 1 a ↔ a = 1 := by
-  refine ⟨fun ⟨c, h⟩ => ?_, fun h => by rw [h]⟩
+  refine ⟨fun ⟨c, h⟩ ↦ ?_, fun h ↦ by rw [h]⟩
   rw [SemiconjBy, mul_one] at h
   exact c.isUnit.mul_eq_right.mp h.symm
 
@@ -73,7 +73,7 @@ variable [Group α]
 
 @[simp]
 theorem isConj_iff {a b : α} : IsConj a b ↔ ∃ c : α, c * a * c⁻¹ = b :=
-  ⟨fun ⟨c, hc⟩ => ⟨c, mul_inv_eq_iff_eq_mul.2 hc⟩, fun ⟨c, hc⟩ =>
+  ⟨fun ⟨c, hc⟩ ↦ ⟨c, mul_inv_eq_iff_eq_mul.2 hc⟩, fun ⟨c, hc⟩ ↦
     ⟨⟨c, c⁻¹, mul_inv_cancel c, inv_mul_cancel c⟩, mul_inv_eq_iff_eq_mul.1 hc⟩⟩
 
 theorem conj_inv {a b : α} : (b * a * b⁻¹)⁻¹ = b * a⁻¹ * b⁻¹ :=
@@ -96,7 +96,7 @@ theorem conj_zpow {i : ℤ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻
   · simp only [zpow_negSucc, conj_pow, mul_inv_rev, inv_inv]
     rw [mul_assoc]
 
-theorem conj_injective {x : α} : Function.Injective fun g : α => x * g * x⁻¹ :=
+theorem conj_injective {x : α} : Function.Injective fun g : α ↦ x * g * x⁻¹ :=
   (MulAut.conj x).injective
 
 end Group
@@ -139,10 +139,10 @@ theorem quot_mk_eq_mk (a : α) : Quot.mk Setoid.r a = ConjClasses.mk a :=
   rfl
 
 theorem forall_isConj {p : ConjClasses α → Prop} : (∀ a, p a) ↔ ∀ a, p (ConjClasses.mk a) :=
-  Iff.intro (fun h _ => h _) fun h a => Quotient.inductionOn a h
+  Iff.intro (fun h _ ↦ h _) fun h a ↦ Quotient.inductionOn a h
 
 theorem mk_surjective : Function.Surjective (@ConjClasses.mk α _) :=
-  forall_isConj.2 fun a => ⟨a, rfl⟩
+  forall_isConj.2 fun a ↦ ⟨a, rfl⟩
 
 instance : One (ConjClasses α) :=
   ⟨⟦1⟧⟩
@@ -155,7 +155,7 @@ theorem exists_rep (a : ConjClasses α) : ∃ a0 : α, ConjClasses.mk a0 = a :=
 
 /-- A `MonoidHom` maps conjugacy classes of one group to conjugacy classes of another. -/
 def map (f : α →* β) : ConjClasses α → ConjClasses β :=
-  Quotient.lift (ConjClasses.mk ∘ f) fun _ _ ab => mk_eq_mk_iff_isConj.2 (f.map_isConj ab)
+  Quotient.lift (ConjClasses.mk ∘ f) fun _ _ ab ↦ mk_eq_mk_iff_isConj.2 (f.map_isConj ab)
 
 theorem map_surjective {f : α →* β} (hf : Function.Surjective f) :
     Function.Surjective (ConjClasses.map f) := by
@@ -191,7 +191,7 @@ section CommMonoid
 
 variable [CommMonoid α]
 
-theorem mk_injective : Function.Injective (@ConjClasses.mk α _) := fun _ _ =>
+theorem mk_injective : Function.Injective (@ConjClasses.mk α _) := fun _ _ ↦
   (mk_eq_mk_iff_isConj.trans isConj_iff_eq).1
 
 theorem mk_bijective : Function.Bijective (@ConjClasses.mk α _) :=
@@ -199,7 +199,7 @@ theorem mk_bijective : Function.Bijective (@ConjClasses.mk α _) :=
 
 /-- The bijection between a `CommGroup` and its `ConjClasses`. -/
 def mkEquiv : α ≃ ConjClasses α :=
-  ⟨ConjClasses.mk, Quotient.lift id fun (_ : α) _ => isConj_iff_eq.1, Quotient.lift_mk _ _, by
+  ⟨ConjClasses.mk, Quotient.lift id fun (_ : α) _ ↦ isConj_iff_eq.1, Quotient.lift_mk _ _, by
     rw [Function.RightInverse, Function.LeftInverse, forall_isConj]
     solve_by_elim⟩
 
@@ -219,10 +219,10 @@ theorem mem_conjugatesOf_self {a : α} : a ∈ conjugatesOf a :=
   IsConj.refl _
 
 theorem IsConj.conjugatesOf_eq {a b : α} (ab : IsConj a b) : conjugatesOf a = conjugatesOf b :=
-  Set.ext fun _ => ⟨fun ag => ab.symm.trans ag, fun bg => ab.trans bg⟩
+  Set.ext fun _ ↦ ⟨fun ag ↦ ab.symm.trans ag, fun bg ↦ ab.trans bg⟩
 
 theorem isConj_iff_conjugatesOf_eq {a b : α} : IsConj a b ↔ conjugatesOf a = conjugatesOf b :=
-  ⟨IsConj.conjugatesOf_eq, fun h => by
+  ⟨IsConj.conjugatesOf_eq, fun h ↦ by
     have ha := mem_conjugatesOf_self (a := b)
     rwa [← h] at ha⟩
 
@@ -236,7 +236,7 @@ attribute [local instance] IsConj.setoid
 
 /-- Given a conjugacy class `a`, `carrier a` is the set it represents. -/
 def carrier : ConjClasses α → Set α :=
-  Quotient.lift conjugatesOf fun (_ : α) _ ab => IsConj.conjugatesOf_eq ab
+  Quotient.lift conjugatesOf fun (_ : α) _ ab ↦ IsConj.conjugatesOf_eq ab
 
 theorem mem_carrier_mk {a : α} : a ∈ carrier (ConjClasses.mk a) :=
   IsConj.refl _
@@ -250,6 +250,6 @@ theorem mem_carrier_iff_mk_eq {a : α} {b : ConjClasses α} :
   rfl
 
 theorem carrier_eq_preimage_mk {a : ConjClasses α} : a.carrier = ConjClasses.mk ⁻¹' {a} :=
-  Set.ext fun _ => mem_carrier_iff_mk_eq
+  Set.ext fun _ ↦ mem_carrier_iff_mk_eq
 
 end ConjClasses

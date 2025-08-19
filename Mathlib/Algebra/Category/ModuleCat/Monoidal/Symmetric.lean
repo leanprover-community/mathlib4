@@ -91,8 +91,8 @@ theorem braiding_inv_apply {M N : ModuleCat.{u} R} (m : M) (n : N) :
 
 theorem tensorμ_eq_tensorTensorTensorComm {A B C D : ModuleCat R} :
     tensorμ A B C D = ofHom (TensorProduct.tensorTensorTensorComm R A B C D).toLinearMap :=
-  ModuleCat.hom_ext <| TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext₂ fun _ _ =>
-    TensorProduct.ext <| LinearMap.ext₂ fun _ _ => rfl
+  ModuleCat.hom_ext <| TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext₂ fun _ _ ↦
+    TensorProduct.ext <| LinearMap.ext₂ fun _ _ ↦ rfl
 
 @[simp]
 theorem tensorμ_apply

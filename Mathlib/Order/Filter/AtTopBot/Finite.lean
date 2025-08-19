@@ -95,7 +95,7 @@ theorem frequently_low_scores [LinearOrder β] [NoMinOrder β] {u : ℕ → β}
 theorem strictMono_subseq_of_tendsto_atTop [LinearOrder β] [NoMaxOrder β] {u : ℕ → β}
     (hu : Tendsto u atTop atTop) : ∃ φ : ℕ → ℕ, StrictMono φ ∧ StrictMono (u ∘ φ) :=
   let ⟨φ, h, h'⟩ := extraction_of_frequently_atTop (frequently_high_scores hu)
-  ⟨φ, h, fun _ m hnm => h' m _ (h hnm)⟩
+  ⟨φ, h, fun _ m hnm ↦ h' m _ (h hnm)⟩
 
 theorem strictMono_subseq_of_id_le {u : ℕ → ℕ} (hu : ∀ n, n ≤ u n) :
     ∃ φ : ℕ → ℕ, StrictMono φ ∧ StrictMono (u ∘ φ) :=
@@ -105,7 +105,7 @@ theorem Eventually.atTop_of_arithmetic {p : ℕ → Prop} {n : ℕ} (hn : n ≠ 
     (hp : ∀ k < n, ∀ᶠ a in atTop, p (n * a + k)) : ∀ᶠ a in atTop, p a := by
   simp only [eventually_atTop] at hp ⊢
   choose! N hN using hp
-  refine ⟨(Finset.range n).sup (n * N ·), fun b hb => ?_⟩
+  refine ⟨(Finset.range n).sup (n * N ·), fun b hb ↦ ?_⟩
   rw [← Nat.div_add_mod b n]
   have hlt := Nat.mod_lt b hn.bot_lt
   refine hN _ hlt _ ?_
@@ -120,9 +120,9 @@ theorem HasAntitoneBasis.subbasis_with_rel {f : Filter α} {s : ℕ → Set α}
     ∃ φ : ℕ → ℕ, StrictMono φ ∧ (∀ ⦃m n⦄, m < n → r (φ m) (φ n)) ∧ f.HasAntitoneBasis (s ∘ φ) := by
   rsuffices ⟨φ, hφ, hrφ⟩ : ∃ φ : ℕ → ℕ, StrictMono φ ∧ ∀ m n, m < n → r (φ m) (φ n)
   · exact ⟨φ, hφ, hrφ, hs.comp_strictMono hφ⟩
-  have : ∀ t : Set ℕ, t.Finite → ∀ᶠ n in atTop, ∀ m ∈ t, m < n ∧ r m n := fun t ht =>
-    (eventually_all_finite ht).2 fun m _ => (eventually_gt_atTop m).and (hr _)
-  rcases seq_of_forall_finite_exists fun t ht => (this t ht).exists with ⟨φ, hφ⟩
+  have : ∀ t : Set ℕ, t.Finite → ∀ᶠ n in atTop, ∀ m ∈ t, m < n ∧ r m n := fun t ht ↦
+    (eventually_all_finite ht).2 fun m _ ↦ (eventually_gt_atTop m).and (hr _)
+  rcases seq_of_forall_finite_exists fun t ht ↦ (this t ht).exists with ⟨φ, hφ⟩
   simp only [forall_mem_image, forall_and, mem_Iio] at hφ
   exact ⟨φ, forall_swap.2 hφ.1, forall_swap.2 hφ.2⟩
 

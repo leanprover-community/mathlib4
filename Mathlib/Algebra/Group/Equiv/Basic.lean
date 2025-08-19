@@ -45,14 +45,14 @@ section unique
 /-- The `MulEquiv` between two monoids with a unique element. -/
 @[to_additive /-- The `AddEquiv` between two `AddMonoid`s with a unique element. -/]
 def ofUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N] : M ≃* N :=
-  { Equiv.ofUnique M N with map_mul' := fun _ _ => Subsingleton.elim _ _ }
+  { Equiv.ofUnique M N with map_mul' := fun _ _ ↦ Subsingleton.elim _ _ }
 
 /-- There is a unique monoid homomorphism between two monoids with a unique element. -/
 @[to_additive /-- There is a unique additive monoid homomorphism between two additive monoids with
   a unique element. -/]
 instance {M N} [Unique M] [Unique N] [Mul M] [Mul N] : Unique (M ≃* N) where
   default := ofUnique
-  uniq _ := ext fun _ => Subsingleton.elim _ _
+  uniq _ := ext fun _ ↦ Subsingleton.elim _ _
 
 end unique
 
@@ -199,23 +199,23 @@ This is the `MulEquiv` version of `Equiv.piCongrRight`, and the dependent versio
   `AddEquiv.arrowCongr`. -/]
 def piCongrRight {η : Type*} {Ms Ns : η → Type*} [∀ j, Mul (Ms j)] [∀ j, Mul (Ns j)]
     (es : ∀ j, Ms j ≃* Ns j) : (∀ j, Ms j) ≃* ∀ j, Ns j :=
-  { Equiv.piCongrRight fun j => (es j).toEquiv with
-    toFun := fun x j => es j (x j),
-    invFun := fun x j => (es j).symm (x j),
-    map_mul' := fun x y => funext fun j => map_mul (es j) (x j) (y j) }
+  { Equiv.piCongrRight fun j ↦ (es j).toEquiv with
+    toFun := fun x j ↦ es j (x j),
+    invFun := fun x j ↦ (es j).symm (x j),
+    map_mul' := fun x y ↦ funext fun j ↦ map_mul (es j) (x j) (y j) }
 
 @[to_additive (attr := simp)]
 theorem piCongrRight_refl {η : Type*} {Ms : η → Type*} [∀ j, Mul (Ms j)] :
-    (piCongrRight fun j => MulEquiv.refl (Ms j)) = MulEquiv.refl _ := rfl
+    (piCongrRight fun j ↦ MulEquiv.refl (Ms j)) = MulEquiv.refl _ := rfl
 
 @[to_additive (attr := simp)]
 theorem piCongrRight_symm {η : Type*} {Ms Ns : η → Type*} [∀ j, Mul (Ms j)] [∀ j, Mul (Ns j)]
-    (es : ∀ j, Ms j ≃* Ns j) : (piCongrRight es).symm = piCongrRight fun i => (es i).symm := rfl
+    (es : ∀ j, Ms j ≃* Ns j) : (piCongrRight es).symm = piCongrRight fun i ↦ (es i).symm := rfl
 
 @[to_additive (attr := simp)]
 theorem piCongrRight_trans {η : Type*} {Ms Ns Ps : η → Type*} [∀ j, Mul (Ms j)]
     [∀ j, Mul (Ns j)] [∀ j, Mul (Ps j)] (es : ∀ j, Ms j ≃* Ns j) (fs : ∀ j, Ns j ≃* Ps j) :
-    (piCongrRight es).trans (piCongrRight fs) = piCongrRight fun i => (es i).trans (fs i) := rfl
+    (piCongrRight es).trans (piCongrRight fs) = piCongrRight fun i ↦ (es i).trans (fs i) := rfl
 
 /-- A family indexed by a type with a unique element
 is `MulEquiv` to the element at the single index. -/
@@ -224,7 +224,7 @@ is `MulEquiv` to the element at the single index. -/
   is `AddEquiv` to the element at the single index. -/]
 def piUnique {ι : Type*} (M : ι → Type*) [∀ j, Mul (M j)] [Unique ι] :
     (∀ j, M j) ≃* M default :=
-  { Equiv.piUnique M with map_mul' := fun _ _ => Pi.mul_apply _ _ _ }
+  { Equiv.piUnique M with map_mul' := fun _ _ ↦ Pi.mul_apply _ _ _ }
 
 end MulEquiv
 

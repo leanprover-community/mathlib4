@@ -51,10 +51,10 @@ theorem eq_pure_of_finite_mem (h : s.Finite) (h' : s ∈ f) : ∃ x ∈ s, f = p
   exact ⟨a, has, eq_of_le (Filter.le_pure_iff.2 haf)⟩
 
 theorem eq_pure_of_finite [Finite α] (f : Ultrafilter α) : ∃ a, f = pure a :=
-  (eq_pure_of_finite_mem finite_univ univ_mem).imp fun _ ⟨_, ha⟩ => ha
+  (eq_pure_of_finite_mem finite_univ univ_mem).imp fun _ ⟨_, ha⟩ ↦ ha
 
 theorem le_cofinite_or_eq_pure (f : Ultrafilter α) : (f : Filter α) ≤ cofinite ∨ ∃ a, f = pure a :=
-  or_iff_not_imp_left.2 fun h =>
+  or_iff_not_imp_left.2 fun h ↦
     let ⟨_, hs, hfin⟩ := Filter.disjoint_cofinite_right.1 (disjoint_iff_not_le.2 h)
     let ⟨a, _, hf⟩ := eq_pure_of_finite_mem hfin hs
     ⟨a, hf⟩
@@ -63,9 +63,9 @@ theorem exists_ultrafilter_of_finite_inter_nonempty (S : Set (Set α))
     (cond : ∀ T : Finset (Set α), (↑T : Set (Set α)) ⊆ S → (⋂₀ (↑T : Set (Set α))).Nonempty) :
     ∃ F : Ultrafilter α, S ⊆ F.sets :=
   haveI : NeBot (generate S) :=
-    generate_neBot_iff.2 fun _ hts ht =>
+    generate_neBot_iff.2 fun _ hts ht ↦
       ht.coe_toFinset ▸ cond ht.toFinset (ht.coe_toFinset.symm ▸ hts)
-  ⟨of (generate S), fun _ ht => (of_le <| generate S) <| GenerateSets.basic ht⟩
+  ⟨of (generate S), fun _ ht ↦ (of_le <| generate S) <| GenerateSets.basic ht⟩
 
 end Ultrafilter
 
@@ -106,7 +106,7 @@ theorem _root_.Nat.hyperfilter_le_atTop : (hyperfilter ℕ).toFilter ≤ atTop :
 theorem bot_ne_hyperfilter : (⊥ : Filter α) ≠ hyperfilter α :=
   (NeBot.ne inferInstance).symm
 
-theorem notMem_hyperfilter_of_finite {s : Set α} (hf : s.Finite) : s ∉ hyperfilter α := fun hy =>
+theorem notMem_hyperfilter_of_finite {s : Set α} (hf : s.Finite) : s ∉ hyperfilter α := fun hy ↦
   compl_notMem hy <| hyperfilter_le_cofinite hf.compl_mem_cofinite
 
 @[deprecated (since := "2025-05-24")]

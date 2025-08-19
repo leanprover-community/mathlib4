@@ -115,9 +115,9 @@ lemma inner_smul_right_real {z : ℝ} {x y : E} : ⟪x, z • y⟫ = z • ⟪x,
 
 /-- The function `⟨x, y⟩ ↦ ⟪x, y⟫` bundled as a sesquilinear map. -/
 def innerₛₗ : E →ₗ⋆[ℂ] E →ₗ[ℂ] A where
-  toFun x := { toFun := fun y => ⟪x, y⟫
-               map_add' := fun z y => by simp
-               map_smul' := fun z y => by simp }
+  toFun x := { toFun := fun y ↦ ⟪x, y⟫
+               map_add' := fun z y ↦ by simp
+               map_smul' := fun z y ↦ by simp }
   map_add' z y := by ext; simp
   map_smul' z y := by ext; simp
 
@@ -180,8 +180,8 @@ protected lemma norm_pos {x : E} (hx : x ≠ 0) : 0 < ‖x‖ := by
 protected lemma norm_zero : ‖(0 : E)‖ = 0 := by simp [norm_eq_sqrt_norm_inner_self (A := A)]
 
 lemma norm_zero_iff (x : E) : ‖x‖ = 0 ↔ x = 0 :=
-  ⟨fun h => by simpa [norm_eq_sqrt_norm_inner_self (A := A), inner_self] using h,
-    fun h => by simp [h, norm_eq_sqrt_norm_inner_self (A := A)]⟩
+  ⟨fun h ↦ by simpa [norm_eq_sqrt_norm_inner_self (A := A), inner_self] using h,
+    fun h ↦ by simp [h, norm_eq_sqrt_norm_inner_self (A := A)]⟩
 
 end
 
@@ -194,7 +194,7 @@ lemma inner_mul_inner_swap_le {x y : E} : ⟪x, y⟫ * ⟪y, x⟫ ≤ ‖x‖ ^ 
   · simp [h, CStarModule.norm_zero A (E := E)]
   · have h₁ : ∀ (a : A),
         (0 : A) ≤ ‖x‖ ^ 2 • (a * star a) - ‖x‖ ^ 2 • (a * ⟪y, x⟫)
-                  - ‖x‖ ^ 2 • (⟪x, y⟫ * star a) + ‖x‖ ^ 2 • (‖x‖ ^ 2 • ⟪y, y⟫) := fun a => by
+                  - ‖x‖ ^ 2 • (⟪x, y⟫ * star a) + ‖x‖ ^ 2 • (‖x‖ ^ 2 • ⟪y, y⟫) := fun a ↦ by
       calc (0 : A) ≤ ⟪a • x - ‖x‖ ^ 2 • y, a • x - ‖x‖ ^ 2 • y⟫_A := by
                       exact inner_self_nonneg
             _ = a * ⟪x, x⟫ * star a - ‖x‖ ^ 2 • (a * ⟪y, x⟫)
@@ -292,13 +292,13 @@ variable {A E : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRi
 
 /-- The function `⟨x, y⟩ ↦ ⟪x, y⟫` bundled as a continuous sesquilinear map. -/
 noncomputable def innerSL : E →L⋆[ℂ] E →L[ℂ] A :=
-  LinearMap.mkContinuous₂ (innerₛₗ : E →ₗ⋆[ℂ] E →ₗ[ℂ] A) 1 <| fun x y => by
+  LinearMap.mkContinuous₂ (innerₛₗ : E →ₗ⋆[ℂ] E →ₗ[ℂ] A) 1 <| fun x y ↦ by
     simp [innerₛₗ_apply, norm_inner_le E]
 
 lemma innerSL_apply {x y : E} : innerSL x y = ⟪x, y⟫_A := rfl
 
 @[continuity, fun_prop]
-lemma continuous_inner : Continuous (fun x : E × E => ⟪x.1, x.2⟫_A) := by
+lemma continuous_inner : Continuous (fun x : E × E ↦ ⟪x.1, x.2⟫_A) := by
   simp_rw [← innerSL_apply]
   fun_prop
 

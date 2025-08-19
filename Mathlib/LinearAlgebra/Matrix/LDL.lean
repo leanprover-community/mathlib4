@@ -74,7 +74,7 @@ theorem LDL.lowerInv_orthogonal {i j : n} (h₀ : i ≠ j) :
   @gramSchmidt_orthogonal 𝕜 _ _ (_ :) (InnerProductSpace.ofMatrix hS.transpose) _ _ _ _ _ _ _ h₀
 
 /-- The entries of the diagonal matrix `D` of the LDL decomposition. -/
-noncomputable def LDL.diagEntries : n → 𝕜 := fun i =>
+noncomputable def LDL.diagEntries : n → 𝕜 := fun i ↦
   ⟪star (LDL.lowerInv hS i), S *ᵥ star (LDL.lowerInv hS i)⟫ₑ
 
 /-- The diagonal matrix `D` of the LDL decomposition. -/
@@ -97,7 +97,7 @@ theorem LDL.diag_eq_lowerInv_conj : LDL.diag hS = LDL.lowerInv hS * S * (LDL.low
     rfl
   · simp only [LDL.diag, hij, diagonal_apply_ne, Ne, not_false_iff, mul_mul_apply]
     rw [conjTranspose, transpose_map, transpose_transpose, dotProduct_mulVec,
-      (LDL.lowerInv_orthogonal hS fun h : j = i => hij h.symm).symm, ← inner_conj_symm,
+      (LDL.lowerInv_orthogonal hS fun h : j = i ↦ hij h.symm).symm, ← inner_conj_symm,
       mulVec_transpose, EuclideanSpace.inner_toLp_toLp, ← RCLike.star_def, ←
       star_dotProduct_star, star_star]
     rfl

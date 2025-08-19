@@ -81,8 +81,8 @@ While we may want to switch to this behavior later, doing it mid-port will break
 
 /-- Coercion of a `PartialHomeomorph` to function.
 Note that a `PartialHomeomorph` is not `DFunLike`. -/
-instance : CoeFun (PartialHomeomorph X Y) fun _ => X → Y :=
-  ⟨fun e => e.toFun'⟩
+instance : CoeFun (PartialHomeomorph X Y) fun _ ↦ X → Y :=
+  ⟨fun e ↦ e.toFun'⟩
 
 /-- The inverse of a partial homeomorphism -/
 @[symm]
@@ -163,14 +163,14 @@ theorem eq_symm_apply {x : X} {y : Y} (hx : x ∈ e.source) (hy : y ∈ e.target
     x = e.symm y ↔ e x = y :=
   e.toPartialEquiv.eq_symm_apply hx hy
 
-protected theorem mapsTo : MapsTo e e.source e.target := fun _ => e.map_source
+protected theorem mapsTo : MapsTo e e.source e.target := fun _ ↦ e.map_source
 
 protected theorem symm_mapsTo : MapsTo e.symm e.target e.source :=
   e.symm.mapsTo
 
-protected theorem leftInvOn : LeftInvOn e.symm e e.source := fun _ => e.left_inv
+protected theorem leftInvOn : LeftInvOn e.symm e e.source := fun _ ↦ e.left_inv
 
-protected theorem rightInvOn : RightInvOn e.symm e e.target := fun _ => e.right_inv
+protected theorem rightInvOn : RightInvOn e.symm e e.target := fun _ ↦ e.right_inv
 
 protected theorem invOn : InvOn e.symm e e.source e.target :=
   ⟨e.leftInvOn, e.rightInvOn⟩
@@ -240,8 +240,8 @@ theorem eventually_right_inverse' {x} (hx : x ∈ e.source) :
 theorem eventually_ne_nhdsWithin {x} (hx : x ∈ e.source) :
     ∀ᶠ x' in 𝓝[≠] x, e x' ≠ e x :=
   eventually_nhdsWithin_iff.2 <|
-    (e.eventually_left_inverse hx).mono fun x' hx' =>
-      mt fun h => by rw [mem_singleton_iff, ← e.left_inv hx, ← h, hx']
+    (e.eventually_left_inverse hx).mono fun x' hx' ↦
+      mt fun h ↦ by rw [mem_singleton_iff, ← e.left_inv hx, ← h, hx']
 
 theorem nhdsWithin_source_inter {x} (hx : x ∈ e.source) (s : Set X) : 𝓝[e.source ∩ s] x = 𝓝[s] x :=
   nhdsWithin_inter_of_mem (mem_nhdsWithin_of_mem_nhds <| IsOpen.mem_nhds e.open_source hx)
@@ -355,7 +355,7 @@ theorem eventually_nhds {x : X} (p : Y → Prop) (hx : x ∈ e.source) :
 theorem eventually_nhds' {x : X} (p : X → Prop) (hx : x ∈ e.source) :
     (∀ᶠ y in 𝓝 (e x), p (e.symm y)) ↔ ∀ᶠ x in 𝓝 x, p x := by
   rw [e.eventually_nhds _ hx]
-  refine eventually_congr ((e.eventually_left_inverse hx).mono fun y hy => ?_)
+  refine eventually_congr ((e.eventually_left_inverse hx).mono fun y hy ↦ ?_)
   rw [hy]
 
 theorem eventually_nhdsWithin {x : X} (p : Y → Prop) {s : Set X}
@@ -367,7 +367,7 @@ theorem eventually_nhdsWithin' {x : X} (p : X → Prop) {s : Set X}
     (hx : x ∈ e.source) : (∀ᶠ y in 𝓝[e.symm ⁻¹' s] e x, p (e.symm y)) ↔ ∀ᶠ x in 𝓝[s] x, p x := by
   rw [e.eventually_nhdsWithin _ hx]
   refine eventually_congr <|
-    (eventually_nhdsWithin_of_eventually_nhds <| e.eventually_left_inverse hx).mono fun y hy => ?_
+    (eventually_nhdsWithin_of_eventually_nhds <| e.eventually_left_inverse hx).mono fun y hy ↦ ?_
   rw [hy]
 
 /-- This lemma is useful in the manifold library in the case that `e` is a chart. It states that
@@ -465,7 +465,7 @@ theorem symm_apply_mem_iff (h : e.IsImage s t) (hy : y ∈ e.target) : e.symm y 
 
 @[simp]
 theorem symm_iff : e.symm.IsImage t s ↔ e.IsImage s t :=
-  ⟨fun h => h.symm, fun h => h.symm⟩
+  ⟨fun h ↦ h.symm, fun h ↦ h.symm⟩
 
 protected theorem mapsTo (h : e.IsImage s t) : MapsTo e (e.source ∩ s) (e.target ∩ t) :=
   h.toPartialEquiv.mapsTo
@@ -506,13 +506,13 @@ theorem of_image_eq (h : e '' (e.source ∩ s) = e.target ∩ t) : e.IsImage s t
 theorem of_symm_image_eq (h : e.symm '' (e.target ∩ t) = e.source ∩ s) : e.IsImage s t :=
   PartialEquiv.IsImage.of_symm_image_eq h
 
-protected theorem compl (h : e.IsImage s t) : e.IsImage sᶜ tᶜ := fun _ hx => (h hx).not
+protected theorem compl (h : e.IsImage s t) : e.IsImage sᶜ tᶜ := fun _ hx ↦ (h hx).not
 
 protected theorem inter {s' t'} (h : e.IsImage s t) (h' : e.IsImage s' t') :
-    e.IsImage (s ∩ s') (t ∩ t') := fun _ hx => (h hx).and (h' hx)
+    e.IsImage (s ∩ s') (t ∩ t') := fun _ hx ↦ (h hx).and (h' hx)
 
 protected theorem union {s' t'} (h : e.IsImage s t) (h' : e.IsImage s' t') :
-    e.IsImage (s ∪ s') (t ∪ t') := fun _ hx => (h hx).or (h' hx)
+    e.IsImage (s ∪ s') (t ∪ t') := fun _ hx ↦ (h hx).or (h' hx)
 
 protected theorem diff {s' t'} (h : e.IsImage s t) (h' : e.IsImage s' t') :
     e.IsImage (s \ s') (t \ t') :=
@@ -536,7 +536,7 @@ theorem symm_eqOn_of_inter_eq_of_eqOn {e' : PartialHomeomorph X Y} (h : e.IsImag
 theorem map_nhdsWithin_eq (h : e.IsImage s t) (hx : x ∈ e.source) : map e (𝓝[s] x) = 𝓝[t] e x := by
   rw [e.map_nhdsWithin_eq hx, h.image_eq, e.nhdsWithin_target_inter (e.map_source hx)]
 
-protected theorem closure (h : e.IsImage s t) : e.IsImage (closure s) (closure t) := fun x hx => by
+protected theorem closure (h : e.IsImage s t) : e.IsImage (closure s) (closure t) := fun x hx ↦ by
   simp only [mem_closure_iff_nhdsWithin_neBot, ← h.map_nhdsWithin_eq hx, map_neBot_iff]
 
 protected theorem interior (h : e.IsImage s t) : e.IsImage (interior s) (interior t) := by
@@ -546,7 +546,7 @@ protected theorem frontier (h : e.IsImage s t) : e.IsImage (frontier s) (frontie
   h.closure.diff h.interior
 
 theorem isOpen_iff (h : e.IsImage s t) : IsOpen (e.source ∩ s) ↔ IsOpen (e.target ∩ t) :=
-  ⟨fun hs => h.symm_preimage_eq' ▸ e.symm.isOpen_inter_preimage hs, fun hs =>
+  ⟨fun hs ↦ h.symm_preimage_eq' ▸ e.symm.isOpen_inter_preimage hs, fun hs ↦
     h.preimage_eq' ▸ e.isOpen_inter_preimage hs⟩
 
 /-- Restrict a `PartialHomeomorph` to a pair of corresponding open sets. -/
@@ -643,7 +643,7 @@ theorem restr_univ {e : PartialHomeomorph X Y} : e.restr univ = e :=
   restr_eq_of_source_subset (subset_univ _)
 
 theorem restr_source_inter (s : Set X) : e.restr (e.source ∩ s) = e.restr s := by
-  refine PartialHomeomorph.ext _ _ (fun x => rfl) (fun x => rfl) ?_
+  refine PartialHomeomorph.ext _ _ (fun x ↦ rfl) (fun x ↦ rfl) ?_
   simp [e.open_source.interior_eq, ← inter_assoc]
 
 /-- The identity on the whole space as a partial homeomorphism. -/
@@ -793,14 +793,14 @@ theorem refl_trans : (PartialHomeomorph.refl X).trans e = e :=
   toPartialEquiv_injective e.1.refl_trans
 
 theorem trans_ofSet {s : Set Y} (hs : IsOpen s) : e.trans (ofSet s hs) = e.restr (e ⁻¹' s) :=
-  PartialHomeomorph.ext _ _ (fun _ => rfl) (fun _ => rfl) <| by
+  PartialHomeomorph.ext _ _ (fun _ ↦ rfl) (fun _ ↦ rfl) <| by
     rw [trans_source, restr_source, ofSet_source, ← preimage_interior, hs.interior_eq]
 
 theorem trans_of_set' {s : Set Y} (hs : IsOpen s) :
     e.trans (ofSet s hs) = e.restr (e.source ∩ e ⁻¹' s) := by rw [trans_ofSet, restr_source_inter]
 
 theorem ofSet_trans {s : Set X} (hs : IsOpen s) : (ofSet s hs).trans e = e.restr s :=
-  PartialHomeomorph.ext _ _ (fun _ => rfl) (fun _ => rfl) <| by simp [hs.interior_eq, inter_comm]
+  PartialHomeomorph.ext _ _ (fun _ ↦ rfl) (fun _ ↦ rfl) <| by simp [hs.interior_eq, inter_comm]
 
 theorem ofSet_trans' {s : Set X} (hs : IsOpen s) :
     (ofSet s hs).trans e = e.restr (e.source ∩ s) := by
@@ -913,7 +913,7 @@ theorem prod_symm (eX : PartialHomeomorph X X') (eY : PartialHomeomorph Y Y') :
 @[simp]
 theorem refl_prod_refl :
     (PartialHomeomorph.refl X).prod (PartialHomeomorph.refl Y) = PartialHomeomorph.refl (X × Y) :=
-  PartialHomeomorph.ext _ _ (fun _ => rfl) (fun _ => rfl) univ_prod_univ
+  PartialHomeomorph.ext _ _ (fun _ ↦ rfl) (fun _ ↦ rfl) univ_prod_univ
 
 @[simp, mfld_simps]
 theorem prod_trans (e : PartialHomeomorph X Y) (f : PartialHomeomorph Y Z)
@@ -948,13 +948,13 @@ variable {ι : Type*} [Finite ι] {X Y : ι → Type*} [∀ i, TopologicalSpace 
 /-- The product of a finite family of `PartialHomeomorph`s. -/
 @[simps! toPartialEquiv apply symm_apply source target]
 def pi : PartialHomeomorph (∀ i, X i) (∀ i, Y i) where
-  toPartialEquiv := PartialEquiv.pi fun i => (ei i).toPartialEquiv
-  open_source := isOpen_set_pi finite_univ fun i _ => (ei i).open_source
-  open_target := isOpen_set_pi finite_univ fun i _ => (ei i).open_target
-  continuousOn_toFun := continuousOn_pi.2 fun i =>
-    (ei i).continuousOn.comp (continuous_apply _).continuousOn fun _f hf => hf i trivial
-  continuousOn_invFun := continuousOn_pi.2 fun i =>
-    (ei i).continuousOn_symm.comp (continuous_apply _).continuousOn fun _f hf => hf i trivial
+  toPartialEquiv := PartialEquiv.pi fun i ↦ (ei i).toPartialEquiv
+  open_source := isOpen_set_pi finite_univ fun i _ ↦ (ei i).open_source
+  open_target := isOpen_set_pi finite_univ fun i _ ↦ (ei i).open_target
+  continuousOn_toFun := continuousOn_pi.2 fun i ↦
+    (ei i).continuousOn.comp (continuous_apply _).continuousOn fun _f hf ↦ hf i trivial
+  continuousOn_invFun := continuousOn_pi.2 fun i ↦
+    (ei i).continuousOn_symm.comp (continuous_apply _).continuousOn fun _f hf ↦ hf i trivial
 
 end Pi
 
@@ -1034,7 +1034,7 @@ on the right is continuous on the corresponding set. -/
 theorem continuousOn_iff_continuousOn_comp_right {f : Y → Z} {s : Set Y} (h : s ⊆ e.target) :
     ContinuousOn f s ↔ ContinuousOn (f ∘ e) (e.source ∩ e ⁻¹' s) := by
   simp only [← e.symm_image_eq_source_inter_preimage h, ContinuousOn, forall_mem_image]
-  refine forall₂_congr fun x hx => ?_
+  refine forall₂_congr fun x hx ↦ ?_
   rw [e.continuousWithinAt_iff_continuousWithinAt_comp_right (h hx),
     e.symm_image_eq_source_inter_preimage h, inter_comm, continuousWithinAt_inter]
   exact IsOpen.mem_nhds e.open_source (e.map_target (h hx))
@@ -1045,13 +1045,13 @@ homeomorphism -/
 theorem continuousWithinAt_iff_continuousWithinAt_comp_left {f : Z → X} {s : Set Z} {x : Z}
     (hx : f x ∈ e.source) (h : f ⁻¹' e.source ∈ 𝓝[s] x) :
     ContinuousWithinAt f s x ↔ ContinuousWithinAt (e ∘ f) s x := by
-  refine ⟨(e.continuousAt hx).comp_continuousWithinAt, fun fe_cont => ?_⟩
+  refine ⟨(e.continuousAt hx).comp_continuousWithinAt, fun fe_cont ↦ ?_⟩
   rw [← continuousWithinAt_inter' h] at fe_cont ⊢
   have : ContinuousWithinAt (e.symm ∘ e ∘ f) (s ∩ f ⁻¹' e.source) x :=
     haveI : ContinuousWithinAt e.symm univ (e (f x)) :=
       (e.continuousAt_symm (e.map_source hx)).continuousWithinAt
     ContinuousWithinAt.comp this fe_cont (subset_univ _)
-  exact this.congr (fun y hy => by simp [e.left_inv hy.2]) (by simp [e.left_inv hx])
+  exact this.congr (fun y hy ↦ by simp [e.left_inv hy.2]) (by simp [e.left_inv hx])
 
 /-- Continuity at a point can be read under left composition with a partial homeomorphism if a
 neighborhood of the initial point is sent to the source of the partial homeomorphism -/
@@ -1066,7 +1066,7 @@ theorem continuousAt_iff_continuousAt_comp_left {f : Z → X} {x : Z} (h : f ⁻
 on the left is continuous on the corresponding set. -/
 theorem continuousOn_iff_continuousOn_comp_left {f : Z → X} {s : Set Z} (h : s ⊆ f ⁻¹' e.source) :
     ContinuousOn f s ↔ ContinuousOn (e ∘ f) s :=
-  forall₂_congr fun _x hx =>
+  forall₂_congr fun _x hx ↦
     e.continuousWithinAt_iff_continuousWithinAt_comp_left (h hx)
       (mem_of_superset self_mem_nhdsWithin h)
 
@@ -1085,12 +1085,12 @@ def homeomorphOfImageSubsetSource {s : Set X} {t : Set Y} (hs : s ⊆ e.source) 
     s ≃ₜ t :=
   have h₁ : MapsTo e s t := mapsTo'.2 ht.subset
   have h₂ : t ⊆ e.target := ht ▸ e.image_source_eq_target ▸ image_mono hs
-  have h₃ : MapsTo e.symm t s := ht ▸ forall_mem_image.2 fun _x hx =>
+  have h₃ : MapsTo e.symm t s := ht ▸ forall_mem_image.2 fun _x hx ↦
       (e.left_inv (hs hx)).symm ▸ hx
   { toFun := MapsTo.restrict e s t h₁
     invFun := MapsTo.restrict e.symm t s h₃
-    left_inv := fun a => Subtype.ext (e.left_inv (hs a.2))
-    right_inv := fun b => Subtype.eq <| e.right_inv (h₂ b.2)
+    left_inv := fun a ↦ Subtype.ext (e.left_inv (hs a.2))
+    right_inv := fun b ↦ Subtype.eq <| e.right_inv (h₂ b.2)
     continuous_toFun := (e.continuousOn.mono hs).restrict_mapsTo h₁
     continuous_invFun := (e.continuousOn_symm.mono h₂).restrict_mapsTo h₃ }
 
@@ -1173,7 +1173,7 @@ def transPartialHomeomorph (e : X ≃ₜ Y) (f' : PartialHomeomorph Y Z) : Parti
   toPartialEquiv := e.toEquiv.transPartialEquiv f'.toPartialEquiv
   open_source := f'.open_source.preimage e.continuous
   open_target := f'.open_target
-  continuousOn_toFun := f'.continuousOn.comp e.continuous.continuousOn fun _ => id
+  continuousOn_toFun := f'.continuousOn.comp e.continuous.continuousOn fun _ ↦ id
   continuousOn_invFun := e.symm.continuous.comp_continuousOn f'.symm.continuousOn
 
 theorem transPartialHomeomorph_eq_trans (e : X ≃ₜ Y) (f' : PartialHomeomorph Y Z) :
@@ -1261,7 +1261,7 @@ def transHomeomorph (e : PartialHomeomorph X Y) (f' : Y ≃ₜ Z) : PartialHomeo
   open_source := e.open_source
   open_target := e.open_target.preimage f'.symm.continuous
   continuousOn_toFun := f'.continuous.comp_continuousOn e.continuousOn
-  continuousOn_invFun := e.symm.continuousOn.comp f'.symm.continuous.continuousOn fun _ => id
+  continuousOn_invFun := e.symm.continuousOn.comp f'.symm.continuous.continuousOn fun _ ↦ id
 
 theorem transHomeomorph_eq_trans (e : PartialHomeomorph X Y) (f' : Y ≃ₜ Z) :
     e.transHomeomorph f' = e.trans f'.toPartialHomeomorph :=

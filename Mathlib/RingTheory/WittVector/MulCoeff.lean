@@ -199,7 +199,7 @@ theorem polyOfInterest_vars (n : ℕ) : (polyOfInterest p n).vars ⊆ univ ×ˢ 
   rw [polyOfInterest_vars_eq]; apply mul_polyOfInterest_vars
 
 theorem peval_polyOfInterest (n : ℕ) (x y : 𝕎 k) :
-    peval (polyOfInterest p n) ![fun i => x.coeff i, fun i => y.coeff i] =
+    peval (polyOfInterest p n) ![fun i ↦ x.coeff i, fun i ↦ y.coeff i] =
     (x * y).coeff (n + 1) + p ^ (n + 1) * x.coeff (n + 1) * y.coeff (n + 1) -
       y.coeff (n + 1) * ∑ i ∈ range (n + 1 + 1), p ^ i * x.coeff i ^ p ^ (n + 1 - i) -
       x.coeff (n + 1) * ∑ i ∈ range (n + 1 + 1), p ^ i * y.coeff i ^ p ^ (n + 1 - i) := by
@@ -214,7 +214,7 @@ variable [CharP k p]
 
 /-- The characteristic `p` version of `peval_polyOfInterest` -/
 theorem peval_polyOfInterest' (n : ℕ) (x y : 𝕎 k) :
-    peval (polyOfInterest p n) ![fun i => x.coeff i, fun i => y.coeff i] =
+    peval (polyOfInterest p n) ![fun i ↦ x.coeff i, fun i ↦ y.coeff i] =
       (x * y).coeff (n + 1) - y.coeff (n + 1) * x.coeff 0 ^ p ^ (n + 1) -
         x.coeff (n + 1) * y.coeff 0 ^ p ^ (n + 1) := by
   rw [peval_polyOfInterest]
@@ -235,14 +235,14 @@ theorem nth_mul_coeff' (n : ℕ) :
         x.coeff (n + 1) * y.coeff 0 ^ p ^ (n + 1) := by
   simp only [← peval_polyOfInterest']
   obtain ⟨f₀, hf₀⟩ := exists_restrict_to_vars k (polyOfInterest_vars p n)
-  have : ∀ (a : Multiset (Fin 2)) (b : Multiset ℕ), a ×ˢ b = a.product b := fun a b => rfl
+  have : ∀ (a : Multiset (Fin 2)) (b : Multiset ℕ), a ×ˢ b = a.product b := fun a b ↦ rfl
   let f : TruncatedWittVector p (n + 1) k → TruncatedWittVector p (n + 1) k → k := by
     intro x y
     apply f₀
     rintro ⟨a, ha⟩
     apply Function.uncurry ![x, y]
     simp_rw [product_val, this, range_val, Multiset.range_succ] at ha
-    let S : Set (Fin 2 × ℕ) := (fun a => a.2 = n ∨ a.2 < n)
+    let S : Set (Fin 2 × ℕ) := (fun a ↦ a.2 = n ∨ a.2 < n)
     have ha' : a ∈ S := by
       convert ha
       dsimp [S]

@@ -61,15 +61,15 @@ variable [DecidableEq α] [Fintype α] {𝒜 : Finset (Finset α)} {r : ℕ}
 (the finsets of card `r`) than `∂𝒜` takes up of `α^(r - 1)`. -/
 theorem local_lubell_yamamoto_meshalkin_inequality_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
     #𝒜 * r ≤ #(∂ 𝒜) * (Fintype.card α - r + 1) := by
-  let i : DecidableRel ((· ⊆ ·) : Finset α → Finset α → Prop) := fun _ _ => Classical.dec _
-  refine card_mul_le_card_mul' (· ⊆ ·) (fun s hs => ?_) (fun s hs => ?_)
+  let i : DecidableRel ((· ⊆ ·) : Finset α → Finset α → Prop) := fun _ _ ↦ Classical.dec _
+  refine card_mul_le_card_mul' (· ⊆ ·) (fun s hs ↦ ?_) (fun s hs ↦ ?_)
   · rw [← h𝒜 hs, ← card_image_of_injOn s.erase_injOn]
     refine card_le_card ?_
     simp_rw [image_subset_iff, mem_bipartiteBelow]
-    exact fun a ha => ⟨erase_mem_shadow hs ha, erase_subset _ _⟩
+    exact fun a ha ↦ ⟨erase_mem_shadow hs ha, erase_subset _ _⟩
   refine le_trans ?_ tsub_tsub_le_tsub_add
   rw [← (Set.Sized.shadow h𝒜) hs, ← card_compl, ← card_image_of_injOn (insert_inj_on' _)]
-  refine card_le_card fun t ht => ?_
+  refine card_le_card fun t ht ↦ ?_
   rw [mem_bipartiteAbove] at ht
   have : ∅ ∉ 𝒜 := by
     rw [← mem_coe, h𝒜.empty_mem_iff, coe_eq_singleton]
@@ -130,13 +130,13 @@ theorem mem_falling : s ∈ falling k 𝒜 ↔ (∃ t ∈ 𝒜, s ⊆ t) ∧ #s 
 
 variable (𝒜 k)
 
-theorem sized_falling : (falling k 𝒜 : Set (Finset α)).Sized k := fun _ hs => (mem_falling.1 hs).2
+theorem sized_falling : (falling k 𝒜 : Set (Finset α)).Sized k := fun _ hs ↦ (mem_falling.1 hs).2
 
-theorem slice_subset_falling : 𝒜 # k ⊆ falling k 𝒜 := fun s hs =>
-  mem_falling.2 <| (mem_slice.1 hs).imp_left fun h => ⟨s, h, Subset.refl _⟩
+theorem slice_subset_falling : 𝒜 # k ⊆ falling k 𝒜 := fun s hs ↦
+  mem_falling.2 <| (mem_slice.1 hs).imp_left fun h ↦ ⟨s, h, Subset.refl _⟩
 
 theorem falling_zero_subset : falling 0 𝒜 ⊆ {∅} :=
-  subset_singleton_iff'.2 fun _ ht => card_eq_zero.1 <| sized_falling _ _ ht
+  subset_singleton_iff'.2 fun _ ht ↦ card_eq_zero.1 <| sized_falling _ _ ht
 
 theorem slice_union_shadow_falling_succ : 𝒜 # k ∪ ∂ (falling (k + 1) 𝒜) = falling k 𝒜 := by
   ext s
@@ -160,7 +160,7 @@ variable {𝒜 k}
 antichain property. -/
 theorem IsAntichain.disjoint_slice_shadow_falling {m n : ℕ}
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) : Disjoint (𝒜 # m) (∂ (falling n 𝒜)) :=
-  disjoint_right.2 fun s h₁ h₂ => by
+  disjoint_right.2 fun s h₁ h₂ ↦ by
     simp_rw [mem_shadow_iff, mem_falling] at h₁
     obtain ⟨s, ⟨⟨t, ht, hst⟩, _⟩, a, ha, rfl⟩ := h₁
     refine h𝒜 (slice_subset h₂) ht ?_ ((erase_subset _ _).trans hst)

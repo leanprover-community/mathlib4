@@ -30,7 +30,7 @@ variable (C) (D)
 
 /-- Bundled left-exact functors. -/
 def LeftExactFunctor :=
-  ObjectProperty.FullSubcategory fun F : C ⥤ D => PreservesFiniteLimits F
+  ObjectProperty.FullSubcategory fun F : C ⥤ D ↦ PreservesFiniteLimits F
 
 instance : Category (LeftExactFunctor C D) :=
   ObjectProperty.FullSubcategory.category _
@@ -54,7 +54,7 @@ abbrev LeftExactFunctor.fullyFaithful : (LeftExactFunctor.forget C D).FullyFaith
 
 /-- Bundled right-exact functors. -/
 def RightExactFunctor :=
-  ObjectProperty.FullSubcategory fun F : C ⥤ D => PreservesFiniteColimits F
+  ObjectProperty.FullSubcategory fun F : C ⥤ D ↦ PreservesFiniteColimits F
 
 instance : Category (RightExactFunctor C D) :=
   ObjectProperty.FullSubcategory.category _
@@ -78,7 +78,7 @@ abbrev RightExactFunctor.fullyFaithful : (RightExactFunctor.forget C D).FullyFai
 
 /-- Bundled exact functors. -/
 def ExactFunctor :=
-  ObjectProperty.FullSubcategory fun F : C ⥤ D =>
+  ObjectProperty.FullSubcategory fun F : C ⥤ D ↦
     PreservesFiniteLimits F ∧ PreservesFiniteColimits F
 
 instance : Category (ExactFunctor C D) :=
@@ -99,7 +99,7 @@ instance : (ExactFunctor.forget C D).Faithful :=
 
 /-- Turn an exact functor into a left exact functor. -/
 def LeftExactFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤ₗ D :=
-  ObjectProperty.ιOfLE (fun _ => And.left)
+  ObjectProperty.ιOfLE (fun _ ↦ And.left)
 
 instance : (LeftExactFunctor.ofExact C D).Full :=
   ObjectProperty.full_ιOfLE _
@@ -109,7 +109,7 @@ instance : (LeftExactFunctor.ofExact C D).Faithful :=
 
 /-- Turn an exact functor into a left exact functor. -/
 def RightExactFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤ᵣ D :=
-  ObjectProperty.ιOfLE (fun _ => And.right)
+  ObjectProperty.ιOfLE (fun _ ↦ And.right)
 
 instance : (RightExactFunctor.ofExact C D).Full :=
   ObjectProperty.full_ιOfLE _
@@ -226,10 +226,10 @@ variable (C D E)
 @[simps! obj_obj obj_map map_app_app]
 def LeftExactFunctor.whiskeringLeft : (C ⥤ₗ D) ⥤ (D ⥤ₗ E) ⥤ (C ⥤ₗ E) where
   obj F := ObjectProperty.lift _ (forget _ _ ⋙ (Functor.whiskeringLeft C D E).obj F.obj)
-    (fun G => by dsimp; exact comp_preservesFiniteLimits _ _)
+    (fun G ↦ by dsimp; exact comp_preservesFiniteLimits _ _)
   map {F G} η :=
-    { app := fun H => ((Functor.whiskeringLeft C D E).map η).app H.obj
-      naturality := fun _ _ f => ((Functor.whiskeringLeft C D E).map η).naturality f }
+    { app := fun H ↦ ((Functor.whiskeringLeft C D E).map η).app H.obj
+      naturality := fun _ _ f ↦ ((Functor.whiskeringLeft C D E).map η).naturality f }
   map_id X := by
     rw [ObjectProperty.FullSubcategory.id_def]
     cat_disch
@@ -241,19 +241,19 @@ def LeftExactFunctor.whiskeringLeft : (C ⥤ₗ D) ⥤ (D ⥤ₗ E) ⥤ (C ⥤�
 @[simps! obj_obj obj_map map_app_app]
 def LeftExactFunctor.whiskeringRight : (D ⥤ₗ E) ⥤ (C ⥤ₗ D) ⥤ (C ⥤ₗ E) where
   obj F := ObjectProperty.lift _ (forget _ _ ⋙ (Functor.whiskeringRight C D E).obj F.obj)
-    (fun G => by dsimp; exact comp_preservesFiniteLimits _ _)
+    (fun G ↦ by dsimp; exact comp_preservesFiniteLimits _ _)
   map {F G} η :=
-    { app := fun H => ((Functor.whiskeringRight C D E).map η).app H.obj
-      naturality := fun _ _ f => ((Functor.whiskeringRight C D E).map η).naturality f }
+    { app := fun H ↦ ((Functor.whiskeringRight C D E).map η).app H.obj
+      naturality := fun _ _ f ↦ ((Functor.whiskeringRight C D E).map η).naturality f }
 
 /-- Whiskering a right exact functor by a right exact functor yields a right exact functor. -/
 @[simps! obj_obj obj_map map_app_app]
 def RightExactFunctor.whiskeringLeft : (C ⥤ᵣ D) ⥤ (D ⥤ᵣ E) ⥤ (C ⥤ᵣ E) where
   obj F := ObjectProperty.lift _ (forget _ _ ⋙ (Functor.whiskeringLeft C D E).obj F.obj)
-    (fun G => by dsimp; exact comp_preservesFiniteColimits _ _)
+    (fun G ↦ by dsimp; exact comp_preservesFiniteColimits _ _)
   map {F G} η :=
-    { app := fun H => ((Functor.whiskeringLeft C D E).map η).app H.obj
-      naturality := fun _ _ f => ((Functor.whiskeringLeft C D E).map η).naturality f }
+    { app := fun H ↦ ((Functor.whiskeringLeft C D E).map η).app H.obj
+      naturality := fun _ _ f ↦ ((Functor.whiskeringLeft C D E).map η).naturality f }
   map_id X := by
     rw [ObjectProperty.FullSubcategory.id_def]
     cat_disch
@@ -265,20 +265,20 @@ def RightExactFunctor.whiskeringLeft : (C ⥤ᵣ D) ⥤ (D ⥤ᵣ E) ⥤ (C ⥤�
 @[simps! obj_obj obj_map map_app_app]
 def RightExactFunctor.whiskeringRight : (D ⥤ᵣ E) ⥤ (C ⥤ᵣ D) ⥤ (C ⥤ᵣ E) where
   obj F := ObjectProperty.lift _ (forget _ _ ⋙ (Functor.whiskeringRight C D E).obj F.obj)
-    (fun G => by dsimp; exact comp_preservesFiniteColimits _ _)
+    (fun G ↦ by dsimp; exact comp_preservesFiniteColimits _ _)
   map {F G} η :=
-    { app := fun H => ((Functor.whiskeringRight C D E).map η).app H.obj
-      naturality := fun _ _ f => ((Functor.whiskeringRight C D E).map η).naturality f }
+    { app := fun H ↦ ((Functor.whiskeringRight C D E).map η).app H.obj
+      naturality := fun _ _ f ↦ ((Functor.whiskeringRight C D E).map η).naturality f }
 
 /-- Whiskering an exact functor by an exact functor yields an exact functor. -/
 @[simps! obj_obj obj_map map_app_app]
 def ExactFunctor.whiskeringLeft : (C ⥤ₑ D) ⥤ (D ⥤ₑ E) ⥤ (C ⥤ₑ E) where
   obj F := ObjectProperty.lift _ (forget _ _ ⋙ (Functor.whiskeringLeft C D E).obj F.obj)
-    (fun G => ⟨by dsimp; exact comp_preservesFiniteLimits _ _,
+    (fun G ↦ ⟨by dsimp; exact comp_preservesFiniteLimits _ _,
       by dsimp; exact comp_preservesFiniteColimits _ _⟩)
   map {F G} η :=
-    { app := fun H => ((Functor.whiskeringLeft C D E).map η).app H.obj
-      naturality := fun _ _ f => ((Functor.whiskeringLeft C D E).map η).naturality f }
+    { app := fun H ↦ ((Functor.whiskeringLeft C D E).map η).app H.obj
+      naturality := fun _ _ f ↦ ((Functor.whiskeringLeft C D E).map η).naturality f }
   map_id X := by
     rw [ObjectProperty.FullSubcategory.id_def]
     cat_disch
@@ -290,11 +290,11 @@ def ExactFunctor.whiskeringLeft : (C ⥤ₑ D) ⥤ (D ⥤ₑ E) ⥤ (C ⥤ₑ E)
 @[simps! obj_obj obj_map map_app_app]
 def ExactFunctor.whiskeringRight : (D ⥤ₑ E) ⥤ (C ⥤ₑ D) ⥤ (C ⥤ₑ E) where
   obj F := ObjectProperty.lift _ (forget _ _ ⋙ (Functor.whiskeringRight C D E).obj F.obj)
-    (fun G => ⟨by dsimp; exact comp_preservesFiniteLimits _ _,
+    (fun G ↦ ⟨by dsimp; exact comp_preservesFiniteLimits _ _,
       by dsimp; exact comp_preservesFiniteColimits _ _⟩)
   map {F G} η :=
-    { app := fun H => ((Functor.whiskeringRight C D E).map η).app H.obj
-      naturality := fun _ _ f => ((Functor.whiskeringRight C D E).map η).naturality f }
+    { app := fun H ↦ ((Functor.whiskeringRight C D E).map η).app H.obj
+      naturality := fun _ _ f ↦ ((Functor.whiskeringRight C D E).map η).naturality f }
 
 end
 

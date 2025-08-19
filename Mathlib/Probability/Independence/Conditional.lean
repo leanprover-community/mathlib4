@@ -708,13 +708,13 @@ by `f i` for `i ∈ S` is conditionally independent of the tuple `(f i)_i` for `
 theorem iCondIndepFun.condIndepFun_finset {β : ι → Type*}
     {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i} (S T : Finset ι) (hST : Disjoint S T)
     (hf_Indep : iCondIndepFun m' hm' f μ) (hf_meas : ∀ i, Measurable (f i)) :
-    CondIndepFun m' hm' (fun a (i : S) => f i a) (fun a (i : T) => f i a) μ :=
+    CondIndepFun m' hm' (fun a (i : S) ↦ f i a) (fun a (i : T) ↦ f i a) μ :=
   Kernel.iIndepFun.indepFun_finset S T hST hf_Indep hf_meas
 
 theorem iCondIndepFun.condIndepFun_prodMk {β : ι → Type*}
     {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i} (hf_Indep : iCondIndepFun m' hm' f μ)
     (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
-    CondIndepFun m' hm' (fun a => (f i a, f j a)) (f k) μ :=
+    CondIndepFun m' hm' (fun a ↦ (f i a, f j a)) (f k) μ :=
   Kernel.iIndepFun.indepFun_prodMk hf_Indep hf_meas i j k hik hjk
 
 @[deprecated (since := "2025-03-05")]
@@ -812,7 +812,7 @@ end CommMonoid
 
 theorem iCondIndepSet.iCondIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β}
     {s : ι → Set Ω} (hs : iCondIndepSet m' hm' s μ) :
-    iCondIndepFun m' hm' (fun n => (s n).indicator fun _ω => (1 : β)) μ :=
+    iCondIndepFun m' hm' (fun n ↦ (s n).indicator fun _ω ↦ (1 : β)) μ :=
   Kernel.iIndepSet.iIndepFun_indicator hs
 
 end CondIndepFun

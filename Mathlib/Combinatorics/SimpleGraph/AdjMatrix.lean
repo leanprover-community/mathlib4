@@ -86,7 +86,7 @@ end IsAdjMatrix
 /-- For `A : Matrix V V α`, `A.compl` is supposed to be the adjacency matrix of
 the complement graph of the graph induced by `A.adjMatrix`. -/
 def compl [Zero α] [One α] [DecidableEq α] [DecidableEq V] (A : Matrix V V α) : Matrix V V α :=
-  fun i j => ite (i = j) 0 (ite (A i j = 0) 1 0)
+  fun i j ↦ ite (i = j) 0 (ite (A i j = 0) 1 0)
 
 section Compl
 
@@ -136,7 +136,7 @@ variable (α) in
 /-- `adjMatrix G α` is the matrix `A` such that `A i j = (1 : α)` if `i` and `j` are
   adjacent in the simple graph `G`, and otherwise `A i j = 0`. -/
 def adjMatrix [Zero α] [One α] : Matrix V V α :=
-  of fun i j => if G.Adj i j then (1 : α) else 0
+  of fun i j ↦ if G.Adj i j then (1 : α) else 0
 
 -- TODO: set as an equation lemma for `adjMatrix`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
@@ -158,7 +158,7 @@ variable (α)
 /-- The adjacency matrix of `G` is an adjacency matrix. -/
 @[simp]
 theorem isAdjMatrix_adjMatrix [Zero α] [One α] : (G.adjMatrix α).IsAdjMatrix :=
-  { zero_or_one := fun i j => by by_cases h : G.Adj i j <;> simp [h] }
+  { zero_or_one := fun i j ↦ by by_cases h : G.Adj i j <;> simp [h] }
 
 /-- The graph induced by the adjacency matrix of `G` is `G` itself. -/
 theorem toGraph_adjMatrix_eq [MulZeroOneClass α] [Nontrivial α] :

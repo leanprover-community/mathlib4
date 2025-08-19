@@ -74,9 +74,9 @@ sending `x` to `f x * g x`. -/
 @[to_additive /-- Given two additive morphisms `f`, `g` to an additive commutative semigroup,
 `f + g` is the additive morphism sending `x` to `f x + g x`. -/]
 instance [Mul M] [CommSemigroup N] : Mul (M →ₙ* N) :=
-  ⟨fun f g =>
-    { toFun := fun m => f m * g m,
-      map_mul' := fun x y => by
+  ⟨fun f g ↦
+    { toFun := fun m ↦ f m * g m,
+      map_mul' := fun x y ↦ by
         show f (x * y) * g (x * y) = f x * g x * (f y * g y)
         rw [f.map_mul, g.map_mul, ← mul_assoc, ← mul_assoc, mul_right_comm (f x)] }⟩
 
@@ -109,7 +109,7 @@ For the iff statement on the triviality of the kernel, see `injective_iff_map_eq
 theorem _root_.injective_iff_map_eq_one {G H} [Group G] [MulOneClass H]
     [FunLike F G H] [MonoidHomClass F G H]
     (f : F) : Function.Injective f ↔ ∀ a, f a = 1 → a = 1 :=
-  ⟨fun h _ => (map_eq_one_iff f h).mp, fun h x y hxy =>
+  ⟨fun h _ ↦ (map_eq_one_iff f h).mp, fun h x y hxy ↦
     mul_inv_eq_one.1 <| h _ <| by rw [map_mul, hxy, ← map_mul, mul_inv_cancel, map_one]⟩
 
 /-- A homomorphism from a group to a monoid is injective iff its kernel is trivial,
@@ -123,18 +123,18 @@ theorem _root_.injective_iff_map_eq_one' {G H} [Group G] [MulOneClass H]
     [FunLike F G H] [MonoidHomClass F G H]
     (f : F) : Function.Injective f ↔ ∀ a, f a = 1 ↔ a = 1 :=
   (injective_iff_map_eq_one f).trans <|
-    forall_congr' fun _ => ⟨fun h => ⟨h, fun H => H.symm ▸ map_one f⟩, Iff.mp⟩
+    forall_congr' fun _ ↦ ⟨fun h ↦ ⟨h, fun H ↦ H.symm ▸ map_one f⟩, Iff.mp⟩
 
 /-- Makes a group homomorphism from a proof that the map preserves right division
-`fun x y => x * y⁻¹`. See also `MonoidHom.of_map_div` for a version using `fun x y => x / y`.
+`fun x y ↦ x * y⁻¹`. See also `MonoidHom.of_map_div` for a version using `fun x y ↦ x / y`.
 -/
 @[to_additive
   /-- Makes an additive group homomorphism from a proof that the map preserves
-  the operation `fun a b => a + -b`. See also `AddMonoidHom.ofMapSub` for a version using
-  `fun a b => a - b`. -/]
+  the operation `fun a b ↦ a + -b`. See also `AddMonoidHom.ofMapSub` for a version using
+  `fun a b ↦ a - b`. -/]
 def ofMapMulInv {H : Type*} [Group H] (f : G → H)
     (map_div : ∀ a b : G, f (a * b⁻¹) = f a * (f b)⁻¹) : G →* H :=
-  (mk' f) fun x y =>
+  (mk' f) fun x y ↦
     calc
       f (x * y) = f x * (f <| 1 * 1⁻¹ * y⁻¹)⁻¹ := by
         { simp only [one_mul, inv_one, ← map_div, inv_inv] }
@@ -165,10 +165,10 @@ variable [MulOneClass M] [CommMonoid N]
 sending `x` to `f x * g x`. -/
 @[to_additive]
 instance mul : Mul (M →* N) :=
-  ⟨fun f g =>
-    { toFun := fun m => f m * g m,
+  ⟨fun f g ↦
+    { toFun := fun m ↦ f m * g m,
       map_one' := by simp,
-      map_mul' := fun x y => by
+      map_mul' := fun x y ↦ by
         rw [f.map_mul, g.map_mul, ← mul_assoc, ← mul_assoc, mul_right_comm (f x)] }⟩
 
 /-- Given two additive monoid morphisms `f`, `g` to an additive commutative monoid,

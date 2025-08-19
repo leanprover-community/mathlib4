@@ -69,14 +69,14 @@ def commaMapEquivalenceInverse [IsIso β] (X : Comma L' R') :
 def commaMapEquivalenceUnitIso [IsIso β] (X : Comma L' R') :
     𝟭 (StructuredArrow X (Comma.map α β)) ≅
       commaMapEquivalenceFunctor α β X ⋙ commaMapEquivalenceInverse α β X :=
-  NatIso.ofComponents (fun _ => isoMk (Iso.refl _))
+  NatIso.ofComponents (fun _ ↦ isoMk (Iso.refl _))
 
 /-- The counit functor establishing the equivalence `StructuredArrow.commaMapEquivalence`. -/
 @[simps!]
 def commaMapEquivalenceCounitIso [IsIso β] (X : Comma L' R') :
     commaMapEquivalenceInverse α β X ⋙ commaMapEquivalenceFunctor α β X ≅
       𝟭 (Comma (map₂ (𝟙 (L'.obj X.left)) α) (map₂ X.hom (inv β))) :=
-  NatIso.ofComponents (fun _ => Comma.isoMk (Iso.refl _) (Iso.refl _))
+  NatIso.ofComponents (fun _ ↦ Comma.isoMk (Iso.refl _) (Iso.refl _))
 
 /-- The structured arrow category on the functor `Comma.map α β`, with `β` a natural isomorphism,
 is equivalent to a comma category on two instances of `StructuredArrow.map₂`. -/

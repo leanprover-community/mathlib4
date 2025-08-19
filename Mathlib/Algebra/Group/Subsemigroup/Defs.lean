@@ -92,7 +92,7 @@ namespace Subsemigroup
 
 @[to_additive]
 instance : SetLike (Subsemigroup M) M :=
-  ⟨Subsemigroup.carrier, fun p q h => by cases p; cases q; congr⟩
+  ⟨Subsemigroup.carrier, fun p q h ↦ by cases p; cases q; congr⟩
 
 initialize_simps_projections Subsemigroup (carrier → coe, as_prefix coe)
 initialize_simps_projections AddSubsemigroup (carrier → coe, as_prefix coe)
@@ -109,7 +109,7 @@ instance (priority := 100) : CanLift (Set M) (Subsemigroup M) (↑)
   prf s h := ⟨{ carrier := s, mul_mem' := h }, rfl⟩
 
 @[to_additive]
-instance : MulMemClass (Subsemigroup M) M where mul_mem := fun {_ _ _} => Subsemigroup.mul_mem' _
+instance : MulMemClass (Subsemigroup M) M where mul_mem := fun {_ _ _} ↦ Subsemigroup.mul_mem' _
 
 @[to_additive (attr := simp)]
 theorem mem_carrier {s : Subsemigroup M} {x : M} : x ∈ s.carrier ↔ x ∈ s :=
@@ -161,7 +161,7 @@ protected theorem mul_mem {x y : M} : x ∈ S → y ∈ S → x * y ∈ S :=
 @[to_additive /-- The additive subsemigroup `M` of the magma `M`. -/]
 instance : Top (Subsemigroup M) :=
   ⟨{  carrier := Set.univ
-      mul_mem' := fun _ _ => Set.mem_univ _ }⟩
+      mul_mem' := fun _ _ ↦ Set.mem_univ _ }⟩
 
 /-- The trivial subsemigroup `∅` of a magma `M`. -/
 @[to_additive /-- The trivial `AddSubsemigroup` `∅` of an additive magma `M`. -/]
@@ -197,9 +197,9 @@ theorem coe_bot : ((⊥ : Subsemigroup M) : Set M) = ∅ :=
 /-- The inf of two subsemigroups is their intersection. -/
 @[to_additive /-- The inf of two `AddSubsemigroup`s is their intersection. -/]
 instance : Min (Subsemigroup M) :=
-  ⟨fun S₁ S₂ =>
+  ⟨fun S₁ S₂ ↦
     { carrier := S₁ ∩ S₂
-      mul_mem' := fun ⟨hx, hx'⟩ ⟨hy, hy'⟩ => ⟨S₁.mul_mem hx hy, S₂.mul_mem hx' hy'⟩ }⟩
+      mul_mem' := fun ⟨hx, hx'⟩ ⟨hy, hy'⟩ ↦ ⟨S₁.mul_mem hx hy, S₂.mul_mem hx' hy'⟩ }⟩
 
 @[to_additive (attr := simp)]
 theorem coe_inf (p p' : Subsemigroup M) : ((p ⊓ p' : Subsemigroup M) : Set M) = (p : Set M) ∩ p' :=
@@ -217,7 +217,7 @@ theorem subsingleton_of_subsingleton [Subsingleton (Subsemigroup M)] : Subsingle
 
 @[to_additive]
 instance [hn : Nonempty M] : Nontrivial (Subsemigroup M) :=
-  ⟨⟨⊥, ⊤, fun h => by
+  ⟨⟨⊥, ⊤, fun h ↦ by
       obtain ⟨x⟩ := id hn
       refine absurd (?_ : x ∈ ⊥) notMem_bot
       simp [h]⟩⟩
@@ -238,7 +238,7 @@ def eqLocus (f g : M →ₙ* N) : Subsemigroup M where
 
 @[to_additive]
 theorem eq_of_eqOn_top {f g : M →ₙ* N} (h : Set.EqOn f g (⊤ : Subsemigroup M)) : f = g :=
-  ext fun _ => h trivial
+  ext fun _ ↦ h trivial
 
 end MulHom
 
@@ -252,7 +252,7 @@ variable {A : Type*} [Mul M] [SetLike A M] [hA : MulMemClass A M] (S' : A)
 /-- A submagma of a magma inherits a multiplication. -/
 @[to_additive /-- An additive submagma of an additive magma inherits an addition. -/]
 instance (priority := 900) mul : Mul S' :=
-  ⟨fun a b => ⟨a.1 * b.1, mul_mem a.2 b.2⟩⟩
+  ⟨fun a b ↦ ⟨a.1 * b.1, mul_mem a.2 b.2⟩⟩
 
 -- lower priority so later simp lemmas are used first; to appease simp_nf
 @[to_additive (attr := simp low, norm_cast)]
@@ -274,19 +274,19 @@ theorem mul_def (x y : S') : x * y = ⟨x * y, mul_mem x.2 y.2⟩ :=
 /-- An `AddSubsemigroup` of an `AddSemigroup` inherits an `AddSemigroup` structure. -/]
 instance toSemigroup {M : Type*} [Semigroup M] {A : Type*} [SetLike A M] [MulMemClass A M]
     (S : A) : Semigroup S := fast_instance%
-  Subtype.coe_injective.semigroup Subtype.val fun _ _ => rfl
+  Subtype.coe_injective.semigroup Subtype.val fun _ _ ↦ rfl
 
 /-- A subsemigroup of a `CommSemigroup` is a `CommSemigroup`. -/
 @[to_additive /-- An `AddSubsemigroup` of an `AddCommSemigroup` is an `AddCommSemigroup`. -/]
 instance toCommSemigroup {M} [CommSemigroup M] {A : Type*} [SetLike A M] [MulMemClass A M]
     (S : A) : CommSemigroup S := fast_instance%
-  Subtype.coe_injective.commSemigroup Subtype.val fun _ _ => rfl
+  Subtype.coe_injective.commSemigroup Subtype.val fun _ _ ↦ rfl
 
 /-- The natural semigroup hom from a subsemigroup of semigroup `M` to `M`. -/
 @[to_additive /-- The natural semigroup hom from an `AddSubsemigroup` of
 `AddSubsemigroup` `M` to `M`. -/]
 def subtype : S' →ₙ* M where
-  toFun := Subtype.val; map_mul' := fun _ _ => rfl
+  toFun := Subtype.val; map_mul' := fun _ _ ↦ rfl
 
 variable {S'} in
 @[to_additive (attr := simp)]

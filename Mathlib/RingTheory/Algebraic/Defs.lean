@@ -86,7 +86,7 @@ theorem Subalgebra.isAlgebraic_iff (S : Subalgebra R A) :
     S.IsAlgebraic ↔ Algebra.IsAlgebraic R S := by
   delta Subalgebra.IsAlgebraic
   rw [Subtype.forall', Algebra.isAlgebraic_def]
-  refine forall_congr' fun x => exists_congr fun p => and_congr Iff.rfl ?_
+  refine forall_congr' fun x ↦ exists_congr fun p ↦ and_congr Iff.rfl ?_
   have h : Function.Injective S.val := Subtype.val_injective
   conv_rhs => rw [← h.eq_iff, map_zero]
   rw [← aeval_algHom_apply, S.val_apply]

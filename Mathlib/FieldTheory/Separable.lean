@@ -105,9 +105,9 @@ theorem Separable.isCoprime {f g : R[X]} (h : (f * g).Separable) : IsCoprime f g
 
 theorem Separable.of_pow' {f : R[X]} :
     ∀ {n : ℕ} (_h : (f ^ n).Separable), IsUnit f ∨ f.Separable ∧ n = 1 ∨ n = 0
-  | 0 => fun _h => Or.inr <| Or.inr rfl
-  | 1 => fun h => Or.inr <| Or.inl ⟨pow_one f ▸ h, rfl⟩
-  | n + 2 => fun h => by
+  | 0 => fun _h ↦ Or.inr <| Or.inr rfl
+  | 1 => fun h ↦ Or.inr <| Or.inl ⟨pow_one f ▸ h, rfl⟩
+  | n + 2 => fun h ↦ by
     rw [pow_succ, pow_succ] at h
     exact Or.inl (isCoprime_self.1 h.isCoprime.of_mul_left_right)
 
@@ -186,7 +186,7 @@ field. -/
 theorem Separable.squarefree {p : R[X]} (hsep : Separable p) : Squarefree p := by
   classical
   rw [squarefree_iff_emultiplicity_le_one p]
-  exact fun f => or_iff_not_imp_right.mpr fun hunit => emultiplicity_le_one_of_separable hunit hsep
+  exact fun f ↦ or_iff_not_imp_right.mpr fun hunit ↦ emultiplicity_le_one_of_separable hunit hsep
 
 end CommSemiring
 
@@ -207,16 +207,16 @@ theorem separable_prod' {ι : Sort _} {f : ι → R[X]} {s : Finset ι} :
     (∀ x ∈ s, ∀ y ∈ s, x ≠ y → IsCoprime (f x) (f y)) →
       (∀ x ∈ s, (f x).Separable) → (∏ x ∈ s, f x).Separable := by
   classical
-  exact Finset.induction_on s (fun _ _ => separable_one) fun a s has ih h1 h2 => by
+  exact Finset.induction_on s (fun _ _ ↦ separable_one) fun a s has ih h1 h2 ↦ by
     simp_rw [Finset.forall_mem_insert, forall_and] at h1 h2; rw [prod_insert has]
     exact
       h2.1.mul (ih h1.2.2 h2.2)
-        (IsCoprime.prod_right fun i his => h1.1.2 i his <| Ne.symm <| ne_of_mem_of_not_mem his has)
+        (IsCoprime.prod_right fun i his ↦ h1.1.2 i his <| Ne.symm <| ne_of_mem_of_not_mem his has)
 
 open scoped Function in -- required for scoped `on` notation
 theorem separable_prod {ι : Sort _} [Fintype ι] {f : ι → R[X]} (h1 : Pairwise (IsCoprime on f))
     (h2 : ∀ x, (f x).Separable) : (∏ x, f x).Separable :=
-  separable_prod' (fun _x _hx _y _hy hxy => h1 hxy) fun x _hx => h2 x
+  separable_prod' (fun _x _hx _y _hy hxy ↦ h1 hxy) fun x _hx ↦ h2 x
 
 theorem Separable.inj_of_prod_X_sub_C [Nontrivial R] {ι : Sort _} {f : ι → R} {s : Finset ι}
     (hfs : (∏ i ∈ s, (X - C (f i))).Separable) {x y : ι} (hx : x ∈ s) (hy : y ∈ s)
@@ -229,11 +229,11 @@ theorem Separable.inj_of_prod_X_sub_C [Nontrivial R] {ι : Sort _} {f : ι → R
   cases (hfs.of_mul_left.of_pow (not_isUnit_X_sub_C _) two_ne_zero).2
 
 theorem Separable.injective_of_prod_X_sub_C [Nontrivial R] {ι : Sort _} [Fintype ι] {f : ι → R}
-    (hfs : (∏ i, (X - C (f i))).Separable) : Function.Injective f := fun _x _y hfxy =>
+    (hfs : (∏ i, (X - C (f i))).Separable) : Function.Injective f := fun _x _y hfxy ↦
   hfs.inj_of_prod_X_sub_C (mem_univ _) (mem_univ _) hfxy
 
 theorem nodup_of_separable_prod [Nontrivial R] {s : Multiset R}
-    (hs : Separable (Multiset.map (fun a => X - C a) s).prod) : s.Nodup := by
+    (hs : Separable (Multiset.map (fun a ↦ X - C a) s).prod) : s.Nodup := by
   rw [Multiset.nodup_iff_ne_cons_cons]
   rintro a t rfl
   refine not_isUnit_X_sub_C a (isUnit_of_self_mul_dvd_separable hs ?_)
@@ -309,8 +309,8 @@ variable {F : Type u} [Field F] {K : Type v} [Field K]
 
 theorem separable_iff_derivative_ne_zero {f : F[X]} (hf : Irreducible f) :
     f.Separable ↔ derivative f ≠ 0 :=
-  ⟨fun h1 h2 => hf.not_isUnit <| isCoprime_zero_right.1 <| h2 ▸ h1, fun h =>
-    EuclideanDomain.isCoprime_of_dvd (mt And.right h) fun g hg1 _hg2 ⟨p, hg3⟩ hg4 =>
+  ⟨fun h1 h2 ↦ hf.not_isUnit <| isCoprime_zero_right.1 <| h2 ▸ h1, fun h ↦
+    EuclideanDomain.isCoprime_of_dvd (mt And.right h) fun g hg1 _hg2 ⟨p, hg3⟩ hg4 ↦
       let ⟨u, hu⟩ := (hf.isUnit_or_isUnit hg3).resolve_left hg1
       have : f ∣ derivative f := by
         conv_lhs => rw [hg3, ← hu]
@@ -328,14 +328,14 @@ theorem separable_map {S} [CommRing S] [Nontrivial S] (f : F →+* S) {p : F[X]}
 
 theorem separable_prod_X_sub_C_iff' {ι : Sort _} {f : ι → F} {s : Finset ι} :
     (∏ i ∈ s, (X - C (f i))).Separable ↔ ∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y :=
-  ⟨fun hfs _ hx _ hy hfxy => hfs.inj_of_prod_X_sub_C hx hy hfxy, fun H => by
+  ⟨fun hfs _ hx _ hy hfxy ↦ hfs.inj_of_prod_X_sub_C hx hy hfxy, fun H ↦ by
     rw [← prod_attach]
     exact
       separable_prod'
-        (fun x _hx y _hy hxy =>
-          @pairwise_coprime_X_sub_C _ _ { x // x ∈ s } (fun x => f x)
-            (fun x y hxy => Subtype.eq <| H x.1 x.2 y.1 y.2 hxy) _ _ hxy)
-        fun _ _ => separable_X_sub_C⟩
+        (fun x _hx y _hy hxy ↦
+          @pairwise_coprime_X_sub_C _ _ { x // x ∈ s } (fun x ↦ f x)
+            (fun x y hxy ↦ Subtype.eq <| H x.1 x.2 y.1 y.2 hxy) _ _ hxy)
+        fun _ _ ↦ separable_X_sub_C⟩
 
 theorem separable_prod_X_sub_C_iff {ι : Sort _} [Fintype ι] {f : ι → F} :
     (∏ i, (X - C (f i))).Separable ↔ Function.Injective f :=
@@ -436,7 +436,7 @@ theorem separable_X_pow_sub_C' (p n : ℕ) (a : F) [CharP F p] (hn : ¬p ∣ n) 
 -- bi-implication, but it is nontrivial!
 /-- In a field `F`, `X ^ n - 1` is separable iff `↑n ≠ 0`. -/
 theorem X_pow_sub_one_separable_iff {n : ℕ} : (X ^ n - 1 : F[X]).Separable ↔ (n : F) ≠ 0 := by
-  refine ⟨?_, fun h => separable_X_pow_sub_C_unit 1 (IsUnit.mk0 _ h)⟩
+  refine ⟨?_, fun h ↦ separable_X_pow_sub_C_unit 1 (IsUnit.mk0 _ h)⟩
   rw [separable_def', derivative_sub, derivative_X_pow, derivative_one, sub_zero]
   -- Suppose `(n : F) = 0`, then the derivative is `0`, so `X ^ n - 1` is a unit, contradiction.
   rintro (h : IsCoprime _ _) hn'
@@ -498,7 +498,7 @@ theorem eq_X_sub_C_of_separable_of_root_eq {x : F} {h : F[X]} (h_sep : h.Separab
     · exact h_roots
 
 theorem exists_finset_of_splits (i : F →+* K) {f : F[X]} (sep : Separable f) (sp : Splits i f) :
-    ∃ s : Finset K, f.map i = C (i f.leadingCoeff) * s.prod fun a : K => X - C a := by
+    ∃ s : Finset K, f.map i = C (i f.leadingCoeff) * s.prod fun a : K ↦ X - C a := by
   classical
   obtain ⟨s, h⟩ := (splits_iff_exists_multiset _).1 sp
   use s.toFinset
@@ -578,8 +578,8 @@ variable {F}
 
 theorem Algebra.isSeparable_iff :
     Algebra.IsSeparable F K ↔ ∀ x : K, IsIntegral F x ∧ IsSeparable F x :=
-  ⟨fun _ x => ⟨Algebra.IsSeparable.isIntegral F x, Algebra.IsSeparable.isSeparable F x⟩,
-    fun h => ⟨fun x => (h x).2⟩⟩
+  ⟨fun _ x ↦ ⟨Algebra.IsSeparable.isIntegral F x, Algebra.IsSeparable.isSeparable F x⟩,
+    fun h ↦ ⟨fun x ↦ (h x).2⟩⟩
 
 variable {L} in
 lemma IsSeparable.map [Ring L] [Algebra F L] {x : K} (f : K →ₐ[F] L) (hf : Function.Injective f)
@@ -689,13 +689,13 @@ include f
 variable {F} in
 theorem IsSeparable.of_algHom {x : E} (h : IsSeparable F (f x)) : IsSeparable F x := by
   let _ : Algebra E E' := RingHom.toAlgebra f.toRingHom
-  haveI : IsScalarTower F E E' := IsScalarTower.of_algebraMap_eq fun x => (f.commutes x).symm
+  haveI : IsScalarTower F E E' := IsScalarTower.of_algebraMap_eq fun x ↦ (f.commutes x).symm
   exact h.tower_bot
 
 
 variable (E') in
 theorem Algebra.IsSeparable.of_algHom [Algebra.IsSeparable F E'] : Algebra.IsSeparable F E :=
-  ⟨fun x => (Algebra.IsSeparable.isSeparable F (f x)).of_algHom⟩
+  ⟨fun x ↦ (Algebra.IsSeparable.isSeparable F (f x)).of_algHom⟩
 
 end
 
@@ -754,7 +754,7 @@ theorem AlgHom.natCard_of_powerBasis (pb : PowerBasis K S) (h_sep : IsSeparable 
     (h_splits : (minpoly K pb.gen).Splits (algebraMap K L)) :
     Nat.card (S →ₐ[K] L) = pb.dim := by
   classical
-  rw [Nat.card_congr pb.liftEquiv', Nat.subtype_card _ (fun x => Multiset.mem_toFinset),
+  rw [Nat.card_congr pb.liftEquiv', Nat.subtype_card _ (fun x ↦ Multiset.mem_toFinset),
     ← pb.natDegree_minpoly, natDegree_eq_card_roots h_splits, Multiset.toFinset_card_of_nodup]
   exact nodup_roots ((separable_map (algebraMap K L)).mpr h_sep)
 

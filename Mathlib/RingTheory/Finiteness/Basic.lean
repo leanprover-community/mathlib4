@@ -42,7 +42,7 @@ theorem FG.sup {N₁ N₂ : Submodule R M} (hN₁ : N₁.FG) (hN₂ : N₂.FG) :
 
 theorem fg_finset_sup {ι : Type*} (s : Finset ι) (N : ι → Submodule R M) (h : ∀ i ∈ s, (N i).FG) :
     (s.sup N).FG :=
-  Finset.sup_induction fg_bot (fun _ ha _ hb => ha.sup hb) h
+  Finset.sup_induction fg_bot (fun _ ha _ hb ↦ ha.sup hb) h
 
 theorem fg_biSup {ι : Type*} (s : Finset ι) (N : ι → Submodule R M) (h : ∀ i ∈ s, (N i).FG) :
     (⨆ i ∈ s, N i).FG := by simpa only [Finset.sup_eq_iSup] using fg_finset_sup s N h
@@ -50,7 +50,7 @@ theorem fg_biSup {ι : Type*} (s : Finset ι) (N : ι → Submodule R M) (h : �
 theorem fg_iSup {ι : Sort*} [Finite ι] (N : ι → Submodule R M) (h : ∀ i, (N i).FG) :
     (iSup N).FG := by
   cases nonempty_fintype (PLift ι)
-  simpa [iSup_plift_down] using fg_biSup Finset.univ (N ∘ PLift.down) fun i _ => h i.down
+  simpa [iSup_plift_down] using fg_biSup Finset.univ (N ∘ PLift.down) fun i _ ↦ h i.down
 
 instance : SemilatticeSup {P : Submodule R M // P.FG} where
   sup := fun P Q ↦ ⟨P.val ⊔ Q.val, Submodule.FG.sup P.property Q.property⟩
@@ -75,7 +75,7 @@ theorem fg_pi {ι : Type*} {M : ι → Type*} [Finite ι] [∀ i, AddCommMonoid 
     simp_rw [fg_def] at hsb ⊢
     choose t htf hts using hsb
     refine
-      ⟨⋃ i, (LinearMap.single R _ i) '' t i, Set.finite_iUnion fun i => (htf i).image _, ?_⟩
+      ⟨⋃ i, (LinearMap.single R _ i) '' t i, Set.finite_iUnion fun i ↦ (htf i).image _, ?_⟩
     -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 changed `span_image` into `span_image _`
     simp_rw [span_iUnion, span_image _, hts, Submodule.iSup_map_single]
 
@@ -86,7 +86,7 @@ theorem FG.map {N : Submodule R M} (hs : N.FG) : (N.map f).FG :=
 theorem fg_of_fg_map_injective (hf : Function.Injective f) {N : Submodule R M}
     (hfn : (N.map f).FG) : N.FG :=
   let ⟨t, ht⟩ := hfn
-  ⟨t.preimage f fun _ _ _ _ h => hf h,
+  ⟨t.preimage f fun _ _ _ _ h ↦ hf h,
     Submodule.map_injective_of_injective hf <| by
       rw [map_span, Finset.coe_preimage, Set.image_preimage_eq_inter_range,
         Set.inter_eq_self_of_subset_left, ht]
@@ -105,7 +105,7 @@ theorem fg_of_fg_map {R M P : Type*} [Ring R] [AddCommGroup M] [Module R M] [Add
   fg_of_fg_map_injective f (LinearMap.ker_eq_bot.1 hf) hfn
 
 theorem fg_top (N : Submodule R M) : (⊤ : Submodule R N).FG ↔ N.FG :=
-  ⟨fun h => N.range_subtype ▸ map_top N.subtype ▸ h.map _, fun h =>
+  ⟨fun h ↦ N.range_subtype ▸ map_top N.subtype ▸ h.map _, fun h ↦
     fg_of_fg_map_injective N.subtype Subtype.val_injective <| by rwa [map_top, range_subtype]⟩
 
 theorem fg_of_linearEquiv (e : M ≃ₗ[R] P) (h : (⊤ : Submodule R P).FG) : (⊤ : Submodule R M).FG :=
@@ -146,7 +146,7 @@ lemma FG.of_restrictScalars (R) {A M} [Semiring R] [Semiring A] [AddCommMonoid M
 theorem FG.stabilizes_of_iSup_eq {M' : Submodule R M} (hM' : M'.FG) (N : ℕ →o Submodule R M)
     (H : iSup N = M') : ∃ n, M' = N n := by
   obtain ⟨S, hS⟩ := hM'
-  have : ∀ s : S, ∃ n, (s : M) ∈ N n := fun s =>
+  have : ∀ s : S, ∃ n, (s : M) ∈ N n := fun s ↦
     (Submodule.mem_iSup_of_chain N s).mp
       (by
         rw [H, ← hS]
@@ -165,14 +165,14 @@ theorem FG.stabilizes_of_iSup_eq {M' : Submodule R M} (hM' : M'.FG) (N : ℕ →
 theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactElement s := by
   classical
     -- Introduce shorthand for span of an element
-    let sp : M → Submodule R M := fun a => span R {a}
+    let sp : M → Submodule R M := fun a ↦ span R {a}
     -- Trivial rewrite lemma; a small hack since simp (only) & rw can't accomplish this smoothly.
-    have supr_rw : ∀ t : Finset M, ⨆ x ∈ t, sp x = ⨆ x ∈ (↑t : Set M), sp x := fun t => by rfl
+    have supr_rw : ∀ t : Finset M, ⨆ x ∈ t, sp x = ⨆ x ∈ (↑t : Set M), sp x := fun t ↦ by rfl
     constructor
     · rintro ⟨t, rfl⟩
       rw [span_eq_iSup_of_singleton_spans, ← supr_rw, ← Finset.sup_eq_iSup t sp]
       apply CompleteLattice.isCompactElement_finsetSup
-      exact fun n _ => singleton_span_isCompactElement n
+      exact fun n _ ↦ singleton_span_isCompactElement n
     · intro h
       -- s is the Sup of the spans of its elements.
       have sSup' : s = sSup (sp '' ↑s) := by
@@ -240,18 +240,18 @@ instance quotient (R) {A M} [Semiring R] [AddCommGroup M] [Ring A] [Module A M] 
 instance range {F : Type*} [FunLike F M N] [SemilinearMapClass F (RingHom.id R) M N]
     [Module.Finite R M] (f : F) : Module.Finite R (LinearMap.range f) :=
   of_surjective (SemilinearMapClass.semilinearMap f).rangeRestrict
-    fun ⟨_, y, hy⟩ => ⟨y, Subtype.ext hy⟩
+    fun ⟨_, y, hy⟩ ↦ ⟨y, Subtype.ext hy⟩
 
 /-- Pushforwards of finite submodules are finite. -/
 instance map (p : Submodule R M) [Module.Finite R p] (f : M →ₗ[R] N) : Module.Finite R (p.map f) :=
-  of_surjective (f.restrict fun _ => Submodule.mem_map_of_mem) fun ⟨_, _, hy, hy'⟩ =>
+  of_surjective (f.restrict fun _ ↦ Submodule.mem_map_of_mem) fun ⟨_, _, hy, hy'⟩ ↦
     ⟨⟨_, hy⟩, Subtype.ext hy'⟩
 
 instance pi {ι : Type*} {M : ι → Type*} [_root_.Finite ι] [∀ i, AddCommMonoid (M i)]
     [∀ i, Module R (M i)] [h : ∀ i, Module.Finite R (M i)] : Module.Finite R (∀ i, M i) :=
   ⟨by
     rw [← Submodule.pi_top]
-    exact Submodule.fg_pi fun i => (h i).1⟩
+    exact Submodule.fg_pi fun i ↦ (h i).1⟩
 
 variable (R)
 
@@ -361,8 +361,8 @@ work well with typeclass search. -/
 instance finite_finset_sup {ι : Type*} (s : Finset ι) (S : ι → Submodule R V)
     [∀ i, Module.Finite R (S i)] : Module.Finite R (s.sup S : Submodule R V) := by
   refine
-    @Finset.sup_induction _ _ _ _ s S (fun i => Module.Finite R ↑i) (Module.Finite.bot R V)
-      ?_ fun i _ => by infer_instance
+    @Finset.sup_induction _ _ _ _ s S (fun i ↦ Module.Finite R ↑i) (Module.Finite.bot R V)
+      ?_ fun i _ ↦ by infer_instance
   intro S₁ hS₁ S₂ hS₂
   exact Submodule.finite_sup S₁ S₂
 

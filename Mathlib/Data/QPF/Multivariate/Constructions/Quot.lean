@@ -61,7 +61,7 @@ variable [MvFunctor F] (Hfunc : ∀ ⦃α β⦄ (a b : F α) (f : α ⟹ β), R 
 
 /-- `map` of the `Quot1` functor -/
 def Quot1.map ⦃α β⦄ (f : α ⟹ β) : Quot1.{u} R α → Quot1.{u} R β :=
-  Quot.lift (fun x : F α => Quot.mk _ (f <$$> x : F β)) fun a b h => Quot.sound <| Hfunc a b _ h
+  Quot.lift (fun x : F α ↦ Quot.mk _ (f <$$> x : F β)) fun a b h ↦ Quot.sound <| Hfunc a b _ h
 
 /-- `mvFunctor` instance for `Quot1` with well-behaved `R` -/
 def Quot1.mvFunctor : MvFunctor (Quot1 R) where map := @Quot1.map _ _ R _ Hfunc
@@ -74,8 +74,8 @@ variable [q : MvQPF F] (Hfunc : ∀ ⦃α β⦄ (a b : F α) (f : α ⟹ β), R 
 
 /-- `Quot1` is a QPF -/
 noncomputable def relQuot : @MvQPF _ (Quot1 R) :=
-  @quotientQPF n F q _ (MvQPF.Quot1.mvFunctor R Hfunc) (fun x => Quot.mk _ x)
-    Quot.out (fun _x => Quot.out_eq _) fun _f _x => rfl
+  @quotientQPF n F q _ (MvQPF.Quot1.mvFunctor R Hfunc) (fun x ↦ Quot.mk _ x)
+    Quot.out (fun _x ↦ Quot.out_eq _) fun _f _x ↦ rfl
 
 end
 

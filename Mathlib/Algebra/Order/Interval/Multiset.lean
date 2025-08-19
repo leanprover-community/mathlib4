@@ -34,19 +34,19 @@ lemma map_add_left_Ioo (a b c : α) : (Ioo a b).map (c + ·) = Ioo (c + a) (c + 
   classical rw [Ioo, Ioo, ← Finset.image_add_left_Ioo, Finset.image_val,
       ((Finset.nodup _).map <| add_right_injective c).dedup]
 
-lemma map_add_right_Icc (a b c : α) : ((Icc a b).map fun x => x + c) = Icc (a + c) (b + c) := by
+lemma map_add_right_Icc (a b c : α) : ((Icc a b).map fun x ↦ x + c) = Icc (a + c) (b + c) := by
   simp_rw [add_comm _ c]
   exact map_add_left_Icc _ _ _
 
-lemma map_add_right_Ico (a b c : α) : ((Ico a b).map fun x => x + c) = Ico (a + c) (b + c) := by
+lemma map_add_right_Ico (a b c : α) : ((Ico a b).map fun x ↦ x + c) = Ico (a + c) (b + c) := by
   simp_rw [add_comm _ c]
   exact map_add_left_Ico _ _ _
 
-lemma map_add_right_Ioc (a b c : α) : ((Ioc a b).map fun x => x + c) = Ioc (a + c) (b + c) := by
+lemma map_add_right_Ioc (a b c : α) : ((Ioc a b).map fun x ↦ x + c) = Ioc (a + c) (b + c) := by
   simp_rw [add_comm _ c]
   exact map_add_left_Ioc _ _ _
 
-lemma map_add_right_Ioo (a b c : α) : ((Ioo a b).map fun x => x + c) = Ioo (a + c) (b + c) := by
+lemma map_add_right_Ioo (a b c : α) : ((Ioo a b).map fun x ↦ x + c) = Ioo (a + c) (b + c) := by
   simp_rw [add_comm _ c]
   exact map_add_left_Ioo _ _ _
 

@@ -81,18 +81,18 @@ See note [reducible non-instances]. -/
 protected abbrev Function.Injective.module [AddCommMonoid M₂] [SMul R M₂] (f : M₂ →+ M)
     (hf : Injective f) (smul : ∀ (c : R) (x), f (c • x) = c • f x) : Module R M₂ :=
   { hf.distribMulAction f smul with
-    add_smul := fun c₁ c₂ x => hf <| by simp only [smul, f.map_add, add_smul]
-    zero_smul := fun x => hf <| by simp only [smul, zero_smul, f.map_zero] }
+    add_smul := fun c₁ c₂ x ↦ hf <| by simp only [smul, f.map_add, add_smul]
+    zero_smul := fun x ↦ hf <| by simp only [smul, zero_smul, f.map_zero] }
 
 /-- Pushforward a `Module` structure along a surjective additive monoid homomorphism.
 See note [reducible non-instances]. -/
 protected abbrev Function.Surjective.module [AddCommMonoid M₂] [SMul R M₂] (f : M →+ M₂)
     (hf : Surjective f) (smul : ∀ (c : R) (x), f (c • x) = c • f x) : Module R M₂ :=
   { toDistribMulAction := hf.distribMulAction f smul
-    add_smul := fun c₁ c₂ x => by
+    add_smul := fun c₁ c₂ x ↦ by
       rcases hf x with ⟨x, rfl⟩
       simp only [add_smul, ← smul, ← f.map_add]
-    zero_smul := fun x => by
+    zero_smul := fun x ↦ by
       rcases hf x with ⟨x, rfl⟩
       rw [← f.map_zero, ← smul, zero_smul] }
 

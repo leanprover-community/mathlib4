@@ -80,7 +80,7 @@ lemma mk_singleton_self (x : R) [(Ideal.span {x}).IsTwoSided] : mk (Ideal.span {
 variable (I)
 
 instance noZeroDivisors [hI : I.IsPrime] : NoZeroDivisors (R ⧸ I) where
-    eq_zero_or_eq_zero_of_mul_eq_zero {a b} := Quotient.inductionOn₂' a b fun {_ _} hab =>
+    eq_zero_or_eq_zero_of_mul_eq_zero {a b} := Quotient.inductionOn₂' a b fun {_ _} hab ↦
       (hI.mem_or_mem (eq_zero_iff_mem.1 hab)).elim (Or.inl ∘ eq_zero_iff_mem.2)
         (Or.inr ∘ eq_zero_iff_mem.2)
 
@@ -89,7 +89,7 @@ instance isDomain [hI : I.IsPrime] : IsDomain (R ⧸ I) :=
   NoZeroDivisors.to_isDomain _
 
 theorem isDomain_iff_prime : IsDomain (R ⧸ I) ↔ I.IsPrime := by
-  refine ⟨fun H => ⟨zero_ne_one_iff.1 ?_, fun {x y} h => ?_⟩, fun h => inferInstance⟩
+  refine ⟨fun H ↦ ⟨zero_ne_one_iff.1 ?_, fun {x y} h ↦ ?_⟩, fun h ↦ inferInstance⟩
   · haveI : Nontrivial (R ⧸ I) := ⟨H.2.1⟩
     exact zero_ne_one
   · simp only [← eq_zero_iff_mem, (mk I).map_mul] at h ⊢
@@ -114,8 +114,8 @@ since users will have computable inverses in some applications.
 See note [reducible non-instances]. -/
 protected noncomputable abbrev groupWithZero [hI : I.IsMaximal] :
     GroupWithZero (R ⧸ I) := fast_instance%
-  { inv := fun a => if ha : a = 0 then 0 else Classical.choose (exists_inv ha)
-    mul_inv_cancel := fun a (ha : a ≠ 0) =>
+  { inv := fun a ↦ if ha : a = 0 then 0 else Classical.choose (exists_inv ha)
+    mul_inv_cancel := fun a (ha : a ≠ 0) ↦
       show a * dite _ _ _ = _ by rw [dif_neg ha]; exact Classical.choose_spec (exists_inv ha)
     inv_zero := dif_pos rfl
     __ := Quotient.nontrivial hI.out.1 }
@@ -159,7 +159,7 @@ theorem maximal_of_isField {R} [CommRing R] (I : Ideal R) (hqf : IsField (R ⧸ 
 /-- The quotient of a ring by an ideal is a field iff the ideal is maximal. -/
 theorem maximal_ideal_iff_isField_quotient {R} [CommRing R] (I : Ideal R) :
     I.IsMaximal ↔ IsField (R ⧸ I) :=
-  ⟨fun h =>
+  ⟨fun h ↦
     let _i := @Quotient.field _ _ I h
     Field.toIsField _,
     maximal_of_isField _⟩
@@ -206,7 +206,7 @@ theorem map_pi [I.IsTwoSided] {ι : Type*} [Finite ι] {ι' : Type w} (x : ι �
     cases nonempty_fintype ι
     rw [pi_eq_sum_univ x]
     simp only [Finset.sum_apply, smul_eq_mul, map_sum, Pi.smul_apply, map_smul]
-    exact I.sum_mem fun j _ => I.mul_mem_right _ (hi j)
+    exact I.sum_mem fun j _ ↦ I.mul_mem_right _ (hi j)
 
 end Pi
 

@@ -20,7 +20,7 @@ variable {ι : Sort*} {M α : Type*}
 
 theorem smul_mono_right [SMul M α] [Preorder α] [CovariantClass M α HSMul.hSMul LE.le]
     (m : M) : Monotone (HSMul.hSMul m : α → α) :=
-  fun _ _ => CovariantClass.elim _
+  fun _ _ ↦ CovariantClass.elim _
 
 /-- A copy of `smul_mono_right` that is understood by `gcongr`. -/
 @[gcongr]
@@ -36,11 +36,11 @@ theorem smul_inf_le [SMul M α] [SemilatticeInf α] [CovariantClass M α HSMul.h
 theorem smul_iInf_le [SMul M α] [CompleteLattice α] [CovariantClass M α HSMul.hSMul LE.le]
     {m : M} {t : ι → α} :
     m • iInf t ≤ ⨅ i, m • t i :=
-  le_iInf fun _ => smul_mono_right _ (iInf_le _ _)
+  le_iInf fun _ ↦ smul_mono_right _ (iInf_le _ _)
 
 theorem smul_strictMono_right [SMul M α] [Preorder α] [CovariantClass M α HSMul.hSMul LT.lt]
     (m : M) : StrictMono (HSMul.hSMul m : α → α) :=
-  fun _ _ => CovariantClass.elim _
+  fun _ _ ↦ CovariantClass.elim _
 
 lemma le_pow_smul {G : Type*} [Monoid G] {α : Type*} [Preorder α] {g : G} {a : α}
     [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le]

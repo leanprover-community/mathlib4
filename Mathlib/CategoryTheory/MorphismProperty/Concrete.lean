@@ -33,13 +33,13 @@ namespace MorphismProperty
 open Function
 
 /-- Injectivity (in a concrete category) as a `MorphismProperty` -/
-protected def injective : MorphismProperty C := fun _ _ f => Injective f
+protected def injective : MorphismProperty C := fun _ _ f ↦ Injective f
 
 /-- Surjectiveness (in a concrete category) as a `MorphismProperty` -/
-protected def surjective : MorphismProperty C := fun _ _ f => Surjective f
+protected def surjective : MorphismProperty C := fun _ _ f ↦ Surjective f
 
 /-- Bijectiveness (in a concrete category) as a `MorphismProperty` -/
-protected def bijective : MorphismProperty C := fun _ _ f => Bijective f
+protected def bijective : MorphismProperty C := fun _ _ f ↦ Bijective f
 
 theorem bijective_eq_sup :
     MorphismProperty.bijective C = MorphismProperty.injective C ⊓ MorphismProperty.surjective C :=
@@ -77,15 +77,15 @@ instance : (MorphismProperty.bijective C).IsMultiplicative where
 
 instance injective_respectsIso : (MorphismProperty.injective C).RespectsIso :=
   respectsIso_of_isStableUnderComposition
-    (fun _ _ f (_ : IsIso f) => ((forget C).mapIso (asIso f)).toEquiv.injective)
+    (fun _ _ f (_ : IsIso f) ↦ ((forget C).mapIso (asIso f)).toEquiv.injective)
 
 instance surjective_respectsIso : (MorphismProperty.surjective C).RespectsIso :=
   respectsIso_of_isStableUnderComposition
-    (fun _ _ f (_ : IsIso f) => ((forget C).mapIso (asIso f)).toEquiv.surjective)
+    (fun _ _ f (_ : IsIso f) ↦ ((forget C).mapIso (asIso f)).toEquiv.surjective)
 
 instance bijective_respectsIso : (MorphismProperty.bijective C).RespectsIso :=
   respectsIso_of_isStableUnderComposition
-    (fun _ _ f (_ : IsIso f) => ((forget C).mapIso (asIso f)).toEquiv.bijective)
+    (fun _ _ f (_ : IsIso f) ↦ ((forget C).mapIso (asIso f)).toEquiv.bijective)
 
 end MorphismProperty
 
@@ -116,17 +116,17 @@ map followed by an injective map. -/
 def functorialSurjectiveInjectiveFactorizationData :
     FunctorialSurjectiveInjectiveFactorizationData (Type u) where
   Z :=
-    { obj := fun f => Subtype (Set.range f.hom)
-      map := fun φ y => ⟨φ.right y.1, by
+    { obj := fun f ↦ Subtype (Set.range f.hom)
+      map := fun φ y ↦ ⟨φ.right y.1, by
         obtain ⟨_, x, rfl⟩ := y
         exact ⟨φ.left x, congr_fun φ.w x⟩ ⟩ }
   i :=
-    { app := fun f x => ⟨f.hom x, ⟨x, rfl⟩⟩
-      naturality := fun f g φ => by
+    { app := fun f x ↦ ⟨f.hom x, ⟨x, rfl⟩⟩
+      naturality := fun f g φ ↦ by
         ext x
         exact congr_fun φ.w x }
   p :=
-    { app := fun _ y => y.1
+    { app := fun _ y ↦ y.1
       naturality := by intros; rfl; }
   fac := rfl
   hi := by

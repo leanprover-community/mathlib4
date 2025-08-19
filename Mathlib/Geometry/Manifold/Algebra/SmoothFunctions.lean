@@ -31,7 +31,7 @@ namespace ContMDiffMap
 @[to_additive]
 protected instance instMul {G : Type*} [Mul G] [TopologicalSpace G] [ChartedSpace H' G]
     [ContMDiffMul I' n G] : Mul C^n⟮I, N; I', G⟯ :=
-  ⟨fun f g => ⟨f * g, f.contMDiff.mul g.contMDiff⟩⟩
+  ⟨fun f g ↦ ⟨f * g, f.contMDiff.mul g.contMDiff⟩⟩
 
 @[to_additive (attr := simp)]
 theorem coe_mul {G : Type*} [Mul G] [TopologicalSpace G] [ChartedSpace H' G] [ContMDiffMul I' n G]
@@ -137,10 +137,10 @@ instance commMonoid {G : Type*} [CommMonoid G] [TopologicalSpace G] [ChartedSpac
 instance group {G : Type*} [Group G] [TopologicalSpace G] [ChartedSpace H' G] [LieGroup I' n G] :
     Group C^n⟮I, N; I', G⟯ :=
   { ContMDiffMap.monoid with
-    inv := fun f => ⟨fun x => (f x)⁻¹, f.contMDiff.inv⟩
-    inv_mul_cancel := fun a => by ext; exact inv_mul_cancel _
-    div := fun f g => ⟨f / g, f.contMDiff.div g.contMDiff⟩
-    div_eq_mul_inv := fun f g => by ext; exact div_eq_mul_inv _ _ }
+    inv := fun f ↦ ⟨fun x ↦ (f x)⁻¹, f.contMDiff.inv⟩
+    inv_mul_cancel := fun a ↦ by ext; exact inv_mul_cancel _
+    div := fun f g ↦ ⟨f / g, f.contMDiff.div g.contMDiff⟩
+    div_eq_mul_inv := fun f g ↦ by ext; exact div_eq_mul_inv _ _ }
 
 @[to_additive (attr := simp)]
 theorem coe_inv {G : Type*} [Group G] [TopologicalSpace G] [ChartedSpace H' G] [LieGroup I' n G]
@@ -173,10 +173,10 @@ instance semiring {R : Type*} [Semiring R] [TopologicalSpace R] [ChartedSpace H'
     [ContMDiffRing I' n R] : Semiring C^n⟮I, N; I', R⟯ :=
   { ContMDiffMap.addCommMonoid,
     ContMDiffMap.monoid with
-    left_distrib := fun a b c => by ext; exact left_distrib _ _ _
-    right_distrib := fun a b c => by ext; exact right_distrib _ _ _
-    zero_mul := fun a => by ext; exact zero_mul _
-    mul_zero := fun a => by ext; exact mul_zero _ }
+    left_distrib := fun a b c ↦ by ext; exact left_distrib _ _ _
+    right_distrib := fun a b c ↦ by ext; exact right_distrib _ _ _
+    zero_mul := fun a ↦ by ext; exact zero_mul _
+    mul_zero := fun a ↦ by ext; exact mul_zero _ }
 
 instance ring {R : Type*} [Ring R] [TopologicalSpace R] [ChartedSpace H' R] [ContMDiffRing I' n R] :
     Ring C^n⟮I, N; I', R⟯ :=
@@ -196,7 +196,7 @@ def compLeftRingHom {R' : Type*} [Ring R'] [TopologicalSpace R'] [ChartedSpace H
     C^n⟮I, N; I', R'⟯ →+* C^n⟮I, N; I'', R''⟯ :=
   { ContMDiffMap.compLeftMonoidHom I N φ.toMonoidHom hφ,
     ContMDiffMap.compLeftAddMonoidHom I N φ.toAddMonoidHom hφ with
-    toFun := fun f => ⟨φ ∘ f, hφ.comp f.contMDiff⟩ }
+    toFun := fun f ↦ ⟨φ ∘ f, hφ.comp f.contMDiff⟩ }
 
 variable (I') {N}
 
@@ -206,7 +206,7 @@ def restrictRingHom (R : Type*) [Ring R] [TopologicalSpace R] [ChartedSpace H' R
     [ContMDiffRing I' n R] {U V : Opens N} (h : U ≤ V) :
     C^n⟮I, V; I', R⟯ →+* C^n⟮I, U; I', R⟯ :=
   { ContMDiffMap.restrictMonoidHom I I' R h, ContMDiffMap.restrictAddMonoidHom I I' R h with
-    toFun := fun f => ⟨f ∘ Set.inclusion h, f.contMDiff.comp (contMDiff_inclusion h)⟩ }
+    toFun := fun f ↦ ⟨f ∘ Set.inclusion h, f.contMDiff.comp (contMDiff_inclusion h)⟩ }
 
 variable {I I'}
 
@@ -236,7 +236,7 @@ field `𝕜` inherit a vector space structure.
 
 instance instSMul {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
     SMul 𝕜 C^n⟮I, N; 𝓘(𝕜, V), V⟯ :=
-  ⟨fun r f => ⟨r • ⇑f, contMDiff_const.smul f.contMDiff⟩⟩
+  ⟨fun r f ↦ ⟨r • ⇑f, contMDiff_const.smul f.contMDiff⟩⟩
 
 @[simp]
 theorem coe_smul {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (r : 𝕜)
@@ -276,17 +276,17 @@ variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A] [ContMDiffRing 𝓘(�
 
 /-- `C^n` constant functions as a `RingHom`. -/
 def C : 𝕜 →+* C^n⟮I, N; 𝓘(𝕜, A), A⟯ where
-  toFun := fun c : 𝕜 => ⟨fun _ => (algebraMap 𝕜 A) c, contMDiff_const⟩
+  toFun := fun c : 𝕜 ↦ ⟨fun _ ↦ (algebraMap 𝕜 A) c, contMDiff_const⟩
   map_one' := by ext; exact (algebraMap 𝕜 A).map_one
   map_mul' c₁ c₂ := by ext; exact (algebraMap 𝕜 A).map_mul _ _
   map_zero' := by ext; exact (algebraMap 𝕜 A).map_zero
   map_add' c₁ c₂ := by ext; exact (algebraMap 𝕜 A).map_add _ _
 
 instance algebra : Algebra 𝕜 C^n⟮I, N; 𝓘(𝕜, A), A⟯ where
-  smul := fun r f => ⟨r • f, contMDiff_const.smul f.contMDiff⟩
+  smul := fun r f ↦ ⟨r • f, contMDiff_const.smul f.contMDiff⟩
   algebraMap := ContMDiffMap.C
-  commutes' := fun c f => by ext x; exact Algebra.commutes' _ _
-  smul_def' := fun c f => by ext x; exact Algebra.smul_def' _ _
+  commutes' := fun c f ↦ by ext x; exact Algebra.commutes' _ _
+  smul_def' := fun c f ↦ by ext x; exact Algebra.smul_def' _ _
 
 /-- Coercion to a function as an `AlgHom`. -/
 @[simps]
@@ -312,7 +312,7 @@ is naturally a vector space over the ring of `C^n` functions from `N` to `𝕜`.
 /-- `C^n` scalar-valued functions act by left-multiplication on `C^n` functions. -/
 instance instSMul' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
     SMul C^n⟮I, N; 𝕜⟯ C^n⟮I, N; 𝓘(𝕜, V), V⟯ :=
-  ⟨fun f g => ⟨fun x => f x • g x, ContMDiff.smul f.2 g.2⟩⟩
+  ⟨fun f g ↦ ⟨fun x ↦ f x • g x, ContMDiff.smul f.2 g.2⟩⟩
 
 /-- The left multiplication with a `C^n` scalar function commutes with composition. -/
 @[simp]

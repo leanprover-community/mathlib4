@@ -40,7 +40,7 @@ namespace mapBifunctorMapHomotopy
 noncomputable def hom₁ (j j' : J) :
     (mapBifunctor K₁ K₂ F c).X j ⟶ (mapBifunctor L₁ L₂ F c).X j' :=
   HomologicalComplex₂.totalDesc _
-    (fun i₁ i₂ _ => ComplexShape.ε₁ c₁ c₂ c (c₁.prev i₁, i₂) •
+    (fun i₁ i₂ _ ↦ ComplexShape.ε₁ c₁ c₂ c (c₁.prev i₁, i₂) •
       (F.map (h₁.hom i₁ (c₁.prev i₁))).app (K₂.X i₂) ≫
       (F.obj (L₁.X (c₁.prev i₁))).map (f₂.f i₂) ≫ ιMapBifunctorOrZero L₁ L₂ F c _ _ j')
 

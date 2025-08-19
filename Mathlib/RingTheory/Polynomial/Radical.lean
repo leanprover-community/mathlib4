@@ -50,8 +50,8 @@ theorem divRadical_dvd_derivative (a : k[X]) : divRadical a ∣ derivative a := 
     case hcp x y hpxy hx hy =>
     have hc : IsCoprime x y :=
       EuclideanDomain.isCoprime_of_dvd
-        (fun ⟨hx, hy⟩ => not_isUnit_zero (hpxy (zero_dvd_iff.mpr hx) (zero_dvd_iff.mpr hy)))
-        fun p hp _ hpx hpy => hp (hpxy hpx hpy)
+        (fun ⟨hx, hy⟩ ↦ not_isUnit_zero (hpxy (zero_dvd_iff.mpr hx) (zero_dvd_iff.mpr hy)))
+        fun p hp _ hpx hpy ↦ hp (hpxy hpx hpy)
     rw [divRadical_mul hc, derivative_mul]
     exact dvd_add (mul_dvd_mul hx (divRadical_dvd_self y)) (mul_dvd_mul (divRadical_dvd_self x) hy)
 

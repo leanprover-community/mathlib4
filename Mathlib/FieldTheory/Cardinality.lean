@@ -40,7 +40,7 @@ theorem Fintype.isPrimePow_card_of_field {α} [Fintype α] [Field α] : IsPrimeP
 
 /-- A `Fintype` can be given a field structure iff its cardinality is a prime power. -/
 theorem Fintype.nonempty_field_iff {α} [Fintype α] : Nonempty (Field α) ↔ IsPrimePow ‖α‖ := by
-  refine ⟨fun ⟨h⟩ => Fintype.isPrimePow_card_of_field, ?_⟩
+  refine ⟨fun ⟨h⟩ ↦ Fintype.isPrimePow_card_of_field, ?_⟩
   rintro ⟨p, n, hp, hn, hα⟩
   haveI := Fact.mk hp.nat_prime
   haveI : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
@@ -49,7 +49,7 @@ theorem Fintype.nonempty_field_iff {α} [Fintype α] : Nonempty (Field α) ↔ I
 
 theorem Fintype.not_isField_of_card_not_prime_pow {α} [Fintype α] [Ring α] :
     ¬IsPrimePow ‖α‖ → ¬IsField α :=
-  mt fun h => Fintype.nonempty_field_iff.mp ⟨h.toField⟩
+  mt fun h ↦ Fintype.nonempty_field_iff.mp ⟨h.toField⟩
 
 /-- Any infinite type can be endowed a field structure. -/
 theorem Infinite.nonempty_field {α : Type u} [Infinite α] : Nonempty (Field α) := by

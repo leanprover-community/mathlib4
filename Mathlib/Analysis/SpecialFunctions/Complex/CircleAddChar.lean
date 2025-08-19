@@ -109,7 +109,7 @@ variable (n : ℕ) [NeZero n]
 
 /-- Interpret `n`-th roots of unity in `ℂ` as elements of the circle -/
 noncomputable def rootsOfUnitytoCircle : (rootsOfUnity n ℂ) →* Circle where
-  toFun := fun z => ⟨z.val.val,
+  toFun := fun z ↦ ⟨z.val.val,
     mem_sphere_zero_iff_norm.2 (Complex.norm_eq_one_of_mem_rootsOfUnity z.prop)⟩
   map_one' := rfl
   map_mul' _ _ := rfl

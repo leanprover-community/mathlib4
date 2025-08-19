@@ -41,7 +41,7 @@ theorem HigherFacesVanish.comp_σ {Y : C} {X : SimplicialObject C} {n b q : ℕ}
       (φ ≫
         X.σ ⟨b, by
           simp only [hnbq, Nat.lt_add_one_iff, le_add_iff_nonneg_right, zero_le]⟩) :=
-  fun j hj => by
+  fun j hj ↦ by
   rw [assoc, SimplicialObject.δ_comp_σ_of_gt', Fin.pred_succ, v.comp_δ_eq_zero_assoc _ _ hj,
     zero_comp]
   · dsimp

@@ -29,7 +29,7 @@ condition of an ore set. -/
 def oreSetOfCancelMonoidWithZero {R : Type*} [CancelMonoidWithZero R] {S : Submonoid R}
     (oreNum : R → S → R) (oreDenom : R → S → S)
     (ore_eq : ∀ (r : R) (s : S), oreDenom r s * r = oreNum r s * s) : OreSet S :=
-  { ore_right_cancel := fun _ _ s h => ⟨s, mul_eq_mul_left_iff.mpr (mul_eq_mul_right_iff.mp h)⟩
+  { ore_right_cancel := fun _ _ s h ↦ ⟨s, mul_eq_mul_left_iff.mpr (mul_eq_mul_right_iff.mp h)⟩
     oreNum
     oreDenom
     ore_eq }

@@ -84,7 +84,7 @@ theorem notMem_maximalIdeal {x : R} : x ∉ maximalIdeal R ↔ IsUnit x := by
 
 theorem isField_iff_maximalIdeal_eq : IsField R ↔ maximalIdeal R = ⊥ :=
   not_iff_not.mp
-    ⟨Ring.ne_bot_of_isMaximal_of_not_isField inferInstance, fun h =>
+    ⟨Ring.ne_bot_of_isMaximal_of_not_isField inferInstance, fun h ↦
       Ring.not_isField_iff_exists_prime.mpr ⟨_, h, Ideal.IsMaximal.isPrime' _⟩⟩
 
 end IsLocalRing
@@ -101,7 +101,7 @@ variable [IsLocalRing R]
 
 theorem maximalIdeal_le_jacobson (I : Ideal R) :
     IsLocalRing.maximalIdeal R ≤ I.jacobson :=
-  le_sInf fun _ ⟨_, h⟩ => le_of_eq (IsLocalRing.eq_maximalIdeal h).symm
+  le_sInf fun _ ⟨_, h⟩ ↦ le_of_eq (IsLocalRing.eq_maximalIdeal h).symm
 
 theorem jacobson_eq_maximalIdeal (I : Ideal R) (h : I ≠ ⊤) :
     I.jacobson = IsLocalRing.maximalIdeal R :=

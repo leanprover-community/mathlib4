@@ -47,7 +47,7 @@ theorem mem_sym2_iff {m : Sym2 α} : m ∈ s.sym2 ↔ ∀ a ∈ m, a ∈ s := by
   simp only [mem_val]
 
 @[simp] lemma coe_sym2 {m : Finset α} : (m.sym2 : Set (Sym2 α)) = (m : Set α).sym2 :=
-  Set.ext fun z ↦ z.ind fun a b => by simp
+  Set.ext fun z ↦ z.ind fun a b ↦ by simp
 
 theorem sym2_cons (a : α) (s : Finset α) (ha : a ∉ s) :
     (s.cons a ha).sym2 = ((s.cons a ha).map <| Sym2.mkEmbedding a).disjUnion s.sym2 (by
@@ -55,7 +55,7 @@ theorem sym2_cons (a : α) (s : Finset α) (ha : a ∉ s) :
   val_injective <| Multiset.sym2_cons _ _
 
 theorem sym2_insert [DecidableEq α] (a : α) (s : Finset α) :
-    (insert a s).sym2 = ((insert a s).image fun b => s(a, b)) ∪ s.sym2 := by
+    (insert a s).sym2 = ((insert a s).image fun b ↦ s(a, b)) ∪ s.sym2 := by
   obtain ha | ha := Decidable.em (a ∈ s)
   · simp only [insert_eq_of_mem ha, right_eq_union, image_subset_iff]
     aesop
@@ -87,7 +87,7 @@ theorem sym2_mono (h : s ⊆ t) : s.sym2 ⊆ t.sym2 := by
   apply Multiset.sym2_mono
   rwa [val_le_iff]
 
-theorem monotone_sym2 : Monotone (Finset.sym2 : Finset α → _) := fun _ _ => sym2_mono
+theorem monotone_sym2 : Monotone (Finset.sym2 : Finset α → _) := fun _ _ ↦ sym2_mono
 
 theorem injective_sym2 : Function.Injective (Finset.sym2 : Finset α → _) := by
   intro s t h

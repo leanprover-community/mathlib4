@@ -65,13 +65,13 @@ lemma chainsMap_f_single (n : ℕ) (x : Fin n → G) (a : A) :
 @[simp]
 lemma chainsMap_id :
     chainsMap (MonoidHom.id G) (𝟙 A) = 𝟙 (inhomogeneousChains A) :=
-  HomologicalComplex.hom_ext _ _ fun _ => ModuleCat.hom_ext <| lhom_ext' fun _ =>
+  HomologicalComplex.hom_ext _ _ fun _ ↦ ModuleCat.hom_ext <| lhom_ext' fun _ ↦
     ModuleCat.hom_ext_iff.1 <| lsingle_comp_chainsMap_f (k := k) (MonoidHom.id G) ..
 
 @[simp]
 lemma chainsMap_id_f_hom_eq_mapRange {A B : Rep k G} (i : ℕ) (φ : A ⟶ B) :
     ((chainsMap (MonoidHom.id G) φ).f i).hom = mapRange.linearMap φ.hom.hom := by
-  refine lhom_ext fun _ _ => ?_
+  refine lhom_ext fun _ _ ↦ ?_
   simp [chainsMap_f, MonoidHom.coe_id]
 
 lemma chainsMap_comp {G H K : Type u} [Group G] [Group H] [Group K]
@@ -98,7 +98,7 @@ lemma chainsMap_f_map_mono (hf : Function.Injective f) [Mono φ] (i : ℕ) :
 
 instance chainsMap_id_f_map_mono {A B : Rep k G} (φ : A ⟶ B) [Mono φ] (i : ℕ) :
     Mono ((chainsMap (MonoidHom.id G) φ).f i) :=
-  chainsMap_f_map_mono (MonoidHom.id G) φ (fun _ _ h => h) _
+  chainsMap_f_map_mono (MonoidHom.id G) φ (fun _ _ h ↦ h) _
 
 lemma chainsMap_f_map_epi (hf : Function.Surjective f) [Epi φ] (i : ℕ) :
     Epi ((chainsMap f φ).f i) := by
@@ -108,7 +108,7 @@ lemma chainsMap_f_map_epi (hf : Function.Surjective f) [Epi φ] (i : ℕ) :
 
 instance chainsMap_id_f_map_epi {A B : Rep k G} (φ : A ⟶ B) [Epi φ] (i : ℕ) :
     Epi ((chainsMap (MonoidHom.id G) φ).f i) :=
-  chainsMap_f_map_epi _ _ (fun x => ⟨x, rfl⟩) _
+  chainsMap_f_map_epi _ _ (fun x ↦ ⟨x, rfl⟩) _
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map `Zₙ(G, A) ⟶ Zₙ(H, B)` sending `∑ aᵢ·gᵢ : Gⁿ →₀ A` to
@@ -297,7 +297,7 @@ noncomputable abbrev mapCycles₁ :
     (shortComplexH1 B).moduleCatLeftHomologyData
 
 lemma mapCycles₁_hom :
-    (mapCycles₁ f φ).hom = (chainsMap₁ f φ).hom.restrict (fun x _ => by
+    (mapCycles₁ f φ).hom = (chainsMap₁ f φ).hom.restrict (fun x _ ↦ by
       have := congr($((mapShortComplexH1 f φ).comm₂₃) x); simp_all [cycles₁, shortComplexH1]) :=
   rfl
 
@@ -330,7 +330,7 @@ lemma map₁_one (φ : A ⟶ (Action.res _ (1 : G →* H)).obj B) :
   rw [ModuleCat.hom_comp]
   refine (H1π_eq_zero_iff _).2 ?_
   simpa [coe_mapCycles₁ _ φ x, mapDomain, map_finsuppSum] using
-    (boundaries₁ B).finsuppSum_mem k x.1 _ fun _ _ => single_one_mem_boundaries₁ (A := B) _
+    (boundaries₁ B).finsuppSum_mem k x.1 _ fun _ _ ↦ single_one_mem_boundaries₁ (A := B) _
 
 section CoresCoinf
 
@@ -349,8 +349,8 @@ instance mapCycles₁_quotientGroupMk'_epi :
   refine ⟨⟨mapDomain s x, ?_⟩, Subtype.ext <| by
     simp [mapCycles₁_hom, ← mapDomain_comp, hs₁]⟩
   simpa [mem_cycles₁_iff, ← (mem_cycles₁_iff _).1 hx, sum_mapDomain_index_inj (f := s)
-      (fun x y h => by rw [← hs x, ← hs y, h])]
-    using Finsupp.sum_congr fun a b => QuotientGroup.induction_on a fun a => by
+      (fun x y h ↦ by rw [← hs x, ← hs y, h])]
+    using Finsupp.sum_congr fun a b ↦ QuotientGroup.induction_on a fun a ↦ by
       simp [← QuotientGroup.mk_inv, apply_eq_of_coe_eq A.ρ S (s a)⁻¹ a⁻¹ (by simp [hs])]
 
 /-- Given a `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially, this is the
@@ -408,8 +408,8 @@ previous assumptions. -/
   have hv : mapDomain (s ∘ QuotientGroup.mk) v = 0 := by
     rw [mapDomain_comp]
     simp_all [v, mapDomain, sum_sub_index, coe_mapCycles₁ _ _ ⟨x, hxc⟩]
-  let e : G → G × G := fun (g : G) => (s (g : G ⧸ S), (s (g : G ⧸ S))⁻¹ * g)
-  have he : e.Injective := fun x y hxy => by
+  let e : G → G × G := fun (g : G) ↦ (s (g : G ⧸ S), (s (g : G ⧸ S))⁻¹ * g)
+  have he : e.Injective := fun x y hxy ↦ by
     obtain ⟨(h₁ : s _ = s _), (h₂ : _ * _ = _ * _)⟩ := Prod.ext_iff.1 hxy
     exact (mul_right_inj _).1 (h₁ ▸ h₂)
 /- Let `ve := ∑ v(g)·(s(π(g)), s(π(g))⁻¹g)`. -/
@@ -436,15 +436,15 @@ previous assumptions. -/
   /- Indeed, `v + d(ve) - x = d(ve - z) ∈ B₁(G, A)`, since `v := x - dz`. -/
     use ve - z
     have := mapDomain_comapDomain (α := S) Subtype.val Subtype.val_injective
-      (v + d₂₁ A ve) (fun x hx => ⟨⟨x, hS hx⟩, rfl⟩)
+      (v + d₂₁ A ve) (fun x hx ↦ ⟨⟨x, hS hx⟩, rfl⟩)
     simp_all [mapCycles₁_hom, v, add_sub_assoc, sub_add_sub_cancel']
   /- And `v + d(ve) := x - dz + d(ve)` is a 1-cycle because `x` is. -/
   · have : v + d₂₁ _ ve ∈ cycles₁ A := Submodule.add_mem _
       (Submodule.sub_mem _ hxc <| d₂₁_apply_mem_cycles₁ _) (d₂₁_apply_mem_cycles₁ _)
     rw [mem_cycles₁_iff] at this ⊢
-    rwa [← sum_comapDomain, ← sum_comapDomain (g := fun _ a => a)] at this <;>
+    rwa [← sum_comapDomain, ← sum_comapDomain (g := fun _ a ↦ a)] at this <;>
     exact ⟨Set.mapsTo_preimage _ _, Set.injOn_of_injective Subtype.val_injective,
-      fun x hx => ⟨⟨x, hS hx⟩, hx, rfl⟩⟩
+      fun x hx ↦ ⟨⟨x, hS hx⟩, hx, rfl⟩⟩
 
 end OfTrivial
 
@@ -516,7 +516,7 @@ noncomputable abbrev mapCycles₂ :
     (shortComplexH2 B).moduleCatLeftHomologyData
 
 lemma mapCycles₂_hom :
-    (mapCycles₂ f φ).hom = (chainsMap₂ f φ).hom.restrict (fun x _ => by
+    (mapCycles₂ f φ).hom = (chainsMap₂ f φ).hom.restrict (fun x _ ↦ by
       have := congr($((mapShortComplexH2 f φ).comm₂₃) x); simp_all [cycles₂, shortComplexH2]) :=
   rfl
 

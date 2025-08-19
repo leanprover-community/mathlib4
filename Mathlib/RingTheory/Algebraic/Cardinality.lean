@@ -28,14 +28,14 @@ variable [NoZeroSMulDivisors R L] [Algebra.IsAlgebraic R L]
 theorem lift_cardinalMk_le_sigma_polynomial :
     lift.{u} #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) := by
   have := @lift_mk_le_lift_mk_of_injective L (Σ p : R[X], {x : L | x ∈ p.aroots L})
-    (fun x : L =>
+    (fun x : L ↦
       let p := Classical.indefiniteDescription _ (Algebra.IsAlgebraic.isAlgebraic x)
       ⟨p.1, x, by
         dsimp
         have := (Polynomial.map_ne_zero_iff (FaithfulSMul.algebraMap_injective R L)).2 p.2.1
         rw [Polynomial.mem_roots this, Polynomial.IsRoot, Polynomial.eval_map,
           ← Polynomial.aeval_def, p.2.2]⟩)
-    fun x y => by
+    fun x y ↦ by
       intro h
       simp only [Set.coe_setOf, ne_eq, Set.mem_setOf_eq, Sigma.mk.inj_iff] at h
       refine (Subtype.heq_iff_coe_eq ?_).1 h.2
@@ -46,10 +46,10 @@ theorem lift_cardinalMk_le_max : lift.{u} #L ≤ lift.{v} #R ⊔ ℵ₀ :=
   calc
     lift.{u} #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) :=
       lift_cardinalMk_le_sigma_polynomial R L
-    _ = Cardinal.sum fun p : R[X] => #{x : L | x ∈ p.aroots L} := by
+    _ = Cardinal.sum fun p : R[X] ↦ #{x : L | x ∈ p.aroots L} := by
       rw [← mk_sigma]; rfl
-    _ ≤ Cardinal.sum.{u, v} fun _ : R[X] => ℵ₀ :=
-      (sum_le_sum _ _ fun _ => (Multiset.finite_toSet _).lt_aleph0.le)
+    _ ≤ Cardinal.sum.{u, v} fun _ : R[X] ↦ ℵ₀ :=
+      (sum_le_sum _ _ fun _ ↦ (Multiset.finite_toSet _).lt_aleph0.le)
     _ = lift.{v} #(R[X]) * ℵ₀ := by rw [sum_const, lift_aleph0]
     _ ≤ lift.{v} (#R ⊔ ℵ₀) ⊔ ℵ₀ ⊔ ℵ₀ := (mul_le_max _ _).trans <| by
       gcongr; simp only [lift_le, Polynomial.cardinalMk_le_max]

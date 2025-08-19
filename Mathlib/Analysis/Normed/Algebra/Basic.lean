@@ -36,7 +36,7 @@ namespace CharacterSpace
 variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
 theorem norm_le_norm_one (φ : characterSpace 𝕜 A) : ‖toStrongDual (φ : WeakDual 𝕜 A)‖ ≤ ‖(1 : A)‖ :=
-  ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg (1 : A)) fun a =>
+  ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg (1 : A)) fun a ↦
     mul_comm ‖a‖ ‖(1 : A)‖ ▸ spectrum.norm_le_norm_mul_of_mem (apply_mem_spectrum φ a)
 
 instance [ProperSpace 𝕜] : CompactSpace (characterSpace 𝕜 A) := by

@@ -50,7 +50,7 @@ end Functor
 
 
 protected instance pure : Pure Finset :=
-  ⟨fun x => {x}⟩
+  ⟨fun x ↦ {x}⟩
 
 @[simp]
 theorem pure_def {α} : (pure : α → Finset α) = singleton := rfl
@@ -64,12 +64,12 @@ variable {α β : Type u} [∀ P, Decidable P]
 
 protected instance applicative : Applicative Finset :=
   { Finset.functor, Finset.pure with
-    seq := fun t s => t.sup fun f => (s ()).image f
-    seqLeft := fun s t => if t () = ∅ then ∅ else s
-    seqRight := fun s t => if s = ∅ then ∅ else t () }
+    seq := fun t s ↦ t.sup fun f ↦ (s ()).image f
+    seqLeft := fun s t ↦ if t () = ∅ then ∅ else s
+    seqRight := fun s t ↦ if s = ∅ then ∅ else t () }
 
 @[simp]
-theorem seq_def (s : Finset α) (t : Finset (α → β)) : t <*> s = t.sup fun f => s.image f :=
+theorem seq_def (s : Finset α) (t : Finset (α → β)) : t <*> s = t.sup fun f ↦ s.image f :=
   rfl
 
 @[simp]
@@ -89,35 +89,35 @@ theorem image₂_def {α β γ : Type u} (f : α → β → γ) (s : Finset α) 
 
 instance lawfulApplicative : LawfulApplicative Finset :=
   { Finset.lawfulFunctor with
-    seqLeft_eq := fun s t => by
+    seqLeft_eq := fun s t ↦ by
       rw [seq_def, fmap_def, seqLeft_def]
       obtain rfl | ht := t.eq_empty_or_nonempty
       · simp_rw [image_empty, if_true]
         exact (sup_bot _).symm
       · ext a
         rw [if_neg ht.ne_empty, mem_sup]
-        refine ⟨fun ha => ⟨const _ a, mem_image_of_mem _ ha, mem_image_const_self.2 ht⟩, ?_⟩
+        refine ⟨fun ha ↦ ⟨const _ a, mem_image_of_mem _ ha, mem_image_const_self.2 ht⟩, ?_⟩
         rintro ⟨f, hf, ha⟩
         rw [mem_image] at hf ha
         obtain ⟨b, hb, rfl⟩ := hf
         obtain ⟨_, _, rfl⟩ := ha
         exact hb
-    seqRight_eq := fun s t => by
+    seqRight_eq := fun s t ↦ by
       rw [seq_def, fmap_def, seqRight_def]
       obtain rfl | hs := s.eq_empty_or_nonempty
       · rw [if_pos rfl, image_empty, sup_empty, bot_eq_empty]
       · ext a
         rw [if_neg hs.ne_empty, mem_sup]
-        refine ⟨fun ha => ⟨id, mem_image_const_self.2 hs, by rwa [image_id]⟩, ?_⟩
+        refine ⟨fun ha ↦ ⟨id, mem_image_const_self.2 hs, by rwa [image_id]⟩, ?_⟩
         rintro ⟨f, hf, ha⟩
         rw [mem_image] at hf ha
         obtain ⟨b, hb, rfl⟩ := ha
         obtain ⟨_, _, rfl⟩ := hf
         exact hb
-    pure_seq := fun f s => by simp only [pure_def, seq_def, sup_singleton, fmap_def]
-    map_pure := fun _ _ => image_singleton _ _
-    seq_pure := fun _ _ => sup_singleton_apply _ _
-    seq_assoc := fun s t u => by
+    pure_seq := fun f s ↦ by simp only [pure_def, seq_def, sup_singleton, fmap_def]
+    map_pure := fun _ _ ↦ image_singleton _ _
+    seq_pure := fun _ _ ↦ sup_singleton_apply _ _
+    seq_assoc := fun s t u ↦ by
       ext a
       simp_rw [seq_def, fmap_def]
       simp only [mem_sup, mem_image]
@@ -129,10 +129,10 @@ instance lawfulApplicative : LawfulApplicative Finset :=
 
 instance commApplicative : CommApplicative Finset :=
   { Finset.lawfulApplicative with
-    commutative_prod := fun s t => by
+    commutative_prod := fun s t ↦ by
       simp_rw [seq_def, fmap_def, sup_image, sup_eq_biUnion]
-      change (s.biUnion fun a => t.image fun b => (a, b))
-        = t.biUnion fun b => s.image fun a => (a, b)
+      change (s.biUnion fun a ↦ t.image fun b ↦ (a, b))
+        = t.biUnion fun b ↦ s.image fun a ↦ (a, b)
       trans s ×ˢ t <;> [rw [product_eq_biUnion]; rw [product_eq_biUnion_right]] }
 
 end Applicative
@@ -153,10 +153,10 @@ theorem bind_def {α β} : (· >>= ·) = sup (α := Finset α) (β := β) :=
 
 instance : LawfulMonad Finset :=
   { Finset.lawfulApplicative with
-    bind_pure_comp := fun _ _ => sup_singleton_apply _ _
-    bind_map := fun _ _ => rfl
-    pure_bind := fun _ _ => sup_singleton
-    bind_assoc := fun s f g => by simp only [bind, sup_eq_biUnion, biUnion_biUnion] }
+    bind_pure_comp := fun _ _ ↦ sup_singleton_apply _ _
+    bind_map := fun _ _ ↦ rfl
+    pure_bind := fun _ _ ↦ sup_singleton
+    bind_assoc := fun s f g ↦ by simp only [bind, sup_eq_biUnion, biUnion_biUnion] }
 
 end Monad
 
@@ -169,7 +169,7 @@ variable [∀ P, Decidable P]
 
 instance : Alternative Finset :=
   { Finset.applicative with
-    orElse := fun s t => (s ∪ t ())
+    orElse := fun s t ↦ (s ∪ t ())
     failure := ∅ }
 
 end Alternative
@@ -195,7 +195,7 @@ open scoped Classical in
 @[simp]
 theorem map_comp_coe (h : α → β) :
     Functor.map h ∘ Multiset.toFinset = Multiset.toFinset ∘ Functor.map h :=
-  funext fun _ => image_toFinset
+  funext fun _ ↦ image_toFinset
 
 open scoped Classical in
 @[simp]

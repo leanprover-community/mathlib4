@@ -25,19 +25,19 @@ open Set Filter Asymptotics NNReal ENNReal
 variable {f g : E → F} {p pf pg : FormalMultilinearSeries 𝕜 E F} {x : E} {r r' : ℝ≥0∞} {n m : ℕ}
 
 theorem hasFiniteFPowerSeriesOnBall_const {c : F} {e : E} :
-    HasFiniteFPowerSeriesOnBall (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e 1 ⊤ :=
+    HasFiniteFPowerSeriesOnBall (fun _ ↦ c) (constFormalMultilinearSeries 𝕜 E c) e 1 ⊤ :=
   ⟨hasFPowerSeriesOnBall_const,
     fun _ hn ↦ constFormalMultilinearSeries_apply_of_nonzero (Nat.ne_zero_of_lt hn)⟩
 
 theorem hasFiniteFPowerSeriesAt_const {c : F} {e : E} :
-    HasFiniteFPowerSeriesAt (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e 1 :=
+    HasFiniteFPowerSeriesAt (fun _ ↦ c) (constFormalMultilinearSeries 𝕜 E c) e 1 :=
   ⟨⊤, hasFiniteFPowerSeriesOnBall_const⟩
 
-theorem CPolynomialAt_const {v : F} : CPolynomialAt 𝕜 (fun _ => v) x :=
+theorem CPolynomialAt_const {v : F} : CPolynomialAt 𝕜 (fun _ ↦ v) x :=
   ⟨constFormalMultilinearSeries 𝕜 E v, 1, hasFiniteFPowerSeriesAt_const⟩
 
-theorem CPolynomialOn_const {v : F} {s : Set E} : CPolynomialOn 𝕜 (fun _ => v) s :=
-  fun _ _ => CPolynomialAt_const
+theorem CPolynomialOn_const {v : F} {s : Set E} : CPolynomialOn 𝕜 (fun _ ↦ v) s :=
+  fun _ _ ↦ CPolynomialAt_const
 
 theorem HasFiniteFPowerSeriesOnBall.add (hf : HasFiniteFPowerSeriesOnBall f pf x n r)
     (hg : HasFiniteFPowerSeriesOnBall g pg x m r) :
@@ -87,11 +87,11 @@ theorem CPolynomialAt.sub (hf : CPolynomialAt 𝕜 f x) (hg : CPolynomialAt 𝕜
 
 theorem CPolynomialOn.add {s : Set E} (hf : CPolynomialOn 𝕜 f s) (hg : CPolynomialOn 𝕜 g s) :
     CPolynomialOn 𝕜 (f + g) s :=
-  fun z hz => (hf z hz).add (hg z hz)
+  fun z hz ↦ (hf z hz).add (hg z hz)
 
 theorem CPolynomialOn.sub {s : Set E} (hf : CPolynomialOn 𝕜 f s) (hg : CPolynomialOn 𝕜 g s) :
     CPolynomialOn 𝕜 (f - g) s :=
-  fun z hz => (hf z hz).sub (hg z hz)
+  fun z hz ↦ (hf z hz).sub (hg z hz)
 
 
 /-!

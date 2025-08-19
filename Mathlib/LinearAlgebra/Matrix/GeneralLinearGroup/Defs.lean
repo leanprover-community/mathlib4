@@ -51,7 +51,7 @@ variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
 
 section CoeFnInstance
 
-instance instCoeFun : CoeFun (GL n R) fun _ => n → n → R where
+instance instCoeFun : CoeFun (GL n R) fun _ ↦ n → n → R where
   coe A := (A : Matrix n n R)
 
 end CoeFnInstance
@@ -278,7 +278,7 @@ variable {n : Type u} {R : Type v} [DecidableEq n] [Fintype n]
 /-- Formal operation of negation on general linear group on even cardinality `n` given by negating
 each element. -/
 instance : Neg (GLPos n R) :=
-  ⟨fun g =>
+  ⟨fun g ↦
     ⟨-g, by
       rw [mem_glpos, GeneralLinearGroup.val_det_apply, Units.val_neg, det_neg,
         (Fact.out (p := Even <| Fintype.card n)).neg_one_pow, one_mul]

@@ -18,12 +18,12 @@ instance Prop.instDistribLattice : DistribLattice Prop where
   sup := Or
   le_sup_left := @Or.inl
   le_sup_right := @Or.inr
-  sup_le := fun _ _ _ => Or.rec
+  sup_le := fun _ _ _ ↦ Or.rec
   inf := And
   inf_le_left := @And.left
   inf_le_right := @And.right
-  le_inf := fun _ _ _ Hab Hac Ha => And.intro (Hab Ha) (Hac Ha)
-  le_sup_inf := fun _ _ _ => or_and_left.2
+  le_inf := fun _ _ _ Hab Hac Ha ↦ And.intro (Hab Ha) (Hac Ha)
+  le_sup_inf := fun _ _ _ ↦ or_and_left.2
 
 /-- Propositions form a bounded order. -/
 instance Prop.instBoundedOrder : BoundedOrder Prop where
@@ -41,7 +41,7 @@ theorem Prop.top_eq_true : (⊤ : Prop) = True :=
   rfl
 
 instance Prop.le_isTotal : IsTotal Prop (· ≤ ·) :=
-  ⟨fun p q => by by_cases h : q <;> simp [h]⟩
+  ⟨fun p q ↦ by by_cases h : q <;> simp [h]⟩
 
 noncomputable instance Prop.linearOrder : LinearOrder Prop := by
   classical
@@ -64,14 +64,14 @@ theorem disjoint_iff [∀ i, OrderBot (α' i)] {f g : ∀ i, α' i} :
   classical
   constructor
   · intro h i x hf hg
-    exact (update_le_iff.mp <| h (update_le_iff.mpr ⟨hf, fun _ _ => bot_le⟩)
-      (update_le_iff.mpr ⟨hg, fun _ _ => bot_le⟩)).1
+    exact (update_le_iff.mp <| h (update_le_iff.mpr ⟨hf, fun _ _ ↦ bot_le⟩)
+      (update_le_iff.mpr ⟨hg, fun _ _ ↦ bot_le⟩)).1
   · intro h x hf hg i
     apply h i (hf i) (hg i)
 
 theorem codisjoint_iff [∀ i, OrderTop (α' i)] {f g : ∀ i, α' i} :
     Codisjoint f g ↔ ∀ i, Codisjoint (f i) (g i) :=
-  @disjoint_iff _ (fun i => (α' i)ᵒᵈ) _ _ _ _
+  @disjoint_iff _ (fun i ↦ (α' i)ᵒᵈ) _ _ _ _
 
 theorem isCompl_iff [∀ i, BoundedOrder (α' i)] {f g : ∀ i, α' i} :
     IsCompl f g ↔ ∀ i, IsCompl (f i) (g i) := by
@@ -97,12 +97,12 @@ section decidable_instances
 universe u
 variable {α : Type u}
 
-instance Prop.decidablePredBot : DecidablePred (⊥ : α → Prop) := fun _ => instDecidableFalse
+instance Prop.decidablePredBot : DecidablePred (⊥ : α → Prop) := fun _ ↦ instDecidableFalse
 
-instance Prop.decidablePredTop : DecidablePred (⊤ : α → Prop) := fun _ => instDecidableTrue
+instance Prop.decidablePredTop : DecidablePred (⊤ : α → Prop) := fun _ ↦ instDecidableTrue
 
-instance Prop.decidableRelBot : DecidableRel (⊥ : α → α → Prop) := fun _ _ => instDecidableFalse
+instance Prop.decidableRelBot : DecidableRel (⊥ : α → α → Prop) := fun _ _ ↦ instDecidableFalse
 
-instance Prop.decidableRelTop : DecidableRel (⊤ : α → α → Prop) := fun _ _ => instDecidableTrue
+instance Prop.decidableRelTop : DecidableRel (⊤ : α → α → Prop) := fun _ _ ↦ instDecidableTrue
 
 end decidable_instances

@@ -31,9 +31,9 @@ variable {R : Type*} {M : Type*} [Ring R] [TopologicalSpace R] [TopologicalSpace
   [AddCommGroup M] [Module R M]
 
 theorem ContinuousSMul.of_nhds_zero [IsTopologicalRing R] [IsTopologicalAddGroup M]
-    (hmul : Tendsto (fun p : R × M => p.1 • p.2) (𝓝 0 ×ˢ 𝓝 0) (𝓝 0))
-    (hmulleft : ∀ m : M, Tendsto (fun a : R => a • m) (𝓝 0) (𝓝 0))
-    (hmulright : ∀ a : R, Tendsto (fun m : M => a • m) (𝓝 0) (𝓝 0)) : ContinuousSMul R M where
+    (hmul : Tendsto (fun p : R × M ↦ p.1 • p.2) (𝓝 0 ×ˢ 𝓝 0) (𝓝 0))
+    (hmulleft : ∀ m : M, Tendsto (fun a : R ↦ a • m) (𝓝 0) (𝓝 0))
+    (hmulright : ∀ a : R, Tendsto (fun m : M ↦ a • m) (𝓝 0) (𝓝 0)) : ContinuousSMul R M where
   continuous_smul := by
     rw [← nhds_prod_eq] at hmul
     refine continuous_of_continuousAt_zero₂ (AddMonoidHom.smul : R →+ M →+ M) ?_ ?_ ?_ <;>
@@ -60,9 +60,9 @@ This is the case, e.g., if `R` is a nontrivially normed field. -/
 theorem Submodule.eq_top_of_nonempty_interior' [NeBot (𝓝[{ x : R | IsUnit x }] 0)]
     (s : Submodule R M) (hs : (interior (s : Set M)).Nonempty) : s = ⊤ := by
   rcases hs with ⟨y, hy⟩
-  refine Submodule.eq_top_iff'.2 fun x => ?_
+  refine Submodule.eq_top_iff'.2 fun x ↦ ?_
   rw [mem_interior_iff_mem_nhds] at hy
-  have : Tendsto (fun c : R => y + c • x) (𝓝[{ x : R | IsUnit x }] 0) (𝓝 (y + (0 : R) • x)) :=
+  have : Tendsto (fun c : R ↦ y + c • x) (𝓝[{ x : R | IsUnit x }] 0) (𝓝 (y + (0 : R) • x)) :=
     tendsto_const_nhds.add ((tendsto_nhdsWithin_of_tendsto_nhds tendsto_id).smul tendsto_const_nhds)
   rw [zero_smul, add_zero] at this
   obtain ⟨_, hu : y + _ • _ ∈ s, u, rfl⟩ :=
@@ -84,7 +84,7 @@ One can also use `haveI := Module.punctured_nhds_neBot R M` in a proof.
 theorem Module.punctured_nhds_neBot [Nontrivial M] [NeBot (𝓝[≠] (0 : R))] [NoZeroSMulDivisors R M]
     (x : M) : NeBot (𝓝[≠] x) := by
   rcases exists_ne (0 : M) with ⟨y, hy⟩
-  suffices Tendsto (fun c : R => x + c • y) (𝓝[≠] 0) (𝓝[≠] x) from this.neBot
+  suffices Tendsto (fun c : R ↦ x + c • y) (𝓝[≠] 0) (𝓝[≠] x) from this.neBot
   refine Tendsto.inf ?_ (tendsto_principal_principal.2 <| ?_)
   · convert tendsto_const_nhds.add ((@tendsto_id R _).smul_const y)
     rw [zero_smul, add_zero]
@@ -249,11 +249,11 @@ theorem LinearMap.continuous_on_pi {ι : Type*} {R : Type*} {M : Type*} [Finite 
   classical
     -- for the proof, write `f` in the standard basis, and use that each coordinate is a continuous
     -- function.
-    have : (f : (ι → R) → M) = fun x => ∑ i : ι, x i • f fun j => if i = j then 1 else 0 := by
+    have : (f : (ι → R) → M) = fun x ↦ ∑ i : ι, x i • f fun j ↦ if i = j then 1 else 0 := by
       ext x
       exact f.pi_apply_eq_sum_univ x
     rw [this]
-    refine continuous_finset_sum _ fun i _ => ?_
+    refine continuous_finset_sum _ fun i _ ↦ ?_
     exact (continuous_apply i).smul continuous_const
 
 end Pi
@@ -277,14 +277,14 @@ def linearMapOfMemClosureRangeCoe (f : M₁ → M₂)
 /-- Construct a bundled linear map from a pointwise limit of linear maps -/
 @[simps! -fullyApplied]
 def linearMapOfTendsto (f : M₁ → M₂) (g : α → M₁ →ₛₗ[σ] M₂) [l.NeBot]
-    (h : Tendsto (fun a x => g a x) l (𝓝 f)) : M₁ →ₛₗ[σ] M₂ :=
+    (h : Tendsto (fun a x ↦ g a x) l (𝓝 f)) : M₁ →ₛₗ[σ] M₂ :=
   linearMapOfMemClosureRangeCoe f <|
-    mem_closure_of_tendsto h <| Eventually.of_forall fun _ => Set.mem_range_self _
+    mem_closure_of_tendsto h <| Eventually.of_forall fun _ ↦ Set.mem_range_self _
 
 variable (M₁ M₂ σ)
 
 theorem LinearMap.isClosed_range_coe : IsClosed (Set.range ((↑) : (M₁ →ₛₗ[σ] M₂) → M₁ → M₂)) :=
-  isClosed_of_closure_subset fun f hf => ⟨linearMapOfMemClosureRangeCoe f hf, rfl⟩
+  isClosed_of_closure_subset fun f hf ↦ ⟨linearMapOfMemClosureRangeCoe f hf, rfl⟩
 
 end PointwiseLimits
 

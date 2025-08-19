@@ -158,11 +158,11 @@ lemma prev_eq_self' (c : ComplexShape ι) (j : ι) (hj : ∀ i, ¬c.Rel i j) :
 
 lemma next_eq_self (c : ComplexShape ι) (j : ι) (hj : ¬c.Rel j (c.next j)) :
     c.next j = j :=
-  c.next_eq_self' j (fun k hk' => hj (by simpa only [c.next_eq' hk'] using hk'))
+  c.next_eq_self' j (fun k hk' ↦ hj (by simpa only [c.next_eq' hk'] using hk'))
 
 lemma prev_eq_self (c : ComplexShape ι) (j : ι) (hj : ¬c.Rel (c.prev j) j) :
     c.prev j = j :=
-  c.prev_eq_self' j (fun k hk' => hj (by simpa only [c.prev_eq' hk'] using hk'))
+  c.prev_eq_self' j (fun k hk' ↦ hj (by simpa only [c.prev_eq' hk'] using hk'))
 
 /-- The `ComplexShape` allowing differentials from `X i` to `X (i+a)`.
 (For example when `a = 1`, a cohomology theory indexed by `ℕ` or `ℤ`)
@@ -210,10 +210,10 @@ namespace ComplexShape
 variable (α : Type*) [AddRightCancelSemigroup α] [DecidableEq α]
 
 instance (a : α) : DecidableRel (ComplexShape.up' a).Rel :=
-  fun _ _ => by dsimp; infer_instance
+  fun _ _ ↦ by dsimp; infer_instance
 
 instance (a : α) : DecidableRel (ComplexShape.down' a).Rel :=
-  fun _ _ => by dsimp; infer_instance
+  fun _ _ ↦ by dsimp; infer_instance
 
 variable [One α]
 

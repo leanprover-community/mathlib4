@@ -60,7 +60,7 @@ theorem exp_eq_sum {a : A} {k : ℕ} (h : a ^ k = 0) :
   suffices ∑ i ∈ Ico (nilpotencyClass a) k, (i.factorial : ℚ)⁻¹ • (a ^ i) = 0 by
     dsimp [exp]
     rw [h₁, this, add_zero]
-  exact sum_eq_zero fun _ h₂ => by
+  exact sum_eq_zero fun _ h₂ ↦ by
     rw [pow_eq_zero_of_le (mem_Ico.1 h₂).1 (pow_nilpotencyClass ⟨k, h⟩), smul_zero]
 
 theorem exp_smul_eq_sum {M : Type*} [AddCommGroup M] [Module A M] [Module ℚ M] {a : A} {m : M}

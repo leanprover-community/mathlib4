@@ -17,7 +17,7 @@ open scoped NNReal Topology
 variable {ι α : Type*} [PseudoMetricSpace α]
 
 instance : OrderTopology ℝ :=
-  orderTopology_of_nhds_abs fun x => by
+  orderTopology_of_nhds_abs fun x ↦ by
     simp only [nhds_basis_ball.eq_biInf, ball, Real.dist_eq, abs_sub_comm]
 
 lemma Real.singleton_eq_inter_Icc (b : ℝ) : {b} = ⋂ (r > 0), Icc (b - r) (b + r) := by
@@ -76,8 +76,8 @@ lemma frontier_closedBall_subset_sphere : frontier (closedBall x ε) ⊆ sphere 
 
 lemma closedBall_zero' (x : α) : closedBall x 0 = closure {x} :=
   Subset.antisymm
-    (fun _y hy =>
-      mem_closure_iff.2 fun _ε ε0 => ⟨x, mem_singleton x, (mem_closedBall.1 hy).trans_lt ε0⟩)
+    (fun _y hy ↦
+      mem_closure_iff.2 fun _ε ε0 ↦ ⟨x, mem_singleton x, (mem_closedBall.1 hy).trans_lt ε0⟩)
     (closure_minimal (singleton_subset_iff.2 (dist_self x).le) isClosed_closedBall)
 
 lemma eventually_isCompact_closedBall [WeaklyLocallyCompactSpace α] (x : α) :

@@ -159,7 +159,7 @@ theorem FiniteMultiplicity.def : FiniteMultiplicity a b ↔ ∃ n : ℕ, ¬a ^ (
   Iff.rfl
 
 theorem FiniteMultiplicity.not_dvd_of_one_right : FiniteMultiplicity a 1 → ¬a ∣ 1 :=
-  fun ⟨n, hn⟩ ⟨d, hd⟩ => hn ⟨d ^ (n + 1), (pow_mul_pow_eq_one (n + 1) hd.symm).symm⟩
+  fun ⟨n, hn⟩ ⟨d, hd⟩ ↦ hn ⟨d ^ (n + 1), (pow_mul_pow_eq_one (n + 1) hd.symm).symm⟩
 
 @[norm_cast]
 theorem Int.natCast_emultiplicity (a b : ℕ) :
@@ -172,7 +172,7 @@ theorem Int.natCast_multiplicity (a b : ℕ) : multiplicity (a : ℤ) (b : ℤ) 
   multiplicity_eq_of_emultiplicity_eq (natCast_emultiplicity a b)
 
 theorem FiniteMultiplicity.not_iff_forall : ¬FiniteMultiplicity a b ↔ ∀ n : ℕ, a ^ n ∣ b :=
-  ⟨fun h n =>
+  ⟨fun h n ↦
     Nat.casesOn n
       (by
         rw [_root_.pow_zero]
@@ -185,8 +185,8 @@ theorem FiniteMultiplicity.not_unit (h : FiniteMultiplicity a b) : ¬IsUnit a :=
   hn ∘ IsUnit.dvd ∘ IsUnit.pow (n + 1)
 
 theorem FiniteMultiplicity.mul_left {c : α} :
-    FiniteMultiplicity a (b * c) → FiniteMultiplicity a b := fun ⟨n, hn⟩ =>
-  ⟨n, fun h => hn (h.trans (dvd_mul_right _ _))⟩
+    FiniteMultiplicity a (b * c) → FiniteMultiplicity a b := fun ⟨n, hn⟩ ↦
+  ⟨n, fun h ↦ hn (h.trans (dvd_mul_right _ _))⟩
 
 theorem pow_dvd_of_le_emultiplicity {k : ℕ} (hk : k ≤ emultiplicity a b) :
     a ^ k ∣ b := by classical
@@ -206,7 +206,7 @@ theorem pow_multiplicity_dvd (a b : α) : a ^ (multiplicity a b) ∣ b :=
   pow_dvd_of_le_multiplicity le_rfl
 
 theorem not_pow_dvd_of_emultiplicity_lt {m : ℕ} (hm : emultiplicity a b < m) :
-    ¬a ^ m ∣ b := fun nh => by
+    ¬a ^ m ∣ b := fun nh ↦ by
   unfold emultiplicity at hm
   split at hm
   · simp only [cast_lt, find_lt_iff] at hm
@@ -221,7 +221,7 @@ theorem FiniteMultiplicity.not_pow_dvd_of_multiplicity_lt (hf : FiniteMultiplici
   norm_cast
 
 theorem multiplicity_pos_of_dvd (hdiv : a ∣ b) : 0 < multiplicity a b := by
-  refine Nat.pos_iff_ne_zero.2 fun h => ?_
+  refine Nat.pos_iff_ne_zero.2 fun h ↦ ?_
   simpa [hdiv] using FiniteMultiplicity.not_pow_dvd_of_multiplicity_lt
     (by by_contra! nh; simp [nh] at h) (lt_one_iff.mpr h)
 
@@ -241,7 +241,7 @@ theorem multiplicity_eq_of_dvd_of_not_dvd {k : ℕ} (hk : a ^ k ∣ b) (hsucc : 
 
 theorem le_emultiplicity_of_pow_dvd {k : ℕ} (hk : a ^ k ∣ b) :
     k ≤ emultiplicity a b :=
-  le_of_not_gt fun hk' => not_pow_dvd_of_emultiplicity_lt hk' hk
+  le_of_not_gt fun hk' ↦ not_pow_dvd_of_emultiplicity_lt hk' hk
 
 theorem FiniteMultiplicity.le_multiplicity_of_pow_dvd (hf : FiniteMultiplicity a b)
     {k : ℕ} (hk : a ^ k ∣ b) : k ≤ multiplicity a b :=
@@ -356,10 +356,10 @@ theorem FiniteMultiplicity.multiplicity_le_multiplicity_iff {c d : β} (hab : Fi
 
 theorem emultiplicity_eq_emultiplicity_iff {c d : β} :
     emultiplicity a b = emultiplicity c d ↔ ∀ n : ℕ, a ^ n ∣ b ↔ c ^ n ∣ d :=
-  ⟨fun h n =>
+  ⟨fun h n ↦
     ⟨emultiplicity_le_emultiplicity_iff.1 h.le n, emultiplicity_le_emultiplicity_iff.1 h.ge n⟩,
-    fun h => le_antisymm (emultiplicity_le_emultiplicity_iff.2 fun n => (h n).mp)
-      (emultiplicity_le_emultiplicity_iff.2 fun n => (h n).mpr)⟩
+    fun h ↦ le_antisymm (emultiplicity_le_emultiplicity_iff.2 fun n ↦ (h n).mp)
+      (emultiplicity_le_emultiplicity_iff.2 fun n ↦ (h n).mpr)⟩
 
 theorem le_emultiplicity_map {F : Type*} [FunLike F α β] [MonoidHomClass F α β]
     (f : F) {a b : α} :
@@ -376,7 +376,7 @@ theorem multiplicity_map_eq {F : Type*} [EquivLike F α β] [MulEquivClass F α 
 
 theorem emultiplicity_le_emultiplicity_of_dvd_right {a b c : α} (h : b ∣ c) :
     emultiplicity a b ≤ emultiplicity a c :=
-  emultiplicity_le_emultiplicity_iff.2 fun _ hb => hb.trans h
+  emultiplicity_le_emultiplicity_iff.2 fun _ hb ↦ hb.trans h
 
 theorem emultiplicity_eq_of_associated_right {a b c : α} (h : Associated b c) :
     emultiplicity a b = emultiplicity a c :=
@@ -394,7 +394,7 @@ theorem dvd_of_multiplicity_pos {a b : α} (h : 0 < multiplicity a b) : a ∣ b 
   dvd_of_emultiplicity_pos (lt_emultiplicity_of_lt_multiplicity h)
 
 theorem dvd_iff_multiplicity_pos {a b : α} : 0 < multiplicity a b ↔ a ∣ b :=
-  ⟨dvd_of_multiplicity_pos, fun hdvd => Nat.pos_of_ne_zero (by simpa [multiplicity_eq_zero])⟩
+  ⟨dvd_of_multiplicity_pos, fun hdvd ↦ Nat.pos_of_ne_zero (by simpa [multiplicity_eq_zero])⟩
 
 theorem dvd_iff_emultiplicity_pos {a b : α} : 0 < emultiplicity a b ↔ a ∣ b :=
   emultiplicity_pos_iff.trans dvd_iff_multiplicity_pos
@@ -403,18 +403,18 @@ theorem Nat.finiteMultiplicity_iff {a b : ℕ} : FiniteMultiplicity a b ↔ a �
   rw [← not_iff_not, FiniteMultiplicity.not_iff_forall, not_and_or, not_ne_iff, not_lt,
     Nat.le_zero]
   exact
-    ⟨fun h =>
-      or_iff_not_imp_right.2 fun hb =>
-        have ha : a ≠ 0 := fun ha => hb <| zero_dvd_iff.mp <| by rw [ha] at h; exact h 1
-        Classical.by_contradiction fun ha1 : a ≠ 1 =>
+    ⟨fun h ↦
+      or_iff_not_imp_right.2 fun hb ↦
+        have ha : a ≠ 0 := fun ha ↦ hb <| zero_dvd_iff.mp <| by rw [ha] at h; exact h 1
+        Classical.by_contradiction fun ha1 : a ≠ 1 ↦
           have ha_gt_one : 1 < a :=
-            lt_of_not_ge fun _ =>
+            lt_of_not_ge fun _ ↦
               match a with
               | 0 => ha rfl
               | 1 => ha1 rfl
               | b+2 => by omega
           not_lt_of_ge (le_of_dvd (Nat.pos_of_ne_zero hb) (h b)) (b.lt_pow_self ha_gt_one),
-      fun h => by cases h <;> simp [*]⟩
+      fun h ↦ by cases h <;> simp [*]⟩
 
 alias ⟨_, Dvd.multiplicity_pos⟩ := dvd_iff_multiplicity_pos
 
@@ -449,7 +449,7 @@ theorem multiplicity_of_unit_right {a : α} (ha : ¬IsUnit a) (u : αˣ) : multi
 
 theorem emultiplicity_le_emultiplicity_of_dvd_left {a b c : α} (hdvd : a ∣ b) :
     emultiplicity b c ≤ emultiplicity a c :=
-  emultiplicity_le_emultiplicity_iff.2 fun n h => (pow_dvd_pow_of_dvd hdvd n).trans h
+  emultiplicity_le_emultiplicity_iff.2 fun n h ↦ (pow_dvd_pow_of_dvd hdvd n).trans h
 
 theorem emultiplicity_eq_of_associated_left {a b c : α} (h : Associated a b) :
     emultiplicity b c = emultiplicity a c :=
@@ -472,7 +472,7 @@ variable [MonoidWithZero α]
 
 theorem FiniteMultiplicity.ne_zero {a b : α} (h : FiniteMultiplicity a b) : b ≠ 0 :=
   let ⟨n, hn⟩ := h
-  fun hb => by simp [hb] at hn
+  fun hb ↦ by simp [hb] at hn
 
 @[simp]
 theorem emultiplicity_zero (a : α) : emultiplicity a 0 = ⊤ :=
@@ -601,13 +601,13 @@ variable [CancelCommMonoidWithZero α]
 Pulled a b intro parameters since Lean parses that more easily -/
 theorem finiteMultiplicity_mul_aux {p : α} (hp : Prime p) {a b : α} :
     ∀ {n m : ℕ}, ¬p ^ (n + 1) ∣ a → ¬p ^ (m + 1) ∣ b → ¬p ^ (n + m + 1) ∣ a * b
-  | n, m => fun ha hb ⟨s, hs⟩ =>
+  | n, m => fun ha hb ⟨s, hs⟩ ↦
     have : p ∣ a * b := ⟨p ^ (n + m) * s, by simp [hs, pow_add, mul_comm, mul_left_comm]⟩
     (hp.2.2 a b this).elim
-      (fun ⟨x, hx⟩ =>
+      (fun ⟨x, hx⟩ ↦
         have hn0 : 0 < n :=
-          Nat.pos_of_ne_zero fun hn0 => by simp [hx, hn0] at ha
-        have hpx : ¬p ^ (n - 1 + 1) ∣ x := fun ⟨y, hy⟩ =>
+          Nat.pos_of_ne_zero fun hn0 ↦ by simp [hx, hn0] at ha
+        have hpx : ¬p ^ (n - 1 + 1) ∣ x := fun ⟨y, hy⟩ ↦
           ha (hx.symm ▸ ⟨y, mul_right_cancel₀ hp.1 <| by
             rw [tsub_add_cancel_of_le (succ_le_of_lt hn0)] at hy
             simp [hy, pow_add, mul_comm, mul_left_comm]⟩)
@@ -616,10 +616,10 @@ theorem finiteMultiplicity_mul_aux {p : α} (hp : Prime p) {a b : α} :
           ⟨s, mul_right_cancel₀ hp.1 (by
                 rw [tsub_add_eq_add_tsub (succ_le_of_lt hn0), tsub_add_cancel_of_le this]
                 simp_all [mul_comm, mul_left_comm, pow_add])⟩)
-      fun ⟨x, hx⟩ =>
+      fun ⟨x, hx⟩ ↦
         have hm0 : 0 < m :=
-          Nat.pos_of_ne_zero fun hm0 => by simp [hx, hm0] at hb
-        have hpx : ¬p ^ (m - 1 + 1) ∣ x := fun ⟨y, hy⟩ =>
+          Nat.pos_of_ne_zero fun hm0 ↦ by simp [hx, hm0] at hb
+        have hpx : ¬p ^ (m - 1 + 1) ∣ x := fun ⟨y, hy⟩ ↦
           hb
             (hx.symm ▸
               ⟨y,
@@ -633,11 +633,11 @@ theorem finiteMultiplicity_mul_aux {p : α} (hp : Prime p) {a b : α} :
 
 theorem Prime.finiteMultiplicity_mul {p a b : α} (hp : Prime p) :
     FiniteMultiplicity p a → FiniteMultiplicity p b → FiniteMultiplicity p (a * b) :=
-  fun ⟨n, hn⟩ ⟨m, hm⟩ => ⟨n + m, finiteMultiplicity_mul_aux hp hn hm⟩
+  fun ⟨n, hn⟩ ⟨m, hm⟩ ↦ ⟨n + m, finiteMultiplicity_mul_aux hp hn hm⟩
 
 theorem FiniteMultiplicity.mul_iff {p a b : α} (hp : Prime p) :
     FiniteMultiplicity p (a * b) ↔ FiniteMultiplicity p a ∧ FiniteMultiplicity p b :=
-  ⟨fun h => ⟨h.mul_left, h.mul_right⟩, fun h =>
+  ⟨fun h ↦ ⟨h.mul_left, h.mul_right⟩, fun h ↦
     hp.finiteMultiplicity_mul h.1 h.2⟩
 
 theorem FiniteMultiplicity.pow {p a : α} (hp : Prime p)
@@ -672,7 +672,7 @@ theorem multiplicity_mul {p a b : α} (hp : Prime p) (hfin : FiniteMultiplicity 
   have hdiv : p ^ (multiplicity p a + multiplicity p b) ∣ a * b := by
     rw [pow_add]; gcongr
   have hsucc : ¬p ^ (multiplicity p a + multiplicity p b + 1) ∣ a * b :=
-    fun h =>
+    fun h ↦
     not_or_intro (hfin.mul_left.not_pow_dvd_of_multiplicity_lt (lt_succ_self _))
       (hfin.mul_right.not_pow_dvd_of_multiplicity_lt (lt_succ_self _))
       (_root_.succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul hp hdiva hdivb h)
@@ -752,8 +752,8 @@ theorem Int.finiteMultiplicity_iff {a b : ℤ} : FiniteMultiplicity a b ↔ a.na
   rw [finiteMultiplicity_iff_finiteMultiplicity_natAbs, Nat.finiteMultiplicity_iff,
     pos_iff_ne_zero, Int.natAbs_ne_zero]
 
-instance Nat.decidableFiniteMultiplicity : DecidableRel fun a b : ℕ => FiniteMultiplicity a b :=
+instance Nat.decidableFiniteMultiplicity : DecidableRel fun a b : ℕ ↦ FiniteMultiplicity a b :=
   fun _ _ ↦ decidable_of_iff' _ Nat.finiteMultiplicity_iff
 
-instance Int.decidableMultiplicityFinite : DecidableRel fun a b : ℤ => FiniteMultiplicity a b :=
+instance Int.decidableMultiplicityFinite : DecidableRel fun a b : ℤ ↦ FiniteMultiplicity a b :=
   fun _ _ ↦ decidable_of_iff' _ Int.finiteMultiplicity_iff

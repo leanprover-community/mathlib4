@@ -84,7 +84,7 @@ alias _root_.Doset.eq_of_not_disjoint := eq_of_not_disjoint
 
 /-- The setoid defined by the double_coset relation -/
 def setoid (H K : Set G) : Setoid G :=
-  Setoid.ker fun x => doubleCoset x H K
+  Setoid.ker fun x ↦ doubleCoset x H K
 
 @[deprecated (since := "2025-07-12")]
 alias _root_.Doset.setoid := setoid
@@ -99,8 +99,8 @@ alias _root_.Doset.Quotient := Quotient
 theorem rel_iff {H K : Subgroup G} {x y : G} :
     setoid ↑H ↑K x y ↔ ∃ a ∈ H, ∃ b ∈ K, y = a * x * b :=
   Iff.trans
-    ⟨fun (hxy : doubleCoset x H K = doubleCoset y H K) => hxy ▸ mem_doubleCoset_self H K y,
-      fun hxy => (doubleCoset_eq_of_mem hxy).symm⟩ mem_doubleCoset
+    ⟨fun (hxy : doubleCoset x H K = doubleCoset y H K) ↦ hxy ▸ mem_doubleCoset_self H K y,
+      fun hxy ↦ (doubleCoset_eq_of_mem hxy).symm⟩ mem_doubleCoset
 
 @[deprecated (since := "2025-07-12")]
 alias _root_.Doset.rel_iff := rel_iff

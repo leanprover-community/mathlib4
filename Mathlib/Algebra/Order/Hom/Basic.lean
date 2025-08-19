@@ -238,7 +238,7 @@ instance (priority := 100) GroupSeminormClass.toNonnegHomClass [Group α]
     [AddCommMonoid β] [LinearOrder β] [IsOrderedAddMonoid β] [GroupSeminormClass F α β] :
     NonnegHomClass F α β :=
   { ‹GroupSeminormClass F α β› with
-    apply_nonneg := fun f a =>
+    apply_nonneg := fun f a ↦
       (nsmul_nonneg_iff two_ne_zero).1 <| by
         rw [two_nsmul, ← map_one_eq_zero f, ← div_self' a]
         exact map_div_le_add _ _ _ }
@@ -312,7 +312,7 @@ instance (priority := 100) RingSeminormClass.toNonnegHomClass [NonUnitalNonAssoc
 -- See note [lower instance priority]
 instance (priority := 100) MulRingSeminormClass.toRingSeminormClass [NonAssocRing α]
     [Semiring β] [PartialOrder β] [MulRingSeminormClass F α β] : RingSeminormClass F α β :=
-  { ‹MulRingSeminormClass F α β› with map_mul_le_mul := fun _ _ _ => (map_mul _ _ _).le }
+  { ‹MulRingSeminormClass F α β› with map_mul_le_mul := fun _ _ _ ↦ (map_mul _ _ _).le }
 
 -- See note [lower instance priority]
 instance (priority := 100) MulRingNormClass.toRingNormClass [NonAssocRing α]

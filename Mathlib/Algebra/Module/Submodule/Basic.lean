@@ -35,7 +35,7 @@ variable {p q : Submodule R M}
 
 @[mono]
 theorem toAddSubmonoid_strictMono : StrictMono (toAddSubmonoid : Submodule R M → AddSubmonoid M) :=
-  fun _ _ => id
+  fun _ _ ↦ id
 
 theorem toAddSubmonoid_le : p.toAddSubmonoid ≤ q.toAddSubmonoid ↔ p ≤ q :=
   Iff.rfl
@@ -46,7 +46,7 @@ theorem toAddSubmonoid_mono : Monotone (toAddSubmonoid : Submodule R M → AddSu
 
 @[mono]
 theorem toSubMulAction_strictMono :
-    StrictMono (toSubMulAction : Submodule R M → SubMulAction R M) := fun _ _ => id
+    StrictMono (toSubMulAction : Submodule R M → SubMulAction R M) := fun _ _ ↦ id
 
 @[mono]
 theorem toSubMulAction_mono : Monotone (toSubMulAction : Submodule R M → SubMulAction R M) :=
@@ -72,14 +72,14 @@ protected theorem sum_mem {t : Finset ι} {f : ι → M} : (∀ c ∈ t, f c ∈
 
 theorem sum_smul_mem {t : Finset ι} {f : ι → M} (r : ι → R) (hyp : ∀ c ∈ t, f c ∈ p) :
     (∑ i ∈ t, r i • f i) ∈ p :=
-  sum_mem fun i hi => smul_mem _ _ (hyp i hi)
+  sum_mem fun i hi ↦ smul_mem _ _ (hyp i hi)
 
 instance isCentralScalar [SMul S R] [SMul S M] [IsScalarTower S R M] [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M]
     [IsScalarTower Sᵐᵒᵖ R M] [IsCentralScalar S M] : IsCentralScalar S p :=
   p.toSubMulAction.isCentralScalar
 
 instance noZeroSMulDivisors [NoZeroSMulDivisors R M] : NoZeroSMulDivisors R p :=
-  ⟨fun {c} {x : p} h =>
+  ⟨fun {c} {x : p} h ↦
     have : c = 0 ∨ (x : M) = 0 := eq_zero_or_eq_zero_of_smul_eq_zero (congr_arg Subtype.val h)
     this.imp_right (@Subtype.ext_iff _ _ x 0).mpr⟩
 
@@ -100,10 +100,10 @@ instance [VAdd M α] : VAdd p α :=
   p.toAddSubmonoid.vadd
 
 instance vaddCommClass [VAdd M β] [VAdd α β] [VAddCommClass M α β] : VAddCommClass p α β :=
-  ⟨fun a => vadd_comm (a : M)⟩
+  ⟨fun a ↦ vadd_comm (a : M)⟩
 
 instance [VAdd M α] [FaithfulVAdd M α] : FaithfulVAdd p α :=
-  ⟨fun h => Subtype.ext <| eq_of_vadd_eq_vadd h⟩
+  ⟨fun h ↦ Subtype.ext <| eq_of_vadd_eq_vadd h⟩
 
 variable {p}
 
@@ -124,7 +124,7 @@ variable {r : R} {x y : M}
 
 @[mono]
 theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Submodule R M → AddSubgroup M) :=
-  fun _ _ => id
+  fun _ _ ↦ id
 
 theorem toAddSubgroup_le : p.toAddSubgroup ≤ p'.toAddSubgroup ↔ p ≤ p' :=
   Iff.rfl
@@ -138,7 +138,7 @@ protected alias ⟨_, _root_.GCongr.Submodule.toAddSubgroup_le⟩ := Submodule.t
 
 -- See `neg_coe_set`
 theorem neg_coe : -(p : Set M) = p :=
-  Set.ext fun _ => p.neg_mem_iff
+  Set.ext fun _ ↦ p.neg_mem_iff
 
 end AddCommGroup
 
@@ -156,7 +156,7 @@ theorem notMem_of_ortho {x : M} {N : Submodule R M}
 
 theorem ne_zero_of_ortho {x : M} {N : Submodule R M}
     (ortho : ∀ (c : R), ∀ y ∈ N, c • x + y = (0 : M) → c = 0) : x ≠ 0 :=
-  mt (fun h => show x ∈ N from h.symm ▸ N.zero_mem) (notMem_of_ortho ortho)
+  mt (fun h ↦ show x ∈ N from h.symm ▸ N.zero_mem) (notMem_of_ortho ortho)
 
 end IsDomain
 

@@ -41,13 +41,13 @@ protected def Rel (x y : Σ j, F.obj j) : Prop :=
 
 theorem rel_of_colimitTypeRel (x y : Σ j, F.obj j) :
     F.ColimitTypeRel x y → FilteredColimit.Rel.{v, u} F x y :=
-  fun ⟨f, h⟩ => ⟨y.1, f, 𝟙 y.1, by rw [← h, FunctorToTypes.map_id_apply]⟩
+  fun ⟨f, h⟩ ↦ ⟨y.1, f, 𝟙 y.1, by rw [← h, FunctorToTypes.map_id_apply]⟩
 
 @[deprecated (since := "2025-06-22")] alias rel_of_quot_rel := rel_of_colimitTypeRel
 
 theorem eqvGen_colimitTypeRel_of_rel (x y : Σ j, F.obj j) :
     FilteredColimit.Rel.{v, u} F x y → Relation.EqvGen F.ColimitTypeRel x y :=
-  fun ⟨k, f, g, h⟩ => by
+  fun ⟨k, f, g, h⟩ ↦ by
     refine Relation.EqvGen.trans _ ⟨k, F.map f x.2⟩ _ ?_ ?_
     · exact (Relation.EqvGen.rel _ _ ⟨f, rfl⟩)
     · exact (Relation.EqvGen.symm _ _ (Relation.EqvGen.rel _ _ ⟨g, h⟩))
@@ -60,19 +60,19 @@ noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x 
       ∀ i j xi xj,
         t.ι.app i xi = t.ι.app j xj → ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj) :
     IsColimit t := by
-  let α : t.pt → J := fun x => (hsurj x).choose
-  let f : ∀ (x : t.pt), F.obj (α x) := fun x => (hsurj x).choose_spec.choose
-  have hf : ∀ (x : t.pt), x = t.ι.app _ (f x) := fun x => (hsurj x).choose_spec.choose_spec
+  let α : t.pt → J := fun x ↦ (hsurj x).choose
+  let f : ∀ (x : t.pt), F.obj (α x) := fun x ↦ (hsurj x).choose_spec.choose
+  have hf : ∀ (x : t.pt), x = t.ι.app _ (f x) := fun x ↦ (hsurj x).choose_spec.choose_spec
   exact
-    { desc := fun s x => s.ι.app _ (f x)
-      fac := fun s j => by
+    { desc := fun s x ↦ s.ι.app _ (f x)
+      fac := fun s j ↦ by
         ext y
         obtain ⟨k, l, g, eq⟩ := hinj _ _ _ _ (hf (t.ι.app j y))
         have h := congr_fun (s.ι.naturality g) (f (t.ι.app j y))
         have h' := congr_fun (s.ι.naturality l) y
         dsimp at h h' ⊢
         rw [← h, ← eq, h']
-      uniq := fun s m hm => by
+      uniq := fun s m hm ↦ by
         ext x
         dsimp
         nth_rw 1 [hf x]
@@ -92,8 +92,8 @@ noncomputable def isColimitOf' (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x
 
 protected theorem rel_equiv : _root_.Equivalence (FilteredColimit.Rel.{v, u} F) where
   refl x := ⟨x.1, 𝟙 x.1, 𝟙 x.1, rfl⟩
-  symm := fun ⟨k, f, g, h⟩ => ⟨k, g, f, h.symm⟩
-  trans {x y z} := fun ⟨k, f, g, h⟩ ⟨k', f', g', h'⟩ =>
+  symm := fun ⟨k, f, g, h⟩ ↦ ⟨k, g, f, h.symm⟩
+  trans {x y z} := fun ⟨k, f, g, h⟩ ⟨k', f', g', h'⟩ ↦
     let ⟨l, fl, gl, _⟩ := IsFilteredOrEmpty.cocone_objs k k'
     let ⟨m, n, hn⟩ := IsFilteredOrEmpty.cocone_maps (g ≫ fl) (f' ≫ gl)
     ⟨m, f ≫ fl ≫ n, g' ≫ gl ≫ n,

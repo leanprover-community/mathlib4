@@ -32,7 +32,7 @@ on a semiring that depend on absolute values.
 
 This is also helpful when dealing with several absolute values on the same semiring. -/
 @[nolint unusedArguments]
-def WithAbs [Semiring R] : AbsoluteValue R S → Type _ := fun _ => R
+def WithAbs [Semiring R] : AbsoluteValue R S → Type _ := fun _ ↦ R
 
 namespace WithAbs
 

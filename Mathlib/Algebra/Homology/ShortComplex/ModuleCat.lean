@@ -138,7 +138,7 @@ lemma moduleCatLeftHomologyData_descH_hom {M : ModuleCat R}
 @[simp]
 lemma moduleCatLeftHomologyData_liftK_hom {M : ModuleCat R} (φ : M ⟶ S.X₂) (h : φ ≫ S.g = 0) :
     (S.moduleCatLeftHomologyData.liftK φ h).hom =
-      φ.hom.codRestrict (LinearMap.ker S.g.hom) (fun m => congr($h m)) := rfl
+      φ.hom.codRestrict (LinearMap.ker S.g.hom) (fun m ↦ congr($h m)) := rfl
 
 /-- Given a short complex `S` of modules, this is the isomorphism between
 the abstract `S.cycles` of the homology API and the more concrete description as

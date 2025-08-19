@@ -127,8 +127,8 @@ lemma hilbertPoly_add_left (p q : F[X]) (d : ℕ) :
   | zero => simp only [add_zero]
   | succ d _ =>
       simp only
-      rw [← sum_def _ fun _ r => r • _]
-      exact sum_add_index _ _ _ (fun _ => zero_smul ..) (fun _ _ _ => add_smul ..)
+      rw [← sum_def _ fun _ r ↦ r • _]
+      exact sum_add_index _ _ _ (fun _ ↦ zero_smul ..) (fun _ _ _ ↦ add_smul ..)
 
 lemma hilbertPoly_smul (a : F) (p : F[X]) (d : ℕ) :
     hilbertPoly (a • p) d = a • hilbertPoly p d := by
@@ -137,8 +137,8 @@ lemma hilbertPoly_smul (a : F) (p : F[X]) (d : ℕ) :
   | zero => simp only [smul_zero]
   | succ d _ =>
       simp only
-      rw [← sum_def _ fun _ r => r • _, ← sum_def _ fun _ r => r • _, Polynomial.smul_sum,
-        sum_smul_index' _ _ _ fun i => zero_smul F (preHilbertPoly F d i)]
+      rw [← sum_def _ fun _ r ↦ r • _, ← sum_def _ fun _ r ↦ r • _, Polynomial.smul_sum,
+        sum_smul_index' _ _ _ fun i ↦ zero_smul F (preHilbertPoly F d i)]
       simp only [smul_assoc]
 
 variable (F) in
@@ -172,7 +172,7 @@ theorem coeff_mul_invOneSubPow_eq_hilbertPoly_eval
       have h (i : p.support) : eval ↑n (preHilbertPoly F d ↑i) = (n + d - ↑i).choose d := by
         rw [preHilbertPoly_eq_choose_sub_add _ _ (h_le i), Nat.sub_add_comm (h_le i)]
       simp_rw [h]
-      rw [Finset.sum_coe_sort _ (fun x => (p.coeff ↑x) * (_ + d - ↑x).choose _),
+      rw [Finset.sum_coe_sort _ (fun x ↦ (p.coeff ↑x) * (_ + d - ↑x).choose _),
         PowerSeries.coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk,
         invOneSubPow_val_eq_mk_sub_one_add_choose_of_pos _ _ (zero_lt_succ d)]
       simp only [coeff_coe, coeff_mk]
@@ -192,7 +192,7 @@ theorem existsUnique_hilbertPoly (p : F[X]) (d : ℕ) :
       PowerSeries.coeff F n (p * invOneSubPow F d) = h.eval (n : F) := by
   use hilbertPoly p d; constructor
   · use p.natDegree
-    exact fun n => coeff_mul_invOneSubPow_eq_hilbertPoly_eval d
+    exact fun n ↦ coeff_mul_invOneSubPow_eq_hilbertPoly_eval d
   · rintro h ⟨N, hhN⟩
     apply eq_of_infinite_eval_eq h (hilbertPoly p d)
     apply ((Set.Ioi_infinite (max N p.natDegree)).image cast_injective.injOn).mono
@@ -210,7 +210,7 @@ theorem eq_hilbertPoly_of_forall_coeff_eq_eval
     PowerSeries.coeff F n (p * invOneSubPow F d) = h.eval (n : F)) :
     h = hilbertPoly p d :=
   ExistsUnique.unique (existsUnique_hilbertPoly p d) ⟨N, hhN⟩
-    ⟨p.natDegree, fun _ x => coeff_mul_invOneSubPow_eq_hilbertPoly_eval d x⟩
+    ⟨p.natDegree, fun _ x ↦ coeff_mul_invOneSubPow_eq_hilbertPoly_eval d x⟩
 
 lemma hilbertPoly_mul_one_sub_succ (p : F[X]) (d : ℕ) :
     hilbertPoly (p * (1 - X)) (d + 1) = hilbertPoly p d := by
@@ -249,12 +249,12 @@ theorem natDegree_hilbertPoly_of_ne_zero_of_rootMultiplicity_lt
     ← Nat.sub_add_cancel (Nat.le_sub_of_add_le' <| add_one_le_of_lt hpd)]
   delta hilbertPoly
   apply natDegree_eq_of_le_of_coeff_ne_zero
-  · apply natDegree_sum_le_of_forall_le _ _ <| fun _ _ => ?_
+  · apply natDegree_sum_le_of_forall_le _ _ <| fun _ _ ↦ ?_
     apply le_trans (natDegree_smul_le _ _)
     rw [natDegree_preHilbertPoly]
-  · have : (fun (x : ℕ) (a : F) => a) = fun x a => a * 1 ^ x := by simp only [one_pow, mul_one]
+  · have : (fun (x : ℕ) (a : F) ↦ a) = fun x a ↦ a * 1 ^ x := by simp only [one_pow, mul_one]
     simp only [finset_sum_coeff, coeff_smul, smul_eq_mul, coeff_preHilbertPoly_self,
-      ← Finset.sum_mul, ← sum_def _ (fun _ a => a), this, ← eval_eq_sum, eval_mul, eval_pow,
+      ← Finset.sum_mul, ← sum_def _ (fun _ a ↦ a), this, ← eval_eq_sum, eval_mul, eval_pow,
       eval_neg, eval_one, _root_.mul_eq_zero, pow_eq_zero_iff', neg_eq_zero, one_ne_zero, ne_eq,
       false_and, or_false, inv_eq_zero, cast_eq_zero, not_or]
     exact ⟨(not_iff_not.2 dvd_iff_isRoot).1 hq2, factorial_ne_zero _⟩

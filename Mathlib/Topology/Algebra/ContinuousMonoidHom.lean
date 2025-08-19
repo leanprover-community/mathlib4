@@ -134,7 +134,7 @@ theorem ext {f g : A →ₜ* B} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
 
 @[to_additive]
-theorem toContinuousMap_injective : Injective (toContinuousMap : _ → C(A, B)) := fun f g h =>
+theorem toContinuousMap_injective : Injective (toContinuousMap : _ → C(A, B)) := fun f g h ↦
   ext <| by convert DFunLike.ext_iff.1 h
 
 /-- Composition of two continuous homomorphisms. -/
@@ -225,10 +225,10 @@ variable {A B C D E}
 @[to_additive]
 instance : CommMonoid (A →ₜ* E) where
   mul f g := (mul E).comp (f.prod g)
-  mul_comm f g := ext fun x => mul_comm (f x) (g x)
-  mul_assoc f g h := ext fun x => mul_assoc (f x) (g x) (h x)
-  one_mul f := ext fun x => one_mul (f x)
-  mul_one f := ext fun x => mul_one (f x)
+  mul_comm f g := ext fun x ↦ mul_comm (f x) (g x)
+  mul_assoc f g h := ext fun x ↦ mul_assoc (f x) (g x) (h x)
+  one_mul f := ext fun x ↦ one_mul (f x)
+  mul_one f := ext fun x ↦ mul_one (f x)
 
 /-- Coproduct of two continuous homomorphisms to the same space. -/
 @[to_additive (attr := simps!) /-- Coproduct of two continuous homomorphisms to the same space. -/]
@@ -250,9 +250,9 @@ def inv : ContinuousMonoidHom E E :=
 instance : CommGroup (ContinuousMonoidHom A E) where
   __ : CommMonoid (ContinuousMonoidHom A E) := inferInstance
   inv f := (inv E).comp f
-  inv_mul_cancel f := ext fun x => inv_mul_cancel (f x)
+  inv_mul_cancel f := ext fun x ↦ inv_mul_cancel (f x)
   div f g := .comp ⟨divMonoidHom, continuous_div'⟩ (f.prod g)
-  div_eq_mul_inv f g := ext fun x => div_eq_mul_inv (f x) (g x)
+  div_eq_mul_inv f g := ext fun x ↦ div_eq_mul_inv (f x) (g x)
 
 end CommGroup
 

@@ -21,7 +21,7 @@ open Finset Nat
 
 namespace Nat
 
-lemma monotone_factorial : Monotone factorial := fun _ _ => factorial_le
+lemma monotone_factorial : Monotone factorial := fun _ _ ↦ factorial_le
 
 variable {α : Type*} (s : Finset α) (f : α → ℕ)
 

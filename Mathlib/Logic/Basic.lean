@@ -59,7 +59,7 @@ theorem congr_arg_heq {β : α → Sort*} (f : ∀ a, β a) :
   ⟨fun h ↦ by rw [h], fun h a ↦ by rw [h]⟩
 
 lemma ne_and_eq_iff_right {a b c : α} (h : b ≠ c) : a ≠ b ∧ a = c ↔ a = c :=
-  and_iff_right_of_imp (fun h2 => h2.symm ▸ h.symm)
+  and_iff_right_of_imp (fun h2 ↦ h2.symm ▸ h.symm)
 
 /-- Wrapper for adding elementary propositions to the type class systems.
 Warning: this can easily be abused. See the rest of this docstring for details.
@@ -617,7 +617,7 @@ theorem forall_and_index {p q : Prop} {r : p ∧ q → Prop} :
 
 theorem forall_and_index' {p q : Prop} {r : p → q → Prop} :
     (∀ (hp : p) (hq : q), r hp hq) ↔ ∀ h : p ∧ q, r h.1 h.2 :=
-  (forall_and_index (r := fun h => r h.1 h.2)).symm
+  (forall_and_index (r := fun h ↦ r h.1 h.2)).symm
 
 theorem Exists.fst {b : Prop} {p : b → Prop} : Exists p → b
   | ⟨h, _⟩ => h
@@ -974,7 +974,7 @@ theorem ite_mem {a b : α} {s : β} : (if p then a else b) ∈ s ↔ (p → a �
 end Membership
 
 theorem not_beq_of_ne {α : Type*} [BEq α] [LawfulBEq α] {a b : α} (ne : a ≠ b) : ¬(a == b) :=
-  fun h => ne (eq_of_beq h)
+  fun h ↦ ne (eq_of_beq h)
 
 alias beq_eq_decide := Bool.beq_eq_decide_eq
 

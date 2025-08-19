@@ -48,9 +48,9 @@ theorem val_dvd_le : ∀ a b : R, b ∣ a → a ≠ 0 → ¬a ≺ b
 
 @[simp]
 theorem mod_eq_zero {a b : R} : a % b = 0 ↔ b ∣ a :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [← div_add_mod a b, h, add_zero]
-    exact dvd_mul_right _ _, fun ⟨c, e⟩ => by
+    exact dvd_mul_right _ _, fun ⟨c, e⟩ ↦ by
     rw [e, ← add_left_cancel_iff, div_add_mod, add_zero]
     haveI := Classical.dec
     by_cases b0 : b = 0
@@ -74,7 +74,7 @@ theorem zero_mod (b : R) : 0 % b = 0 :=
 
 @[simp]
 theorem zero_div {a : R} : 0 / a = 0 :=
-  by_cases (fun a0 : a = 0 => a0.symm ▸ div_zero 0) fun a0 => by
+  by_cases (fun a0 : a = 0 ↦ a0.symm ▸ div_zero 0) fun a0 ↦ by
     simpa only [zero_mul] using mul_div_cancel_right₀ 0 a0
 
 @[simp]
@@ -132,10 +132,10 @@ theorem gcd_val (a b : R) : gcd a b = gcd (b % a) a := by
 
 theorem gcd_dvd (a b : R) : gcd a b ∣ a ∧ gcd a b ∣ b :=
   GCD.induction a b
-    (fun b => by
+    (fun b ↦ by
       rw [gcd_zero_left]
       exact ⟨dvd_zero _, dvd_rfl⟩)
-    fun a b _ ⟨IH₁, IH₂⟩ => by
+    fun a b _ ⟨IH₁, IH₂⟩ ↦ by
     rw [gcd_val]
     exact ⟨IH₂, (dvd_mod_iff IH₂).1 IH₁⟩
 
@@ -146,19 +146,19 @@ theorem gcd_dvd_right (a b : R) : gcd a b ∣ b :=
   (gcd_dvd a b).right
 
 protected theorem gcd_eq_zero_iff {a b : R} : gcd a b = 0 ↔ a = 0 ∧ b = 0 :=
-  ⟨fun h => by simpa [h] using gcd_dvd a b, by
+  ⟨fun h ↦ by simpa [h] using gcd_dvd a b, by
     rintro ⟨rfl, rfl⟩
     exact gcd_zero_right _⟩
 
 theorem dvd_gcd {a b c : R} : c ∣ a → c ∣ b → c ∣ gcd a b :=
-  GCD.induction a b (fun _ _ H => by simpa only [gcd_zero_left] using H) fun a b _ IH ca cb => by
+  GCD.induction a b (fun _ _ H ↦ by simpa only [gcd_zero_left] using H) fun a b _ IH ca cb ↦ by
     rw [gcd_val]
     exact IH ((dvd_mod_iff ca).2 cb) ca
 
 theorem gcd_eq_left {a b : R} : gcd a b = a ↔ a ∣ b :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [← h]
-    apply gcd_dvd_right, fun h => by rw [gcd_val, mod_eq_zero.2 h, gcd_zero_left]⟩
+    apply gcd_dvd_right, fun h ↦ by rw [gcd_val, mod_eq_zero.2 h, gcd_zero_left]⟩
 
 @[simp]
 theorem gcd_one_left (a : R) : gcd 1 a = 1 :=
@@ -174,7 +174,7 @@ theorem xgcdAux_fst (x y : R) : ∀ s t s' t', (xgcdAux x s t y s' t').1 = gcd x
     (by
       intros
       rw [xgcd_zero_left, gcd_zero_left])
-    fun x y h IH s t s' t' => by
+    fun x y h IH s t s' t' ↦ by
     simp only [xgcdAux_rec h, IH]
     rw [← gcd_val]
 
@@ -206,8 +206,8 @@ theorem gcd_eq_gcd_ab (a b : R) : (gcd a b : R) = a * gcdA a b + b * gcdB a b :=
 -- see Note [lower instance priority]
 instance (priority := 70) (R : Type*) [e : EuclideanDomain R] : NoZeroDivisors R :=
   haveI := Classical.decEq R
-  { eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} h =>
-      or_iff_not_and_not.2 fun h0 => h0.1 <| by rw [← mul_div_cancel_right₀ a h0.2, h, zero_div] }
+  { eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} h ↦
+      or_iff_not_and_not.2 fun h0 ↦ h0.1 <| by rw [← mul_div_cancel_right₀ a h0.2, h, zero_div] }
 
 -- see Note [lower instance priority]
 instance (priority := 70) (R : Type*) [e : EuclideanDomain R] : IsDomain R :=
@@ -221,19 +221,19 @@ variable [DecidableEq R]
 
 theorem dvd_lcm_left (x y : R) : x ∣ lcm x y :=
   by_cases
-    (fun hxy : gcd x y = 0 => by
+    (fun hxy : gcd x y = 0 ↦ by
       rw [lcm, hxy, div_zero]
       exact dvd_zero _)
-    fun hxy =>
+    fun hxy ↦
     let ⟨z, hz⟩ := (gcd_dvd x y).2
     ⟨z, Eq.symm <| eq_div_of_mul_eq_left hxy <| by rw [mul_right_comm, mul_assoc, ← hz]⟩
 
 theorem dvd_lcm_right (x y : R) : y ∣ lcm x y :=
   by_cases
-    (fun hxy : gcd x y = 0 => by
+    (fun hxy : gcd x y = 0 ↦ by
       rw [lcm, hxy, div_zero]
       exact dvd_zero _)
-    fun hxy =>
+    fun hxy ↦
     let ⟨z, hz⟩ := (gcd_dvd x y).1
     ⟨z, Eq.symm <| eq_div_of_mul_eq_right hxy <| by rw [← mul_assoc, mul_right_comm, ← hz]⟩
 
@@ -263,7 +263,7 @@ theorem lcm_dvd {x y z : R} (hxz : x ∣ z) (hyz : y ∣ z) : lcm x y ∣ z := b
 
 @[simp]
 theorem lcm_dvd_iff {x y z : R} : lcm x y ∣ z ↔ x ∣ z ∧ y ∣ z :=
-  ⟨fun hz => ⟨(dvd_lcm_left _ _).trans hz, (dvd_lcm_right _ _).trans hz⟩, fun ⟨hxz, hyz⟩ =>
+  ⟨fun hz ↦ ⟨(dvd_lcm_left _ _).trans hz, (dvd_lcm_right _ _).trans hz⟩, fun ⟨hxz, hyz⟩ ↦
     lcm_dvd hxz hyz⟩
 
 @[simp]

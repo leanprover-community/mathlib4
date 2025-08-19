@@ -115,7 +115,7 @@ theorem poly_eq_of_wittPolynomial_bind_eq' [Fact p.Prime] (f g : ℕ → MvPolyn
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   rw [← funext_iff] at h
   replace h :=
-    congr_arg (fun fam => bind₁ (MvPolynomial.map (Int.castRingHom ℚ) ∘ fam) (xInTermsOfW p ℚ n)) h
+    congr_arg (fun fam ↦ bind₁ (MvPolynomial.map (Int.castRingHom ℚ) ∘ fam) (xInTermsOfW p ℚ n)) h
   simpa only [Function.comp_def, map_bind₁, map_wittPolynomial, ← bind₁_bind₁,
     bind₁_wittPolynomial_xInTermsOfW, bind₁_X_right] using h
 
@@ -125,7 +125,7 @@ theorem poly_eq_of_wittPolynomial_bind_eq [Fact p.Prime] (f g : ℕ → MvPolyno
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   rw [← funext_iff] at h
   replace h :=
-    congr_arg (fun fam => bind₁ (MvPolynomial.map (Int.castRingHom ℚ) ∘ fam) (xInTermsOfW p ℚ n)) h
+    congr_arg (fun fam ↦ bind₁ (MvPolynomial.map (Int.castRingHom ℚ) ∘ fam) (xInTermsOfW p ℚ n)) h
   simpa only [Function.comp_def, map_bind₁, map_wittPolynomial, ← bind₁_bind₁,
     bind₁_wittPolynomial_xInTermsOfW, bind₁_X_right] using h
 
@@ -146,18 +146,18 @@ This no longer seems to be an issue, so that such instances can be defined direc
 class IsPoly (f : ∀ ⦃R⦄ [CommRing R], WittVector p R → 𝕎 R) : Prop where mk' ::
   poly :
     ∃ φ : ℕ → MvPolynomial ℕ ℤ,
-      ∀ ⦃R⦄ [CommRing R] (x : 𝕎 R), (f x).coeff = fun n => aeval x.coeff (φ n)
+      ∀ ⦃R⦄ [CommRing R] (x : 𝕎 R), (f x).coeff = fun n ↦ aeval x.coeff (φ n)
 
 /-- The identity function on Witt vectors is a polynomial function. -/
-instance idIsPoly : IsPoly p fun _ _ => id :=
+instance idIsPoly : IsPoly p fun _ _ ↦ id :=
   ⟨⟨X, by intros; simp only [aeval_X, id]⟩⟩
 
-instance idIsPolyI' : IsPoly p fun _ _ a => a :=
+instance idIsPolyI' : IsPoly p fun _ _ a ↦ a :=
   WittVector.idIsPoly _
 
 namespace IsPoly
 
-instance : Inhabited (IsPoly p fun _ _ => id) :=
+instance : Inhabited (IsPoly p fun _ _ ↦ id) :=
   ⟨WittVector.idIsPoly p⟩
 
 variable {p}
@@ -175,7 +175,7 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly p f) (hg : IsPoly p g)
   apply MvPolynomial.funext
   intro x
   simp only [hom_bind₁]
-  specialize h (ULift ℤ) (mk p fun i => ⟨x i⟩) k
+  specialize h (ULift ℤ) (mk p fun i ↦ ⟨x i⟩) k
   simp only [ghostComponent_apply, aeval_eq_eval₂Hom] at h
   apply (ULift.ringEquiv.symm : ℤ ≃+* _).injective
   simp only [← RingEquiv.coe_toRingHom, map_eval₂Hom]
@@ -189,10 +189,10 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly p f) (hg : IsPoly p g)
 
 /-- The composition of polynomial functions is polynomial. -/
 instance comp {g f} [hg : IsPoly p g] [hf : IsPoly p f] :
-    IsPoly p fun R _Rcr => @g R _Rcr ∘ @f R _Rcr := by
+    IsPoly p fun R _Rcr ↦ @g R _Rcr ∘ @f R _Rcr := by
   obtain ⟨φ, hf⟩ := hf
   obtain ⟨ψ, hg⟩ := hg
-  use fun n => bind₁ φ (ψ n)
+  use fun n ↦ bind₁ φ (ψ n)
   intros
   simp only [aeval_bind₁, Function.comp, hg, hf]
 
@@ -212,13 +212,13 @@ This no longer seems to be an issue, so that such instances can be defined direc
 class IsPoly₂ (f : ∀ ⦃R⦄ [CommRing R], WittVector p R → 𝕎 R → 𝕎 R) : Prop where mk' ::
   poly :
     ∃ φ : ℕ → MvPolynomial (Fin 2 × ℕ) ℤ,
-      ∀ ⦃R⦄ [CommRing R] (x y : 𝕎 R), (f x y).coeff = fun n => peval (φ n) ![x.coeff, y.coeff]
+      ∀ ⦃R⦄ [CommRing R] (x y : 𝕎 R), (f x y).coeff = fun n ↦ peval (φ n) ![x.coeff, y.coeff]
 
 variable {p}
 
 /-- The composition of polynomial functions is polynomial. -/
 instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsPoly p g] :
-    IsPoly₂ p fun _ _Rcr x y => h (f x) (g y) := by
+    IsPoly₂ p fun _ _Rcr x y ↦ h (f x) (g y) := by
   obtain ⟨φ, hf⟩ := hf
   obtain ⟨ψ, hg⟩ := hg
   obtain ⟨χ, hh⟩ := hh
@@ -235,17 +235,17 @@ instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsP
 
 /-- The composition of a polynomial function with a binary polynomial function is polynomial. -/
 instance IsPoly.comp₂ {g f} [hg : IsPoly p g] [hf : IsPoly₂ p f] :
-    IsPoly₂ p fun _ _Rcr x y => g (f x y) := by
+    IsPoly₂ p fun _ _Rcr x y ↦ g (f x y) := by
   obtain ⟨φ, hf⟩ := hf
   obtain ⟨ψ, hg⟩ := hg
-  use fun n => bind₁ φ (ψ n)
+  use fun n ↦ bind₁ φ (ψ n)
   intros
   simp only [peval, aeval_bind₁, hg, hf]
 
 /-- The diagonal `fun x ↦ f x x` of a polynomial function `f` is polynomial. -/
-instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun _ _Rcr x => f x x := by
+instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun _ _Rcr x ↦ f x x := by
   obtain ⟨φ, hf⟩ := hf
-  refine ⟨⟨fun n => bind₁ (uncurry ![X, X]) (φ n), ?_⟩⟩
+  refine ⟨⟨fun n ↦ bind₁ (uncurry ![X, X]) (φ n), ?_⟩⟩
   intros; funext n
   simp +unfoldPartialApp only [hf, peval, uncurry, aeval_bind₁]
   apply eval₂Hom_congr rfl _ rfl
@@ -253,8 +253,8 @@ instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun _ _Rcr x => f x 
   fin_cases i <;> simp
 
 /-- The additive negation is a polynomial function on Witt vectors. -/
-instance negIsPoly [Fact p.Prime] : IsPoly p fun R _ => @Neg.neg (𝕎 R) _ :=
-  ⟨⟨fun n => rename Prod.snd (wittNeg p n), by
+instance negIsPoly [Fact p.Prime] : IsPoly p fun R _ ↦ @Neg.neg (𝕎 R) _ :=
+  ⟨⟨fun n ↦ rename Prod.snd (wittNeg p n), by
       intros; funext n
       rw [neg_coeff, aeval_eq_eval₂Hom, eval₂Hom_rename]
       apply eval₂Hom_congr rfl _ rfl
@@ -265,7 +265,7 @@ section ZeroOne
 /- To avoid a theory of 0-ary functions (a.k.a. constants)
 we model them as constant unary functions. -/
 /-- The function that is constantly zero on Witt vectors is a polynomial function. -/
-instance zeroIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 0 :=
+instance zeroIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ ↦ 0 :=
   ⟨⟨0, by intros; funext n; simp only [Pi.zero_apply, map_zero, zero_coeff]⟩⟩
 
 @[simp]
@@ -288,7 +288,7 @@ theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
   · simp
 
 /-- The function that is constantly one on Witt vectors is a polynomial function. -/
-instance oneIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 1 :=
+instance oneIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ ↦ 1 :=
   ⟨⟨onePoly, by
       intros; funext n; cases n
       · simp only [one_coeff_zero, onePoly, ite_true, map_one]
@@ -299,11 +299,11 @@ instance oneIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 1 :=
 end ZeroOne
 
 /-- Addition of Witt vectors is a polynomial function. -/
-instance addIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· + ·) :=
+instance addIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ ↦ (· + ·) :=
   ⟨⟨wittAdd p, by intros; ext; exact add_coeff _ _ _⟩⟩
 
 /-- Multiplication of Witt vectors is a polynomial function. -/
-instance mulIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· * ·) :=
+instance mulIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ ↦ (· * ·) :=
   ⟨⟨wittMul p, by intros; ext; exact mul_coeff _ _ _⟩⟩
 
 -- unfortunately this is not universe polymorphic, merely because `f` isn't
@@ -319,8 +319,8 @@ theorem IsPoly.map [Fact p.Prime] {f} (hf : IsPoly p f) (g : R →+* S) (x : �
 
 namespace IsPoly₂
 
--- porting note: the argument `(fun _ _ => (· + ·))` to `IsPoly₂` was just `_`.
-instance [Fact p.Prime] : Inhabited (IsPoly₂ p (fun _ _ => (· + ·))) :=
+-- porting note: the argument `(fun _ _ ↦ (· + ·))` to `IsPoly₂` was just `_`.
+instance [Fact p.Prime] : Inhabited (IsPoly₂ p (fun _ _ ↦ (· + ·))) :=
   ⟨addIsPoly₂⟩
 
 theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
@@ -336,7 +336,7 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
   apply MvPolynomial.funext
   intro x
   simp only [hom_bind₁]
-  specialize h (ULift ℤ) (mk p fun i => ⟨x (0, i)⟩) (mk p fun i => ⟨x (1, i)⟩) k
+  specialize h (ULift ℤ) (mk p fun i ↦ ⟨x (0, i)⟩) (mk p fun i ↦ ⟨x (1, i)⟩) k
   simp only [ghostComponent_apply, aeval_eq_eval₂Hom] at h
   apply (ULift.ringEquiv.symm : ℤ ≃+* _).injective
   simp only [← RingEquiv.coe_toRingHom, map_eval₂Hom]
@@ -410,7 +410,7 @@ so it is easier (and prettier) to put it in a tactic script.
 syntax (name := ghostCalc) "ghost_calc" (ppSpace colGt term:max)* : tactic
 
 private def runIntro (ref : Syntax) (n : Name) : TacticM FVarId := do
-  let fvarId ← liftMetaTacticAux fun g => do
+  let fvarId ← liftMetaTacticAux fun g ↦ do
     let (fv, g') ← g.intro n
     return (fv, [g'])
   withMainContext do
@@ -426,7 +426,7 @@ private def getLocalOrIntro (t : Term) : TacticM FVarId := do
 elab_rules : tactic | `(tactic| ghost_calc $[$ids']*) => do
   let ids ← ids'.mapM getLocalOrIntro
   withMainContext do
-  let idsS ← ids.mapM (fun id => Elab.Term.exprToSyntax (.fvar id))
+  let idsS ← ids.mapM (fun id ↦ Elab.Term.exprToSyntax (.fvar id))
   let some (α, lhs, rhs) := (← getMainTarget'').eq?
     | throwError "ghost_calc expecting target to be an equality"
   let (``WittVector, #[_, R]) := α.getAppFnArgs

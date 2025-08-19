@@ -123,7 +123,7 @@ theorem coe_mk (f : α → M) (s : Finset α) (h : ∀ a, a ∈ s ↔ f a ≠ 0)
   rfl
 
 instance instZero : Zero (α →₀ M) :=
-  ⟨⟨∅, 0, fun _ => ⟨fun h ↦ (notMem_empty _ h).elim, fun H => (H rfl).elim⟩⟩⟩
+  ⟨⟨∅, 0, fun _ ↦ ⟨fun h ↦ (notMem_empty _ h).elim, fun H ↦ (H rfl).elim⟩⟩⟩
 
 @[simp, norm_cast] lemma coe_zero : ⇑(0 : α →₀ M) = 0 := rfl
 
@@ -143,7 +143,7 @@ theorem mem_support_iff {f : α →₀ M} : ∀ {a : α}, a ∈ f.support ↔ f 
 
 @[simp, norm_cast]
 theorem fun_support_eq (f : α →₀ M) : Function.support f = f.support :=
-  Set.ext fun _x => mem_support_iff.symm
+  Set.ext fun _x ↦ mem_support_iff.symm
 
 theorem notMem_support_iff {f : α →₀ M} {a} : a ∉ f.support ↔ f a = 0 :=
   not_iff_comm.1 mem_support_iff.symm
@@ -154,8 +154,8 @@ theorem notMem_support_iff {f : α →₀ M} {a} : a ∉ f.support ↔ f a = 0 :
 theorem coe_eq_zero {f : α →₀ M} : (f : α → M) = 0 ↔ f = 0 := by rw [← coe_zero, DFunLike.coe_fn_eq]
 
 theorem ext_iff' {f g : α →₀ M} : f = g ↔ f.support = g.support ∧ ∀ x ∈ f.support, f x = g x :=
-  ⟨fun h => h ▸ ⟨rfl, fun _ _ => rfl⟩, fun ⟨h₁, h₂⟩ =>
-    ext fun a => by
+  ⟨fun h ↦ h ▸ ⟨rfl, fun _ _ ↦ rfl⟩, fun ⟨h₁, h₂⟩ ↦
+    ext fun a ↦ by
       classical
       exact if h : a ∈ f.support then h₂ a h else by
         have hf : f a = 0 := notMem_support_iff.1 h
@@ -171,7 +171,7 @@ theorem support_nonempty_iff {f : α →₀ M} : f.support.Nonempty ↔ f ≠ 0 
 
 theorem card_support_eq_zero {f : α →₀ M} : #f.support = 0 ↔ f = 0 := by simp
 
-instance instDecidableEq [DecidableEq α] [DecidableEq M] : DecidableEq (α →₀ M) := fun f g =>
+instance instDecidableEq [DecidableEq α] [DecidableEq M] : DecidableEq (α →₀ M) := fun f g ↦
   decidable_of_iff (f.support = g.support ∧ ∀ a ∈ f.support, f a = g a) ext_iff'.symm
 
 theorem finite_support (f : α →₀ M) : Set.Finite (Function.support f) :=
@@ -179,14 +179,14 @@ theorem finite_support (f : α →₀ M) : Set.Finite (Function.support f) :=
 
 theorem support_subset_iff {s : Set α} {f : α →₀ M} :
     ↑f.support ⊆ s ↔ ∀ a ∉ s, f a = 0 := by
-  simp only [Set.subset_def, mem_coe, mem_support_iff, forall_congr' fun a => not_imp_comm]
+  simp only [Set.subset_def, mem_coe, mem_support_iff, forall_congr' fun a ↦ not_imp_comm]
 
 /-- Given `Finite α`, `equivFunOnFinite` is the `Equiv` between `α →₀ β` and `α → β`.
   (All functions on a finite type are finitely supported.) -/
 @[simps]
 def equivFunOnFinite [Finite α] : (α →₀ M) ≃ (α → M) where
   toFun := (⇑)
-  invFun f := mk (Function.support f).toFinite.toFinset f fun _a => Set.Finite.mem_toFinset _
+  invFun f := mk (Function.support f).toFinite.toFinset f fun _a ↦ Set.Finite.mem_toFinset _
 
 @[simp]
 theorem equivFunOnFinite_symm_coe {α} [Finite α] (f : α →₀ M) : equivFunOnFinite.symm f = f :=
@@ -204,7 +204,7 @@ noncomputable def _root_.Equiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →�
 
 @[ext]
 theorem unique_ext [Unique α] {f g : α →₀ M} (h : f default = g default) : f = g :=
-  ext fun a => by rwa [Unique.eq_default a]
+  ext fun a ↦ by rwa [Unique.eq_default a]
 
 end Basic
 
@@ -265,7 +265,7 @@ theorem ofSupportFinite_coe {f : α → M} {hf : (Function.support f).Finite} :
     (ofSupportFinite f hf : α → M) = f :=
   rfl
 
-instance instCanLift : CanLift (α → M) (α →₀ M) (⇑) fun f => (Function.support f).Finite where
+instance instCanLift : CanLift (α → M) (α →₀ M) (⇑) fun f ↦ (Function.support f).Finite where
   prf f hf := ⟨ofSupportFinite f hf, rfl⟩
 
 end OfSupportFinite
@@ -291,8 +291,8 @@ bundled (defined in `Mathlib/Data/Finsupp/Basic.lean`):
 * `Finsupp.mapRange.linearEquiv`
 -/
 def mapRange (f : M → N) (hf : f 0 = 0) (g : α →₀ M) : α →₀ N :=
-  onFinset g.support (f ∘ g) fun a => by
-    rw [mem_support_iff, not_imp_not]; exact fun H => (congr_arg f H).trans hf
+  onFinset g.support (f ∘ g) fun a ↦ by
+    rw [mem_support_iff, not_imp_not]; exact fun H ↦ (congr_arg f H).trans hf
 
 @[simp]
 theorem mapRange_apply {f : M → N} {hf : f 0 = 0} {g : α →₀ M} {a : α} :
@@ -301,15 +301,15 @@ theorem mapRange_apply {f : M → N} {hf : f 0 = 0} {g : α →₀ M} {a : α} :
 
 @[simp]
 theorem mapRange_zero {f : M → N} {hf : f 0 = 0} : mapRange f hf (0 : α →₀ M) = 0 :=
-  ext fun _ => by simp only [hf, zero_apply, mapRange_apply]
+  ext fun _ ↦ by simp only [hf, zero_apply, mapRange_apply]
 
 @[simp]
 theorem mapRange_id (g : α →₀ M) : mapRange id rfl g = g :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 theorem mapRange_comp (f : N → P) (hf : f 0 = 0) (f₂ : M → N) (hf₂ : f₂ 0 = 0) (h : (f ∘ f₂) 0 = 0)
     (g : α →₀ M) : mapRange (f ∘ f₂) h g = mapRange f hf (mapRange f₂ hf₂ g) :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 lemma mapRange_mapRange (e₁ : N → P) (e₂ : M → N) (he₁ he₂) (f : α →₀ M) :
@@ -371,10 +371,10 @@ def embDomain (f : α ↪ β) (v : α →₀ M) : β →₀ M where
     haveI := Classical.decEq β
     if h : a₂ ∈ v.support.map f then
       v
-        (v.support.choose (fun a₁ => f a₁ = a₂)
+        (v.support.choose (fun a₁ ↦ f a₁ = a₂)
           (by
             rcases Finset.mem_map.1 h with ⟨a, ha, rfl⟩
-            exact ExistsUnique.intro a ⟨ha, rfl⟩ fun b ⟨_, hb⟩ => f.injective hb))
+            exact ExistsUnique.intro a ⟨ha, rfl⟩ fun b ⟨_, hb⟩ ↦ f.injective hb))
     else 0
   mem_support_toFun a₂ := by
     dsimp
@@ -398,18 +398,18 @@ theorem embDomain_apply (f : α ↪ β) (v : α →₀ M) (a : α) : embDomain f
     simp_rw [embDomain, coe_mk, mem_map']
     split_ifs with h
     · refine congr_arg (v : α → M) (f.inj' ?_)
-      exact Finset.choose_property (fun a₁ => f a₁ = f a) _ _
+      exact Finset.choose_property (fun a₁ ↦ f a₁ = f a) _ _
     · exact (notMem_support_iff.1 h).symm
 
 theorem embDomain_notin_range (f : α ↪ β) (v : α →₀ M) (a : β) (h : a ∉ Set.range f) :
     embDomain f v a = 0 := by
   classical
-    refine dif_neg (mt (fun h => ?_) h)
+    refine dif_neg (mt (fun h ↦ ?_) h)
     rcases Finset.mem_map.1 h with ⟨a, _h, rfl⟩
     exact Set.mem_range_self a
 
 theorem embDomain_injective (f : α ↪ β) : Function.Injective (embDomain f : (α →₀ M) → β →₀ M) :=
-  fun l₁ l₂ h => ext fun a => by simpa only [embDomain_apply] using DFunLike.ext_iff.1 h (f a)
+  fun l₁ l₂ h ↦ ext fun a ↦ by simpa only [embDomain_apply] using DFunLike.ext_iff.1 h (f a)
 
 @[simp]
 theorem embDomain_inj {f : α ↪ β} {l₁ l₂ : α →₀ M} : embDomain f l₁ = embDomain f l₂ ↔ l₁ = l₂ :=
@@ -442,8 +442,8 @@ variable [Zero M] [Zero N] [Zero P]
 def zipWith (f : M → N → P) (hf : f 0 0 = 0) (g₁ : α →₀ M) (g₂ : α →₀ N) : α →₀ P :=
   onFinset
     (haveI := Classical.decEq α; g₁.support ∪ g₂.support)
-    (fun a => f (g₁ a) (g₂ a))
-    fun a (H : f _ _ ≠ 0) => by
+    (fun a ↦ f (g₁ a) (g₂ a))
+    fun a (H : f _ _ ≠ 0) ↦ by
       classical
       rw [mem_union, mem_support_iff, mem_support_iff, ← not_and_or]
       rintro ⟨h₁, h₂⟩; rw [h₁, h₂] at H; exact H hf

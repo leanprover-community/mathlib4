@@ -95,7 +95,7 @@ instance : PreGaloisCategory (Action FintypeCat G) where
 noncomputable instance : FiberFunctor (Action.forget FintypeCat G) where
   preservesFiniteCoproducts := ⟨fun _ ↦ inferInstance⟩
   preservesQuotientsByFiniteGroups _ _ _ := inferInstance
-  reflectsIsos := ⟨fun f (_ : IsIso f.hom) => inferInstance⟩
+  reflectsIsos := ⟨fun f (_ : IsIso f.hom) ↦ inferInstance⟩
 
 /-- The forgetful functor from finite `G`-sets to sets is a `FiberFunctor`. -/
 noncomputable instance : FiberFunctor (forget₂ (Action FintypeCat G) FintypeCat) :=

@@ -47,7 +47,7 @@ instance : Coe (PointedCone R E) (ConvexCone R E) where
   coe := toConvexCone
 
 theorem toConvexCone_injective : Injective ((↑) : PointedCone R E → ConvexCone R E) :=
-  fun _ _ => by simp [toConvexCone]
+  fun _ _ ↦ by simp [toConvexCone]
 
 @[simp]
 theorem pointed_toConvexCone (C : PointedCone R E) : (C : ConvexCone R E).Pointed := by
@@ -67,7 +67,7 @@ def _root_.ConvexCone.toPointedCone {C : ConvexCone R E} (hC : C.Pointed) : Poin
   carrier := C
   add_mem' hx hy := C.add_mem hx hy
   zero_mem' := hC
-  smul_mem' := fun ⟨c, hc⟩ x hx => by
+  smul_mem' := fun ⟨c, hc⟩ x hx ↦ by
     simp_rw [SetLike.mem_coe]
     rcases eq_or_lt_of_le hc with hzero | hpos
     · unfold ConvexCone.Pointed at hC

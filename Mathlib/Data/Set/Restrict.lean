@@ -25,7 +25,7 @@ section restrict
 
 /-- Restrict domain of a function `f` to a set `s`. Same as `Subtype.restrict` but this version
 takes an argument `↥s` instead of `Subtype s`. -/
-def restrict (s : Set α) (f : ∀ a : α, π a) : ∀ a : s, π a := fun x => f x
+def restrict (s : Set α) (f : ∀ a : α, π a) : ∀ a : s, π a := fun x ↦ f x
 
 theorem restrict_def (s : Set α) : s.restrict (π := π) = fun f x ↦ f x := rfl
 
@@ -57,23 +57,23 @@ theorem image_restrict (f : α → β) (s t : Set α) :
 @[simp]
 theorem restrict_dite {s : Set α} [∀ x, Decidable (x ∈ s)] (f : ∀ a ∈ s, β)
     (g : ∀ a ∉ s, β) :
-    (s.restrict fun a => if h : a ∈ s then f a h else g a h) = (fun a : s => f a a.2) :=
-  funext fun a => dif_pos a.2
+    (s.restrict fun a ↦ if h : a ∈ s then f a h else g a h) = (fun a : s ↦ f a a.2) :=
+  funext fun a ↦ dif_pos a.2
 
 @[simp]
 theorem restrict_dite_compl {s : Set α} [∀ x, Decidable (x ∈ s)] (f : ∀ a ∈ s, β)
     (g : ∀ a ∉ s, β) :
-    (sᶜ.restrict fun a => if h : a ∈ s then f a h else g a h) = (fun a : (sᶜ : Set α) => g a a.2) :=
-  funext fun a => dif_neg a.2
+    (sᶜ.restrict fun a ↦ if h : a ∈ s then f a h else g a h) = (fun a : (sᶜ : Set α) ↦ g a a.2) :=
+  funext fun a ↦ dif_neg a.2
 
 @[simp]
 theorem restrict_ite (f g : α → β) (s : Set α) [∀ x, Decidable (x ∈ s)] :
-    (s.restrict fun a => if a ∈ s then f a else g a) = s.restrict f :=
+    (s.restrict fun a ↦ if a ∈ s then f a else g a) = s.restrict f :=
   restrict_dite _ _
 
 @[simp]
 theorem restrict_ite_compl (f g : α → β) (s : Set α) [∀ x, Decidable (x ∈ s)] :
-    (sᶜ.restrict fun a => if a ∈ s then f a else g a) = sᶜ.restrict g :=
+    (sᶜ.restrict fun a ↦ if a ∈ s then f a else g a) = sᶜ.restrict g :=
   restrict_dite_compl _ _
 
 @[simp]
@@ -87,7 +87,7 @@ theorem restrict_piecewise_compl (f g : α → β) (s : Set α) [∀ x, Decidabl
   restrict_ite_compl _ _ _
 
 theorem restrict_extend_range (f : α → β) (g : α → γ) (g' : β → γ) :
-    (range f).restrict (extend f g g') = fun x => g x.coe_prop.choose := by
+    (range f).restrict (extend f g g') = fun x ↦ g x.coe_prop.choose := by
   classical
   exact restrict_dite _ _
 
@@ -100,7 +100,7 @@ theorem restrict_extend_compl_range (f : α → β) (g : α → γ) (g' : β →
 /-- If a function `f` is restricted to a set `t`, and `s ⊆ t`, this is the restriction to `s`. -/
 @[simp]
 def restrict₂ {s t : Set α} (hst : s ⊆ t) (f : ∀ a : t, π a) : ∀ a : s, π a :=
-  fun x => f ⟨x.1, hst x.2⟩
+  fun x ↦ f ⟨x.1, hst x.2⟩
 
 theorem restrict₂_def {s t : Set α} (hst : s ⊆ t) :
     restrict₂ (π := π) hst = fun f x ↦ f ⟨x.1, hst x.2⟩ := rfl
@@ -127,7 +127,7 @@ theorem range_extend {f : α → β} (hf : Injective f) (g : α → γ) (g' : β
 
 /-- Restrict codomain of a function `f` to a set `s`. Same as `Subtype.coind` but this version
 has codomain `↥s` instead of `Subtype s`. -/
-def codRestrict (f : ι → α) (s : Set α) (h : ∀ x, f x ∈ s) : ι → s := fun x => ⟨f x, h x⟩
+def codRestrict (f : ι → α) (s : Set α) (h : ∀ x, f x ∈ s) : ι → s := fun x ↦ ⟨f x, h x⟩
 
 @[simp]
 theorem val_codRestrict_apply (f : ι → α) (s : Set α) (h : ∀ x, f x ∈ s) (x : ι) :
@@ -176,12 +176,12 @@ theorem MapsTo.coe_iterate_restrict {f : α → α} (h : MapsTo f s s) (x : s) (
 /-- Restricting the domain and then the codomain is the same as `MapsTo.restrict`. -/
 @[simp]
 theorem codRestrict_restrict (h : ∀ x : s, f x ∈ t) :
-    codRestrict (s.restrict f) t h = MapsTo.restrict f s t fun x hx => h ⟨x, hx⟩ :=
+    codRestrict (s.restrict f) t h = MapsTo.restrict f s t fun x hx ↦ h ⟨x, hx⟩ :=
   rfl
 
 /-- Reverse of `Set.codRestrict_restrict`. -/
 theorem MapsTo.restrict_eq_codRestrict (h : MapsTo f s t) :
-    h.restrict f s t = codRestrict (s.restrict f) t fun x => h x.2 :=
+    h.restrict f s t = codRestrict (s.restrict f) t fun x ↦ h x.2 :=
   rfl
 
 theorem MapsTo.coe_restrict (h : Set.MapsTo f s t) :
@@ -193,12 +193,12 @@ theorem MapsTo.range_restrict (f : α → β) (s : Set α) (t : Set β) (h : Map
   Set.range_subtype_map f h
 
 theorem mapsTo_iff_exists_map_subtype : MapsTo f s t ↔ ∃ g : s → t, ∀ x : s, f x = g x :=
-  ⟨fun h => ⟨h.restrict f s t, fun _ => rfl⟩, fun ⟨g, hg⟩ x hx => by
+  ⟨fun h ↦ ⟨h.restrict f s t, fun _ ↦ rfl⟩, fun ⟨g, hg⟩ x hx ↦ by
     rw [hg ⟨x, hx⟩]
     apply Subtype.coe_prop⟩
 
 theorem surjective_mapsTo_image_restrict (f : α → β) (s : Set α) :
-    Surjective ((mapsTo_image f s).restrict f s (f '' s)) := fun ⟨_, x, hs, hxy⟩ =>
+    Surjective ((mapsTo_image f s).restrict f s (f '' s)) := fun ⟨_, x, hs, hxy⟩ ↦
   ⟨⟨x, hs⟩, Subtype.ext hxy⟩
 
 end MapsTo
@@ -233,10 +233,10 @@ theorem preimage_restrictPreimage {u : Set t} :
     preimage_image_eq _ Subtype.val_injective]
 
 lemma restrictPreimage_injective (hf : Injective f) : Injective (t.restrictPreimage f) :=
-  fun _ _ e => Subtype.coe_injective <| hf <| Subtype.mk.inj e
+  fun _ _ e ↦ Subtype.coe_injective <| hf <| Subtype.mk.inj e
 
 lemma restrictPreimage_surjective (hf : Surjective f) : Surjective (t.restrictPreimage f) :=
-  fun x => ⟨⟨_, ((hf x).choose_spec.symm ▸ x.2 : _ ∈ t)⟩, Subtype.ext (hf x).choose_spec⟩
+  fun x ↦ ⟨⟨_, ((hf x).choose_spec.symm ▸ x.2 : _ ∈ t)⟩, Subtype.ext (hf x).choose_spec⟩
 
 lemma restrictPreimage_bijective (hf : Bijective f) : Bijective (t.restrictPreimage f) :=
   ⟨t.restrictPreimage_injective hf.1, t.restrictPreimage_surjective hf.2⟩
@@ -251,7 +251,7 @@ end
 section injOn
 
 theorem injOn_iff_injective : InjOn f s ↔ Injective (s.restrict f) :=
-  ⟨fun H a b h => Subtype.eq <| H a.2 b.2 h, fun H a as b bs h =>
+  ⟨fun H a b h ↦ Subtype.eq <| H a.2 b.2 h, fun H a as b bs h ↦
     congr_arg Subtype.val <| @H ⟨a, as⟩ ⟨b, bs⟩ h⟩
 
 alias ⟨InjOn.injective, _⟩ := Set.injOn_iff_injective
@@ -265,10 +265,10 @@ end injOn
 section surjOn
 
 theorem surjOn_iff_surjective : SurjOn f s univ ↔ Surjective (s.restrict f) :=
-  ⟨fun H b =>
+  ⟨fun H b ↦
     let ⟨a, as, e⟩ := @H b trivial
     ⟨⟨a, as⟩, e⟩,
-    fun H b _ =>
+    fun H b _ ↦
     let ⟨⟨a, as⟩, e⟩ := H b
     ⟨a, as, e⟩⟩
 

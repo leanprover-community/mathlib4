@@ -45,7 +45,7 @@ lemma whiskerVertical [w.GuitartExact] (α : L ≅ L') (β : R ≅ R') :
   intro X₂
   let e : structuredArrowDownwards (w.whiskerVertical α.hom β.inv) X₂ ≅
       w.structuredArrowDownwards X₂ ⋙ (StructuredArrow.mapIso (β.app X₂) ).functor :=
-    NatIso.ofComponents (fun f => StructuredArrow.isoMk (α.symm.app f.right) (by
+    NatIso.ofComponents (fun f ↦ StructuredArrow.isoMk (α.symm.app f.right) (by
       dsimp
       simp only [NatTrans.naturality_assoc, assoc, ← B.map_comp,
         Iso.hom_inv_id_app, B.map_id, comp_id]))
@@ -89,7 +89,7 @@ variable {H₁ : C₁ ⥤ D₁} {L₁ : C₁ ⥤ C₂} {R₁ : D₁ ⥤ D₂} {H
 def structuredArrowDownwardsComp (Y₁ : D₁) :
     w.structuredArrowDownwards Y₁ ⋙ w'.structuredArrowDownwards (R₁.obj Y₁) ≅
       (w ≫ᵥ w').structuredArrowDownwards Y₁ :=
-  NatIso.ofComponents (fun _ => StructuredArrow.isoMk (Iso.refl _))
+  NatIso.ofComponents (fun _ ↦ StructuredArrow.isoMk (Iso.refl _))
 
 /-- The vertical composition of 2-squares. (Variant where we allow the replacement of
 the vertical compositions by isomorphic functors.) -/

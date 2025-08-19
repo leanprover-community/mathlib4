@@ -26,7 +26,7 @@ structure FinBddDistLat extends BddDistLat where
 namespace FinBddDistLat
 
 instance : CoeSort FinBddDistLat Type* :=
-  ⟨fun X => X.carrier⟩
+  ⟨fun X ↦ X.carrier⟩
 
 instance (X : FinBddDistLat) : DistribLattice X :=
   X.str
@@ -177,8 +177,8 @@ def dual : FinBddDistLat ⥤ FinBddDistLat where
 def dualEquiv : FinBddDistLat ≌ FinBddDistLat where
   functor := dual
   inverse := dual
-  unitIso := NatIso.ofComponents (fun X => Iso.mk (α := X) <| OrderIso.dualDual X)
-  counitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X)
+  unitIso := NatIso.ofComponents (fun X ↦ Iso.mk (α := X) <| OrderIso.dualDual X)
+  counitIso := NatIso.ofComponents (fun X ↦ Iso.mk <| OrderIso.dualDual X)
 
 end FinBddDistLat
 

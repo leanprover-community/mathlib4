@@ -107,7 +107,7 @@ theorem Path.cast_eq_iff_heq {u v u' v' : U} (hu : u = u') (hv : v = v') (p : Pa
 
 theorem Path.eq_cast_iff_heq {u v u' v' : U} (hu : u = u') (hv : v = v') (p : Path u v)
     (p' : Path u' v') : p' = p.cast hu hv ↔ p' ≍ p :=
-  ⟨fun h => ((p.cast_eq_iff_heq hu hv p').1 h.symm).symm, fun h =>
+  ⟨fun h ↦ ((p.cast_eq_iff_heq hu hv p').1 h.symm).symm, fun h ↦
     ((p.cast_eq_iff_heq hu hv p').2 h.symm).symm⟩
 
 theorem Path.cast_cons {u v w u' w' : U} (p : Path u v) (e : v ⟶ w) (hu : u = u') (hw : w = w') :

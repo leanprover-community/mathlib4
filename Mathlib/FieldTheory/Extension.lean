@@ -358,7 +358,7 @@ theorem Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly_of_splits {F K : Type*
     [Field F] [Field K] [Field L] [Algebra F L] [Algebra F K]
     (hA : ∀ x : K, (minpoly F x).Splits (algebraMap F L))
     [Algebra.IsAlgebraic F K] (x : K) :
-    (Set.range fun (ψ : K →ₐ[F] L) => ψ x) = (minpoly F x).rootSet L := by
+    (Set.range fun (ψ : K →ₐ[F] L) ↦ ψ x) = (minpoly F x).rootSet L := by
   ext a
   rw [mem_rootSet_of_ne (minpoly.ne_zero (Algebra.IsIntegral.isIntegral x))]
   refine ⟨fun ⟨ψ, hψ⟩ ↦ ?_, fun ha ↦ IntermediateField.exists_algHom_of_splits_of_aeval

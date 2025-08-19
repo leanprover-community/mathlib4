@@ -72,15 +72,15 @@ We start with simple observations.
 -/
 
 
-protected theorem summable {m : ℝ} (hm : 1 < m) : Summable fun i : ℕ => 1 / m ^ i ! :=
+protected theorem summable {m : ℝ} (hm : 1 < m) : Summable fun i : ℕ ↦ 1 / m ^ i ! :=
   summable_one_div_pow_of_le hm Nat.self_le_factorial
 
 theorem remainder_summable {m : ℝ} (hm : 1 < m) (k : ℕ) :
-    Summable fun i : ℕ => 1 / m ^ (i + (k + 1))! := by
+    Summable fun i : ℕ ↦ 1 / m ^ (i + (k + 1))! := by
   convert (summable_nat_add_iff (k + 1)).2 (LiouvilleNumber.summable hm)
 
 theorem remainder_pos {m : ℝ} (hm : 1 < m) (k : ℕ) : 0 < remainder m k :=
-  (remainder_summable hm k).tsum_pos (fun _ => by positivity) 0 (by positivity)
+  (remainder_summable hm k).tsum_pos (fun _ ↦ by positivity) 0 (by positivity)
 
 theorem partialSum_succ (m : ℝ) (n : ℕ) :
     partialSum m (n + 1) = partialSum m n + 1 / m ^ (n + 1)! :=
@@ -106,7 +106,7 @@ theorem remainder_lt' (n : ℕ) {m : ℝ} (m1 : 1 < m) :
   calc
     (∑' i, 1 / m ^ (i + (n + 1))!) < ∑' i, 1 / m ^ (i + (n + 1)!) :=
         -- 1. the second series dominates the first
-        Summable.tsum_lt_tsum (fun b => one_div_pow_le_one_div_pow_of_le m1.le
+        Summable.tsum_lt_tsum (fun b ↦ one_div_pow_le_one_div_pow_of_le m1.le
           (b.add_factorial_succ_le_factorial_add_succ n))
         -- 2. the term with index `i = 2` of the first series is strictly smaller than
         -- the corresponding term of the second series
@@ -114,7 +114,7 @@ theorem remainder_lt' (n : ℕ) {m : ℝ} (m1 : 1 < m) :
         -- 3. the first series is summable
         (remainder_summable m1 n)
         -- 4. the second series is summable, since its terms grow quickly
-        (summable_one_div_pow_of_le m1 fun _ => le_self_add)
+        (summable_one_div_pow_of_le m1 fun _ ↦ le_self_add)
     -- split the sum in the exponent and massage
     _ = ∑' i : ℕ, (1 / m) ^ i * (1 / m ^ (n + 1)!) := by
       simp only [pow_add, one_div, mul_inv, inv_pow]

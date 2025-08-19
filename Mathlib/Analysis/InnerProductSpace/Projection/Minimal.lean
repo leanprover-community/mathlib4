@@ -28,34 +28,34 @@ open Topology RCLike Real Filter InnerProductSpace
 Let `u` be a point in a real inner product space, and let `K` be a nonempty complete convex subset.
 Then there exists a (unique) `v` in `K` that minimizes the distance `‖u - v‖` to `u`. -/
 theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h₁ : IsComplete K)
-    (h₂ : Convex ℝ K) : ∀ u : F, ∃ v ∈ K, ‖u - v‖ = ⨅ w : K, ‖u - w‖ := fun u => by
+    (h₂ : Convex ℝ K) : ∀ u : F, ∃ v ∈ K, ‖u - v‖ = ⨅ w : K, ‖u - w‖ := fun u ↦ by
   let δ := ⨅ w : K, ‖u - w‖
   letI : Nonempty K := ne.to_subtype
-  have zero_le_δ : 0 ≤ δ := le_ciInf fun _ => norm_nonneg _
-  have δ_le : ∀ w : K, δ ≤ ‖u - w‖ := ciInf_le ⟨0, Set.forall_mem_range.2 fun _ => norm_nonneg _⟩
-  have δ_le' : ∀ w ∈ K, δ ≤ ‖u - w‖ := fun w hw => δ_le ⟨w, hw⟩
+  have zero_le_δ : 0 ≤ δ := le_ciInf fun _ ↦ norm_nonneg _
+  have δ_le : ∀ w : K, δ ≤ ‖u - w‖ := ciInf_le ⟨0, Set.forall_mem_range.2 fun _ ↦ norm_nonneg _⟩
+  have δ_le' : ∀ w ∈ K, δ ≤ ‖u - w‖ := fun w hw ↦ δ_le ⟨w, hw⟩
   -- Step 1: since `δ` is the infimum, can find a sequence `w : ℕ → K` in `K`
   -- such that `‖u - w n‖ < δ + 1 / (n + 1)` (which implies `‖u - w n‖ --> δ`);
   -- maybe this should be a separate lemma
   have exists_seq : ∃ w : ℕ → K, ∀ n, ‖u - w n‖ < δ + 1 / (n + 1) := by
-    have hδ : ∀ n : ℕ, δ < δ + 1 / (n + 1) := fun n =>
+    have hδ : ∀ n : ℕ, δ < δ + 1 / (n + 1) := fun n ↦
       lt_add_of_le_of_pos le_rfl Nat.one_div_pos_of_nat
-    have h := fun n => exists_lt_of_ciInf_lt (hδ n)
-    let w : ℕ → K := fun n => Classical.choose (h n)
-    exact ⟨w, fun n => Classical.choose_spec (h n)⟩
+    have h := fun n ↦ exists_lt_of_ciInf_lt (hδ n)
+    let w : ℕ → K := fun n ↦ Classical.choose (h n)
+    exact ⟨w, fun n ↦ Classical.choose_spec (h n)⟩
   rcases exists_seq with ⟨w, hw⟩
-  have norm_tendsto : Tendsto (fun n => ‖u - w n‖) atTop (𝓝 δ) := by
-    have h : Tendsto (fun _ : ℕ => δ) atTop (𝓝 δ) := tendsto_const_nhds
-    have h' : Tendsto (fun n : ℕ => δ + 1 / (n + 1)) atTop (𝓝 δ) := by
+  have norm_tendsto : Tendsto (fun n ↦ ‖u - w n‖) atTop (𝓝 δ) := by
+    have h : Tendsto (fun _ : ℕ ↦ δ) atTop (𝓝 δ) := tendsto_const_nhds
+    have h' : Tendsto (fun n : ℕ ↦ δ + 1 / (n + 1)) atTop (𝓝 δ) := by
       convert h.add tendsto_one_div_add_atTop_nhds_zero_nat
       simp only [add_zero]
-    exact tendsto_of_tendsto_of_tendsto_of_le_of_le h h' (fun x => δ_le _) fun x => le_of_lt (hw _)
+    exact tendsto_of_tendsto_of_tendsto_of_le_of_le h h' (fun x ↦ δ_le _) fun x ↦ le_of_lt (hw _)
   -- Step 2: Prove that the sequence `w : ℕ → K` is a Cauchy sequence
-  have seq_is_cauchy : CauchySeq fun n => (w n : F) := by
+  have seq_is_cauchy : CauchySeq fun n ↦ (w n : F) := by
     rw [cauchySeq_iff_le_tendsto_0]
     -- splits into three goals
-    let b := fun n : ℕ => 8 * δ * (1 / (n + 1)) + 4 * (1 / (n + 1)) * (1 / (n + 1))
-    use fun n => √(b n)
+    let b := fun n : ℕ ↦ 8 * δ * (1 / (n + 1)) + 4 * (1 / (n + 1)) * (1 / (n + 1))
+    use fun n ↦ √(b n)
     constructor
     -- first goal :  `∀ (n : ℕ), 0 ≤ √(b n)`
     · intro n
@@ -120,19 +120,19 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
         _ ≤ 2 * ((δ + div) * (δ + div) + (δ + div) * (δ + div)) - 4 * δ * δ := by gcongr
         _ = 8 * δ * div + 4 * div * div := by ring
       positivity
-    -- third goal : `Tendsto (fun (n : ℕ) => √(b n)) atTop (𝓝 0)`
+    -- third goal : `Tendsto (fun (n : ℕ) ↦ √(b n)) atTop (𝓝 0)`
     suffices Tendsto (fun x ↦ √(8 * δ * x + 4 * x * x) : ℝ → ℝ) (𝓝 0) (𝓝 0)
       from this.comp tendsto_one_div_add_atTop_nhds_zero_nat
     exact Continuous.tendsto' (by fun_prop) _ _ (by simp)
   -- Step 3: By completeness of `K`, let `w : ℕ → K` converge to some `v : K`.
   -- Prove that it satisfies all requirements.
-  rcases cauchySeq_tendsto_of_isComplete h₁ (fun n => Subtype.mem _) seq_is_cauchy with
+  rcases cauchySeq_tendsto_of_isComplete h₁ (fun n ↦ Subtype.mem _) seq_is_cauchy with
     ⟨v, hv, w_tendsto⟩
   use v
   use hv
-  have h_cont : Continuous fun v => ‖u - v‖ :=
+  have h_cont : Continuous fun v ↦ ‖u - v‖ :=
     Continuous.comp continuous_norm (Continuous.sub continuous_const continuous_id)
-  have : Tendsto (fun n => ‖u - w n‖) atTop (𝓝 ‖u - v‖) := by
+  have : Tendsto (fun n ↦ ‖u - w n‖) atTop (𝓝 ‖u - v‖) := by
     convert Tendsto.comp h_cont.continuousAt w_tendsto
   exact tendsto_nhds_unique this norm_tendsto
 
@@ -146,7 +146,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
     let δ := ⨅ w : K, ‖u - w‖
     let p := ⟪u - v, w - v⟫_ℝ
     let q := ‖w - v‖ ^ 2
-    have δ_le (w : K) : δ ≤ ‖u - w‖ := ciInf_le ⟨0, fun _ ⟨_, h⟩ => h ▸ norm_nonneg _⟩ _
+    have δ_le (w : K) : δ ≤ ‖u - w‖ := ciInf_le ⟨0, fun _ ⟨_, h⟩ ↦ h ▸ norm_nonneg _⟩ _
     have δ_le' (w) (hw : w ∈ K) : δ ≤ ‖u - w‖ := δ_le ⟨w, hw⟩
     have (θ : ℝ) (hθ₁ : 0 < θ) (hθ₂ : θ ≤ 1) : 2 * p ≤ θ * q := by
       have : ‖u - v‖ ^ 2 ≤ ‖u - v‖ ^ 2 - 2 * θ * ⟪u - v, w - v⟫_ℝ + θ * θ * ‖w - v‖ ^ 2 :=
@@ -215,7 +215,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
         _ = ‖u - w‖ * ‖u - w‖ := by
           have : u - v - (w - v) = u - w := by abel
           rw [this, sq]
-    · change ⨅ w : K, ‖u - w‖ ≤ (fun w : K => ‖u - w‖) ⟨v, hv⟩
+    · change ⨅ w : K, ‖u - w‖ ≤ (fun w : K ↦ ‖u - w‖) ⟨v, hv⟩
       apply ciInf_le
       use 0
       rintro y ⟨z, rfl⟩

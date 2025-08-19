@@ -24,7 +24,7 @@ open Complex Function Metric Real
 
 /-- The exponential map $θ ↦ c + R e^{θi}$. The range of this map is the circle in `ℂ` with center
 `c` and radius `|R|`. -/
-def circleMap (c : ℂ) (R : ℝ) : ℝ → ℂ := fun θ => c + R * exp (θ * I)
+def circleMap (c : ℂ) (R : ℝ) : ℝ → ℂ := fun θ ↦ c + R * exp (θ * I)
 
 @[simp]
 theorem circleMap_sub_center (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ - c = circleMap 0 R θ := by
@@ -62,7 +62,7 @@ theorem circleMap_eq_center_iff {c : ℂ} {R : ℝ} {θ : ℝ} : circleMap c R �
 
 @[simp]
 theorem circleMap_zero_radius (c : ℂ) : circleMap c 0 = const ℝ c :=
-  funext fun _ => circleMap_eq_center_iff.2 rfl
+  funext fun _ ↦ circleMap_eq_center_iff.2 rfl
 
 theorem circleMap_ne_center {c : ℂ} {R : ℝ} (hR : R ≠ 0) {θ : ℝ} : circleMap c R θ ≠ c :=
   mt circleMap_eq_center_iff.1 hR
@@ -98,7 +98,7 @@ lemma circleMap_neg_pi_div_two (c : ℂ) (R : ℝ) : circleMap c R (-π / 2) = c
     sub_eq_add_neg]
 
 /-- `circleMap` is `2π`-periodic. -/
-theorem periodic_circleMap (c : ℂ) (R : ℝ) : Periodic (circleMap c R) (2 * π) := fun θ => by
+theorem periodic_circleMap (c : ℂ) (R : ℝ) : Periodic (circleMap c R) (2 * π) := fun θ ↦ by
   simp [circleMap, add_mul, exp_periodic _]
 
 theorem Set.Countable.preimage_circleMap {s : Set ℂ} (hs : s.Countable) (c : ℂ) {R : ℝ}

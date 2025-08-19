@@ -76,7 +76,7 @@ protected theorem eq [T0Space α] (h : IsGenericPoint x S) (h' : IsGenericPoint 
   (h.inseparable h').eq
 
 theorem mem_open_set_iff (h : IsGenericPoint x S) (hU : IsOpen U) : x ∈ U ↔ (S ∩ U).Nonempty :=
-  ⟨fun h' => ⟨x, h.mem, h'⟩, fun ⟨_y, hyS, hyU⟩ => (h.specializes hyS).mem_open hU hyU⟩
+  ⟨fun h' ↦ ⟨x, h.mem, h'⟩, fun ⟨_y, hyS, hyU⟩ ↦ (h.specializes hyS).mem_open hU hyU⟩
 
 theorem disjoint_iff (h : IsGenericPoint x S) (hU : IsOpen U) : Disjoint S U ↔ x ∉ U := by
   rw [h.mem_open_set_iff hU, ← not_disjoint_iff_nonempty_inter, Classical.not_not]
@@ -200,8 +200,8 @@ theorem Topology.IsOpenEmbedding.quasiSober {f : α → β} (hf : IsOpenEmbeddin
     apply image_injective.mpr hf.injective
     ext z
     simp only [image_preimage_eq_inter_range, mem_inter_iff, and_congr_left_iff]
-    exact fun hy => ⟨fun h => hT.closure_eq ▸ closure_mono inter_subset_left h,
-      fun h => subset_closure ⟨h, hy⟩⟩
+    exact fun hy ↦ ⟨fun h ↦ hT.closure_eq ▸ closure_mono inter_subset_left h,
+      fun h ↦ subset_closure ⟨h, hy⟩⟩
 
 lemma TopologicalSpace.IsOpenCover.quasiSober_iff_forall {ι : Type*} {U : ι → Opens α}
     (hU : TopologicalSpace.IsOpenCover U) : QuasiSober α ↔ ∀ i, QuasiSober (U i) := by

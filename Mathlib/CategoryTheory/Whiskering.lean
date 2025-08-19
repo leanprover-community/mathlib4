@@ -72,13 +72,13 @@ variable (C D E)
 @[simps]
 def whiskeringLeft : (C ⥤ D) ⥤ (D ⥤ E) ⥤ C ⥤ E where
   obj F :=
-    { obj := fun G => F ⋙ G
-      map := fun α => whiskerLeft F α }
+    { obj := fun G ↦ F ⋙ G
+      map := fun α ↦ whiskerLeft F α }
   map τ :=
-    { app := fun H =>
-        { app := fun c => H.map (τ.app c)
-          naturality := fun X Y f => by dsimp; rw [← H.map_comp, ← H.map_comp, ← τ.naturality] }
-      naturality := fun X Y f => by ext; dsimp; rw [f.naturality] }
+    { app := fun H ↦
+        { app := fun c ↦ H.map (τ.app c)
+          naturality := fun X Y f ↦ by dsimp; rw [← H.map_comp, ← H.map_comp, ← τ.naturality] }
+      naturality := fun X Y f ↦ by ext; dsimp; rw [f.naturality] }
 
 /-- Right-composition gives a functor `(D ⥤ E) ⥤ ((C ⥤ D) ⥤ (C ⥤ E))`.
 
@@ -88,13 +88,13 @@ def whiskeringLeft : (C ⥤ D) ⥤ (D ⥤ E) ⥤ C ⥤ E where
 @[simps]
 def whiskeringRight : (D ⥤ E) ⥤ (C ⥤ D) ⥤ C ⥤ E where
   obj H :=
-    { obj := fun F => F ⋙ H
-      map := fun α => whiskerRight α H }
+    { obj := fun F ↦ F ⋙ H
+      map := fun α ↦ whiskerRight α H }
   map τ :=
-    { app := fun F =>
-        { app := fun c => τ.app (F.obj c)
-          naturality := fun X Y f => by dsimp; rw [τ.naturality] }
-      naturality := fun X Y f => by ext; dsimp; rw [← NatTrans.naturality] }
+    { app := fun F ↦
+        { app := fun c ↦ τ.app (F.obj c)
+          naturality := fun X Y f ↦ by dsimp; rw [τ.naturality] }
+      naturality := fun X Y f ↦ by ext; dsimp; rw [← NatTrans.naturality] }
 
 variable {C} {D} {E}
 
@@ -111,8 +111,8 @@ def FullyFaithful.whiskeringRight {F : D ⥤ E} (hF : F.FullyFaithful)
     (C : Type*) [Category C] :
     ((whiskeringRight C D E).obj F).FullyFaithful where
   preimage f :=
-    { app := fun X => hF.preimage (f.app X)
-      naturality := fun _ _ g => by
+    { app := fun X ↦ hF.preimage (f.app X)
+      naturality := fun _ _ g ↦ by
         apply hF.map_injective
         dsimp
         simp only [map_comp, map_preimage]

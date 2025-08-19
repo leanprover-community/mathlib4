@@ -92,11 +92,11 @@ theorem vadd_right_cancel {g₁ g₂ : G} (p : P) (h : g₁ +ᵥ p = g₂ +ᵥ p
 
 @[simp]
 theorem vadd_right_cancel_iff {g₁ g₂ : G} (p : P) : g₁ +ᵥ p = g₂ +ᵥ p ↔ g₁ = g₂ :=
-  ⟨vadd_right_cancel p, fun h => h ▸ rfl⟩
+  ⟨vadd_right_cancel p, fun h ↦ h ▸ rfl⟩
 
 /-- Adding a group element to the point `p` is an injective
 function. -/
-theorem vadd_right_injective (p : P) : Function.Injective ((· +ᵥ p) : G → P) := fun _ _ =>
+theorem vadd_right_injective (p : P) : Function.Injective ((· +ᵥ p) : G → P) := fun _ _ ↦
   vadd_right_cancel p
 
 /-- Adding a group element to a point, then subtracting another point,
@@ -119,7 +119,7 @@ theorem eq_of_vsub_eq_zero {p₁ p₂ : P} (h : p₁ -ᵥ p₂ = (0 : G)) : p₁
 equal. -/
 @[simp]
 theorem vsub_eq_zero_iff_eq {p₁ p₂ : P} : p₁ -ᵥ p₂ = (0 : G) ↔ p₁ = p₂ :=
-  Iff.intro eq_of_vsub_eq_zero fun h => h ▸ vsub_self _
+  Iff.intro eq_of_vsub_eq_zero fun h ↦ h ▸ vsub_self _
 
 theorem vsub_ne_zero {p q : P} : p -ᵥ q ≠ (0 : G) ↔ p ≠ q :=
   not_congr vsub_eq_zero_iff_eq
@@ -155,7 +155,7 @@ theorem vsub_sub_vsub_cancel_right (p₁ p₂ p₃ : P) : p₁ -ᵥ p₃ - (p₂
 and an equality of a subtraction of two points with a group
 element. -/
 theorem eq_vadd_iff_vsub_eq (p₁ : P) (g : G) (p₂ : P) : p₁ = g +ᵥ p₂ ↔ p₁ -ᵥ p₂ = g :=
-  ⟨fun h => h.symm ▸ vadd_vsub _ _, fun h => h ▸ (vsub_vadd _ _).symm⟩
+  ⟨fun h ↦ h.symm ▸ vadd_vsub _ _, fun h ↦ h ▸ (vsub_vadd _ _).symm⟩
 
 theorem vadd_eq_vadd_iff_neg_add_eq_vsub {v₁ v₂ : G} {p₁ p₂ : P} :
     v₁ +ᵥ p₁ = v₂ +ᵥ p₂ ↔ -v₁ + v₂ = p₁ -ᵥ p₂ := by
@@ -179,11 +179,11 @@ def vaddConst (p : P) : G ≃ P where
   right_inv _ := vsub_vadd _ _
 
 @[simp]
-theorem coe_vaddConst (p : P) : ⇑(vaddConst p) = fun v => v +ᵥ p :=
+theorem coe_vaddConst (p : P) : ⇑(vaddConst p) = fun v ↦ v +ᵥ p :=
   rfl
 
 @[simp]
-theorem coe_vaddConst_symm (p : P) : ⇑(vaddConst p).symm = fun p' => p' -ᵥ p :=
+theorem coe_vaddConst_symm (p : P) : ⇑(vaddConst p).symm = fun p' ↦ p' -ᵥ p :=
   rfl
 
 /-- `p' ↦ p -ᵥ p'` as an equivalence. -/
@@ -196,7 +196,7 @@ def constVSub (p : P) : P ≃ G where
 @[simp] lemma coe_constVSub (p : P) : ⇑(constVSub p) = (p -ᵥ ·) := rfl
 
 @[simp]
-theorem coe_constVSub_symm (p : P) : ⇑(constVSub p).symm = fun (v : G) => -v +ᵥ p :=
+theorem coe_constVSub_symm (p : P) : ⇑(constVSub p).symm = fun (v : G) ↦ -v +ᵥ p :=
   rfl
 
 variable (P)
@@ -237,7 +237,7 @@ theorem pointReflection_symm (x : P) : (pointReflection x).symm = pointReflectio
 theorem pointReflection_self (x : P) : pointReflection x x = x :=
   vsub_vadd _ _
 
-theorem pointReflection_involutive (x : P) : Involutive (pointReflection x : P → P) := fun y =>
+theorem pointReflection_involutive (x : P) : Involutive (pointReflection x : P → P) := fun y ↦
   (Equiv.apply_eq_iff_eq_symm_apply _).2 <| by rw [pointReflection_symm]
 
 end Equiv

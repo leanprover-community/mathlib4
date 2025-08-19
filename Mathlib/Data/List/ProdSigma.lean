@@ -27,7 +27,7 @@ theorem nil_product (l : List β) : (@nil α) ×ˢ l = [] :=
 
 @[simp]
 theorem product_cons (a : α) (l₁ : List α) (l₂ : List β) :
-    (a :: l₁) ×ˢ l₂ = map (fun b => (a, b)) l₂ ++ (l₁ ×ˢ l₂) :=
+    (a :: l₁) ×ˢ l₂ = map (fun b ↦ (a, b)) l₂ ++ (l₁ ×ˢ l₂) :=
   rfl
 
 @[simp]
@@ -63,7 +63,7 @@ theorem sigma_cons (a : α) (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
   rfl
 
 @[simp]
-theorem sigma_nil : ∀ l : List α, (l.sigma fun a => @nil (σ a)) = []
+theorem sigma_nil : ∀ l : List α, (l.sigma fun a ↦ @nil (σ a)) = []
   | [] => rfl
   | _ :: l => by simp [sigma_cons, sigma_nil l]
 

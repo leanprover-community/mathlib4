@@ -340,7 +340,7 @@ lemma _root_.MeasureTheory.Measure.iInf_rat_gt_prod_Iic {ρ : Measure (α × ℝ
       exact mod_cast htq
     · exact mod_cast hta.le
   · exact fun r r' hrr' ↦ prod_mono_right <| by gcongr
-  · exact fun _ => (hs.prod measurableSet_Iic).nullMeasurableSet
+  · exact fun _ ↦ (hs.prod measurableSet_Iic).nullMeasurableSet
   · exact ⟨⟨t + 1, lt_add_one _⟩, measure_ne_top ρ _⟩
 
 lemma IsRatCondKernelCDFAux.setIntegral_iInf_rat_gt (hf : IsRatCondKernelCDFAux f κ ν)

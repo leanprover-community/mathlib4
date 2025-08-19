@@ -45,10 +45,10 @@ theorem totient_eq_card_coprime (n : ℕ) : φ n = #{a ∈ range n | n.Coprime a
 /-- A characterisation of `Nat.totient` that avoids `Finset`. -/
 theorem totient_eq_card_lt_and_coprime (n : ℕ) : φ n = Nat.card { m | m < n ∧ n.Coprime m } := by
   let e : { m | m < n ∧ n.Coprime m } ≃ {x ∈ range n | n.Coprime x} :=
-    { toFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
-      invFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
-      left_inv := fun m => by simp only [Subtype.coe_eta]
-      right_inv := fun m => by simp only [Subtype.coe_eta] }
+    { toFun := fun m ↦ ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
+      invFun := fun m ↦ ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
+      left_inv := fun m ↦ by simp only [Subtype.coe_eta]
+      right_inv := fun m ↦ by simp only [Subtype.coe_eta] }
   rw [totient_eq_card_coprime, card_congr e, card_eq_fintype_card, Fintype.card_coe]
 
 theorem totient_le (n : ℕ) : φ n ≤ n :=
@@ -137,13 +137,13 @@ theorem totient_div_of_dvd {n d : ℕ} (hnd : d ∣ n) :
   rcases d.eq_zero_or_pos with (rfl | hd0); · simp [eq_zero_of_zero_dvd hnd]
   rcases hnd with ⟨x, rfl⟩
   rw [Nat.mul_div_cancel_left x hd0]
-  apply Finset.card_bij fun k _ => d * k
+  apply Finset.card_bij fun k _ ↦ d * k
   · simp only [mem_filter, mem_range, and_imp, Coprime]
-    refine fun a ha1 ha2 => ⟨(mul_lt_mul_left hd0).2 ha1, ?_⟩
+    refine fun a ha1 ha2 ↦ ⟨(mul_lt_mul_left hd0).2 ha1, ?_⟩
     rw [gcd_mul_left, ha2, mul_one]
   · simp [hd0.ne']
   · simp only [mem_filter, mem_range, exists_prop, and_imp]
-    refine fun b hb1 hb2 => ?_
+    refine fun b hb1 hb2 ↦ ?_
     have : d ∣ b := by
       rw [← hb2]
       apply gcd_dvd_right
@@ -157,10 +157,10 @@ theorem sum_totient (n : ℕ) : n.divisors.sum φ = n := by
   rw [← sum_div_divisors n φ]
   have : n = ∑ d ∈ n.divisors, #{k ∈ range n | n.gcd k = d} := by
     nth_rw 1 [← card_range n]
-    refine card_eq_sum_card_fiberwise fun x _ => mem_divisors.2 ⟨?_, hn.ne'⟩
+    refine card_eq_sum_card_fiberwise fun x _ ↦ mem_divisors.2 ⟨?_, hn.ne'⟩
     apply gcd_dvd_left
   nth_rw 3 [this]
-  exact sum_congr rfl fun x hx => totient_div_of_dvd (dvd_of_mem_divisors hx)
+  exact sum_congr rfl fun x hx ↦ totient_div_of_dvd (dvd_of_mem_divisors hx)
 
 theorem sum_totient' (n : ℕ) : ∑ m ∈ range n.succ with m ∣ n, φ m = n := by
   convert sum_totient _ using 1
@@ -188,7 +188,7 @@ theorem totient_prime_pow_succ {p : ℕ} (hp : p.Prime) (n : ℕ) : φ (p ^ (n +
             exact h b ⟨lt_of_mul_lt_mul_left ha (zero_le _), mul_comm _ _⟩)
     _ = _ := by
       have h1 : Function.Injective (· * p) := mul_left_injective₀ hp.ne_zero
-      have h2 : (range (p ^ n)).image (· * p) ⊆ range (p ^ (n + 1)) := fun a => by
+      have h2 : (range (p ^ n)).image (· * p) ⊆ range (p ^ (n + 1)) := fun a ↦ by
         simp only [mem_image, mem_range, exists_imp]
         rintro b ⟨h, rfl⟩
         rw [Nat.pow_succ]
@@ -206,7 +206,7 @@ theorem totient_prime {p : ℕ} (hp : p.Prime) : φ p = p - 1 := by
   rw [← pow_one p, totient_prime_pow hp] <;> simp
 
 theorem totient_eq_iff_prime {p : ℕ} (hp : 0 < p) : p.totient = p - 1 ↔ p.Prime := by
-  refine ⟨fun h => ?_, totient_prime⟩
+  refine ⟨fun h ↦ ?_, totient_prime⟩
   replace hp : 1 < p := by
     apply lt_of_le_of_ne
     · rwa [succ_le_iff]
@@ -217,7 +217,7 @@ theorem totient_eq_iff_prime {p : ℕ} (hp : 0 < p) : p.totient = p - 1 ↔ p.Pr
     Finset.filter_insert, if_neg (not_coprime_of_dvd_of_dvd hp (dvd_refl p) (dvd_zero p)),
     ← Nat.card_Ico 1 p] at h
   refine
-    p.prime_of_coprime hp fun n hn hnz => Finset.filter_card_eq h n <| Finset.mem_Ico.mpr ⟨?_, hn⟩
+    p.prime_of_coprime hp fun n hn hnz ↦ Finset.filter_card_eq h n <| Finset.mem_Ico.mpr ⟨?_, hn⟩
   omega
 
 theorem card_units_zmod_lt_sub_one {p : ℕ} (hp : 1 < p) [Fintype (ZMod p)ˣ] :
@@ -252,7 +252,7 @@ theorem totient_eq_one_iff : ∀ {n : ℕ}, n.totient = 1 ↔ n = 1 ∨ n = 2
   | n + 3 => by
     have : 3 ≤ n + 3 := le_add_self
     simp only [succ_succ_ne_one, false_or]
-    exact ⟨fun h => not_even_one.elim <| h ▸ totient_even this, by rintro ⟨⟩⟩
+    exact ⟨fun h ↦ not_even_one.elim <| h ▸ totient_even this, by rintro ⟨⟩⟩
 
 theorem dvd_two_of_totient_le_one {a : ℕ} (han : 0 < a) (ha : a.totient ≤ 1) : a ∣ 2 := by
   rcases totient_eq_one_iff.mp <| le_antisymm ha <| totient_pos.2 han with rfl | rfl <;> norm_num
@@ -279,7 +279,7 @@ We prove several different statements of this formula. -/
 
 /-- Euler's product formula for the totient function. -/
 theorem totient_eq_prod_factorization {n : ℕ} (hn : n ≠ 0) :
-    φ n = n.factorization.prod fun p k => p ^ (k - 1) * (p - 1) := by
+    φ n = n.factorization.prod fun p k ↦ p ^ (k - 1) * (p - 1) := by
   rw [multiplicative_factorization φ (@totient_mul) totient_one hn]
   apply Finsupp.prod_congr _
   intro p hp
@@ -293,7 +293,7 @@ theorem totient_mul_prod_primeFactors (n : ℕ) :
   rw [totient_eq_prod_factorization hn]
   nth_rw 3 [← factorization_prod_pow_eq_self hn]
   simp only [prod_primeFactors_prod_factorization, ← Finsupp.prod_mul]
-  refine Finsupp.prod_congr (M := ℕ) (N := ℕ) fun p hp => ?_
+  refine Finsupp.prod_congr (M := ℕ) (N := ℕ) fun p hp ↦ ?_
   rw [Finsupp.mem_support_iff, ← zero_lt_iff] at hp
   rw [mul_comm, ← mul_assoc, ← pow_succ', Nat.sub_one, Nat.succ_pred_eq_of_pos hp]
 
@@ -302,7 +302,7 @@ theorem totient_eq_div_primeFactors_mul (n : ℕ) :
     φ n = (n / ∏ p ∈ n.primeFactors, p) * ∏ p ∈ n.primeFactors, (p - 1) := by
   rw [← mul_div_left n.totient, totient_mul_prod_primeFactors, mul_comm,
     Nat.mul_div_assoc _ (prod_primeFactors_dvd n), mul_comm]
-  exact prod_pos (fun p => pos_of_mem_primeFactors)
+  exact prod_pos (fun p ↦ pos_of_mem_primeFactors)
 
 /-- Euler's product formula for the totient function. -/
 theorem totient_eq_mul_prod_factors (n : ℕ) :
@@ -312,10 +312,10 @@ theorem totient_eq_mul_prod_factors (n : ℕ) :
   have hn' : (n : ℚ) ≠ 0 := by simp [hn]
   have hpQ : (∏ p ∈ n.primeFactors, (p : ℚ)) ≠ 0 := by
     rw [← cast_prod, cast_ne_zero, ← zero_lt_iff, prod_primeFactors_prod_factorization]
-    exact prod_pos fun p hp => pos_of_mem_primeFactors hp
+    exact prod_pos fun p hp ↦ pos_of_mem_primeFactors hp
   simp only [totient_eq_div_primeFactors_mul n, prod_primeFactors_dvd n, cast_mul, cast_prod,
     cast_div_charZero, mul_comm_div, mul_right_inj' hn', div_eq_iff hpQ, ← prod_mul_distrib]
-  refine prod_congr rfl fun p hp => ?_
+  refine prod_congr rfl fun p hp ↦ ?_
   have hp := pos_of_mem_primeFactorsList (List.mem_toFinset.mp hp)
   have hp' : (p : ℚ) ≠ 0 := cast_ne_zero.mpr hp.ne.symm
   rw [sub_mul, one_mul, mul_comm, mul_inv_cancel₀ hp', cast_pred hp]
@@ -355,7 +355,7 @@ theorem totient_dvd_of_dvd {a b : ℕ} (h : a ∣ b) : φ a ∣ φ b := by
   · simp
   have hab' := primeFactors_mono h hb0
   rw [totient_eq_prod_factorization ha0, totient_eq_prod_factorization hb0]
-  refine Finsupp.prod_dvd_prod_of_subset_of_dvd hab' fun p _ => mul_dvd_mul ?_ dvd_rfl
+  refine Finsupp.prod_dvd_prod_of_subset_of_dvd hab' fun p _ ↦ mul_dvd_mul ?_ dvd_rfl
   exact pow_dvd_pow p (tsub_le_tsub_right ((factorization_le_iff_dvd ha0 hb0).2 h p) 1)
 
 theorem totient_mul_of_prime_of_dvd {p n : ℕ} (hp : p.Prime) (h : p ∣ n) :

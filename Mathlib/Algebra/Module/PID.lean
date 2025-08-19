@@ -72,7 +72,7 @@ variable [IsDomain R]
 `p i ^ e i`-torsion submodules for some primes `p i` and numbers `e i`. -/
 theorem Submodule.isInternal_prime_power_torsion_of_pid [DecidableEq (Ideal R)] [Module.Finite R M]
     (hM : Module.IsTorsion R M) :
-    DirectSum.IsInternal fun p : (factors (⊤ : Submodule R M).annihilator).toFinset =>
+    DirectSum.IsInternal fun p : (factors (⊤ : Submodule R M).annihilator).toFinset ↦
       torsionBy R M
         (IsPrincipal.generator (p : Ideal R) ^
           (factors (⊤ : Submodule R M).annihilator).count ↑p) := by
@@ -86,7 +86,7 @@ theorem Submodule.isInternal_prime_power_torsion_of_pid [DecidableEq (Ideal R)] 
 theorem Submodule.exists_isInternal_prime_power_torsion_of_pid [Module.Finite R M]
     (hM : Module.IsTorsion R M) :
     ∃ (ι : Type u) (_ : Fintype ι) (_ : DecidableEq ι) (p : ι → R) (_ : ∀ i, Irreducible <| p i)
-        (e : ι → ℕ), DirectSum.IsInternal fun i => torsionBy R M <| p i ^ e i := by
+        (e : ι → ℕ), DirectSum.IsInternal fun i ↦ torsionBy R M <| p i ^ e i := by
   classical
   refine ⟨_, ?_, _, _, ?_, _, Submodule.isInternal_prime_power_torsion_of_pid hM⟩
   · exact Finset.fintypeCoeSort _
@@ -113,7 +113,7 @@ theorem _root_.Ideal.torsionOf_eq_span_pow_pOrder (x : M) :
   rw [← (torsionOf R M x).span_singleton_generator, Ideal.span_singleton_eq_span_singleton, ←
     Associates.mk_eq_mk_iff_associated, Associates.mk_pow]
   have prop :
-    (fun n : ℕ => p ^ n • x = 0) = fun n : ℕ =>
+    (fun n : ℕ ↦ p ^ n • x = 0) = fun n : ℕ ↦
       (Associates.mk <| generator <| torsionOf R M x) ∣ Associates.mk p ^ n := by
     ext n; rw [← Associates.mk_pow, Associates.mk_dvd_mk, ← mem_iff_generator_dvd]; rfl
   have := (isTorsion'_powers_iff p).mp hM x; rw [prop] at this
@@ -173,10 +173,10 @@ theorem torsion_by_prime_power_decomposition (hM : Module.IsTorsion' M (Submonoi
   · use finZeroElim
     rw [Set.range_eq_empty, Submodule.span_empty] at hs
     haveI : Unique M :=
-      ⟨⟨0⟩, fun x => by dsimp; rw [← Submodule.mem_bot R, hs]; exact Submodule.mem_top⟩
+      ⟨⟨0⟩, fun x ↦ by dsimp; rw [← Submodule.mem_bot R, hs]; exact Submodule.mem_top⟩
     haveI : IsEmpty (Fin Nat.zero) := inferInstanceAs (IsEmpty (Fin 0))
     exact ⟨0⟩
-  · have : ∀ x : M, Decidable (x = 0) := fun _ => by classical infer_instance
+  · have : ∀ x : M, Decidable (x = 0) := fun _ ↦ by classical infer_instance
     obtain ⟨j, hj⟩ := exists_isTorsionBy hM d.succ d.succ_ne_zero s hs
     let s' : Fin d → M ⧸ R ∙ s j := Submodule.Quotient.mk ∘ s ∘ j.succAbove
     -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5732):
@@ -192,18 +192,18 @@ theorem torsion_by_prime_power_decomposition (hM : Module.IsTorsion' M (Submonoi
         simp only [fi, LinearMap.coe_comp, f.symm.coe_toLinearMap, f.apply_symm_apply,
           Function.comp_apply]
       refine ⟨?_, ⟨?_⟩⟩
-      · exact fun a => (fun i => (Option.rec (pOrder hM (s j)) k i : ℕ)) (finSuccEquiv d a)
+      · exact fun a ↦ (fun i ↦ (Option.rec (pOrder hM (s j)) k i : ℕ)) (finSuccEquiv d a)
       · refine
           (lequivProdOfRightSplitExact
             (g := f.toLinearMap.comp <| mkQ _)
-            (f := (DirectSum.toModule _ _ _ fun i => (liftQSpanSingleton (p ^ k i)
+            (f := (DirectSum.toModule _ _ _ fun i ↦ (liftQSpanSingleton (p ^ k i)
                 (LinearMap.toSpanSingleton _ _ _) (this i).choose_spec.left : R ⧸ _ →ₗ[R] _)))
               (R ∙ s j).injective_subtype ?_ ?_).symm ≪≫ₗ
           (((quotTorsionOfEquivSpanSingleton R M (s j)).symm ≪≫ₗ
             (quotEquivOfEq (torsionOf R M (s j)) _
               (Ideal.torsionOf_eq_span_pow_pOrder hp hM (s j)))).prodCongr (.refl _ _)) ≪≫ₗ
           (@DirectSum.lequivProdDirectSum R _ _
-            (fun i => R ⧸ R ∙ p ^ @Option.rec _ (fun _ => ℕ) (pOrder hM <| s j) k i) _ _).symm ≪≫ₗ
+            (fun i ↦ R ⧸ R ∙ p ^ @Option.rec _ (fun _ ↦ ℕ) (pOrder hM <| s j) k i) _ _).symm ≪≫ₗ
           (DirectSum.lequivCongrLeft R (finSuccEquiv d).symm)
         · rw [range_subtype, LinearEquiv.ker_comp, ker_mkQ]
         · rw [LinearMap.comp_assoc]
@@ -212,7 +212,7 @@ theorem torsion_by_prime_power_decomposition (hM : Module.IsTorsion' M (Submonoi
           rw [LinearEquiv.coe_toLinearMap, LinearMap.id_apply, DirectSum.toModule_lof,
             liftQSpanSingleton_apply, LinearMap.toSpanSingleton_one, Ideal.Quotient.mk_eq_mk,
             map_one (Ideal.Quotient.mk _), (this i).choose_spec.right]
-    · exact (mk_surjective _).forall.mpr fun x =>
+    · exact (mk_surjective _).forall.mpr fun x ↦
         ⟨(@hM x).choose, by rw [← Quotient.mk_smul, (@hM x).choose_spec, Quotient.mk_zero]⟩
     · have hs' := congr_arg (Submodule.map <| mkQ <| R ∙ s j) hs
       rw [Submodule.map_span, Submodule.map_top, range_mkQ] at hs'; simp only [mkQ_apply] at hs'
@@ -235,18 +235,18 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R M] (hM : Module.IsTor
     ∀ i,
       ∃ (d : ℕ) (k : Fin d → ℕ),
         Nonempty <| torsionBy R M (p i ^ e i) ≃ₗ[R] ⨁ j, R ⧸ R ∙ p i ^ k j := by
-    haveI := fun i => isNoetherian_submodule' (torsionBy R M <| p i ^ e i)
-    exact fun i =>
+    haveI := fun i ↦ isNoetherian_submodule' (torsionBy R M <| p i ^ e i)
+    exact fun i ↦
       torsion_by_prime_power_decomposition.{u, v} (hp i)
-        ((isTorsion'_powers_iff <| p i).mpr fun x => ⟨e i, smul_torsionBy _ _⟩)
+        ((isTorsion'_powers_iff <| p i).mpr fun x ↦ ⟨e i, smul_torsionBy _ _⟩)
   classical
   refine
-    ⟨Σ i, Fin (this i).choose, inferInstance, fun ⟨i, _⟩ => p i, fun ⟨i, _⟩ => hp i, fun ⟨i, j⟩ =>
+    ⟨Σ i, Fin (this i).choose, inferInstance, fun ⟨i, _⟩ ↦ p i, fun ⟨i, _⟩ ↦ hp i, fun ⟨i, j⟩ ↦
       (this i).choose_spec.choose j,
       ⟨(LinearEquiv.ofBijective (DirectSum.coeLinearMap _) h).symm.trans <|
-          (DFinsupp.mapRange.linearEquiv fun i => (this i).choose_spec.choose_spec.some).trans <|
+          (DFinsupp.mapRange.linearEquiv fun i ↦ (this i).choose_spec.choose_spec.some).trans <|
             (DirectSum.sigmaLcurryEquiv R).symm.trans
-              (DFinsupp.mapRange.linearEquiv fun i => quotEquivOfEq _ _ ?_)⟩⟩
+              (DFinsupp.mapRange.linearEquiv fun i ↦ quotEquivOfEq _ _ ?_)⟩⟩
   obtain ⟨i, j⟩ := i
   simp only
 

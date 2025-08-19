@@ -22,7 +22,7 @@ universe u v
 namespace Path
 
 instance : Subsingleton (Path PUnit.unit PUnit.unit) :=
-  ⟨fun x y => by ext⟩
+  ⟨fun x y ↦ by ext⟩
 
 end Path
 
@@ -37,7 +37,7 @@ instance {x y : FundamentalGroupoid PUnit} : Subsingleton (x ⟶ y) := by
 def punitEquivDiscretePUnit : FundamentalGroupoid PUnit.{u + 1} ≌ Discrete PUnit.{v + 1} where
   functor := Functor.star _
   inverse := (CategoryTheory.Functor.const _).obj ⟨PUnit.unit⟩
-  unitIso := NatIso.ofComponents (fun _ => Iso.refl _)
+  unitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
   counitIso := Iso.refl _
 
 end FundamentalGroupoid

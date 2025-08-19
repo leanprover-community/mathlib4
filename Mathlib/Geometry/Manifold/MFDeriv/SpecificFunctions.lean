@@ -139,7 +139,7 @@ theorem mdifferentiableAt_id : MDifferentiableAt I I (@id M) x :=
 theorem mdifferentiableWithinAt_id : MDifferentiableWithinAt I I (@id M) s x :=
   mdifferentiableAt_id.mdifferentiableWithinAt
 
-theorem mdifferentiable_id : MDifferentiable I I (@id M) := fun _ => mdifferentiableAt_id
+theorem mdifferentiable_id : MDifferentiable I I (@id M) := fun _ ↦ mdifferentiableAt_id
 
 theorem mdifferentiableOn_id : MDifferentiableOn I I (@id M) s :=
   mdifferentiable_id.mdifferentiableOn
@@ -173,33 +173,33 @@ section Const
 variable {c : M'}
 
 theorem hasMFDerivAt_const (c : M') (x : M) :
-    HasMFDerivAt I I' (fun _ : M => c) x (0 : TangentSpace I x →L[𝕜] TangentSpace I' c) := by
+    HasMFDerivAt I I' (fun _ : M ↦ c) x (0 : TangentSpace I x →L[𝕜] TangentSpace I' c) := by
   refine ⟨continuous_const.continuousAt, ?_⟩
   simp only [writtenInExtChartAt, Function.comp_def, hasFDerivWithinAt_const]
 
 theorem hasMFDerivWithinAt_const (c : M') (s : Set M) (x : M) :
-    HasMFDerivWithinAt I I' (fun _ : M => c) s x (0 : TangentSpace I x →L[𝕜] TangentSpace I' c) :=
+    HasMFDerivWithinAt I I' (fun _ : M ↦ c) s x (0 : TangentSpace I x →L[𝕜] TangentSpace I' c) :=
   (hasMFDerivAt_const c x).hasMFDerivWithinAt
 
-theorem mdifferentiableAt_const : MDifferentiableAt I I' (fun _ : M => c) x :=
+theorem mdifferentiableAt_const : MDifferentiableAt I I' (fun _ : M ↦ c) x :=
   (hasMFDerivAt_const c x).mdifferentiableAt
 
-theorem mdifferentiableWithinAt_const : MDifferentiableWithinAt I I' (fun _ : M => c) s x :=
+theorem mdifferentiableWithinAt_const : MDifferentiableWithinAt I I' (fun _ : M ↦ c) s x :=
   mdifferentiableAt_const.mdifferentiableWithinAt
 
-theorem mdifferentiable_const : MDifferentiable I I' fun _ : M => c := fun _ =>
+theorem mdifferentiable_const : MDifferentiable I I' fun _ : M ↦ c := fun _ ↦
   mdifferentiableAt_const
 
-theorem mdifferentiableOn_const : MDifferentiableOn I I' (fun _ : M => c) s :=
+theorem mdifferentiableOn_const : MDifferentiableOn I I' (fun _ : M ↦ c) s :=
   mdifferentiable_const.mdifferentiableOn
 
 @[simp, mfld_simps]
 theorem mfderiv_const :
-    mfderiv I I' (fun _ : M => c) x = (0 : TangentSpace I x →L[𝕜] TangentSpace I' c) :=
+    mfderiv I I' (fun _ : M ↦ c) x = (0 : TangentSpace I x →L[𝕜] TangentSpace I' c) :=
   HasMFDerivAt.mfderiv (hasMFDerivAt_const c x)
 
 theorem mfderivWithin_const :
-    mfderivWithin I I' (fun _ : M => c) s x = (0 : TangentSpace I x →L[𝕜] TangentSpace I' c) :=
+    mfderivWithin I I' (fun _ : M ↦ c) s x = (0 : TangentSpace I x →L[𝕜] TangentSpace I' c) :=
   (hasMFDerivWithinAt_const _ _ _).mfderivWithin_eq_zero
 
 end Const
@@ -238,7 +238,7 @@ theorem mdifferentiableWithinAt_fst {s : Set (M × M')} {x : M × M'} :
     MDifferentiableWithinAt (I.prod I') I Prod.fst s x :=
   mdifferentiableAt_fst.mdifferentiableWithinAt
 
-theorem mdifferentiable_fst : MDifferentiable (I.prod I') I (Prod.fst : M × M' → M) := fun _ =>
+theorem mdifferentiable_fst : MDifferentiable (I.prod I') I (Prod.fst : M × M' → M) := fun _ ↦
   mdifferentiableAt_fst
 
 theorem mdifferentiableOn_fst {s : Set (M × M')} : MDifferentiableOn (I.prod I') I Prod.fst s :=
@@ -305,7 +305,7 @@ theorem mdifferentiableWithinAt_snd {s : Set (M × M')} {x : M × M'} :
     MDifferentiableWithinAt (I.prod I') I' Prod.snd s x :=
   mdifferentiableAt_snd.mdifferentiableWithinAt
 
-theorem mdifferentiable_snd : MDifferentiable (I.prod I') I' (Prod.snd : M × M' → M') := fun _ =>
+theorem mdifferentiable_snd : MDifferentiable (I.prod I') I' (Prod.snd : M × M' → M') := fun _ ↦
   mdifferentiableAt_snd
 
 theorem mdifferentiableOn_snd {s : Set (M × M')} : MDifferentiableOn (I.prod I') I' Prod.snd s :=
@@ -325,35 +325,35 @@ theorem mfderivWithin_snd {s : Set (M × M')} {x : M × M'}
 
 theorem MDifferentiableWithinAt.fst {f : N → M × M'} {s : Set N} {x : N}
     (hf : MDifferentiableWithinAt J (I.prod I') f s x) :
-    MDifferentiableWithinAt J I (fun x => (f x).1) s x :=
+    MDifferentiableWithinAt J I (fun x ↦ (f x).1) s x :=
   mdifferentiableAt_fst.comp_mdifferentiableWithinAt x hf
 
 theorem MDifferentiableAt.fst {f : N → M × M'} {x : N} (hf : MDifferentiableAt J (I.prod I') f x) :
-    MDifferentiableAt J I (fun x => (f x).1) x :=
+    MDifferentiableAt J I (fun x ↦ (f x).1) x :=
   mdifferentiableAt_fst.comp x hf
 
 theorem MDifferentiable.fst {f : N → M × M'} (hf : MDifferentiable J (I.prod I') f) :
-    MDifferentiable J I fun x => (f x).1 :=
+    MDifferentiable J I fun x ↦ (f x).1 :=
   mdifferentiable_fst.comp hf
 
 theorem MDifferentiableWithinAt.snd {f : N → M × M'} {s : Set N} {x : N}
     (hf : MDifferentiableWithinAt J (I.prod I') f s x) :
-    MDifferentiableWithinAt J I' (fun x => (f x).2) s x :=
+    MDifferentiableWithinAt J I' (fun x ↦ (f x).2) s x :=
   mdifferentiableAt_snd.comp_mdifferentiableWithinAt x hf
 
 theorem MDifferentiableAt.snd {f : N → M × M'} {x : N} (hf : MDifferentiableAt J (I.prod I') f x) :
-    MDifferentiableAt J I' (fun x => (f x).2) x :=
+    MDifferentiableAt J I' (fun x ↦ (f x).2) x :=
   mdifferentiableAt_snd.comp x hf
 
 theorem MDifferentiable.snd {f : N → M × M'} (hf : MDifferentiable J (I.prod I') f) :
-    MDifferentiable J I' fun x => (f x).2 :=
+    MDifferentiable J I' fun x ↦ (f x).2 :=
   mdifferentiable_snd.comp hf
 
 theorem mdifferentiableWithinAt_prod_iff (f : M → M' × N') :
     MDifferentiableWithinAt I (I'.prod J') f s x ↔
       MDifferentiableWithinAt I I' (Prod.fst ∘ f) s x
       ∧ MDifferentiableWithinAt I J' (Prod.snd ∘ f) s x :=
-  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.prodMk h.2⟩
+  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.1.prodMk h.2⟩
 
 theorem mdifferentiableWithinAt_prod_module_iff (f : M → F₁ × F₂) :
     MDifferentiableWithinAt I 𝓘(𝕜, F₁ × F₂) f s x ↔
@@ -391,7 +391,7 @@ theorem mdifferentiableOn_prod_module_iff (f : M → F₁ × F₂) :
 theorem mdifferentiable_prod_iff (f : M → M' × N') :
     MDifferentiable I (I'.prod J') f ↔
       MDifferentiable I I' (Prod.fst ∘ f) ∧ MDifferentiable I J' (Prod.snd ∘ f) :=
-  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => by convert h.1.prodMk h.2⟩
+  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ by convert h.1.prodMk h.2⟩
 
 theorem mdifferentiable_prod_module_iff (f : M → F₁ × F₂) :
     MDifferentiable I 𝓘(𝕜, F₁ × F₂) f ↔
@@ -482,7 +482,7 @@ alias tangentMapWithin_prod_snd := tangentMapWithin_prodSnd
 
 theorem MDifferentiableAt.mfderiv_prod {f : M → M'} {g : M → M''} {x : M}
     (hf : MDifferentiableAt I I' f x) (hg : MDifferentiableAt I I'' g x) :
-    mfderiv I (I'.prod I'') (fun x => (f x, g x)) x =
+    mfderiv I (I'.prod I'') (fun x ↦ (f x, g x)) x =
       (mfderiv I I' f x).prod (mfderiv I I'' g x) := by
   classical
   simp_rw [mfderiv, if_pos (hf.prodMk hg), if_pos hf, if_pos hg]
@@ -490,24 +490,24 @@ theorem MDifferentiableAt.mfderiv_prod {f : M → M'} {g : M → M''} {x : M}
     hg.differentiableWithinAt_writtenInExtChartAt (I.uniqueDiffOn _ (mem_range_self _))
 
 theorem mfderiv_prod_left {x₀ : M} {y₀ : M'} :
-    mfderiv I (I.prod I') (fun x => (x, y₀)) x₀ =
+    mfderiv I (I.prod I') (fun x ↦ (x, y₀)) x₀ =
       ContinuousLinearMap.inl 𝕜 (TangentSpace I x₀) (TangentSpace I' y₀) := by
   refine (mdifferentiableAt_id.mfderiv_prod mdifferentiableAt_const).trans ?_
   rw [mfderiv_id, mfderiv_const, ContinuousLinearMap.inl]
 
 theorem tangentMap_prod_left {p : TangentBundle I M} {y₀ : M'} :
-    tangentMap I (I.prod I') (fun x => (x, y₀)) p = ⟨(p.1, y₀), (p.2, 0)⟩ := by
+    tangentMap I (I.prod I') (fun x ↦ (x, y₀)) p = ⟨(p.1, y₀), (p.2, 0)⟩ := by
   simp only [tangentMap, mfderiv_prod_left, TotalSpace.mk_inj]
   rfl
 
 theorem mfderiv_prod_right {x₀ : M} {y₀ : M'} :
-    mfderiv I' (I.prod I') (fun y => (x₀, y)) y₀ =
+    mfderiv I' (I.prod I') (fun y ↦ (x₀, y)) y₀ =
       ContinuousLinearMap.inr 𝕜 (TangentSpace I x₀) (TangentSpace I' y₀) := by
   refine (mdifferentiableAt_const.mfderiv_prod mdifferentiableAt_id).trans ?_
   rw [mfderiv_id, mfderiv_const, ContinuousLinearMap.inr]
 
 theorem tangentMap_prod_right {p : TangentBundle I' M'} {x₀ : M} :
-    tangentMap I' (I.prod I') (fun y => (x₀, y)) p = ⟨(x₀, p.1), (0, p.2)⟩ := by
+    tangentMap I' (I.prod I') (fun y ↦ (x₀, y)) p = ⟨(x₀, p.1), (0, p.2)⟩ := by
   simp only [tangentMap, mfderiv_prod_right, TotalSpace.mk_inj]
   rfl
 
@@ -517,8 +517,8 @@ theorem tangentMap_prod_right {p : TangentBundle I' M'} {x₀ : M} :
 theorem mfderiv_prod_eq_add {f : M × M' → M''} {p : M × M'}
     (hf : MDifferentiableAt (I.prod I') I'' f p) :
     mfderiv (I.prod I') I'' f p =
-        mfderiv (I.prod I') I'' (fun z : M × M' => f (z.1, p.2)) p +
-          mfderiv (I.prod I') I'' (fun z : M × M' => f (p.1, z.2)) p := by
+        mfderiv (I.prod I') I'' (fun z : M × M' ↦ f (z.1, p.2)) p +
+          mfderiv (I.prod I') I'' (fun z : M × M' ↦ f (p.1, z.2)) p := by
   erw [mfderiv_comp_of_eq hf (mdifferentiableAt_fst.prodMk mdifferentiableAt_const) rfl,
     mfderiv_comp_of_eq hf (mdifferentiableAt_const.prodMk mdifferentiableAt_snd) rfl,
     ← ContinuousLinearMap.comp_add,
@@ -535,19 +535,19 @@ theorem mfderiv_prod_eq_add {f : M × M' → M''} {p : M × M'}
 theorem mfderiv_prod_eq_add_comp {f : M × M' → M''} {p : M × M'}
     (hf : MDifferentiableAt (I.prod I') I'' f p) :
     mfderiv (I.prod I') I'' f p =
-        (mfderiv I I'' (fun z : M => f (z, p.2)) p.1) ∘L (id (ContinuousLinearMap.fst 𝕜 E E') :
+        (mfderiv I I'' (fun z : M ↦ f (z, p.2)) p.1) ∘L (id (ContinuousLinearMap.fst 𝕜 E E') :
           (TangentSpace (I.prod I') p) →L[𝕜] (TangentSpace I p.1)) +
-        (mfderiv I' I'' (fun z : M' => f (p.1, z)) p.2) ∘L (id (ContinuousLinearMap.snd 𝕜 E E') :
+        (mfderiv I' I'' (fun z : M' ↦ f (p.1, z)) p.2) ∘L (id (ContinuousLinearMap.snd 𝕜 E E') :
           (TangentSpace (I.prod I') p) →L[𝕜] (TangentSpace I' p.2)) := by
   rw [mfderiv_prod_eq_add hf]
   congr
-  · have : (fun z : M × M' => f (z.1, p.2)) = (fun z : M => f (z, p.2)) ∘ Prod.fst := rfl
+  · have : (fun z : M × M' ↦ f (z.1, p.2)) = (fun z : M ↦ f (z, p.2)) ∘ Prod.fst := rfl
     rw [this, mfderiv_comp (I' := I)]
     · simp only [mfderiv_fst, id_eq]
       rfl
     · exact hf.comp _  (mdifferentiableAt_id.prodMk mdifferentiableAt_const)
     · exact mdifferentiableAt_fst
-  · have : (fun z : M × M' => f (p.1, z.2)) = (fun z : M' => f (p.1, z)) ∘ Prod.snd := rfl
+  · have : (fun z : M × M' ↦ f (p.1, z.2)) = (fun z : M' ↦ f (p.1, z)) ∘ Prod.snd := rfl
     rw [this, mfderiv_comp (I' := I')]
     · simp only [mfderiv_snd, id_eq]
       rfl
@@ -560,8 +560,8 @@ theorem mfderiv_prod_eq_add_comp {f : M × M' → M''} {p : M × M'}
 theorem mfderiv_prod_eq_add_apply {f : M × M' → M''} {p : M × M'} {v : TangentSpace (I.prod I') p}
     (hf : MDifferentiableAt (I.prod I') I'' f p) :
     mfderiv (I.prod I') I'' f p v =
-      mfderiv I I'' (fun z : M => f (z, p.2)) p.1 v.1 +
-      mfderiv I' I'' (fun z : M' => f (p.1, z)) p.2 v.2 := by
+      mfderiv I I'' (fun z : M ↦ f (z, p.2)) p.1 v.1 +
+      mfderiv I' I'' (fun z : M' ↦ f (p.1, z)) p.2 v.2 := by
   rw [mfderiv_prod_eq_add_comp hf]
   rfl
 
@@ -603,7 +603,7 @@ theorem MDifferentiableOn.add {s : Set M} (hf : MDifferentiableOn I 𝓘(𝕜, E
   fun x hx ↦ (hf x hx).add (hg x hx)
 
 theorem MDifferentiable.add (hf : MDifferentiable I 𝓘(𝕜, E') f)
-    (hg : MDifferentiable I 𝓘(𝕜, E') g) : MDifferentiable I 𝓘(𝕜, E') (f + g) := fun x =>
+    (hg : MDifferentiable I 𝓘(𝕜, E') g) : MDifferentiable I 𝓘(𝕜, E') (f + g) := fun x ↦
   (hf x).add (hg x)
 
 -- Porting note: forcing types using `by exact`
@@ -622,7 +622,7 @@ theorem MDifferentiableAt.const_smul (hf : MDifferentiableAt I 𝓘(𝕜, E') f 
   (hf.hasMFDerivAt.const_smul s).mdifferentiableAt
 
 theorem MDifferentiable.const_smul (s : 𝕜) (hf : MDifferentiable I 𝓘(𝕜, E') f) :
-    MDifferentiable I 𝓘(𝕜, E') (s • f) := fun x => (hf x).const_smul s
+    MDifferentiable I 𝓘(𝕜, E') (s • f) := fun x ↦ (hf x).const_smul s
 
 theorem const_smul_mfderiv (hf : MDifferentiableAt I 𝓘(𝕜, E') f z) (s : 𝕜) :
     (mfderiv I 𝓘(𝕜, E') (s • f) z : TangentSpace I z →L[𝕜] E') =
@@ -638,7 +638,7 @@ theorem HasMFDerivAt.neg (hf : HasMFDerivAt I 𝓘(𝕜, E') f z f') :
   ⟨hf.1.neg, hf.2.neg⟩
 
 theorem hasMFDerivAt_neg : HasMFDerivAt I 𝓘(𝕜, E') (-f) z (-f') ↔ HasMFDerivAt I 𝓘(𝕜, E') f z f' :=
-  ⟨fun hf => by convert hf.neg <;> rw [neg_neg], fun hf => hf.neg⟩
+  ⟨fun hf ↦ by convert hf.neg <;> rw [neg_neg], fun hf ↦ hf.neg⟩
 
 theorem MDifferentiableWithinAt.neg {s : Set M} (hf : MDifferentiableWithinAt I 𝓘(𝕜, E') f s z) :
     MDifferentiableWithinAt I 𝓘(𝕜, E') (-f) s z :=
@@ -654,10 +654,10 @@ theorem MDifferentiableOn.neg {s : Set M} (hf : MDifferentiableOn I 𝓘(𝕜, E
 
 theorem mdifferentiableAt_neg :
     MDifferentiableAt I 𝓘(𝕜, E') (-f) z ↔ MDifferentiableAt I 𝓘(𝕜, E') f z :=
-  ⟨fun hf => by convert hf.neg; rw [neg_neg], fun hf => hf.neg⟩
+  ⟨fun hf ↦ by convert hf.neg; rw [neg_neg], fun hf ↦ hf.neg⟩
 
 theorem MDifferentiable.neg (hf : MDifferentiable I 𝓘(𝕜, E') f) : MDifferentiable I 𝓘(𝕜, E') (-f) :=
-  fun x => (hf x).neg
+  fun x ↦ (hf x).neg
 
 theorem mfderiv_neg (f : M → E') (x : M) :
     (mfderiv I 𝓘(𝕜, E') (-f) x : TangentSpace I x →L[𝕜] E') =
@@ -676,7 +676,7 @@ theorem MDifferentiableAt.sub (hf : MDifferentiableAt I 𝓘(𝕜, E') f z)
   (hf.hasMFDerivAt.sub hg.hasMFDerivAt).mdifferentiableAt
 
 theorem MDifferentiable.sub (hf : MDifferentiable I 𝓘(𝕜, E') f)
-    (hg : MDifferentiable I 𝓘(𝕜, E') g) : MDifferentiable I 𝓘(𝕜, E') (f - g) := fun x =>
+    (hg : MDifferentiable I 𝓘(𝕜, E') g) : MDifferentiable I 𝓘(𝕜, E') (f - g) := fun x ↦
   (hf x).sub (hg x)
 
 theorem mfderiv_sub (hf : MDifferentiableAt I 𝓘(𝕜, E') f z)
@@ -713,11 +713,11 @@ theorem MDifferentiableAt.mul (hp : MDifferentiableAt I 𝓘(𝕜, F') p z)
   (hp.hasMFDerivAt.mul' hq.hasMFDerivAt).mdifferentiableAt
 
 theorem MDifferentiableOn.mul (hp : MDifferentiableOn I 𝓘(𝕜, F') p s)
-    (hq : MDifferentiableOn I 𝓘(𝕜, F') q s) : MDifferentiableOn I 𝓘(𝕜, F') (p * q) s := fun x hx =>
+    (hq : MDifferentiableOn I 𝓘(𝕜, F') q s) : MDifferentiableOn I 𝓘(𝕜, F') (p * q) s := fun x hx ↦
   (hp x hx).mul <| hq x hx
 
 theorem MDifferentiable.mul (hp : MDifferentiable I 𝓘(𝕜, F') p)
-    (hq : MDifferentiable I 𝓘(𝕜, F') q) : MDifferentiable I 𝓘(𝕜, F') (p * q) := fun x =>
+    (hq : MDifferentiable I 𝓘(𝕜, F') q) : MDifferentiable I 𝓘(𝕜, F') (p * q) := fun x ↦
   (hp x).mul (hq x)
 
 end AlgebraOverRing

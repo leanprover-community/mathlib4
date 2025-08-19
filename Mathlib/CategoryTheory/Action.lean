@@ -36,7 +36,7 @@ def actionAsFunctor : SingleObj M ⥤ Type u where
   obj _ := X
   map := (· • ·)
   map_id _ := funext <| MulAction.one_smul
-  map_comp f g := funext fun x => (smul_smul g f x).symm
+  map_comp f g := funext fun x ↦ (smul_smul g f x).symm
 
 /-- A multiplicative action M ↻ X induces a category structure on X, where a morphism
 from x to y is a scalar taking x to y. Due to implementation details, the object type
@@ -65,12 +65,12 @@ theorem π_obj (p : ActionCategory M X) : (π M X).obj p = SingleObj.star M :=
 
 variable {M X}
 
-/-- The canonical map `ActionCategory M X → X`. It is given by `fun x => x.snd`, but
+/-- The canonical map `ActionCategory M X → X`. It is given by `fun x ↦ x.snd`, but
   has a more explicit type. -/
-protected def back : ActionCategory M X → X := fun x => x.snd
+protected def back : ActionCategory M X → X := fun x ↦ x.snd
 
 instance : CoeTC X (ActionCategory M X) :=
-  ⟨fun x => ⟨(), x⟩⟩
+  ⟨fun x ↦ ⟨(), x⟩⟩
 
 @[simp]
 theorem coe_back (x : X) : ActionCategory.back (x : ActionCategory M X) = x :=
@@ -125,7 +125,7 @@ protected theorem comp_val {x y z : ActionCategory M X} (f : x ⟶ y) (g : y ⟶
   rfl
 
 instance [IsPretransitive M X] [Nonempty X] : IsConnected (ActionCategory M X) :=
-  zigzag_isConnected fun x y =>
+  zigzag_isConnected fun x y ↦
     Relation.ReflTransGen.single <|
       Or.inl <| nonempty_subtype.mpr (show _ from exists_smul_eq M x.back y.back)
 
@@ -164,7 +164,7 @@ lemma cases' ⦃a' b' : ActionCategory G X⦄ (f : a' ⟶ b') :
     ∃ (a b : X) (g : G) (ha : a' = a) (hb : b' = b) (hg : a = g⁻¹ • b),
       f = eqToHom (by rw [ha, hg]) ≫ homOfPair b g ≫ eqToHom (by rw [hb]) := by
   revert a' b' f
-  exact ActionCategory.cases (fun t g => ⟨g⁻¹ • t, t, g, rfl, rfl, rfl, by simp⟩)
+  exact ActionCategory.cases (fun t g ↦ ⟨g⁻¹ • t, t, g, rfl, rfl, rfl, by simp⟩)
 
 variable {H : Type*} [Group H]
 
@@ -176,7 +176,7 @@ def curry (F : ActionCategory G X ⥤ SingleObj H) : G →* (X → H) ⋊[mulAut
     apply ActionCategory.cases
     intros
     rfl
-  { toFun := fun g => ⟨fun b => F.map (homOfPair b g), g⟩
+  { toFun := fun g ↦ ⟨fun b ↦ F.map (homOfPair b g), g⟩
     map_one' := by
       dsimp
       ext1

@@ -61,7 +61,7 @@ variable {α : Type u} {σ : Type v} {M : NFA α σ}
 namespace NFA
 
 instance : Inhabited (NFA α σ) :=
-  ⟨NFA.mk (fun _ _ => ∅) ∅ ∅⟩
+  ⟨NFA.mk (fun _ _ ↦ ∅) ∅ ∅⟩
 
 variable (M) in
 /-- `M.stepSet S a` is the union of `M.step s a` for all `s ∈ S`. -/
@@ -207,7 +207,7 @@ def toDFA : DFA α (Set σ) where
 theorem toDFA_correct : M.toDFA.accepts = M.accepts := by
   ext x
   rw [mem_accepts, DFA.mem_accepts]
-  constructor <;> · exact fun ⟨w, h2, h3⟩ => ⟨w, h3, h2⟩
+  constructor <;> · exact fun ⟨w, h2, h3⟩ ↦ ⟨w, h3, h2⟩
 
 theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
     (hlen : Fintype.card (Set σ) ≤ List.length x) :
@@ -246,7 +246,7 @@ theorem toNFA_correct (M : DFA α σ) : M.toNFA.accepts = M.accepts := by
   constructor
   · rintro ⟨S, hS₁, hS₂⟩
     rwa [Set.mem_singleton_iff.mp hS₂] at hS₁
-  · exact fun h => ⟨M.eval x, h, rfl⟩
+  · exact fun h ↦ ⟨M.eval x, h, rfl⟩
 
 end DFA
 

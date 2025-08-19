@@ -69,15 +69,15 @@ lemma iff_flat_and_proper_ideal :
     FaithfullyFlat R M ↔
     (Flat R M ∧ ∀ (I : Ideal R), I ≠ ⊤ → I • (⊤ : Submodule R M) ≠ ⊤) := by
   rw [faithfullyFlat_iff]
-  refine ⟨fun ⟨flat, h⟩ => ⟨flat, fun I hI r => ?_⟩, fun h => ⟨h.1, fun m hm => h.2 _ hm.ne_top⟩⟩
+  refine ⟨fun ⟨flat, h⟩ ↦ ⟨flat, fun I hI r ↦ ?_⟩, fun h ↦ ⟨h.1, fun m hm ↦ h.2 _ hm.ne_top⟩⟩
   obtain ⟨m, hm, le⟩ := I.exists_le_maximal hI
   exact h hm <| eq_top_iff.2 <| show ⊤ ≤ m • ⊤ from r ▸ Submodule.smul_mono le (by simp [r])
 
 lemma iff_flat_and_ideal_smul_eq_top :
     FaithfullyFlat R M ↔
     (Flat R M ∧ ∀ (I : Ideal R), I • (⊤ : Submodule R M) = ⊤ → I = ⊤) :=
-  iff_flat_and_proper_ideal R M |>.trans <| and_congr_right_iff.2 fun _ => iff_of_eq <|
-    forall_congr fun I => eq_iff_iff.2 <| by tauto
+  iff_flat_and_proper_ideal R M |>.trans <| and_congr_right_iff.2 fun _ ↦ iff_of_eq <|
+    forall_congr fun I ↦ eq_iff_iff.2 <| by tauto
 
 end proper_ideal
 
@@ -91,7 +91,7 @@ instance rTensor_nontrivial
   by_cases I_ne_top : I = ⊤
   · rw [Ideal.eq_top_iff_one, Submodule.mem_annihilator_span_singleton, one_smul] at I_ne_top
     contradiction
-  let inc : R ⧸ I →ₗ[R] N := Submodule.liftQ _ ((LinearMap.lsmul R N).flip n) <| fun r hr => by
+  let inc : R ⧸ I →ₗ[R] N := Submodule.liftQ _ ((LinearMap.lsmul R N).flip n) <| fun r hr ↦ by
     simpa only [LinearMap.mem_ker, LinearMap.flip_apply, LinearMap.lsmul_apply,
       Submodule.mem_annihilator_span_singleton, I] using hr
   have injective_inc : Function.Injective inc := LinearMap.ker_eq_bot.1 <| eq_bot_iff.2 <| by
@@ -101,7 +101,7 @@ instance rTensor_nontrivial
       Submodule.mem_annihilator_span_singleton, LinearMap.mem_ker, Submodule.liftQ_apply,
       LinearMap.flip_apply, LinearMap.lsmul_apply, I, inc] using hr
   have ne_top := iff_flat_and_proper_ideal R M |>.1 fl |>.2 I I_ne_top
-  refine subsingleton_or_nontrivial _ |>.resolve_left fun rid => ?_
+  refine subsingleton_or_nontrivial _ |>.resolve_left fun rid ↦ ?_
   exact False.elim <| ne_top <| Submodule.subsingleton_quotient_iff_eq_top.1 <|
     Function.Injective.comp (g := LinearMap.rTensor M inc)
       (fl.toFlat.rTensor_preserves_injective_linearMap inc injective_inc)
@@ -133,7 +133,7 @@ lemma iff_flat_and_rTensor_faithful :
     (Flat R M ∧
       ∀ (N : Type max u v) [AddCommGroup N] [Module R N],
         Nontrivial N → Nontrivial (N ⊗[R] M)) := by
-  refine ⟨fun fl => ⟨inferInstance, rTensor_nontrivial R M⟩, fun ⟨flat, faithful⟩ => ⟨?_⟩⟩
+  refine ⟨fun fl ↦ ⟨inferInstance, rTensor_nontrivial R M⟩, fun ⟨flat, faithful⟩ ↦ ⟨?_⟩⟩
   intro m hm rid
   specialize faithful (ULift (R ⧸ m)) inferInstance
   haveI : Nontrivial ((R ⧸ m) ⊗[R] M) :=
@@ -150,8 +150,8 @@ lemma iff_flat_and_rTensor_reflects_triviality :
     (Flat R M ∧
       ∀ (N : Type max u v) [AddCommGroup N] [Module R N],
         Subsingleton (N ⊗[R] M) → Subsingleton N) :=
-  iff_flat_and_rTensor_faithful R M |>.trans <| and_congr_right_iff.2 fun _ => iff_of_eq <|
-    forall_congr fun N => forall_congr fun _ => forall_congr fun _ => iff_iff_eq.1 <| by
+  iff_flat_and_rTensor_faithful R M |>.trans <| and_congr_right_iff.2 fun _ ↦ iff_of_eq <|
+    forall_congr fun N ↦ forall_congr fun _ ↦ forall_congr fun _ ↦ iff_iff_eq.1 <| by
       simp only [← not_subsingleton_iff_nontrivial]; tauto
 
 lemma iff_flat_and_lTensor_faithful :
@@ -160,9 +160,9 @@ lemma iff_flat_and_lTensor_faithful :
       ∀ (N : Type max u v) [AddCommGroup N] [Module R N],
         Nontrivial N → Nontrivial (M ⊗[R] N)) :=
   iff_flat_and_rTensor_faithful R M |>.trans
-  ⟨fun ⟨flat, faithful⟩ => ⟨flat, fun N _ _ _ =>
+  ⟨fun ⟨flat, faithful⟩ ↦ ⟨flat, fun N _ _ _ ↦
       letI := faithful N inferInstance; (TensorProduct.comm R M N).toEquiv.nontrivial⟩,
-    fun ⟨flat, faithful⟩ => ⟨flat, fun N _ _ _ =>
+    fun ⟨flat, faithful⟩ ↦ ⟨flat, fun N _ _ _ ↦
       letI := faithful N inferInstance; (TensorProduct.comm R M N).symm.toEquiv.nontrivial⟩⟩
 
 lemma iff_flat_and_lTensor_reflects_triviality :
@@ -170,8 +170,8 @@ lemma iff_flat_and_lTensor_reflects_triviality :
     (Flat R M ∧
       ∀ (N : Type max u v) [AddCommGroup N] [Module R N],
         Subsingleton (M ⊗[R] N) → Subsingleton N) :=
-  iff_flat_and_lTensor_faithful R M |>.trans <| and_congr_right_iff.2 fun _ => iff_of_eq <|
-    forall_congr fun N => forall_congr fun _ => forall_congr fun _ => iff_iff_eq.1 <| by
+  iff_flat_and_lTensor_faithful R M |>.trans <| and_congr_right_iff.2 fun _ ↦ iff_of_eq <|
+    forall_congr fun N ↦ forall_congr fun _ ↦ forall_congr fun _ ↦ iff_iff_eq.1 <| by
       simp only [← not_subsingleton_iff_nontrivial]; tauto
 
 end faithful
@@ -295,20 +295,20 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
     rw [← TensorProduct.span_tmul_eq_top, Submodule.mem_span_set] at mem
     obtain ⟨c, hc, rfl⟩ := mem
     choose b a hy using hc
-    let r :  ⦃a : E ⊗[R] M⦄ → a ∈ ↑c.support → R := fun a ha =>
+    let r :  ⦃a : E ⊗[R] M⦄ → a ∈ ↑c.support → R := fun a ha ↦
       Submodule.mem_span_singleton.1 (b ha).2 |>.choose
     have hr : ∀ ⦃i : E ⊗[R] M⦄ (hi : i ∈ c.support), b hi =
-        r hi • ⟨l23 (l12 n1), Submodule.mem_span_singleton_self _⟩ := fun a ha =>
+        r hi • ⟨l23 (l12 n1), Submodule.mem_span_singleton_self _⟩ := fun a ha ↦
       Subtype.ext <| Submodule.mem_span_singleton.1 (b ha).2 |>.choose_spec.symm
     -- Since `M` is flat and `E -> N1` is injective, we only need to check that x = 0
     -- in `N1 ⊗ M`. We write `x = ∑ μᵢ • (l23 (l12 n1)) ⊗ mᵢ = ∑ μᵢ • 0 = 0`
     -- (remember `E = span {l23 (l12 n1)}` and `eq1`)
-    refine Finset.sum_eq_zero fun i hi => show c i • i = 0 from
+    refine Finset.sum_eq_zero fun i hi ↦ show c i • i = 0 from
       (Module.Flat.rTensor_preserves_injective_linearMap (M := M) E.subtype <|
               Submodule.injective_subtype E) ?_
     rw [← hy hi, hr hi, smul_tmul, map_smul, LinearMap.rTensor_tmul, Submodule.subtype_apply, eq1,
       smul_zero, map_zero]
-  have : Subsingleton (E ⊗[R] M) := subsingleton_iff_forall_eq 0 |>.2 fun x =>
+  have : Subsingleton (E ⊗[R] M) := subsingleton_iff_forall_eq 0 |>.2 fun x ↦
     show x ∈ (⊥ : Submodule R _) from eq0 ▸ ⟨⟩
   -- but `E ⊗ M = 0` implies `E = 0` because `M` is faithfully flat and this is a contradiction.
   exact not_subsingleton_iff_nontrivial.2 inferInstance <| fl.rTensor_reflects_triviality R M E
@@ -407,11 +407,11 @@ lemma iff_exact_iff_rTensor_exact :
       {N3 : Type max u v} [AddCommGroup N3] [Module R N3]
       (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3),
         Function.Exact l12 l23 ↔ Function.Exact (l12.rTensor M) (l23.rTensor M)) :=
-  ⟨fun fl _ _ _ _ _ _ _ _ _ l12 l23 => (rTensor_exact_iff_exact R M l12 l23).symm, fun iff_exact =>
+  ⟨fun fl _ _ _ _ _ _ _ _ _ l12 l23 ↦ (rTensor_exact_iff_exact R M l12 l23).symm, fun iff_exact ↦
     iff_flat_and_rTensor_reflects_triviality _ _ |>.2
-      ⟨Flat.iff_rTensor_exact.2 <| fun _ _ _ => iff_exact .. |>.1,
-    fun N _ _ h => subsingleton_iff_forall_eq 0 |>.2 <| fun y => by
-      simpa [eq_comm] using (iff_exact (0 : PUnit →ₗ[R] N) (0 : N →ₗ[R] PUnit) |>.2 fun x => by
+      ⟨Flat.iff_rTensor_exact.2 <| fun _ _ _ ↦ iff_exact .. |>.1,
+    fun N _ _ h ↦ subsingleton_iff_forall_eq 0 |>.2 <| fun y ↦ by
+      simpa [eq_comm] using (iff_exact (0 : PUnit →ₗ[R] N) (0 : N →ₗ[R] PUnit) |>.2 fun x ↦ by
         simpa using Subsingleton.elim _ _) y⟩⟩
 
 lemma iff_exact_iff_lTensor_exact :
@@ -448,11 +448,11 @@ lemma zero_iff_lTensor_zero [h : FaithfullyFlat R M]
     {N : Type*} [AddCommGroup N] [Module R N]
     {N' : Type*} [AddCommGroup N'] [Module R N'] (f : N →ₗ[R] N') :
     f = 0 ↔ LinearMap.lTensor M f = 0 :=
-  ⟨fun hf => hf.symm ▸ LinearMap.lTensor_zero M, fun hf => by
+  ⟨fun hf ↦ hf.symm ▸ LinearMap.lTensor_zero M, fun hf ↦ by
     have := lTensor_reflects_exact R M f LinearMap.id (by
       rw [LinearMap.exact_iff, hf, LinearMap.range_zero, LinearMap.ker_eq_bot]
       apply Module.Flat.lTensor_preserves_injective_linearMap
-      exact fun _ _ h => h)
+      exact fun _ _ h ↦ h)
     ext x; simpa using this (f x)⟩
 
 
@@ -465,8 +465,8 @@ lemma zero_iff_rTensor_zero [h: FaithfullyFlat R M]
     (f : N →ₗ[R] N') :
     f = 0 ↔ LinearMap.rTensor M f = 0 :=
   zero_iff_lTensor_zero R M f |>.trans
-  ⟨fun h => by ext n m; exact (TensorProduct.comm R N' M).injective <|
-    (by simpa using congr($h (m ⊗ₜ n))), fun h => by
+  ⟨fun h ↦ by ext n m; exact (TensorProduct.comm R N' M).injective <|
+    (by simpa using congr($h (m ⊗ₜ n))), fun h ↦ by
     ext m n; exact (TensorProduct.comm R M N').injective <| (by simpa using congr($h (n ⊗ₜ m)))⟩
 
 /-- If `A` is a faithfully flat `R`-algebra, and `m` is a term of an `R`-module `M`,
@@ -498,11 +498,11 @@ lemma iff_zero_iff_lTensor_zero :
       (∀ {N : Type max u v} [AddCommGroup N] [Module R N]
         {N' : Type max u v} [AddCommGroup N'] [Module R N']
         (f : N →ₗ[R] N'), f.lTensor M = 0 ↔ f = 0)) :=
-  ⟨fun fl => ⟨inferInstance, fun f => zero_iff_lTensor_zero R M f |>.symm⟩,
-    fun ⟨flat, Z⟩ => iff_flat_and_lTensor_reflects_triviality R M |>.2 ⟨flat, fun N _ _ _ => by
+  ⟨fun fl ↦ ⟨inferInstance, fun f ↦ zero_iff_lTensor_zero R M f |>.symm⟩,
+    fun ⟨flat, Z⟩ ↦ iff_flat_and_lTensor_reflects_triviality R M |>.2 ⟨flat, fun N _ _ _ ↦ by
       have := Z (LinearMap.id : N →ₗ[R] N) |>.1 (by ext; exact Subsingleton.elim _ _)
       rw [subsingleton_iff_forall_eq 0]
-      exact fun y => congr($this y)⟩⟩
+      exact fun y ↦ congr($this y)⟩⟩
 
 /--
 An `R`-module `M` is faithfully flat iff it is flat and for all linear maps `f`, the map
@@ -513,11 +513,11 @@ lemma iff_zero_iff_rTensor_zero :
       (∀ {N : Type max u v} [AddCommGroup N] [Module R N]
         {N' : Type max u v} [AddCommGroup N'] [Module R N']
         (f : N →ₗ[R] N'), f.rTensor M = 0 ↔ (f = 0))) :=
-  ⟨fun fl => ⟨inferInstance, fun f => zero_iff_rTensor_zero R M f |>.symm⟩,
-    fun ⟨flat, Z⟩ => iff_flat_and_rTensor_reflects_triviality R M |>.2 ⟨flat, fun N _ _ _ => by
+  ⟨fun fl ↦ ⟨inferInstance, fun f ↦ zero_iff_rTensor_zero R M f |>.symm⟩,
+    fun ⟨flat, Z⟩ ↦ iff_flat_and_rTensor_reflects_triviality R M |>.2 ⟨flat, fun N _ _ _ ↦ by
       have := Z (LinearMap.id : N →ₗ[R] N) |>.1 (by ext; exact Subsingleton.elim _ _)
       rw [subsingleton_iff_forall_eq 0]
-      exact fun y => congr($this y)⟩⟩
+      exact fun y ↦ congr($this y)⟩⟩
 
 end fixed_universe
 
@@ -537,7 +537,7 @@ include S in
 as an `R`-module. -/
 theorem trans : FaithfullyFlat R M := by
   rw [iff_zero_iff_lTensor_zero]
-  refine ⟨Module.Flat.trans R S M, @fun N _ _ N' _ _ f => ⟨fun aux => ?_, fun eq => eq ▸ by simp⟩⟩
+  refine ⟨Module.Flat.trans R S M, @fun N _ _ N' _ _ f ↦ ⟨fun aux ↦ ?_, fun eq ↦ eq ▸ by simp⟩⟩
   rw [zero_iff_lTensor_zero (R:= R) (M := S) f,
     show f.lTensor S = (AlgebraTensorModule.map (A:= S) LinearMap.id f).restrictScalars R by aesop,
     show (0 :  S ⊗[R] N →ₗ[R] S ⊗[R] N') = (0 : S ⊗[R] N →ₗ[S] S ⊗[R] N').restrictScalars R by rfl,

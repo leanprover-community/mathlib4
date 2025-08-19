@@ -69,7 +69,7 @@ theorem hasStrictFDerivAt_exp_zero_of_radius_pos (h : 0 < (expSeries 𝕂 𝔸).
     HasStrictFDerivAt (exp 𝕂) (1 : 𝔸 →L[𝕂] 𝔸) 0 := by
   convert (hasFPowerSeriesAt_exp_zero_of_radius_pos h).hasStrictFDerivAt
   ext x
-  change x = expSeries 𝕂 𝔸 1 fun _ => x
+  change x = expSeries 𝕂 𝔸 1 fun _ ↦ x
   simp [expSeries_apply_eq, Nat.factorial]
 
 /-- The exponential in a Banach algebra `𝔸` over a normed field `𝕂` has Fréchet derivative
@@ -94,7 +94,7 @@ theorem hasFDerivAt_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
   have hpos : 0 < (expSeries 𝕂 𝔸).radius := (zero_le _).trans_lt hx
   rw [hasFDerivAt_iff_isLittleO_nhds_zero]
   suffices
-    (fun h => exp 𝕂 x * (exp 𝕂 (0 + h) - exp 𝕂 0 - ContinuousLinearMap.id 𝕂 𝔸 h)) =ᶠ[𝓝 0] fun h =>
+    (fun h ↦ exp 𝕂 x * (exp 𝕂 (0 + h) - exp 𝕂 0 - ContinuousLinearMap.id 𝕂 𝔸 h)) =ᶠ[𝓝 0] fun h ↦
       exp 𝕂 (x + h) - exp 𝕂 x - exp 𝕂 x • ContinuousLinearMap.id 𝕂 𝔸 h by
     refine (IsLittleO.const_mul_left ?_ _).congr' this (EventuallyEq.refl _ _)
     rw [← hasFDerivAt_iff_isLittleO_nhds_zero]
@@ -204,7 +204,7 @@ theorem hasDerivAt_exp_zero : HasDerivAt (exp 𝕂) (1 : 𝕂) 0 :=
 end DerivRCLike
 
 theorem Complex.exp_eq_exp_ℂ : Complex.exp = NormedSpace.exp ℂ := by
-  refine funext fun x => ?_
+  refine funext fun x ↦ ?_
   rw [Complex.exp, exp_eq_tsum_div]
   have : CauSeq.IsComplete ℂ norm := Complex.instIsComplete
   exact tendsto_nhds_unique x.exp'.tendsto_limit (expSeries_div_summable ℝ x).hasSum.tendsto_sum_nat
@@ -253,23 +253,23 @@ variable [CompleteSpace 𝔸]
 
 theorem hasFDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕊)
     (htx : t • x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
-    HasFDerivAt (fun u : 𝕊 => exp 𝕂 (u • x)) (exp 𝕂 (t • x) • (1 : 𝕊 →L[𝕂] 𝕊).smulRight x) t := by
+    HasFDerivAt (fun u : 𝕊 ↦ exp 𝕂 (u • x)) (exp 𝕂 (t • x) • (1 : 𝕊 →L[𝕂] 𝕊).smulRight x) t := by
   -- TODO: prove this via `hasFDerivAt_exp_of_mem_ball` using the commutative ring
   -- `Algebra.elementalAlgebra 𝕊 x`. See https://github.com/leanprover-community/mathlib3/pull/19062 for discussion.
   have hpos : 0 < (expSeries 𝕂 𝔸).radius := (zero_le _).trans_lt htx
   rw [hasFDerivAt_iff_isLittleO_nhds_zero]
-  suffices (fun (h : 𝕊) => exp 𝕂 (t • x) *
+  suffices (fun (h : 𝕊) ↦ exp 𝕂 (t • x) *
       (exp 𝕂 ((0 + h) • x) - exp 𝕂 ((0 : 𝕊) • x) - ((1 : 𝕊 →L[𝕂] 𝕊).smulRight x) h)) =ᶠ[𝓝 0]
-        fun h =>
+        fun h ↦
           exp 𝕂 ((t + h) • x) - exp 𝕂 (t • x) - (exp 𝕂 (t • x) • (1 : 𝕊 →L[𝕂] 𝕊).smulRight x) h by
     apply (IsLittleO.const_mul_left _ _).congr' this (EventuallyEq.refl _ _)
-    rw [← hasFDerivAt_iff_isLittleO_nhds_zero (f := fun u => exp 𝕂 (u • x))
+    rw [← hasFDerivAt_iff_isLittleO_nhds_zero (f := fun u ↦ exp 𝕂 (u • x))
       (f' := (1 : 𝕊 →L[𝕂] 𝕊).smulRight x) (x := 0)]
     have : HasFDerivAt (exp 𝕂) (1 : 𝔸 →L[𝕂] 𝔸) ((1 : 𝕊 →L[𝕂] 𝕊).smulRight x 0) := by
       rw [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, zero_smul]
       exact hasFDerivAt_exp_zero_of_radius_pos hpos
     exact this.comp 0 ((1 : 𝕊 →L[𝕂] 𝕊).smulRight x).hasFDerivAt
-  have : Tendsto (fun h : 𝕊 => h • x) (𝓝 0) (𝓝 0) := by
+  have : Tendsto (fun h : 𝕊 ↦ h • x) (𝓝 0) (𝓝 0) := by
     rw [← zero_smul 𝕊 x]
     exact tendsto_id.smul_const x
   have : ∀ᶠ h in 𝓝 (0 : 𝕊), h • x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius :=
@@ -283,7 +283,7 @@ theorem hasFDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕊)
 
 theorem hasFDerivAt_exp_smul_const_of_mem_ball' (x : 𝔸) (t : 𝕊)
     (htx : t • x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
-    HasFDerivAt (fun u : 𝕊 => exp 𝕂 (u • x))
+    HasFDerivAt (fun u : 𝕊 ↦ exp 𝕂 (u • x))
       (((1 : 𝕊 →L[𝕂] 𝕊).smulRight x).smulRight (exp 𝕂 (t • x))) t := by
   convert hasFDerivAt_exp_smul_const_of_mem_ball 𝕂 _ _ htx using 1
   ext t'
@@ -292,18 +292,18 @@ theorem hasFDerivAt_exp_smul_const_of_mem_ball' (x : 𝔸) (t : 𝕊)
 
 theorem hasStrictFDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕊)
     (htx : t • x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
-    HasStrictFDerivAt (fun u : 𝕊 => exp 𝕂 (u • x))
+    HasStrictFDerivAt (fun u : 𝕊 ↦ exp 𝕂 (u • x))
       (exp 𝕂 (t • x) • (1 : 𝕊 →L[𝕂] 𝕊).smulRight x) t :=
   let ⟨_, hp⟩ := analyticAt_exp_of_mem_ball (t • x) htx
-  have deriv₁ : HasStrictFDerivAt (fun u : 𝕊 => exp 𝕂 (u • x)) _ t :=
+  have deriv₁ : HasStrictFDerivAt (fun u : 𝕊 ↦ exp 𝕂 (u • x)) _ t :=
     hp.hasStrictFDerivAt.comp t ((ContinuousLinearMap.id 𝕂 𝕊).smulRight x).hasStrictFDerivAt
-  have deriv₂ : HasFDerivAt (fun u : 𝕊 => exp 𝕂 (u • x)) _ t :=
+  have deriv₂ : HasFDerivAt (fun u : 𝕊 ↦ exp 𝕂 (u • x)) _ t :=
     hasFDerivAt_exp_smul_const_of_mem_ball 𝕂 x t htx
   deriv₁.hasFDerivAt.unique deriv₂ ▸ deriv₁
 
 theorem hasStrictFDerivAt_exp_smul_const_of_mem_ball' (x : 𝔸) (t : 𝕊)
     (htx : t • x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
-    HasStrictFDerivAt (fun u : 𝕊 => exp 𝕂 (u • x))
+    HasStrictFDerivAt (fun u : 𝕊 ↦ exp 𝕂 (u • x))
       (((1 : 𝕊 →L[𝕂] 𝕊).smulRight x).smulRight (exp 𝕂 (t • x))) t := by
   let ⟨_, _⟩ := analyticAt_exp_of_mem_ball (t • x) htx
   convert hasStrictFDerivAt_exp_smul_const_of_mem_ball 𝕂 _ _ htx using 1
@@ -315,22 +315,22 @@ variable {𝕂}
 
 theorem hasStrictDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕂)
     (htx : t • x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
-    HasStrictDerivAt (fun u : 𝕂 => exp 𝕂 (u • x)) (exp 𝕂 (t • x) * x) t := by
+    HasStrictDerivAt (fun u : 𝕂 ↦ exp 𝕂 (u • x)) (exp 𝕂 (t • x) * x) t := by
   simpa using (hasStrictFDerivAt_exp_smul_const_of_mem_ball 𝕂 x t htx).hasStrictDerivAt
 
 theorem hasStrictDerivAt_exp_smul_const_of_mem_ball' (x : 𝔸) (t : 𝕂)
     (htx : t • x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
-    HasStrictDerivAt (fun u : 𝕂 => exp 𝕂 (u • x)) (x * exp 𝕂 (t • x)) t := by
+    HasStrictDerivAt (fun u : 𝕂 ↦ exp 𝕂 (u • x)) (x * exp 𝕂 (t • x)) t := by
   simpa using (hasStrictFDerivAt_exp_smul_const_of_mem_ball' 𝕂 x t htx).hasStrictDerivAt
 
 theorem hasDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕂)
     (htx : t • x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
-    HasDerivAt (fun u : 𝕂 => exp 𝕂 (u • x)) (exp 𝕂 (t • x) * x) t :=
+    HasDerivAt (fun u : 𝕂 ↦ exp 𝕂 (u • x)) (exp 𝕂 (t • x) * x) t :=
   (hasStrictDerivAt_exp_smul_const_of_mem_ball x t htx).hasDerivAt
 
 theorem hasDerivAt_exp_smul_const_of_mem_ball' (x : 𝔸) (t : 𝕂)
     (htx : t • x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
-    HasDerivAt (fun u : 𝕂 => exp 𝕂 (u • x)) (x * exp 𝕂 (t • x)) t :=
+    HasDerivAt (fun u : 𝕂 ↦ exp 𝕂 (u • x)) (x * exp 𝕂 (t • x)) t :=
   (hasStrictDerivAt_exp_smul_const_of_mem_ball' x t htx).hasDerivAt
 
 end MemBall
@@ -344,24 +344,24 @@ variable [IsScalarTower 𝕂 𝕊 𝔸]
 variable [CompleteSpace 𝔸]
 
 theorem hasFDerivAt_exp_smul_const (x : 𝔸) (t : 𝕊) :
-    HasFDerivAt (fun u : 𝕊 => exp 𝕂 (u • x)) (exp 𝕂 (t • x) • (1 : 𝕊 →L[𝕂] 𝕊).smulRight x) t :=
+    HasFDerivAt (fun u : 𝕊 ↦ exp 𝕂 (u • x)) (exp 𝕂 (t • x) • (1 : 𝕊 →L[𝕂] 𝕊).smulRight x) t :=
   hasFDerivAt_exp_smul_const_of_mem_ball 𝕂 _ _ <|
     (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
 
 theorem hasFDerivAt_exp_smul_const' (x : 𝔸) (t : 𝕊) :
-    HasFDerivAt (fun u : 𝕊 => exp 𝕂 (u • x))
+    HasFDerivAt (fun u : 𝕊 ↦ exp 𝕂 (u • x))
       (((1 : 𝕊 →L[𝕂] 𝕊).smulRight x).smulRight (exp 𝕂 (t • x))) t :=
   hasFDerivAt_exp_smul_const_of_mem_ball' 𝕂 _ _ <|
     (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
 
 theorem hasStrictFDerivAt_exp_smul_const (x : 𝔸) (t : 𝕊) :
-    HasStrictFDerivAt (fun u : 𝕊 => exp 𝕂 (u • x))
+    HasStrictFDerivAt (fun u : 𝕊 ↦ exp 𝕂 (u • x))
       (exp 𝕂 (t • x) • (1 : 𝕊 →L[𝕂] 𝕊).smulRight x) t :=
   hasStrictFDerivAt_exp_smul_const_of_mem_ball 𝕂 _ _ <|
     (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
 
 theorem hasStrictFDerivAt_exp_smul_const' (x : 𝔸) (t : 𝕊) :
-    HasStrictFDerivAt (fun u : 𝕊 => exp 𝕂 (u • x))
+    HasStrictFDerivAt (fun u : 𝕊 ↦ exp 𝕂 (u • x))
       (((1 : 𝕊 →L[𝕂] 𝕊).smulRight x).smulRight (exp 𝕂 (t • x))) t :=
   hasStrictFDerivAt_exp_smul_const_of_mem_ball' 𝕂 _ _ <|
     (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
@@ -369,21 +369,21 @@ theorem hasStrictFDerivAt_exp_smul_const' (x : 𝔸) (t : 𝕊) :
 variable {𝕂}
 
 theorem hasStrictDerivAt_exp_smul_const (x : 𝔸) (t : 𝕂) :
-    HasStrictDerivAt (fun u : 𝕂 => exp 𝕂 (u • x)) (exp 𝕂 (t • x) * x) t :=
+    HasStrictDerivAt (fun u : 𝕂 ↦ exp 𝕂 (u • x)) (exp 𝕂 (t • x) * x) t :=
   hasStrictDerivAt_exp_smul_const_of_mem_ball _ _ <|
     (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
 
 theorem hasStrictDerivAt_exp_smul_const' (x : 𝔸) (t : 𝕂) :
-    HasStrictDerivAt (fun u : 𝕂 => exp 𝕂 (u • x)) (x * exp 𝕂 (t • x)) t :=
+    HasStrictDerivAt (fun u : 𝕂 ↦ exp 𝕂 (u • x)) (x * exp 𝕂 (t • x)) t :=
   hasStrictDerivAt_exp_smul_const_of_mem_ball' _ _ <|
     (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
 
 theorem hasDerivAt_exp_smul_const (x : 𝔸) (t : 𝕂) :
-    HasDerivAt (fun u : 𝕂 => exp 𝕂 (u • x)) (exp 𝕂 (t • x) * x) t :=
+    HasDerivAt (fun u : 𝕂 ↦ exp 𝕂 (u • x)) (exp 𝕂 (t • x) * x) t :=
   hasDerivAt_exp_smul_const_of_mem_ball _ _ <| (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
 
 theorem hasDerivAt_exp_smul_const' (x : 𝔸) (t : 𝕂) :
-    HasDerivAt (fun u : 𝕂 => exp 𝕂 (u • x)) (x * exp 𝕂 (t • x)) t :=
+    HasDerivAt (fun u : 𝕂 ↦ exp 𝕂 (u • x)) (x * exp 𝕂 (t • x)) t :=
   hasDerivAt_exp_smul_const_of_mem_ball' _ _ <|
     (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
 

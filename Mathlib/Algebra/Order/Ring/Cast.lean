@@ -50,8 +50,8 @@ variable [NeZero (1 : R)] {m n : ℤ}
 @[simp, norm_cast] lemma cast_le : (m : R) ≤ n ↔ m ≤ n := by
   rw [← sub_nonneg, ← cast_sub, cast_nonneg, sub_nonneg]
 
-lemma cast_strictMono : StrictMono (fun x : ℤ => (x : R)) :=
-  strictMono_of_le_iff_le fun _ _ => cast_le.symm
+lemma cast_strictMono : StrictMono (fun x : ℤ ↦ (x : R)) :=
+  strictMono_of_le_iff_le fun _ _ ↦ cast_le.symm
 
 @[simp, norm_cast] lemma cast_lt : (m : R) < n ↔ m < n := cast_strictMono.lt_iff_lt
 
@@ -88,10 +88,10 @@ lemma cast_le_neg_one_or_one_le_cast_of_ne_zero (hn : n ≠ 0) : (n : R) ≤ -1 
   hn.lt_or_gt.imp cast_le_neg_one_of_neg cast_one_le_of_pos
 
 lemma nneg_mul_add_sq_of_abs_le_one (n : ℤ) (hx : |x| ≤ 1) : (0 : R) ≤ n * x + n * n := by
-  have hnx : 0 < n → 0 ≤ x + n := fun hn => by
+  have hnx : 0 < n → 0 ≤ x + n := fun hn ↦ by
     have := _root_.add_le_add (neg_le_of_abs_le hx) (cast_one_le_of_pos hn)
     rwa [neg_add_cancel] at this
-  have hnx' : n < 0 → x + n ≤ 0 := fun hn => by
+  have hnx' : n < 0 → x + n ≤ 0 := fun hn ↦ by
     have := _root_.add_le_add (le_of_abs_le hx) (cast_le_neg_one_of_neg hn)
     rwa [add_neg_cancel] at this
   rw [← mul_add, mul_nonneg_iff]

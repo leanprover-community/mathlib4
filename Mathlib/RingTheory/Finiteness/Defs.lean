@@ -41,18 +41,18 @@ def FG (N : Submodule R M) : Prop :=
   ∃ S : Finset M, Submodule.span R ↑S = N
 
 theorem fg_def {N : Submodule R M} : N.FG ↔ ∃ S : Set M, S.Finite ∧ span R S = N :=
-  ⟨fun ⟨t, h⟩ => ⟨_, Finset.finite_toSet t, h⟩, by
+  ⟨fun ⟨t, h⟩ ↦ ⟨_, Finset.finite_toSet t, h⟩, by
     rintro ⟨t', h, rfl⟩
     rcases Finite.exists_finset_coe h with ⟨t, rfl⟩
     exact ⟨t, rfl⟩⟩
 
 theorem fg_iff_addSubmonoid_fg (P : Submodule ℕ M) : P.FG ↔ P.toAddSubmonoid.FG :=
-  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_nat_eq_addSubmonoid_closure] using hS⟩, fun ⟨S, hS⟩ =>
+  ⟨fun ⟨S, hS⟩ ↦ ⟨S, by simpa [← span_nat_eq_addSubmonoid_closure] using hS⟩, fun ⟨S, hS⟩ ↦
     ⟨S, by simpa [← span_nat_eq_addSubmonoid_closure] using hS⟩⟩
 
 theorem fg_iff_add_subgroup_fg {G : Type*} [AddCommGroup G] (P : Submodule ℤ G) :
     P.FG ↔ P.toAddSubgroup.FG :=
-  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_int_eq_addSubgroup_closure] using hS⟩, fun ⟨S, hS⟩ =>
+  ⟨fun ⟨S, hS⟩ ↦ ⟨S, by simpa [← span_int_eq_addSubgroup_closure] using hS⟩, fun ⟨S, hS⟩ ↦
     ⟨S, by simpa [← span_int_eq_addSubgroup_closure] using hS⟩⟩
 
 theorem fg_iff_exists_fin_generating_family {N : Submodule R M} :
@@ -124,18 +124,18 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R
 
 theorem finite_def {R M} [Semiring R] [AddCommMonoid M] [Module R M] :
     Module.Finite R M ↔ (⊤ : Submodule R M).FG :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
 
 namespace Finite
 
 open Submodule Set
 
 theorem iff_addMonoid_fg {M : Type*} [AddCommMonoid M] : Module.Finite ℕ M ↔ AddMonoid.FG M :=
-  ⟨fun h => AddMonoid.fg_def.2 <| (Submodule.fg_iff_addSubmonoid_fg ⊤).1 (finite_def.1 h), fun h =>
+  ⟨fun h ↦ AddMonoid.fg_def.2 <| (Submodule.fg_iff_addSubmonoid_fg ⊤).1 (finite_def.1 h), fun h ↦
     finite_def.2 <| (Submodule.fg_iff_addSubmonoid_fg ⊤).2 (AddMonoid.fg_def.1 h)⟩
 
 theorem iff_addGroup_fg {G : Type*} [AddCommGroup G] : Module.Finite ℤ G ↔ AddGroup.FG G :=
-  ⟨fun h => AddGroup.fg_def.2 <| (Submodule.fg_iff_add_subgroup_fg ⊤).1 (finite_def.1 h), fun h =>
+  ⟨fun h ↦ AddGroup.fg_def.2 <| (Submodule.fg_iff_add_subgroup_fg ⊤).1 (finite_def.1 h), fun h ↦
     finite_def.2 <| (Submodule.fg_iff_add_subgroup_fg ⊤).2 (AddGroup.fg_def.1 h)⟩
 
 variable {R M N}

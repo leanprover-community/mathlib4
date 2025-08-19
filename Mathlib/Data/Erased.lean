@@ -28,7 +28,7 @@ namespace Erased
 /-- Erase a value. -/
 @[inline]
 def mk {α} (a : α) : Erased α :=
-  ⟨fun b => a = b, a, rfl⟩
+  ⟨fun b ↦ a = b, a, rfl⟩
 
 /-- Extracts the erased value, noncomputably. -/
 noncomputable def out {α} : Erased α → α
@@ -63,10 +63,10 @@ noncomputable def equiv (α) : Erased α ≃ α :=
   ⟨out, mk, mk_out, out_mk⟩
 
 instance (α : Type u) : Repr (Erased α) :=
-  ⟨fun _ _ => "Erased"⟩
+  ⟨fun _ _ ↦ "Erased"⟩
 
 instance (α : Type u) : ToString (Erased α) :=
-  ⟨fun _ => "Erased"⟩
+  ⟨fun _ ↦ "Erased"⟩
 
 /-- Computably produce an erased value from a proof of nonemptiness. -/
 def choice {α} (h : Nonempty α) : Erased α :=
@@ -74,7 +74,7 @@ def choice {α} (h : Nonempty α) : Erased α :=
 
 @[simp]
 theorem nonempty_iff {α} : Nonempty (Erased α) ↔ Nonempty α :=
-  ⟨fun ⟨a⟩ => ⟨a.out⟩, fun ⟨a⟩ => ⟨mk a⟩⟩
+  ⟨fun ⟨a⟩ ↦ ⟨a.out⟩, fun ⟨a⟩ ↦ ⟨mk a⟩⟩
 
 instance {α} [h : Nonempty α] : Inhabited (Erased α) :=
   ⟨choice h⟩
@@ -85,7 +85,7 @@ This is a separate definition because `α` and `β` can live in different
 universes (the universe is fixed in `Monad`).
 -/
 def bind {α β} (a : Erased α) (f : α → Erased β) : Erased β :=
-  ⟨fun b => (f a.out).1 b, (f a.out).2⟩
+  ⟨fun b ↦ (f a.out).1 b, (f a.out).2⟩
 
 @[simp]
 theorem bind_eq_out {α β} (a f) : @bind α β a f = f a.out := rfl

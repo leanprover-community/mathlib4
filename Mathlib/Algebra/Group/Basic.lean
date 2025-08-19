@@ -327,7 +327,7 @@ theorem inv_inj : a⁻¹ = b⁻¹ ↔ a = b :=
 
 @[to_additive]
 theorem inv_eq_iff_eq_inv : a⁻¹ = b ↔ a = b⁻¹ :=
-  ⟨fun h => h ▸ (inv_inv a).symm, fun h => h.symm ▸ inv_inv b⟩
+  ⟨fun h ↦ h ▸ (inv_inv a).symm, fun h ↦ h.symm ▸ inv_inv b⟩
 
 variable (G)
 
@@ -1051,9 +1051,9 @@ lemma multiplicative_of_symmetric_of_isTotal
 theorem multiplicative_of_isTotal (p : α → Prop) (hswap : ∀ {a b}, p a → p b → f a b * f b a = 1)
     (hmul : ∀ {a b c}, r a b → r b c → p a → p b → p c → f a c = f a b * f b c) {a b c : α}
     (pa : p a) (pb : p b) (pc : p c) : f a c = f a b * f b c := by
-  apply multiplicative_of_symmetric_of_isTotal (fun a b => p a ∧ p b) r f fun _ _ => And.symm
+  apply multiplicative_of_symmetric_of_isTotal (fun a b ↦ p a ∧ p b) r f fun _ _ ↦ And.symm
   · simp_rw [and_imp]; exact @hswap
-  · exact fun rab rbc pab _pbc pac => hmul rab rbc pab.1 pab.2 pac.2
+  · exact fun rab rbc pab _pbc pac ↦ hmul rab rbc pab.1 pab.2 pac.2
   exacts [⟨pa, pb⟩, ⟨pb, pc⟩, ⟨pa, pc⟩]
 
 end multiplicative

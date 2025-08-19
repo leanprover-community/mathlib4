@@ -36,11 +36,11 @@ Note that while this is stated for `DFinsupp` not `DirectSum`, the types are def
 noncomputable def basis {η : ι → Type*} (b : ∀ i, Basis (η i) R (M i)) :
     Basis (Σ i, η i) R (Π₀ i, M i) :=
   .ofRepr
-    ((mapRange.linearEquiv fun i => (b i).repr).trans (sigmaFinsuppLequivDFinsupp R).symm)
+    ((mapRange.linearEquiv fun i ↦ (b i).repr).trans (sigmaFinsuppLequivDFinsupp R).symm)
 
 variable (R M) in
 instance _root_.Module.Free.dfinsupp [∀ i : ι, Module.Free R (M i)] : Module.Free R (Π₀ i, M i) :=
-  .of_basis <| DFinsupp.basis fun i => Module.Free.chooseBasis R (M i)
+  .of_basis <| DFinsupp.basis fun i ↦ Module.Free.chooseBasis R (M i)
 
 variable [DecidableEq ι] {φ : ι → Type*} (f : ∀ i, φ i → M i)
 
@@ -97,8 +97,8 @@ theorem basis_repr {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) (g : ι →
 
 @[simp]
 theorem coe_basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) :
-    ⇑(Finsupp.basis b) = fun ix : Σ i, φ i => single ix.1 (b ix.1 ix.2) :=
-  funext fun ⟨i, x⟩ =>
+    ⇑(Finsupp.basis b) = fun ix : Σ i, φ i ↦ single ix.1 (b ix.1 ix.2) :=
+  funext fun ⟨i, x⟩ ↦
     Basis.apply_eq_iff.mpr <| by
       ext ⟨j, y⟩
       by_cases h : i = j
@@ -108,7 +108,7 @@ theorem coe_basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) :
 
 variable (ι R M) in
 instance _root_.Module.Free.finsupp [Module.Free R M] : Module.Free R (ι →₀ M) :=
-  .of_basis (Finsupp.basis fun _ => Module.Free.chooseBasis R M)
+  .of_basis (Finsupp.basis fun _ ↦ Module.Free.chooseBasis R M)
 
 /-- The basis on `ι →₀ R` with basis vectors `fun i ↦ single i 1`. -/
 @[simps]
@@ -116,8 +116,8 @@ protected def basisSingleOne : Basis ι R (ι →₀ R) :=
   Basis.ofRepr (LinearEquiv.refl _ _)
 
 @[simp]
-theorem coe_basisSingleOne : (Finsupp.basisSingleOne : ι → ι →₀ R) = fun i => Finsupp.single i 1 :=
-  funext fun _ => Basis.apply_eq_iff.mpr rfl
+theorem coe_basisSingleOne : (Finsupp.basisSingleOne : ι → ι →₀ R) = fun i ↦ Finsupp.single i 1 :=
+  funext fun _ ↦ Basis.apply_eq_iff.mpr rfl
 
 variable (ι R) in
 lemma linearIndependent_single_one : LinearIndependent R fun i : ι ↦ single i (1 : R) :=

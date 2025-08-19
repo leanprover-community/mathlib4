@@ -135,7 +135,7 @@ many of the paths do not have defeq starting/ending points, so we end up needing
 
 /-- Interpret a homotopy `H : C(I × X, Y)` as a map `C(ULift I × X, Y)` -/
 def uliftMap : C(TopCat.of (ULift.{u} I × X), Y) :=
-  ⟨fun x => H (x.1.down, x.2),
+  ⟨fun x ↦ H (x.1.down, x.2),
     H.continuous.comp ((continuous_uliftDown.comp continuous_fst).prodMk continuous_snd)⟩
 
 theorem ulift_apply (i : ULift.{u} I) (x : X) : H.uliftMap (i, x) = H (i.down, x) :=
@@ -160,7 +160,7 @@ theorem apply_zero_path : (πₘ (TopCat.ofHom f)).map p = hcast (H.apply_zero x
     (πₘ (TopCat.ofHom H.uliftMap)).map
       (prodToProdTopI (𝟙 (@fromTop (TopCat.of _) (ULift.up 0))) p) ≫
     hcast (H.apply_zero x₁) :=
-  Quotient.inductionOn p fun p' => by
+  Quotient.inductionOn p fun p' ↦ by
     apply @eq_path_of_eq_image _ _ _ _ H.uliftMap _ _ _ _ _ ((Path.refl (ULift.up _)).prod p')
     intros
     rw [Path.prod_coe, ulift_apply H]
@@ -171,7 +171,7 @@ theorem apply_one_path : (πₘ (TopCat.ofHom g)).map p = hcast (H.apply_one x�
     (πₘ (TopCat.ofHom H.uliftMap)).map
       (prodToProdTopI (𝟙 (@fromTop (TopCat.of _) (ULift.up 1))) p) ≫
     hcast (H.apply_one x₁) :=
-  Quotient.inductionOn p fun p' => by
+  Quotient.inductionOn p fun p' ↦ by
     apply @eq_path_of_eq_image _ _ _ _ H.uliftMap _ _ _ _ _ ((Path.refl (ULift.up _)).prod p')
     intros
     rw [Path.prod_coe, ulift_apply H]

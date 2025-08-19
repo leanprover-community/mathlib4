@@ -109,7 +109,7 @@ variable {R} {S : Type*} [CommRing S]
 @[simp]
 theorem map_wittPolynomial (f : R →+* S) (n : ℕ) : map f (W n) = W n := by
   rw [wittPolynomial, map_sum, wittPolynomial]
-  refine sum_congr rfl fun i _ => ?_
+  refine sum_congr rfl fun i _ ↦ ?_
   rw [map_monomial, RingHom.map_pow, map_natCast]
 
 variable (R)

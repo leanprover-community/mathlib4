@@ -99,8 +99,8 @@ lemma ringChar_of_prime_eq_zero [Nontrivial R] {p : ℕ} (hprime : Nat.Prime p)
 
 lemma charP_iff_prime_eq_zero [Nontrivial R] {p : ℕ} (hp : p.Prime) :
     CharP R p ↔ (p : R) = 0 :=
-  ⟨fun _ => cast_eq_zero R p,
-   fun hp0 => (ringChar_of_prime_eq_zero hp hp0) ▸ inferInstance⟩
+  ⟨fun _ ↦ cast_eq_zero R p,
+   fun hp0 ↦ (ringChar_of_prime_eq_zero hp hp0) ▸ inferInstance⟩
 
 end NonAssocSemiring
 end CharP
@@ -117,16 +117,16 @@ protected lemma Ring.two_ne_zero {R : Type*} [NonAssocSemiring R] [Nontrivial R]
 -- This is a version using `ringChar` instead.
 /-- Characteristic `≠ 2` and nontrivial implies that `-1 ≠ 1`. -/
 lemma Ring.neg_one_ne_one_of_char_ne_two {R : Type*} [NonAssocRing R] [Nontrivial R]
-    (hR : ringChar R ≠ 2) : (-1 : R) ≠ 1 := fun h =>
+    (hR : ringChar R ≠ 2) : (-1 : R) ≠ 1 := fun h ↦
   Ring.two_ne_zero hR (one_add_one_eq_two (R := R) ▸ neg_eq_iff_add_eq_zero.mp h)
 
 /-- Characteristic `≠ 2` in a domain implies that `-a = a` iff `a = 0`. -/
 lemma Ring.eq_self_iff_eq_zero_of_char_ne_two {R : Type*} [NonAssocRing R] [Nontrivial R]
     [NoZeroDivisors R] (hR : ringChar R ≠ 2) {a : R} : -a = a ↔ a = 0 :=
-  ⟨fun h =>
+  ⟨fun h ↦
     (mul_eq_zero.mp <| (two_mul a).trans <| neg_eq_iff_add_eq_zero.mp h).resolve_left
       (Ring.two_ne_zero hR),
-    fun h => ((congr_arg (fun x => -x) h).trans neg_zero).trans h.symm⟩
+    fun h ↦ ((congr_arg (fun x ↦ -x) h).trans neg_zero).trans h.symm⟩
 
 end
 
@@ -176,7 +176,7 @@ namespace CharZero
 
 lemma charZero_iff_forall_prime_ne_zero [NonAssocRing R] [NoZeroDivisors R] [Nontrivial R] :
     CharZero R ↔ ∀ p : ℕ, p.Prime → (p : R) ≠ 0 := by
-  refine ⟨fun h p hp => by simp [hp.ne_zero], fun h => ?_⟩
+  refine ⟨fun h p hp ↦ by simp [hp.ne_zero], fun h ↦ ?_⟩
   let p := ringChar R
   cases CharP.char_is_prime_or_zero R p with
   | inl hp => simpa using h p hp

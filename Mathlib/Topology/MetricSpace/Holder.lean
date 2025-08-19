@@ -55,7 +55,7 @@ def HolderOnWith (C r : ℝ≥0) (f : X → Y) (s : Set X) : Prop :=
   ∀ x ∈ s, ∀ y ∈ s, edist (f x) (f y) ≤ (C : ℝ≥0∞) * edist x y ^ (r : ℝ)
 
 @[simp]
-theorem holderOnWith_empty (C r : ℝ≥0) (f : X → Y) : HolderOnWith C r f ∅ := fun _ hx => hx.elim
+theorem holderOnWith_empty (C r : ℝ≥0) (f : X → Y) : HolderOnWith C r f ∅ := fun _ hx ↦ hx.elim
 
 @[simp]
 theorem holderOnWith_singleton (C r : ℝ≥0) (f : X → Y) (x : X) : HolderOnWith C r f {x} := by
@@ -87,7 +87,7 @@ theorem holderWith_id : HolderWith 1 1 (id : X → X) :=
   LipschitzWith.id.holderWith
 
 protected theorem HolderWith.holderOnWith {C r : ℝ≥0} {f : X → Y} (h : HolderWith C r f)
-    (s : Set X) : HolderOnWith C r f s := fun x _ y _ => h x y
+    (s : Set X) : HolderOnWith C r f s := fun x _ y _ ↦ h x y
 
 namespace HolderOnWith
 
@@ -112,26 +112,26 @@ theorem comp {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HolderOnWith Cg r
 theorem comp_holderWith {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HolderOnWith Cg rg g t)
     {Cf rf : ℝ≥0} {f : X → Y} (hf : HolderWith Cf rf f) (ht : ∀ x, f x ∈ t) :
     HolderWith (Cg * Cf ^ (rg : ℝ)) (rg * rf) (g ∘ f) :=
-  holderOnWith_univ.mp <| hg.comp (hf.holderOnWith univ) fun x _ => ht x
+  holderOnWith_univ.mp <| hg.comp (hf.holderOnWith univ) fun x _ ↦ ht x
 
 /-- A Hölder continuous function is uniformly continuous -/
 protected theorem uniformContinuousOn (hf : HolderOnWith C r f s) (h0 : 0 < r) :
     UniformContinuousOn f s := by
-  refine EMetric.uniformContinuousOn_iff.2 fun ε εpos => ?_
-  have : Tendsto (fun d : ℝ≥0∞ => (C : ℝ≥0∞) * d ^ (r : ℝ)) (𝓝 0) (𝓝 0) :=
+  refine EMetric.uniformContinuousOn_iff.2 fun ε εpos ↦ ?_
+  have : Tendsto (fun d : ℝ≥0∞ ↦ (C : ℝ≥0∞) * d ^ (r : ℝ)) (𝓝 0) (𝓝 0) :=
     ENNReal.tendsto_const_mul_rpow_nhds_zero_of_pos ENNReal.coe_ne_top h0
   rcases ENNReal.nhds_zero_basis.mem_iff.1 (this (gt_mem_nhds εpos)) with ⟨δ, δ0, H⟩
-  exact ⟨δ, δ0, fun hx y hy h => (hf.edist_le hx hy).trans_lt (H h)⟩
+  exact ⟨δ, δ0, fun hx y hy h ↦ (hf.edist_le hx hy).trans_lt (H h)⟩
 
 protected theorem continuousOn (hf : HolderOnWith C r f s) (h0 : 0 < r) : ContinuousOn f s :=
   (hf.uniformContinuousOn h0).continuousOn
 
 protected theorem mono (hf : HolderOnWith C r f s) (ht : t ⊆ s) : HolderOnWith C r f t :=
-  fun _ hx _ hy => hf.edist_le (ht hx) (ht hy)
+  fun _ hx _ hy ↦ hf.edist_le (ht hx) (ht hy)
 
 theorem ediam_image_le_of_le (hf : HolderOnWith C r f s) {d : ℝ≥0∞} (hd : EMetric.diam s ≤ d) :
     EMetric.diam (f '' s) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
-  EMetric.diam_image_le_iff.2 fun _ hx _ hy =>
+  EMetric.diam_image_le_iff.2 fun _ hx _ hy ↦
     hf.edist_le_of_le hx hy <| (EMetric.edist_le_diam_of_mem hx hy).trans hd
 
 theorem ediam_image_le (hf : HolderOnWith C r f s) :
@@ -176,12 +176,12 @@ theorem edist_le_of_le (h : HolderWith C r f) {x y : X} {d : ℝ≥0∞} (hd : e
 
 theorem comp {Cg rg : ℝ≥0} {g : Y → Z} (hg : HolderWith Cg rg g) {Cf rf : ℝ≥0} {f : X → Y}
     (hf : HolderWith Cf rf f) : HolderWith (Cg * Cf ^ (rg : ℝ)) (rg * rf) (g ∘ f) :=
-  (hg.holderOnWith univ).comp_holderWith hf fun _ => trivial
+  (hg.holderOnWith univ).comp_holderWith hf fun _ ↦ trivial
 
 theorem comp_holderOnWith {Cg rg : ℝ≥0} {g : Y → Z} (hg : HolderWith Cg rg g) {Cf rf : ℝ≥0}
     {f : X → Y} {s : Set X} (hf : HolderOnWith Cf rf f s) :
     HolderOnWith (Cg * Cf ^ (rg : ℝ)) (rg * rf) (g ∘ f) s :=
-  (hg.holderOnWith univ).comp hf fun _ _ => trivial
+  (hg.holderOnWith univ).comp hf fun _ _ ↦ trivial
 
 /-- A Hölder continuous function is uniformly continuous -/
 protected theorem uniformContinuous (hf : HolderWith C r f) (h0 : 0 < r) : UniformContinuous f :=
@@ -192,11 +192,11 @@ protected theorem continuous (hf : HolderWith C r f) (h0 : 0 < r) : Continuous f
 
 theorem ediam_image_le (hf : HolderWith C r f) (s : Set X) :
     EMetric.diam (f '' s) ≤ (C : ℝ≥0∞) * EMetric.diam s ^ (r : ℝ) :=
-  EMetric.diam_image_le_iff.2 fun _ hx _ hy =>
+  EMetric.diam_image_le_iff.2 fun _ hx _ hy ↦
     hf.edist_le_of_le <| EMetric.edist_le_diam_of_mem hx hy
 
 lemma const {y : Y} :
-    HolderWith C r (Function.const X y) := fun x₁ x₂ => by
+    HolderWith C r (Function.const X y) := fun x₁ x₂ ↦ by
   simp only [Function.const_apply, edist_self, zero_le]
 
 lemma zero [Zero Y] : HolderWith C r (0 : X → Y) := .const
@@ -268,7 +268,7 @@ variable [PseudoMetricSpace X] [MetricSpace Y] {r : ℝ≥0} {f : X → Y}
 
 @[simp]
 lemma holderWith_zero_iff : HolderWith 0 r f ↔ ∀ x₁ x₂, f x₁ = f x₂ := by
-  refine ⟨fun h x₁ x₂ => ?_, fun h x₁ x₂ => h x₁ x₂ ▸ ?_⟩
+  refine ⟨fun h x₁ x₂ ↦ ?_, fun h x₁ x₂ ↦ h x₁ x₂ ▸ ?_⟩
   · specialize h x₁ x₂
     simp [ENNReal.coe_zero, zero_mul, nonpos_iff_eq_zero, edist_eq_zero] at h
     assumption
@@ -283,12 +283,12 @@ variable [PseudoMetricSpace X] [SeminormedAddCommGroup Y] {C C' r : ℝ≥0} {f 
 namespace HolderWith
 
 lemma add (hf : HolderWith C r f) (hg : HolderWith C' r g) :
-    HolderWith (C + C') r (f + g) := fun x₁ x₂ => by
+    HolderWith (C + C') r (f + g) := fun x₁ x₂ ↦ by
   refine le_trans (edist_add_add_le _ _ _ _) <| le_trans (add_le_add (hf x₁ x₂) (hg x₁ x₂)) ?_
   rw [coe_add, add_mul]
 
 lemma smul {α} [SeminormedAddCommGroup α] [SMulZeroClass α Y] [IsBoundedSMul α Y] (a : α)
-    (hf : HolderWith C r f) : HolderWith (C * ‖a‖₊) r (a • f) := fun x₁ x₂ => by
+    (hf : HolderWith C r f) : HolderWith (C * ‖a‖₊) r (a • f) := fun x₁ x₂ ↦ by
   refine edist_smul_le _ _ _ |>.trans ?_
   rw [coe_mul, ENNReal.smul_def, smul_eq_mul, mul_comm (C : ℝ≥0∞), mul_assoc]
   gcongr

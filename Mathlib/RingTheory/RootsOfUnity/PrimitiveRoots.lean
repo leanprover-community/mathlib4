@@ -292,7 +292,7 @@ theorem of_map_of_injective [MonoidHomClass F M N] (h : IsPrimitiveRoot (f ζ) k
 
 theorem map_iff_of_injective [MonoidHomClass F M N] (hf : Injective f) :
     IsPrimitiveRoot (f ζ) k ↔ IsPrimitiveRoot ζ k :=
-  ⟨fun h => h.of_map_of_injective hf, fun h => h.map_of_injective hf⟩
+  ⟨fun h ↦ h.of_map_of_injective hf, fun h ↦ h.map_of_injective hf⟩
 
 end Maps
 

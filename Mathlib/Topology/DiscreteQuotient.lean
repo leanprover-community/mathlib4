@@ -81,7 +81,7 @@ lemma toSetoid_injective : Function.Injective (@toSetoid X _)
 
 /-- Construct a discrete quotient from a clopen set. -/
 def ofIsClopen {A : Set X} (h : IsClopen A) : DiscreteQuotient X where
-  toSetoid := ⟨fun x y => x ∈ A ↔ y ∈ A, fun _ => Iff.rfl, Iff.symm, Iff.trans⟩
+  toSetoid := ⟨fun x y ↦ x ∈ A ↔ y ∈ A, fun _ ↦ Iff.rfl, Iff.symm, Iff.trans⟩
   isOpen_setOf_rel x := by by_cases hx : x ∈ A <;> simp [hx, h.1, h.2, ← compl_setOf]
 
 theorem refl : ∀ x, S.toSetoid x x := S.refl'
@@ -94,7 +94,7 @@ theorem trans (x y z : X) : S.toSetoid x y → S.toSetoid y z → S.toSetoid x z
 add_decl_doc toSetoid
 
 instance : CoeSort (DiscreteQuotient X) (Type _) :=
-  ⟨fun S => Quotient S.toSetoid⟩
+  ⟨fun S ↦ Quotient S.toSetoid⟩
 
 instance : TopologicalSpace S :=
   inferInstanceAs (TopologicalSpace (Quotient S.toSetoid))
@@ -103,7 +103,7 @@ instance : TopologicalSpace S :=
 def proj : X → S := Quotient.mk''
 
 theorem fiber_eq (x : X) : S.proj ⁻¹' {S.proj x} = setOf (S.toSetoid x) :=
-  Set.ext fun _ => eq_comm.trans Quotient.eq''
+  Set.ext fun _ ↦ eq_comm.trans Quotient.eq''
 
 theorem proj_surjective : Function.Surjective S.proj :=
   Quotient.mk''_surjective
@@ -115,7 +115,7 @@ theorem proj_continuous : Continuous S.proj :=
   S.proj_isQuotientMap.continuous
 
 instance : DiscreteTopology S :=
-  singletons_open_iff_discrete.1 <| S.proj_surjective.forall.2 fun x => by
+  singletons_open_iff_discrete.1 <| S.proj_surjective.forall.2 fun x ↦ by
     rw [← S.proj_isQuotientMap.isOpen_preimage, fiber_eq]
     exact S.isOpen_setOf_rel _
 
@@ -136,13 +136,13 @@ theorem isClopen_setOf_rel (x : X) : IsClopen (setOf (S.toSetoid x)) := by
   apply isClopen_preimage
 
 instance : Min (DiscreteQuotient X) :=
-  ⟨fun S₁ S₂ => ⟨S₁.1 ⊓ S₂.1, fun x => (S₁.2 x).inter (S₂.2 x)⟩⟩
+  ⟨fun S₁ S₂ ↦ ⟨S₁.1 ⊓ S₂.1, fun x ↦ (S₁.2 x).inter (S₂.2 x)⟩⟩
 
 instance : SemilatticeInf (DiscreteQuotient X) :=
-  Injective.semilatticeInf toSetoid toSetoid_injective fun _ _ => rfl
+  Injective.semilatticeInf toSetoid toSetoid_injective fun _ _ ↦ rfl
 
 instance : OrderTop (DiscreteQuotient X) where
-  top := ⟨⊤, fun _ => isOpen_univ⟩
+  top := ⟨⊤, fun _ ↦ isOpen_univ⟩
   le_top a := by tauto
 
 instance : Inhabited (DiscreteQuotient X) := ⟨⊤⟩
@@ -221,11 +221,11 @@ end OfLE
 instance [LocallyConnectedSpace X] : OrderBot (DiscreteQuotient X) where
   bot :=
     { toSetoid := connectedComponentSetoid X
-      isOpen_setOf_rel := fun x => by
+      isOpen_setOf_rel := fun x ↦ by
         convert isOpen_connectedComponent (x := x)
         ext y
         simpa only [connectedComponentSetoid, ← connectedComponent_eq_iff_mem] using eq_comm }
-  bot_le S := fun x y (h : connectedComponent x = connectedComponent y) =>
+  bot_le S := fun x y (h : connectedComponent x = connectedComponent y) ↦
     (S.isClopen_setOf_rel x).connectedComponent_subset (S.refl _) <| h.symm ▸ mem_connectedComponent
 
 @[simp]
@@ -236,7 +236,7 @@ theorem proj_bot_eq [LocallyConnectedSpace X] {x y : X} :
 theorem proj_bot_inj [DiscreteTopology X] {x y : X} : proj ⊥ x = proj ⊥ y ↔ x = y := by simp
 
 theorem proj_bot_injective [DiscreteTopology X] : Injective (⊥ : DiscreteQuotient X).proj :=
-  fun _ _ => proj_bot_inj.1
+  fun _ _ ↦ proj_bot_inj.1
 
 theorem proj_bot_bijective [DiscreteTopology X] : Bijective (⊥ : DiscreteQuotient X).proj :=
   ⟨proj_bot_injective, proj_surjective _⟩
@@ -323,19 +323,19 @@ theorem fiber_subset_ofLE {A B : DiscreteQuotient X} (h : A ≤ B) (a : A) :
     A.proj ⁻¹' {a} ⊆ B.proj ⁻¹' {ofLE h a} := by
   rcases A.proj_surjective a with ⟨a, rfl⟩
   rw [fiber_eq, ofLE_proj, fiber_eq]
-  exact fun _ h' => h h'
+  exact fun _ h' ↦ h h'
 
 theorem exists_of_compat [CompactSpace X] (Qs : (Q : DiscreteQuotient X) → Q)
     (compat : ∀ (A B : DiscreteQuotient X) (h : A ≤ B), ofLE h (Qs _) = Qs _) :
     ∃ x : X, ∀ Q : DiscreteQuotient X, Q.proj x = Qs _ := by
-  have H₁ : ∀ Q₁ Q₂, Q₁ ≤ Q₂ → proj Q₁ ⁻¹' {Qs Q₁} ⊆ proj Q₂ ⁻¹' {Qs Q₂} := fun _ _ h => by
+  have H₁ : ∀ Q₁ Q₂, Q₁ ≤ Q₂ → proj Q₁ ⁻¹' {Qs Q₁} ⊆ proj Q₂ ⁻¹' {Qs Q₂} := fun _ _ h ↦ by
     rw [← compat _ _ h]
     exact fiber_subset_ofLE _ _
   obtain ⟨x, hx⟩ : Set.Nonempty (⋂ Q, proj Q ⁻¹' {Qs Q}) :=
     IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
-      (fun Q : DiscreteQuotient X => Q.proj ⁻¹' {Qs _}) (directed_of_isDirected_ge H₁)
-      (fun Q => (singleton_nonempty _).preimage Q.proj_surjective)
-      (fun Q => (Q.isClosed_preimage {Qs _}).isCompact) fun Q => Q.isClosed_preimage _
+      (fun Q : DiscreteQuotient X ↦ Q.proj ⁻¹' {Qs _}) (directed_of_isDirected_ge H₁)
+      (fun Q ↦ (singleton_nonempty _).preimage Q.proj_surjective)
+      (fun Q ↦ (Q.isClosed_preimage {Qs _}).isCompact) fun Q ↦ Q.isClosed_preimage _
   exact ⟨x, mem_iInter.1 hx⟩
 
 /-- If `X` is a compact space, then any discrete quotient of `X` is finite. -/
@@ -405,7 +405,7 @@ def discreteQuotient : DiscreteQuotient X where
 /-- The (locally constant) function from the discrete quotient associated to a locally constant
 function. -/
 def lift : LocallyConstant f.discreteQuotient α :=
-  ⟨fun a => Quotient.liftOn' a f fun _ _ => id, fun _ => isOpen_discrete _⟩
+  ⟨fun a ↦ Quotient.liftOn' a f fun _ _ ↦ id, fun _ ↦ isOpen_discrete _⟩
 
 @[simp]
 theorem lift_comp_proj : f.lift ∘ f.discreteQuotient.proj = f := rfl

@@ -38,11 +38,11 @@ lemma isPrimary_iff {I : Ideal R} :
 
 theorem IsPrime.isPrimary {I : Ideal R} (hi : IsPrime I) : I.IsPrimary :=
   isPrimary_iff.mpr
-  ⟨hi.1, fun {_ _} hxy => (hi.mem_or_mem hxy).imp id fun hyi => le_radical hyi⟩
+  ⟨hi.1, fun {_ _} hxy ↦ (hi.mem_or_mem hxy).imp id fun hyi ↦ le_radical hyi⟩
 
 theorem isPrime_radical {I : Ideal R} (hi : I.IsPrimary) : IsPrime (radical I) :=
   ⟨mt radical_eq_top.1 hi.1,
-   fun {x y} ⟨m, hxy⟩ => by
+   fun {x y} ⟨m, hxy⟩ ↦ by
     rw [mul_pow] at hxy; rcases (isPrimary_iff.mp hi).2 hxy with h | h
     · exact Or.inl ⟨m, h⟩
     · exact Or.inr (mem_radical_of_pow_mem h)⟩
@@ -51,7 +51,7 @@ theorem isPrimary_inf {I J : Ideal R} (hi : I.IsPrimary) (hj : J.IsPrimary)
     (hij : radical I = radical J) : (I ⊓ J).IsPrimary :=
   isPrimary_iff.mpr
   ⟨ne_of_lt <| lt_of_le_of_lt inf_le_left (lt_top_iff_ne_top.2 hi.1),
-   fun {x y} ⟨hxyi, hxyj⟩ => by
+   fun {x y} ⟨hxyi, hxyj⟩ ↦ by
     rw [radical_inf, hij, inf_idem]
     rcases (isPrimary_iff.mp hi).2 hxyi with hxi | hyi
     · rcases (isPrimary_iff.mp hj).2 hxyj with hxj | hyj

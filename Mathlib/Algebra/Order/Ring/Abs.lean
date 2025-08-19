@@ -65,7 +65,7 @@ lemma abs_neg_one_pow (n : ℕ) : |(-1 : α) ^ n| = 1 := by rw [← pow_abs, abs
 
 omit [IsOrderedRing α] in
 @[simp] lemma abs_mul_abs_self (a : α) : |a| * |a| = a * a :=
-  abs_by_cases (fun x => x * x = a * a) rfl (neg_mul_neg a a)
+  abs_by_cases (fun x ↦ x * x = a * a) rfl (neg_mul_neg a a)
 
 @[simp]
 lemma abs_mul_self (a : α) : |a * a| = a * a := by rw [abs_mul, abs_mul_abs_self]

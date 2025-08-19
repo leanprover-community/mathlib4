@@ -158,8 +158,8 @@ lemma bitwise_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) 
 
 lemma bitwise_eq_binaryRec (f : Bool → Bool → Bool) :
     bitwise f =
-    binaryRec (fun n => cond (f false true) n 0) fun a m Ia =>
-      binaryRec (cond (f true false) (bit a m) 0) fun b n _ => bit (f a b) (Ia n) := by
+    binaryRec (fun n ↦ cond (f false true) n 0) fun a m Ia ↦
+      binaryRec (cond (f true false) (bit a m) 0) fun b n _ ↦ bit (f a b) (Ia n) := by
   funext x y
   induction x using binaryRec' generalizing y with
   | z => simp only [bitwise_zero_left, binaryRec_zero, Bool.cond_eq_ite]
@@ -176,7 +176,7 @@ lemma bitwise_eq_binaryRec (f : Bool → Bool → Bool) :
 theorem zero_of_testBit_eq_false {n : ℕ} (h : ∀ i, testBit n i = false) : n = 0 := by
   induction n using Nat.binaryRec with | z => rfl | f b n hn => ?_
   have : b = false := by simpa using h 0
-  rw [this, bit_false, hn fun i => by rw [← h (i + 1), testBit_bit_succ]]
+  rw [this, bit_false, hn fun i ↦ by rw [← h (i + 1), testBit_bit_succ]]
 
 theorem testBit_eq_false_of_lt {n i} (h : n < 2 ^ i) : n.testBit i = false := by
   simp [testBit, shiftRight_eq_div_pow, Nat.div_eq_of_lt h]
@@ -201,11 +201,11 @@ theorem exists_most_significant_bit {n : ℕ} (h : n ≠ 0) :
     rw [show b = true by
         revert h
         cases b <;> simp]
-    refine ⟨0, ⟨by rw [testBit_bit_zero], fun j hj => ?_⟩⟩
+    refine ⟨0, ⟨by rw [testBit_bit_zero], fun j hj ↦ ?_⟩⟩
     obtain ⟨j', rfl⟩ := exists_eq_succ_of_ne_zero (ne_of_gt hj)
     rw [testBit_bit_succ, zero_testBit]
   · obtain ⟨k, ⟨hk, hk'⟩⟩ := hn h'
-    refine ⟨k + 1, ⟨by rw [testBit_bit_succ, hk], fun j hj => ?_⟩⟩
+    refine ⟨k + 1, ⟨by rw [testBit_bit_succ, hk], fun j hj ↦ ?_⟩⟩
     obtain ⟨j', rfl⟩ := exists_eq_succ_of_ne_zero (show j ≠ 0 by intro x; subst x; simp at hj)
     exact (testBit_bit_succ _ _ _).trans (hk' _ (lt_of_succ_lt_succ hj))
 
@@ -224,13 +224,13 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
       · subst hi
         simp only [testBit_bit_zero] at hn hm
         have : n = m :=
-          eq_of_testBit_eq fun i => by convert hnm (i + 1) (Nat.zero_lt_succ _) using 1
+          eq_of_testBit_eq fun i ↦ by convert hnm (i + 1) (Nat.zero_lt_succ _) using 1
           <;> rw [testBit_bit_succ]
         rw [hn, hm, this, bit_false, bit_true]
         exact Nat.lt_succ_self _
       · obtain ⟨i', rfl⟩ := exists_eq_succ_of_ne_zero hi
         simp only [testBit_bit_succ] at hn hm
-        have := hn' _ hn hm fun j hj => by
+        have := hn' _ hn hm fun j hj ↦ by
           convert hnm j.succ (succ_lt_succ hj) using 1 <;> rw [testBit_bit_succ]
         exact bit_lt_bit b b' this
 
@@ -251,7 +251,7 @@ theorem bitwise_comm {f : Bool → Bool → Bool} (hf : ∀ b b', f b b' = f b' 
     bitwise f n m = bitwise f m n :=
   suffices bitwise f = swap (bitwise f) by conv_lhs => rw [this]
   calc
-    bitwise f = bitwise (swap f) := congr_arg _ <| funext fun _ => funext <| hf _
+    bitwise f = bitwise (swap f) := congr_arg _ <| funext fun _ ↦ funext <| hf _
     _ = swap (bitwise f) := bitwise_swap
 
 theorem lor_comm (n m : ℕ) : n ||| m = m ||| n :=
@@ -261,7 +261,7 @@ theorem land_comm (n m : ℕ) : n &&& m = m &&& n :=
   bitwise_comm Bool.and_comm n m
 
 lemma and_two_pow (n i : ℕ) : n &&& 2 ^ i = (n.testBit i).toNat * 2 ^ i := by
-  refine eq_of_testBit_eq fun j => ?_
+  refine eq_of_testBit_eq fun j ↦ ?_
   obtain rfl | hij := Decidable.eq_or_ne i j <;> cases h : n.testBit i
   · simp [h]
   · simp [h]
@@ -290,11 +290,11 @@ theorem xor_cancel_right (n m : ℕ) : (m ^^^ n) ^^^ n = m := by
 theorem xor_cancel_left (n m : ℕ) : n ^^^ (n ^^^ m) = m := by
   rw [← Nat.xor_assoc, Nat.xor_self, zero_xor]
 
-theorem xor_right_injective {n : ℕ} : Function.Injective (HXor.hXor n : ℕ → ℕ) := fun m m' h => by
+theorem xor_right_injective {n : ℕ} : Function.Injective (HXor.hXor n : ℕ → ℕ) := fun m m' h ↦ by
   rw [← xor_cancel_left n m, ← xor_cancel_left n m', h]
 
-theorem xor_left_injective {n : ℕ} : Function.Injective fun m => m ^^^ n :=
-  fun m m' (h : m ^^^ n = m' ^^^ n) => by
+theorem xor_left_injective {n : ℕ} : Function.Injective fun m ↦ m ^^^ n :=
+  fun m m' (h : m ^^^ n = m' ^^^ n) ↦ by
   rw [← xor_cancel_right n m, ← xor_cancel_right n m', h]
 
 @[simp]
@@ -337,7 +337,7 @@ theorem xor_trichotomy {a b c : ℕ} (h : a ^^^ b ^^^ c ≠ 0) :
   on_goal 2 => right; left; rw [hca]
   on_goal 3 => right; right; rw [hab]
   all_goals
-    refine lt_of_testBit i ?_ h fun j hj => ?_
+    refine lt_of_testBit i ?_ h fun j hj ↦ ?_
     · rw [testBit_xor, h, hi]
       rfl
     · simp only [testBit_xor, hi' _ hj, Bool.bne_false]

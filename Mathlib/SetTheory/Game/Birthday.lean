@@ -49,12 +49,12 @@ birthdays of its left and right games. It may be thought as the "step" in which 
 constructed. -/
 noncomputable def birthday : PGame.{u} → Ordinal.{u}
   | ⟨_, _, xL, xR⟩ =>
-    max (lsub.{u, u} fun i => birthday (xL i)) (lsub.{u, u} fun i => birthday (xR i))
+    max (lsub.{u, u} fun i ↦ birthday (xL i)) (lsub.{u, u} fun i ↦ birthday (xR i))
 
 theorem birthday_def (x : PGame) :
     birthday x =
-      max (lsub.{u, u} fun i => birthday (x.moveLeft i))
-        (lsub.{u, u} fun i => birthday (x.moveRight i)) := by
+      max (lsub.{u, u} fun i ↦ birthday (x.moveLeft i))
+        (lsub.{u, u} fun i ↦ birthday (x.moveRight i)) := by
   cases x; rw [birthday]; rfl
 
 theorem birthday_moveLeft_lt {x : PGame} (i : x.LeftMoves) :
@@ -126,7 +126,7 @@ theorem birthday_ordinalToPGame (o : Ordinal) : o.toPGame.birthday = o := by
 theorem le_birthday : ∀ x : PGame, x ≤ x.birthday.toPGame
   | ⟨xl, _, xL, _⟩ =>
     le_def.2
-      ⟨fun i =>
+      ⟨fun i ↦
         Or.inl ⟨toLeftMovesToPGame ⟨_, birthday_moveLeft_lt i⟩, by simp [le_birthday (xL i)]⟩,
         isEmptyElim⟩
 

@@ -164,12 +164,12 @@ def WalkingSpan.ext {F : WalkingSpan ⥤ C} {s t : Cocone F} (i : s.pt ≅ t.pt)
 
 /-- `cospan f g` is the functor from the walking cospan hitting `f` and `g`. -/
 def cospan {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) : WalkingCospan ⥤ C :=
-  WidePullbackShape.wideCospan Z (fun j => WalkingPair.casesOn j X Y) fun j =>
+  WidePullbackShape.wideCospan Z (fun j ↦ WalkingPair.casesOn j X Y) fun j ↦
     WalkingPair.casesOn j f g
 
 /-- `span f g` is the functor from the walking span hitting `f` and `g`. -/
 def span {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) : WalkingSpan ⥤ C :=
-  WidePushoutShape.wideSpan X (fun j => WalkingPair.casesOn j Y Z) fun j =>
+  WidePushoutShape.wideSpan X (fun j ↦ WalkingPair.casesOn j Y Z) fun j ↦
     WalkingPair.casesOn j f g
 
 @[simp]
@@ -223,7 +223,7 @@ theorem span_map_id {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) (w : WalkingSpan) :
 @[simps!]
 def diagramIsoCospan (F : WalkingCospan ⥤ C) : F ≅ cospan (F.map inl) (F.map inr) :=
   NatIso.ofComponents
-  (fun j => eqToIso (by rcases j with (⟨⟩ | ⟨⟨⟩⟩) <;> rfl))
+  (fun j ↦ eqToIso (by rcases j with (⟨⟩ | ⟨⟨⟩⟩) <;> rfl))
   (by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) f <;> cases f <;> simp)
 
 /-- Every diagram indexing a pushout is naturally isomorphic (actually, equal) to a `span` -/
@@ -231,7 +231,7 @@ def diagramIsoCospan (F : WalkingCospan ⥤ C) : F ≅ cospan (F.map inl) (F.map
 @[simps!]
 def diagramIsoSpan (F : WalkingSpan ⥤ C) : F ≅ span (F.map fst) (F.map snd) :=
   NatIso.ofComponents
-  (fun j => eqToIso (by rcases j with (⟨⟩ | ⟨⟨⟩⟩) <;> rfl))
+  (fun j ↦ eqToIso (by rcases j with (⟨⟩ | ⟨⟨⟩⟩) <;> rfl))
   (by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) f <;> cases f <;> simp)
 
 variable {D : Type u₂} [Category.{v₂} D]

@@ -362,7 +362,7 @@ variable [PartialOrder A] [StarOrderedRing A]
 
 /-- A C⋆-algebra is spanned by its nonnegative elements. -/
 lemma CStarAlgebra.span_nonneg : Submodule.span ℂ {a : A | 0 ≤ a} = ⊤ := by
-  refine eq_top_iff.mpr fun x _ => ?_
+  refine eq_top_iff.mpr fun x _ ↦ ?_
   rw [← CStarAlgebra.linear_combination_nonneg x]
   apply_rules [sub_mem, Submodule.smul_mem, add_mem]
   all_goals

@@ -65,7 +65,7 @@ theorem mem_reesAlgebra_iff_support (f : R[X]) :
   apply forall_congr'
   intro a
   rw [mem_support_iff, Iff.comm, Classical.imp_iff_right_iff, Ne, ← imp_iff_not_or]
-  exact fun e => e.symm ▸ (I ^ a).zero_mem
+  exact fun e ↦ e.symm ▸ (I ^ a).zero_mem
 
 theorem reesAlgebra.monomial_mem {I : Ideal R} {i : ℕ} {r : R} :
     monomial i r ∈ reesAlgebra I ↔ r ∈ I ^ i := by
@@ -79,7 +79,7 @@ theorem monomial_mem_adjoin_monomial {I : Ideal R} {n : ℕ} {r : R} (hr : r ∈
   · rw [pow_succ'] at hr
     apply Submodule.smul_induction_on
       -- Porting note: did not need help with motive previously
-      (p := fun r => (monomial (Nat.succ n)) r ∈ Algebra.adjoin R (Submodule.map (monomial 1) I)) hr
+      (p := fun r ↦ (monomial (Nat.succ n)) r ∈ Algebra.adjoin R (Submodule.map (monomial 1) I)) hr
     · intro r hr s hs
       rw [Nat.succ_eq_one_add, smul_eq_mul, ← monomial_mul_monomial]
       exact Subalgebra.mul_mem _ (Algebra.subset_adjoin (Set.mem_image_of_mem _ hr)) (hn hs)

@@ -66,7 +66,7 @@ protected theorem mem_span (x : M) : x ∈ span R (range b) :=
 
 @[simp]
 protected theorem span_eq : span R (range b) = ⊤ :=
-  eq_top_iff.mpr fun x _ => b.mem_span x
+  eq_top_iff.mpr fun x _ ↦ b.mem_span x
 
 theorem _root_.Submodule.eq_top_iff_forall_basis_mem {p : Submodule R M} :
     p = ⊤ ↔ ∀ i, b i ∈ p := by
@@ -80,7 +80,7 @@ theorem index_nonempty (b : Basis ι R M) [Nontrivial M] : Nonempty ι := by
   exact ⟨i⟩
 
 protected theorem linearIndependent : LinearIndependent R b :=
-  fun x y hxy => by
+  fun x y hxy ↦ by
     rw [← b.repr_linearCombination x, hxy, b.repr_linearCombination y]
 
 protected theorem ne_zero [Nontrivial R] (i) : b i ≠ 0 :=
@@ -97,10 +97,10 @@ variable (hli : LinearIndependent R v) (hsp : ⊤ ≤ span R (range v))
 /-- A linear independent family of vectors spanning the whole module is a basis. -/
 protected noncomputable def mk : Basis ι R M :=
   .ofRepr
-    { hli.repr.comp (LinearMap.id.codRestrict _ fun _ => hsp Submodule.mem_top) with
+    { hli.repr.comp (LinearMap.id.codRestrict _ fun _ ↦ hsp Submodule.mem_top) with
       invFun := Finsupp.linearCombination _ v
-      left_inv := fun x => hli.linearCombination_repr ⟨x, _⟩
-      right_inv := fun _ => hli.repr_eq rfl }
+      left_inv := fun x ↦ hli.linearCombination_repr ⟨x, _⟩
+      right_inv := fun _ ↦ hli.repr_eq rfl }
 
 @[simp]
 theorem mk_repr : (Basis.mk hli hsp).repr x = hli.repr ⟨x, hsp Submodule.mem_top⟩ :=
@@ -151,14 +151,14 @@ protected noncomputable def span : Basis ι R (span R (range v)) :=
   Basis.mk (linearIndependent_span hli) <| by
     intro x _
     have : ∀ i, v i ∈ span R (range v) := fun i ↦ subset_span (Set.mem_range_self _)
-    have h₁ : (((↑) : span R (range v) → M) '' range fun i => ⟨v i, this i⟩) = range v := by
+    have h₁ : (((↑) : span R (range v) → M) '' range fun i ↦ ⟨v i, this i⟩) = range v := by
       simp only [← Set.range_comp]
       rfl
-    have h₂ : map (Submodule.subtype (span R (range v))) (span R (range fun i => ⟨v i, this i⟩)) =
+    have h₂ : map (Submodule.subtype (span R (range v))) (span R (range fun i ↦ ⟨v i, this i⟩)) =
         span R (range v) := by
       rw [← span_image, Submodule.coe_subtype, h₁]
     have h₃ : (x : M) ∈ map (Submodule.subtype (span R (range v)))
-        (span R (Set.range fun i => Subtype.mk (v i) (this i))) := by
+        (span R (Set.range fun i ↦ Subtype.mk (v i) (this i))) := by
       rw [h₂]
       apply Subtype.mem x
     rcases mem_map.1 h₃ with ⟨y, hy₁, hy₂⟩
@@ -174,7 +174,7 @@ end Span
 
 /-- Any basis is a maximal linear independent set.
 -/
-theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal := fun w hi h => by
+theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal := fun w hi h ↦ by
   -- If `w` is strictly bigger than `range b`,
   apply le_antisymm h
   -- then choose some `x ∈ w \ range b`,
@@ -185,7 +185,7 @@ theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal 
   -- This then expresses `x` as a linear combination
   -- of elements of `w` which are in the range of `b`,
   let u : ι ↪ w :=
-    ⟨fun i => ⟨b i, h ⟨i, rfl⟩⟩, fun i i' r =>
+    ⟨fun i ↦ ⟨b i, h ⟨i, rfl⟩⟩, fun i i' r ↦
       b.injective (by simpa only [Subtype.mk_eq_mk] using r)⟩
   simp_rw [Finsupp.linearCombination_apply] at e
   change ((b.repr x).sum fun (i : ι) (a : R) ↦ a • (u i : M)) = ((⟨x, p⟩ : w) : M) at e
@@ -199,7 +199,7 @@ theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal 
   apply q ⟨j, W⟩
 
 instance uniqueBasis [Subsingleton R] : Unique (Basis ι R M) :=
-  ⟨⟨⟨default⟩⟩, fun ⟨b⟩ => by rw [Subsingleton.elim b]⟩
+  ⟨⟨⟨default⟩⟩, fun ⟨b⟩ ↦ by rw [Subsingleton.elim b]⟩
 
 variable (b : Basis ι R M)
 
@@ -208,12 +208,12 @@ section Singleton
 /-- `Basis.singleton ι R` is the basis sending the unique element of `ι` to `1 : R`. -/
 protected def singleton (ι R : Type*) [Unique ι] [Semiring R] : Basis ι R R :=
   ofRepr
-    { toFun := fun x => Finsupp.single default x
-      invFun := fun f => f default
-      left_inv := fun x => by simp
-      right_inv := fun f => Finsupp.unique_ext (by simp)
-      map_add' := fun x y => by simp
-      map_smul' := fun c x => by simp }
+    { toFun := fun x ↦ Finsupp.single default x
+      invFun := fun f ↦ f default
+      left_inv := fun x ↦ by simp
+      right_inv := fun f ↦ Finsupp.unique_ext (by simp)
+      map_add' := fun x y ↦ by simp
+      map_smul' := fun c x ↦ by simp }
 
 @[simp]
 theorem singleton_apply (ι R : Type*) [Unique ι] [Semiring R] (i) : Basis.singleton ι R i = 1 :=
@@ -235,7 +235,7 @@ protected def empty [Subsingleton M] [IsEmpty ι] : Basis ι R M :=
 
 instance emptyUnique [Subsingleton M] [IsEmpty ι] : Unique (Basis ι R M) where
   default := Basis.empty M
-  uniq := fun _ => congr_arg ofRepr <| Subsingleton.elim _ _
+  uniq := fun _ ↦ congr_arg ofRepr <| Subsingleton.elim _ _
 
 end Empty
 
@@ -244,13 +244,13 @@ section NoZeroSMulDivisors
 -- Can't be an instance because the basis can't be inferred.
 protected theorem noZeroSMulDivisors [NoZeroDivisors R] (b : Basis ι R M) :
     NoZeroSMulDivisors R M :=
-  ⟨fun {c x} hcx => by
-    exact or_iff_not_imp_right.mpr fun hx => by
+  ⟨fun {c x} hcx ↦ by
+    exact or_iff_not_imp_right.mpr fun hx ↦ by
       rw [← b.linearCombination_repr x, ← LinearMap.map_smul,
         ← map_zero (linearCombination R b)] at hcx
       have := b.linearIndependent hcx
       rw [smul_eq_zero] at this
-      exact this.resolve_right fun hr => hx (b.repr.map_eq_zero_iff.mp hr)⟩
+      exact this.resolve_right fun hr ↦ hx (b.repr.map_eq_zero_iff.mp hr)⟩
 
 protected theorem smul_eq_zero [NoZeroDivisors R] (b : Basis ι R M) {c : R} {x : M} :
     c • x = 0 ↔ c = 0 ∨ x = 0 :=
@@ -269,12 +269,12 @@ theorem basis_singleton_iff {R M : Type*} [Ring R] [Nontrivial R] [AddCommGroup 
     simpa [span_singleton_eq_top_iff, Set.range_unique] using b.span_eq
   · rintro ⟨x, nz, w⟩
     refine ⟨ofRepr <| LinearEquiv.symm
-      { toFun := fun f => f default • x
-        invFun := fun y => Finsupp.single default (w y).choose
-        left_inv := fun f => Finsupp.unique_ext ?_
-        right_inv := fun y => ?_
-        map_add' := fun y z => ?_
-        map_smul' := fun c y => ?_ }⟩
+      { toFun := fun f ↦ f default • x
+        invFun := fun y ↦ Finsupp.single default (w y).choose
+        left_inv := fun f ↦ Finsupp.unique_ext ?_
+        right_inv := fun y ↦ ?_
+        map_add' := fun y z ↦ ?_
+        map_smul' := fun c y ↦ ?_ }⟩
     · simp [Finsupp.add_apply, add_smul]
     · simp only [Finsupp.coe_smul, Pi.smul_apply, RingHom.id_apply]
       rw [← smul_assoc]

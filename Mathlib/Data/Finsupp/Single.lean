@@ -63,7 +63,7 @@ theorem single_apply [Decidable (a = a')] : single a b a' = if a = a' then b els
 theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α) (y : M) :
     single (f x) y (f z) = single x y z := by classical simp only [single_apply, hf.eq_iff]
 
-theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b := by
+theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ ↦ b := by
   classical
   ext
   simp [single_apply, Set.indicator, @eq_comm _ a]
@@ -113,7 +113,7 @@ theorem range_single_subset : Set.range (single a b) ⊆ {0, b} :=
 
 /-- `Finsupp.single a b` is injective in `b`. For the statement that it is injective in `a`, see
 `Finsupp.single_left_injective` -/
-theorem single_injective (a : α) : Function.Injective (single a : M → α →₀ M) := fun b₁ b₂ eq => by
+theorem single_injective (a : α) : Function.Injective (single a : M → α →₀ M) := fun b₁ b₂ eq ↦ by
   have : (single a b₁ : α →₀ M) a = (single a b₂ : α →₀ M) a := by rw [eq]
   rwa [single_eq_same, single_eq_same] at this
 
@@ -127,11 +127,11 @@ theorem mem_support_single (a a' : α) (b : M) : a ∈ (single a' b).support ↔
   simp [single_apply_eq_zero]
 
 theorem eq_single_iff {f : α →₀ M} {a b} : f = single a b ↔ f.support ⊆ {a} ∧ f a = b := by
-  refine ⟨fun h => h.symm ▸ ⟨support_single_subset, single_eq_same⟩, ?_⟩
+  refine ⟨fun h ↦ h.symm ▸ ⟨support_single_subset, single_eq_same⟩, ?_⟩
   rintro ⟨h, rfl⟩
   ext x
   by_cases hx : a = x <;> simp only [hx, single_eq_same, single_eq_of_ne, Ne, not_false_iff]
-  exact notMem_support_iff.1 (mt (fun hx => (mem_singleton.1 (h hx)).symm) hx)
+  exact notMem_support_iff.1 (mt (fun hx ↦ (mem_singleton.1 (h hx)).symm) hx)
 
 theorem single_eq_single_iff (a₁ a₂ : α) (b₁ b₂ : M) :
     single a₁ b₁ = single a₂ b₂ ↔ a₁ = a₂ ∧ b₁ = b₂ ∨ b₁ = 0 ∧ b₂ = 0 := by
@@ -151,8 +151,8 @@ theorem single_eq_single_iff (a₁ a₂ : α) (b₁ b₂ : M) :
 
 /-- `Finsupp.single a b` is injective in `a`. For the statement that it is injective in `b`, see
 `Finsupp.single_injective` -/
-theorem single_left_injective (h : b ≠ 0) : Function.Injective fun a : α => single a b :=
-  fun _a _a' H => (((single_eq_single_iff _ _ _ _).mp H).resolve_right fun hb => h hb.1).left
+theorem single_left_injective (h : b ≠ 0) : Function.Injective fun a : α ↦ single a b :=
+  fun _a _a' H ↦ (((single_eq_single_iff _ _ _ _).mp H).resolve_right fun hb ↦ h hb.1).left
 
 theorem single_left_inj (h : b ≠ 0) : single a b = single a' b ↔ a = a' :=
   (single_left_injective h).eq_iff
@@ -200,17 +200,17 @@ lemma apply_single' [Zero N] [Zero P] (e : N → P) (he : e 0 = 0) (a : α) (n :
 
 theorem support_eq_singleton {f : α →₀ M} {a : α} :
     f.support = {a} ↔ f a ≠ 0 ∧ f = single a (f a) :=
-  ⟨fun h =>
+  ⟨fun h ↦
     ⟨mem_support_iff.1 <| h.symm ▸ Finset.mem_singleton_self a,
       eq_single_iff.2 ⟨subset_of_eq h, rfl⟩⟩,
-    fun h => h.2.symm ▸ support_single_ne_zero _ h.1⟩
+    fun h ↦ h.2.symm ▸ support_single_ne_zero _ h.1⟩
 
 theorem support_eq_singleton' {f : α →₀ M} {a : α} :
     f.support = {a} ↔ ∃ b ≠ 0, f = single a b :=
-  ⟨fun h =>
+  ⟨fun h ↦
     let h := support_eq_singleton.1 h
     ⟨_, h.1, h.2⟩,
-    fun ⟨_b, hb, hf⟩ => hf.symm ▸ support_single_ne_zero _ hb⟩
+    fun ⟨_b, hb, hf⟩ ↦ hf.symm ▸ support_single_ne_zero _ hb⟩
 
 theorem card_support_eq_one {f : α →₀ M} :
     #f.support = 1 ↔ ∃ a, f a ≠ 0 ∧ f = single a (f a) := by
@@ -221,10 +221,10 @@ theorem card_support_eq_one' {f : α →₀ M} :
   simp only [card_eq_one, support_eq_singleton']
 
 theorem support_subset_singleton {f : α →₀ M} {a : α} : f.support ⊆ {a} ↔ f = single a (f a) :=
-  ⟨fun h => eq_single_iff.mpr ⟨h, rfl⟩, fun h => (eq_single_iff.mp h).left⟩
+  ⟨fun h ↦ eq_single_iff.mpr ⟨h, rfl⟩, fun h ↦ (eq_single_iff.mp h).left⟩
 
 theorem support_subset_singleton' {f : α →₀ M} {a : α} : f.support ⊆ {a} ↔ ∃ b, f = single a b :=
-  ⟨fun h => ⟨f a, support_subset_singleton.mp h⟩, fun ⟨b, hb⟩ => by
+  ⟨fun h ↦ ⟨f a, support_subset_singleton.mp h⟩, fun ⟨b, hb⟩ ↦ by
     rw [hb, support_subset_singleton, single_eq_same]⟩
 
 theorem card_support_le_one [Nonempty α] {f : α →₀ M} :
@@ -363,7 +363,7 @@ def erase (a : α) (f : α →₀ M) : α →₀ M where
     classical
     rw [mem_erase, mem_support_iff]; dsimp
     split_ifs with h
-    · exact ⟨fun H _ => H.1 h, fun H => (H rfl).elim⟩
+    · exact ⟨fun H _ ↦ H.1 h, fun H ↦ (H rfl).elim⟩
     · exact and_iff_right h
 
 @[simp]
@@ -411,7 +411,7 @@ theorem erase_zero (a : α) : erase a (0 : α →₀ M) = 0 := by
 
 theorem erase_eq_update_zero (f : α →₀ M) (a : α) : f.erase a = update f a 0 :=
   letI := Classical.decEq α
-  ext fun _ => (Function.update_apply _ _ _ _).symm
+  ext fun _ ↦ (Function.update_apply _ _ _ _).symm
 
 -- The name matches `Finset.erase_insert_of_ne`
 theorem erase_update_of_ne (f : α →₀ M) {a a' : α} (ha : a ≠ a') (b : M) :
@@ -442,8 +442,8 @@ variable [Zero M] [Zero N] [Zero P]
 @[simp]
 theorem mapRange_single {f : M → N} {hf : f 0 = 0} {a : α} {b : M} :
     mapRange f hf (single a b) = single a (f b) :=
-  ext fun a' => by
-    classical simpa only [single_eq_pi_single] using Pi.apply_single _ (fun _ => hf) a _ a'
+  ext fun a' ↦ by
+    classical simpa only [single_eq_pi_single] using Pi.apply_single _ (fun _ ↦ hf) a _ a'
 
 end MapRange
 

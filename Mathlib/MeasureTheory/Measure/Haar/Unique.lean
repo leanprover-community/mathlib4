@@ -1010,7 +1010,7 @@ instance (priority := 100) IsHaarMeasure.isInvInvariant_of_innerRegular
 
 @[to_additive]
 theorem measurePreserving_zpow [CompactSpace G] [RootableBy G ℤ] {n : ℤ} (hn : n ≠ 0) :
-    MeasurePreserving (fun g : G => g ^ n) μ μ :=
+    MeasurePreserving (fun g : G ↦ g ^ n) μ μ :=
   (zpowGroupHom n).measurePreserving (μ := μ) (continuous_zpow n)
     (RootableBy.surjective_pow G ℤ hn) rfl
 
@@ -1018,7 +1018,7 @@ theorem measurePreserving_zpow [CompactSpace G] [RootableBy G ℤ] {n : ℤ} (hn
 theorem MeasurePreserving.zpow [CompactSpace G] [RootableBy G ℤ]
     {n : ℤ} (hn : n ≠ 0) {X : Type*}
     [MeasurableSpace X] {μ' : Measure X} {f : X → G} (hf : MeasurePreserving f μ' μ) :
-    MeasurePreserving (fun x => f x ^ n) μ' μ :=
+    MeasurePreserving (fun x ↦ f x ^ n) μ' μ :=
   (measurePreserving_zpow μ hn).comp hf
 
 end CommGroup

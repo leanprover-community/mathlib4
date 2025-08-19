@@ -91,7 +91,7 @@ def hσ (q : ℕ) (n : ℕ) : X _⦋n⦌ ⟶ X _⦋n + 1⦌ :=
   if n < q then 0 else (-1 : ℤ) ^ (n - q) • X.σ ⟨n - q, Nat.lt_succ_of_le (Nat.sub_le _ _)⟩
 
 /-- We can turn `hσ` into a datum that can be passed to `nullHomotopicMap'`. -/
-def hσ' (q : ℕ) : ∀ n m, c.Rel m n → (K[X].X n ⟶ K[X].X m) := fun n m hnm =>
+def hσ' (q : ℕ) : ∀ n m, c.Rel m n → (K[X].X n ⟶ K[X].X m) := fun n m hnm ↦
   hσ q n ≫ eqToHom (by congr)
 
 theorem hσ'_eq_zero {q n m : ℕ} (hnq : n < q) (hnm : c.Rel m n) :

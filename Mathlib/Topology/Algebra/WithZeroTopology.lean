@@ -56,10 +56,10 @@ theorem nhds_zero : 𝓝 (0 : Γ₀) = ⨅ γ ≠ 0, 𝓟 (Iio γ) := by
 
 /-- In a linearly ordered group with zero element adjoined, `U` is a neighbourhood of `0` if and
 only if there exists a nonzero element `γ₀` such that `Iio γ₀ ⊆ U`. -/
-theorem hasBasis_nhds_zero : (𝓝 (0 : Γ₀)).HasBasis (fun γ : Γ₀ => γ ≠ 0) Iio := by
+theorem hasBasis_nhds_zero : (𝓝 (0 : Γ₀)).HasBasis (fun γ : Γ₀ ↦ γ ≠ 0) Iio := by
   rw [nhds_zero]
   refine hasBasis_biInf_principal ?_ ⟨1, one_ne_zero⟩
-  exact directedOn_iff_directed.2 (Monotone.directed_ge fun a b hab => Iio_subset_Iio hab)
+  exact directedOn_iff_directed.2 (Monotone.directed_ge fun a b hab ↦ Iio_subset_Iio hab)
 
 theorem Iio_mem_nhds_zero (hγ : γ ≠ 0) : Iio γ ∈ 𝓝 (0 : Γ₀) :=
   hasBasis_nhds_zero.mem_of_mem hγ
@@ -96,12 +96,12 @@ is a neighbourhood of `γ`. -/
 theorem singleton_mem_nhds_of_ne_zero (h : γ ≠ 0) : ({γ} : Set Γ₀) ∈ 𝓝 (γ : Γ₀) := by simp [h]
 
 theorem hasBasis_nhds_of_ne_zero {x : Γ₀} (h : x ≠ 0) :
-    HasBasis (𝓝 x) (fun _ : Unit => True) fun _ => {x} := by
+    HasBasis (𝓝 x) (fun _ : Unit ↦ True) fun _ ↦ {x} := by
   rw [nhds_of_ne_zero h]
   exact hasBasis_pure _
 
 theorem hasBasis_nhds_units (γ : Γ₀ˣ) :
-    HasBasis (𝓝 (γ : Γ₀)) (fun _ : Unit => True) fun _ => {↑γ} :=
+    HasBasis (𝓝 (γ : Γ₀)) (fun _ : Unit ↦ True) fun _ ↦ {↑γ} :=
   hasBasis_nhds_of_ne_zero γ.ne_zero
 
 theorem tendsto_of_ne_zero {γ : Γ₀} (h : γ ≠ 0) : Tendsto f l (𝓝 γ) ↔ ∀ᶠ x in l, f x = γ := by
@@ -127,7 +127,7 @@ theorem isClosed_iff {s : Set Γ₀} : IsClosed s ↔ (0 : Γ₀) ∈ s ∨ ∃ 
     compl_subset_compl]
 
 theorem isOpen_Iio {a : Γ₀} : IsOpen (Iio a) :=
-  isOpen_iff.mpr <| imp_iff_not_or.mp fun ha => ⟨a, ne_of_gt ha, Subset.rfl⟩
+  isOpen_iff.mpr <| imp_iff_not_or.mp fun ha ↦ ⟨a, ne_of_gt ha, Subset.rfl⟩
 
 /-!
 ### Instances
@@ -146,9 +146,9 @@ scoped instance (priority := 100) orderClosedTopology : OrderClosedTopology Γ�
 /-- The topology on a linearly ordered group with zero element adjoined is T₅. -/
 @[nolint defLemma]
 scoped instance (priority := 100) t5Space : T5Space Γ₀ where
-  completely_normal := fun s t h₁ h₂ => by
+  completely_normal := fun s t h₁ h₂ ↦ by
     by_cases hs : 0 ∈ s
-    · have ht : 0 ∉ t := fun ht => disjoint_left.1 h₁ (subset_closure hs) ht
+    · have ht : 0 ∉ t := fun ht ↦ disjoint_left.1 h₁ (subset_closure hs) ht
       rwa [(isOpen_iff.2 (.inl ht)).nhdsSet_eq, disjoint_nhdsSet_principal]
     · rwa [(isOpen_iff.2 (.inl hs)).nhdsSet_eq, disjoint_principal_nhdsSet]
 
@@ -165,12 +165,12 @@ scoped instance (priority := 100) : ContinuousMul Γ₀ where
     rcases eq_or_ne x 0 with (rfl | hx) <;> [rcases eq_or_ne y 0 with (rfl | hy); skip]
     · rw [zero_mul]
       refine ((hasBasis_nhds_zero.prod_nhds hasBasis_nhds_zero).tendsto_iff hasBasis_nhds_zero).2
-        fun γ hγ => ⟨(γ, 1), ⟨hγ, one_ne_zero⟩, ?_⟩
+        fun γ hγ ↦ ⟨(γ, 1), ⟨hγ, one_ne_zero⟩, ?_⟩
       rintro ⟨x, y⟩ ⟨hx : x < γ, hy : y < 1⟩
       exact (mul_lt_mul'' hx hy zero_le' zero_le').trans_eq (mul_one γ)
     · rw [zero_mul, nhds_prod_eq, nhds_of_ne_zero hy, prod_pure, tendsto_map'_iff]
-      refine (hasBasis_nhds_zero.tendsto_iff hasBasis_nhds_zero).2 fun γ hγ => ?_
-      refine ⟨γ / y, div_ne_zero hγ hy, fun x hx => ?_⟩
+      refine (hasBasis_nhds_zero.tendsto_iff hasBasis_nhds_zero).2 fun γ hγ ↦ ?_
+      refine ⟨γ / y, div_ne_zero hγ hy, fun x hx ↦ ?_⟩
       calc x * y < γ / y * y := mul_lt_mul_of_pos_right hx (zero_lt_iff.2 hy)
       _ = γ := div_mul_cancel₀ _ hy
     · have hy : y ≠ 0 := ((zero_lt_iff.mpr hx).trans_le hle).ne'
@@ -179,7 +179,7 @@ scoped instance (priority := 100) : ContinuousMul Γ₀ where
 
 @[nolint defLemma]
 scoped instance (priority := 100) : HasContinuousInv₀ Γ₀ :=
-  ⟨fun γ h => by
+  ⟨fun γ h ↦ by
     rw [ContinuousAt, nhds_of_ne_zero h]
     exact pure_le_nhds γ⁻¹⟩
 

@@ -11,7 +11,7 @@ import Mathlib.Probability.ConditionalProbability
 # Kernel associated with a conditional expectation
 
 We define `condExpKernel μ m`, a kernel from `Ω` to `Ω` such that for all integrable functions `f`,
-`μ[f | m] =ᵐ[μ] fun ω => ∫ y, f y ∂(condExpKernel μ m ω)`.
+`μ[f | m] =ᵐ[μ] fun ω ↦ ∫ y, f y ∂(condExpKernel μ m ω)`.
 
 This kernel is defined if `Ω` is a standard Borel space. In general, `μ⟦s | m⟧` maps a measurable
 set `s` to a function `Ω → ℝ≥0∞`, and for all `s` that map is unique up to a `μ`-null set. For all
@@ -22,11 +22,11 @@ on `Ω` allows us to do so.
 
 ## Main definitions
 
-* `condExpKernel μ m`: kernel such that `μ[f | m] =ᵐ[μ] fun ω => ∫ y, f y ∂(condExpKernel μ m ω)`.
+* `condExpKernel μ m`: kernel such that `μ[f | m] =ᵐ[μ] fun ω ↦ ∫ y, f y ∂(condExpKernel μ m ω)`.
 
 ## Main statements
 
-* `condExp_ae_eq_integral_condExpKernel`: `μ[f | m] =ᵐ[μ] fun ω => ∫ y, f y ∂(condExpKernel μ m ω)`.
+* `condExp_ae_eq_integral_condExpKernel`: `μ[f | m] =ᵐ[μ] fun ω ↦ ∫ y, f y ∂(condExpKernel μ m ω)`.
 
 -/
 
@@ -43,15 +43,15 @@ variable {Ω F : Type*} {m mΩ : MeasurableSpace Ω} {μ : Measure Ω} {f : Ω �
 
 theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prod_id [TopologicalSpace F]
     (hm : m ≤ mΩ) (hf : AEStronglyMeasurable f μ) :
-    AEStronglyMeasurable[m.prod mΩ] (fun x : Ω × Ω => f x.2)
-      (@Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) (fun ω => (id ω, id ω)) μ) := by
+    AEStronglyMeasurable[m.prod mΩ] (fun x : Ω × Ω ↦ f x.2)
+      (@Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) (fun ω ↦ (id ω, id ω)) μ) := by
   rw [← aestronglyMeasurable_comp_snd_map_prodMk_iff (measurable_id'' hm)] at hf
   simp_rw [id] at hf ⊢
   exact hf
 
 theorem _root_.MeasureTheory.Integrable.comp_snd_map_prod_id [NormedAddCommGroup F] (hm : m ≤ mΩ)
-    (hf : Integrable f μ) : Integrable (fun x : Ω × Ω => f x.2)
-      (@Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) (fun ω => (id ω, id ω)) μ) := by
+    (hf : Integrable f μ) : Integrable (fun x : Ω × Ω ↦ f x.2)
+      (@Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) (fun ω ↦ (id ω, id ω)) μ) := by
   rw [← integrable_comp_snd_map_prodMk_iff (measurable_id'' hm)] at hf
   simp_rw [id] at hf ⊢
   exact hf
@@ -63,7 +63,7 @@ variable {Ω F : Type*} {m : MeasurableSpace Ω} [mΩ : MeasurableSpace Ω]
 
 open Classical in
 /-- Kernel associated with the conditional expectation with respect to a σ-algebra. It satisfies
-`μ[f | m] =ᵐ[μ] fun ω => ∫ y, f y ∂(condExpKernel μ m ω)`.
+`μ[f | m] =ᵐ[μ] fun ω ↦ ∫ y, f y ∂(condExpKernel μ m ω)`.
 It is defined as the conditional distribution of the identity given the identity, where the second
 identity is understood as a map from `Ω` with the σ-algebra `mΩ` to `Ω` with σ-algebra `m ⊓ mΩ`.
 We use `m ⊓ mΩ` instead of `m` to ensure that it is a sub-σ-algebra of `mΩ`. We then use
@@ -113,7 +113,7 @@ section Measurability
 variable [NormedAddCommGroup F] {f : Ω → F}
 
 theorem measurable_condExpKernel {s : Set Ω} (hs : MeasurableSet s) :
-    Measurable[m] fun ω => condExpKernel μ m ω s := by
+    Measurable[m] fun ω ↦ condExpKernel μ m ω s := by
   nontriviality Ω
   simp_rw [condExpKernel_apply_eq_condDistrib]
   refine Measurable.mono ?_ (inf_le_left : m ⊓ mΩ ≤ m) le_rfl
@@ -121,7 +121,7 @@ theorem measurable_condExpKernel {s : Set Ω} (hs : MeasurableSet s) :
   rw [MeasurableSpace.comap_id]
 
 theorem stronglyMeasurable_condExpKernel {s : Set Ω} (hs : MeasurableSet s) :
-    StronglyMeasurable[m] fun ω => condExpKernel μ m ω s :=
+    StronglyMeasurable[m] fun ω ↦ condExpKernel μ m ω s :=
   Measurable.stronglyMeasurable (measurable_condExpKernel hs)
 
 theorem _root_.MeasureTheory.StronglyMeasurable.integral_condExpKernel' [NormedSpace ℝ F]
@@ -138,7 +138,7 @@ theorem _root_.MeasureTheory.StronglyMeasurable.integral_condExpKernel [NormedSp
 
 theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_condExpKernel [NormedSpace ℝ F]
     (hf : AEStronglyMeasurable f μ) :
-    AEStronglyMeasurable (fun ω => ∫ y, f y ∂condExpKernel μ m ω) μ := by
+    AEStronglyMeasurable (fun ω ↦ ∫ y, f y ∂condExpKernel μ m ω) μ := by
   nontriviality Ω
   simp_rw [condExpKernel_apply_eq_condDistrib]
   exact AEStronglyMeasurable.integral_condDistrib
@@ -147,7 +147,7 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_condExpKernel [Normed
 
 theorem aestronglyMeasurable_integral_condExpKernel [NormedSpace ℝ F]
     (hf : AEStronglyMeasurable f μ) :
-    AEStronglyMeasurable[m] (fun ω => ∫ y, f y ∂condExpKernel μ m ω) μ := by
+    AEStronglyMeasurable[m] (fun ω ↦ ∫ y, f y ∂condExpKernel μ m ω) μ := by
   nontriviality Ω
   rw [condExpKernel_eq]
   have h := aestronglyMeasurable_integral_condDistrib
@@ -177,7 +177,7 @@ theorem _root_.MeasureTheory.Integrable.condExpKernel_ae (hf_int : Integrable f 
     (hf_int.comp_snd_map_prod_id (inf_le_right : m ⊓ mΩ ≤ mΩ)) using 1
 
 theorem _root_.MeasureTheory.Integrable.integral_norm_condExpKernel (hf_int : Integrable f μ) :
-    Integrable (fun ω => ∫ y, ‖f y‖ ∂condExpKernel μ m ω) μ := by
+    Integrable (fun ω ↦ ∫ y, ‖f y‖ ∂condExpKernel μ m ω) μ := by
   nontriviality Ω
   rw [condExpKernel_eq]
   convert Integrable.integral_norm_condDistrib
@@ -186,7 +186,7 @@ theorem _root_.MeasureTheory.Integrable.integral_norm_condExpKernel (hf_int : In
 
 theorem _root_.MeasureTheory.Integrable.norm_integral_condExpKernel [NormedSpace ℝ F]
     (hf_int : Integrable f μ) :
-    Integrable (fun ω => ‖∫ y, f y ∂condExpKernel μ m ω‖) μ := by
+    Integrable (fun ω ↦ ‖∫ y, f y ∂condExpKernel μ m ω‖) μ := by
   nontriviality Ω
   rw [condExpKernel_eq]
   convert Integrable.norm_integral_condDistrib
@@ -195,7 +195,7 @@ theorem _root_.MeasureTheory.Integrable.norm_integral_condExpKernel [NormedSpace
 
 theorem _root_.MeasureTheory.Integrable.integral_condExpKernel [NormedSpace ℝ F]
     (hf_int : Integrable f μ) :
-    Integrable (fun ω => ∫ y, f y ∂condExpKernel μ m ω) μ := by
+    Integrable (fun ω ↦ ∫ y, f y ∂condExpKernel μ m ω) μ := by
   nontriviality Ω
   rw [condExpKernel_eq]
   convert Integrable.integral_condDistrib
@@ -203,7 +203,7 @@ theorem _root_.MeasureTheory.Integrable.integral_condExpKernel [NormedSpace ℝ 
     (hf_int.comp_snd_map_prod_id (inf_le_right : m ⊓ mΩ ≤ mΩ)) using 1
 
 theorem integrable_toReal_condExpKernel {s : Set Ω} (hs : MeasurableSet s) :
-    Integrable (fun ω => (condExpKernel μ m ω).real s) μ := by
+    Integrable (fun ω ↦ (condExpKernel μ m ω).real s) μ := by
   nontriviality Ω
   rw [condExpKernel_eq]
   exact integrable_toReal_condDistrib (aemeasurable_id'' μ (inf_le_right : m ⊓ mΩ ≤ mΩ)) hs
@@ -236,7 +236,7 @@ lemma condExpKernel_ae_eq_trim_condExp
 
 theorem condExp_ae_eq_integral_condExpKernel' [NormedAddCommGroup F] {f : Ω → F}
     [NormedSpace ℝ F] [CompleteSpace F] (hf_int : Integrable f μ) :
-    μ[f|m ⊓ mΩ] =ᵐ[μ] fun ω => ∫ y, f y ∂condExpKernel μ m ω := by
+    μ[f|m ⊓ mΩ] =ᵐ[μ] fun ω ↦ ∫ y, f y ∂condExpKernel μ m ω := by
   rcases isEmpty_or_nonempty Ω with h | h
   · have : μ = 0 := Measure.eq_zero_of_isEmpty μ
     simpa [this] using trivial
@@ -249,7 +249,7 @@ theorem condExp_ae_eq_integral_condExpKernel' [NormedAddCommGroup F] {f : Ω →
 the integral `∫ y, f y ∂(condExpKernel μ m ω)`. -/
 theorem condExp_ae_eq_integral_condExpKernel [NormedAddCommGroup F] {f : Ω → F}
     [NormedSpace ℝ F] [CompleteSpace F] (hm : m ≤ mΩ) (hf_int : Integrable f μ) :
-    μ[f|m] =ᵐ[μ] fun ω => ∫ y, f y ∂condExpKernel μ m ω :=
+    μ[f|m] =ᵐ[μ] fun ω ↦ ∫ y, f y ∂condExpKernel μ m ω :=
   ((condExp_ae_eq_integral_condExpKernel' hf_int).symm.trans (by rw [inf_of_le_left hm])).symm
 
 /-- Auxiliary lemma for `condExp_ae_eq_trim_integral_condExpKernel`. -/

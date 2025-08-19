@@ -96,7 +96,7 @@ theorem isLocallySurjective_iff_range_sheafify_eq_top {F G : Cᵒᵖ ⥤ A} (f :
     IsLocallySurjective J f ↔ (Subpresheaf.range (whiskerRight f (forget A))).sheafify J = ⊤ := by
   simp only [Subpresheaf.ext_iff, funext_iff, Set.ext_iff, Subpresheaf.top_obj,
     Set.top_eq_univ, Set.mem_univ, iff_true]
-  exact ⟨fun H _ => H.imageSieve_mem, fun H => ⟨H _⟩⟩
+  exact ⟨fun H _ ↦ H.imageSieve_mem, fun H ↦ ⟨H _⟩⟩
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 theorem isLocallySurjective_iff_range_sheafify_eq_top' {F G : Cᵒᵖ ⥤ Type w} (f : F ⟶ G) :
@@ -128,7 +128,7 @@ instance isLocallySurjective_comp {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} (f₁ : F₁ 
     [IsLocallySurjective J f₁] [IsLocallySurjective J f₂] :
     IsLocallySurjective J (f₁ ≫ f₂) where
   imageSieve_mem s := by
-    have : (Sieve.bind (imageSieve f₂ s) fun _ _ h => imageSieve f₁ h.choose) ≤
+    have : (Sieve.bind (imageSieve f₂ s) fun _ _ h ↦ imageSieve f₁ h.choose) ≤
         imageSieve (f₁ ≫ f₂) s := by
       rintro V i ⟨W, i, j, H, ⟨t', ht'⟩, rfl⟩
       refine ⟨t', ?_⟩
@@ -186,7 +186,7 @@ lemma isLocallyInjective_of_isLocallyInjective_of_isLocallySurjective
     have hS : S ∈ J X.unop := by
       apply J.intersection_covering
       all_goals apply imageSieve_mem
-    let T : ∀ ⦃Y : C⦄ (f : Y ⟶ X.unop) (_ : S f), Sieve Y := fun Y f hf =>
+    let T : ∀ ⦃Y : C⦄ (f : Y ⟶ X.unop) (_ : S f), Sieve Y := fun Y f hf ↦
       equalizerSieve (localPreimage f₁ x₁ f hf.1) (localPreimage f₁ x₂ f hf.2)
     refine J.superset_covering ?_ (J.transitive hS (Sieve.bind S.1 T) ?_)
     · rintro Y f ⟨Z, a, g, hg, ha, rfl⟩
@@ -211,7 +211,7 @@ lemma isLocallySurjective_of_isLocallySurjective_of_isLocallyInjective
     IsLocallySurjective J f₁ where
   imageSieve_mem {X} x := by
     let S := imageSieve (f₁ ≫ f₂) (f₂.app _ x)
-    let T : ∀ ⦃Y : C⦄ (f : Y ⟶ X) (_ : S f), Sieve Y := fun Y f hf =>
+    let T : ∀ ⦃Y : C⦄ (f : Y ⟶ X) (_ : S f), Sieve Y := fun Y f hf ↦
       equalizerSieve (f₁.app _ (localPreimage (f₁ ≫ f₂) (f₂.app _ x) f hf)) (F₂.map f.op x)
     refine J.superset_covering ?_ (J.transitive (imageSieve_mem J (f₁ ≫ f₂) (f₂.app _ x))
       (Sieve.bind S.1 T) ?_)
@@ -286,7 +286,7 @@ instance isLocallySurjective_toPlus (P : Cᵒᵖ ⥤ Type max u v) :
     IsLocallySurjective J (J.toPlus P) where
   imageSieve_mem x := by
     obtain ⟨S, x, rfl⟩ := exists_rep x
-    refine J.superset_covering (fun Y f hf => ⟨x.1 ⟨Y, f, hf⟩, ?_⟩) S.2
+    refine J.superset_covering (fun Y f hf ↦ ⟨x.1 ⟨Y, f, hf⟩, ?_⟩) S.2
     dsimp
     rw [toPlus_eq_mk, res_mk_eq_mk_pullback, eq_mk_iff_exists]
     refine ⟨S.pullback f, homOfLE le_top, 𝟙 _, ?_⟩
@@ -399,12 +399,12 @@ which sends a map in this sieve to an arbitrary choice of a preimage of the
 restriction of `r'`. -/
 noncomputable def localPreimage :
     FamilyOfElements R (Presheaf.imageSieve φ r').arrows :=
-  fun _ f hf => Presheaf.localPreimage φ r' f hf
+  fun _ f hf ↦ Presheaf.localPreimage φ r' f hf
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma isAmalgamation_map_localPreimage :
     ((localPreimage φ r').map φ).IsAmalgamation r' :=
-  fun _ f hf => (Presheaf.app_localPreimage φ r' f hf).symm
+  fun _ f hf ↦ (Presheaf.app_localPreimage φ r' f hf).symm
 
 end Presieve.FamilyOfElements
 

@@ -155,8 +155,8 @@ def dual : Preord ⥤ Preord where
 def dualEquiv : Preord ≌ Preord where
   functor := dual
   inverse := dual
-  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
-  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  unitIso := NatIso.ofComponents fun X ↦ Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X ↦ Iso.mk <| OrderIso.dualDual X
 
 end Preord
 

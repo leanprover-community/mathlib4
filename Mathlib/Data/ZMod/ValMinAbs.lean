@@ -57,7 +57,7 @@ lemma valMinAbs_mul_two_eq_iff (a : ZMod n) : a.valMinAbs * 2 = n ↔ 2 * a.val 
     rw [← a.valMinAbs_nonneg_iff, ← mul_nonneg_iff_left_nonneg_of_pos, he] at h
     exacts [h (Nat.cast_nonneg _), zero_lt_two]
   · rw [mul_comm]
-    exact fun h => (Nat.le_div_iff_mul_le zero_lt_two).2 h.le
+    exact fun h ↦ (Nat.le_div_iff_mul_le zero_lt_two).2 h.le
 
 lemma valMinAbs_mem_Ioc [NeZero n] (x : ZMod n) : x.valMinAbs * 2 ∈ Set.Ioc (-n : ℤ) n := by
   simp_rw [valMinAbs_def_pos, Nat.le_div_two_iff_mul_two_le]; split_ifs with h
@@ -159,7 +159,7 @@ lemma valMinAbs_natCast_of_half_lt (ha : n / 2 < a) (ha' : a < n) :
 
 @[simp]
 lemma valMinAbs_natCast_eq_self [NeZero n] : (a : ZMod n).valMinAbs = a ↔ a ≤ n / 2 := by
-  refine ⟨fun ha => ?_, valMinAbs_natCast_of_le_half⟩
+  refine ⟨fun ha ↦ ?_, valMinAbs_natCast_of_le_half⟩
   rw [← Int.natAbs_natCast a, ← ha]
   exact natAbs_valMinAbs_le (n := n) a
 

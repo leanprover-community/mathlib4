@@ -197,7 +197,7 @@ theorem mul_lt_top : a < ∞ → b < ∞ → a * b < ∞ := WithTop.mul_lt_top
 theorem mul_ne_top : a ≠ ∞ → b ≠ ∞ → a * b ≠ ∞ := WithTop.mul_ne_top
 
 theorem lt_top_of_mul_ne_top_left (h : a * b ≠ ∞) (hb : b ≠ 0) : a < ∞ :=
-  lt_top_iff_ne_top.2 fun ha => h <| mul_eq_top.2 (Or.inr ⟨ha, hb⟩)
+  lt_top_iff_ne_top.2 fun ha ↦ h <| mul_eq_top.2 (Or.inr ⟨ha, hb⟩)
 
 theorem lt_top_of_mul_ne_top_right (h : a * b ≠ ∞) (ha : a ≠ 0) : b < ∞ :=
   lt_top_of_mul_ne_top_left (by rwa [mul_comm]) ha
@@ -289,7 +289,7 @@ end Cancel
 section Sub
 
 theorem sub_eq_sInf {a b : ℝ≥0∞} : a - b = sInf { d | a ≤ d + b } :=
-  le_antisymm (le_sInf fun _ h => tsub_le_iff_right.mpr h) <| sInf_le <| mem_setOf.2 le_tsub_add
+  le_antisymm (le_sInf fun _ h ↦ tsub_le_iff_right.mpr h) <| sInf_le <| mem_setOf.2 le_tsub_add
 
 /-- This is a special case of `WithTop.coe_sub` in the `ENNReal` namespace -/
 @[simp, norm_cast] theorem coe_sub : (↑(r - p) : ℝ≥0∞) = ↑r - ↑p := WithTop.coe_sub
@@ -373,7 +373,7 @@ lemma add_sub_add_eq_sub_left (hc : c ≠ ∞ := by finiteness) : (c + a) - (c +
 protected theorem lt_add_of_sub_lt_left (h : a ≠ ∞ ∨ b ≠ ∞) : a - b < c → a < b + c := by
   obtain rfl | hb := eq_or_ne b ∞
   · rw [top_add, lt_top_iff_ne_top]
-    exact fun _ => h.resolve_right (Classical.not_not.2 rfl)
+    exact fun _ ↦ h.resolve_right (Classical.not_not.2 rfl)
   · exact (cancel_of_ne hb).lt_add_of_tsub_lt_left
 
 protected theorem lt_add_of_sub_lt_right (h : a ≠ ∞ ∨ c ≠ ∞) : a - c < b → a < b + c :=
@@ -461,10 +461,10 @@ variable {x y z : ℝ≥0∞} {ε ε₁ ε₂ : ℝ≥0∞} {s : Set ℝ≥0∞}
 protected theorem Ico_eq_Iio : Ico 0 y = Iio y :=
   Ico_bot
 
-theorem mem_Iio_self_add : x ≠ ∞ → ε ≠ 0 → x ∈ Iio (x + ε) := fun xt ε0 => lt_add_right xt ε0
+theorem mem_Iio_self_add : x ≠ ∞ → ε ≠ 0 → x ∈ Iio (x + ε) := fun xt ε0 ↦ lt_add_right xt ε0
 
 theorem mem_Ioo_self_sub_add : x ≠ ∞ → x ≠ 0 → ε₁ ≠ 0 → ε₂ ≠ 0 → x ∈ Ioo (x - ε₁) (x + ε₂) :=
-  fun xt x0 ε0 ε0' => ⟨ENNReal.sub_lt_self xt x0 ε0, lt_add_right xt ε0'⟩
+  fun xt x0 ε0 ε0' ↦ ⟨ENNReal.sub_lt_self xt x0 ε0, lt_add_right xt ε0'⟩
 
 @[simp]
 theorem image_coe_Iic (x : ℝ≥0) : (↑) '' Iic x = Iic (x : ℝ≥0∞) := WithTop.image_coe_Iic
@@ -514,7 +514,7 @@ theorem toNNReal_iInf (hf : ∀ i, f i ≠ ∞) : (iInf f).toNNReal = ⨅ i, (f 
 
 theorem toNNReal_sInf (s : Set ℝ≥0∞) (hs : ∀ r ∈ s, r ≠ ∞) :
     (sInf s).toNNReal = sInf (ENNReal.toNNReal '' s) := by
-  have hf : ∀ i, ((↑) : s → ℝ≥0∞) i ≠ ∞ := fun ⟨r, rs⟩ => hs r rs
+  have hf : ∀ i, ((↑) : s → ℝ≥0∞) i ≠ ∞ := fun ⟨r, rs⟩ ↦ hs r rs
   simpa only [← sInf_range, ← image_eq_range, Subtype.range_coe_subtype] using (toNNReal_iInf hf)
 
 theorem toReal_iInf (hf : ∀ i, f i ≠ ∞) : (iInf f).toReal = ⨅ i, (f i).toReal := by
@@ -538,11 +538,11 @@ theorem toReal_sInf (s : Set ℝ≥0∞) (hf : ∀ r ∈ s, r ≠ ∞) :
   · exact Real.iInf_nonneg h
 
 theorem iInf_add : iInf f + a = ⨅ i, f i + a :=
-  le_antisymm (le_iInf fun _ => add_le_add (iInf_le _ _) <| le_rfl)
-    (tsub_le_iff_right.1 <| le_iInf fun _ => tsub_le_iff_right.2 <| iInf_le _ _)
+  le_antisymm (le_iInf fun _ ↦ add_le_add (iInf_le _ _) <| le_rfl)
+    (tsub_le_iff_right.1 <| le_iInf fun _ ↦ tsub_le_iff_right.2 <| iInf_le _ _)
 
 theorem sub_iInf : (a - ⨅ i, f i) = ⨆ i, a - f i := by
-  refine eq_of_forall_ge_iff fun c => ?_
+  refine eq_of_forall_ge_iff fun c ↦ ?_
   rw [tsub_le_iff_right, add_comm, iInf_add]
   simp [tsub_le_iff_right, add_comm]
 
@@ -553,10 +553,10 @@ theorem add_iInf {a : ℝ≥0∞} : a + iInf f = ⨅ b, a + f b := by
 
 theorem iInf_add_iInf (h : ∀ i j, ∃ k, f k + g k ≤ f i + g j) : iInf f + iInf g = ⨅ a, f a + g a :=
   suffices ⨅ a, f a + g a ≤ iInf f + iInf g from
-    le_antisymm (le_iInf fun _ => add_le_add (iInf_le _ _) (iInf_le _ _)) this
+    le_antisymm (le_iInf fun _ ↦ add_le_add (iInf_le _ _) (iInf_le _ _)) this
   calc
     ⨅ a, f a + g a ≤ ⨅ (a) (a'), f a + g a' :=
-      le_iInf₂ fun a a' => let ⟨k, h⟩ := h a a'; iInf_le_of_le k h
+      le_iInf₂ fun a a' ↦ let ⟨k, h⟩ := h a a'; iInf_le_of_le k h
     _ = iInf f + iInf g := by simp_rw [iInf_add, add_iInf]
 
 lemma iInf_add_iInf_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· ≥ ·)] {f g : ι → ℝ≥0∞}
@@ -585,7 +585,7 @@ lemma le_iInf₂_add_iInf₂ {q₁ : ι → Sort*} {q₂ : κ → Sort*}
     (h : ∀ i pi k qk, a ≤ f i pi + g k qk) :
     a ≤ (⨅ (i) (qi), f i qi) + ⨅ (k) (qk), g k qk := by
   simp_rw [iInf₂_add, add_iInf₂]
-  exact le_iInf₂ fun i hi => le_iInf₂ (h i hi)
+  exact le_iInf₂ fun i hi ↦ le_iInf₂ (h i hi)
 
 @[simp] lemma iInf_gt_eq_self (a : ℝ≥0∞) : ⨅ b, ⨅ _ : a < b, b = a := by
   refine le_antisymm ?_ (le_iInf₂ fun b hb ↦ hb.le)
@@ -613,7 +613,7 @@ theorem toNNReal_iSup (hf : ∀ i, f i ≠ ∞) : (iSup f).toNNReal = ⨆ i, (f 
 
 theorem toNNReal_sSup (s : Set ℝ≥0∞) (hs : ∀ r ∈ s, r ≠ ∞) :
     (sSup s).toNNReal = sSup (ENNReal.toNNReal '' s) := by
-  have hf : ∀ i, ((↑) : s → ℝ≥0∞) i ≠ ∞ := fun ⟨r, rs⟩ => hs r rs
+  have hf : ∀ i, ((↑) : s → ℝ≥0∞) i ≠ ∞ := fun ⟨r, rs⟩ ↦ hs r rs
   simpa only [← sSup_range, ← image_eq_range, Subtype.range_coe_subtype] using (toNNReal_iSup hf)
 
 theorem toReal_iSup (hf : ∀ i, f i ≠ ∞) : (iSup f).toReal = ⨆ i, (f i).toReal := by
@@ -624,15 +624,15 @@ theorem toReal_sSup (s : Set ℝ≥0∞) (hf : ∀ r ∈ s, r ≠ ∞) :
   simp only [ENNReal.toReal, toNNReal_sSup s hf, NNReal.coe_sSup, Set.image_image]
 
 theorem iSup_sub : (⨆ i, f i) - a = ⨆ i, f i - a :=
-  le_antisymm (tsub_le_iff_right.2 <| iSup_le fun i => tsub_le_iff_right.1 <| le_iSup (f · - a) i)
-    (iSup_le fun _ => tsub_le_tsub (le_iSup _ _) (le_refl a))
+  le_antisymm (tsub_le_iff_right.2 <| iSup_le fun i ↦ tsub_le_iff_right.1 <| le_iSup (f · - a) i)
+    (iSup_le fun _ ↦ tsub_le_tsub (le_iSup _ _) (le_refl a))
 
 @[simp] lemma iSup_eq_zero : ⨆ i, f i = 0 ↔ ∀ i, f i = 0 := iSup_eq_bot
 
 @[simp] lemma iSup_zero : ⨆ _ : ι, (0 : ℝ≥0∞) = 0 := by simp
 
 lemma iSup_natCast : ⨆ n : ℕ, (n : ℝ≥0∞) = ∞ :=
-  (iSup_eq_top _).2 fun _b hb => ENNReal.exists_nat_gt (lt_top_iff_ne_top.1 hb)
+  (iSup_eq_top _).2 fun _b hb ↦ ENNReal.exists_nat_gt (lt_top_iff_ne_top.1 hb)
 
 lemma add_iSup [Nonempty ι] (f : ι → ℝ≥0∞) : a + ⨆ i, f i = ⨆ i, a + f i := by
   obtain rfl | ha := eq_or_ne a ∞
@@ -671,7 +671,7 @@ lemma biSup_add_biSup_le' {p : ι → Prop} {q : κ → Prop} (hp : ∃ i, p i) 
     {g : κ → ℝ≥0∞} (h : ∀ i, p i → ∀ j, q j → f i + g j ≤ a) :
     (⨆ i, ⨆ _ : p i, f i) + ⨆ j, ⨆ _ : q j, g j ≤ a := by
   simp_rw [biSup_add' hp, add_biSup' hq]
-  exact iSup₂_le fun i hi => iSup₂_le (h i hi)
+  exact iSup₂_le fun i hi ↦ iSup₂_le (h i hi)
 
 lemma biSup_add_biSup_le {ι κ : Type*} {s : Set ι} {t : Set κ} (hs : s.Nonempty) (ht : t.Nonempty)
     {f : ι → ℝ≥0∞} {g : κ → ℝ≥0∞} {a : ℝ≥0∞} (h : ∀ i ∈ s, ∀ j ∈ t, f i + g j ≤ a) :
@@ -680,8 +680,8 @@ lemma biSup_add_biSup_le {ι κ : Type*} {s : Set ι} {t : Set κ} (hs : s.Nonem
 lemma iSup_add_iSup (h : ∀ i j, ∃ k, f i + g j ≤ f k + g k) : iSup f + iSup g = ⨆ i, f i + g i := by
   cases isEmpty_or_nonempty ι
   · simp only [iSup_of_empty, bot_eq_zero, zero_add]
-  · refine le_antisymm ?_ (iSup_le fun a => add_le_add (le_iSup _ _) (le_iSup _ _))
-    refine iSup_add_iSup_le fun i j => ?_
+  · refine le_antisymm ?_ (iSup_le fun a ↦ add_le_add (le_iSup _ _) (le_iSup _ _))
+    refine iSup_add_iSup_le fun i j ↦ ?_
     rcases h i j with ⟨k, hk⟩
     exact le_iSup_of_le k hk
 

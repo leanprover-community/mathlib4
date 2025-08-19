@@ -56,7 +56,7 @@ lemma piecewise_eq_of_notMem {i : ι} (hi : i ∉ s) : s.piecewise f g i = g i :
 
 lemma piecewise_congr {f f' g g' : ∀ i, π i} (hf : ∀ i ∈ s, f i = f' i)
     (hg : ∀ i ∉ s, g i = g' i) : s.piecewise f g = s.piecewise f' g' :=
-  funext fun i => if_ctx_congr Iff.rfl (hf i) (hg i)
+  funext fun i ↦ if_ctx_congr Iff.rfl (hf i) (hg i)
 
 @[simp]
 lemma piecewise_insert_of_ne [DecidableEq ι] {i j : ι} [∀ i, Decidable (i ∈ insert j s)]
@@ -79,7 +79,7 @@ lemma piecewise_singleton [DecidableEq ι] (i : ι) : piecewise {i} f g = update
 lemma piecewise_piecewise_of_subset_left {s t : Finset ι} [∀ i, Decidable (i ∈ s)]
     [∀ i, Decidable (i ∈ t)] (h : s ⊆ t) (f₁ f₂ g : ∀ a, π a) :
     s.piecewise (t.piecewise f₁ f₂) g = s.piecewise f₁ g :=
-  s.piecewise_congr (fun _i hi => piecewise_eq_of_mem _ _ _ (h hi)) fun _ _ => rfl
+  s.piecewise_congr (fun _i hi ↦ piecewise_eq_of_mem _ _ _ (h hi)) fun _ _ ↦ rfl
 
 @[simp]
 lemma piecewise_idem_left (f₁ f₂ g : ∀ a, π a) :
@@ -89,7 +89,7 @@ lemma piecewise_idem_left (f₁ f₂ g : ∀ a, π a) :
 lemma piecewise_piecewise_of_subset_right {s t : Finset ι} [∀ i, Decidable (i ∈ s)]
     [∀ i, Decidable (i ∈ t)] (h : t ⊆ s) (f g₁ g₂ : ∀ a, π a) :
     s.piecewise f (t.piecewise g₁ g₂) = s.piecewise f g₂ :=
-  s.piecewise_congr (fun _ _ => rfl) fun _i hi => t.piecewise_eq_of_notMem _ _ (mt (@h _) hi)
+  s.piecewise_congr (fun _ _ ↦ rfl) fun _i hi ↦ t.piecewise_eq_of_notMem _ _ (mt (@h _) hi)
 
 @[simp]
 lemma piecewise_idem_right (f g₁ g₂ : ∀ a, π a) :
@@ -97,8 +97,8 @@ lemma piecewise_idem_right (f g₁ g₂ : ∀ a, π a) :
   piecewise_piecewise_of_subset_right (Subset.refl _) f g₁ g₂
 
 lemma update_eq_piecewise {β : Type*} [DecidableEq ι] (f : ι → β) (i : ι) (v : β) :
-    update f i v = piecewise (singleton i) (fun _ => v) f :=
-  (piecewise_singleton (fun _ => v) _ _).symm
+    update f i v = piecewise (singleton i) (fun _ ↦ v) f :=
+  (piecewise_singleton (fun _ ↦ v) _ _).symm
 
 lemma update_piecewise [DecidableEq ι] (i : ι) (v : π i) :
     update (s.piecewise f g) i v = s.piecewise (update f i v) (update g i v) := by
@@ -108,14 +108,14 @@ lemma update_piecewise [DecidableEq ι] (i : ι) (v : π i) :
 lemma update_piecewise_of_mem [DecidableEq ι] {i : ι} (hi : i ∈ s) (v : π i) :
     update (s.piecewise f g) i v = s.piecewise (update f i v) g := by
   rw [update_piecewise]
-  refine s.piecewise_congr (fun _ _ => rfl) fun j hj => update_of_ne ?_ ..
-  exact fun h => hj (h.symm ▸ hi)
+  refine s.piecewise_congr (fun _ _ ↦ rfl) fun j hj ↦ update_of_ne ?_ ..
+  exact fun h ↦ hj (h.symm ▸ hi)
 
 lemma update_piecewise_of_notMem [DecidableEq ι] {i : ι} (hi : i ∉ s) (v : π i) :
     update (s.piecewise f g) i v = s.piecewise f (update g i v) := by
   rw [update_piecewise]
-  refine s.piecewise_congr (fun j hj => update_of_ne ?_ ..) fun _ _ => rfl
-  exact fun h => hi (h ▸ hj)
+  refine s.piecewise_congr (fun j hj ↦ update_of_ne ?_ ..) fun _ _ ↦ rfl
+  exact fun h ↦ hi (h ▸ hj)
 
 @[deprecated (since := "2025-05-23")]
 alias update_piecewise_of_not_mem := update_piecewise_of_notMem
@@ -154,17 +154,17 @@ lemma piecewise_mem_set_pi (hf : f ∈ Set.pi t t') (hg : g ∈ Set.pi t t') :
 
 variable [∀ i, Preorder (π i)]
 
-lemma piecewise_le_of_le_of_le (hf : f ≤ h) (hg : g ≤ h) : s.piecewise f g ≤ h := fun x =>
+lemma piecewise_le_of_le_of_le (hf : f ≤ h) (hg : g ≤ h) : s.piecewise f g ≤ h := fun x ↦
   piecewise_cases s f g (· ≤ h x) (hf x) (hg x)
 
-lemma le_piecewise_of_le_of_le (hf : h ≤ f) (hg : h ≤ g) : h ≤ s.piecewise f g := fun x =>
-  piecewise_cases s f g (fun y => h x ≤ y) (hf x) (hg x)
+lemma le_piecewise_of_le_of_le (hf : h ≤ f) (hg : h ≤ g) : h ≤ s.piecewise f g := fun x ↦
+  piecewise_cases s f g (fun y ↦ h x ≤ y) (hf x) (hg x)
 
 lemma piecewise_le_piecewise' (hf : ∀ x ∈ s, f x ≤ f' x) (hg : ∀ x ∉ s, g x ≤ g' x) :
-    s.piecewise f g ≤ s.piecewise f' g' := fun x => by by_cases hx : x ∈ s <;> simp [*]
+    s.piecewise f g ≤ s.piecewise f' g' := fun x ↦ by by_cases hx : x ∈ s <;> simp [*]
 
 lemma piecewise_le_piecewise (hf : f ≤ f') (hg : g ≤ g') : s.piecewise f g ≤ s.piecewise f' g' :=
-  s.piecewise_le_piecewise' (fun x _ => hf x) fun x _ => hg x
+  s.piecewise_le_piecewise' (fun x _ ↦ hf x) fun x _ ↦ hg x
 
 lemma piecewise_mem_Icc_of_mem_of_mem (hf : f ∈ Set.Icc f' g') (hg : g ∈ Set.Icc f' g') :
     s.piecewise f g ∈ Set.Icc f' g' :=

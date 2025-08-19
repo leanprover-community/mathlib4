@@ -78,7 +78,7 @@ theorem isNoetherianRing_of_away : IsNoetherianRing R := by
     exact monotone_stabilizes_iff_noetherian.mpr (hN s) f
   let N := Finset.sup S minN
   use N
-  have hN : ∀ s : S, minN s ≤ N := fun s => Finset.le_sup s.prop
+  have hN : ∀ s : S, minN s ≤ N := fun s ↦ Finset.le_sup s.prop
   intro n hn
   rw [IsLocalization.ideal_eq_iInf_comap_map_away hS (I N),
       IsLocalization.ideal_eq_iInf_comap_map_away hS (I n),
@@ -98,7 +98,7 @@ then `X` is locally Noetherian. -/
 theorem isLocallyNoetherian_of_affine_cover {ι} {S : ι → X.affineOpens}
     (hS : (⨆ i, S i : X.Opens) = ⊤)
     (hS' : ∀ i, IsNoetherianRing Γ(X, S i)) : IsLocallyNoetherian X := by
-  refine ⟨fun U => ?_⟩
+  refine ⟨fun U ↦ ?_⟩
   induction U using of_affine_open_cover S hS with
   | basicOpen U f hN =>
     have := U.prop.isLocalization_basicOpen f
@@ -119,7 +119,7 @@ See [Har77], Proposition II.3.2. -/
 theorem isLocallyNoetherian_iff_of_iSup_eq_top {ι} {S : ι → X.affineOpens}
     (hS : (⨆ i, S i : X.Opens) = ⊤) :
     IsLocallyNoetherian X ↔ ∀ i, IsNoetherianRing Γ(X, S i) :=
-  ⟨fun _ i => IsLocallyNoetherian.component_noetherian (S i),
+  ⟨fun _ i ↦ IsLocallyNoetherian.component_noetherian (S i),
    isLocallyNoetherian_of_affine_cover hS⟩
 
 open CategoryTheory in
@@ -145,7 +145,7 @@ theorem isLocallyNoetherian_iff_of_affine_openCover (𝒰 : Scheme.OpenCover.{v,
 
 lemma isLocallyNoetherian_of_isOpenImmersion {Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f]
     [IsLocallyNoetherian Y] : IsLocallyNoetherian X := by
-  refine ⟨fun U => ?_⟩
+  refine ⟨fun U ↦ ?_⟩
   let V : Y.affineOpens := ⟨f ''ᵁ U, IsAffineOpen.image_of_isOpenImmersion U.prop _⟩
   suffices Γ(X, U) ≅ Γ(Y, V) by
     convert isNoetherianRing_of_ringEquiv (R := Γ(Y, V)) _
@@ -285,13 +285,13 @@ instance (priority := 100) IsNoetherian.noetherianSpace [IsNoetherian X] :
 @[stacks 01P0]
 instance (priority := 100) quasiCompact_of_noetherianSpace_source {X Y : Scheme}
     [NoetherianSpace X] (f : X ⟶ Y) : QuasiCompact f :=
-  ⟨fun _ _ _ => NoetherianSpace.isCompact _⟩
+  ⟨fun _ _ _ ↦ NoetherianSpace.isCompact _⟩
 
 /-- If `R` is a Noetherian ring, `Spec R` is a locally Noetherian scheme. -/
 instance {R : CommRingCat} [IsNoetherianRing R] :
     IsLocallyNoetherian (Spec R) := by
   apply isLocallyNoetherian_of_affine_cover
-    (ι := Fin 1) (S := fun _ => ⟨⊤, isAffineOpen_top (Spec R)⟩)
+    (ι := Fin 1) (S := fun _ ↦ ⟨⊤, isAffineOpen_top (Spec R)⟩)
   · exact iSup_const
   · intro
     apply isNoetherianRing_of_ringEquiv R
@@ -324,8 +324,8 @@ instance [IsLocallyNoetherian X] {x : X} : IsNoetherianRing (X.presheaf.stalk x)
 /-- `R` is a Noetherian ring if and only if `Spec R` is a Noetherian scheme. -/
 theorem isNoetherian_Spec {R : CommRingCat} :
     IsNoetherian (Spec R) ↔ IsNoetherianRing R :=
-  ⟨fun _ => inferInstance,
-   fun _ => inferInstance⟩
+  ⟨fun _ ↦ inferInstance,
+   fun _ ↦ inferInstance⟩
 
 /-- A Noetherian scheme has a finite number of irreducible components. -/
 @[stacks 0BA8]

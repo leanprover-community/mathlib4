@@ -24,7 +24,7 @@ variable {α : Type*}
 instance : StarMul (FreeMonoid α) where
   star := List.reverse
   star_involutive := List.reverse_reverse
-  star_mul := fun _ _ => List.reverse_append
+  star_mul := fun _ _ ↦ List.reverse_append
 
 @[simp]
 theorem star_of (x : α) : star (of x) = of x :=
@@ -68,6 +68,6 @@ theorem star_algebraMap (r : R) : star (algebraMap R (FreeAlgebra R X) r) = alge
 
 /-- `star` as an `AlgEquiv` -/
 def starHom : FreeAlgebra R X ≃ₐ[R] (FreeAlgebra R X)ᵐᵒᵖ :=
-  { starRingEquiv with commutes' := fun r => by simp [star_algebraMap] }
+  { starRingEquiv with commutes' := fun r ↦ by simp [star_algebraMap] }
 
 end FreeAlgebra

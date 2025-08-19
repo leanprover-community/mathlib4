@@ -78,7 +78,7 @@ theorem Quotient.mk_smul_mk_quotient_map_quotient (x : R) (y : S) :
 
 instance Quotient.tower_quotient_map_quotient [Algebra R S] :
     IsScalarTower R (R ⧸ p) (S ⧸ map (algebraMap R S) p) :=
-  IsScalarTower.of_algebraMap_eq fun x => by
+  IsScalarTower.of_algebraMap_eq fun x ↦ by
     rw [Quotient.algebraMap_eq, Quotient.algebraMap_quotient_map_quotient,
       Quotient.mk_algebraMap]
 

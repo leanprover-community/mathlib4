@@ -147,7 +147,7 @@ def hcomp (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) : Homotopy (p₀.tra
     if (x.2 : ℝ) ≤ 1 / 2 then (F.eval x.1).extend (2 * x.2) else (G.eval x.1).extend (2 * x.2 - 1)
   continuous_toFun := continuous_if_le (continuous_induced_dom.comp continuous_snd) continuous_const
     (F.toHomotopy.continuous.comp (by continuity)).continuousOn
-    (G.toHomotopy.continuous.comp (by continuity)).continuousOn fun x hx => by norm_num [hx]
+    (G.toHomotopy.continuous.comp (by continuity)).continuousOn fun x hx ↦ by norm_num [hx]
   map_zero_left x := by simp [Path.trans]
   map_one_left x := by simp [Path.trans]
   prop' x t ht := by
@@ -249,7 +249,7 @@ theorem equivalence : Equivalence (@Homotopic X _ x₀ x₁) :=
 
 nonrec theorem map {p q : Path x₀ x₁} (h : p.Homotopic q) (f : C(X, Y)) :
     Homotopic (p.map f.continuous) (q.map f.continuous) :=
-  h.map fun F => F.map f
+  h.map fun F ↦ F.map f
 
 theorem hcomp {p₀ p₁ : Path x₀ x₁} {q₀ q₁ : Path x₁ x₂} (hp : p₀.Homotopic p₁)
     (hq : q₀.Homotopic q₁) : (p₀.trans q₀).Homotopic (p₁.trans q₁) :=
@@ -275,7 +275,7 @@ instance : Inhabited (Homotopic.Quotient () ()) :=
 /-- The composition of path homotopy classes. This is `Path.trans` descended to the quotient. -/
 def Quotient.comp (P₀ : Path.Homotopic.Quotient x₀ x₁) (P₁ : Path.Homotopic.Quotient x₁ x₂) :
     Path.Homotopic.Quotient x₀ x₂ :=
-  Quotient.map₂ Path.trans (fun (_ : Path x₀ x₁) _ hp (_ : Path x₁ x₂) _ hq => hcomp hp hq) P₀ P₁
+  Quotient.map₂ Path.trans (fun (_ : Path x₀ x₁) _ hp (_ : Path x₁ x₂) _ hq ↦ hcomp hp hq) P₀ P₁
 
 theorem comp_lift (P₀ : Path x₀ x₁) (P₁ : Path x₁ x₂) : ⟦P₀.trans P₁⟧ = Quotient.comp ⟦P₀⟧ ⟦P₁⟧ :=
   rfl
@@ -284,7 +284,7 @@ theorem comp_lift (P₀ : Path x₀ x₁) (P₁ : Path x₁ x₂) : ⟦P₀.tran
 This is `Path.map` descended to the quotient. -/
 def Quotient.mapFn (P₀ : Path.Homotopic.Quotient x₀ x₁) (f : C(X, Y)) :
     Path.Homotopic.Quotient (f x₀) (f x₁) :=
-  Quotient.map (fun q : Path x₀ x₁ => q.map f.continuous) (fun _ _ h => Path.Homotopic.map h f) P₀
+  Quotient.map (fun q : Path x₀ x₁ ↦ q.map f.continuous) (fun _ _ h ↦ Path.Homotopic.map h f) P₀
 
 theorem map_lift (P₀ : Path x₀ x₁) (f : C(X, Y)) : ⟦P₀.map f.continuous⟧ = Quotient.mapFn ⟦P₀⟧ f :=
   rfl

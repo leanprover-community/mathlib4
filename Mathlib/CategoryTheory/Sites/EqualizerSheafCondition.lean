@@ -49,7 +49,7 @@ of the Stacks entry.
 -/
 @[stacks 00VM "This is the middle object of the fork diagram there."]
 def FirstObj : Type max v u :=
-  ∏ᶜ fun f : Σ Y, { f : Y ⟶ X // R f } => P.obj (op f.1)
+  ∏ᶜ fun f : Σ Y, { f : Y ⟶ X // R f } ↦ P.obj (op f.1)
 
 variable {P R}
 
@@ -67,8 +67,8 @@ variable (P R)
 /-- Show that `FirstObj` is isomorphic to `FamilyOfElements`. -/
 @[simps]
 def firstObjEqFamily : FirstObj P R ≅ R.FamilyOfElements P where
-  hom t _ _ hf := Pi.π (fun f : Σ Y, { f : Y ⟶ X // R f } => P.obj (op f.1)) ⟨_, _, hf⟩ t
-  inv := Pi.lift fun f x => x _ f.2.2
+  hom t _ _ hf := Pi.π (fun f : Σ Y, { f : Y ⟶ X // R f } ↦ P.obj (op f.1)) ⟨_, _, hf⟩ t
+  inv := Pi.lift fun f x ↦ x _ f.2.2
 
 instance : Inhabited (FirstObj P (⊥ : Presieve X)) :=
   (firstObjEqFamily P _).toEquiv.inhabited
@@ -83,7 +83,7 @@ of the Stacks entry.
 -/
 @[stacks 00VM "This is the left morphism of the fork diagram there."]
 def forkMap : P.obj (op X) ⟶ FirstObj P R :=
-  Pi.lift fun f => P.map f.2.1.op
+  Pi.lift fun f ↦ P.map f.2.1.op
 
 /-!
 This section establishes the equivalence between the sheaf condition of Equation (3) [MM92] and
@@ -97,7 +97,7 @@ namespace Sieve
 to check a family is compatible.
 -/
 def SecondObj : Type max v u :=
-  ∏ᶜ fun f : Σ (Y Z : _) (_ : Z ⟶ Y), { f' : Y ⟶ X // S f' } => P.obj (op f.2.1)
+  ∏ᶜ fun f : Σ (Y Z : _) (_ : Z ⟶ Y), { f' : Y ⟶ X // S f' } ↦ P.obj (op f.2.1)
 
 variable {P S}
 
@@ -114,7 +114,7 @@ variable (P S)
 
 /-- The map `p` of Equations (3,4) [MM92]. -/
 def firstMap : FirstObj P (S : Presieve X) ⟶ SecondObj P S :=
-  Pi.lift fun fg =>
+  Pi.lift fun fg ↦
     Pi.π _ (⟨_, _, S.downward_closed fg.2.2.2.2 fg.2.2.1⟩ : Σ Y, { f : Y ⟶ X // S f })
 
 instance : Inhabited (SecondObj P (⊥ : Sieve X)) :=
@@ -122,7 +122,7 @@ instance : Inhabited (SecondObj P (⊥ : Sieve X)) :=
 
 /-- The map `a` of Equations (3,4) [MM92]. -/
 def secondMap : FirstObj P (S : Presieve X) ⟶ SecondObj P S :=
-  Pi.lift fun fg => Pi.π _ ⟨_, fg.2.2.2⟩ ≫ P.map fg.2.2.1.op
+  Pi.lift fun fg ↦ Pi.π _ ⟨_, fg.2.2.2⟩ ≫ P.map fg.2.2.1.op
 
 theorem w : forkMap P (S : Presieve X) ≫ firstMap P S = forkMap P S ≫ secondMap P S := by
   ext
@@ -183,14 +183,14 @@ contains the data used to check a family of elements for a presieve is compatibl
 -/
 @[simp, stacks 00VM "This is the rightmost object of the fork diagram there."]
 def SecondObj : Type max v u :=
-  ∏ᶜ fun fg : (Σ Y, { f : Y ⟶ X // R f }) × Σ Z, { g : Z ⟶ X // R g } =>
+  ∏ᶜ fun fg : (Σ Y, { f : Y ⟶ X // R f }) × Σ Z, { g : Z ⟶ X // R g } ↦
     haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
     P.obj (op (pullback fg.1.2.1 fg.2.2.1))
 
 /-- The map `pr₀*` of the Stacks entry. -/
 @[stacks 00VM "This is the map `pr₀*` there."]
 def firstMap : FirstObj P R ⟶ SecondObj P R :=
-  Pi.lift fun fg =>
+  Pi.lift fun fg ↦
     haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
     Pi.π _ _ ≫ P.map (pullback.fst _ _).op
 
@@ -200,7 +200,7 @@ instance [HasPullbacks C] : Inhabited (SecondObj P (⊥ : Presieve X)) :=
 /-- The map `pr₁*` of the Stacks entry. -/
 @[stacks 00VM "This is the map `pr₁*` there."]
 def secondMap : FirstObj P R ⟶ SecondObj P R :=
-  Pi.lift fun fg =>
+  Pi.lift fun fg ↦
     haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
     Pi.π _ _ ≫ P.map (pullback.snd _ _).op
 
@@ -298,14 +298,14 @@ The first of the two parallel morphisms of the fork diagram, induced by the firs
 each pullback.
 -/
 def firstMap : FirstObj P X ⟶ SecondObj P X π :=
-  Pi.lift fun _ => Pi.π _ _ ≫ P.map (pullback.fst _ _).op
+  Pi.lift fun _ ↦ Pi.π _ _ ≫ P.map (pullback.fst _ _).op
 
 /--
 The second of the two parallel morphisms of the fork diagram, induced by the second projection in
 each pullback.
 -/
 def secondMap : FirstObj P X ⟶ SecondObj P X π :=
-  Pi.lift fun _ => Pi.π _ _ ≫ P.map (pullback.snd _ _).op
+  Pi.lift fun _ ↦ Pi.π _ _ ≫ P.map (pullback.snd _ _).op
 
 theorem w : forkMap P X π ≫ firstMap P X π = forkMap P X π ≫ secondMap P X π := by
   ext x ij

@@ -103,13 +103,13 @@ theorem coeSubmodule_le_coeSubmodule (h : M ≤ nonZeroDivisors R) {I J : Ideal 
 @[mono]
 theorem coeSubmodule_strictMono (h : M ≤ nonZeroDivisors R) :
     StrictMono (coeSubmodule S : Ideal R → Submodule R S) :=
-  strictMono_of_le_iff_le fun _ _ => (coeSubmodule_le_coeSubmodule h).symm
+  strictMono_of_le_iff_le fun _ _ ↦ (coeSubmodule_le_coeSubmodule h).symm
 
 variable (S)
 
 theorem coeSubmodule_injective (h : M ≤ nonZeroDivisors R) :
     Function.Injective (coeSubmodule S : Ideal R → Submodule R S) :=
-  injective_of_le_imp_le _ fun hl => (coeSubmodule_le_coeSubmodule h).mp hl
+  injective_of_le_imp_le _ fun hl ↦ (coeSubmodule_le_coeSubmodule h).mp hl
 
 theorem coeSubmodule_isPrincipal {I : Ideal R} (h : M ≤ nonZeroDivisors R) :
     (coeSubmodule S I).IsPrincipal ↔ I.IsPrincipal := by
@@ -182,12 +182,12 @@ theorem coeSubmodule_le_coeSubmodule {I J : Ideal R} :
 
 @[mono]
 theorem coeSubmodule_strictMono : StrictMono (coeSubmodule K : Ideal R → Submodule R K) :=
-  strictMono_of_le_iff_le fun _ _ => coeSubmodule_le_coeSubmodule.symm
+  strictMono_of_le_iff_le fun _ _ ↦ coeSubmodule_le_coeSubmodule.symm
 
 variable (R K)
 
 theorem coeSubmodule_injective : Function.Injective (coeSubmodule K : Ideal R → Submodule R K) :=
-  injective_of_le_imp_le _ fun hl => coeSubmodule_le_coeSubmodule.mp hl
+  injective_of_le_imp_le _ fun hl ↦ coeSubmodule_le_coeSubmodule.mp hl
 
 @[simp]
 theorem coeSubmodule_isPrincipal {I : Ideal R} : (coeSubmodule K I).IsPrincipal ↔ I.IsPrincipal :=

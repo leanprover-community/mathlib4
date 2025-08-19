@@ -61,8 +61,8 @@ protected theorem equicontinuousAt_iff_pair {ι : Type*} [TopologicalSpace β] {
     exact H _ (dist_mem_uniformity hε)
   · intro U hU
     rcases mem_uniformity_dist.mp hU with ⟨ε, hε, hεU⟩
-    refine Exists.imp (fun V => And.imp_right fun h => ?_) (H _ hε)
-    exact fun x hx x' hx' i => hεU (h _ hx _ hx' i)
+    refine Exists.imp (fun V ↦ And.imp_right fun h ↦ ?_) (H _ hε)
+    exact fun x hx x' hx' i ↦ hεU (h _ hx _ hx' i)
 
 /-- Characterization of uniform equicontinuity for families of functions taking values in a
 (pseudo) metric space. -/
@@ -87,7 +87,7 @@ theorem equicontinuousAt_of_continuity_modulus {ι : Type*} [TopologicalSpace β
   intro ε ε0
   -- Porting note: Lean 3 didn't need `Filter.mem_map.mp` here
   filter_upwards [Filter.mem_map.mp <| b_lim (Iio_mem_nhds ε0), H] using
-    fun x hx₁ hx₂ i => (hx₂ i).trans_lt hx₁
+    fun x hx₁ hx₂ i ↦ (hx₂ i).trans_lt hx₁
 
 /-- For a family of functions between (pseudo) metric spaces, a convenient way to prove
 uniform equicontinuity is to show that all of the functions share a common *global* continuity
@@ -98,7 +98,7 @@ theorem uniformEquicontinuous_of_continuity_modulus {ι : Type*} [PseudoMetricSp
   rw [Metric.uniformEquicontinuous_iff]
   intro ε ε0
   rcases tendsto_nhds_nhds.1 b_lim ε ε0 with ⟨δ, δ0, hδ⟩
-  refine ⟨δ, δ0, fun x y hxy i => ?_⟩
+  refine ⟨δ, δ0, fun x y hxy i ↦ ?_⟩
   calc
     dist (F i x) (F i y) ≤ b (dist x y) := H x y i
     _ ≤ |b (dist x y)| := le_abs_self _

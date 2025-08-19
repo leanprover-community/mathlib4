@@ -45,7 +45,7 @@ section LinearOrderedSemifield
 variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {x y : α}
 
 instance inv : Inv { x : α // 0 ≤ x } :=
-  ⟨fun x => ⟨x⁻¹, inv_nonneg.2 x.2⟩⟩
+  ⟨fun x ↦ ⟨x⁻¹, inv_nonneg.2 x.2⟩⟩
 
 @[simp, norm_cast]
 protected theorem coe_inv (a : { x : α // 0 ≤ x }) : ((a⁻¹ : { x : α // 0 ≤ x }) : α) = (a : α)⁻¹ :=
@@ -57,7 +57,7 @@ theorem inv_mk (hx : 0 ≤ x) :
   rfl
 
 instance div : Div { x : α // 0 ≤ x } :=
-  ⟨fun x y => ⟨x / y, div_nonneg x.2 y.2⟩⟩
+  ⟨fun x y ↦ ⟨x / y, div_nonneg x.2 y.2⟩⟩
 
 @[simp, norm_cast]
 protected theorem coe_div (a b : { x : α // 0 ≤ x }) : ((a / b : { x : α // 0 ≤ x }) : α) = a / b :=
@@ -69,7 +69,7 @@ theorem mk_div_mk (hx : 0 ≤ x) (hy : 0 ≤ y) :
   rfl
 
 instance zpow : Pow { x : α // 0 ≤ x } ℤ :=
-  ⟨fun a n => ⟨(a : α) ^ n, zpow_nonneg a.2 _⟩⟩
+  ⟨fun a n ↦ ⟨(a : α) ^ n, zpow_nonneg a.2 _⟩⟩
 
 @[simp, norm_cast]
 protected theorem coe_zpow (a : { x : α // 0 ≤ x }) (n : ℤ) :
@@ -96,7 +96,7 @@ instance instNNRatSMul : SMul ℚ≥0 {x : α // 0 ≤ x} where
 
 instance semifield : Semifield { x : α // 0 ≤ x } := fast_instance%
   Subtype.coe_injective.semifield _ Nonneg.coe_zero Nonneg.coe_one Nonneg.coe_add
-    Nonneg.coe_mul Nonneg.coe_inv Nonneg.coe_div (fun _ _ => rfl) coe_nnqsmul Nonneg.coe_pow
+    Nonneg.coe_mul Nonneg.coe_inv Nonneg.coe_div (fun _ _ ↦ rfl) coe_nnqsmul Nonneg.coe_pow
     Nonneg.coe_zpow Nonneg.coe_natCast coe_nnratCast
 
 end LinearOrderedSemifield

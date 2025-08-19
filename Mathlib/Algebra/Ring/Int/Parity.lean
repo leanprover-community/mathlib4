@@ -47,7 +47,7 @@ lemma even_xor'_odd' (n : ℤ) : ∃ k, Xor' (n = 2 * k) (n = 2 * k + 1) := by
     simp only [Xor'] -- Perhaps `grind` needs a normalization rule for `Xor'`?
     grind
 
-instance : DecidablePred (Odd : ℤ → Prop) := fun _ => decidable_of_iff _ not_even_iff_odd
+instance : DecidablePred (Odd : ℤ → Prop) := fun _ ↦ decidable_of_iff _ not_even_iff_odd
 
 lemma even_add' : Even (m + n) ↔ (Odd m ↔ Odd n) := by grind
 

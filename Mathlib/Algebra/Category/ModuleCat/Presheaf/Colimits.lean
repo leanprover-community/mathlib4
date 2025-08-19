@@ -33,7 +33,7 @@ of the functors `evaluation R X` for all `X`. -/
 def evaluationJointlyReflectsColimits (c : Cocone F)
     (hc : ∀ (X : Cᵒᵖ), IsColimit ((evaluation R X).mapCocone c)) : IsColimit c where
   desc s :=
-    { app := fun X => (hc X).desc ((evaluation R X).mapCocone s)
+    { app := fun X ↦ (hc X).desc ((evaluation R X).mapCocone s)
       naturality := fun {X Y} f ↦ (hc X).hom_ext (fun j ↦ by
         rw [(hc X).fac_assoc ((evaluation R X).mapCocone s) j]
         have h₁ := (c.ι.app j).naturality f
@@ -65,14 +65,14 @@ noncomputable def colimitPresheafOfModules : PresheafOfModules R where
   obj X := colimit (F ⋙ evaluation R X)
   map {_ Y} f := colimMap (Functor.whiskerLeft F (restriction R f)) ≫
     (preservesColimitIso (ModuleCat.restrictScalars (R.map f).hom) (F ⋙ evaluation R Y)).inv
-  map_id X := colimit.hom_ext (fun j => by
+  map_id X := colimit.hom_ext (fun j ↦ by
     dsimp
     rw [ι_colimMap_assoc, Functor.whiskerLeft_app, restriction_app]
     -- Here we should rewrite using `Functor.assoc` but that gives a "motive is type-incorrect"
     erw [ι_preservesColimitIso_inv (G := ModuleCat.restrictScalars (R.map (𝟙 X)).hom)]
     rw [ModuleCat.restrictScalarsId'App_inv_naturality, map_id]
     dsimp)
-  map_comp {X Y Z} f g := colimit.hom_ext (fun j => by
+  map_comp {X Y Z} f g := colimit.hom_ext (fun j ↦ by
     dsimp
     rw [ι_colimMap_assoc, Functor.whiskerLeft_app, restriction_app, assoc, ι_colimMap_assoc]
     -- Here we should rewrite using `Functor.assoc` but that gives a "motive is type-incorrect"
@@ -103,7 +103,7 @@ noncomputable def colimitCocone : Cocone F where
 
 /-- The cocone `colimitCocone F` is colimit for any `F : J ⥤ PresheafOfModules.{v} R`. -/
 noncomputable def isColimitColimitCocone : IsColimit (colimitCocone F) :=
-  evaluationJointlyReflectsColimits _ _ (fun _ => colimit.isColimit _)
+  evaluationJointlyReflectsColimits _ _ (fun _ ↦ colimit.isColimit _)
 
 instance hasColimit : HasColimit F := ⟨_, isColimitColimitCocone F⟩
 
@@ -118,7 +118,7 @@ instance toPresheaf_preservesColimit :
     PreservesColimit F (toPresheaf R) :=
   preservesColimit_of_preserves_colimit_cocone (isColimitColimitCocone F)
     (Limits.evaluationJointlyReflectsColimits _
-      (fun X => isColimitOfPreserves (evaluation R X ⋙ forget₂ _ AddCommGrp)
+      (fun X ↦ isColimitOfPreserves (evaluation R X ⋙ forget₂ _ AddCommGrp)
         (isColimitColimitCocone F)))
 
 end Colimits
@@ -142,7 +142,7 @@ end HasColimitsOfShape
 namespace Finite
 
 instance hasFiniteColimits : HasFiniteColimits (PresheafOfModules.{v} R) :=
-  ⟨fun _ => inferInstance⟩
+  ⟨fun _ ↦ inferInstance⟩
 
 noncomputable instance evaluation_preservesFiniteColimits (X : Cᵒᵖ) :
     PreservesFiniteColimits (evaluation.{v} R X) where

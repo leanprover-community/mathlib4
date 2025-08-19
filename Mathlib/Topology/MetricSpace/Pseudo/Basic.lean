@@ -47,14 +47,14 @@ theorem dist_le_Ico_sum_of_dist_le {f : ℕ → α} {m n} (hmn : m ≤ n) {d : �
     (hd : ∀ {k}, m ≤ k → k < n → dist (f k) (f (k + 1)) ≤ d k) :
     dist (f m) (f n) ≤ ∑ i ∈ Finset.Ico m n, d i :=
   le_trans (dist_le_Ico_sum_dist f hmn) <|
-    Finset.sum_le_sum fun _k hk => hd (Finset.mem_Ico.1 hk).1 (Finset.mem_Ico.1 hk).2
+    Finset.sum_le_sum fun _k hk ↦ hd (Finset.mem_Ico.1 hk).1 (Finset.mem_Ico.1 hk).2
 
 /-- A version of `dist_le_range_sum_dist` with each intermediate distance replaced
 with an upper estimate. -/
 theorem dist_le_range_sum_of_dist_le {f : ℕ → α} (n : ℕ) {d : ℕ → ℝ}
     (hd : ∀ {k}, k < n → dist (f k) (f (k + 1)) ≤ d k) :
     dist (f 0) (f n) ≤ ∑ i ∈ Finset.range n, d i :=
-  Nat.Ico_zero_eq_range ▸ dist_le_Ico_sum_of_dist_le (zero_le n) fun _ => hd
+  Nat.Ico_zero_eq_range ▸ dist_le_Ico_sum_of_dist_le (zero_le n) fun _ ↦ hd
 
 namespace Metric
 
@@ -95,10 +95,10 @@ theorem totallyBounded_of_finite_discretization {s : Set α}
     exact totallyBounded_empty
   rcases hs with ⟨x0, hx0⟩
   haveI : Inhabited s := ⟨⟨x0, hx0⟩⟩
-  refine totallyBounded_iff.2 fun ε ε0 => ?_
+  refine totallyBounded_iff.2 fun ε ε0 ↦ ?_
   rcases H ε ε0 with ⟨β, fβ, F, hF⟩
   let Finv := Function.invFun F
-  refine ⟨range (Subtype.val ∘ Finv), finite_range _, fun x xs => ?_⟩
+  refine ⟨range (Subtype.val ∘ Finv), finite_range _, fun x xs ↦ ?_⟩
   let x' := Finv (F ⟨x, xs⟩)
   have : F x' = F ⟨x, xs⟩ := Function.invFun_eq ⟨⟨x, xs⟩, rfl⟩
   simp only [Set.mem_iUnion, Set.mem_range]
@@ -114,26 +114,26 @@ theorem finite_approx_of_totallyBounded {s : Set α} (hs : TotallyBounded s) :
 theorem tendstoUniformlyOnFilter_iff {F : ι → β → α} {f : β → α} {p : Filter ι} {p' : Filter β} :
     TendstoUniformlyOnFilter F f p p' ↔
       ∀ ε > 0, ∀ᶠ n : ι × β in p ×ˢ p', dist (f n.snd) (F n.fst n.snd) < ε := by
-  refine ⟨fun H ε hε => H _ (dist_mem_uniformity hε), fun H u hu => ?_⟩
+  refine ⟨fun H ε hε ↦ H _ (dist_mem_uniformity hε), fun H u hu ↦ ?_⟩
   rcases mem_uniformity_dist.1 hu with ⟨ε, εpos, hε⟩
-  exact (H ε εpos).mono fun n hn => hε hn
+  exact (H ε εpos).mono fun n hn ↦ hε hn
 
 /-- Expressing locally uniform convergence on a set using `dist`. -/
 theorem tendstoLocallyUniformlyOn_iff [TopologicalSpace β] {F : ι → β → α} {f : β → α}
     {p : Filter ι} {s : Set β} :
     TendstoLocallyUniformlyOn F f p s ↔
       ∀ ε > 0, ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, ∀ᶠ n in p, ∀ y ∈ t, dist (f y) (F n y) < ε := by
-  refine ⟨fun H ε hε => H _ (dist_mem_uniformity hε), fun H u hu x hx => ?_⟩
+  refine ⟨fun H ε hε ↦ H _ (dist_mem_uniformity hε), fun H u hu x hx ↦ ?_⟩
   rcases mem_uniformity_dist.1 hu with ⟨ε, εpos, hε⟩
   rcases H ε εpos x hx with ⟨t, ht, Ht⟩
-  exact ⟨t, ht, Ht.mono fun n hs x hx => hε (hs x hx)⟩
+  exact ⟨t, ht, Ht.mono fun n hs x hx ↦ hε (hs x hx)⟩
 
 /-- Expressing uniform convergence on a set using `dist`. -/
 theorem tendstoUniformlyOn_iff {F : ι → β → α} {f : β → α} {p : Filter ι} {s : Set β} :
     TendstoUniformlyOn F f p s ↔ ∀ ε > 0, ∀ᶠ n in p, ∀ x ∈ s, dist (f x) (F n x) < ε := by
-  refine ⟨fun H ε hε => H _ (dist_mem_uniformity hε), fun H u hu => ?_⟩
+  refine ⟨fun H ε hε ↦ H _ (dist_mem_uniformity hε), fun H u hu ↦ ?_⟩
   rcases mem_uniformity_dist.1 hu with ⟨ε, εpos, hε⟩
-  exact (H ε εpos).mono fun n hs x hx => hε (hs x hx)
+  exact (H ε εpos).mono fun n hs x hx ↦ hε (hs x hx)
 
 /-- Expressing locally uniform convergence using `dist`. -/
 theorem tendstoLocallyUniformly_iff [TopologicalSpace β] {F : ι → β → α} {f : β → α}
@@ -189,7 +189,7 @@ theorem tendsto_nhds_unique_dist {f : β → α} {l : Filter β} {x y : α} [NeB
 section Real
 
 theorem cauchySeq_iff_tendsto_dist_atTop_0 [Nonempty β] [SemilatticeSup β] {u : β → α} :
-    CauchySeq u ↔ Tendsto (fun n : β × β => dist (u n.1) (u n.2)) atTop (𝓝 0) := by
+    CauchySeq u ↔ Tendsto (fun n : β × β ↦ dist (u n.1) (u n.2)) atTop (𝓝 0) := by
   rw [cauchySeq_iff_tendsto, Metric.uniformity_eq_comap_nhds_zero, tendsto_comap_iff,
     Function.comp_def]
   simp_rw [Prod.map_fst, Prod.map_snd]
@@ -230,10 +230,10 @@ is `ε`-dense. -/
 theorem secondCountable_of_almost_dense_set
     (H : ∀ ε > (0 : ℝ), ∃ s : Set α, s.Countable ∧ ∀ x, ∃ y ∈ s, dist x y ≤ ε) :
     SecondCountableTopology α := by
-  refine EMetric.secondCountable_of_almost_dense_set fun ε ε0 => ?_
+  refine EMetric.secondCountable_of_almost_dense_set fun ε ε0 ↦ ?_
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 ε0 with ⟨ε', ε'0, ε'ε⟩
   choose s hsc y hys hyx using H ε' (mod_cast ε'0)
-  refine ⟨s, hsc, iUnion₂_eq_univ_iff.2 fun x => ⟨y x, hys _, le_trans ?_ ε'ε.le⟩⟩
+  refine ⟨s, hsc, iUnion₂_eq_univ_iff.2 fun x ↦ ⟨y x, hys _, le_trans ?_ ε'ε.le⟩⟩
   exact mod_cast hyx x
 
 end SecondCountable
@@ -247,7 +247,7 @@ variable {X : Type*} [PseudoMetricSpace X] {s : Set X} {ε : ℝ}
 positive radius -/
 theorem finite_cover_balls_of_compact (hs : IsCompact s) {e : ℝ} (he : 0 < e) :
     ∃ t ⊆ s, t.Finite ∧ s ⊆ ⋃ x ∈ t, ball x e :=
-  let ⟨t, hts, ht⟩ := hs.elim_nhds_subcover _ (fun x _ => ball_mem_nhds x he)
+  let ⟨t, hts, ht⟩ := hs.elim_nhds_subcover _ (fun x _ ↦ ball_mem_nhds x he)
   ⟨t, hts, t.finite_toSet, ht⟩
 
 alias IsCompact.finite_cover_balls := finite_cover_balls_of_compact

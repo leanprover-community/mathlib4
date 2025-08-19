@@ -65,7 +65,7 @@ def homologicalKernel : ObjectProperty C :=
 
 lemma mem_homologicalKernel_iff [F.ShiftSequence ℤ] (X : C) :
     F.homologicalKernel X ↔ ∀ (n : ℤ), IsZero ((F.shift n).obj X) := by
-  simp only [← fun (n : ℤ) => Iso.isZero_iff ((F.isoShift n).app X),
+  simp only [← fun (n : ℤ) ↦ Iso.isZero_iff ((F.isoShift n).app X),
     homologicalKernel, comp_obj]
 
 section Pretriangulated
@@ -100,7 +100,7 @@ lemma IsHomological.mk' [F.PreservesZeroMorphisms]
 lemma IsHomological.of_iso {F₁ F₂ : C ⥤ A} [F₁.IsHomological] (e : F₁ ≅ F₂) :
     F₂.IsHomological :=
   have := preservesZeroMorphisms_of_iso e
-  ⟨fun T hT => ShortComplex.exact_of_iso (ShortComplex.mapNatIso _ e)
+  ⟨fun T hT ↦ ShortComplex.exact_of_iso (ShortComplex.mapNatIso _ e)
     (F₁.map_distinguished_exact T hT)⟩
 
 section
@@ -126,7 +126,7 @@ end
 noncomputable instance (priority := 100) [F.IsHomological] :
     PreservesLimitsOfShape (Discrete WalkingPair) F := by
   suffices ∀ (X₁ X₂ : C), PreservesLimit (pair X₁ X₂) F from
-    ⟨fun {X} => preservesLimit_of_iso_diagram F (diagramIsoPair X).symm⟩
+    ⟨fun {X} ↦ preservesLimit_of_iso_diagram F (diagramIsoPair X).symm⟩
   intro X₁ X₂
   have : HasBinaryBiproduct (F.obj X₁) (F.obj X₂) := HasBinaryBiproducts.has_binary_biproduct _ _
   have : Mono (F.biprodComparison X₁ X₂) := by
@@ -154,7 +154,7 @@ lemma isHomological_of_localization (L : C ⥤ D)
   have : F.PreservesZeroMorphisms := preservesZeroMorphisms_of_map_zero_object
     (F.mapIso L.mapZeroObject.symm ≪≫ e.app _ ≪≫ G.mapZeroObject)
   have : (L ⋙ F).IsHomological := IsHomological.of_iso e.symm
-  refine IsHomological.mk' _ (fun T hT => ?_)
+  refine IsHomological.mk' _ (fun T hT ↦ ?_)
   rw [L.distTriang_iff] at hT
   obtain ⟨T₀, e, hT₀⟩ := hT
   exact ⟨L.mapTriangle.obj T₀, e, (L ⋙ F).map_distinguished_exact _ hT₀⟩
@@ -251,9 +251,9 @@ lemma mem_homologicalKernel_trW_iff {X Y : C} (f : X ⟶ Y) :
     F.homologicalKernel.trW f ↔ ∀ (n : ℤ), IsIso ((F.shift n).map f) := by
   obtain ⟨Z, g, h, hT⟩ := distinguished_cocone_triangle f
   apply (F.homologicalKernel.trW_iff_of_distinguished _ hT).trans
-  have h₁ := fun n => (F.homologySequence_exact₃ _ hT n _ rfl).isZero_X₂_iff
-  have h₂ := fun n => F.homologySequence_mono_shift_map_mor₁_iff _ hT n _ rfl
-  have h₃ := fun n => F.homologySequence_epi_shift_map_mor₁_iff _ hT n
+  have h₁ := fun n ↦ (F.homologySequence_exact₃ _ hT n _ rfl).isZero_X₂_iff
+  have h₂ := fun n ↦ F.homologySequence_mono_shift_map_mor₁_iff _ hT n _ rfl
+  have h₃ := fun n ↦ F.homologySequence_epi_shift_map_mor₁_iff _ hT n
   dsimp at h₁ h₂ h₃ ⊢
   simp only [mem_homologicalKernel_iff, h₁, ← h₂, ← h₃]
   constructor

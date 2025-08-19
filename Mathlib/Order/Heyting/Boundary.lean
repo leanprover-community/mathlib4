@@ -86,8 +86,8 @@ logic and duality between Heyting and co-Heyting algebras. It is crucial that th
 intuitionistic. -/
 example (a b : Prop) : (a ∧ b ∨ ¬(a ∧ b)) ∧ ((a ∨ b) ∨ ¬(a ∨ b)) → a ∨ ¬a := by
   rintro ⟨⟨ha, _⟩ | hnab, (ha | hb) | hnab⟩ <;> try exact Or.inl ha
-  · exact Or.inr fun ha => hnab ⟨ha, hb⟩
-  · exact Or.inr fun ha => hnab <| Or.inl ha
+  · exact Or.inr fun ha ↦ hnab ⟨ha, hb⟩
+  · exact Or.inr fun ha ↦ hnab <| Or.inl ha
 
 theorem boundary_le_boundary_sup_sup_boundary_inf_left : ∂ a ≤ ∂ (a ⊔ b) ⊔ ∂ (a ⊓ b) := by
   simp only [boundary, sup_inf_left, sup_inf_right, sup_right_idem, le_inf_iff, sup_assoc,
@@ -117,7 +117,7 @@ theorem hnot_hnot_sup_boundary (a : α) : ￢￢a ⊔ ∂ a = a := by
   exact hnot_hnot_le
 
 theorem hnot_eq_top_iff_exists_boundary : ￢a = ⊤ ↔ ∃ b, ∂ b = a :=
-  ⟨fun h => ⟨a, by rw [boundary, h, inf_top_eq]⟩, by
+  ⟨fun h ↦ ⟨a, by rw [boundary, h, inf_top_eq]⟩, by
     rintro ⟨b, rfl⟩
     exact hnot_boundary _⟩
 

@@ -129,7 +129,7 @@ lemma ofLawson_inj {a b : WithLawson α} : ofLawson a = ofLawson b ↔ a = b := 
 /-- A recursor for `WithLawson`. Use as `induction x`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 protected def rec {β : WithLawson α → Sort*}
-    (h : ∀ a, β (toLawson a)) : ∀ a, β a := fun a => h (ofLawson a)
+    (h : ∀ a, β (toLawson a)) : ∀ a, β a := fun a ↦ h (ofLawson a)
 
 instance [Nonempty α] : Nonempty (WithLawson α) := ‹Nonempty α›
 instance [Inhabited α] : Inhabited (WithLawson α) := ‹Inhabited α›
@@ -177,7 +177,7 @@ lemma lawsonClosed_of_lowerClosed (s : Set α) (h : IsClosed (WithLower.ofLower 
 /-- An upper set is Lawson open if and only if it is Scott open -/
 lemma lawsonOpen_iff_scottOpen_of_isUpperSet {s : Set α} (h : IsUpperSet s) :
     IsOpen (WithLawson.ofLawson ⁻¹' s) ↔ IsOpen (WithScott.ofScott ⁻¹' s) :=
-  ⟨fun hs => IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open (D := univ).mpr
+  ⟨fun hs ↦ IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open (D := univ).mpr
     ⟨h, (scottHausdorff_le_lawson s) hs⟩, lawson_le_scott _⟩
 
 variable (L : TopologicalSpace α) (S : TopologicalSpace α)

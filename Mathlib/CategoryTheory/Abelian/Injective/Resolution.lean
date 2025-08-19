@@ -87,7 +87,7 @@ def descFSucc {Y Z : C} (I : InjectiveResolution Y) (J : InjectiveResolution Z) 
 def desc {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y) (J : InjectiveResolution Z) :
     J.cocomplex ⟶ I.cocomplex :=
   CochainComplex.mkHom _ _ (descFZero f _ _) (descFOne f _ _) (descFOne_zero_comm f I J).symm
-    fun n ⟨g, g', w⟩ => ⟨(descFSucc I J n g g' w.symm).1, (descFSucc I J n g g' w.symm).2.symm⟩
+    fun n ⟨g, g', w⟩ ↦ ⟨(descFSucc I J n g g' w.symm).1, (descFSucc I J n g g' w.symm).2.symm⟩
 
 /-- The resolution maps intertwine the descent of a morphism and that morphism. -/
 @[reassoc (attr := simp)]
@@ -154,7 +154,7 @@ lemma comp_descHomotopyZeroSucc {Y Z : C} {I : InjectiveResolution Y} {J : Injec
 def descHomotopyZero {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveResolution Z}
     (f : I.cocomplex ⟶ J.cocomplex) (comm : I.ι ≫ f = 0) : Homotopy f 0 :=
   Homotopy.mkCoinductive _ (descHomotopyZeroZero f comm) (by simp)
-    (descHomotopyZeroOne f comm) (by simp) (fun n ⟨g, g', w⟩ =>
+    (descHomotopyZeroOne f comm) (by simp) (fun n ⟨g, g', w⟩ ↦
     ⟨descHomotopyZeroSucc f n g g' (by simp only [w, add_comm]), by simp⟩)
 
 /-- Two descents of the same morphism are homotopic. -/
@@ -292,7 +292,7 @@ variable [Abelian C] [EnoughInjectives C] (Z : C)
 /-- Auxiliary definition for `InjectiveResolution.of`. -/
 def ofCocomplex : CochainComplex C ℕ :=
   CochainComplex.mk' (Injective.under Z) (Injective.syzygies (Injective.ι Z))
-    (Injective.d (Injective.ι Z)) fun f => ⟨_, Injective.d f, by simp⟩
+    (Injective.d (Injective.ι Z)) fun f ↦ ⟨_, Injective.d f, by simp⟩
 
 lemma ofCocomplex_d_0_1 :
     (ofCocomplex Z).d 0 1 = d (Injective.ι Z) := by
@@ -320,7 +320,7 @@ irreducible_def of : InjectiveResolution Z where
   cocomplex := ofCocomplex Z
   ι := (CochainComplex.fromSingle₀Equiv _ _).symm ⟨Injective.ι Z,
     by rw [ofCocomplex_d_0_1, cokernel.condition_assoc, zero_comp]⟩
-  quasiIso := ⟨fun n => by
+  quasiIso := ⟨fun n ↦ by
     cases n
     · rw [CochainComplex.quasiIsoAt₀_iff, ShortComplex.quasiIso_iff_of_zeros]
       · refine (ShortComplex.exact_and_mono_f_iff_of_iso ?_).2

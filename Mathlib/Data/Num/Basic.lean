@@ -154,10 +154,10 @@ def cmp : PosNum → PosNum → Ordering
   | bit1 a, bit1 b => cmp a b
 
 instance : LT PosNum :=
-  ⟨fun a b => cmp a b = Ordering.lt⟩
+  ⟨fun a b ↦ cmp a b = Ordering.lt⟩
 
 instance : LE PosNum :=
-  ⟨fun a b => ¬b < a⟩
+  ⟨fun a b ↦ ¬b < a⟩
 
 instance decidableLT : DecidableLT PosNum
   | a, b => by dsimp [LT.lt]; infer_instance
@@ -193,10 +193,10 @@ instance (priority := 900) numNatCoe [Zero α] : CoeHTCT Num α :=
   ⟨castNum⟩
 
 instance : Repr PosNum :=
-  ⟨fun n _ => repr (n : ℕ)⟩
+  ⟨fun n _ ↦ repr (n : ℕ)⟩
 
 instance : Repr Num :=
-  ⟨fun n _ => repr (n : ℕ)⟩
+  ⟨fun n _ ↦ repr (n : ℕ)⟩
 
 end
 
@@ -265,10 +265,10 @@ def cmp : Num → Num → Ordering
   | pos a, pos b => PosNum.cmp a b
 
 instance : LT Num :=
-  ⟨fun a b => cmp a b = Ordering.lt⟩
+  ⟨fun a b ↦ cmp a b = Ordering.lt⟩
 
 instance : LE Num :=
-  ⟨fun a b => ¬b < a⟩
+  ⟨fun a b ↦ ¬b < a⟩
 
 instance decidableLT : DecidableLT Num
   | a, b => by dsimp [LT.lt]; infer_instance
@@ -288,7 +288,7 @@ def toZNumNeg : Num → ZNum
 
 /-- Converts a `Nat` to a `Num`. -/
 def ofNat' : ℕ → Num :=
-  Nat.binaryRec 0 (fun b _ => cond b Num.bit1 Num.bit0)
+  Nat.binaryRec 0 (fun b _ ↦ cond b Num.bit1 Num.bit0)
 
 end Num
 
@@ -474,10 +474,10 @@ def cmp : ZNum → ZNum → Ordering
   | _, neg _ => gt
 
 instance : LT ZNum :=
-  ⟨fun a b => cmp a b = Ordering.lt⟩
+  ⟨fun a b ↦ cmp a b = Ordering.lt⟩
 
 instance : LE ZNum :=
-  ⟨fun a b => ¬b < a⟩
+  ⟨fun a b ↦ ¬b < a⟩
 
 instance decidableLT : DecidableLT ZNum
   | a, b => by dsimp [LT.lt]; infer_instance
@@ -521,9 +521,9 @@ private def sqrtAux1 (b : PosNum) (r n : Num) : Num × Num :=
 
 /-- Auxiliary definition for a `sqrt` function which is not currently implemented. -/
 private def sqrtAux : PosNum → Num → Num → Num
-  | b@(bit0 b') => fun r n => let (r', n') := sqrtAux1 b r n; sqrtAux b' r' n'
-  | b@(bit1 b') => fun r n => let (r', n') := sqrtAux1 b r n; sqrtAux b' r' n'
-  | 1 => fun r n => (sqrtAux1 1 r n).1
+  | b@(bit0 b') => fun r n ↦ let (r', n') := sqrtAux1 b r n; sqrtAux b' r' n'
+  | b@(bit1 b') => fun r n ↦ let (r', n') := sqrtAux1 b r n; sqrtAux b' r' n'
+  | 1 => fun r n ↦ (sqrtAux1 1 r n).1
 
 end PosNum
 
@@ -603,6 +603,6 @@ instance (priority := 900) znumCoe : CoeHTCT ZNum α :=
   ⟨castZNum⟩
 
 instance : Repr ZNum :=
-  ⟨fun n _ => repr (n : ℤ)⟩
+  ⟨fun n _ ↦ repr (n : ℤ)⟩
 
 end

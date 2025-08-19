@@ -74,7 +74,7 @@ theorem isDedekindDomainInv_iff [Algebra A K] [IsFractionRing A K] :
     IsDedekindDomainInv A ↔ ∀ I ≠ (⊥ : FractionalIdeal A⁰ K), I * I⁻¹ = 1 := by
   let h : FractionalIdeal A⁰ (FractionRing A) ≃+* FractionalIdeal A⁰ K :=
     FractionalIdeal.mapEquiv (FractionRing.algEquiv A K)
-  refine h.toEquiv.forall_congr (fun {x} => ?_)
+  refine h.toEquiv.forall_congr (fun {x} ↦ ?_)
   rw [← h.toEquiv.apply_eq_iff_eq]
   simp [h]
 
@@ -103,7 +103,7 @@ protected theorem isUnit {I : FractionalIdeal A⁰ K} (hI : I ≠ 0) : IsUnit I 
   isUnit_of_mul_eq_one _ _ (h.mul_inv_eq_one hI)
 
 theorem isNoetherianRing : IsNoetherianRing A := by
-  refine isNoetherianRing_iff.mpr ⟨fun I : Ideal A => ?_⟩
+  refine isNoetherianRing_iff.mpr ⟨fun I : Ideal A ↦ ?_⟩
   by_cases hI : I = ⊥
   · rw [hI]; apply Submodule.fg_bot
   have hI : (I : FractionalIdeal A⁰ (FractionRing A)) ≠ 0 := coeIdeal_ne_zero.mpr hI
@@ -112,12 +112,12 @@ theorem isNoetherianRing : IsNoetherianRing A := by
 theorem integrallyClosed : IsIntegrallyClosed A := by
   -- It suffices to show that for integral `x`,
   -- `A[x]` (which is a fractional ideal) is in fact equal to `A`.
-  refine (isIntegrallyClosed_iff (FractionRing A)).mpr (fun {x hx} => ?_)
+  refine (isIntegrallyClosed_iff (FractionRing A)).mpr (fun {x hx} ↦ ?_)
   rw [← Set.mem_range, ← Algebra.mem_bot, ← Subalgebra.mem_toSubmodule, Algebra.toSubmodule_bot,
     Submodule.one_eq_span, ← coe_spanSingleton A⁰ (1 : FractionRing A), spanSingleton_one, ←
     FractionalIdeal.adjoinIntegral_eq_one_of_isUnit x hx (h.isUnit _)]
   · exact mem_adjoinIntegral_self A⁰ x hx
-  · exact fun h => one_ne_zero (eq_zero_iff.mp h 1 (Algebra.adjoin A {x}).one_mem)
+  · exact fun h ↦ one_ne_zero (eq_zero_iff.mp h 1 (Algebra.adjoin A {x}).one_mem)
 
 open Ring
 
@@ -125,7 +125,7 @@ theorem dimensionLEOne : DimensionLEOne A := ⟨by
   -- We're going to show that `P` is maximal because any (maximal) ideal `M`
   -- that is strictly larger would be `⊤`.
   rintro P P_ne hP
-  refine Ideal.isMaximal_def.mpr ⟨hP.ne_top, fun M hM => ?_⟩
+  refine Ideal.isMaximal_def.mpr ⟨hP.ne_top, fun M hM ↦ ?_⟩
   -- We may assume `P` and `M` (as fractional ideals) are nonzero.
   have P'_ne : (P : FractionalIdeal A⁰ (FractionRing A)) ≠ 0 := coeIdeal_ne_zero.mpr P_ne
   have M'_ne : (M : FractionalIdeal A⁰ (FractionRing A)) ≠ 0 := coeIdeal_ne_zero.mpr hM.ne_bot
@@ -197,7 +197,7 @@ theorem exists_multiset_prod_cons_le_and_prod_not_le [IsDedekindDomain A] (hNF :
   -- Then in fact there is a `P ∈ Z` with `P ≤ M`.
   obtain ⟨P, hPZ, rfl⟩ := Multiset.mem_map.mp hPZ'
   classical
-    have := Multiset.map_erase PrimeSpectrum.asIdeal (fun _ _ => PrimeSpectrum.ext) P Z
+    have := Multiset.map_erase PrimeSpectrum.asIdeal (fun _ _ ↦ PrimeSpectrum.ext) P Z
     obtain ⟨hP0, hZP0⟩ : P.asIdeal ≠ ⊥ ∧ ((Z.erase P).map PrimeSpectrum.asIdeal).prod ≠ ⊥ := by
       rwa [Ne, ← Multiset.cons_erase hPZ', Multiset.prod_cons, Ideal.mul_eq_bot, not_or, ←
         this] at hprodZ
@@ -208,7 +208,7 @@ theorem exists_multiset_prod_cons_le_and_prod_not_le [IsDedekindDomain A] (hNF :
     refine ⟨Z.erase P, ?_, ?_⟩
     · convert hZI
       rw [this, Multiset.cons_erase hPZ']
-    · refine fun h => h_eraseZ (Z.erase P) ⟨h, ?_⟩ (Multiset.erase_lt.mpr hPZ)
+    · refine fun h ↦ h_eraseZ (Z.erase P) ⟨h, ?_⟩ (Multiset.erase_lt.mpr hPZ)
       exact hZP0
 
 namespace FractionalIdeal
@@ -300,11 +300,11 @@ theorem coe_ideal_mul_inv [h : IsDedekindDomain A] (I : Ideal A) (hI0 : I ≠ �
     exact hx _ (mul_mem_mul hy hb)
   -- It turns out the subalgebra consisting of all `p(x)` for `p : A[X]` works.
   refine ⟨AlgHom.range (Polynomial.aeval x : A[X] →ₐ[A] K),
-    isNoetherian_submodule.mp (isNoetherian (I : FractionalIdeal A⁰ K)⁻¹) _ fun y hy => ?_,
+    isNoetherian_submodule.mp (isNoetherian (I : FractionalIdeal A⁰ K)⁻¹) _ fun y hy ↦ ?_,
     ⟨Polynomial.X, Polynomial.aeval_X x⟩⟩
   obtain ⟨p, rfl⟩ := (AlgHom.mem_range _).mp hy
   rw [Polynomial.aeval_eq_sum_range]
-  refine Submodule.sum_mem _ fun i hi => Submodule.smul_mem _ _ ?_
+  refine Submodule.sum_mem _ fun i hi ↦ Submodule.smul_mem _ _ ?_
   clear hi
   induction' i with i ih
   · rw [pow_zero]; exact one_mem_inv_coe_ideal hI0
@@ -337,14 +337,14 @@ theorem mul_right_le_iff [IsDedekindDomain A] {J : FractionalIdeal A⁰ K} (hJ :
   · intro h
     convert mul_right_mono J⁻¹ h <;> dsimp only <;>
     rw [mul_assoc, FractionalIdeal.mul_inv_cancel hJ, mul_one]
-  · exact fun h => mul_right_mono J h
+  · exact fun h ↦ mul_right_mono J h
 
 theorem mul_left_le_iff [IsDedekindDomain A] {J : FractionalIdeal A⁰ K} (hJ : J ≠ 0) {I I'} :
     J * I ≤ J * I' ↔ I ≤ I' := by convert mul_right_le_iff hJ using 1; simp only [mul_comm]
 
 theorem mul_right_strictMono [IsDedekindDomain A] {I : FractionalIdeal A⁰ K} (hI : I ≠ 0) :
     StrictMono (· * I) :=
-  strictMono_of_le_iff_le fun _ _ => (mul_right_le_iff hI).symm
+  strictMono_of_le_iff_le fun _ _ ↦ (mul_right_le_iff hI).symm
 
 instance [IsDedekindDomain A] : PosMulReflectLE (FractionalIdeal A⁰ K) where
   elim I _ _ := (FractionalIdeal.mul_left_le_iff I.2.ne').mp
@@ -381,7 +381,7 @@ end FractionalIdeal
 to express that an integral domain is a Dedekind domain. -/
 theorem isDedekindDomain_iff_isDedekindDomainInv [IsDomain A] :
     IsDedekindDomain A ↔ IsDedekindDomainInv A :=
-  ⟨fun _h _I hI => FractionalIdeal.mul_inv_cancel hI, fun h => h.isDedekindDomain⟩
+  ⟨fun _h _I hI ↦ FractionalIdeal.mul_inv_cancel hI, fun h ↦ h.isDedekindDomain⟩
 
 end Inverse
 
@@ -400,7 +400,7 @@ noncomputable instance FractionalIdeal.semifield : Semifield (FractionalIdeal A�
   div_eq_mul_inv := FractionalIdeal.div_eq_mul_inv
   mul_inv_cancel _ := FractionalIdeal.mul_inv_cancel
   nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
+  nnqsmul_def := fun _ _ ↦ rfl
 
 #adaptation_note /-- 2025-03-29 for lean4#7717 had to add `mul_left_cancel_of_ne_zero` field.
 TODO(kmill) There is trouble calculating the type of the `IsLeftCancelMulZero` parent. -/
@@ -439,7 +439,7 @@ instance : MulPosStrictMono (Ideal A) := MulPosMono.toMulPosStrictMono
 
 /-- For ideals in a Dedekind domain, to divide is to contain. -/
 theorem Ideal.dvd_iff_le {I J : Ideal A} : I ∣ J ↔ J ≤ I :=
-  ⟨Ideal.le_of_dvd, fun h => by
+  ⟨Ideal.le_of_dvd, fun h ↦ by
     by_cases hI : I = ⊥
     · have hJ : J = ⊥ := by rwa [hI, ← eq_bot_iff] at h
       rw [hI, hJ]
@@ -453,14 +453,14 @@ theorem Ideal.dvd_iff_le {I J : Ideal A} : I ∣ J ↔ J ≤ I :=
     rw [coeIdeal_mul, hH, ← mul_assoc, mul_inv_cancel₀ hI', one_mul]⟩
 
 theorem Ideal.dvdNotUnit_iff_lt {I J : Ideal A} : DvdNotUnit I J ↔ J < I :=
-  ⟨fun ⟨hI, H, hunit, hmul⟩ =>
+  ⟨fun ⟨hI, H, hunit, hmul⟩ ↦
     lt_of_le_of_ne (Ideal.dvd_iff_le.mp ⟨H, hmul⟩)
       (mt
-        (fun h =>
+        (fun h ↦
           have : H = 1 := mul_left_cancel₀ hI (by rw [← hmul, h, mul_one])
           show IsUnit H from this.symm ▸ isUnit_one)
         hunit),
-    fun h =>
+    fun h ↦
     dvdNotUnit_of_dvd_of_not_dvd (Ideal.dvd_iff_le.mpr (le_of_lt h))
       (mt Ideal.dvd_iff_le.mp (not_le_of_gt h))⟩
 
@@ -474,7 +474,7 @@ instance : WfDvdMonoid (Ideal A) where
 instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :=
   { irreducible_iff_prime := by
       intro P
-      exact ⟨fun hirr => ⟨hirr.ne_zero, hirr.not_isUnit, fun I J => by
+      exact ⟨fun hirr ↦ ⟨hirr.ne_zero, hirr.not_isUnit, fun I J ↦ by
         have : P.IsMaximal := by
           refine ⟨⟨mt Ideal.isUnit_iff.mpr hirr.not_isUnit, ?_⟩⟩
           intro J hJ

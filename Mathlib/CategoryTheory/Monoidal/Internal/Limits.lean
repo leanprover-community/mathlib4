@@ -44,8 +44,8 @@ def limit (F : J ⥤ Mon_ C) : Mon_ C :=
 def limitCone (F : J ⥤ Mon_ C) : Cone F where
   pt := limit F
   π :=
-    { app := fun j => .mk' (limit.π (F ⋙ Mon_.forget C) j)
-      naturality := fun j j' f => by ext; exact (limit.cone (F ⋙ Mon_.forget C)).π.naturality f }
+    { app := fun j ↦ .mk' (limit.π (F ⋙ Mon_.forget C) j)
+      naturality := fun j j' f ↦ by ext; exact (limit.cone (F ⋙ Mon_.forget C)).π.naturality f }
 
 /-- The image of the proposed limit cone for `F : J ⥤ Mon_ C` under the forgetful functor
 `forget C : Mon_ C ⥤ C` is isomorphic to the limit cone of `F ⋙ forget C`.
@@ -71,17 +71,17 @@ def limitConeIsLimit (F : J ⥤ Mon_ C) : IsLimit (limitCone F) where
   fac s h := by ext; simp
   uniq s m w := by
     ext1
-    refine limit.hom_ext (fun j => ?_)
+    refine limit.hom_ext (fun j ↦ ?_)
     dsimp; simp only [Mon_.forget_map, limit.lift_π, Functor.mapCone_π_app]
     exact congr_arg Mon_.Hom.hom (w j)
 
 instance hasLimitsOfShape [HasLimitsOfShape J C] : HasLimitsOfShape J (Mon_ C) where
-  has_limit := fun F => HasLimit.mk
+  has_limit := fun F ↦ HasLimit.mk
     { cone := limitCone F
       isLimit := limitConeIsLimit F }
 
 instance forget_preservesLimitsOfShape : PreservesLimitsOfShape J (Mon_.forget C) where
-  preservesLimit := fun {F} =>
+  preservesLimit := fun {F} ↦
     preservesLimit_of_preserves_limit_cone (limitConeIsLimit F)
       (IsLimit.ofIsoLimit (limit.isLimit (F ⋙ Mon_.forget C)) (forgetMapConeLimitConeIso F).symm)
 

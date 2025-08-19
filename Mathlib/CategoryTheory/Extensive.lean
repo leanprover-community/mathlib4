@@ -195,7 +195,7 @@ theorem finitaryExtensive_iff_of_isTerminal (C : Type u) [Category.{v} C] [HasFi
     [HasPullbacksOfInclusions C]
     (T : C) (HT : IsTerminal T) (c₀ : BinaryCofan T T) (hc₀ : IsColimit c₀) :
     FinitaryExtensive C ↔ IsVanKampenColimit c₀ := by
-  refine ⟨fun H => H.van_kampen' c₀ hc₀, fun H => ?_⟩
+  refine ⟨fun H ↦ H.van_kampen' c₀ hc₀, fun H ↦ ?_⟩
   constructor
   simp_rw [BinaryCofan.isVanKampen_iff] at H ⊢
   intro X Y c hc X' Y' c' αX αY f hX hY
@@ -210,8 +210,8 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
   classical
   rw [finitaryExtensive_iff_of_isTerminal (Type u) PUnit Types.isTerminalPunit _
       (Types.binaryCoproductColimit _ _)]
-  apply BinaryCofan.isVanKampen_mk _ _ (fun X Y => Types.binaryCoproductColimit X Y) _
-      fun f g => (Limits.Types.pullbackLimitCone f g).2
+  apply BinaryCofan.isVanKampen_mk _ _ (fun X Y ↦ Types.binaryCoproductColimit X Y) _
+      fun f g ↦ (Limits.Types.pullbackLimitCone f g).2
   · intros _ _ _ _ f hαX hαY
     constructor
     · refine ⟨⟨hαX.symm⟩, ⟨PullbackCone.isLimitAux' _ ?_⟩⟩
@@ -226,7 +226,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       delta ExistsUnique at this
       choose l hl hl' using this
       exact ⟨l, (funext hl).symm, Types.isTerminalPunit.hom_ext _ _,
-        fun {l'} h₁ _ => funext fun x => hl' x (l' x) (congr_fun h₁ x).symm⟩
+        fun {l'} h₁ _ ↦ funext fun x ↦ hl' x (l' x) (congr_fun h₁ x).symm⟩
     · refine ⟨⟨hαY.symm⟩, ⟨PullbackCone.isLimitAux' _ ?_⟩⟩
       intro s
       have : ∀ x, ∃! y, s.fst x = Sum.inr y := by
@@ -239,7 +239,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       delta ExistsUnique at this
       choose l hl hl' using this
       exact ⟨l, (funext hl).symm, Types.isTerminalPunit.hom_ext _ _,
-        fun {l'} h₁ _ => funext fun x => hl' x (l' x) (congr_fun h₁ x).symm⟩
+        fun {l'} h₁ _ ↦ funext fun x ↦ hl' x (l' x) (congr_fun h₁ x).symm⟩
   · intro Z f
     dsimp [Limits.Types.binaryCoproductCocone]
     delta Types.PullbackObj
@@ -248,14 +248,14 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       rcases f x with (⟨⟨⟩⟩ | ⟨⟨⟩⟩)
       exacts [Or.inl rfl, Or.inr rfl]
     let eX : { p : Z × PUnit // f p.fst = Sum.inl p.snd } ≃ { x : Z // f x = Sum.inl PUnit.unit } :=
-      ⟨fun p => ⟨p.1.1, by convert p.2⟩, fun x => ⟨⟨_, _⟩, x.2⟩, fun _ => by ext; rfl,
-        fun _ => by ext; rfl⟩
+      ⟨fun p ↦ ⟨p.1.1, by convert p.2⟩, fun x ↦ ⟨⟨_, _⟩, x.2⟩, fun _ ↦ by ext; rfl,
+        fun _ ↦ by ext; rfl⟩
     let eY : { p : Z × PUnit // f p.fst = Sum.inr p.snd } ≃ { x : Z // f x = Sum.inr PUnit.unit } :=
-      ⟨fun p => ⟨p.1.1, p.2.trans (congr_arg Sum.inr <| Subsingleton.elim _ _)⟩,
-        fun x => ⟨⟨_, _⟩, x.2⟩, fun _ => by ext; rfl, fun _ => by ext; rfl⟩
+      ⟨fun p ↦ ⟨p.1.1, p.2.trans (congr_arg Sum.inr <| Subsingleton.elim _ _)⟩,
+        fun x ↦ ⟨⟨_, _⟩, x.2⟩, fun _ ↦ by ext; rfl, fun _ ↦ by ext; rfl⟩
     fapply BinaryCofan.isColimitMk
-    · exact fun s x => dite _ (fun h => s.inl <| eX.symm ⟨x, h⟩)
-        fun h => s.inr <| eY.symm ⟨x, (this x).resolve_left h⟩
+    · exact fun s x ↦ dite _ (fun h ↦ s.inl <| eX.symm ⟨x, h⟩)
+        fun h ↦ s.inr <| eY.symm ⟨x, (this x).resolve_left h⟩
     · intro s
       ext ⟨⟨x, ⟨⟩⟩, _⟩
       dsimp
@@ -302,8 +302,8 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
 instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
   rw [finitaryExtensive_iff_of_isTerminal TopCat.{u} _ TopCat.isTerminalPUnit _
       (TopCat.binaryCofanIsColimit _ _)]
-  apply BinaryCofan.isVanKampen_mk _ _ (fun X Y => TopCat.binaryCofanIsColimit X Y) _
-      fun f g => TopCat.pullbackConeIsLimit f g
+  apply BinaryCofan.isVanKampen_mk _ _ (fun X Y ↦ TopCat.binaryCofanIsColimit X Y) _
+      fun f g ↦ TopCat.pullbackConeIsLimit f g
   · intro X' Y' αX αY f hαX hαY
     constructor
     · refine ⟨⟨hαX.symm⟩, ⟨PullbackCone.isLimitAux' _ ?_⟩⟩
@@ -311,15 +311,15 @@ instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
       have : ∀ x, ∃! y, s.fst x = Sum.inl y := by
         intro x
         rcases h : s.fst x with val | val
-        · exact ⟨val, rfl, fun y h => Sum.inl_injective h.symm⟩
+        · exact ⟨val, rfl, fun y h ↦ Sum.inl_injective h.symm⟩
         · apply_fun f at h
           cases ((ConcreteCategory.congr_hom s.condition x).symm.trans h).trans
             (ConcreteCategory.congr_hom hαY val :).symm
       delta ExistsUnique at this
       choose l hl hl' using this
-      refine ⟨TopCat.ofHom ⟨l, ?_⟩, TopCat.ext fun a => (hl a).symm,
+      refine ⟨TopCat.ofHom ⟨l, ?_⟩, TopCat.ext fun a ↦ (hl a).symm,
         TopCat.isTerminalPUnit.hom_ext _ _,
-        fun {l'} h₁ _ => TopCat.ext fun x =>
+        fun {l'} h₁ _ ↦ TopCat.ext fun x ↦
           hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm⟩
       apply (IsEmbedding.inl (X := X') (Y := Y')).isInducing.continuous_iff.mpr
       convert s.fst.hom.2 using 1
@@ -332,13 +332,13 @@ instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
         · apply_fun f at h
           cases ((ConcreteCategory.congr_hom s.condition x).symm.trans h).trans
             (ConcreteCategory.congr_hom hαX val :).symm
-        · exact ⟨val, rfl, fun y h => Sum.inr_injective h.symm⟩
+        · exact ⟨val, rfl, fun y h ↦ Sum.inr_injective h.symm⟩
       delta ExistsUnique at this
       choose l hl hl' using this
-      refine ⟨TopCat.ofHom ⟨l, ?_⟩, TopCat.ext fun a => (hl a).symm,
+      refine ⟨TopCat.ofHom ⟨l, ?_⟩, TopCat.ext fun a ↦ (hl a).symm,
         TopCat.isTerminalPUnit.hom_ext _ _,
-        fun {l'} h₁ _ =>
-          TopCat.ext fun x => hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm⟩
+        fun {l'} h₁ _ ↦
+          TopCat.ext fun x ↦ hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm⟩
       apply (IsEmbedding.inr (X := X') (Y := Y')).isInducing.continuous_iff.mpr
       convert s.fst.hom.2 using 1
       exact (funext hl).symm
@@ -376,8 +376,8 @@ theorem finitaryExtensive_of_reflective
 
 instance finitaryExtensive_functor [HasPullbacks C] [FinitaryExtensive C] :
     FinitaryExtensive (D ⥤ C) :=
-  haveI : HasFiniteCoproducts (D ⥤ C) := ⟨fun _ => Limits.functorCategoryHasColimitsOfShape⟩
-  ⟨fun c hc => isVanKampenColimit_of_evaluation _ c fun _ =>
+  haveI : HasFiniteCoproducts (D ⥤ C) := ⟨fun _ ↦ Limits.functorCategoryHasColimitsOfShape⟩
+  ⟨fun c hc ↦ isVanKampenColimit_of_evaluation _ c fun _ ↦
     FinitaryExtensive.vanKampen _ <| isColimitOfPreserves _ hc⟩
 
 instance {C} [Category C] {D} [Category D] (F : C ⥤ D)

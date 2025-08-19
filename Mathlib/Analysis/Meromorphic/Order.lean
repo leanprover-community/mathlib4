@@ -299,12 +299,12 @@ theorem meromorphicOrderAt_congr (hf₁₂ : f₁ =ᶠ[𝓝[≠] x] f₂) :
   by_cases h₁f₁ : meromorphicOrderAt f₁ x = ⊤
   · rw [h₁f₁, eq_comm]
     rw [meromorphicOrderAt_eq_top_iff] at h₁f₁ ⊢
-    exact EventuallyEq.rw h₁f₁ (fun x => Eq (f₂ x)) hf₁₂.symm
+    exact EventuallyEq.rw h₁f₁ (fun x ↦ Eq (f₂ x)) hf₁₂.symm
   · obtain ⟨n, hn : meromorphicOrderAt f₁ x = n⟩ := Option.ne_none_iff_exists'.mp h₁f₁
     obtain ⟨g, h₁g, h₂g, h₃g⟩ := (meromorphicOrderAt_eq_int_iff hf₁).1 hn
     rw [hn, eq_comm, meromorphicOrderAt_eq_int_iff (hf₁.congr hf₁₂)]
     use g, h₁g, h₂g
-    exact EventuallyEq.rw h₃g (fun x => Eq (f₂ x)) hf₁₂.symm
+    exact EventuallyEq.rw h₃g (fun x ↦ Eq (f₂ x)) hf₁₂.symm
 
 @[deprecated (since := "2025-05-22")] alias MeromorphicAt.order_congr :=
   meromorphicOrderAt_congr
@@ -644,7 +644,7 @@ theorem exists_meromorphicOrderAt_ne_top_iff_forall (hf : MeromorphicOn f U) (hU
     have := isPreconnected_iff_preconnectedSpace.1 hU.isPreconnected
     rcases isClopen_iff.1 hf.isClopen_setOf_meromorphicOrderAt_eq_top with h | h
     · intro u
-      have : u ∉ (∅ : Set U) := by exact fun a => a
+      have : u ∉ (∅ : Set U) := by exact fun a ↦ a
       rw [← h] at this
       tauto
     · obtain ⟨u, hU⟩ := h₂f

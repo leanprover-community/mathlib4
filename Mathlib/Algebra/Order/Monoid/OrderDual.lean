@@ -20,11 +20,11 @@ namespace OrderDual
 @[to_additive]
 instance isOrderedMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
     IsOrderedMonoid αᵒᵈ :=
-  { mul_le_mul_left := fun _ _ h c => mul_le_mul_left' h c }
+  { mul_le_mul_left := fun _ _ h c ↦ mul_le_mul_left' h c }
 
 @[to_additive]
 instance isOrderedCancelMonoid [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α] :
     IsOrderedCancelMonoid αᵒᵈ :=
-  { le_of_mul_le_mul_left := fun _ _ _ : α => le_of_mul_le_mul_left' }
+  { le_of_mul_le_mul_left := fun _ _ _ : α ↦ le_of_mul_le_mul_left' }
 
 end OrderDual

@@ -147,7 +147,7 @@ It is exact away from `0` and has homology `X` at `0`. -/
 @[simps]
 noncomputable def alternatingConst [HasZeroMorphisms C] : C ⥤ ChainComplex C ℕ where
   obj X := HomologicalComplex.alternatingConst X (Category.id_comp 0) (Category.comp_id 0)
-    (fun _ _ => ComplexShape.down_nat_odd_add)
+    (fun _ _ ↦ ComplexShape.down_nat_odd_add)
   map {X Y} f := {
     f _ := f
     comm' i j hij := by by_cases Even i <;> simp_all [-Nat.not_even_iff_odd] }

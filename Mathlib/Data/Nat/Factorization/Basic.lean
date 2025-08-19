@@ -29,7 +29,7 @@ theorem dvd_of_factorization_pos {n p : ℕ} (hn : n.factorization p ≠ 0) : p 
 
 theorem factorization_eq_zero_iff_remainder {p r : ℕ} (i : ℕ) (pp : p.Prime) (hr0 : r ≠ 0) :
     ¬p ∣ r ↔ (p * i + r).factorization p = 0 := by
-  refine ⟨factorization_eq_zero_of_remainder i, fun h => ?_⟩
+  refine ⟨factorization_eq_zero_of_remainder i, fun h ↦ ?_⟩
   rw [factorization_eq_zero_iff] at h
   contrapose! h
   refine ⟨pp, ?_, ?_⟩
@@ -47,7 +47,7 @@ theorem factorization_eq_zero_iff' (n : ℕ) : n.factorization = 0 ↔ n = 0 ∨
 /-- Modified version of `factorization_prod` that accounts for inputs. -/
 theorem factorization_prod_apply {α : Type*} {p : ℕ}
     {S : Finset α} {g : α → ℕ} (hS : ∀ x ∈ S, g x ≠ 0) :
-    (S.prod g).factorization p = S.sum fun x => (g x).factorization p := by
+    (S.prod g).factorization p = S.sum fun x ↦ (g x).factorization p := by
   rw [factorization_prod hS, finset_sum_apply]
 
 /-- A product over `n.factorization` can be written as a product over `n.primeFactors`; -/
@@ -81,7 +81,7 @@ theorem Prime.eq_of_factorization_pos {p q : ℕ} (hp : Prime p) (h : p.factoriz
 
 theorem eq_factorization_iff {n : ℕ} {f : ℕ →₀ ℕ} (hn : n ≠ 0) (hf : ∀ p ∈ f.support, Prime p) :
     f = n.factorization ↔ f.prod (· ^ ·) = n :=
-  ⟨fun h => by rw [h, factorization_prod_pow_eq_self hn], fun h => by
+  ⟨fun h ↦ by rw [h, factorization_prod_pow_eq_self hn], fun h ↦ by
     rw [← h, prod_pow_factorization_eq_self hf]⟩
 
 theorem factorizationEquiv_inv_apply {f : ℕ →₀ ℕ} (hf : ∀ p ∈ f.support, Prime p) :
@@ -145,7 +145,7 @@ theorem factorization_le_of_le_pow {n p b : ℕ} (hb : n ≤ p ^ b) : n.factoriz
 theorem factorization_prime_le_iff_dvd {d n : ℕ} (hd : d ≠ 0) (hn : n ≠ 0) :
     (∀ p : ℕ, p.Prime → d.factorization p ≤ n.factorization p) ↔ d ∣ n := by
   rw [← factorization_le_iff_dvd hd hn]
-  refine ⟨fun h p => (em p.Prime).elim (h p) fun hp => ?_, fun h p _ => h p⟩
+  refine ⟨fun h p ↦ (em p.Prime).elim (h p) fun hp ↦ ?_, fun h p _ ↦ h p⟩
   simp_rw [factorization_eq_zero_of_non_prime _ hp]
   rfl
 
@@ -279,7 +279,7 @@ theorem ordCompl_dvd_ordCompl_of_dvd {a b : ℕ} (hab : a ∣ b) (p : ℕ) :
 
 theorem ordCompl_dvd_ordCompl_iff_dvd (a b : ℕ) :
     (∀ p : ℕ, ordCompl[p] a ∣ ordCompl[p] b) ↔ a ∣ b := by
-  refine ⟨fun h => ?_, fun hab p => ordCompl_dvd_ordCompl_of_dvd hab p⟩
+  refine ⟨fun h ↦ ?_, fun hab p ↦ ordCompl_dvd_ordCompl_of_dvd hab p⟩
   rcases eq_or_ne b 0 with (rfl | hb0)
   · simp
   if pa : a.Prime then ?_ else simpa [pa] using h a
@@ -297,7 +297,7 @@ theorem dvd_iff_prime_pow_dvd_dvd (n d : ℕ) :
   rcases eq_or_ne d 0 with (rfl | hd)
   · simp only [zero_dvd_iff, hn, false_iff, not_forall]
     exact ⟨2, n, prime_two, dvd_zero _, mt (le_of_dvd hn.bot_lt) (n.lt_two_pow_self).not_ge⟩
-  refine ⟨fun h p k _ hpkd => dvd_trans hpkd h, ?_⟩
+  refine ⟨fun h p k _ hpkd ↦ dvd_trans hpkd h, ?_⟩
   rw [← factorization_prime_le_iff_dvd hd hn]
   intro h p pp
   simp_rw [← pp.pow_dvd_iff_le_factorization hn]
@@ -336,7 +336,7 @@ theorem factorization_gcd {a b : ℕ} (ha_pos : a ≠ 0) (hb_pos : b ≠ 0) :
 theorem factorization_lcm {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
     (a.lcm b).factorization = a.factorization ⊔ b.factorization := by
   rw [← add_right_inj (a.gcd b).factorization, ←
-    factorization_mul (mt gcd_eq_zero_iff.1 fun h => ha h.1) (lcm_ne_zero ha hb), gcd_mul_lcm,
+    factorization_mul (mt gcd_eq_zero_iff.1 fun h ↦ ha h.1) (lcm_ne_zero ha hb), gcd_mul_lcm,
     factorization_gcd ha hb, factorization_mul ha hb]
   ext1
   exact (min_add_max _ _).symm
@@ -366,7 +366,7 @@ theorem Icc_factorization_eq_pow_dvd (n : ℕ) {p : ℕ} (pp : Prime p) :
   ext x
   simp only [mem_Icc, Finset.mem_filter, mem_Ico, and_assoc, and_congr_right_iff,
     pp.pow_dvd_iff_le_factorization hn, iff_and_self]
-  exact fun _ H => lt_of_le_of_lt H (factorization_lt p hn)
+  exact fun _ H ↦ lt_of_le_of_lt H (factorization_lt p hn)
 
 theorem factorization_eq_card_pow_dvd (n : ℕ) {p : ℕ} (pp : p.Prime) :
     n.factorization p = #{i ∈ Ico 1 n | p ^ i ∣ n} := by
@@ -423,7 +423,7 @@ theorem eq_iff_prime_padicValNat_eq (a b : ℕ) (ha : a ≠ 0) (hb : b ≠ 0) :
   · rintro rfl
     simp
   · intro h
-    refine eq_of_factorization_eq ha hb fun p => ?_
+    refine eq_of_factorization_eq ha hb fun p ↦ ?_
     by_cases pp : p.Prime
     · simp [factorization_def, pp, h p pp]
     · simp [factorization_eq_zero_of_non_prime, pp]
@@ -433,7 +433,7 @@ theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < 
   nth_rw 2 [← factorization_prod_pow_eq_self hn]
   rw [eq_comm]
   apply Finset.prod_subset_one_on_sdiff
-  · exact fun p hp => Finset.mem_filter.mpr ⟨Finset.mem_range.2 <| pr.trans_le' <|
+  · exact fun p hp ↦ Finset.mem_filter.mpr ⟨Finset.mem_range.2 <| pr.trans_le' <|
       le_of_mem_primeFactors hp, prime_of_mem_primeFactors hp⟩
   · intro p hp
     obtain ⟨hp1, hp2⟩ := Finset.mem_sdiff.mp hp

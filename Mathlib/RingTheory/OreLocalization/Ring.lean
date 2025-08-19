@@ -141,7 +141,7 @@ def universalHom : R[S⁻¹] →+* T :=
       simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe]
       rw [OreLocalization.zero_def, universalMulHom_apply]
       simp
-    map_add' := fun x y => by
+    map_add' := fun x y ↦ by
       simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe]
       induction' x with r₁ s₁
       induction' y with r₂ s₂
@@ -197,7 +197,7 @@ open nonZeroDivisors
 
 theorem numeratorHom_inj (hS : S ≤ nonZeroDivisorsLeft R) :
     Function.Injective (numeratorHom : R → R[S⁻¹]) :=
-  fun r₁ r₂ h => by
+  fun r₁ r₂ h ↦ by
   rw [numeratorHom_apply, numeratorHom_apply, oreDiv_eq_iff] at h
   rcases h with ⟨u, v, h₁, h₂⟩
   simp only [S.coe_one, mul_one, Submonoid.smul_def, smul_eq_mul] at h₁ h₂
@@ -245,7 +245,7 @@ open Classical in
 @[irreducible]
 protected def inv : R[R⁰⁻¹] → R[R⁰⁻¹] :=
   liftExpand
-    (fun r s =>
+    (fun r s ↦
       if hr : r = (0 : R) then (0 : R[R⁰⁻¹])
       else s /ₒ ⟨r, mem_nonZeroDivisors_of_ne_zero hr⟩)
     (by
@@ -286,9 +286,9 @@ instance : DivisionRing R[R⁰⁻¹] where
   mul_inv_cancel := OreLocalization.mul_inv_cancel
   inv_zero := OreLocalization.inv_zero
   nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
+  nnqsmul_def := fun _ _ ↦ rfl
   qsmul := _
-  qsmul_def := fun _ _ => rfl
+  qsmul_def := fun _ _ ↦ rfl
 
 end DivisionRing
 

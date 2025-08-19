@@ -50,7 +50,7 @@ def Fix.approx : Stream' (∀ a, Part (β a))
 /-- loop body for finding the fixed point of `f` -/
 def fixAux {p : ℕ → Prop} (i : Nat.Upto p) (g : ∀ j : Nat.Upto p, i < j → ∀ a, Part (β a)) :
     ∀ a, Part (β a) :=
-  f fun x : α => (assert ¬p i.val) fun h : ¬p i.val => g (i.succ h) (Nat.lt_succ_self _) x
+  f fun x : α ↦ (assert ¬p i.val) fun h : ¬p i.val ↦ g (i.succ h) (Nat.lt_succ_self _) x
 
 /-- The least fixed point of `f`.
 
@@ -61,13 +61,13 @@ it satisfies the equations:
   2. `∀ X, f X ≤ X → fix f ≤ X`   (least fixed point)
 -/
 protected def fix (x : α) : Part (β x) :=
-  (Part.assert (∃ i, (Fix.approx f i x).Dom)) fun h =>
+  (Part.assert (∃ i, (Fix.approx f i x).Dom)) fun h ↦
     WellFounded.fix.{1} (Nat.Upto.wf h) (fixAux f) Nat.Upto.zero x
 
 open Classical in
 protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
     Part.fix f x = Fix.approx f (Nat.succ (Nat.find h')) x := by
-  let p := fun i : ℕ => (Fix.approx f i x).Dom
+  let p := fun i : ℕ ↦ (Fix.approx f i x).Dom
   have : p (Nat.find h') := Nat.find_spec h'
   generalize hk : Nat.find h' = k
   replace hk : Nat.find h' = k + (@Upto.zero p).val := hk
@@ -110,7 +110,7 @@ end Part
 namespace Part
 
 instance hasFix : Fix (Part α) :=
-  ⟨fun f => Part.fix (fun x u => f (x u)) ()⟩
+  ⟨fun f ↦ Part.fix (fun x u ↦ f (x u)) ()⟩
 
 end Part
 

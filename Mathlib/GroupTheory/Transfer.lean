@@ -51,7 +51,7 @@ noncomputable def diff : A :=
 @[to_additive]
 theorem diff_mul_diff : diff ϕ R S * diff ϕ S T = diff ϕ R T :=
   prod_mul_distrib.symm.trans
-    (prod_congr rfl fun q _ =>
+    (prod_congr rfl fun q _ ↦
       (ϕ.map_mul _ _).symm.trans
         (congr_arg ϕ
           (by simp_rw [Subtype.ext_iff, coe_mul, mul_assoc, mul_inv_cancel_left])))
@@ -81,7 +81,7 @@ variable (H) in
 /-- The transfer transversal as a function. Given a `⟨g⟩`-orbit `q₀, g • q₀, ..., g ^ (m - 1) • q₀`
   in `G ⧸ H`, an element `g ^ k • q₀` is mapped to `g ^ k • g₀` for a fixed choice of
   representative `g₀` of `q₀`. -/
-noncomputable def transferFunction : G ⧸ H → G := fun q =>
+noncomputable def transferFunction : G ⧸ H → G := fun q ↦
   g ^ (cast (quotientEquivSigmaZMod H g q).2 : ℤ) * (quotientEquivSigmaZMod H g q).1.out.out
 
 lemma transferFunction_apply (q : G ⧸ H) :
@@ -142,9 +142,9 @@ the transfer homomorphism is `transfer ϕ : G →* A`. -/
 the transfer homomorphism is `transfer ϕ : G →+ A`. -/]
 noncomputable def transfer [FiniteIndex H] : G →* A :=
   let T : H.LeftTransversal := default
-  { toFun := fun g => diff ϕ T (g • T)
+  { toFun := fun g ↦ diff ϕ T (g • T)
     map_one' := by rw [one_smul, diff_self]
-    map_mul' := fun g h => by rw [mul_smul, ← diff_mul_diff, smul_diff_smul] }
+    map_mul' := fun g h ↦ by rw [mul_smul, ← diff_mul_diff, smul_diff_smul] }
 
 variable (T : H.LeftTransversal)
 
@@ -167,7 +167,7 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
       _ = _ := ((quotientEquivSigmaZMod H g).symm.prod_comp _).symm
       _ = _ := Finset.prod_sigma _ _ _
       _ = _ := by
-        refine Fintype.prod_congr _ _ (fun q => ?_)
+        refine Fintype.prod_congr _ _ (fun q ↦ ?_)
         simp only [quotientEquivSigmaZMod_symm_apply, transferTransversal_apply',
           transferTransversal_apply'']
         rw [Fintype.prod_eq_single (0 : ZMod (Function.minimalPeriod (g • ·) q.out)) _]
@@ -185,16 +185,16 @@ theorem transfer_eq_pow_aux (g : G)
     exact H.one_mem
   letI := fintypeOfIndexNeZero hH
   classical
-    replace key : ∀ (k : ℕ) (g₀ : G), g₀⁻¹ * g ^ k * g₀ ∈ H → g ^ k ∈ H := fun k g₀ hk =>
+    replace key : ∀ (k : ℕ) (g₀ : G), g₀⁻¹ * g ^ k * g₀ ∈ H → g ^ k ∈ H := fun k g₀ hk ↦
       (congr_arg (· ∈ H) (key k g₀ hk)).mp hk
-    replace key : ∀ q : G ⧸ H, g ^ Function.minimalPeriod (g • ·) q ∈ H := fun q =>
+    replace key : ∀ q : G ⧸ H, g ^ Function.minimalPeriod (g • ·) q ∈ H := fun q ↦
       key (Function.minimalPeriod (g • ·) q) q.out
         (QuotientGroup.out_conj_pow_minimalPeriod_mem H g q)
-    let f : Quotient (orbitRel (zpowers g) (G ⧸ H)) → zpowers g := fun q =>
+    let f : Quotient (orbitRel (zpowers g) (G ⧸ H)) → zpowers g := fun q ↦
       (⟨g, mem_zpowers g⟩ : zpowers g) ^ Function.minimalPeriod (g • ·) q.out
-    have hf : ∀ q, f q ∈ H.subgroupOf (zpowers g) := fun q => key q.out
+    have hf : ∀ q, f q ∈ H.subgroupOf (zpowers g) := fun q ↦ key q.out
     replace key :=
-      Subgroup.prod_mem (H.subgroupOf (zpowers g)) fun q (_ : q ∈ Finset.univ) => hf q
+      Subgroup.prod_mem (H.subgroupOf (zpowers g)) fun q (_ : q ∈ Finset.univ) ↦ hf q
     simpa only [f, minimalPeriod_eq_card, Finset.prod_pow_eq_pow_sum, Fintype.card_sigma,
       Fintype.card_congr (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)), index_eq_card,
       Nat.card_eq_fintype_card] using key
@@ -219,7 +219,7 @@ theorem transfer_eq_pow [FiniteIndex H] (g : G)
 
 theorem transfer_center_eq_pow [FiniteIndex (center G)] (g : G) :
     transfer (MonoidHom.id (center G)) g = ⟨g ^ (center G).index, (center G).pow_index_mem g⟩ :=
-  transfer_eq_pow (id (center G)) g fun k _ hk => by rw [← mul_right_inj, ← hk.comm,
+  transfer_eq_pow (id (center G)) g fun k _ hk ↦ by rw [← mul_right_inj, ← hk.comm,
     mul_inv_cancel_right]
 
 variable (G) in
@@ -242,7 +242,7 @@ include hP
 /-- The homomorphism `G →* P` in Burnside's transfer theorem. -/
 noncomputable def transferSylow [FiniteIndex (P : Subgroup G)] : G →* (P : Subgroup G) :=
   @transfer G _ P P
-    (@CommGroup.ofIsMulCommutative P _ ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩)
+    (@CommGroup.ofIsMulCommutative P _ ⟨⟨fun a b ↦ Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩)
       (MonoidHom.id P) _
 
 variable [Fact p.Prime] [Finite (Sylow p G)]
@@ -251,7 +251,7 @@ variable [Fact p.Prime] [Finite (Sylow p G)]
 theorem transferSylow_eq_pow_aux (g : G) (hg : g ∈ P) (k : ℕ) (g₀ : G)
     (h : g₀⁻¹ * g ^ k * g₀ ∈ P) : g₀⁻¹ * g ^ k * g₀ = g ^ k := by
   haveI : IsMulCommutative (P : Subgroup G) :=
-    ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
+    ⟨⟨fun a b ↦ Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
   replace hg := (P : Subgroup G).pow_mem hg k
   obtain ⟨n, hn, h⟩ := P.conj_eq_normalizer_conj_of_mem (g ^ k) g₀ hg h
   exact h.trans (Commute.inv_mul_cancel (hP hn (g ^ k) hg).symm)
@@ -261,12 +261,12 @@ variable [FiniteIndex (P : Subgroup G)]
 theorem transferSylow_eq_pow (g : G) (hg : g ∈ P) :
     transferSylow P hP g =
       ⟨g ^ (P : Subgroup G).index, transfer_eq_pow_aux g (transferSylow_eq_pow_aux P hP g hg)⟩ :=
-  haveI : IsMulCommutative P := ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
+  haveI : IsMulCommutative P := ⟨⟨fun a b ↦ Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
   transfer_eq_pow _ _ <| transferSylow_eq_pow_aux P hP g hg
 
 theorem transferSylow_restrict_eq_pow : ⇑((transferSylow P hP).restrict (P : Subgroup G)) =
-    (fun x : P => x ^ (P : Subgroup G).index) :=
-  funext fun g => transferSylow_eq_pow P hP g g.2
+    (fun x : P ↦ x ^ (P : Subgroup G).index) :=
+  funext fun g ↦ transferSylow_eq_pow P hP g g.2
 
 /-- **Burnside's normal p-complement theorem**: If `N(P) ≤ C(P)`, then `P` has a normal
 complement. -/
@@ -288,7 +288,7 @@ theorem ker_transferSylow_disjoint (Q : Subgroup G) (hQ : IsPGroup p Q) :
     Disjoint (transferSylow P hP).ker Q :=
   disjoint_iff.mpr <|
     card_eq_one.mp <|
-      (hQ.to_le inf_le_right).card_eq_or_dvd.resolve_right fun h =>
+      (hQ.to_le inf_le_right).card_eq_or_dvd.resolve_right fun h ↦
         not_dvd_card_ker_transferSylow P hP <| h.trans <| card_dvd_of_le inf_le_left
 
 end BurnsideTransfer

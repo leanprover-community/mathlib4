@@ -20,7 +20,7 @@ namespace Subgroup
 -/
 theorem commutator_pi_pi_of_finite {η : Type*} [Finite η] {Gs : η → Type*} [∀ i, Group (Gs i)]
     (H K : ∀ i, Subgroup (Gs i)) : ⁅Subgroup.pi Set.univ H, Subgroup.pi Set.univ K⁆ =
-    Subgroup.pi Set.univ fun i => ⁅H i, K i⁆ := by
+    Subgroup.pi Set.univ fun i ↦ ⁅H i, K i⁆ := by
   classical
     apply le_antisymm (commutator_pi_pi_le H K)
     rw [pi_le_iff]

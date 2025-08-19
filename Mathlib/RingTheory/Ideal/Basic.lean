@@ -133,13 +133,13 @@ theorem pow_multiset_sum_mem_span_pow [DecidableEq α] (s : Multiset α) (n : �
     exact mul_mem_left _ _ hs
 
 theorem sum_pow_mem_span_pow {ι} (s : Finset ι) (f : ι → α) (n : ℕ) :
-    (∑ i ∈ s, f i) ^ (s.card * n + 1) ∈ span ((fun i => f i ^ (n + 1)) '' s) := by
+    (∑ i ∈ s, f i) ^ (s.card * n + 1) ∈ span ((fun i ↦ f i ^ (n + 1)) '' s) := by
   classical
   simpa only [Multiset.card_map, Multiset.map_map, comp_apply, Multiset.toFinset_map,
     Finset.coe_image, Finset.val_toFinset] using pow_multiset_sum_mem_span_pow (s.1.map f) n
 
 theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
-    span ((fun (x : α) => x ^ n) '' s) = ⊤ := by
+    span ((fun (x : α) ↦ x ^ n) '' s) = ⊤ := by
   rw [eq_top_iff_one]
   rcases n with - | n
   · obtain rfl | ⟨x, hx⟩ := eq_empty_or_nonempty s
@@ -148,14 +148,14 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
     · exact subset_span ⟨_, hx, pow_zero _⟩
   rw [eq_top_iff_one, span, Finsupp.mem_span_iff_linearCombination] at hs
   rcases hs with ⟨f, hf⟩
-  have hf : (f.support.sum fun a => f a * a) = 1 := hf -- Porting note: was `change ... at hf`
-  have := sum_pow_mem_span_pow f.support (fun a => f a * a) n
+  have hf : (f.support.sum fun a ↦ f a * a) = 1 := hf -- Porting note: was `change ... at hf`
+  have := sum_pow_mem_span_pow f.support (fun a ↦ f a * a) n
   rw [hf, one_pow] at this
   refine span_le.mpr ?_ this
   rintro _ hx
   simp_rw [Set.mem_image] at hx
   rcases hx with ⟨x, _, rfl⟩
-  have : span ({(x : α) ^ (n + 1)} : Set α) ≤ span ((fun x : α => x ^ (n + 1)) '' s) := by
+  have : span ({(x : α) ^ (n + 1)} : Set α) ≤ span ((fun x : α ↦ x ^ (n + 1)) '' s) := by
     rw [span_le, Set.singleton_subset_iff]
     exact subset_span ⟨x, x.prop, rfl⟩
   refine this ?_
@@ -217,7 +217,7 @@ variable {R : Type*} [CommSemiring R]
 
 theorem exists_not_isUnit_of_not_isField [Nontrivial R] (hf : ¬IsField R) :
     ∃ (x : R) (_hx : x ≠ (0 : R)), ¬IsUnit x := by
-  have : ¬_ := fun h => hf ⟨exists_pair_ne R, mul_comm, h⟩
+  have : ¬_ := fun h ↦ hf ⟨exists_pair_ne R, mul_comm, h⟩
   simp_rw [isUnit_iff_exists_inv]
   push_neg at this ⊢
   obtain ⟨x, hx, not_unit⟩ := this
@@ -241,10 +241,10 @@ theorem not_isField_iff_exists_ideal_bot_lt_and_lt_top [Nontrivial R] :
 theorem not_isField_iff_exists_prime [Nontrivial R] :
     ¬IsField R ↔ ∃ p : Ideal R, p ≠ ⊥ ∧ p.IsPrime :=
   not_isField_iff_exists_ideal_bot_lt_and_lt_top.trans
-    ⟨fun ⟨I, bot_lt, lt_top⟩ =>
+    ⟨fun ⟨I, bot_lt, lt_top⟩ ↦
       let ⟨p, hp, le_p⟩ := I.exists_le_maximal (lt_top_iff_ne_top.mp lt_top)
       ⟨p, bot_lt_iff_ne_bot.mp (lt_of_lt_of_le bot_lt le_p), hp.isPrime⟩,
-      fun ⟨p, ne_bot, Prime⟩ => ⟨p, bot_lt_iff_ne_bot.mpr ne_bot, lt_top_iff_ne_top.mpr Prime.1⟩⟩
+      fun ⟨p, ne_bot, Prime⟩ ↦ ⟨p, bot_lt_iff_ne_bot.mpr ne_bot, lt_top_iff_ne_top.mpr Prime.1⟩⟩
 
 /-- Also see `Ideal.isSimpleOrder` for the forward direction as an instance when `R` is a
 division (semi)ring.
@@ -253,12 +253,12 @@ This result actually holds for all division semirings, but we lack the predicate
 theorem isField_iff_isSimpleOrder_ideal : IsField R ↔ IsSimpleOrder (Ideal R) := by
   cases subsingleton_or_nontrivial R
   · exact
-      ⟨fun h => (not_isField_of_subsingleton _ h).elim, fun h =>
+      ⟨fun h ↦ (not_isField_of_subsingleton _ h).elim, fun h ↦
         (false_of_nontrivial_of_subsingleton <| Ideal R).elim⟩
   rw [← not_iff_not, Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top, ← not_iff_not]
   push_neg
   simp_rw [lt_top_iff_ne_top, bot_lt_iff_ne_bot, ← or_iff_not_imp_left, not_ne_iff]
-  exact ⟨fun h => ⟨h⟩, fun h => h.2⟩
+  exact ⟨fun h ↦ ⟨h⟩, fun h ↦ h.2⟩
 
 /-- When a ring is not a field, the maximal ideals are nontrivial. -/
 theorem ne_bot_of_isMaximal_of_not_isField [Nontrivial R] {M : Ideal R} (max : M.IsMaximal)

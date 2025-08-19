@@ -181,7 +181,7 @@ lemma isIntegral_discr_mul_of_mem_traceDual
     IsIntegral A ((discr K b) • a * x) := by
   have hinv : IsUnit (traceMatrix K b).det := by
     simpa [← discr_def] using discr_isUnit_of_basis _ b
-  have H := mulVec_cramer (traceMatrix K b) fun i => trace K L (x * a * b i)
+  have H := mulVec_cramer (traceMatrix K b) fun i ↦ trace K L (x * a * b i)
   have : Function.Injective (traceMatrix K b).mulVec := by
     rwa [mulVec_injective_iff_isUnit, isUnit_iff_isUnit_det]
   rw [← traceMatrix_of_basis_mulVec, ← mulVec_smul, this.eq_iff,

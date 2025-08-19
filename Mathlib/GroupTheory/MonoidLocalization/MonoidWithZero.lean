@@ -25,13 +25,13 @@ theorem injective_iff
   constructor <;> intro h
   · intro x hx y z hyz
     simp_rw [LocalizationMap.eq_iff_exists] at h
-    apply (fun y z _ => h) y z x
+    apply (fun y z _ ↦ h) y z x
     lift x to S using hx
     use x
   · intro a b hab
     rw [LocalizationMap.eq_iff_exists] at hab
     obtain ⟨c,hc⟩ := hab
-    apply (fun x a => h a) c (SetLike.coe_mem c) hc
+    apply (fun x a ↦ h a) c (SetLike.coe_mem c) hc
 
 end Submonoid.LocalizationMap
 
@@ -71,9 +71,9 @@ variable {S}
 theorem mk_zero (x : S) : mk 0 (x : S) = 0 := OreLocalization.zero_oreDiv' _
 
 instance : CommMonoidWithZero (Localization S) where
-  zero_mul := fun x ↦ Localization.induction_on x fun y => by
+  zero_mul := fun x ↦ Localization.induction_on x fun y ↦ by
     simp only [← Localization.mk_zero y.2, mk_mul, mk_eq_mk_iff, mul_zero, zero_mul, r_of_eq]
-  mul_zero := fun x ↦ Localization.induction_on x fun y => by
+  mul_zero := fun x ↦ Localization.induction_on x fun y ↦ by
     simp only [← Localization.mk_zero y.2, mk_mul, mk_eq_mk_iff, mul_zero, r_of_eq]
 
 theorem liftOn_zero {p : Type*} (f : M → S → p) (H) : liftOn 0 f H = f 0 1 := by
@@ -158,7 +158,7 @@ regular, then N is a cancellative monoid with zero. -/
 theorem isLeftRegular_of_le_isCancelMulZero (f : LocalizationWithZeroMap S N)
     [IsCancelMulZero M] (h : ∀ ⦃x⦄, x ∈ S → IsRegular x) : IsCancelMulZero N := by
   have : IsLeftCancelMulZero N :=
-    leftCancelMulZero_of_le_isLeftRegular f (fun x h' => (h h').left)
+    leftCancelMulZero_of_le_isLeftRegular f (fun x h' ↦ (h h').left)
   exact IsLeftCancelMulZero.to_isCancelMulZero
 
 end LocalizationWithZeroMap

@@ -74,7 +74,7 @@ namespace SpecialLinearGroup
 variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
 
 instance hasCoeToMatrix : Coe (SpecialLinearGroup n R) (Matrix n n R) :=
-  ⟨fun A => A.val⟩
+  ⟨fun A ↦ A.val⟩
 
 /-- In this file, Lean often has a hard time working out the values of `n` and `R` for an expression
 like `det ↑A`. Rather than writing `(A : Matrix n n R)` everywhere in this file which is annoyingly
@@ -87,7 +87,7 @@ section CoeFnInstance
 
 /-- This instance is here for convenience, but is literally the same as the coercion from
 `hasCoeToMatrix`. -/
-instance instCoeFun : CoeFun (SpecialLinearGroup n R) fun _ => n → n → R where coe A := ↑ₘA
+instance instCoeFun : CoeFun (SpecialLinearGroup n R) fun _ ↦ n → n → R where coe A := ↑ₘA
 
 end CoeFnInstance
 
@@ -106,10 +106,10 @@ instance subsingleton_of_subsingleton [Subsingleton n] : Subsingleton (SpecialLi
   simp only [Subsingleton.elim j i, hA, hB]
 
 instance hasInv : Inv (SpecialLinearGroup n R) :=
-  ⟨fun A => ⟨adjugate A, by rw [det_adjugate, A.prop, one_pow]⟩⟩
+  ⟨fun A ↦ ⟨adjugate A, by rw [det_adjugate, A.prop, one_pow]⟩⟩
 
 instance hasMul : Mul (SpecialLinearGroup n R) :=
-  ⟨fun A B => ⟨A * B, by rw [det_mul, A.prop, B.prop, one_mul]⟩⟩
+  ⟨fun A B ↦ ⟨A * B, by rw [det_mul, A.prop, B.prop, one_mul]⟩⟩
 
 instance hasOne : One (SpecialLinearGroup n R) :=
   ⟨⟨1, det_one⟩⟩
@@ -165,7 +165,7 @@ theorem det_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) : det ↑ₘg �
   rw [g.det_coe]
   norm_num
 
-theorem row_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) (i : n) : g i ≠ 0 := fun h =>
+theorem row_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) (i : n) : g i ≠ 0 := fun h ↦
   g.det_ne_zero <| det_eq_zero_of_row_eq_zero i <| by simp [h]
 
 end CoeLemmas
@@ -175,7 +175,7 @@ instance monoid : Monoid (SpecialLinearGroup n R) :=
 
 instance : Group (SpecialLinearGroup n R) :=
   { SpecialLinearGroup.monoid, SpecialLinearGroup.hasInv with
-    inv_mul_cancel := fun A => by
+    inv_mul_cancel := fun A ↦ by
       ext1
       simp [adjugate_mul] }
 
@@ -205,7 +205,7 @@ theorem toLin'_symm_to_linearMap (A : SpecialLinearGroup n R) :
   rfl
 
 theorem toLin'_injective :
-    Function.Injective ↑(toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R) := fun _ _ h =>
+    Function.Injective ↑(toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R) := fun _ _ h ↦
   Subtype.coe_injective <| Matrix.toLin'.injective <| LinearEquiv.toLinearMap_injective.eq_iff.mpr h
 
 variable {S : Type*} [CommRing S]
@@ -301,7 +301,7 @@ section cast
 
 /-- Coercion of SL `n` `ℤ` to SL `n` `R` for a commutative ring `R`. -/
 instance : Coe (SpecialLinearGroup n ℤ) (SpecialLinearGroup n R) :=
-  ⟨fun x => map (Int.castRingHom R) x⟩
+  ⟨fun x ↦ map (Int.castRingHom R) x⟩
 
 @[simp]
 theorem coe_matrix_coe (g : SpecialLinearGroup n ℤ) :
@@ -328,7 +328,7 @@ variable [Fact (Even (Fintype.card n))]
 /-- Formal operation of negation on special linear group on even cardinality `n` given by negating
 each element. -/
 instance instNeg : Neg (SpecialLinearGroup n R) :=
-  ⟨fun g => ⟨-g, by
+  ⟨fun g ↦ ⟨-g, by
     simpa [(@Fact.out <| Even <| Fintype.card n).neg_one_pow, g.det_coe] using det_smul (↑ₘg) (-1)⟩⟩
 
 @[simp]

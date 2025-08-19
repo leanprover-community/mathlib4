@@ -107,6 +107,6 @@ instance instSMulCommClass' [SMulCommClass S R S] : SMulCommClass R ℚ S :=
 end DivisionRing
 
 instance algebra_rat_subsingleton {R} [Semiring R] : Subsingleton (Algebra ℚ R) :=
-  ⟨fun x y => Algebra.algebra_ext x y <| RingHom.congr_fun <| Subsingleton.elim _ _⟩
+  ⟨fun x y ↦ Algebra.algebra_ext x y <| RingHom.congr_fun <| Subsingleton.elim _ _⟩
 
 end Rat

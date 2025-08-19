@@ -44,7 +44,7 @@ theorem prod_map_erase [DecidableEq ι] {a : ι} (h : a ∈ m) :
 
 @[to_additive (attr := simp, grind =)]
 theorem prod_add (s t : Multiset M) : prod (s + t) = prod s * prod t :=
-  Quotient.inductionOn₂ s t fun l₁ l₂ => by simp
+  Quotient.inductionOn₂ s t fun l₁ l₂ ↦ by simp
 
 @[to_additive]
 theorem prod_nsmul (m : Multiset M) : ∀ n : ℕ, (n • m).prod = m.prod ^ n
@@ -83,41 +83,41 @@ theorem prod_hom_ne_zero {s : Multiset M} (hs : s ≠ 0) {F : Type*} [FunLike F 
 theorem prod_hom (s : Multiset M) {F : Type*} [FunLike F M N]
     [MonoidHomClass F M N] (f : F) :
     (s.map f).prod = f s.prod :=
-  Quotient.inductionOn s fun l => by simp only [l.prod_hom f, quot_mk_to_coe, map_coe, prod_coe]
+  Quotient.inductionOn s fun l ↦ by simp only [l.prod_hom f, quot_mk_to_coe, map_coe, prod_coe]
 
 @[to_additive]
 theorem prod_hom' (s : Multiset ι) {F : Type*} [FunLike F M N]
     [MonoidHomClass F M N] (f : F)
-    (g : ι → M) : (s.map fun i => f <| g i).prod = f (s.map g).prod := by
+    (g : ι → M) : (s.map fun i ↦ f <| g i).prod = f (s.map g).prod := by
   convert (s.map g).prod_hom f
   exact (map_map _ _ _).symm
 
 @[to_additive]
 theorem prod_hom₂_ne_zero [CommMonoid O] {s : Multiset ι} (hs : s ≠ 0) (f : M → N → O)
     (hf : ∀ a b c d, f (a * b) (c * d) = f a c * f b d) (f₁ : ι → M) (f₂ : ι → N) :
-    (s.map fun i => f (f₁ i) (f₂ i)).prod = f (s.map f₁).prod (s.map f₂).prod := by
+    (s.map fun i ↦ f (f₁ i) (f₂ i)).prod = f (s.map f₁).prod (s.map f₂).prod := by
   induction s using Quotient.inductionOn; aesop (add simp List.prod_hom₂_nonempty)
 
 @[to_additive]
 theorem prod_hom₂ [CommMonoid O] (s : Multiset ι) (f : M → N → O)
     (hf : ∀ a b c d, f (a * b) (c * d) = f a c * f b d) (hf' : f 1 1 = 1) (f₁ : ι → M)
-    (f₂ : ι → N) : (s.map fun i => f (f₁ i) (f₂ i)).prod = f (s.map f₁).prod (s.map f₂).prod :=
-  Quotient.inductionOn s fun l => by
+    (f₂ : ι → N) : (s.map fun i ↦ f (f₁ i) (f₂ i)).prod = f (s.map f₁).prod (s.map f₂).prod :=
+  Quotient.inductionOn s fun l ↦ by
     simp only [l.prod_hom₂ f hf hf', quot_mk_to_coe, map_coe, prod_coe]
 
 @[to_additive (attr := simp)]
-theorem prod_map_mul : (m.map fun i => f i * g i).prod = (m.map f).prod * (m.map g).prod :=
+theorem prod_map_mul : (m.map fun i ↦ f i * g i).prod = (m.map f).prod * (m.map g).prod :=
   m.prod_hom₂ (· * ·) mul_mul_mul_comm (mul_one _) _ _
 
 @[to_additive]
-theorem prod_map_pow {n : ℕ} : (m.map fun i => f i ^ n).prod = (m.map f).prod ^ n :=
+theorem prod_map_pow {n : ℕ} : (m.map fun i ↦ f i ^ n).prod = (m.map f).prod ^ n :=
   m.prod_hom' (powMonoidHom n : M →* M) f
 
 @[to_additive]
 theorem prod_map_prod_map (m : Multiset ι) (n : Multiset κ) {f : ι → κ → M} :
-    prod (m.map fun a => prod <| n.map fun b => f a b) =
-      prod (n.map fun b => prod <| m.map fun a => f a b) :=
-  Multiset.induction_on m (by simp) fun a m ih => by simp [ih]
+    prod (m.map fun a ↦ prod <| n.map fun b ↦ f a b) =
+      prod (n.map fun b ↦ prod <| m.map fun a ↦ f a b) :=
+  Multiset.induction_on m (by simp) fun a m ih ↦ by simp [ih]
 
 theorem prod_dvd_prod_of_le (h : s ≤ t) : s.prod ∣ t.prod := by
   obtain ⟨z, rfl⟩ := exists_add_of_le h
@@ -184,22 +184,22 @@ theorem prod_map_inv' (m : Multiset G) : (m.map Inv.inv).prod = m.prod⁻¹ :=
   m.prod_hom (invMonoidHom : G →* G)
 
 @[to_additive (attr := simp)]
-theorem prod_map_inv : (m.map fun i => (f i)⁻¹).prod = (m.map f).prod⁻¹ := by
+theorem prod_map_inv : (m.map fun i ↦ (f i)⁻¹).prod = (m.map f).prod⁻¹ := by
   rw [← (m.map f).prod_map_inv', map_map, Function.comp_def]
 
 @[to_additive (attr := simp)]
-theorem prod_map_div : (m.map fun i => f i / g i).prod = (m.map f).prod / (m.map g).prod :=
+theorem prod_map_div : (m.map fun i ↦ f i / g i).prod = (m.map f).prod / (m.map g).prod :=
   m.prod_hom₂ (· / ·) mul_div_mul_comm (div_one _) _ _
 
 @[to_additive]
-theorem prod_map_zpow {n : ℤ} : (m.map fun i => f i ^ n).prod = (m.map f).prod ^ n := by
+theorem prod_map_zpow {n : ℤ} : (m.map fun i ↦ f i ^ n).prod = (m.map f).prod ^ n := by
   convert (m.map f).prod_hom (zpowGroupHom n : G →* G)
   simp only [map_map, Function.comp_apply, zpowGroupHom_apply]
 
 end DivisionCommMonoid
 
 @[simp]
-theorem sum_map_singleton (s : Multiset M) : (s.map fun a => ({a} : Multiset M)).sum = s :=
+theorem sum_map_singleton (s : Multiset M) : (s.map fun a ↦ ({a} : Multiset M)).sum = s :=
   Multiset.induction_on s (by simp) (by simp)
 
 theorem sum_nat_mod (s : Multiset ℕ) (n : ℕ) : s.sum % n = (s.map (· % n)).sum % n := by
@@ -223,7 +223,7 @@ theorem sum_map_tsub [AddCommMonoid M] [PartialOrder M] [ExistsAddOfLE M]
   eq_tsub_of_add_eq <| by
     rw [← sum_map_add]
     congr 1
-    exact map_congr rfl fun x hx => tsub_add_cancel_of_le <| hfg _ hx
+    exact map_congr rfl fun x hx ↦ tsub_add_cancel_of_le <| hfg _ hx
 
 end OrderedSub
 

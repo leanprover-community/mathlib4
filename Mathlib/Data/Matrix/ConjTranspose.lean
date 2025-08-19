@@ -94,26 +94,26 @@ variable [NonUnitalSemiring α]
 
 theorem star_mulVec [Fintype n] [StarRing α] (M : Matrix m n α) (v : n → α) :
     star (M *ᵥ v) = star v ᵥ* Mᴴ :=
-  funext fun _ => (star_dotProduct_star _ _).symm
+  funext fun _ ↦ (star_dotProduct_star _ _).symm
 
 theorem star_vecMul [Fintype m] [StarRing α] (M : Matrix m n α) (v : m → α) :
     star (v ᵥ* M) = Mᴴ *ᵥ star v :=
-  funext fun _ => (star_dotProduct_star _ _).symm
+  funext fun _ ↦ (star_dotProduct_star _ _).symm
 
 theorem mulVec_conjTranspose [Fintype m] [StarRing α] (A : Matrix m n α) (x : m → α) :
     Aᴴ *ᵥ x = star (star x ᵥ* A) :=
-  funext fun _ => star_dotProduct _ _
+  funext fun _ ↦ star_dotProduct _ _
 
 theorem vecMul_conjTranspose [Fintype n] [StarRing α] (A : Matrix m n α) (x : n → α) :
     x ᵥ* Aᴴ = star (A *ᵥ star x) :=
-  funext fun _ => dotProduct_star _ _
+  funext fun _ ↦ dotProduct_star _ _
 
 end NonUnitalSemiring
 
 @[simp]
 theorem conjTranspose_vecMulVec [Mul α] [StarMul α] (w : m → α) (v : n → α) :
     (vecMulVec w v)ᴴ = vecMulVec (star v) (star w) :=
-  ext fun _ _ => star_mul _ _
+  ext fun _ _ ↦ star_mul _ _
 
 section ConjTranspose
 
@@ -233,7 +233,7 @@ variants which this lemma would not apply to:
 @[simp]
 theorem conjTranspose_smul [Star R] [Star α] [SMul R α] [StarModule R α] (c : R)
     (M : Matrix m n α) : (c • M)ᴴ = star c • Mᴴ :=
-  Matrix.ext fun _ _ => star_smul _ _
+  Matrix.ext fun _ _ ↦ star_smul _ _
 
 @[simp]
 theorem conjTranspose_smul_non_comm [Star R] [Star α] [SMul R α] [SMul Rᵐᵒᵖ α] (c : R)
@@ -307,13 +307,13 @@ theorem conjTranspose_neg [AddGroup α] [StarAddMonoid α] (M : Matrix m n α) :
 
 theorem conjTranspose_map [Star α] [Star β] {A : Matrix m n α} (f : α → β)
     (hf : Function.Semiconj f star star) : Aᴴ.map f = (A.map f)ᴴ :=
-  Matrix.ext fun _ _ => hf _
+  Matrix.ext fun _ _ ↦ hf _
 
 /-- When `star x = x` on the coefficients (such as the real numbers) `conjTranspose` and `transpose`
 are the same operation. -/
 @[simp]
 theorem conjTranspose_eq_transpose_of_trivial [Star α] [TrivialStar α] (A : Matrix m n α) :
-    Aᴴ = Aᵀ := Matrix.ext fun _ _ => star_trivial _
+    Aᴴ = Aᵀ := Matrix.ext fun _ _ ↦ star_trivial _
 
 variable (m n α)
 
@@ -367,9 +367,9 @@ variable (m α)
 def conjTransposeRingEquiv [Semiring α] [StarRing α] [Fintype m] :
     Matrix m m α ≃+* (Matrix m m α)ᵐᵒᵖ :=
   { (conjTransposeAddEquiv m m α).trans MulOpposite.opAddEquiv with
-    toFun := fun M => MulOpposite.op Mᴴ
-    invFun := fun M => M.unopᴴ
-    map_mul' := fun M N =>
+    toFun := fun M ↦ MulOpposite.op Mᴴ
+    invFun := fun M ↦ M.unopᴴ
+    map_mul' := fun M N ↦
       (congr_arg MulOpposite.op (conjTranspose_mul M N)).trans (MulOpposite.op_mul _ _) }
 
 variable {m α}
@@ -423,7 +423,7 @@ end Star
 @[simp]
 theorem conjTranspose_submatrix [Star α] (A : Matrix m n α) (r : l → m)
     (c : o → n) : (A.submatrix r c)ᴴ = Aᴴ.submatrix c r :=
-  ext fun _ _ => rfl
+  ext fun _ _ ↦ rfl
 
 theorem conjTranspose_reindex [Star α] (eₘ : m ≃ l) (eₙ : n ≃ o) (M : Matrix m n α) :
     (reindex eₘ eₙ M)ᴴ = reindex eₙ eₘ Mᴴ :=

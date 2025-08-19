@@ -20,7 +20,7 @@ namespace Filter
 
 @[nontriviality]
 theorem Subsingleton.atTop_eq (α) [Subsingleton α] [Preorder α] : (atTop : Filter α) = ⊤ := by
-  refine top_unique fun s hs x => ?_
+  refine top_unique fun s hs x ↦ ?_
   rw [atTop, ciInf_subsingleton x, mem_principal] at hs
   exact hs left_mem_Ici
 

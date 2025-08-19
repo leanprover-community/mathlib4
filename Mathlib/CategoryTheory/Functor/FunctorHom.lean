@@ -113,14 +113,14 @@ lemma functorHom_ext {X : C} {x y : (F.functorHom G).obj X}
 def functorHomEquiv (A : C ⥤ Type max u v v') : (A ⟶ F.functorHom G) ≃ HomObj F G A where
   toFun φ :=
     { app := fun X a ↦ (φ.app X a).app X (𝟙 _)
-      naturality := fun {X Y} f a => by
+      naturality := fun {X Y} f a ↦ by
         rw [← (φ.app X a).naturality f (𝟙 _)]
         have := HomObj.congr_app (congr_fun (φ.naturality f) a) Y (𝟙 _)
         dsimp [functorHom, homObjFunctor] at this
         aesop }
   invFun x :=
-    { app := fun X a ↦ { app := fun Y f => x.app Y (A.map f a) }
-      naturality := fun X Y f => by
+    { app := fun X a ↦ { app := fun Y f ↦ x.app Y (A.map f a) }
+      naturality := fun X Y f ↦ by
         ext
         dsimp only [types_comp_apply]
         rw [← FunctorToTypes.map_comp_apply]
@@ -200,6 +200,6 @@ lemma associator_hom_apply (K L M N : C ⥤ D) {X : C}
 noncomputable instance : EnrichedCategory (C ⥤ Type max v' v u) (C ⥤ D) where
   Hom := functorHom
   id F := natTransEquiv.symm (𝟙 F)
-  comp F G H := { app := fun _ ⟨f, g⟩ => f.comp g }
+  comp F G H := { app := fun _ ⟨f, g⟩ ↦ f.comp g }
 
 end CategoryTheory.Enriched.Functor

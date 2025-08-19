@@ -234,7 +234,7 @@ def lmap : (⨁ i, M i) →ₗ[R] ⨁ i, N i := DFinsupp.mapRange.linearMap f
 
 @[simp] lemma lmap_of [DecidableEq ι] (i : ι) (x : M i) :
     lmap f (of M i x) = of N i (f i x) :=
-  DFinsupp.mapRange_single (hf := fun _ => map_zero _)
+  DFinsupp.mapRange_single (hf := fun _ ↦ map_zero _)
 
 @[simp] theorem lmap_lof [DecidableEq ι] (i) (x : M i) :
     lmap f (lof R _ _ _ x) = lof R _ _ _ (f i x) :=
@@ -257,13 +257,13 @@ theorem lmap_surjective : Function.Surjective (lmap f) ↔ (∀ i, Function.Surj
 
 lemma lmap_eq_iff (x y : ⨁ i, M i) :
     lmap f x = lmap f y ↔ ∀ i, f i (x i) = f i (y i) :=
-  map_eq_iff (fun i => (f i).toAddMonoidHom) _ _
+  map_eq_iff (fun i ↦ (f i).toAddMonoidHom) _ _
 
 lemma toAddMonoidHom_lmap :
-    (lmap f).toAddMonoidHom = map (fun i => (f i).toAddMonoidHom) :=
+    (lmap f).toAddMonoidHom = map (fun i ↦ (f i).toAddMonoidHom) :=
   rfl
 
-lemma lmap_eq_map (x : ⨁ i, M i) : lmap f x = map (fun i => (f i).toAddMonoidHom) x :=
+lemma lmap_eq_map (x : ⨁ i, M i) : lmap f x = map (fun i ↦ (f i).toAddMonoidHom) x :=
   rfl
 
 lemma ker_lmap :
@@ -367,8 +367,8 @@ indexed by `ι`. This is `DirectSum.coeAddMonoidHom` as a `LinearMap`. -/
 def coeLinearMap : (⨁ i, A i) →ₗ[R] M :=
   toModule R ι M fun i ↦ (A i).subtype
 
-theorem coeLinearMap_eq_dfinsuppSum [DecidableEq M] (x : DirectSum ι fun i => A i) :
-    coeLinearMap A x = DFinsupp.sum x fun i => (fun x : A i => ↑x) := by
+theorem coeLinearMap_eq_dfinsuppSum [DecidableEq M] (x : DirectSum ι fun i ↦ A i) :
+    coeLinearMap A x = DFinsupp.sum x fun i ↦ (fun x : A i ↦ ↑x) := by
   simp only [coeLinearMap, toModule, DFinsupp.lsum, LinearEquiv.coe_mk, LinearMap.coe_mk,
     AddHom.coe_mk]
   rw [DFinsupp.sumAddHom_apply]
@@ -380,7 +380,7 @@ alias coeLinearMap_eq_dfinsupp_sum := coeLinearMap_eq_dfinsuppSum
 @[simp]
 theorem coeLinearMap_of (i : ι) (x : A i) : DirectSum.coeLinearMap A (of (fun i ↦ A i) i x) = x :=
   -- Porting note: spelled out arguments. (I don't know how this works.)
-  toAddMonoid_of (β := fun i => A i) (fun i ↦ ((A i).subtype : A i →+ M)) i x
+  toAddMonoid_of (β := fun i ↦ A i) (fun i ↦ ((A i).subtype : A i →+ M)) i x
 
 variable {A}
 

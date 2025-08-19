@@ -138,13 +138,13 @@ theorem isOpenEmbedding {X : TopCat.{u}} (U : Opens X) : IsOpenEmbedding (inclus
 -/
 def inclusionTopIso (X : TopCat.{u}) : (toTopCat X).obj ⊤ ≅ X where
   hom := inclusion' ⊤
-  inv := TopCat.ofHom ⟨fun x => ⟨x, trivial⟩, continuous_def.2 fun _ ⟨_, hS, hSU⟩ => hSU ▸ hS⟩
+  inv := TopCat.ofHom ⟨fun x ↦ ⟨x, trivial⟩, continuous_def.2 fun _ ⟨_, hS, hSU⟩ ↦ hSU ▸ hS⟩
 
 /-- `Opens.map f` gives the functor from open sets in Y to open set in X,
 given by taking preimages under f. -/
 def map (f : X ⟶ Y) : Opens Y ⥤ Opens X where
   obj U := ⟨f ⁻¹' (U : Set Y), U.isOpen.preimage f.hom.continuous⟩
-  map i := ⟨⟨fun _ h => i.le h⟩⟩
+  map i := ⟨⟨fun _ h ↦ i.le h⟩⟩
 
 @[simp]
 theorem map_coe (f : X ⟶ Y) (U : Opens Y) : ((map f).obj U : Set X) = f ⁻¹' (U : Set Y) :=
@@ -221,8 +221,8 @@ is naturally isomorphic to the identity functor.
 -/
 @[simps]
 def mapId : map (𝟙 X) ≅ 𝟭 (Opens X) where
-  hom := { app := fun U => eqToHom (map_id_obj U) }
-  inv := { app := fun U => eqToHom (map_id_obj U).symm }
+  hom := { app := fun U ↦ eqToHom (map_id_obj U) }
+  inv := { app := fun U ↦ eqToHom (map_id_obj U).symm }
 
 theorem map_id_eq : map (𝟙 X) = 𝟭 (Opens X) := by
   rfl
@@ -234,8 +234,8 @@ of taking preimages under `g`, then preimages under `f`.
 -/
 @[simps]
 def mapComp (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map g ⋙ map f where
-  hom := { app := fun U => eqToHom (map_comp_obj f g U) }
-  inv := { app := fun U => eqToHom (map_comp_obj f g U).symm }
+  hom := { app := fun U ↦ eqToHom (map_comp_obj f g U) }
+  inv := { app := fun U ↦ eqToHom (map_comp_obj f g U).symm }
 
 theorem map_comp_eq (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) = map g ⋙ map f :=
   rfl
@@ -246,7 +246,7 @@ theorem map_comp_eq (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) = map g ⋙ map 
 then the functors `Opens Y ⥤ Opens X` they induce are isomorphic.
 -/
 def mapIso (f g : X ⟶ Y) (h : f = g) : map f ≅ map g :=
-  NatIso.ofComponents fun U => eqToIso (by rw [congr_arg map h])
+  NatIso.ofComponents fun U ↦ eqToIso (by rw [congr_arg map h])
 
 theorem map_eq (f g : X ⟶ Y) (h : f = g) : map f = map g := by
   subst h
@@ -274,8 +274,8 @@ TODO: define `OrderIso.equivalence`, use it.
 def mapMapIso {X Y : TopCat.{u}} (H : X ≅ Y) : Opens Y ≌ Opens X where
   functor := map H.hom
   inverse := map H.inv
-  unitIso := NatIso.ofComponents fun U => eqToIso (by simp [map, Set.preimage_preimage])
-  counitIso := NatIso.ofComponents fun U => eqToIso (by simp [map, Set.preimage_preimage])
+  unitIso := NatIso.ofComponents fun U ↦ eqToIso (by simp [map, Set.preimage_preimage])
+  counitIso := NatIso.ofComponents fun U ↦ eqToIso (by simp [map, Set.preimage_preimage])
 
 end TopologicalSpace.Opens
 
@@ -290,13 +290,13 @@ def IsOpenMap.functor {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) : Opens X 
 -/
 def IsOpenMap.adjunction {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) :
     hf.functor ⊣ Opens.map f where
-  unit := { app := fun _ => homOfLE fun x hxU => ⟨x, hxU, rfl⟩ }
-  counit := { app := fun _ => homOfLE fun _ ⟨_, hfxV, hxy⟩ => hxy ▸ hfxV }
+  unit := { app := fun _ ↦ homOfLE fun x hxU ↦ ⟨x, hxU, rfl⟩ }
+  counit := { app := fun _ ↦ homOfLE fun _ ⟨_, hfxV, hxy⟩ ↦ hxy ▸ hfxV }
 
 instance IsOpenMap.functorFullOfMono {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) [H : Mono f] :
     hf.functor.Full where
   map_surjective i :=
-    ⟨homOfLE fun x hx => by
+    ⟨homOfLE fun x hx ↦ by
       obtain ⟨y, hy, eq⟩ := i.le ⟨x, hx, rfl⟩
       exact (TopCat.mono_iff_injective f).mp H eq ▸ hy, rfl⟩
 
@@ -384,7 +384,7 @@ theorem inclusion'_top_functor (X : TopCat) :
   refine CategoryTheory.Functor.ext ?_ ?_
   · intro U
     ext x
-    exact ⟨fun ⟨⟨_, _⟩, h, rfl⟩ => h, fun h => ⟨⟨x, trivial⟩, h, rfl⟩⟩
+    exact ⟨fun ⟨⟨_, _⟩, h, rfl⟩ ↦ h, fun h ↦ ⟨⟨x, trivial⟩, h, rfl⟩⟩
   · subsingleton
 
 theorem functor_obj_map_obj {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) (U : Opens Y) :

@@ -43,11 +43,11 @@ namespace ProbabilityTheory
 theorem lintegral_mul_indicator_eq_lintegral_mul_lintegral_indicator {Mf mΩ : MeasurableSpace Ω}
     {μ : Measure Ω} (hMf : Mf ≤ mΩ) (c : ℝ≥0∞) {T : Set Ω} (h_meas_T : MeasurableSet T)
     (h_ind : IndepSets {s | MeasurableSet[Mf] s} {T} μ) (h_meas_f : Measurable[Mf] f) :
-    (∫⁻ ω, f ω * T.indicator (fun _ => c) ω ∂μ) =
-      (∫⁻ ω, f ω ∂μ) * ∫⁻ ω, T.indicator (fun _ => c) ω ∂μ := by
+    (∫⁻ ω, f ω * T.indicator (fun _ ↦ c) ω ∂μ) =
+      (∫⁻ ω, f ω ∂μ) * ∫⁻ ω, T.indicator (fun _ ↦ c) ω ∂μ := by
   revert f
-  have h_mul_indicator : ∀ g, Measurable g → Measurable fun a => g a * T.indicator (fun _ => c) a :=
-    fun g h_mg => h_mg.mul (measurable_const.indicator h_meas_T)
+  have h_mul_indicator : ∀ g, Measurable g → Measurable fun a ↦ g a * T.indicator (fun _ ↦ c) a :=
+    fun g h_mg ↦ h_mg.mul (measurable_const.indicator h_meas_T)
   apply @Measurable.ennreal_induction _ Mf
   · intro c' s' h_meas_s'
     simp_rw [← inter_indicator_mul]
@@ -63,12 +63,12 @@ theorem lintegral_mul_indicator_eq_lintegral_mul_lintegral_indicator {Mf mΩ : M
     rw [lintegral_add_left (h_mul_indicator _ h_measM_f'), lintegral_add_left h_measM_f',
       right_distrib, h_ind_f', h_ind_g]
   · intro f h_meas_f h_mono_f h_ind_f
-    have h_measM_f : ∀ n, Measurable (f n) := fun n => (h_meas_f n).mono hMf le_rfl
+    have h_measM_f : ∀ n, Measurable (f n) := fun n ↦ (h_meas_f n).mono hMf le_rfl
     simp_rw [ENNReal.iSup_mul]
     rw [lintegral_iSup h_measM_f h_mono_f, lintegral_iSup, ENNReal.iSup_mul]
     · simp_rw [← h_ind_f]
-    · exact fun n => h_mul_indicator _ (h_measM_f n)
-    · exact fun m n h_le a => mul_le_mul_right' (h_mono_f h_le a) _
+    · exact fun n ↦ h_mul_indicator _ (h_measM_f n)
+    · exact fun m n h_le a ↦ mul_le_mul_right' (h_mono_f h_le a) _
 
 /--
 If `f` and `g` are independent random variables with values in `ℝ≥0∞`,
@@ -94,12 +94,12 @@ theorem lintegral_mul_eq_lintegral_mul_lintegral_of_independent_measurableSpace
     rw [lintegral_add_left h_measM_f', lintegral_add_left (h_measM_f.mul h_measM_f'), left_distrib,
       h_ind_f', h_ind_g']
   · intro f' h_meas_f' h_mono_f' h_ind_f'
-    have h_measM_f' : ∀ n, Measurable (f' n) := fun n => (h_meas_f' n).mono hMg le_rfl
+    have h_measM_f' : ∀ n, Measurable (f' n) := fun n ↦ (h_meas_f' n).mono hMg le_rfl
     simp_rw [ENNReal.mul_iSup]
     rw [lintegral_iSup, lintegral_iSup h_measM_f' h_mono_f', ENNReal.mul_iSup]
     · simp_rw [← h_ind_f']
-    · exact fun n => h_measM_f.mul (h_measM_f' n)
-    · exact fun n m (h_le : n ≤ m) a => mul_le_mul_left' (h_mono_f' h_le a) _
+    · exact fun n ↦ h_measM_f.mul (h_measM_f' n)
+    · exact fun n m (h_le : n ≤ m) a ↦ mul_le_mul_left' (h_mono_f' h_le a) _
 
 /-- If `f` and `g` are independent random variables with values in `ℝ≥0∞`,
 then `E[f * g] = E[f] * E[g]`. -/
@@ -146,8 +146,8 @@ theorem lintegral_prod_eq_prod_lintegral_of_indepFun {ι : Type*}
 theorem IndepFun.integrable_mul {β : Type*} [MeasurableSpace β] {X Y : Ω → β}
     [NormedDivisionRing β] [BorelSpace β] (hXY : IndepFun X Y μ) (hX : Integrable X μ)
     (hY : Integrable Y μ) : Integrable (X * Y) μ := by
-  let nX : Ω → ℝ≥0∞ := fun a => ‖X a‖ₑ
-  let nY : Ω → ℝ≥0∞ := fun a => ‖Y a‖ₑ
+  let nX : Ω → ℝ≥0∞ := fun a ↦ ‖X a‖ₑ
+  let nY : Ω → ℝ≥0∞ := fun a ↦ ‖Y a‖ₑ
   have hXY' : IndepFun nX nY μ := hXY.comp measurable_enorm measurable_enorm
   have hnX : AEMeasurable nX μ := hX.1.aemeasurable.enorm
   have hnY : AEMeasurable nY μ := hY.1.aemeasurable.enorm
@@ -167,11 +167,11 @@ theorem IndepFun.integrable_left_of_integrable_mul {β : Type*} [MeasurableSpace
     Integrable X μ := by
   refine ⟨hX, ?_⟩
   have I : (∫⁻ ω, ‖Y ω‖ₑ ∂μ) ≠ 0 := fun H ↦ by
-    have I : (fun ω => ‖Y ω‖ₑ : Ω → ℝ≥0∞) =ᵐ[μ] 0 := (lintegral_eq_zero_iff' hY.enorm).1 H
+    have I : (fun ω ↦ ‖Y ω‖ₑ : Ω → ℝ≥0∞) =ᵐ[μ] 0 := (lintegral_eq_zero_iff' hY.enorm).1 H
     apply h'Y
     filter_upwards [I] with ω hω
     simpa using hω
-  refine hasFiniteIntegral_iff_enorm.mpr <| lt_top_iff_ne_top.2 fun H => ?_
+  refine hasFiniteIntegral_iff_enorm.mpr <| lt_top_iff_ne_top.2 fun H ↦ ?_
   have J : IndepFun (‖X ·‖ₑ) (‖Y ·‖ₑ) μ := hXY.comp measurable_enorm measurable_enorm
   have A : ∫⁻ ω, ‖X ω * Y ω‖ₑ ∂μ < ∞ := h'XY.2
   simp only [enorm_mul] at A
@@ -191,8 +191,8 @@ theorem IndepFun.integrable_right_of_integrable_mul {β : Type*} [MeasurableSpac
     apply h'X
     filter_upwards [I] with ω hω
     simpa using hω
-  refine lt_top_iff_ne_top.2 fun H => ?_
-  have J : IndepFun (fun ω => ‖X ω‖ₑ : Ω → ℝ≥0∞) (fun ω => ‖Y ω‖ₑ : Ω → ℝ≥0∞) μ :=
+  refine lt_top_iff_ne_top.2 fun H ↦ ?_
+  have J : IndepFun (fun ω ↦ ‖X ω‖ₑ : Ω → ℝ≥0∞) (fun ω ↦ ‖Y ω‖ₑ : Ω → ℝ≥0∞) μ :=
     IndepFun.comp hXY measurable_enorm measurable_enorm
   have A : ∫⁻ ω, ‖X ω * Y ω‖ₑ ∂μ < ∞ := h'XY.2
   simp only [enorm_mul] at A
@@ -271,7 +271,7 @@ theorem indepFun_iff_integral_comp_mul [IsFiniteMeasure μ] {β β' : Type*} {m�
     IndepFun f g μ ↔ ∀ {φ : β → ℝ} {ψ : β' → ℝ}, Measurable φ → Measurable ψ →
       Integrable (φ ∘ f) μ → Integrable (ψ ∘ g) μ →
         integral μ (φ ∘ f * ψ ∘ g) = integral μ (φ ∘ f) * integral μ (ψ ∘ g) := by
-  refine ⟨fun hfg _ _ hφ hψ _ _ => hfg.integral_comp_mul_comp
+  refine ⟨fun hfg _ _ hφ hψ _ _ ↦ hfg.integral_comp_mul_comp
       hfm.aemeasurable hgm.aemeasurable hφ.aestronglyMeasurable hψ.aestronglyMeasurable, ?_⟩
   rw [IndepFun_iff]
   rintro h _ _ ⟨A, hA, rfl⟩ ⟨B, hB, rfl⟩

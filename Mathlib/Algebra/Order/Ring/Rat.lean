@@ -25,7 +25,7 @@ assert_not_exists Field Finset Set.Icc GaloisConnection
 namespace Rat
 
 instance instIsOrderedAddMonoid : IsOrderedAddMonoid ℚ where
-  add_le_add_left := fun _ _ ab _ => Rat.add_le_add_left.2 ab
+  add_le_add_left := fun _ _ ab _ ↦ Rat.add_le_add_left.2 ab
 
 instance instZeroLEOneClass : ZeroLEOneClass ℚ where
   zero_le_one := by decide

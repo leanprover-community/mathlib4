@@ -233,6 +233,6 @@ variable (J D)
 @[simps!]
 noncomputable def sheafificationNatIso :
     𝟭 (Sheaf J D) ≅ sheafToPresheaf J D ⋙ presheafToSheaf J D :=
-  NatIso.ofComponents (fun P => sheafificationIso P) (by cat_disch)
+  NatIso.ofComponents (fun P ↦ sheafificationIso P) (by cat_disch)
 
 end CategoryTheory

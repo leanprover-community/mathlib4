@@ -103,7 +103,7 @@ variable {m n : ℕ}
 instance _root_.PiFin.hasRepr [Repr α] : Repr (Fin n → α) where
   reprPrec f _ :=
     Std.Format.bracket "![" (Std.Format.joinSep
-      ((List.finRange n).map fun n => repr (f n)) ("," ++ Std.Format.line)) "]"
+      ((List.finRange n).map fun n ↦ repr (f n)) ("," ++ Std.Format.line)) "]"
 
 end MatrixNotation
 
@@ -115,7 +115,7 @@ theorem empty_eq (v : Fin 0 → α) : v = ![] :=
 section Val
 
 @[simp]
-theorem head_fin_const (a : α) : (vecHead fun _ : Fin (n + 1) => a) = a :=
+theorem head_fin_const (a : α) : (vecHead fun _ : Fin (n + 1) ↦ a) = a :=
   rfl
 
 @[simp]
@@ -153,7 +153,7 @@ open Qq in
 /-- A simproc that handles terms of the form `Matrix.vecCons a f i` where `i` is a numeric literal.
 
 In practice, this is most effective at handling `![a, b, c] i`-style terms. -/
-dsimproc cons_val (Matrix.vecCons _ _ _) := fun e => do
+dsimproc cons_val (Matrix.vecCons _ _ _) := fun e ↦ do
   let_expr Matrix.vecCons α en x xs' ei := ← Meta.whnfR e | return .continue
   let some i := ei.int? | return .continue
   let (xs, etailn, tail) ← matchVecConsPrefix en xs'
@@ -195,7 +195,7 @@ theorem tail_cons (x : α) (u : Fin m → α) : vecTail (vecCons x u) = u := by
   ext
   simp [vecTail]
 
-theorem empty_val' {n' : Type*} (j : n') : (fun i => (![] : Fin 0 → n' → α) i j) = ![] :=
+theorem empty_val' {n' : Type*} (j : n') : (fun i ↦ (![] : Fin 0 → n' → α) i j) = ![] :=
   empty_eq _
 
 @[simp]
@@ -204,7 +204,7 @@ theorem cons_head_tail (u : Fin m.succ → α) : vecCons (vecHead u) (vecTail u)
 
 @[simp]
 theorem range_cons (x : α) (u : Fin n → α) : Set.range (vecCons x u) = {x} ∪ Set.range u :=
-  Set.ext fun y => by simp [Fin.exists_fin_succ, eq_comm]
+  Set.ext fun y ↦ by simp [Fin.exists_fin_succ, eq_comm]
 
 @[simp]
 theorem range_empty (u : Fin 0 → α) : Set.range u = ∅ :=
@@ -218,10 +218,10 @@ theorem range_cons_cons_empty (x y : α) (u : Fin 0 → α) :
     Set.range (vecCons x <| vecCons y u) = {x, y} := by
   rw [range_cons, range_cons_empty, Set.singleton_union]
 
-theorem vecCons_const (a : α) : (vecCons a fun _ : Fin n => a) = fun _ => a :=
+theorem vecCons_const (a : α) : (vecCons a fun _ : Fin n ↦ a) = fun _ ↦ a :=
   funext <| Fin.forall_iff_succ.2 ⟨rfl, cons_val_succ _ _⟩
 
-theorem vec_single_eq_const (a : α) : ![a] = fun _ => a :=
+theorem vec_single_eq_const (a : α) : ![a] = fun _ ↦ a :=
   let _ : Unique (Fin 1) := inferInstance
   funext <| Unique.forall_iff.2 rfl
 
@@ -249,7 +249,7 @@ theorem cons_val_fin_one (x : α) (u : Fin 0 → α) : ∀ (i : Fin 1), vecCons 
   rw [Fin.forall_fin_one]
   rfl
 
-theorem cons_fin_one (x : α) (u : Fin 0 → α) : vecCons x u = fun _ => x :=
+theorem cons_fin_one (x : α) (u : Fin 0 → α) : vecCons x u = fun _ ↦ x :=
   funext (cons_val_fin_one x u)
 
 @[simp]
@@ -274,7 +274,7 @@ protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToE
   have lu := toLevel.{u}
   have eα : Q(Type $lu) := toTypeExpr α
   let toTypeExpr := q(Fin $n → $eα)
-  { toTypeExpr, toExpr v := PiFin.mkLiteralQ fun i => show Q($eα) from toExpr (v i) }
+  { toTypeExpr, toExpr v := PiFin.mkLiteralQ fun i ↦ show Q($eα) from toExpr (v i) }
 
 /-! ### `bit0` and `bit1` indices
 The following definitions and `simp` lemmas are used to allow
@@ -297,7 +297,7 @@ def vecAppend {α : Type*} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fi
   Fin.append u v ∘ Fin.cast ho
 
 theorem vecAppend_eq_ite {α : Type*} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) :
-    vecAppend ho u v = fun i : Fin o =>
+    vecAppend ho u v = fun i : Fin o ↦
       if h : (i : ℕ) < m then u ⟨i, h⟩ else v ⟨(i : ℕ) - m, by omega⟩ := by
   ext i
   rw [vecAppend, Fin.append, Function.comp_apply, Fin.addCases]
@@ -418,7 +418,7 @@ theorem empty_vecAlt1 (α) {h} : vecAlt1 h (![] : Fin 0 → α) = ![] := by
 
 end Val
 
-lemma const_fin1_eq (x : α) : (fun _ : Fin 1 => x) = ![x] :=
+lemma const_fin1_eq (x : α) : (fun _ : Fin 1 ↦ x) = ![x] :=
   (cons_fin_one x _).symm
 
 end Matrix

@@ -49,7 +49,7 @@ which sends each infinite sequence `x` to an element of the intersection along t
 branch corresponding to `x`, if it exists.
 We call this the map induced by the scheme. -/
 noncomputable def inducedMap : Σ s : Set (ℕ → β), s → α :=
-  ⟨fun x => Set.Nonempty (⋂ n : ℕ, A (res x n)), fun x => x.property.some⟩
+  ⟨fun x ↦ Set.Nonempty (⋂ n : ℕ, A (res x n)), fun x ↦ x.property.some⟩
 
 section Topology
 
@@ -64,7 +64,7 @@ def ClosureAntitone [TopologicalSpace α] : Prop :=
 
 /-- A scheme is disjoint if the children of each set of pairwise disjoint. -/
 protected def Disjoint : Prop :=
-  ∀ l : List β, Pairwise fun a b => Disjoint (A (a :: l)) (A (b :: l))
+  ∀ l : List β, Pairwise fun a b ↦ Disjoint (A (a :: l)) (A (b :: l))
 
 variable {A}
 
@@ -76,10 +76,10 @@ theorem map_mem (x : (inducedMap A).1) (n : ℕ) : (inducedMap A).2 x ∈ A (res
   exact this n
 
 protected theorem ClosureAntitone.antitone [TopologicalSpace α] (hA : ClosureAntitone A) :
-    CantorScheme.Antitone A := fun l a => subset_closure.trans (hA l a)
+    CantorScheme.Antitone A := fun l a ↦ subset_closure.trans (hA l a)
 
 protected theorem Antitone.closureAntitone [TopologicalSpace α] (hanti : CantorScheme.Antitone A)
-    (hclosed : ∀ l, IsClosed (A l)) : ClosureAntitone A := fun _ _ =>
+    (hclosed : ∀ l, IsClosed (A l)) : ClosureAntitone A := fun _ _ ↦
   (hclosed _).closure_eq.subset.trans (hanti _ _)
 
 /-- A scheme where the children of each set are pairwise disjoint induces an injective map. -/
@@ -111,7 +111,7 @@ variable [PseudoMetricSpace α]
 
 /-- A scheme on a metric space has vanishing diameter if diameter approaches 0 along each branch. -/
 def VanishingDiam : Prop :=
-  ∀ x : ℕ → β, Tendsto (fun n : ℕ => EMetric.diam (A (res x n))) atTop (𝓝 0)
+  ∀ x : ℕ → β, Tendsto (fun n : ℕ ↦ EMetric.diam (A (res x n))) atTop (𝓝 0)
 
 variable {A}
 
@@ -153,9 +153,9 @@ theorem ClosureAntitone.map_of_vanishingDiam [CompleteSpace α] (hdiam : Vanishi
     (hanti : ClosureAntitone A) (hnonempty : ∀ l, (A l).Nonempty) : (inducedMap A).1 = univ := by
   rw [eq_univ_iff_forall]
   intro x
-  choose u hu using fun n => hnonempty (res x n)
+  choose u hu using fun n ↦ hnonempty (res x n)
   have umem : ∀ n m : ℕ, n ≤ m → u m ∈ A (res x n) := by
-    have : Antitone fun n : ℕ => A (res x n) := by
+    have : Antitone fun n : ℕ ↦ A (res x n) := by
       refine antitone_nat_of_succ_le ?_
       intro n
       apply hanti.antitone

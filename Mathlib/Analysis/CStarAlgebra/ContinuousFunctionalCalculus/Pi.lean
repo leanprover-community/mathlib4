@@ -14,7 +14,7 @@ This file contains results about the continuous functional calculus on (indexed)
 
 ## Main theorems
 
-+ `cfc_map_pi` and `cfcₙ_map_pi`: given `a : ∀ i, A i`, then `cfc f a = fun i => cfc f (a i)`
++ `cfc_map_pi` and `cfcₙ_map_pi`: given `a : ∀ i, A i`, then `cfc f a = fun i ↦ cfc f (a i)`
   (and likewise for the non-unital version)
 + `cfc_map_prod` and `cfcₙ_map_prod`: given `a : A` and `b : B`, then
   `cfc f (a, b) = (cfc f a, cfc f b)` (and likewise for the non-unital version)
@@ -38,7 +38,7 @@ include S in
 lemma cfcₙ_map_pi (f : R → R) (a : ∀ i, A i)
     (hf : ContinuousOn f (⋃ i, quasispectrum R (a i)) := by cfc_cont_tac)
     (ha : p a := by cfc_tac) (ha' : ∀ i, q i (a i) := by cfc_tac) :
-    cfcₙ f a = fun i => cfcₙ f (a i) := by
+    cfcₙ f a = fun i ↦ cfcₙ f (a i) := by
   cases isEmpty_or_nonempty ι with
   | inr h =>
     by_cases hf₀ : f 0 = 0
@@ -100,7 +100,7 @@ include S in
 lemma cfc_map_pi (f : R → R) (a : ∀ i, A i)
     (hf : ContinuousOn f (⋃ i, spectrum R (a i)) := by cfc_cont_tac)
     (ha : p a := by cfc_tac) (ha' : ∀ i, q i (a i) := by cfc_tac) :
-    cfc f a = fun i => cfc f (a i) := by
+    cfc f a = fun i ↦ cfc f (a i) := by
   ext i
   let φ := Pi.evalStarAlgHom S A i
   exact φ.map_cfc f a (by rwa [Pi.spectrum_eq]) (continuous_apply i) ha (ha' i)

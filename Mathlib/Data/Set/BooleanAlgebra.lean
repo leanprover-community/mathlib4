@@ -27,10 +27,10 @@ namespace Set
 
 instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Set α) :=
   { instBooleanAlgebra with
-    le_sSup := fun _ t t_in _ a_in => ⟨t, t_in, a_in⟩
-    sSup_le := fun _ _ h _ ⟨t', ⟨t'_in, a_in⟩⟩ => h t' t'_in a_in
-    le_sInf := fun _ _ h _ a_in t' t'_in => h t' t'_in a_in
-    sInf_le := fun _ _ t_in _ h => h _ t_in
+    le_sSup := fun _ t t_in _ a_in ↦ ⟨t, t_in, a_in⟩
+    sSup_le := fun _ _ h _ ⟨t', ⟨t'_in, a_in⟩⟩ ↦ h t' t'_in a_in
+    le_sInf := fun _ _ h _ a_in t' t'_in ↦ h t' t'_in a_in
+    sInf_le := fun _ _ t_in _ h ↦ h _ t_in
     iInf_iSup_eq := by intros; ext; simp [Classical.skolem] }
 
 instance : OrderTop (Set α) where

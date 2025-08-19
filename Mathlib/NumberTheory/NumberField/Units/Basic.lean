@@ -62,7 +62,7 @@ namespace NumberField.Units
 section coe
 
 instance : CoeHTC (𝓞 K)ˣ K :=
-  ⟨fun x => algebraMap _ K (Units.val x)⟩
+  ⟨fun x ↦ algebraMap _ K (Units.val x)⟩
 
 theorem coe_injective : Function.Injective ((↑) : (𝓞 K)ˣ → K) :=
   RingOfIntegers.coe_injective.comp Units.val_injective
@@ -125,7 +125,7 @@ instance [NumberField K] : Fintype (torsion K) := by
   refine @Fintype.ofFinite _ (Set.finite_coe_iff.mpr ?_)
   refine Set.Finite.of_finite_image ?_ (coe_injective K).injOn
   refine (Embeddings.finite_of_norm_le K ℂ 1).subset
-    (fun a ⟨u, ⟨h_tors, h_ua⟩⟩ => ⟨?_, fun φ => ?_⟩)
+    (fun a ⟨u, ⟨h_tors, h_ua⟩⟩ ↦ ⟨?_, fun φ ↦ ?_⟩)
   · rw [← h_ua]
     exact u.val.prop
   · rw [← h_ua]
@@ -153,7 +153,7 @@ theorem torsionOrder_pos [NumberField K] :
 theorem rootsOfUnity_eq_one [NumberField K] {k : ℕ+} (hc : Nat.Coprime k (torsionOrder K))
     {ζ : (𝓞 K)ˣ} : ζ ∈ rootsOfUnity k (𝓞 K) ↔ ζ = 1 := by
   rw [mem_rootsOfUnity]
-  refine ⟨fun h => ?_, fun h => by rw [h, one_pow]⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h, one_pow]⟩
   refine orderOf_eq_one_iff.mp (Nat.eq_one_of_dvd_coprimes hc ?_ ?_)
   · exact orderOf_dvd_of_pow_eq_one h
   · have hζ : ζ ∈ torsion K := by
@@ -168,7 +168,7 @@ theorem rootsOfUnity_eq_torsion [NumberField K] :
     rootsOfUnity (torsionOrder K) (𝓞 K) = torsion K := by
   ext ζ
   rw [torsion, mem_rootsOfUnity]
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
     exact ⟨torsionOrder K, torsionOrder_pos K, h⟩
   · exact Subtype.ext_iff.mp (@pow_card_eq_one (torsion K) _ _ ⟨ζ, h⟩)

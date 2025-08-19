@@ -158,7 +158,7 @@ theorem total {s : CompositionSeries X} {x y : X} (hx : x ∈ s) (hy : y ∈ s) 
   exact le_total i j
 
 theorem toList_sorted (s : CompositionSeries X) : s.toList.Sorted (· < ·) :=
-  List.pairwise_iff_get.2 fun i j h => by
+  List.pairwise_iff_get.2 fun i j h ↦ by
     dsimp only [RelSeries.toList]
     rw [List.get_ofFn, List.get_ofFn]
     exact s.strictMono h
@@ -240,7 +240,7 @@ theorem eq_snoc_eraseLast {s : CompositionSeries X} (h : 0 < s.length) :
 theorem snoc_eraseLast_last {s : CompositionSeries X} (h : IsMaximal s.eraseLast.last s.last) :
     s.eraseLast.snoc s.last h = s :=
   have h : 0 < s.length :=
-    Nat.pos_of_ne_zero (fun hs => ne_of_gt (lt_of_isMaximal h) <| by simp [last, Fin.ext_iff, hs])
+    Nat.pos_of_ne_zero (fun hs ↦ ne_of_gt (lt_of_isMaximal h) <| by simp [last, Fin.ext_iff, hs])
   (eq_snoc_eraseLast h).symm
 
 /-- Two `CompositionSeries X`, `s₁` and `s₂` are equivalent if there is a bijection
@@ -255,17 +255,17 @@ namespace Equivalent
 
 @[refl]
 theorem refl (s : CompositionSeries X) : Equivalent s s :=
-  ⟨Equiv.refl _, fun _ => (s.step _).iso_refl⟩
+  ⟨Equiv.refl _, fun _ ↦ (s.step _).iso_refl⟩
 
 @[symm]
 theorem symm {s₁ s₂ : CompositionSeries X} (h : Equivalent s₁ s₂) : Equivalent s₂ s₁ :=
-  ⟨h.choose.symm, fun i => iso_symm (by simpa using h.choose_spec (h.choose.symm i))⟩
+  ⟨h.choose.symm, fun i ↦ iso_symm (by simpa using h.choose_spec (h.choose.symm i))⟩
 
 @[trans]
 theorem trans {s₁ s₂ s₃ : CompositionSeries X} (h₁ : Equivalent s₁ s₂) (h₂ : Equivalent s₂ s₃) :
     Equivalent s₁ s₃ :=
   ⟨h₁.choose.trans h₂.choose,
-    fun i => iso_trans (h₁.choose_spec i) (h₂.choose_spec (h₁.choose i))⟩
+    fun i ↦ iso_trans (h₁.choose_spec i) (h₂.choose_spec (h₁.choose i))⟩
 
 protected theorem smash {s₁ s₂ t₁ t₂ : CompositionSeries X}
     (hs : s₁.last = s₂.head) (ht : t₁.last = t₂.head)
@@ -292,7 +292,7 @@ protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat�
       Fin (s₁.length + 1) ≃ Option (Fin s₁.length) := finSuccEquivLast
       _ ≃ Option (Fin s₂.length) := Functor.mapEquiv Option hequiv.choose
       _ ≃ Fin (s₂.length + 1) := finSuccEquivLast.symm
-  ⟨e, fun i => by
+  ⟨e, fun i ↦ by
     refine Fin.lastCases ?_ ?_ i
     · simpa [e, apply_last] using hlast
     · intro i
@@ -314,14 +314,14 @@ theorem snoc_snoc_swap {s : CompositionSeries X} {x₁ x₂ y₁ y₂ : X} {hsat
   ⟨e, by
     intro i
     dsimp only [e]
-    refine Fin.lastCases ?_ (fun i => ?_) i
+    refine Fin.lastCases ?_ (fun i ↦ ?_) i
     · erw [Equiv.swap_apply_left, snoc_castSucc,
       show (snoc s x₁ hsat₁).toFun (Fin.last _) = x₁ from last_snoc _ _ _, Fin.succ_last,
       show ((s.snoc x₁ hsat₁).snoc y₁ hsaty₁).toFun (Fin.last _) = y₁ from last_snoc _ _ _,
       snoc_castSucc, snoc_castSucc, Fin.succ_castSucc, snoc_castSucc, Fin.succ_last,
       show (s.snoc _ hsat₂).toFun (Fin.last _) = x₂ from last_snoc _ _ _]
       exact hr₂
-    · refine Fin.lastCases ?_ (fun i => ?_) i
+    · refine Fin.lastCases ?_ (fun i ↦ ?_) i
       · erw [Equiv.swap_apply_right, snoc_castSucc, snoc_castSucc, snoc_castSucc,
           Fin.succ_castSucc, snoc_castSucc, Fin.succ_last, last_snoc', last_snoc', last_snoc']
         exact hr₁
@@ -348,14 +348,14 @@ theorem length_pos_of_head_eq_head_of_last_eq_last_of_length_pos {s₁ s₂ : Co
 
 theorem eq_of_head_eq_head_of_last_eq_last_of_length_eq_zero {s₁ s₂ : CompositionSeries X}
     (hb : s₁.head = s₂.head) (ht : s₁.last = s₂.last) (hs₁0 : s₁.length = 0) : s₁ = s₂ := by
-  have : ∀ x, x ∈ s₁ ↔ x = s₁.last := fun x =>
-    ⟨fun hx =>  subsingleton_of_length_eq_zero hs₁0 hx s₁.last_mem, fun hx => hx.symm ▸ s₁.last_mem⟩
-  have : ∀ x, x ∈ s₂ ↔ x = s₂.last := fun x =>
-    ⟨fun hx =>
+  have : ∀ x, x ∈ s₁ ↔ x = s₁.last := fun x ↦
+    ⟨fun hx ↦  subsingleton_of_length_eq_zero hs₁0 hx s₁.last_mem, fun hx ↦ hx.symm ▸ s₁.last_mem⟩
+  have : ∀ x, x ∈ s₂ ↔ x = s₂.last := fun x ↦
+    ⟨fun hx ↦
       subsingleton_of_length_eq_zero
         (length_eq_zero_of_head_eq_head_of_last_eq_last_of_length_eq_zero hb ht
           hs₁0) hx s₂.last_mem,
-      fun hx => hx.symm ▸ s₂.last_mem⟩
+      fun hx ↦ hx.symm ▸ s₂.last_mem⟩
   ext
   simp [*]
 

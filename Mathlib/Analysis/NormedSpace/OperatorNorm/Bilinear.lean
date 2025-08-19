@@ -47,11 +47,11 @@ open Set Real
 theorem opNorm_ext [RingHomIsometric σ₁₃] (f : E →SL[σ₁₂] F) (g : E →SL[σ₁₃] G)
     (h : ∀ x, ‖f x‖ = ‖g x‖) : ‖f‖ = ‖g‖ :=
   opNorm_eq_of_bounds (norm_nonneg _)
-    (fun x => by
+    (fun x ↦ by
       rw [h x]
       exact le_opNorm _ _)
-    fun c hc h₂ =>
-    opNorm_le_bound _ hc fun z => by
+    fun c hc h₂ ↦
+    opNorm_le_bound _ hc fun z ↦ by
       rw [← h z]
       exact h₂ z
 
@@ -60,7 +60,7 @@ variable [RingHomIsometric σ₂₃]
 
 theorem opNorm_le_bound₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) {C : ℝ} (h0 : 0 ≤ C)
     (hC : ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) : ‖f‖ ≤ C :=
-  f.opNorm_le_bound h0 fun x => (f x).opNorm_le_bound (by positivity) <| hC x
+  f.opNorm_le_bound h0 fun x ↦ (f x).opNorm_le_bound (by positivity) <| hC x
 
 
 theorem le_opNorm₂ [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (x : E) (y : F) :
@@ -97,11 +97,11 @@ follow automatically in `LinearMap.mkContinuous₂_norm_le`. -/
 def mkContinuousOfExistsBound₂ (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G)
     (h : ∃ C, ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) : E →SL[σ₁₃] F →SL[σ₂₃] G :=
   LinearMap.mkContinuousOfExistsBound
-    { toFun := fun x => (f x).mkContinuousOfExistsBound <| let ⟨C, hC⟩ := h; ⟨C * ‖x‖, hC x⟩
-      map_add' := fun x y => by
+    { toFun := fun x ↦ (f x).mkContinuousOfExistsBound <| let ⟨C, hC⟩ := h; ⟨C * ‖x‖, hC x⟩
+      map_add' := fun x y ↦ by
         ext z
         simp
-      map_smul' := fun c x => by
+      map_smul' := fun c x ↦ by
         ext z
         simp } <|
     let ⟨C, hC⟩ := h; ⟨max C 0, norm_mkContinuous₂_aux f C hC⟩
@@ -138,13 +138,13 @@ For a version bundled as `LinearIsometryEquiv`, see
 `ContinuousLinearMap.flipL`. -/
 def flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : F →SL[σ₂₃] E →SL[σ₁₃] G :=
   LinearMap.mkContinuous₂
-    (LinearMap.mk₂'ₛₗ σ₂₃ σ₁₃ (fun y x => f x y) (fun x y z => (f z).map_add x y)
-      (fun c y x => (f x).map_smulₛₗ c y) (fun z x y => by simp only [f.map_add, add_apply])
-        (fun c y x => by simp only [f.map_smulₛₗ, smul_apply]))
-    ‖f‖ fun y x => (f.le_opNorm₂ x y).trans_eq <| by simp only [mul_right_comm]
+    (LinearMap.mk₂'ₛₗ σ₂₃ σ₁₃ (fun y x ↦ f x y) (fun x y z ↦ (f z).map_add x y)
+      (fun c y x ↦ (f x).map_smulₛₗ c y) (fun z x y ↦ by simp only [f.map_add, add_apply])
+        (fun c y x ↦ by simp only [f.map_smulₛₗ, smul_apply]))
+    ‖f‖ fun y x ↦ (f.le_opNorm₂ x y).trans_eq <| by simp only [mul_right_comm]
 
 private theorem le_norm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f‖ ≤ ‖flip f‖ :=
-  f.opNorm_le_bound₂ (norm_nonneg f.flip) fun x y => by
+  f.opNorm_le_bound₂ (norm_nonneg f.flip) fun x y ↦ by
     rw [mul_right_comm]
     exact (flip f).le_opNorm₂ y x
 
@@ -257,11 +257,11 @@ variable (σ₁₂ σ₂₃ E F G)
 /-- Composition of continuous semilinear maps as a continuous semibilinear map. -/
 def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G :=
   LinearMap.mkContinuous₂
-    (LinearMap.mk₂'ₛₗ (RingHom.id 𝕜₃) σ₂₃ comp add_comp smul_comp comp_add fun c f g => by
+    (LinearMap.mk₂'ₛₗ (RingHom.id 𝕜₃) σ₂₃ comp add_comp smul_comp comp_add fun c f g ↦ by
       ext
       simp only [ContinuousLinearMap.map_smulₛₗ, coe_smul', coe_comp', Function.comp_apply,
         Pi.smul_apply])
-    1 fun f g => by simpa only [one_mul] using opNorm_comp_le f g
+    1 fun f g ↦ by simpa only [one_mul] using opNorm_comp_le f g
 
 theorem norm_compSL_le : ‖compSL E F G σ₁₂ σ₂₃‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
@@ -274,13 +274,13 @@ theorem compSL_apply (f : F →SL[σ₂₃] G) (g : E →SL[σ₁₂] F) : compS
 
 theorem _root_.Continuous.const_clm_comp {X} [TopologicalSpace X] {f : X → E →SL[σ₁₂] F}
     (hf : Continuous f) (g : F →SL[σ₂₃] G) :
-    Continuous (fun x => g.comp (f x) : X → E →SL[σ₁₃] G) :=
+    Continuous (fun x ↦ g.comp (f x) : X → E →SL[σ₁₃] G) :=
   (compSL E F G σ₁₂ σ₂₃ g).continuous.comp hf
 
 -- Giving the implicit argument speeds up elaboration significantly
 theorem _root_.Continuous.clm_comp_const {X} [TopologicalSpace X] {g : X → F →SL[σ₂₃] G}
     (hg : Continuous g) (f : E →SL[σ₁₂] F) :
-    Continuous (fun x => (g x).comp f : X → E →SL[σ₁₃] G) :=
+    Continuous (fun x ↦ (g x).comp f : X → E →SL[σ₁₃] G) :=
   (@ContinuousLinearMap.flip _ _ _ _ _ (E →SL[σ₁₃] G) _ _ _ _ _ _ _ _ _ _ _ _ _
     (compSL E F G σ₁₂ σ₂₃) f).continuous.comp hg
 
@@ -365,7 +365,7 @@ def deriv₂ (f : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : E × Fₗ →L[𝕜] E ×
 
 @[simp]
 theorem coe_deriv₂ (f : E →L[𝕜] Fₗ →L[𝕜] Gₗ) (p : E × Fₗ) :
-    ⇑(f.deriv₂ p) = fun q : E × Fₗ => f p.1 q.2 + f q.1 p.2 :=
+    ⇑(f.deriv₂ p) = fun q : E × Fₗ ↦ f p.1 q.2 + f q.1 p.2 :=
   rfl
 
 theorem map_add_add (f : E →L[𝕜] Fₗ →L[𝕜] Gₗ) (x x' : E) (y y' : Fₗ) :
@@ -378,7 +378,7 @@ is the product of the norms. -/
 @[simp]
 theorem norm_smulRight_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRight c f‖ = ‖c‖ * ‖f‖ := by
   refine le_antisymm ?_ ?_
-  · refine opNorm_le_bound _ (by positivity) fun x => ?_
+  · refine opNorm_le_bound _ (by positivity) fun x ↦ ?_
     calc
       ‖c x • f‖ = ‖c x‖ * ‖f‖ := norm_smul _ _
       _ ≤ ‖c‖ * ‖x‖ * ‖f‖ := by gcongr; apply le_opNorm
@@ -386,7 +386,7 @@ theorem norm_smulRight_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRight c
   · obtain hf | hf := (norm_nonneg f).eq_or_lt'
     · simp [hf]
     · rw [← le_div_iff₀ hf]
-      refine opNorm_le_bound _ (by positivity) fun x => ?_
+      refine opNorm_le_bound _ (by positivity) fun x ↦ ?_
       rw [div_mul_eq_mul_div, le_div_iff₀ hf]
       calc
         ‖c x‖ * ‖f‖ = ‖c x • f‖ := (norm_smul _ _).symm
@@ -405,14 +405,14 @@ variable (𝕜 E Fₗ) in
 def smulRightL : (E →L[𝕜] 𝕜) →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] Fₗ :=
   LinearMap.mkContinuous₂
     { toFun := smulRightₗ
-      map_add' := fun c₁ c₂ => by
+      map_add' := fun c₁ c₂ ↦ by
         ext x
         simp only [add_smul, coe_smulRightₗ, add_apply, smulRight_apply, LinearMap.add_apply]
-      map_smul' := fun m c => by
+      map_smul' := fun m c ↦ by
         ext x
         dsimp
         rw [smul_smul] }
-    1 fun c x => by
+    1 fun c x ↦ by
       simp only [coe_smulRightₗ, one_mul, norm_smulRight_apply, LinearMap.coe_mk, AddHom.coe_mk,
         le_refl]
 

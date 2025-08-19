@@ -78,7 +78,7 @@ protected theorem Convex.isConnected {s : Set E} (h : Convex ℝ s) (hne : s.Non
 
 /-- A convex set is preconnected. -/
 protected theorem Convex.isPreconnected {s : Set E} (h : Convex ℝ s) : IsPreconnected s :=
-  s.eq_empty_or_nonempty.elim (fun h => h.symm ▸ isPreconnected_empty) fun hne =>
+  s.eq_empty_or_nonempty.elim (fun h ↦ h.symm ▸ isPreconnected_empty) fun hne ↦
     (h.isConnected hne).isPreconnected
 
 /-- A subspace in a topological vector space over `ℝ` is path connected. -/

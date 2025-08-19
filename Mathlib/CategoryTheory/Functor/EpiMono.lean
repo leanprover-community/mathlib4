@@ -86,65 +86,65 @@ instance reflectsEpimorphisms_comp (F : C ⥤ D) (G : D ⥤ E) [ReflectsEpimorph
 
 theorem preservesEpimorphisms_of_preserves_of_reflects (F : C ⥤ D) (G : D ⥤ E)
     [PreservesEpimorphisms (F ⋙ G)] [ReflectsEpimorphisms G] : PreservesEpimorphisms F :=
-  ⟨fun f _ => G.epi_of_epi_map <| show Epi ((F ⋙ G).map f) from inferInstance⟩
+  ⟨fun f _ ↦ G.epi_of_epi_map <| show Epi ((F ⋙ G).map f) from inferInstance⟩
 
 theorem preservesMonomorphisms_of_preserves_of_reflects (F : C ⥤ D) (G : D ⥤ E)
     [PreservesMonomorphisms (F ⋙ G)] [ReflectsMonomorphisms G] : PreservesMonomorphisms F :=
-  ⟨fun f _ => G.mono_of_mono_map <| show Mono ((F ⋙ G).map f) from inferInstance⟩
+  ⟨fun f _ ↦ G.mono_of_mono_map <| show Mono ((F ⋙ G).map f) from inferInstance⟩
 
 theorem reflectsEpimorphisms_of_preserves_of_reflects (F : C ⥤ D) (G : D ⥤ E)
     [PreservesEpimorphisms G] [ReflectsEpimorphisms (F ⋙ G)] : ReflectsEpimorphisms F :=
-  ⟨fun f _ => (F ⋙ G).epi_of_epi_map <| show Epi (G.map (F.map f)) from inferInstance⟩
+  ⟨fun f _ ↦ (F ⋙ G).epi_of_epi_map <| show Epi (G.map (F.map f)) from inferInstance⟩
 
 theorem reflectsMonomorphisms_of_preserves_of_reflects (F : C ⥤ D) (G : D ⥤ E)
     [PreservesMonomorphisms G] [ReflectsMonomorphisms (F ⋙ G)] : ReflectsMonomorphisms F :=
-  ⟨fun f _ => (F ⋙ G).mono_of_mono_map <| show Mono (G.map (F.map f)) from inferInstance⟩
+  ⟨fun f _ ↦ (F ⋙ G).mono_of_mono_map <| show Mono (G.map (F.map f)) from inferInstance⟩
 
 theorem preservesMonomorphisms.of_iso {F G : C ⥤ D} [PreservesMonomorphisms F] (α : F ≅ G) :
     PreservesMonomorphisms G :=
-  { preserves := fun {X} {Y} f h => by
+  { preserves := fun {X} {Y} f h ↦ by
       suffices G.map f = (α.app X).inv ≫ F.map f ≫ (α.app Y).hom from this ▸ mono_comp _ _
       rw [Iso.eq_inv_comp, Iso.app_hom, Iso.app_hom, NatTrans.naturality] }
 
 theorem preservesMonomorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
     PreservesMonomorphisms F ↔ PreservesMonomorphisms G :=
-  ⟨fun _ => preservesMonomorphisms.of_iso α, fun _ => preservesMonomorphisms.of_iso α.symm⟩
+  ⟨fun _ ↦ preservesMonomorphisms.of_iso α, fun _ ↦ preservesMonomorphisms.of_iso α.symm⟩
 
 theorem preservesEpimorphisms.of_iso {F G : C ⥤ D} [PreservesEpimorphisms F] (α : F ≅ G) :
     PreservesEpimorphisms G :=
-  { preserves := fun {X} {Y} f h => by
+  { preserves := fun {X} {Y} f h ↦ by
       suffices G.map f = (α.app X).inv ≫ F.map f ≫ (α.app Y).hom from this ▸ epi_comp _ _
       rw [Iso.eq_inv_comp, Iso.app_hom, Iso.app_hom, NatTrans.naturality] }
 
 theorem preservesEpimorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
     PreservesEpimorphisms F ↔ PreservesEpimorphisms G :=
-  ⟨fun _ => preservesEpimorphisms.of_iso α, fun _ => preservesEpimorphisms.of_iso α.symm⟩
+  ⟨fun _ ↦ preservesEpimorphisms.of_iso α, fun _ ↦ preservesEpimorphisms.of_iso α.symm⟩
 
 theorem reflectsMonomorphisms.of_iso {F G : C ⥤ D} [ReflectsMonomorphisms F] (α : F ≅ G) :
     ReflectsMonomorphisms G :=
-  { reflects := fun {X} {Y} f h => by
+  { reflects := fun {X} {Y} f h ↦ by
       apply F.mono_of_mono_map
       suffices F.map f = (α.app X).hom ≫ G.map f ≫ (α.app Y).inv from this ▸ mono_comp _ _
       rw [← Category.assoc, Iso.eq_comp_inv, Iso.app_hom, Iso.app_hom, NatTrans.naturality] }
 
 theorem reflectsMonomorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
     ReflectsMonomorphisms F ↔ ReflectsMonomorphisms G :=
-  ⟨fun _ => reflectsMonomorphisms.of_iso α, fun _ => reflectsMonomorphisms.of_iso α.symm⟩
+  ⟨fun _ ↦ reflectsMonomorphisms.of_iso α, fun _ ↦ reflectsMonomorphisms.of_iso α.symm⟩
 
 theorem reflectsEpimorphisms.of_iso {F G : C ⥤ D} [ReflectsEpimorphisms F] (α : F ≅ G) :
     ReflectsEpimorphisms G :=
-  { reflects := fun {X} {Y} f h => by
+  { reflects := fun {X} {Y} f h ↦ by
       apply F.epi_of_epi_map
       suffices F.map f = (α.app X).hom ≫ G.map f ≫ (α.app Y).inv from this ▸ epi_comp _ _
       rw [← Category.assoc, Iso.eq_comp_inv, Iso.app_hom, Iso.app_hom, NatTrans.naturality] }
 
 theorem reflectsEpimorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
     ReflectsEpimorphisms F ↔ ReflectsEpimorphisms G :=
-  ⟨fun _ => reflectsEpimorphisms.of_iso α, fun _ => reflectsEpimorphisms.of_iso α.symm⟩
+  ⟨fun _ ↦ reflectsEpimorphisms.of_iso α, fun _ ↦ reflectsEpimorphisms.of_iso α.symm⟩
 
 theorem preservesEpimorphisms_of_adjunction {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) :
     PreservesEpimorphisms F :=
-  { preserves := fun {X} {Y} f hf =>
+  { preserves := fun {X} {Y} f hf ↦
       ⟨by
         intro Z g h H
         replace H := congr_arg (adj.homEquiv X Z) H
@@ -160,7 +160,7 @@ instance (priority := 100) preservesEpimorphisms_of_isLeftAdjoint (F : C ⥤ D) 
 
 theorem preservesMonomorphisms_of_adjunction {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) :
     PreservesMonomorphisms G :=
-  { preserves := fun {X} {Y} f hf =>
+  { preserves := fun {X} {Y} f hf ↦
       ⟨by
         intro Z g h H
         replace H := congr_arg (adj.homEquiv Z Y).symm H
@@ -174,13 +174,13 @@ instance (priority := 100) preservesMonomorphisms_of_isRightAdjoint (F : C ⥤ D
 instance (priority := 100) reflectsMonomorphisms_of_faithful (F : C ⥤ D) [Faithful F] :
     ReflectsMonomorphisms F where
   reflects {X} {Y} f _ :=
-    ⟨fun {Z} g h hgh =>
+    ⟨fun {Z} g h hgh ↦
       F.map_injective ((cancel_mono (F.map f)).1 (by rw [← F.map_comp, hgh, F.map_comp]))⟩
 
 instance (priority := 100) reflectsEpimorphisms_of_faithful (F : C ⥤ D) [Faithful F] :
     ReflectsEpimorphisms F where
   reflects {X} {Y} f _ :=
-    ⟨fun {Z} g h hgh =>
+    ⟨fun {Z} g h hgh ↦
       F.map_injective ((cancel_epi (F.map f)).1 (by rw [← F.map_comp, hgh, F.map_comp]))⟩
 
 section
@@ -243,7 +243,7 @@ theorem mono_map_iff_mono [hF₁ : PreservesMonomorphisms F] [hF₂ : ReflectsMo
 then `D` also is. -/
 theorem splitEpiCategoryImpOfIsEquivalence [IsEquivalence F] [SplitEpiCategory C] :
     SplitEpiCategory D :=
-  ⟨fun {X} {Y} f => by
+  ⟨fun {X} {Y} f ↦ by
     intro
     rw [← F.inv.isSplitEpi_iff f]
     apply isSplitEpi_of_epi⟩
@@ -258,7 +258,7 @@ variable {C D : Type*} [Category C] [Category D] {F : C ⥤ D} {F' : D ⥤ C} {A
 
 theorem strongEpi_map_of_strongEpi (adj : F ⊣ F') (f : A ⟶ B) [F'.PreservesMonomorphisms]
     [F.PreservesEpimorphisms] [StrongEpi f] : StrongEpi (F.map f) :=
-  ⟨inferInstance, fun X Y Z => by
+  ⟨inferInstance, fun X Y Z ↦ by
     intro
     rw [adj.hasLiftingProperty_iff]
     infer_instance⟩

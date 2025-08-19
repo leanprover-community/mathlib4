@@ -534,10 +534,10 @@ lemma ext_s (s s' : S.Splitting) (h : s.s = s'.s) : s = s' := by
 noncomputable def leftHomologyData [HasZeroObject C] (s : S.Splitting) :
     LeftHomologyData S := by
   have hi := KernelFork.IsLimit.ofι S.f S.zero
-    (fun x _ => x ≫ s.r)
-    (fun x hx => by simp only [assoc, s.r_f, comp_sub, comp_id,
+    (fun x _ ↦ x ≫ s.r)
+    (fun x hx ↦ by simp only [assoc, s.r_f, comp_sub, comp_id,
       sub_eq_self, reassoc_of% hx, zero_comp])
-    (fun x _ b hb => by simp only [← hb, assoc, f_r, comp_id])
+    (fun x _ b hb ↦ by simp only [← hb, assoc, f_r, comp_id])
   let f' := hi.lift (KernelFork.ofι S.f S.zero)
   have hf' : f' = 𝟙 _ := by
     apply Fork.IsLimit.hom_ext hi
@@ -562,9 +562,9 @@ noncomputable def leftHomologyData [HasZeroObject C] (s : S.Splitting) :
 noncomputable def rightHomologyData [HasZeroObject C] (s : S.Splitting) :
     RightHomologyData S := by
   have hp := CokernelCofork.IsColimit.ofπ S.g S.zero
-    (fun x _ => s.s ≫ x)
-    (fun x hx => by simp only [s.g_s_assoc, sub_comp, id_comp, sub_eq_self, assoc, hx, comp_zero])
-    (fun x _ b hb => by simp only [← hb, s.s_g_assoc])
+    (fun x _ ↦ s.s ≫ x)
+    (fun x hx ↦ by simp only [s.g_s_assoc, sub_comp, id_comp, sub_eq_self, assoc, hx, comp_zero])
+    (fun x _ b hb ↦ by simp only [← hb, s.s_g_assoc])
   let g' := hp.desc (CokernelCofork.ofπ S.g S.zero)
   have hg' : g' = 𝟙 _ := by
     apply Cofork.IsColimit.hom_ext hp
@@ -865,7 +865,7 @@ lemma quasiIso_iff_of_zeros' {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
     rw [hg₁, op_zero]
   rw [← exact_unop_iff]
   have : Mono φ.τ₂.op ↔ Epi φ.τ₂ :=
-    ⟨fun _ => unop_epi_of_mono φ.τ₂.op, fun _ => op_mono_of_epi _⟩
+    ⟨fun _ ↦ unop_epi_of_mono φ.τ₂.op, fun _ ↦ op_mono_of_epi _⟩
   tauto
 
 variable {S : ShortComplex C}

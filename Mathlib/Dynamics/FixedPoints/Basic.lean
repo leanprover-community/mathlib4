@@ -108,7 +108,7 @@ end IsFixedPt
 @[simp]
 theorem Injective.isFixedPt_apply_iff (hf : Injective f) {x : α} :
     IsFixedPt f (f x) ↔ IsFixedPt f x :=
-  ⟨fun h => hf h.eq, IsFixedPt.apply⟩
+  ⟨fun h ↦ hf h.eq, IsFixedPt.apply⟩
 
 /-- The set of fixed points of a map `f : α → α`. -/
 def fixedPoints (f : α → α) : Set α :=
@@ -127,24 +127,24 @@ theorem mem_fixedPoints_iff {α : Type*} {f : α → α} {x : α} : x ∈ fixedP
 
 @[simp]
 theorem fixedPoints_id : fixedPoints (@id α) = Set.univ :=
-  Set.ext fun _ => by simpa using isFixedPt_id _
+  Set.ext fun _ ↦ by simpa using isFixedPt_id _
 
-theorem fixedPoints_subset_range : fixedPoints f ⊆ Set.range f := fun x hx => ⟨x, hx⟩
+theorem fixedPoints_subset_range : fixedPoints f ⊆ Set.range f := fun x hx ↦ ⟨x, hx⟩
 
 /-- If `g` semiconjugates `fa` to `fb`, then it sends fixed points of `fa` to fixed points
 of `fb`. -/
 theorem Semiconj.mapsTo_fixedPoints {g : α → β} (h : Semiconj g fa fb) :
-    Set.MapsTo g (fixedPoints fa) (fixedPoints fb) := fun _ hx => hx.map h
+    Set.MapsTo g (fixedPoints fa) (fixedPoints fb) := fun _ hx ↦ hx.map h
 
 /-- Any two maps `f : α → β` and `g : β → α` are inverse of each other on the sets of fixed points
 of `f ∘ g` and `g ∘ f`, respectively. -/
 theorem invOn_fixedPoints_comp (f : α → β) (g : β → α) :
     Set.InvOn f g (fixedPoints <| f ∘ g) (fixedPoints <| g ∘ f) :=
-  ⟨fun _ => id, fun _ => id⟩
+  ⟨fun _ ↦ id, fun _ ↦ id⟩
 
 /-- Any map `f` sends fixed points of `g ∘ f` to fixed points of `f ∘ g`. -/
 theorem mapsTo_fixedPoints_comp (f : α → β) (g : β → α) :
-    Set.MapsTo f (fixedPoints <| g ∘ f) (fixedPoints <| f ∘ g) := fun _ hx => hx.map fun _ => rfl
+    Set.MapsTo f (fixedPoints <| g ∘ f) (fixedPoints <| f ∘ g) := fun _ hx ↦ hx.map fun _ ↦ rfl
 
 /-- Given two maps `f : α → β` and `g : β → α`, `g` is a bijective map between the fixed points
 of `f ∘ g` and the fixed points of `g ∘ f`. The inverse map is `f`, see `invOn_fixedPoints_comp`. -/

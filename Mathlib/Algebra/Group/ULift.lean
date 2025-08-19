@@ -35,7 +35,7 @@ theorem one_down [One α] : (1 : ULift α).down = 1 :=
 
 @[to_additive]
 instance mul [Mul α] : Mul (ULift α) :=
-  ⟨fun f g => ⟨f.down * g.down⟩⟩
+  ⟨fun f g ↦ ⟨f.down * g.down⟩⟩
 
 @[to_additive (attr := simp)]
 theorem mul_down [Mul α] : (x * y).down = x.down * y.down :=
@@ -43,7 +43,7 @@ theorem mul_down [Mul α] : (x * y).down = x.down * y.down :=
 
 @[to_additive]
 instance div [Div α] : Div (ULift α) :=
-  ⟨fun f g => ⟨f.down / g.down⟩⟩
+  ⟨fun f g ↦ ⟨f.down / g.down⟩⟩
 
 @[to_additive (attr := simp)]
 theorem div_down [Div α] : (x / y).down = x.down / y.down :=
@@ -51,7 +51,7 @@ theorem div_down [Div α] : (x / y).down = x.down / y.down :=
 
 @[to_additive]
 instance inv [Inv α] : Inv (ULift α) :=
-  ⟨fun f => ⟨f.down⁻¹⟩⟩
+  ⟨fun f ↦ ⟨f.down⁻¹⟩⟩
 
 @[to_additive (attr := simp)]
 theorem inv_down [Inv α] : x⁻¹.down = x.down⁻¹ :=
@@ -59,7 +59,7 @@ theorem inv_down [Inv α] : x⁻¹.down = x.down⁻¹ :=
 
 @[to_additive]
 instance smul [SMul α β] : SMul α (ULift β) :=
-  ⟨fun n x => up (n • x.down)⟩
+  ⟨fun n x ↦ up (n • x.down)⟩
 
 @[to_additive (attr := simp)]
 theorem smul_down [SMul α β] (a : α) (b : ULift.{w} β) : (a • b).down = a • b.down :=
@@ -67,7 +67,7 @@ theorem smul_down [SMul α β] (a : α) (b : ULift.{w} β) : (a • b).down = a 
 
 @[to_additive existing (reorder := 1 2) smul]
 instance pow [Pow α β] : Pow (ULift α) β :=
-  ⟨fun x n => up (x.down ^ n)⟩
+  ⟨fun x n ↦ up (x.down ^ n)⟩
 
 @[to_additive existing (attr := simp) (reorder := 1 2, 4 5) smul_down]
 theorem pow_down [Pow α β] (a : ULift.{w} α) (b : β) : (a ^ b).down = a.down ^ b :=
@@ -77,15 +77,15 @@ theorem pow_down [Pow α β] (a : ULift.{w} α) (b : β) : (a ^ b).down = a.down
 -/
 @[to_additive /-- The additive equivalence between `ULift α` and `α`. -/]
 def _root_.MulEquiv.ulift [Mul α] : ULift α ≃* α :=
-  { Equiv.ulift with map_mul' := fun _ _ => rfl }
+  { Equiv.ulift with map_mul' := fun _ _ ↦ rfl }
 
 @[to_additive]
 instance semigroup [Semigroup α] : Semigroup (ULift α) :=
-  (MulEquiv.ulift.injective.semigroup _) fun _ _ => rfl
+  (MulEquiv.ulift.injective.semigroup _) fun _ _ ↦ rfl
 
 @[to_additive]
 instance commSemigroup [CommSemigroup α] : CommSemigroup (ULift α) :=
-  (Equiv.ulift.injective.commSemigroup _) fun _ _ => rfl
+  (Equiv.ulift.injective.commSemigroup _) fun _ _ ↦ rfl
 
 @[to_additive]
 instance mulOneClass [MulOneClass α] : MulOneClass (ULift α) :=
@@ -93,50 +93,50 @@ instance mulOneClass [MulOneClass α] : MulOneClass (ULift α) :=
 
 @[to_additive]
 instance monoid [Monoid α] : Monoid (ULift α) :=
-  Equiv.ulift.injective.monoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+  Equiv.ulift.injective.monoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 @[to_additive]
 instance commMonoid [CommMonoid α] : CommMonoid (ULift α) :=
-  Equiv.ulift.injective.commMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+  Equiv.ulift.injective.commMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 @[to_additive]
 instance divInvMonoid [DivInvMonoid α] : DivInvMonoid (ULift α) :=
-  Equiv.ulift.injective.divInvMonoid _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+  Equiv.ulift.injective.divInvMonoid _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 @[to_additive]
 instance group [Group α] : Group (ULift α) :=
-  Equiv.ulift.injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+  Equiv.ulift.injective.group _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 @[to_additive]
 instance commGroup [CommGroup α] : CommGroup (ULift α) :=
-  Equiv.ulift.injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+  Equiv.ulift.injective.commGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 @[to_additive]
 instance leftCancelSemigroup [LeftCancelSemigroup α] : LeftCancelSemigroup (ULift α) :=
-  Equiv.ulift.injective.leftCancelSemigroup _ fun _ _ => rfl
+  Equiv.ulift.injective.leftCancelSemigroup _ fun _ _ ↦ rfl
 
 @[to_additive]
 instance rightCancelSemigroup [RightCancelSemigroup α] : RightCancelSemigroup (ULift α) :=
-  Equiv.ulift.injective.rightCancelSemigroup _ fun _ _ => rfl
+  Equiv.ulift.injective.rightCancelSemigroup _ fun _ _ ↦ rfl
 
 @[to_additive]
 instance leftCancelMonoid [LeftCancelMonoid α] : LeftCancelMonoid (ULift α) :=
-  Equiv.ulift.injective.leftCancelMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+  Equiv.ulift.injective.leftCancelMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 @[to_additive]
 instance rightCancelMonoid [RightCancelMonoid α] : RightCancelMonoid (ULift α) :=
-  Equiv.ulift.injective.rightCancelMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+  Equiv.ulift.injective.rightCancelMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 @[to_additive]
 instance cancelMonoid [CancelMonoid α] : CancelMonoid (ULift α) :=
-  Equiv.ulift.injective.cancelMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+  Equiv.ulift.injective.cancelMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 @[to_additive]
 instance cancelCommMonoid [CancelCommMonoid α] : CancelCommMonoid (ULift α) :=
-  Equiv.ulift.injective.cancelCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+  Equiv.ulift.injective.cancelCommMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 instance nontrivial [Nontrivial α] : Nontrivial (ULift α) :=
   Equiv.ulift.symm.injective.nontrivial

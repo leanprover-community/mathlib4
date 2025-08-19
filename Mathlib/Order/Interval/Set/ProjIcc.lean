@@ -107,18 +107,18 @@ theorem projIcc_val (x : Icc a b) : projIcc a b h x = x := by
   cases x
   apply projIcc_of_mem
 
-theorem projIci_surjOn : SurjOn (projIci a) (Ici a) univ := fun x _ => ⟨x, x.2, projIci_coe x⟩
+theorem projIci_surjOn : SurjOn (projIci a) (Ici a) univ := fun x _ ↦ ⟨x, x.2, projIci_coe x⟩
 
-theorem projIic_surjOn : SurjOn (projIic b) (Iic b) univ := fun x _ => ⟨x, x.2, projIic_coe x⟩
+theorem projIic_surjOn : SurjOn (projIic b) (Iic b) univ := fun x _ ↦ ⟨x, x.2, projIic_coe x⟩
 
-theorem projIcc_surjOn : SurjOn (projIcc a b h) (Icc a b) univ := fun x _ =>
+theorem projIcc_surjOn : SurjOn (projIcc a b h) (Icc a b) univ := fun x _ ↦
   ⟨x, x.2, projIcc_val h x⟩
 
-theorem projIci_surjective : Surjective (projIci a) := fun x => ⟨x, projIci_coe x⟩
+theorem projIci_surjective : Surjective (projIci a) := fun x ↦ ⟨x, projIci_coe x⟩
 
-theorem projIic_surjective : Surjective (projIic b) := fun x => ⟨x, projIic_coe x⟩
+theorem projIic_surjective : Surjective (projIic b) := fun x ↦ ⟨x, projIic_coe x⟩
 
-theorem projIcc_surjective : Surjective (projIcc a b h) := fun x => ⟨x, projIcc_val h x⟩
+theorem projIcc_surjective : Surjective (projIcc a b h) := fun x ↦ ⟨x, projIcc_val h x⟩
 
 @[simp]
 theorem range_projIci : range (projIci a) = univ := projIci_surjective.range_eq
@@ -130,20 +130,20 @@ theorem range_projIic : range (projIic a) = univ := projIic_surjective.range_eq
 theorem range_projIcc : range (projIcc a b h) = univ :=
   (projIcc_surjective h).range_eq
 
-theorem monotone_projIci : Monotone (projIci a) := fun _ _ => max_le_max le_rfl
+theorem monotone_projIci : Monotone (projIci a) := fun _ _ ↦ max_le_max le_rfl
 
-theorem monotone_projIic : Monotone (projIic a) := fun _ _ => min_le_min le_rfl
+theorem monotone_projIic : Monotone (projIic a) := fun _ _ ↦ min_le_min le_rfl
 
-theorem monotone_projIcc : Monotone (projIcc a b h) := fun _ _ hxy =>
+theorem monotone_projIcc : Monotone (projIcc a b h) := fun _ _ hxy ↦
   max_le_max le_rfl <| min_le_min le_rfl hxy
 
-theorem strictMonoOn_projIci : StrictMonoOn (projIci a) (Ici a) := fun x hx y hy hxy => by
+theorem strictMonoOn_projIci : StrictMonoOn (projIci a) (Ici a) := fun x hx y hy hxy ↦ by
   simpa only [projIci_of_mem, hx, hy]
 
-theorem strictMonoOn_projIic : StrictMonoOn (projIic b) (Iic b) := fun x hx y hy hxy => by
+theorem strictMonoOn_projIic : StrictMonoOn (projIic b) (Iic b) := fun x hx y hy hxy ↦ by
   simpa only [projIic_of_mem, hx, hy]
 
-theorem strictMonoOn_projIcc : StrictMonoOn (projIcc a b h) (Icc a b) := fun x hx y hy hxy => by
+theorem strictMonoOn_projIcc : StrictMonoOn (projIcc a b h) (Icc a b) := fun x hx y hy hxy ↦ by
   simpa only [projIcc_of_mem, hx, hy]
 
 /-- Extend a function `[a, ∞) → β` to a map `α → β`. -/
@@ -271,12 +271,12 @@ theorem StrictMono.strictMonoOn_IccExtend (hf : StrictMono f) :
 
 protected theorem Set.OrdConnected.IciExtend {s : Set (Ici a)} (hs : s.OrdConnected) :
     {x | IciExtend (· ∈ s) x}.OrdConnected :=
-  ⟨fun _ hx _ hy _ hz => hs.out hx hy ⟨max_le_max le_rfl hz.1, max_le_max le_rfl hz.2⟩⟩
+  ⟨fun _ hx _ hy _ hz ↦ hs.out hx hy ⟨max_le_max le_rfl hz.1, max_le_max le_rfl hz.2⟩⟩
 
 protected theorem Set.OrdConnected.IicExtend {s : Set (Iic b)} (hs : s.OrdConnected) :
     {x | IicExtend (· ∈ s) x}.OrdConnected :=
-  ⟨fun _ hx _ hy _ hz => hs.out hx hy ⟨min_le_min le_rfl hz.1, min_le_min le_rfl hz.2⟩⟩
+  ⟨fun _ hx _ hy _ hz ↦ hs.out hx hy ⟨min_le_min le_rfl hz.1, min_le_min le_rfl hz.2⟩⟩
 
 protected theorem Set.OrdConnected.restrict (hs : s.OrdConnected) :
     {x | restrict t (· ∈ s) x}.OrdConnected :=
-  ⟨fun _ hx _ hy _ hz => hs.out hx hy hz⟩
+  ⟨fun _ hx _ hy _ hz ↦ hs.out hx hy hz⟩

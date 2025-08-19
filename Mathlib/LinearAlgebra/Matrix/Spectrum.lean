@@ -43,7 +43,7 @@ noncomputable def eigenvalues₀ : Fin (Fintype.card n) → ℝ :=
   (isHermitian_iff_isSymmetric.1 hA).eigenvalues finrank_euclideanSpace
 
 /-- The eigenvalues of a hermitian matrix, reusing the index `n` of the matrix entries. -/
-noncomputable def eigenvalues : n → ℝ := fun i =>
+noncomputable def eigenvalues : n → ℝ := fun i ↦
   hA.eigenvalues₀ <| (Fintype.equivOfCardEq (Fintype.card_fin _)).symm i
 
 /-- A choice of an orthonormal basis of eigenvectors of a hermitian matrix. -/

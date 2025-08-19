@@ -104,12 +104,12 @@ lemma FractionalOperation.IsValid.contains {ω : FractionalOperation D m} (valid
 /-- Fractional operation applied to a transposed table of values. -/
 def FractionalOperation.tt {ι : Type*} (ω : FractionalOperation D m) (x : Fin m → ι → D) :
     Multiset (ι → D) :=
-  ω.map (fun (g : (Fin m → D) → D) (i : ι) => g ((Function.swap x) i))
+  ω.map (fun (g : (Fin m → D) → D) (i : ι) ↦ g ((Function.swap x) i))
 
 /-- Cost function admits given fractional operation, i.e., `ω` improves `f` in the `≤` sense. -/
 def Function.AdmitsFractional {n : ℕ} (f : (Fin n → D) → C) (ω : FractionalOperation D m) : Prop :=
   ∀ x : (Fin m → (Fin n → D)),
-    m • ((ω.tt x).map f).sum ≤ ω.size • Finset.univ.sum (fun i => f (x i))
+    m • ((ω.tt x).map f).sum ≤ ω.size • Finset.univ.sum (fun i ↦ f (x i))
 
 /-- Fractional operation is a fractional polymorphism for given VCSP template. -/
 def FractionalOperation.IsFractionalPolymorphismFor
@@ -142,7 +142,7 @@ lemma Function.HasMaxCutPropertyAt.rows_lt_aux {C : Type*} [PartialOrder C]
       exact hab.symm
   apply asymm
   obtain ⟨o, in_omega, rfl⟩ := rin
-  change o (fun j => ![![a, b], ![b, a]] j 0) = o (fun j => ![![a, b], ![b, a]] j 1)
+  change o (fun j ↦ ![![a, b], ![b, a]] j 0) = o (fun j ↦ ![![a, b], ![b, a]] j 1)
   convert symmega ![a, b] ![b, a] (by simp [List.Perm.swap]) o in_omega using 2 <;>
     simp [Matrix.const_fin1_eq]
 
@@ -157,25 +157,25 @@ lemma Function.HasMaxCutProperty.forbids_commutativeFractionalPolymorphism
   specialize contr ![![a, b], ![b, a]]
   rw [Fin.sum_univ_two', ← mcfab.left, ← two_nsmul] at contr
   have sharp :
-    2 • ((ω.tt ![![a, b], ![b, a]]).map (fun _ => f ![a, b])).sum <
+    2 • ((ω.tt ![![a, b], ![b, a]]).map (fun _ ↦ f ![a, b])).sum <
     2 • ((ω.tt ![![a, b], ![b, a]]).map f).sum := by
     have half_sharp :
-      ((ω.tt ![![a, b], ![b, a]]).map (fun _ => f ![a, b])).sum <
+      ((ω.tt ![![a, b], ![b, a]]).map (fun _ ↦ f ![a, b])).sum <
       ((ω.tt ![![a, b], ![b, a]]).map f).sum := by
       apply Multiset.sum_lt_sum
       · intro r rin
         exact le_of_lt (mcfab.rows_lt_aux hab symmega rin)
       · obtain ⟨g, _⟩ := valid.contains
-        have : (fun i => g ((Function.swap ![![a, b], ![b, a]]) i)) ∈ ω.tt ![![a, b], ![b, a]] := by
+        have : (fun i ↦ g ((Function.swap ![![a, b], ![b, a]]) i)) ∈ ω.tt ![![a, b], ![b, a]] := by
           simp only [FractionalOperation.tt, Multiset.mem_map]
           use g
         exact ⟨_, this, mcfab.rows_lt_aux hab symmega this⟩
     rw [two_nsmul, two_nsmul]
     exact add_lt_add half_sharp half_sharp
-  have impos : 2 • (ω.map (fun _ => f ![a, b])).sum < ω.size • 2 • f ![a, b] := by
+  have impos : 2 • (ω.map (fun _ ↦ f ![a, b])).sum < ω.size • 2 • f ![a, b] := by
     convert lt_of_lt_of_le sharp contr
     simp [FractionalOperation.tt, Multiset.map_map]
   have rhs_swap : ω.size • 2 • f ![a, b] = 2 • ω.size • f ![a, b] := nsmul_left_comm ..
-  have distrib : (ω.map (fun _ => f ![a, b])).sum = ω.size • f ![a, b] := by simp
+  have distrib : (ω.map (fun _ ↦ f ![a, b])).sum = ω.size • f ![a, b] := by simp
   rw [rhs_swap, distrib] at impos
   exact ne_of_lt impos rfl

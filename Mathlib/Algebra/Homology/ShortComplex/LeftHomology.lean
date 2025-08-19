@@ -82,9 +82,9 @@ attribute [reassoc (attr := simp)] wi wπ
 variable {S}
 variable (h : S.LeftHomologyData) {A : C}
 
-instance : Mono h.i := ⟨fun _ _ => Fork.IsLimit.hom_ext h.hi⟩
+instance : Mono h.i := ⟨fun _ _ ↦ Fork.IsLimit.hom_ext h.hi⟩
 
-instance : Epi h.π := ⟨fun _ _ => Cofork.IsColimit.hom_ext h.hπ⟩
+instance : Epi h.π := ⟨fun _ _ ↦ Cofork.IsColimit.hom_ext h.hπ⟩
 
 /-- Any morphism `k : A ⟶ S.X₂` that is a cycle (i.e. `k ≫ S.g = 0`) lifts
 to a morphism `A ⟶ K` -/
@@ -305,7 +305,7 @@ def comp {φ : S₁ ⟶ S₂} {φ' : S₂ ⟶ S₃}
   φH := ψ.φH ≫ ψ'.φH
 
 instance : Subsingleton (LeftHomologyMapData φ h₁ h₂) :=
-  ⟨fun ψ₁ ψ₂ => by
+  ⟨fun ψ₁ ψ₂ ↦ by
     have hK : ψ₁.φK = ψ₂.φK := by rw [← cancel_mono h₂.i, commi, commi]
     have hH : ψ₁.φH = ψ₂.φH := by rw [← cancel_epi h₁.π, commπ, commπ, hK]
     cases ψ₁
@@ -796,7 +796,7 @@ noncomputable def cyclesFunctor : ShortComplex C ⥤ C where
 @[simps]
 noncomputable def leftHomologyπNatTrans : cyclesFunctor C ⟶ leftHomologyFunctor C where
   app S := leftHomologyπ S
-  naturality := fun _ _ φ => (leftHomologyπ_naturality φ).symm
+  naturality := fun _ _ φ ↦ (leftHomologyπ_naturality φ).symm
 
 /-- The natural transformation `S.cycles ⟶ S.X₂` for all short complexes `S`. -/
 @[simps]
@@ -808,7 +808,7 @@ noncomputable def iCyclesNatTrans : cyclesFunctor C ⟶ ShortComplex.π₂ where
 noncomputable def toCyclesNatTrans :
     π₁ ⟶ cyclesFunctor C where
   app S := S.toCycles
-  naturality := fun _ _ φ => (toCycles_naturality φ).symm
+  naturality := fun _ _ φ ↦ (toCycles_naturality φ).symm
 
 end
 
@@ -823,9 +823,9 @@ noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData 
   let i : h.K ⟶ S₂.X₂ := h.i ≫ φ.τ₂
   have wi : i ≫ S₂.g = 0 := by simp only [i, assoc, φ.comm₂₃, h.wi_assoc, zero_comp]
   have hi : IsLimit (KernelFork.ofι i wi) := KernelFork.IsLimit.ofι _ _
-    (fun x hx => h.liftK (x ≫ inv φ.τ₂) (by rw [assoc, ← cancel_mono φ.τ₃, assoc,
+    (fun x hx ↦ h.liftK (x ≫ inv φ.τ₂) (by rw [assoc, ← cancel_mono φ.τ₃, assoc,
       assoc, ← φ.comm₂₃, IsIso.inv_hom_id_assoc, hx, zero_comp]))
-    (fun x hx => by simp [i]) (fun x hx b hb => by
+    (fun x hx ↦ by simp [i]) (fun x hx b hb ↦ by
       dsimp
       rw [← cancel_mono h.i, ← cancel_mono φ.τ₂, assoc, assoc, liftK_i_assoc,
         assoc, IsIso.inv_hom_id, comp_id, hb])
@@ -837,8 +837,8 @@ noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData 
   have wπ : f' ≫ h.π = 0 := by
     rw [← cancel_epi φ.τ₁, comp_zero, reassoc_of% hf', h.f'_π]
   have hπ : IsColimit (CokernelCofork.ofπ h.π wπ) := CokernelCofork.IsColimit.ofπ _ _
-    (fun x hx => h.descH x (by rw [← hf', assoc, hx, comp_zero]))
-    (fun x hx => by simp) (fun x hx b hb => by rw [← cancel_epi h.π, π_descH, hb])
+    (fun x hx ↦ h.descH x (by rw [← hf', assoc, hx, comp_zero]))
+    (fun x hx ↦ by simp) (fun x hx b hb ↦ by rw [← cancel_epi h.π, π_descH, hb])
   exact ⟨h.K, h.H, i, h.π, wi, hi, wπ, hπ⟩
 
 @[simp]
@@ -858,10 +858,10 @@ noncomputable def ofEpiOfIsIsoOfMono' (φ : S₁ ⟶ S₂) (h : LeftHomologyData
     rw [assoc, ← cancel_mono φ.τ₃, zero_comp, assoc, assoc, ← φ.comm₂₃,
       IsIso.inv_hom_id_assoc, h.wi]
   have hi : IsLimit (KernelFork.ofι i wi) := KernelFork.IsLimit.ofι _ _
-    (fun x hx => h.liftK (x ≫ φ.τ₂)
+    (fun x hx ↦ h.liftK (x ≫ φ.τ₂)
       (by rw [assoc, φ.comm₂₃, reassoc_of% hx, zero_comp]))
-    (fun x hx => by simp [i])
-    (fun x hx b hb => by rw [← cancel_mono h.i, ← cancel_mono (inv φ.τ₂), assoc, assoc,
+    (fun x hx ↦ by simp [i])
+    (fun x hx b hb ↦ by rw [← cancel_mono h.i, ← cancel_mono (inv φ.τ₂), assoc, assoc,
       hb, liftK_i_assoc, assoc, IsIso.hom_inv_id, comp_id])
   let f' := hi.lift (KernelFork.ofι S₁.f S₁.zero)
   have hf' : f' ≫ i = S₁.f := Fork.IsLimit.lift_ι _
@@ -870,9 +870,9 @@ noncomputable def ofEpiOfIsIsoOfMono' (φ : S₁ ⟶ S₂) (h : LeftHomologyData
       φ.comm₁₂_assoc, IsIso.hom_inv_id, comp_id]
   have wπ : f' ≫ h.π = 0 := by simp only [hf'', assoc, f'_π, comp_zero]
   have hπ : IsColimit (CokernelCofork.ofπ h.π wπ) := CokernelCofork.IsColimit.ofπ _ _
-    (fun x hx => h.descH x (by rw [← cancel_epi φ.τ₁, ← reassoc_of% hf'', hx, comp_zero]))
-    (fun x hx => π_descH _ _ _)
-    (fun x hx b hx => by rw [← cancel_epi h.π, π_descH, hx])
+    (fun x hx ↦ h.descH x (by rw [← cancel_epi φ.τ₁, ← reassoc_of% hf'', hx, comp_zero]))
+    (fun x hx ↦ π_descH _ _ _)
+    (fun x hx b hx ↦ by rw [← cancel_epi h.π, π_descH, hx])
   exact ⟨h.K, h.H, i, h.π, wi, hi, wπ, hπ⟩
 
 @[simp]

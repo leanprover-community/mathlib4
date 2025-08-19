@@ -84,7 +84,7 @@ lemma sSup_eq_top_of_infinite (h : s.Infinite) : sSup s = ⊤ := by
   | coe x =>
     contrapose! h
     simp only [not_infinite]
-    apply Finite.subset <| Finite.Set.finite_image {n : ℕ | n ≤ x} (fun (n : ℕ) => (n : ℕ∞))
+    apply Finite.subset <| Finite.Set.finite_image {n : ℕ | n ≤ x} (fun (n : ℕ) ↦ (n : ℕ∞))
     intro y hy
     specialize h y hy
     have hxt : y < ⊤ := lt_of_le_of_lt h hx
@@ -211,7 +211,7 @@ lemma biSup_add_biSup_le' {p : ι → Prop} {q : κ → Prop} (hp : ∃ i, p i) 
     {g : κ → ℕ∞} (h : ∀ i, p i → ∀ j, q j → f i + g j ≤ a) :
     (⨆ i, ⨆ _ : p i, f i) + ⨆ j, ⨆ _ : q j, g j ≤ a := by
   simp_rw [biSup_add' hp, add_biSup' hq]
-  exact iSup₂_le fun i hi => iSup₂_le (h i hi)
+  exact iSup₂_le fun i hi ↦ iSup₂_le (h i hi)
 
 lemma biSup_add_biSup_le {ι κ : Type*} {s : Set ι} {t : Set κ} (hs : s.Nonempty) (ht : t.Nonempty)
     {f : ι → ℕ∞} {g : κ → ℕ∞} {a : ℕ∞} (h : ∀ i ∈ s, ∀ j ∈ t, f i + g j ≤ a) :
@@ -220,8 +220,8 @@ lemma biSup_add_biSup_le {ι κ : Type*} {s : Set ι} {t : Set κ} (hs : s.Nonem
 lemma iSup_add_iSup (h : ∀ i j, ∃ k, f i + g j ≤ f k + g k) : iSup f + iSup g = ⨆ i, f i + g i := by
   cases isEmpty_or_nonempty ι
   · simp only [iSup_of_empty, bot_eq_zero, zero_add]
-  · refine le_antisymm ?_ (iSup_le fun a => add_le_add (le_iSup _ _) (le_iSup _ _))
-    refine iSup_add_iSup_le fun i j => ?_
+  · refine le_antisymm ?_ (iSup_le fun a ↦ add_le_add (le_iSup _ _) (le_iSup _ _))
+    refine iSup_add_iSup_le fun i j ↦ ?_
     rcases h i j with ⟨k, hk⟩
     exact le_iSup_of_le k hk
 

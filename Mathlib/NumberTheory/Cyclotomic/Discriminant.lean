@@ -38,8 +38,8 @@ theorem discr_zeta_eq_discr_zeta_sub_one (hζ : IsPrimitiveRoot ζ n) :
   haveI : NumberField K := @NumberField.mk _ _ _ (IsCyclotomicExtension.finiteDimensional {n} ℚ K)
   have H₁ : (aeval (hζ.powerBasis ℚ).gen) (X - 1 : ℤ[X]) = (hζ.subOnePowerBasis ℚ).gen := by simp
   have H₂ : (aeval (hζ.subOnePowerBasis ℚ).gen) (X + 1 : ℤ[X]) = (hζ.powerBasis ℚ).gen := by simp
-  refine discr_eq_discr_of_toMatrix_coeff_isIntegral _ (fun i j => toMatrix_isIntegral H₁ ?_ ?_ _ _)
-    fun i j => toMatrix_isIntegral H₂ ?_ ?_ _ _
+  refine discr_eq_discr_of_toMatrix_coeff_isIntegral _ (fun i j ↦ toMatrix_isIntegral H₁ ?_ ?_ _ _)
+    fun i j ↦ toMatrix_isIntegral H₂ ?_ ?_ _ _
   · exact hζ.isIntegral (NeZero.pos _)
   · refine minpoly.isIntegrallyClosed_eq_field_fractions' (K := ℚ) (hζ.isIntegral (NeZero.pos _))
   · exact (hζ.isIntegral (NeZero.pos _)).sub isIntegral_one
@@ -90,7 +90,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
     rw [derivative_mul, derivative_sub, derivative_one, sub_zero, derivative_X_pow, C_eq_natCast,
       derivative_sub, derivative_one, sub_zero, derivative_X_pow, C_eq_natCast,
       hζ.minpoly_eq_cyclotomic_of_irreducible hirr] at H
-    replace H := congr_arg (fun P => aeval ζ P) H
+    replace H := congr_arg (fun P ↦ aeval ζ P) H
     simp only [aeval_add, aeval_mul, minpoly.aeval, zero_mul, add_zero, aeval_natCast,
       map_sub, aeval_one, aeval_X_pow] at H
     replace H := congr_arg (Algebra.norm K) H
@@ -105,7 +105,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
       mul_one, cast_pow, ← pow_mul, ← mul_assoc, mul_comm (k + 1), mul_assoc] at H
     have := mul_pos (succ_pos k) (tsub_pos_of_lt hp.out.one_lt)
     rw [← succ_pred_eq_of_pos this, mul_succ, pow_add _ _ (p ^ k)] at H
-    replace H := (mul_left_inj' fun h => ?_).1 H
+    replace H := (mul_left_inj' fun h ↦ ?_).1 H
     · simp only [H, mul_comm _ (k + 1)]; norm_cast
     · have := hne.1
       rw [Nat.cast_pow, Ne, pow_eq_zero_iff (by omega)] at this

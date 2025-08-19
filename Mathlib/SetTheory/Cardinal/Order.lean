@@ -74,9 +74,9 @@ namespace Cardinal
 /-- We define the order on cardinal numbers by `#α ≤ #β` if and only if
   there exists an embedding (injective function) from α to β. -/
 instance : LE Cardinal.{u} :=
-  ⟨fun q₁ q₂ =>
-    Quotient.liftOn₂ q₁ q₂ (fun α β => Nonempty <| α ↪ β) fun _ _ _ _ ⟨e₁⟩ ⟨e₂⟩ =>
-      propext ⟨fun ⟨e⟩ => ⟨e.congr e₁ e₂⟩, fun ⟨e⟩ => ⟨e.congr e₁.symm e₂.symm⟩⟩⟩
+  ⟨fun q₁ q₂ ↦
+    Quotient.liftOn₂ q₁ q₂ (fun α β ↦ Nonempty <| α ↪ β) fun _ _ _ _ ⟨e₁⟩ ⟨e₂⟩ ↦
+      propext ⟨fun ⟨e⟩ ↦ ⟨e.congr e₁ e₂⟩, fun ⟨e⟩ ↦ ⟨e.congr e₁.symm e₂.symm⟩⟩⟩
 
 instance partialOrder : PartialOrder Cardinal.{u} where
   le := (· ≤ ·)
@@ -110,8 +110,8 @@ theorem mk_le_of_surjective {α β : Type u} {f : α → β} (hf : Surjective f)
   ⟨Embedding.ofSurjective f hf⟩
 
 theorem le_mk_iff_exists_set {c : Cardinal} {α : Type u} : c ≤ #α ↔ ∃ p : Set α, #p = c :=
-  ⟨inductionOn c fun _ ⟨⟨f, hf⟩⟩ => ⟨Set.range f, (Equiv.ofInjective f hf).cardinal_eq.symm⟩,
-    fun ⟨_, e⟩ => e ▸ ⟨⟨Subtype.val, fun _ _ => Subtype.eq⟩⟩⟩
+  ⟨inductionOn c fun _ ⟨⟨f, hf⟩⟩ ↦ ⟨Set.range f, (Equiv.ofInjective f hf).cardinal_eq.symm⟩,
+    fun ⟨_, e⟩ ↦ e ▸ ⟨⟨Subtype.val, fun _ _ ↦ Subtype.eq⟩⟩⟩
 
 theorem mk_subtype_le {α : Type u} (p : α → Prop) : #(Subtype p) ≤ #α :=
   ⟨Embedding.subtype p⟩
@@ -124,7 +124,7 @@ theorem out_embedding {c c' : Cardinal} : c ≤ c' ↔ Nonempty (c.out ↪ c'.ou
 
 theorem lift_mk_le {α : Type v} {β : Type w} :
     lift.{max u w} #α ≤ lift.{max u v} #β ↔ Nonempty (α ↪ β) :=
-  ⟨fun ⟨f⟩ => ⟨Embedding.congr Equiv.ulift Equiv.ulift f⟩, fun ⟨f⟩ =>
+  ⟨fun ⟨f⟩ ↦ ⟨Embedding.congr Equiv.ulift Equiv.ulift f⟩, fun ⟨f⟩ ↦
     ⟨Embedding.congr Equiv.ulift.symm Equiv.ulift.symm f⟩⟩
 
 /-- A variant of `Cardinal.lift_mk_le` with specialized universes.
@@ -169,7 +169,7 @@ theorem lift_le {a b : Cardinal.{v}} : lift.{u} a ≤ lift.{u} b ↔ a ≤ b :=
 theorem lift_lt {a b : Cardinal.{u}} : lift.{v, u} a < lift.{v, u} b ↔ a < b :=
   liftInitialSeg.lt_iff_lt
 
-theorem lift_strictMono : StrictMono lift := fun _ _ => lift_lt.2
+theorem lift_strictMono : StrictMono lift := fun _ _ ↦ lift_lt.2
 
 theorem lift_monotone : Monotone lift :=
   lift_strictMono.monotone
@@ -215,18 +215,18 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   one := 1
   add := (· + ·)
   mul := (· * ·)
-  zero_add a := inductionOn a fun α => mk_congr <| Equiv.emptySum _ α
-  add_zero a := inductionOn a fun α => mk_congr <| Equiv.sumEmpty α _
-  add_assoc a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumAssoc α β γ
-  add_comm a b := inductionOn₂ a b fun α β => mk_congr <| Equiv.sumComm α β
-  zero_mul a := inductionOn a fun _ => mk_eq_zero _
-  mul_zero a := inductionOn a fun _ => mk_eq_zero _
-  one_mul a := inductionOn a fun α => mk_congr <| Equiv.uniqueProd α _
-  mul_one a := inductionOn a fun α => mk_congr <| Equiv.prodUnique α _
-  mul_assoc a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.prodAssoc α β γ
-  mul_comm a b := inductionOn₂ a b fun α β => mk_congr <| Equiv.prodComm α β
-  left_distrib a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.prodSumDistrib α β γ
-  right_distrib a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumProdDistrib α β γ
+  zero_add a := inductionOn a fun α ↦ mk_congr <| Equiv.emptySum _ α
+  add_zero a := inductionOn a fun α ↦ mk_congr <| Equiv.sumEmpty α _
+  add_assoc a b c := inductionOn₃ a b c fun α β γ ↦ mk_congr <| Equiv.sumAssoc α β γ
+  add_comm a b := inductionOn₂ a b fun α β ↦ mk_congr <| Equiv.sumComm α β
+  zero_mul a := inductionOn a fun _ ↦ mk_eq_zero _
+  mul_zero a := inductionOn a fun _ ↦ mk_eq_zero _
+  one_mul a := inductionOn a fun α ↦ mk_congr <| Equiv.uniqueProd α _
+  mul_one a := inductionOn a fun α ↦ mk_congr <| Equiv.prodUnique α _
+  mul_assoc a b c := inductionOn₃ a b c fun α β γ ↦ mk_congr <| Equiv.prodAssoc α β γ
+  mul_comm a b := inductionOn₂ a b fun α β ↦ mk_congr <| Equiv.prodComm α β
+  left_distrib a b c := inductionOn₃ a b c fun α β γ ↦ mk_congr <| Equiv.prodSumDistrib α β γ
+  right_distrib a b c := inductionOn₃ a b c fun α β γ ↦ mk_congr <| Equiv.sumProdDistrib α β γ
   nsmul := nsmulRec
   npow n c := c ^ (n : Cardinal)
   npow_zero := power_zero
@@ -241,7 +241,7 @@ theorem mk_Prop : #Prop = 2 := by simp
 
 theorem power_mul {a b c : Cardinal} : a ^ (b * c) = (a ^ b) ^ c := by
   rw [mul_comm b c]
-  exact inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.curry γ β α
+  exact inductionOn₃ a b c fun α β γ ↦ mk_congr <| Equiv.curry γ β α
 
 @[simp, norm_cast]
 theorem power_natCast (a : Cardinal.{u}) (n : ℕ) : a ^ (↑n : Cardinal.{u}) = a ^ n :=
@@ -253,7 +253,7 @@ theorem lift_eq_one {a : Cardinal.{v}} : lift.{u} a = 1 ↔ a = 1 :=
 
 @[simp]
 theorem lift_mul (a b : Cardinal.{u}) : lift.{v} (a * b) = lift.{v} a * lift.{v} b :=
-  inductionOn₂ a b fun _ _ =>
+  inductionOn₂ a b fun _ _ ↦
     mk_congr <| Equiv.ulift.trans (Equiv.prodCongr Equiv.ulift Equiv.ulift).symm
 
 theorem lift_two : lift.{u, v} 2 = 2 := by simp [← one_add_one_eq_two]
@@ -279,14 +279,14 @@ private theorem add_le_add' : ∀ {a b c d : Cardinal}, a ≤ b → c ≤ d → 
   rintro ⟨α⟩ ⟨β⟩ ⟨γ⟩ ⟨δ⟩ ⟨e₁⟩ ⟨e₂⟩; exact ⟨e₁.sumMap e₂⟩
 
 instance addLeftMono : AddLeftMono Cardinal :=
-  ⟨fun _ _ _ => add_le_add' le_rfl⟩
+  ⟨fun _ _ _ ↦ add_le_add' le_rfl⟩
 
 instance addRightMono : AddRightMono Cardinal :=
-  ⟨fun _ _ _ h => add_le_add' h le_rfl⟩
+  ⟨fun _ _ _ h ↦ add_le_add' h le_rfl⟩
 
 instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
   exists_add_of_le {a b} :=
-    inductionOn₂ a b fun α β ⟨⟨f, hf⟩⟩ =>
+    inductionOn₂ a b fun α β ⟨⟨f, hf⟩⟩ ↦
       have : α ⊕ ((range f)ᶜ : Set β) ≃ β := by
         classical
         exact (Equiv.sumCongr (Equiv.ofInjective f hf) (Equiv.refl _)).trans <|
@@ -302,8 +302,8 @@ instance orderBot : OrderBot Cardinal.{u} where
   bot_le := zero_le
 
 instance noZeroDivisors : NoZeroDivisors Cardinal.{u} where
-  eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>
-    inductionOn₂ a b fun α β => by
+  eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} ↦
+    inductionOn₂ a b fun α β ↦ by
       simpa only [mul_def, mk_eq_zero_iff, isEmpty_prod] using id
 
 instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
@@ -343,7 +343,7 @@ theorem self_le_power (a : Cardinal) {b : Cardinal} (hb : 1 ≤ b) : a ≤ a ^ b
 theorem cantor (a : Cardinal.{u}) : a < 2 ^ a := by
   induction a using Cardinal.inductionOn with | _ α
   rw [← mk_set]
-  refine ⟨⟨⟨singleton, fun a b => singleton_eq_singleton_iff.1⟩⟩, ?_⟩
+  refine ⟨⟨⟨singleton, fun a b ↦ singleton_eq_singleton_iff.1⟩⟩, ?_⟩
   rintro ⟨⟨f, hf⟩⟩
   exact cantor_injective f hf
 
@@ -358,20 +358,20 @@ theorem power_le_max_power_one {a b c : Cardinal} (h : b ≤ c) : a ^ b ≤ max 
   · exact (power_le_power_left ha h).trans (le_max_left _ _)
 
 theorem power_le_power_right {a b c : Cardinal} : a ≤ b → a ^ c ≤ b ^ c :=
-  inductionOn₃ a b c fun _ _ _ ⟨e⟩ => ⟨Embedding.arrowCongrRight e⟩
+  inductionOn₃ a b c fun _ _ _ ⟨e⟩ ↦ ⟨Embedding.arrowCongrRight e⟩
 
 theorem power_pos {a : Cardinal} (b : Cardinal) (ha : 0 < a) : 0 < a ^ b :=
   (power_ne_zero _ ha.ne').bot_lt
 
 protected theorem lt_wf : @WellFounded Cardinal.{u} (· < ·) :=
-  ⟨fun a =>
-    by_contradiction fun h => by
+  ⟨fun a ↦
+    by_contradiction fun h ↦ by
       let ι := { c : Cardinal // ¬Acc (· < ·) c }
       let f : ι → Cardinal := Subtype.val
       haveI hι : Nonempty ι := ⟨⟨_, h⟩⟩
       obtain ⟨⟨c : Cardinal, hc : ¬Acc (· < ·) c⟩, ⟨h_1 : ∀ j, (f ⟨c, hc⟩).out ↪ (f j).out⟩⟩ :=
-        Embedding.min_injective fun i => (f i).out
-      refine hc (Acc.intro _ fun j h' => by_contradiction fun hj => h'.2 ?_)
+        Embedding.min_injective fun i ↦ (f i).out
+      refine hc (Acc.intro _ fun j h' ↦ by_contradiction fun hj ↦ h'.2 ?_)
       have : #_ ≤ #_ := ⟨h_1 ⟨j, hj⟩⟩
       simpa only [mk_out] using this⟩
 
@@ -408,7 +408,7 @@ theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c := by
   intro b hlt
   rcases b, c with ⟨⟨β⟩, ⟨γ⟩⟩
   obtain ⟨f⟩ := le_of_lt hlt
-  have : ¬Surjective f := fun hn => (not_le_of_gt hlt) (mk_le_of_surjective hn)
+  have : ¬Surjective f := fun hn ↦ (not_le_of_gt hlt) (mk_le_of_surjective hn)
   simp only [Surjective, not_forall] at this
   rcases this with ⟨b, hb⟩
   calc
@@ -418,7 +418,7 @@ theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c := by
 @[simp]
 theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) :=
   le_antisymm
-    (le_of_not_gt fun h => by
+    (le_of_not_gt fun h ↦ by
       rcases lt_lift_iff.1 h with ⟨b, h, e⟩
       rw [lt_succ_iff, ← lift_le, e] at h
       exact h.not_gt (lt_succ _))
@@ -453,7 +453,7 @@ protected theorem IsStrongLimit.isSuccPrelimit {c} (H : IsStrongLimit c) : IsSuc
 
 theorem le_sum {ι} (f : ι → Cardinal) (i) : f i ≤ sum f := by
   rw [← Quotient.out_eq (f i)]
-  exact ⟨⟨fun a => ⟨i, a⟩, fun a b h => by injection h⟩⟩
+  exact ⟨⟨fun a ↦ ⟨i, a⟩, fun a b h ↦ by injection h⟩⟩
 
 theorem iSup_le_sum {ι} (f : ι → Cardinal) : iSup f ≤ sum f :=
   ciSup_le' <| le_sum _
@@ -466,11 +466,11 @@ theorem sum_add_distrib {ι} (f g : ι → Cardinal) : sum (f + g) = sum f + sum
 
 @[simp]
 theorem sum_add_distrib' {ι} (f g : ι → Cardinal) :
-    (Cardinal.sum fun i => f i + g i) = sum f + sum g :=
+    (Cardinal.sum fun i ↦ f i + g i) = sum f + sum g :=
   sum_add_distrib f g
 
 theorem sum_le_sum {ι} (f g : ι → Cardinal) (H : ∀ i, f i ≤ g i) : sum f ≤ sum g :=
-  ⟨(Embedding.refl _).sigmaMap fun i =>
+  ⟨(Embedding.refl _).sigmaMap fun i ↦
       Classical.choice <| by have := H i; rwa [← Quot.out_eq (f i), ← Quot.out_eq (g i)] at this⟩
 
 theorem mk_le_mk_mul_of_mk_preimage_le {c : Cardinal} (f : α → β) (hf : ∀ b : β, #(f ⁻¹' {b}) ≤ c) :
@@ -480,8 +480,8 @@ theorem mk_le_mk_mul_of_mk_preimage_le {c : Cardinal} (f : α → β) (hf : ∀ 
 
 theorem lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le {α : Type u} {β : Type v} {c : Cardinal}
     (f : α → β) (hf : ∀ b : β, lift.{v} #(f ⁻¹' {b}) ≤ c) : lift.{v} #α ≤ lift.{u} #β * c :=
-  (mk_le_mk_mul_of_mk_preimage_le fun x : ULift.{v} α => ULift.up.{u} (f x.1)) <|
-    ULift.forall.2 fun b =>
+  (mk_le_mk_mul_of_mk_preimage_le fun x : ULift.{v} α ↦ ULift.up.{u} (f x.1)) <|
+    ULift.forall.2 fun b ↦
       (mk_congr <|
             (Equiv.ulift.image _).trans
               (Equiv.trans
@@ -502,7 +502,7 @@ end Cardinal
 
 open Cardinal in
 theorem nonempty_embedding_to_cardinal : Nonempty (α ↪ Cardinal.{u}) :=
-  (Embedding.total _ _).resolve_left fun ⟨⟨f, hf⟩⟩ =>
+  (Embedding.total _ _).resolve_left fun ⟨⟨f, hf⟩⟩ ↦
     let g : α → Cardinal.{u} := invFun f
     let ⟨x, (hx : g x = 2 ^ sum g)⟩ := invFun_surjective hf (2 ^ sum g)
     have : g x ≤ sum g := le_sum.{u, u} g x
@@ -558,9 +558,9 @@ lemma exists_eq_of_iSup_eq_of_not_isSuccLimit
 
 /-- **König's theorem** -/
 theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f < prod g :=
-  lt_of_not_ge fun ⟨F⟩ => by
+  lt_of_not_ge fun ⟨F⟩ ↦ by
     have : Inhabited (∀ i : ι, (g i).out) := by
-      refine ⟨fun i => Classical.choice <| mk_ne_zero_iff.1 ?_⟩
+      refine ⟨fun i ↦ Classical.choice <| mk_ne_zero_iff.1 ?_⟩
       rw [mk_out]
       exact (H i).ne_bot
     let G := invFun F
@@ -569,14 +569,14 @@ theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f 
       show ∀ i, ∃ b, ∀ a, G ⟨i, a⟩ i ≠ b by
         intro i
         simp only [not_exists.symm, not_forall.symm]
-        refine fun h => (H i).not_ge ?_
+        refine fun h ↦ (H i).not_ge ?_
         rw [← mk_out (f i), ← mk_out (g i)]
         exact ⟨Embedding.ofSurjective _ h⟩
     let ⟨⟨i, a⟩, h⟩ := sG C
     exact hc i a (congr_fun h _)
 
 theorem prod_le_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i ≤ g i) : prod f ≤ prod g :=
-  ⟨Embedding.piCongrRight fun i =>
+  ⟨Embedding.piCongrRight fun i ↦
       Classical.choice <| by have := H i; rwa [← mk_out (f i), ← mk_out (g i)] at this⟩
 
 /-! ### The first infinite cardinal `aleph0` -/

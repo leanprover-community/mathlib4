@@ -264,21 +264,21 @@ instance : MonoidalPreadditive (ModuleCat.{u} R) := by
   refine ⟨?_, ?_, ?_, ?_⟩
   · intros
     ext : 1
-    refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
+    refine TensorProduct.ext (LinearMap.ext fun x ↦ LinearMap.ext fun y ↦ ?_)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply, hom_zero, LinearMap.zero_apply]
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [MonoidalCategory.whiskerLeft_apply]
     simp
   · intros
     ext : 1
-    refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
+    refine TensorProduct.ext (LinearMap.ext fun x ↦ LinearMap.ext fun y ↦ ?_)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply, hom_zero, LinearMap.zero_apply, ]
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [MonoidalCategory.whiskerRight_apply]
     simp
   · intros
     ext : 1
-    refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
+    refine TensorProduct.ext (LinearMap.ext fun x ↦ LinearMap.ext fun y ↦ ?_)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply, hom_add, LinearMap.add_apply]
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [MonoidalCategory.whiskerLeft_apply, MonoidalCategory.whiskerLeft_apply]
@@ -286,7 +286,7 @@ instance : MonoidalPreadditive (ModuleCat.{u} R) := by
     simp [TensorProduct.tmul_add]
   · intros
     ext : 1
-    refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
+    refine TensorProduct.ext (LinearMap.ext fun x ↦ LinearMap.ext fun y ↦ ?_)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply, hom_add, LinearMap.add_apply]
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [MonoidalCategory.whiskerRight_apply, MonoidalCategory.whiskerRight_apply]
@@ -297,14 +297,14 @@ instance : MonoidalLinear R (ModuleCat.{u} R) := by
   refine ⟨?_, ?_⟩
   · intros
     ext : 1
-    refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
+    refine TensorProduct.ext (LinearMap.ext fun x ↦ LinearMap.ext fun y ↦ ?_)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply, hom_smul, LinearMap.smul_apply]
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [MonoidalCategory.whiskerLeft_apply, MonoidalCategory.whiskerLeft_apply]
     simp
   · intros
     ext : 1
-    refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
+    refine TensorProduct.ext (LinearMap.ext fun x ↦ LinearMap.ext fun y ↦ ?_)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply, hom_smul, LinearMap.smul_apply]
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [MonoidalCategory.whiskerRight_apply, MonoidalCategory.whiskerRight_apply]

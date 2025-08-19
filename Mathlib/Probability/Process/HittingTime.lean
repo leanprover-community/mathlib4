@@ -50,13 +50,13 @@ before `m` then the hitting time is simply `m`).
 The hitting time is a stopping time if the process is adapted and discrete. -/
 noncomputable def hitting [Preorder ι] [InfSet ι] (u : ι → Ω → β)
     (s : Set β) (n m : ι) : Ω → ι :=
-  fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s
+  fun x ↦ if ∃ j ∈ Set.Icc n m, u j x ∈ s
     then sInf (Set.Icc n m ∩ {i : ι | u i x ∈ s}) else m
 
 open scoped Classical in
 theorem hitting_def [Preorder ι] [InfSet ι] (u : ι → Ω → β) (s : Set β) (n m : ι) :
     hitting u s n m =
-    fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s then sInf (Set.Icc n m ∩ {i : ι | u i x ∈ s}) else m :=
+    fun x ↦ if ∃ j ∈ Set.Icc n m, u j x ∈ s then sInf (Set.Icc n m ∩ {i : ι | u i x ∈ s}) else m :=
   rfl
 
 section Inequalities
@@ -104,7 +104,7 @@ theorem hitting_of_le {m : ι} (hmn : m ≤ n) : hitting u s n m ω = m := by
 theorem le_hitting {m : ι} (hnm : n ≤ m) (ω : Ω) : n ≤ hitting u s n m ω := by
   simp only [hitting]
   split_ifs with h
-  · refine le_csInf ?_ fun b hb => ?_
+  · refine le_csInf ?_ fun b hb ↦ ?_
     · obtain ⟨k, hk_Icc, hk_s⟩ := h
       exact ⟨k, hk_Icc, hk_s⟩
     · rw [Set.mem_inter_iff] at hb
@@ -153,7 +153,7 @@ theorem hitting_le_iff_of_exists [WellFoundedLT ι] {m : ι}
       obtain ⟨k₁, hk₁_mem, hk₁_s⟩ := h_exists
       obtain ⟨k₂, hk₂_mem, hk₂_s⟩ := h'
       refine ⟨min k₁ k₂, ⟨le_min hk₁_mem.1 hk₂_mem.1, min_le_min hk₁_mem.2 hk₂_mem.2⟩, ?_⟩
-      exact min_rec' (fun j => u j ω ∈ s) hk₁_s hk₂_s
+      exact min_rec' (fun j ↦ u j ω ∈ s) hk₁_s hk₂_s
     obtain ⟨k, hk₁, hk₂⟩ := h''
     refine le_trans ?_ (hk₁.2.trans (min_le_right _ _))
     exact hitting_le_of_mem hk₁.1 (hk₁.2.trans (min_le_left _ _)) hk₂
@@ -165,7 +165,7 @@ theorem hitting_le_iff_of_lt [WellFoundedLT ι] {m : ι} (i : ι) (hi : i < m) :
   · simp_rw [hitting, if_neg h_exists]
     push_neg at h_exists
     simp only [not_le.mpr hi, Set.mem_Icc, false_iff, not_exists, not_and, and_imp]
-    exact fun k hkn hki => h_exists k ⟨hkn, hki.trans hi.le⟩
+    exact fun k hkn hki ↦ h_exists k ⟨hkn, hki.trans hi.le⟩
 
 theorem hitting_lt_iff [WellFoundedLT ι] {m : ι} (i : ι) (hi : i ≤ m) :
     hitting u s n m ω < i ↔ ∃ j ∈ Set.Ico n i, u j ω ∈ s := by
@@ -186,7 +186,7 @@ theorem hitting_eq_hitting_of_exists {m₁ m₂ : ι} (h : m₁ ≤ m₂)
   rw [if_pos]
   · refine le_antisymm ?_ (csInf_le_csInf bddBelow_Icc.inter_of_left ⟨j, hj₁, hj₂⟩
       (Set.inter_subset_inter_left _ (Set.Icc_subset_Icc_right h)))
-    refine le_csInf ⟨j, Set.Icc_subset_Icc_right h hj₁, hj₂⟩ fun i hi => ?_
+    refine le_csInf ⟨j, Set.Icc_subset_Icc_right h hj₁, hj₂⟩ fun i hi ↦ ?_
     by_cases hi' : i ≤ m₁
     · exact csInf_le bddBelow_Icc.inter_of_left ⟨⟨hi.1.1, hi'⟩, hi.2⟩
     · change j ∈ {i | u i ω ∈ s} at hj₂
@@ -215,15 +215,15 @@ theorem hitting_isStoppingTime [ConditionallyCompleteLinearOrder ι] [WellFounde
     (hs : MeasurableSet s) : IsStoppingTime f (hitting u s n n') := by
   intro i
   rcases le_or_gt n' i with hi | hi
-  · have h_le : ∀ ω, hitting u s n n' ω ≤ i := fun x => (hitting_le x).trans hi
+  · have h_le : ∀ ω, hitting u s n n' ω ≤ i := fun x ↦ (hitting_le x).trans hi
     simp [h_le]
   · have h_set_eq_Union : {ω | hitting u s n n' ω ≤ i} = ⋃ j ∈ Set.Icc n i, u j ⁻¹' s := by
       ext x
       rw [Set.mem_setOf_eq, hitting_le_iff_of_lt _ hi]
       simp only [Set.mem_Icc, exists_prop, Set.mem_iUnion, Set.mem_preimage]
     rw [h_set_eq_Union]
-    exact MeasurableSet.iUnion fun j =>
-      MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j).measurable hs)
+    exact MeasurableSet.iUnion fun j ↦
+      MeasurableSet.iUnion fun hj ↦ f.mono hj.2 _ ((hu j).measurable hs)
 
 theorem stoppedValue_hitting_mem [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
     {u : ι → Ω → β} {s : Set β} {n m : ι} {ω : Ω} (h : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
@@ -241,7 +241,7 @@ theorem isStoppingTime_hitting_isStoppingTime [ConditionallyCompleteLinearOrder 
     [FirstCountableTopology ι] [TopologicalSpace β] [PseudoMetrizableSpace β] [MeasurableSpace β]
     [BorelSpace β] {f : Filtration ι m} {u : ι → Ω → β} {τ : Ω → ι} (hτ : IsStoppingTime f τ)
     {N : ι} (hτbdd : ∀ x, τ x ≤ N) {s : Set β} (hs : MeasurableSet s) (hf : Adapted f u) :
-    IsStoppingTime f fun x => hitting u s (τ x) N x := by
+    IsStoppingTime f fun x ↦ hitting u s (τ x) N x := by
   intro n
   have h₁ : {x | hitting u s (τ x) N x ≤ n} =
     (⋃ i ≤ n, {x | τ x = i} ∩ {x | hitting u s i N x ≤ n}) ∪
@@ -255,7 +255,7 @@ theorem isStoppingTime_hitting_isStoppingTime [ConditionallyCompleteLinearOrder 
     rintro m hm rfl
     exact lt_of_lt_of_le hm (le_hitting (hτbdd _) _)
   rw [h₁, h₂, Set.union_empty]
-  exact MeasurableSet.iUnion fun i => MeasurableSet.iUnion fun hi =>
+  exact MeasurableSet.iUnion fun i ↦ MeasurableSet.iUnion fun hi ↦
     (f.mono hi _ (hτ.measurableSet_eq i)).inter (hitting_isStoppingTime hf hs n)
 
 section CompleteLattice
@@ -269,7 +269,7 @@ theorem hitting_eq_sInf (ω : Ω) : hitting u s ⊥ ⊤ ω = sInf {i : ι | u i 
   symm
   rw [sInf_eq_top]
   simp only [Set.mem_univ, true_and] at h_notMem_s
-  exact fun i hi_mem_s => absurd hi_mem_s (h_notMem_s i)
+  exact fun i hi_mem_s ↦ absurd hi_mem_s (h_notMem_s i)
 
 end CompleteLattice
 

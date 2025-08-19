@@ -78,7 +78,7 @@ because it is actually `e.toPartialEquiv.toFun`, so `simp` will apply lemmas abo
 lot of proofs. -/
 @[coe] def toFun' : Z → (B × F) := e.toFun
 
-instance : CoeFun (Pretrivialization F proj) fun _ => Z → B × F := ⟨toFun'⟩
+instance : CoeFun (Pretrivialization F proj) fun _ ↦ Z → B × F := ⟨toFun'⟩
 
 @[ext]
 lemma ext' (e e' : Pretrivialization F proj) (h₁ : e.toPartialEquiv = e'.toPartialEquiv)
@@ -114,7 +114,7 @@ theorem mem_source : x ∈ e.source ↔ proj x ∈ e.baseSet := by rw [e.source_
 theorem coe_fst' (ex : proj x ∈ e.baseSet) : (e x).1 = proj x :=
   e.coe_fst (e.mem_source.2 ex)
 
-protected theorem eqOn : EqOn (Prod.fst ∘ e) proj e.source := fun _ hx => e.coe_fst hx
+protected theorem eqOn : EqOn (Prod.fst ∘ e) proj e.source := fun _ hx ↦ e.coe_fst hx
 
 theorem mk_proj_snd (ex : x ∈ e.source) : (proj x, (e x).2) = e x :=
   Prod.ext (e.coe_fst ex).symm rfl
@@ -137,7 +137,7 @@ theorem proj_symm_apply' {b : B} {x : F} (hx : b ∈ e.baseSet) :
     proj (e.toPartialEquiv.symm (b, x)) = b :=
   e.proj_symm_apply (e.mem_target.2 hx)
 
-theorem proj_surjOn_baseSet [Nonempty F] : Set.SurjOn proj e.source e.baseSet := fun b hb =>
+theorem proj_surjOn_baseSet [Nonempty F] : Set.SurjOn proj e.source e.baseSet := fun b hb ↦
   let ⟨y⟩ := ‹Nonempty F›
   ⟨e.toPartialEquiv.symm (b, y), e.toPartialEquiv.map_target <| e.mem_target.2 hb,
     e.proj_symm_apply' hb⟩
@@ -160,7 +160,7 @@ theorem symm_apply_mk_proj {x : Z} (ex : x ∈ e.source) :
 @[simp, mfld_simps]
 theorem preimage_symm_proj_baseSet :
     e.toPartialEquiv.symm ⁻¹' (proj ⁻¹' e.baseSet) ∩ e.target = e.target := by
-  refine inter_eq_right.mpr fun x hx => ?_
+  refine inter_eq_right.mpr fun x hx ↦ ?_
   simp only [mem_preimage, e.proj_symm_apply hx]
   exact e.mem_target.mp hx
 
@@ -236,7 +236,7 @@ theorem symm_apply_of_notMem (e : Pretrivialization F (π F E)) {b : B} (hb : b 
 
 theorem coe_symm_of_notMem (e : Pretrivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet) :
     (e.symm b : F → E b) = 0 :=
-  funext fun _ => dif_neg hb
+  funext fun _ ↦ dif_neg hb
 
 @[deprecated (since := "2025-05-23")] alias coe_symm_of_not_mem := coe_symm_of_notMem
 
@@ -293,7 +293,7 @@ lot of proofs. -/
 def toPretrivialization : Pretrivialization F proj :=
   { e with }
 
-instance : CoeFun (Trivialization F proj) fun _ => Z → B × F := ⟨toFun'⟩
+instance : CoeFun (Trivialization F proj) fun _ ↦ Z → B × F := ⟨toFun'⟩
 
 instance : Coe (Trivialization F proj) (Pretrivialization F proj) :=
   ⟨toPretrivialization⟩
@@ -308,7 +308,7 @@ noncomputable def Simps.symm_apply (proj : Z → B) (e : Trivialization F proj) 
 initialize_simps_projections Trivialization (toFun → apply, invFun → symm_apply)
 
 theorem toPretrivialization_injective :
-    Function.Injective fun e : Trivialization F proj => e.toPretrivialization := fun e e' h => by
+    Function.Injective fun e : Trivialization F proj ↦ e.toPretrivialization := fun e e' h ↦ by
   ext1
   exacts [PartialHomeomorph.toPartialEquiv_injective (congr_arg Pretrivialization.toPartialEquiv h),
     congr_arg Pretrivialization.baseSet h]
@@ -321,7 +321,7 @@ theorem coe_coe : ⇑e.toPartialHomeomorph = e :=
 theorem coe_fst (ex : x ∈ e.source) : (e x).1 = proj x :=
   e.proj_toFun x ex
 
-protected theorem eqOn : EqOn (Prod.fst ∘ e) proj e.source := fun _x hx => e.coe_fst hx
+protected theorem eqOn : EqOn (Prod.fst ∘ e) proj e.source := fun _x hx ↦ e.coe_fst hx
 
 theorem mem_source : x ∈ e.source ↔ proj x ∈ e.baseSet := by rw [e.source_eq, mem_preimage]
 
@@ -380,7 +380,7 @@ theorem symm_trans_target_eq (e e' : Trivialization F proj) :
   Pretrivialization.symm_trans_target_eq e.toPretrivialization e'
 
 theorem coe_fst_eventuallyEq_proj (ex : x ∈ e.source) : Prod.fst ∘ e =ᶠ[𝓝 x] proj :=
-  mem_nhds_iff.2 ⟨e.source, fun _y hy => e.coe_fst hy, e.open_source, ex⟩
+  mem_nhds_iff.2 ⟨e.source, fun _y hy ↦ e.coe_fst hy, e.open_source, ex⟩
 
 theorem coe_fst_eventuallyEq_proj' (ex : proj x ∈ e.baseSet) : Prod.fst ∘ e =ᶠ[𝓝 x] proj :=
   e.coe_fst_eventuallyEq_proj (e.mem_source.2 ex)
@@ -390,14 +390,14 @@ theorem map_proj_nhds (ex : x ∈ e.source) : map proj (𝓝 x) = 𝓝 (proj x) 
     e.map_nhds_eq ex, map_fst_nhds]
 
 theorem preimage_subset_source {s : Set B} (hb : s ⊆ e.baseSet) : proj ⁻¹' s ⊆ e.source :=
-  fun _p hp => e.mem_source.mpr (hb hp)
+  fun _p hp ↦ e.mem_source.mpr (hb hp)
 
 theorem image_preimage_eq_prod_univ {s : Set B} (hb : s ⊆ e.baseSet) :
     e '' (proj ⁻¹' s) = s ×ˢ univ :=
   Subset.antisymm
-    (image_subset_iff.mpr fun p hp =>
+    (image_subset_iff.mpr fun p hp ↦
       ⟨(e.proj_toFun p (e.preimage_subset_source hb hp)).symm ▸ hp, trivial⟩)
-    fun p hp =>
+    fun p hp ↦
     let hp' : p ∈ e.target := e.mem_target.mpr (hb hp.1)
     ⟨e.invFun p, mem_preimage.mpr ((e.proj_symm_apply hp').symm ▸ hp.1), e.apply_symm_apply hp'⟩
 
@@ -578,7 +578,7 @@ theorem apply_mk_symm (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.base
   e.toPretrivialization.apply_mk_symm hb y
 
 theorem continuousOn_symm (e : Trivialization F (π F E)) :
-    ContinuousOn (fun z : B × F => TotalSpace.mk' F z.1 (e.symm z.1 z.2)) (e.baseSet ×ˢ univ) := by
+    ContinuousOn (fun z : B × F ↦ TotalSpace.mk' F z.1 (e.symm z.1 z.2)) (e.baseSet ×ˢ univ) := by
   have : ∀ z ∈ e.baseSet ×ˢ (univ : Set F),
       TotalSpace.mk z.1 (e.symm z.1 z.2) = e.toPartialHomeomorph.symm z := by
     rintro x ⟨hx : x.1 ∈ e.baseSet, _⟩
@@ -641,7 +641,7 @@ theorem continuous_coordChange (e₁ e₂ : Trivialization F proj) {b : B} (h₁
   refine continuous_snd.comp (e₂.toPartialHomeomorph.continuousOn.comp_continuous
     (e₁.toPartialHomeomorph.continuousOn_symm.comp_continuous ?_ ?_) ?_)
   · fun_prop
-  · exact fun x => e₁.mem_target.2 h₁
+  · exact fun x ↦ e₁.mem_target.2 h₁
   · intro x
     rwa [e₂.mem_source, e₁.proj_symm_apply' h₁]
 
@@ -662,7 +662,7 @@ theorem coordChangeHomeomorph_coe (e₁ e₂ : Trivialization F proj) {b : B} (h
   rfl
 
 theorem isImage_preimage_prod (e : Trivialization F proj) (s : Set B) :
-    e.toPartialHomeomorph.IsImage (proj ⁻¹' s) (s ×ˢ univ) := fun x hx => by simp [hx]
+    e.toPartialHomeomorph.IsImage (proj ⁻¹' s) (s ×ˢ univ) := fun x hx ↦ by simp [hx]
 
 /-- Restrict a `Trivialization` to an open set in the base. -/
 protected def restrOpen (e : Trivialization F proj) (s : Set B) (hs : IsOpen s) :
@@ -711,10 +711,10 @@ noncomputable def piecewiseLeOfEq [LinearOrder B] [OrderTopology B] (e e' : Triv
     (a : B) (He : a ∈ e.baseSet) (He' : a ∈ e'.baseSet) (Heq : ∀ p, proj p = a → e p = e' p) :
     Trivialization F proj :=
   e.piecewise e' (Iic a)
-    (Set.ext fun x => and_congr_left_iff.2 fun hx => by
+    (Set.ext fun x ↦ and_congr_left_iff.2 fun hx ↦ by
       obtain rfl : x = a := mem_singleton_iff.1 (frontier_Iic_subset _ hx)
       simp [He, He'])
-    fun p hp => Heq p <| frontier_Iic_subset _ hp.2
+    fun p hp ↦ Heq p <| frontier_Iic_subset _ hp.2
 
 /-- Given two bundle trivializations `e`, `e'` of a topological fiber bundle `proj : Z → B` over a
 linearly ordered base `B` and a point `a ∈ e.baseSet ∩ e'.baseSet`, `e.piecewise_le e' a He He'`
@@ -756,7 +756,7 @@ noncomputable def disjointUnion (e e' : Trivialization F proj) (H : Disjoint e.b
     · change (e.source.piecewise e e' p).1 = proj p
       rw [piecewise_eq_of_notMem, e'.coe_fst hp']
       simp only [source_eq] at hp' ⊢
-      exact fun h => H.le_bot ⟨h, hp'⟩
+      exact fun h ↦ H.le_bot ⟨h, hp'⟩
 
 end Piecewise
 
@@ -791,8 +791,8 @@ homotopy lifting) -/
 def clift (T : Trivialization F proj) [LocallyCompactPair ι T.baseSet] :
     C(T.source × C(ι, T.baseSet), C(ι, T.source)) := by
   let Ψ : C((T.source × C(ι, T.baseSet)) × ι, C(ι, T.baseSet) × ι) :=
-    ⟨fun eγt => (eγt.1.2, eγt.2), by fun_prop⟩
-  refine ContinuousMap.curry <| T.liftCM.comp <| ⟨fun eγt => ⟨eγt.1.1, eγt.1.2 eγt.2⟩, ?_⟩
+    ⟨fun eγt ↦ (eγt.1.2, eγt.2), by fun_prop⟩
+  refine ContinuousMap.curry <| T.liftCM.comp <| ⟨fun eγt ↦ ⟨eγt.1.1, eγt.1.2 eγt.2⟩, ?_⟩
   simpa using ⟨by fun_prop, ContinuousEval.continuous_eval.comp Ψ.continuous⟩
 
 @[simp]

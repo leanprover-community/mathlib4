@@ -100,7 +100,7 @@ theorem locallySmall_of_faithful {C : Type u} [Category.{v} C] {D : Type u'} [Ca
 
 theorem locallySmall_congr {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
     (e : C ≌ D) : LocallySmall.{w} C ↔ LocallySmall.{w} D :=
-  ⟨fun _ => locallySmall_of_faithful e.inverse, fun _ => locallySmall_of_faithful e.functor⟩
+  ⟨fun _ ↦ locallySmall_of_faithful e.inverse, fun _ ↦ locallySmall_of_faithful e.functor⟩
 
 instance (priority := 100) locallySmall_self (C : Type u) [Category.{v} C] :
     LocallySmall.{v} C where
@@ -249,7 +249,7 @@ instance essentiallySmall_fullSubcategory_mem (s : Set C) [Small.{w} s] [Locally
     EssentiallySmall.{w} (ObjectProperty.FullSubcategory (· ∈ s)) :=
   suffices Small.{w} (ObjectProperty.FullSubcategory (· ∈ s)) from
     essentiallySmall_of_small_of_locallySmall _
-  small_of_injective (f := fun x => (⟨x.1, x.2⟩ : s)) (by cat_disch)
+  small_of_injective (f := fun x ↦ (⟨x.1, x.2⟩ : s)) (by cat_disch)
 
 end FullSubcategory
 

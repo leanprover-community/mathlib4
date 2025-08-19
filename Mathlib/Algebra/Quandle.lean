@@ -240,8 +240,8 @@ instance oppositeRack : Rack Rᵐᵒᵖ where
     simp only [op_inj, unop_op]
     rw [self_distrib_inv]
   invAct x y := op (Shelf.act (unop x) (unop y))
-  left_inv := MulOpposite.rec' fun x => MulOpposite.rec' fun y => by simp
-  right_inv := MulOpposite.rec' fun x => MulOpposite.rec' fun y => by simp
+  left_inv := MulOpposite.rec' fun x ↦ MulOpposite.rec' fun y ↦ by simp
+  right_inv := MulOpposite.rec' fun x ↦ MulOpposite.rec' fun y ↦ by simp
 
 @[simp]
 theorem op_act_op_eq {x y : R} : op x ◃ op y = op (x ◃⁻¹ y) :=
@@ -330,7 +330,7 @@ theorem map_act (f : S₁ →◃ S₂) {x y : S₁} : f (x ◃ y) = f x ◃ f y 
 
 /-- The identity homomorphism -/
 def id (S : Type*) [Shelf S] : S →◃ S where
-  toFun := fun x => x
+  toFun := fun x ↦ x
   map_act' := by simp
 
 instance inhabited (S : Type*) [Shelf S] : Inhabited (S →◃ S) :=
@@ -412,7 +412,7 @@ def Dihedral (n : ℕ) :=
 
 /-- The operation for the dihedral quandle.  It does not need to be an equivalence
 because it is an involution (see `dihedralAct.inv`). -/
-def dihedralAct (n : ℕ) (a : ZMod n) : ZMod n → ZMod n := fun b => 2 * a - b
+def dihedralAct (n : ℕ) (a : ZMod n) : ZMod n → ZMod n := fun b ↦ 2 * a - b
 
 theorem dihedralAct.inv (n : ℕ) (a : ZMod n) : Function.Involutive (dihedralAct n a) := by
   intro b
@@ -586,20 +586,20 @@ def EnvelGroup (R : Type*) [Rack R] :=
 -- TODO: is there a non-invasive way of defining the instance directly?
 instance (R : Type*) [Rack R] : DivInvMonoid (EnvelGroup R) where
   mul a b :=
-    Quotient.liftOn₂ a b (fun a b => ⟦PreEnvelGroup.mul a b⟧) fun _ _ _ _ ⟨ha⟩ ⟨hb⟩ =>
+    Quotient.liftOn₂ a b (fun a b ↦ ⟦PreEnvelGroup.mul a b⟧) fun _ _ _ _ ⟨ha⟩ ⟨hb⟩ ↦
       Quotient.sound (PreEnvelGroupRel'.congr_mul ha hb).rel
   one := ⟦unit⟧
   inv a :=
-    Quotient.liftOn a (fun a => ⟦PreEnvelGroup.inv a⟧) fun _ _ ⟨ha⟩ =>
+    Quotient.liftOn a (fun a ↦ ⟦PreEnvelGroup.inv a⟧) fun _ _ ⟨ha⟩ ↦
       Quotient.sound (PreEnvelGroupRel'.congr_inv ha).rel
   mul_assoc a b c :=
-    Quotient.inductionOn₃ a b c fun a b c => Quotient.sound (PreEnvelGroupRel'.assoc a b c).rel
-  one_mul a := Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.one_mul a).rel
-  mul_one a := Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.mul_one a).rel
+    Quotient.inductionOn₃ a b c fun a b c ↦ Quotient.sound (PreEnvelGroupRel'.assoc a b c).rel
+  one_mul a := Quotient.inductionOn a fun a ↦ Quotient.sound (PreEnvelGroupRel'.one_mul a).rel
+  mul_one a := Quotient.inductionOn a fun a ↦ Quotient.sound (PreEnvelGroupRel'.mul_one a).rel
 
 instance (R : Type*) [Rack R] : Group (EnvelGroup R) :=
-  { inv_mul_cancel := fun a =>
-      Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.inv_mul_cancel a).rel }
+  { inv_mul_cancel := fun a ↦
+      Quotient.inductionOn a fun a ↦ Quotient.sound (PreEnvelGroupRel'.inv_mul_cancel a).rel }
 
 instance EnvelGroup.inhabited (R : Type*) [Rack R] : Inhabited (EnvelGroup R) :=
   ⟨1⟩
@@ -609,7 +609,7 @@ Satisfies universal properties given by `toEnvelGroup.map` and `toEnvelGroup.uni
 -/
 def toEnvelGroup (R : Type*) [Rack R] : R →◃ Quandle.Conj (EnvelGroup R) where
   toFun x := ⟦incl x⟧
-  map_act' := @fun x y => Quotient.sound (PreEnvelGroupRel'.act_incl x y).symm.rel
+  map_act' := @fun x y ↦ Quotient.sound (PreEnvelGroupRel'.act_incl x y).symm.rel
 
 /-- The preliminary definition of the induced map from the enveloping group.
 See `toEnvelGroup.map`.
@@ -650,20 +650,20 @@ More precisely, the `EnvelGroup` functor is left adjoint to `Quandle.Conj`.
 def toEnvelGroup.map {R : Type*} [Rack R] {G : Type*} [Group G] :
     (R →◃ Quandle.Conj G) ≃ (EnvelGroup R →* G) where
   toFun f :=
-    { toFun := fun x =>
-        Quotient.liftOn x (toEnvelGroup.mapAux f) fun _ _ ⟨hab⟩ =>
+    { toFun := fun x ↦
+        Quotient.liftOn x (toEnvelGroup.mapAux f) fun _ _ ⟨hab⟩ ↦
           toEnvelGroup.mapAux.well_def f hab
       map_one' := by
         change Quotient.liftOn ⟦Rack.PreEnvelGroup.unit⟧ (toEnvelGroup.mapAux f) _ = 1
         simp only [Quotient.lift_mk, mapAux]
-      map_mul' := fun x y =>
-        Quotient.inductionOn₂ x y fun x y => by
+      map_mul' := fun x y ↦
+        Quotient.inductionOn₂ x y fun x y ↦ by
           change Quotient.liftOn ⟦mul x y⟧ (toEnvelGroup.mapAux f) _ = _
           simp [toEnvelGroup.mapAux] }
   invFun F := (Quandle.Conj.map F).comp (toEnvelGroup R)
   right_inv F :=
-    MonoidHom.ext fun x =>
-      Quotient.inductionOn x fun x => by
+    MonoidHom.ext fun x ↦
+      Quotient.inductionOn x fun x ↦ by
         induction x with
         | unit => exact F.map_one.symm
         | incl => rfl

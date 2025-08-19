@@ -106,7 +106,7 @@ such that `fst ≫ f = snd ≫ g`. -/
 @[simps]
 def mk {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫ g) : PullbackCone f g where
   pt := W
-  π := { app := fun j => Option.casesOn j (fst ≫ f) fun j' => WalkingPair.casesOn j' fst snd
+  π := { app := fun j ↦ Option.casesOn j (fst ≫ f) fun j' ↦ WalkingPair.casesOn j' fst snd
          naturality := by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) j <;> cases j <;> simp [eq] }
 
 @[simp]
@@ -161,11 +161,11 @@ def isLimitAux (t : PullbackCone f g) (lift : ∀ s : PullbackCone f g, s.pt ⟶
     (uniq : ∀ (s : PullbackCone f g) (m : s.pt ⟶ t.pt)
       (_ : ∀ j : WalkingCospan, m ≫ t.π.app j = s.π.app j), m = lift s) : IsLimit t :=
   { lift
-    fac := fun s j => Option.casesOn j (by
+    fac := fun s j ↦ Option.casesOn j (by
         rw [← s.w inl, ← t.w inl, ← Category.assoc]
         congr
         exact fac_left s)
-      fun j' => WalkingPair.casesOn j' (fac_left s) (fac_right s)
+      fun j' ↦ WalkingPair.casesOn j' (fac_left s) (fac_right s)
     uniq := uniq }
 
 /-- This is another convenient method to verify that a pullback cone is a limit cone. It
@@ -178,8 +178,8 @@ def isLimitAux' (t : PullbackCone f g)
           l ≫ t.fst = s.fst ∧
             l ≫ t.snd = s.snd ∧ ∀ {m}, m ≫ t.fst = s.fst → m ≫ t.snd = s.snd → m = l }) :
     Limits.IsLimit t :=
-  PullbackCone.isLimitAux t (fun s => (create s).1) (fun s => (create s).2.1)
-    (fun s => (create s).2.2.1) fun s _ w =>
+  PullbackCone.isLimitAux t (fun s ↦ (create s).1) (fun s ↦ (create s).2.1)
+    (fun s ↦ (create s).2.2.1) fun s _ w ↦
     (create s).2.2.2 (w WalkingCospan.left) (w WalkingCospan.right)
 
 /-- This is a more convenient formulation to show that a `PullbackCone` constructed using
@@ -193,7 +193,7 @@ def IsLimit.mk {W : C} {fst : W ⟶ X} {snd : W ⟶ Y} (eq : fst ≫ f = snd ≫
       ∀ (s : PullbackCone f g) (m : s.pt ⟶ W) (_ : m ≫ fst = s.fst) (_ : m ≫ snd = s.snd),
         m = lift s) :
     IsLimit (mk fst snd eq) :=
-  isLimitAux _ lift fac_left fac_right fun s m w =>
+  isLimitAux _ lift fac_left fac_right fun s m w ↦
     uniq s m (w WalkingCospan.left) (w WalkingCospan.right)
 
 theorem IsLimit.hom_ext {t : PullbackCone f g} (ht : IsLimit t) {W : C} {k l : W ⟶ t.pt}
@@ -246,7 +246,7 @@ variable {t}
 
 /-- The flip of a pullback square is a pullback square. -/
 def flipIsLimit (ht : IsLimit t) : IsLimit t.flip :=
-  IsLimit.mk _ (fun s => ht.lift s.flip) (by simp) (by simp) (fun s m h₁ h₂ => by
+  IsLimit.mk _ (fun s ↦ ht.lift s.flip) (by simp) (by simp) (fun s m h₁ h₂ ↦ by
     apply IsLimit.hom_ext ht <;> simp [h₁, h₂])
 
 /-- A square is a pullback square if its flip is. -/
@@ -321,7 +321,7 @@ that `f ≫ inl = g ↠ inr`. -/
 @[simps]
 def mk {W : C} (inl : Y ⟶ W) (inr : Z ⟶ W) (eq : f ≫ inl = g ≫ inr) : PushoutCocone f g where
   pt := W
-  ι := { app := fun j => Option.casesOn j (f ≫ inl) fun j' => WalkingPair.casesOn j' inl inr
+  ι := { app := fun j ↦ Option.casesOn j (f ≫ inl) fun j' ↦ WalkingPair.casesOn j' inl inr
          naturality := by
           rintro (⟨⟩|⟨⟨⟩⟩) (⟨⟩|⟨⟨⟩⟩) <;> intro f <;> cases f <;> dsimp <;> aesop }
 
@@ -378,8 +378,8 @@ def isColimitAux (t : PushoutCocone f g) (desc : ∀ s : PushoutCocone f g, t.pt
     (uniq : ∀ (s : PushoutCocone f g) (m : t.pt ⟶ s.pt)
     (_ : ∀ j : WalkingSpan, t.ι.app j ≫ m = s.ι.app j), m = desc s) : IsColimit t :=
   { desc
-    fac := fun s j =>
-      Option.casesOn j (by simp [← s.w fst, ← t.w fst, fac_left s]) fun j' =>
+    fac := fun s j ↦
+      Option.casesOn j (by simp [← s.w fst, ← t.w fst, fac_left s]) fun j' ↦
         WalkingPair.casesOn j' (fac_left s) (fac_right s)
     uniq := uniq }
 
@@ -393,8 +393,8 @@ def isColimitAux' (t : PushoutCocone f g)
           t.inl ≫ l = s.inl ∧
             t.inr ≫ l = s.inr ∧ ∀ {m}, t.inl ≫ m = s.inl → t.inr ≫ m = s.inr → m = l }) :
     IsColimit t :=
-  isColimitAux t (fun s => (create s).1) (fun s => (create s).2.1) (fun s => (create s).2.2.1)
-    fun s _ w => (create s).2.2.2 (w WalkingCospan.left) (w WalkingCospan.right)
+  isColimitAux t (fun s ↦ (create s).1) (fun s ↦ (create s).2.1) (fun s ↦ (create s).2.2.1)
+    fun s _ w ↦ (create s).2.2.2 (w WalkingCospan.left) (w WalkingCospan.right)
 
 
 theorem IsColimit.hom_ext {t : PushoutCocone f g} (ht : IsColimit t) {W : C} {k l : t.pt ⟶ W}
@@ -437,7 +437,7 @@ def IsColimit.mk {W : C} {inl : Y ⟶ W} {inr : Z ⟶ W} (eq : f ≫ inl = g ≫
       ∀ (s : PushoutCocone f g) (m : W ⟶ s.pt) (_ : inl ≫ m = s.inl) (_ : inr ≫ m = s.inr),
         m = desc s) :
     IsColimit (mk inl inr eq) :=
-  isColimitAux _ desc fac_left fac_right fun s m w =>
+  isColimitAux _ desc fac_left fac_right fun s m w ↦
     uniq s m (w WalkingCospan.left) (w WalkingCospan.right)
 
 /-- The pushout cocone reconstructed using `PushoutCocone.mk` from a pushout cocone that is a
@@ -464,7 +464,7 @@ variable {t}
 
 /-- The flip of a pushout square is a pushout square. -/
 def flipIsColimit (ht : IsColimit t) : IsColimit t.flip :=
-  IsColimit.mk _ (fun s => ht.desc s.flip) (by simp) (by simp) (fun s m h₁ h₂ => by
+  IsColimit.mk _ (fun s ↦ ht.desc s.flip) (by simp) (by simp) (fun s m h₁ h₂ ↦ by
     apply IsColimit.hom_ext ht <;> simp [h₁, h₂])
 
 /-- A square is a pushout square if its flip is. -/

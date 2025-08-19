@@ -37,13 +37,13 @@ variable [NoAtoms μ]
 
 theorem _root_.Set.Subsingleton.measure_zero (hs : s.Subsingleton) (μ : Measure α) [NoAtoms μ] :
     μ s = 0 :=
-  hs.induction_on (p := fun s => μ s = 0) measure_empty measure_singleton
+  hs.induction_on (p := fun s ↦ μ s = 0) measure_empty measure_singleton
 
 theorem Measure.restrict_singleton' {a : α} : μ.restrict {a} = 0 := by
   simp only [measure_singleton, Measure.restrict_eq_zero]
 
 instance Measure.restrict.instNoAtoms (s : Set α) : NoAtoms (μ.restrict s) := by
-  refine ⟨fun x => ?_⟩
+  refine ⟨fun x ↦ ?_⟩
   obtain ⟨t, hxt, ht1, ht2⟩ := exists_measurable_superset_of_null (measure_singleton x : μ {x} = 0)
   apply measure_mono_null hxt
   rw [Measure.restrict_apply ht1]

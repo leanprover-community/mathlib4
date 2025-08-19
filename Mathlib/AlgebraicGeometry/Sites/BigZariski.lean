@@ -49,7 +49,7 @@ instance subcanonical_zariskiTopology : zariskiTopology.Subcanonical := by
   intro X
   rw [Presieve.isSheaf_pretopology]
   rintro Y S ⟨𝓤,rfl⟩ x hx
-  let e : Y ⟶ X := 𝓤.glueMorphisms (fun j => x (𝓤.map _) (.mk _)) <| by
+  let e : Y ⟶ X := 𝓤.glueMorphisms (fun j ↦ x (𝓤.map _) (.mk _)) <| by
     intro i j
     apply hx
     exact Limits.pullback.condition

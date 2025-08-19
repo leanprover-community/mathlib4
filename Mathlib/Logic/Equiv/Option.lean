@@ -120,7 +120,7 @@ theorem removeNone_none {x : α} (h : e (some x) = none) : some (removeNone e x)
 
 @[simp]
 theorem option_symm_apply_none_iff : e.symm none = none ↔ e none = none :=
-  ⟨fun h => by simpa using (congr_arg e h).symm, fun h => by simpa using (congr_arg e.symm h).symm⟩
+  ⟨fun h ↦ by simpa using (congr_arg e h).symm, fun h ↦ by simpa using (congr_arg e.symm h).symm⟩
 
 theorem some_removeNone_iff {x : α} : some (removeNone e x) = e none ↔ e.symm none = some x := by
   rcases h : e (some x) with a | a
@@ -134,7 +134,7 @@ theorem some_removeNone_iff {x : α} : some (removeNone e x) = e none ↔ e.symm
 
 @[simp]
 theorem removeNone_optionCongr (e : α ≃ β) : removeNone e.optionCongr = e :=
-  Equiv.ext fun x => Option.some_injective _ <| removeNone_some _ ⟨e x, by simp⟩
+  Equiv.ext fun x ↦ Option.some_injective _ <| removeNone_some _ ⟨e x, by simp⟩
 
 end RemoveNone
 
@@ -146,30 +146,30 @@ equivalences between `α` and `{y : β // y ≠ x}`. -/
 def optionSubtype [DecidableEq β] (x : β) :
     { e : Option α ≃ β // e none = x } ≃ (α ≃ { y : β // y ≠ x }) where
   toFun e :=
-    { toFun := fun a =>
+    { toFun := fun a ↦
         ⟨(e : Option α ≃ β) a, ((EquivLike.injective _).ne_iff' e.property).2 (some_ne_none _)⟩,
-      invFun := fun b =>
+      invFun := fun b ↦
         get _
           (ne_none_iff_isSome.1
             (((EquivLike.injective _).ne_iff'
               ((apply_eq_iff_eq_symm_apply _).1 e.property).symm).2 b.property)),
-      left_inv := fun a => by
+      left_inv := fun a ↦ by
         rw [← some_inj, some_get]
         exact symm_apply_apply (e : Option α ≃ β) a,
-      right_inv := fun b => by
+      right_inv := fun b ↦ by
         ext
         simp }
   invFun e :=
-    ⟨{  toFun := fun a => casesOn' a x (Subtype.val ∘ e),
-        invFun := fun b => if h : b = x then none else e.symm ⟨b, h⟩,
-        left_inv := fun a => by
+    ⟨{  toFun := fun a ↦ casesOn' a x (Subtype.val ∘ e),
+        invFun := fun b ↦ if h : b = x then none else e.symm ⟨b, h⟩,
+        left_inv := fun a ↦ by
           cases a with
           | none => simp
           | some a =>
             simp only [casesOn'_some, Function.comp_apply, Subtype.coe_eta,
               symm_apply_apply, dite_eq_ite]
             exact if_neg (e a).property,
-        right_inv := fun b => by
+        right_inv := fun b ↦ by
           by_cases h : b = x <;> simp [h] },
       rfl⟩
   left_inv e := by
@@ -227,7 +227,7 @@ theorem optionSubtype_symm_apply_symm_apply [DecidableEq β] (x : β) (e : α �
     (b : { y : β // y ≠ x }) : ((optionSubtype x).symm e : Option α ≃ β).symm b = e.symm b := by
   simp only [optionSubtype, coe_fn_symm_mk, Subtype.coe_mk,
              Subtype.coe_eta, dite_eq_ite, ite_eq_right_iff]
-  exact fun h => False.elim (b.property h)
+  exact fun h ↦ False.elim (b.property h)
 
 variable [DecidableEq α] {a b : α}
 
@@ -247,9 +247,9 @@ open Sum
 
 /-- `Option α` is equivalent to `α ⊕ PUnit` -/
 def optionEquivSumPUnit.{v, w} (α : Type w) : Option α ≃ α ⊕ PUnit.{v+1} :=
-  ⟨fun o => o.elim (inr PUnit.unit) inl, fun s => s.elim some fun _ => none,
-    fun o => by cases o <;> rfl,
-    fun s => by rcases s with (_ | ⟨⟨⟩⟩) <;> rfl⟩
+  ⟨fun o ↦ o.elim (inr PUnit.unit) inl, fun s ↦ s.elim some fun _ ↦ none,
+    fun o ↦ by cases o <;> rfl,
+    fun s ↦ by rcases s with (_ | ⟨⟨⟩⟩) <;> rfl⟩
 
 @[simp]
 theorem optionEquivSumPUnit_none {α} : optionEquivSumPUnit α none = Sum.inr PUnit.unit :=

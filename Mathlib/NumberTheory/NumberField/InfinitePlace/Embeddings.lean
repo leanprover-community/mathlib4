@@ -63,10 +63,10 @@ variable (K A : Type*) [Field K] [NumberField K] [Field A] [Algebra ℚ A] [IsAl
 The images of `x` by the embeddings of `K` in `A` are exactly the roots in `A` of
 the minimal polynomial of `x` over `ℚ`. -/
 theorem range_eval_eq_rootSet_minpoly :
-    (range fun φ : K →+* A => φ x) = (minpoly ℚ x).rootSet A := by
+    (range fun φ : K →+* A ↦ φ x) = (minpoly ℚ x).rootSet A := by
   convert (NumberField.isAlgebraic K).range_eval_eq_rootSet_minpoly A x using 1
   ext a
-  exact ⟨fun ⟨φ, hφ⟩ => ⟨φ.toRatAlgHom, hφ⟩, fun ⟨φ, hφ⟩ => ⟨φ.toRingHom, hφ⟩⟩
+  exact ⟨fun ⟨φ, hφ⟩ ↦ ⟨φ.toRatAlgHom, hφ⟩, fun ⟨φ, hφ⟩ ↦ ⟨φ.toRingHom, hφ⟩⟩
 
 end Roots
 
@@ -82,7 +82,7 @@ theorem coeff_bdd_of_norm_le {B : ℝ} {x : K} (h : ∀ φ : K →+* A, ‖φ x�
   have hx := Algebra.IsSeparable.isIntegral ℚ x
   rw [← norm_algebraMap' A, ← coeff_map (algebraMap ℚ A)]
   refine coeff_bdd_of_roots_le _ (minpoly.monic hx)
-      (IsAlgClosed.splits_codomain _) (minpoly.natDegree_le x) (fun z hz => ?_) i
+      (IsAlgClosed.splits_codomain _) (minpoly.natDegree_le x) (fun z hz ↦ ?_) i
   classical
   rw [← Multiset.mem_toFinset] at hz
   obtain ⟨φ, rfl⟩ := (range_eval_eq_rootSet_minpoly K A x).symm.subset hz
@@ -96,9 +96,9 @@ theorem finite_of_norm_le (B : ℝ) : {x : K | IsIntegral ℤ x ∧ ∀ φ : K �
   classical
   let C := Nat.ceil (max B 1 ^ finrank ℚ K * (finrank ℚ K).choose (finrank ℚ K / 2))
   have := bUnion_roots_finite (algebraMap ℤ K) (finrank ℚ K) (finite_Icc (-C : ℤ) C)
-  refine this.subset fun x hx => ?_; simp_rw [mem_iUnion]
+  refine this.subset fun x hx ↦ ?_; simp_rw [mem_iUnion]
   have h_map_ℚ_minpoly := minpoly.isIntegrallyClosed_eq_field_fractions' ℚ hx.1
-  refine ⟨_, ⟨?_, fun i => ?_⟩, mem_rootSet.2 ⟨minpoly.ne_zero hx.1, minpoly.aeval ℤ x⟩⟩
+  refine ⟨_, ⟨?_, fun i ↦ ?_⟩, mem_rootSet.2 ⟨minpoly.ne_zero hx.1, minpoly.aeval ℤ x⟩⟩
   · rw [← (minpoly.monic hx.1).natDegree_map (algebraMap ℤ ℚ), ← h_map_ℚ_minpoly]
     exact minpoly.natDegree_le x
   rw [mem_Icc, ← abs_le, ← @Int.cast_le ℝ]
@@ -110,12 +110,12 @@ theorem pow_eq_one_of_norm_eq_one {x : K} (hxi : IsIntegral ℤ x) (hx : ∀ φ 
     ∃ (n : ℕ) (_ : 0 < n), x ^ n = 1 := by
   obtain ⟨a, -, b, -, habne, h⟩ :=
     @Set.Infinite.exists_ne_map_eq_of_mapsTo _ _ _ _ (x ^ · : ℕ → K) Set.infinite_univ
-      (by exact fun a _ => ⟨hxi.pow a, fun φ => by simp [hx φ]⟩) (finite_of_norm_le K A (1 : ℝ))
+      (by exact fun a _ ↦ ⟨hxi.pow a, fun φ ↦ by simp [hx φ]⟩) (finite_of_norm_le K A (1 : ℝ))
   wlog hlt : b < a
   · exact this K A hxi hx b a habne.symm h.symm (habne.lt_or_gt.resolve_right hlt)
   refine ⟨a - b, tsub_pos_of_lt hlt, ?_⟩
   rw [← Nat.sub_add_cancel hlt.le, pow_add, mul_left_eq_self₀] at h
-  refine h.resolve_right fun hp => ?_
+  refine h.resolve_right fun hp ↦ ?_
   specialize hx (IsAlgClosed.lift (R := ℚ)).toRingHom
   rw [pow_eq_zero hp, map_zero, norm_zero] at hx; norm_num at hx
 

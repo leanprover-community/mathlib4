@@ -168,7 +168,7 @@ irreducible_def volumeForm : E [⋀^Fin n]→ₗ[ℝ] ℝ := by
     cases n with
     | zero =>
       let opos : E [⋀^Fin 0]→ₗ[ℝ] ℝ := .constOfIsEmpty ℝ E (Fin 0) (1 : ℝ)
-      exact o.eq_or_eq_neg_of_isEmpty.by_cases (fun _ => opos) fun _ => -opos
+      exact o.eq_or_eq_neg_of_isEmpty.by_cases (fun _ ↦ opos) fun _ ↦ -opos
     | succ n => exact (o.finOrthonormalBasis n.succ_pos _i.out).toBasis.det
 
 @[simp]
@@ -259,7 +259,7 @@ theorem volumeForm_apply_le (v : Fin n → E) : o.volumeForm v ≤ ∏ i : Fin n
 real inner product space `E`. The output of the volume form of `E` when evaluated on `v` is, up to
 sign, the product of the norms of the vectors `v i`. -/
 theorem abs_volumeForm_apply_of_pairwise_orthogonal {v : Fin n → E}
-    (hv : Pairwise fun i j => ⟪v i, v j⟫ = 0) : |o.volumeForm v| = ∏ i : Fin n, ‖v i‖ := by
+    (hv : Pairwise fun i j ↦ ⟪v i, v j⟫ = 0) : |o.volumeForm v| = ∏ i : Fin n, ‖v i‖ := by
   rcases n with - | n
   · refine o.eq_or_eq_neg_of_isEmpty.elim ?_ ?_ <;> rintro rfl <;> simp
   haveI : FiniteDimensional ℝ E := .of_fact_finrank_eq_succ n

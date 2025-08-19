@@ -64,7 +64,7 @@ theorem eq_of_mem_of_mem {a : α} {o1 o2 : Option α} (h1 : a ∈ o1) (h2 : a �
   h1.trans h2.symm
 
 theorem Mem.leftUnique : Relator.LeftUnique ((· ∈ ·) : α → Option α → Prop) :=
-  fun _ _ _=> mem_unique
+  fun _ _ _↦ mem_unique
 
 theorem some_injective (α : Type*) : Function.Injective (@some α) := fun _ _ ↦ some_inj.mp
 
@@ -245,14 +245,14 @@ theorem elim_none_some (f : Option α → β) (i : Option α) : i.elim (f none) 
   cases i <;> rfl
 
 theorem elim_comp (h : α → β) {f : γ → α} {x : α} {i : Option γ} :
-    (i.elim (h x) fun j => h (f j)) = h (i.elim x f) := by cases i <;> rfl
+    (i.elim (h x) fun j ↦ h (f j)) = h (i.elim x f) := by cases i <;> rfl
 
 theorem elim_comp₂ (h : α → β → γ) {f : γ → α} {x : α} {g : γ → β} {y : β}
-    {i : Option γ} : (i.elim (h x y) fun j => h (f j) (g j)) = h (i.elim x f) (i.elim y g) := by
+    {i : Option γ} : (i.elim (h x y) fun j ↦ h (f j) (g j)) = h (i.elim x f) (i.elim y g) := by
   cases i <;> rfl
 
 theorem elim_apply {f : γ → α → β} {x : α → β} {i : Option γ} {y : α} :
-    i.elim x f y = i.elim (x y) fun j => f j y := by rw [elim_comp fun f : α → β => f y]
+    i.elim x f y = i.elim (x y) fun j ↦ f j y := by rw [elim_comp fun f : α → β ↦ f y]
 
 @[deprecated (since := "2025-04-10")] alias bnot_isSome := not_isSome
 @[deprecated (since := "2025-04-10")] alias bnot_comp_isSome := not_comp_isSome
@@ -266,7 +266,7 @@ lemma elim'_update {α : Type*} {β : Type*} [DecidableEq α]
     (f : β) (g : α → β) (a : α) (x : β) :
     Option.elim' f (update g a x) = update (Option.elim' f g) (.some a) x :=
   -- Can't reuse `Option.rec_update` as `Option.elim'` is not defeq.
-  Function.rec_update (α := fun _ => β) (@Option.some.inj _) (Option.elim' f) (fun _ _ => rfl) (fun
+  Function.rec_update (α := fun _ ↦ β) (@Option.some.inj _) (Option.elim' f) (fun _ _ ↦ rfl) (fun
     | _, _, .some _, h => (h _ rfl).elim
     | _, _, .none, _ => rfl) _ _ _
 

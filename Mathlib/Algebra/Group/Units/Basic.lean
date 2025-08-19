@@ -55,25 +55,25 @@ theorem inv_mul_cancel_right (a : α) (b : αˣ) : a * ↑b⁻¹ * b = a := by
 
 @[to_additive (attr := simp)]
 theorem mul_right_inj (a : αˣ) {b c : α} : (a : α) * b = a * c ↔ b = c :=
-  ⟨fun h => by simpa only [inv_mul_cancel_left] using congr_arg (fun x : α => ↑(a⁻¹ : αˣ) * x) h,
+  ⟨fun h ↦ by simpa only [inv_mul_cancel_left] using congr_arg (fun x : α ↦ ↑(a⁻¹ : αˣ) * x) h,
     congr_arg _⟩
 
 @[to_additive (attr := simp)]
 theorem mul_left_inj (a : αˣ) {b c : α} : b * a = c * a ↔ b = c :=
-  ⟨fun h => by simpa only [mul_inv_cancel_right] using congr_arg (fun x : α => x * ↑(a⁻¹ : αˣ)) h,
+  ⟨fun h ↦ by simpa only [mul_inv_cancel_right] using congr_arg (fun x : α ↦ x * ↑(a⁻¹ : αˣ)) h,
     congr_arg (· * a.val)⟩
 
 @[to_additive]
 theorem eq_mul_inv_iff_mul_eq {a b : α} : a = b * ↑c⁻¹ ↔ a * c = b :=
-  ⟨fun h => by rw [h, inv_mul_cancel_right], fun h => by rw [← h, mul_inv_cancel_right]⟩
+  ⟨fun h ↦ by rw [h, inv_mul_cancel_right], fun h ↦ by rw [← h, mul_inv_cancel_right]⟩
 
 @[to_additive]
 theorem eq_inv_mul_iff_mul_eq {a c : α} : a = ↑b⁻¹ * c ↔ ↑b * a = c :=
-  ⟨fun h => by rw [h, mul_inv_cancel_left], fun h => by rw [← h, inv_mul_cancel_left]⟩
+  ⟨fun h ↦ by rw [h, mul_inv_cancel_left], fun h ↦ by rw [← h, inv_mul_cancel_left]⟩
 
 @[to_additive]
 theorem mul_inv_eq_iff_eq_mul {a c : α} : a * ↑b⁻¹ = c ↔ a = c * b :=
-  ⟨fun h => by rw [← h, inv_mul_cancel_right], fun h => by rw [h, mul_inv_cancel_right]⟩
+  ⟨fun h ↦ by rw [← h, inv_mul_cancel_right], fun h ↦ by rw [h, mul_inv_cancel_right]⟩
 
 @[to_additive]
 protected theorem inv_eq_of_mul_eq_one_left {a : α} (h : a * u = 1) : ↑u⁻¹ = a :=
@@ -97,7 +97,7 @@ protected theorem eq_inv_of_mul_eq_one_right {a : α} (h : a * u = 1) : a = ↑u
 
 @[to_additive (attr := simp)]
 theorem mul_inv_eq_one {a : α} : a * ↑u⁻¹ = 1 ↔ a = u :=
-  ⟨inv_inv u ▸ Units.eq_inv_of_mul_eq_one_right, fun h => mul_inv_of_eq h.symm⟩
+  ⟨inv_inv u ▸ Units.eq_inv_of_mul_eq_one_right, fun h ↦ mul_inv_of_eq h.symm⟩
 
 @[to_additive (attr := simp)]
 theorem inv_mul_eq_one {a : α} : ↑u⁻¹ * a = 1 ↔ ↑u = a :=
@@ -176,7 +176,7 @@ protected theorem eq_one_of_mul_left (h : a * b = 1) : b = 1 := by
 
 @[to_additive (attr := simp)]
 protected theorem mul_eq_one : a * b = 1 ↔ a = 1 ∧ b = 1 :=
-  ⟨fun h => ⟨LeftCancelMonoid.eq_one_of_mul_right h, LeftCancelMonoid.eq_one_of_mul_left h⟩, by
+  ⟨fun h ↦ ⟨LeftCancelMonoid.eq_one_of_mul_right h, LeftCancelMonoid.eq_one_of_mul_left h⟩, by
     rintro ⟨rfl, rfl⟩
     exact mul_one _⟩
 
@@ -200,7 +200,7 @@ protected theorem eq_one_of_mul_left (h : a * b = 1) : b = 1 := by
 
 @[to_additive (attr := simp)]
 protected theorem mul_eq_one : a * b = 1 ↔ a = 1 ∧ b = 1 :=
-  ⟨fun h => ⟨RightCancelMonoid.eq_one_of_mul_right h, RightCancelMonoid.eq_one_of_mul_left h⟩, by
+  ⟨fun h ↦ ⟨RightCancelMonoid.eq_one_of_mul_right h, RightCancelMonoid.eq_one_of_mul_left h⟩, by
     rintro ⟨rfl, rfl⟩
     exact mul_one _⟩
 
@@ -257,7 +257,7 @@ theorem eq_one_of_mul_left (h : a * b = 1) : b = 1 :=
 
 @[to_additive (attr := simp)]
 theorem mul_eq_one : a * b = 1 ↔ a = 1 ∧ b = 1 :=
-  ⟨fun h => ⟨eq_one_of_mul_right h, eq_one_of_mul_left h⟩, by
+  ⟨fun h ↦ ⟨eq_one_of_mul_right h, eq_one_of_mul_left h⟩, by
     rintro ⟨rfl, rfl⟩
     exact mul_one _⟩
 
@@ -330,11 +330,11 @@ theorem mul_eq_left (h : IsUnit a) : a * b = a ↔ b = 1 := calc
 
 @[to_additive]
 protected theorem mul_right_injective (h : IsUnit a) : Injective (a * ·) :=
-  fun _ _ => h.mul_left_cancel
+  fun _ _ ↦ h.mul_left_cancel
 
 @[to_additive]
 protected theorem mul_left_injective (h : IsUnit b) : Injective (· * b) :=
-  fun _ _ => h.mul_right_cancel
+  fun _ _ ↦ h.mul_right_cancel
 
 @[to_additive]
 theorem isUnit_iff_mulLeft_bijective {a : M} :
@@ -432,7 +432,7 @@ protected lemma eq_div_of_mul_eq (h : IsUnit c) : a * c = b → a = b / c :=
 
 @[to_additive]
 protected lemma div_eq_one_iff_eq (h : IsUnit b) : a / b = 1 ↔ a = b :=
-  ⟨eq_of_div_eq_one, fun hab => hab.symm ▸ h.div_self⟩
+  ⟨eq_of_div_eq_one, fun hab ↦ hab.symm ▸ h.div_self⟩
 
 @[to_additive]
 protected lemma div_mul_left (h : IsUnit b) : b / (a * b) = 1 / a := by

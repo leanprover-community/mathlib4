@@ -45,7 +45,7 @@ lemma mul_def [Mul β] (x y : α) :
 /-- Transfer `Div` across an `Equiv` -/
 @[to_additive /-- Transfer `Sub` across an `Equiv` -/]
 protected abbrev div [Div β] : Div α :=
-  ⟨fun x y => e.symm (e x / e y)⟩
+  ⟨fun x y ↦ e.symm (e x / e y)⟩
 
 @[to_additive]
 lemma div_def [Div β] (x y : α) :
@@ -95,7 +95,7 @@ def mulEquiv (e : α ≃ β) [Mul β] :
   intros
   exact
     { e with
-      map_mul' := fun x y => by
+      map_mul' := fun x y ↦ by
         apply e.symm.injective
         simp [mul_def] }
 

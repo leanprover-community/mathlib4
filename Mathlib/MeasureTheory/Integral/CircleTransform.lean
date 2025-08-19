@@ -51,7 +51,7 @@ theorem circleTransformDeriv_periodic (f : ℂ → E) :
   simp [this]
 
 theorem circleTransformDeriv_eq (f : ℂ → E) : circleTransformDeriv R z w f =
-    fun θ => (circleMap z R θ - w)⁻¹ • circleTransform R z w f θ := by
+    fun θ ↦ (circleMap z R θ - w)⁻¹ • circleTransform R z w f θ := by
   ext
   simp_rw [circleTransformDeriv, circleTransform, ← mul_smul, ← mul_assoc]
   ring_nf
@@ -73,7 +73,7 @@ theorem continuous_circleTransform {R : ℝ} (hR : 0 < R) {f : ℂ → E} {z w :
     apply_rules [Continuous.mul, continuous_circleMap 0 R, continuous_const]
   · exact continuous_circleMap_inv hw
   · apply ContinuousOn.comp_continuous hf (continuous_circleMap z R)
-    exact fun _ => (circleMap_mem_sphere _ hR.le) _
+    exact fun _ ↦ (circleMap_mem_sphere _ hR.le) _
 
 theorem continuous_circleTransformDeriv {R : ℝ} (hR : 0 < R) {f : ℂ → E} {z w : ℂ}
     (hf : ContinuousOn f (sphere z R)) (hw : w ∈ ball z R) :
@@ -83,10 +83,10 @@ theorem continuous_circleTransformDeriv {R : ℝ} (hR : 0 < R) {f : ℂ → E} {
 
 /-- A useful bound for circle integrals (with complex codomain) -/
 def circleTransformBoundingFunction (R : ℝ) (z : ℂ) (w : ℂ × ℝ) : ℂ :=
-  circleTransformDeriv R z w.1 (fun _ => 1) w.2
+  circleTransformDeriv R z w.1 (fun _ ↦ 1) w.2
 
 theorem continuousOn_prod_circle_transform_function {R r : ℝ} (hr : r < R) {z : ℂ} :
-    ContinuousOn (fun w : ℂ × ℝ => (circleMap z R w.snd - w.fst)⁻¹ ^ 2)
+    ContinuousOn (fun w : ℂ × ℝ ↦ (circleMap z R w.snd - w.fst)⁻¹ ^ 2)
       (closedBall z r ×ˢ univ) := by
   simp_rw [← one_div]
   apply_rules [ContinuousOn.pow, ContinuousOn.div, continuousOn_const]
@@ -130,7 +130,7 @@ theorem circleTransformDeriv_bound {R : ℝ} (hR : 0 < R) {z x : ℂ} {f : ℂ �
   obtain ⟨ε', hε', H⟩ := exists_ball_subset_ball hrx
   obtain ⟨⟨⟨a, b⟩, ⟨ha, hb⟩⟩, hab⟩ :=
     norm_circleTransformBoundingFunction_le hr (pos_of_mem_ball hrx).le z
-  let V : ℝ → ℂ → ℂ := fun θ w => circleTransformDeriv R z w (fun _ => 1) θ
+  let V : ℝ → ℂ → ℂ := fun θ w ↦ circleTransformDeriv R z w (fun _ ↦ 1) θ
   obtain ⟨X, -, HX2⟩ := (isCompact_sphere z R).exists_isMaxOn
     (NormedSpace.sphere_nonempty.2 hR.le) hf.norm
   refine ⟨‖V b a‖ * ‖f X‖, ε', hε', H.trans (ball_subset_ball hr.le), fun y v hv ↦ ?_⟩

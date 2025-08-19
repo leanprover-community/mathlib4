@@ -250,13 +250,13 @@ end
 
 theorem zero_mem_invSet (a : Nimber) : 0 ∈ invSet a := by
   rw [invSet]
-  exact Set.mem_sInter.2 fun _ hs => hs.1
+  exact Set.mem_sInter.2 fun _ hs ↦ hs.1
 
 /-- "cons" is our operation `(1 + (a + a') * b) / a'` in the definition of the inverse. -/
 theorem cons_mem_invSet {a' : Nimber} (ha₀ : a' ≠ 0) (ha : a' < a) (hb : b ∈ invSet a) :
     invAux a' * (1 + (a + a') * b) ∈ invSet a := by
   rw [invSet] at hb ⊢
-  exact Set.mem_sInter.2 fun _ hs => hs.2 _ ha ha₀ _ (Set.mem_sInter.1 hb _ hs)
+  exact Set.mem_sInter.2 fun _ hs ↦ hs.2 _ ha ha₀ _ (Set.mem_sInter.1 hb _ hs)
 
 /-- A recursion principle for `invSet`. -/
 @[elab_as_elim]
@@ -320,7 +320,7 @@ private theorem mul_inv_cancel_aux (a : Nimber) :
         add_self, mul_assoc, mul_comm b, add_assoc, add_comm _ a', ← add_assoc, ← mul_one_add,
         ← ne_eq, mul_ne_zero_iff, add_ne_zero_iff, add_ne_zero_iff]
       exact ⟨ha.ne', hb.symm⟩
-  refine ⟨H₁, fun ha₀ => le_antisymm ?_ ?_⟩
+  refine ⟨H₁, fun ha₀ ↦ le_antisymm ?_ ?_⟩
   · apply mul_le_of_forall_ne fun a' ha b hb H ↦ ?_
     replace hb := mem_invSet_of_lt_invAux hb
     rw [add_assoc, ← add_mul, ← CharTwo.eq_add_iff_add_eq] at H

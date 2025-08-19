@@ -64,9 +64,9 @@ variable {s : Set G} {g : G}
 theorem centralizer_closure (S : Set G) :
     centralizer (closure S : Set G) = ⨅ g ∈ S, centralizer (zpowers g : Set G) :=
   le_antisymm
-      (le_iInf fun _ => le_iInf fun hg => centralizer_le <| zpowers_le.2 <| subset_closure hg) <|
+      (le_iInf fun _ ↦ le_iInf fun hg ↦ centralizer_le <| zpowers_le.2 <| subset_closure hg) <|
     le_centralizer_iff.1 <|
-      (closure_le _).2 fun g =>
+      (closure_le _).2 fun g ↦
         SetLike.mem_coe.2 ∘ zpowers_le.1 ∘ le_centralizer_iff.1 ∘ iInf_le_of_le g ∘ iInf_le _
 
 @[to_additive]

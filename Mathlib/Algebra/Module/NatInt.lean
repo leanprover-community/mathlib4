@@ -68,15 +68,15 @@ See note [reducible non-instances]. -/
 abbrev Module.addCommMonoidToAddCommGroup
     [Ring R] [AddCommMonoid M] [Module R M] : AddCommGroup M :=
   { (inferInstance : AddCommMonoid M) with
-    neg := fun a => (-1 : R) • a
-    neg_add_cancel := fun a =>
+    neg := fun a ↦ (-1 : R) • a
+    neg_add_cancel := fun a ↦
       show (-1 : R) • a + a = 0 by
         nth_rw 2 [← one_smul R a]
         rw [← add_smul, neg_add_cancel, zero_smul]
-    zsmul := fun z a => (z : R) • a
-    zsmul_zero' := fun a => by simpa only [Int.cast_zero] using zero_smul R a
-    zsmul_succ' := fun z a => by simp [add_comm, add_smul]
-    zsmul_neg' := fun z a => by simp [← smul_assoc] }
+    zsmul := fun z a ↦ (z : R) • a
+    zsmul_zero' := fun a ↦ by simpa only [Int.cast_zero] using zero_smul R a
+    zsmul_succ' := fun z a ↦ by simp [add_comm, add_smul]
+    zsmul_neg' := fun z a ↦ by simp [← smul_assoc] }
 
 section AddCommMonoid
 
@@ -109,7 +109,7 @@ theorem nat_smul_eq_nsmul (h : Module ℕ M) (n : ℕ) (x : M) : @SMul.smul ℕ 
 should normally have exactly one `ℕ`-module structure by design. -/
 def AddCommMonoid.uniqueNatModule : Unique (Module ℕ M) where
   default := by infer_instance
-  uniq P := (Module.ext' P _) fun n => by convert nat_smul_eq_nsmul P n
+  uniq P := (Module.ext' P _) fun n ↦ by convert nat_smul_eq_nsmul P n
 
 instance AddCommMonoid.nat_isScalarTower : IsScalarTower ℕ R M where
   smul_assoc n x y := by

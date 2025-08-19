@@ -85,8 +85,8 @@ theorem primitive_element_inf_aux_exists_c (f g : F[X]) :
   let sf := (f.map ϕ).roots
   let sg := (g.map ϕ).roots
   classical
-  let s := (sf.bind fun α' => sg.map fun β' => -(α' - α) / (β' - β)).toFinset
-  let s' := s.preimage ϕ fun x _ y _ h => ϕ.injective h
+  let s := (sf.bind fun α' ↦ sg.map fun β' ↦ -(α' - α) / (β' - β)).toFinset
+  let s' := s.preimage ϕ fun x _ y _ h ↦ ϕ.injective h
   obtain ⟨c, hc⟩ := Infinite.exists_notMem_finset s'
   simp_rw [s', s, Finset.mem_preimage, Multiset.mem_toFinset, Multiset.mem_bind, Multiset.mem_map]
     at hc
@@ -126,7 +126,7 @@ theorem primitive_element_inf_aux [Algebra.IsSeparable F E] : ∃ γ : E, F⟮α
   let h := EuclideanDomain.gcd ((f.map ιFE).comp (C γ - C (ιFE c) * X)) (g.map ιFE)
   have map_g_ne_zero : g.map ιFE ≠ 0 := map_ne_zero (minpoly.ne_zero hβ)
   have h_ne_zero : h ≠ 0 :=
-    mt EuclideanDomain.gcd_eq_zero_iff.mp (not_and.mpr fun _ => map_g_ne_zero)
+    mt EuclideanDomain.gcd_eq_zero_iff.mp (not_and.mpr fun _ ↦ map_g_ne_zero)
   suffices p_linear : p.map (algebraMap F⟮γ⟯ E) = C h.leadingCoeff * (X - C β) by
     have finale : β = algebraMap F⟮γ⟯ E (-p.coeff 0 / p.coeff 1) := by
       simp [map_div₀, RingHom.map_neg, ← coeff_map, ← coeff_map, p_linear,
@@ -206,7 +206,7 @@ variable [FiniteDimensional F E] [Algebra.IsSeparable F E]
 @[stacks 030N "The moreover part"]
 theorem exists_primitive_element : ∃ α : E, F⟮α⟯ = ⊤ := by
   rcases isEmpty_or_nonempty (Fintype F) with (F_inf | ⟨⟨F_finite⟩⟩)
-  · let P : IntermediateField F E → Prop := fun K => ∃ α : E, F⟮α⟯ = K
+  · let P : IntermediateField F E → Prop := fun K ↦ ∃ α : E, F⟮α⟯ = K
     have base : P ⊥ := ⟨0, adjoin_zero⟩
     have ih : ∀ (K : IntermediateField F E) (x : E), P K → P (K⟮x⟯.restrictScalars F) := by
       intro K β hK
@@ -370,8 +370,8 @@ variable (F : Type*) {E : Type*} [Field F] [Field E] [Algebra F E] [FiniteDimens
 theorem primitive_element_iff_minpoly_natDegree_eq (α : E) :
     F⟮α⟯ = ⊤ ↔ (minpoly F α).natDegree = finrank F E := by
   rw [← adjoin.finrank (IsIntegral.of_finite F α), ← finrank_top F E]
-  refine ⟨fun h => ?_, fun h => eq_of_le_of_finrank_eq le_top h⟩
-  exact congr_arg (fun K : IntermediateField F E => finrank F K) h
+  refine ⟨fun h ↦ ?_, fun h ↦ eq_of_le_of_finrank_eq le_top h⟩
+  exact congr_arg (fun K : IntermediateField F E ↦ finrank F K) h
 
 theorem primitive_element_iff_minpoly_degree_eq (α : E) :
     F⟮α⟯ = ⊤ ↔ (minpoly F α).degree = finrank F E := by

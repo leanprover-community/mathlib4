@@ -123,7 +123,7 @@ theorem transReflReparamAux_one : transReflReparamAux 1 = 1 := by
 
 theorem trans_refl_reparam (p : Path x₀ x₁) :
     p.trans (Path.refl x₁) =
-      p.reparam (fun t => ⟨transReflReparamAux t, transReflReparamAux_mem_I t⟩) (by fun_prop)
+      p.reparam (fun t ↦ ⟨transReflReparamAux t, transReflReparamAux_mem_I t⟩) (by fun_prop)
         (Subtype.ext transReflReparamAux_zero) (Subtype.ext transReflReparamAux_one) := by
   ext
   unfold transReflReparamAux
@@ -136,7 +136,7 @@ theorem trans_refl_reparam (p : Path x₀ x₁) :
 
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from `p.trans (Path.refl x₁)` to `p`. -/
 def transRefl (p : Path x₀ x₁) : Homotopy (p.trans (Path.refl x₁)) p :=
-  ((Homotopy.reparam p (fun t => ⟨transReflReparamAux t, transReflReparamAux_mem_I t⟩)
+  ((Homotopy.reparam p (fun t ↦ ⟨transReflReparamAux t, transReflReparamAux_mem_I t⟩)
           (by fun_prop) (Subtype.ext transReflReparamAux_zero)
           (Subtype.ext transReflReparamAux_one)).cast
       rfl (trans_refl_reparam p).symm).symm
@@ -177,7 +177,7 @@ theorem transAssocReparamAux_one : transAssocReparamAux 1 = 1 := by
 theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : Path x₁ x₂) (r : Path x₂ x₃) :
     (p.trans q).trans r =
       (p.trans (q.trans r)).reparam
-        (fun t => ⟨transAssocReparamAux t, transAssocReparamAux_mem_I t⟩) (by fun_prop)
+        (fun t ↦ ⟨transAssocReparamAux t, transAssocReparamAux_mem_I t⟩) (by fun_prop)
         (Subtype.ext transAssocReparamAux_zero) (Subtype.ext transAssocReparamAux_one) := by
   ext x
   simp only [transAssocReparamAux, Path.trans_apply, Function.comp_apply, mul_ite, Path.coe_reparam]
@@ -195,7 +195,7 @@ theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : 
 def transAssoc {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : Path x₁ x₂) (r : Path x₂ x₃) :
     Homotopy ((p.trans q).trans r) (p.trans (q.trans r)) :=
   ((Homotopy.reparam (p.trans (q.trans r))
-          (fun t => ⟨transAssocReparamAux t, transAssocReparamAux_mem_I t⟩) (by fun_prop)
+          (fun t ↦ ⟨transAssocReparamAux t, transAssocReparamAux_mem_I t⟩) (by fun_prop)
           (Subtype.ext transAssocReparamAux_zero) (Subtype.ext transAssocReparamAux_one)).cast
       rfl (trans_assoc_reparam p q r).symm).symm
 
@@ -262,17 +262,17 @@ instance : CategoryTheory.Groupoid (FundamentalGroupoid X) where
   id x := ⟦Path.refl x.as⟧
   comp {_ _ _} := Path.Homotopic.Quotient.comp
   id_comp {x _} f :=
-    Quotient.inductionOn f fun a =>
+    Quotient.inductionOn f fun a ↦
       show ⟦(Path.refl x.as).trans a⟧ = ⟦a⟧ from Quotient.sound ⟨Path.Homotopy.reflTrans a⟩
   comp_id {_ y} f :=
-    Quotient.inductionOn f fun a =>
+    Quotient.inductionOn f fun a ↦
       show ⟦a.trans (Path.refl y.as)⟧ = ⟦a⟧ from Quotient.sound ⟨Path.Homotopy.transRefl a⟩
   assoc {_ _ _ _} f g h :=
-    Quotient.inductionOn₃ f g h fun p q r =>
+    Quotient.inductionOn₃ f g h fun p q r ↦
       show ⟦(p.trans q).trans r⟧ = ⟦p.trans (q.trans r)⟧ from
         Quotient.sound ⟨Path.Homotopy.transAssoc p q r⟩
   inv {x y} p :=
-    Quotient.lift (fun l : Path x.as y.as => ⟦l.symm⟧)
+    Quotient.lift (fun l : Path x.as y.as ↦ ⟦l.symm⟧)
       (by
         rintro a b ⟨h⟩
         simp only
@@ -280,11 +280,11 @@ instance : CategoryTheory.Groupoid (FundamentalGroupoid X) where
         exact ⟨h.symm₂⟩)
       p
   inv_comp {_ y} f :=
-    Quotient.inductionOn f fun a =>
+    Quotient.inductionOn f fun a ↦
       show ⟦a.symm.trans a⟧ = ⟦Path.refl y.as⟧ from
         Quotient.sound ⟨(Path.Homotopy.reflSymmTrans a).symm⟩
   comp_inv {x _} f :=
-    Quotient.inductionOn f fun a =>
+    Quotient.inductionOn f fun a ↦
       show ⟦a.trans a.symm⟧ = ⟦Path.refl x.as⟧ from
         Quotient.sound ⟨(Path.Homotopy.reflTransSymm a).symm⟩
 
@@ -296,17 +296,17 @@ theorem id_eq_path_refl (x : FundamentalGroupoid X) : 𝟙 x = ⟦Path.refl x.as
 def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
   obj X := { α := FundamentalGroupoid X }
   map f :=
-    { obj := fun x => ⟨f x.as⟩
-      map := fun {X Y} p => by exact Path.Homotopic.Quotient.mapFn p f.hom
-      map_id := fun _ => rfl
-      map_comp := fun {x y z} p q => by
-        refine Quotient.inductionOn₂ p q fun a b => ?_
+    { obj := fun x ↦ ⟨f x.as⟩
+      map := fun {X Y} p ↦ by exact Path.Homotopic.Quotient.mapFn p f.hom
+      map_id := fun _ ↦ rfl
+      map_comp := fun {x y z} p q ↦ by
+        refine Quotient.inductionOn₂ p q fun a b ↦ ?_
         simp only [comp_eq, ← Path.Homotopic.map_lift, ← Path.Homotopic.comp_lift, Path.map_trans] }
   map_id X := by
     simp only
     congr
     ext x y p
-    refine Quotient.inductionOn p fun q => ?_
+    refine Quotient.inductionOn p fun q ↦ ?_
     rw [← Path.Homotopic.map_lift]
     conv_rhs => rw [← q.map_id]
     rfl
@@ -314,7 +314,7 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
     simp only
     congr
     ext x y p
-    refine Quotient.inductionOn p fun q => ?_
+    refine Quotient.inductionOn p fun q ↦ ?_
     simp only
     rfl
 

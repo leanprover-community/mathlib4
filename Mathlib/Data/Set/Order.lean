@@ -22,19 +22,19 @@ section Preorder
 variable [Preorder α] [Preorder β] {f : α → β}
 
 theorem monotoneOn_iff_monotone : MonotoneOn f s ↔
-    Monotone fun a : s => f a := by
+    Monotone fun a : s ↦ f a := by
   simp [Monotone, MonotoneOn]
 
 theorem antitoneOn_iff_antitone : AntitoneOn f s ↔
-    Antitone fun a : s => f a := by
+    Antitone fun a : s ↦ f a := by
   simp [Antitone, AntitoneOn]
 
 theorem strictMonoOn_iff_strictMono : StrictMonoOn f s ↔
-    StrictMono fun a : s => f a := by
+    StrictMono fun a : s ↦ f a := by
   simp [StrictMono, StrictMonoOn]
 
 theorem strictAntiOn_iff_strictAnti : StrictAntiOn f s ↔
-    StrictAnti fun a : s => f a := by
+    StrictAnti fun a : s ↦ f a := by
   simp [StrictAnti, StrictAntiOn]
 
 end Preorder
@@ -71,48 +71,48 @@ section Monotone
 variable {α β : Type*}
 
 theorem Monotone.inter [Preorder β] {f g : β → Set α} (hf : Monotone f) (hg : Monotone g) :
-    Monotone fun x => f x ∩ g x :=
+    Monotone fun x ↦ f x ∩ g x :=
   hf.inf hg
 
 theorem MonotoneOn.inter [Preorder β] {f g : β → Set α} {s : Set β} (hf : MonotoneOn f s)
-    (hg : MonotoneOn g s) : MonotoneOn (fun x => f x ∩ g x) s :=
+    (hg : MonotoneOn g s) : MonotoneOn (fun x ↦ f x ∩ g x) s :=
   hf.inf hg
 
 theorem Antitone.inter [Preorder β] {f g : β → Set α} (hf : Antitone f) (hg : Antitone g) :
-    Antitone fun x => f x ∩ g x :=
+    Antitone fun x ↦ f x ∩ g x :=
   hf.inf hg
 
 theorem AntitoneOn.inter [Preorder β] {f g : β → Set α} {s : Set β} (hf : AntitoneOn f s)
-    (hg : AntitoneOn g s) : AntitoneOn (fun x => f x ∩ g x) s :=
+    (hg : AntitoneOn g s) : AntitoneOn (fun x ↦ f x ∩ g x) s :=
   hf.inf hg
 
 theorem Monotone.union [Preorder β] {f g : β → Set α} (hf : Monotone f) (hg : Monotone g) :
-    Monotone fun x => f x ∪ g x :=
+    Monotone fun x ↦ f x ∪ g x :=
   hf.sup hg
 
 theorem MonotoneOn.union [Preorder β] {f g : β → Set α} {s : Set β} (hf : MonotoneOn f s)
-    (hg : MonotoneOn g s) : MonotoneOn (fun x => f x ∪ g x) s :=
+    (hg : MonotoneOn g s) : MonotoneOn (fun x ↦ f x ∪ g x) s :=
   hf.sup hg
 
 theorem Antitone.union [Preorder β] {f g : β → Set α} (hf : Antitone f) (hg : Antitone g) :
-    Antitone fun x => f x ∪ g x :=
+    Antitone fun x ↦ f x ∪ g x :=
   hf.sup hg
 
 theorem AntitoneOn.union [Preorder β] {f g : β → Set α} {s : Set β} (hf : AntitoneOn f s)
-    (hg : AntitoneOn g s) : AntitoneOn (fun x => f x ∪ g x) s :=
+    (hg : AntitoneOn g s) : AntitoneOn (fun x ↦ f x ∪ g x) s :=
   hf.sup hg
 
 namespace Set
 
-theorem monotone_setOf [Preorder α] {p : α → β → Prop} (hp : ∀ b, Monotone fun a => p a b) :
-    Monotone fun a => { b | p a b } := fun _ _ h b => hp b h
+theorem monotone_setOf [Preorder α] {p : α → β → Prop} (hp : ∀ b, Monotone fun a ↦ p a b) :
+    Monotone fun a ↦ { b | p a b } := fun _ _ h b ↦ hp b h
 
-theorem antitone_setOf [Preorder α] {p : α → β → Prop} (hp : ∀ b, Antitone fun a => p a b) :
-    Antitone fun a => { b | p a b } := fun _ _ h b => hp b h
+theorem antitone_setOf [Preorder α] {p : α → β → Prop} (hp : ∀ b, Antitone fun a ↦ p a b) :
+    Antitone fun a ↦ { b | p a b } := fun _ _ h b ↦ hp b h
 
 /-- Quantifying over a set is antitone in the set -/
-theorem antitone_bforall {P : α → Prop} : Antitone fun s : Set α => ∀ x ∈ s, P x :=
-  fun _ _ hst h x hx => h x <| hst hx
+theorem antitone_bforall {P : α → Prop} : Antitone fun s : Set α ↦ ∀ x ∈ s, P x :=
+  fun _ _ hst h x hx ↦ h x <| hst hx
 
 end Set
 

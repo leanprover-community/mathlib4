@@ -58,8 +58,8 @@ def MemHolder (r : ℝ≥0) (f : X → Y) : Prop := ∃ C, HolderWith C r f
 lemma HolderWith.memHolder {C : ℝ≥0} (hf : HolderWith C r f) : MemHolder r f := ⟨C, hf⟩
 
 @[simp] lemma eHolderNorm_lt_top : eHolderNorm r f < ∞ ↔ MemHolder r f := by
-  refine ⟨fun h => ?_,
-    fun hf => let ⟨C, hC⟩ := hf; iInf_lt_top.2 ⟨C, iInf_lt_top.2 ⟨hC, coe_lt_top⟩⟩⟩
+  refine ⟨fun h ↦ ?_,
+    fun hf ↦ let ⟨C, hC⟩ := hf; iInf_lt_top.2 ⟨C, iInf_lt_top.2 ⟨hC, coe_lt_top⟩⟩⟩
   simp_rw [eHolderNorm, iInf_lt_top] at h
   let ⟨C, hC, _⟩ := h
   exact ⟨C, hC⟩
@@ -81,7 +81,7 @@ variable (X) in
 @[simp]
 lemma eHolderNorm_const (r : ℝ≥0) (c : Y) : eHolderNorm r (Function.const X c) = 0 := by
   rw [eHolderNorm, ← ENNReal.bot_eq_zero, iInf₂_eq_bot]
-  exact fun C' hC' => ⟨0, .const, hC'⟩
+  exact fun C' hC' ↦ ⟨0, .const, hC'⟩
 
 variable (X) in
 @[simp]
@@ -105,7 +105,7 @@ attribute [simp] eHolderNorm_const eHolderNorm_zero
 lemma eHolderNorm_of_isEmpty [hX : IsEmpty X] :
     eHolderNorm r f = 0 := by
   rw [eHolderNorm, ← ENNReal.bot_eq_zero, iInf₂_eq_bot]
-  exact fun ε hε => ⟨0, .of_isEmpty, hε⟩
+  exact fun ε hε ↦ ⟨0, .of_isEmpty, hε⟩
 
 lemma HolderWith.eHolderNorm_le {C : ℝ≥0} (hf : HolderWith C r f) :
     eHolderNorm r f ≤ C :=
@@ -134,12 +134,12 @@ variable [MetricSpace X] [EMetricSpace Y]
 lemma eHolderNorm_eq_zero {r : ℝ≥0} {f : X → Y} :
     eHolderNorm r f = 0 ↔ ∀ x₁ x₂, f x₁ = f x₂ := by
   constructor
-  · refine fun h x₁ x₂ => ?_
+  · refine fun h x₁ x₂ ↦ ?_
     by_cases hx : x₁ = x₂
     · rw [hx]
     · rw [eHolderNorm, ← ENNReal.bot_eq_zero, iInf₂_eq_bot] at h
       rw [← edist_eq_zero, ← le_zero_iff]
-      refine le_of_forall_gt fun b hb => ?_
+      refine le_of_forall_gt fun b hb ↦ ?_
       obtain ⟨C, hC, hC'⟩ := h (b / edist x₁ x₂ ^ (r : ℝ))
         (ENNReal.div_pos hb.ne.symm (ENNReal.rpow_lt_top_of_nonneg zero_le_coe
           (edist_lt_top x₁ x₂).ne).ne)
@@ -163,7 +163,7 @@ lemma MemHolder.holderWith {r : ℝ≥0} {f : X → Y} (hf : MemHolder r f) :
   have h₂ : edist x₁ x₂ ^ (r : ℝ) ≠ ∞ := by
     simp [(edist_lt_top x₁ x₂).ne]
   rw [← ENNReal.div_le_iff h₁ h₂]
-  refine le_iInf₂ fun C hC => ?_
+  refine le_iInf₂ fun C hC ↦ ?_
   rw [ENNReal.div_le_iff h₁ h₂]
   exact hC x₁ x₂
 
@@ -206,7 +206,7 @@ lemma MemHolder.smul {𝕜} [SeminormedRing 𝕜] [Module 𝕜 Y] [IsBoundedSMul
 
 lemma MemHolder.smul_iff {𝕜} [SeminormedRing 𝕜] [Module 𝕜 Y] [NormSMulClass 𝕜 Y]
     {c : 𝕜} (hc : ‖c‖₊ ≠ 0) : MemHolder r (c • f) ↔ MemHolder r f := by
-  refine ⟨fun ⟨h, hh⟩ => ⟨h * ‖c‖₊⁻¹, ?_⟩, .smul⟩
+  refine ⟨fun ⟨h, hh⟩ ↦ ⟨h * ‖c‖₊⁻¹, ?_⟩, .smul⟩
   rw [← HolderWith.smul_iff _ hc, inv_mul_cancel_right₀ hc]
   exact hh
 
@@ -239,7 +239,7 @@ lemma eHolderNorm_smul {α} [NormedRing α] [Module α Y] [NormSMulClass α Y] (
   · refine le_antisymm ((hf.holderWith.smul c).eHolderNorm_le.trans ?_) <| mul_le_of_le_div' ?_
     · rw [coe_mul, hf.coe_nnHolderNorm_eq_eHolderNorm, mul_comm]
     · rw [← (hf.holderWith.smul c).memHolder.coe_nnHolderNorm_eq_eHolderNorm, ← coe_div hc]
-      refine HolderWith.eHolderNorm_le fun x₁ x₂ => ?_
+      refine HolderWith.eHolderNorm_le fun x₁ x₂ ↦ ?_
       rw [coe_div hc, ← ENNReal.mul_div_right_comm,
         ENNReal.le_div_iff_mul_le (Or.inl <| coe_ne_zero.2 hc) <| Or.inl coe_ne_top,
         mul_comm, ← smul_eq_mul, ← ENNReal.smul_def, ← edist_smul₀, ← Pi.smul_apply,

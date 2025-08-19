@@ -77,7 +77,7 @@ instance : HasForget (ContAction V G) :=
 
 instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
     [ConcreteCategory V FV] :
-    ConcreteCategory (ContAction V G) (fun X Y => Action.HomSubtype V G X.1 Y.1) :=
+    ConcreteCategory (ContAction V G) (fun X Y ↦ Action.HomSubtype V G X.1 Y.1) :=
   FullSubcategory.concreteCategory (IsContinuous (V := V) (G := G))
 
 instance : HasForget₂ (ContAction V G) (Action V G) :=
@@ -161,7 +161,7 @@ instance : HasForget (DiscreteContAction V G) :=
 
 instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
     [ConcreteCategory V FV] :
-    ConcreteCategory (DiscreteContAction V G) (fun X Y => Action.HomSubtype V G X.1 Y.1) :=
+    ConcreteCategory (DiscreteContAction V G) (fun X Y ↦ Action.HomSubtype V G X.1 Y.1) :=
   FullSubcategory.concreteCategory (IsDiscrete (V := V) (G := G))
 
 instance : HasForget₂ (DiscreteContAction V G) (ContAction V G) :=

@@ -91,7 +91,7 @@ theorem convexOn_of_slope_mono_adjacent (hs : Convex 𝕜 s)
       ∀ {x y z : 𝕜},
         x ∈ s → z ∈ s → x < y → y < z → (f y - f x) / (y - x) ≤ (f z - f y) / (z - y)) :
     ConvexOn 𝕜 s f :=
-  LinearOrder.convexOn_of_lt hs fun x hx z hz hxz a b ha hb hab => by
+  LinearOrder.convexOn_of_lt hs fun x hx z hz hxz a b ha hb hab ↦ by
     let y := a * x + b * z
     have hxy : x < y := by
       rw [← one_mul x, ← hab, add_mul]
@@ -124,7 +124,7 @@ theorem concaveOn_of_slope_anti_adjacent (hs : Convex 𝕜 s)
         x ∈ s → z ∈ s → x < y → y < z → (f z - f y) / (z - y) ≤ (f y - f x) / (y - x)) :
     ConcaveOn 𝕜 s f := by
   rw [← neg_convexOn_iff]
-  refine convexOn_of_slope_mono_adjacent hs fun hx hz hxy hyz => ?_
+  refine convexOn_of_slope_mono_adjacent hs fun hx hz hxy hyz ↦ ?_
   rw [← neg_le_neg_iff]
   simp_rw [← neg_div, neg_sub, Pi.neg_apply, neg_sub_neg]
   exact hf hx hz hxy hyz
@@ -136,7 +136,7 @@ theorem strictConvexOn_of_slope_strict_mono_adjacent (hs : Convex 𝕜 s)
       ∀ {x y z : 𝕜},
         x ∈ s → z ∈ s → x < y → y < z → (f y - f x) / (y - x) < (f z - f y) / (z - y)) :
     StrictConvexOn 𝕜 s f :=
-  LinearOrder.strictConvexOn_of_lt hs fun x hx z hz hxz a b ha hb hab => by
+  LinearOrder.strictConvexOn_of_lt hs fun x hx z hz hxz a b ha hb hab ↦ by
     let y := a * x + b * z
     have hxy : x < y := by
       rw [← one_mul x, ← hab, add_mul]
@@ -170,7 +170,7 @@ theorem strictConcaveOn_of_slope_strict_anti_adjacent (hs : Convex 𝕜 s)
         x ∈ s → z ∈ s → x < y → y < z → (f z - f y) / (z - y) < (f y - f x) / (y - x)) :
     StrictConcaveOn 𝕜 s f := by
   rw [← neg_strictConvexOn_iff]
-  refine strictConvexOn_of_slope_strict_mono_adjacent hs fun hx hz hxy hyz => ?_
+  refine strictConvexOn_of_slope_strict_mono_adjacent hs fun hx hz hxy hyz ↦ ?_
   rw [← neg_lt_neg_iff]
   simp_rw [← neg_div, neg_sub, Pi.neg_apply, neg_sub_neg]
   exact hf hx hz hxy hyz
@@ -181,8 +181,8 @@ theorem convexOn_iff_slope_mono_adjacent :
     ConvexOn 𝕜 s f ↔
       Convex 𝕜 s ∧ ∀ ⦃x y z : 𝕜⦄,
           x ∈ s → z ∈ s → x < y → y < z → (f y - f x) / (y - x) ≤ (f z - f y) / (z - y) :=
-  ⟨fun h => ⟨h.1, fun _ _ _ => h.slope_mono_adjacent⟩, fun h =>
-    convexOn_of_slope_mono_adjacent h.1 (@fun _ _ _ hx hy => h.2 hx hy)⟩
+  ⟨fun h ↦ ⟨h.1, fun _ _ _ ↦ h.slope_mono_adjacent⟩, fun h ↦
+    convexOn_of_slope_mono_adjacent h.1 (@fun _ _ _ hx hy ↦ h.2 hx hy)⟩
 
 /-- A function `f : 𝕜 → 𝕜` is concave iff for any three points `x < y < z` the slope of the secant
 line of `f` on `[x, y]` is greater than the slope of the secant line of `f` on `[y, z]`. -/
@@ -191,8 +191,8 @@ theorem concaveOn_iff_slope_anti_adjacent :
       Convex 𝕜 s ∧
         ∀ ⦃x y z : 𝕜⦄,
           x ∈ s → z ∈ s → x < y → y < z → (f z - f y) / (z - y) ≤ (f y - f x) / (y - x) :=
-  ⟨fun h => ⟨h.1, fun _ _ _ => h.slope_anti_adjacent⟩, fun h =>
-    concaveOn_of_slope_anti_adjacent h.1 (@fun _ _ _ hx hy => h.2 hx hy)⟩
+  ⟨fun h ↦ ⟨h.1, fun _ _ _ ↦ h.slope_anti_adjacent⟩, fun h ↦
+    concaveOn_of_slope_anti_adjacent h.1 (@fun _ _ _ hx hy ↦ h.2 hx hy)⟩
 
 /-- A function `f : 𝕜 → 𝕜` is strictly convex iff for any three points `x < y < z` the slope of
 the secant line of `f` on `[x, y]` is strictly less than the slope of the secant line of `f` on
@@ -202,8 +202,8 @@ theorem strictConvexOn_iff_slope_strict_mono_adjacent :
       Convex 𝕜 s ∧
         ∀ ⦃x y z : 𝕜⦄,
           x ∈ s → z ∈ s → x < y → y < z → (f y - f x) / (y - x) < (f z - f y) / (z - y) :=
-  ⟨fun h => ⟨h.1, fun _ _ _ => h.slope_strict_mono_adjacent⟩, fun h =>
-    strictConvexOn_of_slope_strict_mono_adjacent h.1 (@fun _ _ _ hx hy => h.2 hx hy)⟩
+  ⟨fun h ↦ ⟨h.1, fun _ _ _ ↦ h.slope_strict_mono_adjacent⟩, fun h ↦
+    strictConvexOn_of_slope_strict_mono_adjacent h.1 (@fun _ _ _ hx hy ↦ h.2 hx hy)⟩
 
 /-- A function `f : 𝕜 → 𝕜` is strictly concave iff for any three points `x < y < z` the slope of
 the secant line of `f` on `[x, y]` is strictly greater than the slope of the secant line of `f` on
@@ -213,8 +213,8 @@ theorem strictConcaveOn_iff_slope_strict_anti_adjacent :
       Convex 𝕜 s ∧
         ∀ ⦃x y z : 𝕜⦄,
           x ∈ s → z ∈ s → x < y → y < z → (f z - f y) / (z - y) < (f y - f x) / (y - x) :=
-  ⟨fun h => ⟨h.1, fun _ _ _ => h.slope_anti_adjacent⟩, fun h =>
-    strictConcaveOn_of_slope_strict_anti_adjacent h.1 (@fun _ _ _ hx hy => h.2 hx hy)⟩
+  ⟨fun h ↦ ⟨h.1, fun _ _ _ ↦ h.slope_anti_adjacent⟩, fun h ↦
+    strictConcaveOn_of_slope_strict_anti_adjacent h.1 (@fun _ _ _ hx hy ↦ h.2 hx hy)⟩
 
 theorem ConvexOn.secant_mono_aux1 (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s) (hz : z ∈ s)
     (hxy : x < y) (hyz : y < z) : (z - x) * f y ≤ (z - y) * f x + (y - x) * f z := by

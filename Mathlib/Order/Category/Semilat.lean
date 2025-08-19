@@ -159,8 +159,8 @@ end SemilatInfCat
 def SemilatSupCatEquivSemilatInfCat : SemilatSupCat ≌ SemilatInfCat where
   functor := SemilatSupCat.dual
   inverse := SemilatInfCat.dual
-  unitIso := NatIso.ofComponents fun X => SemilatSupCat.Iso.mk <| OrderIso.dualDual X
-  counitIso := NatIso.ofComponents fun X => SemilatInfCat.Iso.mk <| OrderIso.dualDual X
+  unitIso := NatIso.ofComponents fun X ↦ SemilatSupCat.Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X ↦ SemilatInfCat.Iso.mk <| OrderIso.dualDual X
 
 theorem SemilatSupCat_dual_comp_forget_to_partOrd :
     SemilatSupCat.dual ⋙ forget₂ SemilatInfCat PartOrd =

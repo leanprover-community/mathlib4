@@ -41,7 +41,7 @@ This is the `Fintype` version of `Finset.exists_ne_map_eq_of_card_lt_of_maps_to`
 -/
 theorem exists_ne_map_eq_of_card_lt (f : α → β) (h : Fintype.card β < Fintype.card α) :
     ∃ x y, x ≠ y ∧ f x = f y :=
-  let ⟨x, _, y, _, h⟩ := Finset.exists_ne_map_eq_of_card_lt_of_maps_to h fun x _ => mem_univ (f x)
+  let ⟨x, _, y, _, h⟩ := Finset.exists_ne_map_eq_of_card_lt_of_maps_to h fun x _ ↦ mem_univ (f x)
   ⟨x, y, h⟩
 
 end Fintype
@@ -55,7 +55,7 @@ Note this cannot be an instance as it needs `h`. -/
 @[simp]
 theorem isEmpty_of_card_lt [Fintype α] [Fintype β] (h : Fintype.card β < Fintype.card α) :
     IsEmpty (α ↪ β) :=
-  ⟨fun f =>
+  ⟨fun f ↦
     let ⟨_x, _y, ne, feq⟩ := Fintype.exists_ne_map_eq_of_card_lt f h
     ne <| f.injective feq⟩
 
@@ -83,8 +83,8 @@ theorem Finite.exists_infinite_fiber [Infinite α] [Finite β] (f : α → β) :
   classical
     by_contra! hf
     cases nonempty_fintype β
-    haveI := fun y => fintypeOfNotInfinite <| hf y
+    haveI := fun y ↦ fintypeOfNotInfinite <| hf y
     let key : Fintype α :=
-      { elems := univ.biUnion fun y : β => (f ⁻¹' {y}).toFinset
+      { elems := univ.biUnion fun y : β ↦ (f ⁻¹' {y}).toFinset
         complete := by simp }
     exact key.false

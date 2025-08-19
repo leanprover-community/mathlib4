@@ -149,7 +149,7 @@ theorem nnnorm_eq_sup (x : Unitization 𝕜 A) :
 theorem lipschitzWith_addEquiv :
     LipschitzWith 2 (Unitization.addEquiv 𝕜 A) := by
   rw [← Real.toNNReal_ofNat]
-  refine AddMonoidHomClass.lipschitz_of_bound (Unitization.addEquiv 𝕜 A) 2 fun x => ?_
+  refine AddMonoidHomClass.lipschitz_of_bound (Unitization.addEquiv 𝕜 A) 2 fun x ↦ ?_
   rw [norm_eq_sup, Prod.norm_def]
   refine max_le ?_ ?_
   · rw [mul_max_of_nonneg _ _ (zero_le_two : (0 : ℝ) ≤ 2)]
@@ -166,7 +166,7 @@ theorem lipschitzWith_addEquiv :
 
 theorem antilipschitzWith_addEquiv :
     AntilipschitzWith 2 (addEquiv 𝕜 A) := by
-  refine AddMonoidHomClass.antilipschitz_of_bound (addEquiv 𝕜 A) fun x => ?_
+  refine AddMonoidHomClass.antilipschitz_of_bound (addEquiv 𝕜 A) fun x ↦ ?_
   rw [norm_eq_sup, Prod.norm_def, NNReal.coe_two]
   refine max_le ?_ ?_
   · rw [mul_max_of_nonneg _ _ (zero_le_two : (0 : ℝ) ≤ 2)]
@@ -223,7 +223,7 @@ algebra homomorphism `Unitization.splitMul 𝕜 A`, but replace the bornology an
 that they coincide with `𝕜 × A`. -/
 noncomputable instance instMetricSpace : MetricSpace (Unitization 𝕜 A) :=
   (normedRingAux.toMetricSpace.replaceUniformity uniformity_eq_aux).replaceBornology
-    fun s => Filter.ext_iff.1 cobounded_eq_aux (sᶜ)
+    fun s ↦ Filter.ext_iff.1 cobounded_eq_aux (sᶜ)
 
 /-- Pull back the normed ring structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
@@ -242,7 +242,7 @@ instance instNormedAlgebra : NormedAlgebra 𝕜 (Unitization 𝕜 A) where
 
 instance instNormOneClass : NormOneClass (Unitization 𝕜 A) where
   norm_one := by simpa only [norm_eq_sup, fst_one, norm_one, snd_one, map_one, map_zero,
-      add_zero, sup_eq_left] using opNorm_le_bound _ zero_le_one fun x => by simp
+      add_zero, sup_eq_left] using opNorm_le_bound _ zero_le_one fun x ↦ by simp
 
 lemma norm_inr (a : A) : ‖(a : Unitization 𝕜 A)‖ = ‖a‖ := by
   simp [norm_eq_sup]

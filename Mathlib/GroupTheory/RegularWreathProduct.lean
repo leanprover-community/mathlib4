@@ -115,10 +115,10 @@ theorem fun_id (q : Q) : rightHom (inl q : D ≀ᵣ Q) = q := by simp
 
 /-- The equivalence map for the representation as a product. -/
 def equivProd D Q : D ≀ᵣ Q ≃ (Q → D) × Q where
-  toFun := fun ⟨d, q⟩ => ⟨d, q⟩
-  invFun := fun ⟨d, q⟩ => ⟨d, q⟩
-  left_inv := fun _ => rfl
-  right_inv := fun _ => rfl
+  toFun := fun ⟨d, q⟩ ↦ ⟨d, q⟩
+  invFun := fun ⟨d, q⟩ ↦ ⟨d, q⟩
+  left_inv := fun _ ↦ rfl
+  right_inv := fun _ ↦ rfl
 
 instance [Finite D] [Finite Q] : Finite (D ≀ᵣ Q) :=
   Finite.of_equiv _ (equivProd D Q).symm
@@ -160,7 +160,7 @@ instance [Nonempty Q] [Nonempty Λ] : FaithfulSMul (D ≀ᵣ Q) (Λ × Q) where
     let ⟨a⟩ := ‹Nonempty Λ›
     let ⟨b⟩ := ‹Nonempty Q›
     ext q
-    · have hh := fun a => (h a (m₁.right⁻¹ * q)).1
+    · have hh := fun a ↦ (h a (m₁.right⁻¹ * q)).1
       rw [← (h a b).2] at hh
       group at hh
       exact FaithfulSMul.eq_of_smul_eq_smul hh

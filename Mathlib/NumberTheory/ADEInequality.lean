@@ -100,7 +100,7 @@ of the elements of `pqr`, as rational number.
 
 The intended argument is a multiset `{p,q,r}` of cardinality `3`. -/
 def sumInv (pqr : Multiset ℕ+) : ℚ :=
-  Multiset.sum (pqr.map fun (x : ℕ+) => x⁻¹)
+  Multiset.sum (pqr.map fun (x : ℕ+) ↦ x⁻¹)
 
 theorem sumInv_pqr (p q r : ℕ+) : sumInv {p, q, r} = (p : ℚ)⁻¹ + (q : ℚ)⁻¹ + (r : ℚ)⁻¹ := by
   simp only [sumInv, insert_eq_cons, add_assoc, map_cons, sum_cons,

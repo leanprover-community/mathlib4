@@ -65,7 +65,7 @@ alias ⟨ModEq.symm, _⟩ := modEq_comm
 attribute [symm] ModEq.symm
 
 @[trans]
-theorem ModEq.trans : a ≡ b [PMOD p] → b ≡ c [PMOD p] → a ≡ c [PMOD p] := fun ⟨m, hm⟩ ⟨n, hn⟩ =>
+theorem ModEq.trans : a ≡ b [PMOD p] → b ≡ c [PMOD p] → a ≡ c [PMOD p] := fun ⟨m, hm⟩ ⟨n, hn⟩ ↦
   ⟨m + n, by simp [add_smul, ← hm, ← hn]⟩
 
 instance : IsTrans α (ModEq p) where
@@ -126,29 +126,29 @@ protected theorem add_nsmul (n : ℕ) : a ≡ b [PMOD p] → a + n • p ≡ b [
 protected theorem nsmul_add (n : ℕ) : a ≡ b [PMOD p] → n • p + a ≡ b [PMOD p] :=
   (nsmul_add_modEq _).trans
 
-protected theorem of_zsmul : a ≡ b [PMOD z • p] → a ≡ b [PMOD p] := fun ⟨m, hm⟩ =>
+protected theorem of_zsmul : a ≡ b [PMOD z • p] → a ≡ b [PMOD p] := fun ⟨m, hm⟩ ↦
   ⟨m * z, by rwa [mul_smul]⟩
 
-protected theorem of_nsmul : a ≡ b [PMOD n • p] → a ≡ b [PMOD p] := fun ⟨m, hm⟩ =>
+protected theorem of_nsmul : a ≡ b [PMOD n • p] → a ≡ b [PMOD p] := fun ⟨m, hm⟩ ↦
   ⟨m * n, by rwa [mul_smul, natCast_zsmul]⟩
 
 protected theorem zsmul : a ≡ b [PMOD p] → z • a ≡ z • b [PMOD z • p] :=
-  Exists.imp fun m hm => by rw [← smul_sub, hm, smul_comm]
+  Exists.imp fun m hm ↦ by rw [← smul_sub, hm, smul_comm]
 
 protected theorem nsmul : a ≡ b [PMOD p] → n • a ≡ n • b [PMOD n • p] :=
-  Exists.imp fun m hm => by rw [← smul_sub, hm, smul_comm]
+  Exists.imp fun m hm ↦ by rw [← smul_sub, hm, smul_comm]
 
 end ModEq
 
 @[simp]
 theorem zsmul_modEq_zsmul [NoZeroSMulDivisors ℤ α] (hn : z ≠ 0) :
     z • a ≡ z • b [PMOD z • p] ↔ a ≡ b [PMOD p] :=
-  exists_congr fun m => by rw [← smul_sub, smul_comm, smul_right_inj hn]
+  exists_congr fun m ↦ by rw [← smul_sub, smul_comm, smul_right_inj hn]
 
 @[simp]
 theorem nsmul_modEq_nsmul [NoZeroSMulDivisors ℕ α] (hn : n ≠ 0) :
     n • a ≡ n • b [PMOD n • p] ↔ a ≡ b [PMOD p] :=
-  exists_congr fun m => by rw [← smul_sub, smul_comm, smul_right_inj hn]
+  exists_congr fun m ↦ by rw [← smul_sub, smul_comm, smul_right_inj hn]
 
 alias ⟨ModEq.zsmul_cancel, _⟩ := zsmul_modEq_zsmul
 
@@ -158,22 +158,22 @@ namespace ModEq
 
 @[simp]
 protected theorem add_iff_left :
-    a₁ ≡ b₁ [PMOD p] → (a₁ + a₂ ≡ b₁ + b₂ [PMOD p] ↔ a₂ ≡ b₂ [PMOD p]) := fun ⟨m, hm⟩ =>
+    a₁ ≡ b₁ [PMOD p] → (a₁ + a₂ ≡ b₁ + b₂ [PMOD p] ↔ a₂ ≡ b₂ [PMOD p]) := fun ⟨m, hm⟩ ↦
   (Equiv.addLeft m).symm.exists_congr_left.trans <| by simp [add_sub_add_comm, hm, add_smul, ModEq]
 
 @[simp]
 protected theorem add_iff_right :
-    a₂ ≡ b₂ [PMOD p] → (a₁ + a₂ ≡ b₁ + b₂ [PMOD p] ↔ a₁ ≡ b₁ [PMOD p]) := fun ⟨m, hm⟩ =>
+    a₂ ≡ b₂ [PMOD p] → (a₁ + a₂ ≡ b₁ + b₂ [PMOD p] ↔ a₁ ≡ b₁ [PMOD p]) := fun ⟨m, hm⟩ ↦
   (Equiv.addRight m).symm.exists_congr_left.trans <| by simp [add_sub_add_comm, hm, add_smul, ModEq]
 
 @[simp]
 protected theorem sub_iff_left :
-    a₁ ≡ b₁ [PMOD p] → (a₁ - a₂ ≡ b₁ - b₂ [PMOD p] ↔ a₂ ≡ b₂ [PMOD p]) := fun ⟨m, hm⟩ =>
+    a₁ ≡ b₁ [PMOD p] → (a₁ - a₂ ≡ b₁ - b₂ [PMOD p] ↔ a₂ ≡ b₂ [PMOD p]) := fun ⟨m, hm⟩ ↦
   (Equiv.subLeft m).symm.exists_congr_left.trans <| by simp [sub_sub_sub_comm, hm, sub_smul, ModEq]
 
 @[simp]
 protected theorem sub_iff_right :
-    a₂ ≡ b₂ [PMOD p] → (a₁ - a₂ ≡ b₁ - b₂ [PMOD p] ↔ a₁ ≡ b₁ [PMOD p]) := fun ⟨m, hm⟩ =>
+    a₂ ≡ b₂ [PMOD p] → (a₁ - a₂ ≡ b₁ - b₂ [PMOD p] ↔ a₁ ≡ b₁ [PMOD p]) := fun ⟨m, hm⟩ ↦
   (Equiv.subRight m).symm.exists_congr_left.trans <| by simp [sub_sub_sub_comm, hm, sub_smul, ModEq]
 
 protected alias ⟨add_left_cancel, add⟩ := ModEq.add_iff_left

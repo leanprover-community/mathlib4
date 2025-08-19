@@ -33,18 +33,18 @@ section CartesianClosed
 for any `X : Type v₁`. -/
 def Types.tensorProductAdjunction (X : Type v₁) :
     tensorLeft X ⊣ coyoneda.obj (Opposite.op X) where
-  unit := { app := fun Z (z : Z) x => ⟨x, z⟩ }
-  counit := { app := fun _ xf => xf.2 xf.1 }
+  unit := { app := fun Z (z : Z) x ↦ ⟨x, z⟩ }
+  counit := { app := fun _ xf ↦ xf.2 xf.1 }
 
 instance (X : Type v₁) : (tensorLeft X).IsLeftAdjoint :=
   ⟨_, ⟨Types.tensorProductAdjunction X⟩⟩
 
 instance : CartesianClosed (Type v₁) := CartesianClosed.mk _
-  (fun X => Exponentiable.mk _ _ (Types.tensorProductAdjunction X))
+  (fun X ↦ Exponentiable.mk _ _ (Types.tensorProductAdjunction X))
 
 instance {C : Type v₁} [SmallCategory C] : CartesianClosed (C ⥤ Type v₁) :=
   CartesianClosed.mk _
-    (fun F => by
+    (fun F ↦ by
       haveI : ∀ X : Type v₁, PreservesColimits (tensorLeft X) := by infer_instance
       letI : PreservesColimits (tensorLeft F) := ⟨by infer_instance⟩
       have := Presheaf.isLeftAdjoint_of_preservesColimits.{v₁} (tensorLeft F)

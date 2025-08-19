@@ -47,7 +47,7 @@ instance (priority := 100) [Nonempty X] : NeZero μ :=
   ⟨measure_univ_pos.mp <| isOpen_univ.measure_pos μ univ_nonempty⟩
 
 theorem _root_.IsOpen.measure_pos_iff (hU : IsOpen U) : 0 < μ U ↔ U.Nonempty :=
-  ⟨fun h => nonempty_iff_ne_empty.2 fun he => h.ne' <| he.symm ▸ measure_empty, hU.measure_pos μ⟩
+  ⟨fun h ↦ nonempty_iff_ne_empty.2 fun he ↦ h.ne' <| he.symm ▸ measure_empty, hU.measure_pos μ⟩
 
 theorem _root_.IsOpen.measure_eq_zero_iff (hU : IsOpen U) : μ U = 0 ↔ U = ∅ := by
   simpa only [not_lt, nonpos_iff_eq_zero, not_nonempty_iff_eq_empty] using
@@ -60,12 +60,12 @@ theorem measure_pos_of_mem_nhds (h : s ∈ 𝓝 x) : 0 < μ s :=
   measure_pos_of_nonempty_interior _ ⟨x, mem_interior_iff_mem_nhds.2 h⟩
 
 theorem isOpenPosMeasure_smul {c : ℝ≥0∞} (h : c ≠ 0) : IsOpenPosMeasure (c • μ) :=
-  ⟨fun _U Uo Une => mul_ne_zero h (Uo.measure_ne_zero μ Une)⟩
+  ⟨fun _U Uo Une ↦ mul_ne_zero h (Uo.measure_ne_zero μ Une)⟩
 
 variable {μ ν}
 
 protected theorem AbsolutelyContinuous.isOpenPosMeasure (h : μ ≪ ν) : IsOpenPosMeasure ν :=
-  ⟨fun _U ho hne h₀ => ho.measure_ne_zero μ hne (h h₀)⟩
+  ⟨fun _U ho hne h₀ ↦ ho.measure_ne_zero μ hne (h h₀)⟩
 
 theorem _root_.LE.le.isOpenPosMeasure (h : μ ≤ ν) : IsOpenPosMeasure ν :=
   h.absolutelyContinuous.isOpenPosMeasure
@@ -113,17 +113,17 @@ theorem eqOn_open_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ.restrict U] g) (hU : I
   replace h := ae_imp_of_ae_restrict h
   simp only [ae_iff, Classical.not_imp] at h
   have : IsOpen (U ∩ { a | f a ≠ g a }) := by
-    refine isOpen_iff_mem_nhds.mpr fun a ha => inter_mem (hU.mem_nhds ha.1) ?_
+    refine isOpen_iff_mem_nhds.mpr fun a ha ↦ inter_mem (hU.mem_nhds ha.1) ?_
     rcases ha with ⟨ha : a ∈ U, ha' : (f a, g a) ∈ (diagonal Y)ᶜ⟩
     exact
       (hf.continuousAt (hU.mem_nhds ha)).prodMk_nhds (hg.continuousAt (hU.mem_nhds ha))
         (isClosed_diagonal.isOpen_compl.mem_nhds ha')
   replace := (this.eq_empty_of_measure_zero h).le
-  exact fun x hx => Classical.not_not.1 fun h => this ⟨hx, h⟩
+  exact fun x hx ↦ Classical.not_not.1 fun h ↦ this ⟨hx, h⟩
 
 /-- If two continuous functions are a.e. equal, then they are equal. -/
 theorem eq_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ] g) (hf : Continuous f) (hg : Continuous g) : f = g :=
-  suffices EqOn f g univ from funext fun _ => this trivial
+  suffices EqOn f g univ from funext fun _ ↦ this trivial
   eqOn_open_of_ae_eq (ae_restrict_of_ae h) isOpen_univ hf.continuousOn hg.continuousOn
 
 theorem eqOn_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ.restrict s] g) (hf : ContinuousOn f s)
@@ -136,13 +136,13 @@ theorem eqOn_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ.restrict s] g) (hf : Contin
 variable (μ) in
 theorem _root_.Continuous.ae_eq_iff_eq {f g : X → Y} (hf : Continuous f) (hg : Continuous g) :
     f =ᵐ[μ] g ↔ f = g :=
-  ⟨fun h => eq_of_ae_eq h hf hg, fun h => h ▸ EventuallyEq.rfl⟩
+  ⟨fun h ↦ eq_of_ae_eq h hf hg, fun h ↦ h ▸ EventuallyEq.rfl⟩
 
 theorem _root_.Continuous.isOpenPosMeasure_map [OpensMeasurableSpace X]
     {Z : Type*} [TopologicalSpace Z] [MeasurableSpace Z] [BorelSpace Z]
     {f : X → Z} (hf : Continuous f) (hf_surj : Function.Surjective f) :
     (Measure.map f μ).IsOpenPosMeasure := by
-  refine ⟨fun U hUo hUne => ?_⟩
+  refine ⟨fun U hUo hUne ↦ ?_⟩
   rw [Measure.map_apply hf.measurable hUo.measurableSet]
   exact (hUo.preimage hf).measure_ne_zero μ (hf_surj.nonempty_preimage.mpr hUne)
 

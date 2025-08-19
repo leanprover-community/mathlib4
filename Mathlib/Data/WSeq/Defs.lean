@@ -24,7 +24,7 @@ open Function
 /-- Get the length of `s` (if it is finite and completes in finite time). -/
 def length (s : WSeq α) : Computation ℕ :=
   @Computation.corec ℕ (ℕ × WSeq α)
-    (fun ⟨n, s⟩ =>
+    (fun ⟨n, s⟩ ↦
       match Seq.destruct s with
       | none => Sum.inl n
       | some (none, s') => Sum.inr (n, s')
@@ -46,7 +46,7 @@ def get (s : WSeq α) [IsFinite s] : List α :=
 /-- Replace the `n`th element of `s` with `a`. -/
 def updateNth (s : WSeq α) (n : ℕ) (a : α) : WSeq α :=
   @Seq.corec (Option α) (ℕ × WSeq α)
-    (fun ⟨n, s⟩ =>
+    (fun ⟨n, s⟩ ↦
       match Seq.destruct s, n with
       | none, _ => none
       | some (none, s'), n => some (none, n, s')
@@ -58,7 +58,7 @@ def updateNth (s : WSeq α) (n : ℕ) (a : α) : WSeq α :=
 /-- Remove the `n`th element of `s`. -/
 def removeNth (s : WSeq α) (n : ℕ) : WSeq α :=
   @Seq.corec (Option α) (ℕ × WSeq α)
-    (fun ⟨n, s⟩ =>
+    (fun ⟨n, s⟩ ↦
       match Seq.destruct s, n with
       | none, _ => none
       | some (none, s'), n => some (none, n, s')
@@ -69,7 +69,7 @@ def removeNth (s : WSeq α) (n : ℕ) : WSeq α :=
 
 /-- Map the elements of `s` over `f`, removing any values that yield `none`. -/
 def filterMap (f : α → Option β) : WSeq α → WSeq β :=
-  Seq.corec fun s =>
+  Seq.corec fun s ↦
     match Seq.destruct s with
     | none => none
     | some (none, s') => some (none, s')
@@ -77,7 +77,7 @@ def filterMap (f : α → Option β) : WSeq α → WSeq β :=
 
 /-- Select the elements of `s` that satisfy `p`. -/
 def filter (p : α → Prop) [DecidablePred p] : WSeq α → WSeq α :=
-  filterMap fun a => if p a then some a else none
+  filterMap fun a ↦ if p a then some a else none
 
 -- example of infinite list manipulations
 /-- Get the first element of `s` satisfying `p`. -/
@@ -87,7 +87,7 @@ def find (p : α → Prop) [DecidablePred p] (s : WSeq α) : Computation (Option
 /-- Zip a function over two weak sequences -/
 def zipWith (f : α → β → γ) (s1 : WSeq α) (s2 : WSeq β) : WSeq γ :=
   @Seq.corec (Option γ) (WSeq α × WSeq β)
-    (fun ⟨s1, s2⟩ =>
+    (fun ⟨s1, s2⟩ ↦
       match Seq.destruct s1, Seq.destruct s2 with
       | some (none, s1'), some (none, s2') => some (none, s1', s2')
       | some (some _, _), some (none, s2') => some (none, s1, s2')
@@ -102,11 +102,11 @@ def zip : WSeq α → WSeq β → WSeq (α × β) :=
 
 /-- Get the list of indexes of elements of `s` satisfying `p` -/
 def findIndexes (p : α → Prop) [DecidablePred p] (s : WSeq α) : WSeq ℕ :=
-  (zip s (Stream'.nats : WSeq ℕ)).filterMap fun ⟨a, n⟩ => if p a then some n else none
+  (zip s (Stream'.nats : WSeq ℕ)).filterMap fun ⟨a, n⟩ ↦ if p a then some n else none
 
 /-- Get the index of the first element of `s` satisfying `p` -/
 def findIndex (p : α → Prop) [DecidablePred p] (s : WSeq α) : Computation ℕ :=
-  (fun o => Option.getD o 0) <$> head (findIndexes p s)
+  (fun o ↦ Option.getD o 0) <$> head (findIndexes p s)
 
 /-- Get the index of the first occurrence of `a` in `s` -/
 def indexOf [DecidableEq α] (a : α) : WSeq α → Computation ℕ :=
@@ -120,7 +120,7 @@ def indexesOf [DecidableEq α] (a : α) : WSeq α → WSeq ℕ :=
   some order (nondeterministically). -/
 def union (s1 s2 : WSeq α) : WSeq α :=
   @Seq.corec (Option α) (WSeq α × WSeq α)
-    (fun ⟨s1, s2⟩ =>
+    (fun ⟨s1, s2⟩ ↦
       match Seq.destruct s1, Seq.destruct s2 with
       | none, none => none
       | some (a1, s1'), none => some (a1, s1', nil)
@@ -144,7 +144,7 @@ def compute (s : WSeq α) : WSeq α :=
 /-- Get the first `n` elements of a weak sequence -/
 def take (s : WSeq α) (n : ℕ) : WSeq α :=
   @Seq.corec (Option α) (ℕ × WSeq α)
-    (fun ⟨n, s⟩ =>
+    (fun ⟨n, s⟩ ↦
       match n, Seq.destruct s with
       | 0, _ => none
       | _ + 1, none => none
@@ -156,7 +156,7 @@ def take (s : WSeq α) (n : ℕ) : WSeq α :=
   and the weak sequence tail -/
 def splitAt (s : WSeq α) (n : ℕ) : Computation (List α × WSeq α) :=
   @Computation.corec (List α × WSeq α) (ℕ × List α × WSeq α)
-    (fun ⟨n, l, s⟩ =>
+    (fun ⟨n, l, s⟩ ↦
       match n, Seq.destruct s with
       | 0, _ => Sum.inl (l.reverse, s)
       | _ + 1, none => Sum.inl (l.reverse, s)
@@ -167,7 +167,7 @@ def splitAt (s : WSeq α) (n : ℕ) : Computation (List α × WSeq α) :=
 /-- Returns `true` if any element of `s` satisfies `p` -/
 def any (s : WSeq α) (p : α → Bool) : Computation Bool :=
   Computation.corec
-    (fun s : WSeq α =>
+    (fun s : WSeq α ↦
       match Seq.destruct s with
       | none => Sum.inl false
       | some (none, s') => Sum.inr s'
@@ -177,7 +177,7 @@ def any (s : WSeq α) (p : α → Bool) : Computation Bool :=
 /-- Returns `true` if every element of `s` satisfies `p` -/
 def all (s : WSeq α) (p : α → Bool) : Computation Bool :=
   Computation.corec
-    (fun s : WSeq α =>
+    (fun s : WSeq α ↦
       match Seq.destruct s with
       | none => Sum.inl true
       | some (none, s') => Sum.inr s'
@@ -190,7 +190,7 @@ def all (s : WSeq α) (p : α → Bool) : Computation Bool :=
 def scanl (f : α → β → α) (a : α) (s : WSeq β) : WSeq α :=
   cons a <|
     @Seq.corec (Option α) (α × WSeq β)
-      (fun ⟨a, s⟩ =>
+      (fun ⟨a, s⟩ ↦
         match Seq.destruct s with
         | none => none
         | some (none, s') => some (none, a, s')
@@ -203,7 +203,7 @@ def scanl (f : α → β → α) (a : α) (s : WSeq β) : WSeq α :=
 def inits (s : WSeq α) : WSeq (List α) :=
   cons [] <|
     @Seq.corec (Option (List α)) (Batteries.DList α × WSeq α)
-      (fun ⟨l, s⟩ =>
+      (fun ⟨l, s⟩ ↦
         match Seq.destruct s with
         | none => none
         | some (none, s') => some (none, l, s')
@@ -220,14 +220,14 @@ def collect (s : WSeq α) (n : ℕ) : List α :=
 theorem length_eq_map (s : WSeq α) : length s = Computation.map List.length (toList s) := by
   refine
     Computation.eq_of_bisim
-      (fun c1 c2 =>
+      (fun c1 c2 ↦
         ∃ (l : List α) (s : WSeq α),
-          c1 = Computation.corec (fun ⟨n, s⟩ =>
+          c1 = Computation.corec (fun ⟨n, s⟩ ↦
             match Seq.destruct s with
             | none => Sum.inl n
             | some (none, s') => Sum.inr (n, s')
             | some (some _, s') => Sum.inr (n + 1, s')) (l.length, s) ∧
-            c2 = Computation.map List.length (Computation.corec (fun ⟨l, s⟩ =>
+            c2 = Computation.map List.length (Computation.corec (fun ⟨l, s⟩ ↦
               match Seq.destruct s with
               | none => Sum.inl l.reverse
               | some (none, s') => Sum.inr (l, s')

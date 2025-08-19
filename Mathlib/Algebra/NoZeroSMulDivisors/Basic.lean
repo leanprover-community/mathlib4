@@ -43,7 +43,7 @@ variable (R M)
 /-- If `M` is an `R`-module with one and `M` has characteristic zero, then `R` has characteristic
 zero as well. Usually `M` is an `R`-algebra. -/
 theorem CharZero.of_module (M) [AddCommMonoidWithOne M] [CharZero M] [Module R M] : CharZero R := by
-  refine ⟨fun m n h => @Nat.cast_injective M _ _ _ _ ?_⟩
+  refine ⟨fun m n h ↦ @Nat.cast_injective M _ _ _ _ ?_⟩
   rw [← nsmul_one, ← nsmul_one, ← Nat.cast_smul_eq_nsmul R, ← Nat.cast_smul_eq_nsmul R, h]
 
 end Module
@@ -58,7 +58,7 @@ section SMulInjective
 variable (M) in
 theorem smul_right_injective [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) :
     Function.Injective (c • · : M → M) :=
-  (injective_iff_map_eq_zero (smulAddHom R M c)).2 fun _ ha => (smul_eq_zero.mp ha).resolve_left hc
+  (injective_iff_map_eq_zero (smulAddHom R M c)).2 fun _ ha ↦ (smul_eq_zero.mp ha).resolve_left hc
 
 theorem smul_right_inj [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) {x y : M} :
     c • x = c • y ↔ x = y :=
@@ -101,8 +101,8 @@ section SMulInjective
 variable (R)
 variable [NoZeroSMulDivisors R M]
 
-theorem smul_left_injective {x : M} (hx : x ≠ 0) : Function.Injective fun c : R => c • x :=
-  fun c d h =>
+theorem smul_left_injective {x : M} (hx : x ≠ 0) : Function.Injective fun c : R ↦ c • x :=
+  fun c d h ↦
   sub_eq_zero.mp
     ((smul_eq_zero.mp
           (calc

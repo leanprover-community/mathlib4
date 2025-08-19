@@ -102,10 +102,10 @@ instance funLike : FunLike (A →ₗc[R] B) A B where
     congr
 
 instance coalgHomClass : CoalgHomClass (A →ₗc[R] B) R A B where
-  map_add := fun f => f.map_add'
-  map_smulₛₗ := fun f => f.map_smul'
-  counit_comp := fun f => f.counit_comp
-  map_comp_comul := fun f => f.map_comp_comul
+  map_add := fun f ↦ f.map_add'
+  map_smulₛₗ := fun f ↦ f.map_smul'
+  counit_comp := fun f ↦ f.counit_comp
+  map_comp_comul := fun f ↦ f.map_comp_comul
 
 /-- See Note [custom simps projection] -/
 def Simps.apply {R α β : Type*} [CommSemiring R]
@@ -151,7 +151,7 @@ theorem coe_fn_inj {φ₁ φ₂ : A →ₗc[R] B} : (φ₁ : A → B) = φ₂ �
   DFunLike.coe_fn_eq
 
 theorem coe_linearMap_injective : Function.Injective ((↑) : (A →ₗc[R] B) → A →ₗ[R] B) :=
-  fun φ₁ φ₂ H => coe_fn_injective <|
+  fun φ₁ φ₂ H ↦ coe_fn_injective <|
     show ((φ₁ : A →ₗ[R] B) : A → B) = ((φ₂ : A →ₗ[R] B) : A → B) from congr_arg _ H
 
 theorem coe_addMonoidHom_injective : Function.Injective ((↑) : (A →ₗc[R] B) → A →+ B) :=
@@ -173,7 +173,7 @@ theorem ext_of_ring {f g : R →ₗc[R] A} (h : f 1 = g 1) : f = g :=
 
 @[simp]
 theorem mk_coe {f : A →ₗc[R] B} (h₁ h₂ h₃ h₄) : (⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : A →ₗc[R] B) = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 /-- Copy of a `CoalgHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
@@ -224,15 +224,15 @@ variable (φ : A →ₗc[R] B)
 
 @[simp]
 theorem comp_id : φ.comp (CoalgHom.id R A) = φ :=
-  ext fun _x => rfl
+  ext fun _x ↦ rfl
 
 @[simp]
 theorem id_comp : (CoalgHom.id R B).comp φ = φ :=
-  ext fun _x => rfl
+  ext fun _x ↦ rfl
 
 theorem comp_assoc (φ₁ : C →ₗc[R] D) (φ₂ : B →ₗc[R] C) (φ₃ : A →ₗc[R] B) :
     (φ₁.comp φ₂).comp φ₃ = φ₁.comp (φ₂.comp φ₃) :=
-  ext fun _x => rfl
+  ext fun _x ↦ rfl
 
 theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul A B R' R] (r : R')
     (x : A) : φ (r • x) = r • φ x :=
@@ -243,8 +243,8 @@ instance End : Monoid (A →ₗc[R] A) where
   mul := comp
   mul_assoc _ _ _ := rfl
   one := CoalgHom.id R A
-  one_mul _ := ext fun _ => rfl
-  mul_one _ := ext fun _ => rfl
+  one_mul _ := ext fun _ ↦ rfl
+  mul_one _ := ext fun _ ↦ rfl
 
 @[simp]
 theorem one_apply (x : A) : (1 : A →ₗc[R] A) x = x :=
@@ -285,7 +285,7 @@ theorem counitCoalgHom_toLinearMap :
 variable {R}
 
 instance subsingleton_to_ring : Subsingleton (A →ₗc[R] R) :=
-  ⟨fun f g => CoalgHom.ext fun x => by
+  ⟨fun f g ↦ CoalgHom.ext fun x ↦ by
     have hf := CoalgHomClass.counit_comp_apply f x
     have hg := CoalgHomClass.counit_comp_apply g x
     simp_all only [CommSemiring.counit_apply]⟩

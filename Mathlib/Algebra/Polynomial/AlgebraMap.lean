@@ -98,7 +98,7 @@ implementation detail, but it can be useful to transfer results from `Finsupp` t
 @[simps!]
 def toFinsuppIsoAlg : R[X] ≃ₐ[R] R[ℕ] :=
   { toFinsuppIso R with
-    commutes' := fun r => by
+    commutes' := fun r ↦ by
       dsimp }
 
 instance subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
@@ -161,7 +161,7 @@ theorem coe_mapAlgHom (f : A →ₐ[R] B) : ⇑(mapAlgHom f) = map f :=
 
 @[simp]
 theorem mapAlgHom_id : mapAlgHom (AlgHom.id R A) = AlgHom.id R (Polynomial A) :=
-  AlgHom.ext fun _x => map_id
+  AlgHom.ext fun _x ↦ map_id
 
 @[simp]
 theorem mapAlgHom_coe_ringHom (f : A →ₐ[R] B) :
@@ -174,7 +174,7 @@ theorem mapAlgHom_comp (C : Type*) [Semiring C] [Algebra R C] (f : B →ₐ[R] C
   ext <;> simp
 
 theorem mapAlgHom_eq_eval₂AlgHom'_CAlgHom (f : A →ₐ[R] B) : mapAlgHom f = eval₂AlgHom'
-    (CAlgHom.comp f) X (fun a => (commute_X (C (f a))).symm) := by
+    (CAlgHom.comp f) X (fun a ↦ (commute_X (C (f a))).symm) := by
   apply AlgHom.ext
   intro x
   congr
@@ -189,7 +189,7 @@ theorem coe_mapAlgEquiv (f : A ≃ₐ[R] B) : ⇑(mapAlgEquiv f) = map f :=
 
 @[simp]
 theorem mapAlgEquiv_id : mapAlgEquiv (@AlgEquiv.refl R A _ _ _) = AlgEquiv.refl :=
-  AlgEquiv.ext fun _x => map_id
+  AlgEquiv.ext fun _x ↦ map_id
 
 @[simp]
 theorem mapAlgEquiv_coe_ringHom (f : A ≃ₐ[R] B) :
@@ -373,7 +373,7 @@ theorem eval_unique (φ : R[X] →ₐ[R] A) (p) : φ p = eval₂ (algebraMap R A
 theorem aeval_algHom_apply {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
     (f : F) (x : A) (p : R[X]) :
     aeval (f x) p = f (aeval x p) := by
-  refine Polynomial.induction_on p (by simp [AlgHomClass.commutes]) (fun p q hp hq => ?_)
+  refine Polynomial.induction_on p (by simp [AlgHomClass.commutes]) (fun p q hp hq ↦ ?_)
     (by simp [AlgHomClass.commutes])
   rw [map_add, hp, hq, ← map_add, ← map_add]
 
@@ -433,7 +433,7 @@ theorem coe_aeval_eq_evalRingHom (x : R) :
 @[simp]
 theorem aeval_fn_apply {X : Type*} (g : R[X]) (f : X → R) (x : X) :
     ((aeval f) g) x = aeval (f x) g :=
-  (aeval_algHom_apply (Pi.evalAlgHom R (fun _ => R) x) f g).symm
+  (aeval_algHom_apply (Pi.evalAlgHom R (fun _ ↦ R) x) f g).symm
 
 @[norm_cast]
 theorem aeval_subalgebra_coe (g : R[X]) {A : Type*} [Semiring A] [Algebra R A] (s : Subalgebra R A)
@@ -494,7 +494,7 @@ variable [CommSemiring S] [Algebra S R] [Algebra S A'] [Algebra S B]
 /-- Version of `aeval` for defining algebra homs out of `R[X]` over a smaller base ring
   than `R`. -/
 def aevalTower (f : R →ₐ[S] A') (x : A') : R[X] →ₐ[S] A' :=
-  eval₂AlgHom' f x fun _ => Commute.all _ _
+  eval₂AlgHom' f x fun _ ↦ Commute.all _ _
 
 variable (g : R →ₐ[S] A') (y : A')
 
@@ -591,7 +591,7 @@ theorem eval_mul_X_sub_C {p : R[X]} (r : R) : (p * (X - C r)).eval r = 0 := by
   simp
 
 theorem not_isUnit_X_sub_C [Nontrivial R] (r : R) : ¬IsUnit (X - C r) :=
-  fun ⟨⟨_, g, _hfg, hgf⟩, rfl⟩ => zero_ne_one' R <| by rw [← eval_mul_X_sub_C, hgf, eval_one]
+  fun ⟨⟨_, g, _hfg, hgf⟩, rfl⟩ ↦ zero_ne_one' R <| by rw [← eval_mul_X_sub_C, hgf, eval_one]
 
 end Ring
 
@@ -607,7 +607,7 @@ theorem aeval_sub {p q : R[X]} [Ring A] [Algebra R A] (x : A) :
     aeval x (p - q) = aeval x p - aeval x q := map_sub ..
 
 theorem aeval_endomorphism {M : Type*} [AddCommGroup M] [Module R M] (f : M →ₗ[R] M)
-    (v : M) (p : R[X]) : aeval f p v = p.sum fun n b => b • (f ^ n) v := by
+    (v : M) (p : R[X]) : aeval f p v = p.sum fun n b ↦ b • (f ^ n) v := by
   rw [aeval_def, eval₂_eq_sum]
   exact map_sum (LinearMap.applyₗ v) _ _
 

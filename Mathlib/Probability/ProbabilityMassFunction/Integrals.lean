@@ -38,7 +38,7 @@ theorem integral_eq_tsum (p : PMF α) (f : α → E) (hf : Integrable f p.toMeas
     tsum_subtype_eq_of_support_subset <| calc
       (fun a ↦ (p a).toReal • f a).support ⊆ (fun a ↦ (p a).toReal).support :=
         Function.support_smul_subset_left _ _
-      _ ⊆ support p := fun x h1 h2 => h1 (by simp [h2])
+      _ ⊆ support p := fun x h1 h2 ↦ h1 (by simp [h2])
 
 theorem integral_eq_sum [Fintype α] (p : PMF α) (f : α → E) :
     ∫ a, f a ∂(p.toMeasure) = ∑ a, (p a).toReal • f a := by

@@ -64,12 +64,12 @@ theorem Nonempty.exists_mem {s : Finset α} (h : s.Nonempty) : ∃ x : α, x ∈
 
 theorem Nonempty.forall_const {s : Finset α} (h : s.Nonempty) {p : Prop} : (∀ x ∈ s, p) ↔ p :=
   let ⟨x, hx⟩ := h
-  ⟨fun h => h x hx, fun h _ _ => h⟩
+  ⟨fun h ↦ h x hx, fun h _ _ ↦ h⟩
 
 theorem Nonempty.to_subtype {s : Finset α} : s.Nonempty → Nonempty s :=
   nonempty_coe_sort.2
 
-theorem Nonempty.to_type {s : Finset α} : s.Nonempty → Nonempty α := fun ⟨x, _hx⟩ => ⟨x⟩
+theorem Nonempty.to_type {s : Finset α} : s.Nonempty → Nonempty α := fun ⟨x, _hx⟩ ↦ ⟨x⟩
 
 /-! ### empty -/
 
@@ -99,17 +99,17 @@ theorem notMem_empty (a : α) : a ∉ (∅ : Finset α) := by
 @[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
 
 @[simp]
-theorem not_nonempty_empty : ¬(∅ : Finset α).Nonempty := fun ⟨x, hx⟩ => notMem_empty x hx
+theorem not_nonempty_empty : ¬(∅ : Finset α).Nonempty := fun ⟨x, hx⟩ ↦ notMem_empty x hx
 
 @[simp]
 theorem mk_zero : (⟨0, nodup_zero⟩ : Finset α) = ∅ :=
   rfl
 
-theorem ne_empty_of_mem {a : α} {s : Finset α} (h : a ∈ s) : s ≠ ∅ := fun e =>
+theorem ne_empty_of_mem {a : α} {s : Finset α} (h : a ∈ s) : s ≠ ∅ := fun e ↦
   notMem_empty a <| e ▸ h
 
 theorem Nonempty.ne_empty {s : Finset α} (h : s.Nonempty) : s ≠ ∅ :=
-  (Exists.elim h) fun _a => ne_empty_of_mem
+  (Exists.elim h) fun _a ↦ ne_empty_of_mem
 
 @[simp]
 theorem empty_subset (s : Finset α) : ∅ ⊆ s :=
@@ -145,7 +145,7 @@ theorem not_nonempty_iff_eq_empty {s : Finset α} : ¬s.Nonempty ↔ s = ∅ :=
   nonempty_iff_ne_empty.not.trans not_not
 
 theorem eq_empty_or_nonempty (s : Finset α) : s = ∅ ∨ s.Nonempty :=
-  by_cases Or.inl fun h => Or.inr (nonempty_of_ne_empty h)
+  by_cases Or.inl fun h ↦ Or.inr (nonempty_of_ne_empty h)
 
 @[simp, norm_cast]
 theorem coe_empty : ((∅ : Finset α) : Set α) = ∅ := by grind

@@ -114,7 +114,7 @@ section HasseDeriv
 /-- The Hasse derivative of Laurent series, as a linear map. -/
 def hasseDeriv (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V] (k : ℕ) :
     V⸨X⸩ →ₗ[R] V⸨X⸩ where
-  toFun f := HahnSeries.ofSuppBddBelow (fun (n : ℤ) => (Ring.choose (n + k) k) • f.coeff (n + k))
+  toFun f := HahnSeries.ofSuppBddBelow (fun (n : ℤ) ↦ (Ring.choose (n + k) k) • f.coeff (n + k))
     (forallLTEqZero_supp_BddBelow _ (f.order - k : ℤ)
     (fun _ h_lt ↦ by rw [coeff_eq_zero_of_lt_order <| lt_sub_iff_add_lt.mp h_lt, smul_zero]))
   map_add' f g := by
@@ -205,7 +205,7 @@ theorem coeff_coe_powerSeries (x : R⟦X⟧) (n : ℕ) :
   Laurent series. If the Laurent series is nonzero, `powerSeriesPart` has a nonzero
   constant term. -/
 def powerSeriesPart (x : R⸨X⸩) : R⟦X⟧ :=
-  PowerSeries.mk fun n => x.coeff (x.order + n)
+  PowerSeries.mk fun n ↦ x.coeff (x.order + n)
 
 @[simp]
 theorem powerSeriesPart_coeff (x : R⸨X⸩) (n : ℕ) :
@@ -293,7 +293,7 @@ instance of_powerSeries_localization [CommRing R] :
 
 instance {K : Type*} [Field K] : IsFractionRing K⟦X⟧ K⸨X⸩ :=
   IsLocalization.of_le (Submonoid.powers (PowerSeries.X : K⟦X⟧)) _
-    (powers_le_nonZeroDivisors_of_noZeroDivisors PowerSeries.X_ne_zero) fun _ hf =>
+    (powers_le_nonZeroDivisors_of_noZeroDivisors PowerSeries.X_ne_zero) fun _ hf ↦
     isUnit_of_mem_nonZeroDivisors <| map_mem_nonZeroDivisors _ HahnSeries.ofPowerSeries_injective hf
 
 end LaurentSeries
@@ -554,7 +554,7 @@ theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : K⸨X⸩}
 /- The valuation of a Laurent series is the order of the first non-zero coefficient. -/
 theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : K⸨X⸩} :
     Valued.v f ≤ ↑(Multiplicative.ofAdd (-D : ℤ)) ↔ ∀ n : ℤ, n < D → f.coeff n = 0 := by
-  refine ⟨fun hnD n hn => coeff_zero_of_lt_valuation K hnD hn, fun h_val_f => ?_⟩
+  refine ⟨fun hnD n hn ↦ coeff_zero_of_lt_valuation K hnD hn, fun h_val_f ↦ ?_⟩
   let F := powerSeriesPart f
   by_cases ord_nonpos : f.order ≤ 0
   · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat ord_nonpos
@@ -597,7 +597,7 @@ small enough indices. -/
 theorem eq_coeff_of_valuation_sub_lt {d n : ℤ} {f g : K⸨X⸩}
     (H : Valued.v (g - f) ≤ ↑(Multiplicative.ofAdd (-d))) : n < d → g.coeff n = f.coeff n := by
   by_cases triv : g = f
-  · exact fun _ => by rw [triv]
+  · exact fun _ ↦ by rw [triv]
   · intro hn
     apply eq_of_sub_eq_zero
     rw [← HahnSeries.coeff_sub]
@@ -607,7 +607,7 @@ theorem eq_coeff_of_valuation_sub_lt {d n : ℤ} {f g : K⸨X⸩}
 theorem val_le_one_iff_eq_coe (f : K⸨X⸩) : Valued.v f ≤ (1 : ℤᵐ⁰) ↔
     ∃ F : K⟦X⟧, F = f := by
   rw [← WithZero.coe_one, ← ofAdd_zero, ← neg_zero, valuation_le_iff_coeff_lt_eq_zero]
-  refine ⟨fun h => ⟨PowerSeries.mk fun n => f.coeff n, ?_⟩, ?_⟩
+  refine ⟨fun h ↦ ⟨PowerSeries.mk fun n ↦ f.coeff n, ?_⟩, ?_⟩
   on_goal 1 => ext (_ | n)
   · simp only [Int.ofNat_eq_coe, coeff_coe_powerSeries, coeff_mk]
   on_goal 1 => simp only [h (Int.negSucc n) (Int.negSucc_lt_zero n)]

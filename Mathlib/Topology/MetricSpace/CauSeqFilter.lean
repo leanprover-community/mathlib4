@@ -58,7 +58,7 @@ theorem CauchySeq.isCauSeq {f : ℕ → β} (hf : CauchySeq f) : IsCauSeq norm f
   apply Set.mk_mem_prod <;> solve_by_elim [le_refl]
 
 theorem CauSeq.cauchySeq (f : CauSeq β norm) : CauchySeq f := by
-  refine cauchy_iff.2 ⟨by infer_instance, fun s hs => ?_⟩
+  refine cauchy_iff.2 ⟨by infer_instance, fun s hs ↦ ?_⟩
   rcases mem_uniformity_dist.1 hs with ⟨ε, ⟨hε, hεs⟩⟩
   obtain ⟨N, hN⟩ := CauSeq.cauchy₂ f hε
   exists { n | n ≥ N }.image f
@@ -77,7 +77,7 @@ theorem CauSeq.cauchySeq (f : CauSeq β norm) : CauchySeq f := by
 /-- In a normed field, `CauSeq` coincides with the usual notion of Cauchy sequences. -/
 theorem isCauSeq_iff_cauchySeq {α : Type u} [NormedField α] {u : ℕ → α} :
     IsCauSeq norm u ↔ CauchySeq u :=
-  ⟨fun h => CauSeq.cauchySeq ⟨u, h⟩, fun h => h.isCauSeq⟩
+  ⟨fun h ↦ CauSeq.cauchySeq ⟨u, h⟩, fun h ↦ h.isCauSeq⟩
 
 -- see Note [lower instance priority]
 /-- A complete normed field is complete as a metric space, as Cauchy sequences converge by

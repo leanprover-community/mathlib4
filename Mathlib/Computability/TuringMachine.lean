@@ -701,8 +701,8 @@ theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L)
   · refine ⟨ListBlank.mk (L.reverse.map fun a ↦ update default k (some a)), fun k' ↦ ?_⟩
     refine ListBlank.ext fun i ↦ ?_
     rw [ListBlank.map_mk, ListBlank.nth_mk, List.getI_eq_iget_getElem?, List.map_map]
-    have : ((proj k').f ∘ fun a => update (β := fun k => Option (Γ k)) default k (some a))
-      = fun a => (proj k').f (update (β := fun k => Option (Γ k)) default k (some a)) := rfl
+    have : ((proj k').f ∘ fun a ↦ update (β := fun k ↦ Option (Γ k)) default k (some a))
+      = fun a ↦ (proj k').f (update (β := fun k ↦ Option (Γ k)) default k (some a)) := rfl
     rw [this, List.getElem?_map, proj, PointedMap.mk_val]
     simp only []
     by_cases h : k' = k

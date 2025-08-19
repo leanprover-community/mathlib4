@@ -51,13 +51,13 @@ def IsFwInvariant [Preorder τ] [Zero τ] (ϕ : τ → α → α) (s : Set α) :
   ∀ ⦃t⦄, 0 ≤ t → MapsTo (ϕ t) s s
 
 theorem IsInvariant.isFwInvariant [Preorder τ] [Zero τ] {ϕ : τ → α → α} {s : Set α}
-    (h : IsInvariant ϕ s) : IsFwInvariant ϕ s := fun t _ht => h t
+    (h : IsInvariant ϕ s) : IsFwInvariant ϕ s := fun t _ht ↦ h t
 
 /-- If `τ` is a `CanonicallyOrderedAdd` monoid (e.g., `ℕ` or `ℝ≥0`), then the notions
 `IsFwInvariant` and `IsInvariant` are equivalent. -/
 theorem IsFwInvariant.isInvariant [AddMonoid τ] [PartialOrder τ] [CanonicallyOrderedAdd τ]
     {ϕ : τ → α → α} {s : Set α}
-    (h : IsFwInvariant ϕ s) : IsInvariant ϕ s := fun t => h (zero_le t)
+    (h : IsFwInvariant ϕ s) : IsInvariant ϕ s := fun t ↦ h (zero_le t)
 
 /-- If `τ` is a `CanonicallyOrderedAdd` monoid (e.g., `ℕ` or `ℝ≥0`), then the notions
 `IsFwInvariant` and `IsInvariant` are equivalent. -/
@@ -88,12 +88,12 @@ variable {τ : Type*} [AddMonoid τ] [TopologicalSpace τ] [ContinuousAdd τ]
   {α : Type*} [TopologicalSpace α] (ϕ : Flow τ α)
 
 instance : Inhabited (Flow τ α) :=
-  ⟨{  toFun := fun _ x => x
+  ⟨{  toFun := fun _ x ↦ x
       cont' := continuous_snd
-      map_add' := fun _ _ _ => rfl
-      map_zero' := fun _ => rfl }⟩
+      map_add' := fun _ _ _ ↦ rfl
+      map_zero' := fun _ ↦ rfl }⟩
 
-instance : CoeFun (Flow τ α) fun _ => τ → α → α := ⟨Flow.toFun⟩
+instance : CoeFun (Flow τ α) fun _ ↦ τ → α → α := ⟨Flow.toFun⟩
 
 @[ext]
 theorem ext : ∀ {ϕ₁ ϕ₂ : Flow τ α}, (∀ t x, ϕ₁ t x = ϕ₂ t x) → ϕ₁ = ϕ₂
@@ -104,7 +104,7 @@ theorem ext : ∀ {ϕ₁ ϕ₂ : Flow τ α}, (∀ t x, ϕ₁ t x = ϕ₂ t x) �
 
 @[continuity, fun_prop]
 protected theorem continuous {β : Type*} [TopologicalSpace β] {t : β → τ} (ht : Continuous t)
-    {f : β → α} (hf : Continuous f) : Continuous fun x => ϕ (t x) (f x) :=
+    {f : β → α} (hf : Continuous f) : Continuous fun x ↦ ϕ (t x) (f x) :=
   ϕ.cont'.comp (ht.prodMk hf)
 
 alias _root_.Continuous.flow := Flow.continuous
@@ -141,8 +141,8 @@ variable {τ : Type*} [AddCommGroup τ] [TopologicalSpace τ] [IsTopologicalAddG
 theorem isInvariant_iff_image_eq (s : Set α) : IsInvariant ϕ s ↔ ∀ t, ϕ t '' s = s :=
   (isInvariant_iff_image _ _).trans
     (Iff.intro
-      (fun h t => Subset.antisymm (h t) fun _ hx => ⟨_, h (-t) ⟨_, hx, rfl⟩, by simp [← map_add]⟩)
-      fun h t => by rw [h t])
+      (fun h t ↦ Subset.antisymm (h t) fun _ hx ↦ ⟨_, h (-t) ⟨_, hx, rfl⟩, by simp [← map_add]⟩)
+      fun h t ↦ by rw [h t])
 
 /-- The time-reversal of a flow `ϕ` by a (commutative, additive) group
 is defined `ϕ.reverse t x = ϕ (-t) x`. -/

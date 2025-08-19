@@ -158,7 +158,7 @@ variable [Field K]
 
 instance (priority := 100) Field.toGrindField [Field K] : Lean.Grind.Field K :=
   { CommRing.toGrindCommRing K, ‹Field K› with
-    zpow := ⟨fun a n => a^n⟩
+    zpow := ⟨fun a n ↦ a^n⟩
     zpow_zero a := by simp
     zpow_succ a n := by
       by_cases h : a = 0
@@ -202,9 +202,9 @@ noncomputable abbrev DivisionRing.ofIsUnitOrEqZero [Ring R] (h : ∀ a : R, IsUn
   toRing := ‹Ring R›
   __ := groupWithZeroOfIsUnitOrEqZero h
   nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
+  nnqsmul_def := fun _ _ ↦ rfl
   qsmul := _
-  qsmul_def := fun _ _ => rfl
+  qsmul_def := fun _ _ ↦ rfl
 
 /-- Constructs a `Field` structure on a `CommRing` consisting only of units and 0. -/
 -- See note [reducible non-instances]

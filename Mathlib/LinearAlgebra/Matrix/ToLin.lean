@@ -92,8 +92,8 @@ def Matrix.vecMulBilin [Fintype m] : (m → A) →ₗ[R] Matrix m n A →ₗ[S] 
   { toFun M := x ᵥ* M
     map_add' _ _ := vecMul_add _ _ _
     map_smul' _ _ := vecMul_smul _ _ _ }
-  map_add' _ _ := LinearMap.ext fun _ => add_vecMul _ _ _
-  map_smul' _ _ := LinearMap.ext fun _ => smul_vecMul _ _ _
+  map_add' _ _ := LinearMap.ext fun _ ↦ add_vecMul _ _ _
+  map_smul' _ _ := LinearMap.ext fun _ ↦ smul_vecMul _ _ _
 
 @[simp]
 theorem Matrix.vecMulBilin_apply [Fintype m] (v : m → A) (M : Matrix m n A) :
@@ -109,8 +109,8 @@ def Matrix.mulVecBilin [Fintype n] : Matrix m n A →ₗ[R] (n → A) →ₗ[S] 
   { toFun x := M *ᵥ x
     map_add' _ _ := mulVec_add _ _ _
     map_smul' _ _ := mulVec_smul _ _ _ }
-  map_add' _ _ := LinearMap.ext fun _ => add_mulVec _ _ _
-  map_smul' _ _ := LinearMap.ext fun _ => smul_mulVec _ _ _
+  map_add' _ _ := LinearMap.ext fun _ ↦ add_mulVec _ _ _
+  map_smul' _ _ := LinearMap.ext fun _ ↦ smul_mulVec _ _ _
 
 @[simp]
 theorem Matrix.mulVecBilin_apply [Fintype n] (M : Matrix m n A) (v : n → A) :
@@ -127,8 +127,8 @@ def vecMulVecBilin : (m → A) →ₗ[R] (n → A) →ₗ[S] Matrix m n A where
     { toFun y := vecMulVec x y
       map_add' _ _ := vecMulVec_add _ _ _
       map_smul' _ _ := vecMulVec_smul _ _ _ }
-  map_add' _ _ := LinearMap.ext fun _ => add_vecMulVec _ _ _
-  map_smul' _ _ := LinearMap.ext fun _ => smul_vecMulVec _ _ _
+  map_add' _ _ := LinearMap.ext fun _ ↦ add_vecMulVec _ _ _
+  map_smul' _ _ := LinearMap.ext fun _ ↦ smul_vecMulVec _ _ _
 
 example {A} [Semiring A] := (vecMulVecBilin A Aᵐᵒᵖ : (m → A) →ₗ[_] (n → A) →ₗ[_] _)
 
@@ -141,8 +141,8 @@ def dotProductBilin [Fintype m] : (m → A) →ₗ[R] (m → A) →ₗ[S] A wher
     { toFun y := dotProduct x y
       map_add' _ _ := dotProduct_add _ _ _
       map_smul' _ _ := dotProduct_smul _ _ _ }
-  map_add' _ _ := LinearMap.ext fun _ => add_dotProduct _ _ _
-  map_smul' _ _ := LinearMap.ext fun _ => smul_dotProduct _ _ _
+  map_add' _ _ := LinearMap.ext fun _ ↦ add_dotProduct _ _ _
+  map_smul' _ _ := LinearMap.ext fun _ ↦ smul_dotProduct _ _ _
 
 example {A} [Semiring A] [Fintype m] := (dotProductBilin A Aᵐᵒᵖ : (m → A) →ₗ[_] _ →ₗ[_] _)
 

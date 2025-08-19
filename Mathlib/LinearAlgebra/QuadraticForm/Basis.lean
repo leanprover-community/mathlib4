@@ -78,8 +78,8 @@ variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N
 Unlike `QuadraticMap.associated`, this is not symmetric; however, as a result it can be used even
 in characteristic two. When considered as a matrix, the form is triangular. -/
 noncomputable def toBilin (Q : QuadraticMap R M N) (bm : Basis ι R M) : LinearMap.BilinMap R M N :=
-  bm.constr (S := R) fun i =>
-    bm.constr (S := R) fun j =>
+  bm.constr (S := R) fun i ↦
+    bm.constr (S := R) fun j ↦
       if i = j then Q (bm i) else if i < j then polar Q (bm i) (bm j) else 0
 
 theorem toBilin_apply (Q : QuadraticMap R M N) (bm : Basis ι R M) (i j : ι) :
@@ -118,7 +118,7 @@ theorem _root_.LinearMap.BilinMap.toQuadraticMap_surjective [Module.Free R M] :
 @[simp]
 lemma add_toBilin (bm : Basis ι R M) (Q₁ Q₂ : QuadraticMap R M N) :
     (Q₁ + Q₂).toBilin bm = Q₁.toBilin bm + Q₂.toBilin bm := by
-  refine bm.ext fun i => bm.ext fun j => ?_
+  refine bm.ext fun i ↦ bm.ext fun j ↦ ?_
   obtain h | rfl | h := lt_trichotomy i j
   · simp [h.ne, h, toBilin_apply, polar_add]
   · simp [toBilin_apply]
@@ -130,7 +130,7 @@ variable [Module S N] [IsScalarTower S R N]
 @[simp]
 lemma smul_toBilin (bm : Basis ι R M) (s : S) (Q : QuadraticMap R M N) :
     (s • Q).toBilin bm = s • Q.toBilin bm := by
-  refine bm.ext fun i => bm.ext fun j => ?_
+  refine bm.ext fun i ↦ bm.ext fun j ↦ ?_
   obtain h | rfl | h := lt_trichotomy i j
   · simp [h.ne, h, toBilin_apply, polar_smul]
   · simp [toBilin_apply]

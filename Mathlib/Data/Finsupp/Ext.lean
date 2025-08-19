@@ -28,8 +28,8 @@ variable [AddZeroClass M]
 @[simp]
 theorem add_closure_setOf_eq_single :
     AddSubmonoid.closure { f : α →₀ M | ∃ a b, f = single a b } = ⊤ :=
-  top_unique fun x _hx =>
-    Finsupp.induction x (AddSubmonoid.zero_mem _) fun a b _f _ha _hb hf =>
+  top_unique fun x _hx ↦
+    Finsupp.induction x (AddSubmonoid.zero_mem _) fun a b _f _ha _hb hf ↦
       AddSubmonoid.add_mem _ (AddSubmonoid.subset_closure <| ⟨a, b, rfl⟩) hf
 
 /-- If two additive homomorphisms from `α →₀ M` are equal on each `single a b`,
@@ -49,7 +49,7 @@ verify `f (single a 1) = g (single a 1)`. -/
 @[ext high]
 theorem addHom_ext' [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
     (H : ∀ x, f.comp (singleAddHom x) = g.comp (singleAddHom x)) : f = g :=
-  addHom_ext fun x => DFunLike.congr_fun (H x)
+  addHom_ext fun x ↦ DFunLike.congr_fun (H x)
 
 theorem mulHom_ext [MulOneClass N] ⦃f g : Multiplicative (α →₀ M) →* N⦄
     (H : ∀ x y, f (Multiplicative.ofAdd <| single x y) = g (Multiplicative.ofAdd <| single x y)) :
@@ -66,6 +66,6 @@ theorem mulHom_ext' [MulOneClass N] {f g : Multiplicative (α →₀ M) →* N}
     (H : ∀ x, f.comp (AddMonoidHom.toMultiplicative (singleAddHom x)) =
               g.comp (AddMonoidHom.toMultiplicative (singleAddHom x))) :
     f = g :=
-  mulHom_ext fun x => DFunLike.congr_fun (H x)
+  mulHom_ext fun x ↦ DFunLike.congr_fun (H x)
 
 end Finsupp

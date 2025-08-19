@@ -134,12 +134,12 @@ theorem coe_decompose_mul_add_of_right_mem [AddRightCancelMonoid ι] [GradedRing
 
 theorem decompose_mul_add_left [AddLeftCancelMonoid ι] [GradedRing 𝒜] (a : 𝒜 i) {b : A} :
     decompose 𝒜 (↑a * b) (i + j) =
-      @GradedMonoid.GMul.mul ι (fun i => 𝒜 i) _ _ _ _ a (decompose 𝒜 b j) :=
+      @GradedMonoid.GMul.mul ι (fun i ↦ 𝒜 i) _ _ _ _ a (decompose 𝒜 b j) :=
   Subtype.ext <| coe_decompose_mul_add_of_left_mem 𝒜 a.2
 
 theorem decompose_mul_add_right [AddRightCancelMonoid ι] [GradedRing 𝒜] {a : A} (b : 𝒜 j) :
     decompose 𝒜 (a * ↑b) (i + j) =
-      @GradedMonoid.GMul.mul ι (fun i => 𝒜 i) _ _ _ _ (decompose 𝒜 a i) b :=
+      @GradedMonoid.GMul.mul ι (fun i ↦ 𝒜 i) _ _ _ _ (decompose 𝒜 a i) b :=
   Subtype.ext <| coe_decompose_mul_add_of_right_mem 𝒜 b.2
 
 theorem coe_decompose_mul_of_left_mem_zero [AddMonoid ι] [GradedRing 𝒜] {a b : A}
@@ -173,7 +173,7 @@ condition in a way that allows custom `@[ext]` lemmas to apply.
 See note [reducible non-instances]. -/
 abbrev GradedAlgebra.ofAlgHom [SetLike.GradedMonoid 𝒜] (decompose : A →ₐ[R] ⨁ i, 𝒜 i)
     (right_inv : (DirectSum.coeAlgHom 𝒜).comp decompose = AlgHom.id R A)
-    (left_inv : ∀ i (x : 𝒜 i), decompose (x : A) = DirectSum.of (fun i => ↥(𝒜 i)) i x) :
+    (left_inv : ∀ i (x : 𝒜 i), decompose (x : A) = DirectSum.of (fun i ↦ ↥(𝒜 i)) i x) :
     GradedAlgebra 𝒜 where
   decompose' := decompose
   left_inv := AlgHom.congr_fun right_inv
@@ -262,7 +262,7 @@ def GradedRing.projZeroRingHom : A →+* A where
     rw [decompose_add]
     rfl
   map_mul' := by
-    refine DirectSum.Decomposition.inductionOn 𝒜 (fun x => ?_) ?_ ?_
+    refine DirectSum.Decomposition.inductionOn 𝒜 (fun x ↦ ?_) ?_ ?_
     · simp only [zero_mul, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
     · rintro i ⟨c, hc⟩
       refine DirectSum.Decomposition.inductionOn 𝒜 ?_ ?_ ?_
@@ -289,7 +289,7 @@ section GradeZero
 
 /-- The ring homomorphism from `A` to `𝒜 0` sending every `a : A` to `a₀`. -/
 def GradedRing.projZeroRingHom' : A →+* 𝒜 0 :=
-  ((GradedRing.projZeroRingHom 𝒜).codRestrict _ fun _x => SetLike.coe_mem _ :
+  ((GradedRing.projZeroRingHom 𝒜).codRestrict _ fun _x ↦ SetLike.coe_mem _ :
   A →+* SetLike.GradeZero.subsemiring 𝒜)
 
 @[simp] lemma GradedRing.coe_projZeroRingHom'_apply (a : A) :
@@ -355,8 +355,8 @@ variable {M : ι → Submodule R A} [SetLike.GradedMonoid M]
 -- The following lines were given on Zulip by Adam Topaz
 /-- The canonical isomorphism of an internal direct sum with the ambient algebra -/
 noncomputable def coeAlgEquiv (hM : DirectSum.IsInternal M) :
-    (DirectSum ι fun i => ↥(M i)) ≃ₐ[R] A :=
-  { RingEquiv.ofBijective (DirectSum.coeAlgHom M) hM with commutes' := fun r => by simp }
+    (DirectSum ι fun i ↦ ↥(M i)) ≃ₐ[R] A :=
+  { RingEquiv.ofBijective (DirectSum.coeAlgHom M) hM with commutes' := fun r ↦ by simp }
 
 /-- Given an `R`-algebra `A` and a family `ι → Submodule R A` of submodules
 parameterized by an additive monoid `ι`

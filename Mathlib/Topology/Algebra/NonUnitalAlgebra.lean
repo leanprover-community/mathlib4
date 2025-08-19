@@ -112,10 +112,10 @@ instance isClosed (x : A) : IsClosed (elemental R x : Set A) :=
 instance [T2Space A] {x : A} : NonUnitalCommSemiring (elemental R x) :=
   nonUnitalCommSemiringTopologicalClosure _
     letI : NonUnitalCommSemiring (adjoin R {x}) :=
-      NonUnitalAlgebra.adjoinNonUnitalCommSemiringOfComm R fun y hy z hz => by
+      NonUnitalAlgebra.adjoinNonUnitalCommSemiringOfComm R fun y hy z hz ↦ by
         rw [Set.mem_singleton_iff] at hy hz
         rw [hy, hz]
-    fun _ _ => mul_comm _ _
+    fun _ _ ↦ mul_comm _ _
 
 instance {R A : Type*} [CommRing R] [NonUnitalRing A]
     [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]

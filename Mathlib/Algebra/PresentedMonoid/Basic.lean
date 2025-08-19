@@ -52,7 +52,7 @@ monoid with the same generators and the given relations `rels` -/]
 def mk (rels : FreeMonoid α → FreeMonoid α → Prop) : FreeMonoid α →* PresentedMonoid rels where
   toFun := Quotient.mk (conGen rels).toSetoid
   map_one' := rfl
-  map_mul' := fun _ _ => rfl
+  map_mul' := fun _ _ ↦ rfl
 
 /-- `of` is the canonical map from `α` to a presented monoid with generators `x : α`. The term `x`
 is mapped to the equivalence class of the image of `x` in `FreeMonoid α`. -/

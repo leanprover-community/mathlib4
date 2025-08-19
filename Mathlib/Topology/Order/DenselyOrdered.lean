@@ -226,7 +226,7 @@ theorem comap_coe_nhdsLT_of_Ioo_subset (hb : s ⊆ Iio b) (hs : s.Nonempty → �
     exact hts (hxt ⟨hxy.trans_le hyz, hb hzs⟩)
   · intro hu
     obtain ⟨x : s, hx : ∀ z, x ≤ z → z ∈ u⟩ := mem_atTop_sets.1 hu
-    exact ⟨Ioo x b, Ioo_mem_nhdsLT (hb x.2), fun z hz => hx _ hz.1.le⟩
+    exact ⟨Ioo x b, Ioo_mem_nhdsLT (hb x.2), fun z hz ↦ hx _ hz.1.le⟩
 
 theorem comap_coe_nhdsGT_of_Ioo_subset (ha : s ⊆ Ioi a) (hs : s.Nonempty → ∃ b > a, Ioo a b ⊆ s) :
     comap ((↑) : s → α) (𝓝[>] a) = atBot := by
@@ -237,9 +237,9 @@ theorem comap_coe_nhdsGT_of_Ioo_subset (ha : s ⊆ Ioi a) (hs : s.Nonempty → �
 theorem map_coe_atTop_of_Ioo_subset (hb : s ⊆ Iio b) (hs : ∀ a' < b, ∃ a < b, Ioo a b ⊆ s) :
     map ((↑) : s → α) atTop = 𝓝[<] b := by
   rcases eq_empty_or_nonempty (Iio b) with (hb' | ⟨a, ha⟩)
-  · have : IsEmpty s := ⟨fun x => hb'.subset (hb x.2)⟩
+  · have : IsEmpty s := ⟨fun x ↦ hb'.subset (hb x.2)⟩
     rw [filter_eq_bot_of_isEmpty atTop, Filter.map_bot, hb', nhdsWithin_empty]
-  · rw [← comap_coe_nhdsLT_of_Ioo_subset hb fun _ => hs a ha, map_comap_of_mem]
+  · rw [← comap_coe_nhdsLT_of_Ioo_subset hb fun _ ↦ hs a ha, map_comap_of_mem]
     rw [Subtype.range_val]
     exact (mem_nhdsLT_iff_exists_Ioo_subset' ha).2 (hs a ha)
 
@@ -247,36 +247,36 @@ theorem map_coe_atBot_of_Ioo_subset (ha : s ⊆ Ioi a) (hs : ∀ b' > a, ∃ b >
     map ((↑) : s → α) atBot = 𝓝[>] a := by
   -- the elaborator gets stuck without `(... :)`
   refine (map_coe_atTop_of_Ioo_subset (show ofDual ⁻¹' s ⊆ Iio (toDual a) from ha)
-    fun b' hb' => ?_ :)
+    fun b' hb' ↦ ?_ :)
   simpa using hs b' hb'
 
 /-- The `atTop` filter for an open interval `Ioo a b` comes from the left-neighbourhoods filter at
 the right endpoint in the ambient order. -/
 theorem comap_coe_Ioo_nhdsLT (a b : α) : comap ((↑) : Ioo a b → α) (𝓝[<] b) = atTop :=
-  comap_coe_nhdsLT_of_Ioo_subset Ioo_subset_Iio_self fun h => ⟨a, nonempty_Ioo.1 h, Subset.refl _⟩
+  comap_coe_nhdsLT_of_Ioo_subset Ioo_subset_Iio_self fun h ↦ ⟨a, nonempty_Ioo.1 h, Subset.refl _⟩
 
 /-- The `atBot` filter for an open interval `Ioo a b` comes from the right-neighbourhoods filter at
 the left endpoint in the ambient order. -/
 theorem comap_coe_Ioo_nhdsGT (a b : α) : comap ((↑) : Ioo a b → α) (𝓝[>] a) = atBot :=
-  comap_coe_nhdsGT_of_Ioo_subset Ioo_subset_Ioi_self fun h => ⟨b, nonempty_Ioo.1 h, Subset.refl _⟩
+  comap_coe_nhdsGT_of_Ioo_subset Ioo_subset_Ioi_self fun h ↦ ⟨b, nonempty_Ioo.1 h, Subset.refl _⟩
 
 theorem comap_coe_Ioi_nhdsGT (a : α) : comap ((↑) : Ioi a → α) (𝓝[>] a) = atBot :=
-  comap_coe_nhdsGT_of_Ioo_subset (Subset.refl _) fun ⟨x, hx⟩ => ⟨x, hx, Ioo_subset_Ioi_self⟩
+  comap_coe_nhdsGT_of_Ioo_subset (Subset.refl _) fun ⟨x, hx⟩ ↦ ⟨x, hx, Ioo_subset_Ioi_self⟩
 
 theorem comap_coe_Iio_nhdsLT (a : α) : comap ((↑) : Iio a → α) (𝓝[<] a) = atTop :=
   comap_coe_Ioi_nhdsGT (α := αᵒᵈ) a
 
 @[simp]
 theorem map_coe_Ioo_atTop {a b : α} (h : a < b) : map ((↑) : Ioo a b → α) atTop = 𝓝[<] b :=
-  map_coe_atTop_of_Ioo_subset Ioo_subset_Iio_self fun _ _ => ⟨_, h, Subset.refl _⟩
+  map_coe_atTop_of_Ioo_subset Ioo_subset_Iio_self fun _ _ ↦ ⟨_, h, Subset.refl _⟩
 
 @[simp]
 theorem map_coe_Ioo_atBot {a b : α} (h : a < b) : map ((↑) : Ioo a b → α) atBot = 𝓝[>] a :=
-  map_coe_atBot_of_Ioo_subset Ioo_subset_Ioi_self fun _ _ => ⟨_, h, Subset.refl _⟩
+  map_coe_atBot_of_Ioo_subset Ioo_subset_Ioi_self fun _ _ ↦ ⟨_, h, Subset.refl _⟩
 
 @[simp]
 theorem map_coe_Ioi_atBot (a : α) : map ((↑) : Ioi a → α) atBot = 𝓝[>] a :=
-  map_coe_atBot_of_Ioo_subset (Subset.refl _) fun b hb => ⟨b, hb, Ioo_subset_Ioi_self⟩
+  map_coe_atBot_of_Ioo_subset (Subset.refl _) fun b hb ↦ ⟨b, hb, Ioo_subset_Ioi_self⟩
 
 @[simp]
 theorem map_coe_Iio_atTop (a : α) : map ((↑) : Iio a → α) atTop = 𝓝[<] a :=
@@ -286,46 +286,46 @@ variable {l : Filter β} {f : α → β}
 
 @[simp]
 theorem tendsto_comp_coe_Ioo_atTop (h : a < b) :
-    Tendsto (fun x : Ioo a b => f x) atTop l ↔ Tendsto f (𝓝[<] b) l := by
+    Tendsto (fun x : Ioo a b ↦ f x) atTop l ↔ Tendsto f (𝓝[<] b) l := by
   rw [← map_coe_Ioo_atTop h, tendsto_map'_iff]; rfl
 
 @[simp]
 theorem tendsto_comp_coe_Ioo_atBot (h : a < b) :
-    Tendsto (fun x : Ioo a b => f x) atBot l ↔ Tendsto f (𝓝[>] a) l := by
+    Tendsto (fun x : Ioo a b ↦ f x) atBot l ↔ Tendsto f (𝓝[>] a) l := by
   rw [← map_coe_Ioo_atBot h, tendsto_map'_iff]; rfl
 
 @[simp]
 theorem tendsto_comp_coe_Ioi_atBot :
-    Tendsto (fun x : Ioi a => f x) atBot l ↔ Tendsto f (𝓝[>] a) l := by
+    Tendsto (fun x : Ioi a ↦ f x) atBot l ↔ Tendsto f (𝓝[>] a) l := by
   rw [← map_coe_Ioi_atBot, tendsto_map'_iff]; rfl
 
 @[simp]
 theorem tendsto_comp_coe_Iio_atTop :
-    Tendsto (fun x : Iio a => f x) atTop l ↔ Tendsto f (𝓝[<] a) l := by
+    Tendsto (fun x : Iio a ↦ f x) atTop l ↔ Tendsto f (𝓝[<] a) l := by
   rw [← map_coe_Iio_atTop, tendsto_map'_iff]; rfl
 
 @[simp]
 theorem tendsto_Ioo_atTop {f : β → Ioo a b} :
-    Tendsto f l atTop ↔ Tendsto (fun x => (f x : α)) l (𝓝[<] b) := by
+    Tendsto f l atTop ↔ Tendsto (fun x ↦ (f x : α)) l (𝓝[<] b) := by
   rw [← comap_coe_Ioo_nhdsLT, tendsto_comap_iff]; rfl
 
 @[simp]
 theorem tendsto_Ioo_atBot {f : β → Ioo a b} :
-    Tendsto f l atBot ↔ Tendsto (fun x => (f x : α)) l (𝓝[>] a) := by
+    Tendsto f l atBot ↔ Tendsto (fun x ↦ (f x : α)) l (𝓝[>] a) := by
   rw [← comap_coe_Ioo_nhdsGT, tendsto_comap_iff]; rfl
 
 @[simp]
 theorem tendsto_Ioi_atBot {f : β → Ioi a} :
-    Tendsto f l atBot ↔ Tendsto (fun x => (f x : α)) l (𝓝[>] a) := by
+    Tendsto f l atBot ↔ Tendsto (fun x ↦ (f x : α)) l (𝓝[>] a) := by
   rw [← comap_coe_Ioi_nhdsGT, tendsto_comap_iff]; rfl
 
 @[simp]
 theorem tendsto_Iio_atTop {f : β → Iio a} :
-    Tendsto f l atTop ↔ Tendsto (fun x => (f x : α)) l (𝓝[<] a) := by
+    Tendsto f l atTop ↔ Tendsto (fun x ↦ (f x : α)) l (𝓝[<] a) := by
   rw [← comap_coe_Iio_nhdsLT, tendsto_comap_iff]; rfl
 
 instance (x : α) [Nontrivial α] : NeBot (𝓝[≠] x) := by
-  refine forall_mem_nonempty_iff_neBot.1 fun s hs => ?_
+  refine forall_mem_nonempty_iff_neBot.1 fun s hs ↦ ?_
   obtain ⟨u, u_open, xu, us⟩ : ∃ u : Set α, IsOpen u ∧ x ∈ u ∧ u ∩ {x}ᶜ ⊆ s := mem_nhdsWithin.1 hs
   obtain ⟨a, b, a_lt_b, hab⟩ : ∃ a b : α, a < b ∧ Ioo a b ⊆ u := u_open.exists_Ioo_subset ⟨x, xu⟩
   obtain ⟨y, hy⟩ : ∃ y, a < y ∧ y < b := exists_between a_lt_b
@@ -341,7 +341,7 @@ theorem Dense.exists_countable_dense_subset_no_bot_top [Nontrivial α] {s : Set 
     (hs : Dense s) :
     ∃ t, t ⊆ s ∧ t.Countable ∧ Dense t ∧ (∀ x, IsBot x → x ∉ t) ∧ ∀ x, IsTop x → x ∉ t := by
   rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, htd⟩
-  refine ⟨t \ ({ x | IsBot x } ∪ { x | IsTop x }), ?_, ?_, ?_, fun x hx => ?_, fun x hx => ?_⟩
+  refine ⟨t \ ({ x | IsBot x } ∪ { x | IsTop x }), ?_, ?_, ?_, fun x hx ↦ ?_, fun x hx ↦ ?_⟩
   · exact diff_subset.trans hts
   · exact htc.mono diff_subset
   · exact htd.diff_finite ((subsingleton_isBot α).finite.union (subsingleton_isTop α).finite)
@@ -360,7 +360,7 @@ theorem exists_countable_dense_no_bot_top [SeparableSpace α] [Nontrivial α] :
 /-- `Set.Ico a b` is only closed if it is empty. -/
 @[simp]
 theorem isClosed_Ico_iff {a b : α} : IsClosed (Set.Ico a b) ↔ b ≤ a := by
-  refine ⟨fun h => le_of_not_gt fun hab => ?_, by simp_all⟩
+  refine ⟨fun h ↦ le_of_not_gt fun hab ↦ ?_, by simp_all⟩
   have := h.closure_eq
   rw [closure_Ico hab.ne, Icc_eq_Ico_same_iff] at this
   exact this hab.le
@@ -368,7 +368,7 @@ theorem isClosed_Ico_iff {a b : α} : IsClosed (Set.Ico a b) ↔ b ≤ a := by
 /-- `Set.Ioc a b` is only closed if it is empty. -/
 @[simp]
 theorem isClosed_Ioc_iff {a b : α} : IsClosed (Set.Ioc a b) ↔ b ≤ a := by
-  refine ⟨fun h => le_of_not_gt fun hab => ?_, by simp_all⟩
+  refine ⟨fun h ↦ le_of_not_gt fun hab ↦ ?_, by simp_all⟩
   have := h.closure_eq
   rw [closure_Ioc hab.ne, Icc_eq_Ioc_same_iff] at this
   exact this hab.le
@@ -376,7 +376,7 @@ theorem isClosed_Ioc_iff {a b : α} : IsClosed (Set.Ioc a b) ↔ b ≤ a := by
 /-- `Set.Ioo a b` is only closed if it is empty. -/
 @[simp]
 theorem isClosed_Ioo_iff {a b : α} : IsClosed (Set.Ioo a b) ↔ b ≤ a := by
-  refine ⟨fun h => le_of_not_gt fun hab => ?_, by simp_all⟩
+  refine ⟨fun h ↦ le_of_not_gt fun hab ↦ ?_, by simp_all⟩
   have := h.closure_eq
   rw [closure_Ioo hab.ne, Icc_eq_Ioo_same_iff] at this
   exact this hab.le

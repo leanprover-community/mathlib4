@@ -41,7 +41,7 @@ theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type*} [CommRi
   induction s, hfs using Set.Finite.induction_on with
   | empty =>
     rcases H with ⟨r, hr1, hrn, _⟩
-    refine ⟨r, hr1, fun n hn => ?_⟩
+    refine ⟨r, hr1, fun n hn ↦ ?_⟩
     specialize hrn hn
     rwa [mem_comap, span_empty, smul_bot, mem_bot] at hrn
   | @insert i s _ _ ih =>
@@ -80,6 +80,6 @@ theorem exists_mem_and_smul_eq_self_of_fg_of_le_smul {R : Type*} [CommRing R] {M
     [AddCommGroup M] [Module R M] (I : Ideal R) (N : Submodule R M) (hn : N.FG) (hin : N ≤ I • N) :
     ∃ r ∈ I, ∀ n ∈ N, r • n = n := by
   obtain ⟨r, hr, hr'⟩ := exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul I N hn hin
-  exact ⟨-(r - 1), I.neg_mem hr, fun n hn => by simpa [sub_smul] using hr' n hn⟩
+  exact ⟨-(r - 1), I.neg_mem hr, fun n hn ↦ by simpa [sub_smul] using hr' n hn⟩
 
 end Submodule

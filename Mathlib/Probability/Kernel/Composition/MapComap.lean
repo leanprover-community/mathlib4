@@ -103,7 +103,7 @@ lemma map_apply_eq_iff_map_symm_apply_eq (κ : Kernel α β) {f : β ≃ᵐ γ} 
     f.map_apply_eq_iff_map_symm_apply_eq]
 
 theorem sum_map_seq (κ : Kernel α β) [IsSFiniteKernel κ] (f : β → γ) :
-    (Kernel.sum fun n => map (seq κ n) f) = map κ f := by
+    (Kernel.sum fun n ↦ map (seq κ n) f) = map κ f := by
   by_cases hf : Measurable f
   · ext a s hs
     rw [Kernel.sum_apply, map_apply' κ hf a hs, Measure.sum_apply _ hs, ← measure_sum_seq κ,
@@ -113,7 +113,7 @@ theorem sum_map_seq (κ : Kernel α β) [IsSFiniteKernel κ] (f : β → γ) :
 
 lemma IsMarkovKernel.map (κ : Kernel α β) [IsMarkovKernel κ] (hf : Measurable f) :
     IsMarkovKernel (map κ f) :=
-  ⟨fun a => ⟨by rw [map_apply' κ hf a MeasurableSet.univ, Set.preimage_univ, measure_univ]⟩⟩
+  ⟨fun a ↦ ⟨by rw [map_apply' κ hf a MeasurableSet.univ, Set.preimage_univ, measure_univ]⟩⟩
 
 instance IsZeroOrMarkovKernel.map (κ : Kernel α β) [IsZeroOrMarkovKernel κ] (f : β → γ) :
     IsZeroOrMarkovKernel (map κ f) := by
@@ -125,7 +125,7 @@ instance IsZeroOrMarkovKernel.map (κ : Kernel α β) [IsZeroOrMarkovKernel κ] 
 
 instance IsFiniteKernel.map (κ : Kernel α β) [IsFiniteKernel κ] (f : β → γ) :
     IsFiniteKernel (map κ f) := by
-  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => ?_⟩⟩
+  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a ↦ ?_⟩⟩
   by_cases hf : Measurable f
   · rw [map_apply' κ hf a MeasurableSet.univ]
     exact measure_le_bound κ a _
@@ -133,7 +133,7 @@ instance IsFiniteKernel.map (κ : Kernel α β) [IsFiniteKernel κ] (f : β → 
 
 instance IsSFiniteKernel.map (κ : Kernel α β) [IsSFiniteKernel κ] (f : β → γ) :
     IsSFiniteKernel (map κ f) :=
-  ⟨⟨fun n => Kernel.map (seq κ n) f, inferInstance, (sum_map_seq κ f).symm⟩⟩
+  ⟨⟨fun n ↦ Kernel.map (seq κ n) f, inferInstance, (sum_map_seq κ f).symm⟩⟩
 
 @[simp]
 lemma map_const (μ : Measure α) {f : α → β} (hf : Measurable f) :
@@ -174,7 +174,7 @@ theorem lintegral_comap (κ : Kernel α β) (hg : Measurable g) (c : γ) (g' : �
   rfl
 
 theorem sum_comap_seq (κ : Kernel α β) [IsSFiniteKernel κ] (hg : Measurable g) :
-    (Kernel.sum fun n => comap (seq κ n) g hg) = comap κ g hg := by
+    (Kernel.sum fun n ↦ comap (seq κ n) g hg) = comap κ g hg := by
   ext a s hs
   rw [Kernel.sum_apply, comap_apply' κ hg a s, Measure.sum_apply _ hs, ← measure_sum_seq κ,
     Measure.sum_apply _ hs]
@@ -182,7 +182,7 @@ theorem sum_comap_seq (κ : Kernel α β) [IsSFiniteKernel κ] (hg : Measurable 
 
 instance IsMarkovKernel.comap (κ : Kernel α β) [IsMarkovKernel κ] (hg : Measurable g) :
     IsMarkovKernel (comap κ g hg) :=
-  ⟨fun a => ⟨by rw [comap_apply' κ hg a Set.univ, measure_univ]⟩⟩
+  ⟨fun a ↦ ⟨by rw [comap_apply' κ hg a Set.univ, measure_univ]⟩⟩
 
 instance IsZeroOrMarkovKernel.comap (κ : Kernel α β) [IsZeroOrMarkovKernel κ] (hg : Measurable g) :
     IsZeroOrMarkovKernel (comap κ g hg) := by
@@ -192,13 +192,13 @@ instance IsZeroOrMarkovKernel.comap (κ : Kernel α β) [IsZeroOrMarkovKernel κ
 
 instance IsFiniteKernel.comap (κ : Kernel α β) [IsFiniteKernel κ] (hg : Measurable g) :
     IsFiniteKernel (comap κ g hg) := by
-  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => ?_⟩⟩
+  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a ↦ ?_⟩⟩
   rw [comap_apply' κ hg a Set.univ]
   exact measure_le_bound κ _ _
 
 instance IsSFiniteKernel.comap (κ : Kernel α β) [IsSFiniteKernel κ] (hg : Measurable g) :
     IsSFiniteKernel (comap κ g hg) :=
-  ⟨⟨fun n => Kernel.comap (seq κ n) g hg, inferInstance, (sum_comap_seq κ hg).symm⟩⟩
+  ⟨⟨fun n ↦ Kernel.comap (seq κ n) g hg, inferInstance, (sum_comap_seq κ hg).symm⟩⟩
 
 lemma comap_map_comm (κ : Kernel β γ) {f : α → β} {g : γ → δ}
     (hf : Measurable f) (hg : Measurable g) :

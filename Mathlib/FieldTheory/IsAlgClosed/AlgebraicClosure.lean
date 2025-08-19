@@ -165,7 +165,7 @@ theorem Monics.map_eq_prod {f : Monics k} :
   refine le_maxIdeal _ (Ideal.subset_span ⟨⟨f, _⟩, rfl⟩)
 
 instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
-  ⟨fun z =>
+  ⟨fun z ↦
     IsIntegral.isAlgebraic <| by
       let ⟨p, hp⟩ := Ideal.Quotient.mk_surjective z
       rw [← hp]

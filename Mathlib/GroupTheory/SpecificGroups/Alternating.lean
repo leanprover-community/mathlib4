@@ -73,7 +73,7 @@ instance alternatingGroup.instFintype : Fintype (alternatingGroup α) :=
   @Subtype.fintype _ _ sign.decidableMemKer _
 
 instance [Subsingleton α] : Unique (alternatingGroup α) :=
-  ⟨⟨1⟩, fun ⟨p, _⟩ => Subtype.eq (Subsingleton.elim p _)⟩
+  ⟨⟨1⟩, fun ⟨p, _⟩ ↦ Subtype.eq (Subsingleton.elim p _)⟩
 
 variable {α}
 
@@ -172,7 +172,7 @@ open alternatingGroup
 @[simp]
 theorem closure_three_cycles_eq_alternating :
     closure { σ : Perm α | IsThreeCycle σ } = alternatingGroup α :=
-  closure_eq_of_le _ (fun _ hσ => mem_alternatingGroup.2 hσ.sign) fun σ hσ => by
+  closure_eq_of_le _ (fun _ hσ ↦ mem_alternatingGroup.2 hσ.sign) fun σ hσ ↦ by
     suffices hind :
       ∀ (n : ℕ) (l : List (Perm α)) (_ : ∀ g, g ∈ l → IsSwap g) (_ : l.length = 2 * n),
         l.prod ∈ closure { σ : Perm α | IsThreeCycle σ } by
@@ -194,7 +194,7 @@ theorem closure_three_cycles_eq_alternating :
       mul_mem
         (IsSwap.mul_mem_closure_three_cycles (hl a List.mem_cons_self)
           (hl b (List.mem_cons_of_mem a List.mem_cons_self)))
-        (ih _ (fun g hg => hl g (List.mem_cons_of_mem _ (List.mem_cons_of_mem _ hg))) hn)
+        (ih _ (fun g hg ↦ hl g (List.mem_cons_of_mem _ (List.mem_cons_of_mem _ hg))) hn)
 
 /-- A key lemma to prove $A_5$ is simple. Shows that any normal subgroup of an alternating group on
   at least 5 elements is the entire alternating group if it contains a 3-cycle. -/
@@ -331,9 +331,9 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
 /-- Shows that $A_5$ is simple by taking an arbitrary non-identity element and showing by casework
   on its cycle type that its normal closure is all of $A_5$. -/
 instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
-  ⟨fun H => by
+  ⟨fun H ↦ by
     intro Hn
-    refine or_not.imp id fun Hb => ?_
+    refine or_not.imp id fun Hb ↦ ?_
     rw [eq_bot_iff_forall] at Hb
     push_neg at Hb
     obtain ⟨⟨g, gA⟩, gH, g1⟩ : ∃ x : ↥(alternatingGroup (Fin 5)), x ∈ H ∧ x ≠ 1 := Hb

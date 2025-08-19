@@ -266,7 +266,7 @@ theorem toDualRight_symm_comp_toDualLeft :
 
 @[deprecated "No replacement" (since := "2025-05-27")]
 theorem bijective_toDualRight_symm_toDualLeft :
-    Bijective (fun x => p.toDualRight.symm.dualMap (p.toDualLeft x)) :=
+    Bijective (fun x ↦ p.toDualRight.symm.dualMap (p.toDualLeft x)) :=
   Bijective.comp (LinearEquiv.bijective p.toDualRight.symm.dualMap)
     (LinearEquiv.bijective p.toDualLeft)
 

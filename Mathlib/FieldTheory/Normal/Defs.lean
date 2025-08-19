@@ -40,9 +40,9 @@ theorem Normal.splits (_ : Normal F K) (x : K) : Splits (algebraMap F K) (minpol
   Normal.splits' x
 
 theorem normal_iff : Normal F K ↔ ∀ x : K, IsIntegral F x ∧ Splits (algebraMap F K) (minpoly F x) :=
-  ⟨fun h x => ⟨h.isIntegral x, h.splits x⟩, fun h =>
-    { isAlgebraic := fun x => (h x).1.isAlgebraic
-      splits' := fun x => (h x).2 }⟩
+  ⟨fun h x ↦ ⟨h.isIntegral x, h.splits x⟩, fun h ↦
+    { isAlgebraic := fun x ↦ (h x).1.isAlgebraic
+      splits' := fun x ↦ (h x).2 }⟩
 
 theorem Normal.out : Normal F K → ∀ x : K, IsIntegral F x ∧ Splits (algebraMap F K) (minpoly F x) :=
   normal_iff.1
@@ -50,8 +50,8 @@ theorem Normal.out : Normal F K → ∀ x : K, IsIntegral F x ∧ Splits (algebr
 variable (F K)
 
 instance normal_self : Normal F F where
-  isAlgebraic := fun _ => isIntegral_algebraMap.isAlgebraic
-  splits' := fun x => (minpoly.eq_X_sub_C' x).symm ▸ splits_X_sub_C _
+  isAlgebraic := fun _ ↦ isIntegral_algebraMap.isAlgebraic
+  splits' := fun x ↦ (minpoly.eq_X_sub_C' x).symm ▸ splits_X_sub_C _
 
 section NormalTower
 
@@ -59,7 +59,7 @@ variable (E : Type*) [Field E] [Algebra F E] [Algebra K E] [IsScalarTower F K E]
 
 @[stacks 09HN]
 theorem Normal.tower_top_of_normal [h : Normal F E] : Normal K E :=
-  normal_iff.2 fun x => by
+  normal_iff.2 fun x ↦ by
     obtain ⟨hx, hhx⟩ := h.out x
     rw [algebraMap_eq F K E] at hhx
     exact
@@ -160,7 +160,7 @@ theorem AlgHom.restrictNormal_commutes [Normal F E] (x : E) :
 
 theorem AlgHom.restrictNormal_comp [Normal F E] :
     (ψ.restrictNormal E).comp (ϕ.restrictNormal E) = (ψ.comp ϕ).restrictNormal E :=
-  AlgHom.ext fun _ =>
+  AlgHom.ext fun _ ↦
     (algebraMap E K₃).injective (by simp only [AlgHom.comp_apply, AlgHom.restrictNormal_commutes])
 
 /-- Restrict algebra isomorphism to a normal subfield -/
@@ -174,13 +174,13 @@ theorem AlgEquiv.restrictNormal_commutes [Normal F E] (x : E) :
 
 theorem AlgEquiv.restrictNormal_trans [Normal F E] :
     (χ.trans ω).restrictNormal E = (χ.restrictNormal E).trans (ω.restrictNormal E) :=
-  AlgEquiv.ext fun _ =>
+  AlgEquiv.ext fun _ ↦
     (algebraMap E K₃).injective
       (by simp only [AlgEquiv.trans_apply, AlgEquiv.restrictNormal_commutes])
 
 /-- Restriction to a normal subfield as a group homomorphism -/
 def AlgEquiv.restrictNormalHom [Normal F E] : (K₁ ≃ₐ[F] K₁) →* E ≃ₐ[F] E :=
-  MonoidHom.mk' (fun χ => χ.restrictNormal E) fun ω χ => χ.restrictNormal_trans ω E
+  MonoidHom.mk' (fun χ ↦ χ.restrictNormal E) fun ω χ ↦ χ.restrictNormal_trans ω E
 
 lemma AlgEquiv.restrictNormalHom_apply (L : IntermediateField F K₁) [Normal F L]
     (σ : (K₁ ≃ₐ[F] K₁)) (x : L) : restrictNormalHom L σ x = σ x :=

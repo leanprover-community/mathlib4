@@ -34,45 +34,45 @@ variable {α : Type u} {a : α} {s t : Set α}
 protected def Subsingleton (s : Set α) : Prop :=
   ∀ ⦃x⦄ (_ : x ∈ s) ⦃y⦄ (_ : y ∈ s), x = y
 
-theorem Subsingleton.anti (ht : t.Subsingleton) (hst : s ⊆ t) : s.Subsingleton := fun _ hx _ hy =>
+theorem Subsingleton.anti (ht : t.Subsingleton) (hst : s ⊆ t) : s.Subsingleton := fun _ hx _ hy ↦
   ht (hst hx) (hst hy)
 
 theorem Subsingleton.eq_singleton_of_mem (hs : s.Subsingleton) {x : α} (hx : x ∈ s) : s = {x} :=
-  ext fun _ => ⟨fun hy => hs hx hy ▸ mem_singleton _, fun hy => (eq_of_mem_singleton hy).symm ▸ hx⟩
+  ext fun _ ↦ ⟨fun hy ↦ hs hx hy ▸ mem_singleton _, fun hy ↦ (eq_of_mem_singleton hy).symm ▸ hx⟩
 
 @[simp]
-theorem subsingleton_empty : (∅ : Set α).Subsingleton := fun _ => False.elim
+theorem subsingleton_empty : (∅ : Set α).Subsingleton := fun _ ↦ False.elim
 
 @[simp]
-theorem subsingleton_singleton {a} : ({a} : Set α).Subsingleton := fun _ hx _ hy =>
+theorem subsingleton_singleton {a} : ({a} : Set α).Subsingleton := fun _ hx _ hy ↦
   (eq_of_mem_singleton hx).symm ▸ (eq_of_mem_singleton hy).symm ▸ rfl
 
 theorem subsingleton_of_subset_singleton (h : s ⊆ {a}) : s.Subsingleton :=
   subsingleton_singleton.anti h
 
-theorem subsingleton_of_forall_eq (a : α) (h : ∀ b ∈ s, b = a) : s.Subsingleton := fun _ hb _ hc =>
+theorem subsingleton_of_forall_eq (a : α) (h : ∀ b ∈ s, b = a) : s.Subsingleton := fun _ hb _ hc ↦
   (h _ hb).trans (h _ hc).symm
 
 theorem subsingleton_iff_singleton {x} (hx : x ∈ s) : s.Subsingleton ↔ s = {x} :=
-  ⟨fun h => h.eq_singleton_of_mem hx, fun h => h.symm ▸ subsingleton_singleton⟩
+  ⟨fun h ↦ h.eq_singleton_of_mem hx, fun h ↦ h.symm ▸ subsingleton_singleton⟩
 
 theorem Subsingleton.eq_empty_or_singleton (hs : s.Subsingleton) : s = ∅ ∨ ∃ x, s = {x} :=
-  s.eq_empty_or_nonempty.elim Or.inl fun ⟨x, hx⟩ => Or.inr ⟨x, hs.eq_singleton_of_mem hx⟩
+  s.eq_empty_or_nonempty.elim Or.inl fun ⟨x, hx⟩ ↦ Or.inr ⟨x, hs.eq_singleton_of_mem hx⟩
 
 theorem Subsingleton.induction_on {p : Set α → Prop} (hs : s.Subsingleton) (he : p ∅)
     (h₁ : ∀ x, p {x}) : p s := by
   rcases hs.eq_empty_or_singleton with (rfl | ⟨x, rfl⟩)
   exacts [he, h₁ _]
 
-theorem subsingleton_univ [Subsingleton α] : (univ : Set α).Subsingleton := fun x _ y _ =>
+theorem subsingleton_univ [Subsingleton α] : (univ : Set α).Subsingleton := fun x _ y _ ↦
   Subsingleton.elim x y
 
 theorem subsingleton_of_univ_subsingleton (h : (univ : Set α).Subsingleton) : Subsingleton α :=
-  ⟨fun a b => h (mem_univ a) (mem_univ b)⟩
+  ⟨fun a b ↦ h (mem_univ a) (mem_univ b)⟩
 
 @[simp]
 theorem subsingleton_univ_iff : (univ : Set α).Subsingleton ↔ Subsingleton α :=
-  ⟨subsingleton_of_univ_subsingleton, fun h => @subsingleton_univ _ h⟩
+  ⟨subsingleton_of_univ_subsingleton, fun h ↦ @subsingleton_univ _ h⟩
 
 lemma Subsingleton.inter_singleton : (s ∩ {a}).Subsingleton :=
   Set.subsingleton_of_subset_singleton Set.inter_subset_right
@@ -84,14 +84,14 @@ theorem subsingleton_of_subsingleton [Subsingleton α] {s : Set α} : Set.Subsin
   subsingleton_univ.anti (subset_univ s)
 
 theorem subsingleton_isTop (α : Type*) [PartialOrder α] : Set.Subsingleton { x : α | IsTop x } :=
-  fun x hx _ hy => hx.isMax.eq_of_le (hy x)
+  fun x hx _ hy ↦ hx.isMax.eq_of_le (hy x)
 
 theorem subsingleton_isBot (α : Type*) [PartialOrder α] : Set.Subsingleton { x : α | IsBot x } :=
-  fun x hx _ hy => hx.isMin.eq_of_ge (hy x)
+  fun x hx _ hy ↦ hx.isMin.eq_of_ge (hy x)
 
 theorem exists_eq_singleton_iff_nonempty_subsingleton :
     (∃ a : α, s = {a}) ↔ s.Nonempty ∧ s.Subsingleton := by
-  refine ⟨?_, fun h => ?_⟩
+  refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨a, rfl⟩
     exact ⟨singleton_nonempty a, subsingleton_singleton⟩
   · exact h.2.eq_empty_or_singleton.resolve_left h.1.ne_empty
@@ -100,9 +100,9 @@ theorem exists_eq_singleton_iff_nonempty_subsingleton :
 @[simp, norm_cast]
 theorem subsingleton_coe (s : Set α) : Subsingleton s ↔ s.Subsingleton := by
   constructor
-  · refine fun h => fun a ha b hb => ?_
+  · refine fun h ↦ fun a ha b hb ↦ ?_
     exact SetCoe.ext_iff.2 (@Subsingleton.elim s h ⟨a, ha⟩ ⟨b, hb⟩)
-  · exact fun h => Subsingleton.intro fun a b => SetCoe.ext (h a.property b.property)
+  · exact fun h ↦ Subsingleton.intro fun a b ↦ SetCoe.ext (h a.property b.property)
 
 theorem Subsingleton.coe_sort {s : Set α} : s.Subsingleton → Subsingleton s :=
   s.subsingleton_coe.2
@@ -163,7 +163,7 @@ theorem Nontrivial.pair_subset (hs : s.Nontrivial) : ∃ x y, x ≠ y ∧ {x, y}
   ⟨x, y, hxy, insert_subset hx <| singleton_subset_iff.2 hy⟩
 
 theorem nontrivial_iff_pair_subset : s.Nontrivial ↔ ∃ x y, x ≠ y ∧ {x, y} ⊆ s :=
-  ⟨Nontrivial.pair_subset, fun H =>
+  ⟨Nontrivial.pair_subset, fun H ↦
     let ⟨_, _, hxy, h⟩ := H
     nontrivial_of_pair_subset hxy h⟩
 
@@ -178,7 +178,7 @@ theorem Nontrivial.exists_ne (hs : s.Nontrivial) (z) : ∃ x ∈ s, x ≠ z := b
   exact hxy rfl
 
 theorem nontrivial_iff_exists_ne {x} (hx : x ∈ s) : s.Nontrivial ↔ ∃ y ∈ s, y ≠ x :=
-  ⟨fun H => H.exists_ne _, nontrivial_of_exists_ne hx⟩
+  ⟨fun H ↦ H.exists_ne _, nontrivial_of_exists_ne hx⟩
 
 theorem nontrivial_of_lt [Preorder α] {x y} (hx : x ∈ s) (hy : y ∈ s) (hxy : x < y) :
     s.Nontrivial :=
@@ -191,7 +191,7 @@ theorem nontrivial_of_exists_lt [Preorder α]
 
 theorem Nontrivial.exists_lt [LinearOrder α] (hs : s.Nontrivial) : ∃ᵉ (x ∈ s) (y ∈ s), x < y :=
   let ⟨x, hx, y, hy, hxy⟩ := hs
-  Or.elim (lt_or_gt_of_ne hxy) (fun H => ⟨x, hx, y, hy, H⟩) fun H => ⟨y, hy, x, hx, H⟩
+  Or.elim (lt_or_gt_of_ne hxy) (fun H ↦ ⟨x, hx, y, hy, H⟩) fun H ↦ ⟨y, hy, x, hx, H⟩
 
 theorem nontrivial_iff_exists_lt [LinearOrder α] :
     s.Nontrivial ↔ ∃ᵉ (x ∈ s) (y ∈ s), x < y :=
@@ -208,15 +208,15 @@ theorem Nontrivial.not_subset_empty (hs : s.Nontrivial) : ¬s ⊆ ∅ :=
   hs.nonempty.not_subset_empty
 
 @[simp]
-theorem not_nontrivial_empty : ¬(∅ : Set α).Nontrivial := fun h => h.ne_empty rfl
+theorem not_nontrivial_empty : ¬(∅ : Set α).Nontrivial := fun h ↦ h.ne_empty rfl
 
 @[simp]
-theorem not_nontrivial_singleton {x} : ¬({x} : Set α).Nontrivial := fun H => by
+theorem not_nontrivial_singleton {x} : ¬({x} : Set α).Nontrivial := fun H ↦ by
   rw [nontrivial_iff_exists_ne (mem_singleton x)] at H
   let ⟨y, hy, hya⟩ := H
   exact hya (mem_singleton_iff.1 hy)
 
-theorem Nontrivial.ne_singleton {x} (hs : s.Nontrivial) : s ≠ {x} := fun H => by
+theorem Nontrivial.ne_singleton {x} (hs : s.Nontrivial) : s ≠ {x} := fun H ↦ by
   rw [H] at hs
   exact not_nontrivial_singleton hs
 
@@ -233,7 +233,7 @@ theorem nontrivial_of_univ_nontrivial (h : (univ : Set α).Nontrivial) : Nontriv
 
 @[simp]
 theorem nontrivial_univ_iff : (univ : Set α).Nontrivial ↔ Nontrivial α :=
-  ⟨nontrivial_of_univ_nontrivial, fun h => @nontrivial_univ _ h⟩
+  ⟨nontrivial_of_univ_nontrivial, fun h ↦ @nontrivial_univ _ h⟩
 
 @[simp]
 theorem singleton_ne_univ [Nontrivial α] (a : α) : {a} ≠ univ :=
@@ -288,7 +288,7 @@ lemma Nonempty.exists_eq_singleton_or_nontrivial : s.Nonempty → (∃ a, s = {a
   fun ⟨a, ha⟩ ↦ (eq_singleton_or_nontrivial ha).imp_left <| Exists.intro a
 
 theorem univ_eq_true_false : univ = ({True, False} : Set Prop) :=
-  Eq.symm <| eq_univ_of_forall fun x => by
+  Eq.symm <| eq_univ_of_forall fun x ↦ by
     rw [mem_insert_iff, mem_singleton_iff]
     exact Classical.propComplete x
 
@@ -300,16 +300,16 @@ section Monotonicity
 variable {α : Type u} {β : Type v} {a : α} {s : Set α} [Preorder α] [Preorder β] (f : α → β)
 
 protected theorem Subsingleton.monotoneOn (h : s.Subsingleton) : MonotoneOn f s :=
-  fun _ ha _ hb _ => (congr_arg _ (h ha hb)).le
+  fun _ ha _ hb _ ↦ (congr_arg _ (h ha hb)).le
 
 protected theorem Subsingleton.antitoneOn (h : s.Subsingleton) : AntitoneOn f s :=
-  fun _ ha _ hb _ => (congr_arg _ (h hb ha)).le
+  fun _ ha _ hb _ ↦ (congr_arg _ (h hb ha)).le
 
 protected theorem Subsingleton.strictMonoOn (h : s.Subsingleton) : StrictMonoOn f s :=
-  fun _ ha _ hb hlt => (hlt.ne (h ha hb)).elim
+  fun _ ha _ hb hlt ↦ (hlt.ne (h ha hb)).elim
 
 protected theorem Subsingleton.strictAntiOn (h : s.Subsingleton) : StrictAntiOn f s :=
-  fun _ ha _ hb hlt => (hlt.ne (h ha hb)).elim
+  fun _ ha _ hb hlt ↦ (hlt.ne (h ha hb)).elim
 
 @[simp]
 theorem monotoneOn_singleton : MonotoneOn f {a} :=

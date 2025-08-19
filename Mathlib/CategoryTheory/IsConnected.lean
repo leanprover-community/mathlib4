@@ -89,7 +89,7 @@ private def liftToDiscrete {α : Type u₂} (F : J ⥤ Discrete α) : J ⥤ Disc
 /-- Implementation detail of `isoConstant`. -/
 private def factorThroughDiscrete {α : Type u₂} (F : J ⥤ Discrete α) :
     liftToDiscrete F ⋙ Discrete.functor F.obj ≅ F :=
-  NatIso.ofComponents (fun _ => eqToIso Function.apply_invFun_apply) (by cat_disch)
+  NatIso.ofComponents (fun _ ↦ eqToIso Function.apply_invFun_apply) (by cat_disch)
 
 end IsPreconnected.IsoConstantAux
 
@@ -100,7 +100,7 @@ def isoConstant [IsPreconnected J] {α : Type u₂} (F : J ⥤ Discrete α) (j :
     F ≅ (Functor.const J).obj (F.obj j) :=
   (IsPreconnected.IsoConstantAux.factorThroughDiscrete F).symm
     ≪≫ isoWhiskerRight (IsPreconnected.iso_constant _ j).some _
-    ≪≫ NatIso.ofComponents (fun _ => eqToIso Function.apply_invFun_apply) (by simp)
+    ≪≫ NatIso.ofComponents (fun _ ↦ eqToIso Function.apply_invFun_apply) (by simp)
 
 /-- If `J` is connected, any functor to a discrete category is constant on objects.
 The converse is given in `IsConnected.of_any_functor_const_on_obj`.
@@ -115,10 +115,10 @@ The converse of `any_functor_const_on_obj`.
 theorem IsPreconnected.of_any_functor_const_on_obj
     (h : ∀ {α : Type u₁} (F : J ⥤ Discrete α), ∀ j j' : J, F.obj j = F.obj j') :
     IsPreconnected J where
-  iso_constant := fun F j' => ⟨NatIso.ofComponents fun j => eqToIso (h F j j')⟩
+  iso_constant := fun F j' ↦ ⟨NatIso.ofComponents fun j ↦ eqToIso (h F j j')⟩
 
 instance IsPreconnected.prod [IsPreconnected J] [IsPreconnected K] : IsPreconnected (J × K) := by
-  refine .of_any_functor_const_on_obj (fun {a} F ⟨j, k⟩ ⟨j', k'⟩ => ?_)
+  refine .of_any_functor_const_on_obj (fun {a} F ⟨j, k⟩ ⟨j', k'⟩ ↦ ?_)
   exact (any_functor_const_on_obj (Prod.sectL J k ⋙ F) j j').trans
     (any_functor_const_on_obj (Prod.sectR j' K ⋙ F) k k')
 
@@ -142,7 +142,7 @@ theorem constant_of_preserves_morphisms [IsPreconnected J] {α : Type u₂} (F :
   simpa using
     any_functor_const_on_obj
       { obj := Discrete.mk ∘ F
-        map := fun f => eqToHom (by ext; exact h _ _ f) }
+        map := fun f ↦ eqToHom (by ext; exact h _ _ f) }
       j j'
 
 /-- `J` is connected if: given any function `F : J → α` which is constant for any
@@ -155,8 +155,8 @@ theorem IsPreconnected.of_constant_of_preserves_morphisms
     (h : ∀ {α : Type u₁} (F : J → α),
       (∀ {j₁ j₂ : J} (_ : j₁ ⟶ j₂), F j₁ = F j₂) → ∀ j j' : J, F j = F j') :
     IsPreconnected J :=
-  IsPreconnected.of_any_functor_const_on_obj fun F =>
-    h F.obj fun f => by ext; exact Discrete.eq_of_hom (F.map f)
+  IsPreconnected.of_any_functor_const_on_obj fun F ↦
+    h F.obj fun f ↦ by ext; exact Discrete.eq_of_hom (F.map f)
 
 /-- `J` is connected if: given any function `F : J → α` which is constant for any
 `j₁, j₂` for which there is a morphism `j₁ ⟶ j₂`, then `F` is constant.
@@ -179,7 +179,7 @@ The converse is given in `IsConnected.of_induct`.
 theorem induct_on_objects [IsPreconnected J] (p : Set J) {j₀ : J} (h0 : j₀ ∈ p)
     (h1 : ∀ {j₁ j₂ : J} (_ : j₁ ⟶ j₂), j₁ ∈ p ↔ j₂ ∈ p) (j : J) : j ∈ p := by
   let aux (j₁ j₂ : J) (f : j₁ ⟶ j₂) := congrArg ULift.up <| (h1 f).eq
-  injection constant_of_preserves_morphisms (fun k => ULift.up.{u₁} (k ∈ p)) aux j j₀ with i
+  injection constant_of_preserves_morphisms (fun k ↦ ULift.up.{u₁} (k ∈ p)) aux j j₀ with i
   rwa [i]
 
 /--
@@ -191,8 +191,8 @@ theorem IsConnected.of_induct {j₀ : J}
     (h : ∀ p : Set J, j₀ ∈ p → (∀ {j₁ j₂ : J} (_ : j₁ ⟶ j₂), j₁ ∈ p ↔ j₂ ∈ p) → ∀ j : J, j ∈ p) :
     IsConnected J :=
   have := Nonempty.intro j₀
-  IsConnected.of_constant_of_preserves_morphisms fun {α} F a => by
-    have w := h { j | F j = F j₀ } rfl (fun {j₁} {j₂} f => by
+  IsConnected.of_constant_of_preserves_morphisms fun {α} F a ↦ by
+    have w := h { j | F j = F j₀ } rfl (fun {j₁} {j₂} f ↦ by
       change F j₁ = F j₀ ↔ F j₂ = F j₀
       simp [a f])
     intro j j'
@@ -207,7 +207,7 @@ instance [hc : IsConnected J] : IsConnected (ULiftHom.{v₂} (ULift.{u₂} J)) :
     have hj₀' : Classical.choice hc.is_nonempty ∈ p' := by
       simp only [p']
       exact hj₀
-    apply induct_on_objects p' hj₀' fun f => h ((ULiftHomULiftCategory.equiv J).functor.map f)
+    apply induct_on_objects p' hj₀' fun f ↦ h ((ULiftHomULiftCategory.equiv J).functor.map f)
 
 /-- Another induction principle for `IsPreconnected J`:
 given a type family `Z : J → Sort*` and
@@ -218,7 +218,7 @@ theorem isPreconnected_induction [IsPreconnected J] (Z : J → Sort*)
     (h₁ : ∀ {j₁ j₂ : J} (_ : j₁ ⟶ j₂), Z j₁ → Z j₂) (h₂ : ∀ {j₁ j₂ : J} (_ : j₁ ⟶ j₂), Z j₂ → Z j₁)
     {j₀ : J} (x : Z j₀) (j : J) : Nonempty (Z j) :=
   (induct_on_objects { j | Nonempty (Z j) } ⟨x⟩
-      (fun f => ⟨by rintro ⟨y⟩; exact ⟨h₁ f y⟩, by rintro ⟨y⟩; exact ⟨h₂ f y⟩⟩)
+      (fun f ↦ ⟨by rintro ⟨y⟩; exact ⟨h₁ f y⟩, by rintro ⟨y⟩; exact ⟨h₂ f y⟩⟩)
       j :)
 
 /-- If `J` and `K` are equivalent, then if `J` is preconnected then `K` is as well. -/
@@ -231,11 +231,11 @@ theorem isPreconnected_of_equivalent {K : Type u₂} [Category.{v₂} K] [IsPrec
           isoWhiskerLeft e.inverse (isoConstant (e.functor ⋙ F) (e.inverse.obj k))
         _ ≅ e.inverse ⋙ (Functor.const J).obj (F.obj k) :=
           isoWhiskerLeft _ ((F ⋙ Functor.const J).mapIso (e.counitIso.app k))
-        _ ≅ (Functor.const K).obj (F.obj k) := NatIso.ofComponents fun _ => Iso.refl _⟩
+        _ ≅ (Functor.const K).obj (F.obj k) := NatIso.ofComponents fun _ ↦ Iso.refl _⟩
 
 lemma isPreconnected_iff_of_equivalence {K : Type u₂} [Category.{v₂} K] (e : J ≌ K) :
     IsPreconnected J ↔ IsPreconnected K :=
-  ⟨fun _ => isPreconnected_of_equivalent e, fun _ => isPreconnected_of_equivalent e.symm⟩
+  ⟨fun _ ↦ isPreconnected_of_equivalent e, fun _ ↦ isPreconnected_of_equivalent e.symm⟩
 
 /-- If `J` and `K` are equivalent, then if `J` is connected then `K` is as well. -/
 theorem isConnected_of_equivalent {K : Type u₂} [Category.{v₂} K] (e : J ≌ K) [IsConnected J] :
@@ -245,12 +245,12 @@ theorem isConnected_of_equivalent {K : Type u₂} [Category.{v₂} K] (e : J ≌
 
 lemma isConnected_iff_of_equivalence {K : Type u₂} [Category.{v₂} K] (e : J ≌ K) :
     IsConnected J ↔ IsConnected K :=
-  ⟨fun _ => isConnected_of_equivalent e, fun _ => isConnected_of_equivalent e.symm⟩
+  ⟨fun _ ↦ isConnected_of_equivalent e, fun _ ↦ isConnected_of_equivalent e.symm⟩
 
 /-- If `J` is preconnected, then `Jᵒᵖ` is preconnected as well. -/
 instance isPreconnected_op [IsPreconnected J] : IsPreconnected Jᵒᵖ where
-  iso_constant := fun {α} F X =>
-    ⟨NatIso.ofComponents fun Y =>
+  iso_constant := fun {α} F X ↦
+    ⟨NatIso.ofComponents fun Y ↦
       eqToIso (Discrete.ext (Discrete.eq_of_hom ((Nonempty.some
         (IsPreconnected.iso_constant (F.rightOp ⋙ (Discrete.opposite α).functor) (unop X))).app
           (unop Y)).hom))⟩
@@ -268,7 +268,7 @@ theorem isConnected_of_isConnected_op [IsConnected Jᵒᵖ] : IsConnected J :=
 variable (J) in
 @[simp]
 theorem isConnected_op_iff_isConnected : IsConnected Jᵒᵖ ↔ IsConnected J :=
-  ⟨fun _ => isConnected_of_isConnected_op, fun _ => isConnected_op⟩
+  ⟨fun _ ↦ isConnected_of_isConnected_op, fun _ ↦ isConnected_op⟩
 
 /-- j₁ and j₂ are related by `Zag` if there is a morphism between them. -/
 def Zag (j₁ j₂ : J) : Prop :=
@@ -276,7 +276,7 @@ def Zag (j₁ j₂ : J) : Prop :=
 
 @[refl] theorem Zag.refl (X : J) : Zag X X := Or.inl ⟨𝟙 _⟩
 
-theorem zag_symmetric : Symmetric (@Zag J _) := fun _ _ h => h.symm
+theorem zag_symmetric : Symmetric (@Zag J _) := fun _ _ h ↦ h.symm
 
 @[symm] theorem Zag.symm {j₁ j₂ : J} (h : Zag j₁ j₂) : Zag j₂ j₁ := zag_symmetric h
 
@@ -294,8 +294,8 @@ theorem zigzag_symmetric : Symmetric (@Zigzag J _) :=
   Relation.ReflTransGen.symmetric zag_symmetric
 
 theorem zigzag_equivalence : _root_.Equivalence (@Zigzag J _) :=
-  _root_.Equivalence.mk Relation.reflexive_reflTransGen (fun h => zigzag_symmetric h)
-  (fun h g => Relation.transitive_reflTransGen h g)
+  _root_.Equivalence.mk Relation.reflexive_reflTransGen (fun h ↦ zigzag_symmetric h)
+  (fun h g ↦ Relation.transitive_reflTransGen h g)
 
 @[refl] theorem Zigzag.refl (X : J) : Zigzag X X := zigzag_equivalence.refl _
 
@@ -353,7 +353,7 @@ def Zigzag.setoid (J : Type u₂) [Category.{v₁} J] : Setoid J where
 -/
 theorem zigzag_prefunctor_obj_of_zigzag (F : J ⥤q K) {j₁ j₂ : J} (h : Zigzag j₁ j₂) :
     Zigzag (F.obj j₁) (F.obj j₂) :=
-  h.lift _ fun _ _ => Or.imp (Nonempty.map fun f => F.map f) (Nonempty.map fun f => F.map f)
+  h.lift _ fun _ _ ↦ Or.imp (Nonempty.map fun f ↦ F.map f) (Nonempty.map fun f ↦ F.map f)
 
 /-- If there is a zigzag from `j₁` to `j₂`, then there is a zigzag from `F j₁` to
 `F j₂` as long as `F` is a functor.
@@ -383,13 +383,13 @@ theorem equiv_relation [IsPreconnected J] (r : J → J → Prop) (hr : _root_.Eq
   intros j₁ j₂
   have z : ∀ j : J, r j₁ j :=
     induct_on_objects {k | r j₁ k} (hr.1 j₁)
-      fun f => ⟨fun t => hr.3 t (h f), fun t => hr.3 t (hr.2 (h f))⟩
+      fun f ↦ ⟨fun t ↦ hr.3 t (h f), fun t ↦ hr.3 t (hr.2 (h f))⟩
   exact z j₂
 
 /-- In a connected category, any two objects are related by `Zigzag`. -/
 theorem isPreconnected_zigzag [IsPreconnected J] (j₁ j₂ : J) : Zigzag j₁ j₂ :=
   equiv_relation _ zigzag_equivalence
-    (fun f => Relation.ReflTransGen.single (Or.inl (Nonempty.intro f))) _ _
+    (fun f ↦ Relation.ReflTransGen.single (Or.inl (Nonempty.intro f))) _ _
 
 
 theorem zigzag_isPreconnected (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsPreconnected J := by
@@ -439,7 +439,7 @@ theorem isConnected_of_zigzag [Nonempty J] (h : ∀ j₁ j₂ : J, ∃ l,
 def discreteIsConnectedEquivPUnit {α : Type u₁} [IsConnected (Discrete α)] : α ≃ PUnit :=
   Discrete.equivOfEquivalence.{u₁, u₁}
     { functor := Functor.star (Discrete α)
-      inverse := Discrete.functor fun _ => Classical.arbitrary _
+      inverse := Discrete.functor fun _ ↦ Classical.arbitrary _
       unitIso := isoConstant _ (Classical.arbitrary _)
       counitIso := Functor.punitExt _ _ }
 
@@ -452,7 +452,7 @@ This is the key property of connected categories which we use to establish prope
 theorem nat_trans_from_is_connected [IsPreconnected J] {X Y : C}
     (α : (Functor.const J).obj X ⟶ (Functor.const J).obj Y) :
     ∀ j j' : J, α.app j = (α.app j' : X ⟶ Y) :=
-  @constant_of_preserves_morphisms _ _ _ (X ⟶ Y) (fun j => α.app j) fun _ _ f => by
+  @constant_of_preserves_morphisms _ _ _ (X ⟶ Y) (fun j ↦ α.app j) fun _ _ f ↦ by
     simpa using (α.naturality f).symm
 
 instance [IsConnected J] : (Functor.const J : C ⥤ J ⥤ C).Full where
@@ -462,11 +462,11 @@ instance [IsConnected J] : (Functor.const J : C ⥤ J ⥤ C).Full where
 
 theorem nonempty_hom_of_preconnected_groupoid {G} [Groupoid G] [IsPreconnected G] :
     ∀ x y : G, Nonempty (x ⟶ y) := by
-  refine equiv_relation _ ?_ fun {j₁ j₂} => Nonempty.intro
+  refine equiv_relation _ ?_ fun {j₁ j₂} ↦ Nonempty.intro
   exact
-    ⟨fun j => ⟨𝟙 _⟩,
-     fun {j₁ j₂} => Nonempty.map fun f => inv f,
-     fun {_ _ _} => Nonempty.map2 (· ≫ ·)⟩
+    ⟨fun j ↦ ⟨𝟙 _⟩,
+     fun {j₁ j₂} ↦ Nonempty.map fun f ↦ inv f,
+     fun {_ _ _} ↦ Nonempty.map2 (· ≫ ·)⟩
 
 attribute [instance] nonempty_hom_of_preconnected_groupoid
 

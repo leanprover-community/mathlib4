@@ -30,7 +30,7 @@ theorem Inseparable.inner_eq_inner {x₁ x₂ y₁ y₂ : E}
 namespace SeparationQuotient
 
 instance : Inner 𝕜 (SeparationQuotient E) where
-  inner := SeparationQuotient.lift₂ (inner 𝕜) fun _ _ _ _ => Inseparable.inner_eq_inner
+  inner := SeparationQuotient.lift₂ (inner 𝕜) fun _ _ _ _ ↦ Inseparable.inner_eq_inner
 
 @[simp]
 theorem inner_mk_mk (x y : E) :
@@ -39,7 +39,7 @@ theorem inner_mk_mk (x y : E) :
 instance : InnerProductSpace 𝕜 (SeparationQuotient E) where
   norm_sq_eq_re_inner := Quotient.ind norm_sq_eq_re_inner
   conj_inner_symm := Quotient.ind₂ inner_conj_symm
-  add_left := Quotient.ind fun x => Quotient.ind₂ <| inner_add_left x
+  add_left := Quotient.ind fun x ↦ Quotient.ind₂ <| inner_add_left x
   smul_left := Quotient.ind₂ inner_smul_left
 
 end SeparationQuotient
@@ -66,38 +66,38 @@ theorem inner_coe (a b : E) : ⟪(a : Completion E), (b : Completion E)⟫ = ⟪
 protected theorem continuous_inner :
     Continuous (uncurry (inner 𝕜 (E := Completion E))) := by
   let inner' : E →+ E →+ 𝕜 :=
-    { toFun := fun x => (innerₛₗ 𝕜 x).toAddMonoidHom
+    { toFun := fun x ↦ (innerₛₗ 𝕜 x).toAddMonoidHom
       map_zero' := by ext x; exact inner_zero_left _
-      map_add' := fun x y => by ext z; exact inner_add_left _ _ _ }
-  have : Continuous fun p : E × E => inner' p.1 p.2 := continuous_inner
+      map_add' := fun x y ↦ by ext z; exact inner_add_left _ _ _ }
+  have : Continuous fun p : E × E ↦ inner' p.1 p.2 := continuous_inner
   rw [Completion.toInner, inner, uncurry_curry _]
   change
     Continuous
-      (((isDenseInducing_toCompl E).prodMap (isDenseInducing_toCompl E)).extend fun p : E × E =>
+      (((isDenseInducing_toCompl E).prodMap (isDenseInducing_toCompl E)).extend fun p : E × E ↦
         inner' p.1 p.2)
   exact (isDenseInducing_toCompl E).extend_Z_bilin (isDenseInducing_toCompl E) this
 
 @[fun_prop]
 protected theorem Continuous.inner {α : Type*} [TopologicalSpace α] {f g : α → Completion E}
-    (hf : Continuous f) (hg : Continuous g) : Continuous (fun x : α => ⟪f x, g x⟫) :=
+    (hf : Continuous f) (hg : Continuous g) : Continuous (fun x : α ↦ ⟪f x, g x⟫) :=
   UniformSpace.Completion.continuous_inner.comp (hf.prodMk hg :)
 
 instance innerProductSpace : InnerProductSpace 𝕜 (Completion E) where
   norm_sq_eq_re_inner x :=
     Completion.induction_on x (isClosed_eq (by fun_prop) (by fun_prop))
-      fun a => by simp only [norm_coe, inner_coe, inner_self_eq_norm_sq]
+      fun a ↦ by simp only [norm_coe, inner_coe, inner_self_eq_norm_sq]
   conj_inner_symm x y :=
     Completion.induction_on₂ x y
       (isClosed_eq (continuous_conj.comp (by fun_prop)) (by fun_prop))
-      fun a b => by simp only [inner_coe, inner_conj_symm]
+      fun a b ↦ by simp only [inner_coe, inner_conj_symm]
   add_left x y z :=
     Completion.induction_on₃ x y z (isClosed_eq (by fun_prop) (by fun_prop))
-      fun a b c => by simp only [← coe_add, inner_coe, inner_add_left]
+      fun a b c ↦ by simp only [← coe_add, inner_coe, inner_add_left]
   smul_left x y c :=
     Completion.induction_on₂ x y
       (isClosed_eq (Continuous.inner (continuous_fst.const_smul c) continuous_snd)
         ((continuous_mul_left _).comp (by fun_prop)))
-      fun a b => by simp only [← coe_smul c a, inner_coe, inner_smul_left]
+      fun a b ↦ by simp only [← coe_smul c a, inner_coe, inner_smul_left]
 
 end UniformSpace.Completion
 

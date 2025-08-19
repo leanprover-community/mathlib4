@@ -131,7 +131,7 @@ theorem eq_zero_of_image_eq_zero {X Y : C} {f : X ⟶ Y} [HasImage f] (w : image
     f = 0 := by rw [← image.fac f, w, HasZeroMorphisms.comp_zero]
 
 theorem nonzero_image_of_nonzero {X Y : C} {f : X ⟶ Y} [HasImage f] (w : f ≠ 0) : image.ι f ≠ 0 :=
-  fun h => w (eq_zero_of_image_eq_zero h)
+  fun h ↦ w (eq_zero_of_image_eq_zero h)
 
 end
 
@@ -140,10 +140,10 @@ section
 variable [HasZeroMorphisms D]
 
 instance : HasZeroMorphisms (C ⥤ D) where
-  zero F G := ⟨{ app := fun _ => 0 }⟩
-  comp_zero := fun η H => by
+  zero F G := ⟨{ app := fun _ ↦ 0 }⟩
+  comp_zero := fun η H ↦ by
     ext X; dsimp; apply comp_zero
-  zero_comp := fun F {G H} η => by
+  zero_comp := fun F {G H} η ↦ by
     ext X; dsimp; apply zero_comp
 
 @[simp]
@@ -162,10 +162,10 @@ theorem eq_zero_of_tgt {X Y : C} (o : IsZero Y) (f : X ⟶ Y) : f = 0 :=
   o.eq_of_tgt _ _
 
 theorem iff_id_eq_zero (X : C) : IsZero X ↔ 𝟙 X = 0 :=
-  ⟨fun h => h.eq_of_src _ _, fun h =>
-    ⟨fun Y => ⟨⟨⟨0⟩, fun f => by
+  ⟨fun h ↦ h.eq_of_src _ _, fun h ↦
+    ⟨fun Y ↦ ⟨⟨⟨0⟩, fun f ↦ by
         rw [← id_comp f, ← id_comp (0 : X ⟶ Y), h, zero_comp, zero_comp]; simp only⟩⟩,
-    fun Y => ⟨⟨⟨0⟩, fun f => by
+    fun Y ↦ ⟨⟨⟨0⟩, fun f ↦ by
         rw [← comp_id f, ← comp_id (0 : Y ⟶ X), h, comp_zero, comp_zero]; simp only ⟩⟩⟩⟩
 
 theorem of_mono_zero (X Y : C) [Mono (0 : X ⟶ Y)] : IsZero X :=
@@ -293,7 +293,7 @@ end HasZeroMorphisms
 open ZeroObject
 
 instance {B : Type*} [Category B] : HasZeroObject (B ⥤ C) :=
-  (((CategoryTheory.Functor.const B).obj (0 : C)).isZero fun _ => isZero_zero _).hasZeroObject
+  (((CategoryTheory.Functor.const B).obj (0 : C)).isZero fun _ ↦ isZero_zero _).hasZeroObject
 
 end HasZeroObject
 
@@ -347,10 +347,10 @@ theorem zero_of_target_iso_zero' {X Y : C} (f : X ⟶ Y) (i : IsIsomorphic Y 0) 
   zero_of_target_iso_zero f (Nonempty.some i)
 
 theorem mono_of_source_iso_zero {X Y : C} (f : X ⟶ Y) (i : X ≅ 0) : Mono f :=
-  ⟨fun {Z} g h _ => by rw [zero_of_target_iso_zero g i, zero_of_target_iso_zero h i]⟩
+  ⟨fun {Z} g h _ ↦ by rw [zero_of_target_iso_zero g i, zero_of_target_iso_zero h i]⟩
 
 theorem epi_of_target_iso_zero {X Y : C} (f : X ⟶ Y) (i : Y ≅ 0) : Epi f :=
-  ⟨fun {Z} g h _ => by rw [zero_of_source_iso_zero g i, zero_of_source_iso_zero h i]⟩
+  ⟨fun {Z} g h _ ↦ by rw [zero_of_source_iso_zero g i, zero_of_source_iso_zero h i]⟩
 
 /-- An object `X` has `𝟙 X = 0` if and only if it is isomorphic to the zero object.
 
@@ -472,7 +472,7 @@ end IsIso
 /-- If there are zero morphisms, any initial object is a zero object. -/
 theorem hasZeroObject_of_hasInitial_object [HasZeroMorphisms C] [HasInitial C] :
     HasZeroObject C := by
-  refine ⟨⟨⊥_ C, fun X => ⟨⟨⟨0⟩, by cat_disch⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩⟩
+  refine ⟨⟨⊥_ C, fun X ↦ ⟨⟨⟨0⟩, by cat_disch⟩⟩, fun X ↦ ⟨⟨⟨0⟩, fun f ↦ ?_⟩⟩⟩⟩
   calc
     f = f ≫ 𝟙 _ := (Category.comp_id _).symm
     _ = f ≫ 0 := by congr!; subsingleton
@@ -481,7 +481,7 @@ theorem hasZeroObject_of_hasInitial_object [HasZeroMorphisms C] [HasInitial C] :
 /-- If there are zero morphisms, any terminal object is a zero object. -/
 theorem hasZeroObject_of_hasTerminal_object [HasZeroMorphisms C] [HasTerminal C] :
     HasZeroObject C := by
-  refine ⟨⟨⊤_ C, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, by cat_disch⟩⟩⟩⟩
+  refine ⟨⟨⊤_ C, fun X ↦ ⟨⟨⟨0⟩, fun f ↦ ?_⟩⟩, fun X ↦ ⟨⟨⟨0⟩, by cat_disch⟩⟩⟩⟩
   calc
     f = 𝟙 _ ≫ f := (Category.id_comp _).symm
     _ = 0 ≫ f := by congr!; subsingleton
@@ -515,7 +515,7 @@ def monoFactorisationZero (X Y : C) : MonoFactorisation (0 : X ⟶ Y) where
 -/
 def imageFactorisationZero (X Y : C) : ImageFactorisation (0 : X ⟶ Y) where
   F := monoFactorisationZero X Y
-  isImage := { lift := fun _ => 0 }
+  isImage := { lift := fun _ ↦ 0 }
 
 instance hasImage_zero {X Y : C} : HasImage (0 : X ⟶ Y) :=
   HasImage.mk <| imageFactorisationZero _ _

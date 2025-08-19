@@ -20,7 +20,7 @@ variable [AddCommMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α]
   [Sub α] [OrderedSub α] {a b c : α}
 
 theorem add_tsub_cancel_iff_le : a + (b - a) = b ↔ a ≤ b :=
-  ⟨fun h => le_iff_exists_add.mpr ⟨b - a, h.symm⟩, add_tsub_cancel_of_le⟩
+  ⟨fun h ↦ le_iff_exists_add.mpr ⟨b - a, h.symm⟩, add_tsub_cancel_of_le⟩
 
 theorem tsub_add_cancel_iff_le : b - a + a = b ↔ a ≤ b := by
   rw [add_comm]
@@ -60,7 +60,7 @@ namespace AddLECancellable
 
 protected theorem tsub_le_tsub_iff_left (ha : AddLECancellable a) (hc : AddLECancellable c)
     (h : c ≤ a) : a - b ≤ a - c ↔ c ≤ b := by
-  refine ⟨?_, fun h => tsub_le_tsub_left h a⟩
+  refine ⟨?_, fun h ↦ tsub_le_tsub_left h a⟩
   rw [tsub_le_iff_left, ← hc.add_tsub_assoc_of_le h, hc.le_tsub_iff_right (h.trans le_add_self),
     add_comm b]
   apply ha
@@ -94,8 +94,8 @@ cancellative. This is not an instance as it would form a typeclass loop.
 See note [reducible non-instances]. -/
 abbrev CanonicallyOrderedAddCommMonoid.toAddCancelCommMonoid : AddCancelCommMonoid α :=
   { (by infer_instance : AddCommMonoid α) with
-    add_left_cancel := fun a b c h => by
-      simpa only [add_tsub_cancel_left] using congr_arg (fun x => x - a) h }
+    add_left_cancel := fun a b c h ↦ by
+      simpa only [add_tsub_cancel_left] using congr_arg (fun x ↦ x - a) h }
 
 end Contra
 
@@ -131,13 +131,13 @@ protected theorem tsub_lt_tsub_iff_right (hc : AddLECancellable c) (h : c ≤ a)
     a - c < b - c ↔ a < b := by rw [hc.lt_tsub_iff_left, add_tsub_cancel_of_le h]
 
 protected theorem tsub_lt_self (ha : AddLECancellable a) (h₁ : 0 < a) (h₂ : 0 < b) : a - b < a := by
-  refine tsub_le_self.lt_of_ne fun h => ?_
+  refine tsub_le_self.lt_of_ne fun h ↦ ?_
   rw [← h, tsub_pos_iff_lt] at h₁
   exact h₂.not_ge (ha.add_le_iff_nonpos_left.1 <| add_le_of_le_tsub_left_of_le h₁.le h.ge)
 
 protected theorem tsub_lt_self_iff (ha : AddLECancellable a) : a - b < a ↔ 0 < a ∧ 0 < b := by
   refine
-    ⟨fun h => ⟨(zero_le _).trans_lt h, (zero_le b).lt_of_ne ?_⟩, fun h => ha.tsub_lt_self h.1 h.2⟩
+    ⟨fun h ↦ ⟨(zero_le _).trans_lt h, (zero_le b).lt_of_ne ?_⟩, fun h ↦ ha.tsub_lt_self h.1 h.2⟩
   rintro rfl
   rw [tsub_zero] at h
   exact h.false

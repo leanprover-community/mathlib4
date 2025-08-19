@@ -65,14 +65,14 @@ theorem gameAdd_mk_iff {rα rβ} {a₁ a₂ : α} {b₁ b₂ : β} :
 
 @[simp]
 theorem gameAdd_swap_swap : ∀ a b : α × β, GameAdd rβ rα a.swap b.swap ↔ GameAdd rα rβ a b :=
-  fun ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ => by rw [Prod.swap, Prod.swap, gameAdd_mk_iff, gameAdd_mk_iff, or_comm]
+  fun ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ ↦ by rw [Prod.swap, Prod.swap, gameAdd_mk_iff, gameAdd_mk_iff, or_comm]
 
 theorem gameAdd_swap_swap_mk (a₁ a₂ : α) (b₁ b₂ : β) :
     GameAdd rα rβ (a₁, b₁) (a₂, b₂) ↔ GameAdd rβ rα (b₁, a₁) (b₂, a₂) :=
   gameAdd_swap_swap rβ rα (b₁, a₁) (b₂, a₂)
 
 /-- `Prod.GameAdd` is a subrelation of `Prod.Lex`. -/
-theorem gameAdd_le_lex : GameAdd rα rβ ≤ Prod.Lex rα rβ := fun _ _ h =>
+theorem gameAdd_le_lex : GameAdd rα rβ ≤ Prod.Lex rα rβ := fun _ _ h ↦
   h.rec (Prod.Lex.left _ _) (Prod.Lex.right _)
 
 /-- `Prod.RProd` is a subrelation of the transitive closure of `Prod.GameAdd`. -/
@@ -90,7 +90,7 @@ theorem Acc.prod_gameAdd (ha : Acc rα a) (hb : Acc rβ b) :
     Acc (Prod.GameAdd rα rβ) (a, b) := by
   induction ha generalizing b with | _ a _ iha
   induction hb with | _ b hb ihb
-  refine Acc.intro _ fun h => ?_
+  refine Acc.intro _ fun h ↦ ?_
   rintro (⟨ra⟩ | ⟨rb⟩)
   exacts [iha _ ra (Acc.intro b hb), ihb _ rb]
 
@@ -99,7 +99,7 @@ theorem Acc.prod_gameAdd (ha : Acc rα a) (hb : Acc rβ b) :
   In particular, the sum of two well-founded games is well-founded. -/
 theorem WellFounded.prod_gameAdd (hα : WellFounded rα) (hβ : WellFounded rβ) :
     WellFounded (Prod.GameAdd rα rβ) :=
-  ⟨fun ⟨a, b⟩ => (hα.apply a).prod_gameAdd (hβ.apply b)⟩
+  ⟨fun ⟨a, b⟩ ↦ (hα.apply a).prod_gameAdd (hβ.apply b)⟩
 
 namespace Prod
 
@@ -108,12 +108,12 @@ namespace Prod
 def GameAdd.fix {C : α → β → Sort*} (hα : WellFounded rα) (hβ : WellFounded rβ)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, GameAdd rα rβ (a₂, b₂) (a₁, b₁) → C a₂ b₂) → C a₁ b₁) (a : α) (b : β) :
     C a b :=
-  @WellFounded.fix (α × β) (fun x => C x.1 x.2) _ (hα.prod_gameAdd hβ)
-    (fun ⟨x₁, x₂⟩ IH' => IH x₁ x₂ fun a' b' => IH' ⟨a', b'⟩) ⟨a, b⟩
+  @WellFounded.fix (α × β) (fun x ↦ C x.1 x.2) _ (hα.prod_gameAdd hβ)
+    (fun ⟨x₁, x₂⟩ IH' ↦ IH x₁ x₂ fun a' b' ↦ IH' ⟨a', b'⟩) ⟨a, b⟩
 
 theorem GameAdd.fix_eq {C : α → β → Sort*} (hα : WellFounded rα) (hβ : WellFounded rβ)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, GameAdd rα rβ (a₂, b₂) (a₁, b₁) → C a₂ b₂) → C a₁ b₁) (a : α) (b : β) :
-    GameAdd.fix hα hβ IH a b = IH a b fun a' b' _ => GameAdd.fix hα hβ IH a' b' :=
+    GameAdd.fix hα hβ IH a b = IH a b fun a' b' _ ↦ GameAdd.fix hα hβ IH a' b' :=
   WellFounded.fix_eq _ _ _
 
 /-- Induction on the well-founded `Prod.GameAdd` relation.
@@ -136,8 +136,8 @@ namespace Sym2
   See `Prod.GameAdd` for the ordered pair analog. -/
 def GameAdd (rα : α → α → Prop) : Sym2 α → Sym2 α → Prop :=
   Sym2.lift₂
-    ⟨fun a₁ b₁ a₂ b₂ => Prod.GameAdd rα rα (a₁, b₁) (a₂, b₂) ∨ Prod.GameAdd rα rα (b₁, a₁) (a₂, b₂),
-      fun a₁ b₁ a₂ b₂ => by
+    ⟨fun a₁ b₁ a₂ b₂ ↦ Prod.GameAdd rα rα (a₁, b₁) (a₂, b₂) ∨ Prod.GameAdd rα rα (b₁, a₁) (a₂, b₂),
+      fun a₁ b₁ a₂ b₂ ↦ by
         dsimp
         rw [Prod.gameAdd_swap_swap_mk _ _ b₁ b₂ a₁ a₂, Prod.gameAdd_swap_swap_mk _ _ a₁ b₂ b₁ a₂]
         simp [or_comm]⟩
@@ -176,7 +176,7 @@ theorem Acc.sym2_gameAdd {a b} (ha : Acc rα a) (hb : Acc rα b) :
     Acc (Sym2.GameAdd rα) s(a, b) := by
   induction ha generalizing b with | _ a _ iha
   induction hb with | _ b hb ihb
-  refine Acc.intro _ fun s => ?_
+  refine Acc.intro _ fun s ↦ ?_
   induction s with | _ c d
   rw [Sym2.GameAdd]
   dsimp
@@ -190,7 +190,7 @@ theorem Acc.sym2_gameAdd {a b} (ha : Acc rα a) (hb : Acc rα b) :
 
 /-- The `Sym2.GameAdd` relation on well-founded inputs is well-founded. -/
 theorem WellFounded.sym2_gameAdd (h : WellFounded rα) : WellFounded (Sym2.GameAdd rα) :=
-  ⟨fun i => Sym2.inductionOn i fun x y => (h.apply x).sym2_gameAdd (h.apply y)⟩
+  ⟨fun i ↦ Sym2.inductionOn i fun x y ↦ (h.apply x).sym2_gameAdd (h.apply y)⟩
 
 namespace Sym2
 
@@ -200,14 +200,14 @@ attribute [local instance] Sym2.Rel.setoid
 def GameAdd.fix {C : α → α → Sort*} (hr : WellFounded rα)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, Sym2.GameAdd rα s(a₂, b₂) s(a₁, b₁) → C a₂ b₂) → C a₁ b₁) (a b : α) :
     C a b :=
-  @WellFounded.fix (α × α) (fun x => C x.1 x.2)
+  @WellFounded.fix (α × α) (fun x ↦ C x.1 x.2)
     (fun x y ↦ Prod.GameAdd rα rα x y ∨ Prod.GameAdd rα rα x.swap y)
     (by simpa [← Sym2.gameAdd_iff] using hr.sym2_gameAdd.onFun)
-    (fun ⟨x₁, x₂⟩ IH' => IH x₁ x₂ fun a' b' => IH' ⟨a', b'⟩) (a, b)
+    (fun ⟨x₁, x₂⟩ IH' ↦ IH x₁ x₂ fun a' b' ↦ IH' ⟨a', b'⟩) (a, b)
 
 theorem GameAdd.fix_eq {C : α → α → Sort*} (hr : WellFounded rα)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, Sym2.GameAdd rα s(a₂, b₂) s(a₁, b₁) → C a₂ b₂) → C a₁ b₁) (a b : α) :
-    GameAdd.fix hr IH a b = IH a b fun a' b' _ => GameAdd.fix hr IH a' b' :=
+    GameAdd.fix hr IH a b = IH a b fun a' b' _ ↦ GameAdd.fix hr IH a' b' :=
   WellFounded.fix_eq ..
 
 /-- Induction on the well-founded `Sym2.GameAdd` relation. -/

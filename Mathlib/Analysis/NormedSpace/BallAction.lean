@@ -94,39 +94,39 @@ variable [NormedAlgebra 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' E]
 
 instance isScalarTower_closedBall_closedBall_closedBall :
     IsScalarTower (closedBall (0 : 𝕜) 1) (closedBall (0 : 𝕜') 1) (closedBall (0 : E) r) :=
-  ⟨fun a b c => Subtype.ext <| smul_assoc (a : 𝕜) (b : 𝕜') (c : E)⟩
+  ⟨fun a b c ↦ Subtype.ext <| smul_assoc (a : 𝕜) (b : 𝕜') (c : E)⟩
 
 instance isScalarTower_closedBall_closedBall_ball :
     IsScalarTower (closedBall (0 : 𝕜) 1) (closedBall (0 : 𝕜') 1) (ball (0 : E) r) :=
-  ⟨fun a b c => Subtype.ext <| smul_assoc (a : 𝕜) (b : 𝕜') (c : E)⟩
+  ⟨fun a b c ↦ Subtype.ext <| smul_assoc (a : 𝕜) (b : 𝕜') (c : E)⟩
 
 instance isScalarTower_sphere_closedBall_closedBall :
     IsScalarTower (sphere (0 : 𝕜) 1) (closedBall (0 : 𝕜') 1) (closedBall (0 : E) r) :=
-  ⟨fun a b c => Subtype.ext <| smul_assoc (a : 𝕜) (b : 𝕜') (c : E)⟩
+  ⟨fun a b c ↦ Subtype.ext <| smul_assoc (a : 𝕜) (b : 𝕜') (c : E)⟩
 
 instance isScalarTower_sphere_closedBall_ball :
     IsScalarTower (sphere (0 : 𝕜) 1) (closedBall (0 : 𝕜') 1) (ball (0 : E) r) :=
-  ⟨fun a b c => Subtype.ext <| smul_assoc (a : 𝕜) (b : 𝕜') (c : E)⟩
+  ⟨fun a b c ↦ Subtype.ext <| smul_assoc (a : 𝕜) (b : 𝕜') (c : E)⟩
 
 instance isScalarTower_sphere_sphere_closedBall :
     IsScalarTower (sphere (0 : 𝕜) 1) (sphere (0 : 𝕜') 1) (closedBall (0 : E) r) :=
-  ⟨fun a b c => Subtype.ext <| smul_assoc (a : 𝕜) (b : 𝕜') (c : E)⟩
+  ⟨fun a b c ↦ Subtype.ext <| smul_assoc (a : 𝕜) (b : 𝕜') (c : E)⟩
 
 instance isScalarTower_sphere_sphere_ball :
     IsScalarTower (sphere (0 : 𝕜) 1) (sphere (0 : 𝕜') 1) (ball (0 : E) r) :=
-  ⟨fun a b c => Subtype.ext <| smul_assoc (a : 𝕜) (b : 𝕜') (c : E)⟩
+  ⟨fun a b c ↦ Subtype.ext <| smul_assoc (a : 𝕜) (b : 𝕜') (c : E)⟩
 
 instance isScalarTower_sphere_sphere_sphere :
     IsScalarTower (sphere (0 : 𝕜) 1) (sphere (0 : 𝕜') 1) (sphere (0 : E) r) :=
-  ⟨fun a b c => Subtype.ext <| smul_assoc (a : 𝕜) (b : 𝕜') (c : E)⟩
+  ⟨fun a b c ↦ Subtype.ext <| smul_assoc (a : 𝕜) (b : 𝕜') (c : E)⟩
 
 instance isScalarTower_sphere_ball_ball :
     IsScalarTower (sphere (0 : 𝕜) 1) (ball (0 : 𝕜') 1) (ball (0 : 𝕜') 1) :=
-  ⟨fun a b c => Subtype.ext <| smul_assoc (a : 𝕜) (b : 𝕜') (c : 𝕜')⟩
+  ⟨fun a b c ↦ Subtype.ext <| smul_assoc (a : 𝕜) (b : 𝕜') (c : 𝕜')⟩
 
 instance isScalarTower_closedBall_ball_ball :
     IsScalarTower (closedBall (0 : 𝕜) 1) (ball (0 : 𝕜') 1) (ball (0 : 𝕜') 1) :=
-  ⟨fun a b c => Subtype.ext <| smul_assoc (a : 𝕜) (b : 𝕜') (c : 𝕜')⟩
+  ⟨fun a b c ↦ Subtype.ext <| smul_assoc (a : 𝕜) (b : 𝕜') (c : 𝕜')⟩
 
 end IsScalarTower
 
@@ -136,35 +136,35 @@ variable [SMulCommClass 𝕜 𝕜' E]
 
 instance instSMulCommClass_closedBall_closedBall_closedBall :
     SMulCommClass (closedBall (0 : 𝕜) 1) (closedBall (0 : 𝕜') 1) (closedBall (0 : E) r) :=
-  ⟨fun a b c => Subtype.ext <| smul_comm (a : 𝕜) (b : 𝕜') (c : E)⟩
+  ⟨fun a b c ↦ Subtype.ext <| smul_comm (a : 𝕜) (b : 𝕜') (c : E)⟩
 
 instance instSMulCommClass_closedBall_closedBall_ball :
     SMulCommClass (closedBall (0 : 𝕜) 1) (closedBall (0 : 𝕜') 1) (ball (0 : E) r) :=
-  ⟨fun a b c => Subtype.ext <| smul_comm (a : 𝕜) (b : 𝕜') (c : E)⟩
+  ⟨fun a b c ↦ Subtype.ext <| smul_comm (a : 𝕜) (b : 𝕜') (c : E)⟩
 
 instance instSMulCommClass_sphere_closedBall_closedBall :
     SMulCommClass (sphere (0 : 𝕜) 1) (closedBall (0 : 𝕜') 1) (closedBall (0 : E) r) :=
-  ⟨fun a b c => Subtype.ext <| smul_comm (a : 𝕜) (b : 𝕜') (c : E)⟩
+  ⟨fun a b c ↦ Subtype.ext <| smul_comm (a : 𝕜) (b : 𝕜') (c : E)⟩
 
 instance instSMulCommClass_sphere_closedBall_ball :
     SMulCommClass (sphere (0 : 𝕜) 1) (closedBall (0 : 𝕜') 1) (ball (0 : E) r) :=
-  ⟨fun a b c => Subtype.ext <| smul_comm (a : 𝕜) (b : 𝕜') (c : E)⟩
+  ⟨fun a b c ↦ Subtype.ext <| smul_comm (a : 𝕜) (b : 𝕜') (c : E)⟩
 
 instance instSMulCommClass_sphere_ball_ball [NormedAlgebra 𝕜 𝕜'] :
     SMulCommClass (sphere (0 : 𝕜) 1) (ball (0 : 𝕜') 1) (ball (0 : 𝕜') 1) :=
-  ⟨fun a b c => Subtype.ext <| smul_comm (a : 𝕜) (b : 𝕜') (c : 𝕜')⟩
+  ⟨fun a b c ↦ Subtype.ext <| smul_comm (a : 𝕜) (b : 𝕜') (c : 𝕜')⟩
 
 instance instSMulCommClass_sphere_sphere_closedBall :
     SMulCommClass (sphere (0 : 𝕜) 1) (sphere (0 : 𝕜') 1) (closedBall (0 : E) r) :=
-  ⟨fun a b c => Subtype.ext <| smul_comm (a : 𝕜) (b : 𝕜') (c : E)⟩
+  ⟨fun a b c ↦ Subtype.ext <| smul_comm (a : 𝕜) (b : 𝕜') (c : E)⟩
 
 instance instSMulCommClass_sphere_sphere_ball :
     SMulCommClass (sphere (0 : 𝕜) 1) (sphere (0 : 𝕜') 1) (ball (0 : E) r) :=
-  ⟨fun a b c => Subtype.ext <| smul_comm (a : 𝕜) (b : 𝕜') (c : E)⟩
+  ⟨fun a b c ↦ Subtype.ext <| smul_comm (a : 𝕜) (b : 𝕜') (c : E)⟩
 
 instance instSMulCommClass_sphere_sphere_sphere :
     SMulCommClass (sphere (0 : 𝕜) 1) (sphere (0 : 𝕜') 1) (sphere (0 : E) r) :=
-  ⟨fun a b c => Subtype.ext <| smul_comm (a : 𝕜) (b : 𝕜') (c : E)⟩
+  ⟨fun a b c ↦ Subtype.ext <| smul_comm (a : 𝕜) (b : 𝕜') (c : E)⟩
 
 end SMulCommClass
 
@@ -172,7 +172,7 @@ variable (𝕜)
 variable [CharZero 𝕜]
 
 include 𝕜 in
-theorem ne_neg_of_mem_sphere {r : ℝ} (hr : r ≠ 0) (x : sphere (0 : E) r) : x ≠ -x := fun h =>
+theorem ne_neg_of_mem_sphere {r : ℝ} (hr : r ≠ 0) (x : sphere (0 : E) r) : x ≠ -x := fun h ↦
   ne_zero_of_mem_sphere hr x ((self_eq_neg 𝕜 _).mp (by (conv_lhs => rw [h]); rfl))
 
 include 𝕜 in

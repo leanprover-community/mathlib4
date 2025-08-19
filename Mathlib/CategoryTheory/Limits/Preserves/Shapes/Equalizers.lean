@@ -181,7 +181,7 @@ instance : IsIso (coequalizerComparison f g G) := by
   infer_instance
 
 instance map_π_epi : Epi (G.map (coequalizer.π f g)) :=
-  ⟨fun {W} h k => by
+  ⟨fun {W} h k ↦ by
     rw [← ι_comp_coequalizerComparison]
     haveI : Epi (coequalizer.π (G.map f) (G.map g) ≫ coequalizerComparison f g G) := by
       apply epi_comp

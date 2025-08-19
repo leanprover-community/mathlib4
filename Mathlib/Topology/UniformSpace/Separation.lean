@@ -172,7 +172,7 @@ theorem Filter.Tendsto.inseparable_iff_uniformity {β} {l : Filter β} [NeBot l]
   exact (ClusterPt.of_le_nhds (ha.prodMk_nhds hb)).mono h
 
 theorem isClosed_of_spaced_out [T0Space α] {V₀ : Set (α × α)} (V₀_in : V₀ ∈ 𝓤 α) {s : Set α}
-    (hs : s.Pairwise fun x y => (x, y) ∉ V₀) : IsClosed s := by
+    (hs : s.Pairwise fun x y ↦ (x, y) ∉ V₀) : IsClosed s := by
   rcases comp_symm_mem_uniformity_sets V₀_in with ⟨V₁, V₁_in, V₁_symm, h_comp⟩
   apply isClosed_of_closure_subset
   intro x hx
@@ -188,7 +188,7 @@ theorem isClosed_of_spaced_out [T0Space α] {V₀ : Set (α × α)} (V₀_in : V
   exact ball_inter_right x _ _ hz
 
 theorem isClosed_range_of_spaced_out {ι} [T0Space α] {V₀ : Set (α × α)} (V₀_in : V₀ ∈ 𝓤 α)
-    {f : ι → α} (hf : Pairwise fun x y => (f x, f y) ∉ V₀) : IsClosed (range f) :=
+    {f : ι → α} (hf : Pairwise fun x y ↦ (f x, f y) ∉ V₀) : IsClosed (range f) :=
   isClosed_of_spaced_out V₀_in <| by
     rintro _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ h
     exact hf (ne_of_apply_ne f h)
@@ -252,8 +252,8 @@ open Classical in
 
 TODO: unify with `SeparationQuotient.lift`. -/
 def lift' [T0Space β] (f : α → β) : SeparationQuotient α → β :=
-  if hc : UniformContinuous f then lift f fun _ _ h => (h.map hc.continuous).eq
-  else fun x => f (Nonempty.some ⟨x.out⟩)
+  if hc : UniformContinuous f then lift f fun _ _ h ↦ (h.map hc.continuous).eq
+  else fun x ↦ f (Nonempty.some ⟨x.out⟩)
 
 theorem lift'_mk [T0Space β] {f : α → β} (h : UniformContinuous f) (a : α) :
     lift' f (mk a) = f a := by rw [lift', dif_pos h, lift_mk]
@@ -262,7 +262,7 @@ theorem uniformContinuous_lift' [T0Space β] (f : α → β) : UniformContinuous
   by_cases hf : UniformContinuous f
   · rwa [lift', dif_pos hf, uniformContinuous_lift]
   · rw [lift', dif_neg hf]
-    exact uniformContinuous_of_const fun a _ => rfl
+    exact uniformContinuous_of_const fun a _ ↦ rfl
 
 /-- The separation quotient functor acting on functions. -/
 def map (f : α → β) : SeparationQuotient α → SeparationQuotient β := lift' (mk ∘ f)

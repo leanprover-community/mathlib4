@@ -29,7 +29,7 @@ theorem quotient (R : Type u) [CommRing R] (p : ℕ) [hp1 : Fact p.Prime] (hp2 :
     map_natCast (Ideal.Quotient.mk (Ideal.span {(p : R)} : Ideal R)) p ▸
       Ideal.Quotient.eq_zero_iff_mem.2 (Ideal.subset_span <| Set.mem_singleton _)
   ringChar.of_eq <|
-    Or.resolve_left ((Nat.dvd_prime hp1.1).1 <| ringChar.dvd hp0) fun h1 =>
+    Or.resolve_left ((Nat.dvd_prime hp1.1).1 <| ringChar.dvd hp0) fun h1 ↦
       hp2 <|
         isUnit_iff_dvd_one.2 <|
           Ideal.mem_span_singleton.1 <|
@@ -40,16 +40,16 @@ theorem quotient (R : Type u) [CommRing R] (p : ℕ) [hp1 : Fact p.Prime] (hp2 :
 inherits the characteristic of the underlying ring. -/
 theorem quotient' {R : Type*} [CommRing R] (p : ℕ) [CharP R p] (I : Ideal R)
     (h : ∀ x : ℕ, (x : R) ∈ I → (x : R) = 0) : CharP (R ⧸ I) p :=
-  ⟨fun x => by
+  ⟨fun x ↦ by
     rw [← cast_eq_zero_iff R p x, ← map_natCast (Ideal.Quotient.mk I)]
     refine Ideal.Quotient.eq.trans (?_ : ↑x - 0 ∈ I ↔ _)
     rw [sub_zero]
-    exact ⟨h x, fun h' => h'.symm ▸ I.zero_mem⟩⟩
+    exact ⟨h x, fun h' ↦ h'.symm ▸ I.zero_mem⟩⟩
 
 /-- `CharP.quotient'` as an `Iff`. -/
 theorem quotient_iff {R : Type*} [CommRing R] (n : ℕ) [CharP R n] (I : Ideal R) :
     CharP (R ⧸ I) n ↔ ∀ x : ℕ, ↑x ∈ I → (x : R) = 0 := by
-  refine ⟨fun _ x hx => ?_, CharP.quotient' n I⟩
+  refine ⟨fun _ x hx ↦ ?_, CharP.quotient' n I⟩
   rw [CharP.cast_eq_zero_iff R n, ← CharP.cast_eq_zero_iff (R ⧸ I) n _]
   exact (Submodule.Quotient.mk_eq_zero I).mpr hx
 

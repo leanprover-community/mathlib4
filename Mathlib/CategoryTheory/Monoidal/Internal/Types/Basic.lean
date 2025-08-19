@@ -46,8 +46,8 @@ noncomputable def inverse : MonCat.{u} ⥤ Mon_ (Type u) where
   obj A :=
     { X := A
       mon :=
-        { one := fun _ => 1
-          mul := fun p => p.1 * p.2
+        { one := fun _ ↦ 1
+          mul := fun p ↦ p.1 * p.2
           one_mul := by ext ⟨_, _⟩; simp
           mul_one := by ext ⟨_, _⟩; simp
           mul_assoc := by ext ⟨⟨x, y⟩, z⟩; simp [_root_.mul_assoc] } }
@@ -65,7 +65,7 @@ noncomputable def monTypeEquivalenceMon : Mon_ (Type u) ≌ MonCat.{u} where
   inverse := inverse
   unitIso := Iso.refl _
   counitIso := NatIso.ofComponents
-    (fun A => MulEquiv.toMonCatIso { Equiv.refl _ with map_mul' := fun _ _ => rfl })
+    (fun A ↦ MulEquiv.toMonCatIso { Equiv.refl _ with map_mul' := fun _ _ ↦ rfl })
     (by cat_disch)
 
 /-- The equivalence `Mon_ (Type u) ≌ MonCat.{u}`
@@ -73,7 +73,7 @@ is naturally compatible with the forgetful functors to `Type u`.
 -/
 noncomputable def monTypeEquivalenceMonForget :
     MonTypeEquivalenceMon.functor ⋙ forget MonCat ≅ Mon_.forget (Type u) :=
-  NatIso.ofComponents (fun _ => Iso.refl _) (by cat_disch)
+  NatIso.ofComponents (fun _ ↦ Iso.refl _) (by cat_disch)
 
 noncomputable instance monTypeInhabited : Inhabited (Mon_ (Type u)) :=
   ⟨MonTypeEquivalenceMon.inverse.obj (MonCat.of PUnit)⟩
@@ -82,7 +82,7 @@ namespace CommMonTypeEquivalenceCommMon
 
 instance commMonCommMonoid (A : Type u) [Mon_Class A] [IsCommMon A] : CommMonoid A :=
   { MonTypeEquivalenceMon.monMonoid A with
-    mul_comm := fun x y => by convert congr_fun (IsCommMon.mul_comm A) (y, x) }
+    mul_comm := fun x y ↦ by convert congr_fun (IsCommMon.mul_comm A) (y, x) }
 
 /-- Converting a commutative monoid object in `Type` to a bundled commutative monoid.
 -/
@@ -113,7 +113,7 @@ noncomputable def commMonTypeEquivalenceCommMon : CommMon_ (Type u) ≌ CommMonC
   inverse := inverse
   unitIso := Iso.refl _
   counitIso := NatIso.ofComponents
-    (fun A => MulEquiv.toCommMonCatIso { Equiv.refl _ with map_mul' := fun _ _ => rfl })
+    (fun A ↦ MulEquiv.toCommMonCatIso { Equiv.refl _ with map_mul' := fun _ _ ↦ rfl })
     (by cat_disch)
 
 /-- The equivalences `Mon_ (Type u) ≌ MonCat.{u}` and `CommMon_ (Type u) ≌ CommMonCat.{u}`

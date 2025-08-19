@@ -55,20 +55,20 @@ lemma contMDiff_val : ContMDiff 𝓘(𝕜, R) 𝓘(𝕜, R) n (val : Rˣ → R) 
 instance : LieGroup 𝓘(𝕜, R) n Rˣ where
   contMDiff_mul := by
     apply ContMDiff.of_comp_isOpenEmbedding Units.isOpenEmbedding_val
-    have : (val : Rˣ → R) ∘ (fun x : Rˣ × Rˣ => x.1 * x.2) =
-      (fun x : R × R => x.1 * x.2) ∘ (fun x : Rˣ × Rˣ => (x.1, x.2)) := by ext; simp
+    have : (val : Rˣ → R) ∘ (fun x : Rˣ × Rˣ ↦ x.1 * x.2) =
+      (fun x : R × R ↦ x.1 * x.2) ∘ (fun x : Rˣ × Rˣ ↦ (x.1, x.2)) := by ext; simp
     rw [this]
     have : ContMDiff (𝓘(𝕜, R).prod 𝓘(𝕜, R)) 𝓘(𝕜, R × R) n
-      (fun x : Rˣ × Rˣ => ((x.1 : R), (x.2 : R))) :=
+      (fun x : Rˣ × Rˣ ↦ ((x.1 : R), (x.2 : R))) :=
       (contMDiff_val.comp contMDiff_fst).prodMk_space (contMDiff_val.comp contMDiff_snd)
     refine ContMDiff.comp ?_ this
     rw [contMDiff_iff_contDiff]
     exact contDiff_mul
   contMDiff_inv := by
     apply ContMDiff.of_comp_isOpenEmbedding Units.isOpenEmbedding_val
-    have : (val : Rˣ → R) ∘ (fun x : Rˣ => x⁻¹) = Ring.inverse ∘ val := by ext; simp
+    have : (val : Rˣ → R) ∘ (fun x : Rˣ ↦ x⁻¹) = Ring.inverse ∘ val := by ext; simp
     rw [this, ContMDiff]
-    refine fun x => ContMDiffAt.comp x ?_ (contMDiff_val x)
+    refine fun x ↦ ContMDiffAt.comp x ?_ (contMDiff_val x)
     rw [contMDiffAt_iff_contDiffAt]
     exact contDiffAt_ringInverse _ _
 

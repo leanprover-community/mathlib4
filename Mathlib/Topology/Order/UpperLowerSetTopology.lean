@@ -90,7 +90,7 @@ lemma ofUpperSet_inj {a b : WithUpperSet α} : ofUpperSet a = ofUpperSet b ↔ a
 /-- A recursor for `WithUpperSet`. Use as `induction x`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 protected def rec {β : WithUpperSet α → Sort*} (h : ∀ a, β (toUpperSet a)) : ∀ a, β a :=
-  fun a => h (ofUpperSet a)
+  fun a ↦ h (ofUpperSet a)
 
 instance [Nonempty α] : Nonempty (WithUpperSet α) := ‹Nonempty α›
 instance [Inhabited α] : Inhabited (WithUpperSet α) := ‹Inhabited α›
@@ -136,7 +136,7 @@ lemma ofLowerSet_inj {a b : WithLowerSet α} : ofLowerSet a = ofLowerSet b ↔ a
 /-- A recursor for `WithLowerSet`. Use as `induction x`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 protected def rec {β : WithLowerSet α → Sort*} (h : ∀ a, β (toLowerSet a)) : ∀ a, β a :=
-  fun a => h (ofLowerSet a)
+  fun a ↦ h (ofLowerSet a)
 
 instance [Nonempty α] : Nonempty (WithLowerSet α) := ‹Nonempty α›
 instance [Inhabited α] : Inhabited (WithLowerSet α) := ‹Inhabited α›
@@ -280,7 +280,7 @@ lemma monotone_to_upperTopology_continuous [TopologicalSpace α] [TopologicalSpa
   exact (IsUpper.isUpperSet_of_isOpen hs).preimage hf
 
 lemma upperSet_le_upper {t₁ t₂ : TopologicalSpace α} [@Topology.IsUpperSet α t₁ _]
-    [@Topology.IsUpper α t₂ _] : t₁ ≤ t₂ := fun s hs => by
+    [@Topology.IsUpper α t₂ _] : t₁ ≤ t₂ := fun s hs ↦ by
   rw [@isOpen_iff_isUpperSet α _ t₁]
   exact IsUpper.isUpperSet_of_isOpen hs
 
@@ -345,7 +345,7 @@ lemma monotone_to_lowerTopology_continuous [TopologicalSpace α] [TopologicalSpa
   IsUpperSet.monotone_to_upperTopology_continuous (α := αᵒᵈ) (β := βᵒᵈ) hf.dual
 
 lemma lowerSet_le_lower {t₁ t₂ : TopologicalSpace α} [@Topology.IsLowerSet α t₁ _]
-    [@IsLower α t₂ _] : t₁ ≤ t₂ := fun s hs => by
+    [@IsLower α t₂ _] : t₁ ≤ t₂ := fun s hs ↦ by
   rw [@isOpen_iff_isLowerSet α _ t₁]
   exact IsLower.isLowerSet_of_isOpen hs
 

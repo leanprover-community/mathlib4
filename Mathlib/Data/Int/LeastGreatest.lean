@@ -49,7 +49,7 @@ def leastOfBdd {P : ℤ → Prop} [DecidablePred P] (b : ℤ) (Hb : ∀ z : ℤ,
     let ⟨elt, Helt⟩ := Hinh
     match elt, le.dest (Hb _ Helt), Helt with
     | _, ⟨n, rfl⟩, Hn => ⟨n, Hn⟩
-  ⟨b + (Nat.find EX : ℤ), Nat.find_spec EX, fun z h =>
+  ⟨b + (Nat.find EX : ℤ), Nat.find_spec EX, fun z h ↦
     match z, le.dest (Hb _ h), h with
     | _, ⟨_, rfl⟩, h => add_le_add_left (Int.ofNat_le.2 <| Nat.find_min' _ h) _⟩
 
@@ -84,12 +84,12 @@ integers, with an explicit upper bound and a proof that it is somewhere true, re
 the greatest value for which the predicate is true. -/
 def greatestOfBdd {P : ℤ → Prop} [DecidablePred P] (b : ℤ) (Hb : ∀ z : ℤ, P z → z ≤ b)
     (Hinh : ∃ z : ℤ, P z) : { ub : ℤ // P ub ∧ ∀ z : ℤ, P z → z ≤ ub } :=
-  have Hbdd' : ∀ z : ℤ, P (-z) → -b ≤ z := fun _ h => neg_le.1 (Hb _ h)
+  have Hbdd' : ∀ z : ℤ, P (-z) → -b ≤ z := fun _ h ↦ neg_le.1 (Hb _ h)
   have Hinh' : ∃ z : ℤ, P (-z) :=
     let ⟨elt, Helt⟩ := Hinh
     ⟨-elt, by rw [neg_neg]; exact Helt⟩
   let ⟨lb, Plb, al⟩ := leastOfBdd (-b) Hbdd' Hinh'
-  ⟨-lb, Plb, fun z h => le_neg.1 <| al _ <| by rwa [neg_neg]⟩
+  ⟨-lb, Plb, fun z h ↦ le_neg.1 <| al _ <| by rwa [neg_neg]⟩
 
 /-- `Int.greatestOfBdd` is the greatest integer satisfying a predicate which is false for all
 `z : ℤ` with `b < z` for some fixed `b : ℤ`. -/

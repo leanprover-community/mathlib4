@@ -92,7 +92,7 @@ theorem finite_integral_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r)
     (∫⁻ x : E, ENNReal.ofReal ((1 + ‖x‖) ^ (-r)) ∂μ) < ∞ := by
   have hr : 0 < r := lt_of_le_of_lt (finrank ℝ E).cast_nonneg hnr
   -- We start by applying the layer cake formula
-  have h_meas : Measurable fun ω : E => (1 + ‖ω‖) ^ (-r) := by fun_prop
+  have h_meas : Measurable fun ω : E ↦ (1 + ‖ω‖) ^ (-r) := by fun_prop
   have h_pos : ∀ x : E, 0 ≤ (1 + ‖x‖) ^ (-r) := fun x ↦ by positivity
   rw [lintegral_eq_lintegral_meas_le μ (Eventually.of_forall h_pos) h_meas.aemeasurable]
   have h_int : ∀ t, 0 < t → μ {a : E | t ≤ (1 + ‖a‖) ^ (-r)} =
@@ -120,7 +120,7 @@ theorem finite_integral_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r)
     exact ENNReal.mul_lt_top
       (finite_integral_rpow_sub_one_pow_aux (finrank ℝ E) hnr) measure_ball_lt_top
   · -- The integral from 1 to ∞ is zero:
-    have h_int'' : ∀ t ∈ Ioi (1 : ℝ), f t = 0 := fun t ht => by
+    have h_int'' : ∀ t ∈ Ioi (1 : ℝ), f t = 0 := fun t ht ↦ by
       simp only [f, closedBall_rpow_sub_one_eq_empty_aux E hr ht, measure_empty]
     -- The integral over the constant zero function is finite:
     rw [setLIntegral_congr_fun measurableSet_Ioi h_int'', lintegral_const 0,
@@ -133,7 +133,7 @@ theorem integrable_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
   · apply Measurable.aestronglyMeasurable (by fun_prop)
   -- Lower Lebesgue integral
   have : (∫⁻ a : E, ‖(1 + ‖a‖) ^ (-r)‖ₑ ∂μ) = ∫⁻ a : E, ENNReal.ofReal ((1 + ‖a‖) ^ (-r)) ∂μ :=
-    lintegral_enorm_of_nonneg fun _ => rpow_nonneg (by positivity) _
+    lintegral_enorm_of_nonneg fun _ ↦ rpow_nonneg (by positivity) _
   rw [hasFiniteIntegral_iff_enorm, this]
   exact finite_integral_one_add_norm hnr
 
@@ -141,7 +141,7 @@ theorem integrable_rpow_neg_one_add_norm_sq {r : ℝ} (hnr : (finrank ℝ E : �
     Integrable (fun x ↦ ((1 : ℝ) + ‖x‖ ^ 2) ^ (-r / 2)) μ := by
   have hr : 0 < r := lt_of_le_of_lt (finrank ℝ E).cast_nonneg hnr
   refine ((integrable_one_add_norm hnr).const_mul <| (2 : ℝ) ^ (r / 2)).mono'
-    ?_ (Eventually.of_forall fun x => ?_)
+    ?_ (Eventually.of_forall fun x ↦ ?_)
   · apply Measurable.aestronglyMeasurable (by fun_prop)
   refine (abs_of_pos ?_).trans_le (rpow_neg_one_add_norm_sq_le x hr)
   positivity

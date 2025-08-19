@@ -96,7 +96,7 @@ def d [Monoid G] (A : Rep k G) (n : ℕ) :
     ModuleCat.of k ((Fin n → G) → A) ⟶ ModuleCat.of k ((Fin (n + 1) → G) → A) :=
   ModuleCat.ofHom
   { toFun f g :=
-      A.ρ (g 0) (f fun i => g i.succ) + Finset.univ.sum fun j : Fin (n + 1) =>
+      A.ρ (g 0) (f fun i ↦ g i.succ) + Finset.univ.sum fun j : Fin (n + 1) ↦
         (-1 : k) ^ ((j : ℕ) + 1) • f (Fin.contractNth j (· * ·) g)
     map_add' f g := by
       ext
@@ -127,8 +127,8 @@ open inhomogeneousCochains Rep
 $$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \to \dots$$
 which calculates the group cohomology of `A`. -/
 noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
-  CochainComplex.of (fun n => ModuleCat.of k ((Fin n → G) → A))
-    (fun n => inhomogeneousCochains.d A n) fun n => by
+  CochainComplex.of (fun n ↦ ModuleCat.of k ((Fin n → G) → A))
+    (fun n ↦ inhomogeneousCochains.d A n) fun n ↦ by
     classical
     simp only [d_eq]
     slice_lhs 3 4 => { rw [Iso.hom_inv_id] }
@@ -153,7 +153,7 @@ to `Hom(P, A)`, where `P` is the bar resolution of `k` as a trivial `G`-represen
 def inhomogeneousCochainsIso [DecidableEq G] :
     inhomogeneousCochains A ≅ (barComplex k G).linearYonedaObj k A := by
   refine HomologicalComplex.Hom.isoOfComponents
-    (fun i => (Rep.freeLiftLEquiv (Fin i → G) A).toModuleIso.symm) ?_
+    (fun i ↦ (Rep.freeLiftLEquiv (Fin i → G) A).toModuleIso.symm) ?_
   rintro i j (h : i + 1 = j)
   subst h
   simp [d_eq, -LinearEquiv.toModuleIso_hom, -LinearEquiv.toModuleIso_inv]

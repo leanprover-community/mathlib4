@@ -38,7 +38,7 @@ instance : Inhabited CompactlyGenerated.{u, w} :=
   ⟨{ toTop := TopCat.of (ULift (Fin 37)) }⟩
 
 instance : CoeSort CompactlyGenerated Type* :=
-  ⟨fun X => X.toTop⟩
+  ⟨fun X ↦ X.toTop⟩
 
 attribute [instance] is_compactly_generated
 

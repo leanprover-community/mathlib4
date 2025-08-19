@@ -85,14 +85,14 @@ variable [SMul R M] [SetLike S M] [hS : SMulMemClass S R M] (s : S)
 /-- A subset closed under the scalar action inherits that action. -/
 @[to_additive /-- A subset closed under the additive action inherits that action. -/]
 instance (priority := 50) smul : SMul R s :=
-  ⟨fun r x => ⟨r • x.1, smul_mem r x.2⟩⟩
+  ⟨fun r x ↦ ⟨r • x.1, smul_mem r x.2⟩⟩
 
 /-- This can't be an instance because Lean wouldn't know how to find `N`, but we can still use
 this to manually derive `SMulMemClass` on specific types. -/
 @[to_additive] theorem _root_.SMulMemClass.ofIsScalarTower (S M N α : Type*) [SetLike S α]
     [SMul M N] [SMul M α] [Monoid N] [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] :
     SMulMemClass S M α :=
-  { smul_mem := fun m a ha => smul_one_smul N m a ▸ SMulMemClass.smul_mem _ ha }
+  { smul_mem := fun m a ha ↦ smul_one_smul N m a ▸ SMulMemClass.smul_mem _ ha }
 
 instance instIsScalarTower [Mul M] [MulMemClass S M] [IsScalarTower R M M]
     (s : S) : IsScalarTower R s s where
@@ -121,7 +121,7 @@ theorem smul_def (r : R) (x : s) : r • x = ⟨r • x, smul_mem r x.2⟩ :=
 @[simp]
 theorem forall_smul_mem_iff {R M S : Type*} [Monoid R] [MulAction R M] [SetLike S M]
     [SMulMemClass S R M] {N : S} {x : M} : (∀ a : R, a • x ∈ N) ↔ x ∈ N :=
-  ⟨fun h => by simpa using h 1, fun h a => SMulMemClass.smul_mem a h⟩
+  ⟨fun h ↦ by simpa using h 1, fun h a ↦ SMulMemClass.smul_mem a h⟩
 
 end SMul
 
@@ -178,7 +178,7 @@ variable [SMul R M]
 
 @[to_additive]
 instance : SetLike (SubMulAction R M) M :=
-  ⟨SubMulAction.carrier, fun p q h => by cases p; cases q; congr⟩
+  ⟨SubMulAction.carrier, fun p q h ↦ by cases p; cases q; congr⟩
 
 @[to_additive]
 instance : SMulMemClass (SubMulAction R M) R M where smul_mem := smul_mem' _
@@ -211,7 +211,7 @@ theorem copy_eq (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : p.copy s hs
 instance : Bot (SubMulAction R M) where
   bot :=
     { carrier := ∅
-      smul_mem' := fun _c h => Set.notMem_empty h }
+      smul_mem' := fun _c h ↦ Set.notMem_empty h }
 
 @[to_additive]
 instance : Inhabited (SubMulAction R M) :=
@@ -329,7 +329,7 @@ theorem val_smul_of_tower (s : S) (x : p) : ((s • x : p) : M) = s • (x : M) 
 @[to_additive (attr := simp)]
 theorem smul_mem_iff' {G} [Group G] [SMul G R] [MulAction G M] [IsScalarTower G R M] (g : G)
     {x : M} : g • x ∈ p ↔ x ∈ p :=
-  ⟨fun h => inv_smul_smul g x ▸ p.smul_of_tower_mem g⁻¹ h, p.smul_of_tower_mem g⟩
+  ⟨fun h ↦ inv_smul_smul g x ▸ p.smul_of_tower_mem g⁻¹ h, p.smul_of_tower_mem g⟩
 
 @[to_additive]
 instance isCentralScalar [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsScalarTower Sᵐᵒᵖ R M]
@@ -428,7 +428,7 @@ theorem zero_mem (h : (p : Set M).Nonempty) : (0 : M) ∈ p :=
 /-- If the scalar product forms a `Module`, and the `SubMulAction` is not `⊥`, then the
 subset inherits the zero. -/
 instance [n_empty : Nonempty p] : Zero p where
-  zero := ⟨0, n_empty.elim fun x => p.zero_mem ⟨x, x.prop⟩⟩
+  zero := ⟨0, n_empty.elim fun x ↦ p.zero_mem ⟨x, x.prop⟩⟩
 
 end Module
 
@@ -445,12 +445,12 @@ theorem neg_mem (hx : x ∈ p) : -x ∈ p := by
 
 @[simp]
 theorem neg_mem_iff : -x ∈ p ↔ x ∈ p :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [← neg_neg x]
     exact neg_mem _ h, neg_mem _⟩
 
 instance : Neg p :=
-  ⟨fun x => ⟨-x.1, neg_mem _ x.2⟩⟩
+  ⟨fun x ↦ ⟨-x.1, neg_mem _ x.2⟩⟩
 
 @[simp, norm_cast]
 theorem val_neg (x : p) : ((-x : p) : M) = -x :=

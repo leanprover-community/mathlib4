@@ -36,7 +36,7 @@ theorem closure_isCycle : closure { σ : Perm β | IsCycle σ } = ⊤ := by
   classical
     cases nonempty_fintype β
     exact
-      top_le_iff.mp (le_trans (ge_of_eq closure_isSwap) (closure_mono fun _ => IsSwap.isCycle))
+      top_le_iff.mp (le_trans (ge_of_eq closure_isSwap) (closure_mono fun _ ↦ IsSwap.isCycle))
 
 variable [DecidableEq α] [Fintype α]
 
@@ -113,7 +113,7 @@ theorem closure_prime_cycle_swap {σ τ : Perm α} (h0 : (Fintype.card α).Prime
       (mem_support.mp ((Finset.ext_iff.mp h2 y).mpr (Finset.mem_univ y)))
   rw [h5, ← hi]
   refine closure_cycle_coprime_swap
-    (Nat.Coprime.symm (h0.coprime_iff_not_dvd.mpr fun h => h4 ?_)) h1 h2 x
+    (Nat.Coprime.symm (h0.coprime_iff_not_dvd.mpr fun h ↦ h4 ?_)) h1 h2 x
   obtain ⟨m, hm⟩ := h
   rwa [hm, pow_mul, ← Finset.card_univ, ← h2, ← h1.orderOf, pow_orderOf_eq_one, one_pow,
     one_apply] at hi

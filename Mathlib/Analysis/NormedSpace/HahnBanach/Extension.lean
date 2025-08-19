@@ -40,17 +40,17 @@ See also `exists_extension_norm_eq` in the root namespace for a more general ver
 that works both for `ℝ` and `ℂ`. -/
 theorem exists_extension_norm_eq (p : Subspace ℝ E) (f : p →L[ℝ] ℝ) :
     ∃ g : E →L[ℝ] ℝ, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
-  rcases exists_extension_of_le_sublinear ⟨p, f⟩ (fun x => ‖f‖ * ‖x‖)
-      (fun c hc x => by simp only [norm_smul c x, Real.norm_eq_abs, abs_of_pos hc, mul_left_comm])
-      (fun x y => by
+  rcases exists_extension_of_le_sublinear ⟨p, f⟩ (fun x ↦ ‖f‖ * ‖x‖)
+      (fun c hc x ↦ by simp only [norm_smul c x, Real.norm_eq_abs, abs_of_pos hc, mul_left_comm])
+      (fun x y ↦ by
         rw [← left_distrib]
         exact mul_le_mul_of_nonneg_left (norm_add_le x y) (@norm_nonneg _ _ f))
-      fun x => le_trans (le_abs_self _) (f.le_opNorm _) with ⟨g, g_eq, g_le⟩
+      fun x ↦ le_trans (le_abs_self _) (f.le_opNorm _) with ⟨g, g_eq, g_le⟩
   set g' :=
-    g.mkContinuous ‖f‖ fun x => abs_le.2 ⟨neg_le.1 <| g.map_neg x ▸ norm_neg x ▸ g_le (-x), g_le x⟩
+    g.mkContinuous ‖f‖ fun x ↦ abs_le.2 ⟨neg_le.1 <| g.map_neg x ▸ norm_neg x ▸ g_le (-x), g_le x⟩
   refine ⟨g', g_eq, ?_⟩
   apply le_antisymm (g.mkContinuous_norm_le (norm_nonneg f) _)
-  refine f.opNorm_le_bound (norm_nonneg _) fun x => ?_
+  refine f.opNorm_le_bound (norm_nonneg _) fun x ↦ ?_
   dsimp at g_eq
   rw [← g_eq]
   apply g'.le_opNorm
@@ -108,7 +108,7 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : p →L[𝕜] 𝕜) :
       _ = ‖fr‖ := hnormeq
       _ ≤ ‖reCLM‖ * ‖f‖ := ContinuousLinearMap.opNorm_comp_le _ _
       _ = ‖f‖ := by rw [reCLM_norm, one_mul]
-  · exact f.opNorm_le_bound g.extendTo𝕜.opNorm_nonneg fun x => h x ▸ g.extendTo𝕜.le_opNorm x
+  · exact f.opNorm_le_bound g.extendTo𝕜.opNorm_nonneg fun x ↦ h x ▸ g.extendTo𝕜.le_opNorm x
 
 open Module
 

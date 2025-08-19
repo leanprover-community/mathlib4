@@ -106,9 +106,9 @@ class BooleanAlgebra (α : Type u) extends
   /-- `⊥` is the least element -/
   bot_le : ∀ a : α, ⊥ ≤ a
   /-- `x \ y` is equal to `x ⊓ yᶜ` -/
-  sdiff := fun x y => x ⊓ yᶜ
+  sdiff := fun x y ↦ x ⊓ yᶜ
   /-- `x ⇨ y` is equal to `y ⊔ xᶜ` -/
-  himp := fun x y => y ⊔ xᶜ
+  himp := fun x y ↦ y ⊔ xᶜ
   /-- `x \ y` is equal to `x ⊓ yᶜ` -/
   sdiff_eq : ∀ x y : α, x \ y = x ⊓ yᶜ := by aesop
   /-- `x ⇨ y` is equal to `y ⊔ xᶜ` -/

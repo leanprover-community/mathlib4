@@ -52,13 +52,13 @@ variable (σ₁ : R₁ →+* S₁) (σ₂ : R₂ →+* S₂)
 This is an auxiliary definition for the equivalence `Matrix.toLinearMap₂'`. -/
 def Matrix.toLinearMap₂'Aux (f : Matrix n m N₂) : (n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] N₂ :=
   -- porting note: we don't seem to have `∑ i j` as valid notation yet
-  mk₂'ₛₗ σ₁ σ₂ (fun (v : n → R₁) (w : m → R₂) => ∑ i, ∑ j, σ₂ (w j) • σ₁ (v i) • f i j)
-    (fun _ _ _ => by simp only [Pi.add_apply, map_add, smul_add, sum_add_distrib, add_smul])
-    (fun c v w => by
+  mk₂'ₛₗ σ₁ σ₂ (fun (v : n → R₁) (w : m → R₂) ↦ ∑ i, ∑ j, σ₂ (w j) • σ₁ (v i) • f i j)
+    (fun _ _ _ ↦ by simp only [Pi.add_apply, map_add, smul_add, sum_add_distrib, add_smul])
+    (fun c v w ↦ by
       simp only [Pi.smul_apply, smul_sum, smul_eq_mul, σ₁.map_mul, ← smul_comm _ (σ₁ c),
         MulAction.mul_smul])
-    (fun _ _ _ => by simp only [Pi.add_apply, map_add, add_smul, sum_add_distrib])
-    (fun _ v w => by
+    (fun _ _ _ ↦ by simp only [Pi.add_apply, map_add, add_smul, sum_add_distrib])
+    (fun _ v w ↦ by
       simp only [Pi.smul_apply, smul_eq_mul, map_mul, MulAction.mul_smul, smul_sum])
 
 variable [DecidableEq n] [DecidableEq m]
@@ -72,7 +72,7 @@ theorem Matrix.toLinearMap₂'Aux_single (f : Matrix n m N₂) (i : n) (j : m) :
     simp_rw [← Finset.smul_sum]
     simp only [ite_smul, one_smul, zero_smul, sum_ite_eq, mem_univ, ↓reduceIte]
   rw [← this]
-  exact Finset.sum_congr rfl fun _ _ => Finset.sum_congr rfl fun _ _ => by aesop
+  exact Finset.sum_congr rfl fun _ _ ↦ Finset.sum_congr rfl fun _ _ ↦ by aesop
 
 end AuxToLinearMap
 
@@ -93,7 +93,7 @@ and an `m`-indexed basis for `M₂`.
 This is an auxiliary definition for the equivalence `Matrix.toLinearMapₛₗ₂'`. -/
 def LinearMap.toMatrix₂Aux (b₁ : n → M₁) (b₂ : m → M₂) :
     (M₁ →ₛₗ[σ₁] M₂ →ₛₗ[σ₂] N₂) →ₗ[R] Matrix n m N₂ where
-  toFun f := of fun i j => f (b₁ i) (b₂ j)
+  toFun f := of fun i j ↦ f (b₁ i) (b₂ j)
   map_add' _f _g := rfl
   map_smul' _f _g := rfl
 
@@ -107,14 +107,14 @@ variable [DecidableEq n] [DecidableEq m]
 
 theorem LinearMap.toLinearMap₂'Aux_toMatrix₂Aux (f : (n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] N₂) :
     Matrix.toLinearMap₂'Aux σ₁ σ₂
-        (LinearMap.toMatrix₂Aux R (fun i => Pi.single i 1) (fun j => Pi.single j 1) f) =
+        (LinearMap.toMatrix₂Aux R (fun i ↦ Pi.single i 1) (fun j ↦ Pi.single j 1) f) =
       f := by
-  refine ext_basis (Pi.basisFun R₁ n) (Pi.basisFun R₂ m) fun i j => ?_
+  refine ext_basis (Pi.basisFun R₁ n) (Pi.basisFun R₂ m) fun i j ↦ ?_
   simp_rw [Pi.basisFun_apply, Matrix.toLinearMap₂'Aux_single, LinearMap.toMatrix₂Aux_apply]
 
 theorem Matrix.toMatrix₂Aux_toLinearMap₂'Aux (f : Matrix n m N₂) :
-    LinearMap.toMatrix₂Aux R (fun i => Pi.single i 1)
-        (fun j => Pi.single j 1) (f.toLinearMap₂'Aux σ₁ σ₂) =
+    LinearMap.toMatrix₂Aux R (fun i ↦ Pi.single i 1)
+        (fun j ↦ Pi.single j 1) (f.toLinearMap₂'Aux σ₁ σ₂) =
       f := by
   ext i j
   simp_rw [LinearMap.toMatrix₂Aux_apply, Matrix.toLinearMap₂'Aux_single]
@@ -141,7 +141,7 @@ variable (R)
 
 /-- The linear equivalence between sesquilinear maps and `n × m` matrices -/
 def LinearMap.toMatrixₛₗ₂' : ((n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] N₂) ≃ₗ[R] Matrix n m N₂ :=
-  { LinearMap.toMatrix₂Aux R (fun i => Pi.single i 1) (fun j => Pi.single j 1) with
+  { LinearMap.toMatrix₂Aux R (fun i ↦ Pi.single i 1) (fun j ↦ Pi.single j 1) with
     toFun := LinearMap.toMatrix₂Aux R _ _
     invFun := Matrix.toLinearMap₂'Aux σ₁ σ₂
     left_inv := LinearMap.toLinearMap₂'Aux_toMatrix₂Aux R
@@ -171,21 +171,21 @@ theorem Matrix.toLinearMapₛₗ₂'_apply (M : Matrix n m N₂) (x : n → R₁
     -- porting note: we don't seem to have `∑ i j` as valid notation yet
     Matrix.toLinearMapₛₗ₂' R σ₁ σ₂ M x y = ∑ i, ∑ j, σ₁ (x i) •  σ₂ (y j) • M i j := by
   rw [toLinearMapₛₗ₂', toMatrixₛₗ₂', LinearEquiv.coe_symm_mk, toLinearMap₂'Aux, mk₂'ₛₗ_apply]
-  apply Finset.sum_congr rfl fun _ _ => Finset.sum_congr rfl fun _ _ => by
+  apply Finset.sum_congr rfl fun _ _ ↦ Finset.sum_congr rfl fun _ _ ↦ by
     rw [smul_comm]
 
 theorem Matrix.toLinearMap₂'_apply (M : Matrix n m N₂) (x : n → S₁) (y : m → S₂) :
     -- porting note: we don't seem to have `∑ i j` as valid notation yet
     Matrix.toLinearMap₂' R M x y = ∑ i, ∑ j, x i • y j • M i j :=
-  Finset.sum_congr rfl fun _ _ => Finset.sum_congr rfl fun _ _ => by
+  Finset.sum_congr rfl fun _ _ ↦ Finset.sum_congr rfl fun _ _ ↦ by
     rw [RingHom.id_apply, RingHom.id_apply, smul_comm]
 
 theorem Matrix.toLinearMap₂'_apply' {T : Type*} [CommSemiring T] (M : Matrix n m T) (v : n → T)
     (w : m → T) : Matrix.toLinearMap₂' T M v w = v ⬝ᵥ (M *ᵥ w) := by
   simp_rw [Matrix.toLinearMap₂'_apply, dotProduct, Matrix.mulVec, dotProduct]
-  refine Finset.sum_congr rfl fun _ _ => ?_
+  refine Finset.sum_congr rfl fun _ _ ↦ ?_
   rw [Finset.mul_sum]
-  refine Finset.sum_congr rfl fun _ _ => ?_
+  refine Finset.sum_congr rfl fun _ _ ↦ ?_
   rw [smul_eq_mul, smul_eq_mul, mul_comm (w _), ← mul_assoc]
 
 @[simp]
@@ -345,14 +345,14 @@ theorem LinearMap.toMatrix₂_apply (B : M₁ →ₗ[R] M₂ →ₗ[R] N₂) (i 
 @[simp]
 theorem Matrix.toLinearMap₂_apply (M : Matrix n m N₂) (x : M₁) (y : M₂) :
     Matrix.toLinearMap₂ b₁ b₂ M x y = ∑ i, ∑ j, b₁.repr x i • b₂.repr y j • M i j :=
-  Finset.sum_congr rfl fun _ _ => Finset.sum_congr rfl fun _ _ =>
+  Finset.sum_congr rfl fun _ _ ↦ Finset.sum_congr rfl fun _ _ ↦
     smul_algebra_smul_comm ((RingHom.id R) ((Basis.equivFun b₁) x _))
     ((RingHom.id R) ((Basis.equivFun b₂) y _)) (M _ _)
 
 -- Not a `simp` lemma since `LinearMap.toMatrix₂` needs an extra argument
 theorem LinearMap.toMatrix₂Aux_eq (B : M₁ →ₗ[R] M₂ →ₗ[R] N₂) :
     LinearMap.toMatrix₂Aux R b₁ b₂ B = LinearMap.toMatrix₂ b₁ b₂ B :=
-  Matrix.ext fun i j => by rw [LinearMap.toMatrix₂_apply, LinearMap.toMatrix₂Aux_apply]
+  Matrix.ext fun i j ↦ by rw [LinearMap.toMatrix₂_apply, LinearMap.toMatrix₂Aux_apply]
 
 @[simp]
 theorem LinearMap.toMatrix₂_symm :
@@ -611,14 +611,14 @@ theorem _root_.Matrix.separatingLeft_toLinearMap₂'_iff_separatingLeft_toLinear
 
 -- Lemmas transferring nondegeneracy between a matrix and its associated bilinear form
 theorem _root_.Matrix.Nondegenerate.toLinearMap₂' {M : Matrix ι ι R₁} (h : M.Nondegenerate) :
-    (Matrix.toLinearMap₂' R₁ M).SeparatingLeft (R := R₁) := fun x hx =>
-  h.eq_zero_of_ortho fun y => by simpa only [toLinearMap₂'_apply'] using hx y
+    (Matrix.toLinearMap₂' R₁ M).SeparatingLeft (R := R₁) := fun x hx ↦
+  h.eq_zero_of_ortho fun y ↦ by simpa only [toLinearMap₂'_apply'] using hx y
 
 @[simp]
 theorem _root_.Matrix.separatingLeft_toLinearMap₂'_iff {M : Matrix ι ι R₁} :
     (Matrix.toLinearMap₂' R₁ M).SeparatingLeft (R := R₁) ↔ M.Nondegenerate := by
   refine ⟨fun h ↦ Matrix.nondegenerate_def.mpr ?_, Matrix.Nondegenerate.toLinearMap₂'⟩
-  exact fun v hv => h v fun w => (M.toLinearMap₂'_apply' _ _).trans <| hv w
+  exact fun v hv ↦ h v fun w ↦ (M.toLinearMap₂'_apply' _ _).trans <| hv w
 
 theorem _root_.Matrix.Nondegenerate.toLinearMap₂ {M : Matrix ι ι R₁} (h : M.Nondegenerate)
     (b : Basis ι R₁ M₁) : (toLinearMap₂ b b M).SeparatingLeft :=

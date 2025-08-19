@@ -63,9 +63,9 @@ theorem Ultrafilter.eventually_mul {M} [Mul M] (U V : Ultrafilter M) (p : M → 
 structure on `M`. -/]
 def Ultrafilter.semigroup {M} [Semigroup M] : Semigroup (Ultrafilter M) :=
   { Ultrafilter.mul with
-    mul_assoc := fun U V W =>
+    mul_assoc := fun U V W ↦
       Ultrafilter.coe_inj.mp <|
-        Filter.ext' fun p => by simp [Ultrafilter.eventually_mul, mul_assoc] }
+        Filter.ext' fun p ↦ by simp [Ultrafilter.eventually_mul, mul_assoc] }
 
 attribute [local instance] Ultrafilter.semigroup Ultrafilter.addSemigroup
 
@@ -100,7 +100,7 @@ is obtained from a subsequence of `M` starting sufficiently late. -/]
 theorem FP.mul {M} [Semigroup M] {a : Stream' M} {m : M} (hm : m ∈ FP a) :
     ∃ n, ∀ m' ∈ FP (a.drop n), m * m' ∈ FP a := by
   induction hm with
-  | head a => exact ⟨1, fun m hm => FP.cons a m hm⟩
+  | head a => exact ⟨1, fun m hm ↦ FP.cons a m hm⟩
   | tail a m _ ih =>
     obtain ⟨n, hn⟩ := ih
     use n + 1
@@ -132,7 +132,7 @@ theorem exists_idempotent_ultrafilter_le_FP {M} [Semigroup M] (a : Stream' M) :
     · exact (ultrafilter_isClosed_basic _).isCompact
     · intro n
       apply ultrafilter_isClosed_basic
-  · exact IsClosed.isCompact (isClosed_iInter fun i => ultrafilter_isClosed_basic _)
+  · exact IsClosed.isCompact (isClosed_iInter fun i ↦ ultrafilter_isClosed_basic _)
   · intro U hU V hV
     rw [Set.mem_iInter] at *
     intro n
@@ -152,9 +152,9 @@ theorem exists_FP_of_large {M} [Semigroup M] (U : Ultrafilter M) (U_idem : U * U
   `U`-large, so we can repeat the argument starting from `s₁`, obtaining `a₁`, `s₂`, etc.
   This gives the desired infinite sequence. -/
   have exists_elem : ∀ {s : Set M} (_hs : s ∈ U), (s ∩ { m | ∀ᶠ m' in U, m * m' ∈ s }).Nonempty :=
-    fun {s} hs => Ultrafilter.nonempty_of_mem (inter_mem hs <| by rwa [← U_idem] at hs)
-  let elem : { s // s ∈ U } → M := fun p => (exists_elem p.property).some
-  let succ : {s // s ∈ U} → {s // s ∈ U} := fun (p : {s // s ∈ U}) =>
+    fun {s} hs ↦ Ultrafilter.nonempty_of_mem (inter_mem hs <| by rwa [← U_idem] at hs)
+  let elem : { s // s ∈ U } → M := fun p ↦ (exists_elem p.property).some
+  let succ : {s // s ∈ U} → {s // s ∈ U} := fun (p : {s // s ∈ U}) ↦
         ⟨p.val ∩ {m : M | elem p * m ∈ p.val},
          inter_mem p.property
            (show (exists_elem p.property).some ∈ {m : M | ∀ᶠ (m' : M) in ↑U, m * m' ∈ p.val} from
@@ -231,7 +231,7 @@ theorem FP.mul_two {M} [Semigroup M] (a : Stream' M) (i j : ℕ) (ij : i < j) :
 
 @[to_additive]
 theorem FP.finset_prod {M} [CommMonoid M] (a : Stream' M) (s : Finset ℕ) (hs : s.Nonempty) :
-    (s.prod fun i => a.get i) ∈ FP a := by
+    (s.prod fun i ↦ a.get i) ∈ FP a := by
   refine FP_drop_subset_FP _ (s.min' hs) ?_
   induction s using Finset.eraseInduction with | H s ih => _
   rw [← Finset.mul_prod_erase _ _ (s.min'_mem hs), ← Stream'.head_drop]

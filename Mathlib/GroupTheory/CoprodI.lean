@@ -106,7 +106,7 @@ structure Word where
   /-- A reduced word does not contain `1` -/
   ne_one : ∀ l ∈ toList, Sigma.snd l ≠ 1
   /-- Adjacent letters are not from the same summand. -/
-  chain_ne : toList.Chain' fun l l' => Sigma.fst l ≠ Sigma.fst l'
+  chain_ne : toList.Chain' fun l l' ↦ Sigma.fst l ≠ Sigma.fst l'
 
 variable {M}
 
@@ -126,7 +126,7 @@ variable {N : Type*} [Monoid N]
 @[ext 1100]
 theorem ext_hom (f g : CoprodI M →* N) (h : ∀ i, f.comp (of : M i →* _) = g.comp of) : f = g :=
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
-    FreeMonoid.hom_eq fun ⟨i, x⟩ => by
+    FreeMonoid.hom_eq fun ⟨i, x⟩ ↦ by
       rw [MonoidHom.comp_apply, MonoidHom.comp_apply, ← of_apply]
       unfold CoprodI
       rw [← MonoidHom.comp_apply, ← MonoidHom.comp_apply, h]
@@ -136,7 +136,7 @@ universal property of the free product, characterizing it as a categorical copro
 @[simps symm_apply]
 def lift : (∀ i, M i →* N) ≃ (CoprodI M →* N) where
   toFun fi :=
-    Con.lift _ (FreeMonoid.lift fun p : Σ i, M i => fi p.fst p.snd) <|
+    Con.lift _ (FreeMonoid.lift fun p : Σ i, M i ↦ fi p.fst p.snd) <|
       Con.conGen_le <| by
         simp_rw [Con.ker_rel]
         rintro _ _ (i | ⟨x, y⟩) <;> simp
@@ -168,7 +168,7 @@ theorem lift_of' : lift (fun i ↦ (of : M i →* CoprodI M)) = .id (CoprodI M) 
   lift_comp_of' (.id _)
 
 theorem of_leftInverse [DecidableEq ι] (i : ι) :
-    Function.LeftInverse (lift <| Pi.mulSingle i (MonoidHom.id (M i))) of := fun x => by
+    Function.LeftInverse (lift <| Pi.mulSingle i (MonoidHom.id (M i))) of := fun x ↦ by
   simp only [lift_of, Pi.mulSingle_eq_same, MonoidHom.id_apply]
 
 theorem of_injective (i : ι) : Function.Injective (of : M i →* _) := by
@@ -216,12 +216,12 @@ variable (G : ι → Type*) [∀ i, Group (G i)]
 
 instance : Inv (CoprodI G) where
   inv :=
-    MulOpposite.unop ∘ lift fun i => (of : G i →* _).op.comp (MulEquiv.inv' (G i)).toMonoidHom
+    MulOpposite.unop ∘ lift fun i ↦ (of : G i →* _).op.comp (MulEquiv.inv' (G i)).toMonoidHom
 
 theorem inv_def (x : CoprodI G) :
     x⁻¹ =
       MulOpposite.unop
-        (lift (fun i => (of : G i →* _).op.comp (MulEquiv.inv' (G i)).toMonoidHom) x) :=
+        (lift (fun i ↦ (of : G i →* _).op.comp (MulEquiv.inv' (G i)).toMonoidHom) x) :=
   rfl
 
 instance : Group (CoprodI G) :=
@@ -250,7 +250,7 @@ theorem lift_range_le {N} [Group N] (f : ∀ i, G i →* N) {s : Subgroup N}
     exact s.mul_mem hx hy
 
 theorem range_eq_iSup {N} [Group N] (f : ∀ i, G i →* N) : (lift f).range = ⨆ i, (f i).range := by
-  apply le_antisymm (lift_range_le _ f fun i => le_iSup (fun i => MonoidHom.range (f i)) i)
+  apply le_antisymm (lift_range_le _ f fun i ↦ le_iSup (fun i ↦ MonoidHom.range (f i)) i)
   apply iSup_le _
   rintro i _ ⟨x, rfl⟩
   exact ⟨of x, by simp only [lift_of]⟩
@@ -271,7 +271,7 @@ instance : Inhabited (Word M) :=
 
 /-- A reduced word determines an element of the free product, given by multiplication. -/
 def prod (w : Word M) : CoprodI M :=
-  List.prod (w.toList.map fun l => of l.snd)
+  List.prod (w.toList.map fun l ↦ of l.snd)
 
 @[simp]
 theorem prod_empty : prod (empty : Word M) = 1 :=
@@ -379,7 +379,7 @@ def consRecOn {motive : Word M → Sort*} (w : Word M) (empty : motive empty)
   induction w with
   | nil => exact empty
   | cons m w ih =>
-    refine cons m.1 m.2 ⟨w, fun _ hl => h1 _ (List.mem_cons_of_mem _ hl), h2.tail⟩ ?_ ?_ (ih _ _)
+    refine cons m.1 m.2 ⟨w, fun _ hl ↦ h1 _ (List.mem_cons_of_mem _ hl), h2.tail⟩ ?_ ?_ (ih _ _)
     · rw [List.chain'_cons'] at h2
       simp only [fstIdx, ne_eq, Option.map_eq_some_iff,
         Sigma.exists, exists_and_right, exists_eq_right, not_exists]
@@ -406,7 +406,7 @@ variable [DecidableEq ι] [∀ i, DecidableEq (M i)]
 /-- Given `i : ι`, any reduced word can be decomposed into a pair `p` such that `w = rcons p`. -/
 private def equivPairAux (i) (w : Word M) : { p : Pair M i // rcons p = w } :=
   consRecOn w ⟨⟨1, .empty, by simp [fstIdx, empty]⟩, by simp [rcons]⟩ <|
-    fun j m w h1 h2 _ =>
+    fun j m w h1 h2 _ ↦
       if ij : i = j then
         { val :=
           { head := ij ▸ m
@@ -475,7 +475,7 @@ instance summandAction (i) : MulAction (M i) (Word M) where
     simp [mul_assoc, ← equivPair_symm, Equiv.apply_symm_apply]
 
 instance : MulAction (CoprodI M) (Word M) :=
-  MulAction.ofEndHom (lift fun _ => MulAction.toEndHom)
+  MulAction.ofEndHom (lift fun _ ↦ MulAction.toEndHom)
 
 theorem smul_def {i} (m : M i) (w : Word M) :
     m • w = rcons { equivPair i w with head := m * (equivPair i w).head } :=
@@ -595,7 +595,7 @@ def equiv : CoprodI M ≃ Word M where
       rw [prod_smul, mul_smul, ih]
 
 instance : DecidableEq (Word M) :=
-  Function.Injective.decidableEq fun _ _ => Word.ext
+  Function.Injective.decidableEq fun _ _ ↦ Word.ext
 
 instance : DecidableEq (CoprodI M) :=
   Equiv.decidableEq Word.equiv
@@ -809,7 +809,7 @@ variable {α : Type*} [MulAction G α]
 variable (X : ι → Set α)
 variable (hXnonempty : ∀ i, (X i).Nonempty)
 variable (hXdisj : Pairwise (Disjoint on X))
-variable (hpp : Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X j ⊆ X i)
+variable (hpp : Pairwise fun i j ↦ ∀ h : H i, h ≠ 1 → f i h • X j ⊆ X i)
 include hpp
 
 theorem lift_word_ping_pong {i j k} (w : NeWord H i j) (hk : j ≠ k) :
@@ -917,8 +917,8 @@ def FreeGroupBasis.coprodI {ι : Type*} {X : ι → Type*} {G : ι → Type*} [�
     (B : ∀ i, FreeGroupBasis (X i) (G i)) :
     FreeGroupBasis (Σ i, X i) (CoprodI G) :=
   ⟨MulEquiv.symm <| MonoidHom.toMulEquiv
-    (FreeGroup.lift fun x : Σ i, X i => CoprodI.of (B x.1 x.2))
-    (CoprodI.lift fun i : ι => (B i).lift fun x : X i =>
+    (FreeGroup.lift fun x : Σ i, X i ↦ CoprodI.of (B x.1 x.2))
+    (CoprodI.lift fun i : ι ↦ (B i).lift fun x : X i ↦
               FreeGroup.of (⟨i, x⟩ : Σ i, X i))
     (by ext; simp)
     (by ext1 i; apply (B i).ext_hom; simp)⟩
@@ -933,10 +933,10 @@ instance {ι : Type*} (G : ι → Type*) [∀ i, Group (G i)] [∀ i, IsFreeGrou
 /-- A free group is a free product of copies of the free_group over one generator. -/
 @[simps!]
 def _root_.freeGroupEquivCoprodI {ι : Type u_1} :
-    FreeGroup ι ≃* CoprodI fun _ : ι => FreeGroup Unit := by
+    FreeGroup ι ≃* CoprodI fun _ : ι ↦ FreeGroup Unit := by
   refine MonoidHom.toMulEquiv ?_ ?_ ?_ ?_
-  · exact FreeGroup.lift fun i => @CoprodI.of ι _ _ i (FreeGroup.of Unit.unit)
-  · exact CoprodI.lift fun i => FreeGroup.lift fun _ => FreeGroup.of i
+  · exact FreeGroup.lift fun i ↦ @CoprodI.of ι _ _ i (FreeGroup.of Unit.unit)
+  · exact CoprodI.lift fun i ↦ FreeGroup.lift fun _ ↦ FreeGroup.of i
   · ext; simp
   · ext i a; cases a; simp
 
@@ -973,7 +973,7 @@ group to be generated by the elements.
 theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeGroup.lift a) := by
   -- Step one: express the free group lift via the free product lift
   have : FreeGroup.lift a =
-      (CoprodI.lift fun i => FreeGroup.lift fun _ => a i).comp
+      (CoprodI.lift fun i ↦ FreeGroup.lift fun _ ↦ a i).comp
         (@freeGroupEquivCoprodI ι).toMonoidHom := by
     ext i
     simp
@@ -981,14 +981,14 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   clear this
   refine Function.Injective.comp ?_ (MulEquiv.injective freeGroupEquivCoprodI)
   -- Step two: Invoke the ping-pong lemma for free products
-  change Function.Injective (lift fun i : ι => FreeGroup.lift fun _ => a i)
+  change Function.Injective (lift fun i : ι ↦ FreeGroup.lift fun _ ↦ a i)
   -- Prepare to instantiate lift_injective_of_ping_pong
-  let H : ι → Type _ := fun _i => FreeGroup Unit
-  let f : ∀ i, H i →* G := fun i => FreeGroup.lift fun _ => a i
-  let X' : ι → Set α := fun i => X i ∪ Y i
+  let H : ι → Type _ := fun _i ↦ FreeGroup Unit
+  let f : ∀ i, H i →* G := fun i ↦ FreeGroup.lift fun _ ↦ a i
+  let X' : ι → Set α := fun i ↦ X i ∪ Y i
   apply lift_injective_of_ping_pong f _ X'
   · show ∀ i, (X' i).Nonempty
-    exact fun i => Set.Nonempty.inl (hXnonempty i)
+    exact fun i ↦ Set.Nonempty.inl (hXnonempty i)
   · show Pairwise (Disjoint on X')
     intro i j hij
     simp only [X']
@@ -997,12 +997,12 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
     · exact hXYdisj i j
     · exact (hXYdisj j i).symm
     · exact hYdisj hij
-  · change Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X' j ⊆ X' i
+  · change Pairwise fun i j ↦ ∀ h : H i, h ≠ 1 → f i h • X' j ⊆ X' i
     rintro i j hij
     -- use free_group unit ≃ ℤ
     refine FreeGroup.freeGroupUnitEquivInt.forall_congr_left.mpr ?_
     intro n hne1
-    change FreeGroup.lift (fun _ => a i) (FreeGroup.of () ^ n) • X' j ⊆ X' i
+    change FreeGroup.lift (fun _ ↦ a i) (FreeGroup.of () ^ n) • X' j ⊆ X' i
     simp only [map_zpow, FreeGroup.lift_apply_of]
     change a i ^ n • X' j ⊆ X' i
     have hnne0 : n ≠ 0 := by

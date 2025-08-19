@@ -413,8 +413,8 @@ variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
 instance instAlgebra : Algebra R (SeparationQuotient A) where
   algebraMap := mkRingHom.comp (algebraMap R A)
-  commutes' r := Quotient.ind fun a => congrArg _ <| Algebra.commutes r a
-  smul_def' r := Quotient.ind fun a => congrArg _ <| Algebra.smul_def r a
+  commutes' r := Quotient.ind fun a ↦ congrArg _ <| Algebra.commutes r a
+  smul_def' r := Quotient.ind fun a ↦ congrArg _ <| Algebra.smul_def r a
 
 @[simp]
 theorem mk_algebraMap (r : R) : mk (algebraMap R A r) = algebraMap R (SeparationQuotient A) r :=

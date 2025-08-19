@@ -161,7 +161,7 @@ class ENormedCommMonoid (E : Type*) [TopologicalSpace E]
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖`
 defines a pseudometric space structure. -/
 class SeminormedAddGroup (E : Type*) extends Norm E, AddGroup E, PseudoMetricSpace E where
-  dist := fun x y => ‖x - y‖
+  dist := fun x y ↦ ‖x - y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
 
@@ -169,14 +169,14 @@ class SeminormedAddGroup (E : Type*) extends Norm E, AddGroup E, PseudoMetricSpa
 pseudometric space structure. -/
 @[to_additive]
 class SeminormedGroup (E : Type*) extends Norm E, Group E, PseudoMetricSpace E where
-  dist := fun x y => ‖x / y‖
+  dist := fun x y ↦ ‖x / y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
 
 /-- A normed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖` defines a
 metric space structure. -/
 class NormedAddGroup (E : Type*) extends Norm E, AddGroup E, MetricSpace E where
-  dist := fun x y => ‖x - y‖
+  dist := fun x y ↦ ‖x - y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
 
@@ -184,7 +184,7 @@ class NormedAddGroup (E : Type*) extends Norm E, AddGroup E, MetricSpace E where
 space structure. -/
 @[to_additive]
 class NormedGroup (E : Type*) extends Norm E, Group E, MetricSpace E where
-  dist := fun x y => ‖x / y‖
+  dist := fun x y ↦ ‖x / y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
 
@@ -192,7 +192,7 @@ class NormedGroup (E : Type*) extends Norm E, Group E, MetricSpace E where
 defines a pseudometric space structure. -/
 class SeminormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E,
   PseudoMetricSpace E where
-  dist := fun x y => ‖x - y‖
+  dist := fun x y ↦ ‖x - y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
 
@@ -200,14 +200,14 @@ class SeminormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E,
 defines a pseudometric space structure. -/
 @[to_additive]
 class SeminormedCommGroup (E : Type*) extends Norm E, CommGroup E, PseudoMetricSpace E where
-  dist := fun x y => ‖x / y‖
+  dist := fun x y ↦ ‖x / y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
 
 /-- A normed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖` defines a
 metric space structure. -/
 class NormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E, MetricSpace E where
-  dist := fun x y => ‖x - y‖
+  dist := fun x y ↦ ‖x - y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
 
@@ -215,7 +215,7 @@ class NormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E, MetricSpace
 space structure. -/
 @[to_additive]
 class NormedCommGroup (E : Type*) extends Norm E, CommGroup E, MetricSpace E where
-  dist := fun x y => ‖x / y‖
+  dist := fun x y ↦ ‖x / y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
 
@@ -253,7 +253,7 @@ abbrev NormedGroup.ofSeparation [SeminormedGroup E] (h : ∀ x : E, ‖x‖ = 0 
     NormedGroup E where
   dist_eq := ‹SeminormedGroup E›.dist_eq
   toMetricSpace :=
-    { eq_of_dist_eq_zero := fun hxy =>
+    { eq_of_dist_eq_zero := fun hxy ↦
         div_eq_one.1 <| h _ <| (‹SeminormedGroup E›.dist_eq _ _).symm.trans hxy }
 
 -- See note [reducible non-instances]
@@ -396,7 +396,7 @@ definitional equalities (e.g., it does not take into account a possibly existing
 instance on `E`). -/]
 abbrev GroupNorm.toNormedGroup [Group E] (f : GroupNorm E) : NormedGroup E :=
   { f.toGroupSeminorm.toSeminormedGroup with
-    eq_of_dist_eq_zero := fun h => div_eq_one.1 <| eq_one_of_map_eq_zero f h }
+    eq_of_dist_eq_zero := fun h ↦ div_eq_one.1 <| eq_one_of_map_eq_zero f h }
 
 -- See note [reducible non-instances]
 /-- Construct a normed group from a norm, i.e., registering the distance and the metric space
@@ -611,11 +611,11 @@ lemma norm_div_eq_norm_left (x : E) {y : E} (h : ‖y‖ = 0) : ‖x / y‖ = �
 
 @[to_additive ball_eq]
 theorem ball_eq' (y : E) (ε : ℝ) : ball y ε = { x | ‖x / y‖ < ε } :=
-  Set.ext fun a => by simp [dist_eq_norm_div]
+  Set.ext fun a ↦ by simp [dist_eq_norm_div]
 
 @[to_additive]
 theorem ball_one_eq (r : ℝ) : ball (1 : E) r = { x | ‖x‖ < r } :=
-  Set.ext fun a => by simp
+  Set.ext fun a ↦ by simp
 
 @[to_additive mem_ball_iff_norm]
 theorem mem_ball_iff_norm'' : b ∈ ball a r ↔ ‖b / a‖ < r := by rw [mem_ball, dist_eq_norm_div]
@@ -712,19 +712,19 @@ theorem NormedCommGroup.tendsto_nhds_nhds {f : E → F} {x : E} {y : F} :
 
 @[to_additive]
 theorem NormedCommGroup.nhds_basis_norm_lt (x : E) :
-    (𝓝 x).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { y | ‖y / x‖ < ε } := by
+    (𝓝 x).HasBasis (fun ε : ℝ ↦ 0 < ε) fun ε ↦ { y | ‖y / x‖ < ε } := by
   simp_rw [← ball_eq']
   exact Metric.nhds_basis_ball
 
 @[to_additive]
 theorem NormedCommGroup.nhds_one_basis_norm_lt :
-    (𝓝 (1 : E)).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { y | ‖y‖ < ε } := by
+    (𝓝 (1 : E)).HasBasis (fun ε : ℝ ↦ 0 < ε) fun ε ↦ { y | ‖y‖ < ε } := by
   convert NormedCommGroup.nhds_basis_norm_lt (1 : E)
   simp
 
 @[to_additive]
 theorem NormedCommGroup.uniformity_basis_dist :
-    (𝓤 E).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { p : E × E | ‖p.fst / p.snd‖ < ε } := by
+    (𝓤 E).HasBasis (fun ε : ℝ ↦ 0 < ε) fun ε ↦ { p : E × E | ‖p.fst / p.snd‖ < ε } := by
   convert Metric.uniformity_basis_dist (α := E) using 1
   simp [dist_eq_norm_div]
 
@@ -737,7 +737,7 @@ section NNNorm
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) SeminormedGroup.toNNNorm : NNNorm E :=
-  ⟨fun a => ⟨‖a‖, norm_nonneg' a⟩⟩
+  ⟨fun a ↦ ⟨‖a‖, norm_nonneg' a⟩⟩
 
 @[to_additive (attr := simp, norm_cast) coe_nnnorm]
 theorem coe_nnnorm' (a : E) : (‖a‖₊ : ℝ) = ‖a‖ := rfl
@@ -1022,8 +1022,8 @@ structure on the domain. -/
 abbrev SeminormedGroup.induced [Group E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
     SeminormedGroup E :=
   { PseudoMetricSpace.induced f toPseudoMetricSpace with
-    norm := fun x => ‖f x‖
-    dist_eq := fun x y => by simp only [map_div, ← dist_eq_norm_div]; rfl }
+    norm := fun x ↦ ‖f x‖
+    dist_eq := fun x y ↦ by simp only [map_div, ← dist_eq_norm_div]; rfl }
 
 -- See note [reducible non-instances]
 /-- A group homomorphism from a `CommGroup` to a `SeminormedGroup` induces a
@@ -1070,7 +1070,7 @@ theorem norm_eq_abs (r : ℝ) : ‖r‖ = |r| :=
   rfl
 
 instance normedAddCommGroup : NormedAddCommGroup ℝ :=
-  ⟨fun _r _y => rfl⟩
+  ⟨fun _r _y ↦ rfl⟩
 
 theorem norm_of_nonneg (hr : 0 ≤ r) : ‖r‖ = r :=
   abs_of_nonneg hr
@@ -1148,13 +1148,13 @@ theorem dist_inv (x y : E) : dist x⁻¹ y = dist x y⁻¹ := by
   simp_rw [dist_eq_norm_div, ← norm_inv' (x⁻¹ / y), inv_div, div_inv_eq_mul, mul_comm]
 
 theorem norm_multiset_sum_le {E} [SeminormedAddCommGroup E] (m : Multiset E) :
-    ‖m.sum‖ ≤ (m.map fun x => ‖x‖).sum :=
+    ‖m.sum‖ ≤ (m.map fun x ↦ ‖x‖).sum :=
   m.le_sum_of_subadditive norm norm_zero norm_add_le
 
 @[to_additive existing]
-theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x => ‖x‖).sum := by
+theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x ↦ ‖x‖).sum := by
   rw [← Multiplicative.ofAdd_le, ofAdd_multiset_prod, Multiset.map_map]
-  refine Multiset.le_prod_of_submultiplicative (Multiplicative.ofAdd ∘ norm) ?_ (fun x y => ?_) _
+  refine Multiset.le_prod_of_submultiplicative (Multiplicative.ofAdd ∘ norm) ?_ (fun x y ↦ ?_) _
   · simp only [comp_apply, norm_one', ofAdd_zero]
   · exact norm_mul_le' x y
 
@@ -1172,14 +1172,14 @@ theorem norm_sum_le {E} [SeminormedAddCommGroup E] (s : Finset ι) (f : ι → E
 @[to_additive existing]
 theorem enorm_prod_le (s : Finset ι) (f : ι → ε) : ‖∏ i ∈ s, f i‖ₑ ≤ ∑ i ∈ s, ‖f i‖ₑ := by
   rw [← Multiplicative.ofAdd_le, ofAdd_sum]
-  refine Finset.le_prod_of_submultiplicative (Multiplicative.ofAdd ∘ enorm) ?_ (fun x y => ?_) _ _
+  refine Finset.le_prod_of_submultiplicative (Multiplicative.ofAdd ∘ enorm) ?_ (fun x y ↦ ?_) _ _
   · simp
   · exact enorm_mul_le' x y
 
 @[to_additive existing]
 theorem norm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ i ∈ s, f i‖ ≤ ∑ i ∈ s, ‖f i‖ := by
   rw [← Multiplicative.ofAdd_le, ofAdd_sum]
-  refine Finset.le_prod_of_submultiplicative (Multiplicative.ofAdd ∘ norm) ?_ (fun x y => ?_) _ _
+  refine Finset.le_prod_of_submultiplicative (Multiplicative.ofAdd ∘ norm) ?_ (fun x y ↦ ?_) _ _
   · simp only [comp_apply, norm_one', ofAdd_zero]
   · exact norm_mul_le' x y
 
@@ -1203,7 +1203,7 @@ theorem dist_prod_prod_le_of_le (s : Finset ι) {f a : ι → E} {d : ι → ℝ
 @[to_additive]
 theorem dist_prod_prod_le (s : Finset ι) (f a : ι → E) :
     dist (∏ b ∈ s, f b) (∏ b ∈ s, a b) ≤ ∑ b ∈ s, dist (f b) (a b) :=
-  dist_prod_prod_le_of_le s fun _ _ => le_rfl
+  dist_prod_prod_le_of_le s fun _ _ ↦ le_rfl
 
 @[to_additive]
 theorem mul_mem_ball_iff_norm : a * b ∈ ball a r ↔ ‖b‖ < r := by
@@ -1268,7 +1268,7 @@ theorem smul_ball'' : a • ball b r = ball (a • b) r := by
     ← eq_inv_mul_iff_mul_eq, mul_assoc]
 
 @[to_additive]
-theorem nnnorm_multiset_prod_le (m : Multiset E) : ‖m.prod‖₊ ≤ (m.map fun x => ‖x‖₊).sum :=
+theorem nnnorm_multiset_prod_le (m : Multiset E) : ‖m.prod‖₊ ≤ (m.map fun x ↦ ‖x‖₊).sum :=
   NNReal.coe_le_coe.1 <| by
     push_cast
     rw [Multiset.map_map]
@@ -1355,7 +1355,7 @@ variable (E)
 /-- The norm of a normed group as a group norm. -/
 @[to_additive /-- The norm of a normed group as an additive group norm. -/]
 def normGroupNorm : GroupNorm E :=
-  { normGroupSeminorm _ with eq_one_of_map_eq_zero' := fun _ => norm_eq_zero'.1 }
+  { normGroupSeminorm _ with eq_one_of_map_eq_zero' := fun _ ↦ norm_eq_zero'.1 }
 
 @[simp]
 theorem coe_normGroupNorm : ⇑(normGroupNorm E) = norm :=
@@ -1369,7 +1369,7 @@ variable [NormedAddGroup E] [TopologicalSpace α] {f : α → E}
 
 /-! Some relations with `HasCompactSupport` -/
 
-theorem hasCompactSupport_norm_iff : (HasCompactSupport fun x => ‖f x‖) ↔ HasCompactSupport f :=
+theorem hasCompactSupport_norm_iff : (HasCompactSupport fun x ↦ ‖f x‖) ↔ HasCompactSupport f :=
   hasCompactSupport_comp_left norm_eq_zero
 
 alias ⟨_, HasCompactSupport.norm⟩ := hasCompactSupport_norm_iff

@@ -31,7 +31,7 @@ instance : IsManifold 𝓘(ℂ) ω ℍ :=
 
 /-- The inclusion map `ℍ → ℂ` is a map of `C^n` manifolds. -/
 theorem contMDiff_coe : ContMDiff 𝓘(ℂ) 𝓘(ℂ) n ((↑) : ℍ → ℂ) :=
-  fun _ => contMDiffAt_extChartAt
+  fun _ ↦ contMDiffAt_extChartAt
 
 /-- The inclusion map `ℍ → ℂ` is a differentiable map of manifolds. -/
 theorem mdifferentiable_coe : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) ((↑) : ℍ → ℂ) :=

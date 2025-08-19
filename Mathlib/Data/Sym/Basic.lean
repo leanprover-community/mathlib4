@@ -61,7 +61,7 @@ attribute [local instance] Vector.Perm.isSetoid
 -- (Although `List.Vector.Perm.isSetoid` is an `abbrev`, `List.isSetoid` is not.)
 instance {α : Type*} {n : ℕ} [DecidableEq α] :
     DecidableRel (· ≈ · : List.Vector α n → List.Vector α n → Prop) :=
-  fun _ _ => List.decidablePerm _ _
+  fun _ _ ↦ List.decidablePerm _ _
 
 namespace Sym
 
@@ -123,7 +123,7 @@ theorem coe_cons (s : Sym α n) (a : α) : (a ::ₛ s : Multiset α) = a ::ₘ s
 symmetric power.
 -/
 def ofVector : List.Vector α n → Sym α n :=
-  fun x => ⟨↑x.val, (Multiset.coe_card _).trans x.2⟩
+  fun x ↦ ⟨↑x.val, (Multiset.coe_card _).trans x.2⟩
 
 /-- This is the quotient map that takes a list of n elements as an n-tuple and produces an nth
 symmetric power.
@@ -146,7 +146,7 @@ theorem card_coe : Multiset.card (s : Multiset α) = n := s.prop
 /-- `α ∈ s` means that `a` appears as one of the factors in `s`.
 -/
 instance : Membership α (Sym α n) :=
-  ⟨fun s a => a ∈ s.1⟩
+  ⟨fun s a ↦ a ∈ s.1⟩
 
 instance decidableMem [DecidableEq α] (a : α) (s : Sym α n) : Decidable (a ∈ s) :=
   s.1.decidableMem _
@@ -227,8 +227,8 @@ def Sym' (α : Type*) (n : ℕ) :=
 
 /-- This is `cons` but for the alternative `Sym'` definition.
 -/
-def cons' {α : Type*} {n : ℕ} : α → Sym' α n → Sym' α (Nat.succ n) := fun a =>
-  Quotient.map (Vector.cons a) fun ⟨_, _⟩ ⟨_, _⟩ h => List.Perm.cons _ h
+def cons' {α : Type*} {n : ℕ} : α → Sym' α n → Sym' α (Nat.succ n) := fun a ↦
+  Quotient.map (Vector.cons a) fun ⟨_, _⟩ ⟨_, _⟩ h ↦ List.Perm.cons _ h
 
 @[inherit_doc]
 scoped notation a " :: " b => cons' a b
@@ -236,7 +236,7 @@ scoped notation a " :: " b => cons' a b
 /-- Multisets of cardinality n are equivalent to length-n vectors up to permutations.
 -/
 def symEquivSym' {α : Type*} {n : ℕ} : Sym α n ≃ Sym' α n :=
-  Equiv.subtypeQuotientEquivQuotientSubtype _ _ (fun _ => by rfl) fun _ _ => by rfl
+  Equiv.subtypeQuotientEquivQuotientSubtype _ _ (fun _ ↦ by rfl) fun _ _ ↦ by rfl
 
 theorem cons_equiv_eq_equiv_cons (α : Type*) (n : ℕ) (a : α) (s : Sym α n) :
     (a::symEquivSym' s) = symEquivSym' (a ::ₛ s) := by
@@ -300,7 +300,7 @@ theorem eq_replicate {a : α} {n : ℕ} {s : Sym α n} : s = replicate n a ↔ �
 
 theorem eq_replicate_of_subsingleton [Subsingleton α] (a : α) {n : ℕ} (s : Sym α n) :
     s = replicate n a :=
-  eq_replicate.2 fun _ _ => Subsingleton.elim _ _
+  eq_replicate.2 fun _ _ ↦ Subsingleton.elim _ _
 
 instance [Subsingleton α] (n : ℕ) : Subsingleton (Sym α n) :=
   ⟨by
@@ -317,7 +317,7 @@ instance inhabitedSym' [Inhabited α] (n : ℕ) : Inhabited (Sym' α n) :=
   ⟨Quotient.mk' (List.Vector.replicate n default)⟩
 
 instance (n : ℕ) [IsEmpty α] : IsEmpty (Sym α n.succ) :=
-  ⟨fun s => by
+  ⟨fun s ↦ by
     obtain ⟨a, -⟩ := exists_mem s
     exact isEmptyElim a⟩
 
@@ -328,7 +328,7 @@ theorem replicate_right_inj {a b : α} {n : ℕ} (h : n ≠ 0) : replicate n a =
   Subtype.ext_iff.trans (Multiset.replicate_right_inj h)
 
 theorem replicate_right_injective {n : ℕ} (h : n ≠ 0) :
-    Function.Injective (replicate n : α → Sym α n) := fun _ _ => (replicate_right_inj h).1
+    Function.Injective (replicate n : α → Sym α n) := fun _ _ ↦ (replicate_right_inj h).1
 
 instance (n : ℕ) [Nontrivial α] : Nontrivial (Sym α (n + 1)) :=
   (replicate_right_injective n.succ_ne_zero).nontrivial
@@ -345,7 +345,7 @@ theorem mem_map {n : ℕ} {f : α → β} {b : β} {l : Sym α n} :
 
 /-- Note: `Sym.map_id` is not simp-normal, as simp ends up unfolding `id` with `Sym.map_congr` -/
 @[simp]
-theorem map_id' {α : Type*} {n : ℕ} (s : Sym α n) : Sym.map (fun x : α => x) s = s := by
+theorem map_id' {α : Type*} {n : ℕ} (s : Sym α n) : Sym.map (fun x : α ↦ x) s = s := by
   ext; simp only [map, Multiset.map_id', ← val_eq_coe]
 
 theorem map_id {α : Type*} {n : ℕ} (s : Sym α n) : Sym.map id s = s := by
@@ -378,7 +378,7 @@ theorem coe_map (s : Sym α n) (f : α → β) : ↑(s.map f) = Multiset.map f s
   rfl
 
 theorem map_injective {f : α → β} (hf : Injective f) (n : ℕ) :
-    Injective (map f : Sym α n → Sym β n) := fun _ _ h =>
+    Injective (map f : Sym α n → Sym β n) := fun _ _ h ↦
   coe_injective <| Multiset.map_injective hf <| coe_inj.2 h
 
 /-- Mapping an equivalence `α ≃ β` using `Sym.map` gives an equivalence between `Sym α n` and
@@ -419,7 +419,7 @@ theorem attach_nil : (nil : Sym α 0).attach = nil :=
 @[simp]
 theorem attach_cons (x : α) (s : Sym α n) :
     (cons x s).attach =
-      cons ⟨x, mem_cons_self _ _⟩ (s.attach.map fun x => ⟨x, mem_cons_of_mem x.prop⟩) :=
+      cons ⟨x, mem_cons_self _ _⟩ (s.attach.map fun x ↦ ⟨x, mem_cons_of_mem x.prop⟩) :=
   coe_injective <| Multiset.attach_cons _ _
 
 /-- Change the length of a `Sym` using an equality.
@@ -539,7 +539,7 @@ theorem filter_ne_fill
       · intro b hb
         rw [mem_filter, Sym.mem_coe, mem_replicate] at hb
         exact hb.2 hb.1.2.symm
-      · exact fun a ha ha' => h <| ha'.symm ▸ ha)
+      · exact fun a ha ha' ↦ h <| ha'.symm ▸ ha)
 
 theorem count_coe_fill_self_of_notMem [DecidableEq α] {a : α} {i : Fin (n + 1)} {s : Sym α (n - i)}
     (hx : a ∉ s) :
@@ -574,7 +574,7 @@ def encode [DecidableEq α] (s : Sym (Option α) n.succ) : Sym (Option α) n ⊕
   if h : none ∈ s then Sum.inl (s.erase none h)
   else
     Sum.inr
-      (s.attach.map fun o =>
+      (s.attach.map fun o ↦
         o.1.get <| Option.ne_none_iff_isSome.1 <| ne_of_mem_of_not_mem o.2 h)
 
 @[simp]
@@ -586,7 +586,7 @@ theorem encode_of_none_mem [DecidableEq α] (s : Sym (Option α) n.succ) (h : no
 theorem encode_of_none_notMem [DecidableEq α] (s : Sym (Option α) n.succ) (h : none ∉ s) :
     encode s =
       Sum.inr
-        (s.attach.map fun o =>
+        (s.attach.map fun o ↦
           o.1.get <| Option.ne_none_iff_isSome.1 <| ne_of_mem_of_not_mem o.2 h) :=
   dif_neg h
 

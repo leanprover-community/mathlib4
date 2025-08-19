@@ -75,7 +75,7 @@ lemma tendsto_integral_gaussian_smul (hf : Integrable f) (h'f : Integrable (𝓕
   have A : Tendsto (fun (c : ℝ) ↦ (∫ w : V, cexp (- c⁻¹ * ‖w‖^2 + 2 * π * I * ⟪v, w⟫)
        • (𝓕 f) w)) atTop (𝓝 (𝓕⁻ (𝓕 f) v)) := by
     have : Integrable (fun w ↦ 𝐞 ⟪w, v⟫ • (𝓕 f) w) := by
-      have B : Continuous fun p : V × V => (- innerₗ V) p.1 p.2 := continuous_inner.neg
+      have B : Continuous fun p : V × V ↦ (- innerₗ V) p.1 p.2 := continuous_inner.neg
       simpa using
         (VectorFourier.fourierIntegral_convergent_iff Real.continuous_fourierChar B v).2 h'f
     convert tendsto_integral_cexp_sq_smul this using 4 with c w

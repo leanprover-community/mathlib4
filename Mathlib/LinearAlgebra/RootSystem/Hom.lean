@@ -538,7 +538,7 @@ lemma weightHom_toLinearMap {P : RootPairing ι R M N} (g : Aut P) :
   rfl
 
 lemma weightHom_injective (P : RootPairing ι R M N) : Injective (Equiv.weightHom P) := by
-  refine Injective.of_comp (f := LinearEquiv.toLinearMap) fun g g' hgg' => ?_
+  refine Injective.of_comp (f := LinearEquiv.toLinearMap) fun g g' hgg' ↦ ?_
   let h : (weightHom P g).toLinearMap = (weightHom P g').toLinearMap := hgg' --`have` gets lint
   rw [weightHom_toLinearMap, weightHom_toLinearMap] at h
   suffices h' : g.toHom = g'.toHom by
@@ -567,7 +567,7 @@ lemma coweightHom_toLinearMap {P : RootPairing ι R M N} (g : Aut P) :
   rfl
 
 lemma coweightHom_injective (P : RootPairing ι R M N) : Injective (Equiv.coweightHom P) := by
-  refine Injective.of_comp (f := fun a => MulOpposite.op a) fun g g' hgg' => ?_
+  refine Injective.of_comp (f := fun a ↦ MulOpposite.op a) fun g g' hgg' ↦ ?_
   have h : (MulOpposite.unop (coweightHom P g)).toLinearMap =
       (MulOpposite.unop (coweightHom P g')).toLinearMap := by
     simp_all
@@ -633,9 +633,9 @@ lemma reflection_indexEquiv (P : RootPairing ι R M N) (i : ι) :
 lemma reflection_inv (P : RootPairing ι R M N) (i : ι) :
     (reflection P i)⁻¹ = (reflection P i) := by
   refine Equiv.ext ?_ ?_ ?_
-  · exact LinearMap.ext_iff.mpr (fun x => by simp [← weightEquiv_apply])
-  · exact LinearMap.ext_iff.mpr (fun x => by simp [← coweightEquiv_apply])
-  · exact _root_.Equiv.ext (fun j => by simp only [← indexHom_apply, map_inv]; simp)
+  · exact LinearMap.ext_iff.mpr (fun x ↦ by simp [← weightEquiv_apply])
+  · exact LinearMap.ext_iff.mpr (fun x ↦ by simp [← coweightEquiv_apply])
+  · exact _root_.Equiv.ext (fun j ↦ by simp only [← indexHom_apply, map_inv]; simp)
 
 instance : DistribMulAction P.Aut M where
   smul w x := weightHom P w x

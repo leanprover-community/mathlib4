@@ -28,7 +28,7 @@ variable [Group α] [MulAction α β]
 /-- Given an action of a group `α` on `β`, each `g : α` defines a permutation of `β`. -/
 @[to_additive (attr := simps)]
 def MulAction.toPerm (a : α) : Equiv.Perm β :=
-  ⟨fun x => a • x, fun x => a⁻¹ • x, inv_smul_smul a, smul_inv_smul a⟩
+  ⟨fun x ↦ a • x, fun x ↦ a⁻¹ • x, inv_smul_smul a, smul_inv_smul a⟩
 
 /-- Given an action of an additive group `α` on `β`, each `g : α` defines a permutation of `β`. -/
 add_decl_doc AddAction.toPerm
@@ -89,10 +89,10 @@ variable {G A B : Type*} [DivisionMonoid G] [MulAction G A]
 def arrowAction : MulAction G (A → B) where
   smul g F a := F (g⁻¹ • a)
   one_smul f := by
-    change (fun x => f ((1 : G)⁻¹ • x)) = f
+    change (fun x ↦ f ((1 : G)⁻¹ • x)) = f
     simp only [inv_one, one_smul]
   mul_smul x y f := by
-    change (fun a => f ((x*y)⁻¹ • a)) = (fun a => f (y⁻¹ • x⁻¹ • a))
+    change (fun a ↦ f ((x*y)⁻¹ • a)) = (fun a ↦ f (y⁻¹ • x⁻¹ • a))
     simp only [mul_smul, mul_inv_rev]
 
 attribute [local instance] arrowAction
@@ -132,7 +132,7 @@ section SMul
 variable [Group α] [Monoid β] [MulAction α β] [SMulCommClass α β β] [IsScalarTower α β β]
 
 @[simp] lemma isUnit_smul_iff (g : α) (m : β) : IsUnit (g • m) ↔ IsUnit m :=
-  ⟨fun h => inv_smul_smul g m ▸ h.smul g⁻¹, IsUnit.smul g⟩
+  ⟨fun h ↦ inv_smul_smul g m ▸ h.smul g⁻¹, IsUnit.smul g⟩
 
 end SMul
 

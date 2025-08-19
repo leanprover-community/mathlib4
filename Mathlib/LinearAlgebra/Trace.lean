@@ -47,7 +47,7 @@ theorem traceAux_def (b : Basis ι R M) (f : M →ₗ[R] M) :
   rfl
 
 theorem traceAux_eq : traceAux R b = traceAux R c :=
-  LinearMap.ext fun f =>
+  LinearMap.ext fun f ↦
     calc
       Matrix.trace (LinearMap.toMatrix b b f) =
           Matrix.trace (LinearMap.toMatrix b b ((LinearMap.id.comp f).comp LinearMap.id)) := by

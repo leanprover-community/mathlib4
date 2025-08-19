@@ -290,7 +290,7 @@ protected def FreeAddMagma.repr {α : Type u} [Repr α] : FreeAddMagma α → Le
 attribute [to_additive existing] FreeMagma.repr
 
 @[to_additive]
-instance {α : Type u} [Repr α] : Repr (FreeMagma α) := ⟨fun o _ => FreeMagma.repr o⟩
+instance {α : Type u} [Repr α] : Repr (FreeMagma α) := ⟨fun o _ ↦ FreeMagma.repr o⟩
 
 /-- Length of an element of a free magma. -/
 def FreeMagma.length {α : Type u} : FreeMagma α → ℕ
@@ -373,7 +373,7 @@ variable {β : Type v} [Semigroup β] (f : α →ₙ* β)
 
 @[to_additive (attr := ext 1100)]
 theorem hom_ext {f g : AssocQuotient α →ₙ* β} (h : f.comp of = g.comp of) : f = g :=
-  (DFunLike.ext _ _) fun x => AssocQuotient.induction_on x <| DFunLike.congr_fun h
+  (DFunLike.ext _ _) fun x ↦ AssocQuotient.induction_on x <| DFunLike.congr_fun h
 
 /-- Lifts a magma homomorphism `α → β` to a semigroup homomorphism `Magma.AssocQuotient α → β`
 given a semigroup `β`. -/

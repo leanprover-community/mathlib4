@@ -87,7 +87,7 @@ theorem image_connectedComponentIn {s : Set X} (h : X ≃ₜ Y) {x : X} (hx : x 
 @[simp]
 theorem comap_cocompact (h : X ≃ₜ Y) : comap h (cocompact Y) = cocompact X :=
   (comap_cocompact_le h.continuous).antisymm <|
-    (hasBasis_cocompact.le_basis_iff (hasBasis_cocompact.comap h)).2 fun K hK =>
+    (hasBasis_cocompact.le_basis_iff (hasBasis_cocompact.comap h)).2 fun K hK ↦
       ⟨h ⁻¹' K, h.isCompact_preimage.2 hK, Subset.rfl⟩
 
 @[simp]
@@ -134,8 +134,8 @@ theorem locallyConnectedSpace [i : LocallyConnectedSpace Y] (h : X ≃ₜ Y) :
 the domain is a locally compact space. -/
 theorem locallyCompactSpace_iff (h : X ≃ₜ Y) :
     LocallyCompactSpace X ↔ LocallyCompactSpace Y := by
-  exact ⟨fun _ => h.symm.isOpenEmbedding.locallyCompactSpace,
-    fun _ => h.isClosedEmbedding.locallyCompactSpace⟩
+  exact ⟨fun _ ↦ h.symm.isOpenEmbedding.locallyCompactSpace,
+    fun _ ↦ h.isClosedEmbedding.locallyCompactSpace⟩
 
 @[simp]
 theorem comp_continuousOn_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) :
@@ -250,12 +250,12 @@ def piCongrRight {ι : Type*} {Y₁ Y₂ : ι → Type*} [∀ i, TopologicalSpac
     [∀ i, TopologicalSpace (Y₂ i)] (F : ∀ i, Y₁ i ≃ₜ Y₂ i) : (∀ i, Y₁ i) ≃ₜ ∀ i, Y₂ i where
   continuous_toFun := Pi.continuous_postcomp' fun i ↦ (F i).continuous
   continuous_invFun := Pi.continuous_postcomp' fun i ↦ (F i).symm.continuous
-  toEquiv := Equiv.piCongrRight fun i => (F i).toEquiv
+  toEquiv := Equiv.piCongrRight fun i ↦ (F i).toEquiv
 
 @[simp]
 theorem piCongrRight_symm {ι : Type*} {Y₁ Y₂ : ι → Type*} [∀ i, TopologicalSpace (Y₁ i)]
     [∀ i, TopologicalSpace (Y₂ i)] (F : ∀ i, Y₁ i ≃ₜ Y₂ i) :
-    (piCongrRight F).symm = piCongrRight fun i => (F i).symm :=
+    (piCongrRight F).symm = piCongrRight fun i ↦ (F i).symm :=
   rfl
 
 /-- `Equiv.piCongr` as a homeomorphism: this is the natural homeomorphism
@@ -321,8 +321,8 @@ variable {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
 def sigmaProdDistrib : (Σ i, X i) × Y ≃ₜ Σ i, X i × Y :=
   Homeomorph.symm <|
     (Equiv.sigmaProdDistrib X Y).symm.toHomeomorphOfContinuousOpen
-      (continuous_sigma fun _ => continuous_sigmaMk.fst'.prodMk continuous_snd)
-      (isOpenMap_sigma.2 fun _ => isOpenMap_sigmaMk.prodMap IsOpenMap.id)
+      (continuous_sigma fun _ ↦ continuous_sigmaMk.fst'.prodMk continuous_snd)
+      (isOpenMap_sigma.2 fun _ ↦ isOpenMap_sigmaMk.prodMap IsOpenMap.id)
 
 end Distrib
 
@@ -331,7 +331,7 @@ end Distrib
 def funUnique (ι X : Type*) [Unique ι] [TopologicalSpace X] : (ι → X) ≃ₜ X where
   toEquiv := Equiv.funUnique ι X
   continuous_toFun := continuous_apply _
-  continuous_invFun := continuous_pi fun _ => continuous_id
+  continuous_invFun := continuous_pi fun _ ↦ continuous_id
 
 /-- Homeomorphism between dependent functions `Π i : Fin 2, X i` and `X 0 × X 1`. -/
 @[simps! -fullyApplied]
@@ -343,7 +343,7 @@ def piFinTwo.{u} (X : Fin 2 → Type u) [∀ i, TopologicalSpace (X i)] : (∀ i
 /-- Homeomorphism between `X² = Fin 2 → X` and `X × X`. -/
 @[simps! -fullyApplied]
 def finTwoArrow : (Fin 2 → X) ≃ₜ X × X :=
-  { piFinTwo fun _ => X with toEquiv := finTwoArrowEquiv X }
+  { piFinTwo fun _ ↦ X with toEquiv := finTwoArrowEquiv X }
 
 /-- A subset of a topological space is homeomorphic to its image under a homeomorphism.
 -/
@@ -381,9 +381,9 @@ def piEquivPiSubtypeProd (p : ι → Prop) (Y : ι → Type*) [∀ i, Topologica
     [DecidablePred p] : (∀ i, Y i) ≃ₜ (∀ i : { x // p x }, Y i) × ∀ i : { x // ¬p x }, Y i where
   toEquiv := Equiv.piEquivPiSubtypeProd p Y
   continuous_toFun := by
-    apply Continuous.prodMk <;> exact continuous_pi fun j => continuous_apply j.1
+    apply Continuous.prodMk <;> exact continuous_pi fun j ↦ continuous_apply j.1
   continuous_invFun :=
-    continuous_pi fun j => by
+    continuous_pi fun j ↦ by
       dsimp only [Equiv.piEquivPiSubtypeProd]; split_ifs
       exacts [(continuous_apply _).comp continuous_fst, (continuous_apply _).comp continuous_snd]
 
@@ -395,9 +395,9 @@ variable [DecidableEq ι] (i : ι)
 def piSplitAt (Y : ι → Type*) [∀ j, TopologicalSpace (Y j)] :
     (∀ j, Y j) ≃ₜ Y i × ∀ j : { j // j ≠ i }, Y j where
   toEquiv := Equiv.piSplitAt i Y
-  continuous_toFun := (continuous_apply i).prodMk (continuous_pi fun j => continuous_apply j.1)
+  continuous_toFun := (continuous_apply i).prodMk (continuous_pi fun j ↦ continuous_apply j.1)
   continuous_invFun :=
-    continuous_pi fun j => by
+    continuous_pi fun j ↦ by
       dsimp only [Equiv.piSplitAt]
       split_ifs with h
       · subst h
@@ -497,7 +497,7 @@ end IsHomeomorph
 
 /-- A map is a homeomorphism iff it is the map underlying a bundled homeomorphism `h : X ≃ₜ Y`. -/
 lemma isHomeomorph_iff_exists_homeomorph : IsHomeomorph f ↔ ∃ h : X ≃ₜ Y, h = f :=
-  ⟨fun hf => ⟨hf.homeomorph f, rfl⟩, fun ⟨h, h'⟩ => h' ▸ h.isHomeomorph⟩
+  ⟨fun hf ↦ ⟨hf.homeomorph f, rfl⟩, fun ⟨h, h'⟩ ↦ h' ▸ h.isHomeomorph⟩
 
 /-- A map is a homeomorphism iff it is continuous and has a continuous inverse. -/
 lemma isHomeomorph_iff_exists_inverse : IsHomeomorph f ↔ Continuous f ∧ ∃ g : Y → X,
@@ -516,8 +516,8 @@ lemma isHomeomorph_iff_isEmbedding_surjective : IsHomeomorph f ↔ IsEmbedding f
 /-- A map is a homeomorphism iff it is continuous, closed and bijective. -/
 lemma isHomeomorph_iff_continuous_isClosedMap_bijective : IsHomeomorph f ↔
     Continuous f ∧ IsClosedMap f ∧ Function.Bijective f :=
-  ⟨fun hf => ⟨hf.continuous, hf.isClosedMap, hf.bijective⟩, fun ⟨hf, hf', hf''⟩ =>
-    ⟨hf, fun _ hu => isClosed_compl_iff.1 (image_compl_eq hf'' ▸ hf' _ hu.isClosed_compl), hf''⟩⟩
+  ⟨fun hf ↦ ⟨hf.continuous, hf.isClosedMap, hf.bijective⟩, fun ⟨hf, hf', hf''⟩ ↦
+    ⟨hf, fun _ hu ↦ isClosed_compl_iff.1 (image_compl_eq hf'' ▸ hf' _ hu.isClosed_compl), hf''⟩⟩
 
 /-- A map from a compact space to a T2 space is a homeomorphism iff it is continuous and
   bijective. -/

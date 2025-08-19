@@ -75,7 +75,7 @@ lemma hom_ext [H.IsGenerating] {X : C} (S : Sieve X) (hS : S ∈ J X) {T : A}
     (h : ∀ ⦃Y : C⦄ (f : Y ⟶ X) (_ : S f), x ≫ P.map f.op = y ≫ P.map f.op) :
     x = y := by
   obtain ⟨E, hE, le⟩ := H.exists_oneHypercover S hS
-  exact Multifork.IsLimit.hom_ext (hP E hE).some (fun j => h _ (le _ (Sieve.ofArrows_mk _ _ _)))
+  exact Multifork.IsLimit.hom_ext (hP E hE).some (fun j ↦ h _ (le _ (Sieve.ofArrows_mk _ _ _)))
 
 variable {P H}
 variable {X : C} {S : Sieve X} {E : J.OneHypercover X} (hE : H E) (le : E.sieve₀ ≤ S)
@@ -87,8 +87,8 @@ variable (F : Multifork (Cover.index ⟨S, J.superset_covering le E.mem₀⟩ P)
 /-- Auxiliary definition for `isLimit`. -/
 noncomputable def lift : F.pt ⟶ P.obj (Opposite.op X) :=
   Multifork.IsLimit.lift (hP E hE).some
-    (fun i => F.ι ⟨_, E.f i, le _ (Sieve.ofArrows_mk _ _ _)⟩)
-    (fun ⟨⟨i₁, i₂⟩, j⟩ =>
+    (fun i ↦ F.ι ⟨_, E.f i, le _ (Sieve.ofArrows_mk _ _ _)⟩)
+    (fun ⟨⟨i₁, i₂⟩, j⟩ ↦
       F.condition {
         fst := { hf := le _ (Sieve.ofArrows_mk _ _ i₁), .. }
         snd := { hf := le _ (Sieve.ofArrows_mk _ _ i₂), .. }
@@ -120,11 +120,11 @@ end
 noncomputable def isLimit [H.IsGenerating] :
     IsLimit (Cover.multifork ⟨S, J.superset_covering le E.mem₀⟩ P) :=
   Multifork.IsLimit.mk _
-    (fun F => lift hP hE le F)
-    (fun F => by
+    (fun F ↦ lift hP hE le F)
+    (fun F ↦ by
       rintro ⟨Y, f, hf⟩
       apply fac)
-    (fun F m hm => by
+    (fun F m hm ↦ by
       apply hom_ext H P hP S (J.superset_covering le E.mem₀)
       intro Y f hf
       rw [fac _ _ _ _ _ hf]

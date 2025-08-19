@@ -80,7 +80,7 @@ open Nat ZMod
 -- Since we need the fact that the factors are prime, we use `List.pmap`.
 /-- The Jacobi symbol of `a` and `b` -/
 def jacobiSym (a : ℤ) (b : ℕ) : ℤ :=
-  (b.primeFactorsList.pmap (fun p pp => @legendreSym p ⟨pp⟩ a) fun _ pf =>
+  (b.primeFactorsList.pmap (fun p pp ↦ @legendreSym p ⟨pp⟩ a) fun _ pf ↦
     prime_of_mem_primeFactorsList pf).prod
 
 -- Notation for the Jacobi symbol.
@@ -119,7 +119,7 @@ theorem mul_right' (a : ℤ) {b₁ b₂ : ℕ} (hb₁ : b₁ ≠ 0) (hb₂ : b�
   rw [jacobiSym, ((perm_primeFactorsList_mul hb₁ hb₂).pmap _).prod_eq, List.pmap_append,
     List.prod_append]
   pick_goal 2
-  · exact fun p hp =>
+  · exact fun p hp ↦
       (List.mem_append.mp hp).elim prime_of_mem_primeFactorsList prime_of_mem_primeFactorsList
   · rfl
 
@@ -142,7 +142,7 @@ theorem trichotomy (a : ℤ) (b : ℕ) : J(a | b) = 0 ∨ J(a | b) = 1 ∨ J(a |
 /-- The symbol `J(1 | b)` has the value `1`. -/
 @[simp]
 theorem one_left (b : ℕ) : J(1 | b) = 1 :=
-  List.prod_eq_one fun z hz => by
+  List.prod_eq_one fun z hz ↦ by
     let ⟨p, hp, he⟩ := List.mem_pmap.1 hz
     rw [← he, legendreSym.at_one]
 
@@ -171,10 +171,10 @@ protected theorem ne_zero {a : ℤ} {b : ℕ} (h : a.gcd b = 1) : J(a | b) ≠ 0
 
 /-- The symbol `J(a | b)` vanishes if and only if `b ≠ 0` and `a` and `b` are not coprime. -/
 theorem eq_zero_iff {a : ℤ} {b : ℕ} : J(a | b) = 0 ↔ b ≠ 0 ∧ a.gcd b ≠ 1 :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rcases eq_or_ne b 0 with hb | hb
     · rw [hb, zero_right] at h; cases h
-    exact ⟨hb, mt jacobiSym.ne_zero <| Classical.not_not.2 h⟩, fun ⟨hb, h⟩ => by
+    exact ⟨hb, mt jacobiSym.ne_zero <| Classical.not_not.2 h⟩, fun ⟨hb, h⟩ ↦ by
     rw [← neZero_iff] at hb; exact eq_zero_iff_not_coprime.2 h⟩
 
 /-- The symbol `J(0 | b)` vanishes when `b > 1`. -/
@@ -188,7 +188,7 @@ theorem eq_one_or_neg_one {a : ℤ} {b : ℕ} (h : a.gcd b = 1) : J(a | b) = 1 �
 
 /-- We have that `J(a^e | b) = J(a | b)^e`. -/
 theorem pow_left (a : ℤ) (e b : ℕ) : J(a ^ e | b) = J(a | b) ^ e :=
-  Nat.recOn e (by rw [_root_.pow_zero, _root_.pow_zero, one_left]) fun _ ih => by
+  Nat.recOn e (by rw [_root_.pow_zero, _root_.pow_zero, one_left]) fun _ ih ↦ by
     rw [_root_.pow_succ, _root_.pow_succ, mul_left, ih]
 
 /-- We have that `J(a | b^e) = J(a | b)^e`. -/
@@ -229,22 +229,22 @@ theorem prime_dvd_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : J(a | p)
   exact legendreSym.prime_dvd_of_eq_neg_one h hxy
 
 /-- We can pull out a product over a list in the first argument of the Jacobi symbol. -/
-theorem list_prod_left {l : List ℤ} {n : ℕ} : J(l.prod | n) = (l.map fun a => J(a | n)).prod := by
+theorem list_prod_left {l : List ℤ} {n : ℕ} : J(l.prod | n) = (l.map fun a ↦ J(a | n)).prod := by
   induction l with
   | nil => simp only [List.prod_nil, List.map_nil, one_left]
   | cons n l' ih => rw [List.map, List.prod_cons, List.prod_cons, mul_left, ih]
 
 /-- We can pull out a product over a list in the second argument of the Jacobi symbol. -/
 theorem list_prod_right {a : ℤ} {l : List ℕ} (hl : ∀ n ∈ l, n ≠ 0) :
-    J(a | l.prod) = (l.map fun n => J(a | n)).prod := by
+    J(a | l.prod) = (l.map fun n ↦ J(a | n)).prod := by
   induction l with
   | nil => simp only [List.prod_nil, one_right, List.map_nil]
   | cons n l' ih =>
     have hn := hl n List.mem_cons_self
     -- `n ≠ 0`
-    have hl' := List.prod_ne_zero fun hf => hl 0 (List.mem_cons_of_mem _ hf) rfl
+    have hl' := List.prod_ne_zero fun hf ↦ hl 0 (List.mem_cons_of_mem _ hf) rfl
     -- `l'.prod ≠ 0`
-    have h := fun m hm => hl m (List.mem_cons_of_mem _ hm)
+    have h := fun m hm ↦ hl m (List.mem_cons_of_mem _ hm)
     -- `∀ (m : ℕ), m ∈ l' → m ≠ 0`
     rw [List.map, List.prod_cons, List.prod_cons, mul_right' a hn hl', ih h]
 
@@ -268,7 +268,7 @@ open jacobiSym
 
 /-- If `J(a | b)` is `-1`, then `a` is not a square modulo `b`. -/
 theorem nonsquare_of_jacobiSym_eq_neg_one {a : ℤ} {b : ℕ} (h : J(a | b) = -1) :
-    ¬IsSquare (a : ZMod b) := fun ⟨r, ha⟩ => by
+    ¬IsSquare (a : ZMod b) := fun ⟨r, ha⟩ ↦ by
   rw [← r.coe_valMinAbs, ← Int.cast_mul, intCast_eq_intCast_iff', ← sq] at ha
   apply (by simp : ¬(0 : ℤ) ≤ -1)
   rw [← h, mod_left, ha, ← mod_left, pow_left]
@@ -301,15 +301,15 @@ theorem value_at (a : ℤ) {R : Type*} [Semiring R] (χ : R →* ℤ)
     J(a | b) = χ b := by
   conv_rhs => rw [← prod_primeFactorsList hb.pos.ne', cast_list_prod, map_list_prod χ]
   rw [jacobiSym, List.map_map, ← List.pmap_eq_map
-    fun _ => prime_of_mem_primeFactorsList]
+    fun _ ↦ prime_of_mem_primeFactorsList]
   congr 1; apply List.pmap_congr_left
-  exact fun p h pp _ => hp p pp (hb.ne_two_of_dvd_nat <| dvd_of_mem_primeFactorsList h)
+  exact fun p h pp _ ↦ hp p pp (hb.ne_two_of_dvd_nat <| dvd_of_mem_primeFactorsList h)
 
 /-- If `b` is odd, then `J(-1 | b)` is given by `χ₄ b`. -/
 theorem at_neg_one {b : ℕ} (hb : Odd b) : J(-1 | b) = χ₄ b :=
   -- Porting note: In mathlib3, it was written `χ₄` and Lean could guess that it had to use
   -- `χ₄.to_monoid_hom`. This is not the case with Lean 4.
-  value_at (-1) χ₄.toMonoidHom (fun p pp => @legendreSym.at_neg_one p ⟨pp⟩) hb
+  value_at (-1) χ₄.toMonoidHom (fun p pp ↦ @legendreSym.at_neg_one p ⟨pp⟩) hb
 
 /-- If `b` is odd, then `J(-a | b) = χ₄ b * J(a | b)`. -/
 protected theorem neg (a : ℤ) {b : ℕ} (hb : Odd b) : J(-a | b) = χ₄ b * J(a | b) := by
@@ -317,11 +317,11 @@ protected theorem neg (a : ℤ) {b : ℕ} (hb : Odd b) : J(-a | b) = χ₄ b * J
 
 /-- If `b` is odd, then `J(2 | b)` is given by `χ₈ b`. -/
 theorem at_two {b : ℕ} (hb : Odd b) : J(2 | b) = χ₈ b :=
-  value_at 2 χ₈.toMonoidHom (fun p pp => @legendreSym.at_two p ⟨pp⟩) hb
+  value_at 2 χ₈.toMonoidHom (fun p pp ↦ @legendreSym.at_two p ⟨pp⟩) hb
 
 /-- If `b` is odd, then `J(-2 | b)` is given by `χ₈' b`. -/
 theorem at_neg_two {b : ℕ} (hb : Odd b) : J(-2 | b) = χ₈' b :=
-  value_at (-2) χ₈'.toMonoidHom (fun p pp => @legendreSym.at_neg_two p ⟨pp⟩) hb
+  value_at (-2) χ₈'.toMonoidHom (fun p pp ↦ @legendreSym.at_neg_two p ⟨pp⟩) hb
 
 theorem div_four_left {a : ℤ} {b : ℕ} (ha4 : a % 4 = 0) (hb2 : b % 2 = 1) :
     J(a / 4 | b) = J(a | b) := by
@@ -382,10 +382,10 @@ protected theorem symm {m n : ℕ} (hm : Odd m) (hn : Odd n) : qrSign m n = qrSi
 theorem eq_iff_eq {m n : ℕ} (hm : Odd m) (hn : Odd n) (x y : ℤ) :
     qrSign m n * x = y ↔ x = qrSign m n * y := by
   refine
-      ⟨fun h' =>
+      ⟨fun h' ↦
         let h := h'.symm
         ?_,
-        fun h => ?_⟩ <;>
+        fun h ↦ ?_⟩ <;>
     rw [h, ← mul_assoc, ← pow_two, sq_eq_one hm hn, one_mul]
 
 end qrSign
@@ -396,17 +396,17 @@ namespace jacobiSym
 theorem quadratic_reciprocity' {a b : ℕ} (ha : Odd a) (hb : Odd b) :
     J(a | b) = qrSign b a * J(b | a) := by
   -- define the right hand side for fixed `a` as a `ℕ →* ℤ`
-  let rhs : ℕ → ℕ →* ℤ := fun a =>
-    { toFun := fun x => qrSign x a * J(x | a)
+  let rhs : ℕ → ℕ →* ℤ := fun a ↦
+    { toFun := fun x ↦ qrSign x a * J(x | a)
       map_one' := by convert ← mul_one (M := ℤ) _; (on_goal 1 => symm); all_goals apply one_left
-      map_mul' := fun x y => by
+      map_mul' := fun x y ↦ by
         simp_rw [qrSign.mul_left x y a, Nat.cast_mul, mul_left, mul_mul_mul_comm] }
-  have rhs_apply : ∀ a b : ℕ, rhs a b = qrSign b a * J(b | a) := fun a b => rfl
-  refine value_at a (rhs a) (fun p pp hp => Eq.symm ?_) hb
+  have rhs_apply : ∀ a b : ℕ, rhs a b = qrSign b a * J(b | a) := fun a b ↦ rfl
+  refine value_at a (rhs a) (fun p pp hp ↦ Eq.symm ?_) hb
   have hpo := pp.eq_two_or_odd'.resolve_left hp
   rw [@legendreSym.to_jacobiSym p ⟨pp⟩, rhs_apply, Nat.cast_id, qrSign.eq_iff_eq hpo ha,
     qrSign.symm hpo ha]
-  refine value_at p (rhs p) (fun q pq hq => ?_) ha
+  refine value_at p (rhs p) (fun q pq hq ↦ ?_) ha
   have hqo := pq.eq_two_or_odd'.resolve_left hq
   rw [rhs_apply, Nat.cast_id, ← @legendreSym.to_jacobiSym p ⟨pp⟩, qrSign.symm hqo hpo,
     qrSign.neg_one_pow hpo hqo, @legendreSym.quadratic_reciprocity' p q ⟨pp⟩ ⟨pq⟩ hp hq]

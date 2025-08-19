@@ -204,7 +204,7 @@ theorem neg_pi_div_two_lt_arcsin {x : ℝ} : -(π / 2) < arcsin x ↔ -1 < x :=
 
 @[simp]
 theorem arcsin_eq_pi_div_two {x : ℝ} : arcsin x = π / 2 ↔ 1 ≤ x :=
-  ⟨fun h => not_lt.1 fun h' => (arcsin_lt_pi_div_two.2 h').ne h, arcsin_of_one_le⟩
+  ⟨fun h ↦ not_lt.1 fun h' ↦ (arcsin_lt_pi_div_two.2 h').ne h, arcsin_of_one_le⟩
 
 @[simp]
 theorem pi_div_two_eq_arcsin {x} : π / 2 = arcsin x ↔ 1 ≤ x :=
@@ -216,7 +216,7 @@ theorem pi_div_two_le_arcsin {x} : π / 2 ≤ arcsin x ↔ 1 ≤ x :=
 
 @[simp]
 theorem arcsin_eq_neg_pi_div_two {x : ℝ} : arcsin x = -(π / 2) ↔ x ≤ -1 :=
-  ⟨fun h => not_lt.1 fun h' => (neg_pi_div_two_lt_arcsin.2 h').ne' h, arcsin_of_le_neg_one⟩
+  ⟨fun h ↦ not_lt.1 fun h' ↦ (neg_pi_div_two_lt_arcsin.2 h').ne' h, arcsin_of_le_neg_one⟩
 
 @[simp]
 theorem neg_pi_div_two_eq_arcsin {x} : -(π / 2) = arcsin x ↔ x ≤ -1 :=
@@ -232,7 +232,7 @@ theorem pi_div_four_le_arcsin {x} : π / 4 ≤ arcsin x ↔ √2 / 2 ≤ x := by
   have := pi_pos
   constructor <;> linarith
 
-theorem mapsTo_sin_Ioo : MapsTo sin (Ioo (-(π / 2)) (π / 2)) (Ioo (-1) 1) := fun x h => by
+theorem mapsTo_sin_Ioo : MapsTo sin (Ioo (-(π / 2)) (π / 2)) (Ioo (-1) 1) := fun x h ↦ by
   rwa [mem_Ioo, ← arcsin_lt_pi_div_two, ← neg_pi_div_two_lt_arcsin, arcsin_sin h.1.le h.2.le]
 
 /-- `Real.sin` as a `PartialHomeomorph` between `(-π / 2, π / 2)` and `(-1, 1)`. -/
@@ -311,7 +311,7 @@ theorem arccos_cos {x : ℝ} (hx₁ : 0 ≤ x) (hx₂ : x ≤ π) : arccos (cos 
 lemma arccos_eq_of_eq_cos (hy₀ : 0 ≤ y) (hy₁ : y ≤ π) (hxy : x = cos y) : arccos x = y := by
   rw [hxy, arccos_cos hy₀ hy₁]
 
-theorem strictAntiOn_arccos : StrictAntiOn arccos (Icc (-1) 1) := fun _ hx _ hy h =>
+theorem strictAntiOn_arccos : StrictAntiOn arccos (Icc (-1) 1) := fun _ hx _ hy h ↦
   sub_lt_sub_left (strictMonoOn_arcsin hx hy h) _
 
 @[gcongr]

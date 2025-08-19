@@ -81,11 +81,11 @@ def id : ∀ X : WithTerminal C, Hom X X
 /-- Composition of morphisms for `WithTerminal C`. -/
 @[simp]
 def comp : ∀ {X Y Z : WithTerminal C}, Hom X Y → Hom Y Z → Hom X Z
-  | of _X, of _Y, of _Z => fun f g => f ≫ g
-  | of _X, _, star => fun _f _g => PUnit.unit
-  | star, of _X, _ => fun f _g => PEmpty.elim f
-  | _, star, of _Y => fun _f g => PEmpty.elim g
-  | star, star, star => fun _ _ => PUnit.unit
+  | of _X, of _Y, of _Z => fun f g ↦ f ≫ g
+  | of _X, _, star => fun _f _g ↦ PUnit.unit
+  | star, of _X, _ => fun f _g ↦ PEmpty.elim f
+  | _, star, of _Y => fun _f g ↦ PEmpty.elim g
+  | star, star, star => fun _ _ ↦ PUnit.unit
 attribute [nolint simpNF] comp.eq_4
 
 instance : Category.{v} (WithTerminal C) where
@@ -139,7 +139,7 @@ def map {D : Type*} [Category D] (F : C ⥤ D) : WithTerminal C ⥤ WithTerminal
 /-- A natural isomorphism between the functor `map (𝟭 C)` and `𝟭 (WithTerminal C)`. -/
 @[simps!]
 def mapId (C : Type*) [Category C] : map (𝟭 C) ≅ 𝟭 (WithTerminal C) :=
-  NatIso.ofComponents (fun X => match X with
+  NatIso.ofComponents (fun X ↦ match X with
     | of _ => Iso.refl _
     | star => Iso.refl _) (by cat_disch)
 
@@ -147,7 +147,7 @@ def mapId (C : Type*) [Category C] : map (𝟭 C) ≅ 𝟭 (WithTerminal C) :=
 @[simps!]
 def mapComp {D E : Type*} [Category D] [Category E] (F : C ⥤ D) (G : D ⥤ E) :
     map (F ⋙ G) ≅ map F ⋙ map G :=
-  NatIso.ofComponents (fun X => match X with
+  NatIso.ofComponents (fun X ↦ match X with
     | of _ => Iso.refl _
     | star => Iso.refl _) (by cat_disch)
 
@@ -155,7 +155,7 @@ def mapComp {D E : Type*} [Category D] [Category E] (F : C ⥤ D) (G : D ⥤ E) 
 of functors `WithTerminal C ⥤ WithTerminal D`. -/
 @[simps]
 def map₂ {D : Type*} [Category D] {F G : C ⥤ D} (η : F ⟶ G) : map F ⟶ map G where
-  app := fun X => match X with
+  app := fun X ↦ match X with
     | of x => η.app x
     | star => 𝟙 star
   naturality := by
@@ -296,8 +296,8 @@ def lift {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x 
 @[simps!]
 def inclLift {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x ⟶ Z)
     (hM : ∀ (x y : C) (f : x ⟶ y), F.map f ≫ M y = M x) : incl ⋙ lift F M hM ≅ F where
-  hom := { app := fun _ => 𝟙 _ }
-  inv := { app := fun _ => 𝟙 _ }
+  hom := { app := fun _ ↦ 𝟙 _ }
+  inv := { app := fun _ ↦ 𝟙 _ }
 
 /-- The isomorphism between `(lift F _ _).obj WithTerminal.star` with `Z`. -/
 @[simps!]
@@ -321,7 +321,7 @@ def liftUnique {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.
     (hh : ∀ x : C, G.map (starTerminal.from (incl.obj x)) ≫ hG.hom = h.hom.app x ≫ M x) :
     G ≅ lift F M hM :=
   NatIso.ofComponents
-    (fun X =>
+    (fun X ↦
       match X with
       | of x => h.app x
       | star => hG)
@@ -339,7 +339,7 @@ def liftUnique {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.
 @[simps!]
 def liftToTerminal {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsTerminal Z) :
     WithTerminal C ⥤ D :=
-  lift F (fun _x => hZ.from _) fun _x _y _f => hZ.hom_ext _ _
+  lift F (fun _x ↦ hZ.from _) fun _x _y _f ↦ hZ.hom_ext _ _
 
 /-- A variant of `incl_lift` with `Z` a terminal object. -/
 @[simps!]
@@ -351,7 +351,7 @@ def inclLiftToTerminal {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (hZ : Limi
 @[simps!]
 def liftToTerminalUnique {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsTerminal Z)
     (G : WithTerminal C ⥤ D) (h : incl ⋙ G ≅ F) (hG : G.obj star ≅ Z) : G ≅ liftToTerminal F hZ :=
-  liftUnique F (fun _z => hZ.from _) (fun _x _y _f => hZ.hom_ext _ _) G h hG fun _x =>
+  liftUnique F (fun _z ↦ hZ.from _) (fun _x _y _f ↦ hZ.hom_ext _ _) G h hG fun _x ↦
     hZ.hom_ext _ _
 
 /-- Constructs a morphism to `star` from `of X`. -/
@@ -464,11 +464,11 @@ def id : ∀ X : WithInitial C, Hom X X
 /-- Composition of morphisms for `WithInitial C`. -/
 @[simp]
 def comp : ∀ {X Y Z : WithInitial C}, Hom X Y → Hom Y Z → Hom X Z
-  | of _X, of _Y, of _Z => fun f g => f ≫ g
-  | star, _, of _X => fun _f _g => PUnit.unit
-  | _, of _X, star => fun _f g => PEmpty.elim g
-  | of _Y, star, _ => fun f _g => PEmpty.elim f
-  | star, star, star => fun _ _ => PUnit.unit
+  | of _X, of _Y, of _Z => fun f g ↦ f ≫ g
+  | star, _, of _X => fun _f _g ↦ PUnit.unit
+  | _, of _X, star => fun _f g ↦ PEmpty.elim g
+  | of _Y, star, _ => fun f _g ↦ PEmpty.elim f
+  | star, star, star => fun _ _ ↦ PUnit.unit
 attribute [nolint simpNF] comp.eq_3
 
 instance : Category.{v} (WithInitial C) where
@@ -520,7 +520,7 @@ def map {D : Type*} [Category D] (F : C ⥤ D) : WithInitial C ⥤ WithInitial D
 /-- A natural isomorphism between the functor `map (𝟭 C)` and `𝟭 (WithInitial C)`. -/
 @[simps!]
 def mapId (C : Type*) [Category C] : map (𝟭 C) ≅ 𝟭 (WithInitial C) :=
-  NatIso.ofComponents (fun X => match X with
+  NatIso.ofComponents (fun X ↦ match X with
     | of _ => Iso.refl _
     | star => Iso.refl _) (by cat_disch)
 
@@ -528,7 +528,7 @@ def mapId (C : Type*) [Category C] : map (𝟭 C) ≅ 𝟭 (WithInitial C) :=
 @[simps!]
 def mapComp {D E : Type*} [Category D] [Category E] (F : C ⥤ D) (G : D ⥤ E) :
     map (F ⋙ G) ≅ map F ⋙ map G :=
-  NatIso.ofComponents (fun X => match X with
+  NatIso.ofComponents (fun X ↦ match X with
     | of _ => Iso.refl _
     | star => Iso.refl _) (by cat_disch)
 
@@ -536,7 +536,7 @@ def mapComp {D E : Type*} [Category D] [Category E] (F : C ⥤ D) (G : D ⥤ E) 
 of functors `WithInitial C ⥤ WithInitial D`. -/
 @[simps]
 def map₂ {D : Type*} [Category D] {F G : C ⥤ D} (η : F ⟶ G) : map F ⟶ map G where
-  app := fun X => match X with
+  app := fun X ↦ match X with
     | of x => η.app x
     | star => 𝟙 star
   naturality := by
@@ -676,8 +676,8 @@ def lift {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.
 @[simps!]
 def inclLift {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)
     (hM : ∀ (x y : C) (f : x ⟶ y), M x ≫ F.map f = M y) : incl ⋙ lift F M hM ≅ F where
-  hom := { app := fun _ => 𝟙 _ }
-  inv := { app := fun _ => 𝟙 _ }
+  hom := { app := fun _ ↦ 𝟙 _ }
+  inv := { app := fun _ ↦ 𝟙 _ }
 
 /-- The isomorphism between `(lift F _ _).obj WithInitial.star` with `Z`. -/
 @[simps!]
@@ -701,7 +701,7 @@ def liftUnique {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z 
     (hh : ∀ x : C, hG.symm.hom ≫ G.map (starInitial.to (incl.obj x)) = M x ≫ h.symm.hom.app x) :
     G ≅ lift F M hM :=
   NatIso.ofComponents
-    (fun X =>
+    (fun X ↦
       match X with
       | of x => h.app x
       | star => hG)
@@ -722,7 +722,7 @@ def liftUnique {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z 
 @[simps!]
 def liftToInitial {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsInitial Z) :
     WithInitial C ⥤ D :=
-  lift F (fun _x => hZ.to _) fun _x _y _f => hZ.hom_ext _ _
+  lift F (fun _x ↦ hZ.to _) fun _x _y _f ↦ hZ.hom_ext _ _
 
 /-- A variant of `incl_lift` with `Z` an initial object. -/
 @[simps!]
@@ -734,7 +734,7 @@ def inclLiftToInitial {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (hZ : Limit
 @[simps!]
 def liftToInitialUnique {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsInitial Z)
     (G : WithInitial C ⥤ D) (h : incl ⋙ G ≅ F) (hG : G.obj star ≅ Z) : G ≅ liftToInitial F hZ :=
-  liftUnique F (fun _z => hZ.to _) (fun _x _y _f => hZ.hom_ext _ _) G h hG fun _x => hZ.hom_ext _ _
+  liftUnique F (fun _z ↦ hZ.to _) (fun _x _y _f ↦ hZ.hom_ext _ _) G h hG fun _x ↦ hZ.hom_ext _ _
 
 /-- Constructs a morphism from `star` to `of X`. -/
 @[simp]

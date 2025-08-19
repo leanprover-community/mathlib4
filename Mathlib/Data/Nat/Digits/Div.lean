@@ -25,7 +25,7 @@ theorem modEq_nine_digits_sum (n : ℕ) : n ≡ (digits 10 n).sum [MOD 9] :=
   modEq_digits_sum 9 10 (by norm_num) n
 
 theorem modEq_eleven_digits_sum (n : ℕ) :
-    n ≡ ((digits 10 n).map fun n : ℕ => (n : ℤ)).alternatingSum [ZMOD 11] := by
+    n ≡ ((digits 10 n).map fun n : ℕ ↦ (n : ℤ)).alternatingSum [ZMOD 11] := by
   have t := zmodeq_ofDigits_digits 11 10 (-1 : ℤ) (by unfold Int.ModEq; rfl) n
   rwa [ofDigits_neg_one] at t
 
@@ -51,14 +51,14 @@ theorem dvd_iff_dvd_ofDigits (b b' : ℕ) (c : ℤ) (h : (b : ℤ) ∣ (b' : ℤ
     dvd_iff_dvd_of_dvd_sub (zmodeq_ofDigits_digits b b' c (Int.modEq_iff_dvd.2 h).symm _).symm.dvd
 
 theorem eleven_dvd_iff :
-    11 ∣ n ↔ (11 : ℤ) ∣ ((digits 10 n).map fun n : ℕ => (n : ℤ)).alternatingSum := by
+    11 ∣ n ↔ (11 : ℤ) ∣ ((digits 10 n).map fun n : ℕ ↦ (n : ℤ)).alternatingSum := by
   have t := dvd_iff_dvd_ofDigits 11 10 (-1 : ℤ) (by norm_num) n
   rw [ofDigits_neg_one] at t
   exact t
 
 theorem eleven_dvd_of_palindrome (p : (digits 10 n).Palindrome) (h : Even (digits 10 n).length) :
     11 ∣ n := by
-  let dig := (digits 10 n).map fun n : ℕ => (n : ℤ)
+  let dig := (digits 10 n).map fun n : ℕ ↦ (n : ℤ)
   replace h : Even dig.length := by rwa [List.length_map]
   refine eleven_dvd_iff.2 ⟨0, (?_ : dig.alternatingSum = 0)⟩
   have := dig.alternatingSum_reverse

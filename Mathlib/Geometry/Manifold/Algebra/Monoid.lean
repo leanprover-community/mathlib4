@@ -45,7 +45,7 @@ class ContMDiffAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [To
     (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
     (G : Type*) [Add G] [TopologicalSpace G] [ChartedSpace H G] : Prop
     extends IsManifold I n G where
-  contMDiff_add : ContMDiff (I.prod I) I n fun p : G × G => p.1 + p.2
+  contMDiff_add : ContMDiff (I.prod I) I n fun p : G × G ↦ p.1 + p.2
 
 -- See note [Design choices about smooth algebraic structures]
 /-- Basic hypothesis to talk about a `C^n` (Lie) monoid or a `C^n` semigroup.
@@ -57,7 +57,7 @@ class ContMDiffMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [To
     (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
     (G : Type*) [Mul G] [TopologicalSpace G] [ChartedSpace H G] : Prop
     extends IsManifold I n G where
-  contMDiff_mul : ContMDiff (I.prod I) I n fun p : G × G => p.1 * p.2
+  contMDiff_mul : ContMDiff (I.prod I) I n fun p : G × G ↦ p.1 * p.2
 
 section ContMDiffMul
 
@@ -96,7 +96,7 @@ section
 variable (I n)
 
 @[to_additive]
-theorem contMDiff_mul [ContMDiffMul I n G] : ContMDiff (I.prod I) I n fun p : G × G => p.1 * p.2 :=
+theorem contMDiff_mul [ContMDiffMul I n G] : ContMDiff (I.prod I) I n fun p : G × G ↦ p.1 * p.2 :=
   ContMDiffMul.contMDiff_mul
 
 include I n in
@@ -125,11 +125,11 @@ nonrec theorem ContMDiffAt.mul (hf : ContMDiffAt I' I n f x) (hg : ContMDiffAt I
 
 @[to_additive]
 theorem ContMDiffOn.mul (hf : ContMDiffOn I' I n f s) (hg : ContMDiffOn I' I n g s) :
-    ContMDiffOn I' I n (f * g) s := fun x hx => (hf x hx).mul (hg x hx)
+    ContMDiffOn I' I n (f * g) s := fun x hx ↦ (hf x hx).mul (hg x hx)
 
 @[to_additive]
 theorem ContMDiff.mul (hf : ContMDiff I' I n f) (hg : ContMDiff I' I n g) :
-    ContMDiff I' I n (f * g) := fun x => (hf x).mul (hg x)
+    ContMDiff I' I n (f * g) := fun x ↦ (hf x).mul (hg x)
 
 @[to_additive]
 theorem contMDiff_mul_left {a : G} : ContMDiff I I n (a * ·) :=
@@ -256,7 +256,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
   {G' : Type*} [Monoid G'] [TopologicalSpace G'] [ChartedSpace H' G'] [ContMDiffMul I' n G']
 
 @[to_additive]
-theorem contMDiff_pow : ∀ i : ℕ, ContMDiff I I n fun a : G => a ^ i
+theorem contMDiff_pow : ∀ i : ℕ, ContMDiff I I n fun a : G ↦ a ^ i
   | 0 => by simp only [pow_zero, contMDiff_const]
   | k + 1 => by simpa [pow_succ] using (contMDiff_pow _).mul contMDiff_id
 
@@ -337,12 +337,12 @@ theorem contMDiffWithinAt_finprod (lf : LocallyFinite fun i ↦ mulSupport <| f 
 @[to_additive]
 theorem contMDiffWithinAt_finset_prod' (h : ∀ i ∈ t, ContMDiffWithinAt I' I n (f i) s x) :
     ContMDiffWithinAt I' I n (∏ i ∈ t, f i) s x :=
-  Finset.prod_induction f (fun f => ContMDiffWithinAt I' I n f s x) (fun _ _ hf hg => hf.mul hg)
+  Finset.prod_induction f (fun f ↦ ContMDiffWithinAt I' I n f s x) (fun _ _ hf hg ↦ hf.mul hg)
     (contMDiffWithinAt_const (c := 1)) h
 
 @[to_additive]
 theorem contMDiffWithinAt_finset_prod (h : ∀ i ∈ t, ContMDiffWithinAt I' I n (f i) s x) :
-    ContMDiffWithinAt I' I n (fun x => ∏ i ∈ t, f i x) s x := by
+    ContMDiffWithinAt I' I n (fun x ↦ ∏ i ∈ t, f i x) s x := by
   simp only [← Finset.prod_apply]
   exact contMDiffWithinAt_finset_prod' h
 
@@ -365,7 +365,7 @@ theorem contMDiffAt_finset_prod' (h : ∀ i ∈ t, ContMDiffAt I' I n (f i) x) :
 
 @[to_additive]
 theorem contMDiffAt_finset_prod (h : ∀ i ∈ t, ContMDiffAt I' I n (f i) x) :
-    ContMDiffAt I' I n (fun x => ∏ i ∈ t, f i x) x :=
+    ContMDiffAt I' I n (fun x ↦ ∏ i ∈ t, f i x) x :=
   contMDiffWithinAt_finset_prod h
 
 @[to_additive]
@@ -376,13 +376,13 @@ theorem contMDiffOn_finprod
 
 @[to_additive]
 theorem contMDiffOn_finset_prod' (h : ∀ i ∈ t, ContMDiffOn I' I n (f i) s) :
-    ContMDiffOn I' I n (∏ i ∈ t, f i) s := fun x hx =>
-  contMDiffWithinAt_finset_prod' fun i hi => h i hi x hx
+    ContMDiffOn I' I n (∏ i ∈ t, f i) s := fun x hx ↦
+  contMDiffWithinAt_finset_prod' fun i hi ↦ h i hi x hx
 
 @[to_additive]
 theorem contMDiffOn_finset_prod (h : ∀ i ∈ t, ContMDiffOn I' I n (f i) s) :
-    ContMDiffOn I' I n (fun x => ∏ i ∈ t, f i x) s := fun x hx =>
-  contMDiffWithinAt_finset_prod fun i hi => h i hi x hx
+    ContMDiffOn I' I n (fun x ↦ ∏ i ∈ t, f i x) s := fun x hx ↦
+  contMDiffWithinAt_finset_prod fun i hi ↦ h i hi x hx
 
 @[to_additive]
 theorem ContMDiff.prod (h : ∀ i ∈ t, ContMDiff I' I n (f i)) :
@@ -391,24 +391,24 @@ theorem ContMDiff.prod (h : ∀ i ∈ t, ContMDiff I' I n (f i)) :
 
 @[to_additive]
 theorem contMDiff_finset_prod' (h : ∀ i ∈ t, ContMDiff I' I n (f i)) :
-    ContMDiff I' I n (∏ i ∈ t, f i) := fun x => contMDiffAt_finset_prod' fun i hi => h i hi x
+    ContMDiff I' I n (∏ i ∈ t, f i) := fun x ↦ contMDiffAt_finset_prod' fun i hi ↦ h i hi x
 
 @[to_additive]
 theorem contMDiff_finset_prod (h : ∀ i ∈ t, ContMDiff I' I n (f i)) :
-    ContMDiff I' I n fun x => ∏ i ∈ t, f i x := fun x =>
-  contMDiffAt_finset_prod fun i hi => h i hi x
+    ContMDiff I' I n fun x ↦ ∏ i ∈ t, f i x := fun x ↦
+  contMDiffAt_finset_prod fun i hi ↦ h i hi x
 
 @[to_additive]
 theorem contMDiff_finprod (h : ∀ i, ContMDiff I' I n (f i))
-    (hfin : LocallyFinite fun i => mulSupport (f i)) : ContMDiff I' I n fun x => ∏ᶠ i, f i x :=
+    (hfin : LocallyFinite fun i ↦ mulSupport (f i)) : ContMDiff I' I n fun x ↦ ∏ᶠ i, f i x :=
   fun x ↦ contMDiffAt_finprod hfin fun i ↦ h i x
 
 @[to_additive]
 theorem contMDiff_finprod_cond (hc : ∀ i, p i → ContMDiff I' I n (f i))
-    (hf : LocallyFinite fun i => mulSupport (f i)) :
-    ContMDiff I' I n fun x => ∏ᶠ (i) (_ : p i), f i x := by
+    (hf : LocallyFinite fun i ↦ mulSupport (f i)) :
+    ContMDiff I' I n fun x ↦ ∏ᶠ (i) (_ : p i), f i x := by
   simp only [← finprod_subtype_eq_finprod_cond]
-  exact contMDiff_finprod (fun i => hc i i.2) (hf.comp_injective Subtype.coe_injective)
+  exact contMDiff_finprod (fun i ↦ hc i i.2) (hf.comp_injective Subtype.coe_injective)
 
 end CommMonoid
 
@@ -448,10 +448,10 @@ nonrec theorem ContMDiffAt.div_const (hf : ContMDiffAt I' I n f x) :
 
 @[to_additive]
 theorem ContMDiffOn.div_const (hf : ContMDiffOn I' I n f s) :
-    ContMDiffOn I' I n (fun x ↦ f x / c) s := fun x hx => (hf x hx).div_const c
+    ContMDiffOn I' I n (fun x ↦ f x / c) s := fun x hx ↦ (hf x hx).div_const c
 
 @[to_additive]
 theorem ContMDiff.div_const (hf : ContMDiff I' I n f) :
-    ContMDiff I' I n (fun x ↦ f x / c) := fun x => (hf x).div_const c
+    ContMDiff I' I n (fun x ↦ f x / c) := fun x ↦ (hf x).div_const c
 
 end DivConst

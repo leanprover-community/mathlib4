@@ -49,7 +49,7 @@ class MonoCoprod : Prop where
 variable {C}
 
 instance (priority := 100) monoCoprodOfHasZeroMorphisms [HasZeroMorphisms C] : MonoCoprod C :=
-  ⟨fun A B c hc => by
+  ⟨fun A B c hc ↦ by
     haveI : IsSplitMono c.inl :=
       IsSplitMono.mk' (SplitMono.mk (hc.desc (BinaryCofan.mk (𝟙 A) 0)) (IsColimit.fac _ _ _))
     infer_instance⟩
@@ -59,9 +59,9 @@ namespace MonoCoprod
 theorem binaryCofan_inr {A B : C} [MonoCoprod C] (c : BinaryCofan A B) (hc : IsColimit c) :
     Mono c.inr := by
   haveI hc' : IsColimit (BinaryCofan.mk c.inr c.inl) :=
-    BinaryCofan.IsColimit.mk _ (fun f₁ f₂ => hc.desc (BinaryCofan.mk f₂ f₁))
+    BinaryCofan.IsColimit.mk _ (fun f₁ f₂ ↦ hc.desc (BinaryCofan.mk f₂ f₁))
       (by simp) (by simp)
-      (fun f₁ f₂ m h₁ h₂ => BinaryCofan.IsColimit.hom_ext hc (by cat_disch) (by cat_disch))
+      (fun f₁ f₂ m h₁ h₂ ↦ BinaryCofan.IsColimit.hom_ext hc (by cat_disch) (by cat_disch))
   exact binaryCofan_inl _ hc'
 
 instance {A B : C} [MonoCoprod C] [HasBinaryCoproduct A B] : Mono (coprod.inl : A ⟶ A ⨿ B) :=
@@ -75,27 +75,27 @@ theorem mono_inl_iff {A B : C} {c₁ c₂ : BinaryCofan A B} (hc₁ : IsColimit 
   suffices
     ∀ (c₁ c₂ : BinaryCofan A B) (_ : IsColimit c₁) (_ : IsColimit c₂) (_ : Mono c₁.inl),
       Mono c₂.inl
-    by exact ⟨fun h₁ => this _ _ hc₁ hc₂ h₁, fun h₂ => this _ _ hc₂ hc₁ h₂⟩
+    by exact ⟨fun h₁ ↦ this _ _ hc₁ hc₂ h₁, fun h₂ ↦ this _ _ hc₂ hc₁ h₂⟩
   intro c₁ c₂ hc₁ hc₂
   intro
   simpa only [IsColimit.comp_coconePointUniqueUpToIso_hom] using
     mono_comp c₁.inl (hc₁.coconePointUniqueUpToIso hc₂).hom
 
 theorem mk' (h : ∀ A B : C, ∃ (c : BinaryCofan A B) (_ : IsColimit c), Mono c.inl) : MonoCoprod C :=
-  ⟨fun A B c' hc' => by
+  ⟨fun A B c' hc' ↦ by
     obtain ⟨c, hc₁, hc₂⟩ := h A B
     simpa only [mono_inl_iff hc' hc₁] using hc₂⟩
 
 instance monoCoprodType : MonoCoprod (Type u) :=
-  MonoCoprod.mk' fun A B => by
+  MonoCoprod.mk' fun A B ↦ by
     refine ⟨BinaryCofan.mk (Sum.inl : A ⟶ A ⊕ B) Sum.inr, ?_, ?_⟩
     · exact BinaryCofan.IsColimit.mk _
-        (fun f₁ f₂ x => by
+        (fun f₁ f₂ x ↦ by
           rcases x with x | x
           exacts [f₁ x, f₂ x])
-        (fun f₁ f₂ => by rfl)
-        (fun f₁ f₂ => by rfl)
-        (fun f₁ f₂ m h₁ h₂ => by
+        (fun f₁ f₂ ↦ by rfl)
+        (fun f₁ f₂ ↦ by rfl)
+        (fun f₁ f₂ m h₁ h₂ ↦ by
           funext x
           rcases x with x | x
           · exact congr_fun h₁ x
@@ -116,17 +116,17 @@ of `X ∘ Sum.inl` and `X ∘ Sum.inr`, this is a cofan for `c₁.pt` and `c₂.
 point is `c.pt`. -/
 @[simp]
 def binaryCofanSum : BinaryCofan c₁.pt c₂.pt :=
-  BinaryCofan.mk (Cofan.IsColimit.desc hc₁ (fun i₁ => c.inj (Sum.inl i₁)))
-    (Cofan.IsColimit.desc hc₂ (fun i₂ => c.inj (Sum.inr i₂)))
+  BinaryCofan.mk (Cofan.IsColimit.desc hc₁ (fun i₁ ↦ c.inj (Sum.inl i₁)))
+    (Cofan.IsColimit.desc hc₂ (fun i₂ ↦ c.inj (Sum.inr i₂)))
 
 /-- The binary cofan `binaryCofanSum c c₁ c₂ hc₁ hc₂` is colimit. -/
 def isColimitBinaryCofanSum : IsColimit (binaryCofanSum c c₁ c₂ hc₁ hc₂) :=
-  BinaryCofan.IsColimit.mk _ (fun f₁ f₂ => Cofan.IsColimit.desc hc (fun i => match i with
+  BinaryCofan.IsColimit.mk _ (fun f₁ f₂ ↦ Cofan.IsColimit.desc hc (fun i ↦ match i with
       | Sum.inl i₁ => c₁.inj i₁ ≫ f₁
       | Sum.inr i₂ => c₂.inj i₂ ≫ f₂))
-    (fun f₁ f₂ => Cofan.IsColimit.hom_ext hc₁ _ _ (by simp))
-    (fun f₁ f₂ => Cofan.IsColimit.hom_ext hc₂ _ _ (by simp))
-    (fun f₁ f₂ m hm₁ hm₂ => by
+    (fun f₁ f₂ ↦ Cofan.IsColimit.hom_ext hc₁ _ _ (by simp))
+    (fun f₁ f₂ ↦ Cofan.IsColimit.hom_ext hc₂ _ _ (by simp))
+    (fun f₁ f₂ m hm₁ hm₂ ↦ by
       apply Cofan.IsColimit.hom_ext hc
       rintro (i₁|i₂) <;> cat_disch)
 
@@ -162,11 +162,11 @@ variable [MonoCoprod C] {I J : Type*} (X : I → C) (ι : J → I)
 
 lemma mono_of_injective_aux (hι : Function.Injective ι) (c : Cofan X) (c₁ : Cofan (X ∘ ι))
     (hc : IsColimit c) (hc₁ : IsColimit c₁)
-    (c₂ : Cofan (fun (k : ((Set.range ι)ᶜ : Set I)) => X k.1))
-    (hc₂ : IsColimit c₂) : Mono (Cofan.IsColimit.desc hc₁ (fun i => c.inj (ι i))) := by
+    (c₂ : Cofan (fun (k : ((Set.range ι)ᶜ : Set I)) ↦ X k.1))
+    (hc₂ : IsColimit c₂) : Mono (Cofan.IsColimit.desc hc₁ (fun i ↦ c.inj (ι i))) := by
   classical
   let e := ((Equiv.ofInjective ι hι).sumCongr (Equiv.refl _)).trans (Equiv.Set.sumCompl _)
-  refine mono_binaryCofanSum_inl' (Cofan.mk c.pt (fun i' => c.inj (e i'))) _ _ ?_
+  refine mono_binaryCofanSum_inl' (Cofan.mk c.pt (fun i' ↦ c.inj (e i'))) _ _ ?_
     hc₁ hc₂ _ (by simp [e])
   exact IsColimit.ofIsoColimit ((IsColimit.ofCoconeEquiv (Cocones.equivalenceOfReindexing
     (Discrete.equivalence e) (Iso.refl _))).symm hc) (Cocones.ext (Iso.refl _))
@@ -176,18 +176,18 @@ variable (hι : Function.Injective ι) (c : Cofan X) (c₁ : Cofan (X ∘ ι))
 include hι
 
 include hc in
-lemma mono_of_injective [HasCoproduct (fun (k : ((Set.range ι)ᶜ : Set I)) => X k.1)] :
-    Mono (Cofan.IsColimit.desc hc₁ (fun i => c.inj (ι i))) :=
+lemma mono_of_injective [HasCoproduct (fun (k : ((Set.range ι)ᶜ : Set I)) ↦ X k.1)] :
+    Mono (Cofan.IsColimit.desc hc₁ (fun i ↦ c.inj (ι i))) :=
   mono_of_injective_aux X ι hι c c₁ hc hc₁ _ (colimit.isColimit _)
 
 lemma mono_of_injective' [HasCoproduct (X ∘ ι)] [HasCoproduct X]
-    [HasCoproduct (fun (k : ((Set.range ι)ᶜ : Set I)) => X k.1)] :
-    Mono (Sigma.desc (f := X ∘ ι) (fun j => Sigma.ι X (ι j))) :=
+    [HasCoproduct (fun (k : ((Set.range ι)ᶜ : Set I)) ↦ X k.1)] :
+    Mono (Sigma.desc (f := X ∘ ι) (fun j ↦ Sigma.ι X (ι j))) :=
   mono_of_injective X ι hι _ _ (colimit.isColimit _) (colimit.isColimit _)
 
 lemma mono_map'_of_injective [HasCoproduct (X ∘ ι)] [HasCoproduct X]
-    [HasCoproduct (fun (k : ((Set.range ι)ᶜ : Set I)) => X k.1)] :
-    Mono (Sigma.map' ι (fun j => 𝟙 ((X ∘ ι) j))) := by
+    [HasCoproduct (fun (k : ((Set.range ι)ᶜ : Set I)) ↦ X k.1)] :
+    Mono (Sigma.map' ι (fun j ↦ 𝟙 ((X ∘ ι) j))) := by
   convert mono_of_injective' X ι hι
   apply Sigma.hom_ext
   intro j
@@ -206,7 +206,7 @@ lemma mono_inj (c : Cofan X) (h : IsColimit c) (i : I)
   let ι : Unit → I := fun _ ↦ i
   have hι : Function.Injective ι := fun _ _ _ ↦ rfl
   exact mono_of_injective X ι hι c (Cofan.mk (X i) (fun _ ↦ 𝟙 _)) h
-    (mkCofanColimit _ (fun s => s.inj ()))
+    (mkCofanColimit _ (fun s ↦ s.inj ()))
 
 instance mono_ι [HasCoproduct X] (i : I)
     [HasCoproduct (fun (k : ((Set.range (fun _ : Unit ↦ i))ᶜ : Set I)) => X k.1)] :

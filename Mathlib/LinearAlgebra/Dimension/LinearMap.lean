@@ -84,28 +84,28 @@ theorem rank_add_le (f g : V →ₗ[K] V') : rank (f + g) ≤ rank f + rank g :=
   calc
     rank (f + g) ≤ Module.rank K (LinearMap.range f ⊔ LinearMap.range g : Submodule K V') := by
       refine Submodule.rank_mono ?_
-      exact LinearMap.range_le_iff_comap.2 <| eq_top_iff'.2 fun x =>
+      exact LinearMap.range_le_iff_comap.2 <| eq_top_iff'.2 fun x ↦
         show f x + g x ∈ (LinearMap.range f ⊔ LinearMap.range g : Submodule K V') from
         mem_sup.2 ⟨_, ⟨x, rfl⟩, _, ⟨x, rfl⟩, rfl⟩
     _ ≤ rank f + rank g := Submodule.rank_add_le_rank_add_rank _ _
 
 theorem rank_finset_sum_le {η} (s : Finset η) (f : η → V →ₗ[K] V') :
     rank (∑ d ∈ s, f d) ≤ ∑ d ∈ s, rank (f d) :=
-  @Finset.sum_hom_rel _ _ _ _ _ (fun a b => rank a ≤ b) f (fun d => rank (f d)) s
-    (le_of_eq rank_zero) fun _ _ _ h => le_trans (rank_add_le _ _) (add_le_add_left h _)
+  @Finset.sum_hom_rel _ _ _ _ _ (fun a b ↦ rank a ≤ b) f (fun d ↦ rank (f d)) s
+    (le_of_eq rank_zero) fun _ _ _ h ↦ le_trans (rank_add_le _ _) (add_le_add_left h _)
 
 theorem le_rank_iff_exists_linearIndependent {c : Cardinal} {f : V →ₗ[K] V'} :
     c ≤ rank f ↔ ∃ s : Set V,
     Cardinal.lift.{v'} #s = Cardinal.lift.{v} c ∧ LinearIndepOn K f s := by
   rcases f.rangeRestrict.exists_rightInverse_of_surjective f.range_rangeRestrict with ⟨g, hg⟩
   have fg : LeftInverse f.rangeRestrict g := LinearMap.congr_fun hg
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · rcases _root_.le_rank_iff_exists_linearIndependent.1 h with ⟨s, rfl, si⟩
     refine ⟨g '' s, Cardinal.mk_image_eq_lift _ _ fg.injective, ?_⟩
     replace fg : ∀ x, f (g x) = x := by
       intro x
       convert congr_arg Subtype.val (fg x)
-    replace si : LinearIndepOn K (fun x => f (g x)) s := by
+    replace si : LinearIndepOn K (fun x ↦ f (g x)) s := by
       simpa only [fg] using si.map' _ (ker_subtype _)
     exact si.image_of_comp
   · rintro ⟨s, hsc, si⟩
@@ -116,7 +116,7 @@ theorem le_rank_iff_exists_linearIndependent {c : Cardinal} {f : V →ₗ[K] V'}
     exact injOn_iff_injective.2 this.injective
 
 theorem le_rank_iff_exists_linearIndependent_finset {n : ℕ} {f : V →ₗ[K] V'} :
-    ↑n ≤ rank f ↔ ∃ s : Finset V, s.card = n ∧ LinearIndependent K fun x : (s : Set V) => f x := by
+    ↑n ≤ rank f ↔ ∃ s : Finset V, s.card = n ∧ LinearIndependent K fun x : (s : Set V) ↦ f x := by
   simp only [le_rank_iff_exists_linearIndependent, Cardinal.lift_natCast, Cardinal.lift_eq_nat_iff,
     Cardinal.mk_set_eq_nat_iff_finset]
   constructor

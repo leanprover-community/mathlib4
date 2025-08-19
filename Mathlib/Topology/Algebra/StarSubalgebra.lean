@@ -58,8 +58,8 @@ def topologicalClosure (s : StarSubalgebra R A) : StarSubalgebra R A :=
   {
     s.toSubalgebra.topologicalClosure with
     carrier := closure (s : Set A)
-    star_mem' := fun ha =>
-      map_mem_closure continuous_star ha fun x => (star_mem : x ∈ s → star x ∈ s) }
+    star_mem' := fun ha ↦
+      map_mem_closure continuous_star ha fun x ↦ (star_mem : x ∈ s → star x ∈ s) }
 
 theorem topologicalClosure_toSubalgebra_comm (s : StarSubalgebra R A) :
     s.topologicalClosure.toSubalgebra = s.toSubalgebra.topologicalClosure :=
@@ -87,7 +87,7 @@ theorem topologicalClosure_minimal {s t : StarSubalgebra R A} (h : s ≤ t)
   closure_minimal h ht
 
 theorem topologicalClosure_mono : Monotone (topologicalClosure : _ → StarSubalgebra R A) :=
-  fun _ S₂ h =>
+  fun _ S₂ h ↦
   topologicalClosure_minimal (h.trans <| le_topologicalClosure S₂) (isClosed_topologicalClosure S₂)
 
 theorem topologicalClosure_map_le [StarModule R B] [IsTopologicalSemiring B] [ContinuousStar B]
@@ -109,7 +109,7 @@ theorem _root_.Subalgebra.topologicalClosure_star_comm (s : Subalgebra R A) :
     (star s).topologicalClosure = star s.topologicalClosure := by
   suffices ∀ t : Subalgebra R A, (star t).topologicalClosure ≤ star t.topologicalClosure from
     le_antisymm (this s) (by simpa only [star_star] using Subalgebra.star_mono (this (star s)))
-  exact fun t => (star t).topologicalClosure_minimal (Subalgebra.star_mono subset_closure)
+  exact fun t ↦ (star t).topologicalClosure_minimal (Subalgebra.star_mono subset_closure)
     (isClosed_closure.preimage continuous_star)
 
 /-- If a star subalgebra of a topological star algebra is commutative, then so is its topological
@@ -134,14 +134,14 @@ theorem _root_.StarAlgHom.ext_topologicalClosure [T2Space B] {S : StarSubalgebra
     φ = ψ := by
   rw [DFunLike.ext'_iff]
   have : Dense (Set.range <| inclusion (le_topologicalClosure S)) := by
-    refine IsInducing.subtypeVal.dense_iff.2 fun x => ?_
+    refine IsInducing.subtypeVal.dense_iff.2 fun x ↦ ?_
     convert show ↑x ∈ closure (S : Set A) from x.prop
     rw [← Set.range_comp]
     exact
-      Set.ext fun y =>
+      Set.ext fun y ↦
         ⟨by
           rintro ⟨y, rfl⟩
-          exact y.prop, fun hy => ⟨⟨y, hy⟩, rfl⟩⟩
+          exact y.prop, fun hy ↦ ⟨⟨y, hy⟩, rfl⟩⟩
   refine Continuous.ext_on this hφ hψ ?_
   rintro _ ⟨x, rfl⟩
   simpa only using DFunLike.congr_fun h x
@@ -249,11 +249,11 @@ theorem starAlgHomClass_ext [T2Space B] {F : Type*} {a : A}
     [FunLike F (elemental R a) B] [AlgHomClass F R _ B] [StarHomClass F _ B]
     {φ ψ : F} (hφ : Continuous φ)
     (hψ : Continuous ψ) (h : φ ⟨a, self_mem R a⟩ = ψ ⟨a, self_mem R a⟩) : φ = ψ := by
-  refine StarAlgHomClass.ext_topologicalClosure hφ hψ fun x => ?_
+  refine StarAlgHomClass.ext_topologicalClosure hφ hψ fun x ↦ ?_
   refine adjoin_induction_subtype x ?_ ?_ ?_ ?_ ?_
-  exacts [fun y hy => by simpa only [Set.mem_singleton_iff.mp hy] using h, fun r => by
-    simp only [AlgHomClass.commutes], fun x y hx hy => by simp only [map_add, hx, hy],
-    fun x y hx hy => by simp only [map_mul, hx, hy], fun x hx => by simp only [map_star, hx]]
+  exacts [fun y hy ↦ by simpa only [Set.mem_singleton_iff.mp hy] using h, fun r ↦ by
+    simp only [AlgHomClass.commutes], fun x y hx hy ↦ by simp only [map_add, hx, hy],
+    fun x y hx hy ↦ by simp only [map_mul, hx, hy], fun x hx ↦ by simp only [map_star, hx]]
 
 end elemental
 

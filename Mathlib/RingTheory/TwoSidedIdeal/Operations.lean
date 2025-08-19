@@ -60,7 +60,7 @@ lemma subset_span {s : Set R} : s ⊆ (span s : Set R) := by
 
 lemma mem_span_iff {s : Set R} {x} :
     x ∈ span s ↔ ∀ (I : TwoSidedIdeal R), s ⊆ I → x ∈ I := by
-  refine ⟨?_, fun h => h _ subset_span⟩
+  refine ⟨?_, fun h ↦ h _ subset_span⟩
   delta span
   rw [RingCon.ringConGen_eq]
   intro h I hI
@@ -72,7 +72,7 @@ lemma mem_span_iff {s : Set R} {x} :
 lemma span_mono {s t : Set R} (h : s ⊆ t) : span s ≤ span t := by
   intro x hx
   rw [mem_span_iff] at hx ⊢
-  exact fun I hI => hx I <| h.trans hI
+  exact fun I hI ↦ hx I <| h.trans hI
 
 lemma span_le {s : Set R} {I : TwoSidedIdeal R} : span s ≤ I ↔ s ⊆ I := by
   rw [TwoSidedIdeal.ringCon_le_iff, RingCon.gi _ |>.gc]
@@ -322,7 +322,7 @@ def asIdeal : TwoSidedIdeal R →o Ideal R where
   { carrier := I
     add_mem' := I.add_mem
     zero_mem' := I.zero_mem
-    smul_mem' := fun r x hx => I.mul_mem_left r x hx }
+    smul_mem' := fun r x hx ↦ I.mul_mem_left r x hx }
   monotone' _ _ h _ h' := h h'
 
 @[simp]
@@ -330,7 +330,7 @@ lemma mem_asIdeal {I : TwoSidedIdeal R} {x : R} :
     x ∈ asIdeal I ↔ x ∈ I := by simp [asIdeal]
 
 lemma gc : GaloisConnection fromIdeal (asIdeal (R := R)) :=
-  fun I J => ⟨fun h x hx ↦ h <| mem_span_iff.2 fun _ H ↦ H hx, fun h x hx ↦ by
+  fun I J ↦ ⟨fun h x hx ↦ h <| mem_span_iff.2 fun _ H ↦ H hx, fun h x hx ↦ by
     simp only [fromIdeal, OrderHom.coe_mk, mem_span_iff] at hx
     exact hx _ h⟩
 
@@ -373,7 +373,7 @@ def orderIsoIdeal : TwoSidedIdeal R ≃o Ideal R where
   right_inv J := SetLike.ext fun x ↦ mem_span_iff.trans
     ⟨fun h ↦ mem_mk' _ _ _ _ _ _ _ |>.1 <| h (mk'
       J J.zero_mem J.add_mem J.neg_mem (J.mul_mem_left _) (J.mul_mem_right _))
-      (fun x => by simp), by aesop⟩
+      (fun x ↦ by simp), by aesop⟩
 
 end CommRing
 

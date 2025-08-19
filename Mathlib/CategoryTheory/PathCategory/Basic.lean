@@ -36,7 +36,7 @@ variable (V : Type u₁) [Quiver.{v₁ + 1} V]
 namespace Paths
 
 instance categoryPaths : Category.{max u₁ v₁} (Paths V) where
-  Hom := fun X Y : V => Quiver.Path X Y
+  Hom := fun X Y : V ↦ Quiver.Path X Y
   id _ := Quiver.Path.nil
   comp f g := Quiver.Path.comp f g
 
@@ -104,8 +104,8 @@ attribute [local ext (iff := false)] Functor.ext
 def lift {C} [Category C] (φ : V ⥤q C) : Paths V ⥤ C where
   obj := φ.obj
   map {X} {Y} f :=
-    @Quiver.Path.rec V _ X (fun Y _ => φ.obj X ⟶ φ.obj Y) (𝟙 <| φ.obj X)
-      (fun _ f ihp => ihp ≫ φ.map f) Y f
+    @Quiver.Path.rec V _ X (fun Y _ ↦ φ.obj X ⟶ φ.obj Y) (𝟙 <| φ.obj X)
+      (fun _ f ihp ↦ ihp ≫ φ.map f) Y f
   map_id _ := rfl
   map_comp f g := by
     induction g with
@@ -242,7 +242,7 @@ def pathComposition : Paths C ⥤ C where
 /-- The canonical relation on the path category of a category:
 two paths are related if they compose to the same morphism. -/
 @[simp]
-def pathsHomRel : HomRel (Paths C) := fun _ _ p q =>
+def pathsHomRel : HomRel (Paths C) := fun _ _ p q ↦
   (pathComposition C).map p = (pathComposition C).map q
 
 /-- The functor from a category to the canonical quotient of its path category. -/
@@ -257,7 +257,7 @@ def toQuotientPaths : C ⥤ Quotient (pathsHomRel C) where
 to the original category. -/
 @[simps!]
 def quotientPathsTo : Quotient (pathsHomRel C) ⥤ C :=
-  Quotient.lift _ (pathComposition C) fun _ _ _ _ w => w
+  Quotient.lift _ (pathComposition C) fun _ _ _ _ w ↦ w
 
 /-- The canonical quotient of the path category of a category
 is equivalent to the original category. -/
@@ -266,12 +266,12 @@ def quotientPathsEquiv : Quotient (pathsHomRel C) ≌ C where
   inverse := toQuotientPaths C
   unitIso :=
     NatIso.ofComponents
-      (fun X => by cases X; rfl)
-      (Quot.ind fun f => by
+      (fun X ↦ by cases X; rfl)
+      (Quot.ind fun f ↦ by
         apply Quot.sound
         apply Quotient.CompClosure.of
         simp [Category.comp_id, Category.id_comp, pathsHomRel])
-  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp)
+  counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _) (fun f ↦ by simp)
   functor_unitIso_comp X := by
     cases X
     simp only [Functor.id_obj,

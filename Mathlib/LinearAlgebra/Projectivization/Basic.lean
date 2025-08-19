@@ -96,7 +96,7 @@ open Module
 
 /-- Consider an element of the projectivization as a submodule of `V`. -/
 protected def submodule (v : ℙ K V) : Submodule K V :=
-  (Quotient.liftOn' v fun v => K ∙ (v : V)) <| by
+  (Quotient.liftOn' v fun v ↦ K ∙ (v : V)) <| by
     rintro ⟨a, ha⟩ ⟨b, hb⟩ ⟨x, rfl : x • b = a⟩
     exact Submodule.span_singleton_group_smul_eq _ x _
 
@@ -115,7 +115,7 @@ theorem mk_eq_mk_iff' (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) :
   · rintro ⟨a, ha⟩
     exact ⟨a, ha⟩
   · rintro ⟨a, ha⟩
-    refine ⟨Units.mk0 a fun c => hv.symm ?_, ha⟩
+    refine ⟨Units.mk0 a fun c ↦ hv.symm ?_, ha⟩
     rwa [c, zero_smul] at ha
 
 theorem exists_smul_eq_mk_rep (v : V) (hv : v ≠ 0) : ∃ a : Kˣ, a • v = (mk K v hv).rep :=
@@ -186,7 +186,7 @@ variable {L W : Type*} [DivisionRing L] [AddCommGroup W] [Module L W]
 
 /-- An injective semilinear map of vector spaces induces a map on projective spaces. -/
 def map {σ : K →+* L} (f : V →ₛₗ[σ] W) (hf : Function.Injective f) : ℙ K V → ℙ L W :=
-  Quotient.map' (fun v => ⟨f v, fun c => v.2 (hf (by simp [c]))⟩)
+  Quotient.map' (fun v ↦ ⟨f v, fun c ↦ v.2 (hf (by simp [c]))⟩)
     (by
       rintro ⟨u, hu⟩ ⟨v, hv⟩ ⟨a, ha⟩
       use Units.map σ.toMonoidHom a

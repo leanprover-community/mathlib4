@@ -42,7 +42,7 @@ noncomputable def average : MonoidAlgebra k G :=
 theorem mul_average_left (g : G) : ↑(Finsupp.single g 1) * average k G = average k G := by
   simp only [mul_one, Finset.mul_sum, Algebra.mul_smul_comm, average, MonoidAlgebra.of_apply,
     MonoidAlgebra.single_mul_single]
-  set f : G → MonoidAlgebra k G := fun x => Finsupp.single x 1
+  set f : G → MonoidAlgebra k G := fun x ↦ Finsupp.single x 1
   change ⅟(Fintype.card G : k) • ∑ x : G, f (g * x) = ⅟(Fintype.card G : k) • ∑ x : G, f x
   rw [Function.Bijective.sum_comp (Group.mulLeft_bijective g) _]
 
@@ -52,7 +52,7 @@ theorem mul_average_left (g : G) : ↑(Finsupp.single g 1) * average k G = avera
 theorem mul_average_right (g : G) : average k G * ↑(Finsupp.single g 1) = average k G := by
   simp only [mul_one, Finset.sum_mul, Algebra.smul_mul_assoc, average, MonoidAlgebra.of_apply,
     MonoidAlgebra.single_mul_single]
-  set f : G → MonoidAlgebra k G := fun x => Finsupp.single x 1
+  set f : G → MonoidAlgebra k G := fun x ↦ Finsupp.single x 1
   change ⅟(Fintype.card G : k) • ∑ x : G, f (x * g) = ⅟(Fintype.card G : k) • ∑ x : G, f x
   rw [Function.Bijective.sum_comp (Group.mulRight_bijective g) _]
 
@@ -70,7 +70,7 @@ variable (ρ : Representation k G V)
 /-- The subspace of invariants, consisting of the vectors fixed by all elements of `G`.
 -/
 def invariants : Submodule k V where
-  carrier := setOf fun v => ∀ g : G, ρ g v = v
+  carrier := setOf fun v ↦ ∀ g : G, ρ g v = v
   zero_mem' g := by simp only [map_zero]
   add_mem' hv hw g := by simp only [hv g, hw g, map_add]
   smul_mem' r v hv g := by simp only [hv g, LinearMap.map_smulₛₗ, RingHom.id_apply]
@@ -83,7 +83,7 @@ theorem invariants_eq_inter : (invariants ρ).carrier = ⋂ g : G, Function.fixe
 
 theorem invariants_eq_top [ρ.IsTrivial] :
     invariants ρ = ⊤ :=
-eq_top_iff.2 (fun x _ g => ρ.isTrivial_apply g x)
+eq_top_iff.2 (fun x _ g ↦ ρ.isTrivial_apply g x)
 
 section
 
@@ -97,7 +97,7 @@ noncomputable def averageMap : V →ₗ[k] V :=
 
 /-- The `averageMap` sends elements of `V` to the subspace of invariants.
 -/
-theorem averageMap_invariant (v : V) : averageMap ρ v ∈ invariants ρ := fun g => by
+theorem averageMap_invariant (v : V) : averageMap ρ v ∈ invariants ρ := fun g ↦ by
   rw [averageMap, ← asAlgebraHom_single_one, ← Module.End.mul_apply, ← map_mul (asAlgebraHom ρ),
     mul_average_left]
 
@@ -119,7 +119,7 @@ variable (ρ : Representation k G V) (S : Subgroup G) [S.Normal]
 lemma le_comap_invariants (g : G) :
     (invariants <| ρ.comp S.subtype) ≤
       (invariants <| ρ.comp S.subtype).comap (ρ g) :=
-  fun x hx ⟨s, hs⟩ => by
+  fun x hx ⟨s, hs⟩ ↦ by
     simpa using congr(ρ g $(hx ⟨(g⁻¹ * s * g), Subgroup.Normal.conj_mem' ‹_› s hs g⟩))
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
@@ -129,7 +129,7 @@ abbrev toInvariants :
   subrepresentation ρ _ <| le_comap_invariants ρ S
 
 instance : IsTrivial ((toInvariants ρ S).comp S.subtype) where
-  out g := LinearMap.ext fun ⟨x, hx⟩ => Subtype.ext <| by simpa using (hx g)
+  out g := LinearMap.ext fun ⟨x, hx⟩ ↦ Subtype.ext <| by simpa using (hx g)
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
 the invariants of `ρ|_S`. -/
@@ -162,11 +162,11 @@ theorem mem_invariants_iff_comm {X Y : Rep k G} (f : X.V →ₗ[k] Y.V) (g : G) 
 homomorphisms from `X` to `Y`. -/
 @[simps]
 def invariantsEquivRepHom (X Y : Rep k G) : (linHom X.ρ Y.ρ).invariants ≃ₗ[k] X ⟶ Y where
-  toFun f := ⟨ModuleCat.ofHom f.val, fun g =>
+  toFun f := ⟨ModuleCat.ofHom f.val, fun g ↦
     ModuleCat.hom_ext ((mem_invariants_iff_comm _ g).1 (f.property g))⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  invFun f := ⟨f.hom.hom, fun g =>
+  invFun f := ⟨f.hom.hom, fun g ↦
     (mem_invariants_iff_comm _ g).2 (ModuleCat.hom_ext_iff.mp (f.comm g))⟩
 
 end Rep
@@ -211,7 +211,7 @@ variable (k G)
 noncomputable def invariantsFunctor : Rep k G ⥤ ModuleCat k where
   obj A := ModuleCat.of k A.ρ.invariants
   map {A B} f := ModuleCat.ofHom <| (f.hom.hom ∘ₗ A.ρ.invariants.subtype).codRestrict
-    B.ρ.invariants fun ⟨c, hc⟩ g => by
+    B.ρ.invariants fun ⟨c, hc⟩ g ↦ by
       have := (hom_comm_apply f g c).symm
       simp_all [hc g]
 
@@ -228,7 +228,7 @@ noncomputable def quotientToInvariantsFunctor (S : Subgroup G) [S.Normal] :
   obj X := X.quotientToInvariants S
   map {X Y} f := {
     hom := (invariantsFunctor k S).map ((Action.res _ S.subtype).map f)
-    comm g := QuotientGroup.induction_on g fun g => by
+    comm g := QuotientGroup.induction_on g fun g ↦ by
       ext x
       simp [ModuleCat.endRingEquiv, Representation.quotientToInvariants,
         Representation.toInvariants, invariants, hom_comm_apply] }

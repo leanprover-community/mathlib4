@@ -130,28 +130,28 @@ theorem nonempty_of_nonempty_iUnion_eq_univ
   nonempty_of_nonempty_iUnion (s := s) (by simpa only [h_Union] using univ_nonempty)
 
 theorem setOf_exists (p : ι → β → Prop) : { x | ∃ i, p i x } = ⋃ i, { x | p i x } :=
-  ext fun _ => mem_iUnion.symm
+  ext fun _ ↦ mem_iUnion.symm
 
 theorem setOf_forall (p : ι → β → Prop) : { x | ∀ i, p i x } = ⋂ i, { x | p i x } :=
-  ext fun _ => mem_iInter.symm
+  ext fun _ ↦ mem_iInter.symm
 
 theorem iUnion_subset {s : ι → Set α} {t : Set α} (h : ∀ i, s i ⊆ t) : ⋃ i, s i ⊆ t :=
   iSup_le h
 
 theorem iUnion₂_subset {s : ∀ i, κ i → Set α} {t : Set α} (h : ∀ i j, s i j ⊆ t) :
     ⋃ (i) (j), s i j ⊆ t :=
-  iUnion_subset fun x => iUnion_subset (h x)
+  iUnion_subset fun x ↦ iUnion_subset (h x)
 
 theorem subset_iInter {t : Set β} {s : ι → Set β} (h : ∀ i, t ⊆ s i) : t ⊆ ⋂ i, s i :=
   le_iInf h
 
 theorem subset_iInter₂ {s : Set α} {t : ∀ i, κ i → Set α} (h : ∀ i j, s ⊆ t i j) :
     s ⊆ ⋂ (i) (j), t i j :=
-  subset_iInter fun x => subset_iInter <| h x
+  subset_iInter fun x ↦ subset_iInter <| h x
 
 @[simp]
 theorem iUnion_subset_iff {s : ι → Set α} {t : Set α} : ⋃ i, s i ⊆ t ↔ ∀ i, s i ⊆ t :=
-  ⟨fun h _ => Subset.trans (le_iSup s _) h, iUnion_subset⟩
+  ⟨fun h _ ↦ Subset.trans (le_iSup s _) h, iUnion_subset⟩
 
 theorem iUnion₂_subset_iff {s : ∀ i, κ i → Set α} {t : Set α} :
     ⋃ (i) (j), s i j ⊆ t ↔ ∀ i j, s i j ⊆ t := by simp_rw [iUnion_subset_iff]
@@ -232,23 +232,23 @@ theorem iUnion₂_mono' {s : ∀ i, κ i → Set α} {t : ∀ i', κ' i' → Set
 
 theorem iInter_mono' {s : ι → Set α} {t : ι' → Set α} (h : ∀ j, ∃ i, s i ⊆ t j) :
     ⋂ i, s i ⊆ ⋂ j, t j :=
-  Set.subset_iInter fun j =>
+  Set.subset_iInter fun j ↦
     let ⟨i, hi⟩ := h j
     iInter_subset_of_subset i hi
 
 theorem iInter₂_mono' {s : ∀ i, κ i → Set α} {t : ∀ i', κ' i' → Set α}
     (h : ∀ i' j', ∃ i j, s i j ⊆ t i' j') : ⋂ (i) (j), s i j ⊆ ⋂ (i') (j'), t i' j' :=
-  subset_iInter₂_iff.2 fun i' j' =>
+  subset_iInter₂_iff.2 fun i' j' ↦
     let ⟨_, _, hst⟩ := h i' j'
     (iInter₂_subset _ _).trans hst
 
 theorem iUnion₂_subset_iUnion (κ : ι → Sort*) (s : ι → Set α) :
     ⋃ (i) (_ : κ i), s i ⊆ ⋃ i, s i :=
-  iUnion_mono fun _ => iUnion_subset fun _ => Subset.rfl
+  iUnion_mono fun _ ↦ iUnion_subset fun _ ↦ Subset.rfl
 
 theorem iInter_subset_iInter₂ (κ : ι → Sort*) (s : ι → Set α) :
     ⋂ i, s i ⊆ ⋂ (i) (_ : κ i), s i :=
-  iInter_mono fun _ => subset_iInter fun _ => Subset.rfl
+  iInter_mono fun _ ↦ subset_iInter fun _ ↦ Subset.rfl
 
 theorem iUnion_setOf (P : ι → α → Prop) : ⋃ i, { x : α | P i x } = { x : α | ∃ i, P i x } := by
   ext
@@ -271,11 +271,11 @@ lemma iInter_congr {s t : ι → Set α} (h : ∀ i, s i = t i) : ⋂ i, s i = �
 
 lemma iUnion₂_congr {s t : ∀ i, κ i → Set α} (h : ∀ i j, s i j = t i j) :
     ⋃ (i) (j), s i j = ⋃ (i) (j), t i j :=
-  iUnion_congr fun i => iUnion_congr <| h i
+  iUnion_congr fun i ↦ iUnion_congr <| h i
 
 lemma iInter₂_congr {s t : ∀ i, κ i → Set α} (h : ∀ i j, s i j = t i j) :
     ⋂ (i) (j), s i j = ⋂ (i) (j), t i j :=
-  iInter_congr fun i => iInter_congr <| h i
+  iInter_congr fun i ↦ iInter_congr <| h i
 
 section Nonempty
 variable [Nonempty ι] {f : ι → Set α} {s : Set α}
@@ -605,7 +605,7 @@ theorem mem_biInter {s : Set α} {t : α → Set β} {y : β} (h : ∀ x ∈ s, 
 /-- A specialization of `subset_iUnion₂`. -/
 theorem subset_biUnion_of_mem {s : Set α} {u : α → Set β} {x : α} (xs : x ∈ s) :
     u x ⊆ ⋃ x ∈ s, u x :=
-  subset_iUnion₂ (s := fun i _ => u i) x xs
+  subset_iUnion₂ (s := fun i _ ↦ u i) x xs
 
 /-- A specialization of `iInter₂_subset`. -/
 theorem biInter_subset_of_mem {s : Set α} {t : α → Set β} {x : α} (xs : x ∈ s) :
@@ -617,11 +617,11 @@ lemma biInter_subset_biUnion {s : Set α} (hs : s.Nonempty) {t : α → Set β} 
 
 theorem biUnion_subset_biUnion_left {s s' : Set α} {t : α → Set β} (h : s ⊆ s') :
     ⋃ x ∈ s, t x ⊆ ⋃ x ∈ s', t x :=
-  iUnion₂_subset fun _ hx => subset_biUnion_of_mem <| h hx
+  iUnion₂_subset fun _ hx ↦ subset_biUnion_of_mem <| h hx
 
 theorem biInter_subset_biInter_left {s s' : Set α} {t : α → Set β} (h : s' ⊆ s) :
     ⋂ x ∈ s, t x ⊆ ⋂ x ∈ s', t x :=
-  subset_iInter₂ fun _ hx => biInter_subset_of_mem <| h hx
+  subset_iInter₂ fun _ hx ↦ biInter_subset_of_mem <| h hx
 
 theorem biUnion_mono {s s' : Set α} {t t' : α → Set β} (hs : s' ⊆ s) (h : ∀ x ∈ s, t x ⊆ t' x) :
     ⋃ x ∈ s', t x ⊆ ⋃ x ∈ s, t' x :=
@@ -661,7 +661,7 @@ theorem biInter_univ (u : α → Set β) : ⋂ x ∈ @univ α, u x = ⋂ x, u x 
 
 @[simp]
 theorem biUnion_self (s : Set α) : ⋃ x ∈ s, s = s :=
-  Subset.antisymm (iUnion₂_subset fun _ _ => Subset.refl s) fun _ hx => mem_biUnion hx hx
+  Subset.antisymm (iUnion₂_subset fun _ _ ↦ Subset.refl s) fun _ hx ↦ mem_biUnion hx hx
 
 @[simp]
 theorem iUnion_nonempty_self (s : Set α) : ⋃ _ : s.Nonempty, s = s := by
@@ -741,7 +741,7 @@ theorem mem_sUnion_of_mem {x : α} {t : Set α} {S : Set (Set α)} (hx : x ∈ t
 
 -- is this theorem really necessary?
 theorem notMem_of_notMem_sUnion {x : α} {t : Set α} {S : Set (Set α)} (hx : x ∉ ⋃₀ S)
-    (ht : t ∈ S) : x ∉ t := fun h => hx ⟨t, ht, h⟩
+    (ht : t ∈ S) : x ∉ t := fun h ↦ hx ⟨t, ht, h⟩
 
 @[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_sUnion := notMem_of_notMem_sUnion
 
@@ -782,11 +782,11 @@ theorem subset_sInter_iff {S : Set (Set α)} {t : Set α} : t ⊆ ⋂₀ S ↔ �
 
 @[gcongr]
 theorem sUnion_subset_sUnion {S T : Set (Set α)} (h : S ⊆ T) : ⋃₀ S ⊆ ⋃₀ T :=
-  sUnion_subset fun _ hs => subset_sUnion_of_mem (h hs)
+  sUnion_subset fun _ hs ↦ subset_sUnion_of_mem (h hs)
 
 @[gcongr]
 theorem sInter_subset_sInter {S T : Set (Set α)} (h : S ⊆ T) : ⋂₀ T ⊆ ⋂₀ S :=
-  subset_sInter fun _ hs => sInter_subset_of_mem (h hs)
+  subset_sInter fun _ hs ↦ sInter_subset_of_mem (h hs)
 
 @[simp]
 theorem sUnion_empty : ⋃₀ ∅ = (∅ : Set α) :=
@@ -936,7 +936,7 @@ theorem nonempty_sInter {c : Set (Set α)} : (⋂₀ c).Nonempty ↔ ∃ a, ∀ 
 
 -- classical
 theorem compl_sUnion (S : Set (Set α)) : (⋃₀ S)ᶜ = ⋂₀ (compl '' S) :=
-  ext fun x => by simp
+  ext fun x ↦ by simp
 
 -- classical
 theorem sUnion_eq_compl_sInter_compl (S : Set (Set α)) : ⋃₀ S = (⋂₀ (compl '' S))ᶜ := by
@@ -956,13 +956,13 @@ theorem inter_empty_of_inter_sUnion_empty {s t : Set α} {S : Set (Set α)} (hs 
     rw [← h]; exact inter_subset_inter_right _ (subset_sUnion_of_mem hs)
 
 theorem range_sigma_eq_iUnion_range {γ : α → Type*} (f : Sigma γ → β) :
-    range f = ⋃ a, range fun b => f ⟨a, b⟩ :=
+    range f = ⋃ a, range fun b ↦ f ⟨a, b⟩ :=
   Set.ext <| by simp
 
-theorem iUnion_eq_range_sigma (s : α → Set β) : ⋃ i, s i = range fun a : Σ i, s i => a.2 := by
+theorem iUnion_eq_range_sigma (s : α → Set β) : ⋃ i, s i = range fun a : Σ i, s i ↦ a.2 := by
   simp [Set.ext_iff]
 
-theorem iUnion_eq_range_psigma (s : ι → Set β) : ⋃ i, s i = range fun a : Σ' i, s i => a.2 := by
+theorem iUnion_eq_range_psigma (s : ι → Set β) : ⋃ i, s i = range fun a : Σ' i, s i ↦ a.2 := by
   simp [Set.ext_iff]
 
 theorem iUnion_image_preimage_sigma_mk_eq_self {ι : Type*} {σ : ι → Type*} (s : Set (Sigma σ)) :
@@ -977,7 +977,7 @@ theorem iUnion_image_preimage_sigma_mk_eq_self {ι : Type*} {σ : ι → Type*} 
     exact ⟨i, a, h, rfl⟩
 
 theorem Sigma.univ (X : α → Type*) : (Set.univ : Set (Σ a, X a)) = ⋃ a, range (Sigma.mk a) :=
-  Set.ext fun x =>
+  Set.ext fun x ↦
     iff_of_true trivial ⟨range (Sigma.mk x.1), Set.mem_range_self _, x.2, Sigma.eta x⟩
 
 alias sUnion_mono := sUnion_subset_sUnion
@@ -1047,7 +1047,7 @@ theorem sInter_iUnion (s : ι → Set (Set α)) : ⋂₀ ⋃ i, s i = ⋂ i, ⋂
   simp only [sInter_eq_biInter, biInter_iUnion]
 
 theorem iUnion_range_eq_sUnion {α β : Type*} (C : Set (Set α)) {f : ∀ s : C, β → (s : Type _)}
-    (hf : ∀ s : C, Surjective (f s)) : ⋃ y : β, range (fun s : C => (f s y).val) = ⋃₀ C := by
+    (hf : ∀ s : C, Surjective (f s)) : ⋃ y : β, range (fun s : C ↦ (f s y).val) = ⋃₀ C := by
   ext x; constructor
   · rintro ⟨s, ⟨y, rfl⟩, ⟨s, hs⟩, rfl⟩
     refine ⟨_, hs, ?_⟩
@@ -1058,7 +1058,7 @@ theorem iUnion_range_eq_sUnion {α β : Type*} (C : Set (Set α)) {f : ∀ s : C
     exact congr_arg Subtype.val hy
 
 theorem iUnion_range_eq_iUnion (C : ι → Set α) {f : ∀ x : ι, β → C x}
-    (hf : ∀ x : ι, Surjective (f x)) : ⋃ y : β, range (fun x : ι => (f x y).val) = ⋃ x, C x := by
+    (hf : ∀ x : ι, Surjective (f x)) : ⋃ y : β, range (fun x : ι ↦ (f x y).val) = ⋃ x, C x := by
   ext x; rw [mem_iUnion, mem_iUnion]; constructor
   · rintro ⟨y, i, rfl⟩
     exact ⟨i, (f i y).2⟩
@@ -1133,17 +1133,17 @@ theorem univ_pi_eq_iInter (t : ∀ i, Set (π i)) : pi univ t = ⋂ i, eval i �
 
 theorem pi_diff_pi_subset (i : Set α) (s t : ∀ a, Set (π a)) :
     pi i s \ pi i t ⊆ ⋃ a ∈ i, eval a ⁻¹' (s a \ t a) := by
-  refine diff_subset_comm.2 fun x hx a ha => ?_
+  refine diff_subset_comm.2 fun x hx a ha ↦ ?_
   simp only [mem_diff, mem_pi, mem_iUnion, not_exists, mem_preimage, not_and, not_not] at hx
   exact hx.2 _ ha (hx.1 _ ha)
 
 theorem iUnion_univ_pi {ι : α → Type*} (t : (a : α) → ι a → Set (π a)) :
-    ⋃ x : (a : α) → ι a, pi univ (fun a => t a (x a)) = pi univ fun a => ⋃ j : ι a, t a j := by
+    ⋃ x : (a : α) → ι a, pi univ (fun a ↦ t a (x a)) = pi univ fun a ↦ ⋃ j : ι a, t a j := by
   ext
   simp [Classical.skolem]
 
 theorem biUnion_univ_pi {ι : α → Type*} (s : (a : α) → Set (ι a)) (t : (a : α) → ι a → Set (π a)) :
-    ⋃ x ∈ univ.pi s, pi univ (fun a => t a (x a)) = pi univ fun a => ⋃ j ∈ s a, t a j := by
+    ⋃ x ∈ univ.pi s, pi univ (fun a ↦ t a (x a)) = pi univ fun a ↦ ⋃ j ∈ s a, t a j := by
   ext
   simp [Classical.skolem, forall_and]
 
@@ -1154,7 +1154,7 @@ section Directed
 theorem directedOn_iUnion {r} {f : ι → Set α} (hd : Directed (· ⊆ ·) f)
     (h : ∀ x, DirectedOn r (f x)) : DirectedOn r (⋃ x, f x) := by
   simp only [DirectedOn, mem_iUnion, exists_imp]
-  exact fun a₁ b₁ fb₁ a₂ b₂ fb₂ =>
+  exact fun a₁ b₁ fb₁ a₂ b₂ fb₂ ↦
     let ⟨z, zb₁, zb₂⟩ := hd b₁ b₂
     let ⟨x, xf, xa₁, xa₂⟩ := h z a₁ (zb₁ fb₁) a₂ (zb₂ fb₂)
     ⟨x, ⟨z, xf⟩, xa₁, xa₂⟩
@@ -1265,10 +1265,10 @@ lemma nonempty_iInter_Ici_iff [Preorder α] {f : ι → α} :
 variable [CompleteLattice α]
 
 theorem Ici_iSup (f : ι → α) : Ici (⨆ i, f i) = ⋂ i, Ici (f i) :=
-  ext fun _ => by simp only [mem_Ici, iSup_le_iff, mem_iInter]
+  ext fun _ ↦ by simp only [mem_Ici, iSup_le_iff, mem_iInter]
 
 theorem Iic_iInf (f : ι → α) : Iic (⨅ i, f i) = ⋂ i, Iic (f i) :=
-  ext fun _ => by simp only [mem_Iic, le_iInf_iff, mem_iInter]
+  ext fun _ ↦ by simp only [mem_Iic, le_iInf_iff, mem_iInter]
 
 theorem Ici_iSup₂ (f : ∀ i, κ i → α) : Ici (⨆ (i) (j), f i j) = ⋂ (i) (j), Ici (f i j) := by
   simp_rw [Ici_iSup]
@@ -1309,7 +1309,7 @@ theorem sigmaToiUnion_injective (h : Pairwise (Disjoint on t)) :
   | ⟨a₁, b₁, h₁⟩, ⟨a₂, b₂, h₂⟩, eq =>
     have b_eq : b₁ = b₂ := congr_arg Subtype.val eq
     have a_eq : a₁ = a₂ :=
-      by_contradiction fun ne =>
+      by_contradiction fun ne ↦
         have : b₁ ∈ t a₁ ∩ t a₂ := ⟨h₁, b_eq.symm ▸ h₂⟩
         (h ne).le_bot this
     Sigma.eq a_eq <| Subtype.eq <| by subst b_eq; subst a_eq; rfl

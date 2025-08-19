@@ -135,8 +135,8 @@ end MemLp
 
 namespace Lp
 
-instance instCoeFun : CoeFun (Lp E p μ) (fun _ => α → E) :=
-  ⟨fun f => ((f : α →ₘ[μ] E) : α → E)⟩
+instance instCoeFun : CoeFun (Lp E p μ) (fun _ ↦ α → E) :=
+  ⟨fun f ↦ ((f : α →ₘ[μ] E) : α → E)⟩
 
 @[ext high]
 theorem ext {f g : Lp E p μ} (h : f =ᵐ[μ] g) : f = g := by
@@ -154,7 +154,7 @@ theorem mem_Lp_iff_memLp {f : α →ₘ[μ] E} : f ∈ Lp E p μ ↔ MemLp f p �
 alias mem_Lp_iff_memℒp := mem_Lp_iff_memLp
 
 protected theorem antitone [IsFiniteMeasure μ] {p q : ℝ≥0∞} (hpq : p ≤ q) : Lp E q μ ≤ Lp E p μ :=
-  fun f hf => (MemLp.mono_exponent ⟨f.aestronglyMeasurable, hf⟩ hpq).2
+  fun f hf ↦ (MemLp.mono_exponent ⟨f.aestronglyMeasurable, hf⟩ hpq).2
 
 @[simp]
 theorem coeFn_mk {f : α →ₘ[μ] E} (hf : eLpNorm f p μ < ∞) : ((⟨f, hf⟩ : Lp E p μ) : α → E) = f :=
@@ -293,7 +293,7 @@ theorem norm_measure_zero (f : Lp E p (0 : MeasureTheory.Measure α)) : ‖f‖ 
   simp only [norm_def, eLpNorm_exponent_zero, ENNReal.toReal_zero]
 
 theorem nnnorm_eq_zero_iff {f : Lp E p μ} (hp : 0 < p) : ‖f‖₊ = 0 ↔ f = 0 := by
-  refine ⟨fun hf => ?_, fun hf => by simp [hf]⟩
+  refine ⟨fun hf ↦ ?_, fun hf ↦ by simp [hf]⟩
   rw [nnnorm_def, ENNReal.toNNReal_eq_zero_iff] at hf
   cases hf with
   | inl hf =>
@@ -385,14 +385,14 @@ instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E
       { toFun := (norm : Lp E p μ → ℝ)
         map_zero' := norm_zero
         neg' := by simp only [norm_neg, implies_true] -- squeezed for performance reasons
-        add_le' := fun f g => by
+        add_le' := fun f g ↦ by
           suffices ‖f + g‖ₑ ≤ ‖f‖ₑ + ‖g‖ₑ by
             -- Squeezed for performance reasons
             simpa only [ge_iff_le, enorm, ←ENNReal.coe_add, ENNReal.coe_le_coe] using this
           simp only [Lp.enorm_def]
           exact (eLpNorm_congr_ae (AEEqFun.coeFn_add _ _)).trans_le
             (eLpNorm_add_le (Lp.aestronglyMeasurable _) (Lp.aestronglyMeasurable _) hp.out)
-        eq_zero_of_map_eq_zero' := fun _ =>
+        eq_zero_of_map_eq_zero' := fun _ ↦
           (norm_eq_zero_iff <| zero_lt_one.trans_le hp.1).1 } with
     edist := edist
     edist_dist := Lp.edist_dist }
@@ -418,7 +418,7 @@ variable (𝕜 E p μ)
 /-- The `𝕜`-submodule of elements of `α →ₘ[μ] E` whose `Lp` norm is finite.  This is `Lp E p μ`,
 with extra structure. -/
 def LpSubmodule : Submodule 𝕜 (α →ₘ[μ] E) :=
-  { Lp E p μ with smul_mem' := fun c f hf => by simpa using const_smul_mem_Lp c ⟨f, hf⟩ }
+  { Lp E p μ with smul_mem' := fun c f hf ↦ by simpa using const_smul_mem_Lp c ⟨f, hf⟩ }
 
 variable {𝕜 E p μ}
 
@@ -442,7 +442,7 @@ instance instIsScalarTower [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' E] : IsSc
   smul_assoc k k' f := Subtype.ext <| smul_assoc k k' (f : α →ₘ[μ] E)
 
 instance instIsBoundedSMul [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (Lp E p μ) :=
-  IsBoundedSMul.of_enorm_smul_le fun r f => by
+  IsBoundedSMul.of_enorm_smul_le fun r f ↦ by
     simpa only [eLpNorm_congr_ae (coeFn_smul _ _), enorm_def]
       using eLpNorm_const_smul_le (c := r) (f := f) (p := p)
 
@@ -489,7 +489,7 @@ theorem MemLp.enorm_rpow_div {f : α → ε} (hf : MemLp f p μ) (q : ℝ≥0∞
   exact hf.2.ne
 
 theorem MemLp.norm_rpow_div {f : α → E} (hf : MemLp f p μ) (q : ℝ≥0∞) :
-    MemLp (fun x : α => ‖f x‖ ^ q.toReal) (p / q) μ := by
+    MemLp (fun x : α ↦ ‖f x‖ ^ q.toReal) (p / q) μ := by
   refine ⟨(hf.1.norm.aemeasurable.pow_const q.toReal).aestronglyMeasurable, ?_⟩
   by_cases q_top : q = ∞
   · simp [q_top]
@@ -510,7 +510,7 @@ alias Memℒp.norm_rpow_div := MemLp.norm_rpow_div
 
 theorem memLp_enorm_rpow_iff {q : ℝ≥0∞} {f : α → ε} (hf : AEStronglyMeasurable f μ) (q_zero : q ≠ 0)
     (q_top : q ≠ ∞) : MemLp (‖f ·‖ₑ ^ q.toReal) (p / q) μ ↔ MemLp f p μ := by
-  refine ⟨fun h => ?_, fun h => h.enorm_rpow_div q⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ h.enorm_rpow_div q⟩
   apply (memLp_enorm_iff hf).1
   convert h.enorm_rpow_div q⁻¹ using 1
   · ext x
@@ -521,8 +521,8 @@ theorem memLp_enorm_rpow_iff {q : ℝ≥0∞} {f : α → ε} (hf : AEStronglyMe
       mul_one]
 
 theorem memLp_norm_rpow_iff {q : ℝ≥0∞} {f : α → E} (hf : AEStronglyMeasurable f μ) (q_zero : q ≠ 0)
-    (q_top : q ≠ ∞) : MemLp (fun x : α => ‖f x‖ ^ q.toReal) (p / q) μ ↔ MemLp f p μ := by
-  refine ⟨fun h => ?_, fun h => h.norm_rpow_div q⟩
+    (q_top : q ≠ ∞) : MemLp (fun x : α ↦ ‖f x‖ ^ q.toReal) (p / q) μ ↔ MemLp f p μ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.norm_rpow_div q⟩
   apply (memLp_norm_iff hf).1
   convert h.norm_rpow_div q⁻¹ using 1
   · ext x
@@ -536,12 +536,12 @@ theorem memLp_norm_rpow_iff {q : ℝ≥0∞} {f : α → E} (hf : AEStronglyMeas
 alias memℒp_norm_rpow_iff := memLp_norm_rpow_iff
 
 theorem MemLp.enorm_rpow {f : α → ε} (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
-    MemLp (fun x : α => ‖f x‖ₑ ^ p.toReal) 1 μ := by
+    MemLp (fun x : α ↦ ‖f x‖ₑ ^ p.toReal) 1 μ := by
   convert hf.enorm_rpow_div p
   rw [div_eq_mul_inv, ENNReal.mul_inv_cancel hp_ne_zero hp_ne_top]
 
 theorem MemLp.norm_rpow {f : α → E} (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
-    MemLp (fun x : α => ‖f x‖ ^ p.toReal) 1 μ := by
+    MemLp (fun x : α ↦ ‖f x‖ ^ p.toReal) 1 μ := by
   convert hf.norm_rpow_div p
   rw [div_eq_mul_inv, ENNReal.mul_inv_cancel hp_ne_zero hp_ne_top]
 
@@ -662,7 +662,7 @@ namespace LipschitzWith
 theorem memLp_comp_iff_of_antilipschitz {α E F} {K K'} [MeasurableSpace α] {μ : Measure α}
     [NormedAddCommGroup E] [NormedAddCommGroup F] {f : α → E} {g : E → F} (hg : LipschitzWith K g)
     (hg' : AntilipschitzWith K' g) (g0 : g 0 = 0) : MemLp (g ∘ f) p μ ↔ MemLp f p μ :=
-  ⟨fun h => h.of_comp_antilipschitzWith hg.uniformContinuous hg' g0, fun h => hg.comp_memLp g0 h⟩
+  ⟨fun h ↦ h.of_comp_antilipschitzWith hg.uniformContinuous hg' g0, fun h ↦ hg.comp_memLp g0 h⟩
 
 @[deprecated (since := "2025-02-21")]
 alias memℒp_comp_iff_of_antilipschitz := memLp_comp_iff_of_antilipschitz
@@ -705,7 +705,7 @@ theorem norm_compLp_le (hg : LipschitzWith c g) (g0 : g 0 = 0) (f : Lp E p μ) :
 theorem lipschitzWith_compLp [Fact (1 ≤ p)] (hg : LipschitzWith c g) (g0 : g 0 = 0) :
     LipschitzWith c (hg.compLp g0 : Lp E p μ → Lp F p μ) :=
   -- squeezed for performance reasons
-  LipschitzWith.of_dist_le_mul fun f g => by simp only [dist_eq_norm, norm_compLp_sub_le]
+  LipschitzWith.of_dist_le_mul fun f g ↦ by simp only [dist_eq_norm, norm_compLp_sub_le]
 
 theorem continuous_compLp [Fact (1 ≤ p)] (hg : LipschitzWith c g) (g0 : g 0 = 0) :
     Continuous (hg.compLp g0 : Lp E p μ → Lp F p μ) :=
@@ -724,7 +724,7 @@ def compLp (L : E →L[𝕜] F) (f : Lp E p μ) : Lp F p μ :=
 theorem coeFn_compLp (L : E →L[𝕜] F) (f : Lp E p μ) : ∀ᵐ a ∂μ, (L.compLp f) a = L (f a) :=
   LipschitzWith.coeFn_compLp _ _ _
 
-theorem coeFn_compLp' (L : E →L[𝕜] F) (f : Lp E p μ) : L.compLp f =ᵐ[μ] fun a => L (f a) :=
+theorem coeFn_compLp' (L : E →L[𝕜] F) (f : Lp E p μ) : L.compLp f =ᵐ[μ] fun a ↦ L (f a) :=
   L.coeFn_compLp f
 
 theorem comp_memLp (L : E →L[𝕜] F) (f : Lp E p μ) : MemLp (L ∘ f) p μ :=
@@ -744,7 +744,7 @@ section RCLike
 variable {K : Type*} [RCLike K]
 
 theorem _root_.MeasureTheory.MemLp.ofReal {f : α → ℝ} (hf : MemLp f p μ) :
-    MemLp (fun x => (f x : K)) p μ :=
+    MemLp (fun x ↦ (f x : K)) p μ :=
   (@RCLike.ofRealCLM K _).comp_memLp' hf
 
 @[deprecated (since := "2025-02-21")]
@@ -753,7 +753,7 @@ alias _root_.MeasureTheory.Memℒp.ofReal := _root_.MeasureTheory.MemLp.ofReal
 theorem _root_.MeasureTheory.memLp_re_im_iff {f : α → K} :
     MemLp (fun x ↦ RCLike.re (f x)) p μ ∧ MemLp (fun x ↦ RCLike.im (f x)) p μ ↔
       MemLp f p μ := by
-  refine ⟨?_, fun hf => ⟨hf.re, hf.im⟩⟩
+  refine ⟨?_, fun hf ↦ ⟨hf.re, hf.im⟩⟩
   rintro ⟨hre, him⟩
   convert MeasureTheory.MemLp.add (ε := K) hre.ofReal (him.ofReal.const_mul RCLike.I)
   ext1 x
@@ -777,7 +777,7 @@ theorem smul_compLp {𝕜'} [NormedRing 𝕜'] [Module 𝕜' F] [IsBoundedSMul �
     (c : 𝕜') (L : E →L[𝕜] F) (f : Lp E p μ) : (c • L).compLp f = c • L.compLp f := by
   ext1
   grw [Lp.coeFn_smul, coeFn_compLp']
-  refine (L.coeFn_compLp' f).mono fun x hx => ?_
+  refine (L.coeFn_compLp' f).mono fun x hx ↦ ?_
   rw [Pi.smul_apply, hx, coe_smul', Pi.smul_def]
 
 theorem norm_compLp_le (L : E →L[𝕜] F) (f : Lp E p μ) : ‖L.compLp f‖ ≤ ‖L‖ * ‖f‖ :=
@@ -814,7 +814,7 @@ def compLpL [Fact (1 ≤ p)] (L : E →L[𝕜] F) : Lp E p μ →L[𝕜] Lp F p 
 variable {μ p}
 
 theorem coeFn_compLpL [Fact (1 ≤ p)] (L : E →L[𝕜] F) (f : Lp E p μ) :
-    L.compLpL p μ f =ᵐ[μ] fun a => L (f a) :=
+    L.compLpL p μ f =ᵐ[μ] fun a ↦ L (f a) :=
   L.coeFn_compLp f
 
 theorem add_compLpL [Fact (1 ≤ p)] (L L' : E →L[𝕜] F) :
@@ -833,18 +833,18 @@ namespace MeasureTheory.Lp
 
 section PosPart
 
-theorem lipschitzWith_pos_part : LipschitzWith 1 fun x : ℝ => max x 0 :=
+theorem lipschitzWith_pos_part : LipschitzWith 1 fun x : ℝ ↦ max x 0 :=
   LipschitzWith.id.max_const _
 
 theorem _root_.MeasureTheory.MemLp.pos_part {f : α → ℝ} (hf : MemLp f p μ) :
-    MemLp (fun x => max (f x) 0) p μ :=
+    MemLp (fun x ↦ max (f x) 0) p μ :=
   lipschitzWith_pos_part.comp_memLp (max_eq_right le_rfl) hf
 
 @[deprecated (since := "2025-02-21")]
 alias _root_.MeasureTheory.Memℒp.pos_part := _root_.MeasureTheory.MemLp.pos_part
 
 theorem _root_.MeasureTheory.MemLp.neg_part {f : α → ℝ} (hf : MemLp f p μ) :
-    MemLp (fun x => max (-f x) 0) p μ :=
+    MemLp (fun x ↦ max (-f x) 0) p μ :=
   lipschitzWith_pos_part.comp_memLp (max_eq_right le_rfl) hf.neg
 
 @[deprecated (since := "2025-02-21")]
@@ -862,7 +862,7 @@ def negPart (f : Lp ℝ p μ) : Lp ℝ p μ :=
 theorem coe_posPart (f : Lp ℝ p μ) : (posPart f : α →ₘ[μ] ℝ) = (f : α →ₘ[μ] ℝ).posPart :=
   rfl
 
-theorem coeFn_posPart (f : Lp ℝ p μ) : ⇑(posPart f) =ᵐ[μ] fun a => max (f a) 0 :=
+theorem coeFn_posPart (f : Lp ℝ p μ) : ⇑(posPart f) =ᵐ[μ] fun a ↦ max (f a) 0 :=
   AEEqFun.coeFn_posPart _
 
 theorem coeFn_negPart_eq_max (f : Lp ℝ p μ) : ∀ᵐ a ∂μ, negPart f a = max (-f a) 0 := by
@@ -871,12 +871,12 @@ theorem coeFn_negPart_eq_max (f : Lp ℝ p μ) : ∀ᵐ a ∂μ, negPart f a = m
   rw [h₁, h₂, Pi.neg_apply]
 
 theorem coeFn_negPart (f : Lp ℝ p μ) : ∀ᵐ a ∂μ, negPart f a = -min (f a) 0 :=
-  (coeFn_negPart_eq_max f).mono fun a h => by rw [h, ← max_neg_neg, neg_zero]
+  (coeFn_negPart_eq_max f).mono fun a h ↦ by rw [h, ← max_neg_neg, neg_zero]
 
-theorem continuous_posPart [Fact (1 ≤ p)] : Continuous fun f : Lp ℝ p μ => posPart f :=
+theorem continuous_posPart [Fact (1 ≤ p)] : Continuous fun f : Lp ℝ p μ ↦ posPart f :=
   LipschitzWith.continuous_compLp _ _
 
-theorem continuous_negPart [Fact (1 ≤ p)] : Continuous fun f : Lp ℝ p μ => negPart f := by
+theorem continuous_negPart [Fact (1 ≤ p)] : Continuous fun f : Lp ℝ p μ ↦ negPart f := by
   unfold negPart
   exact continuous_posPart.comp continuous_neg
 

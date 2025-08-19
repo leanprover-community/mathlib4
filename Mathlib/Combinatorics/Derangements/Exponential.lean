@@ -21,17 +21,17 @@ open Filter NormedSpace
 open scoped Topology
 
 theorem numDerangements_tendsto_inv_e :
-    Tendsto (fun n => (numDerangements n : ℝ) / n.factorial) atTop (𝓝 (Real.exp (-1))) := by
+    Tendsto (fun n ↦ (numDerangements n : ℝ) / n.factorial) atTop (𝓝 (Real.exp (-1))) := by
   -- we show that d(n)/n! is the partial sum of exp(-1), but offset by 1.
   -- this isn't entirely obvious, since we have to ensure that asc_factorial and
   -- factorial interact in the right way, e.g., that k ≤ n always
-  let s : ℕ → ℝ := fun n => ∑ k ∈ Finset.range n, (-1 : ℝ) ^ k / k.factorial
+  let s : ℕ → ℝ := fun n ↦ ∑ k ∈ Finset.range n, (-1 : ℝ) ^ k / k.factorial
   suffices ∀ n : ℕ, (numDerangements n : ℝ) / n.factorial = s (n + 1) by
     simp_rw [this]
     -- shift the function by 1, and then use the fact that the partial sums
     -- converge to the infinite sum
     rw [tendsto_add_atTop_iff_nat
-      (f := fun n => ∑ k ∈ Finset.range n, (-1 : ℝ) ^ k / k.factorial) 1]
+      (f := fun n ↦ ∑ k ∈ Finset.range n, (-1 : ℝ) ^ k / k.factorial) 1]
     apply HasSum.tendsto_sum_nat
     -- there's no specific lemma for ℝ that ∑ x^k/k! sums to exp(x), but it's
     -- true in more general fields, so use that lemma

@@ -122,9 +122,9 @@ theorem continuous_constantCoeff [Semiring R] : Continuous (constantCoeff σ R) 
 theorem tendsto_iff_coeff_tendsto [Semiring R] {ι : Type*}
     (f : ι → MvPowerSeries σ R) (u : Filter ι) (g : MvPowerSeries σ R) :
     Tendsto f u (nhds g) ↔
-    ∀ d : σ →₀ ℕ, Tendsto (fun i => coeff R d (f i)) u (nhds (coeff R d g)) := by
+    ∀ d : σ →₀ ℕ, Tendsto (fun i ↦ coeff R d (f i)) u (nhds (coeff R d g)) := by
   rw [nhds_pi, tendsto_pi]
-  exact forall_congr' (fun d => Iff.rfl)
+  exact forall_congr' (fun d ↦ Iff.rfl)
 
 theorem tendsto_trunc'_atTop [DecidableEq σ] [CommSemiring R] (f : MvPowerSeries σ R) :
     Tendsto (fun d ↦ (trunc' R d f : MvPowerSeries σ R)) atTop (𝓝 f) := by
@@ -158,10 +158,10 @@ variable (σ R)
 @[scoped instance]
 theorem instIsTopologicalSemiring [Semiring R] [IsTopologicalSemiring R] :
     IsTopologicalSemiring (MvPowerSeries σ R) where
-  continuous_add := continuous_pi fun d => continuous_add.comp
+  continuous_add := continuous_pi fun d ↦ continuous_add.comp
     (((continuous_coeff R d).fst').prodMk (continuous_coeff R d).snd')
-  continuous_mul := continuous_pi fun _ =>
-    continuous_finset_sum _ fun i _ => continuous_mul.comp
+  continuous_mul := continuous_pi fun _ ↦
+    continuous_finset_sum _ fun i _ ↦ continuous_mul.comp
       ((continuous_coeff R i.fst).fst'.prodMk (continuous_coeff R i.snd).snd')
 
 /-- The ring topology on `MvPowerSeries` of a topological ring -/
@@ -214,7 +214,7 @@ theorem isTopologicallyNilpotent_of_constantCoeff_isNilpotent [CommSemiring R]
 
 theorem isTopologicallyNilpotent_of_constantCoeff_zero [CommSemiring R]
     {f} (hf : constantCoeff σ R f = 0) :
-    Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) := by
+    Tendsto (fun n : ℕ ↦ f ^ n) atTop (nhds 0) := by
   apply isTopologicallyNilpotent_of_constantCoeff_isNilpotent
   rw [hf]
   exact IsNilpotent.zero
@@ -236,7 +236,7 @@ variable [Semiring R]
 
 /-- A multivariate power series is the sum (in the sense of summable families) of its monomials -/
 theorem hasSum_of_monomials_self (f : MvPowerSeries σ R) :
-    HasSum (fun d : σ →₀ ℕ => monomial R d (coeff R d f)) f := by
+    HasSum (fun d : σ →₀ ℕ ↦ monomial R d (coeff R d f)) f := by
   rw [Pi.hasSum]
   intro d
   convert hasSum_single d ?_ using 1
@@ -245,7 +245,7 @@ theorem hasSum_of_monomials_self (f : MvPowerSeries σ R) :
 
 /-- If the coefficient space is T2, then the multivariate power series is `tsum` of its monomials -/
 theorem as_tsum [T2Space R] (f : MvPowerSeries σ R) :
-    f = tsum fun d : σ →₀ ℕ => monomial R d (coeff R d f) :=
+    f = tsum fun d : σ →₀ ℕ ↦ monomial R d (coeff R d f) :=
   (HasSum.tsum_eq (hasSum_of_monomials_self _)).symm
 
 end Topology
@@ -256,12 +256,12 @@ variable [UniformSpace R]
 
 /-- The componentwise uniformity on `MvPowerSeries` -/
 scoped instance : UniformSpace (MvPowerSeries σ R) :=
-  Pi.uniformSpace fun _ : σ →₀ ℕ => R
+  Pi.uniformSpace fun _ : σ →₀ ℕ ↦ R
 
 variable (R) in
 /-- Coefficients of a multivariate power series are uniformly continuous -/
 theorem uniformContinuous_coeff [Semiring R] (d : σ →₀ ℕ) :
-    UniformContinuous fun f : MvPowerSeries σ R => coeff R d f :=
+    UniformContinuous fun f : MvPowerSeries σ R ↦ coeff R d f :=
   uniformContinuous_pi.mp uniformContinuous_id d
 
 /-- Completeness of the uniform structure on `MvPowerSeries` -/

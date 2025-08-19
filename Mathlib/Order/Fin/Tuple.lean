@@ -114,7 +114,7 @@ def OrderIso.piFinTwoIso (α : Fin 2 → Type*) [∀ i, Preorder (α i)] : (∀ 
 /-- The space of functions `Fin 2 → α` is order equivalent to `α × α`. See also
 `OrderIso.piFinTwoIso`. -/
 def OrderIso.finTwoArrowIso (α : Type*) [Preorder α] : (Fin 2 → α) ≃o α × α :=
-  { OrderIso.piFinTwoIso fun _ => α with toEquiv := finTwoArrowEquiv α }
+  { OrderIso.piFinTwoIso fun _ ↦ α with toEquiv := finTwoArrowEquiv α }
 
 namespace Fin
 

@@ -51,7 +51,7 @@ theorem borel_eq_generateFrom_Iio_rat : borel ℝ = .generateFrom (⋃ a : ℚ, 
     simp [isLUB_iff_le_iff, mem_upperBounds, ← le_iff_forall_rat_lt_imp_le]
   rw [← this.biUnion_Iio_eq, ← image_univ, ← image_inter_preimage, univ_inter, biUnion_image]
   exact MeasurableSet.biUnion (to_countable _)
-    fun b _ => GenerateMeasurable.basic (Iio (b : ℝ)) (by simp)
+    fun b _ ↦ GenerateMeasurable.basic (Iio (b : ℝ)) (by simp)
 
 theorem borel_eq_generateFrom_Ioi_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Ioi (a : ℝ)}) := by
   rw [borel_eq_generateFrom_Ioi]
@@ -63,7 +63,7 @@ theorem borel_eq_generateFrom_Ioi_rat : borel ℝ = .generateFrom (⋃ a : ℚ, 
     simp [isGLB_iff_le_iff, mem_lowerBounds, ← le_iff_forall_lt_rat_imp_le]
   rw [← this.biUnion_Ioi_eq, ← image_univ, ← image_inter_preimage, univ_inter, biUnion_image]
   exact MeasurableSet.biUnion (to_countable _)
-    fun b _ => GenerateMeasurable.basic (Ioi (b : ℝ)) (by simp)
+    fun b _ ↦ GenerateMeasurable.basic (Ioi (b : ℝ)) (by simp)
 
 theorem borel_eq_generateFrom_Iic_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Iic (a : ℝ)}) := by
   rw [borel_eq_generateFrom_Ioi_rat, iUnion_singleton_eq_range, iUnion_singleton_eq_range]
@@ -120,7 +120,7 @@ def finiteSpanningSetsInIooRat (μ : Measure ℝ) [IsLocallyFiniteMeasure μ] :
     exact neg_lt_self n.cast_add_one_pos
   finite _ := measure_Ioo_lt_top
   spanning :=
-    iUnion_eq_univ_iff.2 fun x =>
+    iUnion_eq_univ_iff.2 fun x ↦
       ⟨⌊|x|⌋₊, neg_lt.1 ((neg_le_abs x).trans_lt (Nat.lt_floor_add_one _)),
         (le_abs_self x).trans_lt (Nat.lt_floor_add_one _)⟩
 
@@ -141,12 +141,12 @@ theorem measurable_real_toNNReal : Measurable Real.toNNReal :=
 
 @[measurability, fun_prop]
 theorem Measurable.real_toNNReal {f : α → ℝ} (hf : Measurable f) :
-    Measurable fun x => Real.toNNReal (f x) :=
+    Measurable fun x ↦ Real.toNNReal (f x) :=
   measurable_real_toNNReal.comp hf
 
 @[measurability, fun_prop]
 theorem AEMeasurable.real_toNNReal {f : α → ℝ} {μ : Measure α} (hf : AEMeasurable f μ) :
-    AEMeasurable (fun x => Real.toNNReal (f x)) μ :=
+    AEMeasurable (fun x ↦ Real.toNNReal (f x)) μ :=
   measurable_real_toNNReal.comp_aemeasurable hf
 
 @[measurability]
@@ -155,12 +155,12 @@ theorem measurable_coe_nnreal_real : Measurable ((↑) : ℝ≥0 → ℝ) :=
 
 @[measurability, fun_prop]
 theorem Measurable.coe_nnreal_real {f : α → ℝ≥0} (hf : Measurable f) :
-    Measurable fun x => (f x : ℝ) :=
+    Measurable fun x ↦ (f x : ℝ) :=
   measurable_coe_nnreal_real.comp hf
 
 @[measurability, fun_prop]
 theorem AEMeasurable.coe_nnreal_real {f : α → ℝ≥0} {μ : Measure α} (hf : AEMeasurable f μ) :
-    AEMeasurable (fun x => (f x : ℝ)) μ :=
+    AEMeasurable (fun x ↦ (f x : ℝ)) μ :=
   measurable_coe_nnreal_real.comp_aemeasurable hf
 
 @[measurability]
@@ -169,17 +169,17 @@ theorem measurable_coe_nnreal_ennreal : Measurable ((↑) : ℝ≥0 → ℝ≥0�
 
 @[measurability, fun_prop]
 theorem Measurable.coe_nnreal_ennreal {f : α → ℝ≥0} (hf : Measurable f) :
-    Measurable fun x => (f x : ℝ≥0∞) :=
+    Measurable fun x ↦ (f x : ℝ≥0∞) :=
   ENNReal.continuous_coe.measurable.comp hf
 
 @[measurability, fun_prop]
 theorem AEMeasurable.coe_nnreal_ennreal {f : α → ℝ≥0} {μ : Measure α} (hf : AEMeasurable f μ) :
-    AEMeasurable (fun x => (f x : ℝ≥0∞)) μ :=
+    AEMeasurable (fun x ↦ (f x : ℝ≥0∞)) μ :=
   ENNReal.continuous_coe.measurable.comp_aemeasurable hf
 
 @[measurability, fun_prop]
 theorem Measurable.ennreal_ofReal {f : α → ℝ} (hf : Measurable f) :
-    Measurable fun x => ENNReal.ofReal (f x) :=
+    Measurable fun x ↦ ENNReal.ofReal (f x) :=
   ENNReal.continuous_ofReal.measurable.comp hf
 
 @[measurability, fun_prop]
@@ -189,12 +189,12 @@ lemma AEMeasurable.ennreal_ofReal {f : α → ℝ} {μ : Measure α} (hf : AEMea
 
 @[simp, norm_cast]
 theorem measurable_coe_nnreal_real_iff {f : α → ℝ≥0} :
-    Measurable (fun x => f x : α → ℝ) ↔ Measurable f :=
-  ⟨fun h => by simpa only [Real.toNNReal_coe] using h.real_toNNReal, Measurable.coe_nnreal_real⟩
+    Measurable (fun x ↦ f x : α → ℝ) ↔ Measurable f :=
+  ⟨fun h ↦ by simpa only [Real.toNNReal_coe] using h.real_toNNReal, Measurable.coe_nnreal_real⟩
 
 @[simp, norm_cast]
 theorem aemeasurable_coe_nnreal_real_iff {f : α → ℝ≥0} {μ : Measure α} :
-    AEMeasurable (fun x => f x : α → ℝ) μ ↔ AEMeasurable f μ :=
+    AEMeasurable (fun x ↦ f x : α → ℝ) μ ↔ AEMeasurable f μ :=
   ⟨fun h ↦ by simpa only [Real.toNNReal_coe] using h.real_toNNReal, AEMeasurable.coe_nnreal_real⟩
 
 /-- The set of finite `ℝ≥0∞` numbers is `MeasurableEquiv` to `ℝ≥0`. -/
@@ -203,7 +203,7 @@ def MeasurableEquiv.ennrealEquivNNReal : { r : ℝ≥0∞ | r ≠ ∞ } ≃ᵐ �
 
 namespace ENNReal
 
-theorem measurable_of_measurable_nnreal {f : ℝ≥0∞ → α} (h : Measurable fun p : ℝ≥0 => f p) :
+theorem measurable_of_measurable_nnreal {f : ℝ≥0∞ → α} (h : Measurable fun p : ℝ≥0 ↦ f p) :
     Measurable f :=
   measurable_of_measurable_on_compl_singleton ∞
     (MeasurableEquiv.ennrealEquivNNReal.symm.measurable_comp_iff.1 h)
@@ -218,16 +218,16 @@ def ennrealEquivSum : ℝ≥0∞ ≃ᵐ ℝ≥0 ⊕ Unit :=
 open Function (uncurry)
 
 theorem measurable_of_measurable_nnreal_prod {_ : MeasurableSpace β} {_ : MeasurableSpace γ}
-    {f : ℝ≥0∞ × β → γ} (H₁ : Measurable fun p : ℝ≥0 × β => f (p.1, p.2))
-    (H₂ : Measurable fun x => f (∞, x)) : Measurable f :=
+    {f : ℝ≥0∞ × β → γ} (H₁ : Measurable fun p : ℝ≥0 × β ↦ f (p.1, p.2))
+    (H₂ : Measurable fun x ↦ f (∞, x)) : Measurable f :=
   let e : ℝ≥0∞ × β ≃ᵐ (ℝ≥0 × β) ⊕ (Unit × β) :=
     (ennrealEquivSum.prodCongr (MeasurableEquiv.refl β)).trans
       (MeasurableEquiv.sumProdDistrib _ _ _)
   e.symm.measurable_comp_iff.1 <| measurable_fun_sum H₁ (H₂.comp measurable_id.snd)
 
 theorem measurable_of_measurable_nnreal_nnreal {_ : MeasurableSpace β} {f : ℝ≥0∞ × ℝ≥0∞ → β}
-    (h₁ : Measurable fun p : ℝ≥0 × ℝ≥0 => f (p.1, p.2)) (h₂ : Measurable fun r : ℝ≥0 => f (∞, r))
-    (h₃ : Measurable fun r : ℝ≥0 => f (r, ∞)) : Measurable f :=
+    (h₁ : Measurable fun p : ℝ≥0 × ℝ≥0 ↦ f (p.1, p.2)) (h₂ : Measurable fun r : ℝ≥0 ↦ f (∞, r))
+    (h₃ : Measurable fun r : ℝ≥0 ↦ f (r, ∞)) : Measurable f :=
   measurable_of_measurable_nnreal_prod
     (measurable_swap_iff.1 <| measurable_of_measurable_nnreal_prod (h₁.comp measurable_swap) h₃)
     (measurable_of_measurable_nnreal h₂)
@@ -273,12 +273,12 @@ theorem measurable_of_tendsto' {ι : Type*} {f : ι → α → ℝ≥0∞} {g : 
     Measurable g := by
   rcases u.exists_seq_tendsto with ⟨x, hx⟩
   rw [tendsto_pi_nhds] at lim
-  have : (fun y => liminf (fun n => (f (x n) y : ℝ≥0∞)) atTop) = g := by
+  have : (fun y ↦ liminf (fun n ↦ (f (x n) y : ℝ≥0∞)) atTop) = g := by
     ext1 y
     exact ((lim y).comp hx).liminf_eq
   rw [← this]
-  change Measurable fun y => liminf (fun n => (f (x n) y : ℝ≥0∞)) atTop
-  exact .liminf fun n => hf (x n)
+  change Measurable fun y ↦ liminf (fun n ↦ (f (x n) y : ℝ≥0∞)) atTop
+  exact .liminf fun n ↦ hf (x n)
 
 /-- A sequential limit of measurable `ℝ≥0∞` valued functions is measurable. -/
 theorem measurable_of_tendsto {f : ℕ → α → ℝ≥0∞} {g : α → ℝ≥0∞} (hf : ∀ i, Measurable (f i))
@@ -319,65 +319,65 @@ end ENNReal
 
 @[measurability, fun_prop]
 theorem Measurable.ennreal_toNNReal {f : α → ℝ≥0∞} (hf : Measurable f) :
-    Measurable fun x => (f x).toNNReal :=
+    Measurable fun x ↦ (f x).toNNReal :=
   ENNReal.measurable_toNNReal.comp hf
 
 @[measurability, fun_prop]
 theorem AEMeasurable.ennreal_toNNReal {f : α → ℝ≥0∞} {μ : Measure α} (hf : AEMeasurable f μ) :
-    AEMeasurable (fun x => (f x).toNNReal) μ :=
+    AEMeasurable (fun x ↦ (f x).toNNReal) μ :=
   ENNReal.measurable_toNNReal.comp_aemeasurable hf
 
 @[simp, norm_cast]
 theorem measurable_coe_nnreal_ennreal_iff {f : α → ℝ≥0} :
-    (Measurable fun x => (f x : ℝ≥0∞)) ↔ Measurable f :=
-  ⟨fun h => h.ennreal_toNNReal, fun h => h.coe_nnreal_ennreal⟩
+    (Measurable fun x ↦ (f x : ℝ≥0∞)) ↔ Measurable f :=
+  ⟨fun h ↦ h.ennreal_toNNReal, fun h ↦ h.coe_nnreal_ennreal⟩
 
 @[simp, norm_cast]
 theorem aemeasurable_coe_nnreal_ennreal_iff {f : α → ℝ≥0} {μ : Measure α} :
-    AEMeasurable (fun x => (f x : ℝ≥0∞)) μ ↔ AEMeasurable f μ :=
-  ⟨fun h => h.ennreal_toNNReal, fun h => h.coe_nnreal_ennreal⟩
+    AEMeasurable (fun x ↦ (f x : ℝ≥0∞)) μ ↔ AEMeasurable f μ :=
+  ⟨fun h ↦ h.ennreal_toNNReal, fun h ↦ h.coe_nnreal_ennreal⟩
 
 @[measurability, fun_prop]
 theorem Measurable.ennreal_toReal {f : α → ℝ≥0∞} (hf : Measurable f) :
-    Measurable fun x => ENNReal.toReal (f x) :=
+    Measurable fun x ↦ ENNReal.toReal (f x) :=
   ENNReal.measurable_toReal.comp hf
 
 @[measurability, fun_prop]
 theorem AEMeasurable.ennreal_toReal {f : α → ℝ≥0∞} {μ : Measure α} (hf : AEMeasurable f μ) :
-    AEMeasurable (fun x => ENNReal.toReal (f x)) μ :=
+    AEMeasurable (fun x ↦ ENNReal.toReal (f x)) μ :=
   ENNReal.measurable_toReal.comp_aemeasurable hf
 
 /-- note: `ℝ≥0∞` can probably be generalized in a future version of this lemma. -/
 @[measurability, fun_prop]
 theorem Measurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
-    Measurable fun x => ∑' i, f i x := by
+    Measurable fun x ↦ ∑' i, f i x := by
   simp_rw [ENNReal.tsum_eq_iSup_sum]
-  exact .iSup fun s ↦ s.measurable_fun_sum fun i _ => h i
+  exact .iSup fun s ↦ s.measurable_fun_sum fun i _ ↦ h i
 
 @[measurability, fun_prop]
 theorem Measurable.ennreal_tsum' {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
     Measurable (∑' i, f i) := by
   convert Measurable.ennreal_tsum h with x
-  exact tsum_apply (Pi.summable.2 fun _ => ENNReal.summable)
+  exact tsum_apply (Pi.summable.2 fun _ ↦ ENNReal.summable)
 
 @[measurability, fun_prop]
 theorem Measurable.nnreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0} (h : ∀ i, Measurable (f i)) :
-    Measurable fun x => ∑' i, f i x := by
+    Measurable fun x ↦ ∑' i, f i x := by
   simp_rw [NNReal.tsum_eq_toNNReal_tsum]
-  exact (Measurable.ennreal_tsum fun i => (h i).coe_nnreal_ennreal).ennreal_toNNReal
+  exact (Measurable.ennreal_tsum fun i ↦ (h i).coe_nnreal_ennreal).ennreal_toNNReal
 
 @[measurability, fun_prop]
 theorem AEMeasurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0∞} {μ : Measure α}
-    (h : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun x => ∑' i, f i x) μ := by
+    (h : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun x ↦ ∑' i, f i x) μ := by
   simp_rw [ENNReal.tsum_eq_iSup_sum]
-  exact .iSup fun s ↦ Finset.aemeasurable_fun_sum s fun i _ => h i
+  exact .iSup fun s ↦ Finset.aemeasurable_fun_sum s fun i _ ↦ h i
 
 @[measurability, fun_prop]
 theorem AEMeasurable.nnreal_tsum {α : Type*} {_ : MeasurableSpace α} {ι : Type*} [Countable ι]
     {f : ι → α → NNReal} {μ : Measure α} (h : ∀ i : ι, AEMeasurable (f i) μ) :
-    AEMeasurable (fun x : α => ∑' i : ι, f i x) μ := by
+    AEMeasurable (fun x : α ↦ ∑' i : ι, f i x) μ := by
   simp_rw [NNReal.tsum_eq_toNNReal_tsum]
-  exact (AEMeasurable.ennreal_tsum fun i => (h i).coe_nnreal_ennreal).ennreal_toNNReal
+  exact (AEMeasurable.ennreal_tsum fun i ↦ (h i).coe_nnreal_ennreal).ennreal_toNNReal
 
 @[measurability, fun_prop]
 theorem measurable_coe_real_ereal : Measurable ((↑) : ℝ → EReal) :=
@@ -385,19 +385,19 @@ theorem measurable_coe_real_ereal : Measurable ((↑) : ℝ → EReal) :=
 
 @[measurability]
 theorem Measurable.coe_real_ereal {f : α → ℝ} (hf : Measurable f) :
-    Measurable fun x => (f x : EReal) :=
+    Measurable fun x ↦ (f x : EReal) :=
   measurable_coe_real_ereal.comp hf
 
 @[measurability]
 theorem AEMeasurable.coe_real_ereal {f : α → ℝ} {μ : Measure α} (hf : AEMeasurable f μ) :
-    AEMeasurable (fun x => (f x : EReal)) μ :=
+    AEMeasurable (fun x ↦ (f x : EReal)) μ :=
   measurable_coe_real_ereal.comp_aemeasurable hf
 
 /-- The set of finite `EReal` numbers is `MeasurableEquiv` to `ℝ`. -/
 def MeasurableEquiv.erealEquivReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ᵐ ℝ :=
   EReal.neBotTopHomeomorphReal.toMeasurableEquiv
 
-theorem EReal.measurable_of_measurable_real {f : EReal → α} (h : Measurable fun p : ℝ => f p) :
+theorem EReal.measurable_of_measurable_real {f : EReal → α} (h : Measurable fun p : ℝ ↦ f p) :
     Measurable f :=
   measurable_of_measurable_on_compl_finite {⊥, ⊤} (by simp)
     (MeasurableEquiv.erealEquivReal.symm.measurable_comp_iff.1 h)
@@ -408,12 +408,12 @@ theorem measurable_ereal_toReal : Measurable EReal.toReal :=
 
 @[measurability, fun_prop]
 theorem Measurable.ereal_toReal {f : α → EReal} (hf : Measurable f) :
-    Measurable fun x => (f x).toReal :=
+    Measurable fun x ↦ (f x).toReal :=
   measurable_ereal_toReal.comp hf
 
 @[measurability, fun_prop]
 theorem AEMeasurable.ereal_toReal {f : α → EReal} {μ : Measure α} (hf : AEMeasurable f μ) :
-    AEMeasurable (fun x => (f x).toReal) μ :=
+    AEMeasurable (fun x ↦ (f x).toReal) μ :=
   measurable_ereal_toReal.comp_aemeasurable hf
 
 @[measurability]
@@ -422,12 +422,12 @@ theorem measurable_coe_ennreal_ereal : Measurable ((↑) : ℝ≥0∞ → EReal)
 
 @[measurability, fun_prop]
 theorem Measurable.coe_ereal_ennreal {f : α → ℝ≥0∞} (hf : Measurable f) :
-    Measurable fun x => (f x : EReal) :=
+    Measurable fun x ↦ (f x : EReal) :=
   measurable_coe_ennreal_ereal.comp hf
 
 @[measurability, fun_prop]
 theorem AEMeasurable.coe_ereal_ennreal {f : α → ℝ≥0∞} {μ : Measure α} (hf : AEMeasurable f μ) :
-    AEMeasurable (fun x => (f x : EReal)) μ :=
+    AEMeasurable (fun x ↦ (f x : EReal)) μ :=
   measurable_coe_ennreal_ereal.comp_aemeasurable hf
 
 @[measurability]
@@ -436,12 +436,12 @@ theorem measurable_ereal_toENNReal : Measurable EReal.toENNReal :=
 
 @[measurability, fun_prop]
 theorem Measurable.ereal_toENNReal {f : α → EReal} (hf : Measurable f) :
-    Measurable fun x => (f x).toENNReal :=
+    Measurable fun x ↦ (f x).toENNReal :=
   measurable_ereal_toENNReal.comp hf
 
 @[measurability, fun_prop]
 theorem AEMeasurable.ereal_toENNReal {f : α → EReal} {μ : Measure α} (hf : AEMeasurable f μ) :
-    AEMeasurable (fun x => (f x).toENNReal) μ :=
+    AEMeasurable (fun x ↦ (f x).toENNReal) μ :=
   measurable_ereal_toENNReal.comp_aemeasurable hf
 
 namespace NNReal
@@ -456,7 +456,7 @@ theorem measurable_of_tendsto' {ι} {f : ι → α → ℝ≥0} {g : α → ℝ�
   simp_rw [← measurable_coe_nnreal_ennreal_iff] at hf ⊢
   refine ENNReal.measurable_of_tendsto' u hf ?_
   rw [tendsto_pi_nhds] at lim ⊢
-  exact fun x => (ENNReal.continuous_coe.tendsto (g x)).comp (lim x)
+  exact fun x ↦ (ENNReal.continuous_coe.tendsto (g x)).comp (lim x)
 
 /-- A sequential limit of measurable `ℝ≥0` valued functions is measurable. -/
 theorem measurable_of_tendsto {f : ℕ → α → ℝ≥0} {g : α → ℝ≥0} (hf : ∀ i, Measurable (f i))
@@ -541,26 +541,26 @@ theorem exists_spanning_measurableSet_le {f : α → ℝ≥0} (hf : Measurable f
       (∀ n, MeasurableSet (s n) ∧ μ (s n) < ∞ ∧ ∀ x ∈ s n, f x ≤ n) ∧
       ⋃ i, s i = Set.univ := by
   let sigma_finite_sets := spanningSets μ
-  let norm_sets := fun n : ℕ => { x | f x ≤ n }
+  let norm_sets := fun n : ℕ ↦ { x | f x ≤ n }
   have norm_sets_spanning : ⋃ n, norm_sets n = Set.univ := by
     ext1 x
     simp only [Set.mem_iUnion, Set.mem_univ, iff_true]
     exact exists_nat_ge (f x)
   let sets n := sigma_finite_sets n ∩ norm_sets n
   have h_meas : ∀ n, MeasurableSet (sets n) := by
-    refine fun n => MeasurableSet.inter ?_ ?_
+    refine fun n ↦ MeasurableSet.inter ?_ ?_
     · exact measurableSet_spanningSets μ n
     · exact hf measurableSet_Iic
   have h_finite : ∀ n, μ (sets n) < ∞ := by
-    refine fun n => (measure_mono Set.inter_subset_left).trans_lt ?_
+    refine fun n ↦ (measure_mono Set.inter_subset_left).trans_lt ?_
     exact measure_spanningSets_lt_top μ n
-  refine ⟨sets, fun n => ⟨h_meas n, h_finite n, ?_⟩, ?_⟩
-  · exact fun x hx => hx.2
+  refine ⟨sets, fun n ↦ ⟨h_meas n, h_finite n, ?_⟩, ?_⟩
+  · exact fun x hx ↦ hx.2
   · have :
       ⋃ i, sigma_finite_sets i ∩ norm_sets i = (⋃ i, sigma_finite_sets i) ∩ ⋃ i, norm_sets i := by
-      refine Set.iUnion_inter_of_monotone (monotone_spanningSets μ) fun i j hij x => ?_
+      refine Set.iUnion_inter_of_monotone (monotone_spanningSets μ) fun i j hij x ↦ ?_
       simp only [norm_sets, Set.mem_setOf_eq]
-      refine fun hif => hif.trans ?_
+      refine fun hif ↦ hif.trans ?_
       exact mod_cast hij
     rw [this, norm_sets_spanning, iUnion_spanningSets μ, Set.inter_univ]
 

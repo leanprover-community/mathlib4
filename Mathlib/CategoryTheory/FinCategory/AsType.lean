@@ -66,7 +66,7 @@ noncomputable def asTypeEquivObjAsType : AsType α ≌ ObjAsType α where
   counitIso := NatIso.ofComponents Iso.refl
 
 noncomputable instance asTypeFinCategory : FinCategory (AsType α) where
-  fintypeHom := fun _ _ => show Fintype (Fin _) from inferInstance
+  fintypeHom := fun _ _ ↦ show Fintype (Fin _) from inferInstance
 
 /-- The constructed category (`ObjAsType α`) is indeed equivalent to `α`. -/
 noncomputable def equivAsType : AsType α ≌ α :=

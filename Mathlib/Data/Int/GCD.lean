@@ -93,7 +93,7 @@ theorem gcdB_zero_right {s : ℕ} (h : s ≠ 0) : gcdB s 0 = 0 := by
 
 @[simp]
 theorem xgcdAux_fst (x y) : ∀ s t s' t', (xgcdAux x s t y s' t').1 = gcd x y :=
-  gcd.induction x y (by simp) fun x y h IH s t s' t' => by
+  gcd.induction x y (by simp) fun x y h IH s t s' t' ↦ by
     simp only [h, xgcdAux_rec, IH]
     rw [← gcd_rec]
 
@@ -132,7 +132,7 @@ end
 
 theorem exists_mul_emod_eq_gcd {k n : ℕ} (hk : gcd n k < k) : ∃ m, n * m % k = gcd n k := by
   have hk' := Int.ofNat_ne_zero.2 (ne_of_gt (lt_of_le_of_lt (zero_le (gcd n k)) hk))
-  have key := congr_arg (fun (m : ℤ) => (m % k).toNat) (gcd_eq_gcd_ab n k)
+  have key := congr_arg (fun (m : ℤ) ↦ (m % k).toNat) (gcd_eq_gcd_ab n k)
   simp only at key
   rw [Int.add_mul_emod_self_left, ← Int.natCast_mod, Int.toNat_natCast, mod_eq_of_lt hk] at key
   refine ⟨(n.gcdA k % k).toNat, Eq.trans (Int.ofNat.inj ?_) key.symm⟩
@@ -253,7 +253,7 @@ theorem gcd_least_linear {a b : ℤ} (ha : a ≠ 0) :
   constructor
   · simpa [and_true, dvd_refl, Set.mem_setOf_eq] using gcd_pos_of_ne_zero_left b ha
   · simp only [lowerBounds, and_imp, Set.mem_setOf_eq]
-    exact fun n hn_pos hn => Nat.le_of_dvd hn_pos hn
+    exact fun n hn_pos hn ↦ Nat.le_of_dvd hn_pos hn
 
 end Int
 

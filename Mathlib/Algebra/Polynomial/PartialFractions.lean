@@ -87,28 +87,28 @@ Then, a fraction of the form f / ∏ (g i) can be rewritten as q + ∑ (r i) / (
 deg(r i) < deg(g i), provided that the g i are monic and pairwise coprime.
 -/
 theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]} {s : Finset ι}
-    (hg : ∀ i ∈ s, (g i).Monic) (hcop : Set.Pairwise ↑s fun i j => IsCoprime (g i) (g j)) :
+    (hg : ∀ i ∈ s, (g i).Monic) (hcop : Set.Pairwise ↑s fun i j ↦ IsCoprime (g i) (g j)) :
     ∃ (q : R[X]) (r : ι → R[X]),
       (∀ i ∈ s, (r i).degree < (g i).degree) ∧
         ((↑f : K) / ∏ i ∈ s, ↑(g i)) = ↑q + ∑ i ∈ s, (r i : K) / (g i : K) := by
   classical
   induction s using Finset.induction_on generalizing f with
   | empty =>
-    refine ⟨f, fun _ : ι => (0 : R[X]), fun i => ?_, by simp⟩
+    refine ⟨f, fun _ : ι ↦ (0 : R[X]), fun i ↦ ?_, by simp⟩
     rintro ⟨⟩
   | insert a b hab Hind => ?_
   obtain ⟨q₀, r₁, r₂, hdeg₁, _, hf : (↑f : K) / _ = _⟩ :=
     div_eq_quo_add_rem_div_add_rem_div R K f
       (hg a (b.mem_insert_self a) : Monic (g a))
-      (monic_prod_of_monic _ _ fun i hi => hg i (Finset.mem_insert_of_mem hi) :
+      (monic_prod_of_monic _ _ fun i hi ↦ hg i (Finset.mem_insert_of_mem hi) :
         Monic (∏ i ∈ b, g i))
-      (IsCoprime.prod_right fun i hi =>
+      (IsCoprime.prod_right fun i hi ↦
         hcop (Finset.mem_coe.2 (b.mem_insert_self a))
           (Finset.mem_coe.2 (Finset.mem_insert_of_mem hi)) (by rintro rfl; exact hab hi))
   obtain ⟨q, r, hrdeg, IH⟩ :=
-    Hind _ (fun i hi => hg i (Finset.mem_insert_of_mem hi))
-      (Set.Pairwise.mono (Finset.coe_subset.2 fun i hi => Finset.mem_insert_of_mem hi) hcop)
-  refine ⟨q₀ + q, fun i => if i = a then r₁ else r i, ?_, ?_⟩
+    Hind _ (fun i hi ↦ hg i (Finset.mem_insert_of_mem hi))
+      (Set.Pairwise.mono (Finset.coe_subset.2 fun i hi ↦ Finset.mem_insert_of_mem hi) hcop)
+  refine ⟨q₀ + q, fun i ↦ if i = a then r₁ else r i, ?_, ?_⟩
   · intro i
     dsimp only
     split_ifs with h1
@@ -123,7 +123,7 @@ theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]} {s 
   · push_cast
     ring
   congr 2
-  refine Finset.sum_congr rfl fun x hxb => ?_
+  refine Finset.sum_congr rfl fun x hxb ↦ ?_
   grind
 
 end NDenominators

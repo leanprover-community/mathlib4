@@ -50,7 +50,7 @@ variable {ι : Type*} {G : ι → Type*} {H : Type*} {K : Type*} [Monoid K]
 /-- The relation we quotient by to form the pushout -/
 def PushoutI.con [∀ i, Monoid (G i)] [Monoid H] (φ : ∀ i, H →* G i) :
     Con (Coprod (CoprodI G) H) :=
-  conGen (fun x y : Coprod (CoprodI G) H =>
+  conGen (fun x y : Coprod (CoprodI G) H ↦
     ∃ i x', x = inl (of (φ i x')) ∧ y = inr x')
 
 /-- The indexed pushout of monoids, which is the pushout in the category of monoids,
@@ -101,7 +101,7 @@ def lift (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k) :
     PushoutI φ →* K :=
   Con.lift _ (Coprod.lift (CoprodI.lift f) k) <| by
-    apply Con.conGen_le fun x y => ?_
+    apply Con.conGen_le fun x y ↦ ?_
     rintro ⟨i, x', rfl, rfl⟩
     simp only [DFunLike.ext_iff, MonoidHom.coe_comp, comp_apply] at hf
     simp [hf]
@@ -147,12 +147,12 @@ condition. -/
 @[simps]
 def homEquiv :
     (PushoutI φ →* K) ≃ { f : (Π i, G i →* K) × (H →* K) // ∀ i, (f.1 i).comp (φ i) = f.2 } :=
-  { toFun := fun f => ⟨(fun i => f.comp (of i), f.comp (base φ)),
-      fun i => by rw [MonoidHom.comp_assoc, of_comp_eq_base]⟩
-    invFun := fun f => lift f.1.1 f.1.2 f.2,
-    left_inv := fun _ => hom_ext (by simp [DFunLike.ext_iff])
+  { toFun := fun f ↦ ⟨(fun i ↦ f.comp (of i), f.comp (base φ)),
+      fun i ↦ by rw [MonoidHom.comp_assoc, of_comp_eq_base]⟩
+    invFun := fun f ↦ lift f.1.1 f.1.2 f.2,
+    left_inv := fun _ ↦ hom_ext (by simp [DFunLike.ext_iff])
       (by simp [DFunLike.ext_iff])
-    right_inv := fun ⟨⟨_, _⟩, _⟩ => by simp [DFunLike.ext_iff, funext_iff] }
+    right_inv := fun ⟨⟨_, _⟩, _⟩ ↦ by simp [DFunLike.ext_iff, funext_iff] }
 
 /-- The map from the coproduct into the pushout -/
 def ofCoprodI : CoprodI G →* PushoutI φ :=
@@ -228,13 +228,13 @@ structure Transversal : Type _ where
   compl : ∀ i, IsComplement (φ i).range (set i)
 
 theorem transversal_nonempty (hφ : ∀ i, Injective (φ i)) : Nonempty (Transversal φ) := by
-  choose t ht using fun i => (φ i).range.exists_isComplement_right 1
+  choose t ht using fun i ↦ (φ i).range.exists_isComplement_right 1
   apply Nonempty.intro
   exact
     { injective := hφ
       set := t
-      one_mem := fun i => (ht i).2
-      compl := fun i => (ht i).1 }
+      one_mem := fun i ↦ (ht i).2
+      compl := fun i ↦ (ht i).1 }
 
 variable {φ}
 
@@ -261,14 +261,14 @@ variable {d : Transversal φ}
 
 /-- The empty normalized word, representing the identity element of the group. -/
 @[simps!]
-def empty : NormalWord d := ⟨CoprodI.Word.empty, 1, fun i g => by simp [CoprodI.Word.empty]⟩
+def empty : NormalWord d := ⟨CoprodI.Word.empty, 1, fun i g ↦ by simp [CoprodI.Word.empty]⟩
 
 instance : Inhabited (NormalWord d) := ⟨NormalWord.empty⟩
 
 instance (i : ι) : Inhabited (Pair d i) :=
   ⟨{ (empty : NormalWord d) with
       head := 1, tail := _,
-      fstIdx_ne := fun h => by cases h }⟩
+      fstIdx_ne := fun h ↦ by cases h }⟩
 
 @[ext]
 theorem ext {w₁ w₂ : NormalWord d} (hhead : w₁.head = w₂.head)
@@ -280,7 +280,7 @@ theorem ext {w₁ w₂ : NormalWord d} (hhead : w₁.head = w₂.head)
 open Subgroup.IsComplement
 
 instance baseAction : MulAction H (NormalWord d) :=
-  { smul := fun h w => { w with head := h * w.head },
+  { smul := fun h w ↦ { w with head := h * w.head },
     one_smul := by simp [instHSMul]
     mul_smul := by simp [instHSMul, mul_assoc] }
 
@@ -311,7 +311,7 @@ noncomputable def cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some
       (mt (mul_mem_cancel_right (by simp)).1 hgr))
   { toWord := w'
     head := (MonoidHom.ofInjective (d.injective i)).symm n.1
-    normalized := fun i g hg => by
+    normalized := fun i g hg ↦ by
       simp only [w', Word.cons, mem_cons, Sigma.mk.inj_iff] at hg
       rcases hg with ⟨rfl, hg | hg⟩
       · simp
@@ -390,7 +390,7 @@ noncomputable def rcons (i : ι) (p : Pair d i) : NormalWord d :=
   let w := (Word.equivPair i).symm { p.toPair with head := n.2 }
   { toWord := w
     head := (MonoidHom.ofInjective (d.injective i)).symm n.1
-    normalized := fun i g hg => by
+    normalized := fun i g hg ↦ by
         dsimp [w] at hg
         rw [Word.equivPair_symm, Word.mem_rcons_iff] at hg
         rcases hg with hg | ⟨_, rfl, rfl⟩
@@ -413,16 +413,16 @@ pair by taking the head of the `List` if it is in `G i` and multiplying it by th
 base group. -/
 noncomputable def equivPair (i) : NormalWord d ≃ Pair d i :=
   letI toFun : NormalWord d → Pair d i :=
-    fun w =>
+    fun w ↦
       letI p := Word.equivPair i (CoprodI.of (φ i w.head) • w.toWord)
       { toPair := p
-        normalized := fun j g hg => by
+        normalized := fun j g hg ↦ by
           dsimp only [p] at hg
           rw [Word.of_smul_def, ← Word.equivPair_symm, Equiv.apply_symm_apply] at hg
           dsimp at hg
           exact w.normalized _ _ (Word.mem_of_mem_equivPair_tail _ hg) }
   haveI leftInv : Function.LeftInverse (rcons i) toFun :=
-    fun w => ext_smul i <| by
+    fun w ↦ ext_smul i <| by
       simp only [toFun, rcons, Word.equivPair_symm,
         Word.equivPair_smul_same, Word.equivPair_tail_eq_inv_smul, Word.rcons_eq_smul,
         MonoidHom.apply_ofInjective_symm, equiv_fst_eq_mul_inv, mul_assoc, map_mul, map_inv,
@@ -430,17 +430,17 @@ noncomputable def equivPair (i) : NormalWord d ≃ Pair d i :=
   { toFun := toFun
     invFun := rcons i
     left_inv := leftInv
-    right_inv := fun _ => rcons_injective (leftInv _) }
+    right_inv := fun _ ↦ rcons_injective (leftInv _) }
 
 noncomputable instance summandAction (i : ι) : MulAction (G i) (NormalWord d) :=
-  { smul := fun g w => (equivPair i).symm
+  { smul := fun g w ↦ (equivPair i).symm
       { equivPair i w with
         head := g * (equivPair i w).head }
-    one_smul := fun _ => by
+    one_smul := fun _ ↦ by
       dsimp [instHSMul]
       rw [one_mul]
       exact (equivPair i).symm_apply_apply _
-    mul_smul := fun _ _ _ => by
+    mul_smul := fun _ _ _ ↦ by
       dsimp [instHSMul]
       simp [mul_assoc, Equiv.apply_symm_apply] }
 
@@ -452,7 +452,7 @@ theorem summand_smul_def' {i : ι} (g : G i) (w : NormalWord d) :
 noncomputable instance mulAction : MulAction (PushoutI φ) (NormalWord d) :=
   MulAction.ofEndHom <|
     lift
-      (fun _ => MulAction.toEndHom)
+      (fun _ ↦ MulAction.toEndHom)
       MulAction.toEndHom <| by
     intro i
     simp only [MulAction.toEndHom, DFunLike.ext_iff, MonoidHom.coe_comp, MonoidHom.coe_mk,
@@ -503,7 +503,7 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
   · induction w using Word.consRecOn with
     | empty => exact empty
     | cons i g w h1 hg1 ih =>
-      convert cons i g ⟨w, 1, fun _ _ h => h3 _ _ (List.mem_cons_of_mem _ h)⟩
+      convert cons i g ⟨w, 1, fun _ _ h ↦ h3 _ _ (List.mem_cons_of_mem _ h)⟩
         h1 (h3 _ _ List.mem_cons_self) ?_ rfl
         (ih ?_)
       · ext
@@ -556,20 +556,20 @@ theorem prod_smul_empty (w : NormalWord d) : w.prod • empty = w := by
 
 /-- The equivalence between normal forms and elements of the pushout -/
 noncomputable def equiv : PushoutI φ ≃ NormalWord d :=
-  { toFun := fun g => g • .empty
-    invFun := fun w => w.prod
-    left_inv := fun g => by
+  { toFun := fun g ↦ g • .empty
+    invFun := fun w ↦ w.prod
+    left_inv := fun g ↦ by
       simp only [prod_smul, prod_empty, mul_one]
-    right_inv := fun w => prod_smul_empty w }
+    right_inv := fun w ↦ prod_smul_empty w }
 
 theorem prod_injective {ι : Type*} {G : ι → Type*} [(i : ι) → Group (G i)] {φ : (i : ι) → H →* G i}
     {d : Transversal φ} : Function.Injective (prod : NormalWord d → PushoutI φ) := by
   letI := Classical.decEq ι
-  letI := fun i => Classical.decEq (G i)
+  letI := fun i ↦ Classical.decEq (G i)
   classical exact equiv.symm.injective
 
 instance : FaithfulSMul (PushoutI φ) (NormalWord d) :=
-  ⟨fun h => by simpa using congr_arg prod (h empty)⟩
+  ⟨fun h ↦ by simpa using congr_arg prod (h empty)⟩
 
 instance (i : ι) : FaithfulSMul (G i) (NormalWord d) :=
   ⟨by simp [summand_smul_def']⟩
@@ -589,22 +589,22 @@ theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
     Function.Injective (of (φ := φ) i) := by
   rcases transversal_nonempty φ hφ with ⟨d⟩
   let _ := Classical.decEq ι
-  let _ := fun i => Classical.decEq (G i)
+  let _ := fun i ↦ Classical.decEq (G i)
   refine Function.Injective.of_comp
     (f := ((· • ·) : PushoutI φ → NormalWord d → NormalWord d)) ?_
   intros _ _ h
-  exact eq_of_smul_eq_smul (fun w : NormalWord d =>
+  exact eq_of_smul_eq_smul (fun w : NormalWord d ↦
     by simp_all [funext_iff, of_smul_eq_smul])
 
 theorem base_injective (hφ : ∀ i, Function.Injective (φ i)) :
     Function.Injective (base φ) := by
   rcases transversal_nonempty φ hφ with ⟨d⟩
   let _ := Classical.decEq ι
-  let _ := fun i => Classical.decEq (G i)
+  let _ := fun i ↦ Classical.decEq (G i)
   refine Function.Injective.of_comp
     (f := ((· • ·) : PushoutI φ → NormalWord d → NormalWord d)) ?_
   intros _ _ h
-  exact eq_of_smul_eq_smul (fun w : NormalWord d =>
+  exact eq_of_smul_eq_smul (fun w : NormalWord d ↦
     by simp_all [funext_iff, base_smul_eq_smul])
 
 section Reduced
@@ -621,7 +621,7 @@ theorem Reduced.exists_normalWord_prod_eq (d : Transversal φ) {w : Word G} (hw 
   induction w using Word.consRecOn with
   | empty => exact ⟨empty, by simp, rfl⟩
   | cons i g w hIdx hg1 ih =>
-    rcases ih (fun _ hg => hw _ (List.mem_cons_of_mem _ hg)) with
+    rcases ih (fun _ hg ↦ hw _ (List.mem_cons_of_mem _ hg)) with
       ⟨w', hw'prod, hw'map⟩
     refine ⟨cons g w' ?_ ?_, ?_⟩
     · rwa [Word.fstIdx, ← List.head?_map, hw'map, List.head?_map]

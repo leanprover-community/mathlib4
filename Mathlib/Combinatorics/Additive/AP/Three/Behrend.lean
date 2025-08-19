@@ -91,7 +91,7 @@ an additive monoid homomorphism.
 
 /-- The box `{0, ..., d - 1}^n` as a `Finset`. -/
 def box (n d : ℕ) : Finset (Fin n → ℕ) :=
-  Fintype.piFinset fun _ => range d
+  Fintype.piFinset fun _ ↦ range d
 
 theorem mem_box : x ∈ box n d ↔ ∀ i, x i < d := by simp only [box, Fintype.mem_piFinset, mem_range]
 
@@ -105,7 +105,7 @@ theorem box_zero : box (n + 1) 0 = ∅ := by simp [box]
 quadrant. -/
 def sphere (n d k : ℕ) : Finset (Fin n → ℕ) := {x ∈ box n d | ∑ i, x i ^ 2 = k}
 
-theorem sphere_zero_subset : sphere n d 0 ⊆ 0 := fun x => by simp [sphere, funext_iff]
+theorem sphere_zero_subset : sphere n d 0 ⊆ 0 := fun x ↦ by simp [sphere, funext_iff]
 
 @[simp]
 theorem sphere_zero_right (n k : ℕ) : sphere (n + 1) 0 k = ∅ := by simp [sphere]
@@ -120,9 +120,9 @@ theorem norm_of_mem_sphere {x : Fin n → ℕ} (hx : x ∈ sphere n d k) :
   simp_rw [abs_cast, ← cast_pow, ← cast_sum, (mem_filter.1 hx).2]
 
 theorem sphere_subset_preimage_metric_sphere : (sphere n d k : Set (Fin n → ℕ)) ⊆
-    (fun x : Fin n → ℕ => WithLp.toLp 2 ((↑) ∘ x : Fin n → ℝ)) ⁻¹'
-      Metric.sphere (0 : PiLp 2 fun _ : Fin n => ℝ) (√↑k) :=
-  fun x hx => by rw [Set.mem_preimage, mem_sphere_zero_iff_norm, norm_of_mem_sphere hx]
+    (fun x : Fin n → ℕ ↦ WithLp.toLp 2 ((↑) ∘ x : Fin n → ℝ)) ⁻¹'
+      Metric.sphere (0 : PiLp 2 fun _ : Fin n ↦ ℝ) (√↑k) :=
+  fun x hx ↦ by rw [Set.mem_preimage, mem_sphere_zero_iff_norm, norm_of_mem_sphere hx]
 
 /-- The map that appears in Behrend's bound on Roth numbers. -/
 @[simps]
@@ -140,15 +140,15 @@ theorem map_succ (a : Fin (n + 1) → ℕ) :
 theorem map_succ' (a : Fin (n + 1) → ℕ) : map d a = a 0 + map d (a ∘ Fin.succ) * d :=
   map_succ _
 
-theorem map_monotone (d : ℕ) : Monotone (map d : (Fin n → ℕ) → ℕ) := fun x y h => by
-  dsimp; exact sum_le_sum fun i _ => Nat.mul_le_mul_right _ <| h i
+theorem map_monotone (d : ℕ) : Monotone (map d : (Fin n → ℕ) → ℕ) := fun x y h ↦ by
+  dsimp; exact sum_le_sum fun i _ ↦ Nat.mul_le_mul_right _ <| h i
 
 theorem map_mod (a : Fin n.succ → ℕ) : map d a % d = a 0 % d := by
   rw [map_succ, Nat.add_mul_mod_self_right]
 
 theorem map_eq_iff {x₁ x₂ : Fin n.succ → ℕ} (hx₁ : ∀ i, x₁ i < d) (hx₂ : ∀ i, x₂ i < d) :
     map d x₁ = map d x₂ ↔ x₁ 0 = x₂ 0 ∧ map d (x₁ ∘ Fin.succ) = map d (x₂ ∘ Fin.succ) := by
-  refine ⟨fun h => ?_, fun h => by rw [map_succ', map_succ', h.1, h.2]⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ by rw [map_succ', map_succ', h.1, h.2]⟩
   have : x₁ 0 = x₂ 0 := by
     rw [← mod_eq_of_lt (hx₁ _), ← map_mod, ← mod_eq_of_lt (hx₂ _), ← map_mod, h]
   rw [map_succ, map_succ, this, add_right_inj, mul_eq_mul_right_iff] at h
@@ -161,20 +161,20 @@ theorem map_injOn : {x : Fin n → ℕ | ∀ i, x i < d}.InjOn (map d) := by
   | succ n ih =>
     ext i
     have x := (map_eq_iff hx₁ hx₂).1 h
-    exact Fin.cases x.1 (congr_fun <| ih (fun _ => hx₁ _) (fun _ => hx₂ _) x.2) i
+    exact Fin.cases x.1 (congr_fun <| ih (fun _ ↦ hx₁ _) (fun _ ↦ hx₂ _) x.2) i
 
 theorem map_le_of_mem_box (hx : x ∈ box n d) :
     map (2 * d - 1) x ≤ ∑ i : Fin n, (d - 1) * (2 * d - 1) ^ (i : ℕ) :=
-  map_monotone (2 * d - 1) fun _ => Nat.le_sub_one_of_lt <| mem_box.1 hx _
+  map_monotone (2 * d - 1) fun _ ↦ Nat.le_sub_one_of_lt <| mem_box.1 hx _
 
 nonrec theorem threeAPFree_sphere : ThreeAPFree (sphere n d k : Set (Fin n → ℕ)) := by
   set f : (Fin n → ℕ) →+ EuclideanSpace ℝ (Fin n) :=
-    { toFun := fun f => ((↑) : ℕ → ℝ) ∘ f
-      map_zero' := funext fun _ => cast_zero
-      map_add' := fun _ _ => funext fun _ => cast_add _ _ }
+    { toFun := fun f ↦ ((↑) : ℕ → ℝ) ∘ f
+      map_zero' := funext fun _ ↦ cast_zero
+      map_add' := fun _ _ ↦ funext fun _ ↦ cast_add _ _ }
   refine ThreeAPFree.of_image (AddMonoidHomClass.isAddFreimanHom f (Set.mapsTo_image _ _))
     cast_injective.comp_left.injOn (Set.subset_univ _) ?_
-  refine (threeAPFree_sphere 0 (√↑k)).mono (Set.image_subset_iff.2 fun x => ?_)
+  refine (threeAPFree_sphere 0 (√↑k)).mono (Set.image_subset_iff.2 fun x ↦ ?_)
   rw [Set.mem_preimage, mem_sphere_zero_iff_norm]
   exact norm_of_mem_sphere
 
@@ -192,13 +192,13 @@ theorem threeAPFree_image_sphere :
 
 theorem sum_sq_le_of_mem_box (hx : x ∈ box n d) : ∑ i : Fin n, x i ^ 2 ≤ n * (d - 1) ^ 2 := by
   rw [mem_box] at hx
-  have : ∀ i, x i ^ 2 ≤ (d - 1) ^ 2 := fun i =>
+  have : ∀ i, x i ^ 2 ≤ (d - 1) ^ 2 := fun i ↦
     Nat.pow_le_pow_left (Nat.le_sub_one_of_lt (hx i)) _
-  exact (sum_le_card_nsmul univ _ _ fun i _ => this i).trans (by rw [Finset.card_fin, smul_eq_mul])
+  exact (sum_le_card_nsmul univ _ _ fun i _ ↦ this i).trans (by rw [Finset.card_fin, smul_eq_mul])
 
 theorem sum_eq : (∑ i : Fin n, d * (2 * d + 1) ^ (i : ℕ)) = ((2 * d + 1) ^ n - 1) / 2 := by
   refine (Nat.div_eq_of_eq_mul_left zero_lt_two ?_).symm
-  rw [← sum_range fun i => d * (2 * d + 1) ^ (i : ℕ), ← mul_sum, mul_right_comm, mul_comm d, ←
+  rw [← sum_range fun i ↦ d * (2 * d + 1) ^ (i : ℕ), ← mul_sum, mul_right_comm, mul_comm d, ←
     geom_sum_mul_add, add_tsub_cancel_right, mul_comm]
 
 theorem sum_lt : (∑ i : Fin n, d * (2 * d + 1) ^ (i : ℕ)) < (2 * d + 1) ^ n :=
@@ -215,9 +215,9 @@ theorem card_sphere_le_rothNumberNat (n d k : ℕ) :
       sphere, mem_filter]
     rintro _ x hx _ rfl
     exact (map_le_of_mem_box hx).trans_lt sum_lt
-  apply map_injOn.mono fun x => ?_
+  apply map_injOn.mono fun x ↦ ?_
   simp only [mem_coe, sphere, mem_filter, mem_box, and_imp, two_mul]
-  exact fun h _ i => (h i).trans_le le_self_add
+  exact fun h _ i ↦ (h i).trans_le le_self_add
 
 /-!
 ### Optimization
@@ -231,7 +231,7 @@ that we then optimize by tweaking the parameters. The (almost) optimal parameter
 
 theorem exists_large_sphere_aux (n d : ℕ) : ∃ k ∈ range (n * (d - 1) ^ 2 + 1),
     (↑(d ^ n) / ((n * (d - 1) ^ 2 :) + 1) : ℝ) ≤ #(sphere n d k) := by
-  refine exists_le_card_fiber_of_nsmul_le_card_of_maps_to (fun x hx => ?_) nonempty_range_succ ?_
+  refine exists_le_card_fiber_of_nsmul_le_card_of_maps_to (fun x hx ↦ ?_) nonempty_range_succ ?_
   · rw [mem_range, Nat.lt_succ_iff]
     exact sum_sq_le_of_mem_box hx
   · rw [card_range, nsmul_eq_mul, mul_div_assoc', cast_add_one, mul_div_cancel_left₀, card_box]

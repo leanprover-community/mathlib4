@@ -62,9 +62,9 @@ def hallMatchingsOn {ι : Type u} {α : Type v} (t : ι → Finset α) (ι' : Fi
 /-- Given a matching on a finset, construct the restriction of that matching to a subset. -/
 def hallMatchingsOn.restrict {ι : Type u} {α : Type v} (t : ι → Finset α) {ι' ι'' : Finset ι}
     (h : ι' ⊆ ι'') (f : hallMatchingsOn t ι'') : hallMatchingsOn t ι' := by
-  refine ⟨fun i => f.val ⟨i, h i.property⟩, ?_⟩
+  refine ⟨fun i ↦ f.val ⟨i, h i.property⟩, ?_⟩
   obtain ⟨hinj, hc⟩ := f.property
-  refine ⟨?_, fun i => hc ⟨i, h i.property⟩⟩
+  refine ⟨?_, fun i ↦ hc ⟨i, h i.property⟩⟩
   rintro ⟨i, hi⟩ ⟨j, hj⟩ hh
   simpa only [Subtype.mk_eq_mk] using hinj hh
 
@@ -75,7 +75,7 @@ theorem hallMatchingsOn.nonempty {ι : Type u} {α : Type v} [DecidableEq α] (t
     Nonempty (hallMatchingsOn t ι') := by
   classical
     refine ⟨Classical.indefiniteDescription _ ?_⟩
-    apply (all_card_le_biUnion_card_iff_existsInjective' fun i : ι' => t i).mp
+    apply (all_card_le_biUnion_card_iff_existsInjective' fun i : ι' ↦ t i).mp
     intro s'
     convert h (s'.image (↑)) using 1
     · simp only [card_image_of_injective s' Subtype.coe_injective]
@@ -120,7 +120,7 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
   constructor
   · intro h
     -- Set up the functor
-    haveI : ∀ ι' : (Finset ι)ᵒᵖ, Nonempty ((hallMatchingsFunctor t).obj ι') := fun ι' =>
+    haveI : ∀ ι' : (Finset ι)ᵒᵖ, Nonempty ((hallMatchingsFunctor t).obj ι') := fun ι' ↦
       hallMatchingsOn.nonempty t h ι'.unop
     classical
       haveI : ∀ ι' : (Finset ι)ᵒᵖ, Finite ((hallMatchingsFunctor t).obj ι') := by
@@ -132,7 +132,7 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
       -- Interpret the resulting section of the inverse limit
       refine ⟨?_, ?_, ?_⟩
       ·-- Build the matching function from the section
-        exact fun i =>
+        exact fun i ↦
           (u (Opposite.op ({i} : Finset ι))).val ⟨i, by simp only [mem_singleton]⟩
       · -- Show that it is injective
         intro i i'
@@ -142,7 +142,7 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
         simp only
         rw [← hu (CategoryTheory.homOfLE subi).op, ← hu (CategoryTheory.homOfLE subi').op]
         let uii' := u (Opposite.op ({i, i'} : Finset ι))
-        exact fun h => Subtype.mk_eq_mk.mp (uii'.property.1 h)
+        exact fun h ↦ Subtype.mk_eq_mk.mp (uii'.property.1 h)
       · -- Show that it maps each index to the corresponding finite set
         intro i
         apply (u (Opposite.op ({i} : Finset ι))).property.2
@@ -156,7 +156,7 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
 finite set is finite. -/
 instance {α : Type u} {β : Type v} [DecidableEq β] (R : SetRel α β)
     [∀ a : α, Fintype (R.image {a})] (A : Finset α) : Fintype (R.image A) := by
-  have h : R.image A = (A.biUnion fun a => (R.image {a}).toFinset : Set β) := by
+  have h : R.image A = (A.biUnion fun a ↦ (R.image {a}).toFinset : Set β) := by
     ext
     simp [SetRel.image]
   rw [h]

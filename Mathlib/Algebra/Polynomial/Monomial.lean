@@ -26,7 +26,7 @@ theorem monomial_one_eq_iff [Nontrivial R] {i j : ℕ} :
   exact AddMonoidAlgebra.of_injective.eq_iff
 
 instance infinite [Nontrivial R] : Infinite R[X] :=
-  Infinite.of_injective (fun i => monomial i 1) fun m n h => by simpa [monomial_one_eq_iff] using h
+  Infinite.of_injective (fun i ↦ monomial i 1) fun m n h ↦ by simpa [monomial_one_eq_iff] using h
 
 theorem card_support_le_one_iff_monomial {f : R[X]} :
     Finset.card f.support ≤ 1 ↔ ∃ n a, f = monomial n a := by
@@ -40,7 +40,7 @@ theorem card_support_le_one_iff_monomial {f : R[X]} :
     · simp [hi]
     · have : f.coeff i = 0 := by
         rw [← notMem_support_iff]
-        exact fun hi' => hi (Finset.mem_singleton.1 (hn hi'))
+        exact fun hi' ↦ hi (Finset.mem_singleton.1 (hn hi'))
       simp [this, Ne.symm hi, coeff_monomial]
   · rintro ⟨n, a, rfl⟩
     rw [← Finset.card_singleton n]

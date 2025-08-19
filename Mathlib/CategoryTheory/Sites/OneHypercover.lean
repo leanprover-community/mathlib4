@@ -77,7 +77,7 @@ noncomputable abbrev toPullback (j : E.I₁ i₁ i₂) [HasPullback (E.f i₁) (
 variable (i₁ i₂) in
 /-- The sieve of `pullback (E.f i₁) (E.f i₂)` given by `E : PreOneHypercover S`. -/
 noncomputable def sieve₁' : Sieve (pullback (E.f i₁) (E.f i₂)) :=
-  Sieve.ofArrows _ (fun (j : E.I₁ i₁ i₂) => E.toPullback j)
+  Sieve.ofArrows _ (fun (j : E.I₁ i₁ i₂) ↦ E.toPullback j)
 
 lemma sieve₁_eq_pullback_sieve₁' {W : C} (p₁ : W ⟶ E.X i₁) (p₂ : W ⟶ E.X i₂)
     (w : p₁ ≫ E.f i₁ = p₂ ≫ E.f i₂) :
@@ -100,7 +100,7 @@ lemma sieve₁'_eq_sieve₁ : E.sieve₁' i₁ i₂ = E.sieve₁ (pullback.fst _
 end
 
 /-- The sigma type of all `E.I₁ i₁ i₂` for `⟨i₁, i₂⟩ : E.I₀ × E.I₀`. -/
-abbrev I₁' : Type w := Sigma (fun (i : E.I₀ × E.I₀) => E.I₁ i.1 i.2)
+abbrev I₁' : Type w := Sigma (fun (i : E.I₀ × E.I₀) ↦ E.I₁ i.1 i.2)
 
 /-- The shape of the multiforks attached to `E : PreOneHypercover S`. -/
 @[simps]
@@ -122,7 +122,7 @@ def multicospanIndex (F : Cᵒᵖ ⥤ A) : MulticospanIndex E.multicospanShape A
 /-- The multifork attached to a presheaf `F : Cᵒᵖ ⥤ A`, `S : C` and `E : PreOneHypercover S`. -/
 def multifork (F : Cᵒᵖ ⥤ A) :
     Multifork (E.multicospanIndex F) :=
-  Multifork.ofι _ (F.obj (Opposite.op S)) (fun i₀ => F.map (E.f i₀).op) (by
+  Multifork.ofι _ (F.obj (Opposite.op S)) (fun i₀ ↦ F.map (E.f i₀).op) (by
     rintro ⟨⟨i₁, i₂⟩, (j : E.I₁ i₁ i₂)⟩
     dsimp
     simp only [← F.map_comp, ← op_comp, E.w])
@@ -388,7 +388,7 @@ variable (c : Multifork (E.multicospanIndex F.val))
 
 /-- Auxiliary definition of `isLimitMultifork`. -/
 noncomputable def multiforkLift : c.pt ⟶ F.val.obj (Opposite.op S) :=
-  F.cond.amalgamateOfArrows _ E.mem₀ c.ι (fun W i₁ i₂ p₁ p₂ w => by
+  F.cond.amalgamateOfArrows _ E.mem₀ c.ι (fun W i₁ i₂ p₁ p₂ w ↦ by
     apply F.cond.hom_ext ⟨_, E.mem₁ _ _ _ _ w⟩
     rintro ⟨T, g, j, h, fac₁, fac₂⟩
     dsimp
@@ -406,7 +406,7 @@ end
 a multiequalizer of suitable maps `F.obj (op (E.X i)) ⟶ F.obj (op (E.Y j))`
 induced by `E.p₁ j` and `E.p₂ j`. -/
 noncomputable def isLimitMultifork : IsLimit (E.multifork F.1) :=
-  Multifork.IsLimit.mk _ (fun c => multiforkLift c) (fun c => multiforkLift_map c) (by
+  Multifork.IsLimit.mk _ (fun c ↦ multiforkLift c) (fun c ↦ multiforkLift_map c) (by
     intro c m hm
     apply F.cond.hom_ext_ofArrows _ E.mem₀
     intro i₀

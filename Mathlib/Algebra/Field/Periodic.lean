@@ -39,36 +39,36 @@ namespace Function
 /-! ### Periodicity -/
 
 protected theorem Periodic.const_smul₀ [AddCommMonoid α] [DivisionSemiring γ] [Module γ α]
-    (h : Periodic f c) (a : γ) : Periodic (fun x => f (a • x)) (a⁻¹ • c) := fun x => by
+    (h : Periodic f c) (a : γ) : Periodic (fun x ↦ f (a • x)) (a⁻¹ • c) := fun x ↦ by
   by_cases ha : a = 0
   · simp only [ha, zero_smul]
   · simpa only [smul_add, smul_inv_smul₀ ha] using h (a • x)
 
 protected theorem Periodic.const_mul [DivisionSemiring α] (h : Periodic f c) (a : α) :
-    Periodic (fun x => f (a * x)) (a⁻¹ * c) :=
+    Periodic (fun x ↦ f (a * x)) (a⁻¹ * c) :=
   Periodic.const_smul₀ h a
 
 theorem Periodic.const_inv_smul₀ [AddCommMonoid α] [DivisionSemiring γ] [Module γ α]
-    (h : Periodic f c) (a : γ) : Periodic (fun x => f (a⁻¹ • x)) (a • c) := by
+    (h : Periodic f c) (a : γ) : Periodic (fun x ↦ f (a⁻¹ • x)) (a • c) := by
   simpa only [inv_inv] using h.const_smul₀ a⁻¹
 
 theorem Periodic.const_inv_mul [DivisionSemiring α] (h : Periodic f c) (a : α) :
-    Periodic (fun x => f (a⁻¹ * x)) (a * c) :=
+    Periodic (fun x ↦ f (a⁻¹ * x)) (a * c) :=
   h.const_inv_smul₀ a
 
 theorem Periodic.mul_const [DivisionSemiring α] (h : Periodic f c) (a : α) :
-    Periodic (fun x => f (x * a)) (c * a⁻¹) :=
+    Periodic (fun x ↦ f (x * a)) (c * a⁻¹) :=
   h.const_smul₀ (MulOpposite.op a)
 
 theorem Periodic.mul_const' [DivisionSemiring α] (h : Periodic f c) (a : α) :
-    Periodic (fun x => f (x * a)) (c / a) := by simpa only [div_eq_mul_inv] using h.mul_const a
+    Periodic (fun x ↦ f (x * a)) (c / a) := by simpa only [div_eq_mul_inv] using h.mul_const a
 
 theorem Periodic.mul_const_inv [DivisionSemiring α] (h : Periodic f c) (a : α) :
-    Periodic (fun x => f (x * a⁻¹)) (c * a) :=
+    Periodic (fun x ↦ f (x * a⁻¹)) (c * a) :=
   h.const_inv_smul₀ (MulOpposite.op a)
 
 theorem Periodic.div_const [DivisionSemiring α] (h : Periodic f c) (a : α) :
-    Periodic (fun x => f (x / a)) (c * a) := by simpa only [div_eq_mul_inv] using h.mul_const_inv a
+    Periodic (fun x ↦ f (x / a)) (c * a) := by simpa only [div_eq_mul_inv] using h.mul_const_inv a
 
 /-- If a function `f` is `Periodic` with positive period `c`, then for all `x` there exists some
   `y ∈ Ico 0 c` such that `f x = f y`. -/
@@ -97,7 +97,7 @@ theorem Periodic.exists_mem_Ioc [AddCommGroup α] [LinearOrder α] [IsOrderedAdd
 theorem Periodic.image_Ioc [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
     [Archimedean α] (h : Periodic f c)
     (hc : 0 < c) (a : α) : f '' Ioc a (a + c) = range f :=
-  (image_subset_range _ _).antisymm <| range_subset_iff.2 fun x =>
+  (image_subset_range _ _).antisymm <| range_subset_iff.2 fun x ↦
     let ⟨y, hy, hyx⟩ := h.exists_mem_Ioc hc x a
     ⟨y, hy, hyx.symm⟩
 
@@ -133,38 +133,38 @@ theorem Antiperiodic.nat_mul_sub_eq [NonAssocRing α] [Ring β] (h : Antiperiodi
     Int.cast_one] using h.nsmul_sub_eq n
 
 theorem Antiperiodic.const_smul₀ [AddMonoid α] [Neg β] [GroupWithZero γ] [DistribMulAction γ α]
-    (h : Antiperiodic f c) {a : γ} (ha : a ≠ 0) : Antiperiodic (fun x => f (a • x)) (a⁻¹ • c) :=
-  fun x => by simpa only [smul_add, smul_inv_smul₀ ha] using h (a • x)
+    (h : Antiperiodic f c) {a : γ} (ha : a ≠ 0) : Antiperiodic (fun x ↦ f (a • x)) (a⁻¹ • c) :=
+  fun x ↦ by simpa only [smul_add, smul_inv_smul₀ ha] using h (a • x)
 
 theorem Antiperiodic.const_mul [DivisionSemiring α] [Neg β] (h : Antiperiodic f c) {a : α}
-    (ha : a ≠ 0) : Antiperiodic (fun x => f (a * x)) (a⁻¹ * c) :=
+    (ha : a ≠ 0) : Antiperiodic (fun x ↦ f (a * x)) (a⁻¹ * c) :=
   h.const_smul₀ ha
 
 theorem Antiperiodic.const_inv_smul₀ [AddMonoid α] [Neg β] [GroupWithZero γ] [DistribMulAction γ α]
-    (h : Antiperiodic f c) {a : γ} (ha : a ≠ 0) : Antiperiodic (fun x => f (a⁻¹ • x)) (a • c) := by
+    (h : Antiperiodic f c) {a : γ} (ha : a ≠ 0) : Antiperiodic (fun x ↦ f (a⁻¹ • x)) (a • c) := by
   simpa only [inv_inv] using h.const_smul₀ (inv_ne_zero ha)
 
 theorem Antiperiodic.const_inv_mul [DivisionSemiring α] [Neg β] (h : Antiperiodic f c) {a : α}
-    (ha : a ≠ 0) : Antiperiodic (fun x => f (a⁻¹ * x)) (a * c) :=
+    (ha : a ≠ 0) : Antiperiodic (fun x ↦ f (a⁻¹ * x)) (a * c) :=
   h.const_inv_smul₀ ha
 
 theorem Antiperiodic.mul_const [DivisionSemiring α] [Neg β] (h : Antiperiodic f c) {a : α}
-    (ha : a ≠ 0) : Antiperiodic (fun x => f (x * a)) (c * a⁻¹) :=
+    (ha : a ≠ 0) : Antiperiodic (fun x ↦ f (x * a)) (c * a⁻¹) :=
   h.const_smul₀ <| (MulOpposite.op_ne_zero_iff a).mpr ha
 
 theorem Antiperiodic.mul_const' [DivisionSemiring α] [Neg β] (h : Antiperiodic f c) {a : α}
-    (ha : a ≠ 0) : Antiperiodic (fun x => f (x * a)) (c / a) := by
+    (ha : a ≠ 0) : Antiperiodic (fun x ↦ f (x * a)) (c / a) := by
   simpa only [div_eq_mul_inv] using h.mul_const ha
 
 theorem Antiperiodic.mul_const_inv [DivisionSemiring α] [Neg β] (h : Antiperiodic f c) {a : α}
-    (ha : a ≠ 0) : Antiperiodic (fun x => f (x * a⁻¹)) (c * a) :=
+    (ha : a ≠ 0) : Antiperiodic (fun x ↦ f (x * a⁻¹)) (c * a) :=
   h.const_inv_smul₀ <| (MulOpposite.op_ne_zero_iff a).mpr ha
 
 theorem Antiperiodic.div_inv [DivisionSemiring α] [Neg β] (h : Antiperiodic f c) {a : α}
-    (ha : a ≠ 0) : Antiperiodic (fun x => f (x / a)) (c * a) := by
+    (ha : a ≠ 0) : Antiperiodic (fun x ↦ f (x / a)) (c * a) := by
   simpa only [div_eq_mul_inv] using h.mul_const_inv ha
 
 end Function
 
 theorem Int.fract_periodic (α) [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α] :
-    Function.Periodic Int.fract (1 : α) := fun a => mod_cast Int.fract_add_intCast a 1
+    Function.Periodic Int.fract (1 : α) := fun a ↦ mod_cast Int.fract_add_intCast a 1

@@ -49,12 +49,12 @@ variable [Mul α] [MulOneClass β]
 @[to_additive /-- Lift an add semigroup homomorphism `f` to a bundled add monoid homomorphism. -/]
 def lift : (α →ₙ* β) ≃ (WithOne α →* β) where
   toFun f :=
-    { toFun := fun x => Option.casesOn x 1 f, map_one' := rfl,
-      map_mul' := fun x y => WithOne.cases_on x (by rw [one_mul]; exact (one_mul _).symm)
-        (fun x => WithOne.cases_on y (by rw [mul_one]; exact (mul_one _).symm)
-          (fun y => f.map_mul x y)) }
+    { toFun := fun x ↦ Option.casesOn x 1 f, map_one' := rfl,
+      map_mul' := fun x y ↦ WithOne.cases_on x (by rw [one_mul]; exact (one_mul _).symm)
+        (fun x ↦ WithOne.cases_on y (by rw [mul_one]; exact (mul_one _).symm)
+          (fun y ↦ f.map_mul x y)) }
   invFun F := F.toMulHom.comp coeMulHom
-  right_inv F := MonoidHom.ext fun x => WithOne.cases_on x F.map_one.symm (fun _ => rfl)
+  right_inv F := MonoidHom.ext fun x ↦ WithOne.cases_on x F.map_one.symm (fun _ ↦ rfl)
 
 variable (f : α →ₙ* β)
 
@@ -111,7 +111,7 @@ theorem map_map (f : α →ₙ* β) (g : β →ₙ* γ) (x) : map g (map f x) = 
 
 @[to_additive (attr := simp)]
 theorem map_comp (f : α →ₙ* β) (g : β →ₙ* γ) : map (g.comp f) = (map g).comp (map f) :=
-  MonoidHom.ext fun x => (map_map f g x).symm
+  MonoidHom.ext fun x ↦ (map_map f g x).symm
 
 /-- A version of `Equiv.optionCongr` for `WithOne`. -/
 @[to_additive (attr := simps apply) /-- A version of `Equiv.optionCongr` for `WithZero`. -/]

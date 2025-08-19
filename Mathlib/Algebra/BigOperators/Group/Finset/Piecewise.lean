@@ -22,7 +22,7 @@ variable [CommMonoid M]
 
 @[to_additive]
 theorem prod_apply_dite {p : ι → Prop} [DecidablePred p]
-    [DecidablePred fun x => ¬p x] (f : ∀ x : ι, p x → γ) (g : ∀ x : ι, ¬p x → γ) (h : γ → M) :
+    [DecidablePred fun x ↦ ¬p x] (f : ∀ x : ι, p x → γ) (g : ∀ x : ι, ¬p x → γ) (h : γ → M) :
     (∏ x ∈ s, h (if hx : p x then f x hx else g x hx)) =
       (∏ x : {x ∈ s | p x}, h (f x.1 <| by simpa using (mem_filter.mp x.2).2)) *
         ∏ x : {x ∈ s | ¬p x}, h (g x.1 <| by simpa using (mem_filter.mp x.2).2) :=
@@ -38,7 +38,7 @@ theorem prod_apply_dite {p : ι → Prop} [DecidablePred p]
           ∏ x : {x ∈ s | ¬p x}, h (g x.1 <| by simpa using (mem_filter.mp x.2).2) :=
       congr_arg₂ _ (prod_congr rfl fun x _hx ↦
         congr_arg h (dif_pos <| by simpa using (mem_filter.mp x.2).2))
-        (prod_congr rfl fun x _hx => congr_arg h (dif_neg <| by simpa using (mem_filter.mp x.2).2))
+        (prod_congr rfl fun x _hx ↦ congr_arg h (dif_neg <| by simpa using (mem_filter.mp x.2).2))
 
 @[to_additive]
 theorem prod_apply_ite {s : Finset ι} {p : ι → Prop} [DecidablePred p] (f g : ι → γ)
@@ -53,18 +53,18 @@ theorem prod_dite {s : Finset ι} {p : ι → Prop} [DecidablePred p] (f : ∀ x
     ∏ x ∈ s, (if hx : p x then f x hx else g x hx) =
       (∏ x : {x ∈ s | p x}, f x.1 (by simpa using (mem_filter.mp x.2).2)) *
         ∏ x : {x ∈ s | ¬p x}, g x.1 (by simpa using (mem_filter.mp x.2).2) := by
-  simp [prod_apply_dite _ _ fun x => x]
+  simp [prod_apply_dite _ _ fun x ↦ x]
 
 @[to_additive]
 theorem prod_ite {s : Finset ι} {p : ι → Prop} [DecidablePred p] (f g : ι → M) :
     ∏ x ∈ s, (if p x then f x else g x) = (∏ x ∈ s with p x, f x) * ∏ x ∈ s with ¬p x, g x := by
-  simp [prod_apply_ite _ _ fun x => x]
+  simp [prod_apply_ite _ _ fun x ↦ x]
 
 @[to_additive]
 lemma prod_dite_of_false {p : ι → Prop} [DecidablePred p] (h : ∀ i ∈ s, ¬ p i)
     (f : ∀ i, p i → M) (g : ∀ i, ¬ p i → M) :
     ∏ i ∈ s, (if hi : p i then f i hi else g i hi) = ∏ i : s, g i.1 (h _ i.2) := by
-  refine prod_bij' (fun x hx => ⟨x, hx⟩) (fun x _ ↦ x) ?_ ?_ ?_ ?_ ?_ <;> aesop
+  refine prod_bij' (fun x hx ↦ ⟨x, hx⟩) (fun x _ ↦ x) ?_ ?_ ?_ ?_ ?_ <;> aesop
 
 @[to_additive]
 lemma prod_ite_of_false {p : ι → Prop} [DecidablePred p] (h : ∀ x ∈ s, ¬p x) (f g : ι → M) :
@@ -75,7 +75,7 @@ lemma prod_ite_of_false {p : ι → Prop} [DecidablePred p] (h : ∀ x ∈ s, ¬
 lemma prod_dite_of_true {p : ι → Prop} [DecidablePred p] (h : ∀ i ∈ s, p i) (f : ∀ i, p i → M)
     (g : ∀ i, ¬ p i → M) :
     ∏ i ∈ s, (if hi : p i then f i hi else g i hi) = ∏ i : s, f i.1 (h _ i.2) := by
-  refine prod_bij' (fun x hx => ⟨x, hx⟩) (fun x _ ↦ x) ?_ ?_ ?_ ?_ ?_ <;> aesop
+  refine prod_bij' (fun x hx ↦ ⟨x, hx⟩) (fun x _ ↦ x) ?_ ?_ ?_ ?_ ?_ <;> aesop
 
 @[to_additive]
 lemma prod_ite_of_true {p : ι → Prop} [DecidablePred p] (h : ∀ x ∈ s, p x) (f g : ι → M) :
@@ -135,7 +135,7 @@ theorem prod_dite_eq' [DecidableEq ι] (s : Finset ι) (a : ι) (b : ∀ x : ι,
 @[to_additive (attr := simp)]
 theorem prod_ite_eq [DecidableEq ι] (s : Finset ι) (a : ι) (b : ι → M) :
     (∏ x ∈ s, ite (a = x) (b x) 1) = ite (a ∈ s) (b a) 1 :=
-  prod_dite_eq s a fun x _ => b x
+  prod_dite_eq s a fun x _ ↦ b x
 
 /-- A product taken over a conditional whose condition is an equality test on the index and whose
 alternative is `1` has value either the term at that index or `1`.
@@ -147,7 +147,7 @@ test on the index and whose alternative is `0` has value either the term at that
 The difference with `Finset.sum_ite_eq` is that the arguments to `Eq` are swapped. -/]
 theorem prod_ite_eq' [DecidableEq ι] (s : Finset ι) (a : ι) (b : ι → M) :
     (∏ x ∈ s, ite (x = a) (b x) 1) = ite (a ∈ s) (b a) 1 :=
-  prod_dite_eq' s a fun x _ => b x
+  prod_dite_eq' s a fun x _ ↦ b x
 
 @[to_additive]
 theorem prod_ite_eq_of_mem [DecidableEq ι] (s : Finset ι) (a : ι) (b : ι → M) (h : a ∈ s) :
@@ -241,7 +241,7 @@ theorem prod_ite_one (s : Finset ι) (p : ι → Prop) [DecidablePred p]
     exact fun j hj hji ↦ if_neg fun hpj ↦ hji <| h _ hj _ hi hpj hpi
   · push_neg at h
     rw [prod_eq_one]
-    exact fun i hi => if_neg (h i hi)
+    exact fun i hi ↦ if_neg (h i hi)
 
 @[to_additive sum_boole_nsmul]
 theorem prod_pow_boole [DecidableEq ι] (s : Finset ι) (f : ι → M) (a : ι) :

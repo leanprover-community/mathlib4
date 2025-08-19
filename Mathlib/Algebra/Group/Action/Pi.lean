@@ -60,7 +60,7 @@ instance smulCommClass [∀ i, SMul M (α i)] [∀ i, SMul N (α i)] [∀ i, SMu
 @[to_additive]
 instance smulCommClass' [∀ i, SMul M (β i)] [∀ i, SMul (α i) (β i)]
     [∀ i, SMulCommClass M (α i) (β i)] : SMulCommClass M (∀ i, α i) (∀ i, β i) :=
-  ⟨fun x y z => funext fun i ↦ smul_comm x (y i) (z i)⟩
+  ⟨fun x y z ↦ funext fun i ↦ smul_comm x (y i) (z i)⟩
 
 @[to_additive]
 instance smulCommClass'' [∀ i, SMul (β i) (γ i)] [∀ i, SMul (α i) (γ i)]
@@ -79,10 +79,10 @@ not an instance as `i` cannot be inferred. -/
 so does `Π i, α i`. This is not an instance as `i` cannot be inferred -/]
 lemma faithfulSMul_at [∀ i, SMul M (α i)] [∀ i, Nonempty (α i)] (i : ι) [FaithfulSMul M (α i)] :
     FaithfulSMul M (∀ i, α i) where
-  eq_of_smul_eq_smul h := eq_of_smul_eq_smul fun a : α i => by
+  eq_of_smul_eq_smul h := eq_of_smul_eq_smul fun a : α i ↦ by
     classical
     simpa using
-      congr_fun (h <| Function.update (fun j => Classical.choice (‹∀ i, Nonempty (α i)› j)) i a) i
+      congr_fun (h <| Function.update (fun j ↦ Classical.choice (‹∀ i, Nonempty (α i)› j)) i a) i
 
 @[to_additive]
 instance faithfulSMul [Nonempty ι] [∀ i, SMul M (α i)] [∀ i, Nonempty (α i)]
@@ -126,7 +126,7 @@ instance smulCommClass {α : Type*} [SMul M α] [SMul N α] [SMulCommClass M N �
 @[to_additive]
 lemma update_smul [∀ i, SMul M (α i)] [DecidableEq ι] (c : M) (f₁ : ∀ i, α i)
     (i : ι) (x₁ : α i) : update (c • f₁) i (c • x₁) = c • update f₁ i x₁ :=
-  funext fun j => (apply_update (β := α) (fun _ ↦ (c • ·)) f₁ i x₁ j).symm
+  funext fun j ↦ (apply_update (β := α) (fun _ ↦ (c • ·)) f₁ i x₁ j).symm
 
 @[to_additive]
 lemma extend_smul {M α β : Type*} [SMul M β] (r : M) (f : ι → α) (g : ι → β) (e : α → β) :

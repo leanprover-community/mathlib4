@@ -126,7 +126,7 @@ protected noncomputable irreducible_def inv (z : K) : K := open scoped Classical
   else
     mk' K ↑(sec (nonZeroDivisors A) z).2
       ⟨(sec _ z).1,
-        mem_nonZeroDivisors_iff_ne_zero.2 fun h0 =>
+        mem_nonZeroDivisors_iff_ne_zero.2 fun h0 ↦
           h <| eq_zero_of_fst_eq_zero (sec_spec (nonZeroDivisors A) z) h0⟩
 
 protected theorem mul_inv_cancel (x : K) (hx : x ≠ 0) : x * IsFractionRing.inv A x = 1 := by
@@ -134,7 +134,7 @@ protected theorem mul_inv_cancel (x : K) (hx : x ≠ 0) : x * IsFractionRing.inv
     IsUnit.mul_left_inj
       (map_units K
         ⟨(sec _ x).1,
-          mem_nonZeroDivisors_iff_ne_zero.2 fun h0 =>
+          mem_nonZeroDivisors_iff_ne_zero.2 fun h0 ↦
             hx <| eq_zero_of_fst_eq_zero (sec_spec (nonZeroDivisors A) x) h0⟩),
     one_mul, mul_assoc]
   rw [mk'_spec, ← eq_mk'_iff_mul_eq]
@@ -149,9 +149,9 @@ noncomputable abbrev toField : Field K where
   mul_inv_cancel := IsFractionRing.mul_inv_cancel A
   inv_zero := show IsFractionRing.inv A (0 : K) = 0 by rw [IsFractionRing.inv]; exact dif_pos rfl
   nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
+  nnqsmul_def := fun _ _ ↦ rfl
   qsmul := _
-  qsmul_def := fun _ _ => rfl
+  qsmul_def := fun _ _ ↦ rfl
 
 lemma surjective_iff_isField [IsDomain R] : Function.Surjective (algebraMap R K) ↔ IsField R where
   mp h := (RingEquiv.ofBijective (algebraMap R K)
@@ -195,7 +195,7 @@ theorem mk'_eq_zero_iff_eq_zero [Algebra R K] [IsFractionRing R K] {x : R} {y : 
 
 theorem mk'_eq_one_iff_eq {x : A} {y : nonZeroDivisors A} : mk' K x y = 1 ↔ x = y := by
   haveI := (algebraMap A K).domain_nontrivial
-  refine ⟨?_, fun hxy => by rw [hxy, mk'_self']⟩
+  refine ⟨?_, fun hxy ↦ by rw [hxy, mk'_self']⟩
   intro hxy
   have hy : (algebraMap A K) ↑y ≠ (0 : K) :=
     IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors y.property
@@ -239,7 +239,7 @@ and an injective ring hom `g : A →+* L` where `L` is a field, we get a
 field hom sending `z : K` to `g x * (g y)⁻¹`, where `(x, y) : A × (NonZeroDivisors A)` are
 such that `z = f x * (f y)⁻¹`. -/
 noncomputable def lift (hg : Injective g) : K →+* L :=
-  IsLocalization.lift fun y : nonZeroDivisors A => isUnit_map_of_injective hg y
+  IsLocalization.lift fun y : nonZeroDivisors A ↦ isUnit_map_of_injective hg y
 
 theorem lift_unique (hg : Function.Injective g) {f : K →+* L}
     (hf1 : ∀ x, f (algebraMap A K x) = g x) : IsFractionRing.lift hg = f :=
@@ -253,8 +253,8 @@ theorem ringHom_ext {f1 f2 : K →+* L}
   rw [map_div₀, map_div₀, hf, hf]
 
 theorem injective_comp_algebraMap :
-    Function.Injective fun (f : K →+* L) => f.comp (algebraMap A K) :=
-  fun _ _ h => ringHom_ext (fun x => RingHom.congr_fun h x)
+    Function.Injective fun (f : K →+* L) ↦ f.comp (algebraMap A K) :=
+  fun _ _ h ↦ ringHom_ext (fun x ↦ RingHom.congr_fun h x)
 
 section liftAlgHom
 
@@ -264,7 +264,7 @@ include hg
 
 /-- `AlgHom` version of `IsFractionRing.lift`. -/
 noncomputable def liftAlgHom : K →ₐ[R] L :=
-  IsLocalization.liftAlgHom fun y : nonZeroDivisors A => isUnit_map_of_injective hg y
+  IsLocalization.liftAlgHom fun y : nonZeroDivisors A ↦ isUnit_map_of_injective hg y
 
 theorem liftAlgHom_toRingHom : (liftAlgHom hg : K →ₐ[R] L).toRingHom = lift hg := rfl
 

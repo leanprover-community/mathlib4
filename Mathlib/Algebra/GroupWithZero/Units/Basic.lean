@@ -34,11 +34,11 @@ theorem ne_zero [Nontrivial M₀] (u : M₀ˣ) : (u : M₀) ≠ 0 :=
 -- `Nonzero M₀`.
 @[simp]
 theorem mul_left_eq_zero (u : M₀ˣ) {a : M₀} : a * u = 0 ↔ a = 0 :=
-  ⟨fun h => by simpa using mul_eq_zero_of_left h ↑u⁻¹, fun h => mul_eq_zero_of_left h u⟩
+  ⟨fun h ↦ by simpa using mul_eq_zero_of_left h ↑u⁻¹, fun h ↦ mul_eq_zero_of_left h u⟩
 
 @[simp]
 theorem mul_right_eq_zero (u : M₀ˣ) {a : M₀} : ↑u * a = 0 ↔ a = 0 :=
-  ⟨fun h => by simpa using mul_eq_zero_of_right (↑u⁻¹) h, mul_eq_zero_of_right (u : M₀)⟩
+  ⟨fun h ↦ by simpa using mul_eq_zero_of_right (↑u⁻¹) h, mul_eq_zero_of_right (u : M₀)⟩
 
 end Units
 
@@ -60,7 +60,7 @@ end IsUnit
 
 @[simp]
 theorem isUnit_zero_iff : IsUnit (0 : M₀) ↔ (0 : M₀) = 1 :=
-  ⟨fun ⟨⟨_, a, (a0 : 0 * a = 1), _⟩, rfl⟩ => by rwa [zero_mul] at a0, fun h =>
+  ⟨fun ⟨⟨_, a, (a0 : 0 * a = 1), _⟩, rfl⟩ ↦ by rwa [zero_mul] at a0, fun h ↦
     @isUnit_of_subsingleton _ _ (subsingleton_of_zero_eq_one h) 0⟩
 
 theorem not_isUnit_zero [Nontrivial M₀] : ¬IsUnit (0 : M₀) :=
@@ -75,7 +75,7 @@ than partially) defined inverse function for some purposes, including for calcul
 
 Note that while this is in the `Ring` namespace for brevity, it requires the weaker assumption
 `MonoidWithZero M₀` instead of `Ring M₀`. -/
-noncomputable def inverse : M₀ → M₀ := fun x => if h : IsUnit x then ((h.unit⁻¹ : M₀ˣ) : M₀) else 0
+noncomputable def inverse : M₀ → M₀ := fun x ↦ if h : IsUnit x then ((h.unit⁻¹ : M₀ˣ) : M₀) else 0
 
 /-- By definition, if `x` is invertible then `inverse x = x⁻¹`. -/
 theorem inverse_unit (u : M₀ˣ) : inverse (u : M₀) = (u⁻¹ : M₀ˣ) := by
@@ -109,12 +109,12 @@ theorem inverse_mul_cancel_left (x y : M₀) (h : IsUnit x) : inverse x * (x * y
   rw [← mul_assoc, inverse_mul_cancel x h, one_mul]
 
 theorem inverse_mul_eq_iff_eq_mul (x y z : M₀) (h : IsUnit x) : inverse x * y = z ↔ y = x * z :=
-  ⟨fun h1 => by rw [← h1, mul_inverse_cancel_left _ _ h],
-  fun h1 => by rw [h1, inverse_mul_cancel_left _ _ h]⟩
+  ⟨fun h1 ↦ by rw [← h1, mul_inverse_cancel_left _ _ h],
+  fun h1 ↦ by rw [h1, inverse_mul_cancel_left _ _ h]⟩
 
 theorem eq_mul_inverse_iff_mul_eq (x y z : M₀) (h : IsUnit z) : x = y * inverse z ↔ x * z = y :=
-  ⟨fun h1 => by rw [h1, inverse_mul_cancel_right _ _ h],
-  fun h1 => by rw [← h1, mul_inverse_cancel_right _ _ h]⟩
+  ⟨fun h1 ↦ by rw [h1, inverse_mul_cancel_right _ _ h],
+  fun h1 ↦ by rw [← h1, mul_inverse_cancel_right _ _ h]⟩
 
 variable (M₀)
 
@@ -139,7 +139,7 @@ theorem IsUnit.ringInverse {a : M₀} : IsUnit a → IsUnit (Ring.inverse a)
 
 @[simp]
 theorem isUnit_ringInverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     cases subsingleton_or_nontrivial M₀
     · convert h
     · contrapose h
@@ -182,12 +182,12 @@ theorem inv_mul' (u : G₀ˣ) : (u⁻¹ : G₀) * u = 1 :=
 
 @[simp]
 theorem mk0_inj {a b : G₀} (ha : a ≠ 0) (hb : b ≠ 0) : Units.mk0 a ha = Units.mk0 b hb ↔ a = b :=
-  ⟨fun h => by injection h, fun h => Units.ext h⟩
+  ⟨fun h ↦ by injection h, fun h ↦ Units.ext h⟩
 
 /-- In a group with zero, an existential over a unit can be rewritten in terms of `Units.mk0`. -/
 theorem exists0 {p : G₀ˣ → Prop} : (∃ g : G₀ˣ, p g) ↔ ∃ (g : G₀) (hg : g ≠ 0), p (Units.mk0 g hg) :=
-  ⟨fun ⟨g, pg⟩ => ⟨g, g.ne_zero, (g.mk0_val g.ne_zero).symm ▸ pg⟩,
-  fun ⟨g, hg, pg⟩ => ⟨Units.mk0 g hg, pg⟩⟩
+  ⟨fun ⟨g, pg⟩ ↦ ⟨g, g.ne_zero, (g.mk0_val g.ne_zero).symm ▸ pg⟩,
+  fun ⟨g, hg, pg⟩ ↦ ⟨Units.mk0 g hg, pg⟩⟩
 
 /-- An alternative version of `Units.exists0`. This one is useful if Lean cannot
 figure out `p` when using `Units.exists0` from right to left. -/
@@ -219,7 +219,7 @@ protected alias ⟨_, Ne.isUnit⟩ := isUnit_iff_ne_zero
 -- see Note [lower instance priority]
 instance (priority := 10) GroupWithZero.noZeroDivisors : NoZeroDivisors G₀ :=
   { (‹_› : GroupWithZero G₀) with
-    eq_zero_or_eq_zero_of_mul_eq_zero := @fun a b h => by
+    eq_zero_or_eq_zero_of_mul_eq_zero := @fun a b h ↦ by
       contrapose! h
       exact (Units.mk0 a h.1 * Units.mk0 b h.2).ne_zero }
 
@@ -360,7 +360,7 @@ lemma zpow_ne_zero {a : G₀} : ∀ n : ℤ, a ≠ 0 → a ^ n ≠ 0
 lemma eq_zero_of_zpow_eq_zero {n : ℤ} : a ^ n = 0 → a = 0 := not_imp_not.1 (zpow_ne_zero _)
 
 lemma zpow_eq_zero_iff {n : ℤ} (hn : n ≠ 0) : a ^ n = 0 ↔ a = 0 :=
-  ⟨eq_zero_of_zpow_eq_zero, fun ha => ha.symm ▸ zero_zpow _ hn⟩
+  ⟨eq_zero_of_zpow_eq_zero, fun ha ↦ ha.symm ▸ zero_zpow _ hn⟩
 
 lemma zpow_ne_zero_iff {n : ℤ} (hn : n ≠ 0) : a ^ n ≠ 0 ↔ a ≠ 0 := (zpow_eq_zero_iff hn).ne
 
@@ -463,9 +463,9 @@ open Classical in
 noncomputable def groupWithZeroOfIsUnitOrEqZero [hM : MonoidWithZero M]
     (h : ∀ a : M, IsUnit a ∨ a = 0) : GroupWithZero M :=
   { hM with
-    inv := fun a => if h0 : a = 0 then 0 else ↑((h a).resolve_right h0).unit⁻¹,
+    inv := fun a ↦ if h0 : a = 0 then 0 else ↑((h a).resolve_right h0).unit⁻¹,
     inv_zero := dif_pos rfl,
-    mul_inv_cancel := fun a h0 => by
+    mul_inv_cancel := fun a h0 ↦ by
       change (a * if h0 : a = 0 then 0 else ↑((h a).resolve_right h0).unit⁻¹) = 1
       rw [dif_neg h0, Units.mul_inv_eq_iff_eq_mul, one_mul, IsUnit.unit_spec] }
 

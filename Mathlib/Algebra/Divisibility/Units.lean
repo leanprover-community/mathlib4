@@ -37,7 +37,7 @@ theorem dvd_mul_right : a ∣ b * u ↔ a ∣ b :=
 
 /-- In a monoid, an element `a` divides an element `b` iff all associates of `a` divide `b`. -/
 theorem mul_right_dvd : a * u ∣ b ↔ a ∣ b :=
-  Iff.intro (fun ⟨c, eq⟩ => ⟨↑u * c, eq.trans (mul_assoc _ _ _)⟩) fun h =>
+  Iff.intro (fun ⟨c, eq⟩ ↦ ⟨↑u * c, eq.trans (mul_assoc _ _ _)⟩) fun h ↦
     dvd_trans (Dvd.intro (↑u⁻¹) (by rw [mul_assoc, u.mul_inv, mul_one])) h
 
 end Monoid
@@ -117,10 +117,10 @@ section CommMonoid
 variable [CommMonoid α]
 
 theorem isUnit_iff_dvd_one {x : α} : IsUnit x ↔ x ∣ 1 :=
-  ⟨IsUnit.dvd, fun ⟨y, h⟩ => ⟨⟨x, y, h.symm, by rw [h, mul_comm]⟩, rfl⟩⟩
+  ⟨IsUnit.dvd, fun ⟨y, h⟩ ↦ ⟨⟨x, y, h.symm, by rw [h, mul_comm]⟩, rfl⟩⟩
 
 theorem isUnit_iff_forall_dvd {x : α} : IsUnit x ↔ ∀ y, x ∣ y :=
-  isUnit_iff_dvd_one.trans ⟨fun h _ => h.trans (one_dvd _), fun h => h _⟩
+  isUnit_iff_dvd_one.trans ⟨fun h _ ↦ h.trans (one_dvd _), fun h ↦ h _⟩
 
 theorem isUnit_of_dvd_unit {x y : α} (xy : x ∣ y) (hu : IsUnit y) : IsUnit x :=
   isUnit_iff_dvd_one.2 <| xy.trans <| isUnit_iff_dvd_one.1 hu

@@ -29,7 +29,7 @@ lemma prod_eq_zero (hi : i ∈ s) (h : f i = 0) : ∏ j ∈ s, f j = 0 := by
 lemma prod_ite_zero :
     (∏ i ∈ s, if p i then f i else 0) = if ∀ i ∈ s, p i then ∏ i ∈ s, f i else 0 := by
   split_ifs with h
-  · exact prod_congr rfl fun i hi => by simp [h i hi]
+  · exact prod_congr rfl fun i hi ↦ by simp [h i hi]
   · push_neg at h
     rcases h with ⟨i, hi, hq⟩
     exact prod_eq_zero hi (by simp [hq])
@@ -46,7 +46,7 @@ variable [Nontrivial M₀] [NoZeroDivisors M₀]
 lemma prod_eq_zero_iff : ∏ x ∈ s, f x = 0 ↔ ∃ a ∈ s, f a = 0 := by
   classical
     induction s using Finset.induction_on with
-    | empty => exact ⟨Not.elim one_ne_zero, fun ⟨_, H, _⟩ => by simp at H⟩
+    | empty => exact ⟨Not.elim one_ne_zero, fun ⟨_, H, _⟩ ↦ by simp at H⟩
     | insert _ _ ha ih => rw [prod_insert ha, mul_eq_zero, exists_mem_insert, ih]
 
 lemma prod_ne_zero_iff : ∏ x ∈ s, f x ≠ 0 ↔ ∀ a ∈ s, f a ≠ 0 := by

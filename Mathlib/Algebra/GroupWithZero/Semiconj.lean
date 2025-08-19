@@ -29,7 +29,7 @@ variable [GroupWithZero G₀] {a x y x' y' : G₀}
 
 @[simp]
 theorem inv_symm_left_iff₀ : SemiconjBy a⁻¹ x y ↔ SemiconjBy a y x :=
-  Classical.by_cases (fun ha : a = 0 => by simp only [ha, inv_zero, SemiconjBy.zero_left]) fun ha =>
+  Classical.by_cases (fun ha : a = 0 ↦ by simp only [ha, inv_zero, SemiconjBy.zero_left]) fun ha ↦
     @units_inv_symm_left_iff _ _ (Units.mk0 a ha) _ _
 
 theorem inv_symm_left₀ (h : SemiconjBy a x y) : SemiconjBy a⁻¹ y x :=
@@ -48,7 +48,7 @@ theorem inv_right₀ (h : SemiconjBy a x y) : SemiconjBy a x⁻¹ y⁻¹ := by
 
 @[simp]
 theorem inv_right_iff₀ : SemiconjBy a x⁻¹ y⁻¹ ↔ SemiconjBy a x y :=
-  ⟨fun h => inv_inv x ▸ inv_inv y ▸ h.inv_right₀, inv_right₀⟩
+  ⟨fun h ↦ inv_inv x ▸ inv_inv y ▸ h.inv_right₀, inv_right₀⟩
 
 theorem div_right (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') :
     SemiconjBy a (x / x') (y / y') := by

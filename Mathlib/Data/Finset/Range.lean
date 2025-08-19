@@ -59,7 +59,7 @@ theorem mem_range : m ∈ range n ↔ m < n :=
 
 @[simp, norm_cast]
 theorem coe_range (n : ℕ) : (range n : Set ℕ) = Set.Iio n :=
-  Set.ext fun _ => mem_range
+  Set.ext fun _ ↦ mem_range
 
 @[simp]
 theorem range_zero : range 0 = ∅ :=
@@ -87,7 +87,7 @@ theorem self_mem_range_succ (n : ℕ) : n ∈ range (n + 1) :=
 theorem range_subset {n m} : range n ⊆ range m ↔ n ≤ m :=
   Multiset.range_subset
 
-theorem range_mono : Monotone range := fun _ _ => range_subset.2
+theorem range_mono : Monotone range := fun _ _ ↦ range_subset.2
 
 @[gcongr] alias ⟨_, _root_.GCongr.finset_range_subset_of_le⟩ := range_subset
 
@@ -102,8 +102,8 @@ theorem mem_range_sub_ne_zero {n x : ℕ} (hx : x ∈ range n) : n - x ≠ 0 :=
 
 @[simp]
 theorem nonempty_range_iff : (range n).Nonempty ↔ n ≠ 0 :=
-  ⟨fun ⟨k, hk⟩ => (k.zero_le.trans_lt <| mem_range.1 hk).ne',
-   fun h => ⟨0, mem_range.2 <| Nat.pos_iff_ne_zero.2 h⟩⟩
+  ⟨fun ⟨k, hk⟩ ↦ (k.zero_le.trans_lt <| mem_range.1 hk).ne',
+   fun h ↦ ⟨0, mem_range.2 <| Nat.pos_iff_ne_zero.2 h⟩⟩
 
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 protected alias ⟨_, Aesop.range_nonempty⟩ := nonempty_range_iff
@@ -122,7 +122,7 @@ lemma range_nontrivial {n : ℕ} (hn : 1 < n) : (Finset.range n).Nontrivial := b
 
 theorem exists_nat_subset_range (s : Finset ℕ) : ∃ n : ℕ, s ⊆ range n :=
   s.induction_on (by simp)
-    fun a _ _ ⟨n, hn⟩ => ⟨max (a + 1) n, insert_subset (by simp) (hn.trans (by simp))⟩
+    fun a _ _ ⟨n, hn⟩ ↦ ⟨max (a + 1) n, insert_subset (by simp) (hn.trans (by simp))⟩
 
 end Range
 
@@ -140,10 +140,10 @@ def notMemRangeEquiv (k : ℕ) : { n // n ∉ range k } ≃ ℕ where
 
 @[simp]
 theorem coe_notMemRangeEquiv (k : ℕ) :
-    (notMemRangeEquiv k : { n // n ∉ range k } → ℕ) = fun (i : { n // n ∉ range k }) => i - k :=
+    (notMemRangeEquiv k : { n // n ∉ range k } → ℕ) = fun (i : { n // n ∉ range k }) ↦ i - k :=
   rfl
 
 @[simp]
 theorem coe_notMemRangeEquiv_symm (k : ℕ) :
-    ((notMemRangeEquiv k).symm : ℕ → { n // n ∉ range k }) = fun j => ⟨j + k, by simp⟩ :=
+    ((notMemRangeEquiv k).symm : ℕ → { n // n ∉ range k }) = fun j ↦ ⟨j + k, by simp⟩ :=
   rfl

@@ -63,11 +63,11 @@ instance map (f : F[X]) [IsSplittingField F L f] : IsSplittingField K L (f.map <
     Subalgebra.restrictScalars_injective F <| by
       rw [rootSet, aroots, map_map, ← IsScalarTower.algebraMap_eq, Subalgebra.restrictScalars_top,
         eq_top_iff, ← adjoin_rootSet L f, Algebra.adjoin_le_iff]
-      exact fun x hx => @Algebra.subset_adjoin K _ _ _ _ _ _ hx⟩
+      exact fun x hx ↦ @Algebra.subset_adjoin K _ _ _ _ _ _ hx⟩
 
 theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
     Splits (RingHom.id K) f ↔ (⊤ : Subalgebra K L) = ⊥ :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [eq_bot_iff, ← adjoin_rootSet L f, rootSet, aroots, roots_map (algebraMap K L) h,
       Algebra.adjoin_le_iff]
     intro y hy
@@ -76,7 +76,7 @@ theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
     obtain ⟨x : K, -, hxy : algebraMap K L x = y⟩ := hy
     rw [← hxy]
     exact SetLike.mem_coe.2 <| Subalgebra.algebraMap_mem _ _,
-    fun h => @RingEquiv.toRingHom_refl K _ ▸ RingEquiv.self_trans_symm
+    fun h ↦ @RingEquiv.toRingHom_refl K _ ▸ RingEquiv.self_trans_symm
       (RingEquiv.ofBijective _ <| Algebra.bijective_algebraMap_iff.2 h) ▸ by
         rw [RingEquiv.toRingHom_trans]
         exact splits_comp_of_splits _ _ (splits L f)⟩
@@ -108,7 +108,7 @@ def lift [Algebra K F] (f : K[X]) [IsSplittingField K L f]
         exact Algebra.toTop
   else AlgHom.comp (by
     rw [← adjoin_rootSet L f]
-    exact Classical.choice (lift_of_splits _ fun y hy =>
+    exact Classical.choice (lift_of_splits _ fun y hy ↦
       have : aeval y f = 0 := (eval₂_eq_eval_map _).trans <|
         (mem_roots <| map_ne_zero hf0).1 (Multiset.mem_toFinset.mp hy)
     ⟨IsAlgebraic.isIntegral ⟨f, hf0, this⟩,

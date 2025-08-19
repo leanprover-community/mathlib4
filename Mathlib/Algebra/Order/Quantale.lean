@@ -159,7 +159,7 @@ theorem mul_sup_distrib : x * (y ⊔ z) = (x * y) ⊔ (x * z) := by
 
 @[to_additive]
 theorem sup_mul_distrib : (x ⊔ y) * z = (x * z) ⊔ (y * z) := by
-  rw [← (@iSup_pair _ _ _ (fun _? => _? * z) _ _), ← sSup_pair, sSup_mul_distrib]
+  rw [← (@iSup_pair _ _ _ (fun _? ↦ _? * z) _ _), ← sSup_pair, sSup_mul_distrib]
 
 @[to_additive]
 instance : MulLeftMono α where

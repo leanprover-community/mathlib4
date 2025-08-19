@@ -32,7 +32,7 @@ There is no requirement that the functions are continuous, here.
 -/
 def presheafToTypes (T : X → Type*) : X.Presheaf (Type _) where
   obj U := ∀ x : U.unop, T x
-  map {_ V} i g := fun x : V.unop => g (i.unop x)
+  map {_ V} i g := fun x : V.unop ↦ g (i.unop x)
   map_id U := by
     ext g
     rfl
@@ -45,7 +45,7 @@ theorem presheafToTypes_obj {T : X → Type*} {U : (Opens X)ᵒᵖ} :
 
 @[simp]
 theorem presheafToTypes_map {T : X → Type*} {U V : (Opens X)ᵒᵖ} {i : U ⟶ V} {f} :
-    (presheafToTypes X T).map i f = fun x => f (i.unop x) :=
+    (presheafToTypes X T).map i f = fun x ↦ f (i.unop x) :=
   rfl
 
 -- We don't just define this in terms of `presheafToTypes`,

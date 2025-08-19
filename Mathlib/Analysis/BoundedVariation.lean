@@ -51,12 +51,12 @@ theorem ae_differentiableWithinAt_of_mem_real {f : ℝ → ℝ} {s : Set ℝ}
 almost everywhere. Superseded by `ae_differentiableWithinAt_of_mem`. -/
 theorem ae_differentiableWithinAt_of_mem_pi {ι : Type*} [Fintype ι] {f : ℝ → ι → ℝ} {s : Set ℝ}
     (h : LocallyBoundedVariationOn f s) : ∀ᵐ x, x ∈ s → DifferentiableWithinAt ℝ f s x := by
-  have A : ∀ i : ι, LipschitzWith 1 fun x : ι → ℝ => x i := fun i => LipschitzWith.eval i
-  have : ∀ i : ι, ∀ᵐ x, x ∈ s → DifferentiableWithinAt ℝ (fun x : ℝ => f x i) s x := fun i ↦ by
+  have A : ∀ i : ι, LipschitzWith 1 fun x : ι → ℝ ↦ x i := fun i ↦ LipschitzWith.eval i
+  have : ∀ i : ι, ∀ᵐ x, x ∈ s → DifferentiableWithinAt ℝ (fun x : ℝ ↦ f x i) s x := fun i ↦ by
     apply ae_differentiableWithinAt_of_mem_real
     exact LipschitzWith.comp_locallyBoundedVariationOn (A i) h
   filter_upwards [ae_all_iff.2 this] with x hx xs
-  exact differentiableWithinAt_pi.2 fun i => hx i xs
+  exact differentiableWithinAt_pi.2 fun i ↦ hx i xs
 
 /-- A real function into a finite dimensional real vector space with bounded variation on a set
 is differentiable almost everywhere in this set. -/

@@ -90,23 +90,23 @@ theorem isIntegral_of_smul_mem_submodule {M : Type*} [AddCommGroup M] [Module R 
     (x : A) (hx : ∀ n ∈ N, x • n ∈ N) : IsIntegral R x := by
   let A' : Subalgebra R A :=
     { carrier := { x | ∀ n ∈ N, x • n ∈ N }
-      mul_mem' := fun {a b} ha hb n hn => smul_smul a b n ▸ ha _ (hb _ hn)
-      one_mem' := fun n hn => (one_smul A n).symm ▸ hn
-      add_mem' := fun {a b} ha hb n hn => (add_smul a b n).symm ▸ N.add_mem (ha _ hn) (hb _ hn)
-      zero_mem' := fun n _hn => (zero_smul A n).symm ▸ N.zero_mem
-      algebraMap_mem' := fun r n hn => (algebraMap_smul A r n).symm ▸ N.smul_mem r hn }
+      mul_mem' := fun {a b} ha hb n hn ↦ smul_smul a b n ▸ ha _ (hb _ hn)
+      one_mem' := fun n hn ↦ (one_smul A n).symm ▸ hn
+      add_mem' := fun {a b} ha hb n hn ↦ (add_smul a b n).symm ▸ N.add_mem (ha _ hn) (hb _ hn)
+      zero_mem' := fun n _hn ↦ (zero_smul A n).symm ▸ N.zero_mem
+      algebraMap_mem' := fun r n hn ↦ (algebraMap_smul A r n).symm ▸ N.smul_mem r hn }
   let f : A' →ₐ[R] Module.End R N :=
     AlgHom.ofLinearMap
-      { toFun := fun x => (DistribMulAction.toLinearMap R M x).restrict x.prop
+      { toFun := fun x ↦ (DistribMulAction.toLinearMap R M x).restrict x.prop
         -- Porting note: was
-                -- `fun x y => LinearMap.ext fun n => Subtype.ext <| add_smul x y n`
+                -- `fun x y ↦ LinearMap.ext fun n ↦ Subtype.ext <| add_smul x y n`
         map_add' := by intros x y; ext; exact add_smul _ _ _
         -- Porting note: was
-                --  `fun r s => LinearMap.ext fun n => Subtype.ext <| smul_assoc r s n`
+                --  `fun r s ↦ LinearMap.ext fun n ↦ Subtype.ext <| smul_assoc r s n`
         map_smul' := by intros r s; ext; apply smul_assoc }
       -- Porting note: the next two lines were
-      --`(LinearMap.ext fun n => Subtype.ext <| one_smul _ _) fun x y =>`
-      --`LinearMap.ext fun n => Subtype.ext <| mul_smul x y n`
+      --`(LinearMap.ext fun n ↦ Subtype.ext <| one_smul _ _) fun x y ↦`
+      --`LinearMap.ext fun n ↦ Subtype.ext <| mul_smul x y n`
       (by ext; apply one_smul)
       (by intros x y; ext; apply mul_smul)
   obtain ⟨a, ha₁, ha₂⟩ : ∃ a ∈ N, a ≠ (0 : M) := by
@@ -171,7 +171,7 @@ theorem RingHom.IsIntegralElem.of_neg {x : S} (h : f.IsIntegralElem (-x)) : f.Is
 
 @[simp]
 theorem RingHom.IsIntegralElem.neg_iff {x : S} : f.IsIntegralElem (-x) ↔ f.IsIntegralElem x :=
-  ⟨fun h => h.of_neg, fun h => h.neg⟩
+  ⟨fun h ↦ h.of_neg, fun h ↦ h.neg⟩
 
 theorem IsIntegral.neg {x : B} (hx : IsIntegral R x) : IsIntegral R (-x) :=
   .of_mem_of_fg _ hx.fg_adjoin_singleton _ (Subalgebra.neg_mem _ <| Algebra.subset_adjoin rfl)

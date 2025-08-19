@@ -47,7 +47,7 @@ variable [IsScalarTower R S A]
 
 /-- An integral element of an algebra is algebraic. -/
 theorem IsIntegral.isAlgebraic [Nontrivial R] {x : A} : IsIntegral R x → IsAlgebraic R x :=
-  fun ⟨p, hp, hpx⟩ => ⟨p, hp.ne_zero, hpx⟩
+  fun ⟨p, hp, hpx⟩ ↦ ⟨p, hp.ne_zero, hpx⟩
 
 instance Algebra.IsIntegral.isAlgebraic [Nontrivial R] [Algebra.IsIntegral R A] :
     Algebra.IsAlgebraic R A := ⟨fun a ↦ (Algebra.IsIntegral.isIntegral a).isAlgebraic⟩

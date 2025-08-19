@@ -106,16 +106,16 @@ def initList (tm : FinTM2) (s : List (tm.Γ tm.k₀)) : tm.Cfg where
   l := Option.some tm.main
   var := tm.initialState
   stk k :=
-    @dite (List (tm.Γ k)) (k = tm.k₀) (tm.kDecidableEq k tm.k₀) (fun h => by rw [h]; exact s)
-      fun _ => []
+    @dite (List (tm.Γ k)) (k = tm.k₀) (tm.kDecidableEq k tm.k₀) (fun h ↦ by rw [h]; exact s)
+      fun _ ↦ []
 
 /-- The final configuration corresponding to a list in the output alphabet. -/
 def haltList (tm : FinTM2) (s : List (tm.Γ tm.k₁)) : tm.Cfg where
   l := Option.none
   var := tm.initialState
   stk k :=
-    @dite (List (tm.Γ k)) (k = tm.k₁) (tm.kDecidableEq k tm.k₁) (fun h => by rw [h]; exact s)
-      fun _ => []
+    @dite (List (tm.Γ k)) (k = tm.k₁) (tm.kDecidableEq k tm.k₁) (fun h ↦ by rw [h]; exact s)
+      fun _ ↦ []
 
 /-- A "proof" of the fact that `f` eventually reaches `b` when repeatedly evaluated on `a`,
 remembering the number of steps it takes. -/
@@ -217,13 +217,13 @@ structure TM2ComputableInPolyTime {α β : Type} (ea : FinEncoding α) (eb : Fin
 /-- A forgetful map, forgetting the time bound on the number of steps. -/
 def TM2ComputableInTime.toTM2Computable {α β : Type} {ea : FinEncoding α} {eb : FinEncoding β}
     {f : α → β} (h : TM2ComputableInTime ea eb f) : TM2Computable ea eb f :=
-  ⟨h.toTM2ComputableAux, fun a => TM2OutputsInTime.toTM2Outputs (h.outputsFun a)⟩
+  ⟨h.toTM2ComputableAux, fun a ↦ TM2OutputsInTime.toTM2Outputs (h.outputsFun a)⟩
 
 /-- A forgetful map, forgetting that the time function is polynomial. -/
 def TM2ComputableInPolyTime.toTM2ComputableInTime {α β : Type} {ea : FinEncoding α}
     {eb : FinEncoding β} {f : α → β} (h : TM2ComputableInPolyTime ea eb f) :
     TM2ComputableInTime ea eb f :=
-  ⟨h.toTM2ComputableAux, fun n => h.time.eval n, h.outputsFun⟩
+  ⟨h.toTM2ComputableAux, fun n ↦ h.time.eval n, h.outputsFun⟩
 
 open Turing.TM2.Stmt
 
@@ -274,10 +274,10 @@ instance inhabitedTM2Outputs :
   ⟨TM2OutputsInTime.toTM2Outputs Turing.inhabitedTM2OutputsInTime.default⟩
 
 instance inhabitedEvalsToInTime :
-    Inhabited (EvalsToInTime (fun _ : Unit => some ⟨⟩) ⟨⟩ (some ⟨⟩) 0) :=
+    Inhabited (EvalsToInTime (fun _ : Unit ↦ some ⟨⟩) ⟨⟩ (some ⟨⟩) 0) :=
   ⟨EvalsToInTime.refl _ _⟩
 
-instance inhabitedTM2EvalsTo : Inhabited (EvalsTo (fun _ : Unit => some ⟨⟩) ⟨⟩ (some ⟨⟩)) :=
+instance inhabitedTM2EvalsTo : Inhabited (EvalsTo (fun _ : Unit ↦ some ⟨⟩) ⟨⟩ (some ⟨⟩)) :=
   ⟨EvalsTo.refl _ _⟩
 
 /-- A proof that the identity map on α is computable in time. -/

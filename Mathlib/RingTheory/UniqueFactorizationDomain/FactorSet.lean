@@ -91,7 +91,7 @@ theorem FactorSet.prod_eq_zero_iff [Nontrivial α] (p : FactorSet α) : p.prod =
   · simp only [Associates.prod_top]
   · rw [prod_coe, Multiset.prod_eq_zero_iff, Multiset.mem_map, eq_false WithTop.coe_ne_top,
       iff_false, not_exists]
-    exact fun a => not_and_of_not_right _ a.prop.ne_zero
+    exact fun a ↦ not_and_of_not_right _ a.prop.ne_zero
 
 section count
 
@@ -186,7 +186,7 @@ theorem FactorSet.unique [Nontrivial α] {p q : FactorSet α} (h : p.prod = q.pr
 /-- This returns the multiset of irreducible factors as a `FactorSet`,
   a multiset of irreducible associates `WithTop`. -/
 noncomputable def factors' (a : α) : Multiset { a : Associates α // Irreducible a } :=
-  (factors a).pmap (fun a ha => ⟨Associates.mk a, irreducible_mk.2 ha⟩) irreducible_of_factor
+  (factors a).pmap (fun a ha ↦ ⟨Associates.mk a, irreducible_mk.2 ha⟩) irreducible_of_factor
 
 @[simp]
 theorem map_subtype_coe_factors' {a : α} :
@@ -210,13 +210,13 @@ theorem factors'_cong {a b : α} (h : a ~ᵤ b) : factors' a = factors' b := by
 /-- This returns the multiset of irreducible factors of an associate as a `FactorSet`,
   a multiset of irreducible associates `WithTop`. -/
 noncomputable def factors (a : Associates α) : FactorSet α := by
-  classical refine if h : a = 0 then ⊤ else Quotient.hrecOn a (fun x _ => factors' x) ?_ h
+  classical refine if h : a = 0 then ⊤ else Quotient.hrecOn a (fun x _ ↦ factors' x) ?_ h
   intro a b hab
   apply Function.hfunext
-  · have : a ~ᵤ 0 ↔ b ~ᵤ 0 := Iff.intro (fun ha0 => hab.symm.trans ha0) fun hb0 => hab.trans hb0
+  · have : a ~ᵤ 0 ↔ b ~ᵤ 0 := Iff.intro (fun ha0 ↦ hab.symm.trans ha0) fun hb0 ↦ hab.trans hb0
     simp only [associated_zero_iff_eq_zero] at this
     simp only [quotient_mk_eq_mk, this, mk_eq_zero]
-  exact fun ha hb _ => heq_of_eq <| congr_arg some <| factors'_cong hab
+  exact fun ha hb _ ↦ heq_of_eq <| congr_arg some <| factors'_cong hab
 
 @[simp]
 theorem factors_zero : (0 : Associates α).factors = ⊤ :=
@@ -325,26 +325,26 @@ theorem prod_le [Nontrivial α] {a b : FactorSet α} : a.prod ≤ b.prod ↔ a �
 
 open Classical in
 noncomputable instance : Max (Associates α) :=
-  ⟨fun a b => (a.factors ⊔ b.factors).prod⟩
+  ⟨fun a b ↦ (a.factors ⊔ b.factors).prod⟩
 
 open Classical in
 noncomputable instance : Min (Associates α) :=
-  ⟨fun a b => (a.factors ⊓ b.factors).prod⟩
+  ⟨fun a b ↦ (a.factors ⊓ b.factors).prod⟩
 
 open Classical in
 noncomputable instance : Lattice (Associates α) :=
   { Associates.instPartialOrder with
     sup := (· ⊔ ·)
     inf := (· ⊓ ·)
-    sup_le := fun _ _ c hac hbc =>
+    sup_le := fun _ _ c hac hbc ↦
       factors_prod c ▸ prod_mono (sup_le (factors_mono hac) (factors_mono hbc))
-    le_sup_left := fun a _ => le_trans (le_of_eq (factors_prod a).symm) <| prod_mono <| le_sup_left
-    le_sup_right := fun _ b =>
+    le_sup_left := fun a _ ↦ le_trans (le_of_eq (factors_prod a).symm) <| prod_mono <| le_sup_left
+    le_sup_right := fun _ b ↦
       le_trans (le_of_eq (factors_prod b).symm) <| prod_mono <| le_sup_right
-    le_inf := fun a _ _ hac hbc =>
+    le_inf := fun a _ _ hac hbc ↦
       factors_prod a ▸ prod_mono (le_inf (factors_mono hac) (factors_mono hbc))
-    inf_le_left := fun a _ => le_trans (prod_mono inf_le_left) (le_of_eq (factors_prod a))
-    inf_le_right := fun _ b => le_trans (prod_mono inf_le_right) (le_of_eq (factors_prod b)) }
+    inf_le_left := fun a _ ↦ le_trans (prod_mono inf_le_left) (le_of_eq (factors_prod a))
+    inf_le_right := fun _ b ↦ le_trans (prod_mono inf_le_right) (le_of_eq (factors_prod b)) }
 
 open Classical in
 theorem sup_mul_inf (a b : Associates α) : (a ⊔ b) * (a ⊓ b) = a * b :=
@@ -486,10 +486,10 @@ theorem count_ne_zero_iff_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
   nontriviality α
   rw [← Associates.mk_le_mk_iff_dvd]
   refine
-    ⟨fun h =>
+    ⟨fun h ↦
       Associates.le_of_count_ne_zero (Associates.mk_ne_zero.mpr ha0)
         (Associates.irreducible_mk.mpr hp) h,
-      fun h => ?_⟩
+      fun h ↦ ?_⟩
   rw [← pow_one (Associates.mk p),
     Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero.mpr ha0)
       (Associates.irreducible_mk.mpr hp)] at h
@@ -593,7 +593,7 @@ theorem eq_pow_count_factors_of_dvd_pow {p a : Associates α}
   have hph := pow_ne_zero n hp.ne_zero
   have ha := ne_zero_of_dvd_ne_zero hph h
   apply eq_of_eq_counts ha (pow_ne_zero _ hp.ne_zero)
-  have eq_zero_of_ne : ∀ q : Associates α, Irreducible q → q ≠ p → _ = 0 := fun q hq h' =>
+  have eq_zero_of_ne : ∀ q : Associates α, Irreducible q → q ≠ p → _ = 0 := fun q hq h' ↦
     Nat.eq_zero_of_le_zero <| by
       convert count_le_count_of_le hph hq h
       symm
@@ -606,16 +606,16 @@ theorem eq_pow_count_factors_of_dvd_pow {p a : Associates α}
 
 theorem count_factors_eq_find_of_dvd_pow {a p : Associates α}
     (hp : Irreducible p) [∀ n : ℕ, Decidable (a ∣ p ^ n)] {n : ℕ} (h : a ∣ p ^ n) :
-    @Nat.find (fun n => a ∣ p ^ n) _ ⟨n, h⟩ = p.count a.factors := by
+    @Nat.find (fun n ↦ a ∣ p ^ n) _ ⟨n, h⟩ = p.count a.factors := by
   apply le_antisymm
   · refine Nat.find_le ⟨1, ?_⟩
     rw [mul_one]
     symm
     exact eq_pow_count_factors_of_dvd_pow hp h
-  · have hph := pow_ne_zero (@Nat.find (fun n => a ∣ p ^ n) _ ⟨n, h⟩) hp.ne_zero
+  · have hph := pow_ne_zero (@Nat.find (fun n ↦ a ∣ p ^ n) _ ⟨n, h⟩) hp.ne_zero
     rcases subsingleton_or_nontrivial α with hα | hα
     · simp [eq_iff_true_of_subsingleton] at hph
-    convert count_le_count_of_le hph hp (@Nat.find_spec (fun n => a ∣ p ^ n) _ ⟨n, h⟩)
+    convert count_le_count_of_le hph hp (@Nat.find_spec (fun n ↦ a ∣ p ^ n) _ ⟨n, h⟩)
     rw [count_pow hp.ne_zero hp, count_self hp, mul_one]
 
 end count
@@ -640,7 +640,7 @@ theorem eq_pow_of_mul_eq_pow {a b c : Associates α} (ha : a ≠ 0) (hb : b ≠ 
 /-- The only divisors of prime powers are prime powers. -/
 theorem eq_pow_find_of_dvd_irreducible_pow {a p : Associates α} (hp : Irreducible p)
     [∀ n : ℕ, Decidable (a ∣ p ^ n)] {n : ℕ} (h : a ∣ p ^ n) :
-    a = p ^ @Nat.find (fun n => a ∣ p ^ n) _ ⟨n, h⟩ := by
+    a = p ^ @Nat.find (fun n ↦ a ∣ p ^ n) _ ⟨n, h⟩ := by
   classical rw [count_factors_eq_find_of_dvd_pow hp, ← eq_pow_count_factors_of_dvd_pow hp h]
   exact h
 

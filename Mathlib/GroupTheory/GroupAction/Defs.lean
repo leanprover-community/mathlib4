@@ -42,7 +42,7 @@ variable {α}
 /-- The orbit of an element under an action. -/
 @[to_additive /-- The orbit of an element under an action. -/]
 def orbit (a : α) :=
-  Set.range fun m : M => m • a
+  Set.range fun m : M ↦ m • a
 
 variable {M}
 
@@ -70,7 +70,7 @@ theorem orbit_nonempty (a : α) : Set.Nonempty (orbit M a) :=
 
 @[to_additive]
 theorem mapsTo_smul_orbit (m : M) (a : α) : Set.MapsTo (m • ·) (orbit M a) (orbit M a) :=
-  Set.range_subset_iff.2 fun m' => ⟨m * m', mul_smul _ _ _⟩
+  Set.range_subset_iff.2 fun m' ↦ ⟨m * m', mul_smul _ _ _⟩
 
 @[to_additive]
 theorem smul_orbit_subset (m : M) (a : α) : m • orbit M a ⊆ orbit M a :=
@@ -78,7 +78,7 @@ theorem smul_orbit_subset (m : M) (a : α) : m • orbit M a ⊆ orbit M a :=
 
 @[to_additive]
 theorem orbit_smul_subset (m : M) (a : α) : orbit M (m • a) ⊆ orbit M a :=
-  Set.range_subset_iff.2 fun m' => mul_smul m' m a ▸ mem_orbit _ _
+  Set.range_subset_iff.2 fun m' ↦ mul_smul m' m a ▸ mem_orbit _ _
 
 @[to_additive]
 instance {a : α} : MulAction M (orbit M a) where
@@ -117,8 +117,8 @@ def fixedBy (m : M) : Set α :=
 
 @[to_additive]
 theorem fixed_eq_iInter_fixedBy : fixedPoints M α = ⋂ m : M, fixedBy α m :=
-  Set.ext fun _ =>
-    ⟨fun hx => Set.mem_iInter.2 fun m => hx m, fun hx m => (Set.mem_iInter.1 hx m :)⟩
+  Set.ext fun _ ↦
+    ⟨fun hx ↦ Set.mem_iInter.2 fun m ↦ hx m, fun hx m ↦ (Set.mem_iInter.1 hx m :)⟩
 
 variable {M α}
 
@@ -132,10 +132,10 @@ theorem mem_fixedBy {m : M} {a : α} : a ∈ fixedBy α m ↔ m • a = a :=
 
 @[to_additive]
 theorem mem_fixedPoints' {a : α} : a ∈ fixedPoints M α ↔ ∀ a', a' ∈ orbit M a → a' = a :=
-  ⟨fun h _ h₁ =>
+  ⟨fun h _ h₁ ↦
     let ⟨m, hm⟩ := mem_orbit_iff.1 h₁
     hm ▸ h m,
-    fun h _ => h _ (mem_orbit _ _)⟩
+    fun h _ ↦ h _ (mem_orbit _ _)⟩
 
 end FixedPoints
 
@@ -155,7 +155,7 @@ variable {M}
 
 @[to_additive]
 instance [DecidableEq α] (a : α) : DecidablePred (· ∈ stabilizerSubmonoid M a) :=
-  fun _ => inferInstanceAs <| Decidable (_ = _)
+  fun _ ↦ inferInstanceAs <| Decidable (_ = _)
 
 @[to_additive (attr := simp)]
 theorem mem_stabilizerSubmonoid_iff {a : α} {m : M} : m ∈ stabilizerSubmonoid M a ↔ m • a = a :=
@@ -223,7 +223,7 @@ theorem orbit_smul (g : G) (a : α) : orbit G (g • a) = orbit G a :=
 
 @[to_additive]
 theorem orbit_eq_iff {a b : α} : orbit G a = orbit G b ↔ a ∈ orbit G b :=
-  ⟨fun h => h ▸ mem_orbit_self _, fun ⟨_, hc⟩ => hc ▸ orbit_smul _ _⟩
+  ⟨fun h ↦ h ▸ mem_orbit_self _, fun ⟨_, hc⟩ ↦ hc ▸ orbit_smul _ _⟩
 
 @[to_additive]
 theorem mem_orbit_smul (g : G) (a : α) : a ∈ orbit G (g • a) := by
@@ -272,7 +272,7 @@ variable (G α)
 def orbitRel : Setoid α where
   r a b := a ∈ orbit G b
   iseqv :=
-    ⟨mem_orbit_self, fun {a b} => by simp [orbit_eq_iff.symm, eq_comm], fun {a b} => by
+    ⟨mem_orbit_self, fun {a b} ↦ by simp [orbit_eq_iff.symm, eq_comm], fun {a b} ↦ by
       simp +contextual [orbit_eq_iff.symm]⟩
 
 variable {G α}
@@ -313,7 +313,7 @@ theorem disjoint_image_image_iff {U V : Set α} :
   letI := orbitRel G α
   set f : α → Quotient (MulAction.orbitRel G α) := Quotient.mk'
   refine
-    ⟨fun h a a_in_U g g_in_V =>
+    ⟨fun h a a_in_U g g_in_V ↦
       h.le_bot ⟨⟨a, a_in_U, Quotient.sound ⟨g⁻¹, ?_⟩⟩, ⟨g • a, g_in_V, rfl⟩⟩, ?_⟩
   · simp
   · intro h
@@ -341,7 +341,7 @@ variable {G α}
 /-- The orbit corresponding to an element of the quotient by `MulAction.orbitRel` -/
 @[to_additive /-- The orbit corresponding to an element of the quotient by `AddAction.orbitRel` -/]
 nonrec def orbitRel.Quotient.orbit (x : orbitRel.Quotient G α) : Set α :=
-  Quotient.liftOn' x (orbit G) fun _ _ => MulAction.orbit_eq_iff.2
+  Quotient.liftOn' x (orbit G) fun _ _ ↦ MulAction.orbit_eq_iff.2
 
 @[to_additive (attr := simp)]
 theorem orbitRel.Quotient.orbit_mk (a : α) :
@@ -462,15 +462,15 @@ def selfEquivSigmaOrbits' : α ≃ Σ ω : Ω, ω.orbit :=
   calc
     α ≃ Σ ω : Ω, { a // Quotient.mk' a = ω } := (Equiv.sigmaFiberEquiv Quotient.mk').symm
     _ ≃ Σ ω : Ω, ω.orbit :=
-      Equiv.sigmaCongrRight fun _ =>
-        Equiv.subtypeEquivRight fun _ => orbitRel.Quotient.mem_orbit.symm
+      Equiv.sigmaCongrRight fun _ ↦
+        Equiv.subtypeEquivRight fun _ ↦ orbitRel.Quotient.mem_orbit.symm
 
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action. -/
 @[to_additive /-- Decomposition of a type `X` as a disjoint union of its orbits under an additive
 group action. -/]
 def selfEquivSigmaOrbits : α ≃ Σ ω : Ω, orbit G ω.out :=
   (selfEquivSigmaOrbits' G α).trans <|
-    Equiv.sigmaCongrRight fun _ =>
+    Equiv.sigmaCongrRight fun _ ↦
       Equiv.setCongr <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'
 
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action.
@@ -495,11 +495,11 @@ A subgroup. -/
 itself. An additive subgroup. -/]
 def stabilizer (a : α) : Subgroup G :=
   { stabilizerSubmonoid G a with
-    inv_mem' := fun {m} (ha : m • a = a) => show m⁻¹ • a = a by rw [inv_smul_eq_iff, ha] }
+    inv_mem' := fun {m} (ha : m • a = a) ↦ show m⁻¹ • a = a by rw [inv_smul_eq_iff, ha] }
 
 @[to_additive]
 instance [DecidableEq α] (a : α) : DecidablePred (· ∈ stabilizer G a) :=
-  fun _ => inferInstanceAs <| Decidable (_ = _)
+  fun _ ↦ inferInstanceAs <| Decidable (_ = _)
 
 @[to_additive (attr := simp)]
 theorem mem_stabilizer_iff {a : α} {g : G} : g ∈ stabilizer G a ↔ g • a = a :=

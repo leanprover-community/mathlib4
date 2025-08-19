@@ -112,7 +112,7 @@ theorem choose_pos : ∀ {n k}, k ≤ n → 0 < choose n k
   | _ + 1, _ + 1, hk => Nat.add_pos_left (choose_pos (le_of_succ_le_succ hk)) _
 
 theorem choose_eq_zero_iff {n k : ℕ} : n.choose k = 0 ↔ n < k :=
-  ⟨fun h => lt_of_not_ge (mt Nat.choose_pos h.symm.not_lt), Nat.choose_eq_zero_of_lt⟩
+  ⟨fun h ↦ lt_of_not_ge (mt Nat.choose_pos h.symm.not_lt), Nat.choose_eq_zero_of_lt⟩
 
 theorem choose_ne_zero_iff {n k : ℕ} : n.choose k ≠ 0 ↔ k ≤ n :=
   not_iff_not.1 <| by simp [choose_eq_zero_iff]
@@ -272,7 +272,7 @@ and in compiled code. -/
 def fast_choose n k := Nat.descFactorial n k / Nat.factorial k
 
 @[csimp] lemma choose_eq_fast_choose : Nat.choose = fast_choose :=
-  funext (fun _ => funext (Nat.choose_eq_descFactorial_div_factorial _))
+  funext (fun _ ↦ funext (Nat.choose_eq_descFactorial_div_factorial _))
 
 
 /-! ### Inequalities -/
@@ -319,7 +319,7 @@ theorem choose_le_add (a b c : ℕ) : choose a c ≤ choose (a + b) c := by
 theorem choose_le_choose {a b : ℕ} (c : ℕ) (h : a ≤ b) : choose a c ≤ choose b c :=
   Nat.add_sub_cancel' h ▸ choose_le_add a (b - a) c
 
-theorem choose_mono (b : ℕ) : Monotone fun a => choose a b := fun _ _ => choose_le_choose b
+theorem choose_mono (b : ℕ) : Monotone fun a ↦ choose a b := fun _ _ ↦ choose_le_choose b
 
 /-! #### Multichoose
 

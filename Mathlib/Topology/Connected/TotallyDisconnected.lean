@@ -32,10 +32,10 @@ a subsingleton, ie either empty or a singleton. -/
 def IsTotallyDisconnected (s : Set α) : Prop :=
   ∀ t, t ⊆ s → IsPreconnected t → t.Subsingleton
 
-theorem isTotallyDisconnected_empty : IsTotallyDisconnected (∅ : Set α) := fun _ ht _ _ x_in _ _ =>
+theorem isTotallyDisconnected_empty : IsTotallyDisconnected (∅ : Set α) := fun _ ht _ _ x_in _ _ ↦
   (ht x_in).elim
 
-theorem isTotallyDisconnected_singleton {x} : IsTotallyDisconnected ({x} : Set α) := fun _ ht _ =>
+theorem isTotallyDisconnected_singleton {x} : IsTotallyDisconnected ({x} : Set α) := fun _ ht _ ↦
   subsingleton_singleton.anti ht
 
 /-- A space is totally disconnected if all of its connected components are singletons. -/
@@ -51,30 +51,30 @@ theorem IsPreconnected.subsingleton [TotallyDisconnectedSpace α] {s : Set α}
 instance Pi.totallyDisconnectedSpace {α : Type*} {β : α → Type*}
     [∀ a, TopologicalSpace (β a)] [∀ a, TotallyDisconnectedSpace (β a)] :
     TotallyDisconnectedSpace (∀ a : α, β a) :=
-  ⟨fun t _ h2 =>
-    have this : ∀ a, IsPreconnected ((fun x : ∀ a, β a => x a) '' t) := fun a =>
-      h2.image (fun x => x a) (continuous_apply a).continuousOn
-    fun x x_in y y_in => funext fun a => (this a).subsingleton ⟨x, x_in, rfl⟩ ⟨y, y_in, rfl⟩⟩
+  ⟨fun t _ h2 ↦
+    have this : ∀ a, IsPreconnected ((fun x : ∀ a, β a ↦ x a) '' t) := fun a ↦
+      h2.image (fun x ↦ x a) (continuous_apply a).continuousOn
+    fun x x_in y y_in ↦ funext fun a ↦ (this a).subsingleton ⟨x, x_in, rfl⟩ ⟨y, y_in, rfl⟩⟩
 
 instance Prod.totallyDisconnectedSpace [TopologicalSpace β] [TotallyDisconnectedSpace α]
     [TotallyDisconnectedSpace β] : TotallyDisconnectedSpace (α × β) :=
-  ⟨fun t _ h2 =>
+  ⟨fun t _ h2 ↦
     have H1 : IsPreconnected (Prod.fst '' t) := h2.image Prod.fst continuous_fst.continuousOn
     have H2 : IsPreconnected (Prod.snd '' t) := h2.image Prod.snd continuous_snd.continuousOn
-    fun x hx y hy =>
+    fun x hx y hy ↦
     Prod.ext (H1.subsingleton ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩)
       (H2.subsingleton ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩)⟩
 
 instance [TopologicalSpace β] [TotallyDisconnectedSpace α] [TotallyDisconnectedSpace β] :
     TotallyDisconnectedSpace (α ⊕ β) := by
-  refine ⟨fun s _ hs => ?_⟩
+  refine ⟨fun s _ hs ↦ ?_⟩
   obtain ⟨t, ht, rfl⟩ | ⟨t, ht, rfl⟩ := Sum.isPreconnected_iff.1 hs
   · exact ht.subsingleton.image _
   · exact ht.subsingleton.image _
 
 instance [∀ i, TopologicalSpace (X i)] [∀ i, TotallyDisconnectedSpace (X i)] :
     TotallyDisconnectedSpace (Σi, X i) := by
-  refine ⟨fun s _ hs => ?_⟩
+  refine ⟨fun s _ hs ↦ ?_⟩
   obtain rfl | h := s.eq_empty_or_nonempty
   · exact subsingleton_empty
   · obtain ⟨a, t, ht, rfl⟩ := Sigma.isConnected_iff.1 ⟨h, hs⟩
@@ -98,7 +98,7 @@ theorem totallyDisconnectedSpace_iff_connectedComponent_subsingleton :
 theorem totallyDisconnectedSpace_iff_connectedComponent_singleton :
     TotallyDisconnectedSpace α ↔ ∀ x : α, connectedComponent x = {x} := by
   rw [totallyDisconnectedSpace_iff_connectedComponent_subsingleton]
-  refine forall_congr' fun x => ?_
+  refine forall_congr' fun x ↦ ?_
   rw [subsingleton_iff_singleton]
   exact mem_connectedComponent
 
@@ -115,7 +115,7 @@ theorem Continuous.image_connectedComponent_eq_singleton {β : Type*} [Topologic
     (isPreconnected_connectedComponent.image f h.continuousOn).subsingleton
 
 theorem isTotallyDisconnected_of_totallyDisconnectedSpace [TotallyDisconnectedSpace α] (s : Set α) :
-    IsTotallyDisconnected s := fun t _ ht =>
+    IsTotallyDisconnected s := fun t _ ht ↦
   TotallyDisconnectedSpace.isTotallyDisconnected_univ _ t.subset_univ ht
 
 lemma TotallyDisconnectedSpace.eq_of_continuous [TopologicalSpace β]
@@ -136,7 +136,7 @@ noncomputable def TotallyDisconnectedSpace.continuousMapEquivOfConnectedSpace
 
 theorem isTotallyDisconnected_of_image [TopologicalSpace β] {f : α → β} (hf : ContinuousOn f s)
     (hf' : Injective f) (h : IsTotallyDisconnected (f '' s)) : IsTotallyDisconnected s :=
-  fun _t hts ht _x x_in _y y_in =>
+  fun _t hts ht _x x_in _y y_in ↦
   hf' <|
     h _ (image_mono hts) (ht.image f <| hf.mono hts) (mem_image_of_mem f x_in)
       (mem_image_of_mem f y_in)
@@ -172,12 +172,12 @@ section TotallySeparated
 /-- A set `s` is called totally separated if any two points of this set can be separated
 by two disjoint open sets covering `s`. -/
 def IsTotallySeparated (s : Set α) : Prop :=
-  Set.Pairwise s fun x y =>
+  Set.Pairwise s fun x y ↦
   ∃ u v : Set α, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ s ⊆ u ∪ v ∧ Disjoint u v
 
-theorem isTotallySeparated_empty : IsTotallySeparated (∅ : Set α) := fun _ => False.elim
+theorem isTotallySeparated_empty : IsTotallySeparated (∅ : Set α) := fun _ ↦ False.elim
 
-theorem isTotallySeparated_singleton {x} : IsTotallySeparated ({x} : Set α) := fun _ hp _ hq hpq =>
+theorem isTotallySeparated_singleton {x} : IsTotallySeparated ({x} : Set α) := fun _ hp _ hq hpq ↦
   (hpq <| (eq_of_mem_singleton hp).symm ▸ (eq_of_mem_singleton hq).symm).elim
 
 theorem isTotallyDisconnected_of_isTotallySeparated {s : Set α} (H : IsTotallySeparated s) :
@@ -207,7 +207,7 @@ instance (priority := 100) TotallySeparatedSpace.totallyDisconnectedSpace (α : 
 -- see Note [lower instance priority]
 instance (priority := 100) TotallySeparatedSpace.of_discrete (α : Type*) [TopologicalSpace α]
     [DiscreteTopology α] : TotallySeparatedSpace α :=
-  ⟨fun _ _ b _ h => ⟨{b}ᶜ, {b}, isOpen_discrete _, isOpen_discrete _, h, rfl,
+  ⟨fun _ _ b _ h ↦ ⟨{b}ᶜ, {b}, isOpen_discrete _, isOpen_discrete _, h, rfl,
     (compl_union_self _).symm.subset, disjoint_compl_left⟩⟩
 
 theorem totallySeparatedSpace_iff_exists_isClopen {α : Type*} [TopologicalSpace α] :
@@ -246,7 +246,7 @@ theorem Continuous.image_eq_of_connectedComponent_eq (h : Continuous f) (a b : �
 /--
 The lift to `connectedComponents α` of a continuous map from `α` to a totally disconnected space
 -/
-def Continuous.connectedComponentsLift (h : Continuous f) : ConnectedComponents α → β := fun x =>
+def Continuous.connectedComponentsLift (h : Continuous f) : ConnectedComponents α → β := fun x ↦
   Quotient.liftOn' x f h.image_eq_of_connectedComponent_eq
 
 @[continuity]
@@ -275,10 +275,10 @@ theorem Continuous.connectedComponentsLift_unique (h : Continuous f) (g : Connec
 instance ConnectedComponents.totallyDisconnectedSpace :
     TotallyDisconnectedSpace (ConnectedComponents α) := by
   rw [totallyDisconnectedSpace_iff_connectedComponent_singleton]
-  refine ConnectedComponents.surjective_coe.forall.2 fun x => ?_
+  refine ConnectedComponents.surjective_coe.forall.2 fun x ↦ ?_
   rw [← ConnectedComponents.isQuotientMap_coe.image_connectedComponent, ←
     connectedComponents_preimage_singleton, image_preimage_eq _ ConnectedComponents.surjective_coe]
-  refine ConnectedComponents.surjective_coe.forall.2 fun y => ?_
+  refine ConnectedComponents.surjective_coe.forall.2 fun y ↦ ?_
   rw [connectedComponents_preimage_singleton]
   exact isConnected_connectedComponent
 
@@ -318,5 +318,5 @@ theorem IsPreconnected.eqOn_const_of_mapsTo {S : Set α} (hS : IsPreconnected S)
     {β} [TopologicalSpace β] {T : Set β} [DiscreteTopology T] {f : α → β} (hc : ContinuousOn f S)
     (hTm : MapsTo f S T) (hne : T.Nonempty) : ∃ y ∈ T, EqOn f (const α y) S := by
   rcases S.eq_empty_or_nonempty with (rfl | ⟨x, hx⟩)
-  · exact hne.imp fun _ hy => ⟨hy, eqOn_empty _ _⟩
-  · exact ⟨f x, hTm hx, fun x' hx' => hS.constant_of_mapsTo hc hTm hx' hx⟩
+  · exact hne.imp fun _ hy ↦ ⟨hy, eqOn_empty _ _⟩
+  · exact ⟨f x, hTm hx, fun x' hx' ↦ hS.constant_of_mapsTo hc hTm hx' hx⟩

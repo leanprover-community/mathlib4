@@ -79,7 +79,7 @@ bilinear map `M →[A] N →[R] M ⊗[R] N` to form a bilinear map `M →[A] N �
 nonrec def curry (f : M ⊗[R] N →ₗ[A] P) : M →ₗ[A] N →ₗ[R] P :=
   { curry (f.restrictScalars R) with
     toFun := curry (f.restrictScalars R)
-    map_smul' := fun c x => LinearMap.ext fun y => f.map_smul c (x ⊗ₜ y) }
+    map_smul' := fun c x ↦ LinearMap.ext fun y ↦ f.map_smul c (x ⊗ₜ y) }
 
 theorem restrictScalars_curry (f : M ⊗[R] N →ₗ[A] P) :
     restrictScalars R (curry f) = TensorProduct.curry (f.restrictScalars R) :=
@@ -91,7 +91,7 @@ a better `ext` lemma than `TensorProduct.AlgebraTensorModule.ext` below.
 See note [partially-applied ext lemmas]. -/
 @[ext high]
 nonrec theorem curry_injective : Function.Injective (curry : (M ⊗ N →ₗ[A] P) → M →ₗ[A] N →ₗ[R] P) :=
-  fun _ _ h =>
+  fun _ _ h ↦
   LinearMap.restrictScalars_injective R <|
     curry_injective <| (congr_arg (LinearMap.restrictScalars R) h :)
 
@@ -105,14 +105,14 @@ property that its composition with the canonical bilinear map `M →[A] N →[R]
 the given bilinear map `M →[A] N →[R] P`. -/
 nonrec def lift (f : M →ₗ[A] N →ₗ[R] P) : M ⊗[R] N →ₗ[A] P :=
   { lift (f.restrictScalars R) with
-    map_smul' := fun c =>
+    map_smul' := fun c ↦
       show
         ∀ x : M ⊗[R] N,
           (lift (f.restrictScalars R)).comp (lsmul R R _ c) x =
             (lsmul R R _ c).comp (lift (f.restrictScalars R)) x
         from
         LinearMap.ext_iff.1 <|
-          TensorProduct.ext' fun x y => by
+          TensorProduct.ext' fun x y ↦ by
             simp only [comp_apply, Algebra.lsmul_coe, smul_tmul', lift.tmul,
               coe_restrictScalars, f.map_smul, smul_apply] }
 
@@ -138,8 +138,8 @@ the given bilinear map `M →[A] N →[R] P`. -/
 @[simps]
 def uncurry : (M →ₗ[A] N →ₗ[R] P) →ₗ[B] M ⊗[R] N →ₗ[A] P where
   toFun := lift
-  map_add' _ _ := ext fun x y => by simp only [lift_tmul, add_apply]
-  map_smul' _ _ := ext fun x y => by simp only [lift_tmul, smul_apply, RingHom.id_apply]
+  map_add' _ _ := ext fun x y ↦ by simp only [lift_tmul, add_apply]
+  map_smul' _ _ := ext fun x y ↦ by simp only [lift_tmul, smul_apply, RingHom.id_apply]
 
 /-- Heterobasic version of `TensorProduct.lcurry`:
 
@@ -158,8 +158,8 @@ bilinear map `M →[A] N →[R] P` with the property that its composition with t
 canonical bilinear map `M →[A] N →[R] M ⊗[R] N` is the given bilinear map `M →[A] N →[R] P`. -/
 def lift.equiv : (M →ₗ[A] N →ₗ[R] P) ≃ₗ[B] M ⊗[R] N →ₗ[A] P :=
   LinearEquiv.ofLinear (uncurry R A B M N P) (lcurry R A B M N P)
-    (LinearMap.ext fun _ => ext fun x y => lift_tmul _ x y)
-    (LinearMap.ext fun f => LinearMap.ext fun x => LinearMap.ext fun y => lift_tmul f x y)
+    (LinearMap.ext fun _ ↦ ext fun x y ↦ lift_tmul _ x y)
+    (LinearMap.ext fun f ↦ LinearMap.ext fun x ↦ LinearMap.ext fun y ↦ lift_tmul f x y)
 
 /-- Heterobasic version of `TensorProduct.mk`:
 
@@ -168,16 +168,16 @@ The canonical bilinear map `M →[A] N →[R] M ⊗[R] N`. -/
 nonrec def mk (A M N : Type*) [Semiring A]
     [AddCommMonoid M] [Module R M] [Module A M] [SMulCommClass R A M]
     [AddCommMonoid N] [Module R N] : M →ₗ[A] N →ₗ[R] M ⊗[R] N :=
-  { mk R M N with map_smul' := fun _ _ => rfl }
+  { mk R M N with map_smul' := fun _ _ ↦ rfl }
 
 variable {R A B M N P Q}
 
 /-- Heterobasic version of `TensorProduct.map` -/
 def map (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : M ⊗[R] N →ₗ[A] P ⊗[R] Q :=
   lift <|
-    { toFun := fun h => h ∘ₗ g,
-      map_add' := fun h₁ h₂ => LinearMap.add_comp g h₂ h₁,
-      map_smul' := fun c h => LinearMap.smul_comp c h g } ∘ₗ mk R A P Q ∘ₗ f
+    { toFun := fun h ↦ h ∘ₗ g,
+      map_add' := fun h₁ h₂ ↦ LinearMap.add_comp g h₂ h₁,
+      map_smul' := fun c h ↦ LinearMap.smul_comp c h g } ∘ₗ mk R A P Q ∘ₗ f
 
 @[simp] theorem map_tmul (f : M →ₗ[A] P) (g : N →ₗ[R] Q) (m : M) (n : N) :
     map f g (m ⊗ₜ n) = f m ⊗ₜ g n :=
@@ -185,11 +185,11 @@ def map (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : M ⊗[R] N →ₗ[A] P ⊗[R] 
 
 @[simp]
 theorem map_id : map (id : M →ₗ[A] M) (id : N →ₗ[R] N) = .id :=
-  ext fun _ _ => rfl
+  ext fun _ _ ↦ rfl
 
 theorem map_comp (f₂ : P →ₗ[A] P') (f₁ : M →ₗ[A] P) (g₂ : Q →ₗ[R] Q') (g₁ : N →ₗ[R] Q) :
     map (f₂.comp f₁) (g₂.comp g₁) = (map f₂ g₂).comp (map f₁ g₁) :=
-  ext fun _ _ => rfl
+  ext fun _ _ ↦ rfl
 
 @[simp]
 protected theorem map_one : map (1 : M →ₗ[A] M) (1 : N →ₗ[R] N) = 1 := map_id
@@ -242,11 +242,11 @@ lemma restrictScalars_lTensor (f : N →ₗ[R] Q) :
   rfl
 
 @[simp] lemma lTensor_id : lTensor A M (id : N →ₗ[R] N) = .id :=
-  ext fun _ _ => rfl
+  ext fun _ _ ↦ rfl
 
 lemma lTensor_comp (f₂ : Q →ₗ[R] Q') (f₁ : N →ₗ[R] Q) :
     lTensor A M (f₂.comp f₁) = (lTensor A M f₂).comp (lTensor A M f₁) :=
-  ext fun _ _ => rfl
+  ext fun _ _ ↦ rfl
 
 @[simp]
 lemma lTensor_one : lTensor A M (1 : N →ₗ[R] N) = 1 := map_id
@@ -274,11 +274,11 @@ lemma restrictScalars_rTensor (f : M →ₗ[A] P) :
   rfl
 
 @[simp] lemma rTensor_id : rTensor R N (id : M →ₗ[A] M) = .id :=
-  ext fun _ _ => rfl
+  ext fun _ _ ↦ rfl
 
 lemma rTensor_comp (f₂ : P →ₗ[A] P') (f₁ : M →ₗ[A] P) :
     rTensor R N (f₂.comp f₁) = (rTensor R N f₂).comp (rTensor R N f₁) :=
-  ext fun _ _ => rfl
+  ext fun _ _ ↦ rfl
 
 @[simp]
 lemma rTensor_one : rTensor R N (1 : M →ₗ[A] M) = 1 := map_id
@@ -314,8 +314,8 @@ variable {R A B M N P Q}
 /-- Heterobasic version of `TensorProduct.congr` -/
 def congr (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) : (M ⊗[R] N) ≃ₗ[A] (P ⊗[R] Q) :=
   LinearEquiv.ofLinear (map f g) (map f.symm g.symm)
-    (ext fun _m _n => congr_arg₂ (· ⊗ₜ ·) (f.apply_symm_apply _) (g.apply_symm_apply _))
-    (ext fun _m _n => congr_arg₂ (· ⊗ₜ ·) (f.symm_apply_apply _) (g.symm_apply_apply _))
+    (ext fun _m _n ↦ congr_arg₂ (· ⊗ₜ ·) (f.apply_symm_apply _) (g.apply_symm_apply _))
+    (ext fun _m _n ↦ congr_arg₂ (· ⊗ₜ ·) (f.symm_apply_apply _) (g.symm_apply_apply _))
 
 @[simp]
 theorem congr_refl : congr (.refl A M) (.refl R N) = .refl A _ :=
@@ -349,7 +349,7 @@ protected def rid : M ⊗[R] R ≃ₗ[A] M :=
     (lift <| Algebra.lsmul _ _ _ |>.toLinearMap |>.flip)
     (mk R A M R |>.flip 1)
     (LinearMap.ext <| one_smul _)
-    (ext fun _ _ => smul_tmul _ _ _ |>.trans <| congr_arg _ <| mul_one _)
+    (ext fun _ _ ↦ smul_tmul _ _ _ |>.trans <| congr_arg _ <| mul_one _)
 
 /-- The heterobasic version of `rid` coincides with the regular version. -/
 theorem rid_eq_rid : AlgebraTensorModule.rid R R M = TensorProduct.rid R M := rfl

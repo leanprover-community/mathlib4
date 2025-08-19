@@ -525,7 +525,7 @@ def mkContinuousAlternating (f : E [⋀^ι]→ₗ[𝕜] (F [⋀^ι']→ₗ[𝕜]
         ext v'
         have : f v = 0 := by simpa using f.map_eq_zero_of_eq' v i j hv hij
         simp [this] }
-    (max C 0) fun m => by
+    (max C 0) fun m ↦ by
       simp only [coe_mk, MultilinearMap.coe_mk]
       refine ((f m).mkContinuous_norm_le' _).trans_eq ?_
       rw [max_mul_of_nonneg, zero_mul]

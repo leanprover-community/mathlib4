@@ -334,12 +334,12 @@ def mfderiv (f : M → M') (x : M) : TangentSpace I x →L[𝕜] TangentSpace I'
 
 variable (I I') in
 /-- The derivative within a set, as a map between the tangent bundles -/
-def tangentMapWithin (f : M → M') (s : Set M) : TangentBundle I M → TangentBundle I' M' := fun p =>
+def tangentMapWithin (f : M → M') (s : Set M) : TangentBundle I M → TangentBundle I' M' := fun p ↦
   ⟨f p.1, (mfderivWithin I I' f s p.1 : TangentSpace I p.1 → TangentSpace I' (f p.1)) p.2⟩
 
 variable (I I') in
 /-- The derivative, as a map between the tangent bundles -/
-def tangentMap (f : M → M') : TangentBundle I M → TangentBundle I' M' := fun p =>
+def tangentMap (f : M → M') : TangentBundle I M → TangentBundle I' M' := fun p ↦
   ⟨f p.1, (mfderiv I I' f p.1 : TangentSpace I p.1 → TangentSpace I' (f p.1)) p.2⟩
 
 end DerivativesDefinitions

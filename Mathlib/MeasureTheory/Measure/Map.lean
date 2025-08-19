@@ -43,10 +43,10 @@ def liftLinear [MeasurableSpace β] (f : OuterMeasure α →ₗ[ℝ≥0∞] Oute
     (hf : ∀ μ : Measure α, ‹_› ≤ (f μ.toOuterMeasure).caratheodory) :
     Measure α →ₗ[ℝ≥0∞] Measure β where
   toFun μ := (f μ.toOuterMeasure).toMeasure (hf μ)
-  map_add' μ₁ μ₂ := ext fun s hs => by
+  map_add' μ₁ μ₂ := ext fun s hs ↦ by
     simp only [map_add, coe_add, Pi.add_apply, toMeasure_apply, add_toOuterMeasure,
       OuterMeasure.coe_add, hs]
-  map_smul' c μ := ext fun s hs => by
+  map_smul' c μ := ext fun s hs ↦ by
     simp only [LinearMap.map_smulₛₗ, Pi.smul_apply,
       toMeasure_apply, smul_toOuterMeasure (R := ℝ≥0∞), OuterMeasure.coe_smul (R := ℝ≥0∞),
       smul_apply, hs]
@@ -70,7 +70,7 @@ a measurable function. -/
 noncomputable
 def mapₗ [MeasurableSpace α] [MeasurableSpace β] (f : α → β) : Measure α →ₗ[ℝ≥0∞] Measure β :=
   if hf : Measurable f then
-    liftLinear (OuterMeasure.map f) fun μ _s hs t =>
+    liftLinear (OuterMeasure.map f) fun μ _s hs t ↦
       le_toOuterMeasure_caratheodory μ _ (hf hs) (f ⁻¹' t)
   else 0
 
@@ -188,17 +188,17 @@ lemma mapₗ_ne_zero_iff (hf : Measurable f) : Measure.mapₗ f μ ≠ 0 ↔ μ 
 
 @[simp]
 theorem map_id : map id μ = μ :=
-  ext fun _ => map_apply measurable_id
+  ext fun _ ↦ map_apply measurable_id
 
 @[simp]
-theorem map_id' : map (fun x => x) μ = μ :=
+theorem map_id' : map (fun x ↦ x) μ = μ :=
   map_id
 
 /-- Mapping a measure twice is the same as mapping the measure with the composition. This version is
 for measurable functions. See `map_map_of_aemeasurable` when they are just ae measurable. -/
 theorem map_map {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
     (μ.map f).map g = μ.map (g ∘ f) :=
-  ext fun s hs => by simp [hf, hg, hs, hg hs, hg.comp hf, ← preimage_comp]
+  ext fun s hs ↦ by simp [hf, hg, hs, hg hs, hg.comp hf, ← preimage_comp]
 
 @[mono]
 theorem map_mono {f : α → β} (h : μ ≤ ν) (hf : Measurable f) : μ.map f ≤ ν.map f :=
@@ -223,7 +223,7 @@ theorem preimage_null_of_map_null {f : α → β} (hf : AEMeasurable f μ) {s : 
   nonpos_iff_eq_zero.mp <| (le_map_apply hf s).trans_eq hs
 
 theorem tendsto_ae_map {f : α → β} (hf : AEMeasurable f μ) : Tendsto f (ae μ) (ae (μ.map f)) :=
-  fun _ hs => preimage_null_of_map_null hf hs
+  fun _ hs ↦ preimage_null_of_map_null hf hs
 
 end Measure
 

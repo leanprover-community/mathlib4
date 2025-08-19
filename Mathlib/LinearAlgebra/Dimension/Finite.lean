@@ -32,7 +32,7 @@ open Basis Cardinal Function Module Set Submodule
 then the same is true for arbitrary sets of linearly independent vectors.
 -/
 theorem linearIndependent_bounded_of_finset_linearIndependent_bounded {n : ℕ}
-    (H : ∀ s : Finset M, (LinearIndependent R fun i : s => (i : M)) → s.card ≤ n) :
+    (H : ∀ s : Finset M, (LinearIndependent R fun i : s ↦ (i : M)) → s.card ≤ n) :
     ∀ s : Set M, LinearIndependent R ((↑) : s → M) → #s ≤ n := by
   intro s li
   apply Cardinal.card_le_of
@@ -42,7 +42,7 @@ theorem linearIndependent_bounded_of_finset_linearIndependent_bounded {n : ℕ}
   apply linearIndependent_finset_map_embedding_subtype _ li
 
 theorem rank_le {n : ℕ}
-    (H : ∀ s : Finset M, (LinearIndependent R fun i : s => (i : M)) → s.card ≤ n) :
+    (H : ∀ s : Finset M, (LinearIndependent R fun i : s ↦ (i : M)) → s.card ≤ n) :
     Module.rank R M ≤ n := by
   rw [Module.rank_def]
   apply ciSup_le'
@@ -108,7 +108,7 @@ end
 
 theorem exists_mem_ne_zero_of_rank_pos {s : Submodule R M} (h : 0 < Module.rank R s) :
     ∃ b : M, b ∈ s ∧ b ≠ 0 :=
-  exists_mem_ne_zero_of_ne_bot fun eq => by rw [eq, rank_bot] at h; exact lt_irrefl _ h
+  exists_mem_ne_zero_of_ne_bot fun eq ↦ by rw [eq, rank_bot] at h; exact lt_irrefl _ h
 
 end RankZero
 
@@ -168,7 +168,7 @@ theorem fintype_card_le_finrank [Module.Finite R M]
   simpa using h.cardinalMk_le_finrank
 
 theorem finset_card_le_finrank [Module.Finite R M]
-    {b : Finset M} (h : LinearIndependent R (fun x => x : b → M)) :
+    {b : Finset M} (h : LinearIndependent R (fun x ↦ x : b → M)) :
     b.card ≤ finrank R M := by
   rw [← Fintype.card_coe]
   exact h.fintype_card_le_finrank
@@ -186,7 +186,7 @@ theorem finite [Module.Finite R M] {ι : Type*} {f : ι → M}
   Cardinal.lt_aleph0_iff_finite.1 <| h.lt_aleph0_of_finite
 
 theorem setFinite [Module.Finite R M] {b : Set M}
-    (h : LinearIndependent R fun x : b => (x : M)) : b.Finite :=
+    (h : LinearIndependent R fun x : b ↦ (x : M)) : b.Finite :=
   Cardinal.lt_aleph0_iff_set_finite.mp h.lt_aleph0_of_finite
 
 end LinearIndependent
@@ -443,12 +443,12 @@ theorem Submodule.bot_eq_top_of_rank_eq_zero [NoZeroSMulDivisors R M] (h : Modul
 @[simp]
 theorem Submodule.rank_eq_zero [Nontrivial R] [NoZeroSMulDivisors R M] {S : Submodule R M} :
     Module.rank R S = 0 ↔ S = ⊥ :=
-  ⟨fun h =>
-    (Submodule.eq_bot_iff _).2 fun x hx =>
+  ⟨fun h ↦
+    (Submodule.eq_bot_iff _).2 fun x hx ↦
       congr_arg Subtype.val <|
         ((Submodule.eq_bot_iff _).1 <| Eq.symm <| Submodule.bot_eq_top_of_rank_eq_zero h) ⟨x, hx⟩
           Submodule.mem_top,
-    fun h => by rw [h, rank_bot]⟩
+    fun h ↦ by rw [h, rank_bot]⟩
 
 @[simp]
 theorem Submodule.finrank_eq_zero [StrongRankCondition R] [NoZeroSMulDivisors R M]
@@ -480,7 +480,7 @@ theorem finrank_eq_zero_of_basis_imp_not_finite
 
 theorem finrank_eq_zero_of_basis_imp_false (h : ∀ s : Finset M, Basis.{v} (s : Set M) R M → False) :
     finrank R M = 0 :=
-  finrank_eq_zero_of_basis_imp_not_finite fun s b hs =>
+  finrank_eq_zero_of_basis_imp_not_finite fun s b hs ↦
     h hs.toFinset
       (by
         convert b
@@ -488,15 +488,15 @@ theorem finrank_eq_zero_of_basis_imp_false (h : ∀ s : Finset M, Basis.{v} (s :
 
 theorem finrank_eq_zero_of_not_exists_basis
     (h : ¬∃ s : Finset M, Nonempty (Basis (s : Set M) R M)) : finrank R M = 0 :=
-  finrank_eq_zero_of_basis_imp_false fun s b => h ⟨s, ⟨b⟩⟩
+  finrank_eq_zero_of_basis_imp_false fun s b ↦ h ⟨s, ⟨b⟩⟩
 
 theorem finrank_eq_zero_of_not_exists_basis_finite
     (h : ¬∃ (s : Set M) (_ : Basis.{v} (s : Set M) R M), s.Finite) : finrank R M = 0 :=
-  finrank_eq_zero_of_basis_imp_not_finite fun s b hs => h ⟨s, b, hs⟩
+  finrank_eq_zero_of_basis_imp_not_finite fun s b hs ↦ h ⟨s, b, hs⟩
 
 theorem finrank_eq_zero_of_not_exists_basis_finset (h : ¬∃ s : Finset M, Nonempty (Basis s R M)) :
     finrank R M = 0 :=
-  finrank_eq_zero_of_basis_imp_false fun s b => h ⟨s, ⟨b⟩⟩
+  finrank_eq_zero_of_basis_imp_false fun s b ↦ h ⟨s, ⟨b⟩⟩
 
 end FinrankZero
 
@@ -523,7 +523,7 @@ theorem finrank_le_one (v : M) (h : ∀ w : M, ∃ c : R, c • v = w) : finrank
   haveI := nontrivial_of_invariantBasisNumber R
   rcases eq_or_ne v 0 with (rfl | hn)
   · haveI :=
-      _root_.subsingleton_of_forall_eq (0 : M) fun w => by
+      _root_.subsingleton_of_forall_eq (0 : M) fun w ↦ by
         obtain ⟨c, rfl⟩ := h w
         simp
     rw [finrank_zero_of_subsingleton]

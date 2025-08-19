@@ -187,7 +187,7 @@ protected def inv : Inv (Finset α) :=
 scoped[Pointwise] attribute [instance] Finset.inv Finset.neg
 
 @[to_additive]
-theorem inv_def : s⁻¹ = s.image fun x => x⁻¹ :=
+theorem inv_def : s⁻¹ = s.image fun x ↦ x⁻¹ :=
   rfl
 
 @[to_additive] lemma image_inv_eq_inv (s : Finset α) : s.image (·⁻¹) = s⁻¹ := rfl
@@ -311,11 +311,11 @@ protected def mul : Mul (Finset α) :=
 scoped[Pointwise] attribute [instance] Finset.mul Finset.add
 
 @[to_additive]
-theorem mul_def : s * t = (s ×ˢ t).image fun p : α × α => p.1 * p.2 :=
+theorem mul_def : s * t = (s ×ˢ t).image fun p : α × α ↦ p.1 * p.2 :=
   rfl
 
 @[to_additive]
-theorem image_mul_product : ((s ×ˢ t).image fun x : α × α => x.fst * x.snd) = s * t :=
+theorem image_mul_product : ((s ×ˢ t).image fun x : α × α ↦ x.fst * x.snd) = s * t :=
   rfl
 
 @[to_additive]
@@ -335,7 +335,7 @@ theorem card_mul_le : #(s * t) ≤ #s * #t :=
 
 @[to_additive]
 theorem card_mul_iff :
-    #(s * t) = #s * #t ↔ (s ×ˢ t : Set (α × α)).InjOn fun p => p.1 * p.2 :=
+    #(s * t) = #s * #t ↔ (s ×ˢ t : Set (α × α)).InjOn fun p ↦ p.1 * p.2 :=
   card_image₂_iff
 
 @[to_additive (attr := simp)]
@@ -530,11 +530,11 @@ protected def div : Div (Finset α) :=
 scoped[Pointwise] attribute [instance] Finset.div Finset.sub
 
 @[to_additive]
-theorem div_def : s / t = (s ×ˢ t).image fun p : α × α => p.1 / p.2 :=
+theorem div_def : s / t = (s ×ˢ t).image fun p : α × α ↦ p.1 / p.2 :=
   rfl
 
 @[to_additive]
-theorem image_div_product : ((s ×ˢ t).image fun x : α × α => x.fst / x.snd) = s / t :=
+theorem image_div_product : ((s ×ˢ t).image fun x : α × α ↦ x.fst / x.snd) = s / t :=
   rfl
 
 @[to_additive]
@@ -690,7 +690,7 @@ protected def nsmul [Zero α] [Add α] : SMul ℕ (Finset α) :=
 /-- Repeated pointwise multiplication (not the same as pointwise repeated multiplication!) of a
 `Finset`. See note [pointwise nat action]. -/
 protected def npow [One α] [Mul α] : Pow (Finset α) ℕ :=
-  ⟨fun s n => npowRec n s⟩
+  ⟨fun s n ↦ npowRec n s⟩
 
 attribute [to_additive existing] Finset.npow
 
@@ -704,7 +704,7 @@ protected def zsmul [Zero α] [Add α] [Neg α] : SMul ℤ (Finset α) :=
 multiplication/division!) of a `Finset`. See note [pointwise nat action]. -/
 @[to_additive existing]
 protected def zpow [One α] [Mul α] [Inv α] : Pow (Finset α) ℤ :=
-  ⟨fun s n => zpowRec npowRec n s⟩
+  ⟨fun s n ↦ zpowRec npowRec n s⟩
 
 scoped[Pointwise] attribute [instance] Finset.nsmul Finset.npow Finset.zsmul Finset.zpow
 
@@ -745,11 +745,11 @@ scoped[Pointwise] attribute [instance] Finset.semigroup Finset.addSemigroup Fins
   Finset.addCommSemigroup Finset.mulOneClass Finset.addZeroClass
 
 @[to_additive]
-theorem subset_mul_left (s : Finset α) {t : Finset α} (ht : (1 : α) ∈ t) : s ⊆ s * t := fun a ha =>
+theorem subset_mul_left (s : Finset α) {t : Finset α} (ht : (1 : α) ∈ t) : s ⊆ s * t := fun a ha ↦
   mem_mul.2 ⟨a, ha, 1, ht, mul_one _⟩
 
 @[to_additive]
-theorem subset_mul_right {s : Finset α} (t : Finset α) (hs : (1 : α) ∈ s) : t ⊆ s * t := fun a ha =>
+theorem subset_mul_right {s : Finset α} (t : Finset α) (hs : (1 : α) ∈ s) : t ⊆ s * t := fun a ha ↦
   mem_mul.2 ⟨1, hs, a, ha, one_mul _⟩
 
 /-- The singleton operation as a `MonoidHom`. -/
@@ -873,13 +873,13 @@ theorem coe_list_prod (s : List (Finset α)) : (↑s.prod : Set α) = (s.map (�
 
 @[to_additive]
 theorem mem_prod_list_ofFn {a : α} {s : Fin n → Finset α} :
-    a ∈ (List.ofFn s).prod ↔ ∃ f : ∀ i : Fin n, s i, (List.ofFn fun i => (f i : α)).prod = a := by
+    a ∈ (List.ofFn s).prod ↔ ∃ f : ∀ i : Fin n, s i, (List.ofFn fun i ↦ (f i : α)).prod = a := by
   rw [← mem_coe, coe_list_prod, List.map_ofFn, Set.mem_prod_list_ofFn]
   rfl
 
 @[to_additive]
 theorem mem_pow {a : α} {n : ℕ} :
-    a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i => ↑(f i)).prod = a := by
+    a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i ↦ ↑(f i)).prod = a := by
   simp [← mem_coe, coe_pow, Set.mem_pow]
 
 @[to_additive]
@@ -889,11 +889,11 @@ lemma card_pow_le : ∀ {n}, #(s ^ n) ≤ #s ^ n
 
 @[to_additive]
 theorem mul_univ_of_one_mem [Fintype α] (hs : (1 : α) ∈ s) : s * univ = univ :=
-  eq_univ_iff_forall.2 fun _ => mem_mul.2 ⟨_, hs, _, mem_univ _, one_mul _⟩
+  eq_univ_iff_forall.2 fun _ ↦ mem_mul.2 ⟨_, hs, _, mem_univ _, one_mul _⟩
 
 @[to_additive]
 theorem univ_mul_of_one_mem [Fintype α] (ht : (1 : α) ∈ t) : univ * t = univ :=
-  eq_univ_iff_forall.2 fun _ => mem_mul.2 ⟨_, mem_univ _, _, ht, mul_one _⟩
+  eq_univ_iff_forall.2 fun _ ↦ mem_mul.2 ⟨_, mem_univ _, _, ht, mul_one _⟩
 
 @[to_additive (attr := simp)]
 theorem univ_mul_univ [Fintype α] : (univ : Finset α) * univ = univ :=
@@ -1070,7 +1070,7 @@ theorem isUnit_iff_singleton_aux {α} [Group α] {s : Finset α} :
 
 @[to_additive (attr := simp)]
 theorem image_mul_left :
-    image (fun b => a * b) t = preimage t (fun b => a⁻¹ * b) (mul_right_injective _).injOn :=
+    image (fun b ↦ a * b) t = preimage t (fun b ↦ a⁻¹ * b) (mul_right_injective _).injOn :=
   coe_injective <| by simp
 
 @[to_additive (attr := simp)]
@@ -1079,7 +1079,7 @@ theorem image_mul_right : image (· * b) t = preimage t (· * b⁻¹) (mul_left_
 
 @[to_additive]
 theorem image_mul_left' :
-    image (fun b => a⁻¹ * b) t = preimage t (fun b => a * b) (mul_right_injective _).injOn := by
+    image (fun b ↦ a⁻¹ * b) t = preimage t (fun b ↦ a * b) (mul_right_injective _).injOn := by
   simp
 
 @[to_additive]

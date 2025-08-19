@@ -37,7 +37,7 @@ noncomputable def isometryEquivSignWeightedSumSquares (w : ι → ℝ) :
   have hwu : ∀ i, w i / |(u i : ℝ)| = sign (w i) := fun i ↦ by
     by_cases hi : w i = 0 <;> field_simp [hi, u]
   convert QuadraticMap.isometryEquivBasisRepr (weightedSumSquares ℝ w)
-    ((Pi.basisFun ℝ ι).unitsSMul fun i => .mk0 _ (hu i))
+    ((Pi.basisFun ℝ ι).unitsSMul fun i ↦ .mk0 _ (hu i))
   ext1 v
   classical
   suffices ∑ i, (w i / |(u i : ℝ)|) * v i ^ 2 = ∑ i, w i * (v i ^ 2 * |(u i : ℝ)|⁻¹) by
@@ -51,7 +51,7 @@ theorem equivalent_sign_ne_zero_weighted_sum_squared {M : Type*} [AddCommGroup M
     ∃ w : Fin (Module.finrank ℝ M) → SignType,
       (∀ i, w i ≠ 0) ∧ Equivalent Q (weightedSumSquares ℝ fun i ↦ (w i : ℝ)) :=
   let ⟨w, ⟨hw₁⟩⟩ := Q.equivalent_weightedSumSquares_units_of_nondegenerate' hQ
-  ⟨sign ∘ ((↑) : ℝˣ → ℝ) ∘ w, fun i => sign_ne_zero.2 (w i).ne_zero,
+  ⟨sign ∘ ((↑) : ℝˣ → ℝ) ∘ w, fun i ↦ sign_ne_zero.2 (w i).ne_zero,
     ⟨hw₁.trans (isometryEquivSignWeightedSumSquares (((↑) : ℝˣ → ℝ) ∘ w))⟩⟩
 
 /-- **Sylvester's law of inertia**: A nondegenerate real quadratic form is equivalent to a weighted

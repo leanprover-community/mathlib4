@@ -79,7 +79,7 @@ lemma incl_obj {i : I} (X : C i) : (incl i).obj X = ⟨i, X⟩ :=
   rfl
 
 instance (i : I) : Functor.Full (incl i : C i ⥤ Σ i, C i) where
-  map_surjective := fun ⟨f⟩ => ⟨f, rfl⟩
+  map_surjective := fun ⟨f⟩ ↦ ⟨f, rfl⟩
 
 instance (i : I) : Functor.Faithful (incl i : C i ⥤ Σ i, C i) where
   map_injective {_ _ _ _} h := by injection h
@@ -93,7 +93,7 @@ To build a natural transformation over the sigma category, it suffices to specif
 each subcategory.
 -/
 def natTrans {F G : (Σ i, C i) ⥤ D} (h : ∀ i : I, incl i ⋙ F ⟶ incl i ⋙ G) : F ⟶ G where
-  app := fun ⟨j, X⟩ => (h j).app X
+  app := fun ⟨j, X⟩ ↦ (h j).app X
   naturality := by
     rintro ⟨j, X⟩ ⟨_, _⟩ ⟨f⟩
     apply (h j).naturality
@@ -136,7 +136,7 @@ lemma desc_map_mk {i : I} (X Y : C i) (f : X ⟶ Y) : (desc F).map (SigmaHom.mk 
 `F i`.
 -/
 def inclDesc (i : I) : incl i ⋙ desc F ≅ F i :=
-  NatIso.ofComponents fun _ => Iso.refl _
+  NatIso.ofComponents fun _ ↦ Iso.refl _
 
 @[simp]
 lemma inclDesc_hom_app (i : I) (X : C i) : (inclDesc F i).hom.app X = 𝟙 ((F i).obj X) :=
@@ -150,7 +150,7 @@ lemma inclDesc_inv_app (i : I) (X : C i) : (inclDesc F i).inv.app X = 𝟙 ((F i
 `desc F`.
 -/
 def descUniq (q : (Σ i, C i) ⥤ D) (h : ∀ i, incl i ⋙ q ≅ F i) : q ≅ desc F :=
-  NatIso.ofComponents (fun ⟨i, X⟩ => (h i).app X) <| by
+  NatIso.ofComponents (fun ⟨i, X⟩ ↦ (h i).app X) <| by
     rintro ⟨i, X⟩ ⟨_, _⟩ ⟨f⟩
     apply (h i).hom.naturality f
 
@@ -169,8 +169,8 @@ If `q₁` and `q₂` when restricted to each subcategory `C i` agree, then `q₁
 -/
 @[simps]
 def natIso {q₁ q₂ : (Σ i, C i) ⥤ D} (h : ∀ i, incl i ⋙ q₁ ≅ incl i ⋙ q₂) : q₁ ≅ q₂ where
-  hom := natTrans fun i => (h i).hom
-  inv := natTrans fun i => (h i).inv
+  hom := natTrans fun i ↦ (h i).hom
+  inv := natTrans fun i ↦ (h i).inv
 
 end
 
@@ -180,7 +180,7 @@ variable (C) {J : Type w₂} (g : J → I)
 
 /-- A function `J → I` induces a functor `Σ j, C (g j) ⥤ Σ i, C i`. -/
 def map : (Σ j : J, C (g j)) ⥤ Σ i : I, C i :=
-  desc fun j => incl (g j)
+  desc fun j ↦ incl (g j)
 
 @[simp]
 lemma map_obj (j : J) (X : C (g j)) : (Sigma.map C g).obj ⟨j, X⟩ = ⟨g j, X⟩ :=
@@ -202,16 +202,16 @@ variable (I)
 /-- The functor `Sigma.map` applied to the identity function is just the identity functor. -/
 @[simps!]
 def mapId : map C (id : I → I) ≅ 𝟭 (Σ i, C i) :=
-  natIso fun i => NatIso.ofComponents fun _ => Iso.refl _
+  natIso fun i ↦ NatIso.ofComponents fun _ ↦ Iso.refl _
 
 variable {I} {K : Type w₃}
 
--- Porting note: Had to expand (C ∘ g) to (fun x => C (g x)) in lemma statement
+-- Porting note: Had to expand (C ∘ g) to (fun x ↦ C (g x)) in lemma statement
 -- so that the suitable category instances could be found
 /-- The functor `Sigma.map` applied to a composition is a composition of functors. -/
 @[simps!]
 def mapComp (f : K → J) (g : J → I) : map (fun x ↦ C (g x)) f ⋙ (map C g :) ≅ map C (g ∘ f) :=
-  (descUniq _ _) fun k =>
+  (descUniq _ _) fun k ↦
     (Functor.isoWhiskerRight (inclCompMap _ f k) (map C g :) :) ≪≫ inclCompMap _ g (f k)
 
 end
@@ -224,7 +224,7 @@ variable {D : I → Type u₁} [∀ i, Category.{v₁} (D i)]
 /-- Assemble an `I`-indexed family of functors into a functor between the sigma types.
 -/
 def sigma (F : ∀ i, C i ⥤ D i) : (Σ i, C i) ⥤ Σ i, D i :=
-  desc fun i => F i ⋙ incl i
+  desc fun i ↦ F i ⋙ incl i
 
 end Functor
 

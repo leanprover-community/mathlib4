@@ -39,7 +39,7 @@ instance [Nontrivial R] : Nonempty <| MaximalSpectrum R :=
 def toPrimeSpectrum (x : MaximalSpectrum R) : PrimeSpectrum R :=
   ⟨x.asIdeal, x.isMaximal.isPrime⟩
 
-theorem toPrimeSpectrum_injective : (@toPrimeSpectrum R _).Injective := fun ⟨_, _⟩ ⟨_, _⟩ h => by
+theorem toPrimeSpectrum_injective : (@toPrimeSpectrum R _).Injective := fun ⟨_, _⟩ ⟨_, _⟩ h ↦ by
   simpa only [MaximalSpectrum.mk.injEq] using PrimeSpectrum.ext_iff.mp h
 
 end MaximalSpectrum

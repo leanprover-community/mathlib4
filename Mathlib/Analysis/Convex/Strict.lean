@@ -32,7 +32,7 @@ section OrderedSemiring
 interior. This basically means "convex and not flat on the boundary". -/
 def StrictConvex (𝕜 : Type*) {E : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [TopologicalSpace E]
     [AddCommMonoid E] [SMul 𝕜 E] (s : Set E) : Prop :=
-  s.Pairwise fun x y => ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → a • x + b • y ∈ interior s
+  s.Pairwise fun x y ↦ ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → a • x + b • y ∈ interior s
 
 variable [Semiring 𝕜] [PartialOrder 𝕜] [TopologicalSpace E] [TopologicalSpace F]
 
@@ -48,8 +48,8 @@ variable {s}
 variable {x y : E} {a b : 𝕜}
 
 theorem strictConvex_iff_openSegment_subset :
-    StrictConvex 𝕜 s ↔ s.Pairwise fun x y => openSegment 𝕜 x y ⊆ interior s :=
-  forall₅_congr fun _ _ _ _ _ => (openSegment_subset_iff 𝕜).symm
+    StrictConvex 𝕜 s ↔ s.Pairwise fun x y ↦ openSegment 𝕜 x y ⊆ interior s :=
+  forall₅_congr fun _ _ _ _ _ ↦ (openSegment_subset_iff 𝕜).symm
 
 theorem StrictConvex.openSegment_subset (hs : StrictConvex 𝕜 s) (hx : x ∈ s) (hy : y ∈ s)
     (h : x ≠ y) : openSegment 𝕜 x y ⊆ interior s :=
@@ -65,7 +65,7 @@ theorem strictConvex_univ : StrictConvex 𝕜 (univ : Set E) := by
 
 protected nonrec theorem StrictConvex.eq (hs : StrictConvex 𝕜 s) (hx : x ∈ s) (hy : y ∈ s)
     (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) (h : a • x + b • y ∉ interior s) : x = y :=
-  hs.eq hx hy fun H => h <| H ha hb hab
+  hs.eq hx hy fun H ↦ h <| H ha hb hab
 
 protected theorem StrictConvex.inter {t : Set E} (hs : StrictConvex 𝕜 s) (ht : StrictConvex 𝕜 t) :
     StrictConvex 𝕜 (s ∩ t) := by
@@ -85,7 +85,7 @@ theorem Directed.strictConvex_iUnion {ι : Sort*} {s : ι → Set E} (hdir : Dir
 theorem DirectedOn.strictConvex_sUnion {S : Set (Set E)} (hdir : DirectedOn (· ⊆ ·) S)
     (hS : ∀ s ∈ S, StrictConvex 𝕜 s) : StrictConvex 𝕜 (⋃₀ S) := by
   rw [sUnion_eq_iUnion]
-  exact (directedOn_iff_directed.1 hdir).strictConvex_iUnion fun s => hS _ s.2
+  exact (directedOn_iff_directed.1 hdir).strictConvex_iUnion fun s ↦ hS _ s.2
 
 end SMul
 
@@ -94,13 +94,13 @@ section Module
 variable [Module 𝕜 E] [Module 𝕜 F] {s : Set E}
 
 protected theorem StrictConvex.convex (hs : StrictConvex 𝕜 s) : Convex 𝕜 s :=
-  convex_iff_pairwise_pos.2 fun _ hx _ hy hxy _ _ ha hb hab =>
+  convex_iff_pairwise_pos.2 fun _ hx _ hy hxy _ _ ha hb hab ↦
     interior_subset <| hs hx hy hxy ha hb hab
 
 /-- An open convex set is strictly convex. -/
 protected theorem Convex.strictConvex_of_isOpen (h : IsOpen s) (hs : Convex 𝕜 s) :
     StrictConvex 𝕜 s :=
-  fun _ hx _ hy _ _ _ ha hb hab => h.interior_eq.symm ▸ hs hx hy ha.le hb.le hab
+  fun _ hx _ hy _ _ _ ha hb hab ↦ h.interior_eq.symm ▸ hs hx hy ha.le hb.le hab
 
 theorem IsOpen.strictConvex_iff (h : IsOpen s) : StrictConvex 𝕜 s ↔ Convex 𝕜 s :=
   ⟨StrictConvex.convex, Convex.strictConvex_of_isOpen h⟩
@@ -141,7 +141,7 @@ variable [TopologicalSpace β] [AddCommMonoid β] [LinearOrder β] [IsOrderedCan
 
 protected theorem Set.OrdConnected.strictConvex {s : Set β} (hs : OrdConnected s) :
     StrictConvex 𝕜 s := by
-  refine strictConvex_iff_openSegment_subset.2 fun x hx y hy hxy => ?_
+  refine strictConvex_iff_openSegment_subset.2 fun x hx y hy hxy ↦ ?_
   rcases hxy.lt_or_gt with hlt | hlt <;> [skip; rw [openSegment_symm]] <;>
     exact
       (openSegment_subset_Ioo hlt).trans
@@ -189,7 +189,7 @@ variable [AddCancelCommMonoid E] [ContinuousAdd E] [Module 𝕜 E] {s : Set E}
 
 /-- The translation of a strictly convex set is also strictly convex. -/
 theorem StrictConvex.preimage_add_right (hs : StrictConvex 𝕜 s) (z : E) :
-    StrictConvex 𝕜 ((fun x => z + x) ⁻¹' s) := by
+    StrictConvex 𝕜 ((fun x ↦ z + x) ⁻¹' s) := by
   intro x hx y hy hxy a b ha hb hab
   refine preimage_interior_subset_interior_preimage (continuous_add_left _) ?_
   have h := hs hx hy ((add_right_injective _).ne hxy) ha hb hab
@@ -197,7 +197,7 @@ theorem StrictConvex.preimage_add_right (hs : StrictConvex 𝕜 s) (z : E) :
 
 /-- The translation of a strictly convex set is also strictly convex. -/
 theorem StrictConvex.preimage_add_left (hs : StrictConvex 𝕜 s) (z : E) :
-    StrictConvex 𝕜 ((fun x => x + z) ⁻¹' s) := by
+    StrictConvex 𝕜 ((fun x ↦ x + z) ⁻¹' s) := by
   simpa only [add_comm] using hs.preimage_add_right z
 
 end AddCancelCommMonoid
@@ -225,11 +225,11 @@ theorem StrictConvex.add (hs : StrictConvex 𝕜 s) (ht : StrictConvex 𝕜 t) :
       (add_mem_add (hs hv hx hvx ha hb hab) <| ht.convex hw hy ha.le hb.le hab)
 
 theorem StrictConvex.add_left (hs : StrictConvex 𝕜 s) (z : E) :
-    StrictConvex 𝕜 ((fun x => z + x) '' s) := by
+    StrictConvex 𝕜 ((fun x ↦ z + x) '' s) := by
   simpa only [singleton_add] using (strictConvex_singleton z).add hs
 
 theorem StrictConvex.add_right (hs : StrictConvex 𝕜 s) (z : E) :
-    StrictConvex 𝕜 ((fun x => x + z) '' s) := by simpa only [add_comm] using hs.add_left z
+    StrictConvex 𝕜 ((fun x ↦ x + z) '' s) := by simpa only [add_comm] using hs.add_left z
 
 /-- The translation of a strictly convex set is also strictly convex. -/
 theorem StrictConvex.vadd (hs : StrictConvex 𝕜 s) (x : E) : StrictConvex 𝕜 (x +ᵥ s) :=
@@ -267,7 +267,7 @@ variable [AddCommGroup E] [Module 𝕜 E] [NoZeroSMulDivisors 𝕜 E] [Continuou
   {s : Set E}
 
 theorem StrictConvex.preimage_smul (hs : StrictConvex 𝕜 s) (c : 𝕜) :
-    StrictConvex 𝕜 ((fun z => c • z) ⁻¹' s) := by
+    StrictConvex 𝕜 ((fun z ↦ c • z) ⁻¹' s) := by
   classical
     obtain rfl | hc := eq_or_ne c 0
     · simp_rw [zero_smul, preimage_const]
@@ -306,7 +306,7 @@ theorem StrictConvex.add_smul_mem [AddRightStrictMono 𝕜]
     (hy : y ≠ 0) {t : 𝕜} (ht₀ : 0 < t) (ht₁ : t < 1) : x + t • y ∈ interior s := by
   have h : x + t • y = (1 - t) • x + t • (x + y) := by match_scalars <;> simp
   rw [h]
-  exact hs hx hxy (fun h => hy <| add_left_cancel (a := x) (by rw [← h, add_zero]))
+  exact hs hx hxy (fun h ↦ hy <| add_left_cancel (a := x) (by rw [← h, add_zero]))
     (sub_pos_of_lt ht₁) ht₀ (sub_add_cancel 1 t)
 
 theorem StrictConvex.smul_mem_of_zero_mem [AddRightStrictMono 𝕜]
@@ -360,7 +360,7 @@ variable [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F] {s : 
 /-- Alternative definition of set strict convexity, using division. -/
 theorem strictConvex_iff_div :
     StrictConvex 𝕜 s ↔
-      s.Pairwise fun x y =>
+      s.Pairwise fun x y ↦
         ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → (a / (a + b)) • x + (b / (a + b)) • y ∈ interior s :=
   ⟨fun h x hx y hy hxy a b ha hb ↦ h hx hy hxy (by positivity) (by positivity) (by field_simp),
     fun h x hx y hy hxy a b ha hb hab ↦ by
@@ -390,7 +390,7 @@ variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [Topological
 /-- A set in a linear ordered field is strictly convex if and only if it is convex. -/
 @[simp]
 theorem strictConvex_iff_convex : StrictConvex 𝕜 s ↔ Convex 𝕜 s :=
-  ⟨StrictConvex.convex, fun hs => hs.ordConnected.strictConvex⟩
+  ⟨StrictConvex.convex, fun hs ↦ hs.ordConnected.strictConvex⟩
 
 theorem strictConvex_iff_ordConnected : StrictConvex 𝕜 s ↔ s.OrdConnected :=
   strictConvex_iff_convex.trans convex_iff_ordConnected

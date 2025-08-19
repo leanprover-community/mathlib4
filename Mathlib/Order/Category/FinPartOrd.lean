@@ -32,7 +32,7 @@ structure FinPartOrd extends PartOrd where
 namespace FinPartOrd
 
 instance : CoeSort FinPartOrd Type* :=
-  ⟨fun X => X.toPartOrd⟩
+  ⟨fun X ↦ X.toPartOrd⟩
 
 instance (X : FinPartOrd) : PartialOrder X :=
   X.toPartOrd.str
@@ -109,8 +109,8 @@ def dual : FinPartOrd ⥤ FinPartOrd where
 def dualEquiv : FinPartOrd ≌ FinPartOrd where
   functor := dual
   inverse := dual
-  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
-  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  unitIso := NatIso.ofComponents fun X ↦ Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X ↦ Iso.mk <| OrderIso.dualDual X
 
 end FinPartOrd
 

@@ -62,7 +62,7 @@ coincide -/
 theorem mdifferentiableWithinAt_iff_differentiableWithinAt :
     MDifferentiableWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E') f s x ↔ DifferentiableWithinAt 𝕜 f s x := by
   simp only [mdifferentiableWithinAt_iff', mfld_simps]
-  exact ⟨fun H => H.2, fun H => ⟨H.continuousWithinAt, H⟩⟩
+  exact ⟨fun H ↦ H.2, fun H ↦ ⟨H.continuousWithinAt, H⟩⟩
 
 alias ⟨MDifferentiableWithinAt.differentiableWithinAt,
     DifferentiableWithinAt.mdifferentiableWithinAt⟩ :=
@@ -72,7 +72,7 @@ alias ⟨MDifferentiableWithinAt.differentiableWithinAt,
 theorem mdifferentiableAt_iff_differentiableAt :
     MDifferentiableAt 𝓘(𝕜, E) 𝓘(𝕜, E') f x ↔ DifferentiableAt 𝕜 f x := by
   simp only [mdifferentiableAt_iff, differentiableWithinAt_univ, mfld_simps]
-  exact ⟨fun H => H.2, fun H => ⟨H.continuousAt, H⟩⟩
+  exact ⟨fun H ↦ H.2, fun H ↦ ⟨H.continuousAt, H⟩⟩
 
 alias ⟨MDifferentiableAt.differentiableAt, DifferentiableAt.mdifferentiableAt⟩ :=
   mdifferentiableAt_iff_differentiableAt

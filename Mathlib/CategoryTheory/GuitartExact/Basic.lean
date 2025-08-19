@@ -219,7 +219,7 @@ class GuitartExact : Prop where
 lemma guitartExact_iff_isConnected_rightwards :
     w.GuitartExact ↔ ∀ {X₂ : C₂} {X₃ : C₃} (g : R.obj X₂ ⟶ B.obj X₃),
       IsConnected (w.StructuredArrowRightwards g) :=
-  ⟨fun h => h.isConnected_rightwards, fun h => ⟨h⟩⟩
+  ⟨fun h ↦ h.isConnected_rightwards, fun h ↦ ⟨h⟩⟩
 
 lemma guitartExact_iff_isConnected_downwards :
     w.GuitartExact ↔ ∀ {X₂ : C₂} {X₃ : C₃} (g : R.obj X₂ ⟶ B.obj X₃),
@@ -239,7 +239,7 @@ instance [hw : w.GuitartExact] {X₂ : C₂} (g : StructuredArrow (R.obj X₂) B
 
 lemma guitartExact_iff_final :
     w.GuitartExact ↔ ∀ (X₃ : C₃), (w.costructuredArrowRightwards X₃).Final :=
-  ⟨fun _ _ => ⟨fun _ => inferInstance⟩, fun _ => ⟨fun _ => inferInstance⟩⟩
+  ⟨fun _ _ ↦ ⟨fun _ ↦ inferInstance⟩, fun _ ↦ ⟨fun _ ↦ inferInstance⟩⟩
 
 instance [hw : w.GuitartExact] (X₃ : C₃) :
     (w.costructuredArrowRightwards X₃).Final := by
@@ -248,7 +248,7 @@ instance [hw : w.GuitartExact] (X₃ : C₃) :
 
 lemma guitartExact_iff_initial :
     w.GuitartExact ↔ ∀ (X₂ : C₂), (w.structuredArrowDownwards X₂).Initial :=
-  ⟨fun _ _ => ⟨fun _ => inferInstance⟩, by
+  ⟨fun _ _ ↦ ⟨fun _ ↦ inferInstance⟩, by
     rw [guitartExact_iff_isConnected_downwards]
     intros
     infer_instance⟩
@@ -277,7 +277,7 @@ instance guitartExact_id (F : C₁ ⥤ C₂) :
   intro X₂ X₃ (g : F.obj X₂ ⟶ X₃)
   let Z := StructuredArrowRightwards (TwoSquare.mk (𝟭 C₁) F F (𝟭 C₂) (𝟙 F)) g
   let X₀ : Z := StructuredArrow.mk (Y := CostructuredArrow.mk g) (CostructuredArrow.homMk (𝟙 _))
-  have φ : ∀ (X : Z), X₀ ⟶ X := fun X =>
+  have φ : ∀ (X : Z), X₀ ⟶ X := fun X ↦
     StructuredArrow.homMk (CostructuredArrow.homMk X.hom.left
       (by simpa using CostructuredArrow.w X.hom))
   have : Nonempty Z := ⟨X₀⟩

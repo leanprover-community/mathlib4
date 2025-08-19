@@ -50,7 +50,7 @@ local notation "σ" => spectrum R
 local notation "↑ₐ" => algebraMap R A
 
 theorem exists_mem_of_not_isUnit_aeval_prod [IsDomain R] {p : R[X]} {a : A}
-    (h : ¬IsUnit (aeval a (Multiset.map (fun x : R => X - C x) p.roots).prod)) :
+    (h : ¬IsUnit (aeval a (Multiset.map (fun x : R ↦ X - C x) p.roots).prod)) :
     ∃ k : R, k ∈ σ a ∧ eval k p = 0 := by
   rw [← Multiset.prod_toList, map_list_prod] at h
   replace h := mt List.prod_isUnit h
@@ -83,7 +83,7 @@ theorem subset_polynomial_aeval (a : A) (p : 𝕜[X]) : (eval · p) '' σ a ⊆ 
     simp only [q, aeval_C, map_sub]
   rw [mem_iff, aeval_q_eq, ← hroot, aeval_mul]
   have hcomm := (Commute.all (C k - X) (-(q / (X - C k)))).map (aeval a : 𝕜[X] →ₐ[𝕜] A)
-  apply mt fun h => (hcomm.isUnit_mul_iff.mp h).1
+  apply mt fun h ↦ (hcomm.isUnit_mul_iff.mp h).1
   simpa only [aeval_X, aeval_C, map_sub] using hk
 
 /-- The *spectral mapping theorem* for polynomials.  Note: the assumption `degree p > 0`
@@ -92,7 +92,7 @@ assuming `[Nontrivial A]`, is `{k}` where `p = Polynomial.C k`. -/
 theorem map_polynomial_aeval_of_degree_pos [IsAlgClosed 𝕜] (a : A) (p : 𝕜[X])
     (hdeg : 0 < degree p) : σ (aeval a p) = (eval · p) '' σ a := by
   -- handle the easy direction via `spectrum.subset_polynomial_aeval`
-  refine Set.eq_of_subset_of_subset (fun k hk => ?_) (subset_polynomial_aeval a p)
+  refine Set.eq_of_subset_of_subset (fun k hk ↦ ?_) (subset_polynomial_aeval a p)
   -- write `C k - p` product of linear factors and a constant; show `C k - p ≠ 0`.
   have hprod := eq_prod_roots_of_splits_id (IsAlgClosed.splits (C k - p))
   have h_ne : C k - p ≠ 0 := ne_zero_of_degree_gt <| by
@@ -112,14 +112,14 @@ theorem map_polynomial_aeval_of_degree_pos [IsAlgClosed 𝕜] (a : A) (p : 𝕜[
 /-- In this version of the spectral mapping theorem, we assume the spectrum
 is nonempty instead of assuming the degree of the polynomial is positive. -/
 theorem map_polynomial_aeval_of_nonempty [IsAlgClosed 𝕜] (a : A) (p : 𝕜[X])
-    (hnon : (σ a).Nonempty) : σ (aeval a p) = (fun k => eval k p) '' σ a := by
+    (hnon : (σ a).Nonempty) : σ (aeval a p) = (fun k ↦ eval k p) '' σ a := by
   nontriviality A
-  refine Or.elim (le_or_gt (degree p) 0) (fun h => ?_) (map_polynomial_aeval_of_degree_pos a p)
+  refine Or.elim (le_or_gt (degree p) 0) (fun h ↦ ?_) (map_polynomial_aeval_of_degree_pos a p)
   rw [eq_C_of_degree_le_zero h]
   simp only [eval_C, aeval_C, scalar_eq, Set.Nonempty.image_const hnon]
 
 /-- A specialization of `spectrum.subset_polynomial_aeval` to monic monomials for convenience. -/
-theorem pow_image_subset (a : A) (n : ℕ) : (fun x => x ^ n) '' σ a ⊆ σ (a ^ n) := by
+theorem pow_image_subset (a : A) (n : ℕ) : (fun x ↦ x ^ n) '' σ a ⊆ σ (a ^ n) := by
   simpa only [eval_pow, eval_X, aeval_X_pow] using subset_polynomial_aeval a (X ^ n : 𝕜[X])
 
 theorem pow_mem_pow (a : A) (n : ℕ) {k : 𝕜} (hk : k ∈ σ a) : k ^ n ∈ σ (a ^ n) :=
@@ -160,7 +160,7 @@ theorem IsIdempotentElem.spectrum_subset (𝕜 : Type*) {A : Type*} [Field 𝕜]
     {p : A} (hp : IsIdempotentElem p) : spectrum 𝕜 p ⊆ {0, 1} := by
   nontriviality A
   apply Set.image_subset_iff.mp (spectrum.subset_polynomial_aeval p (X ^ 2 - X)) |>.trans
-  refine fun a ha => eq_zero_or_one_of_sq_eq_self ?_
+  refine fun a ha ↦ eq_zero_or_one_of_sq_eq_self ?_
   simpa [pow_two p, hp.eq, sub_eq_zero] using ha
 
 open Unitization in

@@ -35,14 +35,14 @@ theorem contMDiff_model : ContMDiff I 𝓘(𝕜, E) n I := by
   refine contMDiffAt_iff.mpr ⟨I.continuousAt, ?_⟩
   simp only [mfld_simps]
   refine contDiffWithinAt_id.congr_of_eventuallyEq ?_ ?_
-  · exact Filter.eventuallyEq_of_mem self_mem_nhdsWithin fun x₂ => I.right_inv
+  · exact Filter.eventuallyEq_of_mem self_mem_nhdsWithin fun x₂ ↦ I.right_inv
   simp_rw [Function.comp_apply, I.left_inv, Function.id_def]
 
 theorem contMDiffOn_model_symm : ContMDiffOn 𝓘(𝕜, E) I n I.symm (range I) := by
   rw [contMDiffOn_iff]
-  refine ⟨I.continuousOn_symm, fun x y => ?_⟩
+  refine ⟨I.continuousOn_symm, fun x y ↦ ?_⟩
   simp only [mfld_simps]
-  exact contDiffOn_id.congr fun x' => I.right_inv
+  exact contDiffOn_id.congr fun x' ↦ I.right_inv
 
 /-- An atlas member is `C^n` for any `n`. -/
 theorem contMDiffOn_of_mem_maximalAtlas (h : e ∈ maximalAtlas I n M) :
@@ -86,7 +86,7 @@ theorem contMDiffAt_extChartAt : ContMDiffAt I 𝓘(𝕜, E) n (extChartAt I x) 
   exact PartialEquiv.right_inv (extChartAt I x) hy
 
 theorem contMDiffOn_extChartAt : ContMDiffOn I 𝓘(𝕜, E) n (extChartAt I x) (chartAt H x).source :=
-  fun _x' hx' => (contMDiffAt_extChartAt' hx').contMDiffWithinAt
+  fun _x' hx' ↦ (contMDiffAt_extChartAt' hx').contMDiffWithinAt
 
 theorem contMDiffOn_extend_symm (he : e ∈ maximalAtlas I n M) :
     ContMDiffOn 𝓘(𝕜, E) I n (e.extend I).symm (I '' e.target) := by
@@ -205,7 +205,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') 
     let c := chartAt H x
     let c' := chartAt H X
     obtain ⟨-, hxf⟩ := h x hx
-    refine ⟨(f.symm.continuousAt hX).continuousWithinAt, fun h2x => ?_⟩
+    refine ⟨(f.symm.continuousAt hX).continuousWithinAt, fun h2x ↦ ?_⟩
     obtain ⟨e, he, h2e, hef, hex⟩ :
       ∃ e : PartialHomeomorph H H,
         e ∈ contDiffGroupoid n I ∧

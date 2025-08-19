@@ -18,7 +18,7 @@ open Filter Metric Set Topology
 namespace Nat
 
 noncomputable instance : Dist ℕ :=
-  ⟨fun x y => dist (x : ℝ) y⟩
+  ⟨fun x y ↦ dist (x : ℝ) y⟩
 
 theorem dist_eq (x y : ℕ) : dist x y = |(x : ℝ) - y| := rfl
 
@@ -27,7 +27,7 @@ theorem dist_coe_int (x y : ℕ) : dist (x : ℤ) (y : ℤ) = dist x y := rfl
 @[norm_cast, simp]
 theorem dist_cast_real (x y : ℕ) : dist (x : ℝ) y = dist x y := rfl
 
-theorem pairwise_one_le_dist : Pairwise fun m n : ℕ => 1 ≤ dist m n := fun _ _ hne =>
+theorem pairwise_one_le_dist : Pairwise fun m n : ℕ ↦ 1 ≤ dist m n := fun _ _ hne ↦
   Int.pairwise_one_le_dist <| mod_cast hne
 
 theorem isUniformEmbedding_coe_real : IsUniformEmbedding ((↑) : ℕ → ℝ) :=
@@ -53,7 +53,7 @@ theorem closedBall_eq_Icc (x : ℕ) (r : ℝ) : closedBall x r = Icc ⌈↑x - r
       linarith
 
 instance : ProperSpace ℕ :=
-  ⟨fun x r => by
+  ⟨fun x r ↦ by
     rw [closedBall_eq_Icc]
     exact (Set.finite_Icc _ _).isCompact⟩
 

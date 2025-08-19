@@ -56,7 +56,7 @@ variable {P P₂ P₃}
 /-- Construct a 0-simplex from a point. -/
 def mkOfPoint (p : P) : Simplex k P 0 :=
   have : Subsingleton (Fin (1 + 0)) := by rw [add_zero]; infer_instance
-  ⟨fun _ => p, affineIndependent_of_subsingleton k _⟩
+  ⟨fun _ ↦ p, affineIndependent_of_subsingleton k _⟩
 
 /-- The point in a simplex constructed with `mkOfPoint`. -/
 @[simp]
@@ -171,13 +171,13 @@ def map {n : ℕ} (s : Affine.Simplex k P n) (f : P →ᵃ[k] P₂) (hf : Functi
 @[simp]
 theorem map_id {n : ℕ} (s : Affine.Simplex k P n) :
     s.map (AffineMap.id _ _) Function.injective_id = s :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 theorem map_comp {n : ℕ} (s : Affine.Simplex k P n)
     (f : P →ᵃ[k] P₂) (hf : Function.Injective f)
     (g : P₂ →ᵃ[k] P₃) (hg : Function.Injective g) :
     s.map (g.comp f) (hg.comp hf) = (s.map f hf).map g hg :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem face_map {n : ℕ} (s : Simplex k P n) (f : P →ᵃ[k] P₂) (hf : Function.Injective f)
@@ -204,7 +204,7 @@ def reindex {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fin (n + 1)) : 
 /-- Reindexing by `Equiv.refl` yields the original simplex. -/
 @[simp]
 theorem reindex_refl {n : ℕ} (s : Simplex k P n) : s.reindex (Equiv.refl (Fin (n + 1))) = s :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 /-- Reindexing by the composition of two equivalences is the same as reindexing twice. -/
 @[simp]

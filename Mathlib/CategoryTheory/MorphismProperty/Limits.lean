@@ -635,14 +635,14 @@ lemma IsStableUnderProductsOfShape.mk (J : Type*) [W.RespectsIso]
       (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
       W (Limits.Pi.map f)) : W.IsStableUnderProductsOfShape J where
   condition X₁ X₂ c₁ c₂ hc₁ hc₂ f hf α hα := by
-    let φ := fun j => f.app (Discrete.mk j)
+    let φ := fun j ↦ f.app (Discrete.mk j)
     have : HasLimit X₁ := ⟨c₁, hc₁⟩
     have : HasLimit X₂ := ⟨c₂, hc₂⟩
     have : HasProduct fun j ↦ X₁.obj (Discrete.mk j) :=
       hasLimit_of_iso (Discrete.natIso (fun j ↦ Iso.refl (X₁.obj j)))
     have : HasProduct fun j ↦ X₂.obj (Discrete.mk j) :=
       hasLimit_of_iso (Discrete.natIso (fun j ↦ Iso.refl (X₂.obj j)))
-    have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
+    have hf' := hW _ _ φ (fun j ↦ hf (Discrete.mk j))
     refine (W.arrow_mk_iso_iff ?_).2 hf'
     refine Arrow.isoMk
       (IsLimit.conePointUniqueUpToIso hc₁ (limit.isLimit X₁) ≪≫ (Pi.isoLimit X₁).symm)
@@ -656,14 +656,14 @@ lemma IsStableUnderCoproductsOfShape.mk (J : Type*) [W.RespectsIso]
       (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
       W (Limits.Sigma.map f)) : W.IsStableUnderCoproductsOfShape J where
   condition X₁ X₂ c₁ c₂ hc₁ hc₂ f hf α hα := by
-    let φ := fun j => f.app (Discrete.mk j)
+    let φ := fun j ↦ f.app (Discrete.mk j)
     have : HasColimit X₁ := ⟨c₁, hc₁⟩
     have : HasColimit X₂ := ⟨c₂, hc₂⟩
     have : HasCoproduct fun j ↦ X₁.obj (Discrete.mk j) :=
       hasColimit_of_iso (Discrete.natIso (fun j ↦ Iso.refl (X₁.obj j)))
     have : HasCoproduct fun j ↦ X₂.obj (Discrete.mk j) :=
       hasColimit_of_iso (Discrete.natIso (fun j ↦ Iso.refl (X₂.obj j)))
-    have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
+    have hf' := hW _ _ φ (fun j ↦ hf (Discrete.mk j))
     refine (W.arrow_mk_iso_iff ?_).1 hf'
     refine Arrow.isoMk
       ((Sigma.isoColimit _) ≪≫ IsColimit.coconePointUniqueUpToIso (colimit.isColimit X₁) hc₁)
@@ -728,7 +728,7 @@ variable [HasPullbacks C] {P : MorphismProperty C}
 
 /-- For `P : MorphismProperty C`, `P.diagonal` is a morphism property that holds for `f : X ⟶ Y`
 whenever `P` holds for `X ⟶ Y xₓ Y`. -/
-def diagonal (P : MorphismProperty C) : MorphismProperty C := fun _ _ f => P (pullback.diagonal f)
+def diagonal (P : MorphismProperty C) : MorphismProperty C := fun _ _ f ↦ P (pullback.diagonal f)
 
 theorem diagonal_iff {X Y : C} {f : X ⟶ Y} : P.diagonal f ↔ P (pullback.diagonal f) :=
   Iff.rfl
@@ -782,7 +782,7 @@ end Diagonal
 section Universally
 
 /-- `P.universally` holds for a morphism `f : X ⟶ Y` iff `P` holds for all `X ×[Y] Y' ⟶ Y'`. -/
-def universally (P : MorphismProperty C) : MorphismProperty C := fun X Y f =>
+def universally (P : MorphismProperty C) : MorphismProperty C := fun X Y f ↦
   ∀ ⦃X' Y' : C⦄ (i₁ : X' ⟶ X) (i₂ : Y' ⟶ Y) (f' : X' ⟶ Y') (_ : IsPullback f' i₁ i₂ f), P f'
 
 instance universally_respectsIso (P : MorphismProperty C) : P.universally.RespectsIso := by
@@ -825,13 +825,13 @@ theorem universally_inf (P Q : MorphismProperty C) :
 theorem universally_eq_iff {P : MorphismProperty C} :
     P.universally = P ↔ P.IsStableUnderBaseChange :=
   ⟨(· ▸ P.universally_isStableUnderBaseChange),
-    fun hP ↦ P.universally_le.antisymm fun _ _ _ hf _ _ _ _ _ H => hP.of_isPullback H.flip hf⟩
+    fun hP ↦ P.universally_le.antisymm fun _ _ _ hf _ _ _ _ _ H ↦ hP.of_isPullback H.flip hf⟩
 
 theorem IsStableUnderBaseChange.universally_eq {P : MorphismProperty C}
     [hP : P.IsStableUnderBaseChange] : P.universally = P := universally_eq_iff.mpr hP
 
 theorem universally_mono : Monotone (universally : MorphismProperty C → MorphismProperty C) :=
-  fun _ _ h _ _ _ h₁ _ _ _ _ _ H => h _ (h₁ _ _ _ H)
+  fun _ _ h _ _ _ h₁ _ _ _ _ _ H ↦ h _ (h₁ _ _ _ H)
 
 lemma universally_mk' (P : MorphismProperty C) [P.RespectsIso] {X Y : C} (g : X ⟶ Y)
     (H : ∀ {T : C} (f : T ⟶ Y) [HasPullback f g], P (pullback.fst f g)) :

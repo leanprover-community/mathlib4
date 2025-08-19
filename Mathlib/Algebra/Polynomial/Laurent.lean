@@ -238,9 +238,9 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
     intro n a
     refine Int.induction_on n ?_ ?_ ?_
     · simpa only [T_zero, mul_one] using h_C a
-    · exact fun m => h_C_mul_T m a
-    · exact fun m => h_C_mul_T_Z m a
-  have B : ∀ s : Finset ℤ, M (s.sum fun n : ℤ => C (p n) * T n) := by
+    · exact fun m ↦ h_C_mul_T m a
+    · exact fun m ↦ h_C_mul_T_Z m a
+  have B : ∀ s : Finset ℤ, M (s.sum fun n : ℤ ↦ C (p n) * T n) := by
     apply Finset.induction
     · convert h_C 0
       simp only [Finset.sum_empty, map_zero]
@@ -264,13 +264,13 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
 protected theorem induction_on' {motive : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹])
     (add : ∀ p q, motive p → motive q → motive (p + q))
     (C_mul_T : ∀ (n : ℤ) (a : R), motive (C a * T n)) : motive p := by
-  refine p.induction_on (fun a => ?_) (fun {p q} => add p q) ?_ ?_ <;>
-      try exact fun n f _ => C_mul_T _ f
+  refine p.induction_on (fun a ↦ ?_) (fun {p q} ↦ add p q) ?_ ?_ <;>
+      try exact fun n f _ ↦ C_mul_T _ f
   convert C_mul_T 0 a
   exact (mul_one _).symm
 
 theorem commute_T (n : ℤ) (f : R[T;T⁻¹]) : Commute (T n) f :=
-  f.induction_on' (fun _ _ Tp Tq => Commute.add_right Tp Tq) fun m a =>
+  f.induction_on' (fun _ _ Tp Tq ↦ Commute.add_right Tp Tq) fun m a ↦
     show T n * _ = _ by
       rw [T, T, ← single_eq_C, single_mul_single, single_mul_single, single_mul_single]
       simp [add_comm]
@@ -291,7 +291,7 @@ theorem smul_eq_C_mul (r : R) (f : R[T;T⁻¹]) : r • f = C r * f := by
 nonnegative degree coincide with the ones of `f`.  The terms of negative degree of `f` "vanish".
 `trunc` is a left-inverse to `Polynomial.toLaurent`. -/
 def trunc : R[T;T⁻¹] →+ R[X] :=
-  (toFinsuppIso R).symm.toAddMonoidHom.comp <| comapDomain.addMonoidHom fun _ _ => Int.ofNat.inj
+  (toFinsuppIso R).symm.toAddMonoidHom.comp <| comapDomain.addMonoidHom fun _ _ ↦ Int.ofNat.inj
 
 @[simp]
 theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (monomial n.toNat r) 0 := by
@@ -314,7 +314,7 @@ theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (mon
 @[simp]
 theorem leftInverse_trunc_toLaurent :
     Function.LeftInverse (trunc : R[T;T⁻¹] → R[X]) Polynomial.toLaurent := by
-  refine fun f => f.induction_on' ?_ ?_
+  refine fun f ↦ f.induction_on' ?_ ?_
   · intro f g hf hg
     simp only [hf, hg, map_add]
   · intro n r
@@ -331,7 +331,7 @@ theorem _root_.Polynomial.toLaurent_injective :
 
 @[simp]
 theorem _root_.Polynomial.toLaurent_inj (f g : R[X]) : toLaurent f = toLaurent g ↔ f = g :=
-  ⟨fun h => Polynomial.toLaurent_injective h, congr_arg _⟩
+  ⟨fun h ↦ Polynomial.toLaurent_injective h, congr_arg _⟩
 
 theorem _root_.Polynomial.toLaurent_ne_zero {f : R[X]} : toLaurent f ≠ 0 ↔ f ≠ 0 :=
   map_ne_zero_iff _ Polynomial.toLaurent_injective
@@ -341,7 +341,7 @@ theorem _root_.Polynomial.toLaurent_eq_zero {f : R[X]} : toLaurent f = 0 ↔ f =
   map_eq_zero_iff _ Polynomial.toLaurent_injective
 
 theorem exists_T_pow (f : R[T;T⁻¹]) : ∃ (n : ℕ) (f' : R[X]), toLaurent f' = f * T n := by
-  refine f.induction_on' ?_ fun n a => ?_ <;> clear f
+  refine f.induction_on' ?_ fun n a ↦ ?_ <;> clear f
   · rintro f g ⟨m, fn, hf⟩ ⟨n, gn, hg⟩
     refine ⟨m + n, fn * X ^ n + gn * X ^ m, ?_⟩
     simp only [hf, hg, add_mul, add_comm (n : ℤ), map_add, map_mul, Polynomial.toLaurent_X_pow,
@@ -421,7 +421,7 @@ theorem degree_zero : degree (0 : R[T;T⁻¹]) = ⊥ :=
 
 @[simp]
 theorem degree_eq_bot_iff {f : R[T;T⁻¹]} : f.degree = ⊥ ↔ f = 0 := by
-  refine ⟨fun h => ?_, fun h => by rw [h, degree_zero]⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h, degree_zero]⟩
   ext n
   simp only [coe_zero, Pi.zero_apply]
   simp_rw [degree, Finset.max_eq_sup_withBot, Finset.sup_eq_bot_iff, Finsupp.mem_support_iff, Ne,
@@ -486,8 +486,8 @@ variable [CommSemiring R] {S : Type*} [CommSemiring S] (f : R →+* S) (x : Sˣ)
 
 instance algebraPolynomial (R : Type*) [CommSemiring R] : Algebra R[X] R[T;T⁻¹] where
   algebraMap := Polynomial.toLaurent
-  commutes' := fun f l => by simp [mul_comm]
-  smul_def' := fun _ _ => rfl
+  commutes' := fun f l ↦ by simp [mul_comm]
+  smul_def' := fun _ _ ↦ rfl
 
 theorem algebraMap_X_pow (n : ℕ) : algebraMap R[X] R[T;T⁻¹] (X ^ n) = T n :=
   Polynomial.toLaurent_X_pow n
@@ -497,17 +497,17 @@ theorem algebraMap_eq_toLaurent (f : R[X]) : algebraMap R[X] R[T;T⁻¹] f = toL
   rfl
 
 instance isLocalization : IsLocalization.Away (X : R[X]) R[T;T⁻¹] :=
-  { map_units' := fun ⟨t, ht⟩ => by
+  { map_units' := fun ⟨t, ht⟩ ↦ by
       obtain ⟨n, rfl⟩ := ht
       rw [algebraMap_eq_toLaurent, toLaurent_X_pow]
       exact isUnit_T ↑n
-    surj' := fun f => by
+    surj' := fun f ↦ by
       induction' f using LaurentPolynomial.induction_on_mul_T with f n
       have : X ^ n ∈ Submonoid.powers (X : R[X]) := ⟨n, rfl⟩
       refine ⟨(f, ⟨_, this⟩), ?_⟩
       simp only [algebraMap_eq_toLaurent, toLaurent_X_pow, mul_T_assoc, neg_add_cancel, T_zero,
         mul_one]
-    exists_of_eq := fun {f g} => by
+    exists_of_eq := fun {f g} ↦ by
       rw [algebraMap_eq_toLaurent, algebraMap_eq_toLaurent, Polynomial.toLaurent_inj]
       rintro rfl
       exact ⟨1, rfl⟩ }
@@ -616,9 +616,9 @@ section SMulWithZero
 variable [Semiring R] [AddCommMonoid S] [SMulWithZero R S] [Monoid S] (f g : R[T;T⁻¹]) (x y : Sˣ)
 
 /-- Evaluate a Laurent polynomial at a unit, using scalar multiplication. -/
-def smeval : S := Finsupp.sum f fun n r => r • (x ^ n).val
+def smeval : S := Finsupp.sum f fun n r ↦ r • (x ^ n).val
 
-theorem smeval_eq_sum : f.smeval x = Finsupp.sum f fun n r => r • (x ^ n).val := rfl
+theorem smeval_eq_sum : f.smeval x = Finsupp.sum f fun n r ↦ r • (x ^ n).val := rfl
 
 theorem smeval_congr : f = g → x = y → f.smeval x = g.smeval y := by rintro rfl rfl; rfl
 
@@ -662,7 +662,7 @@ variable [Semiring R] [AddCommMonoid S] [Module R S] [Monoid S] (f g : R[T;T⁻�
 @[simp]
 theorem smeval_add : (f + g).smeval x = f.smeval x + g.smeval x := by
   simp only [smeval_eq_sum]
-  rw [Finsupp.sum_add_index (fun n _ => zero_smul R (x ^ n).val) (fun n _ r r' => add_smul r r' _)]
+  rw [Finsupp.sum_add_index (fun n _ ↦ zero_smul R (x ^ n).val) (fun n _ r r' ↦ add_smul r r' _)]
 
 @[simp]
 theorem smeval_C_mul (r : R) : (C r * f).smeval x = r • (f.smeval x) := by

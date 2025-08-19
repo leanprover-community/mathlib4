@@ -95,14 +95,14 @@ theorem covBy_sup_of_inf_covBy_of_inf_covBy_left : a ⊓ b ⋖ a → a ⊓ b ⋖
 
 theorem covBy_sup_of_inf_covBy_of_inf_covBy_right : a ⊓ b ⋖ a → a ⊓ b ⋖ b → b ⋖ a ⊔ b := by
   rw [inf_comm, sup_comm]
-  exact fun ha hb => covBy_sup_of_inf_covBy_of_inf_covBy_left hb ha
+  exact fun ha hb ↦ covBy_sup_of_inf_covBy_of_inf_covBy_left hb ha
 
 alias CovBy.sup_of_inf_of_inf_left := covBy_sup_of_inf_covBy_of_inf_covBy_left
 
 alias CovBy.sup_of_inf_of_inf_right := covBy_sup_of_inf_covBy_of_inf_covBy_right
 
 instance : IsWeakLowerModularLattice (OrderDual α) :=
-  ⟨fun ha hb => (ha.ofDual.sup_of_inf_of_inf_left hb.ofDual).toDual⟩
+  ⟨fun ha hb ↦ (ha.ofDual.sup_of_inf_of_inf_left hb.ofDual).toDual⟩
 
 end WeakUpperModular
 
@@ -115,14 +115,14 @@ theorem inf_covBy_of_covBy_sup_of_covBy_sup_left : a ⋖ a ⊔ b → b ⋖ a ⊔
 
 theorem inf_covBy_of_covBy_sup_of_covBy_sup_right : a ⋖ a ⊔ b → b ⋖ a ⊔ b → a ⊓ b ⋖ b := by
   rw [sup_comm, inf_comm]
-  exact fun ha hb => inf_covBy_of_covBy_sup_of_covBy_sup_left hb ha
+  exact fun ha hb ↦ inf_covBy_of_covBy_sup_of_covBy_sup_left hb ha
 
 alias CovBy.inf_of_sup_of_sup_left := inf_covBy_of_covBy_sup_of_covBy_sup_left
 
 alias CovBy.inf_of_sup_of_sup_right := inf_covBy_of_covBy_sup_of_covBy_sup_right
 
 instance : IsWeakUpperModularLattice (OrderDual α) :=
-  ⟨fun ha hb => (ha.ofDual.inf_of_sup_of_sup_left hb.ofDual).toDual⟩
+  ⟨fun ha hb ↦ (ha.ofDual.inf_of_sup_of_sup_left hb.ofDual).toDual⟩
 
 end WeakLowerModular
 
@@ -144,10 +144,10 @@ alias CovBy.sup_of_inf_right := covBy_sup_of_inf_covBy_right
 -- See note [lower instance priority]
 instance (priority := 100) IsUpperModularLattice.to_isWeakUpperModularLattice :
     IsWeakUpperModularLattice α :=
-  ⟨fun _ => CovBy.sup_of_inf_right⟩
+  ⟨fun _ ↦ CovBy.sup_of_inf_right⟩
 
 instance : IsLowerModularLattice (OrderDual α) :=
-  ⟨fun h => h.ofDual.sup_of_inf_left.toDual⟩
+  ⟨fun h ↦ h.ofDual.sup_of_inf_left.toDual⟩
 
 end UpperModular
 
@@ -169,10 +169,10 @@ alias CovBy.inf_of_sup_right := inf_covBy_of_covBy_sup_right
 -- See note [lower instance priority]
 instance (priority := 100) IsLowerModularLattice.to_isWeakLowerModularLattice :
     IsWeakLowerModularLattice α :=
-  ⟨fun _ => CovBy.inf_of_sup_right⟩
+  ⟨fun _ ↦ CovBy.inf_of_sup_right⟩
 
 instance : IsUpperModularLattice (OrderDual α) :=
-  ⟨fun h => h.ofDual.inf_of_sup_left.toDual⟩
+  ⟨fun h ↦ h.ofDual.inf_of_sup_left.toDual⟩
 
 end LowerModular
 
@@ -191,7 +191,7 @@ theorem inf_sup_assoc_of_le {x : α} (y : α) {z : α} (h : z ≤ x) : x ⊓ y �
   rw [inf_comm, sup_comm, ← sup_inf_assoc_of_le y h, inf_comm, sup_comm]
 
 instance : IsModularLattice αᵒᵈ :=
-  ⟨fun y z xz =>
+  ⟨fun y z xz ↦
     le_of_eq
       (by
         rw [inf_comm, sup_comm, eq_comm, inf_comm, sup_comm]
@@ -213,7 +213,7 @@ theorem eq_of_le_of_inf_le_of_sup_le (hxy : x ≤ y) (hinf : y ⊓ z ≤ x ⊓ z
   eq_of_le_of_inf_le_of_le_sup hxy (hinf.trans inf_le_left) (le_sup_left.trans hsup)
 
 theorem sup_lt_sup_of_lt_of_inf_le_inf (hxy : x < y) (hinf : y ⊓ z ≤ x ⊓ z) : x ⊔ z < y ⊔ z :=
-  lt_of_le_of_ne (sup_le_sup_right (le_of_lt hxy) _) fun hsup =>
+  lt_of_le_of_ne (sup_le_sup_right (le_of_lt hxy) _) fun hsup ↦
     ne_of_lt hxy <| eq_of_le_of_inf_le_of_sup_le (le_of_lt hxy) hinf (le_of_eq hsup.symm)
 
 theorem inf_lt_inf_of_lt_of_sup_le_sup (hxy : x < y) (hinf : y ⊔ z ≤ x ⊔ z) : x ⊓ z < y ⊓ z :=
@@ -262,15 +262,15 @@ def infIccOrderIsoIccSup (a b : α) : Set.Icc (a ⊓ b) a ≃o Set.Icc b (a ⊔ 
   map_rel_iff' {x y} := by
     simp only [Subtype.mk_le_mk, Equiv.coe_fn_mk]
     rw [← Subtype.coe_le_coe]
-    refine ⟨fun h => ?_, fun h => sup_le_sup_right h _⟩
+    refine ⟨fun h ↦ ?_, fun h ↦ sup_le_sup_right h _⟩
     rw [← sup_eq_right.2 x.prop.1, inf_sup_assoc_of_le _ x.prop.2, sup_comm, ←
       sup_eq_right.2 y.prop.1, inf_sup_assoc_of_le _ y.prop.2, sup_comm b]
     exact inf_le_inf_left _ h
 
-theorem inf_strictMonoOn_Icc_sup {a b : α} : StrictMonoOn (fun c => a ⊓ c) (Icc b (a ⊔ b)) :=
+theorem inf_strictMonoOn_Icc_sup {a b : α} : StrictMonoOn (fun c ↦ a ⊓ c) (Icc b (a ⊔ b)) :=
   StrictMono.of_restrict (infIccOrderIsoIccSup a b).symm.strictMono
 
-theorem sup_strictMonoOn_Icc_inf {a b : α} : StrictMonoOn (fun c => c ⊔ b) (Icc (a ⊓ b) a) :=
+theorem sup_strictMonoOn_Icc_inf {a b : α} : StrictMonoOn (fun c ↦ c ⊔ b) (Icc (a ⊓ b) a) :=
   StrictMono.of_restrict (infIccOrderIsoIccSup a b).strictMono
 
 /-- The diamond isomorphism between the intervals `]a ⊓ b, a[` and `}b, a ⊔ b[`. -/
@@ -294,20 +294,20 @@ def infIooOrderIsoIooSup (a b : α) : Ioo (a ⊓ b) a ≃o Ioo b (a ⊔ b) where
     Subtype.ext <| by
       dsimp
       rw [inf_comm, inf_sup_assoc_of_le _ c.prop.1.le, inf_eq_left.2 c.prop.2.le]
-  map_rel_iff' := @fun c d =>
+  map_rel_iff' := @fun c d ↦
     @OrderIso.le_iff_le _ _ _ _ (infIccOrderIsoIccSup _ _) ⟨c.1, Ioo_subset_Icc_self c.2⟩
       ⟨d.1, Ioo_subset_Icc_self d.2⟩
 
 -- See note [lower instance priority]
 instance (priority := 100) IsModularLattice.to_isLowerModularLattice : IsLowerModularLattice α :=
-  ⟨fun {a b} => by
+  ⟨fun {a b} ↦ by
     simp_rw [covBy_iff_Ioo_eq, sup_comm a, inf_comm a, ← isEmpty_coe_sort, right_lt_sup,
       inf_lt_left, (infIooOrderIsoIooSup b a).symm.toEquiv.isEmpty_congr]
     exact id⟩
 
 -- See note [lower instance priority]
 instance (priority := 100) IsModularLattice.to_isUpperModularLattice : IsUpperModularLattice α :=
-  ⟨fun {a b} => by
+  ⟨fun {a b} ↦ by
     simp_rw [covBy_iff_Ioo_eq, ← isEmpty_coe_sort, right_lt_sup, inf_lt_left,
       (infIooOrderIsoIooSup a b).toEquiv.isEmpty_congr]
     exact id⟩
@@ -329,13 +329,13 @@ end IsCompl
 
 theorem isModularLattice_iff_inf_sup_inf_assoc [Lattice α] :
     IsModularLattice α ↔ ∀ x y z : α, x ⊓ z ⊔ y ⊓ z = (x ⊓ z ⊔ y) ⊓ z :=
-  ⟨fun h => @IsModularLattice.inf_sup_inf_assoc _ _ h, fun h =>
-    ⟨fun y z xz => by rw [← inf_eq_left.2 xz, h]⟩⟩
+  ⟨fun h ↦ @IsModularLattice.inf_sup_inf_assoc _ _ h, fun h ↦
+    ⟨fun y z xz ↦ by rw [← inf_eq_left.2 xz, h]⟩⟩
 
 namespace DistribLattice
 
 instance (priority := 100) [DistribLattice α] : IsModularLattice α :=
-  ⟨fun y z xz => by rw [inf_sup_right, inf_eq_left.2 xz]⟩
+  ⟨fun y z xz ↦ by rw [inf_sup_right, inf_eq_left.2 xz]⟩
 
 end DistribLattice
 
@@ -383,10 +383,10 @@ namespace IsModularLattice
 variable [Lattice α] [IsModularLattice α] {a b c : α}
 
 instance isModularLattice_Iic : IsModularLattice (Set.Iic a) :=
-  ⟨@fun x y z xz => (sup_inf_le_assoc_of_le (y : α) xz : (↑x ⊔ ↑y) ⊓ ↑z ≤ ↑x ⊔ ↑y ⊓ ↑z)⟩
+  ⟨@fun x y z xz ↦ (sup_inf_le_assoc_of_le (y : α) xz : (↑x ⊔ ↑y) ⊓ ↑z ≤ ↑x ⊔ ↑y ⊓ ↑z)⟩
 
 instance isModularLattice_Ici : IsModularLattice (Set.Ici a) :=
-  ⟨@fun x y z xz => (sup_inf_le_assoc_of_le (y : α) xz : (↑x ⊔ ↑y) ⊓ ↑z ≤ ↑x ⊔ ↑y ⊓ ↑z)⟩
+  ⟨@fun x y z xz ↦ (sup_inf_le_assoc_of_le (y : α) xz : (↑x ⊔ ↑y) ⊓ ↑z ≤ ↑x ⊔ ↑y ⊓ ↑z)⟩
 
 section ComplementedLattice
 
@@ -407,19 +407,19 @@ theorem exists_inf_eq_and_codisjoint (h : a ≤ b) : ∃ b', b ⊓ b' = a ∧ Co
   apply exists_inf_eq_and_sup_eq h (by simp)
 
 instance complementedLattice_Icc [Fact (a ≤ b)] : ComplementedLattice (Set.Icc a b) where
-  exists_isCompl := fun ⟨x, ha, hb⟩ => by
+  exists_isCompl := fun ⟨x, ha, hb⟩ ↦ by
     simp_rw [Set.Icc.isCompl_iff]
     obtain ⟨y, rfl, rfl⟩ := exists_inf_eq_and_sup_eq ha hb
     exact ⟨⟨y, inf_le_right, le_sup_right⟩, rfl, rfl⟩
 
 instance complementedLattice_Iic : ComplementedLattice (Set.Iic a) where
-  exists_isCompl := fun ⟨x, hx⟩ => by
+  exists_isCompl := fun ⟨x, hx⟩ ↦ by
     simp_rw [Set.Iic.isCompl_iff]
     obtain ⟨y, hdisjoint, rfl⟩ := exists_disjoint_and_sup_eq hx
     exact ⟨⟨y, le_sup_right⟩, hdisjoint, rfl⟩
 
 instance complementedLattice_Ici : ComplementedLattice (Set.Ici a) where
-  exists_isCompl := fun ⟨x, hx⟩ => by
+  exists_isCompl := fun ⟨x, hx⟩ ↦ by
     simp_rw [Set.Ici.isCompl_iff]
     obtain ⟨y, rfl, hcodisjoint⟩ := exists_inf_eq_and_codisjoint hx
     exact ⟨⟨y, inf_le_right⟩, rfl, hcodisjoint⟩

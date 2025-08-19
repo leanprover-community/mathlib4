@@ -41,7 +41,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
   choose! F hF using H
   -- Use the axiom of choice
   -- Now define u by induction starting at x, with u_{n+1} = F(n, u_n)
-  let u : ℕ → X := fun n => Nat.recOn n x F
+  let u : ℕ → X := fun n ↦ Nat.recOn n x F
   -- The properties of F translate to properties of u
   have hu :
     ∀ n,
@@ -60,19 +60,19 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
         calc
           d (u 0) (u (n + 1)) ≤ ∑ i ∈ r, d (u i) (u <| i + 1) := dist_le_range_sum_dist u (n + 1)
           _ ≤ ∑ i ∈ r, ε / 2 ^ i :=
-            (sum_le_sum fun i i_in => (IH i <| Nat.lt_succ_iff.mp <| Finset.mem_range.mp i_in).1)
+            (sum_le_sum fun i i_in ↦ (IH i <| Nat.lt_succ_iff.mp <| Finset.mem_range.mp i_in).1)
           _ = (∑ i ∈ r, (1 / 2 : ℝ) ^ i) * ε := by
             rw [Finset.sum_mul]
             field_simp
           _ ≤ 2 * ε := by gcongr; apply sum_geometric_two_le
       have B : 2 ^ (n + 1) * ϕ x ≤ ϕ (u (n + 1)) := by
-        refine @geom_le (ϕ ∘ u) _ zero_le_two (n + 1) fun m hm => ?_
+        refine @geom_le (ϕ ∘ u) _ zero_le_two (n + 1) fun m hm ↦ ?_
         exact (IH _ <| Nat.lt_add_one_iff.1 hm).2.le
       exact hu (n + 1) ⟨A, B⟩
   obtain ⟨key₁, key₂⟩ := forall_and.mp key
   -- Hence u is Cauchy
   have cauchy_u : CauchySeq u := by
-    refine cauchySeq_of_le_geometric _ ε one_half_lt_one fun n => ?_
+    refine cauchySeq_of_le_geometric _ ε one_half_lt_one fun n ↦ ?_
     simpa only [one_div, inv_pow] using key₁ n
   -- So u converges to some y
   obtain ⟨y, limy⟩ : ∃ y, Tendsto u atTop (𝓝 y) := CompleteSpace.complete cauchy_u
@@ -85,7 +85,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
         0 ≤ 2 * ϕ (u 0) := by specialize nonneg x; positivity
         _ < ϕ (u (0 + 1)) := key₂ 0
     apply tendsto_atTop_of_geom_le hv₀ one_lt_two
-    exact fun n => (key₂ (n + 1)).le
+    exact fun n ↦ (key₂ (n + 1)).le
   -- But ϕ ∘ u also needs to go to ϕ(y)
   have lim : Tendsto (ϕ ∘ u) atTop (𝓝 (ϕ y)) := Tendsto.comp cont.continuousAt limy
   -- So we have our contradiction!

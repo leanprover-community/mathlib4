@@ -82,13 +82,13 @@ namespace AreSeparated
 @[symm]
 theorem symm (h : AreSeparated s t) : AreSeparated t s :=
   let ⟨r, r0, hr⟩ := h
-  ⟨r, r0, fun y hy x hx => edist_comm x y ▸ hr x hx y hy⟩
+  ⟨r, r0, fun y hy x hx ↦ edist_comm x y ▸ hr x hx y hy⟩
 
 theorem comm : AreSeparated s t ↔ AreSeparated t s := ⟨symm, symm⟩
 
 @[simp]
 theorem empty_left (s : Set X) : AreSeparated ∅ s :=
-  ⟨1, one_ne_zero, fun _x => False.elim⟩
+  ⟨1, one_ne_zero, fun _x ↦ False.elim⟩
 
 @[simp]
 theorem empty_right (s : Set X) : AreSeparated s ∅ :=
@@ -96,15 +96,15 @@ theorem empty_right (s : Set X) : AreSeparated s ∅ :=
 
 protected theorem disjoint (h : AreSeparated s t) : Disjoint s t :=
   let ⟨r, r0, hr⟩ := h
-  Set.disjoint_left.mpr fun x hx1 hx2 => r0 <| by simpa using hr x hx1 x hx2
+  Set.disjoint_left.mpr fun x hx1 hx2 ↦ r0 <| by simpa using hr x hx1 x hx2
 
-theorem subset_compl_right (h : AreSeparated s t) : s ⊆ tᶜ := fun _ hs ht =>
+theorem subset_compl_right (h : AreSeparated s t) : s ⊆ tᶜ := fun _ hs ht ↦
   h.disjoint.le_bot ⟨hs, ht⟩
 
 @[mono]
 theorem mono {s' t'} (hs : s ⊆ s') (ht : t ⊆ t') :
-    AreSeparated s' t' → AreSeparated s t := fun ⟨r, r0, hr⟩ =>
-  ⟨r, r0, fun x hx y hy => hr x (hs hx) y (ht hy)⟩
+    AreSeparated s' t' → AreSeparated s t := fun ⟨r, r0, hr⟩ ↦
+  ⟨r, r0, fun x hx y hy ↦ hr x (hs hx) y (ht hy)⟩
 
 theorem mono_left {s'} (h' : AreSeparated s' t) (hs : s ⊆ s') : AreSeparated s t :=
   h'.mono hs Subset.rfl
@@ -115,16 +115,16 @@ theorem mono_right {t'} (h' : AreSeparated s t') (ht : t ⊆ t') : AreSeparated 
 theorem union_left {s'} (h : AreSeparated s t) (h' : AreSeparated s' t) :
     AreSeparated (s ∪ s') t := by
   rcases h, h' with ⟨⟨r, r0, hr⟩, ⟨r', r0', hr'⟩⟩
-  refine ⟨min r r', ?_, fun x hx y hy => hx.elim ?_ ?_⟩
+  refine ⟨min r r', ?_, fun x hx y hy ↦ hx.elim ?_ ?_⟩
   · rw [← pos_iff_ne_zero] at r0 r0' ⊢
     exact lt_min r0 r0'
-  · exact fun hx => (min_le_left _ _).trans (hr _ hx _ hy)
-  · exact fun hx => (min_le_right _ _).trans (hr' _ hx _ hy)
+  · exact fun hx ↦ (min_le_left _ _).trans (hr _ hx _ hy)
+  · exact fun hx ↦ (min_le_right _ _).trans (hr' _ hx _ hy)
 
 @[simp]
 theorem union_left_iff {s'} :
     AreSeparated (s ∪ s') t ↔ AreSeparated s t ∧ AreSeparated s' t :=
-  ⟨fun h => ⟨h.mono_left subset_union_left, h.mono_left subset_union_right⟩, fun h =>
+  ⟨fun h ↦ ⟨h.mono_left subset_union_left, h.mono_left subset_union_right⟩, fun h ↦
     h.1.union_left h.2⟩
 
 theorem union_right {t'} (h : AreSeparated s t) (h' : AreSeparated s t') :

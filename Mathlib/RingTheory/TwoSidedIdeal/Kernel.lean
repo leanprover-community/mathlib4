@@ -46,7 +46,7 @@ lemma ker_eq_bot : ker f = ⊥ ↔ Function.Injective f := by
   fconstructor
   · intro h x y hxy
     simpa [h, rel_iff, mem_bot, sub_eq_zero] using show (ker f).ringCon x y from hxy
-  · exact fun h ↦ eq_bot_iff.2 fun x hx => h hx
+  · exact fun h ↦ eq_bot_iff.2 fun x hx ↦ h hx
 
 section NonAssocRing
 
@@ -58,8 +58,8 @@ The kernel of the ring homomorphism `R → R⧸I` is `I`.
 @[simp]
 lemma ker_ringCon_mk' (I : TwoSidedIdeal R) : ker I.ringCon.mk' = I :=
   le_antisymm
-    (fun _ h => by simpa using I.rel_iff _ _ |>.1 (Quotient.eq'.1 h))
-    (fun _ h => Quotient.sound' <| I.rel_iff _ _ |>.2 (by simpa using h))
+    (fun _ h ↦ by simpa using I.rel_iff _ _ |>.1 (Quotient.eq'.1 h))
+    (fun _ h ↦ Quotient.sound' <| I.rel_iff _ _ |>.2 (by simpa using h))
 
 end NonAssocRing
 

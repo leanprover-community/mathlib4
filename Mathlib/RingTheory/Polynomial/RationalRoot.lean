@@ -129,12 +129,12 @@ theorem exists_integer_of_is_root_of_monic {p : A[X]} (hp : Monic p) {r : K} (hr
 
 namespace UniqueFactorizationMonoid
 
-theorem integer_of_integral {x : K} : IsIntegral A x → IsInteger A x := fun ⟨_, hp, hx⟩ =>
+theorem integer_of_integral {x : K} : IsIntegral A x → IsInteger A x := fun ⟨_, hp, hx⟩ ↦
   isInteger_of_is_root_of_monic hp hx
 
 -- See library note [lower instance priority]
 instance (priority := 100) instIsIntegrallyClosed : IsIntegrallyClosed A :=
-  (isIntegrallyClosed_iff (FractionRing A)).mpr fun {_} => integer_of_integral
+  (isIntegrallyClosed_iff (FractionRing A)).mpr fun {_} ↦ integer_of_integral
 
 end UniqueFactorizationMonoid
 

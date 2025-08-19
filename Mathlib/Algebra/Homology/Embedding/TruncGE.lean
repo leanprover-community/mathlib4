@@ -339,7 +339,7 @@ instance (i' : ι') : Epi ((K.πTruncGE e).f i') := by
     infer_instance
   · apply (isZero_extend_X _ _ _ (by simpa using hi')).epi
 
-instance : Epi (K.πTruncGE e) := epi_of_epi_f _ (fun _ => inferInstance)
+instance : Epi (K.πTruncGE e) := epi_of_epi_f _ (fun _ ↦ inferInstance)
 
 instance : (K.truncGE e).IsStrictlySupported e := by
   dsimp [truncGE]

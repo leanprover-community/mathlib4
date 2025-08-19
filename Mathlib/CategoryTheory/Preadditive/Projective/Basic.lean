@@ -105,7 +105,7 @@ theorem iso_iff {P Q : C} (i : P ≅ Q) : Projective P ↔ Projective Q :=
 instance (X : Type u) : Projective X where
   factors f e _ :=
     have he : Function.Surjective e := surjective_of_epi e
-    ⟨fun x => (he (f x)).choose, funext fun x ↦ (he (f x)).choose_spec⟩
+    ⟨fun x ↦ (he (f x)).choose, funext fun x ↦ (he (f x)).choose_spec⟩
 
 instance Type.enoughProjectives : EnoughProjectives (Type u) where
   presentation X := ⟨⟨X, 𝟙 X⟩⟩
@@ -115,7 +115,7 @@ instance {P Q : C} [HasBinaryCoproduct P Q] [Projective P] [Projective Q] : Proj
     by cat_disch⟩
 
 instance {β : Type v} (g : β → C) [HasCoproduct g] [∀ b, Projective (g b)] : Projective (∐ g) where
-  factors f e epi := ⟨Sigma.desc fun b => factorThru (Sigma.ι g b ≫ f) e, by cat_disch⟩
+  factors f e epi := ⟨Sigma.desc fun b ↦ factorThru (Sigma.ι g b ≫ f) e, by cat_disch⟩
 
 instance {P Q : C} [HasZeroMorphisms C] [HasBinaryBiproduct P Q] [Projective P] [Projective Q] :
     Projective (P ⊞ Q) where
@@ -124,17 +124,17 @@ instance {P Q : C} [HasZeroMorphisms C] [HasBinaryBiproduct P Q] [Projective P] 
 
 instance {β : Type v} (g : β → C) [HasZeroMorphisms C] [HasBiproduct g] [∀ b, Projective (g b)] :
     Projective (⨁ g) where
-  factors f e epi := ⟨biproduct.desc fun b => factorThru (biproduct.ι g b ≫ f) e, by cat_disch⟩
+  factors f e epi := ⟨biproduct.desc fun b ↦ factorThru (biproduct.ι g b ≫ f) e, by cat_disch⟩
 
 theorem projective_iff_preservesEpimorphisms_coyoneda_obj (P : C) :
     Projective P ↔ (coyoneda.obj (op P)).PreservesEpimorphisms :=
-  ⟨fun hP =>
-    ⟨fun f _ =>
-      (epi_iff_surjective _).2 fun g =>
+  ⟨fun hP ↦
+    ⟨fun f _ ↦
+      (epi_iff_surjective _).2 fun g ↦
         have : Projective (unop (op P)) := hP
         ⟨factorThru g f, factorThru_comp _ _⟩⟩,
-    fun _ =>
-    ⟨fun f e _ =>
+    fun _ ↦
+    ⟨fun f e _ ↦
       (epi_iff_surjective _).1 (inferInstance : Epi ((coyoneda.obj (op P)).map e)) f⟩⟩
 
 section EnoughProjectives

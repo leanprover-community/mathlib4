@@ -69,14 +69,14 @@ theorem ext {I J : Ideal α} (h : ∀ x, x ∈ I ↔ x ∈ J) : I = J :=
 
 @[simp]
 theorem unit_mul_mem_iff_mem {x y : α} (hy : IsUnit y) : y * x ∈ I ↔ x ∈ I := by
-  refine ⟨fun h => ?_, fun h => I.mul_mem_left y h⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ I.mul_mem_left y h⟩
   obtain ⟨y', hy'⟩ := hy.exists_left_inv
   have := I.mul_mem_left y' h
   rwa [← mul_assoc, hy', one_mul] at this
 
 theorem pow_mem_of_mem (ha : a ∈ I) (n : ℕ) (hn : 0 < n) : a ^ n ∈ I :=
   Nat.casesOn n (Not.elim (by decide))
-    (fun m _hm => (pow_succ a m).symm ▸ I.mul_mem_left (a ^ m) ha) hn
+    (fun m _hm ↦ (pow_succ a m).symm ▸ I.mul_mem_left (a ^ m) ha) hn
 
 theorem pow_mem_of_pow_mem {m n : ℕ} (ha : a ^ m ∈ I) (h : m ≤ n) : a ^ n ∈ I := by
   rw [← Nat.add_sub_of_le h, add_comm, pow_add]

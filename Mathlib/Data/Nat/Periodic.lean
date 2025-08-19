@@ -25,11 +25,11 @@ theorem periodic_gcd (a : ℕ) : Periodic (gcd a) a := by
 theorem periodic_coprime (a : ℕ) : Periodic (Coprime a) a := by
   simp only [coprime_add_self_right, forall_const, Periodic]
 
-theorem periodic_mod (a : ℕ) : Periodic (fun n => n % a) a := by
+theorem periodic_mod (a : ℕ) : Periodic (fun n ↦ n % a) a := by
   simp only [forall_const, add_mod_right, Periodic]
 
 theorem _root_.Function.Periodic.map_mod_nat {α : Type*} {f : ℕ → α} {a : ℕ} (hf : Periodic f a) :
-    ∀ n, f (n % a) = f n := fun n => by
+    ∀ n, f (n % a) = f n := fun n ↦ by
   conv_rhs => rw [← Nat.mod_add_div n a, mul_comm, ← Nat.nsmul_eq_mul, hf.nsmul]
 
 section Multiset

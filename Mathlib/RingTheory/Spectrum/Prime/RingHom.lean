@@ -29,7 +29,7 @@ open PrimeSpectrum
 The bundled continuous version is `PrimeSpectrum.comap`. -/
 abbrev RingHom.specComap {R S : Type*} [CommSemiring R] [CommSemiring S] (f : R →+* S) :
     PrimeSpectrum S → PrimeSpectrum R :=
-  fun y => ⟨Ideal.comap f y.asIdeal, inferInstance⟩
+  fun y ↦ ⟨Ideal.comap f y.asIdeal, inferInstance⟩
 
 namespace PrimeSpectrum
 
@@ -50,7 +50,7 @@ theorem specComap_asIdeal (y : PrimeSpectrum S) :
   rfl
 
 @[simp]
-theorem specComap_id : (RingHom.id R).specComap = fun x => x :=
+theorem specComap_id : (RingHom.id R).specComap = fun x ↦ x :=
   rfl
 
 @[simp]
@@ -68,7 +68,7 @@ theorem preimage_specComap_zeroLocus (s : Set R) :
   preimage_specComap_zeroLocus_aux f s
 
 theorem specComap_injective_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
-    Function.Injective f.specComap := fun x y h =>
+    Function.Injective f.specComap := fun x y h ↦
   PrimeSpectrum.ext
     (Ideal.comap_injective_of_surjective f hf
       (congr_arg PrimeSpectrum.asIdeal h : (f.specComap x).asIdeal = (f.specComap y).asIdeal))
@@ -203,16 +203,16 @@ variable {R}
 theorem image_specComap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal S) :
     f.specComap '' zeroLocus I = zeroLocus (I.comap f) := by
   simp only [Set.ext_iff, Set.mem_image, mem_zeroLocus, SetLike.coe_subset_coe]
-  refine fun p => ⟨?_, fun h_I_p => ?_⟩
+  refine fun p ↦ ⟨?_, fun h_I_p ↦ ?_⟩
   · rintro ⟨p, hp, rfl⟩ a ha
     exact hp ha
   · have hp : ker f ≤ p.asIdeal := (Ideal.comap_mono bot_le).trans h_I_p
-    refine ⟨⟨p.asIdeal.map f, Ideal.map_isPrime_of_surjective hf hp⟩, fun x hx => ?_, ?_⟩
+    refine ⟨⟨p.asIdeal.map f, Ideal.map_isPrime_of_surjective hf hp⟩, fun x hx ↦ ?_, ?_⟩
     · obtain ⟨x', rfl⟩ := hf x
       exact Ideal.mem_map_of_mem f (h_I_p hx)
     · ext x
       rw [specComap_asIdeal, Ideal.mem_comap, Ideal.mem_map_iff_of_surjective f hf]
-      refine ⟨?_, fun hx => ⟨x, hx, rfl⟩⟩
+      refine ⟨?_, fun hx ↦ ⟨x, hx, rfl⟩⟩
       rintro ⟨x', hx', heq⟩
       rw [← sub_sub_cancel x' x]
       refine p.asIdeal.sub_mem hx' (hp ?_)

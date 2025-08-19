@@ -68,7 +68,7 @@ theorem AbsConvex.inter {s t : Set E} (hs : AbsConvex 𝕜 s) (ht : AbsConvex �
     AbsConvex 𝕜 (s ∩ t) := ⟨hs.1.inter ht.1, hs.2.inter ht.2⟩
 
 theorem AbsConvex.sInter {S : Set (Set E)} (h : ∀ s ∈ S, AbsConvex 𝕜 s) : AbsConvex 𝕜 (⋂₀ S) :=
-  ⟨.sInter fun s hs => (h s hs).1, convex_sInter fun s hs => (h s hs).2⟩
+  ⟨.sInter fun s hs ↦ (h s hs).1, convex_sInter fun s hs ↦ (h s hs).2⟩
 
 theorem AbsConvex.iInter {ι : Sort*} {s : ι → Set E} (h : ∀ i, AbsConvex 𝕜 (s i)) :
     AbsConvex 𝕜 (⋂ i, s i) :=
@@ -76,7 +76,7 @@ theorem AbsConvex.iInter {ι : Sort*} {s : ι → Set E} (h : ∀ i, AbsConvex �
 
 theorem AbsConvex.iInter₂ {ι : Sort*} {κ : ι → Sort*} {f : ∀ i, κ i → Set E}
     (h : ∀ i j, AbsConvex 𝕜 (f i j)) : AbsConvex 𝕜 (⋂ (i) (j), f i j) :=
-  AbsConvex.iInter fun _  => (AbsConvex.iInter fun _ => h _ _)
+  AbsConvex.iInter fun _  ↦ (AbsConvex.iInter fun _ ↦ h _ _)
 
 variable (𝕜)
 
@@ -152,14 +152,14 @@ variable [TopologicalSpace E]
 
 theorem absConvex_closed_sInter {S : Set (Set E)} (h : ∀ s ∈ S, AbsConvex 𝕜 s ∧ IsClosed s) :
     AbsConvex 𝕜 (⋂₀ S) ∧ IsClosed (⋂₀ S) :=
-  ⟨AbsConvex.sInter (fun s hs => (h s hs).1), isClosed_sInter fun _ hs => (h _ hs).2⟩
+  ⟨AbsConvex.sInter (fun s hs ↦ (h s hs).1), isClosed_sInter fun _ hs ↦ (h _ hs).2⟩
 
 variable (𝕜) in
 /-- The absolutely convex closed hull of a set `s` is the minimal absolutely convex closed set that
 includes `s`. -/
 @[simps! isClosed]
 def closedAbsConvexHull : ClosureOperator (Set E) :=
-  .ofCompletePred (fun s => AbsConvex 𝕜 s ∧ IsClosed s) fun _ ↦ absConvex_closed_sInter
+  .ofCompletePred (fun s ↦ AbsConvex 𝕜 s ∧ IsClosed s) fun _ ↦ absConvex_closed_sInter
 
 theorem absConvex_convexClosedHull {s : Set E} :
     AbsConvex 𝕜 (closedAbsConvexHull 𝕜 s) := ((closedAbsConvexHull 𝕜).isClosed_closure s).1
@@ -215,9 +215,9 @@ variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
 variable [TopologicalSpace E] [LocallyConvexSpace ℝ E] [ContinuousSMul 𝕜 E]
 
 theorem nhds_hasBasis_absConvex :
-    (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ AbsConvex 𝕜 s) id := by
+    (𝓝 (0 : E)).HasBasis (fun s : Set E ↦ s ∈ 𝓝 (0 : E) ∧ AbsConvex 𝕜 s) id := by
   refine
-    (LocallyConvexSpace.convex_basis_zero ℝ E).to_hasBasis (fun s hs => ?_) fun s hs =>
+    (LocallyConvexSpace.convex_basis_zero ℝ E).to_hasBasis (fun s hs ↦ ?_) fun s hs ↦
       ⟨s, ⟨hs.1, hs.2.2⟩, rfl.subset⟩
   refine ⟨convexHull ℝ (balancedCore 𝕜 s), ?_, convexHull_min (balancedCore_subset s) hs.2⟩
   refine ⟨Filter.mem_of_superset (balancedCore_mem_nhds_zero hs.1) (subset_convexHull ℝ _), ?_⟩
@@ -227,7 +227,7 @@ theorem nhds_hasBasis_absConvex :
 variable [ContinuousSMul ℝ E] [IsTopologicalAddGroup E]
 
 theorem nhds_hasBasis_absConvex_open :
-    (𝓝 (0 : E)).HasBasis (fun s => (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex 𝕜 s) id := by
+    (𝓝 (0 : E)).HasBasis (fun s ↦ (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex 𝕜 s) id := by
   refine (nhds_hasBasis_absConvex 𝕜 E).to_hasBasis ?_ ?_
   · rintro s ⟨hs_nhds, hs_balanced, hs_convex⟩
     refine ⟨interior s, ?_, interior_subset⟩
@@ -287,7 +287,7 @@ theorem convexHull_union_neg_eq_absConvexHull {s : Set E} :
     convexHull ℝ (s ∪ -s) = absConvexHull ℝ s := by
   rw [absConvexHull_eq_convexHull_balancedHull]
   exact le_antisymm (convexHull_mono (union_subset (subset_balancedHull ℝ)
-    (fun _ _ => by rw [mem_balancedHull_iff]; use -1; aesop)))
+    (fun _ _ ↦ by rw [mem_balancedHull_iff]; use -1; aesop)))
     (by
       rw [← Convex.convexHull_eq (convex_convexHull ℝ (s ∪ -s))]
       exact convexHull_mono balancedHull_subset_convexHull_union_neg)

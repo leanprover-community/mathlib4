@@ -75,13 +75,13 @@ section Enumerate
 
 /-- Noncomputably enumerate elements in a set. The `default` value is used to extend the domain to
 all of `ℕ`. -/
-def enumerateCountable {s : Set α} (h : s.Countable) (default : α) : ℕ → α := fun n =>
+def enumerateCountable {s : Set α} (h : s.Countable) (default : α) : ℕ → α := fun n ↦
   match @Encodable.decode s h.toEncodable n with
   | some y => y
   | none => default
 
 theorem subset_range_enumerate {s : Set α} (h : s.Countable) (default : α) :
-    s ⊆ range (enumerateCountable h default) := fun x hx =>
+    s ⊆ range (enumerateCountable h default) := fun x hx ↦
   ⟨@Encodable.encode s h.toEncodable ⟨x, hx⟩, by
     letI := h.toEncodable
     simp [enumerateCountable, Encodable.encodek]⟩
@@ -116,9 +116,9 @@ theorem countable_range [Countable ι] (f : ι → β) : (range f).Countable :=
 
 theorem countable_iff_exists_subset_range [Nonempty α] {s : Set α} :
     s.Countable ↔ ∃ f : ℕ → α, s ⊆ range f :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     inhabit α
-    exact ⟨enumerateCountable h default, subset_range_enumerate _ _⟩, fun ⟨f, hsf⟩ =>
+    exact ⟨enumerateCountable h default, subset_range_enumerate _ _⟩, fun ⟨f, hsf⟩ ↦
     (countable_range f).mono hsf⟩
 
 /-- A non-empty set is countable iff there exists a surjection from the
@@ -185,9 +185,9 @@ theorem exists_seq_iSup_eq_top_iff_countable [CompleteLattice α] {p : α → Pr
     · rw [sSup_empty] at hS
       haveI := subsingleton_of_bot_eq_top hS
       rcases h with ⟨x, hx⟩
-      exact ⟨fun _ => x, fun _ => hx, Subsingleton.elim _ _⟩
+      exact ⟨fun _ ↦ x, fun _ ↦ hx, Subsingleton.elim _ _⟩
     · rcases (Set.countable_iff_exists_surjective hne).1 hSc with ⟨s, hs⟩
-      refine ⟨fun n => s n, fun n => hps _ (s n).coe_prop, ?_⟩
+      refine ⟨fun n ↦ s n, fun n ↦ hps _ (s n).coe_prop, ?_⟩
       rwa [hs.iSup_comp, ← sSup_eq_iSup']
 
 theorem exists_seq_cover_iff_countable {p : Set α → Prop} (h : ∃ s, p s) :
@@ -208,7 +208,7 @@ theorem countable_iUnion {t : ι → Set α} [Countable ι] (ht : ∀ i, (t i).C
 @[simp]
 theorem countable_iUnion_iff [Countable ι] {t : ι → Set α} :
     (⋃ i, t i).Countable ↔ ∀ i, (t i).Countable :=
-  ⟨fun h _ => h.mono <| subset_iUnion _ _, countable_iUnion⟩
+  ⟨fun h _ ↦ h.mono <| subset_iUnion _ _, countable_iUnion⟩
 
 theorem Countable.biUnion_iff {s : Set α} {t : ∀ a ∈ s, Set β} (hs : s.Countable) :
     (⋃ a ∈ s, t a ‹_›).Countable ↔ ∀ a (ha : a ∈ s), (t a ha).Countable := by
@@ -259,7 +259,7 @@ theorem countable_isBot (α : Type*) [PartialOrder α] : { x : α | IsBot x }.Co
 theorem countable_setOf_finite_subset {s : Set α} (hs : s.Countable) :
     { t | Set.Finite t ∧ t ⊆ s }.Countable := by
   have := hs.to_subtype
-  refine (countable_range fun t : Finset s => Subtype.val '' (t : Set s)).mono ?_
+  refine (countable_range fun t : Finset s ↦ Subtype.val '' (t : Set s)).mono ?_
   rintro t ⟨ht, hts⟩
   lift t to Set s using hts
   lift t to Finset s using ht.of_finite_image Subtype.val_injective.injOn

@@ -102,8 +102,8 @@ def AffineScheme.ofHom {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
 
 @[simp]
 theorem essImage_Spec {X : Scheme} : Scheme.Spec.essImage X ↔ IsAffine X :=
-  ⟨fun h => ⟨Functor.essImage.unit_isIso h⟩,
-    fun _ => ΓSpec.adjunction.mem_essImage_of_unit_isIso _⟩
+  ⟨fun h ↦ ⟨Functor.essImage.unit_isIso h⟩,
+    fun _ ↦ ΓSpec.adjunction.mem_essImage_of_unit_isIso _⟩
 
 @[deprecated (since := "2025-04-08")] alias mem_Spec_essImage := essImage_Spec
 
@@ -808,7 +808,7 @@ theorem basicOpen_union_eq_self_iff (s : Set Γ(X, U)) :
   · trans
       hU.fromSpec.base ⁻¹' (⨆ f : s, X.basicOpen (f : Γ(X, U))).1 =
         hU.fromSpec.base ⁻¹' U.1
-    · refine ⟨fun h => by rw [h], ?_⟩
+    · refine ⟨fun h ↦ by rw [h], ?_⟩
       intro h
       apply_fun Set.image hU.fromSpec.base at h
       rw [Set.image_preimage_eq_inter_range, Set.image_preimage_eq_inter_range, hU.range_fromSpec]
@@ -834,7 +834,7 @@ include hU in
 theorem self_le_basicOpen_union_iff (s : Set Γ(X, U)) :
     (U ≤ ⨆ f : s, X.basicOpen f.1) ↔ Ideal.span s = ⊤ := by
   rw [← hU.basicOpen_union_eq_self_iff, @comm _ Eq]
-  refine ⟨fun h => le_antisymm h ?_, le_of_eq⟩
+  refine ⟨fun h ↦ le_antisymm h ?_, le_of_eq⟩
   simp only [iSup_le_iff, SetCoe.forall]
   intro x _
   exact X.basicOpen_le x

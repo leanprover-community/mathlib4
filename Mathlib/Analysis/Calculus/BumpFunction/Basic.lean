@@ -115,7 +115,7 @@ function instead. -/
 @[coe] def toFun {c : E} (f : ContDiffBump c) : E → ℝ :=
   (someContDiffBumpBase E).toFun (f.rOut / f.rIn) ∘ fun x ↦ (f.rIn⁻¹ • (x - c))
 
-instance : CoeFun (ContDiffBump c) fun _ => E → ℝ :=
+instance : CoeFun (ContDiffBump c) fun _ ↦ E → ℝ :=
   ⟨toFun⟩
 
 protected theorem apply (x : E) :
@@ -171,11 +171,11 @@ theorem eventuallyEq_one : f =ᶠ[𝓝 c] 1 :=
 /-- `ContDiffBump` is `𝒞ⁿ` in all its arguments. -/
 protected theorem _root_.ContDiffWithinAt.contDiffBump {c g : X → E} {s : Set X}
     {f : ∀ x, ContDiffBump (c x)} {x : X} (hc : ContDiffWithinAt ℝ n c s x)
-    (hr : ContDiffWithinAt ℝ n (fun x => (f x).rIn) s x)
-    (hR : ContDiffWithinAt ℝ n (fun x => (f x).rOut) s x)
+    (hr : ContDiffWithinAt ℝ n (fun x ↦ (f x).rIn) s x)
+    (hR : ContDiffWithinAt ℝ n (fun x ↦ (f x).rOut) s x)
     (hg : ContDiffWithinAt ℝ n g s x) :
-    ContDiffWithinAt ℝ n (fun x => f x (g x)) s x := by
-  change ContDiffWithinAt ℝ n (uncurry (someContDiffBumpBase E).toFun ∘ fun x : X =>
+    ContDiffWithinAt ℝ n (fun x ↦ f x (g x)) s x := by
+  change ContDiffWithinAt ℝ n (uncurry (someContDiffBumpBase E).toFun ∘ fun x : X ↦
     ((f x).rOut / (f x).rIn, (f x).rIn⁻¹ • (g x - c x))) s x
   refine (((someContDiffBumpBase E).smooth.contDiffAt ?_).of_le
     (mod_cast le_top)).comp_contDiffWithinAt x ?_
@@ -184,17 +184,17 @@ protected theorem _root_.ContDiffWithinAt.contDiffBump {c g : X → E} {s : Set 
 
 /-- `ContDiffBump` is `𝒞ⁿ` in all its arguments. -/
 protected nonrec theorem _root_.ContDiffAt.contDiffBump {c g : X → E} {f : ∀ x, ContDiffBump (c x)}
-    {x : X} (hc : ContDiffAt ℝ n c x) (hr : ContDiffAt ℝ n (fun x => (f x).rIn) x)
-    (hR : ContDiffAt ℝ n (fun x => (f x).rOut) x) (hg : ContDiffAt ℝ n g x) :
-    ContDiffAt ℝ n (fun x => f x (g x)) x :=
+    {x : X} (hc : ContDiffAt ℝ n c x) (hr : ContDiffAt ℝ n (fun x ↦ (f x).rIn) x)
+    (hR : ContDiffAt ℝ n (fun x ↦ (f x).rOut) x) (hg : ContDiffAt ℝ n g x) :
+    ContDiffAt ℝ n (fun x ↦ f x (g x)) x :=
   hc.contDiffBump hr hR hg
 
 theorem _root_.ContDiff.contDiffBump {c g : X → E} {f : ∀ x, ContDiffBump (c x)}
-    (hc : ContDiff ℝ n c) (hr : ContDiff ℝ n fun x => (f x).rIn)
-    (hR : ContDiff ℝ n fun x => (f x).rOut) (hg : ContDiff ℝ n g) :
-    ContDiff ℝ n fun x => f x (g x) := by
+    (hc : ContDiff ℝ n c) (hr : ContDiff ℝ n fun x ↦ (f x).rIn)
+    (hR : ContDiff ℝ n fun x ↦ (f x).rOut) (hg : ContDiff ℝ n g) :
+    ContDiff ℝ n fun x ↦ f x (g x) := by
   rw [contDiff_iff_contDiffAt] at *
-  exact fun x => (hc x).contDiffBump (hr x) (hR x) (hg x)
+  exact fun x ↦ (hc x).contDiffBump (hr x) (hR x) (hg x)
 
 protected theorem contDiff : ContDiff ℝ n f :=
   contDiff_const.contDiffBump contDiff_const contDiff_const contDiff_id

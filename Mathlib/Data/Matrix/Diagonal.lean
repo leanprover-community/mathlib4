@@ -44,7 +44,7 @@ Note that bundled versions exist as:
 * `Matrix.diagonalAlgHom`
 -/
 def diagonal [Zero α] (d : n → α) : Matrix n n α :=
-  of fun i j => if i = j then d i else 0
+  of fun i j ↦ if i = j then d i else 0
 
 -- TODO: set as an equation lemma for `diagonal`, see https://github.com/leanprover-community/mathlib4/pull/3024
 theorem diagonal_apply [Zero α] (d : n → α) (i j) : diagonal d i j = if i = j then d i else 0 :=
@@ -64,14 +64,14 @@ theorem diagonal_apply_ne' [Zero α] (d : n → α) {i j : n} (h : j ≠ i) : (d
 @[simp]
 theorem diagonal_eq_diagonal_iff [Zero α] {d₁ d₂ : n → α} :
     diagonal d₁ = diagonal d₂ ↔ ∀ i, d₁ i = d₂ i :=
-  ⟨fun h i => by simpa using congr_arg (fun m : Matrix n n α => m i i) h, fun h => by
+  ⟨fun h i ↦ by simpa using congr_arg (fun m : Matrix n n α ↦ m i i) h, fun h ↦ by
     rw [show d₁ = d₂ from funext h]⟩
 
 theorem diagonal_injective [Zero α] : Function.Injective (diagonal : (n → α) → Matrix n n α) :=
-  fun d₁ d₂ h => funext fun i => by simpa using Matrix.ext_iff.mpr h i i
+  fun d₁ d₂ h ↦ funext fun i ↦ by simpa using Matrix.ext_iff.mpr h i i
 
 @[simp]
-theorem diagonal_zero [Zero α] : (diagonal fun _ => 0 : Matrix n n α) = 0 := by
+theorem diagonal_zero [Zero α] : (diagonal fun _ ↦ 0 : Matrix n n α) = 0 := by
   ext
   simp [diagonal]
 
@@ -84,7 +84,7 @@ theorem diagonal_transpose [Zero α] (v : n → α) : (diagonal v)ᵀ = diagonal
 
 @[simp]
 theorem diagonal_add [AddZeroClass α] (d₁ d₂ : n → α) :
-    diagonal d₁ + diagonal d₂ = diagonal fun i => d₁ i + d₂ i := by
+    diagonal d₁ + diagonal d₂ = diagonal fun i ↦ d₁ i + d₂ i := by
   ext i j
   by_cases h : i = j <;>
   simp [h]
@@ -97,14 +97,14 @@ theorem diagonal_smul [Zero α] [SMulZeroClass R α] (r : R) (d : n → α) :
 
 @[simp]
 theorem diagonal_neg [NegZeroClass α] (d : n → α) :
-    -diagonal d = diagonal fun i => -d i := by
+    -diagonal d = diagonal fun i ↦ -d i := by
   ext i j
   by_cases h : i = j <;>
   simp [h]
 
 @[simp]
 theorem diagonal_sub [SubNegZeroMonoid α] (d₁ d₂ : n → α) :
-    diagonal d₁ - diagonal d₂ = diagonal fun i => d₁ i - d₂ i := by
+    diagonal d₁ - diagonal d₂ = diagonal fun i ↦ d₁ i - d₂ i := by
   ext i j
   by_cases h : i = j <;>
   simp [h]
@@ -116,44 +116,44 @@ theorem diagonal_mem_matrix_iff [Zero α] {S : Set α} (hS : 0 ∈ S) {d : n →
   simp [hS]
 
 instance [Zero α] [NatCast α] : NatCast (Matrix n n α) where
-  natCast m := diagonal fun _ => m
+  natCast m := diagonal fun _ ↦ m
 
 @[norm_cast]
-theorem diagonal_natCast [Zero α] [NatCast α] (m : ℕ) : diagonal (fun _ : n => (m : α)) = m := rfl
+theorem diagonal_natCast [Zero α] [NatCast α] (m : ℕ) : diagonal (fun _ : n ↦ (m : α)) = m := rfl
 
 @[norm_cast]
 theorem diagonal_natCast' [Zero α] [NatCast α] (m : ℕ) : diagonal ((m : n → α)) = m := rfl
 
 theorem diagonal_ofNat [Zero α] [NatCast α] (m : ℕ) [m.AtLeastTwo] :
-    diagonal (fun _ : n => (ofNat(m) : α)) = OfNat.ofNat m := rfl
+    diagonal (fun _ : n ↦ (ofNat(m) : α)) = OfNat.ofNat m := rfl
 
 theorem diagonal_ofNat' [Zero α] [NatCast α] (m : ℕ) [m.AtLeastTwo] :
     diagonal (ofNat(m) : n → α) = OfNat.ofNat m := rfl
 
 instance [Zero α] [IntCast α] : IntCast (Matrix n n α) where
-  intCast m := diagonal fun _ => m
+  intCast m := diagonal fun _ ↦ m
 
 @[norm_cast]
-theorem diagonal_intCast [Zero α] [IntCast α] (m : ℤ) : diagonal (fun _ : n => (m : α)) = m := rfl
+theorem diagonal_intCast [Zero α] [IntCast α] (m : ℤ) : diagonal (fun _ : n ↦ (m : α)) = m := rfl
 
 @[norm_cast]
 theorem diagonal_intCast' [Zero α] [IntCast α] (m : ℤ) : diagonal ((m : n → α)) = m := rfl
 
 @[simp]
 theorem diagonal_map [Zero α] [Zero β] {f : α → β} (h : f 0 = 0) {d : n → α} :
-    (diagonal d).map f = diagonal fun m => f (d m) := by
+    (diagonal d).map f = diagonal fun m ↦ f (d m) := by
   ext
   simp only [diagonal_apply, map_apply]
   split_ifs <;> simp [h]
 
 protected theorem map_natCast [AddMonoidWithOne α] [Zero β]
     {f : α → β} (h : f 0 = 0) (d : ℕ) :
-    (d : Matrix n n α).map f = diagonal (fun _ => f d) :=
+    (d : Matrix n n α).map f = diagonal (fun _ ↦ f d) :=
   diagonal_map h
 
 protected theorem map_ofNat [AddMonoidWithOne α] [Zero β]
     {f : α → β} (h : f 0 = 0) (d : ℕ) [d.AtLeastTwo] :
-    (ofNat(d) : Matrix n n α).map f = diagonal (fun _ => f (OfNat.ofNat d)) :=
+    (ofNat(d) : Matrix n n α).map f = diagonal (fun _ ↦ f (OfNat.ofNat d)) :=
   diagonal_map h
 
 theorem natCast_apply [AddMonoidWithOne α] {i j} {d : ℕ} :
@@ -166,11 +166,11 @@ theorem ofNat_apply [AddMonoidWithOne α] {i j} {d : ℕ} [d.AtLeastTwo] :
 
 protected theorem map_intCast [AddGroupWithOne α] [Zero β]
     {f : α → β} (h : f 0 = 0) (d : ℤ) :
-    (d : Matrix n n α).map f = diagonal (fun _ => f d) :=
+    (d : Matrix n n α).map f = diagonal (fun _ ↦ f d) :=
   diagonal_map h
 
 theorem diagonal_unique [Unique m] [DecidableEq m] [Zero α] (d : m → α) :
-    diagonal d = of fun _ _ => d default := by
+    diagonal d = of fun _ _ ↦ d default := by
   ext i j
   rw [Subsingleton.elim i default, Subsingleton.elim j default, diagonal_apply_eq _ _, of_apply]
 
@@ -189,10 +189,10 @@ section One
 variable [Zero α] [One α]
 
 instance one : One (Matrix n n α) :=
-  ⟨diagonal fun _ => 1⟩
+  ⟨diagonal fun _ ↦ 1⟩
 
 @[simp]
-theorem diagonal_one : (diagonal fun _ => 1 : Matrix n n α) = 1 :=
+theorem diagonal_one : (diagonal fun _ ↦ 1 : Matrix n n α) = 1 :=
   rfl
 
 @[simp]
@@ -220,7 +220,7 @@ protected theorem map_one [Zero β] [One β] (f : α → β) (h₀ : f 0 = 0) (h
   simp only [one_apply, map_apply]
   split_ifs <;> simp [h₀, h₁]
 
-theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (M := fun _ => α) i 1 j := by
+theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (M := fun _ ↦ α) i 1 j := by
   simp only [one_apply, Pi.single_apply, eq_comm]
 
 end One
@@ -358,7 +358,7 @@ end Transpose
   injective, then the resulting matrix is again diagonal. -/
 theorem submatrix_diagonal [Zero α] [DecidableEq m] [DecidableEq l] (d : m → α) (e : l → m)
     (he : Function.Injective e) : (diagonal d).submatrix e e = diagonal (d ∘ e) :=
-  ext fun i j => by
+  ext fun i j ↦ by
     rw [submatrix_apply]
     by_cases h : i = j
     · rw [h, diagonal_apply_eq, diagonal_apply_eq, Function.comp_apply]

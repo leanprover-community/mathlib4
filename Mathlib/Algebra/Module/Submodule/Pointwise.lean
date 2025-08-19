@@ -63,7 +63,7 @@ This is available as an instance in the `Pointwise` locale. -/
 protected def pointwiseNeg : Neg (Submodule R M) where
   neg p :=
     { -p.toAddSubmonoid with
-      smul_mem' := fun r m hm => Set.mem_neg.2 <| smul_neg r m ▸ p.smul_mem r <| Set.mem_neg.1 hm }
+      smul_mem' := fun r m hm ↦ Set.mem_neg.2 <| smul_neg r m ▸ p.smul_mem r <| Set.mem_neg.1 hm }
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseNeg
 
@@ -141,7 +141,7 @@ open Pointwise
 
 @[simp]
 theorem neg_eq_self [Ring R] [AddCommGroup M] [Module R M] (p : Submodule R M) : -p = p :=
-  ext fun _ => p.neg_mem_iff
+  ext fun _ ↦ p.neg_mem_iff
 
 end Neg
 
@@ -169,11 +169,11 @@ theorem zero_eq_bot : (0 : Submodule R M) = ⊥ :=
   rfl
 
 instance : IsOrderedAddMonoid (Submodule R M) :=
-  { add_le_add_left := fun _a _b => sup_le_sup_left }
+  { add_le_add_left := fun _a _b ↦ sup_le_sup_left }
 
 instance : CanonicallyOrderedAdd (Submodule R M) where
-  exists_add_of_le := @fun _a b h => ⟨b, (sup_eq_right.2 h).symm⟩
-  le_self_add := fun _a _b => le_sup_left
+  exists_add_of_le := @fun _a b h ↦ ⟨b, (sup_eq_right.2 h).symm⟩
+  le_self_add := fun _a _b ↦ le_sup_left
 
 section
 
@@ -185,9 +185,9 @@ This is available as an instance in the `Pointwise` locale. -/
 protected def pointwiseDistribMulAction : DistribMulAction α (Submodule R M) where
   smul a S := S.map (DistribMulAction.toLinearMap R M a : M →ₗ[R] M)
   one_smul S :=
-    (congr_arg (fun f : Module.End R M => S.map f) (LinearMap.ext <| one_smul α)).trans S.map_id
+    (congr_arg (fun f : Module.End R M ↦ S.map f) (LinearMap.ext <| one_smul α)).trans S.map_id
   mul_smul _a₁ _a₂ S :=
-    (congr_arg (fun f : Module.End R M => S.map f) (LinearMap.ext <| mul_smul _ _)).trans
+    (congr_arg (fun f : Module.End R M ↦ S.map f) (LinearMap.ext <| mul_smul _ _)).trans
       (S.map_comp _ _)
   smul_zero _a := map_bot _
   smul_add _a _S₁ _S₂ := map_sup _ _ _
@@ -219,7 +219,7 @@ theorem smul_mem_pointwise_smul (m : M) (a : α) (S : Submodule R M) : m ∈ S �
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set M))
 
 instance : CovariantClass α (Submodule R M) HSMul.hSMul LE.le :=
-  ⟨fun _ _ => map_mono⟩
+  ⟨fun _ _ ↦ map_mono⟩
 
 /-- See also `Submodule.smul_bot`. -/
 @[simp]
@@ -240,7 +240,7 @@ theorem span_smul (a : α) (s : Set M) : span R (a • s) = a • span R s :=
 
 instance pointwiseCentralScalar [DistribMulAction αᵐᵒᵖ M] [SMulCommClass αᵐᵒᵖ R M]
     [IsCentralScalar α M] : IsCentralScalar α (Submodule R M) :=
-  ⟨fun _a S => (congr_arg fun f : Module.End R M => S.map f) <| LinearMap.ext <| op_smul_eq_smul _⟩
+  ⟨fun _a S ↦ (congr_arg fun f : Module.End R M ↦ S.map f) <| LinearMap.ext <| op_smul_eq_smul _⟩
 
 @[simp]
 theorem smul_le_self_of_tower {α : Type*} [Monoid α] [SMul α R] [DistribMulAction α M]
@@ -262,8 +262,8 @@ This is a stronger version of `Submodule.pointwiseDistribMulAction`. Note that `
 not hold so this cannot be stated as a `Module`. -/
 protected def pointwiseMulActionWithZero : MulActionWithZero α (Submodule R M) :=
   { Submodule.pointwiseDistribMulAction with
-    zero_smul := fun S =>
-      (congr_arg (fun f : M →ₗ[R] M => S.map f) (LinearMap.ext <| zero_smul α)).trans S.map_zero }
+    zero_smul := fun S ↦
+      (congr_arg (fun f : M →ₗ[R] M ↦ S.map f) (LinearMap.ext <| zero_smul α)).trans S.map_zero }
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseMulActionWithZero
 
@@ -329,7 +329,7 @@ variable {s N} in
 lemma mem_set_smul_of_mem_mem {r : S} {m : M} (mem1 : r ∈ s) (mem2 : m ∈ N) :
     r • m ∈ s • N := by
   rw [mem_set_smul_def, mem_sInf]
-  exact fun _ h => h mem1 mem2
+  exact fun _ h ↦ h mem1 mem2
 
 lemma set_smul_le (p : Submodule R M)
     (closed_under_smul : ∀ ⦃r : S⦄ ⦃n : M⦄, r ∈ s → n ∈ N → r • n ∈ p) :
@@ -351,12 +351,12 @@ lemma set_smul_eq_of_le (p : Submodule R M)
   le_antisymm (set_smul_le s N p closed_under_smul) le
 
 instance : CovariantClass (Set S) (Submodule R M) HSMul.hSMul LE.le :=
-  ⟨fun _ _ _ le => set_smul_le _ _ _ fun _ _ hr hm => mem_set_smul_of_mem_mem (mem1 := hr)
+  ⟨fun _ _ _ le ↦ set_smul_le _ _ _ fun _ _ hr hm ↦ mem_set_smul_of_mem_mem (mem1 := hr)
     (mem2 := le hm)⟩
 
 lemma set_smul_mono_left {s t : Set S} (le : s ≤ t) :
     s • N ≤ t • N :=
-  set_smul_le _ _ _ fun _ _ hr hm => mem_set_smul_of_mem_mem (mem1 := le hr)
+  set_smul_le _ _ _ fun _ _ hr hm ↦ mem_set_smul_of_mem_mem (mem1 := le hr)
     (mem2 := hm)
 
 lemma set_smul_le_of_le_le {s t : Set S} {p q : Submodule R M}
@@ -367,7 +367,7 @@ lemma set_smul_eq_iSup [SMulCommClass S R M] (s : Set S) (N : Submodule R M) :
     s • N = ⨆ (a ∈ s), a • N := by
   refine Eq.trans (congrArg sInf ?_) csInf_Ici
   simp_rw [← Set.Ici_def, iSup_le_iff, @forall_comm M]
-  exact Set.ext fun _ => forall₂_congr (fun _ _ => Iff.symm map_le_iff_le_comap)
+  exact Set.ext fun _ ↦ forall₂_congr (fun _ _ ↦ Iff.symm map_le_iff_le_comap)
 
 theorem set_smul_span [SMulCommClass S R M] (s : Set S) (t : Set M) :
     s • span R t = span R (s • t) := by
@@ -505,13 +505,13 @@ lemma smul_inductionOn_pointwise [SMulCommClass S R M] {a : S} {p : (x : M) → 
 /-- A subset of a ring `R` has a multiplicative action on submodules of a module over `R`. -/
 protected noncomputable def pointwiseSetMulAction [SMulCommClass R R M] :
     MulAction (Set R) (Submodule R M) where
-  one_smul x := show {(1 : R)} • x = x from SetLike.ext fun m =>
+  one_smul x := show {(1 : R)} • x = x from SetLike.ext fun m ↦
     (mem_singleton_set_smul _ _ _).trans ⟨by rintro ⟨_, h, rfl⟩; rwa [one_smul],
-      fun h => ⟨m, h, (one_smul _ _).symm⟩⟩
+      fun h ↦ ⟨m, h, (one_smul _ _).symm⟩⟩
   mul_smul s t x := le_antisymm
     (set_smul_le _ _ _ <| by rintro _ _ ⟨_, _, _, _, rfl⟩ _; rw [mul_smul]; aesop)
     (set_smul_le _ _ _ fun r m hr hm ↦ by
-      have : SMulCommClass R R x := ⟨fun r s m => Subtype.ext <| smul_comm _ _ _⟩
+      have : SMulCommClass R R x := ⟨fun r s m ↦ Subtype.ext <| smul_comm _ _ _⟩
       obtain ⟨c, hc1, rfl⟩ := mem_set_smul _ _ _ |>.mp hm
       rw [Finsupp.sum, AddSubmonoid.coe_finset_sum]
       simp only [SetLike.val_smul, Finset.smul_sum, smul_smul]

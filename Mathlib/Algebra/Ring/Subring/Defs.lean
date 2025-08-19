@@ -90,21 +90,21 @@ theorem intCast_mem (n : ℤ) : (n : R) ∈ s := by simp only [← zsmul_one, zs
 namespace SubringClass
 
 instance (priority := 75) toHasIntCast : IntCast s :=
-  ⟨fun n => ⟨n, intCast_mem s n⟩⟩
+  ⟨fun n ↦ ⟨n, intCast_mem s n⟩⟩
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a ring inherits a ring structure -/
 instance (priority := 75) toRing : Ring s := fast_instance%
-  Subtype.coe_injective.ring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
+  Subtype.coe_injective.ring Subtype.val rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) fun _ ↦ rfl
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a `CommRing` is a `CommRing`. -/
 instance (priority := 75) toCommRing {R} [CommRing R] [SetLike S R] [SubringClass S R] :
     CommRing s := fast_instance%
-  Subtype.coe_injective.commRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) fun _ => rfl
+  Subtype.coe_injective.commRing Subtype.val rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ ↦ rfl) fun _ ↦ rfl
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a domain is a domain. -/
@@ -236,7 +236,7 @@ theorem toSubsemiring_injective : Function.Injective (toSubsemiring : Subring R 
 theorem toAddSubgroup_injective : Function.Injective (toAddSubgroup : Subring R → AddSubgroup R)
   | _, _, h => ext (SetLike.ext_iff.mp h :)
 
-theorem toSubmonoid_injective : Function.Injective (fun s : Subring R => s.toSubmonoid)
+theorem toSubmonoid_injective : Function.Injective (fun s : Subring R ↦ s.toSubmonoid)
   | _, _, h => ext (SetLike.ext_iff.mp h :)
 
 /-- Construct a `Subring R` from a set `s`, a submonoid `sm`, and an additive
@@ -333,7 +333,7 @@ theorem coe_pow (x : s) (n : ℕ) : ↑(x ^ n) = (x : R) ^ n :=
   SubmonoidClass.coe_pow x n
 
 theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 :=
-  ⟨fun h => Subtype.ext (Trans.trans h s.coe_zero.symm), fun h => h.symm ▸ s.coe_zero⟩
+  ⟨fun h ↦ Subtype.ext (Trans.trans h s.coe_zero.symm), fun h ↦ h.symm ▸ s.coe_zero⟩
 
 /-- A subring of a `CommRing` is a `CommRing`. -/
 instance toCommRing {R} [CommRing R] (s : Subring R) : CommRing s :=

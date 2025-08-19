@@ -148,7 +148,7 @@ theorem HasGradientAt.gradient (h : HasGradientAt f f' x) : ∇ f x = f' :=
   h.differentiableAt.hasGradientAt.unique h
 
 theorem gradient_eq {f' : F → F} (h : ∀ x, HasGradientAt f (f' x) x) : ∇ f = f' :=
-  funext fun x => (h x).gradient
+  funext fun x ↦ (h x).gradient
 
 section OneDimension
 
@@ -209,30 +209,30 @@ section GradientProperties
 
 theorem hasGradientAtFilter_iff_isLittleO :
     HasGradientAtFilter f f' x L ↔
-    (fun x' : F => f x' - f x - ⟪f', x' - x⟫) =o[L] fun x' => x' - x :=
+    (fun x' : F ↦ f x' - f x - ⟪f', x' - x⟫) =o[L] fun x' ↦ x' - x :=
   hasFDerivAtFilter_iff_isLittleO ..
 
 theorem hasGradientWithinAt_iff_isLittleO :
     HasGradientWithinAt f f' s x ↔
-    (fun x' : F => f x' - f x - ⟪f', x' - x⟫) =o[𝓝[s] x] fun x' => x' - x :=
+    (fun x' : F ↦ f x' - f x - ⟪f', x' - x⟫) =o[𝓝[s] x] fun x' ↦ x' - x :=
   hasGradientAtFilter_iff_isLittleO
 
 theorem hasGradientWithinAt_iff_tendsto :
     HasGradientWithinAt f f' s x ↔
-    Tendsto (fun x' => ‖x' - x‖⁻¹ * ‖f x' - f x - ⟪f', x' - x⟫‖) (𝓝[s] x) (𝓝 0) :=
+    Tendsto (fun x' ↦ ‖x' - x‖⁻¹ * ‖f x' - f x - ⟪f', x' - x⟫‖) (𝓝[s] x) (𝓝 0) :=
   hasFDerivAtFilter_iff_tendsto
 
 theorem hasGradientAt_iff_isLittleO : HasGradientAt f f' x ↔
-    (fun x' : F => f x' - f x - ⟪f', x' - x⟫) =o[𝓝 x] fun x' => x' - x :=
+    (fun x' : F ↦ f x' - f x - ⟪f', x' - x⟫) =o[𝓝 x] fun x' ↦ x' - x :=
   hasGradientAtFilter_iff_isLittleO
 
 theorem hasGradientAt_iff_tendsto :
     HasGradientAt f f' x ↔
-    Tendsto (fun x' => ‖x' - x‖⁻¹ * ‖f x' - f x - ⟪f', x' - x⟫‖) (𝓝 x) (𝓝 0) :=
+    Tendsto (fun x' ↦ ‖x' - x‖⁻¹ * ‖f x' - f x - ⟪f', x' - x⟫‖) (𝓝 x) (𝓝 0) :=
   hasFDerivAtFilter_iff_tendsto
 
 theorem HasGradientAtFilter.isBigO_sub (h : HasGradientAtFilter f f' x L) :
-    (fun x' => f x' - f x) =O[L] fun x' => x' - x :=
+    (fun x' ↦ f x' - f x) =O[L] fun x' ↦ x' - x :=
   HasFDerivAtFilter.isBigO_sub h
 
 theorem hasGradientWithinAt_congr_set' {s t : Set F} (y : F) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
@@ -244,7 +244,7 @@ theorem hasGradientWithinAt_congr_set {s t : Set F} (h : s =ᶠ[𝓝 x] t) :
   hasFDerivWithinAt_congr_set h
 
 theorem hasGradientAt_iff_isLittleO_nhds_zero : HasGradientAt f f' x ↔
-    (fun h => f (x + h) - f x - ⟪f', h⟫) =o[𝓝 0] fun h => h :=
+    (fun h ↦ f (x + h) - f x - ⟪f', h⟫) =o[𝓝 0] fun h ↦ h :=
   hasFDerivAt_iff_isLittleO_nhds_zero
 
 end GradientProperties
@@ -292,7 +292,7 @@ theorem Filter.EventuallyEq.gradient_eq (hL : f₁ =ᶠ[𝓝 x] f) : ∇ f₁ x 
   rwa [Filter.EventuallyEq.fderiv_eq]
 
 protected theorem Filter.EventuallyEq.gradient (h : f₁ =ᶠ[𝓝 x] f) : ∇ f₁ =ᶠ[𝓝 x] ∇ f :=
-  h.eventuallyEq_nhds.mono fun _ h => h.gradient_eq
+  h.eventuallyEq_nhds.mono fun _ h ↦ h.gradient_eq
 
 end congr
 
@@ -302,22 +302,22 @@ section Const
 
 variable (c : 𝕜) (s x L)
 
-theorem hasGradientAtFilter_const : HasGradientAtFilter (fun _ => c) 0 x L := by
+theorem hasGradientAtFilter_const : HasGradientAtFilter (fun _ ↦ c) 0 x L := by
   rw [HasGradientAtFilter, map_zero]; apply hasFDerivAtFilter_const c x L
 
-theorem hasGradientWithinAt_const : HasGradientWithinAt (fun _ => c) 0 s x :=
+theorem hasGradientWithinAt_const : HasGradientWithinAt (fun _ ↦ c) 0 s x :=
   hasGradientAtFilter_const _ _ _
 
-theorem hasGradientAt_const : HasGradientAt (fun _ => c) 0 x :=
+theorem hasGradientAt_const : HasGradientAt (fun _ ↦ c) 0 x :=
   hasGradientAtFilter_const _ _ _
 
-theorem gradient_fun_const : ∇ (fun _ => c) x = 0 := by simp [gradient]
+theorem gradient_fun_const : ∇ (fun _ ↦ c) x = 0 := by simp [gradient]
 
 theorem gradient_const : ∇ (const F c) x = 0 := gradient_fun_const x c
 
 @[simp]
-theorem gradient_fun_const' : (∇ fun _ : F => c) = fun _ => 0 :=
-  funext fun x => gradient_const x c
+theorem gradient_fun_const' : (∇ fun _ : F ↦ c) = fun _ ↦ 0 :=
+  funext fun x ↦ gradient_const x c
 
 @[simp]
 theorem gradient_const' : ∇ (const F c) = 0 := gradient_fun_const' c
@@ -341,6 +341,6 @@ theorem HasGradientAt.continuousAt (h : HasGradientAt f f' x) : ContinuousAt f x
 
 protected theorem HasGradientAt.continuousOn {f' : F → F} (h : ∀ x ∈ s, HasGradientAt f (f' x) x) :
     ContinuousOn f s :=
-  fun x hx => (h x hx).continuousAt.continuousWithinAt
+  fun x hx ↦ (h x hx).continuousAt.continuousWithinAt
 
 end Continuous

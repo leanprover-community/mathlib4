@@ -56,29 +56,29 @@ def IsRefl (B : BilinForm R M) : Prop := LinearMap.IsRefl B
 
 namespace IsRefl
 
-theorem eq_zero (H : B.IsRefl) : ∀ {x y : M}, B x y = 0 → B y x = 0 := fun {x y} => H x y
+theorem eq_zero (H : B.IsRefl) : ∀ {x y : M}, B x y = 0 → B y x = 0 := fun {x y} ↦ H x y
 
-protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsRefl) : (-B).IsRefl := fun x y =>
+protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsRefl) : (-B).IsRefl := fun x y ↦
   neg_eq_zero.mpr ∘ hB x y ∘ neg_eq_zero.mp
 
 protected theorem smul {α} [Semiring α] [Module α R] [SMulCommClass R α R]
     [NoZeroSMulDivisors α R] (a : α) {B : BilinForm R M} (hB : B.IsRefl) :
-    (a • B).IsRefl := fun _ _ h =>
-  (smul_eq_zero.mp h).elim (fun ha => smul_eq_zero_of_left ha _) fun hBz =>
+    (a • B).IsRefl := fun _ _ h ↦
+  (smul_eq_zero.mp h).elim (fun ha ↦ smul_eq_zero_of_left ha _) fun hBz ↦
     smul_eq_zero_of_right _ (hB _ _ hBz)
 
 protected theorem groupSMul {α} [Group α] [DistribMulAction α R] [SMulCommClass R α R] (a : α)
-    {B : BilinForm R M} (hB : B.IsRefl) : (a • B).IsRefl := fun x y =>
+    {B : BilinForm R M} (hB : B.IsRefl) : (a • B).IsRefl := fun x y ↦
   (smul_eq_zero_iff_eq _).mpr ∘ hB x y ∘ (smul_eq_zero_iff_eq _).mp
 
 end IsRefl
 
 @[simp]
-theorem isRefl_zero : (0 : BilinForm R M).IsRefl := fun _ _ _ => rfl
+theorem isRefl_zero : (0 : BilinForm R M).IsRefl := fun _ _ _ ↦ rfl
 
 @[simp]
 theorem isRefl_neg {B : BilinForm R₁ M₁} : (-B).IsRefl ↔ B.IsRefl :=
-  ⟨fun h => neg_neg B ▸ h.neg, IsRefl.neg⟩
+  ⟨fun h ↦ neg_neg B ▸ h.neg, IsRefl.neg⟩
 
 /-- The proposition that a bilinear form is symmetric -/
 structure IsSymm (B : BilinForm R M) : Prop where
@@ -93,33 +93,33 @@ theorem isSymm_iff : IsSymm B ↔ LinearMap.IsSymm B := by
 
 namespace IsSymm
 
-theorem isRefl (H : B.IsSymm) : B.IsRefl := fun x y H1 => H.eq x y ▸ H1
+theorem isRefl (H : B.IsSymm) : B.IsRefl := fun x y H1 ↦ H.eq x y ▸ H1
 
 protected theorem add {B₁ B₂ : BilinForm R M} (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) :
-    (B₁ + B₂).IsSymm := ⟨fun x y => (congr_arg₂ (· + ·) (hB₁.eq x y) (hB₂.eq x y) :)⟩
+    (B₁ + B₂).IsSymm := ⟨fun x y ↦ (congr_arg₂ (· + ·) (hB₁.eq x y) (hB₂.eq x y) :)⟩
 
 protected theorem sub {B₁ B₂ : BilinForm R₁ M₁} (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) :
-    (B₁ - B₂).IsSymm := ⟨fun x y => (congr_arg₂ Sub.sub (hB₁.eq x y) (hB₂.eq x y) :)⟩
+    (B₁ - B₂).IsSymm := ⟨fun x y ↦ (congr_arg₂ Sub.sub (hB₁.eq x y) (hB₂.eq x y) :)⟩
 
-protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsSymm) : (-B).IsSymm := ⟨fun x y =>
+protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsSymm) : (-B).IsSymm := ⟨fun x y ↦
   congr_arg Neg.neg (hB.eq x y)⟩
 
 protected theorem smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R] (a : α)
-    {B : BilinForm R M} (hB : B.IsSymm) : (a • B).IsSymm := ⟨fun x y =>
+    {B : BilinForm R M} (hB : B.IsSymm) : (a • B).IsSymm := ⟨fun x y ↦
   congr_arg (a • ·) (hB.eq x y)⟩
 
 /-- The restriction of a symmetric bilinear form on a submodule is also symmetric. -/
 theorem restrict {B : BilinForm R M} (b : B.IsSymm) (W : Submodule R M) :
-    (B.restrict W).IsSymm := ⟨fun x y => b.eq x y⟩
+    (B.restrict W).IsSymm := ⟨fun x y ↦ b.eq x y⟩
 
 end IsSymm
 
 @[simp]
-theorem isSymm_zero : (0 : BilinForm R M).IsSymm := ⟨fun _ _ => rfl⟩
+theorem isSymm_zero : (0 : BilinForm R M).IsSymm := ⟨fun _ _ ↦ rfl⟩
 
 @[simp]
 theorem isSymm_neg {B : BilinForm R₁ M₁} : (-B).IsSymm ↔ B.IsSymm :=
-  ⟨fun h => neg_neg B ▸ h.neg, IsSymm.neg⟩
+  ⟨fun h ↦ neg_neg B ▸ h.neg, IsSymm.neg⟩
 
 theorem isSymm_iff_flip : B.IsSymm ↔ flipHom B = B where
   mp := fun ⟨h⟩ ↦ by ext; simp [h]
@@ -187,26 +187,26 @@ theorem eq_of_add_add_eq_zero [IsCancelAdd R] {a b c : M} (H : B.IsAlt) (hAdd : 
     B a b = B b c := LinearMap.IsAlt.eq_of_add_add_eq_zero H hAdd
 
 protected theorem add {B₁ B₂ : BilinForm R M} (hB₁ : B₁.IsAlt) (hB₂ : B₂.IsAlt) : (B₁ + B₂).IsAlt :=
-  fun x => (congr_arg₂ (· + ·) (hB₁ x) (hB₂ x) :).trans <| add_zero _
+  fun x ↦ (congr_arg₂ (· + ·) (hB₁ x) (hB₂ x) :).trans <| add_zero _
 
 protected theorem sub {B₁ B₂ : BilinForm R₁ M₁} (hB₁ : B₁.IsAlt) (hB₂ : B₂.IsAlt) :
-    (B₁ - B₂).IsAlt := fun x => (congr_arg₂ Sub.sub (hB₁ x) (hB₂ x)).trans <| sub_zero _
+    (B₁ - B₂).IsAlt := fun x ↦ (congr_arg₂ Sub.sub (hB₁ x) (hB₂ x)).trans <| sub_zero _
 
-protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsAlt) : (-B).IsAlt := fun x =>
+protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsAlt) : (-B).IsAlt := fun x ↦
   neg_eq_zero.mpr <| hB x
 
 protected theorem smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R] (a : α)
-    {B : BilinForm R M} (hB : B.IsAlt) : (a • B).IsAlt := fun x =>
+    {B : BilinForm R M} (hB : B.IsAlt) : (a • B).IsAlt := fun x ↦
   (congr_arg (a • ·) (hB x)).trans <| smul_zero _
 
 end IsAlt
 
 @[simp]
-theorem isAlt_zero : (0 : BilinForm R M).IsAlt := fun _ => rfl
+theorem isAlt_zero : (0 : BilinForm R M).IsAlt := fun _ ↦ rfl
 
 @[simp]
 theorem isAlt_neg {B : BilinForm R₁ M₁} : (-B).IsAlt ↔ B.IsAlt :=
-  ⟨fun h => neg_neg B ▸ h.neg, IsAlt.neg⟩
+  ⟨fun h ↦ neg_neg B ▸ h.neg, IsAlt.neg⟩
 
 end BilinForm
 
@@ -230,7 +230,7 @@ variable (R M)
 /-- In a non-trivial module, zero is not non-degenerate. -/
 theorem not_nondegenerate_zero [Nontrivial M] : ¬(0 : BilinForm R M).Nondegenerate :=
   let ⟨m, hm⟩ := exists_ne (0 : M)
-  fun h => hm (h m fun _ => rfl)
+  fun h ↦ hm (h m fun _ ↦ rfl)
 
 end
 
@@ -238,17 +238,17 @@ variable {M' : Type*}
 variable [AddCommMonoid M'] [Module R M']
 
 theorem Nondegenerate.ne_zero [Nontrivial M] {B : BilinForm R M} (h : B.Nondegenerate) : B ≠ 0 :=
-  fun h0 => not_nondegenerate_zero R M <| h0 ▸ h
+  fun h0 ↦ not_nondegenerate_zero R M <| h0 ▸ h
 
 theorem Nondegenerate.congr {B : BilinForm R M} (e : M ≃ₗ[R] M') (h : B.Nondegenerate) :
-    (congr e B).Nondegenerate := fun m hm =>
+    (congr e B).Nondegenerate := fun m hm ↦
   e.symm.map_eq_zero_iff.1 <|
-    h (e.symm m) fun n => (congr_arg _ (e.symm_apply_apply n).symm).trans (hm (e n))
+    h (e.symm m) fun n ↦ (congr_arg _ (e.symm_apply_apply n).symm).trans (hm (e n))
 
 @[simp]
 theorem nondegenerate_congr_iff {B : BilinForm R M} (e : M ≃ₗ[R] M') :
     (congr e B).Nondegenerate ↔ B.Nondegenerate :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     convert h.congr e.symm
     rw [congr_congr, e.self_trans_symm, congr_refl, LinearEquiv.refl_apply], Nondegenerate.congr e⟩
 
@@ -262,7 +262,7 @@ theorem Nondegenerate.ker_eq_bot {B : BilinForm R M} (h : B.Nondegenerate) :
     LinearMap.ker B = ⊥ := nondegenerate_iff_ker_eq_bot.mp h
 
 theorem compLeft_injective (B : BilinForm R₁ M₁) (b : B.Nondegenerate) :
-    Function.Injective B.compLeft := fun φ ψ h => by
+    Function.Injective B.compLeft := fun φ ψ h ↦ by
   ext w
   refine eq_of_sub_eq_zero (b _ ?_)
   intro v
@@ -271,7 +271,7 @@ theorem compLeft_injective (B : BilinForm R₁ M₁) (b : B.Nondegenerate) :
 theorem isAdjointPair_unique_of_nondegenerate (B : BilinForm R₁ M₁) (b : B.Nondegenerate)
     (φ ψ₁ ψ₂ : M₁ →ₗ[R₁] M₁) (hψ₁ : IsAdjointPair B B ψ₁ φ) (hψ₂ : IsAdjointPair B B ψ₂ φ) :
     ψ₁ = ψ₂ :=
-  B.compLeft_injective b <| ext fun v w => by rw [compLeft_apply, compLeft_apply, hψ₁, hψ₂]
+  B.compLeft_injective b <| ext fun v w ↦ by rw [compLeft_apply, compLeft_apply, hψ₁, hψ₂]
 
 section FiniteDimensional
 
@@ -390,17 +390,17 @@ noncomputable def leftAdjointOfNondegenerate (B : BilinForm K V) (b : B.Nondegen
   symmCompOfNondegenerate (B.compRight φ) B b
 
 theorem isAdjointPairLeftAdjointOfNondegenerate (B : BilinForm K V) (b : B.Nondegenerate)
-    (φ : V →ₗ[K] V) : IsAdjointPair B B (B.leftAdjointOfNondegenerate b φ) φ := fun x y =>
+    (φ : V →ₗ[K] V) : IsAdjointPair B B (B.leftAdjointOfNondegenerate b φ) φ := fun x y ↦
   (B.compRight φ).symmCompOfNondegenerate_left_apply b y x
 
 /-- Given the nondegenerate bilinear form `B`, the linear map `φ` has a unique left adjoint given by
 `BilinForm.leftAdjointOfNondegenerate`. -/
 theorem isAdjointPair_iff_eq_of_nondegenerate (B : BilinForm K V) (b : B.Nondegenerate)
     (ψ φ : V →ₗ[K] V) : IsAdjointPair B B ψ φ ↔ ψ = B.leftAdjointOfNondegenerate b φ :=
-  ⟨fun h =>
+  ⟨fun h ↦
     B.isAdjointPair_unique_of_nondegenerate b φ ψ _ h
       (isAdjointPairLeftAdjointOfNondegenerate _ _ _),
-    fun h => h.symm ▸ isAdjointPairLeftAdjointOfNondegenerate _ _ _⟩
+    fun h ↦ h.symm ▸ isAdjointPairLeftAdjointOfNondegenerate _ _ _⟩
 
 end LinearAdjoints
 

@@ -62,7 +62,7 @@ instance PseudoMetrizableSpace.subtype [PseudoMetrizableSpace X] (s : Set X) :
 instance pseudoMetrizableSpace_pi [∀ i, PseudoMetrizableSpace (A i)] :
     PseudoMetrizableSpace (∀ i, A i) := by
   cases nonempty_fintype ι
-  letI := fun i => pseudoMetrizableSpacePseudoMetric (A i)
+  letI := fun i ↦ pseudoMetrizableSpacePseudoMetric (A i)
   infer_instance
 
 /-- A topological space is metrizable if there exists a metric space structure compatible with the
@@ -111,7 +111,7 @@ instance MetrizableSpace.subtype [MetrizableSpace X] (s : Set X) : MetrizableSpa
 
 instance metrizableSpace_pi [∀ i, MetrizableSpace (A i)] : MetrizableSpace (∀ i, A i) := by
   cases nonempty_fintype ι
-  letI := fun i => metrizableSpaceMetric (A i)
+  letI := fun i ↦ metrizableSpaceMetric (A i)
   infer_instance
 
 theorem IsSeparable.secondCountableTopology [PseudoMetrizableSpace X] {s : Set X}

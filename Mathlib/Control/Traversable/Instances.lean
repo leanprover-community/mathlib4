@@ -53,7 +53,7 @@ instance : LawfulTraversable Option :=
     id_traverse := Option.id_traverse
     comp_traverse := Option.comp_traverse
     traverse_eq_map_id := Option.traverse_eq_map_id
-    naturality := fun η _ _ f x => Option.naturality η f x }
+    naturality := fun η _ _ f x ↦ Option.naturality η f x }
 
 namespace List
 
@@ -117,7 +117,7 @@ theorem traverse_append :
   | a :: as, bs => by simp [traverse_append as bs, functor_norm]; congr
 
 theorem mem_traverse {f : α' → Set β'} :
-    ∀ (l : List α') (n : List β'), n ∈ traverse f l ↔ Forall₂ (fun b a => b ∈ f a) n l
+    ∀ (l : List α') (n : List β'), n ∈ traverse f l ↔ Forall₂ (fun b a ↦ b ∈ f a) n l
   | [], [] => by simp
   | a :: as, [] => by simp
   | [], b :: bs => by simp

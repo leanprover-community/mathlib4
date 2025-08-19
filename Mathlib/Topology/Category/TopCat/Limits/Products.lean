@@ -27,7 +27,7 @@ variable {J : Type v} [Category.{w} J]
 
 /-- The projection from the product as a bundled continuous map. -/
 abbrev piπ {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : TopCat.of (∀ i, α i) ⟶ α i :=
-  ofHom ⟨fun f => f i, continuous_apply i⟩
+  ofHom ⟨fun f ↦ f i, continuous_apply i⟩
 
 /-- The explicit fan of a family of topological spaces given by the pi type. -/
 @[simps! pt π_app]
@@ -37,8 +37,8 @@ def piFan {ι : Type v} (α : ι → TopCat.{max v u}) : Fan α :=
 /-- The constructed fan is indeed a limit -/
 def piFanIsLimit {ι : Type v} (α : ι → TopCat.{max v u}) : IsLimit (piFan α) where
   lift S := ofHom
-    { toFun := fun s i => S.π.app ⟨i⟩ s
-      continuous_toFun := continuous_pi (fun i => (S.π.app ⟨i⟩).hom.2) }
+    { toFun := fun s i ↦ S.π.app ⟨i⟩ s
+      continuous_toFun := continuous_pi (fun i ↦ (S.π.app ⟨i⟩).hom.2) }
   uniq := by
     intro S m h
     ext x
@@ -81,7 +81,7 @@ def sigmaCofan {ι : Type v} (α : ι → TopCat.{max v u}) : Cofan α :=
 /-- The constructed cofan is indeed a colimit -/
 def sigmaCofanIsColimit {ι : Type v} (β : ι → TopCat.{max v u}) : IsColimit (sigmaCofan β) where
   desc S := ofHom
-    { toFun := fun (s : of (Σ i, β i)) => S.ι.app ⟨s.1⟩ s.2
+    { toFun := fun (s : of (Σ i, β i)) ↦ S.ι.app ⟨s.1⟩ s.2
       continuous_toFun := by continuity }
   uniq := by
     intro S m h
@@ -126,8 +126,8 @@ def prodBinaryFan (X Y : TopCat.{u}) : BinaryFan X Y :=
 
 /-- The constructed binary fan is indeed a limit -/
 def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
-  lift := fun S : BinaryFan X Y => ofHom {
-    toFun := fun s => (S.fst s, S.snd s)
+  lift := fun S : BinaryFan X Y ↦ ofHom {
+    toFun := fun s ↦ (S.fst s, S.snd s)
     continuous_toFun := by continuity }
   fac := by
     rintro S (_ | _) <;> {dsimp; ext; rfl}
@@ -137,10 +137,10 @@ def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): used to be part of `ext x`
     refine Prod.ext ?_ ?_
     · specialize h ⟨WalkingPair.left⟩
-      apply_fun fun e => e x at h
+      apply_fun fun e ↦ e x at h
       exact h
     · specialize h ⟨WalkingPair.right⟩
-      apply_fun fun e => e x at h
+      apply_fun fun e ↦ e x at h
       exact h
 
 /-- The homeomorphism between `X ⨯ Y` and the set-theoretic product of `X` and `Y`,
@@ -232,7 +232,7 @@ protected def binaryCofan (X Y : TopCat.{u}) : BinaryCofan X Y :=
 
 /-- The constructed binary coproduct cofan in `TopCat` is the coproduct. -/
 def binaryCofanIsColimit (X Y : TopCat.{u}) : IsColimit (TopCat.binaryCofan X Y) := by
-  refine Limits.BinaryCofan.isColimitMk (fun s => ofHom
+  refine Limits.BinaryCofan.isColimitMk (fun s ↦ ofHom
     { toFun := Sum.elim s.inl s.inr, continuous_toFun := ?_ }) ?_ ?_ ?_
   · continuity
   · intro s
@@ -267,11 +267,11 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
     · rintro ⟨h₁, h₂, h₃⟩
       have : ∀ x, x ∈ Set.range c.inl ∨ x ∈ Set.range c.inr := by
         rw [eq_compl_iff_isCompl.mpr h₃.symm]
-        exact fun _ => or_not
+        exact fun _ ↦ or_not
       refine ⟨BinaryCofan.IsColimit.mk _ ?_ ?_ ?_ ?_⟩
       · intro T f g
         refine ofHom (ContinuousMap.mk ?_ ?_)
-        · exact fun x =>
+        · exact fun x ↦
             if h : x ∈ Set.range c.inl then f ((Equiv.ofInjective _ h₁.injective).symm ⟨x, h⟩)
             else g ((Equiv.ofInjective _ h₂.injective).symm ⟨x, (this x).resolve_left h⟩)
         rw [continuous_iff_continuousAt]

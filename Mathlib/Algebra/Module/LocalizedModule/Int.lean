@@ -60,7 +60,7 @@ theorem exist_integer_multiples {ι : Type*} (s : Finset ι) (g : ι → M') :
     ∃ b : S, ∀ i ∈ s, IsInteger f (b.val • g i) := by
   classical
   choose sec hsec using (fun i ↦ IsLocalizedModule.surj S f (g i))
-  refine ⟨∏ i ∈ s, (sec i).2, fun i hi => ⟨?_, ?_⟩⟩
+  refine ⟨∏ i ∈ s, (sec i).2, fun i hi ↦ ⟨?_, ?_⟩⟩
   · exact (∏ j ∈ s.erase i, (sec j).2) • (sec i).1
   · simp only [LinearMap.map_smul_of_tower, Submonoid.coe_finset_prod]
     rw [← hsec, ← mul_smul, Submonoid.smul_def]
@@ -74,7 +74,7 @@ theorem exist_integer_multiples_of_finite {ι : Type*} [Finite ι] (g : ι → M
     ∃ b : S, ∀ i, IsInteger f ((b : R) • g i) := by
   cases nonempty_fintype ι
   obtain ⟨b, hb⟩ := exist_integer_multiples S f Finset.univ g
-  exact ⟨b, fun i => hb i (Finset.mem_univ _)⟩
+  exact ⟨b, fun i ↦ hb i (Finset.mem_univ _)⟩
 
 /-- We can clear the denominators of a finite set of fractions. -/
 theorem exist_integer_multiples_of_finset (s : Finset M') :
@@ -101,7 +101,7 @@ noncomputable def commonDenomOfFinset (s : Finset M') : S :=
 
 /-- The finset of numerators after clearing the denominators of a finite set of fractions. -/
 noncomputable def finsetIntegerMultiple [DecidableEq M] (s : Finset M') : Finset M :=
-  s.attach.image fun t => integerMultiple S f s id t
+  s.attach.image fun t ↦ integerMultiple S f s id t
 
 open Pointwise
 

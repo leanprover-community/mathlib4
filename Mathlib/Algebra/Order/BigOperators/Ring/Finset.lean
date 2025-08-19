@@ -68,15 +68,15 @@ lemma prod_lt_prod (hf : ∀ i ∈ s, 0 < f i) (hfg : ∀ i ∈ s, f i ≤ g i)
   rw [← insert_erase hi, prod_insert (notMem_erase _ _), prod_insert (notMem_erase _ _)]
   have := posMulStrictMono_iff_mulPosStrictMono.1 ‹PosMulStrictMono R›
   refine mul_lt_mul_of_pos_of_nonneg' hilt ?_ ?_ ?_
-  · exact prod_le_prod (fun j hj => le_of_lt (hf j (mem_of_mem_erase hj)))
+  · exact prod_le_prod (fun j hj ↦ le_of_lt (hf j (mem_of_mem_erase hj)))
       (fun _ hj ↦ hfg _ <| mem_of_mem_erase hj)
-  · exact prod_pos fun j hj => hf j (mem_of_mem_erase hj)
+  · exact prod_pos fun j hj ↦ hf j (mem_of_mem_erase hj)
   · exact (hf i hi).le.trans hilt.le
 
 lemma prod_lt_prod_of_nonempty (hf : ∀ i ∈ s, 0 < f i) (hfg : ∀ i ∈ s, f i < g i)
     (h_ne : s.Nonempty) :
     ∏ i ∈ s, f i < ∏ i ∈ s, g i := by
-  apply prod_lt_prod hf fun i hi => le_of_lt (hfg i hi)
+  apply prod_lt_prod hf fun i hi ↦ le_of_lt (hfg i hi)
   obtain ⟨i, hi⟩ := h_ne
   exact ⟨i, hi, hfg i hi⟩
 

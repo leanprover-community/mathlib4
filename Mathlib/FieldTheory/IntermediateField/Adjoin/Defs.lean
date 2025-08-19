@@ -29,7 +29,7 @@ variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] (S : Set E)
 @[stacks 09FZ "first part"]
 def adjoin : IntermediateField F E :=
   { Subfield.closure (Set.range (algebraMap F E) ∪ S) with
-    algebraMap_mem' := fun x => Subfield.subset_closure (Or.inl (Set.mem_range_self x)) }
+    algebraMap_mem' := fun x ↦ Subfield.subset_closure (Or.inl (Set.mem_range_self x)) }
 
 @[simp]
 theorem adjoin_toSubfield :
@@ -49,17 +49,17 @@ variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 
 @[simp]
 theorem adjoin_le_iff {S : Set E} {T : IntermediateField F E} : adjoin F S ≤ T ↔ S ⊆ T :=
-  ⟨fun H => le_trans (le_trans Set.subset_union_right Subfield.subset_closure) H, fun H =>
+  ⟨fun H ↦ le_trans (le_trans Set.subset_union_right Subfield.subset_closure) H, fun H ↦
     (@Subfield.closure_le E _ (Set.range (algebraMap F E) ∪ S) T.toSubfield).mpr
       (Set.union_subset (IntermediateField.set_range_subset T) H)⟩
 
 theorem gc : GaloisConnection (adjoin F : Set E → IntermediateField F E)
-    (fun (x : IntermediateField F E) => (x : Set E)) := fun _ _ =>
+    (fun (x : IntermediateField F E) ↦ (x : Set E)) := fun _ _ ↦
   adjoin_le_iff
 
 /-- Galois insertion between `adjoin` and `coe`. -/
 def gi : GaloisInsertion (adjoin F : Set E → IntermediateField F E)
-    (fun (x : IntermediateField F E) => (x : Set E)) where
+    (fun (x : IntermediateField F E) ↦ (x : Set E)) where
   choice s hs := (adjoin F s).copy s <| le_antisymm (gc.le_u_l s) hs
   gc := IntermediateField.gc
   le_l_u S := (IntermediateField.gc (S : Set E) (adjoin F S)).1 <| le_rfl
@@ -141,7 +141,7 @@ theorem sup_toSubfield (S T : IntermediateField F E) :
 
 @[simp, norm_cast]
 theorem coe_sInf (S : Set (IntermediateField F E)) : (↑(sInf S) : Set E) =
-    sInf ((fun (x : IntermediateField F E) => (x : Set E)) '' S) :=
+    sInf ((fun (x : IntermediateField F E) ↦ (x : Set E)) '' S) :=
   rfl
 
 @[simp]
@@ -312,7 +312,7 @@ theorem adjoin.range_algebraMap_subset : Set.range (algebraMap F E) ⊆ adjoin F
 instance adjoin.fieldCoe : CoeTC F (adjoin F S) where
   coe x := ⟨algebraMap F E x, adjoin.algebraMap_mem F S x⟩
 
-theorem subset_adjoin : S ⊆ adjoin F S := fun _ hx => Subfield.subset_closure (Or.inr hx)
+theorem subset_adjoin : S ⊆ adjoin F S := fun _ hx ↦ Subfield.subset_closure (Or.inr hx)
 
 instance adjoin.setCoe : CoeTC S (adjoin F S) where coe x := ⟨x, subset_adjoin F S (Subtype.mem x)⟩
 
@@ -320,13 +320,13 @@ instance adjoin.setCoe : CoeTC S (adjoin F S) where coe x := ⟨x, subset_adjoin
 theorem adjoin.mono (T : Set E) (h : S ⊆ T) : adjoin F S ≤ adjoin F T :=
   GaloisConnection.monotone_l gc h
 
-theorem adjoin_contains_field_as_subfield (F : Subfield E) : (F : Set E) ⊆ adjoin F S := fun x hx =>
+theorem adjoin_contains_field_as_subfield (F : Subfield E) : (F : Set E) ⊆ adjoin F S := fun x hx ↦
   adjoin.algebraMap_mem F S ⟨x, hx⟩
 
 theorem subset_adjoin_of_subset_left {F : Subfield E} {T : Set E} (HT : T ⊆ F) : T ⊆ adjoin F S :=
-  fun x hx => (adjoin F S).algebraMap_mem ⟨x, HT hx⟩
+  fun x hx ↦ (adjoin F S).algebraMap_mem ⟨x, HT hx⟩
 
-theorem subset_adjoin_of_subset_right {T : Set E} (H : T ⊆ S) : T ⊆ adjoin F S := fun _ hx =>
+theorem subset_adjoin_of_subset_right {T : Set E} (H : T ⊆ S) : T ⊆ adjoin F S := fun _ hx ↦
   subset_adjoin F S (H hx)
 
 @[simp]
@@ -348,8 +348,8 @@ theorem adjoin_le_subfield {K : Subfield E} (HF : Set.range (algebraMap F E) ⊆
 theorem adjoin_subset_adjoin_iff {F' : Type*} [Field F'] [Algebra F' E] {S S' : Set E} :
     (adjoin F S : Set E) ⊆ adjoin F' S' ↔
       Set.range (algebraMap F E) ⊆ adjoin F' S' ∧ S ⊆ adjoin F' S' :=
-  ⟨fun h => ⟨(adjoin.range_algebraMap_subset _ _).trans h,
-    (subset_adjoin _ _).trans h⟩, fun ⟨hF, hS⟩ =>
+  ⟨fun h ↦ ⟨(adjoin.range_algebraMap_subset _ _).trans h,
+    (subset_adjoin _ _).trans h⟩, fun ⟨hF, hS⟩ ↦
       (Subfield.closure_le (t := (adjoin F' S').toSubfield)).mpr (Set.union_subset hF hS)⟩
 
 /-- Adjoining S and then T is the same as adjoining `S ∪ T`. -/
@@ -627,7 +627,7 @@ theorem induction_on_adjoin_finset (S : Finset E) (P : IntermediateField F E →
     (ih : ∀ (K : IntermediateField F E), ∀ x ∈ S, P K → P (K⟮x⟯.restrictScalars F)) :
     P (adjoin F S) := by
   classical
-  refine Finset.induction_on' S ?_ (fun _ _ ha _ _ h => ?_)
+  refine Finset.induction_on' S ?_ (fun _ _ ha _ _ h ↦ ?_)
   · simp [base]
   · rw [Finset.coe_insert, Set.insert_eq, Set.union_comm, ← adjoin_adjoin_left]
     exact ih (adjoin F _) _ ha h
@@ -636,7 +636,7 @@ theorem induction_on_adjoin_fg (P : IntermediateField F E → Prop) (base : P �
     (ih : ∀ (K : IntermediateField F E) (x : E), P K → P (K⟮x⟯.restrictScalars F))
     (K : IntermediateField F E) (hK : K.FG) : P K := by
   obtain ⟨S, rfl⟩ := hK
-  exact induction_on_adjoin_finset S P base fun K x _ hK => ih K x hK
+  exact induction_on_adjoin_finset S P base fun K x _ hK ↦ ih K x hK
 
 end Induction
 

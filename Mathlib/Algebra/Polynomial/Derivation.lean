@@ -48,7 +48,7 @@ theorem C_smul_derivation_apply (D : Derivation R R[X] A) (a : R) (f : R[X]) :
 
 @[ext]
 theorem derivation_ext {D₁ D₂ : Derivation R R[X] A} (h : D₁ X = D₂ X) : D₁ = D₂ :=
-  Derivation.ext fun f => Derivation.eqOn_adjoin (Set.eqOn_singleton.2 h) <| by
+  Derivation.ext fun f ↦ Derivation.eqOn_adjoin (Set.eqOn_singleton.2 h) <| by
     simp only [adjoin_X, Algebra.coe_top, Set.mem_univ]
 
 variable [IsScalarTower R (Polynomial R) A]
@@ -79,11 +79,11 @@ lemma mkDerivation_one_eq_derivative (f : R[X]) : mkDerivation R (1 : R[X]) f = 
 def mkDerivationEquiv : A ≃ₗ[R] Derivation R R[X] A :=
   LinearEquiv.symm <|
     { invFun := mkDerivation R
-      toFun := fun D => D X
-      map_add' := fun _ _ => rfl
-      map_smul' := fun _ _ => rfl
-      left_inv := fun _ => derivation_ext <| mkDerivation_X _ _
-      right_inv := fun _ => mkDerivation_X _ _ }
+      toFun := fun D ↦ D X
+      map_add' := fun _ _ ↦ rfl
+      map_smul' := fun _ _ ↦ rfl
+      left_inv := fun _ ↦ derivation_ext <| mkDerivation_X _ _
+      right_inv := fun _ ↦ mkDerivation_X _ _ }
 
 @[simp] lemma mkDerivationEquiv_apply (a : A) :
     mkDerivationEquiv R a = mkDerivation R a := by

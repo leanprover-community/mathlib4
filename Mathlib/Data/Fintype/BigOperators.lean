@@ -60,21 +60,21 @@ variable {M : Type*} [Fintype α] [CommMonoid M]
 
 @[to_additive]
 theorem prod_eq_one (f : α → M) (h : ∀ a, f a = 1) : ∏ a, f a = 1 :=
-  Finset.prod_eq_one fun a _ha => h a
+  Finset.prod_eq_one fun a _ha ↦ h a
 
 @[to_additive]
 theorem prod_congr (f g : α → M) (h : ∀ a, f a = g a) : ∏ a, f a = ∏ a, g a :=
-  Finset.prod_congr rfl fun a _ha => h a
+  Finset.prod_congr rfl fun a _ha ↦ h a
 
 @[to_additive]
 theorem prod_eq_single {f : α → M} (a : α) (h : ∀ x ≠ a, f x = 1) : ∏ x, f x = f a :=
-  Finset.prod_eq_single a (fun x _ hx => h x hx) fun ha => (ha (Finset.mem_univ a)).elim
+  Finset.prod_eq_single a (fun x _ hx ↦ h x hx) fun ha ↦ (ha (Finset.mem_univ a)).elim
 
 @[to_additive]
 theorem prod_eq_mul {f : α → M} (a b : α) (h₁ : a ≠ b) (h₂ : ∀ x, x ≠ a ∧ x ≠ b → f x = 1) :
     ∏ x, f x = f a * f b := by
-  apply Finset.prod_eq_mul a b h₁ fun x _ hx => h₂ x hx <;>
-    exact fun hc => (hc (Finset.mem_univ _)).elim
+  apply Finset.prod_eq_mul a b h₁ fun x _ hx ↦ h₂ x hx <;>
+    exact fun hc ↦ (hc (Finset.mem_univ _)).elim
 
 /-- If a product of a `Finset` of a subsingleton type has a given
 value, so do the terms in that product. -/
@@ -229,8 +229,8 @@ nonrec theorem Fintype.prod_dite [Fintype α] {p : α → Prop} [DecidablePred p
     (∏ a : { a // p a }, f a a.2) * ∏ a : { a // ¬p a }, g a a.2 := by
   simp only [prod_dite]
   congr 1
-  · exact (Equiv.subtypeEquivRight <| by simp).prod_comp fun x : { x // p x } => f x x.2
-  · exact (Equiv.subtypeEquivRight <| by simp).prod_comp fun x : { x // ¬p x } => g x x.2
+  · exact (Equiv.subtypeEquivRight <| by simp).prod_comp fun x : { x // p x } ↦ f x x.2
+  · exact (Equiv.subtypeEquivRight <| by simp).prod_comp fun x : { x // ¬p x } ↦ g x x.2
 
 section
 

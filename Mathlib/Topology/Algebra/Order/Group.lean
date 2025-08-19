@@ -58,7 +58,7 @@ variable {α : Type*} {l : Filter α} {f : α → G}
 
 @[to_additive]
 protected theorem Filter.Tendsto.mabs {a : G} (h : Tendsto f l (𝓝 a)) :
-    Tendsto (fun x => |f x|ₘ) l (𝓝 |a|ₘ) :=
+    Tendsto (fun x ↦ |f x|ₘ) l (𝓝 |a|ₘ) :=
   (continuous_mabs.tendsto _).comp h
 
 @[to_additive (attr := simp)]
@@ -75,26 +75,26 @@ end Tendsto
 variable {X : Type*} [TopologicalSpace X] {f : X → G} {s : Set X} {x : X}
 
 @[to_additive (attr := fun_prop)]
-protected theorem Continuous.mabs (h : Continuous f) : Continuous fun x => |f x|ₘ :=
+protected theorem Continuous.mabs (h : Continuous f) : Continuous fun x ↦ |f x|ₘ :=
   continuous_mabs.comp h
 
 @[to_additive (attr := fun_prop)]
-protected theorem ContinuousAt.mabs (h : ContinuousAt f x) : ContinuousAt (fun x => |f x|ₘ) x :=
+protected theorem ContinuousAt.mabs (h : ContinuousAt f x) : ContinuousAt (fun x ↦ |f x|ₘ) x :=
   Filter.Tendsto.mabs h
 
 @[to_additive]
 protected theorem ContinuousWithinAt.mabs (h : ContinuousWithinAt f s x) :
-    ContinuousWithinAt (fun x => |f x|ₘ) s x :=
+    ContinuousWithinAt (fun x ↦ |f x|ₘ) s x :=
   Filter.Tendsto.mabs h
 
 @[to_additive (attr := fun_prop)]
-protected theorem ContinuousOn.mabs (h : ContinuousOn f s) : ContinuousOn (fun x => |f x|ₘ) s :=
-  fun x hx => (h x hx).mabs
+protected theorem ContinuousOn.mabs (h : ContinuousOn f s) : ContinuousOn (fun x ↦ |f x|ₘ) s :=
+  fun x hx ↦ (h x hx).mabs
 
 @[to_additive]
 theorem tendsto_mabs_nhdsNE_one : Tendsto (mabs : G → G) (𝓝[≠] 1) (𝓝[>] 1) :=
   (continuous_mabs.tendsto' (1 : G) 1 mabs_one).inf <|
-    tendsto_principal_principal.2 fun _x => one_lt_mabs.2
+    tendsto_principal_principal.2 fun _x ↦ one_lt_mabs.2
 
 @[deprecated (since := "2025-03-18")]
 alias tendsto_abs_nhdsWithin_zero := tendsto_abs_nhdsNE_zero

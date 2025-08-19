@@ -87,7 +87,7 @@ lemma ConvexOn.isBoundedUnder_abs (hf : ConvexOn ℝ C f) {x₀ : E} (hC : C ∈
   refine ⟨fun h ↦ h.mono_le <| .of_forall fun x ↦ le_abs_self _, ?_⟩
   rintro ⟨r, hr⟩
   refine ⟨|r| + 2 * |f x₀|, ?_⟩
-  have : (𝓝 x₀).Tendsto (fun y => 2 • x₀ - y) (𝓝 x₀) :=
+  have : (𝓝 x₀).Tendsto (fun y ↦ 2 • x₀ - y) (𝓝 x₀) :=
     tendsto_nhds_nhds.2 (⟨·, ·, by simp [two_nsmul, dist_comm]⟩)
   simp only [Filter.eventually_map, Pi.abs_apply, abs_le'] at hr ⊢
   filter_upwards [this.eventually_mem hC, hC, hr, this.eventually hr] with y hx hx' hfr hfr'

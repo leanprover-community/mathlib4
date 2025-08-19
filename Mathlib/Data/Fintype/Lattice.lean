@@ -25,7 +25,7 @@ variable [Fintype α] {s : Finset α}
 
 /-- A special case of `Finset.sup_eq_iSup` that omits the useless `x ∈ univ` binder. -/
 theorem sup_univ_eq_iSup [CompleteLattice β] (f : α → β) : Finset.univ.sup f = iSup f :=
-  (sup_eq_iSup _ f).trans <| congr_arg _ <| funext fun _ => iSup_pos (mem_univ _)
+  (sup_eq_iSup _ f).trans <| congr_arg _ <| funext fun _ ↦ iSup_pos (mem_univ _)
 
 /-- A special case of `Finset.inf_eq_iInf` that omits the useless `x ∈ univ` binder. -/
 theorem inf_univ_eq_iInf [CompleteLattice β] (f : α → β) : Finset.univ.inf f = iInf f :=
@@ -33,13 +33,13 @@ theorem inf_univ_eq_iInf [CompleteLattice β] (f : α → β) : Finset.univ.inf 
 
 @[simp]
 theorem fold_inf_univ [SemilatticeInf α] [OrderBot α] (a : α) :
-    (Finset.univ.fold min a fun x => x) = ⊥ :=
+    (Finset.univ.fold min a fun x ↦ x) = ⊥ :=
   eq_bot_iff.2 <|
     ((Finset.fold_op_rel_iff_and <| @le_inf_iff α _).1 le_rfl).2 ⊥ <| Finset.mem_univ _
 
 @[simp]
 theorem fold_sup_univ [SemilatticeSup α] [OrderTop α] (a : α) :
-    (Finset.univ.fold max a fun x => x) = ⊤ :=
+    (Finset.univ.fold max a fun x ↦ x) = ⊤ :=
   @fold_inf_univ αᵒᵈ _ _ _ _
 
 lemma mem_inf [DecidableEq α] {s : Finset ι} {f : ι → Finset α} {a : α} :

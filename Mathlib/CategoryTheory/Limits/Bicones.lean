@@ -62,13 +62,13 @@ inductive BiconeHom : Bicone J → Bicone J → Type max u₁ v₁
 instance : Inhabited (BiconeHom J Bicone.left Bicone.left) :=
   ⟨BiconeHom.left_id⟩
 
-instance BiconeHom.decidableEq {j k : Bicone J} : DecidableEq (BiconeHom J j k) := fun f g => by
+instance BiconeHom.decidableEq {j k : Bicone J} : DecidableEq (BiconeHom J j k) := fun f g ↦ by
   classical cases f <;> cases g <;> simp only [diagram.injEq] <;> infer_instance
 
 @[simps]
 instance biconeCategoryStruct : CategoryStruct (Bicone J) where
   Hom := BiconeHom J
-  id j := Bicone.casesOn j BiconeHom.left_id BiconeHom.right_id fun k => BiconeHom.diagram (𝟙 k)
+  id j := Bicone.casesOn j BiconeHom.left_id BiconeHom.right_id fun k ↦ BiconeHom.diagram (𝟙 k)
   comp f g := by
     rcases f with (_ | _ | _ | _ | f)
     · exact g
@@ -95,7 +95,7 @@ variable (J : Type v₁) [SmallCategory J]
 -/
 @[simps]
 def biconeMk {C : Type u₁} [Category.{v₁} C] {F : J ⥤ C} (c₁ c₂ : Cone F) : Bicone J ⥤ C where
-  obj X := Bicone.casesOn X c₁.pt c₂.pt fun j => F.obj j
+  obj X := Bicone.casesOn X c₁.pt c₂.pt fun j ↦ F.obj j
   map f := by
     rcases f with (_ | _ | _ | _ | f)
     · exact 𝟙 _
@@ -120,31 +120,31 @@ instance finBiconeHom [FinCategory J] (j k : Bicone J) : Fintype (j ⟶ k) := by
   cases j <;> cases k
   · exact
       { elems := {BiconeHom.left_id}
-        complete := fun f => by cases f; simp }
+        complete := fun f ↦ by cases f; simp }
   · exact
     { elems := ∅
-      complete := fun f => by cases f }
+      complete := fun f ↦ by cases f }
   · exact
     { elems := {BiconeHom.left _}
-      complete := fun f => by cases f; simp }
+      complete := fun f ↦ by cases f; simp }
   · exact
     { elems := ∅
-      complete := fun f => by cases f }
+      complete := fun f ↦ by cases f }
   · exact
       { elems := {BiconeHom.right_id}
-        complete := fun f => by cases f; simp }
+        complete := fun f ↦ by cases f; simp }
   · exact
     { elems := {BiconeHom.right _}
-      complete := fun f => by cases f; simp }
+      complete := fun f ↦ by cases f; simp }
   · exact
     { elems := ∅
-      complete := fun f => by cases f }
+      complete := fun f ↦ by cases f }
   · exact
     { elems := ∅
-      complete := fun f => by cases f }
+      complete := fun f ↦ by cases f }
   · exact
     { elems := Finset.image BiconeHom.diagram Fintype.elems
-      complete := fun f => by
+      complete := fun f ↦ by
         rcases f with (_ | _ | _ | _ | f)
         simp only [Finset.mem_image]
         use f

@@ -48,7 +48,7 @@ lemma iff {X Y : C} (f : X ⟶ Y) (a : A) : W (f⟦a⟧') ↔ W f := by
   rfl
 
 lemma shiftFunctor_comp_inverts (a : A) :
-    W.IsInvertedBy (shiftFunctor C a ⋙ L) := fun _ _ f hf =>
+    W.IsInvertedBy (shiftFunctor C a ⋙ L) := fun _ _ f hf ↦
   Localization.inverts L W _ (by simpa only [iff] using hf)
 
 end IsCompatibleWithShift
@@ -76,9 +76,9 @@ noncomputable def HasShift.localized : HasShift D A :=
   have := Localization.full_whiskeringLeft L W D
   have := Localization.faithful_whiskeringLeft L W D
   HasShift.induced L A
-    (fun a => Localization.lift (shiftFunctor C a ⋙ L)
+    (fun a ↦ Localization.lift (shiftFunctor C a ⋙ L)
       (MorphismProperty.IsCompatibleWithShift.shiftFunctor_comp_inverts L W a) L)
-    (fun _ => Localization.fac _ _ _)
+    (fun _ ↦ Localization.fac _ _ _)
 
 /-- The localization functor `L : C ⥤ D` is compatible with the shift. -/
 @[nolint unusedHavesSuffices]

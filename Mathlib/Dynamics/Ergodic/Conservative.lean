@@ -57,14 +57,14 @@ structure Conservative (f : α → α) (μ : Measure α) : Prop extends QuasiMea
 /-- A self-map preserving a finite measure is conservative. -/
 protected theorem MeasurePreserving.conservative [IsFiniteMeasure μ] (h : MeasurePreserving f μ μ) :
     Conservative f μ :=
-  ⟨h.quasiMeasurePreserving, fun _ hsm h0 => h.exists_mem_iterate_mem hsm.nullMeasurableSet h0⟩
+  ⟨h.quasiMeasurePreserving, fun _ hsm h0 ↦ h.exists_mem_iterate_mem hsm.nullMeasurableSet h0⟩
 
 namespace Conservative
 
 /-- The identity map is conservative w.r.t. any measure. -/
 protected theorem id (μ : Measure α) : Conservative id μ :=
   { toQuasiMeasurePreserving := QuasiMeasurePreserving.id μ
-    exists_mem_iterate_mem' := fun _ _ h0 => by
+    exists_mem_iterate_mem' := fun _ _ h0 ↦ by
       simpa [exists_ne] using nonempty_of_measure_ne_zero h0 }
 
 theorem of_absolutelyContinuous {ν : Measure α} (h : Conservative f μ) (hν : ν ≪ μ)
@@ -173,11 +173,11 @@ set, then for `μ`-a.e. `x`, if the orbit of `x` visits `s` at least once, then 
 infinitely many times. -/
 theorem ae_forall_image_mem_imp_frequently_image_mem (hf : Conservative f μ)
     (hs : NullMeasurableSet s μ) : ∀ᵐ x ∂μ, ∀ k, f^[k] x ∈ s → ∃ᶠ n in atTop, f^[n] x ∈ s := by
-  refine ae_all_iff.2 fun k => ?_
+  refine ae_all_iff.2 fun k ↦ ?_
   refine (hf.ae_mem_imp_frequently_image_mem
-    (hs.preimage <| hf.toQuasiMeasurePreserving.iterate k)).mono fun x hx hk => ?_
+    (hs.preimage <| hf.toQuasiMeasurePreserving.iterate k)).mono fun x hx hk ↦ ?_
   rw [← map_add_atTop_eq_nat k, frequently_map]
-  refine (hx hk).mono fun n hn => ?_
+  refine (hx hk).mono fun n hn ↦ ?_
   rwa [add_comm, iterate_add_apply]
 
 /-- If `f` is a conservative self-map and `s` is a measurable set of positive measure, then
@@ -185,7 +185,7 @@ theorem ae_forall_image_mem_imp_frequently_image_mem (hf : Conservative f μ)
 theorem frequently_ae_mem_and_frequently_image_mem (hf : Conservative f μ)
     (hs : NullMeasurableSet s μ) (h0 : μ s ≠ 0) : ∃ᵐ x ∂μ, x ∈ s ∧ ∃ᶠ n in atTop, f^[n] x ∈ s :=
   ((frequently_ae_mem_iff.2 h0).and_eventually (hf.ae_mem_imp_frequently_image_mem hs)).mono
-    fun _ hx => ⟨hx.1, hx.2 hx.1⟩
+    fun _ hx ↦ ⟨hx.1, hx.2 hx.1⟩
 
 /-- Poincaré recurrence theorem. Let `f : α → α` be a conservative dynamical system on a topological
 space with second countable topology and measurable open sets. Then almost every point `x : α`
@@ -193,18 +193,18 @@ is recurrent: it visits every neighborhood `s ∈ 𝓝 x` infinitely many times.
 theorem ae_frequently_mem_of_mem_nhds [TopologicalSpace α] [SecondCountableTopology α]
     [OpensMeasurableSpace α] {f : α → α} {μ : Measure α} (h : Conservative f μ) :
     ∀ᵐ x ∂μ, ∀ s ∈ 𝓝 x, ∃ᶠ n in atTop, f^[n] x ∈ s := by
-  have : ∀ s ∈ countableBasis α, ∀ᵐ x ∂μ, x ∈ s → ∃ᶠ n in atTop, f^[n] x ∈ s := fun s hs =>
+  have : ∀ s ∈ countableBasis α, ∀ᵐ x ∂μ, x ∈ s → ∃ᶠ n in atTop, f^[n] x ∈ s := fun s hs ↦
     h.ae_mem_imp_frequently_image_mem (isOpen_of_mem_countableBasis hs).nullMeasurableSet
-  refine ((ae_ball_iff <| countable_countableBasis α).2 this).mono fun x hx s hs => ?_
+  refine ((ae_ball_iff <| countable_countableBasis α).2 this).mono fun x hx s hs ↦ ?_
   rcases (isBasis_countableBasis α).mem_nhds_iff.1 hs with ⟨o, hoS, hxo, hos⟩
-  exact (hx o hoS hxo).mono fun n hn => hos hn
+  exact (hx o hoS hxo).mono fun n hn ↦ hos hn
 
 /-- Iteration of a conservative system is a conservative system. -/
 protected theorem iterate (hf : Conservative f μ) (n : ℕ) : Conservative f^[n] μ := by
   -- Discharge the trivial case `n = 0`
   rcases n with - | n
   · exact Conservative.id μ
-  refine ⟨hf.1.iterate _, fun s hs hs0 => ?_⟩
+  refine ⟨hf.1.iterate _, fun s hs hs0 ↦ ?_⟩
   rcases (hf.frequently_ae_mem_and_frequently_image_mem hs.nullMeasurableSet hs0).exists
     with ⟨x, _, hx⟩
   /- We take a point `x ∈ s` such that `f^[k] x ∈ s` for infinitely many values of `k`,

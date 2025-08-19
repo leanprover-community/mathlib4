@@ -60,11 +60,11 @@ def isTerminalEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (Y : C) :
     IsLimit (⟨Y, by cat_disch, by simp⟩ : Cone F) ≃ ∀ X : C, Unique (X ⟶ Y) where
   toFun t X :=
     { default := t.lift ⟨X, ⟨by cat_disch, by simp⟩⟩
-      uniq := fun f =>
+      uniq := fun f ↦
         t.uniq ⟨X, ⟨by cat_disch, by simp⟩⟩ f (by simp) }
   invFun u :=
-    { lift := fun s => (u s.pt).default
-      uniq := fun s _ _ => (u s.pt).2 _ }
+    { lift := fun s ↦ (u s.pt).default
+      uniq := fun s _ _ ↦ (u s.pt).2 _ }
   left_inv := by dsimp [Function.LeftInverse]; intro x; simp only [eq_iff_true_of_subsingleton]
   right_inv := by
     dsimp [Function.RightInverse,Function.LeftInverse]
@@ -74,7 +74,7 @@ def isTerminalEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (Y : C) :
     (as an instance). -/
 def IsTerminal.ofUnique (Y : C) [h : ∀ X : C, Unique (X ⟶ Y)] : IsTerminal Y where
   lift s := (h s.pt).default
-  fac := fun _ ⟨j⟩ => j.elim
+  fac := fun _ ⟨j⟩ ↦ j.elim
 
 /-- An object `Y` is terminal if for every `X` there is a unique morphism `X ⟶ Y`
     (as explicit arguments). -/
@@ -106,10 +106,10 @@ def isInitialEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (X : C) :
     IsColimit (⟨X, ⟨by cat_disch, by simp⟩⟩ : Cocone F) ≃ ∀ Y : C, Unique (X ⟶ Y) where
   toFun t X :=
     { default := t.desc ⟨X, ⟨by cat_disch, by simp⟩⟩
-      uniq := fun f => t.uniq ⟨X, ⟨by cat_disch, by simp⟩⟩ f (by simp) }
+      uniq := fun f ↦ t.uniq ⟨X, ⟨by cat_disch, by simp⟩⟩ f (by simp) }
   invFun u :=
-    { desc := fun s => (u s.pt).default
-      uniq := fun s _ _ => (u s.pt).2 _ }
+    { desc := fun s ↦ (u s.pt).default
+      uniq := fun s _ _ ↦ (u s.pt).2 _ }
   left_inv := by dsimp [Function.LeftInverse]; intro; simp only [eq_iff_true_of_subsingleton]
   right_inv := by
     #adaptation_note /-- 19-07-2025 grind stopped working -/
@@ -119,7 +119,7 @@ def isInitialEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (X : C) :
     (as an instance). -/
 def IsInitial.ofUnique (X : C) [h : ∀ Y : C, Unique (X ⟶ Y)] : IsInitial X where
   desc s := (h s.pt).default
-  fac := fun _ ⟨j⟩ => j.elim
+  fac := fun _ ⟨j⟩ ↦ j.elim
 
 /-- An object `X` is initial if for every `Y` there is a unique morphism `X ⟶ Y`
     (as explicit arguments). -/
@@ -328,7 +328,7 @@ theorem InitialMonoClass.of_isInitial {I : C} (hI : IsInitial I) (h : ∀ X, Mon
 initial object to a terminal object is a monomorphism. -/
 theorem InitialMonoClass.of_isTerminal {I T : C} (hI : IsInitial I) (hT : IsTerminal T)
     (_ : Mono (hI.to T)) : InitialMonoClass C :=
-  InitialMonoClass.of_isInitial hI fun X => mono_of_mono_fac (hI.hom_ext (_ ≫ hT.from X) (hI.to T))
+  InitialMonoClass.of_isInitial hI fun X ↦ mono_of_mono_fac (hI.hom_ext (_ ≫ hT.from X) (hI.to T))
 
 section Comparison
 
@@ -344,8 +344,8 @@ In `limitOfDiagramInitial` we show it is a limit cone. -/
 def coneOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) : Cone F where
   pt := F.obj X
   π :=
-    { app := fun j => F.map (tX.to j)
-      naturality := fun j j' k => by
+    { app := fun j ↦ F.map (tX.to j)
+      naturality := fun j j' k ↦ by
         dsimp
         rw [← F.map_comp, Category.id_comp, tX.hom_ext (tX.to j ≫ k) (tX.to j')] }
 
@@ -367,7 +367,7 @@ def coneOfDiagramTerminal {X : J} (hX : IsTerminal X) (F : J ⥤ C)
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : Cone F where
   pt := F.obj X
   π :=
-    { app := fun _ => inv (F.map (hX.from _))
+    { app := fun _ ↦ inv (F.map (hX.from _))
       naturality := by
         intro i j f
         dsimp
@@ -386,8 +386,8 @@ In `colimitOfDiagramTerminal` we show it is a colimit cocone. -/
 def coconeOfDiagramTerminal {X : J} (tX : IsTerminal X) (F : J ⥤ C) : Cocone F where
   pt := F.obj X
   ι :=
-    { app := fun j => F.map (tX.from j)
-      naturality := fun j j' k => by
+    { app := fun j ↦ F.map (tX.from j)
+      naturality := fun j j' k ↦ by
         dsimp
         rw [← F.map_comp, Category.comp_id, tX.hom_ext (k ≫ tX.from j') (tX.from j)] }
 
@@ -415,7 +415,7 @@ def coconeOfDiagramInitial {X : J} (hX : IsInitial X) (F : J ⥤ C)
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : Cocone F where
   pt := F.obj X
   ι :=
-    { app := fun _ => inv (F.map (hX.to _))
+    { app := fun _ ↦ inv (F.map (hX.to _))
       naturality := by
         intro i j f
         dsimp

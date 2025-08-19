@@ -51,7 +51,7 @@ theorem toMatrix_apply : e.toMatrix v i j = e.repr (v j) i :=
   rfl
 
 theorem toMatrix_transpose_apply : (e.toMatrix v)ᵀ j = e.repr (v j) :=
-  funext fun _ => rfl
+  funext fun _ ↦ rfl
 
 theorem toMatrix_eq_toMatrix_constr [Fintype ι] [DecidableEq ι] (v : ι → M) :
     e.toMatrix v = LinearMap.toMatrix e e (e.constr ℕ v) := by
@@ -116,7 +116,7 @@ theorem toMatrix_map_vecMul {S : Type*} [Semiring S] [Algebra R S] [Fintype ι] 
 @[simp]
 theorem toLin_toMatrix [Finite ι] [Fintype ι'] [DecidableEq ι'] (v : Basis ι' R M) :
     Matrix.toLin v e (e.toMatrix v) = LinearMap.id :=
-  v.ext fun i => by cases nonempty_fintype ι; rw [toLin_self, id_apply, e.sum_toMatrix_smul_self]
+  v.ext fun i ↦ by cases nonempty_fintype ι; rw [toLin_self, id_apply, e.sum_toMatrix_smul_self]
 
 /-- From a basis `e : ι → M`, build a linear equivalence between families of vectors `v : ι → M`,
 and matrices, making the matrix whose columns are the vectors `v i` written in the basis `e`. -/
@@ -209,7 +209,7 @@ theorem mul_basis_toMatrix [DecidableEq ι] [DecidableEq ι'] (b₁ : Basis ι R
   rwa [LinearMap.toMatrix_toLin] at this
 
 theorem basis_toMatrix_basisFun_mul (b : Basis ι R (ι → R)) (A : Matrix ι ι R) :
-    b.toMatrix (Pi.basisFun R ι) * A = of fun i j => b.repr (A.col j) i := by
+    b.toMatrix (Pi.basisFun R ι) * A = of fun i j ↦ b.repr (A.col j) i := by
   classical
   simp only [basis_toMatrix_mul _ _ (Pi.basisFun R ι), Matrix.toLin_eq_toLin']
   ext i j

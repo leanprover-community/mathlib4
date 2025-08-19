@@ -20,7 +20,7 @@ variable {R : Type u} [Ring R] (P : ModuleCat.{v} R)
 
 instance ModuleCat.projective_of_categoryTheory_projective [Module.Projective R P] :
     CategoryTheory.Projective P := by
-  refine ⟨fun E X epi => ?_⟩
+  refine ⟨fun E X epi ↦ ?_⟩
   obtain ⟨f, h⟩ := Module.projective_lifting_property X.hom E.hom
     ((ModuleCat.epi_iff_surjective _).mp epi)
   exact ⟨ofHom f, hom_ext h⟩
@@ -36,8 +36,8 @@ instance ModuleCat.projective_of_module_projective [Small.{v} R] [Projective P] 
 /-- The categorical notion of projective object agrees with the explicit module-theoretic notion. -/
 theorem IsProjective.iff_projective [Small.{v} R] (P : Type v) [AddCommGroup P] [Module R P] :
     Module.Projective R P ↔ Projective (of R P) :=
-  ⟨fun _ => (of R P).projective_of_categoryTheory_projective,
-    fun _ => (of R P).projective_of_module_projective⟩
+  ⟨fun _ ↦ (of R P).projective_of_categoryTheory_projective,
+    fun _ ↦ (of R P).projective_of_module_projective⟩
 
 namespace ModuleCat
 

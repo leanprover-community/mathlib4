@@ -165,7 +165,7 @@ instance : PartialOrder (M ≃ₚ[L] N) where
     f.toEquiv.symm_apply_apply]
   exact toEquiv_inclusion_apply hfg _
 
-theorem monotone_symm : Monotone (fun (f : M ≃ₚ[L] N) ↦ f.symm) := fun _ _ => symm_le_symm
+theorem monotone_symm : Monotone (fun (f : M ≃ₚ[L] N) ↦ f.symm) := fun _ _ ↦ symm_le_symm
 
 theorem symm_le_iff {f : M ≃ₚ[L] N} {g : N ≃ₚ[L] M} : f.symm ≤ g ↔ f ≤ g.symm :=
   ⟨by intro h; rw [← f.symm_symm]; exact monotone_symm h,
@@ -402,9 +402,9 @@ instance inhabited_FGEquiv_of_IsEmpty_Constants_and_Relations
       invFun := isEmptyElim
       left_inv := isEmptyElim
       right_inv := isEmptyElim
-      map_fun' := fun {n} f x => by
+      map_fun' := fun {n} f x ↦ by
         subsingleton
-      map_rel' := fun {n} r x => by
+      map_rel' := fun {n} r x ↦ by
         cases n
         · exact isEmptyElim r
         · exact isEmptyElim (x 0)
@@ -428,7 +428,7 @@ theorem isExtensionPair_iff_exists_embedding_closure_singleton_sup :
     ∀ (S : L.Substructure M) (_ : S.FG) (f : S ↪[L] N) (m : M),
       ∃ g : (closure L {m} ⊔ S : L.Substructure M) ↪[L] N, f =
         g.comp (Substructure.inclusion le_sup_right) := by
-  refine ⟨fun h S S_FG f m => ?_, fun h ⟨f, f_FG⟩ m => ?_⟩
+  refine ⟨fun h S S_FG f m ↦ ?_, fun h ⟨f, f_FG⟩ m ↦ ?_⟩
   · obtain ⟨⟨f', hf'⟩, mf', ff'1, ff'2⟩ := h ⟨⟨S, _, f.equivRange⟩, S_FG⟩ m
     refine ⟨f'.toEmbedding.comp (Substructure.inclusion ?_), ?_⟩
     · simp only [sup_le_iff, ff'1, closure_le, singleton_subset_iff, SetLike.mem_coe, mf',
@@ -441,7 +441,7 @@ theorem isExtensionPair_iff_exists_embedding_closure_singleton_sup :
     refine ⟨⟨⟨closure L {m} ⊔ f.dom, f'.toHom.range, f'.equivRange⟩,
       (fg_closure_singleton _).sup f_FG⟩,
       subset_closure.trans (le_sup_left : (closure L) {m} ≤ _) (mem_singleton m),
-      ⟨le_sup_right, Embedding.ext (fun _ => ?_)⟩⟩
+      ⟨le_sup_right, Embedding.ext (fun _ ↦ ?_)⟩⟩
     rw [PartialEquiv.toEmbedding] at eq_f'
     simp only [Embedding.comp_apply, Substructure.coe_inclusion, Equiv.coe_toEmbedding, coe_subtype,
       Embedding.equivRange_apply, eq_f']
@@ -454,13 +454,13 @@ protected alias ⟨cod, _⟩ := isExtensionPair_iff_cod
 def definedAtLeft
     (h : L.IsExtensionPair M N) (m : M) : Order.Cofinal (FGEquiv L M N) where
   carrier := {f | m ∈ f.val.dom}
-  isCofinal := fun f => h f m
+  isCofinal := fun f ↦ h f m
 
 /-- The cofinal set of finite equivalences with a given element in their codomain. -/
 def definedAtRight
     (h : L.IsExtensionPair N M) (n : N) : Order.Cofinal (FGEquiv L M N) where
   carrier := {f | n ∈ f.val.cod}
-  isCofinal := fun f => h.cod f n
+  isCofinal := fun f ↦ h.cod f n
 
 end IsExtensionPair
 

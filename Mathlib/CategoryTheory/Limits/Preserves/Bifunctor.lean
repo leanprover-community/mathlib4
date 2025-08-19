@@ -212,7 +212,7 @@ instance of_preservesColimits_in_each_variable
         (G.flip.obj c₂.pt).mapCocone c₁ :=
       Cocones.ext
         (Iso.refl _)
-        (fun j₁ => by
+        (fun j₁ ↦ by
           dsimp [E₀, Q₀]
           simp only [id_comp, comp_id]
           let s : Cocone (whiskeringLeft₂ C |>.obj K₁ |>.obj K₂ |>.obj G |>.obj j₁) := ?_
@@ -333,13 +333,13 @@ instance of_preservesLimits_in_each_variable
     let Q₀ : DiagramOfCones (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G) :=
       { obj j₁ := G.obj (K₁.obj j₁) |>.mapCone c₂
         map f := { hom := G.map (K₁.map f)|>.app c₂.pt }}
-    let P : ∀ j₁, IsLimit (Q₀.obj j₁) := fun _ => isLimitOfPreserves _ hc₂
+    let P : ∀ j₁, IsLimit (Q₀.obj j₁) := fun _ ↦ isLimitOfPreserves _ hc₂
     let E₀ : Q₀.conePoints ≅ K₁ ⋙ G.flip.obj c₂.pt := NatIso.ofComponents (fun _ ↦ Iso.refl _)
     let E₁ : (Cones.postcompose E₀.hom).obj (coneOfConeUncurry P <| G.mapCone₂ c₁ c₂) ≅
         (G.flip.obj c₂.pt).mapCone c₁ :=
       Cones.ext
         (Iso.refl _)
-        (fun j₁ => by
+        (fun j₁ ↦ by
           dsimp [E₀, Q₀]
           simp only [id_comp, comp_id]
           let s : Cone (whiskeringLeft₂ C |>.obj K₁ |>.obj K₂ |>.obj G |>.obj j₁) := ?_

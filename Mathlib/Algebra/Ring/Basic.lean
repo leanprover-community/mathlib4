@@ -115,7 +115,7 @@ section NonUnitalNonAssocCommSemiring
 variable [NonUnitalNonAssocCommSemiring R]
 
 lemma mulRight_eq_mulLeft : mulRight = (mulLeft : R →+ AddMonoid.End R) :=
-  AddMonoidHom.ext fun _ =>
+  AddMonoidHom.ext fun _ ↦
     Eq.symm <| AddMonoidHom.mulLeft_eq_mulRight_iff_forall_commute.2 (.all _)
 
 end NonUnitalNonAssocCommSemiring
@@ -155,7 +155,7 @@ theorem vieta_formula_quadratic {b c x : α} (h : x * x - b * x + c = 0) :
 
 end NonUnitalCommRing
 
-theorem succ_ne_self {α : Type*} [NonAssocRing α] [Nontrivial α] (a : α) : a + 1 ≠ a := fun h =>
+theorem succ_ne_self {α : Type*} [NonAssocRing α] [Nontrivial α] (a : α) : a + 1 ≠ a := fun h ↦
   one_ne_zero ((add_right_inj a).mp (by simp [h]))
 
 theorem pred_ne_self {α : Type*} [NonAssocRing α] [Nontrivial α] (a : α) : a - 1 ≠ a := fun h ↦

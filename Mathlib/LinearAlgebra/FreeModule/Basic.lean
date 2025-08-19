@@ -53,7 +53,7 @@ theorem free_def [Small.{w, v} M] : Free R M ↔ ∃ I : Type w, Nonempty (Basis
   mp h :=
     ⟨Shrink (Set.range h.exists_basis.some.2),
       ⟨(Basis.reindexRange h.exists_basis.some.2).reindex (equivShrink _)⟩⟩
-  mpr h := ⟨(nonempty_sigma.2 h).map fun ⟨_, b⟩ => ⟨Set.range b, b.reindexRange⟩⟩
+  mpr h := ⟨(nonempty_sigma.2 h).map fun ⟨_, b⟩ ↦ ⟨Set.range b, b.reindexRange⟩⟩
 
 variable {R M}
 

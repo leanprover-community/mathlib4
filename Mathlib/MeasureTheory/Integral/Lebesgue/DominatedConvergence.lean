@@ -22,48 +22,48 @@ variable {α : Type*} [MeasurableSpace α] {μ : Measure α}
 
 theorem limsup_lintegral_le {f : ℕ → α → ℝ≥0∞} (g : α → ℝ≥0∞) (hf_meas : ∀ n, Measurable (f n))
     (h_bound : ∀ n, f n ≤ᵐ[μ] g) (h_fin : ∫⁻ a, g a ∂μ ≠ ∞) :
-    limsup (fun n => ∫⁻ a, f n a ∂μ) atTop ≤ ∫⁻ a, limsup (fun n => f n a) atTop ∂μ :=
+    limsup (fun n ↦ ∫⁻ a, f n a ∂μ) atTop ≤ ∫⁻ a, limsup (fun n ↦ f n a) atTop ∂μ :=
   calc
-    limsup (fun n => ∫⁻ a, f n a ∂μ) atTop = ⨅ n : ℕ, ⨆ i ≥ n, ∫⁻ a, f i a ∂μ :=
+    limsup (fun n ↦ ∫⁻ a, f n a ∂μ) atTop = ⨅ n : ℕ, ⨆ i ≥ n, ∫⁻ a, f i a ∂μ :=
       limsup_eq_iInf_iSup_of_nat
-    _ ≤ ⨅ n : ℕ, ∫⁻ a, ⨆ i ≥ n, f i a ∂μ := iInf_mono fun _ => iSup₂_lintegral_le _
+    _ ≤ ⨅ n : ℕ, ∫⁻ a, ⨆ i ≥ n, f i a ∂μ := iInf_mono fun _ ↦ iSup₂_lintegral_le _
     _ = ∫⁻ a, ⨅ n : ℕ, ⨆ i ≥ n, f i a ∂μ := by
       refine (lintegral_iInf ?_ ?_ ?_).symm
       · intro n
         exact .biSup _ (Set.to_countable _) (fun i _ ↦ hf_meas i)
       · intro n m hnm a
-        exact iSup_le_iSup_of_subset fun i hi => le_trans hnm hi
+        exact iSup_le_iSup_of_subset fun i hi ↦ le_trans hnm hi
       · refine ne_top_of_le_ne_top h_fin (lintegral_mono_ae ?_)
-        refine (ae_all_iff.2 h_bound).mono fun n hn => ?_
-        exact iSup_le fun i => iSup_le fun _ => hn i
-    _ = ∫⁻ a, limsup (fun n => f n a) atTop ∂μ := by simp only [limsup_eq_iInf_iSup_of_nat]
+        refine (ae_all_iff.2 h_bound).mono fun n hn ↦ ?_
+        exact iSup_le fun i ↦ iSup_le fun _ ↦ hn i
+    _ = ∫⁻ a, limsup (fun n ↦ f n a) atTop ∂μ := by simp only [limsup_eq_iInf_iSup_of_nat]
 
 /-- **Dominated convergence theorem** for nonnegative `Measurable` functions. -/
 theorem tendsto_lintegral_of_dominated_convergence {F : ℕ → α → ℝ≥0∞} {f : α → ℝ≥0∞}
     (bound : α → ℝ≥0∞) (hF_meas : ∀ n, Measurable (F n)) (h_bound : ∀ n, F n ≤ᵐ[μ] bound)
-    (h_fin : ∫⁻ a, bound a ∂μ ≠ ∞) (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) atTop (𝓝 (f a))) :
-    Tendsto (fun n => ∫⁻ a, F n a ∂μ) atTop (𝓝 (∫⁻ a, f a ∂μ)) :=
+    (h_fin : ∫⁻ a, bound a ∂μ ≠ ∞) (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n ↦ F n a) atTop (𝓝 (f a))) :
+    Tendsto (fun n ↦ ∫⁻ a, F n a ∂μ) atTop (𝓝 (∫⁻ a, f a ∂μ)) :=
   tendsto_of_le_liminf_of_limsup_le
     (calc
-      ∫⁻ a, f a ∂μ = ∫⁻ a, liminf (fun n : ℕ => F n a) atTop ∂μ :=
-        lintegral_congr_ae <| h_lim.mono fun _ h => h.liminf_eq.symm
-      _ ≤ liminf (fun n => ∫⁻ a, F n a ∂μ) atTop := lintegral_liminf_le hF_meas)
+      ∫⁻ a, f a ∂μ = ∫⁻ a, liminf (fun n : ℕ ↦ F n a) atTop ∂μ :=
+        lintegral_congr_ae <| h_lim.mono fun _ h ↦ h.liminf_eq.symm
+      _ ≤ liminf (fun n ↦ ∫⁻ a, F n a ∂μ) atTop := lintegral_liminf_le hF_meas)
     (calc
-      limsup (fun n : ℕ => ∫⁻ a, F n a ∂μ) atTop ≤ ∫⁻ a, limsup (fun n => F n a) atTop ∂μ :=
+      limsup (fun n : ℕ ↦ ∫⁻ a, F n a ∂μ) atTop ≤ ∫⁻ a, limsup (fun n ↦ F n a) atTop ∂μ :=
         limsup_lintegral_le _ hF_meas h_bound h_fin
-      _ = ∫⁻ a, f a ∂μ := lintegral_congr_ae <| h_lim.mono fun _ h => h.limsup_eq)
+      _ = ∫⁻ a, f a ∂μ := lintegral_congr_ae <| h_lim.mono fun _ h ↦ h.limsup_eq)
 
 /-- **Dominated convergence theorem** for nonnegative `AEMeasurable` functions. -/
 theorem tendsto_lintegral_of_dominated_convergence' {F : ℕ → α → ℝ≥0∞} {f : α → ℝ≥0∞}
     (bound : α → ℝ≥0∞) (hF_meas : ∀ n, AEMeasurable (F n) μ) (h_bound : ∀ n, F n ≤ᵐ[μ] bound)
-    (h_fin : ∫⁻ a, bound a ∂μ ≠ ∞) (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) atTop (𝓝 (f a))) :
-    Tendsto (fun n => ∫⁻ a, F n a ∂μ) atTop (𝓝 (∫⁻ a, f a ∂μ)) := by
-  have : ∀ n, ∫⁻ a, F n a ∂μ = ∫⁻ a, (hF_meas n).mk (F n) a ∂μ := fun n =>
+    (h_fin : ∫⁻ a, bound a ∂μ ≠ ∞) (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n ↦ F n a) atTop (𝓝 (f a))) :
+    Tendsto (fun n ↦ ∫⁻ a, F n a ∂μ) atTop (𝓝 (∫⁻ a, f a ∂μ)) := by
+  have : ∀ n, ∫⁻ a, F n a ∂μ = ∫⁻ a, (hF_meas n).mk (F n) a ∂μ := fun n ↦
     lintegral_congr_ae (hF_meas n).ae_eq_mk
   simp_rw [this]
   apply
-    tendsto_lintegral_of_dominated_convergence bound (fun n => (hF_meas n).measurable_mk) _ h_fin
-  · have : ∀ n, ∀ᵐ a ∂μ, (hF_meas n).mk (F n) a = F n a := fun n => (hF_meas n).ae_eq_mk.symm
+    tendsto_lintegral_of_dominated_convergence bound (fun n ↦ (hF_meas n).measurable_mk) _ h_fin
+  · have : ∀ n, ∀ᵐ a ∂μ, (hF_meas n).mk (F n) a = F n a := fun n ↦ (hF_meas n).ae_eq_mk.symm
     have : ∀ᵐ a ∂μ, ∀ n, (hF_meas n).mk (F n) a = F n a := ae_all_iff.mpr this
     filter_upwards [this, h_lim] with a H H'
     simp_rw [H]
@@ -76,8 +76,8 @@ theorem tendsto_lintegral_of_dominated_convergence' {F : ℕ → α → ℝ≥0�
 theorem tendsto_lintegral_filter_of_dominated_convergence {ι} {l : Filter ι}
     [l.IsCountablyGenerated] {F : ι → α → ℝ≥0∞} {f : α → ℝ≥0∞} (bound : α → ℝ≥0∞)
     (hF_meas : ∀ᶠ n in l, Measurable (F n)) (h_bound : ∀ᶠ n in l, ∀ᵐ a ∂μ, F n a ≤ bound a)
-    (h_fin : ∫⁻ a, bound a ∂μ ≠ ∞) (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) l (𝓝 (f a))) :
-    Tendsto (fun n => ∫⁻ a, F n a ∂μ) l (𝓝 <| ∫⁻ a, f a ∂μ) := by
+    (h_fin : ∫⁻ a, bound a ∂μ ≠ ∞) (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n ↦ F n a) l (𝓝 (f a))) :
+    Tendsto (fun n ↦ ∫⁻ a, F n a ∂μ) l (𝓝 <| ∫⁻ a, f a ∂μ) := by
   rw [tendsto_iff_seq_tendsto]
   intro x xl
   have hxl := by
@@ -96,8 +96,8 @@ theorem tendsto_lintegral_filter_of_dominated_convergence {ι} {l : Filter ι}
     refine (h _ ?_).2
     exact Nat.le_add_left _ _
   · assumption
-  · refine h_lim.mono fun a h_lim => ?_
-    apply @Tendsto.comp _ _ _ (fun n => x (n + k)) fun n => F n a
+  · refine h_lim.mono fun a h_lim ↦ ?_
+    apply @Tendsto.comp _ _ _ (fun n ↦ x (n + k)) fun n ↦ F n a
     · assumption
     rw [tendsto_add_atTop_iff_nat]
     assumption

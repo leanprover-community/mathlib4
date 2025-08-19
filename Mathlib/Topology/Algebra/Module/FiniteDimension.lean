@@ -92,7 +92,7 @@ theorem unique_topology_of_t2 {t : TopologicalSpace 𝕜} (h₁ : @IsTopological
     -- Thus, its balanced core `𝓑` is too. Let's show that the closed ball of radius `ε` contains
     -- `𝓑`, which will imply that the closed ball is indeed a `𝓣`-neighborhood of 0.
     have : balancedCore 𝕜 {ξ₀}ᶜ ∈ @nhds 𝕜 t 0 := balancedCore_mem_nhds_zero this
-    refine mem_of_superset this fun ξ hξ => ?_
+    refine mem_of_superset this fun ξ hξ ↦ ?_
     -- Let `ξ ∈ 𝓑`. We want to show `‖ξ‖ < ε`. If `ξ = 0`, this is trivial.
     by_cases hξ0 : ξ = 0
     · rw [hξ0]
@@ -115,7 +115,7 @@ theorem unique_topology_of_t2 {t : TopologicalSpace 𝕜} (h₁ : @IsTopological
       @nhds 𝕜 hnorm.toUniformSpace.toTopologicalSpace 0 =
           map id (@nhds 𝕜 hnorm.toUniformSpace.toTopologicalSpace 0) :=
         map_id.symm
-      _ = map (fun x => id x • (1 : 𝕜)) (@nhds 𝕜 hnorm.toUniformSpace.toTopologicalSpace 0) := by
+      _ = map (fun x ↦ id x • (1 : 𝕜)) (@nhds 𝕜 hnorm.toUniformSpace.toTopologicalSpace 0) := by
         conv_rhs =>
           congr
           ext
@@ -160,7 +160,7 @@ theorem LinearMap.continuous_of_isClosed_ker (l : E →ₗ[𝕜] 𝕜)
       refine unique_topology_of_t2 (topologicalAddGroup_induced φ.symm.toLinearMap)
         (continuousSMul_induced φ.symm.toMulActionHom) ?_
       rw [t2Space_iff]
-      exact fun x y hxy =>
+      exact fun x y hxy ↦
         @separated_by_continuous _ _ (induced _ _) _ _ _ continuous_induced_dom _ _
           (φ.toEquiv.symm.injective.ne hxy)
     -- Finally, the pullback by `φ.symm` is exactly the pushforward by `φ`, so we have to prove
@@ -173,13 +173,13 @@ theorem LinearMap.continuous_of_isClosed_ker (l : E →ₗ[𝕜] 𝕜)
 and only if its kernel is closed. -/
 theorem LinearMap.continuous_iff_isClosed_ker (l : E →ₗ[𝕜] 𝕜) :
     Continuous l ↔ IsClosed (LinearMap.ker l : Set E) :=
-  ⟨fun h => isClosed_singleton.preimage h, l.continuous_of_isClosed_ker⟩
+  ⟨fun h ↦ isClosed_singleton.preimage h, l.continuous_of_isClosed_ker⟩
 
 /-- Over a nontrivially normed field, any linear form which is nonzero on a nonempty open set is
 automatically continuous. -/
 theorem LinearMap.continuous_of_nonzero_on_open (l : E →ₗ[𝕜] 𝕜) (s : Set E) (hs₁ : IsOpen s)
     (hs₂ : s.Nonempty) (hs₃ : ∀ x ∈ s, l x ≠ 0) : Continuous l := by
-  refine l.continuous_of_isClosed_ker (l.isClosed_or_dense_ker.resolve_right fun hl => ?_)
+  refine l.continuous_of_isClosed_ker (l.isClosed_or_dense_ker.resolve_right fun hl ↦ ?_)
   rcases hs₂ with ⟨x, hx⟩
   have : x ∈ interior (LinearMap.ker l : Set E)ᶜ := by
     rw [mem_interior_iff_mem_nhds]
@@ -199,7 +199,7 @@ private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Fintype
   induction n generalizing ι E with
   | zero =>
     rw [Fintype.card_eq_zero_iff] at hn
-    exact continuous_of_const fun x y => funext hn.elim
+    exact continuous_of_const fun x y ↦ funext hn.elim
   | succ n IH =>
     haveI : FiniteDimensional 𝕜 E := .of_fintype_basis ξ
     -- first step: thanks to the induction hypothesis, any n-dimensional subspace is equivalent
@@ -262,7 +262,7 @@ theorem LinearMap.continuous_of_finiteDimensional [T2Space E] [FiniteDimensional
 
 instance LinearMap.continuousLinearMapClassOfFiniteDimensional [T2Space E] [FiniteDimensional 𝕜 E] :
     ContinuousLinearMapClass (E →ₗ[𝕜] F') 𝕜 E F' :=
-  { LinearMap.semilinearMapClass with map_continuous := fun f => f.continuous_of_finiteDimensional }
+  { LinearMap.semilinearMapClass with map_continuous := fun f ↦ f.continuous_of_finiteDimensional }
 
 /-- In finite dimensions over a non-discrete complete normed field, the canonical identification
 (in terms of a basis) with `𝕜^n` (endowed with the product topology) is continuous.
@@ -329,8 +329,8 @@ theorem isOpenMap_of_finiteDimensional (f : F →ₗ[𝕜] E) (hf : Function.Sur
     IsOpenMap f :=
   IsModuleTopology.isOpenMap_of_surjective hf
 
-instance canLiftContinuousLinearMap : CanLift (E →ₗ[𝕜] F) (E →L[𝕜] F) (↑) fun _ => True :=
-  ⟨fun f _ => ⟨LinearMap.toContinuousLinearMap f, rfl⟩⟩
+instance canLiftContinuousLinearMap : CanLift (E →ₗ[𝕜] F) (E →L[𝕜] F) (↑) fun _ ↦ True :=
+  ⟨fun f _ ↦ ⟨LinearMap.toContinuousLinearMap f, rfl⟩⟩
 
 lemma toContinuousLinearMap_eq_iff_eq_toLinearMap (f : E →ₗ[𝕜] E) (g : E →L[𝕜] E) :
     f.toContinuousLinearMap = g ↔ f = g.toLinearMap := by
@@ -387,8 +387,8 @@ theorem toLinearEquiv_toContinuousLinearEquiv_symm (e : E ≃ₗ[𝕜] F) :
   rfl
 
 instance canLiftContinuousLinearEquiv :
-    CanLift (E ≃ₗ[𝕜] F) (E ≃L[𝕜] F) ContinuousLinearEquiv.toLinearEquiv fun _ => True :=
-  ⟨fun f _ => ⟨_, f.toLinearEquiv_toContinuousLinearEquiv⟩⟩
+    CanLift (E ≃ₗ[𝕜] F) (E ≃L[𝕜] F) ContinuousLinearEquiv.toLinearEquiv fun _ ↦ True :=
+  ⟨fun f _ ↦ ⟨_, f.toLinearEquiv_toContinuousLinearEquiv⟩⟩
 
 end LinearEquiv
 
@@ -404,7 +404,7 @@ theorem FiniteDimensional.nonempty_continuousLinearEquiv_of_finrank_eq
 linearly equivalent if and only if they have the same (finite) dimension. -/
 theorem FiniteDimensional.nonempty_continuousLinearEquiv_iff_finrank_eq :
     Nonempty (E ≃L[𝕜] F) ↔ finrank 𝕜 E = finrank 𝕜 F :=
-  ⟨fun ⟨h⟩ => h.toLinearEquiv.finrank_eq, fun h =>
+  ⟨fun ⟨h⟩ ↦ h.toLinearEquiv.finrank_eq, fun h ↦
     FiniteDimensional.nonempty_continuousLinearEquiv_of_finrank_eq h⟩
 
 /-- A continuous linear equivalence between two finite-dimensional topological vector spaces over a
@@ -531,11 +531,11 @@ theorem LinearMap.isClosedEmbedding_of_injective [T2Space E] [FiniteDimensional 
       simpa [LinearMap.range_coe f] using (LinearMap.range f).closed_of_finiteDimensional }
 
 theorem isClosedEmbedding_smul_left [T2Space E] {c : E} (hc : c ≠ 0) :
-    IsClosedEmbedding fun x : 𝕜 => x • c :=
+    IsClosedEmbedding fun x : 𝕜 ↦ x • c :=
   LinearMap.isClosedEmbedding_of_injective (LinearMap.ker_toSpanSingleton 𝕜 E hc)
 
 -- `smul` is a closed map in the first argument.
-theorem isClosedMap_smul_left [T2Space E] (c : E) : IsClosedMap fun x : 𝕜 => x • c := by
+theorem isClosedMap_smul_left [T2Space E] (c : E) : IsClosedMap fun x : 𝕜 ↦ x • c := by
   by_cases hc : c = 0
   · simp_rw [hc, smul_zero]
     exact isClosedMap_const

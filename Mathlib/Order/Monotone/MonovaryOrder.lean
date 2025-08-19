@@ -41,8 +41,8 @@ lemma monovaryOn_iff_exists_monotoneOn :
     MonovaryOn f g s ↔ ∃ (_ : LinearOrder ι), MonotoneOn f s ∧ MonotoneOn g s := by
   classical
   letI := linearOrderOfSTO (MonovaryOrder f g)
-  refine ⟨fun hfg => ⟨‹_›, monotoneOn_iff_forall_lt.2 fun i hi j hj hij => ?_,
-    monotoneOn_iff_forall_lt.2 fun i hi j hj hij => ?_⟩, ?_⟩
+  refine ⟨fun hfg ↦ ⟨‹_›, monotoneOn_iff_forall_lt.2 fun i hi j hj hij ↦ ?_,
+    monotoneOn_iff_forall_lt.2 fun i hi j hj hij ↦ ?_⟩, ?_⟩
   · obtain h | ⟨h, -⟩ := Prod.lex_iff.1 hij <;> exact h.le
   · obtain h | ⟨-, h⟩ := Prod.lex_iff.1 hij
     · exact hfg.symm hi hj h

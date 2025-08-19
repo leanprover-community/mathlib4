@@ -152,11 +152,11 @@ theorem coe_eq_one_iff {m : ℕ+} : (m : ℕ) = 1 ↔ m = 1 :=
   Subtype.coe_injective.eq_iff' one_coe
 
 instance : WellFoundedRelation ℕ+ :=
-  measure (fun (a : ℕ+) => (a : ℕ))
+  measure (fun (a : ℕ+) ↦ (a : ℕ))
 
 /-- Strong induction on `ℕ+`. -/
 def strongInductionOn {p : ℕ+ → Sort*} (n : ℕ+) : (∀ k, (∀ m, m < k → p m) → p k) → p n
-  | IH => IH _ fun a _ => strongInductionOn a IH
+  | IH => IH _ fun a _ ↦ strongInductionOn a IH
 termination_by n.1
 
 /-- We define `m % k` and `m / k` in the same way as for `ℕ`
@@ -224,11 +224,11 @@ end PNat
 
 section CanLift
 
-instance Nat.canLiftPNat : CanLift ℕ ℕ+ (↑) (fun n => 0 < n) :=
-  ⟨fun n hn => ⟨Nat.toPNat' n, PNat.toPNat'_coe hn⟩⟩
+instance Nat.canLiftPNat : CanLift ℕ ℕ+ (↑) (fun n ↦ 0 < n) :=
+  ⟨fun n hn ↦ ⟨Nat.toPNat' n, PNat.toPNat'_coe hn⟩⟩
 
 instance Int.canLiftPNat : CanLift ℤ ℕ+ (↑) ((0 < ·)) :=
-  ⟨fun n hn =>
+  ⟨fun n hn ↦
     ⟨Nat.toPNat' (Int.natAbs n), by
       rw [Nat.toPNat'_coe, if_pos (Int.natAbs_pos.2 hn.ne'),
         Int.natAbs_of_nonneg hn.le]⟩⟩

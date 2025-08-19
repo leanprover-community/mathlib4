@@ -218,9 +218,9 @@ theorem NFBelow.lt {e n a b} (h : NFBelow (ONote.oadd e n a) b) : repr e < b := 
   obtain - | ⟨h₁, h₂, h₃⟩ := h; exact h₃
 
 theorem NFBelow_zero : ∀ {o}, NFBelow o 0 ↔ o = 0
-  | 0 => ⟨fun _ => rfl, fun _ => NFBelow.zero⟩
+  | 0 => ⟨fun _ ↦ rfl, fun _ ↦ NFBelow.zero⟩
   | oadd _ _ _ =>
-    ⟨fun h => (not_le_of_gt h.lt).elim (Ordinal.zero_le _), fun e => e.symm ▸ NFBelow.zero⟩
+    ⟨fun h ↦ (not_le_of_gt h.lt).elim (Ordinal.zero_le _), fun e ↦ e.symm ▸ NFBelow.zero⟩
 
 theorem NF.zero_of_zero {e n a} (h : NF (ONote.oadd e n a)) (e0 : e = 0) : a = 0 := by
   simpa [e0, NFBelow_zero] using h.snd'
@@ -315,7 +315,7 @@ theorem cmp_compares : ∀ (a b : ONote) [NF a] [NF b], (cmp a b).Compares a b
       subst IHa; exact rfl
 
 theorem repr_inj {a b} [NF a] [NF b] : repr a = repr b ↔ a = b :=
-  ⟨fun e => match cmp a b, cmp_compares a b with
+  ⟨fun e ↦ match cmp a b, cmp_compares a b with
     | Ordering.lt, (h : repr a < repr b) => (ne_of_lt h e).elim
     | Ordering.gt, (h : repr a > repr b)=> (ne_of_gt h e).elim
     | Ordering.eq, h => h,
@@ -324,8 +324,8 @@ theorem repr_inj {a b} [NF a] [NF b] : repr a = repr b ↔ a = b :=
 theorem NF.of_dvd_omega0_opow {b e n a} (h : NF (ONote.oadd e n a))
     (d : ω ^ b ∣ repr (ONote.oadd e n a)) :
     b ≤ repr e ∧ ω ^ b ∣ repr a := by
-  have := mt repr_inj.1 (fun h => by injection h : ONote.oadd e n a ≠ 0)
-  have L := le_of_not_gt fun l => not_le_of_gt (h.below_of_lt l).repr_lt (le_of_dvd this d)
+  have := mt repr_inj.1 (fun h ↦ by injection h : ONote.oadd e n a ≠ 0)
+  have L := le_of_not_gt fun l ↦ not_le_of_gt (h.below_of_lt l).repr_lt (le_of_dvd this d)
   simp only [repr] at d
   exact ⟨L, (dvd_add_iff <| (opow_dvd_opow _ L).mul_right _).1 d⟩
 
@@ -344,9 +344,9 @@ instance decidableTopBelow : DecidableRel TopBelow := by
   cases o <;> delta TopBelow <;> infer_instance
 
 theorem nfBelow_iff_topBelow {b} [NF b] : ∀ {o}, NFBelow o (repr b) ↔ NF o ∧ TopBelow b o
-  | 0 => ⟨fun h => ⟨⟨⟨_, h⟩⟩, trivial⟩, fun _ => NFBelow.zero⟩
+  | 0 => ⟨fun h ↦ ⟨⟨⟨_, h⟩⟩, trivial⟩, fun _ ↦ NFBelow.zero⟩
   | oadd _ _ _ =>
-    ⟨fun h => ⟨⟨⟨_, h⟩⟩, (@cmp_compares _ b h.fst _).eq_lt.2 h.lt⟩, fun ⟨h₁, h₂⟩ =>
+    ⟨fun h ↦ ⟨⟨⟨_, h⟩⟩, (@cmp_compares _ b h.fst _).eq_lt.2 h.lt⟩, fun ⟨h₁, h₂⟩ ↦
       h₁.below_of_lt <| (@cmp_compares _ b h₁.fst _).eq_lt.1 h₂⟩
 
 instance decidableNF : DecidablePred NF
@@ -355,8 +355,8 @@ instance decidableNF : DecidablePred NF
     have := decidableNF e
     have := decidableNF a
     apply decidable_of_iff (NF e ∧ NF a ∧ TopBelow e a)
-    rw [← and_congr_right fun h => @nfBelow_iff_topBelow _ h _]
-    exact ⟨fun ⟨h₁, h₂⟩ => NF.oadd h₁ n h₂, fun h => ⟨h.fst, h.snd'⟩⟩
+    rw [← and_congr_right fun h ↦ @nfBelow_iff_topBelow _ h _]
+    exact ⟨fun ⟨h₁, h₂⟩ ↦ NF.oadd h₁ n h₂, fun h ↦ ⟨h.fst, h.snd'⟩⟩
 
 /-- Auxiliary definition for `add` -/
 def addAux (e : ONote) (n : ℕ+) (o : ONote) : ONote :=
@@ -416,7 +416,7 @@ theorem add_nfBelow {b} : ∀ {o₁ o₂}, NFBelow o₁ b → NFBelow o₂ b →
 
 instance add_nf (o₁ o₂) : ∀ [NF o₁] [NF o₂], NF (o₁ + o₂)
   | ⟨⟨b₁, h₁⟩⟩, ⟨⟨b₂, h₂⟩⟩ =>
-    ⟨(le_total b₁ b₂).elim (fun h => ⟨b₂, add_nfBelow (h₁.mono h) h₂⟩) fun h =>
+    ⟨(le_total b₁ b₂).elim (fun h ↦ ⟨b₂, add_nfBelow (h₁.mono h) h₂⟩) fun h ↦
         ⟨b₁, add_nfBelow h₁ (h₂.mono h)⟩⟩
 
 @[simp]
@@ -831,7 +831,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
       apply nat_lt_omega0
     · rw [opow_mul]
       exact IH.1 k0
-  refine ⟨fun _ => ?_, ?_⟩
+  refine ⟨fun _ ↦ ?_, ?_⟩
   · rw [RR, ← opow_mul _ _ (succ k.succ)]
     have e0 := Ordinal.pos_iff_ne_zero.2 e0
     have rr0 : 0 < repr a0 + repr a0 := lt_of_lt_of_le e0 (le_add_left _ _)
@@ -925,16 +925,16 @@ def fundamentalSequence : ONote → (Option ONote) ⊕ (ℕ → ONote)
   | zero => Sum.inl none
   | oadd a m b =>
     match fundamentalSequence b with
-    | Sum.inr f => Sum.inr fun i => oadd a m (f i)
+    | Sum.inr f => Sum.inr fun i ↦ oadd a m (f i)
     | Sum.inl (some b') => Sum.inl (some (oadd a m b'))
     | Sum.inl none =>
       match fundamentalSequence a, m.natPred with
       | Sum.inl none, 0 => Sum.inl (some zero)
       | Sum.inl none, m + 1 => Sum.inl (some (oadd zero m.succPNat zero))
-      | Sum.inl (some a'), 0 => Sum.inr fun i => oadd a' i.succPNat zero
-      | Sum.inl (some a'), m + 1 => Sum.inr fun i => oadd a m.succPNat (oadd a' i.succPNat zero)
-      | Sum.inr f, 0 => Sum.inr fun i => oadd (f i) 1 zero
-      | Sum.inr f, m + 1 => Sum.inr fun i => oadd a m.succPNat (oadd (f i) 1 zero)
+      | Sum.inl (some a'), 0 => Sum.inr fun i ↦ oadd a' i.succPNat zero
+      | Sum.inl (some a'), m + 1 => Sum.inr fun i ↦ oadd a m.succPNat (oadd a' i.succPNat zero)
+      | Sum.inr f, 0 => Sum.inr fun i ↦ oadd (f i) 1 zero
+      | Sum.inr f, m + 1 => Sum.inr fun i ↦ oadd a m.succPNat (oadd (f i) 1 zero)
 
 private theorem exists_lt_add {α} [hα : Nonempty α] {o : Ordinal} {f : α → Ordinal}
     (H : ∀ ⦃a⦄, a < o → ∃ i, a < f i) {b : Ordinal} ⦃a⦄ (h : a < b + o) : ∃ i, a < b + f i := by
@@ -942,7 +942,7 @@ private theorem exists_lt_add {α} [hα : Nonempty α] {o : Ordinal} {f : α →
   · obtain ⟨i⟩ := id hα
     exact ⟨i, h.trans_le (le_add_right _ _)⟩
   · rw [← Ordinal.add_sub_cancel_of_le h', add_lt_add_iff_left] at h
-    refine (H h).imp fun i H => ?_
+    refine (H h).imp fun i H ↦ ?_
     rwa [← Ordinal.add_sub_cancel_of_le h', add_lt_add_iff_left]
 
 private theorem exists_lt_mul_omega0' {o : Ordinal} ⦃a⦄ (h : a < o * ω) :
@@ -955,7 +955,7 @@ private theorem exists_lt_omega0_opow' {α} {o b : Ordinal} (hb : 1 < b) (ho : I
     {f : α → Ordinal} (H : ∀ ⦃a⦄, a < o → ∃ i, a < f i) ⦃a⦄ (h : a < b ^ o) :
         ∃ i, a < b ^ f i := by
   obtain ⟨d, hd, h'⟩ := (lt_opow_of_isSuccLimit (zero_lt_one.trans hb).ne' ho).1 h
-  exact (H hd).imp fun i hi => h'.trans <| (opow_lt_opow_iff_right hb).2 hi
+  exact (H hd).imp fun i hi ↦ h'.trans <| (opow_lt_opow_iff_right hb).2 hi
 
 /-- The property satisfied by `fundamentalSequence o`:
 
@@ -1008,42 +1008,42 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
     · exact ⟨rfl, inferInstance⟩
     · have := opow_pos (repr a') omega0_pos
       refine
-        ⟨isSuccLimit_mul this isSuccLimit_omega0, fun i =>
-          ⟨this, ?_, fun H => @NF.oadd_zero _ _ (iha.2 H.fst)⟩, exists_lt_mul_omega0'⟩
+        ⟨isSuccLimit_mul this isSuccLimit_omega0, fun i ↦
+          ⟨this, ?_, fun H ↦ @NF.oadd_zero _ _ (iha.2 H.fst)⟩, exists_lt_mul_omega0'⟩
       rw [← mul_succ, ← natCast_succ, Ordinal.mul_lt_mul_iff_left this]
       apply nat_lt_omega0
     · have := opow_pos (repr a') omega0_pos
       refine
-        ⟨isSuccLimit_add _ (isSuccLimit_mul this isSuccLimit_omega0), fun i => ⟨this, ?_, ?_⟩,
+        ⟨isSuccLimit_add _ (isSuccLimit_mul this isSuccLimit_omega0), fun i ↦ ⟨this, ?_, ?_⟩,
           exists_lt_add exists_lt_mul_omega0'⟩
       · rw [← mul_succ, ← natCast_succ, Ordinal.mul_lt_mul_iff_left this]
         apply nat_lt_omega0
-      · refine fun H => H.fst.oadd _ (NF.below_of_lt' ?_ (@NF.oadd_zero _ _ (iha.2 H.fst)))
+      · refine fun H ↦ H.fst.oadd _ (NF.below_of_lt' ?_ (@NF.oadd_zero _ _ (iha.2 H.fst)))
         rw [repr, ← zero_def, repr, add_zero, iha.1, opow_succ, Ordinal.mul_lt_mul_iff_left this]
         apply nat_lt_omega0
     · rcases iha with ⟨h1, h2, h3⟩
-      refine ⟨isSuccLimit_opow one_lt_omega0 h1, fun i => ?_,
+      refine ⟨isSuccLimit_opow one_lt_omega0 h1, fun i ↦ ?_,
         exists_lt_omega0_opow' one_lt_omega0 h1 h3⟩
       obtain ⟨h4, h5, h6⟩ := h2 i
-      exact ⟨h4, h5, fun H => @NF.oadd_zero _ _ (h6 H.fst)⟩
+      exact ⟨h4, h5, fun H ↦ @NF.oadd_zero _ _ (h6 H.fst)⟩
     · rcases iha with ⟨h1, h2, h3⟩
       refine
-        ⟨isSuccLimit_add _ (isSuccLimit_opow one_lt_omega0 h1), fun i => ?_,
+        ⟨isSuccLimit_add _ (isSuccLimit_opow one_lt_omega0 h1), fun i ↦ ?_,
           exists_lt_add (exists_lt_omega0_opow' one_lt_omega0 h1 h3)⟩
       obtain ⟨h4, h5, h6⟩ := h2 i
-      refine ⟨h4, h5, fun H => H.fst.oadd _ (NF.below_of_lt' ?_ (@NF.oadd_zero _ _ (h6 H.fst)))⟩
+      refine ⟨h4, h5, fun H ↦ H.fst.oadd _ (NF.below_of_lt' ?_ (@NF.oadd_zero _ _ (h6 H.fst)))⟩
       rwa [repr, ← zero_def, repr, add_zero, PNat.one_coe, Nat.cast_one, mul_one,
         opow_lt_opow_iff_right one_lt_omega0]
   · refine ⟨by
-      rw [repr, ihb.1, add_succ, repr], fun H => H.fst.oadd _ (NF.below_of_lt' ?_ (ihb.2 H.snd))⟩
+      rw [repr, ihb.1, add_succ, repr], fun H ↦ H.fst.oadd _ (NF.below_of_lt' ?_ (ihb.2 H.snd))⟩
     have := H.snd'.repr_lt
     rw [ihb.1] at this
     exact (lt_succ _).trans this
   · rcases ihb with ⟨h1, h2, h3⟩
     simp only [repr]
     exact
-      ⟨isSuccLimit_add _ h1, fun i =>
-        ⟨oadd_lt_oadd_3 (h2 i).1, oadd_lt_oadd_3 (h2 i).2.1, fun H =>
+      ⟨isSuccLimit_add _ h1, fun i ↦
+        ⟨oadd_lt_oadd_3 (h2 i).1, oadd_lt_oadd_3 (h2 i).2.1, fun H ↦
           H.fst.oadd _ (NF.below_of_lt' (lt_trans (h2 i).2.1 H.snd'.repr_lt) ((h2 i).2.2 H.snd))⟩,
         exists_lt_add h3⟩
 
@@ -1060,8 +1060,8 @@ def fastGrowing : ONote → ℕ → ℕ
     | Sum.inl none, _ => Nat.succ
     | Sum.inl (some a), h =>
       have : a < o := by rw [lt_def, h.1]; apply lt_succ
-      fun i => (fastGrowing a)^[i] i
-    | Sum.inr f, h => fun i =>
+      fun i ↦ (fastGrowing a)^[i] i
+    | Sum.inr f, h => fun i ↦
       have : f i < o := (h.2.1 i).2.1
       fastGrowing (f i) i
   termination_by o => o
@@ -1075,8 +1075,8 @@ theorem fastGrowing_def {o : ONote} {x} (e : fundamentalSequence o = x) :
         x, e ▸ fundamentalSequence_has_prop o with
       | Sum.inl none, _ => Nat.succ
       | Sum.inl (some a), _ =>
-        fun i => (fastGrowing a)^[i] i
-      | Sum.inr f, _ => fun i =>
+        fun i ↦ (fastGrowing a)^[i] i
+      | Sum.inr f, _ => fun i ↦
         fastGrowing (f i) i := by
   subst x
   rw [fastGrowing]
@@ -1086,11 +1086,11 @@ theorem fastGrowing_zero' (o : ONote) (h : fundamentalSequence o = Sum.inl none)
   rw [fastGrowing_def h]
 
 theorem fastGrowing_succ (o) {a} (h : fundamentalSequence o = Sum.inl (some a)) :
-    fastGrowing o = fun i => (fastGrowing a)^[i] i := by
+    fastGrowing o = fun i ↦ (fastGrowing a)^[i] i := by
   rw [fastGrowing_def h]
 
 theorem fastGrowing_limit (o) {f} (h : fundamentalSequence o = Sum.inr f) :
-    fastGrowing o = fun i => fastGrowing (f i) i := by
+    fastGrowing o = fun i ↦ fastGrowing (f i) i := by
   rw [fastGrowing_def h]
 
 @[simp]
@@ -1098,13 +1098,13 @@ theorem fastGrowing_zero : fastGrowing 0 = Nat.succ :=
   fastGrowing_zero' _ rfl
 
 @[simp]
-theorem fastGrowing_one : fastGrowing 1 = fun n => 2 * n := by
+theorem fastGrowing_one : fastGrowing 1 = fun n ↦ 2 * n := by
   rw [@fastGrowing_succ 1 0 rfl]; funext i; rw [two_mul, fastGrowing_zero]
   suffices ∀ a b, Nat.succ^[a] b = b + a from this _ _
   intro a b; induction a <;> simp [*, Function.iterate_succ', Nat.add_assoc, -Function.iterate_succ]
 
 @[simp]
-theorem fastGrowing_two : fastGrowing 2 = fun n => (2 ^ n) * n := by
+theorem fastGrowing_two : fastGrowing 2 = fun n ↦ (2 ^ n) * n := by
   rw [@fastGrowing_succ 2 1 rfl]
   simp
 
@@ -1112,7 +1112,7 @@ theorem fastGrowing_two : fastGrowing 2 = fun n => (2 ^ n) * n := by
 as the fundamental sequence converging to `ε₀` (which is not an `ONote`). Extending the fast
 growing hierarchy beyond this requires a definition of fundamental sequence for larger ordinals. -/
 def fastGrowingε₀ (i : ℕ) : ℕ :=
-  fastGrowing ((fun a => a.oadd 1 0)^[i] 0) i
+  fastGrowing ((fun a ↦ a.oadd 1 0)^[i] 0) i
 
 theorem fastGrowingε₀_zero : fastGrowingε₀ 0 = 1 := by simp [fastGrowingε₀]
 
@@ -1155,10 +1155,10 @@ noncomputable def repr (o : NONote) : Ordinal :=
   o.1.repr
 
 instance : ToString NONote :=
-  ⟨fun x => x.1.toString⟩
+  ⟨fun x ↦ x.1.toString⟩
 
 instance : Repr NONote :=
-  ⟨fun x prec => x.1.repr' prec⟩
+  ⟨fun x prec ↦ x.1.repr' prec⟩
 
 instance : Preorder NONote where
   le x y := repr x ≤ repr y
@@ -1219,21 +1219,21 @@ def recOn {C : NONote → Sort*} (o : NONote) (H0 : C 0)
 
 /-- Addition of ordinal notations -/
 instance : Add NONote :=
-  ⟨fun x y => mk (x.1 + y.1)⟩
+  ⟨fun x y ↦ mk (x.1 + y.1)⟩
 
 theorem repr_add (a b) : repr (a + b) = repr a + repr b :=
   ONote.repr_add a.1 b.1
 
 /-- Subtraction of ordinal notations -/
 instance : Sub NONote :=
-  ⟨fun x y => mk (x.1 - y.1)⟩
+  ⟨fun x y ↦ mk (x.1 - y.1)⟩
 
 theorem repr_sub (a b) : repr (a - b) = repr a - repr b :=
   ONote.repr_sub a.1 b.1
 
 /-- Multiplication of ordinal notations -/
 instance : Mul NONote :=
-  ⟨fun x y => mk (x.1 * y.1)⟩
+  ⟨fun x y ↦ mk (x.1 * y.1)⟩
 
 theorem repr_mul (a b) : repr (a * b) = repr a * repr b :=
   ONote.repr_mul a.1 b.1

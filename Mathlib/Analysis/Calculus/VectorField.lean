@@ -279,7 +279,7 @@ theorem lieBracketWithin_congr_set (h : s =ᶠ[𝓝 x] t) :
 in  the complement of a point. -/
 theorem lieBracketWithin_eventually_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     lieBracketWithin 𝕜 V W s =ᶠ[𝓝 x] lieBracketWithin 𝕜 V W t :=
-  (eventually_nhds_nhdsWithin.2 h).mono fun _ => lieBracketWithin_congr_set' y
+  (eventually_nhds_nhdsWithin.2 h).mono fun _ ↦ lieBracketWithin_congr_set' y
 
 theorem lieBracketWithin_eventually_congr_set (h : s =ᶠ[𝓝 x] t) :
     lieBracketWithin 𝕜 V W s =ᶠ[𝓝 x] lieBracketWithin 𝕜 V W t :=

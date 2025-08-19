@@ -42,7 +42,7 @@ instance algebraObj (j) :
 def sectionsSubalgebra : Subalgebra R (∀ j, F.obj j) :=
   { SemiRingCat.sectionsSubsemiring
       (F ⋙ forget₂ (AlgCat R) RingCat.{w} ⋙ forget₂ RingCat SemiRingCat.{w}) with
-    algebraMap_mem' := fun r _ _ f => (F.map f).hom.commutes r }
+    algebraMap_mem' := fun r _ _ f ↦ (F.map f).hom.commutes r }
 
 instance (F : J ⥤ AlgCat.{w} R) : Ring (F ⋙ forget _).sections :=
   inferInstanceAs <| Ring (sectionsSubalgebra F)
@@ -73,7 +73,7 @@ def limitπAlgHom (j) :
   { SemiRingCat.limitπRingHom
       (F ⋙ forget₂ (AlgCat R) RingCat.{w} ⋙ forget₂ RingCat SemiRingCat.{w}) j with
     toFun := (Types.Small.limitCone (F ⋙ forget (AlgCat.{w} R))).π.app j
-    commutes' := fun x => by
+    commutes' := fun x ↦ by
       simp only [Types.Small.limitCone_π_app, ← Shrink.algEquiv_apply R,
         Types.Small.limitCone_pt, AlgEquiv.commutes]
       rfl
@@ -91,7 +91,7 @@ def limitCone : Cone F where
   pt := AlgCat.of R (Types.Small.limitCone (F ⋙ forget _)).pt
   π :=
     { app := fun j ↦ ofHom <| limitπAlgHom F j
-      naturality := fun _ _ f => by
+      naturality := fun _ _ f ↦ by
         ext : 1
         exact AlgHom.coe_fn_injective ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) }
 
@@ -101,10 +101,10 @@ def limitCone : Cone F where
 def limitConeIsLimit : IsLimit (limitCone.{v, w} F) := by
   refine
     IsLimit.ofFaithful (forget (AlgCat R)) (Types.Small.limitConeIsLimit.{v, w} _)
-      (fun s => ofHom
+      (fun s ↦ ofHom
         { toFun := _, map_one' := ?_, map_mul' := ?_, map_zero' := ?_, map_add' := ?_,
           commutes' := ?_ })
-      (fun s => rfl)
+      (fun s ↦ rfl)
   · congr
     ext j
     simp only [Functor.mapCone_π_app, forget_map, map_one, Pi.one_apply]
@@ -138,8 +138,8 @@ open HasLimits
 
 /-- The category of R-algebras has all limits. -/
 lemma hasLimitsOfSize [UnivLE.{v, w}] : HasLimitsOfSize.{t, v} (AlgCat.{w} R) :=
-  { has_limits_of_shape := fun _ _ =>
-    { has_limit := fun F => HasLimit.mk
+  { has_limits_of_shape := fun _ _ ↦
+    { has_limit := fun F ↦ HasLimit.mk
         { cone := limitCone F
           isLimit := limitConeIsLimit F } } }
 

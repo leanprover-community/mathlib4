@@ -25,7 +25,7 @@ the endomorphisms of the additive forgetful functor `Module R ⥤ AddCommGroup`.
 def ringEquivEndForget₂ (R : Type u) [Ring R] :
     R ≃+* End (AdditiveFunctor.of (forget₂ (ModuleCat.{u} R) AddCommGrp.{u})) where
   toFun r :=
-    { app := fun M =>
+    { app := fun M ↦
         @AddCommGrp.ofHom M.carrier M.carrier _ _ (DistribMulAction.toAddMonoidHom M r) }
   invFun φ := φ.app (ModuleCat.of R R) (1 : R)
   left_inv := by

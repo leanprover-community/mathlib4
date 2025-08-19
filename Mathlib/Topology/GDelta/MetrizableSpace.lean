@@ -43,8 +43,8 @@ instance (priority := 500) [PseudoMetrizableSpace X] : PerfectlyNormalSpace X wh
     let _ := pseudoMetrizableSpacePseudoMetric X
     rcases (@uniformity_hasBasis_open X _).exists_antitone_subbasis with ⟨U, hUo, hU, -⟩
     rw [← hs.closure_eq, ← hU.biInter_biUnion_ball]
-    refine .biInter (to_countable _) fun n _ => IsOpen.isGδ ?_
-    exact isOpen_biUnion fun x _ => UniformSpace.isOpen_ball _ (hUo _).2
+    refine .biInter (to_countable _) fun n _ ↦ IsOpen.isGδ ?_
+    exact isOpen_biUnion fun x _ ↦ UniformSpace.isOpen_ball _ (hUo _).2
 
 instance (priority := 100) [MetrizableSpace X] : T4Space X where
 

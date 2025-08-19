@@ -64,21 +64,21 @@ lemma map_def {s : Set β} : MeasurableSet[m.map f] s ↔ MeasurableSet[m] (f �
 
 @[simp]
 theorem map_id : m.map id = m :=
-  MeasurableSpace.ext fun _ => Iff.rfl
+  MeasurableSpace.ext fun _ ↦ Iff.rfl
 
 @[simp]
 theorem map_comp {f : α → β} {g : β → γ} : (m.map f).map g = m.map (g ∘ f) :=
-  MeasurableSpace.ext fun _ => Iff.rfl
+  MeasurableSpace.ext fun _ ↦ Iff.rfl
 
 /-- The reverse image of a measurable space under a function. `comap f m` contains the sets
   `s : Set α` such that `s` is the `f`-preimage of a measurable set in `β`. -/
 protected def comap (f : α → β) (m : MeasurableSpace β) : MeasurableSpace α where
   MeasurableSet' s := ∃ s', MeasurableSet[m] s' ∧ f ⁻¹' s' = s
   measurableSet_empty := ⟨∅, m.measurableSet_empty, rfl⟩
-  measurableSet_compl := fun _ ⟨s', h₁, h₂⟩ => ⟨s'ᶜ, m.measurableSet_compl _ h₁, h₂ ▸ rfl⟩
+  measurableSet_compl := fun _ ⟨s', h₁, h₂⟩ ↦ ⟨s'ᶜ, m.measurableSet_compl _ h₁, h₂ ▸ rfl⟩
   measurableSet_iUnion s hs :=
     let ⟨s', hs'⟩ := Classical.axiom_of_choice hs
-    ⟨⋃ i, s' i, m.measurableSet_iUnion _ fun i => (hs' i).left, by simp [hs']⟩
+    ⟨⋃ i, s' i, m.measurableSet_iUnion _ fun i ↦ (hs' i).left, by simp [hs']⟩
 
 lemma measurableSet_comap {m : MeasurableSpace β} :
     MeasurableSet[m.comap f] s ↔ ∃ s', MeasurableSet[m] s' ∧ f ⁻¹' s' = s := .rfl
@@ -89,29 +89,29 @@ theorem comap_eq_generateFrom (m : MeasurableSpace β) (f : α → β) :
 
 @[simp]
 theorem comap_id : m.comap id = m :=
-  MeasurableSpace.ext fun s => ⟨fun ⟨_, hs', h⟩ => h ▸ hs', fun h => ⟨s, h, rfl⟩⟩
+  MeasurableSpace.ext fun s ↦ ⟨fun ⟨_, hs', h⟩ ↦ h ▸ hs', fun h ↦ ⟨s, h, rfl⟩⟩
 
 @[simp]
 theorem comap_comp {f : β → α} {g : γ → β} : (m.comap f).comap g = m.comap (f ∘ g) :=
-  MeasurableSpace.ext fun _ =>
-    ⟨fun ⟨_, ⟨u, h, hu⟩, ht⟩ => ⟨u, h, ht ▸ hu ▸ rfl⟩, fun ⟨t, h, ht⟩ => ⟨f ⁻¹' t, ⟨_, h, rfl⟩, ht⟩⟩
+  MeasurableSpace.ext fun _ ↦
+    ⟨fun ⟨_, ⟨u, h, hu⟩, ht⟩ ↦ ⟨u, h, ht ▸ hu ▸ rfl⟩, fun ⟨t, h, ht⟩ ↦ ⟨f ⁻¹' t, ⟨_, h, rfl⟩, ht⟩⟩
 
 theorem comap_le_iff_le_map {f : α → β} : m'.comap f ≤ m ↔ m' ≤ m.map f :=
-  ⟨fun h _s hs => h _ ⟨_, hs, rfl⟩, fun h _s ⟨_t, ht, heq⟩ => heq ▸ h _ ht⟩
+  ⟨fun h _s hs ↦ h _ ⟨_, hs, rfl⟩, fun h _s ⟨_t, ht, heq⟩ ↦ heq ▸ h _ ht⟩
 
 theorem gc_comap_map (f : α → β) :
-    GaloisConnection (MeasurableSpace.comap f) (MeasurableSpace.map f) := fun _ _ =>
+    GaloisConnection (MeasurableSpace.comap f) (MeasurableSpace.map f) := fun _ _ ↦
   comap_le_iff_le_map
 
 theorem map_mono (h : m₁ ≤ m₂) : m₁.map f ≤ m₂.map f :=
   (gc_comap_map f).monotone_u h
 
-theorem monotone_map : Monotone (MeasurableSpace.map f) := fun _ _ => map_mono
+theorem monotone_map : Monotone (MeasurableSpace.map f) := fun _ _ ↦ map_mono
 
 theorem comap_mono (h : m₁ ≤ m₂) : m₁.comap g ≤ m₂.comap g :=
   (gc_comap_map g).monotone_l h
 
-theorem monotone_comap : Monotone (MeasurableSpace.comap g) := fun _ _ h => comap_mono h
+theorem monotone_comap : Monotone (MeasurableSpace.comap g) := fun _ _ h ↦ comap_mono h
 
 @[simp]
 theorem comap_bot : (⊥ : MeasurableSpace α).comap g = ⊥ :=
@@ -148,15 +148,15 @@ end Functors
 @[simp] theorem map_const {m} (b : β) : MeasurableSpace.map (fun _a : α ↦ b) m = ⊤ :=
   eq_top_iff.2 <| fun s _ ↦ by rw [map_def]; by_cases h : b ∈ s <;> simp [h]
 
-@[simp] theorem comap_const {m} (b : β) : MeasurableSpace.comap (fun _a : α => b) m = ⊥ :=
+@[simp] theorem comap_const {m} (b : β) : MeasurableSpace.comap (fun _a : α ↦ b) m = ⊥ :=
   eq_bot_iff.2 <| by rintro _ ⟨s, -, rfl⟩; by_cases b ∈ s <;> simp [*]
 
 theorem comap_generateFrom {f : α → β} {s : Set (Set β)} :
     (generateFrom s).comap f = generateFrom (preimage f '' s) :=
   le_antisymm
     (comap_le_iff_le_map.2 <|
-      generateFrom_le fun _t hts => GenerateMeasurable.basic _ <| mem_image_of_mem _ <| hts)
-    (generateFrom_le fun _t ⟨u, hu, Eq⟩ => Eq ▸ ⟨u, GenerateMeasurable.basic _ hu, rfl⟩)
+      generateFrom_le fun _t hts ↦ GenerateMeasurable.basic _ <| mem_image_of_mem _ <| hts)
+    (generateFrom_le fun _t ⟨u, hu, Eq⟩ ↦ Eq ▸ ⟨u, GenerateMeasurable.basic _ hu, rfl⟩)
 
 end MeasurableSpace
 
@@ -177,11 +177,11 @@ theorem measurable_iff_comap_le {m₁ : MeasurableSpace α} {m₂ : MeasurableSp
 alias ⟨Measurable.comap_le, Measurable.of_comap_le⟩ := measurable_iff_comap_le
 
 theorem comap_measurable {m : MeasurableSpace β} (f : α → β) : Measurable[m.comap f] f :=
-  fun s hs => ⟨s, hs, rfl⟩
+  fun s hs ↦ ⟨s, hs, rfl⟩
 
 theorem Measurable.mono {ma ma' : MeasurableSpace α} {mb mb' : MeasurableSpace β} {f : α → β}
     (hf : @Measurable α β ma mb f) (ha : ma ≤ ma') (hb : mb' ≤ mb) : @Measurable α β ma' mb' f :=
-  fun _t ht => ha _ <| hf <| hb _ ht
+  fun _t ht ↦ ha _ <| hf <| hb _ ht
 
 lemma Measurable.iSup' {mα : ι → MeasurableSpace α} {_ : MeasurableSpace β} {f : α → β} (i₀ : ι)
     (h : Measurable[mα i₀] f) :
@@ -202,7 +202,7 @@ theorem measurable_id'' {m mα : MeasurableSpace α} (hm : m ≤ mα) : @Measura
   measurable_id.mono le_rfl hm
 
 @[measurability]
-theorem measurable_from_top [MeasurableSpace β] {f : α → β} : Measurable[⊤] f := fun _ _ => trivial
+theorem measurable_from_top [MeasurableSpace β] {f : α → β} : Measurable[⊤] f := fun _ _ ↦ trivial
 
 theorem measurable_generateFrom [MeasurableSpace α] {s : Set (Set β)} {f : α → β}
     (h : ∀ t ∈ s, MeasurableSet (f ⁻¹' t)) : @Measurable _ _ _ (generateFrom s) f :=
@@ -215,12 +215,12 @@ section TypeclassMeasurableSpace
 variable [MeasurableSpace α] [MeasurableSpace β]
 
 @[nontriviality, measurability]
-theorem Subsingleton.measurable [Subsingleton α] : Measurable f := fun _ _ =>
+theorem Subsingleton.measurable [Subsingleton α] : Measurable f := fun _ _ ↦
   @Subsingleton.measurableSet α _ _ _
 
 @[nontriviality, measurability]
 theorem measurable_of_subsingleton_codomain [Subsingleton β] (f : α → β) : Measurable f :=
-  fun s _ => Subsingleton.set_cases MeasurableSet.empty MeasurableSet.univ s
+  fun s _ ↦ Subsingleton.set_cases MeasurableSet.empty MeasurableSet.univ s
 
 @[to_additive (attr := measurability, fun_prop)]
 theorem measurable_one [One α] : Measurable (1 : β → α) :=
@@ -249,7 +249,7 @@ theorem measurable_intCast [IntCast α] (n : ℤ) : Measurable (n : β → α) :
   @measurable_const α _ _ _ n
 
 theorem measurable_of_countable [Countable α] [MeasurableSingletonClass α] (f : α → β) :
-    Measurable f := fun s _ =>
+    Measurable f := fun s _ ↦
   (f ⁻¹' s).to_countable.measurableSet
 
 theorem measurable_of_finite [Finite α] [MeasurableSingletonClass α] (f : α → β) : Measurable f :=
@@ -287,7 +287,7 @@ protected theorem Measurable.piecewise {_ : DecidablePred (· ∈ s)} (hs : Meas
 `exact Measurable.ite (measurableSet_singleton 0) measurable_const measurable_const`,
 but replacing `Measurable.ite` by `Measurable.piecewise` in that example proof does not work. -/
 theorem Measurable.ite {p : α → Prop} {_ : DecidablePred p} (hp : MeasurableSet { a : α | p a })
-    (hf : Measurable f) (hg : Measurable g) : Measurable fun x => ite (p x) (f x) (g x) :=
+    (hf : Measurable f) (hg : Measurable g) : Measurable fun x ↦ ite (p x) (f x) (g x) :=
   Measurable.piecewise hp hf hg
 
 @[measurability, fun_prop]
@@ -336,11 +336,11 @@ def IsCountablySpanning (C : Set (Set α)) : Prop :=
 
 theorem isCountablySpanning_measurableSet [MeasurableSpace α] :
     IsCountablySpanning { s : Set α | MeasurableSet s } :=
-  ⟨fun _ => univ, fun _ => MeasurableSet.univ, iUnion_const _⟩
+  ⟨fun _ ↦ univ, fun _ ↦ MeasurableSet.univ, iUnion_const _⟩
 
 /-- Rectangles of countably spanning sets are countably spanning. -/
 lemma IsCountablySpanning.prod {C : Set (Set α)} {D : Set (Set β)} (hC : IsCountablySpanning C)
     (hD : IsCountablySpanning D) : IsCountablySpanning (image2 (· ×ˢ ·) C D) := by
   rcases hC, hD with ⟨⟨s, h1s, h2s⟩, t, h1t, h2t⟩
-  refine ⟨fun n => s n.unpair.1 ×ˢ t n.unpair.2, fun n => mem_image2_of_mem (h1s _) (h1t _), ?_⟩
+  refine ⟨fun n ↦ s n.unpair.1 ×ˢ t n.unpair.2, fun n ↦ mem_image2_of_mem (h1s _) (h1t _), ?_⟩
   rw [iUnion_unpair_prod, h2s, h2t, univ_prod_univ]

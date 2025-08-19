@@ -123,7 +123,7 @@ theorem copy_eq (S : Submodule R M) (s : Set M) (hs : s = ↑S) : S.copy s hs = 
   SetLike.coe_injective hs
 
 theorem toAddSubmonoid_injective : Injective (toAddSubmonoid : Submodule R M → AddSubmonoid M) :=
-  fun p q h => SetLike.ext'_iff.2 (show (p.toAddSubmonoid : Set M) = q from SetLike.ext'_iff.1 h)
+  fun p q h ↦ SetLike.ext'_iff.2 (show (p.toAddSubmonoid : Set M) = q from SetLike.ext'_iff.1 h)
 
 @[simp]
 theorem toAddSubmonoid_inj : p.toAddSubmonoid = q.toAddSubmonoid ↔ p = q :=
@@ -134,7 +134,7 @@ theorem coe_toAddSubmonoid (p : Submodule R M) : (p.toAddSubmonoid : Set M) = p 
   rfl
 
 theorem toSubMulAction_injective : Injective (toSubMulAction : Submodule R M → SubMulAction R M) :=
-  fun p q h => SetLike.ext'_iff.2 (show (p.toSubMulAction : Set M) = q from SetLike.ext'_iff.1 h)
+  fun p q h ↦ SetLike.ext'_iff.2 (show (p.toSubMulAction : Set M) = q from SetLike.ext'_iff.1 h)
 
 theorem toSubMulAction_inj : p.toSubMulAction = q.toSubMulAction ↔ p = q :=
   toSubMulAction_injective.eq_iff
@@ -213,7 +213,7 @@ lemma smul_mem_iff_of_isUnit (hr : IsUnit r) :
   smul_mem_iff'' p
 
 instance add : Add p :=
-  ⟨fun x y => ⟨x.1 + y.1, add_mem x.2 y.2⟩⟩
+  ⟨fun x y ↦ ⟨x.1 + y.1, add_mem x.2 y.2⟩⟩
 
 instance zero : Zero p :=
   ⟨⟨0, zero_mem _⟩⟩
@@ -222,7 +222,7 @@ instance inhabited : Inhabited p :=
   ⟨0⟩
 
 instance smul [SMul S R] [SMul S M] [IsScalarTower S R M] : SMul S p :=
-  ⟨fun c x => ⟨c • x.1, smul_of_tower_mem _ c x.2⟩⟩
+  ⟨fun c x ↦ ⟨c • x.1, smul_of_tower_mem _ c x.2⟩⟩
 
 instance isScalarTower [SMul S R] [SMul S M] [IsScalarTower S R M] : IsScalarTower S R p :=
   p.toSubMulAction.isScalarTower
@@ -284,10 +284,10 @@ instance isCancelAdd [IsCancelAdd M] : IsCancelAdd p where
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
     Module S p := fast_instance%
   { (show MulAction S p from p.toSubMulAction.mulAction') with
-    smul_zero := fun a => by ext; simp
-    zero_smul := fun a => by ext; simp
-    add_smul := fun a b x => by ext; simp [add_smul]
-    smul_add := fun a x y => by ext; simp [smul_add] }
+    smul_zero := fun a ↦ by ext; simp
+    zero_smul := fun a ↦ by ext; simp
+    add_smul := fun a b x ↦ by ext; simp [add_smul]
+    smul_add := fun a x y ↦ by ext; simp [smul_add] }
 
 instance module : Module R p :=
   p.module'
@@ -302,14 +302,14 @@ variable (p p' : Submodule R M)
 variable {r : R} {x y : M}
 
 instance addSubgroupClass [Module R M] : AddSubgroupClass (Submodule R M) M :=
-  { Submodule.addSubmonoidClass with neg_mem := fun p {_} => p.toSubMulAction.neg_mem }
+  { Submodule.addSubmonoidClass with neg_mem := fun p {_} ↦ p.toSubMulAction.neg_mem }
 
 protected theorem neg_mem (hx : x ∈ p) : -x ∈ p :=
   neg_mem hx
 
 /-- Reinterpret a submodule as an additive subgroup. -/
 def toAddSubgroup : AddSubgroup M :=
-  { p.toAddSubmonoid with neg_mem' := fun {_} => p.neg_mem }
+  { p.toAddSubmonoid with neg_mem' := fun {_} ↦ p.neg_mem }
 
 @[simp]
 theorem coe_toAddSubgroup : (p.toAddSubgroup : Set M) = p :=

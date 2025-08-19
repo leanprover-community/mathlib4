@@ -78,7 +78,7 @@ variable {F G n}
 
 /-- A practical constructor for cochains. -/
 def mk (v : ∀ (p q : ℤ) (_ : p + n = q), F.X p ⟶ G.X q) : Cochain F G n :=
-  fun ⟨p, q, hpq⟩ => v p q hpq
+  fun ⟨p, q, hpq⟩ ↦ v p q hpq
 
 /-- The value of a cochain on a triplet `⟨p, q, hpq⟩`. -/
 def v (γ : Cochain F G n) (p q : ℤ) (hpq : p + n = q) :
@@ -130,7 +130,7 @@ lemma units_smul_v {n : ℤ} (k : Rˣ) (z : Cochain F G n) (p q : ℤ) (hpq : p 
 /-- A cochain of degree `0` from `F` to `G` can be constructed from a family
 of morphisms `F.X p ⟶ G.X p` for all `p : ℤ`. -/
 def ofHoms (ψ : ∀ (p : ℤ), F.X p ⟶ G.X p) : Cochain F G 0 :=
-  Cochain.mk (fun p q hpq => ψ p ≫ eqToHom (by rw [← hpq, add_zero]))
+  Cochain.mk (fun p q hpq ↦ ψ p ≫ eqToHom (by rw [← hpq, add_zero]))
 
 @[simp]
 lemma ofHoms_v (ψ : ∀ (p : ℤ), F.X p ⟶ G.X p) (p : ℤ) :
@@ -138,7 +138,7 @@ lemma ofHoms_v (ψ : ∀ (p : ℤ), F.X p ⟶ G.X p) (p : ℤ) :
   simp only [ofHoms, mk_v, eqToHom_refl, comp_id]
 
 @[simp]
-lemma ofHoms_zero : ofHoms (fun p => (0 : F.X p ⟶ G.X p)) = 0 := by cat_disch
+lemma ofHoms_zero : ofHoms (fun p ↦ (0 : F.X p ⟶ G.X p)) = 0 := by cat_disch
 
 @[simp]
 lemma ofHoms_v_comp_d (ψ : ∀ (p : ℤ), F.X p ⟶ G.X p) (p q q' : ℤ) (hpq : p + 0 = q) :
@@ -155,7 +155,7 @@ lemma d_comp_ofHoms_v (ψ : ∀ (p : ℤ), F.X p ⟶ G.X p) (p' p q : ℤ) (hpq 
   rw [ofHoms_v]
 
 /-- The `0`-cochain attached to a morphism of cochain complexes. -/
-def ofHom (φ : F ⟶ G) : Cochain F G 0 := ofHoms (fun p => φ.f p)
+def ofHom (φ : F ⟶ G) : Cochain F G 0 := ofHoms (fun p ↦ φ.f p)
 
 variable (F G)
 
@@ -193,7 +193,7 @@ lemma ofHom_neg (φ : F ⟶ G) :
 
 /-- The cochain of degree `-1` given by an homotopy between two morphism of complexes. -/
 def ofHomotopy {φ₁ φ₂ : F ⟶ G} (ho : Homotopy φ₁ φ₂) : Cochain F G (-1) :=
-  Cochain.mk (fun p q _ => ho.hom p q)
+  Cochain.mk (fun p q _ ↦ ho.hom p q)
 
 @[simp]
 lemma ofHomotopy_ofEq {φ₁ φ₂ : F ⟶ G} (h : φ₁ = φ₂) :
@@ -220,7 +220,7 @@ lemma v_comp_XIsoOfEq_inv
 /-- The composition of cochains. -/
 def comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂) :
     Cochain F K n₁₂ :=
-  Cochain.mk (fun p q hpq => z₁.v p (p + n₁) rfl ≫ z₂.v (p + n₁) q (by omega))
+  Cochain.mk (fun p q hpq ↦ z₁.v p (p + n₁) rfl ≫ z₂.v (p + n₁) q (by omega))
 
 /-! If `z₁` is a cochain of degree `n₁` and `z₂` is a cochain of degree `n₂`, and that
 we have a relation `h : n₁ + n₂ = n₁₂`, then `z₁.comp z₂ h` is a cochain of degree `n₁₂`.
@@ -380,7 +380,7 @@ protected lemma comp_id {n : ℤ} (z₁ : Cochain F G n) :
 
 @[simp]
 lemma ofHoms_comp (φ : ∀ (p : ℤ), F.X p ⟶ G.X p) (ψ : ∀ (p : ℤ), G.X p ⟶ K.X p) :
-    (ofHoms φ).comp (ofHoms ψ) (zero_add 0) = ofHoms (fun p => φ p ≫ ψ p) := by cat_disch
+    (ofHoms φ).comp (ofHoms ψ) (zero_add 0) = ofHoms (fun p ↦ φ p ≫ ψ p) := by cat_disch
 
 @[simp]
 lemma ofHom_comp (f : F ⟶ G) (g : G ⟶ K) :
@@ -390,7 +390,7 @@ lemma ofHom_comp (f : F ⟶ G) (g : G ⟶ K) :
 variable (K)
 
 /-- The differential on a cochain complex, as a cochain of degree `1`. -/
-def diff : Cochain K K 1 := Cochain.mk (fun p q _ => K.d p q)
+def diff : Cochain K K 1 := Cochain.mk (fun p q _ ↦ K.d p q)
 
 @[simp]
 lemma diff_v (p q : ℤ) (hpq : p + 1 = q) : (diff K).v p q hpq = K.d p q := rfl
@@ -401,7 +401,7 @@ variable {F G}
 
 /-- The differential on the complex of morphisms between cochain complexes. -/
 def δ (z : Cochain F G n) : Cochain F G m :=
-  Cochain.mk (fun p q hpq => z.v p (p + n) rfl ≫ G.d (p + n) q +
+  Cochain.mk (fun p q hpq ↦ z.v p (p + n) rfl ≫ G.d (p + n) q +
     m.negOnePow • F.d p (p + m - n) ≫ z.v (p + m - n) q (by rw [hpq, sub_add_cancel]))
 
 /-! Similarly as for the composition of cochains, if `z : Cochain F G n`,
@@ -425,7 +425,7 @@ lemma δ_shape (hnm : ¬ n + 1 = m) (z : Cochain F G n) : δ n m z = 0 := by
   rw [Cochain.mk_v, Cochain.zero_v, F.shape, G.shape, comp_zero, zero_add, zero_comp, smul_zero]
   all_goals
     simp only [ComplexShape.up_Rel]
-    exact fun _ => hnm (by omega)
+    exact fun _ ↦ hnm (by omega)
 
 variable (F G) (R)
 
@@ -546,7 +546,7 @@ lemma δ_ofHomotopy {φ₁ φ₂ : F ⟶ G} (h : Homotopy φ₁ φ₂) :
 
 lemma δ_neg_one_cochain (z : Cochain F G (-1)) :
     δ (-1) 0 z = Cochain.ofHom (Homotopy.nullHomotopicMap'
-      (fun i j hij => z.v i j (by dsimp at hij; rw [← hij, add_neg_cancel_right]))) := by
+      (fun i j hij ↦ z.v i j (by dsimp at hij; rw [← hij, add_neg_cancel_right]))) := by
   ext p
   rw [δ_v (-1) 0 (neg_add_cancel 1) _ p p (add_zero p) (p-1) (p+1) rfl rfl]
   simp only [one_smul, Cochain.ofHom_v, Int.negOnePow_zero]
@@ -744,22 +744,22 @@ def equivHomotopy (φ₁ φ₂ : F ⟶ G) :
       { z : Cochain F G (-1) // Cochain.ofHom φ₁ = δ (-1) 0 z + Cochain.ofHom φ₂ } where
   toFun ho := ⟨Cochain.ofHomotopy ho, by simp only [δ_ofHomotopy, sub_add_cancel]⟩
   invFun z :=
-    { hom := fun i j => if hij : i + (-1) = j then z.1.v i j hij else 0
-      zero := fun i j (hij : j + 1 ≠ i) => dif_neg (fun _ => hij (by omega))
-      comm := fun p => by
+    { hom := fun i j ↦ if hij : i + (-1) = j then z.1.v i j hij else 0
+      zero := fun i j (hij : j + 1 ≠ i) ↦ dif_neg (fun _ ↦ hij (by omega))
+      comm := fun p ↦ by
         have eq := Cochain.congr_v z.2 p p (add_zero p)
         have h₁ : (ComplexShape.up ℤ).Rel (p - 1) p := by simp
         have h₂ : (ComplexShape.up ℤ).Rel p (p + 1) := by simp
         simp only [δ_neg_one_cochain, Cochain.ofHom_v, ComplexShape.up_Rel, Cochain.add_v,
           Homotopy.nullHomotopicMap'_f h₁ h₂] at eq
         rw [dNext_eq _ h₂, prevD_eq _ h₁, eq, dif_pos, dif_pos] }
-  left_inv := fun ho => by
+  left_inv := fun ho ↦ by
     ext i j
     dsimp
     split_ifs with h
     · rfl
-    · rw [ho.zero i j (fun h' => h (by dsimp at h'; omega))]
-  right_inv := fun z => by
+    · rw [ho.zero i j (fun h' ↦ h (by dsimp at h'; omega))]
+  right_inv := fun z ↦ by
     ext p q hpq
     dsimp [Cochain.ofHomotopy]
     rw [dif_pos hpq]
@@ -785,7 +785,7 @@ cochain complexes in `C` can be mapped to a cochain between the cochain complexe
 in `D` obtained by applying the functor
 `Φ.mapHomologicalComplex _ : CochainComplex C ℤ ⥤ CochainComplex D ℤ`. -/
 def map : Cochain ((Φ.mapHomologicalComplex _).obj K) ((Φ.mapHomologicalComplex _).obj L) n :=
-  Cochain.mk (fun p q hpq => Φ.map (z.v p q hpq))
+  Cochain.mk (fun p q hpq ↦ Φ.map (z.v p q hpq))
 
 @[simp]
 lemma map_v (p q : ℤ) (hpq : p + n = q) : (z.map Φ).v p q hpq = Φ.map (z.v p q hpq) := rfl

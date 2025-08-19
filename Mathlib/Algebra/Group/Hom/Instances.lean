@@ -50,7 +50,7 @@ lemma MonoidHom.pow_apply [MulOneClass M] [CommMonoid N] (f : M →* N) (n : ℕ
 @[to_additive /-- `(M →+ N)` is an `AddCommMonoid` if `N` is commutative. -/]
 instance MonoidHom.instCommMonoid [MulOneClass M] [CommMonoid N] : CommMonoid (M →* N) :=
   fast_instance%
-    DFunLike.coe_injective.commMonoid DFunLike.coe rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    DFunLike.coe_injective.commMonoid DFunLike.coe rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance AddMonoidHom.instIntSMul [AddZeroClass M] [AddCommGroup N] : SMul ℤ (M →+ N) where
   smul a f :=
@@ -76,15 +76,15 @@ lemma MonoidHom.zpow_apply [MulOneClass M] [CommGroup N] (f : M →* N) (z : ℤ
 instance MonoidHom.instCommGroup [MulOneClass M] [CommGroup N] : CommGroup (M →* N) :=
   fast_instance%
     DFunLike.coe_injective.commGroup DFunLike.coe
-      rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+      rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 @[to_additive]
 instance [MulOneClass M] [CommMonoid N] [IsLeftCancelMul N] : IsLeftCancelMul (M →* N) :=
-  DFunLike.coe_injective.isLeftCancelMul _ fun _ _ => rfl
+  DFunLike.coe_injective.isLeftCancelMul _ fun _ _ ↦ rfl
 
 @[to_additive]
 instance [MulOneClass M] [CommMonoid N] [IsRightCancelMul N] : IsRightCancelMul (M →* N) :=
-  DFunLike.coe_injective.isRightCancelMul _ fun _ _ => rfl
+  DFunLike.coe_injective.isRightCancelMul _ fun _ _ ↦ rfl
 
 @[to_additive]
 instance [MulOneClass M] [CommMonoid N] [IsCancelMul N] : IsCancelMul (M →* N) where
@@ -106,7 +106,7 @@ instance AddMonoid.End.instAddCommGroup [AddCommGroup M] : AddCommGroup (AddMono
   AddMonoidHom.instAddCommGroup
 
 instance AddMonoid.End.instIntCast [AddCommGroup M] : IntCast (AddMonoid.End M) :=
-  { intCast := fun z => z • (1 : AddMonoid.End M) }
+  { intCast := fun z ↦ z • (1 : AddMonoid.End M) }
 
 /-- See also `AddMonoid.End.intCast_def`. -/
 @[simp]
@@ -129,18 +129,18 @@ namespace MonoidHom
 @[to_additive]
 theorem ext_iff₂ {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} {f g : M →* N →* P} :
     f = g ↔ ∀ x y, f x y = g x y :=
-  DFunLike.ext_iff.trans <| forall_congr' fun _ => DFunLike.ext_iff
+  DFunLike.ext_iff.trans <| forall_congr' fun _ ↦ DFunLike.ext_iff
 
 /-- `flip` arguments of `f : M →* N →* P` -/
 @[to_additive /-- `flip` arguments of `f : M →+ N →+ P` -/]
 def flip {mM : MulOneClass M} {mN : MulOneClass N} {mP : CommMonoid P} (f : M →* N →* P) :
     N →* M →* P where
   toFun y :=
-    { toFun := fun x => f x y,
+    { toFun := fun x ↦ f x y,
       map_one' := by simp [f.map_one, one_apply],
-      map_mul' := fun x₁ x₂ => by simp [f.map_mul, mul_apply] }
-  map_one' := ext fun x => (f x).map_one
-  map_mul' y₁ y₂ := ext fun x => (f x).map_mul y₁ y₂
+      map_mul' := fun x₁ x₂ ↦ by simp [f.map_mul, mul_apply] }
+  map_one' := ext fun x ↦ (f x).map_one
+  map_mul' y₁ y₂ := ext fun x ↦ (f x).map_mul y₁ y₂
 
 @[to_additive (attr := simp)]
 theorem flip_apply {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} (f : M →* N →* P)

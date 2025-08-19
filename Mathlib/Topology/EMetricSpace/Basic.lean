@@ -51,14 +51,14 @@ theorem edist_le_Ico_sum_of_edist_le {f : ℕ → α} {m n} (hmn : m ≤ n) {d :
     (hd : ∀ {k}, m ≤ k → k < n → edist (f k) (f (k + 1)) ≤ d k) :
     edist (f m) (f n) ≤ ∑ i ∈ Finset.Ico m n, d i :=
   le_trans (edist_le_Ico_sum_edist f hmn) <|
-    Finset.sum_le_sum fun _k hk => hd (Finset.mem_Ico.1 hk).1 (Finset.mem_Ico.1 hk).2
+    Finset.sum_le_sum fun _k hk ↦ hd (Finset.mem_Ico.1 hk).1 (Finset.mem_Ico.1 hk).2
 
 /-- A version of `edist_le_range_sum_edist` with each intermediate distance replaced
 with an upper estimate. -/
 theorem edist_le_range_sum_of_edist_le {f : ℕ → α} (n : ℕ) {d : ℕ → ℝ≥0∞}
     (hd : ∀ {k}, k < n → edist (f k) (f (k + 1)) ≤ d k) :
     edist (f 0) (f n) ≤ ∑ i ∈ Finset.range n, d i :=
-  Nat.Ico_zero_eq_range ▸ edist_le_Ico_sum_of_edist_le (zero_le n) fun _ => hd
+  Nat.Ico_zero_eq_range ▸ edist_le_Ico_sum_of_edist_le (zero_le n) fun _ ↦ hd
 
 namespace EMetric
 
@@ -101,7 +101,7 @@ theorem complete_of_convergent_controlled_sequences (B : ℕ → ℝ≥0∞) (hB
       ∃ x, Tendsto u atTop (𝓝 x)) :
     CompleteSpace α :=
   UniformSpace.complete_of_convergent_controlled_sequences
-    (fun n => { p : α × α | edist p.1 p.2 < B n }) (fun n => edist_mem_uniformity <| hB n) H
+    (fun n ↦ { p : α × α | edist p.1 p.2 < B n }) (fun n ↦ edist_mem_uniformity <| hB n) H
 
 /-- A sequentially complete pseudoemetric space is complete. -/
 theorem complete_of_cauchySeq_tendsto :
@@ -113,17 +113,17 @@ theorem tendstoLocallyUniformlyOn_iff {ι : Type*} [TopologicalSpace β] {F : ι
     {p : Filter ι} {s : Set β} :
     TendstoLocallyUniformlyOn F f p s ↔
       ∀ ε > 0, ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, ∀ᶠ n in p, ∀ y ∈ t, edist (f y) (F n y) < ε := by
-  refine ⟨fun H ε hε => H _ (edist_mem_uniformity hε), fun H u hu x hx => ?_⟩
+  refine ⟨fun H ε hε ↦ H _ (edist_mem_uniformity hε), fun H u hu x hx ↦ ?_⟩
   rcases mem_uniformity_edist.1 hu with ⟨ε, εpos, hε⟩
   rcases H ε εpos x hx with ⟨t, ht, Ht⟩
-  exact ⟨t, ht, Ht.mono fun n hs x hx => hε (hs x hx)⟩
+  exact ⟨t, ht, Ht.mono fun n hs x hx ↦ hε (hs x hx)⟩
 
 /-- Expressing uniform convergence on a set using `edist`. -/
 theorem tendstoUniformlyOn_iff {ι : Type*} {F : ι → β → α} {f : β → α} {p : Filter ι} {s : Set β} :
     TendstoUniformlyOn F f p s ↔ ∀ ε > 0, ∀ᶠ n in p, ∀ x ∈ s, edist (f x) (F n x) < ε := by
-  refine ⟨fun H ε hε => H _ (edist_mem_uniformity hε), fun H u hu => ?_⟩
+  refine ⟨fun H ε hε ↦ H _ (edist_mem_uniformity hε), fun H u hu ↦ ?_⟩
   rcases mem_uniformity_edist.1 hu with ⟨ε, εpos, hε⟩
-  exact (H ε εpos).mono fun n hs x hx => hε (hs x hx)
+  exact (H ε εpos).mono fun n hs x hx ↦ hε (hs x hx)
 
 /-- Expressing locally uniform convergence using `edist`. -/
 theorem tendstoLocallyUniformly_iff {ι : Type*} [TopologicalSpace β] {F : ι → β → α} {f : β → α}
@@ -171,17 +171,17 @@ theorem cauchySeq_iff_NNReal [Nonempty β] [SemilatticeSup β] {u : β → α} :
 
 theorem totallyBounded_iff {s : Set α} :
     TotallyBounded s ↔ ∀ ε > 0, ∃ t : Set α, t.Finite ∧ s ⊆ ⋃ y ∈ t, ball y ε :=
-  ⟨fun H _ε ε0 => H _ (edist_mem_uniformity ε0), fun H _r ru =>
+  ⟨fun H _ε ε0 ↦ H _ (edist_mem_uniformity ε0), fun H _r ru ↦
     let ⟨ε, ε0, hε⟩ := mem_uniformity_edist.1 ru
     let ⟨t, ft, h⟩ := H ε ε0
-    ⟨t, ft, h.trans <| iUnion₂_mono fun _ _ _ => hε⟩⟩
+    ⟨t, ft, h.trans <| iUnion₂_mono fun _ _ _ ↦ hε⟩⟩
 
 theorem totallyBounded_iff' {s : Set α} :
     TotallyBounded s ↔ ∀ ε > 0, ∃ t, t ⊆ s ∧ Set.Finite t ∧ s ⊆ ⋃ y ∈ t, ball y ε :=
-  ⟨fun H _ε ε0 => (totallyBounded_iff_subset.1 H) _ (edist_mem_uniformity ε0), fun H _r ru =>
+  ⟨fun H _ε ε0 ↦ (totallyBounded_iff_subset.1 H) _ (edist_mem_uniformity ε0), fun H _r ru ↦
     let ⟨ε, ε0, hε⟩ := mem_uniformity_edist.1 ru
     let ⟨t, _, ft, h⟩ := H ε ε0
-    ⟨t, ft, h.trans <| iUnion₂_mono fun _ _ _ => hε⟩⟩
+    ⟨t, ft, h.trans <| iUnion₂_mono fun _ _ _ ↦ hε⟩⟩
 
 section Compact
 
@@ -190,9 +190,9 @@ section Compact
 countable set. -/
 theorem subset_countable_closure_of_compact {s : Set α} (hs : IsCompact s) :
     ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
-  refine subset_countable_closure_of_almost_dense_set s fun ε hε => ?_
+  refine subset_countable_closure_of_almost_dense_set s fun ε hε ↦ ?_
   rcases totallyBounded_iff'.1 hs.totallyBounded ε hε with ⟨t, -, htf, hst⟩
-  exact ⟨t, htf.countable, hst.trans <| iUnion₂_mono fun _ _ => ball_subset_closedBall⟩
+  exact ⟨t, htf.countable, hst.trans <| iUnion₂_mono fun _ _ ↦ ball_subset_closedBall⟩
 
 end Compact
 
@@ -205,9 +205,9 @@ variable (α) in
 instance (priority := 90) secondCountable_of_sigmaCompact [SigmaCompactSpace α] :
     SecondCountableTopology α := by
   suffices SeparableSpace α by exact UniformSpace.secondCountable_of_separable α
-  choose T _ hTc hsubT using fun n =>
+  choose T _ hTc hsubT using fun n ↦
     subset_countable_closure_of_compact (isCompact_compactCovering α n)
-  refine ⟨⟨⋃ n, T n, countable_iUnion hTc, fun x => ?_⟩⟩
+  refine ⟨⟨⋃ n, T n, countable_iUnion hTc, fun x ↦ ?_⟩⟩
   rcases iUnion_eq_univ_iff.1 (iUnion_compactCovering α) x with ⟨n, hn⟩
   exact closure_mono (subset_iUnion _ n) (hsubT _ hn)
 
@@ -218,7 +218,7 @@ theorem secondCountable_of_almost_dense_set
   have : ∀ ε > 0, ∃ t : Set α, Set.Countable t ∧ univ ⊆ ⋃ x ∈ t, closedBall x ε := by
     simpa only [univ_subset_iff] using hs
   rcases subset_countable_closure_of_almost_dense_set (univ : Set α) this with ⟨t, -, htc, ht⟩
-  exact ⟨⟨t, htc, fun x => ht (mem_univ x)⟩⟩
+  exact ⟨⟨t, htc, fun x ↦ ht (mem_univ x)⟩⟩
 
 end SecondCountable
 
@@ -244,7 +244,7 @@ theorem EMetric.isUniformEmbedding_iff' [PseudoEMetricSpace β] {f : γ → β} 
 abbrev EMetricSpace.ofT0PseudoEMetricSpace (α : Type*) [PseudoEMetricSpace α] [T0Space α] :
     EMetricSpace α :=
   { ‹PseudoEMetricSpace α› with
-    eq_of_edist_eq_zero := fun h => (EMetric.inseparable_iff.2 h).eq }
+    eq_of_edist_eq_zero := fun h ↦ (EMetric.inseparable_iff.2 h).eq }
 
 /-- The product of two emetric spaces, with the max distance, is an extended
 metric spaces. We make sure that the uniform structure thus constructed is the one
@@ -267,7 +267,7 @@ end EMetric
 -/
 
 instance [PseudoEMetricSpace X] : EDist (SeparationQuotient X) where
-  edist := SeparationQuotient.lift₂ edist fun _ _ _ _ hx hy =>
+  edist := SeparationQuotient.lift₂ edist fun _ _ _ _ hx hy ↦
     edist_congr (EMetric.inseparable_iff.1 hx) (EMetric.inseparable_iff.1 hy)
 
 @[simp] theorem SeparationQuotient.edist_mk [PseudoEMetricSpace X] (x y : X) :
@@ -295,9 +295,9 @@ subset. This is not obvious, as the countable set whose closure covers `s` given
 of separability does not need in general to be contained in `s`. -/
 theorem IsSeparable.exists_countable_dense_subset
     {s : Set α} (hs : IsSeparable s) : ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
-  have : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ s ⊆ ⋃ x ∈ t, closedBall x ε := fun ε ε0 => by
+  have : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ s ⊆ ⋃ x ∈ t, closedBall x ε := fun ε ε0 ↦ by
     rcases hs with ⟨t, htc, hst⟩
-    refine ⟨t, htc, hst.trans fun x hx => ?_⟩
+    refine ⟨t, htc, hst.trans fun x hx ↦ ?_⟩
     rcases mem_closure_iff.1 hx ε ε0 with ⟨y, hyt, hxy⟩
     exact mem_iUnion₂.2 ⟨y, hyt, mem_closedBall.2 hxy.le⟩
   exact subset_countable_closure_of_almost_dense_set _ this

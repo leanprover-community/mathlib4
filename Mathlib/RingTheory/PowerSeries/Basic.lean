@@ -150,14 +150,14 @@ theorem coeff_def {s : Unit →₀ ℕ} {n : ℕ} (h : s () = n) : coeff R n = M
 /-- Two formal power series are equal if all their coefficients are equal. -/
 @[ext]
 theorem ext {φ ψ : R⟦X⟧} (h : ∀ n, coeff R n φ = coeff R n ψ) : φ = ψ :=
-  MvPowerSeries.ext fun n => by
+  MvPowerSeries.ext fun n ↦ by
     rw [← coeff_def]
     · apply h
     rfl
 
 @[simp]
 theorem forall_coeff_eq_zero (φ : R⟦X⟧) : (∀ n, coeff R n φ = 0) ↔ φ = 0 :=
-  ⟨fun h => ext h, fun h => by simp [h]⟩
+  ⟨fun h ↦ ext h, fun h ↦ by simp [h]⟩
 
 /-- Two formal power series are equal if all their coefficients are equal. -/
 add_decl_doc PowerSeries.ext_iff
@@ -167,7 +167,7 @@ instance [Subsingleton R] : Subsingleton R⟦X⟧ := by
   subsingleton
 
 /-- Constructor for formal power series. -/
-def mk {R} (f : ℕ → R) : R⟦X⟧ := fun s => f (s ())
+def mk {R} (f : ℕ → R) : R⟦X⟧ := fun s ↦ f (s ())
 
 @[simp]
 theorem coeff_mk (n : ℕ) (f : ℕ → R) : coeff R n (mk f) = f n :=
@@ -178,8 +178,8 @@ theorem coeff_monomial (m n : ℕ) (a : R) : coeff R m (monomial R n a) = if m =
     coeff R m (monomial R n a) = _ := MvPowerSeries.coeff_monomial _ _ _
     _ = if m = n then a else 0 := by simp only [Finsupp.unique_single_eq_iff]
 
-theorem monomial_eq_mk (n : ℕ) (a : R) : monomial R n a = mk fun m => if m = n then a else 0 :=
-  ext fun m => by rw [coeff_monomial, coeff_mk]
+theorem monomial_eq_mk (n : ℕ) (a : R) : monomial R n a = mk fun m ↦ if m = n then a else 0 :=
+  ext fun m ↦ by rw [coeff_monomial, coeff_mk]
 
 @[simp]
 theorem coeff_monomial_same (n : ℕ) (a : R) : coeff R n (monomial R n a) = a :=
@@ -273,7 +273,7 @@ theorem coeff_zero_X : coeff R 0 (X : R⟦X⟧) = 0 := by
 theorem coeff_one_X : coeff R 1 (X : R⟦X⟧) = 1 := by rw [coeff_X, if_pos rfl]
 
 @[simp]
-theorem X_ne_zero [Nontrivial R] : (X : R⟦X⟧) ≠ 0 := fun H => by
+theorem X_ne_zero [Nontrivial R] : (X : R⟦X⟧) ≠ 0 := fun H ↦ by
   simpa only [coeff_one_X, one_ne_zero, map_zero] using congr_arg (coeff R 1) H
 
 theorem X_pow_eq (n : ℕ) : (X : R⟦X⟧) ^ n = monomial R n 1 :=
@@ -384,7 +384,7 @@ theorem coeff_zero_mul_X (φ : R⟦X⟧) : coeff R 0 (φ * X) = 0 := by simp
 theorem coeff_zero_X_mul (φ : R⟦X⟧) : coeff R 0 (X * φ) = 0 := by simp
 
 theorem constantCoeff_surj : Function.Surjective (constantCoeff R) :=
-  fun r => ⟨(C R) r, constantCoeff_C r⟩
+  fun r ↦ ⟨(C R) r, constantCoeff_C r⟩
 
 -- The following section duplicates the API of `Mathlib.Data.Polynomial.Coeff` and should attempt
 -- to keep up to date with that
@@ -405,7 +405,7 @@ theorem coeff_mul_X_pow (p : R⟦X⟧) (n d : ℕ) :
     rw [mem_antidiagonal, add_right_cancel_iff] at h1
     subst h1
     rfl
-  · exact fun h1 => (h1 (mem_antidiagonal.2 rfl)).elim
+  · exact fun h1 ↦ (h1 (mem_antidiagonal.2 rfl)).elim
 
 @[simp]
 theorem coeff_X_pow_mul (p : R⟦X⟧) (n d : ℕ) :
@@ -419,7 +419,7 @@ theorem coeff_X_pow_mul (p : R⟦X⟧) (n d : ℕ) :
     subst h1
     rfl
   · rw [add_comm]
-    exact fun h1 => (h1 (mem_antidiagonal.2 rfl)).elim
+    exact fun h1 ↦ (h1 (mem_antidiagonal.2 rfl)).elim
 
 theorem mul_X_pow_cancel {k : ℕ} {φ ψ : R⟦X⟧} (h : φ * X ^ k = ψ * X ^ k) :
     φ = ψ := by
@@ -451,7 +451,7 @@ theorem coeff_mul_X_pow' (p : R⟦X⟧) (n d : ℕ) :
     coeff R d (p * X ^ n) = ite (n ≤ d) (coeff R (d - n) p) 0 := by
   split_ifs with h
   · rw [← tsub_add_cancel_of_le h, coeff_mul_X_pow, add_tsub_cancel_right]
-  · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => ?_)
+  · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx ↦ ?_)
     rw [coeff_X_pow, if_neg, mul_zero]
     exact ((le_of_add_le_right (mem_antidiagonal.mp hx).le).trans_lt <| not_le.mp h).ne
 
@@ -460,7 +460,7 @@ theorem coeff_X_pow_mul' (p : R⟦X⟧) (n d : ℕ) :
   split_ifs with h
   · rw [← tsub_add_cancel_of_le h, coeff_X_pow_mul]
     simp
-  · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => ?_)
+  · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx ↦ ?_)
     rw [coeff_X_pow, if_neg, zero_mul]
     have := mem_antidiagonal.mp hx
     rw [add_comm] at this
@@ -474,7 +474,7 @@ theorem isUnit_constantCoeff (φ : R⟦X⟧) (h : IsUnit φ) : IsUnit (constantC
 
 /-- Split off the constant coefficient. -/
 theorem eq_shift_mul_X_add_const (φ : R⟦X⟧) :
-    φ = (mk fun p => coeff R (p + 1) φ) * X + C R (constantCoeff R φ) := by
+    φ = (mk fun p ↦ coeff R (p + 1) φ) * X + C R (constantCoeff R φ) := by
   ext (_ | n)
   · simp only [coeff_zero_eq_constantCoeff, map_add, map_mul, constantCoeff_X,
       mul_zero, coeff_zero_C, zero_add]
@@ -483,7 +483,7 @@ theorem eq_shift_mul_X_add_const (φ : R⟦X⟧) :
 
 /-- Split off the constant coefficient. -/
 theorem eq_X_mul_shift_add_const (φ : R⟦X⟧) :
-    φ = (X * mk fun p => coeff R (p + 1) φ) + C R (constantCoeff R φ) := by
+    φ = (X * mk fun p ↦ coeff R (p + 1) φ) + C R (constantCoeff R φ) := by
   ext (_ | n)
   · simp only [coeff_zero_eq_constantCoeff, map_add, map_mul, constantCoeff_X,
       zero_mul, coeff_zero_C, zero_add]
@@ -568,7 +568,7 @@ open Finset Nat
 
 /-- The ring homomorphism taking a power series `f(X)` to `f(aX)`. -/
 noncomputable def rescale (a : R) : R⟦X⟧ →+* R⟦X⟧ where
-  toFun f := PowerSeries.mk fun n => a ^ n * PowerSeries.coeff R n f
+  toFun f := PowerSeries.mk fun n ↦ a ^ n * PowerSeries.coeff R n f
   map_zero' := by
     ext
     simp only [LinearMap.map_zero, PowerSeries.coeff_mk, mul_zero]
@@ -610,7 +610,7 @@ theorem rescale_one : rescale 1 = RingHom.id R⟦X⟧ := by
   ext
   simp [coeff_rescale]
 
-theorem rescale_mk (f : ℕ → R) (a : R) : rescale a (mk f) = mk fun n : ℕ => a ^ n * f n := by
+theorem rescale_mk (f : ℕ → R) (a : R) : rescale a (mk f) = mk fun n : ℕ ↦ a ^ n * f n := by
   ext
   rw [coeff_rescale, coeff_mk, coeff_mk]
 
@@ -651,7 +651,7 @@ lemma coeff_pow (k n : ℕ) (φ : R⟦X⟧) :
     coeff R n (φ ^ k) = ∑ l ∈ finsuppAntidiag (range k) n, ∏ i ∈ range k, coeff R (l i) φ := by
   have h₁ (i : ℕ) : Function.const ℕ φ i = φ := rfl
   have h₂ (i : ℕ) : ∏ j ∈ range i, Function.const ℕ φ j = φ ^ i := by
-    apply prod_range_induction (fun _ => φ) (fun i => φ ^ i) rfl i (fun _ => congrFun rfl)
+    apply prod_range_induction (fun _ ↦ φ) (fun i ↦ φ ^ i) rfl i (fun _ ↦ congrFun rfl)
   rw [← h₂, ← h₁ k]
   apply coeff_prod (f := Function.const ℕ φ) (d := n) (s := range k)
 
@@ -768,8 +768,8 @@ variable {R : Type*} [Semiring R] (φ ψ : R[X])
 
 /-- The natural inclusion from polynomials into formal power series. -/
 @[coe]
-def toPowerSeries : R[X] → PowerSeries R := fun φ =>
-  PowerSeries.mk fun n => coeff φ n
+def toPowerSeries : R[X] → PowerSeries R := fun φ ↦
+  PowerSeries.mk fun n ↦ coeff φ n
 
 /-- The natural inclusion from polynomials into formal power series. -/
 instance coeToPowerSeries : Coe R[X] (PowerSeries R) :=
@@ -804,7 +804,7 @@ theorem coe_add : ((φ + ψ : R[X]) : PowerSeries R) = φ + ψ := by
 
 @[simp, norm_cast]
 theorem coe_mul : ((φ * ψ : R[X]) : PowerSeries R) = φ * ψ :=
-  PowerSeries.ext fun n => by simp only [coeff_coe, PowerSeries.coeff_mul, coeff_mul]
+  PowerSeries.ext fun n ↦ by simp only [coeff_coe, PowerSeries.coeff_mul, coeff_mul]
 
 @[simp, norm_cast]
 theorem coe_C (a : R) : ((C a : R[X]) : PowerSeries R) = PowerSeries.C R a := by
@@ -827,7 +827,7 @@ theorem constantCoeff_coe : PowerSeries.constantCoeff R φ = φ.coeff 0 :=
 
 variable (R)
 
-theorem coe_injective : Function.Injective ((↑) : R[X] → PowerSeries R) := fun x y h => by
+theorem coe_injective : Function.Injective ((↑) : R[X] → PowerSeries R) := fun x y h ↦ by
   ext
   simp_rw [← coeff_coe, h]
 
@@ -900,7 +900,7 @@ as an algebra homomorphism.
 -/
 def coeToPowerSeries.algHom : R[X] →ₐ[R] PowerSeries A :=
   { (PowerSeries.map (algebraMap R A)).comp coeToPowerSeries.ringHom with
-    commutes' := fun r => by simp [PowerSeries.algebraMap_apply] }
+    commutes' := fun r ↦ by simp [PowerSeries.algebraMap_apply] }
 
 @[simp]
 theorem coeToPowerSeries.algHom_apply :

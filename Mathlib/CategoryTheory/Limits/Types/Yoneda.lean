@@ -30,12 +30,12 @@ transformations `(const J).obj X ⟶ F`. -/
 def compCoyonedaSectionsEquiv (F : J ⥤ C) (X : C) :
     (F ⋙ coyoneda.obj (op X)).sections ≃ ((const J).obj X ⟶ F) where
   toFun s :=
-    { app := fun j => s.val j
-      naturality := fun j j' f => by
+    { app := fun j ↦ s.val j
+      naturality := fun j j' f ↦ by
         dsimp
         rw [Category.id_comp]
         exact (s.property f).symm }
-  invFun τ := ⟨τ.app, fun {j j'} f => by simpa using (τ.naturality f).symm⟩
+  invFun τ := ⟨τ.app, fun {j j'} f ↦ by simpa using (τ.naturality f).symm⟩
 
 /-- Sections of `F.op ⋙ yoneda.obj X` identify to natural
 transformations `F ⟶ (const J).obj X`. -/
@@ -43,12 +43,12 @@ transformations `F ⟶ (const J).obj X`. -/
 def opCompYonedaSectionsEquiv (F : J ⥤ C) (X : C) :
     (F.op ⋙ yoneda.obj X).sections ≃ (F ⟶ (const J).obj X) where
   toFun s :=
-    { app := fun j => s.val (op j)
-      naturality := fun j j' f => by
+    { app := fun j ↦ s.val (op j)
+      naturality := fun j j' f ↦ by
         dsimp
         rw [Category.comp_id]
         exact (s.property f.op) }
-  invFun τ := ⟨fun j => τ.app j.unop, fun {j j'} f => by simp [τ.naturality f.unop]⟩
+  invFun τ := ⟨fun j ↦ τ.app j.unop, fun {j j'} f ↦ by simp [τ.naturality f.unop]⟩
 
 /-- Sections of `F ⋙ yoneda.obj X` identify to natural
 transformations `(const J).obj X ⟶ F`. -/
@@ -56,13 +56,13 @@ transformations `(const J).obj X ⟶ F`. -/
 def compYonedaSectionsEquiv (F : J ⥤ Cᵒᵖ) (X : C) :
     (F ⋙ yoneda.obj X).sections ≃ ((const J).obj (op X) ⟶ F) where
   toFun s :=
-    { app := fun j => (s.val j).op
-      naturality := fun j j' f => by
+    { app := fun j ↦ (s.val j).op
+      naturality := fun j j' f ↦ by
         dsimp
         rw [Category.id_comp]
         exact Quiver.Hom.unop_inj (s.property f).symm }
-  invFun τ := ⟨fun j => (τ.app j).unop,
-    fun {j j'} f => Quiver.Hom.op_inj (by simpa using (τ.naturality f).symm)⟩
+  invFun τ := ⟨fun j ↦ (τ.app j).unop,
+    fun {j j'} f ↦ Quiver.Hom.op_inj (by simpa using (τ.naturality f).symm)⟩
 
 end
 
@@ -79,7 +79,7 @@ noncomputable def limitCompCoyonedaIsoCone (F : J ⥤ C) (X : C) :
 @[simps!]
 noncomputable def coyonedaCompLimIsoCones (F : J ⥤ C) :
     coyoneda ⋙ (whiskeringLeft _ _ _).obj F ⋙ lim ≅ F.cones :=
-  NatIso.ofComponents (fun X => limitCompCoyonedaIsoCone F X.unop)
+  NatIso.ofComponents (fun X ↦ limitCompCoyonedaIsoCone F X.unop)
 
 variable (J) (C) in
 /-- A cone on `F` with cone point `X` is the same as an element of `lim Hom(X, F·)`,
@@ -108,6 +108,6 @@ variable (J) (C) in
 @[simps!]
 noncomputable def opHomCompWhiskeringLimYonedaIsoCocones : opHom _ _ ⋙ whiskeringLeft _ _ _ ⋙
       (whiskeringRight _ _ _).obj lim ⋙ (whiskeringLeft _ _ _).obj yoneda ≅ cocones J C :=
-  NatIso.ofComponents (fun F => yonedaCompLimIsoCocones F.unop)
+  NatIso.ofComponents (fun F ↦ yonedaCompLimIsoCocones F.unop)
 
 end CategoryTheory.Limits

@@ -60,17 +60,17 @@ lemma op_geom_sum (x : R) (n : ℕ) : op (∑ i ∈ range n, x ^ i) = ∑ i ∈ 
 lemma op_geom_sum₂ (x y : R) (n : ℕ) : ∑ i ∈ range n, op y ^ (n - 1 - i) * op x ^ i =
     ∑ i ∈ range n, op y ^ i * op x ^ (n - 1 - i) := by
   rw [← sum_range_reflect]
-  refine sum_congr rfl fun j j_in => ?_
+  refine sum_congr rfl fun j j_in ↦ ?_
   grind
 
 lemma geom_sum₂_with_one (x : R) (n : ℕ) :
     ∑ i ∈ range n, x ^ i * 1 ^ (n - 1 - i) = ∑ i ∈ range n, x ^ i :=
-  sum_congr rfl fun i _ => by rw [one_pow, mul_one]
+  sum_congr rfl fun i _ ↦ by rw [one_pow, mul_one]
 
 /-- $x^n-y^n = (x-y) \sum x^ky^{n-1-k}$ reformulated without `-` signs. -/
 protected lemma Commute.geom_sum₂_mul_add {x y : R} (h : Commute x y) (n : ℕ) :
     (∑ i ∈ range n, (x + y) ^ i * y ^ (n - 1 - i)) * x + y ^ n = (x + y) ^ n := by
-  let f :  ℕ → ℕ → R := fun m i : ℕ => (x + y) ^ i * y ^ (m - 1 - i)
+  let f :  ℕ → ℕ → R := fun m i : ℕ ↦ (x + y) ^ i * y ^ (m - 1 - i)
   change (∑ i ∈ range n, (f n) i) * x + y ^ n = (x + y) ^ n
   induction n with
   | zero => rw [range_zero, sum_empty, zero_mul, zero_add, pow_zero, pow_zero]
@@ -78,7 +78,7 @@ protected lemma Commute.geom_sum₂_mul_add {x y : R} (h : Commute x y) (n : ℕ
     have f_last : f (n + 1) n = (x + y) ^ n := by
       dsimp only [f]
       rw [← tsub_add_eq_tsub_tsub, Nat.add_comm, tsub_self, pow_zero, mul_one]
-    have f_succ : ∀ i, i ∈ range n → f (n + 1) i = y * f n i := fun i hi => by
+    have f_succ : ∀ i, i ∈ range n → f (n + 1) i = y * f n i := fun i hi ↦ by
       dsimp only [f]
       have : Commute y ((x + y) ^ i) := (h.symm.add_right (Commute.refl y)).pow_right i
       rw [← mul_assoc, this.eq, mul_assoc, ← pow_succ' y (n - 1 - i), add_tsub_cancel_right,
@@ -96,7 +96,7 @@ lemma geom_sum₂_self (x : R) (n : ℕ) : ∑ i ∈ range n, x ^ i * x ^ (n - 1
         ∑ i ∈ Finset.range n, x ^ (i + (n - 1 - i)) := by
       simp_rw [← pow_add]
     _ = ∑ _i ∈ Finset.range n, x ^ (n - 1) :=
-      Finset.sum_congr rfl fun _ hi =>
+      Finset.sum_congr rfl fun _ hi ↦
         congr_arg _ <| add_tsub_cancel_of_le <| Nat.le_sub_one_of_lt <| Finset.mem_range.1 hi
     _ = #(range n) • x ^ (n - 1) := sum_const _
     _ = n * x ^ (n - 1) := by rw [Finset.card_range, nsmul_eq_mul]
@@ -111,7 +111,7 @@ protected lemma Commute.geom_sum₂_comm (n : ℕ) (h : Commute x y) :
   cases n; · simp
   simp only [Nat.add_sub_cancel]
   rw [← Finset.sum_flip]
-  refine Finset.sum_congr rfl fun i hi => ?_
+  refine Finset.sum_congr rfl fun i hi ↦ ?_
   simpa [Nat.sub_sub_self (Nat.succ_le_succ_iff.mp (Finset.mem_range.mp hi))] using h.pow_pow _ _
 
 -- TODO: for consistency, the next two lemmas should be moved to the root namespace
@@ -227,7 +227,7 @@ protected lemma Commute.mul_geom_sum₂_Ico (h : Commute x y) {m n : ℕ}
   have :
     ∑ k ∈ range m, x ^ k * y ^ (n - 1 - k) =
       ∑ k ∈ range m, x ^ k * (y ^ (n - m) * y ^ (m - 1 - k)) := by
-    refine sum_congr rfl fun j j_in => ?_
+    refine sum_congr rfl fun j j_in ↦ ?_
     rw [← pow_add]
     congr
     rw [mem_range] at j_in
@@ -243,7 +243,7 @@ protected lemma Commute.geom_sum₂_succ_eq (h : Commute x y) {n : ℕ} :
       x ^ n + y * ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i) := by
   simp_rw [mul_sum, sum_range_succ_comm, tsub_self, pow_zero, mul_one, add_right_inj, ← mul_assoc,
     (h.symm.pow_right _).eq, mul_assoc, ← pow_succ']
-  refine sum_congr rfl fun i hi => ?_
+  refine sum_congr rfl fun i hi ↦ ?_
   suffices n - 1 - i + 1 = n - i by rw [this]
   rw [Finset.mem_range] at hi
   omega
@@ -255,7 +255,7 @@ protected lemma Commute.geom_sum₂_Ico_mul (h : Commute x y) {m n : ℕ}
   simp only [op_sub, op_mul, op_pow, op_sum]
   have : (∑ k ∈ Ico m n, MulOpposite.op y ^ (n - 1 - k) * MulOpposite.op x ^ k) =
       ∑ k ∈ Ico m n, MulOpposite.op x ^ k * MulOpposite.op y ^ (n - 1 - k) := by
-    refine sum_congr rfl fun k _ => ?_
+    refine sum_congr rfl fun k _ ↦ ?_
     have hp := Commute.pow_pow (Commute.op h.symm) (n - 1 - k) k
     simpa [Commute, SemiconjBy] using hp
   simp only [this]

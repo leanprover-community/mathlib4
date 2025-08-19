@@ -168,8 +168,8 @@ instance : Inhabited YoungDiagram :=
   ⟨⊥⟩
 
 instance : DistribLattice YoungDiagram :=
-  Function.Injective.distribLattice YoungDiagram.cells (fun μ ν h => by rwa [YoungDiagram.ext_iff])
-    (fun _ _ => rfl) fun _ _ => rfl
+  Function.Injective.distribLattice YoungDiagram.cells (fun μ ν h ↦ by rwa [YoungDiagram.ext_iff])
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 end DistribLattice
 
@@ -209,16 +209,16 @@ theorem transpose_eq_iff {μ ν : YoungDiagram} : μ.transpose = ν.transpose �
 
 -- This is effectively both directions of `transpose_le_iff` below.
 protected theorem le_of_transpose_le {μ ν : YoungDiagram} (h_le : μ.transpose ≤ ν) :
-    μ ≤ ν.transpose := fun c hc => by
+    μ ≤ ν.transpose := fun c hc ↦ by
   simp only [mem_cells, mem_transpose]
   apply h_le
   simpa
 
 @[simp]
 theorem transpose_le_iff {μ ν : YoungDiagram} : μ.transpose ≤ ν.transpose ↔ μ ≤ ν :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     convert YoungDiagram.le_of_transpose_le h
-    simp, fun h => by
+    simp, fun h ↦ by
     rw [← transpose_transpose μ] at h
     exact YoungDiagram.le_of_transpose_le h ⟩
 
@@ -229,7 +229,7 @@ protected theorem transpose_mono {μ ν : YoungDiagram} (h_le : μ ≤ ν) : μ.
 /-- Transposing Young diagrams is an `OrderIso`. -/
 @[simps]
 def transposeOrderIso : YoungDiagram ≃o YoungDiagram :=
-  ⟨⟨transpose, transpose, fun _ => by simp, fun _ => by simp⟩, by simp⟩
+  ⟨⟨transpose, transpose, fun _ ↦ by simp, fun _ ↦ by simp⟩, by simp⟩
 
 end Transpose
 
@@ -249,7 +249,7 @@ as the smallest `j` such that `(i, j) ∉ μ`. -/
 
 /-- The `i`-th row of a Young diagram consists of the cells whose first coordinate is `i`. -/
 def row (μ : YoungDiagram) (i : ℕ) : Finset (ℕ × ℕ) :=
-  μ.cells.filter fun c => c.fst = i
+  μ.cells.filter fun c ↦ c.fst = i
 
 theorem mem_row_iff {μ : YoungDiagram} {i : ℕ} {c : ℕ × ℕ} : c ∈ μ.row i ↔ c ∈ μ ∧ c.fst = i := by
   simp [row]
@@ -259,7 +259,7 @@ theorem mk_mem_row_iff {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ.row i ↔
 protected theorem exists_notMem_row (μ : YoungDiagram) (i : ℕ) : ∃ j, (i, j) ∉ μ := by
   obtain ⟨j, hj⟩ :=
     Infinite.exists_notMem_finset
-      (μ.cells.preimage (Prod.mk i) fun _ _ _ _ h => by
+      (μ.cells.preimage (Prod.mk i) fun _ _ _ _ h ↦ by
         cases h
         rfl)
   rw [Finset.mem_preimage] at hj
@@ -275,7 +275,7 @@ def rowLen (μ : YoungDiagram) (i : ℕ) : ℕ :=
 theorem mem_iff_lt_rowLen {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ ↔ j < μ.rowLen i := by
   rw [rowLen, Nat.lt_find_iff]
   push_neg
-  exact ⟨fun h _ hmj => μ.up_left_mem (by rfl) hmj h, fun h => h _ (by rfl)⟩
+  exact ⟨fun h _ hmj ↦ μ.up_left_mem (by rfl) hmj h, fun h ↦ h _ (by rfl)⟩
 
 theorem row_eq_prod {μ : YoungDiagram} {i : ℕ} : μ.row i = {i} ×ˢ Finset.range (μ.rowLen i) := by
   ext ⟨a, b⟩
@@ -305,7 +305,7 @@ This section has an identical API to the rows section. -/
 
 /-- The `j`-th column of a Young diagram consists of the cells whose second coordinate is `j`. -/
 def col (μ : YoungDiagram) (j : ℕ) : Finset (ℕ × ℕ) :=
-  μ.cells.filter fun c => c.snd = j
+  μ.cells.filter fun c ↦ c.snd = j
 
 theorem mem_col_iff {μ : YoungDiagram} {j : ℕ} {c : ℕ × ℕ} : c ∈ μ.col j ↔ c ∈ μ ∧ c.snd = j := by
   simp [col]
@@ -437,7 +437,7 @@ theorem rowLens_length_ofRowLens {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (hpo
     (ofRowLens w hw).rowLens.length = w.length := by
   simp only [length_rowLens, colLen, Nat.find_eq_iff, mem_cells, mem_ofRowLens,
     lt_self_iff_false, IsEmpty.exists_iff, Classical.not_not]
-  exact ⟨not_false, fun n hn => ⟨hn, hpos _ (List.getElem_mem hn)⟩⟩
+  exact ⟨not_false, fun n hn ↦ ⟨hn, hpos _ (List.getElem_mem hn)⟩⟩
 
 /-- The length of the `i`th row in `ofRowLens w hw` is the `i`th entry of `w` -/
 theorem rowLen_ofRowLens {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (i : Fin w.length) :
@@ -453,7 +453,7 @@ theorem ofRowLens_to_rowLens_eq_self {μ : YoungDiagram} : ofRowLens _ (rowLens_
 /-- The right_inv direction of the equivalence -/
 theorem rowLens_ofRowLens_eq_self {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (hpos : ∀ x ∈ w, 0 < x) :
     (ofRowLens w hw).rowLens = w :=
-  List.ext_get (rowLens_length_ofRowLens hpos) fun i h₁ h₂ =>
+  List.ext_get (rowLens_length_ofRowLens hpos) fun i h₁ h₂ ↦
     (get_rowLens (h := h₁)).trans <| rowLen_ofRowLens ⟨i, h₂⟩
 
 /-- Equivalence between Young diagrams and weakly decreasing lists of positive natural numbers.
@@ -463,7 +463,7 @@ def equivListRowLens : YoungDiagram ≃ { w : List ℕ // w.Sorted (· ≥ ·) �
   toFun μ := ⟨μ.rowLens, μ.rowLens_sorted, μ.pos_of_mem_rowLens⟩
   invFun ww := ofRowLens ww.1 ww.2.1
   left_inv _ := ofRowLens_to_rowLens_eq_self
-  right_inv := fun ⟨_, hw⟩ => Subtype.mk_eq_mk.mpr (rowLens_ofRowLens_eq_self hw.2)
+  right_inv := fun ⟨_, hw⟩ ↦ Subtype.mk_eq_mk.mpr (rowLens_ofRowLens_eq_self hw.2)
 
 end EquivListRowLens
 

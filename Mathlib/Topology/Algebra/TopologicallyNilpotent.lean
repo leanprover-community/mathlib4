@@ -63,7 +63,7 @@ theorem map {F : Type*} [FunLike F R S] [MonoidWithZeroHomClass F R S]
 /-- `0` is topologically nilpotent -/
 theorem zero : IsTopologicallyNilpotent (0 : R) :=
   tendsto_atTop_of_eventually_const (i₀ := 1)
-    (fun _ hi => by rw [zero_pow (Nat.ne_zero_iff_zero_lt.mpr hi)])
+    (fun _ hi ↦ by rw [zero_pow (Nat.ne_zero_iff_zero_lt.mpr hi)])
 
 theorem _root_.IsNilpotent.isTopologicallyNilpotent {a : R} (ha : IsNilpotent a) :
     IsTopologicallyNilpotent a := by

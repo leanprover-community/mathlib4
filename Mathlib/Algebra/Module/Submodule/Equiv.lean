@@ -34,8 +34,8 @@ variable (p q : Submodule R M)
 /-- Linear equivalence between two equal submodules. -/
 def ofEq (h : p = q) : p ≃ₗ[R] q :=
   { Equiv.setCongr (congr_arg _ h) with
-    map_smul' := fun _ _ => rfl
-    map_add' := fun _ _ => rfl }
+    map_smul' := fun _ _ ↦ rfl
+    map_add' := fun _ _ ↦ rfl }
 
 variable {p q}
 
@@ -95,7 +95,7 @@ variable (p)
 /-- The top submodule of `M` is linearly equivalent to `M`. -/
 def ofTop (h : p = ⊤) : p ≃ₗ[R] M :=
   { p.subtype with
-    invFun := fun x => ⟨x, h.symm ▸ trivial⟩ }
+    invFun := fun x ↦ ⟨x, h.symm ▸ trivial⟩ }
 
 @[simp]
 theorem ofTop_apply {h} (x : p) : ofTop p h x = x :=
@@ -118,7 +118,7 @@ protected theorem _root_.LinearEquivClass.range [Module R M] [Module R₂ M₂] 
   LinearMap.range_eq_top.2 (EquivLike.surjective e)
 
 theorem eq_bot_of_equiv [Module R₂ M₂] (e : p ≃ₛₗ[σ₁₂] (⊥ : Submodule R₂ M₂)) : p = ⊥ := by
-  refine bot_unique (SetLike.le_def.2 fun b hb => (Submodule.mem_bot R).2 ?_)
+  refine bot_unique (SetLike.le_def.2 fun b hb ↦ (Submodule.mem_bot R).2 ?_)
   rw [← p.mk_eq_zero hb, ← e.map_eq_zero_iff]
   apply Submodule.eq_zero_of_bot_submodule
 
@@ -140,7 +140,7 @@ def ofLeftInverse [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ
     toFun := LinearMap.rangeRestrict f
     invFun := g ∘ (LinearMap.range f).subtype
     left_inv := h
-    right_inv := fun x =>
+    right_inv := fun x ↦
       Subtype.ext <|
         let ⟨x', hx'⟩ := LinearMap.mem_range.mp x.prop
         show f (g x) = x by rw [← hx', h x'] }

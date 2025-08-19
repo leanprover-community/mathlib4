@@ -38,9 +38,9 @@ variable [HasFiniteCoproducts C]
 `Finset (Discrete α) ⥤ C` by taking coproducts. -/
 @[simps!]
 def liftToFinsetObj (F : Discrete α ⥤ C) : Finset (Discrete α) ⥤ C where
-  obj s := ∐ fun x : s => F.obj x
-  map {_ Y} h := Sigma.desc fun y =>
-    Sigma.ι (fun (x : { x // x ∈ Y }) => F.obj x) ⟨y, h.down.down y.2⟩
+  obj s := ∐ fun x : s ↦ F.obj x
+  map {_ Y} h := Sigma.desc fun y ↦
+    Sigma.ι (fun (x : { x // x ∈ Y }) ↦ F.obj x) ⟨y, h.down.down y.2⟩
 
 /-- If `C` has finite coproducts and filtered colimits, we can construct arbitrary coproducts by
 taking the colimit of the diagram formed by the coproducts of finite sets over the indexing type. -/
@@ -50,15 +50,15 @@ def liftToFinsetColimitCocone [HasColimitsOfShape (Finset (Discrete α)) C]
   cocone :=
     { pt := colimit (liftToFinsetObj F)
       ι :=
-        Discrete.natTrans fun j =>
-          Sigma.ι (fun x : ({j} : Finset (Discrete α)) => F.obj x) ⟨j, by simp⟩ ≫
+        Discrete.natTrans fun j ↦
+          Sigma.ι (fun x : ({j} : Finset (Discrete α)) ↦ F.obj x) ⟨j, by simp⟩ ≫
             colimit.ι (liftToFinsetObj F) {j} }
   isColimit :=
-    { desc := fun s =>
+    { desc := fun s ↦
         colimit.desc (liftToFinsetObj F)
           { pt := s.pt
-            ι := { app := fun _ => Sigma.desc fun x => s.ι.app x } }
-      uniq := fun s m h => by
+            ι := { app := fun _ ↦ Sigma.desc fun x ↦ s.ι.app x } }
+      uniq := fun s m h ↦ by
         apply colimit.hom_ext
         rintro t
         dsimp [liftToFinsetObj]
@@ -75,7 +75,7 @@ coproducts. -/
 @[simps!]
 def liftToFinset : (Discrete α ⥤ C) ⥤ (Finset (Discrete α) ⥤ C) where
   obj := liftToFinsetObj
-  map := fun β => { app := fun _ => Sigma.map (fun x => β.app x.val) }
+  map := fun β ↦ { app := fun _ ↦ Sigma.map (fun x ↦ β.app x.val) }
 
 /-- The converse of the construction in `liftToFinsetColimitCocone`: we can form a cocone on the
 coproduct of `f` whose legs are the coproducts over the finite subsets of `α`. -/
@@ -83,7 +83,7 @@ coproduct of `f` whose legs are the coproducts over the finite subsets of `α`. 
 def finiteSubcoproductsCocone (f : α → C) [HasCoproduct f] :
     Cocone (liftToFinsetObj (Discrete.functor f)) where
   pt := ∐ f
-  ι := { app S := Sigma.desc fun s => Sigma.ι f _ }
+  ι := { app S := Sigma.desc fun s ↦ Sigma.ι f _ }
 
 /-- The cocone `finiteSubcoproductsCocone` is a colimit cocone. -/
 def isColimitFiniteSubproductsCocone (f : α → C) [HasColimitsOfShape (Finset (Discrete α)) C]
@@ -106,8 +106,8 @@ end CoproductsFromFiniteFiltered
 open CoproductsFromFiniteFiltered
 
 theorem hasCoproducts_of_finite_and_filtered [HasFiniteCoproducts C]
-    [HasFilteredColimitsOfSize.{w, w} C] : HasCoproducts.{w} C := fun α => by
-  classical exact ⟨fun F => HasColimit.mk (liftToFinsetColimitCocone F)⟩
+    [HasFilteredColimitsOfSize.{w, w} C] : HasCoproducts.{w} C := fun α ↦ by
+  classical exact ⟨fun F ↦ HasColimit.mk (liftToFinsetColimitCocone F)⟩
 
 theorem has_colimits_of_finite_and_filtered [HasFiniteColimits C]
     [HasFilteredColimitsOfSize.{w, w} C] : HasColimitsOfSize.{w, w} C :=
@@ -143,8 +143,8 @@ theorem liftToFinsetColimIso_aux (F : Discrete α ⥤ C) {J : Finset (Discrete �
 functor. -/
 def liftToFinsetColimIso : liftToFinset C α ⋙ colim ≅ colim :=
   NatIso.ofComponents
-    (fun F => Iso.symm <| colimit.isoColimitCocone (liftToFinsetColimitCocone F))
-    (fun β => by
+    (fun F ↦ Iso.symm <| colimit.isoColimitCocone (liftToFinsetColimitCocone F))
+    (fun β ↦ by
       simp only [Functor.comp_obj, colim_obj, Functor.comp_map, colim_map, Iso.symm_hom]
       ext J
       simp only [liftToFinset_obj_obj]
@@ -160,8 +160,8 @@ with `colim`. -/
 def liftToFinsetEvaluationIso [HasFiniteCoproducts C] (I : Finset (Discrete α)) :
     liftToFinset C α ⋙ (evaluation _ _).obj I ≅
     (Functor.whiskeringLeft _ _ _).obj (Discrete.functor (·.val)) ⋙ colim (J := Discrete I) :=
-  NatIso.ofComponents (fun _ => HasColimit.isoOfNatIso (Discrete.natIso fun _ => Iso.refl _))
-    fun _ => by dsimp; ext; simp
+  NatIso.ofComponents (fun _ ↦ HasColimit.isoOfNatIso (Discrete.natIso fun _ ↦ Iso.refl _))
+    fun _ ↦ by dsimp; ext; simp
 
 end CoproductsFromFiniteFiltered
 
@@ -173,9 +173,9 @@ variable [HasFiniteProducts C]
 `Finset (Discrete α) ⥤ C` by taking coproducts. -/
 @[simps!]
 def liftToFinsetObj (F : Discrete α ⥤ C) : (Finset (Discrete α))ᵒᵖ ⥤ C where
-  obj s := ∏ᶜ (fun x : s.unop => F.obj x)
-  map {Y _} h := Pi.lift fun y =>
-    Pi.π (fun (x : { x // x ∈ Y.unop }) => F.obj x) ⟨y, h.unop.down.down y.2⟩
+  obj s := ∏ᶜ (fun x : s.unop ↦ F.obj x)
+  map {Y _} h := Pi.lift fun y ↦
+    Pi.π (fun (x : { x // x ∈ Y.unop }) ↦ F.obj x) ⟨y, h.unop.down.down y.2⟩
 
 
 /-- If `C` has finite coproducts and filtered colimits, we can construct arbitrary coproducts by
@@ -185,14 +185,14 @@ def liftToFinsetLimitCone [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
     (F : Discrete α ⥤ C) : LimitCone F where
   cone :=
     { pt := limit (liftToFinsetObj F)
-      π := Discrete.natTrans fun j =>
+      π := Discrete.natTrans fun j ↦
         limit.π (liftToFinsetObj F) ⟨{j}⟩ ≫ Pi.π _ (⟨j, by simp⟩ : ({j} : Finset (Discrete α))) }
   isLimit :=
-    { lift := fun s =>
+    { lift := fun s ↦
         limit.lift (liftToFinsetObj F)
           { pt := s.pt
-            π := { app := fun _ => Pi.lift fun x => s.π.app x } }
-      uniq := fun s m h => by
+            π := { app := fun _ ↦ Pi.lift fun x ↦ s.π.app x } }
+      uniq := fun s m h ↦ by
         apply limit.hom_ext
         rintro t
         dsimp [liftToFinsetObj]
@@ -209,7 +209,7 @@ product of `f` whose legs are the products over the finite subsets of `α`. -/
 def finiteSubproductsCone (f : α → C) [HasProduct f] :
     Cone (liftToFinsetObj (Discrete.functor f)) where
   pt := ∏ᶜ f
-  π := { app S := Pi.lift fun s => Pi.π f _ }
+  π := { app S := Pi.lift fun s ↦ Pi.π f _ }
 
 /-- The cone `finiteSubproductsCone` is a limit cone. -/
 def isLimitFiniteSubproductsCone (f : α → C) [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
@@ -234,15 +234,15 @@ coproducts. -/
 @[simps!]
 def liftToFinset : (Discrete α ⥤ C) ⥤ ((Finset (Discrete α))ᵒᵖ ⥤ C) where
   obj := liftToFinsetObj
-  map := fun β => { app := fun _ => Pi.map (fun x => β.app x.val) }
+  map := fun β ↦ { app := fun _ ↦ Pi.map (fun x ↦ β.app x.val) }
 
 /-- The `liftToFinset` functor, precomposed with forming a colimit, is a coproduct on the original
 functor. -/
 def liftToFinsetLimIso [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
     [HasLimitsOfShape (Discrete α) C] : liftToFinset C α ⋙ lim ≅ lim :=
   NatIso.ofComponents
-    (fun F => Iso.symm <| limit.isoLimitCone (liftToFinsetLimitCone F))
-    (fun β => by
+    (fun F ↦ Iso.symm <| limit.isoLimitCone (liftToFinsetLimitCone F))
+    (fun β ↦ by
       simp only [Functor.comp_obj, lim_obj, Functor.comp_map, lim_map, Iso.symm_hom]
       ext J
       simp [liftToFinset])
@@ -252,8 +252,8 @@ with `colim`. -/
 def liftToFinsetEvaluationIso (I : Finset (Discrete α)) :
     liftToFinset C α ⋙ (evaluation _ _).obj ⟨I⟩ ≅
     (Functor.whiskeringLeft _ _ _).obj (Discrete.functor (·.val)) ⋙ lim (J := Discrete I) :=
-  NatIso.ofComponents (fun _ => HasLimit.isoOfNatIso (Discrete.natIso fun _ => Iso.refl _))
-    fun _ => by dsimp; ext; simp
+  NatIso.ofComponents (fun _ ↦ HasLimit.isoOfNatIso (Discrete.natIso fun _ ↦ Iso.refl _))
+    fun _ ↦ by dsimp; ext; simp
 
 end ProductsFromFiniteCofiltered
 

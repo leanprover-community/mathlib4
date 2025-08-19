@@ -62,7 +62,7 @@ instance isScalarTower : IsScalarTower R (CommutatorRing L) (CommutatorRing L) :
 /-- Regarding the `LieRing` of a `LieAlgebra` as a `NonUnitalNonAssocRing`, we can
 reinterpret the `lie_smul` law as an `SMulCommClass`. -/
 instance smulCommClass : SMulCommClass R (CommutatorRing L) (CommutatorRing L) :=
-  ⟨fun t x y => (lie_smul t x y).symm⟩
+  ⟨fun t x y ↦ (lie_smul t x y).symm⟩
 
 end LieAlgebra
 
@@ -82,6 +82,6 @@ def toNonUnitalAlgHom (f : L →ₗ⁅R⁆ L₂) : CommutatorRing L →ₙₐ[R]
 
 theorem toNonUnitalAlgHom_injective :
     Function.Injective (toNonUnitalAlgHom : _ → CommutatorRing L →ₙₐ[R] CommutatorRing L₂) :=
-  fun _ _ h => ext <| NonUnitalAlgHom.congr_fun h
+  fun _ _ h ↦ ext <| NonUnitalAlgHom.congr_fun h
 
 end LieHom

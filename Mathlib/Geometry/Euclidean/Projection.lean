@@ -207,7 +207,7 @@ the subspace. -/
 theorem orthogonalProjection_eq_self_iff {s : AffineSubspace ℝ P} [Nonempty s]
     [s.direction.HasOrthogonalProjection] {p : P} : ↑(orthogonalProjection s p) = p ↔ p ∈ s := by
   constructor
-  · exact fun h => h ▸ orthogonalProjection_mem p
+  · exact fun h ↦ h ▸ orthogonalProjection_mem p
   · intro h
     have hp : p ∈ (s : Set P) ∩ mk' p s.directionᗮ := ⟨h, self_mem_mk' p _⟩
     rw [inter_eq_singleton_orthogonalProjection p] at hp
@@ -381,12 +381,12 @@ theorem dist_eq_iff_dist_orthogonalProjection_eq {s : AffineSubspace ℝ P} [Non
 `orthogonalProjection` is. -/
 theorem dist_set_eq_iff_dist_orthogonalProjection_eq {s : AffineSubspace ℝ P} [Nonempty s]
     [s.direction.HasOrthogonalProjection] {ps : Set P} (hps : ps ⊆ s) (p : P) :
-    (Set.Pairwise ps fun p₁ p₂ => dist p₁ p = dist p₂ p) ↔
-      Set.Pairwise ps fun p₁ p₂ =>
+    (Set.Pairwise ps fun p₁ p₂ ↦ dist p₁ p = dist p₂ p) ↔
+      Set.Pairwise ps fun p₁ p₂ ↦
         dist p₁ (orthogonalProjection s p) = dist p₂ (orthogonalProjection s p) :=
-  ⟨fun h _ hp₁ _ hp₂ hne =>
+  ⟨fun h _ hp₁ _ hp₂ hne ↦
     (dist_eq_iff_dist_orthogonalProjection_eq p (hps hp₁) (hps hp₂)).1 (h hp₁ hp₂ hne),
-    fun h _ hp₁ _ hp₂ hne =>
+    fun h _ hp₁ _ hp₂ hne ↦
     (dist_eq_iff_dist_orthogonalProjection_eq p (hps hp₁) (hps hp₂)).2 (h hp₁ hp₂ hne)⟩
 
 /-- There exists `r` such that `p` has distance `r` from all the
@@ -409,7 +409,7 @@ general sense of the word that includes both those common cases. -/
 def reflection (s : AffineSubspace ℝ P) [Nonempty s] [s.direction.HasOrthogonalProjection] :
     P ≃ᵃⁱ[ℝ] P :=
   AffineIsometryEquiv.mk'
-    (fun p => (↑(orthogonalProjection s p) -ᵥ p) +ᵥ (orthogonalProjection s p : P))
+    (fun p ↦ (↑(orthogonalProjection s p) -ᵥ p) +ᵥ (orthogonalProjection s p : P))
     s.direction.reflection (↑(Classical.arbitrary s))
     (by
       intro p

@@ -274,7 +274,7 @@ theorem not_isOpen_singleton (x : X) [NeBot (𝓝[≠] x)] : ¬IsOpen ({x} : Set
   dense_compl_singleton_iff_not_open.1 (dense_compl_singleton x)
 
 theorem closure_eq_cluster_pts : closure s = { a | ClusterPt a (𝓟 s) } :=
-  Set.ext fun _ => mem_closure_iff_clusterPt
+  Set.ext fun _ ↦ mem_closure_iff_clusterPt
 
 theorem mem_closure_iff_nhds : x ∈ closure s ↔ ∀ t ∈ 𝓝 x, (t ∩ s).Nonempty :=
   mem_closure_iff_clusterPt.trans clusterPt_principal_iff

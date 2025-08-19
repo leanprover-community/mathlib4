@@ -241,7 +241,7 @@ theorem ext_of_forall_integral_eq_of_IsFiniteMeasure {Ω : Type*}
   apply (ENNReal.toReal_eq_toReal_iff' (lintegral_lt_top_of_nnreal μ f).ne
       (lintegral_lt_top_of_nnreal ν f).ne).mp
   rw [toReal_lintegral_coe_eq_integral f μ, toReal_lintegral_coe_eq_integral f ν]
-  exact h ⟨⟨fun x => (f x).toReal, Continuous.comp' NNReal.continuous_coe f.continuous⟩,
+  exact h ⟨⟨fun x ↦ (f x).toReal, Continuous.comp' NNReal.continuous_coe f.continuous⟩,
       f.map_bounded'⟩
 
 end MeasureTheory -- namespace

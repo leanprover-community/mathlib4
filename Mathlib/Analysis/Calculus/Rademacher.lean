@@ -351,7 +351,7 @@ finite-dimensional space. -/
 theorem ae_differentiableWithinAt_of_mem_pi
     {ι : Type*} [Fintype ι] {f : E → ι → ℝ} {s : Set E}
     (hf : LipschitzOnWith C f s) : ∀ᵐ x ∂μ, x ∈ s → DifferentiableWithinAt ℝ f s x := by
-  have A : ∀ i : ι, LipschitzWith 1 (fun x : ι → ℝ ↦ x i) := fun i => LipschitzWith.eval i
+  have A : ∀ i : ι, LipschitzWith 1 (fun x : ι → ℝ ↦ x i) := fun i ↦ LipschitzWith.eval i
   have : ∀ i : ι, ∀ᵐ x ∂μ, x ∈ s → DifferentiableWithinAt ℝ (fun x : E ↦ f x i) s x := fun i ↦ by
     apply ae_differentiableWithinAt_of_mem_of_real
     exact LipschitzWith.comp_lipschitzOnWith (A i) hf

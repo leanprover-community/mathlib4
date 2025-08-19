@@ -55,8 +55,8 @@ theorem eventually_cocardinal {p : α → Prop} :
     (∀ᶠ x in cocardinal α hreg, p x) ↔ #{ x | ¬p x } < c := Iff.rfl
 
 theorem hasBasis_cocardinal : HasBasis (cocardinal α hreg) {s : Set α | #s < c} compl :=
-  ⟨fun s =>
-    ⟨fun h => ⟨sᶜ, h, (compl_compl s).subset⟩, fun ⟨_t, htf, hts⟩ => by
+  ⟨fun s ↦
+    ⟨fun h ↦ ⟨sᶜ, h, (compl_compl s).subset⟩, fun ⟨_t, htf, hts⟩ ↦ by
       have : #↑sᶜ < c := by
         apply lt_of_le_of_lt _ htf
         rw [compl_subset_comm] at hts

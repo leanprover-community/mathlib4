@@ -78,7 +78,7 @@ instance [NeZero n] : Inhabited (EuclideanHalfSpace n) :=
   ⟨⟨0, le_rfl⟩⟩
 
 instance : Inhabited (EuclideanQuadrant n) :=
-  ⟨⟨0, fun _ => le_rfl⟩⟩
+  ⟨⟨0, fun _ ↦ le_rfl⟩⟩
 
 instance {n : ℕ} [NeZero n] : Zero (EuclideanHalfSpace n) := ⟨⟨fun _ ↦ 0, by simp⟩⟩
 
@@ -179,10 +179,10 @@ def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
   target := { x | 0 ≤ x 0 }
   map_source' x _ := x.property
   map_target' _ _ := mem_univ _
-  left_inv' := fun ⟨xval, xprop⟩ _ => by
+  left_inv' := fun ⟨xval, xprop⟩ _ ↦ by
     rw [Subtype.mk_eq_mk, update_eq_iff]
-    exact ⟨max_eq_left xprop, fun i _ => rfl⟩
-  right_inv' _ hx := update_eq_iff.2 ⟨max_eq_left hx, fun _ _ => rfl⟩
+    exact ⟨max_eq_left xprop, fun i _ ↦ rfl⟩
+  right_inv' _ hx := update_eq_iff.2 ⟨max_eq_left hx, fun _ _ ↦ rfl⟩
   source_eq := rfl
   convex_range' := by
     simp only [instIsRCLikeNormedField, ↓reduceDIte]
@@ -202,7 +202,7 @@ model for manifolds with corners -/
 def modelWithCornersEuclideanQuadrant (n : ℕ) :
     ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n) where
   toFun := Subtype.val
-  invFun x := ⟨fun i => max (x i) 0, fun i => by simp only [le_refl, or_true, le_max_iff]⟩
+  invFun x := ⟨fun i ↦ max (x i) 0, fun i ↦ by simp only [le_refl, or_true, le_max_iff]⟩
   source := univ
   target := { x | ∀ i, 0 ≤ x i }
   map_source' x _ := x.property
@@ -220,7 +220,7 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
     exact ⟨fun i ↦ 1, by simp⟩
   continuous_toFun := continuous_subtype_val
   continuous_invFun := Continuous.subtype_mk
-    (continuous_pi fun i => (continuous_id.max continuous_const).comp (continuous_apply i)) _
+    (continuous_pi fun i ↦ (continuous_id.max continuous_const).comp (continuous_apply i)) _
 
 /-- The model space used to define `n`-dimensional real manifolds without boundary. -/
 scoped[Manifold]
@@ -262,7 +262,7 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
     PartialHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
   source := { z : Icc x y | z.val < y }
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
-  toFun := fun z : Icc x y => ⟨fun _ => z.val - x, sub_nonneg.mpr z.property.1⟩
+  toFun := fun z : Icc x y ↦ ⟨fun _ ↦ z.val - x, sub_nonneg.mpr z.property.1⟩
   invFun z := ⟨min (z.val 0 + x) y, by simp [z.prop, h.out.le]⟩
   map_source' := by simp only [imp_self, sub_lt_sub_iff_right, mem_setOf_eq, forall_true_iff]
   map_target' := by
@@ -286,20 +286,20 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
   open_target := by
     have : IsOpen { z : ℝ | z < y - x } := isOpen_Iio
     have : IsOpen { z : EuclideanSpace ℝ (Fin 1) | z 0 < y - x } :=
-      this.preimage (@continuous_apply (Fin 1) (fun _ => ℝ) _ 0)
+      this.preimage (@continuous_apply (Fin 1) (fun _ ↦ ℝ) _ 0)
     exact this.preimage continuous_subtype_val
   continuousOn_toFun := by
     apply Continuous.continuousOn
     apply Continuous.subtype_mk
-    have : Continuous fun (z : ℝ) (_ : Fin 1) => z - x :=
-      Continuous.sub (continuous_pi fun _ => continuous_id) continuous_const
+    have : Continuous fun (z : ℝ) (_ : Fin 1) ↦ z - x :=
+      Continuous.sub (continuous_pi fun _ ↦ continuous_id) continuous_const
     exact this.comp continuous_subtype_val
   continuousOn_invFun := by
     apply Continuous.continuousOn
     apply Continuous.subtype_mk
-    have A : Continuous fun z : ℝ => min (z + x) y :=
+    have A : Continuous fun z : ℝ ↦ min (z + x) y :=
       (continuous_id.add continuous_const).min continuous_const
-    have B : Continuous fun z : EuclideanSpace ℝ (Fin 1) => z 0 := continuous_apply 0
+    have B : Continuous fun z : EuclideanSpace ℝ (Fin 1) ↦ z 0 := continuous_apply 0
     exact (A.comp B).comp continuous_subtype_val
 
 variable {x y : ℝ} [hxy : Fact (x < y)]
@@ -336,7 +336,7 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
     PartialHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
   source := { z : Icc x y | x < z.val }
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
-  toFun z := ⟨fun _ => y - z.val, sub_nonneg.mpr z.property.2⟩
+  toFun z := ⟨fun _ ↦ y - z.val, sub_nonneg.mpr z.property.2⟩
   invFun z :=
     ⟨max (y - z.val 0) x, by simp [z.prop, h.out.le, sub_eq_add_neg]⟩
   map_source' := by simp only [imp_self, mem_setOf_eq, sub_lt_sub_iff_left, forall_true_iff]
@@ -361,20 +361,20 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
   open_target := by
     have : IsOpen { z : ℝ | z < y - x } := isOpen_Iio
     have : IsOpen { z : EuclideanSpace ℝ (Fin 1) | z 0 < y - x } :=
-      this.preimage (@continuous_apply (Fin 1) (fun _ => ℝ) _ 0)
+      this.preimage (@continuous_apply (Fin 1) (fun _ ↦ ℝ) _ 0)
     exact this.preimage continuous_subtype_val
   continuousOn_toFun := by
     apply Continuous.continuousOn
     apply Continuous.subtype_mk
-    have : Continuous fun (z : ℝ) (_ : Fin 1) => y - z :=
-      continuous_const.sub (continuous_pi fun _ => continuous_id)
+    have : Continuous fun (z : ℝ) (_ : Fin 1) ↦ y - z :=
+      continuous_const.sub (continuous_pi fun _ ↦ continuous_id)
     exact this.comp continuous_subtype_val
   continuousOn_invFun := by
     apply Continuous.continuousOn
     apply Continuous.subtype_mk
-    have A : Continuous fun z : ℝ => max (y - z) x :=
+    have A : Continuous fun z : ℝ ↦ max (y - z) x :=
       (continuous_const.sub continuous_id).max continuous_const
-    have B : Continuous fun z : EuclideanSpace ℝ (Fin 1) => z 0 := continuous_apply 0
+    have B : Continuous fun z : EuclideanSpace ℝ (Fin 1) ↦ z 0 := continuous_apply 0
     exact (A.comp B).comp continuous_subtype_val
 
 lemma IccRightChart_extend_top :
@@ -461,7 +461,7 @@ lemma boundary_product [I.Boundaryless] :
 instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
     IsManifold (𝓡∂ 1) n (Icc x y) := by
   have M : ContDiff ℝ n (show EuclideanSpace ℝ (Fin 1) → EuclideanSpace ℝ (Fin 1)
-      from fun z i => -z i + (y - x)) :=
+      from fun z i ↦ -z i + (y - x)) :=
     contDiff_id.neg.add contDiff_const
   apply isManifold_of_contDiffOn
   intro e e' he he'

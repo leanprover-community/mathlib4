@@ -123,7 +123,7 @@ lemma op_comp_isSheaf_of_types [Functor.IsContinuous.{t} F J K] (G : Sheaf K (Ty
 
 lemma op_comp_isSheaf [Functor.IsContinuous.{t} F J K] (G : Sheaf K A) :
     Presheaf.IsSheaf J (F.op ⋙ G.val) :=
-  fun T => F.op_comp_isSheaf_of_types J K ⟨_, (isSheaf_iff_isSheaf_of_type _ _).2 (G.cond T)⟩
+  fun T ↦ F.op_comp_isSheaf_of_types J K ⟨_, (isSheaf_iff_isSheaf_of_type _ _).2 (G.cond T)⟩
 
 lemma isContinuous_of_iso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂)
     (J : GrothendieckTopology C) (K : GrothendieckTopology D)

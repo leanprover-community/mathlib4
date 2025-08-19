@@ -30,9 +30,9 @@ variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} (f : α →+* β)
     (since := "2025-06-09")]
 theorem codomain_trivial_iff_range_eq_singleton_zero : (0 : β) = 1 ↔ Set.range f = {0} :=
   f.codomain_trivial_iff_range_trivial.trans
-    ⟨fun h =>
-      Set.ext fun y => ⟨fun ⟨x, hx⟩ => by simp [← hx, h x], fun hy => ⟨0, by simpa using hy.symm⟩⟩,
-      fun h x => Set.mem_singleton_iff.mp (h ▸ Set.mem_range_self x)⟩
+    ⟨fun h ↦
+      Set.ext fun y ↦ ⟨fun ⟨x, hx⟩ ↦ by simp [← hx, h x], fun hy ↦ ⟨0, by simpa using hy.symm⟩⟩,
+      fun h x ↦ Set.mem_singleton_iff.mp (h ▸ Set.mem_range_self x)⟩
 
 end
 

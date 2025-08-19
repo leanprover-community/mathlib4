@@ -74,7 +74,7 @@ instance : HasFiniteLimits (FDRep k G) := inferInstance
 instance : Linear R (FDRep R G) := by infer_instance
 
 instance : CoeSort (FDRep R G) (Type u) :=
-  ⟨fun V => V.V⟩
+  ⟨fun V ↦ V.V⟩
 
 instance (V : FDRep R G) : AddCommGroup V := by
   change AddCommGroup ((forget₂ (FDRep R G) (FGModuleCat R)).obj V).obj; infer_instance
@@ -224,7 +224,7 @@ noncomputable def dualTensorIsoLinHomAux :
 /-- When `V` and `W` are finite dimensional representations of a group `G`, the isomorphism
 `dualTensorHomEquiv k V W` of vector spaces induces an isomorphism of representations. -/
 noncomputable def dualTensorIsoLinHom : FDRep.of ρV.dual ⊗ W ≅ FDRep.of (linHom ρV W.ρ) := by
-  refine Action.mkIso (dualTensorIsoLinHomAux ρV W) (fun g => ?_)
+  refine Action.mkIso (dualTensorIsoLinHomAux ρV W) (fun g ↦ ?_)
   ext : 1
   exact dualTensorHom_comm ρV W.ρ g
 

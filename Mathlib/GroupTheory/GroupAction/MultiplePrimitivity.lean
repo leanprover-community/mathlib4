@@ -275,7 +275,7 @@ theorem IsMultiplyPreprimitive.of_bijective_map
     let s := f ⁻¹' t
     have hs' : f '' s = t := Set.image_preimage_eq t hf.surjective
     let φ' : fixingSubgroup M s → fixingSubgroup N t := fun ⟨m, hm⟩ ↦
-      ⟨φ m, fun ⟨y, hy⟩ => by
+      ⟨φ m, fun ⟨y, hy⟩ ↦ by
         rw [← hs', Set.mem_image] at hy
         obtain ⟨x, hx, hx'⟩ := hy
         simp only []
@@ -284,8 +284,8 @@ theorem IsMultiplyPreprimitive.of_bijective_map
         rw [mem_fixingSubgroup_iff] at hm
         exact hm x hx⟩
     let f' : SubMulAction.ofFixingSubgroup M s →ₑ[φ'] SubMulAction.ofFixingSubgroup N t :=
-      { toFun := fun ⟨x, hx⟩ => ⟨f.toFun x, fun h => hx (Set.mem_preimage.mp h)⟩
-        map_smul' := fun ⟨m, hm⟩ ⟨x, hx⟩ =>
+      { toFun := fun ⟨x, hx⟩ ↦ ⟨f.toFun x, fun h ↦ hx (Set.mem_preimage.mp h)⟩
+        map_smul' := fun ⟨m, hm⟩ ⟨x, hx⟩ ↦
           by
           rw [← SetLike.coe_eq_coe]
           exact f.map_smul' m x }

@@ -32,7 +32,7 @@ with derivative `f'`. -/
 theorem hasFDerivWithinAt_closure_of_tendsto_fderiv {f : E → F} {s : Set E} {x : E} {f' : E →L[ℝ] F}
     (f_diff : DifferentiableOn ℝ f s) (s_conv : Convex ℝ s) (s_open : IsOpen s)
     (f_cont : ∀ y ∈ closure s, ContinuousWithinAt f s y)
-    (h : Tendsto (fun y => fderiv ℝ f y) (𝓝[s] x) (𝓝 f')) :
+    (h : Tendsto (fun y ↦ fderiv ℝ f y) (𝓝[s] x) (𝓝 f')) :
     HasFDerivWithinAt f f' (closure s) x := by
   classical
     -- one can assume without loss of generality that `x` belongs to the closure of `s`, as the
@@ -51,7 +51,7 @@ theorem hasFDerivWithinAt_closure_of_tendsto_fderiv {f : E → F} {s : Set E} {x
       simpa [dist_zero_right] using tendsto_nhdsWithin_nhds.1 h ε ε_pos
     set B := ball x δ
     suffices ∀ y ∈ B ∩ closure s, ‖f y - f x - (f' y - f' x)‖ ≤ ε * ‖y - x‖ from
-      mem_nhdsWithin_iff.2 ⟨δ, δ_pos, fun y hy => by simpa using this y hy⟩
+      mem_nhdsWithin_iff.2 ⟨δ, δ_pos, fun y hy ↦ by simpa using this y hy⟩
     suffices
       ∀ p : E × E,
         p ∈ closure ((B ∩ s) ×ˢ (B ∩ s)) → ‖f p.2 - f p.1 - (f' p.2 - f' p.1)‖ ≤ ε * ‖p.2 - p.1‖ by
@@ -104,7 +104,7 @@ theorem hasFDerivWithinAt_closure_of_tendsto_fderiv {f : E → F} {s : Set E} {x
 its derivative also converges at `a`, then `f` is differentiable on the right at `a`. -/
 theorem hasDerivWithinAt_Ici_of_tendsto_deriv {s : Set ℝ} {e : E} {a : ℝ} {f : ℝ → E}
     (f_diff : DifferentiableOn ℝ f s) (f_lim : ContinuousWithinAt f s a) (hs : s ∈ 𝓝[>] a)
-    (f_lim' : Tendsto (fun x => deriv f x) (𝓝[>] a) (𝓝 e)) : HasDerivWithinAt f e (Ici a) a := by
+    (f_lim' : Tendsto (fun x ↦ deriv f x) (𝓝[>] a) (𝓝 e)) : HasDerivWithinAt f e (Ici a) a := by
   /- This is a specialization of `hasFDerivWithinAt_closure_of_tendsto_fderiv`. To be in the
     setting of this theorem, we need to work on an open interval with closure contained in
     `s ∪ {a}`, that we call `t = (a, b)`. Then, we check all the assumptions of this theorem and
@@ -123,7 +123,7 @@ theorem hasDerivWithinAt_Ici_of_tendsto_deriv {s : Set ℝ} {e : E} {a : ℝ} {f
     · rw [h]; exact f_lim.mono ts
     · have : y ∈ s := sab ⟨lt_of_le_of_ne hy.1 (Ne.symm h), hy.2⟩
       exact (f_diff.continuousOn y this).mono ts
-  have t_diff' : Tendsto (fun x => fderiv ℝ f x) (𝓝[t] a) (𝓝 (smulRight (1 : ℝ →L[ℝ] ℝ) e)) := by
+  have t_diff' : Tendsto (fun x ↦ fderiv ℝ f x) (𝓝[t] a) (𝓝 (smulRight (1 : ℝ →L[ℝ] ℝ) e)) := by
     simp only [deriv_fderiv.symm]
     exact Tendsto.comp
       (isBoundedBilinearMap_smulRight : IsBoundedBilinearMap ℝ _).continuous_right.continuousAt
@@ -138,7 +138,7 @@ theorem hasDerivWithinAt_Ici_of_tendsto_deriv {s : Set ℝ} {e : E} {a : ℝ} {f
 its derivative also converges at `a`, then `f` is differentiable on the left at `a`. -/
 theorem hasDerivWithinAt_Iic_of_tendsto_deriv {s : Set ℝ} {e : E} {a : ℝ}
     {f : ℝ → E} (f_diff : DifferentiableOn ℝ f s) (f_lim : ContinuousWithinAt f s a)
-    (hs : s ∈ 𝓝[<] a) (f_lim' : Tendsto (fun x => deriv f x) (𝓝[<] a) (𝓝 e)) :
+    (hs : s ∈ 𝓝[<] a) (f_lim' : Tendsto (fun x ↦ deriv f x) (𝓝[<] a) (𝓝 e)) :
     HasDerivWithinAt f e (Iic a) a := by
   /- This is a specialization of `hasFDerivWithinAt_closure_of_tendsto_fderiv`. To be in the
     setting of this theorem, we need to work on an open interval with closure contained in
@@ -158,7 +158,7 @@ theorem hasDerivWithinAt_Iic_of_tendsto_deriv {s : Set ℝ} {e : E} {a : ℝ}
     · rw [h]; exact f_lim.mono ts
     · have : y ∈ s := sab ⟨hy.1, lt_of_le_of_ne hy.2 h⟩
       exact (f_diff.continuousOn y this).mono ts
-  have t_diff' : Tendsto (fun x => fderiv ℝ f x) (𝓝[t] a) (𝓝 (smulRight (1 : ℝ →L[ℝ] ℝ) e)) := by
+  have t_diff' : Tendsto (fun x ↦ fderiv ℝ f x) (𝓝[t] a) (𝓝 (smulRight (1 : ℝ →L[ℝ] ℝ) e)) := by
     simp only [deriv_fderiv.symm]
     exact Tendsto.comp
       (isBoundedBilinearMap_smulRight : IsBoundedBilinearMap ℝ _).continuous_right.continuousAt
@@ -175,7 +175,7 @@ theorem hasDerivAt_of_hasDerivAt_of_ne {f g : ℝ → E} {x : ℝ}
     (f_diff : ∀ y ≠ x, HasDerivAt f (g y) y) (hf : ContinuousAt f x)
     (hg : ContinuousAt g x) : HasDerivAt f (g x) x := by
   have A : HasDerivWithinAt f (g x) (Ici x) x := by
-    have diff : DifferentiableOn ℝ f (Ioi x) := fun y hy =>
+    have diff : DifferentiableOn ℝ f (Ioi x) := fun y hy ↦
       (f_diff y (ne_of_gt hy)).differentiableAt.differentiableWithinAt
     -- next line is the nontrivial bit of this proof, appealing to differentiability
     -- extension results.
@@ -184,11 +184,11 @@ theorem hasDerivAt_of_hasDerivAt_of_ne {f g : ℝ → E} {x : ℝ}
         self_mem_nhdsWithin
     have : Tendsto g (𝓝[>] x) (𝓝 (g x)) := tendsto_inf_left hg
     apply this.congr' _
-    apply mem_of_superset self_mem_nhdsWithin fun y hy => _
+    apply mem_of_superset self_mem_nhdsWithin fun y hy ↦ _
     intros y hy
     exact (f_diff y (ne_of_gt hy)).deriv.symm
   have B : HasDerivWithinAt f (g x) (Iic x) x := by
-    have diff : DifferentiableOn ℝ f (Iio x) := fun y hy =>
+    have diff : DifferentiableOn ℝ f (Iio x) := fun y hy ↦
       (f_diff y (ne_of_lt hy)).differentiableAt.differentiableWithinAt
     -- next line is the nontrivial bit of this proof, appealing to differentiability
     -- extension results.
@@ -197,7 +197,7 @@ theorem hasDerivAt_of_hasDerivAt_of_ne {f g : ℝ → E} {x : ℝ}
         self_mem_nhdsWithin
     have : Tendsto g (𝓝[<] x) (𝓝 (g x)) := tendsto_inf_left hg
     apply this.congr' _
-    apply mem_of_superset self_mem_nhdsWithin fun y hy => _
+    apply mem_of_superset self_mem_nhdsWithin fun y hy ↦ _
     intros y hy
     exact (f_diff y (ne_of_lt hy)).deriv.symm
   simpa using B.union A

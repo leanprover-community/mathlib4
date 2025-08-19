@@ -238,7 +238,7 @@ instance : MeasurableSpace (ProbabilityMeasure Ω) := Subtype.instMeasurableSpac
 
 lemma measurableSet_isProbabilityMeasure :
     MeasurableSet { μ : Measure Ω | IsProbabilityMeasure μ } := by
-  suffices { μ : Measure Ω | IsProbabilityMeasure μ } = (fun μ => μ univ) ⁻¹' {1} by
+  suffices { μ : Measure Ω | IsProbabilityMeasure μ } = (fun μ ↦ μ univ) ⁻¹' {1} by
     rw [this]
     exact Measure.measurable_coe MeasurableSet.univ (measurableSet_singleton 1)
   ext _

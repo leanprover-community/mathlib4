@@ -442,9 +442,9 @@ lemma latticeClosure_sup_inf_induction (p : (a : α) → a ∈ latticeClosure s 
     {a : α} (has : a ∈ latticeClosure s) :
     p a has := by
   have h : IsSublattice { a : α | ∃ has : a ∈ latticeClosure s, p a has } := {
-    supClosed := fun a ⟨has, hpa⟩ b ⟨hbs, hpb⟩ =>
+    supClosed := fun a ⟨has, hpa⟩ b ⟨hbs, hpb⟩ ↦
       ⟨isSublattice_latticeClosure.supClosed has hbs, sup a has b hbs hpa hpb⟩
-    infClosed := fun a ⟨has, hpa⟩ b ⟨hbs, hpb⟩ =>
+    infClosed := fun a ⟨has, hpa⟩ b ⟨hbs, hpb⟩ ↦
       ⟨isSublattice_latticeClosure.infClosed has hbs, inf a has b hbs hpa hpb⟩ }
   refine (latticeClosure_min (fun a ha ↦ ?_) h has).choose_spec
   exact ⟨subset_latticeClosure ha, mem a ha⟩
@@ -484,7 +484,7 @@ lemma ofDual_preimage_latticeClosure (s : Set α) :
   change ClosureOperator.ofCompletePred _ _ _ = ClosureOperator.ofCompletePred _ _ _
   congr 2
   ext
-  exact ⟨fun h => ⟨h.2, h.1⟩, fun h => ⟨h.2, h.1⟩⟩
+  exact ⟨fun h ↦ ⟨h.2, h.1⟩, fun h ↦ ⟨h.2, h.1⟩⟩
 
 lemma image_latticeClosure' (s : Set α) (f : α → β)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊓ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊔ f b) :
@@ -532,7 +532,7 @@ end DistribLattice
 -/
 def SemilatticeSup.toCompleteSemilatticeSup [SemilatticeSup α] (sSup : Set α → α)
     (h : ∀ s, SupClosed s → IsLUB s (sSup s)) : CompleteSemilatticeSup α where
-  sSup := fun s => sSup (supClosure s)
+  sSup := fun s ↦ sSup (supClosure s)
   le_sSup _ _ ha := (h _ supClosed_supClosure).1 <| subset_supClosure ha
   sSup_le s a ha := (isLUB_le_iff <| h _ supClosed_supClosure).2 <| by rwa [upperBounds_supClosure]
 
@@ -540,7 +540,7 @@ def SemilatticeSup.toCompleteSemilatticeSup [SemilatticeSup α] (sSup : Set α �
 complete. -/
 def SemilatticeInf.toCompleteSemilatticeInf [SemilatticeInf α] (sInf : Set α → α)
     (h : ∀ s, InfClosed s → IsGLB s (sInf s)) : CompleteSemilatticeInf α where
-  sInf := fun s => sInf (infClosure s)
+  sInf := fun s ↦ sInf (infClosure s)
   sInf_le _ _ ha := (h _ infClosed_infClosure).1 <| subset_infClosure ha
   le_sInf s a ha := (le_isGLB_iff <| h _ infClosed_infClosure).2 <| by rwa [lowerBounds_infClosure]
 
@@ -574,7 +574,7 @@ variable [BooleanAlgebra α] {s : Set α}
 
 lemma compl_image_latticeClosure (s : Set α) :
     compl '' latticeClosure s = latticeClosure (compl '' s) :=
-  image_latticeClosure' s _ compl_sup_distrib (fun _ _ => compl_inf)
+  image_latticeClosure' s _ compl_sup_distrib (fun _ _ ↦ compl_inf)
 
 lemma compl_image_latticeClosure_eq_of_compl_image_eq_self (hs : compl '' s = s) :
     compl '' latticeClosure s = latticeClosure s :=

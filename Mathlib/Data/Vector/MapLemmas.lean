@@ -26,7 +26,7 @@ variable (xs : Vector α n) (f₁ : β → σ₁ → σ₁ × γ) (f₂ : α →
 @[simp]
 theorem mapAccumr_mapAccumr :
     mapAccumr f₁ (mapAccumr f₂ xs s₂).snd s₁
-    = let m := (mapAccumr (fun x s =>
+    = let m := (mapAccumr (fun x s ↦
         let r₂ := f₂ x s.snd
         let r₁ := f₁ r₂.snd s.fst
         ((r₁.fst, r₂.fst), r₁.snd)
@@ -36,28 +36,28 @@ theorem mapAccumr_mapAccumr :
 
 @[simp]
 theorem mapAccumr_map {s : σ₁} (f₂ : α → β) :
-    (mapAccumr f₁ (map f₂ xs) s) = (mapAccumr (fun x s => f₁ (f₂ x) s) xs s) := by
+    (mapAccumr f₁ (map f₂ xs) s) = (mapAccumr (fun x s ↦ f₁ (f₂ x) s) xs s) := by
   induction xs using Vector.revInductionOn generalizing s <;> simp_all
 
 @[simp]
 theorem map_mapAccumr {s : σ₂} (f₁ : β → γ) :
-    (map f₁ (mapAccumr f₂ xs s).snd) = (mapAccumr (fun x s =>
+    (map f₁ (mapAccumr f₂ xs s).snd) = (mapAccumr (fun x s ↦
         let r := (f₂ x s); (r.fst, f₁ r.snd)
       ) xs s).snd := by
   induction xs using Vector.revInductionOn generalizing s <;> simp_all
 
 @[simp]
 theorem map_map (f₁ : β → γ) (f₂ : α → β) :
-    map f₁ (map f₂ xs) = map (fun x => f₁ <| f₂ x) xs := by
+    map f₁ (map f₂ xs) = map (fun x ↦ f₁ <| f₂ x) xs := by
   induction xs <;> simp_all
 
 theorem map_pmap {p : α → Prop} (f₁ : β → γ) (f₂ : (a : α) → p a → β) (H : ∀ x ∈ xs.toList, p x) :
-    map f₁ (pmap f₂ xs H) = pmap (fun x hx => f₁ <| f₂ x hx) xs H := by
+    map f₁ (pmap f₂ xs H) = pmap (fun x hx ↦ f₁ <| f₂ x hx) xs H := by
   induction xs <;> simp_all
 
 theorem pmap_map {p : β → Prop} (f₁ : (b : β) → p b → γ) (f₂ : α → β)
     (H : ∀ x ∈ (xs.map f₂).toList, p x) :
-    pmap f₁ (map f₂ xs) H = pmap (fun x hx => f₁ (f₂ x) hx) xs (by simpa using H) := by
+    pmap f₁ (map f₂ xs) H = pmap (fun x hx ↦ f₁ (f₂ x) hx) xs (by simpa using H) := by
   induction xs <;> simp_all
 
 end Unary
@@ -68,7 +68,7 @@ variable (xs : Vector α n) (ys : Vector β n)
 @[simp]
 theorem mapAccumr₂_mapAccumr_left (f₁ : γ → β → σ₁ → σ₁ × ζ) (f₂ : α → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ (mapAccumr f₂ xs s₂).snd ys s₁)
-    = let m := (mapAccumr₂ (fun x y s =>
+    = let m := (mapAccumr₂ (fun x y s ↦
           let r₂ := f₂ x s.snd
           let r₁ := f₁ r₂.snd y s.fst
           ((r₁.fst, r₂.fst), r₁.snd)
@@ -78,13 +78,13 @@ theorem mapAccumr₂_mapAccumr_left (f₁ : γ → β → σ₁ → σ₁ × ζ)
 
 @[simp]
 theorem map₂_map_left (f₁ : γ → β → ζ) (f₂ : α → γ) :
-    map₂ f₁ (map f₂ xs) ys = map₂ (fun x y => f₁ (f₂ x) y) xs ys := by
+    map₂ f₁ (map f₂ xs) ys = map₂ (fun x y ↦ f₁ (f₂ x) y) xs ys := by
   induction xs, ys using Vector.revInductionOn₂ <;> simp_all
 
 @[simp]
 theorem mapAccumr₂_mapAccumr_right (f₁ : α → γ → σ₁ → σ₁ × ζ) (f₂ : β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ xs (mapAccumr f₂ ys s₂).snd s₁)
-    = let m := (mapAccumr₂ (fun x y s =>
+    = let m := (mapAccumr₂ (fun x y s ↦
           let r₂ := f₂ y s.snd
           let r₁ := f₁ x r₂.snd s.fst
           ((r₁.fst, r₂.fst), r₁.snd)
@@ -94,13 +94,13 @@ theorem mapAccumr₂_mapAccumr_right (f₁ : α → γ → σ₁ → σ₁ × ζ
 
 @[simp]
 theorem map₂_map_right (f₁ : α → γ → ζ) (f₂ : β → γ) :
-    map₂ f₁ xs (map f₂ ys) = map₂ (fun x y => f₁ x (f₂ y)) xs ys := by
+    map₂ f₁ xs (map f₂ ys) = map₂ (fun x y ↦ f₁ x (f₂ y)) xs ys := by
   induction xs, ys using Vector.revInductionOn₂ <;> simp_all
 
 @[simp]
 theorem mapAccumr_mapAccumr₂ (f₁ : γ → σ₁ → σ₁ × ζ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr f₁ (mapAccumr₂ f₂ xs ys s₂).snd s₁)
-    = let m := mapAccumr₂ (fun x y s =>
+    = let m := mapAccumr₂ (fun x y s ↦
           let r₂ := f₂ x y s.snd
           let r₁ := f₁ r₂.snd s.fst
           ((r₁.fst, r₂.fst), r₁.snd)
@@ -110,13 +110,13 @@ theorem mapAccumr_mapAccumr₂ (f₁ : γ → σ₁ → σ₁ × ζ) (f₂ : α 
 
 @[simp]
 theorem map_map₂ (f₁ : γ → ζ) (f₂ : α → β → γ) :
-    map f₁ (map₂ f₂ xs ys) = map₂ (fun x y => f₁ <| f₂ x y) xs ys := by
+    map f₁ (map₂ f₂ xs ys) = map₂ (fun x y ↦ f₁ <| f₂ x y) xs ys := by
   induction xs, ys using Vector.revInductionOn₂ <;> simp_all
 
 @[simp]
 theorem mapAccumr₂_mapAccumr₂_left_left (f₁ : γ → α → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ (mapAccumr₂ f₂ xs ys s₂).snd xs s₁)
-    = let m := mapAccumr₂ (fun x y (s₁, s₂) =>
+    = let m := mapAccumr₂ (fun x y (s₁, s₂) ↦
                 let r₂ := f₂ x y s₂
                 let r₁ := f₁ r₂.snd x s₁
                 ((r₁.fst, r₂.fst), r₁.snd)
@@ -129,7 +129,7 @@ theorem mapAccumr₂_mapAccumr₂_left_left (f₁ : γ → α → σ₁ → σ�
 theorem mapAccumr₂_mapAccumr₂_left_right
     (f₁ : γ → β → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ (mapAccumr₂ f₂ xs ys s₂).snd ys s₁)
-    = let m := mapAccumr₂ (fun x y (s₁, s₂) =>
+    = let m := mapAccumr₂ (fun x y (s₁, s₂) ↦
                 let r₂ := f₂ x y s₂
                 let r₁ := f₁ r₂.snd y s₁
                 ((r₁.fst, r₂.fst), r₁.snd)
@@ -141,7 +141,7 @@ theorem mapAccumr₂_mapAccumr₂_left_right
 @[simp]
 theorem mapAccumr₂_mapAccumr₂_right_left (f₁ : α → γ → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ xs (mapAccumr₂ f₂ xs ys s₂).snd s₁)
-    = let m := mapAccumr₂ (fun x y (s₁, s₂) =>
+    = let m := mapAccumr₂ (fun x y (s₁, s₂) ↦
                 let r₂ := f₂ x y s₂
                 let r₁ := f₁ x r₂.snd s₁
                 ((r₁.fst, r₂.fst), r₁.snd)
@@ -153,7 +153,7 @@ theorem mapAccumr₂_mapAccumr₂_right_left (f₁ : α → γ → σ₁ → σ�
 @[simp]
 theorem mapAccumr₂_mapAccumr₂_right_right (f₁ : β → γ → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ ys (mapAccumr₂ f₂ xs ys s₂).snd s₁)
-    = let m := mapAccumr₂ (fun x y (s₁, s₂) =>
+    = let m := mapAccumr₂ (fun x y (s₁, s₂) ↦
                 let r₂ := f₂ x y s₂
                 let r₁ := f₁ y r₂.snd s₁
                 ((r₁.fst, r₂.fst), r₁.snd)
@@ -245,8 +245,8 @@ theorem mapAccumr_eq_map {f : α → σ → σ × β} {s₀ : σ} (S : Set σ) (
     (mapAccumr f xs s₀).snd = map (f · s₀ |>.snd) xs := by
   rw [Vector.map_eq_mapAccumr]
   apply mapAccumr_bisim_tail
-  use fun s _ => s ∈ S, h₀
-  exact @fun s _q a h => ⟨closure a s h, out a s s₀ h h₀⟩
+  use fun s _ ↦ s ∈ S, h₀
+  exact @fun s _q a h ↦ ⟨closure a s h, out a s s₀ h h₀⟩
 
 protected theorem map₂_eq_mapAccumr₂ {f : α → β → γ} :
     map₂ f xs ys = (mapAccumr₂ (fun x y (_ : Unit) ↦ ((), f x y)) xs ys ()).snd := by
@@ -263,8 +263,8 @@ theorem mapAccumr₂_eq_map₂ {f : α → β → σ → σ × γ} {s₀ : σ} (
     (mapAccumr₂ f xs ys s₀).snd = map₂ (f · · s₀ |>.snd) xs ys := by
   rw [Vector.map₂_eq_mapAccumr₂]
   apply mapAccumr₂_bisim_tail
-  use fun s _ => s ∈ S, h₀
-  exact @fun s _q a b h => ⟨closure a b s h, out a b s s₀ h h₀⟩
+  use fun s _ ↦ s ∈ S, h₀
+  exact @fun s _q a b h ↦ ⟨closure a b s h, out a b s s₀ h h₀⟩
 
 /--
 If an accumulation function `f`, given an initial state `s`, produces `s` as its output state
@@ -272,7 +272,7 @@ for all possible input bits, then the state is redundant and can be optimized ou
 -/
 @[simp]
 theorem mapAccumr_eq_map_of_constant_state (f : α → σ → σ × β) (s : σ) (h : ∀ a, (f a s).fst = s) :
-    mapAccumr f xs s = (s, (map (fun x => (f x s).snd) xs)) := by
+    mapAccumr f xs s = (s, (map (fun x ↦ (f x s).snd) xs)) := by
   induction xs using revInductionOn <;> simp_all
 
 /--
@@ -282,7 +282,7 @@ for all possible input bits, then the state is redundant and can be optimized ou
 @[simp]
 theorem mapAccumr₂_eq_map₂_of_constant_state (f : α → β → σ → σ × γ) (s : σ)
     (h : ∀ a b, (f a b s).fst = s) :
-    mapAccumr₂ f xs ys s = (s, (map₂ (fun x y => (f x y s).snd) xs ys)) := by
+    mapAccumr₂ f xs ys s = (s, (map₂ (fun x y ↦ (f x y s).snd) xs ys)) := by
   induction xs, ys using revInductionOn₂ <;> simp_all
 
 /--
@@ -293,7 +293,7 @@ then the state is redundant and can be optimized out.
 theorem mapAccumr_eq_map_of_unused_state (f : α → σ → σ × β) (f' : α → β) (s : σ)
     (h : ∀ a s, (f a s).snd = f' a) :
     (mapAccumr f xs s).snd = (map f' xs) := by
-  rw [mapAccumr_eq_map (fun _ => true) rfl (fun _ _ _ => rfl) (fun a s s' _ _ => by rw [h, h])]
+  rw [mapAccumr_eq_map (fun _ ↦ true) rfl (fun _ _ _ ↦ rfl) (fun a s s' _ _ ↦ by rw [h, h])]
   simp_all
 
 
@@ -304,8 +304,8 @@ then the state is redundant and can be optimized out.
 @[simp]
 theorem mapAccumr₂_eq_map₂_of_unused_state (f : α → β → σ → σ × γ) (f' : α → β → γ) (s : σ)
     (h : ∀ a b s, (f a b s).snd = f' a b) :
-    (mapAccumr₂ f xs ys s).snd = (map₂ (fun x y => (f x y s).snd) xs ys) :=
-  mapAccumr₂_eq_map₂ (fun _ => true) rfl (fun _ _ _ _ => rfl) (fun a b s s' _ _ => by rw [h, h])
+    (mapAccumr₂ f xs ys s).snd = (map₂ (fun x y ↦ (f x y s).snd) xs ys) :=
+  mapAccumr₂_eq_map₂ (fun _ ↦ true) rfl (fun _ _ _ _ ↦ rfl) (fun a b s s' _ _ ↦ by rw [h, h])
 
 
 /-- If `f` takes a pair of states, but always returns the same value for both elements of the
@@ -314,11 +314,11 @@ pair, then we can simplify to just a single element of state.
 @[simp]
 theorem mapAccumr_redundant_pair (f : α → (σ × σ) → (σ × σ) × β)
     (h : ∀ x s, (f x (s, s)).fst.fst = (f x (s, s)).fst.snd) :
-    (mapAccumr f xs (s, s)).snd = (mapAccumr (fun x (s : σ) =>
+    (mapAccumr f xs (s, s)).snd = (mapAccumr (fun x (s : σ) ↦
       (f x (s, s) |>.fst.fst, f x (s, s) |>.snd)
     ) xs s).snd :=
   mapAccumr_bisim_tail <| by
-    use fun (s₁, s₂) s => s₂ = s ∧ s₁ = s
+    use fun (s₁, s₂) s ↦ s₂ = s ∧ s₁ = s
     simp_all
 
 /-- If `f` takes a pair of states, but always returns the same value for both elements of the
@@ -327,11 +327,11 @@ pair, then we can simplify to just a single element of state.
 @[simp]
 theorem mapAccumr₂_redundant_pair (f : α → β → (σ × σ) → (σ × σ) × γ)
     (h : ∀ x y s, let s' := (f x y (s, s)).fst; s'.fst = s'.snd) :
-    (mapAccumr₂ f xs ys (s, s)).snd = (mapAccumr₂ (fun x y (s : σ) =>
+    (mapAccumr₂ f xs ys (s, s)).snd = (mapAccumr₂ (fun x y (s : σ) ↦
       (f x y (s, s) |>.fst.fst, f x y (s, s) |>.snd)
     ) xs ys s).snd :=
   mapAccumr₂_bisim_tail <| by
-    use fun (s₁, s₂) s => s₂ = s ∧ s₁ = s
+    use fun (s₁, s₂) s ↦ s₂ = s ∧ s₁ = s
     simp_all
 
 end RedundantState

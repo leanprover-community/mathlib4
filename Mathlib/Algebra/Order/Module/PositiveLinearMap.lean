@@ -86,7 +86,7 @@ instance : LinearMapClass (E₁ →ₚ[R] E₂) R E₁ E₂ where
   map_smulₛₗ f := f.toLinearMap.map_smul'
 
 instance : OrderHomClass (E₁ →ₚ[R] E₂) E₁ E₂ where
-  map_rel f := fun {_ _} hab => f.monotone' hab
+  map_rel f := fun {_ _} hab ↦ f.monotone' hab
 
 @[simp]
 lemma map_smul_of_tower {S : Type*} [SMul S E₁] [SMul S E₂]

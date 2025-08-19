@@ -38,14 +38,14 @@ namespace Projectivization
 in projective space. -/
 inductive Independent : (ι → ℙ K V) → Prop
   | mk (f : ι → V) (hf : ∀ i : ι, f i ≠ 0) (hl : LinearIndependent K f) :
-    Independent fun i => mk K (f i) (hf i)
+    Independent fun i ↦ mk K (f i) (hf i)
 
 /-- A family of points in a projective space is independent if and only if the representative
 vectors determined by the family are linearly independent. -/
 theorem independent_iff : Independent f ↔ LinearIndependent K (Projectivization.rep ∘ f) := by
-  refine ⟨?_, fun h => ?_⟩
+  refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨ff, hff, hh⟩
-    choose a ha using fun i : ι => exists_smul_eq_mk_rep K (ff i) (hff i)
+    choose a ha using fun i : ι ↦ exists_smul_eq_mk_rep K (ff i) (hff i)
     convert hh.units_smul a
     ext i
     exact (ha i).symm
@@ -56,13 +56,13 @@ theorem independent_iff : Independent f ↔ LinearIndependent K (Projectivizatio
 
 /-- A family of points in projective space is independent if and only if the family of
 submodules which the points determine is independent in the lattice-theoretic sense. -/
-theorem independent_iff_iSupIndep : Independent f ↔ iSupIndep fun i => (f i).submodule := by
-  refine ⟨?_, fun h => ?_⟩
+theorem independent_iff_iSupIndep : Independent f ↔ iSupIndep fun i ↦ (f i).submodule := by
+  refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨f, hf, hi⟩
     simp only [submodule_mk]
     exact (iSupIndep_iff_linearIndependent_of_ne_zero (R := K) hf).mpr hi
   · rw [independent_iff]
-    refine h.linearIndependent (Projectivization.submodule ∘ f) (fun i => ?_) fun i => ?_
+    refine h.linearIndependent (Projectivization.submodule ∘ f) (fun i ↦ ?_) fun i ↦ ?_
     · simpa only [Function.comp_apply, submodule_eq] using Submodule.mem_span_singleton_self _
     · exact rep_nonzero (f i)
 
@@ -70,21 +70,21 @@ theorem independent_iff_iSupIndep : Independent f ↔ iSupIndep fun i => (f i).s
 in projective space. -/
 inductive Dependent : (ι → ℙ K V) → Prop
   | mk (f : ι → V) (hf : ∀ i : ι, f i ≠ 0) (h : ¬LinearIndependent K f) :
-    Dependent fun i => mk K (f i) (hf i)
+    Dependent fun i ↦ mk K (f i) (hf i)
 
 /-- A family of points in a projective space is dependent if and only if their
 representatives are linearly dependent. -/
 theorem dependent_iff : Dependent f ↔ ¬LinearIndependent K (Projectivization.rep ∘ f) := by
-  refine ⟨?_, fun h => ?_⟩
+  refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨ff, hff, hh1⟩
     contrapose! hh1
-    choose a ha using fun i : ι => exists_smul_eq_mk_rep K (ff i) (hff i)
+    choose a ha using fun i : ι ↦ exists_smul_eq_mk_rep K (ff i) (hff i)
     convert hh1.units_smul a⁻¹
     ext i
     simp only [← ha, inv_smul_smul, Pi.smul_apply', Pi.inv_apply, Function.comp_apply]
   · convert Dependent.mk _ _ h
     · simp only [mk_rep, Function.comp_apply]
-    · exact fun i => rep_nonzero (f i)
+    · exact fun i ↦ rep_nonzero (f i)
 
 /-- Dependence is the negation of independence. -/
 theorem dependent_iff_not_independent : Dependent f ↔ ¬Independent f := by

@@ -64,7 +64,7 @@ end AddMonoidHom
 theorem exists_pos_bound_of_bound {V W : Type*} [SeminormedAddCommGroup V]
     [SeminormedAddCommGroup W] {f : V → W} (M : ℝ) (h : ∀ x, ‖f x‖ ≤ M * ‖x‖) :
     ∃ N, 0 < N ∧ ∀ x, ‖f x‖ ≤ N * ‖x‖ :=
-  ⟨max M 1, lt_of_lt_of_le zero_lt_one (le_max_right _ _), fun x =>
+  ⟨max M 1, lt_of_lt_of_le zero_lt_one (le_max_right _ _), fun x ↦
     calc
       ‖f x‖ ≤ M * ‖x‖ := h x
       _ ≤ max M 1 * ‖x‖ := by gcongr; apply le_max_left
@@ -130,7 +130,7 @@ theorem coe_toAddMonoidHom : ⇑f.toAddMonoidHom = f :=
   rfl
 
 theorem toAddMonoidHom_injective :
-    Function.Injective (@NormedAddGroupHom.toAddMonoidHom V₁ V₂ _ _) := fun f g h =>
+    Function.Injective (@NormedAddGroupHom.toAddMonoidHom V₁ V₂ _ _) := fun f g h ↦
   coe_inj <| by rw [← coe_toAddMonoidHom f, ← coe_toAddMonoidHom g, h]
 
 @[simp]
@@ -143,7 +143,7 @@ theorem bound : ∃ C, 0 < C ∧ ∀ x, ‖f x‖ ≤ C * ‖x‖ :=
   exists_pos_bound_of_bound _ hC
 
 theorem antilipschitz_of_norm_ge {K : ℝ≥0} (h : ∀ x, ‖x‖ ≤ K * ‖f x‖) : AntilipschitzWith K f :=
-  AntilipschitzWith.of_le_mul_dist fun x y => by simpa only [dist_eq_norm, map_sub] using h (x - y)
+  AntilipschitzWith.of_le_mul_dist fun x y ↦ by simpa only [dist_eq_norm, map_sub] using h (x - y)
 
 /-- A normed group hom is surjective on the subgroup `K` with constant `C` if every element
 `x` of `K` has a preimage whose norm is bounded above by `C*‖x‖`. This is a more
@@ -169,8 +169,8 @@ theorem SurjectiveOnWith.exists_pos {f : NormedAddGroupHom V₁ V₂} {K : AddSu
     linarith [le_abs_self C]
 
 theorem SurjectiveOnWith.surjOn {f : NormedAddGroupHom V₁ V₂} {K : AddSubgroup V₂} {C : ℝ}
-    (h : f.SurjectiveOnWith K C) : Set.SurjOn f Set.univ K := fun x hx =>
-  (h x hx).imp fun _a ⟨ha, _⟩ => ⟨Set.mem_univ _, ha⟩
+    (h : f.SurjectiveOnWith K C) : Set.SurjOn f Set.univ K := fun x hx ↦
+  (h x hx).imp fun _a ⟨ha, _⟩ ↦ ⟨Set.mem_univ _, ha⟩
 
 /-! ### The operator norm -/
 
@@ -194,10 +194,10 @@ theorem bounds_nonempty {f : NormedAddGroupHom V₁ V₂} :
 
 theorem bounds_bddBelow {f : NormedAddGroupHom V₁ V₂} :
     BddBelow { c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * ‖x‖ } :=
-  ⟨0, fun _ ⟨hn, _⟩ => hn⟩
+  ⟨0, fun _ ⟨hn, _⟩ ↦ hn⟩
 
 theorem opNorm_nonneg : 0 ≤ ‖f‖ :=
-  le_csInf bounds_nonempty fun _ ⟨hx, _⟩ => hx
+  le_csInf bounds_nonempty fun _ ⟨hx, _⟩ ↦ hx
 
 /-- The fundamental property of the operator norm: `‖f x‖ ≤ ‖f‖ * ‖x‖`. -/
 theorem le_opNorm (x : V₁) : ‖f x‖ ≤ ‖f‖ * ‖x‖ := by
@@ -208,7 +208,7 @@ theorem le_opNorm (x : V₁) : ‖f x‖ ≤ ‖f‖ * ‖x‖ := by
   have hlt : 0 < ‖x‖ := lt_of_le_of_ne (norm_nonneg x) (Ne.symm h)
   exact
     (div_le_iff₀ hlt).mp
-      (le_csInf bounds_nonempty fun c ⟨_, hc⟩ => (div_le_iff₀ hlt).mpr <| by apply hc)
+      (le_csInf bounds_nonempty fun c ⟨_, hc⟩ ↦ (div_le_iff₀ hlt).mpr <| by apply hc)
 
 theorem le_opNorm_of_le {c : ℝ} {x} (h : ‖x‖ ≤ c) : ‖f x‖ ≤ ‖f‖ * c :=
   le_trans (f.le_opNorm x) (by gcongr; exact f.opNorm_nonneg)
@@ -218,7 +218,7 @@ theorem le_of_opNorm_le {c : ℝ} (h : ‖f‖ ≤ c) (x : V₁) : ‖f x‖ ≤
 
 /-- continuous linear maps are Lipschitz continuous. -/
 theorem lipschitz : LipschitzWith ⟨‖f‖, opNorm_nonneg f⟩ f :=
-  LipschitzWith.of_dist_le_mul fun x y => by
+  LipschitzWith.of_dist_le_mul fun x y ↦ by
     rw [dist_eq_norm, dist_eq_norm, ← map_sub]
     apply le_opNorm
 
@@ -230,7 +230,7 @@ protected theorem continuous (f : NormedAddGroupHom V₁ V₂) : Continuous f :=
   f.uniformContinuous.continuous
 
 instance : ContinuousMapClass (NormedAddGroupHom V₁ V₂) V₁ V₂ where
-  map_continuous := fun f => f.continuous
+  map_continuous := fun f ↦ f.continuous
 
 theorem ratio_le_opNorm (x : V₁) : ‖f x‖ / ‖x‖ ≤ ‖f‖ :=
   div_le_of_le_mul₀ (norm_nonneg _) f.opNorm_nonneg (le_opNorm _ _)
@@ -243,11 +243,11 @@ theorem opNorm_eq_of_bounds {M : ℝ} (M_nonneg : 0 ≤ M) (h_above : ∀ x, ‖
     (h_below : ∀ N ≥ 0, (∀ x, ‖f x‖ ≤ N * ‖x‖) → M ≤ N) : ‖f‖ = M :=
   le_antisymm (f.opNorm_le_bound M_nonneg h_above)
     ((le_csInf_iff NormedAddGroupHom.bounds_bddBelow ⟨M, M_nonneg, h_above⟩).mpr
-      fun N ⟨N_nonneg, hN⟩ => h_below N N_nonneg hN)
+      fun N ⟨N_nonneg, hN⟩ ↦ h_below N N_nonneg hN)
 
 theorem opNorm_le_of_lipschitz {f : NormedAddGroupHom V₁ V₂} {K : ℝ≥0} (hf : LipschitzWith K f) :
     ‖f‖ ≤ K :=
-  f.opNorm_le_bound K.2 fun x => by simpa only [dist_zero_right, map_zero] using hf.dist_le_mul x 0
+  f.opNorm_le_bound K.2 fun x ↦ by simpa only [dist_zero_right, map_zero] using hf.dist_le_mul x 0
 
 /-- If a bounded group homomorphism map is constructed from a group homomorphism via the constructor
 `AddMonoidHom.mkNormedAddGroupHom`, then its norm is bounded by the bound given to the constructor
@@ -267,7 +267,7 @@ via the constructor `AddMonoidHom.mkNormedAddGroupHom`, then its norm is bounded
 given to the constructor or zero if this bound is negative. -/
 theorem mkNormedAddGroupHom_norm_le' (f : V₁ →+ V₂) {C : ℝ} (h : ∀ x, ‖f x‖ ≤ C * ‖x‖) :
     ‖f.mkNormedAddGroupHom C h‖ ≤ max C 0 :=
-  opNorm_le_bound _ (le_max_right _ _) fun x =>
+  opNorm_le_bound _ (le_max_right _ _) fun x ↦
     (h x).trans <| by gcongr; apply le_max_left
 
 alias _root_.AddMonoidHom.mkNormedAddGroupHom_norm_le := mkNormedAddGroupHom_norm_le
@@ -279,8 +279,8 @@ alias _root_.AddMonoidHom.mkNormedAddGroupHom_norm_le' := mkNormedAddGroupHom_no
 
 /-- Addition of normed group homs. -/
 instance add : Add (NormedAddGroupHom V₁ V₂) :=
-  ⟨fun f g =>
-    (f.toAddMonoidHom + g.toAddMonoidHom).mkNormedAddGroupHom (‖f‖ + ‖g‖) fun v =>
+  ⟨fun f g ↦
+    (f.toAddMonoidHom + g.toAddMonoidHom).mkNormedAddGroupHom (‖f‖ + ‖g‖) fun v ↦
       calc
         ‖f v + g v‖ ≤ ‖f v‖ + ‖g v‖ := norm_add_le _ _
         _ ≤ ‖f‖ * ‖v‖ + ‖g‖ * ‖v‖ := by gcongr <;> apply le_opNorm
@@ -313,7 +313,7 @@ instance inhabited : Inhabited (NormedAddGroupHom V₁ V₂) :=
 theorem opNorm_zero : ‖(0 : NormedAddGroupHom V₁ V₂)‖ = 0 :=
   le_antisymm
     (csInf_le bounds_bddBelow
-      ⟨ge_of_eq rfl, fun _ =>
+      ⟨ge_of_eq rfl, fun _ ↦
         le_of_eq
           (by
             rw [zero_mul]
@@ -324,14 +324,14 @@ theorem opNorm_zero : ‖(0 : NormedAddGroupHom V₁ V₂)‖ = 0 :=
 theorem opNorm_zero_iff {V₁ V₂ : Type*} [NormedAddCommGroup V₁] [NormedAddCommGroup V₂]
     {f : NormedAddGroupHom V₁ V₂} : ‖f‖ = 0 ↔ f = 0 :=
   Iff.intro
-    (fun hn =>
-      ext fun x =>
+    (fun hn ↦
+      ext fun x ↦
         norm_le_zero_iff.1
           (calc
             _ ≤ ‖f‖ * ‖x‖ := le_opNorm _ _
             _ = _ := by rw [hn, zero_mul]
             ))
-    fun hf => by rw [hf, opNorm_zero]
+    fun hf ↦ by rw [hf, opNorm_zero]
 
 @[simp]
 theorem coe_zero : ⇑(0 : NormedAddGroupHom V₁ V₂) = 0 :=
@@ -357,7 +357,7 @@ def id : NormedAddGroupHom V V :=
 element vanishes, where it is `0`. (Since we are working with seminorms this can happen even if the
 space is non-trivial.) It means that one can not do better than an inequality in general. -/
 theorem norm_id_le : ‖(id V : NormedAddGroupHom V V)‖ ≤ 1 :=
-  opNorm_le_bound _ zero_le_one fun x => by simp
+  opNorm_le_bound _ zero_le_one fun x ↦ by simp
 
 /-- If there is an element with norm different from `0`, then the norm of the identity equals `1`.
 (Since we are working with seminorms supposing that the space is non-trivial is not enough.) -/
@@ -381,7 +381,7 @@ theorem coe_id : (NormedAddGroupHom.id V : V → V) = _root_.id :=
 
 /-- Opposite of a normed group hom. -/
 instance neg : Neg (NormedAddGroupHom V₁ V₂) :=
-  ⟨fun f => (-f.toAddMonoidHom).mkNormedAddGroupHom ‖f‖ fun v => by simp [le_opNorm f v]⟩
+  ⟨fun f ↦ (-f.toAddMonoidHom).mkNormedAddGroupHom ‖f‖ fun v ↦ by simp [le_opNorm f v]⟩
 
 @[simp]
 theorem coe_neg (f : NormedAddGroupHom V₁ V₂) : ⇑(-f) = -f :=
@@ -400,7 +400,7 @@ theorem opNorm_neg (f : NormedAddGroupHom V₁ V₂) : ‖-f‖ = ‖f‖ := by
 
 /-- Subtraction of normed group homs. -/
 instance sub : Sub (NormedAddGroupHom V₁ V₂) :=
-  ⟨fun f g =>
+  ⟨fun f g ↦
     { f.toAddMonoidHom - g.toAddMonoidHom with
       bound' := by
         simp only [AddMonoidHom.toFun_eq_coe, sub_eq_add_neg]
@@ -430,7 +430,7 @@ instance smul : SMul R (NormedAddGroupHom V₁ V₂) where
       map_add' := (r • f.toAddMonoidHom).map_add'
       bound' :=
         let ⟨b, hb⟩ := f.bound'
-        ⟨dist r 0 * b, fun x => by
+        ⟨dist r 0 * b, fun x ↦ by
           have := dist_smul_pair r (f x) (f 0)
           rw [map_zero, smul_zero, dist_zero_right, dist_zero_right] at this
           rw [mul_assoc]
@@ -448,15 +448,15 @@ theorem smul_apply (r : R) (f : NormedAddGroupHom V₁ V₂) (v : V₁) : (r •
 
 instance smulCommClass [SMulCommClass R R' V₂] :
     SMulCommClass R R' (NormedAddGroupHom V₁ V₂) where
-  smul_comm _ _ _ := ext fun _ => smul_comm _ _ _
+  smul_comm _ _ _ := ext fun _ ↦ smul_comm _ _ _
 
 instance isScalarTower [SMul R R'] [IsScalarTower R R' V₂] :
     IsScalarTower R R' (NormedAddGroupHom V₁ V₂) where
-  smul_assoc _ _ _ := ext fun _ => smul_assoc _ _ _
+  smul_assoc _ _ _ := ext fun _ ↦ smul_assoc _ _ _
 
 instance isCentralScalar [DistribMulAction Rᵐᵒᵖ V₂] [IsCentralScalar R V₂] :
     IsCentralScalar R (NormedAddGroupHom V₁ V₂) where
-  op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
+  op_smul_eq_smul _ _ := ext fun _ ↦ op_smul_eq_smul _ _
 
 end SMul
 
@@ -466,7 +466,7 @@ instance nsmul : SMul ℕ (NormedAddGroupHom V₁ V₂) where
       map_add' := (n • f.toAddMonoidHom).map_add'
       bound' :=
         let ⟨b, hb⟩ := f.bound'
-        ⟨n • b, fun v => by
+        ⟨n • b, fun v ↦ by
           rw [Pi.smul_apply, nsmul_eq_mul, mul_assoc]
           exact norm_nsmul_le.trans (by gcongr; apply hb)⟩ }
 
@@ -484,7 +484,7 @@ instance zsmul : SMul ℤ (NormedAddGroupHom V₁ V₂) where
       map_add' := (z • f.toAddMonoidHom).map_add'
       bound' :=
         let ⟨b, hb⟩ := f.bound'
-        ⟨‖z‖ • b, fun v => by
+        ⟨‖z‖ • b, fun v ↦ by
           rw [Pi.smul_apply, smul_eq_mul, mul_assoc]
           exact (norm_zsmul_le _ _).trans (by gcongr; apply hb)⟩ }
 
@@ -501,8 +501,8 @@ theorem zsmul_apply (r : ℤ) (f : NormedAddGroupHom V₁ V₂) (v : V₁) : (r 
 
 /-- Homs between two given normed groups form a commutative additive group. -/
 instance toAddCommGroup : AddCommGroup (NormedAddGroupHom V₁ V₂) :=
-  coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    fun _ _ => rfl
+  coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    fun _ _ ↦ rfl
 
 /-- Normed group homomorphisms themselves form a seminormed group with respect to
 the operator norm. -/
@@ -522,7 +522,7 @@ instance toNormedAddCommGroup {V₁ V₂ : Type*} [NormedAddCommGroup V₁] [Nor
       map_zero' := opNorm_zero
       neg' := opNorm_neg
       add_le' := opNorm_add_le
-      eq_zero_of_map_eq_zero' := fun _f => opNorm_zero_iff.1 }
+      eq_zero_of_map_eq_zero' := fun _f ↦ opNorm_zero_iff.1 }
 
 /-- Coercion of a `NormedAddGroupHom` is an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`. -/
 @[simps]
@@ -557,7 +557,7 @@ instance module {R : Type*} [Semiring R] [Module R V₂] [PseudoMetricSpace R] [
 @[simps!]
 protected def comp (g : NormedAddGroupHom V₂ V₃) (f : NormedAddGroupHom V₁ V₂) :
     NormedAddGroupHom V₁ V₃ :=
-  (g.toAddMonoidHom.comp f.toAddMonoidHom).mkNormedAddGroupHom (‖g‖ * ‖f‖) fun v =>
+  (g.toAddMonoidHom.comp f.toAddMonoidHom).mkNormedAddGroupHom (‖g‖ * ‖f‖) fun v ↦
     calc
       ‖g (f v)‖ ≤ ‖g‖ * ‖f v‖ := le_opNorm _ _
       _ ≤ ‖g‖ * (‖f‖ * ‖v‖) := by gcongr; apply le_opNorm
@@ -579,8 +579,8 @@ theorem norm_comp_le_of_le' {g : NormedAddGroupHom V₂ V₃} (C₁ C₂ C₃ : 
 /-- Composition of normed groups hom as an additive group morphism. -/
 def compHom : NormedAddGroupHom V₂ V₃ →+ NormedAddGroupHom V₁ V₂ →+ NormedAddGroupHom V₁ V₃ :=
   AddMonoidHom.mk'
-    (fun g =>
-      AddMonoidHom.mk' (fun f => g.comp f)
+    (fun g ↦
+      AddMonoidHom.mk' (fun f ↦ g.comp f)
         (by
           intros
           ext
@@ -623,7 +623,7 @@ variable {V W V₁ V₂ V₃ : Type*} [SeminormedAddCommGroup V] [SeminormedAddC
 def incl (s : AddSubgroup V) : NormedAddGroupHom s V where
   toFun := (Subtype.val : s → V)
   map_add' _ _ := AddSubgroup.coe_add _ _ _
-  bound' := ⟨1, fun v => by rw [one_mul, AddSubgroup.coe_norm]⟩
+  bound' := ⟨1, fun v ↦ by rw [one_mul, AddSubgroup.coe_norm]⟩
 
 theorem norm_incl {V' : AddSubgroup V} (x : V') : ‖incl _ x‖ = ‖x‖ :=
   rfl
@@ -695,7 +695,7 @@ theorem comp_range : (g.comp f).range = AddSubgroup.map g.toAddMonoidHom f.range
 
 theorem incl_range (s : AddSubgroup V₁) : (incl s).range = s := by
   ext x
-  exact ⟨fun ⟨y, hy⟩ => by rw [← hy]; simp, fun hx => ⟨⟨x, hx⟩, by simp⟩⟩
+  exact ⟨fun ⟨y, hy⟩ ↦ by rw [← hy]; simp, fun hx ↦ ⟨⟨x, hx⟩, by simp⟩⟩
 
 @[simp]
 theorem range_comp_incl_top : (f.comp (incl (⊤ : AddSubgroup V₁))).range = f.range := by
@@ -712,21 +712,21 @@ def NormNoninc (f : NormedAddGroupHom V W) : Prop :=
 namespace NormNoninc
 
 theorem normNoninc_iff_norm_le_one : f.NormNoninc ↔ ‖f‖ ≤ 1 := by
-  refine ⟨fun h => ?_, fun h => fun v => ?_⟩
-  · refine opNorm_le_bound _ zero_le_one fun v => ?_
+  refine ⟨fun h ↦ ?_, fun h ↦ fun v ↦ ?_⟩
+  · refine opNorm_le_bound _ zero_le_one fun v ↦ ?_
     simpa [one_mul] using h v
   · simpa using le_of_opNorm_le f h v
 
-theorem zero : (0 : NormedAddGroupHom V₁ V₂).NormNoninc := fun v => by simp
+theorem zero : (0 : NormedAddGroupHom V₁ V₂).NormNoninc := fun v ↦ by simp
 
-theorem id : (id V).NormNoninc := fun _v => le_rfl
+theorem id : (id V).NormNoninc := fun _v ↦ le_rfl
 
 theorem comp {g : NormedAddGroupHom V₂ V₃} {f : NormedAddGroupHom V₁ V₂} (hg : g.NormNoninc)
-    (hf : f.NormNoninc) : (g.comp f).NormNoninc := fun v => (hg (f v)).trans (hf v)
+    (hf : f.NormNoninc) : (g.comp f).NormNoninc := fun v ↦ (hg (f v)).trans (hf v)
 
 @[simp]
 theorem neg_iff {f : NormedAddGroupHom V₁ V₂} : (-f).NormNoninc ↔ f.NormNoninc :=
-  ⟨fun h x => by simpa using h x, fun h x => (norm_neg (f x)).le.trans (h x)⟩
+  ⟨fun h x ↦ by simpa using h x, fun h x ↦ (norm_neg (f x)).le.trans (h x)⟩
 
 end NormNoninc
 
@@ -742,7 +742,7 @@ theorem isometry_comp {g : NormedAddGroupHom V₂ V₃} {f : NormedAddGroupHom V
     (hf : Isometry f) : Isometry (g.comp f) :=
   hg.comp hf
 
-theorem normNoninc_of_isometry (hf : Isometry f) : f.NormNoninc := fun v =>
+theorem normNoninc_of_isometry (hf : Isometry f) : f.NormNoninc := fun v ↦
   le_of_eq <| norm_eq_of_isometry hf v
 
 end Isometry
@@ -836,7 +836,7 @@ theorem map_comp_map (hf : ψ.comp f₁ = f₂.comp φ) (hg : ψ.comp g₁ = g�
   ext
   rfl
 
-theorem ι_normNoninc : (ι f g).NormNoninc := fun _v => le_rfl
+theorem ι_normNoninc : (ι f g).NormNoninc := fun _v ↦ le_rfl
 
 /-- The lifting of a norm nonincreasing morphism is norm nonincreasing. -/
 theorem lift_normNoninc (φ : NormedAddGroupHom V₁ V) (h : f.comp φ = g.comp φ) (hφ : φ.NormNoninc) :

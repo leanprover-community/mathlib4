@@ -102,33 +102,33 @@ Throughout this section, some `Monoid` and `Semiring` arguments are specified wi
 
 theorem _root_.IsSMulRegular.finsupp [Zero M] [SMulZeroClass R M] {k : R}
     (hk : IsSMulRegular M k) : IsSMulRegular (α →₀ M) k :=
-  fun _ _ h => ext fun i => hk (DFunLike.congr_fun h i)
+  fun _ _ h ↦ ext fun i ↦ hk (DFunLike.congr_fun h i)
 
 instance faithfulSMul [Nonempty α] [Zero M] [SMulZeroClass R M] [FaithfulSMul R M] :
     FaithfulSMul R (α →₀ M) where
   eq_of_smul_eq_smul h :=
     let ⟨a⟩ := ‹Nonempty α›
-    eq_of_smul_eq_smul fun m : M => by simpa using DFunLike.congr_fun (h (single a m)) a
+    eq_of_smul_eq_smul fun m : M ↦ by simpa using DFunLike.congr_fun (h (single a m)) a
 
 variable (α M)
 
 instance distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
     DistribMulAction R (α →₀ M) :=
   { Finsupp.distribSMul _ _ with
-    one_smul := fun x => ext fun y => one_smul R (x y)
-    mul_smul := fun r s x => ext fun y => mul_smul r s (x y) }
+    one_smul := fun x ↦ ext fun y ↦ one_smul R (x y)
+    mul_smul := fun r s x ↦ ext fun y ↦ mul_smul r s (x y) }
 
 instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module R (α →₀ M) :=
   { toDistribMulAction := Finsupp.distribMulAction α M
-    zero_smul := fun _ => ext fun _ => zero_smul _ _
-    add_smul := fun _ _ _ => ext fun _ => add_smul _ _ _ }
+    zero_smul := fun _ ↦ ext fun _ ↦ zero_smul _ _
+    add_smul := fun _ _ _ ↦ ext fun _ ↦ add_smul _ _ _ }
 
 variable {α M}
 
 @[simp]
 theorem support_smul_eq [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M] {b : R}
     (hb : b ≠ 0) {g : α →₀ M} : (b • g).support = g.support :=
-  Finset.ext fun a => by simp [Finsupp.smul_apply, hb]
+  Finset.ext fun a ↦ by simp [Finsupp.smul_apply, hb]
 
 section
 
@@ -171,22 +171,22 @@ theorem comapDomain_smul_of_injective [Zero M] [SMulZeroClass R M] {f : α → �
 end
 
 theorem sum_smul_index [MulZeroClass R] [AddCommMonoid M] {g : α →₀ R} {b : R} {h : α → R → M}
-    (h0 : ∀ i, h i 0 = 0) : (b • g).sum h = g.sum fun i a => h i (b * a) :=
+    (h0 : ∀ i, h i 0 = 0) : (b • g).sum h = g.sum fun i a ↦ h i (b * a) :=
   Finsupp.sum_mapRange_index h0
 
 theorem sum_smul_index' [Zero M] [SMulZeroClass R M] [AddCommMonoid N] {g : α →₀ M} {b : R}
-    {h : α → M → N} (h0 : ∀ i, h i 0 = 0) : (b • g).sum h = g.sum fun i c => h i (b • c) :=
+    {h : α → M → N} (h0 : ∀ i, h i 0 = 0) : (b • g).sum h = g.sum fun i c ↦ h i (b • c) :=
   Finsupp.sum_mapRange_index h0
 
 /-- A version of `Finsupp.sum_smul_index'` for bundled additive maps. -/
 theorem sum_smul_index_addMonoidHom [AddZeroClass M] [AddCommMonoid N] [SMulZeroClass R M]
     {g : α →₀ M} {b : R} {h : α → M →+ N} :
-    ((b • g).sum fun a => h a) = g.sum fun i c => h i (b • c) :=
-  sum_mapRange_index fun i => (h i).map_zero
+    ((b • g).sum fun a ↦ h a) = g.sum fun i c ↦ h i (b • c) :=
+  sum_mapRange_index fun i ↦ (h i).map_zero
 
 instance noZeroSMulDivisors [Zero R] [Zero M] [SMulZeroClass R M] {ι : Type*}
     [NoZeroSMulDivisors R M] : NoZeroSMulDivisors R (ι →₀ M) :=
-  ⟨fun h => or_iff_not_imp_left.mpr fun hc => Finsupp.ext fun i =>
+  ⟨fun h ↦ or_iff_not_imp_left.mpr fun hc ↦ Finsupp.ext fun i ↦
     (eq_zero_or_eq_zero_of_smul_eq_zero (DFunLike.ext_iff.mp h i)).resolve_left hc⟩
 
 section DistribMulActionSemiHom
@@ -197,7 +197,7 @@ variable [Monoid R] [AddMonoid M] [AddMonoid N] [DistribMulAction R M] [DistribM
 See also `Finsupp.lsingle` for the version as a linear map. -/
 def DistribMulActionHom.single (a : α) : M →+[R] α →₀ M :=
   { singleAddHom a with
-    map_smul' := fun k m => by simp }
+    map_smul' := fun k m ↦ by simp }
 
 theorem distribMulActionHom_ext {f g : (α →₀ M) →+[R] N}
     (h : ∀ (a : α) (m : M), f (single a m) = g (single a m)) : f = g :=
@@ -208,7 +208,7 @@ theorem distribMulActionHom_ext {f g : (α →₀ M) →+[R] N}
 theorem distribMulActionHom_ext' {f g : (α →₀ M) →+[R] N}
     (h : ∀ a : α, f.comp (DistribMulActionHom.single a) = g.comp (DistribMulActionHom.single a)) :
     f = g :=
-  distribMulActionHom_ext fun a => DistribMulActionHom.congr_fun (h a)
+  distribMulActionHom_ext fun a ↦ DistribMulActionHom.congr_fun (h a)
 
 end DistribMulActionSemiHom
 

@@ -43,7 +43,7 @@ theorem riesz_lemma {F : Subspace 𝕜 E} (hFc : IsClosed (F : Set E)) (hF : ∃
     let d := Metric.infDist x F
     have hFn : (F : Set E).Nonempty := ⟨_, F.zero_mem⟩
     have hdp : 0 < d :=
-      lt_of_le_of_ne Metric.infDist_nonneg fun heq =>
+      lt_of_le_of_ne Metric.infDist_nonneg fun heq ↦
         hx ((hFc.mem_iff_infDist_zero hFn).2 heq.symm)
     let r' := max r 2⁻¹
     have hr' : r' < 1 := by
@@ -57,7 +57,7 @@ theorem riesz_lemma {F : Subspace 𝕜 E} (hFc : IsClosed (F : Set E)) (hF : ∃
       have : x - y₀ + y₀ ∈ F := F.add_mem h hy₀F
       simp only [neg_add_cancel_right, sub_eq_add_neg] at this
       exact hx this
-    refine ⟨x - y₀, x_ne_y₀, fun y hy => le_of_lt ?_⟩
+    refine ⟨x - y₀, x_ne_y₀, fun y hy ↦ le_of_lt ?_⟩
     have hy₀y : y₀ + y ∈ F := F.add_mem hy₀F hy
     calc
       r * ‖x - y₀‖ ≤ r' * ‖x - y₀‖ := by gcongr; apply le_max_left
@@ -85,11 +85,11 @@ theorem riesz_lemma_of_norm_lt {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖
     rw [div_lt_iff₀ Rpos]
     simpa using hR
   rcases riesz_lemma hFc hF this with ⟨x, xF, hx⟩
-  have x0 : x ≠ 0 := fun H => by simp [H] at xF
+  have x0 : x ≠ 0 := fun H ↦ by simp [H] at xF
   obtain ⟨d, d0, dxlt, ledx, -⟩ :
     ∃ d : 𝕜, d ≠ 0 ∧ ‖d • x‖ < R ∧ R / ‖c‖ ≤ ‖d • x‖ ∧ ‖d‖⁻¹ ≤ R⁻¹ * ‖c‖ * ‖x‖ :=
     rescale_to_shell hc Rpos x0
-  refine ⟨d • x, dxlt.le, fun y hy => ?_⟩
+  refine ⟨d • x, dxlt.le, fun y hy ↦ ?_⟩
   set y' := d⁻¹ • y
   have yy' : y = d • y' := by simp [y', smul_smul, mul_inv_cancel₀ d0]
   calc

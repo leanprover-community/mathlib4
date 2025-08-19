@@ -41,8 +41,8 @@ abbrev Group.ofLeftAxioms {G : Type u} [Mul G] [Inv G] [One G]
   { mul_assoc := assoc,
     one_mul := one_mul,
     inv_mul_cancel := inv_mul_cancel,
-    mul_one := fun a => by
-      have mul_inv_cancel : ∀ a : G, a * a⁻¹ = 1 := fun a =>
+    mul_one := fun a ↦ by
+      have mul_inv_cancel : ∀ a : G, a * a⁻¹ = 1 := fun a ↦
         calc a * a⁻¹ = 1 * (a * a⁻¹) := (one_mul _).symm
           _ = ((a * a⁻¹)⁻¹ * (a * a⁻¹)) * (a * a⁻¹) := by
             rw [inv_mul_cancel]
@@ -65,7 +65,7 @@ abbrev Group.ofRightAxioms {G : Type u} [Mul G] [Inv G] [One G]
     (assoc : ∀ a b c : G, (a * b) * c = a * (b * c))
     (mul_one : ∀ a : G, a * 1 = a)
     (mul_inv_cancel : ∀ a : G, a * a⁻¹ = 1) : Group G :=
-  have inv_mul_cancel : ∀ a : G, a⁻¹ * a = 1 := fun a =>
+  have inv_mul_cancel : ∀ a : G, a⁻¹ * a = 1 := fun a ↦
     calc a⁻¹ * a = (a⁻¹ * a) * 1 := (mul_one _).symm
       _ = (a⁻¹ * a) * ((a⁻¹ * a) * (a⁻¹ * a)⁻¹) := by
         rw [mul_inv_cancel]
@@ -76,5 +76,5 @@ abbrev Group.ofRightAxioms {G : Type u} [Mul G] [Inv G] [One G]
   { mul_assoc := assoc,
     mul_one := mul_one,
     inv_mul_cancel := inv_mul_cancel,
-    one_mul := fun a => by
+    one_mul := fun a ↦ by
       rw [← mul_inv_cancel a, assoc, inv_mul_cancel, mul_one] }

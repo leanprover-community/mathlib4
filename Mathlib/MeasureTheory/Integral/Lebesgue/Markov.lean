@@ -35,10 +35,10 @@ theorem lintegral_add_mul_meas_add_le_le_lintegral {f g : α → ℝ≥0∞} (hl
     _ ≤ ∫⁻ x, φ x ∂μ + ε * μ { x | φ x + ε ≤ g x } := by
       gcongr
       exact hφ_le _
-    _ = ∫⁻ x, φ x + indicator { x | φ x + ε ≤ g x } (fun _ => ε) x ∂μ := by
+    _ = ∫⁻ x, φ x + indicator { x | φ x + ε ≤ g x } (fun _ ↦ ε) x ∂μ := by
       rw [lintegral_add_left hφm, lintegral_indicator₀, setLIntegral_const]
       exact measurableSet_le (hφm.nullMeasurable.measurable'.add_const _) hg.nullMeasurable
-    _ ≤ ∫⁻ x, g x ∂μ := lintegral_mono_ae (hle.mono fun x hx₁ => ?_)
+    _ ≤ ∫⁻ x, g x ∂μ := lintegral_mono_ae (hle.mono fun x hx₁ ↦ ?_)
   simp only [indicator_apply]; split_ifs with hx₂
   exacts [hx₂, (add_zero _).trans_le <| (hφ_le x).trans hx₁]
 
@@ -46,7 +46,7 @@ theorem lintegral_add_mul_meas_add_le_le_lintegral {f g : α → ℝ≥0∞} (hl
 theorem mul_meas_ge_le_lintegral₀ {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (ε : ℝ≥0∞) :
     ε * μ { x | ε ≤ f x } ≤ ∫⁻ a, f a ∂μ := by
   simpa only [lintegral_zero, zero_add] using
-    lintegral_add_mul_meas_add_le_le_lintegral (ae_of_all _ fun x => zero_le (f x)) hf ε
+    lintegral_add_mul_meas_add_le_le_lintegral (ae_of_all _ fun x ↦ zero_le (f x)) hf ε
 
 /-- **Markov's inequality** also known as **Chebyshev's first inequality**. For a version assuming
 `AEMeasurable`, see `mul_meas_ge_le_lintegral₀`. -/
@@ -92,12 +92,12 @@ alias setLintegral_eq_top_of_measure_eq_top_ne_zero := setLIntegral_eq_top_of_me
 
 theorem measure_eq_top_of_lintegral_ne_top {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hμf : ∫⁻ x, f x ∂μ ≠ ∞) : μ {x | f x = ∞} = 0 :=
-  of_not_not fun h => hμf <| lintegral_eq_top_of_measure_eq_top_ne_zero hf h
+  of_not_not fun h ↦ hμf <| lintegral_eq_top_of_measure_eq_top_ne_zero hf h
 
 theorem measure_eq_top_of_setLIntegral_ne_top {f : α → ℝ≥0∞} {s : Set α}
     (hf : AEMeasurable f (μ.restrict s)) (hμf : ∫⁻ x in s, f x ∂μ ≠ ∞) :
     μ ({x ∈ s | f x = ∞}) = 0 :=
-  of_not_not fun h => hμf <| setLIntegral_eq_top_of_measure_eq_top_ne_zero hf h
+  of_not_not fun h ↦ hμf <| setLIntegral_eq_top_of_measure_eq_top_ne_zero hf h
 
 @[deprecated (since := "2025-04-22")]
 alias measure_eq_top_of_setLintegral_ne_top := measure_eq_top_of_setLIntegral_ne_top
@@ -118,9 +118,9 @@ theorem ae_eq_of_ae_le_of_lintegral_le {f g : α → ℝ≥0∞} (hfg : f ≤ᵐ
       (lintegral_add_mul_meas_add_le_le_lintegral hfg hg n⁻¹).trans hgf
     rw [(ENNReal.cancel_of_ne hf).add_le_iff_nonpos_right, nonpos_iff_eq_zero, mul_eq_zero] at this
     exact this.resolve_left (ENNReal.inv_ne_zero.2 (ENNReal.natCast_ne_top _))
-  refine hfg.mp ((ae_all_iff.2 this).mono fun x hlt hle => hle.antisymm ?_)
-  suffices Tendsto (fun n : ℕ => f x + (n : ℝ≥0∞)⁻¹) atTop (𝓝 (f x)) from
-    ge_of_tendsto' this fun i => (hlt i).le
+  refine hfg.mp ((ae_all_iff.2 this).mono fun x hlt hle ↦ hle.antisymm ?_)
+  suffices Tendsto (fun n : ℕ ↦ f x + (n : ℝ≥0∞)⁻¹) atTop (𝓝 (f x)) from
+    ge_of_tendsto' this fun i ↦ (hlt i).le
   simpa only [inv_top, add_zero] using
     tendsto_const_nhds.add (ENNReal.tendsto_inv_iff.2 ENNReal.tendsto_nat_nhds_top)
 
@@ -135,7 +135,7 @@ theorem lintegral_strict_mono_of_ae_le_of_ae_lt_on {f g : α → ℝ≥0∞} (hg
     (hfi : ∫⁻ x, f x ∂μ ≠ ∞) (h_le : f ≤ᵐ[μ] g) {s : Set α} (hμs : μ s ≠ 0)
     (h : ∀ᵐ x ∂μ, x ∈ s → f x < g x) : ∫⁻ x, f x ∂μ < ∫⁻ x, g x ∂μ :=
   lintegral_strict_mono_of_ae_le_of_frequently_ae_lt hg hfi h_le <|
-    ((frequently_ae_mem_iff.2 hμs).and_eventually h).mono fun _x hx => (hx.2 hx.1).ne
+    ((frequently_ae_mem_iff.2 hμs).and_eventually h).mono fun _x hx ↦ (hx.2 hx.1).ne
 
 theorem lintegral_strict_mono {f g : α → ℝ≥0∞} (hμ : μ ≠ 0) (hg : AEMeasurable g μ)
     (hfi : ∫⁻ x, f x ∂μ ≠ ∞) (h : ∀ᵐ x ∂μ, f x < g x) : ∫⁻ x, f x ∂μ < ∫⁻ x, g x ∂μ := by

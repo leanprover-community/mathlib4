@@ -55,9 +55,9 @@ theorem nhdsWithin_Iic_neBot {a b : α} (H : a ≤ b) : NeBot (𝓝[Iic b] a) :=
 instance nhdsLE_neBot (a : α) : NeBot (𝓝[≤] a) := nhdsWithin_Iic_neBot (le_refl a)
 
 theorem nhdsLT_le_nhdsNE (a : α) : 𝓝[<] a ≤ 𝓝[≠] a :=
-  nhdsWithin_mono a fun _ => ne_of_lt
+  nhdsWithin_mono a fun _ ↦ ne_of_lt
 
-theorem nhdsGT_le_nhdsNE (a : α) : 𝓝[>] a ≤ 𝓝[≠] a := nhdsWithin_mono a fun _ => ne_of_gt
+theorem nhdsGT_le_nhdsNE (a : α) : 𝓝[>] a ≤ 𝓝[≠] a := nhdsWithin_mono a fun _ ↦ ne_of_gt
 
 -- TODO: add instances for `NeBot (𝓝[<] x)` on (indexed) product types
 

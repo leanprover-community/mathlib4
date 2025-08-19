@@ -84,7 +84,7 @@ theorem quotientInfEquivSupQuotient_injective (p p' : Submodule R M) :
     Function.Injective (quotientInfToSupQuotient p p') := by
   rw [← ker_eq_bot, quotientInfToSupQuotient, ker_liftQ_eq_bot]
   rw [ker_comp, ker_mkQ]
-  exact fun ⟨x, hx1⟩ hx2 => ⟨hx1, hx2⟩
+  exact fun ⟨x, hx1⟩ hx2 ↦ ⟨hx1, hx2⟩
 
 theorem quotientInfEquivSupQuotient_surjective (p p' : Submodule R M) :
     Function.Surjective (quotientInfToSupQuotient p p') := by
@@ -166,11 +166,11 @@ def quotientQuotientEquivQuotient : ((M ⧸ S) ⧸ T.map S.mkQ) ≃ₗ[R] M ⧸ 
   { quotientQuotientEquivQuotientAux S T h with
     toFun := quotientQuotientEquivQuotientAux S T h
     invFun := mapQ _ _ (mkQ S) (le_comap_map _ _)
-    left_inv := fun x => Submodule.Quotient.induction_on _
-     x fun x => Submodule.Quotient.induction_on _ x fun x =>
+    left_inv := fun x ↦ Submodule.Quotient.induction_on _
+     x fun x ↦ Submodule.Quotient.induction_on _ x fun x ↦
       by simp
-    right_inv := fun x => Submodule.Quotient.induction_on _ x
-      fun x => by simp }
+    right_inv := fun x ↦ Submodule.Quotient.induction_on _ x
+      fun x ↦ by simp }
 
 /-- Essentially the same equivalence as in the third isomorphism theorem,
 except restated in terms of suprema/addition of submodules instead of `≤`. -/

@@ -174,7 +174,7 @@ instance (α : Type*) [Inhabited α] : Inhabited (Lex α) :=
 
 /-- A recursor for `Lex`. Use as `induction x`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
-protected def Lex.rec {β : Lex α → Sort*} (h : ∀ a, β (toLex a)) : ∀ a, β a := fun a => h (ofLex a)
+protected def Lex.rec {β : Lex α → Sort*} (h : ∀ a, β (toLex a)) : ∀ a, β a := fun a ↦ h (ofLex a)
 
 @[simp] lemma Lex.forall {p : Lex α → Prop} : (∀ a, p a) ↔ ∀ a, p (toLex a) := Iff.rfl
 @[simp] lemma Lex.exists {p : Lex α → Prop} : (∃ a, p a) ↔ ∃ a, p (toLex a) := Iff.rfl

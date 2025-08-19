@@ -45,9 +45,9 @@ relation `r` is compatible with the shift. -/
 noncomputable instance HasShift.quotient [r.IsCompatibleWithShift A] :
     HasShift (Quotient r) A :=
   HasShift.induced (Quotient.functor r) A
-    (fun a => Quotient.lift r (shiftFunctor C a ⋙ Quotient.functor r)
-      (fun _ _ _ _ hfg => Quotient.sound r (HomRel.IsCompatibleWithShift.condition _ _ _ hfg)))
-    (fun _ => Quotient.lift.isLift _ _ _)
+    (fun a ↦ Quotient.lift r (shiftFunctor C a ⋙ Quotient.functor r)
+      (fun _ _ _ _ hfg ↦ Quotient.sound r (HomRel.IsCompatibleWithShift.condition _ _ _ hfg)))
+    (fun _ ↦ Quotient.lift.isLift _ _ _)
 
 /-- The functor `Quotient.functor r : C ⥤ Quotient r` commutes with the shift. -/
 noncomputable instance Quotient.functor_commShift [r.IsCompatibleWithShift A] :

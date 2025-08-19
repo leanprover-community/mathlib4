@@ -293,12 +293,12 @@ theorem one_snd : (1 : X q).2 = 0 :=
 
 instance : Monoid (X q) :=
   { inferInstanceAs (Mul (X q)), inferInstanceAs (One (X q)) with
-    mul_assoc := fun x y z => by ext <;> dsimp <;> ring
-    one_mul := fun x => by ext <;> simp
-    mul_one := fun x => by ext <;> simp }
+    mul_assoc := fun x y z ↦ by ext <;> dsimp <;> ring
+    one_mul := fun x ↦ by ext <;> simp
+    mul_one := fun x ↦ by ext <;> simp }
 
 instance : NatCast (X q) where
-    natCast := fun n => ⟨n, 0⟩
+    natCast := fun n ↦ ⟨n, 0⟩
 
 @[simp] theorem fst_natCast (n : ℕ) : (n : X q).fst = (n : ZMod q) := rfl
 
@@ -317,9 +317,9 @@ instance : AddGroupWithOne (X q) :=
       inferInstanceAs (NatCast (X q)) with
     natCast_zero := by ext <;> simp
     natCast_succ := fun _ ↦ by ext <;> simp
-    intCast := fun n => ⟨n, 0⟩
-    intCast_ofNat := fun n => by ext <;> simp
-    intCast_negSucc := fun n => by ext <;> simp }
+    intCast := fun n ↦ ⟨n, 0⟩
+    intCast_ofNat := fun n ↦ by ext <;> simp
+    intCast_negSucc := fun n ↦ by ext <;> simp }
 
 theorem left_distrib (x y z : X q) : x * (y + z) = x * y + x * z := by
   ext <;> dsimp <;> ring
@@ -510,11 +510,11 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
       pow_pos, cast_pred, cast_pow, cast_ofNat] at h
   obtain ⟨k, h⟩ := h
   use k
-  replace h := congr_arg (fun n : ℤ => (n : X (q (p' + 2)))) h
+  replace h := congr_arg (fun n : ℤ ↦ (n : X (q (p' + 2)))) h
   -- coercion from ℤ to X q
   dsimp at h
   rw [closed_form] at h
-  replace h := congr_arg (fun x => ω ^ 2 ^ p' * x) h
+  replace h := congr_arg (fun x ↦ ω ^ 2 ^ p' * x) h
   dsimp at h
   have t : 2 ^ p' + 2 ^ p' = 2 ^ (p' + 1) := by ring
   rw [mul_add, ← pow_add ω, t, ← mul_pow ω ωb (2 ^ p'), ω_mul_ωb, one_pow] at h
