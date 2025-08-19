@@ -654,3 +654,20 @@ def mulNoExec {G} (n : Nonempty G) : G := Classical.choice n
 #guard_msgs in #computability addNoExec
 
 end
+
+/-! Test structures with a private constructor and private fields -/
+
+structure MyPrivateAdd where
+  private mk ::
+  private add : Nat
+
+@[to_additive]
+structure MyPrivateMul where
+  private mk ::
+  private mul : Nat
+
+@[to_additive]
+def MyPrivateMul.mk' (a : Nat) := MyPrivateMul.mk a
+
+@[to_additive]
+def MyPrivateMul.mul' (x : MyPrivateMul) := x.mul
