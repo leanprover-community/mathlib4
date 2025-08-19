@@ -249,21 +249,9 @@ theorem IsIntegral.det {n : Type*} [Fintype n] [DecidableEq n] {M : Matrix n n A
 theorem IsIntegral.pow_iff {x : A} {n : ℕ} (hn : 0 < n) : IsIntegral R (x ^ n) ↔ IsIntegral R x :=
   ⟨IsIntegral.of_pow hn, fun hx ↦ hx.pow n⟩
 
-open TensorProduct
-
-theorem IsIntegral.tmul (x : A) {y : B} (h : IsIntegral R y) : IsIntegral A (x ⊗ₜ[R] y) := by
-  rw [← mul_one x, ← smul_eq_mul, ← smul_tmul']
-  exact smul _ (h.map_of_comp_eq (algebraMap R A)
-    (Algebra.TensorProduct.includeRight (R := R) (A := A) (B := B)).toRingHom
-    Algebra.TensorProduct.includeLeftRingHom_comp_algebraMap)
-
 section Pushout
 
 variable (R S A) [Algebra R S] [int : Algebra.IsIntegral R S]
-
-instance Algebra.IsIntegral.tensorProduct : Algebra.IsIntegral A (A ⊗[R] S) where
-  isIntegral p := p.induction_on isIntegral_zero (fun _ s ↦ .tmul _ <| int.1 s) (fun _ _ ↦ .add)
-
 variable (SA : Type*) [CommRing SA] [Algebra R SA] [Algebra S SA] [Algebra A SA]
   [IsScalarTower R S SA] [IsScalarTower R A SA]
 
