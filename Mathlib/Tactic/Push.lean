@@ -56,66 +56,6 @@ register_option push_neg.use_distrib : Bool :=
 
 open Lean Meta Elab.Tactic Parser.Tactic
 
-section ElabHead
-open Elab Term
-
-private partial def syntaxLambdaBody (stx : Syntax) : Syntax :=
-  match stx with
-  | `(fun $_ => $stx) => syntaxLambdaBody stx
-  | _ => stx
-
-/--
-This is a copy of `elabCDotFunctionAlias?` in core lean.
-It has been modified so that it can also support `∃ _, ·`, `∑ _, ·`, etc.
--/
-def elabCDotFunctionAlias? (stx : Term) : TermElabM (Option Expr) := do
-  let some stx ← liftMacroM <| expandCDotArg? stx | pure none
-  let stx ← liftMacroM <| expandMacros stx
-  match stx with
-  | `(fun $binders* => $f $args*) =>
-    -- we use `syntaxLambdaBody` to get rid of extra lambdas in cases like `∃ _, ·`
-    if binders.raw.toList.isPerm (args.raw.toList.map syntaxLambdaBody) then
-      try Term.resolveId? f catch _ => return none
-    else
-      return none
-  | `(fun $binders* => binop% $f $a $b)
-  | `(fun $binders* => binop_lazy% $f $a $b)
-  | `(fun $binders* => leftact% $f $a $b)
-  | `(fun $binders* => rightact% $f $a $b)
-  | `(fun $binders* => binrel% $f $a $b)
-  | `(fun $binders* => binrel_no_prop% $f $a $b) =>
-    if binders == #[a, b] || binders == #[b, a] then
-      try Term.resolveId? f catch _ => return none
-    else
-      return none
-  | `(fun $binders* => unop% $f $a) =>
-    if binders == #[a] then
-      try Term.resolveId? f catch _ => return none
-    else
-      return none
-  | _ => return none
-where
-  /-- Auxiliary function for `elabCDotFunctionAlias?` -/
-  expandCDotArg? (stx : Term) : MacroM (Option Term) :=
-    match stx with
-    | `(($h:hygieneInfo $e)) => Term.expandCDot? e h.getHygieneInfo
-    | _ => Term.expandCDot? stx none
-
-/-- Elaborator for the argument passed to `push`. It accepts a constant, or a function -/
-def elabHead (term : Term) : TermElabM Head := withRef term do
-  match term with
-  | `(fun $_ => ·) => return .lambda
-  | `(∀ $_, ·) => return .forall
-  | _ =>
-    match ← resolveId? term (withInfo := true) <|> elabCDotFunctionAlias? term with
-    | some (.const name _) =>
-      return .name name
-    | _ => throwError "Could not resolve `push` arugment {term}. \
-      Expected either a constant as in `push Not`, \
-      or a function with `·` notation as in `push ¬ .`"
-
-end ElabHead
-
 section push
 
 /--
@@ -246,6 +186,66 @@ def pullLocalDecl (head : Head) (discharge? : Option Simp.Discharge) (fvarId : F
 
 end pull
 
+section ElabHead
+open Elab Term
+
+private partial def syntaxLambdaBody (stx : Syntax) : Syntax :=
+  match stx with
+  | `(fun $_ => $stx) => syntaxLambdaBody stx
+  | _ => stx
+
+/--
+This is a copy of `elabCDotFunctionAlias?` in core lean.
+It has been modified so that it can also support `∃ _, ·`, `∑ _, ·`, etc.
+-/
+def elabCDotFunctionAlias? (stx : Term) : TermElabM (Option Expr) := do
+  let some stx ← liftMacroM <| expandCDotArg? stx | pure none
+  let stx ← liftMacroM <| expandMacros stx
+  match stx with
+  | `(fun $binders* => $f $args*) =>
+    -- we use `syntaxLambdaBody` to get rid of extra lambdas in cases like `∃ _, ·`
+    if binders.raw.toList.isPerm (args.raw.toList.map syntaxLambdaBody) then
+      try Term.resolveId? f catch _ => return none
+    else
+      return none
+  | `(fun $binders* => binop% $f $a $b)
+  | `(fun $binders* => binop_lazy% $f $a $b)
+  | `(fun $binders* => leftact% $f $a $b)
+  | `(fun $binders* => rightact% $f $a $b)
+  | `(fun $binders* => binrel% $f $a $b)
+  | `(fun $binders* => binrel_no_prop% $f $a $b) =>
+    if binders == #[a, b] || binders == #[b, a] then
+      try Term.resolveId? f catch _ => return none
+    else
+      return none
+  | `(fun $binders* => unop% $f $a) =>
+    if binders == #[a] then
+      try Term.resolveId? f catch _ => return none
+    else
+      return none
+  | _ => return none
+where
+  /-- Auxiliary function for `elabCDotFunctionAlias?` -/
+  expandCDotArg? (stx : Term) : MacroM (Option Term) :=
+    match stx with
+    | `(($h:hygieneInfo $e)) => Term.expandCDot? e h.getHygieneInfo
+    | _ => Term.expandCDot? stx none
+
+/-- Elaborator for the argument passed to `push`. It accepts a constant, or a function -/
+def elabHead (term : Term) : TermElabM Head := withRef term do
+  match term with
+  | `(fun $_ => ·) => return .lambda
+  | `(∀ $_, ·) => return .forall
+  | _ =>
+    match ← resolveId? term (withInfo := true) <|> elabCDotFunctionAlias? term with
+    | some (.const name _) =>
+      return .name name
+    | _ => throwError "Could not resolve `push` arugment {term}. \
+      Expected either a constant as in `push Not`, \
+      or a function with `·` notation as in `push ¬ .`"
+
+end ElabHead
+
 /-- Elaborate the `(disch := ...)` syntax. -/
 def elabOptDisch (optDischargeSyntax : Syntax) : TacticM (Option Simp.Discharge) := do
   if optDischargeSyntax.isNone then
@@ -337,6 +337,9 @@ def elabPull : Tactic := fun stx => do
     (fun _ ↦ throwNoProgress `pull head)
   if (← getMainGoal) == goal then
     throwNoProgress `pull head
+
+/-- A simproc variant of `push fun _ ↦ ·` that should be used as `simp [↓pushFun]`. -/
+simproc_decl _root_.pushFun (fun _ ↦ _) := pushStep .lambda
 
 section Conv
 
