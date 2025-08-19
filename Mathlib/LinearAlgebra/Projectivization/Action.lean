@@ -18,12 +18,12 @@ namespace Projectivization
 
 section DivisionRing
 
-variable {α K V : Type*} [AddCommGroup V] [DivisionRing K] [Module K V]
-  [Group α] [DistribMulAction α V] [SMulCommClass α K V]
+variable {G K V : Type*} [AddCommGroup V] [DivisionRing K] [Module K V]
+  [Group G] [DistribMulAction G V] [SMulCommClass G K V]
 
 /-- Any group acting `K`-linearly on `V` (such as the general linear group) acts on `ℙ V`. -/
 @[simps -isSimp]
-instance : MulAction α (ℙ K V) where
+instance : MulAction G (ℙ K V) where
   smul g x := x.map (DistribMulAction.toModuleEnd _ _ g)
     (DistribMulAction.toLinearEquiv _ _ g).injective
   one_smul x := show map _ _ _ = _ by simp [map_one, Module.End.one_eq_id]
@@ -36,8 +36,8 @@ lemma generalLinearGroup_smul_def (g : LinearMap.GeneralLinearGroup K V) (x : �
   rfl
 
 @[simp]
-lemma smul_mk (g : α) {v : V} (hv : v ≠ 0) :
-    g • mk K _ hv = mk K _ ((smul_ne_zero_iff_ne g).mpr hv) :=
+lemma smul_mk (g : G) {v : V} (hv : v ≠ 0) :
+    g • mk K v hv = mk K (g • v) ((smul_ne_zero_iff_ne g).mpr hv) :=
   rfl
 
 end DivisionRing
