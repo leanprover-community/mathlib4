@@ -65,22 +65,22 @@ instance isOrderedAddMonoid : IsOrderedAddMonoid ℤ[ε] := by
 theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
   rw [trailingCoeff]
   refine
-    ⟨?_, fun h =>
-      ⟨p.natTrailingDegree, fun m hm => (coeff_eq_zero_of_lt_natTrailingDegree hm).symm, h⟩⟩
+    ⟨?_, fun h ↦
+      ⟨p.natTrailingDegree, fun m hm ↦ (coeff_eq_zero_of_lt_natTrailingDegree hm).symm, h⟩⟩
   rintro ⟨n, hn⟩
   convert hn.2
   exact (natTrailingDegree_le_of_ne_zero hn.2.ne').antisymm
-    (le_natTrailingDegree (by rintro rfl; cases hn.2.false) fun m hm => (hn.1 _ hm).symm)
+    (le_natTrailingDegree (by rintro rfl; cases hn.2.false) fun m hm ↦ (hn.1 _ hm).symm)
 
 instance : ZeroLEOneClass ℤ[ε] :=
   { zero_le_one := Or.inr ⟨0, by simp⟩ }
 
 instance : IsStrictOrderedRing ℤ[ε] :=
-  .of_mul_pos fun p q => by simp_rw [pos_iff]; rw [trailingCoeff_mul]; exact mul_pos
+  .of_mul_pos fun p q ↦ by simp_rw [pos_iff]; rw [trailingCoeff_mul]; exact mul_pos
 
 instance : FloorRing ℤ[ε] :=
-  FloorRing.ofFloor _ (fun p => if (p.coeff 0 : ℤ[ε]) ≤ p then p.coeff 0 else p.coeff 0 - 1)
-    fun p q => by
+  FloorRing.ofFloor _ (fun p ↦ if (p.coeff 0 : ℤ[ε]) ≤ p then p.coeff 0 else p.coeff 0 - 1)
+    fun p q ↦ by
     simp_rw [← not_lt, not_iff_not]
     constructor
     · split_ifs with h
@@ -91,10 +91,10 @@ instance : FloorRing ℤ[ε] :=
         · dsimp at hn
           simp [hn.1 _ n.zero_lt_succ]
           rw [intCast_coeff_zero]; simp
-      · exact fun h' => cast_lt.1 ((not_lt.1 h).trans_lt h')
+      · exact fun h' ↦ cast_lt.1 ((not_lt.1 h).trans_lt h')
     · split_ifs with h
-      · exact fun h' => h.trans_le (cast_le.2 <| sub_one_lt_iff.1 h')
-      · exact fun h' => ⟨0, by simp; rwa [intCast_coeff_zero]⟩
+      · exact fun h' ↦ h.trans_le (cast_le.2 <| sub_one_lt_iff.1 h')
+      · exact fun h' ↦ ⟨0, by simp; rwa [intCast_coeff_zero]⟩
 
 /-- The ordered ring homomorphisms from `ℤ[ε]` to `ℤ` that "forgets" the `ε`s. -/
 def forgetEpsilons : ℤ[ε] →+*o ℤ where

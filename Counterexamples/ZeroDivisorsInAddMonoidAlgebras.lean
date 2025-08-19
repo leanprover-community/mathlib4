@@ -78,9 +78,9 @@ torsion element. -/
 theorem zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a : A)
     (o2 : 2 ≤ addOrderOf a) : ∃ f g : R[A], f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 := by
   refine
-    ⟨(Finset.range (addOrderOf a)).sum fun i : ℕ => single a 1 ^ i, single a 1 - single 0 1, ?_, ?_,
+    ⟨(Finset.range (addOrderOf a)).sum fun i : ℕ ↦ single a 1 ^ i, single a 1 - single 0 1, ?_, ?_,
       ?_⟩
-  · apply_fun fun x : R[A] => x 0
+  · apply_fun fun x : R[A] ↦ x 0
     refine ne_of_eq_of_ne (?_ : (_ : R) = 1) one_ne_zero
     dsimp only; rw [Finset.sum_apply']
     refine (Finset.sum_eq_single 0 ?_ ?_).trans ?_
@@ -89,7 +89,7 @@ theorem zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a 
       exact nsmul_ne_zero_of_lt_addOrderOf b0 (Finset.mem_range.mp hb)
     · grind
     · rw [single_pow, one_pow, zero_smul, single_eq_same]
-  · apply_fun fun x : R[A] => x 0
+  · apply_fun fun x : R[A] ↦ x 0
     refine sub_ne_zero.mpr (ne_of_eq_of_ne (?_ : (_ : R) = 0) ?_)
     · have a0 : a ≠ 0 :=
         ne_of_eq_of_ne (one_nsmul a).symm
@@ -194,7 +194,7 @@ example : LinearOrder F := by infer_instance
 example : AddMonoid F := by infer_instance
 
 /-- ... except for the strict monotonicity of addition, the crux of the matter. -/
-example : ¬AddLeftStrictMono F := fun h =>
+example : ¬AddLeftStrictMono F := fun h ↦
   lt_irrefl 1 <| (h.elim : Covariant F F (· + ·) (· < ·)) 1 z01
 
 /-- A few `simp`-lemmas to take care of trivialities in the proof of the example below. -/
@@ -203,7 +203,7 @@ theorem f1 : ∀ a : F, 1 + a = 1 := by boom
 
 @[simp]
 theorem f011 : ofLex (Finsupp.single (0 : F) (1 : F)) 1 = 0 :=
-  single_apply_eq_zero.mpr fun h => h
+  single_apply_eq_zero.mpr fun h ↦ h
 
 @[simp]
 theorem f010 : ofLex (Finsupp.single (0 : F) (1 : F)) 0 = 1 :=
@@ -215,7 +215,7 @@ theorem f111 : ofLex (Finsupp.single (1 : F) (1 : F)) 1 = 1 :=
 
 @[simp]
 theorem f110 : ofLex (Finsupp.single (1 : F) (1 : F)) 0 = 0 :=
-  single_apply_eq_zero.mpr fun h => h.symm
+  single_apply_eq_zero.mpr fun h ↦ h.symm
 
 /-- Here we see that (not-necessarily strict) monotonicity of addition on `Lex (F →₀ F)` is not
 a consequence of monotonicity of addition on `F`.  Strict monotonicity of addition on `F` is
@@ -251,6 +251,6 @@ example (n : ℕ) (n2 : 2 ≤ n) : ¬UniqueSums (ZMod n) := by
   refine not_not.mpr (h Finset.univ_nonempty Finset.univ_nonempty) ?_
   suffices ∀ x y : ZMod n, ∃ x' y' : ZMod n, x' + y' = x + y ∧ (x' = x → ¬y' = y) by
     simpa [UniqueAdd]
-  exact fun x y => ⟨x - 1, y + 1, sub_add_add_cancel _ _ _, by simp⟩
+  exact fun x y ↦ ⟨x - 1, y + 1, sub_add_add_cancel _ _ _, by simp⟩
 
 end Counterexample

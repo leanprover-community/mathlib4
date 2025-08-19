@@ -125,9 +125,9 @@ Hahn-Banach. -/
 def boundedIntegrableFunctionsIntegralCLM [MeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] :
     boundedIntegrableFunctions μ →L[ℝ] ℝ :=
   LinearMap.mkContinuous (E := ↥(boundedIntegrableFunctions μ))
-    { toFun := fun f => ∫ x, f.1 x ∂μ
-      map_add' := fun f g => integral_add f.2 g.2
-      map_smul' := fun c f => integral_smul c f.1 } (μ.real univ)
+    { toFun := fun f ↦ ∫ x, f.1 x ∂μ
+      map_add' := fun f g ↦ integral_add f.2 g.2
+      map_smul' := fun c f ↦ integral_smul c f.1 } (μ.real univ)
     (by
       intro f
       rw [mul_comm]
@@ -143,7 +143,7 @@ theorem exists_linear_extension_to_boundedFunctions [MeasurableSpace α] (μ : M
     ∃ φ : (DiscreteCopy α →ᵇ ℝ) →L[ℝ] ℝ,
       ∀ f : DiscreteCopy α →ᵇ ℝ, Integrable f μ → φ f = ∫ x, f x ∂μ := by
   rcases exists_extension_norm_eq _ (boundedIntegrableFunctionsIntegralCLM μ) with ⟨φ, hφ⟩
-  exact ⟨φ, fun f hf => hφ.1 ⟨f, hf⟩⟩
+  exact ⟨φ, fun f hf ↦ hφ.1 ⟨f, hf⟩⟩
 
 /-- An arbitrary extension of the integral to all bounded functions, as a continuous linear map.
 It is not at all canonical, and constructed using Hahn-Banach. -/
@@ -173,12 +173,12 @@ structure BoundedAdditiveMeasure (α : Type u) where
 attribute [coe] BoundedAdditiveMeasure.toFun
 
 instance : Inhabited (BoundedAdditiveMeasure α) :=
-  ⟨{  toFun := fun _ => 0
-      additive' := fun s t _ => by simp
-      exists_bound := ⟨0, fun _ => by simp⟩ }⟩
+  ⟨{  toFun := fun _ ↦ 0
+      additive' := fun s t _ ↦ by simp
+      exists_bound := ⟨0, fun _ ↦ by simp⟩ }⟩
 
-instance : CoeFun (BoundedAdditiveMeasure α) fun _ => Set α → ℝ :=
-  ⟨fun f => f.toFun⟩
+instance : CoeFun (BoundedAdditiveMeasure α) fun _ ↦ Set α → ℝ :=
+  ⟨fun f ↦ f.toFun⟩
 
 namespace BoundedAdditiveMeasure
 
@@ -203,10 +203,10 @@ theorem empty (f : BoundedAdditiveMeasure α) : f ∅ = 0 := by
   rwa [f.additive _ _ (empty_disjoint _), right_eq_add] at this
 
 instance : Neg (BoundedAdditiveMeasure α) :=
-  ⟨fun f =>
-    { toFun := fun s => -f s
-      additive' := fun s t hst => by simp only [f.additive s t hst, add_comm, neg_add_rev]
-      exists_bound := ⟨f.C, fun s => by simp [f.abs_le_bound]⟩ }⟩
+  ⟨fun f ↦
+    { toFun := fun s ↦ -f s
+      additive' := fun s t hst ↦ by simp only [f.additive s t hst, add_comm, neg_add_rev]
+      exists_bound := ⟨f.C, fun s ↦ by simp [f.abs_le_bound]⟩ }⟩
 
 @[simp]
 theorem neg_apply (f : BoundedAdditiveMeasure α) (s : Set α) : (-f) s = -f s :=
@@ -218,7 +218,7 @@ def restrict (f : BoundedAdditiveMeasure α) (t : Set α) : BoundedAdditiveMeasu
   additive' s s' h := by
     rw [← f.additive (t ∩ s) (t ∩ s'), inter_union_distrib_left]
     exact h.mono inter_subset_right inter_subset_right
-  exists_bound := ⟨f.C, fun s => f.abs_le_bound _⟩
+  exists_bound := ⟨f.C, fun s ↦ f.abs_le_bound _⟩
 
 @[simp]
 theorem restrict_apply (f : BoundedAdditiveMeasure α) (s t : Set α) : f.restrict s t = f (s ∩ t) :=
@@ -252,12 +252,12 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
   -- maximal.
   have : ∀ s : A, ∃ t : A, ∀ u : A, f (↑u \ ↑s) ≤ 2 * f (↑t \ ↑s) := by
     intro s
-    have B : BddAbove (range fun u : A => f (↑u \ ↑s)) := by
-      refine ⟨f.C, fun x hx => ?_⟩
+    have B : BddAbove (range fun u : A ↦ f (↑u \ ↑s)) := by
+      refine ⟨f.C, fun x hx ↦ ?_⟩
       rcases hx with ⟨u, hu⟩
       rw [← hu]
       exact f.le_bound _
-    let S := iSup fun t : A => f (↑t \ ↑s)
+    let S := iSup fun t : A ↦ f (↑t \ ↑s)
     have S_pos : 0 < S := by
       rcases h s.1 s.2 with ⟨t, t_count, ht⟩
       apply ht.trans_le
@@ -265,18 +265,18 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
       change f (↑t' \ ↑s) ≤ S
       exact le_ciSup B t'
     rcases exists_lt_of_lt_ciSup (half_lt_self S_pos) with ⟨t, ht⟩
-    refine ⟨t, fun u => ?_⟩
+    refine ⟨t, fun u ↦ ?_⟩
     calc
       f (↑u \ ↑s) ≤ S := le_ciSup B _
       _ ≤ 2 * f (↑t \ ↑s) := (div_le_iff₀' two_pos).1 ht.le
   choose! F hF using this
   -- iterate the above construction, by adding at each step a set with measure close to maximal in
   -- the complement of already chosen points. This is the set `s n` at step `n`.
-  let G : A → A := fun u => ⟨(↑u : Set α) ∪ ↑(F u), u.2.union (F u).2⟩
-  let s : ℕ → A := fun n => G^[n] empty
+  let G : A → A := fun u ↦ ⟨(↑u : Set α) ∪ ↑(F u), u.2.union (F u).2⟩
+  let s : ℕ → A := fun n ↦ G^[n] empty
   -- We will get a contradiction from the fact that there is a countable set `u` with positive
   -- measure in the complement of `⋃ n, s n`.
-  rcases h (⋃ n, ↑(s n)) (countable_iUnion fun n => (s n).2) with ⟨t, t_count, ht⟩
+  rcases h (⋃ n, ↑(s n)) (countable_iUnion fun n ↦ (s n).2) with ⟨t, t_count, ht⟩
   let u : A := ⟨t \ ⋃ n, ↑(s n), t_count.mono diff_subset⟩
   set ε := f ↑u with hε
   have ε_pos : 0 < ε := ht
@@ -314,7 +314,7 @@ theorem exists_discrete_support (f : BoundedAdditiveMeasure α) :
     ∃ s : Set α, s.Countable ∧ ∀ t : Set α, t.Countable → f (t \ s) = 0 := by
   rcases f.exists_discrete_support_nonpos with ⟨s₁, s₁_count, h₁⟩
   rcases (-f).exists_discrete_support_nonpos with ⟨s₂, s₂_count, h₂⟩
-  refine ⟨s₁ ∪ s₂, s₁_count.union s₂_count, fun t ht => le_antisymm ?_ ?_⟩
+  refine ⟨s₁ ∪ s₂, s₁_count.union s₂_count, fun t ht ↦ le_antisymm ?_ ?_⟩
   · have : t \ (s₁ ∪ s₂) = (t \ (s₁ ∪ s₂)) \ s₁ := by
       rw [diff_diff, union_comm, union_assoc, union_self]
     rw [this]
@@ -399,7 +399,7 @@ def _root_.ContinuousLinearMap.toBoundedAdditiveMeasure [TopologicalSpace α] [D
       ext x; simp [indicator_union_of_disjoint hst]
     rw [this, f.map_add]
   exists_bound :=
-    ⟨‖f‖, fun s => by
+    ⟨‖f‖, fun s ↦ by
       have I :
         ‖ofNormedAddCommGroupDiscrete (indicator s 1) 1 (norm_indicator_le_one s)‖ ≤ 1 := by
         apply norm_ofNormedAddCommGroup_le _ zero_le_one
@@ -424,7 +424,7 @@ theorem toFunctions_toMeasure [MeasurableSpace α] (μ : Measure α) [IsFiniteMe
   rw [extensionToBoundedFunctions_apply]
   · simp [integral_indicator hs]
   · simp only [coe_ofNormedAddCommGroupDiscrete]
-    have : Integrable (fun _ => (1 : ℝ)) μ := integrable_const (1 : ℝ)
+    have : Integrable (fun _ ↦ (1 : ℝ)) μ := integrable_const (1 : ℝ)
     apply
       this.mono' (Measurable.indicator (@measurable_const _ _ _ _ (1 : ℝ)) hs).aestronglyMeasurable
     apply Filter.Eventually.of_forall
@@ -459,7 +459,7 @@ We need the continuum hypothesis to construct it.
 theorem sierpinski_pathological_family (Hcont : #ℝ = ℵ₁) :
     ∃ f : ℝ → Set ℝ, (∀ x, (univ \ f x).Countable) ∧ ∀ y, {x : ℝ | y ∈ f x}.Countable := by
   rcases Cardinal.ord_eq ℝ with ⟨r, hr, H⟩
-  refine ⟨fun x => {y | r x y}, fun x => ?_, fun y => ?_⟩
+  refine ⟨fun x ↦ {y | r x y}, fun x ↦ ?_, fun y ↦ ?_⟩
   · have : univ \ {y | r x y} = {y | r y x} ∪ {x} := by
       ext y
       simp only [true_and, mem_univ, mem_setOf_eq, mem_insert_iff, union_singleton, mem_diff]
@@ -536,7 +536,7 @@ theorem countable_ne (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ ℝ)
     simp only [exists_prop, mem_iUnion, mem_setOf_eq]
     exact hx
   apply Countable.mono (Subset.trans A B)
-  exact Countable.biUnion (countable_discreteSupport _) fun a _ => countable_spf_mem Hcont a
+  exact Countable.biUnion (countable_discreteSupport _) fun a _ ↦ countable_spf_mem Hcont a
 
 theorem comp_ae_eq_const (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
     ∀ᵐ x ∂volume.restrict (Icc (0 : ℝ) 1),
@@ -547,8 +547,8 @@ theorem comp_ae_eq_const (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ 
   simp only [imp_self, mem_setOf_eq, mem_compl_iff]
 
 theorem integrable_comp (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
-    IntegrableOn (fun x => φ (f Hcont x)) (Icc 0 1) := by
-  have : IntegrableOn (fun _ => φ.toBoundedAdditiveMeasure.continuousPart univ) (Icc (0 : ℝ) 1)
+    IntegrableOn (fun x ↦ φ (f Hcont x)) (Icc 0 1) := by
+  have : IntegrableOn (fun _ ↦ φ.toBoundedAdditiveMeasure.continuousPart univ) (Icc (0 : ℝ) 1)
       volume := by simp
   exact Integrable.congr this (comp_ae_eq_const Hcont φ)
 
@@ -568,8 +568,8 @@ example : CompleteSpace (DiscreteCopy ℝ →ᵇ ℝ) := by infer_instance
 
 /-- The function `f Hcont : ℝ → (DiscreteCopy ℝ →ᵇ ℝ)` is scalarly measurable. -/
 theorem measurable_comp (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
-    Measurable fun x => φ (f Hcont x) := by
-  have : Measurable fun _ : ℝ => φ.toBoundedAdditiveMeasure.continuousPart univ := measurable_const
+    Measurable fun x ↦ φ (f Hcont x) := by
+  have : Measurable fun _ : ℝ ↦ φ.toBoundedAdditiveMeasure.continuousPart univ := measurable_const
   refine this.measurable_of_countable_ne ?_
   exact countable_ne Hcont φ
 

@@ -107,7 +107,7 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
     `b` is the value of the previous sum as a natural, `hb` is the proof that it is indeed the
     value, and `han` is the divisibility condition -/
   obtain ⟨b, hb, han⟩ :=
-    ih (fun i hi => ha i <| Nat.le_succ_of_le hi) fun i hi => a_pos i <| Nat.le_succ_of_le hi
+    ih (fun i hi ↦ ha i <| Nat.le_succ_of_le hi) fun i hi ↦ a_pos i <| Nat.le_succ_of_le hi
   specialize ha n le_rfl
   have ha₀ : a 0 ≤ a n * b := by
     -- Needing this is an artifact of `ℕ`-subtraction.

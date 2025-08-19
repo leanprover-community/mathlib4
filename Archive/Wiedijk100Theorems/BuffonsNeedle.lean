@@ -28,7 +28,7 @@ need to consider only a single vertical line positioned at `x = 0`. A needle the
 vertical line if its projection onto the x-axis contains `0`.
 
 We define a random variable `N : Ω → ℝ` that is `1` if the needle crosses a vertical line, and `0`
-otherwise. This is defined as `fun ω => Set.indicator (needleProjX l (B ω).1 (B ω).2) 1 0`.
+otherwise. This is defined as `fun ω ↦ Set.indicator (needleProjX l (B ω).1 (B ω).2) 1 0`.
 f
 As in many references, the problem is split into two cases, `l ≤ d` (`buffon_short`), and `d ≤ l`
 (`buffon_long`). For both cases, we show that
@@ -273,7 +273,7 @@ The integrand in the long case is `min d (θ.sin * l)` and its integrability is 
 the integral lemmas below.
 -/
 lemma intervalIntegrable_min_const_sin_mul (a b : ℝ) :
-    IntervalIntegrable (fun (θ : ℝ) => min d (θ.sin * l)) ℙ a b := by
+    IntervalIntegrable (fun (θ : ℝ) ↦ min d (θ.sin * l)) ℙ a b := by
   apply Continuous.intervalIntegrable
   exact Continuous.min continuous_const (Continuous.mul Real.continuous_sin continuous_const)
 
@@ -286,8 +286,8 @@ lemma integral_min_eq_two_mul :
     ∫ θ in (0)..π, min d (θ.sin * l) = 2 * ∫ θ in (0)..π / 2, min d (θ.sin * l) := by
   rw [← intervalIntegral.integral_add_adjacent_intervals (b := π / 2) (c := π)]
   conv => lhs; arg 2; arg 1; intro θ; rw [← neg_neg θ, Real.sin_neg]
-  · simp_rw [intervalIntegral.integral_comp_neg fun θ => min d (-θ.sin * l), ← Real.sin_add_pi,
-      intervalIntegral.integral_comp_add_right (fun θ => min d (θ.sin * l)), neg_add_cancel,
+  · simp_rw [intervalIntegral.integral_comp_neg fun θ ↦ min d (-θ.sin * l), ← Real.sin_add_pi,
+      intervalIntegral.integral_comp_add_right (fun θ ↦ min d (θ.sin * l)), neg_add_cancel,
       (by ring : -(π / 2) + π = π / 2), two_mul]
   all_goals exact intervalIntegrable_min_const_sin_mul d l _ _
 
@@ -298,7 +298,7 @@ have that `θ.sin * l ≤ d`, and thus the integral is `∫ θ in (0)..(d / l).a
 -/
 lemma integral_zero_to_arcsin_min :
     ∫ θ in (0)..(d / l).arcsin, min d (θ.sin * l) = (1 - √(1 - (d / l) ^ 2)) * l := by
-  have : Set.EqOn (fun θ => min d (θ.sin * l)) (Real.sin · * l) (Set.uIcc 0 (d / l).arcsin) := by
+  have : Set.EqOn (fun θ ↦ min d (θ.sin * l)) (Real.sin · * l) (Set.uIcc 0 (d / l).arcsin) := by
     intro θ ⟨hθ₁, hθ₂⟩
     have : 0 ≤ (d / l).arcsin := Real.arcsin_nonneg.mpr (div_nonneg hd.le hl.le)
     simp only [min_eq_left this, max_eq_right this] at hθ₁ hθ₂
@@ -316,7 +316,7 @@ have that `d ≤ θ.sin * l`, and thus the integral is `∫ θ in (d / l).arcsin
 -/
 lemma integral_arcsin_to_pi_div_two_min (h : d ≤ l) :
     ∫ θ in (d / l).arcsin..(π / 2), min d (θ.sin * l) = (π / 2 - (d / l).arcsin) * d := by
-  have : Set.EqOn (fun θ => min d (θ.sin * l)) (fun _ => d) (Set.uIcc (d / l).arcsin (π / 2)) := by
+  have : Set.EqOn (fun θ ↦ min d (θ.sin * l)) (fun _ ↦ d) (Set.uIcc (d / l).arcsin (π / 2)) := by
     intro θ ⟨hθ₁, hθ₂⟩
     wlog hθ_ne_pi_div_two : θ ≠ π / 2
     · simp only [ne_eq, not_not] at hθ_ne_pi_div_two

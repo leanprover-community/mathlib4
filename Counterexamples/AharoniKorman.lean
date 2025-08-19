@@ -295,7 +295,7 @@ private lemma no_strictly_decreasing {α : Type*} [Preorder α] [WellFoundedLT �
 
 private lemma no_strictAnti {α : Type*} [Preorder α] [WellFoundedLT α] (f : ℕ → α)
     (hf : StrictAnti f) : False :=
-  no_strictly_decreasing f (n₀ := 0) fun n _ => hf (by simp)
+  no_strictly_decreasing f (n₀ := 0) fun n _ ↦ hf (by simp)
 
 /--
 The Hollom partial order is scattered: it does not contain a suborder which is order-isomorphic

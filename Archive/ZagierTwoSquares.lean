@@ -79,7 +79,7 @@ open Function
 variable (k : ℕ)
 
 /-- The obvious involution `(x, y, z) ↦ (x, z, y)`. -/
-def obvInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ => ⟨⟨x, z, y⟩, by
+def obvInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ ↦ ⟨⟨x, z, y⟩, by
   simp only [zagierSet, Set.mem_setOf_eq] at h ⊢
   linarith [h]⟩
 
@@ -99,7 +99,7 @@ theorem sq_add_sq_of_nonempty_fixedPoints (hn : (fixedPoints (obvInvo k)).Nonemp
 
 /-- The complicated involution, defined piecewise according to how `x` compares with
 `y - z` and `2 * y`. -/
-def complexInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ =>
+def complexInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ ↦
   ⟨if x + z < y then ⟨x + 2 * z, z, y - x - z⟩ else
    if 2 * y < x then ⟨x - 2 * y, x + z - y, y⟩ else
                      ⟨2 * y - x, y, x + z - y⟩, by

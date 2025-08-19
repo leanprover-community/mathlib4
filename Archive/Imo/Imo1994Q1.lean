@@ -49,12 +49,12 @@ theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : #A = m + 1)
     (m + 1) * (n + 1) ≤ 2 * ∑ x ∈ A, x := by
   set a := orderEmbOfFin A hm
   -- We sort the elements of `A`
-  have ha : ∀ i, a i ∈ A := fun i => orderEmbOfFin_mem A hm i
+  have ha : ∀ i, a i ∈ A := fun i ↦ orderEmbOfFin_mem A hm i
   set rev := Equiv.subLeft (Fin.last m)
   -- `i ↦ m-i`
   -- We reindex the sum by fin (m+1)
   have : ∑ x ∈ A, x = ∑ i : Fin (m + 1), a i := by
-    convert sum_image fun x _ y _ => a.eq_iff_eq.1
+    convert sum_image fun x _ y _ ↦ a.eq_iff_eq.1
     rw [← coe_inj]; simp [a]
   rw [this]; clear this
   -- The main proof is a simple calculation by rearranging one of the two sums
@@ -69,7 +69,7 @@ theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : #A = m + 1)
   by_contra! h : a k + a (rev k) < n + 1
   -- We exhibit `k+1` elements of `A` greater than `a (rev k)`
   set f : Fin (m + 1) ↪ ℕ :=
-    ⟨fun i => a i + a (rev k), by
+    ⟨fun i ↦ a i + a (rev k), by
       apply injective_of_le_imp_le
       intro i j hij
       rwa [add_le_add_iff_right, a.map_rel_iff] at hij ⟩

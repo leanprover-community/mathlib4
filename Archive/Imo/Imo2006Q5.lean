@@ -61,10 +61,10 @@ theorem Int.add_eq_add_of_natAbs_eq_of_natAbs_eq {a b c d : ℤ} (hne : a ≠ b)
 
 /-- The main lemma in the proof: if $P^k(t)=t$, then $P(P(t))=t$. -/
 theorem Polynomial.isPeriodicPt_eval_two {P : Polynomial ℤ} {t : ℤ}
-    (ht : t ∈ periodicPts fun x => P.eval x) : IsPeriodicPt (fun x => P.eval x) 2 t := by
+    (ht : t ∈ periodicPts fun x ↦ P.eval x) : IsPeriodicPt (fun x ↦ P.eval x) 2 t := by
   -- The cycle [P(t) - t, P(P(t)) - P(t), ...]
-  let C : Cycle ℤ := (periodicOrbit (fun x => P.eval x) t).map fun x => P.eval x - x
-  have HC : ∀ {n : ℕ}, (fun x => P.eval x)^[n + 1] t - (fun x => P.eval x)^[n] t ∈ C := by
+  let C : Cycle ℤ := (periodicOrbit (fun x ↦ P.eval x) t).map fun x ↦ P.eval x - x
+  have HC : ∀ {n : ℕ}, (fun x ↦ P.eval x)^[n + 1] t - (fun x ↦ P.eval x)^[n] t ∈ C := by
     intro n
     rw [Cycle.mem_map, Function.iterate_succ_apply']
     exact ⟨_, iterate_mem_periodicOrbit ht n, rfl⟩
@@ -72,24 +72,24 @@ theorem Polynomial.isPeriodicPt_eval_two {P : Polynomial ℤ} {t : ℤ}
   have Hdvd : C.Chain (· ∣ ·) := by
     rw [Cycle.chain_map, periodicOrbit_chain' _ ht]
     intro n
-    convert sub_dvd_eval_sub ((fun x => P.eval x)^[n + 1] t) ((fun x => P.eval x)^[n] t) P <;>
+    convert sub_dvd_eval_sub ((fun x ↦ P.eval x)^[n + 1] t) ((fun x ↦ P.eval x)^[n] t) P <;>
       rw [Function.iterate_succ_apply']
   -- Any two entries in C have the same absolute value.
   have Habs :
     ∀ m n : ℕ,
-      ((fun x => P.eval x)^[m + 1] t - (fun x => P.eval x)^[m] t).natAbs =
-        ((fun x => P.eval x)^[n + 1] t - (fun x => P.eval x)^[n] t).natAbs :=
-    fun m n => Int.natAbs_eq_of_chain_dvd Hdvd HC HC
+      ((fun x ↦ P.eval x)^[m + 1] t - (fun x ↦ P.eval x)^[m] t).natAbs =
+        ((fun x ↦ P.eval x)^[n + 1] t - (fun x ↦ P.eval x)^[n] t).natAbs :=
+    fun m n ↦ Int.natAbs_eq_of_chain_dvd Hdvd HC HC
   -- We case on whether the elements on C are pairwise equal.
   by_cases HC' : C.Chain (· = ·)
   · -- Any two entries in C are equal.
     have Heq :
       ∀ m n : ℕ,
-        (fun x => P.eval x)^[m + 1] t - (fun x => P.eval x)^[m] t =
-          (fun x => P.eval x)^[n + 1] t - (fun x => P.eval x)^[n] t :=
-      fun m n => Cycle.chain_iff_pairwise.1 HC' _ HC _ HC
+        (fun x ↦ P.eval x)^[m + 1] t - (fun x ↦ P.eval x)^[m] t =
+          (fun x ↦ P.eval x)^[n + 1] t - (fun x ↦ P.eval x)^[n] t :=
+      fun m n ↦ Cycle.chain_iff_pairwise.1 HC' _ HC _ HC
     -- The sign of P^n(t) - t is the same as P(t) - t for positive n. Proven by induction on n.
-    have IH (n : ℕ) : ((fun x => P.eval x)^[n + 1] t - t).sign = (P.eval t - t).sign := by
+    have IH (n : ℕ) : ((fun x ↦ P.eval x)^[n + 1] t - t).sign = (P.eval t - t).sign := by
       induction n with
       | zero => rfl
       | succ n IH =>
@@ -189,7 +189,7 @@ open Imo2006Q5
 /-- The general problem follows easily from the k = 2 case. -/
 theorem imo2006_q5 {P : Polynomial ℤ} (hP : 1 < P.natDegree) {k : ℕ} (hk : 0 < k) :
     (P.comp^[k] X - X).roots.toFinset.card ≤ P.natDegree := by
-  refine (Finset.card_le_card fun t ht => ?_).trans (imo2006_q5' hP)
+  refine (Finset.card_le_card fun t ht ↦ ?_).trans (imo2006_q5' hP)
   have hP' : P.comp P - X ≠ 0 := by
     simpa [Nat.iterate] using Polynomial.iterate_comp_sub_X_ne hP zero_lt_two
   replace ht := isRoot_of_mem_roots (Multiset.mem_toFinset.1 ht)

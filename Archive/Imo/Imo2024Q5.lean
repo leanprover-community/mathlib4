@@ -190,7 +190,7 @@ lemma Path.exists_mem_fst_eq (p : Path N) (r : Fin (N + 2)) : ∃ c ∈ p.cells,
     convert h
   have hig : r ≤ (p.cells[i]).1 := of_decide_eq_true (List.findIdx_getElem (w := hi))
   refine ⟨p.cells[i], List.getElem_mem _, ?_⟩
-  refine (hig.lt_or_eq.resolve_left fun h => ?_).symm
+  refine (hig.lt_or_eq.resolve_left fun h ↦ ?_).symm
   rcases Nat.eq_zero_or_pos i with hi | hi
   · simp only [hi, List.getElem_zero, p.head_first_row, Fin.not_lt_zero] at h
   · suffices r ≤ p.cells[i - 1].1 by
@@ -728,8 +728,8 @@ def path2 (hN : 2 ≤ N) (c₁ : Fin (N + 1)) (r : Fin (N + 2)) : Path N :=
 /-- A strategy that wins in three attempts. -/
 def winningStrategy (hN : 2 ≤ N) : Strategy N
   | 0 => fun _ ↦ path0 hN
-  | 1 => fun r => path1 hN ((r 0).getD 0).2
-  | _ + 2 => fun r => path2 hN ((r 0).getD 0).2 ((r 1).getD 0).1
+  | 1 => fun r ↦ path1 hN ((r 0).getD 0).2
+  | _ + 2 => fun r ↦ path2 hN ((r 0).getD 0).2 ((r 1).getD 0).1
 
 lemma path0_firstMonster_eq_apply_row1 (hN : 2 ≤ N) (m : MonsterData N) :
     (path0 hN).firstMonster m = some (1, m (row1 hN)) := by

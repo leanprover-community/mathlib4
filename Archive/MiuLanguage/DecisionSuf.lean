@@ -346,7 +346,7 @@ theorem der_of_decstr {en : Miustr} (h : Decstr en) : Derivable en := by
 
 /-- Finally, we have the main result, namely that `Derivable` is a decidable predicate.
 -/
-instance : DecidablePred Derivable := fun _ => decidable_of_iff _ ⟨der_of_decstr, decstr_of_der⟩
+instance : DecidablePred Derivable := fun _ ↦ decidable_of_iff _ ⟨der_of_decstr, decstr_of_der⟩
 
 /-!
 By decidability, we can automatically determine whether any given `Miustr` is `Derivable`.

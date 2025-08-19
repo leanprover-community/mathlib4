@@ -47,7 +47,7 @@ instance : MeasurableSpace (Fin m) :=
   ⊤
 
 instance : MeasurableSingletonClass (Fin m) :=
-  ⟨fun _ => trivial⟩
+  ⟨fun _ ↦ trivial⟩
 
 /- We then endow the space with a canonical measure, which is called ℙ.
 We define this to be the conditional counting measure. -/

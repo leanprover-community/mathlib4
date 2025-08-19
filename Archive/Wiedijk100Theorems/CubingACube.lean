@@ -67,7 +67,7 @@ def toSet (c : Cube n) : Set (Fin n → ℝ) :=
 theorem side_nonempty (c : Cube n) (i : Fin n) : (side c i).Nonempty := by simp [side, c.hw]
 
 theorem univ_pi_side (c : Cube n) : pi univ (side c) = c.toSet :=
-  ext fun _ => mem_univ_pi
+  ext fun _ ↦ mem_univ_pi
 
 theorem toSet_subset {c c' : Cube n} : c.toSet ⊆ c'.toSet ↔ ∀ j, c.side j ⊆ c'.side j := by
   simp only [← univ_pi_side, univ_pi_subset_univ_pi_iff, (c.side_nonempty _).ne_empty, exists_false,
@@ -110,7 +110,7 @@ theorem head_shiftUp (c : Cube (n + 1)) : c.shiftUp.b 0 = c.xm :=
   rfl
 
 def unitCube : Cube n :=
-  ⟨fun _ => 0, 1, by simp⟩
+  ⟨fun _ ↦ 0, 1, by simp⟩
 
 @[simp]
 theorem side_unitCube {j : Fin n} : unitCube.side j = Ico 0 1 := by
@@ -189,7 +189,7 @@ theorem shiftUp_bottom_subset_bottoms (hc : (cs i).xm ≠ 1) :
     · exact lt_of_le_of_ne (b_add_w_le_one h) hc
     intro j; exact side_subset h (hps j)
   rw [← h.2, mem_iUnion] at this; rcases this with ⟨i', hi'⟩
-  rw [mem_iUnion]; use i'; refine ⟨?_, fun j => hi' j.succ⟩
+  rw [mem_iUnion]; use i'; refine ⟨?_, fun j ↦ hi' j.succ⟩
   have : i ≠ i' := by rintro rfl; apply not_le_of_gt (hi' 0).2; rw [hp0]; rfl
   have := h.1 this
   rw [onFun, comp_apply, comp_apply, toSet_disjoint, exists_fin_succ] at this
@@ -275,10 +275,10 @@ theorem w_lt_w (hi : i ∈ bcubes cs c) : (cs i).w < c.w := by
 theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
   rcases v.1 c.b_mem_bottom with ⟨_, ⟨i, rfl⟩, hi⟩
   have h2i : i ∈ bcubes cs c :=
-    ⟨hi.1.symm, v.2.1 i hi.1.symm ⟨tail c.b, hi.2, fun j => c.b_mem_side j.succ⟩⟩
+    ⟨hi.1.symm, v.2.1 i hi.1.symm ⟨tail c.b, hi.2, fun j ↦ c.b_mem_side j.succ⟩⟩
   let j : Fin (n + 1) := ⟨2, h.three_le⟩
   have hj : 0 ≠ j := by simp only [j, Fin.ext_iff, Ne]; norm_num
-  let p : Fin (n + 1) → ℝ := fun j' => if j' = j then c.b j + (cs i).w else c.b j'
+  let p : Fin (n + 1) → ℝ := fun j' ↦ if j' = j then c.b j + (cs i).w else c.b j'
   have hp : p ∈ c.bottom := by
     constructor
     · simp only [p, if_neg hj]
@@ -305,7 +305,7 @@ variable [Finite ι]
 
 /-- There is a smallest cube in the valley -/
 theorem exists_mi : ∃ i ∈ bcubes cs c, ∀ i' ∈ bcubes cs c, (cs i).w ≤ (cs i').w :=
-  (bcubes cs c).exists_min_image (fun i => (cs i).w) (Set.toFinite _) (nonempty_bcubes h v)
+  (bcubes cs c).exists_min_image (fun i ↦ (cs i).w) (Set.toFinite _) (nonempty_bcubes h v)
 
 /-- We let `mi` be the (index for the) smallest cube in the valley `c` -/
 def mi : ι :=
@@ -381,7 +381,7 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
   rcases exists_ne j with ⟨j', hj'⟩
   intro hj
   rcases smallest_onBoundary hj with ⟨x, ⟨hx, h2x⟩, h3x⟩
-  let p : Fin (n + 1) → ℝ := cons (c.b 0) fun j₂ => if j₂ = j then x else (cs i).b j₂.succ
+  let p : Fin (n + 1) → ℝ := cons (c.b 0) fun j₂ ↦ if j₂ = j then x else (cs i).b j₂.succ
   have hp : p ∈ c.bottom := by
     suffices ∀ j' : Fin n, ite (j' = j) x ((cs i).b j'.succ) ∈ c.side j'.succ by
       simpa [p, bottom, toSet, tail, side_tail]
@@ -397,7 +397,7 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
     · apply mi_strict_minimal i_i' h2i'
     · apply hw
   rcases this with ⟨⟨x', hx'⟩⟩
-  let p' : Fin (n + 1) → ℝ := cons (c.b 0) fun j₂ => if j₂ = j' then x' else (cs i).b j₂.succ
+  let p' : Fin (n + 1) → ℝ := cons (c.b 0) fun j₂ ↦ if j₂ = j' then x' else (cs i).b j₂.succ
   have hp' : p' ∈ c.bottom := by
     suffices ∀ j : Fin n, ite (j = j') x' ((cs i).b j.succ) ∈ c.side j.succ by
       simpa [p', bottom, toSet, tail, side_tail]
@@ -461,7 +461,7 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
           (le_trans (hp2 j).1 <| le_of_lt (h2p2 j).2) (le_trans (h2p2 j).1 <| le_of_lt (hp2 j).2)
           ⟨hj, hp1 j⟩ with
         ⟨w, hw, h2w, h3w⟩
-      refine ⟨fun j' => if j' = j then w else p2 j', ?_, ?_, ?_⟩
+      refine ⟨fun j' ↦ if j' = j then w else p2 j', ?_, ?_, ?_⟩
       · intro j'; by_cases h : j' = j
         · simp only [if_pos h]; exact h ▸ h3w
         · simp only [if_neg h]; exact hp2 j'
@@ -470,7 +470,7 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
         · simp only [if_pos h, side_tail]; exact h ▸ hw
         · simp only [if_neg h]; apply hi.2; apply h2p2
     rcases this with ⟨p3, h1p3, h2p3, h3p3⟩
-    let p := @cons n (fun _ => ℝ) (c.b 0) p3
+    let p := @cons n (fun _ ↦ ℝ) (c.b 0) p3
     have hp : p ∈ c.bottom := by refine ⟨rfl, ?_⟩; rwa [tail_cons]
     rcases v.1 hp with ⟨_, ⟨i'', rfl⟩, hi''⟩
     have h2i'' : i'' ∈ bcubes cs c := by
@@ -480,7 +480,7 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
       · rw [tail_cons]; exact h3p3
     have h3i'' : (cs i).w < (cs i'').w := by
       apply mi_strict_minimal _ h2i''; rintro rfl; apply h2p3; convert hi''.2
-    let p' := @cons n (fun _ => ℝ) (cs i).xm p3
+    let p' := @cons n (fun _ ↦ ℝ) (cs i).xm p3
     have hp' : p' ∈ (cs i').toSet := by simpa [i, p', toSet, forall_iff_succ, hi'.symm] using h1p3
     have h2p' : p' ∈ (cs i'').toSet := by
       simp only [p', toSet, forall_iff_succ, cons_succ, cons_zero, mem_setOf_eq]
@@ -519,16 +519,16 @@ variable [Finite ι] [Nontrivial ι]
 
 include h in
 theorem strictAnti_sequenceOfCubes : StrictAnti <| decreasingSequence h :=
-  strictAnti_nat_of_succ_lt fun k => by
+  strictAnti_nat_of_succ_lt fun k ↦ by
     let v := (sequenceOfCubes h k).2; dsimp only [decreasingSequence, sequenceOfCubes]
     apply w_lt_w h v (mi_mem_bcubes : mi h v ∈ _)
 
 theorem injective_sequenceOfCubes : Injective (sequenceOfCubes h) :=
-  @Injective.of_comp _ _ _ (fun x : { _i : ι // _ } => (cs x.1).w) _
+  @Injective.of_comp _ _ _ (fun x : { _i : ι // _ } ↦ (cs x.1).w) _
     (strictAnti_sequenceOfCubes h).injective
 
 /-- The infinite sequence of cubes contradicts the finiteness of the family. -/
-theorem not_correct : ¬Correct cs := fun h =>
+theorem not_correct : ¬Correct cs := fun h ↦
   (Finite.of_injective _ <| injective_sequenceOfCubes h).false
 
 /-- **Dissection of Cubes**: A cube cannot be cubed. -/

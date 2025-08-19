@@ -45,9 +45,9 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
   -- Given an index `i`, produce the set of increasing (resp., decreasing) subsequences which ends
   -- at `i`.
   let inc_sequences_ending_in (i : Fin n) : Finset (Finset (Fin n)) :=
-    univ.powerset.filter fun t => Finset.max t = i ∧ StrictMonoOn f ↑t
+    univ.powerset.filter fun t ↦ Finset.max t = i ∧ StrictMonoOn f ↑t
   let dec_sequences_ending_in (i : Fin n) : Finset (Finset (Fin n)) :=
-    univ.powerset.filter fun t => Finset.max t = i ∧ StrictAntiOn f ↑t
+    univ.powerset.filter fun t ↦ Finset.max t = i ∧ StrictAntiOn f ↑t
   -- The singleton sequence is in both of the above collections.
   -- (This is useful to show that the maximum length subsequence is at least 1, and that the set
   -- of subsequences is nonempty.)
@@ -87,7 +87,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
     injection q with q₁ q₂
     -- We have two cases: `f i < f j` or `f j < f i`.
     -- In the former we'll show `a_i < a_j`, and in the latter we'll show `b_i < b_j`.
-    cases lt_or_gt_of_ne fun _ => ne_of_lt ‹i < j› (hf ‹f i = f j›)
+    cases lt_or_gt_of_ne fun _ ↦ ne_of_lt ‹i < j› (hf ‹f i = f j›)
     on_goal 1 =>
       apply ne_of_lt _ q₁
       have := hab1 i
