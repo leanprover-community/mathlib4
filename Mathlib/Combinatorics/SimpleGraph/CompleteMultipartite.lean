@@ -7,6 +7,7 @@ import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.Copy
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Combinatorics.SimpleGraph.Hasse
+import Mathlib.Combinatorics.SimpleGraph.Turan
 
 /-!
 # Complete Multipartite Graphs
@@ -29,6 +30,23 @@ A graph is complete multipartite iff non-adjacency is transitive.
 * See also: `Mathlib/Combinatorics/SimpleGraph/FiveWheelLike.lean`
   `colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree` a maximally `r + 1`- cliquefree graph
   is `r`-colorable iff it is complete-multipartite.
+
+* `SimpleGraph.completeEquipartiteGraph`: the **complete equipartite graph** in parts of *equal*
+  size such that two vertices are adjacent if and only if they are in different parts.
+
+## Implementation Notes
+
+The definition of `completeEquipartiteGraph` is similar to `completeMultipartiteGraph`
+except that `Sigma.fst` is replaced by `Prod.fst` in the definition. The difference is that the
+former vertices are a product type whereas the latter vertices are a *dependent* product type.
+
+While `completeEquipartiteGraph r t` could have been defined as the specialisation
+`completeMultipartiteGraph (const (Fin r) (Fin t))` (or `turanGraph (r * t) r`), it is convenient
+to instead have a *non-dependent* *product* type for the vertices.
+
+See `completeEquipartiteGraph.completeMultipartiteGraph`, `completeEquipartiteGraph.turanGraph`
+for the isomorphisms between a `completeEquipartiteGraph` and a corresponding
+`completeMultipartiteGraph`, `turanGraph`.
 -/
 
 open Finset Fintype
@@ -174,27 +192,58 @@ section CompleteEquipartiteGraph
 variable {r t : ℕ}
 
 /-- The **complete equipartite graph** in `r` parts each of *equal* size `t` such that two
-vertices are adjacent if and only if they are in different parts. -/
-abbrev completeEquipartiteGraph (r t : ℕ) : SimpleGraph ((Fin r) × (Fin t)) :=
-  (⊤ : SimpleGraph (Fin r)).comap Prod.fst
+vertices are adjacent if and only if they are in different parts, often denoted $K_r(t)$.
+
+This is isomorphic to a corresponding `completeMultipartiteGraph` and `turanGraph`. The difference
+is that the former vertices are a product type.
+
+See `completeEquipartiteGraph.completeMultipartiteGraph`, `completeEquipartiteGraph.turanGraph`. -/
+abbrev completeEquipartiteGraph (r t : ℕ) : SimpleGraph (Fin r × Fin t) :=
+  SimpleGraph.comap Prod.fst ⊤
+
+lemma completeEquipartiteGraph_adj {v w} :
+  (completeEquipartiteGraph r t).Adj v w ↔ v.1 ≠ w.1 := by rfl
 
 /-- A `completeEquipartiteGraph` is isomorphic to a corresponding `completeMultipartiteGraph`.
 
 The difference is that the former vertices are a product type whereas the latter vertices are a
-dependent product type. -/
+*dependent* product type. -/
 def completeEquipartiteGraph.completeMultipartiteGraph :
-    completeEquipartiteGraph r t ≃g completeMultipartiteGraph (Function.const (Fin r) (Fin t)) where
-  toFun := fun (v₁, v₂) ↦ by
-    use v₁, v₂, v₂.is_lt
-  invFun := fun ⟨v₁, v₂⟩ ↦ by
-    rw [Function.const_apply] at v₂
-    use v₁, v₂, v₂.is_lt
-  left_inv v := by simp
-  right_inv v := by simp
-  map_rel_iff' := by simp
+    completeEquipartiteGraph r t ≃g completeMultipartiteGraph (Function.const (Fin r) (Fin t)) :=
+  { (Equiv.sigmaEquivProd (Fin r) (Fin t)).symm with map_rel_iff' := by simp }
 
-lemma completeEquipartiteGraph_adj {v w} :
-  (completeEquipartiteGraph r t).Adj v w ↔ v.1 ≠ w.1 := by rfl
+/-- A `completeEquipartiteGraph` is isomorphic to a corresponding `turanGraph`.
+
+The difference is that the former vertices are a product type whereas the latter vertices are
+not. -/
+def completeEquipartiteGraph.turanGraph :
+    completeEquipartiteGraph r t ≃g turanGraph (r * t) r where
+  toFun := by
+    refine fun v ↦ ⟨v.2 * r + v.1, ?_⟩
+    conv_rhs =>
+      rw [← Nat.sub_one_add_one_eq_of_pos v.2.pos, Nat.mul_add_one, mul_comm r (t - 1)]
+    exact add_lt_add_of_le_of_lt (Nat.mul_le_mul_right r (Nat.le_pred_of_lt v.2.prop)) v.1.prop
+  invFun := by
+    refine fun v ↦ (⟨v % r, ?_⟩, ⟨v / r, ?_⟩)
+    · have ⟨hr, _⟩ := CanonicallyOrderedAdd.mul_pos.mp v.pos
+      exact Nat.mod_lt v hr
+    · exact Nat.div_lt_of_lt_mul v.prop
+  left_inv v := by
+    refine Prod.ext (Fin.ext ?_) (Fin.ext ?_)
+    · conv =>
+        enter [1, 1, 1, 1, 1]
+        rw [Nat.mul_add_mod_self_right]
+      exact Nat.mod_eq_of_lt v.1.prop
+    · apply le_antisymm
+      · rw [Nat.div_le_iff_le_mul_add_pred v.1.pos, mul_comm r ↑v.2]
+        exact Nat.add_le_add_left (Nat.le_pred_of_lt v.1.prop) (↑v.2 * r)
+      · rw [Nat.le_div_iff_mul_le v.1.pos]
+        exact Nat.le_add_right (↑v.2 * r) ↑v.1
+  right_inv v := Fin.ext (Nat.div_add_mod' v r)
+  map_rel_iff' {v w} := by
+    rw [turanGraph_adj, Equiv.coe_fn_mk, Nat.mul_add_mod_self_right, Nat.mod_eq_of_lt v.1.prop,
+      Nat.mul_add_mod_self_right, Nat.mod_eq_of_lt w.1.prop, ← Fin.ext_iff.ne,
+      ← completeEquipartiteGraph_adj]
 
 /-- `completeEquipartiteGraph r t` contains no edges when `r ≤ 1` or `t = 0`. -/
 lemma completeEquipartiteGraph_eq_bot_iff :
@@ -229,12 +278,12 @@ theorem neighborFinset_completeEquipartiteGraph (v) :
   ext; simp [ne_comm]
 
 theorem degree_completeEquipartiteGraph (v) :
-    (completeEquipartiteGraph r t).degree v = (r-1) * t := by
+    (completeEquipartiteGraph r t).degree v = (r - 1) * t := by
   rw [← card_neighborFinset_eq_degree, neighborFinset_completeEquipartiteGraph v,
     card_product, card_compl, card_singleton, Fintype.card_fin, card_univ, Fintype.card_fin]
 
 theorem card_edgeFinset_completeEquipartiteGraph :
-    #(completeEquipartiteGraph r t).edgeFinset = (r.choose 2) * t^2 := by
+    #(completeEquipartiteGraph r t).edgeFinset = r.choose 2 * t ^ 2 := by
   rw [← mul_right_inj' two_ne_zero, ← sum_degrees_eq_twice_card_edges]
   conv_lhs =>
     rhs; intro v
@@ -244,45 +293,31 @@ theorem card_edgeFinset_completeEquipartiteGraph :
     rw [← Nat.mul_assoc, Nat.choose_two_right, Nat.mul_div_cancel' r.even_mul_pred_self.two_dvd]
   rw [← mul_assoc, mul_comm r _, mul_assoc t _ _, mul_comm t, mul_assoc _ t, ← pow_two]
 
-section Coloring
-
-/-- The injection `(x₁, x₂) ↦ x₁` is always a `r`-coloring of a `completeEquipartiteGraph r ·`. -/
-def Coloring.completeEquipartiteGraph :
-  (completeEquipartiteGraph r t).Coloring (Fin r) := ⟨Prod.fst, id⟩
-
-/-- The `completeEquipartiteGraph r t` is always `r`-colorable. -/
-theorem completeEquipartiteGraph_colorable :
-  (completeEquipartiteGraph r t).Colorable r := ⟨Coloring.completeEquipartiteGraph⟩
+variable [Fintype α]
 
 /-- Every `n`-colorable graph is contained in a `completeEquipartiteGraph` in `n` parts (as long
   as the parts are at least as large as the largest color class). -/
-theorem isContained_completeEquipartiteGraph_of_colorable [Fintype α]
-    {n : ℕ} (h : G.Colorable n) : ∃ t, G ⊑ completeEquipartiteGraph n t := by
-  let C := h.some
-  let t := univ.sup (fun c ↦ card (C.colorClass c))
-  use t
-  haveI (c : Fin n) : Nonempty (C.colorClass c ↪ (Fin t)) := by
-    rw [Function.Embedding.nonempty_iff_card_le, Fintype.card_fin]
-    exact @le_sup _ _ _ _ _ (fun c ↦ card (C.colorClass c)) c (mem_univ c)
-  have ι (c : Fin n) := Classical.arbitrary (C.colorClass c ↪ (Fin t))
-  have hι_ceq {c₁ c₂} {v} {w} (hc_eq : c₁ = c₂) (hι_eq : ι c₁ v = ι c₂ w) : v.val = w.val := by
-    let v' : C.colorClass c₂ := by
-      use v
-      rw [← hc_eq]
-      exact v.prop
-    have hι_eq' : ι c₁ v = ι c₂ v' := by
+theorem isContained_completeEquipartiteGraph_of_colorable {n : ℕ} (C : G.Coloring (Fin n)) :
+    G ⊑ completeEquipartiteGraph n (univ.sup fun c ↦ card (C.colorClass c)) := by
+  let f := fun c ↦ card (C.colorClass c)
+  have h (c : Fin n) : Nonempty (C.colorClass c ↪ Fin (univ.sup f)) := by
+    rw [Function.Embedding.nonempty_iff_card_le, Fintype.card_fin,
+      show card (C.colorClass c) = f c by dsimp]
+    exact le_sup (mem_univ c)
+  have F (c : Fin n) := Classical.arbitrary (C.colorClass c ↪ Fin (univ.sup f))
+  have hF {c₁ c₂ v₁ v₂} (hc : c₁ = c₂) (hv : F c₁ v₁ = F c₂ v₂) : v₁.val = v₂.val := by
+    let v₁' : C.colorClass c₂ := ⟨v₁, by simp [← hc]⟩
+    have hv' : F c₁ v₁ = F c₂ v₁' := by
       apply congr_heq
-      · rw [hc_eq]
+      · rw [hc]
       · rw [Subtype.heq_iff_coe_eq]
-        simp [hc_eq]
-    rw [hι_eq'] at hι_eq
-    simpa [Subtype.ext_iff] using (ι c₂).injective hι_eq
-  use ⟨fun v ↦ (C v, ι (C v) ⟨v, C.mem_colorClass v⟩), C.valid⟩
-  intro _ _ h_eq
-  rw [Prod.mk.injEq] at h_eq
-  exact hι_ceq h_eq.1 h_eq.2
-
-end Coloring
+        simp [hc]
+    rw [hv'] at hv
+    simpa [Subtype.ext_iff] using (F c₂).injective hv
+  use ⟨fun v ↦ (C v, F (C v) ⟨v, C.mem_colorClass v⟩), C.valid⟩
+  intro v w h
+  rw [Prod.mk.injEq] at h
+  exact hF h.1 h.2
 
 end CompleteEquipartiteGraph
 
