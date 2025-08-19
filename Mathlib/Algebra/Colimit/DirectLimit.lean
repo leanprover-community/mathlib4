@@ -319,6 +319,9 @@ instance [∀ i, NonUnitalNonAssocCommSemiring (G i)]
 instance [∀ i, NonUnitalCommSemiring (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
     NonUnitalCommSemiring (DirectLimit G f) where
 
+instance [∀ i, NonAssocCommSemiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
+    NonAssocCommSemiring (DirectLimit G f) where
+
 instance [∀ i, CommSemiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
     CommSemiring (DirectLimit G f) where
 
@@ -328,6 +331,9 @@ instance [∀ i, NonUnitalNonAssocCommRing (G i)]
 
 instance [∀ i, NonUnitalCommRing (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
     NonUnitalCommRing (DirectLimit G f) where
+
+instance [∀ i, NonAssocCommRing (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
+    NonAssocCommRing (DirectLimit G f) where
 
 instance [∀ i, CommRing (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
     CommRing (DirectLimit G f) where
