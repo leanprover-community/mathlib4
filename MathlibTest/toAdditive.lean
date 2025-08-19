@@ -251,21 +251,6 @@ def pi_nat_has_one {I : Type} : One ((x : I) → Nat)  := pi.has_one
 
 example : @pi_nat_has_one = @pi_nat_has_zero := rfl
 
-section test_noncomputable
-
-@[to_additive Bar.bar]
-noncomputable def Foo.foo (h : ∃ _ : α, True) : α := Classical.choose h
-
-@[to_additive Bar.bar']
-def Foo.foo' : ℕ := 2
-
-theorem Bar.bar'_works : Bar.bar' = 2 := by decide
-
-run_cmd (do
-  if !isNoncomputable (← getEnv) `Test.Bar.bar then throwError "bar shouldn't be computable"
-  if isNoncomputable (← getEnv) `Test.Bar.bar' then throwError "bar' should be computable")
-end test_noncomputable
-
 section instances
 
 class FooClass (α) : Prop where
@@ -581,6 +566,11 @@ run_cmd
     | throwError "no `docComment` docstring found"
   logInfo doc
 
+/--
+warning: String syntax for `to_additive` docstrings is deprecated:
+Use docstring syntax instead (e.g. `@[to_additive /-- example -/]`)
+-/
+#guard_msgs in
 @[to_additive "(via `str` syntax) I am an additive docstring!"]
 theorem mulTrivial' : True := trivial
 
@@ -590,3 +580,94 @@ run_cmd
   let some doc ← findDocString? (← getEnv) ``addTrivial'
     | throwError "no `str` docstring found"
   logInfo doc
+
+/-! Test handling of noncomputability -/
+
+elab "#computability " decl:ident : command => do
+  let name ← liftCoreM (realizeGlobalConstNoOverloadWithInfo decl)
+  let markedNonComp := isNoncomputable (← getEnv) name
+  let hasNoExec := (IR.findEnvDecl (← getEnv) name).isNone
+  let desc :=
+    if markedNonComp then "is marked noncomputable"
+    else if hasNoExec then "has no executable code"
+    else "is computable"
+  logInfo m!"`{name}` {desc}"
+
+/- Both should be computable -/
+
+@[to_additive]
+def mulComputableTest : Nat := 0
+
+/-- info: `mulComputableTest` is computable -/
+#guard_msgs in #computability mulComputableTest
+/-- info: `addComputableTest` is computable -/
+#guard_msgs in #computability addComputableTest
+
+/- Both should be marked noncomputable -/
+
+@[to_additive]
+noncomputable def mulMarkedNoncomputable : Nat := 0
+
+/-- info: `mulMarkedNoncomputable` is marked noncomputable -/
+#guard_msgs in #computability mulMarkedNoncomputable
+/-- info: `addMarkedNoncomputable` is marked noncomputable -/
+#guard_msgs in #computability addMarkedNoncomputable
+
+noncomputable section
+
+/- Compilation should succeed despite `noncomputable` -/
+
+@[to_additive]
+def mulComputableTest' : Nat := 0
+
+/-- info: `mulComputableTest'` is computable -/
+#guard_msgs in #computability mulComputableTest'
+/-- info: `addComputableTest'` is computable -/
+#guard_msgs in #computability addComputableTest'
+
+/- Both should be marked noncomputable -/
+
+@[to_additive]
+noncomputable def mulMarkedNoncomputable' : Nat := 0
+
+/-- info: `mulMarkedNoncomputable'` is marked noncomputable -/
+#guard_msgs in #computability mulMarkedNoncomputable'
+/-- info: `addMarkedNoncomputable'` is marked noncomputable -/
+#guard_msgs in #computability addMarkedNoncomputable'
+
+/-
+Compilation should fail silently.
+
+If `mulNoExec` ever becomes marked noncomputable (meaning Lean's handling of
+`noncomputable section` has changed), then the check for executable code in
+`Mathlib.Tactic.ToAdditive.Frontend` should be replaced with a simple `isNoncomputable` check and
+mark `addNoExec` `noncomputable` as well (plus a check for whether the original declaration is an
+axiom, if `to_additive` ever handles axioms).
+-/
+
+@[to_additive]
+def mulNoExec {G} (n : Nonempty G) : G := Classical.choice n
+
+/-- info: `mulNoExec` has no executable code -/
+#guard_msgs in #computability mulNoExec
+/-- info: `addNoExec` has no executable code -/
+#guard_msgs in #computability addNoExec
+
+end
+
+/-! Test structures with a private constructor and private fields -/
+
+structure MyPrivateAdd where
+  private mk ::
+  private add : Nat
+
+@[to_additive]
+structure MyPrivateMul where
+  private mk ::
+  private mul : Nat
+
+@[to_additive]
+def MyPrivateMul.mk' (a : Nat) := MyPrivateMul.mk a
+
+@[to_additive]
+def MyPrivateMul.mul' (x : MyPrivateMul) := x.mul
