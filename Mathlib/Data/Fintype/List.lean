@@ -88,7 +88,7 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := b
         by_contra hab
         absurd h
         rw [hab] at ha
-        exact Finset.perm_toList.mp <| Perm.trans (id (Perm.symm ha)) hb
+        exact Finset.perm_toList.mp <| Perm.trans ha.symm hb
   · intro l
     simp only [Finset.mem_mk, Multiset.mem_bind, Finset.mem_val, Finset.mem_powerset,
       Finset.subset_univ, Multiset.mem_lists_iff, Multiset.quot_mk_to_coe, true_and]

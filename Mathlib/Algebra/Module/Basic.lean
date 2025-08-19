@@ -5,7 +5,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Group.Indicator
+import Mathlib.Algebra.Notation.Indicator
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs

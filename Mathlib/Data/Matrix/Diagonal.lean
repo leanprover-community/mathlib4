@@ -7,6 +7,7 @@ import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Data.Int.Cast.Pi
 import Mathlib.Data.Matrix.Defs
 import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Logic.Embedding.Basic
 
 /-!
 # Diagonal matrices
@@ -20,7 +21,7 @@ This file defines diagonal matrices and the `AddCommMonoidWithOne` structure on 
 * `Matrix.instAddCommMonoidWithOne`: matrices are an additive commutative monoid with one
 -/
 
-assert_not_exists Algebra Star
+assert_not_exists Algebra TrivialStar
 
 universe u u' v w
 
