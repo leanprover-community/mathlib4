@@ -701,7 +701,7 @@ variable {M₁ M₂ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R
 variable (v₁ : Basis n R M₁) (v₂ : Basis m R M₂)
 
 omit [DecidableEq n] in
-theorem LinearMap.lsmul_flip_apply_toMatrix [DecidableEq m] (b' : Module.Basis m R R) (x : M₁) :
+theorem LinearMap.toMatrix_lsmul_flip_apply [DecidableEq m] (b' : Module.Basis m R R) (x : M₁) :
     ((lsmul R M₁).flip x).toMatrix b' v₁ = vecMulVec (v₁.repr x) b' := by
   ext; simp [toMatrix_apply, vecMulVec_apply, mul_comm]
 

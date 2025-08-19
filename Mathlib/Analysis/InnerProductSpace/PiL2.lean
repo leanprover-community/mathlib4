@@ -1177,10 +1177,9 @@ theorem inner_matrix_col_col [Fintype m] (A B : Matrix m n 𝕜) (i j : n) :
   simp [PiLp.inner_apply, dotProduct, mul_apply', mul_comm]
 
 /-- The matrix representation of `innerSL 𝕜 x` given by an orthonormal basis `b` is equal to
-the conjugate transpose of the column `b.repr x`
-(in other words, it is the row `star (b.repr x)`). -/
-theorem innerSL_apply_toMatrix [DecidableEq ι] (b : OrthonormalBasis ι 𝕜 E) (x : E) :
-    (innerSL 𝕜 x).toMatrix b.toBasis (.singleton Unit 𝕜) = (replicateCol Unit (b.repr x))ᴴ := by
+the row `star (b.repr x)`). -/
+theorem toMatrix_innerSL_apply [DecidableEq ι] (b : OrthonormalBasis ι 𝕜 E) (x : E) :
+    (innerSL 𝕜 x).toMatrix b.toBasis (.singleton Unit 𝕜) = replicateRow Unit (star (b.repr x)) := by
   ext; simp [LinearMap.toMatrix_apply, b.repr_apply_apply]
 
 end Matrix
