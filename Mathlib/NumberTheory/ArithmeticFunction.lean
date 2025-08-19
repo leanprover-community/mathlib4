@@ -472,6 +472,9 @@ def ppow (f : ArithmeticFunction R) (k : ℕ) : ArithmeticFunction R :=
 theorem ppow_zero {f : ArithmeticFunction R} : f.ppow 0 = ζ := by rw [ppow, dif_pos rfl]
 
 @[simp]
+theorem ppow_one {f : ArithmeticFunction R} : f.ppow 1 = f := by ext; simp [ppow]
+
+@[simp]
 theorem ppow_apply {f : ArithmeticFunction R} {k x : ℕ} (kpos : 0 < k) : f.ppow k x = f x ^ k := by
   rw [ppow, dif_neg (Nat.ne_of_gt kpos), coe_mk]
 
@@ -793,6 +796,12 @@ def pow (k : ℕ) : ArithmeticFunction ℕ :=
   id.ppow k
 
 @[simp]
+theorem pow_zero : pow 0 = ζ := rfl
+
+@[simp]
+theorem pow_one : pow 1 = id := by ext; simp [pow]
+
+@[simp]
 theorem pow_apply {k n : ℕ} : pow k n = if k = 0 ∧ n = 0 then 0 else n ^ k := by
   cases k <;> simp [pow]
 
@@ -836,6 +845,9 @@ theorem zeta_mul_pow_eq_sigma {k : ℕ} : ζ * pow k = σ k := by
   rw [pow_apply, if_neg (not_and_of_not_right _ _)]
   contrapose! hx
   simp [hx]
+
+theorem pow_mul_zeta_eq_sigma {k : ℕ} : pow k * ζ = σ k := by
+  rw [mul_comm, zeta_mul_pow_eq_sigma]
 
 @[arith_mult]
 theorem isMultiplicative_one [MonoidWithZero R] : IsMultiplicative (1 : ArithmeticFunction R) :=
@@ -961,7 +973,7 @@ theorem cardDistinctFactors_apply_prime_pow {p k : ℕ} (hp : p.Prime) (hk : k �
 
 @[simp]
 theorem cardDistinctFactors_apply_prime {p : ℕ} (hp : p.Prime) : ω p = 1 := by
-  rw [← pow_one p, cardDistinctFactors_apply_prime_pow hp one_ne_zero]
+  rw [← _root_.pow_one p, cardDistinctFactors_apply_prime_pow hp one_ne_zero]
 
 /-- `μ` is the Möbius function. If `n` is squarefree with an even number of distinct prime factors,
   `μ n = 1`. If `n` is squarefree with an odd number of distinct prime factors, `μ n = -1`.
@@ -1027,12 +1039,12 @@ theorem abs_moebius_le_one {n : ℕ} : |μ n| ≤ 1 := by
   simp
 
 theorem moebius_apply_prime {p : ℕ} (hp : p.Prime) : μ p = -1 := by
-  rw [moebius_apply_of_squarefree hp.squarefree, cardFactors_apply_prime hp, pow_one]
+  rw [moebius_apply_of_squarefree hp.squarefree, cardFactors_apply_prime hp, _root_.pow_one]
 
 theorem moebius_apply_prime_pow {p k : ℕ} (hp : p.Prime) (hk : k ≠ 0) :
     μ (p ^ k) = if k = 1 then -1 else 0 := by
   split_ifs with h
-  · rw [h, pow_one, moebius_apply_prime hp]
+  · rw [h, _root_.pow_one, moebius_apply_prime hp]
   rw [moebius_eq_zero_of_not_squarefree]
   rw [squarefree_pow_iff hp.ne_one hk, not_and_or]
   exact Or.inr h
