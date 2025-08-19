@@ -271,6 +271,7 @@ abbrev Declared := Std.HashMap String (Term ⊕ Array Term)
 /-- The environmental extension to locally store polynomial-like notations. -/
 abbrev DeclaredExt := SimpleScopedEnvExtension (String × (Term ⊕ Array Term)) Declared
 
+/-- A local instance to help prove that `DeclaredExt` is inhabited. -/
 @[local instance] def inhabitedSum {α β : Type _} [Inhabited α] : Inhabited (α ⊕ β) :=
   ⟨.inl default⟩
 
@@ -278,12 +279,6 @@ abbrev DeclaredExt := SimpleScopedEnvExtension (String × (Term ⊕ Array Term))
 initialize declaredExt : DeclaredExt ← registerSimpleScopedEnvExtension <|
   { addEntry old new := insert new old
     initial := {} }
-
-/-- Return the raw string for a declaration of polynomial-like notation. -/
-def _root_.Lean.TSyntax.parsePolyesqueRaw (p : Polyesque) : CoreM String := do
-  let `(polyesque| $head:term_decl$body:polyesque_notation*) := p
-    | throwError m!"Unrecognised syntax: {p}"
-  return head.rawTermDecl ++ .join (← body.mapM fun p ↦ return (← p.polyesqueNotation).raw).toList
 
 /-- Given a declaration of polynomial-like notation (e.g. `(Fin 37)[x,y,z][[t]]`), parse it fully to
 return the head (e.g. `(Fin 37)`), the raw body (e.g. `"[x,y,z][[t]]`"), the total type generated
