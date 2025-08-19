@@ -272,9 +272,7 @@ lemma isPrincipalIdealRing_of_compactSpace [hc : CompactSpace 𝒪[K]] :
   -- The strategy to show that we have a PIR is by contradiction,
   -- assuming that the range of the valuation is densely ordered.
   have hi : Valuation.Integers (R := K) Valued.v 𝒪[K] := Valuation.integer.integers v
-  have hc : IsCompact (X := K) 𝒪[K] := by
-    simpa [← isCompact_univ_iff, Subtype.isCompact_iff, Set.image_univ,
-      Subtype.range_coe_subtype] using hc
+  have hc : IsCompact (X := K) 𝒪[K] := isCompact_iff_compactSpace.mpr hc
   -- We can also construct that it has a locally finite order, by compactness
   -- which leads to a contradiction.
   obtain ⟨_⟩ := locallyFiniteOrder_units_mrange_of_isCompact_integer hc
@@ -292,21 +290,28 @@ lemma isPrincipalIdealRing_of_compactSpace [hc : CompactSpace 𝒪[K]] :
   rw [← denselyOrdered_units_iff] at H
   exact not_lt_of_denselyOrdered_of_locallyFinite _ _ hx'
 
+-- MOVE
+theorem _root_.Valuation.isNontrivial_iff_exists_lt_one {K Γ : Type*} [Field K]
+    [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) :
+    v.IsNontrivial ↔ ∃ x, x ≠ 0 ∧ v x < 1 :=
+  ⟨fun h ↦ by simpa using h.exists_lt_one (v := v), fun ⟨x, hx0, hx1⟩ ↦ ⟨x, by simp [hx0, hx1.ne]⟩⟩
+
+-- MOVE
+theorem _root_.Valuation.isNontrivial_iff_not_a_field {K Γ : Type*} [Field K]
+    [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) :
+    v.IsNontrivial ↔ IsLocalRing.maximalIdeal v.integer ≠ ⊥ := by
+  simp_rw [ne_eq, eq_bot_iff, v.isNontrivial_iff_exists_lt_one, SetLike.le_def, Ideal.mem_bot,
+    not_forall, exists_prop, IsLocalRing.notMem_maximalIdeal.not_right,
+    Valuation.Integer.not_isUnit_iff_valuation_lt_one]
+  exact ⟨fun ⟨x, hx0, hx1⟩ ↦ ⟨⟨x, hx1.le⟩, by simp [Subtype.ext_iff, *]⟩,
+  fun ⟨x, hx1, hx0⟩ ↦ ⟨x, by simp [*]⟩⟩
+
 lemma isDiscreteValuationRing_of_compactSpace [hn : (Valued.v : Valuation K Γ₀).IsNontrivial]
-    [CompactSpace 𝒪[K]] : IsDiscreteValuationRing 𝒪[K] := by
+    [CompactSpace 𝒪[K]] : IsDiscreteValuationRing 𝒪[K] :=
   -- To prove we have a DVR, we need to show it is
   -- a local ring (instance is directly inferred) and a PIR and not a field.
-  obtain ⟨x, hx, hx'⟩ := hn.exists_lt_one
-  have key : IsPrincipalIdealRing 𝒪[K] := isPrincipalIdealRing_of_compactSpace
-  exact {
-    not_a_field' := by
-      -- here is the other place where the nontriviality of the valuation comes in,
-      -- since if we had `v x = 0 ∨ v x = 1`, then the maximal ideal would be `⊥`.
-      simp only [ne_eq, Ideal.ext_iff, IsLocalRing.mem_maximalIdeal, mem_nonunits_iff,
-        Ideal.mem_bot, not_forall, Valuation.Integer.not_isUnit_iff_valuation_lt_one]
-      refine ⟨⟨x, hx'.le⟩, ?_⟩
-      simpa [Subtype.ext_iff, hx'] using hx
-  }
+  have : IsPrincipalIdealRing 𝒪[K] := isPrincipalIdealRing_of_compactSpace
+  { not_a_field' := v.isNontrivial_iff_not_a_field.mp hn }
 
 end CompactDVR
 
