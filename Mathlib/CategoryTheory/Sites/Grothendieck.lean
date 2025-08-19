@@ -138,10 +138,12 @@ def copy (J : GrothendieckTopology C) (s : ∀ X : C, Set (Sieve X)) (h : J.siev
   pullback_stable' := h ▸ J.pullback_stable'
   transitive' := h ▸ J.transitive'
 
+@[simp]
 theorem sieves_copy {J : GrothendieckTopology C} {s : ∀ X : C, Set (Sieve X)} {h : J.sieves = s} :
     (J.copy s h).sieves = s :=
   rfl
 
+@[simp]
 theorem coe_copy {J : GrothendieckTopology C} {s : ∀ X : C, Set (Sieve X)} {h : J.sieves = s} :
     ⇑(J.copy s h) = s :=
   rfl
