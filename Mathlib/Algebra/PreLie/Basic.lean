@@ -71,8 +71,7 @@ class RightPreLieAlgebra (L : Type*) [RightPreLieRing L] : Type _ extends
 end algebras
 
 namespace LeftPreLieRing
-variable {R : Type*} [CommRing R]
-variable {L : Type*} [LeftPreLieRing L]
+variable {R L : Type*} [CommRing R] [LeftPreLieRing L]
 
 theorem assoc_symm (x y z : L) :
     associator x y z = associator y x z := LeftPreLieRing.assoc_symm' x y z
@@ -84,15 +83,13 @@ instance : RightPreLieRing Lᵐᵒᵖ where
 end LeftPreLieRing
 
 namespace LeftPreLieAlgebra
-variable {R : Type*} [CommRing R]
-variable {L : Type*} [LeftPreLieRing L] [LeftPreLieAlgebra R L]
+variable {R L : Type*} [CommRing R] [LeftPreLieRing L] [LeftPreLieAlgebra R L]
 /-- Every left pre-Lie algebra is a right pre-Lie algebra with the opposite multiplication -/
 instance : RightPreLieAlgebra R Lᵐᵒᵖ where
 end LeftPreLieAlgebra
 
 namespace RightPreLieRing
-variable {R : Type*} [CommRing R]
-variable {L : Type*} [RightPreLieRing L]
+variable {R L : Type*} [CommRing R] [RightPreLieRing L]
 
 theorem assoc_symm (x y z : L) :
     associator x y z = associator x z y := RightPreLieRing.assoc_symm' x y z
@@ -104,8 +101,7 @@ instance : LeftPreLieRing Lᵐᵒᵖ where
 end RightPreLieRing
 
 namespace RightPreLieAlgebra
-variable {R : Type*} [CommRing R]
-variable {L : Type*} [RightPreLieRing L] [RightPreLieAlgebra R L]
+variable {R L : Type*} [CommRing R] [RightPreLieRing L] [RightPreLieAlgebra R L]
 /-- Every left pre-Lie algebra is a right pre-Lie algebra with the opposite multiplication -/
 instance : LeftPreLieAlgebra R Lᵐᵒᵖ where
 end RightPreLieAlgebra
