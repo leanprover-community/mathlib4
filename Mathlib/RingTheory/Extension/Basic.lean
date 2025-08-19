@@ -60,7 +60,7 @@ attribute [instance] commRing algebra₁ algebra₂ isScalarTower
 
 attribute [simp] algebraMap_σ
 
--- We want to make sure `R₀` acts compatibly on `R` and `S` to avoid unsensical instances
+-- We want to make sure `R₀` acts compatibly on `R` and `S` to avoid nonsensical instances
 @[nolint unusedArguments]
 noncomputable instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
     Algebra R₀ P.Ring := Algebra.compHom P.Ring (algebraMap R₀ R)
