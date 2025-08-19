@@ -589,6 +589,7 @@ end ConnectedComponent
 
 /-- Given graph homomorphisms from each connected component of `G` to `H` this is the graph
 homomorphism from `G` to `H` -/
+@[simps]
 def homOfConnectedComponents (G : SimpleGraph V) {H : SimpleGraph V'}
     (C : (c : G.ConnectedComponent) → c.toSimpleGraph →g H) : G →g H where
   toFun := fun x ↦ (C (G.connectedComponentMk _)) _
