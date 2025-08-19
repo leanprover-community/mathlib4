@@ -45,7 +45,7 @@ It is important here that the levels in the term are level metavariables, as oth
 not be reassignable to the corresponding levels of `Cat`. -/
 def toCatExpr (e : Expr) : MetaM Expr := do
   let (args, binderInfos, conclusion) ← forallMetaTelescope (← inferType e)
-  -- Find the expression corresponding to the bicategory, by anylizing `η = θ` (i.e. conclusion)
+  -- Find the expression corresponding to the bicategory, by analyzing `η = θ` (i.e. conclusion)
   let B ←
     match conclusion.getAppFnArgs with
     | (`Eq, #[_, η, _]) =>

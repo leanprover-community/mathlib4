@@ -58,7 +58,7 @@ def RingHom.Finite (f : A →+* B) : Prop :=
   letI : Algebra A B := f.toAlgebra
   Module.Finite A B
 ```
-An example with a constructor as parameter (as the two properties are not definitonally the same):
+An example with a constructor as parameter (as the two properties are not definitionally the same):
 ```
 @[algebraize Algebra.Flat.out]
 class RingHom.Flat {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+* S) : Prop where

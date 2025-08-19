@@ -250,7 +250,7 @@ def coherence_loop (maxSteps := 37) : TacticM Unit :=
 open Lean.Parser.Tactic
 
 /--
-Simp lemmas for rewriting a hom in monoical categories into a normal form.
+Simp lemmas for rewriting a hom in monoidal categories into a normal form.
 -/
 syntax (name := monoidal_simps) "monoidal_simps" optConfig : tactic
 

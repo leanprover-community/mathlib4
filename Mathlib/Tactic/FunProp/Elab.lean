@@ -102,7 +102,7 @@ Continuous
   continuous_add_left, args: [5], priority: 1000
   continuous_add_right, args [4], priority: 1000
   ...
-Diferentiable
+Differentiable
   Differentiable.add, args: [4,5], priority: 1000
   Differentiable.add_const, args: [4], priority: 1000
   Differentiable.const_add, args: [5], priority: 1000

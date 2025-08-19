@@ -621,7 +621,7 @@ partial def internalizeAppLit (e : Expr) : CCM Unit := do
       addCongruenceTable e
     else
       -- Expensive case where we store a quadratic number of occurrences,
-      -- as described in the paper "Congruence Closure in Internsional Type Theory"
+      -- as described in the paper "Congruence Closure in Intensional Type Theory"
       for h : i in [:apps.size] do
         let curr := apps[i]
         let .app currFn currArg := curr | unreachable!
