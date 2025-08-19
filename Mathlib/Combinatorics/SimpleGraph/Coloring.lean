@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Clique
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Setoid.Partition
@@ -237,6 +238,11 @@ theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     · rintro v w hvw
       simp only [Fin.mk_eq_mk, Ne]
       exact C.valid hvw
+
+theorem colorable_iff_forall_connectedComponents {n : ℕ} :
+    G.Colorable n ↔ ∀ c : G.ConnectedComponent, (c.toSimpleGraph).Colorable n :=
+  ⟨fun ⟨C⟩ _ ↦ ⟨fun v ↦ C v, fun h h1 ↦ C.valid h h1⟩,
+   fun h ↦ ⟨G.homOfConnectedComponents (fun c ↦ (h c).some)⟩⟩
 
 theorem colorable_set_nonempty_of_colorable {n : ℕ} (hc : G.Colorable n) :
     { n : ℕ | G.Colorable n }.Nonempty :=

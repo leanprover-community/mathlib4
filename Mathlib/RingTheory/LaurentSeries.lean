@@ -727,7 +727,7 @@ theorem Cauchy.exists_lb_coeff_ne {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) :
   rw [hf d (lt_of_lt_of_le hd (min_le_left _ _)), hN₂ d (lt_of_lt_of_le hd (min_le_right _ _))]
 
 /- Given a Cauchy filter `ℱ` in the Laurent Series and a bound `D`, for almost all series in the
-filter the coefficients below `D` coincide with `Caucy.coeff hℱ`. -/
+filter the coefficients below `D` coincide with `Cauchy.coeff hℱ`. -/
 theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) {D : ℤ} :
     ∀ᶠ f : K⸨X⸩ in ℱ, ∀ d, d < D → coeff hℱ d = f.coeff d := by
   -- `φ` sends `d` to the set of Laurent Series having `d`th coefficient equal to `ℱ.coeff`.
@@ -948,7 +948,7 @@ lemma comparePkg_eq_extension (x : UniformSpace.Completion (RatFunc K)) :
 /-- The uniform space equivalence between two abstract completions of `ratfunc K` as a ring
 equivalence: this will be the *inverse* of the fundamental one. -/
 abbrev ratfuncAdicComplRingEquiv : RatFuncAdicCompl K ≃+* K⸨X⸩ :=
-  {comparePkg K with
+  { comparePkg K with
     map_mul' := by
       intro x y
       rw [comparePkg_eq_extension, (extensionAsRingHom K (continuous_coe)).map_mul']
