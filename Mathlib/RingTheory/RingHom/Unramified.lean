@@ -47,9 +47,8 @@ lemma respectsIso :
 lemma isStableUnderBaseChange :
     IsStableUnderBaseChange FormallyUnramified := by
   refine .mk respectsIso ?_
-  intros R S T _ _ _ _ _ h
-  change (algebraMap _ _).FormallyUnramified
-  rw [formallyUnramified_algebraMap] at h ⊢
+  introv H
+  rw [formallyUnramified_algebraMap] at H ⊢
   infer_instance
 
 lemma holdsForLocalizationAway :

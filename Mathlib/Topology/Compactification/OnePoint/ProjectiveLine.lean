@@ -3,10 +3,13 @@ Copyright (c) 2024 Bjørn Kjos-Hanssen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen, Oliver Nash
 -/
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-import Mathlib.LinearAlgebra.Projectivization.GLAction
-import Mathlib.Topology.Compactification.OnePoint.Basic
 import Mathlib.Algebra.QuadraticDiscriminant
+import Mathlib.Data.Matrix.Action
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+import Mathlib.LinearAlgebra.Projectivization.Action
+import Mathlib.Topology.Compactification.OnePoint.Basic
+
 
 /-!
 # One-point compactification and projectivization
@@ -30,6 +33,27 @@ one-point extension, projectivization
 open scoped LinearAlgebra.Projectivization
 
 open Projectivization Matrix Polynomial OnePoint
+
+section
+
+variable {R n : Type*} [CommSemiring R] [Fintype n] [DecidableEq n]
+
+instance : Module (Matrix (Fin 2) (Fin 2) R) (R × R) :=
+  (LinearEquiv.finTwoArrow R R).symm.toAddEquiv.module _
+
+instance : SMulCommClass (Matrix (Fin 2) (Fin 2) R) R (R × R) :=
+  (LinearEquiv.finTwoArrow R R).symm.smulCommClass _ _
+
+@[simp] lemma Matrix.fin_two_smul_prod (g : Matrix (Fin 2) (Fin 2) R) (v : R × R) :
+    g • v = (g 0 0 * v.1 + g 0 1 * v.2, g 1 0 * v.1 + g 1 1 * v.2) := by
+  simp [Equiv.smul_def, smul_eq_mulVec, Matrix.mulVec_eq_sum, mul_comm]
+
+@[simp] lemma Matrix.GeneralLinearGroup.fin_two_smul_prod {R : Type*} [CommRing R]
+    (g : GL (Fin 2) R) (v : R × R) :
+    g • v = (g 0 0 * v.1 + g 0 1 * v.2, g 1 0 * v.1 + g 1 1 * v.2) := by
+  simp [Units.smul_def]
+
+end
 
 namespace OnePoint
 
@@ -80,7 +104,8 @@ section Field
 
 variable {K : Type*} [Field K] [DecidableEq K]
 
-/-- For a field `K`, the group `GL(2, K)` acts on `OnePoint K`. -/
+/-- For a field `K`, the group `GL(2, K)` acts on `OnePoint K`, via the canonical identification
+with the `ℙ¹(K)` (which is given explicitly by Möbius transformations). -/
 instance instGLAction : MulAction (GL (Fin 2) K) (OnePoint K) :=
   (equivProjectivization K).mulAction (GL (Fin 2) K)
 
