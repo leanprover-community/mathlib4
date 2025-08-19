@@ -1,4 +1,6 @@
 import Mathlib.Tactic.Push
+import Mathlib.Algebra.Notation.Pi.Defs
+import Mathlib.Data.Nat.Cast.Basic
 
 private axiom test_sorry : ∀ {α}, α
 
@@ -39,6 +41,14 @@ example : p ∨ q ∧ ∃ n : ℕ, n = 1 := by
   pull ∃ n, ·
   guard_target =ₐ p ∨ ∃ n, q ∧ n = 1
   exact test_sorry
+
+
+example : (fun x : ℕ ↦ x ^ 2 + 1 * 0 - 5 • 6) = id ^ 2 + 1 * 0 - 5 • 6 := by
+  push fun x ↦ ·
+  with_reducible rfl
+
+example : (fun x : ℕ ↦ x ^ 2 + 1 * 0 - 5 • 6) = id ^ 2 + 1 * 0 - 5 • 6 := by
+  simp only [pushFun]
 
 -- the following examples still need more tagging to work
 

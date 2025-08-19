@@ -40,6 +40,8 @@ attribute [push]
   and_or_left and_or_right and_true true_and and_false false_and
   or_and_left or_and_right or_true true_or or_false false_or
 
+attribute [push ←] Function.id_def
+
 -- TODO(Jovan): Decide if we want this lemma, and if so, fix the proofs that break as a result
 -- @[push high] theorem Nat.not_nonneg_iff_eq_zero (n : Nat) : ¬0 < n ↔ n = 0 :=
 --   Nat.not_lt.trans Nat.le_zero
