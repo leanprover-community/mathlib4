@@ -39,6 +39,7 @@ variable {R : Type*} (S : Type*) (T : Type*) [CommRing R] [CommRing S] [CommRing
 local notation3 "K" => FractionRing R
 local notation3 "L" => FractionRing S
 local notation3 "F" => FractionRing T
+
 section
 
 theorem algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul {A : Type*} (B : Type*)
@@ -167,7 +168,7 @@ local instance : IsLocalization (algebraMapSubmonoid T P') Tₚ := by
 
 /--
 Let `R ⊆ S ⊆ T` be a tower of rings. Let `Sₚ` and `Tₚ` denote the localizations of `S` and `T` at
-the prime ideal `p` of `R`. Then `Tₚ` is a `Sₚ`-algebra.
+the prime ideal `P` of `R`. Then `Tₚ` is a `Sₚ`-algebra.
 This cannot be an instance since it creates a diamond when `S = T`.
 -/
 noncomputable abbrev Localization.AtPrime.algebra_localization_localization :
