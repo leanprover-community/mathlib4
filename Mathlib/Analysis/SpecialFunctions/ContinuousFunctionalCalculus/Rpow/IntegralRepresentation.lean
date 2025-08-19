@@ -134,17 +134,14 @@ lemma aestronglyMeasurable_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) (hx : 0 ≤ 
     AEStronglyMeasurable (rpowIntegrand₀₁ p · x) (volume.restrict (Ioi 0)) :=
   (continuousOn_rpowIntegrand₀₁ hp hx).aestronglyMeasurable measurableSet_Ioi
 
-lemma monotoneOn_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) :
+lemma rpowIntegrand₀₁_monotoneOn (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) :
     MonotoneOn (rpowIntegrand₀₁ p t) (Ici 0) := by
   intro x hx y hy hxy
-  by_cases h : x = 0 ∧ t = 0
-  case pos => simp [h, rpowIntegrand₀₁_nonneg hp.1 le_rfl hy]
+  by_cases h : x = 0
+  case pos => simpa [h, rpowIntegrand₀₁] using rpowIntegrand₀₁_nonneg hp.1 ht hy
   case neg =>
-    simp only [rpowIntegrand₀₁]
+    simp only [rpowIntegrand₀₁, mem_Ici] at hx h ⊢
     gcongr
-    by_cases 0 < t
-    · apply add_pos_of_pos_of_nonneg <;> grind
-    · apply add_pos_of_nonneg_of_pos <;> grind [← lt_of_le_of_ne]
 
 lemma continuousOn_rpowIntegrand₀₁_uncurry (hp : p ∈ Ioo 0 1) (s : Set ℝ) (hs : s ⊆ Ici 0) :
     ContinuousOn (rpowIntegrand₀₁ p).uncurry (Ioi 0 ×ˢ s) := by
@@ -209,20 +206,12 @@ lemma rpowIntegrand₀₁_eqOn_mul_rpowIntegrand₀₁_one (ht : 0 < t) :
     (Ici 0).EqOn (rpowIntegrand₀₁ p t)
       (fun x => t ^ (p - 1) * (rpowIntegrand₀₁ p 1 (t⁻¹ • x))) := by
   intro x hx
-  calc _ = t ^ p * (t⁻¹ - t⁻¹ * (1 + x * t⁻¹)⁻¹) := by
-          rw [rpowIntegrand₀₁]
-          congr
-          field_simp
+  calc _ = t ^ p * (t⁻¹ - t⁻¹ * (1 + x * t⁻¹)⁻¹) := by field_simp [rpowIntegrand₀₁]
     _ = t ^ (p - 1) * (1 - (1 + x * t⁻¹)⁻¹) := by
           have : t ≠ 0 := ne_of_gt ht
           rw [Real.rpow_sub_one this, div_eq_mul_inv, mul_assoc]
-          congr
           field_simp [this]
-    _ = t ^ (p - 1) * (1⁻¹ - (1 + x * t⁻¹)⁻¹) := by simp
-    _ = t ^ (p - 1) * (rpowIntegrand₀₁ p 1 (x * t⁻¹)) := by simp [rpowIntegrand₀₁]
-    _ = _ := by
-          congr 2
-          rw [mul_comm, smul_eq_mul]
+    _ = _ := by simp [mul_comm, smul_eq_mul, rpowIntegrand₀₁]
 
 /- This lemma is private because it is strictly weaker than `integrableOn_rpowIntegrand₀₁_Ioi` -/
 private lemma integrableOn_rpowIntegrand₀₁_Ioc (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
@@ -373,31 +362,24 @@ variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℝ A] [S
 lemma cfcₙ_rpowIntegrand₀₁_eq_cfcₙ_rpowIntegrand₀₁_one {p t : ℝ} (hp : p ∈ Ioo 0 1) (ht : 0 < t)
     (a : A) (ha : 0 ≤ a) :
     cfcₙ (rpowIntegrand₀₁ p t) a = t ^ (p - 1) • cfcₙ (rpowIntegrand₀₁ p 1) (t⁻¹ • a) := by
-  have hspec : quasispectrum ℝ a ⊆ Ici 0 := fun r hr => quasispectrum_nonneg_of_nonneg a ha r hr
+  have hspec : quasispectrum ℝ a ⊆ Ici 0 := by intro; grind
+  have h_mapsTo : MapsTo (t⁻¹ • · : ℝ → ℝ) (Ici 0) (Ici 0) := by
+    intro x hx
+    simp only [mem_Ici, smul_eq_mul] at hx ⊢
+    positivity
   calc _ = cfcₙ (fun x => t ^ ((p : ℝ) - 1) * (rpowIntegrand₀₁ p 1 (t⁻¹ • x))) a := by
           refine cfcₙ_congr ?_
           refine Set.EqOn.mono hspec (rpowIntegrand₀₁_eqOn_mul_rpowIntegrand₀₁_one ht)
     _ = t ^ ((p : ℝ) - 1) • cfcₙ (fun x => rpowIntegrand₀₁ p 1 (t⁻¹ • x)) a := by
           refine cfcₙ_smul (R := ℝ) (t ^ ((p : ℝ) - 1)) _ a ?_
           refine ContinuousOn.mono ?_ hspec
-          refine ContinuousOn.comp (t := Ici 0) (g := fun x => rpowIntegrand₀₁ p 1 x) ?_ ?_ ?_
-          · exact continuousOn_rpowIntegrand₀₁_Ici hp zero_lt_one
-          · fun_prop
-          · intro x (hx : 0 ≤ x)
-            simp only [smul_eq_mul, mem_Ici]
-            positivity
+          have := continuousOn_rpowIntegrand₀₁_Ici hp zero_lt_one
+          fun_prop (disch := assumption)
     _ = t ^ ((p : ℝ) - 1) • cfcₙ (rpowIntegrand₀₁ p 1) (t⁻¹ • a) := by
-          congr 1
+          congr! 1
           refine cfcₙ_comp_smul (R := ℝ) t⁻¹ (fun x => rpowIntegrand₀₁ p 1 x) a ?_
-          refine ContinuousOn.mono (s := Ici 0) ?_ ?_
-          · exact continuousOn_rpowIntegrand₀₁_Ici hp zero_lt_one
-          · intro x hx
-            rw [Set.mem_image] at hx
-            obtain ⟨r, hr₁, hr₂⟩ := hx
-            rw [← hr₂]
-            change 0 ≤ t⁻¹ • r
-            have : 0 ≤ r := quasispectrum_nonneg_of_nonneg a ha r hr₁
-            positivity
+          exact continuousOn_rpowIntegrand₀₁_Ici hp zero_lt_one |>.mono <|
+            (h_mapsTo.mono_left hspec).image_subset 
 
 variable (A) in
 /-- The integral representation of the function `x ↦ x ^ p` (where `p ∈ (0, 1)`). -/
@@ -408,11 +390,7 @@ lemma exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₀₁ [CompleteSpac
       ∧ a ^ p = ∫ t in Ioi 0, cfcₙ (rpowIntegrand₀₁ p t) a ∂μ := by
   obtain ⟨μ, hμ⟩ := exists_measure_rpow_eq_integral hp
   refine ⟨μ, fun a (ha : 0 ≤ a) => ?_⟩
-  by_cases hnontrivial : Nontrivial A
-  case neg =>
-    rw [not_nontrivial_iff_subsingleton] at hnontrivial
-    simp [Subsingleton.eq_zero a]
-  case pos =>
+  nontriviality A
     have p_pos : 0 < (p : ℝ) := by exact_mod_cast hp.1
     let f t := rpowIntegrand₀₁ p t
     let maxr := sSup (quasispectrum ℝ a)
@@ -479,21 +457,17 @@ lemma monotoneOn_cfcₙ_rpowIntegrand₀₁ {p : ℝ} {t : ℝ} (hp : p ∈ Ioo 
             have hx' : 0 ≤ x := by grind
             simp [hx']
   intro a (ha : 0 ≤ a) b (hb : 0 ≤ b) hab
-  have ha' : IsSelfAdjoint a := ha.isSelfAdjoint
-  have hb' : IsSelfAdjoint b := hb.isSelfAdjoint
-  calc _ = t ^ ((p : ℝ) - 1) • cfcₙ (rpowIntegrand₀₁ p 1) (t⁻¹ • a) := by
-          rw [cfcₙ_rpowIntegrand₀₁_eq_cfcₙ_rpowIntegrand₀₁_one hp ht a ha]
+  calc
+    _ = t ^ ((p : ℝ) - 1) • cfcₙ (rpowIntegrand₀₁ p 1) (t⁻¹ • a) := by
+      rw [cfcₙ_rpowIntegrand₀₁_eq_cfcₙ_rpowIntegrand₀₁_one hp ht a ha]
     _ ≤ t ^ ((p : ℝ) - 1) • cfcₙ (rpowIntegrand₀₁ p 1) (t⁻¹ • b) := by
-          gcongr
-          unfold rpowIntegrand₀₁
-          simp only [Real.one_rpow, one_mul, inv_one]
-          refine hmain ?_ ?_ (by gcongr)
-          · change 0 ≤ t⁻¹ • a
-            positivity
-          · change 0 ≤ t⁻¹ • b
-            positivity
+      gcongr
+      unfold rpowIntegrand₀₁
+      simp only [Real.one_rpow, one_mul, inv_one]
+      refine hmain (?_ : 0 ≤ t⁻¹ • a) (?_ : 0 ≤ t⁻¹ • b) (by gcongr)
+      all_goals positivity
     _ = cfcₙ (rpowIntegrand₀₁ p t) b := by
-          rw [cfcₙ_rpowIntegrand₀₁_eq_cfcₙ_rpowIntegrand₀₁_one hp ht b hb]
+      rw [cfcₙ_rpowIntegrand₀₁_eq_cfcₙ_rpowIntegrand₀₁_one hp ht b hb]
 
 /-- This is an intermediate result; use the more general `CFC.monotone_nnrpow` instead. -/
 private lemma monotoneOn_nnrpow_Ioo {p : ℝ≥0} (hp : p ∈ Ioo 0 1) :
@@ -517,22 +491,15 @@ lemma monotone_nnrpow {p : ℝ≥0} (hp : p ∈ Icc 0 1) :
     rw [hIcc] at hp
     obtain (hp|hp)|hp := hp
     · exact monotoneOn_nnrpow_Ioo hp ha hb hab
-    · simp only [mem_singleton_iff] at hp
-      simp [hp]
-    · simp only [mem_singleton_iff] at hp
-      simp only [hp]
-      have : (Ici 0).EqOn (fun a : A => a ^ (1 : ℝ≥0)) id := by
-        intro a ha
-        simp [nnrpow_one a]
-      simp [nnrpow_one a, nnrpow_one b, hab]
+    · simp_all [mem_singleton_iff]
+    · simp_all [mem_singleton_iff, nnrpow_one a, nnrpow_one b]
   · have : a ^ p = 0 := cfcₙ_apply_of_not_predicate a ha
     simp [this]
 
 /-- `CFC.sqrt` is operator monotone. -/
 lemma monotone_sqrt : Monotone (sqrt : A → A) := by
-  have : CFC.sqrt (A := A) = fun a => a ^ ((1 : ℝ≥0) / 2) := by ext; exact CFC.sqrt_eq_nnrpow
-  rw [this]
-  exact monotone_nnrpow (by norm_num)
+  convert monotone_nnrpow (p := 1 / 2) (by norm_num) using 2
+  exact CFC.sqrt_eq_nnrpow
 
 @[gcongr]
 lemma nnrpow_le_nnrpow {p : ℝ≥0} (hp : p ∈ Icc 0 1) {a b : A} (hab : a ≤ b) :
