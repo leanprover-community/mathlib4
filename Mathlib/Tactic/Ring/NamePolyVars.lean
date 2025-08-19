@@ -41,6 +41,8 @@ initialize registerTraceClass `name_poly_vars
 
 namespace Mathlib.Tactic.NamePolyVars
 
+open Mathlib.Tactic.NamePolyVars
+
 /-- The signature of a polynomial-like notation, consisting of the opening and closing brackets,
 and a `Bool` to declare if it is multivariate. -/
 structure NotationSignature where
@@ -102,13 +104,13 @@ syntax var_decl := &"X" ("," "...")?
 abbrev VarDecl : Type := TSyntax ``var_decl
 
 /-- The parser for whether the polynomial notation is for one-variable or multivariate. -/
-def _root_.Lean.TSyntax.varDeclToBool : VarDecl → Bool
+def Lean.TSyntax.varDeclToBool : VarDecl → Bool
   | `(var_decl| X) => false
   | `(var_decl| X, ...) => true
   | _ => false
 
 /-- Convert a `Bool` to a variable declaration. -/
-def _root_.Bool.toVarDecl : Bool → String
+def Bool.toVarDecl : Bool → String
   | false => "X"
   | true => "X, ..."
 
@@ -119,14 +121,14 @@ syntax term_decl := hole <|> ident <|> ("(" term ")")
 abbrev TermDecl : Type := TSyntax ``term_decl
 
 /-- Convert a `TermDecl` to a term. -/
-def _root_.Lean.TSyntax.term : TermDecl → Term
+def Lean.TSyntax.term : TermDecl → Term
   | `(term_decl| $u:hole) => ⟨u.raw⟩
   | `(term_decl| $k:ident) => ⟨k.raw⟩
   | `(term_decl| ($u:term)) => u
   | _ => default
 
 /-- Convert a `TermDecl` to a string. -/
-def _root_.Lean.TSyntax.rawTermDecl : TermDecl → String
+def Lean.TSyntax.rawTermDecl : TermDecl → String
   | `(term_decl| $_:hole) => "_"
   | `(term_decl| $k:ident) => s!"{k.getId}"
   | `(term_decl| ($u:term)) => s!"({u.raw.prettyPrint.pretty'})"
@@ -184,7 +186,7 @@ def registerElab : CommandElab := fun stx ↦ do
 abbrev Body : Type := Notation × (Ident ⊕ Array Ident)
 
 /-- Get the `Body` from a polynomial-like notation. -/
-def _root_.Lean.TSyntax.polyesqueNotation (p : PolyesqueNotation) : CoreM Body := do
+def Lean.TSyntax.polyesqueNotation (p : PolyesqueNotation) : CoreM Body := do
   let .node _ _ #[.atom _ opening, v, .atom _ closing] := p.raw
     | throwError m!"Unrecognised polynomial-like notation: {p}"
   let `(vars|$v) := v
@@ -287,7 +289,7 @@ identifier (e.g. `x := PowerSeries.C (MvPolynomial.X 0)`).
 
 The head and body are returned as strings here so that they can be stored in a table in the
 environment. -/
-def _root_.Lean.TSyntax.parsePolyesqueFull (p : Polyesque) :
+def Lean.TSyntax.parsePolyesqueFull (p : Polyesque) :
     CoreM (String × String × Bool × Term × Array Term × Array (Ident × Term)) := do
   let `(polyesque| $head:term_decl$body:polyesque_notation*) := p
     | throwError m!"Unrecognised syntax: {p}"
