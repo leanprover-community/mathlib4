@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Topology.Algebra.Valued.LocallyCompact
-import Mathlib.Topology.Algebra.Valued.ValuedField
 import Mathlib.Topology.Algebra.Valued.ValuativeRel
-import Mathlib.RingTheory.Valuation.RankOne
+import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
 
 /-!
 
@@ -24,7 +23,7 @@ we say that it is a non-archimedean local field if the topology comes from the g
 and it is locally compact and non-discrete.
 
 This implies the following typeclasses via `inferInstance`
-- `ValuativeTopology K`
+- `IsValuativeTopology K`
 - `LocallyCompactSpace K`
 - `IsTopologicalDivisionRing K`
 - `ValuativeRel.IsNontrivial K`
@@ -39,8 +38,7 @@ Assuming we have a compatible `UniformSpace K` instance
 - `CompleteSpace 𝒪[K]`
 -/
 class IsNonarchLocalField (K : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] : Prop extends
-  IsTopologicalAddGroup K,
-  ValuativeTopology K,
+  IsValuativeTopology K,
   LocallyCompactSpace K,
   ValuativeRel.IsNontrivial K
 
@@ -70,7 +68,7 @@ lemma isCompact_closedBall (γ : ValueGroupWithZero K) : IsCompact { x | valuati
   obtain ⟨s, hs, -, hs'⟩ := LocallyCompactSpace.local_compact_nhds (0 : K) .univ Filter.univ_mem
   obtain ⟨r, hr, hr1, H⟩ :
       ∃ r', r' ≠ 0 ∧ valuation K r' < 1 ∧ { x | valuation K x ≤ valuation K r' } ⊆ s := by
-    obtain ⟨r, hr, hrs⟩ := (ValuativeTopology.hasBasis_nhds_zero' K).mem_iff.mp hs
+    obtain ⟨r, hr, hrs⟩ := (IsValuativeTopology.hasBasis_nhds_zero' K).mem_iff.mp hs
     obtain ⟨r', hr', hr⟩ := Valuation.IsNontrivial.exists_lt_one (v := valuation K)
     simp only [ne_eq, map_eq_zero] at hr'
     obtain hr1 | hr1 := lt_or_ge r 1
@@ -87,12 +85,12 @@ lemma isCompact_closedBall (γ : ValueGroupWithZero K) : IsCompact { x | valuati
     (Homeomorph.mulLeft₀ (γ / r) (by simp [hr, div_eq_zero_iff, hγ])).continuous using 1
   refine .trans ?_ (Equiv.image_eq_preimage _ _).symm
   ext x
-  simp [div_mul_eq_mul_div, div_le_iff₀, v_eq_valuation, hγ, hr]
+  simp [div_mul_eq_mul_div, div_le_iff₀, IsValuativeTopology.v_eq_valuation, hγ, hr]
 
 instance : CompactSpace 𝒪[K] := isCompact_iff_compactSpace.mp (isCompact_closedBall K 1)
 
 instance (K : Type*) [Field K] [ValuativeRel K] [UniformSpace K] [IsUniformAddGroup K]
-    [ValuativeTopology K] : (Valued.v (R := K) (Γ₀ := ValueGroupWithZero K)).Compatible :=
+    [IsValuativeTopology K] : (Valued.v (R := K) (Γ₀ := ValueGroupWithZero K)).Compatible :=
   inferInstanceAs (valuation K).Compatible
 
 instance : IsDiscreteValuationRing 𝒪[K] :=
@@ -117,28 +115,14 @@ def valueGroupWithZeroIsoInt : ValueGroupWithZero K ≃*o ℤᵐ⁰ := by
     (Units.map_injective (f := e.symm.toMonoidHom) e.symm.injective).nontrivial
   exact ⟨e.symm.trans (LocallyFiniteOrder.orderMonoidWithZeroEquiv _)⟩
 
-instance : ValuativeRel.IsDiscrete K where
-  has_maximal_element := by
-    refine ⟨(valueGroupWithZeroIsoInt K).symm (Multiplicative.ofAdd (-1):), ?_, ?_⟩
-    · rw [← (valueGroupWithZeroIsoInt K).strictMono.lt_iff_lt]
-      simp only [OrderMonoidIso.apply_symm_apply, map_one]
-      decide
-    · intro δ hδ
-      obtain ⟨δ, rfl⟩ := (valueGroupWithZeroIsoInt K).symm.surjective δ
-      induction δ with
-      | zero => simp
-      | coe δ =>
-        obtain ⟨δ, rfl⟩ := Multiplicative.ofAdd.surjective δ
-        replace hδ : δ ≤ -1 := by
-          simpa [← Int.add_le_zero_iff_le_neg,
-            ← (valueGroupWithZeroIsoInt K).strictMono.lt_iff_lt] using hδ
-        simpa [← (valueGroupWithZeroIsoInt K).strictMono.le_iff_le, - ofAdd_neg] using hδ
+instance : ValuativeRel.IsDiscrete K :=
+  (ValuativeRel.nonempty_orderIso_withZeroMul_int_iff.mp ⟨valueGroupWithZeroIsoInt K⟩).1
 
-instance : ValuativeRel.IsRankLeOne K := by
-  letI := IsTopologicalAddGroup.toUniformSpace K
-  haveI := isUniformAddGroup_of_addCommGroup (G := K)
-  rw [ValuativeRel.isRankLeOne_iff_mulArchimedean]
-  exact .comap (valueGroupWithZeroIsoInt K).toMonoidHom (valueGroupWithZeroIsoInt K).strictMono
+instance : MulArchimedean (ValueGroupWithZero K) :=
+  (ValuativeRel.nonempty_orderIso_withZeroMul_int_iff.mp ⟨valueGroupWithZeroIsoInt K⟩).2.2
+
+instance : ValuativeRel.IsRankLeOne K :=
+  ValuativeRel.isRankLeOne_iff_mulArchimedean.mpr inferInstance
 
 instance : Finite 𝓀[K] :=
   letI := IsTopologicalAddGroup.toUniformSpace K

@@ -674,15 +674,12 @@ lemma isNontrivial_iff_isNontrivial
     IsNontrivial R ↔ v.IsNontrivial := by
   constructor
   · rintro ⟨r, hr, hr'⟩
-    induction r using ValueGroupWithZero.ind with | mk r s
-    replace hγ : v r ≠ 0 := by simpa [Valuation.Compatible.rel_iff_le (v := v)] using hr
-    replace hγ' : v r ≤ v s → v r < v s := by
+    induction' r using ValueGroupWithZero.ind with r s
+    have hγ : v r ≠ 0 := by simpa [Valuation.Compatible.rel_iff_le (v := v)] using hr
+    have hγ' : v r ≤ v s → v r < v s := by
       simpa [Valuation.Compatible.rel_iff_le (v := v)] using hr'
     by_cases hr : v r = 1
-    · refine ⟨s, ?_, ?_⟩
-      · simpa [-SetLike.coe_mem, Valuation.Compatible.rel_iff_le (v := v)] using s.2
-      · intro h
-        simp [h, hr] at hγ'
+    · exact ⟨s, by simp, fun h ↦ by simp [h, hr] at hγ'⟩
     · exact ⟨r, by simpa using hγ, hr⟩
   · rintro ⟨r, hr, hr'⟩
     exact ⟨valuation R r, (isEquiv v (valuation R)).ne_zero.mp hr,
@@ -742,8 +739,8 @@ lemma ValueGroupWithZero.embed_valuation (γ : ValueGroupWithZero R) :
 
 lemma ValueGroupWithZero.embed_strictMono [v.Compatible] : StrictMono (embed v) := by
   intro a b h
-  obtain ⟨a, r, rfl⟩ := valuation_surjective a
-  obtain ⟨b, s, rfl⟩ := valuation_surjective b
+  obtain ⟨a, r, rfl⟩ := exists_valuation_div_valuation_eq a
+  obtain ⟨b, s, rfl⟩ := exists_valuation_div_valuation_eq b
   simp only [map_div₀]
   rw [div_lt_div_iff₀] at h ⊢
   any_goals simp [zero_lt_iff]
