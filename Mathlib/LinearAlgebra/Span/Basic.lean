@@ -44,6 +44,11 @@ variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
 
 variable {s t : Set M}
 
+lemma _root_.AddSubmonoid.toNatSubmodule_closure (s : Set M) :
+    (AddSubmonoid.closure s).toNatSubmodule = .span ℕ s :=
+  (Submodule.span_le.mpr AddSubmonoid.subset_closure).antisymm'
+    ((Submodule.span ℕ s).toAddSubmonoid.closure_le.mpr Submodule.subset_span)
+
 /-- A version of `Submodule.span_eq` for when the span is by a smaller ring. -/
 @[simp]
 theorem span_coe_eq_restrictScalars [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
@@ -62,7 +67,7 @@ theorem image_span_subset_span (f : F) (s : Set M) : f '' span R s ⊆ span R₂
 
 theorem map_span [RingHomSurjective σ₁₂] (f : F) (s : Set M) :
     (span R s).map f = span R₂ (f '' s) :=
-  Eq.symm <| span_eq_of_le _ (Set.image_subset f subset_span) (image_span_subset_span f s)
+  Eq.symm <| span_eq_of_le _ (Set.image_mono subset_span) (image_span_subset_span f s)
 
 alias _root_.LinearMap.map_span := Submodule.map_span
 
@@ -429,6 +434,11 @@ section AddCommGroup
 
 variable [Ring R] [AddCommGroup M] [Module R M]
 
+lemma _root_.AddSubgroup.toIntSubmodule_closure (s : Set M) :
+    (AddSubgroup.closure s).toIntSubmodule = .span ℤ s :=
+  (Submodule.span_le.mpr AddSubgroup.subset_closure).antisymm'
+    ((Submodule.span ℤ s).toAddSubgroup.closure_le.mpr Submodule.subset_span)
+
 @[simp]
 theorem span_neg (s : Set M) : span R (-s) = span R s :=
   calc
@@ -463,6 +473,11 @@ theorem comap_map_eq (f : F) (p : Submodule R M) : comap f (map f p) = p ⊔ Lin
   refine le_antisymm ?_ (sup_le (le_comap_map _ _) (comap_mono bot_le))
   rintro x ⟨y, hy, e⟩
   exact mem_sup.2 ⟨y, hy, x - y, by simpa using sub_eq_zero.2 e.symm, by simp⟩
+
+theorem map_lt_map_of_le_of_sup_lt_sup {p p' : Submodule R M} {f : F} (hab : p ≤ p')
+    (h : p ⊔ LinearMap.ker f < p' ⊔ LinearMap.ker f) : Submodule.map f p < Submodule.map f p' := by
+  simp_rw [← comap_map_eq] at h
+  exact lt_of_le_of_ne (map_mono hab) (ne_of_apply_ne _ h.ne)
 
 theorem comap_map_eq_self {f : F} {p : Submodule R M} (h : LinearMap.ker f ≤ p) :
     comap f (map f p) = p := by rw [Submodule.comap_map_eq, sup_of_le_left h]
@@ -538,7 +553,7 @@ lemma biSup_comap_eq_top_of_surjective {ι : Type*} (s : Set ι) (hs : s.Nonempt
   suffices (⨆ i ∈ s, (p i).comap f) ⊔ LinearMap.ker f = ⊤ by
     rw [← this, left_eq_sup]; exact le_trans f.ker_le_comap (le_biSup (fun i ↦ (p i).comap f) hk)
   rw [iSup_subtype'] at hp ⊢
-  rw [← comap_map_eq, map_iSup_comap_of_sujective hf, hp, comap_top]
+  rw [← comap_map_eq, map_iSup_comap_of_surjective hf, hp, comap_top]
 
 lemma biSup_comap_eq_top_of_range_eq_biSup
     {R R₂ : Type*} [Semiring R] [Ring R₂] {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
@@ -550,6 +565,31 @@ lemma biSup_comap_eq_top_of_range_eq_biSup
   exact hf ▸ biSup_comap_subtype_eq_top s p
 
 end AddCommGroup
+
+section Ring
+
+variable [Ring R] [Semiring R₂]
+variable [AddCommGroup M] [Module R M] [AddCommGroup M₂] [Module R₂ M₂]
+variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
+variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
+variable {p p' : Submodule R M}
+
+theorem map_strict_mono_or_ker_sup_lt_ker_sup (f : F) (hab : p < p') :
+    Submodule.map f p < Submodule.map f p' ∨ LinearMap.ker f ⊓ p < LinearMap.ker f ⊓ p' := by
+  obtain (⟨h, -⟩ | ⟨-, h⟩) := Prod.mk_lt_mk.mp <| strictMono_inf_prod_sup (z := LinearMap.ker f) hab
+  · simpa [inf_comm] using Or.inr h
+  · apply Or.inl <| map_lt_map_of_le_of_sup_lt_sup hab.le h
+
+theorem _root_.LinearMap.ker_inf_lt_ker_inf_of_map_eq_of_lt {f : F}
+    (hab : p < p') (q : Submodule.map f p = Submodule.map f p') :
+    LinearMap.ker f ⊓ p < LinearMap.ker f ⊓ p' :=
+  map_strict_mono_or_ker_sup_lt_ker_sup f hab |>.resolve_left q.not_lt
+
+theorem map_strict_mono_of_ker_inf_eq {f : F} (hab : p < p')
+    (q : LinearMap.ker f ⊓ p = LinearMap.ker f ⊓ p') : Submodule.map f p < Submodule.map f p' :=
+  map_strict_mono_or_ker_sup_lt_ker_sup f hab |>.resolve_right q.not_lt
+
+end Ring
 
 section DivisionRing
 
@@ -636,7 +676,7 @@ section
 variable (R) (M) [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- Given an element `x` of a module `M` over `R`, the natural map from
-    `R` to scalar multiples of `x`. See also `LinearMap.ringLmapEquivSelf`. -/
+`R` to scalar multiples of `x`. See also `LinearMap.ringLmapEquivSelf`. -/
 @[simps!]
 def toSpanSingleton (x : M) : R →ₗ[R] M :=
   LinearMap.id.smulRight x

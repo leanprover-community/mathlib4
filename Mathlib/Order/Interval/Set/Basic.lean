@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
 -/
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Order.BooleanAlgebra.Set
 import Mathlib.Order.Interval.Set.Defs
 
 /-!
@@ -57,19 +58,19 @@ instance decidableMemIci [Decidable (a ≤ x)] : Decidable (x ∈ Ici a) := by a
 
 instance decidableMemIoi [Decidable (a < x)] : Decidable (x ∈ Ioi a) := by assumption
 
-theorem left_mem_Ioo : a ∈ Ioo a b ↔ False := by simp [lt_irrefl]
+theorem left_mem_Ioo : a ∈ Ioo a b ↔ False := by simp
 
 theorem left_mem_Ico : a ∈ Ico a b ↔ a < b := by simp [le_refl]
 
 theorem left_mem_Icc : a ∈ Icc a b ↔ a ≤ b := by simp [le_refl]
 
-theorem left_mem_Ioc : a ∈ Ioc a b ↔ False := by simp [lt_irrefl]
+theorem left_mem_Ioc : a ∈ Ioc a b ↔ False := by simp
 
 theorem left_mem_Ici : a ∈ Ici a := by simp
 
-theorem right_mem_Ioo : b ∈ Ioo a b ↔ False := by simp [lt_irrefl]
+theorem right_mem_Ioo : b ∈ Ioo a b ↔ False := by simp
 
-theorem right_mem_Ico : b ∈ Ico a b ↔ False := by simp [lt_irrefl]
+theorem right_mem_Ico : b ∈ Ico a b ↔ False := by simp
 
 theorem right_mem_Icc : b ∈ Icc a b ↔ a ≤ b := by simp [le_refl]
 
@@ -322,11 +323,9 @@ theorem Iic_subset_Iio : Iic a ⊆ Iio b ↔ a < b :=
 theorem Ioo_subset_Ioo (h₁ : a₂ ≤ a₁) (h₂ : b₁ ≤ b₂) : Ioo a₁ b₁ ⊆ Ioo a₂ b₂ := fun _ ⟨hx₁, hx₂⟩ =>
   ⟨h₁.trans_lt hx₁, hx₂.trans_le h₂⟩
 
-@[gcongr]
 theorem Ioo_subset_Ioo_left (h : a₁ ≤ a₂) : Ioo a₂ b ⊆ Ioo a₁ b :=
   Ioo_subset_Ioo h le_rfl
 
-@[gcongr]
 theorem Ioo_subset_Ioo_right (h : b₁ ≤ b₂) : Ioo a b₁ ⊆ Ioo a b₂ :=
   Ioo_subset_Ioo le_rfl h
 
@@ -334,11 +333,9 @@ theorem Ioo_subset_Ioo_right (h : b₁ ≤ b₂) : Ioo a b₁ ⊆ Ioo a b₂ :=
 theorem Ico_subset_Ico (h₁ : a₂ ≤ a₁) (h₂ : b₁ ≤ b₂) : Ico a₁ b₁ ⊆ Ico a₂ b₂ := fun _ ⟨hx₁, hx₂⟩ =>
   ⟨h₁.trans hx₁, hx₂.trans_le h₂⟩
 
-@[gcongr]
 theorem Ico_subset_Ico_left (h : a₁ ≤ a₂) : Ico a₂ b ⊆ Ico a₁ b :=
   Ico_subset_Ico h le_rfl
 
-@[gcongr]
 theorem Ico_subset_Ico_right (h : b₁ ≤ b₂) : Ico a b₁ ⊆ Ico a b₂ :=
   Ico_subset_Ico le_rfl h
 
@@ -346,11 +343,9 @@ theorem Ico_subset_Ico_right (h : b₁ ≤ b₂) : Ico a b₁ ⊆ Ico a b₂ :=
 theorem Icc_subset_Icc (h₁ : a₂ ≤ a₁) (h₂ : b₁ ≤ b₂) : Icc a₁ b₁ ⊆ Icc a₂ b₂ := fun _ ⟨hx₁, hx₂⟩ =>
   ⟨h₁.trans hx₁, le_trans hx₂ h₂⟩
 
-@[gcongr]
 theorem Icc_subset_Icc_left (h : a₁ ≤ a₂) : Icc a₂ b ⊆ Icc a₁ b :=
   Icc_subset_Icc h le_rfl
 
-@[gcongr]
 theorem Icc_subset_Icc_right (h : b₁ ≤ b₂) : Icc a b₁ ⊆ Icc a b₂ :=
   Icc_subset_Icc le_rfl h
 
@@ -367,11 +362,9 @@ theorem Ioc_subset_Iic_self : Ioc a b ⊆ Iic b := fun _ => And.right
 theorem Ioc_subset_Ioc (h₁ : a₂ ≤ a₁) (h₂ : b₁ ≤ b₂) : Ioc a₁ b₁ ⊆ Ioc a₂ b₂ := fun _ ⟨hx₁, hx₂⟩ =>
   ⟨h₁.trans_lt hx₁, hx₂.trans h₂⟩
 
-@[gcongr]
 theorem Ioc_subset_Ioc_left (h : a₁ ≤ a₂) : Ioc a₂ b ⊆ Ioc a₁ b :=
   Ioc_subset_Ioc h le_rfl
 
-@[gcongr]
 theorem Ioc_subset_Ioc_right (h : b₁ ≤ b₂) : Ioc a b₁ ⊆ Ioc a b₂ :=
   Ioc_subset_Ioc le_rfl h
 
@@ -675,13 +668,13 @@ theorem Icc_eq_singleton_iff : Icc a b = {c} ↔ a = c ∧ b = c := by
 
 lemma subsingleton_Icc_of_ge (hba : b ≤ a) : Set.Subsingleton (Icc a b) :=
   fun _x ⟨hax, hxb⟩ _y ⟨hay, hyb⟩ ↦ le_antisymm
-    (le_implies_le_of_le_of_le hxb hay hba) (le_implies_le_of_le_of_le hyb hax hba)
+    (le_imp_le_of_le_of_le hxb hay hba) (le_imp_le_of_le_of_le hyb hax hba)
 
 @[simp] lemma subsingleton_Icc_iff {α : Type*} [LinearOrder α] {a b : α} :
     Set.Subsingleton (Icc a b) ↔ b ≤ a := by
   refine ⟨fun h ↦ ?_, subsingleton_Icc_of_ge⟩
   contrapose! h
-  simp only [gt_iff_lt, not_subsingleton_iff]
+  simp only [not_subsingleton_iff]
   exact ⟨a, ⟨le_refl _, h.le⟩, b, ⟨h.le, le_refl _⟩, h.ne⟩
 
 @[simp]
@@ -823,14 +816,14 @@ theorem mem_Icc_Ico_Ioc_Ioo_of_subset_of_subset {s : Set α} (ho : Ioo a b ⊆ s
       apply_rules [subset_diff_singleton]
 
 theorem eq_left_or_mem_Ioo_of_mem_Ico {x : α} (hmem : x ∈ Ico a b) : x = a ∨ x ∈ Ioo a b :=
-  hmem.1.eq_or_gt.imp_right fun h => ⟨h, hmem.2⟩
+  hmem.1.eq_or_lt'.imp_right fun h => ⟨h, hmem.2⟩
 
 theorem eq_right_or_mem_Ioo_of_mem_Ioc {x : α} (hmem : x ∈ Ioc a b) : x = b ∨ x ∈ Ioo a b :=
   hmem.2.eq_or_lt.imp_right <| And.intro hmem.1
 
 theorem eq_endpoints_or_mem_Ioo_of_mem_Icc {x : α} (hmem : x ∈ Icc a b) :
     x = a ∨ x = b ∨ x ∈ Ioo a b :=
-  hmem.1.eq_or_gt.imp_right fun h => eq_right_or_mem_Ioo_of_mem_Ioc ⟨h, hmem.2⟩
+  hmem.1.eq_or_lt'.imp_right fun h => eq_right_or_mem_Ioo_of_mem_Ioc ⟨h, hmem.2⟩
 
 theorem _root_.IsMax.Ici_eq (h : IsMax a) : Ici a = {a} :=
   eq_singleton_iff_unique_mem.2 ⟨left_mem_Ici, fun _ => h.eq_of_ge⟩
@@ -983,7 +976,7 @@ theorem Iic_prod_eq (a : α × β) : Iic a = Iic a.1 ×ˢ Iic a.2 :=
 @[simp]
 theorem Icc_prod_Icc (a₁ a₂ : α) (b₁ b₂ : β) : Icc a₁ a₂ ×ˢ Icc b₁ b₂ = Icc (a₁, b₁) (a₂, b₂) := by
   ext ⟨x, y⟩
-  simp [and_assoc, and_comm, and_left_comm]
+  simp [and_assoc, and_left_comm]
 
 theorem Icc_prod_eq (a b : α × β) : Icc a b = Icc a.1 b.1 ×ˢ Icc a.2 b.2 := by simp
 

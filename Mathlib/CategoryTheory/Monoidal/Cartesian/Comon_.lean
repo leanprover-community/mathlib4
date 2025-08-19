@@ -35,7 +35,7 @@ def cartesianComon_ : C ⥤ Comon_ C where
       counit := toUnit _
     }
   }
-  map f := { hom := f }
+  map f := .mk' f
 
 variable {C}
 
@@ -55,8 +55,8 @@ Every comonoid object in a cartesian monoidal category is equivalent to
 the canonical comonoid structure on the underlying object.
 -/
 @[simps] def iso_cartesianComon_ (A : Comon_ C) : A ≅ (cartesianComon_ C).obj A.X :=
-  { hom := { hom := 𝟙 _ }
-    inv := { hom := 𝟙 _ } }
+  { hom := .mk' (𝟙 _)
+    inv := .mk' (𝟙 _) }
 
 /--
 The category of comonoid objects in a cartesian monoidal category is equivalent

@@ -9,10 +9,10 @@ import Mathlib.Algebra.Algebra.Tower
 /-!
 # Subalgebras in towers of algebras
 
-In this file we prove facts about subalgebras in towers of algebra.
+In this file we prove facts about subalgebras in towers of algebras.
 
 An algebra tower A/S/R is expressed by having instances of `Algebra A S`,
-`Algebra R S`, `Algebra R A` and `IsScalarTower R S A`, the later asserting the
+`Algebra R S`, `Algebra R A` and `IsScalarTower R S A`, the latter asserting the
 compatibility condition `(r • s) • a = r • (s • a)`.
 
 ## Main results
@@ -88,7 +88,9 @@ theorem coe_restrictScalars {U : Subalgebra S A} : (restrictScalars R U : Set A)
 
 @[simp]
 theorem restrictScalars_top : restrictScalars R (⊤ : Subalgebra S A) = ⊤ :=
-  SetLike.coe_injective <| by dsimp -- Porting note: why does `rfl` not work instead of `by dsimp`?
+  -- Porting note: `by dsimp` used to be `rfl`. This appears to work but causes
+  -- this theorem to timeout in the kernel after minutes of thinking.
+  SetLike.coe_injective <| by dsimp
 
 @[simp]
 theorem restrictScalars_toSubmodule {U : Subalgebra S A} :
@@ -119,9 +121,7 @@ lemma range_isScalarTower_toAlgHom [CommSemiring R] [CommSemiring A]
     [Algebra R A] (S : Subalgebra R A) :
     LinearMap.range (IsScalarTower.toAlgHom R S A) = Subalgebra.toSubmodule S := by
   ext
-  simp only [← Submodule.range_subtype (Subalgebra.toSubmodule S), LinearMap.mem_range,
-    IsScalarTower.coe_toAlgHom', Subalgebra.mem_toSubmodule]
-  rfl
+  simp [algebraMap_eq]
 
 end CommSemiring
 

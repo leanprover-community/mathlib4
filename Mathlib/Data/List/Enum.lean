@@ -39,13 +39,4 @@ theorem exists_mem_zipIdx' {l : List α} {p : α × ℕ → Prop} :
     (∃ x ∈ l.zipIdx, p x) ↔ ∃ (i : ℕ) (_ : i < length l), p (l[i], i) :=
   exists_mem_zipIdx.trans <| by simp
 
-@[deprecated (since := "2025-01-28")]
-alias forall_mem_enumFrom := forall_mem_zipIdx
-@[deprecated (since := "2025-01-28")]
-alias forall_mem_enum := forall_mem_zipIdx'
-@[deprecated (since := "2025-01-28")]
-alias exists_mem_enumFrom := exists_mem_zipIdx
-@[deprecated (since := "2025-01-28")]
-alias exists_mem_enum := exists_mem_zipIdx'
-
 end List

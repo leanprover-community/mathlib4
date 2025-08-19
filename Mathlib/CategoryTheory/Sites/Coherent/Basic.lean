@@ -55,12 +55,10 @@ class Precoherent : Prop where
   an effective epi family `π₂` over `B₂`, such that `π₂` factors through `π₁`.
   -/
   pullback {B₁ B₂ : C} (f : B₂ ⟶ B₁) :
-    ∀ (α : Type) [Finite α] (X₁ : α → C) (π₁ : (a : α) → (X₁ a ⟶ B₁)),
-      EffectiveEpiFamily X₁ π₁ →
+    ∀ (α : Type) [Finite α] (X₁ : α → C) (π₁ : (a : α) → (X₁ a ⟶ B₁)), EffectiveEpiFamily X₁ π₁ →
     ∃ (β : Type) (_ : Finite β) (X₂ : β → C) (π₂ : (b : β) → (X₂ b ⟶ B₂)),
       EffectiveEpiFamily X₂ π₂ ∧
-      ∃ (i : β → α) (ι : (b :  β) → (X₂ b ⟶ X₁ (i b))),
-      ∀ (b : β), ι b ≫ π₁ _ = π₂ _ ≫ f
+    ∃ (i : β → α) (ι : (b :  β) → (X₂ b ⟶ X₁ (i b))), ∀ (b : β), ι b ≫ π₁ _ = π₂ _ ≫ f
 
 /--
 The coherent coverage on a precoherent category `C`.
@@ -142,7 +140,8 @@ def extensiveCoverage [FinitaryPreExtensive C] : Coverage C where
     let π' : (a : α) → Z' a ⟶ Y := fun a ↦ pullback.fst _ _
     refine ⟨@Presieve.ofArrows C _ _ α Z' π', ⟨?_, ?_⟩⟩
     · constructor
-      exact ⟨hα, Z', π', ⟨by simp only, FinitaryPreExtensive.sigma_desc_iso (fun x => π x) f h_iso⟩⟩
+      exact ⟨hα, Z', π', ⟨by simp only,
+        FinitaryPreExtensive.isIso_sigmaDesc_fst (fun x => π x) f h_iso⟩⟩
     · intro W g hg
       rcases hg with ⟨a⟩
       refine ⟨Z a, pullback.snd _ _, π a, ?_, by rw [CategoryTheory.Limits.pullback.condition]⟩

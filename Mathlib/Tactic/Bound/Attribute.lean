@@ -103,7 +103,7 @@ Each `@[bound]` lemma is assigned a score based on the number and complexity of 
 and the `aesop` implementation chooses lemmas with lower scores first:
 1. Inequality hypotheses involving `0` add 1 to the score.
 2. General inequalities add `10`.
-3. Disjuctions `a ∨ b` add `100` plus the sum of the scores of `a` and `b`.
+3. Disjunctions `a ∨ b` add `100` plus the sum of the scores of `a` and `b`.
 
 The functionality of `bound` overlaps with `positivity` and `gcongr`, but can jump back and forth
 between `0 ≤ x` and `x ≤ y`-type inequalities.  For example, `bound` proves

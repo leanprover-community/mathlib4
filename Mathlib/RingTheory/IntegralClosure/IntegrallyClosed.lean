@@ -250,10 +250,10 @@ theorem pow_dvd_pow_iff [IsDomain R] [IsIntegrallyClosed R]
   let y := (algebraMap R K b) / (algebraMap R K a)
   have hy : IsIntegral R y := by
     refine ⟨X ^ n - C x, monic_X_pow_sub_C _ hn, ?_⟩
-    simp only [y, map_pow, eval₂_sub, eval₂_X_pow, div_pow, eval₂_pow', eval₂_C]
+    simp only [y, eval₂_sub, eval₂_X_pow, div_pow, eval₂_C]
     replace hx := congr_arg (algebraMap R K) hx
     rw [map_pow] at hx
-    field_simp [hx, ha]
+    simp [hx, ha]
   obtain ⟨k, hk⟩ := algebraMap_eq_of_integral hy
   refine ⟨k, IsFractionRing.injective R K ?_⟩
   rw [map_mul, hk, mul_div_cancel₀ _ ha]

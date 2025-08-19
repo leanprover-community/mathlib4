@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, Sophie Morel, Yury Kudryashov
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Data.Fintype.CardEmbedding
+import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 import Mathlib.Topology.Algebra.Module.Multilinear.Topology
 
 /-!
@@ -216,14 +217,14 @@ theorem norm_image_sub_le_of_bound' [DecidableEq ι] (f : MultilinearMap 𝕜 E 
       have A : (insert i s).piecewise m₂ m₁ = Function.update (s.piecewise m₂ m₁) i (m₂ i) :=
         s.piecewise_insert _ _ _
       have B : s.piecewise m₂ m₁ = Function.update (s.piecewise m₂ m₁) i (m₁ i) := by
-        simp [eq_update_iff, his]
+        simp [his]
       rw [B, A, ← f.map_update_sub]
       apply le_trans (H _)
       gcongr with j
       by_cases h : j = i
       · rw [h]
         simp
-      · by_cases h' : j ∈ s <;> simp [h', h, le_refl]
+      · by_cases h' : j ∈ s <;> simp [h', h]
     calc
       ‖f m₁ - f ((insert i s).piecewise m₂ m₁)‖ ≤
           ‖f m₁ - f (s.piecewise m₂ m₁)‖ +
@@ -310,7 +311,7 @@ theorem restr_norm_le {k n : ℕ} (f : MultilinearMap 𝕜 (fun _ : Fin n => G) 
   rw [mul_right_comm, mul_assoc]
   convert H _ using 2
   simp only [apply_dite norm, Fintype.prod_dite, prod_const ‖z‖, Finset.card_univ,
-    Fintype.card_of_subtype sᶜ fun _ => mem_compl, card_compl, Fintype.card_fin, hk, mk_coe, ←
+    Fintype.card_of_subtype sᶜ fun _ => mem_compl, card_compl, Fintype.card_fin, hk, ←
     (s.orderIsoOfFin hk).symm.bijective.prod_comp fun x => ‖v x‖]
   convert rfl
 
@@ -381,9 +382,6 @@ theorem le_mul_prod_of_opNorm_le_of_le {f : ContinuousMultilinearMap 𝕜 E G}
     {m : ∀ i, E i} {C : ℝ} {b : ι → ℝ} (hC : ‖f‖ ≤ C) (hm : ∀ i, ‖m i‖ ≤ b i) :
     ‖f m‖ ≤ C * ∏ i, b i :=
   (f.le_opNorm m).trans <| by gcongr; exacts [f.opNorm_nonneg.trans hC, hm _]
-
-@[deprecated (since := "2024-11-27")]
-alias le_mul_prod_of_le_opNorm_of_le := le_mul_prod_of_opNorm_le_of_le
 
 theorem le_opNorm_mul_prod_of_le (f : ContinuousMultilinearMap 𝕜 E G)
     {m : ∀ i, E i} {b : ι → ℝ} (hm : ∀ i, ‖m i‖ ≤ b i) : ‖f m‖ ≤ ‖f‖ * ∏ i, b i :=
@@ -484,7 +482,7 @@ instance instPseudoMetricSpace : PseudoMetricSpace (ContinuousMultilinearMap �
     uniformity_eq_seminorm
 
 /-- Continuous multilinear maps themselves form a seminormed space with respect to
-    the operator norm. -/
+the operator norm. -/
 instance seminormedAddCommGroup :
     SeminormedAddCommGroup (ContinuousMultilinearMap 𝕜 E G) := ⟨fun _ _ ↦ rfl⟩
 
@@ -501,9 +499,6 @@ instance normedSpace : NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 E G) :=
 search. -/
 instance normedSpace' : NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 (fun _ : ι => G') G) :=
   ContinuousMultilinearMap.normedSpace
-
-@[deprecated norm_neg (since := "2024-11-24")]
-theorem opNorm_neg (f : ContinuousMultilinearMap 𝕜 E G) : ‖-f‖ = ‖f‖ := norm_neg f
 
 /-- The fundamental property of the operator norm of a continuous multilinear map:
 `‖f m‖` is bounded by `‖f‖` times the product of the `‖m i‖`, `nnnorm` version. -/
@@ -710,7 +705,7 @@ theorem norm_mkPiAlgebra_of_empty [IsEmpty ι] :
   apply le_antisymm
   · apply opNorm_le_bound <;> simp
   · convert ratio_le_opNorm (ContinuousMultilinearMap.mkPiAlgebra 𝕜 ι A) fun _ => 1
-    simp [eq_empty_of_isEmpty univ]
+    simp
 
 @[simp]
 theorem norm_mkPiAlgebra [NormOneClass A] : ‖ContinuousMultilinearMap.mkPiAlgebra 𝕜 ι A‖ = 1 := by
@@ -729,7 +724,7 @@ variable {n : ℕ} {A : Type*} [SeminormedRing A] [NormedAlgebra 𝕜 A]
 theorem norm_mkPiAlgebraFin_succ_le : ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n.succ A‖ ≤ 1 := by
   refine opNorm_le_bound zero_le_one fun m => ?_
   simp only [ContinuousMultilinearMap.mkPiAlgebraFin_apply, one_mul, List.ofFn_eq_map,
-    Fin.prod_univ_def, Multiset.map_coe, Multiset.prod_coe]
+    Fin.prod_univ_def]
   refine (List.norm_prod_le' ?_).trans_eq ?_
   · rw [Ne, List.map_eq_nil_iff, List.finRange_eq_nil]
     exact Nat.succ_ne_zero _
@@ -804,7 +799,7 @@ def smulRightL : ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] Co
     1 (fun f z ↦ by simp [norm_smulRight])
 
 @[simp] lemma smulRightL_apply (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
-  smulRightL 𝕜 E G f z = f.smulRight z := rfl
+    smulRightL 𝕜 E G f z = f.smulRight z := rfl
 
 lemma norm_smulRightL_le : ‖smulRightL 𝕜 E G‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
@@ -1284,10 +1279,10 @@ variable {𝕜 : Type u} {ι : Type v} {E : ι → Type wE} {G : Type wG} {G' : 
 
 /-- A continuous linear map is zero iff its norm vanishes. -/
 theorem opNorm_zero_iff {f : ContinuousMultilinearMap 𝕜 E G} : ‖f‖ = 0 ↔ f = 0 := by
-  simp [← (opNorm_nonneg f).le_iff_eq, opNorm_le_iff le_rfl, ContinuousMultilinearMap.ext_iff]
+  simp [← (opNorm_nonneg f).ge_iff_eq', opNorm_le_iff le_rfl, ContinuousMultilinearMap.ext_iff]
 
 /-- Continuous multilinear maps themselves form a normed group with respect to
-    the operator norm. -/
+the operator norm. -/
 instance normedAddCommGroup : NormedAddCommGroup (ContinuousMultilinearMap 𝕜 E G) :=
   NormedAddCommGroup.ofSeparation fun _ ↦ opNorm_zero_iff.mp
 

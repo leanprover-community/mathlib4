@@ -23,6 +23,7 @@ This defines the cardinality of a `Finset` and provides induction principles for
 * `Finset.strongDownwardInductionOn`
 * `Finset.case_strong_induction_on`
 * `Finset.Nonempty.strong_induction`
+* `Finset.eraseInduction`
 -/
 
 assert_not_exists Monoid
@@ -282,7 +283,7 @@ theorem map_eq_of_subset {f : α ↪ α} (hs : s.map f ⊆ s) : s.map f = s :=
 
 theorem card_filter_eq_iff {p : α → Prop} [DecidablePred p] :
     #(s.filter p) = #s ↔ ∀ x ∈ s, p x := by
-  rw [(card_filter_le s p).eq_iff_not_lt, not_lt, eq_iff_card_le_of_subset (filter_subset p s),
+  rw [← (card_filter_le s p).ge_iff_eq, eq_iff_card_le_of_subset (filter_subset p s),
     filter_eq_self]
 
 alias ⟨filter_card_eq, _⟩ := card_filter_eq_iff
@@ -291,10 +292,18 @@ theorem card_filter_eq_zero_iff {p : α → Prop} [DecidablePred p] :
     #(s.filter p) = 0 ↔ ∀ x ∈ s, ¬ p x := by
   rw [card_eq_zero, filter_eq_empty_iff]
 
+@[gcongr]
 nonrec lemma card_lt_card (h : s ⊂ t) : #s < #t := card_lt_card <| val_lt_iff.2 h
 
 lemma card_strictMono : StrictMono (card : Finset α → ℕ) := fun _ _ ↦ card_lt_card
 
+section bij
+
+/--
+See also `card_bij`.
+TODO: consider deprecating, since this has been unused in mathlib for a long time and is just a
+special case of `card_bij`.
+-/
 theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i, ∃ h : i < n, f i h = a)
     (hf' : ∀ i (h : i < n), f i h ∈ s)
     (f_inj : ∀ i j (hi : i < n) (hj : j < n), f i hi = f j hj → i = j) : #s = n := by
@@ -315,10 +324,10 @@ theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i,
   intro ⟨i, hi⟩ ⟨j, hj⟩ eq
   exact Subtype.eq <| f_inj i j (mem_range.1 hi) (mem_range.1 hj) eq
 
-section bij
 variable {t : Finset β}
 
-/-- Reorder a finset.
+/-- Given a bijection from a finite set `s` to a finite set `t`, the cardinalities of `s` and `t`
+are equal.
 
 The difference with `Finset.card_bij'` is that the bijection is specified as a surjective injection,
 rather than by an inverse function.
@@ -342,7 +351,8 @@ lemma card_bij (i : ∀ a ∈ s, β) (hi : ∀ a ha, i a ha ∈ t)
     · obtain ⟨_, _, rfl⟩ := mem_image.1 h; apply hi
     · obtain ⟨a, ha, rfl⟩ := i_surj b h; exact mem_image.2 ⟨⟨a, ha⟩, by simp⟩
 
-/-- Reorder a finset.
+/-- Given a bijection from a finite set `s` to a finite set `t`, the cardinalities of `s` and `t`
+are equal.
 
 The difference with `Finset.card_bij` is that the bijection is specified with an inverse, rather
 than as a surjective injection.
@@ -356,18 +366,20 @@ lemma card_bij' (i : ∀ a ∈ s, β) (j : ∀ a ∈ t, α) (hi : ∀ a ha, i a 
   rw [← left_inv a1 h1, ← left_inv a2 h2]
   simp only [eq]
 
-/-- Reorder a finset.
+/-- Given a bijection from a finite set `s` to a finite set `t`, the cardinalities of `s` and `t`
+are equal.
 
 The difference with `Finset.card_nbij'` is that the bijection is specified as a surjective
 injection, rather than by an inverse function.
 
 The difference with `Finset.card_bij` is that the bijection is a non-dependent function, rather than
 being allowed to use membership of the domain. -/
-lemma card_nbij (i : α → β) (hi : ∀ a ∈ s, i a ∈ t) (i_inj : (s : Set α).InjOn i)
+lemma card_nbij (i : α → β) (hi : Set.MapsTo i s t) (i_inj : (s : Set α).InjOn i)
     (i_surj : (s : Set α).SurjOn i t) : #s = #t :=
   card_bij (fun a _ ↦ i a) hi i_inj (by simpa using i_surj)
 
-/-- Reorder a finset.
+/-- Given a bijection from a finite set `s` to a finite set `t`, the cardinalities of `s` and `t`
+are equal.
 
 The difference with `Finset.card_nbij` is that the bijection is specified with an inverse, rather
 than as a surjective injection.
@@ -377,15 +389,15 @@ functions, rather than being allowed to use membership of the domains.
 
 The difference with `Finset.card_equiv` is that bijectivity is only required to hold on the domains,
 rather than on the entire types. -/
-lemma card_nbij' (i : α → β) (j : β → α) (hi : ∀ a ∈ s, i a ∈ t) (hj : ∀ a ∈ t, j a ∈ s)
-    (left_inv : ∀ a ∈ s, j (i a) = a) (right_inv : ∀ a ∈ t, i (j a) = a) : #s = #t :=
+lemma card_nbij' (i : α → β) (j : β → α) (hi : Set.MapsTo i s t) (hj : Set.MapsTo j t s)
+    (left_inv : Set.LeftInvOn j i s) (right_inv : Set.RightInvOn j i t) : #s = #t :=
   card_bij' (fun a _ ↦ i a) (fun b _ ↦ j b) hi hj left_inv right_inv
 
 /-- Specialization of `Finset.card_nbij'` that automatically fills in most arguments.
 
 See `Fintype.card_equiv` for the version where `s` and `t` are `univ`. -/
 lemma card_equiv (e : α ≃ β) (hst : ∀ i, i ∈ s ↔ e i ∈ t) : #s = #t := by
-  refine card_nbij' e e.symm ?_ ?_ ?_ ?_ <;> simp [hst]
+  refine card_nbij' e e.symm ?_ ?_ ?_ ?_ <;> simp [hst, Set.MapsTo, Set.LeftInvOn, Set.RightInvOn]
 
 /-- Specialization of `Finset.card_nbij` that automatically fills in most arguments.
 
@@ -393,19 +405,23 @@ See `Fintype.card_bijective` for the version where `s` and `t` are `univ`. -/
 lemma card_bijective (e : α → β) (he : e.Bijective) (hst : ∀ i, i ∈ s ↔ e i ∈ t) :
     #s = #t := card_equiv (.ofBijective e he) hst
 
-lemma card_le_card_of_injOn (f : α → β) (hf : ∀ a ∈ s, f a ∈ t) (f_inj : (s : Set α).InjOn f) :
+lemma _root_.Set.BijOn.finsetCard_eq (e : α → β) (he : Set.BijOn e s t) : #s = #t :=
+  card_nbij e he.mapsTo he.injOn he.surjOn
+
+lemma card_le_card_of_injOn (f : α → β) (hf : Set.MapsTo f s t) (f_inj : (s : Set α).InjOn f) :
     #s ≤ #t := by
   classical
   calc
     #s = #(s.image f) := (card_image_of_injOn f_inj).symm
     _  ≤ #t           := card_le_card <| image_subset_iff.2 hf
+
 lemma card_le_card_of_injective {f : s → t} (hf : f.Injective) : #s ≤ #t := by
   rcases s.eq_empty_or_nonempty with rfl | ⟨a₀, ha₀⟩
   · simp
   · classical
     let f' : α → β := fun a => f (if ha : a ∈ s then ⟨a, ha⟩ else ⟨a₀, ha₀⟩)
     apply card_le_card_of_injOn f'
-    · aesop
+    · aesop (add safe unfold Set.MapsTo)
     · intro a₁ ha₁ a₂ ha₂ haa
       rw [mem_coe] at ha₁ ha₂
       simp only [f', ha₁, ha₂, ← Subtype.ext_iff] at haa
@@ -415,9 +431,11 @@ lemma card_le_card_of_surjOn (f : α → β) (hf : Set.SurjOn f s t) : #t ≤ #s
   classical unfold Set.SurjOn at hf; exact (card_le_card (mod_cast hf)).trans card_image_le
 
 /-- If there are more pigeons than pigeonholes, then there are two pigeons in the same pigeonhole.
--/
-theorem exists_ne_map_eq_of_card_lt_of_maps_to {t : Finset β} (hc : #t < #s) {f : α → β}
-    (hf : ∀ a ∈ s, f a ∈ t) : ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y := by
+
+See also `Set.exists_ne_map_eq_of_encard_lt_of_maps_to` and
+`Set.exists_ne_map_eq_of_ncard_lt_of_maps_to`. -/
+theorem exists_ne_map_eq_of_card_lt_of_maps_to (hc : #t < #s) {f : α → β}
+    (hf : Set.MapsTo f s t) : ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y := by
   classical
   by_contra! hz
   refine hc.not_ge (card_le_card_of_injOn f hf ?_)
@@ -425,12 +443,21 @@ theorem exists_ne_map_eq_of_card_lt_of_maps_to {t : Finset β} (hc : #t < #s) {f
   contrapose
   exact hz x hx y hy
 
+/--
+See also `Finset.card_le_card_of_injOn`, which is a more general version of this lemma.
+TODO: consider deprecating, since this is just a special case of `Finset.card_le_card_of_injOn`.
+-/
 lemma le_card_of_inj_on_range (f : ℕ → α) (hf : ∀ i < n, f i ∈ s)
     (f_inj : ∀ i < n, ∀ j < n, f i = f j → i = j) : n ≤ #s :=
   calc
     n = #(range n) := (card_range n).symm
-    _ ≤ #s := card_le_card_of_injOn f (by simpa only [mem_range]) (by simpa)
+    _ ≤ #s := card_le_card_of_injOn f (by simpa [Set.MapsTo, mem_range] using hf) (by simpa)
 
+/--
+Given an injective map `f` from a finite set `s` to another finite set `t`, if `t` is no larger
+than `s`, then `f` is surjective to `t` when restricted to `s`.
+See `Finset.surj_on_of_inj_on_of_card_le` for the version where `f` is a dependent function.
+-/
 lemma surjOn_of_injOn_of_card_le (f : α → β) (hf : Set.MapsTo f s t) (hinj : Set.InjOn f s)
     (hst : #t ≤ #s) : Set.SurjOn f s t := by
   classical
@@ -438,6 +465,11 @@ lemma surjOn_of_injOn_of_card_le (f : α → β) (hf : Set.MapsTo f s t) (hinj :
   have : s.image f ⊆ t := by aesop (add simp Finset.subset_iff)
   exact eq_of_subset_of_card_le this (hst.trans_eq (card_image_of_injOn hinj).symm)
 
+/--
+Given an injective map `f` defined on a finite set `s` to another finite set `t`, if `t` is no
+larger than `s`, then `f` is surjective to `t` when restricted to `s`.
+See `Finset.surjOn_of_injOn_of_card_le` for the version where `f` is a non-dependent function.
+-/
 lemma surj_on_of_inj_on_of_card_le (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha ∈ t)
     (hinj : ∀ a₁ a₂ ha₁ ha₂, f a₁ ha₁ = f a₂ ha₂ → a₁ = a₂) (hst : #t ≤ #s) :
     ∀ b ∈ t, ∃ a ha, b = f a ha := by
@@ -448,6 +480,11 @@ lemma surj_on_of_inj_on_of_card_le (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha 
   obtain ⟨a, ha, rfl⟩ := surjOn_of_injOn_of_card_le _ hmapsto' hinj' (by rwa [card_attach]) hb
   exact ⟨a, a.2, rfl⟩
 
+/--
+Given a surjective map `f` from a finite set `s` to another finite set `t`, if `s` is no larger
+than `t`, then `f` is injective when restricted to `s`.
+See `Finset.inj_on_of_surj_on_of_card_le` for the version where `f` is a dependent function.
+-/
 lemma injOn_of_surjOn_of_card_le (f : α → β) (hf : Set.MapsTo f s t) (hsurj : Set.SurjOn f s t)
     (hst : #s ≤ #t) : Set.InjOn f s := by
   classical
@@ -457,6 +494,11 @@ lemma injOn_of_surjOn_of_card_le (f : α → β) (hf : Set.MapsTo f s t) (hsurj 
   rw [← card_image_iff]
   omega
 
+/--
+Given a surjective map `f` defined on a finite set `s` to another finite set `t`, if `s` is no
+larger than `t`, then `f` is injective when restricted to `s`.
+See `Finset.injOn_of_surjOn_of_card_le` for the version where `f` is a non-dependent function.
+-/
 theorem inj_on_of_surj_on_of_card_le (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha ∈ t)
     (hsurj : ∀ b ∈ t, ∃ a ha, f a ha = b) (hst : #s ≤ #t) ⦃a₁⦄ (ha₁ : a₁ ∈ s) ⦃a₂⦄
     (ha₂ : a₂ ∈ s) (ha₁a₂ : f a₁ ha₁ = f a₂ ha₂) : a₁ = a₂ := by
@@ -621,7 +663,7 @@ theorem exists_eq_insert_iff [DecidableEq α] {s t : Finset α} :
 theorem card_le_one : #s ≤ 1 ↔ ∀ a ∈ s, ∀ b ∈ s, a = b := by
   obtain rfl | ⟨x, hx⟩ := s.eq_empty_or_nonempty
   · simp
-  refine (Nat.succ_le_of_lt (card_pos.2 ⟨x, hx⟩)).le_iff_eq.trans (card_eq_one.trans ⟨?_, ?_⟩)
+  refine (Nat.succ_le_of_lt (card_pos.2 ⟨x, hx⟩)).ge_iff_eq'.trans (card_eq_one.trans ⟨?_, ?_⟩)
   · rintro ⟨y, rfl⟩
     simp
   · exact fun h => ⟨x, eq_singleton_iff_unique_mem.2 ⟨hx, fun y hy => h _ hy _ hx⟩⟩
@@ -658,7 +700,7 @@ theorem one_lt_card : 1 < #s ↔ ∃ a ∈ s, ∃ b ∈ s, a ≠ b := by
 
 theorem one_lt_card_iff : 1 < #s ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b := by
   rw [one_lt_card]
-  simp only [exists_prop, exists_and_left]
+  simp only [exists_and_left]
 
 theorem one_lt_card_iff_nontrivial : 1 < #s ↔ s.Nontrivial := by
   rw [← not_iff_not, not_lt, Finset.Nontrivial, ← Set.nontrivial_coe_sort,
@@ -718,6 +760,19 @@ theorem card_eq_three : #s = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y ≠ z �
     simp only [xy, xz, yz, mem_insert, card_insert_of_notMem, not_false_iff, mem_singleton,
       or_self_iff, card_singleton]
 
+theorem card_eq_four : #s = 4 ↔
+    ∃ x y z w, x ≠ y ∧ x ≠ z ∧ x ≠ w ∧ y ≠ z ∧ y ≠ w ∧ z ≠ w ∧ s = {x, y, z, w} := by
+  constructor
+  · rw [card_eq_succ]
+    simp_rw [card_eq_three]
+    rintro ⟨a, _, abcd, rfl, b, c, d, bc, bd, cd, rfl⟩
+    simp_rw [mem_insert, mem_singleton, not_or] at abcd
+    exact ⟨a, b, c, d, abcd.1, abcd.2.1, abcd.2.2, bc, bd, cd, rfl⟩
+  · rintro ⟨x, y, z, w, xy, xz, xw, yz, yw, zw, rfl⟩
+    simp only [xy, xz, xw, yz, yw, zw, mem_insert,
+      card_insert_of_notMem, not_false_iff, mem_singleton,
+      or_self_iff, card_singleton]
+
 end DecidableEq
 
 theorem two_lt_card_iff : 2 < #s ↔ ∃ a b c, a ∈ s ∧ b ∈ s ∧ c ∈ s ∧ a ≠ b ∧ a ≠ c ∧ b ≠ c := by
@@ -732,6 +787,22 @@ theorem two_lt_card_iff : 2 < #s ↔ ∃ a b c, a ∈ s ∧ b ∈ s ∧ c ∈ s 
 
 theorem two_lt_card : 2 < #s ↔ ∃ a ∈ s, ∃ b ∈ s, ∃ c ∈ s, a ≠ b ∧ a ≠ c ∧ b ≠ c := by
   simp_rw [two_lt_card_iff, exists_and_left]
+
+theorem three_lt_card_iff : 3 < #s ↔
+    ∃ a b c d, a ∈ s ∧ b ∈ s ∧ c ∈ s ∧ d ∈ s ∧
+    a ≠ b ∧ a ≠ c ∧ a ≠ d ∧ b ≠ c ∧ b ≠ d ∧ c ≠ d := by
+  classical
+    simp_rw [lt_iff_add_one_le, le_card_iff_exists_subset_card, reduceAdd, card_eq_four,
+      ← exists_and_left, exists_comm (α := Finset α)]
+    constructor
+    · rintro ⟨a, b, c, d, t, hsub, hab, hac, had, hbc, hbd, hcd, rfl⟩
+      exact ⟨a, b, c, d, by simp_all [insert_subset_iff]⟩
+    · rintro ⟨a, b, c, d, ha, hb, hc, hd, hab, hac, had, hbc, hbd, hcd⟩
+      exact ⟨a, b, c, d, {a, b, c, d}, by simp_all [insert_subset_iff]⟩
+
+theorem three_lt_card : 3 < #s ↔ ∃ a ∈ s, ∃ b ∈ s, ∃ c ∈ s, ∃ d ∈ s,
+    a ≠ b ∧ a ≠ c ∧ a ≠ d ∧ b ≠ c ∧ b ≠ d ∧ c ≠ d := by
+  simp_rw [three_lt_card_iff, exists_and_left]
 
 /-! ### Inductions -/
 
@@ -830,5 +901,18 @@ theorem lt_wf {α} : WellFounded (@LT.lt (Finset α) _) :=
   have H : Subrelation (@LT.lt (Finset α) _) (InvImage (· < ·) card) := fun {_ _} hxy =>
     card_lt_card hxy
   Subrelation.wf H <| InvImage.wf _ <| (Nat.lt_wfRel).2
+
+/--
+To prove a proposition for an arbitrary `Finset α`,
+it suffices to prove that for any `S : Finset α`, the following is true:
+the property is true for S with any element `s` removed, then the property holds for `S`.
+
+This is a weaker version of `Finset.strongInduction`.
+But it can be more precise when the induction argument
+only requires removing single elements at a time.
+-/
+theorem eraseInduction [DecidableEq α] {p : Finset α → Prop}
+    (H : (S : Finset α) → (∀ s ∈ S, p (S.erase s)) → p S) (S : Finset α) : p S :=
+  S.strongInduction fun S ih => H S fun _ hs => ih _ (erase_ssubset hs)
 
 end Finset
