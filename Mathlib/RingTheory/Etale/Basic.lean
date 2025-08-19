@@ -9,7 +9,7 @@ import Mathlib.RingTheory.Unramified.Basic
 
 /-!
 
-# Etale morphisms
+# Étale morphisms
 
 An `R`-algebra `A` is formally étale if for every `R`-algebra `B`,
 every square-zero ideal `I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists
@@ -216,7 +216,7 @@ namespace RingHom
 variable {R S : Type u} [CommRing R] [CommRing S]
 
 /--
-A ring homomorphism `R →+* A` is formally etale if it is formally unramified and formally smooth.
+A ring homomorphism `R →+* A` is formally étale if it is formally unramified and formally smooth.
 See `Algebra.FormallyEtale`.
 -/
 @[algebraize Algebra.FormallyEtale]
@@ -226,8 +226,6 @@ def FormallyEtale (f : R →+* S) : Prop :=
 
 lemma formallyEtale_algebraMap [Algebra R S] :
     (algebraMap R S).FormallyEtale ↔ Algebra.FormallyEtale R S := by
-  delta FormallyEtale
-  congr!
-  exact Algebra.algebra_ext _ _ fun _ ↦ rfl
+  rw [FormallyEtale, toAlgebra_algebraMap]
 
 end RingHom
