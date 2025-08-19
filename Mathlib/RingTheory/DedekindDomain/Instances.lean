@@ -98,10 +98,15 @@ instance : NoZeroSMulDivisors R Sₚ := by
   have := IsLocalization.AtPrime.faithfulSMul Rₚ R P
   exact NoZeroSMulDivisors.trans_faithfulSMul R Rₚ _
 
-noncomputable instance : Algebra Sₚ L :=
+/--
+This is not an instance because it creates a diamond with `OreLocalization.instAlgebra`.
+-/
+noncomputable abbrev Localization.AtPrime.liftAlgebra : Algebra Sₚ L :=
   (map _ (T := S⁰) (RingHom.id S)
     (algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul _
       P.primeCompl_le_nonZeroDivisors)).toAlgebra
+
+attribute [local instance] Localization.AtPrime.liftAlgebra
 
 instance : IsScalarTower S Sₚ L :=
   localization_isScalarTower_of_submonoid_le _ _ _ _
