@@ -174,6 +174,36 @@ theorem isNNRat_pow {α} [Semiring α] {f : α → ℕ → α} {a : α} {an cn :
   rw [← Nat.cast_pow] at this
   use this; simp [invOf_pow, Commute.mul_pow, Nat.cast_commute]
 
+/-- Main part of `evalPow`. -/
+def evalPow.core {u : Level} {α : Q(Type u)} (e : Q(«$α»)) (f : Q(«$α» → ℕ → «$α»)) (a : Q(«$α»))
+    (b nb : Q(ℕ)) (pb : Q(IsNat «$b» «$nb»)) (sα : Q(Semiring «$α»)) (ra : Result a) :
+    OptionT CoreM (Result e) := do
+  haveI' : $e =Q $a ^ $b := ⟨⟩
+  haveI' : $f =Q HPow.hPow := ⟨⟩
+  match ra with
+  | .isBool .. => failure
+  | .isNat sα na pa =>
+    assumeInstancesCommute
+    let ⟨c, r⟩ ← evalNatPow na nb
+    return .isNat sα c q(isNat_pow (f := $f) (.refl $f) $pa $pb $r)
+  | .isNegNat rα .. =>
+    assumeInstancesCommute
+    let ⟨za, na, pa⟩ ← OptionT.mk <| pure (ra.toInt rα)
+    let ⟨zc, c, r⟩ ← evalIntPow za na nb
+    return .isInt rα c zc q(isInt_pow (f := $f) (.refl $f) $pa $pb $r)
+  | .isNNRat dα _qa na da pa =>
+    assumeInstancesCommute
+    let ⟨nc, r1⟩ ← evalNatPow na nb
+    let ⟨dc, r2⟩ ← evalNatPow da nb
+    let qc := mkRat nc.natLit! dc.natLit!
+    return .isNNRat dα qc nc dc q(isNNRat_pow (f := $f) (.refl $f) $pa $pb $r1 $r2)
+  | .isNegNNRat dα qa na da pa =>
+    assumeInstancesCommute
+    let ⟨zc, nc, r1⟩ ← evalIntPow qa.num q(Int.negOfNat $na) nb
+    let ⟨dc, r2⟩ ← evalNatPow da nb
+    let qc := mkRat zc dc.natLit!
+    return .isRat dα qc nc dc q(isRat_pow (f := $f) (.refl $f) $pa $pb $r1 $r2)
+
 attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a ^ b`,
 such that `norm_num` successfully recognises both `a` and `b`, with `b : ℕ`. -/
@@ -186,33 +216,8 @@ def evalPow : NormNumExt where eval {u α} e := do
   guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := $α))
   haveI' : $e =Q $a ^ $b := ⟨⟩
   haveI' : $f =Q HPow.hPow := ⟨⟩
-  let rec
-  /-- Main part of `evalPow`. -/
-  core : OptionT CoreM (Result e) := do
-    match ra with
-    | .isBool .. => failure
-    | .isNat sα na pa =>
-      assumeInstancesCommute
-      let ⟨c, r⟩ ← evalNatPow na nb
-      return .isNat sα c q(isNat_pow (f := $f) (.refl $f) $pa $pb $r)
-    | .isNegNat rα .. =>
-      assumeInstancesCommute
-      let .some ⟨za, na, pa⟩ := ra.toInt rα | failure
-      let ⟨zc, c, r⟩ ← evalIntPow za na nb
-      return .isInt rα c zc q(isInt_pow (f := $f) (.refl $f) $pa $pb $r)
-    | .isNNRat dα _qa na da pa =>
-      assumeInstancesCommute
-      let ⟨nc, r1⟩ ← evalNatPow na nb
-      let ⟨dc, r2⟩ ← evalNatPow da nb
-      let qc := mkRat nc.natLit! dc.natLit!
-      return .isNNRat dα qc nc dc q(isNNRat_pow (f := $f) (.refl $f) $pa $pb $r1 $r2)
-    | .isNegNNRat dα qa na da pa =>
-      assumeInstancesCommute
-      let ⟨zc, nc, r1⟩ ← evalIntPow qa.num q(Int.negOfNat $na) nb
-      let ⟨dc, r2⟩ ← evalNatPow da nb
-      let qc := mkRat zc dc.natLit!
-      return .isRat dα qc nc dc q(isRat_pow (f := $f) (.refl $f) $pa $pb $r1 $r2)
-  let .some r ← core.run | failure
+  let .some r ←
+    liftM <| OptionT.run (evalPow.core q($e) q($f) q($a) q($b) q($nb) q($pb) q($sα) ra) | failure
   return r
 
 theorem isNat_zpow_pos {α : Type*} [DivisionSemiring α] {a : α} {b : ℤ} {nb ne : ℕ}
