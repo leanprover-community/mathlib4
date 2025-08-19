@@ -55,12 +55,12 @@ variable {ι : Type*}
 theorem replicateRow_apply (v : n → α) (i : ι) (j) : replicateRow ι v i j = v j :=
   rfl
 
-theorem vecMulVec_one {ι ι' R : Type*} [MulOneClass R] (x : ι → R) :
-    vecMulVec x 1 = replicateCol ι' x := by
+theorem vecMulVec_one [MulOneClass R] (x : n → R) :
+    vecMulVec x 1 = replicateCol m x := by
   ext; simp [vecMulVec_apply]
 
-theorem one_vecMulVec {ι ι' R : Type*} [MulOneClass R] (x : ι → R) :
-    vecMulVec 1 x = replicateRow ι' x := by
+theorem one_vecMulVec [MulOneClass R] (x : n → R) :
+    vecMulVec 1 x = replicateRow m x := by
   ext; simp [vecMulVec_apply]
 
 theorem replicateCol_injective [Nonempty ι] :
