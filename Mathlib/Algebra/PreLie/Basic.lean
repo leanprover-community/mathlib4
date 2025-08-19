@@ -56,7 +56,9 @@ class RightPreLieRing (L : Type*) : Type _ extends NonUnitalNonAssocRing L where
   assoc_symm' (x y z : L) : associator x y z = associator x z y
 
 section algebras
-variable (R) [CommRing R]
+
+variable (R : Type*) [CommRing R]
+
 /-- A `LeftPreLieAlgebra` is a `LeftPreLieRing` with an action of a `CommRing` satisfying
 `r • x * y = r • (x * y)` and ` x * (r • y) = r • (x * y)`. -/
 @[ext]
@@ -68,10 +70,14 @@ class LeftPreLieAlgebra (L : Type*) [LeftPreLieRing L] : Type _ extends
 @[ext]
 class RightPreLieAlgebra (L : Type*) [RightPreLieRing L] : Type _ extends
   Module R L, IsScalarTower R L L, SMulCommClass R L L
+
 end algebras
 
+variable {R L : Type*} [CommRing R]
+
 namespace LeftPreLieRing
-variable {R L : Type*} [CommRing R] [LeftPreLieRing L]
+
+variable [LeftPreLieRing L]
 
 theorem assoc_symm (x y z : L) :
     associator x y z = associator y x z := LeftPreLieRing.assoc_symm' x y z
@@ -80,16 +86,21 @@ theorem assoc_symm (x y z : L) :
 instance : RightPreLieRing Lᵐᵒᵖ where
   assoc_symm' x y z := by
     simp [assoc_symm]
+
 end LeftPreLieRing
 
 namespace LeftPreLieAlgebra
-variable {R L : Type*} [CommRing R] [LeftPreLieRing L] [LeftPreLieAlgebra R L]
+
+variable [LeftPreLieRing L] [LeftPreLieAlgebra R L]
+
 /-- Every left pre-Lie algebra is a right pre-Lie algebra with the opposite multiplication -/
 instance : RightPreLieAlgebra R Lᵐᵒᵖ where
+
 end LeftPreLieAlgebra
 
 namespace RightPreLieRing
-variable {R L : Type*} [CommRing R] [RightPreLieRing L]
+
+variable [RightPreLieRing L]
 
 theorem assoc_symm (x y z : L) :
     associator x y z = associator x z y := RightPreLieRing.assoc_symm' x y z
@@ -98,10 +109,14 @@ theorem assoc_symm (x y z : L) :
 instance : LeftPreLieRing Lᵐᵒᵖ where
   assoc_symm' x y z := by
     simp [assoc_symm]
+
 end RightPreLieRing
 
 namespace RightPreLieAlgebra
-variable {R L : Type*} [CommRing R] [RightPreLieRing L] [RightPreLieAlgebra R L]
+
+variable [RightPreLieRing L] [RightPreLieAlgebra R L]
+
 /-- Every left pre-Lie algebra is a right pre-Lie algebra with the opposite multiplication -/
 instance : LeftPreLieAlgebra R Lᵐᵒᵖ where
+
 end RightPreLieAlgebra
