@@ -103,7 +103,7 @@ weak topology. -/
 noncomputable def leftDualEquiv (hl : B.SeparatingLeft) : E ≃ₗ[𝕜] StrongDual 𝕜 (WeakBilin B.flip) :=
   rightDualEquiv _ (LinearMap.flip_separatingRight.mpr hl)
 
-lemma polar_gc_closureOperator_of_separatingLeft_empty (h : SeparatingLeft B) :
+lemma closureOperator_polar_gc_empty_of_separatingLeft (h : SeparatingLeft B) :
     B.polar_gc.closureOperator (∅ : Set E) = {0} := by
   simp only [GaloisConnection.closureOperator_apply, Function.comp_apply, polar_empty,
     OrderDual.ofDual_toDual, (B.flip.polar_univ h)]
