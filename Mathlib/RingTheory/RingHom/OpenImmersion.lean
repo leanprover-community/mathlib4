@@ -31,8 +31,7 @@ variable (R S) in
 theorem exists_away [IsStandardOpenImmersion R S] : ∃ r : R, IsLocalization.Away r S :=
   IsStandardOpenImmersion.exists_away'
 
-lemma IsStandardOpenImmersion.away (r : R) :
-    IsStandardOpenImmersion R (Localization.Away r) :=
+instance (r : R) : IsStandardOpenImmersion R (Localization.Away r) :=
   ⟨r, inferInstance⟩
 
 variable (R S T) in
