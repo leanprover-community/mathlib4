@@ -180,8 +180,8 @@ lemma length_ne_zero_iff_eq_cons :
     p.length ≠ 0 ↔ ∃ (c : V) (p' : Path a c) (e : c ⟶ b), p = p'.cons e := by
   refine ⟨fun h ↦ ?_, ?_⟩
   · cases p with
-  | nil => simp at h
-  | cons p' e => exact ⟨_, p', e, rfl⟩
+    | nil => simp at h
+    | cons p' e => exact ⟨_, p', e, rfl⟩
   · rintro ⟨c, p', e, rfl⟩
     simp
 
