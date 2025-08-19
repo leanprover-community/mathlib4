@@ -98,7 +98,7 @@ noncomputable def rightDualEquiv (hr : B.SeparatingRight) : F ≃ₗ[𝕜] Stron
   LinearEquiv.ofBijective (WeakBilin.eval B)
     ⟨dualEmbedding_isInjective_of_separatingRight B hr, dualEmbedding_isSurjective B⟩
 
-/-- When `B` is left-separating, `E` is linearly equivalent to the topological dual of `F` with the
+/-- When `B` is left-separating, `E` is linearly equivalent to the strong dual of `F` with the
 weak topology. -/
 noncomputable def leftDualEquiv (hl : B.SeparatingLeft) : E ≃ₗ[𝕜] StrongDual 𝕜 (WeakBilin B.flip) :=
   rightDualEquiv _ (LinearMap.flip_separatingRight.mpr hl)
