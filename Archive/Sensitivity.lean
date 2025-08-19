@@ -39,7 +39,7 @@ namespace Sensitivity
 but rather use classical logic. -/
 noncomputable section
 
-local notation "√" ↦ Real.sqrt
+local notation "√" => Real.sqrt
 
 open Bool Finset Fintype Function LinearMap Module Module.DualBases
 
