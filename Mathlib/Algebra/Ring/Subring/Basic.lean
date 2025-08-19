@@ -554,12 +554,12 @@ theorem mem_closure_iff {s : Set R} {x} :
       clear _hx _hy
       induction hx, hy using AddSubgroup.closure_induction₂ with
       | mem _ _ hx hy => exact AddSubgroup.subset_closure (mul_mem hx hy)
-      | one_left => simp
-      | one_right => simp
-      | mul_left _ _ _ _ _ _ h₁ h₂ => simpa [add_mul] using add_mem h₁ h₂
-      | mul_right _ _ _ _ _ _ h₁ h₂ => simpa [mul_add] using add_mem h₁ h₂
-      | inv_left _ _ _ _ h => simpa [neg_mul] using neg_mem h
-      | inv_right _ _ _ _ h => simpa [mul_neg] using neg_mem h,
+      | zero_left => simp
+      | zero_right => simp
+      | add_left _ _ _ _ _ _ h₁ h₂ => simpa [add_mul] using add_mem h₁ h₂
+      | add_right _ _ _ _ _ _ h₁ h₂ => simpa [mul_add] using add_mem h₁ h₂
+      | neg_left _ _ _ _ h => simpa [neg_mul] using neg_mem h
+      | neg_right _ _ _ _ h => simpa [mul_neg] using neg_mem h,
     fun h => by
       induction h using AddSubgroup.closure_induction with
       | mem x hx =>
@@ -567,9 +567,9 @@ theorem mem_closure_iff {s : Set R} {x} :
         | mem _ h => exact subset_closure h
         | one => exact one_mem _
         | mul _ _ _ _ h₁ h₂ => exact mul_mem h₁ h₂
-      | one => exact zero_mem _
-      | mul _ _ _ _ h₁ h₂ => exact add_mem h₁ h₂
-      | inv _ _ h => exact neg_mem h⟩
+      | zero => exact zero_mem _
+      | add _ _ _ _ h₁ h₂ => exact add_mem h₁ h₂
+      | neg _ _ h => exact neg_mem h⟩
 
 lemma closure_le_centralizer_centralizer (s : Set R) :
     closure s ≤ centralizer (centralizer s) :=
@@ -590,12 +590,12 @@ theorem exists_list_of_mem_closure {s : Set R} {x : R} (hx : x ∈ closure s) :
   | mem _ hx =>
     obtain ⟨l, hl, h⟩ := Submonoid.exists_list_of_mem_closure hx
     exact ⟨[l], by simp [h]; clear_aux_decl; tauto⟩
-  | one => exact ⟨[], List.forall_mem_nil _, rfl⟩
-  | mul _ _ _ _ hL hM =>
+  | zero => exact ⟨[], List.forall_mem_nil _, rfl⟩
+  | add _ _ _ _ hL hM =>
     obtain ⟨⟨L, HL1, HL2⟩, ⟨M, HM1, HM2⟩⟩ := And.intro hL hM
     exact ⟨L ++ M, List.forall_mem_append.2 ⟨HL1, HM1⟩, by
       rw [List.map_append, List.sum_append, HL2, HM2]⟩
-  | inv _ _ hL =>
+  | neg _ _ hL =>
     obtain ⟨L, hL⟩ := hL
     exact ⟨L.map (List.cons (-1)),
       List.forall_mem_map.2 fun j hj => List.forall_mem_cons.2 ⟨Or.inr rfl, hL.1 j hj⟩,
