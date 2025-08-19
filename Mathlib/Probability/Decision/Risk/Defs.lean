@@ -26,7 +26,6 @@ equal to `∫⁻ y, ℓ θ y ∂((κ ∘ₖ P) θ)`. We do not introduce a defin
   the prior `π : Measure Θ`.
 * `bayesRisk ℓ P π`: the Bayes risk with respect to the prior `π`, minimum of the average
   risks over all estimators, that is over all Markov kernels `κ : Kernel 𝓧 𝓨`.
-* `supBayesRisk ℓ P`: the supremum of the Bayes risks over all priors (probability measures on `Θ`).
 * `minimaxRisk ℓ P`: minimax risk, infimum over all estimators of the maximum over `θ` of the risk.
 
 -/
@@ -50,12 +49,6 @@ estimators. -/
 noncomputable
 def bayesRisk [MeasurableSpace 𝓨] (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (π : Measure Θ) : ℝ≥0∞ :=
   ⨅ (κ : Kernel 𝓧 𝓨) (_ : IsMarkovKernel κ), avgRisk ℓ P κ π
-
-/-- The maximal Bayes risk, defined as the supremum over priors of the Bayes risk with respect to
-the prior. -/
-noncomputable
-def supBayesRisk [MeasurableSpace 𝓨] (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) : ℝ≥0∞ :=
-  ⨆ (π : Measure Θ) (_ : IsProbabilityMeasure π), bayesRisk ℓ P π
 
 /-- The minimax risk, defined as the infimum over estimators of the maximal risk of
 the estimator. -/
@@ -87,10 +80,6 @@ lemma bayesRisk_zero_left [Nonempty 𝓨] (ℓ : Θ → 𝓨 → ℝ≥0∞) (π
 @[simp]
 lemma bayesRisk_zero_right [Nonempty 𝓨] (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) :
     bayesRisk ℓ P (0 : Measure Θ) = 0 := by simp [bayesRisk, iInf_subtype']
-
-@[simp]
-lemma supBayesRisk_zero [Nonempty 𝓨] (ℓ : Θ → 𝓨 → ℝ≥0∞) :
-    supBayesRisk ℓ (0 : Kernel Θ 𝓧) = 0 := by simp [supBayesRisk]
 
 @[simp]
 lemma minimaxRisk_zero [Nonempty 𝓨] (ℓ : Θ → 𝓨 → ℝ≥0∞) :
@@ -128,18 +117,6 @@ lemma bayesRisk_of_isEmpty' [Nonempty 𝓧] [IsEmpty 𝓨] :
 lemma bayesRisk_of_isEmpty'' [IsEmpty Θ] [Nonempty 𝓨] :
     bayesRisk ℓ P π = 0 := by
   simp [bayesRisk, iInf_subtype']
-
-@[simp]
-lemma supBayesRisk_of_isEmpty [IsEmpty 𝓧] : supBayesRisk ℓ P = 0 := by
-  simp [supBayesRisk]
-
-@[simp]
-lemma supBayesRisk_of_isEmpty' [Nonempty 𝓧] [Nonempty Θ] [IsEmpty 𝓨] : supBayesRisk ℓ P = ∞ := by
-  simp [supBayesRisk, iSup_subtype']
-
-@[simp]
-lemma supBayesRisk_of_isEmpty'' [IsEmpty Θ] [Nonempty 𝓨] : supBayesRisk ℓ P = 0 := by
-  simp [supBayesRisk]
 
 @[simp]
 lemma minimaxRisk_of_isEmpty [IsEmpty 𝓧] : minimaxRisk ℓ P = 0 := by
