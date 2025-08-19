@@ -34,7 +34,7 @@ prove the same equality for the Bochner integral.
 
 This file is to a large extent a copy of part of `Mathlib/MeasureTheory/Integral/Prod.lean`.
 The product of two measures is a particular case of composition-product of kernels and
-it turns out that once the measurablity of the Lebesgue integral of a kernel is proved,
+it turns out that once the measurability of the Lebesgue integral of a kernel is proved,
 almost all proofs about integrals against products of measures extend with minimal modifications
 to the composition-product of two kernels.
 
