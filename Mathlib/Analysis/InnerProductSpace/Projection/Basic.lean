@@ -651,8 +651,9 @@ theorem starProjection_isSymmetric [K.HasOrthogonalProjection] :
 
 open ContinuousLinearMap in
 /-- `U.starProjection` is a symmetric projection. -/
-theorem starProjection_isSymmetricProjection
-    {U : Submodule 𝕜 E} [U.HasOrthogonalProjection] :
+@[simp]
+theorem isSymmetricProjection_starProjection
+    (U : Submodule 𝕜 E}) [U.HasOrthogonalProjection] :
     U.starProjection.IsSymmetricProjection :=
   ⟨U.isIdempotentElem_starProjection.toLinearMap, U.starProjection_isSymmetric⟩
 
