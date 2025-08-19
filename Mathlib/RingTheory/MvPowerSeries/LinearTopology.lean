@@ -67,13 +67,13 @@ def basis (σ : Type*) (R : Type*) [Ring R] (Jd : TwoSidedIdeal R × (σ →₀ 
 
 variable {σ : Type*} {R : Type*} [Ring R]
 
-/-- A power series `f` belongs to the twosided ideal `basis σ R ⟨J, d⟩`
+/-- A power series `f` belongs to the two-sided ideal `basis σ R ⟨J, d⟩`
 if and only if `coeff R e f ∈ J` for all `e ≤ d`. -/
 theorem mem_basis_iff {f : MvPowerSeries σ R} {Jd : TwoSidedIdeal R × (σ →₀ ℕ)} :
     f ∈ basis σ R Jd ↔ ∀ e ≤ Jd.2, coeff R e f ∈ Jd.1 := by
   simp [basis]
 
-/-- If `J ≤ K` and `e ≤ d`, then we have the inclusion of twosided ideals
+/-- If `J ≤ K` and `e ≤ d`, then we have the inclusion of two-sided ideals
 `basis σ R ⟨J, d⟩ ≤ basis σ R ⟨K, e,>`. -/
 theorem basis_le {Jd Ke : TwoSidedIdeal R × (σ →₀ ℕ)} (hJK : Jd.1 ≤ Ke.1) (hed : Ke.2 ≤ Jd.2) :
     basis σ R Jd ≤ basis σ R Ke :=
