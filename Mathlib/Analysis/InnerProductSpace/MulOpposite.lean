@@ -46,8 +46,7 @@ theorem isometry_opLinearEquiv {R M : Type*} [Semiring R] [SeminormedAddCommGrou
     Isometry (opLinearEquiv R (M:=M)) := fun _ _ => rfl
 
 variable (𝕜 H) in
-/-- The linear isometry equivalence version of `MulOpposite.opLinearEquiv`,
-i.e., `x ↦ op x`. -/
+/-- The linear isometry equivalence version of the function `op`. -/
 @[simps!]
 def opLinearIsometryEquiv : H ≃ₗᵢ[𝕜] Hᵐᵒᵖ where
   toLinearEquiv := opLinearEquiv 𝕜
