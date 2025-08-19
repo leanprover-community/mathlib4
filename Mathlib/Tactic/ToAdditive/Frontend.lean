@@ -3,7 +3,6 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
 -/
-import Batteries.Tactic.Lint -- useful to lint this file and for DiscrTree.elements
 import Batteries.Tactic.Trans
 import Lean.Elab.Tactic.Ext
 import Lean.Meta.Tactic.Rfl
@@ -652,14 +651,11 @@ def expand (e : Expr) : MetaM Expr := do
   return e₂
 
 /-- Rename binder names in pi type. -/
-def renameBinderNames (src : Expr) : MetaM Expr := do
-  let tgt := src.mapForallBinderNames
+def renameBinderNames (src : Expr) : Expr :=
+  src.mapForallBinderNames
     fun
     | .str p s => .str p (guessName s)
     | n => n
-  trace[to_additive_detail] m!"renamed binder names from {src.getForallBinderNames} to " ++
-    m!"{tgt.getForallBinderNames}"
-  return tgt
 
 /-- Reorder pi-binders. See doc of `reorderAttr` for the interpretation of the argument -/
 def reorderForall (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr := do
@@ -707,7 +703,7 @@ def updateDecl (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) 
   if 0 ∈ reorder.flatten then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
   decl := decl.updateType <| ← applyReplacementFun <| ← reorderForall reorder <|
-    ← renameBinderNames <| ← expand decl.type
+    renameBinderNames <| ← expand decl.type
   if let some v := decl.value? then
     decl := decl.updateValue <| ← applyReplacementFun <| ← reorderLambda reorder <| ← expand v
   else if let .opaqueInfo info := decl then -- not covered by `value?`
