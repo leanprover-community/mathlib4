@@ -700,6 +700,11 @@ variable {l m n : Type*} [Fintype n] [Fintype m] [DecidableEq n]
 variable {M₁ M₂ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]
 variable (v₁ : Basis n R M₁) (v₂ : Basis m R M₂)
 
+omit [DecidableEq n] in
+theorem LinearMap.lsmul_flip_apply_toMatrix [DecidableEq m] (b' : Module.Basis m R R) (x : M₁) :
+    ((lsmul R M₁).flip x).toMatrix b' v₁ = vecMulVec (v₁.repr x) b' := by
+  ext; simp [toMatrix_apply, vecMulVec_apply, mul_comm]
+
 theorem Matrix.toLin_apply (M : Matrix m n R) (v : M₁) :
     Matrix.toLin v₁ v₂ M v = ∑ j, (M *ᵥ v₁.repr v) j • v₂ j :=
   show v₂.equivFun.symm (Matrix.toLin' M (v₁.repr v)) = _ by

@@ -1176,22 +1176,6 @@ theorem inner_matrix_col_col [Fintype m] (A B : Matrix m n 𝕜) (i j : n) :
     ⟪Aᵀ i, Bᵀ j⟫ₑ = (Aᴴ * B) i j := by
   simp [PiLp.inner_apply, dotProduct, mul_apply', mul_comm]
 
-section
-variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-
-theorem ContinuousLinearMap.lsmul_flip_apply_toMatrix {ι' : Type*} [Fintype ι'] [DecidableEq ι']
-    (b : Basis ι' 𝕜 𝕜) (b' : Basis ι 𝕜 E) (x : E) :
-    ((lsmul 𝕜 𝕜).flip x).toMatrix b b' = vecMulVec (b'.repr x) b := by
-  ext; simp [LinearMap.toMatrix_apply, vecMulVec_apply, mul_comm]
-
-/-- The matrix representation of `(lsmul 𝕜 𝕜).flip x` given by basis `b` is equal to the
-column `b.repr x`. -/
-theorem ContinuousLinearMap.lsmul_flip_apply_toMatrix_singleton (b : Basis ι 𝕜 E) (x : E) :
-    ((lsmul 𝕜 𝕜).flip x).toMatrix (.singleton Unit 𝕜) b = replicateCol Unit (b.repr x) := by
-  simp only [lsmul_flip_apply_toMatrix, vecMulVec, Basis.singleton_apply, mul_one]; rfl
-
-end
-
 /-- The matrix representation of `innerSL 𝕜 x` given by an orthonormal basis `b` is equal to
 the conjugate transpose of the column `b.repr x`
 (in other words, it is the row `star (b.repr x)`). -/
