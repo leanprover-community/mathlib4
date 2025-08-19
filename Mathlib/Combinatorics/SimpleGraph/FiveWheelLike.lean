@@ -493,7 +493,8 @@ end IsFiveWheelLike
 
 variable [DecidableEq α]
 
-/-- **Andrasfái-Erdős-Sós**
+/-- **Andrasfái-Erdős-Sós** theorem
+
 If `G` is a `Kᵣ₊₁`-free graph with `n` vertices and `(3 * r - 4) * n / (3 * r - 1) < G.minDegree`
 then `G` is `r + 1`-colorable, e.g. if `G` is `K₃`-free and `2 * n / 5 < G.minDegree` then `G`
 is `2`-colorable.
