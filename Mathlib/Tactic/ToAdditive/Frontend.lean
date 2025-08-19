@@ -737,6 +737,8 @@ def reorderLambda (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr :=
   else
     return src
 
+/-- Run `applyReplacementFun` on an expression `∀ x₁ .. xₙ, e`
+making sure not to translate `xᵢ` if `i` is in `dontTranslate`. -/
 def applyReplacementForall (dontTranslate : List Nat) (e : Expr) :
     MetaM Expr := do
   if let some maxDont := dontTranslate.max? then
@@ -752,6 +754,8 @@ def applyReplacementForall (dontTranslate : List Nat) (e : Expr) :
   else
     applyReplacementFun e #[]
 
+/-- Run `applyReplacementFun` on an expression `fun x₁ .. xₙ ↦ e`
+making sure not to translate `xᵢ` if `i` is in `dontTranslate`. -/
 def applyReplacementLambda (dontTranslate : List Nat) (e : Expr) :
     MetaM Expr := do
   if let some maxDont := dontTranslate.max? then
