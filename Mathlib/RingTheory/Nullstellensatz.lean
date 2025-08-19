@@ -189,17 +189,14 @@ theorem isPrime_iff_eq_vanishingIdeal_singleton (I : Ideal (MvPolynomial σ k)) 
 @[simp]
 theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal (MvPolynomial σ k)) :
     vanishingIdeal k (zeroLocus K I) = I.radical := by
-  rw [I.radical_eq_sInf]
-  refine le_antisymm (le_sInf ?_) fun p hp x hx => ?_
-  · rintro J ⟨hJI, hJ⟩
-    obtain ⟨x, hx⟩ := (isPrime_iff_eq_vanishingIdeal_singleton (K := K) J).1 hJ
-    refine hx.symm ▸ vanishingIdeal_anti_mono fun y hy p hp => ?_
-    rw [← mem_vanishingIdeal_singleton_iff, Set.mem_singleton_iff.1 hy, ← hx]
-    exact hJI hp
-  · rw [← mem_vanishingIdeal_singleton_iff x p]
-    refine (mem_sInf.mp hp)
-      ⟨le_trans (le_vanishingIdeal_zeroLocus I) (vanishingIdeal_anti_mono fun y hy => hy.symm ▸ hx),
-        MvPolynomial.vanishingIdeal_singleton_isPrime⟩
+  refine le_antisymm ?_ (radical_le_vanishingIdeal_zeroLocus _)
+  rw [radical_eq_sInf]
+  apply le_sInf
+  rintro J ⟨hJI, hJ⟩
+  obtain ⟨x, hx⟩ := (isPrime_iff_eq_vanishingIdeal_singleton (K := K) J).1 hJ
+  refine hx.symm ▸ vanishingIdeal_anti_mono fun y hy p hp => ?_
+  rw [← mem_vanishingIdeal_singleton_iff, Set.mem_singleton_iff.1 hy, ← hx]
+  exact hJI hp
 
 -- Porting note: marked this as high priority to short cut simplifier
 @[simp (high)]
