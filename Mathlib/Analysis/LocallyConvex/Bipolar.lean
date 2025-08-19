@@ -70,17 +70,13 @@ open TopologicalSpace in
 open Topology in
 lemma dualEmbedding_surjective : Function.Surjective (WeakBilin.eval B) := by
   intro f₁
-  have c1 : Continuous[⨅ i, induced (B.flip i) inferInstance, inferInstance] f₁ := by
-    convert f₁.2
-    rw [WeakBilin.instTopologicalSpace, induced_to_pi]
-    rfl
-  have test5 :
+  have mem_span :
     ↑f₁ ∈ Submodule.span 𝕜 (Set.range (WeakBilin.eval B).toLinearMap₂) := by
       rw [LinearMap.mem_span_iff_continuous _]
-      simp only [ContinuousLinearMap.coe_coe]
-      exact c1
-  rw [← Set.image_univ, Finsupp.mem_span_image_iff_linearCombination] at test5
-  obtain ⟨l, _, hl2⟩ := test5
+      convert f₁.2
+      simp_rw [WeakBilin.instTopologicalSpace, induced_to_pi]
+      rfl
+  obtain ⟨l, _, hl2⟩ := (Finsupp.mem_span_image_iff_linearCombination _).mp mem_span
   use Finsupp.linearCombination 𝕜 (id (M :=F) (R := 𝕜)) l
   rw [←ContinuousLinearMap.coe_inj, ← hl2, WeakBilin.eval, coe_mk, AddHom.coe_mk]
   simp [toLinearMap₂, ContinuousLinearMap.coeLMₛₗ, Finsupp.linearCombination_apply, map_finsuppSum]
