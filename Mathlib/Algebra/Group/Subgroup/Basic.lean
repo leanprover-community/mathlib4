@@ -163,19 +163,6 @@ section Pi
 
 variable {η : Type*} {f : η → Type*}
 
--- defined here and not in Algebra.Group.Submonoid.Operations to have access to Algebra.Group.Pi
-/-- A version of `Set.pi` for submonoids. Given an index set `I` and a family of submodules
-`s : Π i, Submonoid f i`, `pi I s` is the submonoid of dependent functions `f : Π i, f i` such that
-`f i` belongs to `Pi I s` whenever `i ∈ I`. -/
-@[to_additive /-- A version of `Set.pi` for `AddSubmonoid`s. Given an index set `I` and a family
-  of submodules `s : Π i, AddSubmonoid f i`, `pi I s` is the `AddSubmonoid` of dependent functions
-  `f : Π i, f i` such that `f i` belongs to `pi I s` whenever `i ∈ I`. -/]
-def _root_.Submonoid.pi [∀ i, MulOneClass (f i)] (I : Set η) (s : ∀ i, Submonoid (f i)) :
-    Submonoid (∀ i, f i) where
-  carrier := I.pi fun i => (s i).carrier
-  one_mem' i _ := (s i).one_mem
-  mul_mem' hp hq i hI := (s i).mul_mem (hp i hI) (hq i hI)
-
 variable [∀ i, Group (f i)]
 
 /-- A version of `Set.pi` for subgroups. Given an index set `I` and a family of submodules
