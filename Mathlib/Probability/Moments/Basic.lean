@@ -22,9 +22,9 @@ import Mathlib.Probability.IdentDistrib
 ## Main results
 
 * `ProbabilityTheory.IndepFun.mgf_add`: if two real random variables `X` and `Y` are independent
-  and their mgfs are defined at `t`, then `mgf (X + Y) μ t = mgf X μ t * mgf Y μ t`
+  and their MGFs are defined at `t`, then `mgf (X + Y) μ t = mgf X μ t * mgf Y μ t`
 * `ProbabilityTheory.IndepFun.cgf_add`: if two real random variables `X` and `Y` are independent
-  and their cgfs are defined at `t`, then `cgf (X + Y) μ t = cgf X μ t + cgf Y μ t`
+  and their CGFs are defined at `t`, then `cgf (X + Y) μ t = cgf X μ t + cgf Y μ t`
 * `ProbabilityTheory.measure_ge_le_exp_cgf` and `ProbabilityTheory.measure_le_le_exp_cgf`:
   Chernoff bound on the upper (resp. lower) tail of a random variable. For `t` nonnegative such that
   the cgf exists, `ℙ(ε ≤ X) ≤ exp(- t*ε + cgf X ℙ t)`. See also

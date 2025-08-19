@@ -40,7 +40,7 @@ namespace ProbabilityTheory
 
 section GaussianPDF
 
-/-- Probability density function of the gaussian distribution with mean `μ` and variance `v`. -/
+/-- Probability density function of the Gaussian distribution with mean `μ` and variance `v`. -/
 noncomputable
 def gaussianPDFReal (μ : ℝ) (v : ℝ≥0) (x : ℝ) : ℝ :=
   (√(2 * π * v))⁻¹ * rexp (- (x - μ)^2 / (2 * v))
@@ -54,22 +54,22 @@ lemma gaussianPDFReal_zero_var (m : ℝ) : gaussianPDFReal m 0 = 0 := by
   ext1 x
   simp [gaussianPDFReal]
 
-/-- The gaussian pdf is positive when the variance is not zero. -/
+/-- The Gaussian pdf is positive when the variance is not zero. -/
 lemma gaussianPDFReal_pos (μ : ℝ) (v : ℝ≥0) (x : ℝ) (hv : v ≠ 0) : 0 < gaussianPDFReal μ v x := by
   rw [gaussianPDFReal]
   positivity
 
-/-- The gaussian pdf is nonnegative. -/
+/-- The Gaussian pdf is nonnegative. -/
 lemma gaussianPDFReal_nonneg (μ : ℝ) (v : ℝ≥0) (x : ℝ) : 0 ≤ gaussianPDFReal μ v x := by
   rw [gaussianPDFReal]
   positivity
 
-/-- The gaussian pdf is measurable. -/
+/-- The Gaussian pdf is measurable. -/
 @[fun_prop]
 lemma measurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDFReal μ v) :=
   (((measurable_id.add_const _).pow_const _).neg.div_const _).exp.const_mul _
 
-/-- The gaussian pdf is strongly measurable. -/
+/-- The Gaussian pdf is strongly measurable. -/
 @[fun_prop]
 lemma stronglyMeasurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
     StronglyMeasurable (gaussianPDFReal μ v) :=
@@ -97,7 +97,7 @@ lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
     field_simp
   exact Integrable.comp_sub_right hg μ
 
-/-- The gaussian distribution pdf integrates to 1 when the variance is not zero. -/
+/-- The Gaussian distribution pdf integrates to 1 when the variance is not zero. -/
 lemma lintegral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
     ∫⁻ x, ENNReal.ofReal (gaussianPDFReal μ v x) = 1 := by
   rw [← ENNReal.toReal_eq_one_iff]
@@ -115,7 +115,7 @@ lemma lintegral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
     ring
   · positivity
 
-/-- The gaussian distribution pdf integrates to 1 when the variance is not zero. -/
+/-- The Gaussian distribution pdf integrates to 1 when the variance is not zero. -/
 lemma integral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
     ∫ x, gaussianPDFReal μ v x = 1 := by
   have h := lintegral_gaussianPDFReal_eq_one μ hv
