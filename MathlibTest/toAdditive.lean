@@ -378,7 +378,7 @@ run_cmd do
   let stx ← `(Semigroup MonoidEnd)
   liftTermElabM do
     let e ← Term.elabTerm stx none
-    guard <| additiveTest (← getEnv) e == some `Test.MonoidEnd
+    guard <| additiveTest (← getEnv) e == some (.inl `Test.MonoidEnd)
 
 
 @[to_additive instSemiGroupAddMonoidEnd]
@@ -471,6 +471,7 @@ lemma one_eq_one {α : Type*} [One α] : (1 : α) = 1 := rfl
 @[to_additive (attr := reduce_mod_char, simp)]
 lemma one_eq_one' {α : Type*} [One α] : (1 : α) = 1 := rfl
 
+section
 -- Test the error message for a name that cannot be additivised.
 
 /--
@@ -483,7 +484,9 @@ warning: declaration uses 'sorry'
 -/
 #guard_msgs in
 @[to_additive]
-instance foo {α : Type*} [Semigroup α] : Monoid α := sorry
+local instance foo {α : Type*} [Semigroup α] : Monoid α := sorry
+
+end
 
 -- Test the error message for a wrong `to_additive existing`.
 
@@ -595,3 +598,18 @@ run_cmd
   let some doc ← findDocString? (← getEnv) ``addTrivial'
     | throwError "no `str` docstring found"
   logInfo doc
+
+/-! Test the `dont_translate := ...` framework -/
+
+class MyRing (α : Type*) extends Group α
+
+@[to_additive (dont_translate := β) add_neg_iff_mul_inv]
+lemma mul_inv_iff_mul_inv {α β : Type} [Group α] [MyRing β] (a : α) (b : β) :
+    a * a⁻¹ = 1 ↔ b * b⁻¹ = 1 := by
+  simp
+
+/--
+info: add_neg_iff_mul_inv {α β : Type} [AddGroup α] [MyRing β] (a : α) (b : β) : a + -a = 0 ↔ b * b⁻¹ = 1
+-/
+#guard_msgs in
+#check add_neg_iff_mul_inv
