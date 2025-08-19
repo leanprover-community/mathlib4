@@ -598,6 +598,11 @@ theorem isStarProjection_toContinuousLinearMap_iff {T : E →ₗ[𝕜] E} :
   simp [isStarProjection_iff, isSelfAdjoint_toContinuousLinearMap_iff,
     ← ContinuousLinearMap.isIdempotentElem_toLinearMap_iff]
 
+theorem isStarProjection_iff_isSymmetricProjection {T : E →ₗ[𝕜] E} :
+    IsStarProjection T ↔ T.IsSymmetricProjection := by
+  simp [← isStarProjection_toContinuousLinearMap_iff,
+    ContinuousLinearMap.isStarProjection_iff_isSymmetricProjection]
+
 open LinearMap in
 /-- Star projection operators are equal iff their range are. -/
 theorem IsStarProjection.ext_iff {S T : E →ₗ[𝕜] E}
