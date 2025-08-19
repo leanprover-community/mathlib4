@@ -20,6 +20,7 @@ import Batteries.Tactic.Lint -- useful to lint this file and for DiscrTree.eleme
 import Batteries.Tactic.Trans
 import Mathlib.Tactic.Eqns -- just to copy the attribute
 import Mathlib.Tactic.Simps.Basic
+import Lean.Meta.Tactic.TryThis
 
 /-!
 # The `@[to_additive]` attribute.
@@ -128,7 +129,7 @@ has a doc string, a doc string for the additive version should be passed explici
 
 ```
 /-- Multiplication is commutative -/
-@[to_additive "Addition is commutative"]
+@[to_additive /-- Addition is commutative -/]
 theorem mul_comm' {α} [CommSemigroup α] (x y : α) : x * y = y * x := CommSemigroup.mul_comm
 ```
 
@@ -444,6 +445,12 @@ initialize translations : NameMapExtension Name ← registerNameMapExtension _
 def findTranslation? (env : Environment) : Name → Option Name :=
   (ToAdditive.translations.getState env).find?
 
+/-- Get the multiplicative → additive translation for the given name,
+falling back to translating a prefix of the name if the full name can't be translated.
+This allows translating automatically generated declarations such as `IsRegular.casesOn`. -/
+def findPrefixTranslation? (env : Environment) (nm : Name) : Name :=
+  nm.mapPrefix (findTranslation? env)
+
 /-- Add a (multiplicative → additive) name translation to the translations map. -/
 def insertTranslation (src tgt : Name) (failIfExists := true) : CoreM Unit := do
   if let some tgt' := findTranslation? (← getEnv) src then
@@ -562,8 +569,16 @@ is tested, instead of the first argument.
 It will also reorder arguments of certain functions, using `reorderFn`:
 e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorderFn g = some [1]`.
 -/
-def applyReplacementFun (e : Expr) : MetaM Expr :=
-  return aux (← getEnv) (← getBoolOption `trace.to_additive_detail) e
+def applyReplacementFun (e : Expr) : MetaM Expr := do
+  let e' := aux (← getEnv) (← getBoolOption `trace.to_additive_detail) e
+  -- Make sure any new reserved names in the expr are realized; this needs to be done outside of
+  -- `aux` as it is monadic.
+  e'.forEach fun
+    | .const n .. => do
+      if !(← hasConst (skipRealize := false) n) && isReservedName (← getEnv) n then
+        executeReservedNameAction n
+    | _ => pure ()
+  return e'
 where /-- Implementation of `applyReplacementFun`. -/
   aux (env : Environment) (trace : Bool) : Expr → Expr :=
   let reorderFn : Name → List (List ℕ) := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
@@ -573,7 +588,7 @@ where /-- Implementation of `applyReplacementFun`. -/
       dbg_trace s!"replacing at {e}"
     match e with
     | .const n₀ ls₀ => do
-      let n₁ := n₀.mapPrefix <| findTranslation? env
+      let n₁ := findPrefixTranslation? env n₀
       let ls₁ : List Level := if 0 ∈ (reorderFn n₀).flatten then ls₀.swapFirstTwo else ls₀
       if trace then
         if n₀ != n₁ then
@@ -634,7 +649,7 @@ where /-- Implementation of `applyReplacementFun`. -/
           pure (← r gf, ← gAllArgs.mapM r)
       return some <| mkAppN gfAdditive gAllArgsAdditive
     | .proj n₀ idx e => do
-      let n₁ := n₀.mapPrefix <| findTranslation? env
+      let n₁ := findPrefixTranslation? env n₀
       if trace then
         dbg_trace s!"applyReplacementFun: in projection {e}.{idx} of type {n₀}, \
           replace type with {n₁}"
@@ -780,9 +795,11 @@ def findAuxDecls (e : Expr) (pre : Name) : NameSet :=
     else
       l
 
-/-- transform the declaration `src` and all declarations `pre._proof_i` occurring in `src`
+/-- Transform the declaration `src` and all declarations `pre._proof_i` occurring in `src`
 using the transforms dictionary.
+
 `replace_all`, `trace`, `ignore` and `reorder` are configuration options.
+
 `pre` is the declaration that got the `@[to_additive]` attribute and `tgt_pre` is the target of this
 declaration. -/
 partial def transformDeclAux
@@ -843,11 +860,23 @@ partial def transformDeclAux
     | _ => panic! "unreachable"
   -- "Refold" all the aux lemmas that we unfolded.
   let trgDecl ← MetaM.run' <| declAbstractNestedProofs trgDecl
+  /- If `src` is explicitly marked as `noncomputable`, then add the new decl as a declaration but
+  do not compile it, and mark is as noncomputable. Otherwise, only log errors in compiling if `src`
+  has executable code.
+
+  Note that `noncomputable section` does not explicitly mark noncomputable definitions as
+  `noncomputable`, but simply abstains from logging compilation errors.
+
+  This is not a perfect solution, as ideally `to_additive` *should* complain when `src` should
+  produce executable code but fails to do so (e.g. outside of `noncomputable section`). However,
+  the `messages` and `infoState` are reset before this runs, so we cannot check for compilation
+  errors on `src`. The scope set by `noncomputable` section lives in the `CommandElabM` state
+  (which is inaccessible here), so we cannot test for `noncomputable section` directly. See [Zulip](https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/to_additive.20and.20noncomputable/with/310541981). -/
   if isNoncomputable env src then
     addDecl trgDecl.toDeclaration!
     setEnv <| addNoncomputable (← getEnv) tgt
   else
-    addAndCompile trgDecl.toDeclaration!
+    addAndCompile trgDecl.toDeclaration! (logCompileErrors := (IR.findEnvDecl env src).isSome)
   if let .defnDecl { hints := .abbrev, .. } := trgDecl.toDeclaration! then
     if (← getReducibilityStatus src) == .reducible then
       setReducibilityStatus tgt .reducible
@@ -1146,7 +1175,7 @@ def targetName (cfg : Config) (src : Name) : CoreM Name := do
   trace[to_additive_detail] "The name {s} splits as {s.splitCase}"
   let tgt_auto := guessName s
   let depth := cfg.tgt.getNumParts
-  let pre := pre.mapPrefix <| findTranslation? (← getEnv)
+  let pre := findPrefixTranslation? (← getEnv) pre
   let (pre1, pre2) := pre.splitAt (depth - 1)
   let res := if cfg.tgt == .anonymous then pre.str tgt_auto else pre1 ++ cfg.tgt
   if res == src then
@@ -1165,22 +1194,18 @@ def targetName (cfg : Config) (src : Name) : CoreM Name := do
   return res
 
 /-- if `f src = #[a_1, ..., a_n]` and `f tgt = #[b_1, ... b_n]` then `proceedFieldsAux src tgt f`
-will insert translations from `src.a_i` to `tgt.b_i`
-(or from `a_i` to `b_i` if `prependName` is false). -/
-def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (Array Name))
-    (prependName := true) : CoreM Unit := do
+will insert translations from `a_i` to `b_i`. -/
+def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (Array Name)) : CoreM Unit := do
   let srcFields ← f src
   let tgtFields ← f tgt
   if srcFields.size != tgtFields.size then
     throwError "Failed to map fields of {src}, {tgt} with {srcFields} ↦ {tgtFields}.\n \
       Lengths do not match."
-  for (srcField, tgtField) in srcFields.zip tgtFields do
-    let srcName := if prependName then src ++ srcField else srcField
-    let tgtName := if prependName then tgt ++ tgtField else tgtField
-    if srcField != tgtField then
-      insertTranslation srcName tgtName
+  for srcField in srcFields, tgtField in tgtFields do
+    if findPrefixTranslation? (← getEnv) srcField != tgtField then
+      insertTranslation srcField tgtField
     else
-      trace[to_additive] "Translation {srcName} ↦ {tgtName} is automatic."
+      trace[to_additive] "Translation {srcField} ↦ {tgtField} is automatic."
 
 /-- Add the structure fields of `src` to the translations dictionary
 so that future uses of `to_additive` will map them to the corresponding `tgt` fields. -/
@@ -1189,11 +1214,12 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
   -- add translations for the structure fields
   aux fun declName ↦ do
     if isStructure (← getEnv) declName then
-      return getStructureFields (← getEnv) declName
+      let info := getStructureInfo (← getEnv) declName
+      return Array.ofFn (n := info.fieldNames.size) (info.getProjFn? · |>.get!)
     else
       return #[]
   -- add translations for the automatically generated instances with `extend`.
-  aux (prependName := false) fun declName ↦ do
+  aux fun declName ↦ do
     if isStructure (← getEnv) declName then
       return getStructureInfo (← getEnv) declName |>.parentInfo
         |>.filterMap fun c ↦ if !c.subobject then c.projFn else none
@@ -1201,10 +1227,11 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
       return #[]
   -- add translations for the constructors of an inductive type
   aux fun declName ↦ do match (← getEnv).find? declName with
-    | some (ConstantInfo.inductInfo {ctors := ctors, ..}) =>
-        return ctors.toArray.map (.mkSimple ·.lastComponentAsString)
+    | some (ConstantInfo.inductInfo { ctors, .. }) => return ctors.toArray
     | _ => pure #[]
 
+open Tactic.TryThis in
+open private addSuggestionCore in addSuggestion in
 /-- Elaboration of the configuration options for `to_additive`. -/
 def elabToAdditive : Syntax → CoreM Config
   | `(attr| to_additive%$tk $[?%$trace]? $existing?
@@ -1239,8 +1266,19 @@ def elabToAdditive : Syntax → CoreM Config
         Instead, you can write the attributes in the usual way."
     trace[to_additive_detail] "attributes: {attrs}; reorder arguments: {reorder}"
     let doc ← doc.mapM fun
-      | `(str|$doc:str) => do
-        -- TODO: deprecate `str` docstring syntax in Mathlib
+      | `(str|$doc:str) => open Linter in do
+        -- Deprecate `str` docstring syntax (since := "2025-08-12")
+        if getLinterValue linter.deprecated (← getLinterOptions) then
+          logWarningAt doc <| .tagged ``Linter.deprecatedAttr
+            m!"String syntax for `to_additive` docstrings is deprecated: Use \
+              docstring syntax instead (e.g. `@[to_additive /-- example -/]`)"
+          addSuggestionCore doc
+            (header := "Update deprecated syntax to:\n")
+            (codeActionPrefix? := "Update to: ")
+            (isInline := true)
+            #[{
+              suggestion := "/-- " ++ doc.getString.trim ++ " -/"
+            }]
         return doc.getString
       | `(docComment|$doc:docComment) => do
         -- TODO: rely on `addDocString`s call to `validateDocComment` after removing `str` support

@@ -211,13 +211,15 @@ theorem uliftFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : ULift.{v} X) :
     uliftFunctor.map f x = ULift.up (f x.down) :=
   rfl
 
-instance uliftFunctor_full : Functor.Full.{u} uliftFunctor where
-  map_surjective f := ⟨fun x => (f (ULift.up x)).down, rfl⟩
+/-- `uliftFunctor : Type u ⥤ Type max u v` is fully faithful. -/
+def fullyFaithfulULiftFunctor : (uliftFunctor.{v, u}).FullyFaithful where
+  preimage f := fun x ↦ (f (ULift.up x)).down
 
-instance uliftFunctor_faithful : uliftFunctor.Faithful where
-  map_injective {_X} {_Y} f g p :=
-    funext fun x =>
-      congr_arg ULift.down (congr_fun p (ULift.up x) : ULift.up (f x) = ULift.up (g x))
+instance uliftFunctor_full : (uliftFunctor.{v, u}).Full :=
+  fullyFaithfulULiftFunctor.full
+
+instance uliftFunctor_faithful : uliftFunctor.{v, u}.Faithful :=
+  fullyFaithfulULiftFunctor.faithful
 
 /-- The functor embedding `Type u` into `Type u` via `ULift` is isomorphic to the identity functor.
 -/
@@ -265,7 +267,7 @@ section
 allows us to use these functors in category theory. -/
 def ofTypeFunctor (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m] : Type u ⥤ Type v where
   obj := m
-  map f := Functor.map f
+  map f := _root_.Functor.map f
   map_id := fun α => by funext X; apply id_map
 
 variable (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m]
@@ -276,7 +278,7 @@ theorem ofTypeFunctor_obj : (ofTypeFunctor m).obj = m :=
 
 @[simp]
 theorem ofTypeFunctor_map {α β} (f : α → β) :
-    (ofTypeFunctor m).map f = (Functor.map f : m α → m β) :=
+    (ofTypeFunctor m).map f = (_root_.Functor.map f : m α → m β) :=
   rfl
 
 end

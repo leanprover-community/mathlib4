@@ -324,7 +324,7 @@ theorem denseRange_coe : DenseRange ((↑) : α → Completion α) :=
   SeparationQuotient.surjective_mk.denseRange.comp denseRange_pureCauchy
     SeparationQuotient.continuous_mk
 
-/-- The Haudorff completion as an abstract completion. -/
+/-- The Hausdorff completion as an abstract completion. -/
 def cPkg {α : Type*} [UniformSpace α] : AbstractCompletion α where
   space := Completion α
   coe := (↑)
