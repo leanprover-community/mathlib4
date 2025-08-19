@@ -22,10 +22,10 @@ open IsLocalization Away
 variable {R S T : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring T]
   [Algebra R S] [Algebra R T]
 
-variable (R S) in
 /-- A standard open immersion is one that is a localization map away from some element. -/
-@[mk_iff] class IsStandardOpenImmersion [Algebra R S] : Prop where
-  exists_away' : ∃ r : R, IsLocalization.Away r S
+@[mk_iff] class IsStandardOpenImmersion (R S : Type*) [CommRing R] [CommRing S]
+    [Algebra R S] : Prop where
+  exists_away (R S) : ∃ r : R, IsLocalization.Away r S
 
 variable (R S) in
 theorem exists_away [IsStandardOpenImmersion R S] : ∃ r : R, IsLocalization.Away r S :=
