@@ -52,12 +52,11 @@ the adjacency relation.
 This is injective (see `SimpleGraph.map_injective`). -/
 protected def map (f : V ↪ W) (G : SimpleGraph V) : SimpleGraph W where
   Adj := Relation.Map G.Adj f f
-  symm a b := by -- Porting note: `obviously` used to handle this
-    rintro ⟨v, w, h, rfl, rfl⟩
-    use w, v, h.symm, rfl
-  loopless a := by -- Porting note: `obviously` used to handle this
-    rintro ⟨v, w, h, rfl, h'⟩
-    exact h.ne (f.injective h'.symm)
+  symm a b := by
+    rintro ⟨v, w, h, _⟩
+    have := h.symm -- Porting note: `obviously` didn't need this hint while `aesop` does.
+    aesop (add norm unfold Relation.Map)
+  loopless a := by aesop (add norm unfold Relation.Map)
 
 instance instDecidableMapAdj {f : V ↪ W} {a b} [Decidable (Relation.Map G.Adj f f a b)] :
     Decidable ((G.map f).Adj a b) := ‹Decidable (Relation.Map G.Adj f f a b)›

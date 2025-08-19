@@ -6,6 +6,7 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Algebra.Ring.Action.Basic
+import Mathlib.GroupTheory.Coset.Card
 import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.GroupTheory.GroupAction.Quotient
 

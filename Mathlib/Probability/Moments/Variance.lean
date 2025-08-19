@@ -153,9 +153,6 @@ lemma variance_of_integral_eq_zero (hX : AEMeasurable X μ) (hXint : μ[X] = 0) 
     variance X μ = ∫ ω, X ω ^ 2 ∂μ := by
   simp [variance_eq_integral hX, hXint]
 
-@[deprecated (since := "2025-01-23")]
-alias _root_.MeasureTheory.Memℒp.variance_eq_of_integral_eq_zero := variance_of_integral_eq_zero
-
 @[simp]
 theorem evariance_zero : evariance 0 μ = 0 := by simp [evariance]
 
@@ -307,8 +304,7 @@ lemma variance_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
 lemma variance_map_equiv {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
     (X : Ω → ℝ) (Y : Ω' ≃ᵐ Ω) :
     Var[X; μ.map Y] = Var[X ∘ Y; μ] := by
-  simp_rw [variance, evariance, lintegral_map_equiv, integral_map_equiv]
-  rfl
+  simp_rw [variance, evariance, lintegral_map_equiv, integral_map_equiv, Function.comp_apply]
 
 lemma variance_id_map (hX : AEMeasurable X μ) : Var[id; μ.map X] = Var[X; μ] := by
   simp [variance_map measurable_id.aemeasurable hX]
