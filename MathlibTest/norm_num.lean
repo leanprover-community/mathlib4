@@ -714,7 +714,7 @@ set_option linter.unusedTactic false in
 -- `simp` will continue even if given invalid theorem names (but generates an error)
 -- and this felicitously applies to `norm_num` too.
 -- Previous this was a `fail_if_success` test, but now we just check for the error.
-/-- error: unknown identifier 'this_doesnt_exist' -/
+/-- error: Unknown identifier `this_doesnt_exist` -/
 #guard_msgs in
 example : 1 + 1 = 2 := by
   norm_num [this_doesnt_exist]
