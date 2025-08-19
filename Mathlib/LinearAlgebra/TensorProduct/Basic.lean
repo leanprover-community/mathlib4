@@ -41,14 +41,24 @@ bilinear, tensor, tensor product
 section Semiring
 
 variable {R : Type*} [CommSemiring R]
+variable {R₂ : Type*} [CommSemiring R₂]
+variable {R₃ : Type*} [CommSemiring R₃]
 variable {R' : Type*} [Monoid R']
 variable {R'' : Type*} [Semiring R'']
-variable {A M N P Q S T : Type*}
-variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-variable [AddCommMonoid Q] [AddCommMonoid S] [AddCommMonoid T]
-variable [Module R M] [Module R N] [Module R Q] [Module R S] [Module R T]
+
+variable {A M N P Q P' Q' M₂ N₂ P₂ Q₂ M₃ N₃ P₃ Q₃ : Type*}
+variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
+variable [AddCommMonoid P'] [AddCommMonoid Q']
+variable [AddCommMonoid M₂] [AddCommMonoid N₂] [AddCommMonoid P₂] [AddCommMonoid Q₂]
+variable [AddCommMonoid M₃] [AddCommMonoid N₃] [AddCommMonoid P₃] [AddCommMonoid Q₃]
 variable [DistribMulAction R' M]
 variable [Module R'' M]
+variable [Module R M] [Module R N] --[Module R P] [Module R Q] will be added later
+variable [Module R P'] [Module R Q']
+variable [Module R₂ M₂] [Module R₂ N₂] [Module R₂ P₂] [Module R₂ Q₂]
+variable [Module R₃ M₃] [Module R₃ N₃] [Module R₃ P₃] [Module R₃ Q₃]
+variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
+
 variable (M N)
 
 namespace TensorProduct
@@ -492,37 +502,40 @@ theorem exists_eq_tmul_of_forall (x : TensorProduct R M N)
 
 end Module
 
-variable [Module R P]
+variable [Module R P] [Module R Q]
 
 section UniversalProperty
 
 variable {M N}
-variable (f : M →ₗ[R] N →ₗ[R] P)
+variable (f : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂)
 
 /-- Auxiliary function to constructing a linear map `M ⊗ N → P` given a bilinear map `M → N → P`
 with the property that its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/
-def liftAux : M ⊗[R] N →+ P :=
+def liftAux : M ⊗[R] N →+ P₂ :=
   liftAddHom (LinearMap.toAddMonoidHom'.comp <| f.toAddMonoidHom)
-    fun r m n => by dsimp; rw [LinearMap.map_smul₂, map_smul]
+    fun r m n => by dsimp; rw [LinearMap.map_smulₛₗ₂, map_smulₛₗ]
 
 theorem liftAux_tmul (m n) : liftAux f (m ⊗ₜ n) = f m n :=
   rfl
 
-variable {f}
+variable {f} {f' : M →ₗ[R] N →ₗ[R] P}
 
 @[simp]
-theorem liftAux.smul (r : R) (x) : liftAux f (r • x) = r • liftAux f x :=
+theorem liftAux.smulₛₗ (r : R) (x) : liftAux f (r • x) = σ₁₂ r • liftAux f x :=
   TensorProduct.induction_on x (smul_zero _).symm
-    (fun p q => by simp_rw [← tmul_smul, liftAux_tmul, (f p).map_smul])
+    (fun p q => by simp_rw [← tmul_smul, liftAux_tmul, (f p).map_smulₛₗ])
     fun p q ih1 ih2 => by simp_rw [smul_add, (liftAux f).map_add, ih1, ih2, smul_add]
+
+theorem liftAux.smul (r : R) (x) : liftAux f' (r • x) = r • liftAux f' x :=
+  liftAux.smulₛₗ r x
 
 variable (f) in
 /-- Constructing a linear map `M ⊗ N → P` given a bilinear map `M → N → P` with the property that
 its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/
-def lift : M ⊗[R] N →ₗ[R] P :=
-  { liftAux f with map_smul' := liftAux.smul }
+def lift : M ⊗[R] N →ₛₗ[σ₁₂] P₂ :=
+  { liftAux f with map_smul' := liftAux.smulₛₗ }
 
 @[simp]
 theorem lift.tmul (x y) : lift f (x ⊗ₜ y) = f x y :=
@@ -532,92 +545,99 @@ theorem lift.tmul (x y) : lift f (x ⊗ₜ y) = f x y :=
 theorem lift.tmul' (x y) : (lift f).1 (x ⊗ₜ y) = f x y :=
   rfl
 
-theorem ext' {g h : M ⊗[R] N →ₗ[R] P} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=
+theorem ext' {g h : M ⊗[R] N →ₛₗ[σ₁₂] P₂} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=
   LinearMap.ext fun z =>
     TensorProduct.induction_on z (by simp_rw [LinearMap.map_zero]) H fun x y ihx ihy => by
       rw [g.map_add, h.map_add, ihx, ihy]
 
-theorem lift.unique {g : M ⊗[R] N →ₗ[R] P} (H : ∀ x y, g (x ⊗ₜ y) = f x y) : g = lift f :=
+theorem lift.unique {g : M ⊗[R] N →ₛₗ[σ₁₂] P₂} (H : ∀ x y, g (x ⊗ₜ y) = f x y) : g = lift f :=
   ext' fun m n => by rw [H, lift.tmul]
 
 theorem lift_mk : lift (mk R M N) = LinearMap.id :=
   Eq.symm <| lift.unique fun _ _ => rfl
 
-theorem lift_compr₂ (g : P →ₗ[R] Q) : lift (f.compr₂ g) = g.comp (lift f) :=
+theorem lift_compr₂ₛₗ [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] (h : P₂ →ₛₗ[σ₂₃] P₃) :
+    lift (f.compr₂ₛₗ h) = h.comp (lift f) :=
   Eq.symm <| lift.unique fun _ _ => by simp
+
+theorem lift_compr₂ (g : P →ₗ[R] Q) : lift (f'.compr₂ g) = g.comp (lift f') :=
+  Eq.symm <| lift.unique fun _ _ => by simp
+
+theorem lift_mk_compr₂ₛₗ (g : M ⊗ N →ₛₗ[σ₁₂] P₂) : lift ((mk R M N).compr₂ₛₗ g) = g := by
+  rw [lift_compr₂ₛₗ g, lift_mk, LinearMap.comp_id]
 
 theorem lift_mk_compr₂ (f : M ⊗ N →ₗ[R] P) : lift ((mk R M N).compr₂ f) = f := by
   rw [lift_compr₂ f, lift_mk, LinearMap.comp_id]
 
-/-- This used to be an `@[ext]` lemma, but it fails very slowly when the `ext` tactic tries to apply
+/-- This used to be an
+ `@[ext]` lemma, but it fails very slowly when the `ext` tactic tries to apply
 it in some cases, notably when one wants to show equality of two linear maps. The `@[ext]`
 attribute is now added locally where it is needed. Using this as the `@[ext]` lemma instead of
 `TensorProduct.ext'` allows `ext` to apply lemmas specific to `M →ₗ _` and `N →ₗ _`.
 
 See note [partially-applied ext lemmas]. -/
-theorem ext {g h : M ⊗ N →ₗ[R] P} (H : (mk R M N).compr₂ g = (mk R M N).compr₂ h) : g = h := by
-  rw [← lift_mk_compr₂ g, H, lift_mk_compr₂]
+theorem ext {g h : M ⊗ N →ₛₗ[σ₁₂] P₂} (H : (mk R M N).compr₂ₛₗ g = (mk R M N).compr₂ₛₗ h) :
+    g = h := by
+  rw [← lift_mk_compr₂ₛₗ g, H, lift_mk_compr₂ₛₗ]
 
 attribute [local ext high] ext
 
-example : M → N → (M → N → P) → P := fun m => flip fun f => f m
-
-variable (R M N P) in
+variable (M N P₂ σ₁₂) in
 /-- Linearly constructing a linear map `M ⊗ N → P` given a bilinear map `M → N → P`
 with the property that its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/
-def uncurry : (M →ₗ[R] N →ₗ[R] P) →ₗ[R] M ⊗[R] N →ₗ[R] P where
-  toFun := lift
-  map_add' f g := by ext; rfl
-  map_smul' _ _ := by ext; rfl
+def uncurry : (M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) →ₗ[R₂] M ⊗[R] N →ₛₗ[σ₁₂] P₂ :=
+  LinearMap.flip <| lift <| LinearMap.lflip.comp (LinearMap.flip LinearMap.id)
 
 @[simp]
-theorem uncurry_apply (f : M →ₗ[R] N →ₗ[R] P) (m : M) (n : N) :
-    uncurry R M N P f (m ⊗ₜ n) = f m n := rfl
+theorem uncurry_apply (f : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) (m : M) (n : N) :
+    uncurry M N P₂ σ₁₂ f (m ⊗ₜ n) = f m n := by rw [uncurry, LinearMap.flip_apply, lift.tmul]; rfl
 
-variable (R M N P)
+variable (M N P₂ σ₁₂)
 
 /-- A linear equivalence constructing a linear map `M ⊗ N → P` given a bilinear map `M → N → P`
 with the property that its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/
-def lift.equiv : (M →ₗ[R] N →ₗ[R] P) ≃ₗ[R] M ⊗[R] N →ₗ[R] P :=
-  { uncurry R M N P with
-    invFun := fun f => (mk R M N).compr₂ f }
+def lift.equiv : (M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) ≃ₗ[R₂] M ⊗[R] N →ₛₗ[σ₁₂] P₂ :=
+  { uncurry M N P₂ σ₁₂ with
+    invFun := fun f => (mk R M N).compr₂ₛₗ f }
 
 @[simp]
-theorem lift.equiv_apply (f : M →ₗ[R] N →ₗ[R] P) (m : M) (n : N) :
-    lift.equiv R M N P f (m ⊗ₜ n) = f m n :=
+theorem lift.equiv_apply (f : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) (m : M) (n : N) :
+    lift.equiv M N P₂ σ₁₂ f (m ⊗ₜ n) = f m n :=
   uncurry_apply f m n
 
 @[simp]
-theorem lift.equiv_symm_apply (f : M ⊗[R] N →ₗ[R] P) (m : M) (n : N) :
-    (lift.equiv R M N P).symm f m n = f (m ⊗ₜ n) :=
+theorem lift.equiv_symm_apply (f : M ⊗[R] N →ₛₗ[σ₁₂] P₂) (m : M) (n : N) :
+    (lift.equiv M N P₂ σ₁₂).symm f m n = f (m ⊗ₜ n) :=
   rfl
 
 /-- Given a linear map `M ⊗ N → P`, compose it with the canonical bilinear map `M → N → M ⊗ N` to
 form a bilinear map `M → N → P`. -/
-def lcurry : (M ⊗[R] N →ₗ[R] P) →ₗ[R] M →ₗ[R] N →ₗ[R] P :=
-  (lift.equiv R M N P).symm
+def lcurry : (M ⊗[R] N →ₛₗ[σ₁₂] P₂) →ₗ[R₂] M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂ :=
+  (lift.equiv M N P₂ σ₁₂).symm
 
-variable {R M N P}
+variable {M N P₂ σ₁₂}
 
 @[simp]
-theorem lcurry_apply (f : M ⊗[R] N →ₗ[R] P) (m : M) (n : N) : lcurry R M N P f m n = f (m ⊗ₜ n) :=
+theorem lcurry_apply (f : M ⊗[R] N →ₛₗ[σ₁₂] P₂) (m : M) (n : N) :
+    lcurry M N P₂ σ₁₂ f m n = f (m ⊗ₜ n) :=
   rfl
 
 /-- Given a linear map `M ⊗ N → P`, compose it with the canonical bilinear map `M → N → M ⊗ N` to
 form a bilinear map `M → N → P`. -/
-def curry (f : M ⊗[R] N →ₗ[R] P) : M →ₗ[R] N →ₗ[R] P :=
-  lcurry R M N P f
+def curry (f : M ⊗[R] N →ₛₗ[σ₁₂] P₂) : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂ :=
+  lcurry M N P₂ σ₁₂ f
 
 @[simp]
-theorem curry_apply (f : M ⊗ N →ₗ[R] P) (m : M) (n : N) : curry f m n = f (m ⊗ₜ n) :=
+theorem curry_apply (f : M ⊗[R] N →ₛₗ[σ₁₂] P₂) (m : M) (n : N) : curry f m n = f (m ⊗ₜ n) :=
   rfl
 
-theorem curry_injective : Function.Injective (curry : (M ⊗[R] N →ₗ[R] P) → M →ₗ[R] N →ₗ[R] P) :=
+theorem curry_injective :
+    Function.Injective (curry : (M ⊗[R] N →ₛₗ[σ₁₂] P₂) → M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) :=
   fun _ _ H => ext H
 
-theorem ext_threefold {g h : M ⊗[R] N ⊗[R] P →ₗ[R] Q}
+theorem ext_threefold {g h : (M ⊗[R] N) ⊗[R] P →ₛₗ[σ₁₂] P₂}
     (H : ∀ x y z, g (x ⊗ₜ y ⊗ₜ z) = h (x ⊗ₜ y ⊗ₜ z)) : g = h := by
   ext x y z
   exact H x y z
@@ -628,14 +648,14 @@ theorem ext_threefold' {g h : M ⊗[R] (N ⊗[R] P) →ₗ[R] Q}
   exact H x y z
 
 -- We'll need this one for checking the pentagon identity!
-theorem ext_fourfold {g h : M ⊗[R] N ⊗[R] P ⊗[R] Q →ₗ[R] S}
+theorem ext_fourfold {g h : ((M ⊗[R] N) ⊗[R] P) ⊗[R] Q →ₛₗ[σ₁₂] P₂}
     (H : ∀ w x y z, g (w ⊗ₜ x ⊗ₜ y ⊗ₜ z) = h (w ⊗ₜ x ⊗ₜ y ⊗ₜ z)) : g = h := by
   ext w x y z
   exact H w x y z
 
 /-- Two linear maps (M ⊗ N) ⊗ (P ⊗ Q) → S which agree on all elements of the
 form (m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q) are equal. -/
-theorem ext_fourfold' {φ ψ : M ⊗[R] N ⊗[R] (P ⊗[R] Q) →ₗ[R] S}
+theorem ext_fourfold' {φ ψ : (M ⊗[R] N) ⊗[R] P ⊗[R] Q →ₛₗ[σ₁₂] P₂}
     (H : ∀ w x y z, φ (w ⊗ₜ x ⊗ₜ (y ⊗ₜ z)) = ψ (w ⊗ₜ x ⊗ₜ (y ⊗ₜ z))) : φ = ψ := by
   ext m n p q
   exact H m n p q
@@ -661,9 +681,11 @@ theorem comm_tmul (m : M) (n : N) : (TensorProduct.comm R M N) (m ⊗ₜ n) = n 
 theorem comm_symm_tmul (m : M) (n : N) : (TensorProduct.comm R M N).symm (n ⊗ₜ m) = m ⊗ₜ n :=
   rfl
 
-lemma lift_comp_comm_eq (f : M →ₗ[R] N →ₗ[R] P) :
-    lift f ∘ₗ TensorProduct.comm R N M = lift f.flip :=
+-- Why is the `toLinearMap` necessary ? And why is this slow ?
+lemma lift_comp_comm_eq (f : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) :
+    (lift f ∘ₛₗ (TensorProduct.comm R N M).toLinearMap) = lift f.flip :=
   ext rfl
+
 end
 
 section CompatibleSMul
@@ -714,25 +736,27 @@ end CompatibleSMul
 open LinearMap
 
 /-- The tensor product of a pair of linear maps between modules. -/
-def map (f : M →ₗ[R] P) (g : N →ₗ[R] Q) : M ⊗[R] N →ₗ[R] P ⊗[R] Q :=
+def map (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) : M ⊗[R] N →ₛₗ[σ₁₂] M₂ ⊗[R₂] N₂ :=
   lift <| comp (compl₂ (mk _ _ _) g) f
 
 @[simp]
-theorem map_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (m : M) (n : N) : map f g (m ⊗ₜ n) = f m ⊗ₜ g n :=
+theorem map_tmul (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) (m : M) (n : N) :
+    map f g (m ⊗ₜ n) = f m ⊗ₜ g n :=
   rfl
 
 /-- Given linear maps `f : M → P`, `g : N → Q`, if we identify `M ⊗ N` with `N ⊗ M` and `P ⊗ Q`
 with `Q ⊗ P`, then this lemma states that `f ⊗ g = g ⊗ f`. -/
-lemma map_comp_comm_eq (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
-    map f g ∘ₗ TensorProduct.comm R N M = TensorProduct.comm R Q P ∘ₗ map g f :=
+lemma map_comp_comm_eq (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) :
+    map f g ∘ₛₗ (TensorProduct.comm R N M).toLinearMap =
+      (TensorProduct.comm R₂ N₂ M₂).toLinearMap ∘ₛₗ map g f :=
   ext rfl
 
-lemma map_comm (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (x : N ⊗[R] M) :
-    map f g (TensorProduct.comm R N M x) = TensorProduct.comm R Q P (map g f x) :=
+lemma map_comm (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) (x : N ⊗[R] M) :
+    map f g (TensorProduct.comm R N M x) = TensorProduct.comm R₂ N₂ M₂ (map g f x) :=
   DFunLike.congr_fun (map_comp_comm_eq _ _) _
 
-theorem map_range_eq_span_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
-    range (map f g) = Submodule.span R { t | ∃ m n, f m ⊗ₜ g n = t } := by
+theorem map_range_eq_span_tmul [RingHomSurjective σ₁₂] (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) :
+    range (map f g) = Submodule.span R₂ { t | ∃ m n, f m ⊗ₜ g n = t } := by
   simp only [← Submodule.map_top, ← span_tmul_eq_top, Submodule.map_span]
   congr; ext t
   simp
@@ -747,26 +771,28 @@ lemma range_mapIncl (p : Submodule R P) (q : Submodule R Q) :
   rw [mapIncl, map_range_eq_span_tmul]
   congr; ext; simp
 
-theorem map₂_eq_range_lift_comp_mapIncl (f : P →ₗ[R] Q →ₗ[R] M)
-    (p : Submodule R P) (q : Submodule R Q) :
-    Submodule.map₂ f p q = LinearMap.range (lift f ∘ₗ mapIncl p q) := by
+-- TODO: semilinearize once `map₂` is semilinearized
+theorem map₂_eq_range_lift_comp_mapIncl (f : M →ₗ[R] N →ₗ[R] P)
+    (m : Submodule R M) (n : Submodule R N) :
+    Submodule.map₂ f m n = LinearMap.range (lift f ∘ₛₗ mapIncl m n) := by
   simp_rw [LinearMap.range_comp, range_mapIncl, Submodule.map_span,
     Set.image_image2, Submodule.map₂_eq_span_image2, lift.tmul]
 
 section
 
-variable {M₁ M₂ M₃ N₁ N₂ N₃ P' Q' : Type*}
+variable {P' Q' : Type*}
 variable [AddCommMonoid P'] [Module R P']
 variable [AddCommMonoid Q'] [Module R Q']
-  [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid N₁] [Module R N₁]
-  [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid N₂] [Module R N₂]
-  [AddCommMonoid M₃] [Module R M₃] [AddCommMonoid N₃] [Module R N₃]
+variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
-lemma map_comp (f₂ : M₂ →ₗ[R] M₃) (g₂ : N₂ →ₗ[R] N₃) (f₁ : M₁ →ₗ[R] M₂) (g₁ : N₁ →ₗ[R] N₂) :
-    map (f₂ ∘ₗ f₁) (g₂ ∘ₗ g₁) = map f₂ g₂ ∘ₗ map f₁ g₁ := ext' fun _ _ => rfl
+theorem map_comp (f₂ : M₂ →ₛₗ[σ₂₃] M₃) (f₁ : M →ₛₗ[σ₁₂] M₂)
+    (g₂ : N₂ →ₛₗ[σ₂₃] N₃) (g₁ : N →ₛₗ[σ₁₂] N₂) :
+    map (f₂.comp f₁) (g₂.comp g₁) = (map f₂ g₂).comp (map f₁ g₁) :=
+  ext' fun _ _ => rfl
 
-lemma map_map (f₂ : M₂ →ₗ[R] M₃) (g₂ : N₂ →ₗ[R] N₃) (f₁ : M₁ →ₗ[R] M₂) (g₁ : N₁ →ₗ[R] N₂)
-    (x : M₁ ⊗ N₁) : map f₂ g₂ (map f₁ g₁ x) = map (f₂ ∘ₗ f₁) (g₂ ∘ₗ g₁) x :=
+theorem map_map (f₂ : M₂ →ₛₗ[σ₂₃] M₃) (g₂ : N₂ →ₛₗ[σ₂₃] N₃)
+    (f₁ : M →ₛₗ[σ₁₂] M₂) (g₁ : N →ₛₗ[σ₁₂] N₂) (x : M ⊗[R] N) :
+    map f₂ g₂ (map f₁ g₁ x) = map (f₂ ∘ₛₗ f₁) (g₂ ∘ₛₗ g₁) x :=
   DFunLike.congr_fun (map_comp ..).symm x
 
 lemma range_mapIncl_mono {p p' : Submodule R P} {q q' : Submodule R Q} (hp : p ≤ p') (hq : q ≤ q') :
@@ -774,7 +800,7 @@ lemma range_mapIncl_mono {p p' : Submodule R P} {q q' : Submodule R Q} (hp : p �
   simp_rw [range_mapIncl]
   exact Submodule.span_mono (Set.image2_subset hp hq)
 
-theorem lift_comp_map (i : P →ₗ[R] Q →ₗ[R] Q') (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
+theorem lift_comp_map (i : M₂ →ₛₗ[σ₂₃] N₂ →ₛₗ[σ₂₃] P₃) (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) :
     (lift i).comp (map f g) = lift ((i.comp f).compl₂ g) :=
   ext' fun _ _ => rfl
 
@@ -783,7 +809,7 @@ attribute [local ext high] ext
 @[simp]
 theorem map_id : map (id : M →ₗ[R] M) (id : N →ₗ[R] N) = .id := by
   ext
-  simp only [mk_apply, id_coe, compr₂_apply, _root_.id, map_tmul]
+  simp only [mk_apply, id_coe, compr₂ₛₗ_apply, _root_.id, map_tmul]
 
 @[simp]
 protected theorem map_one : map (1 : M →ₗ[R] M) (1 : N →ₗ[R] N) = 1 :=
@@ -800,44 +826,46 @@ protected theorem map_pow (f : M →ₗ[R] M) (g : N →ₗ[R] N) (n : ℕ) :
   | zero => simp only [pow_zero, TensorProduct.map_one]
   | succ n ih => simp only [pow_succ', ih, TensorProduct.map_mul]
 
-theorem map_add_left (f₁ f₂ : M →ₗ[R] P) (g : N →ₗ[R] Q) :
+theorem map_add_left (f₁ f₂ : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) :
     map (f₁ + f₂) g = map f₁ g + map f₂ g := by
   ext
-  simp only [add_tmul, compr₂_apply, mk_apply, map_tmul, add_apply]
+  simp only [add_tmul, compr₂ₛₗ_apply, mk_apply, map_tmul, add_apply]
 
-theorem map_add_right (f : M →ₗ[R] P) (g₁ g₂ : N →ₗ[R] Q) :
+theorem map_add_right (f : M →ₛₗ[σ₁₂] M₂) (g₁ g₂ : N →ₛₗ[σ₁₂] N₂) :
     map f (g₁ + g₂) = map f g₁ + map f g₂ := by
   ext
-  simp only [tmul_add, compr₂_apply, mk_apply, map_tmul, add_apply]
+  simp only [tmul_add, compr₂ₛₗ_apply, mk_apply, map_tmul, add_apply]
 
-theorem map_smul_left (r : R) (f : M →ₗ[R] P) (g : N →ₗ[R] Q) : map (r • f) g = r • map f g := by
+theorem map_smul_left (r : R₂) (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) :
+    map (r • f) g = r • map f g := by
   ext
-  simp only [smul_tmul, compr₂_apply, mk_apply, map_tmul, smul_apply, tmul_smul]
+  simp only [smul_tmul, compr₂ₛₗ_apply, mk_apply, map_tmul, smul_apply, tmul_smul]
 
-theorem map_smul_right (r : R) (f : M →ₗ[R] P) (g : N →ₗ[R] Q) : map f (r • g) = r • map f g := by
+theorem map_smul_right (r : R₂) (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) :
+    map f (r • g) = r • map f g := by
   ext
-  simp only [compr₂_apply, mk_apply, map_tmul, smul_apply, tmul_smul]
+  simp only [compr₂ₛₗ_apply, mk_apply, map_tmul, smul_apply, tmul_smul]
 
-variable (R M N P Q)
+variable (M N P M₂ N₂ σ₁₂)
 
 /-- The tensor product of a pair of linear maps between modules, bilinear in both maps. -/
-def mapBilinear : (M →ₗ[R] P) →ₗ[R] (N →ₗ[R] Q) →ₗ[R] M ⊗[R] N →ₗ[R] P ⊗[R] Q :=
-  LinearMap.mk₂ R map map_add_left map_smul_left map_add_right map_smul_right
+def mapBilinear : (M →ₛₗ[σ₁₂] M₂) →ₗ[R₂] (N →ₛₗ[σ₁₂] N₂) →ₗ[R₂] M ⊗[R] N →ₛₗ[σ₁₂] M₂ ⊗[R₂] N₂ :=
+  LinearMap.mk₂ R₂ map map_add_left map_smul_left map_add_right map_smul_right
 
-/-- The canonical linear map from `P ⊗[R] (M →ₗ[R] Q)` to `(M →ₗ[R] P ⊗[R] Q)` -/
-def lTensorHomToHomLTensor : P ⊗[R] (M →ₗ[R] Q) →ₗ[R] M →ₗ[R] P ⊗[R] Q :=
-  TensorProduct.lift (llcomp R M Q _ ∘ₗ mk R P Q)
+/-- The canonical linear map from `P ⊗[R] (M →ₗ[R] Q)` to `(M →ₛₗ[σ₁₂] P ⊗[R] Q)` -/
+def lTensorHomToHomLTensor : M₂ ⊗[R₂] (P →ₛₗ[σ₁₂] N₂) →ₗ[R₂] P →ₛₗ[σ₁₂] M₂ ⊗[R₂] N₂ :=
+  TensorProduct.lift (llcomp _ P N₂ _ ∘ₛₗ mk R₂ M₂ N₂)
 
-/-- The canonical linear map from `(M →ₗ[R] P) ⊗[R] Q` to `(M →ₗ[R] P ⊗[R] Q)` -/
-def rTensorHomToHomRTensor : (M →ₗ[R] P) ⊗[R] Q →ₗ[R] M →ₗ[R] P ⊗[R] Q :=
-  TensorProduct.lift (llcomp R M P _ ∘ₗ (mk R P Q).flip).flip
+/-- The canonical linear map from `(M →ₛₗ[σ₁₂] P) ⊗[R] Q` to `(M →ₛₗ[σ₁₂] P ⊗[R] Q)` -/
+def rTensorHomToHomRTensor : (P →ₛₗ[σ₁₂] M₂) ⊗[R₂] N₂ →ₗ[R₂] P →ₛₗ[σ₁₂] M₂ ⊗[R₂] N₂ :=
+  TensorProduct.lift (llcomp _ P M₂ _ ∘ₗ (mk R₂ M₂ N₂).flip).flip
 
 /-- The linear map from `(M →ₗ P) ⊗ (N →ₗ Q)` to `(M ⊗ N →ₗ P ⊗ Q)` sending `f ⊗ₜ g` to
 the `TensorProduct.map f g`, the tensor product of the two maps. -/
-def homTensorHomMap : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q) →ₗ[R] M ⊗[R] N →ₗ[R] P ⊗[R] Q :=
-  lift (mapBilinear R M N P Q)
+def homTensorHomMap : (M →ₛₗ[σ₁₂] M₂) ⊗[R₂] (N →ₛₗ[σ₁₂] N₂) →ₗ[R₂] M ⊗[R] N →ₛₗ[σ₁₂] M₂ ⊗[R₂] N₂ :=
+  lift (mapBilinear M N M₂ N₂ σ₁₂)
 
-variable {R M N P Q}
+variable {M N P M₂ N₂ σ₁₂}
 
 /--
 This is a binary version of `TensorProduct.map`: Given a bilinear map `f : M ⟶ P ⟶ Q` and a
@@ -848,40 +876,42 @@ bilinear map `g : N ⟶ S ⟶ T`, if we think `f` and `g` as linear maps with tw
 Mathematically, `TensorProduct.map₂` is defined as the composition
 `M ⊗ N -map→ Hom(P, Q) ⊗ Hom(S, T) -homTensorHomMap→ Hom(P ⊗ S, Q ⊗ T)`.
 -/
-def map₂ (f : M →ₗ[R] P →ₗ[R] Q) (g : N →ₗ[R] S →ₗ[R] T) :
-    M ⊗[R] N →ₗ[R] P ⊗[R] S →ₗ[R] Q ⊗[R] T :=
-  homTensorHomMap R _ _ _ _ ∘ₗ map f g
+def map₂ (f : M →ₛₗ[σ₁₃] M₂ →ₛₗ[σ₂₃] M₃) (g : N →ₛₗ[σ₁₃] N₂ →ₛₗ[σ₂₃] N₃) :
+    M ⊗[R] N →ₛₗ[σ₁₃] M₂ ⊗[R₂] N₂ →ₛₗ[σ₂₃] M₃ ⊗[R₃] N₃ :=
+  homTensorHomMap _ _ _ _ σ₂₃ ∘ₛₗ map f g
 
 @[simp]
-theorem mapBilinear_apply (f : M →ₗ[R] P) (g : N →ₗ[R] Q) : mapBilinear R M N P Q f g = map f g :=
+theorem mapBilinear_apply (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) :
+    mapBilinear M N M₂ N₂ σ₁₂ f g = map f g :=
   rfl
 
 @[simp]
-theorem lTensorHomToHomLTensor_apply (p : P) (f : M →ₗ[R] Q) (m : M) :
-    lTensorHomToHomLTensor R M P Q (p ⊗ₜ f) m = p ⊗ₜ f m :=
+theorem lTensorHomToHomLTensor_apply (m₂ : M₂) (f : P →ₛₗ[σ₁₂] N₂) (p : P) :
+    lTensorHomToHomLTensor P M₂ N₂ _ (m₂ ⊗ₜ f) p = m₂ ⊗ₜ f p :=
   rfl
 
 @[simp]
-theorem rTensorHomToHomRTensor_apply (f : M →ₗ[R] P) (q : Q) (m : M) :
-    rTensorHomToHomRTensor R M P Q (f ⊗ₜ q) m = f m ⊗ₜ q :=
+theorem rTensorHomToHomRTensor_apply (f : P →ₛₗ[σ₁₂] M₂) (n₂ : N₂) (p : P) :
+    rTensorHomToHomRTensor P M₂ N₂ _ (f ⊗ₜ n₂) p = f p ⊗ₜ n₂ :=
   rfl
 
 @[simp]
-theorem homTensorHomMap_apply (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
-    homTensorHomMap R M N P Q (f ⊗ₜ g) = map f g :=
+theorem homTensorHomMap_apply (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) :
+    homTensorHomMap M N M₂ N₂ _ (f ⊗ₜ g) = map f g :=
   rfl
 
 @[simp]
-theorem map₂_apply_tmul (f : M →ₗ[R] P →ₗ[R] Q) (g : N →ₗ[R] S →ₗ[R] T) (m : M) (n : N) :
+theorem map₂_apply_tmul (f : M →ₛₗ[σ₁₃] M₂ →ₛₗ[σ₂₃] M₃) (g : N →ₛₗ[σ₁₃] N₂ →ₛₗ[σ₂₃] N₃)
+    (m : M) (n : N) :
     map₂ f g (m ⊗ₜ n) = map (f m) (g n) := rfl
 
 @[simp]
-theorem map_zero_left (g : N →ₗ[R] Q) : map (0 : M →ₗ[R] P) g = 0 :=
-  (mapBilinear R M N P Q).map_zero₂ _
+theorem map_zero_left (g : N →ₛₗ[σ₁₂] N₂) : map (0 : M →ₛₗ[σ₁₂] M₂) g = 0 :=
+  (mapBilinear M N M₂ N₂ _).map_zero₂ _
 
 @[simp]
-theorem map_zero_right (f : M →ₗ[R] P) : map f (0 : N →ₗ[R] Q) = 0 :=
-  (mapBilinear R M N P Q _).map_zero
+theorem map_zero_right (f : M →ₛₗ[σ₁₂] M₂) : map f (0 : N →ₛₗ[σ₁₂] N₂) = 0 :=
+  (mapBilinear M N M₂ N₂ _ _).map_zero
 
 end
 
@@ -910,7 +940,7 @@ theorem congr_symm (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) : (congr f g).symm = 
 @[simp] theorem congr_refl_refl : congr (.refl R M) (.refl R N) = .refl R _ :=
   LinearEquiv.toLinearMap_injective <| ext' fun _ _ ↦ rfl
 
-theorem congr_trans (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) (f' : P ≃ₗ[R] S) (g' : Q ≃ₗ[R] T) :
+theorem congr_trans (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) (f' : P ≃ₗ[R] P') (g' : Q ≃ₗ[R] Q') :
     congr (f ≪≫ₗ f') (g ≪≫ₗ g') = congr f g ≪≫ₗ congr f' g' :=
   LinearEquiv.toLinearMap_injective <| map_comp _ _ _ _
 
@@ -933,7 +963,7 @@ end TensorProduct
 
 open scoped TensorProduct
 
-variable [Module R P]
+variable [Module R P] [Module R Q]
 
 namespace LinearMap
 
@@ -944,8 +974,8 @@ induced by `f : N →ₗ P`. -/
 def lTensor (f : N →ₗ[R] P) : M ⊗[R] N →ₗ[R] M ⊗[R] P :=
   TensorProduct.map id f
 
-/-- `LinearMap.rTensor M f : N₁ ⊗ M →ₗ N₂ ⊗ M` is the natural linear map
-induced by `f : N₁ →ₗ N₂`. -/
+/-- `LinearMap.rTensor M f : N ⊗ M →ₗ P ⊗ M` is the natural linear map
+induced by `f : N →ₗ P`. -/
 def rTensor (f : N →ₗ[R] P) : N ⊗[R] M →ₗ[R] P ⊗[R] M :=
   TensorProduct.map f id
 
@@ -1016,11 +1046,11 @@ def lTensorHom : (N →ₗ[R] P) →ₗ[R] M ⊗[R] N →ₗ[R] M ⊗[R] P where
   toFun := lTensor M
   map_add' f g := by
     ext x y
-    simp only [compr₂_apply, mk_apply, add_apply, lTensor_tmul, tmul_add]
+    simp only [compr₂ₛₗ_apply, mk_apply, add_apply, lTensor_tmul, tmul_add]
   map_smul' r f := by
     dsimp
     ext x y
-    simp only [compr₂_apply, mk_apply, tmul_smul, smul_apply, lTensor_tmul]
+    simp only [compr₂ₛₗ_apply, mk_apply, tmul_smul, smul_apply, lTensor_tmul]
 
 /-- `rTensorHom M` is the natural linear map that sends a linear map `f : N →ₗ P` to `f ⊗ M`.
 
@@ -1029,11 +1059,11 @@ def rTensorHom : (N →ₗ[R] P) →ₗ[R] N ⊗[R] M →ₗ[R] P ⊗[R] M where
   toFun f := f.rTensor M
   map_add' f g := by
     ext x y
-    simp only [compr₂_apply, mk_apply, add_apply, rTensor_tmul, add_tmul]
+    simp only [compr₂ₛₗ_apply, mk_apply, add_apply, rTensor_tmul, add_tmul]
   map_smul' r f := by
     dsimp
     ext x y
-    simp only [compr₂_apply, mk_apply, smul_tmul, tmul_smul, smul_apply, rTensor_tmul]
+    simp only [compr₂ₛₗ_apply, mk_apply, smul_tmul, tmul_smul, smul_apply, rTensor_tmul]
 
 @[simp]
 theorem coe_lTensorHom : (lTensorHom M : (N →ₗ[R] P) → M ⊗[R] N →ₗ[R] M ⊗[R] P) = lTensor M :=
@@ -1069,14 +1099,14 @@ theorem rTensor_smul (r : R) (f : N →ₗ[R] P) : (r • f).rTensor M = r • f
 
 theorem lTensor_comp : (g.comp f).lTensor M = (g.lTensor M).comp (f.lTensor M) := by
   ext m n
-  simp only [compr₂_apply, mk_apply, comp_apply, lTensor_tmul]
+  simp only [compr₂ₛₗ_apply, mk_apply, comp_apply, lTensor_tmul]
 
 theorem lTensor_comp_apply (x : M ⊗[R] N) :
     (g.comp f).lTensor M x = (g.lTensor M) ((f.lTensor M) x) := by rw [lTensor_comp, coe_comp]; rfl
 
 theorem rTensor_comp : (g.comp f).rTensor M = (g.rTensor M).comp (f.rTensor M) := by
   ext m n
-  simp only [compr₂_apply, mk_apply, comp_apply, rTensor_tmul]
+  simp only [compr₂ₛₗ_apply, mk_apply, comp_apply, rTensor_tmul]
 
 theorem rTensor_comp_apply (x : N ⊗[R] M) :
     (g.comp f).rTensor M x = (g.rTensor M) ((f.rTensor M) x) := by rw [rTensor_comp, coe_comp]; rfl
@@ -1130,22 +1160,22 @@ theorem rTensor_comp_lTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
   simp only [lTensor, rTensor, ← map_comp, id_comp, comp_id]
 
 @[simp]
-theorem map_comp_rTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (f' : S →ₗ[R] M) :
+theorem map_comp_rTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (f' : P' →ₗ[R] M) :
     (map f g).comp (f'.rTensor _) = map (f.comp f') g := by
   simp only [rTensor, ← map_comp, comp_id]
 
 @[simp]
-theorem map_comp_lTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (g' : S →ₗ[R] N) :
+theorem map_comp_lTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (g' : P' →ₗ[R] N) :
     (map f g).comp (g'.lTensor _) = map f (g.comp g') := by
   simp only [lTensor, ← map_comp, comp_id]
 
 @[simp]
-theorem rTensor_comp_map (f' : P →ₗ[R] S) (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
+theorem rTensor_comp_map (f' : P →ₗ[R] P') (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     (f'.rTensor _).comp (map f g) = map (f'.comp f) g := by
   simp only [rTensor, ← map_comp, id_comp]
 
 @[simp]
-theorem lTensor_comp_map (g' : Q →ₗ[R] S) (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
+theorem lTensor_comp_map (g' : Q →ₗ[R] P') (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     (g'.lTensor _).comp (map f g) = map f (g'.comp g) := by
   simp only [lTensor, ← map_comp, id_comp]
 
@@ -1239,19 +1269,19 @@ variable {N}
     g.lTensor M ≪≫ₗ f.rTensor Q = TensorProduct.congr f g :=
   toLinearMap_injective <| LinearMap.rTensor_comp_lTensor M _ _
 
-@[simp] theorem rTensor_trans_congr (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) (f' : S ≃ₗ[R] M) :
+@[simp] theorem rTensor_trans_congr (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) (f' : P' ≃ₗ[R] M) :
     f'.rTensor _ ≪≫ₗ TensorProduct.congr f g = TensorProduct.congr (f' ≪≫ₗ f) g :=
   toLinearMap_injective <| LinearMap.map_comp_rTensor M _ _ _
 
-@[simp] theorem lTensor_trans_congr (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) (g' : S ≃ₗ[R] N) :
+@[simp] theorem lTensor_trans_congr (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) (g' : P' ≃ₗ[R] N) :
     g'.lTensor _ ≪≫ₗ TensorProduct.congr f g = TensorProduct.congr f (g' ≪≫ₗ g) :=
   toLinearMap_injective <| LinearMap.map_comp_lTensor M _ _ _
 
-@[simp] theorem congr_trans_rTensor (f' : P ≃ₗ[R] S) (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) :
+@[simp] theorem congr_trans_rTensor (f' : P ≃ₗ[R] P') (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) :
     TensorProduct.congr f g ≪≫ₗ f'.rTensor _ = TensorProduct.congr (f ≪≫ₗ f') g :=
   toLinearMap_injective <| LinearMap.rTensor_comp_map M _ _ _
 
-@[simp] theorem congr_trans_lTensor (g' : Q ≃ₗ[R] S) (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) :
+@[simp] theorem congr_trans_lTensor (g' : Q ≃ₗ[R] P') (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) :
     TensorProduct.congr f g ≪≫ₗ g'.lTensor _ = TensorProduct.congr f (g ≪≫ₗ g') :=
   toLinearMap_injective <| LinearMap.lTensor_comp_map M _ _ _
 
@@ -1276,9 +1306,9 @@ end Semiring
 section Ring
 
 variable {R : Type*} [CommSemiring R]
-variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*} {S : Type*}
-variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [AddCommGroup Q] [AddCommGroup S]
-variable [Module R M] [Module R N] [Module R P] [Module R Q] [Module R S]
+variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
+variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [AddCommGroup Q]
+variable [Module R M] [Module R N] [Module R P] [Module R Q]
 
 namespace TensorProduct
 
