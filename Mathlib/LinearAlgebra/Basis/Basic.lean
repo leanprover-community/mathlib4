@@ -224,7 +224,7 @@ theorem singleton_repr (ι R : Type*) [Unique ι] [Semiring R] (x i) :
     (Basis.singleton ι R).repr x i = x := by simp [Basis.singleton, Unique.eq_default i]
 
 @[simp]
-theorem Module.Basis.coe_singleton {ι R : Type*} [Unique ι] [Semiring R] :
+theorem coe_singleton {ι R : Type*} [Unique ι] [Semiring R] :
     ⇑(Basis.singleton ι R) = 1 := by
   ext; simp
 
