@@ -657,36 +657,6 @@ lemma _root_.LinearIsometryEquiv.star_eq_symm (e : H ≃ₗᵢ[𝕜] H) :
     star (e : H →L[𝕜] H) = e.symm :=
   e.adjoint_eq_symm
 
-theorem _root_.LinearIsometryEquiv.toContinuousLinearEquiv_adjoint_eq_symm (e : H ≃ₗᵢ[𝕜] K) :
-    e.toContinuousLinearEquiv.toContinuousLinearMap.adjoint
-    = e.symm.toContinuousLinearEquiv.toContinuousLinearMap :=
-  LinearIsometryEquiv.adjoint_eq_symm _
-
-omit [CompleteSpace H] [CompleteSpace K] in
-theorem _root_.LinearIsometryEquiv.toLinearEquiv_adjoint_eq_symm [FiniteDimensional 𝕜 H]
-    [FiniteDimensional 𝕜 K] (e : H ≃ₗᵢ[𝕜] K) :
-    e.toLinearEquiv.toLinearMap.adjoint = e.symm.toLinearEquiv.toLinearMap :=
-  have := FiniteDimensional.complete
-  have := FiniteDimensional.complete
-  congr(toLinearMap $e.toContinuousLinearEquiv_adjoint_eq_symm)
-
-open LinearIsometryEquiv in
-theorem isSelfAdjoint_conj_adjoint_iff {T : H →L[𝕜] H} (S : H ≃ₗᵢ[𝕜] K) :
-    IsSelfAdjoint (S.toContinuousLinearEquiv.toContinuousLinearMap ∘L T
-    ∘L adjoint S.toContinuousLinearEquiv.toContinuousLinearMap)
-    ↔ IsSelfAdjoint T := by
-  simp_rw [IsSelfAdjoint, toContinuousLinearEquiv_adjoint_eq_symm, toContinuousLinearEquiv_symm,
-    star_eq_adjoint, adjoint_comp, ← toContinuousLinearEquiv_symm,
-    toContinuousLinearEquiv_adjoint_eq_symm, symm_symm, comp_assoc]
-  refine ⟨fun h => ext fun x => by simpa using congr($h (S x)), fun h => h.symm ▸ rfl⟩
-
-theorem isSelfAdjoint_adjoint_conj_iff {T : H →L[𝕜] H} (S : K ≃ₗᵢ[𝕜] H) :
-    IsSelfAdjoint (adjoint S.toContinuousLinearEquiv.toContinuousLinearMap ∘L T
-    ∘L S.toContinuousLinearEquiv.toContinuousLinearMap)
-    ↔ IsSelfAdjoint T := by
-  have := isSelfAdjoint_conj_adjoint_iff (T := T) S.symm
-  rwa [← LinearIsometryEquiv.toContinuousLinearEquiv_adjoint_eq_symm, adjoint_adjoint] at this
-
 theorem norm_map_of_mem_unitary {u : H →L[𝕜] H} (hu : u ∈ unitary (H →L[𝕜] H)) (x : H) :
     ‖u x‖ = ‖x‖ :=
   -- Elaborates faster with this broken out https://github.com/leanprover-community/mathlib4/issues/11299
