@@ -260,18 +260,17 @@ open Lean Qq in
 /-- `mkVecLiteralQ ![x, y, z]` produces the term `q(![$x, $y, $z])`. -/
 def _root_.PiFin.mkLiteralQ {u : Level} {α : Q(Type u)} {n : ℕ} (elems : Fin n → Q($α)) :
     Q(Fin $n → $α) :=
-  loop n 0 n.add_zero q(![])
+  loop 0 q(vecEmpty)
 where
-  /-- The core logic of `loop` is that `loop 3 0 ![] = ![a 0, a 1, a 2] = loop 2 1 ![a 2]`, where
-  recursion starts from the end. In this example, on the right hand side, the first variable
-  `idx := 2` tracks the most recent index in the generated notation `![a 2]`, and the second
-  variable `len := 1` tracks the length of the current generated notation `![a 2]`. -/
-  loop (idx len : ℕ) (pf : idx + len = n) (ih : Q(Fin $len → $α)) : Q(Fin $n → $α) :=
-    match idx with
-    | 0 => ih
-    | idx+1 =>
-      have : idx < n := pf ▸ idx.lt_succ_self.trans_le (Nat.le_add_right _ _)
-      loop idx (len + 1) (by rwa [Nat.add_succ, ← Nat.succ_add]) q(vecCons $(elems ⟨idx, this⟩) $ih)
+  /-- The core logic of `loop` is that `loop 0 ![] = ![a 0, a 1, a 2] = loop 1 ![a 2]`, where
+  recursion starts from the end. In this example, on the right hand side, the variable `rest := 1`
+  tracks the length of the current generated notation `![a 2]`, and the last usesd index is
+  `n - rest` (`= 3 - 1 = 2`). -/
+  loop (i : ℕ) (rest : Q(Fin $i → $α)) : Q(Fin $n → $α) :=
+    if h : i < n then
+      loop (i + 1) q(vecCons $(elems (Fin.rev ⟨i, h⟩)) $rest)
+    else
+      rest
 
 open Lean Qq in
 protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToExpr (Fin n → α) :=
