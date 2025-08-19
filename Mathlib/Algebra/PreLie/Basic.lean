@@ -36,6 +36,11 @@ Perhaps one could be favored but there is no real reason to.
 ## Tags
 pre-lie algebras
 
+## References
+[F. Chapoton, M. Livernet, *Pre-Lie algebras and the rooted trees operad*][chapoton_livernet_2001]
+[D. Manchon, *A short survey on pre-Lie algebras*][manchon_2011]
+[J.-M. Oudom, D. Guin, *On the Lie enveloping algebra of a pre-Lie algebra*][oudom_guin_2008]
+<https://ncatlab.org/nlab/show/pre-Lie+algebra>
 -/
 
 /-- `LeftPreLieRing`s are `NonUnitalNonAssocRing`s such that the `associator` is symmetric in the
