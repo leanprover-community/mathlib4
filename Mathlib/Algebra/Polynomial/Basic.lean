@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Group.Submonoid.Operations
+import Mathlib.Algebra.MonoidAlgebra.Module
 import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Algebra.Ring.Action.Rat
@@ -60,6 +61,7 @@ denoted as `R[X]` within the `Polynomial` namespace.
 Polynomials should be seen as (semi-)rings with the additional constructor `X`.
 The embedding from `R` is called `C`. -/
 structure Polynomial (R : Type*) [Semiring R] where ofFinsupp ::
+  /-- The coefficients `ℕ →₀ R` of a polynomial in `R[X]`. -/
   toFinsupp : AddMonoidAlgebra R ℕ
 
 @[inherit_doc] scoped[Polynomial] notation:9000 R "[X]" => Polynomial R
@@ -389,10 +391,8 @@ theorem card_support_eq_zero : #p.support = 0 ↔ p = 0 := by simp
 /-- `monomial s a` is the monomial `a * X^s` -/
 def monomial (n : ℕ) : R →ₗ[R] R[X] where
   toFun t := ⟨Finsupp.single n t⟩
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp`.
-  map_add' x y := by simp; rw [ofFinsupp_add]
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [← ofFinsupp_smul]`.
-  map_smul' r x := by simp; rw [← ofFinsupp_smul, smul_single']
+  map_add' x y := by simp [← ofFinsupp_add]
+  map_smul' r x := by simp [← ofFinsupp_smul]
 
 @[simp]
 theorem toFinsupp_monomial (n : ℕ) (r : R) : (monomial n r).toFinsupp = Finsupp.single n r := by
@@ -797,10 +797,8 @@ theorem support_trinomial' (k m n : ℕ) (x y z : R) :
 
 end Fewnomials
 
-theorem X_pow_eq_monomial (n) : X ^ n = monomial n (1 : R) := by
-  induction n with
-  | zero => rw [pow_zero, monomial_zero_one]
-  | succ n hn => rw [pow_succ, hn, X, monomial_mul_monomial, one_mul]
+theorem X_pow_eq_monomial (n) : X ^ n = monomial n (1 : R) :=
+  (monomial_one_right_eq_X_pow n).symm
 
 @[simp high]
 theorem toFinsupp_X_pow (n : ℕ) : (X ^ n).toFinsupp = Finsupp.single n (1 : R) := by

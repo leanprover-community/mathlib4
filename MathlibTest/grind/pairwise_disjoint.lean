@@ -16,5 +16,5 @@ attribute [grind] Finset.disjoint_empty_right
 
 attribute [grind] Pairwise
 
-example: Pairwise (Function.onFun Disjoint fun x ↦ S1 x) := by
+example : Pairwise (Function.onFun Disjoint fun x ↦ S1 x) := by
   grind
