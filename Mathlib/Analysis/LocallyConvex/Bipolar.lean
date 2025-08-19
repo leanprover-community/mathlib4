@@ -92,7 +92,7 @@ lemma dualEmbedding_injective_of_separatingRight (hr : B.SeparatingRight) :
     Function.Injective (WeakBilin.eval B) := (injective_iff_map_eq_zero _).mpr (fun f hf =>
     (separatingRight_iff_linear_flip_nontrivial.mp hr) f (ContinuousLinearMap.coe_inj.mpr hf))
 
-/-- When `B` is right-separating, `F` is linearly equivalent to the topological dual of `E` with the
+/-- When `B` is right-separating, `F` is linearly equivalent to the strong dual of `E` with the
 weak topology. -/
 noncomputable def rightDualEquiv (hr : B.SeparatingRight) : F ≃ₗ[𝕜] StrongDual 𝕜 (WeakBilin B) :=
   LinearEquiv.ofBijective (WeakBilin.eval B)
