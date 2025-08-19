@@ -163,8 +163,8 @@ theorem coe_linearProjOfIsCompl_apply (hpq : IsCompl p q) (x : E) :
 
 @[simp]
 theorem IsCompl.projection_apply_mem (hpq : IsCompl p q) (x : E) :
-    hpq.projection x ∈ p := by
-  simp only [projection, coe_comp, coe_subtype, Function.comp_apply, SetLike.coe_mem]
+    hpq.projection x ∈ p :=
+  SetLike.coe_mem _
 
 @[simp]
 theorem linearProjOfIsCompl_apply_left (h : IsCompl p q) (x : p) :
@@ -193,8 +193,7 @@ theorem linearProjOfIsCompl_apply_eq_zero_iff (h : IsCompl p q) {x : E} :
 @[simp]
 theorem IsCompl.projection_apply_eq_zero_iff (hpq : IsCompl p q) {x : E} :
     hpq.projection x = 0 ↔ x ∈ q := by
-  simp only [projection, coe_comp, coe_subtype, Function.comp_apply, ZeroMemClass.coe_eq_zero,
-    linearProjOfIsCompl_apply_eq_zero_iff hpq]
+  simp [projection, -coe_linearProjOfIsCompl_apply]
 
 theorem linearProjOfIsCompl_apply_right' (h : IsCompl p q) (x : E) (hx : x ∈ q) :
     linearProjOfIsCompl p q h x = 0 :=
@@ -229,8 +228,7 @@ theorem linearProjOfIsCompl_isCompl_projection (h : IsCompl p q) (x : E) :
 @[simp]
 theorem IsCompl.projection_isIdempotentElem (hpq : IsCompl p q) :
     IsIdempotentElem hpq.projection := LinearMap.ext fun x => by
-  simp only [projection, Module.End.mul_apply, coe_comp, coe_subtype, Function.comp_apply,
-    linearProjOfIsCompl_apply_left]
+  simp [projection, -coe_linearProjOfIsCompl_apply]
 
 theorem existsUnique_add_of_isCompl_prod (hc : IsCompl p q) (x : E) :
     ∃! u : p × q, (u.fst : E) + u.snd = x :=
