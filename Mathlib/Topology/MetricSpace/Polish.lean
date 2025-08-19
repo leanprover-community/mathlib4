@@ -221,11 +221,11 @@ instance instMetricSpace : MetricSpace (CompleteCopy s) := by
 
 instance instCompleteSpace [CompleteSpace α] : CompleteSpace (CompleteCopy s) := by
   refine Metric.complete_of_convergent_controlled_sequences ((1 / 2) ^ ·) (by simp) fun u hu ↦ ?_
-  have A : CauchySeq fun n => (u n).1 := by
-    refine cauchySeq_of_le_tendsto_0 (fun n : ℕ => (1 / 2) ^ n) (fun n m N hNn hNm => ?_) ?_
+  have A : CauchySeq fun n ↦ (u n).1 := by
+    refine cauchySeq_of_le_tendsto_0 (fun n : ℕ ↦ (1 / 2) ^ n) (fun n m N hNn hNm ↦ ?_) ?_
     · exact (dist_val_le_dist (u n) (u m)).trans (hu N n m hNn hNm).le
     · exact tendsto_pow_atTop_nhds_zero_of_lt_one (by simp) (by norm_num)
-  obtain ⟨x, xlim⟩ : ∃ x, Tendsto (fun n => (u n).1) atTop (𝓝 x) := cauchySeq_tendsto_of_complete A
+  obtain ⟨x, xlim⟩ : ∃ x, Tendsto (fun n ↦ (u n).1) atTop (𝓝 x) := cauchySeq_tendsto_of_complete A
   by_cases xs : x ∈ s
   · exact ⟨⟨x, xs⟩, tendsto_subtype_rng.2 xlim⟩
   obtain ⟨C, hC⟩ : ∃ C, ∀ n, 1 / infDist (u n).1 sᶜ < C := by
@@ -244,7 +244,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (CompleteCopy s) :
     rw [div_le_iff₀' Cpos]
     exact (div_le_iff₀ this).1 (hC n).le
   have I' : 1 / C ≤ infDist x sᶜ :=
-    have : Tendsto (fun n => infDist (u n).1 sᶜ) atTop (𝓝 (infDist x sᶜ)) :=
+    have : Tendsto (fun n ↦ infDist (u n).1 sᶜ) atTop (𝓝 (infDist x sᶜ)) :=
       ((continuous_infDist_pt (sᶜ : Set α)).tendsto x).comp xlim
     ge_of_tendsto' this I
   exact absurd (Hmem.2 <| lt_of_lt_of_le (div_pos one_pos Cpos) I') xs

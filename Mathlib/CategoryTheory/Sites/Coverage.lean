@@ -93,7 +93,7 @@ lemma factorsThruAlong_id {X : C} (S T : Presieve X) :
 
 lemma factorsThru_of_le {X : C} (S T : Presieve X) (h : S ≤ T) :
     S.FactorsThru T :=
-  fun Y g hg => ⟨Y, 𝟙 _, g, h _ hg, by simp⟩
+  fun Y g hg ↦ ⟨Y, 𝟙 _, g, h _ hg, by simp⟩
 
 lemma le_of_factorsThru_sieve {X : C} (S : Presieve X) (T : Sieve X) (h : S.FactorsThru T) :
     S ≤ T := by
@@ -113,11 +113,11 @@ lemma isSheafFor_of_factorsThru
     T.IsSheafFor P := by
   simp only [← Presieve.isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor] at *
   choose W i e h1 h2 using H
-  refine ⟨?_, fun x hx => ?_⟩
+  refine ⟨?_, fun x hx ↦ ?_⟩
   · intro x y₁ y₂ h₁ h₂
-    refine hS.1.ext (fun Y g hg => ?_)
+    refine hS.1.ext (fun Y g hg ↦ ?_)
     simp only [← h2 hg, op_comp, P.map_comp, types_comp_apply, h₁ _ (h1 _ ), h₂ _ (h1 _)]
-  let y : S.FamilyOfElements P := fun Y g hg => P.map (i _).op (x (e hg) (h1 _))
+  let y : S.FamilyOfElements P := fun Y g hg ↦ P.map (i _).op (x (e hg) (h1 _))
   have hy : y.Compatible := by
     intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ h
     rw [← types_comp_apply (P.map (i h₁).op) (P.map g₁.op),
@@ -127,10 +127,10 @@ lemma isSheafFor_of_factorsThru
     simp only [h2, h, Category.assoc]
   let ⟨_, h2'⟩ := hS
   obtain ⟨z, hz⟩ := h2' y hy
-  refine ⟨z, fun Y g hg => ?_⟩
+  refine ⟨z, fun Y g hg ↦ ?_⟩
   obtain ⟨R, hR1, hR2⟩ := h hg
   choose WW ii ee hh1 hh2 using hR2
-  refine hR1.ext (fun Q t ht => ?_)
+  refine hR1.ext (fun Q t ht ↦ ?_)
   rw [← types_comp_apply (P.map g.op) (P.map t.op), ← P.map_comp, ← op_comp, ← hh2 ht,
     op_comp, P.map_comp, types_comp_apply, hz _ (hh1 _),
     ← types_comp_apply _ (P.map (ii ht).op), ← P.map_comp, ← op_comp]
@@ -160,7 +160,7 @@ structure Coverage where
 
 namespace Coverage
 
-instance : CoeFun (Coverage C) (fun _ => (X : C) → Set (Presieve X)) where
+instance : CoeFun (Coverage C) (fun _ ↦ (X : C) → Set (Presieve X)) where
   coe := covering
 
 variable (C) in
@@ -174,7 +174,7 @@ def ofGrothendieck (J : GrothendieckTopology C) : Coverage C where
   covering X := { S | Sieve.generate S ∈ J X }
   pullback := by
     intro X Y f S (hS : Sieve.generate S ∈ J X)
-    refine ⟨(Sieve.generate S).pullback f, ?_, fun Z g h => h⟩
+    refine ⟨(Sieve.generate S).pullback f, ?_, fun Z g h ↦ h⟩
     dsimp
     rw [Sieve.generate_sieve]
     exact J.pullback_stable _ hS
@@ -251,7 +251,7 @@ instance : PartialOrder (Coverage C) where
   le_refl _ _ := le_refl _
   le_trans _ _ _ h1 h2 X := le_trans (h1 X) (h2 X)
   le_antisymm _ _ h1 h2 := Coverage.ext <| funext <|
-    fun X => le_antisymm (h1 X) (h2 X)
+    fun X ↦ le_antisymm (h1 X) (h2 X)
 
 variable (C) in
 /--
@@ -260,7 +260,7 @@ a Galois insertion.
 -/
 def gi : GaloisInsertion (toGrothendieck C) (ofGrothendieck C) where
   choice K _ := toGrothendieck _ K
-  choice_eq := fun _ _ => rfl
+  choice_eq := fun _ _ ↦ rfl
   le_l_u J X S hS := by
     rw [← Sieve.generate_sieve S]
     apply Saturate.of
@@ -392,24 +392,24 @@ theorem isSheaf_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ Type*) :
       simp only [← Presieve.isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor] at *
       choose H1 H1' using H1
       choose H2 H2' using H2
-      refine ⟨?_, fun x hx => ?_⟩
+      refine ⟨?_, fun x hx ↦ ?_⟩
       · intro x t₁ t₂ h₁ h₂
-        refine (H1 f).ext (fun Z g hg => ?_)
-        refine (H2 hg (𝟙 _)).ext (fun ZZ gg hgg => ?_)
+        refine (H1 f).ext (fun Z g hg ↦ ?_)
+        refine (H2 hg (𝟙 _)).ext (fun ZZ gg hgg ↦ ?_)
         simp only [Sieve.pullback_id, Sieve.pullback_apply] at hgg
         simp only [← types_comp_apply]
         rw [← P.map_comp, ← op_comp, h₁, h₂]
         simpa only [Sieve.pullback_apply, Category.assoc] using hgg
       let y : ∀ ⦃Z : C⦄ (g : Z ⟶ Y),
         ((S.pullback (g ≫ f)).pullback (𝟙 _)).arrows.FamilyOfElements P :=
-        fun Z g ZZ gg hgg => x (gg ≫ g) (by simpa using hgg)
+        fun Z g ZZ gg hgg ↦ x (gg ≫ g) (by simpa using hgg)
       have hy : ∀ ⦃Z : C⦄ (g : Z ⟶ Y), (y g).Compatible := by
         intro Z g Y₁ Y₂ ZZ g₁ g₂ f₁ f₂ h₁ h₂ h
         rw [hx]
         rw [reassoc_of% h]
-      choose z hz using fun ⦃Z : C⦄ ⦃g : Z ⟶ Y⦄ (hg : R.pullback f g) =>
+      choose z hz using fun ⦃Z : C⦄ ⦃g : Z ⟶ Y⦄ (hg : R.pullback f g) ↦
         H2' hg (𝟙 _) (y g) (hy g)
-      let q : (R.pullback f).arrows.FamilyOfElements P := fun Z g hg => z hg
+      let q : (R.pullback f).arrows.FamilyOfElements P := fun Z g hg ↦ z hg
       have hq : q.Compatible := by
         intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ h
         apply (H2 h₁ g₁).ext
@@ -420,14 +420,14 @@ theorem isSheaf_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ Type*) :
         · simpa [reassoc_of% h] using hgg
         · simpa using hgg
       obtain ⟨t, ht⟩ := H1' f q hq
-      refine ⟨t, fun Z g hg => ?_⟩
-      refine (H1 (g ≫ f)).ext (fun ZZ gg hgg => ?_)
+      refine ⟨t, fun Z g hg ↦ ?_⟩
+      refine (H1 (g ≫ f)).ext (fun ZZ gg hgg ↦ ?_)
       rw [← types_comp_apply _ (P.map gg.op), ← P.map_comp, ← op_comp, ht]
       on_goal 2 => simpa using hgg
-      refine (H2 hgg (𝟙 _)).ext (fun ZZZ ggg hggg => ?_)
+      refine (H2 hgg (𝟙 _)).ext (fun ZZZ ggg hggg ↦ ?_)
       rw [← types_comp_apply _ (P.map ggg.op), ← P.map_comp, ← op_comp, hz]
       on_goal 2 => simpa using hggg
-      refine (H2 hgg ggg).ext (fun ZZZZ gggg _ => ?_)
+      refine (H2 hgg ggg).ext (fun ZZZZ gggg _ ↦ ?_)
       rw [← types_comp_apply _ (P.map gggg.op), ← P.map_comp, ← op_comp]
       apply hx
       simp

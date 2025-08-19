@@ -63,7 +63,7 @@ theorem ker_rel (f : F) {x y} : ker f x y ↔ f x = f y :=
 @[to_additive (attr := simp) /-- The kernel of the quotient map induced by an additive congruence
 relation `c` equals `c`. -/]
 theorem ker_mkMulHom_eq (c : Con M) : ker (mkMulHom c) = c :=
-  ext fun _ _ => Quotient.eq''
+  ext fun _ _ ↦ Quotient.eq''
 
 /-- The kernel of a multiplication-preserving function as a congruence relation. -/
 @[to_additive
@@ -79,8 +79,8 @@ set_option linter.deprecated false in
 @[to_additive (attr := simp) /-- The kernel of the quotient map induced by an additive congruence
 relation `c` equals `c`. -/]
 theorem mul_ker_mk_eq {c : Con M} :
-    (mulKer ((↑) : M → c.Quotient) fun _ _ => rfl) = c :=
-  ext fun _ _ => Quotient.eq''
+    (mulKer ((↑) : M → c.Quotient) fun _ _ ↦ rfl) = c :=
+  ext fun _ _ ↦ Quotient.eq''
 
 attribute [deprecated Con.ker_mkMulHom_eq (since := "2025-03-23")] mul_ker_mk_eq
 attribute [deprecated AddCon.ker_mkAddHom_eq (since := "2025-03-23")] AddCon.add_ker_mk_eq
@@ -126,19 +126,19 @@ def correspondence {c : Con M} : { d // c ≤ d } ≃o Con c.Quotient where
     d.1.mapOfSurjective (mkMulHom c) (by rw [Con.ker_mkMulHom_eq]; exact d.2) <|
       Quotient.mk_surjective
   invFun d :=
-    ⟨comap ((↑) : M → c.Quotient) (fun _ _ => rfl) d, fun x y h =>
+    ⟨comap ((↑) : M → c.Quotient) (fun _ _ ↦ rfl) d, fun x y h ↦
       show d x y by rw [c.eq.2 h]; exact d.refl _⟩
   left_inv d :=
     Subtype.ext_iff_val.2 <|
-      ext fun x y =>
-        ⟨fun ⟨a, b, H, hx, hy⟩ =>
+      ext fun x y ↦
+        ⟨fun ⟨a, b, H, hx, hy⟩ ↦
           d.1.trans (d.1.symm <| d.2 <| c.eq.1 hx) <| d.1.trans H <| d.2 <| c.eq.1 hy,
-          fun h => ⟨_, _, h, rfl, rfl⟩⟩
+          fun h ↦ ⟨_, _, h, rfl, rfl⟩⟩
   right_inv d :=
-    ext fun x y =>
-      ⟨fun ⟨_, _, H, hx, hy⟩ =>
+    ext fun x y ↦
+      ⟨fun ⟨_, _, H, hx, hy⟩ ↦
         hx ▸ hy ▸ H,
-        Con.induction_on₂ x y fun w z h => ⟨w, z, h, rfl, rfl⟩⟩
+        Con.induction_on₂ x y fun w z h ↦ ⟨w, z, h, rfl, rfl⟩⟩
   map_rel_iff' {s t} := by
     constructor
     · intros h x y hs
@@ -168,7 +168,7 @@ relation `c` equals `c`. -/
 @[to_additive (attr := simp) /-- The kernel of the natural homomorphism from an `AddMonoid` to its
 quotient by an additive congruence relation `c` equals `c`. -/]
 theorem mk'_ker : ker c.mk' = c :=
-  ext fun _ _ => c.eq
+  ext fun _ _ ↦ c.eq
 
 variable {c}
 
@@ -193,7 +193,7 @@ relation induced on `N` by `f` equals the kernel of `c`'s quotient homomorphism 
 `c` on `M`, the additive congruence relation induced on `N` by `f` equals the kernel of `c`'s
 quotient homomorphism composed with `f`. -/]
 theorem comap_eq {f : N →* M} : comap f f.map_mul c = ker (c.mk'.comp f) :=
-  ext fun x y => show c _ _ ↔ c.mk' _ = c.mk' _ by rw [← c.eq]; rfl
+  ext fun x y ↦ show c _ _ ↔ c.mk' _ = c.mk' _ by rw [← c.eq]; rfl
 
 variable (c) (f : M →* P)
 
@@ -202,9 +202,9 @@ homomorphism constant on `c`'s equivalence classes. -/
 @[to_additive /-- The homomorphism on the quotient of an `AddMonoid` by an additive congruence
 relation `c` induced by a homomorphism constant on `c`'s equivalence classes. -/]
 def lift (H : c ≤ ker f) : c.Quotient →* P where
-  toFun x := (Con.liftOn x f) fun _ _ h => H h
+  toFun x := (Con.liftOn x f) fun _ _ h ↦ H h
   map_one' := by rw [← f.map_one]; rfl
-  map_mul' x y := Con.induction_on₂ x y fun m n => by
+  map_mul' x y := Con.induction_on₂ x y fun m n ↦ by
     dsimp only [← coe_mul, Con.liftOn_coe]
     rw [map_mul]
 
@@ -234,7 +234,7 @@ the quotient. -/
 additive congruence relation, `f` equals the homomorphism on the quotient induced by `f` composed
 with the natural map from the `AddMonoid` to the quotient. -/]
 theorem lift_apply_mk' (f : c.Quotient →* P) :
-    (c.lift (f.comp c.mk') fun x y h => show f ↑x = f ↑y by rw [c.eq.2 h]) = f := by
+    (c.lift (f.comp c.mk') fun x y h ↦ show f ↑x = f ↑y by rw [c.eq.2 h]) = f := by
   ext x; rcases x with ⟨⟩; rfl
 
 /-- Homomorphisms on the quotient of a monoid by a congruence relation `c` are equal if their
@@ -263,8 +263,8 @@ induce a surjective homomorphism on `c`'s quotient. -/
 @[to_additive /-- Surjective `AddMonoid` homomorphisms constant on an additive congruence
 relation `c`'s equivalence classes induce a surjective homomorphism on `c`'s quotient. -/]
 theorem lift_surjective_of_surjective (h : c ≤ ker f) (hf : Surjective f) :
-    Surjective (c.lift f h) := fun y =>
-  (Exists.elim (hf y)) fun w hw => ⟨w, (lift_mk' h w).symm ▸ hw⟩
+    Surjective (c.lift f h) := fun y ↦
+  (Exists.elim (hf y)) fun w hw ↦ ⟨w, (lift_mk' h w).symm ▸ hw⟩
 
 variable (c f)
 
@@ -282,7 +282,7 @@ variable {c}
 @[to_additive /-- The homomorphism induced on the quotient of an `AddMonoid` by the kernel
 of an `AddMonoid` homomorphism. -/]
 def kerLift : (ker f).Quotient →* P :=
-  ((ker f).lift f) fun _ _ => id
+  ((ker f).lift f) fun _ _ ↦ id
 
 variable {f}
 
@@ -297,8 +297,8 @@ theorem kerLift_mk (x : M) : kerLift f x = f x :=
 /-- A monoid homomorphism `f` induces an injective homomorphism on the quotient by `f`'s kernel. -/
 @[to_additive /-- An `AddMonoid` homomorphism `f` induces an injective homomorphism on the quotient
 by `f`'s kernel. -/]
-theorem kerLift_injective (f : M →* P) : Injective (kerLift f) := fun x y =>
-  Quotient.inductionOn₂' x y fun _ _ => (ker f).eq.2
+theorem kerLift_injective (f : M →* P) : Injective (kerLift f) := fun x y ↦
+  Quotient.inductionOn₂' x y fun _ _ ↦ (ker f).eq.2
 
 /-- Given congruence relations `c, d` on a monoid such that `d` contains `c`, `d`'s quotient
 map induces a homomorphism from the quotient by `c` to the quotient by `d`. -/
@@ -306,7 +306,7 @@ map induces a homomorphism from the quotient by `c` to the quotient by `d`. -/
 contains `c`, `d`'s quotient map induces a homomorphism from the quotient by `c` to the quotient
 by `d`. -/]
 def map (c d : Con M) (h : c ≤ d) : c.Quotient →* d.Quotient :=
-  (c.lift d.mk') fun x y hc => show (ker d.mk') x y from (mk'_ker d).symm ▸ h hc
+  (c.lift d.mk') fun x y hc ↦ show (ker d.mk') x y from (mk'_ker d).symm ▸ h hc
 
 /-- Given congruence relations `c, d` on a monoid such that `d` contains `c`, the definition of
 the homomorphism from the quotient by `c` to the quotient by `d` induced by `d`'s quotient map. -/
@@ -314,7 +314,7 @@ the homomorphism from the quotient by `c` to the quotient by `d` induced by `d`'
 contains `c`, the definition of the homomorphism from the quotient by `c` to the quotient by `d`
 induced by `d`'s quotient map. -/]
 theorem map_apply {c d : Con M} (h : c ≤ d) (x) :
-    c.map d h x = c.lift d.mk' (fun _ _ hc => d.eq.2 <| h hc) x :=
+    c.map d h x = c.lift d.mk' (fun _ _ hc ↦ d.eq.2 <| h hc) x :=
   rfl
 
 end MulOneClass

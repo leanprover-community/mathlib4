@@ -95,7 +95,7 @@ abbrev star : SingleObj M :=
 /-- The endomorphisms monoid of the only object in `SingleObj M` is equivalent to the original
 monoid `M`. -/
 def toEnd : M ≃* End (SingleObj.star M) :=
-  { Equiv.refl M with map_mul' := fun _ _ => rfl }
+  { Equiv.refl M with map_mul' := fun _ _ ↦ rfl }
 
 theorem toEnd_def (x : M) : toEnd M x = x :=
   rfl
@@ -109,12 +109,12 @@ def mapHom : (M →* N) ≃ SingleObj M ⥤ SingleObj N where
   toFun f :=
     { obj := id
       map := ⇑f
-      map_id := fun _ => f.map_one
-      map_comp := fun x y => f.map_mul y x }
+      map_id := fun _ ↦ f.map_one
+      map_comp := fun x y ↦ f.map_mul y x }
   invFun f :=
-    { toFun := fun x => f.map ((toEnd M) x)
+    { toFun := fun x ↦ f.map ((toEnd M) x)
       map_one' := f.map_id _
-      map_mul' := fun x y => f.map_comp y x }
+      map_mul' := fun x y ↦ f.map_comp y x }
   left_inv := by cat_disch
   right_inv := by cat_disch
 

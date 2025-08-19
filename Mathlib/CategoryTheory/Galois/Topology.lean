@@ -105,7 +105,7 @@ instance : ContinuousInv (Aut F) :=
 
 instance : IsTopologicalGroup (Aut F) := ⟨⟩
 
-instance (X : C) : SMul (Aut (F.obj X)) (F.obj X) := ⟨fun σ a => σ.hom a⟩
+instance (X : C) : SMul (Aut (F.obj X)) (F.obj X) := ⟨fun σ a ↦ σ.hom a⟩
 
 instance (X : C) : ContinuousSMul (Aut (F.obj X)) (F.obj X) := by
   constructor
@@ -154,7 +154,7 @@ lemma exists_set_ker_evaluation_subset_of_isOpen
       (∀ σ : Aut F, (∀ X : I, σ.hom.app X = 𝟙 (F.obj X)) → σ ∈ H) := by
   obtain ⟨U, hUopen, rfl⟩ := isOpen_induced_iff.mp h
   obtain ⟨I, u, ho, ha⟩ := isOpen_pi_iff.mp hUopen 1 h1
-  choose fι ff fc h4 h5 h6 using (fun X : I => has_decomp_connected_components X.val)
+  choose fι ff fc h4 h5 h6 using (fun X : I ↦ has_decomp_connected_components X.val)
   refine ⟨⋃ X, Set.range (ff X), Fintype.ofFinite _, ?_, ?_⟩
   · rintro X ⟨A, ⟨Y, rfl⟩, hA2⟩
     obtain ⟨i, rfl⟩ := hA2

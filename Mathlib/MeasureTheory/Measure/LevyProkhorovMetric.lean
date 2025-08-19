@@ -430,7 +430,7 @@ lemma LevyProkhorov.continuous_equiv_probabilityMeasure :
   by_cases f_zero : ‖f‖ = 0
   · simp only [norm_eq_zero] at f_zero
     simp [f_zero, limsup_const]
-  have norm_f_pos : 0 < ‖f‖ := lt_of_le_of_ne (norm_nonneg _) (fun a => f_zero a.symm)
+  have norm_f_pos : 0 < ‖f‖ := lt_of_le_of_ne (norm_nonneg _) (fun a ↦ f_zero a.symm)
   apply _root_.le_of_forall_pos_le_add
   intro δ δ_pos
   apply limsup_le_of_le ?_

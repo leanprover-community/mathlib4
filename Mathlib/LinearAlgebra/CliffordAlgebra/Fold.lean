@@ -46,7 +46,7 @@ given by `foldr Q f hf n (ι Q m * x) = f m (foldr Q f hf n x)`.
 For example, `foldr f hf n (r • ι R u + ι R v * ι R w) = r • f u n + f v (f w n)`. -/
 def foldr (f : M →ₗ[R] N →ₗ[R] N) (hf : ∀ m x, f m (f m x) = Q m • x) :
     N →ₗ[R] CliffordAlgebra Q →ₗ[R] N :=
-  (CliffordAlgebra.lift Q ⟨f, fun v => LinearMap.ext <| hf v⟩).toLinearMap.flip
+  (CliffordAlgebra.lift Q ⟨f, fun v ↦ LinearMap.ext <| hf v⟩).toLinearMap.flip
 
 @[simp]
 theorem foldr_ι (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (m : M) : foldr Q f hf n (ι Q m) = f m n :=
@@ -68,7 +68,7 @@ theorem foldr_mul (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (a b : CliffordAl
 
 /-- This lemma demonstrates the origin of the `foldr` name. -/
 theorem foldr_prod_map_ι (l : List M) (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) :
-    foldr Q f hf n (l.map <| ι Q).prod = List.foldr (fun m n => f m n) n l := by
+    foldr Q f hf n (l.map <| ι Q).prod = List.foldr (fun m n ↦ f m n) n l := by
   induction l with
   | nil => rw [List.map_nil, List.prod_nil, List.foldr_nil, foldr_one]
   | cons hd tl ih => rw [List.map_cons, List.prod_cons, List.foldr_cons, foldr_mul, foldr_ι, ih]
@@ -115,7 +115,7 @@ theorem foldl_mul (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (a b : CliffordAl
 
 /-- This lemma demonstrates the origin of the `foldl` name. -/
 theorem foldl_prod_map_ι (l : List M) (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) :
-    foldl Q f hf n (l.map <| ι Q).prod = List.foldl (fun m n => f n m) n l := by
+    foldl Q f hf n (l.map <| ι Q).prod = List.foldl (fun m n ↦ f n m) n l := by
   rw [← foldr_reverse, reverse_prod_map_ι, ← List.map_reverse, foldr_prod_map_ι, List.foldr_reverse]
 
 end Foldl
@@ -159,12 +159,12 @@ def foldr'Aux (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N) :
   have v_mul := (Algebra.lmul R (CliffordAlgebra Q)).toLinearMap ∘ₗ ι Q
   have l := v_mul.compl₂ (LinearMap.fst _ _ N)
   exact
-    { toFun := fun m => (l m).prod (f m)
-      map_add' := fun v₂ v₂ =>
-        LinearMap.ext fun x =>
+    { toFun := fun m ↦ (l m).prod (f m)
+      map_add' := fun v₂ v₂ ↦
+        LinearMap.ext fun x ↦
           Prod.ext (LinearMap.congr_fun (l.map_add _ _) x) (LinearMap.congr_fun (f.map_add _ _) x)
-      map_smul' := fun c v =>
-        LinearMap.ext fun x =>
+      map_smul' := fun c v ↦
+        LinearMap.ext fun x ↦
           Prod.ext (LinearMap.congr_fun (l.map_smul _ _) x)
             (LinearMap.congr_fun (f.map_smul _ _) x) }
 

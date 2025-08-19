@@ -75,7 +75,7 @@ theorem eval_monomial_one_add_sub [CommRing S] (d : ℕ) (y : S) :
   simp only [one_pow, mul_one, mul_comm (y ^ _) (d.choose _)]
   rw [sum_range_succ, mul_add, Nat.choose_self, Nat.cast_one, one_mul, add_sub_cancel_right,
     mul_sum, sum_range_succ', Nat.cast_zero, zero_mul, mul_zero, add_zero]
-  refine sum_congr rfl fun y _hy => ?_
+  refine sum_congr rfl fun y _hy ↦ ?_
   rw [← mul_assoc, ← mul_assoc, ← Nat.cast_mul, Nat.succ_mul_choose_eq, Nat.cast_mul,
     Nat.add_sub_cancel]
 
@@ -128,19 +128,19 @@ def mapEquiv (e : R ≃+* S) : R[X] ≃+* S[X] :=
     (by ext; simp)
 
 theorem map_monic_eq_zero_iff (hp : p.Monic) : p.map f = 0 ↔ ∀ x, f x = 0 :=
-  ⟨fun hfp x =>
+  ⟨fun hfp x ↦
     calc
       f x = f x * f p.leadingCoeff := by simp only [mul_one, hp.leadingCoeff, f.map_one]
       _ = f x * (p.map f).coeff p.natDegree := congr_arg _ (coeff_map _ _).symm
       _ = 0 := by simp only [hfp, mul_zero, coeff_zero]
       ,
-    fun h => ext fun n => by simp only [h, coeff_map, coeff_zero]⟩
+    fun h ↦ ext fun n ↦ by simp only [h, coeff_map, coeff_zero]⟩
 
-theorem map_monic_ne_zero (hp : p.Monic) [Nontrivial S] : p.map f ≠ 0 := fun h =>
+theorem map_monic_ne_zero (hp : p.Monic) [Nontrivial S] : p.map f ≠ 0 := fun h ↦
   f.map_one_ne_zero ((map_monic_eq_zero_iff hp).mp h _)
 
 lemma degree_map_le : degree (p.map f) ≤ degree p := by
-  refine (degree_le_iff_coeff_zero _ _).2 fun m hm => ?_
+  refine (degree_le_iff_coeff_zero _ _).2 fun m hm ↦ ?_
   rw [degree_lt_iff_coeff_zero] at hm
   simp [hm m le_rfl]
 
@@ -167,7 +167,7 @@ theorem degree_map_eq_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f (leadingCo
     degree (p.map f) = degree p := by
   refine degree_map_le.antisymm ?_
   have hp0 : p ≠ 0 :=
-    leadingCoeff_ne_zero.mp fun hp0 => hf (_root_.trans (congr_arg _ hp0) f.map_zero)
+    leadingCoeff_ne_zero.mp fun hp0 ↦ hf (_root_.trans (congr_arg _ hp0) f.map_zero)
   rw [degree_eq_natDegree hp0]
   refine le_degree_of_ne_zero ?_
   rw [coeff_map]
@@ -199,7 +199,7 @@ theorem eval₂_comp {x : S} : eval₂ f x (p.comp q) = eval₂ f (eval₂ f x q
 
 @[simp]
 theorem iterate_comp_eval₂ (k : ℕ) (t : S) :
-    eval₂ f t (p.comp^[k] q) = (fun x => eval₂ f x p)^[k] (eval₂ f t q) := by
+    eval₂ f t (p.comp^[k] q) = (fun x ↦ eval₂ f x p)^[k] (eval₂ f t q) := by
   induction k with
   | zero => simp
   | succ k IH => rw [Function.iterate_succ_apply', Function.iterate_succ_apply', eval₂_comp, IH]
@@ -212,7 +212,7 @@ variable [CommSemiring R] {p q : R[X]} {x : R} [CommSemiring S] (f : R →+* S)
 
 @[simp]
 theorem iterate_comp_eval :
-    ∀ (k : ℕ) (t : R), (p.comp^[k] q).eval t = (fun x => p.eval x)^[k] (q.eval t) :=
+    ∀ (k : ℕ) (t : R), (p.comp^[k] q).eval t = (fun x ↦ p.eval x)^[k] (q.eval t) :=
   iterate_comp_eval₂ _
 
 end

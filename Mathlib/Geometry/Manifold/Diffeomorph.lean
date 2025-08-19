@@ -189,11 +189,11 @@ protected def trans (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : M' ≃ₘ^n⟮I', 
 
 @[simp]
 theorem trans_refl (h : M ≃ₘ^n⟮I, I'⟯ M') : h.trans (Diffeomorph.refl I' M' n) = h :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem refl_trans (h : M ≃ₘ^n⟮I, I'⟯ M') : (Diffeomorph.refl I M n).trans h = h :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem coe_trans (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : M' ≃ₘ^n⟮I', J⟯ N) : ⇑(h₁.trans h₂) = h₂ ∘ h₁ :=
@@ -216,7 +216,7 @@ theorem symm_apply_apply (h : M ≃ₘ^n⟮I, J⟯ N) (x : M) : h.symm (h x) = x
 
 @[simp]
 theorem symm_refl : (Diffeomorph.refl I M n).symm = Diffeomorph.refl I M n :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem self_trans_symm (h : M ≃ₘ^n⟮I, J⟯ N) : h.trans h.symm = Diffeomorph.refl I M n :=
@@ -288,12 +288,12 @@ theorem contMDiffWithinAt_comp_diffeomorph_iff {m} (h : M ≃ₘ^n⟮I, J⟯ N) 
     simpa only [Function.comp_def, h.apply_symm_apply] using
       Hfh.comp (h x) (h.symm.contMDiffWithinAt.of_le hm) (mapsTo_preimage _ _)
   · rw [← h.image_eq_preimage]
-    exact fun hf => hf.comp x (h.contMDiffWithinAt.of_le hm) (mapsTo_image _ _)
+    exact fun hf ↦ hf.comp x (h.contMDiffWithinAt.of_le hm) (mapsTo_image _ _)
 
 @[simp]
 theorem contMDiffOn_comp_diffeomorph_iff {m} (h : M ≃ₘ^n⟮I, J⟯ N) {f : N → M'} {s} (hm : m ≤ n) :
     ContMDiffOn I I' m (f ∘ h) s ↔ ContMDiffOn J I' m f (h.symm ⁻¹' s) :=
-  h.toEquiv.forall_congr fun {_} => by
+  h.toEquiv.forall_congr fun {_} ↦ by
     simp only [hm, coe_toEquiv, h.symm_apply_apply, contMDiffWithinAt_comp_diffeomorph_iff,
       mem_preimage]
 
@@ -310,10 +310,10 @@ theorem contMDiff_comp_diffeomorph_iff {m} (h : M ≃ₘ^n⟮I, J⟯ N) {f : N �
 @[simp]
 theorem contMDiffWithinAt_diffeomorph_comp_iff {m} (h : M ≃ₘ^n⟮I, J⟯ N) {f : M' → M} (hm : m ≤ n)
     {s x} : ContMDiffWithinAt I' J m (h ∘ f) s x ↔ ContMDiffWithinAt I' I m f s x :=
-  ⟨fun Hhf => by
+  ⟨fun Hhf ↦ by
     simpa only [Function.comp_def, h.symm_apply_apply] using
       (h.symm.contMDiffAt.of_le hm).comp_contMDiffWithinAt _ Hhf,
-    fun Hf => (h.contMDiffAt.of_le hm).comp_contMDiffWithinAt _ Hf⟩
+    fun Hf ↦ (h.contMDiffAt.of_le hm).comp_contMDiffWithinAt _ Hf⟩
 
 @[simp]
 theorem contMDiffAt_diffeomorph_comp_iff {m} (h : M ≃ₘ^n⟮I, J⟯ N) {f : M' → M} (hm : m ≤ n) {x} :
@@ -323,12 +323,12 @@ theorem contMDiffAt_diffeomorph_comp_iff {m} (h : M ≃ₘ^n⟮I, J⟯ N) {f : M
 @[simp]
 theorem contMDiffOn_diffeomorph_comp_iff {m} (h : M ≃ₘ^n⟮I, J⟯ N) {f : M' → M} (hm : m ≤ n) {s} :
     ContMDiffOn I' J m (h ∘ f) s ↔ ContMDiffOn I' I m f s :=
-  forall₂_congr fun _ _ => h.contMDiffWithinAt_diffeomorph_comp_iff hm
+  forall₂_congr fun _ _ ↦ h.contMDiffWithinAt_diffeomorph_comp_iff hm
 
 @[simp]
 theorem contMDiff_diffeomorph_comp_iff {m} (h : M ≃ₘ^n⟮I, J⟯ N) {f : M' → M} (hm : m ≤ n) :
     ContMDiff I' J m (h ∘ f) ↔ ContMDiff I' I m f :=
-  forall_congr' fun _ => h.contMDiffWithinAt_diffeomorph_comp_iff hm
+  forall_congr' fun _ ↦ h.contMDiffWithinAt_diffeomorph_comp_iff hm
 
 theorem toPartialHomeomorph_mdifferentiable (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) :
     h.toHomeomorph.toPartialHomeomorph.MDifferentiable I J :=
@@ -342,7 +342,7 @@ theorem uniqueMDiffOn_image_aux (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) {s :
 @[simp]
 theorem uniqueMDiffOn_image (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) {s : Set M} :
     UniqueMDiffOn J (h '' s) ↔ UniqueMDiffOn I s :=
-  ⟨fun hs => h.symm_image_image s ▸ h.symm.uniqueMDiffOn_image_aux hn hs,
+  ⟨fun hs ↦ h.symm_image_image s ▸ h.symm.uniqueMDiffOn_image_aux hn hs,
     h.uniqueMDiffOn_image_aux hn⟩
 
 @[simp]
@@ -472,7 +472,7 @@ variable (e : E ≃L[𝕜] F)
 
 instance instIsManifoldtransContinuousLinearEquiv [IsManifold I n M] :
     IsManifold (I.transContinuousLinearEquiv e) n M := by
-  refine isManifold_of_contDiffOn (I.transContinuousLinearEquiv e) n M fun e₁ e₂ h₁ h₂ => ?_
+  refine isManifold_of_contDiffOn (I.transContinuousLinearEquiv e) n M fun e₁ e₂ h₁ h₂ ↦ ?_
   refine e.contDiff.comp_contDiffOn
       (((contDiffGroupoid n I).compatible h₁ h₂).1.comp e.symm.contDiff.contDiffOn ?_)
   simp [preimage_comp, range_comp, mapsTo_iff_subset_preimage,
@@ -493,7 +493,7 @@ def toTransContinuousLinearEquiv (e : E ≃L[𝕜] F) : M ≃ₘ^n⟮I, I.transC
       ⟨(extChartAt I x).map_source (mem_extChartAt_source x), trivial, by simp only [mfld_simps]⟩
   contMDiff_invFun x := by
     refine contMDiffWithinAt_iff'.2 ⟨continuousWithinAt_id, ?_⟩
-    refine e.symm.contDiff.contDiffWithinAt.congr_of_mem (fun y hy => ?_) ?_
+    refine e.symm.contDiff.contDiffWithinAt.congr_of_mem (fun y hy ↦ ?_) ?_
     · simp only [mem_inter_iff, I.extChartAt_transContinuousLinearEquiv_target] at hy
       simp only [Equiv.coe_refl, Equiv.refl_symm, id, (· ∘ ·),
         I.coe_extChartAt_transContinuousLinearEquiv_symm, (extChartAt I x).right_inv hy.1]

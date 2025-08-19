@@ -38,12 +38,12 @@ the first argument of `(X, Y) ↦ ModuleCat.of R (unop X ⟶ Y)`
 -/
 def Ext (n : ℕ) : Cᵒᵖ ⥤ C ⥤ ModuleCat R :=
   Functor.flip
-    { obj := fun Y => (((linearYoneda R C).obj Y).rightOp.leftDerived n).leftOp
+    { obj := fun Y ↦ (((linearYoneda R C).obj Y).rightOp.leftDerived n).leftOp
       -- Porting note: if we use dot notation for any of
       -- `NatTrans.leftOp` / `NatTrans.rightOp` / `NatTrans.leftDerived`
       -- then `cat_disch` can not discharge the `map_id` and `map_comp` goals.
       -- This should be investigated further.
-      map := fun f =>
+      map := fun f ↦
         NatTrans.leftOp (NatTrans.leftDerived (NatTrans.rightOp ((linearYoneda R C).map f)) n) }
 
 open ZeroObject

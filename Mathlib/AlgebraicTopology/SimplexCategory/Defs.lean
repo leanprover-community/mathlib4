@@ -79,7 +79,7 @@ theorem mk_len (n : SimplexCategory) : ⦋n.len⦌ = n :=
   rfl
 
 /-- A recursor for `SimplexCategory`. Use it as `induction Δ using SimplexCategory.rec`. -/
-protected def rec {F : SimplexCategory → Sort*} (h : ∀ n : ℕ, F ⦋n⦌) : ∀ X, F X := fun n =>
+protected def rec {F : SimplexCategory → Sort*} (h : ∀ n : ℕ, F ⦋n⦌) : ∀ X, F X := fun n ↦
   h n.len
 
 /-- Morphisms in the `SimplexCategory`. -/
@@ -149,7 +149,7 @@ theorem Hom.ext {a b : SimplexCategory} (f g : a ⟶ b) :
 
 /-- The truncated simplex category. -/
 def Truncated (n : ℕ) :=
-  ObjectProperty.FullSubcategory fun a : SimplexCategory => a.len ≤ n
+  ObjectProperty.FullSubcategory fun a : SimplexCategory ↦ a.len ≤ n
 
 instance (n : ℕ) : SmallCategory.{0} (Truncated n) :=
   ObjectProperty.FullSubcategory.category _

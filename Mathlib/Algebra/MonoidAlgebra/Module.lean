@@ -148,13 +148,13 @@ instance smulCommClass_self [SMulCommClass R k k] :
     simp only [smul_eq_mul, mul_apply]
     rw [coe_smul]
     refine Eq.symm (Eq.trans (congr_arg (sum a)
-      (funext₂ fun a₁ b₁ => sum_smul_index' (g := b) (b := t) ?_)) ?_) <;>
+      (funext₂ fun a₁ b₁ ↦ sum_smul_index' (g := b) (b := t) ?_)) ?_) <;>
     simp only [mul_apply, Finsupp.sum, Finset.smul_sum, smul_ite, mul_smul_comm,
       imp_true_iff, ite_eq_right_iff, Pi.smul_apply, mul_zero, smul_zero]
 
 instance smulCommClass_symm_self [SMulCommClass k R k] :
     SMulCommClass (MonoidAlgebra k G) R (MonoidAlgebra k G) :=
-  ⟨fun t a b => by
+  ⟨fun t a b ↦ by
     haveI := SMulCommClass.symm k R k
     rw [← smul_comm]⟩
 
@@ -177,7 +177,7 @@ def submoduleOfSMulMem (W : Submodule k V) (h : ∀ (g : G) (v : V), v ∈ W →
     intro f v hv
     rw [← Finsupp.sum_single f, Finsupp.sum, Finset.sum_smul]
     simp_rw [← smul_of, smul_assoc]
-    exact Submodule.sum_smul_mem W _ fun g _ => h g v hv
+    exact Submodule.sum_smul_mem W _ fun g _ ↦ h g v hv
 
 end Submodule
 

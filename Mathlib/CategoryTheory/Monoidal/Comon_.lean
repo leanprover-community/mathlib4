@@ -263,7 +263,7 @@ The contravariant functor turning comonoid objects into monoid objects in the op
 -/
 @[simps] def Comon_ToMon_OpOp : Comon_ C ⥤ (Mon_ (Cᵒᵖ))ᵒᵖ where
   obj A := op (Comon_ToMon_OpOpObj A)
-  map := fun f => op <|
+  map := fun f ↦ op <|
     { hom := f.hom.op
       is_mon_hom :=
         { one_hom := by apply Quiver.Hom.unop_inj; simp
@@ -295,7 +295,7 @@ The contravariant functor turning monoid objects in the opposite category into c
 @[simps]
 def Mon_OpOpToComon_ : (Mon_ (Cᵒᵖ))ᵒᵖ ⥤ Comon_ C where
   obj A := Mon_OpOpToComonObj (unop A)
-  map := fun f =>
+  map := fun f ↦
     { hom := f.unop.hom.unop
       is_comon_hom :=
         { hom_counit := by apply Quiver.Hom.op_inj; simp
@@ -308,8 +308,8 @@ Comonoid objects are contravariantly equivalent to monoid objects in the opposit
 def Comon_EquivMon_OpOp : Comon_ C ≌ (Mon_ (Cᵒᵖ))ᵒᵖ :=
   { functor := Comon_ToMon_OpOp C
     inverse := Mon_OpOpToComon_ C
-    unitIso := NatIso.ofComponents (fun _ => Iso.refl _)
-    counitIso := NatIso.ofComponents (fun _ => Iso.refl _) }
+    unitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
+    counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _) }
 
 /--
 Comonoid objects in a braided category form a monoidal category.

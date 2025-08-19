@@ -29,22 +29,22 @@ open CategoryTheory.Limits Preadditive
 @[simps]
 instance Endofunctor.algebraPreadditive : Preadditive (Endofunctor.Algebra F) where
   homGroup A₁ A₂ :=
-    { add := fun α β =>
+    { add := fun α β ↦
         { f := α.f + β.f
           h := by simp only [Functor.map_add, add_comp, Endofunctor.Algebra.Hom.h, comp_add] }
       zero :=
         { f := 0
           h := by simp only [Functor.map_zero, zero_comp, comp_zero] }
-      nsmul := fun n α =>
+      nsmul := fun n α ↦
         { f := n • α.f
           h := by rw [comp_nsmul, Functor.map_nsmul, nsmul_comp, Endofunctor.Algebra.Hom.h] }
-      neg := fun α =>
+      neg := fun α ↦
         { f := -α.f
           h := by simp only [Functor.map_neg, neg_comp, Endofunctor.Algebra.Hom.h, comp_neg] }
-      sub := fun α β =>
+      sub := fun α β ↦
         { f := α.f - β.f
           h := by simp only [Functor.map_sub, sub_comp, Endofunctor.Algebra.Hom.h, comp_sub] }
-      zsmul := fun r α =>
+      zsmul := fun r α ↦
         { f := r • α.f
           h := by rw [comp_zsmul, Functor.map_zsmul, zsmul_comp, Endofunctor.Algebra.Hom.h] }
       add_assoc := by
@@ -106,22 +106,22 @@ instance Algebra.forget_additive : (Endofunctor.Algebra.forget F).Additive where
 @[simps]
 instance Endofunctor.coalgebraPreadditive : Preadditive (Endofunctor.Coalgebra F) where
   homGroup A₁ A₂ :=
-    { add := fun α β =>
+    { add := fun α β ↦
         { f := α.f + β.f
           h := by simp only [Functor.map_add, comp_add, Endofunctor.Coalgebra.Hom.h, add_comp] }
       zero :=
         { f := 0
           h := by simp only [Functor.map_zero, zero_comp, comp_zero] }
-      nsmul := fun n α =>
+      nsmul := fun n α ↦
         { f := n • α.f
           h := by rw [Functor.map_nsmul, comp_nsmul, Endofunctor.Coalgebra.Hom.h, nsmul_comp] }
-      neg := fun α =>
+      neg := fun α ↦
         { f := -α.f
           h := by simp only [Functor.map_neg, comp_neg, Endofunctor.Coalgebra.Hom.h, neg_comp] }
-      sub := fun α β =>
+      sub := fun α β ↦
         { f := α.f - β.f
           h := by simp only [Functor.map_sub, comp_sub, Endofunctor.Coalgebra.Hom.h, sub_comp] }
-      zsmul := fun r α =>
+      zsmul := fun r α ↦
         { f := r • α.f
           h := by rw [Functor.map_zsmul, comp_zsmul, Endofunctor.Coalgebra.Hom.h, zsmul_comp] }
       add_assoc := by

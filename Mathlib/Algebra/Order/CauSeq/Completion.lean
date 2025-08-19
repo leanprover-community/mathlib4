@@ -67,35 +67,35 @@ theorem mk_eq_zero {f : CauSeq _ abv} : mk f = 0 ↔ LimZero f := by
   rwa [sub_zero] at this
 
 instance : Add (Cauchy abv) :=
-  ⟨(Quotient.map₂ (· + ·)) fun _ _ hf _ _ hg => add_equiv_add hf hg⟩
+  ⟨(Quotient.map₂ (· + ·)) fun _ _ hf _ _ hg ↦ add_equiv_add hf hg⟩
 
 @[simp]
 theorem mk_add (f g : CauSeq β abv) : mk f + mk g = mk (f + g) :=
   rfl
 
 instance : Neg (Cauchy abv) :=
-  ⟨(Quotient.map Neg.neg) fun _ _ hf => neg_equiv_neg hf⟩
+  ⟨(Quotient.map Neg.neg) fun _ _ hf ↦ neg_equiv_neg hf⟩
 
 @[simp]
 theorem mk_neg (f : CauSeq β abv) : -mk f = mk (-f) :=
   rfl
 
 instance : Mul (Cauchy abv) :=
-  ⟨(Quotient.map₂ (· * ·)) fun _ _ hf _ _ hg => mul_equiv_mul hf hg⟩
+  ⟨(Quotient.map₂ (· * ·)) fun _ _ hf _ _ hg ↦ mul_equiv_mul hf hg⟩
 
 @[simp]
 theorem mk_mul (f g : CauSeq β abv) : mk f * mk g = mk (f * g) :=
   rfl
 
 instance : Sub (Cauchy abv) :=
-  ⟨(Quotient.map₂ Sub.sub) fun _ _ hf _ _ hg => sub_equiv_sub hf hg⟩
+  ⟨(Quotient.map₂ Sub.sub) fun _ _ hf _ _ hg ↦ sub_equiv_sub hf hg⟩
 
 @[simp]
 theorem mk_sub (f g : CauSeq β abv) : mk f - mk g = mk (f - g) :=
   rfl
 
 instance {γ : Type*} [SMul γ β] [IsScalarTower γ β β] : SMul γ (Cauchy abv) :=
-  ⟨fun c => (Quotient.map (c • ·)) fun _ _ hf => smul_equiv_smul _ hf⟩
+  ⟨fun c ↦ (Quotient.map (c • ·)) fun _ _ hf ↦ smul_equiv_smul _ hf⟩
 
 @[simp]
 theorem mk_smul {γ : Type*} [SMul γ β] [IsScalarTower γ β β] (c : γ) (f : CauSeq β abv) :
@@ -103,17 +103,17 @@ theorem mk_smul {γ : Type*} [SMul γ β] [IsScalarTower γ β β] (c : γ) (f :
   rfl
 
 instance : Pow (Cauchy abv) ℕ :=
-  ⟨fun x n => Quotient.map (· ^ n) (fun _ _ hf => pow_equiv_pow hf _) x⟩
+  ⟨fun x n ↦ Quotient.map (· ^ n) (fun _ _ hf ↦ pow_equiv_pow hf _) x⟩
 
 @[simp]
 theorem mk_pow (n : ℕ) (f : CauSeq β abv) : mk f ^ n = mk (f ^ n) :=
   rfl
 
 instance : NatCast (Cauchy abv) :=
-  ⟨fun n => mk n⟩
+  ⟨fun n ↦ mk n⟩
 
 instance : IntCast (Cauchy abv) :=
-  ⟨fun n => mk n⟩
+  ⟨fun n ↦ mk n⟩
 
 @[simp]
 theorem ofRat_natCast (n : ℕ) : (ofRat n : Cauchy abv) = n :=
@@ -134,7 +134,7 @@ theorem ofRat_mul (x y : β) :
     ofRat (x * y) = (ofRat x * ofRat y : Cauchy abv) :=
   congr_arg mk (const_mul _ _)
 
-theorem ofRat_injective : Function.Injective (ofRat : β → Cauchy abv) := fun x y h => by
+theorem ofRat_injective : Function.Injective (ofRat : β → Cauchy abv) := fun x y h ↦ by
   simpa [ofRat, mk_eq, ← const_sub, const_limZero, sub_eq_zero] using h
 
 private theorem zero_def : 0 = mk (abv := abv) 0 :=
@@ -145,9 +145,9 @@ private theorem one_def : 1 = mk (abv := abv) 1 :=
 
 instance Cauchy.ring : Ring (Cauchy abv) := fast_instance%
   Function.Surjective.ring mk Quotient.mk'_surjective zero_def.symm one_def.symm
-    (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
-    (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
-    (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl
+    (fun _ _ ↦ (mk_add _ _).symm) (fun _ _ ↦ (mk_mul _ _).symm) (fun _ ↦ (mk_neg _).symm)
+    (fun _ _ ↦ (mk_sub _ _).symm) (fun _ _ ↦ (mk_smul _ _).symm) (fun _ _ ↦ (mk_smul _ _).symm)
+    (fun _ _ ↦ (mk_pow _ _).symm) (fun _ ↦ rfl) fun _ ↦ rfl
 
 /-- `CauSeq.Completion.ofRat` as a `RingHom` -/
 @[simps]
@@ -173,9 +173,9 @@ variable {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv]
 
 instance Cauchy.commRing : CommRing (Cauchy abv) := fast_instance%
   Function.Surjective.commRing mk Quotient.mk'_surjective zero_def.symm one_def.symm
-    (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
-    (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
-    (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl
+    (fun _ _ ↦ (mk_add _ _).symm) (fun _ _ ↦ (mk_mul _ _).symm) (fun _ ↦ (mk_neg _).symm)
+    (fun _ _ ↦ (mk_sub _ _).symm) (fun _ _ ↦ (mk_smul _ _).symm) (fun _ _ ↦ (mk_smul _ _).symm)
+    (fun _ _ ↦ (mk_pow _ _).symm) (fun _ ↦ rfl) fun _ ↦ rfl
 
 end
 
@@ -192,8 +192,8 @@ instance instRatCast : RatCast (Cauchy abv) where ratCast q := ofRat q
 
 open Classical in
 noncomputable instance : Inv (Cauchy abv) :=
-  ⟨fun x =>
-    (Quotient.liftOn x fun f => mk <| if h : LimZero f then 0 else inv f h) fun f g fg => by
+  ⟨fun x ↦
+    (Quotient.liftOn x fun f ↦ mk <| if h : LimZero f then 0 else inv f h) fun f g fg ↦ by
       have := limZero_congr fg
       by_cases hf : LimZero f
       · simp [hf, this.1 hf]
@@ -212,21 +212,21 @@ theorem inv_zero : (0 : (Cauchy abv))⁻¹ = 0 :=
 theorem inv_mk {f} (hf) : (mk (abv := abv) f)⁻¹ = mk (inv f hf) :=
   congr_arg mk <| by rw [dif_neg]
 
-theorem cau_seq_zero_ne_one : ¬(0 : CauSeq _ abv) ≈ 1 := fun h =>
+theorem cau_seq_zero_ne_one : ¬(0 : CauSeq _ abv) ≈ 1 := fun h ↦
   have : LimZero (1 - 0 : CauSeq _ abv) := Setoid.symm h
   have : LimZero (1 : CauSeq _ abv) := by simpa
   by apply one_ne_zero <| const_limZero.1 this
 
-theorem zero_ne_one : (0 : (Cauchy abv)) ≠ 1 := fun h => cau_seq_zero_ne_one <| mk_eq.1 h
+theorem zero_ne_one : (0 : (Cauchy abv)) ≠ 1 := fun h ↦ cau_seq_zero_ne_one <| mk_eq.1 h
 
 protected theorem inv_mul_cancel {x : (Cauchy abv)} : x ≠ 0 → x⁻¹ * x = 1 :=
-  Quotient.inductionOn x fun f hf => by
+  Quotient.inductionOn x fun f hf ↦ by
     simp only [mk_eq_mk, ne_eq, mk_eq_zero] at hf
     simp only [mk_eq_mk, hf, not_false_eq_true, inv_mk, mk_mul]
     exact Quotient.sound (CauSeq.inv_mul_cancel hf)
 
 protected theorem mul_inv_cancel {x : (Cauchy abv)} : x ≠ 0 → x * x⁻¹ = 1 :=
-  Quotient.inductionOn x fun f hf => by
+  Quotient.inductionOn x fun f hf ↦ by
     simp only [mk_eq_mk, ne_eq, mk_eq_zero] at hf
     simp only [mk_eq_mk, hf, not_false_eq_true, inv_mk, mk_mul]
     exact Quotient.sound (CauSeq.mul_inv_cancel hf)
@@ -351,12 +351,12 @@ theorem lim_neg (f : CauSeq β abv) : lim (-f) = -lim f :=
       exact Setoid.symm (equiv_lim f))
 
 theorem lim_eq_zero_iff (f : CauSeq β abv) : lim f = 0 ↔ LimZero f :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     have hf := equiv_lim f
     rw [h] at hf
     exact (limZero_congr hf).mpr (const_limZero.mpr rfl),
-   fun h => by
-    have h₁ : f = f - const abv 0 := ext fun n => by simp
+   fun h ↦ by
+    have h₁ : f = f - const abv 0 := ext fun n ↦ by simp
     rw [h₁] at h
     exact lim_eq_of_equiv_const h⟩
 
@@ -371,7 +371,7 @@ theorem lim_inv {f : CauSeq β abv} (hf : ¬LimZero f) : lim (inv f hf) = (lim f
   lim_eq_of_equiv_const <|
     show LimZero (inv f hf - const abv (lim f)⁻¹) from
       have h₁ : ∀ (g f : CauSeq β abv) (hf : ¬LimZero f), LimZero (g - f * inv f hf * g) :=
-        fun g f hf => by
+        fun g f hf ↦ by
           have h₂ : g - f * inv f hf * g = 1 * g - f * inv f hf * g := by rw [one_mul g]
           have h₃ : f * inv f hf * g = (f * inv f hf) * g := by simp [mul_assoc]
           have h₄ : g - f * inv f hf * g = (1 - f * inv f hf) * g := by rw [h₂, h₃, ← sub_mul]

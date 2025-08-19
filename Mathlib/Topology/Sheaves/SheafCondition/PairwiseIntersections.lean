@@ -114,8 +114,8 @@ instance (V : OpensLeCover U) : Nonempty (StructuredArrow V (pairwiseToOpensLeCo
 of all opens contained in some `U i`.
 -/
 instance : Functor.Final (pairwiseToOpensLeCover U) :=
-  ⟨fun V =>
-    isConnected_of_zigzag fun A B => by
+  ⟨fun V ↦
+    isConnected_of_zigzag fun A B ↦ by
       rcases A with ⟨⟨⟨⟩⟩, ⟨i⟩ | ⟨i, j⟩, a⟩ <;> rcases B with ⟨⟨⟨⟩⟩, ⟨i'⟩ | ⟨i', j'⟩, b⟩
       · refine
           ⟨[{   left := ⟨⟨⟩⟩
@@ -327,7 +327,7 @@ variable
 Every cone over `F(U) ⟶ F(U ⊓ V)` and `F(V) ⟶ F(U ⊓ V)` factors through `F(U ⊔ V)`.
 -/
 def interUnionPullbackConeLift : s.pt ⟶ F.1.obj (op (U ⊔ V)) := by
-  let ι : ULift.{w} WalkingPair → Opens X := fun j => WalkingPair.casesOn j.down U V
+  let ι : ULift.{w} WalkingPair → Opens X := fun j ↦ WalkingPair.casesOn j.down U V
   have hι : U ⊔ V = iSup ι := by
     ext
     rw [Opens.coe_iSup, Set.mem_iUnion]
@@ -377,7 +377,7 @@ theorem interUnionPullbackConeLift_right :
 
 /-- For a sheaf `F`, `F(U ⊔ V)` is the pullback of `F(U) ⟶ F(U ⊓ V)` and `F(V) ⟶ F(U ⊓ V)`. -/
 def isLimitPullbackCone : IsLimit (interUnionPullbackCone F U V) := by
-  let ι : ULift.{w} WalkingPair → Opens X := fun ⟨j⟩ => WalkingPair.casesOn j U V
+  let ι : ULift.{w} WalkingPair → Opens X := fun ⟨j⟩ ↦ WalkingPair.casesOn j U V
   have hι : U ⊔ V = iSup ι := by
     ext
     rw [Opens.coe_iSup, Set.mem_iUnion]

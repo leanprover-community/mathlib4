@@ -56,8 +56,8 @@ instance : Algebra v.integer R :=
 
 theorem integer.integers : v.Integers v.integer :=
   { hom_inj := Subtype.coe_injective
-    map_le_one := fun r => r.2
-    exists_of_le_one := fun r hr => ⟨⟨r, hr⟩, rfl⟩ }
+    map_le_one := fun r ↦ r.2
+    exists_of_le_one := fun r hr ↦ ⟨⟨r, hr⟩, rfl⟩ }
 
 namespace Integers
 
@@ -123,12 +123,12 @@ namespace Integers
 theorem dvd_of_le (hv : Integers v O) {x y : O}
     (h : v (algebraMap O F x) ≤ v (algebraMap O F y)) : y ∣ x :=
   by_cases
-    (fun hy : algebraMap O F y = 0 =>
+    (fun hy : algebraMap O F y = 0 ↦
       have hx : x = 0 :=
         hv.1 <|
           (algebraMap O F).map_zero.symm ▸ (v.zero_iff.1 <| le_zero_iff.1 (v.map_zero ▸ hy ▸ h))
       hx.symm ▸ dvd_zero y)
-    fun hy : algebraMap O F y ≠ 0 =>
+    fun hy : algebraMap O F y ≠ 0 ↦
     have : v ((algebraMap O F y)⁻¹ * algebraMap O F x) ≤ 1 := by
       rw [← v.map_one, ← inv_mul_cancel₀ hy, v.map_mul, v.map_mul]
       exact mul_le_mul_left' h _

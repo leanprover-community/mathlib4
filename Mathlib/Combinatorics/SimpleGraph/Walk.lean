@@ -745,7 +745,7 @@ theorem darts_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.N
   | nil => simp
   | cons _ p' ih =>
     simp only [darts_cons, support_cons, List.nodup_cons] at h ⊢
-    exact ⟨fun h' => h.1 (dart_fst_mem_support_of_mem_darts p' h'), ih h.2⟩
+    exact ⟨fun h' ↦ h.1 (dart_fst_mem_support_of_mem_darts p' h'), ih h.2⟩
 
 theorem edges_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.Nodup) :
     p.edges.Nodup := by
@@ -753,7 +753,7 @@ theorem edges_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.N
   | nil => simp
   | cons _ p' ih =>
     simp only [edges_cons, support_cons, List.nodup_cons] at h ⊢
-    exact ⟨fun h' => h.1 (fst_mem_support_of_mem_edges p' h'), ih h.2⟩
+    exact ⟨fun h' ↦ h.1 (fst_mem_support_of_mem_edges p' h'), ih h.2⟩
 
 lemma getVert_eq_support_getElem {u v : V} {n : ℕ} (p : G.Walk u v) (h : n ≤ p.length) :
     p.getVert n = p.support[n]'(p.length_support ▸ Nat.lt_add_one_of_le h) := by
@@ -882,8 +882,8 @@ def notNilRec {motive : {u w : V} → (p : G.Walk u w) → (h : ¬ p.Nil) → So
     (cons : {u v w : V} → (h : G.Adj u v) → (q : G.Walk v w) → motive (cons h q) not_nil_cons)
     (p : G.Walk u w) : (hp : ¬ p.Nil) → motive p hp :=
   match p with
-  | nil => fun hp => absurd .nil hp
-  | .cons h q => fun _ => cons h q
+  | nil => fun hp ↦ absurd .nil hp
+  | .cons h q => fun _ ↦ cons h q
 
 @[simp]
 lemma notNilRec_cons {motive : {u w : V} → (p : G.Walk u w) → ¬ p.Nil → Sort*}
@@ -1270,7 +1270,7 @@ protected def transfer {u v : V} (p : G.Walk u v)
   match p with
   | nil => nil
   | cons' u v w _ p =>
-    cons (h s(u, v) (by simp)) (p.transfer H fun e he => h e (by simp [he]))
+    cons (h s(u, v) (by simp)) (p.transfer H fun e he ↦ h e (by simp [he]))
 
 variable {u v : V} (p : G.Walk u v)
 
@@ -1311,8 +1311,8 @@ theorem transfer_transfer (hp) {K : SimpleGraph V} (hp') :
 @[simp]
 theorem transfer_append {w : V} (q : G.Walk v w) (hpq) :
     (p.append q).transfer H hpq =
-      (p.transfer H fun e he => hpq _ (by simp [he])).append
-        (q.transfer H fun e he => hpq _ (by simp [he])) := by
+      (p.transfer H fun e he ↦ hpq _ (by simp [he])).append
+        (q.transfer H fun e he ↦ hpq _ (by simp [he])) := by
   induction p with
   | nil => simp
   | cons _ _ ih => simp only [Walk.transfer, cons_append, ih]
@@ -1339,7 +1339,7 @@ abbrev toDeleteEdges (s : Set (Sym2 V)) {v w : V} (p : G.Walk v w)
     (hp : ∀ e, e ∈ p.edges → e ∉ s) : (G.deleteEdges s).Walk v w :=
   p.transfer _ <| by
     simp only [edgeSet_deleteEdges, Set.mem_diff]
-    exact fun e ep => ⟨edges_subset_edgeSet p ep, hp e ep⟩
+    exact fun e ep ↦ ⟨edges_subset_edgeSet p ep, hp e ep⟩
 
 @[simp]
 theorem toDeleteEdges_nil (s : Set (Sym2 V)) {v : V} (hp) :
@@ -1349,7 +1349,7 @@ theorem toDeleteEdges_nil (s : Set (Sym2 V)) {v : V} (hp) :
 theorem toDeleteEdges_cons (s : Set (Sym2 V)) {u v w : V} (h : G.Adj u v) (p : G.Walk v w) (hp) :
     (Walk.cons h p).toDeleteEdges s hp =
       Walk.cons (deleteEdges_adj.mpr ⟨h, hp _ (List.Mem.head _)⟩)
-        (p.toDeleteEdges s fun _ he => hp _ <| List.Mem.tail _ he) :=
+        (p.toDeleteEdges s fun _ he ↦ hp _ <| List.Mem.tail _ he) :=
   rfl
 
 variable {v w : V}
@@ -1358,7 +1358,7 @@ variable {v w : V}
 This is an abbreviation for `SimpleGraph.Walk.toDeleteEdges`. -/
 abbrev toDeleteEdge (e : Sym2 V) (p : G.Walk v w) (hp : e ∉ p.edges) :
     (G.deleteEdges {e}).Walk v w :=
-  p.toDeleteEdges {e} (fun e' => by contrapose!; simp +contextual [hp])
+  p.toDeleteEdges {e} (fun e' ↦ by contrapose!; simp +contextual [hp])
 
 @[simp]
 theorem map_toDeleteEdges_eq (s : Set (Sym2 V)) {p : G.Walk v w} (hp) :

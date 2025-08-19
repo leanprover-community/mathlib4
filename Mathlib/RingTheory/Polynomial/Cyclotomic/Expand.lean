@@ -46,7 +46,7 @@ theorem cyclotomic_expand_eq_cyclotomic_mul {p n : ℕ} (hp : Nat.Prime p) (hdiv
       (IsPrimitive.mul (cyclotomic.isPrimitive (n * p) ℤ) (cyclotomic.isPrimitive n ℤ))
       ((cyclotomic.monic n ℤ).expand hp.pos).isPrimitive).2 ?_
     rw [Polynomial.map_mul, map_cyclotomic_int, map_cyclotomic_int, map_expand, map_cyclotomic_int]
-    refine IsCoprime.mul_dvd (cyclotomic.isCoprime_rat fun h => ?_) ?_ ?_
+    refine IsCoprime.mul_dvd (cyclotomic.isCoprime_rat fun h ↦ ?_) ?_ ?_
     · replace h : n * p = n * 1 := by simp [h]
       exact Nat.Prime.ne_one hp (mul_left_cancel₀ hnpos.ne' h)
     · have hpos : 0 < n * p := mul_pos hnpos hp.pos
@@ -159,7 +159,7 @@ theorem isRoot_cyclotomic_prime_pow_mul_iff_of_charP {m k p : ℕ} {R : Type*} [
     (Polynomial.cyclotomic (p ^ k * m) R).IsRoot μ ↔ IsPrimitiveRoot μ m := by
   rcases k.eq_zero_or_pos with (rfl | hk)
   · rw [pow_zero, one_mul, isRoot_cyclotomic_iff]
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [IsRoot.def, cyclotomic_mul_prime_pow_eq R (NeZero.not_char_dvd R p m) hk, eval_pow]
       at h
     replace h := pow_eq_zero h

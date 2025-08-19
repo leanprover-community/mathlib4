@@ -50,7 +50,7 @@ theorem ringKrullDim_le_of_surjective (f : R →+* S) (hf : Function.Surjective 
     ringKrullDim S ≤ ringKrullDim R :=
   krullDim_le_of_strictMono (fun I ↦ ⟨Ideal.comap f I.asIdeal, inferInstance⟩)
     (Monotone.strictMono_of_injective (fun _ _ hab ↦ Ideal.comap_mono hab)
-      (fun _ _ h => PrimeSpectrum.ext_iff.mpr <| Ideal.comap_injective_of_surjective f hf <| by
+      (fun _ _ h ↦ PrimeSpectrum.ext_iff.mpr <| Ideal.comap_injective_of_surjective f hf <| by
         simpa using h))
 
 /-- If `I` is an ideal of `R`, then `ringKrullDim (R ⧸ I) ≤ ringKrullDim R`. -/

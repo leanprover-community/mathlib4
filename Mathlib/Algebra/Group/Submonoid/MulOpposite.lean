@@ -169,6 +169,6 @@ theorem unop_closure (s : Set Mᵐᵒᵖ) : (closure s).unop = closure (MulOppos
 /-- Bijection between a submonoid `H` and its opposite. -/
 @[to_additive (attr := simps!) /-- Bijection between an additive submonoid `H` and its opposite. -/]
 def equivOp (H : Submonoid M) : H ≃ H.op :=
-  MulOpposite.opEquiv.subtypeEquiv fun _ => Iff.rfl
+  MulOpposite.opEquiv.subtypeEquiv fun _ ↦ Iff.rfl
 
 end Submonoid

@@ -38,7 +38,7 @@ variable {C : Type u} [Groupoid C]
 /-- The vertex group at `c`. -/
 @[simps mul one inv]
 instance vertexGroup (c : C) : Group (c ⟶ c) where
-  mul := fun x y : c ⟶ c => x ≫ y
+  mul := fun x y : c ⟶ c ↦ x ≫ y
   mul_assoc := Category.assoc
   one := 𝟙 c
   one_mul := Category.id_comp

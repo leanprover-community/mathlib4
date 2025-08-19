@@ -68,12 +68,12 @@ variable {A B : Grp.{u}} (f : A ⟶ B)
 
 @[to_additive]
 theorem ker_eq_bot_of_mono [Mono f] : f.hom.ker = ⊥ :=
-  MonoidHom.ker_eq_bot_of_cancel fun u v h => ConcreteCategory.ext_iff.mp <|
+  MonoidHom.ker_eq_bot_of_cancel fun u v h ↦ ConcreteCategory.ext_iff.mp <|
     (@cancel_mono _ _ _ _ _ f _ (ofHom u) (ofHom v)).1 <| ConcreteCategory.ext h
 
 @[to_additive]
 theorem mono_iff_ker_eq_bot : Mono f ↔ f.hom.ker = ⊥ :=
-  ⟨fun _ => ker_eq_bot_of_mono f, fun h =>
+  ⟨fun _ ↦ ker_eq_bot_of_mono f, fun h ↦
     ConcreteCategory.mono_of_injective _ <| (MonoidHom.ker_eq_bot_iff f.hom).1 h⟩
 
 @[to_additive]
@@ -171,12 +171,12 @@ point at infinity to point at infinity and sending coset `y` to `β • y`.
 -/
 def g : B →* SX' where
   toFun β :=
-    { toFun := fun x => β • x
-      invFun := fun x => β⁻¹ • x
-      left_inv := fun x => by
+    { toFun := fun x ↦ β • x
+      invFun := fun x ↦ β⁻¹ • x
+      left_inv := fun x ↦ by
         dsimp only
         rw [← mul_smul, inv_mul_cancel, one_smul]
-      right_inv := fun x => by
+      right_inv := fun x ↦ by
         dsimp only
         rw [← mul_smul, mul_inv_cancel, one_smul] }
   map_one' := by
@@ -240,12 +240,12 @@ theorem h_apply_fromCoset_nin_range (x : B) (hx : x ∈ f.hom.range) (b : B) (hb
     @Equiv.swap_apply_of_ne_of_ne X' _ (fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩) ∞
       (fromCoset ⟨b • ↑f.hom.range, b, rfl⟩) (fromCoset_ne_of_nin_range _ hb) (by simp)]
   simp only [g_apply_fromCoset, leftCoset_assoc]
-  refine Equiv.swap_apply_of_ne_of_ne (fromCoset_ne_of_nin_range _ fun r => hb ?_) (by simp)
+  refine Equiv.swap_apply_of_ne_of_ne (fromCoset_ne_of_nin_range _ fun r ↦ hb ?_) (by simp)
   convert Subgroup.mul_mem _ (Subgroup.inv_mem _ hx) r
   rw [← mul_assoc, inv_mul_cancel, one_mul]
 
 theorem agree : f.hom.range = { x | h x = g x } := by
-  refine Set.ext fun b => ⟨?_, fun hb : h b = g b => by_contradiction fun r => ?_⟩
+  refine Set.ext fun b ↦ ⟨?_, fun hb : h b = g b ↦ by_contradiction fun r ↦ ?_⟩
   · rintro ⟨a, rfl⟩
     change h (f a) = g (f a)
     ext ⟨⟨_, ⟨y, rfl⟩⟩⟩
@@ -290,11 +290,11 @@ theorem surjective_of_epi [Epi f] : Function.Surjective f := by
   push_neg at r
   rcases r with ⟨b, hb⟩
   exact
-    SurjectiveOfEpiAuxs.g_ne_h f b (fun ⟨c, hc⟩ => hb _ hc)
+    SurjectiveOfEpiAuxs.g_ne_h f b (fun ⟨c, hc⟩ ↦ hb _ hc)
       (congr_arg Grp.Hom.hom ((cancel_epi f).1 (SurjectiveOfEpiAuxs.comp_eq f)))
 
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f :=
-  ⟨fun _ => surjective_of_epi f, ConcreteCategory.epi_of_surjective f⟩
+  ⟨fun _ ↦ surjective_of_epi f, ConcreteCategory.epi_of_surjective f⟩
 
 theorem epi_iff_range_eq_top : Epi f ↔ f.hom.range = ⊤ :=
   Iff.trans (epi_iff_surjective _) (Subgroup.eq_top_iff' f.hom.range).symm
@@ -340,12 +340,12 @@ variable {A B : CommGrp.{u}} (f : A ⟶ B)
 
 @[to_additive]
 theorem ker_eq_bot_of_mono [Mono f] : f.hom.ker = ⊥ :=
-  MonoidHom.ker_eq_bot_of_cancel fun u v h => ConcreteCategory.ext_iff.mp <|
+  MonoidHom.ker_eq_bot_of_cancel fun u v h ↦ ConcreteCategory.ext_iff.mp <|
     (@cancel_mono _ _ _ _ _ f _ (ofHom u) (ofHom v)).1 <| ConcreteCategory.ext h
 
 @[to_additive]
 theorem mono_iff_ker_eq_bot : Mono f ↔ f.hom.ker = ⊥ :=
-  ⟨fun _ => ker_eq_bot_of_mono f, fun h =>
+  ⟨fun _ ↦ ker_eq_bot_of_mono f, fun h ↦
     ConcreteCategory.mono_of_injective _ <| (MonoidHom.ker_eq_bot_iff f.hom).1 h⟩
 
 @[to_additive]
@@ -354,12 +354,12 @@ theorem mono_iff_injective : Mono f ↔ Function.Injective f :=
 
 @[to_additive]
 theorem range_eq_top_of_epi [Epi f] : f.hom.range = ⊤ :=
-  MonoidHom.range_eq_top_of_cancel fun u v h => ConcreteCategory.ext_iff.mp <|
+  MonoidHom.range_eq_top_of_cancel fun u v h ↦ ConcreteCategory.ext_iff.mp <|
     (@cancel_epi _ _ _ _ _ f _ (ofHom u) (ofHom v)).1 (ConcreteCategory.ext h)
 
 @[to_additive]
 theorem epi_iff_range_eq_top : Epi f ↔ f.hom.range = ⊤ :=
-  ⟨fun _ => range_eq_top_of_epi _, fun hf =>
+  ⟨fun _ ↦ range_eq_top_of_epi _, fun hf ↦
     ConcreteCategory.epi_of_surjective _ <| show Function.Surjective f.hom from
       MonoidHom.range_eq_top.mp hf⟩
 

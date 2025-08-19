@@ -84,24 +84,24 @@ open scoped Classical in
 noncomputable abbrev toCompleteLattice [Lattice α] [BoundedOrder α] : CompleteLattice α where
   __ := ‹Lattice α›
   __ := ‹BoundedOrder α›
-  sSup := fun s => s.toFinset.sup id
-  sInf := fun s => s.toFinset.inf id
-  le_sSup := fun _ _ ha => Finset.le_sup (f := id) (Set.mem_toFinset.mpr ha)
-  sSup_le := fun _ _ ha => Finset.sup_le fun _ hb => ha _ <| Set.mem_toFinset.mp hb
-  sInf_le := fun _ _ ha => Finset.inf_le (Set.mem_toFinset.mpr ha)
-  le_sInf := fun _ _ ha => Finset.le_inf fun _ hb => ha _ <| Set.mem_toFinset.mp hb
+  sSup := fun s ↦ s.toFinset.sup id
+  sInf := fun s ↦ s.toFinset.inf id
+  le_sSup := fun _ _ ha ↦ Finset.le_sup (f := id) (Set.mem_toFinset.mpr ha)
+  sSup_le := fun _ _ ha ↦ Finset.sup_le fun _ hb ↦ ha _ <| Set.mem_toFinset.mp hb
+  sInf_le := fun _ _ ha ↦ Finset.inf_le (Set.mem_toFinset.mpr ha)
+  le_sInf := fun _ _ ha ↦ Finset.le_inf fun _ hb ↦ ha _ <| Set.mem_toFinset.mp hb
 
 -- See note [reducible non-instances]
 /-- A finite bounded distributive lattice is completely distributive. -/
 noncomputable abbrev toCompleteDistribLatticeMinimalAxioms [DistribLattice α] [BoundedOrder α] :
     CompleteDistribLattice.MinimalAxioms α where
   __ := toCompleteLattice α
-  iInf_sup_le_sup_sInf := fun a s => by
+  iInf_sup_le_sup_sInf := fun a s ↦ by
     convert (Finset.inf_sup_distrib_left s.toFinset id a).ge using 1
     rw [Finset.inf_eq_iInf]
     simp_rw [Set.mem_toFinset]
     rfl
-  inf_sSup_le_iSup_inf := fun a s => by
+  inf_sSup_le_iSup_inf := fun a s ↦ by
     convert (Finset.sup_inf_distrib_left s.toFinset id a).le using 1
     rw [Finset.sup_eq_iSup]
     simp_rw [Set.mem_toFinset]
@@ -186,7 +186,7 @@ theorem Directed.finite_set_le (D : Directed r f) {s : Set γ} (hs : s.Finite) :
 theorem Directed.finite_le (D : Directed r f) (g : β → γ) : ∃ z, ∀ i, r (f (g i)) (f z) := by
   classical
     obtain ⟨z, hz⟩ := D.finite_set_le (Set.finite_range g)
-    exact ⟨z, fun i => hz (g i) ⟨i, rfl⟩⟩
+    exact ⟨z, fun i ↦ hz (g i) ⟨i, rfl⟩⟩
 
 variable [Nonempty α] [Preorder α]
 
@@ -207,13 +207,13 @@ theorem Set.Finite.exists_ge [IsDirected α (· ≥ ·)] {s : Set α} (hs : s.Fi
 @[simp]
 theorem Finite.bddAbove_range [IsDirected α (· ≤ ·)] (f : β → α) : BddAbove (Set.range f) := by
   obtain ⟨M, hM⟩ := Finite.exists_le f
-  refine ⟨M, fun a ha => ?_⟩
+  refine ⟨M, fun a ha ↦ ?_⟩
   obtain ⟨b, rfl⟩ := ha
   exact hM b
 
 @[simp]
 theorem Finite.bddBelow_range [IsDirected α (· ≥ ·)] (f : β → α) : BddBelow (Set.range f) := by
   obtain ⟨M, hM⟩ := Finite.exists_ge f
-  refine ⟨M, fun a ha => ?_⟩
+  refine ⟨M, fun a ha ↦ ?_⟩
   obtain ⟨b, rfl⟩ := ha
   exact hM b

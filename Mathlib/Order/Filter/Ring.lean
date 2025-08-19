@@ -35,7 +35,7 @@ theorem EventuallyLE.mul_nonneg [Semiring β] [PartialOrder β] [IsOrderedRing �
 theorem eventually_sub_nonneg [Ring β] [PartialOrder β] [IsOrderedRing β]
     {l : Filter α} {f g : α → β} :
     0 ≤ᶠ[l] g - f ↔ f ≤ᶠ[l] g :=
-  eventually_congr <| Eventually.of_forall fun _ => sub_nonneg
+  eventually_congr <| Eventually.of_forall fun _ ↦ sub_nonneg
 
 namespace Germ
 

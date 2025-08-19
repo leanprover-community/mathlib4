@@ -30,7 +30,7 @@ theorem ite_eq_gt_distrib (c : Prop) [Decidable c] (a b : Ordering) :
   by_cases c <;> simp [*]
 
 @[simp]
-lemma dthen_eq_then (o₁ o₂ : Ordering) : o₁.dthen (fun _ => o₂) = o₁.then o₂ := by
+lemma dthen_eq_then (o₁ o₂ : Ordering) : o₁.dthen (fun _ ↦ o₂) = o₁.then o₂ := by
   cases o₁ <;> rfl
 
 end Ordering

@@ -105,7 +105,7 @@ noncomputable def adjoin [IsGalois k K] (s : Set K) [Finite s] :
   normalClosure k (IntermediateField.adjoin k (s : Set K)) K with
   finiteDimensional :=
     letI : FiniteDimensional k (IntermediateField.adjoin k (s : Set K)) :=
-      IntermediateField.finiteDimensional_adjoin <| fun z _ =>
+      IntermediateField.finiteDimensional_adjoin <| fun z _ ↦
         IsAlgebraic.isIntegral (Algebra.IsAlgebraic.isAlgebraic z)
     normalClosure.is_finiteDimensional k (IntermediateField.adjoin k (s : Set K)) K
   isGalois := IsGalois.normalClosure k (IntermediateField.adjoin k (s : Set K)) K }

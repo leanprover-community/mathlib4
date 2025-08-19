@@ -42,9 +42,9 @@ theorem Pairwise.forall_of_forall (H : Symmetric R) (H₁ : ∀ x ∈ l, R x x) 
 theorem Pairwise.forall (hR : Symmetric R) (hl : l.Pairwise R) :
     ∀ ⦃a⦄, a ∈ l → ∀ ⦃b⦄, b ∈ l → a ≠ b → R a b := by
   apply Pairwise.forall_of_forall
-  · exact fun a b h hne => hR (h hne.symm)
-  · exact fun _ _ hx => (hx rfl).elim
-  · exact hl.imp (@fun a b h _ => by exact h)
+  · exact fun a b h hne ↦ hR (h hne.symm)
+  · exact fun _ _ hx ↦ (hx rfl).elim
+  · exact hl.imp (@fun a b h _ ↦ by exact h)
 
 theorem Pairwise.set_pairwise (hl : Pairwise R l) (hr : Symmetric R) : { x | x ∈ l }.Pairwise R :=
   hl.forall hr

@@ -63,7 +63,7 @@ namespace DFA
 variable {α : Type u} {σ : Type v} (M : DFA α σ)
 
 instance [Inhabited σ] : Inhabited (DFA α σ) :=
-  ⟨DFA.mk (fun _ _ => default) default ∅⟩
+  ⟨DFA.mk (fun _ _ ↦ default) default ∅⟩
 
 /-- `M.evalFrom s x` evaluates `M` with input `x` starting from the state `s`. -/
 def evalFrom (s : σ) : List α → σ :=
@@ -123,7 +123,7 @@ theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.car
           b ≠ [] ∧ M.evalFrom s a = q ∧ M.evalFrom q b = q ∧ M.evalFrom q c = t := by
   obtain ⟨n, m, hneq, heq⟩ :=
     Fintype.exists_ne_map_eq_of_card_lt
-      (fun n : Fin (Fintype.card σ + 1) => M.evalFrom s (x.take n)) (by simp)
+      (fun n : Fin (Fintype.card σ + 1) ↦ M.evalFrom s (x.take n)) (by simp)
   wlog hle : (n : ℕ) ≤ m generalizing n m
   · exact this m n hneq.symm heq.symm (le_of_not_ge hle)
   have hm : (m : ℕ) ≤ Fintype.card σ := Fin.is_le m
@@ -216,12 +216,12 @@ theorem accepts_comap (f : α' → α) : (M.comap f).accepts = List.map f ⁻¹'
 @[simps apply_step apply_start apply_accept]
 def reindex (g : σ ≃ σ') : DFA α σ ≃ DFA α σ' where
   toFun M := {
-    step := fun s a => g (M.step (g.symm s) a)
+    step := fun s a ↦ g (M.step (g.symm s) a)
     start := g M.start
     accept := g.symm ⁻¹' M.accept
   }
   invFun M := {
-    step := fun s a => g.symm (M.step (g s) a)
+    step := fun s a ↦ g.symm (M.step (g s) a)
     start := g.symm M.start
     accept := g ⁻¹' M.accept
   }

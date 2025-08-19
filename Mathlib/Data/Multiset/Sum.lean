@@ -61,11 +61,11 @@ theorem inr_mem_disjSum : inr b ∈ s.disjSum t ↔ b ∈ t := by
 theorem disjSum_mono (hs : s₁ ≤ s₂) (ht : t₁ ≤ t₂) : s₁.disjSum t₁ ≤ s₂.disjSum t₂ :=
   add_le_add (map_le_map hs) (map_le_map ht)
 
-theorem disjSum_mono_left (t : Multiset β) : Monotone fun s : Multiset α => s.disjSum t :=
-  fun _ _ hs => Multiset.add_le_add_right (map_le_map hs)
+theorem disjSum_mono_left (t : Multiset β) : Monotone fun s : Multiset α ↦ s.disjSum t :=
+  fun _ _ hs ↦ Multiset.add_le_add_right (map_le_map hs)
 
 theorem disjSum_mono_right (s : Multiset α) :
-    Monotone (s.disjSum : Multiset β → Multiset (α ⊕ β)) := fun _ _ ht =>
+    Monotone (s.disjSum : Multiset β → Multiset (α ⊕ β)) := fun _ _ ht ↦
   Multiset.add_le_add_left (map_le_map ht)
 
 theorem disjSum_lt_disjSum_of_lt_of_le (hs : s₁ < s₂) (ht : t₁ ≤ t₂) :
@@ -76,11 +76,11 @@ theorem disjSum_lt_disjSum_of_le_of_lt (hs : s₁ ≤ s₂) (ht : t₁ < t₂) :
     s₁.disjSum t₁ < s₂.disjSum t₂ :=
   add_lt_add_of_le_of_lt (map_le_map hs) (map_lt_map ht)
 
-theorem disjSum_strictMono_left (t : Multiset β) : StrictMono fun s : Multiset α => s.disjSum t :=
-  fun _ _ hs => disjSum_lt_disjSum_of_lt_of_le hs le_rfl
+theorem disjSum_strictMono_left (t : Multiset β) : StrictMono fun s : Multiset α ↦ s.disjSum t :=
+  fun _ _ hs ↦ disjSum_lt_disjSum_of_lt_of_le hs le_rfl
 
 theorem disjSum_strictMono_right (s : Multiset α) :
-    StrictMono (s.disjSum : Multiset β → Multiset (α ⊕ β)) := fun _ _ =>
+    StrictMono (s.disjSum : Multiset β → Multiset (α ⊕ β)) := fun _ _ ↦
   disjSum_lt_disjSum_of_le_of_lt le_rfl
 
 protected theorem Nodup.disjSum (hs : s.Nodup) (ht : t.Nodup) : (s.disjSum t).Nodup := by

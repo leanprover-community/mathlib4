@@ -95,14 +95,14 @@ theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [Topolo
 
 /-- For any positive `m : ℕ`, `((n % m : ℕ) : ℝ) / (n : ℝ)` tends to `0` as `n` tends to `∞`. -/
 theorem tendsto_mod_div_atTop_nhds_zero_nat {m : ℕ} (hm : 0 < m) :
-    Tendsto (fun n : ℕ => ((n % m : ℕ) : ℝ) / (n : ℝ)) atTop (𝓝 0) := by
-  have h0 : ∀ᶠ n : ℕ in atTop, 0 ≤ (fun n : ℕ => ((n % m : ℕ) : ℝ)) n := by aesop
+    Tendsto (fun n : ℕ ↦ ((n % m : ℕ) : ℝ) / (n : ℝ)) atTop (𝓝 0) := by
+  have h0 : ∀ᶠ n : ℕ in atTop, 0 ≤ (fun n : ℕ ↦ ((n % m : ℕ) : ℝ)) n := by aesop
   exact tendsto_bdd_div_atTop_nhds_zero h0
     (.of_forall (fun n ↦  cast_le.mpr (mod_lt n hm).le)) tendsto_natCast_atTop_atTop
 
 /-- If `a ≠ 0`, `(a * x + c)⁻¹` tends to `0` as `x` tends to `∞`. -/
 theorem tendsto_mul_add_inv_atTop_nhds_zero (a c : ℝ) (ha : a ≠ 0) :
-    Tendsto (fun x => (a * x + c)⁻¹) atTop (𝓝 0) := by
+    Tendsto (fun x ↦ (a * x + c)⁻¹) atTop (𝓝 0) := by
   obtain ha' | ha' := lt_or_gt_of_ne ha
   · exact tendsto_inv_atBot_zero.comp
       (tendsto_atBot_add_const_right _ c (tendsto_id.const_mul_atTop_of_neg ha'))
@@ -127,7 +127,7 @@ theorem Filter.EventuallyEq.div_mul_cancel_atTop {α K : Type*}
 theorem Filter.Tendsto.num {α K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
     [TopologicalSpace K] [OrderTopology K]
     {f g : α → K} {l : Filter α} (hg : Tendsto g l atTop) {a : K} (ha : 0 < a)
-    (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
+    (hlim : Tendsto (fun x ↦ f x / g x) l (𝓝 a)) :
     Tendsto f l atTop :=
   (hlim.pos_mul_atTop ha hg).congr' (EventuallyEq.div_mul_cancel_atTop hg)
 
@@ -136,11 +136,11 @@ theorem Filter.Tendsto.num {α K : Type*} [Field K] [LinearOrder K] [IsStrictOrd
 theorem Filter.Tendsto.den {α K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
     [TopologicalSpace K] [OrderTopology K]
     [ContinuousInv K] {f g : α → K} {l : Filter α} (hf : Tendsto f l atTop) {a : K} (ha : 0 < a)
-    (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
+    (hlim : Tendsto (fun x ↦ f x / g x) l (𝓝 a)) :
     Tendsto g l atTop :=
-  have hlim' : Tendsto (fun x => g x / f x) l (𝓝 a⁻¹) := by
+  have hlim' : Tendsto (fun x ↦ g x / f x) l (𝓝 a⁻¹) := by
     simp_rw [← inv_div (f _)]
-    exact Filter.Tendsto.inv (f := fun x => f x / g x) hlim
+    exact Filter.Tendsto.inv (f := fun x ↦ f x / g x) hlim
   (hlim'.pos_mul_atTop (inv_pos_of_pos ha) hf).congr' (.div_mul_cancel_atTop hf)
 
 /-- If when `x` tends to `∞`, `f x / g x` tends to a positive constant, then `f` tends to `∞` if
@@ -148,7 +148,7 @@ theorem Filter.Tendsto.den {α K : Type*} [Field K] [LinearOrder K] [IsStrictOrd
 theorem Filter.Tendsto.num_atTop_iff_den_atTop {α K : Type*}
     [Field K] [LinearOrder K] [IsStrictOrderedRing K] [TopologicalSpace K]
     [OrderTopology K] [ContinuousInv K] {f g : α → K} {l : Filter α} {a : K} (ha : 0 < a)
-    (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
+    (hlim : Tendsto (fun x ↦ f x / g x) l (𝓝 a)) :
     Tendsto f l atTop ↔ Tendsto g l atTop :=
   ⟨fun hf ↦ hf.den ha hlim, fun hg ↦ hg.num ha hlim⟩
 
@@ -250,8 +250,8 @@ theorem NNReal.tendsto_pow_atTop_nhds_zero_of_lt_one {r : ℝ≥0} (hr : r < 1) 
 
 @[simp]
 protected theorem NNReal.tendsto_pow_atTop_nhds_zero_iff {r : ℝ≥0} :
-    Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0) ↔ r < 1 :=
-  ⟨fun h => by simpa [coe_pow, coe_zero, abs_eq, coe_lt_one, val_eq_coe] using
+    Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝 0) ↔ r < 1 :=
+  ⟨fun h ↦ by simpa [coe_pow, coe_zero, abs_eq, coe_lt_one, val_eq_coe] using
     tendsto_pow_atTop_nhds_zero_iff.mp <| tendsto_coe.mpr h, tendsto_pow_atTop_nhds_zero_of_lt_one⟩
 
 theorem ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one {r : ℝ≥0∞} (hr : r < 1) :
@@ -263,7 +263,7 @@ theorem ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one {r : ℝ≥0∞} (hr : r <
 
 @[simp]
 protected theorem ENNReal.tendsto_pow_atTop_nhds_zero_iff {r : ℝ≥0∞} :
-    Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0) ↔ r < 1 := by
+    Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝 0) ↔ r < 1 := by
   refine ⟨fun h ↦ ?_, tendsto_pow_atTop_nhds_zero_of_lt_one⟩
   lift r to NNReal
   · refine fun hr ↦ top_ne_zero (tendsto_nhds_unique (EventuallyEq.tendsto ?_) (hr ▸ h))
@@ -683,7 +683,7 @@ lemma tendsto_nat_ceil_atTop {α : Type*}
 
 lemma tendsto_nat_floor_mul_atTop {α : Type _}
     [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] [FloorSemiring α]
-    [Archimedean α] (a : α) (ha : 0 < a) : Tendsto (fun (x : ℕ) => ⌊a * x⌋₊) atTop atTop :=
+    [Archimedean α] (a : α) (ha : 0 < a) : Tendsto (fun (x : ℕ) ↦ ⌊a * x⌋₊) atTop atTop :=
   Tendsto.comp tendsto_nat_floor_atTop
     <| Tendsto.const_mul_atTop ha tendsto_natCast_atTop_atTop
 

@@ -801,7 +801,7 @@ theorem cos_bound {x : ℝ} (hx : |x| ≤ 1) : |cos x - (1 - x ^ 2 / 2)| ≤ |x|
     _ = ‖((Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) +
               (Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial)) / 2‖ :=
       (congr_arg (‖·‖ : ℂ → ℝ)
-        (congr_arg (fun x : ℂ => x / 2) (by
+        (congr_arg (fun x : ℂ ↦ x / 2) (by
           simp only [neg_mul, pow_succ, pow_zero, sum_range_succ, range_zero, sum_empty,
           Nat.factorial, Nat.cast_succ, zero_add, mul_one, Nat.mul_one, mul_neg, neg_neg]
           apply Complex.ext <;> simp [div_eq_mul_inv, normSq] <;> ring_nf)))
@@ -829,7 +829,7 @@ theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x|
     _ = ‖((Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) -
                 (Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial)) * I / 2‖ :=
       (congr_arg (‖·‖ : ℂ → ℝ)
-        (congr_arg (fun x : ℂ => x / 2)
+        (congr_arg (fun x : ℂ ↦ x / 2)
           (by
             simp only [neg_mul, pow_succ, pow_zero, ofReal_sub, ofReal_mul, ofReal_ofNat,
               ofReal_div, sum_range_succ, range_zero, sum_empty, Nat.factorial, Nat.cast_succ,

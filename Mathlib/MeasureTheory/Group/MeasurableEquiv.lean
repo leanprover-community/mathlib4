@@ -116,11 +116,11 @@ def mulRight (g : G) : G ≃ᵐ G where
   measurable_invFun := measurable_mul_const g⁻¹
 
 @[to_additive]
-theorem _root_.measurableEmbedding_mulRight (g : G) : MeasurableEmbedding fun x => x * g :=
+theorem _root_.measurableEmbedding_mulRight (g : G) : MeasurableEmbedding fun x ↦ x * g :=
   (mulRight g).measurableEmbedding
 
 @[to_additive (attr := simp)]
-theorem coe_mulRight (g : G) : ⇑(mulRight g) = fun x => x * g :=
+theorem coe_mulRight (g : G) : ⇑(mulRight g) = fun x ↦ x * g :=
   rfl
 
 @[to_additive (attr := simp)]
@@ -159,11 +159,11 @@ def mulRight₀ (g : G₀) (hg : g ≠ 0) : G₀ ≃ᵐ G₀ where
   measurable_invFun := measurable_mul_const g⁻¹
 
 theorem _root_.measurableEmbedding_mulRight₀ {g : G₀} (hg : g ≠ 0) :
-    MeasurableEmbedding fun x => x * g :=
+    MeasurableEmbedding fun x ↦ x * g :=
   (mulRight₀ g hg).measurableEmbedding
 
 @[simp]
-theorem coe_mulRight₀ {g : G₀} (hg : g ≠ 0) : ⇑(mulRight₀ g hg) = fun x => x * g :=
+theorem coe_mulRight₀ {g : G₀} (hg : g ≠ 0) : ⇑(mulRight₀ g hg) = fun x ↦ x * g :=
   rfl
 
 @[simp]

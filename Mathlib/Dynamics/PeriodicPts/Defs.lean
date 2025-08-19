@@ -150,7 +150,7 @@ protected theorem mod (hm : IsPeriodicPt f m x) (hn : IsPeriodicPt f n x) :
 protected theorem gcd (hm : IsPeriodicPt f m x) (hn : IsPeriodicPt f n x) :
     IsPeriodicPt f (m.gcd n) x := by
   revert hm hn
-  refine Nat.gcd.induction m n (fun n _ hn => ?_) fun m n _ ih hm hn => ?_
+  refine Nat.gcd.induction m n (fun n _ hn ↦ ?_) fun m n _ ih hm hn ↦ ?_
   · rwa [Nat.gcd_zero_left]
   · rw [Nat.gcd_rec]
     exact ih (hn.mod hm) hm
@@ -183,8 +183,8 @@ theorem Semiconj.mapsTo_ptsOfPeriod {g : α → β} (h : Semiconj g fa fb) (n : 
 
 theorem bijOn_ptsOfPeriod (f : α → α) {n : ℕ} (hn : 0 < n) :
     BijOn f (ptsOfPeriod f n) (ptsOfPeriod f n) :=
-  ⟨(Commute.refl f).mapsTo_ptsOfPeriod n, fun _ hx _ hy hxy => hx.eq_of_apply_eq_same hy hn hxy,
-    fun x hx =>
+  ⟨(Commute.refl f).mapsTo_ptsOfPeriod n, fun _ hx _ hy hxy ↦ hx.eq_of_apply_eq_same hy hn hxy,
+    fun x hx ↦
     ⟨f^[n.pred] x, hx.apply_iterate _, by
       rw [← comp_apply (f := f), comp_iterate_pred_of_pos f hn, hx.eq]⟩⟩
 
@@ -223,7 +223,7 @@ theorem isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate (hx : x ∈ peri
 variable (f)
 
 theorem bUnion_ptsOfPeriod : ⋃ n > 0, ptsOfPeriod f n = periodicPts f :=
-  Set.ext fun x => by simp [mem_periodicPts]
+  Set.ext fun x ↦ by simp [mem_periodicPts]
 
 theorem iUnion_pnat_ptsOfPeriod : ⋃ n : ℕ+, ptsOfPeriod f n = periodicPts f :=
   iSup_subtype.trans <| bUnion_ptsOfPeriod f
@@ -234,7 +234,7 @@ alias iUnion_pNat_ptsOfPeriod := iUnion_pnat_ptsOfPeriod
 variable {f}
 
 theorem Semiconj.mapsTo_periodicPts {g : α → β} (h : Semiconj g fa fb) :
-    MapsTo g (periodicPts fa) (periodicPts fb) := fun _ ⟨n, hn, hx⟩ => ⟨n, hn, hx.map h⟩
+    MapsTo g (periodicPts fa) (periodicPts fb) := fun _ ⟨n, hn, hx⟩ ↦ ⟨n, hn, hx.map h⟩
 
 noncomputable section
 
@@ -280,7 +280,7 @@ theorem IsPeriodicPt.minimalPeriod_pos (hn : 0 < n) (hx : IsPeriodicPt f n x) :
   minimalPeriod_pos_of_mem_periodicPts <| mk_mem_periodicPts hn hx
 
 theorem minimalPeriod_pos_iff_mem_periodicPts : 0 < minimalPeriod f x ↔ x ∈ periodicPts f :=
-  ⟨not_imp_not.1 fun h => by simp only [minimalPeriod, dif_neg h, lt_irrefl 0, not_false_iff],
+  ⟨not_imp_not.1 fun h ↦ by simp only [minimalPeriod, dif_neg h, lt_irrefl 0, not_false_iff],
     minimalPeriod_pos_of_mem_periodicPts⟩
 
 theorem minimalPeriod_eq_zero_iff_notMem_periodicPts :
@@ -334,7 +334,7 @@ theorem iterate_eq_iterate_iff_of_lt_minimalPeriod {m n : ℕ} (hm : m < minimal
     (Nat.succ_le_of_lt ((is_periodic_id _ _).minimalPeriod_pos Nat.one_pos))
 
 theorem minimalPeriod_eq_one_iff_isFixedPt : minimalPeriod f x = 1 ↔ IsFixedPt f x := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [← iterate_one f]
     refine Function.IsPeriodicPt.isFixedPt ?_
     rw [← h]
@@ -346,21 +346,21 @@ theorem minimalPeriod_eq_one_iff_isFixedPt : minimalPeriod f x = 1 ↔ IsFixedPt
 theorem IsPeriodicPt.eq_zero_of_lt_minimalPeriod (hx : IsPeriodicPt f n x)
     (hn : n < minimalPeriod f x) : n = 0 :=
   Eq.symm <|
-    (eq_or_lt_of_le <| n.zero_le).resolve_right fun hn0 => not_lt.2 (hx.minimalPeriod_le hn0) hn
+    (eq_or_lt_of_le <| n.zero_le).resolve_right fun hn0 ↦ not_lt.2 (hx.minimalPeriod_le hn0) hn
 
 theorem not_isPeriodicPt_of_pos_of_lt_minimalPeriod :
     ∀ {n : ℕ} (_ : n ≠ 0) (_ : n < minimalPeriod f x), ¬IsPeriodicPt f n x
   | 0, n0, _ => (n0 rfl).elim
-  | _ + 1, _, hn => fun hp => Nat.succ_ne_zero _ (hp.eq_zero_of_lt_minimalPeriod hn)
+  | _ + 1, _, hn => fun hp ↦ Nat.succ_ne_zero _ (hp.eq_zero_of_lt_minimalPeriod hn)
 
 theorem IsPeriodicPt.minimalPeriod_dvd (hx : IsPeriodicPt f n x) : minimalPeriod f x ∣ n :=
-  (eq_or_lt_of_le <| n.zero_le).elim (fun hn0 => hn0 ▸ Nat.dvd_zero _) fun hn0 =>
+  (eq_or_lt_of_le <| n.zero_le).elim (fun hn0 ↦ hn0 ▸ Nat.dvd_zero _) fun hn0 ↦
     Nat.dvd_iff_mod_eq_zero.2 <|
       (hx.mod <| isPeriodicPt_minimalPeriod f x).eq_zero_of_lt_minimalPeriod <|
         Nat.mod_lt _ <| hx.minimalPeriod_pos hn0
 
 theorem isPeriodicPt_iff_minimalPeriod_dvd : IsPeriodicPt f n x ↔ minimalPeriod f x ∣ n :=
-  ⟨IsPeriodicPt.minimalPeriod_dvd, fun h => (isPeriodicPt_minimalPeriod f x).trans_dvd h⟩
+  ⟨IsPeriodicPt.minimalPeriod_dvd, fun h ↦ (isPeriodicPt_minimalPeriod f x).trans_dvd h⟩
 
 open Nat
 
@@ -402,16 +402,16 @@ the minimal period of `x`.
 
 If `x` is not a periodic point, then this is the empty (aka nil) cycle. -/
 def periodicOrbit (f : α → α) (x : α) : Cycle α :=
-  (List.range (minimalPeriod f x)).map fun n => f^[n] x
+  (List.range (minimalPeriod f x)).map fun n ↦ f^[n] x
 
 /-- The definition of a periodic orbit, in terms of `List.map`. -/
 theorem periodicOrbit_def (f : α → α) (x : α) :
-    periodicOrbit f x = (List.range (minimalPeriod f x)).map fun n => f^[n] x :=
+    periodicOrbit f x = (List.range (minimalPeriod f x)).map fun n ↦ f^[n] x :=
   rfl
 
 /-- The definition of a periodic orbit, in terms of `Cycle.map`. -/
 theorem periodicOrbit_eq_cycle_map (f : α → α) (x : α) :
-    periodicOrbit f x = (List.range (minimalPeriod f x) : Cycle ℕ).map fun n => f^[n] x :=
+    periodicOrbit f x = (List.range (minimalPeriod f x) : Cycle ℕ).map fun n ↦ f^[n] x :=
   rfl
 
 @[simp]
@@ -432,7 +432,7 @@ theorem periodicOrbit_eq_nil_of_not_periodic_pt (h : x ∉ periodicPts f) :
 theorem mem_periodicOrbit_iff (hx : x ∈ periodicPts f) :
     y ∈ periodicOrbit f x ↔ ∃ n, f^[n] x = y := by
   simp only [periodicOrbit, Cycle.mem_coe_iff, List.mem_map, List.mem_range]
-  use fun ⟨a, _, ha'⟩ => ⟨a, ha'⟩
+  use fun ⟨a, _, ha'⟩ ↦ ⟨a, ha'⟩
   rintro ⟨n, rfl⟩
   use n % minimalPeriod f x, mod_lt _ (minimalPeriod_pos_of_mem_periodicPts hx)
   rw [iterate_mod_minimalPeriod_eq]
@@ -470,7 +470,7 @@ theorem periodicOrbit_chain (r : α → α → Prop) {f : α → α} {x : α} :
   · have hx' := minimalPeriod_pos_of_mem_periodicPts hx
     have hM := Nat.sub_add_cancel (succ_le_iff.2 hx')
     rw [periodicOrbit, ← Cycle.map_coe, Cycle.chain_map, ← hM, Cycle.chain_range_succ]
-    refine ⟨?_, fun H => ⟨?_, fun m hm => H _ (hm.trans (Nat.lt_succ_self _))⟩⟩
+    refine ⟨?_, fun H ↦ ⟨?_, fun m hm ↦ H _ (hm.trans (Nat.lt_succ_self _))⟩⟩
     · rintro ⟨hr, H⟩ n hn
       rcases eq_or_lt_of_le (Nat.lt_succ_iff.1 hn) with hM' | hM'
       · rwa [hM', hM, iterate_minimalPeriod]
@@ -485,7 +485,7 @@ theorem periodicOrbit_chain (r : α → α → Prop) {f : α → α} {x : α} :
 theorem periodicOrbit_chain' (r : α → α → Prop) {f : α → α} {x : α} (hx : x ∈ periodicPts f) :
     (periodicOrbit f x).Chain r ↔ ∀ n, r (f^[n] x) (f^[n+1] x) := by
   rw [periodicOrbit_chain r]
-  refine ⟨fun H n => ?_, fun H n _ => H n⟩
+  refine ⟨fun H n ↦ ?_, fun H n _ ↦ H n⟩
   rw [iterate_succ_apply, ← iterate_mod_minimalPeriod_eq, ← iterate_mod_minimalPeriod_eq (n := n),
     ← iterate_succ_apply, minimalPeriod_apply hx]
   exact H _ (mod_lt _ (minimalPeriod_pos_of_mem_periodicPts hx))
@@ -539,13 +539,13 @@ The period of a multiplicative action of `g` on `a` is the smallest positive `n`
 -/
 @[to_additive /-- The period of an additive action of `g` on `a` is the smallest positive `n`
 such that `(n • g) +ᵥ a = a`, or `0` if such an `n` does not exist. -/]
-noncomputable def period (m : M) (a : α) : ℕ := minimalPeriod (fun x => m • x) a
+noncomputable def period (m : M) (a : α) : ℕ := minimalPeriod (fun x ↦ m • x) a
 
 /-- `MulAction.period m a` is definitionally equal to `Function.minimalPeriod (m • ·) a`. -/
 @[to_additive /-- `AddAction.period m a` is definitionally equal to
 `Function.minimalPeriod (m +ᵥ ·) a` -/]
 theorem period_eq_minimalPeriod {m : M} {a : α} :
-    MulAction.period m a = minimalPeriod (fun x => m • x) a := rfl
+    MulAction.period m a = minimalPeriod (fun x ↦ m • x) a := rfl
 
 /-- `m ^ (period m a)` fixes `a`. -/
 @[to_additive (attr := simp) /-- `(period m a) • m` fixes `a`. -/]

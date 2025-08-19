@@ -58,7 +58,7 @@ theorem notMem_erase (a : α) (s : Finset α) : a ∉ erase s a :=
 
 @[deprecated (since := "2025-05-23")] alias not_mem_erase := notMem_erase
 
-theorem ne_of_mem_erase : b ∈ erase s a → b ≠ a := fun h => (mem_erase.1 h).1
+theorem ne_of_mem_erase : b ∈ erase s a → b ≠ a := fun h ↦ (mem_erase.1 h).1
 
 theorem mem_of_mem_erase : b ∈ erase s a → b ∈ s :=
   Multiset.mem_of_mem_erase
@@ -79,7 +79,7 @@ theorem erase_eq_of_notMem {a : α} {s : Finset α} (h : a ∉ s) : erase s a = 
 
 @[simp]
 theorem erase_eq_self : s.erase a = s ↔ a ∉ s :=
-  ⟨fun h => h ▸ notMem_erase _ _, erase_eq_of_notMem⟩
+  ⟨fun h ↦ h ▸ notMem_erase _ _, erase_eq_of_notMem⟩
 
 theorem erase_ne_self : s.erase a ≠ s ↔ a ∈ s :=
   erase_eq_self.not_left
@@ -106,7 +106,7 @@ theorem erase_right_comm {a b : α} {s : Finset α} : erase (erase s a) b = eras
 theorem erase_inj {x y : α} (s : Finset α) (hx : x ∈ s) : s.erase x = s.erase y ↔ x = y := by
   grind [eq_of_mem_of_notMem_erase]
 
-theorem erase_injOn (s : Finset α) : Set.InjOn s.erase s := fun _ _ _ _ => (erase_inj s ‹_›).mp
+theorem erase_injOn (s : Finset α) : Set.InjOn s.erase s := fun _ _ _ _ ↦ (erase_inj s ‹_›).mp
 
 end Erase
 

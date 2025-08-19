@@ -91,7 +91,7 @@ variable (s) in
 
 @[simp]
 lemma dual_span (s : Set M) : dual p (Submodule.span R≥0 s) = dual p s := by
-  refine le_antisymm (dual_le_dual Submodule.subset_span) (fun x hx y hy => ?_)
+  refine le_antisymm (dual_le_dual Submodule.subset_span) (fun x hx y hy ↦ ?_)
   induction hy using Submodule.span_induction with
   | mem _y h => exact hx h
   | zero => simp

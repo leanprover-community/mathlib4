@@ -37,7 +37,7 @@ namespace MySubobject
 variable {X : Type*} [ObjectTypeclass X] {x : X}
 
 instance : SetLike (MySubobject X) X :=
-  ⟨MySubobject.carrier, fun p q h => by cases p; cases q; congr!⟩
+  ⟨MySubobject.carrier, fun p q h ↦ by cases p; cases q; congr!⟩
 
 @[simp] lemma mem_carrier {p : MySubobject X} : x ∈ p.carrier ↔ x ∈ (p : Set X) := Iff.rfl
 
@@ -107,10 +107,10 @@ variable {A : Type*} {B : Type*} [i : SetLike A B]
 instance : CoeTC A (Set B) where coe := SetLike.coe
 
 instance (priority := 100) instMembership : Membership B A :=
-  ⟨fun p x => x ∈ (p : Set B)⟩
+  ⟨fun p x ↦ x ∈ (p : Set B)⟩
 
 instance (priority := 100) : CoeSort A (Type _) :=
-  ⟨fun p => { x : B // x ∈ p }⟩
+  ⟨fun p ↦ { x : B // x ∈ p }⟩
 
 section Delab
 open Lean PrettyPrinter.Delaborator SubExpr
@@ -143,7 +143,7 @@ protected theorem «exists» {q : p → Prop} : (∃ x, q x) ↔ ∃ (x : B) (h 
 protected theorem «forall» {q : p → Prop} : (∀ x, q x) ↔ ∀ (x : B) (h : x ∈ p), q ⟨x, ‹_›⟩ :=
   SetCoe.forall
 
-theorem coe_injective : Function.Injective (SetLike.coe : A → Set B) := fun _ _ h =>
+theorem coe_injective : Function.Injective (SetLike.coe : A → Set B) := fun _ _ h ↦
   SetLike.coe_injective' h
 
 @[simp, norm_cast]
@@ -187,7 +187,7 @@ protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rf
 
 instance (priority := 100) instPartialOrder : PartialOrder A :=
   { PartialOrder.lift (SetLike.coe : A → Set B) coe_injective with
-    le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K }
+    le := fun H K ↦ ∀ ⦃x⦄, x ∈ H → x ∈ K }
 
 theorem le_def {S T : A} : S ≤ T ↔ ∀ ⦃x : B⦄, x ∈ S → x ∈ T :=
   Iff.rfl
@@ -201,10 +201,10 @@ protected alias ⟨GCongr.mem_of_le_of_mem, _⟩ := le_def
 @[gcongr] protected alias ⟨_, GCongr.coe_ssubset_coe⟩ := coe_ssubset_coe
 
 @[mono]
-theorem coe_mono : Monotone (SetLike.coe : A → Set B) := fun _ _ => coe_subset_coe.mpr
+theorem coe_mono : Monotone (SetLike.coe : A → Set B) := fun _ _ ↦ coe_subset_coe.mpr
 
 @[mono]
-theorem coe_strictMono : StrictMono (SetLike.coe : A → Set B) := fun _ _ => coe_ssubset_coe.mpr
+theorem coe_strictMono : StrictMono (SetLike.coe : A → Set B) := fun _ _ ↦ coe_ssubset_coe.mpr
 
 theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q :=
   Set.not_subset

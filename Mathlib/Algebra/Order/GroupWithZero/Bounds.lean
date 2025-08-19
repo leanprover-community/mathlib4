@@ -17,7 +17,7 @@ open Set
   nonnegative values. -/
 lemma BddAbove.range_comp_of_nonneg {α β γ : Type*} [Nonempty α] [Preorder β] [Zero β] [Preorder γ]
     {f : α → β} {g : β → γ} (hf : BddAbove (range f)) (hf0 : 0 ≤ f)
-    (hg : MonotoneOn g {x : β | 0 ≤ x}) : BddAbove (range (fun x => g (f x))) := by
+    (hg : MonotoneOn g {x : β | 0 ≤ x}) : BddAbove (range (fun x ↦ g (f x))) := by
   suffices hg' : BddAbove (g '' range f) by
     rwa [← Function.comp_def, Set.range_comp]
   apply hg.map_bddAbove (by rintro x ⟨a, rfl⟩; exact hf0 a)

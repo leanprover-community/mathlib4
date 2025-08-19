@@ -27,16 +27,16 @@ variable {ι : Type*} [Fintype ι]
 sum of squares, i.e. `weightedSumSquares` with weights 1 or 0. -/
 noncomputable def isometryEquivSumSquares (w' : ι → ℂ) :
     IsometryEquiv (weightedSumSquares ℂ w')
-      (weightedSumSquares ℂ (fun i => if w' i = 0 then 0 else 1 : ι → ℂ)) := by
+      (weightedSumSquares ℂ (fun i ↦ if w' i = 0 then 0 else 1 : ι → ℂ)) := by
   let w i := if h : w' i = 0 then (1 : Units ℂ) else Units.mk0 (w' i) h
   have hw' : ∀ i : ι, (w i : ℂ) ^ (-(1 / 2 : ℂ)) ≠ 0 := by
     intro i hi
     exact (w i).ne_zero ((Complex.cpow_eq_zero_iff _ _).1 hi).1
   convert QuadraticMap.isometryEquivBasisRepr (weightedSumSquares ℂ w')
-    ((Pi.basisFun ℂ ι).unitsSMul fun i => (isUnit_iff_ne_zero.2 <| hw' i).unit)
+    ((Pi.basisFun ℂ ι).unitsSMul fun i ↦ (isUnit_iff_ne_zero.2 <| hw' i).unit)
   ext1 v
   rw [basisRepr_apply, weightedSumSquares_apply, weightedSumSquares_apply]
-  refine sum_congr rfl fun j hj => ?_
+  refine sum_congr rfl fun j hj ↦ ?_
   have hsum : (∑ i : ι, v i • ((isUnit_iff_ne_zero.2 <| hw' i).unit : ℂ) • (Pi.basisFun ℂ ι) i) j =
       v j • w j ^ (-(1 / 2 : ℂ)) := by
     classical
@@ -61,13 +61,13 @@ noncomputable def isometryEquivSumSquares (w' : ι → ℂ) :
     Complex.cpow_neg_one, inv_mul_cancel₀ (w j).ne_zero, one_mul]
 
 /-- The isometry between a weighted sum of squares on the complex numbers and the
-sum of squares, i.e. `weightedSumSquares` with weight `fun (i : ι) => 1`. -/
+sum of squares, i.e. `weightedSumSquares` with weight `fun (i : ι) ↦ 1`. -/
 noncomputable def isometryEquivSumSquaresUnits (w : ι → Units ℂ) :
     IsometryEquiv (weightedSumSquares ℂ w) (weightedSumSquares ℂ (1 : ι → ℂ)) := by
   simpa using isometryEquivSumSquares ((↑) ∘ w)
 
 /-- A nondegenerate quadratic form on the complex numbers is equivalent to
-the sum of squares, i.e. `weightedSumSquares` with weight `fun (i : ι) => 1`. -/
+the sum of squares, i.e. `weightedSumSquares` with weight `fun (i : ι) ↦ 1`. -/
 theorem equivalent_sum_squares {M : Type*} [AddCommGroup M] [Module ℂ M] [FiniteDimensional ℂ M]
     (Q : QuadraticForm ℂ M) (hQ : (associated (R := ℂ) Q).SeparatingLeft) :
     Equivalent Q (weightedSumSquares ℂ (1 : Fin (Module.finrank ℂ M) → ℂ)) :=

@@ -28,7 +28,7 @@ instance Prod.instBornology : Bornology (α × β) where
     @coprod_cofinite α β ▸ coprod_mono ‹Bornology α›.le_cofinite ‹Bornology β›.le_cofinite
 
 instance Pi.instBornology : Bornology (∀ i, X i) where
-  cobounded' := Filter.coprodᵢ fun i => cobounded (X i)
+  cobounded' := Filter.coprodᵢ fun i ↦ cobounded (X i)
   le_cofinite' := iSup_le fun _ ↦ (comap_mono (Bornology.le_cofinite _)).trans (comap_cofinite_le _)
 
 /-- Inverse image of a bornology. -/
@@ -73,7 +73,7 @@ theorem IsBounded.prod (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s ×ˢ
 
 theorem isBounded_prod_of_nonempty (hne : Set.Nonempty (s ×ˢ t)) :
     IsBounded (s ×ˢ t) ↔ IsBounded s ∧ IsBounded t :=
-  ⟨fun h => ⟨h.fst_of_prod hne.snd, h.snd_of_prod hne.fst⟩, fun h => h.1.prod h.2⟩
+  ⟨fun h ↦ ⟨h.fst_of_prod hne.snd, h.snd_of_prod hne.fst⟩, fun h ↦ h.1.prod h.2⟩
 
 theorem isBounded_prod : IsBounded (s ×ˢ t) ↔ s = ∅ ∨ t = ∅ ∨ IsBounded s ∧ IsBounded t := by
   rcases s.eq_empty_or_nonempty with (rfl | hs); · simp
@@ -89,7 +89,7 @@ theorem isBounded_prod_self : IsBounded (s ×ˢ s) ↔ IsBounded s := by
 -/
 
 
-theorem cobounded_pi : cobounded (∀ i, X i) = Filter.coprodᵢ fun i => cobounded (X i) :=
+theorem cobounded_pi : cobounded (∀ i, X i) = Filter.coprodᵢ fun i ↦ cobounded (X i) :=
   rfl
 
 theorem forall_isBounded_image_eval_iff {s : Set (∀ i, X i)} :
@@ -101,11 +101,11 @@ lemma IsBounded.image_eval {s : Set (∀ i, X i)} (hs : IsBounded s) (i : ι) :
   forall_isBounded_image_eval_iff.2 hs i
 
 theorem IsBounded.pi (h : ∀ i, IsBounded (S i)) : IsBounded (pi univ S) :=
-  forall_isBounded_image_eval_iff.1 fun i => (h i).subset eval_image_univ_pi_subset
+  forall_isBounded_image_eval_iff.1 fun i ↦ (h i).subset eval_image_univ_pi_subset
 
 theorem isBounded_pi_of_nonempty (hne : (pi univ S).Nonempty) :
     IsBounded (pi univ S) ↔ ∀ i, IsBounded (S i) :=
-  ⟨fun H i => @eval_image_univ_pi _ _ _ i hne ▸ forall_isBounded_image_eval_iff.2 H i, IsBounded.pi⟩
+  ⟨fun H i ↦ @eval_image_univ_pi _ _ _ i hne ▸ forall_isBounded_image_eval_iff.2 H i, IsBounded.pi⟩
 
 theorem isBounded_pi : IsBounded (pi univ S) ↔ (∃ i, S i = ∅) ∨ ∀ i, IsBounded (S i) := by
   by_cases hne : ∃ i, S i = ∅

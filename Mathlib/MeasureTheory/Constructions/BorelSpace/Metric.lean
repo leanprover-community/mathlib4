@@ -47,21 +47,21 @@ theorem measurableSet_closedBall : MeasurableSet (Metric.closedBall x ε) :=
   Metric.isClosed_closedBall.measurableSet
 
 @[measurability]
-theorem measurable_infDist {s : Set α} : Measurable fun x => infDist x s :=
+theorem measurable_infDist {s : Set α} : Measurable fun x ↦ infDist x s :=
   (continuous_infDist_pt s).measurable
 
 @[measurability, fun_prop]
 theorem Measurable.infDist {f : β → α} (hf : Measurable f) {s : Set α} :
-    Measurable fun x => infDist (f x) s :=
+    Measurable fun x ↦ infDist (f x) s :=
   measurable_infDist.comp hf
 
 @[measurability]
-theorem measurable_infNndist {s : Set α} : Measurable fun x => infNndist x s :=
+theorem measurable_infNndist {s : Set α} : Measurable fun x ↦ infNndist x s :=
   (continuous_infNndist_pt s).measurable
 
 @[measurability, fun_prop]
 theorem Measurable.infNndist {f : β → α} (hf : Measurable f) {s : Set α} :
-    Measurable fun x => infNndist (f x) s :=
+    Measurable fun x ↦ infNndist (f x) s :=
   measurable_infNndist.comp hf
 
 section
@@ -69,21 +69,21 @@ section
 variable [SecondCountableTopology α]
 
 @[measurability]
-theorem measurable_dist : Measurable fun p : α × α => dist p.1 p.2 :=
+theorem measurable_dist : Measurable fun p : α × α ↦ dist p.1 p.2 :=
   continuous_dist.measurable
 
 @[measurability, fun_prop]
 theorem Measurable.dist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
-    Measurable fun b => dist (f b) (g b) :=
+    Measurable fun b ↦ dist (f b) (g b) :=
   (@continuous_dist α _).measurable2 hf hg
 
 @[measurability]
-theorem measurable_nndist : Measurable fun p : α × α => nndist p.1 p.2 :=
+theorem measurable_nndist : Measurable fun p : α × α ↦ nndist p.1 p.2 :=
   continuous_nndist.measurable
 
 @[measurability, fun_prop]
 theorem Measurable.nndist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
-    Measurable fun b => nndist (f b) (g b) :=
+    Measurable fun b ↦ nndist (f b) (g b) :=
   (@continuous_nndist α _).measurable2 hf hg
 
 end
@@ -106,16 +106,16 @@ theorem measurable_edist_right : Measurable (edist x) :=
   (continuous_const.edist continuous_id).measurable
 
 @[measurability, fun_prop]
-theorem measurable_edist_left : Measurable fun y => edist y x :=
+theorem measurable_edist_left : Measurable fun y ↦ edist y x :=
   (continuous_id.edist continuous_const).measurable
 
 @[measurability]
-theorem measurable_infEdist {s : Set α} : Measurable fun x => infEdist x s :=
+theorem measurable_infEdist {s : Set α} : Measurable fun x ↦ infEdist x s :=
   continuous_infEdist.measurable
 
 @[measurability, fun_prop]
 theorem Measurable.infEdist {f : β → α} (hf : Measurable f) {s : Set α} :
-    Measurable fun x => infEdist (f x) s :=
+    Measurable fun x ↦ infEdist (f x) s :=
   measurable_infEdist.comp hf
 
 open Metric EMetric
@@ -124,13 +124,13 @@ open Metric EMetric
 thickenings converges to the measure of its closure as `r` tends to `0`. -/
 theorem tendsto_measure_cthickening {μ : Measure α} {s : Set α}
     (hs : ∃ R > 0, μ (cthickening R s) ≠ ∞) :
-    Tendsto (fun r => μ (cthickening r s)) (𝓝 0) (𝓝 (μ (closure s))) := by
-  have A : Tendsto (fun r => μ (cthickening r s)) (𝓝[Ioi 0] 0) (𝓝 (μ (closure s))) := by
+    Tendsto (fun r ↦ μ (cthickening r s)) (𝓝 0) (𝓝 (μ (closure s))) := by
+  have A : Tendsto (fun r ↦ μ (cthickening r s)) (𝓝[Ioi 0] 0) (𝓝 (μ (closure s))) := by
     rw [closure_eq_iInter_cthickening]
     exact
-      tendsto_measure_biInter_gt (fun r _ => isClosed_cthickening.nullMeasurableSet)
-        (fun i j _ ij => cthickening_mono ij _) hs
-  have B : Tendsto (fun r => μ (cthickening r s)) (𝓝[Iic 0] 0) (𝓝 (μ (closure s))) := by
+      tendsto_measure_biInter_gt (fun r _ ↦ isClosed_cthickening.nullMeasurableSet)
+        (fun i j _ ij ↦ cthickening_mono ij _) hs
+  have B : Tendsto (fun r ↦ μ (cthickening r s)) (𝓝[Iic 0] 0) (𝓝 (μ (closure s))) := by
     apply Tendsto.congr' _ tendsto_const_nhds
     filter_upwards [self_mem_nhdsWithin (α := ℝ)] with _ hr
     rw [cthickening_of_nonpos hr]
@@ -141,7 +141,7 @@ theorem tendsto_measure_cthickening {μ : Measure α} {s : Set α}
 `r`-thickenings converge to its measure as `r` tends to `0`. -/
 theorem tendsto_measure_cthickening_of_isClosed {μ : Measure α} {s : Set α}
     (hs : ∃ R > 0, μ (cthickening R s) ≠ ∞) (h's : IsClosed s) :
-    Tendsto (fun r => μ (cthickening r s)) (𝓝 0) (𝓝 (μ s)) := by
+    Tendsto (fun r ↦ μ (cthickening r s)) (𝓝 0) (𝓝 (μ s)) := by
   convert tendsto_measure_cthickening hs
   exact h's.closure_eq.symm
 
@@ -149,33 +149,33 @@ theorem tendsto_measure_cthickening_of_isClosed {μ : Measure α} {s : Set α}
 converge to the measure of its closure as `r > 0` tends to `0`. -/
 theorem tendsto_measure_thickening {μ : Measure α} {s : Set α}
     (hs : ∃ R > 0, μ (thickening R s) ≠ ∞) :
-    Tendsto (fun r => μ (thickening r s)) (𝓝[>] 0) (𝓝 (μ (closure s))) := by
+    Tendsto (fun r ↦ μ (thickening r s)) (𝓝[>] 0) (𝓝 (μ (closure s))) := by
   rw [closure_eq_iInter_thickening]
-  exact tendsto_measure_biInter_gt (fun r _ => isOpen_thickening.nullMeasurableSet)
-      (fun i j _ ij => thickening_mono ij _) hs
+  exact tendsto_measure_biInter_gt (fun r _ ↦ isOpen_thickening.nullMeasurableSet)
+      (fun i j _ ij ↦ thickening_mono ij _) hs
 
 /-- If a closed set has a thickening with finite measure, then the measure of its
 `r`-thickenings converge to its measure as `r > 0` tends to `0`. -/
 theorem tendsto_measure_thickening_of_isClosed {μ : Measure α} {s : Set α}
     (hs : ∃ R > 0, μ (thickening R s) ≠ ∞) (h's : IsClosed s) :
-    Tendsto (fun r => μ (thickening r s)) (𝓝[>] 0) (𝓝 (μ s)) := by
+    Tendsto (fun r ↦ μ (thickening r s)) (𝓝[>] 0) (𝓝 (μ s)) := by
   convert tendsto_measure_thickening hs
   exact h's.closure_eq.symm
 
 variable [SecondCountableTopology α]
 
 @[measurability]
-theorem measurable_edist : Measurable fun p : α × α => edist p.1 p.2 :=
+theorem measurable_edist : Measurable fun p : α × α ↦ edist p.1 p.2 :=
   continuous_edist.measurable
 
 @[measurability, fun_prop]
 theorem Measurable.edist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
-    Measurable fun b => edist (f b) (g b) :=
+    Measurable fun b ↦ edist (f b) (g b) :=
   (@continuous_edist α _).measurable2 hf hg
 
 @[measurability, fun_prop]
 theorem AEMeasurable.edist {f g : β → α} {μ : Measure β} (hf : AEMeasurable f μ)
-    (hg : AEMeasurable g μ) : AEMeasurable (fun a => edist (f a) (g a)) μ :=
+    (hg : AEMeasurable g μ) : AEMeasurable (fun a ↦ edist (f a) (g a)) μ :=
   (@continuous_edist α _).aemeasurable2 hf hg
 
 end PseudoEMetricSpace
@@ -185,7 +185,7 @@ its measure as `r` tends to `0`. -/
 theorem tendsto_measure_cthickening_of_isCompact [MetricSpace α] [MeasurableSpace α]
     [OpensMeasurableSpace α] [ProperSpace α] {μ : Measure α} [IsFiniteMeasureOnCompacts μ]
     {s : Set α} (hs : IsCompact s) :
-    Tendsto (fun r => μ (Metric.cthickening r s)) (𝓝 0) (𝓝 (μ s)) :=
+    Tendsto (fun r ↦ μ (Metric.cthickening r s)) (𝓝 0) (𝓝 (μ s)) :=
   tendsto_measure_cthickening_of_isClosed
     ⟨1, zero_lt_one, hs.isBounded.cthickening.measure_lt_top.ne⟩ hs.isClosed
 
@@ -239,12 +239,12 @@ theorem measurable_norm : Measurable (norm : α → ℝ) :=
   continuous_norm.measurable
 
 @[measurability, fun_prop]
-theorem Measurable.norm {f : β → α} (hf : Measurable f) : Measurable fun a => norm (f a) :=
+theorem Measurable.norm {f : β → α} (hf : Measurable f) : Measurable fun a ↦ norm (f a) :=
   measurable_norm.comp hf
 
 @[measurability, fun_prop]
 theorem AEMeasurable.norm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
-    AEMeasurable (fun a => norm (f a)) μ :=
+    AEMeasurable (fun a ↦ norm (f a)) μ :=
   measurable_norm.comp_aemeasurable hf
 
 @[measurability]
@@ -252,12 +252,12 @@ theorem measurable_nnnorm : Measurable (nnnorm : α → ℝ≥0) :=
   continuous_nnnorm.measurable
 
 @[measurability, fun_prop]
-protected theorem Measurable.nnnorm {f : β → α} (hf : Measurable f) : Measurable fun a => ‖f a‖₊ :=
+protected theorem Measurable.nnnorm {f : β → α} (hf : Measurable f) : Measurable fun a ↦ ‖f a‖₊ :=
   measurable_nnnorm.comp hf
 
 @[measurability, fun_prop]
 protected lemma AEMeasurable.nnnorm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
-    AEMeasurable (fun a => ‖f a‖₊) μ :=
+    AEMeasurable (fun a ↦ ‖f a‖₊) μ :=
   measurable_nnnorm.comp_aemeasurable hf
 
 end NormedAddCommGroup

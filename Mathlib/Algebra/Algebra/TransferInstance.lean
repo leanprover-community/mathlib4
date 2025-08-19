@@ -53,7 +53,7 @@ def algEquiv (e : α ≃ β) [Semiring β] [Algebra R β] : by
   intros
   exact
     { Equiv.ringEquiv e with
-      commutes' := fun r => by
+      commutes' := fun r ↦ by
         apply e.symm.injective
         simp only [RingEquiv.toEquiv_eq_coe, toFun_as_coe, EquivLike.coe_coe, ringEquiv_apply,
           symm_apply_apply, algebraMap_def] }

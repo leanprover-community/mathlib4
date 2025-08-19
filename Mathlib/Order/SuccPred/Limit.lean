@@ -45,7 +45,7 @@ theorem not_isSuccPrelimit_iff_exists_covBy (a : α) : ¬IsSuccPrelimit a ↔ �
   simp [IsSuccPrelimit]
 
 @[simp]
-theorem IsSuccPrelimit.of_dense [DenselyOrdered α] (a : α) : IsSuccPrelimit a := fun _ => not_covBy
+theorem IsSuccPrelimit.of_dense [DenselyOrdered α] (a : α) : IsSuccPrelimit a := fun _ ↦ not_covBy
 
 end LT
 
@@ -82,7 +82,7 @@ theorem isSuccPrelimit_iff_isSuccLimit [NoMinOrder α] : IsSuccPrelimit a ↔ Is
 protected theorem _root_.IsMin.not_isSuccLimit (h : IsMin a) : ¬ IsSuccLimit a :=
   fun ha ↦ ha.not_isMin h
 
-protected theorem _root_.IsMin.isSuccPrelimit : IsMin a → IsSuccPrelimit a := fun h _ hab =>
+protected theorem _root_.IsMin.isSuccPrelimit : IsMin a → IsSuccPrelimit a := fun h _ hab ↦
   not_isMin_of_lt hab.lt h
 
 theorem isSuccPrelimit_bot [OrderBot α] : IsSuccPrelimit (⊥ : α) :=
@@ -131,10 +131,10 @@ theorem IsSuccLimit.succ_ne (h : IsSuccLimit a) (b : α) : succ b ≠ a :=
   h.isSuccPrelimit.succ_ne b
 
 @[simp]
-theorem not_isSuccPrelimit_succ (a : α) : ¬IsSuccPrelimit (succ a) := fun h => h.succ_ne _ rfl
+theorem not_isSuccPrelimit_succ (a : α) : ¬IsSuccPrelimit (succ a) := fun h ↦ h.succ_ne _ rfl
 
 @[simp]
-theorem not_isSuccLimit_succ (a : α) : ¬IsSuccLimit (succ a) := fun h => h.succ_ne _ rfl
+theorem not_isSuccLimit_succ (a : α) : ¬IsSuccLimit (succ a) := fun h ↦ h.succ_ne _ rfl
 
 end NoMaxOrder
 
@@ -175,12 +175,12 @@ theorem IsSuccLimit.bot_lt [OrderBot α] (h : IsSuccLimit a) : ⊥ < a :=
 
 variable [SuccOrder α]
 
-theorem isSuccPrelimit_of_succ_ne (h : ∀ b, succ b ≠ a) : IsSuccPrelimit a := fun b hba =>
+theorem isSuccPrelimit_of_succ_ne (h : ∀ b, succ b ≠ a) : IsSuccPrelimit a := fun b hba ↦
   h b (CovBy.succ_eq hba)
 
 theorem not_isSuccPrelimit_iff : ¬ IsSuccPrelimit a ↔ ∃ b, ¬ IsMax b ∧ succ b = a := by
   rw [not_isSuccPrelimit_iff_exists_covBy]
-  refine exists_congr fun b => ⟨fun hba => ⟨hba.lt.not_isMax, (CovBy.succ_eq hba)⟩, ?_⟩
+  refine exists_congr fun b ↦ ⟨fun hba ↦ ⟨hba.lt.not_isMax, (CovBy.succ_eq hba)⟩, ?_⟩
   rintro ⟨h, rfl⟩
   exact covBy_succ_of_not_isMax h
 
@@ -200,14 +200,14 @@ theorem isMin_or_mem_range_succ_or_isSuccLimit (a) :
   have := mem_range_succ_or_isSuccPrelimit a
   tauto
 
-theorem isSuccPrelimit_of_succ_lt (H : ∀ a < b, succ a < b) : IsSuccPrelimit b := fun a hab =>
+theorem isSuccPrelimit_of_succ_lt (H : ∀ a < b, succ a < b) : IsSuccPrelimit b := fun a hab ↦
   (H a hab.lt).ne (CovBy.succ_eq hab)
 
 theorem IsSuccPrelimit.succ_lt (hb : IsSuccPrelimit b) (ha : a < b) : succ a < b := by
   by_cases h : IsMax a
   · rwa [h.succ_eq]
   · rw [lt_iff_le_and_ne, succ_le_iff_of_not_isMax h]
-    refine ⟨ha, fun hab => ?_⟩
+    refine ⟨ha, fun hab ↦ ?_⟩
     subst hab
     exact (h hb.isMax).elim
 
@@ -215,13 +215,13 @@ theorem IsSuccLimit.succ_lt (hb : IsSuccLimit b) (ha : a < b) : succ a < b :=
   hb.isSuccPrelimit.succ_lt ha
 
 theorem IsSuccPrelimit.succ_lt_iff (hb : IsSuccPrelimit b) : succ a < b ↔ a < b :=
-  ⟨fun h => (le_succ a).trans_lt h, hb.succ_lt⟩
+  ⟨fun h ↦ (le_succ a).trans_lt h, hb.succ_lt⟩
 
 theorem IsSuccLimit.succ_lt_iff (hb : IsSuccLimit b) : succ a < b ↔ a < b :=
   hb.isSuccPrelimit.succ_lt_iff
 
 theorem isSuccPrelimit_iff_succ_lt : IsSuccPrelimit b ↔ ∀ a < b, succ a < b :=
-  ⟨fun hb _ => hb.succ_lt, isSuccPrelimit_of_succ_lt⟩
+  ⟨fun hb _ ↦ hb.succ_lt, isSuccPrelimit_of_succ_lt⟩
 
 section NoMaxOrder
 
@@ -239,9 +239,9 @@ section IsSuccArchimedean
 
 variable [IsSuccArchimedean α]
 
-protected theorem IsSuccPrelimit.isMin (h : IsSuccPrelimit a) : IsMin a := fun b hb => by
+protected theorem IsSuccPrelimit.isMin (h : IsSuccPrelimit a) : IsMin a := fun b hb ↦ by
   revert h
-  refine Succ.rec (fun _ => le_rfl) (fun c _ H hc => ?_) hb
+  refine Succ.rec (fun _ ↦ le_rfl) (fun c _ H hc ↦ ?_) hb
   have := hc.isMax.succ_eq
   rw [this] at hc ⊢
   exact H hc
@@ -353,7 +353,7 @@ theorem not_isPredPrelimit_iff_exists_covBy (a : α) : ¬IsPredPrelimit a ↔ �
   simp [IsPredPrelimit]
 
 @[simp]
-theorem IsPredPrelimit.of_dense [DenselyOrdered α] (a : α) : IsPredPrelimit a := fun _ => not_covBy
+theorem IsPredPrelimit.of_dense [DenselyOrdered α] (a : α) : IsPredPrelimit a := fun _ ↦ not_covBy
 
 @[simp]
 theorem isSuccPrelimit_toDual_iff : IsSuccPrelimit (toDual a) ↔ IsPredPrelimit a := by
@@ -412,7 +412,7 @@ theorem isPredPrelimit_iff_isPredLimit [NoMaxOrder α] : IsPredPrelimit a ↔ Is
 protected theorem _root_.IsMax.not_isPredLimit (h : IsMax a) : ¬ IsPredLimit a :=
   fun ha ↦ ha.not_isMax h
 
-protected theorem _root_.IsMax.isPredPrelimit : IsMax a → IsPredPrelimit a := fun h _ hab =>
+protected theorem _root_.IsMax.isPredPrelimit : IsMax a → IsPredPrelimit a := fun h _ hab ↦
   not_isMax_of_lt hab.lt h
 
 theorem isPredPrelimit_top [OrderTop α] : IsPredPrelimit (⊤ : α) :=
@@ -455,10 +455,10 @@ theorem IsPredLimit.pred_ne (h : IsPredLimit a) (b : α) : pred b ≠ a :=
   h.isPredPrelimit.pred_ne b
 
 @[simp]
-theorem not_isPredPrelimit_pred (a : α) : ¬ IsPredPrelimit (pred a) := fun h => h.pred_ne _ rfl
+theorem not_isPredPrelimit_pred (a : α) : ¬ IsPredPrelimit (pred a) := fun h ↦ h.pred_ne _ rfl
 
 @[simp]
-theorem not_isPredLimit_pred (a : α) : ¬ IsPredLimit (pred a) := fun h => h.pred_ne _ rfl
+theorem not_isPredLimit_pred (a : α) : ¬ IsPredLimit (pred a) := fun h ↦ h.pred_ne _ rfl
 
 end NoMinOrder
 
@@ -495,7 +495,7 @@ theorem IsPredLimit.lt_top [OrderTop α] (h : IsPredLimit a) : a < ⊤ :=
 
 variable [PredOrder α]
 
-theorem isPredPrelimit_of_pred_ne (h : ∀ b, pred b ≠ a) : IsPredPrelimit a := fun b hba =>
+theorem isPredPrelimit_of_pred_ne (h : ∀ b, pred b ≠ a) : IsPredPrelimit a := fun b hba ↦
   h b (CovBy.pred_eq hba)
 
 theorem not_isPredPrelimit_iff : ¬ IsPredPrelimit a ↔ ∃ b, ¬ IsMin b ∧ pred b = a := by
@@ -512,7 +512,7 @@ theorem mem_range_pred_of_not_isPredPrelimit (h : ¬ IsPredPrelimit a) :
 theorem mem_range_pred_or_isPredPrelimit (a) : a ∈ range (pred : α → α) ∨ IsPredPrelimit a :=
   or_iff_not_imp_right.2 <| mem_range_pred_of_not_isPredPrelimit
 
-theorem isPredPrelimit_of_pred_lt (H : ∀ b > a, a < pred b) : IsPredPrelimit a := fun a hab =>
+theorem isPredPrelimit_of_pred_lt (H : ∀ b > a, a < pred b) : IsPredPrelimit a := fun a hab ↦
   (H a hab.lt).ne (CovBy.pred_eq hab).symm
 
 theorem IsPredPrelimit.lt_pred (ha : IsPredPrelimit a) (hb : a < b) : a < pred b :=
@@ -528,7 +528,7 @@ theorem IsPredLimit.lt_pred_iff (ha : IsPredLimit a) : a < pred b ↔ a < b :=
   ha.dual.succ_lt_iff
 
 theorem isPredPrelimit_iff_lt_pred : IsPredPrelimit a ↔ ∀ b > a, a < pred b :=
-  ⟨fun hb _ => hb.lt_pred, isPredPrelimit_of_pred_lt⟩
+  ⟨fun hb _ ↦ hb.lt_pred, isPredPrelimit_of_pred_lt⟩
 
 section NoMinOrder
 
@@ -770,7 +770,7 @@ variable (b) in
 and predecessor limits. -/
 @[elab_as_elim]
 noncomputable def isPredLimitRecOn : motive b :=
-  isSuccLimitRecOn (α := αᵒᵈ) b isMax pred (fun a ha => isPredLimit a ha.dual)
+  isSuccLimitRecOn (α := αᵒᵈ) b isMax pred (fun a ha ↦ isPredLimit a ha.dual)
 
 @[simp]
 theorem isPredLimitRecOn_of_isPredLimit (hb : IsPredLimit b) :
@@ -924,7 +924,7 @@ variable [PartialOrder α] [PredOrder α] [WellFoundedGT α]
 variable (b) in
 /-- Recursion principle on a well-founded partial `PredOrder`. -/
 @[elab_as_elim] noncomputable def prelimitRecOn : motive b :=
-  SuccOrder.prelimitRecOn (α := αᵒᵈ) b pred (fun a ha => isPredPrelimit a ha.dual)
+  SuccOrder.prelimitRecOn (α := αᵒᵈ) b pred (fun a ha ↦ isPredPrelimit a ha.dual)
 
 @[simp]
 theorem prelimitRecOn_of_isPredPrelimit (hb : IsPredPrelimit b) :
@@ -968,7 +968,7 @@ open Classical in
 /-- Recursion principle on a well-founded partial `PredOrder`, separating out the case of a
 maximal element. -/
 @[elab_as_elim] noncomputable def limitRecOn : motive b :=
-  SuccOrder.limitRecOn (α := αᵒᵈ) b isMax pred (fun a ha => isPredLimit a ha.dual)
+  SuccOrder.limitRecOn (α := αᵒᵈ) b isMax pred (fun a ha ↦ isPredLimit a ha.dual)
 
 @[simp]
 theorem limitRecOn_isMax (hb : IsMax b) : limitRecOn b isMax pred isPredLimit = isMax b hb :=

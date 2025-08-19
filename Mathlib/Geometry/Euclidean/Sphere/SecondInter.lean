@@ -60,7 +60,7 @@ theorem Sphere.secondInter_zero (s : Sphere P) (p : P) : s.secondInter p (0 : V)
 orthogonal to the radius vector. -/
 theorem Sphere.secondInter_eq_self_iff {s : Sphere P} {p : P} {v : V} :
     s.secondInter p v = p ↔ ⟪v, p -ᵥ s.center⟫ = 0 := by
-  refine ⟨fun hp => ?_, fun hp => ?_⟩
+  refine ⟨fun hp ↦ ?_, fun hp ↦ ?_⟩
   · by_cases hv : v = 0
     · simp [hv]
     rwa [Sphere.secondInter, eq_comm, eq_vadd_iff_vsub_eq, vsub_self, eq_comm, smul_eq_zero,
@@ -72,7 +72,7 @@ theorem Sphere.secondInter_eq_self_iff {s : Sphere P} {p : P} {v : V} :
 theorem Sphere.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem {s : Sphere P} {p : P}
     (hp : p ∈ s) {v : V} {p' : P} (hp' : p' ∈ AffineSubspace.mk' p (ℝ ∙ v)) :
     p' = p ∨ p' = s.secondInter p v ↔ p' ∈ s := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with (h | h)
     · rwa [h]
     · rwa [h, Sphere.secondInter_mem]

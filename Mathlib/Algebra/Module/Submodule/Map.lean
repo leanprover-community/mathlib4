@@ -97,7 +97,7 @@ theorem apply_coe_mem_map (f : F) {p : Submodule R M} (r : p) : f r ∈ map f p 
 
 @[simp]
 theorem map_id : map (LinearMap.id : M →ₗ[R] M) p = p :=
-  Submodule.ext fun a => by simp
+  Submodule.ext fun a ↦ by simp
 
 theorem map_comp [RingHomSurjective σ₂₃] [RingHomSurjective σ₁₃] (f : M →ₛₗ[σ₁₂] M₂)
     (g : M₂ →ₛₗ[σ₂₃] M₃) (p : Submodule R M) : map (g.comp f : M →ₛₗ[σ₁₃] M₃) p = map g (map f p) :=
@@ -129,7 +129,7 @@ lemma map_iInf {ι : Type*} [Nonempty ι] {p : ι → Submodule R M} (f : F) (hf
   SetLike.coe_injective <| by simpa only [map_coe, iInf_coe] using hf.injOn.image_iInter_eq
 
 theorem range_map_nonempty (N : Submodule R M) :
-    (Set.range (fun ϕ => Submodule.map ϕ N : (M →ₛₗ[σ₁₂] M₂) → Submodule R₂ M₂)).Nonempty :=
+    (Set.range (fun ϕ ↦ Submodule.map ϕ N : (M →ₛₗ[σ₁₂] M₂) → Submodule R₂ M₂)).Nonempty :=
   ⟨_, Set.mem_range.mpr ⟨0, rfl⟩⟩
 
 end
@@ -171,7 +171,7 @@ def comap [SemilinearMapClass F σ₁₂ M M₂] (f : F) (p : Submodule R₂ M�
   { p.toAddSubmonoid.comap f with
     carrier := f ⁻¹' p
     -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 added `map_smulₛₗ _`
-    smul_mem' := fun a x h => by simp [p.smul_mem (σ₁₂ a) h, map_smulₛₗ _] }
+    smul_mem' := fun a x h ↦ by simp [p.smul_mem (σ₁₂ a) h, map_smulₛₗ _] }
 
 @[simp]
 theorem comap_coe (f : F) (p : Submodule R₂ M₂) : (comap f p : Set M) = f ⁻¹' p :=
@@ -279,7 +279,7 @@ variable [RingHomSurjective σ₁₂] {f : F}
 
 /-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/
 def giMapComap (hf : Surjective f) : GaloisInsertion (map f) (comap f) :=
-  (gc_map_comap f).toGaloisInsertion fun S x hx => by
+  (gc_map_comap f).toGaloisInsertion fun S x hx ↦ by
     rcases hf x with ⟨y, rfl⟩
     simp only [mem_map, mem_comap]
     exact ⟨y, hx, rfl⟩
@@ -341,7 +341,7 @@ variable [RingHomSurjective σ₁₂] {f : F}
 
 /-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
 def gciMapComap (hf : Injective f) : GaloisCoinsertion (map f) (comap f) :=
-  (gc_map_comap f).toGaloisCoinsertion fun S x => by
+  (gc_map_comap f).toGaloisCoinsertion fun S x ↦ by
     simp only [mem_comap, mem_map, forall_exists_index, and_imp]
     intro y hy hxy
     rw [hf.eq_iff] at hxy
@@ -450,7 +450,7 @@ theorem map_inf_eq_map_inf_comap [RingHomSurjective σ₁₂] {f : F} {p : Submo
 
 @[simp]
 theorem map_comap_subtype : map p.subtype (comap p.subtype p') = p ⊓ p' :=
-  ext fun x => ⟨by rintro ⟨⟨_, h₁⟩, h₂, rfl⟩; exact ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨⟨_, h₁⟩, h₂, rfl⟩⟩
+  ext fun x ↦ ⟨by rintro ⟨⟨_, h₁⟩, h₂, rfl⟩; exact ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ ↦ ⟨⟨_, h₁⟩, h₂, rfl⟩⟩
 
 theorem eq_zero_of_bot_submodule : ∀ b : (⊥ : Submodule R M), b = 0
   | ⟨b', hb⟩ => Subtype.eq <| show b' = 0 from (mem_bot R).1 hb
@@ -476,8 +476,8 @@ variable [AddCommGroup M₂] [Module R M₂]
 
 @[simp]
 protected theorem map_neg (f : M →ₗ[R] M₂) : map (-f) p = map f p :=
-  ext fun _ =>
-    ⟨fun ⟨x, hx, hy⟩ => hy ▸ ⟨-x, show -x ∈ p from neg_mem hx, map_neg f x⟩, fun ⟨x, hx, hy⟩ =>
+  ext fun _ ↦
+    ⟨fun ⟨x, hx, hy⟩ ↦ hy ▸ ⟨-x, show -x ∈ p from neg_mem hx, map_neg f x⟩, fun ⟨x, hx, hy⟩ ↦
       hy ▸ ⟨-x, show -x ∈ p from neg_mem hx, (map_neg (-f) _).trans (neg_neg (f x))⟩⟩
 
 @[simp]
@@ -559,7 +559,7 @@ theorem mem_map_equiv {e : M ≃ₛₗ[τ₁₂] M₂} {x : M₂} :
 
 theorem map_equiv_eq_comap_symm (e : M ≃ₛₗ[τ₁₂] M₂) (K : Submodule R M) :
     K.map (e : M →ₛₗ[τ₁₂] M₂) = K.comap (e.symm : M₂ →ₛₗ[τ₂₁] M) :=
-  Submodule.ext fun _ => by rw [mem_map_equiv, mem_comap, LinearEquiv.coe_coe]
+  Submodule.ext fun _ ↦ by rw [mem_map_equiv, mem_comap, LinearEquiv.coe_coe]
 
 theorem comap_equiv_eq_map_symm (e : M ≃ₛₗ[τ₁₂] M₂) (K : Submodule R₂ M₂) :
     K.comap (e : M →ₛₗ[τ₁₂] M₂) = K.map (e.symm : M₂ →ₛₗ[τ₂₁] M) :=
@@ -667,11 +667,11 @@ open Submodule
 
 theorem map_codRestrict [RingHomSurjective σ₂₁] (p : Submodule R M) (f : M₂ →ₛₗ[σ₂₁] M) (h p') :
     Submodule.map (codRestrict p f h) p' = comap p.subtype (p'.map f) :=
-  Submodule.ext fun ⟨x, hx⟩ => by simp [Subtype.ext_iff_val]
+  Submodule.ext fun ⟨x, hx⟩ ↦ by simp [Subtype.ext_iff_val]
 
 theorem comap_codRestrict (p : Submodule R M) (f : M₂ →ₛₗ[σ₂₁] M) (hf p') :
     Submodule.comap (codRestrict p f hf) p' = Submodule.comap f (map p.subtype p') :=
-  Submodule.ext fun x => ⟨fun h => ⟨⟨_, hf x⟩, h, rfl⟩, by rintro ⟨⟨_, _⟩, h, ⟨⟩⟩; exact h⟩
+  Submodule.ext fun x ↦ ⟨fun h ↦ ⟨⟨_, hf x⟩, h, rfl⟩, by rintro ⟨⟨_, _⟩, h, ⟨⟩⟩; exact h⟩
 
 end LinearMap
 
@@ -699,21 +699,21 @@ This is the linear version of `AddEquiv.submonoidMap` and `AddEquiv.subgroupMap`
 
 This is `LinearEquiv.ofSubmodule'` but with `map` on the right instead of `comap` on the left. -/
 def submoduleMap (p : Submodule R M) : p ≃ₛₗ[σ₁₂] ↥(p.map (e : M →ₛₗ[σ₁₂] M₂) : Submodule R₂ M₂) :=
-  { ((e : M →ₛₗ[σ₁₂] M₂).domRestrict p).codRestrict (p.map (e : M →ₛₗ[σ₁₂] M₂)) fun x =>
+  { ((e : M →ₛₗ[σ₁₂] M₂).domRestrict p).codRestrict (p.map (e : M →ₛₗ[σ₁₂] M₂)) fun x ↦
       ⟨x, by
         simp only [LinearMap.domRestrict_apply, and_true, SetLike.coe_mem,
           SetLike.mem_coe]⟩ with
-    invFun := fun y =>
+    invFun := fun y ↦
       ⟨(e.symm : M₂ →ₛₗ[σ₂₁] M) y, by
         rcases y with ⟨y', hy⟩
         rw [Submodule.mem_map] at hy
         rcases hy with ⟨x, hx, hxy⟩
         subst hxy
         simp only [symm_apply_apply, coe_coe, hx]⟩
-    left_inv := fun x => by
+    left_inv := fun x ↦ by
       simp only [LinearMap.domRestrict_apply, LinearMap.codRestrict_apply, LinearMap.toFun_eq_coe,
         LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply, SetLike.eta]
-    right_inv := fun y => by
+    right_inv := fun y ↦ by
       apply SetCoe.ext
       simp only [LinearMap.domRestrict_apply, LinearMap.codRestrict_apply, LinearMap.toFun_eq_coe,
         LinearEquiv.coe_coe, LinearEquiv.apply_symm_apply] }

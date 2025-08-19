@@ -217,7 +217,7 @@ theorem deleteFar_iff [Fintype (Sym2 V)] :
 
 alias ⟨DeleteFar.le_card_sub_card, _⟩ := deleteFar_iff
 
-theorem DeleteFar.mono (h : G.DeleteFar p r₂) (hr : r₁ ≤ r₂) : G.DeleteFar p r₁ := fun _ hs hG =>
+theorem DeleteFar.mono (h : G.DeleteFar p r₂) (hr : r₁ ≤ r₂) : G.DeleteFar p r₁ := fun _ hs hG ↦
   hr.trans <| h hs hG
 
 end DeleteFar

@@ -59,27 +59,27 @@ attribute [to_additive] MulAction.QuotientAction
 
 @[to_additive]
 instance left_quotientAction : QuotientAction α H :=
-  ⟨fun _ _ _ _ => by rwa [smul_eq_mul, smul_eq_mul, mul_inv_rev, mul_assoc, inv_mul_cancel_left]⟩
+  ⟨fun _ _ _ _ ↦ by rwa [smul_eq_mul, smul_eq_mul, mul_inv_rev, mul_assoc, inv_mul_cancel_left]⟩
 
 @[to_additive]
 instance right_quotientAction : QuotientAction (normalizer H).op H :=
-  ⟨fun b c _ _ => by
+  ⟨fun b c _ _ ↦ by
     rwa [smul_def, smul_def, smul_eq_mul_unop, smul_eq_mul_unop, mul_inv_rev, ← mul_assoc,
       mem_normalizer_iff'.mp b.prop, mul_assoc, mul_inv_cancel_left]⟩
 
 @[to_additive]
 instance right_quotientAction' [hH : H.Normal] : QuotientAction αᵐᵒᵖ H :=
-  ⟨fun _ _ _ _ => by
+  ⟨fun _ _ _ _ ↦ by
     rwa [smul_eq_mul_unop, smul_eq_mul_unop, mul_inv_rev, mul_assoc, hH.mem_comm_iff, mul_assoc,
       mul_inv_cancel_right]⟩
 
 @[to_additive]
 instance quotient [QuotientAction β H] : MulAction β (α ⧸ H) where
   smul b :=
-    Quotient.map' (b • ·) fun _ _ h =>
+    Quotient.map' (b • ·) fun _ _ h ↦
       leftRel_apply.mpr <| QuotientAction.inv_mul_mem b <| leftRel_apply.mp h
-  one_smul q := Quotient.inductionOn' q fun a => congr_arg Quotient.mk'' (one_smul β a)
-  mul_smul b b' q := Quotient.inductionOn' q fun a => congr_arg Quotient.mk'' (mul_smul b b' a)
+  one_smul q := Quotient.inductionOn' q fun a ↦ congr_arg Quotient.mk'' (one_smul β a)
+  mul_smul b b' q := Quotient.inductionOn' q fun a ↦ congr_arg Quotient.mk'' (mul_smul b b' a)
 
 variable {β}
 
@@ -129,7 +129,7 @@ variable [MulAction α β] (x : β)
 /-- The canonical map from the quotient of the stabilizer to the set. -/
 @[to_additive /-- The canonical map from the quotient of the stabilizer to the set. -/]
 def ofQuotientStabilizer (g : α ⧸ MulAction.stabilizer α x) : β :=
-  Quotient.liftOn' g (· • x) fun g1 g2 H =>
+  Quotient.liftOn' g (· • x) fun g1 g2 H ↦
     calc
       g1 • x = g1 • (g1⁻¹ * g2) • x := congr_arg _ (leftRel_apply.mp H).symm
       _ = g2 • x := by rw [smul_smul, mul_inv_cancel_left]
@@ -140,17 +140,17 @@ theorem ofQuotientStabilizer_mk (g : α) : ofQuotientStabilizer α x (QuotientGr
 
 @[to_additive]
 theorem ofQuotientStabilizer_mem_orbit (g) : ofQuotientStabilizer α x g ∈ orbit α x :=
-  Quotient.inductionOn' g fun g => ⟨g, rfl⟩
+  Quotient.inductionOn' g fun g ↦ ⟨g, rfl⟩
 
 @[to_additive]
 theorem ofQuotientStabilizer_smul (g : α) (g' : α ⧸ MulAction.stabilizer α x) :
     ofQuotientStabilizer α x (g • g') = g • ofQuotientStabilizer α x g' :=
-  Quotient.inductionOn' g' fun _ => mul_smul _ _ _
+  Quotient.inductionOn' g' fun _ ↦ mul_smul _ _ _
 
 @[to_additive]
 theorem injective_ofQuotientStabilizer : Function.Injective (ofQuotientStabilizer α x) :=
-  fun y₁ y₂ =>
-  Quotient.inductionOn₂' y₁ y₂ fun g₁ g₂ (H : g₁ • x = g₂ • x) =>
+  fun y₁ y₂ ↦
+  Quotient.inductionOn₂' y₁ y₂ fun g₁ g₂ (H : g₁ • x = g₂ • x) ↦
     Quotient.sound' <| by
       rw [leftRel_apply]
       change (g₁⁻¹ * g₂) • x = x
@@ -160,9 +160,9 @@ theorem injective_ofQuotientStabilizer : Function.Injective (ofQuotientStabilize
 @[to_additive /-- Orbit-stabilizer theorem. -/]
 noncomputable def orbitEquivQuotientStabilizer (b : β) : orbit α b ≃ α ⧸ stabilizer α b :=
   Equiv.symm <|
-    Equiv.ofBijective (fun g => ⟨ofQuotientStabilizer α b g, ofQuotientStabilizer_mem_orbit α b g⟩)
-      ⟨fun x y hxy => injective_ofQuotientStabilizer α b (by convert congr_arg Subtype.val hxy),
-        fun ⟨_, ⟨g, hgb⟩⟩ => ⟨g, Subtype.eq hgb⟩⟩
+    Equiv.ofBijective (fun g ↦ ⟨ofQuotientStabilizer α b g, ofQuotientStabilizer_mem_orbit α b g⟩)
+      ⟨fun x y hxy ↦ injective_ofQuotientStabilizer α b (by convert congr_arg Subtype.val hxy),
+        fun ⟨_, ⟨g, hgb⟩⟩ ↦ ⟨g, Subtype.eq hgb⟩⟩
 
 /-- Orbit-stabilizer theorem. -/
 @[to_additive AddAction.orbitProdStabilizerEquivAddGroup /-- Orbit-stabilizer theorem. -/]
@@ -210,7 +210,7 @@ noncomputable def selfEquivSigmaOrbitsQuotientStabilizer' {φ : Ω → β}
   calc
     β ≃ Σ ω : Ω, orbitRel.Quotient.orbit ω := selfEquivSigmaOrbits' α β
     _ ≃ Σ ω : Ω, α ⧸ stabilizer α (φ ω) :=
-      Equiv.sigmaCongrRight fun ω =>
+      Equiv.sigmaCongrRight fun ω ↦
         (Equiv.setCongr <| orbitRel.Quotient.orbit_eq_orbit_out _ hφ).trans <|
           orbitEquivQuotientStabilizer α (φ ω)
 
@@ -233,19 +233,19 @@ noncomputable def sigmaFixedByEquivOrbitsProdGroup : (Σ a : α, fixedBy β a) �
   calc
     (Σ a : α, fixedBy β a) ≃ { ab : α × β // ab.1 • ab.2 = ab.2 } :=
       (Equiv.subtypeProdEquivSigmaSubtype _).symm
-    _ ≃ { ba : β × α // ba.2 • ba.1 = ba.1 } := (Equiv.prodComm α β).subtypeEquiv fun _ => Iff.rfl
+    _ ≃ { ba : β × α // ba.2 • ba.1 = ba.1 } := (Equiv.prodComm α β).subtypeEquiv fun _ ↦ Iff.rfl
     _ ≃ Σ b : β, stabilizer α b :=
-      Equiv.subtypeProdEquivSigmaSubtype fun (b : β) a => a ∈ stabilizer α b
+      Equiv.subtypeProdEquivSigmaSubtype fun (b : β) a ↦ a ∈ stabilizer α b
     _ ≃ Σ ωb : Σ ω : Ω, orbit α ω.out, stabilizer α (ωb.2 : β) :=
       (selfEquivSigmaOrbits α β).sigmaCongrLeft'
     _ ≃ Σ ω : Ω, Σ b : orbit α ω.out, stabilizer α (b : β) :=
-      Equiv.sigmaAssoc fun (ω : Ω) (b : orbit α ω.out) => stabilizer α (b : β)
+      Equiv.sigmaAssoc fun (ω : Ω) (b : orbit α ω.out) ↦ stabilizer α (b : β)
     _ ≃ Σ ω : Ω, Σ _ : orbit α ω.out, stabilizer α ω.out :=
-      Equiv.sigmaCongrRight fun _ =>
-        Equiv.sigmaCongrRight fun ⟨_, hb⟩ => (stabilizerEquivStabilizerOfOrbitRel hb).toEquiv
+      Equiv.sigmaCongrRight fun _ ↦
+        Equiv.sigmaCongrRight fun ⟨_, hb⟩ ↦ (stabilizerEquivStabilizerOfOrbitRel hb).toEquiv
     _ ≃ Σ ω : Ω, orbit α ω.out × stabilizer α ω.out :=
-      Equiv.sigmaCongrRight fun _ => Equiv.sigmaEquivProd _ _
-    _ ≃ Σ _ : Ω, α := Equiv.sigmaCongrRight fun ω => orbitProdStabilizerEquivGroup α ω.out
+      Equiv.sigmaCongrRight fun _ ↦ Equiv.sigmaEquivProd _ _
+    _ ≃ Σ _ : Ω, α := Equiv.sigmaCongrRight fun ω ↦ orbitProdStabilizerEquivGroup α ω.out
     _ ≃ Ω × α := Equiv.sigmaEquivProd Ω α
 
 /-- **Burnside's lemma** : given a finite group `G` acting on a set `X`, the average number of
@@ -427,10 +427,10 @@ theorem normalCore_eq_ker : H.normalCore = (MulAction.toPermHom G (G ⧸ H)).ker
   · intro g hg
     apply Equiv.Perm.ext
     refine fun q ↦ QuotientGroup.induction_on q ?_
-    refine fun g' => (MulAction.Quotient.smul_mk H g g').trans (QuotientGroup.eq.mpr ?_)
+    refine fun g' ↦ (MulAction.Quotient.smul_mk H g g').trans (QuotientGroup.eq.mpr ?_)
     rw [smul_eq_mul, mul_inv_rev, ← inv_inv g', inv_inv]
     exact H.normalCore.inv_mem hg g'⁻¹
-  · refine (Subgroup.normal_le_normalCore.mpr fun g hg => ?_)
+  · refine (Subgroup.normal_le_normalCore.mpr fun g hg ↦ ?_)
     rw [← H.inv_mem_iff, ← mul_one g⁻¹, ← QuotientGroup.eq, ← mul_one g]
     exact (MulAction.Quotient.smul_mk H g 1).symm.trans (Equiv.Perm.ext_iff.mp hg (1 : G))
 
@@ -441,11 +441,11 @@ noncomputable def quotientCentralizerEmbedding (g : G) :
     G ⧸ centralizer (zpowers (g : G)) ↪ commutatorSet G :=
   ((MulAction.orbitEquivQuotientStabilizer (ConjAct G) g).trans
             (quotientEquivOfEq (ConjAct.stabilizer_eq_centralizer g))).symm.toEmbedding.trans
-    ⟨fun x =>
+    ⟨fun x ↦
       ⟨x * g⁻¹,
         let ⟨_, x, rfl⟩ := x
         ⟨x, g, rfl⟩⟩,
-      fun _ _ => Subtype.ext ∘ mul_right_cancel ∘ Subtype.ext_iff.mp⟩
+      fun _ _ ↦ Subtype.ext ∘ mul_right_cancel ∘ Subtype.ext_iff.mp⟩
 
 theorem quotientCentralizerEmbedding_apply (g : G) (x : G) :
     quotientCentralizerEmbedding g x = ⟨⁅x, g⁆, x, g, rfl⟩ :=
@@ -457,7 +457,7 @@ noncomputable def quotientCenterEmbedding {S : Set G} (hS : closure S = ⊤) :
     G ⧸ center G ↪ S → commutatorSet G :=
   (quotientEquivOfEq (center_eq_infi' S hS)).toEmbedding.trans
     ((quotientiInfEmbedding _).trans
-      (Function.Embedding.piCongrRight fun g => quotientCentralizerEmbedding (g : G)))
+      (Function.Embedding.piCongrRight fun g ↦ quotientCentralizerEmbedding (g : G)))
 
 theorem quotientCenterEmbedding_apply {S : Set G} (hS : closure S = ⊤) (g : G) (s : S) :
     quotientCenterEmbedding hS g s = ⟨⁅g, s⁆, g, s, rfl⟩ :=

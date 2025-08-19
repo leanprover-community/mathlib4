@@ -243,7 +243,7 @@ theorem orientation_eq_or_eq_neg (e : Basis ι R M) (x : Orientation R M ι) :
 if it does not equal that given by that basis. -/
 theorem orientation_ne_iff_eq_neg (e : Basis ι R M) (x : Orientation R M ι) :
     x ≠ e.orientation ↔ x = -e.orientation :=
-  ⟨fun h => (e.orientation_eq_or_eq_neg x).resolve_left h, fun h =>
+  ⟨fun h ↦ (e.orientation_eq_or_eq_neg x).resolve_left h, fun h ↦
     h.symm ▸ (Module.Ray.ne_neg_self e.orientation).symm⟩
 
 /-- Composing a basis with a linear equiv gives the same orientation if and only if the
@@ -342,7 +342,7 @@ theorem eq_or_eq_neg [FiniteDimensional R M] (x₁ x₂ : Orientation R M ι)
 negation of another orientation if and only if they are not equal. -/
 theorem ne_iff_eq_neg [FiniteDimensional R M] (x₁ x₂ : Orientation R M ι)
     (h : Fintype.card ι = finrank R M) : x₁ ≠ x₂ ↔ x₁ = -x₂ :=
-  ⟨fun hn => (eq_or_eq_neg x₁ x₂ h).resolve_left hn, fun he =>
+  ⟨fun hn ↦ (eq_or_eq_neg x₁ x₂ h).resolve_left hn, fun he ↦
     he.symm ▸ (Module.Ray.ne_neg_self x₂).symm⟩
 
 /-- The value of `Orientation.map` when the index type has cardinality equal to the finite

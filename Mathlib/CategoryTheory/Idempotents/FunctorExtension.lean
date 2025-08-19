@@ -99,36 +99,36 @@ using `functorExtension₁` actually extends the original functors `C ⥤ Karoub
 def functorExtension₁CompWhiskeringLeftToKaroubiIso :
     functorExtension₁ C D ⋙ (whiskeringLeft C (Karoubi C) (Karoubi D)).obj (toKaroubi C) ≅ 𝟭 _ :=
   NatIso.ofComponents
-    (fun F => NatIso.ofComponents
-      (fun X =>
+    (fun F ↦ NatIso.ofComponents
+      (fun X ↦
         { hom := { f := (F.obj X).p }
           inv := { f := (F.obj X).p } })
-      (fun {X Y} f => by simp))
+      (fun {X Y} f ↦ by simp))
     (by cat_disch)
 
 /-- The counit isomorphism of the equivalence `(C ⥤ Karoubi D) ≌ (Karoubi C ⥤ Karoubi D)`. -/
 def KaroubiUniversal₁.counitIso :
     (whiskeringLeft C (Karoubi C) (Karoubi D)).obj (toKaroubi C) ⋙ functorExtension₁ C D ≅ 𝟭 _ :=
   NatIso.ofComponents
-    (fun G =>
+    (fun G ↦
       { hom :=
-          { app := fun P =>
+          { app := fun P ↦
               { f := (G.map (decompId_p P)).f
                 comm := by
                   simpa only [hom_ext_iff, G.map_comp, G.map_id] using
                     G.congr_map
                       (show (toKaroubi C).map P.p ≫ P.decompId_p ≫ 𝟙 _ = P.decompId_p by simp) }
-            naturality := fun P Q f => by
+            naturality := fun P Q f ↦ by
               simpa only [hom_ext_iff, G.map_comp]
                 using (G.congr_map (decompId_p_naturality f)).symm }
         inv :=
-          { app := fun P =>
+          { app := fun P ↦
               { f := (G.map (decompId_i P)).f
                 comm := by
                   simpa only [hom_ext_iff, G.map_comp, G.map_id] using
                     G.congr_map
                       (show 𝟙 _ ≫ P.decompId_i ≫ (toKaroubi C).map P.p = P.decompId_i by simp) }
-            naturality := fun P Q f => by
+            naturality := fun P Q f ↦ by
               simpa only [hom_ext_iff, G.map_comp] using G.congr_map (decompId_i_naturality f) }
         hom_inv_id := by
           ext P
@@ -136,7 +136,7 @@ def KaroubiUniversal₁.counitIso :
         inv_hom_id := by
           ext P
           simpa only [hom_ext_iff, G.map_comp, G.map_id] using G.congr_map P.decompId.symm })
-    (fun {X Y} φ => by
+    (fun {X Y} φ ↦ by
       ext P
       dsimp
       rw [natTrans_eq φ P, P.decomp_p]
@@ -176,8 +176,8 @@ def functorExtension₂CompWhiskeringLeftToKaroubiIso :
     functorExtension₂ C D ⋙ (whiskeringLeft C (Karoubi C) (Karoubi D)).obj (toKaroubi C) ≅
       (whiskeringRight C D (Karoubi D)).obj (toKaroubi D) :=
   NatIso.ofComponents
-    (fun F => NatIso.ofComponents
-      (fun X =>
+    (fun F ↦ NatIso.ofComponents
+      (fun X ↦
         { hom := { f := 𝟙 _ }
           inv := { f := 𝟙 _ } })
       (by simp))

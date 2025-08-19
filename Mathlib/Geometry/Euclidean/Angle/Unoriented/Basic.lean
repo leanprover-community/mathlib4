@@ -42,7 +42,7 @@ def angle (x y : V) : ℝ :=
   Real.arccos (⟪x, y⟫ / (‖x‖ * ‖y‖))
 
 theorem continuousAt_angle {x : V × V} (hx1 : x.1 ≠ 0) (hx2 : x.2 ≠ 0) :
-    ContinuousAt (fun y : V × V => angle y.1 y.2) x := by
+    ContinuousAt (fun y : V × V ↦ angle y.1 y.2) x := by
   unfold angle
   fun_prop (disch := simp [*])
 
@@ -221,7 +221,7 @@ theorem inner_eq_mul_norm_of_angle_eq_zero {x y : V} (h : angle x y = 0) : ⟪x,
 if and only if the angle between the two vectors is π. -/
 theorem inner_eq_neg_mul_norm_iff_angle_eq_pi {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     ⟪x, y⟫ = -(‖x‖ * ‖y‖) ↔ angle x y = π := by
-  refine ⟨fun h => ?_, inner_eq_neg_mul_norm_of_angle_eq_pi⟩
+  refine ⟨fun h ↦ ?_, inner_eq_neg_mul_norm_of_angle_eq_pi⟩
   have h₁ : ‖x‖ * ‖y‖ ≠ 0 := (mul_pos (norm_pos_iff.mpr hx) (norm_pos_iff.mpr hy)).ne'
   rw [angle, h, neg_div, div_self h₁, Real.arccos_neg_one]
 
@@ -229,7 +229,7 @@ theorem inner_eq_neg_mul_norm_iff_angle_eq_pi {x y : V} (hx : x ≠ 0) (hy : y �
 if and only if the angle between the two vectors is 0. -/
 theorem inner_eq_mul_norm_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     ⟪x, y⟫ = ‖x‖ * ‖y‖ ↔ angle x y = 0 := by
-  refine ⟨fun h => ?_, inner_eq_mul_norm_of_angle_eq_zero⟩
+  refine ⟨fun h ↦ ?_, inner_eq_mul_norm_of_angle_eq_zero⟩
   have h₁ : ‖x‖ * ‖y‖ ≠ 0 := (mul_pos (norm_pos_iff.mpr hx) (norm_pos_iff.mpr hy)).ne'
   rw [angle, h, div_self h₁, Real.arccos_one]
 
@@ -261,7 +261,7 @@ theorem norm_sub_eq_abs_sub_norm_of_angle_eq_zero {x y : V} (h : angle x y = 0) 
 if and only the angle between the two vectors is π. -/
 theorem norm_sub_eq_add_norm_iff_angle_eq_pi {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     ‖x - y‖ = ‖x‖ + ‖y‖ ↔ angle x y = π := by
-  refine ⟨fun h => ?_, norm_sub_eq_add_norm_of_angle_eq_pi⟩
+  refine ⟨fun h ↦ ?_, norm_sub_eq_add_norm_of_angle_eq_pi⟩
   rw [← inner_eq_neg_mul_norm_iff_angle_eq_pi hx hy]
   obtain ⟨hxy₁, hxy₂⟩ := norm_nonneg (x - y), add_nonneg (norm_nonneg x) (norm_nonneg y)
   rw [← sq_eq_sq₀ hxy₁ hxy₂, norm_sub_pow_two_real] at h
@@ -273,7 +273,7 @@ theorem norm_sub_eq_add_norm_iff_angle_eq_pi {x y : V} (hx : x ≠ 0) (hy : y �
 if and only the angle between the two vectors is 0. -/
 theorem norm_add_eq_add_norm_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     ‖x + y‖ = ‖x‖ + ‖y‖ ↔ angle x y = 0 := by
-  refine ⟨fun h => ?_, norm_add_eq_add_norm_of_angle_eq_zero⟩
+  refine ⟨fun h ↦ ?_, norm_add_eq_add_norm_of_angle_eq_zero⟩
   rw [← inner_eq_mul_norm_iff_angle_eq_zero hx hy]
   obtain ⟨hxy₁, hxy₂⟩ := norm_nonneg (x + y), add_nonneg (norm_nonneg x) (norm_nonneg y)
   rw [← sq_eq_sq₀ hxy₁ hxy₂, norm_add_pow_two_real] at h
@@ -285,7 +285,7 @@ theorem norm_add_eq_add_norm_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y 
 of the difference of their norms if and only the angle between the two vectors is 0. -/
 theorem norm_sub_eq_abs_sub_norm_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     ‖x - y‖ = |‖x‖ - ‖y‖| ↔ angle x y = 0 := by
-  refine ⟨fun h => ?_, norm_sub_eq_abs_sub_norm_of_angle_eq_zero⟩
+  refine ⟨fun h ↦ ?_, norm_sub_eq_abs_sub_norm_of_angle_eq_zero⟩
   rw [← inner_eq_mul_norm_iff_angle_eq_zero hx hy]
   have h1 : ‖x - y‖ ^ 2 = (‖x‖ - ‖y‖) ^ 2 := by
     rw [h]
@@ -326,7 +326,7 @@ theorem sin_eq_zero_iff_angle_eq_zero_or_angle_eq_pi :
 
 /-- The sine of the angle between two vectors is 1 if and only if the angle is π / 2. -/
 theorem sin_eq_one_iff_angle_eq_pi_div_two : sin (angle x y) = 1 ↔ angle x y = π / 2 := by
-  refine ⟨fun h => ?_, fun h => by rw [h, sin_pi_div_two]⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h, sin_pi_div_two]⟩
   rw [← cos_eq_zero_iff_angle_eq_pi_div_two, ← abs_eq_zero, abs_cos_eq_sqrt_one_sub_sin_sq, h]
   simp
 

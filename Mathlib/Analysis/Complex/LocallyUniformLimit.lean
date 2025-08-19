@@ -61,8 +61,8 @@ theorem norm_cderiv_le (hr : 0 < r) (hf : ∀ w ∈ sphere z r, ‖f w‖ ≤ M)
 
 theorem cderiv_sub (hr : 0 < r) (hf : ContinuousOn f (sphere z r))
     (hg : ContinuousOn g (sphere z r)) : cderiv r (f - g) z = cderiv r f z - cderiv r g z := by
-  have h1 : ContinuousOn (fun w : ℂ => ((w - z) ^ 2)⁻¹) (sphere z r) := by
-    refine ((continuous_id'.sub continuous_const).pow 2).continuousOn.inv₀ fun w hw h => hr.ne ?_
+  have h1 : ContinuousOn (fun w : ℂ ↦ ((w - z) ^ 2)⁻¹) (sphere z r) := by
+    refine ((continuous_id'.sub continuous_const).pow 2).continuousOn.inv₀ fun w hw h ↦ hr.ne ?_
     rwa [mem_sphere_iff_norm, sq_eq_zero_iff.mp h, norm_zero] at hw
   simp_rw [cderiv, ← smul_sub]
   congr 1
@@ -74,7 +74,7 @@ theorem norm_cderiv_lt (hr : 0 < r) (hfM : ∀ w ∈ sphere z r, ‖f w‖ < M)
     (hf : ContinuousOn f (sphere z r)) : ‖cderiv r f z‖ < M / r := by
   obtain ⟨L, hL1, hL2⟩ : ∃ L < M, ∀ w ∈ sphere z r, ‖f w‖ ≤ L := by
     have e1 : (sphere z r).Nonempty := NormedSpace.sphere_nonempty.mpr hr.le
-    have e2 : ContinuousOn (fun w => ‖f w‖) (sphere z r) := continuous_norm.comp_continuousOn hf
+    have e2 : ContinuousOn (fun w ↦ ‖f w‖) (sphere z r) := continuous_norm.comp_continuousOn hf
     obtain ⟨x, hx, hx'⟩ := (isCompact_sphere z r).exists_isMaxOn e1 e2
     exact ⟨‖f x‖, hfM x hx, hx'⟩
   exact (norm_cderiv_le hr hL2).trans_lt ((div_lt_div_iff_of_pos_right hr).mpr hL1)
@@ -94,7 +94,7 @@ theorem _root_.TendstoUniformlyOn.cderiv (hF : TendstoUniformlyOn F f φ (cthick
   rintro ε hε
   filter_upwards [hF (ε * δ) (mul_pos hε hδ), hFn] with n h h' z hz
   simp_rw [dist_eq_norm] at h ⊢
-  have e2 : ∀ w ∈ sphere z δ, ‖f w - F n w‖ < ε * δ := fun w hw1 =>
+  have e2 : ∀ w ∈ sphere z δ, ‖f w - F n w‖ < ε * δ := fun w hw1 ↦
     h w (closedBall_subset_cthickening hz δ (sphere_subset_closedBall hw1))
   have e3 := sphere_subset_closedBall.trans (closedBall_subset_cthickening hz δ)
   have hf : ContinuousOn f (sphere z δ) :=
@@ -141,9 +141,9 @@ theorem _root_.TendstoLocallyUniformlyOn.differentiableOn [φ.NeBot]
   have h4 : TendstoLocallyUniformlyOn F f φ (interior K) := hf.mono h2
   have h5 : TendstoLocallyUniformlyOn (deriv ∘ F) (cderiv δ f) φ (interior K) :=
     h1.tendstoLocallyUniformlyOn.mono interior_subset
-  have h6 : ∀ x ∈ interior K, HasDerivAt f (cderiv δ f x) x := fun x h =>
-    hasDerivAt_of_tendsto_locally_uniformly_on' isOpen_interior h5 h3 (fun _ => h4.tendsto_at) h
-  have h7 : DifferentiableOn ℂ f (interior K) := fun x hx =>
+  have h6 : ∀ x ∈ interior K, HasDerivAt f (cderiv δ f x) x := fun x h ↦
+    hasDerivAt_of_tendsto_locally_uniformly_on' isOpen_interior h5 h3 (fun _ ↦ h4.tendsto_at) h
+  have h7 : DifferentiableOn ℂ f (interior K) := fun x hx ↦
     (h6 x hx).differentiableAt.differentiableWithinAt
   exact (h7.differentiableAt (interior_mem_nhds.mpr hKx)).differentiableWithinAt
 
@@ -155,7 +155,7 @@ theorem _root_.TendstoLocallyUniformlyOn.deriv (hf : TendstoLocallyUniformlyOn F
   · simp only [TendstoUniformlyOn, eventually_bot, imp_true_iff]
   rintro K hKU hK
   obtain ⟨δ, hδ, hK4, h⟩ := exists_cthickening_tendstoUniformlyOn hf hF hK hU hKU
-  refine h.congr_right fun z hz => cderiv_eq_deriv hU (hf.differentiableOn hF hU) hδ ?_
+  refine h.congr_right fun z hz ↦ cderiv_eq_deriv hU (hf.differentiableOn hF hU) hδ ?_
   exact (closedBall_subset_cthickening hz δ).trans hK4
 
 end Weierstrass
@@ -167,11 +167,11 @@ summable function, and each term in the sum is differentiable on `U`, then so is
 theorem differentiableOn_tsum_of_summable_norm {u : ι → ℝ} (hu : Summable u)
     (hf : ∀ i : ι, DifferentiableOn ℂ (F i) U) (hU : IsOpen U)
     (hF_le : ∀ (i : ι) (w : ℂ), w ∈ U → ‖F i w‖ ≤ u i) :
-    DifferentiableOn ℂ (fun w : ℂ => ∑' i : ι, F i w) U := by
+    DifferentiableOn ℂ (fun w : ℂ ↦ ∑' i : ι, F i w) U := by
   classical
   have hc := (tendstoUniformlyOn_tsum hu hF_le).tendstoLocallyUniformlyOn
-  refine hc.differentiableOn (Eventually.of_forall fun s => ?_) hU
-  exact DifferentiableOn.fun_sum fun i _ => hf i
+  refine hc.differentiableOn (Eventually.of_forall fun s ↦ ?_) hU
+  exact DifferentiableOn.fun_sum fun i _ ↦ hf i
 
 /-- If the terms in the sum `∑' (i : ι), F i` are uniformly bounded on `U` by a
 summable function, then the sum of `deriv F i` at a point in `U` is the derivative of the
@@ -179,13 +179,13 @@ sum. -/
 theorem hasSum_deriv_of_summable_norm {u : ι → ℝ} (hu : Summable u)
     (hf : ∀ i : ι, DifferentiableOn ℂ (F i) U) (hU : IsOpen U)
     (hF_le : ∀ (i : ι) (w : ℂ), w ∈ U → ‖F i w‖ ≤ u i) (hz : z ∈ U) :
-    HasSum (fun i : ι => deriv (F i) z) (deriv (fun w : ℂ => ∑' i : ι, F i w) z) := by
+    HasSum (fun i : ι ↦ deriv (F i) z) (deriv (fun w : ℂ ↦ ∑' i : ι, F i w) z) := by
   rw [HasSum]
   have hc := (tendstoUniformlyOn_tsum hu hF_le).tendstoLocallyUniformlyOn
-  convert (hc.deriv (Eventually.of_forall fun s =>
-    DifferentiableOn.fun_sum fun i _ => hf i) hU).tendsto_at hz using 1
+  convert (hc.deriv (Eventually.of_forall fun s ↦
+    DifferentiableOn.fun_sum fun i _ ↦ hf i) hU).tendsto_at hz using 1
   ext1 s
-  exact (deriv_fun_sum fun i _ => (hf i).differentiableAt (hU.mem_nhds hz)).symm
+  exact (deriv_fun_sum fun i _ ↦ (hf i).differentiableAt (hU.mem_nhds hz)).symm
 
 end Tsums
 
@@ -196,7 +196,7 @@ function is the logarithmic derivative of the limit function. -/
 theorem logDeriv_tendsto {ι : Type*} {p : Filter ι} {f : ι → ℂ → ℂ} {g : ℂ → ℂ}
     {s : Set ℂ} (hs : IsOpen s) (x : s) (hF : TendstoLocallyUniformlyOn f g p s)
     (hf : ∀ᶠ n : ι in p, DifferentiableOn ℂ (f n) s) (hg : g x ≠ 0) :
-    Tendsto (fun n : ι => logDeriv (f n) x) p (𝓝 ((logDeriv g) x)) := by
+    Tendsto (fun n : ι ↦ logDeriv (f n) x) p (𝓝 ((logDeriv g) x)) := by
   simp_rw [logDeriv]
   apply Tendsto.div ((hF.deriv hf hs).tendsto_at x.2) (hF.tendsto_at x.2) hg
 

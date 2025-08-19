@@ -39,12 +39,12 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 noncomputable def gronwallBound (δ K ε x : ℝ) : ℝ :=
   if K = 0 then δ + ε * x else δ * exp (K * x) + ε / K * (exp (K * x) - 1)
 
-theorem gronwallBound_K0 (δ ε : ℝ) : gronwallBound δ 0 ε = fun x => δ + ε * x :=
-  funext fun _ => if_pos rfl
+theorem gronwallBound_K0 (δ ε : ℝ) : gronwallBound δ 0 ε = fun x ↦ δ + ε * x :=
+  funext fun _ ↦ if_pos rfl
 
 theorem gronwallBound_of_K_ne_0 {δ K ε : ℝ} (hK : K ≠ 0) :
-    gronwallBound δ K ε = fun x => δ * exp (K * x) + ε / K * (exp (K * x) - 1) :=
-  funext fun _ => if_neg hK
+    gronwallBound δ K ε = fun x ↦ δ * exp (K * x) + ε / K * (exp (K * x) - 1) :=
+  funext fun _ ↦ if_neg hK
 
 theorem hasDerivAt_gronwallBound (δ K ε x : ℝ) :
     HasDerivAt (gronwallBound δ K ε) (K * gronwallBound δ K ε x + ε) x := by
@@ -60,7 +60,7 @@ theorem hasDerivAt_gronwallBound (δ K ε x : ℝ) :
     ring
 
 theorem hasDerivAt_gronwallBound_shift (δ K ε x a : ℝ) :
-    HasDerivAt (fun y => gronwallBound δ K ε (y - a)) (K * gronwallBound δ K ε (x - a) + ε) x := by
+    HasDerivAt (fun y ↦ gronwallBound δ K ε (y - a)) (K * gronwallBound δ K ε (x - a) + ε) x := by
   convert (hasDerivAt_gronwallBound δ K ε _).comp x ((hasDerivAt_id x).sub_const a) using 1
   rw [id, mul_one]
 
@@ -78,7 +78,7 @@ theorem gronwallBound_ε0 (δ K x : ℝ) : gronwallBound δ K 0 x = δ * exp (K 
 theorem gronwallBound_ε0_δ0 (K x : ℝ) : gronwallBound 0 K 0 x = 0 := by
   simp only [gronwallBound_ε0, zero_mul]
 
-theorem gronwallBound_continuous_ε (δ K x : ℝ) : Continuous fun ε => gronwallBound δ K ε x := by
+theorem gronwallBound_continuous_ε (δ K x : ℝ) : Continuous fun ε ↦ gronwallBound δ K ε x := by
   by_cases hK : K = 0
   · simp only [gronwallBound_K0, hK]
     exact continuous_const.add (continuous_id.mul continuous_const)
@@ -103,14 +103,14 @@ theorem le_gronwallBound_of_liminf_deriv_right_le {f f' : ℝ → ℝ} {δ K ε 
     intro x hx ε' hε'
     apply image_le_of_liminf_slope_right_lt_deriv_boundary hf hf'
     · rwa [sub_self, gronwallBound_x0]
-    · exact fun x => hasDerivAt_gronwallBound_shift δ K ε' x a
+    · exact fun x ↦ hasDerivAt_gronwallBound_shift δ K ε' x a
     · intro x hx hfB
       rw [← hfB]
       apply lt_of_le_of_lt (bound x hx)
       exact add_lt_add_left (mem_Ioi.1 hε') _
     · exact hx
   intro x hx
-  change f x ≤ (fun ε' => gronwallBound δ K ε' (x - a)) ε
+  change f x ≤ (fun ε' ↦ gronwallBound δ K ε' (x - a)) ε
   convert continuousWithinAt_const.closure_le _ _ (H x hx)
   · simp only [closure_Ioi, left_mem_Ici]
   exact (gronwallBound_continuous_ε δ K (x - a)).continuousWithinAt
@@ -124,7 +124,7 @@ theorem norm_le_gronwallBound_of_norm_deriv_right_le {f f' : ℝ → E} {δ K ε
     (ha : ‖f a‖ ≤ δ) (bound : ∀ x ∈ Ico a b, ‖f' x‖ ≤ K * ‖f x‖ + ε) :
     ∀ x ∈ Icc a b, ‖f x‖ ≤ gronwallBound δ K ε (x - a) :=
   le_gronwallBound_of_liminf_deriv_right_le (continuous_norm.comp_continuousOn hf)
-    (fun x hx _r hr => (hf' x hx).liminf_right_slope_norm_le hr) ha bound
+    (fun x hx _r hr ↦ (hf' x hx).liminf_right_slope_norm_le hr) ha bound
 
 variable {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0} {f g f' g' : ℝ → E} {a b t₀ : ℝ} {εf εg δ : ℝ}
 
@@ -147,8 +147,8 @@ theorem dist_le_of_approx_trajectories_ODE_of_mem
     (ha : dist (f a) (g a) ≤ δ) :
     ∀ t ∈ Icc a b, dist (f t) (g t) ≤ gronwallBound δ K (εf + εg) (t - a) := by
   simp only [dist_eq_norm] at ha ⊢
-  have h_deriv : ∀ t ∈ Ico a b, HasDerivWithinAt (fun t => f t - g t) (f' t - g' t) (Ici t) t :=
-    fun t ht => (hf' t ht).sub (hg' t ht)
+  have h_deriv : ∀ t ∈ Ico a b, HasDerivWithinAt (fun t ↦ f t - g t) (f' t - g' t) (Ici t) t :=
+    fun t ht ↦ (hf' t ht).sub (hg' t ht)
   apply norm_le_gronwallBound_of_norm_deriv_right_le (hf.sub hg) h_deriv ha
   intro t ht
   have := dist_triangle4_right (f' t) (g' t) (v t (f t)) (v t (g t))
@@ -172,9 +172,9 @@ theorem dist_le_of_approx_trajectories_ODE
     (g_bound : ∀ t ∈ Ico a b, dist (g' t) (v t (g t)) ≤ εg)
     (ha : dist (f a) (g a) ≤ δ) :
     ∀ t ∈ Icc a b, dist (f t) (g t) ≤ gronwallBound δ K (εf + εg) (t - a) :=
-  have hfs : ∀ t ∈ Ico a b, f t ∈ @univ E := fun _ _ => trivial
-  dist_le_of_approx_trajectories_ODE_of_mem (fun t _ => (hv t).lipschitzOnWith) hf hf'
-    f_bound hfs hg hg' g_bound (fun _ _ => trivial) ha
+  have hfs : ∀ t ∈ Ico a b, f t ∈ @univ E := fun _ _ ↦ trivial
+  dist_le_of_approx_trajectories_ODE_of_mem (fun t _ ↦ (hv t).lipschitzOnWith) hf hf'
+    f_bound hfs hg hg' g_bound (fun _ _ ↦ trivial) ha
 
 /-- If `f` and `g` are two exact solutions of the same ODE, then the distance between them
 can't grow faster than exponentially. This is a simple corollary of Grönwall's inequality, and some
@@ -210,9 +210,9 @@ theorem dist_le_of_trajectories_ODE
     (hg' : ∀ t ∈ Ico a b, HasDerivWithinAt g (v t (g t)) (Ici t) t)
     (ha : dist (f a) (g a) ≤ δ) :
     ∀ t ∈ Icc a b, dist (f t) (g t) ≤ δ * exp (K * (t - a)) :=
-  have hfs : ∀ t ∈ Ico a b, f t ∈ @univ E := fun _ _ => trivial
-  dist_le_of_trajectories_ODE_of_mem (fun t _ => (hv t).lipschitzOnWith) hf hf' hfs hg
-    hg' (fun _ _ => trivial) ha
+  have hfs : ∀ t ∈ Ico a b, f t ∈ @univ E := fun _ _ ↦ trivial
+  dist_le_of_trajectories_ODE_of_mem (fun t _ ↦ (hv t).lipschitzOnWith) hf hf' hfs hg
+    hg' (fun _ _ ↦ trivial) ha
 
 /-- There exists only one solution of an ODE \(\dot x=v(t, x)\) in a set `s ⊆ ℝ × E` with
 a given initial value provided that the RHS is Lipschitz continuous in `x` within `s`,
@@ -358,9 +358,9 @@ theorem ODE_solution_unique
     (hg' : ∀ t ∈ Ico a b, HasDerivWithinAt g (v t (g t)) (Ici t) t)
     (ha : f a = g a) :
     EqOn f g (Icc a b) :=
-  have hfs : ∀ t ∈ Ico a b, f t ∈ univ := fun _ _ => trivial
-  ODE_solution_unique_of_mem_Icc_right (fun t _ => (hv t).lipschitzOnWith) hf hf' hfs hg hg'
-    (fun _ _ => trivial) ha
+  have hfs : ∀ t ∈ Ico a b, f t ∈ univ := fun _ _ ↦ trivial
+  ODE_solution_unique_of_mem_Icc_right (fun t _ ↦ (hv t).lipschitzOnWith) hf hf' hfs hg hg'
+    (fun _ _ ↦ trivial) ha
 
 /-- There exists only one global solution to an ODE \(\dot x=v(t, x\) with a given initial value
 provided that the RHS is Lipschitz continuous. -/
@@ -379,4 +379,4 @@ theorem ODE_solution_unique_univ
     · exact sub_one_lt _ |>.trans_le <| min_le_right _ _ |>.trans <| neg_abs_le t₀
     · exact le_abs_self _ |>.trans_lt <| le_max_right _ _ |>.trans_lt <| lt_add_one _
   exact ODE_solution_unique_of_mem_Ioo
-    (fun t _ => hv t) Ht₀ (fun t _ => hf t) (fun t _ => hg t) heq Ht
+    (fun t _ ↦ hv t) Ht₀ (fun t _ ↦ hf t) (fun t _ ↦ hg t) heq Ht

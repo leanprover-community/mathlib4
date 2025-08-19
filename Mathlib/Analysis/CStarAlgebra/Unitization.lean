@@ -29,10 +29,10 @@ variable [NormedSpace 𝕜 E] [IsScalarTower 𝕜 E E] [SMulCommClass 𝕜 E E] 
 
 lemma opNorm_mul_flip_apply (a : E) : ‖(mul 𝕜 E).flip a‖ = ‖a‖ := by
   refine le_antisymm
-    (opNorm_le_bound _ (norm_nonneg _) fun b => by simpa only [mul_comm] using norm_mul_le b a) ?_
+    (opNorm_le_bound _ (norm_nonneg _) fun b ↦ by simpa only [mul_comm] using norm_mul_le b a) ?_
   suffices ‖mul 𝕜 E (star a)‖ ≤ ‖(mul 𝕜 E).flip a‖ by
     simpa only [ge_iff_le, opNorm_mul_apply, norm_star] using this
-  refine opNorm_le_bound _ (norm_nonneg _) fun b => ?_
+  refine opNorm_le_bound _ (norm_nonneg _) fun b ↦ ?_
   calc ‖mul 𝕜 E (star a) b‖ = ‖(mul 𝕜 E).flip a (star b)‖ := by
         simpa only [mul_apply', flip_apply, star_mul, star_star] using norm_star (star b * a)
     _ ≤ ‖(mul 𝕜 E).flip a‖ * ‖b‖ := by
@@ -54,10 +54,10 @@ variable (E)
 
 /-- A C⋆-algebra over a densely normed field is a regular normed algebra. -/
 instance CStarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
-  isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 E) fun a => NNReal.eq_iff.mp <|
+  isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 E) fun a ↦ NNReal.eq_iff.mp <|
     show ‖mul 𝕜 E a‖₊ = ‖a‖₊ by
     rw [← sSup_unitClosedBall_eq_nnnorm]
-    refine csSup_eq_of_forall_le_of_forall_lt_exists_gt ?_ ?_ fun r hr => ?_
+    refine csSup_eq_of_forall_le_of_forall_lt_exists_gt ?_ ?_ fun r hr ↦ ?_
     · exact (Metric.nonempty_closedBall.mpr zero_le_one).image _
     · rintro - ⟨x, hx, rfl⟩
       exact

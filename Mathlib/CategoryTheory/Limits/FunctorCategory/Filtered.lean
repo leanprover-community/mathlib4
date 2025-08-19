@@ -20,9 +20,9 @@ namespace CategoryTheory.Limits
 variable {C : Type u₁} [Category.{v₁} C] {K : Type u₂} [Category.{v₂} K]
 
 instance [HasFilteredColimitsOfSize.{w', w} C] : HasFilteredColimitsOfSize.{w', w} (K ⥤ C) :=
-  ⟨fun _ => inferInstance⟩
+  ⟨fun _ ↦ inferInstance⟩
 
 instance [HasCofilteredLimitsOfSize.{w', w} C] : HasCofilteredLimitsOfSize.{w', w} (K ⥤ C) :=
-  ⟨fun _ => inferInstance⟩
+  ⟨fun _ ↦ inferInstance⟩
 
 end CategoryTheory.Limits

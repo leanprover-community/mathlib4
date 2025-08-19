@@ -51,7 +51,7 @@ theorem rank_lt_of_mem : ∀ {x y : PSet}, y ∈ x → rank y < rank x
 
 theorem rank_le_iff {o : Ordinal} : ∀ {x : PSet}, rank x ≤ o ↔ ∀ ⦃y⦄, y ∈ x → rank y < o
   | ⟨_, A⟩ => by
-    refine ⟨fun h _ h' => (rank_lt_of_mem h').trans_le h, fun h ↦ Ordinal.iSup_le fun a ↦ ?_⟩
+    refine ⟨fun h _ h' ↦ (rank_lt_of_mem h').trans_le h, fun h ↦ Ordinal.iSup_le fun a ↦ ?_⟩
     rw [succ_le_iff]
     exact h (Mem.mk A a)
 
@@ -62,7 +62,7 @@ theorem lt_rank_iff {o : Ordinal} {x : PSet} : o < rank x ↔ ∃ y ∈ x, o ≤
 variable {x y : PSet.{u}}
 
 @[gcongr] theorem rank_mono (h : x ⊆ y) : rank x ≤ rank y :=
-  rank_le_iff.2 fun _ h₁ => rank_lt_of_mem (mem_of_subset h h₁)
+  rank_le_iff.2 fun _ h₁ ↦ rank_lt_of_mem (mem_of_subset h h₁)
 
 @[simp]
 theorem rank_empty : rank ∅ = 0 := by simp [empty_def, rank]
@@ -76,7 +76,7 @@ theorem rank_insert (x y : PSet) : rank (insert x y) = max (succ (rank x)) (rank
     · simp [rank_lt_of_mem h]
   · apply max_le
     · exact (rank_lt_of_mem (mem_insert x y)).succ_le
-    · exact rank_mono (subset_iff.2 fun z => mem_insert_of_mem x)
+    · exact rank_mono (subset_iff.2 fun z ↦ mem_insert_of_mem x)
 
 @[simp]
 theorem rank_singleton (x : PSet) : rank {x} = succ (rank x) :=
@@ -117,7 +117,7 @@ theorem le_succ_rank_sUnion (x : PSet) : rank x ≤ succ (rank (⋃₀ x)) := by
 theorem rank_eq_wfRank : lift.{u + 1, u} (rank x) = IsWellFounded.rank (α := PSet) (· ∈ ·) x := by
   induction x using mem_wf.induction with | _ x ih
   rw [IsWellFounded.rank_eq]
-  simp_rw [← fun y : { y // y ∈ x } => ih y y.2]
+  simp_rw [← fun y : { y // y ∈ x } ↦ ih y y.2]
   apply (le_of_forall_lt _).antisymm (Ordinal.iSup_le _) <;> intro h
   · rw [lt_lift_iff]
     rintro ⟨o, h, rfl⟩
@@ -134,22 +134,22 @@ variable {x y : ZFSet.{u}}
 
 /-- The ordinal rank of a ZFC set -/
 noncomputable def rank : ZFSet.{u} → Ordinal.{u} :=
-  Quotient.lift _ fun _ _ => PSet.rank_congr
+  Quotient.lift _ fun _ _ ↦ PSet.rank_congr
 
 theorem rank_lt_of_mem : y ∈ x → rank y < rank x :=
-  Quotient.inductionOn₂ x y fun _ _ => PSet.rank_lt_of_mem
+  Quotient.inductionOn₂ x y fun _ _ ↦ PSet.rank_lt_of_mem
 
 theorem rank_le_iff {o : Ordinal} : rank x ≤ o ↔ ∀ ⦃y⦄, y ∈ x → rank y < o :=
-  ⟨fun h _ h' => (rank_lt_of_mem h').trans_le h,
-    Quotient.inductionOn x fun _ h =>
-      PSet.rank_le_iff.2 fun y h' => @h ⟦y⟧ h'⟩
+  ⟨fun h _ h' ↦ (rank_lt_of_mem h').trans_le h,
+    Quotient.inductionOn x fun _ h ↦
+      PSet.rank_le_iff.2 fun y h' ↦ @h ⟦y⟧ h'⟩
 
 theorem lt_rank_iff {o : Ordinal} : o < rank x ↔ ∃ y ∈ x, o ≤ rank y := by
   rw [← not_iff_not, not_lt, rank_le_iff]
   simp
 
 @[gcongr] theorem rank_mono (h : x ⊆ y) : rank x ≤ rank y :=
-  rank_le_iff.2 fun _ h₁ => rank_lt_of_mem (h h₁)
+  rank_le_iff.2 fun _ h₁ ↦ rank_lt_of_mem (h h₁)
 
 @[simp]
 theorem rank_empty : rank ∅ = 0 := PSet.rank_empty
@@ -205,7 +205,7 @@ theorem rank_range {α : Type*} [Small.{u} α] (f : α → ZFSet.{u}) :
 theorem rank_eq_wfRank : lift.{u + 1, u} (rank x) = IsWellFounded.rank (α := ZFSet) (· ∈ ·) x := by
   induction x using inductionOn with | _ x ih
   rw [IsWellFounded.rank_eq]
-  simp_rw [← fun y : { y // y ∈ x } => ih y y.2]
+  simp_rw [← fun y : { y // y ∈ x } ↦ ih y y.2]
   apply (le_of_forall_lt _).antisymm (Ordinal.iSup_le _) <;> intro h
   · rw [lt_lift_iff]
     rintro ⟨o, h, rfl⟩

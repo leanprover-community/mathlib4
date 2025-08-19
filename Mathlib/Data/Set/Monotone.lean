@@ -39,16 +39,16 @@ theorem _root_.StrictAntiOn.congr (h₁ : StrictAntiOn f₁ s) (h : s.EqOn f₁ 
   h₁.dual_right.congr h
 
 theorem EqOn.congr_monotoneOn (h : s.EqOn f₁ f₂) : MonotoneOn f₁ s ↔ MonotoneOn f₂ s :=
-  ⟨fun h₁ => h₁.congr h, fun h₂ => h₂.congr h.symm⟩
+  ⟨fun h₁ ↦ h₁.congr h, fun h₂ ↦ h₂.congr h.symm⟩
 
 theorem EqOn.congr_antitoneOn (h : s.EqOn f₁ f₂) : AntitoneOn f₁ s ↔ AntitoneOn f₂ s :=
-  ⟨fun h₁ => h₁.congr h, fun h₂ => h₂.congr h.symm⟩
+  ⟨fun h₁ ↦ h₁.congr h, fun h₂ ↦ h₂.congr h.symm⟩
 
 theorem EqOn.congr_strictMonoOn (h : s.EqOn f₁ f₂) : StrictMonoOn f₁ s ↔ StrictMonoOn f₂ s :=
-  ⟨fun h₁ => h₁.congr h, fun h₂ => h₂.congr h.symm⟩
+  ⟨fun h₁ ↦ h₁.congr h, fun h₂ ↦ h₂.congr h.symm⟩
 
 theorem EqOn.congr_strictAntiOn (h : s.EqOn f₁ f₂) : StrictAntiOn f₁ s ↔ StrictAntiOn f₂ s :=
-  ⟨fun h₁ => h₁.congr h, fun h₂ => h₂.congr h.symm⟩
+  ⟨fun h₁ ↦ h₁.congr h, fun h₂ ↦ h₂.congr h.symm⟩
 
 end Order
 
@@ -58,32 +58,32 @@ section Mono
 variable {s s₂ : Set α} {f : α → β} [Preorder α] [Preorder β]
 
 theorem _root_.MonotoneOn.mono (h : MonotoneOn f s) (h' : s₂ ⊆ s) : MonotoneOn f s₂ :=
-  fun _ hx _ hy => h (h' hx) (h' hy)
+  fun _ hx _ hy ↦ h (h' hx) (h' hy)
 
 theorem _root_.AntitoneOn.mono (h : AntitoneOn f s) (h' : s₂ ⊆ s) : AntitoneOn f s₂ :=
-  fun _ hx _ hy => h (h' hx) (h' hy)
+  fun _ hx _ hy ↦ h (h' hx) (h' hy)
 
 theorem _root_.StrictMonoOn.mono (h : StrictMonoOn f s) (h' : s₂ ⊆ s) : StrictMonoOn f s₂ :=
-  fun _ hx _ hy => h (h' hx) (h' hy)
+  fun _ hx _ hy ↦ h (h' hx) (h' hy)
 
 theorem _root_.StrictAntiOn.mono (h : StrictAntiOn f s) (h' : s₂ ⊆ s) : StrictAntiOn f s₂ :=
-  fun _ hx _ hy => h (h' hx) (h' hy)
+  fun _ hx _ hy ↦ h (h' hx) (h' hy)
 
 protected theorem _root_.MonotoneOn.monotone (h : MonotoneOn f s) :
     Monotone (f ∘ Subtype.val : s → β) :=
-  fun x y hle => h x.coe_prop y.coe_prop hle
+  fun x y hle ↦ h x.coe_prop y.coe_prop hle
 
 protected theorem _root_.AntitoneOn.monotone (h : AntitoneOn f s) :
     Antitone (f ∘ Subtype.val : s → β) :=
-  fun x y hle => h x.coe_prop y.coe_prop hle
+  fun x y hle ↦ h x.coe_prop y.coe_prop hle
 
 protected theorem _root_.StrictMonoOn.strictMono (h : StrictMonoOn f s) :
     StrictMono (f ∘ Subtype.val : s → β) :=
-  fun x y hlt => h x.coe_prop y.coe_prop hlt
+  fun x y hlt ↦ h x.coe_prop y.coe_prop hlt
 
 protected theorem _root_.StrictAntiOn.strictAnti (h : StrictAntiOn f s) :
     StrictAnti (f ∘ Subtype.val : s → β) :=
-  fun x y hlt => h x.coe_prop y.coe_prop hlt
+  fun x y hlt ↦ h x.coe_prop y.coe_prop hlt
 
 lemma monotoneOn_insert_iff {a : α} :
     MonotoneOn f (insert a s) ↔
@@ -112,7 +112,7 @@ namespace Monotone
 
 variable [Preorder α] [Preorder β] {f : α → β}
 
-protected theorem restrict (h : Monotone f) (s : Set α) : Monotone (s.restrict f) := fun _ _ hxy =>
+protected theorem restrict (h : Monotone f) (s : Set α) : Monotone (s.restrict f) := fun _ _ hxy ↦
   h hxy
 
 protected theorem codRestrict (h : Monotone f) {s : Set β} (hs : ∀ x, f x ∈ s) :

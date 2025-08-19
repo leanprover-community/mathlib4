@@ -65,7 +65,7 @@ variable {A}
 
 theorem num_mul_den_eq_num_iff_eq {x y : K} :
     x * algebraMap A K (den A y) = algebraMap A K (num A y) ↔ x = y :=
-  ⟨fun h => by simpa only [mk'_num_den] using eq_mk'_iff_mul_eq.mpr h, fun h ↦
+  ⟨fun h ↦ by simpa only [mk'_num_den] using eq_mk'_iff_mul_eq.mpr h, fun h ↦
     eq_mk'_iff_mul_eq.mp (by rw [h, mk'_num_den])⟩
 
 theorem num_mul_den_eq_num_iff_eq' {x y : K} :

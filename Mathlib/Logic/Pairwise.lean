@@ -30,7 +30,7 @@ def Pairwise (r : α → α → Prop) :=
   ∀ ⦃i j⦄, i ≠ j → r i j
 
 theorem Pairwise.mono (hr : Pairwise r) (h : ∀ ⦃i j⦄, r i j → p i j) : Pairwise p :=
-  fun _i _j hij => h <| hr hij
+  fun _i _j hij ↦ h <| hr hij
 
 protected theorem Pairwise.eq (h : Pairwise r) : ¬r a b → a = b :=
   not_imp_comm.1 <| @h _ _
@@ -40,7 +40,7 @@ protected lemma Subsingleton.pairwise [Subsingleton α] : Pairwise r :=
   fun _ _ h ↦ False.elim <| h.elim <| Subsingleton.elim _ _
 
 theorem Function.injective_iff_pairwise_ne : Injective f ↔ Pairwise ((· ≠ ·) on f) :=
-  forall₂_congr fun _i _j => not_imp_not.symm
+  forall₂_congr fun _i _j ↦ not_imp_not.symm
 
 alias ⟨Function.Injective.pairwise_ne, _⟩ := Function.injective_iff_pairwise_ne
 
@@ -58,18 +58,18 @@ lemma Function.Bijective.pairwise_comp_iff {f : β → α} (hf : Bijective f) :
 theorem pairwise_fin_succ_iff {n : ℕ} {R : Fin n.succ → Fin n.succ → Prop} :
     Pairwise R ↔
       (∀ i, R (Fin.succ i) 0) ∧ (∀ j, R 0 (Fin.succ j)) ∧
-      Pairwise fun i j => R (Fin.succ i) (Fin.succ j) where
+      Pairwise fun i j ↦ R (Fin.succ i) (Fin.succ j) where
   mp h := ⟨
-    fun _ => h (Fin.succ_ne_zero _), fun _ => h (Fin.succ_ne_zero _).symm,
-    fun _i _j hij => h <| Fin.succ_inj.not.2 hij⟩
+    fun _ ↦ h (Fin.succ_ne_zero _), fun _ ↦ h (Fin.succ_ne_zero _).symm,
+    fun _i _j hij ↦ h <| Fin.succ_inj.not.2 hij⟩
   mpr
   | ⟨hi, hj, h⟩ =>
     Fin.cases
-      (Fin.cases nofun fun j _ => hj j)
-      (fun i => Fin.cases (fun _ => hi i) fun _j hij => h (ne_of_apply_ne _ hij))
+      (Fin.cases nofun fun j _ ↦ hj j)
+      (fun i ↦ Fin.cases (fun _ ↦ hi i) fun _j hij ↦ h (ne_of_apply_ne _ hij))
 
 theorem pairwise_fin_succ_iff_of_isSymm {n : ℕ} {R : Fin n.succ → Fin n.succ → Prop} [IsSymm _ R] :
-    Pairwise R ↔ (∀ j, R 0 (Fin.succ j)) ∧ Pairwise fun i j => R (Fin.succ i) (Fin.succ j) := by
+    Pairwise R ↔ (∀ j, R 0 (Fin.succ j)) ∧ Pairwise fun i j ↦ R (Fin.succ i) (Fin.succ j) := by
   simp only [pairwise_fin_succ_iff, comm (b := 0) (r := R), and_self_left]
 
 namespace Set
@@ -79,28 +79,28 @@ protected def Pairwise (s : Set α) (r : α → α → Prop) :=
   ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → x ≠ y → r x y
 
 theorem pairwise_of_forall (s : Set α) (r : α → α → Prop) (h : ∀ a b, r a b) : s.Pairwise r :=
-  fun a _ b _ _ => h a b
+  fun a _ b _ _ ↦ h a b
 
-theorem Pairwise.imp_on (h : s.Pairwise r) (hrp : s.Pairwise fun ⦃a b : α⦄ => r a b → p a b) :
+theorem Pairwise.imp_on (h : s.Pairwise r) (hrp : s.Pairwise fun ⦃a b : α⦄ ↦ r a b → p a b) :
     s.Pairwise p :=
-  fun _a ha _b hb hab => hrp ha hb hab <| h ha hb hab
+  fun _a ha _b hb hab ↦ hrp ha hb hab <| h ha hb hab
 
 theorem Pairwise.imp (h : s.Pairwise r) (hpq : ∀ ⦃a b : α⦄, r a b → p a b) : s.Pairwise p :=
   h.imp_on <| pairwise_of_forall s _ hpq
 
 protected theorem Pairwise.eq (hs : s.Pairwise r) (ha : a ∈ s) (hb : b ∈ s) (h : ¬r a b) : a = b :=
-  of_not_not fun hab => h <| hs ha hb hab
+  of_not_not fun hab ↦ h <| hs ha hb hab
 
 theorem _root_.Reflexive.set_pairwise_iff (hr : Reflexive r) :
     s.Pairwise r ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → r a b :=
-  forall₄_congr fun a _ _ _ => or_iff_not_imp_left.symm.trans <| or_iff_right_of_imp <| Eq.ndrec <|
+  forall₄_congr fun a _ _ _ ↦ or_iff_not_imp_left.symm.trans <| or_iff_right_of_imp <| Eq.ndrec <|
     hr a
 
 theorem Pairwise.on_injective (hs : s.Pairwise r) (hf : Function.Injective f) (hfs : ∀ x, f x ∈ s) :
-    Pairwise (r on f) := fun i j hij => hs (hfs i) (hfs j) (hf.ne hij)
+    Pairwise (r on f) := fun i j hij ↦ hs (hfs i) (hfs j) (hf.ne hij)
 
 end Set
 
-theorem Pairwise.set_pairwise (h : Pairwise r) (s : Set α) : s.Pairwise r := fun _ _ _ _ w => h w
+theorem Pairwise.set_pairwise (h : Pairwise r) (s : Set α) : s.Pairwise r := fun _ _ _ _ w ↦ h w
 
 end Pairwise

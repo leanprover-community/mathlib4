@@ -95,7 +95,7 @@ def Bornology.ofBounded' {α : Type*} (B : Set (Set α))
     (union_mem : ∀ s₁ ∈ B, ∀ s₂ ∈ B, s₁ ∪ s₂ ∈ B)
     (sUnion_univ : ⋃₀ B = univ) :
     Bornology α :=
-  Bornology.ofBounded B empty_mem subset_mem union_mem fun x => by
+  Bornology.ofBounded B empty_mem subset_mem union_mem fun x ↦ by
     rw [sUnion_eq_univ_iff] at sUnion_univ
     rcases sUnion_univ x with ⟨s, hs, hxs⟩
     exact subset_mem s hs {x} (singleton_subset_iff.mpr hxs)
@@ -178,7 +178,7 @@ theorem IsBounded.subset (ht : IsBounded t) (hs : s ⊆ t) : IsBounded s :=
 
 @[simp]
 theorem sUnion_bounded_univ : ⋃₀ { s : Set α | IsBounded s } = univ :=
-  sUnion_eq_univ_iff.2 fun a => ⟨{a}, isBounded_singleton, mem_singleton a⟩
+  sUnion_eq_univ_iff.2 fun a ↦ ⟨{a}, isBounded_singleton, mem_singleton a⟩
 
 theorem IsBounded.insert (h : IsBounded s) (x : α) : IsBounded (insert x s) :=
   isBounded_singleton.union h
@@ -190,7 +190,7 @@ theorem isBounded_insert : IsBounded (insert x s) ↔ IsBounded s :=
 theorem comap_cobounded_le_iff [Bornology β] {f : α → β} :
     (cobounded β).comap f ≤ cobounded α ↔ ∀ ⦃s⦄, IsBounded s → IsBounded (f '' s) := by
   refine
-    ⟨fun h s hs => ?_, fun h t ht =>
+    ⟨fun h s hs ↦ ?_, fun h t ht ↦
       ⟨(f '' tᶜ)ᶜ, h <| IsCobounded.compl ht, compl_subset_comm.1 <| subset_preimage_image _ _⟩⟩
   obtain ⟨t, ht, hts⟩ := h hs.compl
   rw [subset_compl_comm, ← preimage_compl] at hts
@@ -294,7 +294,7 @@ namespace Bornology
 variable [Bornology α]
 
 theorem isBounded_univ : IsBounded (univ : Set α) ↔ BoundedSpace α :=
-  ⟨fun h => ⟨h⟩, fun h => h.1⟩
+  ⟨fun h ↦ ⟨h⟩, fun h ↦ h.1⟩
 
 theorem cobounded_eq_bot_iff : cobounded α = ⊥ ↔ BoundedSpace α := by
   rw [← isBounded_univ, isBounded_def, compl_univ, empty_mem_iff_bot]

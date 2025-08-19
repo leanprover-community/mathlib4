@@ -77,7 +77,7 @@ lemma Int.univ_addEquiv :
 
 instance : Unique (ℤ ≃+o ℤ) where
   uniq e := OrderAddMonoidIso.toAddEquiv_injective <|
-    Int.addEquiv_eq_refl_or_neg e |>.resolve_right fun H => by
+    Int.addEquiv_eq_refl_or_neg e |>.resolve_right fun H ↦ by
       replace H : e 1 = -1 := congr($H 1)
       have h1 : 0 < e 1 := by
         rw [← map_zero e, map_lt_map_iff]
@@ -90,7 +90,7 @@ instance : Unique (ℤ ≃+o ℤᵒᵈ) where
   uniq e := OrderAddMonoidIso.toAddEquiv_injective <| by
     simp only [OrderAddMonoidIso.toAddEquiv_eq_coe]
     refine Int.addEquiv_eq_refl_or_neg ((e : ℤ ≃+ ℤᵒᵈ).trans ⟨toDual, toDual_add⟩)
-        |>.resolve_left fun H => by
+        |>.resolve_left fun H ↦ by
       replace H : e 1 = 1 := congr($H 1)
       have h1 : 0 < e 1 := by
         rw [← map_zero e, map_lt_map_iff]

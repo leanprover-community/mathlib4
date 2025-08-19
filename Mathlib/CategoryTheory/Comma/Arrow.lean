@@ -75,7 +75,7 @@ theorem mk_eq (f : Arrow T) : Arrow.mk f.hom = f := by
   rfl
 
 theorem mk_injective (A B : T) :
-    Function.Injective (Arrow.mk : (A ⟶ B) → Arrow T) := fun f g h => by
+    Function.Injective (Arrow.mk : (A ⟶ B) → Arrow T) := fun f g h ↦ by
   cases h
   rfl
 
@@ -201,7 +201,7 @@ lemma isIso_of_isIso {X Y : T} {f : X ⟶ Y} {g : Arrow T} (sq : mk f ⟶ g) [Is
 
 lemma isIso_hom_iff_isIso_hom_of_isIso {f g : Arrow T} (sq : f ⟶ g) [IsIso sq] :
     IsIso f.hom ↔ IsIso g.hom :=
-  ⟨fun _ => isIso_of_isIso sq, fun _ => isIso_of_isIso (inv sq)⟩
+  ⟨fun _ ↦ isIso_of_isIso sq, fun _ ↦ isIso_of_isIso (inv sq)⟩
 
 lemma isIso_iff_isIso_of_isIso {W X Y Z : T} {f : W ⟶ X} {g : Y ⟶ Z} (sq : mk f ⟶ mk g) [IsIso sq] :
     IsIso f ↔ IsIso g :=
@@ -227,10 +227,10 @@ theorem inv_left_hom_right [IsIso sq] : inv sq.left ≫ f.hom ≫ sq.right = g.h
 
 instance mono_left [Mono sq] : Mono sq.left where
   right_cancellation {Z} φ ψ h := by
-    let aux : (Z ⟶ f.left) → (Arrow.mk (𝟙 Z) ⟶ f) := fun φ =>
+    let aux : (Z ⟶ f.left) → (Arrow.mk (𝟙 Z) ⟶ f) := fun φ ↦
       { left := φ
         right := φ ≫ f.hom }
-    have : ∀ g, (aux g).right = g ≫ f.hom := fun g => by dsimp
+    have : ∀ g, (aux g).right = g ≫ f.hom := fun g ↦ by dsimp
     change (aux φ).left = (aux ψ).left
     congr 1
     rw [← cancel_mono sq]
@@ -242,7 +242,7 @@ instance mono_left [Mono sq] : Mono sq.left where
 
 instance epi_right [Epi sq] : Epi sq.right where
   left_cancellation {Z} φ ψ h := by
-    let aux : (g.right ⟶ Z) → (g ⟶ Arrow.mk (𝟙 Z)) := fun φ =>
+    let aux : (g.right ⟶ Z) → (g ⟶ Arrow.mk (𝟙 Z)) := fun φ ↦
       { right := φ
         left := g.hom ≫ φ }
     change (aux φ).right = (aux ψ).right
@@ -343,7 +343,7 @@ a functor `F : C ⥤ D` to `F.mapArrow`. -/
 def mapArrowFunctor : (C ⥤ D) ⥤ (Arrow C ⥤ Arrow D) where
   obj F := F.mapArrow
   map τ :=
-    { app := fun f =>
+    { app := fun f ↦
         { left := τ.app _
           right := τ.app _ } }
 

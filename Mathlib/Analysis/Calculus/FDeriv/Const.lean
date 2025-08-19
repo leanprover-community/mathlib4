@@ -32,8 +32,8 @@ section Const
 
 @[fun_prop]
 theorem hasStrictFDerivAt_const (c : F) (x : E) :
-    HasStrictFDerivAt (fun _ => c) (0 : E →L[𝕜] F) x :=
-  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun _ => by
+    HasStrictFDerivAt (fun _ ↦ c) (0 : E →L[𝕜] F) x :=
+  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun _ ↦ by
     simp only [zero_apply, sub_self, Pi.zero_apply]
 
 @[fun_prop]
@@ -57,8 +57,8 @@ theorem hasStrictFDerivAt_ofNat (n : ℕ) [OfNat F n] (x : E) :
     HasStrictFDerivAt (ofNat(n) : E → F) (0 : E →L[𝕜] F) x := hasStrictFDerivAt_const _ _
 
 theorem hasFDerivAtFilter_const (c : F) (x : E) (L : Filter E) :
-    HasFDerivAtFilter (fun _ => c) (0 : E →L[𝕜] F) x L :=
-  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun _ => by
+    HasFDerivAtFilter (fun _ ↦ c) (0 : E →L[𝕜] F) x L :=
+  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun _ ↦ by
     simp only [zero_apply, sub_self, Pi.zero_apply]
 
 theorem hasFDerivAtFilter_zero (x : E) (L : Filter E) :
@@ -81,7 +81,7 @@ theorem hasFDerivAtFilter_ofNat (n : ℕ) [OfNat F n] (x : E) (L : Filter E) :
 
 @[fun_prop]
 theorem hasFDerivWithinAt_const (c : F) (x : E) (s : Set E) :
-    HasFDerivWithinAt (fun _ => c) (0 : E →L[𝕜] F) s x :=
+    HasFDerivWithinAt (fun _ ↦ c) (0 : E →L[𝕜] F) s x :=
   hasFDerivAtFilter_const _ _ _
 
 @[fun_prop]
@@ -108,7 +108,7 @@ theorem hasFDerivWithinAt_ofNat (n : ℕ) [OfNat F n] (x : E) (s : Set E) :
   hasFDerivWithinAt_const _ _ _
 
 @[fun_prop]
-theorem hasFDerivAt_const (c : F) (x : E) : HasFDerivAt (fun _ => c) (0 : E →L[𝕜] F) x :=
+theorem hasFDerivAt_const (c : F) (x : E) : HasFDerivAt (fun _ ↦ c) (0 : E →L[𝕜] F) x :=
   hasFDerivAtFilter_const _ _ _
 
 @[fun_prop]
@@ -132,7 +132,7 @@ theorem hasFDerivAt_ofNat (n : ℕ) [OfNat F n] (x : E) :
     HasFDerivAt (ofNat(n) : E → F) (0 : E →L[𝕜] F) x := hasFDerivAt_const _ _
 
 @[simp, fun_prop]
-theorem differentiableAt_const (c : F) : DifferentiableAt 𝕜 (fun _ => c) x :=
+theorem differentiableAt_const (c : F) : DifferentiableAt 𝕜 (fun _ ↦ c) x :=
   ⟨0, hasFDerivAt_const c x⟩
 
 @[simp, fun_prop]
@@ -156,7 +156,7 @@ theorem differentiableAt_ofNat (n : ℕ) [OfNat F n] (x : E) :
     DifferentiableAt 𝕜 (ofNat(n) : E → F) x := differentiableAt_const _
 
 @[fun_prop]
-theorem differentiableWithinAt_const (c : F) : DifferentiableWithinAt 𝕜 (fun _ => c) s x :=
+theorem differentiableWithinAt_const (c : F) : DifferentiableWithinAt 𝕜 (fun _ ↦ c) s x :=
   DifferentiableAt.differentiableWithinAt (differentiableAt_const _)
 
 @[fun_prop]
@@ -179,7 +179,7 @@ theorem differentiableWithinAt_intCast [IntCast F] (z : ℤ) :
 theorem differentiableWithinAt_ofNat (n : ℕ) [OfNat F n] :
     DifferentiableWithinAt 𝕜 (ofNat(n) : E → F) s x := differentiableWithinAt_const _
 
-theorem fderivWithin_const_apply (c : F) : fderivWithin 𝕜 (fun _ => c) s x = 0 := by
+theorem fderivWithin_const_apply (c : F) : fderivWithin 𝕜 (fun _ ↦ c) s x = 0 := by
   rw [fderivWithin, if_pos]
   apply hasFDerivWithinAt_const
 
@@ -210,11 +210,11 @@ theorem fderivWithin_intCast [IntCast F] (z : ℤ) : fderivWithin 𝕜 (z : E �
 theorem fderivWithin_ofNat (n : ℕ) [OfNat F n] : fderivWithin 𝕜 (ofNat(n) : E → F) s = 0 :=
   fderivWithin_const _
 
-theorem fderiv_const_apply (c : F) : fderiv 𝕜 (fun _ => c) x = 0 :=
+theorem fderiv_const_apply (c : F) : fderiv 𝕜 (fun _ ↦ c) x = 0 :=
   (hasFDerivAt_const c x).fderiv
 
 @[simp]
-theorem fderiv_fun_const (c : F) : fderiv 𝕜 (fun _ : E => c) = 0 := by
+theorem fderiv_fun_const (c : F) : fderiv 𝕜 (fun _ : E ↦ c) = 0 := by
   rw [← fderivWithin_univ, fderivWithin_fun_const]
 
 @[simp]
@@ -237,7 +237,7 @@ theorem fderiv_intCast [IntCast F] (z : ℤ) : fderiv 𝕜 (z : E → F) = 0 := 
 theorem fderiv_ofNat (n : ℕ) [OfNat F n] : fderiv 𝕜 (ofNat(n) : E → F) = 0 := fderiv_const _
 
 @[simp, fun_prop]
-theorem differentiable_const (c : F) : Differentiable 𝕜 fun _ : E => c := fun _ =>
+theorem differentiable_const (c : F) : Differentiable 𝕜 fun _ : E ↦ c := fun _ ↦
   differentiableAt_const _
 
 @[simp, fun_prop]
@@ -261,7 +261,7 @@ theorem differentiable_ofNat (n : ℕ) [OfNat F n] :
     Differentiable 𝕜 (ofNat(n) : E → F) := differentiable_const _
 
 @[simp, fun_prop]
-theorem differentiableOn_const (c : F) : DifferentiableOn 𝕜 (fun _ => c) s :=
+theorem differentiableOn_const (c : F) : DifferentiableOn 𝕜 (fun _ ↦ c) s :=
   (differentiable_const _).differentiableOn
 
 @[simp, fun_prop]
@@ -297,7 +297,7 @@ theorem hasFDerivAt_of_subsingleton [h : Subsingleton E] (f : E → F) (x : E) :
   exact hasFDerivWithinAt_singleton f x
 
 @[fun_prop]
-theorem differentiableOn_empty : DifferentiableOn 𝕜 f ∅ := fun _ => False.elim
+theorem differentiableOn_empty : DifferentiableOn 𝕜 f ∅ := fun _ ↦ False.elim
 
 @[fun_prop]
 theorem differentiableOn_singleton : DifferentiableOn 𝕜 f {x} :=
@@ -305,9 +305,9 @@ theorem differentiableOn_singleton : DifferentiableOn 𝕜 f {x} :=
 
 @[fun_prop]
 theorem Set.Subsingleton.differentiableOn (hs : s.Subsingleton) : DifferentiableOn 𝕜 f s :=
-  hs.induction_on differentiableOn_empty fun _ => differentiableOn_singleton
+  hs.induction_on differentiableOn_empty fun _ ↦ differentiableOn_singleton
 
-theorem hasFDerivAt_zero_of_eventually_const (c : F) (hf : f =ᶠ[𝓝 x] fun _ => c) :
+theorem hasFDerivAt_zero_of_eventually_const (c : F) (hf : f =ᶠ[𝓝 x] fun _ ↦ c) :
     HasFDerivAt f (0 : E →L[𝕜] F) x :=
   (hasFDerivAt_const _ _).congr_of_eventuallyEq hf
 

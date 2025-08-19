@@ -44,7 +44,7 @@ theorem exists_root {f : ℂ[X]} (hf : 0 < degree f) : ∃ z : ℂ, IsRoot f z :
   simp at hf
 
 instance isAlgClosed : IsAlgClosed ℂ :=
-  IsAlgClosed.of_exists_root _ fun _p _ hp => Complex.exists_root <| degree_pos_of_irreducible hp
+  IsAlgClosed.of_exists_root _ fun _p _ hp ↦ Complex.exists_root <| degree_pos_of_irreducible hp
 
 end Complex
 
@@ -131,7 +131,7 @@ theorem galActionHom_bijective_of_prime_degree {p : ℚ[X]} (p_irr : Irreducible
     · exact nodup_roots ((separable_map (algebraMap ℚ ℂ)).mpr p_irr.separable)
   let conj' := restrict p ℂ (Complex.conjAe.restrictScalars ℚ)
   refine
-    ⟨galActionHom_injective p ℂ, fun x =>
+    ⟨galActionHom_injective p ℂ, fun x ↦
       (congr_arg (x ∈ ·) (show (galActionHom p ℂ).range = ⊤ from ?_)).mpr
         (Subgroup.mem_top x)⟩
   apply Equiv.Perm.subgroup_eq_top_of_swap_mem

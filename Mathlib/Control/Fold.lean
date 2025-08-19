@@ -134,7 +134,7 @@ def Foldr.get (x : Foldr α) : α → α :=
 def Foldr.ofFreeMonoid (f : α → β → β) : FreeMonoid α →* Monoid.Foldr β where
   toFun xs := flip (List.foldr f) (FreeMonoid.toList xs)
   map_one' := rfl
-  map_mul' _ _ := funext fun _ => List.foldr_append
+  map_mul' _ _ := funext fun _ ↦ List.foldr_append
 
 abbrev foldlM (m : Type u → Type u) [Monad m] (α : Type u) : Type u :=
   MulOpposite <| End <| KleisliCat.mk m α
@@ -205,7 +205,7 @@ def toList : t α → List α :=
   List.reverse ∘ foldl (flip List.cons) []
 
 def length (xs : t α) : ℕ :=
-  down <| foldl (fun l _ => up <| l.down + 1) (up 0) xs
+  down <| foldl (fun l _ ↦ up <| l.down + 1) (up 0) xs
 
 variable {m : Type u → Type u} [Monad m]
 
@@ -324,7 +324,7 @@ theorem toList_map (f : α → β) (xs : t α) : toList (f <$> xs) = f <$> toLis
 
 @[simp]
 theorem foldl_map (g : β → γ) (f : α → γ → α) (a : α) (l : t β) :
-    foldl f a (g <$> l) = foldl (fun x y => f x (g y)) a l := by
+    foldl f a (g <$> l) = foldl (fun x y ↦ f x (g y)) a l := by
   simp only [foldl, foldMap_map, Function.comp_def, Function.flip_def]
 
 @[simp]
@@ -367,7 +367,7 @@ theorem foldrm_toList (f : α → β → m β) (x : β) (xs : t α) :
 
 @[simp]
 theorem foldlm_map (g : β → γ) (f : α → γ → m α) (a : α) (l : t β) :
-    foldlm f a (g <$> l) = foldlm (fun x y => f x (g y)) a l := by
+    foldlm f a (g <$> l) = foldlm (fun x y ↦ f x (g y)) a l := by
   simp only [foldlm, foldMap_map, Function.comp_def, Function.flip_def]
 
 @[simp]

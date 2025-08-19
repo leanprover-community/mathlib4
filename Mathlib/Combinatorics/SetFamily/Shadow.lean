@@ -56,7 +56,7 @@ variable [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s t : Finset α} {a :
 `𝒜`, and the (`k` times) iterated shadow (`shadow^[k]`) is all sets we can get by removing `k`
 elements from any set in `𝒜`. -/
 def shadow (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
-  𝒜.sup fun s => s.image (erase s)
+  𝒜.sup fun s ↦ s.image (erase s)
 
 @[inherit_doc] scoped[FinsetFamily] notation:max "∂ " => Finset.shadow
 
@@ -80,7 +80,7 @@ theorem shadow_singleton (a : α) : ∂ {{a}} = {∅} := by
 
 /-- The shadow is monotone. -/
 @[mono]
-theorem shadow_monotone : Monotone (shadow : Finset (Finset α) → Finset (Finset α)) := fun _ _ =>
+theorem shadow_monotone : Monotone (shadow : Finset (Finset α) → Finset (Finset α)) := fun _ _ ↦
   sup_mono
 
 @[gcongr] lemma shadow_mono (h𝒜ℬ : 𝒜 ⊆ ℬ) : ∂ 𝒜 ⊆ ∂ ℬ := shadow_monotone h𝒜ℬ
@@ -160,7 +160,7 @@ lemma _root_.Set.Sized.shadow_iterate (h𝒜 : (𝒜 : Set (Finset α)).Sized r)
 
 theorem sized_shadow_iff (h : ∅ ∉ 𝒜) :
     (∂ 𝒜 : Set (Finset α)).Sized r ↔ (𝒜 : Set (Finset α)).Sized (r + 1) := by
-  refine ⟨fun h𝒜 s hs => ?_, Set.Sized.shadow⟩
+  refine ⟨fun h𝒜 s hs ↦ ?_, Set.Sized.shadow⟩
   obtain ⟨a, ha⟩ := nonempty_iff_ne_empty.2 (ne_of_mem_of_not_mem hs h)
   rw [← h𝒜 (erase_mem_shadow hs ha), card_erase_add_one ha]
 
@@ -181,7 +181,7 @@ variable [DecidableEq α] [Fintype α] {𝒜 : Finset (Finset α)} {s t : Finset
 `𝒜`, and the (`k` times) iterated upper shadow (`upShadow^[k]`) is all sets we can get by adding
 `k` elements from any set in `𝒜`. -/
 def upShadow (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
-  𝒜.sup fun s => sᶜ.image fun a => insert a s
+  𝒜.sup fun s ↦ sᶜ.image fun a ↦ insert a s
 
 @[inherit_doc] scoped[FinsetFamily] notation:max "∂⁺ " => Finset.upShadow
 
@@ -193,7 +193,7 @@ theorem upShadow_empty : ∂⁺ (∅ : Finset (Finset α)) = ∅ :=
 /-- The upper shadow is monotone. -/
 @[mono]
 theorem upShadow_monotone : Monotone (upShadow : Finset (Finset α) → Finset (Finset α)) :=
-  fun _ _ => sup_mono
+  fun _ _ ↦ sup_mono
 
 /-- `t` is in the upper shadow of `𝒜` iff there is a `s ∈ 𝒜` from which we can remove one element
 to get `t`. -/
@@ -277,7 +277,7 @@ theorem mem_upShadow_iff_exists_mem_card_add :
     s ∈ ∂⁺ ^[k] 𝒜 ↔ ∃ t ∈ 𝒜, t ⊆ s ∧ #t + k = #s := by
   induction k generalizing 𝒜 s with
   | zero =>
-    refine ⟨fun hs => ⟨s, hs, Subset.refl _, rfl⟩, ?_⟩
+    refine ⟨fun hs ↦ ⟨s, hs, Subset.refl _, rfl⟩, ?_⟩
     rintro ⟨t, ht, hst, hcard⟩
     rwa [← eq_of_subset_of_card_le hst hcard.ge]
   | succ k ih =>

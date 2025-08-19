@@ -48,17 +48,17 @@ theorem ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_count
     exact heq _ hgA_toReal
   apply ext_of_forall_integral_eq_of_IsFiniteMeasure
   intro f
-  have h0 : Tendsto (fun ε : ℝ => 6 * √ε) (𝓝[>] 0) (𝓝 0) := by
+  have h0 : Tendsto (fun ε : ℝ ↦ 6 * √ε) (𝓝[>] 0) (𝓝 0) := by
     nth_rewrite 3 [← mul_zero 6]
     apply tendsto_nhdsWithin_of_tendsto_nhds (Tendsto.const_mul 6 _)
     nth_rewrite 2 [← sqrt_zero]
     exact Continuous.tendsto continuous_sqrt 0
-  have lim1 : Tendsto (fun ε => |∫ x, mulExpNegMulSq ε (f x) ∂P - ∫ x, mulExpNegMulSq ε (f x) ∂P'|)
+  have lim1 : Tendsto (fun ε ↦ |∫ x, mulExpNegMulSq ε (f x) ∂P - ∫ x, mulExpNegMulSq ε (f x) ∂P'|)
       (𝓝[>] 0) (𝓝 0) := by
-    apply squeeze_zero' (eventually_nhdsWithin_of_forall (fun x _ => abs_nonneg _))
+    apply squeeze_zero' (eventually_nhdsWithin_of_forall (fun x _ ↦ abs_nonneg _))
       (eventually_nhdsWithin_of_forall _) h0
-    exact fun ε hε => dist_integral_mulExpNegMulSq_comp_le f hA_toReal heq' hε
-  have lim2 : Tendsto (fun ε => |∫ x, mulExpNegMulSq ε (f x) ∂P
+    exact fun ε hε ↦ dist_integral_mulExpNegMulSq_comp_le f hA_toReal heq' hε
+  have lim2 : Tendsto (fun ε ↦ |∫ x, mulExpNegMulSq ε (f x) ∂P
       - ∫ x, mulExpNegMulSq ε (f x) ∂P'|) (𝓝[>] 0)
       (𝓝 |∫ x, f x ∂↑P - ∫ x, f x ∂↑P'|) :=
     Tendsto.abs (Tendsto.sub (tendsto_integral_mulExpNegMulSq_comp f)

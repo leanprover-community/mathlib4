@@ -81,7 +81,7 @@ namespace IntFractPair
 
 /-- Make an `IntFractPair` printable. -/
 instance [Repr K] : Repr (IntFractPair K) :=
-  ⟨fun p _ => "(b : " ++ repr p.b ++ ", fract : " ++ repr p.fr ++ ")"⟩
+  ⟨fun p _ ↦ "(b : " ++ repr p.b ++ ", fract : " ++ repr p.fr ++ ")"⟩
 
 instance inhabited [Inhabited K] : Inhabited (IntFractPair K) :=
   ⟨⟨0, default⟩⟩
@@ -138,7 +138,7 @@ For example, let `(v : ℚ) := 3.4`. The process goes as follows:
 protected def stream (v : K) : Stream' <| Option (IntFractPair K)
   | 0 => some (IntFractPair.of v)
   | n + 1 =>
-    (IntFractPair.stream v n).bind fun ap_n =>
+    (IntFractPair.stream v n).bind fun ap_n ↦
       if ap_n.fr = 0 then none else some (IntFractPair.of ap_n.fr⁻¹)
 
 /-- Shows that `IntFractPair.stream` has the sequence property, that is once we return `none` at
@@ -181,7 +181,7 @@ fraction. Refer to said function for more details about the computation process.
 protected def of [DivisionRing K] [LinearOrder K] [FloorRing K] (v : K) : GenContFract K :=
   let ⟨h, s⟩ := IntFractPair.seq1 v -- get the sequence of integer and fractional parts.
   ⟨h.b, -- the head is just the first integer part
-    s.map fun p => ⟨1, p.b⟩⟩ -- the sequence consists of the remaining integer parts as the partial
+    s.map fun p ↦ ⟨1, p.b⟩⟩ -- the sequence consists of the remaining integer parts as the partial
                             -- denominators; all partial numerators are simply 1
 
 end GenContFract

@@ -38,7 +38,7 @@ section Basic
 variable {R I J K L}
 
 theorem comp_map_map (M : Matrix I J (Matrix K L R)) (f : R → R') :
-    comp I J K L _ (M.map (fun M' => M'.map f)) = (comp I J K L _ M).map f := rfl
+    comp I J K L _ (M.map (fun M' ↦ M'.map f)) = (comp I J K L _ M).map f := rfl
 
 @[simp]
 theorem comp_single_single
@@ -75,8 +75,8 @@ theorem comp_symm_single
 
 @[simp]
 theorem comp_diagonal_diagonal [DecidableEq I] [DecidableEq J] [Zero R] (d : I → J → R) :
-    comp I I J J R (diagonal fun i => diagonal fun j => d i j)
-      = diagonal fun ij => d ij.1 ij.2 := by
+    comp I I J J R (diagonal fun i ↦ diagonal fun j ↦ d i j)
+      = diagonal fun ij ↦ d ij.1 ij.2 := by
   ext ⟨i₁, j₁⟩ ⟨i₂, j₂⟩
   dsimp [comp_apply]
   obtain hi | rfl := ne_or_eq i₁ i₂
@@ -89,8 +89,8 @@ theorem comp_diagonal_diagonal [DecidableEq I] [DecidableEq J] [Zero R] (d : I �
 
 @[simp]
 theorem comp_symm_diagonal [DecidableEq I] [DecidableEq J] [Zero R] (d : I × J → R) :
-    (comp I I J J R).symm (diagonal d) = diagonal fun i => diagonal fun j => d (i, j) :=
-  (comp I I J J R).symm_apply_eq.2 <| (comp_diagonal_diagonal fun i j => d (i, j)).symm
+    (comp I I J J R).symm (diagonal d) = diagonal fun i ↦ diagonal fun j ↦ d (i, j) :=
+  (comp I I J J R).symm_apply_eq.2 <| (comp_diagonal_diagonal fun i j ↦ d (i, j)).symm
 
 theorem comp_transpose (M : Matrix I J (Matrix K L R)) :
     comp J I K L R Mᵀ = (comp _ _ _ _ R <| M.map (·ᵀ))ᵀ := rfl

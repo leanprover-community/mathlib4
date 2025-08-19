@@ -153,7 +153,7 @@ of morphisms whose cone satisfies `P`. (The name `trW` contains the prefix `tr`
 for "triangulated", and `W` is a letter that is often used to refer to classes of
 morphisms with respect to which we may consider the localized category.) -/
 def trW : MorphismProperty C :=
-  fun X Y f => ∃ (Z : C) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧)
+  fun X Y f ↦ ∃ (Z : C) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧)
     (_ : Triangle.mk f g h ∈ distTriang C), P Z
 
 lemma trW_iff {X Y : C} (f : X ⟶ Y) :
@@ -201,7 +201,7 @@ instance : P.trW.RespectsIso where
 
 instance [P.ContainsZero] : P.trW.ContainsIdentities := by
   rw [← trW_isoClosure]
-  exact ⟨fun X => ⟨_, _, _, contractible_distinguished X, prop_zero _⟩⟩
+  exact ⟨fun X ↦ ⟨_, _, _, contractible_distinguished X, prop_zero _⟩⟩
 
 lemma trW_of_isIso [P.ContainsZero] {X Y : C} (f : X ⟶ Y) [IsIso f] : P.trW f := by
   refine (P.trW.arrow_mk_iso_iff ?_).1 (MorphismProperty.id_mem _ X)
@@ -226,7 +226,7 @@ lemma trW.unshift [P.IsStableUnderShift ℤ]
 instance [P.IsStableUnderShift ℤ] : P.trW.IsCompatibleWithShift ℤ where
   condition n := by
     ext K L f
-    exact ⟨fun hf => hf.unshift, fun hf => hf.shift n⟩
+    exact ⟨fun hf ↦ hf.unshift, fun hf ↦ hf.shift n⟩
 
 instance [IsTriangulated C] [P.IsTriangulated] : P.trW.IsMultiplicative where
   comp_mem := by

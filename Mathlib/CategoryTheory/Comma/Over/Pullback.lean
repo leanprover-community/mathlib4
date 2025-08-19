@@ -52,7 +52,7 @@ by pulling back a morphism along `f`. -/
 @[simps! +simpRhs obj_left obj_hom map_left]
 def pullback {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X where
   obj g := Over.mk (pullback.snd g.hom f)
-  map := fun g {h} {k} =>
+  map := fun g {h} {k} ↦
     Over.homMk (pullback.lift (pullback.fst _ _ ≫ k.left) (pullback.snd _ _)
       (by simp [pullback.condition]))
 
@@ -60,13 +60,13 @@ def pullback {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X where
 @[simps! unit_app counit_app]
 def mapPullbackAdj {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ pullback f :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun x y =>
-        { toFun := fun u =>
+    { homEquiv := fun x y ↦
+        { toFun := fun u ↦
             Over.homMk (pullback.lift u.left x.hom <| by simp)
-          invFun := fun v => Over.homMk (v.left ≫ pullback.fst _ _) <| by
+          invFun := fun v ↦ Over.homMk (v.left ≫ pullback.fst _ _) <| by
             simp [← Over.w v, pullback.condition]
           left_inv := by cat_disch
-          right_inv := fun v => by
+          right_inv := fun v ↦ by
             ext
             dsimp
             ext
@@ -143,7 +143,7 @@ by pushing a morphism forward along `f`. -/
 @[simps]
 def pushout {X Y : C} (f : X ⟶ Y) : Under X ⥤ Under Y where
   obj x := Under.mk (pushout.inr x.hom f)
-  map := fun x {x'} {u} =>
+  map := fun x {x'} {u} ↦
     Under.homMk (pushout.desc (u.right ≫ pushout.inl _ _) (pushout.inr _ _)
       (by simp [← pushout.condition]))
 
@@ -151,15 +151,15 @@ def pushout {X Y : C} (f : X ⟶ Y) : Under X ⥤ Under Y where
 @[simps! unit_app counit_app]
 def mapPushoutAdj {X Y : C} (f : X ⟶ Y) : pushout f ⊣ map f :=
   Adjunction.mkOfHomEquiv {
-    homEquiv := fun x y => {
-      toFun := fun u => Under.homMk (pushout.inl _ _ ≫ u.right) <| by
+    homEquiv := fun x y ↦ {
+      toFun := fun u ↦ Under.homMk (pushout.inl _ _ ≫ u.right) <| by
         simp only [map_obj_hom]
         rw [← Under.w u]
         simp only [Functor.const_obj_obj, map_obj_right, Functor.id_obj, pushout_obj, mk_right,
           mk_hom]
         rw [← assoc, ← assoc, pushout.condition]
-      invFun := fun v => Under.homMk (pushout.desc v.right y.hom <| by simp)
-      left_inv := fun u => by
+      invFun := fun v ↦ Under.homMk (pushout.desc v.right y.hom <| by simp)
+      left_inv := fun u ↦ by
         ext
         dsimp
         ext

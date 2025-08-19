@@ -92,7 +92,7 @@ private lemma recursion' (n : ℕ) :
   have hv₂ (x) : HasDerivAt v₂ (v₂' x) x := (hasDerivAt_mul_const θ).cos
   convert_to (∫ (x : ℝ) in (-1)..1, u₁ x * v₁' x) * θ = _ using 1
   · simp_rw [u₁, v₁', f, ← intervalIntegral.integral_mul_const, sq θ, mul_assoc]
-  rw [integral_mul_deriv_eq_deriv_mul (fun x _ => hu₁ x) (fun x _ => hv₁ x)
+  rw [integral_mul_deriv_eq_deriv_mul (fun x _ ↦ hu₁ x) (fun x _ ↦ hv₁ x)
     (hu₁d.intervalIntegrable _ _) (hv₁d.intervalIntegrable _ _), hu₁_eval_one, hu₁_eval_neg_one,
     zero_mul, zero_mul, sub_zero, zero_sub, ← integral_neg, ← integral_mul_const]
   convert_to ((-2 : ℝ) * (n + 1)) * ∫ (x : ℝ) in (-1)..1, (u₂ x * v₂' x) = _ using 1
@@ -100,7 +100,7 @@ private lemma recursion' (n : ℕ) :
     congr 1 with x
     dsimp [u₁', v₁, u₂, v₂']
     ring
-  rw [integral_mul_deriv_eq_deriv_mul (fun x _ => hu₂ x) (fun x _ => hv₂ x)
+  rw [integral_mul_deriv_eq_deriv_mul (fun x _ ↦ hu₂ x) (fun x _ ↦ hv₂ x)
     (hu₂d.intervalIntegrable _ _) (hv₂d.intervalIntegrable _ _),
     mul_sub, t, neg_mul, neg_mul, neg_mul, sub_neg_eq_add]
   have (x : _) : u₂' x = (2 * n + 1) * f x ^ n - 2 * n * f x ^ (n - 1) := by
@@ -218,7 +218,7 @@ private lemma is_integer {p : ℤ[X]} (a b : ℤ) {k : ℕ} (hp : p.natDegree �
   conv => lhs; rw [← sum_monomial_eq p]
   rw [eval₂_sum, sum, Finset.sum_mul, Int.cast_sum]
   simp only [eval₂_monomial, eq_intCast, div_pow, Int.cast_mul, Int.cast_pow]
-  refine Finset.sum_congr rfl (fun i hi => ?_)
+  refine Finset.sum_congr rfl (fun i hi ↦ ?_)
   have ik := (le_natDegree_of_mem_supp i hi).trans hp
   rw [mul_assoc, div_mul_comm, ← Int.cast_pow, ← Int.cast_pow, ← Int.cast_pow,
     ← pow_sub_mul_pow b ik, ← Int.cast_div_charZero, Int.mul_ediv_cancel _ (pow_ne_zero _ hb),
@@ -234,7 +234,7 @@ so the integral is positive.
 -/
 private lemma I_pos : 0 < I n (π / 2) := by
   refine integral_pos (by simp) (by fun_prop) ?_ ⟨0, by simp⟩
-  refine fun x hx => mul_nonneg (pow_nonneg ?_ _) ?_
+  refine fun x hx ↦ mul_nonneg (pow_nonneg ?_ _) ?_
   · rw [sub_nonneg, sq_le_one_iff_abs_le_one, abs_le]
     exact ⟨hx.1.le, hx.2⟩
   refine cos_nonneg_of_neg_pi_div_two_le_of_le ?_ ?_ <;>
@@ -261,9 +261,9 @@ For any real `a`, we have that `a ^ (2n+1) / n!` tends to `0` as `n → ∞`.  T
 reformulation of tendsto_pow_div_factorial_atTop, which asserts the same for `a ^ n / n!`
 -/
 private lemma tendsto_pow_div_factorial_at_top_aux (a : ℝ) :
-    Tendsto (fun n => (a : ℝ) ^ (2 * n + 1) / n !) atTop (nhds 0) := by
+    Tendsto (fun n ↦ (a : ℝ) ^ (2 * n + 1) / n !) atTop (nhds 0) := by
   rw [← mul_zero a]
-  refine ((FloorSemiring.tendsto_pow_div_factorial_atTop (a ^ 2)).const_mul a).congr (fun x => ?_)
+  refine ((FloorSemiring.tendsto_pow_div_factorial_atTop (a ^ 2)).const_mul a).congr (fun x ↦ ?_)
   rw [← pow_mul, mul_div_assoc', _root_.pow_succ']
 
 /-- If `x` is rational, it can be written as `a / b` with `a : ℤ` and `b : ℕ` satisfying `b > 0`. -/

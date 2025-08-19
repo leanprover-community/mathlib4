@@ -48,7 +48,7 @@ section Preorder
 
 variable (α) [Preorder α] [Preorder β] [Preorder γ] {g : β → γ} {f : α → β}
 
-protected theorem id : LeftOrdContinuous (id : α → α) := fun s x h => by
+protected theorem id : LeftOrdContinuous (id : α → α) := fun s x h ↦ by
   simpa only [image_id] using h
 
 variable {α}
@@ -64,12 +64,12 @@ theorem map_isGreatest (hf : LeftOrdContinuous f) {s : Set α} {x : α} (h : IsG
     IsGreatest (f '' s) (f x) :=
   ⟨mem_image_of_mem f h.1, (hf h.isLUB).1⟩
 
-theorem mono (hf : LeftOrdContinuous f) : Monotone f := fun a₁ a₂ h =>
+theorem mono (hf : LeftOrdContinuous f) : Monotone f := fun a₁ a₂ h ↦
   have : IsGreatest {a₁, a₂} a₂ := ⟨Or.inr rfl, by simp [*]⟩
   (hf.map_isGreatest this).2 <| mem_image_of_mem _ (Or.inl rfl)
 
 theorem comp (hg : LeftOrdContinuous g) (hf : LeftOrdContinuous f) : LeftOrdContinuous (g ∘ f) :=
-  fun s x h => by simpa only [image_image] using hg (hf h)
+  fun s x h ↦ by simpa only [image_image] using hg (hf h)
 
 protected theorem iterate {f : α → α} (hf : LeftOrdContinuous f) (n : ℕ) :
     LeftOrdContinuous f^[n] :=
@@ -146,7 +146,7 @@ section Preorder
 
 variable (α) [Preorder α] [Preorder β] [Preorder γ] {g : β → γ} {f : α → β}
 
-protected theorem id : RightOrdContinuous (id : α → α) := fun s x h => by
+protected theorem id : RightOrdContinuous (id : α → α) := fun s x h ↦ by
   simpa only [image_id] using h
 
 variable {α}

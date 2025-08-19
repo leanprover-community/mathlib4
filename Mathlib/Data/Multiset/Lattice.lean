@@ -56,7 +56,7 @@ theorem le_sup {s : Multiset α} {a : α} (h : a ∈ s) : a ≤ s.sup :=
 
 @[gcongr]
 theorem sup_mono {s₁ s₂ : Multiset α} (h : s₁ ⊆ s₂) : s₁.sup ≤ s₂.sup :=
-  sup_le.2 fun _ hb => le_sup (h hb)
+  sup_le.2 fun _ hb ↦ le_sup (h hb)
 
 variable [DecidableEq α]
 
@@ -125,7 +125,7 @@ theorem inf_le {s : Multiset α} {a : α} (h : a ∈ s) : s.inf ≤ a :=
 
 @[gcongr]
 theorem inf_mono {s₁ s₂ : Multiset α} (h : s₁ ⊆ s₂) : s₂.inf ≤ s₁.inf :=
-  le_inf.2 fun _ hb => inf_le (h hb)
+  le_inf.2 fun _ hb ↦ inf_le (h hb)
 
 variable [DecidableEq α]
 

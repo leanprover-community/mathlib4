@@ -95,13 +95,13 @@ theorem naturality_app_app {F G : C ⥤ D ⥤ E ⥤ E'}
 
 /-- A natural transformation is a monomorphism if each component is. -/
 theorem mono_of_mono_app (α : F ⟶ G) [∀ X : C, Mono (α.app X)] : Mono α :=
-  ⟨fun g h eq => by
+  ⟨fun g h eq ↦ by
     ext X
     rw [← cancel_mono (α.app X), ← comp_app, eq, comp_app]⟩
 
 /-- A natural transformation is an epimorphism if each component is. -/
 theorem epi_of_epi_app (α : F ⟶ G) [∀ X : C, Epi (α.app X)] : Epi α :=
-  ⟨fun g h eq => by
+  ⟨fun g h eq ↦ by
     ext X
     rw [← cancel_epi (α.app X), ← comp_app, eq, comp_app]⟩
 
@@ -113,7 +113,7 @@ lemma id_comm (α β : (𝟭 C) ⟶ (𝟭 C)) : α ≫ β = β ≫ α := by
 /-- `hcomp α β` is the horizontal composition of natural transformations. -/
 @[simps]
 def hcomp {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) : F ⋙ H ⟶ G ⋙ I where
-  app := fun X : C => β.app (F.obj X) ≫ I.map (α.app X)
+  app := fun X : C ↦ β.app (F.obj X) ≫ I.map (α.app X)
 
 /-- Notation for horizontal composition of natural transformations. -/
 infixl:80 " ◫ " => hcomp
@@ -141,9 +141,9 @@ namespace Functor
 @[simps obj_obj obj_map]
 protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
   obj k :=
-    { obj := fun j => (F.obj j).obj k,
-      map := fun f => (F.map f).app k, }
-  map f := { app := fun j => (F.obj j).map f }
+    { obj := fun j ↦ (F.obj j).obj k,
+      map := fun f ↦ (F.map f).app k, }
+  map f := { app := fun j ↦ (F.obj j).map f }
 
 -- `@[simps]` doesn't produce a nicely stated lemma here:
 -- the implicit arguments for `app` use the definition of `flip`, rather than `flip` itself.
@@ -157,16 +157,16 @@ attribute [grind =] flip_obj_obj flip_obj_map flip_map_app
 @[simps]
 def leftUnitor (F : C ⥤ D) :
     𝟭 C ⋙ F ≅ F where
-  hom := { app := fun X => 𝟙 (F.obj X) }
-  inv := { app := fun X => 𝟙 (F.obj X) }
+  hom := { app := fun X ↦ 𝟙 (F.obj X) }
+  inv := { app := fun X ↦ 𝟙 (F.obj X) }
 
 /-- The right unitor, a natural isomorphism `(F ⋙ (𝟭 B)) ≅ F`.
 -/
 @[simps]
 def rightUnitor (F : C ⥤ D) :
     F ⋙ 𝟭 D ≅ F where
-  hom := { app := fun X => 𝟙 (F.obj X) }
-  inv := { app := fun X => 𝟙 (F.obj X) }
+  hom := { app := fun X ↦ 𝟙 (F.obj X) }
+  inv := { app := fun X ↦ 𝟙 (F.obj X) }
 
 /-- The associator for functors, a natural isomorphism `((F ⋙ G) ⋙ H) ≅ (F ⋙ (G ⋙ H))`.
 
@@ -176,8 +176,8 @@ and it's usually best to insert explicit associators.)
 @[simps]
 def associator (F : C ⥤ D) (G : D ⥤ E) (H : E ⥤ E') :
     (F ⋙ G) ⋙ H ≅ F ⋙ G ⋙ H where
-  hom := { app := fun _ => 𝟙 _ }
-  inv := { app := fun _ => 𝟙 _ }
+  hom := { app := fun _ ↦ 𝟙 _ }
+  inv := { app := fun _ ↦ 𝟙 _ }
 
 protected theorem assoc (F : C ⥤ D) (G : D ⥤ E) (H : E ⥤ E') : (F ⋙ G) ⋙ H = F ⋙ G ⋙ H :=
   rfl
@@ -190,8 +190,8 @@ variable (C D E) in
 def flipFunctor : (C ⥤ D ⥤ E) ⥤ D ⥤ C ⥤ E where
   obj F := F.flip
   map {F₁ F₂} φ :=
-    { app := fun Y =>
-      { app := fun X => (φ.app X).app Y } }
+    { app := fun Y ↦
+      { app := fun X ↦ (φ.app X).app Y } }
 
 namespace Iso
 

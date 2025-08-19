@@ -188,7 +188,7 @@ See note [partially-applied ext lemmas]. -/
 @[ext high]
 theorem addHom_ext' {γ : Type*} [AddZeroClass γ] ⦃f g : (⨁ i, β i) →+ γ⦄
     (H : ∀ i : ι, f.comp (of _ i) = g.comp (of _ i)) : f = g :=
-  addHom_ext fun i => DFunLike.congr_fun <| H i
+  addHom_ext fun i ↦ DFunLike.congr_fun <| H i
 
 variable {γ : Type u₁} [AddCommMonoid γ]
 
@@ -208,7 +208,7 @@ def toAddMonoid : (⨁ i, β i) →+ γ :=
 theorem toAddMonoid_of (i) (x : β i) : toAddMonoid φ (of β i x) = φ i x :=
   DFinsupp.liftAddHom_apply_single φ i x
 
-theorem toAddMonoid.unique (f : ⨁ i, β i) : ψ f = toAddMonoid (fun i => ψ.comp (of β i)) f := by
+theorem toAddMonoid.unique (f : ⨁ i, β i) : ψ f = toAddMonoid (fun i ↦ ψ.comp (of β i)) f := by
   congr
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` applies addHom_ext' here, which isn't what we want.
   apply DFinsupp.addHom_ext'
@@ -229,7 +229,7 @@ induced by a family `φ` of homomorphisms `γ → β i`.
 
 Note that this is not an isomorphism. Not every homomorphism `γ →+ ⨁ i, β i` arises in this way. -/
 def fromAddMonoid : (⨁ i, γ →+ β i) →+ γ →+ ⨁ i, β i :=
-  toAddMonoid fun i => AddMonoidHom.compHom (of β i)
+  toAddMonoid fun i ↦ AddMonoidHom.compHom (of β i)
 
 @[simp]
 theorem fromAddMonoid_of (i : ι) (f : γ →+ β i) : fromAddMonoid (of _ i f) = (of _ i).comp f := by
@@ -248,7 +248,7 @@ variable (β)
 /-- `setToSet β S T h` is the natural homomorphism `⨁ (i : S), β i → ⨁ (i : T), β i`,
 where `h : S ⊆ T`. -/
 def setToSet (S T : Set ι) (H : S ⊆ T) : (⨁ i : S, β i) →+ ⨁ i : T, β i :=
-  toAddMonoid fun i => of (fun i : Subtype T => β i) ⟨↑i, H i.2⟩
+  toAddMonoid fun i ↦ of (fun i : Subtype T ↦ β i) ⟨↑i, H i.2⟩
 
 end DecidableEq
 
@@ -263,16 +263,16 @@ instance uniqueOfIsEmpty [IsEmpty ι] : Unique (⨁ i, β i) :=
 protected def id (M : Type v) (ι : Type* := PUnit) [AddCommMonoid M] [Unique ι] :
     (⨁ _ : ι, M) ≃+ M :=
   {
-    DirectSum.toAddMonoid fun _ =>
+    DirectSum.toAddMonoid fun _ ↦
       AddMonoidHom.id
         M with
-    toFun := DirectSum.toAddMonoid fun _ => AddMonoidHom.id M
-    invFun := of (fun _ => M) default
-    left_inv := fun x =>
+    toFun := DirectSum.toAddMonoid fun _ ↦ AddMonoidHom.id M
+    invFun := of (fun _ ↦ M) default
+    left_inv := fun x ↦
       DirectSum.induction_on x (by rw [AddMonoidHom.map_zero, AddMonoidHom.map_zero])
-        (fun p x => by rw [Unique.default_eq p, toAddMonoid_of]; rfl) fun x y ihx ihy => by
+        (fun p x ↦ by rw [Unique.default_eq p, toAddMonoid_of]; rfl) fun x y ihx ihy ↦ by
         rw [AddMonoidHom.map_add, AddMonoidHom.map_add, ihx, ihy]
-    right_inv := fun _ => toAddMonoid_of _ _ _ }
+    right_inv := fun _ ↦ toAddMonoid_of _ _ _ }
 
 section CongrLeft
 
@@ -339,12 +339,12 @@ indexed by `ι`.
 When `S = Submodule _ M`, this is available as a `LinearMap`, `DirectSum.coe_linearMap`. -/
 protected def coeAddMonoidHom {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
     [AddSubmonoidClass S M] (A : ι → S) : (⨁ i, A i) →+ M :=
-  toAddMonoid fun i => AddSubmonoidClass.subtype (A i)
+  toAddMonoid fun i ↦ AddSubmonoidClass.subtype (A i)
 
 theorem coeAddMonoidHom_eq_dfinsuppSum [DecidableEq ι]
     {M S : Type*} [DecidableEq M] [AddCommMonoid M]
-    [SetLike S M] [AddSubmonoidClass S M] (A : ι → S) (x : DirectSum ι fun i => A i) :
-    DirectSum.coeAddMonoidHom A x = DFinsupp.sum x fun i => (fun x : A i => ↑x) := by
+    [SetLike S M] [AddSubmonoidClass S M] (A : ι → S) (x : DirectSum ι fun i ↦ A i) :
+    DirectSum.coeAddMonoidHom A x = DFinsupp.sum x fun i ↦ (fun x : A i ↦ ↑x) := by
   simp only [DirectSum.coeAddMonoidHom, toAddMonoid, DFinsupp.liftAddHom, AddEquiv.coe_mk,
     Equiv.coe_fn_mk]
   exact DFinsupp.sumAddHom_apply _ x
@@ -355,7 +355,7 @@ alias coeAddMonoidHom_eq_dfinsupp_sum := coeAddMonoidHom_eq_dfinsuppSum
 @[simp]
 theorem coeAddMonoidHom_of {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
     [AddSubmonoidClass S M] (A : ι → S) (i : ι) (x : A i) :
-    DirectSum.coeAddMonoidHom A (of (fun i => A i) i x) = x :=
+    DirectSum.coeAddMonoidHom A (of (fun i ↦ A i) i x) = x :=
   toAddMonoid_of _ _ _
 
 theorem coe_of_apply {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
@@ -382,14 +382,14 @@ theorem IsInternal.addSubmonoid_iSup_eq_top {M : Type*} [DecidableEq ι] [AddCom
 
 variable {M S : Type*} [AddCommMonoid M] [SetLike S M] [AddSubmonoidClass S M]
 
-theorem support_subset [DecidableEq ι] [DecidableEq M] (A : ι → S) (x : DirectSum ι fun i => A i) :
-    (Function.support fun i => (x i : M)) ⊆ ↑(DFinsupp.support x) := by
+theorem support_subset [DecidableEq ι] [DecidableEq M] (A : ι → S) (x : DirectSum ι fun i ↦ A i) :
+    (Function.support fun i ↦ (x i : M)) ⊆ ↑(DFinsupp.support x) := by
   intro m
   simp only [Function.mem_support, Finset.mem_coe, DFinsupp.mem_support_toFun, not_imp_not,
     ZeroMemClass.coe_eq_zero, imp_self]
 
-theorem finite_support (A : ι → S) (x : DirectSum ι fun i => A i) :
-    (Function.support fun i => (x i : M)).Finite := by
+theorem finite_support (A : ι → S) (x : DirectSum ι fun i ↦ A i) :
+    (Function.support fun i ↦ (x i : M)).Finite := by
   classical
   exact (DFinsupp.support x).finite_toSet.subset (DirectSum.support_subset _ x)
 
@@ -402,10 +402,10 @@ variable [∀ i, AddCommMonoid (β i)] (f : ∀ (i : ι), α i →+ β i)
 def map : (⨁ i, α i) →+ ⨁ i, β i := DFinsupp.mapRange.addMonoidHom f
 
 @[simp] lemma map_of [DecidableEq ι] (i : ι) (x : α i) : map f (of α i x) = of β i (f i x) :=
-  DFinsupp.mapRange_single (hf := fun _ => map_zero _)
+  DFinsupp.mapRange_single (hf := fun _ ↦ map_zero _)
 
 @[simp] lemma map_apply (i : ι) (x : ⨁ i, α i) : map f x i = f i (x i) :=
-  DFinsupp.mapRange_apply (hf := fun _ => map_zero _) _ _ _
+  DFinsupp.mapRange_apply (hf := fun _ ↦ map_zero _) _ _ _
 
 @[simp] lemma map_id :
     (map (fun i ↦ AddMonoidHom.id (α i))) = AddMonoidHom.id (⨁ i, α i) :=

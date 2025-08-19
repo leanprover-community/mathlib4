@@ -26,7 +26,7 @@ variable {C : Type*} [CommGroup C]
 
 @[to_additive]
 instance : IsModularLattice (Subgroup C) :=
-  ⟨fun {x} y z xz a ha => by
+  ⟨fun {x} y z xz a ha ↦ by
     rw [mem_inf, mem_sup] at ha
     rcases ha with ⟨⟨b, hb, c, hc, rfl⟩, haz⟩
     rw [mem_sup]
@@ -76,7 +76,7 @@ variable {G : Type*}
 @[to_additive /-- An `AddSubgroup` of an `AddOrderedCommGroup` is an `AddOrderedCommGroup`. -/]
 instance toIsOrderedMonoid [CommGroup G] [PartialOrder G] [IsOrderedMonoid G] (H : Subgroup G) :
     IsOrderedMonoid H :=
-  Subtype.coe_injective.isOrderedMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.isOrderedMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 end Subgroup
 

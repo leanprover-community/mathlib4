@@ -65,7 +65,7 @@ protected theorem Subgroup.isCyclic_iff_exists_zpowers_eq_top [Group α] (H : Su
 
 @[to_additive]
 instance (priority := 100) isCyclic_of_subsingleton [Group α] [Subsingleton α] : IsCyclic α :=
-  ⟨⟨1, fun _ => ⟨0, Subsingleton.elim _ _⟩⟩⟩
+  ⟨⟨1, fun _ ↦ ⟨0, Subsingleton.elim _ _⟩⟩⟩
 
 @[simp]
 theorem isCyclic_multiplicative_iff [SubNegMonoid α] :
@@ -115,7 +115,7 @@ theorem MonoidHom.map_cyclic [h : IsCyclic G] (σ : G →* G) :
     ∃ m : ℤ, ∀ g : G, σ g = g ^ m := by
   obtain ⟨h, hG⟩ := IsCyclic.exists_generator (α := G)
   obtain ⟨m, hm⟩ := hG (σ h)
-  refine ⟨m, fun g => ?_⟩
+  refine ⟨m, fun g ↦ ?_⟩
   obtain ⟨n, rfl⟩ := hG g
   rw [MonoidHom.map_zpow, ← hm, ← zpow_mul, ← zpow_mul']
 
@@ -236,7 +236,7 @@ theorem Infinite.orderOf_eq_zero_of_forall_mem_zpowers [Infinite α] {g : α}
 
 @[to_additive]
 instance Bot.isCyclic : IsCyclic (⊥ : Subgroup α) :=
-  ⟨⟨1, fun x => ⟨0, Subtype.eq <| (zpow_zero (1 : α)).trans <| Eq.symm (Subgroup.mem_bot.1 x.2)⟩⟩⟩
+  ⟨⟨1, fun x ↦ ⟨0, Subtype.eq <| (zpow_zero (1 : α)).trans <| Eq.symm (Subgroup.mem_bot.1 x.2)⟩⟩⟩
 
 @[to_additive]
 instance Subgroup.isCyclic [IsCyclic α] (H : Subgroup α) : IsCyclic H :=
@@ -248,13 +248,13 @@ instance Subgroup.isCyclic [IsCyclic α] (H : Subgroup α) : IsCyclic H :=
     have hk : g ^ k = x := hk
     have hex : ∃ n : ℕ, 0 < n ∧ g ^ n ∈ H :=
       ⟨k.natAbs,
-        Nat.pos_of_ne_zero fun h => hx₂ <| by
+        Nat.pos_of_ne_zero fun h ↦ hx₂ <| by
           rw [← hk, Int.natAbs_eq_zero.mp h, zpow_zero], by
             rcases k with k | k
             · rw [Int.ofNat_eq_coe, Int.natAbs_cast k, ← zpow_natCast, ← Int.ofNat_eq_coe, hk]
               exact hx₁
             · rw [Int.natAbs_negSucc, ← Subgroup.inv_mem_iff H]; simp_all⟩
-    ⟨⟨⟨g ^ Nat.find hex, (Nat.find_spec hex).2⟩, fun ⟨x, hx⟩ =>
+    ⟨⟨⟨g ^ Nat.find hex, (Nat.find_spec hex).2⟩, fun ⟨x, hx⟩ ↦
         let ⟨k, hk⟩ := hg x
         have hk : g ^ k = x := hk
         have hk₂ : g ^ ((Nat.find hex : ℤ) * (k / Nat.find hex : ℤ)) ∈ H := by
@@ -269,7 +269,7 @@ instance Subgroup.isCyclic [IsCyclic α] (H : Subgroup α) : IsCyclic H :=
               (Int.emod_nonneg _ (Int.natCast_ne_zero_iff_pos.2 (Nat.find_spec hex).1))]
         have hk₅ : g ^ (k % Nat.find hex).natAbs ∈ H := by rwa [← zpow_natCast, ← hk₄]
         have hk₆ : (k % (Nat.find hex : ℤ)).natAbs = 0 :=
-          by_contradiction fun h =>
+          by_contradiction fun h ↦
             Nat.find_min hex
               (Int.ofNat_lt.1 <| by
                 rw [← hk₄]; exact Int.emod_lt_of_pos _ (Int.natCast_pos.2 (Nat.find_spec hex).1))
@@ -283,8 +283,8 @@ instance Subgroup.isCyclic [IsCyclic α] (H : Subgroup α) : IsCyclic H :=
                 hk])⟩⟩⟩
   else by
     have : H = (⊥ : Subgroup α) :=
-      Subgroup.ext fun x =>
-        ⟨fun h => by simp at *; tauto, fun h => by rw [Subgroup.mem_bot.1 h]; exact H.one_mem⟩
+      Subgroup.ext fun x ↦
+        ⟨fun h ↦ by simp at *; tauto, fun h ↦ by rw [Subgroup.mem_bot.1 h]; exact H.one_mem⟩
     subst this; infer_instance
 
 @[to_additive]
@@ -308,7 +308,7 @@ theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] 
   calc
     #{a : α | a ^ n = 1} ≤
         #(zpowers (g ^ (Fintype.card α / Nat.gcd n (Fintype.card α))) : Set α).toFinset :=
-      card_le_card fun x hx =>
+      card_le_card fun x hx ↦
         let ⟨m, hm⟩ := show x ∈ Submonoid.powers g from mem_powers_iff_mem_zpowers.2 <| hg x
         Set.mem_toFinset.2
           ⟨(m / (Fintype.card α / Nat.gcd n (Fintype.card α)) : ℕ), by
@@ -325,7 +325,7 @@ theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] 
     _ ≤ n := by
       let ⟨m, hm⟩ := Nat.gcd_dvd_right n (Fintype.card α)
       have hm0 : 0 < m :=
-        Nat.pos_of_ne_zero fun hm0 => by
+        Nat.pos_of_ne_zero fun hm0 ↦ by
           rw [hm0, mul_zero, Fintype.card_eq_zero_iff] at hm
           exact hm.elim' 1
       simp only [Set.toFinset_card, SetLike.coe_sort_coe]
@@ -398,13 +398,13 @@ variable [DecidableEq α]
 
 @[to_additive]
 theorem IsCyclic.image_range_orderOf (ha : ∀ x : α, x ∈ zpowers a) :
-    Finset.image (fun i => a ^ i) (range (orderOf a)) = univ := by
+    Finset.image (fun i ↦ a ^ i) (range (orderOf a)) = univ := by
   simp_rw [← SetLike.mem_coe] at ha
   simp only [_root_.image_range_orderOf, Set.eq_univ_iff_forall.mpr ha, Set.toFinset_univ]
 
 @[to_additive]
 theorem IsCyclic.image_range_card (ha : ∀ x : α, x ∈ zpowers a) :
-    Finset.image (fun i => a ^ i) (range (Nat.card α)) = univ := by
+    Finset.image (fun i ↦ a ^ i) (range (Nat.card α)) = univ := by
   rw [← orderOf_eq_card_of_forall_mem_zpowers ha, IsCyclic.image_range_orderOf ha]
 
 @[to_additive]
@@ -432,17 +432,17 @@ private theorem card_pow_eq_one_eq_orderOf_aux (a : α) : #{b : α | b ^ orderOf
       orderOf a = @Fintype.card (zpowers a) (id _) := Fintype.card_zpowers.symm
       _ ≤
           @Fintype.card (({b : α | b ^ orderOf a = 1} : Finset _) : Set α)
-            (Fintype.ofFinset _ fun _ => Iff.rfl) :=
+            (Fintype.ofFinset _ fun _ ↦ Iff.rfl) :=
         (@Fintype.card_le_of_injective (zpowers a)
           (({b : α | b ^ orderOf a = 1} : Finset _) : Set α) (id _) (id _)
-          (fun b =>
+          (fun b ↦
             ⟨b.1,
               mem_filter.2
                 ⟨mem_univ _, by
                   let ⟨i, hi⟩ := b.2
                   rw [← hi, ← zpow_natCast, ← zpow_mul, mul_comm, zpow_mul, zpow_natCast,
                     pow_orderOf_eq_one, one_zpow]⟩⟩)
-          fun _ _ h => Subtype.eq (Subtype.mk.inj h))
+          fun _ _ h ↦ Subtype.eq (Subtype.mk.inj h))
       _ = #{b : α | b ^ orderOf a = 1} := Fintype.card_ofFinset _ _
       )
 
@@ -459,7 +459,7 @@ private theorem card_orderOf_eq_totient_aux₁ {d : ℕ} (hd : d ∣ Fintype.car
   have h1 :
     (∑ m ∈ d.properDivisors, #{a : α | orderOf a = m}) =
       ∑ m ∈ d.properDivisors, φ m := by
-    refine Finset.sum_congr rfl fun m hm => ?_
+    refine Finset.sum_congr rfl fun m hm ↦ ?_
     simp only [mem_properDivisors] at hm
     refine IH m hm.2 (hm.1.trans hd) (Finset.card_pos.2 ⟨a ^ (d / m), ?_⟩)
     rw [mem_filter_univ, orderOf_pow a, ha, Nat.gcd_eq_right (div_dvd_of_dvd hm.1),
@@ -488,13 +488,13 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
       simp [c]
     _ = ∑ m ∈ c.divisors.erase d, #{a : α | orderOf a = m} := by
       rw [eq_comm]
-      refine sum_subset (erase_subset _ _) fun m hm₁ hm₂ => ?_
+      refine sum_subset (erase_subset _ _) fun m hm₁ hm₂ ↦ ?_
       have : m = d := by
         contrapose! hm₂
         exact mem_erase_of_ne_of_mem hm₂ hm₁
       simp [this, h0]
     _ ≤ ∑ m ∈ c.divisors.erase d, φ m := by
-      refine sum_le_sum fun m hm => ?_
+      refine sum_le_sum fun m hm ↦ ?_
       have hmc : m ∣ c := by
         simp only [mem_erase, mem_divisors] at hm
         tauto
@@ -520,7 +520,7 @@ end Totient
 @[to_additive]
 lemma IsCyclic.card_orderOf_eq_totient [IsCyclic α] [Fintype α] {d : ℕ} (hd : d ∣ Fintype.card α) :
     #{a : α | orderOf a = d} = totient d := by
-  classical apply card_orderOf_eq_totient_aux₂ (fun n => IsCyclic.card_pow_eq_one_le) hd
+  classical apply card_orderOf_eq_totient_aux₂ (fun n ↦ IsCyclic.card_pow_eq_one_le) hd
 
 /-- A finite group of prime order is simple. -/
 @[to_additive /-- A finite group of prime order is simple. -/]
@@ -529,7 +529,7 @@ theorem isSimpleGroup_of_prime_card {p : ℕ} [hp : Fact p.Prime]
   subst h
   have : Finite α := Nat.finite_of_card_ne_zero hp.1.ne_zero
   have : Nontrivial α := Finite.one_lt_card_iff_nontrivial.mp hp.1.one_lt
-  exact ⟨fun H _ => H.eq_bot_or_eq_top_of_prime_card⟩
+  exact ⟨fun H _ ↦ H.eq_bot_or_eq_top_of_prime_card⟩
 
 end Cyclic
 
@@ -591,7 +591,7 @@ theorem prime_card [Finite α] : (Nat.card α).Prime := by
   have h0 : 0 < Nat.card α := Nat.card_pos
   obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := α)
   rw [Nat.prime_def]
-  refine ⟨Finite.one_lt_card_iff_nontrivial.2 inferInstance, fun n hn => ?_⟩
+  refine ⟨Finite.one_lt_card_iff_nontrivial.2 inferInstance, fun n hn ↦ ?_⟩
   refine (IsSimpleOrder.eq_bot_or_eq_top (Subgroup.zpowers (g ^ n))).symm.imp ?_ ?_
   · intro h
     have hgo := orderOf_pow (n := n) g
@@ -658,7 +658,7 @@ theorem IsCyclic.of_exponent_eq_card [CommGroup α] [Finite α] (h : exponent α
 @[to_additive]
 theorem IsCyclic.iff_exponent_eq_card [CommGroup α] [Finite α] :
     IsCyclic α ↔ exponent α = Nat.card α :=
-  ⟨fun _ => IsCyclic.exponent_eq_card, IsCyclic.of_exponent_eq_card⟩
+  ⟨fun _ ↦ IsCyclic.exponent_eq_card, IsCyclic.of_exponent_eq_card⟩
 
 @[to_additive]
 theorem IsCyclic.exponent_eq_zero_of_infinite [Group α] [IsCyclic α] [Infinite α] :

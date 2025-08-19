@@ -42,18 +42,18 @@ theorem ae_const_le_iff_forall_lt_measure_zero {β} [LinearOrder β] [Topologica
   push_neg
   constructor
   · intro h b hb
-    exact measure_mono_null (fun y hy => (lt_of_le_of_lt hy hb : _)) h
+    exact measure_mono_null (fun y hy ↦ (lt_of_le_of_lt hy hb : _)) h
   intro hc
   by_cases h : ∀ b, c ≤ b
   · have : {a : α | f a < c} = ∅ := by
-      apply Set.eq_empty_iff_forall_notMem.2 fun x hx => ?_
+      apply Set.eq_empty_iff_forall_notMem.2 fun x hx ↦ ?_
       exact (lt_irrefl _ (lt_of_lt_of_le hx (h (f x)))).elim
     simp [this]
   by_cases H : ¬IsLUB (Set.Iio c) c
-  · have : c ∈ upperBounds (Set.Iio c) := fun y hy => le_of_lt hy
+  · have : c ∈ upperBounds (Set.Iio c) := fun y hy ↦ le_of_lt hy
     obtain ⟨b, b_up, bc⟩ : ∃ b : β, b ∈ upperBounds (Set.Iio c) ∧ b < c := by
       simpa [IsLUB, IsLeast, this, lowerBounds] using H
-    exact measure_mono_null (fun x hx => b_up hx) (hc b bc)
+    exact measure_mono_null (fun x hx ↦ b_up hx) (hc b bc)
   push_neg at H h
   obtain ⟨u, _, u_lt, u_lim, -⟩ :
     ∃ u : ℕ → β,
@@ -90,7 +90,7 @@ theorem ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀ [SigmaFinite μ]
           simp only [lintegral_const, Set.univ_inter, MeasurableSet.univ, Measure.restrict_apply]
         _ = ∫⁻ x in s, g x + ε ∂μ := (lintegral_add_right _ measurable_const).symm
         _ ≤ ∫⁻ x in s, f x ∂μ :=
-          setLIntegral_mono_ae hf.restrict <| ae_of_all _ fun x hx => hx.1.1
+          setLIntegral_mono_ae hf.restrict <| ae_of_all _ fun x hx ↦ hx.1.1
         _ ≤ (∫⁻ x in s, g x ∂μ) + 0 := by
           rw [add_zero, ← Measure.restrict_toMeasurable s_lt_top.ne]
           refine h _ (measurableSet_toMeasurable ..) ?_
@@ -102,18 +102,18 @@ theorem ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀ [SigmaFinite μ]
   obtain ⟨u, _, u_pos, u_lim⟩ :
     ∃ u : ℕ → ℝ≥0, StrictAnti u ∧ (∀ n, 0 < u n) ∧ Tendsto u atTop (𝓝 0) :=
     exists_seq_strictAnti_tendsto (0 : ℝ≥0)
-  let s := fun n : ℕ => {x | g x + u n ≤ f x ∧ g x ≤ (n : ℝ≥0)} ∩ spanningSets μ n
-  have μs : ∀ n, μ (s n) = 0 := fun n => A _ _ _ (u_pos n)
+  let s := fun n : ℕ ↦ {x | g x + u n ≤ f x ∧ g x ≤ (n : ℝ≥0)} ∩ spanningSets μ n
+  have μs : ∀ n, μ (s n) = 0 := fun n ↦ A _ _ _ (u_pos n)
   have B : {x | f x ≤ g x}ᶜ ⊆ ⋃ n, s n := by
     intro x hx
     simp only [Set.mem_compl_iff, Set.mem_setOf, not_le] at hx
     have L1 : ∀ᶠ n in atTop, g x + u n ≤ f x := by
-      have : Tendsto (fun n => g x + u n) atTop (𝓝 (g x + (0 : ℝ≥0))) :=
+      have : Tendsto (fun n ↦ g x + u n) atTop (𝓝 (g x + (0 : ℝ≥0))) :=
         tendsto_const_nhds.add (ENNReal.tendsto_coe.2 u_lim)
       simp only [ENNReal.coe_zero, add_zero] at this
       exact this.eventually_le_const hx
     have L2 : ∀ᶠ n : ℕ in (atTop : Filter ℕ), g x ≤ (n : ℝ≥0) :=
-      have : Tendsto (fun n : ℕ => ((n : ℝ≥0) : ℝ≥0∞)) atTop (𝓝 ∞) := by
+      have : Tendsto (fun n : ℕ ↦ ((n : ℝ≥0) : ℝ≥0∞)) atTop (𝓝 ∞) := by
         simp only [ENNReal.coe_natCast]
         exact ENNReal.tendsto_nat_nhds_top
       this.eventually_const_le (hx.trans_le le_top)
@@ -121,7 +121,7 @@ theorem ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀ [SigmaFinite μ]
     exact ((L1.and L2).and (eventually_mem_spanningSets μ x)).exists
   refine le_antisymm ?_ bot_le
   calc
-    μ {x : α | (fun x : α => f x ≤ g x) x}ᶜ ≤ μ (⋃ n, s n) := measure_mono B
+    μ {x : α | (fun x : α ↦ f x ≤ g x) x}ᶜ ≤ μ (⋃ n, s n) := measure_mono B
     _ ≤ ∑' n, μ (s n) := measure_iUnion_le _
     _ = 0 := by simp only [μs, tsum_zero]
 
@@ -134,9 +134,9 @@ theorem ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite₀ [SigmaFinite μ]
     {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
     (h : ∀ s, MeasurableSet s → μ s < ∞ → ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ) : f =ᵐ[μ] g := by
   have A : f ≤ᵐ[μ] g :=
-    ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀ hf fun s hs h's => le_of_eq (h s hs h's)
+    ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀ hf fun s hs h's ↦ le_of_eq (h s hs h's)
   have B : g ≤ᵐ[μ] f :=
-    ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀ hg fun s hs h's => ge_of_eq (h s hs h's)
+    ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀ hg fun s hs h's ↦ ge_of_eq (h s hs h's)
   filter_upwards [A, B] with x using le_antisymm
 
 theorem ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite [SigmaFinite μ] {f g : α → ℝ≥0∞}

@@ -58,7 +58,7 @@ section Ext
 variable {M N : Matrix m n α}
 
 theorem ext_iff : (∀ i j, M i j = N i j) ↔ M = N :=
-  ⟨fun h => funext fun i => funext <| h i, fun h => by simp [h]⟩
+  ⟨fun h ↦ funext fun i ↦ funext <| h i, fun h ↦ by simp [h]⟩
 
 @[ext]
 theorem ext : (∀ i j, M i j = N i j) → M = N :=
@@ -101,7 +101,7 @@ This is available in bundled forms as:
 * `AlgEquiv.mapMatrix`
 -/
 def map (M : Matrix m n α) (f : α → β) : Matrix m n β :=
-  of fun i j => f (M i j)
+  of fun i j ↦ f (M i j)
 
 @[simp]
 theorem map_apply {M : Matrix m n α} {f : α → β} {i : m} {j : n} : M.map f i j = f (M i j) :=
@@ -122,12 +122,12 @@ theorem map_map {M : Matrix m n α} {β γ : Type*} {f : α → β} {g : β → 
   rfl
 
 theorem map_injective {f : α → β} (hf : Function.Injective f) :
-    Function.Injective fun M : Matrix m n α => M.map f := fun _ _ h =>
-  ext fun i j => hf <| ext_iff.mpr h i j
+    Function.Injective fun M : Matrix m n α ↦ M.map f := fun _ _ h ↦
+  ext fun i j ↦ hf <| ext_iff.mpr h i j
 
 /-- The transpose of a matrix. -/
 def transpose (M : Matrix m n α) : Matrix n m α :=
-  of fun x y => M y x
+  of fun x y ↦ M y x
 
 -- TODO: set as an equation lemma for `transpose`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
@@ -270,49 +270,49 @@ protected theorem map_zero [Zero α] [Zero β] (f : α → β) (h : f 0 = 0) :
 
 protected theorem map_add [Add α] [Add β] (f : α → β) (hf : ∀ a₁ a₂, f (a₁ + a₂) = f a₁ + f a₂)
     (M N : Matrix m n α) : (M + N).map f = M.map f + N.map f :=
-  ext fun _ _ => hf _ _
+  ext fun _ _ ↦ hf _ _
 
 protected theorem map_sub [Sub α] [Sub β] (f : α → β) (hf : ∀ a₁ a₂, f (a₁ - a₂) = f a₁ - f a₂)
     (M N : Matrix m n α) : (M - N).map f = M.map f - N.map f :=
-  ext fun _ _ => hf _ _
+  ext fun _ _ ↦ hf _ _
 
 protected theorem map_smul [SMul R α] [SMul R β] (f : α → β) (r : R) (hf : ∀ a, f (r • a) = r • f a)
     (M : Matrix m n α) : (r • M).map f = r • M.map f :=
-  ext fun _ _ => hf _
+  ext fun _ _ ↦ hf _
 
 protected theorem map_smulₛₗ [SMul R α] [SMul S β] (f : α → β) (σ : R → S) (r : R)
     (hf : ∀ a, f (r • a) = σ r • f a)
     (M : Matrix m n α) : (r • M).map f = σ r • M.map f :=
-  ext fun _ _ => hf _
+  ext fun _ _ ↦ hf _
 
 /-- The scalar action via `Mul.toSMul` is transformed by the same map as the elements
 of the matrix, when `f` preserves multiplication. -/
 theorem map_smul' [Mul α] [Mul β] (f : α → β) (r : α) (A : Matrix n n α)
     (hf : ∀ a₁ a₂, f (a₁ * a₂) = f a₁ * f a₂) : (r • A).map f = f r • A.map f :=
-  ext fun _ _ => hf _ _
+  ext fun _ _ ↦ hf _ _
 
 /-- The scalar action via `mul.toOppositeSMul` is transformed by the same map as the
 elements of the matrix, when `f` preserves multiplication. -/
 theorem map_op_smul' [Mul α] [Mul β] (f : α → β) (r : α) (A : Matrix n n α)
     (hf : ∀ a₁ a₂, f (a₁ * a₂) = f a₁ * f a₂) :
     (MulOpposite.op r • A).map f = MulOpposite.op (f r) • A.map f :=
-  ext fun _ _ => hf _ _
+  ext fun _ _ ↦ hf _ _
 
 theorem _root_.IsSMulRegular.matrix [SMul R S] {k : R} (hk : IsSMulRegular S k) :
     IsSMulRegular (Matrix m n S) k :=
-  IsSMulRegular.pi fun _ => IsSMulRegular.pi fun _ => hk
+  IsSMulRegular.pi fun _ ↦ IsSMulRegular.pi fun _ ↦ hk
 
 theorem _root_.IsLeftRegular.matrix [Mul α] {k : α} (hk : IsLeftRegular k) :
     IsSMulRegular (Matrix m n α) k :=
   hk.isSMulRegular.matrix
 
 instance subsingleton_of_empty_left [IsEmpty m] : Subsingleton (Matrix m n α) :=
-  ⟨fun M N => by
+  ⟨fun M N ↦ by
     ext i
     exact isEmptyElim i⟩
 
 instance subsingleton_of_empty_right [IsEmpty n] : Subsingleton (Matrix m n α) :=
-  ⟨fun M N => by
+  ⟨fun M N ↦ by
     ext i j
     exact isEmptyElim j⟩
 
@@ -346,7 +346,7 @@ theorem transpose_transpose (M : Matrix m n α) : Mᵀᵀ = M := by
   rfl
 
 theorem transpose_injective : Function.Injective (transpose : Matrix m n α → Matrix n m α) :=
-  fun _ _ h => ext fun i j => ext_iff.2 h j i
+  fun _ _ h ↦ ext fun i j ↦ ext_iff.2 h j i
 
 @[simp] theorem transpose_inj {A B : Matrix m n α} : Aᵀ = Bᵀ ↔ A = B := transpose_injective.eq_iff
 
@@ -387,7 +387,7 @@ a matrix `M : Matrix m n α`, the matrix `M.submatrix r c : Matrix l o α` is de
 by `(M.submatrix r c) i j = M (r i) (c j)` for `(i,j) : l × o`.
 Note that the total number of row and columns does not have to be preserved. -/
 def submatrix (A : Matrix m n α) (r : l → m) (c : o → n) : Matrix l o α :=
-  of fun i j => A (r i) (c j)
+  of fun i j ↦ A (r i) (c j)
 
 @[simp]
 theorem submatrix_apply (A : Matrix m n α) (r : l → m) (c : o → n) (i j) :
@@ -396,18 +396,18 @@ theorem submatrix_apply (A : Matrix m n α) (r : l → m) (c : o → n) (i j) :
 
 @[simp]
 theorem submatrix_id_id (A : Matrix m n α) : A.submatrix id id = A :=
-  ext fun _ _ => rfl
+  ext fun _ _ ↦ rfl
 
 @[simp]
 theorem submatrix_submatrix {l₂ o₂ : Type*} (A : Matrix m n α) (r₁ : l → m) (c₁ : o → n)
     (r₂ : l₂ → l) (c₂ : o₂ → o) :
     (A.submatrix r₁ c₁).submatrix r₂ c₂ = A.submatrix (r₁ ∘ r₂) (c₁ ∘ c₂) :=
-  ext fun _ _ => rfl
+  ext fun _ _ ↦ rfl
 
 @[simp]
 theorem transpose_submatrix (A : Matrix m n α) (r : l → m) (c : o → n) :
     (A.submatrix r c)ᵀ = Aᵀ.submatrix c r :=
-  ext fun _ _ => rfl
+  ext fun _ _ ↦ rfl
 
 theorem submatrix_add [Add α] (A B : Matrix m n α) :
     ((A + B).submatrix : (l → m) → (o → n) → Matrix l o α) = A.submatrix + B.submatrix :=
@@ -459,7 +459,7 @@ theorem reindex_symm (eₘ : m ≃ l) (eₙ : n ≃ o) :
 theorem reindex_trans {l₂ o₂ : Type*} (eₘ : m ≃ l) (eₙ : n ≃ o) (eₘ₂ : l ≃ l₂) (eₙ₂ : o ≃ o₂) :
     (reindex eₘ eₙ).trans (reindex eₘ₂ eₙ₂) =
       (reindex (eₘ.trans eₘ₂) (eₙ.trans eₙ₂) : Matrix m n α ≃ _) :=
-  Equiv.ext fun A => (A.submatrix_submatrix eₘ.symm eₙ.symm eₘ₂.symm eₙ₂.symm :)
+  Equiv.ext fun A ↦ (A.submatrix_submatrix eₘ.symm eₙ.symm eₘ₂.symm eₙ₂.symm :)
 
 theorem transpose_reindex (eₘ : m ≃ l) (eₙ : n ≃ o) (M : Matrix m n α) :
     (reindex eₘ eₙ M)ᵀ = reindex eₙ eₘ Mᵀ :=
@@ -602,6 +602,6 @@ theorem submatrix_mem_matrix {M : Matrix m n α} {r : l → m} {c : o → n} (hM
 theorem submatrix_mem_matrix_iff {M : Matrix m n α} {r : l → m} {c : o → n}
     (hr : Function.Surjective r) (hc : Function.Surjective c) :
     M.submatrix r c ∈ S.matrix ↔ M ∈ S.matrix :=
-  ⟨(hr.forall.mpr fun _ => hc.forall.mpr fun _ => · _ _), submatrix_mem_matrix⟩
+  ⟨(hr.forall.mpr fun _ ↦ hc.forall.mpr fun _ ↦ · _ _), submatrix_mem_matrix⟩
 
 end Matrix

@@ -104,7 +104,7 @@ variable (s : Set ℕ) [Infinite s]
 /-- An order embedding from `ℕ` to itself with a specified range -/
 def orderEmbeddingOfSet [DecidablePred (· ∈ s)] : ℕ ↪o ℕ :=
   (RelEmbedding.orderEmbeddingOfLTEmbedding
-    (RelEmbedding.natLT (Nat.Subtype.ofNat s) fun _ => Nat.Subtype.lt_succ_self _)).trans
+    (RelEmbedding.natLT (Nat.Subtype.ofNat s) fun _ ↦ Nat.Subtype.lt_succ_self _)).trans
     (OrderEmbedding.subtype s)
 
 /-- `Nat.Subtype.ofNat` as an order isomorphism between `ℕ` and an infinite subset. See also
@@ -114,7 +114,7 @@ noncomputable def Subtype.orderIsoOfNat : ℕ ≃o s := by
   exact
     RelIso.ofSurjective
       (RelEmbedding.orderEmbeddingOfLTEmbedding
-        (RelEmbedding.natLT (Nat.Subtype.ofNat s) fun n => Nat.Subtype.lt_succ_self _))
+        (RelEmbedding.natLT (Nat.Subtype.ofNat s) fun n ↦ Nat.Subtype.lt_succ_self _))
       Nat.Subtype.ofNat_surjective
 
 variable {s}
@@ -144,10 +144,10 @@ theorem exists_subseq_of_forall_mem_union {s t : Set α} (e : ℕ → α) (he : 
   classical
     have : Infinite (e ⁻¹' s) ∨ Infinite (e ⁻¹' t) := by
       simp only [Set.infinite_coe_iff, ← Set.infinite_union, ← Set.preimage_union,
-        Set.eq_univ_of_forall fun n => Set.mem_preimage.2 (he n), Set.infinite_univ]
+        Set.eq_univ_of_forall fun n ↦ Set.mem_preimage.2 (he n), Set.infinite_univ]
     cases this
-    exacts [⟨Nat.orderEmbeddingOfSet (e ⁻¹' s), Or.inl fun n => (Nat.Subtype.ofNat (e ⁻¹' s) _).2⟩,
-      ⟨Nat.orderEmbeddingOfSet (e ⁻¹' t), Or.inr fun n => (Nat.Subtype.ofNat (e ⁻¹' t) _).2⟩]
+    exacts [⟨Nat.orderEmbeddingOfSet (e ⁻¹' s), Or.inl fun n ↦ (Nat.Subtype.ofNat (e ⁻¹' s) _).2⟩,
+      ⟨Nat.orderEmbeddingOfSet (e ⁻¹' t), Or.inr fun n ↦ (Nat.Subtype.ofNat (e ⁻¹' t) _).2⟩]
 
 end Nat
 
@@ -157,7 +157,7 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
   classical
     let bad : Set ℕ := { m | ∀ n, m < n → ¬r (f m) (f n) }
     by_cases hbad : Infinite bad
-    · refine ⟨Nat.orderEmbeddingOfSet bad, Or.intro_right _ fun m n mn => ?_⟩
+    · refine ⟨Nat.orderEmbeddingOfSet bad, Or.intro_right _ fun m n mn ↦ ?_⟩
       have h := @Set.mem_range_self _ _ ↑(Nat.orderEmbeddingOfSet bad) m
       rw [Nat.orderEmbeddingOfSet_range bad] at h
       exact h _ ((OrderEmbedding.lt_iff_lt _).2 mn)
@@ -165,10 +165,10 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
       obtain ⟨m, hm⟩ : ∃ m, ∀ n, m ≤ n → n ∉ bad := by
         by_cases he : hbad.toFinset.Nonempty
         · refine
-            ⟨(hbad.toFinset.max' he).succ, fun n hn nbad =>
+            ⟨(hbad.toFinset.max' he).succ, fun n hn nbad ↦
               Nat.not_succ_le_self _
                 (hn.trans (hbad.toFinset.le_max' n (hbad.mem_toFinset.2 nbad)))⟩
-        · exact ⟨0, fun n _ nbad => he ⟨n, hbad.mem_toFinset.2 nbad⟩⟩
+        · exact ⟨0, fun n _ nbad ↦ he ⟨n, hbad.mem_toFinset.2 nbad⟩⟩
       have h : ∀ n : ℕ, ∃ n' : ℕ, n < n' ∧ r (f (n + m)) (f (n' + m)) := by
         intro n
         have h := hm _ (Nat.le_add_left m n)
@@ -177,11 +177,11 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
         refine ⟨n + n' - n - m, by omega, ?_⟩
         convert hn2
         omega
-      let g' : ℕ → ℕ := @Nat.rec (fun _ => ℕ) m fun n gn => Nat.find (h gn)
+      let g' : ℕ → ℕ := @Nat.rec (fun _ ↦ ℕ) m fun n gn ↦ Nat.find (h gn)
       exact
-        ⟨(RelEmbedding.natLT (fun n => g' n + m) fun n =>
+        ⟨(RelEmbedding.natLT (fun n ↦ g' n + m) fun n ↦
               Nat.add_lt_add_right (Nat.find_spec (h (g' n))).1 m).orderEmbeddingOfLTEmbedding,
-          Or.intro_left _ fun n => (Nat.find_spec (h (g' n))).2⟩
+          Or.intro_left _ fun n ↦ (Nat.find_spec (h (g' n))).2⟩
 
 /-- This is the infinitary Erdős–Szekeres theorem, and an important lemma in the usual proof of
 Bolzano-Weierstrass for `ℝ`. -/
@@ -189,7 +189,7 @@ theorem exists_increasing_or_nonincreasing_subseq (r : α → α → Prop) [IsTr
     ∃ g : ℕ ↪o ℕ,
       (∀ m n : ℕ, m < n → r (f (g m)) (f (g n))) ∨ ∀ m n : ℕ, m < n → ¬r (f (g m)) (f (g n)) := by
   obtain ⟨g, hr | hnr⟩ := exists_increasing_or_nonincreasing_subseq' r f
-  · refine ⟨g, Or.intro_left _ fun m n mn => ?_⟩
+  · refine ⟨g, Or.intro_left _ fun m n mn ↦ ?_⟩
     obtain ⟨x, rfl⟩ := Nat.exists_eq_add_of_le (Nat.succ_le_iff.2 mn)
     induction x with
     | zero => apply hr
@@ -204,11 +204,11 @@ contains two non-increasing indices.
 See `wellFoundedGT_iff_monotone_chain_condition` for a stronger version on partial orders. -/
 theorem wellFoundedGT_iff_monotone_chain_condition' [Preorder α] :
     WellFoundedGT α ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → ¬a n < a m := by
-  refine ⟨fun h a => ?_, fun h => ?_⟩
+  refine ⟨fun h a ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨x, ⟨n, rfl⟩, H⟩ := h.wf.has_min _ (Set.range_nonempty a)
-    exact ⟨n, fun m _ => H _ (Set.mem_range_self _)⟩
+    exact ⟨n, fun m _ ↦ H _ (Set.mem_range_self _)⟩
   · rw [WellFoundedGT, isWellFounded_iff, RelEmbedding.wellFounded_iff_isEmpty]
-    refine ⟨fun a => ?_⟩
+    refine ⟨fun a ↦ ?_⟩
     obtain ⟨n, hn⟩ := h (a.swap : _ →r _).toOrderHom
     exact hn n.succ n.lt_succ_self.le ((RelEmbedding.map_rel_iff _).2 n.lt_succ_self)
 

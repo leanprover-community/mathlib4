@@ -56,7 +56,7 @@ theorem nnnorm_star (x : E) : ‖star x‖₊ = ‖x‖₊ :=
 
 /-- The `star` map in a normed star group is a normed group homomorphism. -/
 def starNormedAddGroupHom : NormedAddGroupHom E E :=
-  { starAddEquiv with bound' := ⟨1, fun _ => le_trans (norm_star _).le (one_mul _).symm.le⟩ }
+  { starAddEquiv with bound' := ⟨1, fun _ ↦ le_trans (norm_star _).le (one_mul _).symm.le⟩ }
 
 /-- The `star` map in a normed star group is an isometry -/
 theorem star_isometry : Isometry (star : E → E) :=
@@ -167,8 +167,8 @@ instance _root_.Pi.cstarRing : CStarRing (∀ i, R i) where
     simp only [norm, Pi.mul_apply, Pi.star_apply, nnnorm_star_mul_self, ← sq]
     norm_cast
     exact
-      (Finset.comp_sup_eq_sup_comp_of_is_total (fun x : NNReal => x ^ 2)
-          (fun x y h => by simpa only [sq] using mul_le_mul' h h) (by simp)).symm
+      (Finset.comp_sup_eq_sup_comp_of_is_total (fun x : NNReal ↦ x ^ 2)
+          (fun x y h ↦ by simpa only [sq] using mul_le_mul' h h) (by simp)).symm
 
 instance _root_.Pi.cstarRing' : CStarRing (ι → R₁) :=
   Pi.cstarRing

@@ -76,12 +76,12 @@ theorem Perfect.exists_nat_bool_injection
     (hC : Perfect C) (hnonempty : C.Nonempty) [CompleteSpace α] :
     ∃ f : (ℕ → Bool) → α, range f ⊆ C ∧ Continuous f ∧ Injective f := by
   obtain ⟨u, -, upos', hu⟩ := exists_seq_strictAnti_tendsto' (zero_lt_one' ℝ≥0∞)
-  have upos := fun n => (upos' n).1
-  let P := Subtype fun E : Set α => Perfect E ∧ E.Nonempty
+  have upos := fun n ↦ (upos' n).1
+  let P := Subtype fun E : Set α ↦ Perfect E ∧ E.Nonempty
   choose C0 C1 h0 h1 hdisj using
-    fun {C : Set α} (hC : Perfect C) (hnonempty : C.Nonempty) {ε : ℝ≥0∞} (hε : 0 < ε) =>
+    fun {C : Set α} (hC : Perfect C) (hnonempty : C.Nonempty) {ε : ℝ≥0∞} (hε : 0 < ε) ↦
     hC.small_diam_splitting hnonempty hε
-  let DP : List Bool → P := fun l => by
+  let DP : List Bool → P := fun l ↦ by
     induction l with
     | nil => exact ⟨C, ⟨hC, hnonempty⟩⟩
     | cons a l ih =>
@@ -90,9 +90,9 @@ theorem Perfect.exists_nat_bool_injection
         exact ⟨(h0 _ _ _).1, (h0 _ _ _).2.1⟩
       use C1 ih.property.1 ih.property.2 (upos (l.length + 1))
       exact ⟨(h1 _ _ _).1, (h1 _ _ _).2.1⟩
-  let D : List Bool → Set α := fun l => (DP l).val
+  let D : List Bool → Set α := fun l ↦ (DP l).val
   have hanti : ClosureAntitone D := by
-    refine Antitone.closureAntitone ?_ fun l => (DP l).property.1.closed
+    refine Antitone.closureAntitone ?_ fun l ↦ (DP l).property.1.closed
     intro l a
     cases a
     · exact (h0 _ _ _).2.2.1
@@ -102,7 +102,7 @@ theorem Perfect.exists_nat_bool_injection
     apply tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds hu
     · simp
     rw [eventually_atTop]
-    refine ⟨1, fun m (hm : 1 ≤ m) => ?_⟩
+    refine ⟨1, fun m (hm : 1 ≤ m) ↦ ?_⟩
     rw [Nat.one_le_iff_ne_zero] at hm
     rcases Nat.exists_eq_succ_of_ne_zero hm with ⟨n, rfl⟩
     dsimp
@@ -115,10 +115,10 @@ theorem Perfect.exists_nat_bool_injection
     rintro l (a | a) (b | b) hab <;> try contradiction
     · exact hdisj _ _ _
     exact (hdisj _ _ _).symm
-  have hdom : ∀ {x : ℕ → Bool}, x ∈ (inducedMap D).1 := fun {x} => by
-    rw [hanti.map_of_vanishingDiam hdiam fun l => (DP l).property.2]
+  have hdom : ∀ {x : ℕ → Bool}, x ∈ (inducedMap D).1 := fun {x} ↦ by
+    rw [hanti.map_of_vanishingDiam hdiam fun l ↦ (DP l).property.2]
     apply mem_univ
-  refine ⟨fun x => (inducedMap D).2 ⟨x, hdom⟩, ?_, ?_, ?_⟩
+  refine ⟨fun x ↦ (inducedMap D).2 ⟨x, hdom⟩, ?_, ?_, ?_⟩
   · rintro y ⟨x, rfl⟩
     exact map_mem ⟨_, hdom⟩ 0
   · apply hdiam.map_continuous.comp

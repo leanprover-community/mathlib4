@@ -44,7 +44,7 @@ variable (K : Type*) [Field K]
 namespace NumberField.canonicalEmbedding
 
 /-- The canonical embedding of a number field `K` of degree `n` into `ℂ^n`. -/
-def _root_.NumberField.canonicalEmbedding : K →+* ((K →+* ℂ) → ℂ) := Pi.ringHom fun φ => φ
+def _root_.NumberField.canonicalEmbedding : K →+* ((K →+* ℂ) → ℂ) := Pi.ringHom fun φ ↦ φ
 
 theorem _root_.NumberField.canonicalEmbedding_injective [NumberField K] :
     Function.Injective (NumberField.canonicalEmbedding K) := RingHom.injective _
@@ -61,7 +61,7 @@ that `conj x_φ = x_(conj φ)` for all `∀ φ : K →+* ℂ`. -/
 theorem conj_apply {x : ((K →+* ℂ) → ℂ)} (φ : K →+* ℂ)
     (hx : x ∈ Submodule.span ℝ (Set.range (canonicalEmbedding K))) :
     conj (x φ) = x (ComplexEmbedding.conjugate φ) := by
-  refine Submodule.span_induction ?_ ?_ (fun _ _ _ _ hx hy => ?_) (fun a _ _ hx => ?_) hx
+  refine Submodule.span_induction ?_ ?_ (fun _ _ _ _ hx hy ↦ ?_) (fun a _ _ hx ↦ ?_) hx
   · rintro _ ⟨x, rfl⟩
     rw [apply_at, apply_at, ComplexEmbedding.conjugate_coe_eq]
   · rw [Pi.zero_apply, Pi.zero_apply, map_zero]
@@ -70,7 +70,7 @@ theorem conj_apply {x : ((K →+* ℂ) → ℂ)} (φ : K →+* ℂ)
     exact congrArg ((a : ℂ) * ·) hx
 
 theorem nnnorm_eq [NumberField K] (x : K) :
-    ‖canonicalEmbedding K x‖₊ = Finset.univ.sup (fun φ : K →+* ℂ => ‖φ x‖₊) := by
+    ‖canonicalEmbedding K x‖₊ = Finset.univ.sup (fun φ : K →+* ℂ ↦ ‖φ x‖₊) := by
   simp_rw [Pi.nnnorm_def, apply_at]
 
 theorem norm_le_iff [NumberField K] (x : K) (r : ℝ) :
@@ -79,7 +79,7 @@ theorem norm_le_iff [NumberField K] (x : K) (r : ℝ) :
   · obtain ⟨φ⟩ := (inferInstance : Nonempty (K →+* ℂ))
     refine iff_of_false ?_ ?_
     · exact (hr.trans_le (norm_nonneg _)).not_ge
-    · exact fun h => hr.not_ge (le_trans (norm_nonneg _) (h φ))
+    · exact fun h ↦ hr.not_ge (le_trans (norm_nonneg _) (h φ))
   · lift r to NNReal using hr
     simp_rw [← coe_nnnorm, nnnorm_eq, NNReal.coe_le_coe, Finset.sup_le_iff, Finset.mem_univ,
       forall_true_left]
@@ -100,7 +100,7 @@ theorem integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
     convert (Embeddings.finite_of_norm_le K ℂ r).image (canonicalEmbedding K)
     ext; constructor
     · rintro ⟨⟨_, ⟨x, rfl⟩, rfl⟩, hx⟩
-      exact ⟨x, ⟨SetLike.coe_mem x, fun φ => (heq _).mp hx φ⟩, rfl⟩
+      exact ⟨x, ⟨SetLike.coe_mem x, fun φ ↦ (heq _).mp hx φ⟩, rfl⟩
     · rintro ⟨x, ⟨hx1, hx2⟩, rfl⟩
       exact ⟨⟨x, ⟨⟨x, hx1⟩, rfl⟩, rfl⟩, (heq x).mpr hx2⟩
 
@@ -114,13 +114,13 @@ noncomputable def latticeBasis [NumberField K] :
     let B := Pi.basisFun ℂ (K →+* ℂ)
     let e : (K →+* ℂ) ≃ Free.ChooseBasisIndex ℤ (𝓞 K) :=
       Fintype.equivOfCardEq ((Embeddings.card K ℂ).trans (finrank_eq_card_basis (integralBasis K)))
-    let M := B.toMatrix (fun i => canonicalEmbedding K (integralBasis K (e i)))
+    let M := B.toMatrix (fun i ↦ canonicalEmbedding K (integralBasis K (e i)))
     suffices M.det ≠ 0 by
       rw [← isUnit_iff_ne_zero, ← Basis.det_apply, ← Basis.is_basis_iff_det] at this
       exact (basisOfPiSpaceOfLinearIndependent this.1).reindex e
   -- In order to prove that the determinant is nonzero, we show that it is equal to the
   -- square of the discriminant of the integral basis and thus it is not zero
-    let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i => integralBasis K (e i))
+    let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i ↦ integralBasis K (e i))
       RingHom.equivRatAlgHom
     rw [show M = N.transpose by { ext : 2; rfl }]
     rw [Matrix.det_transpose, ← pow_ne_zero_iff two_ne_zero]
@@ -128,7 +128,7 @@ noncomputable def latticeBasis [NumberField K] :
       (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
     rw [← Algebra.discr_reindex ℚ (integralBasis K) e.symm]
     exact (Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two ℚ ℂ
-      (fun i => integralBasis K (e i)) RingHom.equivRatAlgHom).symm
+      (fun i ↦ integralBasis K (e i)) RingHom.equivRatAlgHom).symm
 
 @[simp]
 theorem latticeBasis_apply [NumberField K] (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
@@ -141,7 +141,7 @@ theorem mem_span_latticeBasis [NumberField K] {x : (K →+* ℂ) → ℂ} :
       x ∈ ((canonicalEmbedding K).comp (algebraMap (𝓞 K) K)).range := by
   rw [show Set.range (latticeBasis K) =
       (canonicalEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
-    rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
+    rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i ↦ latticeBasis_apply K i))]
   rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
   rw [← RingHom.map_range, Subring.mem_map, Set.mem_image]
   simp only [SetLike.mem_coe, mem_span_integralBasis K]
@@ -183,8 +183,8 @@ abbrev mixedSpace :=
 
 /-- The mixed embedding of a number field `K` into the mixed space of `K`. -/
 noncomputable def _root_.NumberField.mixedEmbedding : K →+* (mixedSpace K) :=
-  RingHom.prod (Pi.ringHom fun w => embedding_of_isReal w.prop)
-    (Pi.ringHom fun w => w.val.embedding)
+  RingHom.prod (Pi.ringHom fun w ↦ embedding_of_isReal w.prop)
+    (Pi.ringHom fun w ↦ w.val.embedding)
 
 @[simp]
 theorem mixedEmbedding_apply_isReal (x : K) (w : {w // IsReal w}) :
@@ -258,14 +258,14 @@ section commMap
 /-- The linear map that makes `canonicalEmbedding` and `mixedEmbedding` commute, see
 `commMap_canonical_eq_mixed`. -/
 noncomputable def commMap : ((K →+* ℂ) → ℂ) →ₗ[ℝ] (mixedSpace K) where
-  toFun := fun x => ⟨fun w => (x w.val.embedding).re, fun w => x w.val.embedding⟩
+  toFun := fun x ↦ ⟨fun w ↦ (x w.val.embedding).re, fun w ↦ x w.val.embedding⟩
   map_add' := by
     simp only [Pi.add_apply, Complex.add_re, Prod.mk_add_mk, Prod.mk.injEq]
-    exact fun _ _ => ⟨rfl, rfl⟩
+    exact fun _ _ ↦ ⟨rfl, rfl⟩
   map_smul' := by
     simp only [Pi.smul_apply, Complex.real_smul, Complex.mul_re, Complex.ofReal_re,
       Complex.ofReal_im, zero_mul, sub_zero, RingHom.id_apply, Prod.smul_mk, Prod.mk.injEq]
-    exact fun _ _ => ⟨rfl, rfl⟩
+    exact fun _ _ ↦ ⟨rfl, rfl⟩
 
 theorem commMap_apply_of_isReal (x : (K →+* ℂ) → ℂ) {w : InfinitePlace K} (hw : IsReal w) :
     (commMap K x).1 ⟨w, hw⟩ = (x w.embedding).re := rfl
@@ -286,7 +286,7 @@ see `mixedEmbedding.latticeBasis`. -/
 theorem disjoint_span_commMap_ker [NumberField K] :
     Disjoint (Submodule.span ℝ (Set.range (canonicalEmbedding.latticeBasis K)))
       (LinearMap.ker (commMap K)) := by
-  refine LinearMap.disjoint_ker.mpr (fun x h_mem h_zero => ?_)
+  refine LinearMap.disjoint_ker.mpr (fun x h_mem h_zero ↦ ?_)
   replace h_mem : x ∈ Submodule.span ℝ (Set.range (canonicalEmbedding K)) := by
     refine (Submodule.span_mono ?_) h_mem
     rintro _ ⟨i, rfl⟩
@@ -296,10 +296,10 @@ theorem disjoint_span_commMap_ker [NumberField K] :
   by_cases hφ : ComplexEmbedding.IsReal φ
   · apply Complex.ext
     · rw [← embedding_mk_eq_of_isReal hφ, ← commMap_apply_of_isReal K x ⟨φ, hφ, rfl⟩]
-      exact congrFun (congrArg (fun x => x.1) h_zero) ⟨InfinitePlace.mk φ, _⟩
+      exact congrFun (congrArg (fun x ↦ x.1) h_zero) ⟨InfinitePlace.mk φ, _⟩
     · rw [Complex.zero_im, ← Complex.conj_eq_iff_im, canonicalEmbedding.conj_apply _ h_mem,
         ComplexEmbedding.isReal_iff.mp hφ]
-  · have := congrFun (congrArg (fun x => x.2) h_zero) ⟨InfinitePlace.mk φ, ⟨φ, hφ, rfl⟩⟩
+  · have := congrFun (congrArg (fun x ↦ x.2) h_zero) ⟨InfinitePlace.mk φ, ⟨φ, hφ, rfl⟩⟩
     cases embedding_mk_eq φ with
     | inl h => rwa [← h, ← commMap_apply_of_isComplex K x ⟨φ, hφ, rfl⟩]
     | inr h =>
@@ -489,7 +489,7 @@ elsewhere for `IsReal w` and by the couple of vectors equal to `1` (resp. `I`) a
 elsewhere for `IsComplex w`. -/
 def stdBasis : Basis (index K) ℝ (mixedSpace K) :=
   Basis.prod (Pi.basisFun ℝ _)
-    (Basis.reindex (Pi.basis fun _ => basisOneI) (Equiv.sigmaEquivProd _ _))
+    (Basis.reindex (Pi.basis fun _ ↦ basisOneI) (Equiv.sigmaEquivProd _ _))
 
 variable {K}
 
@@ -518,8 +518,8 @@ variable (K)
 open scoped Classical in
 theorem fundamentalDomain_stdBasis :
     fundamentalDomain (stdBasis K) =
-      (Set.univ.pi fun _ => Set.Ico 0 1) ×ˢ
-      (Set.univ.pi fun _ => Complex.measurableEquivPi ⁻¹' (Set.univ.pi fun _ => Set.Ico 0 1)) := by
+      (Set.univ.pi fun _ ↦ Set.Ico 0 1) ×ˢ
+      (Set.univ.pi fun _ ↦ Complex.measurableEquivPi ⁻¹' (Set.univ.pi fun _ ↦ Set.Ico 0 1)) := by
   ext
   simp [stdBasis, mem_fundamentalDomain, Complex.measurableEquivPi]
 
@@ -529,14 +529,14 @@ theorem volume_fundamentalDomain_stdBasis :
   rw [fundamentalDomain_stdBasis, volume_eq_prod, prod_prod, volume_pi, volume_pi, pi_pi, pi_pi,
     Complex.volume_preserving_equiv_pi.measure_preimage ?_, volume_pi, pi_pi, Real.volume_Ico,
     sub_zero, ENNReal.ofReal_one, prod_const_one, prod_const_one, prod_const_one, one_mul]
-  exact (MeasurableSet.pi Set.countable_univ (fun _ _ => measurableSet_Ico)).nullMeasurableSet
+  exact (MeasurableSet.pi Set.countable_univ (fun _ _ ↦ measurableSet_Ico)).nullMeasurableSet
 
 open scoped Classical in
 /-- The `Equiv` between `index K` and `K →+* ℂ` defined by sending a real infinite place `w` to
 the unique corresponding embedding `w.embedding`, and the pair `⟨w, 0⟩` (resp. `⟨w, 1⟩`) for a
 complex infinite place `w` to `w.embedding` (resp. `conjugate w.embedding`). -/
 def indexEquiv : (index K) ≃ (K →+* ℂ) := by
-  refine Equiv.ofBijective (fun c => ?_)
+  refine Equiv.ofBijective (fun c ↦ ?_)
     ((Fintype.bijective_iff_surjective_and_card _).mpr ⟨?_, ?_⟩)
   · cases c with
     | inl w => exact w.val.embedding
@@ -579,8 +579,8 @@ open scoped Classical in
 element `x` of `(K →+* ℂ) → ℂ` fixed by the map `x_φ ↦ conj x_(conjugate φ)`,
 see `stdBasis_repr_eq_matrixToStdBasis_mul`. -/
 def matrixToStdBasis : Matrix (index K) (index K) ℂ :=
-  fromBlocks (diagonal fun _ => 1) 0 0 <| reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _)
-    (blockDiagonal (fun _ => (2 : ℂ)⁻¹ • !![1, 1; -I, I]))
+  fromBlocks (diagonal fun _ ↦ 1) 0 0 <| reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _)
+    (blockDiagonal (fun _ ↦ (2 : ℂ)⁻¹ • !![1, 1; -I, I]))
 
 open scoped Classical in
 theorem det_matrixToStdBasis :
@@ -590,7 +590,7 @@ theorem det_matrixToStdBasis :
       rw [matrixToStdBasis, det_fromBlocks_zero₂₁, det_diagonal, prod_const_one, one_mul,
           det_reindex_self, det_blockDiagonal]
   _ = ∏ _k : { w : InfinitePlace K // IsComplex w }, (2⁻¹ * Complex.I) := by
-      refine prod_congr (Eq.refl _) (fun _ _ => ?_)
+      refine prod_congr (Eq.refl _) (fun _ _ ↦ ?_)
       field_simp; ring
   _ = (2⁻¹ * Complex.I) ^ Fintype.card {w : InfinitePlace K // IsComplex w} := by
       rw [prod_const, Fintype.card]
@@ -674,7 +674,7 @@ theorem mem_span_latticeBasis {x : (mixedSpace K)} :
       x ∈ mixedEmbedding.integerLattice K := by
   rw [show Set.range (latticeBasis K) =
       (mixedEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
-    rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
+    rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i ↦ latticeBasis_apply K i))]
   rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
   simp only [Set.mem_image, SetLike.mem_coe, mem_span_integralBasis K,
     RingHom.mem_range, exists_exists_eq_and]

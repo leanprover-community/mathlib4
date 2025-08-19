@@ -186,15 +186,15 @@ A constructor for lax monoidal functors whose axioms are described by `tensorHom
 def ofTensorHom : F.LaxMonoidal where
   ε := ε
   μ := μ
-  μ_natural_left := fun f X' => by
+  μ_natural_left := fun f X' ↦ by
     simp_rw [← tensorHom_id, ← F.map_id, μ_natural]
-  μ_natural_right := fun X' f => by
+  μ_natural_right := fun X' f ↦ by
     simp_rw [← id_tensorHom, ← F.map_id, μ_natural]
-  associativity := fun X Y Z => by
+  associativity := fun X Y Z ↦ by
     simp_rw [← tensorHom_id, ← id_tensorHom, associativity]
-  left_unitality := fun X => by
+  left_unitality := fun X ↦ by
     simp_rw [← tensorHom_id, left_unitality]
-  right_unitality := fun X => by
+  right_unitality := fun X ↦ by
     simp_rw [← id_tensorHom, right_unitality]
 
 end
@@ -502,13 +502,13 @@ noncomputable def μNatIso :
 @[simps!]
 noncomputable def commTensorLeft (X : C) :
     F ⋙ tensorLeft (F.obj X) ≅ tensorLeft X ⋙ F :=
-  NatIso.ofComponents (fun Y => μIso F X Y)
+  NatIso.ofComponents (fun Y ↦ μIso F X Y)
 
 /-- Monoidal functors commute with right tensoring up to isomorphism -/
 @[simps!]
 noncomputable def commTensorRight (X : C) :
     F ⋙ tensorRight (F.obj X) ≅ tensorRight X ⋙ F :=
-  NatIso.ofComponents (fun Y => μIso F Y X)
+  NatIso.ofComponents (fun Y ↦ μIso F Y X)
 
 end
 

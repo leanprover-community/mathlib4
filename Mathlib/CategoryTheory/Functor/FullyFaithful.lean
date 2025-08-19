@@ -56,10 +56,10 @@ theorem map_injective (F : C ⥤ D) [Faithful F] :
 
 lemma map_injective_iff (F : C ⥤ D) [Faithful F] {X Y : C} (f g : X ⟶ Y) :
     F.map f = F.map g ↔ f = g :=
-  ⟨fun h => F.map_injective h, fun h => by rw [h]⟩
+  ⟨fun h ↦ F.map_injective h, fun h ↦ by rw [h]⟩
 
 theorem mapIso_injective (F : C ⥤ D) [Faithful F] :
-    Function.Injective <| (F.mapIso : (X ≅ Y) → (F.obj X ≅ F.obj Y))  := fun _ _ h =>
+    Function.Injective <| (F.mapIso : (X ≅ Y) → (F.obj X ≅ F.obj Y))  := fun _ _ h ↦
   Iso.ext (map_injective F (congr_arg Iso.hom h :))
 
 theorem map_surjective (F : C ⥤ D) [Full F] :
@@ -259,7 +259,7 @@ instance Faithful.comp [F.Faithful] [G.Faithful] : (F ⋙ G).Faithful where
 
 theorem Faithful.of_comp [(F ⋙ G).Faithful] : F.Faithful :=
   -- Porting note: (F ⋙ G).map_injective.of_comp has the incorrect type
-  { map_injective := fun {_ _} => Function.Injective.of_comp (F ⋙ G).map_injective }
+  { map_injective := fun {_ _} ↦ Function.Injective.of_comp (F ⋙ G).map_injective }
 
 instance (priority := 100) [Quiver.IsThin C] : F.Faithful where
 
@@ -273,7 +273,7 @@ lemma Full.of_iso [Full F] (α : F ≅ F') : Full F' where
     ⟨F.preimage ((α.app X).hom ≫ f ≫ (α.app Y).inv), by simp [← NatIso.naturality_1 α]⟩
 
 theorem Faithful.of_iso [F.Faithful] (α : F ≅ F') : F'.Faithful :=
-  { map_injective := fun h =>
+  { map_injective := fun h ↦
       F.map_injective (by rw [← NatIso.naturality_1 α.symm, h, NatIso.naturality_1 α.symm]) }
 
 end
@@ -352,7 +352,7 @@ can 'cancel' it to give a natural iso between `F` and `G`.
 -/
 noncomputable def fullyFaithfulCancelRight {F G : C ⥤ D} (H : D ⥤ E) [Full H] [H.Faithful]
     (comp_iso : F ⋙ H ≅ G ⋙ H) : F ≅ G :=
-  NatIso.ofComponents (fun X => H.preimageIso (comp_iso.app X)) fun f =>
+  NatIso.ofComponents (fun X ↦ H.preimageIso (comp_iso.app X)) fun f ↦
     H.map_injective (by simpa using comp_iso.hom.naturality f)
 
 @[simp]

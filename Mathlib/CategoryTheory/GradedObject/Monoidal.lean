@@ -36,7 +36,7 @@ namespace GradedObject
 /-- The tensor product of two graded objects `X₁` and `X₂` exists if for any `n`,
 the coproduct of the objects `X₁ i ⊗ X₂ j` for `i + j = n` exists. -/
 abbrev HasTensor (X₁ X₂ : GradedObject I C) : Prop :=
-  HasMap (((mapBifunctor (curriedTensor C) I I).obj X₁).obj X₂) (fun ⟨i, j⟩ => i + j)
+  HasMap (((mapBifunctor (curriedTensor C) I I).obj X₁).obj X₂) (fun ⟨i, j⟩ ↦ i + j)
 
 lemma hasTensor_of_iso {X₁ X₂ Y₁ Y₂ : GradedObject I C}
     (e₁ : X₁ ≅ Y₁) (e₂ : X₂ ≅ Y₂) [HasTensor X₁ X₂] :
@@ -51,7 +51,7 @@ namespace Monoidal
 /-- The tensor product of two graded objects. -/
 noncomputable abbrev tensorObj (X₁ X₂ : GradedObject I C) [HasTensor X₁ X₂] :
     GradedObject I C :=
-  mapBifunctorMapObj (curriedTensor C) (fun ⟨i, j⟩ => i + j) X₁ X₂
+  mapBifunctorMapObj (curriedTensor C) (fun ⟨i, j⟩ ↦ i + j) X₁ X₂
 
 section
 
@@ -147,30 +147,30 @@ lemma tensorHom_def {X₁ X₂ Y₁ Y₂ : GradedObject I C} (f : X₁ ⟶ X₂)
   rw [← tensor_comp, id_comp, comp_id]
 
 /-- This is the addition map `I × I × I → I` for an additive monoid `I`. -/
-def r₁₂₃ : I × I × I → I := fun ⟨i, j, k⟩ => i + j + k
+def r₁₂₃ : I × I × I → I := fun ⟨i, j, k⟩ ↦ i + j + k
 
 /-- Auxiliary definition for `associator`. -/
 @[reducible] def ρ₁₂ : BifunctorComp₁₂IndexData (r₁₂₃ : _ → I) where
   I₁₂ := I
-  p := fun ⟨i₁, i₂⟩ => i₁ + i₂
-  q := fun ⟨i₁₂, i₃⟩ => i₁₂ + i₃
-  hpq := fun _ => rfl
+  p := fun ⟨i₁, i₂⟩ ↦ i₁ + i₂
+  q := fun ⟨i₁₂, i₃⟩ ↦ i₁₂ + i₃
+  hpq := fun _ ↦ rfl
 
 /-- Auxiliary definition for `associator`. -/
 @[reducible] def ρ₂₃ : BifunctorComp₂₃IndexData (r₁₂₃ : _ → I) where
   I₂₃ := I
-  p := fun ⟨i₂, i₃⟩ => i₂ + i₃
-  q := fun ⟨i₁₂, i₃⟩ => i₁₂ + i₃
+  p := fun ⟨i₂, i₃⟩ ↦ i₂ + i₃
+  q := fun ⟨i₁₂, i₃⟩ ↦ i₁₂ + i₃
   hpq _ := (add_assoc _ _ _).symm
 
 variable (I) in
 /-- Auxiliary definition for `associator`. -/
 @[reducible]
-def triangleIndexData : TriangleIndexData (r₁₂₃ : _ → I) (fun ⟨i₁, i₃⟩ => i₁ + i₃) where
-  p₁₂ := fun ⟨i₁, i₂⟩ => i₁ + i₂
-  p₂₃ := fun ⟨i₂, i₃⟩ => i₂ + i₃
-  hp₁₂ := fun _ => rfl
-  hp₂₃ := fun _ => (add_assoc _ _ _).symm
+def triangleIndexData : TriangleIndexData (r₁₂₃ : _ → I) (fun ⟨i₁, i₃⟩ ↦ i₁ + i₃) where
+  p₁₂ := fun ⟨i₁, i₂⟩ ↦ i₁ + i₂
+  p₂₃ := fun ⟨i₂, i₃⟩ ↦ i₂ + i₃
+  hp₁₂ := fun _ ↦ rfl
+  hp₂₃ := fun _ ↦ (add_assoc _ _ _).symm
   h₁ := add_zero
   h₃ := zero_add
 
@@ -491,13 +491,13 @@ instance : HasTensor tensorUnit X :=
   mapBifunctorLeftUnitor_hasMap _ _ (leftUnitorNatIso C) _ zero_add _
 
 instance : HasMap (((mapBifunctor (curriedTensor C) I I).obj
-    ((single₀ I).obj (𝟙_ C))).obj X) (fun ⟨i₁, i₂⟩ => i₁ + i₂) :=
+    ((single₀ I).obj (𝟙_ C))).obj X) (fun ⟨i₁, i₂⟩ ↦ i₁ + i₂) :=
   (inferInstance : HasTensor tensorUnit X)
 
 /-- The left unitor isomorphism for graded objects. -/
 noncomputable def leftUnitor : tensorObj tensorUnit X ≅ X :=
     mapBifunctorLeftUnitor (curriedTensor C) (𝟙_ C)
-      (leftUnitorNatIso C) (fun (⟨i₁, i₂⟩ : I × I) => i₁ + i₂) zero_add X
+      (leftUnitorNatIso C) (fun (⟨i₁, i₂⟩ : I × I) ↦ i₁ + i₂) zero_add X
 
 lemma leftUnitor_inv_apply (i : I) :
     (leftUnitor X).inv i = (λ_ (X i)).inv ≫ tensorUnit₀.inv ▷ (X i) ≫
@@ -524,13 +524,13 @@ instance : HasTensor X tensorUnit :=
     (rightUnitorNatIso C) _ add_zero _
 
 instance : HasMap (((mapBifunctor (curriedTensor C) I I).obj X).obj
-    ((single₀ I).obj (𝟙_ C))) (fun ⟨i₁, i₂⟩ => i₁ + i₂) :=
+    ((single₀ I).obj (𝟙_ C))) (fun ⟨i₁, i₂⟩ ↦ i₁ + i₂) :=
   (inferInstance : HasTensor X tensorUnit)
 
 /-- The right unitor isomorphism for graded objects. -/
 noncomputable def rightUnitor : tensorObj X tensorUnit ≅ X :=
     mapBifunctorRightUnitor (curriedTensor C) (𝟙_ C)
-      (rightUnitorNatIso C) (fun (⟨i₁, i₂⟩ : I × I) => i₁ + i₂) add_zero X
+      (rightUnitorNatIso C) (fun (⟨i₁, i₂⟩ : I × I) ↦ i₁ + i₂) add_zero X
 
 lemma rightUnitor_inv_apply (i : I) :
     (rightUnitor X).inv i = (ρ_ (X i)).inv ≫ (X i) ◁ tensorUnit₀.inv ≫
@@ -599,14 +599,14 @@ end
 
 section
 
-instance (n : ℕ) : Finite ((fun (i : ℕ × ℕ) => i.1 + i.2) ⁻¹' {n}) := by
-  refine Finite.of_injective (fun ⟨⟨i₁, i₂⟩, (hi : i₁ + i₂ = n)⟩ =>
+instance (n : ℕ) : Finite ((fun (i : ℕ × ℕ) ↦ i.1 + i.2) ⁻¹' {n}) := by
+  refine Finite.of_injective (fun ⟨⟨i₁, i₂⟩, (hi : i₁ + i₂ = n)⟩ ↦
     ((⟨i₁, by omega⟩, ⟨i₂, by omega⟩) : Fin (n + 1) × Fin (n + 1) )) ?_
   rintro ⟨⟨_, _⟩, _⟩ ⟨⟨_, _⟩, _⟩ h
   simpa using h
 
 instance (n : ℕ) : Finite ({ i : (ℕ × ℕ × ℕ) | i.1 + i.2.1 + i.2.2 = n }) := by
-  refine Finite.of_injective (fun ⟨⟨i₁, i₂, i₃⟩, (hi : i₁ + i₂ + i₃ = n)⟩ =>
+  refine Finite.of_injective (fun ⟨⟨i₁, i₂, i₃⟩, (hi : i₁ + i₂ + i₃ = n)⟩ ↦
     (⟨⟨i₁, by omega⟩, ⟨i₂, by omega⟩, ⟨i₃, by omega⟩⟩ :
       Fin (n + 1) × Fin (n + 1) × Fin (n + 1))) ?_
   rintro ⟨⟨_, _, _⟩, _⟩ ⟨⟨_, _, _⟩, _⟩ h

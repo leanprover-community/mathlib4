@@ -86,8 +86,8 @@ noncomputable def endMonoidalStarFunctorEquivalence :
     EndMonoidal (MonoidalSingleObj.star C) ≌ C where
   functor := endMonoidalStarFunctor C
   inverse :=
-    { obj := fun X => X
-      map := fun f => f }
+    { obj := fun X ↦ X
+      map := fun f ↦ f }
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 

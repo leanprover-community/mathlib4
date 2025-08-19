@@ -35,7 +35,7 @@ notation:max C "ᴹᵒᵖ" => MonoidalOpposite C
 theorem mop_injective : Function.Injective (mop : C → Cᴹᵒᵖ) := @mop.inj C
 
 theorem unmop_injective : Function.Injective (unmop : Cᴹᵒᵖ → C) :=
-  fun _ _ h => congrArg mop h
+  fun _ _ h ↦ congrArg mop h
 
 theorem mop_inj_iff (x y : C) : mop x = mop y ↔ x = y := mop_injective.eq_iff
 
@@ -75,11 +75,11 @@ open MonoidalOpposite renaming mop → mop', unmop → unmop'
 
 theorem mop_inj {X Y : C} :
     Function.Injective (Quiver.Hom.mop : (X ⟶ Y) → (mop' X ⟶ mop' Y)) :=
-  fun _ _ H => congr_arg Quiver.Hom.unmop H
+  fun _ _ H ↦ congr_arg Quiver.Hom.unmop H
 
 theorem unmop_inj {X Y : Cᴹᵒᵖ} :
     Function.Injective (Quiver.Hom.unmop : (X ⟶ Y) → (unmop' X ⟶ unmop' Y)) :=
-  fun _ _ H => congr_arg Quiver.Hom.mop H
+  fun _ _ H ↦ congr_arg Quiver.Hom.mop H
 
 @[simp]
 theorem unmop_mop {X Y : C} {f : X ⟶ Y} : f.mop.unmop = f :=

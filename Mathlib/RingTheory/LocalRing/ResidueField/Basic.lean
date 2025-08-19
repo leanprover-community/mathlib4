@@ -56,7 +56,7 @@ theorem ResidueField.algebraMap_eq : algebraMap R (ResidueField R) = residue R :
   rfl
 
 instance : IsLocalHom (IsLocalRing.residue R) :=
-  ⟨fun _ ha =>
+  ⟨fun _ ha ↦
     Classical.not_not.mp (Ideal.Quotient.eq_zero_iff_mem.not.mp (isUnit_iff_ne_zero.mp ha))⟩
 
 instance {R₀} [CommRing R₀] [Algebra R₀ R] [Module.Finite R₀ R] :
@@ -70,12 +70,12 @@ namespace ResidueField
 /-- A local ring homomorphism into a field can be descended onto the residue field. -/
 def lift {R S : Type*} [CommRing R] [IsLocalRing R] [Field S] (f : R →+* S) [IsLocalHom f] :
     IsLocalRing.ResidueField R →+* S :=
-  Ideal.Quotient.lift _ f fun a ha =>
-    by_contradiction fun h => ha (isUnit_of_map_unit f a (isUnit_iff_ne_zero.mpr h))
+  Ideal.Quotient.lift _ f fun a ha ↦
+    by_contradiction fun h ↦ ha (isUnit_of_map_unit f a (isUnit_iff_ne_zero.mpr h))
 
 theorem lift_comp_residue {R S : Type*} [CommRing R] [IsLocalRing R] [Field S] (f : R →+* S)
     [IsLocalHom f] : (lift f).comp (residue R) = f :=
-  RingHom.ext fun _ => rfl
+  RingHom.ext fun _ ↦ rfl
 
 @[simp]
 theorem lift_residue_apply {R S : Type*} [CommRing R] [IsLocalRing R] [Field S] (f : R →+* S)
@@ -84,7 +84,7 @@ theorem lift_residue_apply {R S : Type*} [CommRing R] [IsLocalRing R] [Field S] 
 
 /-- The map on residue fields induced by a local homomorphism between local rings -/
 noncomputable def map (f : R →+* S) [IsLocalHom f] : ResidueField R →+* ResidueField S :=
-  Ideal.Quotient.lift (maximalIdeal R) ((Ideal.Quotient.mk _).comp f) fun a ha => by
+  Ideal.Quotient.lift (maximalIdeal R) ((Ideal.Quotient.mk _).comp f) fun a ha ↦ by
     unfold ResidueField
     rw [RingHom.comp_apply, Ideal.Quotient.eq_zero_iff_mem]
     exact map_nonunit f a ha
@@ -94,14 +94,14 @@ ring homomorphism. -/
 @[simp]
 theorem map_id :
     IsLocalRing.ResidueField.map (RingHom.id R) = RingHom.id (IsLocalRing.ResidueField R) :=
-  Ideal.Quotient.ringHom_ext <| RingHom.ext fun _ => rfl
+  Ideal.Quotient.ringHom_ext <| RingHom.ext fun _ ↦ rfl
 
 /-- The composite of two `IsLocalRing.ResidueField.map`s is the `IsLocalRing.ResidueField.map` of
 the composite. -/
 theorem map_comp (f : T →+* R) (g : R →+* S) [IsLocalHom f] [IsLocalHom g] :
     IsLocalRing.ResidueField.map (g.comp f) =
       (IsLocalRing.ResidueField.map g).comp (IsLocalRing.ResidueField.map f) :=
-  Ideal.Quotient.ringHom_ext <| RingHom.ext fun _ => rfl
+  Ideal.Quotient.ringHom_ext <| RingHom.ext fun _ ↦ rfl
 
 theorem map_comp_residue (f : R →+* S) [IsLocalHom f] :
     (ResidueField.map f).comp (residue R) = (residue S).comp f :=

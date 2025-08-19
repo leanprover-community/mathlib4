@@ -33,7 +33,7 @@ instance : Inhabited Sequential.{u} :=
   ⟨{ toTop := TopCat.of (ULift (Fin 37)) }⟩
 
 instance : CoeSort Sequential Type* :=
-  ⟨fun X => X.toTop⟩
+  ⟨fun X ↦ X.toTop⟩
 
 attribute [instance] is_sequential
 

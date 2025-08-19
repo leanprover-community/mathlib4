@@ -151,7 +151,7 @@ lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsM
   intro _ hv
   obtain ⟨w, hw⟩ := hM <| Set.mem_of_mem_image_val <| (Subgraph.verts_coeSubgraph M).symm ▸ hv
   use w
-  refine ⟨?_, fun y hy => ?_⟩
+  refine ⟨?_, fun y hy ↦ ?_⟩
   · obtain ⟨v, hv⟩ := (Set.mem_image _ _ _).mp <| (Subgraph.verts_coeSubgraph M).symm ▸ hv
     simp only [coeSubgraph_adj, Subtype.coe_eta, Subtype.coe_prop, exists_const]
     exact ⟨hv.2 ▸ v.2, hw.1⟩
@@ -208,7 +208,7 @@ matched.
 def IsPerfectMatching (M : G.Subgraph) : Prop := M.IsMatching ∧ M.IsSpanning
 
 theorem IsMatching.support_eq_verts (h : M.IsMatching) : M.support = M.verts := by
-  refine M.support_subset_verts.antisymm fun v hv => ?_
+  refine M.support_subset_verts.antisymm fun v hv ↦ ?_
   obtain ⟨w, hvw, -⟩ := h hv
   exact ⟨_, hvw⟩
 
@@ -224,11 +224,11 @@ theorem IsMatching.even_card [Fintype M.verts] (h : M.IsMatching) : Even M.verts
   -- Porting note: `SimpleGraph.Subgraph.coe_degree` does not trigger because it uses
   -- instance arguments instead of implicit arguments for the first `Fintype` argument.
   -- Using a `convert_to` to swap out the `Fintype` instance to the "right" one.
-  convert_to _ = Finset.sum Finset.univ fun v => SimpleGraph.degree (Subgraph.coe M) v using 3
+  convert_to _ = Finset.sum Finset.univ fun v ↦ SimpleGraph.degree (Subgraph.coe M) v using 3
   simp [h, Finset.card_univ]
 
 theorem isPerfectMatching_iff : M.IsPerfectMatching ↔ ∀ v, ∃! w, M.Adj v w := by
-  refine ⟨?_, fun hm => ⟨fun v _ => hm v, fun v => ?_⟩⟩
+  refine ⟨?_, fun hm ↦ ⟨fun v _ ↦ hm v, fun v ↦ ?_⟩⟩
   · rintro ⟨hm, hs⟩ v
     exact hm (hs v)
   · obtain ⟨w, hw, -⟩ := hm v

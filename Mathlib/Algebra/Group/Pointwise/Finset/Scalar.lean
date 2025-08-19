@@ -66,10 +66,10 @@ protected def smul : SMul (Finset α) (Finset β) := ⟨image₂ (· • ·)⟩
 
 scoped[Pointwise] attribute [instance] Finset.smul Finset.vadd
 
-@[to_additive] lemma smul_def : s • t = (s ×ˢ t).image fun p : α × β => p.1 • p.2 := rfl
+@[to_additive] lemma smul_def : s • t = (s ×ˢ t).image fun p : α × β ↦ p.1 • p.2 := rfl
 
 @[to_additive]
-lemma image_smul_product : ((s ×ˢ t).image fun x : α × β => x.fst • x.snd) = s • t := rfl
+lemma image_smul_product : ((s ×ˢ t).image fun x : α × β ↦ x.fst • x.snd) = s • t := rfl
 
 @[to_additive] lemma mem_smul {x : β} : x ∈ s • t ↔ ∃ y ∈ s, ∃ z ∈ t, y • z = x := mem_image₂
 

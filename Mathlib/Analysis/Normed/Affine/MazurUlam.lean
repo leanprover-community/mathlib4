@@ -47,7 +47,7 @@ theorem midpoint_fixed {x y : PE} :
   set s := { e : PE ≃ᵢ PE | e x = x ∧ e y = y }
   haveI : Nonempty s := ⟨⟨IsometryEquiv.refl PE, rfl, rfl⟩⟩
   -- On the one hand, `e` cannot send the midpoint `z` of `[x, y]` too far
-  have h_bdd : BddAbove (range fun e : s => dist ((e : PE ≃ᵢ PE) z) z) := by
+  have h_bdd : BddAbove (range fun e : s ↦ dist ((e : PE ≃ᵢ PE) z) z) := by
     refine ⟨dist x z + dist x z, forall_mem_range.2 <| Subtype.forall.2 ?_⟩
     rintro e ⟨hx, _⟩
     calc
@@ -58,7 +58,7 @@ theorem midpoint_fixed {x y : PE} :
   -- sending each `e` to `R ∘ e⁻¹ ∘ R ∘ e`, where `R` is the point reflection in the
   -- midpoint `z` of `[x, y]`.
   set R : PE ≃ᵢ PE := (pointReflection ℝ z).toIsometryEquiv
-  set f : PE ≃ᵢ PE → PE ≃ᵢ PE := fun e => ((e.trans R).trans e.symm).trans R
+  set f : PE ≃ᵢ PE → PE ≃ᵢ PE := fun e ↦ ((e.trans R).trans e.symm).trans R
   -- Note that `f` doubles the value of `dist (e z) z`
   have hf_dist : ∀ e, dist (f e z) z = 2 * dist (e z) z := by
     intro e
@@ -77,7 +77,7 @@ theorem midpoint_fixed {x y : PE} :
     simp only [le_div_iff₀' (zero_lt_two' ℝ), ← hf_dist]
     exact le_ciSup h_bdd ⟨f e, hf_maps_to he⟩
   replace : c ≤ 0 := by linarith
-  refine fun e hx hy => dist_le_zero.1 (le_trans ?_ this)
+  refine fun e hx hy ↦ dist_le_zero.1 (le_trans ?_ this)
   exact le_ciSup h_bdd ⟨e, hx, hy⟩
 
 /-- A bijective isometry sends midpoints to midpoints. -/
@@ -102,7 +102,7 @@ We define a conversion to a `ContinuousLinearEquiv` first, then a conversion to 
 over `ℝ` and `f 0 = 0`, then `f` is a linear isometry equivalence. -/
 def toRealLinearIsometryEquivOfMapZero (f : E ≃ᵢ F) (h0 : f 0 = 0) : E ≃ₗᵢ[ℝ] F :=
   { (AddMonoidHom.ofMapMidpoint ℝ ℝ f h0 f.map_midpoint).toRealLinearMap f.continuous, f with
-    norm_map' := fun x => show ‖f x‖ = ‖x‖ by simp only [← dist_zero_right, ← h0, f.dist_eq] }
+    norm_map' := fun x ↦ show ‖f x‖ = ‖x‖ by simp only [← dist_zero_right, ← h0, f.dist_eq] }
 
 @[simp]
 theorem coe_toRealLinearIsometryEquivOfMapZero (f : E ≃ᵢ F) (h0 : f 0 = 0) :
@@ -136,7 +136,7 @@ def toRealAffineIsometryEquiv (f : PE ≃ᵢ PF) : PE ≃ᵃⁱ[ℝ] PF :=
   AffineIsometryEquiv.mk' f
     ((vaddConst (Classical.arbitrary PE)).trans <|
         f.trans (vaddConst (f <| Classical.arbitrary PE)).symm).toRealLinearIsometryEquiv
-    (Classical.arbitrary PE) fun p => by simp
+    (Classical.arbitrary PE) fun p ↦ by simp
 
 @[simp]
 theorem coeFn_toRealAffineIsometryEquiv (f : PE ≃ᵢ PF) : ⇑f.toRealAffineIsometryEquiv = f :=

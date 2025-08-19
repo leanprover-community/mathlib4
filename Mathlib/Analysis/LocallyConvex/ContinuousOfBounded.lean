@@ -95,7 +95,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
   -- and reformulate non-continuity in terms of these bases
   rcases (nhds_basis_balanced 𝕜 E).exists_antitone_subbasis with ⟨b, bE1, bE⟩
   simp only [_root_.id] at bE
-  have bE' : (𝓝 (0 : E)).HasBasis (fun x : ℕ => x ≠ 0) fun n : ℕ => (n : 𝕜)⁻¹ • b n := by
+  have bE' : (𝓝 (0 : E)).HasBasis (fun x : ℕ ↦ x ≠ 0) fun n : ℕ ↦ (n : 𝕜)⁻¹ • b n := by
     refine bE.1.to_hasBasis ?_ ?_
     · intro n _
       use n + 1
@@ -113,12 +113,12 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
       simp
     intro n hn
     -- The converse direction follows from continuity of the scalar multiplication
-    have hcont : ContinuousAt (fun x : E => (n : 𝕜) • x) 0 :=
+    have hcont : ContinuousAt (fun x : E ↦ (n : 𝕜) • x) 0 :=
       (continuous_const_smul (n : 𝕜)).continuousAt
     simp only [ContinuousAt, smul_zero] at hcont
     rw [bE.1.tendsto_left_iff] at hcont
     rcases hcont (b n) (bE1 n).1 with ⟨i, _, hi⟩
-    refine ⟨i, trivial, fun x hx => ⟨(n : 𝕜) • x, hi hx, ?_⟩⟩
+    refine ⟨i, trivial, fun x hx ↦ ⟨(n : 𝕜) • x, hi hx, ?_⟩⟩
     simp [← mul_smul, hn]
   rw [ContinuousAt, map_zero, bE'.tendsto_iff (nhds_basis_balanced 𝕜' F)] at h
   push_neg at h
@@ -127,7 +127,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
   -- There exists `u : ℕ → E` such that for all `n : ℕ` we have `u n ∈ n⁻¹ • b n` and `f (u n) ∉ V`
   choose! u hu hu' using h
   -- The sequence `(fun n ↦ n • u n)` converges to `0`
-  have h_tendsto : Tendsto (fun n : ℕ => (n : 𝕜) • u n) atTop (𝓝 (0 : E)) := by
+  have h_tendsto : Tendsto (fun n : ℕ ↦ (n : 𝕜) • u n) atTop (𝓝 (0 : E)) := by
     apply bE.tendsto
     intro n
     by_cases h : n = 0
@@ -138,7 +138,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     rw [← hu1, ← mul_smul]
     simp only [h, mul_inv_cancel₀, Ne, Nat.cast_eq_zero, not_false_iff, one_smul]
   -- The image `(fun n ↦ n • u n)` is von Neumann bounded:
-  have h_bounded : IsVonNBounded 𝕜 (Set.range fun n : ℕ => (n : 𝕜) • u n) :=
+  have h_bounded : IsVonNBounded 𝕜 (Set.range fun n : ℕ ↦ (n : 𝕜) • u n) :=
     h_tendsto.cauchySeq.totallyBounded_range.isVonNBounded 𝕜
   -- Since `range u` is bounded, `V` absorbs it
   rcases (hf _ h_bounded hV).exists_pos with ⟨r, hr, h'⟩
@@ -154,7 +154,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     specialize h' (n : 𝕜') h1 (Set.mem_range_self n)
     simp only [Set.mem_preimage, LinearMap.map_smulₛₗ, map_natCast] at h'
     rcases h' with ⟨y, hy, h'⟩
-    apply_fun fun y : F => (n : 𝕜')⁻¹ • y at h'
+    apply_fun fun y : F ↦ (n : 𝕜')⁻¹ • y at h'
     simp only [hn', inv_smul_smul₀, Ne, Nat.cast_eq_zero, not_false_iff] at h'
     rwa [← h']
   exact hu' n hn' h''

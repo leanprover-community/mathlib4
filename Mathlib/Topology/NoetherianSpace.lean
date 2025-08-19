@@ -59,14 +59,14 @@ variable {α β}
 
 /-- In a Noetherian space, all sets are compact. -/
 protected theorem NoetherianSpace.isCompact [NoetherianSpace α] (s : Set α) : IsCompact s := by
-  refine isCompact_iff_finite_subcover.2 fun U hUo hs => ?_
+  refine isCompact_iff_finite_subcover.2 fun U hUo hs ↦ ?_
   rcases ((noetherianSpace_iff_opens α).mp ‹_› ⟨⋃ i, U i, isOpen_iUnion hUo⟩).elim_finite_subcover U
     hUo Set.Subset.rfl with ⟨t, ht⟩
   exact ⟨t, hs.trans ht⟩
 
 protected theorem _root_.Topology.IsInducing.noetherianSpace [NoetherianSpace α] {i : β → α}
     (hi : IsInducing i) : NoetherianSpace β :=
-  (noetherianSpace_iff_opens _).2 fun _ => hi.isCompact_iff.2 (NoetherianSpace.isCompact _)
+  (noetherianSpace_iff_opens _).2 fun _ ↦ hi.isCompact_iff.2 (NoetherianSpace.isCompact _)
 
 @[stacks 0052 "(1)"]
 instance NoetherianSpace.set [NoetherianSpace α] (s : Set α) : NoetherianSpace s :=
@@ -84,7 +84,7 @@ theorem noetherianSpace_TFAE :
     exact Opens.compl_bijective.2.wellFounded_iff (@OrderIso.compl (Set α)).lt_iff_lt.symm
   tfae_have 1 ↔ 4 := noetherianSpace_iff_opens α
   tfae_have 1 → 3 := @NoetherianSpace.isCompact α _
-  tfae_have 3 → 4 := fun h s => h s
+  tfae_have 3 → 4 := fun h s ↦ h s
   tfae_finish
 
 theorem noetherianSpace_iff_isCompact : NoetherianSpace α ↔ ∀ s : Set α, IsCompact s :=
@@ -104,12 +104,12 @@ instance {α} : NoetherianSpace (CofiniteTopology α) := by
 
 theorem noetherianSpace_of_surjective [NoetherianSpace α] (f : α → β) (hf : Continuous f)
     (hf' : Function.Surjective f) : NoetherianSpace β :=
-  noetherianSpace_iff_isCompact.2 <| (Set.image_surjective.mpr hf').forall.2 fun s =>
+  noetherianSpace_iff_isCompact.2 <| (Set.image_surjective.mpr hf').forall.2 fun s ↦
     (NoetherianSpace.isCompact s).image hf
 
 theorem noetherianSpace_iff_of_homeomorph (f : α ≃ₜ β) : NoetherianSpace α ↔ NoetherianSpace β :=
-  ⟨fun _ => noetherianSpace_of_surjective f f.continuous f.surjective,
-    fun _ => noetherianSpace_of_surjective f.symm f.symm.continuous f.symm.surjective⟩
+  ⟨fun _ ↦ noetherianSpace_of_surjective f f.continuous f.surjective,
+    fun _ ↦ noetherianSpace_of_surjective f.symm f.symm.continuous f.symm.surjective⟩
 
 theorem NoetherianSpace.range [NoetherianSpace α] (f : α → β) (hf : Continuous f) :
     NoetherianSpace (Set.range f) :=
@@ -130,11 +130,11 @@ theorem NoetherianSpace.iUnion {ι : Type*} (f : ι → Set α) [Finite ι]
   simp_rw [noetherianSpace_set_iff] at hf ⊢
   intro t ht
   rw [← Set.inter_eq_left.mpr ht, Set.inter_iUnion]
-  exact isCompact_iUnion fun i => hf i _ Set.inter_subset_right
+  exact isCompact_iUnion fun i ↦ hf i _ Set.inter_subset_right
 
 -- This is not an instance since it makes a loop with `t2_space_discrete`.
 theorem NoetherianSpace.discrete [NoetherianSpace α] [T2Space α] : DiscreteTopology α :=
-  ⟨eq_bot_iff.mpr fun _ _ => isClosed_compl_iff.mp (NoetherianSpace.isCompact _).isClosed⟩
+  ⟨eq_bot_iff.mpr fun _ _ ↦ isClosed_compl_iff.mp (NoetherianSpace.isCompact _).isClosed⟩
 
 attribute [local instance] NoetherianSpace.discrete
 
@@ -186,7 +186,7 @@ theorem NoetherianSpace.finite_irreducibleComponents [NoetherianSpace α] :
     (irreducibleComponents α).Finite := by
   obtain ⟨S : Set (Set α), hSf, hSc, hSi, hSU⟩ :=
     NoetherianSpace.exists_finite_set_isClosed_irreducible isClosed_univ (α := α)
-  refine hSf.subset fun s hs => ?_
+  refine hSf.subset fun s hs ↦ ?_
   lift S to Finset (Set α) using hSf
   rcases isIrreducible_iff_sUnion_isClosed.1 hs.1 S hSc (hSU ▸ Set.subset_univ _) with ⟨t, htS, ht⟩
   rwa [ht.antisymm (hs.2 (hSi _ htS) ht)]

@@ -59,8 +59,8 @@ class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α w
   toDecidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ toDecidableLE
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
   toDecidableLT : DecidableLT α := @decidableLTOfDecidableLE _ _ toDecidableLE
-  min := fun a b => if a ≤ b then a else b
-  max := fun a b => if a ≤ b then b else a
+  min := fun a b ↦ if a ≤ b then a else b
+  max := fun a b ↦ if a ≤ b then b else a
   /-- The minimum function is equivalent to the one you get from `minOfLe`. -/
   min_def : ∀ a b, min a b = if a ≤ b then a else b := by intros; rfl
   /-- The minimum function is equivalent to the one you get from `maxOfLe`. -/
@@ -88,11 +88,11 @@ lemma lt_of_not_ge (h : ¬b ≤ a) : a < b := lt_of_le_not_ge (le_of_not_ge h) h
 
 lemma lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a :=
   Or.elim (le_total a b)
-    (fun h : a ≤ b =>
-      Or.elim (Decidable.lt_or_eq_of_le h) (fun h : a < b => Or.inl h) fun h : a = b =>
+    (fun h : a ≤ b ↦
+      Or.elim (Decidable.lt_or_eq_of_le h) (fun h : a < b ↦ Or.inl h) fun h : a = b ↦
         Or.inr (Or.inl h))
-    fun h : b ≤ a =>
-    Or.elim (Decidable.lt_or_eq_of_le h) (fun h : b < a => Or.inr (Or.inr h)) fun h : b = a =>
+    fun h : b ≤ a ↦
+    Or.elim (Decidable.lt_or_eq_of_le h) (fun h : b < a ↦ Or.inr (Or.inr h)) fun h : b = a ↦
       Or.inr (Or.inl h.symm)
 
 lemma le_of_not_gt (h : ¬b < a) : a ≤ b :=
@@ -122,7 +122,7 @@ lemma lt_iff_not_ge : a < b ↔ ¬b ≤ a := ⟨not_le_of_gt, lt_of_not_ge⟩
 @[simp] lemma not_le : ¬a ≤ b ↔ b < a := lt_iff_not_ge.symm
 
 lemma eq_or_gt_of_not_lt (h : ¬a < b) : a = b ∨ b < a :=
-  if h₁ : a = b then Or.inl h₁ else Or.inr (lt_of_not_ge fun hge => h (lt_of_le_of_ne hge h₁))
+  if h₁ : a = b then Or.inl h₁ else Or.inr (lt_of_not_ge fun hge ↦ h (lt_of_le_of_ne hge h₁))
 
 @[deprecated (since := "2025-07-27")] alias eq_or_lt_of_not_gt := eq_or_gt_of_not_lt
 @[deprecated (since := "2025-05-11")] alias eq_or_lt_of_not_lt := eq_or_gt_of_not_lt
@@ -135,7 +135,7 @@ def ltByCases (x y : α) {P : Sort*} (h₁ : x < y → P) (h₂ : x = y → P) (
 
 theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α} {c d : β}
     (H : d < c → b < a) (h : a ≤ b) : c ≤ d :=
-  le_of_not_gt fun h' => not_le_of_gt (H h') h
+  le_of_not_gt fun h' ↦ not_le_of_gt (H h') h
 
 lemma min_def (a b : α) : min a b = if a ≤ b then a else b := by rw [LinearOrder.min_def a]
 lemma max_def (a b : α) : max a b = if a ≤ b then b else a := by rw [LinearOrder.max_def a]
@@ -174,7 +174,7 @@ lemma eq_min (h₁ : c ≤ a) (h₂ : c ≤ b) (h₃ : ∀ {d}, d ≤ a → d �
   le_antisymm (le_min h₁ h₂) (h₃ (min_le_left a b) (min_le_right a b))
 
 lemma min_comm (a b : α) : min a b = min b a :=
-  eq_min (min_le_right a b) (min_le_left a b) fun h₁ h₂ => le_min h₂ h₁
+  eq_min (min_le_right a b) (min_le_left a b) fun h₁ h₂ ↦ le_min h₂ h₁
 
 lemma min_assoc (a b c : α) : min (min a b) c = min a (min b c) := by
   apply eq_min
@@ -201,7 +201,7 @@ lemma eq_max (h₁ : a ≤ c) (h₂ : b ≤ c) (h₃ : ∀ {d}, a ≤ d → b �
   le_antisymm (h₃ (le_max_left a b) (le_max_right a b)) (max_le h₁ h₂)
 
 lemma max_comm (a b : α) : max a b = max b a :=
-  eq_max (le_max_right a b) (le_max_left a b) fun h₁ h₂ => max_le h₂ h₁
+  eq_max (le_max_right a b) (le_max_left a b) fun h₁ h₂ ↦ max_le h₂ h₁
 
 lemma max_assoc (a b c : α) : max (max a b) c = max a (max b c) := by
   apply eq_max

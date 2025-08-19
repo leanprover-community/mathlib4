@@ -90,7 +90,7 @@ to show the domain type when the expect is over `Finset.univ`. -/
   let #[_, _, _, _, s, f] := (← getExpr).getAppArgs | failure
   guard <| f.isLambda
   let ppDomain ← getPPOption getPPFunBinderTypes
-  let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
+  let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i ↦ do
     return (i, ← delab)
   if s.isAppOfArity ``Finset.univ 2 then
     let binder ←

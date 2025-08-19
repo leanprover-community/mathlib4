@@ -52,10 +52,10 @@ noncomputable def quotientEquivPiSpan (N : Submodule R M) (b : Basis ι R M)
       exact ⟨c i, this c i⟩
     · rintro ha
       choose c hc using ha
-      exact ⟨c, b'.ext_elem fun i => Eq.trans (hc i) (this c i).symm⟩
+      exact ⟨c, b'.ext_elem fun i ↦ Eq.trans (hc i) (this c i).symm⟩
   -- Now we map everything through the linear equiv `M ≃ₗ (ι → R)`,
   -- which maps `N` to `N' := Π i, a i ℤ`.
-  let N' : Submodule R (ι → R) := Submodule.pi Set.univ fun i => span R ({a i} : Set R)
+  let N' : Submodule R (ι → R) := Submodule.pi Set.univ fun i ↦ span R ({a i} : Set R)
   have : Submodule.map (b'.equivFun : M →ₗ[R] ι → R) N = N' := by
     ext x
     simp only [N', Submodule.mem_map, Submodule.mem_pi, mem_span_singleton, Set.mem_univ,
@@ -65,12 +65,12 @@ noncomputable def quotientEquivPiSpan (N : Submodule R M) (b : Basis ι R M)
     · rintro ⟨y, hy, rfl⟩ i
       exact hy i
     · rintro hdvd
-      refine ⟨∑ i, x i • b' i, fun i => ?_, ?_⟩ <;> rw [b'.repr_sum_self]
+      refine ⟨∑ i, x i • b' i, fun i ↦ ?_, ?_⟩ <;> rw [b'.repr_sum_self]
       · exact hdvd i
   refine (Submodule.Quotient.equiv N N' b'.equivFun this).trans (re₂₃ := inferInstance)
     (re₃₂ := inferInstance) ?_
   classical
-  exact Submodule.quotientPi (show _ → Submodule R R from fun i => span R ({a i} : Set R))
+  exact Submodule.quotientPi (show _ → Submodule R R from fun i ↦ span R ({a i} : Set R))
 
 /--
 Quotients by submodules of full rank of free finite `ℤ`-modules are isomorphic
@@ -82,7 +82,7 @@ noncomputable def quotientEquivPiZMod (N : Submodule ℤ M) (b : Basis ι ℤ M)
   let a := smithNormalFormCoeffs b h
   let e := N.quotientEquivPiSpan b h
   let e' : (∀ i : ι, ℤ ⧸ Ideal.span ({a i} : Set ℤ)) ≃+ ∀ i : ι, ZMod (a i).natAbs :=
-    AddEquiv.piCongrRight fun i => ↑(Int.quotientSpanEquivZMod (a i))
+    AddEquiv.piCongrRight fun i ↦ ↑(Int.quotientSpanEquivZMod (a i))
   (↑(e : (M ⧸ N) ≃ₗ[ℤ] _) : M ⧸ N ≃+ _).trans e'
 
 /--

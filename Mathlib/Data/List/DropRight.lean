@@ -128,7 +128,7 @@ variable (p) (l)
 
 theorem dropWhile_idempotent : dropWhile p (dropWhile p l) = dropWhile p l := by
   simp only [dropWhile_eq_self_iff]
-  exact fun h => dropWhile_get_zero_not p l h
+  exact fun h ↦ dropWhile_get_zero_not p l h
 
 theorem rdropWhile_idempotent : rdropWhile p (rdropWhile p l) = rdropWhile p l :=
   rdropWhile_eq_self_iff.mpr (rdropWhile_last_not _ _)
@@ -177,7 +177,7 @@ theorem mem_rtakeWhile_imp {x : α} (hx : x ∈ rtakeWhile p l) : p x := by
 
 theorem rtakeWhile_idempotent (p : α → Bool) (l : List α) :
     rtakeWhile p (rtakeWhile p l) = rtakeWhile p l :=
-  rtakeWhile_eq_self_iff.mpr fun _ => mem_rtakeWhile_imp
+  rtakeWhile_eq_self_iff.mpr fun _ ↦ mem_rtakeWhile_imp
 
 theorem rtakeWhile_reverse : l.reverse.rtakeWhile p = (l.takeWhile p).reverse := by
   simp_rw [rtakeWhile, reverse_reverse]

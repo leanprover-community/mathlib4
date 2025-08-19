@@ -30,7 +30,7 @@ add_decl_doc BddDistLat.toDistLat
 namespace BddDistLat
 
 instance : CoeSort BddDistLat Type* :=
-  ⟨fun X => X.toDistLat⟩
+  ⟨fun X ↦ X.toDistLat⟩
 
 instance (X : BddDistLat) : DistribLattice X :=
   X.toDistLat.str
@@ -188,8 +188,8 @@ def dual : BddDistLat ⥤ BddDistLat where
 def dualEquiv : BddDistLat ≌ BddDistLat where
   functor := dual
   inverse := dual
-  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
-  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  unitIso := NatIso.ofComponents fun X ↦ Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X ↦ Iso.mk <| OrderIso.dualDual X
 
 end BddDistLat
 

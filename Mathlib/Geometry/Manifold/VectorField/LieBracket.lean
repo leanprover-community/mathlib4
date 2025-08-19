@@ -192,7 +192,7 @@ theorem mlieBracketWithin_of_isOpen (hs : IsOpen s) (hx : x ∈ s) :
 in the complement of a point. -/
 theorem mlieBracketWithin_eventually_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     mlieBracketWithin I V W s =ᶠ[𝓝 x] mlieBracketWithin I V W t :=
-  (eventually_nhds_nhdsWithin.2 h).mono fun _ => mlieBracketWithin_congr_set' y
+  (eventually_nhds_nhdsWithin.2 h).mono fun _ ↦ mlieBracketWithin_congr_set' y
 
 theorem mlieBracketWithin_eventually_congr_set (h : s =ᶠ[𝓝 x] t) :
     mlieBracketWithin I V W s =ᶠ[𝓝 x] mlieBracketWithin I V W t :=

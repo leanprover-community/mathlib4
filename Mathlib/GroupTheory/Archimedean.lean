@@ -66,7 +66,7 @@ elements of this group admits the least element. -/]
 theorem Subgroup.exists_isLeast_one_lt {H : Subgroup G} (hbot : H ≠ ⊥) {a : G} (h₀ : 1 < a)
     (hd : Disjoint (H : Set G) (Ioo 1 a)) : ∃ b, IsLeast { g : G | g ∈ H ∧ 1 < g } b := by
   -- todo: move to a lemma?
-  have hex : ∀ g > 1, ∃ n : ℕ, g ∈ Ioc (a ^ n) (a ^ (n + 1)) := fun g hg => by
+  have hex : ∀ g > 1, ∃ n : ℕ, g ∈ Ioc (a ^ n) (a ^ (n + 1)) := fun g hg ↦ by
     rcases existsUnique_mul_zpow_mem_Ico h₀ 1 (g / a) with ⟨m, ⟨hm, hm'⟩, -⟩
     simp only [one_mul, div_le_iff_le_mul, div_mul_cancel, ← zpow_add_one] at hm hm'
     lift m to ℕ
@@ -101,10 +101,10 @@ theorem Subgroup.cyclic_of_isolated_one {H : Subgroup G} {a : G} (h₀ : 1 < a)
     (hd : Disjoint (H : Set G) (Ioo 1 a)) : ∃ b, H = closure {b} := by
   rcases eq_or_ne H ⊥ with rfl | hbot
   · exact ⟨1, closure_singleton_one.symm⟩
-  · exact (exists_isLeast_one_lt hbot h₀ hd).imp fun _ => cyclic_of_min
+  · exact (exists_isLeast_one_lt hbot h₀ hd).imp fun _ ↦ cyclic_of_min
 
 /-- Every subgroup of `ℤ` is cyclic. -/
 theorem Int.subgroup_cyclic (H : AddSubgroup ℤ) : ∃ a, H = AddSubgroup.closure {a} :=
-  have : Ioo (0 : ℤ) 1 = ∅ := eq_empty_of_forall_notMem fun _ hm =>
+  have : Ioo (0 : ℤ) 1 = ∅ := eq_empty_of_forall_notMem fun _ hm ↦
     hm.1.not_ge (lt_add_one_iff.1 hm.2)
   AddSubgroup.cyclic_of_isolated_zero one_pos <| by simp [this]

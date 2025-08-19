@@ -69,7 +69,7 @@ theorem exists_isClopen_upper_or_lower_of_ne (h : x ≠ y) :
 -- See note [lower instance priority]
 instance (priority := 100) PriestleySpace.toTotallySeparatedSpace : TotallySeparatedSpace α where
   isTotallySeparated_univ _ _ _ _ h :=
-    (exists_isClopen_upper_or_lower_of_ne h).elim fun U ⟨hU, _, hx, hy⟩ =>
+    (exists_isClopen_upper_or_lower_of_ne h).elim fun U ⟨hU, _, hx, hy⟩ ↦
       ⟨U, Uᶜ, hU.isOpen, hU.compl.isOpen, hx, hy,
         union_compl_self U ▸ subset_rfl, disjoint_compl_right⟩
 

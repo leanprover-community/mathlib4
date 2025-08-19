@@ -110,7 +110,7 @@ theorem ext {f g : α →ᵈ β} (h : ∀ x, f x = g x) : f = g :=
 
 @[simp]
 theorem mk_coe (f : α →ᵈ β) (h) : Dilation.mk f h = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 /-- Copy of a `Dilation` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
@@ -197,7 +197,7 @@ def mkOfNNDistEq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α �
   toFun := f
   edist_eq' := by
     rcases h with ⟨r, hne, h⟩
-    refine ⟨r, hne, fun x y => ?_⟩
+    refine ⟨r, hne, fun x y ↦ ?_⟩
     rw [edist_nndist, edist_nndist, ← ENNReal.coe_mul, h x y]
 
 @[simp]
@@ -208,14 +208,14 @@ theorem coe_mkOfNNDistEq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (
 @[simp]
 theorem mk_coe_of_nndist_eq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α →ᵈ β)
     (h) : Dilation.mkOfNNDistEq f h = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 /-- Alternative `Dilation` constructor when the distance hypothesis is over `dist` -/
 def mkOfDistEq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α → β)
     (h : ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, dist (f x) (f y) = r * dist x y) : α →ᵈ β :=
   mkOfNNDistEq f <|
-    h.imp fun r hr =>
-      ⟨hr.1, fun x y => NNReal.eq <| by rw [coe_nndist, hr.2, NNReal.coe_mul, coe_nndist]⟩
+    h.imp fun r hr ↦
+      ⟨hr.1, fun x y ↦ NNReal.eq <| by rw [coe_nndist, hr.2, NNReal.coe_mul, coe_nndist]⟩
 
 @[simp]
 theorem coe_mkOfDistEq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α → β) (h) :
@@ -225,7 +225,7 @@ theorem coe_mkOfDistEq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f 
 @[simp]
 theorem mk_coe_of_dist_eq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α →ᵈ β) (h) :
     Dilation.mkOfDistEq f h = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 end Setup
 
@@ -249,9 +249,9 @@ lemma _root_.Isometry.toDilation_ratio {f : α → β} {hf : Isometry f} : ratio
     obtain ⟨x, y, h₁, h₂⟩ := h
     exact ratio_unique h₁ h₂ (by simp [hf x y]) |>.symm
 
-theorem lipschitz : LipschitzWith (ratio f) (f : α → β) := fun x y => (edist_eq f x y).le
+theorem lipschitz : LipschitzWith (ratio f) (f : α → β) := fun x y ↦ (edist_eq f x y).le
 
-theorem antilipschitz : AntilipschitzWith (ratio f)⁻¹ (f : α → β) := fun x y => by
+theorem antilipschitz : AntilipschitzWith (ratio f)⁻¹ (f : α → β) := fun x y ↦ by
   have hr : ratio f ≠ 0 := ratio_ne_zero f
   exact mod_cast
     (ENNReal.mul_le_iff_le_inv (ENNReal.coe_ne_zero.2 hr) ENNReal.coe_ne_top).1 (edist_eq f x y).ge
@@ -265,7 +265,7 @@ protected theorem injective {α : Type*} [EMetricSpace α] [FunLike F α β] [Di
 /-- The identity is a dilation -/
 protected def id (α) [PseudoEMetricSpace α] : α →ᵈ α where
   toFun := id
-  edist_eq' := ⟨1, one_ne_zero, fun x y => by simp only [id, ENNReal.coe_one, one_mul]⟩
+  edist_eq' := ⟨1, one_ne_zero, fun x y ↦ by simp only [id, ENNReal.coe_one, one_mul]⟩
 
 instance : Inhabited (α →ᵈ α) :=
   ⟨Dilation.id α⟩
@@ -286,7 +286,7 @@ theorem ratio_id : ratio (Dilation.id α) = 1 := by
 def comp (g : β →ᵈ γ) (f : α →ᵈ β) : α →ᵈ γ where
   toFun := g ∘ f
   edist_eq' := ⟨ratio g * ratio f, mul_ne_zero (ratio_ne_zero g) (ratio_ne_zero f),
-    fun x y => by simp_rw [Function.comp, edist_eq, ENNReal.coe_mul, mul_assoc]⟩
+    fun x y ↦ by simp_rw [Function.comp, edist_eq, ENNReal.coe_mul, mul_assoc]⟩
 
 theorem comp_assoc {δ : Type*} [PseudoEMetricSpace δ] (f : α →ᵈ β) (g : β →ᵈ γ)
     (h : γ →ᵈ δ) : (h.comp g).comp f = h.comp (g.comp f) :=
@@ -314,11 +314,11 @@ theorem ratio_comp' {g : β →ᵈ γ} {f : α →ᵈ β}
 
 @[simp]
 theorem comp_id (f : α →ᵈ β) : f.comp (Dilation.id α) = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem id_comp (f : α →ᵈ β) : (Dilation.id β).comp f = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 instance : Monoid (α →ᵈ α) where
   one := Dilation.id α
@@ -361,12 +361,12 @@ theorem ratio_pow (f : α →ᵈ α) (n : ℕ) : ratio (f ^ n) = ratio f ^ n :=
 @[simp]
 theorem cancel_right {g₁ g₂ : β →ᵈ γ} {f : α →ᵈ β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => Dilation.ext <| hf.forall.2 (Dilation.ext_iff.1 h), fun h => h ▸ rfl⟩
+  ⟨fun h ↦ Dilation.ext <| hf.forall.2 (Dilation.ext_iff.1 h), fun h ↦ h ▸ rfl⟩
 
 @[simp]
 theorem cancel_left {g : β →ᵈ γ} {f₁ f₂ : α →ᵈ β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => Dilation.ext fun x => hg <| by rw [← comp_apply, h, comp_apply], fun h => h ▸ rfl⟩
+  ⟨fun h ↦ Dilation.ext fun x ↦ hg <| by rw [← comp_apply, h, comp_apply], fun h ↦ h ▸ rfl⟩
 
 /-- A dilation from a metric space is a uniform inducing map -/
 theorem isUniformInducing : IsUniformInducing (f : α → β) :=
@@ -394,13 +394,13 @@ theorem ediam_range : EMetric.diam (range (f : α → β)) = ratio f * EMetric.d
 /-- A dilation maps balls to balls and scales the radius by `ratio f`. -/
 theorem mapsTo_emetric_ball (x : α) (r : ℝ≥0∞) :
     MapsTo (f : α → β) (EMetric.ball x r) (EMetric.ball (f x) (ratio f * r)) :=
-  fun y hy => (edist_eq f y x).trans_lt <|
+  fun y hy ↦ (edist_eq f y x).trans_lt <|
     (ENNReal.mul_lt_mul_left (ENNReal.coe_ne_zero.2 <| ratio_ne_zero f) ENNReal.coe_ne_top).2 hy
 
 /-- A dilation maps closed balls to closed balls and scales the radius by `ratio f`. -/
 theorem mapsTo_emetric_closedBall (x : α) (r' : ℝ≥0∞) :
     MapsTo (f : α → β) (EMetric.closedBall x r') (EMetric.closedBall (f x) (ratio f * r')) :=
-  fun y hy => (edist_eq f y x).trans_le <| mul_le_mul_left' hy _
+  fun y hy ↦ (edist_eq f y x).trans_le <| mul_le_mul_left' hy _
 
 theorem comp_continuousOn_iff {γ} [TopologicalSpace γ] {g : γ → α} {s : Set γ} :
     ContinuousOn ((f : α → β) ∘ g) s ↔ ContinuousOn g s :=
@@ -459,17 +459,17 @@ theorem diam_range : Metric.diam (range (f : α → β)) = ratio f * Metric.diam
 /-- A dilation maps balls to balls and scales the radius by `ratio f`. -/
 theorem mapsTo_ball (x : α) (r' : ℝ) :
     MapsTo (f : α → β) (Metric.ball x r') (Metric.ball (f x) (ratio f * r')) :=
-  fun y hy => (dist_eq f y x).trans_lt <| (mul_lt_mul_left <| NNReal.coe_pos.2 <| ratio_pos f).2 hy
+  fun y hy ↦ (dist_eq f y x).trans_lt <| (mul_lt_mul_left <| NNReal.coe_pos.2 <| ratio_pos f).2 hy
 
 /-- A dilation maps spheres to spheres and scales the radius by `ratio f`. -/
 theorem mapsTo_sphere (x : α) (r' : ℝ) :
     MapsTo (f : α → β) (Metric.sphere x r') (Metric.sphere (f x) (ratio f * r')) :=
-  fun y hy => Metric.mem_sphere.mp hy ▸ dist_eq f y x
+  fun y hy ↦ Metric.mem_sphere.mp hy ▸ dist_eq f y x
 
 /-- A dilation maps closed balls to closed balls and scales the radius by `ratio f`. -/
 theorem mapsTo_closedBall (x : α) (r' : ℝ) :
     MapsTo (f : α → β) (Metric.closedBall x r') (Metric.closedBall (f x) (ratio f * r')) :=
-  fun y hy => (dist_eq f y x).trans_le <| mul_le_mul_of_nonneg_left hy (NNReal.coe_nonneg _)
+  fun y hy ↦ (dist_eq f y x).trans_le <| mul_le_mul_of_nonneg_left hy (NNReal.coe_nonneg _)
 
 lemma tendsto_cobounded : Filter.Tendsto f (cobounded α) (cobounded β) :=
   (Dilation.antilipschitz f).tendsto_cobounded

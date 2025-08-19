@@ -84,11 +84,11 @@ section
 variable {f' : E →L[𝕜] F} {s t : Set E} {c c' : ℝ≥0}
 
 theorem mono_num (hc : c ≤ c') (hf : ApproximatesLinearOn f f' s c) :
-    ApproximatesLinearOn f f' s c' := fun x hx y hy =>
+    ApproximatesLinearOn f f' s c' := fun x hx y hy ↦
   le_trans (hf x hx y hy) (mul_le_mul_of_nonneg_right hc <| norm_nonneg _)
 
 theorem mono_set (hst : s ⊆ t) (hf : ApproximatesLinearOn f f' t c) :
-    ApproximatesLinearOn f f' s c := fun x hx y hy => hf x (hst hx) y (hst hy)
+    ApproximatesLinearOn f f' s c := fun x hx y hy ↦ hf x (hst hx) y (hst hy)
 
 theorem approximatesLinearOn_iff_lipschitzOnWith {f : E → F} {f' : E →L[𝕜] F} {s : Set E}
     {c : ℝ≥0} : ApproximatesLinearOn f f' s c ↔ LipschitzOnWith c (f - ⇑f') s := by
@@ -100,7 +100,7 @@ alias ⟨lipschitzOnWith, _root_.LipschitzOnWith.approximatesLinearOn⟩ :=
   approximatesLinearOn_iff_lipschitzOnWith
 
 theorem lipschitz_sub (hf : ApproximatesLinearOn f f' s c) :
-    LipschitzWith c fun x : s => f x - f' x :=
+    LipschitzWith c fun x : s ↦ f x - f' x :=
   hf.lipschitzOnWith.to_restrict
 
 protected theorem lipschitz (hf : ApproximatesLinearOn f f' s c) :
@@ -158,8 +158,8 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
     bound on `dist (u n) b`, from which one checks that `u n` stays in the ball on which one has a
     control. Therefore, the bound can be checked at the next step, and so on inductively.
     -/
-  set g := fun x => x + f'symm (y - f x) with hg
-  set u := fun n : ℕ => g^[n] b with hu
+  set g := fun x ↦ x + f'symm (y - f x) with hg
+  set u := fun n : ℕ ↦ g^[n] b with hu
   have usucc : ∀ n, u (n + 1) = g (u n) := by simp [hu, ← iterate_succ_apply' g _ b]
   -- First bound: if `f z` is close to `y`, then `g z` is close to `z` (i.e., almost a fixed point).
   have A : ∀ z, dist (g z) z ≤ f'symm.nnnorm * dist (f z) y := by
@@ -249,18 +249,18 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
   obtain ⟨x, hx⟩ : ∃ x, Tendsto u atTop (𝓝 x) := cauchySeq_tendsto_of_complete this
   -- As all the `uₙ` belong to the ball `closedBall b ε`, so does their limit `x`.
   have xmem : x ∈ closedBall b ε :=
-    isClosed_closedBall.mem_of_tendsto hx (Eventually.of_forall fun n => C n _ (D n).2)
+    isClosed_closedBall.mem_of_tendsto hx (Eventually.of_forall fun n ↦ C n _ (D n).2)
   refine ⟨x, xmem, ?_⟩
   -- It remains to check that `f x = y`. This follows from continuity of `f` on `closedBall b ε`
   -- and from the fact that `f uₙ` is converging to `y` by construction.
   have hx' : Tendsto u atTop (𝓝[closedBall b ε] x) := by
     simp only [nhdsWithin, tendsto_inf, hx, true_and, tendsto_principal]
-    exact Eventually.of_forall fun n => C n _ (D n).2
+    exact Eventually.of_forall fun n ↦ C n _ (D n).2
   have T1 : Tendsto (f ∘ u) atTop (𝓝 (f x)) :=
     (hf.continuousOn.mono hε x xmem).tendsto.comp hx'
   have T2 : Tendsto (f ∘ u) atTop (𝓝 y) := by
     rw [tendsto_iff_dist_tendsto_zero]
-    refine squeeze_zero (fun _ => dist_nonneg) (fun n => (D n).1) ?_
+    refine squeeze_zero (fun _ ↦ dist_nonneg) (fun n ↦ (D n).1) ?_
     simpa using (tendsto_pow_atTop_nhds_zero_of_lt_one (by positivity) Icf').mul tendsto_const_nhds
   exact tendsto_nhds_unique T1 T2
 
@@ -283,7 +283,7 @@ theorem image_mem_nhds (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.Nonline
 theorem map_nhds_eq (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearRightInverse) {x : E}
     (hs : s ∈ 𝓝 x) (hc : Subsingleton F ∨ c < f'symm.nnnorm⁻¹) : map f (𝓝 x) = 𝓝 (f x) := by
   refine
-    le_antisymm ((hf.continuousOn x (mem_of_mem_nhds hs)).continuousAt hs) (le_map fun t ht => ?_)
+    le_antisymm ((hf.continuousOn x (mem_of_mem_nhds hs)).continuousAt hs) (le_map fun t ht ↦ ?_)
   have : f '' (s ∩ t) ∈ 𝓝 (f x) :=
     (hf.mono_set inter_subset_left).image_mem_nhds f'symm (inter_mem hs ht) hc
   exact mem_of_superset this (image_mono inter_subset_right)
@@ -321,16 +321,16 @@ protected theorem surjective [CompleteSpace E] (hf : ApproximatesLinearOn f (f' 
   rcases hc with hE | hc
   · haveI : Subsingleton F := (Equiv.subsingleton_congr f'.toEquiv).1 hE
     exact surjective_to_subsingleton _
-  · apply forall_of_forall_mem_closedBall (fun y : F => ∃ a, f a = y) (f 0) _
+  · apply forall_of_forall_mem_closedBall (fun y : F ↦ ∃ a, f a = y) (f 0) _
     have hc' : (0 : ℝ) < N⁻¹ - c := by rw [sub_pos]; exact hc
-    let p : ℝ → Prop := fun R => closedBall (f 0) R ⊆ Set.range f
+    let p : ℝ → Prop := fun R ↦ closedBall (f 0) R ⊆ Set.range f
     have hp : ∀ᶠ r : ℝ in atTop, p ((N⁻¹ - c) * r) := by
       have hr : ∀ᶠ r : ℝ in atTop, 0 ≤ r := eventually_ge_atTop 0
-      refine hr.mono fun r hr => Subset.trans ?_ (image_subset_range f (closedBall 0 r))
+      refine hr.mono fun r hr ↦ Subset.trans ?_ (image_subset_range f (closedBall 0 r))
       refine hf.surjOn_closedBall_of_nonlinearRightInverse f'.toNonlinearRightInverse hr ?_
       exact subset_univ _
     refine ((tendsto_id.const_mul_atTop hc').frequently hp.frequently).mono ?_
-    exact fun R h y hy => h hy
+    exact fun R h y hy ↦ h hy
 
 /-- A map approximating a linear equivalence on a set defines a partial equivalence on this set.
 Should not be used outside of this file, because it is superseded by `toPartialHomeomorph` below.
@@ -346,14 +346,14 @@ theorem inverse_continuousOn (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) 
     (hc : Subsingleton E ∨ c < N⁻¹) : ContinuousOn (hf.toPartialEquiv hc).symm (f '' s) := by
   apply continuousOn_iff_continuous_restrict.2
   refine ((hf.antilipschitz hc).to_rightInvOn' ?_ (hf.toPartialEquiv hc).right_inv').continuous
-  exact fun x hx => (hf.toPartialEquiv hc).map_target hx
+  exact fun x hx ↦ (hf.toPartialEquiv hc).map_target hx
 
 /-- The inverse function is approximated linearly on `f '' s` by `f'.symm`. -/
 theorem to_inv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c) (hc : Subsingleton E ∨ c < N⁻¹) :
     ApproximatesLinearOn (hf.toPartialEquiv hc).symm (f'.symm : F →L[𝕜] E) (f '' s)
       (N * (N⁻¹ - c)⁻¹ * c) := fun x hx y hy ↦ by
   set A := hf.toPartialEquiv hc
-  have Af : ∀ z, A z = f z := fun z => rfl
+  have Af : ∀ z, A z = f z := fun z ↦ rfl
   rcases (mem_image _ _ _).1 hx with ⟨x', x's, rfl⟩
   rcases (mem_image _ _ _).1 hy with ⟨y', y's, rfl⟩
   rw [← Af x', ← Af y', A.left_inv x's, A.left_inv y's]

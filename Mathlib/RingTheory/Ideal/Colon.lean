@@ -53,8 +53,8 @@ theorem colon_top {I : Ideal R} [I.IsTwoSided] : I.colon ⊤ = I := by
 theorem colon_bot : colon ⊥ N = N.annihilator := by
   simp_rw [SetLike.ext_iff, mem_colon, mem_annihilator, mem_bot, forall_const]
 
-theorem colon_mono (hn : N₁ ≤ N₂) (hp : P₁ ≤ P₂) : N₁.colon P₂ ≤ N₂.colon P₁ := fun _ hrnp =>
-  mem_colon.2 fun p₁ hp₁ => hn <| mem_colon.1 hrnp p₁ <| hp hp₁
+theorem colon_mono (hn : N₁ ≤ N₂) (hp : P₁ ≤ P₂) : N₁.colon P₂ ≤ N₂.colon P₁ := fun _ hrnp ↦
+  mem_colon.2 fun p₁ hp₁ ↦ hn <| mem_colon.1 hrnp p₁ <| hp hp₁
 
 theorem _root_.Ideal.le_colon {I J : Ideal R} [I.IsTwoSided] : I ≤ I.colon J := by
   calc I = I.colon ⊤ := colon_top.symm
@@ -72,11 +72,11 @@ theorem mem_colon' {r} : r ∈ N.colon P ↔ P ≤ comap (r • (LinearMap.id : 
 
 theorem iInf_colon_iSup (ι₁ : Sort*) (f : ι₁ → Submodule R M) (ι₂ : Sort*)
     (g : ι₂ → Submodule R M) : (⨅ i, f i).colon (⨆ j, g j) = ⨅ (i) (j), (f i).colon (g j) :=
-  le_antisymm (le_iInf fun _ => le_iInf fun _ => colon_mono (iInf_le _ _) (le_iSup _ _)) fun _ H =>
+  le_antisymm (le_iInf fun _ ↦ le_iInf fun _ ↦ colon_mono (iInf_le _ _) (le_iSup _ _)) fun _ H ↦
     mem_colon'.2 <|
-      iSup_le fun j =>
+      iSup_le fun j ↦
         map_le_iff_le_comap.1 <|
-          le_iInf fun i =>
+          le_iInf fun i ↦
             map_le_iff_le_comap.2 <|
               mem_colon'.1 <|
                 have := (mem_iInf _).1 H i

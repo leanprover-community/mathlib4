@@ -44,7 +44,7 @@ def oangle (p₁ p₂ p₃ : P) : Real.Angle :=
 
 /-- Oriented angles are continuous when neither end point equals the middle point. -/
 theorem continuousAt_oangle {x : P × P × P} (hx12 : x.1 ≠ x.2.1) (hx32 : x.2.2 ≠ x.2.1) :
-    ContinuousAt (fun y : P × P × P => ∡ y.1 y.2.1 y.2.2) x := by
+    ContinuousAt (fun y : P × P × P ↦ ∡ y.1 y.2.1 y.2.2) x := by
   unfold oangle
   fun_prop (disch := simp [*])
 
@@ -564,7 +564,7 @@ of those points. -/
 theorem dist_eq_iff_eq_smul_rotation_pi_div_two_vadd_midpoint {p₁ p₂ p : P} (h : p₁ ≠ p₂) :
     dist p₁ p = dist p₂ p ↔
       ∃ r : ℝ, r • o.rotation (π / 2 : ℝ) (p₂ -ᵥ p₁) +ᵥ midpoint ℝ p₁ p₂ = p := by
-  refine ⟨fun hd => ?_, fun hr => ?_⟩
+  refine ⟨fun hd ↦ ?_, fun hr ↦ ?_⟩
   · have hi : ⟪p₂ -ᵥ p₁, p -ᵥ midpoint ℝ p₁ p₂⟫ = 0 := by
       rw [@dist_eq_norm_vsub' V, @dist_eq_norm_vsub' V, ←
         mul_self_inj (norm_nonneg _) (norm_nonneg _), ← real_inner_self_eq_norm_mul_norm, ←
@@ -607,14 +607,14 @@ theorem _root_.Collinear.oangle_sign_of_sameRay_vsub {p₁ p₂ p₃ p₄ : P} (
     rw [← Real.Angle.sign_eq_zero_iff] at hs₁₅₂ hs₃₅₄
     rw [hs₁₅₂, hs₃₅₄]
   · let s : Set (P × P × P) :=
-      (fun x : line[ℝ, p₁, p₂] × V => (x.1, p₅, x.2 +ᵥ (x.1 : P))) ''
+      (fun x : line[ℝ, p₁, p₂] × V ↦ (x.1, p₅, x.2 +ᵥ (x.1 : P))) ''
         Set.univ ×ˢ {v | SameRay ℝ (p₂ -ᵥ p₁) v ∧ v ≠ 0}
     have hco : IsConnected s :=
       haveI : ConnectedSpace line[ℝ, p₁, p₂] := AddTorsor.connectedSpace _ _
       (isConnected_univ.prod (isConnected_setOf_sameRay_and_ne_zero
         (vsub_ne_zero.2 hp₁p₂.symm))).image _ (by fun_prop)
-    have hf : ContinuousOn (fun p : P × P × P => ∡ p.1 p.2.1 p.2.2) s := by
-      refine continuousOn_of_forall_continuousAt fun p hp => continuousAt_oangle ?_ ?_
+    have hf : ContinuousOn (fun p : P × P × P ↦ ∡ p.1 p.2.1 p.2.2) s := by
+      refine continuousOn_of_forall_continuousAt fun p hp ↦ continuousAt_oangle ?_ ?_
       all_goals
         simp_rw [s, Set.mem_image, Set.mem_prod, Set.mem_univ, true_and, Prod.ext_iff] at hp
         obtain ⟨q₁, q₅, q₂⟩ := p
@@ -644,7 +644,7 @@ theorem _root_.Collinear.oangle_sign_of_sameRay_vsub {p₁ p₂ p₃ p₄ : P} (
       change q ∈ line[ℝ, p₁, p₂] at hq
       rw [oangle_ne_zero_and_ne_pi_iff_affineIndependent]
       refine affineIndependent_of_ne_of_mem_of_notMem_of_mem ?_ hq
-          (fun h => hc₅₁₂ ((collinear_insert_iff_of_mem_affineSpan h).2 (collinear_pair _ _ _))) ?_
+          (fun h ↦ hc₅₁₂ ((collinear_insert_iff_of_mem_affineSpan h).2 (collinear_pair _ _ _))) ?_
       · rwa [← @vsub_ne_zero V, vsub_vadd_eq_vsub_sub, vsub_self, zero_sub, neg_ne_zero]
       · refine vadd_mem_of_mem_direction ?_ hq
         rw [direction_affineSpan]
@@ -706,11 +706,11 @@ theorem _root_.AffineSubspace.SSameSide.oangle_sign_eq {s : AffineSubspace ℝ P
     (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₃p₄ : s.SSameSide p₃ p₄) :
     (∡ p₁ p₄ p₂).sign = (∡ p₁ p₃ p₂).sign := by
   by_cases h : p₁ = p₂; · simp [h]
-  let sp : Set (P × P × P) := (fun p : P => (p₁, p, p₂)) '' {p | s.SSameSide p₃ p}
+  let sp : Set (P × P × P) := (fun p : P ↦ (p₁, p, p₂)) '' {p | s.SSameSide p₃ p}
   have hc : IsConnected sp :=
     (isConnected_setOf_sSameSide hp₃p₄.2.1 hp₃p₄.nonempty).image _ (by fun_prop)
-  have hf : ContinuousOn (fun p : P × P × P => ∡ p.1 p.2.1 p.2.2) sp := by
-    refine continuousOn_of_forall_continuousAt fun p hp => continuousAt_oangle ?_ ?_
+  have hf : ContinuousOn (fun p : P × P × P ↦ ∡ p.1 p.2.1 p.2.2) sp := by
+    refine continuousOn_of_forall_continuousAt fun p hp ↦ continuousAt_oangle ?_ ?_
     all_goals
       simp_rw [sp, Set.mem_image, Set.mem_setOf] at hp
       obtain ⟨p', hp', rfl⟩ := hp

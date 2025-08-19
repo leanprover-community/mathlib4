@@ -32,7 +32,7 @@ instance EssSurj.ofUnivLE [UnivLE.{max u v, v}] :
 
 theorem UnivLE_iff_essSurj :
     UnivLE.{max u v, v} ↔ (uliftFunctor.{u, v} : Type v ⥤ Type max u v).EssSurj :=
-  ⟨fun _ => inferInstance, fun w => UnivLE.ofEssSurj w⟩
+  ⟨fun _ ↦ inferInstance, fun w ↦ UnivLE.ofEssSurj w⟩
 
 instance [UnivLE.{max u v, v}] : uliftFunctor.{u, v}.IsEquivalence where
 

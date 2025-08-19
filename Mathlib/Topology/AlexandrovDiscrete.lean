@@ -185,11 +185,11 @@ lemma principal_nhdsKer_singleton (a : α) : 𝓟 (nhdsKer {a}) = 𝓝 a := by
   rw [principal_nhdsKer, nhdsSet_singleton]
 
 lemma nhdsSet_basis_nhdsKer (s : Set α) :
-    (𝓝ˢ s).HasBasis (fun _ : Unit => True) (fun _ => nhdsKer s) :=
+    (𝓝ˢ s).HasBasis (fun _ : Unit ↦ True) (fun _ ↦ nhdsKer s) :=
   principal_nhdsKer s ▸ hasBasis_principal (nhdsKer s)
 
 lemma nhds_basis_nhdsKer_singleton (a : α) :
-    (𝓝 a).HasBasis (fun _ : Unit => True) (fun _ => nhdsKer {a}) :=
+    (𝓝 a).HasBasis (fun _ : Unit ↦ True) (fun _ ↦ nhdsKer {a}) :=
   principal_nhdsKer_singleton a ▸ hasBasis_principal (nhdsKer {a})
 
 lemma isOpen_iff_forall_specializes : IsOpen s ↔ ∀ x y, x ⤳ y → y ∈ s → x ∈ s := by

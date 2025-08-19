@@ -214,7 +214,7 @@ theorem star_mem {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) : star x ∈ pi
   have hy₃ : y * star y = 1 := by
     rw [← Units.val_inj]
     simp only [hx₃, Units.val_mul, Units.coe_star, Units.val_one]
-  apply_fun fun x => y⁻¹ * x at hy₃
+  apply_fun fun x ↦ y⁻¹ * x at hy₃
   simp only [inv_mul_cancel_left, mul_one] at hy₃
   simp only [hy₃, hy₁, inv_mem_iff]
 
@@ -274,7 +274,7 @@ def toUnits : pinGroup Q →* (CliffordAlgebra Q)ˣ where
   map_mul' _x _y := Units.ext rfl
 
 theorem toUnits_injective : Function.Injective (toUnits : pinGroup Q → (CliffordAlgebra Q)ˣ) :=
-  fun _x _y h => Subtype.ext <| Units.ext_iff.mp h
+  fun _x _y h ↦ Subtype.ext <| Units.ext_iff.mp h
 
 end pinGroup
 
@@ -405,7 +405,7 @@ def toUnits : spinGroup Q →* (CliffordAlgebra Q)ˣ where
   map_mul' _x _y := Units.ext rfl
 
 theorem toUnits_injective : Function.Injective (toUnits : spinGroup Q → (CliffordAlgebra Q)ˣ) :=
-  fun _x _y h => Subtype.ext <| Units.ext_iff.mp h
+  fun _x _y h ↦ Subtype.ext <| Units.ext_iff.mp h
 
 end spinGroup
 

@@ -52,7 +52,7 @@ See also `eq_bot_of_le_smul_of_le_jacobson_bot` for the special case when `J = �
 @[stacks 00DV "(2)"]
 theorem eq_smul_of_le_smul_of_le_jacobson {I J : Ideal R} {N : Submodule R M} (hN : N.FG)
     (hIN : N ≤ I • N) (hIjac : I ≤ jacobson J) : N = J • N := by
-  refine le_antisymm ?_ (Submodule.smul_le.2 fun _ _ _ => Submodule.smul_mem _ _)
+  refine le_antisymm ?_ (Submodule.smul_le.2 fun _ _ _ ↦ Submodule.smul_mem _ _)
   intro n hn
   obtain ⟨r, hr⟩ := Submodule.exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul I N hN hIN
   obtain ⟨s, hs⟩ := exists_mul_sub_mem_of_sub_one_mem_jacobson r (hIjac hr.1)
@@ -83,7 +83,7 @@ lemma eq_bot_of_set_smul_eq_of_subset_jacobson_annihilator {s : Set R}
 
 lemma top_ne_ideal_smul_of_le_jacobson_annihilator [Nontrivial M]
     [Module.Finite R M] {I} (h : I ≤ (Module.annihilator R M).jacobson) :
-    (⊤ : Submodule R M) ≠ I • ⊤ := fun H => top_ne_bot <|
+    (⊤ : Submodule R M) ≠ I • ⊤ := fun H ↦ top_ne_bot <|
   eq_bot_of_eq_ideal_smul_of_le_jacobson_annihilator Module.Finite.fg_top H <|
     (congrArg (I ≤ Ideal.jacobson ·) annihilator_top).mpr h
 
@@ -115,7 +115,7 @@ theorem sup_eq_sup_smul_of_le_smul_of_le_jacobson {I J : Ideal R} {N N' : Submod
     (hN' : N'.FG) (hIJ : I ≤ jacobson J) (hNN : N' ≤ N ⊔ I • N') : N ⊔ N' = N ⊔ J • N' := by
   have hNN' : N ⊔ N' = N ⊔ I • N' :=
     le_antisymm (sup_le le_sup_left hNN)
-    (sup_le_sup_left (Submodule.smul_le.2 fun _ _ _ => Submodule.smul_mem _ _) _)
+    (sup_le_sup_left (Submodule.smul_le.2 fun _ _ _ ↦ Submodule.smul_mem _ _) _)
   have h_comap :=
     comap_injective_of_surjective (LinearMap.range_eq_top.1 N.range_mkQ)
   have : (I • N').map N.mkQ = N'.map N.mkQ := by

@@ -38,10 +38,10 @@ theorem vsub_left_cancel {p₁ p₂ p : P} (h : p₁ -ᵥ p = p₂ -ᵥ p) : p�
 if and only if those points are equal. -/
 @[simp]
 theorem vsub_left_cancel_iff {p₁ p₂ p : P} : p₁ -ᵥ p = p₂ -ᵥ p ↔ p₁ = p₂ :=
-  ⟨vsub_left_cancel, fun h => h ▸ rfl⟩
+  ⟨vsub_left_cancel, fun h ↦ h ▸ rfl⟩
 
 /-- Subtracting the point `p` is an injective function. -/
-theorem vsub_left_injective (p : P) : Function.Injective ((· -ᵥ p) : P → G) := fun _ _ =>
+theorem vsub_left_injective (p : P) : Function.Injective ((· -ᵥ p) : P → G) := fun _ _ ↦
   vsub_left_cancel
 
 /-- If subtracting two points from the same point produces equal
@@ -54,11 +54,11 @@ theorem vsub_right_cancel {p₁ p₂ p : P} (h : p -ᵥ p₁ = p -ᵥ p₂) : p�
 if and only if those points are equal. -/
 @[simp]
 theorem vsub_right_cancel_iff {p₁ p₂ p : P} : p -ᵥ p₁ = p -ᵥ p₂ ↔ p₁ = p₂ :=
-  ⟨vsub_right_cancel, fun h => h ▸ rfl⟩
+  ⟨vsub_right_cancel, fun h ↦ h ▸ rfl⟩
 
 /-- Subtracting a point from the point `p` is an injective
 function. -/
-theorem vsub_right_injective (p : P) : Function.Injective ((p -ᵥ ·) : P → G) := fun _ _ =>
+theorem vsub_right_injective (p : P) : Function.Injective ((p -ᵥ ·) : P → G) := fun _ _ ↦
   vsub_right_cancel
 
 end General
@@ -154,11 +154,11 @@ open AddAction AddTorsor
 /-- A product of `AddTorsor`s is an `AddTorsor`. -/
 instance instAddTorsor [∀ i, AddTorsor (fg i) (fp i)] : AddTorsor (∀ i, fg i) (∀ i, fp i) where
   vadd g p i := g i +ᵥ p i
-  zero_vadd p := funext fun i => zero_vadd (fg i) (p i)
-  add_vadd g₁ g₂ p := funext fun i => add_vadd (g₁ i) (g₂ i) (p i)
+  zero_vadd p := funext fun i ↦ zero_vadd (fg i) (p i)
+  add_vadd g₁ g₂ p := funext fun i ↦ add_vadd (g₁ i) (g₂ i) (p i)
   vsub p₁ p₂ i := p₁ i -ᵥ p₂ i
-  vsub_vadd' p₁ p₂ := funext fun i => vsub_vadd (p₁ i) (p₂ i)
-  vadd_vsub' g p := funext fun i => vadd_vsub (g i) (p i)
+  vsub_vadd' p₁ p₂ := funext fun i ↦ vsub_vadd (p₁ i) (p₂ i)
+  vadd_vsub' g p := funext fun i ↦ vadd_vsub (g i) (p i)
 
 end Pi
 
@@ -203,8 +203,8 @@ theorem pointReflection_fixed_iff_of_injective_two_nsmul {x y : P} (h : Injectiv
 
 theorem injective_pointReflection_left_of_injective_two_nsmul {G P : Type*} [AddCommGroup G]
     [AddTorsor G P] (h : Injective (2 • · : G → G)) (y : P) :
-    Injective fun x : P => pointReflection x y :=
-  fun x₁ x₂ (hy : pointReflection x₁ y = pointReflection x₂ y) => by
+    Injective fun x : P ↦ pointReflection x y :=
+  fun x₁ x₂ (hy : pointReflection x₁ y = pointReflection x₂ y) ↦ by
   rwa [pointReflection_apply, pointReflection_apply, vadd_eq_vadd_iff_sub_eq_vsub,
     vsub_sub_vsub_cancel_right, ← neg_vsub_eq_vsub_rev, neg_eq_iff_add_eq_zero,
     ← two_nsmul, ← nsmul_zero 2, h.eq_iff, vsub_eq_zero_iff_eq] at hy

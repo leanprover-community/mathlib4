@@ -52,7 +52,7 @@ noncomputable def spanNorm (I : Ideal S) : Ideal R :=
 
 @[simp]
 theorem spanNorm_bot :
-    spanNorm R (⊥ : Ideal S) = ⊥ := span_eq_bot.mpr fun x hx => by simpa using hx
+    spanNorm R (⊥ : Ideal S) = ⊥ := span_eq_bot.mpr fun x hx ↦ by simpa using hx
 
 variable {R} in
 @[simp]
@@ -74,7 +74,7 @@ theorem norm_mem_spanNorm [Module.Free R S] {I : Ideal S} (x : S) (hx : x ∈ I)
 theorem spanNorm_singleton {r : S} :
     spanNorm R (span ({r} : Set S)) = span {Algebra.intNorm R S r} :=
   le_antisymm
-    (span_le.mpr fun x hx =>
+    (span_le.mpr fun x hx ↦
       mem_span_singleton.mpr
         (by
           obtain ⟨x, hx', rfl⟩ := (Set.mem_image _ _ _).mp hx

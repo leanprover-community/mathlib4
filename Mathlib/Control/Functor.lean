@@ -38,7 +38,7 @@ theorem Functor.map_id : (id <$> ·) = (id : F α → F α) := funext id_map
 
 theorem Functor.map_comp_map (f : α → β) (g : β → γ) :
     ((g <$> ·) ∘ (f <$> ·) : F α → F γ) = ((g ∘ f) <$> ·) :=
-  funext fun _ => (comp_map _ _ _).symm
+  funext fun _ ↦ (comp_map _ _ _).symm
   -- Porting note: was `apply funext <;> intro <;> rw [comp_map]` but `rw` failed?
 
 theorem Functor.ext {F} :
@@ -191,11 +191,11 @@ instance lawfulFunctor : LawfulFunctor (Comp F G) where
 -- Porting note: had to use switch to `Id` from `id` because this has the `Functor` instance.
 theorem functor_comp_id {F} [AF : Functor F] [LawfulFunctor F] :
     @Comp.functor F Id _ _ = AF :=
-  @Functor.ext F _ AF (Comp.lawfulFunctor (G := Id)) _ fun _ _ _ _ => rfl
+  @Functor.ext F _ AF (Comp.lawfulFunctor (G := Id)) _ fun _ _ _ _ ↦ rfl
 
 -- Porting note: had to use switch to `Id` from `id` because this has the `Functor` instance.
 theorem functor_id_comp {F} [AF : Functor F] [LawfulFunctor F] : @Comp.functor Id F _ _ = AF :=
-  @Functor.ext F _ AF (Comp.lawfulFunctor (F := Id)) _ fun _ _ _ _ => rfl
+  @Functor.ext F _ AF (Comp.lawfulFunctor (F := Id)) _ fun _ _ _ _ ↦ rfl
 
 end Comp
 
@@ -215,10 +215,10 @@ protected def seq {α β : Type v} : Comp F G (α → β) → (Unit → Comp F G
 -- `ₓ` because the type of `Seq.seq` doesn't match `has_seq.seq`
 
 instance : Pure (Comp F G) :=
-  ⟨fun x => Comp.mk <| pure <| pure x⟩
+  ⟨fun x ↦ Comp.mk <| pure <| pure x⟩
 
 instance : Seq (Comp F G) :=
-  ⟨fun f x => Comp.seq f x⟩
+  ⟨fun f x ↦ Comp.seq f x⟩
 
 @[simp]
 protected theorem run_pure {α : Type v} : ∀ x : α, (pure x : Comp F G α).run = pure (pure x)
@@ -246,8 +246,8 @@ def Liftp {α : Type u} (p : α → Prop) (x : F α) : Prop :=
 (2) we can pair values `a` from `x` and `b` from `y` so that `r a b` holds. -/
 def Liftr {α : Type u} (r : α → α → Prop) (x y : F α) : Prop :=
   ∃ u : F { p : α × α // r p.fst p.snd },
-    (fun t : { p : α × α // r p.fst p.snd } => t.val.fst) <$> u = x ∧
-      (fun t : { p : α × α // r p.fst p.snd } => t.val.snd) <$> u = y
+    (fun t : { p : α × α // r p.fst p.snd } ↦ t.val.fst) <$> u = x ∧
+      (fun t : { p : α × α // r p.fst p.snd } ↦ t.val.snd) <$> u = y
 
 /-- If we consider `x : F α` to, in some sense, contain values of type `α`, then
 `supp x` is the set of values of type `α` that `x` contains. -/
@@ -255,14 +255,14 @@ def supp {α : Type u} (x : F α) : Set α :=
   { y : α | ∀ ⦃p⦄, Liftp p x → p y }
 
 theorem of_mem_supp {α : Type u} {x : F α} {p : α → Prop} (h : Liftp p x) : ∀ y ∈ supp x, p y :=
-  fun _ hy => hy h
+  fun _ hy ↦ hy h
 
 /-- If `f` is a functor, if `fb : f β` and `a : α`, then `mapConstRev fb a` is the result of
   applying `f.map` to the constant function `β → α` sending everything to `a`, and then
   evaluating at `fb`. In other words it's `const a <$> fb`. -/
 abbrev mapConstRev {f : Type u → Type v} [Functor f] {α β : Type u} :
     f β → α → f α :=
-  fun a b => Functor.mapConst b a
+  fun a b ↦ Functor.mapConst b a
 /-- If `f` is a functor, if `fb : f β` and `a : α`, then `mapConstRev fb a` is the result of
   applying `f.map` to the constant function `β → α` sending everything to `a`, and then
   evaluating at `fb`. In other words it's `const a <$> fb`. -/

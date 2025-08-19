@@ -226,50 +226,50 @@ variable [Preorder α] {f g : α → R}
 
 theorem antitone_mul_left [ExistsAddOfLE R] [PosMulMono R]
     [AddRightMono R] [AddRightReflectLE R]
-    {a : R} (ha : a ≤ 0) : Antitone (a * ·) := fun _ _ b_le_c =>
+    {a : R} (ha : a ≤ 0) : Antitone (a * ·) := fun _ _ b_le_c ↦
   mul_le_mul_of_nonpos_left b_le_c ha
 
 theorem antitone_mul_right [ExistsAddOfLE R] [MulPosMono R]
     [AddRightMono R] [AddRightReflectLE R]
-    {a : R} (ha : a ≤ 0) : Antitone fun x => x * a := fun _ _ b_le_c =>
+    {a : R} (ha : a ≤ 0) : Antitone fun x ↦ x * a := fun _ _ b_le_c ↦
   mul_le_mul_of_nonpos_right b_le_c ha
 
 theorem Monotone.const_mul_of_nonpos [ExistsAddOfLE R] [PosMulMono R]
     [AddRightMono R] [AddRightReflectLE R]
-    (hf : Monotone f) (ha : a ≤ 0) : Antitone fun x => a * f x :=
+    (hf : Monotone f) (ha : a ≤ 0) : Antitone fun x ↦ a * f x :=
   (antitone_mul_left ha).comp_monotone hf
 
 theorem Monotone.mul_const_of_nonpos [ExistsAddOfLE R] [MulPosMono R]
     [AddRightMono R] [AddRightReflectLE R]
-    (hf : Monotone f) (ha : a ≤ 0) : Antitone fun x => f x * a :=
+    (hf : Monotone f) (ha : a ≤ 0) : Antitone fun x ↦ f x * a :=
   (antitone_mul_right ha).comp_monotone hf
 
 theorem Antitone.const_mul_of_nonpos [ExistsAddOfLE R] [PosMulMono R]
     [AddRightMono R] [AddRightReflectLE R]
-    (hf : Antitone f) (ha : a ≤ 0) : Monotone fun x => a * f x :=
+    (hf : Antitone f) (ha : a ≤ 0) : Monotone fun x ↦ a * f x :=
   (antitone_mul_left ha).comp hf
 
 theorem Antitone.mul_const_of_nonpos [ExistsAddOfLE R] [MulPosMono R]
     [AddRightMono R] [AddRightReflectLE R]
-    (hf : Antitone f) (ha : a ≤ 0) : Monotone fun x => f x * a :=
+    (hf : Antitone f) (ha : a ≤ 0) : Monotone fun x ↦ f x * a :=
   (antitone_mul_right ha).comp hf
 
 theorem Antitone.mul_monotone [ExistsAddOfLE R] [PosMulMono R] [MulPosMono R]
     [AddRightMono R] [AddRightReflectLE R]
     (hf : Antitone f) (hg : Monotone g) (hf₀ : ∀ x, f x ≤ 0)
-    (hg₀ : ∀ x, 0 ≤ g x) : Antitone (f * g) := fun _ _ h =>
+    (hg₀ : ∀ x, 0 ≤ g x) : Antitone (f * g) := fun _ _ h ↦
   mul_le_mul_of_nonpos_of_nonneg (hf h) (hg h) (hf₀ _) (hg₀ _)
 
 theorem Monotone.mul_antitone [ExistsAddOfLE R] [PosMulMono R] [MulPosMono R]
     [AddRightMono R] [AddRightReflectLE R]
     (hf : Monotone f) (hg : Antitone g) (hf₀ : ∀ x, 0 ≤ f x)
-    (hg₀ : ∀ x, g x ≤ 0) : Antitone (f * g) := fun _ _ h =>
+    (hg₀ : ∀ x, g x ≤ 0) : Antitone (f * g) := fun _ _ h ↦
   mul_le_mul_of_nonneg_of_nonpos (hf h) (hg h) (hf₀ _) (hg₀ _)
 
 theorem Antitone.mul [ExistsAddOfLE R] [PosMulMono R] [MulPosMono R]
     [AddRightMono R] [AddRightReflectLE R]
     (hf : Antitone f) (hg : Antitone g) (hf₀ : ∀ x, f x ≤ 0) (hg₀ : ∀ x, g x ≤ 0) :
-    Monotone (f * g) := fun _ _ h => mul_le_mul_of_nonpos_of_nonpos (hf h) (hg h) (hf₀ _) (hg₀ _)
+    Monotone (f * g) := fun _ _ h ↦ mul_le_mul_of_nonpos_of_nonpos (hf h) (hg h) (hf₀ _) (hg₀ _)
 
 end Monotone
 end OrderedSemiring
@@ -339,32 +339,32 @@ variable [Preorder α] {f : α → R}
 
 theorem strictAnti_mul_left [ExistsAddOfLE R] [PosMulStrictMono R]
     [AddRightStrictMono R] [AddRightReflectLT R]
-    {a : R} (ha : a < 0) : StrictAnti (a * ·) := fun _ _ b_lt_c =>
+    {a : R} (ha : a < 0) : StrictAnti (a * ·) := fun _ _ b_lt_c ↦
   mul_lt_mul_of_neg_left b_lt_c ha
 
 theorem strictAnti_mul_right [ExistsAddOfLE R] [MulPosStrictMono R]
     [AddRightStrictMono R] [AddRightReflectLT R]
-    {a : R} (ha : a < 0) : StrictAnti fun x => x * a := fun _ _ b_lt_c =>
+    {a : R} (ha : a < 0) : StrictAnti fun x ↦ x * a := fun _ _ b_lt_c ↦
   mul_lt_mul_of_neg_right b_lt_c ha
 
 theorem StrictMono.const_mul_of_neg [ExistsAddOfLE R] [PosMulStrictMono R]
     [AddRightStrictMono R] [AddRightReflectLT R]
-    (hf : StrictMono f) (ha : a < 0) : StrictAnti fun x => a * f x :=
+    (hf : StrictMono f) (ha : a < 0) : StrictAnti fun x ↦ a * f x :=
   (strictAnti_mul_left ha).comp_strictMono hf
 
 theorem StrictMono.mul_const_of_neg [ExistsAddOfLE R] [MulPosStrictMono R]
     [AddRightStrictMono R] [AddRightReflectLT R]
-    (hf : StrictMono f) (ha : a < 0) : StrictAnti fun x => f x * a :=
+    (hf : StrictMono f) (ha : a < 0) : StrictAnti fun x ↦ f x * a :=
   (strictAnti_mul_right ha).comp_strictMono hf
 
 theorem StrictAnti.const_mul_of_neg [ExistsAddOfLE R] [PosMulStrictMono R]
     [AddRightStrictMono R] [AddRightReflectLT R]
-    (hf : StrictAnti f) (ha : a < 0) : StrictMono fun x => a * f x :=
+    (hf : StrictAnti f) (ha : a < 0) : StrictMono fun x ↦ a * f x :=
   (strictAnti_mul_left ha).comp hf
 
 theorem StrictAnti.mul_const_of_neg [ExistsAddOfLE R] [MulPosStrictMono R]
     [AddRightStrictMono R] [AddRightReflectLT R]
-    (hf : StrictAnti f) (ha : a < 0) : StrictMono fun x => f x * a :=
+    (hf : StrictAnti f) (ha : a < 0) : StrictMono fun x ↦ f x * a :=
   (strictAnti_mul_right ha).comp hf
 
 end Monotone
@@ -420,19 +420,19 @@ theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg
 
 theorem nonneg_of_mul_nonneg_left [MulPosStrictMono R]
     (h : 0 ≤ a * b) (hb : 0 < b) : 0 ≤ a :=
-  le_of_not_gt fun ha => (mul_neg_of_neg_of_pos ha hb).not_ge h
+  le_of_not_gt fun ha ↦ (mul_neg_of_neg_of_pos ha hb).not_ge h
 
 theorem nonneg_of_mul_nonneg_right [PosMulStrictMono R]
     (h : 0 ≤ a * b) (ha : 0 < a) : 0 ≤ b :=
-  le_of_not_gt fun hb => (mul_neg_of_pos_of_neg ha hb).not_ge h
+  le_of_not_gt fun hb ↦ (mul_neg_of_pos_of_neg ha hb).not_ge h
 
 theorem nonpos_of_mul_nonpos_left [PosMulStrictMono R]
     (h : a * b ≤ 0) (hb : 0 < b) : a ≤ 0 :=
-  le_of_not_gt fun ha : a > 0 => (mul_pos ha hb).not_ge h
+  le_of_not_gt fun ha : a > 0 ↦ (mul_pos ha hb).not_ge h
 
 theorem nonpos_of_mul_nonpos_right [PosMulStrictMono R]
     (h : a * b ≤ 0) (ha : 0 < a) : b ≤ 0 :=
-  le_of_not_gt fun hb : b > 0 => (mul_pos ha hb).not_ge h
+  le_of_not_gt fun hb : b > 0 ↦ (mul_pos ha hb).not_ge h
 
 @[simp]
 theorem mul_nonneg_iff_of_pos_left [PosMulStrictMono R]
@@ -484,25 +484,25 @@ theorem add_le_mul' [ZeroLEOneClass R] [NeZero (1 : R)]
 
 theorem mul_nonneg_iff_right_nonneg_of_pos [PosMulStrictMono R]
     (ha : 0 < a) : 0 ≤ a * b ↔ 0 ≤ b :=
-  ⟨fun h => nonneg_of_mul_nonneg_right h ha, mul_nonneg ha.le⟩
+  ⟨fun h ↦ nonneg_of_mul_nonneg_right h ha, mul_nonneg ha.le⟩
 
 theorem mul_nonneg_iff_left_nonneg_of_pos [PosMulStrictMono R] [MulPosStrictMono R]
     (hb : 0 < b) : 0 ≤ a * b ↔ 0 ≤ a :=
-  ⟨fun h => nonneg_of_mul_nonneg_left h hb, fun h => mul_nonneg h hb.le⟩
+  ⟨fun h ↦ nonneg_of_mul_nonneg_left h hb, fun h ↦ mul_nonneg h hb.le⟩
 
 theorem nonpos_of_mul_nonneg_left [PosMulStrictMono R]
     (h : 0 ≤ a * b) (hb : b < 0) : a ≤ 0 :=
-  le_of_not_gt fun ha => absurd h (mul_neg_of_pos_of_neg ha hb).not_ge
+  le_of_not_gt fun ha ↦ absurd h (mul_neg_of_pos_of_neg ha hb).not_ge
 
 theorem nonpos_of_mul_nonneg_right [MulPosStrictMono R]
     (h : 0 ≤ a * b) (ha : a < 0) : b ≤ 0 :=
-  le_of_not_gt fun hb => absurd h (mul_neg_of_neg_of_pos ha hb).not_ge
+  le_of_not_gt fun hb ↦ absurd h (mul_neg_of_neg_of_pos ha hb).not_ge
 
 @[simp]
 theorem Units.inv_pos
     [ZeroLEOneClass R] [NeZero (1 : R)] [PosMulStrictMono R]
     {u : Rˣ} : (0 : R) < ↑u⁻¹ ↔ (0 : R) < u :=
-  have : ∀ {u : Rˣ}, (0 : R) < u → (0 : R) < ↑u⁻¹ := @fun u h =>
+  have : ∀ {u : Rˣ}, (0 : R) < u → (0 : R) < ↑u⁻¹ := @fun u h ↦
     (mul_pos_iff_of_pos_left h).mp <| u.mul_inv.symm ▸ zero_lt_one
   ⟨this, this⟩
 
@@ -510,7 +510,7 @@ theorem Units.inv_pos
 theorem Units.inv_neg
     [ZeroLEOneClass R] [NeZero (1 : R)] [MulPosMono R] [PosMulMono R]
     {u : Rˣ} : ↑u⁻¹ < (0 : R) ↔ ↑u < (0 : R) :=
-  have : ∀ {u : Rˣ}, ↑u < (0 : R) → ↑u⁻¹ < (0 : R) := @fun u h =>
+  have : ∀ {u : Rˣ}, ↑u < (0 : R) → ↑u⁻¹ < (0 : R) := @fun u h ↦
     neg_of_mul_pos_right (u.mul_inv.symm ▸ zero_lt_one) h.le
   ⟨this, this⟩
 
@@ -545,7 +545,7 @@ theorem le_of_mul_le_of_one_le
 
 theorem nonneg_le_nonneg_of_sq_le_sq [PosMulStrictMono R] [MulPosMono R]
     {a b : R} (hb : 0 ≤ b) (h : a * a ≤ b * b) : a ≤ b :=
-  le_of_not_gt fun hab => (mul_self_lt_mul_self hb hab).not_ge h
+  le_of_not_gt fun hab ↦ (mul_self_lt_mul_self hb hab).not_ge h
 
 theorem mul_self_le_mul_self_iff [PosMulStrictMono R] [MulPosMono R]
     {a b : R} (h1 : 0 ≤ a) (h2 : 0 ≤ b) : a ≤ b ↔ a * a ≤ b * b :=
@@ -568,13 +568,13 @@ lemma sign_cases_of_C_mul_pow_nonneg [PosMulStrictMono R]
 theorem mul_pos_iff [ExistsAddOfLE R] [PosMulStrictMono R] [MulPosStrictMono R]
     [AddLeftStrictMono R] [AddLeftReflectLT R] :
     0 < a * b ↔ 0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 :=
-  ⟨pos_and_pos_or_neg_and_neg_of_mul_pos, fun h =>
+  ⟨pos_and_pos_or_neg_and_neg_of_mul_pos, fun h ↦
     h.elim (and_imp.2 mul_pos) (and_imp.2 mul_pos_of_neg_of_neg)⟩
 
 theorem mul_nonneg_iff [ExistsAddOfLE R] [MulPosStrictMono R] [PosMulStrictMono R]
     [AddLeftReflectLE R] [AddLeftMono R] :
     0 ≤ a * b ↔ 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 :=
-  ⟨nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg, fun h =>
+  ⟨nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg, fun h ↦
     h.elim (and_imp.2 mul_nonneg) (and_imp.2 mul_nonneg_of_nonpos_of_nonpos)⟩
 
 /-- Out of three elements of a `LinearOrderedRing`, two must have the same sign. -/
@@ -655,22 +655,22 @@ theorem mul_self_pos [ExistsAddOfLE R] [PosMulStrictMono R] [MulPosStrictMono R]
 theorem nonneg_of_mul_nonpos_left [ExistsAddOfLE R] [MulPosStrictMono R]
     [AddRightMono R] [AddRightReflectLE R]
     {a b : R} (h : a * b ≤ 0) (hb : b < 0) : 0 ≤ a :=
-  le_of_not_gt fun ha => absurd h (mul_pos_of_neg_of_neg ha hb).not_ge
+  le_of_not_gt fun ha ↦ absurd h (mul_pos_of_neg_of_neg ha hb).not_ge
 
 theorem nonneg_of_mul_nonpos_right [ExistsAddOfLE R] [MulPosStrictMono R]
     [AddRightMono R] [AddRightReflectLE R]
     {a b : R} (h : a * b ≤ 0) (ha : a < 0) : 0 ≤ b :=
-  le_of_not_gt fun hb => absurd h (mul_pos_of_neg_of_neg ha hb).not_ge
+  le_of_not_gt fun hb ↦ absurd h (mul_pos_of_neg_of_neg ha hb).not_ge
 
 theorem pos_of_mul_neg_left [ExistsAddOfLE R] [MulPosMono R]
     [AddRightMono R] [AddRightReflectLE R]
     {a b : R} (h : a * b < 0) (hb : b ≤ 0) : 0 < a :=
-  lt_of_not_ge fun ha => absurd h (mul_nonneg_of_nonpos_of_nonpos ha hb).not_gt
+  lt_of_not_ge fun ha ↦ absurd h (mul_nonneg_of_nonpos_of_nonpos ha hb).not_gt
 
 theorem pos_of_mul_neg_right [ExistsAddOfLE R] [MulPosMono R]
     [AddRightMono R] [AddRightReflectLE R]
     {a b : R} (h : a * b < 0) (ha : a ≤ 0) : 0 < b :=
-  lt_of_not_ge fun hb => absurd h (mul_nonneg_of_nonpos_of_nonpos ha hb).not_gt
+  lt_of_not_ge fun hb ↦ absurd h (mul_nonneg_of_nonpos_of_nonpos ha hb).not_gt
 
 theorem neg_iff_pos_of_mul_neg [ExistsAddOfLE R] [PosMulMono R] [MulPosMono R]
     [AddRightMono R] [AddRightReflectLE R]

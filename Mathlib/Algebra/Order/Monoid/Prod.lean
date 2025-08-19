@@ -32,7 +32,7 @@ instance instIsOrderedCancelMonoid
 @[to_additive]
 instance [LE α] [LE β] [Mul α] [Mul β] [ExistsMulOfLE α] [ExistsMulOfLE β] :
     ExistsMulOfLE (α × β) :=
-  ⟨fun h =>
+  ⟨fun h ↦
     let ⟨c, hc⟩ := exists_mul_of_le h.1
     let ⟨d, hd⟩ := exists_mul_of_le h.2
     ⟨(c, d), Prod.ext hc hd⟩⟩
@@ -51,8 +51,8 @@ instance isOrderedMonoid [CommMonoid α] [PartialOrder α] [MulLeftStrictMono α
     [CommMonoid β] [PartialOrder β] [IsOrderedMonoid β] :
     IsOrderedMonoid (α ×ₗ β) where
   mul_le_mul_left _ _ hxy z := (le_iff.1 hxy).elim
-    (fun hxy => left _ _ <| mul_lt_mul_left' hxy _)
-    (fun hxy => le_iff.2 <|
+    (fun hxy ↦ left _ _ <| mul_lt_mul_left' hxy _)
+    (fun hxy ↦ le_iff.2 <|
       Or.inr ⟨by simp only [ofLex_mul, fst_mul, hxy.1], mul_le_mul_left' hxy.2 _⟩)
 
 @[to_additive]
@@ -61,8 +61,8 @@ instance isOrderedCancelMonoid [CommMonoid α] [PartialOrder α] [IsOrderedCance
     IsOrderedCancelMonoid (α ×ₗ β) where
   mul_le_mul_left _ _ := mul_le_mul_left'
   le_of_mul_le_mul_left _ _ _ hxyz := (le_iff.1 hxyz).elim
-    (fun hxy => left _ _ <| lt_of_mul_lt_mul_left' hxy)
-    (fun hxy => le_iff.2 <| Or.inr ⟨mul_left_cancel hxy.1, le_of_mul_le_mul_left' hxy.2⟩)
+    (fun hxy ↦ left _ _ <| lt_of_mul_lt_mul_left' hxy)
+    (fun hxy ↦ le_iff.2 <| Or.inr ⟨mul_left_cancel hxy.1, le_of_mul_le_mul_left' hxy.2⟩)
 
 end Lex
 

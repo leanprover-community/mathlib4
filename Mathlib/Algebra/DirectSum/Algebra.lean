@@ -112,9 +112,9 @@ can be discharged by `rfl`. -/
 def toAlgebra (f : ∀ i, A i →ₗ[R] B) (hone : f _ GradedMonoid.GOne.one = 1)
     (hmul : ∀ {i j} (ai : A i) (aj : A j), f _ (GradedMonoid.GMul.mul ai aj) = f _ ai * f _ aj) :
     (⨁ i, A i) →ₐ[R] B :=
-  { toSemiring (fun i => (f i).toAddMonoidHom) hone @hmul with
-    toFun := toSemiring (fun i => (f i).toAddMonoidHom) hone @hmul
-    commutes' := fun r => by
+  { toSemiring (fun i ↦ (f i).toAddMonoidHom) hone @hmul with
+    toFun := toSemiring (fun i ↦ (f i).toAddMonoidHom) hone @hmul
+    commutes' := fun r ↦ by
       change toModule R _ _ f (algebraMap R _ r) = _
       rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one, map_smul, one_def,
         ← lof_eq_of R, toModule_lof, hone] }
@@ -128,7 +128,7 @@ theorem algHom_ext' ⦃f g : (⨁ i, A i) →ₐ[R] B⦄
   AlgHom.toLinearMap_injective <| DirectSum.linearMap_ext _ h
 
 theorem algHom_ext ⦃f g : (⨁ i, A i) →ₐ[R] B⦄ (h : ∀ i x, f (of A i x) = g (of A i x)) : f = g :=
-  algHom_ext' R A fun i => LinearMap.ext <| h i
+  algHom_ext' R A fun i ↦ LinearMap.ext <| h i
 
 /-- The piecewise multiplication from the `Mul` instance, as a bundled linear map.
 
@@ -136,13 +136,13 @@ This is the graded version of `LinearMap.mul`, and the linear version of `Direct
 @[simps]
 def gMulLHom {i j} : A i →ₗ[R] A j →ₗ[R] A (i + j) where
   toFun a :=
-    { toFun := fun b => GradedMonoid.GMul.mul a b
-      map_smul' := fun r x => by
+    { toFun := fun b ↦ GradedMonoid.GMul.mul a b
+      map_smul' := fun r x ↦ by
         injection (smul_comm r (GradedMonoid.mk _ a) (GradedMonoid.mk _ x)).symm
       map_add' := GNonUnitalNonAssocSemiring.mul_add _ }
-  map_smul' r x := LinearMap.ext fun y => by
+  map_smul' r x := LinearMap.ext fun y ↦ by
     injection smul_assoc r (GradedMonoid.mk _ x) (GradedMonoid.mk _ y)
-  map_add' _ _ := LinearMap.ext fun _ => GNonUnitalNonAssocSemiring.add_mul _ _ _
+  map_add' _ _ := LinearMap.ext fun _ ↦ GNonUnitalNonAssocSemiring.add_mul _ _ _
 
 end DirectSum
 
@@ -152,11 +152,11 @@ end DirectSum
 /-- A direct sum of copies of an `Algebra` inherits the algebra structure. -/
 @[simps]
 instance Algebra.directSumGAlgebra {R A : Type*} [AddMonoid ι] [CommSemiring R]
-    [Semiring A] [Algebra R A] : DirectSum.GAlgebra R fun _ : ι => A where
+    [Semiring A] [Algebra R A] : DirectSum.GAlgebra R fun _ : ι ↦ A where
   toFun := (algebraMap R A).toAddMonoidHom
   map_one := (algebraMap R A).map_one
   map_mul a b := Sigma.ext (zero_add _).symm (heq_of_eq <| (algebraMap R A).map_mul a b)
-  commutes := fun _ ⟨_, _⟩ =>
+  commutes := fun _ ⟨_, _⟩ ↦
     Sigma.ext ((zero_add _).trans (add_zero _).symm) (heq_of_eq <| Algebra.commutes _ _)
-  smul_def := fun _ ⟨_, _⟩ => Sigma.ext (zero_add _).symm (heq_of_eq <| Algebra.smul_def _ _)
+  smul_def := fun _ ⟨_, _⟩ ↦ Sigma.ext (zero_add _).symm (heq_of_eq <| Algebra.smul_def _ _)
 

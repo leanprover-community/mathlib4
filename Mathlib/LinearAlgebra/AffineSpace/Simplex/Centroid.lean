@@ -40,7 +40,7 @@ faces are given by the same subset of points. -/
 theorem centroid_eq_iff [CharZero k] {n : ℕ} (s : Simplex k P n) {fs₁ fs₂ : Finset (Fin (n + 1))}
     {m₁ m₂ : ℕ} (h₁ : #fs₁ = m₁ + 1) (h₂ : #fs₂ = m₂ + 1) :
     fs₁.centroid k s.points = fs₂.centroid k s.points ↔ fs₁ = fs₂ := by
-  refine ⟨fun h => ?_, @congrArg _ _ fs₁ fs₂ (fun z => Finset.centroid k z s.points)⟩
+  refine ⟨fun h ↦ ?_, @congrArg _ _ fs₁ fs₂ (fun z ↦ Finset.centroid k z s.points)⟩
   rw [Finset.centroid_eq_affineCombination_fintype,
     Finset.centroid_eq_affineCombination_fintype] at h
   have ha :=
@@ -51,7 +51,7 @@ theorem centroid_eq_iff [CharZero k] {n : ℕ} (s : Simplex k P n) {fs₁ fs₂ 
     Finset.centroidWeightsIndicator_def, Finset.centroidWeights, h₁, h₂] at ha
   ext i
   specialize ha i
-  have key : ∀ n : ℕ, (n : k) + 1 ≠ 0 := fun n h => by norm_cast at h
+  have key : ∀ n : ℕ, (n : k) + 1 ≠ 0 := fun n h ↦ by norm_cast at h
   -- we should be able to golf this to
   -- `refine ⟨fun hi ↦ decidable.by_contradiction (fun hni ↦ ?_), ...⟩`,
   -- but for some unknown reason it doesn't work.
@@ -76,8 +76,8 @@ theorem centroid_eq_of_range_eq {n : ℕ} {s₁ s₂ : Simplex k P n}
   rw [← Set.image_univ, ← Set.image_univ, ← Finset.coe_univ] at h
   exact
     Finset.univ.centroid_eq_of_inj_on_of_image_eq k _
-      (fun _ _ _ _ he => AffineIndependent.injective s₁.independent he)
-      (fun _ _ _ _ he => AffineIndependent.injective s₂.independent he) h
+      (fun _ _ _ _ he ↦ AffineIndependent.injective s₁.independent he)
+      (fun _ _ _ _ he ↦ AffineIndependent.injective s₂.independent he) h
 
 end Simplex
 

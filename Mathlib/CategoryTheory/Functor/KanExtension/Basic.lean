@@ -370,8 +370,8 @@ lemma isLeftKanExtension_iff_postcomp₁ (α : F ⟶ L' ⋙ F') :
     (LeftExtension.isUniversalPostcomp₁Equiv G e F _).trans
     (IsInitial.equivOfIso (StructuredArrow.isoMk (Iso.refl _)))
   constructor
-  · exact fun _ => ⟨⟨eq (isUniversalOfIsLeftKanExtension _ _)⟩⟩
-  · exact fun _ => ⟨⟨eq.symm (isUniversalOfIsLeftKanExtension _ _)⟩⟩
+  · exact fun _ ↦ ⟨⟨eq (isUniversalOfIsLeftKanExtension _ _)⟩⟩
+  · exact fun _ ↦ ⟨⟨eq.symm (isUniversalOfIsLeftKanExtension _ _)⟩⟩
 
 lemma isRightKanExtension_iff_postcomp₁ (α : L' ⋙ F' ⟶ F) :
     F'.IsRightKanExtension α ↔ (G ⋙ F').IsRightKanExtension
@@ -382,8 +382,8 @@ lemma isRightKanExtension_iff_postcomp₁ (α : L' ⋙ F' ⟶ F) :
   (RightExtension.isUniversalPostcomp₁Equiv G e F _).trans
     (IsTerminal.equivOfIso (CostructuredArrow.isoMk (Iso.refl _)))
   constructor
-  · exact fun _ => ⟨⟨eq (isUniversalOfIsRightKanExtension _ _)⟩⟩
-  · exact fun _ => ⟨⟨eq.symm (isUniversalOfIsRightKanExtension _ _)⟩⟩
+  · exact fun _ ↦ ⟨⟨eq (isUniversalOfIsRightKanExtension _ _)⟩⟩
+  · exact fun _ ↦ ⟨⟨eq.symm (isUniversalOfIsRightKanExtension _ _)⟩⟩
 
 end
 
@@ -476,8 +476,8 @@ lemma isLeftKanExtension_iff_precomp (α : F ⟶ L ⋙ F') :
     (LeftExtension.isUniversalPrecompEquiv L F G _).trans
     (IsInitial.equivOfIso (StructuredArrow.isoMk (Iso.refl _)))
   constructor
-  · exact fun _ => ⟨⟨eq (isUniversalOfIsLeftKanExtension _ _)⟩⟩
-  · exact fun _ => ⟨⟨eq.symm (isUniversalOfIsLeftKanExtension _ _)⟩⟩
+  · exact fun _ ↦ ⟨⟨eq (isUniversalOfIsLeftKanExtension _ _)⟩⟩
+  · exact fun _ ↦ ⟨⟨eq.symm (isUniversalOfIsLeftKanExtension _ _)⟩⟩
 
 lemma isRightKanExtension_iff_precomp (α : L ⋙ F' ⟶ F) :
     F'.IsRightKanExtension α ↔
@@ -487,8 +487,8 @@ lemma isRightKanExtension_iff_precomp (α : L ⋙ F' ⟶ F) :
     (RightExtension.isUniversalPrecompEquiv L F G _).trans
     (IsTerminal.equivOfIso (CostructuredArrow.isoMk (Iso.refl _)))
   constructor
-  · exact fun _ => ⟨⟨eq (isUniversalOfIsRightKanExtension _ _)⟩⟩
-  · exact fun _ => ⟨⟨eq.symm (isUniversalOfIsRightKanExtension _ _)⟩⟩
+  · exact fun _ ↦ ⟨⟨eq (isUniversalOfIsRightKanExtension _ _)⟩⟩
+  · exact fun _ ↦ ⟨⟨eq.symm (isUniversalOfIsRightKanExtension _ _)⟩⟩
 
 end
 
@@ -562,8 +562,8 @@ lemma isLeftKanExtension_iff_of_iso₂ {F₁' F₂' : D ⥤ H} (α₁ : F₁ ⟶
   let eq := LeftExtension.isUniversalEquivOfIso₂ (LeftExtension.mk _ α₁)
     (LeftExtension.mk _ α₂) e e' h
   constructor
-  · exact fun _ => ⟨⟨eq.1 (isUniversalOfIsLeftKanExtension F₁' α₁)⟩⟩
-  · exact fun _ => ⟨⟨eq.2 (isUniversalOfIsLeftKanExtension F₂' α₂)⟩⟩
+  · exact fun _ ↦ ⟨⟨eq.1 (isUniversalOfIsLeftKanExtension F₁' α₁)⟩⟩
+  · exact fun _ ↦ ⟨⟨eq.2 (isUniversalOfIsLeftKanExtension F₂' α₂)⟩⟩
 
 /-- When two right extensions `α₁ : RightExtension L F₁` and `α₂ : RightExtension L F₂`
 are essentially the same via an isomorphism of functors `F₁ ≅ F₂`,
@@ -583,8 +583,8 @@ lemma isRightKanExtension_iff_of_iso₂ {F₁' F₂' : D ⥤ H} (α₁ : L ⋙ F
   let eq := RightExtension.isUniversalEquivOfIso₂ (RightExtension.mk _ α₁)
     (RightExtension.mk _ α₂) e e' h
   constructor
-  · exact fun _ => ⟨⟨eq.1 (isUniversalOfIsRightKanExtension F₁' α₁)⟩⟩
-  · exact fun _ => ⟨⟨eq.2 (isUniversalOfIsRightKanExtension F₂' α₂)⟩⟩
+  · exact fun _ ↦ ⟨⟨eq.1 (isUniversalOfIsRightKanExtension F₁' α₁)⟩⟩
+  · exact fun _ ↦ ⟨⟨eq.2 (isUniversalOfIsRightKanExtension F₂' α₂)⟩⟩
 
 end
 

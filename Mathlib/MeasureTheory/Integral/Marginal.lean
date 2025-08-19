@@ -73,7 +73,7 @@ variable {s t : Finset δ} {f : (∀ i, X i) → ℝ≥0∞} {x : ∀ i, X i}
   is the product measure. -/
 def lmarginal (μ : ∀ i, Measure (X i)) (s : Finset δ) (f : (∀ i, X i) → ℝ≥0∞)
     (x : ∀ i, X i) : ℝ≥0∞ :=
-  ∫⁻ y : ∀ i : s, X i, f (updateFinset x s y) ∂Measure.pi fun i : s => μ i
+  ∫⁻ y : ∀ i : s, X i, f (updateFinset x s y) ∂Measure.pi fun i : s ↦ μ i
 
 -- Note: this notation is not a binder. This is more convenient since it returns a function.
 @[inherit_doc]
@@ -95,7 +95,7 @@ theorem _root_.Measurable.lmarginal [∀ i, SigmaFinite (μ i)] (hf : Measurable
 
 @[simp] theorem lmarginal_empty (f : (∀ i, X i) → ℝ≥0∞) : ∫⋯∫⁻_∅, f ∂μ = f := by
   ext1 x
-  simp_rw [lmarginal, Measure.pi_of_empty fun i : (∅ : Finset δ) => μ i]
+  simp_rw [lmarginal, Measure.pi_of_empty fun i : (∅ : Finset δ) ↦ μ i]
   apply lintegral_dirac'
   exact Subsingleton.measurable
 
@@ -112,7 +112,7 @@ theorem lmarginal_update_of_mem {i : δ} (hi : i ∈ s)
 
 variable {μ} in
 theorem lmarginal_singleton (f : (∀ i, X i) → ℝ≥0∞) (i : δ) :
-    ∫⋯∫⁻_{i}, f ∂μ = fun x => ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i := by
+    ∫⋯∫⁻_{i}, f ∂μ = fun x ↦ ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i := by
   let α : Type _ := ({i} : Finset δ)
   let e := (MeasurableEquiv.piUnique fun j : α ↦ X j).symm
   ext1 x
@@ -126,7 +126,7 @@ theorem lmarginal_singleton (f : (∀ i, X i) → ℝ≥0∞) (i : δ) :
 variable {μ} in
 @[gcongr]
 theorem lmarginal_mono {f g : (∀ i, X i) → ℝ≥0∞} (hfg : f ≤ g) : ∫⋯∫⁻_s, f ∂μ ≤ ∫⋯∫⁻_s, g ∂μ :=
-  fun _ => lintegral_mono fun _ => hfg _
+  fun _ ↦ lintegral_mono fun _ ↦ hfg _
 
 variable [∀ i, SigmaFinite (μ i)]
 
@@ -186,7 +186,7 @@ theorem lmarginal_erase' (f : (∀ i, X i) → ℝ≥0∞) (hf : Measurable f) {
   simpa [insert_erase hi] using lmarginal_insert' _ hf (notMem_erase i s)
 
 @[simp] theorem lmarginal_univ [Fintype δ] {f : (∀ i, X i) → ℝ≥0∞} :
-    ∫⋯∫⁻_univ, f ∂μ = fun _ => ∫⁻ x, f x ∂Measure.pi μ := by
+    ∫⋯∫⁻_univ, f ∂μ = fun _ ↦ ∫⁻ x, f x ∂Measure.pi μ := by
   let e : { j // j ∈ Finset.univ } ≃ δ := Equiv.subtypeUnivEquiv mem_univ
   ext1 x
   simp_rw [lmarginal, measurePreserving_piCongrLeft μ e |>.lintegral_map_equiv, updateFinset_def]

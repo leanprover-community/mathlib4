@@ -75,15 +75,15 @@ effective epimorphic, then the original family is as well.
 -/
 noncomputable def effectiveEpiFamilyStructOfComp {C : Type*} [Category C]
     {I : Type*} {Z Y : I → C} {X : C} (g : ∀ i, Z i ⟶ Y i) (f : ∀ i, Y i ⟶ X)
-    [EffectiveEpiFamily _ (fun i => g i ≫ f i)] [∀ i, Epi (g i)] :
+    [EffectiveEpiFamily _ (fun i ↦ g i ≫ f i)] [∀ i, Epi (g i)] :
     EffectiveEpiFamilyStruct _ f where
-  desc {W} φ h := EffectiveEpiFamily.desc _ (fun i => g i ≫ f i)
-    (fun i => g i ≫ φ i) (fun {T} i₁ i₂ g₁ g₂ eq =>
+  desc {W} φ h := EffectiveEpiFamily.desc _ (fun i ↦ g i ≫ f i)
+    (fun i ↦ g i ≫ φ i) (fun {T} i₁ i₂ g₁ g₂ eq ↦
       by simpa [assoc] using h i₁ i₂ (g₁ ≫ g i₁) (g₂ ≫ g i₂) (by simpa [assoc] using eq))
   fac {W} φ h i := by
-    rw [← cancel_epi (g i), ← assoc, EffectiveEpiFamily.fac _ (fun i => g i ≫ f i)]
-  uniq {W} φ _ m hm := EffectiveEpiFamily.uniq _ (fun i => g i ≫ f i) _ _ _
-    (fun i => by rw [assoc, hm])
+    rw [← cancel_epi (g i), ← assoc, EffectiveEpiFamily.fac _ (fun i ↦ g i ≫ f i)]
+  uniq {W} φ _ m hm := EffectiveEpiFamily.uniq _ (fun i ↦ g i ≫ f i) _ _ _
+    (fun i ↦ by rw [assoc, hm])
 
 lemma effectiveEpiFamily_of_effectiveEpi_epi_comp {α : Type*} {B : C} {X Y : α → C}
     (f : (a : α) → X a ⟶ B) (g : (a : α) → Y a ⟶ X a) [∀ a, Epi (g a)]

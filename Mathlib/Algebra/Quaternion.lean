@@ -150,7 +150,7 @@ theorem coe_imJ : (x : ℍ[R,c₁,c₂,c₃]).imJ = 0 := rfl
 @[simp, norm_cast]
 theorem coe_imK : (x : ℍ[R,c₁,c₂,c₃]).imK = 0 := rfl
 
-theorem coe_injective : Function.Injective (coe : R → ℍ[R,c₁,c₂,c₃]) := fun _ _ h => congr_arg re h
+theorem coe_injective : Function.Injective (coe : R → ℍ[R,c₁,c₂,c₃]) := fun _ _ h ↦ congr_arg re h
 
 @[simp]
 theorem coe_inj {x y : R} : (x : ℍ[R,c₁,c₂,c₃]) = y ↔ x = y :=
@@ -184,7 +184,7 @@ variable [Add R]
 
 @[simps]
 instance : Add ℍ[R,c₁,c₂,c₃] :=
-  ⟨fun a b => ⟨a.1 + b.1, a.2 + b.2, a.3 + b.3, a.4 + b.4⟩⟩
+  ⟨fun a b ↦ ⟨a.1 + b.1, a.2 + b.2, a.3 + b.3, a.4 + b.4⟩⟩
 
 @[simp]
 theorem mk_add_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
@@ -209,7 +209,7 @@ section Neg
 variable [Neg R]
 
 @[simps]
-instance : Neg ℍ[R,c₁,c₂,c₃] := ⟨fun a => ⟨-a.1, -a.2, -a.3, -a.4⟩⟩
+instance : Neg ℍ[R,c₁,c₂,c₃] := ⟨fun a ↦ ⟨-a.1, -a.2, -a.3, -a.4⟩⟩
 
 @[simp]
 theorem neg_mk (a₁ a₂ a₃ a₄ : R) : -(mk a₁ a₂ a₃ a₄ : ℍ[R,c₁,c₂,c₃]) = ⟨-a₁, -a₂, -a₃, -a₄⟩ :=
@@ -228,7 +228,7 @@ theorem coe_neg : ((-x : R) : ℍ[R,c₁,c₂,c₃]) = -x := by ext <;> simp
 
 @[simps]
 instance : Sub ℍ[R,c₁,c₂,c₃] :=
-  ⟨fun a b => ⟨a.1 - b.1, a.2 - b.2, a.3 - b.3, a.4 - b.4⟩⟩
+  ⟨fun a b ↦ ⟨a.1 - b.1, a.2 - b.2, a.3 - b.3, a.4 - b.4⟩⟩
 
 @[simp] theorem sub_im : (a - b).im = a.im - b.im :=
   QuaternionAlgebra.ext (sub_zero _).symm rfl rfl rfl
@@ -271,7 +271,7 @@ variable [Ring R]
 * `j * k = c₂ * c₃ - c₃ * i`, `k * j = c₃ * i`. -/
 @[simps]
 instance : Mul ℍ[R,c₁,c₂,c₃] :=
-  ⟨fun a b =>
+  ⟨fun a b ↦
     ⟨a.1 * b.1 + c₁ * a.2 * b.2 + c₃ * a.3 * b.3 + c₂ * c₃ * a.3 * b.4 - c₁ * c₃ * a.4 * b.4,
       a.1 * b.2 + a.2 * b.1 + c₂ * a.2 * b.2 - c₃ * a.3 * b.4 + c₃ * a.4 * b.3,
       a.1 * b.3 + c₁ * a.2 * b.4 + a.3 * b.1 + c₂ * a.3 * b.2 - c₁ * a.4 * b.2,
@@ -482,8 +482,8 @@ def linearEquivTuple : ℍ[R,c₁,c₂,c₃] ≃ₗ[R] Fin 4 → R :=
     { (equivTuple c₁ c₂ c₃).symm with
       toFun := (equivTuple c₁ c₂ c₃).symm
       invFun := equivTuple c₁ c₂ c₃
-      map_add' := fun _ _ => rfl
-      map_smul' := fun _ _ => rfl }
+      map_add' := fun _ _ ↦ rfl
+      map_smul' := fun _ _ ↦ rfl }
 
 @[simp]
 theorem coe_linearEquivTuple :
@@ -623,7 +623,7 @@ theorem eq_re_of_eq_coe {a : ℍ[R,c₁,c₂,c₃]} {x : R} (h : a = x) : a = a.
 
 theorem eq_re_iff_mem_range_coe {a : ℍ[R,c₁,c₂,c₃]} :
     a = a.re ↔ a ∈ Set.range (coe : R → ℍ[R,c₁,c₂,c₃]) :=
-  ⟨fun h => ⟨a.re, h.symm⟩, fun ⟨_, h⟩ => eq_re_of_eq_coe h.symm⟩
+  ⟨fun h ↦ ⟨a.re, h.symm⟩, fun ⟨_, h⟩ ↦ eq_re_of_eq_coe h.symm⟩
 
 section CharZero
 
@@ -652,8 +652,8 @@ def starAe : ℍ[R,c₁,c₂,c₃] ≃ₐ[R] ℍ[R,c₁,c₂,c₃]ᵐᵒᵖ :=
   { starAddEquiv.trans opAddEquiv with
     toFun := op ∘ star
     invFun := star ∘ unop
-    map_mul' := fun x y => by simp
-    commutes' := fun r => by simp }
+    map_mul' := fun x y ↦ by simp
+    commutes' := fun r ↦ by simp }
 
 @[simp]
 theorem coe_starAe : ⇑(starAe : ℍ[R,c₁,c₂,c₃] ≃ₐ[R] _) = op ∘ star :=
@@ -1078,7 +1078,7 @@ variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] {a : ℍ[R]}
 
 @[simp]
 theorem normSq_eq_zero : normSq a = 0 ↔ a = 0 := by
-  refine ⟨fun h => ?_, fun h => h.symm ▸ normSq.map_zero⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ h.symm ▸ normSq.map_zero⟩
   rw [normSq_def', add_eq_zero_iff_of_nonneg, add_eq_zero_iff_of_nonneg, add_eq_zero_iff_of_nonneg]
     at h
   · exact ext a 0 (pow_eq_zero h.1.1.1) (pow_eq_zero h.1.1.2) (pow_eq_zero h.1.2) (pow_eq_zero h.2)
@@ -1143,13 +1143,13 @@ variable [LinearOrder R] [IsStrictOrderedRing R] (a b : ℍ[R])
 
 @[simps -isSimp]
 instance instInv : Inv ℍ[R] :=
-  ⟨fun a => (normSq a)⁻¹ • star a⟩
+  ⟨fun a ↦ (normSq a)⁻¹ • star a⟩
 
 instance instGroupWithZero : GroupWithZero ℍ[R] :=
   { Quaternion.instNontrivial with
     inv := Inv.inv
     inv_zero := by rw [inv_def, star_zero, smul_zero]
-    mul_inv_cancel := fun a ha => by
+    mul_inv_cancel := fun a ha ↦ by
       rw [inv_def, Algebra.mul_smul_comm (normSq a)⁻¹ a (star a), self_mul_star, smul_coe,
         inv_mul_cancel₀ (normSq_ne_zero.2 ha), coe_one] }
 

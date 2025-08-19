@@ -151,7 +151,7 @@ theorem HasFiniteFPowerSeriesAt.of_le {m n : ℕ}
 /-- If a function `f` has a finite power series `p` around `x`, then the function
 `z ↦ f (z - y)` has the same finite power series around `x + y`. -/
 theorem HasFiniteFPowerSeriesOnBall.comp_sub (hf : HasFiniteFPowerSeriesOnBall f p x n r) (y : E) :
-    HasFiniteFPowerSeriesOnBall (fun z => f (z - y)) p (x + y) n r :=
+    HasFiniteFPowerSeriesOnBall (fun z ↦ f (z - y)) p (x + y) n r :=
   ⟨hf.1.comp_sub y, hf.finite⟩
 
 theorem HasFiniteFPowerSeriesOnBall.mono (hf : HasFiniteFPowerSeriesOnBall f p x n r)
@@ -175,24 +175,24 @@ theorem CPolynomialAt_congr (h : f =ᶠ[𝓝 x] g) : CPolynomialAt 𝕜 f x ↔ 
 
 theorem CPolynomialOn.mono {s t : Set E} (hf : CPolynomialOn 𝕜 f t) (hst : s ⊆ t) :
     CPolynomialOn 𝕜 f s :=
-  fun z hz => hf z (hst hz)
+  fun z hz ↦ hf z (hst hz)
 
 theorem CPolynomialOn.congr' {s : Set E} (hf : CPolynomialOn 𝕜 f s) (hg : f =ᶠ[𝓝ˢ s] g) :
     CPolynomialOn 𝕜 g s :=
-  fun z hz => (hf z hz).congr (mem_nhdsSet_iff_forall.mp hg z hz)
+  fun z hz ↦ (hf z hz).congr (mem_nhdsSet_iff_forall.mp hg z hz)
 
 theorem CPolynomialOn_congr' {s : Set E} (h : f =ᶠ[𝓝ˢ s] g) :
     CPolynomialOn 𝕜 f s ↔ CPolynomialOn 𝕜 g s :=
-  ⟨fun hf => hf.congr' h, fun hg => hg.congr' h.symm⟩
+  ⟨fun hf ↦ hf.congr' h, fun hg ↦ hg.congr' h.symm⟩
 
 theorem CPolynomialOn.congr {s : Set E} (hs : IsOpen s) (hf : CPolynomialOn 𝕜 f s)
     (hg : s.EqOn f g) : CPolynomialOn 𝕜 g s :=
   hf.congr' <| mem_nhdsSet_iff_forall.mpr
-    (fun _ hz => eventuallyEq_iff_exists_mem.mpr ⟨s, hs.mem_nhds hz, hg⟩)
+    (fun _ hz ↦ eventuallyEq_iff_exists_mem.mpr ⟨s, hs.mem_nhds hz, hg⟩)
 
 theorem CPolynomialOn_congr {s : Set E} (hs : IsOpen s) (h : s.EqOn f g) :
     CPolynomialOn 𝕜 f s ↔ CPolynomialOn 𝕜 g s :=
-  ⟨fun hf => hf.congr hs h, fun hg => hg.congr hs h.symm⟩
+  ⟨fun hf ↦ hf.congr hs h, fun hg ↦ hg.congr hs h.symm⟩
 
 /-- If a function `f` has a finite power series `p` on a ball and `g` is a continuous linear map,
 then `g ∘ f` has the finite power series `g ∘ p` on the same ball. -/
@@ -221,8 +221,8 @@ theorem HasFiniteFPowerSeriesOnBall.eq_partialSum
     ∀ y ∈ EMetric.ball (0 : E) r, ∀ m, n ≤ m →
     f (x + y) = p.partialSum m y :=
   fun y hy m hm ↦ (hf.hasSum hy).unique (hasSum_sum_of_ne_finset_zero
-    (f := fun m => p m (fun _ => y)) (s := Finset.range m)
-    (fun N hN => by simp only; simp only [Finset.mem_range, not_lt] at hN
+    (f := fun m ↦ p m (fun _ ↦ y)) (s := Finset.range m)
+    (fun N hN ↦ by simp only; simp only [Finset.mem_range, not_lt] at hN
                     rw [hf.finite _ (le_trans hm hN), ContinuousMultilinearMap.zero_apply]))
 
 /-- Variant of the previous result with the variable expressed as `y` instead of `x + y`. -/
@@ -278,7 +278,7 @@ theorem HasFiniteFPowerSeriesOnBall.eq_const_of_bound_one
 /-- If `f` has a formal power series at x bounded by `1`, then `f` is constant equal
 to `f x` in a neighborhood of `x`. -/
 theorem HasFiniteFPowerSeriesAt.eventually_const_of_bound_one
-    (hf : HasFiniteFPowerSeriesAt f pf x 1) : f =ᶠ[𝓝 x] (fun _ => f x) :=
+    (hf : HasFiniteFPowerSeriesAt f pf x 1) : f =ᶠ[𝓝 x] (fun _ ↦ f x) :=
   Filter.eventuallyEq_iff_exists_mem.mpr (let ⟨r, hf⟩ := hf; ⟨EMetric.ball x r,
     EMetric.ball_mem_nhds x hf.r_pos, fun y hy ↦ hf.eq_const_of_bound_one y hy⟩)
 
@@ -309,7 +309,7 @@ protected theorem FormalMultilinearSeries.sum_of_finite (p : FormalMultilinearSe
 /-- A finite formal multilinear series sums to its sum at every point. -/
 protected theorem FormalMultilinearSeries.hasSum_of_finite (p : FormalMultilinearSeries 𝕜 E F)
     {n : ℕ} (hn : ∀ m, n ≤ m → p m = 0) (x : E) :
-    HasSum (fun n : ℕ => p n fun _ => x) (p.sum x) :=
+    HasSum (fun n : ℕ ↦ p n fun _ ↦ x) (p.sum x) :=
   summable_of_ne_finset_zero (s := .range n)
     (fun m hm ↦ by rw [Finset.mem_range, not_lt] at hm; rw [hn m hm]; rfl)
     |>.hasSum
@@ -318,7 +318,7 @@ protected theorem FormalMultilinearSeries.hasSum_of_finite (p : FormalMultilinea
 protected theorem FormalMultilinearSeries.hasFiniteFPowerSeriesOnBall_of_finite
     (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (hn : ∀ m, n ≤ m → p m = 0) :
     HasFiniteFPowerSeriesOnBall p.sum p 0 n ⊤ where
-  r_le := by rw [radius_eq_top_of_forall_image_add_eq_zero p n fun _ => hn _ (Nat.le_add_left _ _)]
+  r_le := by rw [radius_eq_top_of_forall_image_add_eq_zero p n fun _ ↦ hn _ (Nat.le_add_left _ _)]
   r_pos := zero_lt_top
   finite := hn
   hasSum {y} _ := by rw [zero_add]; exact p.hasSum_of_finite hn y
@@ -359,14 +359,14 @@ lemma changeOriginSeries_finite_of_finite (p : FormalMultilinearSeries 𝕜 E F)
     p.changeOriginSeries k m = 0 := by
   intro m hm
   rw [changeOriginSeries]
-  exact Finset.sum_eq_zero (fun _ _ => p.changeOriginSeriesTerm_bound hn _ _ _ hm)
+  exact Finset.sum_eq_zero (fun _ _ ↦ p.changeOriginSeriesTerm_bound hn _ _ _ hm)
 
 lemma changeOriginSeries_sum_eq_partialSum_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
     (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (k : ℕ) :
     (p.changeOriginSeries k).sum = (p.changeOriginSeries k).partialSum (n - k) := by
   ext x
   rw [partialSum, FormalMultilinearSeries.sum,
-    tsum_eq_sum (f := fun m => p.changeOriginSeries k m (fun _ => x)) (s := Finset.range (n - k))]
+    tsum_eq_sum (f := fun m ↦ p.changeOriginSeries k m (fun _ ↦ x)) (s := Finset.range (n - k))]
   intro m hm
   rw [Finset.mem_range, not_lt] at hm
   rw [p.changeOriginSeries_finite_of_finite hn k (by rw [add_comm]; exact Nat.le_add_of_sub_le hm),
@@ -388,7 +388,7 @@ theorem hasFiniteFPowerSeriesOnBall_changeOrigin (p : FormalMultilinearSeries �
     (k : ℕ) (hn : ∀ (m : ℕ), n + k ≤ m → p m = 0) :
     HasFiniteFPowerSeriesOnBall (p.changeOrigin · k) (p.changeOriginSeries k) 0 n ⊤ :=
   (p.changeOriginSeries k).hasFiniteFPowerSeriesOnBall_of_finite
-    (fun _ hm => p.changeOriginSeries_finite_of_finite hn k
+    (fun _ hm ↦ p.changeOriginSeries_finite_of_finite hn k
     (by rw [add_comm n k]; apply add_le_add_left hm))
 
 theorem changeOrigin_eval_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
@@ -459,7 +459,7 @@ theorem HasFiniteFPowerSeriesOnBall.changeOrigin (hf : HasFiniteFPowerSeriesOnBa
       rw [p.changeOrigin_eval_of_finite hf.finite, add_assoc, hf.sum]
       exact mem_emetric_ball_zero_iff.2 ((enorm_add_le _ _).trans_lt hz)
     rw [this]
-    apply (p.changeOrigin y).hasSum_of_finite fun _ => p.changeOrigin_finite_of_finite hf.finite
+    apply (p.changeOrigin y).hasSum_of_finite fun _ ↦ p.changeOrigin_finite_of_finite hf.finite
 
 /-- If a function admits a finite power series expansion `p` on an open ball `B (x, r)`, then
 it is continuously polynomial at every point of this ball. -/
@@ -477,7 +477,7 @@ alias HasFiniteFPowerSeriesOnBall.cPolynomialAt_of_mem :=
 
 theorem HasFiniteFPowerSeriesOnBall.cpolynomialOn (hf : HasFiniteFPowerSeriesOnBall f p x n r) :
     CPolynomialOn 𝕜 f (EMetric.ball x r) :=
-  fun _y hy => hf.cpolynomialAt_of_mem hy
+  fun _y hy ↦ hf.cpolynomialAt_of_mem hy
 
 @[deprecated (since := "2025-02-18")]
 alias HasFiniteFPowerSeriesOnBall.cPolynomialOn := HasFiniteFPowerSeriesOnBall.cpolynomialOn
@@ -489,7 +489,7 @@ variable (𝕜 f)
 theorem isOpen_cpolynomialAt : IsOpen { x | CPolynomialAt 𝕜 f x } := by
   rw [isOpen_iff_mem_nhds]
   rintro x ⟨p, n, r, hr⟩
-  exact mem_of_superset (EMetric.ball_mem_nhds _ hr.r_pos) fun y hy => hr.cpolynomialAt_of_mem hy
+  exact mem_of_superset (EMetric.ball_mem_nhds _ hr.r_pos) fun y hy ↦ hr.cpolynomialAt_of_mem hy
 
 @[deprecated (since := "2025-02-18")]
 alias isOpen_cPolynomialAt := isOpen_cpolynomialAt

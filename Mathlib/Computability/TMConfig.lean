@@ -107,46 +107,46 @@ we functions that return a single result return a singleton `[n]`, or in some ca
   * `fix f v = fix f w` if `f v = n+1 :: w` (the exact value of `n` is discarded)
 -/
 def Code.eval : Code → List ℕ →. List ℕ
-  | Code.zero' => fun v => pure (0 :: v)
-  | Code.succ => fun v => pure [v.headI.succ]
-  | Code.tail => fun v => pure v.tail
-  | Code.cons f fs => fun v => do
+  | Code.zero' => fun v ↦ pure (0 :: v)
+  | Code.succ => fun v ↦ pure [v.headI.succ]
+  | Code.tail => fun v ↦ pure v.tail
+  | Code.cons f fs => fun v ↦ do
     let n ← Code.eval f v
     let ns ← Code.eval fs v
     pure (n.headI :: ns)
-  | Code.comp f g => fun v => g.eval v >>= f.eval
-  | Code.case f g => fun v => v.headI.rec (f.eval v.tail) fun y _ => g.eval (y::v.tail)
+  | Code.comp f g => fun v ↦ g.eval v >>= f.eval
+  | Code.case f g => fun v ↦ v.headI.rec (f.eval v.tail) fun y _ ↦ g.eval (y::v.tail)
   | Code.fix f =>
-    PFun.fix fun v => (f.eval v).map fun v => if v.headI = 0 then Sum.inl v.tail else Sum.inr v.tail
+    PFun.fix fun v ↦ (f.eval v).map fun v ↦ if v.headI = 0 then Sum.inl v.tail else Sum.inr v.tail
 
 namespace Code
 
 @[simp]
-theorem zero'_eval : zero'.eval = fun v => pure (0 :: v) := by simp [eval]
+theorem zero'_eval : zero'.eval = fun v ↦ pure (0 :: v) := by simp [eval]
 
 @[simp]
-theorem succ_eval : succ.eval = fun v => pure [v.headI.succ] := by simp [eval]
+theorem succ_eval : succ.eval = fun v ↦ pure [v.headI.succ] := by simp [eval]
 
 @[simp]
-theorem tail_eval : tail.eval = fun v => pure v.tail := by simp [eval]
+theorem tail_eval : tail.eval = fun v ↦ pure v.tail := by simp [eval]
 
 @[simp]
-theorem cons_eval (f fs) : (cons f fs).eval = fun v => do {
+theorem cons_eval (f fs) : (cons f fs).eval = fun v ↦ do {
     let n ← Code.eval f v
     let ns ← Code.eval fs v
     pure (n.headI :: ns) } := by simp [eval]
 
 @[simp]
-theorem comp_eval (f g) : (comp f g).eval = fun v => g.eval v >>= f.eval := by simp [eval]
+theorem comp_eval (f g) : (comp f g).eval = fun v ↦ g.eval v >>= f.eval := by simp [eval]
 
 @[simp]
 theorem case_eval (f g) :
-    (case f g).eval = fun v => v.headI.rec (f.eval v.tail) fun y _ => g.eval (y::v.tail) := by
+    (case f g).eval = fun v ↦ v.headI.rec (f.eval v.tail) fun y _ ↦ g.eval (y::v.tail) := by
   simp [eval]
 
 @[simp]
 theorem fix_eval (f) : (fix f).eval =
-    PFun.fix fun v => (f.eval v).map fun v =>
+    PFun.fix fun v ↦ (f.eval v).map fun v ↦
       if v.headI = 0 then Sum.inl v.tail else Sum.inr v.tail := by
   simp [eval]
 
@@ -192,7 +192,7 @@ theorem pred_eval (v) : pred.eval v = pure [v.headI.pred] := by
 
 It is implemented as:
 
-    rfind f v = pred (fix (fun (n::v) => f (n::v) :: n+1 :: v) (0 :: v))
+    rfind f v = pred (fix (fun (n::v) ↦ f (n::v) :: n+1 :: v) (0 :: v))
 
 The idea is that the initial state is `0 :: v`, and the `fix` keeps `n :: v` as its internal state;
 it calls `f (n :: v)` as the exit test and `n+1 :: v` as the next state. At the end we get
@@ -238,23 +238,23 @@ theorem exists_code.comp {m n} {f : List.Vector ℕ n →. ℕ} {g : Fin n → L
     (hf : ∃ c : Code, ∀ v : List.Vector ℕ n, c.eval v.1 = pure <$> f v)
     (hg : ∀ i, ∃ c : Code, ∀ v : List.Vector ℕ m, c.eval v.1 = pure <$> g i v) :
     ∃ c : Code, ∀ v : List.Vector ℕ m,
-      c.eval v.1 = pure <$> ((List.Vector.mOfFn fun i => g i v) >>= f) := by
+      c.eval v.1 = pure <$> ((List.Vector.mOfFn fun i ↦ g i v) >>= f) := by
   rsuffices ⟨cg, hg⟩ :
     ∃ c : Code, ∀ v : List.Vector ℕ m,
-      c.eval v.1 = Subtype.val <$> List.Vector.mOfFn fun i => g i v
+      c.eval v.1 = Subtype.val <$> List.Vector.mOfFn fun i ↦ g i v
   · obtain ⟨cf, hf⟩ := hf
     exact
-      ⟨cf.comp cg, fun v => by
+      ⟨cf.comp cg, fun v ↦ by
         simp [hg, hf, map_bind]
         rfl⟩
   clear hf f
   induction n with
-  | zero => exact ⟨nil, fun v => by simp [Vector.mOfFn]; rfl⟩
+  | zero => exact ⟨nil, fun v ↦ by simp [Vector.mOfFn]; rfl⟩
   | succ n IH =>
     obtain ⟨cg, hg₁⟩ := hg 0
-    obtain ⟨cl, hl⟩ := IH fun i => hg i.succ
+    obtain ⟨cl, hl⟩ := IH fun i ↦ hg i.succ
     exact
-      ⟨cons cg cl, fun v => by
+      ⟨cons cg cl, fun v ↦ by
         simp [Vector.mOfFn, hg₁, map_bind, hl]
         rfl⟩
 
@@ -263,23 +263,23 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
   induction hf with
   | prim hf =>
     induction hf with
-    | zero => exact ⟨zero', fun ⟨[], _⟩ => rfl⟩
-    | succ => exact ⟨succ, fun ⟨[v], _⟩ => rfl⟩
+    | zero => exact ⟨zero', fun ⟨[], _⟩ ↦ rfl⟩
+    | succ => exact ⟨succ, fun ⟨[v], _⟩ ↦ rfl⟩
     | get i =>
-      refine Fin.succRec (fun n => ?_) (fun n i IH => ?_) i
-      · exact ⟨head, fun ⟨List.cons a as, _⟩ => by simp; rfl⟩
+      refine Fin.succRec (fun n ↦ ?_) (fun n i IH ↦ ?_) i
+      · exact ⟨head, fun ⟨List.cons a as, _⟩ ↦ by simp; rfl⟩
       · obtain ⟨c, h⟩ := IH
-        exact ⟨c.comp tail, fun v => by simpa [← Vector.get_tail, Bind.bind] using h v.tail⟩
+        exact ⟨c.comp tail, fun v ↦ by simpa [← Vector.get_tail, Bind.bind] using h v.tail⟩
     | comp g hf hg IHf IHg =>
       simpa [Part.bind_eq_bind] using exists_code.comp IHf IHg
     | @prec n f g _ _ IHf IHg =>
       obtain ⟨cf, hf⟩ := IHf
       obtain ⟨cg, hg⟩ := IHg
       simp only [Part.map_eq_map, Part.map_some, PFun.coe_val] at hf hg
-      refine ⟨prec cf cg, fun v => ?_⟩
+      refine ⟨prec cf cg, fun v ↦ ?_⟩
       rw [← v.cons_head_tail]
       specialize hf v.tail
-      replace hg := fun a b => hg (a ::ᵥ b ::ᵥ v.tail)
+      replace hg := fun a b ↦ hg (a ::ᵥ b ::ᵥ v.tail)
       simp only [Vector.cons_val, Vector.tail_val] at hf hg
       simp only [Part.map_eq_map, Part.map_some, Vector.cons_val, Vector.tail_cons,
         Vector.head_cons, PFun.coe_val, Vector.tail_val]
@@ -289,16 +289,16 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
       | succ n _ =>
       suffices ∀ a b, a + b = n →
         (n.succ :: 0 ::
-          g (n ::ᵥ Nat.rec (f v.tail) (fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)) n ::ᵥ v.tail) ::
+          g (n ::ᵥ Nat.rec (f v.tail) (fun y IH ↦ g (y ::ᵥ IH ::ᵥ v.tail)) n ::ᵥ v.tail) ::
               v.val.tail : List ℕ) ∈
           PFun.fix
-            (fun v : List ℕ => Part.bind (cg.eval (v.headI :: v.tail.tail))
-              (fun x => Part.some (if v.tail.headI = 0
+            (fun v : List ℕ ↦ Part.bind (cg.eval (v.headI :: v.tail.tail))
+              (fun x ↦ Part.some (if v.tail.headI = 0
                 then Sum.inl
                   (v.headI.succ :: v.tail.headI.pred :: x.headI :: v.tail.tail.tail : List ℕ)
                 else Sum.inr
                   (v.headI.succ :: v.tail.headI.pred :: x.headI :: v.tail.tail.tail))))
-            (a :: b :: Nat.rec (f v.tail) (fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)) a :: v.val.tail) by
+            (a :: b :: Nat.rec (f v.tail) (fun y IH ↦ g (y ::ᵥ IH ::ᵥ v.tail)) a :: v.val.tail) by
         erw [Part.eq_some_iff.2 (this 0 n (zero_add n))]
         simp only [List.headI, Part.bind_some, List.tail_cons]
       intro a b e
@@ -313,11 +313,11 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
         exact Part.mem_some_iff.2 rfl
   | comp g _ _ IHf IHg => exact exists_code.comp IHf IHg
   | @rfind n f _ IHf =>
-    obtain ⟨cf, hf⟩ := IHf; refine ⟨rfind cf, fun v => ?_⟩
-    replace hf := fun a => hf (a ::ᵥ v)
+    obtain ⟨cf, hf⟩ := IHf; refine ⟨rfind cf, fun v ↦ ?_⟩
+    replace hf := fun a ↦ hf (a ::ᵥ v)
     simp only [Part.map_eq_map, Part.map_some, Vector.cons_val, PFun.coe_val,
-      show ∀ x, pure x = [x] from fun _ => rfl] at hf ⊢
-    refine Part.ext fun x => ?_
+      show ∀ x, pure x = [x] from fun _ ↦ rfl] at hf ⊢
+    refine Part.ext fun x ↦ ?_
     simp only [rfind, Part.bind_eq_bind, Part.pure_eq_some, Part.bind_some,
       cons_eval, comp_eval, fix_eval, tail_eval, succ_eval, zero'_eval,
       List.headI_cons, pred_eval, Part.map_some, false_eq_decide_iff,
@@ -326,7 +326,7 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     constructor
     · rintro ⟨v', h1, rfl⟩
       suffices ∀ v₁ : List ℕ, v' ∈ PFun.fix
-        (fun v => (cf.eval v).bind fun y => Part.some <|
+        (fun v ↦ (cf.eval v).bind fun y ↦ Part.some <|
           if y.headI = 0 then Sum.inl (v.headI.succ :: v.tail)
             else Sum.inr (v.headI.succ :: v.tail)) v₁ →
         ∀ n, (v₁ = n :: v.val) → (∀ m < n, ¬f (m ::ᵥ v) = 0) →
@@ -335,7 +335,7 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
         by exact this _ h1 0 rfl (by rintro _ ⟨⟩)
       clear h1
       intro v₀ h1
-      refine PFun.fixInduction h1 fun v₁ h2 IH => ?_
+      refine PFun.fixInduction h1 fun v₁ h2 IH ↦ ?_
       clear h1
       rintro n rfl hm
       have := PFun.mem_fix_iff.1 h2
@@ -345,14 +345,14 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
           List.tail_cons, false_and, Sum.inl.injEq, reduceCtorEq] at this
         subst this
         exact ⟨_, ⟨h, @(hm)⟩, rfl⟩
-      · refine IH (n.succ::v.val) (by simp_all) _ rfl fun m h' => ?_
+      · refine IH (n.succ::v.val) (by simp_all) _ rfl fun m h' ↦ ?_
         obtain h | rfl := Nat.lt_succ_iff_lt_or_eq.1 h'
         exacts [hm _ h, h]
     · rintro ⟨n, ⟨hn, hm⟩, rfl⟩
       refine ⟨n.succ::v.1, ?_, rfl⟩
       have : (n.succ::v.1 : List ℕ) ∈
-        PFun.fix (fun v =>
-          (cf.eval v).bind fun y =>
+        PFun.fix (fun v ↦
+          (cf.eval v).bind fun y ↦
             Part.some <|
               if y.headI = 0 then Sum.inl (v.headI.succ :: v.tail)
                 else Sum.inr (v.headI.succ :: v.tail))
@@ -363,7 +363,7 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
       induction n with
       | zero => exact this
       | succ n IH =>
-        refine IH (fun {m} h' => hm (Nat.lt_succ_of_lt h'))
+        refine IH (fun {m} h' ↦ hm (Nat.lt_succ_of_lt h'))
           (PFun.mem_fix_iff.2 (Or.inr ⟨_, ?_, this⟩))
         simp only [hf, hm n.lt_succ_self, Part.bind_some, List.headI, if_false,
           Part.mem_some_iff, List.tail_cons]
@@ -419,12 +419,12 @@ inductive Cont
 /-- The semantics of a continuation. -/
 def Cont.eval : Cont → List ℕ →. List ℕ
   | Cont.halt => pure
-  | Cont.cons₁ fs as k => fun v => do
+  | Cont.cons₁ fs as k => fun v ↦ do
     let ns ← Code.eval fs as
     Cont.eval k (v.headI :: ns)
-  | Cont.cons₂ ns k => fun v => Cont.eval k (ns.headI :: v)
-  | Cont.comp f k => fun v => Code.eval f v >>= Cont.eval k
-  | Cont.fix f k => fun v => if v.headI = 0 then k.eval v.tail else f.fix.eval v.tail >>= k.eval
+  | Cont.cons₂ ns k => fun v ↦ Cont.eval k (ns.headI :: v)
+  | Cont.comp f k => fun v ↦ Code.eval f v >>= Cont.eval k
+  | Cont.fix f k => fun v ↦ if v.headI = 0 then k.eval v.tail else f.fix.eval v.tail >>= k.eval
 
 /-- The set of configurations of the machine:
 
@@ -448,7 +448,7 @@ recursion on `c`, building an augmented continuation and a value to pass to it.
   `f v` in the continuation `k (_.headI :: fs v)` (called `Cont.cons₁ fs v k`)
 * `comp f g v = f (g v)` requires two sub-evaluations, so we evaluate
   `g v` in the continuation `k (f _)` (called `Cont.comp f k`)
-* `case f g v = v.head.casesOn (f v.tail) (fun n => g (n :: v.tail))` has the information needed
+* `case f g v = v.head.casesOn (f v.tail) (fun n ↦ g (n :: v.tail))` has the information needed
   to evaluate the case statement, so we do that and transition to either
   `f v` or `g (n :: v.tail)`.
 * `fix f v = let v' := f v; if v'.headI = 0 then k v'.tail else fix f v'.tail`
@@ -456,14 +456,14 @@ recursion on `c`, building an augmented continuation and a value to pass to it.
   `Cont.fix f k`)
 -/
 def stepNormal : Code → Cont → List ℕ → Cfg
-  | Code.zero' => fun k v => Cfg.ret k (0::v)
-  | Code.succ => fun k v => Cfg.ret k [v.headI.succ]
-  | Code.tail => fun k v => Cfg.ret k v.tail
-  | Code.cons f fs => fun k v => stepNormal f (Cont.cons₁ fs v k) v
-  | Code.comp f g => fun k v => stepNormal g (Cont.comp f k) v
-  | Code.case f g => fun k v =>
-    v.headI.rec (stepNormal f k v.tail) fun y _ => stepNormal g k (y::v.tail)
-  | Code.fix f => fun k v => stepNormal f (Cont.fix f k) v
+  | Code.zero' => fun k v ↦ Cfg.ret k (0::v)
+  | Code.succ => fun k v ↦ Cfg.ret k [v.headI.succ]
+  | Code.tail => fun k v ↦ Cfg.ret k v.tail
+  | Code.cons f fs => fun k v ↦ stepNormal f (Cont.cons₁ fs v k) v
+  | Code.comp f g => fun k v ↦ stepNormal g (Cont.comp f k) v
+  | Code.case f g => fun k v ↦
+    v.headI.rec (stepNormal f k v.tail) fun y _ ↦ stepNormal g k (y::v.tail)
+  | Code.fix f => fun k v ↦ stepNormal f (Cont.fix f k) v
 
 /-- Evaluating a continuation `k : Cont` on input `v : List ℕ`. This is the second part of
 evaluation, when we receive results from continuations built by `stepNormal`.
@@ -505,11 +505,11 @@ where one uses Turing machines embedded inside other Turing machines, but this a
 to avoid changing the ambient type `Cfg` in the middle of the recursion.
 -/
 def Cont.then : Cont → Cont → Cont
-  | Cont.halt => fun k' => k'
-  | Cont.cons₁ fs as k => fun k' => Cont.cons₁ fs as (k.then k')
-  | Cont.cons₂ ns k => fun k' => Cont.cons₂ ns (k.then k')
-  | Cont.comp f k => fun k' => Cont.comp f (k.then k')
-  | Cont.fix f k => fun k' => Cont.fix f (k.then k')
+  | Cont.halt => fun k' ↦ k'
+  | Cont.cons₁ fs as k => fun k' ↦ Cont.cons₁ fs as (k.then k')
+  | Cont.cons₂ ns k => fun k' ↦ Cont.cons₂ ns (k.then k')
+  | Cont.comp f k => fun k' ↦ Cont.comp f (k.then k')
+  | Cont.fix f k => fun k' ↦ Cont.fix f (k.then k')
 
 theorem Cont.then_eval {k k' : Cont} {v} : (k.then k').eval v = k.eval v >>= k'.eval := by
   induction k generalizing v with
@@ -525,8 +525,8 @@ theorem Cont.then_eval {k k' : Cont} {v} : (k.then k').eval v = k.eval v >>= k'.
 `k` to the continuation of a `Cfg.ret` state, and to run `k` on `v` if we are in the `Cfg.halt v`
 state. -/
 def Cfg.then : Cfg → Cont → Cfg
-  | Cfg.halt v => fun k' => stepRet k' v
-  | Cfg.ret k v => fun k' => Cfg.ret (k.then k') v
+  | Cfg.halt v => fun k' ↦ stepRet k' v
+  | Cfg.ret k v => fun k' ↦ Cfg.ret (k.then k') v
 
 /-- The `stepNormal` function respects the `then k'` homomorphism. Note that this is an exact
 equality, not a simulation; the original and embedded machines move in lock-step until the
@@ -566,7 +566,7 @@ In particular, we can let `k = Cont.halt`, and then this asserts that `stepNorma
 evaluates to `Cfg.halt (Code.eval c v)`. -/
 def Code.Ok (c : Code) :=
   ∀ k v, Turing.eval step (stepNormal c k v) =
-    Code.eval c v >>= fun v => Turing.eval step (Cfg.ret k v)
+    Code.eval c v >>= fun v ↦ Turing.eval step (Cfg.ret k v)
 
 theorem Code.Ok.zero {c} (h : Code.Ok c) {v} :
     Turing.eval step (stepNormal c Cont.halt v) = Cfg.halt <$> Code.eval c v := by
@@ -586,8 +586,8 @@ theorem stepNormal.is_ret (c k v) : ∃ k' v', stepNormal c k v = Cfg.ret k' v' 
 
 theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
     Turing.eval step (stepNormal f (Cont.fix f k) v) =
-      f.fix.eval v >>= fun v => Turing.eval step (Cfg.ret k v) := by
-  refine Part.ext fun x => ?_
+      f.fix.eval v >>= fun v ↦ Turing.eval step (Cfg.ret k v) := by
+  refine Part.ext fun x ↦ ?_
   simp only [Part.bind_eq_bind, Part.mem_bind_iff]
   constructor
   · suffices ∀ c, x ∈ eval step c → ∀ v c', c = Cfg.then c' (Cont.fix f k) →
@@ -603,7 +603,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
       · rw [Part.mem_some_iff.1 hv₂]
         exact Or.inl (Part.mem_some _)
       · exact Or.inr ⟨_, Part.mem_some _, hv₂⟩
-    refine fun c he => evalInduction he fun y h IH => ?_
+    refine fun c he ↦ evalInduction he fun y h IH ↦ ?_
     rintro v (⟨v'⟩ | ⟨k', v'⟩) rfl hr <;> rw [Cfg.then] at h IH <;> simp only [] at h IH
     · have := mem_eval.2 ⟨hr, rfl⟩
       rw [fok, Part.bind_eq_bind, Part.mem_bind_iff] at this
@@ -636,7 +636,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
     rw [reaches_eval] at hr
     swap
     · exact ReflTransGen.single rfl
-    refine PFun.fixInduction he fun v (he : v' ∈ f.fix.eval v) IH => ?_
+    refine PFun.fixInduction he fun v (he : v' ∈ f.fix.eval v) IH ↦ ?_
     rw [fok, Part.bind_eq_bind, Part.mem_bind_iff]
     obtain he | ⟨v'', he₁', _⟩ := PFun.mem_fix_iff.1 he
     · obtain ⟨v', he₁, he₂⟩ := (Part.mem_map_iff _).1 he

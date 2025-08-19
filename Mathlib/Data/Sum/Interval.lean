@@ -334,13 +334,13 @@ local elab "simp_lex" : tactic => do
 
 instance locallyFiniteOrder : LocallyFiniteOrder (α ⊕ₗ β) where
   finsetIcc a b :=
-    (sumLexLift Icc Icc (fun a _ => Ici a) (fun _ => Iic) (ofLex a) (ofLex b)).map toLex.toEmbedding
+    (sumLexLift Icc Icc (fun a _ ↦ Ici a) (fun _ ↦ Iic) (ofLex a) (ofLex b)).map toLex.toEmbedding
   finsetIco a b :=
-    (sumLexLift Ico Ico (fun a _ => Ici a) (fun _ => Iio) (ofLex a) (ofLex b)).map toLex.toEmbedding
+    (sumLexLift Ico Ico (fun a _ ↦ Ici a) (fun _ ↦ Iio) (ofLex a) (ofLex b)).map toLex.toEmbedding
   finsetIoc a b :=
-    (sumLexLift Ioc Ioc (fun a _ => Ioi a) (fun _ => Iic) (ofLex a) (ofLex b)).map toLex.toEmbedding
+    (sumLexLift Ioc Ioc (fun a _ ↦ Ioi a) (fun _ ↦ Iic) (ofLex a) (ofLex b)).map toLex.toEmbedding
   finsetIoo a b :=
-    (sumLexLift Ioo Ioo (fun a _ => Ioi a) (fun _ => Iio) (ofLex a) (ofLex b)).map toLex.toEmbedding
+    (sumLexLift Ioo Ioo (fun a _ ↦ Ioi a) (fun _ ↦ Iio) (ofLex a) (ofLex b)).map toLex.toEmbedding
   finset_mem_Icc := by simp_lex
   finset_mem_Ico := by simp_lex
   finset_mem_Ioc := by simp_lex
@@ -412,10 +412,10 @@ variable [Preorder α] [Preorder β] [Fintype α] [LocallyFiniteOrderBot α] [Lo
 instance instLocallyFiniteOrderBot : LocallyFiniteOrderBot (α ⊕ₗ β) where
   finsetIic := Sum.elim
     (Iic · |>.map (.trans .inl toLex.toEmbedding))
-    (fun x => Finset.univ.disjSum (Iic x) |>.map toLex.toEmbedding) ∘ ofLex
+    (fun x ↦ Finset.univ.disjSum (Iic x) |>.map toLex.toEmbedding) ∘ ofLex
   finsetIio := Sum.elim
     (Iio · |>.map (.trans .inl toLex.toEmbedding))
-    (fun x => Finset.univ.disjSum (Iio x) |>.map toLex.toEmbedding) ∘ ofLex
+    (fun x ↦ Finset.univ.disjSum (Iio x) |>.map toLex.toEmbedding) ∘ ofLex
   finset_mem_Iic := by simp
   finset_mem_Iio := by simp
 
@@ -443,10 +443,10 @@ variable [Preorder α] [Preorder β] [LocallyFiniteOrderTop α] [Fintype β] [Lo
 
 instance instLocallyFiniteOrderTop : LocallyFiniteOrderTop (α ⊕ₗ β) where
   finsetIci := Sum.elim
-    (fun x => (Ici x).disjSum Finset.univ |>.map toLex.toEmbedding)
+    (fun x ↦ (Ici x).disjSum Finset.univ |>.map toLex.toEmbedding)
     (Ici · |>.map (.trans .inr toLex.toEmbedding)) ∘ ofLex
   finsetIoi := Sum.elim
-    (fun x => (Ioi x).disjSum Finset.univ |>.map toLex.toEmbedding)
+    (fun x ↦ (Ioi x).disjSum Finset.univ |>.map toLex.toEmbedding)
     (Ioi · |>.map (.trans .inr toLex.toEmbedding)) ∘ ofLex
   finset_mem_Ici := by simp
   finset_mem_Ioi := by simp

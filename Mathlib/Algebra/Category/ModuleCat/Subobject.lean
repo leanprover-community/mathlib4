@@ -35,9 +35,9 @@ variable {R : Type u} [Ring R] (M : ModuleCat.{v} R)
 submodules. -/
 noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
   OrderIso.symm
-    { invFun := fun S => LinearMap.range S.arrow.hom
-      toFun := fun N => Subobject.mk (ofHom N.subtype)
-      right_inv := fun S => Eq.symm (by
+    { invFun := fun S ↦ LinearMap.range S.arrow.hom
+      toFun := fun N ↦ Subobject.mk (ofHom N.subtype)
+      right_inv := fun S ↦ Eq.symm (by
         fapply eq_mk_of_comm
         · apply LinearEquiv.toModuleIso
           apply LinearEquiv.ofBijective (LinearMap.codRestrict
@@ -50,7 +50,7 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
             exact LinearMap.mem_range_self _
         · ext x
           rfl)
-      left_inv := fun N => by
+      left_inv := fun N ↦ by
         convert congr_arg LinearMap.range (ModuleCat.hom_ext_iff.mp
             (underlyingIso_arrow (ofHom N.subtype))) using 1
         · have :
@@ -60,15 +60,15 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
               rfl
           rw [this, hom_comp, hom_ofHom, LinearEquiv.range_comp]
         · exact (Submodule.range_subtype _).symm
-      map_rel_iff' := fun {S T} => by
-        refine ⟨fun h => ?_, fun h => mk_le_mk_of_comm (↟(Submodule.inclusion h)) rfl⟩
+      map_rel_iff' := fun {S T} ↦ by
+        refine ⟨fun h ↦ ?_, fun h ↦ mk_le_mk_of_comm (↟(Submodule.inclusion h)) rfl⟩
         convert LinearMap.range_comp_le_range (ofMkLEMk _ _ h).hom (ofHom T.subtype).hom
         · rw [← hom_comp, ofMkLEMk_comp]
           exact (Submodule.range_subtype _).symm
         · exact (Submodule.range_subtype _).symm }
 
 instance wellPowered_moduleCat : WellPowered.{v} (ModuleCat.{v} R) :=
-  ⟨fun M => ⟨⟨_, ⟨(subobjectModule M).toEquiv⟩⟩⟩⟩
+  ⟨fun M ↦ ⟨⟨_, ⟨(subobjectModule M).toEquiv⟩⟩⟩⟩
 
 attribute [local instance] hasKernels_moduleCat
 

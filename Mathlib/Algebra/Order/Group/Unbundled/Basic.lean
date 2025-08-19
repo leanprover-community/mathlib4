@@ -504,7 +504,7 @@ attribute [simp] div_le_iff_le_mul
 -- see Note [lower instance priority]
 instance (priority := 100) AddGroup.toOrderedSub {α : Type*} [AddGroup α] [LE α]
     [AddRightMono α] : OrderedSub α :=
-  ⟨fun _ _ _ => sub_le_iff_le_add⟩
+  ⟨fun _ _ _ ↦ sub_le_iff_le_add⟩
 
 end Right
 
@@ -719,11 +719,11 @@ variable {a b : α}
 
 @[to_additive]
 theorem le_of_forall_one_lt_lt_mul (h : ∀ ε : α, 1 < ε → a < b * ε) : a ≤ b :=
-  le_of_not_gt fun h₁ => lt_irrefl a (by simpa using h _ (lt_inv_mul_iff_lt.mpr h₁))
+  le_of_not_gt fun h₁ ↦ lt_irrefl a (by simpa using h _ (lt_inv_mul_iff_lt.mpr h₁))
 
 @[to_additive]
 theorem le_iff_forall_one_lt_lt_mul : a ≤ b ↔ ∀ ε, 1 < ε → a < b * ε :=
-  ⟨fun h _ => lt_mul_of_le_of_one_lt h, le_of_forall_one_lt_lt_mul⟩
+  ⟨fun h _ ↦ lt_mul_of_le_of_one_lt h, le_of_forall_one_lt_lt_mul⟩
 
 /-  I (DT) introduced this lemma to prove (the additive version `sub_le_sub_flip` of)
 `div_le_div_flip` below.  Now I wonder what is the point of either of these lemmas... -/
@@ -732,7 +732,7 @@ theorem div_le_inv_mul_iff [MulRightMono α] :
     a / b ≤ a⁻¹ * b ↔ a ≤ b := by
   rw [div_eq_mul_inv, mul_inv_le_inv_mul_iff]
   exact
-    ⟨fun h => not_lt.mp fun k => not_lt.mpr h (mul_lt_mul_of_lt_of_lt k k), fun h =>
+    ⟨fun h ↦ not_lt.mp fun k ↦ not_lt.mpr h (mul_lt_mul_of_lt_of_lt k k), fun h ↦
       mul_le_mul' h h⟩
 
 -- What is the point of this lemma?  See comment about `div_le_inv_mul_iff` above.
@@ -754,20 +754,20 @@ variable {β : Type*} [Group α] [Preorder α] [MulLeftMono α]
   [MulRightMono α] [Preorder β] {f : β → α} {s : Set β}
 
 @[to_additive]
-theorem Monotone.inv (hf : Monotone f) : Antitone fun x => (f x)⁻¹ := fun _ _ hxy =>
+theorem Monotone.inv (hf : Monotone f) : Antitone fun x ↦ (f x)⁻¹ := fun _ _ hxy ↦
   inv_le_inv_iff.2 (hf hxy)
 
 @[to_additive]
-theorem Antitone.inv (hf : Antitone f) : Monotone fun x => (f x)⁻¹ := fun _ _ hxy =>
+theorem Antitone.inv (hf : Antitone f) : Monotone fun x ↦ (f x)⁻¹ := fun _ _ hxy ↦
   inv_le_inv_iff.2 (hf hxy)
 
 @[to_additive]
-theorem MonotoneOn.inv (hf : MonotoneOn f s) : AntitoneOn (fun x => (f x)⁻¹) s :=
-  fun _ hx _ hy hxy => inv_le_inv_iff.2 (hf hx hy hxy)
+theorem MonotoneOn.inv (hf : MonotoneOn f s) : AntitoneOn (fun x ↦ (f x)⁻¹) s :=
+  fun _ hx _ hy hxy ↦ inv_le_inv_iff.2 (hf hx hy hxy)
 
 @[to_additive]
-theorem AntitoneOn.inv (hf : AntitoneOn f s) : MonotoneOn (fun x => (f x)⁻¹) s :=
-  fun _ hx _ hy hxy => inv_le_inv_iff.2 (hf hx hy hxy)
+theorem AntitoneOn.inv (hf : AntitoneOn f s) : MonotoneOn (fun x ↦ (f x)⁻¹) s :=
+  fun _ hx _ hy hxy ↦ inv_le_inv_iff.2 (hf hx hy hxy)
 
 end
 
@@ -777,19 +777,19 @@ variable {β : Type*} [Group α] [Preorder α] [MulLeftStrictMono α]
   [MulRightStrictMono α] [Preorder β] {f : β → α} {s : Set β}
 
 @[to_additive]
-theorem StrictMono.inv (hf : StrictMono f) : StrictAnti fun x => (f x)⁻¹ := fun _ _ hxy =>
+theorem StrictMono.inv (hf : StrictMono f) : StrictAnti fun x ↦ (f x)⁻¹ := fun _ _ hxy ↦
   inv_lt_inv_iff.2 (hf hxy)
 
 @[to_additive]
-theorem StrictAnti.inv (hf : StrictAnti f) : StrictMono fun x => (f x)⁻¹ := fun _ _ hxy =>
+theorem StrictAnti.inv (hf : StrictAnti f) : StrictMono fun x ↦ (f x)⁻¹ := fun _ _ hxy ↦
   inv_lt_inv_iff.2 (hf hxy)
 
 @[to_additive]
-theorem StrictMonoOn.inv (hf : StrictMonoOn f s) : StrictAntiOn (fun x => (f x)⁻¹) s :=
-  fun _ hx _ hy hxy => inv_lt_inv_iff.2 (hf hx hy hxy)
+theorem StrictMonoOn.inv (hf : StrictMonoOn f s) : StrictAntiOn (fun x ↦ (f x)⁻¹) s :=
+  fun _ hx _ hy hxy ↦ inv_lt_inv_iff.2 (hf hx hy hxy)
 
 @[to_additive]
-theorem StrictAntiOn.inv (hf : StrictAntiOn f s) : StrictMonoOn (fun x => (f x)⁻¹) s :=
-  fun _ hx _ hy hxy => inv_lt_inv_iff.2 (hf hx hy hxy)
+theorem StrictAntiOn.inv (hf : StrictAntiOn f s) : StrictMonoOn (fun x ↦ (f x)⁻¹) s :=
+  fun _ hx _ hy hxy ↦ inv_lt_inv_iff.2 (hf hx hy hxy)
 
 end

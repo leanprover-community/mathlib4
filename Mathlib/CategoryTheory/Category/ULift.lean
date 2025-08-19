@@ -67,8 +67,8 @@ def ULift.equivalence : C ≌ ULift.{u₂} C where
     { hom := 𝟙 _
       inv := 𝟙 _ }
   counitIso :=
-    { hom := { app := fun _ => 𝟙 _ }
-      inv := { app := fun _ => 𝟙 _ } }
+    { hom := { app := fun _ ↦ 𝟙 _ }
+      inv := { app := fun _ ↦ 𝟙 _ } }
 
 section ULiftHom
 
@@ -119,8 +119,8 @@ def ULiftHom.down : ULiftHom C ⥤ C where
 def ULiftHom.equiv : C ≌ ULiftHom C where
   functor := ULiftHom.up
   inverse := ULiftHom.down
-  unitIso := NatIso.ofComponents fun _ => eqToIso rfl
-  counitIso := NatIso.ofComponents fun _ => eqToIso rfl
+  unitIso := NatIso.ofComponents fun _ ↦ eqToIso rfl
+  counitIso := NatIso.ofComponents fun _ ↦ eqToIso rfl
 
 end ULiftHom
 
@@ -169,8 +169,8 @@ theorem eqToHom_down {X Y : AsSmall C} (h : X = Y) :
 def AsSmall.equiv : C ≌ AsSmall C where
   functor := AsSmall.up
   inverse := AsSmall.down
-  unitIso := NatIso.ofComponents fun _ => eqToIso rfl
-  counitIso := NatIso.ofComponents fun _ => eqToIso <| ULift.ext _ _ rfl
+  unitIso := NatIso.ofComponents fun _ ↦ eqToIso rfl
+  counitIso := NatIso.ofComponents fun _ ↦ eqToIso <| ULift.ext _ _ rfl
 
 instance [Inhabited C] : Inhabited (AsSmall C) :=
   ⟨⟨default⟩⟩

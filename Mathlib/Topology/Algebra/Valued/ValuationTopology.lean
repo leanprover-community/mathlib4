@@ -36,7 +36,7 @@ namespace Valuation
 variable (v : Valuation R Γ₀)
 
 /-- The basis of open subgroups for the topology on a ring determined by a valuation. -/
-theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgroup γ : AddSubgroup R) :=
+theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ ↦ (v.ltAddSubgroup γ : AddSubgroup R) :=
   { inter := by
       rintro γ₀ γ₁
       use min γ₀ γ₁
@@ -108,18 +108,18 @@ def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
       letI := @IsTopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _
       intro s
       rw [Filter.hasBasis_iff.mp v.subgroups_basis.hasBasis_nhds_zero s]
-      exact exists_congr fun γ => by rw [true_and]; rfl }
+      exact exists_congr fun γ ↦ by rw [true_and]; rfl }
 
 variable (R Γ₀)
 variable [_i : Valued R Γ₀]
 
 theorem hasBasis_nhds_zero :
-    (𝓝 (0 : R)).HasBasis (fun _ => True) fun γ : Γ₀ˣ => { x | v x < (γ : Γ₀) } := by
+    (𝓝 (0 : R)).HasBasis (fun _ ↦ True) fun γ : Γ₀ˣ ↦ { x | v x < (γ : Γ₀) } := by
   simp [Filter.hasBasis_iff, is_topological_valuation]
 
 open Uniformity in
-theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ => True)
-    fun γ : Γ₀ˣ => { p : R × R | v (p.2 - p.1) < (γ : Γ₀) } := by
+theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ ↦ True)
+    fun γ : Γ₀ˣ ↦ { p : R × R | v (p.2 - p.1) < (γ : Γ₀) } := by
   rw [uniformity_eq_comap_nhds_zero]
   exact (hasBasis_nhds_zero R Γ₀).comap _
 
@@ -132,7 +132,7 @@ variable {R Γ₀}
 
 theorem mem_nhds {s : Set R} {x : R} : s ∈ 𝓝 x ↔ ∃ γ : Γ₀ˣ, { y | (v (y - x) : Γ₀) < γ } ⊆ s := by
   simp only [← nhds_translation_add_neg x, ← sub_eq_add_neg, preimage_setOf_eq, true_and,
-    ((hasBasis_nhds_zero R Γ₀).comap fun y => y - x).mem_iff]
+    ((hasBasis_nhds_zero R Γ₀).comap fun y ↦ y - x).mem_iff]
 
 theorem mem_nhds_zero {s : Set R} : s ∈ 𝓝 (0 : R) ↔ ∃ γ : Γ₀ˣ, { x | v x < (γ : Γ₀) } ⊆ s := by
   simp only [mem_nhds, sub_zero]
@@ -169,7 +169,7 @@ theorem isOpen_ball (r : Γ₀) : IsOpen (X := R) {x | v x < r} := by
   rw [mem_nhds]
   simp only [setOf_subset_setOf]
   exact ⟨Units.mk0 _ hr,
-    fun y hy => (sub_add_cancel y x).symm ▸ (v.map_add _ x).trans_lt (max_lt hy hx)⟩
+    fun y hy ↦ (sub_add_cancel y x).symm ▸ (v.map_add _ x).trans_lt (max_lt hy hx)⟩
 
 /-- An open ball centred at the origin in a valued ring is closed. -/
 theorem isClosed_ball (r : Γ₀) : IsClosed (X := R) {x | v x < r} := by
@@ -190,7 +190,7 @@ theorem isOpen_closedball {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x 
   rw [mem_nhds]
   simp only [setOf_subset_setOf]
   exact ⟨Units.mk0 _ hr,
-    fun y hy => (sub_add_cancel y x).symm ▸ le_trans (v.map_add _ _) (max_le (le_of_lt hy) hx)⟩
+    fun y hy ↦ (sub_add_cancel y x).symm ▸ le_trans (v.map_add _ _) (max_le (le_of_lt hy) hx)⟩
 
 /-- A closed ball centred at the origin in a valued ring is closed. -/
 theorem isClosed_closedBall (r : Γ₀) : IsClosed (X := R) {x | v x ≤ r} := by
@@ -198,7 +198,7 @@ theorem isClosed_closedBall (r : Γ₀) : IsClosed (X := R) {x | v x ≤ r} := b
   intro x hx
   rw [mem_nhds]
   have hx' : v x ≠ 0 := ne_of_gt <| lt_of_le_of_lt zero_le' <| lt_of_not_ge hx
-  exact ⟨Units.mk0 _ hx', fun y hy hy' => ne_of_lt hy <| map_sub_swap v x y ▸
+  exact ⟨Units.mk0 _ hx', fun y hy hy' ↦ ne_of_lt hy <| map_sub_swap v x y ▸
       (Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' (lt_of_not_ge hx))⟩
 
 /-- A closed ball centred at the origin in a valued ring is clopen. -/

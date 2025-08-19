@@ -40,19 +40,19 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
     the series will be guaranteed by completeness of `G`. We first write `h` as the sum
     of a sequence `v` of elements of `K` which starts close to `h` and then quickly goes to zero.
     The sequence `b` below quantifies this. -/
-  set b : ℕ → ℝ := fun i => (1 / 2) ^ i * (ε * ‖h‖ / 2) / C
+  set b : ℕ → ℝ := fun i ↦ (1 / 2) ^ i * (ε * ‖h‖ / 2) / C
   have b_pos (i) : 0 < b i := by positivity
   obtain
-    ⟨v : ℕ → H, lim_v : Tendsto (fun n : ℕ => ∑ k ∈ range (n + 1), v k) atTop (𝓝 h), v_in :
+    ⟨v : ℕ → H, lim_v : Tendsto (fun n : ℕ ↦ ∑ k ∈ range (n + 1), v k) atTop (𝓝 h), v_in :
       ∀ n, v n ∈ K, hv₀ : ‖v 0 - h‖ < b 0, hv : ∀ n > 0, ‖v n‖ < b n⟩ :=
     controlled_sum_of_mem_closure h_in b_pos
   /- The controlled surjectivity assumption on `f` allows to build preimages `u n` for all
     elements `v n` of the `v` sequence. -/
-  have : ∀ n, ∃ m' : G, f m' = v n ∧ ‖m'‖ ≤ C * ‖v n‖ := fun n : ℕ => hyp (v n) (v_in n)
+  have : ∀ n, ∃ m' : G, f m' = v n ∧ ‖m'‖ ≤ C * ‖v n‖ := fun n : ℕ ↦ hyp (v n) (v_in n)
   choose u hu hnorm_u using this
   /- The desired series `s` is then obtained by summing `u`. We then check our choice of
     `b` ensures `s` is Cauchy. -/
-  set s : ℕ → G := fun n => ∑ k ∈ range (n + 1), u k
+  set s : ℕ → G := fun n ↦ ∑ k ∈ range (n + 1), u k
   have : CauchySeq s := by
     apply NormedAddCommGroup.cauchy_series_of_le_geometric'' (by simp) one_half_lt_one
     · rintro n (hn : n ≥ 1)
@@ -65,7 +65,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
   obtain ⟨g : G, hg⟩ := cauchySeq_tendsto_of_complete this
   refine ⟨g, ?_, ?_⟩
   · -- We indeed get a preimage. First note:
-    have : f ∘ s = fun n => ∑ k ∈ range (n + 1), v k := by
+    have : f ∘ s = fun n ↦ ∑ k ∈ range (n + 1), v k := by
       ext n
       simp [s, map_sum, hu]
     /- In the above equality, the left-hand-side converges to `f g` by continuity of `f` and

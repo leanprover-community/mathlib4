@@ -139,7 +139,7 @@ lemma HasExactColimitsOfShape.of_codomain_equivalence (J : Type*) [Category J] {
     haveI : HasColimitsOfShape J D := Adjunction.hasColimitsOfShape_of_equivalence e.inverse
     HasExactColimitsOfShape J D := by
   haveI : HasColimitsOfShape J D := Adjunction.hasColimitsOfShape_of_equivalence e.inverse
-  refine ⟨⟨fun _ _ _ => ⟨@fun K => ?_⟩⟩⟩
+  refine ⟨⟨fun _ _ _ ↦ ⟨@fun K ↦ ?_⟩⟩⟩
   refine preservesLimit_of_natIso K (?_ : e.congrRight.inverse ⋙ colim ⋙ e.functor ≅ colim)
   apply e.symm.congrRight.fullyFaithfulFunctor.preimageIso
   exact isoWhiskerLeft (_ ⋙ colim) e.unitIso.symm ≪≫ (preservesColimitNatIso e.inverse).symm
@@ -163,7 +163,7 @@ lemma HasExactLimitsOfShape.of_codomain_equivalence (J : Type*) [Category J] {D 
     haveI : HasLimitsOfShape J D := Adjunction.hasLimitsOfShape_of_equivalence e.inverse
     HasExactLimitsOfShape J D := by
   haveI : HasLimitsOfShape J D := Adjunction.hasLimitsOfShape_of_equivalence e.inverse
-  refine ⟨⟨fun _ _ _ => ⟨@fun K => ?_⟩⟩⟩
+  refine ⟨⟨fun _ _ _ ↦ ⟨@fun K ↦ ?_⟩⟩⟩
   refine preservesColimit_of_natIso K (?_ : e.congrRight.inverse ⋙ lim ⋙ e.functor ≅ lim)
   apply e.symm.congrRight.fullyFaithfulFunctor.preimageIso
   exact isoWhiskerLeft (_ ⋙ lim) e.unitIso.symm ≪≫ (preservesLimitNatIso e.inverse).symm
@@ -379,12 +379,12 @@ variable {α : Type w} [HasZeroMorphisms C] [HasFiniteBiproducts C] [HasFiniteLi
 open CoproductsFromFiniteFiltered
 
 instance preservesFiniteLimits_liftToFinset : PreservesFiniteLimits (liftToFinset C α) :=
-  preservesFiniteLimits_of_evaluation _ fun I =>
+  preservesFiniteLimits_of_evaluation _ fun I ↦
     letI : PreservesFiniteLimits (colim (J := Discrete I) (C := C)) :=
       preservesFiniteLimits_of_natIso HasBiproductsOfShape.colimIsoLim.symm
     letI : PreservesFiniteLimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
         (Discrete.functor fun x ↦ ↑x)) :=
-      ⟨fun J _ _ => whiskeringLeft_preservesLimitsOfShape J _⟩
+      ⟨fun J _ _ ↦ whiskeringLeft_preservesLimitsOfShape J _⟩
     letI : PreservesFiniteLimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
         (Discrete.functor (·.val)) ⋙ colim) :=
       comp_preservesFiniteLimits _ _
@@ -431,11 +431,11 @@ variable {α : Type w} [HasZeroMorphisms C] [HasFiniteBiproducts C] [HasFiniteCo
 open ProductsFromFiniteCofiltered
 
 instance preservesFiniteColimits_liftToFinset : PreservesFiniteColimits (liftToFinset C α) :=
-  preservesFiniteColimits_of_evaluation _ fun ⟨I⟩ =>
+  preservesFiniteColimits_of_evaluation _ fun ⟨I⟩ ↦
     letI : PreservesFiniteColimits (lim (J := Discrete I) (C := C)) :=
       preservesFiniteColimits_of_natIso HasBiproductsOfShape.colimIsoLim
     letI : PreservesFiniteColimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
-        (Discrete.functor fun x ↦ ↑x)) := ⟨fun _ _ _ => inferInstance⟩
+        (Discrete.functor fun x ↦ ↑x)) := ⟨fun _ _ _ ↦ inferInstance⟩
     letI : PreservesFiniteColimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
         (Discrete.functor (·.val)) ⋙ lim) :=
       comp_preservesFiniteColimits _ _

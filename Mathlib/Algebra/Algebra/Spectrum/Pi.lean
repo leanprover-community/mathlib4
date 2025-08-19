@@ -38,8 +38,8 @@ variable (κ) in
 of pre-quasiregular elements. -/
 def PreQuasiregular.toPi [∀ i, NonUnitalSemiring (κ i)] :
     PreQuasiregular (∀ i, κ i) ≃* ∀ i, PreQuasiregular (κ i) where
-  toFun := fun x i => .mk <| x.val i
-  invFun := fun x => .mk <| fun i => (x i).val
+  toFun := fun x i ↦ .mk <| x.val i
+  invFun := fun x ↦ .mk <| fun i ↦ (x i).val
   map_mul' _ _ := rfl
 
 variable (A B) in
@@ -47,8 +47,8 @@ variable (A B) in
 pre-quasiregular elements. -/
 def PreQuasiregular.toProd [NonUnitalSemiring A] [NonUnitalSemiring B] :
     PreQuasiregular (A × B) ≃* PreQuasiregular A × PreQuasiregular B where
-  toFun := fun p => ⟨.mk p.val.1, .mk p.val.2⟩
-  invFun := fun ⟨a, b⟩ => .mk ⟨a.val, b.val⟩
+  toFun := fun p ↦ ⟨.mk p.val.1, .mk p.val.2⟩
+  invFun := fun ⟨a, b⟩ ↦ .mk ⟨a.val, b.val⟩
   map_mul' _ _ := rfl
 
 lemma isQuasiregular_pi_iff [∀ i, NonUnitalSemiring (κ i)] (x : ∀ i, κ i) :
@@ -64,7 +64,7 @@ lemma isQuasiregular_prod_iff [NonUnitalSemiring A] [NonUnitalSemiring B] (a : A
 lemma quasispectrum.mem_iff_of_isUnit [CommSemiring R] [NonUnitalRing A]
     [Module R A] {a : A} {r : R} (hr : IsUnit r) :
     r ∈ quasispectrum R a ↔ ¬ IsQuasiregular (-(hr.unit⁻¹ • a)) :=
-  ⟨fun h => h hr, fun h _ => h⟩
+  ⟨fun h ↦ h hr, fun h _ ↦ h⟩
 
 end quasiregular
 

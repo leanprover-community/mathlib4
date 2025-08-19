@@ -23,12 +23,12 @@ open Multiplicative (ofAdd toAdd)
 def AddMonoidHom.toMultiplicative [AddZeroClass α] [AddZeroClass β] :
     (α →+ β) ≃ (Multiplicative α →* Multiplicative β) where
   toFun f := {
-    toFun := fun a => ofAdd (f a.toAdd)
+    toFun := fun a ↦ ofAdd (f a.toAdd)
     map_mul' := f.map_add
     map_one' := f.map_zero
   }
   invFun f := {
-    toFun := fun a => f (ofAdd a) |>.toAdd
+    toFun := fun a ↦ f (ofAdd a) |>.toAdd
     map_add' := f.map_mul
     map_zero' := f.map_one
   }
@@ -42,12 +42,12 @@ lemma AddMonoidHom.coe_toMultiplicative [AddZeroClass α] [AddZeroClass β] (f :
 def MonoidHom.toAdditive [MulOneClass α] [MulOneClass β] :
     (α →* β) ≃ (Additive α →+ Additive β) where
   toFun f := {
-    toFun := fun a => ofMul (f a.toMul)
+    toFun := fun a ↦ ofMul (f a.toMul)
     map_add' := f.map_mul
     map_zero' := f.map_one
   }
   invFun f := {
-    toFun := fun a => (f (ofMul a)).toMul
+    toFun := fun a ↦ (f (ofMul a)).toMul
     map_mul' := f.map_add
     map_one' := f.map_zero
   }
@@ -61,12 +61,12 @@ lemma MonoidHom.coe_toMultiplicative [MulOneClass α] [MulOneClass β] (f : α �
 def AddMonoidHom.toMultiplicative' [MulOneClass α] [AddZeroClass β] :
     (Additive α →+ β) ≃ (α →* Multiplicative β) where
   toFun f := {
-    toFun := fun a => ofAdd (f (ofMul a))
+    toFun := fun a ↦ ofAdd (f (ofMul a))
     map_mul' := f.map_add
     map_one' := f.map_zero
   }
   invFun f := {
-    toFun := fun a => (f a.toMul).toAdd
+    toFun := fun a ↦ (f a.toMul).toAdd
     map_add' := f.map_mul
     map_zero' := f.map_one
   }
@@ -90,12 +90,12 @@ lemma MonoidHom.coe_toAdditive' [MulOneClass α] [AddZeroClass β] (f : α →* 
 def AddMonoidHom.toMultiplicative'' [AddZeroClass α] [MulOneClass β] :
     (α →+ Additive β) ≃ (Multiplicative α →* β) where
   toFun f := {
-    toFun := fun a => (f a.toAdd).toMul
+    toFun := fun a ↦ (f a.toAdd).toMul
     map_mul' := f.map_add
     map_one' := f.map_zero
   }
   invFun f := {
-    toFun := fun a => ofMul (f (ofAdd a))
+    toFun := fun a ↦ ofMul (f (ofAdd a))
     map_add' := f.map_mul
     map_zero' := f.map_one
   }

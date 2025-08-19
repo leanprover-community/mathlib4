@@ -158,7 +158,7 @@ protected theorem surjective (h : α ≃ᵤ β) : Function.Surjective h :=
 /-- Change the uniform equiv `f` to make the inverse function definitionally equal to `g`. -/
 def changeInv (f : α ≃ᵤ β) (g : β → α) (hg : Function.RightInverse g f) : α ≃ᵤ β :=
   have : g = f.symm :=
-    funext fun x => calc
+    funext fun x ↦ calc
       g x = f.symm (f (g x)) := (f.left_inv (g x)).symm
       _ = f.symm x := by rw [hg x]
   { toFun := f
@@ -315,12 +315,12 @@ def piCongrRight {ι : Type*} {β₁ β₂ : ι → Type*} [∀ i, UniformSpace 
     [∀ i, UniformSpace (β₂ i)] (F : ∀ i, β₁ i ≃ᵤ β₂ i) : (∀ i, β₁ i) ≃ᵤ ∀ i, β₂ i where
   uniformContinuous_toFun := Pi.uniformContinuous_postcomp' _ fun i ↦ (F i).uniformContinuous
   uniformContinuous_invFun := Pi.uniformContinuous_postcomp' _ fun i ↦ (F i).symm.uniformContinuous
-  toEquiv := Equiv.piCongrRight fun i => (F i).toEquiv
+  toEquiv := Equiv.piCongrRight fun i ↦ (F i).toEquiv
 
 @[simp]
 theorem piCongrRight_symm {ι : Type*} {β₁ β₂ : ι → Type*} [∀ i, UniformSpace (β₁ i)]
     [∀ i, UniformSpace (β₂ i)] (F : ∀ i, β₁ i ≃ᵤ β₂ i) :
-    (piCongrRight F).symm = piCongrRight fun i => (F i).symm :=
+    (piCongrRight F).symm = piCongrRight fun i ↦ (F i).symm :=
   rfl
 
 @[simp]
@@ -353,7 +353,7 @@ end
 def funUnique (ι α : Type*) [Unique ι] [UniformSpace α] : (ι → α) ≃ᵤ α where
   toEquiv := Equiv.funUnique ι α
   uniformContinuous_toFun := Pi.uniformContinuous_proj _ _
-  uniformContinuous_invFun := uniformContinuous_pi.mpr fun _ => uniformContinuous_id
+  uniformContinuous_invFun := uniformContinuous_pi.mpr fun _ ↦ uniformContinuous_id
 
 /-- Uniform isomorphism between dependent functions `Π i : Fin 2, α i` and `α 0 × α 1`. -/
 @[simps! -fullyApplied]
@@ -366,7 +366,7 @@ def piFinTwo (α : Fin 2 → Type u) [∀ i, UniformSpace (α i)] : (∀ i, α i
 /-- Uniform isomorphism between `α² = Fin 2 → α` and `α × α`. -/
 @[simps! -fullyApplied]
 def finTwoArrow (α : Type*) [UniformSpace α] : (Fin 2 → α) ≃ᵤ α × α :=
-  { piFinTwo fun _ => α with toEquiv := finTwoArrowEquiv α }
+  { piFinTwo fun _ ↦ α with toEquiv := finTwoArrowEquiv α }
 
 /-- A subset of a uniform space is uniformly isomorphic to its image under a uniform isomorphism.
 -/

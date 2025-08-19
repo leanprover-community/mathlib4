@@ -105,6 +105,6 @@ end Real
 
 /-- Wallis' product formula for `π / 2`. -/
 theorem Real.tendsto_prod_pi_div_two :
-    Tendsto (fun k => ∏ i ∈ range k, ((2 : ℝ) * i + 2) / (2 * i + 1) * ((2 * i + 2) / (2 * i + 3)))
+    Tendsto (fun k ↦ ∏ i ∈ range k, ((2 : ℝ) * i + 2) / (2 * i + 1) * ((2 * i + 2) / (2 * i + 3)))
       atTop (𝓝 (π / 2)) :=
   Real.Wallis.tendsto_W_nhds_pi_div_two

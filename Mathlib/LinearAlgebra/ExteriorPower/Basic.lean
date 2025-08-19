@@ -49,7 +49,7 @@ open Function
 induced by `exteriorAlgebra.ιMulti`, i.e. sending a family of vectors `m : Fin n → M` to the
 product of its entries. -/
 def ιMulti : M [⋀^Fin n]→ₗ[R] (⋀[R]^n M) :=
-  (ExteriorAlgebra.ιMulti R n).codRestrict (⋀[R]^n M) fun _ =>
+  (ExteriorAlgebra.ιMulti R n).codRestrict (⋀[R]^n M) fun _ ↦
     ExteriorAlgebra.ιMulti_range R n <| Set.mem_range_self _
 
 @[simp] lemma ιMulti_apply_coe (a : Fin n → M) : ιMulti R n a = ExteriorAlgebra.ιMulti R n a := rfl
@@ -171,8 +171,8 @@ noncomputable def alternatingMapLinearEquiv : (M [⋀^Fin n]→ₗ[R] N) ≃ₗ[
   LinearEquiv.symm
     (Equiv.toLinearEquiv
       ((presentation R n M).linearMapEquiv.trans presentation.relationsSolutionEquiv)
-      { map_add := fun _ _ => rfl
-        map_smul := fun _ _ => rfl })
+      { map_add := fun _ _ ↦ rfl
+        map_smul := fun _ _ ↦ rfl })
 
 @[simp]
 lemma alternatingMapLinearEquiv_comp_ιMulti (f : M [⋀^Fin n]→ₗ[R] N) :

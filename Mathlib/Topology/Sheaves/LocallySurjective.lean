@@ -59,7 +59,7 @@ def IsLocallySurjective (T : ℱ ⟶ 𝒢) :=
 theorem isLocallySurjective_iff (T : ℱ ⟶ 𝒢) :
     IsLocallySurjective T ↔
       ∀ (U t), ∀ x ∈ U, ∃ (V : _) (ι : V ⟶ U), (∃ s, (T.app _) s = t |_ₕ ι) ∧ x ∈ V :=
-  ⟨fun h _ => h.imageSieve_mem, fun h => ⟨h _⟩⟩
+  ⟨fun h _ ↦ h.imageSieve_mem, fun h ↦ ⟨h _⟩⟩
 
 section SurjectiveOnStalks
 

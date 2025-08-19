@@ -46,7 +46,7 @@ theorem cons_succ : cons y s i.succ = s i :=
 
 @[simp]
 theorem tail_cons : tail (cons y s) = s :=
-  ext fun k => by simp only [tail_apply, cons_succ]
+  ext fun k ↦ by simp only [tail_apply, cons_succ]
 
 @[simp]
 theorem tail_update_zero : tail (update t 0 y) = tail t := by simp [tail]
@@ -81,8 +81,8 @@ theorem cons_ne_zero_of_right (h : s ≠ 0) : cons y s ≠ 0 := by
   simp [← cons_succ a y s, c]
 
 theorem cons_ne_zero_iff : cons y s ≠ 0 ↔ y ≠ 0 ∨ s ≠ 0 := by
-  refine ⟨fun h => ?_, fun h => h.casesOn cons_ne_zero_of_left cons_ne_zero_of_right⟩
-  refine imp_iff_not_or.1 fun h' c => h ?_
+  refine ⟨fun h ↦ ?_, fun h ↦ h.casesOn cons_ne_zero_of_left cons_ne_zero_of_right⟩
+  refine imp_iff_not_or.1 fun h' c ↦ h ?_
   rw [h', c, Finsupp.cons_zero_zero]
 
 lemma cons_support : (s.cons y).support ⊆ insert 0 (s.support.map (Fin.succEmb n)) := by

@@ -80,12 +80,12 @@ theorem isRegular_succ {c : Cardinal.{u}} (h : ℵ₀ ≤ c) : IsRegular (succ c
         rw [← αe, re] at this ⊢
         rcases cof_eq' r this with ⟨S, H, Se⟩
         rw [← Se]
-        apply lt_imp_lt_of_le_imp_le fun h => mul_le_mul_right' h c
+        apply lt_imp_lt_of_le_imp_le fun h ↦ mul_le_mul_right' h c
         rw [mul_eq_self h, ← succ_le_iff, ← αe, ← sum_const']
-        refine le_trans ?_ (sum_le_sum (fun (x : S) => card (typein r (x : α))) _ fun i => ?_)
+        refine le_trans ?_ (sum_le_sum (fun (x : S) ↦ card (typein r (x : α))) _ fun i ↦ ?_)
         · simp only [← card_typein, ← mk_sigma]
           exact
-            ⟨Embedding.ofSurjective (fun x => x.2.1) fun a =>
+            ⟨Embedding.ofSurjective (fun x ↦ x.2.1) fun a ↦
                 let ⟨b, h, ab⟩ := H a
                 ⟨⟨⟨_, h⟩, _, ab⟩, rfl⟩⟩
         · rw [← lt_succ_iff, ← lt_ord, ← αe, re]
@@ -218,7 +218,7 @@ theorem derivFamily_lt_ord_lift {ι : Type u} {f : ι → Ordinal → Ordinal} {
       iSup_eq_bsup.{max u v, max u v} (f := fun x (_ : x < b) ↦ derivFamily f x)
     rw [derivFamily_limit f hb, this]
     exact
-      bsup_lt_ord_of_isRegular.{u, v} hc (ord_lt_ord.1 ((ord_card_le b).trans_lt hb')) fun o' ho' =>
+      bsup_lt_ord_of_isRegular.{u, v} hc (ord_lt_ord.1 ((ord_card_le b).trans_lt hb')) fun o' ho' ↦
         H o' ho' (ho'.trans hb')
 
 theorem derivFamily_lt_ord {ι} {f : ι → Ordinal → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c)
@@ -229,7 +229,7 @@ theorem derivFamily_lt_ord {ι} {f : ι → Ordinal → Ordinal} {c} (hc : IsReg
 theorem deriv_lt_ord {f : Ordinal.{u} → Ordinal} {c} (hc : IsRegular c) (hc' : c ≠ ℵ₀)
     (hf : ∀ i < c.ord, f i < c.ord) {a} : a < c.ord → deriv f a < c.ord :=
   derivFamily_lt_ord_lift hc
-    (by simpa using Cardinal.one_lt_aleph0.trans (lt_of_le_of_ne hc.1 hc'.symm)) hc' fun _ => hf
+    (by simpa using Cardinal.one_lt_aleph0.trans (lt_of_le_of_ne hc.1 hc'.symm)) hc' fun _ ↦ hf
 
 /-! ### Inaccessible cardinals -/
 

@@ -82,7 +82,7 @@ private lemma reduce_aux {A : Δ m} (h : (A.1 1 0) ≠ 0) :
 def reduce_rec {C : Δ m → Sort*}
     (base : ∀ A : Δ m, (A.1 1 0) = 0 → C A)
     (step : ∀ A : Δ m, (A.1 1 0) ≠ 0 → C (reduceStep A) → C A) :
-    ∀ A, C A := fun A => by
+    ∀ A, C A := fun A ↦ by
   by_cases h : (A.1 1 0) = 0
   · exact base _ h
   · exact step A h (reduce_rec base step (reduceStep A))

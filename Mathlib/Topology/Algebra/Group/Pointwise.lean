@@ -152,12 +152,12 @@ variable [TopologicalSpace G] [Group G] [IsTopologicalGroup G] {s t : Set G}
 @[to_additive]
 theorem IsOpen.div_left (ht : IsOpen t) : IsOpen (s / t) := by
   rw [← iUnion_div_left_image]
-  exact isOpen_biUnion fun a _ => isOpenMap_div_left a t ht
+  exact isOpen_biUnion fun a _ ↦ isOpenMap_div_left a t ht
 
 @[to_additive]
 theorem IsOpen.div_right (hs : IsOpen s) : IsOpen (s / t) := by
   rw [← iUnion_div_right_image]
-  exact isOpen_biUnion fun a _ => isOpenMap_div_right a s hs
+  exact isOpen_biUnion fun a _ ↦ isOpenMap_div_right a s hs
 
 @[to_additive]
 theorem subset_interior_div_left : interior s / t ⊆ interior (s / t) :=
@@ -173,7 +173,7 @@ theorem subset_interior_div : interior s / interior t ⊆ interior (s / t) :=
 
 @[to_additive]
 theorem IsOpen.mul_closure (hs : IsOpen s) (t : Set G) : s * closure t = s * t := by
-  refine (mul_subset_iff.2 fun a ha b hb => ?_).antisymm (mul_subset_mul_left subset_closure)
+  refine (mul_subset_iff.2 fun a ha b hb ↦ ?_).antisymm (mul_subset_mul_left subset_closure)
   rw [mem_closure_iff] at hb
   have hbU : b ∈ s⁻¹ * {a * b} := ⟨a⁻¹, Set.inv_mem_inv.2 ha, a * b, rfl, inv_mul_cancel_left _ _⟩
   obtain ⟨_, ⟨c, hc, d, rfl : d = _, rfl⟩, hcs⟩ := hb _ hs.inv.mul_right hbU
@@ -265,7 +265,7 @@ variable (G) [TopologicalSpace G] [Group G] [IsTopologicalGroup G]
 @[to_additive]
 instance (priority := 100) IsTopologicalGroup.regularSpace : RegularSpace G := by
   refine .of_exists_mem_nhds_isClosed_subset fun a s hs ↦ ?_
-  have : Tendsto (fun p : G × G => p.1 * p.2) (𝓝 (a, 1)) (𝓝 a) :=
+  have : Tendsto (fun p : G × G ↦ p.1 * p.2) (𝓝 (a, 1)) (𝓝 a) :=
     continuous_mul.tendsto' _ _ (mul_one a)
   rcases mem_nhds_prod_iff.mp (this hs) with ⟨U, hU, V, hV, hUV⟩
   rw [← image_subset_iff, image_prod] at hUV
@@ -339,7 +339,7 @@ theorem eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_group
     [TopologicalSpace α] [Zero α] [T1Space α]
     {f : G → α} {k : Set G} (hk : IsCompact k) (hf : support f ⊆ k) (h'f : Continuous f) :
     f = 0 ∨ LocallyCompactSpace G := by
-  refine or_iff_not_imp_left.mpr fun h => ?_
+  refine or_iff_not_imp_left.mpr fun h ↦ ?_
   simp_rw [funext_iff, Pi.zero_apply] at h
   push_neg at h
   obtain ⟨x, hx⟩ : ∃ x, f x ≠ 0 := h

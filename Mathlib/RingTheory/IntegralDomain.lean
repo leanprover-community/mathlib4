@@ -37,10 +37,10 @@ section CancelMonoidWithZero
 -- There doesn't seem to be a better home for these right now
 variable {M : Type*} [CancelMonoidWithZero M] [Finite M]
 
-theorem mul_right_bijective_of_finite₀ {a : M} (ha : a ≠ 0) : Bijective fun b => a * b :=
+theorem mul_right_bijective_of_finite₀ {a : M} (ha : a ≠ 0) : Bijective fun b ↦ a * b :=
   Finite.injective_iff_bijective.1 <| mul_right_injective₀ ha
 
-theorem mul_left_bijective_of_finite₀ {a : M} (ha : a ≠ 0) : Bijective fun b => b * a :=
+theorem mul_left_bijective_of_finite₀ {a : M} (ha : a ≠ 0) : Bijective fun b ↦ b * a :=
   Finite.injective_iff_bijective.1 <| mul_left_injective₀ ha
 
 /-- Every finite nontrivial cancel_monoid_with_zero is a group_with_zero. -/
@@ -48,8 +48,8 @@ def Fintype.groupWithZeroOfCancel (M : Type*) [CancelMonoidWithZero M] [Decidabl
     [Nontrivial M] : GroupWithZero M :=
   { ‹Nontrivial M›,
     ‹CancelMonoidWithZero M› with
-    inv := fun a => if h : a = 0 then 0 else Fintype.bijInv (mul_right_bijective_of_finite₀ h) 1
-    mul_inv_cancel := fun a ha => by
+    inv := fun a ↦ if h : a = 0 then 0 else Fintype.bijInv (mul_right_bijective_of_finite₀ h) 1
+    mul_inv_cancel := fun a ha ↦ by
       simp only [dif_neg ha]
       exact Fintype.rightInverse_bijInv _ _
     inv_zero := by simp }
@@ -74,7 +74,7 @@ theorem Finset.exists_eq_pow_of_mul_eq_pow_of_coprime {ι R : Type*} [CommSemiri
     rw [← insert_erase hi, prod_insert (notMem_erase i s)] at hprod
     refine
       exists_eq_pow_of_mul_eq_pow_of_coprime
-        (IsCoprime.prod_right fun j hj => h i hi j (erase_subset i s hj) fun hij => ?_) hprod
+        (IsCoprime.prod_right fun j hj ↦ h i hi j (erase_subset i s hj) fun hij ↦ ?_) hprod
     rw [hij] at hj
     exact (s.notMem_erase _) hj
 
@@ -93,9 +93,9 @@ def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableE
   __ := (‹Ring R›:) -- this also works without the `( :)`, but it's slightly slow
   __ := Fintype.groupWithZeroOfCancel R
   nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
+  nnqsmul_def := fun _ _ ↦ rfl
   qsmul := _
-  qsmul_def := fun _ _ => rfl
+  qsmul_def := fun _ _ ↦ rfl
 
 /-- Every finite commutative domain is a field. More generally, commutativity is not required: this
 can be found in `Mathlib/RingTheory/LittleWedderburn.lean`. -/
@@ -142,7 +142,7 @@ variable (S : Subgroup Rˣ) [Finite S]
 instance subgroup_units_cyclic : IsCyclic S := by
   -- Porting note: the original proof used a `coe`, but I was not able to get it to work.
   apply isCyclic_of_subgroup_isDomain (R := R) (G := S) _ _
-  · exact MonoidHom.mk (OneHom.mk (fun s => ↑s.val) rfl) (by simp)
+  · exact MonoidHom.mk (OneHom.mk (fun s ↦ ↑s.val) rfl) (by simp)
   · exact Units.val_injective.comp Subtype.val_injective
 
 end
@@ -188,14 +188,14 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
       rwa [Subtype.ext_iff, Units.ext_iff, Subtype.coe_mk, MonoidHom.coe_toHomUnits, one_pow,
         eq_comm] at hn
     replace hx1 : (x.val : R) - 1 ≠ 0 := -- Porting note: was `(x : R)`
-      fun h => hx1 (Subtype.eq (Units.ext (sub_eq_zero.1 h)))
+      fun h ↦ hx1 (Subtype.eq (Units.ext (sub_eq_zero.1 h)))
     let c := #{g | f.toHomUnits g = 1}
     calc
       ∑ g : G, f g = ∑ g : G, (f.toHomUnits g : R) := rfl
       _ = ∑ u ∈ univ.image f.toHomUnits, #{g | f.toHomUnits g = u} • (u : R) :=
         sum_comp ((↑) : Rˣ → R) f.toHomUnits
       _ = ∑ u ∈ univ.image f.toHomUnits, c • (u : R) :=
-        (sum_congr rfl fun u hu => congr_arg₂ _ ?_ rfl)
+        (sum_congr rfl fun u hu ↦ congr_arg₂ _ ?_ rfl)
       -- remaining goal 1, proven below
       -- Porting note: have to change `(b : R)` into `((b : Rˣ) : R)`
       _ = ∑ b : MonoidHom.range f.toHomUnits, c • ((b : Rˣ) : R) :=
@@ -217,7 +217,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
         Eq.symm <|
           sum_nbij (x ^ ·) (by simp only [mem_univ, forall_true_iff])
             (by simpa using pow_injOn_Iio_orderOf)
-            (fun b _ => let ⟨n, hn⟩ := hx b
+            (fun b _ ↦ let ⟨n, hn⟩ := hx b
               ⟨n % orderOf x, mem_range.2 (Nat.mod_lt _ (orderOf_pos _)),
                -- Porting note: have to use `dsimp` to apply the function
                by dsimp at hn ⊢; rw [pow_mod_orderOf, hn]⟩)

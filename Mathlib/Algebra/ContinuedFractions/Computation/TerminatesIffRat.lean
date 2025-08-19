@@ -304,7 +304,7 @@ end IntFractPair
 
 /-- The continued fraction of a rational number terminates. -/
 theorem terminates_of_rat (q : ℚ) : (of q).Terminates :=
-  Exists.elim (IntFractPair.exists_nth_stream_eq_none_of_rat q) fun n stream_nth_eq_none =>
+  Exists.elim (IntFractPair.exists_nth_stream_eq_none_of_rat q) fun n stream_nth_eq_none ↦
     Exists.intro n
       (have : IntFractPair.stream q (n + 1) = none := IntFractPair.stream_isSeq q stream_nth_eq_none
       of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none.mpr this)
@@ -314,10 +314,10 @@ end TerminatesOfRat
 /-- The continued fraction `GenContFract.of v` terminates if and only if `v ∈ ℚ`. -/
 theorem terminates_iff_rat (v : K) : (of v).Terminates ↔ ∃ q : ℚ, v = (q : K) :=
   Iff.intro
-    (fun terminates_v : (of v).Terminates =>
+    (fun terminates_v : (of v).Terminates ↦
       show ∃ q : ℚ, v = (q : K) from exists_rat_eq_of_terminates terminates_v)
-    fun exists_q_eq_v : ∃ q : ℚ, v = (↑q : K) =>
-    Exists.elim exists_q_eq_v fun q => fun v_eq_q : v = ↑q =>
+    fun exists_q_eq_v : ∃ q : ℚ, v = (↑q : K) ↦
+    Exists.elim exists_q_eq_v fun q ↦ fun v_eq_q : v = ↑q ↦
       have : (of q).Terminates := terminates_of_rat q
       (of_terminates_iff_of_rat_terminates v_eq_q).mpr this
 

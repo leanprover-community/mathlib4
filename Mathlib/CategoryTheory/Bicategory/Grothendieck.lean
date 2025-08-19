@@ -93,7 +93,7 @@ lemma Hom.ext (f g : a ⟶ b) (hfg₁ : f.base = g.base)
 lemma Hom.ext_iff (f g : a ⟶ b) :
     f = g ↔ ∃ (hfg : f.base = g.base), f.fiber = g.fiber ≫ eqToHom (hfg ▸ rfl) where
   mp hfg := ⟨by rw [hfg], by simp [hfg]⟩
-  mpr := fun ⟨hfg₁, hfg₂⟩ => Hom.ext f g hfg₁ hfg₂
+  mpr := fun ⟨hfg₁, hfg₂⟩ ↦ Hom.ext f g hfg₁ hfg₂
 
 lemma Hom.congr {a b : ∫ F} {f g : a ⟶ b} (h : f = g) :
     f.fiber = g.fiber ≫ eqToHom (h ▸ rfl) := by

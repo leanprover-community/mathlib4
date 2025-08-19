@@ -30,7 +30,7 @@ instance commRing : CommRing ℚ where
   mul_zero := Rat.mul_zero
   left_distrib := Rat.mul_add
   right_distrib := Rat.add_mul
-  intCast := fun n => n
+  intCast := fun n ↦ n
   natCast n := Int.cast n
   natCast_zero := rfl
   natCast_succ n := by

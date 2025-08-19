@@ -43,12 +43,12 @@ theorem map_rat_smul [AddCommGroup M] [AddCommGroup M₂]
 
 /-- There can be at most one `Module ℚ≥0 E` structure on an additive commutative monoid. -/
 instance subsingleton_nnrat_module (E : Type*) [AddCommMonoid E] : Subsingleton (Module ℚ≥0 E) :=
-  ⟨fun P Q => (Module.ext' P Q) fun r x =>
+  ⟨fun P Q ↦ (Module.ext' P Q) fun r x ↦
     map_nnrat_smul (_instM := P) (_instM₂ := Q) (AddMonoidHom.id E) r x⟩
 
 /-- There can be at most one `Module ℚ E` structure on an additive commutative group. -/
 instance subsingleton_rat_module (E : Type*) [AddCommGroup E] : Subsingleton (Module ℚ E) :=
-  ⟨fun P Q => (Module.ext' P Q) fun r x =>
+  ⟨fun P Q ↦ (Module.ext' P Q) fun r x ↦
     map_rat_smul (_instM := P) (_instM₂ := Q) (AddMonoidHom.id E) r x⟩
 
 /-- If `E` is a vector space over two division semirings `R` and `S`, then scalar multiplications
@@ -95,9 +95,9 @@ end
 -- see note [lower instance priority]
 instance (priority := 100) NNRatModule.noZeroSMulDivisors [AddCommMonoid M] [Module ℚ≥0 M] :
     NoZeroSMulDivisors ℕ M :=
-  ⟨fun {k} {x : M} h => by simpa [← Nat.cast_smul_eq_nsmul ℚ≥0 k x] using h⟩
+  ⟨fun {k} {x : M} h ↦ by simpa [← Nat.cast_smul_eq_nsmul ℚ≥0 k x] using h⟩
 
 -- see note [lower instance priority]
 instance (priority := 100) RatModule.noZeroSMulDivisors [AddCommGroup M] [Module ℚ M] :
     NoZeroSMulDivisors ℤ M :=
-  ⟨fun {k} {x : M} h => by simpa [← Int.cast_smul_eq_zsmul ℚ k x] using h⟩
+  ⟨fun {k} {x : M} h ↦ by simpa [← Int.cast_smul_eq_zsmul ℚ k x] using h⟩

@@ -77,7 +77,7 @@ theorem eq_of_dist_eq_zero {x y : γ} : dist x y = 0 → x = y :=
 
 @[simp]
 theorem dist_eq_zero {x y : γ} : dist x y = 0 ↔ x = y :=
-  Iff.intro eq_of_dist_eq_zero fun this => this ▸ dist_self _
+  Iff.intro eq_of_dist_eq_zero fun this ↦ this ▸ dist_self _
 
 @[simp]
 theorem zero_eq_dist {x y : γ} : 0 = dist x y ↔ x = y := by rw [eq_comm, dist_eq_zero]
@@ -113,9 +113,9 @@ namespace Metric
 
 variable {x : γ} {s : Set γ}
 
-@[simp] theorem closedBall_zero : closedBall x 0 = {x} := Set.ext fun _ => dist_le_zero
+@[simp] theorem closedBall_zero : closedBall x 0 = {x} := Set.ext fun _ ↦ dist_le_zero
 
-@[simp] theorem sphere_zero : sphere x 0 = {x} := Set.ext fun _ => dist_eq_zero
+@[simp] theorem sphere_zero : sphere x 0 = {x} := Set.ext fun _ ↦ dist_eq_zero
 
 theorem subsingleton_closedBall (x : γ) {r : ℝ} (hr : r ≤ 0) : (closedBall x r).Subsingleton := by
   rcases hr.lt_or_eq with (hr | rfl)

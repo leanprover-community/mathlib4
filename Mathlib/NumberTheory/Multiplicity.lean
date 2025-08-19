@@ -69,7 +69,7 @@ theorem sq_dvd_add_pow_sub_sub (p x : R) (n : ℕ) :
         dvd_mul_of_dvd_left (dvd_mul_left _ _) _
 
 theorem not_dvd_geom_sum₂ {p : R} (hp : Prime p) (hxy : p ∣ x - y) (hx : ¬p ∣ x) (hn : ¬p ∣ n) :
-    ¬p ∣ ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i) := fun h =>
+    ¬p ∣ ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i) := fun h ↦
   hx <|
     hp.dvd_of_dvd_pow <| (hp.dvd_or_dvd <| (dvd_geom_sum₂_iff_of_dvd_sub' hxy).mp h).resolve_left hn
 
@@ -178,7 +178,7 @@ theorem emultiplicity_pow_prime_pow_sub_pow_prime_pow (a : ℕ) :
     apply emultiplicity_pow_prime_sub_pow_prime hp hp1
     · rw [← geom_sum₂_mul]
       exact dvd_mul_of_dvd_right hxy _
-    · exact fun h => hx (hp.dvd_of_dvd_pow h)
+    · exact fun h ↦ hx (hp.dvd_of_dvd_pow h)
 
 end IntegralDomain
 
@@ -201,7 +201,7 @@ theorem Int.emultiplicity_pow_sub_pow {x y : ℤ} (hxy : ↑p ∣ x - y) (hx : �
     emultiplicity_pow_prime_pow_sub_pow_prime_pow hp hp1 hxy hx, h.emultiplicity_eq_multiplicity]
   · rw [← geom_sum₂_mul]
     exact dvd_mul_of_dvd_right hxy _
-  · exact fun h => hx (hp.dvd_of_dvd_pow h)
+  · exact fun h ↦ hx (hp.dvd_of_dvd_pow h)
   · rw [Int.natCast_dvd_natCast]
     rintro ⟨c, rfl⟩
     refine hpn ⟨c, ?_⟩

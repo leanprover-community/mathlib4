@@ -235,24 +235,24 @@ theorem ofInt'_toZNum : ∀ n : ℕ, toZNum n = ZNum.ofInt' n
       ZNum.add_one]
 
 theorem mem_ofZNum' : ∀ {m : Num} {n : ZNum}, m ∈ ofZNum' n ↔ n = toZNum m
-  | 0, 0 => ⟨fun _ => rfl, fun _ => rfl⟩
+  | 0, 0 => ⟨fun _ ↦ rfl, fun _ ↦ rfl⟩
   | pos _, 0 => ⟨nofun, nofun⟩
   | m, ZNum.pos p =>
     Option.some_inj.trans <| by cases m <;> constructor <;> intro h <;> try cases h <;> rfl
-  | m, ZNum.neg p => ⟨nofun, fun h => by cases m <;> cases h⟩
+  | m, ZNum.neg p => ⟨nofun, fun h ↦ by cases m <;> cases h⟩
 
 theorem ofZNum'_toNat : ∀ n : ZNum, (↑) <$> ofZNum' n = Int.toNat? n
   | 0 => rfl
   | ZNum.pos p => show _ = Int.toNat? p by rw [← PosNum.to_nat_to_int p]; rfl
   | ZNum.neg p =>
-    (congr_arg fun x => Int.toNat? (-x)) <|
+    (congr_arg fun x ↦ Int.toNat? (-x)) <|
       show ((p.pred' + 1 : ℕ) : ℤ) = p by rw [← succ'_to_nat]; simp
 
 theorem ofZNum_toNat : ∀ n : ZNum, (ofZNum n : ℕ) = Int.toNat n
   | 0 => rfl
   | ZNum.pos p => show _ = Int.toNat p by rw [← PosNum.to_nat_to_int p]; rfl
   | ZNum.neg p =>
-    (congr_arg fun x => Int.toNat (-x)) <|
+    (congr_arg fun x ↦ Int.toNat (-x)) <|
       show ((p.pred' + 1 : ℕ) : ℤ) = p by rw [← succ'_to_nat]; simp
 
 @[simp]
@@ -316,7 +316,7 @@ theorem of_to_int' : ∀ n : ZNum, ZNum.ofInt' n = n
     rw [cast_neg, ofInt'_neg, ← PosNum.cast_to_nat, ← Num.ofInt'_toZNum, PosNum.of_to_nat]; rfl
 
 theorem to_int_inj {m n : ZNum} : (m : ℤ) = n ↔ m = n :=
-  ⟨fun h => Function.LeftInverse.injective of_to_int' h, congr_arg _⟩
+  ⟨fun h ↦ Function.LeftInverse.injective of_to_int' h, congr_arg _⟩
 
 theorem cmp_to_int : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℤ) < n) (m = n) ((n : ℤ) < m) : Prop)
   | 0, 0 => rfl
@@ -426,9 +426,9 @@ instance addCommGroup : AddCommGroup ZNum :=
 instance addMonoidWithOne : AddMonoidWithOne ZNum :=
   { ZNum.addMonoid with
     one := 1
-    natCast := fun n => ZNum.ofInt' n
+    natCast := fun n ↦ ZNum.ofInt' n
     natCast_zero := show (Num.ofNat' 0).toZNum = 0 by rw [Num.ofNat'_zero]; rfl
-    natCast_succ := fun n =>
+    natCast_succ := fun n ↦
       show (Num.ofNat' (n + 1)).toZNum = (Num.ofNat' n).toZNum + 1 by
         rw [Num.ofNat'_succ, Num.add_one, Num.toZNum_succ, ZNum.add_one] }
 
@@ -440,7 +440,7 @@ private theorem add_le_add_left : ∀ (a b : ZNum), a ≤ b → ∀ (c : ZNum), 
   intro a b h c
   revert h
   transfer_rw
-  exact fun h => _root_.add_le_add_left h c
+  exact fun h ↦ _root_.add_le_add_left h c
 
 instance commRing : CommRing ZNum :=
   { ZNum.addCommGroup, ZNum.addMonoidWithOne with
@@ -515,7 +515,7 @@ theorem of_natCast [AddGroupWithOne α] (n : ℕ) : ((n : ZNum) : α) = n := by
 
 @[simp, norm_cast]
 theorem dvd_to_int (m n : ZNum) : (m : ℤ) ∣ n ↔ m ∣ n :=
-  ⟨fun ⟨k, e⟩ => ⟨k, by rw [← of_to_int n, e]; simp⟩, fun ⟨k, e⟩ => ⟨k, by simp [e]⟩⟩
+  ⟨fun ⟨k, e⟩ ↦ ⟨k, by rw [← of_to_int n, e]; simp⟩, fun ⟨k, e⟩ ↦ ⟨k, by simp [e]⟩⟩
 
 end ZNum
 
@@ -532,7 +532,7 @@ theorem divMod_to_nat_aux {n d : PosNum} {q r : Num} (h₁ : (r : ℕ) + d * ((q
     simp
   rcases e : Num.ofZNum' (Num.sub' r (Num.pos d)) with - | r₂
   · rw [Num.cast_bit0, two_mul]
-    refine ⟨h₁, lt_of_not_ge fun h => ?_⟩
+    refine ⟨h₁, lt_of_not_ge fun h ↦ ?_⟩
     obtain ⟨r₂, e'⟩ := Nat.le.dest h
     rw [← Num.to_of_nat r₂, add_comm] at e'
     cases e.symm.trans (this.2 e'.symm)

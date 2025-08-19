@@ -77,7 +77,7 @@ theorem multinomial_congr {f g : α → ℕ} (h : ∀ a ∈ s, f a = g a) :
     multinomial s f = multinomial s g := by
   simp only [multinomial]; congr 1
   · rw [Finset.sum_congr rfl h]
-  · exact Finset.prod_congr rfl fun a ha => by rw [h a ha]
+  · exact Finset.prod_congr rfl fun a ha ↦ by rw [h a ha]
 
 /-! ### Connection to binomial coefficients
 
@@ -145,13 +145,13 @@ variable {α : Type*}
   for the big operations
 -/
 def multinomial (f : α →₀ ℕ) : ℕ :=
-  (f.sum fun _ => id)! / f.prod fun _ n => n !
+  (f.sum fun _ ↦ id)! / f.prod fun _ n ↦ n !
 
 theorem multinomial_eq (f : α →₀ ℕ) : f.multinomial = Nat.multinomial f.support f :=
   rfl
 
 theorem multinomial_update (a : α) (f : α →₀ ℕ) :
-    f.multinomial = (f.sum fun _ => id).choose (f a) * (f.update a 0).multinomial := by
+    f.multinomial = (f.sum fun _ ↦ id).choose (f a) * (f.update a 0).multinomial := by
   simp only [multinomial_eq]
   classical
     by_cases h : a ∈ f.support
@@ -267,14 +267,14 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
       apply (Fintype.sum_empty _).symm
   intro n; specialize ih (hc.mono <| s.subset_insert a)
   rw [sum_insert ha, (Commute.sum_right s _ _ _).add_pow, sum_range]; swap
-  · exact fun _ hb => hc (mem_insert_self a s) (mem_insert_of_mem hb)
+  · exact fun _ hb ↦ hc (mem_insert_self a s) (mem_insert_of_mem hb)
       (ne_of_mem_of_not_mem hb ha).symm
   · simp_rw [ih, mul_sum, sum_mul, sum_sigma', univ_sigma_univ]
-    refine (Fintype.sum_equiv (symInsertEquiv ha) _ _ fun m => ?_).symm
+    refine (Fintype.sum_equiv (symInsertEquiv ha) _ _ fun m ↦ ?_).symm
     rw [m.1.1.multinomial_filter_ne a]
     conv in m.1.1.map _ => rw [← m.1.1.filter_add_not (a = ·), Multiset.map_add]
     simp_rw [Multiset.noncommProd_add, m.1.1.filter_eq, Multiset.map_replicate, m.1.2]
-    rw [Multiset.noncommProd_eq_pow_card _ _ _ fun _ => Multiset.eq_of_mem_replicate]
+    rw [Multiset.noncommProd_eq_pow_card _ _ _ fun _ ↦ Multiset.eq_of_mem_replicate]
     rw [Multiset.card_replicate, Nat.cast_mul, mul_assoc, Nat.cast_comm]
     congr 1; simp_rw [← mul_assoc, Nat.cast_comm]; rfl
 

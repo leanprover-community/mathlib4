@@ -37,13 +37,13 @@ section LipschitzMul
 /-- Class `LipschitzAdd M` says that the addition `(+) : X × X → X` is Lipschitz jointly in
 the two arguments. -/
 class LipschitzAdd [AddMonoid β] : Prop where
-  lipschitz_add : ∃ C, LipschitzWith C fun p : β × β => p.1 + p.2
+  lipschitz_add : ∃ C, LipschitzWith C fun p : β × β ↦ p.1 + p.2
 
 /-- Class `LipschitzMul M` says that the multiplication `(*) : X × X → X` is Lipschitz jointly
 in the two arguments. -/
 @[to_additive]
 class LipschitzMul [Monoid β] : Prop where
-  lipschitz_mul : ∃ C, LipschitzWith C fun p : β × β => p.1 * p.2
+  lipschitz_mul : ∃ C, LipschitzWith C fun p : β × β ↦ p.1 * p.2
 
 /-- The Lipschitz constant of an `AddMonoid` `β` satisfying `LipschitzAdd` -/
 def LipschitzAdd.C [AddMonoid β] [_i : LipschitzAdd β] : ℝ≥0 := Classical.choose _i.lipschitz_add
@@ -58,7 +58,7 @@ variable {β}
 
 @[to_additive]
 theorem lipschitzWith_lipschitz_const_mul_edist [_i : LipschitzMul β] :
-    LipschitzWith (LipschitzMul.C β) fun p : β × β => p.1 * p.2 :=
+    LipschitzWith (LipschitzMul.C β) fun p : β × β ↦ p.1 * p.2 :=
   Classical.choose_spec _i.lipschitz_mul
 
 variable [LipschitzMul β]
@@ -82,14 +82,14 @@ instance Submonoid.lipschitzMul (s : Submonoid β) : LipschitzMul s where
 
 @[to_additive]
 instance MulOpposite.lipschitzMul : LipschitzMul βᵐᵒᵖ where
-  lipschitz_mul := ⟨LipschitzMul.C β, fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ =>
+  lipschitz_mul := ⟨LipschitzMul.C β, fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ ↦
     (lipschitzWith_lipschitz_const_mul_edist ⟨x₂.unop, x₁.unop⟩ ⟨y₂.unop, y₁.unop⟩).trans_eq
       (congr_arg _ <| max_comm _ _)⟩
 
 -- this instance could be deduced from `NormedAddCommGroup.lipschitzAdd`, but we prove it
 -- separately here so that it is available earlier in the hierarchy
 instance Real.hasLipschitzAdd : LipschitzAdd ℝ where
-  lipschitz_add := ⟨2, LipschitzWith.of_dist_le_mul fun p q => by
+  lipschitz_add := ⟨2, LipschitzWith.of_dist_le_mul fun p q ↦ by
     simp only [Real.dist_eq, Prod.dist_eq, NNReal.coe_ofNat,
       add_sub_add_comm, two_mul]
     refine le_trans (abs_add (p.1 - q.1) (p.2 - q.2)) ?_
@@ -142,7 +142,7 @@ instance (priority := 100) IsBoundedSMul.continuousSMul : ContinuousSMul α β w
       have : Continuous fun δ ↦ δ * (δ + dist b 0) + dist a 0 * δ := by fun_prop
       refine ((this.tendsto' _ _ ?_).eventually (gt_mem_nhds ε0)).exists_gt
       simp
-    refine ⟨δ, δ0, fun (a', b') hab' => ?_⟩
+    refine ⟨δ, δ0, fun (a', b') hab' ↦ ?_⟩
     obtain ⟨ha, hb⟩ := max_lt_iff.1 hab'
     calc dist (a' • b') (a • b)
         ≤ dist (a' • b') (a • b') + dist (a • b') (a • b) := dist_triangle ..
@@ -155,7 +155,7 @@ instance (priority := 100) IsBoundedSMul.continuousSMul : ContinuousSMul α β w
 
 instance (priority := 100) IsBoundedSMul.toUniformContinuousConstSMul :
     UniformContinuousConstSMul α β :=
-  ⟨fun c => ((lipschitzWith_iff_dist_le_mul (K := nndist c 0)).2 fun _ _ =>
+  ⟨fun c ↦ ((lipschitzWith_iff_dist_le_mul (K := nndist c 0)).2 fun _ _ ↦
     dist_smul_pair c _ _).uniformContinuous⟩
 
 -- this instance could be deduced from `NormedSpace.isBoundedSMul`, but we prove it separately
@@ -171,10 +171,10 @@ instance NNReal.isBoundedSMul : IsBoundedSMul ℝ≥0 ℝ≥0 where
 /-- If a scalar is central, then its right action is bounded when its left action is. -/
 instance IsBoundedSMul.op [SMul αᵐᵒᵖ β] [IsCentralScalar α β] : IsBoundedSMul αᵐᵒᵖ β where
   dist_smul_pair' :=
-    MulOpposite.rec' fun x y₁ y₂ => by simpa only [op_smul_eq_smul] using dist_smul_pair x y₁ y₂
+    MulOpposite.rec' fun x y₁ y₂ ↦ by simpa only [op_smul_eq_smul] using dist_smul_pair x y₁ y₂
   dist_pair_smul' :=
-    MulOpposite.rec' fun x₁ =>
-      MulOpposite.rec' fun x₂ y => by simpa only [op_smul_eq_smul] using dist_pair_smul x₁ x₂ y
+    MulOpposite.rec' fun x₁ ↦
+      MulOpposite.rec' fun x₂ y ↦ by simpa only [op_smul_eq_smul] using dist_pair_smul x₁ x₂ y
 
 end IsBoundedSMul
 

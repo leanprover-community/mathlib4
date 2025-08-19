@@ -144,7 +144,7 @@ theorem sqrt_eq_cases : √x = y ↔ y * y = x ∧ 0 ≤ y ∨ x < 0 ∧ y = 0 :
     exacts [sqrt_mul_self hy, sqrt_eq_zero_of_nonpos hx.le]
 
 theorem sqrt_eq_iff_mul_self_eq (hx : 0 ≤ x) (hy : 0 ≤ y) : √x = y ↔ x = y * y :=
-  ⟨fun h => by rw [← h, mul_self_sqrt hx], fun h => by rw [h, sqrt_mul_self hy]⟩
+  ⟨fun h ↦ by rw [← h, mul_self_sqrt hx], fun h ↦ by rw [h, sqrt_mul_self hy]⟩
 
 theorem sqrt_eq_iff_mul_self_eq_of_pos (h : 0 < y) : √x = y ↔ y * y = x := by
   simp [sqrt_eq_cases, h.ne', h.le]
@@ -203,7 +203,7 @@ theorem sqrt_le_left (hy : 0 ≤ y) : √x ≤ y ↔ x ≤ y ^ 2 := by
     Real.toNNReal_le_toNNReal_iff (mul_self_nonneg y), sq]
 
 theorem sqrt_le_iff : √x ≤ y ↔ 0 ≤ y ∧ x ≤ y ^ 2 := by
-  rw [← and_iff_right_of_imp fun h => (sqrt_nonneg x).trans h, and_congr_right_iff]
+  rw [← and_iff_right_of_imp fun h ↦ (sqrt_nonneg x).trans h, and_congr_right_iff]
   exact sqrt_le_left
 
 theorem sqrt_lt (hx : 0 ≤ x) (hy : 0 ≤ y) : √x < y ↔ x < y ^ 2 := by
@@ -403,25 +403,25 @@ open Real
 variable {α : Type*}
 
 theorem Filter.Tendsto.sqrt {f : α → ℝ} {l : Filter α} {x : ℝ} (h : Tendsto f l (𝓝 x)) :
-    Tendsto (fun x => √(f x)) l (𝓝 (√x)) :=
+    Tendsto (fun x ↦ √(f x)) l (𝓝 (√x)) :=
   (continuous_sqrt.tendsto _).comp h
 
 variable [TopologicalSpace α] {f : α → ℝ} {s : Set α} {x : α}
 
 nonrec theorem ContinuousWithinAt.sqrt (h : ContinuousWithinAt f s x) :
-    ContinuousWithinAt (fun x => √(f x)) s x :=
+    ContinuousWithinAt (fun x ↦ √(f x)) s x :=
   h.sqrt
 
 @[fun_prop]
-nonrec theorem ContinuousAt.sqrt (h : ContinuousAt f x) : ContinuousAt (fun x => √(f x)) x :=
+nonrec theorem ContinuousAt.sqrt (h : ContinuousAt f x) : ContinuousAt (fun x ↦ √(f x)) x :=
   h.sqrt
 
 @[fun_prop]
-theorem ContinuousOn.sqrt (h : ContinuousOn f s) : ContinuousOn (fun x => √(f x)) s :=
-  fun x hx => (h x hx).sqrt
+theorem ContinuousOn.sqrt (h : ContinuousOn f s) : ContinuousOn (fun x ↦ √(f x)) s :=
+  fun x hx ↦ (h x hx).sqrt
 
 @[continuity, fun_prop]
-theorem Continuous.sqrt (h : Continuous f) : Continuous fun x => √(f x) :=
+theorem Continuous.sqrt (h : Continuous f) : Continuous fun x ↦ √(f x) :=
   continuous_sqrt.comp h
 
 namespace NNReal

@@ -8,7 +8,7 @@ import Mathlib.Analysis.Calculus.FDeriv.Pow
 /-!
 # Derivative of `(f x) ^ n`, `n : ℕ`
 
-In this file we prove that the Fréchet derivative of `fun x => f x ^ n`,
+In this file we prove that the Fréchet derivative of `fun x ↦ f x ^ n`,
 where `n` is a natural number, is `n * f x ^ (n - 1) * f'`.
 Additionally, we prove the case for non-commutative rings (with primed names like `deriv_pow'`),
 where the result is instead `∑ i ∈ Finset.range n, f x ^ (n.pred - i) * f' * f x ^ i`.
@@ -59,7 +59,7 @@ theorem HasDerivAt.pow' (h : HasDerivAt f f' x) (n : ℕ) :
 
 @[simp low]
 theorem derivWithin_fun_pow' (h : DifferentiableWithinAt 𝕜 f s x) (n : ℕ) :
-    derivWithin (fun x => f x ^ n) s x =
+    derivWithin (fun x ↦ f x ^ n) s x =
       ∑ i ∈ Finset.range n, f x ^ (n.pred - i) * derivWithin f s x * f x ^ i := by
   by_cases hsx : UniqueDiffWithinAt 𝕜 s x
   · exact (h.hasDerivWithinAt.pow' n).derivWithin hsx
@@ -73,7 +73,7 @@ theorem derivWithin_pow' (h : DifferentiableWithinAt 𝕜 f s x) (n : ℕ) :
 
 @[simp low]
 theorem deriv_fun_pow' (h : DifferentiableAt 𝕜 f x) (n : ℕ) :
-    deriv (fun x => f x ^ n) x = ∑ i ∈ Finset.range n, f x ^ (n.pred - i) * deriv f x * f x ^ i :=
+    deriv (fun x ↦ f x ^ n) x = ∑ i ∈ Finset.range n, f x ^ (n.pred - i) * deriv f x * f x ^ i :=
   (h.hasDerivAt.pow' n).deriv
 
 @[simp low]
@@ -115,7 +115,7 @@ theorem HasDerivAt.pow (h : HasDerivAt f f' x) (n : ℕ) :
 
 @[simp]
 theorem derivWithin_fun_pow (h : DifferentiableWithinAt 𝕜 f s x) (n : ℕ) :
-    derivWithin (fun x => f x ^ n) s x = n * f x ^ (n - 1) * derivWithin f s x := by
+    derivWithin (fun x ↦ f x ^ n) s x = n * f x ^ (n - 1) * derivWithin f s x := by
   by_cases hsx : UniqueDiffWithinAt 𝕜 s x
   · exact (h.hasDerivWithinAt.pow n).derivWithin hsx
   · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
@@ -127,7 +127,7 @@ theorem derivWithin_pow (h : DifferentiableWithinAt 𝕜 f s x) (n : ℕ) :
 
 @[simp]
 theorem deriv_fun_pow (h : DifferentiableAt 𝕜 f x) (n : ℕ) :
-    deriv (fun x => f x ^ n) x = n * f x ^ (n - 1) * deriv f x :=
+    deriv (fun x ↦ f x ^ n) x = n * f x ^ (n - 1) * deriv f x :=
   (h.hasDerivAt.pow n).deriv
 
 @[simp]
@@ -141,7 +141,7 @@ variable [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜} {c : 𝕜 → 
 
 @[deprecated deriv_fun_pow (since := "2025-07-16")]
 theorem deriv_fun_pow'' {c : 𝕜 → 𝕜} (n : ℕ) (hc : DifferentiableAt 𝕜 c x) :
-    deriv (fun x => c x ^ n) x = (n : 𝕜) * c x ^ (n - 1) * deriv c x :=
+    deriv (fun x ↦ c x ^ n) x = (n : 𝕜) * c x ^ (n - 1) * deriv c x :=
   deriv_fun_pow hc n
 
 @[deprecated deriv_pow (since := "2025-07-16")]
@@ -158,14 +158,14 @@ theorem hasDerivWithinAt_pow (n : ℕ) (x : 𝕜) :
   simpa using (hasDerivWithinAt_id x s).pow n
 
 theorem hasDerivAt_pow (n : ℕ) (x : 𝕜) :
-    HasDerivAt (fun x : 𝕜 => x ^ n) ((n : 𝕜) * x ^ (n - 1)) x := by
+    HasDerivAt (fun x : 𝕜 ↦ x ^ n) ((n : 𝕜) * x ^ (n - 1)) x := by
   simpa using (hasStrictDerivAt_pow n x).hasDerivAt
 
 theorem derivWithin_pow_field (h : UniqueDiffWithinAt 𝕜 s x) (n : ℕ) :
-    derivWithin (fun x => x ^ n) s x = (n : 𝕜) * x ^ (n - 1) := by
+    derivWithin (fun x ↦ x ^ n) s x = (n : 𝕜) * x ^ (n - 1) := by
   rw [derivWithin_fun_pow (differentiableWithinAt_id' (s := s)) n, derivWithin_id' _ _ h, mul_one]
 
-theorem deriv_pow_field (n : ℕ) : deriv (fun x => x ^ n) x = (n : 𝕜) * x ^ (n - 1) := by
+theorem deriv_pow_field (n : ℕ) : deriv (fun x ↦ x ^ n) x = (n : 𝕜) * x ^ (n - 1) := by
   simp
 
 end NontriviallyNormedField

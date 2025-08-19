@@ -199,7 +199,7 @@ theorem exists_one_lt_norm : ∃ x : α, 1 < ‖x‖ :=
 theorem exists_one_lt_nnnorm : ∃ x : α, 1 < ‖x‖₊ := exists_one_lt_norm α
 
 theorem exists_one_lt_enorm : ∃ x : α, 1 < ‖x‖ₑ :=
-  exists_one_lt_nnnorm α |>.imp fun _ => ENNReal.coe_lt_coe.mpr
+  exists_one_lt_nnnorm α |>.imp fun _ ↦ ENNReal.coe_lt_coe.mpr
 
 theorem exists_lt_norm (r : ℝ) : ∃ x : α, r < ‖x‖ :=
   let ⟨w, hw⟩ := exists_one_lt_norm α
@@ -222,8 +222,8 @@ theorem exists_nnnorm_lt {r : ℝ≥0} (hr : 0 < r) : ∃ x : α, 0 < ‖x‖₊
 /-- TODO: merge with `_root_.exists_enorm_lt`. -/
 theorem exists_enorm_lt {r : ℝ≥0∞} (hr : 0 < r) : ∃ x : α, 0 < ‖x‖ₑ ∧ ‖x‖ₑ < r :=
   match r with
-  | ∞ => exists_one_lt_enorm α |>.imp fun _ hx => ⟨zero_le_one.trans_lt hx, ENNReal.coe_lt_top⟩
-  | (r : ℝ≥0) => exists_nnnorm_lt α (ENNReal.coe_pos.mp hr) |>.imp fun _ =>
+  | ∞ => exists_one_lt_enorm α |>.imp fun _ hx ↦ ⟨zero_le_one.trans_lt hx, ENNReal.coe_lt_top⟩
+  | (r : ℝ≥0) => exists_nnnorm_lt α (ENNReal.coe_pos.mp hr) |>.imp fun _ ↦
     And.imp ENNReal.coe_pos.mpr ENNReal.coe_lt_coe.mpr
 
 theorem exists_norm_lt_one : ∃ x : α, 0 < ‖x‖ ∧ ‖x‖ < 1 :=

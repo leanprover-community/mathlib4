@@ -55,27 +55,27 @@ include gc
 
 theorem upperBounds_l_image (s : Set α) :
     upperBounds (l '' s) = u ⁻¹' upperBounds s :=
-  Set.ext fun b => by simp [upperBounds, gc _ _]
+  Set.ext fun b ↦ by simp [upperBounds, gc _ _]
 
 theorem lowerBounds_u_image (s : Set β) :
     lowerBounds (u '' s) = l ⁻¹' lowerBounds s :=
   gc.dual.upperBounds_l_image s
 
 theorem bddAbove_l_image {s : Set α} : BddAbove (l '' s) ↔ BddAbove s :=
-  ⟨fun ⟨x, hx⟩ => ⟨u x, by rwa [gc.upperBounds_l_image] at hx⟩, gc.monotone_l.map_bddAbove⟩
+  ⟨fun ⟨x, hx⟩ ↦ ⟨u x, by rwa [gc.upperBounds_l_image] at hx⟩, gc.monotone_l.map_bddAbove⟩
 
 theorem bddBelow_u_image {s : Set β} : BddBelow (u '' s) ↔ BddBelow s :=
   gc.dual.bddAbove_l_image
 
 theorem isLUB_l_image {s : Set α} {a : α} (h : IsLUB s a) : IsLUB (l '' s) (l a) :=
-  ⟨gc.monotone_l.mem_upperBounds_image h.left, fun b hb =>
+  ⟨gc.monotone_l.mem_upperBounds_image h.left, fun b hb ↦
     gc.l_le <| h.right <| by rwa [gc.upperBounds_l_image] at hb⟩
 
 theorem isGLB_u_image {s : Set β} {b : β} (h : IsGLB s b) : IsGLB (u '' s) (u b) :=
   gc.dual.isLUB_l_image h
 
 theorem isLeast_l {a : α} : IsLeast { b | a ≤ u b } (l a) :=
-  ⟨gc.le_u_l _, fun _ hb => gc.l_le hb⟩
+  ⟨gc.le_u_l _, fun _ hb ↦ gc.l_le hb⟩
 
 theorem isGreatest_u {b : β} : IsGreatest { a | l a ≤ b } (u b) :=
   gc.dual.isLeast_l
@@ -208,7 +208,7 @@ variable [Preorder α] [Preorder β]
 
 /-- Makes a Galois connection from an order-preserving bijection. -/
 lemma to_galoisConnection (e : α ≃o β) : GaloisConnection e e.symm :=
-  fun _ _ => e.rel_symm_apply.symm
+  fun _ _ ↦ e.rel_symm_apply.symm
 
 /-- Makes a Galois insertion from an order-preserving bijection. -/
 protected def toGaloisInsertion (e : α ≃o β) : GaloisInsertion e e.symm where
@@ -245,7 +245,7 @@ end OrderIso
 namespace Nat
 
 theorem galoisConnection_mul_div {k : ℕ} (h : 0 < k) :
-    GaloisConnection (fun n => n * k) fun n => n / k := fun _ _ => (le_div_iff_mul_le h).symm
+    GaloisConnection (fun n ↦ n * k) fun n ↦ n / k := fun _ _ ↦ (le_div_iff_mul_le h).symm
 
 end Nat
 
@@ -263,7 +263,7 @@ theorem l_iSup_u [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion
     (f : ι → β) : l (⨆ i, u (f i)) = ⨆ i, f i :=
   calc
     l (⨆ i : ι, u (f i)) = ⨆ i : ι, l (u (f i)) := gi.gc.l_iSup
-    _ = ⨆ i : ι, f i := congr_arg _ <| funext fun i => gi.l_u_eq (f i)
+    _ = ⨆ i : ι, f i := congr_arg _ <| funext fun i ↦ gi.l_u_eq (f i)
 
 theorem l_biSup_u [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion l u) {ι : Sort x}
     {p : ι → Prop} (f : ∀ i, p i → β) : l (⨆ (i) (hi), u (f i hi)) = ⨆ (i) (hi), f i hi := by
@@ -301,16 +301,16 @@ theorem l_biInf_of_ul_eq_self [CompleteLattice α] [CompleteLattice β] (gi : Ga
     {ι : Sort x} {p : ι → Prop} (f : ∀ (i) (_ : p i), α) (hf : ∀ i hi, u (l (f i hi)) = f i hi) :
     l (⨅ (i) (hi), f i hi) = ⨅ (i) (hi), l (f i hi) := by
   rw [iInf_subtype', iInf_subtype']
-  exact gi.l_iInf_of_ul_eq_self _ fun _ => hf _ _
+  exact gi.l_iInf_of_ul_eq_self _ fun _ ↦ hf _ _
 
 theorem isLUB_of_u_image [Preorder α] [Preorder β] (gi : GaloisInsertion l u) {s : Set β} {a : α}
     (hs : IsLUB (u '' s) a) : IsLUB s (l a) :=
-  ⟨fun x hx => (gi.le_l_u x).trans <| gi.gc.monotone_l <| hs.1 <| mem_image_of_mem _ hx, fun _ hx =>
+  ⟨fun x hx ↦ (gi.le_l_u x).trans <| gi.gc.monotone_l <| hs.1 <| mem_image_of_mem _ hx, fun _ hx ↦
     gi.gc.l_le <| hs.2 <| gi.gc.monotone_u.mem_upperBounds_image hx⟩
 
 theorem isGLB_of_u_image [Preorder α] [Preorder β] (gi : GaloisInsertion l u) {s : Set β} {a : α}
     (hs : IsGLB (u '' s) a) : IsGLB s (l a) :=
-  ⟨fun _ hx => gi.gc.l_le <| hs.1 <| mem_image_of_mem _ hx, fun x hx =>
+  ⟨fun _ hx ↦ gi.gc.l_le <| hs.1 <| mem_image_of_mem _ hx, fun x hx ↦
     (gi.le_l_u x).trans <| gi.gc.monotone_l <| hs.2 <| gi.gc.monotone_u.mem_lowerBounds_image hx⟩
 
 section lift
@@ -321,25 +321,25 @@ variable [PartialOrder β]
 /-- Lift the suprema along a Galois insertion -/
 abbrev liftSemilatticeSup [SemilatticeSup α] (gi : GaloisInsertion l u) : SemilatticeSup β :=
   { ‹PartialOrder β› with
-    sup := fun a b => l (u a ⊔ u b)
-    le_sup_left := fun a _ => (gi.le_l_u a).trans <| gi.gc.monotone_l <| le_sup_left
-    le_sup_right := fun _ b => (gi.le_l_u b).trans <| gi.gc.monotone_l <| le_sup_right
-    sup_le := fun _ _ _ hac hbc =>
+    sup := fun a b ↦ l (u a ⊔ u b)
+    le_sup_left := fun a _ ↦ (gi.le_l_u a).trans <| gi.gc.monotone_l <| le_sup_left
+    le_sup_right := fun _ b ↦ (gi.le_l_u b).trans <| gi.gc.monotone_l <| le_sup_right
+    sup_le := fun _ _ _ hac hbc ↦
       gi.gc.l_le <| sup_le (gi.gc.monotone_u hac) (gi.gc.monotone_u hbc) }
 
 -- See note [reducible non instances]
 /-- Lift the infima along a Galois insertion -/
 abbrev liftSemilatticeInf [SemilatticeInf α] (gi : GaloisInsertion l u) : SemilatticeInf β :=
   { ‹PartialOrder β› with
-    inf := fun a b =>
+    inf := fun a b ↦
       gi.choice (u a ⊓ u b) <|
         le_inf (gi.gc.monotone_u <| gi.gc.l_le <| inf_le_left)
           (gi.gc.monotone_u <| gi.gc.l_le <| inf_le_right)
-    inf_le_left := by simp only [gi.choice_eq]; exact fun a b => gi.gc.l_le inf_le_left
-    inf_le_right := by simp only [gi.choice_eq]; exact fun a b => gi.gc.l_le inf_le_right
+    inf_le_left := by simp only [gi.choice_eq]; exact fun a b ↦ gi.gc.l_le inf_le_left
+    inf_le_right := by simp only [gi.choice_eq]; exact fun a b ↦ gi.gc.l_le inf_le_right
     le_inf := by
       simp only [gi.choice_eq]
-      exact fun a b c hac hbc =>
+      exact fun a b c hac hbc ↦
         (gi.le_l_u a).trans <|
           gi.gc.monotone_l <| le_inf (gi.gc.monotone_u hac) (gi.gc.monotone_u hbc) }
 
@@ -354,7 +354,7 @@ abbrev liftOrderTop [Preorder α] [OrderTop α] (gi : GaloisInsertion l u) :
     OrderTop β where
   top := gi.choice ⊤ <| le_top
   le_top := by
-    simp only [gi.choice_eq]; exact fun b => (gi.le_l_u b).trans (gi.gc.monotone_l le_top)
+    simp only [gi.choice_eq]; exact fun b ↦ (gi.le_l_u b).trans (gi.gc.monotone_l le_top)
 
 -- See note [reducible non instances]
 /-- Lift the top, bottom, suprema, and infima along a Galois insertion -/
@@ -365,15 +365,15 @@ abbrev liftBoundedOrder [Preorder α] [BoundedOrder α] (gi : GaloisInsertion l 
 /-- Lift all suprema and infima along a Galois insertion -/
 abbrev liftCompleteLattice [CompleteLattice α] (gi : GaloisInsertion l u) : CompleteLattice β :=
   { gi.liftBoundedOrder, gi.liftLattice with
-    sSup := fun s => l (sSup (u '' s))
-    sSup_le := fun _ => (gi.isLUB_of_u_image (isLUB_sSup _)).2
-    le_sSup := fun _ => (gi.isLUB_of_u_image (isLUB_sSup _)).1
-    sInf := fun s =>
+    sSup := fun s ↦ l (sSup (u '' s))
+    sSup_le := fun _ ↦ (gi.isLUB_of_u_image (isLUB_sSup _)).2
+    le_sSup := fun _ ↦ (gi.isLUB_of_u_image (isLUB_sSup _)).1
+    sInf := fun s ↦
       gi.choice (sInf (u '' s)) <|
         (isGLB_sInf _).2 <|
           gi.gc.monotone_u.mem_lowerBounds_image (gi.isGLB_of_u_image <| isGLB_sInf _).1
-    sInf_le := fun s => by rw [gi.choice_eq]; exact (gi.isGLB_of_u_image (isGLB_sInf _)).1
-    le_sInf := fun s => by rw [gi.choice_eq]; exact (gi.isGLB_of_u_image (isGLB_sInf _)).2 }
+    sInf_le := fun s ↦ by rw [gi.choice_eq]; exact (gi.isGLB_of_u_image (isGLB_sInf _)).1
+    le_sInf := fun s ↦ by rw [gi.choice_eq]; exact (gi.isGLB_of_u_image (isGLB_sInf _)).2 }
 
 end lift
 
@@ -436,27 +436,27 @@ variable [PartialOrder α]
 /-- Lift the infima along a Galois coinsertion -/
 abbrev liftSemilatticeInf [SemilatticeInf β] (gi : GaloisCoinsertion l u) : SemilatticeInf α :=
   { ‹PartialOrder α› with
-    inf_le_left := fun a b =>
+    inf_le_left := fun a b ↦
       (@OrderDual.instSemilatticeInf αᵒᵈ gi.dual.liftSemilatticeSup).inf_le_left a b
-    inf_le_right := fun a b =>
+    inf_le_right := fun a b ↦
       (@OrderDual.instSemilatticeInf αᵒᵈ gi.dual.liftSemilatticeSup).inf_le_right a b
-    le_inf := fun a b c =>
+    le_inf := fun a b c ↦
       (@OrderDual.instSemilatticeInf αᵒᵈ gi.dual.liftSemilatticeSup).le_inf a b c
-    inf := fun a b => u (l a ⊓ l b) }
+    inf := fun a b ↦ u (l a ⊓ l b) }
 
 -- See note [reducible non instances]
 /-- Lift the suprema along a Galois coinsertion -/
 abbrev liftSemilatticeSup [SemilatticeSup β] (gi : GaloisCoinsertion l u) : SemilatticeSup α :=
   { ‹PartialOrder α› with
-    sup := fun a b =>
+    sup := fun a b ↦
       gi.choice (l a ⊔ l b) <|
         sup_le (gi.gc.monotone_l <| gi.gc.le_u <| le_sup_left)
           (gi.gc.monotone_l <| gi.gc.le_u <| le_sup_right)
-    le_sup_left := fun a b =>
+    le_sup_left := fun a b ↦
       (@OrderDual.instSemilatticeSup αᵒᵈ gi.dual.liftSemilatticeInf).le_sup_left a b
-    le_sup_right := fun a b =>
+    le_sup_right := fun a b ↦
       (@OrderDual.instSemilatticeSup αᵒᵈ gi.dual.liftSemilatticeInf).le_sup_right a b
-    sup_le := fun a b c =>
+    sup_le := fun a b c ↦
       (@OrderDual.instSemilatticeSup αᵒᵈ gi.dual.liftSemilatticeInf).sup_le a b c }
 
 -- See note [reducible non instances]
@@ -479,8 +479,8 @@ abbrev liftBoundedOrder
 /-- Lift all suprema and infima along a Galois coinsertion -/
 abbrev liftCompleteLattice [CompleteLattice β] (gi : GaloisCoinsertion l u) : CompleteLattice α :=
   { @OrderDual.instCompleteLattice αᵒᵈ gi.dual.liftCompleteLattice with
-    sInf := fun s => u (sInf (l '' s))
-    sSup := fun s => gi.choice (sSup (l '' s)) _ }
+    sInf := fun s ↦ u (sInf (l '' s))
+    sSup := fun s ↦ gi.choice (sSup (l '' s)) _ }
 
 end lift
 

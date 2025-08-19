@@ -35,7 +35,7 @@ theorem map_isUnit_of_le (hS : S ≤ A⁰) (s : S) : IsUnit (algebraMap A K s) :
   of `A`, given that `S ≤ A⁰`. -/
 noncomputable def mapToFractionRing (B : Type*) [CommRing B] [Algebra A B] [IsLocalization S B]
     (hS : S ≤ A⁰) : B →ₐ[A] K :=
-  { IsLocalization.lift (map_isUnit_of_le K S hS) with commutes' := fun a => by simp }
+  { IsLocalization.lift (map_isUnit_of_le K S hS) with commutes' := fun a ↦ by simp }
 
 @[simp]
 theorem mapToFractionRing_apply {B : Type*} [CommRing B] [Algebra A B] [IsLocalization S B]
@@ -60,10 +60,10 @@ instance isLocalization_range_mapToFractionRing (B : Type*) [CommRing B] [Algebr
     [IsLocalization S B] (hS : S ≤ A⁰) : IsLocalization S (mapToFractionRing K S B hS).range :=
   IsLocalization.isLocalization_of_algEquiv S <|
     show B ≃ₐ[A] _ from AlgEquiv.ofBijective (mapToFractionRing K S B hS).rangeRestrict (by
-      refine ⟨fun a b h => ?_, Set.surjective_onto_range⟩
-      refine (IsLocalization.lift_injective_iff _).2 (fun a b => ?_) (Subtype.ext_iff.1 h)
-      exact ⟨fun h => congr_arg _ (IsLocalization.injective _ hS h),
-        fun h => congr_arg _ (IsFractionRing.injective A K h)⟩)
+      refine ⟨fun a b h ↦ ?_, Set.surjective_onto_range⟩
+      refine (IsLocalization.lift_injective_iff _).2 (fun a b ↦ ?_) (Subtype.ext_iff.1 h)
+      exact ⟨fun h ↦ congr_arg _ (IsLocalization.injective _ hS h),
+        fun h ↦ congr_arg _ (IsFractionRing.injective A K h)⟩)
 
 instance isFractionRing_range_mapToFractionRing (B : Type*) [CommRing B] [Algebra A B]
     [IsLocalization S B] (hS : S ≤ A⁰) : IsFractionRing (mapToFractionRing K S B hS).range K :=

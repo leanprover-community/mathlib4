@@ -89,7 +89,7 @@ lemma mem_subcategoryAcyclic_iff (X : HomotopyCategory C (ComplexShape.up ℤ)) 
 lemma quotient_obj_mem_subcategoryAcyclic_iff_exactAt (K : CochainComplex C ℤ) :
     subcategoryAcyclic C ((quotient _ _).obj K) ↔ ∀ (n : ℤ), K.ExactAt n := by
   rw [mem_subcategoryAcyclic_iff]
-  refine forall_congr' (fun n => ?_)
+  refine forall_congr' (fun n ↦ ?_)
   simp only [HomologicalComplex.exactAt_iff_isZero_homology]
   exact ((homologyFunctorFactors C (ComplexShape.up ℤ) n).app K).isZero_iff
 

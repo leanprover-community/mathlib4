@@ -43,7 +43,7 @@ variable [DecidableEq α] {s t u v : Finset α} {a b : α}
 
 /-- `s \ t` is the set consisting of the elements of `s` that are not in `t`. -/
 instance instSDiff : SDiff (Finset α) :=
-  ⟨fun s₁ s₂ => ⟨s₁.1 - s₂.1, nodup_of_le (Multiset.sub_le_self ..) s₁.2⟩⟩
+  ⟨fun s₁ s₂ ↦ ⟨s₁.1 - s₂.1, nodup_of_le (Multiset.sub_le_self ..) s₁.2⟩⟩
 
 @[simp]
 theorem sdiff_val (s₁ s₂ : Finset α) : (s₁ \ s₂).val = s₁.val - s₂.val :=
@@ -57,10 +57,10 @@ theorem mem_sdiff : a ∈ s \ t ↔ a ∈ s ∧ a ∉ t :=
 theorem inter_sdiff_self (s₁ s₂ : Finset α) : s₁ ∩ (s₂ \ s₁) = ∅ := by grind
 
 instance : GeneralizedBooleanAlgebra (Finset α) :=
-  { sup_inf_sdiff := fun x y => by
+  { sup_inf_sdiff := fun x y ↦ by
       simp only [Finset.ext_iff, mem_union, mem_sdiff, inf_eq_inter, sup_eq_union, mem_inter,
         ← and_or_left, em, and_true, implies_true]
-    inf_inf_sdiff := fun x y => by
+    inf_inf_sdiff := fun x y ↦ by
       simp only [inter_sdiff_self, inter_empty, inter_assoc,
         inf_eq_inter, bot_eq_empty] }
 
@@ -119,7 +119,7 @@ theorem sdiff_subset_sdiff_iff_subset {r : Finset α} (hs : s ⊆ r) (ht : t ⊆
 
 @[simp, norm_cast]
 theorem coe_sdiff (s₁ s₂ : Finset α) : ↑(s₁ \ s₂) = (s₁ \ s₂ : Set α) :=
-  Set.ext fun _ => mem_sdiff
+  Set.ext fun _ ↦ mem_sdiff
 
 @[simp]
 theorem union_sdiff_self_eq_union : s ∪ t \ s = s ∪ t :=

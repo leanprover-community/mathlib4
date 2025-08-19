@@ -59,7 +59,7 @@ instance : CommRing (InfiniteAdeleRing K) := Pi.commRing
 instance : Inhabited (InfiniteAdeleRing K) := ⟨0⟩
 
 instance [NumberField K] : Nontrivial (InfiniteAdeleRing K) :=
-  (inferInstanceAs <| Nonempty (InfinitePlace K)).elim fun w => Pi.nontrivial_at w
+  (inferInstanceAs <| Nonempty (InfinitePlace K)).elim fun w ↦ Pi.nontrivial_at w
 
 instance : TopologicalSpace (InfiniteAdeleRing K) := Pi.topologicalSpace
 
@@ -81,21 +81,21 @@ space `ℝ ^ r₁ × ℂ ^ r₂`, where `(r₁, r₂)` is the signature of the n
 abbrev ringEquiv_mixedSpace :
     InfiniteAdeleRing K ≃+* mixedEmbedding.mixedSpace K :=
   RingEquiv.trans
-    (RingEquiv.piEquivPiSubtypeProd (fun (v : InfinitePlace K) => IsReal v)
-      (fun (v : InfinitePlace K) => v.Completion))
+    (RingEquiv.piEquivPiSubtypeProd (fun (v : InfinitePlace K) ↦ IsReal v)
+      (fun (v : InfinitePlace K) ↦ v.Completion))
     (RingEquiv.prodCongr
-      (RingEquiv.piCongrRight (fun ⟨_, hv⟩ => Completion.ringEquivRealOfIsReal hv))
+      (RingEquiv.piCongrRight (fun ⟨_, hv⟩ ↦ Completion.ringEquivRealOfIsReal hv))
       (RingEquiv.trans
-        (RingEquiv.piCongrRight (fun v => Completion.ringEquivComplexOfIsComplex
+        (RingEquiv.piCongrRight (fun v ↦ Completion.ringEquivComplexOfIsComplex
           ((not_isReal_iff_isComplex.1 v.2))))
-        (RingEquiv.piCongrLeft (fun _ => ℂ) <|
-          Equiv.subtypeEquivRight (fun _ => not_isReal_iff_isComplex))))
+        (RingEquiv.piCongrLeft (fun _ ↦ ℂ) <|
+          Equiv.subtypeEquivRight (fun _ ↦ not_isReal_iff_isComplex))))
 
 @[simp]
 theorem ringEquiv_mixedSpace_apply (x : InfiniteAdeleRing K) :
     ringEquiv_mixedSpace K x =
-      (fun (v : {w : InfinitePlace K // IsReal w}) => extensionEmbeddingOfIsReal v.2 (x v),
-       fun (v : {w : InfinitePlace K // IsComplex w}) => extensionEmbedding v.1 (x v)) := rfl
+      (fun (v : {w : InfinitePlace K // IsReal w}) ↦ extensionEmbeddingOfIsReal v.2 (x v),
+       fun (v : {w : InfinitePlace K // IsComplex w}) ↦ extensionEmbedding v.1 (x v)) := rfl
 
 /-- Transfers the embedding of `x ↦ (x)ᵥ` of the number field `K` into its infinite adele
 ring to the mixed embedding `x ↦ (φᵢ(x))ᵢ` of `K` into the space `ℝ ^ r₁ × ℂ ^ r₂`, where
@@ -152,7 +152,7 @@ theorem algebraMap_snd_apply (x : K) (v : HeightOneSpectrum R) :
     (algebraMap K (AdeleRing R K) x).2 v = x := rfl
 
 theorem algebraMap_injective [NumberField K] : Function.Injective (algebraMap K (AdeleRing R K)) :=
-  fun _ _ hxy => (algebraMap K _).injective (Prod.ext_iff.1 hxy).1
+  fun _ _ hxy ↦ (algebraMap K _).injective (Prod.ext_iff.1 hxy).1
 
 /-- The subgroup of principal adeles `(x)ᵥ` where `x ∈ K`. -/
 abbrev principalSubgroup : AddSubgroup (AdeleRing R K) := (algebraMap K _).range.toAddSubgroup

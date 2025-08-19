@@ -157,7 +157,7 @@ def bigOpBindersProd (processed : (Array (Term × Term))) :
   else if h₁ : processed.size = 1 then
     return processed[0].2
   else
-    processed.foldrM (fun s p => `(SProd.sprod $(s.2) $p)) processed.back.2
+    processed.foldrM (fun s p ↦ `(SProd.sprod $(s.2) $p)) processed.back.2
       (start := processed.size - 1)
 
 /--
@@ -250,7 +250,7 @@ to show the domain type when the product is over `Finset.univ`. -/
   let #[_, _, _, _, f] := (← getExpr).getAppArgs | failure
   guard f.isLambda
   let ppDomain ← getPPOption getPPFunBinderTypes
-  let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
+  let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i ↦ do
     return (⟨i⟩, ← delab)
   let res ← withNaryArg 3 <| delabFinsetArg i
   match res with
@@ -281,7 +281,7 @@ to show the domain type when the sum is over `Finset.univ`. -/
   let #[_, _, _, _, f] := (← getExpr).getAppArgs | failure
   guard f.isLambda
   let ppDomain ← getPPOption getPPFunBinderTypes
-  let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
+  let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i ↦ do
     return ((⟨i⟩ : Ident), ← delab)
   let res ← withNaryArg 3 <| delabFinsetArg i
   match res with
@@ -345,7 +345,7 @@ theorem prod_empty : ∏ x ∈ ∅, f x = 1 :=
 
 /-- Variant of `prod_empty` not applied to a function. -/
 @[to_additive (attr := grind =)]
-theorem prod_empty' : Finset.prod (∅ : Finset ι) = fun (_ : ι → M) => 1 :=
+theorem prod_empty' : Finset.prod (∅ : Finset ι) = fun (_ : ι → M) ↦ 1 :=
   rfl
 
 @[to_additive]
@@ -364,7 +364,7 @@ theorem prod_map (s : Finset ι) (e : ι ↪ κ) (f : κ → M) :
 /-- Variant of `prod_map` not applied to a function. -/
 @[to_additive (attr := grind =)]
 theorem prod_map' (s : Finset ι) (e : ι ↪ κ) :
-    Finset.prod (s.map e) = fun (f : κ → M) => ∏ x ∈ s, f (e x) := by
+    Finset.prod (s.map e) = fun (f : κ → M) ↦ ∏ x ∈ s, f (e x) := by
   funext f
   simp
 
@@ -393,7 +393,7 @@ theorem _root_.Equiv.Perm.prod_comp (σ : Equiv.Perm ι) (s : Finset ι) (f : ι
 @[to_additive]
 theorem _root_.Equiv.Perm.prod_comp' (σ : Equiv.Perm ι) (s : Finset ι) (f : ι → ι → M)
     (hs : { a | σ a ≠ a } ⊆ s) : (∏ x ∈ s, f (σ x) x) = ∏ x ∈ s, f x (σ.symm x) := by
-  convert σ.prod_comp s (fun x => f x (σ.symm x)) hs
+  convert σ.prod_comp s (fun x ↦ f x (σ.symm x)) hs
   rw [Equiv.symm_apply_apply]
 
 end CommMonoid
@@ -535,7 +535,7 @@ variable {f s}
 @[to_additive]
 theorem prod_ite_index (p : Prop) [Decidable p] (s t : Finset ι) (f : ι → M) :
     ∏ x ∈ if p then s else t, f x = if p then ∏ x ∈ s, f x else ∏ x ∈ t, f x :=
-  apply_ite (fun s => ∏ x ∈ s, f x) _ _ _
+  apply_ite (fun s ↦ ∏ x ∈ s, f x) _ _ _
 
 @[to_additive (attr := simp)]
 theorem prod_ite_irrel (p : Prop) [Decidable p] (s : Finset ι) (f g : ι → M) :
@@ -560,7 +560,7 @@ theorem ite_one_prod (p : Prop) [Decidable p] (s : Finset ι) (f : ι → M) :
 
 @[to_additive]
 theorem nonempty_of_prod_ne_one (h : ∏ x ∈ s, f x ≠ 1) : s.Nonempty :=
-  s.eq_empty_or_nonempty.elim (fun H => False.elim <| h <| H.symm ▸ prod_empty) id
+  s.eq_empty_or_nonempty.elim (fun H ↦ False.elim <| h <| H.symm ▸ prod_empty) id
 
 @[to_additive]
 theorem prod_range_zero (f : ℕ → M) : ∏ k ∈ range 0, f k = 1 := by rw [range_zero, prod_empty]
@@ -746,7 +746,7 @@ theorem disjoint_list_sum_right {a : Multiset α} {l : List (Multiset α)} :
 
 theorem disjoint_sum_left {a : Multiset α} {i : Multiset (Multiset α)} :
     Disjoint i.sum a ↔ ∀ b ∈ i, Disjoint b a :=
-  Quotient.inductionOn i fun l => by
+  Quotient.inductionOn i fun l ↦ by
     rw [quot_mk_to_coe, Multiset.sum_coe]
     exact disjoint_list_sum_left
 

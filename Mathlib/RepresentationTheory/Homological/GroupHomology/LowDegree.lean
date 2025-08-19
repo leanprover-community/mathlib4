@@ -68,13 +68,13 @@ def chainsIso₁ : (inhomogeneousChains A).X 1 ≅ ModuleCat.of k (G →₀ A) :
 /-- The 2nd object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
 to `G² →₀ A` as a `k`-module. -/
 def chainsIso₂ : (inhomogeneousChains A).X 2 ≅ ModuleCat.of k (G × G →₀ A) :=
-  (Finsupp.domLCongr (piFinTwoEquiv fun _ => G)).toModuleIso
+  (Finsupp.domLCongr (piFinTwoEquiv fun _ ↦ G)).toModuleIso
 
 /-- The 3rd object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
 to `G³ → A` as a `k`-module. -/
 def chainsIso₃ : (inhomogeneousChains A).X 3 ≅ ModuleCat.of k (G × G × G →₀ A) :=
   (Finsupp.domLCongr ((Fin.consEquiv _).symm.trans
-    ((Equiv.refl G).prodCongr (piFinTwoEquiv fun _ => G)))).toModuleIso
+    ((Equiv.refl G).prodCongr (piFinTwoEquiv fun _ ↦ G)))).toModuleIso
 
 end Chains
 
@@ -83,7 +83,7 @@ section Differentials
 /-- The 0th differential in the complex of inhomogeneous chains of `A : Rep k G`, as a
 `k`-linear map `(G →₀ A) → A`. It is defined by `single g a ↦ ρ_A(g⁻¹)(a) - a.` -/
 def d₁₀ : ModuleCat.of k (G →₀ A) ⟶ A.V :=
-  ModuleCat.ofHom <| lsum k fun g => A.ρ g⁻¹ - LinearMap.id
+  ModuleCat.ofHom <| lsum k fun g ↦ A.ρ g⁻¹ - LinearMap.id
 
 @[simp]
 theorem d₁₀_single (g : G) (a : A) : d₁₀ A (single g a) = A.ρ g⁻¹ a - a := by
@@ -132,7 +132,7 @@ theorem d₁₀_eq_zero_of_isTrivial [A.IsTrivial] : d₁₀ A = 0 := by
 `k`-linear map `(G² →₀ A) → (G →₀ A)`. It is defined by
 `a·(g₁, g₂) ↦ ρ_A(g₁⁻¹)(a)·g₂ - a·g₁g₂ + a·g₁`. -/
 def d₂₁ : ModuleCat.of k (G × G →₀ A) ⟶ ModuleCat.of k (G →₀ A) :=
-  ModuleCat.ofHom <| lsum k fun g => lsingle g.2 ∘ₗ A.ρ g.1⁻¹ - lsingle (g.1 * g.2) + lsingle g.1
+  ModuleCat.ofHom <| lsum k fun g ↦ lsingle g.2 ∘ₗ A.ρ g.1⁻¹ - lsingle (g.1 * g.2) + lsingle g.1
 
 variable {A}
 
@@ -180,7 +180,7 @@ variable (A) in
 `k`-linear map `(G³ →₀ A) → (G² →₀ A)`. It is defined by
 `a·(g₁, g₂, g₃) ↦ ρ_A(g₁⁻¹)(a)·(g₂, g₃) - a·(g₁g₂, g₃) + a·(g₁, g₂g₃) - a·(g₁, g₂)`. -/
 def d₃₂ : ModuleCat.of k (G × G × G →₀ A) ⟶ ModuleCat.of k (G × G →₀ A) :=
-  ModuleCat.ofHom <| lsum k fun g =>
+  ModuleCat.ofHom <| lsum k fun g ↦
     lsingle (g.2.1, g.2.2) ∘ₗ A.ρ g.1⁻¹ - lsingle (g.1 * g.2.1, g.2.2) +
     lsingle (g.1, g.2.1 * g.2.2) - lsingle (g.1, g.2.1)
 
@@ -219,7 +219,7 @@ where the vertical arrows are `chainsIso₁` and `chainsIso₀` respectively.
 -/
 theorem comp_d₁₀_eq :
     (chainsIso₁ A).hom ≫ d₁₀ A = (inhomogeneousChains A).d 1 0 ≫ (chainsIso₀ A).hom :=
-  ModuleCat.hom_ext <| lhom_ext fun _ _ => by
+  ModuleCat.hom_ext <| lhom_ext fun _ _ ↦ by
     simp [inhomogeneousChains.d_def, chainsIso₀, chainsIso₁, d₁₀_single (G := G),
       Unique.eq_default (α := Fin 0 → G), sub_eq_add_neg, inhomogeneousChains.d_single (G := G)]
 
@@ -244,7 +244,7 @@ where the vertical arrows are `chainsIso₂` and `chainsIso₁` respectively.
 
 theorem comp_d₂₁_eq :
     (chainsIso₂ A).hom ≫ d₂₁ A = (inhomogeneousChains A).d 2 1 ≫ (chainsIso₁ A).hom :=
-  ModuleCat.hom_ext <| lhom_ext fun _ _ => by
+  ModuleCat.hom_ext <| lhom_ext fun _ _ ↦ by
     simp [inhomogeneousChains.d_def, chainsIso₁, add_assoc, chainsIso₂, d₂₁_single (G := G),
       -Finsupp.domLCongr_apply, domLCongr_single, sub_eq_add_neg, Fin.contractNth,
       inhomogeneousChains.d_single (G := G)]
@@ -269,7 +269,7 @@ where the vertical arrows are `chainsIso₃` and `chainsIso₂` respectively.
 -/
 theorem comp_d₃₂_eq :
     (chainsIso₃ A).hom ≫ d₃₂ A = (inhomogeneousChains A).d 3 2 ≫ (chainsIso₂ A).hom :=
-  ModuleCat.hom_ext <| lhom_ext fun _ _ => by
+  ModuleCat.hom_ext <| lhom_ext fun _ _ ↦ by
     simp [inhomogeneousChains.d_def, chainsIso₂, pow_succ, chainsIso₃,
       -domLCongr_apply, domLCongr_single, d₃₂, Fin.sum_univ_three,
       Fin.contractNth, Fin.tail_def, sub_eq_add_neg, add_assoc,
@@ -322,8 +322,8 @@ def cycles₂ : Submodule k (G × G →₀ A) := LinearMap.ker (d₂₁ A).hom
 variable {A}
 
 theorem mem_cycles₁_iff (x : G →₀ A) :
-    x ∈ cycles₁ A ↔ x.sum (fun g a => A.ρ g⁻¹ a) = x.sum (fun _ a => a) := by
-  change x.sum (fun g a => A.ρ g⁻¹ a - a) = 0 ↔ _
+    x ∈ cycles₁ A ↔ x.sum (fun g a ↦ A.ρ g⁻¹ a) = x.sum (fun _ a ↦ a) := by
+  change x.sum (fun g a ↦ A.ρ g⁻¹ a - a) = 0 ↔ _
   rw [sum_sub, sub_eq_zero]
 
 theorem single_mem_cycles₁_iff (g : G) (a : A) :
@@ -358,9 +358,9 @@ lemma cycles₁IsoOfIsTrivial_inv_apply [A.IsTrivial] (x : G →₀ A) :
     ((cycles₁IsoOfIsTrivial A).inv x).1 = x := rfl
 
 theorem mem_cycles₂_iff (x : G × G →₀ A) :
-    x ∈ cycles₂ A ↔ x.sum (fun g a => single g.2 (A.ρ g.1⁻¹ a) + single g.1 a) =
-      x.sum (fun g a => single (g.1 * g.2) a) := by
-  change x.sum (fun g a => _) = 0 ↔ _
+    x ∈ cycles₂ A ↔ x.sum (fun g a ↦ single g.2 (A.ρ g.1⁻¹ a) + single g.1 a) =
+      x.sum (fun g a ↦ single (g.1 * g.2) a) := by
+  change x.sum (fun g a ↦ _) = 0 ↔ _
   simp [sub_add_eq_add_sub, sub_eq_zero]
 
 theorem single_mem_cycles₂_iff_inv (g : G × G) (a : A) :
@@ -482,13 +482,13 @@ section
 variable {G A : Type*} [Mul G] [Inv G] [AddCommGroup A] [SMul G A]
 
 /-- A finsupp `∑ aᵢ·gᵢ : G →₀ A` satisfies the 1-cycle condition if `∑ gᵢ⁻¹ • aᵢ = ∑ aᵢ`. -/
-def IsCycle₁ (x : G →₀ A) : Prop := x.sum (fun g a => g⁻¹ • a) = x.sum (fun _ a => a)
+def IsCycle₁ (x : G →₀ A) : Prop := x.sum (fun g a ↦ g⁻¹ • a) = x.sum (fun _ a ↦ a)
 
 /-- A finsupp `∑ aᵢ·(gᵢ, hᵢ) : G × G →₀ A` satisfies the 2-cycle condition if
 `∑ (gᵢ⁻¹ • aᵢ)·hᵢ + aᵢ·gᵢ = ∑ aᵢ·gᵢhᵢ`. -/
 def IsCycle₂ (x : G × G →₀ A) : Prop :=
-  x.sum (fun g a => single g.2 (g.1⁻¹ • a) + single g.1 a) =
-    x.sum (fun g a => single (g.1 * g.2) a)
+  x.sum (fun g a ↦ single g.2 (g.1⁻¹ • a) + single g.1 a) =
+    x.sum (fun g a ↦ single (g.1 * g.2) a)
 
 end
 
@@ -533,19 +533,19 @@ variable (G) in
 /-- A term `x : A` satisfies the 0-boundary condition if there exists a finsupp
 `∑ aᵢ·gᵢ : G →₀ A` such that `∑ gᵢ⁻¹ • aᵢ - aᵢ = x`. -/
 def IsBoundary₀ (a : A) : Prop :=
-  ∃ (x : G →₀ A), x.sum (fun g z => g⁻¹ • z - z) = a
+  ∃ (x : G →₀ A), x.sum (fun g z ↦ g⁻¹ • z - z) = a
 
 /-- A finsupp `x : G →₀ A` satisfies the 1-boundary condition if there's a finsupp
 `∑ aᵢ·(gᵢ, hᵢ) : G × G →₀ A` such that `∑ (gᵢ⁻¹ • aᵢ)·hᵢ - aᵢ·gᵢhᵢ + aᵢ·gᵢ = x`. -/
 def IsBoundary₁ (x : G →₀ A) : Prop :=
   ∃ y : G × G →₀ A, y.sum
-    (fun g a => single g.2 (g.1⁻¹ • a) - single (g.1 * g.2) a + single g.1 a) = x
+    (fun g a ↦ single g.2 (g.1⁻¹ • a) - single (g.1 * g.2) a + single g.1 a) = x
 
 /-- A finsupp `x : G × G →₀ A` satsfies the 2-boundary condition if there's a finsupp
 `∑ aᵢ·(gᵢ, hᵢ, jᵢ) : G × G × G →₀ A` such that
 `∑ (gᵢ⁻¹ • aᵢ)·(hᵢ, jᵢ) - aᵢ·(gᵢhᵢ, jᵢ) + aᵢ·(gᵢ, hᵢjᵢ) - aᵢ·(gᵢ, hᵢ) = x.` -/
 def IsBoundary₂ (x : G × G →₀ A) : Prop :=
-  ∃ y : G × G × G →₀ A, y.sum (fun g a => single (g.2.1, g.2.2) (g.1⁻¹ • a) -
+  ∃ y : G × G × G →₀ A, y.sum (fun g a ↦ single (g.2.1, g.2.2) (g.1⁻¹ • a) -
     single (g.1 * g.2.1, g.2.2) a + single (g.1, g.2.1 * g.2.2) a - single (g.1, g.2.1) a) = x
 
 end
@@ -556,36 +556,36 @@ variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A]
 
 variable (G) in
 theorem isBoundary₀_iff (a : A) :
-    IsBoundary₀ G a ↔ ∃ x : G →₀ A, x.sum (fun g z => g • z - z) = a := by
+    IsBoundary₀ G a ↔ ∃ x : G →₀ A, x.sum (fun g z ↦ g • z - z) = a := by
   constructor
   · rintro ⟨x, hx⟩
-    use x.sum (fun g a => single g (- (g⁻¹ • a)))
+    use x.sum (fun g a ↦ single g (- (g⁻¹ • a)))
     simp_all [sum_neg_index, sum_sum_index, neg_add_eq_sub]
   · rintro ⟨x, hx⟩
-    use x.sum (fun g a => single g (- (g • a)))
+    use x.sum (fun g a ↦ single g (- (g • a)))
     simp_all [sum_neg_index, sum_sum_index, neg_add_eq_sub]
 
 theorem isBoundary₁_iff (x : G →₀ A) :
     IsBoundary₁ x ↔ ∃ y : G × G →₀ A, y.sum
-      (fun g a => single g.2 a - single (g.1 * g.2) (g.1 • a) + single g.1 (g.1 • a)) = x := by
+      (fun g a ↦ single g.2 a - single (g.1 * g.2) (g.1 • a) + single g.1 (g.1 • a)) = x := by
   constructor
   · rintro ⟨y, hy⟩
-    use y.sum (fun g a => single g (g.1⁻¹ • a))
+    use y.sum (fun g a ↦ single g (g.1⁻¹ • a))
     simp_all [sum_sum_index]
   · rintro ⟨x, hx⟩
-    use x.sum (fun g a => single g (g.1 • a))
+    use x.sum (fun g a ↦ single g (g.1 • a))
     simp_all [sum_sum_index]
 
 theorem isBoundary₂_iff (x : G × G →₀ A) :
     IsBoundary₂ x ↔ ∃ y : G × G × G →₀ A, y.sum
-      (fun g a => single (g.2.1, g.2.2) a - single (g.1 * g.2.1, g.2.2) (g.1 • a) +
+      (fun g a ↦ single (g.2.1, g.2.2) a - single (g.1 * g.2.1, g.2.2) (g.1 • a) +
         single (g.1, g.2.1 * g.2.2) (g.1 • a) - single (g.1, g.2.1) (g.1 • a)) = x := by
   constructor
   · rintro ⟨y, hy⟩
-    use y.sum (fun g a => single g (g.1⁻¹ • a))
+    use y.sum (fun g a ↦ single g (g.1⁻¹ • a))
     simp_all [sum_sum_index]
   · rintro ⟨x, hx⟩
-    use x.sum (fun g a => single g (g.1 • a))
+    use x.sum (fun g a ↦ single g (g.1 • a))
     simp_all [sum_sum_index]
 
 end
@@ -605,14 +605,14 @@ def coinvariantsKerOfIsBoundary₀ (x : A) (hx : IsBoundary₀ G x) :
     Coinvariants.ker (Representation.ofDistribMulAction k G A) :=
   ⟨x, by
     rcases (isBoundary₀_iff G x).1 hx with ⟨y, rfl⟩
-    exact Submodule.finsuppSum_mem _ _ _ _ fun g _ => Coinvariants.mem_ker_of_eq g (y g) _ rfl⟩
+    exact Submodule.finsuppSum_mem _ _ _ _ fun g _ ↦ Coinvariants.mem_ker_of_eq g (y g) _ rfl⟩
 
 theorem isBoundary₀_of_mem_coinvariantsKer
     (x : A) (hx : x ∈ Coinvariants.ker (Representation.ofDistribMulAction k G A)) :
     IsBoundary₀ G x :=
-  Submodule.span_induction (fun _ ⟨g, hg⟩ => ⟨single g.1⁻¹ g.2, by simp_all⟩) ⟨0, by simp⟩
-    (fun _ _ _ _ ⟨X, hX⟩ ⟨Y, hY⟩ => ⟨X + Y, by simp_all [sum_add_index', add_sub_add_comm]⟩)
-    (fun r _ _ ⟨X, hX⟩ => ⟨r • X, by simp [← hX, sum_smul_index', smul_comm, smul_sub, smul_sum]⟩)
+  Submodule.span_induction (fun _ ⟨g, hg⟩ ↦ ⟨single g.1⁻¹ g.2, by simp_all⟩) ⟨0, by simp⟩
+    (fun _ _ _ _ ⟨X, hX⟩ ⟨Y, hY⟩ ↦ ⟨X + Y, by simp_all [sum_add_index', add_sub_add_comm]⟩)
+    (fun r _ _ ⟨X, hX⟩ ↦ ⟨r • X, by simp [← hX, sum_smul_index', smul_comm, smul_sub, smul_sum]⟩)
     hx
 
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a finsupp
@@ -848,7 +848,7 @@ lemma cyclesIso₀_comp_H0π :
 @[elab_as_elim]
 theorem H0_induction_on {C : H0 A → Prop} (x : H0 A)
     (h : ∀ x : A, C (H0π A x)) : C x :=
-  groupHomology_induction_on x fun y => by simpa using h ((cyclesIso₀ A).hom y)
+  groupHomology_induction_on x fun y ↦ by simpa using h ((cyclesIso₀ A).hom y)
 
 section IsTrivial
 
@@ -906,7 +906,7 @@ lemma H1π_eq_iff (x y : cycles₁ A) :
 @[elab_as_elim]
 theorem H1_induction_on {C : H1 A → Prop} (x : H1 A) (h : ∀ x : cycles₁ A, C (H1π A x)) :
     C x :=
-  groupHomology_induction_on x fun y => by simpa [H1π] using h ((isoCycles₁ A).hom y)
+  groupHomology_induction_on x fun y ↦ by simpa [H1π] using h ((isoCycles₁ A).hom y)
 
 variable (A)
 
@@ -939,8 +939,8 @@ def mkH1OfIsTrivial : Additive (Abelianization G) →ₗ[ℤ] A →ₗ[ℤ] H1 A
     toFun g := Multiplicative.ofAdd (AddMonoidHom.toIntLinearMap (AddMonoidHomClass.toAddMonoidHom
       ((H1π A).hom ∘ₗ (cycles₁IsoOfIsTrivial A).inv.hom ∘ₗ lsingle g)))
     map_one' := Multiplicative.toAdd.injective <|
-      LinearMap.ext fun _ => (H1π_eq_zero_iff _).2 <| single_one_mem_boundaries₁ _
-    map_mul' g h := Multiplicative.toAdd.injective <| LinearMap.ext fun a => by
+      LinearMap.ext fun _ ↦ (H1π_eq_zero_iff _).2 <| single_one_mem_boundaries₁ _
+    map_mul' g h := Multiplicative.toAdd.injective <| LinearMap.ext fun a ↦ by
       simpa [← map_add] using ((H1π_eq_iff _ _).2 ⟨single (g, h) a, by
         simp [cycles₁IsoOfIsTrivial, sub_add_eq_add_sub, add_comm (single h a),
           d₂₁_single (A := A)]⟩).symm }
@@ -954,9 +954,9 @@ lemma mkH1OfIsTrivial_apply (g : G) (a : A) :
 /-- If a `G`-representation on `A` is trivial, this is the natural map `H₁(G, A) → Gᵃᵇ ⊗[ℤ] A`
 sending `⟦single g a⟧` to `⟦g⟧ ⊗ₜ a`. -/
 def H1ToTensorOfIsTrivial : H1 A →ₗ[ℤ] (Additive <| Abelianization G) ⊗[ℤ] A :=
-  ((QuotientAddGroup.lift _ ((Finsupp.liftAddHom fun g => AddMonoidHomClass.toAddMonoidHom
+  ((QuotientAddGroup.lift _ ((Finsupp.liftAddHom fun g ↦ AddMonoidHomClass.toAddMonoidHom
     (TensorProduct.mk ℤ _ _ (Additive.ofMul (Abelianization.of g)))).comp
-      (cycles₁ A).toAddSubgroup.subtype) fun ⟨y, hy⟩ ⟨z, hz⟩ => AddMonoidHom.mem_ker.2 <| by
+      (cycles₁ A).toAddSubgroup.subtype) fun ⟨y, hy⟩ ⟨z, hz⟩ ↦ AddMonoidHom.mem_ker.2 <| by
       simp [← hz, d₂₁, sum_sum_index, sum_add_index', tmul_add, sum_sub_index, tmul_sub,
         shortComplexH1]).comp <| AddMonoidHomClass.toAddMonoidHom (H1Iso A).hom.hom).toIntLinearMap
 
@@ -1040,7 +1040,7 @@ lemma H2π_eq_iff (x y : cycles₂ A) :
 @[elab_as_elim]
 theorem H2_induction_on {C : H2 A → Prop} (x : H2 A) (h : ∀ x : cycles₂ A, C (H2π A x)) :
     C x :=
-  groupHomology_induction_on x (fun y => by simpa [H2π] using h ((isoCycles₂ A).hom y))
+  groupHomology_induction_on x (fun y ↦ by simpa [H2π] using h ((isoCycles₂ A).hom y))
 
 variable (A)
 

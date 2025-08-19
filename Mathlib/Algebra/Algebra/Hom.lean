@@ -64,7 +64,7 @@ variable {R A B F : Type*} [CommSemiring R] [Semiring A] [Semiring B]
 -- see Note [lower instance priority]
 instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass F R A B :=
   { ‹AlgHomClass F R A B› with
-    map_smulₛₗ := fun f r x => by
+    map_smulₛₗ := fun f r x ↦ by
       simp only [Algebra.smul_def, map_mul, commutes, RingHom.id_apply] }
 
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
@@ -181,7 +181,7 @@ theorem coe_fn_injective : @Function.Injective (A →ₐ[R] B) (A → B) (↑) :
 theorem coe_fn_inj {φ₁ φ₂ : A →ₐ[R] B} : (φ₁ : A → B) = φ₂ ↔ φ₁ = φ₂ :=
   DFunLike.coe_fn_eq
 
-theorem coe_ringHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →+* B) := fun φ₁ φ₂ H =>
+theorem coe_ringHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →+* B) := fun φ₁ φ₂ H ↦
   coe_fn_injective <| show ((φ₁ : A →+* B) : A → B) = ((φ₂ : A →+* B) : A → B) from congr_arg _ H
 
 theorem coe_monoidHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →* B) :=
@@ -217,7 +217,7 @@ theorem comp_algebraMap : (φ : A →+* B).comp (algebraMap R A) = algebraMap R 
 def mk' (f : A →+* B) (h : ∀ (c : R) (x), f (c • x) = c • f x) : A →ₐ[R] B :=
   { f with
     toFun := f
-    commutes' := fun c => by simp only [Algebra.algebraMap_eq_smul_one, h, f.map_one] }
+    commutes' := fun c ↦ by simp only [Algebra.algebraMap_eq_smul_one, h, f.map_one] }
 
 @[simp]
 theorem coe_mk' (f : A →+* B) (h : ∀ (c : R) (x), f (c • x) = c • f x) : ⇑(mk' f h) = f :=
@@ -229,7 +229,7 @@ variable (R A)
 
 /-- Identity map as an `AlgHom`. -/
 protected def id : A →ₐ[R] A :=
-  { RingHom.id A with commutes' := fun _ => rfl }
+  { RingHom.id A with commutes' := fun _ ↦ rfl }
 
 @[simp, norm_cast]
 theorem coe_id : ⇑(AlgHom.id R A) = id :=
@@ -250,7 +250,7 @@ domain of `φ₁` equal to the codomain of `φ₂`, then
 -/
 def comp (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) : A →ₐ[R] C :=
   { φ₁.toRingHom.comp ↑φ₂ with
-    commutes' := fun r : R => by rw [← φ₁.commutes, ← φ₂.commutes]; rfl }
+    commutes' := fun r : R ↦ by rw [← φ₁.commutes, ← φ₂.commutes]; rfl }
 
 @[simp]
 theorem coe_comp (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) : ⇑(φ₁.comp φ₂) = φ₁ ∘ φ₂ :=
@@ -286,7 +286,7 @@ theorem toLinearMap_apply (p : A) : φ.toLinearMap p = φ p :=
   rfl
 
 theorem toLinearMap_injective :
-    Function.Injective (toLinearMap : _ → A →ₗ[R] B) := fun _φ₁ _φ₂ h =>
+    Function.Injective (toLinearMap : _ → A →ₗ[R] B) := fun _φ₁ _φ₂ h ↦
   ext <| LinearMap.congr_fun h
 
 @[simp]
@@ -309,7 +309,7 @@ def ofLinearMap (f : A →ₗ[R] B) (map_one : f 1 = 1) (map_mul : ∀ x y, f (x
     toFun := f
     map_one' := map_one
     map_mul' := map_mul
-    commutes' := fun c => by simp only [Algebra.algebraMap_eq_smul_one, f.map_smul, map_one] }
+    commutes' := fun c ↦ by simp only [Algebra.algebraMap_eq_smul_one, f.map_smul, map_one] }
 
 @[simp]
 theorem ofLinearMap_toLinearMap (map_one) (map_mul) :
@@ -355,11 +355,11 @@ theorem algebraMap_eq_apply (f : A →ₐ[R] B) {y : R} {x : A} (h : algebraMap 
 
 lemma cancel_right {g₁ g₂ : B →ₐ[R] C} {f : A →ₐ[R] B} (hf : Function.Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => AlgHom.ext <| hf.forall.2 (AlgHom.ext_iff.1 h), fun h => h ▸ rfl⟩
+  ⟨fun h ↦ AlgHom.ext <| hf.forall.2 (AlgHom.ext_iff.1 h), fun h ↦ h ▸ rfl⟩
 
 lemma cancel_left {g₁ g₂ : A →ₐ[R] B} {f : B →ₐ[R] C} (hf : Function.Injective f) :
     f.comp g₁ = f.comp g₂ ↔ g₁ = g₂ :=
-  ⟨fun h => AlgHom.ext <| fun _ ↦ hf.eq_iff.mp <| AlgHom.ext_iff.mp h _, fun h => h ▸ rfl⟩
+  ⟨fun h ↦ AlgHom.ext <| fun _ ↦ hf.eq_iff.mp <| AlgHom.ext_iff.mp h _, fun h ↦ h ▸ rfl⟩
 
 /-- `AlgHom.toLinearMap` as a `MonoidHom`. -/
 @[simps] def toEnd : (A →ₐ[R] A) →* Module.End R A where
@@ -387,7 +387,7 @@ variable {R S : Type*}
 def toNatAlgHom [Semiring R] [Semiring S] (f : R →+* S) : R →ₐ[ℕ] S :=
   { f with
     toFun := f
-    commutes' := fun n => by simp }
+    commutes' := fun n ↦ by simp }
 
 @[simp]
 lemma toNatAlgHom_coe [Semiring R] [Semiring S] (f : R →+* S) :
@@ -398,7 +398,7 @@ lemma toNatAlgHom_apply [Semiring R] [Semiring S] (f : R →+* S) (x : R) :
 
 /-- Reinterpret a `RingHom` as a `ℤ`-algebra homomorphism. -/
 def toIntAlgHom [Ring R] [Ring S] (f : R →+* S) : R →ₐ[ℤ] S :=
-  { f with commutes' := fun n => by simp }
+  { f with commutes' := fun n ↦ by simp }
 
 @[simp]
 lemma toIntAlgHom_coe [Ring R] [Ring S] (f : R →+* S) :
@@ -420,7 +420,7 @@ variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 /-- `AlgebraMap` as an `AlgHom`. -/
 def ofId : R →ₐ[R] A :=
-  { algebraMap R A with commutes' := fun _ => rfl }
+  { algebraMap R A with commutes' := fun _ ↦ rfl }
 
 variable {R}
 
@@ -432,7 +432,7 @@ theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
 
 /-- This is a special case of a more general instance that we define in a later file. -/
 instance subsingleton_id : Subsingleton (R →ₐ[R] A) :=
-  ⟨fun f g => AlgHom.ext fun _ => (f.commutes _).trans (g.commutes _).symm⟩
+  ⟨fun f g ↦ AlgHom.ext fun _ ↦ (f.commutes _).trans (g.commutes _).symm⟩
 
 /-- This ext lemma closes trivial subgoals created when chaining heterobasic ext lemmas. -/
 @[ext high]
@@ -490,12 +490,12 @@ This is a stronger version of `MulSemiringAction.toRingHom` and
 @[simps]
 def toAlgHom (m : M) : A →ₐ[R] A :=
   { MulSemiringAction.toRingHom _ _ m with
-    toFun := fun a => m • a
+    toFun := fun a ↦ m • a
     commutes' := smul_algebraMap _ }
 
 theorem toAlgHom_injective [FaithfulSMul M A] :
-    Function.Injective (MulSemiringAction.toAlgHom R A : M → A →ₐ[R] A) := fun _m₁ _m₂ h =>
-  eq_of_smul_eq_smul fun r => AlgHom.ext_iff.1 h r
+    Function.Injective (MulSemiringAction.toAlgHom R A : M → A →ₐ[R] A) := fun _m₁ _m₂ h ↦
+  eq_of_smul_eq_smul fun r ↦ AlgHom.ext_iff.1 h r
 
 end MulSemiringAction
 

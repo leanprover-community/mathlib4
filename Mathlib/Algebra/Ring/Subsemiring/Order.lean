@@ -18,14 +18,14 @@ variable {R S : Type*} [SetLike S R] (s : S)
 /-- A subsemiring of an ordered semiring is an ordered semiring. -/
 instance toIsOrderedRing [Semiring R] [PartialOrder R] [IsOrderedRing R] [SubsemiringClass S R] :
     IsOrderedRing s :=
-  Subtype.coe_injective.isOrderedRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+  Subtype.coe_injective.isOrderedRing Subtype.val rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) fun _ ↦ rfl
 
 /-- A subsemiring of a strict ordered semiring is a strict ordered semiring. -/
 instance toIsStrictOrderedRing [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
     [SubsemiringClass S R] : IsStrictOrderedRing s :=
-  Subtype.coe_injective.isStrictOrderedRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+  Subtype.coe_injective.isStrictOrderedRing Subtype.val rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) fun _ ↦ rfl
 
 end SubsemiringClass
 
@@ -36,14 +36,14 @@ variable {R : Type*}
 /-- A subsemiring of an ordered semiring is an ordered semiring. -/
 instance toIsOrderedRing [Semiring R] [PartialOrder R] [IsOrderedRing R] (s : Subsemiring R) :
     IsOrderedRing s :=
-  Subtype.coe_injective.isOrderedRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+  Subtype.coe_injective.isOrderedRing Subtype.val rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) fun _ ↦ rfl
 
 /-- A subsemiring of a strict ordered semiring is a strict ordered semiring. -/
 instance toIsStrictOrderedRing [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
     (s : Subsemiring R) : IsStrictOrderedRing s :=
-  Subtype.coe_injective.isStrictOrderedRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+  Subtype.coe_injective.isStrictOrderedRing Subtype.val rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) fun _ ↦ rfl
 
 section nonneg
 

@@ -104,7 +104,7 @@ theorem ext {p q : RingSeminorm R} : (∀ x, p x = q x) → p = q :=
 
 instance : Zero (RingSeminorm R) :=
   ⟨{ AddGroupSeminorm.instZeroAddGroupSeminorm.zero with mul_le' :=
-    fun _ _ => (zero_mul _).ge }⟩
+    fun _ _ ↦ (zero_mul _).ge }⟩
 
 theorem eq_zero_iff {p : RingSeminorm R} : p = 0 ↔ ∀ x, p x = 0 :=
   DFunLike.ext_iff
@@ -118,7 +118,7 @@ instance : Inhabited (RingSeminorm R) :=
 every other element. -/
 instance [DecidableEq R] : One (RingSeminorm R) :=
   ⟨{ (1 : AddGroupSeminorm R) with
-      mul_le' := fun x y => by
+      mul_le' := fun x y ↦ by
         by_cases h : x * y = 0
         · refine (if_pos h).trans_le (mul_nonneg ?_ ?_) <;>
             · change _ ≤ ite _ _ _
@@ -140,11 +140,11 @@ variable [Ring R] (p : RingSeminorm R)
 
 theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 := by
   refine
-    ⟨fun h => ne_zero_iff.mpr ⟨1, by rw [h]; exact one_ne_zero⟩,
-      fun h => ?_⟩
+    ⟨fun h ↦ ne_zero_iff.mpr ⟨1, by rw [h]; exact one_ne_zero⟩,
+      fun h ↦ ?_⟩
   obtain hp0 | hp0 := (apply_nonneg p (1 : R)).eq_or_lt'
   · exfalso
-    refine h (ext fun x => (apply_nonneg _ _).antisymm' ?_)
+    refine h (ext fun x ↦ (apply_nonneg _ _).antisymm' ?_)
     simpa only [hp0, mul_one, mul_zero] using map_mul_le_mul p x 1
   · refine hp.antisymm ((le_mul_iff_one_le_left hp0).1 ?_)
     simpa only [one_mul] using map_mul_le_mul p (1 : R) _
@@ -200,7 +200,7 @@ open Filter Nat Real
 /-- If `f` is a ring seminorm on `R` with `f 1 ≤ 1` and `s : ℕ → ℕ` is bounded by `n`, then
   `f (x ^ s (ψ n)) ^ (1 / (ψ n : ℝ))` is eventually bounded. -/
 theorem isBoundedUnder (hp : p 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {x : R} (ψ : ℕ → ℕ) :
-    IsBoundedUnder LE.le atTop fun n : ℕ => p (x ^ s (ψ n)) ^ (1 / (ψ n : ℝ)) := by
+    IsBoundedUnder LE.le atTop fun n : ℕ ↦ p (x ^ s (ψ n)) ^ (1 / (ψ n : ℝ)) := by
   have h_le : ∀ m : ℕ, p (x ^ s (ψ m)) ^ (1 / (ψ m : ℝ)) ≤ p x ^ ((s (ψ m) : ℝ) / (ψ m : ℝ)) := by
     intro m
     rw [← mul_one_div (s (ψ m) : ℝ), rpow_mul (apply_nonneg p x), rpow_natCast]
@@ -208,7 +208,7 @@ theorem isBoundedUnder (hp : p 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, 
       (one_div_nonneg.mpr (cast_nonneg _))
   apply isBoundedUnder_of
   by_cases hfx : p x ≤ 1
-  · use 1, fun m => le_trans (h_le m)
+  · use 1, fun m ↦ le_trans (h_le m)
       (rpow_le_one (apply_nonneg _ _) hfx (div_nonneg (cast_nonneg _) (cast_nonneg _)))
   · use p x
     intro m
@@ -308,7 +308,7 @@ every other element. -/
 instance : One (MulRingSeminorm R) :=
   ⟨{ (1 : AddGroupSeminorm R) with
       map_one' := if_neg one_ne_zero
-      map_mul' := fun x y => by
+      map_mul' := fun x y ↦ by
         obtain rfl | hx := eq_or_ne x 0
         · simp
         obtain rfl | hy := eq_or_ne y 0
@@ -406,7 +406,7 @@ end MulRingNorm
 def RingSeminorm.toRingNorm {K : Type*} [Field K] (f : RingSeminorm K) (hnt : f ≠ 0) :
     RingNorm K :=
   { f with
-    eq_zero_of_map_eq_zero' := fun x hx => by
+    eq_zero_of_map_eq_zero' := fun x hx ↦ by
       obtain ⟨c, hc⟩ := RingSeminorm.ne_zero_iff.mp hnt
       by_contra hn0
       have hc0 : f c = 0 := by

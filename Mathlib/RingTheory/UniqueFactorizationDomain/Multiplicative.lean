@@ -61,7 +61,7 @@ theorem induction_on_prime_power {P : α → Prop} (s : Finset α) (i : α → �
   exact
     hcp (prime_pow_coprime_prod_of_coprime_insert i p hpf' is_prime is_coprime)
       (hpr (i p) (is_prime _ (Finset.mem_insert_self _ _)))
-      (ih (fun q hq => is_prime _ (Finset.mem_insert_of_mem hq)) fun q hq q' hq' =>
+      (ih (fun q hq ↦ is_prime _ (Finset.mem_insert_of_mem hq)) fun q hq q' hq' ↦
         is_coprime _ (Finset.mem_insert_of_mem hq) _ (Finset.mem_insert_of_mem hq'))
 
 /-- If `P` holds for `0`, units and powers of primes,
@@ -74,7 +74,7 @@ theorem induction_on_coprime {P : α → Prop} (a : α) (h0 : P 0) (h1 : ∀ {x}
   letI := Classical.decEq α
   have P_of_associated : ∀ {x y}, Associated x y → P x → P y := by
     rintro x y ⟨u, rfl⟩ hx
-    exact hcp (fun p _ hpx => isUnit_of_dvd_unit hpx u.isUnit) hx (h1 u.isUnit)
+    exact hcp (fun p _ hpx ↦ isUnit_of_dvd_unit hpx u.isUnit) hx (h1 u.isUnit)
   by_cases ha0 : a = 0
   · rwa [ha0]
   haveI : Nontrivial α := ⟨⟨_, _, ha0⟩⟩
@@ -97,12 +97,12 @@ theorem multiplicative_prime_power {f : α → β} (s : Finset α) (i j : α →
   induction' s using Finset.induction_on with p s hps ih
   · simpa using h1 isUnit_one
   have hpr_p := is_prime _ (Finset.mem_insert_self _ _)
-  have hpr_s : ∀ p ∈ s, Prime p := fun p hp => is_prime _ (Finset.mem_insert_of_mem hp)
-  have hcp_p := fun i => prime_pow_coprime_prod_of_coprime_insert i p hps is_prime is_coprime
-  have hcp_s : ∀ᵉ (p ∈ s) (q ∈ s), p ∣ q → p = q := fun p hp q hq =>
+  have hpr_s : ∀ p ∈ s, Prime p := fun p hp ↦ is_prime _ (Finset.mem_insert_of_mem hp)
+  have hcp_p := fun i ↦ prime_pow_coprime_prod_of_coprime_insert i p hps is_prime is_coprime
+  have hcp_s : ∀ᵉ (p ∈ s) (q ∈ s), p ∣ q → p = q := fun p hp q hq ↦
     is_coprime p (Finset.mem_insert_of_mem hp) q (Finset.mem_insert_of_mem hq)
   rw [Finset.prod_insert hps, Finset.prod_insert hps, Finset.prod_insert hps, hcp (hcp_p _),
-    hpr _ hpr_p, hcp (hcp_p _), hpr _ hpr_p, hcp (hcp_p (fun p => i p + j p)), hpr _ hpr_p,
+    hpr _ hpr_p, hcp (hcp_p _), hpr _ hpr_p, hcp (hcp_p (fun p ↦ i p + j p)), hpr _ hpr_p,
     ih hpr_s hcp_s, pow_add, mul_assoc, mul_left_comm (f p ^ j p), mul_assoc]
 
 /-- If `f` maps `p ^ i` to `(f p) ^ i` for primes `p`, and `f`

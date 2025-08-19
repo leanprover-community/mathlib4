@@ -142,12 +142,12 @@ def sum' : A ⊕ B ⥤ C where
 /-- The sum `F.sum' G` precomposed with the left inclusion functor is isomorphic to `F` -/
 @[simps!]
 def inlCompSum' : Sum.inl_ A B ⋙ F.sum' G ≅ F :=
-  NatIso.ofComponents fun _ => Iso.refl _
+  NatIso.ofComponents fun _ ↦ Iso.refl _
 
 /-- The sum `F.sum' G` precomposed with the right inclusion functor is isomorphic to `G` -/
 @[simps!]
 def inrCompSum' : Sum.inr_ A B ⋙ F.sum' G ≅ G :=
-  NatIso.ofComponents fun _ => Iso.refl _
+  NatIso.ofComponents fun _ ↦ Iso.refl _
 
 @[simp]
 theorem sum'_obj_inl (a : A) : (F.sum' G).obj (inl a) = (F.obj a) :=

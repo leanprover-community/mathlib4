@@ -23,7 +23,7 @@ open MulOpposite
       of the additive units. -/]
 def Units.opEquiv {M} [Monoid M] : Mᵐᵒᵖˣ ≃* Mˣᵐᵒᵖ where
   toFun u := op ⟨unop u, unop ↑u⁻¹, op_injective u.4, op_injective u.3⟩
-  invFun := MulOpposite.rec' fun u => ⟨op ↑u, op ↑u⁻¹, unop_injective <| u.4, unop_injective u.3⟩
+  invFun := MulOpposite.rec' fun u ↦ ⟨op ↑u, op ↑u⁻¹, unop_injective <| u.4, unop_injective u.3⟩
   map_mul' _ _ := unop_injective <| Units.ext <| rfl
 
 @[to_additive (attr := simp)]

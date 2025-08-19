@@ -25,7 +25,7 @@ theorem exists_closed_embedding_to_hilbert_cube (X : Type*) [MetricSpace X] [Com
     fun x y ↦ Metric.dist_le_diam_of_mem isCompact_univ.isBounded trivial trivial
   have diam_pos : 0 < diam :=
     Metric.diam_pos (by rwa [Set.nontrivial_univ_iff]) isCompact_univ.isBounded
-  let f : X → (ℕ → unitInterval) := fun x i =>
+  let f : X → (ℕ → unitInterval) := fun x i ↦
     ⟨dist x (s i) / diam, by positivity, div_le_one_of_le₀ (dist_le_diam _ _) Metric.diam_nonneg⟩
   use f
   apply Continuous.isClosedEmbedding

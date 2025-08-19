@@ -32,7 +32,7 @@ section Embedding
 variable {α : Sort u} {β : Sort v}
 
 theorem countable_iff_nonempty_embedding : Countable α ↔ Nonempty (α ↪ ℕ) :=
-  ⟨fun ⟨⟨f, hf⟩⟩ => ⟨⟨f, hf⟩⟩, fun ⟨f⟩ => ⟨⟨f, f.2⟩⟩⟩
+  ⟨fun ⟨⟨f, hf⟩⟩ ↦ ⟨⟨f, hf⟩⟩, fun ⟨f⟩ ↦ ⟨⟨f, f.2⟩⟩⟩
 
 theorem uncountable_iff_isEmpty_embedding : Uncountable α ↔ IsEmpty (α ↪ ℕ) := by
   rw [← not_countable_iff, countable_iff_nonempty_embedding, not_nonempty_iff]
@@ -108,7 +108,7 @@ lemma countable_prod_swap [Countable (α × β)] : Countable (β × α) :=
 
 instance [Countable α] [∀ a, Countable (π a)] : Countable (Sigma π) := by
   rcases exists_injective_nat α with ⟨f, hf⟩
-  choose g hg using fun a => exists_injective_nat (π a)
+  choose g hg using fun a ↦ exists_injective_nat (π a)
   exact ((Equiv.sigmaEquivProd ℕ ℕ).injective.comp <| hf.sigma_map hg).countable
 
 lemma Sigma.uncountable (a : α) [Uncountable (π a)] : Uncountable (Sigma π) :=
@@ -146,7 +146,7 @@ instance [Finite α] [∀ a, Countable (π a)] : Countable (∀ a, π a) := by
     · infer_instance
     · exact Countable.of_equiv (ℕ × (Fin n → ℕ)) (Fin.consEquiv fun _ ↦ ℕ)
   rcases Finite.exists_equiv_fin α with ⟨n, ⟨e⟩⟩
-  have f := fun a => (nonempty_embedding_nat (π a)).some
+  have f := fun a ↦ (nonempty_embedding_nat (π a)).some
   exact ((Embedding.piCongrRight f).trans (Equiv.piCongrLeft' _ e).toEmbedding).countable
 
 end sort

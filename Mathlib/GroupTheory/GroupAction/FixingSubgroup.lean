@@ -53,7 +53,7 @@ def fixingSubmonoid (s : Set α) : Submonoid M where
 @[to_additive]
 theorem mem_fixingSubmonoid_iff {s : Set α} {m : M} :
     m ∈ fixingSubmonoid M s ↔ ∀ y ∈ s, m • y = y :=
-  ⟨fun hg y hy => hg ⟨y, hy⟩, fun h ⟨y, hy⟩ => h y hy⟩
+  ⟨fun hg y hy ↦ hg ⟨y, hy⟩, fun h ⟨y, hy⟩ ↦ h y hy⟩
 
 variable (α)
 
@@ -61,15 +61,15 @@ variable (α)
 @[to_additive]
 theorem fixingSubmonoid_fixedPoints_gc :
     GaloisConnection (OrderDual.toDual ∘ fixingSubmonoid M)
-      ((fun P : Submonoid M => fixedPoints P α) ∘ OrderDual.ofDual) :=
-  fun _s _P => ⟨fun h s hs p => h p.2 ⟨s, hs⟩, fun h p hp s => h s.2 ⟨p, hp⟩⟩
+      ((fun P : Submonoid M ↦ fixedPoints P α) ∘ OrderDual.ofDual) :=
+  fun _s _P ↦ ⟨fun h s hs p ↦ h p.2 ⟨s, hs⟩, fun h p hp s ↦ h s.2 ⟨p, hp⟩⟩
 
 @[to_additive]
-theorem fixingSubmonoid_antitone : Antitone fun s : Set α => fixingSubmonoid M s :=
+theorem fixingSubmonoid_antitone : Antitone fun s : Set α ↦ fixingSubmonoid M s :=
   (fixingSubmonoid_fixedPoints_gc M α).monotone_l
 
 @[to_additive fixedPoints_antitone_addSubmonoid]
-theorem fixedPoints_antitone : Antitone fun P : Submonoid M => fixedPoints P α :=
+theorem fixedPoints_antitone : Antitone fun P : Submonoid M ↦ fixedPoints P α :=
   (fixingSubmonoid_fixedPoints_gc M α).monotone_u.dual_left
 
 /-- Fixing submonoid of union is intersection -/
@@ -107,11 +107,11 @@ variable (M : Type*) {α : Type*} [Group M] [MulAction M α]
 /-- The subgroup fixing a set under a `MulAction`. -/
 @[to_additive /-- The additive subgroup fixing a set under an `AddAction`. -/]
 def fixingSubgroup (s : Set α) : Subgroup M :=
-  { fixingSubmonoid M s with inv_mem' := fun hx z => by rw [inv_smul_eq_iff, hx z] }
+  { fixingSubmonoid M s with inv_mem' := fun hx z ↦ by rw [inv_smul_eq_iff, hx z] }
 
 @[to_additive]
 theorem mem_fixingSubgroup_iff {s : Set α} {m : M} : m ∈ fixingSubgroup M s ↔ ∀ y ∈ s, m • y = y :=
-  ⟨fun hg y hy => hg ⟨y, hy⟩, fun h ⟨y, hy⟩ => h y hy⟩
+  ⟨fun hg y hy ↦ hg ⟨y, hy⟩, fun h ⟨y, hy⟩ ↦ h y hy⟩
 
 @[to_additive]
 theorem mem_fixingSubgroup_iff_subset_fixedBy {s : Set α} {m : M} :
@@ -129,15 +129,15 @@ variable (α)
 @[to_additive]
 theorem fixingSubgroup_fixedPoints_gc :
     GaloisConnection (OrderDual.toDual ∘ fixingSubgroup M)
-      ((fun P : Subgroup M => fixedPoints P α) ∘ OrderDual.ofDual) :=
-  fun _s _P => ⟨fun h s hs p => h p.2 ⟨s, hs⟩, fun h p hp s => h s.2 ⟨p, hp⟩⟩
+      ((fun P : Subgroup M ↦ fixedPoints P α) ∘ OrderDual.ofDual) :=
+  fun _s _P ↦ ⟨fun h s hs p ↦ h p.2 ⟨s, hs⟩, fun h p hp s ↦ h s.2 ⟨p, hp⟩⟩
 
 @[to_additive]
 theorem fixingSubgroup_antitone : Antitone (fixingSubgroup M : Set α → Subgroup M) :=
   (fixingSubgroup_fixedPoints_gc M α).monotone_l
 
 @[to_additive]
-theorem fixedPoints_subgroup_antitone : Antitone fun P : Subgroup M => fixedPoints P α :=
+theorem fixedPoints_subgroup_antitone : Antitone fun P : Subgroup M ↦ fixedPoints P α :=
   (fixingSubgroup_fixedPoints_gc M α).monotone_u.dual_left
 
 /-- Fixing subgroup of union is intersection -/

@@ -39,7 +39,7 @@ variable {α β γ δ : Type*} {f : α → β → γ} {a : Option α} {b : Optio
 /-- The image of a binary function `f : α → β → γ` as a function `Option α → Option β → Option γ`.
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
 def map₂ (f : α → β → γ) (a : Option α) (b : Option β) : Option γ :=
-  a.bind fun a => b.map <| f a
+  a.bind fun a ↦ b.map <| f a
 
 /-- `Option.map₂` in terms of monadic operations. Note that this can't be taken as the definition
 because of the lack of universe polymorphism. -/
@@ -59,13 +59,13 @@ theorem map₂_none_left (f : α → β → γ) (b : Option β) : map₂ f none 
 theorem map₂_none_right (f : α → β → γ) (a : Option α) : map₂ f a none = none := by cases a <;> rfl
 
 @[simp]
-theorem map₂_coe_left (f : α → β → γ) (a : α) (b : Option β) : map₂ f a b = b.map fun b => f a b :=
+theorem map₂_coe_left (f : α → β → γ) (a : α) (b : Option β) : map₂ f a b = b.map fun b ↦ f a b :=
   rfl
 
 -- Porting note: This proof was `rfl` in Lean3, but now is not.
 @[simp]
 theorem map₂_coe_right (f : α → β → γ) (a : Option α) (b : β) :
-    map₂ f a b = a.map fun a => f a b := by grind
+    map₂ f a b = a.map fun a ↦ f a b := by grind
 
 theorem mem_map₂_iff {c : γ} : c ∈ map₂ f a b ↔ ∃ a' b', a' ∈ a ∧ b' ∈ b ∧ f a' b' = c := by
   grind
@@ -81,16 +81,16 @@ theorem map₂_eq_none_iff : map₂ f a b = none ↔ a = none ∨ b = none := by
   grind
 
 theorem map₂_swap (f : α → β → γ) (a : Option α) (b : Option β) :
-    map₂ f a b = map₂ (fun a b => f b a) b a := by grind
+    map₂ f a b = map₂ (fun a b ↦ f b a) b a := by grind
 
 theorem map_map₂ (f : α → β → γ) (g : γ → δ) :
-    (map₂ f a b).map g = map₂ (fun a b => g (f a b)) a b := by grind
+    (map₂ f a b).map g = map₂ (fun a b ↦ g (f a b)) a b := by grind
 
 theorem map₂_map_left (f : γ → β → δ) (g : α → γ) :
-    map₂ f (a.map g) b = map₂ (fun a b => f (g a) b) a b := by grind
+    map₂ f (a.map g) b = map₂ (fun a b ↦ f (g a) b) a b := by grind
 
 theorem map₂_map_right (f : α → γ → δ) (g : β → γ) :
-    map₂ f a (b.map g) = map₂ (fun a b => f a (g b)) a b := by grind
+    map₂ f a (b.map g) = map₂ (fun a b ↦ f a (g b)) a b := by grind
 
 @[simp]
 theorem map₂_curry (f : α × β → γ) (a : Option α) (b : Option β) :

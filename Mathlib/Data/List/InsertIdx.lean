@@ -111,7 +111,7 @@ theorem get_insertIdx_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k <
 
 set_option linter.unnecessarySimpa false in
 theorem insertIdx_injective (n : ℕ) (x : α) :
-    Function.Injective (fun l : List α => l.insertIdx n x) := by
+    Function.Injective (fun l : List α ↦ l.insertIdx n x) := by
   induction n with
   | zero => simp
   | succ n IH => rintro (_ | ⟨a, as⟩) (_ | ⟨b, bs⟩) h <;> simpa [IH.eq_iff] using h

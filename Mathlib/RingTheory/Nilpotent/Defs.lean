@@ -193,18 +193,18 @@ end IsReduced
 
 instance (priority := 900) isReduced_of_noZeroDivisors [MonoidWithZero R] [NoZeroDivisors R] :
     IsReduced R :=
-  ⟨fun _ ⟨_, hn⟩ => pow_eq_zero hn⟩
+  ⟨fun _ ⟨_, hn⟩ ↦ pow_eq_zero hn⟩
 
 instance (priority := 900) isReduced_of_subsingleton [Zero R] [Pow R ℕ] [Subsingleton R] :
     IsReduced R :=
-  ⟨fun _ _ => Subsingleton.elim _ _⟩
+  ⟨fun _ _ ↦ Subsingleton.elim _ _⟩
 
 theorem IsNilpotent.eq_zero [Zero R] [Pow R ℕ] [IsReduced R] (h : IsNilpotent x) : x = 0 :=
   IsReduced.eq_zero x h
 
 @[simp]
 theorem isNilpotent_iff_eq_zero [MonoidWithZero R] [IsReduced R] : IsNilpotent x ↔ x = 0 :=
-  ⟨fun h => h.eq_zero, fun h => h.symm ▸ IsNilpotent.zero⟩
+  ⟨fun h ↦ h.eq_zero, fun h ↦ h.symm ▸ IsNilpotent.zero⟩
 
 theorem isReduced_of_injective [MonoidWithZero R] [MonoidWithZero S] {F : Type*}
     [FunLike F R S] [MonoidWithZeroHomClass F R S]

@@ -158,12 +158,12 @@ private theorem exists_signed_sum_aux [DecidableEq α] (s : Finset α) (f : α �
         (#t = ∑ a ∈ s, (f a).natAbs) ∧
           ∀ a ∈ s, (∑ b ∈ t, if g b = a then (sgn b : ℤ) else 0) = f a := by
   refine
-    ⟨(Σ _ : { x // x ∈ s }, ℕ), Finset.univ.sigma fun a => range (f a).natAbs,
-      fun a => sign (f a.1), fun a => a.1, fun a => a.1.2, ?_, ?_⟩
-  · simp [sum_attach (f := fun a => (f a).natAbs)]
+    ⟨(Σ _ : { x // x ∈ s }, ℕ), Finset.univ.sigma fun a ↦ range (f a).natAbs,
+      fun a ↦ sign (f a.1), fun a ↦ a.1, fun a ↦ a.1.2, ?_, ?_⟩
+  · simp [sum_attach (f := fun a ↦ (f a).natAbs)]
   · intro x hx
     simp [sum_sigma, hx, ← Int.sign_eq_sign, Int.sign_mul_abs, mul_comm |f _|,
-      sum_attach (s := s) (f := fun y => if y = x then f y else 0)]
+      sum_attach (s := s) (f := fun y ↦ if y = x then f y else 0)]
 
 /-- We can decompose a sum of absolute value `n` into a sum of `n` signs. -/
 theorem exists_signed_sum [DecidableEq α] (s : Finset α) (f : α → ℤ) :
@@ -172,7 +172,7 @@ theorem exists_signed_sum [DecidableEq α] (s : Finset α) (f : α → ℤ) :
         (Fintype.card β = ∑ a ∈ s, (f a).natAbs) ∧
           ∀ a ∈ s, (∑ b, if g b = a then (sgn b : ℤ) else 0) = f a :=
   let ⟨β, t, sgn, g, hg, ht, hf⟩ := exists_signed_sum_aux s f
-  ⟨t, inferInstance, fun b => sgn b, fun b => g b, fun b => hg b, by simp [ht], fun a ha =>
+  ⟨t, inferInstance, fun b ↦ sgn b, fun b ↦ g b, fun b ↦ hg b, by simp [ht], fun a ha ↦
     (sum_attach t fun b ↦ ite (g b = a) (sgn b : ℤ) 0).trans <| hf _ ha⟩
 
 /-- We can decompose a sum of absolute value less than `n` into a sum of at most `n` signs. -/
@@ -184,8 +184,8 @@ theorem exists_signed_sum' [Nonempty α] [DecidableEq α] (s : Finset α) (f : �
   obtain ⟨β, _, sgn, g, hg, hβ, hf⟩ := exists_signed_sum s f
   refine
     ⟨β ⊕ (Fin (n - ∑ i ∈ s, (f i).natAbs)), inferInstance, Sum.elim sgn 0,
-      Sum.elim g (Classical.arbitrary (Fin (n - Finset.sum s fun i => Int.natAbs (f i)) → α)),
-        ?_, by simp [hβ, h], fun a ha => by simp [hf _ ha]⟩
+      Sum.elim g (Classical.arbitrary (Fin (n - Finset.sum s fun i ↦ Int.natAbs (f i)) → α)),
+        ?_, by simp [hβ, h], fun a ha ↦ by simp [hf _ ha]⟩
   rintro (b | b) hb
   · cases hb (hg _)
   · rfl

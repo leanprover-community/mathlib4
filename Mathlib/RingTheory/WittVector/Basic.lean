@@ -62,7 +62,7 @@ namespace WittVector
 
 /-- `f : α → β` induces a map from `𝕎 α` to `𝕎 β` by applying `f` componentwise.
 If `f` is a ring homomorphism, then so is `f`, see `WittVector.map f`. -/
-def mapFun (f : α → β) : 𝕎 α → 𝕎 β := fun x => mk _ (f ∘ x.coeff)
+def mapFun (f : α → β) : 𝕎 α → 𝕎 β := fun x ↦ mk _ (f ∘ x.coeff)
 
 namespace mapFun
 
@@ -70,10 +70,10 @@ namespace mapFun
 theorem injective (f : α → β) (hf : Injective f) : Injective (mapFun f : 𝕎 α → 𝕎 β) := by
   intros _ _ h
   ext p
-  exact hf (congr_arg (fun x => coeff x p) h :)
+  exact hf (congr_arg (fun x ↦ coeff x p) h :)
 
-theorem surjective (f : α → β) (hf : Surjective f) : Surjective (mapFun f : 𝕎 α → 𝕎 β) := fun x =>
-  ⟨mk _ fun n => Classical.choose <| hf <| x.coeff n,
+theorem surjective (f : α → β) (hf : Surjective f) : Surjective (mapFun f : 𝕎 α → 𝕎 β) := fun x ↦
+  ⟨mk _ fun n ↦ Classical.choose <| hf <| x.coeff n,
     by ext n; simp only [mapFun, coeff_mk, comp_apply, Classical.choose_spec (hf (x.coeff n))]⟩
 
 /-- Auxiliary tactic for showing that `mapFun` respects the ring operations. -/
@@ -132,7 +132,7 @@ producing a value in `R`.
 This function will be bundled as the ring homomorphism `WittVector.ghostMap`
 once the ring structure is available,
 but we rely on it to set up the ring structure in the first place. -/
-private def ghostFun : 𝕎 R → ℕ → R := fun x n => aeval x.coeff (W_ ℤ n)
+private def ghostFun : 𝕎 R → ℕ → R := fun x n ↦ aeval x.coeff (W_ ℤ n)
 
 section Tactic
 open Lean Elab Tactic
@@ -205,7 +205,7 @@ variable (p) (R)
 In `WittVector.ghostEquiv` we upgrade this to an isomorphism of rings. -/
 private def ghostEquiv' [Invertible (p : R)] : 𝕎 R ≃ (ℕ → R) where
   toFun := ghostFun
-  invFun x := mk p fun n => aeval x (xInTermsOfW p R n)
+  invFun x := mk p fun n ↦ aeval x (xInTermsOfW p R n)
   left_inv := by
     intro x
     ext n

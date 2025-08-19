@@ -37,7 +37,7 @@ variable [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
 Version at a point within a set -/
 theorem mdifferentiableWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x₀ : M} :
     MDifferentiableWithinAt IM (IB.prod 𝓘(𝕜, F)) f s x₀ ↔
-      MDifferentiableWithinAt IM IB (fun x => (f x).proj) s x₀ ∧
+      MDifferentiableWithinAt IM IB (fun x ↦ (f x).proj) s x₀ ∧
       MDifferentiableWithinAt IM 𝓘(𝕜, F)
         (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) s x₀ := by
   simp +singlePass only [mdifferentiableWithinAt_iff_target]
@@ -47,10 +47,10 @@ theorem mdifferentiableWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M
     PartialEquiv.trans_apply, PartialEquiv.prod_coe, PartialEquiv.refl_coe,
     extChartAt_self_apply, modelWithCornersSelf_coe, Function.id_def, ← chartedSpaceSelf_prod]
   refine (mdifferentiableWithinAt_prod_iff _).trans (and_congr ?_ Iff.rfl)
-  have h1 : (fun x => (f x).proj) ⁻¹' (trivializationAt F E (f x₀).proj).baseSet ∈ 𝓝[s] x₀ :=
+  have h1 : (fun x ↦ (f x).proj) ⁻¹' (trivializationAt F E (f x₀).proj).baseSet ∈ 𝓝[s] x₀ :=
     ((FiberBundle.continuous_proj F E).continuousWithinAt.comp hf (mapsTo_image f s))
       ((Trivialization.open_baseSet _).mem_nhds (mem_baseSet_trivializationAt F E _))
-  refine EventuallyEq.mdifferentiableWithinAt_iff (eventually_of_mem h1 fun x hx => ?_) ?_
+  refine EventuallyEq.mdifferentiableWithinAt_iff (eventually_of_mem h1 fun x hx ↦ ?_) ?_
   · simp_rw [Function.comp, PartialHomeomorph.coe_coe, Trivialization.coe_coe]
     rw [Trivialization.coe_fst']
     exact hx
@@ -60,7 +60,7 @@ theorem mdifferentiableWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M
 Version at a point -/
 theorem mdifferentiableAt_totalSpace (f : M → TotalSpace F E) {x₀ : M} :
     MDifferentiableAt IM (IB.prod 𝓘(𝕜, F)) f x₀ ↔
-      MDifferentiableAt IM IB (fun x => (f x).proj) x₀ ∧
+      MDifferentiableAt IM IB (fun x ↦ (f x).proj) x₀ ∧
       MDifferentiableAt IM 𝓘(𝕜, F)
         (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) x₀ := by
   simpa [← mdifferentiableWithinAt_univ] using mdifferentiableWithinAt_totalSpace _ f

@@ -73,7 +73,7 @@ theorem not_secondCountableTopology_opc : ¬SecondCountableTopology ℚ∞ := by
 
 instance : TotallyDisconnectedSpace ℚ := by
   clear p s
-  refine ⟨fun s hsu hs x hx y hy => ?_⟩; clear hsu
+  refine ⟨fun s hsu hs x hx y hy ↦ ?_⟩; clear hsu
   by_contra! H : x ≠ y
   wlog hlt : x < y
   · apply this s hs y hy x hx H.symm <| H.lt_or_gt.resolve_left hlt

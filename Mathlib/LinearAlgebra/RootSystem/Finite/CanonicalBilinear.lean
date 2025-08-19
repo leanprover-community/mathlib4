@@ -155,7 +155,7 @@ theorem range_polarization_domRestrict_le_span_coroot :
   obtain ⟨x, hx⟩ := hy
   rw [← hx, LinearMap.domRestrict_apply, Polarization_apply]
   refine (Submodule.mem_span_range_iff_exists_fun R).mpr ?_
-  use fun i => (P.toPerfectPairing x) (P.coroot i)
+  use fun i ↦ (P.toPerfectPairing x) (P.coroot i)
   simp
 
 theorem corootSpan_dualAnnihilator_le_ker_rootForm :

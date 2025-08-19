@@ -73,7 +73,7 @@ theorem star_star [InvolutiveStar R] (r : R) : star (star r) = r :=
 
 lemma star_mem_iff {S : Type*} [SetLike S R] [InvolutiveStar R] [StarMemClass S R]
     {s : S} {x : R} : star x ∈ s ↔ x ∈ s :=
-  ⟨fun h => star_star x ▸ star_mem h, fun h => star_mem h⟩
+  ⟨fun h ↦ star_star x ▸ star_mem h, fun h ↦ star_mem h⟩
 
 theorem star_injective [InvolutiveStar R] : Function.Injective (star : R → R) :=
   Function.Involutive.injective star_involutive
@@ -155,8 +155,8 @@ theorem star_mul' [CommMagma R] [StarMul R] (x y : R) : star (x * y) = star x * 
 @[simps apply]
 def starMulEquiv [Mul R] [StarMul R] : R ≃* Rᵐᵒᵖ :=
   { (InvolutiveStar.star_involutive.toPerm star).trans opEquiv with
-    toFun := fun x => MulOpposite.op (star x)
-    map_mul' := fun x y => by simp only [star_mul, op_mul] }
+    toFun := fun x ↦ MulOpposite.op (star x)
+    map_mul' := fun x y ↦ by simp only [star_mul, op_mul] }
 
 /-- `star` as a `MulAut` for commutative `R`. -/
 @[simps apply]
@@ -268,7 +268,7 @@ instance (priority := 100) StarRing.toStarAddMonoid [NonUnitalNonAssocSemiring R
 @[simps apply]
 def starRingEquiv [NonUnitalNonAssocSemiring R] [StarRing R] : R ≃+* Rᵐᵒᵖ :=
   { starAddEquiv.trans (MulOpposite.opAddEquiv : R ≃+ Rᵐᵒᵖ), starMulEquiv with
-    toFun := fun x => MulOpposite.op (star x) }
+    toFun := fun x ↦ MulOpposite.op (star x) }
 
 @[simp, norm_cast]
 theorem star_natCast [NonAssocSemiring R] [StarRing R] (n : ℕ) : star (n : R) = n :=
@@ -317,7 +317,7 @@ theorem starRingEnd_apply (x : R) : starRingEnd R x = star x := rfl
 theorem starRingEnd_self_apply (x : R) : starRingEnd R (starRingEnd R x) = x := star_star x
 
 instance RingHom.involutiveStar {S : Type*} [NonAssocSemiring S] : InvolutiveStar (S →+* R) where
-  toStar := { star := fun f => RingHom.comp (starRingEnd R) f }
+  toStar := { star := fun f ↦ RingHom.comp (starRingEnd R) f }
   star_involutive := by
     intro
     ext
@@ -360,7 +360,7 @@ See note [reducible non-instances].
 -/
 abbrev starRingOfComm {R : Type*} [CommSemiring R] : StarRing R :=
   { starMulOfComm with
-    star_add := fun _ _ => rfl }
+    star_add := fun _ _ ↦ rfl }
 
 instance Nat.instStarRing : StarRing ℕ := starRingOfComm
 instance Int.instStarRing : StarRing ℤ := starRingOfComm
@@ -441,7 +441,7 @@ theorem coe_star_inv (u : Rˣ) : ↑(star u)⁻¹ = (star ↑u⁻¹ : R) :=
   rfl
 
 instance {A : Type*} [Star A] [SMul R A] [StarModule R A] : StarModule Rˣ A :=
-  ⟨fun u a => star_smul (u : R) a⟩
+  ⟨fun u a ↦ star_smul (u : R) a⟩
 
 end Units
 
@@ -450,7 +450,7 @@ protected theorem IsUnit.star [Monoid R] [StarMul R] {a : R} : IsUnit a → IsUn
 
 @[simp]
 theorem isUnit_star [Monoid R] [StarMul R] {a : R} : IsUnit (star a) ↔ IsUnit a :=
-  ⟨fun h => star_star a ▸ h.star, IsUnit.star⟩
+  ⟨fun h ↦ star_star a ▸ h.star, IsUnit.star⟩
 
 theorem Ring.inverse_star [Semiring R] [StarRing R] (a : R) :
     Ring.inverse (star a) = star (Ring.inverse a) := by
@@ -478,11 +478,11 @@ section Regular
 
 protected theorem IsLeftRegular.star [Mul R] [StarMul R] {x : R} (hx : IsLeftRegular x) :
     IsRightRegular (star x) :=
-  fun a b h => star_injective <| hx <| by simpa using congr_arg Star.star h
+  fun a b h ↦ star_injective <| hx <| by simpa using congr_arg Star.star h
 
 protected theorem IsRightRegular.star [Mul R] [StarMul R] {x : R} (hx : IsRightRegular x) :
     IsLeftRegular (star x) :=
-  fun a b h => star_injective <| hx <| by simpa using congr_arg Star.star h
+  fun a b h ↦ star_injective <| hx <| by simpa using congr_arg Star.star h
 
 protected theorem IsRegular.star [Mul R] [StarMul R] {x : R} (hx : IsRegular x) :
     IsRegular (star x) :=
@@ -491,12 +491,12 @@ protected theorem IsRegular.star [Mul R] [StarMul R] {x : R} (hx : IsRegular x) 
 @[simp]
 theorem isRightRegular_star_iff [Mul R] [StarMul R] {x : R} :
     IsRightRegular (star x) ↔ IsLeftRegular x :=
-  ⟨fun h => star_star x ▸ h.star, (·.star)⟩
+  ⟨fun h ↦ star_star x ▸ h.star, (·.star)⟩
 
 @[simp]
 theorem isLeftRegular_star_iff [Mul R] [StarMul R] {x : R} :
     IsLeftRegular (star x) ↔ IsRightRegular x :=
-  ⟨fun h => star_star x ▸ h.star, (·.star)⟩
+  ⟨fun h ↦ star_star x ▸ h.star, (·.star)⟩
 
 @[simp]
 theorem isRegular_star_iff [Mul R] [StarMul R] {x : R} :
@@ -541,4 +541,4 @@ end MulOpposite
 `Monoid.toOppositeMulAction`. -/
 instance StarSemigroup.toOpposite_starModule [CommMonoid R] [StarMul R] :
     StarModule Rᵐᵒᵖ R :=
-  ⟨fun r s => star_mul' s r.unop⟩
+  ⟨fun r s ↦ star_mul' s r.unop⟩

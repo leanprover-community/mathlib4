@@ -51,24 +51,24 @@ def AntivaryOn (f : ι → α) (g : ι → β) (s : Set ι) : Prop :=
   ∀ ⦃i⦄ (_ : i ∈ s) ⦃j⦄ (_ : j ∈ s), g i < g j → f j ≤ f i
 
 protected theorem Monovary.monovaryOn (h : Monovary f g) (s : Set ι) : MonovaryOn f g s :=
-  fun _ _ _ _ hij => h hij
+  fun _ _ _ _ hij ↦ h hij
 
 protected theorem Antivary.antivaryOn (h : Antivary f g) (s : Set ι) : AntivaryOn f g s :=
-  fun _ _ _ _ hij => h hij
+  fun _ _ _ _ hij ↦ h hij
 
 @[simp]
-theorem MonovaryOn.empty : MonovaryOn f g ∅ := fun _ => False.elim
+theorem MonovaryOn.empty : MonovaryOn f g ∅ := fun _ ↦ False.elim
 
 @[simp]
-theorem AntivaryOn.empty : AntivaryOn f g ∅ := fun _ => False.elim
+theorem AntivaryOn.empty : AntivaryOn f g ∅ := fun _ ↦ False.elim
 
 @[simp]
 theorem monovaryOn_univ : MonovaryOn f g univ ↔ Monovary f g :=
-  ⟨fun h _ _ => h trivial trivial, fun h _ _ _ _ hij => h hij⟩
+  ⟨fun h _ _ ↦ h trivial trivial, fun h _ _ _ _ hij ↦ h hij⟩
 
 @[simp]
 theorem antivaryOn_univ : AntivaryOn f g univ ↔ Antivary f g :=
-  ⟨fun h _ _ => h trivial trivial, fun h _ _ _ _ hij => h hij⟩
+  ⟨fun h _ _ ↦ h trivial trivial, fun h _ _ _ _ hij ↦ h hij⟩
 
 lemma monovaryOn_iff_monovary : MonovaryOn f g s ↔ Monovary (fun i : s ↦ f i) fun i ↦ g i := by
   simp [Monovary, MonovaryOn]
@@ -77,84 +77,84 @@ lemma antivaryOn_iff_antivary : AntivaryOn f g s ↔ Antivary (fun i : s ↦ f i
   simp [Antivary, AntivaryOn]
 
 protected theorem MonovaryOn.subset (hst : s ⊆ t) (h : MonovaryOn f g t) : MonovaryOn f g s :=
-  fun _ hi _ hj => h (hst hi) (hst hj)
+  fun _ hi _ hj ↦ h (hst hi) (hst hj)
 
 protected theorem AntivaryOn.subset (hst : s ⊆ t) (h : AntivaryOn f g t) : AntivaryOn f g s :=
-  fun _ hi _ hj => h (hst hi) (hst hj)
+  fun _ hi _ hj ↦ h (hst hi) (hst hj)
 
-theorem monovary_const_left (g : ι → β) (a : α) : Monovary (const ι a) g := fun _ _ _ => le_rfl
+theorem monovary_const_left (g : ι → β) (a : α) : Monovary (const ι a) g := fun _ _ _ ↦ le_rfl
 
-theorem antivary_const_left (g : ι → β) (a : α) : Antivary (const ι a) g := fun _ _ _ => le_rfl
+theorem antivary_const_left (g : ι → β) (a : α) : Antivary (const ι a) g := fun _ _ _ ↦ le_rfl
 
-theorem monovary_const_right (f : ι → α) (b : β) : Monovary f (const ι b) := fun _ _ h =>
+theorem monovary_const_right (f : ι → α) (b : β) : Monovary f (const ι b) := fun _ _ h ↦
   (h.ne rfl).elim
 
-theorem antivary_const_right (f : ι → α) (b : β) : Antivary f (const ι b) := fun _ _ h =>
+theorem antivary_const_right (f : ι → α) (b : β) : Antivary f (const ι b) := fun _ _ h ↦
   (h.ne rfl).elim
 
-theorem monovary_self (f : ι → α) : Monovary f f := fun _ _ => le_of_lt
+theorem monovary_self (f : ι → α) : Monovary f f := fun _ _ ↦ le_of_lt
 
-theorem monovaryOn_self (f : ι → α) (s : Set ι) : MonovaryOn f f s := fun _ _ _ _ => le_of_lt
+theorem monovaryOn_self (f : ι → α) (s : Set ι) : MonovaryOn f f s := fun _ _ _ _ ↦ le_of_lt
 
 protected theorem Subsingleton.monovary [Subsingleton ι] (f : ι → α) (g : ι → β) : Monovary f g :=
-  fun _ _ h => (ne_of_apply_ne _ h.ne <| Subsingleton.elim _ _).elim
+  fun _ _ h ↦ (ne_of_apply_ne _ h.ne <| Subsingleton.elim _ _).elim
 
 protected theorem Subsingleton.antivary [Subsingleton ι] (f : ι → α) (g : ι → β) : Antivary f g :=
-  fun _ _ h => (ne_of_apply_ne _ h.ne <| Subsingleton.elim _ _).elim
+  fun _ _ h ↦ (ne_of_apply_ne _ h.ne <| Subsingleton.elim _ _).elim
 
 protected theorem Subsingleton.monovaryOn [Subsingleton ι] (f : ι → α) (g : ι → β) (s : Set ι) :
-    MonovaryOn f g s := fun _ _ _ _ h => (ne_of_apply_ne _ h.ne <| Subsingleton.elim _ _).elim
+    MonovaryOn f g s := fun _ _ _ _ h ↦ (ne_of_apply_ne _ h.ne <| Subsingleton.elim _ _).elim
 
 protected theorem Subsingleton.antivaryOn [Subsingleton ι] (f : ι → α) (g : ι → β) (s : Set ι) :
-    AntivaryOn f g s := fun _ _ _ _ h => (ne_of_apply_ne _ h.ne <| Subsingleton.elim _ _).elim
+    AntivaryOn f g s := fun _ _ _ _ h ↦ (ne_of_apply_ne _ h.ne <| Subsingleton.elim _ _).elim
 
 theorem monovaryOn_const_left (g : ι → β) (a : α) (s : Set ι) : MonovaryOn (const ι a) g s :=
-  fun _ _ _ _ _ => le_rfl
+  fun _ _ _ _ _ ↦ le_rfl
 
 theorem antivaryOn_const_left (g : ι → β) (a : α) (s : Set ι) : AntivaryOn (const ι a) g s :=
-  fun _ _ _ _ _ => le_rfl
+  fun _ _ _ _ _ ↦ le_rfl
 
 theorem monovaryOn_const_right (f : ι → α) (b : β) (s : Set ι) : MonovaryOn f (const ι b) s :=
-  fun _ _ _ _ h => (h.ne rfl).elim
+  fun _ _ _ _ h ↦ (h.ne rfl).elim
 
 theorem antivaryOn_const_right (f : ι → α) (b : β) (s : Set ι) : AntivaryOn f (const ι b) s :=
-  fun _ _ _ _ h => (h.ne rfl).elim
+  fun _ _ _ _ h ↦ (h.ne rfl).elim
 
 theorem Monovary.comp_right (h : Monovary f g) (k : ι' → ι) : Monovary (f ∘ k) (g ∘ k) :=
-  fun _ _ hij => h hij
+  fun _ _ hij ↦ h hij
 
 theorem Antivary.comp_right (h : Antivary f g) (k : ι' → ι) : Antivary (f ∘ k) (g ∘ k) :=
-  fun _ _ hij => h hij
+  fun _ _ hij ↦ h hij
 
 theorem MonovaryOn.comp_right (h : MonovaryOn f g s) (k : ι' → ι) :
-    MonovaryOn (f ∘ k) (g ∘ k) (k ⁻¹' s) := fun _ hi _ hj => h hi hj
+    MonovaryOn (f ∘ k) (g ∘ k) (k ⁻¹' s) := fun _ hi _ hj ↦ h hi hj
 
 theorem AntivaryOn.comp_right (h : AntivaryOn f g s) (k : ι' → ι) :
-    AntivaryOn (f ∘ k) (g ∘ k) (k ⁻¹' s) := fun _ hi _ hj => h hi hj
+    AntivaryOn (f ∘ k) (g ∘ k) (k ⁻¹' s) := fun _ hi _ hj ↦ h hi hj
 
 theorem Monovary.comp_monotone_left (h : Monovary f g) (hf : Monotone f') : Monovary (f' ∘ f) g :=
-  fun _ _ hij => hf <| h hij
+  fun _ _ hij ↦ hf <| h hij
 
 theorem Monovary.comp_antitone_left (h : Monovary f g) (hf : Antitone f') : Antivary (f' ∘ f) g :=
-  fun _ _ hij => hf <| h hij
+  fun _ _ hij ↦ hf <| h hij
 
 theorem Antivary.comp_monotone_left (h : Antivary f g) (hf : Monotone f') : Antivary (f' ∘ f) g :=
-  fun _ _ hij => hf <| h hij
+  fun _ _ hij ↦ hf <| h hij
 
 theorem Antivary.comp_antitone_left (h : Antivary f g) (hf : Antitone f') : Monovary (f' ∘ f) g :=
-  fun _ _ hij => hf <| h hij
+  fun _ _ hij ↦ hf <| h hij
 
 theorem MonovaryOn.comp_monotone_on_left (h : MonovaryOn f g s) (hf : Monotone f') :
-    MonovaryOn (f' ∘ f) g s := fun _ hi _ hj hij => hf <| h hi hj hij
+    MonovaryOn (f' ∘ f) g s := fun _ hi _ hj hij ↦ hf <| h hi hj hij
 
 theorem MonovaryOn.comp_antitone_on_left (h : MonovaryOn f g s) (hf : Antitone f') :
-    AntivaryOn (f' ∘ f) g s := fun _ hi _ hj hij => hf <| h hi hj hij
+    AntivaryOn (f' ∘ f) g s := fun _ hi _ hj hij ↦ hf <| h hi hj hij
 
 theorem AntivaryOn.comp_monotone_on_left (h : AntivaryOn f g s) (hf : Monotone f') :
-    AntivaryOn (f' ∘ f) g s := fun _ hi _ hj hij => hf <| h hi hj hij
+    AntivaryOn (f' ∘ f) g s := fun _ hi _ hj hij ↦ hf <| h hi hj hij
 
 theorem AntivaryOn.comp_antitone_on_left (h : AntivaryOn f g s) (hf : Antitone f') :
-    MonovaryOn (f' ∘ f) g s := fun _ hi _ hj hij => hf <| h hi hj hij
+    MonovaryOn (f' ∘ f) g s := fun _ hi _ hj hij ↦ hf <| h hi hj hij
 
 section OrderDual
 
@@ -279,7 +279,7 @@ end PartialOrder
 variable [LinearOrder ι]
 
 protected theorem Monotone.monovary (hf : Monotone f) (hg : Monotone g) : Monovary f g :=
-  fun _ _ hij => hf (hg.reflect_lt hij).le
+  fun _ _ hij ↦ hf (hg.reflect_lt hij).le
 
 protected theorem Monotone.antivary (hf : Monotone f) (hg : Antitone g) : Antivary f g :=
   (hf.monovary hg.dual_right).dual_right
@@ -291,7 +291,7 @@ protected theorem Antitone.antivary (hf : Antitone f) (hg : Monotone g) : Antiva
   (hf.monovary hg.dual_right).dual_right
 
 protected theorem MonotoneOn.monovaryOn (hf : MonotoneOn f s) (hg : MonotoneOn g s) :
-    MonovaryOn f g s := fun _ hi _ hj hij => hf hi hj (hg.reflect_lt hi hj hij).le
+    MonovaryOn f g s := fun _ hi _ hj hij ↦ hf hi hj (hg.reflect_lt hi hj hij).le
 
 protected theorem MonotoneOn.antivaryOn (hf : MonotoneOn f s) (hg : AntitoneOn g s) :
     AntivaryOn f g s :=
@@ -313,36 +313,36 @@ variable [Preorder α] [LinearOrder β] [Preorder γ] {f : ι → α} {g : ι �
   {s : Set ι}
 
 theorem MonovaryOn.comp_monotoneOn_right (h : MonovaryOn f g s) (hg : MonotoneOn g' (g '' s)) :
-    MonovaryOn f (g' ∘ g) s := fun _ hi _ hj hij =>
+    MonovaryOn f (g' ∘ g) s := fun _ hi _ hj hij ↦
   h hi hj <| hg.reflect_lt (mem_image_of_mem _ hi) (mem_image_of_mem _ hj) hij
 
 theorem MonovaryOn.comp_antitoneOn_right (h : MonovaryOn f g s) (hg : AntitoneOn g' (g '' s)) :
-    AntivaryOn f (g' ∘ g) s := fun _ hi _ hj hij =>
+    AntivaryOn f (g' ∘ g) s := fun _ hi _ hj hij ↦
   h hj hi <| hg.reflect_lt (mem_image_of_mem _ hi) (mem_image_of_mem _ hj) hij
 
 theorem AntivaryOn.comp_monotoneOn_right (h : AntivaryOn f g s) (hg : MonotoneOn g' (g '' s)) :
-    AntivaryOn f (g' ∘ g) s := fun _ hi _ hj hij =>
+    AntivaryOn f (g' ∘ g) s := fun _ hi _ hj hij ↦
   h hi hj <| hg.reflect_lt (mem_image_of_mem _ hi) (mem_image_of_mem _ hj) hij
 
 theorem AntivaryOn.comp_antitoneOn_right (h : AntivaryOn f g s) (hg : AntitoneOn g' (g '' s)) :
-    MonovaryOn f (g' ∘ g) s := fun _ hi _ hj hij =>
+    MonovaryOn f (g' ∘ g) s := fun _ hi _ hj hij ↦
   h hj hi <| hg.reflect_lt (mem_image_of_mem _ hi) (mem_image_of_mem _ hj) hij
 
 @[symm]
-protected theorem Monovary.symm (h : Monovary f g) : Monovary g f := fun _ _ hf =>
-  le_of_not_gt fun hg => hf.not_ge <| h hg
+protected theorem Monovary.symm (h : Monovary f g) : Monovary g f := fun _ _ hf ↦
+  le_of_not_gt fun hg ↦ hf.not_ge <| h hg
 
 @[symm]
-protected theorem Antivary.symm (h : Antivary f g) : Antivary g f := fun _ _ hf =>
-  le_of_not_gt fun hg => hf.not_ge <| h hg
+protected theorem Antivary.symm (h : Antivary f g) : Antivary g f := fun _ _ hf ↦
+  le_of_not_gt fun hg ↦ hf.not_ge <| h hg
 
 @[symm]
-protected theorem MonovaryOn.symm (h : MonovaryOn f g s) : MonovaryOn g f s := fun _ hi _ hj hf =>
-  le_of_not_gt fun hg => hf.not_ge <| h hj hi hg
+protected theorem MonovaryOn.symm (h : MonovaryOn f g s) : MonovaryOn g f s := fun _ hi _ hj hf ↦
+  le_of_not_gt fun hg ↦ hf.not_ge <| h hj hi hg
 
 @[symm]
-protected theorem AntivaryOn.symm (h : AntivaryOn f g s) : AntivaryOn g f s := fun _ hi _ hj hf =>
-  le_of_not_gt fun hg => hf.not_ge <| h hi hj hg
+protected theorem AntivaryOn.symm (h : AntivaryOn f g s) : AntivaryOn g f s := fun _ hi _ hj hf ↦
+  le_of_not_gt fun hg ↦ hf.not_ge <| h hi hj hg
 
 end LinearOrder
 

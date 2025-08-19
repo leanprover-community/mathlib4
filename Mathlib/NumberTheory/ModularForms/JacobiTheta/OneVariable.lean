@@ -65,7 +65,7 @@ theorem norm_exp_mul_sq_le {τ : ℂ} (hτ : 0 < τ.im) (n : ℤ) :
     exact pow_le_pow_of_le_one (exp_pos _).le h.le ((sq n.natAbs).symm ▸ n.natAbs.le_mul_self)
 
 theorem hasSum_nat_jacobiTheta {τ : ℂ} (hτ : 0 < im τ) :
-    HasSum (fun n : ℕ => cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ)) ((jacobiTheta τ - 1) / 2) := by
+    HasSum (fun n : ℕ ↦ cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ)) ((jacobiTheta τ - 1) / 2) := by
   have := hasSum_jacobiTheta₂_term 0 hτ
   simp_rw [jacobiTheta₂_term, mul_zero, zero_add, ← jacobiTheta_eq_jacobiTheta₂] at this
   have := this.nat_add_neg
@@ -95,20 +95,20 @@ theorem norm_jacobiTheta_sub_one_le {τ : ℂ} (hτ : 0 < im τ) :
   have : ∀ n : ℕ, ‖cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ)‖ ≤ rexp (-π * τ.im) ^ (n + 1) := by
     intro n
     simpa only [Int.cast_add, Int.cast_one] using norm_exp_mul_sq_le hτ (n + 1)
-  have s : HasSum (fun n : ℕ =>
+  have s : HasSum (fun n : ℕ ↦
       rexp (-π * τ.im) ^ (n + 1)) (rexp (-π * τ.im) / (1 - rexp (-π * τ.im))) := by
     simp_rw [pow_succ', div_eq_mul_inv, hasSum_mul_left_iff (Real.exp_ne_zero _)]
     exact hasSum_geometric_of_lt_one (exp_pos (-π * τ.im)).le
       (exp_lt_one_iff.mpr <| mul_neg_of_neg_of_pos (neg_lt_zero.mpr pi_pos) hτ)
-  have aux : Summable fun n : ℕ => ‖cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ)‖ :=
-    .of_nonneg_of_le (fun n => norm_nonneg _) this s.summable
+  have aux : Summable fun n : ℕ ↦ ‖cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ)‖ :=
+    .of_nonneg_of_le (fun n ↦ norm_nonneg _) this s.summable
   exact (norm_tsum_le_tsum_norm aux).trans ((aux.tsum_mono s.summable this).trans_eq s.tsum_eq)
 
 /-- The norm of `jacobiTheta τ - 1` decays exponentially as `im τ → ∞`. -/
 theorem isBigO_at_im_infty_jacobiTheta_sub_one :
-    (fun τ => jacobiTheta τ - 1) =O[comap im atTop] fun τ => rexp (-π * τ.im) := by
+    (fun τ ↦ jacobiTheta τ - 1) =O[comap im atTop] fun τ ↦ rexp (-π * τ.im) := by
   simp_rw [IsBigO, IsBigOWith, Filter.eventually_comap, Filter.eventually_atTop]
-  refine ⟨2 / (1 - rexp (-(π * 1))), 1, fun y hy τ hτ =>
+  refine ⟨2 / (1 - rexp (-(π * 1))), 1, fun y hy τ hτ ↦
     (norm_jacobiTheta_sub_one_le (hτ.symm ▸ zero_lt_one.trans_le hy : 0 < im τ)).trans ?_⟩
   rw [Real.norm_eq_abs, Real.abs_exp, hτ, neg_mul]
   gcongr

@@ -121,7 +121,7 @@ instance BoolAlg.hasForgetToBoolRing : HasForget₂ BoolAlg BoolRing where
 def boolRingCatEquivBoolAlg : BoolRing ≌ BoolAlg where
   functor := forget₂ BoolRing BoolAlg
   inverse := forget₂ BoolAlg BoolRing
-  unitIso := NatIso.ofComponents (fun X => BoolRing.Iso.mk <|
-    (RingEquiv.asBoolRingAsBoolAlg X).symm) fun {_ _} _ => rfl
-  counitIso := NatIso.ofComponents (fun X => BoolAlg.Iso.mk <|
-    OrderIso.asBoolAlgAsBoolRing X) fun {_ _} _ => rfl
+  unitIso := NatIso.ofComponents (fun X ↦ BoolRing.Iso.mk <|
+    (RingEquiv.asBoolRingAsBoolAlg X).symm) fun {_ _} _ ↦ rfl
+  counitIso := NatIso.ofComponents (fun X ↦ BoolAlg.Iso.mk <|
+    OrderIso.asBoolAlgAsBoolRing X) fun {_ _} _ ↦ rfl

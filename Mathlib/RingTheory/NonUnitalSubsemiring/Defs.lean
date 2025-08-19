@@ -68,11 +68,11 @@ open AddSubmonoidClass
 `NonUnitalNonAssocSemiring` structure -/
 instance (priority := 75) toNonUnitalNonAssocSemiring :
     NonUnitalNonAssocSemiring s := fast_instance%
-  Subtype.coe_injective.nonUnitalNonAssocSemiring Subtype.val rfl (by simp) (fun _ _ => rfl)
-    fun _ _ => rfl
+  Subtype.coe_injective.nonUnitalNonAssocSemiring Subtype.val rfl (by simp) (fun _ _ ↦ rfl)
+    fun _ _ ↦ rfl
 
 instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s :=
-  Subtype.coe_injective.noZeroDivisors Subtype.val rfl fun _ _ => rfl
+  Subtype.coe_injective.noZeroDivisors Subtype.val rfl fun _ _ ↦ rfl
 
 /-- The natural non-unital ring hom from a non-unital subsemiring of a non-unital semiring `R` to
 `R`. -/
@@ -97,13 +97,13 @@ alias coeSubtype := coe_subtype
 /-- A non-unital subsemiring of a `NonUnitalSemiring` is a `NonUnitalSemiring`. -/
 instance toNonUnitalSemiring {R} [NonUnitalSemiring R] [SetLike S R]
     [NonUnitalSubsemiringClass S R] : NonUnitalSemiring s := fast_instance%
-  Subtype.coe_injective.nonUnitalSemiring Subtype.val rfl (by simp) (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.nonUnitalSemiring Subtype.val rfl (by simp) (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 /-- A non-unital subsemiring of a `NonUnitalCommSemiring` is a `NonUnitalCommSemiring`. -/
 instance toNonUnitalCommSemiring {R} [NonUnitalCommSemiring R] [SetLike S R]
     [NonUnitalSubsemiringClass S R] : NonUnitalCommSemiring s := fast_instance%
-  Subtype.coe_injective.nonUnitalCommSemiring Subtype.val rfl (by simp) (fun _ _ => rfl)
-    fun _ _ => rfl
+  Subtype.coe_injective.nonUnitalCommSemiring Subtype.val rfl (by simp) (fun _ _ ↦ rfl)
+    fun _ _ ↦ rfl
 
 /-! Note: currently, there are no ordered versions of non-unital rings. -/
 
@@ -276,9 +276,9 @@ namespace NonUnitalSubsemiring
 -- should we define this as the range of the zero homomorphism?
 instance : Bot (NonUnitalSubsemiring R) :=
   ⟨{  carrier := {0}
-      add_mem' := fun _ _ => by simp_all
+      add_mem' := fun _ _ ↦ by simp_all
       zero_mem' := Set.mem_singleton 0
-      mul_mem' := fun _ _ => by simp_all }⟩
+      mul_mem' := fun _ _ ↦ by simp_all }⟩
 
 instance : Inhabited (NonUnitalSubsemiring R) :=
   ⟨⊥⟩
@@ -291,7 +291,7 @@ theorem mem_bot {x : R} : x ∈ (⊥ : NonUnitalSubsemiring R) ↔ x = 0 :=
 
 /-- The inf of two non-unital subsemirings is their intersection. -/
 instance : Min (NonUnitalSubsemiring R) :=
-  ⟨fun s t =>
+  ⟨fun s t ↦
     { s.toSubsemigroup ⊓ t.toSubsemigroup, s.toAddSubmonoid ⊓ t.toAddSubmonoid with
       carrier := s ∩ t }⟩
 
@@ -338,6 +338,6 @@ open NonUnitalRingHom NonUnitalSubsemiringClass
 /-- The non-unital ring homomorphism associated to an inclusion of
 non-unital subsemirings. -/
 def inclusion {S T : NonUnitalSubsemiring R} (h : S ≤ T) : S →ₙ+* T :=
-  codRestrict (subtype S) _ fun x => h x.2
+  codRestrict (subtype S) _ fun x ↦ h x.2
 
 end NonUnitalSubsemiring

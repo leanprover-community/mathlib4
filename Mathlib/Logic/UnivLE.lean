@@ -79,4 +79,4 @@ example : UnivLE.{2, 5} := inferInstance
 
 example : ¬UnivLE.{u + 1, u} := by
   simp only [univLE_iff, small_iff, not_forall, not_exists, not_nonempty_iff]
-  exact ⟨Type u, fun α => ⟨fun f => Function.not_surjective_Type.{u, u} f.symm f.symm.surjective⟩⟩
+  exact ⟨Type u, fun α ↦ ⟨fun f ↦ Function.not_surjective_Type.{u, u} f.symm f.symm.surjective⟩⟩

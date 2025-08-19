@@ -74,7 +74,7 @@ theorem toFinsupp_apply_le (hn : l.length ≤ n) : l.toFinsupp n = 0 :=
   getD_eq_default _ _ hn
 
 @[simp]
-theorem toFinsupp_nil [DecidablePred fun i => getD ([] : List M) i 0 ≠ 0] :
+theorem toFinsupp_nil [DecidablePred fun i ↦ getD ([] : List M) i 0 ≠ 0] :
     toFinsupp ([] : List M) = 0 := by
   ext
   simp
@@ -111,7 +111,7 @@ theorem toFinsupp_cons_eq_single_add_embDomain {R : Type*} [AddZeroClass R] (x :
       exact add_comm n 1
 
 theorem toFinsupp_concat_eq_toFinsupp_add_single {R : Type*} [AddZeroClass R] (x : R) (xs : List R)
-    [DecidablePred fun i => getD (xs ++ [x]) i 0 ≠ 0] [DecidablePred fun i => getD xs i 0 ≠ 0] :
+    [DecidablePred fun i ↦ getD (xs ++ [x]) i 0 ≠ 0] [DecidablePred fun i ↦ getD xs i 0 ≠ 0] :
     toFinsupp (xs ++ [x]) = toFinsupp xs + Finsupp.single xs.length x := by
   classical rw [toFinsupp_append, toFinsupp_singleton, Finsupp.embDomain_single,
     addLeftEmbedding_apply, add_zero]
@@ -119,7 +119,7 @@ theorem toFinsupp_concat_eq_toFinsupp_add_single {R : Type*} [AddZeroClass R] (x
 
 theorem toFinsupp_eq_sum_mapIdx_single {R : Type*} [AddMonoid R] (l : List R)
     [DecidablePred (getD l · 0 ≠ 0)] :
-    toFinsupp l = (l.mapIdx fun n r => Finsupp.single n r).sum := by
+    toFinsupp l = (l.mapIdx fun n r ↦ Finsupp.single n r).sum := by
   /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `induction` fails to substitute `l = []` in
   `[DecidablePred (getD l · 0 ≠ 0)]`, so we manually do some `revert`/`intro` as a workaround -/
   revert l; intro l

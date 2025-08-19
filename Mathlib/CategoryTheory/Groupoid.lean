@@ -74,7 +74,7 @@ theorem Groupoid.inv_eq_inv (f : X ⟶ Y) : Groupoid.inv f = CategoryTheory.inv 
 /-- `Groupoid.inv` is involutive. -/
 @[simps]
 def Groupoid.invEquiv : (X ⟶ Y) ≃ (Y ⟶ X) :=
-  ⟨Groupoid.inv, Groupoid.inv, fun f => by simp, fun f => by simp⟩
+  ⟨Groupoid.inv, Groupoid.inv, fun f ↦ by simp, fun f ↦ by simp⟩
 
 instance (priority := 100) groupoidHasInvolutiveReverse : Quiver.HasInvolutiveReverse C where
   reverse' f := Groupoid.inv f
@@ -122,13 +122,13 @@ variable {C : Type u} [Category.{v} C]
 /-- Promote (noncomputably) an `IsGroupoid` to a `Groupoid` structure. -/
 noncomputable def Groupoid.ofIsGroupoid [IsGroupoid C] :
     Groupoid.{v} C where
-  inv := fun f => CategoryTheory.inv f
+  inv := fun f ↦ CategoryTheory.inv f
 
 /-- A category where every morphism `IsIso` is a groupoid. -/
 noncomputable def Groupoid.ofIsIso (all_is_iso : ∀ {X Y : C} (f : X ⟶ Y), IsIso f) :
     Groupoid.{v} C where
-  inv := fun f => CategoryTheory.inv f
-  inv_comp := fun f => Classical.choose_spec (all_is_iso f).out|>.right
+  inv := fun f ↦ CategoryTheory.inv f
+  inv_comp := fun f ↦ Classical.choose_spec (all_is_iso f).out|>.right
 
 /-- A category with a unique morphism between any two objects is a groupoid -/
 def Groupoid.ofHomUnique (all_unique : ∀ {X Y : C}, Unique (X ⟶ Y)) : Groupoid.{v} C where
@@ -166,9 +166,9 @@ section
 
 instance groupoidPi {I : Type u} {J : I → Type u₂} [∀ i, Groupoid.{v} (J i)] :
     Groupoid.{max u v} (∀ i : I, J i) where
-  inv f := fun i : I => Groupoid.inv (f i)
-  comp_inv := fun f => by funext i; apply Groupoid.comp_inv
-  inv_comp := fun f => by funext i; apply Groupoid.inv_comp
+  inv f := fun i : I ↦ Groupoid.inv (f i)
+  comp_inv := fun f ↦ by funext i; apply Groupoid.comp_inv
+  inv_comp := fun f ↦ by funext i; apply Groupoid.inv_comp
 
 instance groupoidProd {α : Type u} {β : Type v} [Groupoid.{u₂} α] [Groupoid.{v₂} β] :
     Groupoid.{max u₂ v₂} (α × β) where

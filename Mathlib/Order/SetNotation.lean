@@ -86,7 +86,7 @@ def iSup_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
   let ppTypes ← getPPOption getPPFunBinderTypes
   let stx ← SubExpr.withAppArg do
     let dom ← SubExpr.withBindingDomain delab
-    withBindingBodyUnusedName fun x => do
+    withBindingBodyUnusedName fun x ↦ do
       let x : TSyntax `ident := .mk x
       let body ← delab
       if prop && !dep then
@@ -114,7 +114,7 @@ def iInf_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
   let ppTypes ← getPPOption getPPFunBinderTypes
   let stx ← SubExpr.withAppArg do
     let dom ← SubExpr.withBindingDomain delab
-    withBindingBodyUnusedName fun x => do
+    withBindingBodyUnusedName fun x ↦ do
       let x : TSyntax `ident := .mk x
       let body ← delab
       if prop && !dep then
@@ -136,10 +136,10 @@ end delaborators
 namespace Set
 
 instance : InfSet (Set α) :=
-  ⟨fun s => { a | ∀ t ∈ s, a ∈ t }⟩
+  ⟨fun s ↦ { a | ∀ t ∈ s, a ∈ t }⟩
 
 instance : SupSet (Set α) :=
-  ⟨fun s => { a | ∃ t ∈ s, a ∈ t }⟩
+  ⟨fun s ↦ { a | ∃ t ∈ s, a ∈ t }⟩
 
 /-- Intersection of a set of sets. -/
 def sInter (S : Set (Set α)) : Set α :=
@@ -191,7 +191,7 @@ def iUnion_delab : Delab := whenPPOption Lean.getPPNotation do
   let ppTypes ← getPPOption getPPFunBinderTypes
   let stx ← SubExpr.withAppArg do
     let dom ← SubExpr.withBindingDomain delab
-    withBindingBodyUnusedName fun x => do
+    withBindingBodyUnusedName fun x ↦ do
       let x : TSyntax `ident := .mk x
       let body ← delab
       if prop && !dep then
@@ -219,7 +219,7 @@ def sInter_delab : Delab := whenPPOption Lean.getPPNotation do
   let ppTypes ← getPPOption getPPFunBinderTypes
   let stx ← SubExpr.withAppArg do
     let dom ← SubExpr.withBindingDomain delab
-    withBindingBodyUnusedName fun x => do
+    withBindingBodyUnusedName fun x ↦ do
       let x : TSyntax `ident := .mk x
       let body ← delab
       if prop && !dep then
@@ -241,13 +241,13 @@ end delaborators
 
 @[simp]
 theorem mem_iUnion {x : α} {s : ι → Set α} : (x ∈ ⋃ i, s i) ↔ ∃ i, x ∈ s i :=
-  ⟨fun ⟨_, ⟨⟨a, (t_eq : s a = _)⟩, (h : x ∈ _)⟩⟩ => ⟨a, t_eq.symm ▸ h⟩, fun ⟨a, h⟩ =>
+  ⟨fun ⟨_, ⟨⟨a, (t_eq : s a = _)⟩, (h : x ∈ _)⟩⟩ ↦ ⟨a, t_eq.symm ▸ h⟩, fun ⟨a, h⟩ ↦
     ⟨s a, ⟨⟨a, rfl⟩, h⟩⟩⟩
 
 @[simp]
 theorem mem_iInter {x : α} {s : ι → Set α} : (x ∈ ⋂ i, s i) ↔ ∀ i, x ∈ s i :=
   ⟨fun (h : ∀ a ∈ { a : Set α | ∃ i, s i = a }, x ∈ a) a => h (s a) ⟨a, rfl⟩,
-    fun h _ ⟨a, (eq : s a = _)⟩ => eq ▸ h a⟩
+    fun h _ ⟨a, (eq : s a = _)⟩ ↦ eq ▸ h a⟩
 
 @[simp]
 theorem sSup_eq_sUnion (S : Set (Set α)) : sSup S = ⋃₀S :=

@@ -20,8 +20,8 @@ variable [MeasurableSpace α] {μ : Measure α} {f g : α → ℝ} {s : Set α}
 theorem volume_regionBetween_eq_integral' [SigmaFinite μ] (f_int : IntegrableOn f s μ)
     (g_int : IntegrableOn g s μ) (hs : MeasurableSet s) (hfg : f ≤ᵐ[μ.restrict s] g) :
     μ.prod volume (regionBetween f g s) = ENNReal.ofReal (∫ y in s, (g - f) y ∂μ) := by
-  have h : g - f =ᵐ[μ.restrict s] fun x => Real.toNNReal (g x - f x) :=
-    hfg.mono fun x hx => (Real.coe_toNNReal _ <| sub_nonneg.2 hx).symm
+  have h : g - f =ᵐ[μ.restrict s] fun x ↦ Real.toNNReal (g x - f x) :=
+    hfg.mono fun x hx ↦ (Real.coe_toNNReal _ <| sub_nonneg.2 hx).symm
   rw [volume_regionBetween_eq_lintegral f_int.aemeasurable g_int.aemeasurable hs,
     integral_congr_ae h, lintegral_congr_ae,
     lintegral_coe_eq_integral _ ((integrable_congr h).mp (g_int.sub f_int))]
@@ -49,12 +49,12 @@ that `Icc a b` has volume `b - a`. -/
 /-- If the sequence with `n`-th term the sup norm of `fun x ↦ f (x + n)` on the interval `Icc 0 1`,
 for `n ∈ ℤ`, is summable, then `f` is integrable on `ℝ`. -/
 theorem Real.integrable_of_summable_norm_Icc {E : Type*} [NormedAddCommGroup E] {f : C(ℝ, E)}
-    (hf : Summable fun n : ℤ => ‖(f.comp <| ContinuousMap.addRight n).restrict (Icc 0 1)‖) :
+    (hf : Summable fun n : ℤ ↦ ‖(f.comp <| ContinuousMap.addRight n).restrict (Icc 0 1)‖) :
     Integrable f := by
   refine integrable_of_summable_norm_restrict (.of_nonneg_of_le
-    (fun n : ℤ => mul_nonneg (norm_nonneg
+    (fun n : ℤ ↦ mul_nonneg (norm_nonneg
       (f.restrict (⟨Icc (n : ℝ) ((n : ℝ) + 1), isCompact_Icc⟩ : Compacts ℝ)))
-        ENNReal.toReal_nonneg) (fun n => ?_) hf) ?_
+        ENNReal.toReal_nonneg) (fun n ↦ ?_) hf) ?_
   · simp only [Compacts.coe_mk, le_add_iff_nonneg_right, zero_le_one, volume_real_Icc_of_le,
       add_sub_cancel_left, mul_one, norm_le _ (norm_nonneg _), ContinuousMap.restrict_apply]
     intro x
@@ -79,7 +79,7 @@ of finite integrals, see `intervalIntegral.integral_comp_neg`.
 itself, it does not apply when `f` is more complicated -/
 theorem integral_comp_neg_Iic {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (c : ℝ) (f : ℝ → E) : (∫ x in Iic c, f (-x)) = ∫ x in Ioi (-c), f x := by
-  have A : MeasurableEmbedding fun x : ℝ => -x :=
+  have A : MeasurableEmbedding fun x : ℝ ↦ -x :=
     (Homeomorph.neg ℝ).isClosedEmbedding.measurableEmbedding
   have := MeasurableEmbedding.setIntegral_map (μ := volume) A f (Ici (-c))
   rw [Measure.map_neg_eq_self (volume : Measure ℝ)] at this
@@ -95,12 +95,12 @@ theorem integral_comp_neg_Ioi {E : Type*} [NormedAddCommGroup E] [NormedSpace �
 theorem integral_comp_abs {f : ℝ → ℝ} :
     ∫ x, f |x| = 2 * ∫ x in Ioi (0 : ℝ), f x := by
   have eq : ∫ (x : ℝ) in Ioi 0, f |x| = ∫ (x : ℝ) in Ioi 0, f x := by
-    refine setIntegral_congr_fun measurableSet_Ioi (fun _ hx => ?_)
+    refine setIntegral_congr_fun measurableSet_Ioi (fun _ hx ↦ ?_)
     rw [abs_eq_self.mpr (le_of_lt (by exact hx))]
-  by_cases hf : IntegrableOn (fun x => f |x|) (Ioi 0)
+  by_cases hf : IntegrableOn (fun x ↦ f |x|) (Ioi 0)
   · have int_Iic : IntegrableOn (fun x ↦ f |x|) (Iic 0) := by
       rw [← Measure.map_neg_eq_self (volume : Measure ℝ)]
-      let m : MeasurableEmbedding fun x : ℝ => -x := (Homeomorph.neg ℝ).measurableEmbedding
+      let m : MeasurableEmbedding fun x : ℝ ↦ -x := (Homeomorph.neg ℝ).measurableEmbedding
       rw [m.integrableOn_map_iff]
       simp_rw [Function.comp_def, abs_neg, neg_preimage, neg_Iic, neg_zero]
       exact Iff.mpr integrableOn_Ici_iff_integrableOn_Ioi hf
@@ -112,9 +112,9 @@ theorem integral_comp_abs {f : ℝ → ℝ} :
         rw [two_mul, eq]
         congr! 1
         rw [← neg_zero, ← integral_comp_neg_Iic, neg_zero]
-        refine setIntegral_congr_fun measurableSet_Iic (fun _ hx => ?_)
+        refine setIntegral_congr_fun measurableSet_Iic (fun _ hx ↦ ?_)
         rw [abs_eq_neg_self.mpr (by exact hx)]
-  · have : ¬ Integrable (fun x => f |x|) := by
+  · have : ¬ Integrable (fun x ↦ f |x|) := by
       contrapose! hf
       exact hf.integrableOn
     rw [← eq, integral_undef hf, integral_undef this, mul_zero]

@@ -60,9 +60,9 @@ theorem not_disjoint_segment_convexHull_triple {p q u v x y z : E} (hz : z ∈ s
       trans az * av * bu + (bz * au * bv + au * av)
       · simp [w, Fin.sum_univ_succ]
       linear_combination (au * bv - 1 * au) * habz + (-(1 * az * au) + au) * habv + az * av * habu
-    have hz : ∀ i, z i ∈ ({p, q, az • x + bz • y} : Set E) := fun i => by fin_cases i <;> simp [z]
-    convert (Finset.centerMass_mem_convexHull (Finset.univ : Finset (Fin 3)) (fun i _ => hw₀ i)
-        (by rwa [hw]) fun i _ => hz i : Finset.univ.centerMass w z ∈ _)
+    have hz : ∀ i, z i ∈ ({p, q, az • x + bz • y} : Set E) := fun i ↦ by fin_cases i <;> simp [z]
+    convert (Finset.centerMass_mem_convexHull (Finset.univ : Finset (Fin 3)) (fun i _ ↦ hw₀ i)
+        (by rwa [hw]) fun i _ ↦ hz i : Finset.univ.centerMass w z ∈ _)
     rw [Finset.centerMass, hw]
     trans (az * av + bz * au)⁻¹ •
       ((az * av * bu) • p + ((bz * au * bv) • q + (au * av) • (az • x + bz • y)))
@@ -76,15 +76,15 @@ theorem exists_convex_convex_compl_subset (hs : Convex 𝕜 s) (ht : Convex 𝕜
   let S : Set (Set E) := { C | Convex 𝕜 C ∧ Disjoint C t }
   obtain ⟨C, hsC, hmax⟩ :=
     zorn_subset_nonempty S
-      (fun c hcS hc ⟨_, _⟩ =>
+      (fun c hcS hc ⟨_, _⟩ ↦
         ⟨⋃₀ c,
-          ⟨hc.directedOn.convex_sUnion fun s hs => (hcS hs).1,
-            disjoint_sUnion_left.2 fun c hc => (hcS hc).2⟩,
-          fun s => subset_sUnion_of_mem⟩)
+          ⟨hc.directedOn.convex_sUnion fun s hs ↦ (hcS hs).1,
+            disjoint_sUnion_left.2 fun c hc ↦ (hcS hc).2⟩,
+          fun s ↦ subset_sUnion_of_mem⟩)
       s ⟨hs, hst⟩
   obtain hC : _ ∧ _ := hmax.prop
   refine
-    ⟨C, hC.1, convex_iff_segment_subset.2 fun x hx y hy z hz hzC => ?_, hsC, hC.2.subset_compl_left⟩
+    ⟨C, hC.1, convex_iff_segment_subset.2 fun x hx y hy z hz hzC ↦ ?_, hsC, hC.2.subset_compl_left⟩
   suffices h : ∀ c ∈ Cᶜ, ∃ a ∈ C, (segment 𝕜 c a ∩ t).Nonempty by
     obtain ⟨p, hp, u, hu, hut⟩ := h x hx
     obtain ⟨q, hq, v, hv, hvt⟩ := h y hy
@@ -99,5 +99,5 @@ theorem exists_convex_convex_compl_subset (hs : Convex 𝕜 s) (ht : Convex 𝕜
       (subset_insert ..).trans <| subset_convexHull ..] at hc
     exact hc (subset_convexHull _ _ <| mem_insert _ _)
   rw [convexHull_insert ⟨z, hzC⟩, convexJoin_singleton_left]
-  refine disjoint_iUnion₂_left.2 fun a ha => disjoint_iff_inter_eq_empty.2 (h a ?_)
+  refine disjoint_iUnion₂_left.2 fun a ha ↦ disjoint_iff_inter_eq_empty.2 (h a ?_)
   rwa [← hC.1.convexHull_eq]

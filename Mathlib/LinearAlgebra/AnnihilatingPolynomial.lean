@@ -144,7 +144,7 @@ theorem annIdealGenerator_eq_minpoly (a : A) : annIdealGenerator 𝕜 a = minpol
     refine p_monic.ne_zero (Ideal.mem_bot.mp ?_)
     simpa only [annIdealGenerator_eq_zero_iff.mp h] using mem_annIdeal_iff_aeval_eq_zero.mpr hp
   · exact minpoly.unique _ _ (monic_annIdealGenerator _ _ h) (annIdealGenerator_aeval_eq_zero _ _)
-      fun q q_monic hq =>
+      fun q q_monic hq ↦
         degree_annIdealGenerator_le_of_mem a q (mem_annIdeal_iff_aeval_eq_zero.mpr hq)
           q_monic.ne_zero
 

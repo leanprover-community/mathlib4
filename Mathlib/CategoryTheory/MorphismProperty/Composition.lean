@@ -34,10 +34,10 @@ lemma id_mem (W : MorphismProperty C) [W.ContainsIdentities] (X : C) :
 namespace ContainsIdentities
 
 instance op (W : MorphismProperty C) [W.ContainsIdentities] :
-    W.op.ContainsIdentities := ⟨fun X => W.id_mem X.unop⟩
+    W.op.ContainsIdentities := ⟨fun X ↦ W.id_mem X.unop⟩
 
 instance unop (W : MorphismProperty Cᵒᵖ) [W.ContainsIdentities] :
-    W.unop.ContainsIdentities := ⟨fun X => W.id_mem (Opposite.op X)⟩
+    W.unop.ContainsIdentities := ⟨fun X ↦ W.id_mem (Opposite.op X)⟩
 
 lemma of_op (W : MorphismProperty C) [W.op.ContainsIdentities] :
     W.ContainsIdentities := (inferInstance : W.op.unop.ContainsIdentities)
@@ -64,12 +64,12 @@ end ContainsIdentities
 instance Prod.containsIdentities {C₁ C₂ : Type*} [Category C₁] [Category C₂]
     (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
     [W₁.ContainsIdentities] [W₂.ContainsIdentities] : (prod W₁ W₂).ContainsIdentities :=
-  ⟨fun _ => ⟨W₁.id_mem _, W₂.id_mem _⟩⟩
+  ⟨fun _ ↦ ⟨W₁.id_mem _, W₂.id_mem _⟩⟩
 
 instance Pi.containsIdentities {J : Type w} {C : J → Type u}
     [∀ j, Category.{v} (C j)] (W : ∀ j, MorphismProperty (C j)) [∀ j, (W j).ContainsIdentities] :
     (pi W).ContainsIdentities :=
-  ⟨fun _ _ => MorphismProperty.id_mem _ _⟩
+  ⟨fun _ _ ↦ MorphismProperty.id_mem _ _⟩
 
 lemma of_isIso (P : MorphismProperty C) [P.ContainsIdentities] [P.RespectsIso] {X Y : C} (f : X ⟶ Y)
     [IsIso f] : P f :=
@@ -112,16 +112,16 @@ def StableUnderInverse (P : MorphismProperty C) : Prop :=
   ∀ ⦃X Y⦄ (e : X ≅ Y), P e.hom → P e.inv
 
 theorem StableUnderInverse.op {P : MorphismProperty C} (h : StableUnderInverse P) :
-    StableUnderInverse P.op := fun _ _ e he => h e.unop he
+    StableUnderInverse P.op := fun _ _ e he ↦ h e.unop he
 
 theorem StableUnderInverse.unop {P : MorphismProperty Cᵒᵖ} (h : StableUnderInverse P) :
-    StableUnderInverse P.unop := fun _ _ e he => h e.op he
+    StableUnderInverse P.unop := fun _ _ e he ↦ h e.op he
 
 theorem respectsIso_of_isStableUnderComposition {P : MorphismProperty C}
     [P.IsStableUnderComposition] (hP : isomorphisms C ≤ P) :
     RespectsIso P := RespectsIso.mk _
-  (fun _ _ hf => P.comp_mem _ _ (hP _ (isomorphisms.infer_property _)) hf)
-    (fun _ _ hf => P.comp_mem _ _ hf (hP _ (isomorphisms.infer_property _)))
+  (fun _ _ hf ↦ P.comp_mem _ _ (hP _ (isomorphisms.infer_property _)) hf)
+    (fun _ _ hf ↦ P.comp_mem _ _ hf (hP _ (isomorphisms.infer_property _)))
 
 instance IsStableUnderComposition.inverseImage {P : MorphismProperty D} [P.IsStableUnderComposition]
     (F : C ⥤ D) : (P.inverseImage F).IsStableUnderComposition where
@@ -132,7 +132,7 @@ this is the `morphism_property C` satisfied by the morphisms in `C` with respect
 to whom `app` is natural. -/
 @[simp]
 def naturalityProperty {F₁ F₂ : C ⥤ D} (app : ∀ X, F₁.obj X ⟶ F₂.obj X) : MorphismProperty C :=
-  fun X Y f => F₁.map f ≫ app Y = app X ≫ F₂.map f
+  fun X Y f ↦ F₁.map f ≫ app Y = app X ≫ F₂.map f
 
 namespace naturalityProperty
 
@@ -145,7 +145,7 @@ instance isStableUnderComposition {F₁ F₂ : C ⥤ D} (app : ∀ X, F₁.obj X
     rw [Category.assoc]
 
 theorem stableUnderInverse {F₁ F₂ : C ⥤ D} (app : ∀ X, F₁.obj X ⟶ F₂.obj X) :
-    (naturalityProperty app).StableUnderInverse := fun X Y e he => by
+    (naturalityProperty app).StableUnderInverse := fun X Y e he ↦ by
   simp only [naturalityProperty] at he ⊢
   rw [← cancel_epi (F₁.map e.hom)]
   slice_rhs 1 2 => rw [he]
@@ -342,9 +342,9 @@ lemma HasOfPrecompProperty.of_le (Q : MorphismProperty C) [W.HasOfPrecompPropert
 end
 
 instance : (isomorphisms C).HasTwoOutOfThreeProperty where
-  of_postcomp f g := fun (hg : IsIso g) (hfg : IsIso (f ≫ g)) =>
+  of_postcomp f g := fun (hg : IsIso g) (hfg : IsIso (f ≫ g)) ↦
     by simpa using (inferInstance : IsIso ((f ≫ g) ≫ inv g))
-  of_precomp f g := fun (hf : IsIso f) (hfg : IsIso (f ≫ g)) =>
+  of_precomp f g := fun (hf : IsIso f) (hfg : IsIso (f ≫ g)) ↦
     by simpa using (inferInstance : IsIso (inv f ≫ (f ≫ g)))
 
 instance (F : C ⥤ D) (W : MorphismProperty D) [W.HasTwoOutOfThreeProperty] :

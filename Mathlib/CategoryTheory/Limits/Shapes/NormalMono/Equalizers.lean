@@ -51,7 +51,7 @@ def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
           rw [ha', hb']
       isLimit :=
         PullbackCone.IsLimit.mk _
-          (fun s =>
+          (fun s ↦
             kernel.lift (prod.lift f g) (PullbackCone.snd s ≫ b) <|
               Limits.prod.hom_ext
                 (calc
@@ -68,15 +68,15 @@ def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
                   _ = PullbackCone.snd s ≫ 0 := by rw [hbg]
                   _ = 0 ≫ Limits.prod.snd := by rw [comp_zero, zero_comp]
                   ))
-          (fun s =>
+          (fun s ↦
             (cancel_mono a).1 <| by
               rw [KernelFork.ι_ofι] at ha'
               simp [ha', PullbackCone.condition s])
-          (fun s =>
+          (fun s ↦
             (cancel_mono b).1 <| by
               rw [KernelFork.ι_ofι] at hb'
               simp [hb'])
-          fun s m h₁ _ =>
+          fun s m h₁ _ ↦
           (cancel_mono (kernel.ι (prod.lift f g))).1 <|
             calc
               m ≫ kernel.ι (prod.lift f g) = m ≫ a' ≫ a := by
@@ -119,11 +119,11 @@ def hasLimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasLimit (parallelPair f g
     { cone := Fork.ofι (pullback.fst _ _) huu
       isLimit :=
         Fork.IsLimit.mk _
-          (fun s =>
+          (fun s ↦
             pullback.lift (Fork.ι s) (Fork.ι s) <|
               Limits.prod.hom_ext (by simp only [prod.lift_fst, Category.assoc])
                 (by simp only [prod.comp_lift, Fork.condition s]))
-          (fun s => by simp) fun s m h =>
+          (fun s ↦ by simp) fun s m h ↦
           pullback.hom_ext (by simpa only [pullback.lift_fst] using h)
             (by simpa only [huv.symm, pullback.lift_fst] using h) }
 
@@ -142,7 +142,7 @@ end
 /-- If a zero morphism is a cokernel of `f`, then `f` is an epimorphism. -/
 theorem epi_of_zero_cokernel {X Y : C} (f : X ⟶ Y) (Z : C)
     (l : IsColimit (CokernelCofork.ofπ (0 : Y ⟶ Z) (show f ≫ 0 = 0 by simp))) : Epi f :=
-  ⟨fun u v huv => by
+  ⟨fun u v huv ↦ by
     obtain ⟨W, w, hw, hl⟩ := normalMonoOfMono (equalizer.ι u v)
     obtain ⟨m, hm⟩ := equalizer.lift' f huv
     have hwf : f ≫ w = 0 := by rw [← hm, Category.assoc, hw, comp_zero]
@@ -200,7 +200,7 @@ def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
           rw [ha', hb']
       isColimit :=
         PushoutCocone.IsColimit.mk _
-          (fun s =>
+          (fun s ↦
             cokernel.desc (coprod.desc f g) (b ≫ PushoutCocone.inr s) <|
               coprod.hom_ext
                 (calc
@@ -216,19 +216,19 @@ def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
                   _ = 0 ≫ PushoutCocone.inr s := by rw [← Category.assoc, eq_whisker hgb]
                   _ = coprod.inr ≫ 0 := by rw [comp_zero, zero_comp]
                   ))
-          (fun s =>
+          (fun s ↦
             (cancel_epi a).1 <| by
               rw [CokernelCofork.π_ofπ] at ha'
               have reassoced {W : C} (h : cokernel (coprod.desc f g) ⟶ W) : a ≫ a' ≫ h
                 = cokernel.π (coprod.desc f g) ≫ h := by rw [← Category.assoc, eq_whisker ha']
               simp [reassoced , PushoutCocone.condition s])
-          (fun s =>
+          (fun s ↦
             (cancel_epi b).1 <| by
               rw [CokernelCofork.π_ofπ] at hb'
               have reassoced' {W : C} (h : cokernel (coprod.desc f g) ⟶ W) : b ≫ b' ≫ h
                 = cokernel.π (coprod.desc f g) ≫ h := by rw [← Category.assoc, eq_whisker hb']
               simp [reassoced'])
-          fun s m h₁ _ =>
+          fun s m h₁ _ ↦
           (cancel_epi (cokernel.π (coprod.desc f g))).1 <|
             calc
               cokernel.π (coprod.desc f g) ≫ m = (a ≫ a') ≫ m := by
@@ -273,11 +273,11 @@ def hasColimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasColimit (parallelPair
     { cocone := Cofork.ofπ (pushout.inl _ _) huu
       isColimit :=
         Cofork.IsColimit.mk _
-          (fun s =>
+          (fun s ↦
             pushout.desc (Cofork.π s) (Cofork.π s) <|
               coprod.hom_ext (by simp only [coprod.inl_desc_assoc])
                 (by simp only [coprod.desc_comp, Cofork.condition s]))
-          (fun s => by simp only [pushout.inl_desc, Cofork.π_ofπ]) fun s m h =>
+          (fun s ↦ by simp only [pushout.inl_desc, Cofork.π_ofπ]) fun s m h ↦
           pushout.hom_ext (by simpa only [pushout.inl_desc] using h)
             (by simpa only [huv.symm, pushout.inl_desc] using h) }
 
@@ -296,7 +296,7 @@ end
 /-- If a zero morphism is a kernel of `f`, then `f` is a monomorphism. -/
 theorem mono_of_zero_kernel {X Y : C} (f : X ⟶ Y) (Z : C)
     (l : IsLimit (KernelFork.ofι (0 : Z ⟶ X) (show 0 ≫ f = 0 by simp))) : Mono f :=
-  ⟨fun u v huv => by
+  ⟨fun u v huv ↦ by
     obtain ⟨W, w, hw, hl⟩ := normalEpiOfEpi (coequalizer.π u v)
     obtain ⟨m, hm⟩ := coequalizer.desc' f huv
     have reassoced {W : C} (h : coequalizer u v ⟶ W) : w ≫ coequalizer.π u v ≫ h = 0 ≫ h := by

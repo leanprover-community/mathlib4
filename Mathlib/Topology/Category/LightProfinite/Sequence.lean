@@ -41,7 +41,7 @@ lemma isClosedEmbedding_natUnionInftyEmbedding : IsClosedEmbedding natUnionInfty
     · simp only [natUnionInftyEmbedding, one_div, ContinuousMap.coe_mk, inv_inj, add_left_inj,
         Nat.cast_inj] at h
       rw [h]
-  · exact fun _ hC => (hC.isCompact.image natUnionInftyEmbedding.continuous).isClosed
+  · exact fun _ hC ↦ (hC.isCompact.image natUnionInftyEmbedding.continuous).isClosed
 
 instance : MetrizableSpace (OnePoint ℕ) := isClosedEmbedding_natUnionInftyEmbedding.metrizableSpace
 

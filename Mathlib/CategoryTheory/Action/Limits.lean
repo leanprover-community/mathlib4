@@ -199,7 +199,7 @@ instance {J : Type*} [Category J] (F : J ⥤ Action V G) :
     ReflectsLimit F (Action.forget V G) where
   reflects h := ⟨by
     apply isLimitOfReflects ((Action.functorCategoryEquivalence V G).functor)
-    exact evaluationJointlyReflectsLimits _ (fun _ => h)⟩
+    exact evaluationJointlyReflectsLimits _ (fun _ ↦ h)⟩
 
 instance {J : Type*} [Category J] :
     ReflectsLimitsOfShape J (Action.forget V G) where
@@ -210,7 +210,7 @@ instance {J : Type*} [Category J] (F : J ⥤ Action V G) :
     ReflectsColimit F (Action.forget V G) where
   reflects h := ⟨by
     apply isColimitOfReflects ((Action.functorCategoryEquivalence V G).functor)
-    exact evaluationJointlyReflectsColimits _ (fun _ => h)⟩
+    exact evaluationJointlyReflectsColimits _ (fun _ ↦ h)⟩
 
 noncomputable instance {J : Type*} [Category J] :
     ReflectsColimitsOfShape J (Action.forget V G) where
@@ -334,7 +334,7 @@ instance functorCategoryEquivalence_additive :
 
 @[simp]
 theorem sum_hom {ι : Type*} (f : ι → (X ⟶ Y)) (s : Finset ι) :
-    (s.sum f).hom = s.sum fun i => (f i).hom :=
+    (s.sum f).hom = s.sum fun i ↦ (f i).hom :=
   (forget V G).map_sum f s
 
 end Preadditive
@@ -345,7 +345,7 @@ variable [Preadditive V] {R : Type*} [Semiring R] [Linear R V]
 
 instance : Linear R (Action V G) where
   homModule X Y :=
-    { smul := fun r f => ⟨r • f.hom, by simp [f.comm]⟩
+    { smul := fun r f ↦ ⟨r • f.hom, by simp [f.comm]⟩
       one_smul := by intros; ext; exact one_smul _ _
       smul_zero := by intros; ext; exact smul_zero _
       zero_smul := by intros; ext; exact zero_smul _ _

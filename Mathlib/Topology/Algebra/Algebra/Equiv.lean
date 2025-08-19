@@ -105,7 +105,7 @@ theorem ext {f g : A ≃A[R] B} (h : ⇑f = ⇑g) : f = g :=
   toAlgEquiv_injective <| AlgEquiv.ext <| congr_fun h
 
 theorem coe_injective : Function.Injective ((↑) : (A ≃A[R] B) → A →A[R] B) :=
-  fun _ _ h => ext <| funext <| ContinuousAlgHom.ext_iff.1 h
+  fun _ _ h ↦ ext <| funext <| ContinuousAlgHom.ext_iff.1 h
 
 @[simp]
 theorem coe_inj {f g : A ≃A[R] B} : (f : A →A[R] B) = g ↔ f = g :=

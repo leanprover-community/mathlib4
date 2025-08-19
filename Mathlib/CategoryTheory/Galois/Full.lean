@@ -75,9 +75,9 @@ lemma exists_lift_of_mono (X : C) (Y : Action FintypeCat.{u} (Aut F))
     have : Mono (t.hom ≫ i) := mono_comp _ _
     mono_comp _ _
   choose gZ gf gu _ _ h using fun i ↦ exists_lift_of_mono_of_isConnected F X (f i) (i' i)
-  let is2 : (functorToAction F).obj (∐ gZ) ≅ ∐ fun i => (functorToAction F).obj (gZ i) :=
+  let is2 : (functorToAction F).obj (∐ gZ) ≅ ∐ fun i ↦ (functorToAction F).obj (gZ i) :=
     PreservesCoproduct.iso (functorToAction F) gZ
-  let u' : ∐ f ≅ ∐ fun i => (functorToAction F).obj (gZ i) := Sigma.mapIso gu
+  let u' : ∐ f ≅ ∐ fun i ↦ (functorToAction F).obj (gZ i) := Sigma.mapIso gu
   have heq : (functorToAction F).map (Sigma.desc gf) = (t.symm ≪≫ u' ≪≫ is2.symm).inv ≫ i := by
     simp only [Iso.trans_inv, Iso.symm_inv, Category.assoc]
     rw [← Iso.inv_comp_eq]

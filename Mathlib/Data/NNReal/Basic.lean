@@ -33,7 +33,7 @@ noncomputable instance : FloorSemiring ℝ≥0 := Nonneg.floorSemiring
 
 @[simp, norm_cast]
 theorem coe_indicator {α} (s : Set α) (f : α → ℝ≥0) (a : α) :
-    ((s.indicator f a : ℝ≥0) : ℝ) = s.indicator (fun x => ↑(f x)) a :=
+    ((s.indicator f a : ℝ≥0) : ℝ) = s.indicator (fun x ↦ ↑(f x)) a :=
   (toRealHom : ℝ≥0 →+ ℝ).map_indicator _ _ _
 
 @[norm_cast]
@@ -65,7 +65,7 @@ lemma coe_expect (s : Finset ι) (f : ι → ℝ≥0) : 𝔼 i ∈ s, f i = 𝔼
 theorem _root_.Real.toNNReal_sum_of_nonneg (hf : ∀ i ∈ s, 0 ≤ f i) :
     Real.toNNReal (∑ a ∈ s, f a) = ∑ a ∈ s, Real.toNNReal (f a) := by
   rw [← coe_inj, NNReal.coe_sum, Real.coe_toNNReal _ (Finset.sum_nonneg hf)]
-  exact Finset.sum_congr rfl fun x hxs => by rw [Real.coe_toNNReal _ (hf x hxs)]
+  exact Finset.sum_congr rfl fun x hxs ↦ by rw [Real.coe_toNNReal _ (hf x hxs)]
 
 @[simp, norm_cast]
 theorem coe_prod (s : Finset ι) (f : ι → ℝ≥0) : ↑(∏ a ∈ s, f a) = ∏ a ∈ s, (f a : ℝ) :=
@@ -74,7 +74,7 @@ theorem coe_prod (s : Finset ι) (f : ι → ℝ≥0) : ↑(∏ a ∈ s, f a) = 
 theorem _root_.Real.toNNReal_prod_of_nonneg (hf : ∀ a, a ∈ s → 0 ≤ f a) :
     Real.toNNReal (∏ a ∈ s, f a) = ∏ a ∈ s, Real.toNNReal (f a) := by
   rw [← coe_inj, NNReal.coe_prod, Real.coe_toNNReal _ (Finset.prod_nonneg hf)]
-  exact Finset.prod_congr rfl fun x hxs => by rw [Real.coe_toNNReal _ (hf x hxs)]
+  exact Finset.prod_congr rfl fun x hxs ↦ by rw [Real.coe_toNNReal _ (hf x hxs)]
 
 theorem le_iInf_add_iInf {ι ι' : Sort*} [Nonempty ι] [Nonempty ι'] {f : ι → ℝ≥0} {g : ι' → ℝ≥0}
     {a : ℝ≥0} (h : ∀ i j, a ≤ f i + g j) : a ≤ (⨅ i, f i) + ⨅ j, g j := by
@@ -82,15 +82,15 @@ theorem le_iInf_add_iInf {ι ι' : Sort*} [Nonempty ι] [Nonempty ι'] {f : ι �
   exact le_ciInf_add_ciInf h
 
 theorem mul_finset_sup {α} (r : ℝ≥0) (s : Finset α) (f : α → ℝ≥0) :
-    r * s.sup f = s.sup fun a => r * f a :=
+    r * s.sup f = s.sup fun a ↦ r * f a :=
   Finset.comp_sup_eq_sup_comp _ (NNReal.mul_sup r) (mul_zero r)
 
 theorem finset_sup_mul {α} (s : Finset α) (f : α → ℝ≥0) (r : ℝ≥0) :
-    s.sup f * r = s.sup fun a => f a * r :=
-  Finset.comp_sup_eq_sup_comp (· * r) (fun x y => NNReal.sup_mul x y r) (zero_mul r)
+    s.sup f * r = s.sup fun a ↦ f a * r :=
+  Finset.comp_sup_eq_sup_comp (· * r) (fun x y ↦ NNReal.sup_mul x y r) (zero_mul r)
 
 theorem finset_sup_div {α} {f : α → ℝ≥0} {s : Finset α} (r : ℝ≥0) :
-    s.sup f / r = s.sup fun a => f a / r := by simp only [div_eq_inv_mul, mul_finset_sup]
+    s.sup f / r = s.sup fun a ↦ f a / r := by simp only [div_eq_inv_mul, mul_finset_sup]
 
 open Real
 
@@ -143,7 +143,7 @@ theorem iSup_mul_le {a : ℝ≥0} {g : ι → ℝ≥0} {h : ℝ≥0} (H : ∀ i,
 
 theorem iSup_mul_iSup_le {a : ℝ≥0} {g h : ι → ℝ≥0} (H : ∀ i j, g i * h j ≤ a) :
     iSup g * iSup h ≤ a :=
-  iSup_mul_le fun _ => mul_iSup_le <| H _
+  iSup_mul_le fun _ ↦ mul_iSup_le <| H _
 
 variable [Nonempty ι]
 
@@ -157,7 +157,7 @@ theorem le_iInf_mul {a : ℝ≥0} {g : ι → ℝ≥0} {h : ℝ≥0} (H : ∀ i,
 
 theorem le_iInf_mul_iInf {a : ℝ≥0} {g h : ι → ℝ≥0} (H : ∀ i j, a ≤ g i * h j) :
     a ≤ iInf g * iInf h :=
-  le_iInf_mul fun i => le_mul_iInf <| H i
+  le_iInf_mul fun i ↦ le_mul_iInf <| H i
 
 end Csupr
 

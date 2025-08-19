@@ -48,9 +48,9 @@ where `P : Submodule R M`.
 -/
 def restrictScalarsEquiv [Ring S] [SMul S R] [Module S M] [IsScalarTower S R M]
     (P : Submodule R M) : (M ⧸ P.restrictScalars S) ≃ₗ[S] M ⧸ P :=
-  { Quotient.congrRight fun _ _ => Iff.rfl with
-    map_add' := fun x y => Quotient.inductionOn₂' x y fun _x' _y' => rfl
-    map_smul' := fun _c x => Submodule.Quotient.induction_on _ x fun _x' => rfl }
+  { Quotient.congrRight fun _ _ ↦ Iff.rfl with
+    map_add' := fun x y ↦ Quotient.inductionOn₂' x y fun _x' _y' ↦ rfl
+    map_smul' := fun _c x ↦ Submodule.Quotient.induction_on _ x fun _x' ↦ rfl }
 
 @[simp]
 theorem restrictScalarsEquiv_mk [Ring S] [SMul S R] [Module S M] [IsScalarTower S R M]
@@ -74,12 +74,12 @@ theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := by
 end Quotient
 
 instance QuotientBot.infinite [Infinite M] : Infinite (M ⧸ (⊥ : Submodule R M)) :=
-  Infinite.of_injective Submodule.Quotient.mk fun _x _y h =>
+  Infinite.of_injective Submodule.Quotient.mk fun _x _y h ↦
     sub_eq_zero.mp <| (Submodule.Quotient.eq ⊥).mp h
 
 instance QuotientTop.unique : Unique (M ⧸ (⊤ : Submodule R M)) where
   default := 0
-  uniq x := Submodule.Quotient.induction_on _ x fun _x =>
+  uniq x := Submodule.Quotient.induction_on _ x fun _x ↦
     (Submodule.Quotient.eq ⊤).mpr Submodule.mem_top
 
 instance QuotientTop.fintype : Fintype (M ⧸ (⊤ : Submodule R M)) :=
@@ -90,20 +90,20 @@ variable {p}
 theorem subsingleton_quotient_iff_eq_top : Subsingleton (M ⧸ p) ↔ p = ⊤ := by
   constructor
   · rintro h
-    refine eq_top_iff.mpr fun x _ => ?_
+    refine eq_top_iff.mpr fun x _ ↦ ?_
     have : x - 0 ∈ p := (Submodule.Quotient.eq p).mp (Subsingleton.elim _ _)
     rwa [sub_zero] at this
   · rintro rfl
     infer_instance
 
 theorem unique_quotient_iff_eq_top : Nonempty (Unique (M ⧸ p)) ↔ p = ⊤ :=
-  ⟨fun ⟨h⟩ => subsingleton_quotient_iff_eq_top.mp (@Unique.instSubsingleton _ h),
+  ⟨fun ⟨h⟩ ↦ subsingleton_quotient_iff_eq_top.mp (@Unique.instSubsingleton _ h),
     by rintro rfl; exact ⟨QuotientTop.unique⟩⟩
 
 variable (p)
 
 noncomputable instance Quotient.fintype [Fintype M] (S : Submodule R M) : Fintype (M ⧸ S) :=
-  @_root_.Quotient.fintype _ _ _ fun _ _ => Classical.dec _
+  @_root_.Quotient.fintype _ _ _ fun _ _ ↦ Classical.dec _
 
 section
 
@@ -286,7 +286,7 @@ def comapMkQRelIso : Submodule R (M ⧸ p) ≃o Set.Ici p where
   toFun p' := ⟨comap p.mkQ p', le_comap_mkQ p _⟩
   invFun q := map p.mkQ q
   left_inv p' := map_comap_eq_self <| by simp
-  right_inv := fun ⟨q, hq⟩ => Subtype.ext_val <| by simpa [comap_map_mkQ p]
+  right_inv := fun ⟨q, hq⟩ ↦ Subtype.ext_val <| by simpa [comap_map_mkQ p]
   map_rel_iff' := comap_le_comap_iff <| range_mkQ _
 
 /-- The ordering on submodules of the quotient of `M` by `p` embeds into the ordering on submodules
@@ -319,15 +319,15 @@ and `f : M ≃ₗ N` maps `P` to `Q`, then `M ⧸ P` is equivalent to `N ⧸ Q`.
 @[simps]
 def Quotient.equiv {N : Type*} [AddCommGroup N] [Module R N] (P : Submodule R M)
     (Q : Submodule R N) (f : M ≃ₗ[R] N) (hf : P.map f = Q) : (M ⧸ P) ≃ₗ[R] N ⧸ Q :=
-  { P.mapQ Q (f : M →ₗ[R] N) fun _ hx => hf ▸ Submodule.mem_map_of_mem hx with
-    toFun := P.mapQ Q (f : M →ₗ[R] N) fun _ hx => hf ▸ Submodule.mem_map_of_mem hx
+  { P.mapQ Q (f : M →ₗ[R] N) fun _ hx ↦ hf ▸ Submodule.mem_map_of_mem hx with
+    toFun := P.mapQ Q (f : M →ₗ[R] N) fun _ hx ↦ hf ▸ Submodule.mem_map_of_mem hx
     invFun :=
-      Q.mapQ P (f.symm : N →ₗ[R] M) fun x hx => by
+      Q.mapQ P (f.symm : N →ₗ[R] M) fun x hx ↦ by
         rw [← hf, Submodule.mem_map] at hx
         obtain ⟨y, hy, rfl⟩ := hx
         simpa
-    left_inv := fun x => Submodule.Quotient.induction_on _ x (by simp)
-    right_inv := fun x => Submodule.Quotient.induction_on _ x (by simp) }
+    left_inv := fun x ↦ Submodule.Quotient.induction_on _ x (by simp)
+    right_inv := fun x ↦ Submodule.Quotient.induction_on _ x (by simp) }
 
 @[simp]
 theorem Quotient.equiv_symm {R M N : Type*} [Ring R] [AddCommGroup M] [Module R M]
@@ -365,7 +365,7 @@ variable {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R �
 variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃] [RingHomSurjective τ₁₂]
 
 theorem range_mkQ_comp (f : M →ₛₗ[τ₁₂] M₂) : (range f).mkQ.comp f = 0 :=
-  LinearMap.ext fun x => by simp
+  LinearMap.ext fun x ↦ by simp
 
 theorem ker_le_range_iff {f : M →ₛₗ[τ₁₂] M₂} {g : M₂ →ₛₗ[τ₂₃] M₃} :
     ker g ≤ range f ↔ (range f).mkQ.comp (ker g).subtype = 0 := by
@@ -392,7 +392,7 @@ variable (p p' : Submodule R M)
 /-- If `p = ⊥`, then `M / p ≃ₗ[R] M`. -/
 def quotEquivOfEqBot (hp : p = ⊥) : (M ⧸ p) ≃ₗ[R] M :=
   LinearEquiv.ofLinear (p.liftQ id <| hp.symm ▸ bot_le) p.mkQ (liftQ_mkQ _ _ _) <|
-    p.quot_hom_ext _ LinearMap.id fun _ => rfl
+    p.quot_hom_ext _ LinearMap.id fun _ ↦ rfl
 
 @[simp]
 theorem quotEquivOfEqBot_apply_mk (hp : p = ⊥) (x : M) :

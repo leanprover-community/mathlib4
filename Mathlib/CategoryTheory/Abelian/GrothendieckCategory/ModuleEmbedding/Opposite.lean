@@ -38,15 +38,15 @@ private theorem isSeparator_projectiveSeparator : IsSeparator (projectiveSeparat
   (has_projective_separator (coseparator Cᵒᵖ) (isCoseparator_coseparator Cᵒᵖ)).choose_spec.2
 
 private noncomputable def generator : Cᵒᵖ :=
-  ∐ (fun (X : D) => ∐ fun (_ : projectiveSeparator C ⟶ F.obj X) => projectiveSeparator C)
+  ∐ (fun (X : D) ↦ ∐ fun (_ : projectiveSeparator C ⟶ F.obj X) ↦ projectiveSeparator C)
 
 private theorem exists_epi (X : D) : ∃ f : generator F ⟶ F.obj X, Epi f := by
   classical
-  refine ⟨Sigma.desc (Pi.single X (𝟙 _)) ≫ Sigma.desc (fun f => f), ?_⟩
+  refine ⟨Sigma.desc (Pi.single X (𝟙 _)) ≫ Sigma.desc (fun f ↦ f), ?_⟩
   have h := (isSeparator_iff_epi (projectiveSeparator C)).1
     isSeparator_projectiveSeparator (F.obj X)
   suffices Epi (Sigma.desc (Pi.single X (𝟙 _))) from epi_comp' this h
-  exact SplitEpi.epi ⟨Sigma.ι (fun (X : D) => ∐ fun _ => projectiveSeparator C) X, by simp⟩
+  exact SplitEpi.epi ⟨Sigma.ι (fun (X : D) ↦ ∐ fun _ ↦ projectiveSeparator C) X, by simp⟩
 
 private instance : Projective (generator F) := by
   rw [generator]

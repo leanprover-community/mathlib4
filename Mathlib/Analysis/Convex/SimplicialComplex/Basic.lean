@@ -75,7 +75,7 @@ variable {K : SimplicialComplex 𝕜 E} {s t : Finset E} {x : E}
 
 /-- A `Finset` belongs to a `SimplicialComplex` if it's a face of it. -/
 instance : Membership (Finset E) (SimplicialComplex 𝕜 E) :=
-  ⟨fun K s => s ∈ K.faces⟩
+  ⟨fun K s ↦ s ∈ K.faces⟩
 
 lemma nonempty_of_mem_faces (hs : s ∈ K.faces) : s.Nonempty := by
   rw [Finset.nonempty_iff_ne_empty]; rintro rfl; exact K.empty_notMem hs
@@ -110,7 +110,7 @@ theorem disjoint_or_exists_inter_eq_convexHull (hs : s ∈ K.faces) (ht : t ∈ 
       ∃ u ∈ K.faces, convexHull 𝕜 (s : Set E) ∩ convexHull 𝕜 ↑t = convexHull 𝕜 ↑u := by
   classical
   by_contra! h
-  refine h.2 (s ∩ t) (K.down_closed hs inter_subset_left fun hst => h.1 <|
+  refine h.2 (s ∩ t) (K.down_closed hs inter_subset_left fun hst ↦ h.1 <|
     disjoint_iff_inf_le.mpr <| (K.inter_subset_convexHull hs ht).trans ?_) ?_
   · rw [← coe_inter, hst, coe_empty, convexHull_empty]
     rfl
@@ -134,10 +134,10 @@ def ofErase (faces : Set (Finset E)) (indep : ∀ s ∈ faces, AffineIndependent
 def ofSubcomplex (K : SimplicialComplex 𝕜 E) (faces : Set (Finset E)) (subset : faces ⊆ K.faces)
     (down_closed : ∀ {s t}, s ∈ faces → t ⊆ s → t ∈ faces) : SimplicialComplex 𝕜 E :=
   { faces
-    empty_notMem := fun h => K.empty_notMem (subset h)
-    indep := fun hs => K.indep (subset hs)
-    down_closed := fun hs hts _ => down_closed hs hts
-    inter_subset_convexHull := fun hs ht => K.inter_subset_convexHull (subset hs) (subset ht) }
+    empty_notMem := fun h ↦ K.empty_notMem (subset h)
+    indep := fun hs ↦ K.indep (subset hs)
+    down_closed := fun hs hts _ ↦ down_closed hs hts
+    inter_subset_convexHull := fun hs ht ↦ K.inter_subset_convexHull (subset hs) (subset ht) }
 
 /-! ### Vertices -/
 
@@ -150,16 +150,16 @@ theorem mem_vertices : x ∈ K.vertices ↔ {x} ∈ K.faces := Iff.rfl
 
 theorem vertices_eq : K.vertices = ⋃ k ∈ K.faces, (k : Set E) := by
   ext x
-  refine ⟨fun h => mem_biUnion h <| mem_coe.2 <| mem_singleton_self x, fun h => ?_⟩
+  refine ⟨fun h ↦ mem_biUnion h <| mem_coe.2 <| mem_singleton_self x, fun h ↦ ?_⟩
   obtain ⟨s, hs, hx⟩ := mem_iUnion₂.1 h
   exact K.down_closed hs (Finset.singleton_subset_iff.2 <| mem_coe.1 hx) (singleton_ne_empty _)
 
 theorem vertices_subset_space : K.vertices ⊆ K.space :=
-  vertices_eq.subset.trans <| iUnion₂_mono fun x _ => subset_convexHull 𝕜 (x : Set E)
+  vertices_eq.subset.trans <| iUnion₂_mono fun x _ ↦ subset_convexHull 𝕜 (x : Set E)
 
 theorem vertex_mem_convexHull_iff (hx : x ∈ K.vertices) (hs : s ∈ K.faces) :
     x ∈ convexHull 𝕜 (s : Set E) ↔ x ∈ s := by
-  refine ⟨fun h => ?_, fun h => subset_convexHull 𝕜 _ h⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ subset_convexHull 𝕜 _ h⟩
   classical
   have h := K.inter_subset_convexHull hx hs ⟨by simp, h⟩
   by_contra H
@@ -169,7 +169,7 @@ theorem vertex_mem_convexHull_iff (hx : x ∈ K.vertices) (hs : s ∈ K.faces) :
 /-- A face is a subset of another one iff its vertices are. -/
 theorem face_subset_face_iff (hs : s ∈ K.faces) (ht : t ∈ K.faces) :
     convexHull 𝕜 (s : Set E) ⊆ convexHull 𝕜 ↑t ↔ s ⊆ t :=
-  ⟨fun h _ hxs =>
+  ⟨fun h _ hxs ↦
     (vertex_mem_convexHull_iff
           (K.down_closed hs (Finset.singleton_subset_iff.2 hxs) <| singleton_ne_empty _) ht).1
       (h (subset_convexHull 𝕜 (E := E) s hxs)),
@@ -185,13 +185,13 @@ def facets (K : SimplicialComplex 𝕜 E) : Set (Finset E) :=
 theorem mem_facets : s ∈ K.facets ↔ s ∈ K.faces ∧ ∀ t ∈ K.faces, s ⊆ t → s = t :=
   mem_sep_iff
 
-theorem facets_subset : K.facets ⊆ K.faces := fun _ hs => hs.1
+theorem facets_subset : K.facets ⊆ K.faces := fun _ hs ↦ hs.1
 
 theorem not_facet_iff_subface (hs : s ∈ K.faces) : s ∉ K.facets ↔ ∃ t, t ∈ K.faces ∧ s ⊂ t := by
-  refine ⟨fun hs' : ¬(_ ∧ _) => ?_, ?_⟩
+  refine ⟨fun hs' : ¬(_ ∧ _) ↦ ?_, ?_⟩
   · push_neg at hs'
     obtain ⟨t, ht⟩ := hs' hs
-    exact ⟨t, ht.1, ⟨ht.2.1, fun hts => ht.2.2 (Subset.antisymm ht.2.1 hts)⟩⟩
+    exact ⟨t, ht.1, ⟨ht.2.1, fun hts ↦ ht.2.2 (Subset.antisymm ht.2.1 hts)⟩⟩
   · rintro ⟨t, ht⟩ ⟨hs, hs'⟩
     have := hs' ht.1 ht.2.1
     rw [this] at ht
@@ -209,29 +209,29 @@ variable (𝕜 E)
 
 /-- The complex consisting of only the faces present in both of its arguments. -/
 instance : Min (SimplicialComplex 𝕜 E) :=
-  ⟨fun K L =>
+  ⟨fun K L ↦
     { faces := K.faces ∩ L.faces
-      empty_notMem := fun h => K.empty_notMem (Set.inter_subset_left h)
-      indep := fun hs => K.indep hs.1
-      down_closed := fun hs hst ht => ⟨K.down_closed hs.1 hst ht, L.down_closed hs.2 hst ht⟩
-      inter_subset_convexHull := fun hs ht => K.inter_subset_convexHull hs.1 ht.1 }⟩
+      empty_notMem := fun h ↦ K.empty_notMem (Set.inter_subset_left h)
+      indep := fun hs ↦ K.indep hs.1
+      down_closed := fun hs hst ht ↦ ⟨K.down_closed hs.1 hst ht, L.down_closed hs.2 hst ht⟩
+      inter_subset_convexHull := fun hs ht ↦ K.inter_subset_convexHull hs.1 ht.1 }⟩
 
 instance : SemilatticeInf (SimplicialComplex 𝕜 E) :=
-  { PartialOrder.lift faces (fun _ _ => SimplicialComplex.ext) with
+  { PartialOrder.lift faces (fun _ _ ↦ SimplicialComplex.ext) with
     inf := (· ⊓ ·)
-    inf_le_left := fun _ _ _ hs => hs.1
-    inf_le_right := fun _ _ _ hs => hs.2
-    le_inf := fun _ _ _ hKL hKM _ hs => ⟨hKL hs, hKM hs⟩ }
+    inf_le_left := fun _ _ _ hs ↦ hs.1
+    inf_le_right := fun _ _ _ hs ↦ hs.2
+    le_inf := fun _ _ _ hKL hKM _ hs ↦ ⟨hKL hs, hKM hs⟩ }
 
 instance hasBot : Bot (SimplicialComplex 𝕜 E) :=
   ⟨{  faces := ∅
       empty_notMem := Set.notMem_empty ∅
-      indep := fun hs => (Set.notMem_empty _ hs).elim
-      down_closed := fun hs => (Set.notMem_empty _ hs).elim
-      inter_subset_convexHull := fun hs => (Set.notMem_empty _ hs).elim }⟩
+      indep := fun hs ↦ (Set.notMem_empty _ hs).elim
+      down_closed := fun hs ↦ (Set.notMem_empty _ hs).elim
+      inter_subset_convexHull := fun hs ↦ (Set.notMem_empty _ hs).elim }⟩
 
 instance : OrderBot (SimplicialComplex 𝕜 E) :=
-  { SimplicialComplex.hasBot 𝕜 E with bot_le := fun _ => Set.empty_subset _ }
+  { SimplicialComplex.hasBot 𝕜 E with bot_le := fun _ ↦ Set.empty_subset _ }
 
 instance : Inhabited (SimplicialComplex 𝕜 E) :=
   ⟨⊥⟩

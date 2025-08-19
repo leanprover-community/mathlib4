@@ -116,9 +116,9 @@ variable (F : V ⥤ W) [F.LaxMonoidal]
 open Functor.LaxMonoidal
 
 instance : EnrichedCategory W (TransportEnrichment F C) where
-  Hom := fun X Y : C => F.obj (X ⟶[V] Y)
-  id := fun X : C => ε F ≫ F.map (eId V X)
-  comp := fun X Y Z : C => μ F _ _ ≫ F.map (eComp V X Y Z)
+  Hom := fun X Y : C ↦ F.obj (X ⟶[V] Y)
+  id := fun X : C ↦ ε F ≫ F.map (eId V X)
+  comp := fun X Y Z : C ↦ μ F _ _ ≫ F.map (eComp V X Y Z)
   id_comp X Y := by
     simp only [comp_whiskerRight, Category.assoc, Functor.LaxMonoidal.μ_natural_left_assoc,
       Functor.LaxMonoidal.left_unitality_inv_assoc]
@@ -495,8 +495,8 @@ the `V`-object of natural transformations from `F` to `G`.
 def enrichedNatTransYoneda (F G : EnrichedFunctor V C D) : Vᵒᵖ ⥤ Type max u₁ w where
   obj A := GradedNatTrans ((Center.ofBraided V).obj (unop A)) F G
   map f σ :=
-    { app := fun X => f.unop ≫ σ.app X
-      naturality := fun X Y => by
+    { app := fun X ↦ f.unop ≫ σ.app X
+      naturality := fun X Y ↦ by
         have p := σ.naturality X Y
         dsimp at p ⊢
         rw [← id_tensor_comp_tensor_id (f.unop ≫ σ.app Y) _, id_tensor_comp, Category.assoc,
@@ -518,15 +518,15 @@ is just the same thing as an honest functor.
 def enrichedFunctorTypeEquivFunctor {C : Type u₁} [𝒞 : EnrichedCategory (Type v) C] {D : Type u₂}
     [𝒟 : EnrichedCategory (Type v) D] : EnrichedFunctor (Type v) C D ≃ C ⥤ D where
   toFun F :=
-    { obj := fun X => F.obj X
-      map := fun f => F.map _ _ f
-      map_id := fun X => congr_fun (F.map_id X) PUnit.unit
-      map_comp := fun f g => congr_fun (F.map_comp _ _ _) ⟨f, g⟩ }
+    { obj := fun X ↦ F.obj X
+      map := fun f ↦ F.map _ _ f
+      map_id := fun X ↦ congr_fun (F.map_id X) PUnit.unit
+      map_comp := fun f g ↦ congr_fun (F.map_comp _ _ _) ⟨f, g⟩ }
   invFun F :=
-    { obj := fun X => F.obj X
-      map := fun _ _ f => F.map f
-      map_id := fun X => by ext ⟨⟩; exact F.map_id X
-      map_comp := fun X Y Z => by ext ⟨f, g⟩; exact F.map_comp f g }
+    { obj := fun X ↦ F.obj X
+      map := fun _ _ f ↦ F.map f
+      map_id := fun X ↦ by ext ⟨⟩; exact F.map_id X
+      map_comp := fun X Y Z ↦ by ext ⟨f, g⟩; exact F.map_comp f g }
 
 /-- We verify that the presheaf representing natural transformations
 between `Type v`-enriched functors is actually represented by
@@ -537,13 +537,13 @@ def enrichedNatTransYonedaTypeIsoYonedaNatTrans {C : Type v} [EnrichedCategory (
     enrichedNatTransYoneda F G ≅
       yoneda.obj (enrichedFunctorTypeEquivFunctor F ⟶ enrichedFunctorTypeEquivFunctor G) :=
   NatIso.ofComponents
-    (fun α =>
-      { hom := fun σ x =>
-          { app := fun X => σ.app X x
-            naturality := fun X Y f => congr_fun (σ.naturality X Y) ⟨x, f⟩ }
-        inv := fun σ =>
-          { app := fun X x => (σ x).app X
-            naturality := fun X Y => by ext ⟨x, f⟩; exact (σ x).naturality f } })
+    (fun α ↦
+      { hom := fun σ x ↦
+          { app := fun X ↦ σ.app X x
+            naturality := fun X Y f ↦ congr_fun (σ.naturality X Y) ⟨x, f⟩ }
+        inv := fun σ ↦
+          { app := fun X x ↦ (σ x).app X
+            naturality := fun X Y ↦ by ext ⟨x, f⟩; exact (σ x).naturality f } })
     (by cat_disch)
 
 end

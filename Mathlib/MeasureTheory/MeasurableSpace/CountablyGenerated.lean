@@ -344,8 +344,8 @@ lemma measurableSet_generateFrom_memPartition_iff (t : ℕ → Set α) (n : ℕ)
         exact diff_subset
       · simp only [Finset.coe_sdiff, coe_toFinset]
         refine (IsCompl.eq_compl ⟨?_, ?_⟩).symm
-        · refine Set.disjoint_sUnion_right.mpr fun u huS => ?_
-          refine Set.disjoint_sUnion_left.mpr fun v huV => ?_
+        · refine Set.disjoint_sUnion_right.mpr fun u huS ↦ ?_
+          refine Set.disjoint_sUnion_left.mpr fun v huV ↦ ?_
           refine disjoint_memPartition t n (mem_of_mem_diff huV) (hS_subset huS) ?_
           exact ne_of_mem_of_not_mem huS (notMem_of_mem_diff huV) |>.symm
         · rw [codisjoint_iff]

@@ -331,7 +331,7 @@ theorem _root_.Ordinal.lift_preOmega (o : Ordinal.{u}) :
 
 theorem preAleph_le_of_isSuccPrelimit {o : Ordinal} (l : IsSuccPrelimit o) {c} :
     preAleph o ≤ c ↔ ∀ o' < o, preAleph o' ≤ c :=
-  ⟨fun h o' h' => (preAleph_le_preAleph.2 <| h'.le).trans h, fun h => by
+  ⟨fun h o' h' ↦ (preAleph_le_preAleph.2 <| h'.le).trans h, fun h ↦ by
     rw [← preAleph.apply_symm_apply c, preAleph_le_preAleph, l.le_iff_forall_le]
     intro x h'
     rw [← preAleph_le_preAleph, preAleph.apply_symm_apply]
@@ -342,9 +342,9 @@ alias preAleph_le_of_isLimit := preAleph_le_of_isSuccPrelimit
 
 theorem preAleph_limit {o : Ordinal} (ho : IsSuccPrelimit o) :
     preAleph o = ⨆ a : Iio o, preAleph a := by
-  refine le_antisymm ?_ (ciSup_le' fun i => preAleph_le_preAleph.2 i.2.le)
+  refine le_antisymm ?_ (ciSup_le' fun i ↦ preAleph_le_preAleph.2 i.2.le)
   rw [preAleph_le_of_isSuccPrelimit ho]
-  exact fun a ha => le_ciSup (bddAbove_of_small _) (⟨a, ha⟩ : Iio o)
+  exact fun a ha ↦ le_ciSup (bddAbove_of_small _) (⟨a, ha⟩ : Iio o)
 
 theorem preAleph_le_of_strictMono {f : Ordinal → Cardinal} (hf : StrictMono f) (o : Ordinal) :
     preAleph o ≤ f o := by
@@ -437,7 +437,7 @@ alias isLimit_omega := isSuccLimit_omega
 @[simp]
 theorem range_aleph : range aleph = Set.Ici ℵ₀ := by
   ext c
-  refine ⟨fun ⟨o, e⟩ => e ▸ aleph0_le_aleph _, fun hc ↦ ⟨preAleph.symm c - ω, ?_⟩⟩
+  refine ⟨fun ⟨o, e⟩ ↦ e ▸ aleph0_le_aleph _, fun hc ↦ ⟨preAleph.symm c - ω, ?_⟩⟩
   rw [aleph_eq_preAleph, Ordinal.add_sub_cancel_of_le, preAleph.apply_symm_apply]
   rwa [← aleph0_le_preAleph, preAleph.apply_symm_apply]
 
@@ -565,7 +565,7 @@ theorem isNormal_preBeth : Ordinal.IsNormal (ord ∘ preBeth) := by
   refine (isNormal_iff_strictMono_limit _).2
     ⟨ord_strictMono.comp preBeth_strictMono, fun o ho a ha ↦ ?_⟩
   rw [comp_apply, preBeth_limit ho.isSuccPrelimit, ord_le]
-  exact ciSup_le' fun b => ord_le.1 (ha _ b.2)
+  exact ciSup_le' fun b ↦ ord_le.1 (ha _ b.2)
 
 /-- The Beth function is defined so that `beth 0 = ℵ₀'`, `beth (succ o) = 2 ^ beth o`, and that for
 a limit ordinal `o`, `beth o` is the supremum of `beth a` for `a < o`.

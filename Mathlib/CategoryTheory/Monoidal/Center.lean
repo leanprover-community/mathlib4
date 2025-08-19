@@ -108,7 +108,7 @@ a morphism whose underlying morphism is an isomorphism.
 def isoMk {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : X ≅ Y where
   hom := f
   inv := ⟨inv f.f,
-    fun U => by simp [← cancel_epi (f.f ▷ U), ← comp_whiskerRight_assoc,
+    fun U ↦ by simp [← cancel_epi (f.f ▷ U), ← comp_whiskerRight_assoc,
       ← MonoidalCategory.whiskerLeft_comp] ⟩
 
 instance isIso_of_f_isIso {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : IsIso f := by
@@ -119,11 +119,11 @@ instance isIso_of_f_isIso {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : IsIso f :
 @[simps]
 def tensorObj (X Y : Center C) : Center C :=
   ⟨X.1 ⊗ Y.1,
-    { β := fun U =>
+    { β := fun U ↦
         α_ _ _ _ ≪≫
           (whiskerLeftIso X.1 (Y.2.β U)) ≪≫ (α_ _ _ _).symm ≪≫
             (whiskerRightIso (X.2.β U) Y.1) ≪≫ α_ _ _ _
-      monoidal := fun U U' => by
+      monoidal := fun U U' ↦ by
         dsimp only [Iso.trans_hom, whiskerLeftIso_hom, Iso.symm_hom, whiskerRightIso_hom]
         simp only [HalfBraiding.monoidal]
         -- We'd like to commute `X.1 ◁ U ◁ (HalfBraiding.β Y.2 U').hom`
@@ -136,7 +136,7 @@ def tensorObj (X Y : Center C) : Center C :=
                 (HalfBraiding.β X.2 U).hom ▷ _) ⊗≫
                   U ◁ (HalfBraiding.β X.2 U').hom ▷ Y.1 ⊗≫ 𝟙 _ := by monoidal
           _ = _ := by rw [whisker_exchange]; monoidal
-      naturality := fun {U U'} f => by
+      naturality := fun {U U'} f ↦ by
         dsimp only [Iso.trans_hom, whiskerLeftIso_hom, Iso.symm_hom, whiskerRightIso_hom]
         calc
           _ = 𝟙 _ ⊗≫
@@ -206,19 +206,19 @@ section
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 @[simps]
 def tensorUnit : Center C :=
-  ⟨𝟙_ C, { β := fun U => λ_ U ≪≫ (ρ_ U).symm }⟩
+  ⟨𝟙_ C, { β := fun U ↦ λ_ U ≪≫ (ρ_ U).symm }⟩
 
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def associator (X Y Z : Center C) : tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z) :=
-  isoMk ⟨(α_ X.1 Y.1 Z.1).hom, fun U => by simp⟩
+  isoMk ⟨(α_ X.1 Y.1 Z.1).hom, fun U ↦ by simp⟩
 
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def leftUnitor (X : Center C) : tensorObj tensorUnit X ≅ X :=
-  isoMk ⟨(λ_ X.1).hom, fun U => by simp⟩
+  isoMk ⟨(λ_ X.1).hom, fun U ↦ by simp⟩
 
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def rightUnitor (X : Center C) : tensorObj X tensorUnit ≅ X :=
-  isoMk ⟨(ρ_ X.1).hom, fun U => by simp⟩
+  isoMk ⟨(ρ_ X.1).hom, fun U ↦ by simp⟩
 
 end
 
@@ -330,7 +330,7 @@ end
 @[simps!]
 def braiding (X Y : Center C) : X ⊗ Y ≅ Y ⊗ X :=
   isoMk
-    ⟨(X.2.β Y.1).hom, fun U => by
+    ⟨(X.2.β Y.1).hom, fun U ↦ by
       dsimp
       simp only [Category.assoc]
       rw [← IsIso.inv_comp_eq, IsIso.Iso.inv_hom, ← HalfBraiding.monoidal_assoc,
@@ -350,7 +350,7 @@ open BraidedCategory
 /-- Auxiliary construction for `ofBraided`. -/
 @[simps]
 def ofBraidedObj (X : C) : Center C :=
-  ⟨X, { β := fun Y => β_ X Y}⟩
+  ⟨X, { β := fun Y ↦ β_ X Y}⟩
 
 variable (C)
 
@@ -361,7 +361,7 @@ def ofBraided : C ⥤ Center C where
   obj := ofBraidedObj
   map f :=
     { f
-      comm := fun U => braiding_naturality_left f U }
+      comm := fun U ↦ braiding_naturality_left f U }
 
 instance : (ofBraided C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal

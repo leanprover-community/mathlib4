@@ -84,7 +84,7 @@ variable (R)
 -/
 def adj : free R ⊣ forget (ModuleCat.{u} R) :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun _ _ => freeHomEquiv
+    { homEquiv := fun _ _ ↦ freeHomEquiv
       homEquiv_naturality_left_symm := fun {X Y M} f g ↦ by ext; simp [freeHomEquiv] }
 
 @[simp]
@@ -232,10 +232,10 @@ open Finsupp
 -- using the fact that `ModuleCat.Free R : Type ⥤ ModuleCat R` and `ModuleCat.forget` are both lax
 -- monoidal. This still seems difficult, so we just do it by hand.
 instance categoryFree : Category (Free R C) where
-  Hom := fun X Y : C => (X ⟶ Y) →₀ R
-  id := fun X : C => Finsupp.single (𝟙 X) 1
+  Hom := fun X Y : C ↦ (X ⟶ Y) →₀ R
+  id := fun X : C ↦ Finsupp.single (𝟙 X) 1
   comp {X _ Z : C} f g :=
-    (f.sum (fun f' s => g.sum (fun g' t => Finsupp.single (f' ≫ g') (s * t))) : (X ⟶ Z) →₀ R)
+    (f.sum (fun f' s ↦ g.sum (fun g' t ↦ Finsupp.single (f' ≫ g') (s * t))) : (X ⟶ Z) →₀ R)
   assoc {W X Y Z} f g h := by
     -- This imitates the proof of associativity for `MonoidAlgebra`.
     simp only [sum_sum_index, sum_single_index, single_zero, single_add,
@@ -296,7 +296,7 @@ open Preadditive Linear
 @[simps]
 def lift (F : C ⥤ D) : Free R C ⥤ D where
   obj X := F.obj X
-  map {_ _} f := f.sum fun f' r => r • F.map f'
+  map {_ _} f := f.sum fun f' r ↦ r • F.map f'
   map_id := by dsimp [CategoryTheory.categoryFree]; simp
   map_comp {X Y Z} f g := by
     induction f using Finsupp.induction_linear with
@@ -341,14 +341,14 @@ instance lift_linear (F : C ⥤ D) : (lift R F).Linear R where
 is isomorphic to the original functor.
 -/
 def embeddingLiftIso (F : C ⥤ D) : embedding R C ⋙ lift R F ≅ F :=
-  NatIso.ofComponents fun _ => Iso.refl _
+  NatIso.ofComponents fun _ ↦ Iso.refl _
 
 /-- Two `R`-linear functors out of the `R`-linear completion are isomorphic iff their
 compositions with the embedding functor are isomorphic.
 -/
 def ext {F G : Free R C ⥤ D} [F.Additive] [F.Linear R] [G.Additive] [G.Linear R]
     (α : embedding R C ⋙ F ≅ embedding R C ⋙ G) : F ≅ G :=
-  NatIso.ofComponents (fun X => α.app X)
+  NatIso.ofComponents (fun X ↦ α.app X)
     (by
       intro X Y f
       induction f using Finsupp.induction_linear with

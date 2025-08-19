@@ -97,7 +97,7 @@ theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : M → F} {U : Set M} {c : M}
   set W := U ∩ {z | ‖f z‖ = ‖f c‖}ᶜ
   have hWo : IsOpen W := hd.continuousOn.norm.isOpen_inter_preimage ho isOpen_ne
   have hdVW : Disjoint V W := disjoint_compl_right.mono inf_le_right inf_le_right
-  have hUVW : U ⊆ V ∪ W := fun x hx => (eq_or_ne ‖f x‖ ‖f c‖).imp (.intro hx) (.intro hx)
+  have hUVW : U ⊆ V ∪ W := fun x hx ↦ (eq_or_ne ‖f x‖ ‖f c‖).imp (.intro hx) (.intro hx)
   exact hc.subset_left_of_subset_union hVo hWo hdVW hUVW hVne
 
 /-- **Maximum modulus principle** on a connected set. Let `U` be a (pre)connected open set in a
@@ -107,7 +107,7 @@ that `‖f x‖` takes its maximum value on `U` at `c ∈ U`. Then `f x = f c` f
 TODO: change assumption from `IsMaxOn` to `IsLocalMax`. -/
 theorem eqOn_of_isPreconnected_of_isMaxOn_norm [StrictConvexSpace ℝ F] {f : M → F} {U : Set M}
     {c : M} (hd : MDifferentiableOn I 𝓘(ℂ, F) f U) (hc : IsPreconnected U) (ho : IsOpen U)
-    (hcU : c ∈ U) (hm : IsMaxOn (norm ∘ f) U c) : EqOn f (const M (f c)) U := fun x hx =>
+    (hcU : c ∈ U) (hm : IsMaxOn (norm ∘ f) U c) : EqOn f (const M (f c)) U := fun x hx ↦
   have H₁ : ‖f x‖ = ‖f c‖ := hd.norm_eqOn_of_isPreconnected_of_isMaxOn hc ho hcU hm hx
   -- TODO: Add `MDifferentiableOn.add` etc; does it mean importing `Manifold.Algebra.Monoid`?
   have hd' : MDifferentiableOn I 𝓘(ℂ, F) (f · + f c) U := fun x hx ↦

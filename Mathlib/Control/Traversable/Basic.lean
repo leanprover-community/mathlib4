@@ -83,7 +83,7 @@ namespace ApplicativeTransformation
 variable (F : Type u → Type v) [Applicative F]
 variable (G : Type u → Type w) [Applicative G]
 
-instance : CoeFun (ApplicativeTransformation F G) fun _ => ∀ {α}, F α → G α :=
+instance : CoeFun (ApplicativeTransformation F G) fun _ ↦ ∀ {α}, F α → G α :=
   ⟨fun η ↦ η.app _⟩
 
 variable {F G}
@@ -99,11 +99,11 @@ theorem coe_mk (f : ∀ α : Type u, F α → G α) (pp ps) :
 
 protected theorem congr_fun (η η' : ApplicativeTransformation F G) (h : η = η') {α : Type u}
     (x : F α) : η x = η' x :=
-  congrArg (fun η'' : ApplicativeTransformation F G => η'' x) h
+  congrArg (fun η'' : ApplicativeTransformation F G ↦ η'' x) h
 
 protected theorem congr_arg (η : ApplicativeTransformation F G) {α : Type u} {x y : F α}
     (h : x = y) : η x = η y :=
-  congrArg (fun z : F α => η z) h
+  congrArg (fun z : F α ↦ η z) h
 
 theorem coe_inj ⦃η η' : ApplicativeTransformation F G⦄ (h : (η : ∀ α, F α → G α) = η') :
     η = η' := by
@@ -178,11 +178,11 @@ theorem comp_assoc {I : Type u → Type t} [Applicative I]
 
 @[simp]
 theorem comp_id (η : ApplicativeTransformation F G) : η.comp idTransformation = η :=
-  ext fun _ _ => rfl
+  ext fun _ _ ↦ rfl
 
 @[simp]
 theorem id_comp (η : ApplicativeTransformation F G) : idTransformation.comp η = η :=
-  ext fun _ _ => rfl
+  ext fun _ _ ↦ rfl
 
 end ApplicativeTransformation
 

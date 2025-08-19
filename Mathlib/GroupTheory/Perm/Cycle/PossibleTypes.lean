@@ -89,7 +89,7 @@ theorem Equiv.Perm.exists_with_cycleType_iff {m : Multiset ℕ} :
       simp only [Multiset.sum_toList]
       exact hc
     obtain ⟨p, hp_length, hp_nodup, hp_disj⟩ := List.exists_pw_disjoint_with_card hc'
-    use List.prod (List.map (fun l => List.formPerm l) p)
+    use List.prod (List.map (fun l ↦ List.formPerm l) p)
     have hp2 : ∀ x ∈ p, 2 ≤ x.length := by
       intro x hx
       apply h2c x.length

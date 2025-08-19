@@ -58,7 +58,7 @@ theorem algebraMap_mem (r : R) : algebraMap R A r ∈ (1 : SubMulAction R A) :=
   ⟨r, (algebraMap_eq_smul_one r).symm⟩
 
 theorem mem_one' {x : A} : x ∈ (1 : SubMulAction R A) ↔ ∃ y, algebraMap R A y = x :=
-  exists_congr fun r => by rw [algebraMap_eq_smul_one]
+  exists_congr fun r ↦ by rw [algebraMap_eq_smul_one]
 
 end SubMulAction
 
@@ -143,7 +143,7 @@ theorem smul_mono_left (h : I ≤ J) : I • N ≤ J • N :=
   smul_mono h le_rfl
 
 instance : CovariantClass (Submodule R A) (Submodule R M) HSMul.hSMul LE.le :=
-  ⟨fun _ _ => smul_mono le_rfl⟩
+  ⟨fun _ _ ↦ smul_mono le_rfl⟩
 
 variable (I J N P)
 
@@ -443,11 +443,11 @@ theorem map_op_mul :
         map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) M := by
   apply le_antisymm
   · simp_rw [map_le_iff_le_comap]
-    refine mul_le.2 fun m hm n hn => ?_
+    refine mul_le.2 fun m hm n hn ↦ ?_
     rw [mem_comap, map_equiv_eq_comap_symm, map_equiv_eq_comap_symm]
     change op n * op m ∈ _
     exact mul_mem_mul hn hm
-  · refine mul_le.2 (MulOpposite.rec' fun m hm => MulOpposite.rec' fun n hn => ?_)
+  · refine mul_le.2 (MulOpposite.rec' fun m hm ↦ MulOpposite.rec' fun n hn ↦ ?_)
     rw [Submodule.mem_map_equiv] at hm hn ⊢
     exact mul_mem_mul hn hm
 
@@ -592,8 +592,8 @@ protected theorem pow_induction_on_left' {C : ∀ (n : ℕ) (x), x ∈ M ^ n →
   | succ n n_ih =>
     revert hx
     simp_rw [pow_succ']
-    exact fun hx ↦ Submodule.mul_induction_on' (fun m hm x ih => mem_mul _ hm _ _ _ (n_ih ih))
-      (fun x hx y hy Cx Cy => add _ _ _ _ _ Cx Cy) hx
+    exact fun hx ↦ Submodule.mul_induction_on' (fun m hm x ih ↦ mem_mul _ hm _ _ _ (n_ih ih))
+      (fun x hx y hy Cx Cy ↦ add _ _ _ _ _ Cx Cy) hx
 
 /-- Dependent version of `Submodule.pow_induction_on_right`. -/
 @[elab_as_elim]
@@ -612,8 +612,8 @@ protected theorem pow_induction_on_right' {C : ∀ (n : ℕ) (x), x ∈ M ^ n �
   | succ n n_ih =>
     revert hx
     simp_rw [pow_succ]
-    exact fun hx ↦ Submodule.mul_induction_on' (fun m hm x ih => mul_mem _ _ hm (n_ih _) _ ih)
-      (fun x hx y hy Cx Cy => add _ _ _ _ _ Cx Cy) hx
+    exact fun hx ↦ Submodule.mul_induction_on' (fun m hm x ih ↦ mul_mem _ _ hm (n_ih _) _ ih)
+      (fun x hx y hy Cx Cy ↦ add _ _ _ _ _ Cx Cy) hx
 
 /-- To show a property on elements of `M ^ n` holds, it suffices to show that it holds for scalars,
 is closed under addition, and holds for `m * x` where `m ∈ M` and it holds for `x` -/
@@ -621,9 +621,9 @@ is closed under addition, and holds for `m * x` where `m ∈ M` and it holds for
 protected theorem pow_induction_on_left {C : A → Prop} (hr : ∀ r : R, C (algebraMap _ _ r))
     (hadd : ∀ x y, C x → C y → C (x + y)) (hmul : ∀ m ∈ M, ∀ (x), C x → C (m * x)) {x : A} {n : ℕ}
     (hx : x ∈ M ^ n) : C x :=
-  Submodule.pow_induction_on_left' M (C := fun _ a _ => C a) hr
-    (fun x y _i _hx _hy => hadd x y)
-    (fun _m hm _i _x _hx => hmul _ hm _) hx
+  Submodule.pow_induction_on_left' M (C := fun _ a _ ↦ C a) hr
+    (fun x y _i _hx _hy ↦ hadd x y)
+    (fun _m hm _i _x _hx ↦ hmul _ hm _) hx
 
 /-- To show a property on elements of `M ^ n` holds, it suffices to show that it holds for scalars,
 is closed under addition, and holds for `x * m` where `m ∈ M` and it holds for `x` -/
@@ -631,9 +631,9 @@ is closed under addition, and holds for `x * m` where `m ∈ M` and it holds for
 protected theorem pow_induction_on_right {C : A → Prop} (hr : ∀ r : R, C (algebraMap _ _ r))
     (hadd : ∀ x y, C x → C y → C (x + y)) (hmul : ∀ x, C x → ∀ m ∈ M, C (x * m)) {x : A} {n : ℕ}
     (hx : x ∈ M ^ n) : C x :=
-  Submodule.pow_induction_on_right' (M := M) (C := fun _ a _ => C a) hr
-    (fun x y _i _hx _hy => hadd x y)
-    (fun _i _x _hx => hmul _) hx
+  Submodule.pow_induction_on_right' (M := M) (C := fun _ a _ ↦ C a) hr
+    (fun x y _i _hx _hy ↦ hadd x y)
+    (fun _i _x _hx ↦ hmul _) hx
 
 /-- `Submonoid.map` as a `RingHom`, when applied to an `AlgHom`. -/
 @[simps]
@@ -723,8 +723,8 @@ theorem mul_mem_mul_rev (hm : m ∈ M) (hn : n ∈ N) : n * m ∈ M * N :=
 variable (M N)
 
 protected theorem mul_comm : M * N = N * M :=
-  le_antisymm (mul_le.2 fun _r hrm _s hsn => mul_mem_mul_rev hsn hrm)
-    (mul_le.2 fun _r hrn _s hsm => mul_mem_mul_rev hsm hrn)
+  le_antisymm (mul_le.2 fun _r hrm _s hsn ↦ mul_mem_mul_rev hsn hrm)
+    (mul_le.2 fun _r hrn _s hsm ↦ mul_mem_mul_rev hsm hrn)
 
 /-- Sub-R-modules of an R-algebra A form a semiring. -/
 instance : IdemCommSemiring (Submodule R A) :=
@@ -785,15 +785,15 @@ which is equivalent to `x • J ⊆ I` (see `mem_div_iff_smul_subset`), but nice
 This is the general form of the ideal quotient, traditionally written $I : J$.
 -/
 instance : Div (Submodule R A) :=
-  ⟨fun I J =>
+  ⟨fun I J ↦
     { carrier := { x | ∀ y ∈ J, x * y ∈ I }
-      zero_mem' := fun y _ => by
+      zero_mem' := fun y _ ↦ by
         rw [zero_mul]
         apply Submodule.zero_mem
-      add_mem' := fun ha hb y hy => by
+      add_mem' := fun ha hb y hy ↦ by
         rw [add_mul]
         exact Submodule.add_mem _ (ha _ hy) (hb _ hy)
-      smul_mem' := fun r x hx y hy => by
+      smul_mem' := fun r x hx y hy ↦ by
         rw [Algebra.smul_mul_assoc]
         exact Submodule.smul_mem _ _ (hx _ hy) }⟩
 
@@ -801,8 +801,8 @@ theorem mem_div_iff_forall_mul_mem {x : A} {I J : Submodule R A} : x ∈ I / J �
   Iff.refl _
 
 theorem mem_div_iff_smul_subset {x : A} {I J : Submodule R A} : x ∈ I / J ↔ x • (J : Set A) ⊆ I :=
-  ⟨fun h y ⟨y', hy', xy'_eq_y⟩ => by rw [← xy'_eq_y]; exact h _ hy',
-    fun h _ hy => h (Set.smul_mem_smul_set hy)⟩
+  ⟨fun h y ⟨y', hy', xy'_eq_y⟩ ↦ by rw [← xy'_eq_y]; exact h _ hy',
+    fun h _ hy ↦ h (Set.smul_mem_smul_set hy)⟩
 
 theorem le_div_iff {I J K : Submodule R A} : I ≤ J / K ↔ ∀ x ∈ I, ∀ z ∈ K, x * z ∈ J :=
   Iff.refl _
@@ -837,7 +837,7 @@ protected theorem map_div {B : Type*} [CommSemiring B] [Algebra R B] (I J : Subm
   · rintro ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
     exact ⟨x * y, hx _ hy, map_mul h x y⟩
   · rintro hx
-    refine ⟨h.symm x, fun z hz => ?_, h.apply_symm_apply x⟩
+    refine ⟨h.symm x, fun z hz ↦ ?_, h.apply_symm_apply x⟩
     obtain ⟨xz, xz_mem, hxz⟩ := hx (h z) ⟨z, hz, rfl⟩
     convert xz_mem
     apply h.injective

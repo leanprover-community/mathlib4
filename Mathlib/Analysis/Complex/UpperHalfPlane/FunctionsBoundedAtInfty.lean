@@ -27,7 +27,7 @@ namespace UpperHalfPlane
 def atImInfty :=
   Filter.atTop.comap UpperHalfPlane.im
 
-theorem atImInfty_basis : atImInfty.HasBasis (fun _ => True) fun i : ℝ => im ⁻¹' Set.Ici i :=
+theorem atImInfty_basis : atImInfty.HasBasis (fun _ ↦ True) fun i : ℝ ↦ im ⁻¹' Set.Ici i :=
   Filter.HasBasis.comap UpperHalfPlane.im Filter.atTop_basis
 
 theorem atImInfty_mem (S : Set ℍ) : S ∈ atImInfty ↔ ∃ A : ℝ, ∀ z : ℍ, A ≤ im z → z ∈ S := by

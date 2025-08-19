@@ -75,7 +75,7 @@ noncomputable def weight : (σ →₀ R) →+ M :=
   (Finsupp.linearCombination R w).toAddMonoidHom
 
 theorem weight_apply (f : σ →₀ R) :
-    weight w f = Finsupp.sum f (fun i c => c • w i) := rfl
+    weight w f = Finsupp.sum f (fun i c ↦ c • w i) := rfl
 
 theorem weight_single_index [DecidableEq σ] (s : σ) (c : M) (f : σ →₀ R) :
     weight (Pi.single s c) f = f s • c :=
@@ -186,7 +186,7 @@ theorem finite_of_nat_weight_le [Finite σ] (w : σ → ℕ) (hw : ∀ x, w x �
     {d : σ →₀ ℕ | weight w d ≤ n}.Finite := by
   classical
   set fg := Finset.antidiagonal (Finsupp.equivFunOnFinite.symm (Function.const σ n)) with hfg
-  suffices {d : σ →₀ ℕ | weight w d ≤ n} ⊆ ↑(fg.image fun uv => uv.fst) by
+  suffices {d : σ →₀ ℕ | weight w d ≤ n} ⊆ ↑(fg.image fun uv ↦ uv.fst) by
     exact Set.Finite.subset (Finset.finite_toSet _) this
   intro d hd
   rw [hfg]
@@ -217,7 +217,7 @@ theorem degree_add (a b : σ →₀ R) : (a + b).degree = a.degree + b.degree :=
 
 @[simp]
 theorem degree_single (a : σ) (r : R) : (Finsupp.single a r).degree = r :=
-  Finsupp.sum_single_index (h := fun _ => id) rfl
+  Finsupp.sum_single_index (h := fun _ ↦ id) rfl
 
 @[simp]
 theorem degree_zero : degree (0 : σ →₀ R) = 0 := by simp [degree]

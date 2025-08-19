@@ -50,7 +50,7 @@ instance instLinearMapClass : LinearMapClass (Q₁ →qᵢ Q₂) R M₁ M₂ whe
   map_smulₛₗ f := f.toLinearMap.map_smul
 
 theorem toLinearMap_injective :
-    Function.Injective (Isometry.toLinearMap : (Q₁ →qᵢ Q₂) → M₁ →ₗ[R] M₂) := fun _f _g h =>
+    Function.Injective (Isometry.toLinearMap : (Q₁ →qᵢ Q₂) → M₁ →ₗ[R] M₂) := fun _f _g h ↦
   DFunLike.coe_injective (congr_arg DFunLike.coe h :)
 
 @[ext]
@@ -99,29 +99,29 @@ theorem toLinearMap_comp (g : Q₂ →qᵢ Q₃) (f : Q₁ →qᵢ Q₂) :
 
 @[simp]
 theorem id_comp (f : Q₁ →qᵢ Q₂) : (id Q₂).comp f = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem comp_id (f : Q₁ →qᵢ Q₂) : f.comp (id Q₁) = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 theorem comp_assoc (h : Q₃ →qᵢ Q₄) (g : Q₂ →qᵢ Q₃) (f : Q₁ →qᵢ Q₂) :
     (h.comp g).comp f = h.comp (g.comp f) :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 /-- There is a zero map from any module with the zero form. -/
 instance : Zero ((0 : QuadraticMap R M₁ N) →qᵢ Q₂) where
-  zero := { (0 : M₁ →ₗ[R] M₂) with map_app' := fun _ => map_zero _ }
+  zero := { (0 : M₁ →ₗ[R] M₂) with map_app' := fun _ ↦ map_zero _ }
 
 /-- There is a zero map from the trivial module. -/
 instance hasZeroOfSubsingleton [Subsingleton M₁] : Zero (Q₁ →qᵢ Q₂) where
   zero :=
   { (0 : M₁ →ₗ[R] M₂) with
-    map_app' := fun m => Subsingleton.elim 0 m ▸ (map_zero _).trans (map_zero _).symm }
+    map_app' := fun m ↦ Subsingleton.elim 0 m ▸ (map_zero _).trans (map_zero _).symm }
 
 /-- Maps into the zero module are trivial -/
 instance [Subsingleton M₂] : Subsingleton (Q₁ →qᵢ Q₂) :=
-  ⟨fun _ _ => ext fun _ => Subsingleton.elim _ _⟩
+  ⟨fun _ _ ↦ ext fun _ ↦ Subsingleton.elim _ _⟩
 
 end Isometry
 

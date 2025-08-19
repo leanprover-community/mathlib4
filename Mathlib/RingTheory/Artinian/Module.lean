@@ -83,7 +83,7 @@ theorem LinearMap.isArtinian_iff_of_bijective {S P} [Semiring S] [AddCommMonoid 
 theorem isArtinian_of_injective (f : M →ₗ[R] P) (h : Function.Injective f) [IsArtinian R P] :
     IsArtinian R M :=
   ⟨Subrelation.wf
-    (fun {A B} hAB => show A.map f < B.map f from Submodule.map_strictMono_of_injective h hAB)
+    (fun {A B} hAB ↦ show A.map f < B.map f from Submodule.map_strictMono_of_injective h hAB)
     (InvImage.wf (Submodule.map f) IsWellFounded.wf)⟩
 
 instance isArtinian_submodule' [IsArtinian R M] (N : Submodule R M) : IsArtinian R N :=
@@ -96,7 +96,7 @@ variable (M) in
 theorem isArtinian_of_surjective (f : M →ₗ[R] P) (hf : Function.Surjective f) [IsArtinian R M] :
     IsArtinian R P :=
   ⟨Subrelation.wf
-    (fun {A B} hAB =>
+    (fun {A B} hAB ↦
       show A.comap f < B.comap f from Submodule.comap_strictMono_of_surjective hf hAB)
     (InvImage.wf (Submodule.comap f) IsWellFounded.wf)⟩
 
@@ -373,7 +373,7 @@ theorem range_smul_pow_stabilizes (r : R) :
       LinearMap.range (r ^ n • LinearMap.id : M →ₗ[R] M) =
       LinearMap.range (r ^ m • LinearMap.id : M →ₗ[R] M) :=
   monotone_stabilizes
-    ⟨fun n => LinearMap.range (r ^ n • LinearMap.id : M →ₗ[R] M), fun n m h x ⟨y, hy⟩ =>
+    ⟨fun n ↦ LinearMap.range (r ^ n • LinearMap.id : M →ₗ[R] M), fun n m h x ⟨y, hy⟩ ↦
       ⟨r ^ (m - n) • y, by
         dsimp at hy ⊢
         rw [← smul_assoc, smul_eq_mul, ← pow_add, ← hy, add_tsub_cancel_of_le h]⟩⟩

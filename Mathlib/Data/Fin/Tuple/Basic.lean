@@ -284,7 +284,7 @@ variable {α : Sort*}
 /-- Append a tuple of length `m` to a tuple of length `n` to get a tuple of length `m + n`.
 This is a non-dependent version of `Fin.add_cases`. -/
 def append (a : Fin m → α) (b : Fin n → α) : Fin (m + n) → α :=
-  @Fin.addCases _ _ (fun _ => α) a b
+  @Fin.addCases _ _ (fun _ ↦ α) a b
 
 @[simp]
 theorem append_left (u : Fin m → α) (v : Fin n → α) (i : Fin m) :
@@ -304,7 +304,7 @@ theorem append_right (u : Fin m → α) (v : Fin n → α) (i : Fin n) :
 
 theorem append_right_nil (u : Fin m → α) (v : Fin n → α) (hv : n = 0) :
     append u v = u ∘ Fin.cast (by rw [hv, Nat.add_zero]) := by
-  refine funext (Fin.addCases (fun l => ?_) fun r => ?_)
+  refine funext (Fin.addCases (fun l ↦ ?_) fun r ↦ ?_)
   · rw [append_left, Function.comp_apply]
     refine congr_arg u (Fin.ext ?_)
     simp
@@ -317,7 +317,7 @@ theorem append_elim0 (u : Fin m → α) :
 
 theorem append_left_nil (u : Fin m → α) (v : Fin n → α) (hu : m = 0) :
     append u v = v ∘ Fin.cast (by rw [hu, Nat.zero_add]) := by
-  refine funext (Fin.addCases (fun l => ?_) fun r => ?_)
+  refine funext (Fin.addCases (fun l ↦ ?_) fun r ↦ ?_)
   · exact (Fin.cast hu l).elim0
   · rw [append_right, Function.comp_apply]
     refine congr_arg v (Fin.ext ?_)
@@ -332,9 +332,9 @@ theorem append_assoc {p : ℕ} (a : Fin m → α) (b : Fin n → α) (c : Fin p 
     append (append a b) c = append a (append b c) ∘ Fin.cast (Nat.add_assoc ..) := by
   ext i
   rw [Function.comp_apply]
-  refine Fin.addCases (fun l => ?_) (fun r => ?_) i
+  refine Fin.addCases (fun l ↦ ?_) (fun r ↦ ?_) i
   · rw [append_left]
-    refine Fin.addCases (fun ll => ?_) (fun lr => ?_) l
+    refine Fin.addCases (fun ll ↦ ?_) (fun lr ↦ ?_) l
     · rw [append_left]
       simp [castAdd_castAdd]
     · rw [append_right]
@@ -404,9 +404,9 @@ theorem append_injective_iff {xs : Fin m → α} {ys : Fin n → α} :
   -- We inline it because it's still shorter than proving from scratch.
   let finSumFinEquiv : Fin m ⊕ Fin n ≃ Fin (m + n) :=
   { toFun := Sum.elim (Fin.castAdd n) (Fin.natAdd m)
-    invFun i := @Fin.addCases m n (fun _ => Fin m ⊕ Fin n) Sum.inl Sum.inr i
+    invFun i := @Fin.addCases m n (fun _ ↦ Fin m ⊕ Fin n) Sum.inl Sum.inr i
     left_inv x := by rcases x with y | y <;> simp
-    right_inv x := by refine Fin.addCases (fun i => ?_) (fun i => ?_) x <;> simp }
+    right_inv x := by refine Fin.addCases (fun i ↦ ?_) (fun i ↦ ?_) x <;> simp }
   rw [← Sum.elim_injective, ← append_comp_sumElim, ← finSumFinEquiv.injective_comp,
     Equiv.coe_fn_mk]
 
@@ -428,7 +428,7 @@ theorem repeat_apply (a : Fin n → α) (i : Fin (m * n)) :
 @[simp]
 theorem repeat_zero (a : Fin n → α) :
     Fin.repeat 0 a = Fin.elim0 ∘ Fin.cast (Nat.zero_mul _) :=
-  funext fun x => (x.cast (Nat.zero_mul _)).elim0
+  funext fun x ↦ (x.cast (Nat.zero_mul _)).elim0
 
 @[simp]
 theorem repeat_one (a : Fin n → α) : Fin.repeat 1 a = a ∘ Fin.cast (Nat.one_mul _) := by
@@ -444,7 +444,7 @@ theorem repeat_succ (a : Fin n → α) (m : ℕ) :
   generalize_proofs h
   apply funext
   rw [(Fin.rightInverse_cast h.symm).surjective.forall]
-  refine Fin.addCases (fun l => ?_) fun r => ?_
+  refine Fin.addCases (fun l ↦ ?_) fun r ↦ ?_
   · simp [modNat, Nat.mod_eq_of_lt l.is_lt]
   · simp [modNat]
 
@@ -454,7 +454,7 @@ theorem repeat_add (a : Fin n → α) (m₁ m₂ : ℕ) : Fin.repeat (m₁ + m�
   generalize_proofs h
   apply funext
   rw [(Fin.rightInverse_cast h.symm).surjective.forall]
-  refine Fin.addCases (fun l => ?_) fun r => ?_
+  refine Fin.addCases (fun l ↦ ?_) fun r ↦ ?_
   · simp [modNat]
   · simp [modNat, Nat.add_mod]
 
@@ -642,10 +642,10 @@ theorem append_right_eq_snoc {α : Sort*} {n : ℕ} (x : Fin n → α) (x₀ : F
   refine Fin.addCases ?_ ?_ i <;> clear i
   · intro i
     rw [Fin.append_left]
-    exact (@snoc_castSucc _ (fun _ => α) _ _ i).symm
+    exact (@snoc_castSucc _ (fun _ ↦ α) _ _ i).symm
   · intro i
     rw [Subsingleton.elim i 0, Fin.append_right]
-    exact (@snoc_last _ (fun _ => α) _ _).symm
+    exact (@snoc_last _ (fun _ ↦ α) _ _).symm
 
 /-- `Fin.snoc` is the same as appending a one-tuple -/
 theorem snoc_eq_append {α : Sort*} (xs : Fin n → α) (x : α) :
@@ -792,7 +792,7 @@ lemma forall_iff_castSucc {P : Fin (n + 1) → Prop} :
 it holds separately for both {0 , ... , m - 1} and {m, ..., m + n - 1}. -/
 theorem forall_fin_add {m n} (P : Fin (m + n) → Prop) :
     (∀ i, P i) ↔ (∀ i, P (castAdd _ i)) ∧ (∀ j, P (natAdd _ j)) :=
-  ⟨fun h => ⟨fun _ => h _, fun _ => h _⟩, fun ⟨hm, hn⟩ => Fin.addCases hm hn⟩
+  ⟨fun h ↦ ⟨fun _ ↦ h _, fun _ ↦ h _⟩, fun ⟨hm, hn⟩ ↦ Fin.addCases hm hn⟩
 
 /-- A property holds for all dependent finite sequence of length m + n iff
 it holds for the concatenation of all pairs of length m sequences and length n sequences. -/
@@ -801,7 +801,7 @@ theorem forall_fin_add_pi {γ : Fin (m + n) → Sort*} {P : (∀ i, γ i) → Pr
       (∀ (vₘ : ∀ i, γ (castAdd n i)) (vₙ : ∀ j, γ (natAdd m j)), P (addCases vₘ vₙ)) where
   mp hv vm vn := hv (addCases vm vn)
   mpr h v := by
-    convert h (fun i => v (castAdd n i)) (fun j => v (natAdd m j))
+    convert h (fun i ↦ v (castAdd n i)) (fun j ↦ v (natAdd m j))
     exact (addCases_castAdd_natAdd v).symm
 
 lemma exists_iff_castSucc {P : Fin (n + 1) → Prop} :
@@ -828,7 +828,7 @@ lemma exists_iff_succAbove {P : Fin (n + 1) → Prop} (p : Fin (n + 1)) :
 
 /-- Analogue of `Fin.eq_zero_or_eq_succ` for `succAbove`. -/
 theorem eq_self_or_eq_succAbove (p i : Fin (n + 1)) : i = p ∨ ∃ j, i = p.succAbove j :=
-  succAboveCases p (.inl rfl) (fun j => .inr ⟨j, rfl⟩) i
+  succAboveCases p (.inl rfl) (fun j ↦ .inr ⟨j, rfl⟩) i
 
 /-- Remove the `p`-th entry of a tuple. -/
 def removeNth (p : Fin (n + 1)) (f : ∀ i, α i) : ∀ i, α (p.succAbove i) := fun i ↦ f (p.succAbove i)
@@ -962,7 +962,7 @@ theorem insertNth_comp_rev {α} (i : Fin (n + 1)) (x : α) (p : Fin n → α) :
   apply insertNth_rev
 
 theorem cons_rev {α n} (a : α) (f : Fin n → α) (i : Fin <| n + 1) :
-    cons (α := fun _ => α) a f i.rev = snoc (α := fun _ => α) (f ∘ Fin.rev : Fin _ → α) a i := by
+    cons (α := fun _ ↦ α) a f i.rev = snoc (α := fun _ ↦ α) (f ∘ Fin.rev : Fin _ → α) a i := by
   simpa using insertNth_rev 0 a f i
 
 theorem cons_comp_rev {α n} (a : α) (f : Fin n → α) :
@@ -970,7 +970,7 @@ theorem cons_comp_rev {α n} (a : α) (f : Fin n → α) :
   funext i; exact cons_rev ..
 
 theorem snoc_rev {α n} (a : α) (f : Fin n → α) (i : Fin <| n + 1) :
-    snoc (α := fun _ => α) f a i.rev = cons (α := fun _ => α) a (f ∘ Fin.rev : Fin _ → α) i := by
+    snoc (α := fun _ ↦ α) f a i.rev = cons (α := fun _ ↦ α) a (f ∘ Fin.rev : Fin _ → α) i := by
   simpa using insertNth_rev (last n) a f i
 
 theorem snoc_comp_rev {α n} (a : α) (f : Fin n → α) :

@@ -87,11 +87,11 @@ theorem one_ne_of (x : α) : 1 ≠ of x := FreeAbelianGroup.of_injective.ne <| F
 protected theorem induction_on {C : FreeRing α → Prop} (z : FreeRing α) (hn1 : C (-1))
     (hb : ∀ b, C (of b)) (ha : ∀ x y, C x → C y → C (x + y)) (hm : ∀ x y, C x → C y → C (x * y)) :
     C z :=
-  have hn : ∀ x, C x → C (-x) := fun x ih => neg_one_mul x ▸ hm _ _ hn1 ih
+  have hn : ∀ x, C x → C (-x) := fun x ih ↦ neg_one_mul x ▸ hm _ _ hn1 ih
   have h1 : C 1 := neg_neg (1 : FreeRing α) ▸ hn _ hn1
   FreeAbelianGroup.induction_on z (neg_add_cancel (1 : FreeRing α) ▸ ha _ _ hn1 h1)
-    (fun m => List.recOn m h1 fun a _ ih => hm _ _ (hb a) ih)
-    (fun _ ih => hn _ ih) ha
+    (fun m ↦ List.recOn m h1 fun a _ ih ↦ hm _ _ (hb a) ih)
+    (fun _ ih ↦ hn _ ih) ha
 
 section lift
 

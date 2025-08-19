@@ -74,7 +74,7 @@ private theorem glueDist_self (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) : ∀ x, 
 theorem glueDist_glued_points [Nonempty Z] (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (p : Z) :
     glueDist Φ Ψ ε (.inl (Φ p)) (.inr (Ψ p)) = ε := by
   have : ⨅ q, dist (Φ p) (Φ q) + dist (Ψ p) (Ψ q) = 0 := by
-    have A : ∀ q, 0 ≤ dist (Φ p) (Φ q) + dist (Ψ p) (Ψ q) := fun _ => by positivity
+    have A : ∀ q, 0 ≤ dist (Φ p) (Φ q) + dist (Ψ p) (Ψ q) := fun _ ↦ by positivity
     refine le_antisymm ?_ (le_ciInf A)
     have : 0 = dist (Φ p) (Φ p) + dist (Ψ p) (Ψ p) := by simp
     rw [this]
@@ -97,7 +97,7 @@ theorem glueDist_swap (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) :
 
 theorem le_glueDist_inl_inr (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (x y) :
     ε ≤ glueDist Φ Ψ ε (.inl x) (.inr y) :=
-  le_add_of_nonneg_left <| Real.iInf_nonneg fun _ => by positivity
+  le_add_of_nonneg_left <| Real.iInf_nonneg fun _ ↦ by positivity
 
 theorem le_glueDist_inr_inl (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (x y) :
     ε ≤ glueDist Φ Ψ ε (.inr x) (.inl y) := by
@@ -111,8 +111,8 @@ private theorem glueDist_triangle_inl_inr_inr (Φ : Z → X) (Ψ : Z → Y) (ε 
       glueDist Φ Ψ ε (.inl x) (.inr y) + glueDist Φ Ψ ε (.inr y) (.inr z) := by
   simp only [glueDist]
   rw [add_right_comm, add_le_add_iff_right]
-  refine le_ciInf_add fun p => ciInf_le_of_le ⟨0, ?_⟩ p ?_
-  · exact forall_mem_range.2 fun _ => by positivity
+  refine le_ciInf_add fun p ↦ ciInf_le_of_le ⟨0, ?_⟩ p ?_
+  · exact forall_mem_range.2 fun _ ↦ by positivity
   · linarith [dist_triangle_left z (Ψ p) y]
 
 private theorem glueDist_triangle_inl_inr_inl (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ)
@@ -120,9 +120,9 @@ private theorem glueDist_triangle_inl_inr_inl (Φ : Z → X) (Ψ : Z → Y) (ε 
     glueDist Φ Ψ ε (.inl x) (.inl z) ≤
       glueDist Φ Ψ ε (.inl x) (.inr y) + glueDist Φ Ψ ε (.inr y) (.inl z) := by
   simp_rw [glueDist, add_add_add_comm _ ε, add_assoc]
-  refine le_ciInf_add fun p => ?_
+  refine le_ciInf_add fun p ↦ ?_
   rw [add_left_comm, add_assoc, ← two_mul]
-  refine le_ciInf_add fun q => ?_
+  refine le_ciInf_add fun q ↦ ?_
   rw [dist_comm z]
   linarith [dist_triangle4 x (Φ p) (Φ q) z, dist_triangle_left (Ψ p) (Ψ q) y, (abs_le.1 (H p q)).2]
 
@@ -167,7 +167,7 @@ theorem Sum.mem_uniformity_iff_glueDist (hε : 0 < ε) (s : Set ((X ⊕ Y) × (X
     · exact absurd h.2 (le_glueDist_inr_inl _ _ _ _ _).not_gt
     · exact hY h.1.2
   · rintro ⟨ε, ε0, H⟩
-    constructor <;> exact ⟨ε, ε0, fun _ _ h => H _ _ h⟩
+    constructor <;> exact ⟨ε, ε0, fun _ _ h ↦ H _ _ h⟩
 
 /-- Given two maps `Φ` and `Ψ` intro metric spaces `X` and `Y` such that the distances between
 `Φ p` and `Φ q`, and between `Ψ p` and `Ψ q`, coincide up to `2 ε` where `ε > 0`, one can almost
@@ -216,7 +216,7 @@ protected def Sum.dist : X ⊕ Y → X ⊕ Y → ℝ
 
 theorem Sum.dist_eq_glueDist {p q : X ⊕ Y} (x : X) (y : Y) :
     Sum.dist p q =
-      glueDist (fun _ : Unit => Nonempty.some ⟨x⟩) (fun _ : Unit => Nonempty.some ⟨y⟩) 1 p q := by
+      glueDist (fun _ : Unit ↦ Nonempty.some ⟨x⟩) (fun _ : Unit ↦ Nonempty.some ⟨y⟩) 1 p q := by
   cases p <;> cases q <;> first |rfl|simp [Sum.dist, glueDist, dist_comm, add_comm,
     add_left_comm, add_assoc]
 
@@ -243,7 +243,7 @@ private theorem Sum.mem_uniformity (s : Set ((X ⊕ Y) × (X ⊕ Y))) :
     · cases not_le_of_gt (lt_of_lt_of_le h (min_le_right _ _)) Sum.one_le_dist_inr_inl
     · exact hY (lt_of_lt_of_le h (le_trans (min_le_left _ _) (min_le_right _ _)))
   · rintro ⟨ε, ε0, H⟩
-    constructor <;> rw [Filter.mem_map, mem_uniformity_dist] <;> exact ⟨ε, ε0, fun _ _ h => H _ _ h⟩
+    constructor <;> rw [Filter.mem_map, mem_uniformity_dist] <;> exact ⟨ε, ε0, fun _ _ h ↦ H _ _ h⟩
 
 /-- The distance on the disjoint union indeed defines a metric space. All the distance properties
 follow from our choice of the distance. The harder work is to show that the uniform structure
@@ -279,11 +279,11 @@ theorem Sum.dist_eq {x y : X ⊕ Y} : dist x y = Sum.dist x y := rfl
 
 /-- The left injection of a space in a disjoint union is an isometry -/
 theorem isometry_inl : Isometry (Sum.inl : X → X ⊕ Y) :=
-  Isometry.of_dist_eq fun _ _ => rfl
+  Isometry.of_dist_eq fun _ _ ↦ rfl
 
 /-- The right injection of a space in a disjoint union is an isometry -/
 theorem isometry_inr : Isometry (Sum.inr : Y → X ⊕ Y) :=
-  Isometry.of_dist_eq fun _ _ => rfl
+  Isometry.of_dist_eq fun _ _ ↦ rfl
 
 end Sum
 
@@ -384,10 +384,10 @@ protected theorem isOpen_iff (s : Set (Σ i, E i)) :
       calc
         1 ≤ Sigma.dist ⟨i, x⟩ ⟨j, y⟩ := Sigma.one_le_dist_of_ne hij _ _
         _ < 1 := hy.trans_le (min_le_right _ _)
-  · refine fun H => isOpen_sigma_iff.2 fun i => Metric.isOpen_iff.2 fun x hx => ?_
+  · refine fun H ↦ isOpen_sigma_iff.2 fun i ↦ Metric.isOpen_iff.2 fun x hx ↦ ?_
     obtain ⟨ε, εpos, hε⟩ : ∃ ε > 0, ∀ y, dist (⟨i, x⟩ : Σ j, E j) y < ε → y ∈ s :=
       H ⟨i, x⟩ hx
-    refine ⟨ε, εpos, fun y hy => ?_⟩
+    refine ⟨ε, εpos, fun y hy ↦ ?_⟩
     apply hε ⟨i, y⟩
     rw [Sigma.dist_same]
     exact mem_ball'.1 hy
@@ -423,16 +423,16 @@ open Filter
 
 /-- The injection of a space in a disjoint union is an isometry -/
 theorem isometry_mk (i : ι) : Isometry (Sigma.mk i : E i → Σ k, E k) :=
-  Isometry.of_dist_eq fun x y => by simp
+  Isometry.of_dist_eq fun x y ↦ by simp
 
 /-- A disjoint union of complete metric spaces is complete. -/
 protected theorem completeSpace [∀ i, CompleteSpace (E i)] : CompleteSpace (Σ i, E i) := by
-  set s : ι → Set (Σ i, E i) := fun i => Sigma.fst ⁻¹' {i}
+  set s : ι → Set (Σ i, E i) := fun i ↦ Sigma.fst ⁻¹' {i}
   set U := { p : (Σ k, E k) × Σ k, E k | dist p.1 p.2 < 1 }
-  have hc : ∀ i, IsComplete (s i) := fun i => by
+  have hc : ∀ i, IsComplete (s i) := fun i ↦ by
     simp only [s, ← range_sigmaMk]
     exact (isometry_mk i).isUniformInducing.isComplete_range
-  have hd : ∀ (i j), ∀ x ∈ s i, ∀ y ∈ s j, (x, y) ∈ U → i = j := fun i j x hx y hy hxy =>
+  have hd : ∀ (i j), ∀ x ∈ s i, ∀ y ∈ s j, (x, y) ∈ U → i = j := fun i j x hx y hy hxy ↦
     (Eq.symm hx).trans ((fst_eq_of_dist_lt_one _ _ hxy).trans hy)
   refine completeSpace_of_isComplete_univ ?_
   convert isComplete_iUnion_separated hc (dist_mem_uniformity zero_lt_one) hd
@@ -453,7 +453,7 @@ def gluePremetric (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : PseudoMetricSpace (X
   dist := glueDist Φ Ψ 0
   dist_self := glueDist_self Φ Ψ 0
   dist_comm := glueDist_comm Φ Ψ 0
-  dist_triangle := glueDist_triangle Φ Ψ 0 fun p q => by rw [hΦ.dist_eq, hΨ.dist_eq]; simp
+  dist_triangle := glueDist_triangle Φ Ψ 0 fun p q ↦ by rw [hΦ.dist_eq, hΨ.dist_eq]; simp
 
 /-- Given two isometric embeddings `Φ : Z → X` and `Ψ : Z → Y`, we define a
 space `GlueSpace hΦ hΨ` by identifying in `X ⊕ Y` the points `Φ x` and `Ψ x`. -/
@@ -490,10 +490,10 @@ theorem toGlue_commute (hΦ : Isometry Φ) (hΨ : Isometry Ψ) :
   exact glueDist_glued_points Φ Ψ 0 _
 
 theorem toGlueL_isometry (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Isometry (toGlueL hΦ hΨ) :=
-  Isometry.of_dist_eq fun _ _ => rfl
+  Isometry.of_dist_eq fun _ _ ↦ rfl
 
 theorem toGlueR_isometry (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Isometry (toGlueR hΦ hΨ) :=
-  Isometry.of_dist_eq fun _ _ => rfl
+  Isometry.of_dist_eq fun _ _ ↦ rfl
 
 end Gluing --section
 
@@ -591,7 +591,7 @@ instance (I : ∀ n, Isometry (f n)) [Inhabited (X 0)] : Inhabited (InductiveLim
 /-- The map `toInductiveLimit n` mapping `X n` to the inductive limit is an isometry. -/
 theorem toInductiveLimit_isometry (I : ∀ n, Isometry (f n)) (n : ℕ) :
     Isometry (toInductiveLimit I n) :=
-  Isometry.of_dist_eq fun x y => by
+  Isometry.of_dist_eq fun x y ↦ by
     change inductiveLimitDist f ⟨n, x⟩ ⟨n, y⟩ = dist x y
     rw [inductiveLimitDist_eq_dist I ⟨n, x⟩ ⟨n, y⟩ n (le_refl n) (le_refl n), leRecOn_self,
       leRecOn_self]
@@ -625,7 +625,7 @@ theorem separableSpaceInductiveLimit_of_separableSpace
     TopologicalSpace.SeparableSpace (Metric.InductiveLimit I) := by
   choose hsX hcX hdX using (fun n ↦ TopologicalSpace.exists_countable_dense (X n))
   let s := ⋃ (i : ℕ), (toInductiveLimit I i '' (hsX i))
-  refine ⟨s, countable_iUnion (fun n => (hcX n).image _), ?_⟩
+  refine ⟨s, countable_iUnion (fun n ↦ (hcX n).image _), ?_⟩
   refine .of_closure <| (dense_iUnion_range_toInductiveLimit I).mono <| iUnion_subset fun i ↦ ?_
   calc
     range (toInductiveLimit I i) ⊆ closure (toInductiveLimit I i '' (hsX i)) :=

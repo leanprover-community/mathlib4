@@ -49,7 +49,7 @@ def castAddHom (α : Type*) [AddGroupWithOne α] : ℤ →+ α where
 section AddGroupWithOne
 variable [AddGroupWithOne α]
 
-@[simp] lemma coe_castAddHom : ⇑(castAddHom α) = fun x : ℤ => (x : α) := rfl
+@[simp] lemma coe_castAddHom : ⇑(castAddHom α) = fun x : ℤ ↦ (x : α) := rfl
 
 lemma _root_.Even.intCast {n : ℤ} (h : Even n) : Even (n : α) := h.map (castAddHom α)
 
@@ -184,7 +184,7 @@ if `f 1 = g 1`. -/
 theorem ext_int [AddMonoid A] {f g : ℤ →+ A} (h1 : f 1 = g 1) : f = g :=
   have : f.comp (Int.ofNatHom : ℕ →+ ℤ) = g.comp (Int.ofNatHom : ℕ →+ ℤ) := ext_nat' _ _ h1
   have this' : ∀ n : ℕ, f n = g n := DFunLike.ext_iff.1 this
-  ext fun n => match n with
+  ext fun n ↦ match n with
   | (n : ℕ) => this' n
   | .negSucc n => eq_on_neg _ _ (this' <| n + 1)
 
@@ -257,7 +257,7 @@ end MonoidWithZeroHom
 /-- If two `MonoidWithZeroHom`s agree on `-1` and the _positive_ naturals then they are equal. -/
 theorem ext_int' [MonoidWithZero α] [FunLike F ℤ α] [MonoidWithZeroHomClass F ℤ α] {f g : F}
     (h_neg_one : f (-1) = g (-1)) (h_pos : ∀ n : ℕ, 0 < n → f n = g n) : f = g :=
-  (DFunLike.ext _ _) fun n =>
+  (DFunLike.ext _ _) fun n ↦
     haveI :=
       DFunLike.congr_fun
         (@MonoidWithZeroHom.ext_int _ _ (f : ℤ →*₀ α) (g : ℤ →*₀ α) h_neg_one <|
@@ -271,9 +271,9 @@ variable (α) [Group α] (β) [AddGroup β]
 /-- Additive homomorphisms from `ℤ` are defined by the image of `1`. -/
 def zmultiplesHom : β ≃ (ℤ →+ β) where
   toFun x :=
-  { toFun := fun n => n • x
+  { toFun := fun n ↦ n • x
     map_zero' := zero_zsmul x
-    map_add' := fun _ _ => add_zsmul _ _ _ }
+    map_add' := fun _ _ ↦ add_zsmul _ _ _ }
   invFun f := f 1
   left_inv := one_zsmul
   right_inv f := AddMonoidHom.ext_int <| one_zsmul (f 1)
@@ -307,11 +307,11 @@ variable (α) [CommGroup α] (β) [AddCommGroup β]
 
 /-- If `α` is commutative, `zmultiplesHom` is an additive equivalence. -/
 def zmultiplesAddHom : β ≃+ (ℤ →+ β) :=
-  { zmultiplesHom β with map_add' := fun a b => AddMonoidHom.ext fun n => by simp [zsmul_add] }
+  { zmultiplesHom β with map_add' := fun a b ↦ AddMonoidHom.ext fun n ↦ by simp [zsmul_add] }
 
 /-- If `α` is commutative, `zpowersHom` is a multiplicative equivalence. -/
 def zpowersMulHom : α ≃* (Multiplicative ℤ →* α) :=
-  { zpowersHom α with map_mul' := fun a b => MonoidHom.ext fun n => by simp [mul_zpow] }
+  { zpowersHom α with map_mul' := fun a b ↦ MonoidHom.ext fun n ↦ by simp [mul_zpow] }
 
 variable {α}
 

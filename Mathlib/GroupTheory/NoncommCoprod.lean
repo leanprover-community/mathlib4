@@ -61,7 +61,7 @@ theorem comp_noncommCoprod {Q : Type*} [Semigroup Q] (h : P →ₙ* Q)
     (comm : ∀ m n, Commute (f m) (g n)) :
     h.comp (f.noncommCoprod g comm) =
       (h.comp f).noncommCoprod (h.comp g) (fun m n ↦ (comm m n).map h) :=
-  ext fun _ => map_mul h _ _
+  ext fun _ ↦ map_mul h _ _
 
 end MulHom
 
@@ -93,17 +93,17 @@ theorem noncommCoprod_apply' (comm) (mn : M × N) :
 
 @[to_additive (attr := simp)]
 theorem noncommCoprod_comp_inl : (f.noncommCoprod g comm).comp (inl M N) = f :=
-  ext fun x => by simp
+  ext fun x ↦ by simp
 
 @[to_additive (attr := simp)]
 theorem noncommCoprod_comp_inr : (f.noncommCoprod g comm).comp (inr M N) = g :=
-  ext fun x => by simp
+  ext fun x ↦ by simp
 
 @[to_additive (attr := simp)]
 theorem noncommCoprod_unique (f : M × N →* P) :
-    (f.comp (inl M N)).noncommCoprod (f.comp (inr M N)) (fun _ _ => (commute_inl_inr _ _).map f)
+    (f.comp (inl M N)).noncommCoprod (f.comp (inr M N)) (fun _ _ ↦ (commute_inl_inr _ _).map f)
       = f :=
-  ext fun x => by simp [inl_apply, inr_apply, ← map_mul]
+  ext fun x ↦ by simp [inl_apply, inr_apply, ← map_mul]
 
 @[to_additive (attr := simp)]
 theorem noncommCoprod_inl_inr {M N : Type*} [Monoid M] [Monoid N] :
@@ -114,7 +114,7 @@ theorem noncommCoprod_inl_inr {M N : Type*} [Monoid M] [Monoid N] :
 theorem comp_noncommCoprod {Q : Type*} [Monoid Q] (h : P →* Q) :
     h.comp (f.noncommCoprod g comm) =
       (h.comp f).noncommCoprod (h.comp g) (fun m n ↦ (comm m n).map h) :=
-  ext fun x => by simp
+  ext fun x ↦ by simp
 
 section group
 

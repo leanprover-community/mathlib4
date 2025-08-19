@@ -38,7 +38,7 @@ theorem closedBall_ae_eq_ball {x : AddCircle T} {ε : ℝ} : closedBall x ε =�
   · suffices volume (closedBall x ε) ≤ volume (ball x ε) from
       (ae_eq_of_subset_of_measure_ge ball_subset_closedBall this
         measurableSet_ball.nullMeasurableSet (measure_ne_top _ _)).symm
-    have : Tendsto (fun δ => volume (closedBall x δ)) (𝓝[<] ε) (𝓝 <| volume (closedBall x ε)) := by
+    have : Tendsto (fun δ ↦ volume (closedBall x δ)) (𝓝[<] ε) (𝓝 <| volume (closedBall x ε)) := by
       simp_rw [volume_closedBall]
       refine ENNReal.tendsto_ofReal (Tendsto.min tendsto_const_nhds <| Tendsto.const_mul _ ?_)
       exact nhdsWithin_le_nhds
@@ -74,7 +74,7 @@ theorem isAddFundamentalDomain_of_ae_ball (I : Set <| AddCircle T) (u x : AddCir
       (nsmul_le_nsmul_left (norm_nonneg g) ?_)
     exact Nat.le_of_dvd (addOrderOf_pos_iff.mpr hu) (addOrderOf_dvd_of_mem_zmultiples hg)
   · -- `∀ (g : G), QuasiMeasurePreserving (VAdd.vadd g) volume volume`
-    exact fun g => quasiMeasurePreserving_add_left (G := AddCircle T) volume g
+    exact fun g ↦ quasiMeasurePreserving_add_left (G := AddCircle T) volume g
   · -- `volume univ ≤ ∑' (g : G), volume (g +ᵥ I)`
     replace hI := hI.trans closedBall_ae_eq_ball.symm
     haveI : Fintype G := @Fintype.ofFinite _ hu.finite_zmultiples.to_subtype

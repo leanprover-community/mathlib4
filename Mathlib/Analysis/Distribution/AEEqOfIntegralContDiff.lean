@@ -88,7 +88,7 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero [SigmaCompactSpace M]
         exact mul_le_of_le_one_left (norm_nonneg _) this
       · have : g n x = 0 := by rw [← notMem_support, g_supp]; contrapose! hxK; exact vK n hxK
         simp [this]
-    have D : ∀ᵐ x ∂μ, Tendsto (fun n => g n x • f x) atTop (𝓝 (s.indicator f x)) := by
+    have D : ∀ᵐ x ∂μ, Tendsto (fun n ↦ g n x • f x) atTop (𝓝 (s.indicator f x)) := by
       filter_upwards with x
       by_cases hxs : x ∈ s
       · have : ∀ n, g n x = 1 := fun n ↦ hg n x hxs

@@ -45,13 +45,13 @@ def RespectsIso : Prop :=
 
 theorem RespectsIso.cancel_left_isIso (hP : RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S)
     (g : S ⟶ T) [IsIso f] : P (g.hom.comp f.hom) ↔ P g.hom :=
-  ⟨fun H => by
+  ⟨fun H ↦ by
     convert hP.2 (f ≫ g).hom (asIso f).symm.commRingCatIsoToRingEquiv H
     simp [← CommRingCat.hom_comp], hP.2 g.hom (asIso f).commRingCatIsoToRingEquiv⟩
 
 theorem RespectsIso.cancel_right_isIso (hP : RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S)
     (g : S ⟶ T) [IsIso g] : P (g.hom.comp f.hom) ↔ P f.hom :=
-  ⟨fun H => by
+  ⟨fun H ↦ by
     convert hP.1 (f ≫ g).hom (asIso g).symm.commRingCatIsoToRingEquiv H
     simp [← CommRingCat.hom_comp],
    hP.1 f.hom (asIso g).commRingCatIsoToRingEquiv⟩

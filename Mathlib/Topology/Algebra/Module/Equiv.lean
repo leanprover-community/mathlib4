@@ -97,19 +97,19 @@ variable (R φ)
 
 /-- If `I` and `J` are complementary index sets, the product of the kernels of the `J`th projections
 of `φ` is linearly equivalent to the product over `I`. -/
-def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjoint I J)
+def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i ↦ i ∈ I] (hd : Disjoint I J)
     (hu : Set.univ ⊆ I ∪ J) :
     (⨅ i ∈ J, ker (proj i : (∀ i, φ i) →L[R] φ i) :
     Submodule R (∀ i, φ i)) ≃L[R] ∀ i : I, φ i where
   toLinearEquiv := LinearMap.iInfKerProjEquiv R φ hd hu
   continuous_toFun :=
-    continuous_pi fun i =>
+    continuous_pi fun i ↦
       Continuous.comp (continuous_apply (A := φ) i) <|
-        @continuous_subtype_val _ _ fun x =>
+        @continuous_subtype_val _ _ fun x ↦
           x ∈ (⨅ i ∈ J, ker (proj i : (∀ i, φ i) →L[R] φ i) : Submodule R (∀ i, φ i))
   continuous_invFun :=
     Continuous.subtype_mk
-      (continuous_pi fun i => by
+      (continuous_pi fun i ↦ by
         dsimp
         split_ifs <;> [apply continuous_apply; exact continuous_zero])
       _
@@ -185,7 +185,7 @@ theorem ext {f g : M₁ ≃SL[σ₁₂] M₂} (h : (f : M₁ → M₂) = g) : f 
   toLinearEquiv_injective <| LinearEquiv.ext <| congr_fun h
 
 theorem coe_injective : Function.Injective ((↑) : (M₁ ≃SL[σ₁₂] M₂) → M₁ →SL[σ₁₂] M₂) :=
-  fun _e _e' h => ext <| funext <| ContinuousLinearMap.ext_iff.1 h
+  fun _e _e' h ↦ ext <| funext <| ContinuousLinearMap.ext_iff.1 h
 
 @[simp, norm_cast]
 theorem coe_inj {e e' : M₁ ≃SL[σ₁₂] M₂} : (e : M₁ →SL[σ₁₂] M₂) = e' ↔ e = e' :=
@@ -259,7 +259,7 @@ theorem comp_continuous_iff {α : Type*} [TopologicalSpace α] (e : M₁ ≃SL[�
 
 /-- An extensionality lemma for `R ≃L[R] M`. -/
 theorem ext₁ [TopologicalSpace R₁] {f g : R₁ ≃L[R₁] M₁} (h : f 1 = g 1) : f = g :=
-  ext <| funext fun x => mul_one x ▸ by rw [← smul_eq_mul, map_smul, h, map_smul]
+  ext <| funext fun x ↦ mul_one x ▸ by rw [← smul_eq_mul, map_smul, h, map_smul]
 
 section
 
@@ -658,10 +658,10 @@ def arrowCongrEquiv (e₁₂ : M₁ ≃SL[σ₁₂] M₂) (e₄₃ : M₄ ≃SL[
   toFun f := (e₄₃ : M₄ →SL[σ₄₃] M₃).comp (f.comp (e₁₂.symm : M₂ →SL[σ₂₁] M₁))
   invFun f := (e₄₃.symm : M₃ →SL[σ₃₄] M₄).comp (f.comp (e₁₂ : M₁ →SL[σ₁₂] M₂))
   left_inv f :=
-    ContinuousLinearMap.ext fun x => by
+    ContinuousLinearMap.ext fun x ↦ by
       simp only [ContinuousLinearMap.comp_apply, symm_apply_apply, coe_coe]
   right_inv f :=
-    ContinuousLinearMap.ext fun x => by
+    ContinuousLinearMap.ext fun x ↦ by
       simp only [ContinuousLinearMap.comp_apply, apply_symm_apply, coe_coe]
 
 section Pi
@@ -716,7 +716,7 @@ def piCongrRight : ((i : ι) → M i) ≃L[R₁] (i : ι) → N i :=
     continuous_toFun := by
       exact continuous_pi fun i ↦ (f i).continuous_toFun.comp (continuous_apply i)
     continuous_invFun := by
-      exact continuous_pi fun i => (f i).continuous_invFun.comp (continuous_apply i) }
+      exact continuous_pi fun i ↦ (f i).continuous_invFun.comp (continuous_apply i) }
 
 @[simp]
 theorem piCongrRight_apply (m : (i : ι) → M i) (i : ι) :
@@ -763,11 +763,11 @@ def ofUnit (f : (M →L[R] M)ˣ) : M ≃L[R] M where
       map_add' := by simp
       map_smul' := by simp
       invFun := f.inv
-      left_inv := fun x =>
+      left_inv := fun x ↦
         show (f.inv * f.val) x = x by
           rw [f.inv_val]
           simp
-      right_inv := fun x =>
+      right_inv := fun x ↦
         show (f.val * f.inv) x = x by
           rw [f.val_inv]
           simp }
@@ -814,7 +814,7 @@ variable (R : Type*) [Semiring R] [TopologicalSpace R] [ContinuousMul R]
 def unitsEquivAut : Rˣ ≃ R ≃L[R] R where
   toFun u :=
     equivOfInverse (ContinuousLinearMap.smulRight (1 : R →L[R] R) ↑u)
-      (ContinuousLinearMap.smulRight (1 : R →L[R] R) ↑u⁻¹) (fun x => by simp) fun x => by simp
+      (ContinuousLinearMap.smulRight (1 : R →L[R] R) ↑u⁻¹) (fun x ↦ by simp) fun x ↦ by simp
   invFun e :=
     ⟨e 1, e.symm 1, by rw [← smul_eq_mul, ← map_smul, smul_eq_mul, mul_one, symm_apply_apply], by
       rw [← smul_eq_mul, ← map_smul, smul_eq_mul, mul_one, apply_symm_apply]⟩
@@ -868,7 +868,7 @@ def piFinTwo (M : Fin 2 → Type*) [∀ i, AddCommMonoid (M i)] [∀ i, Module R
 /-- Continuous linear equivalence between vectors in `M² = Fin 2 → M` and `M × M`. -/
 @[simps! -fullyApplied apply symm_apply]
 def finTwoArrow : (Fin 2 → M) ≃L[R] M × M :=
-  { piFinTwo R fun _ => M with toLinearEquiv := LinearEquiv.finTwoArrow R M }
+  { piFinTwo R fun _ ↦ M with toLinearEquiv := LinearEquiv.finTwoArrow R M }
 
 section
 variable {n : ℕ} {R : Type*} {M : Fin n.succ → Type*} {N : Type*}
@@ -968,7 +968,7 @@ linear equivalence `e` between `M` and `M₂ × f₁.ker` such that `(e x).2 = x
 def equivOfRightInverse (f₁ : M →L[R] M₂) (f₂ : M₂ →L[R] M) (h : Function.RightInverse f₂ f₁) :
     M ≃L[R] M₂ × ker f₁ :=
   equivOfInverse (f₁.prod (f₁.projKerOfRightInverse f₂ h)) (f₂.coprod (ker f₁).subtypeL)
-    (fun x => by simp) fun ⟨x, y⟩ => by simp [h x]
+    (fun x ↦ by simp) fun ⟨x, y⟩ ↦ by simp [h x]
 
 @[simp]
 theorem fst_equivOfRightInverse (f₁ : M →L[R] M₂) (f₂ : M₂ →L[R] M)
@@ -1011,7 +1011,7 @@ open Classical in
 `f` is a continuous linear equivalence and to `0` otherwise.  This definition is somewhat ad hoc,
 but one needs a fully (rather than partially) defined inverse function for some purposes, including
 for calculus. -/
-noncomputable def inverse : (M →L[R] M₂) → M₂ →L[R] M := fun f =>
+noncomputable def inverse : (M →L[R] M₂) → M₂ →L[R] M := fun f ↦
   if h : f.IsInvertible then ((Classical.choose h).symm : M₂ →L[R] M) else 0
 
 @[simp] lemma isInvertible_equiv {f : M ≃L[R] M₂} : IsInvertible (f : M →L[R] M₂) := ⟨f, rfl⟩

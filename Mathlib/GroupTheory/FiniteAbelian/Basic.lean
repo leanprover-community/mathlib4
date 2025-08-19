@@ -92,9 +92,9 @@ variable (M : Type u)
 theorem finite_of_fg_torsion [AddCommGroup M] [Module ℤ M] [Module.Finite ℤ M]
     (hM : Module.IsTorsion ℤ M) : _root_.Finite M := by
   rcases Module.equiv_directSum_of_isTorsion hM with ⟨ι, _, p, h, e, ⟨l⟩⟩
-  haveI : ∀ i : ι, NeZero (p i ^ e i).natAbs := fun i =>
+  haveI : ∀ i : ι, NeZero (p i ^ e i).natAbs := fun i ↦
     ⟨Int.natAbs_ne_zero.mpr <| pow_ne_zero (e i) (h i).ne_zero⟩
-  haveI : ∀ i : ι, _root_.Finite <| ℤ ⧸ Submodule.span ℤ {p i ^ e i} := fun i =>
+  haveI : ∀ i : ι, _root_.Finite <| ℤ ⧸ Submodule.span ℤ {p i ^ e i} := fun i ↦
     Finite.of_equiv _ (p i ^ e i).quotientSpanEquivZMod.symm.toEquiv
   haveI : _root_.Finite (⨁ i, ℤ ⧸ (Submodule.span ℤ {p i ^ e i} : Submodule ℤ ℤ)) :=
     Finite.of_equiv _ DFinsupp.equivFunOnFintype.symm
@@ -116,12 +116,12 @@ theorem equiv_free_prod_directSum_zmod [hG : AddGroup.FG G] :
       Nonempty <| G ≃+ (Fin n →₀ ℤ) × ⨁ i : ι, ZMod (p i ^ e i) := by
   obtain ⟨n, ι, fι, p, hp, e, ⟨f⟩⟩ :=
     @Module.equiv_free_prod_directSum _ _ _ _ _ _ _ (Module.Finite.iff_addGroup_fg.mpr hG)
-  refine ⟨n, ι, fι, fun i => (p i).natAbs, fun i => ?_, e, ⟨?_⟩⟩
+  refine ⟨n, ι, fι, fun i ↦ (p i).natAbs, fun i ↦ ?_, e, ⟨?_⟩⟩
   · rw [← Int.prime_iff_natAbs_prime, ← irreducible_iff_prime]; exact hp i
   exact
     f.toAddEquiv.trans
       ((AddEquiv.refl _).prodCongr <|
-        DFinsupp.mapRange.addEquiv fun i =>
+        DFinsupp.mapRange.addEquiv fun i ↦
           ((Int.quotientSpanEquivZMod _).trans <|
               ZMod.ringEquivCongr <| (p i).natAbs_pow _).toAddEquiv)
 
@@ -138,7 +138,7 @@ theorem equiv_directSum_zmod_of_finite [Finite G] :
     exact ⟨ι, fι, p, hp, e, ⟨f.trans AddEquiv.uniqueProd⟩⟩
   · haveI := @Fintype.prodLeft _ _ _ (Fintype.ofEquiv G f.toEquiv) _
     exact
-      (Fintype.ofSurjective (fun f : Fin n.succ →₀ ℤ => f 0) fun a =>
+      (Fintype.ofSurjective (fun f : Fin n.succ →₀ ℤ ↦ f 0) fun a ↦
             ⟨Finsupp.single 0 a, Finsupp.single_eq_same⟩).false.elim
 
 /-- **Structure theorem of finite abelian groups** : Any finite abelian group is a direct sum of

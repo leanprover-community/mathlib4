@@ -52,11 +52,11 @@ theorem single_mul (a : α) (b₁ b₂ : β) : single a (b₁ * b₂) = single a
   (zipWith_single_single _ _ _ _ _).symm
 
 lemma support_mul_subset_left {g₁ g₂ : α →₀ β} :
-    (g₁ * g₂).support ⊆ g₁.support := fun x hx => by
+    (g₁ * g₂).support ⊆ g₁.support := fun x hx ↦ by
   aesop
 
 lemma support_mul_subset_right {g₁ g₂ : α →₀ β} :
-    (g₁ * g₂).support ⊆ g₂.support := fun x hx => by
+    (g₁ * g₂).support ⊆ g₂.support := fun x hx ↦ by
   aesop
 
 theorem support_mul [DecidableEq α] {g₁ g₂ : α →₀ β} :

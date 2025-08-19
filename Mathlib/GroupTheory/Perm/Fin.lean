@@ -78,7 +78,7 @@ theorem finRotate_succ_eq_decomposeFin {n : ℕ} :
     finRotate n.succ = decomposeFin.symm (1, finRotate n) := by
   ext i
   cases n; · simp
-  refine Fin.cases ?_ (fun i => ?_) i
+  refine Fin.cases ?_ (fun i ↦ ?_) i
   · simp
   rw [coe_finRotate, decomposeFin_symm_apply_succ, if_congr i.succ_eq_last_succ rfl rfl]
   split_ifs with h
@@ -105,7 +105,7 @@ theorem support_finRotate_of_le {n : ℕ} (h : 2 ≤ n) : support (finRotate n) 
   rw [add_comm, support_finRotate]
 
 theorem isCycle_finRotate {n : ℕ} : IsCycle (finRotate (n + 2)) := by
-  refine ⟨0, by simp, fun x hx' => ⟨x, ?_⟩⟩
+  refine ⟨0, by simp, fun x hx' ↦ ⟨x, ?_⟩⟩
   clear hx'
   obtain ⟨x, hx⟩ := x
   rw [zpow_natCast, Fin.ext_iff, Fin.val_mk]

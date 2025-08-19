@@ -37,7 +37,7 @@ variable {α G A S : Type*}
 
 @[to_additive (attr := simp, norm_cast)]
 theorem inv_coe_set [InvolutiveInv G] [SetLike S G] [InvMemClass S G] {H : S} : (H : Set G)⁻¹ = H :=
-  Set.ext fun _ => inv_mem_iff
+  Set.ext fun _ ↦ inv_mem_iff
 
 @[to_additive (attr := simp)]
 lemma smul_coe_set [Group G] [SetLike S G] [SubgroupClass S G] {s : S} {a : G} (ha : a ∈ s) :
@@ -93,18 +93,18 @@ end Set
 namespace Subgroup
 
 @[to_additive (attr := simp)]
-theorem inv_subset_closure (S : Set G) : S⁻¹ ⊆ closure S := fun s hs => by
+theorem inv_subset_closure (S : Set G) : S⁻¹ ⊆ closure S := fun s hs ↦ by
   rw [SetLike.mem_coe, ← Subgroup.inv_mem_iff]
   exact subset_closure (mem_inv.mp hs)
 
 @[to_additive]
 theorem closure_toSubmonoid (S : Set G) :
     (closure S).toSubmonoid = Submonoid.closure (S ∪ S⁻¹) := by
-  refine le_antisymm (fun x hx => ?_) (Submonoid.closure_le.2 ?_)
+  refine le_antisymm (fun x hx ↦ ?_) (Submonoid.closure_le.2 ?_)
   · refine
       closure_induction
-        (fun x hx => Submonoid.closure_mono subset_union_left (Submonoid.subset_closure hx))
-        (Submonoid.one_mem _) (fun x y _ _ hx hy => Submonoid.mul_mem _ hx hy) (fun x _ hx => ?_) hx
+        (fun x hx ↦ Submonoid.closure_mono subset_union_left (Submonoid.subset_closure hx))
+        (Submonoid.one_mem _) (fun x y _ _ hx hy ↦ Submonoid.mul_mem _ hx hy) (fun x _ hx ↦ ?_) hx
     rwa [← Submonoid.mem_closure_inv, Set.union_inv, inv_inv, Set.union_comm]
   · simp only [true_and, coe_toSubmonoid, union_subset_iff, subset_closure, inv_subset_closure]
 
@@ -137,10 +137,10 @@ theorem closure_induction_right {p : (x : G) → x ∈ closure s → Prop} (one 
       p (x * y⁻¹) (mul_mem hx (inv_mem (subset_closure hy))))
     {x : G} (h : x ∈ closure s) : p x h :=
   closure_induction_left (s := MulOpposite.unop ⁻¹' s)
-    (p := fun m hm => p m.unop <| by rwa [← op_closure] at hm)
+    (p := fun m hm ↦ p m.unop <| by rwa [← op_closure] at hm)
     one
-    (fun _x hx _y _ => mul_right _ _ _ hx)
-    (fun _x hx _y _ => mul_inv_cancel _ _ _ hx)
+    (fun _x hx _y _ ↦ mul_right _ _ _ hx)
+    (fun _x hx _y _ ↦ mul_inv_cancel _ _ _ hx)
     (by rwa [← op_closure])
 
 @[to_additive (attr := simp)]
@@ -164,8 +164,8 @@ theorem closure_induction'' {p : (g : G) → g ∈ closure s → Prop}
     (one : p 1 (one_mem _))
     (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     {x} (h : x ∈ closure s) : p x h :=
-  closure_induction_left one (fun x hx y _ hy => mul x y _ _ (mem x hx) hy)
-    (fun x hx y _ => mul x⁻¹ y _ _ <| inv_mem x hx) h
+  closure_induction_left one (fun x hx y _ hy ↦ mul x y _ _ (mem x hx) hy)
+    (fun x hx y _ ↦ mul x⁻¹ y _ _ <| inv_mem x hx) h
 
 /-- An induction principle for elements of `⨆ i, S i`.
 If `C` holds for `1` and all elements of `S i` for all `i`, and is preserved under multiplication,
@@ -193,7 +193,7 @@ theorem iSup_induction' {ι : Sort*} (S : ι → Subgroup G) {C : ∀ x, (x ∈ 
     (hmul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x : G}
     (hx : x ∈ ⨆ i, S i) : C x hx := by
   suffices ∃ h, C x h from this.snd
-  refine iSup_induction S (C := fun x => ∃ h, C x h) hx (fun i x hx => ?_) ?_ fun x y => ?_
+  refine iSup_induction S (C := fun x ↦ ∃ h, C x h) hx (fun i x hx ↦ ?_) ?_ fun x y ↦ ?_
   · exact ⟨_, hp i _ hx⟩
   · exact ⟨_, h1⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
@@ -201,7 +201,7 @@ theorem iSup_induction' {ι : Sort*} (S : ι → Subgroup G) {C : ∀ x, (x ∈ 
 
 @[to_additive]
 theorem closure_mul_le (S T : Set G) : closure (S * T) ≤ closure S ⊔ closure T :=
-  sInf_le fun _x ⟨_s, hs, _t, ht, hx⟩ => hx ▸
+  sInf_le fun _x ⟨_s, hs, _t, ht, hx⟩ ↦ hx ▸
     (closure S ⊔ closure T).mul_mem (SetLike.le_def.mp le_sup_left <| subset_closure hs)
       (SetLike.le_def.mp le_sup_right <| subset_closure ht)
 
@@ -223,7 +223,7 @@ lemma closure_pow {n : ℕ} (hs : 1 ∈ s) (hn : n ≠ 0) : closure (s ^ n) = cl
 @[to_additive]
 theorem sup_eq_closure_mul (H K : Subgroup G) : H ⊔ K = closure ((H : Set G) * (K : Set G)) :=
   le_antisymm
-    (sup_le (fun h hh => subset_closure ⟨h, hh, 1, K.one_mem, mul_one h⟩) fun k hk =>
+    (sup_le (fun h hh ↦ subset_closure ⟨h, hh, 1, K.one_mem, mul_one h⟩) fun k hk ↦
       subset_closure ⟨1, H.one_mem, k, hk, one_mul k⟩)
     ((closure_mul_le _ _).trans <| by rw [closure_eq, closure_eq])
 
@@ -246,7 +246,7 @@ when `H` is a subgroup of the normalizer of `N` in `G`. -/]
 theorem coe_mul_of_left_le_normalizer_right (H N : Subgroup G) (hLE : H ≤ N.normalizer) :
     (↑(H ⊔ N) : Set G) = H * N := by
   rw [sup_eq_closure_mul]
-  refine Set.Subset.antisymm (fun x hx => ?_) subset_closure
+  refine Set.Subset.antisymm (fun x hx ↦ ?_) subset_closure
   induction hx using closure_induction'' with
   | one => exact ⟨1, one_mem _, 1, one_mem _, mul_one 1⟩
   | mem _ hx => exact hx
@@ -329,13 +329,13 @@ theorem smul_mem_of_mem_closure_of_mem {X : Type*} [MulAction G X] {s : Set G} {
 
 @[to_additive]
 theorem smul_opposite_image_mul_preimage' (g : G) (h : Gᵐᵒᵖ) (s : Set G) :
-    (fun y => h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y => h • y) '' s) := by
+    (fun y ↦ h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y ↦ h • y) '' s) := by
   simp [preimage_preimage, mul_assoc]
 
 -- TODO: deprecate?
 @[to_additive]
 theorem smul_opposite_image_mul_preimage {H : Subgroup G} (g : G) (h : H.op) (s : Set G) :
-    (fun y => h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y => h • y) '' s) :=
+    (fun y ↦ h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y ↦ h • y) '' s) :=
   smul_opposite_image_mul_preimage' g h s
 
 /-! ### Pointwise action -/
@@ -354,7 +354,7 @@ protected def pointwiseMulAction : MulAction α (Subgroup G) where
     change S.map _ = S
     simpa only [map_one] using S.map_id
   mul_smul _ _ S :=
-    (congr_arg (fun f : Monoid.End G => S.map f) (MonoidHom.map_mul _ _ _)).trans
+    (congr_arg (fun f : Monoid.End G ↦ S.map f) (MonoidHom.map_mul _ _ _)).trans
       (S.map_map _ _).symm
 
 scoped[Pointwise] attribute [instance] Subgroup.pointwiseMulAction
@@ -376,7 +376,7 @@ theorem smul_mem_pointwise_smul (m : G) (a : α) (S : Subgroup G) : m ∈ S → 
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set G))
 
 instance : CovariantClass α (Subgroup G) HSMul.hSMul LE.le :=
-  ⟨fun _ _ => image_mono⟩
+  ⟨fun _ _ ↦ image_mono⟩
 
 theorem mem_smul_pointwise_iff_exists (m : G) (a : α) (S : Subgroup G) :
     m ∈ a • S ↔ ∃ s : G, s ∈ S ∧ a • s = m :=
@@ -394,7 +394,7 @@ theorem smul_closure (a : α) (s : Set G) : a • closure s = closure (a • s) 
 
 instance pointwise_isCentralScalar [MulDistribMulAction αᵐᵒᵖ G] [IsCentralScalar α G] :
     IsCentralScalar α (Subgroup G) :=
-  ⟨fun _ S => (congr_arg fun f => S.map f) <| MonoidHom.ext <| op_smul_eq_smul _⟩
+  ⟨fun _ S ↦ (congr_arg fun f ↦ S.map f) <| MonoidHom.ext <| op_smul_eq_smul _⟩
 
 theorem conj_smul_le_of_le {P H : Subgroup G} (hP : P ≤ H) (h : H) :
     MulAut.conj (h : G) • P ≤ H := by
@@ -453,7 +453,7 @@ theorem singleton_mul_subgroup {H : Subgroup G} {h : G} (hh : h ∈ H) : {h} * (
 
 theorem Normal.conjAct {H : Subgroup G} (hH : H.Normal) (g : ConjAct G) : g • H = H :=
   have : ∀ g : ConjAct G, g • H ≤ H :=
-    fun _ => map_le_iff_le_comap.2 fun _ h => hH.conj_mem _ h _
+    fun _ ↦ map_le_iff_le_comap.2 fun _ h ↦ hH.conj_mem _ h _
   (this g).antisymm <| (smul_inv_smul g H).symm.trans_le (map_mono <| this _)
 
 @[simp]

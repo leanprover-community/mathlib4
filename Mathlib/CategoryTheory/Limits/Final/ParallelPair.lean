@@ -37,13 +37,13 @@ lemma parallelPair_initial_mk' {X Y : C} (f g : X ⟶ Y)
         · apply h₂
         · refine Zigzag.trans ?_ (h₂ (f ≫ φ) _)
           exact Zigzag.of_inv (homMk left)
-    exact zigzag_isConnected (fun x y => (this x).trans (this y).symm)
+    exact zigzag_isConnected (fun x y ↦ (this x).trans (this y).symm)
 
 lemma parallelPair_initial_mk {X Y : C} (f g : X ⟶ Y)
     (h₁ : ∀ Z, Nonempty (X ⟶ Z))
     (h₂ : ∀ ⦃Z : C⦄ (i j : X ⟶ Z), ∃ (a : Y ⟶ Z), i = f ≫ a ∧ j = g ≫ a) :
     (parallelPair f g).Initial :=
-  parallelPair_initial_mk' f g h₁ (fun Z i j => by
+  parallelPair_initial_mk' f g h₁ (fun Z i j ↦ by
     obtain ⟨a, rfl, rfl⟩ := h₂ i j
     let f₁ : (mk (Y := zero) (f ≫ a) : CostructuredArrow (parallelPair f g) Z) ⟶ mk (Y := one) a :=
       homMk left

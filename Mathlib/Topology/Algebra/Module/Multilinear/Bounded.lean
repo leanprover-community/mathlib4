@@ -67,7 +67,7 @@ theorem image_multilinear' [Nonempty ι] {s : Set (∀ i, E i)} (hs : IsVonNBoun
     let ⟨i₀⟩ := ‹Nonempty ι›
     set y := I.piecewise (fun i ↦ c i • x i) x
     calc
-      f (update y i₀ ((a / ∏ i ∈ I, c i) • y i₀)) ∈ V := hft fun i hi => by
+      f (update y i₀ ((a / ∏ i ∈ I, c i) • y i₀)) ∈ V := hft fun i hi ↦ by
         rcases eq_or_ne i i₀ with rfl | hne
         · simp_rw [update_self, y, I.piecewise_eq_of_mem _ _ hi, smul_smul]
           refine hc _ _ ?_ _ hx

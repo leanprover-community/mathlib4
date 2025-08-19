@@ -65,16 +65,16 @@ theorem inf_eq_iInf (x y : α) : x ⊓ y = ⨅ b : Bool, cond b x y :=
 
 theorem iSup_ge_eq_iSup_nat_add (u : ℕ → α) (n : ℕ) : ⨆ i ≥ n, u i = ⨆ i, u (i + n) := by
   apply le_antisymm <;> simp only [iSup_le_iff]
-  · refine fun i hi => le_sSup ⟨i - n, ?_⟩
+  · refine fun i hi ↦ le_sSup ⟨i - n, ?_⟩
     dsimp only
     rw [Nat.sub_add_cancel hi]
-  · exact fun i => le_sSup ⟨i + n, iSup_pos (Nat.le_add_left _ _)⟩
+  · exact fun i ↦ le_sSup ⟨i + n, iSup_pos (Nat.le_add_left _ _)⟩
 
 theorem iInf_ge_eq_iInf_nat_add (u : ℕ → α) (n : ℕ) : ⨅ i ≥ n, u i = ⨅ i, u (i + n) :=
   @iSup_ge_eq_iSup_nat_add αᵒᵈ _ _ _
 
 theorem Monotone.iSup_nat_add {f : ℕ → α} (hf : Monotone f) (k : ℕ) : ⨆ n, f (n + k) = ⨆ n, f n :=
-  le_antisymm (iSup_le fun i => le_iSup _ (i + k)) <| iSup_mono fun i => hf <| Nat.le_add_right i k
+  le_antisymm (iSup_le fun i ↦ le_iSup _ (i + k)) <| iSup_mono fun i ↦ hf <| Nat.le_add_right i k
 
 theorem Antitone.iInf_nat_add {f : ℕ → α} (hf : Antitone f) (k : ℕ) : ⨅ n, f (n + k) = ⨅ n, f n :=
   hf.dual_right.iSup_nat_add k
@@ -87,7 +87,7 @@ theorem Antitone.iInf_nat_add {f : ℕ → α} (hf : Antitone f) (k : ℕ) : ⨅
 -- @[simp]
 theorem iSup_iInf_ge_nat_add (f : ℕ → α) (k : ℕ) :
     ⨆ n, ⨅ i ≥ n, f (i + k) = ⨆ n, ⨅ i ≥ n, f i := by
-  have hf : Monotone fun n => ⨅ i ≥ n, f i := fun n m h => biInf_mono fun i => h.trans
+  have hf : Monotone fun n ↦ ⨅ i ≥ n, f i := fun n m h ↦ biInf_mono fun i ↦ h.trans
   rw [← Monotone.iSup_nat_add hf k]
   · simp_rw [iInf_ge_eq_iInf_nat_add, ← Nat.add_assoc]
 
@@ -125,7 +125,7 @@ variable [CompleteLattice α] {a : α} {s : Set α}
 
 /-- This is a weaker version of `sup_sInf_eq` -/
 theorem sup_sInf_le_iInf_sup : a ⊔ sInf s ≤ ⨅ b ∈ s, a ⊔ b :=
-  le_iInf₂ fun _ h => sup_le_sup_left (sInf_le h) _
+  le_iInf₂ fun _ h ↦ sup_le_sup_left (sInf_le h) _
 
 /-- This is a weaker version of `inf_sSup_eq` -/
 theorem iSup_inf_le_inf_sSup : ⨆ b ∈ s, a ⊓ b ≤ a ⊓ sSup s :=
@@ -133,14 +133,14 @@ theorem iSup_inf_le_inf_sSup : ⨆ b ∈ s, a ⊓ b ≤ a ⊓ sSup s :=
 
 /-- This is a weaker version of `sInf_sup_eq` -/
 theorem sInf_sup_le_iInf_sup : sInf s ⊔ a ≤ ⨅ b ∈ s, b ⊔ a :=
-  le_iInf₂ fun _ h => sup_le_sup_right (sInf_le h) _
+  le_iInf₂ fun _ h ↦ sup_le_sup_right (sInf_le h) _
 
 /-- This is a weaker version of `sSup_inf_eq` -/
 theorem iSup_inf_le_sSup_inf : ⨆ b ∈ s, b ⊓ a ≤ sSup s ⊓ a :=
   @sInf_sup_le_iInf_sup αᵒᵈ _ _ _
 
 theorem le_iSup_inf_iSup (f g : ι → α) : ⨆ i, f i ⊓ g i ≤ (⨆ i, f i) ⊓ ⨆ i, g i :=
-  le_inf (iSup_mono fun _ => inf_le_left) (iSup_mono fun _ => inf_le_right)
+  le_inf (iSup_mono fun _ ↦ inf_le_left) (iSup_mono fun _ ↦ inf_le_right)
 
 theorem iInf_sup_iInf_le (f g : ι → α) : (⨅ i, f i) ⊔ ⨅ i, g i ≤ ⨅ i, f i ⊔ g i :=
   @le_iSup_inf_iSup αᵒᵈ ι _ f g
@@ -195,8 +195,8 @@ theorem up_iInf [InfSet α] (f : ι → α) : up (⨅ i, f i) = ⨅ i, up (f i) 
 
 instance instCompleteLattice [CompleteLattice α] : CompleteLattice (ULift.{v} α) :=
   ULift.down_injective.completeLattice _ down_sup down_inf
-    (fun s => by rw [sSup_eq_iSup', down_iSup, iSup_subtype''])
-    (fun s => by rw [sInf_eq_iInf', down_iInf, iInf_subtype'']) down_top down_bot
+    (fun s ↦ by rw [sSup_eq_iSup', down_iSup, iSup_subtype''])
+    (fun s ↦ by rw [sInf_eq_iInf', down_iInf, iInf_subtype'']) down_top down_bot
 
 end ULift
 
@@ -205,8 +205,8 @@ namespace PUnit
 instance instCompleteLinearOrder : CompleteLinearOrder PUnit where
   __ := instBooleanAlgebra
   __ := instLinearOrder
-  sSup := fun _ => unit
-  sInf := fun _ => unit
+  sSup := fun _ ↦ unit
+  sInf := fun _ ↦ unit
   le_sSup := by intros; trivial
   sSup_le := by intros; trivial
   sInf_le := by intros; trivial

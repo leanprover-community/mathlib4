@@ -42,11 +42,11 @@ predicate `IsBoundedLinearMap`). We give statements for both versions. -/
 
 @[fun_prop]
 protected theorem ContinuousLinearMap.hasStrictFDerivAt {x : E} : HasStrictFDerivAt e e x :=
-  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun x => by
+  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun x ↦ by
     simp only [e.map_sub, sub_self, Pi.zero_apply]
 
 protected theorem ContinuousLinearMap.hasFDerivAtFilter : HasFDerivAtFilter e e x L :=
-  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun x => by
+  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun x ↦ by
     simp only [e.map_sub, sub_self, Pi.zero_apply]
 
 @[fun_prop]
@@ -75,7 +75,7 @@ protected theorem ContinuousLinearMap.fderivWithin (hxs : UniqueDiffWithinAt �
   exact e.fderiv
 
 @[simp, fun_prop]
-protected theorem ContinuousLinearMap.differentiable : Differentiable 𝕜 e := fun _ =>
+protected theorem ContinuousLinearMap.differentiable : Differentiable 𝕜 e := fun _ ↦
   e.differentiableAt
 
 @[fun_prop]
@@ -116,7 +116,7 @@ theorem IsBoundedLinearMap.fderivWithin (h : IsBoundedLinearMap 𝕜 f)
 
 @[fun_prop]
 theorem IsBoundedLinearMap.differentiable (h : IsBoundedLinearMap 𝕜 f) : Differentiable 𝕜 f :=
-  fun _ => h.differentiableAt
+  fun _ ↦ h.differentiableAt
 
 @[fun_prop]
 theorem IsBoundedLinearMap.differentiableOn (h : IsBoundedLinearMap 𝕜 f) : DifferentiableOn 𝕜 f s :=

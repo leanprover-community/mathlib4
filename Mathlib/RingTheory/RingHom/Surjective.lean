@@ -30,7 +30,7 @@ open TensorProduct Algebra.TensorProduct
 
 universe u
 
-local notation "surjective" => fun {X Y : Type _} [CommRing X] [CommRing Y] => fun f : X →+* Y =>
+local notation "surjective" => fun {X Y : Type _} [CommRing X] [CommRing Y] ↦ fun f : X →+* Y ↦
   Function.Surjective f
 
 theorem surjective_stableUnderComposition : StableUnderComposition surjective := by

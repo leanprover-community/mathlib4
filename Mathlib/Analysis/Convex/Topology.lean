@@ -68,8 +68,8 @@ theorem bounded_stdSimplex : IsBounded (stdSimplex ℝ ι) :=
 /-- `stdSimplex ℝ ι` is closed. -/
 theorem isClosed_stdSimplex : IsClosed (stdSimplex ℝ ι) :=
   (stdSimplex_eq_inter ℝ ι).symm ▸
-    IsClosed.inter (isClosed_iInter fun i => isClosed_le continuous_const (continuous_apply i))
-      (isClosed_eq (continuous_finset_sum _ fun x _ => continuous_apply x) continuous_const)
+    IsClosed.inter (isClosed_iInter fun i ↦ isClosed_le continuous_const (continuous_apply i))
+      (isClosed_eq (continuous_finset_sum _ fun x _ ↦ continuous_apply x) continuous_const)
 
 /-- `stdSimplex ℝ ι` is compact. -/
 theorem isCompact_stdSimplex : IsCompact (stdSimplex ℝ ι) :=
@@ -234,16 +234,16 @@ end
 /-- In a topological vector space, the interior of a convex set is convex. -/
 protected theorem Convex.interior [ZeroLEOneClass 𝕜] {s : Set E} (hs : Convex 𝕜 s) :
     Convex 𝕜 (interior s) :=
-  convex_iff_openSegment_subset.mpr fun _ hx _ hy =>
+  convex_iff_openSegment_subset.mpr fun _ hx _ hy ↦
     hs.openSegment_closure_interior_subset_interior (interior_subset_closure hx) hy
 
 /-- In a topological vector space, the closure of a convex set is convex. -/
 protected theorem Convex.closure {s : Set E} (hs : Convex 𝕜 s) : Convex 𝕜 (closure s) :=
-  fun x hx y hy a b ha hb hab =>
-  let f : E → E → E := fun x' y' => a • x' + b • y'
+  fun x hx y hy a b ha hb hab ↦
+  let f : E → E → E := fun x' y' ↦ a • x' + b • y'
   have hf : Continuous (Function.uncurry f) :=
     (continuous_fst.const_smul _).add (continuous_snd.const_smul _)
-  show f x y ∈ closure s from map_mem_closure₂ hf hx hy fun _ hx' _ hy' => hs hx' hy' ha hb hab
+  show f x y ∈ closure s from map_mem_closure₂ hf hx hy fun _ hx' _ hy' ↦ hs hx' hy' ha hb hab
 
 open AffineMap
 
@@ -253,7 +253,7 @@ variable [IsStrictOrderedRing 𝕜]
 `s \ interior s`, the line passing through these points has nonempty intersection with
 `interior s`. -/
 protected theorem Convex.strictConvex' {s : Set E} (hs : Convex 𝕜 s)
-    (h : (s \ interior s).Pairwise fun x y => ∃ c : 𝕜, lineMap x y c ∈ interior s) :
+    (h : (s \ interior s).Pairwise fun x y ↦ ∃ c : 𝕜, lineMap x y c ∈ interior s) :
     StrictConvex 𝕜 s := by
   refine strictConvex_iff_openSegment_subset.2 ?_
   intro x hx y hy hne
@@ -271,9 +271,9 @@ protected theorem Convex.strictConvex' {s : Set E} (hs : Convex 𝕜 s)
 `s \ interior s`, the segment with endpoints `x`, `y` has nonempty intersection with
 `interior s`. -/
 protected theorem Convex.strictConvex {s : Set E} (hs : Convex 𝕜 s)
-    (h : (s \ interior s).Pairwise fun x y => ([x -[𝕜] y] \ frontier s).Nonempty) :
+    (h : (s \ interior s).Pairwise fun x y ↦ ([x -[𝕜] y] \ frontier s).Nonempty) :
     StrictConvex 𝕜 s := by
-  refine hs.strictConvex' <| h.imp_on fun x hx y hy _ => ?_
+  refine hs.strictConvex' <| h.imp_on fun x hx y hy _ ↦ ?_
   simp only [segment_eq_image_lineMap, ← self_diff_frontier]
   rintro ⟨_, ⟨⟨c, hc, rfl⟩, hcs⟩⟩
   refine ⟨c, hs.segment_subset hx.1 hy.1 ?_, hcs⟩
@@ -314,13 +314,13 @@ variable [Semiring 𝕜] [PartialOrder 𝕜]
 
 theorem convex_closed_sInter {S : Set (Set E)} (h : ∀ s ∈ S, Convex 𝕜 s ∧ IsClosed s) :
     Convex 𝕜 (⋂₀ S) ∧ IsClosed (⋂₀ S) :=
-  ⟨fun _ hx => starConvex_sInter fun _ hs => (h _ hs).1 <| hx _ hs,
-    isClosed_sInter fun _ hs => (h _ hs).2⟩
+  ⟨fun _ hx ↦ starConvex_sInter fun _ hs ↦ (h _ hs).1 <| hx _ hs,
+    isClosed_sInter fun _ hs ↦ (h _ hs).2⟩
 
 variable (𝕜) in
 /-- The convex closed hull of a set `s` is the minimal convex closed set that includes `s`. -/
 @[simps! isClosed]
-def closedConvexHull : ClosureOperator (Set E) := .ofCompletePred (fun s => Convex 𝕜 s ∧ IsClosed s)
+def closedConvexHull : ClosureOperator (Set E) := .ofCompletePred (fun s ↦ Convex 𝕜 s ∧ IsClosed s)
   fun _ ↦ convex_closed_sInter
 
 theorem convex_closedConvexHull {s : Set E} :

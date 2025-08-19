@@ -147,12 +147,12 @@ instance : SmallCategory Skeleton.{u} where
   id _ := id
   comp f g := g ∘ f
 
-theorem is_skeletal : Skeletal Skeleton.{u} := fun X Y ⟨h⟩ =>
+theorem is_skeletal : Skeletal Skeleton.{u} := fun X Y ⟨h⟩ ↦
   ext _ _ <|
     Fin.equiv_iff_eq.mp <|
       Nonempty.intro <|
-        { toFun := fun x => (h.hom ⟨x⟩).down
-          invFun := fun x => (h.inv ⟨x⟩).down
+        { toFun := fun x ↦ (h.hom ⟨x⟩).down
+          invFun := fun x ↦ (h.inv ⟨x⟩).down
           left_inv := by
             intro a
             change ULift.down _ = _
@@ -178,7 +178,7 @@ instance : incl.Full where map_surjective f := ⟨f, rfl⟩
 instance : incl.Faithful where
 
 instance : incl.EssSurj :=
-  Functor.EssSurj.mk fun X =>
+  Functor.EssSurj.mk fun X ↦
     let F := Fintype.equivFin X
     ⟨mk (Fintype.card X),
       Nonempty.intro

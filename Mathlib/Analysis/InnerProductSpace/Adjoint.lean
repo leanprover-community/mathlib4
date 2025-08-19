@@ -85,24 +85,24 @@ variable [CompleteSpace F]
 
 theorem adjointAux_adjointAux (A : E →L[𝕜] F) : adjointAux (adjointAux A) = A := by
   ext v
-  refine ext_inner_left 𝕜 fun w => ?_
+  refine ext_inner_left 𝕜 fun w ↦ ?_
   rw [adjointAux_inner_right, adjointAux_inner_left]
 
 @[simp]
 theorem adjointAux_norm (A : E →L[𝕜] F) : ‖adjointAux A‖ = ‖A‖ := by
   refine le_antisymm ?_ ?_
-  · refine ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fun x => ?_
+  · refine ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fun x ↦ ?_
     rw [adjointAux_apply, LinearIsometryEquiv.norm_map]
     exact toSesqForm_apply_norm_le
   · nth_rw 1 [← adjointAux_adjointAux A]
-    refine ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fun x => ?_
+    refine ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fun x ↦ ?_
     rw [adjointAux_apply, LinearIsometryEquiv.norm_map]
     exact toSesqForm_apply_norm_le
 
 /-- The adjoint of a bounded operator `A` from a Hilbert space `E` to another Hilbert space `F`,
   denoted as `A†`. -/
 def adjoint : (E →L[𝕜] F) ≃ₗᵢ⋆[𝕜] F →L[𝕜] E :=
-  LinearIsometryEquiv.ofSurjective { adjointAux with norm_map' := adjointAux_norm } fun A =>
+  LinearIsometryEquiv.ofSurjective { adjointAux with norm_map' := adjointAux_norm } fun A ↦
     ⟨adjointAux A, adjointAux_adjointAux A⟩
 
 @[inherit_doc]
@@ -127,7 +127,7 @@ in reverse order. -/
 @[simp]
 theorem adjoint_comp (A : F →L[𝕜] G) (B : E →L[𝕜] F) : (A ∘L B)† = B† ∘L A† := by
   ext v
-  refine ext_inner_left 𝕜 fun w => ?_
+  refine ext_inner_left 𝕜 fun w ↦ ?_
   simp only [adjoint_inner_right, ContinuousLinearMap.coe_comp', Function.comp_apply]
 
 theorem apply_norm_sq_eq_inner_adjoint_left (A : E →L[𝕜] F) (x : E) :
@@ -151,9 +151,9 @@ theorem apply_norm_eq_sqrt_inner_adjoint_right (A : E →L[𝕜] F) (x : E) :
 /-- The adjoint is unique: a map `A` is the adjoint of `B` iff it satisfies `⟪A x, y⟫ = ⟪x, B y⟫`
 for all `x` and `y`. -/
 theorem eq_adjoint_iff (A : E →L[𝕜] F) (B : F →L[𝕜] E) : A = B† ↔ ∀ x y, ⟪A x, y⟫ = ⟪x, B y⟫ := by
-  refine ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => ?_⟩
+  refine ⟨fun h x y ↦ by rw [h, adjoint_inner_left], fun h ↦ ?_⟩
   ext x
-  exact ext_inner_right 𝕜 fun y => by simp only [adjoint_inner_left, h x y]
+  exact ext_inner_right 𝕜 fun y ↦ by simp only [adjoint_inner_left, h x y]
 
 @[simp]
 theorem _root_.LinearMap.IsSymmetric.clm_adjoint_eq {A : E →L[𝕜] E} (hA : A.IsSymmetric) :
@@ -225,7 +225,7 @@ theorem norm_adjoint_comp_self (A : E →L[𝕜] F) :
       ‖A† ∘L A‖ ≤ ‖A†‖ * ‖A‖ := opNorm_comp_le _ _
       _ = ‖A‖ * ‖A‖ := by rw [LinearIsometryEquiv.norm_map]
   · rw [← sq, ← Real.sqrt_le_sqrt_iff (norm_nonneg _), Real.sqrt_sq (norm_nonneg _)]
-    refine opNorm_le_bound _ (Real.sqrt_nonneg _) fun x => ?_
+    refine opNorm_le_bound _ (Real.sqrt_nonneg _) fun x ↦ ?_
     have :=
       calc
         re ⟪(A† ∘L A) x, x⟫ ≤ ‖(A† ∘L A) x‖ * ‖x‖ := re_inner_le_norm _ _
@@ -250,7 +250,7 @@ theorem isAdjointPair_inner (A : E →L[𝕜] F) :
 
 theorem adjoint_innerSL_apply (x : E) :
     adjoint (innerSL 𝕜 x) = (lsmul 𝕜 𝕜).flip x :=
-  ext_ring <| ext_inner_left 𝕜 <| fun _ => by simp [adjoint_inner_right]
+  ext_ring <| ext_inner_left 𝕜 <| fun _ ↦ by simp [adjoint_inner_right]
 
 theorem innerSL_apply_comp (x : F) (f : E →L[𝕜] F) :
     innerSL 𝕜 x ∘L f = innerSL 𝕜 (adjoint f x) := by
@@ -296,8 +296,8 @@ theorem adjoint_conj {T : E →L[𝕜] E} (hT : IsSelfAdjoint T) (S : F →L[�
 
 theorem _root_.ContinuousLinearMap.isSelfAdjoint_iff_isSymmetric {A : E →L[𝕜] E} :
     IsSelfAdjoint A ↔ (A : E →ₗ[𝕜] E).IsSymmetric :=
-  ⟨fun hA => hA.isSymmetric, fun hA =>
-    ext fun x => ext_inner_right 𝕜 fun y => (A.adjoint_inner_left y x).symm ▸ (hA x y).symm⟩
+  ⟨fun hA ↦ hA.isSymmetric, fun hA ↦
+    ext fun x ↦ ext_inner_right 𝕜 fun y ↦ (A.adjoint_inner_left y x).symm ▸ (hA x y).symm⟩
 
 theorem _root_.LinearMap.IsSymmetric.isSelfAdjoint {A : E →L[𝕜] E}
     (hA : (A : E →ₗ[𝕜] E).IsSymmetric) : IsSelfAdjoint A := by
@@ -346,7 +346,7 @@ by using the complexification of an inner product space over `𝕜`. -/
 /-- An idempotent operator is self-adjoint iff it is normal. -/
 theorem IsIdempotentElem.isSelfAdjoint_iff_isStarNormal (hT : IsIdempotentElem T) :
     IsSelfAdjoint T ↔ IsStarNormal T := by
-  refine ⟨fun h => by rw [isStarNormal_iff, h], fun h => ?_⟩
+  refine ⟨fun h ↦ by rw [isStarNormal_iff, h], fun h ↦ ?_⟩
   suffices T = star T * T from this ▸ IsSelfAdjoint.star_mul_self _
   rw [← sub_eq_zero, ContinuousLinearMap.ext_iff]
   simp_rw [zero_apply, ← norm_eq_zero (E := E)]
@@ -365,7 +365,7 @@ theorem IsIdempotentElem.isSelfAdjoint_iff_isStarNormal (hT : IsIdempotentElem T
 theorem isStarProjection_iff_isIdempotentElem_and_isStarNormal :
     IsStarProjection T ↔ IsIdempotentElem T ∧ IsStarNormal T := by
   rw [isStarProjection_iff, and_congr_right_iff]
-  exact fun h => IsIdempotentElem.isSelfAdjoint_iff_isStarNormal h
+  exact fun h ↦ IsIdempotentElem.isSelfAdjoint_iff_isStarNormal h
 
 open ContinuousLinearMap in
 omit [CompleteSpace E] in
@@ -379,7 +379,7 @@ open ContinuousLinearMap in
 theorem IsStarProjection.ext_iff {S : E →L[𝕜] E}
     (hS : IsStarProjection S) (hT : IsStarProjection T) :
     S = T ↔ LinearMap.range S = LinearMap.range T := by
-  refine ⟨fun h => h ▸ rfl, fun h => ?_⟩
+  refine ⟨fun h ↦ h ▸ rfl, fun h ↦ ?_⟩
   rw [hS.isIdempotentElem.ext_iff hT.isIdempotentElem,
     ← hT.isIdempotentElem.isSymmetric_iff_orthogonal_range.mp hT.isSelfAdjoint.isSymmetric,
     ← hS.isIdempotentElem.isSymmetric_iff_orthogonal_range.mp hS.isSelfAdjoint.isSymmetric]
@@ -488,7 +488,7 @@ theorem adjoint_inner_right (A : E →ₗ[𝕜] F) (x : E) (y : F) : ⟪x, adjoi
 @[simp]
 theorem adjoint_adjoint (A : E →ₗ[𝕜] F) : A.adjoint.adjoint = A := by
   ext v
-  refine ext_inner_left 𝕜 fun w => ?_
+  refine ext_inner_left 𝕜 fun w ↦ ?_
   rw [adjoint_inner_right, adjoint_inner_left]
 
 /-- The adjoint of the composition of two operators is the composition of the two adjoints
@@ -497,16 +497,16 @@ in reverse order. -/
 theorem adjoint_comp (A : F →ₗ[𝕜] G) (B : E →ₗ[𝕜] F) :
     (A ∘ₗ B).adjoint = B.adjoint ∘ₗ A.adjoint := by
   ext v
-  refine ext_inner_left 𝕜 fun w => ?_
+  refine ext_inner_left 𝕜 fun w ↦ ?_
   simp only [adjoint_inner_right, LinearMap.coe_comp, Function.comp_apply]
 
 /-- The adjoint is unique: a map `A` is the adjoint of `B` iff it satisfies `⟪A x, y⟫ = ⟪x, B y⟫`
 for all `x` and `y`. -/
 theorem eq_adjoint_iff (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
     A = B.adjoint ↔ ∀ x y, ⟪A x, y⟫ = ⟪x, B y⟫ := by
-  refine ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => ?_⟩
+  refine ⟨fun h x y ↦ by rw [h, adjoint_inner_left], fun h ↦ ?_⟩
   ext x
-  exact ext_inner_right 𝕜 fun y => by simp only [adjoint_inner_left, h x y]
+  exact ext_inner_right 𝕜 fun y ↦ by simp only [adjoint_inner_left, h x y]
 
 @[simp]
 theorem IsSymmetric.adjoint_eq {A : E →ₗ[𝕜] E} (hA : A.IsSymmetric) :
@@ -521,20 +521,20 @@ for all basis vectors `x` and `y`. -/
 theorem eq_adjoint_iff_basis {ι₁ : Type*} {ι₂ : Type*} (b₁ : Basis ι₁ 𝕜 E) (b₂ : Basis ι₂ 𝕜 F)
     (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
     A = B.adjoint ↔ ∀ (i₁ : ι₁) (i₂ : ι₂), ⟪A (b₁ i₁), b₂ i₂⟫ = ⟪b₁ i₁, B (b₂ i₂)⟫ := by
-  refine ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => ?_⟩
-  refine Basis.ext b₁ fun i₁ => ?_
-  exact ext_inner_right_basis b₂ fun i₂ => by simp only [adjoint_inner_left, h i₁ i₂]
+  refine ⟨fun h x y ↦ by rw [h, adjoint_inner_left], fun h ↦ ?_⟩
+  refine Basis.ext b₁ fun i₁ ↦ ?_
+  exact ext_inner_right_basis b₂ fun i₂ ↦ by simp only [adjoint_inner_left, h i₁ i₂]
 
 theorem eq_adjoint_iff_basis_left {ι : Type*} (b : Basis ι 𝕜 E) (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
     A = B.adjoint ↔ ∀ i y, ⟪A (b i), y⟫ = ⟪b i, B y⟫ := by
-  refine ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => Basis.ext b fun i => ?_⟩
-  exact ext_inner_right 𝕜 fun y => by simp only [h i, adjoint_inner_left]
+  refine ⟨fun h x y ↦ by rw [h, adjoint_inner_left], fun h ↦ Basis.ext b fun i ↦ ?_⟩
+  exact ext_inner_right 𝕜 fun y ↦ by simp only [h i, adjoint_inner_left]
 
 theorem eq_adjoint_iff_basis_right {ι : Type*} (b : Basis ι 𝕜 F) (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
     A = B.adjoint ↔ ∀ i x, ⟪A x, b i⟫ = ⟪x, B (b i)⟫ := by
-  refine ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => ?_⟩
+  refine ⟨fun h x y ↦ by rw [h, adjoint_inner_left], fun h ↦ ?_⟩
   ext x
-  exact ext_inner_right_basis b fun i => by simp only [h i, adjoint_inner_left]
+  exact ext_inner_right_basis b fun i ↦ by simp only [h i, adjoint_inner_left]
 
 /-- `E →ₗ[𝕜] E` is a star algebra with the adjoint as the star operation. -/
 instance : Star (E →ₗ[𝕜] E) :=
@@ -755,7 +755,7 @@ lemma LinearMap.toMatrixOrthonormal_apply_apply (f : E →ₗ[𝕜] E) (i j : n)
 
 lemma LinearMap.toMatrixOrthonormal_reindex (e : n ≃ m) (f : E →ₗ[𝕜] E) :
     toMatrixOrthonormal (v₁.reindex e) f = (toMatrixOrthonormal v₁ f).reindex e e :=
-  Matrix.ext fun i j =>
+  Matrix.ext fun i j ↦
     calc toMatrixOrthonormal (v₁.reindex e) f i j
       _ = (v₁.reindex e).repr (f (v₁.reindex e j)) i := f.toMatrix_apply ..
       _ = v₁.repr (f (v₁ (e.symm j))) (e.symm i) := by simp

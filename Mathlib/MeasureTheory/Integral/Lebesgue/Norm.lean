@@ -17,7 +17,7 @@ variable {α : Type*} [MeasurableSpace α] {μ : Measure α}
 theorem lintegral_ofReal_le_lintegral_enorm (f : α → ℝ) :
     ∫⁻ x, ENNReal.ofReal (f x) ∂μ ≤ ∫⁻ x, ‖f x‖ₑ ∂μ := by
   simp_rw [← ofReal_norm_eq_enorm]
-  refine lintegral_mono fun x => ENNReal.ofReal_le_ofReal ?_
+  refine lintegral_mono fun x ↦ ENNReal.ofReal_le_ofReal ?_
   rw [Real.norm_eq_abs]
   exact le_abs_self (f x)
 

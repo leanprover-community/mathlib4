@@ -29,13 +29,13 @@ namespace ContinuousLinearMap
 
 @[simp]
 theorem fpowerSeries_radius (f : E →L[𝕜] F) (x : E) : (f.fpowerSeries x).radius = ∞ :=
-  (f.fpowerSeries x).radius_eq_top_of_forall_image_add_eq_zero 2 fun _ => rfl
+  (f.fpowerSeries x).radius_eq_top_of_forall_image_add_eq_zero 2 fun _ ↦ rfl
 
 protected theorem hasFiniteFPowerSeriesOnBall (f : E →L[𝕜] F) (x : E) :
     HasFiniteFPowerSeriesOnBall f (f.fpowerSeries x) x 2 ∞ where
   r_le := by simp
   r_pos := ENNReal.coe_lt_top
-  hasSum := fun _ => (hasSum_nat_add_iff' 2).1 <| by
+  hasSum := fun _ ↦ (hasSum_nat_add_iff' 2).1 <| by
     simp [Finset.sum_range_succ, hasSum_zero, fpowerSeries]
   finite := by
     intro m hm
@@ -77,7 +77,7 @@ protected theorem analyticOn (f : E →L[𝕜] F) (s : Set E) : AnalyticOn 𝕜 
 multilinear series expansion of `uncurry f`. It is given by
 `f.uncurryBilinear ![(x, y), (x', y')] = f x y'`. -/
 def uncurryBilinear (f : E →L[𝕜] F →L[𝕜] G) : E × F[×2]→L[𝕜] G :=
-  @ContinuousLinearMap.uncurryLeft 𝕜 1 (fun _ => E × F) G _ _ _ _ _ <|
+  @ContinuousLinearMap.uncurryLeft 𝕜 1 (fun _ ↦ E × F) G _ _ _ _ _ <|
     (↑(continuousMultilinearCurryFin1 𝕜 (E × F) G).symm : (E × F →L[𝕜] G) →L[𝕜] _).comp <|
       f.bilinearComp (fst _ _ _) (snd _ _ _)
 
@@ -116,35 +116,35 @@ theorem fpowerSeriesBilinear_apply_add_three (f : E →L[𝕜] F →L[𝕜] G) (
 @[simp]
 theorem fpowerSeriesBilinear_radius (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :
     (f.fpowerSeriesBilinear x).radius = ∞ :=
-  (f.fpowerSeriesBilinear x).radius_eq_top_of_forall_image_add_eq_zero 3 fun _ => rfl
+  (f.fpowerSeriesBilinear x).radius_eq_top_of_forall_image_add_eq_zero 3 fun _ ↦ rfl
 
 protected theorem hasFPowerSeriesOnBall_bilinear (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :
-    HasFPowerSeriesOnBall (fun x : E × F => f x.1 x.2) (f.fpowerSeriesBilinear x) x ∞ :=
+    HasFPowerSeriesOnBall (fun x : E × F ↦ f x.1 x.2) (f.fpowerSeriesBilinear x) x ∞ :=
   { r_le := by simp
     r_pos := ENNReal.coe_lt_top
-    hasSum := fun _ =>
+    hasSum := fun _ ↦
       (hasSum_nat_add_iff' 3).1 <| by
         simp only [Finset.sum_range_succ, Prod.fst_add, Prod.snd_add, f.map_add_add]
         simp [fpowerSeriesBilinear, hasSum_zero] }
 
 protected theorem hasFPowerSeriesAt_bilinear (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :
-    HasFPowerSeriesAt (fun x : E × F => f x.1 x.2) (f.fpowerSeriesBilinear x) x :=
+    HasFPowerSeriesAt (fun x : E × F ↦ f x.1 x.2) (f.fpowerSeriesBilinear x) x :=
   ⟨∞, f.hasFPowerSeriesOnBall_bilinear x⟩
 
 protected theorem analyticAt_bilinear (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :
-    AnalyticAt 𝕜 (fun x : E × F => f x.1 x.2) x :=
+    AnalyticAt 𝕜 (fun x : E × F ↦ f x.1 x.2) x :=
   (f.hasFPowerSeriesAt_bilinear x).analyticAt
 
 protected theorem analyticWithinAt_bilinear (f : E →L[𝕜] F →L[𝕜] G) (s : Set (E × F)) (x : E × F) :
-    AnalyticWithinAt 𝕜 (fun x : E × F => f x.1 x.2) s x :=
+    AnalyticWithinAt 𝕜 (fun x : E × F ↦ f x.1 x.2) s x :=
   (f.analyticAt_bilinear x).analyticWithinAt
 
 protected theorem analyticOnNhd_bilinear (f : E →L[𝕜] F →L[𝕜] G) (s : Set (E × F)) :
-    AnalyticOnNhd 𝕜 (fun x : E × F => f x.1 x.2) s :=
+    AnalyticOnNhd 𝕜 (fun x : E × F ↦ f x.1 x.2) s :=
   fun x _ ↦ f.analyticAt_bilinear x
 
 protected theorem analyticOn_bilinear (f : E →L[𝕜] F →L[𝕜] G) (s : Set (E × F)) :
-    AnalyticOn 𝕜 (fun x : E × F => f x.1 x.2) s :=
+    AnalyticOn 𝕜 (fun x : E × F ↦ f x.1 x.2) s :=
   (f.analyticOnNhd_bilinear s).analyticOn
 
 end ContinuousLinearMap

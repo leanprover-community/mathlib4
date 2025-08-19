@@ -121,7 +121,7 @@ lemma map_final {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v
     [Category.{v₅} B'] {T' : Type u₆} [Category.{v₆} T'] {L' : A' ⥤ T'} {R' : B' ⥤ T'} {F : A ⥤ A'}
     {G : B ⥤ B'} {H : T ⥤ T'} (iL : F ⋙ L' ≅ L ⋙ H) (iR : G ⋙ R' ≅ R ⋙ H) [IsFiltered B]
     [R.Final] [R'.Final] [F.Final] [G.Final] :
-    (Comma.map iL.hom iR.inv).Final := ⟨fun ⟨i₂, j₂, u₂⟩ => by
+    (Comma.map iL.hom iR.inv).Final := ⟨fun ⟨i₂, j₂, u₂⟩ ↦ by
   haveI := final_of_natIso iR
   rw [isConnected_iff_of_equivalence (StructuredArrow.commaMapEquivalence iL.hom iR.inv _)]
   have : StructuredArrow.map₂ u₂ iR.hom ≅ StructuredArrow.post j₂ G R' ⋙
@@ -154,11 +154,11 @@ instance isFiltered_of_final [IsFiltered A] [IsFiltered B] [R.Final] : IsFiltere
     R.final_iff_isFiltered_structuredArrow.mp inferInstance (L.obj a)
   have (a : A) : (fromPUnit (Over.mk (𝟙 a))).Final := final_const_of_isTerminal Over.mkIdTerminal
   let η (a : A) : fromPUnit (Over.mk (𝟙 a)) ⋙ Over.forget a ⋙ L ≅ fromPUnit (L.obj a) :=
-    NatIso.ofComponents (fun _ => Iso.refl _)
+    NatIso.ofComponents (fun _ ↦ Iso.refl _)
   have (a : A) := IsFiltered.of_final (map (L := fromPUnit (L.obj a)) (F := 𝟭 T) (η a).hom
     ((Iso.refl (𝟭 B ⋙ R)).inv))
   have : RepresentablyCoflat (fst L R) :=
-    ⟨fun a => IsFiltered.of_equivalence (CostructuredArrow.ofCommaFstEquivalence L R a).symm⟩
+    ⟨fun a ↦ IsFiltered.of_equivalence (CostructuredArrow.ofCommaFstEquivalence L R a).symm⟩
   apply isFiltered_of_representablyCoflat (fst L R)
 
 attribute [local instance] isFiltered_of_final in
@@ -177,7 +177,7 @@ instance final_snd [IsFiltered A] [IsFiltered B] [R.Final] : (snd L R).Final := 
   have := map_final iL iR
   let s := (equivProd (𝟭 _) (star B)).trans <| prod.leftUnitorEquivalence B
   let iS : map iL.hom iR.inv ⋙ s.functor ≅ snd L R :=
-    NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp [iL, iR, s])
+    NatIso.ofComponents (fun _ ↦ Iso.refl _) (fun f ↦ by simp [iL, iR, s])
   apply final_of_natIso iS
 
 /-- Let `A` and `B` be cofiltered categories, `L : A ⥤ T` be initial and `R : B ⥤ T`. Then, the

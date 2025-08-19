@@ -19,16 +19,16 @@ open scoped TensorProduct
 
 open TensorProduct Algebra.TensorProduct
 
-theorem isIntegral_stableUnderComposition : StableUnderComposition fun f => f.IsIntegral := by
+theorem isIntegral_stableUnderComposition : StableUnderComposition fun f ↦ f.IsIntegral := by
   introv R hf hg; exact hf.trans _ _ hg
 
-theorem isIntegral_respectsIso : RespectsIso fun f => f.IsIntegral := by
+theorem isIntegral_respectsIso : RespectsIso fun f ↦ f.IsIntegral := by
   apply isIntegral_stableUnderComposition.respectsIso
   introv x
   rw [← e.apply_symm_apply x]
   apply RingHom.isIntegralElem_map
 
-theorem isIntegral_isStableUnderBaseChange : IsStableUnderBaseChange fun f => f.IsIntegral := by
+theorem isIntegral_isStableUnderBaseChange : IsStableUnderBaseChange fun f ↦ f.IsIntegral := by
   refine IsStableUnderBaseChange.mk isIntegral_respectsIso ?_
   introv h x
   refine TensorProduct.induction_on x ?_ ?_ ?_

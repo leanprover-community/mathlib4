@@ -37,7 +37,7 @@ variable (P : Cᵒᵖ ⥤ D)
 to the diagram used to define `P ⋙ F`. -/
 def diagramCompIso (X : C) : J.diagram P X ⋙ F ≅ J.diagram (P ⋙ F) X :=
   NatIso.ofComponents
-    (fun W => by
+    (fun W ↦ by
       refine ?_ ≪≫ HasLimit.isoOfNatIso (W.unop.multicospanComp _ _).symm
       refine
         (isLimitOfPreserves F (limit.isLimit _)).conePointUniqueUpToIso (limit.isLimit _))
@@ -61,7 +61,7 @@ variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ F]
 /-- The isomorphism between `P⁺ ⋙ F` and `(P ⋙ F)⁺`. -/
 def plusCompIso : J.plusObj P ⋙ F ≅ J.plusObj (P ⋙ F) :=
   NatIso.ofComponents
-    (fun X => by
+    (fun X ↦ by
       refine ?_ ≪≫ HasColimit.isoOfNatIso (J.diagramCompIso F P X.unop)
       refine
         (isColimitOfPreserves F
@@ -133,7 +133,7 @@ def plusFunctorWhiskerLeftIso (P : Cᵒᵖ ⥤ D)
     [∀ (F : D ⥤ E) (X : C) (W : J.Cover X) (P : Cᵒᵖ ⥤ D),
         PreservesLimit (W.index P).multicospan F] :
     (whiskeringLeft _ _ E).obj (J.plusObj P) ≅ (whiskeringLeft _ _ _).obj P ⋙ J.plusFunctor E :=
-  NatIso.ofComponents (fun _ => plusCompIso _ _ _) @fun _ _ _ => plusCompIso_whiskerLeft _ _ _
+  NatIso.ofComponents (fun _ ↦ plusCompIso _ _ _) @fun _ _ _ ↦ plusCompIso_whiskerLeft _ _ _
 
 @[reassoc (attr := simp)]
 theorem plusCompIso_whiskerRight {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
@@ -165,7 +165,7 @@ theorem plusCompIso_whiskerRight {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
 def plusFunctorWhiskerRightIso :
     J.plusFunctor D ⋙ (whiskeringRight _ _ _).obj F ≅
       (whiskeringRight _ _ _).obj F ⋙ J.plusFunctor E :=
-  NatIso.ofComponents (fun _ => J.plusCompIso _ _) @fun _ _ _ => plusCompIso_whiskerRight _ _ _
+  NatIso.ofComponents (fun _ ↦ J.plusCompIso _ _) @fun _ _ _ ↦ plusCompIso_whiskerRight _ _ _
 
 @[reassoc (attr := simp)]
 theorem whiskerRight_toPlus_comp_plusCompIso_hom :

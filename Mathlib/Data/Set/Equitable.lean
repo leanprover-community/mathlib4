@@ -30,20 +30,20 @@ def EquitableOn [LE β] [Add β] [One β] (s : Set α) (f : α → β) : Prop :=
   ∀ ⦃a₁ a₂⦄, a₁ ∈ s → a₂ ∈ s → f a₁ ≤ f a₂ + 1
 
 @[simp]
-theorem equitableOn_empty [LE β] [Add β] [One β] (f : α → β) : EquitableOn ∅ f := fun a _ ha =>
+theorem equitableOn_empty [LE β] [Add β] [One β] (f : α → β) : EquitableOn ∅ f := fun a _ ha ↦
   (Set.notMem_empty a ha).elim
 
 theorem equitableOn_iff_exists_le_le_add_one {s : Set α} {f : α → ℕ} :
     s.EquitableOn f ↔ ∃ b, ∀ a ∈ s, b ≤ f a ∧ f a ≤ b + 1 := by
-  refine ⟨?_, fun ⟨b, hb⟩ x y hx hy => (hb x hx).2.trans (add_le_add_right (hb y hy).1 _)⟩
+  refine ⟨?_, fun ⟨b, hb⟩ x y hx hy ↦ (hb x hx).2.trans (add_le_add_right (hb y hy).1 _)⟩
   obtain rfl | ⟨x, hx⟩ := s.eq_empty_or_nonempty
   · simp
   intro hs
   by_cases h : ∀ y ∈ s, f x ≤ f y
-  · exact ⟨f x, fun y hy => ⟨h _ hy, hs hy hx⟩⟩
+  · exact ⟨f x, fun y hy ↦ ⟨h _ hy, hs hy hx⟩⟩
   push_neg at h
   obtain ⟨w, hw, hwx⟩ := h
-  refine ⟨f w, fun y hy => ⟨Nat.le_of_succ_le_succ ?_, hs hy hw⟩⟩
+  refine ⟨f w, fun y hy ↦ ⟨Nat.le_of_succ_le_succ ?_, hs hy hw⟩⟩
   rw [(Nat.succ_le_of_lt hwx).antisymm (hs hx hw)]
   exact hs hx hy
 
@@ -69,7 +69,7 @@ section OrderedSemiring
 variable [Semiring β] [PartialOrder β] [IsOrderedRing β]
 
 theorem Subsingleton.equitableOn {s : Set α} (hs : s.Subsingleton) (f : α → β) : s.EquitableOn f :=
-  fun i j hi hj => by
+  fun i j hi hj ↦ by
   rw [hs hi hj]
   exact le_add_of_nonneg_right zero_le_one
 
@@ -90,7 +90,7 @@ theorem equitableOn_iff_le_le_add_one :
     EquitableOn (s : Set α) f ↔
       ∀ a ∈ s, (∑ i ∈ s, f i) / s.card ≤ f a ∧ f a ≤ (∑ i ∈ s, f i) / s.card + 1 := by
   rw [Set.equitableOn_iff_exists_le_le_add_one]
-  refine ⟨?_, fun h => ⟨_, h⟩⟩
+  refine ⟨?_, fun h ↦ ⟨_, h⟩⟩
   rintro ⟨b, hb⟩
   by_cases h : ∀ a ∈ s, f a = b + 1
   · intro a ha
@@ -103,10 +103,10 @@ theorem equitableOn_iff_le_le_add_one :
     apply hb
   symm
   refine
-    Nat.div_eq_of_lt_le (le_trans (by simp [mul_comm]) (sum_le_sum fun a ha => (hb a ha).1))
-      ((sum_lt_sum (fun a ha => (hb a ha).2) ⟨_, hx₁, (hb _ hx₁).2.lt_of_ne hx₂⟩).trans_le ?_)
+    Nat.div_eq_of_lt_le (le_trans (by simp [mul_comm]) (sum_le_sum fun a ha ↦ (hb a ha).1))
+      ((sum_lt_sum (fun a ha ↦ (hb a ha).2) ⟨_, hx₁, (hb _ hx₁).2.lt_of_ne hx₂⟩).trans_le ?_)
   rw [mul_comm, sum_const_nat]
-  exact fun _ _ => rfl
+  exact fun _ _ ↦ rfl
 
 theorem EquitableOn.le (h : EquitableOn (s : Set α) f) (ha : a ∈ s) :
     (∑ i ∈ s, f i) / s.card ≤ f a :=

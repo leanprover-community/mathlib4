@@ -45,7 +45,7 @@ def charmatrix (M : Matrix n n R) : Matrix n n R[X] :=
   Matrix.scalar n (X : R[X]) - (C : R →+* R[X]).mapMatrix M
 
 theorem charmatrix_apply :
-    charmatrix M i j = (Matrix.diagonal fun _ : n => X) i j - C (M i j) :=
+    charmatrix M i j = (Matrix.diagonal fun _ : n ↦ X) i j - C (M i j) :=
   rfl
 
 @[simp]
@@ -64,21 +64,21 @@ theorem charmatrix_zero : charmatrix (0 : Matrix n n R) = Matrix.scalar n (X : R
 
 @[simp]
 theorem charmatrix_diagonal (d : n → R) :
-    charmatrix (diagonal d) = diagonal fun i => X - C (d i) := by
+    charmatrix (diagonal d) = diagonal fun i ↦ X - C (d i) := by
   rw [charmatrix, scalar_apply, RingHom.mapMatrix_apply, diagonal_map (map_zero _), diagonal_sub]
 
 @[simp]
-theorem charmatrix_one : charmatrix (1 : Matrix n n R) = diagonal fun _ => X - 1 :=
+theorem charmatrix_one : charmatrix (1 : Matrix n n R) = diagonal fun _ ↦ X - 1 :=
   charmatrix_diagonal _
 
 @[simp]
 theorem charmatrix_natCast (k : ℕ) :
-    charmatrix (k : Matrix n n R) = diagonal fun _ => X - (k : R[X]) :=
+    charmatrix (k : Matrix n n R) = diagonal fun _ ↦ X - (k : R[X]) :=
   charmatrix_diagonal _
 
 @[simp]
 theorem charmatrix_ofNat (k : ℕ) [k.AtLeastTwo] :
-    charmatrix (ofNat(k) : Matrix n n R) = diagonal fun _ => X - ofNat(k) :=
+    charmatrix (ofNat(k) : Matrix n n R) = diagonal fun _ ↦ X - ofNat(k) :=
   charmatrix_natCast _
 
 @[simp]
@@ -213,7 +213,7 @@ theorem aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 := by
   -- However, any polynomial which is a product of the form $N * (t I - M)$
   -- is sent to zero, because the evaluation function puts the polynomial variable
   -- to the right of any coefficients, so everything telescopes.
-  apply_fun fun p => p.eval M at h
+  apply_fun fun p ↦ p.eval M at h
   rw [eval_mul_X_sub_C] at h
   -- Now $χ_M (t) I$, when thought of as a polynomial of matrices
   -- and evaluated at some `N` is exactly $χ_M (N)$.

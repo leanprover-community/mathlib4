@@ -66,7 +66,7 @@ def fintypeOfFintypeNe (a : α) (_ : Fintype { b // b ≠ a }) : Fintype α :=
     classical exact (Equiv.sumCompl (· = a)).bijective
 
 theorem image_subtype_ne_univ_eq_image_erase [Fintype α] [DecidableEq β] (k : β) (b : α → β) :
-    image (fun i : { a // b a ≠ k } => b ↑i) univ = (image b univ).erase k := by
+    image (fun i : { a // b a ≠ k } ↦ b ↑i) univ = (image b univ).erase k := by
   apply subset_antisymm
   · rw [image_subset_iff]
     intro i _
@@ -79,7 +79,7 @@ theorem image_subtype_ne_univ_eq_image_erase [Fintype α] [DecidableEq β] (k : 
 
 theorem image_subtype_univ_ssubset_image_univ [Fintype α] [DecidableEq β] (k : β) (b : α → β)
     (hk : k ∈ Finset.image b univ) (p : β → Prop) [DecidablePred p] (hp : ¬p k) :
-    image (fun i : { a // p (b a) } => b ↑i) univ ⊂ image b univ := by
+    image (fun i : { a // p (b a) } ↦ b ↑i) univ ⊂ image b univ := by
   grind
 
 /-- Any injection from a finset `s` in a fintype `α` to a finset `t` of the same cardinality as `α`
@@ -117,7 +117,7 @@ theorem Set.MapsTo.exists_equiv_extend_of_card_eq [Fintype α] {t : Finset β}
     have hfst' : s'.image f ⊆ t := by simpa [s', ← Finset.coe_subset] using hfst
     have hfs' : Set.InjOn f s' := by simpa [s'] using hfs
     obtain ⟨g, hg⟩ := Finset.exists_equiv_extend_of_card_eq hαt hfst' hfs'
-    refine ⟨g, fun i hi => ?_⟩
+    refine ⟨g, fun i hi ↦ ?_⟩
     apply hg
     simpa [s'] using hi
 
@@ -139,7 +139,7 @@ section
 
 @[simp]
 theorem infinite_sum : Infinite (α ⊕ β) ↔ Infinite α ∨ Infinite β := by
-  refine ⟨fun H => ?_, fun H => H.elim (@Sum.infinite_of_left α β) (@Sum.infinite_of_right α β)⟩
+  refine ⟨fun H ↦ ?_, fun H ↦ H.elim (@Sum.infinite_of_left α β) (@Sum.infinite_of_right α β)⟩
   contrapose! H; haveI := fintypeOfNotInfinite H.1; haveI := fintypeOfNotInfinite H.2
   exact Infinite.false
 

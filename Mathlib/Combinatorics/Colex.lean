@@ -468,7 +468,7 @@ lemma mem_initSeg_self : s ∈ initSeg s := by simp
 @[simp] lemma initSeg_nonempty : (initSeg s).Nonempty := ⟨s, mem_initSeg_self⟩
 
 lemma isInitSeg_initSeg : IsInitSeg (initSeg s) #s := by
-  refine ⟨fun t ht => (mem_initSeg.1 ht).1.symm, fun t₁ t₂ ht₁ ht₂ ↦ mem_initSeg.2 ⟨ht₂.2.symm, ?_⟩⟩
+  refine ⟨fun t ht ↦ (mem_initSeg.1 ht).1.symm, fun t₁ t₂ ht₁ ht₂ ↦ mem_initSeg.2 ⟨ht₂.2.symm, ?_⟩⟩
   rw [mem_initSeg] at ht₁
   exact ht₂.1.le.trans ht₁.2
 

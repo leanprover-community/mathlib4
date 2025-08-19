@@ -115,7 +115,7 @@ lemma IsCircuit.not_nil {p : G.Walk v v} (hp : IsCircuit p) : ¬ p.Nil := (hp.ne
 
 theorem isCycle_def {u : V} (p : G.Walk u u) :
     p.IsCycle ↔ p.IsTrail ∧ p ≠ nil ∧ p.support.tail.Nodup :=
-  Iff.intro (fun h => ⟨h.1.1, h.1.2, h.2⟩) fun h => ⟨⟨h.1, h.2.1⟩, h.2.2⟩
+  Iff.intro (fun h ↦ ⟨h.1.1, h.1.2, h.2⟩) fun h ↦ ⟨⟨h.1, h.2.1⟩, h.2.2⟩
 
 @[simp]
 theorem isCycle_copy {u u'} (p : G.Walk u u) (hu : u = u') :
@@ -227,7 +227,7 @@ theorem IsPath.concat {p : G.Walk u v} (hp : p.IsPath) (hw : w ∉ p.support)
   (concat_isPath_iff h).mpr ⟨hp, hw⟩
 
 @[simp]
-theorem IsCycle.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCycle := fun h => h.ne_nil rfl
+theorem IsCycle.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCycle := fun h ↦ h.ne_nil rfl
 
 lemma IsCycle.ne_bot : ∀ {p : G.Walk u u}, p.IsCycle → G ≠ ⊥
   | nil, hp => by cases hp.ne_nil rfl
@@ -329,7 +329,7 @@ lemma IsPath.getVert_eq_end_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi :
 
 lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤ p.length} ↔
     p.IsPath := by
-  refine ⟨?_, fun a => a.getVert_injOn⟩
+  refine ⟨?_, fun a ↦ a.getVert_injOn⟩
   induction p with
   | nil => simp
   | cons h q ih =>
@@ -341,7 +341,7 @@ lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤
       have := hinj (by rw [length_cons]; omega : n + 1 ≤ (q.cons h).length)
           (by rw [length_cons]; omega : m + 1 ≤ (q.cons h).length)
           (by simpa [getVert_cons] using hnm)
-      omega), fun h' => ?_⟩
+      omega), fun h' ↦ ?_⟩
     obtain ⟨n, ⟨hn, hnl⟩⟩ := mem_support_iff_exists_getVert.mp h'
     have := hinj (by rw [length_cons]; omega : (n + 1) ≤ (q.cons h).length)
       (by omega : 0 ≤ (q.cons h).length) (show (q.cons h).getVert (n + 1) = (q.cons h).getVert 0

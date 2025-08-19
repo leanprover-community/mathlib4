@@ -120,14 +120,14 @@ lemma IsMulFreimanHom.congr (hf₁ : IsMulFreimanHom n A B f₁) (h : EqOn f₁ 
     IsMulFreimanHom n A B f₂ where
   mapsTo := hf₁.mapsTo.congr h
   map_prod_eq_map_prod s t hsA htA hs ht h' := by
-    rw [map_congr rfl fun x hx => (h (hsA hx)).symm, map_congr rfl fun x hx => (h (htA hx)).symm,
+    rw [map_congr rfl fun x hx ↦ (h (hsA hx)).symm, map_congr rfl fun x hx ↦ (h (htA hx)).symm,
       hf₁.map_prod_eq_map_prod hsA htA hs ht h']
 
 lemma IsMulFreimanIso.congr (hf₁ : IsMulFreimanIso n A B f₁) (h : EqOn f₁ f₂ A) :
     IsMulFreimanIso n A B f₂ where
   bijOn := hf₁.bijOn.congr h
   map_prod_eq_map_prod s t hsA htA hs ht := by
-    rw [map_congr rfl fun x hx => h.symm (hsA hx), map_congr rfl fun x hx => h.symm (htA hx),
+    rw [map_congr rfl fun x hx ↦ h.symm (hsA hx), map_congr rfl fun x hx ↦ h.symm (htA hx),
       hf₁.map_prod_eq_map_prod hsA htA hs ht]
 
 @[to_additive]
@@ -157,7 +157,7 @@ lemma isMulFreimanHom_two :
 lemma isMulFreimanIso_two :
     IsMulFreimanIso 2 A B f ↔ BijOn f A B ∧ ∀ a ∈ A, ∀ b ∈ A, ∀ c ∈ A, ∀ d ∈ A,
       f a * f b = f c * f d ↔ a * b = c * d where
-  mp hf := ⟨hf.bijOn, fun _ ha _ hb _ hc _ hd => hf.mul_eq_mul ha hb hc hd⟩
+  mp hf := ⟨hf.bijOn, fun _ ha _ hb _ hc _ hd ↦ hf.mul_eq_mul ha hb hc hd⟩
   mpr hf := ⟨hf.1, by aesop (add simp card_eq_two)⟩
 
 @[to_additive] lemma isMulFreimanHom_id (hA : A₁ ⊆ A₂) : IsMulFreimanHom n A₁ A₂ id where
@@ -209,19 +209,19 @@ lemma isMulFreimanHom_const {b : β} (hb : b ∈ B) : IsMulFreimanHom n A B fun 
 
 @[to_additive (attr := simp)]
 lemma isMulFreimanHom_zero_iff : IsMulFreimanHom 0 A B f ↔ MapsTo f A B :=
-  ⟨fun h => h.mapsTo, fun h => ⟨h, by aesop⟩⟩
+  ⟨fun h ↦ h.mapsTo, fun h ↦ ⟨h, by aesop⟩⟩
 
 @[to_additive (attr := simp)]
 lemma isMulFreimanIso_zero_iff : IsMulFreimanIso 0 A B f ↔ BijOn f A B :=
-  ⟨fun h => h.bijOn, fun h => ⟨h, by aesop⟩⟩
+  ⟨fun h ↦ h.bijOn, fun h ↦ ⟨h, by aesop⟩⟩
 
 @[to_additive (attr := simp) isAddFreimanHom_one_iff]
 lemma isMulFreimanHom_one_iff : IsMulFreimanHom 1 A B f ↔ MapsTo f A B :=
-  ⟨fun h => h.mapsTo, fun h => ⟨h, by aesop (add simp card_eq_one)⟩⟩
+  ⟨fun h ↦ h.mapsTo, fun h ↦ ⟨h, by aesop (add simp card_eq_one)⟩⟩
 
 @[to_additive (attr := simp) isAddFreimanIso_one_iff]
 lemma isMulFreimanIso_one_iff : IsMulFreimanIso 1 A B f ↔ BijOn f A B :=
-  ⟨fun h => h.bijOn, fun h => ⟨h, by aesop (add simp [card_eq_one, BijOn])⟩⟩
+  ⟨fun h ↦ h.bijOn, fun h ↦ ⟨h, by aesop (add simp [card_eq_one, BijOn])⟩⟩
 
 @[to_additive (attr := simp)]
 lemma isMulFreimanHom_empty : IsMulFreimanHom n (∅ : Set α) B f where

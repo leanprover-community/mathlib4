@@ -76,13 +76,13 @@ end OrderedSMul
 axiom of `OrderedSMul`. -/
 theorem OrderedSMul.mk'' [Semiring 𝕜] [PartialOrder 𝕜]
     [AddCommMonoid M] [LinearOrder M] [SMulWithZero 𝕜 M]
-    (h : ∀ ⦃c : 𝕜⦄, 0 < c → StrictMono fun a : M => c • a) : OrderedSMul 𝕜 M :=
-  { smul_lt_smul_of_pos := fun hab hc => h hc hab
-    lt_of_smul_lt_smul_of_pos := fun hab hc => (h hc).lt_iff_lt.1 hab }
+    (h : ∀ ⦃c : 𝕜⦄, 0 < c → StrictMono fun a : M ↦ c • a) : OrderedSMul 𝕜 M :=
+  { smul_lt_smul_of_pos := fun hab hc ↦ h hc hab
+    lt_of_smul_lt_smul_of_pos := fun hab hc ↦ (h hc).lt_iff_lt.1 hab }
 
 instance Nat.orderedSMul [AddCommMonoid M] [LinearOrder M] [IsOrderedCancelAddMonoid M] :
     OrderedSMul ℕ M :=
-  OrderedSMul.mk'' fun n hn a b hab => by
+  OrderedSMul.mk'' fun n hn a b hab ↦ by
     cases n with
     | zero => cases hn
     | succ n =>
@@ -92,7 +92,7 @@ instance Nat.orderedSMul [AddCommMonoid M] [LinearOrder M] [IsOrderedCancelAddMo
 
 instance Int.orderedSMul [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M] :
     OrderedSMul ℤ M :=
-  OrderedSMul.mk'' fun n hn => by
+  OrderedSMul.mk'' fun n hn ↦ by
     cases n
     · simp only [Int.ofNat_eq_coe, Int.natCast_pos, natCast_zsmul] at hn ⊢
       exact strictMono_smul_left_of_pos hn
@@ -103,7 +103,7 @@ variable [Semiring R] [LinearOrder R] [IsStrictOrderedRing R]
 
 -- TODO: `LinearOrderedField M → OrderedSMul ℚ M`
 instance LinearOrderedSemiring.toOrderedSMul : OrderedSMul R R :=
-  OrderedSMul.mk'' fun _ => strictMono_mul_left_of_pos
+  OrderedSMul.mk'' fun _ ↦ strictMono_mul_left_of_pos
 
 end LinearOrderedSemiring
 
@@ -119,22 +119,22 @@ the first axiom of `OrderedSMul`. -/
 theorem OrderedSMul.mk' (h : ∀ ⦃a b : M⦄ ⦃c : 𝕜⦄, a < b → 0 < c → c • a ≤ c • b) :
     OrderedSMul 𝕜 M := by
   have hlt' : ∀ (a b : M) (c : 𝕜), a < b → 0 < c → c • a < c • b := by
-    refine fun a b c hab hc => (h hab hc).lt_of_ne ?_
+    refine fun a b c hab hc ↦ (h hab hc).lt_of_ne ?_
     rw [Ne, hc.ne'.isUnit.smul_left_cancel]
     exact hab.ne
-  refine ⟨fun {a b c} => hlt' a b c, fun {a b c hab hc} => ?_⟩
+  refine ⟨fun {a b c} ↦ hlt' a b c, fun {a b c hab hc} ↦ ?_⟩
   obtain ⟨c, rfl⟩ := hc.ne'.isUnit
   rw [← inv_smul_smul c a, ← inv_smul_smul c b]
   refine hlt' _ _ _ hab (pos_of_mul_pos_right ?_ hc.le)
   simp only [c.mul_inv, zero_lt_one]
 
 instance [OrderedSMul 𝕜 M] [OrderedSMul 𝕜 N] : OrderedSMul 𝕜 (M × N) :=
-  OrderedSMul.mk' fun _ _ _ h hc =>
+  OrderedSMul.mk' fun _ _ _ h hc ↦
     ⟨smul_le_smul_of_nonneg_left h.1.1 hc.le, smul_le_smul_of_nonneg_left h.1.2 hc.le⟩
 
 instance Pi.orderedSMul {M : ι → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, PartialOrder (M i)]
     [∀ i, MulActionWithZero 𝕜 (M i)] [∀ i, OrderedSMul 𝕜 (M i)] : OrderedSMul 𝕜 (∀ i, M i) :=
-  OrderedSMul.mk' fun _ _ _ h hc i => smul_le_smul_of_nonneg_left (h.le i) hc.le
+  OrderedSMul.mk' fun _ _ _ h hc i ↦ smul_le_smul_of_nonneg_left (h.le i) hc.le
 
 end LinearOrderedSemifield
 

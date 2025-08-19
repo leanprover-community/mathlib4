@@ -73,7 +73,7 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
         simp only [Cocone.w]
       rw [(IsColimit.equivOfNatIsoOfIso (diagramIsoSpan F') c' (PushoutCocone.mk _ _ this)
             _).nonempty_congr]
-      · exact ⟨fun h => ⟨⟨this⟩, h⟩, fun h => h.2⟩
+      · exact ⟨fun h ↦ ⟨⟨this⟩, h⟩, fun h ↦ h.2⟩
       · refine Cocones.ext (Iso.refl c'.pt) ?_
         rintro (_ | _ | _) <;> dsimp <;>
           simp only [c'.w, Category.id_comp, Category.comp_id]
@@ -107,7 +107,7 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
       · rintro ⟨h₁, h₂⟩ (_ | _ | _)
         · dsimp; rw [PushoutCocone.condition_zero]; exact hf.paste_horiz h₁
         exacts [h₁, h₂]
-    · exact ⟨fun h => h.2, fun h => ⟨w, h⟩⟩
+    · exact ⟨fun h ↦ h.2, fun h ↦ ⟨w, h⟩⟩
 
 theorem is_coprod_iff_isPushout {X E Y YE : C} (c : BinaryCofan X E) (hc : IsColimit c) {f : X ⟶ Y}
     {iY : Y ⟶ YE} {fE : c.pt ⟶ YE} (H : CommSq f c.inl iY fE) :
@@ -126,9 +126,9 @@ theorem is_coprod_iff_isPushout {X E Y YE : C} (c : BinaryCofan X E) (hc : IsCol
       · dsimp only [BinaryCofan.mk, id] -- Porting note: Originally `dsimp`
         rw [Category.assoc, e₂, eq_comm]; exact h.fac _ ⟨WalkingPair.left⟩
       · refine e₁.trans (Eq.symm ?_); exact h.fac _ _
-  · refine fun H => ⟨?_⟩
+  · refine fun H ↦ ⟨?_⟩
     fapply Limits.BinaryCofan.isColimitMk
-    · exact fun s => H.isColimit.desc (PushoutCocone.mk s.inr _ <|
+    · exact fun s ↦ H.isColimit.desc (PushoutCocone.mk s.inr _ <|
         (hc.fac (BinaryCofan.mk (f ≫ s.inr) s.inl) ⟨WalkingPair.left⟩).symm)
     · intro s
       rw [Category.assoc]
@@ -243,12 +243,12 @@ theorem Adhesive.mono_of_isPushout_of_mono_right [Adhesive C] (H : IsPushout f g
   (Adhesive.van_kampen' H).mono_of_mono_right
 
 instance Type.adhesive : Adhesive (Type u) :=
-  ⟨fun {_ _ _ _ f _ _ _ _} H =>
+  ⟨fun {_ _ _ _ f _ _ _ _} H ↦
     (IsPushout.isVanKampen_inl _ (Types.isCoprodOfMono f) _ _ _ H.flip).flip⟩
 
 noncomputable instance (priority := 100) Adhesive.toRegularMonoCategory [Adhesive C] :
     IsRegularMonoCategory C :=
-  ⟨fun f _ => ⟨{
+  ⟨fun f _ ↦ ⟨{
       Z := pushout f f
       left := pushout.inl _ _
       right := pushout.inr _ _

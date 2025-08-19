@@ -56,12 +56,12 @@ structure CoverPreserving (G : C ⥤ D) : Prop where
 
 /-- The identity functor on a site is cover-preserving. -/
 theorem idCoverPreserving : CoverPreserving J J (𝟭 _) :=
-  ⟨fun hS => by simpa using hS⟩
+  ⟨fun hS ↦ by simpa using hS⟩
 
 /-- The composition of two cover-preserving functors is cover-preserving. -/
 theorem CoverPreserving.comp {F} (hF : CoverPreserving J K F) {G} (hG : CoverPreserving K L G) :
     CoverPreserving J L (F ⋙ G) :=
-  ⟨fun hS => by
+  ⟨fun hS ↦ by
     rw [Sieve.functorPushforward_comp]
     exact hG.cover_preserve (hF.cover_preserve hS)⟩
 
@@ -162,7 +162,7 @@ lemma Functor.isContinuous_of_coverPreserving (hF₁ : CompatiblePreserving.{w} 
     apply existsUnique_of_exists_of_unique
     · have H := (isSheaf_iff_isSheaf_of_type _ _).1 G.2 _ (hF₂.cover_preserve hS)
       exact ⟨H.amalgamate (x.functorPushforward F) (hx.functorPushforward hF₁),
-        fun V f hf => (H.isAmalgamation (hx.functorPushforward hF₁) (F.map f) _).trans
+        fun V f hf ↦ (H.isAmalgamation (hx.functorPushforward hF₁) (F.map f) _).trans
           (hF₁.apply_map _ hx hf)⟩
     · intro y₁ y₂ hy₁ hy₂
       apply (Presieve.isSeparated_of_isSheaf _ _ ((isSheaf_iff_isSheaf_of_type _ _).1 G.2) _

@@ -135,13 +135,13 @@ instance instCancelMonoidWithZero {R : Type*} [Ring R] [PartialOrder R] [IsOrder
     [NoZeroDivisors R] :
     CancelMonoidWithZero (Icc (0 : R) 1) := fast_instance%
   @Function.Injective.cancelMonoidWithZero R _ NoZeroDivisors.toCancelMonoidWithZero _ _ _ _
-    (fun v => v.val) Subtype.coe_injective coe_zero coe_one coe_mul coe_pow
+    (fun v ↦ v.val) Subtype.coe_injective coe_zero coe_one coe_mul coe_pow
 
 instance instCancelCommMonoidWithZero {R : Type*} [CommRing R] [PartialOrder R] [IsOrderedRing R]
     [NoZeroDivisors R] :
     CancelCommMonoidWithZero (Icc (0 : R) 1) := fast_instance%
   @Function.Injective.cancelCommMonoidWithZero R _ NoZeroDivisors.toCancelCommMonoidWithZero _ _ _ _
-    (fun v => v.val) Subtype.coe_injective coe_zero coe_one coe_mul coe_pow
+    (fun v ↦ v.val) Subtype.coe_injective coe_zero coe_one coe_mul coe_pow
 
 variable {β : Type*} [Ring β] [PartialOrder β] [IsOrderedRing β]
 
@@ -150,7 +150,7 @@ theorem one_sub_mem {t : β} (ht : t ∈ Icc (0 : β) 1) : 1 - t ∈ Icc (0 : β
   exact ⟨sub_nonneg.2 ht.2, (sub_le_self_iff _).2 ht.1⟩
 
 theorem mem_iff_one_sub_mem {t : β} : t ∈ Icc (0 : β) 1 ↔ 1 - t ∈ Icc (0 : β) 1 :=
-  ⟨one_sub_mem, fun h => sub_sub_cancel 1 t ▸ one_sub_mem h⟩
+  ⟨one_sub_mem, fun h ↦ sub_sub_cancel 1 t ▸ one_sub_mem h⟩
 
 theorem one_sub_nonneg (x : Icc (0 : β) 1) : 0 ≤ 1 - (x : β) := by simpa using x.2.2
 
@@ -280,9 +280,9 @@ instance instCommMonoid {R : Type*} [CommSemiring R] [PartialOrder R] [IsStrictO
 instance instCancelMonoid {R : Type*} [Ring R] [PartialOrder R] [IsStrictOrderedRing R]
     [IsDomain R] : CancelMonoid (Ioc (0 : R) 1) :=
   { Set.Ioc.instMonoid with
-    mul_left_cancel := fun a _ _ h =>
+    mul_left_cancel := fun a _ _ h ↦
       Subtype.ext <| mul_left_cancel₀ a.prop.1.ne' <| (congr_arg Subtype.val h :)
-    mul_right_cancel := fun b _ _ h =>
+    mul_right_cancel := fun b _ _ h ↦
       Subtype.ext <| mul_right_cancel₀ b.prop.1.ne' <| (congr_arg Subtype.val h :) }
 
 instance instCancelCommMonoid {R : Type*} [CommRing R] [PartialOrder R] [IsStrictOrderedRing R]
@@ -328,7 +328,7 @@ theorem one_sub_mem {t : β} (ht : t ∈ Ioo (0 : β) 1) : 1 - t ∈ Ioo (0 : β
   exact lt_of_le_of_ne ((sub_le_self_iff 1).2 ht.1.le) (mt sub_eq_self.mp ht.1.ne')
 
 theorem mem_iff_one_sub_mem {t : β} : t ∈ Ioo (0 : β) 1 ↔ 1 - t ∈ Ioo (0 : β) 1 :=
-  ⟨one_sub_mem, fun h => sub_sub_cancel 1 t ▸ one_sub_mem h⟩
+  ⟨one_sub_mem, fun h ↦ sub_sub_cancel 1 t ▸ one_sub_mem h⟩
 
 theorem one_minus_pos (x : Ioo (0 : β) 1) : 0 < 1 - (x : β) := by simpa using x.2.2
 

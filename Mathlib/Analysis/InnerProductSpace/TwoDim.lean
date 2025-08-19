@@ -189,7 +189,7 @@ theorem inner_rightAngleRotationAux₁_right (x y : E) :
 oriented real inner product space of dimension 2. -/
 def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
   { o.rightAngleRotationAux₁ with
-    norm_map' := fun x => by
+    norm_map' := fun x ↦ by
       refine le_antisymm ?_ ?_
       · rcases eq_or_lt_of_le (norm_nonneg (o.rightAngleRotationAux₁ x)) with h | h
         · rw [← h]
@@ -209,7 +209,7 @@ def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
           omega
         obtain ⟨w, hw₀⟩ : ∃ w : Kᗮ, w ≠ 0 := exists_ne 0
         have hw' : ⟪x, (w : E)⟫ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
-        have hw : (w : E) ≠ 0 := fun h => hw₀ (Submodule.coe_eq_zero.mp h)
+        have hw : (w : E) ≠ 0 := fun h ↦ hw₀ (Submodule.coe_eq_zero.mp h)
         refine le_of_mul_le_mul_right ?_ (by rwa [norm_pos_iff] : 0 < ‖(w : E)‖)
         rw [← o.abs_areaForm_of_orthogonal hw']
         rw [← o.inner_rightAngleRotationAux₁_left x w]
@@ -329,7 +329,7 @@ theorem linearIsometryEquiv_comp_rightAngleRotation' (φ : E ≃ₗᵢ[ℝ] E)
 `![x, J x]` forms an (orthogonal) basis for `E`. -/
 def basisRightAngleRotation (x : E) (hx : x ≠ 0) : Basis (Fin 2) ℝ E :=
   @basisOfLinearIndependentOfCardEqFinrank ℝ _ _ _ _ _ _ _ ![x, J x]
-    (linearIndependent_of_ne_zero_of_inner_eq_zero (fun i => by fin_cases i <;> simp [hx])
+    (linearIndependent_of_ne_zero_of_inner_eq_zero (fun i ↦ by fin_cases i <;> simp [hx])
       (by
         intro i j hij
         fin_cases i <;> fin_cases j <;> simp_all))
@@ -355,7 +355,7 @@ theorem inner_mul_inner_add_areaForm_mul_areaForm' (a x : E) :
 /-- For vectors `a x y : E`, the identity `⟪a, x⟫ * ⟪a, y⟫ + ω a x * ω a y = ‖a‖ ^ 2 * ⟪x, y⟫`. -/
 theorem inner_mul_inner_add_areaForm_mul_areaForm (a x y : E) :
     ⟪a, x⟫ * ⟪a, y⟫ + ω a x * ω a y = ‖a‖ ^ 2 * ⟪x, y⟫ :=
-  congr_arg (fun f : E →ₗ[ℝ] ℝ => f y) (o.inner_mul_inner_add_areaForm_mul_areaForm' a x)
+  congr_arg (fun f : E →ₗ[ℝ] ℝ ↦ f y) (o.inner_mul_inner_add_areaForm_mul_areaForm' a x)
 
 theorem inner_sq_add_areaForm_sq (a b : E) : ⟪a, b⟫ ^ 2 + ω a b ^ 2 = ‖a‖ ^ 2 * ‖b‖ ^ 2 := by
   simpa [sq, real_inner_self_eq_norm_sq] using o.inner_mul_inner_add_areaForm_mul_areaForm a b b
@@ -373,7 +373,7 @@ theorem inner_mul_areaForm_sub' (a x : E) : ⟪a, x⟫ • ω a - ω a x • inn
 
 /-- For vectors `a x y : E`, the identity `⟪a, x⟫ * ω a y - ω a x * ⟪a, y⟫ = ‖a‖ ^ 2 * ω x y`. -/
 theorem inner_mul_areaForm_sub (a x y : E) : ⟪a, x⟫ * ω a y - ω a x * ⟪a, y⟫ = ‖a‖ ^ 2 * ω x y :=
-  congr_arg (fun f : E →ₗ[ℝ] ℝ => f y) (o.inner_mul_areaForm_sub' a x)
+  congr_arg (fun f : E →ₗ[ℝ] ℝ ↦ f y) (o.inner_mul_areaForm_sub' a x)
 
 theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
     0 ≤ ⟪x, y⟫ ∧ ω x y = 0 ↔ SameRay ℝ x y := by
@@ -490,7 +490,7 @@ theorem kahler_ne_zero {x y : E} (hx : x ≠ 0) (hy : y ≠ 0) : o.kahler x y �
   tauto
 
 theorem kahler_ne_zero_iff (x y : E) : o.kahler x y ≠ 0 ↔ x ≠ 0 ∧ y ≠ 0 := by
-  refine ⟨?_, fun h => o.kahler_ne_zero h.1 h.2⟩
+  refine ⟨?_, fun h ↦ o.kahler_ne_zero h.1 h.2⟩
   contrapose
   simp only [not_and_or, Classical.not_not, kahler_apply_apply, Complex.real_smul]
   rintro (rfl | rfl) <;> simp

@@ -37,15 +37,15 @@ def bit (b : Bool) : ℤ → ℤ :=
 
 /-- `Int.natBitwise` is an auxiliary definition for `Int.bitwise`. -/
 def natBitwise (f : Bool → Bool → Bool) (m n : ℕ) : ℤ :=
-  cond (f false false) -[ Nat.bitwise (fun x y => not (f x y)) m n +1] (Nat.bitwise f m n)
+  cond (f false false) -[ Nat.bitwise (fun x y ↦ not (f x y)) m n +1] (Nat.bitwise f m n)
 
 /-- `Int.bitwise` applies the function `f` to pairs of bits in the same position in
   the binary representations of its inputs. -/
 def bitwise (f : Bool → Bool → Bool) : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => natBitwise f m n
-  | (m : ℕ), -[n +1] => natBitwise (fun x y => f x (not y)) m n
-  | -[m +1], (n : ℕ) => natBitwise (fun x y => f (not x) y) m n
-  | -[m +1], -[n +1] => natBitwise (fun x y => f (not x) (not y)) m n
+  | (m : ℕ), -[n +1] => natBitwise (fun x y ↦ f x (not y)) m n
+  | -[m +1], (n : ℕ) => natBitwise (fun x y ↦ f (not x) y) m n
+  | -[m +1], -[n +1] => natBitwise (fun x y ↦ f (not x) (not y)) m n
 
 /-- `lnot` flips all the bits in the binary representation of its input -/
 def lnot : ℤ → ℤ
@@ -115,7 +115,7 @@ theorem bodd_coe (n : ℕ) : Int.bodd n = Nat.bodd n :=
 
 @[simp]
 theorem bodd_subNatNat (m n : ℕ) : bodd (subNatNat m n) = xor m.bodd n.bodd := by
-  apply subNatNat_elim m n fun m n i => bodd i = xor m.bodd n.bodd <;>
+  apply subNatNat_elim m n fun m n i ↦ bodd i = xor m.bodd n.bodd <;>
   intros i j <;>
   simp only [Int.bodd, Nat.bodd_add] <;>
   cases Nat.bodd i <;> simp
@@ -242,7 +242,7 @@ theorem bitwise_and : bitwise and = land := by
     simp
 
 -- Porting note: Was `bitwise_tac` in mathlib
-theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff := by
+theorem bitwise_diff : (bitwise fun a b ↦ a && not b) = ldiff := by
   funext m n
   rcases m with m | m <;> rcases n with n | n <;> try {rfl}
     <;> simp only [bitwise, natBitwise, Bool.not_false,
@@ -368,21 +368,21 @@ theorem shiftLeft_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<
     congr_arg ofNat (by simp [Nat.shiftLeft_eq, Nat.pow_add, mul_assoc])
   | -[_+1], _, (k : ℕ) => congr_arg negSucc (Nat.shiftLeft'_add _ _ _ _)
   | (m : ℕ), n, -[k+1] =>
-    subNatNat_elim n k.succ (fun n k i => (↑m) <<< i = (Nat.shiftLeft' false m n) >>> k)
-      (fun (i n : ℕ) =>
+    subNatNat_elim n k.succ (fun n k i ↦ (↑m) <<< i = (Nat.shiftLeft' false m n) >>> k)
+      (fun (i n : ℕ) ↦
         by simp [← Nat.shiftLeft_sub _ , Nat.add_sub_cancel_left])
-      fun i n => by
+      fun i n ↦ by
         dsimp
         simp_rw [negSucc_eq, shiftLeft_neg, Nat.shiftLeft'_false, Nat.shiftRight_add,
           ← Nat.shiftLeft_sub _ le_rfl, Nat.sub_self, Nat.shiftLeft_zero, ← shiftRight_natCast,
           ← shiftRight_add', Nat.cast_one]
   | -[m+1], n, -[k+1] =>
     subNatNat_elim n k.succ
-      (fun n k i => -[m+1] <<< i = -[(Nat.shiftLeft' true m n) >>> k+1])
-      (fun i n =>
+      (fun n k i ↦ -[m+1] <<< i = -[(Nat.shiftLeft' true m n) >>> k+1])
+      (fun i n ↦
         congr_arg negSucc <| by
           rw [← Nat.shiftLeft'_sub, Nat.add_sub_cancel_left]; apply Nat.le_add_right)
-      fun i n =>
+      fun i n ↦
       congr_arg negSucc <| by rw [add_assoc, Nat.shiftRight_add, ← Nat.shiftLeft'_sub _ _ le_rfl,
           Nat.sub_self, Nat.shiftLeft']
 
@@ -391,7 +391,7 @@ theorem shiftLeft_sub (m : ℤ) (n : ℕ) (k : ℤ) : m <<< (n - k) = (m <<< (n 
 
 theorem shiftLeft_eq_mul_pow : ∀ (m : ℤ) (n : ℕ), m <<< (n : ℤ) = m * (2 ^ n : ℕ)
   | (m : ℕ), _ => congr_arg ((↑) : ℕ → ℤ) (by simp [Nat.shiftLeft_eq])
-  | -[_+1], _ => @congr_arg ℕ ℤ _ _ (fun i => -i) (Nat.shiftLeft'_tt_eq_mul_pow _ _)
+  | -[_+1], _ => @congr_arg ℕ ℤ _ _ (fun i ↦ -i) (Nat.shiftLeft'_tt_eq_mul_pow _ _)
 
 theorem one_shiftLeft (n : ℕ) : 1 <<< (n : ℤ) = (2 ^ n : ℕ) :=
   congr_arg ((↑) : ℕ → ℤ) (by simp [Nat.shiftLeft_eq])

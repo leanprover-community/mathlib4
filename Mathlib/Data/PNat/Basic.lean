@@ -36,7 +36,7 @@ theorem natPred_add_one (n : ℕ+) : n.natPred + 1 = n :=
   (add_comm _ _).trans n.one_add_natPred
 
 @[mono]
-theorem natPred_strictMono : StrictMono natPred := fun m _ h => Nat.pred_lt_pred m.2.ne' h
+theorem natPred_strictMono : StrictMono natPred := fun m _ h ↦ Nat.pred_lt_pred m.2.ne' h
 
 @[mono]
 theorem natPred_monotone : Monotone natPred :=
@@ -72,7 +72,7 @@ end PNat
 namespace Nat
 
 @[mono]
-theorem succPNat_strictMono : StrictMono succPNat := fun _ _ => Nat.succ_lt_succ
+theorem succPNat_strictMono : StrictMono succPNat := fun _ _ ↦ Nat.succ_lt_succ
 
 @[mono]
 theorem succPNat_mono : Monotone succPNat :=
@@ -161,7 +161,7 @@ def caseStrongInductionOn {p : ℕ+ → Sort*} (a : ℕ+) (hz : p 1)
   · exact (lt_irrefl 0 kprop).elim
   rcases k with - | k
   · exact hz
-  exact hi ⟨k.succ, Nat.succ_pos _⟩ fun m hm => hk _ (Nat.lt_succ_iff.2 hm)
+  exact hi ⟨k.succ, Nat.succ_pos _⟩ fun m hm ↦ hk _ (Nat.lt_succ_iff.2 hm)
 
 /-- An induction principle for `ℕ+`: it takes values in `Sort*`, so it applies also to Types,
 not only to `Prop`. -/
@@ -239,7 +239,7 @@ theorem lt_succ_self (a : ℕ+) : a < succPNat a := lt.base a
   a > b, and by a - b = 1 if a ≤ b.
 -/
 instance instSub : Sub ℕ+ :=
-  ⟨fun a b => toPNat' (a - b : ℕ)⟩
+  ⟨fun a b ↦ toPNat' (a - b : ℕ)⟩
 
 theorem sub_coe (a b : ℕ+) : ((a - b : ℕ+) : ℕ) = ite (b < a) (a - b : ℕ) 1 := by
   change (toPNat' _ : ℕ) = ite _ _ _
@@ -261,7 +261,7 @@ theorem le_sub_one_of_lt {a b : ℕ+} (hab : a < b) : a ≤ b - (1 : ℕ+) := by
   · exact hab.le.trans (le_of_not_gt h)
 
 theorem add_sub_of_lt {a b : ℕ+} : a < b → a + (b - a) = b :=
-  fun h =>
+  fun h ↦
     PNat.eq <| by
       rw [add_coe, sub_coe, if_pos h]
       exact add_tsub_cancel_of_le h.le
@@ -358,11 +358,11 @@ theorem mul_div_exact {m k : ℕ+} (h : k ∣ m) : k * divExact m k = m := by
   change (k : ℕ) * (div m k).succ = m
   rw [← div_add_mod m k, dvd_iff'.mp h, Nat.mul_succ]
 
-theorem dvd_antisymm {m n : ℕ+} : m ∣ n → n ∣ m → m = n := fun hmn hnm =>
+theorem dvd_antisymm {m n : ℕ+} : m ∣ n → n ∣ m → m = n := fun hmn hnm ↦
   (le_of_dvd hmn).antisymm (le_of_dvd hnm)
 
 theorem dvd_one_iff (n : ℕ+) : n ∣ 1 ↔ n = 1 :=
-  ⟨fun h => dvd_antisymm h (one_dvd n), fun h => h.symm ▸ dvd_refl 1⟩
+  ⟨fun h ↦ dvd_antisymm h (one_dvd n), fun h ↦ h.symm ▸ dvd_refl 1⟩
 
 theorem pos_of_div_pos {n : ℕ+} {a : ℕ} (h : a ∣ n) : 0 < a := by
   apply pos_iff_ne_zero.2

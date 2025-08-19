@@ -356,7 +356,7 @@ For example, suppose we compare pairs of numbers using only their first coordina
 The `∈` relation is equivalent to `Amem` as long as the `Ordnode` is well formed,
 and should always be used instead of `Amem`. -/
 def Amem [LE α] (x : α) : Ordnode α → Prop :=
-  Any fun y => x ≤ y ∧ y ≤ x
+  Any fun y ↦ x ≤ y ∧ y ≤ x
 
 instance Amem.decidable [LE α] [DecidableLE α] (x : α) : ∀ t, Decidable (Amem x t) := by
   dsimp [Amem]; infer_instance
@@ -464,10 +464,10 @@ def glue : Ordnode α → Ordnode α → Ordnode α
      merge {1, 2} {3, 4} = {1, 2, 3, 4}
      merge {3, 4} {1, 2} = precondition violation -/
 def merge (l : Ordnode α) : Ordnode α → Ordnode α :=
-  (Ordnode.recOn (motive := fun _ => Ordnode α → Ordnode α) l fun r => r)
-    fun ls ll lx lr _ IHlr r =>
-      (Ordnode.recOn (motive := fun _ => Ordnode α) r (node ls ll lx lr))
-        fun rs rl rx rr IHrl _ =>
+  (Ordnode.recOn (motive := fun _ ↦ Ordnode α → Ordnode α) l fun r ↦ r)
+    fun ls ll lx lr _ IHlr r ↦
+      (Ordnode.recOn (motive := fun _ ↦ Ordnode α) r (node ls ll lx lr))
+        fun rs rl rx rr IHrl _ ↦
           if delta * ls < rs then balanceL IHrl rx rr
           else
             if delta * rs < ls then balanceR ll lx (IHlr <| node rs rl rx rr)
@@ -575,10 +575,10 @@ def toRevList (t : Ordnode α) : List α :=
   foldl (flip List.cons) [] t
 
 instance [ToString α] : ToString (Ordnode α) :=
-  ⟨fun t => "{" ++ String.intercalate ", " (t.toList.map toString) ++ "}"⟩
+  ⟨fun t ↦ "{" ++ String.intercalate ", " (t.toList.map toString) ++ "}"⟩
 
 instance [Std.ToFormat α] : Std.ToFormat (Ordnode α) where
-  format := fun t => Std.Format.joinSep (t.toList.map Std.ToFormat.format) (Std.Format.text ", ")
+  format := fun t ↦ Std.Format.joinSep (t.toList.map Std.ToFormat.format) (Std.Format.text ", ")
 
 /-- O(n). True if the trees have the same elements, ignoring structural differences.
 
@@ -587,20 +587,20 @@ instance [Std.ToFormat α] : Std.ToFormat (Ordnode α) where
 def Equiv (t₁ t₂ : Ordnode α) : Prop :=
   t₁.size = t₂.size ∧ t₁.toList = t₂.toList
 
-instance [DecidableEq α] : DecidableRel (@Equiv α) := fun x y =>
+instance [DecidableEq α] : DecidableRel (@Equiv α) := fun x y ↦
   inferInstanceAs (Decidable (x.size = y.size ∧ x.toList = y.toList))
 
 /-- O(2^n). Constructs the powerset of a given set, that is, the set of all subsets.
 
      powerset {1, 2, 3} = {∅, {1}, {2}, {3}, {1,2}, {1,3}, {2,3}, {1,2,3}} -/
 def powerset (t : Ordnode α) : Ordnode (Ordnode α) :=
-  insertMin nil <| foldr (fun x ts => glue (insertMin (ι x) (map (insertMin x) ts)) ts) t nil
+  insertMin nil <| foldr (fun x ts ↦ glue (insertMin (ι x) (map (insertMin x) ts)) ts) t nil
 
 /-- O(m * n). The cartesian product of two sets: `(a, b) ∈ s.prod t` iff `a ∈ s` and `b ∈ t`.
 
      prod {1, 2} {2, 3} = {(1, 2), (1, 3), (2, 2), (2, 3)} -/
 protected def prod {β} (t₁ : Ordnode α) (t₂ : Ordnode β) : Ordnode (α × β) :=
-  fold nil (fun s₁ a s₂ => merge s₁ <| merge (map (Prod.mk a) t₂) s₂) t₁
+  fold nil (fun s₁ a s₂ ↦ merge s₁ <| merge (map (Prod.mk a) t₂) s₂) t₁
 
 /-- O(m + n). Build a set on the disjoint union by combining sets on the factors.
 `Or.inl a ∈ s.copair t` iff `a ∈ s`, and `Or.inr b ∈ s.copair t` iff `b ∈ t`.
@@ -758,8 +758,8 @@ in the kernel, meaning that you probably can't prove things like
 `ofAscList [1, 2, 3] = {1, 2, 3}` by `rfl`.
 This implementation is optimized for VM evaluation. -/
 def ofAscListAux₁ : ∀ l : List α, ℕ → Ordnode α × { l' : List α // l'.length ≤ l.length }
-  | [] => fun _ => (nil, ⟨[], le_rfl⟩)
-  | x :: xs => fun s =>
+  | [] => fun _ ↦ (nil, ⟨[], le_rfl⟩)
+  | x :: xs => fun s ↦
     if s = 1 then (ι x, ⟨xs, Nat.le_succ _⟩)
     else
       match ofAscListAux₁ xs (s <<< 1) with
@@ -772,8 +772,8 @@ def ofAscListAux₁ : ∀ l : List α, ℕ → Ordnode α × { l' : List α // l
 
 /-- Auxiliary definition for `ofAscList`. -/
 def ofAscListAux₂ : List α → Ordnode α → ℕ → Ordnode α
-  | [] => fun t _ => t
-  | x :: xs => fun l s =>
+  | [] => fun t _ ↦ t
+  | x :: xs => fun l s ↦
     match ofAscListAux₁ xs s with
     | (r, ⟨ys, h⟩) =>
       have := Nat.lt_succ_of_le h
@@ -829,7 +829,7 @@ def find (x : α) : Ordnode α → Option α
     | Ordering.gt => find x r
 
 instance : Membership α (Ordnode α) :=
-  ⟨fun t x => t.mem x⟩
+  ⟨fun t x ↦ t.mem x⟩
 
 instance mem.decidable (x : α) (t : Ordnode α) : Decidable (x ∈ t) :=
   Bool.decEq _ _
@@ -1194,7 +1194,7 @@ def ofList (l : List α) : Ordnode α :=
     ofList' [2, 1, 1, 3] = {1, 2, 3} -/
 def ofList' : List α → Ordnode α
   | [] => nil
-  | x :: xs => if List.Chain (fun a b => ¬b ≤ a) x xs then ofAscList (x :: xs) else ofList (x :: xs)
+  | x :: xs => if List.Chain (fun a b ↦ ¬b ≤ a) x xs then ofAscList (x :: xs) else ofList (x :: xs)
 
 /-- O(n * log n). Map a function on a set. Unlike `map` this has no requirements on
 `f`, and the resulting set may be smaller than the input if `f` is noninjective.

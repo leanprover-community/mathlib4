@@ -84,10 +84,10 @@ namespace UpperSet
 variable {S : Set (UpperSet α)} {s t : UpperSet α} {a : α}
 
 instance : Max (UpperSet α) :=
-  ⟨fun s t => ⟨s ∩ t, s.upper.inter t.upper⟩⟩
+  ⟨fun s t ↦ ⟨s ∩ t, s.upper.inter t.upper⟩⟩
 
 instance : Min (UpperSet α) :=
-  ⟨fun s t => ⟨s ∪ t, s.upper.union t.upper⟩⟩
+  ⟨fun s t ↦ ⟨s ∪ t, s.upper.union t.upper⟩⟩
 
 instance : Top (UpperSet α) :=
   ⟨⟨∅, isUpperSet_empty⟩⟩
@@ -96,19 +96,19 @@ instance : Bot (UpperSet α) :=
   ⟨⟨univ, isUpperSet_univ⟩⟩
 
 instance : SupSet (UpperSet α) :=
-  ⟨fun S => ⟨⋂ s ∈ S, ↑s, isUpperSet_iInter₂ fun s _ => s.upper⟩⟩
+  ⟨fun S ↦ ⟨⋂ s ∈ S, ↑s, isUpperSet_iInter₂ fun s _ ↦ s.upper⟩⟩
 
 instance : InfSet (UpperSet α) :=
-  ⟨fun S => ⟨⋃ s ∈ S, ↑s, isUpperSet_iUnion₂ fun s _ => s.upper⟩⟩
+  ⟨fun S ↦ ⟨⋃ s ∈ S, ↑s, isUpperSet_iUnion₂ fun s _ ↦ s.upper⟩⟩
 
 instance completeLattice : CompleteLattice (UpperSet α) :=
-  (toDual.injective.comp SetLike.coe_injective).completeLattice _ (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) rfl rfl
+  (toDual.injective.comp SetLike.coe_injective).completeLattice _ (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) rfl rfl
 
 instance completelyDistribLattice : CompletelyDistribLattice (UpperSet α) :=
   .ofMinimalAxioms <|
     (toDual.injective.comp SetLike.coe_injective).completelyDistribLatticeMinimalAxioms .of _
-      (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) rfl rfl
+      (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) rfl rfl
 
 instance : Inhabited (UpperSet α) :=
   ⟨⊥⟩
@@ -219,30 +219,30 @@ namespace LowerSet
 variable {S : Set (LowerSet α)} {s t : LowerSet α} {a : α}
 
 instance : Max (LowerSet α) :=
-  ⟨fun s t => ⟨s ∪ t, fun _ _ h => Or.imp (s.lower h) (t.lower h)⟩⟩
+  ⟨fun s t ↦ ⟨s ∪ t, fun _ _ h ↦ Or.imp (s.lower h) (t.lower h)⟩⟩
 
 instance : Min (LowerSet α) :=
-  ⟨fun s t => ⟨s ∩ t, fun _ _ h => And.imp (s.lower h) (t.lower h)⟩⟩
+  ⟨fun s t ↦ ⟨s ∩ t, fun _ _ h ↦ And.imp (s.lower h) (t.lower h)⟩⟩
 
 instance : Top (LowerSet α) :=
-  ⟨⟨univ, fun _ _ _ => id⟩⟩
+  ⟨⟨univ, fun _ _ _ ↦ id⟩⟩
 
 instance : Bot (LowerSet α) :=
-  ⟨⟨∅, fun _ _ _ => id⟩⟩
+  ⟨⟨∅, fun _ _ _ ↦ id⟩⟩
 
 instance : SupSet (LowerSet α) :=
-  ⟨fun S => ⟨⋃ s ∈ S, ↑s, isLowerSet_iUnion₂ fun s _ => s.lower⟩⟩
+  ⟨fun S ↦ ⟨⋃ s ∈ S, ↑s, isLowerSet_iUnion₂ fun s _ ↦ s.lower⟩⟩
 
 instance : InfSet (LowerSet α) :=
-  ⟨fun S => ⟨⋂ s ∈ S, ↑s, isLowerSet_iInter₂ fun s _ => s.lower⟩⟩
+  ⟨fun S ↦ ⟨⋂ s ∈ S, ↑s, isLowerSet_iInter₂ fun s _ ↦ s.lower⟩⟩
 
 instance completeLattice : CompleteLattice (LowerSet α) :=
-  SetLike.coe_injective.completeLattice _ (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ => rfl) rfl rfl
+  SetLike.coe_injective.completeLattice _ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ ↦ rfl) rfl rfl
 
 instance completelyDistribLattice : CompletelyDistribLattice (LowerSet α) :=
   .ofMinimalAxioms <| SetLike.coe_injective.completelyDistribLatticeMinimalAxioms .of _
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) rfl rfl
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) rfl rfl
 
 instance : Inhabited (LowerSet α) :=
   ⟨⊥⟩
@@ -486,9 +486,9 @@ end LE
 section LinearOrder
 variable [LinearOrder α]
 
-instance UpperSet.isTotal_le : IsTotal (UpperSet α) (· ≤ ·) := ⟨fun s t => t.upper.total s.upper⟩
+instance UpperSet.isTotal_le : IsTotal (UpperSet α) (· ≤ ·) := ⟨fun s t ↦ t.upper.total s.upper⟩
 
-instance LowerSet.isTotal_le : IsTotal (LowerSet α) (· ≤ ·) := ⟨fun s t => s.lower.total t.lower⟩
+instance LowerSet.isTotal_le : IsTotal (LowerSet α) (· ≤ ·) := ⟨fun s t ↦ s.lower.total t.lower⟩
 
 noncomputable instance UpperSet.instLinearOrder : LinearOrder (UpperSet α) := by
   classical exact Lattice.toLinearOrder _
@@ -522,7 +522,7 @@ def map (f : α ≃o β) : UpperSet α ≃o UpperSet β where
 
 @[simp]
 theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm :=
-  DFunLike.ext _ _ fun s => ext <| by convert Set.preimage_equiv_eq_image_symm s f.toEquiv
+  DFunLike.ext _ _ fun s ↦ ext <| by convert Set.preimage_equiv_eq_image_symm s f.toEquiv
 
 @[simp]
 theorem mem_map : b ∈ map f s ↔ f.symm b ∈ s := by
@@ -561,7 +561,7 @@ def map (f : α ≃o β) : LowerSet α ≃o LowerSet β where
 
 @[simp]
 theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm :=
-  DFunLike.ext _ _ fun s => ext <| by convert Set.preimage_equiv_eq_image_symm s f.toEquiv
+  DFunLike.ext _ _ fun s ↦ ext <| by convert Set.preimage_equiv_eq_image_symm s f.toEquiv
 
 @[simp]
 theorem mem_map {f : α ≃o β} {b : β} : b ∈ map f s ↔ f.symm b ∈ s := by

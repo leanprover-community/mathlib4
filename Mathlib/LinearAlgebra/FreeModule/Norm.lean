@@ -36,7 +36,7 @@ theorem associated_norm_prod_smith [Fintype ι] (b : Basis ι R S) {f : S} (hf :
   refine (LinearMap.associated_det_of_eq_comp e _ _ ?_).symm
   dsimp only [e, LinearEquiv.trans_apply]
   simp_rw [← LinearEquiv.coe_toLinearMap, ← LinearMap.comp_apply, ← LinearMap.ext_iff]
-  refine b'.ext fun i => ?_
+  refine b'.ext fun i ↦ ?_
   simp_rw [LinearMap.comp_apply, LinearEquiv.coe_toLinearMap, Matrix.toLin_apply, Basis.repr_self,
     Finsupp.single_eq_pi_single, Matrix.diagonal_mulVec_single, Pi.single_apply, ite_smul,
     zero_smul, Finset.sum_ite_eq', mul_one, if_pos (Finset.mem_univ _), b'.equiv_apply]
@@ -66,7 +66,7 @@ theorem finrank_quotient_span_eq_natDegree_norm [Algebra F S] [IsScalarTower F F
   have h := span_singleton_eq_bot.not.2 hf
   rw [natDegree_eq_of_degree_eq
       (degree_eq_degree_of_associated <| associated_norm_prod_smith b hf)]
-  rw [natDegree_prod _ _ fun i _ => smithCoeffs_ne_zero b _ h i, finrank_quotient_eq_sum F h b]
+  rw [natDegree_prod _ _ fun i _ ↦ smithCoeffs_ne_zero b _ h i, finrank_quotient_eq_sum F h b]
   congr with i
   exact (AdjoinRoot.powerBasis <| smithCoeffs_ne_zero b _ h i).finrank
 

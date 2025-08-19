@@ -53,9 +53,9 @@ end Conjugation
 
 theorem perm_inv_on_of_perm_on_finset {s : Finset α} {f : Perm α} (h : ∀ x ∈ s, f x ∈ s) {y : α}
     (hy : y ∈ s) : f⁻¹ y ∈ s := by
-  have h0 : ∀ y ∈ s, ∃ (x : _) (hx : x ∈ s), y = (fun i (_ : i ∈ s) => f i) x hx :=
-    Finset.surj_on_of_inj_on_of_card_le (fun x hx => (fun i _ => f i) x hx) (fun a ha => h a ha)
-      (fun a₁ a₂ ha₁ ha₂ heq => (Equiv.apply_eq_iff_eq f).mp heq) rfl.ge
+  have h0 : ∀ y ∈ s, ∃ (x : _) (hx : x ∈ s), y = (fun i (_ : i ∈ s) ↦ f i) x hx :=
+    Finset.surj_on_of_inj_on_of_card_le (fun x hx ↦ (fun i _ ↦ f i) x hx) (fun a ha ↦ h a ha)
+      (fun a₁ a₂ ha₁ ha₂ heq ↦ (Equiv.apply_eq_iff_eq f).mp heq) rfl.ge
   obtain ⟨y2, hy2, heq⟩ := h0 y hy
   convert hy2
   rw [heq]
@@ -64,10 +64,10 @@ theorem perm_inv_on_of_perm_on_finset {s : Finset α} {f : Perm α} (h : ∀ x �
 theorem perm_inv_mapsTo_of_mapsTo (f : Perm α) {s : Set α} [Finite s] (h : Set.MapsTo f s s) :
     Set.MapsTo (f⁻¹ :) s s := by
   cases nonempty_fintype s
-  exact fun x hx =>
+  exact fun x hx ↦
     Set.mem_toFinset.mp <|
       perm_inv_on_of_perm_on_finset
-        (fun a ha => Set.mem_toFinset.mpr (h (Set.mem_toFinset.mp ha)))
+        (fun a ha ↦ Set.mem_toFinset.mpr (h (Set.mem_toFinset.mp ha)))
         (Set.mem_toFinset.mpr hx)
 
 @[simp]
@@ -85,7 +85,7 @@ theorem perm_inv_on_of_perm_on_finite {f : Perm α} {p : α → Prop} [Finite { 
   `Equiv.Perm.subtypePerm`. -/
 abbrev subtypePermOfFintype (f : Perm α) {p : α → Prop} [Finite { x // p x }]
     (h : ∀ x, p x → p (f x)) : Perm { x // p x } :=
-  f.subtypePerm fun x => ⟨fun h₂ => f.inv_apply_self x ▸ perm_inv_on_of_perm_on_finite h h₂, h x⟩
+  f.subtypePerm fun x ↦ ⟨fun h₂ ↦ f.inv_apply_self x ▸ perm_inv_on_of_perm_on_finite h h₂, h x⟩
 
 @[simp]
 theorem subtypePermOfFintype_apply (f : Perm α) {p : α → Prop} [Finite { x // p x }]
@@ -151,7 +151,7 @@ theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finit
 
 nonrec theorem Disjoint.orderOf {σ τ : Perm α} (hστ : Disjoint σ τ) :
     orderOf (σ * τ) = Nat.lcm (orderOf σ) (orderOf τ) :=
-  haveI h : ∀ n : ℕ, (σ * τ) ^ n = 1 ↔ σ ^ n = 1 ∧ τ ^ n = 1 := fun n => by
+  haveI h : ∀ n : ℕ, (σ * τ) ^ n = 1 ↔ σ ^ n = 1 ∧ τ ^ n = 1 := fun n ↦ by
     rw [hστ.commute.mul_pow, Disjoint.mul_eq_one_iff (hστ.pow_disjoint_pow n n)]
   Nat.dvd_antisymm hστ.commute.orderOf_mul_dvd_lcm
     (Nat.lcm_dvd
@@ -182,7 +182,7 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
     refine isConj_of_support_equiv ?_ ?_
     · refine
           ((Equiv.setCongr hd1').trans (Equiv.Set.union hd1'')).trans
-            ((Equiv.sumCongr (subtypeEquiv f fun a => ?_) (subtypeEquiv g fun a => ?_)).trans
+            ((Equiv.sumCongr (subtypeEquiv f fun a ↦ ?_) (subtypeEquiv g fun a ↦ ?_)).trans
               ((Equiv.setCongr hd2').trans (Equiv.Set.union hd2'')).symm) <;>
       · simp only [Set.mem_image, toEmbedding_apply, exists_eq_right, support_conj, coe_map,
           apply_eq_iff_eq]

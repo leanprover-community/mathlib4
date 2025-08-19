@@ -113,7 +113,7 @@ theorem Finset.card_le_univ [Fintype α] (s : Finset α) : #s ≤ Fintype.card �
 
 theorem Finset.card_lt_univ_of_notMem [Fintype α] {s : Finset α} {x : α} (hx : x ∉ s) :
     #s < Fintype.card α :=
-  card_lt_card ⟨subset_univ s, not_forall.2 ⟨x, fun hx' => hx (hx' <| mem_univ x)⟩⟩
+  card_lt_card ⟨subset_univ s, not_forall.2 ⟨x, fun hx' ↦ hx (hx' <| mem_univ x)⟩⟩
 
 @[deprecated (since := "2025-05-23")]
 alias Finset.card_lt_univ_of_not_mem := Finset.card_lt_univ_of_notMem
@@ -227,7 +227,7 @@ namespace Fintype
 variable [Fintype α] [Fintype β]
 
 theorem card_le_of_injective (f : α → β) (hf : Function.Injective f) : card α ≤ card β :=
-  Finset.card_le_card_of_injOn f (fun _ _ => Finset.mem_univ _) fun _ _ _ _ h => hf h
+  Finset.card_le_card_of_injOn f (fun _ _ ↦ Finset.mem_univ _) fun _ _ _ _ h ↦ hf h
 
 theorem card_le_of_embedding (f : α ↪ β) : card α ≤ card β :=
   card_le_of_injective f f.2
@@ -253,7 +253,7 @@ theorem card_le_of_surjective (f : α → β) (h : Function.Surjective f) : card
 
 theorem card_range_le {α β : Type*} (f : α → β) [Fintype α] [Fintype (Set.range f)] :
     Fintype.card (Set.range f) ≤ Fintype.card α :=
-  Fintype.card_le_of_surjective (fun a => ⟨f a, by simp⟩) fun ⟨_, a, ha⟩ => ⟨a, by simpa using ha⟩
+  Fintype.card_le_of_surjective (fun a ↦ ⟨f a, by simp⟩) fun ⟨_, a, ha⟩ ↦ ⟨a, by simpa using ha⟩
 
 theorem card_range {α β F : Type*} [FunLike F α β] [EmbeddingLike F α β] (f : F) [Fintype α]
     [Fintype (Set.range f)] : Fintype.card (Set.range f) = Fintype.card α :=
@@ -286,7 +286,7 @@ instance [Nonempty α] : NeZero (card α) := ⟨card_ne_zero⟩
 theorem existsUnique_iff_card_one {α} [Fintype α] (p : α → Prop) [DecidablePred p] :
     (∃! a : α, p a) ↔ #{x | p x} = 1 := by
   rw [Finset.card_eq_one]
-  refine exists_congr fun x => ?_
+  refine exists_congr fun x ↦ ?_
   simp only [Subset.antisymm_iff, subset_singleton_iff', singleton_subset_iff, and_comm,
     mem_filter_univ]
 
@@ -314,7 +314,7 @@ theorem surjective_of_injective {f : α → α} (hinj : Injective f) : Surjectiv
   exact ⟨y, h.2⟩
 
 theorem injective_iff_surjective {f : α → α} : Injective f ↔ Surjective f :=
-  ⟨surjective_of_injective, fun hsurj =>
+  ⟨surjective_of_injective, fun hsurj ↦
     HasLeftInverse.injective ⟨surjInv hsurj, leftInverse_of_surjective_of_rightInverse
       (surjective_of_injective (injective_surjInv _))
       (rightInverse_surjInv _)⟩⟩
@@ -327,9 +327,9 @@ theorem surjective_iff_bijective {f : α → α} : Surjective f ↔ Bijective f 
 
 theorem injective_iff_surjective_of_equiv {f : α → β} (e : α ≃ β) : Injective f ↔ Surjective f :=
   have : Injective (e.symm ∘ f) ↔ Surjective (e.symm ∘ f) := injective_iff_surjective
-  ⟨fun hinj => by
+  ⟨fun hinj ↦ by
     simpa [Function.comp] using e.surjective.comp (this.1 (e.symm.injective.comp hinj)),
-    fun hsurj => by
+    fun hsurj ↦ by
     simpa [Function.comp] using e.injective.comp (this.2 (e.symm.surjective.comp hsurj))⟩
 
 alias ⟨_root_.Function.Injective.bijective_of_finite, _⟩ := injective_iff_bijective
@@ -344,7 +344,7 @@ end Finite
 
 @[simp]
 theorem Fintype.card_coe (s : Finset α) [Fintype s] : Fintype.card s = #s :=
-  @Fintype.card_of_finset' _ _ _ (fun _ => Iff.rfl) (id _)
+  @Fintype.card_of_finset' _ _ _ (fun _ ↦ Iff.rfl) (id _)
 
 /-- We can inflate a set `s` to any bigger size. -/
 lemma Finset.exists_superset_card_eq [Fintype α] {n : ℕ} {s : Finset α} (hsn : #s ≤ n)
@@ -423,7 +423,7 @@ theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [
       simp_rw [Finset.lt_iff_ssubset.symm, lt_iff_le_not_ge, Finset.le_iff_subset,
         Finset.subset_iff, mem_filter_univ]
       exact
-        ⟨fun z hzx => _root_.trans hzx hxy,
+        ⟨fun z hzx ↦ _root_.trans hzx hxy,
           not_forall_of_exists_not ⟨x, Classical.not_imp.2 ⟨hxy, irrefl x⟩⟩⟩
   exact Subrelation.wf (this _ _) (measure _).wf
 
@@ -493,7 +493,7 @@ theorem Finset.card_fin (n : ℕ) : #(univ : Finset (Fin n)) = n := by simp
 
 /-- `Fin` as a map from `ℕ` to `Type` is injective. Note that since this is a statement about
 equality of types, using it should be avoided if possible. -/
-theorem fin_injective : Function.Injective Fin := fun m n h =>
+theorem fin_injective : Function.Injective Fin := fun m n h ↦
   (Fintype.card_fin m).symm.trans <| (Fintype.card_congr <| Equiv.cast h).trans (Fintype.card_fin n)
 
 theorem Fin.val_eq_val_of_heq {k l : ℕ} {i : Fin k} {j : Fin l} (h : i ≍ j) :

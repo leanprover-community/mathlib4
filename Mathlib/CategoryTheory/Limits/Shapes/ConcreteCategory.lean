@@ -48,7 +48,7 @@ variable [ConcreteCategory.{max w v} C FC] {J : Type w} (F : J → C)
 /-- The equivalence `ToType (∏ᶜ F) ≃ ∀ j, ToType (F j)` if `F : J → C` is a family of objects
 in a concrete category `C`. -/
 noncomputable def productEquiv : ToType (∏ᶜ F) ≃ ∀ j, ToType (F j) :=
-  ((PreservesProduct.iso (forget C) F) ≪≫ (Types.productIso.{w, v} fun j => ToType (F j))).toEquiv
+  ((PreservesProduct.iso (forget C) F) ≪≫ (Types.productIso.{w, v} fun j ↦ ToType (F j))).toEquiv
 
 @[simp]
 lemma productEquiv_apply_apply (x : ToType (∏ᶜ F)) (j : J) :
@@ -68,7 +68,7 @@ variable {J : Type w} (f : J → C) [HasProduct f] {D : Type t} [Category.{r} D]
 variable {FD : D → D → Type*} {DD : D → Type max w r} [∀ X Y, FunLike (FD X Y) (DD X) (DD Y)]
 variable [ConcreteCategory.{max w r} D FD] (F : C ⥤ D)
   [PreservesLimit (Discrete.functor f) F]
-  [HasProduct fun j => F.obj (f j)]
+  [HasProduct fun j ↦ F.obj (f j)]
   [PreservesLimitsOfShape WalkingCospan (forget D)]
   [PreservesLimit (Discrete.functor fun b ↦ F.obj (f b)) (forget D)]
 
@@ -272,13 +272,13 @@ def multiequalizerEquivAux {J : MulticospanShape.{w, w'}} (I : MulticospanIndex 
     (I.multicospan ⋙ forget C).sections ≃
     { x : ∀ i : J.L, ToType (I.left i) // ∀ i : J.R, I.fst i (x _) = I.snd i (x _) } where
   toFun x :=
-    ⟨fun _ => x.1 (WalkingMulticospan.left _), fun i => by
+    ⟨fun _ ↦ x.1 (WalkingMulticospan.left _), fun i ↦ by
       have a := x.2 (WalkingMulticospan.Hom.fst i)
       have b := x.2 (WalkingMulticospan.Hom.snd i)
       rw [← b] at a
       exact a⟩
   invFun x :=
-    { val := fun j =>
+    { val := fun j ↦
         match j with
         | WalkingMulticospan.left _ => x.1 _
         | WalkingMulticospan.right b => I.fst b (x.1 _)

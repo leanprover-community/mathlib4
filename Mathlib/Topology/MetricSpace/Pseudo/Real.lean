@@ -38,7 +38,7 @@ lemma dist_le_of_mem_Icc_01 {x y : ℝ} (hx : x ∈ Icc (0 : ℝ) 1) (hy : y ∈
 variable [Fintype ι] {x y x' y' : ι → ℝ}
 
 lemma dist_le_of_mem_pi_Icc (hx : x ∈ Icc x' y') (hy : y ∈ Icc x' y') : dist x y ≤ dist x' y' := by
-  refine (dist_pi_le_iff dist_nonneg).2 fun b =>
+  refine (dist_pi_le_iff dist_nonneg).2 fun b ↦
     (Real.dist_le_of_mem_uIcc ?_ ?_).trans (dist_le_pi_dist x' y' b) <;> refine Icc_subset_uIcc ?_
   exacts [⟨hx.1 _, hx.2 _⟩, ⟨hy.1 _, hy.2 _⟩]
 

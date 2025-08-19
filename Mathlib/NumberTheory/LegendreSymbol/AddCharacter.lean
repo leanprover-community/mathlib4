@@ -68,7 +68,7 @@ is injective when `ψ` is primitive. -/
 theorem to_mulShift_inj_of_isPrimitive {ψ : AddChar R R'} (hψ : IsPrimitive ψ) :
     Function.Injective ψ.mulShift := by
   intro a b h
-  apply_fun fun x => x * mulShift ψ (-b) at h
+  apply_fun fun x ↦ x * mulShift ψ (-b) at h
   simp only [mulShift_mul, mulShift_zero, add_neg_cancel] at h
   simpa [← sub_eq_add_neg, sub_eq_zero] using (hψ · h)
 
@@ -151,7 +151,7 @@ end ZModCharDef
 /-- An additive character on `ZMod n` is nontrivial iff it takes a value `≠ 1` on `1`. -/
 theorem zmod_char_ne_one_iff (n : ℕ) [NeZero n] (ψ : AddChar (ZMod n) C) : ψ ≠ 1 ↔ ψ 1 ≠ 1 := by
   rw [ne_one_iff]
-  refine ⟨?_, fun h => ⟨_, h⟩⟩
+  refine ⟨?_, fun h ↦ ⟨_, h⟩⟩
   contrapose!
   rintro h₁ a
   have ha₁ : a = a.val • (1 : ZMod ↑n) := by
@@ -162,14 +162,14 @@ theorem zmod_char_ne_one_iff (n : ℕ) [NeZero n] (ψ : AddChar (ZMod n) C) : ψ
 theorem IsPrimitive.zmod_char_eq_one_iff (n : ℕ) [NeZero n]
     {ψ : AddChar (ZMod n) C} (hψ : IsPrimitive ψ) (a : ZMod n) :
     ψ a = 1 ↔ a = 0 := by
-  refine ⟨fun h => not_imp_comm.mp (@hψ a) ?_, fun ha => by rw [ha, map_zero_eq_one]⟩
+  refine ⟨fun h ↦ not_imp_comm.mp (@hψ a) ?_, fun ha ↦ by rw [ha, map_zero_eq_one]⟩
   rw [zmod_char_ne_one_iff n (mulShift ψ a), mulShift_apply, mul_one, h, Classical.not_not]
 
 /-- The converse: if the additive character takes the value `1` only at `0`,
 then it is primitive. -/
 theorem zmod_char_primitive_of_eq_one_only_at_zero (n : ℕ) (ψ : AddChar (ZMod n) C)
     (hψ : ∀ a, ψ a = 1 → a = 0) : IsPrimitive ψ := by
-  refine fun a ha hf => ?_
+  refine fun a ha hf ↦ ?_
   have h : mulShift ψ a 1 = (1 : AddChar (ZMod n) C) (1 : ZMod n) :=
     congr_fun (congr_arg (↑) hf) 1
   rw [mulShift_apply, mul_one] at h; norm_cast at h
@@ -214,7 +214,7 @@ noncomputable def FiniteField.primitiveChar (F F' : Type*) [Field F] [Finite F] 
     rcases CharP.char_is_prime_or_zero F' (ringChar F') with hq | hq
     · exact mt (Nat.Prime.dvd_iff_eq hp.1 (Nat.Prime.ne_one hq)).mp h.symm
     · rw [hq]
-      exact fun hf => Nat.Prime.ne_zero hp.1 (zero_dvd_iff.mp hf)
+      exact fun hf ↦ Nat.Prime.ne_zero hp.1 (zero_dvd_iff.mp hf)
   let ψ := primitiveZModChar pp F' (neZero_iff.mp (NeZero.of_not_dvd F' hp₂))
   letI : Algebra (ZMod p) F := ZMod.algebra _ _
   let ψ' := ψ.char.compAddMonoidHom (Algebra.trace (ZMod p) F).toAddMonoidHom
@@ -222,7 +222,7 @@ noncomputable def FiniteField.primitiveChar (F F' : Type*) [Field F] [Finite F] 
     obtain ⟨a, ha⟩ := FiniteField.trace_to_zmod_nondegenerate F one_ne_zero
     rw [one_mul] at ha
     exact ne_one_iff.2
-      ⟨a, fun hf => ha <| (ψ.prim.zmod_char_eq_one_iff pp <| Algebra.trace (ZMod p) F a).mp hf⟩
+      ⟨a, fun hf ↦ ha <| (ψ.prim.zmod_char_eq_one_iff pp <| Algebra.trace (ZMod p) F a).mp hf⟩
   exact ⟨ψ.n, ψ', IsPrimitive.of_ne_one hψ'⟩
 /-!
 ### The sum of all character values
@@ -237,7 +237,7 @@ is a domain. -/
 theorem sum_eq_zero_of_ne_one [IsDomain R'] {ψ : AddChar R R'} (hψ : ψ ≠ 1) : ∑ a, ψ a = 0 := by
   rcases ne_one_iff.1 hψ with ⟨b, hb⟩
   have h₁ : ∑ a : R, ψ (b + a) = ∑ a : R, ψ a :=
-    Fintype.sum_bijective _ (AddGroup.addLeft_bijective b) _ _ fun x => rfl
+    Fintype.sum_bijective _ (AddGroup.addLeft_bijective b) _ _ fun x ↦ rfl
   simp_rw [map_add_eq_mul] at h₁
   have h₂ : ∑ a : R, ψ a = Finset.univ.sum ↑ψ := rfl
   rw [← Finset.mul_sum, h₂] at h₁

@@ -92,7 +92,7 @@ theorem intrinsicFrontier_subset_intrinsicClosure : intrinsicFrontier 𝕜 s ⊆
   image_mono frontier_subset_closure
 
 theorem subset_intrinsicClosure : s ⊆ intrinsicClosure 𝕜 s :=
-  fun x hx => ⟨⟨x, subset_affineSpan _ _ hx⟩, subset_closure hx, rfl⟩
+  fun x hx ↦ ⟨⟨x, subset_affineSpan _ _ hx⟩, subset_closure hx, rfl⟩
 
 @[simp]
 theorem intrinsicInterior_empty : intrinsicInterior 𝕜 (∅ : Set P) = ∅ := by simp [intrinsicInterior]
@@ -130,13 +130,13 @@ Note that neither `intrinsicInterior` nor `intrinsicFrontier` is monotone.
 
 
 theorem intrinsicClosure_mono (h : s ⊆ t) : intrinsicClosure 𝕜 s ⊆ intrinsicClosure 𝕜 t := by
-  refine image_subset_iff.2 fun x hx => ?_
+  refine image_subset_iff.2 fun x hx ↦ ?_
   refine ⟨Set.inclusion (affineSpan_mono _ h) x, ?_, rfl⟩
   refine (continuous_inclusion (affineSpan_mono _ h)).closure_preimage_subset _ (closure_mono ?_ hx)
-  exact fun y hy => h hy
+  exact fun y hy ↦ h hy
 
 theorem interior_subset_intrinsicInterior : interior s ⊆ intrinsicInterior 𝕜 s :=
-  fun x hx => ⟨⟨x, subset_affineSpan _ _ <| interior_subset hx⟩,
+  fun x hx ↦ ⟨⟨x, subset_affineSpan _ _ <| interior_subset hx⟩,
     preimage_interior_subset_interior_preimage continuous_subtype_val hx, rfl⟩
 
 theorem intrinsicClosure_subset_closure : intrinsicClosure 𝕜 s ⊆ closure s :=
@@ -268,7 +268,7 @@ variable (𝕜) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [NormedAddCo
 theorem intrinsicClosure_eq_closure : intrinsicClosure 𝕜 s = closure s := by
   ext x
   simp only [mem_closure_iff, mem_intrinsicClosure]
-  refine ⟨?_, fun h => ⟨⟨x, _⟩, ?_, Subtype.coe_mk _ ?_⟩⟩
+  refine ⟨?_, fun h ↦ ⟨⟨x, _⟩, ?_, Subtype.coe_mk _ ?_⟩⟩
   · rintro ⟨x, h, rfl⟩ t ht hx
     obtain ⟨z, hz₁, hz₂⟩ := h _ (continuous_induced_dom.isOpen_preimage t ht) hx
     exact ⟨z, hz₁, hz₂⟩

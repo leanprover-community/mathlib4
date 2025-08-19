@@ -66,7 +66,7 @@ variable [Field 𝕜] [Ring R] [AddCommGroup M]
   [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
 
 @[simp] theorem fst_expSeries (x : tsze R M) (n : ℕ) :
-    fst (expSeries 𝕜 (tsze R M) n fun _ => x) = expSeries 𝕜 R n fun _ => x.fst := by
+    fst (expSeries 𝕜 (tsze R M) n fun _ ↦ x) = expSeries 𝕜 R n fun _ ↦ x.fst := by
   simp [expSeries_apply_eq]
 
 end not_charZero
@@ -80,7 +80,7 @@ variable [Field 𝕜] [CharZero 𝕜] [Ring R] [AddCommGroup M]
 
 theorem snd_expSeries_of_smul_comm
     (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd) (n : ℕ) :
-    snd (expSeries 𝕜 (tsze R M) (n + 1) fun _ => x) = (expSeries 𝕜 R n fun _ => x.fst) • x.snd := by
+    snd (expSeries 𝕜 (tsze R M) (n + 1) fun _ ↦ x) = (expSeries 𝕜 R n fun _ ↦ x.fst) • x.snd := by
   simp_rw [expSeries_apply_eq, snd_smul, snd_pow_of_smul_comm _ _ hx,
     ← Nat.cast_smul_eq_nsmul 𝕜 (n + 1), smul_smul, smul_assoc, Nat.factorial_succ, Nat.pred_succ,
     Nat.cast_mul, mul_inv_rev,
@@ -90,8 +90,8 @@ theorem snd_expSeries_of_smul_comm
 then `(NormedSpace.exp R x).snd` converges to `e • x.snd`. -/
 theorem hasSum_snd_expSeries_of_smul_comm (x : tsze R M)
     (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd) {e : R}
-    (h : HasSum (fun n => expSeries 𝕜 R n fun _ => x.fst) e) :
-    HasSum (fun n => snd (expSeries 𝕜 (tsze R M) n fun _ => x)) (e • x.snd) := by
+    (h : HasSum (fun n ↦ expSeries 𝕜 R n fun _ ↦ x.fst) e) :
+    HasSum (fun n ↦ snd (expSeries 𝕜 (tsze R M) n fun _ ↦ x)) (e • x.snd) := by
   rw [← hasSum_nat_add_iff' 1]
   simp_rw [snd_expSeries_of_smul_comm _ _ hx]
   simp_rw [expSeries_apply_eq] at *
@@ -103,9 +103,9 @@ theorem hasSum_snd_expSeries_of_smul_comm (x : tsze R M)
 then `NormedSpace.exp R x` converges to `inl e + inr (e • x.snd)`. -/
 theorem hasSum_expSeries_of_smul_comm
     (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd)
-    {e : R} (h : HasSum (fun n => expSeries 𝕜 R n fun _ => x.fst) e) :
-    HasSum (fun n => expSeries 𝕜 (tsze R M) n fun _ => x) (inl e + inr (e • x.snd)) := by
-  have : HasSum (fun n => fst (expSeries 𝕜 (tsze R M) n fun _ => x)) e := by
+    {e : R} (h : HasSum (fun n ↦ expSeries 𝕜 R n fun _ ↦ x.fst) e) :
+    HasSum (fun n ↦ expSeries 𝕜 (tsze R M) n fun _ ↦ x) (inl e + inr (e • x.snd)) := by
+  have : HasSum (fun n ↦ fst (expSeries 𝕜 (tsze R M) n fun _ ↦ x)) e := by
     simpa [fst_expSeries] using h
   simpa only [inl_fst_add_inr_snd_eq] using
     (hasSum_inl _ <| this).add (hasSum_inr _ <| hasSum_snd_expSeries_of_smul_comm 𝕜 x hx h)
@@ -115,7 +115,7 @@ variable [T2Space R] [T2Space M]
 theorem exp_def_of_smul_comm (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd) :
     exp 𝕜 x = inl (exp 𝕜 x.fst) + inr (exp 𝕜 x.fst • x.snd) := by
   simp_rw [exp, FormalMultilinearSeries.sum]
-  by_cases h : Summable (fun (n : ℕ) => (expSeries 𝕜 R n) fun _ ↦ fst x)
+  by_cases h : Summable (fun (n : ℕ) ↦ (expSeries 𝕜 R n) fun _ ↦ fst x)
   · refine (hasSum_expSeries_of_smul_comm 𝕜 x hx ?_).tsum_eq
     exact h.hasSum
   · rw [tsum_eq_zero_of_not_summable h, zero_smul, inr_zero, inl_zero, zero_add,

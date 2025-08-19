@@ -193,10 +193,10 @@ open SlashInvariantForm
 variable {Γ : Subgroup SL(2, ℤ)} {k : ℤ}
 
 instance add : Add (ModularForm Γ k) :=
-  ⟨fun f g =>
+  ⟨fun f g ↦
     { toSlashInvariantForm := f + g
       holo' := f.holo'.add g.holo'
-      bdd_at_infty' := fun A => by simpa using (f.bdd_at_infty' A).add (g.bdd_at_infty' A) }⟩
+      bdd_at_infty' := fun A ↦ by simpa using (f.bdd_at_infty' A).add (g.bdd_at_infty' A) }⟩
 
 @[simp]
 theorem coe_add (f g : ModularForm Γ k) : ⇑(f + g) = f + g :=
@@ -208,8 +208,8 @@ theorem add_apply (f g : ModularForm Γ k) (z : ℍ) : (f + g) z = f z + g z :=
 
 instance instZero : Zero (ModularForm Γ k) :=
   ⟨ { toSlashInvariantForm := 0
-      holo' := fun _ => mdifferentiableAt_const
-      bdd_at_infty' := fun A => by simpa using zero_form_isBoundedAtImInfty } ⟩
+      holo' := fun _ ↦ mdifferentiableAt_const
+      bdd_at_infty' := fun A ↦ by simpa using zero_form_isBoundedAtImInfty } ⟩
 
 @[simp]
 theorem coe_zero : ⇑(0 : ModularForm Γ k) = (0 : ℍ → ℂ) :=
@@ -227,7 +227,7 @@ instance instSMul : SMul α (ModularForm Γ k) where
   smul c f :=
   { toSlashInvariantForm := c • f.1
     holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
-    bdd_at_infty' := fun A => by simpa [SL_smul_slash]
+    bdd_at_infty' := fun A ↦ by simpa [SL_smul_slash]
       using (f.bdd_at_infty' A).const_smul_left (c • (1 : ℂ)) }
 
 @[simp]
@@ -241,10 +241,10 @@ theorem smul_apply (f : ModularForm Γ k) (n : α) (z : ℍ) : (n • f) z = n �
 end
 
 instance instNeg : Neg (ModularForm Γ k) :=
-  ⟨fun f =>
+  ⟨fun f ↦
     { toSlashInvariantForm := -f.1
       holo' := f.holo'.neg
-      bdd_at_infty' := fun A => by simpa using (f.bdd_at_infty' A).neg }⟩
+      bdd_at_infty' := fun A ↦ by simpa using (f.bdd_at_infty' A).neg }⟩
 
 @[simp]
 theorem coe_neg (f : ModularForm Γ k) : ⇑(-f) = -f :=
@@ -255,7 +255,7 @@ theorem neg_apply (f : ModularForm Γ k) (z : ℍ) : (-f) z = -f z :=
   rfl
 
 instance instSub : Sub (ModularForm Γ k) :=
-  ⟨fun f g => f + -g⟩
+  ⟨fun f g ↦ f + -g⟩
 
 @[simp]
 theorem coe_sub (f g : ModularForm Γ k) : ⇑(f - g) = f - g :=
@@ -276,7 +276,7 @@ def coeHom : ModularForm Γ k →+ ℍ → ℂ where
   map_add' _ _ := rfl
 
 instance : Module ℂ (ModularForm Γ k) :=
-  Function.Injective.module ℂ coeHom DFunLike.coe_injective fun _ _ => rfl
+  Function.Injective.module ℂ coeHom DFunLike.coe_injective fun _ _ ↦ rfl
 
 instance : Inhabited (ModularForm Γ k) :=
   ⟨0⟩
@@ -342,10 +342,10 @@ open ModularForm
 variable {F : Type*} {Γ : Subgroup SL(2, ℤ)} {k : ℤ}
 
 instance hasAdd : Add (CuspForm Γ k) :=
-  ⟨fun f g =>
+  ⟨fun f g ↦
     { toSlashInvariantForm := f + g
       holo' := f.holo'.add g.holo'
-      zero_at_infty' := fun A => by simpa using (f.zero_at_infty' A).add (g.zero_at_infty' A) }⟩
+      zero_at_infty' := fun A ↦ by simpa using (f.zero_at_infty' A).add (g.zero_at_infty' A) }⟩
 
 @[simp]
 theorem coe_add (f g : CuspForm Γ k) : ⇑(f + g) = f + g :=
@@ -357,7 +357,7 @@ theorem add_apply (f g : CuspForm Γ k) (z : ℍ) : (f + g) z = f z + g z :=
 
 instance instZero : Zero (CuspForm Γ k) :=
   ⟨ { toSlashInvariantForm := 0
-      holo' := fun _ => mdifferentiableAt_const
+      holo' := fun _ ↦ mdifferentiableAt_const
       zero_at_infty' := by simpa using Filter.zero_zeroAtFilter _ } ⟩
 
 @[simp]
@@ -373,10 +373,10 @@ section
 variable {α : Type*} [SMul α ℂ] [IsScalarTower α ℂ ℂ]
 
 instance instSMul : SMul α (CuspForm Γ k) :=
-  ⟨fun c f =>
+  ⟨fun c f ↦
     { toSlashInvariantForm := c • f.1
       holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
-      zero_at_infty' := fun A => by simpa using (f.zero_at_infty' A).smul (c • (1 : ℂ)) }⟩
+      zero_at_infty' := fun A ↦ by simpa using (f.zero_at_infty' A).smul (c • (1 : ℂ)) }⟩
 
 @[simp]
 theorem coe_smul (f : CuspForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
@@ -389,10 +389,10 @@ theorem smul_apply (f : CuspForm Γ k) (n : α) {z : ℍ} : (n • f) z = n • 
 end
 
 instance instNeg : Neg (CuspForm Γ k) :=
-  ⟨fun f =>
+  ⟨fun f ↦
     { toSlashInvariantForm := -f.1
       holo' := f.holo'.neg
-      zero_at_infty' := fun A => by simpa using (f.zero_at_infty' A).neg }⟩
+      zero_at_infty' := fun A ↦ by simpa using (f.zero_at_infty' A).neg }⟩
 
 @[simp]
 theorem coe_neg (f : CuspForm Γ k) : ⇑(-f) = -f :=
@@ -403,7 +403,7 @@ theorem neg_apply (f : CuspForm Γ k) (z : ℍ) : (-f) z = -f z :=
   rfl
 
 instance instSub : Sub (CuspForm Γ k) :=
-  ⟨fun f g => f + -g⟩
+  ⟨fun f g ↦ f + -g⟩
 
 @[simp]
 theorem coe_sub (f g : CuspForm Γ k) : ⇑(f - g) = f - g :=
@@ -424,7 +424,7 @@ def coeHom : CuspForm Γ k →+ ℍ → ℂ where
   map_add' _ _ := rfl
 
 instance : Module ℂ (CuspForm Γ k) :=
-  Function.Injective.module ℂ coeHom DFunLike.coe_injective fun _ _ => rfl
+  Function.Injective.module ℂ coeHom DFunLike.coe_injective fun _ _ ↦ rfl
 
 instance : Inhabited (CuspForm Γ k) :=
   ⟨0⟩
@@ -463,27 +463,27 @@ instance (Γ : Subgroup SL(2, ℤ)) : GradedMonoid.GMul (ModularForm Γ) where
   mul f g := f.mul g
 
 instance instGCommRing (Γ : Subgroup SL(2, ℤ)) : DirectSum.GCommRing (ModularForm Γ) where
-  one_mul _ := gradedMonoid_eq_of_cast (zero_add _) (ext fun _ => one_mul _)
-  mul_one _ := gradedMonoid_eq_of_cast (add_zero _) (ext fun _ => mul_one _)
-  mul_assoc _ _ _ := gradedMonoid_eq_of_cast (add_assoc _ _ _) (ext fun _ => mul_assoc _ _ _)
-  mul_zero {_ _} _ := ext fun _ => mul_zero _
-  zero_mul {_ _} _ := ext fun _ => zero_mul _
-  mul_add {_ _} _ _ _ := ext fun _ => mul_add _ _ _
-  add_mul {_ _} _ _ _ := ext fun _ => add_mul _ _ _
-  mul_comm _ _ := gradedMonoid_eq_of_cast (add_comm _ _) (ext fun _ => mul_comm _ _)
+  one_mul _ := gradedMonoid_eq_of_cast (zero_add _) (ext fun _ ↦ one_mul _)
+  mul_one _ := gradedMonoid_eq_of_cast (add_zero _) (ext fun _ ↦ mul_one _)
+  mul_assoc _ _ _ := gradedMonoid_eq_of_cast (add_assoc _ _ _) (ext fun _ ↦ mul_assoc _ _ _)
+  mul_zero {_ _} _ := ext fun _ ↦ mul_zero _
+  zero_mul {_ _} _ := ext fun _ ↦ zero_mul _
+  mul_add {_ _} _ _ _ := ext fun _ ↦ mul_add _ _ _
+  add_mul {_ _} _ _ _ := ext fun _ ↦ add_mul _ _ _
+  mul_comm _ _ := gradedMonoid_eq_of_cast (add_comm _ _) (ext fun _ ↦ mul_comm _ _)
   natCast := Nat.cast
-  natCast_zero := ext fun _ => Nat.cast_zero
-  natCast_succ _ := ext fun _ => Nat.cast_succ _
+  natCast_zero := ext fun _ ↦ Nat.cast_zero
+  natCast_succ _ := ext fun _ ↦ Nat.cast_succ _
   intCast := Int.cast
-  intCast_ofNat _ := ext fun _ => AddGroupWithOne.intCast_ofNat _
-  intCast_negSucc_ofNat _ := ext fun _ => AddGroupWithOne.intCast_negSucc _
+  intCast_ofNat _ := ext fun _ ↦ AddGroupWithOne.intCast_ofNat _
+  intCast_negSucc_ofNat _ := ext fun _ ↦ AddGroupWithOne.intCast_negSucc _
 
 instance instGAlgebra (Γ : Subgroup SL(2, ℤ)) : DirectSum.GAlgebra ℂ (ModularForm Γ) where
-  toFun := { toFun := const, map_zero' := rfl, map_add' := fun _ _ => rfl }
+  toFun := { toFun := const, map_zero' := rfl, map_add' := fun _ _ ↦ rfl }
   map_one := rfl
   map_mul _x _y := rfl
-  commutes _c _x := gradedMonoid_eq_of_cast (add_comm _ _) (ext fun _ => mul_comm _ _)
-  smul_def _x _x := gradedMonoid_eq_of_cast (zero_add _).symm (ext fun _ => rfl)
+  commutes _c _x := gradedMonoid_eq_of_cast (add_comm _ _) (ext fun _ ↦ mul_comm _ _)
+  smul_def _x _x := gradedMonoid_eq_of_cast (zero_add _).symm (ext fun _ ↦ rfl)
 
 open scoped DirectSum in
 example (Γ : Subgroup SL(2, ℤ)) : Algebra ℂ (⨁ i, ModularForm Γ i) := inferInstance

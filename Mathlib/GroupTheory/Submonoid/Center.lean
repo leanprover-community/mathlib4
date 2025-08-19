@@ -125,7 +125,7 @@ def unitsCenterToCenterUnits [Monoid M] : (Submonoid.center M)ˣ →* Submonoid.
 @[to_additive]
 theorem unitsCenterToCenterUnits_injective [Monoid M] :
     Function.Injective (unitsCenterToCenterUnits M) :=
-  fun _a _b h => Units.ext <| Subtype.ext <| congr_arg (Units.val ∘ Subtype.val) h
+  fun _a _b h ↦ Units.ext <| Subtype.ext <| congr_arg (Units.val ∘ Subtype.val) h
 
 section congr
 

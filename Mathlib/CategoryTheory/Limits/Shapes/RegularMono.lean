@@ -64,7 +64,7 @@ instance equalizerRegular (g h : X ⟶ Y) [HasLimit (parallelPair g h)] :
   right := h
   w := equalizer.condition g h
   isLimit :=
-    Fork.IsLimit.mk _ (fun s => limit.lift _ s) (by simp) fun s m w => by
+    Fork.IsLimit.mk _ (fun s ↦ limit.lift _ s) (by simp) fun s m w ↦ by
       apply equalizer.hom_ext
       simp [← w]
 
@@ -190,7 +190,7 @@ instance coequalizerRegular (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
   right := h
   w := coequalizer.condition g h
   isColimit :=
-    Cofork.IsColimit.mk _ (fun s => colimit.desc _ s) (by simp) fun s m w => by
+    Cofork.IsColimit.mk _ (fun s ↦ colimit.desc _ s) (by simp) fun s m w ↦ by
       apply coequalizer.hom_ext
       simp [← w]
 

@@ -99,7 +99,7 @@ theorem evariance_eq_top [IsFiniteMeasure μ] (hXm : AEStronglyMeasurable X μ) 
     evariance X μ = ∞ := by
   by_contra h
   rw [← Ne, ← lt_top_iff_ne_top] at h
-  have : MemLp (fun ω => X ω - μ[X]) 2 μ := by
+  have : MemLp (fun ω ↦ X ω - μ[X]) 2 μ := by
     refine ⟨by fun_prop, ?_⟩
     rw [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.ofNat_ne_top]
     simp only [ENNReal.toReal_ofNat, ENNReal.rpow_two]
@@ -157,12 +157,12 @@ lemma variance_of_integral_eq_zero (hX : AEMeasurable X μ) (hXint : μ[X] = 0) 
 theorem evariance_zero : evariance 0 μ = 0 := by simp [evariance]
 
 theorem evariance_eq_zero_iff (hX : AEMeasurable X μ) :
-    evariance X μ = 0 ↔ X =ᵐ[μ] fun _ => μ[X] := by
+    evariance X μ = 0 ↔ X =ᵐ[μ] fun _ ↦ μ[X] := by
   simp [evariance, lintegral_eq_zero_iff' ((hX.sub_const _).enorm.pow_const _), EventuallyEq,
     sub_eq_zero]
 
 theorem evariance_mul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
-    evariance (fun ω => c * X ω) μ = ENNReal.ofReal (c ^ 2) * evariance X μ := by
+    evariance (fun ω ↦ c * X ω) μ = ENNReal.ofReal (c ^ 2) * evariance X μ := by
   rw [evariance, evariance, ← lintegral_const_mul' _ _ ENNReal.ofReal_lt_top.ne]
   congr with ω
   rw [integral_const_mul, ← mul_sub, enorm_mul, mul_pow, ← enorm_pow,
@@ -184,7 +184,7 @@ theorem variance_nonneg (X : Ω → ℝ) (μ : Measure Ω) : 0 ≤ variance X μ
   ENNReal.toReal_nonneg
 
 theorem variance_mul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
-    variance (fun ω => c * X ω) μ = c ^ 2 * variance X μ := by
+    variance (fun ω ↦ c * X ω) μ = c ^ 2 * variance X μ := by
   rw [variance, evariance_mul, ENNReal.toReal_mul, ENNReal.toReal_ofReal (sq_nonneg _)]
   rfl
 
@@ -319,15 +319,15 @@ theorem variance_le_expectation_sq [IsProbabilityMeasure μ] {X : Ω → ℝ}
     · simp only [integral_undef hint, Pi.pow_apply, sub_zero]
       exact le_rfl
     · rw [integral_undef]
-      · exact integral_nonneg fun a => sq_nonneg _
+      · exact integral_nonneg fun a ↦ sq_nonneg _
       intro h
-      have A : MemLp (X - fun ω : Ω => μ[X]) 2 μ :=
+      have A : MemLp (X - fun ω : Ω ↦ μ[X]) 2 μ :=
         (memLp_two_iff_integrable_sq (by fun_prop)).2 h
-      have B : MemLp (fun _ : Ω => μ[X]) 2 μ := memLp_const _
+      have B : MemLp (fun _ : Ω ↦ μ[X]) 2 μ := memLp_const _
       apply hX
       convert A.add B
       simp
-  · exact Eventually.of_forall fun x => sq_nonneg _
+  · exact Eventually.of_forall fun x ↦ sq_nonneg _
   · exact (AEMeasurable.pow_const (hm.aemeasurable.sub_const _) _).aestronglyMeasurable
 
 theorem evariance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : AEStronglyMeasurable X μ) :
@@ -347,14 +347,14 @@ theorem evariance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : AEStrong
     simp only [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.ofNat_ne_top, not_lt, top_le_iff,
       ENNReal.toReal_ofNat, one_div, ENNReal.rpow_eq_top_iff, inv_lt_zero, inv_pos, and_true,
       or_iff_not_imp_left, not_and_or, zero_lt_two] at hℒ
-    exact mod_cast hℒ fun _ => zero_le_two
+    exact mod_cast hℒ fun _ ↦ zero_le_two
 
 set_option linter.deprecated false in
 /-- **Chebyshev's inequality** for `ℝ≥0∞`-valued variance. -/
 theorem meas_ge_le_evariance_div_sq {X : Ω → ℝ} (hX : AEStronglyMeasurable X μ) {c : ℝ≥0}
     (hc : c ≠ 0) : μ {ω | ↑c ≤ |X ω - μ[X]|} ≤ evariance X μ / c ^ 2 := by
   have A : (c : ℝ≥0∞) ≠ 0 := by rwa [Ne, ENNReal.coe_eq_zero]
-  have B : AEStronglyMeasurable (fun _ : Ω => μ[X]) μ := aestronglyMeasurable_const
+  have B : AEStronglyMeasurable (fun _ : Ω ↦ μ[X]) μ := aestronglyMeasurable_const
   convert meas_ge_le_mul_pow_eLpNorm μ two_ne_zero ENNReal.ofNat_ne_top (hX.sub B) A using 1
   · congr
     simp only [Pi.sub_apply, ENNReal.coe_le_coe, ← Real.norm_eq_abs, ← coe_nnnorm,
@@ -393,7 +393,7 @@ nonrec theorem IndepFun.variance_add {X Y : Ω → ℝ} (hX : MemLp X 2 μ)
 variances. -/
 nonrec theorem IndepFun.variance_sum {ι : Type*} {X : ι → Ω → ℝ} {s : Finset ι}
     (hs : ∀ i ∈ s, MemLp (X i) 2 μ)
-    (h : Set.Pairwise ↑s fun i j => IndepFun (X i) (X j) μ) :
+    (h : Set.Pairwise ↑s fun i j ↦ IndepFun (X i) (X j) μ) :
     variance (∑ i ∈ s, X i) μ = ∑ i ∈ s, variance (X i) μ := by
   by_cases h'' : ∀ i ∈ s, X i =ᵐ[μ] 0
   · rw [variance_congr (Y := 0), variance_zero]
@@ -423,8 +423,8 @@ The variance of a random variable `X` satisfying `a ≤ X ≤ b` almost everywhe
 lemma variance_le_sub_mul_sub [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → ℝ}
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) (hX : AEMeasurable X μ) :
     variance X μ ≤ (b - μ[X]) * (μ[X] - a) := by
-  have ha : ∀ᵐ ω ∂μ, a ≤ X ω := h.mono fun ω h => h.1
-  have hb : ∀ᵐ ω ∂μ, X ω ≤ b := h.mono fun ω h => h.2
+  have ha : ∀ᵐ ω ∂μ, a ≤ X ω := h.mono fun ω h ↦ h.1
+  have hb : ∀ᵐ ω ∂μ, X ω ≤ b := h.mono fun ω h ↦ h.2
   have hX_int₂ : Integrable (fun ω ↦ -X ω ^ 2) μ :=
     (memLp_of_bounded h hX.aestronglyMeasurable 2).integrable_sq.neg
   have hX_int₁ : Integrable (fun ω ↦ (a + b) * X ω) μ :=

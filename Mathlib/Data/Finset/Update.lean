@@ -47,7 +47,7 @@ theorem update_eq_updateFinset {i y} :
   by_cases hj : j = i
   · cases hj
     simp only [dif_pos, Finset.mem_singleton, update_self, updateFinset]
-    exact uniqueElim_default (α := fun j : ({i} : Finset ι) => π j) y
+    exact uniqueElim_default (α := fun j : ({i} : Finset ι) ↦ π j) y
   · simp [hj, updateFinset]
 
 /-- If one replaces the variables indexed by a finite set `t`, then `f` no longer depends on
@@ -76,8 +76,8 @@ theorem updateFinset_updateFinset {s t : Finset ι} (hst : Disjoint s t)
   by_cases his : i ∈ s <;> by_cases hit : i ∈ t <;>
     simp only [updateFinset, his, hit, dif_pos, dif_neg, Finset.mem_union, false_or, not_false_iff]
   · exfalso; exact Finset.disjoint_left.mp hst his hit
-  · exact piCongrLeft_sumInl (fun b : ↥(s ∪ t) => π b) e y z ⟨i, his⟩ |>.symm
-  · exact piCongrLeft_sumInr (fun b : ↥(s ∪ t) => π b) e y z ⟨i, hit⟩ |>.symm
+  · exact piCongrLeft_sumInl (fun b : ↥(s ∪ t) ↦ π b) e y z ⟨i, his⟩ |>.symm
+  · exact piCongrLeft_sumInr (fun b : ↥(s ∪ t) ↦ π b) e y z ⟨i, hit⟩ |>.symm
 
 lemma updateFinset_updateFinset_of_subset {s t : Finset ι} (hst : s ⊆ t)
     (x : Π i, π i) (y : Π i : s, π i) (z : Π i : t, π i) :

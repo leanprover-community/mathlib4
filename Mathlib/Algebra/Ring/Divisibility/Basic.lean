@@ -64,7 +64,7 @@ section DistribSemigroup
 variable [Add α] [Semigroup α]
 
 theorem dvd_add [LeftDistribClass α] {a b c : α} (h₁ : a ∣ b) (h₂ : a ∣ c) : a ∣ b + c :=
-  Dvd.elim h₁ fun d hd => Dvd.elim h₂ fun e he => Dvd.intro (d + e) (by simp [left_distrib, hd, he])
+  Dvd.elim h₁ fun d hd ↦ Dvd.elim h₂ fun e he ↦ Dvd.intro (d + e) (by simp [left_distrib, hd, he])
 
 alias Dvd.dvd.add := dvd_add
 
@@ -123,7 +123,7 @@ alias Dvd.dvd.sub := dvd_sub
 /-- If an element `a` divides another element `c` in a ring, `a` divides the sum of another element
 `b` with `c` iff `a` divides `b`. -/
 theorem dvd_add_left (h : a ∣ c) : a ∣ b + c ↔ a ∣ b :=
-  ⟨fun H => by simpa only [add_sub_cancel_right] using dvd_sub H h, fun h₂ => dvd_add h₂ h⟩
+  ⟨fun H ↦ by simpa only [add_sub_cancel_right] using dvd_sub H h, fun h₂ ↦ dvd_add h₂ h⟩
 
 /-- If an element `a` divides another element `b` in a ring, `a` divides the sum of `b` and another
 element `c` iff `a` divides `c`. -/

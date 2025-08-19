@@ -105,7 +105,7 @@ theorem IsPrime.mem_or_mem (hI : IsPrime I) {x y : P} : x ⊓ y ∈ I → x ∈ 
   contrapose!
   let F := hI.compl_filter.toPFilter
   change x ∈ F ∧ y ∈ F → x ⊓ y ∈ F
-  exact fun h => inf_mem h.1 h.2
+  exact fun h ↦ inf_mem h.1 h.2
 
 theorem IsPrime.of_mem_or_mem [IsProper I] (hI : ∀ {x y : P}, x ⊓ y ∈ I → x ∈ I ∨ y ∈ I) :
     IsPrime I := by
@@ -114,7 +114,7 @@ theorem IsPrime.of_mem_or_mem [IsProper I] (hI : ∀ {x y : P}, x ⊓ y ∈ I �
   refine .of_def ?_ ?_ ?_
   · exact Set.nonempty_compl.2 (I.isProper_iff.1 ‹_›)
   · intro x hx y hy
-    exact ⟨x ⊓ y, fun h => (hI h).elim hx hy, inf_le_left, inf_le_right⟩
+    exact ⟨x ⊓ y, fun h ↦ (hI h).elim hx hy, inf_le_left, inf_le_right⟩
   · exact @mem_compl_of_ge _ _ _
 
 theorem isPrime_iff_mem_or_mem [IsProper I] : IsPrime I ↔ ∀ {x y : P}, x ⊓ y ∈ I → x ∈ I ∨ y ∈ I :=
@@ -168,7 +168,7 @@ theorem isPrime_of_mem_or_compl_mem [IsProper I] (h : ∀ {x : P}, x ∈ I ∨ x
   rwa [inf_comm, sup_inf_inf_compl] at ass
 
 theorem isPrime_iff_mem_or_compl_mem [IsProper I] : IsPrime I ↔ ∀ {x : P}, x ∈ I ∨ xᶜ ∈ I :=
-  ⟨fun h _ => h.mem_or_compl_mem, isPrime_of_mem_or_compl_mem⟩
+  ⟨fun h _ ↦ h.mem_or_compl_mem, isPrime_of_mem_or_compl_mem⟩
 
 instance (priority := 100) IsPrime.isMaximal [IsPrime I] : IsMaximal I := by
   simp only [isMaximal_iff, Set.eq_univ_iff_forall, IsPrime.toIsProper, true_and]

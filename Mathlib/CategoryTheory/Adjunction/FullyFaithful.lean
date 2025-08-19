@@ -230,11 +230,11 @@ lemma isIso_unit_app_of_iso [R.Faithful] [R.Full] {X : D} {Y : C} (e : Y ≅ R.o
   (isIso_unit_app_iff_mem_essImage h).mpr ⟨X, ⟨e.symm⟩⟩
 
 instance [R.IsEquivalence] : IsIso h.unit := by
-  have := fun Y => isIso_unit_app_of_iso h (R.objObjPreimageIso Y).symm
+  have := fun Y ↦ isIso_unit_app_of_iso h (R.objObjPreimageIso Y).symm
   apply NatIso.isIso_of_isIso_app
 
 instance [L.IsEquivalence] : IsIso h.counit := by
-  have := fun X => isIso_counit_app_of_iso h (L.objObjPreimageIso X).symm
+  have := fun X ↦ isIso_counit_app_of_iso h (L.objObjPreimageIso X).symm
   apply NatIso.isIso_of_isIso_app
 
 lemma isEquivalence_left_of_isEquivalence_right (h : L ⊣ R) [R.IsEquivalence] : L.IsEquivalence :=

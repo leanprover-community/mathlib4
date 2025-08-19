@@ -49,7 +49,7 @@ namespace PiTensorProduct
 properties of `projectiveSeminorm`.
 -/
 def projectiveSeminormAux : FreeAddMonoid (𝕜 × Π i, E i) → ℝ :=
-  fun p => (p.toList.map (fun p ↦ ‖p.1‖ * ∏ i, ‖p.2 i‖)).sum
+  fun p ↦ (p.toList.map (fun p ↦ ‖p.1‖ * ∏ i, ‖p.2 i‖)).sum
 
 theorem projectiveSeminormAux_nonneg (p : FreeAddMonoid (𝕜 × Π i, E i)) :
     0 ≤ projectiveSeminormAux p := by

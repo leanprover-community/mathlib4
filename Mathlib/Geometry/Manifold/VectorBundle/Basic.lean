@@ -80,7 +80,7 @@ variable [TopologicalSpace F] [TopologicalSpace (TotalSpace F E)] [∀ x, Topolo
 /-- A fiber bundle `E` over a base `B` with model fiber `F` is naturally a charted space modelled on
 `B × F`. -/
 instance FiberBundle.chartedSpace' : ChartedSpace (B × F) (TotalSpace F E) where
-  atlas := (fun e : Trivialization F (π F E) => e.toPartialHomeomorph) '' trivializationAtlas F E
+  atlas := (fun e : Trivialization F (π F E) ↦ e.toPartialHomeomorph) '' trivializationAtlas F E
   chartAt x := (trivializationAt F E x.proj).toPartialHomeomorph
   mem_chart_source x :=
     (trivializationAt F E x.proj).mem_source.mpr (mem_baseSet_trivializationAt F E x.proj)
@@ -168,7 +168,7 @@ namespace Bundle
 Version at a point within a set. -/
 theorem contMDiffWithinAt_totalSpace {f : M → TotalSpace F E} {s : Set M} {x₀ : M} :
     ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F)) n f s x₀ ↔
-      ContMDiffWithinAt IM IB n (fun x => (f x).proj) s x₀ ∧
+      ContMDiffWithinAt IM IB n (fun x ↦ (f x).proj) s x₀ ∧
       ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) s x₀ := by
   simp +singlePass only [contMDiffWithinAt_iff_target]
   rw [and_and_and_comm, ← FiberBundle.continuousWithinAt_totalSpace, and_congr_right_iff]
@@ -177,10 +177,10 @@ theorem contMDiffWithinAt_totalSpace {f : M → TotalSpace F E} {s : Set M} {x�
     PartialEquiv.trans_apply, PartialEquiv.prod_coe, PartialEquiv.refl_coe,
     extChartAt_self_apply, modelWithCornersSelf_coe, Function.id_def, ← chartedSpaceSelf_prod]
   refine (contMDiffWithinAt_prod_iff _).trans (and_congr ?_ Iff.rfl)
-  have h1 : (fun x => (f x).proj) ⁻¹' (trivializationAt F E (f x₀).proj).baseSet ∈ 𝓝[s] x₀ :=
+  have h1 : (fun x ↦ (f x).proj) ⁻¹' (trivializationAt F E (f x₀).proj).baseSet ∈ 𝓝[s] x₀ :=
     ((FiberBundle.continuous_proj F E).continuousWithinAt.comp hf (mapsTo_image f s))
       ((Trivialization.open_baseSet _).mem_nhds (mem_baseSet_trivializationAt F E _))
-  refine EventuallyEq.contMDiffWithinAt_iff (eventually_of_mem h1 fun x hx => ?_) ?_
+  refine EventuallyEq.contMDiffWithinAt_iff (eventually_of_mem h1 fun x hx ↦ ?_) ?_
   · simp_rw [Function.comp, PartialHomeomorph.coe_coe, Trivialization.coe_coe]
     rw [Trivialization.coe_fst']
     exact hx
@@ -273,7 +273,7 @@ then `ContMDiffVectorBundle n F E IB` registers that the bundle is `C^n`, in the
 class ContMDiffVectorBundle : Prop where
   protected contMDiffOn_coordChangeL :
     ∀ (e e' : Trivialization F (π F E)) [MemTrivializationAtlas e] [MemTrivializationAtlas e'],
-      ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun b : B => (e.coordChangeL 𝕜 e' b : F →L[𝕜] F))
+      ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun b : B ↦ (e.coordChangeL 𝕜 e' b : F →L[𝕜] F))
         (e.baseSet ∩ e'.baseSet)
 
 variable {F E} in
@@ -305,12 +305,12 @@ variable {F E}
 variable (e e' : Trivialization F (π F E)) [MemTrivializationAtlas e] [MemTrivializationAtlas e']
 
 theorem contMDiffOn_coordChangeL :
-    ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun b : B => (e.coordChangeL 𝕜 e' b : F →L[𝕜] F))
+    ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun b : B ↦ (e.coordChangeL 𝕜 e' b : F →L[𝕜] F))
       (e.baseSet ∩ e'.baseSet) :=
   ContMDiffVectorBundle.contMDiffOn_coordChangeL e e'
 
 theorem contMDiffOn_symm_coordChangeL :
-    ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun b : B => ((e.coordChangeL 𝕜 e' b).symm : F →L[𝕜] F))
+    ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun b : B ↦ ((e.coordChangeL 𝕜 e' b).symm : F →L[𝕜] F))
       (e.baseSet ∩ e'.baseSet) := by
   rw [inter_comm]
   refine (ContMDiffVectorBundle.contMDiffOn_coordChangeL e' e).congr fun b hb ↦ ?_
@@ -319,7 +319,7 @@ theorem contMDiffOn_symm_coordChangeL :
 variable {e e'}
 
 theorem contMDiffAt_coordChangeL {x : B} (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
-    ContMDiffAt IB 𝓘(𝕜, F →L[𝕜] F) n (fun b : B => (e.coordChangeL 𝕜 e' b : F →L[𝕜] F)) x :=
+    ContMDiffAt IB 𝓘(𝕜, F →L[𝕜] F) n (fun b : B ↦ (e.coordChangeL 𝕜 e' b : F →L[𝕜] F)) x :=
   (contMDiffOn_coordChangeL e e').contMDiffAt <|
     (e.open_baseSet.inter e'.open_baseSet).mem_nhds ⟨h, h'⟩
 
@@ -457,28 +457,28 @@ variable {e e' : Trivialization F (π F E)} [MemTrivializationAtlas e] [MemTrivi
 theorem Trivialization.contMDiffWithinAt_iff {f : M → TotalSpace F E} {s : Set M} {x₀ : M}
     (he : f x₀ ∈ e.source) :
     ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F)) n f s x₀ ↔
-      ContMDiffWithinAt IM IB n (fun x => (f x).proj) s x₀ ∧
+      ContMDiffWithinAt IM IB n (fun x ↦ (f x).proj) s x₀ ∧
       ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun x ↦ (e (f x)).2) s x₀ :=
   contMDiffWithinAt_totalSpace.trans <| and_congr_right fun h ↦
     Trivialization.contMDiffWithinAt_snd_comp_iff₂ h FiberBundle.mem_trivializationAt_proj_source he
 
 theorem Trivialization.contMDiffAt_iff {f : M → TotalSpace F E} {x₀ : M} (he : f x₀ ∈ e.source) :
     ContMDiffAt IM (IB.prod 𝓘(𝕜, F)) n f x₀ ↔
-      ContMDiffAt IM IB n (fun x => (f x).proj) x₀ ∧
+      ContMDiffAt IM IB n (fun x ↦ (f x).proj) x₀ ∧
       ContMDiffAt IM 𝓘(𝕜, F) n (fun x ↦ (e (f x)).2) x₀ :=
   e.contMDiffWithinAt_iff he
 
 theorem Trivialization.contMDiffOn_iff {f : M → TotalSpace F E} {s : Set M}
     (he : MapsTo f s e.source) :
     ContMDiffOn IM (IB.prod 𝓘(𝕜, F)) n f s ↔
-      ContMDiffOn IM IB n (fun x => (f x).proj) s ∧
+      ContMDiffOn IM IB n (fun x ↦ (f x).proj) s ∧
       ContMDiffOn IM 𝓘(𝕜, F) n (fun x ↦ (e (f x)).2) s := by
   simp only [ContMDiffOn, ← forall_and]
   exact forall₂_congr fun x hx ↦ e.contMDiffWithinAt_iff (he hx)
 
 theorem Trivialization.contMDiff_iff {f : M → TotalSpace F E} (he : ∀ x, f x ∈ e.source) :
     ContMDiff IM (IB.prod 𝓘(𝕜, F)) n f ↔
-      ContMDiff IM IB n (fun x => (f x).proj) ∧
+      ContMDiff IM IB n (fun x ↦ (f x).proj) ∧
       ContMDiff IM 𝓘(𝕜, F) n (fun x ↦ (e (f x)).2) :=
   (forall_congr' fun x ↦ e.contMDiffAt_iff (he x)).trans forall_and
 

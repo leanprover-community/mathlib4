@@ -26,10 +26,10 @@ variable {R : Type*} [CommRing R]
 isomorphism of $R$-algebras $R[X] / \langle X - x \rangle \cong R$. -/
 noncomputable def quotientSpanXSubCAlgEquiv (x : R) :
     (R[X] ⧸ Ideal.span ({X - C x} : Set R[X])) ≃ₐ[R] R :=
-  let e := RingHom.quotientKerEquivOfRightInverse (fun x => by
-    exact eval_C : Function.RightInverse (fun a : R => (C a : R[X])) (@aeval R R _ _ _ x))
+  let e := RingHom.quotientKerEquivOfRightInverse (fun x ↦ by
+    exact eval_C : Function.RightInverse (fun a : R ↦ (C a : R[X])) (@aeval R R _ _ _ x))
   (Ideal.quotientEquivAlgOfEq R (ker_evalRingHom x).symm).trans
-    { e with commutes' := fun r => e.apply_symm_apply r }
+    { e with commutes' := fun r ↦ e.apply_symm_apply r }
 
 @[simp]
 theorem quotientSpanXSubCAlgEquiv_mk (x : R) (p : R[X]) :
@@ -84,10 +84,10 @@ theorem eval₂_C_mk_eq_zero {I : Ideal R} :
   rw [← sum_monomial_eq a]
   dsimp
   rw [eval₂_sum]
-  refine Finset.sum_eq_zero fun n _ => ?_
+  refine Finset.sum_eq_zero fun n _ ↦ ?_
   dsimp
   rw [eval₂_monomial (C.comp (Quotient.mk I)) X]
-  refine mul_eq_zero_of_left (Polynomial.ext fun m => ?_) (X ^ n)
+  refine mul_eq_zero_of_left (Polynomial.ext fun m ↦ ?_) (X ^ n)
   rw [RingHom.comp_apply, coeff_C]
   by_cases h : m = 0
   · simpa [h] using Quotient.eq_zero_iff_mem.2 ((mem_map_C_iff.1 ha) n)
@@ -157,10 +157,10 @@ theorem eq_zero_of_polynomial_mem_map_range (I : Ideal R[X]) (x : ((Quotient.mk 
     (hx : C x ∈ I.map (Polynomial.mapRingHom ((Quotient.mk I).comp C).rangeRestrict)) : x = 0 := by
   let i := ((Quotient.mk I).comp C).rangeRestrict
   have hi' : RingHom.ker (Polynomial.mapRingHom i) ≤ I := by
-    refine fun f hf => polynomial_mem_ideal_of_coeff_mem_ideal I f fun n => ?_
+    refine fun f hf ↦ polynomial_mem_ideal_of_coeff_mem_ideal I f fun n ↦ ?_
     rw [mem_comap, ← Quotient.eq_zero_iff_mem, ← RingHom.comp_apply]
     rw [RingHom.mem_ker, coe_mapRingHom] at hf
-    replace hf := congr_arg (fun f : Polynomial _ => f.coeff n) hf
+    replace hf := congr_arg (fun f : Polynomial _ ↦ f.coeff n) hf
     simp only [coeff_map, coeff_zero] at hf
     rwa [Subtype.ext_iff, RingHom.coe_rangeRestrict] at hf
   obtain ⟨x, hx'⟩ := x
@@ -193,7 +193,7 @@ theorem eval₂_C_mk_eq_zero {I : Ideal R} {a : MvPolynomial σ R}
     eval₂Hom (C.comp (Ideal.Quotient.mk I)) X a = 0 := by
   rw [as_sum a]
   rw [coe_eval₂Hom, eval₂_sum]
-  refine Finset.sum_eq_zero fun n _ => ?_
+  refine Finset.sum_eq_zero fun n _ ↦ ?_
   simp only [eval₂_monomial, Function.comp_apply, RingHom.coe_comp]
   refine mul_eq_zero_of_left ?_ _
   suffices coeff n a ∈ I by
@@ -206,10 +206,10 @@ lemma quotientEquivQuotientMvPolynomial_rightInverse (I : Ideal R) :
     Function.RightInverse
       (eval₂ (Ideal.Quotient.lift I
         ((Ideal.Quotient.mk (Ideal.map C I : Ideal (MvPolynomial σ R))).comp C)
-          fun _ hi => quotient_map_C_eq_zero hi)
-          fun i => Ideal.Quotient.mk (Ideal.map C I : Ideal (MvPolynomial σ R)) (X i))
+          fun _ hi ↦ quotient_map_C_eq_zero hi)
+          fun i ↦ Ideal.Quotient.mk (Ideal.map C I : Ideal (MvPolynomial σ R)) (X i))
       (Ideal.Quotient.lift (Ideal.map C I : Ideal (MvPolynomial σ R))
-        (eval₂Hom (C.comp (Ideal.Quotient.mk I)) X) fun _ ha => eval₂_C_mk_eq_zero ha) := by
+        (eval₂Hom (C.comp (Ideal.Quotient.mk I)) X) fun _ ha ↦ eval₂_C_mk_eq_zero ha) := by
   intro f
   apply induction_on f
   · intro r
@@ -229,10 +229,10 @@ lemma quotientEquivQuotientMvPolynomial_leftInverse (I : Ideal R) :
     Function.LeftInverse
       (eval₂ (Ideal.Quotient.lift I
         ((Ideal.Quotient.mk (Ideal.map C I : Ideal (MvPolynomial σ R))).comp C)
-          fun _ hi => quotient_map_C_eq_zero hi)
-          fun i => Ideal.Quotient.mk (Ideal.map C I : Ideal (MvPolynomial σ R)) (X i))
+          fun _ hi ↦ quotient_map_C_eq_zero hi)
+          fun i ↦ Ideal.Quotient.mk (Ideal.map C I : Ideal (MvPolynomial σ R)) (X i))
       (Ideal.Quotient.lift (Ideal.map C I : Ideal (MvPolynomial σ R))
-        (eval₂Hom (C.comp (Ideal.Quotient.mk I)) X) fun _ ha => eval₂_C_mk_eq_zero ha) := by
+        (eval₂Hom (C.comp (Ideal.Quotient.mk I)) X) fun _ ha ↦ eval₂_C_mk_eq_zero ha) := by
   intro f
   obtain ⟨f, rfl⟩ := Ideal.Quotient.mk_surjective f
   apply induction_on f
@@ -256,12 +256,12 @@ noncomputable def quotientEquivQuotientMvPolynomial (I : Ideal R) :
       MvPolynomial σ R ⧸ (Ideal.map C I : Ideal (MvPolynomial σ R)) :=
     { eval₂Hom
       (Ideal.Quotient.lift I ((Ideal.Quotient.mk (Ideal.map C I : Ideal (MvPolynomial σ R))).comp C)
-        fun _ hi => quotient_map_C_eq_zero hi)
-      fun i => Ideal.Quotient.mk (Ideal.map C I : Ideal (MvPolynomial σ R)) (X i) with
-      commutes' := fun r => eval₂Hom_C _ _ (Ideal.Quotient.mk I r) }
+        fun _ hi ↦ quotient_map_C_eq_zero hi)
+      fun i ↦ Ideal.Quotient.mk (Ideal.map C I : Ideal (MvPolynomial σ R)) (X i) with
+      commutes' := fun r ↦ eval₂Hom_C _ _ (Ideal.Quotient.mk I r) }
   { e with
     invFun := Ideal.Quotient.lift (Ideal.map C I : Ideal (MvPolynomial σ R))
-      (eval₂Hom (C.comp (Ideal.Quotient.mk I)) X) fun _ ha => eval₂_C_mk_eq_zero ha
+      (eval₂Hom (C.comp (Ideal.Quotient.mk I)) X) fun _ ha ↦ eval₂_C_mk_eq_zero ha
     left_inv := quotientEquivQuotientMvPolynomial_rightInverse I
     right_inv := quotientEquivQuotientMvPolynomial_leftInverse I }
 

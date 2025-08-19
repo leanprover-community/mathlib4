@@ -71,7 +71,7 @@ theorem nndist_lineMap_lineMap (p₁ p₂ : P) (c₁ c₂ : 𝕜) :
   NNReal.eq <| dist_lineMap_lineMap _ _ _ _
 
 theorem lipschitzWith_lineMap (p₁ p₂ : P) : LipschitzWith (nndist p₁ p₂) (lineMap p₁ p₂ : 𝕜 → P) :=
-  LipschitzWith.of_dist_le_mul fun c₁ c₂ =>
+  LipschitzWith.of_dist_le_mul fun c₁ c₂ ↦
     ((dist_lineMap_lineMap p₁ p₂ c₁ c₂).trans (mul_comm _ _)).le
 
 @[simp]
@@ -210,7 +210,7 @@ theorem dist_right_pointReflection (p q : P) :
 
 theorem antilipschitzWith_lineMap {p₁ p₂ : Q} (h : p₁ ≠ p₂) :
     AntilipschitzWith (nndist p₁ p₂)⁻¹ (lineMap p₁ p₂ : 𝕜 → Q) :=
-  AntilipschitzWith.of_le_mul_dist fun c₁ c₂ => by
+  AntilipschitzWith.of_le_mul_dist fun c₁ c₂ ↦ by
     rw [dist_lineMap_lineMap, NNReal.coe_inv, ← dist_nndist, mul_left_comm,
       inv_mul_cancel₀ (dist_ne_zero.2 h), mul_one]
 
@@ -225,7 +225,7 @@ theorem eventually_homothety_mem_of_mem_interior (x : Q) {s : Set Q} {y : Q} (hy
   have hxy : 0 < ‖y -ᵥ x‖ := by rwa [norm_pos_iff, vsub_ne_zero]
   obtain ⟨u, hu₁, hu₂, hu₃⟩ := mem_interior.mp hy
   obtain ⟨ε, hε, hyε⟩ := Metric.isOpen_iff.mp hu₂ y hu₃
-  refine ⟨ε / ‖y -ᵥ x‖, div_pos hε hxy, fun δ (hδ : ‖δ - 1‖ < ε / ‖y -ᵥ x‖) => hu₁ (hyε ?_)⟩
+  refine ⟨ε / ‖y -ᵥ x‖, div_pos hε hxy, fun δ (hδ : ‖δ - 1‖ < ε / ‖y -ᵥ x‖) ↦ hu₁ (hyε ?_)⟩
   rw [lt_div_iff₀ hxy, ← norm_smul, sub_smul, one_smul] at hδ
   rwa [homothety_apply, Metric.mem_ball, dist_eq_norm_vsub W, vadd_vsub_eq_sub_vsub]
 
@@ -256,9 +256,9 @@ def AffineMap.ofMapMidpoint (f : P → Q) (h : ∀ x y, f (midpoint ℝ x y) = m
   let c := Classical.arbitrary P
   AffineMap.mk' f (↑((AddMonoidHom.ofMapMidpoint ℝ ℝ
     ((AffineEquiv.vaddConst ℝ (f <| c)).symm ∘ f ∘ AffineEquiv.vaddConst ℝ c) (by simp)
-    fun x y => by simp [h]).toRealLinearMap <| by
+    fun x y ↦ by simp [h]).toRealLinearMap <| by
         apply_rules [Continuous.vadd, Continuous.vsub, continuous_const, hfc.comp, continuous_id]))
-    c fun p => by simp
+    c fun p ↦ by simp
 
 end
 

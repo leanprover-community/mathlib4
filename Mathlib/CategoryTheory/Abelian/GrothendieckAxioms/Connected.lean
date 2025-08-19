@@ -54,7 +54,7 @@ theorem IsColimit.pullback_hom_ext [HasPullbacks C] [HasColimitsOfShape J C]
     {f : X ⟶ c.pt} {g h : c.pt ⟶ Y}
     (hf : ∀ j, pullback.snd (c.ι.app j) f ≫ f ≫ g = pullback.snd (c.ι.app j) f ≫ f ≫ h) :
     f ≫ g = f ≫ h := by
-  refine (hc.pullbackOfHasExactColimitsOfShape f).hom_ext (fun j => ?_)
+  refine (hc.pullbackOfHasExactColimitsOfShape f).hom_ext (fun j ↦ ?_)
   rw [← cancel_epi (pullbackObjIso _ _ _).inv]
   simpa using hf j
 
@@ -90,7 +90,7 @@ theorem IsLimit.pushout_hom_ext [HasPushouts C] [HasLimitsOfShape J C]
     {g h : Y ⟶ c.pt} {f : c.pt ⟶ X}
     (hf : ∀ j, g ≫ f ≫ pushout.inr (c.π.app j) f = h ≫ f ≫ pushout.inr (c.π.app j) f) :
     g ≫ f = h ≫ f := by
-  refine (hc.pushoutOfHasExactLimitsOfShape f).hom_ext (fun j => ?_)
+  refine (hc.pushoutOfHasExactLimitsOfShape f).hom_ext (fun j ↦ ?_)
   rw [← cancel_mono (pushoutObjIso _ _ _).hom]
   simpa using hf j
 

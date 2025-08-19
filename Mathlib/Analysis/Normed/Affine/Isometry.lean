@@ -178,7 +178,7 @@ theorem comp_continuous_iff {α : Type*} [TopologicalSpace α] {g : α → P} :
 
 /-- The identity affine isometry. -/
 def id : P →ᵃⁱ[𝕜] P :=
-  ⟨AffineMap.id 𝕜 P, fun _ => rfl⟩
+  ⟨AffineMap.id 𝕜 P, fun _ ↦ rfl⟩
 
 @[simp, norm_cast]
 theorem coe_id : ⇑(id : P →ᵃⁱ[𝕜] P) = _root_.id :=
@@ -197,7 +197,7 @@ instance : Inhabited (P →ᵃⁱ[𝕜] P) :=
 
 /-- Composition of affine isometries. -/
 def comp (g : P₂ →ᵃⁱ[𝕜] P₃) (f : P →ᵃⁱ[𝕜] P₂) : P →ᵃⁱ[𝕜] P₃ :=
-  ⟨g.toAffineMap.comp f.toAffineMap, fun _ => (g.norm_map _).trans (f.norm_map _)⟩
+  ⟨g.toAffineMap.comp f.toAffineMap, fun _ ↦ (g.norm_map _).trans (f.norm_map _)⟩
 
 @[simp]
 theorem coe_comp (g : P₂ →ᵃⁱ[𝕜] P₃) (f : P →ᵃⁱ[𝕜] P₂) : ⇑(g.comp f) = g ∘ f :=
@@ -205,11 +205,11 @@ theorem coe_comp (g : P₂ →ᵃⁱ[𝕜] P₃) (f : P →ᵃⁱ[𝕜] P₂) : 
 
 @[simp]
 theorem id_comp : (id : P₂ →ᵃⁱ[𝕜] P₂).comp f = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem comp_id : f.comp id = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 theorem comp_assoc (f : P₃ →ᵃⁱ[𝕜] P₄) (g : P₂ →ᵃⁱ[𝕜] P₃) (h : P →ᵃⁱ[𝕜] P₂) :
     (f.comp g).comp h = f.comp (g.comp h) :=
@@ -412,7 +412,7 @@ variable (𝕜 P)
 
 /-- Identity map as an `AffineIsometryEquiv`. -/
 def refl : P ≃ᵃⁱ[𝕜] P :=
-  ⟨AffineEquiv.refl 𝕜 P, fun _ => rfl⟩
+  ⟨AffineEquiv.refl 𝕜 P, fun _ ↦ rfl⟩
 
 variable {𝕜 P}
 
@@ -479,7 +479,7 @@ theorem coe_symm_toHomeomorph : ⇑e.toHomeomorph.symm = e.symm :=
 
 /-- Composition of `AffineIsometryEquiv`s as an `AffineIsometryEquiv`. -/
 def trans (e' : P₂ ≃ᵃⁱ[𝕜] P₃) : P ≃ᵃⁱ[𝕜] P₃ :=
-  ⟨e.toAffineEquiv.trans e'.toAffineEquiv, fun _ => (e'.norm_map _).trans (e.norm_map _)⟩
+  ⟨e.toAffineEquiv.trans e'.toAffineEquiv, fun _ ↦ (e'.norm_map _).trans (e.norm_map _)⟩
 
 @[simp]
 theorem coe_trans (e₁ : P ≃ᵃⁱ[𝕜] P₂) (e₂ : P₂ ≃ᵃⁱ[𝕜] P₃) : ⇑(e₁.trans e₂) = e₂ ∘ e₁ :=
@@ -487,11 +487,11 @@ theorem coe_trans (e₁ : P ≃ᵃⁱ[𝕜] P₂) (e₂ : P₂ ≃ᵃⁱ[𝕜] P
 
 @[simp]
 theorem trans_refl : e.trans (refl 𝕜 P₂) = e :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem refl_trans : (refl 𝕜 P).trans e = e :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem self_trans_symm : e.trans e.symm = refl 𝕜 P :=
@@ -628,18 +628,18 @@ lemma ofEq_rfl : ofEq s₁ s₁ rfl = refl 𝕜 s₁ :=
 variable (𝕜) in
 /-- The map `v ↦ v +ᵥ p` as an affine isometric equivalence between `V` and `P`. -/
 def vaddConst (p : P) : V ≃ᵃⁱ[𝕜] P :=
-  { AffineEquiv.vaddConst 𝕜 p with norm_map := fun _ => rfl }
+  { AffineEquiv.vaddConst 𝕜 p with norm_map := fun _ ↦ rfl }
 
 @[simp]
-theorem coe_vaddConst (p : P) : ⇑(vaddConst 𝕜 p) = fun v => v +ᵥ p :=
+theorem coe_vaddConst (p : P) : ⇑(vaddConst 𝕜 p) = fun v ↦ v +ᵥ p :=
   rfl
 
 @[simp]
-theorem coe_vaddConst' (p : P) : ↑(AffineEquiv.vaddConst 𝕜 p) = fun v => v +ᵥ p :=
+theorem coe_vaddConst' (p : P) : ↑(AffineEquiv.vaddConst 𝕜 p) = fun v ↦ v +ᵥ p :=
   rfl
 
 @[simp]
-theorem coe_vaddConst_symm (p : P) : ⇑(vaddConst 𝕜 p).symm = fun p' => p' -ᵥ p :=
+theorem coe_vaddConst_symm (p : P) : ⇑(vaddConst 𝕜 p).symm = fun p' ↦ p' -ᵥ p :=
   rfl
 
 @[simp]
@@ -667,7 +667,7 @@ variable (𝕜 P) in
 /-- Translation by `v` (that is, the map `p ↦ v +ᵥ p`) as an affine isometric automorphism of `P`.
 -/
 def constVAdd (v : V) : P ≃ᵃⁱ[𝕜] P :=
-  { AffineEquiv.constVAdd 𝕜 P v with norm_map := fun _ => rfl }
+  { AffineEquiv.constVAdd 𝕜 P v with norm_map := fun _ ↦ rfl }
 
 @[simp]
 theorem coe_constVAdd (v : V) : ⇑(constVAdd 𝕜 P v : P ≃ᵃⁱ[𝕜] P) = (v +ᵥ ·) :=
@@ -781,7 +781,7 @@ noncomputable def equivMapOfInjective (E : AffineSubspace 𝕜 P₁) [Nonempty E
     linear :=
       (E.direction.equivMapOfInjective φ.linear (φ.linear_injective_iff.mpr hφ)).trans
         (LinearEquiv.ofEq _ _ (AffineSubspace.map_direction _ _).symm)
-    map_vadd' := fun p v => Subtype.ext <| φ.map_vadd p v }
+    map_vadd' := fun p v ↦ Subtype.ext <| φ.map_vadd p v }
 
 /-- Restricts an affine isometry to an affine isometry equivalence between a nonempty affine
 subspace `E` and its image.
@@ -791,7 +791,7 @@ conclusion.
 -/
 noncomputable def isometryEquivMap (φ : P₁' →ᵃⁱ[𝕜] P₂) (E : AffineSubspace 𝕜 P₁') [Nonempty E] :
     E ≃ᵃⁱ[𝕜] E.map φ.toAffineMap :=
-  ⟨E.equivMapOfInjective φ.toAffineMap φ.injective, fun _ => φ.norm_map _⟩
+  ⟨E.equivMapOfInjective φ.toAffineMap φ.injective, fun _ ↦ φ.norm_map _⟩
 
 @[simp]
 theorem isometryEquivMap.apply_symm_apply {E : AffineSubspace 𝕜 P₁'} [Nonempty E]

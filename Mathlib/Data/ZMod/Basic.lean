@@ -162,7 +162,7 @@ This function is a morphism if the characteristic of `R` divides `n`.
 See `ZMod.castHom` for a bundled version. -/
 def cast : ∀ {n : ℕ}, ZMod n → R
   | 0 => Int.cast
-  | _ + 1 => fun i => i.val
+  | _ + 1 => fun i ↦ i.val
 
 
 @[simp]
@@ -426,11 +426,11 @@ def ringEquivCongr {m n : ℕ} (h : m = n) : ZMod m ≃+* ZMod n := by
     exact m.succ_ne_zero h
   · exact
       { finCongr h with
-        map_mul' := fun a b => by
+        map_mul' := fun a b ↦ by
           dsimp [ZMod]
           ext
           rw [Fin.coe_cast, Fin.coe_mul, Fin.coe_mul, Fin.coe_cast, Fin.coe_cast, ← h]
-        map_add' := fun a b => by
+        map_add' := fun a b ↦ by
           dsimp [ZMod]
           ext
           rw [Fin.coe_cast, Fin.val_add, Fin.val_add, Fin.coe_cast, Fin.coe_cast, ← h] }
@@ -676,7 +676,7 @@ theorem val_mul_iff_lt {n : ℕ} [NeZero n] (a b : ZMod n) :
   · apply ZMod.val_mul_of_lt h
 
 instance nontrivial (n : ℕ) [Fact (1 < n)] : Nontrivial (ZMod n) :=
-  ⟨⟨0, 1, fun h =>
+  ⟨⟨0, 1, fun h ↦
       zero_ne_one <|
         calc
           0 = (0 : ZMod n).val := by rw [val_zero]
@@ -836,8 +836,8 @@ the subtype of terms `x : ZMod n` for which `x.val` is coprime to `n` -/
 def unitsEquivCoprime {n : ℕ} [NeZero n] : (ZMod n)ˣ ≃ { x : ZMod n // Nat.Coprime x.val n } where
   toFun x := ⟨x, val_coe_unit_coprime x⟩
   invFun x := unitOfCoprime x.1.val x.2
-  left_inv := fun ⟨_, _, _, _⟩ => Units.ext (natCast_zmod_val _)
-  right_inv := fun ⟨_, _⟩ => by simp
+  left_inv := fun ⟨_, _, _, _⟩ ↦ Units.ext (natCast_zmod_val _)
+  right_inv := fun ⟨_, _⟩ ↦ by simp
 
 /-- The **Chinese remainder theorem**. For a pair of coprime natural numbers, `m` and `n`,
   the rings `ZMod (m * n)` and `ZMod m × ZMod n` are isomorphic.
@@ -848,7 +848,7 @@ ring.
 def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m × ZMod n :=
   let to_fun : ZMod (m * n) → ZMod m × ZMod n :=
     ZMod.castHom (show m.lcm n ∣ m * n by simp [Nat.lcm_dvd_iff]) (ZMod m × ZMod n)
-  let inv_fun : ZMod m × ZMod n → ZMod (m * n) := fun x =>
+  let inv_fun : ZMod m × ZMod n → ZMod (m * n) := fun x ↦
     if m * n = 0 then
       if m = 1 then cast (RingHom.snd _ (ZMod n) x) else cast (RingHom.fst (ZMod m) _ x)
     else Nat.chineseRemainder h x.1.val x.2.val
@@ -944,8 +944,8 @@ theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val 
   cases n
   · rw [@mul_eq_zero ℤ, @mul_eq_zero ℕ, val_eq_zero]
     exact
-      ⟨fun h => h.elim (by simp) Or.inl, fun h =>
-        Or.inr (h.elim id fun h => h.elim (by simp) id)⟩
+      ⟨fun h ↦ h.elim (by simp) Or.inl, fun h ↦
+        Or.inr (h.elim id fun h ↦ h.elim (by simp) id)⟩
   conv_lhs =>
     rw [← a.natCast_zmod_val, ← Nat.cast_two, ← Nat.cast_mul, natCast_eq_zero_iff]
   constructor
@@ -1080,7 +1080,7 @@ instance subsingleton_ringHom [Semiring R] : Subsingleton (ZMod n →+* R) :=
   ⟨RingHom.ext_zmod⟩
 
 instance subsingleton_ringEquiv [Semiring R] : Subsingleton (ZMod n ≃+* R) :=
-  ⟨fun f g => by
+  ⟨fun f g ↦ by
     rw [RingEquiv.coe_ringHom_inj_iff]
     apply RingHom.ext_zmod _ _⟩
 
@@ -1129,10 +1129,10 @@ variable (f : { f : ℤ →+ A // f n = 0 })
 
 @[simp]
 theorem lift_coe (x : ℤ) : lift n f (x : ZMod n) = f.val x :=
-  AddMonoidHom.liftOfRightInverse_comp_apply _ _ (fun _ => intCast_zmod_cast _) _ _
+  AddMonoidHom.liftOfRightInverse_comp_apply _ _ (fun _ ↦ intCast_zmod_cast _) _ _
 
 theorem lift_castAddHom (x : ℤ) : lift n f (Int.castAddHom (ZMod n) x) = f.1 x :=
-  AddMonoidHom.liftOfRightInverse_comp_apply _ _ (fun _ => intCast_zmod_cast _) _ _
+  AddMonoidHom.liftOfRightInverse_comp_apply _ _ (fun _ ↦ intCast_zmod_cast _) _ _
 
 @[simp]
 theorem lift_comp_coe : ZMod.lift n f ∘ ((↑) : ℤ → _) = f :=

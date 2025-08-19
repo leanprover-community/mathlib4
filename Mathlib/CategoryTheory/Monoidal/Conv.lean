@@ -32,7 +32,7 @@ instance : One (Conv M N) where
 theorem one_eq : (1 : Conv M N) = ε[M] ≫ η[N] := rfl
 
 instance : Mul (Conv M N) where
-  mul := fun f g => Δ[M] ≫ f ▷ M ≫ N ◁ g ≫ μ[N]
+  mul := fun f g ↦ Δ[M] ≫ f ▷ M ≫ N ◁ g ≫ μ[N]
 
 theorem mul_eq (f g : Conv M N) : f * g = Δ[M] ≫ f ▷ M ≫ N ◁ g ≫ μ[N] := rfl
 

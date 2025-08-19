@@ -55,8 +55,8 @@ class IsRightDerivedFunctor (RF : D ⥤ H) {F : C ⥤ H} {L : C ⥤ D} (α : F �
 lemma isRightDerivedFunctor_iff_isLeftKanExtension [L.IsLocalization W] :
     RF.IsRightDerivedFunctor α W ↔ RF.IsLeftKanExtension α := by
   constructor
-  · exact fun _ => IsRightDerivedFunctor.isLeftKanExtension RF α W
-  · exact fun h => ⟨h⟩
+  · exact fun _ ↦ IsRightDerivedFunctor.isLeftKanExtension RF α W
+  · exact fun h ↦ ⟨h⟩
 
 variable {RF RF'} in
 lemma isRightDerivedFunctor_iff_of_iso (α' : F ⟶ L ⋙ RF') (W : MorphismProperty C)
@@ -158,7 +158,7 @@ variable [L.IsLocalization W]
 lemma hasRightDerivedFunctor_iff :
     F.HasRightDerivedFunctor W ↔ HasLeftKanExtension L F := by
   have : HasRightDerivedFunctor F W ↔ HasLeftKanExtension W.Q F :=
-    ⟨fun h => h.hasLeftKanExtension', fun h => ⟨h⟩⟩
+    ⟨fun h ↦ h.hasLeftKanExtension', fun h ↦ ⟨h⟩⟩
   rw [this, hasLeftExtension_iff_postcomp₁ (Localization.compUniqFunctor W.Q L W) F]
 
 variable {F}

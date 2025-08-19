@@ -22,4 +22,4 @@ instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid
 
 /-- Any `FreeAddMonoid` has the `TwoUniqueSums` property. -/
 instance FreeAddMonoid.instTwoUniqueSums {κ : Type*} : TwoUniqueSums (FreeAddMonoid κ) :=
-  .of_addHom ⟨_, fun _ _ => List.length_append⟩ (fun _ _ _ _ h h' ↦ List.append_inj h h'.1)
+  .of_addHom ⟨_, fun _ _ ↦ List.length_append⟩ (fun _ _ _ _ h h' ↦ List.append_inj h h'.1)

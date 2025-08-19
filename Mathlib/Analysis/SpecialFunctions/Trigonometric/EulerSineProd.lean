@@ -35,21 +35,21 @@ We evaluate the integral of `cos (2 * z * x) * cos x ^ n`, for any complex `z` a
 variable {z : ℂ} {n : ℕ}
 
 theorem antideriv_cos_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
-    HasDerivAt (fun y : ℝ => Complex.sin (2 * z * y) / (2 * z)) (Complex.cos (2 * z * x)) x := by
-  have a : HasDerivAt (fun y : ℂ => y * (2 * z)) _ x := hasDerivAt_mul_const _
-  have b : HasDerivAt (Complex.sin ∘ fun y : ℂ => (y * (2 * z))) _ x :=
+    HasDerivAt (fun y : ℝ ↦ Complex.sin (2 * z * y) / (2 * z)) (Complex.cos (2 * z * x)) x := by
+  have a : HasDerivAt (fun y : ℂ ↦ y * (2 * z)) _ x := hasDerivAt_mul_const _
+  have b : HasDerivAt (Complex.sin ∘ fun y : ℂ ↦ (y * (2 * z))) _ x :=
     HasDerivAt.comp (x : ℂ) (Complex.hasDerivAt_sin (x * (2 * z))) a
   have c := b.comp_ofReal.div_const (2 * z)
-  field_simp at c; simp only [fun y => mul_comm y (2 * z)] at c
+  field_simp at c; simp only [fun y ↦ mul_comm y (2 * z)] at c
   exact c
 
 theorem antideriv_sin_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
-    HasDerivAt (fun y : ℝ => -Complex.cos (2 * z * y) / (2 * z)) (Complex.sin (2 * z * x)) x := by
-  have a : HasDerivAt (fun y : ℂ => y * (2 * z)) _ x := hasDerivAt_mul_const _
-  have b : HasDerivAt (Complex.cos ∘ fun y : ℂ => (y * (2 * z))) _ x :=
+    HasDerivAt (fun y : ℝ ↦ -Complex.cos (2 * z * y) / (2 * z)) (Complex.sin (2 * z * x)) x := by
+  have a : HasDerivAt (fun y : ℂ ↦ y * (2 * z)) _ x := hasDerivAt_mul_const _
+  have b : HasDerivAt (Complex.cos ∘ fun y : ℂ ↦ (y * (2 * z))) _ x :=
     HasDerivAt.comp (x : ℂ) (Complex.hasDerivAt_cos (x * (2 * z))) a
   have c := (b.comp_ofReal.div_const (2 * z)).fun_neg
-  field_simp at c; simp only [fun y => mul_comm y (2 * z)] at c
+  field_simp at c; simp only [fun y ↦ mul_comm y (2 * z)] at c
   exact c
 
 theorem integral_cos_mul_cos_pow_aux (hn : 2 ≤ n) (hz : z ≠ 0) :
@@ -59,19 +59,19 @@ theorem integral_cos_mul_cos_pow_aux (hn : 2 ≤ n) (hz : z ≠ 0) :
   have der1 :
     ∀ x : ℝ,
       x ∈ uIcc 0 (π / 2) →
-        HasDerivAt (fun y : ℝ => (cos y : ℂ) ^ n) (-n * sin x * (cos x : ℂ) ^ (n - 1)) x := by
+        HasDerivAt (fun y : ℝ ↦ (cos y : ℂ) ^ n) (-n * sin x * (cos x : ℂ) ^ (n - 1)) x := by
     intro x _
-    have b : HasDerivAt (fun y : ℝ => (cos y : ℂ)) (-sin x) x := by
+    have b : HasDerivAt (fun y : ℝ ↦ (cos y : ℂ)) (-sin x) x := by
       simpa using (hasDerivAt_cos x).ofReal_comp
     convert HasDerivAt.comp x (hasDerivAt_pow _ _) b using 1
     ring
   convert (config := { sameFun := true })
-    integral_mul_deriv_eq_deriv_mul der1 (fun x _ => antideriv_cos_comp_const_mul hz x) _ _ using 2
+    integral_mul_deriv_eq_deriv_mul der1 (fun x _ ↦ antideriv_cos_comp_const_mul hz x) _ _ using 2
   · ext1 x; rw [mul_comm]
   · rw [Complex.ofReal_zero, mul_zero, Complex.sin_zero, zero_div, mul_zero, sub_zero,
       cos_pi_div_two, Complex.ofReal_zero, zero_pow (by positivity : n ≠ 0), zero_mul, zero_sub,
       ← integral_neg, ← integral_const_mul]
-    refine integral_congr fun x _ => ?_
+    refine integral_congr fun x _ ↦ ?_
     field_simp; ring
   · apply Continuous.intervalIntegrable
     exact
@@ -88,7 +88,7 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
   have der1 :
     ∀ x : ℝ,
       x ∈ uIcc 0 (π / 2) →
-        HasDerivAt (fun y : ℝ => sin y * (cos y : ℂ) ^ (n - 1))
+        HasDerivAt (fun y : ℝ ↦ sin y * (cos y : ℂ) ^ (n - 1))
           ((cos x : ℂ) ^ n - (n - 1) * (sin x : ℂ) ^ 2 * (cos x : ℂ) ^ (n - 2)) x := by
     intro x _
     have c := HasDerivAt.comp (x : ℂ) (hasDerivAt_pow (n - 1) _) (Complex.hasDerivAt_cos x)
@@ -103,8 +103,8 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
         rw [Nat.sub_sub, this]
         ring
   convert
-    integral_mul_deriv_eq_deriv_mul der1 (fun x _ => antideriv_sin_comp_const_mul hz x) _ _ using 1
-  · refine integral_congr fun x _ => ?_
+    integral_mul_deriv_eq_deriv_mul der1 (fun x _ ↦ antideriv_sin_comp_const_mul hz x) _ _ using 1
+  · refine integral_congr fun x _ ↦ ?_
     ring_nf
   · -- now a tedious rearrangement of terms
     -- gather into a single integral, and deal with continuity subgoals:
@@ -123,7 +123,7 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
           ((Complex.continuous_cos.comp (continuous_const.mul Complex.continuous_ofReal)).mul
             ((Complex.continuous_ofReal.comp continuous_cos).pow (n - 2)))
     · exact Nat.sub_ne_zero_of_lt hn
-    refine integral_congr fun x _ => ?_
+    refine integral_congr fun x _ ↦ ?_
     dsimp only
     -- get rid of real trig functions and divisions by 2 * z:
     rw [Complex.ofReal_cos, Complex.ofReal_sin, Complex.sin_sq, ← mul_div_right_comm, ←
@@ -152,7 +152,7 @@ theorem integral_cos_mul_cos_pow (hn : 2 ≤ n) (hz : z ≠ 0) :
   have := integral_cos_mul_cos_pow_aux hn hz
   rw [integral_sin_mul_sin_mul_cos_pow_eq hn hz, sub_eq_neg_add, mul_add, ← sub_eq_iff_eq_add]
     at this
-  convert congr_arg (fun u : ℂ => -u * (2 * z) ^ 2 / n ^ 2) this using 1 <;> field_simp <;> ring
+  convert congr_arg (fun u : ℂ ↦ -u * (2 * z) ^ 2 / n ^ 2) this using 1 <;> field_simp <;> ring
 
 /-- Note this also holds for `z = 0`, but we do not need this case for `sin_pi_mul_eq`. -/
 theorem integral_cos_mul_cos_pow_even (n : ℕ) (hz : z ≠ 0) :
@@ -181,12 +181,12 @@ theorem integral_cos_pow_eq (n : ℕ) :
   · nth_rw 1 [(by ring : 0 = π / 2 - π / 2)]
     nth_rw 3 [(by ring : π / 2 = π / 2 - 0)]
     rw [← integral_comp_sub_left]
-    refine integral_congr fun x _ => ?_
+    refine integral_congr fun x _ ↦ ?_
     rw [cos_pi_div_two_sub]
   · nth_rw 3 [(by ring : π = π / 2 + π / 2)]
     nth_rw 2 [(by ring : π / 2 = 0 + π / 2)]
     rw [← integral_comp_add_right]
-    refine integral_congr fun x _ => ?_
+    refine integral_congr fun x _ ↦ ?_
     rw [sin_add_pi_div_two]
 
 theorem integral_cos_pow_pos (n : ℕ) : 0 < ∫ x in (0 : ℝ)..π / 2, cos x ^ n :=
@@ -265,14 +265,14 @@ stating that the sequence of measures on `[0, π/2]` given by integration agains
 
 theorem tendsto_integral_cos_pow_mul_div {f : ℝ → ℂ} (hf : ContinuousOn f (Icc 0 (π / 2))) :
     Tendsto
-      (fun n : ℕ => (∫ x in (0 : ℝ)..π / 2, (cos x : ℂ) ^ n * f x) /
+      (fun n : ℕ ↦ (∫ x in (0 : ℝ)..π / 2, (cos x : ℂ) ^ n * f x) /
         (∫ x in (0 : ℝ)..π / 2, cos x ^ n : ℝ))
       atTop (𝓝 <| f 0) := by
   simp_rw [div_eq_inv_mul (α := ℂ), ← Complex.ofReal_inv, integral_of_le pi_div_two_pos.le,
     ← MeasureTheory.integral_Icc_eq_integral_Ioc, ← Complex.ofReal_pow, ← Complex.real_smul]
-  have c_lt : ∀ y : ℝ, y ∈ Icc 0 (π / 2) → y ≠ 0 → cos y < cos 0 := fun y hy hy' =>
+  have c_lt : ∀ y : ℝ, y ∈ Icc 0 (π / 2) → y ≠ 0 → cos y < cos 0 := fun y hy hy' ↦
     cos_lt_cos_of_nonneg_of_le_pi_div_two (le_refl 0) hy.2 (lt_of_le_of_ne hy.1 hy'.symm)
-  have c_nonneg : ∀ x : ℝ, x ∈ Icc 0 (π / 2) → 0 ≤ cos x := fun x hx =>
+  have c_nonneg : ∀ x : ℝ, x ∈ Icc 0 (π / 2) → 0 ≤ cos x := fun x hx ↦
     cos_nonneg_of_mem_Icc ((Icc_subset_Icc_left (neg_nonpos_of_nonneg pi_div_two_pos.le)) hx)
   have c_zero_pos : 0 < cos 0 := by rw [cos_zero]; exact zero_lt_one
   have zero_mem : (0 : ℝ) ∈ closure (interior (Icc 0 (π / 2))) := by
@@ -284,24 +284,24 @@ theorem tendsto_integral_cos_pow_mul_div {f : ℝ → ℂ} (hf : ContinuousOn f 
 
 /-- Euler's infinite product formula for the complex sine function. -/
 theorem _root_.Complex.tendsto_euler_sin_prod (z : ℂ) :
-    Tendsto (fun n : ℕ => π * z * ∏ j ∈ Finset.range n, ((1 : ℂ) - z ^ 2 / ((j : ℂ) + 1) ^ 2))
+    Tendsto (fun n : ℕ ↦ π * z * ∏ j ∈ Finset.range n, ((1 : ℂ) - z ^ 2 / ((j : ℂ) + 1) ^ 2))
       atTop (𝓝 <| Complex.sin (π * z)) := by
   have A :
     Tendsto
-      (fun n : ℕ =>
+      (fun n : ℕ ↦
         ((π * z * ∏ j ∈ Finset.range n, ((1 : ℂ) - z ^ 2 / ((j : ℂ) + 1) ^ 2)) *
             ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (2 * n)) /
           (∫ x in (0 : ℝ)..π / 2, cos x ^ (2 * n) : ℝ))
       atTop (𝓝 <| _) :=
-    Tendsto.congr (fun n => sin_pi_mul_eq z n) tendsto_const_nhds
+    Tendsto.congr (fun n ↦ sin_pi_mul_eq z n) tendsto_const_nhds
   have : 𝓝 (Complex.sin (π * z)) = 𝓝 (Complex.sin (π * z) * 1) := by rw [mul_one]
   simp_rw [this, mul_div_assoc] at A
   convert (tendsto_mul_iff_of_ne_zero _ one_ne_zero).mp A
-  suffices Tendsto (fun n : ℕ =>
+  suffices Tendsto (fun n : ℕ ↦
         (∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ n) /
           (∫ x in (0 : ℝ)..π / 2, cos x ^ n : ℝ)) atTop (𝓝 1) from
     this.comp (tendsto_id.const_mul_atTop' zero_lt_two)
-  have : ContinuousOn (fun x : ℝ => Complex.cos (2 * z * x)) (Icc 0 (π / 2)) :=
+  have : ContinuousOn (fun x : ℝ ↦ Complex.cos (2 * z * x)) (Icc 0 (π / 2)) :=
     (Complex.continuous_cos.comp (continuous_const.mul Complex.continuous_ofReal)).continuousOn
   convert tendsto_integral_cos_pow_mul_div this using 1
   · ext1 n; congr 2 with x : 1; rw [mul_comm]
@@ -309,7 +309,7 @@ theorem _root_.Complex.tendsto_euler_sin_prod (z : ℂ) :
 
 /-- Euler's infinite product formula for the real sine function. -/
 theorem _root_.Real.tendsto_euler_sin_prod (x : ℝ) :
-    Tendsto (fun n : ℕ => π * x * ∏ j ∈ Finset.range n, ((1 : ℝ) - x ^ 2 / ((j : ℝ) + 1) ^ 2))
+    Tendsto (fun n : ℕ ↦ π * x * ∏ j ∈ Finset.range n, ((1 : ℝ) - x ^ 2 / ((j : ℝ) + 1) ^ 2))
       atTop (𝓝 <| sin (π * x)) := by
   convert (Complex.continuous_re.tendsto _).comp (Complex.tendsto_euler_sin_prod x) using 1
   · ext1 n
@@ -319,7 +319,7 @@ theorem _root_.Real.tendsto_euler_sin_prod (x : ℝ) :
         (∏ j ∈ Finset.range n, (1 - x ^ 2 / (j + 1) ^ 2) : ℝ) by
       rw [this, Complex.ofReal_re]
     rw [Complex.ofReal_prod]
-    refine Finset.prod_congr (by rfl) fun n _ => ?_
+    refine Finset.prod_congr (by rfl) fun n _ ↦ ?_
     norm_cast
   · rw [← Complex.ofReal_mul, ← Complex.ofReal_sin, Complex.ofReal_re]
 

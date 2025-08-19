@@ -272,7 +272,7 @@ theorem decompose_lhom_ext {N} [AddCommMonoid N] [Module R N] ⦃f g : M →ₗ[
     suffices f ∘ₗ (decomposeLinearEquiv ℳ).symm
            = (g ∘ₗ (decomposeLinearEquiv ℳ).symm : (⨁ i, ℳ i) →ₗ[R] N) from
       DFunLike.congr_fun this
-    linearMap_ext _ fun i => by
+    linearMap_ext _ fun i ↦ by
       simp_rw [LinearMap.comp_assoc, decomposeLinearEquiv_symm_comp_lof ℳ i, h]
 
 end Module

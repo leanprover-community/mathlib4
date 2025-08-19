@@ -208,7 +208,7 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
 cones are limit cones, `rightExtensionInclusion X 2` is a pointwise right Kan extension. -/
 noncomputable def isPointwiseRightKanExtension :
     (rightExtensionInclusion X 2).IsPointwiseRightKanExtension :=
-  fun Δ => sx.isPointwiseRightKanExtensionAt Δ.unop.len
+  fun Δ ↦ sx.isPointwiseRightKanExtensionAt Δ.unop.len
 
 theorem isRightKanExtension (sx : StrictSegal X) :
     X.IsRightKanExtension (𝟙 ((inclusion 2).op ⋙ X)) :=

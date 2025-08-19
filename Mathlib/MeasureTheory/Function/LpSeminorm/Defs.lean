@@ -72,7 +72,7 @@ lemma eLpNorm'_eq_lintegral_enorm {_ : MeasurableSpace α} (f : α → ε) (q : 
 
 /-- seminorm for `ℒ∞`, equal to the essential supremum of `‖f‖`. -/
 def eLpNormEssSup {_ : MeasurableSpace α} (f : α → ε) (μ : Measure α) :=
-  essSup (fun x => ‖f x‖ₑ) μ
+  essSup (fun x ↦ ‖f x‖ₑ) μ
 
 lemma eLpNormEssSup_eq_essSup_enorm {_ : MeasurableSpace α} (f : α → ε) (μ : Measure α) :
     eLpNormEssSup f μ = essSup (‖f ·‖ₑ) μ := rfl

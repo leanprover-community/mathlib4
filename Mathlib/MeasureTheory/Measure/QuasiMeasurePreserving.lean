@@ -148,14 +148,14 @@ theorem image_zpow_ae_eq {s : Set α} {e : α ≃ α} (he : QuasiMeasurePreservi
 
 -- Need to specify `α := Set α` below because of diamond; see https://github.com/leanprover-community/mathlib4/issues/10941
 theorem limsup_preimage_iterate_ae_eq {f : α → α} (hf : QuasiMeasurePreserving f μ μ)
-    (hs : f ⁻¹' s =ᵐ[μ] s) : limsup (α := Set α) (fun n => (preimage f)^[n] s) atTop =ᵐ[μ] s :=
-  limsup_ae_eq_of_forall_ae_eq (fun n => (preimage f)^[n] s) fun n ↦ by
+    (hs : f ⁻¹' s =ᵐ[μ] s) : limsup (α := Set α) (fun n ↦ (preimage f)^[n] s) atTop =ᵐ[μ] s :=
+  limsup_ae_eq_of_forall_ae_eq (fun n ↦ (preimage f)^[n] s) fun n ↦ by
     simpa only [Set.preimage_iterate_eq] using hf.preimage_iterate_ae_eq n hs
 
 -- Need to specify `α := Set α` below because of diamond; see https://github.com/leanprover-community/mathlib4/issues/10941
 theorem liminf_preimage_iterate_ae_eq {f : α → α} (hf : QuasiMeasurePreserving f μ μ)
-    (hs : f ⁻¹' s =ᵐ[μ] s) : liminf (α := Set α) (fun n => (preimage f)^[n] s) atTop =ᵐ[μ] s :=
-  liminf_ae_eq_of_forall_ae_eq (fun n => (preimage f)^[n] s) fun n ↦ by
+    (hs : f ⁻¹' s =ᵐ[μ] s) : liminf (α := Set α) (fun n ↦ (preimage f)^[n] s) atTop =ᵐ[μ] s :=
+  liminf_ae_eq_of_forall_ae_eq (fun n ↦ (preimage f)^[n] s) fun n ↦ by
     simpa only [Set.preimage_iterate_eq] using hf.preimage_iterate_ae_eq n hs
 
 /-- For a quasi measure preserving self-map `f`, if a null measurable set `s` is a.e. invariant,
@@ -192,7 +192,7 @@ theorem pairwise_aedisjoint_of_aedisjoint_forall_ne_one {G α : Type*} [Group G]
     {_ : MeasurableSpace α} {μ : Measure α} {s : Set α}
     (h_ae_disjoint : ∀ g ≠ (1 : G), AEDisjoint μ (g • s) s)
     (h_qmp : ∀ g : G, QuasiMeasurePreserving (g • ·) μ μ) :
-    Pairwise (AEDisjoint μ on fun g : G => g • s) := by
+    Pairwise (AEDisjoint μ on fun g : G ↦ g • s) := by
   intro g₁ g₂ hg
   let g := g₂⁻¹ * g₁
   replace hg : g ≠ 1 := by

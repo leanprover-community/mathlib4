@@ -61,10 +61,10 @@ theorem gauge_def : gauge s x = sInf ({ r ∈ Set.Ioi (0 : ℝ) | x ∈ r • s 
 the set. -/
 theorem gauge_def' : gauge s x = sInf {r ∈ Set.Ioi (0 : ℝ) | r⁻¹ • x ∈ s} := by
   congrm sInf {r | ?_}
-  exact and_congr_right fun hr => mem_smul_set_iff_inv_smul_mem₀ hr.ne' _ _
+  exact and_congr_right fun hr ↦ mem_smul_set_iff_inv_smul_mem₀ hr.ne' _ _
 
 private theorem gauge_set_bddBelow : BddBelow { r : ℝ | 0 < r ∧ x ∈ r • s } :=
-  ⟨0, fun _ hr => hr.1.le⟩
+  ⟨0, fun _ hr ↦ hr.1.le⟩
 
 /-- If the given subset is `Absorbent` then the set we take an infimum over in `gauge` is nonempty,
 which is useful for proving many properties about the gauge. -/
@@ -73,8 +73,8 @@ theorem Absorbent.gauge_set_nonempty (absorbs : Absorbent ℝ s) :
   let ⟨r, hr₁, hr₂⟩ := (absorbs x).exists_pos
   ⟨r, hr₁, hr₂ r (Real.norm_of_nonneg hr₁.le).ge rfl⟩
 
-theorem gauge_mono (hs : Absorbent ℝ s) (h : s ⊆ t) : gauge t ≤ gauge s := fun _ =>
-  csInf_le_csInf gauge_set_bddBelow hs.gauge_set_nonempty fun _ hr => ⟨hr.1, smul_set_mono h hr.2⟩
+theorem gauge_mono (hs : Absorbent ℝ s) (h : s ⊆ t) : gauge t ≤ gauge s := fun _ ↦
+  csInf_le_csInf gauge_set_bddBelow hs.gauge_set_nonempty fun _ hr ↦ ⟨hr.1, smul_set_mono h hr.2⟩
 
 theorem exists_lt_of_gauge_lt (absorbs : Absorbent ℝ s) (h : gauge s x < a) :
     ∃ b, 0 < b ∧ b < a ∧ x ∈ b • s := by
@@ -98,7 +98,7 @@ theorem gauge_zero' : gauge (0 : Set E) = 0 := by
   · simp only [csInf_Ioi, mem_zero, Pi.zero_apply, sep_true, smul_zero]
   · simp only [mem_zero, Pi.zero_apply, inv_eq_zero, smul_eq_zero]
     convert Real.sInf_empty
-    exact eq_empty_iff_forall_notMem.2 fun r hr => hr.2.elim (ne_of_gt hr.1) hx
+    exact eq_empty_iff_forall_notMem.2 fun r hr ↦ hr.2.elim (ne_of_gt hr.1) hx
 
 @[simp]
 theorem gauge_empty : gauge (∅ : Set E) = 0 := by
@@ -111,10 +111,10 @@ theorem gauge_of_subset_zero (h : s ⊆ 0) : gauge s = 0 := by
 
 /-- The gauge is always nonnegative. -/
 theorem gauge_nonneg (x : E) : 0 ≤ gauge s x :=
-  Real.sInf_nonneg fun _ hx => hx.1.le
+  Real.sInf_nonneg fun _ hx ↦ hx.1.le
 
 theorem gauge_neg (symmetric : ∀ x ∈ s, -x ∈ s) (x : E) : gauge s (-x) = gauge s x := by
-  have : ∀ x, -x ∈ s ↔ x ∈ s := fun x => ⟨fun h => by simpa using symmetric _ h, symmetric x⟩
+  have : ∀ x, -x ∈ s ↔ x ∈ s := fun x ↦ ⟨fun h ↦ by simpa using symmetric _ h, symmetric x⟩
   simp_rw [gauge_def', smul_neg, this]
 
 theorem gauge_neg_set_neg (x : E) : gauge (-s) (-x) = gauge s x := by
@@ -132,7 +132,7 @@ theorem gauge_le_eq (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s) (hs₂ : Abso
     { x | gauge s x ≤ a } = ⋂ (r : ℝ) (_ : a < r), r • s := by
   ext x
   simp_rw [Set.mem_iInter, Set.mem_setOf_eq]
-  refine ⟨fun h r hr => ?_, fun h => le_of_forall_pos_lt_add fun ε hε => ?_⟩
+  refine ⟨fun h r hr ↦ ?_, fun h ↦ le_of_forall_pos_lt_add fun ε hε ↦ ?_⟩
   · have hr' := ha.trans_lt hr
     rw [mem_smul_set_iff_inv_smul_mem₀ hr'.ne']
     obtain ⟨δ, δ_pos, hδr, hδ⟩ := exists_lt_of_gauge_lt hs₂ (h.trans_lt hr)
@@ -150,7 +150,7 @@ theorem gauge_lt_eq' (absorbs : Absorbent ℝ s) (a : ℝ) :
   ext
   simp_rw [mem_setOf, mem_iUnion, exists_prop]
   exact
-    ⟨exists_lt_of_gauge_lt absorbs, fun ⟨r, hr₀, hr₁, hx⟩ =>
+    ⟨exists_lt_of_gauge_lt absorbs, fun ⟨r, hr₀, hr₁, hx⟩ ↦
       (gauge_le_of_mem hr₀.le hx).trans_lt hr₁⟩
 
 theorem gauge_lt_eq (absorbs : Absorbent ℝ s) (a : ℝ) :
@@ -158,7 +158,7 @@ theorem gauge_lt_eq (absorbs : Absorbent ℝ s) (a : ℝ) :
   ext
   simp_rw [mem_setOf, mem_iUnion, exists_prop, mem_Ioo, and_assoc]
   exact
-    ⟨exists_lt_of_gauge_lt absorbs, fun ⟨r, hr₀, hr₁, hx⟩ =>
+    ⟨exists_lt_of_gauge_lt absorbs, fun ⟨r, hr₀, hr₁, hx⟩ ↦
       (gauge_le_of_mem hr₀.le hx).trans_lt hr₁⟩
 
 theorem mem_openSegment_of_gauge_lt_one (absorbs : Absorbent ℝ s) (hgauge : gauge s x < 1) :
@@ -178,7 +178,7 @@ theorem gauge_le_one_of_mem {x : E} (hx : x ∈ s) : gauge s x ≤ 1 :=
 /-- Gauge is subadditive. -/
 theorem gauge_add_le (hs : Convex ℝ s) (absorbs : Absorbent ℝ s) (x y : E) :
     gauge s (x + y) ≤ gauge s x + gauge s y := by
-  refine le_of_forall_pos_lt_add fun ε hε => ?_
+  refine le_of_forall_pos_lt_add fun ε hε ↦ ?_
   obtain ⟨a, ha, ha', x, hx, rfl⟩ :=
     exists_lt_of_gauge_lt absorbs (lt_add_of_pos_right (gauge s x) (half_pos hε))
   obtain ⟨b, hb, hb', y, hy, rfl⟩ :=
@@ -193,18 +193,18 @@ theorem gauge_sum_le {ι : Type*} (hs : Convex ℝ s) (absorbs : Absorbent ℝ s
     (f : ι → E) : gauge s (∑ i ∈ t, f i) ≤ ∑ i ∈ t, gauge s (f i) :=
   Finset.le_sum_of_subadditive _ gauge_zero (gauge_add_le hs absorbs) _ _
 
-theorem self_subset_gauge_le_one : s ⊆ { x | gauge s x ≤ 1 } := fun _ => gauge_le_one_of_mem
+theorem self_subset_gauge_le_one : s ⊆ { x | gauge s x ≤ 1 } := fun _ ↦ gauge_le_one_of_mem
 
 theorem Convex.gauge_le (hs : Convex ℝ s) (h₀ : (0 : E) ∈ s) (absorbs : Absorbent ℝ s) (a : ℝ) :
     Convex ℝ { x | gauge s x ≤ a } := by
   by_cases ha : 0 ≤ a
   · rw [gauge_le_eq hs h₀ absorbs ha]
-    exact convex_iInter fun i => convex_iInter fun _ => hs.smul _
+    exact convex_iInter fun i ↦ convex_iInter fun _ ↦ hs.smul _
   · convert convex_empty (𝕜 := ℝ)
-    exact eq_empty_iff_forall_notMem.2 fun x hx => ha <| (gauge_nonneg _).trans hx
+    exact eq_empty_iff_forall_notMem.2 fun x hx ↦ ha <| (gauge_nonneg _).trans hx
 
 theorem Balanced.starConvex (hs : Balanced ℝ s) : StarConvex ℝ 0 s :=
-  starConvex_zero_iff.2 fun _ hx a ha₀ ha₁ =>
+  starConvex_zero_iff.2 fun _ hx a ha₀ ha₁ ↦
     hs _ (by rwa [Real.norm_of_nonneg ha₀]) (smul_mem_smul_set hx)
 
 theorem le_gauge_of_notMem (hs₀ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s {x}) (hx : x ∉ a • s) :
@@ -213,7 +213,7 @@ theorem le_gauge_of_notMem (hs₀ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s {
   obtain ⟨r, hr, h⟩ := hs₂.exists_pos
   refine le_csInf ⟨r, hr, singleton_subset_iff.1 <| h _ (Real.norm_of_nonneg hr.le).ge⟩ ?_
   rintro b ⟨hb, x, hx', rfl⟩
-  refine not_lt.1 fun hba => hx ?_
+  refine not_lt.1 fun hba ↦ hx ?_
   have ha := hb.trans hba
   refine ⟨(a⁻¹ * b) • x, hs₀ hx' (by positivity) ?_, ?_⟩
   · rw [← div_eq_inv_mul]
@@ -289,7 +289,7 @@ theorem gauge_smul_left [Module α E] [SMulCommClass α ℝ ℝ] [IsScalarTower 
     apply congr_arg
     apply congr_arg
     ext y
-    refine ⟨symmetric _, fun hy => ?_⟩
+    refine ⟨symmetric _, fun hy ↦ ?_⟩
     rw [← neg_neg y]
     exact symmetric _ hy
 
@@ -304,7 +304,7 @@ theorem gauge_norm_smul (hs : Balanced 𝕜 s) (r : 𝕜) (x : E) :
   unfold gauge
   congr with θ
   rw [@RCLike.real_smul_eq_coe_smul 𝕜]
-  refine and_congr_right fun hθ => (hs.smul _).smul_mem_iff ?_
+  refine and_congr_right fun hθ ↦ (hs.smul _).smul_mem_iff ?_
   rw [RCLike.norm_ofReal, abs_norm]
 
 /-- If `s` is balanced, then the Minkowski functional is ℂ-homogeneous. -/
@@ -510,7 +510,7 @@ protected theorem Seminorm.gauge_ball (p : Seminorm ℝ E) : gauge (p.ball 0 1) 
     rw [p.mem_ball_zero, map_smul_eq_mul, Real.norm_eq_abs, abs_of_pos (inv_pos.2 hpx₂),
       inv_mul_lt_iff₀ hpx₂, mul_one]
     exact lt_mul_of_one_lt_left hpx one_lt_two
-  refine IsGLB.csInf_eq ⟨fun r => ?_, fun r hr => le_of_forall_pos_le_add fun ε hε => ?_⟩ hp
+  refine IsGLB.csInf_eq ⟨fun r ↦ ?_, fun r hr ↦ le_of_forall_pos_le_add fun ε hε ↦ ?_⟩ hp
   · rintro ⟨hr, y, hy, rfl⟩
     rw [p.mem_ball_zero] at hy
     rw [map_smul_eq_mul, Real.norm_eq_abs, abs_of_pos hr]
@@ -542,7 +542,7 @@ theorem gauge_ball (hr : 0 ≤ r) (x : E) : gauge (ball (0 : E) r) x = ‖x‖ /
   · rw [← smul_unitBall_of_pos hr, gauge_smul_left, Pi.smul_apply, gauge_unit_ball, smul_eq_mul,
     abs_of_nonneg hr.le, div_eq_inv_mul]
     simp_rw [mem_ball_zero_iff, norm_neg]
-    exact fun _ => id
+    exact fun _ ↦ id
 
 @[simp]
 theorem gauge_closure_zero : gauge (closure (0 : Set E)) = 0 := funext fun x ↦ by
@@ -578,7 +578,7 @@ theorem mul_gauge_le_norm (hs : Metric.ball (0 : E) r ⊆ s) : r * gauge s x ≤
 theorem Convex.lipschitzWith_gauge {r : ℝ≥0} (hc : Convex ℝ s) (hr : 0 < r)
     (hs : Metric.ball (0 : E) r ⊆ s) : LipschitzWith r⁻¹ (gauge s) :=
   have : Absorbent ℝ (Metric.ball (0 : E) r) := absorbent_ball_zero hr
-  LipschitzWith.of_le_add_mul _ fun x y =>
+  LipschitzWith.of_le_add_mul _ fun x y ↦
     calc
       gauge s x = gauge s (y + (x - y)) := by simp
       _ ≤ gauge s y + gauge s (x - y) := gauge_add_le hc (this.mono hs) _ _

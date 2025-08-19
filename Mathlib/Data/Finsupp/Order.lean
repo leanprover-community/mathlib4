@@ -79,7 +79,7 @@ variable [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α]
   {i : ι} {f : ι → κ} {g g₁ g₂ : ι →₀ α}
 
 instance isOrderedAddMonoid : IsOrderedAddMonoid (ι →₀ α) :=
-  { add_le_add_left := fun _a _b h c s => add_le_add_left (h s) (c s) }
+  { add_le_add_left := fun _a _b h c s ↦ add_le_add_left (h s) (c s) }
 
 lemma mapDomain_mono : Monotone (mapDomain f : (ι →₀ α) → (κ →₀ α)) := by
   classical exact fun g₁ g₂ h ↦ sum_le_sum_index h (fun _ _ ↦ single_mono) (by simp)
@@ -94,11 +94,11 @@ end OrderedAddCommMonoid
 
 instance isOrderedCancelAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] :
     IsOrderedCancelAddMonoid (ι →₀ α) :=
-  { le_of_add_le_add_left := fun _f _g _i h s => le_of_add_le_add_left (h s) }
+  { le_of_add_le_add_left := fun _f _g _i h s ↦ le_of_add_le_add_left (h s) }
 
 instance addLeftReflectLE [AddCommMonoid α] [PartialOrder α] [AddLeftReflectLE α] :
     AddLeftReflectLE (ι →₀ α) :=
-  ⟨fun _f _g _h H x => le_of_add_le_add_left <| H x⟩
+  ⟨fun _f _g _h H x ↦ le_of_add_le_add_left <| H x⟩
 
 section SMulZeroClass
 variable [Zero α] [Preorder α] [Zero β] [Preorder β] [SMulZeroClass α β]
@@ -149,7 +149,7 @@ theorem add_eq_zero_iff (f g : ι →₀ α) : f + g = 0 ↔ f = 0 ∧ g = 0 := 
   simp [DFunLike.ext_iff, forall_and]
 
 theorem le_iff' (f g : ι →₀ α) {s : Finset ι} (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=
-  ⟨fun h s _hs => h s, fun h s => by
+  ⟨fun h s _hs ↦ h s, fun h s ↦ by
     classical exact
         if H : s ∈ f.support then h s (hf H) else (notMem_support_iff.1 H).symm ▸ zero_le (g s)⟩
 
@@ -161,7 +161,7 @@ lemma support_monotone : Monotone (support (α := ι) (M := α)) :=
 
 lemma support_mono (hfg : f ≤ g) : f.support ⊆ g.support := support_monotone hfg
 
-instance decidableLE [DecidableLE α] : DecidableLE (ι →₀ α) := fun f g =>
+instance decidableLE [DecidableLE α] : DecidableLE (ι →₀ α) := fun f g ↦
   decidable_of_iff _ (le_iff f g).symm
 
 instance decidableLT [DecidableLE α] : DecidableLT (ι →₀ α) :=
@@ -176,14 +176,14 @@ variable [Sub α] [OrderedSub α] {f g : ι →₀ α} {i : ι} {a b : α}
 /-- This is called `tsub` for truncated subtraction, to distinguish it with subtraction in an
 additive group. -/
 instance tsub : Sub (ι →₀ α) :=
-  ⟨zipWith (fun m n => m - n) (tsub_self 0)⟩
+  ⟨zipWith (fun m n ↦ m - n) (tsub_self 0)⟩
 
 instance orderedSub : OrderedSub (ι →₀ α) :=
-  ⟨fun _n _m _k => forall_congr' fun _x => tsub_le_iff_right⟩
+  ⟨fun _n _m _k ↦ forall_congr' fun _x ↦ tsub_le_iff_right⟩
 
 instance [AddLeftMono α] : CanonicallyOrderedAdd (ι →₀ α) where
-  exists_add_of_le := fun {f g} h => ⟨g - f, ext fun x => (add_tsub_cancel_of_le <| h x).symm⟩
-  le_self_add := fun _f _g _x => le_self_add
+  exists_add_of_le := fun {f g} h ↦ ⟨g - f, ext fun x ↦ (add_tsub_cancel_of_le <| h x).symm⟩
+  le_self_add := fun _f _g _x ↦ le_self_add
 
 @[simp, norm_cast] lemma coe_tsub (f g : ι →₀ α) : ⇑(f - g) = f - g := rfl
 

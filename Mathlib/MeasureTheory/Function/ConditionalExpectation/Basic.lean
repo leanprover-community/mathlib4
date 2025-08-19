@@ -116,7 +116,7 @@ def condExpUnexpander : Lean.PrettyPrinter.Unexpander
 theorem condExp_of_not_le (hm_not : ¬m ≤ m₀) : μ[f|m] = 0 := by rw [condExp, dif_neg hm_not]
 
 theorem condExp_of_not_sigmaFinite (hm : m ≤ m₀) (hμm_not : ¬SigmaFinite (μ.trim hm)) :
-    μ[f|m] = 0 := by rw [condExp, dif_pos hm, dif_neg]; push_neg; exact fun h => absurd h hμm_not
+    μ[f|m] = 0 := by rw [condExp, dif_pos hm, dif_neg]; push_neg; exact fun h ↦ absurd h hμm_not
 
 open scoped Classical in
 theorem condExp_of_sigmaFinite (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] :
@@ -151,7 +151,7 @@ theorem condExp_ae_eq_condExpL1 (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim h
 
 theorem condExp_ae_eq_condExpL1CLM (hm : m ≤ m₀) [SigmaFinite (μ.trim hm)] (hf : Integrable f μ) :
     μ[f|m] =ᵐ[μ] condExpL1CLM E hm μ (hf.toL1 f) := by
-  refine (condExp_ae_eq_condExpL1 hm f).trans (Eventually.of_forall fun x => ?_)
+  refine (condExp_ae_eq_condExpL1 hm f).trans (Eventually.of_forall fun x ↦ ?_)
   rw [condExpL1_eq hf]
 
 theorem condExp_of_not_integrable (hf : ¬Integrable f μ) : μ[f|m] = 0 := by
@@ -212,7 +212,7 @@ theorem integrable_condExp : Integrable (μ[f|m]) μ := by
 the integral of `f` on that set. -/
 theorem setIntegral_condExp (hm : m ≤ m₀) [SigmaFinite (μ.trim hm)] (hf : Integrable f μ)
     (hs : MeasurableSet[m] s) : ∫ x in s, (μ[f|m]) x ∂μ = ∫ x in s, f x ∂μ := by
-  rw [setIntegral_congr_ae (hm s hs) ((condExp_ae_eq_condExpL1 hm f).mono fun x hx _ => hx)]
+  rw [setIntegral_congr_ae (hm s hs) ((condExp_ae_eq_condExpL1 hm f).mono fun x hx _ ↦ hx)]
   exact setIntegral_condExpL1 hf hs
 
 theorem integral_condExp (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] :
@@ -238,12 +238,12 @@ theorem ae_eq_condExp_of_forall_setIntegral_eq (hm : m ≤ m₀) [SigmaFinite (�
     (hg_eq : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, g x ∂μ = ∫ x in s, f x ∂μ)
     (hgm : AEStronglyMeasurable[m] g μ) : g =ᵐ[μ] μ[f|m] := by
   refine ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' hm hg_int_finite
-    (fun s _ _ => integrable_condExp.integrableOn) (fun s hs hμs => ?_) hgm
+    (fun s _ _ ↦ integrable_condExp.integrableOn) (fun s hs hμs ↦ ?_) hgm
     (StronglyMeasurable.aestronglyMeasurable stronglyMeasurable_condExp)
   rw [hg_eq s hs hμs, setIntegral_condExp hm hf hs]
 
 theorem condExp_bot' [hμ : NeZero μ] (f : α → E) :
-    μ[f|⊥] = fun _ => (μ.real Set.univ)⁻¹ • ∫ x, f x ∂μ := by
+    μ[f|⊥] = fun _ ↦ (μ.real Set.univ)⁻¹ • ∫ x, f x ∂μ := by
   by_cases hμ_finite : IsFiniteMeasure μ
   swap
   · have h : ¬SigmaFinite (μ.trim bot_le) := by rwa [sigmaFinite_trim_bot_iff]
@@ -261,12 +261,12 @@ theorem condExp_bot' [hμ : NeZero μ] (f : α → E) :
   exact ⟨NeZero.ne _, measure_ne_top μ Set.univ⟩
 
 theorem condExp_bot_ae_eq (f : α → E) :
-    μ[f|⊥] =ᵐ[μ] fun _ => (μ.real Set.univ)⁻¹ • ∫ x, f x ∂μ := by
+    μ[f|⊥] =ᵐ[μ] fun _ ↦ (μ.real Set.univ)⁻¹ • ∫ x, f x ∂μ := by
   rcases eq_zero_or_neZero μ with rfl | hμ
   · rw [ae_zero]; exact eventually_bot
   · exact Eventually.of_forall <| congr_fun (condExp_bot' f)
 
-theorem condExp_bot [IsProbabilityMeasure μ] (f : α → E) : μ[f|⊥] = fun _ => ∫ x, f x ∂μ := by
+theorem condExp_bot [IsProbabilityMeasure μ] (f : α → E) : μ[f|⊥] = fun _ ↦ ∫ x, f x ∂μ := by
   refine (condExp_bot' f).trans ?_
   rw [measureReal_univ_eq_one, inv_one, one_smul]
 
@@ -302,7 +302,7 @@ theorem condExp_smul [NormedSpace 𝕜 E] (c : 𝕜) (f : α → E) (m : Measura
   refine (condExp_ae_eq_condExpL1 hm _).trans ?_
   rw [condExpL1_smul c f]
   refine (condExp_ae_eq_condExpL1 hm f).mp ?_
-  refine (coeFn_smul c (condExpL1 hm μ f)).mono fun x hx1 hx2 => ?_
+  refine (coeFn_smul c (condExpL1 hm μ f)).mono fun x hx1 hx2 ↦ ?_
   simp only [hx1, hx2, Pi.smul_apply]
 
 theorem condExp_neg (f : α → E) (m : MeasurableSpace α) : μ[-f|m] =ᵐ[μ] -μ[f|m] := by
@@ -327,7 +327,7 @@ theorem condExp_condExp_of_le {m₁ m₂ m₀ : MeasurableSpace α} {μ : Measur
   by_cases hf : Integrable f μ
   swap; · simp_rw [condExp_of_not_integrable hf, condExp_zero]; rfl
   refine ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' (hm₁₂.trans hm₂)
-    (fun s _ _ => integrable_condExp.integrableOn) (fun s _ _ => integrable_condExp.integrableOn) ?_
+    (fun s _ _ ↦ integrable_condExp.integrableOn) (fun s _ _ ↦ integrable_condExp.integrableOn) ?_
     stronglyMeasurable_condExp.aestronglyMeasurable
     stronglyMeasurable_condExp.aestronglyMeasurable
   intro s hs _
@@ -410,8 +410,8 @@ theorem tendsto_condExpL1_of_dominated_convergence (hm : m ≤ m₀) [SigmaFinit
     {fs : ℕ → α → E} {f : α → E} (bound_fs : α → ℝ)
     (hfs_meas : ∀ n, AEStronglyMeasurable (fs n) μ) (h_int_bound_fs : Integrable bound_fs μ)
     (hfs_bound : ∀ n, ∀ᵐ x ∂μ, ‖fs n x‖ ≤ bound_fs x)
-    (hfs : ∀ᵐ x ∂μ, Tendsto (fun n => fs n x) atTop (𝓝 (f x))) :
-    Tendsto (fun n => condExpL1 hm μ (fs n)) atTop (𝓝 (condExpL1 hm μ f)) :=
+    (hfs : ∀ᵐ x ∂μ, Tendsto (fun n ↦ fs n x) atTop (𝓝 (f x))) :
+    Tendsto (fun n ↦ condExpL1 hm μ (fs n)) atTop (𝓝 (condExpL1 hm μ f)) :=
   tendsto_setToFun_of_dominated_convergence _ bound_fs hfs_meas h_int_bound_fs hfs_bound hfs
 
 /-- If two sequences of functions have a.e. equal conditional expectations at each step, converge
@@ -419,8 +419,8 @@ and verify dominated convergence hypotheses, then the conditional expectations o
 a.e. equal. -/
 theorem tendsto_condExp_unique (fs gs : ℕ → α → E) (f g : α → E)
     (hfs_int : ∀ n, Integrable (fs n) μ) (hgs_int : ∀ n, Integrable (gs n) μ)
-    (hfs : ∀ᵐ x ∂μ, Tendsto (fun n => fs n x) atTop (𝓝 (f x)))
-    (hgs : ∀ᵐ x ∂μ, Tendsto (fun n => gs n x) atTop (𝓝 (g x))) (bound_fs : α → ℝ)
+    (hfs : ∀ᵐ x ∂μ, Tendsto (fun n ↦ fs n x) atTop (𝓝 (f x)))
+    (hgs : ∀ᵐ x ∂μ, Tendsto (fun n ↦ gs n x) atTop (𝓝 (g x))) (bound_fs : α → ℝ)
     (h_int_bound_fs : Integrable bound_fs μ) (bound_gs : α → ℝ)
     (h_int_bound_gs : Integrable bound_gs μ) (hfs_bound : ∀ n, ∀ᵐ x ∂μ, ‖fs n x‖ ≤ bound_fs x)
     (hgs_bound : ∀ n, ∀ᵐ x ∂μ, ‖gs n x‖ ≤ bound_gs x) (hfg : ∀ n, μ[fs n|m] =ᵐ[μ] μ[gs n|m]) :
@@ -434,11 +434,11 @@ theorem tendsto_condExp_unique (fs gs : ℕ → α → E) (f g : α → E)
     ext1
     refine (condExp_ae_eq_condExpL1 hm (gs n)).symm.trans ((hfg n).symm.trans ?_)
     exact condExp_ae_eq_condExpL1 hm (fs n)
-  have hcond_fs : Tendsto (fun n => condExpL1 hm μ (fs n)) atTop (𝓝 (condExpL1 hm μ f)) :=
-    tendsto_condExpL1_of_dominated_convergence hm _ (fun n => (hfs_int n).1) h_int_bound_fs
+  have hcond_fs : Tendsto (fun n ↦ condExpL1 hm μ (fs n)) atTop (𝓝 (condExpL1 hm μ f)) :=
+    tendsto_condExpL1_of_dominated_convergence hm _ (fun n ↦ (hfs_int n).1) h_int_bound_fs
       hfs_bound hfs
-  have hcond_gs : Tendsto (fun n => condExpL1 hm μ (gs n)) atTop (𝓝 (condExpL1 hm μ g)) :=
-    tendsto_condExpL1_of_dominated_convergence hm _ (fun n => (hgs_int n).1) h_int_bound_gs
+  have hcond_gs : Tendsto (fun n ↦ condExpL1 hm μ (gs n)) atTop (𝓝 (condExpL1 hm μ g)) :=
+    tendsto_condExpL1_of_dominated_convergence hm _ (fun n ↦ (hgs_int n).1) h_int_bound_gs
       hgs_bound hgs
   exact tendsto_nhds_unique_of_eventuallyEq hcond_gs hcond_fs (Eventually.of_forall hn_eq)
 

@@ -66,7 +66,7 @@ private theorem isRoot_cyclotomic_iff' {n : ℕ} {K : Type*} [Field K] {μ : K} 
     IsRoot (cyclotomic n K) μ ↔ IsPrimitiveRoot μ n := by
   -- in this proof, `o` stands for `orderOf μ`
   have hnpos : 0 < n := (NeZero.of_neZero_natCast K).out.bot_lt
-  refine ⟨fun hμ => ?_, IsPrimitiveRoot.isRoot_cyclotomic hnpos⟩
+  refine ⟨fun hμ ↦ ?_, IsPrimitiveRoot.isRoot_cyclotomic hnpos⟩
   have hμn : μ ^ n = 1 := by
     rw [isRoot_of_unity_iff hnpos _]
     exact ⟨n, n.mem_divisors_self hnpos.ne', hμ⟩
@@ -129,8 +129,8 @@ theorem isRoot_cyclotomic_iff_charZero {n : ℕ} {R : Type*} [CommRing R] [IsDom
 
 end IsDomain
 
-/-- Over a ring `R` of characteristic zero, `fun n => cyclotomic n R` is injective. -/
-theorem cyclotomic_injective [CharZero R] : Function.Injective fun n => cyclotomic n R := by
+/-- Over a ring `R` of characteristic zero, `fun n ↦ cyclotomic n R` is injective. -/
+theorem cyclotomic_injective [CharZero R] : Function.Injective fun n ↦ cyclotomic n R := by
   intro n m hnm
   simp only at hnm
   rcases eq_or_ne n 0 with (rfl | hzero)
@@ -145,7 +145,7 @@ theorem cyclotomic_injective [CharZero R] : Function.Injective fun n => cyclotom
     have hprim := Complex.isPrimitiveRoot_exp _ hzero
     have hroot := isRoot_cyclotomic_iff (R := ℂ).2 hprim
     rw [hnm] at hroot
-    haveI hmzero : NeZero m := ⟨fun h => by simp [h] at hroot⟩
+    haveI hmzero : NeZero m := ⟨fun h ↦ by simp [h] at hroot⟩
     rw [isRoot_cyclotomic_iff (R := ℂ)] at hroot
     replace hprim := hprim.eq_orderOf
     rwa [← IsPrimitiveRoot.eq_orderOf hroot] at hprim
@@ -200,7 +200,7 @@ theorem cyclotomic.isCoprime_rat {n m : ℕ} (h : n ≠ m) :
   rcases m.eq_zero_or_pos with (rfl | hmzero)
   · exact isCoprime_one_right
   rw [Irreducible.coprime_iff_not_dvd <| cyclotomic.irreducible_rat <| hnzero]
-  exact fun hdiv => h <| cyclotomic_injective <|
+  exact fun hdiv ↦ h <| cyclotomic_injective <|
     eq_of_monic_of_associated (cyclotomic.monic n ℚ) (cyclotomic.monic m ℚ) <|
       Irreducible.associated_of_dvd (cyclotomic.irreducible_rat hnzero)
         (cyclotomic.irreducible_rat hmzero) hdiv

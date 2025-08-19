@@ -367,13 +367,13 @@ theorem sdiff_symmDiff_right : b \ a ∆ b = a ⊓ b := by
   rw [symmDiff_comm, inf_comm, sdiff_symmDiff_left]
 
 theorem symmDiff_eq_sup : a ∆ b = a ⊔ b ↔ Disjoint a b := by
-  refine ⟨fun h => ?_, Disjoint.symmDiff_eq_sup⟩
+  refine ⟨fun h ↦ ?_, Disjoint.symmDiff_eq_sup⟩
   rw [symmDiff_eq_sup_sdiff_inf, sdiff_eq_self_iff_disjoint] at h
   exact h.of_disjoint_inf_of_le le_sup_left
 
 @[simp]
 theorem le_symmDiff_iff_left : a ≤ a ∆ b ↔ Disjoint a b := by
-  refine ⟨fun h => ?_, fun h => h.symmDiff_eq_sup.symm ▸ le_sup_left⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ h.symmDiff_eq_sup.symm ▸ le_sup_left⟩
   rw [symmDiff_eq_sup_sdiff_inf] at h
   exact disjoint_iff_inf_le.mpr (le_sdiff_right.1 <| inf_le_of_left_le h).le
 
@@ -700,11 +700,11 @@ end Prod
 namespace Pi
 
 theorem symmDiff_def [∀ i, GeneralizedCoheytingAlgebra (π i)] (a b : ∀ i, π i) :
-    a ∆ b = fun i => a i ∆ b i :=
+    a ∆ b = fun i ↦ a i ∆ b i :=
   rfl
 
 theorem bihimp_def [∀ i, GeneralizedHeytingAlgebra (π i)] (a b : ∀ i, π i) :
-    a ⇔ b = fun i => a i ⇔ b i :=
+    a ⇔ b = fun i ↦ a i ⇔ b i :=
   rfl
 
 @[simp]

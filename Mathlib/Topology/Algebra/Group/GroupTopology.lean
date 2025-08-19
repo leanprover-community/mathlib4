@@ -45,7 +45,7 @@ variable [Group α]
 @[to_additive /-- A version of the global `continuous_add` suitable for dot notation. -/]
 theorem continuous_mul' (g : GroupTopology α) :
     haveI := g.toTopologicalSpace
-    Continuous fun p : α × α => p.1 * p.2 := by
+    Continuous fun p : α × α ↦ p.1 * p.2 := by
   letI := g.toTopologicalSpace
   haveI := g.toIsTopologicalGroup
   exact continuous_mul
@@ -62,7 +62,7 @@ theorem continuous_inv' (g : GroupTopology α) :
 @[to_additive]
 theorem toTopologicalSpace_injective :
     Function.Injective (toTopologicalSpace : GroupTopology α → TopologicalSpace α) :=
-  fun f g h => by
+  fun f g h ↦ by
     cases f
     cases g
     congr
@@ -133,7 +133,7 @@ instance : Inhabited (GroupTopology α) :=
 @[to_additive /-- Infimum of a collection of additive group topologies -/]
 instance : InfSet (GroupTopology α) where
   sInf S :=
-    ⟨sInf (toTopologicalSpace '' S), topologicalGroup_sInf <| forall_mem_image.2 fun t _ => t.2⟩
+    ⟨sInf (toTopologicalSpace '' S), topologicalGroup_sInf <| forall_mem_image.2 fun t _ ↦ t.2⟩
 
 @[to_additive (attr := simp)]
 theorem toTopologicalSpace_sInf (s : Set (GroupTopology α)) :
@@ -164,7 +164,7 @@ topologies contained in the intersection of `s` and `t`. -/
 instance : CompleteSemilatticeInf (GroupTopology α) :=
   { inferInstanceAs (InfSet (GroupTopology α)),
     inferInstanceAs (PartialOrder (GroupTopology α)) with
-    sInf_le := fun _ a haS => toTopologicalSpace_le.1 <| sInf_le ⟨a, haS, rfl⟩
+    sInf_le := fun _ a haS ↦ toTopologicalSpace_le.1 <| sInf_le ⟨a, haS, rfl⟩
     le_sInf := by
       intro S a hab
       apply (inferInstanceAs (CompleteLattice (TopologicalSpace α))).le_sInf

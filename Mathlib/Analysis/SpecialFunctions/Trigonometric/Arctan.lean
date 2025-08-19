@@ -62,17 +62,17 @@ theorem tan_int_mul_pi_div_two (n : ℤ) : tan (n * π / 2) = 0 :=
   tan_eq_zero_iff.mpr (by use n)
 
 theorem continuousOn_tan : ContinuousOn tan {x | cos x ≠ 0} := by
-  suffices ContinuousOn (fun x => sin x / cos x) {x | cos x ≠ 0} by
-    have h_eq : (fun x => sin x / cos x) = tan := by ext1 x; rw [tan_eq_sin_div_cos]
+  suffices ContinuousOn (fun x ↦ sin x / cos x) {x | cos x ≠ 0} by
+    have h_eq : (fun x ↦ sin x / cos x) = tan := by ext1 x; rw [tan_eq_sin_div_cos]
     rwa [h_eq] at this
-  exact continuousOn_sin.div continuousOn_cos fun x => id
+  exact continuousOn_sin.div continuousOn_cos fun x ↦ id
 
 @[continuity]
 theorem continuous_tan : Continuous fun x : {x | cos x ≠ 0} => tan x :=
   continuousOn_iff_continuous_restrict.1 continuousOn_tan
 
 theorem continuousOn_tan_Ioo : ContinuousOn tan (Ioo (-(π / 2)) (π / 2)) := by
-  refine ContinuousOn.mono continuousOn_tan fun x => ?_
+  refine ContinuousOn.mono continuousOn_tan fun x ↦ ?_
   simp only [and_imp, mem_Ioo, mem_setOf_eq, Ne]
   rw [cos_eq_zero_iff]
   rintro hx_gt hx_lt ⟨r, hxr_eq⟩
@@ -97,7 +97,7 @@ theorem surjOn_tan : SurjOn tan (Ioo (-(π / 2)) (π / 2)) univ :=
     (by rw [tendsto_comp_coe_Ioo_atBot this]; exact tendsto_tan_neg_pi_div_two)
     (by rw [tendsto_comp_coe_Ioo_atTop this]; exact tendsto_tan_pi_div_two)
 
-theorem tan_surjective : Function.Surjective tan := fun _ => surjOn_tan.subset_range trivial
+theorem tan_surjective : Function.Surjective tan := fun _ ↦ surjOn_tan.subset_range trivial
 
 theorem image_tan_Ioo : tan '' Ioo (-(π / 2)) (π / 2) = univ :=
   univ_subset_iff.1 surjOn_tan

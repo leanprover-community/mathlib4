@@ -352,7 +352,7 @@ def of (P : MorphismProperty Scheme) : AffineTargetMorphismProperty :=
 /-- An `AffineTargetMorphismProperty` can be extended to a `MorphismProperty` such that it
 *never* holds when the target is not affine -/
 def toProperty (P : AffineTargetMorphismProperty) :
-    MorphismProperty Scheme := fun _ _ f => ∃ h, @P _ _ f h
+    MorphismProperty Scheme := fun _ _ f ↦ ∃ h, @P _ _ f h
 
 theorem toProperty_apply (P : AffineTargetMorphismProperty)
     {X Y : Scheme} (f : X ⟶ Y) [i : IsAffine Y] : P.toProperty f ↔ P f := by
@@ -441,7 +441,7 @@ section targetAffineLocally
 /-- For a `P : AffineTargetMorphismProperty`, `targetAffineLocally P` holds for
 `f : X ⟶ Y` whenever `P` holds for the restriction of `f` on every affine open subset of `Y`. -/
 def targetAffineLocally (P : AffineTargetMorphismProperty) : MorphismProperty Scheme :=
-  fun {X Y : Scheme} (f : X ⟶ Y) => ∀ U : Y.affineOpens, P (f ∣_ U)
+  fun {X Y : Scheme} (f : X ⟶ Y) ↦ ∀ U : Y.affineOpens, P (f ∣_ U)
 
 theorem of_targetAffineLocally_of_isPullback
     {P : AffineTargetMorphismProperty} [P.IsLocal]
@@ -571,11 +571,11 @@ theorem iff_of_openCover (𝒰 : Y.OpenCover) [∀ i, IsAffine (𝒰.obj i)] :
 theorem iff_of_isAffine [IsAffine Y] : P f ↔ Q f := by
   letI := isLocal_affineProperty P
   haveI : ∀ i, IsAffine (Scheme.Cover.obj
-      (Scheme.coverOfIsIso (P := @IsOpenImmersion) (𝟙 Y)) i) := fun i => by
+      (Scheme.coverOfIsIso (P := @IsOpenImmersion) (𝟙 Y)) i) := fun i ↦ by
     dsimp; infer_instance
   rw [iff_of_openCover (P := P) (Scheme.coverOfIsIso.{0} (𝟙 Y))]
   trans Q (pullback.snd f (𝟙 _))
-  · exact ⟨fun H => H PUnit.unit, fun H _ => H⟩
+  · exact ⟨fun H ↦ H PUnit.unit, fun H _ ↦ H⟩
   rw [← Category.comp_id (pullback.snd _ _), ← pullback.condition,
     Q.cancel_left_of_respectsIso]
 
@@ -620,7 +620,7 @@ private theorem pullback_fst_of_right (hP' : Q.IsStableUnderBaseChange)
 theorem isStableUnderBaseChange (hP' : Q.IsStableUnderBaseChange) :
     P.IsStableUnderBaseChange :=
   MorphismProperty.IsStableUnderBaseChange.mk'
-    (fun X Y S f g _ H => by
+    (fun X Y S f g _ H ↦ by
       rw [IsLocalAtTarget.iff_of_openCover (P := P) (S.affineCover.pullbackCover f)]
       intro i
       let e : pullback (pullback.fst f g) ((S.affineCover.pullbackCover f).map i) ≅

@@ -23,7 +23,7 @@ variable {α β : Type*}
 open Finset
 
 instance {α : Type*} [Fintype α] : Fintype (Option α) :=
-  ⟨Finset.insertNone univ, fun a => by simp⟩
+  ⟨Finset.insertNone univ, fun a ↦ by simp⟩
 
 theorem univ_option (α : Type*) [Fintype α] : (univ : Finset (Option α)) = insertNone univ :=
   rfl
@@ -35,7 +35,7 @@ theorem Fintype.card_option {α : Type*} [Fintype α] :
 
 /-- If `Option α` is a `Fintype` then so is `α` -/
 def fintypeOfOption {α : Type*} [Fintype (Option α)] : Fintype α :=
-  ⟨Finset.eraseNone (Fintype.elems (α := Option α)), fun x =>
+  ⟨Finset.eraseNone (Fintype.elems (α := Option α)), fun x ↦
     mem_eraseNone.mpr (Fintype.complete (some x))⟩
 
 /-- A type is a `Fintype` if its successor (using `Option`) is a `Fintype`. -/
@@ -82,12 +82,12 @@ theorem induction_empty_option {P : ∀ (α : Type u) [Fintype α], Prop}
     (h_empty : P PEmpty) (h_option : ∀ (α) [Fintype α], P α → P (Option α)) (α : Type u)
     [h_fintype : Fintype α] : P α := by
   obtain ⟨p⟩ :=
-    let f_empty := fun i => by convert h_empty
+    let f_empty := fun i ↦ by convert h_empty
     let h_option : ∀ {α : Type u} [Fintype α] [DecidableEq α],
           (∀ (h : Fintype α), P α) → ∀ (h : Fintype (Option α)), P (Option α)  := by
       rintro α hα - Pα hα'
       convert h_option α (Pα _)
-    @truncRecEmptyOption (fun α => ∀ h, @P α h) (@fun α β e hα hβ => @of_equiv α β hβ e (hα _))
+    @truncRecEmptyOption (fun α ↦ ∀ h, @P α h) (@fun α β e hα hβ ↦ @of_equiv α β hβ e (hα _))
       f_empty h_option α _ (Classical.decEq α)
   exact p _
   -- ·
@@ -101,4 +101,4 @@ theorem Finite.induction_empty_option {P : Type u → Prop} (of_equiv : ∀ {α 
     [Finite α] : P α := by
   cases nonempty_fintype α
   refine Fintype.induction_empty_option ?_ ?_ ?_ α
-  exacts [fun α β _ => of_equiv, h_empty, @h_option]
+  exacts [fun α β _ ↦ of_equiv, h_empty, @h_option]

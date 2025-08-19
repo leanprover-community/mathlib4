@@ -30,13 +30,13 @@ theorem injective_module_of_injective_object
     have : CategoryTheory.Mono (ModuleCat.ofHom f) := (ModuleCat.mono_iff_injective _).mpr hf
     obtain ⟨l, h⟩ := inj.factors (ModuleCat.ofHom g) (ModuleCat.ofHom f)
     obtain rfl := ModuleCat.hom_ext_iff.mp h
-    exact ⟨l.hom, fun _ => rfl⟩
+    exact ⟨l.hom, fun _ ↦ rfl⟩
 
 theorem injective_iff_injective_object :
     Module.Injective R M ↔
     CategoryTheory.Injective (ModuleCat.of R M) :=
-  ⟨fun _ => injective_object_of_injective_module R M,
-   fun _ => injective_module_of_injective_object R M⟩
+  ⟨fun _ ↦ injective_object_of_injective_module R M,
+   fun _ ↦ injective_module_of_injective_object R M⟩
 
 end Module
 

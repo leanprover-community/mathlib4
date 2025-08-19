@@ -76,13 +76,13 @@ theorem volume_iUnion_setOf_liouvilleWith :
   simp only [← setOf_exists, exists_prop]
   refine measure_mono_null setOf_liouvilleWith_subset_aux ?_
   rw [measure_iUnion_null_iff]; intro m; rw [measure_preimage_add_right]; clear m
-  refine (measure_biUnion_null_iff <| to_countable _).2 fun n (hn : 1 ≤ n) => ?_
+  refine (measure_biUnion_null_iff <| to_countable _).2 fun n (hn : 1 ≤ n) ↦ ?_
   generalize hr : (2 + 1 / n : ℝ) = r
   replace hr : 2 < r := by simp [← hr, zero_lt_one.trans_le hn]
   clear hn n
   refine measure_setOf_frequently_eq_zero ?_
   simp only [setOf_exists, ← exists_prop, ← Real.dist_eq, ← mem_ball, setOf_mem_eq]
-  set B : ℤ → ℕ → Set ℝ := fun a b => ball (a / b) (1 / (b : ℝ) ^ r)
+  set B : ℤ → ℕ → Set ℝ := fun a b ↦ ball (a / b) (1 / (b : ℝ) ^ r)
   have hB : ∀ a b, volume (B a b) = ↑((2 : ℝ≥0) / (b : ℝ≥0) ^ r) := fun a b ↦ by
     rw [Real.volume_ball, mul_one_div, ← NNReal.coe_two, ← NNReal.coe_natCast, ← NNReal.coe_rpow,
       ← NNReal.coe_div, ENNReal.ofReal_coe_nnreal]
@@ -107,7 +107,7 @@ theorem ae_not_liouvilleWith : ∀ᵐ x, ∀ p > (2 : ℝ), ¬LiouvilleWith p x 
     volume_iUnion_setOf_liouvilleWith
 
 theorem ae_not_liouville : ∀ᵐ x, ¬Liouville x :=
-  ae_not_liouvilleWith.mono fun _ h₁ h₂ => h₁ 3 (by norm_num) (h₂.liouvilleWith 3)
+  ae_not_liouvilleWith.mono fun _ h₁ h₂ ↦ h₁ 3 (by norm_num) (h₂.liouvilleWith 3)
 
 /-- The set of Liouville numbers has Lebesgue measure zero. -/
 @[simp]

@@ -27,14 +27,14 @@ variable {R : Type*}
 /-- A subring of an ordered ring is an ordered ring. -/
 instance toIsOrderedRing [Ring R] [PartialOrder R] [IsOrderedRing R] (s : Subring R) :
     IsOrderedRing s :=
-  Subtype.coe_injective.isOrderedRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+  Subtype.coe_injective.isOrderedRing Subtype.val rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) fun _ ↦ rfl
 
 /-- A subring of a strict ordered ring is a strict ordered ring. -/
 instance toIsStrictOrderedRing [Ring R] [PartialOrder R] [IsStrictOrderedRing R]
     (s : Subring R) : IsStrictOrderedRing s :=
-  Subtype.coe_injective.isStrictOrderedRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+  Subtype.coe_injective.isStrictOrderedRing Subtype.val rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) fun _ ↦ rfl
 
 /-- The inclusion `S → R` of a subring, as an ordered ring homomorphism. -/
 def orderedSubtype {R : Type*} [Ring R] [PartialOrder R] (s : Subring R) :

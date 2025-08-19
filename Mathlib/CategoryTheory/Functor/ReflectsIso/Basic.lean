@@ -42,7 +42,7 @@ theorem isIso_of_reflects_iso {A B : C} (f : A ⟶ B) (F : C ⥤ D) [IsIso (F.ma
 
 lemma isIso_iff_of_reflects_iso {A B : C} (f : A ⟶ B) (F : C ⥤ D) [F.ReflectsIsomorphisms] :
     IsIso (F.map f) ↔ IsIso f :=
-  ⟨fun _ => isIso_of_reflects_iso f F, fun _ => inferInstance⟩
+  ⟨fun _ ↦ isIso_of_reflects_iso f F, fun _ ↦ inferInstance⟩
 
 lemma Functor.FullyFaithful.reflectsIsomorphisms {F : C ⥤ D} (hF : F.FullyFaithful) :
     F.ReflectsIsomorphisms where
@@ -56,7 +56,7 @@ instance (priority := 100) reflectsIsomorphisms_of_full_and_faithful
 instance reflectsIsomorphisms_comp (F : C ⥤ D) (G : D ⥤ E)
     [F.ReflectsIsomorphisms] [G.ReflectsIsomorphisms] :
     (F ⋙ G).ReflectsIsomorphisms :=
-  ⟨fun f (hf : IsIso (G.map _)) => by
+  ⟨fun f (hf : IsIso (G.map _)) ↦ by
     haveI := isIso_of_reflects_iso (F.map f) G
     exact isIso_of_reflects_iso f F⟩
 

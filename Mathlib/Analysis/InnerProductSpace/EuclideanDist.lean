@@ -60,7 +60,7 @@ theorem closedBall_eq_preimage (x : E) (r : ℝ) :
     closedBall x r = toEuclidean ⁻¹' Metric.closedBall (toEuclidean x) r :=
   rfl
 
-theorem ball_subset_closedBall {x : E} {r : ℝ} : ball x r ⊆ closedBall x r := fun _ (hy : _ < r) =>
+theorem ball_subset_closedBall {x : E} {r : ℝ} : ball x r ⊆ closedBall x r := fun _ (hy : _ < r) ↦
   le_of_lt hy
 
 @[simp] theorem isOpen_ball {x : E} {r : ℝ} : IsOpen (ball x r) :=
@@ -90,14 +90,14 @@ nonrec theorem exists_pos_lt_subset_ball {R : ℝ} {s : Set E} {x : E} (hR : 0 <
   rcases exists_pos_lt_subset_ball hR (toEuclidean.isClosed_image.2 hs) h with ⟨r, hr, hsr⟩
   exact ⟨r, hr, image_subset_iff.1 hsr⟩
 
-theorem nhds_basis_closedBall {x : E} : (𝓝 x).HasBasis (fun r : ℝ => 0 < r) (closedBall x) := by
+theorem nhds_basis_closedBall {x : E} : (𝓝 x).HasBasis (fun r : ℝ ↦ 0 < r) (closedBall x) := by
   rw [toEuclidean.toHomeomorph.nhds_eq_comap x]
   exact Metric.nhds_basis_closedBall.comap _
 
 theorem closedBall_mem_nhds {x : E} {r : ℝ} (hr : 0 < r) : closedBall x r ∈ 𝓝 x :=
   nhds_basis_closedBall.mem_of_mem hr
 
-theorem nhds_basis_ball {x : E} : (𝓝 x).HasBasis (fun r : ℝ => 0 < r) (ball x) := by
+theorem nhds_basis_ball {x : E} : (𝓝 x).HasBasis (fun r : ℝ ↦ 0 < r) (ball x) := by
   rw [toEuclidean.toHomeomorph.nhds_eq_comap x]
   exact Metric.nhds_basis_ball.comap _
 
@@ -110,8 +110,8 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] {G : Type*} [Nor
   [NormedSpace ℝ G] [FiniteDimensional ℝ G] {f g : F → G} {n : ℕ∞}
 
 theorem ContDiff.euclidean_dist (hf : ContDiff ℝ n f) (hg : ContDiff ℝ n g) (h : ∀ x, f x ≠ g x) :
-    ContDiff ℝ n fun x => Euclidean.dist (f x) (g x) := by
+    ContDiff ℝ n fun x ↦ Euclidean.dist (f x) (g x) := by
   simp only [Euclidean.dist]
   apply ContDiff.dist ℝ
   exacts [(toEuclidean (E := G)).contDiff.comp hf,
-    (toEuclidean (E := G)).contDiff.comp hg, fun x => toEuclidean.injective.ne (h x)]
+    (toEuclidean (E := G)).contDiff.comp hg, fun x ↦ toEuclidean.injective.ne (h x)]

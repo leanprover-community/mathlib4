@@ -105,7 +105,7 @@ theorem exists_iterate_derivative_eq_factorial_smul (p : R[X]) (k : ℕ) :
     ∃ gp : R[X], gp.natDegree ≤ p.natDegree - k ∧ derivative^[k] p = k ! • gp := by
   refine ⟨_, (natDegree_sum_le _ _).trans ?_, iterate_derivative_eq_factorial_smul_sum p k⟩
   rw [fold_max_le]
-  refine ⟨Nat.zero_le _, fun i hi => ?_⟩
+  refine ⟨Nat.zero_le _, fun i hi ↦ ?_⟩
   dsimp only [Function.comp]
   exact (natDegree_C_mul_le _ _).trans <| (natDegree_X_pow_le _).trans <|
     (le_natDegree_of_mem_supp _ hi).trans <| natDegree_iterate_derivative _ _
@@ -154,7 +154,7 @@ theorem aeval_iterate_derivative_of_ge (p : R[X]) (q : ℕ) {k : ℕ} (hk : q �
       ∀ r : A, aeval r (derivative^[k] p) = q ! • aeval r gp := by
   obtain ⟨p', p'_le, hp'⟩ := exists_iterate_derivative_eq_factorial_smul p k
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hk
-  refine ⟨((q + k).descFactorial k : R[X]) * p', (natDegree_C_mul_le _ _).trans p'_le, fun r => ?_⟩
+  refine ⟨((q + k).descFactorial k : R[X]) * p', (natDegree_C_mul_le _ _).trans p'_le, fun r ↦ ?_⟩
   simp_rw [hp', nsmul_eq_mul, map_mul, map_natCast, ← mul_assoc, ← Nat.cast_mul,
     Nat.add_descFactorial_eq_ascFactorial, Nat.factorial_mul_ascFactorial]
 
@@ -179,13 +179,13 @@ theorem aeval_sumIDeriv (p : R[X]) (q : ℕ) :
       rw [map_zero, smul_zero, aeval_iterate_derivative_of_lt p q r hp hk]
     | inr hk =>
       obtain ⟨gp, gp_le, h⟩ := aeval_iterate_derivative_of_ge A p q hk
-      exact ⟨gp, gp_le.trans (tsub_le_tsub_left hk _), fun r _ => h r⟩
+      exact ⟨gp, gp_le.trans (tsub_le_tsub_left hk _), fun r _ ↦ h r⟩
   choose c h using h
   choose c_le hc using h
   refine ⟨(range (p.natDegree + 1)).sum c, ?_, ?_⟩
   · refine (natDegree_sum_le _ _).trans ?_
     rw [fold_max_le]
-    exact ⟨Nat.zero_le _, fun i _ => c_le i⟩
+    exact ⟨Nat.zero_le _, fun i _ ↦ c_le i⟩
   intro r ⟨p', hp⟩
   rw [sumIDeriv_apply, map_sum]; simp_rw [hc _ r ⟨_, hp⟩, map_sum, smul_sum]
 
@@ -204,7 +204,7 @@ theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q :
     rw [Polynomial.map_zero] at hp
     replace hp := (mul_eq_zero.mp hp.symm).resolve_left ?_
     · rw [hp, eval_zero, smul_zero]
-    exact fun h => X_sub_C_ne_zero r (pow_eq_zero h)
+    exact fun h ↦ X_sub_C_ne_zero r (pow_eq_zero h)
   let c k := if hk : q ≤ k then (aeval_iterate_derivative_of_ge A p q hk).choose else 0
   have c_le (k) : (c k).natDegree ≤ p.natDegree - k := by
     dsimp only [c]
@@ -217,7 +217,7 @@ theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q :
   refine ⟨∑ x ∈ Ico q (p.natDegree + 1), c x, ?_, ?_⟩
   · refine (natDegree_sum_le _ _).trans ?_
     rw [fold_max_le]
-    exact ⟨Nat.zero_le _, fun i hi => (c_le i).trans (tsub_le_tsub_left (mem_Ico.mp hi).1 _)⟩
+    exact ⟨Nat.zero_le _, fun i hi ↦ (c_le i).trans (tsub_le_tsub_left (mem_Ico.mp hi).1 _)⟩
   intro r p' hp
   have : range (p.natDegree + 1) = range q ∪ Ico q (p.natDegree + 1) := by
     rw [range_eq_Ico, Ico_union_Ico_eq_Ico hq.le]
@@ -238,7 +238,7 @@ theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q :
   rw [sum_union, this, sum_range_succ]
   · congr 2
     · apply sum_eq_zero
-      exact fun x hx => aeval_iterate_derivative_of_lt p _ r hp (mem_range.mp hx)
+      exact fun x hx ↦ aeval_iterate_derivative_of_lt p _ r hp (mem_range.mp hx)
     · rw [← aeval_iterate_derivative_self _ _ _ hp]
     · rw [smul_sum, sum_congr rfl]
       intro k hk

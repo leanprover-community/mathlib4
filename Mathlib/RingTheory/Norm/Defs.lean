@@ -84,7 +84,7 @@ theorem norm_algebraMap_of_basis [Fintype ι] (b : Basis ι R S) (x : R) :
     norm R (algebraMap R S x) = x ^ Fintype.card ι := by
   haveI := Classical.decEq ι
   rw [norm_apply, ← det_toMatrix b, lmul_algebraMap]
-  convert @det_diagonal _ _ _ _ _ fun _ : ι => x
+  convert @det_diagonal _ _ _ _ _ fun _ : ι ↦ x
   · ext (i j); rw [toMatrix_lsmul]
   · rw [Finset.prod_const, Finset.card_univ]
 

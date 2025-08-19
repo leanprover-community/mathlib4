@@ -37,7 +37,7 @@ theorem integral_exp_mul_eval (p : ℂ[X]) (s : ℂ) :
       -(exp (-s) * p.sumIDeriv.eval s) + p.sumIDeriv.eval 0 := by
   rw [← intervalIntegral.integral_const_mul,
     intervalIntegral.integral_eq_sub_of_hasDerivAt
-      (fun x hx => hasDerivAt_cexp_mul_sumIDeriv p s x)
+      (fun x hx ↦ hasDerivAt_cexp_mul_sumIDeriv p s x)
       (ContinuousOn.intervalIntegrable (by fun_prop))]
   simp
 
@@ -64,7 +64,7 @@ private theorem P_le_aux (f : ℕ → ℂ[X]) (s : ℂ) (c : ℝ)
     ∃ c' ≥ 0, ∀ p : ℕ,
       ‖P (f p) s‖ ≤
         Real.exp s.re * (Real.exp ‖s‖ * c' ^ p * ‖s‖) := by
-  refine ⟨|c|, abs_nonneg _, fun p => ?_⟩
+  refine ⟨|c|, abs_nonneg _, fun p ↦ ?_⟩
   rw [P_eq_integral_exp_mul_eval (f p) s, mul_comm s, norm_mul, norm_mul, norm_exp]
   gcongr
   rw [intervalIntegral.integral_of_le zero_le_one, ← mul_one (_ * _)]
@@ -121,7 +121,7 @@ private theorem exp_polynomial_approx_aux (f : ℤ[X]) (s : ℂ) :
     fun_prop
   obtain ⟨c, h⟩ := this.exists_norm_le
   simp_rw [Real.norm_eq_abs] at h
-  refine P_le _ s c (fun p x hx => ?_)
+  refine P_le _ s c (fun p x hx ↦ ?_)
   specialize h (max (x * ‖s‖) 1 * ‖aeval (x * s) f‖) (Set.mem_image_of_mem _ hx)
   refine le_trans ?_ (pow_le_pow_left₀ (abs_nonneg _) h _)
   simp_rw [Polynomial.map_mul, Polynomial.map_pow, map_X, eval_mul, eval_pow, eval_X, norm_mul,

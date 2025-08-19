@@ -118,7 +118,7 @@ def mkOfTerminalΩ₀
   isPullback m _ := isPullback m
   uniq m _ χ₀' χ' hχ' := uniq m χ' ((t.hom_ext χ₀' (t.from _)) ▸ hχ')
 
-instance {c : Classifier C} : ∀ Y : C, Unique (Y ⟶ c.Ω₀) := fun Y =>
+instance {c : Classifier C} : ∀ Y : C, Unique (Y ⟶ c.Ω₀) := fun Y ↦
   { default := c.χ₀ Y,
     uniq f :=
       have : f ≫ c.truth = c.χ₀ Y ≫ c.truth :=
@@ -219,7 +219,7 @@ It also follows that `C` is a balanced category.
 -/
 instance isRegularMonoCategory : IsRegularMonoCategory C where
   regularMonoOfMono :=
-    fun m => ⟨regularOfIsPullbackFstOfRegular (isPullback_χ m).w (isPullback_χ m).isLimit⟩
+    fun m ↦ ⟨regularOfIsPullbackFstOfRegular (isPullback_χ m).w (isPullback_χ m).isLimit⟩
 
 /-- If the source of a faithful functor has a subobject classifier, the functor reflects
   isomorphisms. This holds for any balanced category.

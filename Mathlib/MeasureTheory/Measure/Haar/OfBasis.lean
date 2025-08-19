@@ -44,7 +44,7 @@ variable [AddCommGroup E] [Module ℝ E] [AddCommGroup F] [Module ℝ F]
 
 /-- The closed parallelepiped spanned by a finite family of vectors. -/
 def parallelepiped (v : ι → E) : Set E :=
-  (fun t : ι → ℝ => ∑ i, t i • v i) '' Icc 0 1
+  (fun t : ι → ℝ ↦ ∑ i, t i • v i) '' Icc 0 1
 
 theorem mem_parallelepiped_iff (v : ι → E) (x : E) :
     x ∈ parallelepiped v ↔ ∃ t ∈ Icc (0 : ι → ℝ) 1, x = ∑ i, t i • v i := by
@@ -71,20 +71,20 @@ theorem image_parallelepiped (f : E →ₗ[ℝ] F) (v : ι → E) :
 theorem parallelepiped_comp_equiv (v : ι → E) (e : ι' ≃ ι) :
     parallelepiped (v ∘ e) = parallelepiped v := by
   simp only [parallelepiped]
-  let K : (ι' → ℝ) ≃ (ι → ℝ) := Equiv.piCongrLeft' (fun _a : ι' => ℝ) e
+  let K : (ι' → ℝ) ≃ (ι → ℝ) := Equiv.piCongrLeft' (fun _a : ι' ↦ ℝ) e
   have : Icc (0 : ι → ℝ) 1 = K '' Icc (0 : ι' → ℝ) 1 := by
     rw [← Equiv.preimage_eq_iff_eq_image]
     ext x
     simp only [K, mem_preimage, mem_Icc, Pi.le_def, Pi.zero_apply, Equiv.piCongrLeft'_apply,
       Pi.one_apply]
     refine
-      ⟨fun h => ⟨fun i => ?_, fun i => ?_⟩, fun h =>
-        ⟨fun i => h.1 (e.symm i), fun i => h.2 (e.symm i)⟩⟩
+      ⟨fun h ↦ ⟨fun i ↦ ?_, fun i ↦ ?_⟩, fun h ↦
+        ⟨fun i ↦ h.1 (e.symm i), fun i ↦ h.2 (e.symm i)⟩⟩
     · simpa only [Equiv.symm_apply_apply] using h.1 (e i)
     · simpa only [Equiv.symm_apply_apply] using h.2 (e i)
   rw [this, ← image_comp]
   ext x
-  have := fun z : ι' → ℝ => e.symm.sum_comp fun i => z i • v (e i)
+  have := fun z : ι' → ℝ ↦ e.symm.sum_comp fun i ↦ z i • v (e i)
   simp_rw [Equiv.apply_symm_apply] at this
   simp_rw [Function.comp_apply, mem_image, mem_Icc, K, Equiv.piCongrLeft'_apply, this]
 
@@ -99,7 +99,7 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
     ext i
     simp only [OrthonormalBasis.coe_reindex]
   rw [← B]
-  let F : ℝ → Fin 1 → ℝ := fun t => fun _i => t
+  let F : ℝ → Fin 1 → ℝ := fun t ↦ fun _i ↦ t
   have A : Icc (0 : Fin 1 → ℝ) 1 = F '' Icc (0 : ℝ) 1 := by
     apply Subset.antisymm
     · intro x hx
@@ -107,7 +107,7 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
       ext j
       simp only [F, Subsingleton.elim j 0]
     · rintro x ⟨y, hy, rfl⟩
-      exact ⟨fun _j => hy.1, fun _j => hy.2⟩
+      exact ⟨fun _j ↦ hy.1, fun _j ↦ hy.2⟩
   rcases orthonormalBasis_one_dim (b.reindex e) with (H | H)
   · left
     simp_rw [parallelepiped, H, A, Algebra.id.smul_eq_mul, mul_one]
@@ -124,7 +124,7 @@ theorem parallelepiped_eq_sum_segment (v : ι → E) : parallelepiped v = ∑ i,
     segment_eq_image, smul_zero, zero_add, ← Set.pi_univ_Icc, Set.mem_univ_pi]
   constructor
   · rintro ⟨t, ht, rfl⟩
-    exact ⟨t • v, fun {i} => ⟨t i, ht _, by simp⟩, rfl⟩
+    exact ⟨t • v, fun {i} ↦ ⟨t i, ht _, by simp⟩, rfl⟩
   rintro ⟨g, hg, rfl⟩
   choose t ht hg using @hg
   refine ⟨@t, @ht, ?_⟩
@@ -132,7 +132,7 @@ theorem parallelepiped_eq_sum_segment (v : ι → E) : parallelepiped v = ∑ i,
 
 theorem convex_parallelepiped (v : ι → E) : Convex ℝ (parallelepiped v) := by
   rw [parallelepiped_eq_sum_segment]
-  exact convex_sum _ fun _i _hi => convex_segment _ _
+  exact convex_sum _ fun _i _hi ↦ convex_segment _ _
 
 /-- A `parallelepiped` is the convex hull of its vertices -/
 theorem parallelepiped_eq_convexHull (v : ι → E) :
@@ -141,7 +141,7 @@ theorem parallelepiped_eq_convexHull (v : ι → E) :
 
 /-- The axis aligned parallelepiped over `ι → ℝ` is a cuboid. -/
 theorem parallelepiped_single [DecidableEq ι] (a : ι → ℝ) :
-    (parallelepiped fun i => Pi.single i (a i)) = Set.uIcc 0 a := by
+    (parallelepiped fun i ↦ Pi.single i (a i)) = Set.uIcc 0 a := by
   ext x
   simp_rw [Set.uIcc, mem_parallelepiped_iff, Set.mem_Icc, Pi.le_def, ← forall_and, Pi.inf_apply,
     Pi.sup_apply, ← Pi.single_smul', Pi.one_apply, Pi.zero_apply, ← Pi.smul_apply',
@@ -156,7 +156,7 @@ theorem parallelepiped_single [DecidableEq ι] (a : ι → ℝ) :
     · rw [sup_eq_right.mpr hai, inf_eq_left.mpr hai]
       exact ⟨mul_nonneg ht.1 hai, mul_le_of_le_one_left hai ht.2⟩
   · intro h
-    refine ⟨fun i => x i / a i, fun i => ?_, funext fun i => ?_⟩
+    refine ⟨fun i ↦ x i / a i, fun i ↦ ?_, funext fun i ↦ ?_⟩
     · specialize h i
       rcases le_total (a i) 0 with hai | hai
       · rw [sup_eq_left.mpr hai, inf_eq_right.mpr hai] at h
@@ -182,7 +182,7 @@ namespace Module.Basis
 def parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
   carrier := _root_.parallelepiped b
   isCompact' := IsCompact.image isCompact_Icc
-      (continuous_finset_sum Finset.univ fun (i : ι) (_H : i ∈ Finset.univ) =>
+      (continuous_finset_sum Finset.univ fun (i : ι) (_H : i ∈ Finset.univ) ↦
         (continuous_apply i).smul continuous_const)
   interior_nonempty' := by
     suffices H : Set.Nonempty (interior (b.equivFunL.symm.toHomeomorph '' Icc 0 1)) by

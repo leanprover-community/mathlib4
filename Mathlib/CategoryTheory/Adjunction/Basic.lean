@@ -149,13 +149,13 @@ attribute [reassoc (attr := simp)] left_triangle_components right_triangle_compo
 @[simps -isSimp]
 def homEquiv {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) (X : C) (Y : D) :
     (F.obj X ⟶ Y) ≃ (X ⟶ G.obj Y) where
-  toFun := fun f => adj.unit.app X ≫ G.map f
-  invFun := fun g => F.map g ≫ adj.counit.app Y
-  left_inv := fun f => by
+  toFun := fun f ↦ adj.unit.app X ≫ G.map f
+  invFun := fun g ↦ F.map g ≫ adj.counit.app Y
+  left_inv := fun f ↦ by
     dsimp
     rw [F.map_comp, assoc, ← Functor.comp_map, adj.counit.naturality, ← assoc]
     simp
-  right_inv := fun g => by
+  right_inv := fun g ↦ by
     simp only [Functor.comp_obj, Functor.map_comp]
     rw [← assoc, ← Functor.comp_map, ← adj.unit.naturality]
     simp
@@ -269,11 +269,11 @@ theorem unit_naturality {X Y : C} (f : X ⟶ Y) :
 
 lemma unit_comp_map_eq_iff {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B) :
     adj.unit.app A ≫ G.map f = g ↔ f = F.map g ≫ adj.counit.app B :=
-  ⟨fun h => by simp [← h], fun h => by simp [h]⟩
+  ⟨fun h ↦ by simp [← h], fun h ↦ by simp [h]⟩
 
 lemma eq_unit_comp_map_iff {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B) :
     g = adj.unit.app A ≫ G.map f ↔ F.map g ≫ adj.counit.app B = f :=
-  ⟨fun h => by simp [h], fun h => by simp [← h]⟩
+  ⟨fun h ↦ by simp [h], fun h ↦ by simp [← h]⟩
 
 theorem homEquiv_apply_eq {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B) :
     adj.homEquiv A B f = g ↔ f = (adj.homEquiv A B).symm g :=
@@ -411,18 +411,18 @@ lemma mk'_homEquiv (adj : CoreHomEquivUnitCounit F G) : (mk' adj).homEquiv = adj
 def mkOfHomEquiv (adj : CoreHomEquiv F G) : F ⊣ G :=
   mk' {
     unit :=
-      { app := fun X => (adj.homEquiv X (F.obj X)) (𝟙 (F.obj X))
+      { app := fun X ↦ (adj.homEquiv X (F.obj X)) (𝟙 (F.obj X))
         naturality := by
           intros
           simp [← adj.homEquiv_naturality_left, ← adj.homEquiv_naturality_right] }
     counit :=
-      { app := fun Y => (adj.homEquiv _ _).invFun (𝟙 (G.obj Y))
+      { app := fun Y ↦ (adj.homEquiv _ _).invFun (𝟙 (G.obj Y))
         naturality := by
           intros
           simp [← adj.homEquiv_naturality_left_symm, ← adj.homEquiv_naturality_right_symm] }
     homEquiv := adj.homEquiv
-    homEquiv_unit := fun {X Y f} => by simp [← adj.homEquiv_naturality_right]
-    homEquiv_counit := fun {X Y f} => by simp [← adj.homEquiv_naturality_left_symm] }
+    homEquiv_unit := fun {X Y f} ↦ by simp [← adj.homEquiv_naturality_right]
+    homEquiv_counit := fun {X Y f} ↦ by simp [← adj.homEquiv_naturality_left_symm] }
 
 @[simp]
 lemma mkOfHomEquiv_homEquiv (adj : CoreHomEquiv F G) :
@@ -475,12 +475,12 @@ def equivHomsetRightOfNatIso {G G' : D ⥤ C} (iso : G ≅ G') {X : C} {Y : D} :
 /-- Transport an adjunction along a natural isomorphism on the left. -/
 def ofNatIsoLeft {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G) : G ⊣ H :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Y => (equivHomsetLeftOfNatIso iso.symm).trans (adj.homEquiv X Y) }
+    { homEquiv := fun X Y ↦ (equivHomsetLeftOfNatIso iso.symm).trans (adj.homEquiv X Y) }
 
 /-- Transport an adjunction along a natural isomorphism on the right. -/
 def ofNatIsoRight {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H) : F ⊣ H :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Y => (adj.homEquiv X Y).trans (equivHomsetRightOfNatIso iso) }
+    { homEquiv := fun X Y ↦ (adj.homEquiv X Y).trans (equivHomsetRightOfNatIso iso) }
 
 /-- The isomorpism which an adjunction `F ⊣ G` induces on `G ⋙ yoneda`. This states that
 `Adjunction.homEquiv` is natural in both arguments. -/
@@ -488,7 +488,7 @@ def ofNatIsoRight {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H) 
 def compYonedaIso {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₁} D]
     {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) :
     G ⋙ yoneda ≅ yoneda ⋙ (whiskeringLeft _ _ _).obj F.op :=
-  NatIso.ofComponents fun X => NatIso.ofComponents fun Y => (adj.homEquiv Y.unop X).toIso.symm
+  NatIso.ofComponents fun X ↦ NatIso.ofComponents fun Y ↦ (adj.homEquiv Y.unop X).toIso.symm
 
 /-- The isomorpism which an adjunction `F ⊣ G` induces on `F.op ⋙ coyoneda`. This states that
 `Adjunction.homEquiv` is natural in both arguments. -/
@@ -496,7 +496,7 @@ def compYonedaIso {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.
 def compCoyonedaIso {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₁} D]
     {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) :
     F.op ⋙ coyoneda ≅ coyoneda ⋙ (whiskeringLeft _ _ _).obj G :=
-  NatIso.ofComponents fun X => NatIso.ofComponents fun Y => (adj.homEquiv X.unop Y).toIso
+  NatIso.ofComponents fun X ↦ NatIso.ofComponents fun Y ↦ (adj.homEquiv X.unop Y).toIso
 
 section
 
@@ -547,7 +547,7 @@ Dual to `rightAdjointOfEquiv`. -/
 def leftAdjointOfEquiv (he : ∀ X Y Y' g h, e X Y' (h ≫ g) = e X Y h ≫ G.map g) : C ⥤ D where
   obj := F_obj
   map {X} {X'} f := (e X (F_obj X')).symm (f ≫ e X' (F_obj X') (𝟙 _))
-  map_comp := fun f f' => by
+  map_comp := fun f f' ↦ by
     rw [Equiv.symm_apply_eq, he, Equiv.apply_symm_apply]
     conv =>
       rhs
@@ -562,7 +562,7 @@ to `adjunctionOfRightEquiv`. -/
 def adjunctionOfEquivLeft : leftAdjointOfEquiv e he ⊣ G :=
   mkOfHomEquiv
     { homEquiv := e
-      homEquiv_naturality_left_symm := fun {X'} {X} {Y} f g => by
+      homEquiv_naturality_left_symm := fun {X'} {X} {Y} f g ↦ by
         have {X : C} {Y Y' : D} (f : X ⟶ G.obj Y) (g : Y ⟶ Y') :
             (e X Y').symm (f ≫ G.map g) = (e X Y).symm f ≫ g := by
           rw [Equiv.symm_apply_eq, he]; simp
@@ -588,7 +588,7 @@ Dual to `leftAdjointOfEquiv`. -/
 def rightAdjointOfEquiv (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X Y g) : D ⥤ C where
   obj := G_obj
   map {Y} {Y'} g := (e (G_obj Y) Y') ((e (G_obj Y) Y).symm (𝟙 _) ≫ g)
-  map_comp := fun {Y} {Y'} {Y''} g g' => by
+  map_comp := fun {Y} {Y'} {Y''} g g' ↦ by
     rw [← Equiv.eq_symm_apply, ← he'' e he, Equiv.symm_apply_apply]
     conv =>
       rhs
@@ -619,8 +619,8 @@ noncomputable def toEquivalence (adj : F ⊣ G) [∀ X, IsIso (adj.unit.app X)]
     [∀ Y, IsIso (adj.counit.app Y)] : C ≌ D where
   functor := F
   inverse := G
-  unitIso := NatIso.ofComponents fun X => asIso (adj.unit.app X)
-  counitIso := NatIso.ofComponents fun Y => asIso (adj.counit.app Y)
+  unitIso := NatIso.ofComponents fun X ↦ asIso (adj.unit.app X)
+  counitIso := NatIso.ofComponents fun Y ↦ asIso (adj.counit.app Y)
 
 end Adjunction
 

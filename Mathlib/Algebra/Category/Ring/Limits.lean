@@ -91,8 +91,8 @@ def limitCone : Cone F where
 -/
 def limitConeIsLimit : IsLimit (limitCone F) := by
   refine IsLimit.ofFaithful (forget SemiRingCat.{u}) (Types.Small.limitConeIsLimit.{v, u} _)
-    (fun s => ofHom { toFun := _, map_one' := ?_, map_mul' := ?_, map_zero' := ?_, map_add' := ?_})
-    (fun s => rfl)
+    (fun s ↦ ofHom { toFun := _, map_one' := ?_, map_mul' := ?_, map_zero' := ?_, map_add' := ?_})
+    (fun s ↦ rfl)
   · simp only [Functor.mapCone_π_app, forget_map, map_one]
     rfl
   · intro x y
@@ -139,7 +139,7 @@ def forget₂AddCommMonPreservesLimitsAux :
 instance forget₂AddCommMon_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget₂ SemiRingCat AddCommMonCat.{u}) where
   preservesLimitsOfShape {_ _} :=
-    { preservesLimit := fun {F} =>
+    { preservesLimit := fun {F} ↦
         preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v, u} F)
           (forget₂AddCommMonPreservesLimitsAux F) }
 
@@ -160,7 +160,7 @@ def forget₂MonPreservesLimitsAux :
 instance forget₂Mon_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget₂ SemiRingCat MonCat.{u}) where
   preservesLimitsOfShape {_ _} :=
-    { preservesLimit := fun {F} =>
+    { preservesLimit := fun {F} ↦
         preservesLimit_of_preserves_limit_cone (limitConeIsLimit F)
           (forget₂MonPreservesLimitsAux.{v, u} F) }
 
@@ -172,7 +172,7 @@ instance forget₂Mon_preservesLimits : PreservesLimits (forget₂ SemiRingCat M
 instance forget_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget SemiRingCat.{u}) where
   preservesLimitsOfShape {_ _} :=
-    { preservesLimit := fun {F} =>
+    { preservesLimit := fun {F} ↦
         preservesLimit_of_preserves_limit_cone (limitConeIsLimit F)
           (Types.Small.limitConeIsLimit.{v, u} (F ⋙ forget _)) }
 
@@ -214,17 +214,17 @@ instance :
   let c : Cone F :=
     { pt := CommSemiRingCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
       π :=
-        { app := fun j => CommSemiRingCat.ofHom <| SemiRingCat.limitπRingHom.{v, u} (J := J)
+        { app := fun j ↦ CommSemiRingCat.ofHom <| SemiRingCat.limitπRingHom.{v, u} (J := J)
             (F ⋙ forget₂ CommSemiRingCat.{u} SemiRingCat.{u}) j
           naturality := fun _ _ f ↦ hom_ext <| congrArg SemiRingCat.Hom.hom <|
             (SemiRingCat.HasLimits.limitCone.{v, u}
             (F ⋙ forget₂ CommSemiRingCat.{u} SemiRingCat.{u})).π.naturality f } }
-  createsLimitOfReflectsIso fun c' t =>
+  createsLimitOfReflectsIso fun c' t ↦
     { liftedCone := c
       validLift := IsLimit.uniqueUpToIso (SemiRingCat.HasLimits.limitConeIsLimit.{v, u} _) t
       makesLimit := by
         refine IsLimit.ofFaithful (forget₂ CommSemiRingCat.{u} SemiRingCat.{u})
-          (SemiRingCat.HasLimits.limitConeIsLimit.{v, u} _) (fun s => _) fun s => rfl }
+          (SemiRingCat.HasLimits.limitConeIsLimit.{v, u} _) (fun s ↦ _) fun s ↦ rfl }
 
 /-- A choice of limit cone for a functor into `CommSemiRingCat`.
 (Generally, you'll just want to use `limit F`.)
@@ -257,7 +257,7 @@ instance hasLimits : HasLimits CommSemiRingCat.{u} :=
 instance forget₂SemiRing_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget₂ CommSemiRingCat SemiRingCat.{u}) where
   preservesLimitsOfShape {_ _} :=
-    { preservesLimit := fun {F} =>
+    { preservesLimit := fun {F} ↦
         preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v, u} F)
           (SemiRingCat.HasLimits.limitConeIsLimit (F ⋙ forget₂ _ SemiRingCat)) }
 
@@ -271,7 +271,7 @@ types could have been computed instead as limits in the category of types.)
 instance forget_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget CommSemiRingCat.{u}) where
   preservesLimitsOfShape {_ _} :=
-    { preservesLimit := fun {F} =>
+    { preservesLimit := fun {F} ↦
         preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v, u} F)
           (Types.Small.limitConeIsLimit.{v, u} _) }
 
@@ -317,15 +317,15 @@ instance : CreatesLimit F (forget₂ RingCat.{u} SemiRingCat.{u}) :=
   let c : Cone F :=
   { pt := RingCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
     π :=
-      { app := fun x => ofHom <| SemiRingCat.limitπRingHom.{v, u} (F ⋙ forget₂ _ SemiRingCat) x
-        naturality := fun _ _ f => hom_ext <| RingHom.coe_inj
+      { app := fun x ↦ ofHom <| SemiRingCat.limitπRingHom.{v, u} (F ⋙ forget₂ _ SemiRingCat) x
+        naturality := fun _ _ f ↦ hom_ext <| RingHom.coe_inj
           ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) } }
-  createsLimitOfReflectsIso fun c' t =>
+  createsLimitOfReflectsIso fun c' t ↦
     { liftedCone := c
       validLift := by apply IsLimit.uniqueUpToIso (SemiRingCat.HasLimits.limitConeIsLimit _) t
       makesLimit :=
         IsLimit.ofFaithful (forget₂ RingCat SemiRingCat.{u})
-          (by apply SemiRingCat.HasLimits.limitConeIsLimit _) (fun _ => _) fun _ => rfl }
+          (by apply SemiRingCat.HasLimits.limitConeIsLimit _) (fun _ ↦ _) fun _ ↦ rfl }
 
 /-- A choice of limit cone for a functor into `RingCat`.
 (Generally, you'll just want to use `limit F`.)
@@ -361,7 +361,7 @@ instance hasLimits : HasLimits RingCat.{u} :=
 instance forget₂SemiRing_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget₂ RingCat SemiRingCat.{u}) where
   preservesLimitsOfShape {_ _} :=
-      { preservesLimit := fun {F} =>
+      { preservesLimit := fun {F} ↦
           preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v, u} F)
             (SemiRingCat.HasLimits.limitConeIsLimit.{v, u} _) }
 
@@ -381,7 +381,7 @@ def forget₂AddCommGroupPreservesLimitsAux :
 instance forget₂AddCommGroup_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{v, v} (forget₂ RingCat.{u} AddCommGrp.{u}) where
   preservesLimitsOfShape {_ _} :=
-    { preservesLimit := fun {F} =>
+    { preservesLimit := fun {F} ↦
         preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v, u} F)
           (forget₂AddCommGroupPreservesLimitsAux F) }
 
@@ -395,7 +395,7 @@ types could have been computed instead as limits in the category of types.)
 instance forget_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{v, v} (forget RingCat.{u}) where
   preservesLimitsOfShape {_ _} :=
-    { preservesLimit := fun {F} =>
+    { preservesLimit := fun {F} ↦
         preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v, u} F)
           (Types.Small.limitConeIsLimit.{v, u} _) }
 
@@ -443,20 +443,20 @@ instance : CreatesLimit F (forget₂ CommRingCat.{u} RingCat.{u}) :=
     let c : Cone F :=
     { pt := CommRingCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
       π :=
-        { app := fun x => ofHom <| SemiRingCat.limitπRingHom.{v, u} F' x
+        { app := fun x ↦ ofHom <| SemiRingCat.limitπRingHom.{v, u} F' x
           naturality :=
-            fun _ _ f => hom_ext <| RingHom.coe_inj
+            fun _ _ f ↦ hom_ext <| RingHom.coe_inj
               ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) } }
-    createsLimitOfReflectsIso fun _ t =>
+    createsLimitOfReflectsIso fun _ t ↦
     { liftedCone := c
       validLift := IsLimit.uniqueUpToIso (RingCat.limitConeIsLimit.{v, u} _) t
       makesLimit :=
         IsLimit.ofFaithful (forget₂ _ RingCat.{u})
           (RingCat.limitConeIsLimit.{v, u} (F ⋙ forget₂ CommRingCat.{u} RingCat.{u}))
-          (fun s : Cone F => CommRingCat.ofHom <|
+          (fun s : Cone F ↦ CommRingCat.ofHom <|
               (RingCat.limitConeIsLimit.{v, u}
                 (F ⋙ forget₂ CommRingCat.{u} RingCat.{u})).lift
-                ((forget₂ _ RingCat.{u}).mapCone s) |>.hom) fun _ => rfl }
+                ((forget₂ _ RingCat.{u}).mapCone s) |>.hom) fun _ ↦ rfl }
 
 /-- A choice of limit cone for a functor into `CommRingCat`.
 (Generally, you'll just want to use `limit F`.)
@@ -491,7 +491,7 @@ instance hasLimits : HasLimits CommRingCat.{u} :=
 instance forget₂Ring_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget₂ CommRingCat RingCat.{u}) where
   preservesLimitsOfShape {_ _} :=
-    { preservesLimit := fun {F} =>
+    { preservesLimit := fun {F} ↦
         preservesLimit_of_preserves_limit_cone.{w, v} (limitConeIsLimit.{v, u} F)
           (RingCat.limitConeIsLimit.{v, u} _) }
 
@@ -513,7 +513,7 @@ in the category of commutative semirings.)
 instance forget₂CommSemiRing_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget₂ CommRingCat CommSemiRingCat.{u}) where
   preservesLimitsOfShape {_ _} :=
-    { preservesLimit := fun {F} =>
+    { preservesLimit := fun {F} ↦
         preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v, u} F)
           (forget₂CommSemiRingPreservesLimitsAux.{v, u} F) }
 
@@ -527,7 +527,7 @@ instance forget₂CommSemiRing_preservesLimits :
 instance forget_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget CommRingCat.{u}) where
   preservesLimitsOfShape {_ _} :=
-    { preservesLimit := fun {F} =>
+    { preservesLimit := fun {F} ↦
         preservesLimit_of_preserves_limit_cone.{w, v} (limitConeIsLimit.{v, u} F)
           (Types.Small.limitConeIsLimit.{v, u} _) }
 

@@ -102,7 +102,7 @@ def SubmonoidPresheaf.toLocalizationPresheaf : F ⟶ G.localizationPresheaf wher
   naturality {_ _} i := CommRingCat.hom_ext <| (IsLocalization.map_comp (G.map i)).symm
 
 instance epi_toLocalizationPresheaf : Epi G.toLocalizationPresheaf :=
-  @NatTrans.epi_of_epi_app _ _ _ _ _ _ G.toLocalizationPresheaf fun U => Localization.epi' (G.obj U)
+  @NatTrans.epi_of_epi_app _ _ _ _ _ _ G.toLocalizationPresheaf fun U ↦ Localization.epi' (G.obj U)
 
 variable (F)
 
@@ -121,11 +121,11 @@ noncomputable def submonoidPresheafOfStalk (S : ∀ x : X, Submonoid (F.stalk x)
     exact hs ⟨_, i.unop.le x.2⟩
 
 noncomputable instance : Inhabited F.SubmonoidPresheaf :=
-  ⟨F.submonoidPresheafOfStalk fun _ => ⊥⟩
+  ⟨F.submonoidPresheafOfStalk fun _ ↦ ⊥⟩
 
 /-- The localization of a presheaf of `CommRing`s at locally non-zero-divisor sections. -/
 noncomputable def totalQuotientPresheaf : X.Presheaf CommRingCat.{w} :=
-  (F.submonoidPresheafOfStalk fun x => (F.stalk x)⁰).localizationPresheaf
+  (F.submonoidPresheafOfStalk fun x ↦ (F.stalk x)⁰).localizationPresheaf
 
 /-- The map into the presheaf of total quotient rings -/
 noncomputable def toTotalQuotientPresheaf : F ⟶ F.totalQuotientPresheaf :=
@@ -197,8 +197,8 @@ instance : Pow (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) ℕ where
 
 instance : CommRing (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) :=
   Function.Injective.commRing _ ConcreteCategory.hom_injective
-    rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
+    rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 -- TODO upgrade the result to TopCommRing?
 /-- The (bundled) commutative ring of continuous functions from a topological space
@@ -234,15 +234,15 @@ from `X : TopCat` to `R : TopCommRingCat` form a commutative ring, functorial in
 `R`. -/
 def commRingYoneda : TopCommRingCat.{u} ⥤ TopCat.{u}ᵒᵖ ⥤ CommRingCat.{u} where
   obj R :=
-    { obj := fun X => continuousFunctions X R
-      map := fun {_ _} f => continuousFunctions.pullback f R
-      map_id := fun X => by
+    { obj := fun X ↦ continuousFunctions X R
+      map := fun {_ _} f ↦ continuousFunctions.pullback f R
+      map_id := fun X ↦ by
         ext
         rfl
-      map_comp := fun {_ _ _} _ _ => rfl }
+      map_comp := fun {_ _ _} _ _ ↦ rfl }
   map {_ _} φ :=
-    { app := fun X => continuousFunctions.map X φ
-      naturality := fun _ _ _ => rfl }
+    { app := fun X ↦ continuousFunctions.map X φ
+      naturality := fun _ _ _ ↦ rfl }
   map_id X := by
     ext
     rfl

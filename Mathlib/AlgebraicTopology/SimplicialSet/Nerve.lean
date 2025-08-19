@@ -41,7 +41,7 @@ instance {C : Type*} [Category C] {Δ : SimplexCategoryᵒᵖ} : Category ((nerv
 /-- Given a functor `C ⥤ D`, we obtain a morphism `nerve C ⟶ nerve D` of simplicial sets. -/
 @[simps]
 def nerveMap {C D : Type u} [Category.{v} C] [Category.{v} D] (F : C ⥤ D) : nerve C ⟶ nerve D :=
-  { app := fun _ => (F.mapComposableArrows _).obj }
+  { app := fun _ ↦ (F.mapComposableArrows _).obj }
 
 /-- The nerve of a category, as a functor `Cat ⥤ SSet` -/
 @[simps]

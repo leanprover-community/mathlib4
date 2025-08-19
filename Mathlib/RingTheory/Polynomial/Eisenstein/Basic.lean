@@ -61,7 +61,7 @@ variable [CommSemiring R] {𝓟 : Ideal R} {f f' : R[X]}
 
 theorem map (hf : f.IsWeaklyEisensteinAt 𝓟) {A : Type v} [CommSemiring A] (φ : R →+* A) :
     (f.map φ).IsWeaklyEisensteinAt (𝓟.map φ) := by
-  refine (isWeaklyEisensteinAt_iff _ _).2 fun hn => ?_
+  refine (isWeaklyEisensteinAt_iff _ _).2 fun hn ↦ ?_
   rw [coeff_map]
   exact mem_map_of_mem _ (hf.mem (lt_of_lt_of_le hn natDegree_map_le))
 
@@ -114,7 +114,7 @@ theorem exists_mem_adjoin_mul_eq_pow_natDegree {x : S} (hx : aeval x f = 0) (hmo
     ⟨-1 * ∑ i : Fin (f.map (algebraMap R S)).natDegree, (algebraMap R S) (φ i.1) * x ^ i.1, ?_, rfl⟩
   exact
     Subalgebra.mul_mem _ (Subalgebra.neg_mem _ (Subalgebra.one_mem _))
-      (Subalgebra.sum_mem _ fun i _ =>
+      (Subalgebra.sum_mem _ fun i _ ↦
         Subalgebra.mul_mem _ (Subalgebra.algebraMap_mem _ _)
           (Subalgebra.pow_mem _ (subset_adjoin (Set.mem_singleton x)) _))
 
@@ -145,7 +145,7 @@ theorem pow_natDegree_le_of_root_of_monic_mem (hf : f.IsWeaklyEisensteinAt 𝓟)
     Finset.sum_insert Finset.notMem_range_self, Finset.sum_range, hmo.coeff_natDegree, one_mul] at
     *
   rw [eq_neg_of_add_eq_zero_left hroot, Ideal.neg_mem_iff]
-  exact Submodule.sum_mem _ fun i _ => mul_mem_right _ _ (hf.mem (Fin.is_lt i))
+  exact Submodule.sum_mem _ fun i _ ↦ mul_mem_right _ _ (hf.mem (Fin.is_lt i))
 
 theorem pow_natDegree_le_of_aeval_zero_of_monic_mem_map (hf : f.IsWeaklyEisensteinAt 𝓟)
     {x : S} (hx : aeval x f = 0) (hmo : f.Monic) :
@@ -168,7 +168,7 @@ variable {A : Type*} [CommRing R] [CommRing A]
 
 theorem scaleRoots.isWeaklyEisensteinAt (p : R[X]) {x : R} {P : Ideal R} (hP : x ∈ P) :
     (scaleRoots p x).IsWeaklyEisensteinAt P := by
-  refine ⟨fun i => ?_⟩
+  refine ⟨fun i ↦ ?_⟩
   rw [coeff_scaleRoots]
   rw [natDegree_scaleRoots, ← tsub_pos_iff_lt] at i
   exact Ideal.mul_mem_left _ _ (Ideal.pow_mem_of_mem P hP _ i)
@@ -211,7 +211,7 @@ theorem _root_.Polynomial.Monic.isEisensteinAt_of_mem_of_notMem (hf : f.Monic) (
     (hmem : ∀ {n}, n < f.natDegree → f.coeff n ∈ 𝓟) (hnotMem : f.coeff 0 ∉ 𝓟 ^ 2) :
     f.IsEisensteinAt 𝓟 :=
   { leading := Polynomial.Monic.leadingCoeff_notMem hf h
-    mem := fun hn => hmem hn
+    mem := fun hn ↦ hmem hn
     notMem := hnotMem }
 
 @[deprecated (since := "2025-05-23")]
@@ -219,7 +219,7 @@ alias _root_.Polynomial.Monic.isEisensteinAt_of_mem_of_not_mem :=
   _root_.Polynomial.Monic.isEisensteinAt_of_mem_of_notMem
 
 theorem isWeaklyEisensteinAt (hf : f.IsEisensteinAt 𝓟) : IsWeaklyEisensteinAt f 𝓟 :=
-  ⟨fun h => hf.mem h⟩
+  ⟨fun h ↦ hf.mem h⟩
 
 theorem coeff_mem (hf : f.IsEisensteinAt 𝓟) {n : ℕ} (hn : n ≠ f.natDegree) : f.coeff n ∈ 𝓟 := by
   rcases ne_iff_lt_or_gt.1 hn with h₁ | h₂
@@ -237,7 +237,7 @@ variable [CommRing R] [IsDomain R] {𝓟 : Ideal R} {f : R[X]}
 then `f` is irreducible. -/
 theorem irreducible (hf : f.IsEisensteinAt 𝓟) (hprime : 𝓟.IsPrime) (hu : f.IsPrimitive)
     (hfd0 : 0 < f.natDegree) : Irreducible f :=
-  irreducible_of_eisenstein_criterion hprime hf.leading (fun _ hn => hf.mem (coe_lt_degree.1 hn))
+  irreducible_of_eisenstein_criterion hprime hf.leading (fun _ hn ↦ hf.mem (coe_lt_degree.1 hn))
     (natDegree_pos_iff_degree_pos.1 hfd0) hf.notMem hu
 
 end IsDomain

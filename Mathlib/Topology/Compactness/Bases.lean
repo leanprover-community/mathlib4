@@ -22,13 +22,13 @@ lemma eq_finite_iUnion_of_isTopologicalBasis_of_isCompact_open (b : ι → Set X
   have : b ∘ f' = f := funext hf'
   subst this
   obtain ⟨t, ht⟩ :=
-    hUc.elim_finite_subcover (b ∘ f') (fun i => hb.isOpen (Set.mem_range_self _)) (by rw [e])
+    hUc.elim_finite_subcover (b ∘ f') (fun i ↦ hb.isOpen (Set.mem_range_self _)) (by rw [e])
   classical
   refine ⟨t.image f', Set.toFinite _, le_antisymm ?_ ?_⟩
   · refine Set.Subset.trans ht ?_
     simp only [Set.iUnion_subset_iff]
     intro i hi
-    simpa using subset_iUnion₂ (s := fun i _ => b (f' i)) i hi
+    simpa using subset_iUnion₂ (s := fun i _ ↦ b (f' i)) i hi
   · apply Set.iUnion₂_subset
     rintro i hi
     obtain ⟨j, -, rfl⟩ := Finset.mem_image.mp hi
@@ -55,5 +55,5 @@ theorem isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis (b : ι → Se
   · exact fun ⟨h₁, h₂⟩ ↦ eq_finite_iUnion_of_isTopologicalBasis_of_isCompact_open _ hb U h₁ h₂
   · rintro ⟨s, hs, rfl⟩
     constructor
-    · exact hs.isCompact_biUnion fun i _ => hb' i
-    · exact isOpen_biUnion fun i _ => hb.isOpen (Set.mem_range_self _)
+    · exact hs.isCompact_biUnion fun i _ ↦ hb' i
+    · exact isOpen_biUnion fun i _ ↦ hb.isOpen (Set.mem_range_self _)

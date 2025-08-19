@@ -153,7 +153,7 @@ lemma map'_map' (f : α →* β) (g : β →* γ) (x) : map' g (map' f x) = map'
 
 @[simp]
 lemma map'_comp (f : α →* β) (g : β →* γ) : map' (g.comp f) = (map' g).comp (map' f) :=
-  MonoidWithZeroHom.ext fun x => (map'_map' f g x).symm
+  MonoidWithZeroHom.ext fun x ↦ (map'_map' f g x).symm
 
 lemma map'_injective_iff {f : α →* β} : Injective (map' f) ↔ Injective f := by
   simp [Injective, WithZero.forall]

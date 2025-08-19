@@ -152,15 +152,15 @@ instance [Inhabited C] : Inhabited (Algebra T) :=
 @[simps! unit counit]
 def adj : T.free ⊣ T.forget :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Y =>
-        { toFun := fun f => T.η.app X ≫ f.f
-          invFun := fun f =>
+    { homEquiv := fun X Y ↦
+        { toFun := fun f ↦ T.η.app X ≫ f.f
+          invFun := fun f ↦
             { f := T.map f ≫ Y.a
               h := by simp [← Y.assoc, ← T.μ.naturality_assoc] }
-          left_inv := fun f => by
+          left_inv := fun f ↦ by
             ext
             simp
-          right_inv := fun f => by
+          right_inv := fun f ↦ by
             dsimp only [forget_obj]
             rw [← T.η.naturality_assoc, Y.unit]
             apply Category.comp_id } }
@@ -176,7 +176,7 @@ theorem algebra_iso_of_iso {A B : Algebra T} (f : A ⟶ B) [IsIso f.f] : IsIso f
 
 instance forget_reflects_iso : T.forget.ReflectsIsomorphisms where
   -- Porting note: Is this the right approach to introduce instances?
-  reflects {_ _} f := fun [IsIso f.f] => algebra_iso_of_iso T f
+  reflects {_ _} f := fun [IsIso f.f] ↦ algebra_iso_of_iso T f
 
 instance forget_faithful : T.forget.Faithful where
 
@@ -212,14 +212,14 @@ The identity monad morphism induces the identity functor from the category of al
 -- Porting note: `semireducible -> default`
 @[simps (rhsMd := .default)]
 def algebraFunctorOfMonadHomId {T₁ : Monad C} : algebraFunctorOfMonadHom (𝟙 T₁) ≅ 𝟭 _ :=
-  NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)
+  NatIso.ofComponents fun X ↦ Algebra.isoMk (Iso.refl _)
 
 /-- A composition of monad morphisms gives the composition of corresponding functors.
 -/
 @[simps (rhsMd := .default)]
 def algebraFunctorOfMonadHomComp {T₁ T₂ T₃ : Monad C} (f : T₁ ⟶ T₂) (g : T₂ ⟶ T₃) :
     algebraFunctorOfMonadHom (f ≫ g) ≅ algebraFunctorOfMonadHom g ⋙ algebraFunctorOfMonadHom f :=
-  NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)
+  NatIso.ofComponents fun X ↦ Algebra.isoMk (Iso.refl _)
 
 /-- If `f` and `g` are two equal morphisms of monads, then the functors of algebras induced by them
 are isomorphic.
@@ -229,7 +229,7 @@ lemmas about.
 @[simps (rhsMd := .default)]
 def algebraFunctorOfMonadHomEq {T₁ T₂ : Monad C} {f g : T₁ ⟶ T₂} (h : f = g) :
     algebraFunctorOfMonadHom f ≅ algebraFunctorOfMonadHom g :=
-  NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)
+  NatIso.ofComponents fun X ↦ Algebra.isoMk (Iso.refl _)
 
 /-- Isomorphic monads give equivalent categories of algebras. Furthermore, they are equivalent as
 categories over `C`, that is, we have `algebraEquivOfIsoMonads h ⋙ forget = forget`.
@@ -376,15 +376,15 @@ for a comonad.
 @[simps! unit counit]
 def adj : G.forget ⊣ G.cofree :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Y =>
-        { toFun := fun f =>
+    { homEquiv := fun X Y ↦
+        { toFun := fun f ↦
             { f := X.a ≫ G.map f
               h := by simp [← Coalgebra.coassoc_assoc] }
-          invFun := fun g => g.f ≫ G.ε.app Y
-          left_inv := fun f => by
+          invFun := fun g ↦ g.f ≫ G.ε.app Y
+          left_inv := fun f ↦ by
             dsimp
             rw [Category.assoc, G.ε.naturality, Functor.id_map, X.counit_assoc]
-          right_inv := fun g => by
+          right_inv := fun g ↦ by
             ext1; dsimp
             rw [Functor.map_comp, g.h_assoc, cofree_obj_a, Comonad.right_counit]
             apply comp_id } }
@@ -400,7 +400,7 @@ theorem coalgebra_iso_of_iso {A B : Coalgebra G} (f : A ⟶ B) [IsIso f.f] : IsI
 
 instance forget_reflects_iso : G.forget.ReflectsIsomorphisms where
   -- Porting note: Is this the right approach to introduce instances?
-  reflects {_ _} f := fun [IsIso f.f] => coalgebra_iso_of_iso G f
+  reflects {_ _} f := fun [IsIso f.f] ↦ coalgebra_iso_of_iso G f
 
 instance forget_faithful : (forget G).Faithful where
 

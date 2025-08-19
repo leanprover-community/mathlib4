@@ -101,7 +101,7 @@ theorem exists_one_le_pow_mul_dist {Z N R : Type*} [PseudoMetricSpace R] {d : N 
   -- A useful inequality to keep at hand
   have me0 : 0 < max (1 / ε) M := lt_max_iff.mpr (Or.inl (one_div_pos.mpr e0))
   -- The maximum between `1 / ε` and `M` works
-  refine ⟨max (1 / ε) M, me0, fun z a => ?_⟩
+  refine ⟨max (1 / ε) M, me0, fun z a ↦ ?_⟩
   -- First, let's deal with the easy case in which we are far away from `α`
   by_cases dm1 : 1 ≤ dist α (j z a) * max (1 / ε) M
   · exact one_le_mul_of_one_le_of_one_le (d0 a) dm1
@@ -125,8 +125,8 @@ theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : 
   -- `fR` is `f` viewed as a polynomial with `ℝ` coefficients.
   set fR : ℝ[X] := map (algebraMap ℤ ℝ) f
   -- `fR` is non-zero, since `f` is non-zero.
-  obtain fR0 : fR ≠ 0 := fun fR0 =>
-    (map_injective (algebraMap ℤ ℝ) fun _ _ A => Int.cast_inj.mp A).ne f0
+  obtain fR0 : fR ≠ 0 := fun fR0 ↦
+    (map_injective (algebraMap ℤ ℝ) fun _ _ A ↦ Int.cast_inj.mp A).ne f0
       (fR0.trans (Polynomial.map_zero _).symm)
   -- reformulating assumption `fa`: `α` is a root of `fR`.
   have ar : α ∈ (fR.roots.toFinset : Set ℝ) :=
@@ -143,17 +143,17 @@ theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : 
       (continuous_abs.comp fR.derivative.continuous_aeval).continuousOn
   -- Use the key lemma `exists_one_le_pow_mul_dist`: we are left to show that ...
   refine
-    @exists_one_le_pow_mul_dist ℤ ℕ ℝ _ _ _ (fun y => fR.eval y) α ζ |fR.derivative.eval xm| ?_ z0
-      (fun y hy => ?_) fun z a hq => ?_
+    @exists_one_le_pow_mul_dist ℤ ℕ ℝ _ _ _ (fun y ↦ fR.eval y) α ζ |fR.derivative.eval xm| ?_ z0
+      (fun y hy ↦ ?_) fun z a hq ↦ ?_
   -- 1: the denominators are positive -- essentially by definition;
-  · exact fun a => one_le_pow₀ ((le_add_iff_nonneg_left 1).mpr a.cast_nonneg)
+  · exact fun a ↦ one_le_pow₀ ((le_add_iff_nonneg_left 1).mpr a.cast_nonneg)
   -- 2: the polynomial `fR` is Lipschitz at `α` -- as its derivative continuous;
   · rw [mul_comm]
     rw [Real.closedBall_eq_Icc] at hy
     -- apply the Mean Value Theorem: the bound on the derivative comes from differentiability.
     refine
-      Convex.norm_image_sub_le_of_norm_deriv_le (fun _ _ => fR.differentiableAt)
-        (fun y h => by rw [fR.deriv]; exact hM h) (convex_Icc _ _) hy (mem_Icc_iff_abs_le.mp ?_)
+      Convex.norm_image_sub_le_of_norm_deriv_le (fun _ _ ↦ fR.differentiableAt)
+        (fun y h ↦ by rw [fR.deriv]; exact hM h) (convex_Icc _ _) hy (mem_Icc_iff_abs_le.mp ?_)
     exact @mem_closedBall_self ℝ _ α ζ (le_of_lt z0)
   -- 3: the weird inequality of Liouville type with powers of the denominators.
   · change 1 ≤ (a + 1 : ℝ) ^ f.natDegree * |eval α fR - eval ((z : ℝ) / (a + 1)) fR|
@@ -161,7 +161,7 @@ theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : 
     rw [show (a + 1 : ℝ) = ((a + 1 : ℕ) : ℤ) by norm_cast] at hq ⊢
     -- key observation: the right-hand side of the inequality is an *integer*.  Therefore,
     -- if its absolute value is not at least one, then it vanishes.  Proceed by contradiction
-    refine one_le_pow_mul_abs_eval_div (Int.natCast_succ_pos a) fun hy => ?_
+    refine one_le_pow_mul_abs_eval_div (Int.natCast_succ_pos a) fun hy ↦ ?_
     -- As the evaluation of the polynomial vanishes, we found a root of `fR` that is rational.
     -- We know that `α` is the only root of `fR` in our interval, and `α` is irrational:
     -- follow your nose.

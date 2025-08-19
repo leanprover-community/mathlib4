@@ -27,15 +27,15 @@ variable {R : Type*} [Semiring R]
 
 /-- The congruence on `HomologicalComplex V c` given by the existence of a homotopy.
 -/
-def homotopic : HomRel (HomologicalComplex V c) := fun _ _ f g => Nonempty (Homotopy f g)
+def homotopic : HomRel (HomologicalComplex V c) := fun _ _ f g ↦ Nonempty (Homotopy f g)
 
 instance homotopy_congruence : Congruence (homotopic V c) where
   equivalence :=
-    { refl := fun C => ⟨Homotopy.refl C⟩
-      symm := fun ⟨w⟩ => ⟨w.symm⟩
-      trans := fun ⟨w₁⟩ ⟨w₂⟩ => ⟨w₁.trans w₂⟩ }
-  compLeft := fun _ _ _ ⟨i⟩ => ⟨i.compLeft _⟩
-  compRight := fun _ ⟨i⟩ => ⟨i.compRight _⟩
+    { refl := fun C ↦ ⟨Homotopy.refl C⟩
+      symm := fun ⟨w⟩ ↦ ⟨w.symm⟩
+      trans := fun ⟨w₁⟩ ⟨w₂⟩ ↦ ⟨w₁.trans w₂⟩ }
+  compLeft := fun _ _ _ ⟨i⟩ ↦ ⟨i.compLeft _⟩
+  compRight := fun _ ⟨i⟩ ↦ ⟨i.compRight _⟩
 
 /-- `HomotopyCategory V c` is the category of chain complexes of shape `c` in `V`,
 with chain maps identified when they are homotopic. -/
@@ -69,7 +69,7 @@ instance : Preadditive (CategoryTheory.Quotient (homotopic V c)) :=
 instance : Functor.Additive (Quotient.functor (homotopic V c)) where
 
 instance [Linear R V] : Linear R (HomotopyCategory V c) :=
-  Quotient.linear R (homotopic V c) (fun _ _ _ _ _ h => ⟨h.some.smul _⟩)
+  Quotient.linear R (homotopic V c) (fun _ _ _ _ _ h ↦ ⟨h.some.smul _⟩)
 
 instance [Linear R V] : Functor.Linear R (HomotopyCategory.quotient V c) :=
   Quotient.linear_functor _ _ _
@@ -208,7 +208,7 @@ variable {V} {W : Type*} [Category W] [Preadditive W]
 def Functor.mapHomotopyCategory (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) :
     HomotopyCategory V c ⥤ HomotopyCategory W c :=
   CategoryTheory.Quotient.lift _ (F.mapHomologicalComplex c ⋙ HomotopyCategory.quotient W c)
-    (fun _ _ _ _ ⟨h⟩ => HomotopyCategory.eq_of_homotopy _ _ (F.mapHomotopy h))
+    (fun _ _ _ _ ⟨h⟩ ↦ HomotopyCategory.eq_of_homotopy _ _ (F.mapHomotopy h))
 
 @[simp]
 lemma Functor.mapHomotopyCategory_map (F : V ⥤ W) [F.Additive] {c : ComplexShape ι}

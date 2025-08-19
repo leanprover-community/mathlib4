@@ -109,7 +109,7 @@ theorem comp_attachBound_mem_closure (A : Subalgebra ℝ C(X, ℝ)) (f : A)
 theorem abs_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f : A) :
     |(f : C(X, ℝ))| ∈ A.topologicalClosure := by
   let f' := attachBound (f : C(X, ℝ))
-  let abs : C(Set.Icc (-‖f‖) ‖f‖, ℝ) := { toFun := fun x : Set.Icc (-‖f‖) ‖f‖ => |(x : ℝ)| }
+  let abs : C(Set.Icc (-‖f‖) ‖f‖, ℝ) := { toFun := fun x : Set.Icc (-‖f‖) ‖f‖ ↦ |(x : ℝ)| }
   change abs.comp f' ∈ A.topologicalClosure
   apply comp_attachBound_mem_closure
 
@@ -166,13 +166,13 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   rintro f -
   refine
     Filter.Frequently.mem_closure
-      ((Filter.HasBasis.frequently_iff Metric.nhds_basis_ball).mpr fun ε pos => ?_)
+      ((Filter.HasBasis.frequently_iff Metric.nhds_basis_ball).mpr fun ε pos ↦ ?_)
   simp only [Metric.mem_ball]
   -- It will be helpful to assume `X` is nonempty later,
   -- so we get that out of the way here.
   by_cases nX : Nonempty X
   swap
-  · exact ⟨nA.some, (dist_lt_iff pos).mpr fun x => False.elim (nX ⟨x⟩), nA.choose_spec⟩
+  · exact ⟨nA.some, (dist_lt_iff pos).mpr fun x ↦ False.elim (nX ⟨x⟩), nA.choose_spec⟩
   /-
     The strategy now is to pick a family of continuous functions `g x y` in `A`
     with the property that `g x y x = f x` and `g x y y = f y`
@@ -185,7 +185,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   choose g hg w₁ w₂ using sep f
   -- For each `x y`, we define `U x y` to be `{z | f z - ε < g x y z}`,
   -- and observe this is a neighbourhood of `y`.
-  let U : X → X → Set X := fun x y => {z | f z - ε < g x y z}
+  let U : X → X → Set X := fun x y ↦ {z | f z - ε < g x y z}
   have U_nhds_y : ∀ x y, U x y ∈ 𝓝 y := by
     intro x y
     refine IsOpen.mem_nhds ?_ ?_
@@ -200,16 +200,16 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   -- and still equal to `f x` at `x`.
   -- Since `X` is compact, for every `x` there is some finset `ys t`
   -- so the union of the `U x y` for `y ∈ ys x` still covers everything.
-  let ys : X → Finset X := fun x => (CompactSpace.elim_nhds_subcover (U x) (U_nhds_y x)).choose
-  let ys_w : ∀ x, ⋃ y ∈ ys x, U x y = ⊤ := fun x =>
+  let ys : X → Finset X := fun x ↦ (CompactSpace.elim_nhds_subcover (U x) (U_nhds_y x)).choose
+  let ys_w : ∀ x, ⋃ y ∈ ys x, U x y = ⊤ := fun x ↦
     (CompactSpace.elim_nhds_subcover (U x) (U_nhds_y x)).choose_spec
-  have ys_nonempty : ∀ x, (ys x).Nonempty := fun x =>
+  have ys_nonempty : ∀ x, (ys x).Nonempty := fun x ↦
     Set.nonempty_of_union_eq_top_of_nonempty _ _ nX (ys_w x)
   -- Thus for each `x` we have the desired `h x : A` so `f z - ε < h x z` everywhere
   -- and `h x x = f x`.
-  let h : X → L := fun x =>
-    ⟨(ys x).sup' (ys_nonempty x) fun y => (g x y : C(X, ℝ)),
-      Finset.sup'_mem _ sup_mem _ _ _ fun y _ => hg x y⟩
+  let h : X → L := fun x ↦
+    ⟨(ys x).sup' (ys_nonempty x) fun y ↦ (g x y : C(X, ℝ)),
+      Finset.sup'_mem _ sup_mem _ _ _ fun y _ ↦ hg x y⟩
   have lt_h : ∀ x z, f z - ε < (h x : X → ℝ) z := by
     intro x z
     obtain ⟨y, ym, zm⟩ := Set.exists_set_mem_of_union_eq_top _ _ (ys_w x) z
@@ -218,7 +218,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
     exact ⟨y, ym, zm⟩
   have h_eq : ∀ x, (h x : X → ℝ) x = f x := by intro x; simp [h, w₁]
   -- For each `x`, we define `W x` to be `{z | h x z < f z + ε}`,
-  let W : X → Set X := fun x => {z | (h x : X → ℝ) z < f z + ε}
+  let W : X → Set X := fun x ↦ {z | (h x : X → ℝ) z < f z + ε}
   -- This is still a neighbourhood of `x`.
   have W_nhds : ∀ x, W x ∈ 𝓝 x := by
     intro x
@@ -235,8 +235,8 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   -- Finally our candidate function is the infimum over `x ∈ xs` of the `h x`.
   -- This function is then globally less than `f z + ε`.
   let k : (L : Type _) :=
-    ⟨xs.inf' xs_nonempty fun x => (h x : C(X, ℝ)),
-      Finset.inf'_mem _ inf_mem _ _ _ fun x _ => (h x).2⟩
+    ⟨xs.inf' xs_nonempty fun x ↦ (h x : C(X, ℝ)),
+      Finset.inf'_mem _ inf_mem _ _ _ fun x _ ↦ (h x).2⟩
   refine ⟨k.1, ?_, k.2⟩
   -- We just need to verify the bound, which we do pointwise.
   rw [dist_lt_iff pos]
@@ -268,8 +268,8 @@ theorem subalgebra_topologicalClosure_eq_top_of_separatesPoints (A : Subalgebra 
   have n : Set.Nonempty (L : Set C(X, ℝ)) := ⟨(1 : C(X, ℝ)), A.le_topologicalClosure A.one_mem⟩
   convert
     sublattice_closure_eq_top (L : Set C(X, ℝ)) n
-      (fun f fm g gm => inf_mem_closed_subalgebra L A.isClosed_topologicalClosure ⟨f, fm⟩ ⟨g, gm⟩)
-      (fun f fm g gm => sup_mem_closed_subalgebra L A.isClosed_topologicalClosure ⟨f, fm⟩ ⟨g, gm⟩)
+      (fun f fm g gm ↦ inf_mem_closed_subalgebra L A.isClosed_topologicalClosure ⟨f, fm⟩ ⟨g, gm⟩)
+      (fun f fm g gm ↦ sup_mem_closed_subalgebra L A.isClosed_topologicalClosure ⟨f, fm⟩ ⟨g, gm⟩)
       (Subalgebra.SeparatesPoints.strongly
         (Subalgebra.separatesPoints_monotone A.le_topologicalClosure w))
   simp [L]
@@ -462,7 +462,7 @@ theorem ContinuousMap.induction_on {𝕜 : Type*} [RCLike 𝕜] {s : Set 𝕜}
     (add : ∀ f g, p f → p g → p (f + g)) (mul : ∀ f g, p f → p g → p (f * g))
     (closure : (∀ f ∈ (polynomialFunctions s).starClosure, p f) → ∀ f, p f) (f : C(s, 𝕜)) :
     p f := by
-  refine closure (fun f hf => ?_) f
+  refine closure (fun f hf ↦ ?_) f
   rw [polynomialFunctions.starClosure_eq_adjoin_X] at hf
   induction hf using Algebra.adjoin_induction with
   | mem f hf =>
@@ -495,7 +495,7 @@ theorem ContinuousMap.algHom_ext_map_X {A : Type*} [Semiring A]
     {φ ψ : C(s, ℝ) →ₐ[ℝ] A} (hφ : Continuous φ) (hψ : Continuous ψ)
     (h : φ (toContinuousMapOnAlgHom s X) = ψ (toContinuousMapOnAlgHom s X)) : φ = ψ := by
   suffices (⊤ : Subalgebra ℝ C(s, ℝ)) ≤ AlgHom.equalizer φ ψ from
-    AlgHom.ext fun x => this (by trivial)
+    AlgHom.ext fun x ↦ this (by trivial)
   rw [← polynomialFunctions.topologicalClosure s]
   exact Subalgebra.topologicalClosure_minimal (polynomialFunctions s)
     (polynomialFunctions.le_equalizer s φ ψ h) (isClosed_eq hφ hψ)
@@ -508,7 +508,7 @@ theorem ContinuousMap.starAlgHom_ext_map_X {𝕜 A : Type*} [RCLike 𝕜] [Ring 
     {φ ψ : C(s, 𝕜) →⋆ₐ[𝕜] A} (hφ : Continuous φ) (hψ : Continuous ψ)
     (h : φ (toContinuousMapOnAlgHom s X) = ψ (toContinuousMapOnAlgHom s X)) : φ = ψ := by
   suffices (⊤ : StarSubalgebra 𝕜 C(s, 𝕜)) ≤ StarAlgHom.equalizer φ ψ from
-    StarAlgHom.ext fun x => this mem_top
+    StarAlgHom.ext fun x ↦ this mem_top
   rw [← polynomialFunctions.starClosure_topologicalClosure s]
   exact StarSubalgebra.topologicalClosure_minimal
     (polynomialFunctions.starClosure_le_equalizer s φ ψ h) (isClosed_eq hφ hψ)
@@ -635,7 +635,7 @@ lemma ContinuousMapZero.induction_on {s : Set 𝕜} [Zero s] (h0 : ((0 : s) : �
     (smul : ∀ (r : 𝕜) f, p f → p (r • f))
     (closure : (∀ f ∈ adjoin 𝕜 {(.id h0 : C(s, 𝕜)₀)}, p f) → ∀ f, p f) (f : C(s, 𝕜)₀) :
     p f := by
-  refine closure (fun f hf => ?_) f
+  refine closure (fun f hf ↦ ?_) f
   induction hf using NonUnitalAlgebra.adjoin_induction with
   | mem f hf =>
     simp only [Set.mem_union, Set.mem_singleton_iff, Set.mem_star] at hf

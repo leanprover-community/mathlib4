@@ -31,7 +31,7 @@ namespace Linear
 /-- The scalar multiplications on morphisms in `Quotient R`. -/
 def smul (hr : ∀ (a : R) ⦃X Y : C⦄ (f₁ f₂ : X ⟶ Y) (_ : r f₁ f₂), r (a • f₁) (a • f₂))
     (X Y : Quotient r) : SMul R (X ⟶ Y) where
-  smul a := Quot.lift (fun g => Quot.mk _ (a • g)) (fun f₁ f₂ h₁₂ => by
+  smul a := Quot.lift (fun g ↦ Quot.mk _ (a • g)) (fun f₁ f₂ h₁₂ ↦ by
     dsimp
     simp only [compClosure_eq_self] at h₁₂
     apply Quot.sound
@@ -50,26 +50,26 @@ def module' (hr : ∀ (a : R) ⦃X Y : C⦄ (f₁ f₂ : X ⟶ Y) (_ : r f₁ f�
     [Preadditive (Quotient r)] [(functor r).Additive] (X Y : C) :
     Module R ((functor r).obj X ⟶ (functor r).obj Y) :=
   letI smul := smul r hr ((functor r).obj X) ((functor r).obj Y)
-  { smul_zero := fun a => by
+  { smul_zero := fun a ↦ by
       rw [← (functor r).map_zero X Y, smul_eq, smul_zero]
-    zero_smul := fun f => by
+    zero_smul := fun f ↦ by
       obtain ⟨f, rfl⟩ := (functor r).map_surjective f
       dsimp [smul]
       rw [zero_smul, Functor.map_zero]
-    one_smul := fun f => by
+    one_smul := fun f ↦ by
       obtain ⟨f, rfl⟩ := (functor r).map_surjective f
       dsimp [smul]
       rw [one_smul]
-    mul_smul := fun a b f => by
+    mul_smul := fun a b f ↦ by
       obtain ⟨f, rfl⟩ := (functor r).map_surjective f
       dsimp [smul]
       rw [mul_smul]
-    smul_add := fun a f g => by
+    smul_add := fun a f g ↦ by
       obtain ⟨f, rfl⟩ := (functor r).map_surjective f
       obtain ⟨g, rfl⟩ := (functor r).map_surjective g
       dsimp [smul]
       rw [← (functor r).map_add, smul_eq, ← (functor r).map_add, smul_add]
-    add_smul := fun a b f => by
+    add_smul := fun a b f ↦ by
       obtain ⟨f, rfl⟩ := (functor r).map_surjective f
       dsimp [smul]
       rw [add_smul, Functor.map_add] }

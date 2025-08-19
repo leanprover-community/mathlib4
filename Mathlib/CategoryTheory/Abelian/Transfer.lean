@@ -52,7 +52,7 @@ variable (G : D ⥤ C) [Functor.PreservesZeroMorphisms G]
 
 /-- No point making this an instance, as it requires `i`. -/
 theorem hasKernels [PreservesFiniteLimits G] (i : F ⋙ G ≅ 𝟭 C) : HasKernels C :=
-  { has_limit := fun f => by
+  { has_limit := fun f ↦ by
       have := NatIso.naturality_1 i f
       simp? at this says
         simp only [Functor.id_obj, Functor.comp_obj, Functor.comp_map, Functor.id_map] at this
@@ -62,7 +62,7 @@ theorem hasKernels [PreservesFiniteLimits G] (i : F ⋙ G ≅ 𝟭 C) : HasKerne
 
 /-- No point making this an instance, as it requires `i` and `adj`. -/
 theorem hasCokernels (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F) : HasCokernels C :=
-  { has_colimit := fun f => by
+  { has_colimit := fun f ↦ by
       have : PreservesColimits G := adj.leftAdjoint_preservesColimits
       have := NatIso.naturality_1 i f
       simp? at this says
@@ -135,7 +135,7 @@ instance hasLimitsOfShape (J : Type*) [Category J]
   Adjunction.hasLimitsOfShape_of_equivalence (inverse C)
 
 instance hasFiniteLimits [HasFiniteLimits C] :
-    HasFiniteLimits.{w} (ShrinkHoms C) := ⟨fun _ => inferInstance⟩
+    HasFiniteLimits.{w} (ShrinkHoms C) := ⟨fun _ ↦ inferInstance⟩
 
 end Preadditive
 
@@ -172,7 +172,7 @@ instance hasLimitsOfShape (J : Type*) [Category J]
   Adjunction.hasLimitsOfShape_of_equivalence equiv.inverse
 
 instance hasFiniteLimits [HasFiniteLimits C] :
-    HasFiniteLimits (AsSmall.{w} C) := ⟨fun _ => inferInstance⟩
+    HasFiniteLimits (AsSmall.{w} C) := ⟨fun _ ↦ inferInstance⟩
 
 end Preadditive
 

@@ -42,7 +42,7 @@ def kroneckerTMulLinearEquiv :
     Matrix l m M ⊗[R] Matrix n p N ≃ₗ[S] Matrix (l × n) (m × p) (M ⊗[R] N) :=
   .ofLinear
     (AlgebraTensorModule.lift <| kroneckerTMulBilinear R S)
-    (Matrix.liftLinear R fun ii jj =>
+    (Matrix.liftLinear R fun ii jj ↦
       AlgebraTensorModule.map (singleLinearMap S ii.1 jj.1) (singleLinearMap R ii.2 jj.2))
     (by
       ext : 4
@@ -163,7 +163,7 @@ theorem right_inv (M : Matrix n n A) : (toFunAlgHom n R A) (invFun n R A M) = M 
   simp only [invFun, map_sum, toFunAlgHom_apply]
   convert Finset.sum_product (β := Matrix n n A) ..
   conv_lhs => rw [matrix_eq_sum_single M]
-  refine Finset.sum_congr rfl fun i _ => Finset.sum_congr rfl fun j _ => Matrix.ext fun a b => ?_
+  refine Finset.sum_congr rfl fun i _ ↦ Finset.sum_congr rfl fun j _ ↦ Matrix.ext fun a b ↦ ?_
   dsimp [single]
   split_ifs <;> aesop
 

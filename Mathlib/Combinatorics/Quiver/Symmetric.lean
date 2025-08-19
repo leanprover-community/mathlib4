@@ -94,7 +94,7 @@ instance _root_.Prefunctor.mapReverseId :
 end MapReverse
 
 instance : HasReverse (Symmetrify V) :=
-  ⟨fun e => e.swap⟩
+  ⟨fun e ↦ e.swap⟩
 
 instance :
     HasInvolutiveReverse
@@ -203,7 +203,7 @@ def _root_.Prefunctor.symmetrify (φ : U ⥤q V) : Symmetrify U ⥤q Symmetrify 
 
 instance _root_.Prefunctor.symmetrify_mapReverse (φ : U ⥤q V) :
     Prefunctor.MapReverse φ.symmetrify :=
-  ⟨fun e => by cases e <;> rfl⟩
+  ⟨fun e ↦ by cases e <;> rfl⟩
 
 end Symmetrify
 

@@ -12,52 +12,52 @@ import Mathlib.Order.BoundedOrder.Basic
 variable {α : Type*}
 
 instance : ∀ [LE α], LE (Multiplicative α) :=
-  fun {inst} => inst
+  fun {inst} ↦ inst
 
 instance : ∀ [LE α], LE (Additive α) :=
-  fun {inst} => inst
+  fun {inst} ↦ inst
 
 instance : ∀ [LT α], LT (Multiplicative α) :=
-  fun {inst} => inst
+  fun {inst} ↦ inst
 
 instance : ∀ [LT α], LT (Additive α) :=
-  fun {inst} => inst
+  fun {inst} ↦ inst
 
 instance Multiplicative.preorder : ∀ [Preorder α], Preorder (Multiplicative α) :=
-  fun {inst} => inst
+  fun {inst} ↦ inst
 
 instance Additive.preorder : ∀ [Preorder α], Preorder (Additive α) :=
-  fun {inst} => inst
+  fun {inst} ↦ inst
 
 instance Multiplicative.partialOrder : ∀ [PartialOrder α], PartialOrder (Multiplicative α) :=
-  fun {inst} => inst
+  fun {inst} ↦ inst
 
 instance Additive.partialOrder : ∀ [PartialOrder α], PartialOrder (Additive α) :=
-  fun {inst} => inst
+  fun {inst} ↦ inst
 
 instance Multiplicative.linearOrder : ∀ [LinearOrder α], LinearOrder (Multiplicative α) :=
-  fun {inst} => inst
+  fun {inst} ↦ inst
 
 instance Additive.linearOrder : ∀ [LinearOrder α], LinearOrder (Additive α) :=
-  fun {inst} => inst
+  fun {inst} ↦ inst
 
 instance Multiplicative.orderBot [LE α] : ∀ [OrderBot α], OrderBot (Multiplicative α) :=
-  fun {inst} => inst
+  fun {inst} ↦ inst
 
 instance Additive.orderBot [LE α] : ∀ [OrderBot α], OrderBot (Additive α) :=
-  fun {inst} => inst
+  fun {inst} ↦ inst
 
 instance Multiplicative.orderTop [LE α] : ∀ [OrderTop α], OrderTop (Multiplicative α) :=
-  fun {inst} => inst
+  fun {inst} ↦ inst
 
 instance Additive.orderTop [LE α] : ∀ [OrderTop α], OrderTop (Additive α) :=
-  fun {inst} => inst
+  fun {inst} ↦ inst
 
 instance Multiplicative.boundedOrder [LE α] : ∀ [BoundedOrder α], BoundedOrder (Multiplicative α) :=
-  fun {inst} => inst
+  fun {inst} ↦ inst
 
 instance Additive.boundedOrder [LE α] : ∀ [BoundedOrder α], BoundedOrder (Additive α) :=
-  fun {inst} => inst
+  fun {inst} ↦ inst
 
 instance Multiplicative.existsMulOfLe [Add α] [LE α] [ExistsAddOfLE α] :
     ExistsMulOfLE (Multiplicative α) :=

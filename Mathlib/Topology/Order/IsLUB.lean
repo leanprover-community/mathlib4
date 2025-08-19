@@ -58,8 +58,8 @@ theorem IsGLB.nhdsWithin_neBot {a : α} {s : Set α} (ha : IsGLB s a) (hs : s.No
 
 theorem isLUB_of_mem_nhds {s : Set α} {a : α} {f : Filter α} (hsa : a ∈ upperBounds s) (hsf : s ∈ f)
     [NeBot (f ⊓ 𝓝 a)] : IsLUB s a :=
-  ⟨hsa, fun b hb =>
-    not_lt.1 fun hba =>
+  ⟨hsa, fun b hb ↦
+    not_lt.1 fun hba ↦
       have : s ∩ { a | b < a } ∈ f ⊓ 𝓝 a := inter_mem_inf hsf (IsOpen.mem_nhds (isOpen_lt' _) hba)
       let ⟨_x, ⟨hxs, hxb⟩⟩ := Filter.nonempty_of_mem this
       have : b < b := lt_of_lt_of_le hxb <| hb hxs
@@ -86,7 +86,7 @@ theorem IsLUB.mem_upperBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [Or
   replace ha := ha.inter_Ici_of_mem hx
   haveI := ha.nhdsWithin_neBot ⟨x, hx, le_rfl⟩
   refine ge_of_tendsto (hb.mono_left (nhdsWithin_mono a (inter_subset_left (t := Ici x)))) ?_
-  exact mem_of_superset self_mem_nhdsWithin fun y hy => hf hx hy.1 hy.2
+  exact mem_of_superset self_mem_nhdsWithin fun y hy ↦ hf hx hy.1 hy.2
 
 -- For a version of this theorem in which the convergence considered on the domain `α` is as `x : α`
 -- tends to infinity, rather than tending to a point `x` in `α`, see `isLUB_of_tendsto_atTop`
@@ -94,8 +94,8 @@ theorem IsLUB.isLUB_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedT
     {s : Set α} {a : α} {b : γ} (hf : MonotoneOn f s) (ha : IsLUB s a) (hs : s.Nonempty)
     (hb : Tendsto f (𝓝[s] a) (𝓝 b)) : IsLUB (f '' s) b :=
   haveI := ha.nhdsWithin_neBot hs
-  ⟨ha.mem_upperBounds_of_tendsto hf hb, fun _b' hb' =>
-    le_of_tendsto hb (mem_of_superset self_mem_nhdsWithin fun _ hx => hb' <| mem_image_of_mem _ hx)⟩
+  ⟨ha.mem_upperBounds_of_tendsto hf hb, fun _b' hb' ↦
+    le_of_tendsto hb (mem_of_superset self_mem_nhdsWithin fun _ hx ↦ hb' <| mem_image_of_mem _ hx)⟩
 
 theorem IsGLB.mem_lowerBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ]
     {f : α → γ} {s : Set α} {a : α} {b : γ} (hf : MonotoneOn f s) (ha : IsGLB s a)
@@ -173,10 +173,10 @@ theorem IsLUB.exists_seq_strictMono_tendsto_of_notMem {t : Set α} {x : α}
   obtain ⟨v, hvx, hvt⟩ := exists_seq_forall_of_frequently (htx.frequently_mem ht)
   replace hvx := hvx.mono_right nhdsWithin_le_nhds
   have hvx' : ∀ {n}, v n < x := (htx.1 (hvt _)).lt_of_ne (ne_of_mem_of_not_mem (hvt _) notMem)
-  have : ∀ k, ∀ᶠ l in atTop, v k < v l := fun k => hvx.eventually (lt_mem_nhds hvx')
-  choose N hN hvN using fun k => ((eventually_gt_atTop k).and (this k)).exists
-  refine ⟨fun k => v (N^[k] 0), strictMono_nat_of_lt_succ fun _ => ?_, fun _ => hvx',
-    hvx.comp (strictMono_nat_of_lt_succ fun _ => ?_).tendsto_atTop, fun _ => hvt _⟩
+  have : ∀ k, ∀ᶠ l in atTop, v k < v l := fun k ↦ hvx.eventually (lt_mem_nhds hvx')
+  choose N hN hvN using fun k ↦ ((eventually_gt_atTop k).and (this k)).exists
+  refine ⟨fun k ↦ v (N^[k] 0), strictMono_nat_of_lt_succ fun _ ↦ ?_, fun _ ↦ hvx',
+    hvx.comp (strictMono_nat_of_lt_succ fun _ ↦ ?_).tendsto_atTop, fun _ ↦ hvt _⟩
   · rw [iterate_succ_apply']; exact hvN _
   · rw [iterate_succ_apply']; exact hN _
 
@@ -188,14 +188,14 @@ theorem IsLUB.exists_seq_monotone_tendsto {t : Set α} {x : α} [IsCountablyGene
     (htx : IsLUB t x) (ht : t.Nonempty) :
     ∃ u : ℕ → α, Monotone u ∧ (∀ n, u n ≤ x) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ n, u n ∈ t := by
   by_cases h : x ∈ t
-  · exact ⟨fun _ => x, monotone_const, fun n => le_rfl, tendsto_const_nhds, fun _ => h⟩
+  · exact ⟨fun _ ↦ x, monotone_const, fun n ↦ le_rfl, tendsto_const_nhds, fun _ ↦ h⟩
   · rcases htx.exists_seq_strictMono_tendsto_of_notMem h ht with ⟨u, hu⟩
-    exact ⟨u, hu.1.monotone, fun n => (hu.2.1 n).le, hu.2.2⟩
+    exact ⟨u, hu.1.monotone, fun n ↦ (hu.2.1 n).le, hu.2.2⟩
 
 theorem exists_seq_strictMono_tendsto' {α : Type*} [LinearOrder α] [TopologicalSpace α]
     [DenselyOrdered α] [OrderTopology α] [FirstCountableTopology α] {x y : α} (hy : y < x) :
     ∃ u : ℕ → α, StrictMono u ∧ (∀ n, u n ∈ Ioo y x) ∧ Tendsto u atTop (𝓝 x) := by
-  have hx : x ∉ Ioo y x := fun h => (lt_irrefl x h.2).elim
+  have hx : x ∉ Ioo y x := fun h ↦ (lt_irrefl x h.2).elim
   have ht : Set.Nonempty (Ioo y x) := nonempty_Ioo.2 hy
   rcases (isLUB_Ioo hy).exists_seq_strictMono_tendsto_of_notMem hx ht with ⟨u, hu⟩
   exact ⟨u, hu.1, hu.2.2.symm⟩
@@ -204,7 +204,7 @@ theorem exists_seq_strictMono_tendsto [DenselyOrdered α] [NoMinOrder α] [First
     (x : α) : ∃ u : ℕ → α, StrictMono u ∧ (∀ n, u n < x) ∧ Tendsto u atTop (𝓝 x) := by
   obtain ⟨y, hy⟩ : ∃ y, y < x := exists_lt x
   rcases exists_seq_strictMono_tendsto' hy with ⟨u, hu_mono, hu_mem, hux⟩
-  exact ⟨u, hu_mono, fun n => (hu_mem n).2, hux⟩
+  exact ⟨u, hu_mono, fun n ↦ (hu_mem n).2, hux⟩
 
 theorem exists_seq_strictMono_tendsto_nhdsWithin [DenselyOrdered α] [NoMinOrder α]
     [FirstCountableTopology α] (x : α) :
@@ -291,8 +291,8 @@ theorem exists_seq_strictAnti_strictMono_tendsto [DenselyOrdered α] [FirstCount
   rcases exists_seq_strictAnti_tendsto' h with ⟨u, hu_anti, hu_mem, hux⟩
   rcases exists_seq_strictMono_tendsto' (hu_mem 0).2 with ⟨v, hv_mono, hv_mem, hvy⟩
   exact
-    ⟨u, v, hu_anti, hv_mono, hu_mem, fun l => ⟨(hu_mem 0).1.trans (hv_mem l).1, (hv_mem l).2⟩,
-      fun k l => (hu_anti.antitone (zero_le k)).trans_lt (hv_mem l).1, hux, hvy⟩
+    ⟨u, v, hu_anti, hv_mono, hu_mem, fun l ↦ ⟨(hu_mem 0).1.trans (hv_mem l).1, (hv_mem l).2⟩,
+      fun k l ↦ (hu_anti.antitone (zero_le k)).trans_lt (hv_mem l).1, hux, hvy⟩
 
 theorem exists_seq_tendsto_sInf {α : Type*} [ConditionallyCompleteLinearOrder α]
     [TopologicalSpace α] [OrderTopology α] [FirstCountableTopology α] {S : Set α} (hS : S.Nonempty)

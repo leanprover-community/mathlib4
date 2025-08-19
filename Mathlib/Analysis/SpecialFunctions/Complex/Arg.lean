@@ -64,7 +64,7 @@ lemma norm_mul_sin_arg (x : ℂ) : ‖x‖ * Real.sin (arg x) = x.im := by
   simpa [-norm_mul_cos_add_sin_mul_I] using congr_arg im (norm_mul_cos_add_sin_mul_I x)
 
 theorem norm_eq_one_iff (z : ℂ) : ‖z‖ = 1 ↔ ∃ θ : ℝ, exp (θ * I) = z := by
-  refine ⟨fun hz => ⟨arg z, ?_⟩, ?_⟩
+  refine ⟨fun hz ↦ ⟨arg z, ?_⟩, ?_⟩
   · calc
       exp (arg z * I) = ‖z‖ * exp (arg z * I) := by rw [hz, ofReal_one, one_mul]
       _ = z :=norm_mul_exp_arg_mul_I z
@@ -78,7 +78,7 @@ theorem norm_eq_one_iff (z : ℂ) : ‖z‖ = 1 ↔ ∃ θ : ℝ, exp (θ * I) =
 @[deprecated (since := "2025-02-16")] alias abs_eq_one_iff := norm_eq_one_iff
 
 @[simp]
-theorem range_exp_mul_I : (Set.range fun x : ℝ => exp (x * I)) = Metric.sphere 0 1 := by
+theorem range_exp_mul_I : (Set.range fun x : ℝ ↦ exp (x * I)) = Metric.sphere 0 1 := by
   ext x
   simp only [mem_sphere_zero_iff_norm, norm_eq_one_iff, Set.mem_range]
 
@@ -123,7 +123,7 @@ theorem ext_norm_arg {x y : ℂ} (h₁ : ‖x‖ = ‖y‖) (h₂ : x.arg = y.ar
   rw [← norm_mul_exp_arg_mul_I x, ← norm_mul_exp_arg_mul_I y, h₁, h₂]
 
 theorem ext_norm_arg_iff {x y : ℂ} : x = y ↔ ‖x‖ = ‖y‖ ∧ arg x = arg y :=
-  ⟨fun h => h ▸ ⟨rfl, rfl⟩, and_imp.2 ext_norm_arg⟩
+  ⟨fun h ↦ h ▸ ⟨rfl, rfl⟩, and_imp.2 ext_norm_arg⟩
 
 @[deprecated (since := "2025-02-16")] alias ext_abs_arg := ext_norm_arg
 @[deprecated (since := "2025-02-16")] alias ext_abs_arg_iff := ext_norm_arg_iff
@@ -141,7 +141,7 @@ theorem arg_mem_Ioc (z : ℂ) : arg z ∈ Set.Ioc (-π) π := by
 
 @[simp]
 theorem range_arg : Set.range arg = Set.Ioc (-π) π :=
-  (Set.range_subset_iff.2 arg_mem_Ioc).antisymm fun _ hx => ⟨_, arg_cos_add_sin_mul_I hx⟩
+  (Set.range_subset_iff.2 arg_mem_Ioc).antisymm fun _ hx ↦ ⟨_, arg_cos_add_sin_mul_I hx⟩
 
 theorem arg_le_pi (x : ℂ) : arg x ≤ π :=
   (arg_mem_Ioc x).2
@@ -157,7 +157,7 @@ theorem arg_nonneg_iff {z : ℂ} : 0 ≤ arg z ↔ 0 ≤ z.im := by
   rcases eq_or_ne z 0 with (rfl | h₀); · simp
   calc
     0 ≤ arg z ↔ 0 ≤ Real.sin (arg z) :=
-      ⟨fun h => Real.sin_nonneg_of_mem_Icc ⟨h, arg_le_pi z⟩, by
+      ⟨fun h ↦ Real.sin_nonneg_of_mem_Icc ⟨h, arg_le_pi z⟩, by
         contrapose!
         intro h
         exact Real.sin_neg_of_neg_of_neg_pi_lt h (neg_pi_lt_arg _)⟩
@@ -216,7 +216,7 @@ lemma ofNat_arg {n : ℕ} [n.AtLeastTwo] : arg ofNat(n) = 0 :=
   natCast_arg
 
 theorem arg_eq_zero_iff {z : ℂ} : arg z = 0 ↔ 0 ≤ z.re ∧ z.im = 0 := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · rw [← norm_mul_cos_add_sin_mul_I z, h]
     simp [norm_nonneg]
   · obtain ⟨x, y⟩ := z
@@ -285,7 +285,7 @@ theorem arg_of_im_nonneg_of_ne_zero {z : ℂ} (h₁ : 0 ≤ z.im) (h₂ : z ≠ 
   rw [← cos_arg h₂, Real.arccos_cos (arg_nonneg_iff.2 h₁) (arg_le_pi _)]
 
 theorem arg_of_im_pos {z : ℂ} (hz : 0 < z.im) : arg z = Real.arccos (z.re / ‖z‖) :=
-  arg_of_im_nonneg_of_ne_zero hz.le fun h => hz.ne' <| h.symm ▸ rfl
+  arg_of_im_nonneg_of_ne_zero hz.le fun h ↦ hz.ne' <| h.symm ▸ rfl
 
 theorem arg_of_im_neg {z : ℂ} (hz : z.im < 0) : arg z = -Real.arccos (z.re / ‖z‖) := by
   have h₀ : z ≠ 0 := mt (congr_arg im) hz.ne
@@ -540,30 +540,30 @@ end slitPlane
 
 section Continuity
 
-theorem arg_eq_nhds_of_re_pos (hx : 0 < x.re) : arg =ᶠ[𝓝 x] fun x => Real.arcsin (x.im / ‖x‖) :=
-  ((continuous_re.tendsto _).eventually (lt_mem_nhds hx)).mono fun _ hy => arg_of_re_nonneg hy.le
+theorem arg_eq_nhds_of_re_pos (hx : 0 < x.re) : arg =ᶠ[𝓝 x] fun x ↦ Real.arcsin (x.im / ‖x‖) :=
+  ((continuous_re.tendsto _).eventually (lt_mem_nhds hx)).mono fun _ hy ↦ arg_of_re_nonneg hy.le
 
 theorem arg_eq_nhds_of_re_neg_of_im_pos (hx_re : x.re < 0) (hx_im : 0 < x.im) :
-    arg =ᶠ[𝓝 x] fun x => Real.arcsin ((-x).im / ‖x‖) + π := by
+    arg =ᶠ[𝓝 x] fun x ↦ Real.arcsin ((-x).im / ‖x‖) + π := by
   suffices h_forall_nhds : ∀ᶠ y : ℂ in 𝓝 x, y.re < 0 ∧ 0 < y.im from
-    h_forall_nhds.mono fun y hy => arg_of_re_neg_of_im_nonneg hy.1 hy.2.le
+    h_forall_nhds.mono fun y hy ↦ arg_of_re_neg_of_im_nonneg hy.1 hy.2.le
   refine IsOpen.eventually_mem ?_ (⟨hx_re, hx_im⟩ : x.re < 0 ∧ 0 < x.im)
   exact
     IsOpen.and (isOpen_lt continuous_re continuous_zero) (isOpen_lt continuous_zero continuous_im)
 
 theorem arg_eq_nhds_of_re_neg_of_im_neg (hx_re : x.re < 0) (hx_im : x.im < 0) :
-    arg =ᶠ[𝓝 x] fun x => Real.arcsin ((-x).im / ‖x‖) - π := by
+    arg =ᶠ[𝓝 x] fun x ↦ Real.arcsin ((-x).im / ‖x‖) - π := by
   suffices h_forall_nhds : ∀ᶠ y : ℂ in 𝓝 x, y.re < 0 ∧ y.im < 0 from
-    h_forall_nhds.mono fun y hy => arg_of_re_neg_of_im_neg hy.1 hy.2
+    h_forall_nhds.mono fun y hy ↦ arg_of_re_neg_of_im_neg hy.1 hy.2
   refine IsOpen.eventually_mem ?_ (⟨hx_re, hx_im⟩ : x.re < 0 ∧ x.im < 0)
   exact
     IsOpen.and (isOpen_lt continuous_re continuous_zero) (isOpen_lt continuous_im continuous_zero)
 
-theorem arg_eq_nhds_of_im_pos (hz : 0 < im z) : arg =ᶠ[𝓝 z] fun x => Real.arccos (x.re / ‖x‖) :=
-  ((continuous_im.tendsto _).eventually (lt_mem_nhds hz)).mono fun _ => arg_of_im_pos
+theorem arg_eq_nhds_of_im_pos (hz : 0 < im z) : arg =ᶠ[𝓝 z] fun x ↦ Real.arccos (x.re / ‖x‖) :=
+  ((continuous_im.tendsto _).eventually (lt_mem_nhds hz)).mono fun _ ↦ arg_of_im_pos
 
-theorem arg_eq_nhds_of_im_neg (hz : im z < 0) : arg =ᶠ[𝓝 z] fun x => -Real.arccos (x.re / ‖x‖) :=
-  ((continuous_im.tendsto _).eventually (gt_mem_nhds hz)).mono fun _ => arg_of_im_neg
+theorem arg_eq_nhds_of_im_neg (hz : im z < 0) : arg =ᶠ[𝓝 z] fun x ↦ -Real.arccos (x.re / ‖x‖) :=
+  ((continuous_im.tendsto _).eventually (gt_mem_nhds hz)).mono fun _ ↦ arg_of_im_neg
 
 theorem continuousAt_arg (h : x ∈ slitPlane) : ContinuousAt arg x := by
   have h₀ : ‖x‖ ≠ 0 := by
@@ -583,7 +583,7 @@ theorem continuousAt_arg (h : x ∈ slitPlane) : ContinuousAt arg x := by
 
 theorem tendsto_arg_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0)
     (him : z.im = 0) : Tendsto arg (𝓝[{ z : ℂ | z.im < 0 }] z) (𝓝 (-π)) := by
-  suffices H : Tendsto (fun x : ℂ => Real.arcsin ((-x).im / ‖x‖) - π)
+  suffices H : Tendsto (fun x : ℂ ↦ Real.arcsin ((-x).im / ‖x‖) - π)
       (𝓝[{ z : ℂ | z.im < 0 }] z) (𝓝 (-π)) by
     refine H.congr' ?_
     have : ∀ᶠ x : ℂ in 𝓝 z, x.re < 0 := continuous_re.tendsto z (gt_mem_nhds hre)
@@ -599,7 +599,7 @@ theorem tendsto_arg_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re
 
 theorem continuousWithinAt_arg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0) (him : z.im = 0) :
     ContinuousWithinAt arg { z : ℂ | 0 ≤ z.im } z := by
-  have : arg =ᶠ[𝓝[{ z : ℂ | 0 ≤ z.im }] z] fun x => Real.arcsin ((-x).im / ‖x‖) + π := by
+  have : arg =ᶠ[𝓝[{ z : ℂ | 0 ≤ z.im }] z] fun x ↦ Real.arcsin ((-x).im / ‖x‖) + π := by
     have : ∀ᶠ x : ℂ in 𝓝 z, x.re < 0 := continuous_re.tendsto z (gt_mem_nhds hre)
     filter_upwards [self_mem_nhdsWithin (s := { z : ℂ | 0 ≤ z.im }),
       mem_nhdsWithin_of_mem_nhds this] with _ him hre
@@ -623,16 +623,16 @@ theorem continuousAt_arg_coe_angle (h : x ≠ 0) : ContinuousAt ((↑) ∘ arg :
   by_cases hs : x ∈ slitPlane
   · exact Real.Angle.continuous_coe.continuousAt.comp (continuousAt_arg hs)
   · rw [← Function.comp_id (((↑) : ℝ → Real.Angle) ∘ arg),
-      (funext_iff.2 fun _ => (neg_neg _).symm : (id : ℂ → ℂ) = Neg.neg ∘ Neg.neg), ←
+      (funext_iff.2 fun _ ↦ (neg_neg _).symm : (id : ℂ → ℂ) = Neg.neg ∘ Neg.neg), ←
       Function.comp_assoc]
     refine ContinuousAt.comp ?_ continuous_neg.continuousAt
     suffices ContinuousAt (Function.update (((↑) ∘ arg) ∘ Neg.neg : ℂ → Real.Angle) 0 π) (-x) by
       rwa [continuousAt_update_of_ne (neg_ne_zero.2 h)] at this
     have ha :
-      Function.update (((↑) ∘ arg) ∘ Neg.neg : ℂ → Real.Angle) 0 π = fun z =>
+      Function.update (((↑) ∘ arg) ∘ Neg.neg : ℂ → Real.Angle) 0 π = fun z ↦
         (arg z : Real.Angle) + π := by
       rw [Function.update_eq_iff]
-      exact ⟨by simp, fun z hz => arg_neg_coe_angle hz⟩
+      exact ⟨by simp, fun z hz ↦ arg_neg_coe_angle hz⟩
     rw [ha]
     replace hs := mem_slitPlane_iff.mpr.mt hs
     push_neg at hs
@@ -640,7 +640,7 @@ theorem continuousAt_arg_coe_angle (h : x ≠ 0) : ContinuousAt ((↑) ∘ arg :
       (Real.Angle.continuous_coe.continuousAt.comp (continuousAt_arg (Or.inl ?_))).add
         continuousAt_const
     rw [neg_re, neg_pos]
-    exact hs.1.lt_of_ne fun h0 => h (Complex.ext_iff.2 ⟨h0, hs.2⟩)
+    exact hs.1.lt_of_ne fun h0 ↦ h (Complex.ext_iff.2 ⟨h0, hs.2⟩)
 
 end Continuity
 

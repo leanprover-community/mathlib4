@@ -330,8 +330,8 @@ def mapWhiskerRightAsSmallFunctor (α : F ⟶ G) :
     (compAsSmallFunctorEquivalence F).functor ⋙ map α ⋙
       (compAsSmallFunctorEquivalence G).inverse :=
   NatIso.ofComponents
-    (fun X => Iso.refl _)
-    (fun f => by
+    (fun X ↦ Iso.refl _)
+    (fun f ↦ by
       fapply Grothendieck.ext
       · simp [compAsSmallFunctorEquivalenceInverse]
       · simp only [compAsSmallFunctorEquivalence_functor, compAsSmallFunctorEquivalence_inverse,
@@ -389,7 +389,7 @@ def grothendieckTypeToCat : Grothendieck (G ⋙ typeToCat) ≌ G.Elements where
   inverse := grothendieckTypeToCatInverse G
   unitIso :=
     NatIso.ofComponents
-      (fun X => by
+      (fun X ↦ by
         rcases X with ⟨_, ⟨⟩⟩
         exact Iso.refl _)
       (by
@@ -399,7 +399,7 @@ def grothendieckTypeToCat : Grothendieck (G ⋙ typeToCat) ≌ G.Elements where
         rfl)
   counitIso :=
     NatIso.ofComponents
-      (fun X => by
+      (fun X ↦ by
         cases X
         exact Iso.refl _)
       (by
@@ -436,8 +436,8 @@ morphism `pre F G` and `pre F H`, up to composition with
 def preNatIso {G H : D ⥤ C} (α : G ≅ H) :
     pre F G ≅ map (whiskerRight α.hom F) ⋙ (pre F H) :=
   NatIso.ofComponents
-    (fun X => (transportIso ⟨G.obj X.base, X.fiber⟩ (α.app X.base)).symm)
-    (fun f => by fapply Grothendieck.ext <;> simp)
+    (fun X ↦ (transportIso ⟨G.obj X.base, X.fiber⟩ (α.app X.base)).symm)
+    (fun f ↦ by fapply Grothendieck.ext <;> simp)
 
 /--
 Given an equivalence of categories `G`, `preInv _ G` is the (weak) inverse of the `pre _ G.functor`.
@@ -567,14 +567,14 @@ def functorFrom : Grothendieck F ⥤ E where
 /-- `Grothendieck.ι F c` composed with `Grothendieck.functorFrom` is isomorphic a functor on a fiber
 on `F` supplied as the first argument to `Grothendieck.functorFrom`. -/
 def ιCompFunctorFrom (c : C) : ι F c ⋙ (functorFrom fib hom hom_id hom_comp) ≅ fib c :=
-  NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp [hom_id])
+  NatIso.ofComponents (fun _ ↦ Iso.refl _) (fun f ↦ by simp [hom_id])
 
 end FunctorFrom
 
 /-- The fiber inclusion `ι F c` composed with `map α` is isomorphic to `α.app c ⋙ ι F' c`. -/
 @[simps!]
 def ιCompMap {F' : C ⥤ Cat} (α : F ⟶ F') (c : C) : ι F c ⋙ map α ≅ α.app c ⋙ ι F' c :=
-  NatIso.ofComponents (fun X => Iso.refl _) (fun f => by simp [map])
+  NatIso.ofComponents (fun X ↦ Iso.refl _) (fun f ↦ by simp [map])
 
 end Grothendieck
 

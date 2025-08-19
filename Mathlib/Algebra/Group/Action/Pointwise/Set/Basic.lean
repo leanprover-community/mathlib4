@@ -109,7 +109,7 @@ variable [Semigroup α]
 @[to_additive]
 lemma op_smul_set_mul_eq_mul_smul_set (a : α) (s : Set α) (t : Set α) :
     op a • s * t = s * a • t :=
-  op_smul_set_smul_eq_smul_smul_set _ _ _ fun _ _ _ => mul_assoc _ _ _
+  op_smul_set_smul_eq_smul_smul_set _ _ _ fun _ _ _ ↦ mul_assoc _ _ _
 
 end Semigroup
 

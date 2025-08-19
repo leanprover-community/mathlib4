@@ -132,8 +132,8 @@ def sigmaOpens [HasCoproduct D.U] : C :=
 def diagram : MultispanIndex (.prod D.J) C where
   left := D.V
   right := D.U
-  fst := fun ⟨i, j⟩ => D.f i j
-  snd := fun ⟨i, j⟩ => D.t i j ≫ D.f j i
+  fst := fun ⟨i, j⟩ ↦ D.f i j
+  snd := fun ⟨i, j⟩ ↦ D.t i j ≫ D.f j i
 
 @[simp]
 theorem diagram_fst (i j : D.J) : D.diagram.fst ⟨i, j⟩ = D.f i j :=
@@ -224,7 +224,7 @@ def mapGlueData : GlueData C' where
   t' i j k :=
     (PreservesPullback.iso F (D.f i j) (D.f i k)).inv ≫
       F.map (D.t' i j k) ≫ (PreservesPullback.iso F (D.f j k) (D.f j i)).hom
-  t_fac i j k := by simpa [Iso.inv_comp_eq] using congr_arg (fun f => F.map f) (D.t_fac i j k)
+  t_fac i j k := by simpa [Iso.inv_comp_eq] using congr_arg (fun f ↦ F.map f) (D.t_fac i j k)
   cocycle i j k := by
     simp only [Category.assoc, Iso.hom_inv_id_assoc, ← Functor.map_comp_assoc, D.cocycle,
       Iso.inv_hom_id, CategoryTheory.Functor.map_id, Category.id_comp]
@@ -234,7 +234,7 @@ original diagram of the `GlueData` via `F`.
 -/
 def diagramIso : D.diagram.multispan ⋙ F ≅ (D.mapGlueData F).diagram.multispan :=
   NatIso.ofComponents
-    (fun x =>
+    (fun x ↦
       match x with
       | WalkingMultispan.left _ => Iso.refl _
       | WalkingMultispan.right _ => Iso.refl _)
@@ -321,7 +321,7 @@ def vPullbackConeIsLimitOfMap (i j : D.J) [ReflectsLimit (cospan (D.ι i) (D.ι 
   let e : cospan (F.map (D.ι i)) (F.map (D.ι j)) ≅
       cospan ((D.mapGlueData F).ι i) ((D.mapGlueData F).ι j) :=
     NatIso.ofComponents
-      (fun x => by
+      (fun x ↦ by
         cases x
         exacts [D.gluedIso F, Iso.refl _])
       (by rintro (_ | _) (_ | _) (_ | _ | _) <;> simp)

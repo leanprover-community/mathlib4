@@ -87,109 +87,109 @@ The next several lemmas are technical lemmas leading up to `rpow_p_mul_one_sub_s
 -/
 
 lemma eventually_deriv_rpow_p_mul_one_sub_smoothingFn (p : ℝ) :
-    deriv (fun z => z ^ p * (1 - ε z))
-      =ᶠ[atTop] fun z => p * z ^ (p - 1) * (1 - ε z) + z ^ (p - 1) / (log z ^ 2) := calc
-  deriv (fun x => x ^ p * (1 - ε x))
-    =ᶠ[atTop] fun x => deriv (· ^ p) x * (1 - ε x) + x ^ p * deriv (1 - ε ·) x := by
+    deriv (fun z ↦ z ^ p * (1 - ε z))
+      =ᶠ[atTop] fun z ↦ p * z ^ (p - 1) * (1 - ε z) + z ^ (p - 1) / (log z ^ 2) := calc
+  deriv (fun x ↦ x ^ p * (1 - ε x))
+    =ᶠ[atTop] fun x ↦ deriv (· ^ p) x * (1 - ε x) + x ^ p * deriv (1 - ε ·) x := by
             filter_upwards [eventually_gt_atTop 1] with x hx
             rw [deriv_fun_mul]
             · exact differentiableAt_rpow_const_of_ne _ (by positivity)
             · exact differentiableAt_one_sub_smoothingFn hx
-  _ =ᶠ[atTop] fun x => p * x ^ (p - 1) * (1 - ε x) + x ^ p * (x⁻¹ / (log x ^ 2)) := by
+  _ =ᶠ[atTop] fun x ↦ p * x ^ (p - 1) * (1 - ε x) + x ^ p * (x⁻¹ / (log x ^ 2)) := by
             filter_upwards [eventually_gt_atTop 1, eventually_deriv_one_sub_smoothingFn]
               with x hx hderiv
             rw [hderiv, Real.deriv_rpow_const (Or.inl <| by positivity)]
-  _ =ᶠ[atTop] fun x => p * x ^ (p - 1) * (1 - ε x) + x ^ (p - 1) / (log x ^ 2) := by
+  _ =ᶠ[atTop] fun x ↦ p * x ^ (p - 1) * (1 - ε x) + x ^ (p - 1) / (log x ^ 2) := by
             filter_upwards [eventually_gt_atTop 0] with x hx
             rw [mul_div, ← Real.rpow_neg_one, ← Real.rpow_add (by positivity), sub_eq_add_neg]
 
 lemma eventually_deriv_rpow_p_mul_one_add_smoothingFn (p : ℝ) :
-    deriv (fun z => z ^ p * (1 + ε z))
-      =ᶠ[atTop] fun z => p * z ^ (p - 1) * (1 + ε z) - z ^ (p - 1) / (log z ^ 2) := calc
-  deriv (fun x => x ^ p * (1 + ε x))
-    =ᶠ[atTop] fun x => deriv (· ^ p) x * (1 + ε x) + x ^ p * deriv (1 + ε ·) x := by
+    deriv (fun z ↦ z ^ p * (1 + ε z))
+      =ᶠ[atTop] fun z ↦ p * z ^ (p - 1) * (1 + ε z) - z ^ (p - 1) / (log z ^ 2) := calc
+  deriv (fun x ↦ x ^ p * (1 + ε x))
+    =ᶠ[atTop] fun x ↦ deriv (· ^ p) x * (1 + ε x) + x ^ p * deriv (1 + ε ·) x := by
             filter_upwards [eventually_gt_atTop 1] with x hx
             rw [deriv_fun_mul]
             · exact differentiableAt_rpow_const_of_ne _ (by positivity)
             · exact differentiableAt_one_add_smoothingFn hx
-  _ =ᶠ[atTop] fun x => p * x ^ (p - 1) * (1 + ε x) - x ^ p * (x⁻¹ / (log x ^ 2)) := by
+  _ =ᶠ[atTop] fun x ↦ p * x ^ (p - 1) * (1 + ε x) - x ^ p * (x⁻¹ / (log x ^ 2)) := by
             filter_upwards [eventually_gt_atTop 1, eventually_deriv_one_add_smoothingFn]
               with x hx hderiv
             simp [hderiv, Real.deriv_rpow_const (Or.inl <| by positivity), neg_div, sub_eq_add_neg]
-  _ =ᶠ[atTop] fun x => p * x ^ (p - 1) * (1 + ε x) - x ^ (p - 1) / (log x ^ 2) := by
+  _ =ᶠ[atTop] fun x ↦ p * x ^ (p - 1) * (1 + ε x) - x ^ (p - 1) / (log x ^ 2) := by
             filter_upwards [eventually_gt_atTop 0] with x hx
             simp [mul_div, ← Real.rpow_neg_one, ← Real.rpow_add (by positivity), sub_eq_add_neg]
 
 lemma isEquivalent_deriv_rpow_p_mul_one_sub_smoothingFn {p : ℝ} (hp : p ≠ 0) :
-    deriv (fun z => z ^ p * (1 - ε z)) ~[atTop] fun z => p * z ^ (p - 1) := calc
-  deriv (fun z => z ^ p * (1 - ε z))
-    =ᶠ[atTop] fun z => p * z ^ (p - 1) * (1 - ε z) + z ^ (p - 1) / (log z ^ 2) :=
+    deriv (fun z ↦ z ^ p * (1 - ε z)) ~[atTop] fun z ↦ p * z ^ (p - 1) := calc
+  deriv (fun z ↦ z ^ p * (1 - ε z))
+    =ᶠ[atTop] fun z ↦ p * z ^ (p - 1) * (1 - ε z) + z ^ (p - 1) / (log z ^ 2) :=
         eventually_deriv_rpow_p_mul_one_sub_smoothingFn p
-  _ ~[atTop] fun z => p * z ^ (p - 1) := by
+  _ ~[atTop] fun z ↦ p * z ^ (p - 1) := by
         refine IsEquivalent.add_isLittleO ?one ?two
         case one => calc
-          (fun z => p * z ^ (p - 1) * (1 - ε z)) ~[atTop] fun z => p * z ^ (p - 1) * 1 :=
+          (fun z ↦ p * z ^ (p - 1) * (1 - ε z)) ~[atTop] fun z ↦ p * z ^ (p - 1) * 1 :=
                 IsEquivalent.mul IsEquivalent.refl isEquivalent_one_sub_smoothingFn_one
-          _ = fun z => p * z ^ (p - 1) := by ext; ring
+          _ = fun z ↦ p * z ^ (p - 1) := by ext; ring
         case two => calc
-          (fun z => z ^ (p - 1) / (log z ^ 2)) =o[atTop] fun z => z ^ (p - 1) / 1 := by
+          (fun z ↦ z ^ (p - 1) / (log z ^ 2)) =o[atTop] fun z ↦ z ^ (p - 1) / 1 := by
                       simp_rw [div_eq_mul_inv]
                       refine IsBigO.mul_isLittleO (isBigO_refl _ _)
                         (IsLittleO.inv_rev ?_ (by simp))
                       rw [isLittleO_const_left]
                       refine Or.inr <| Tendsto.comp tendsto_norm_atTop_atTop ?_
-                      exact Tendsto.comp (g := fun z => z ^ 2)
+                      exact Tendsto.comp (g := fun z ↦ z ^ 2)
                         (tendsto_pow_atTop (by norm_num)) tendsto_log_atTop
-          _ = fun z => z ^ (p - 1) := by ext; simp
-          _ =Θ[atTop] fun z => p * z ^ (p - 1) := by
+          _ = fun z ↦ z ^ (p - 1) := by ext; simp
+          _ =Θ[atTop] fun z ↦ p * z ^ (p - 1) := by
                       exact IsTheta.const_mul_right hp <| isTheta_refl _ _
 
 lemma isEquivalent_deriv_rpow_p_mul_one_add_smoothingFn {p : ℝ} (hp : p ≠ 0) :
-    deriv (fun z => z ^ p * (1 + ε z)) ~[atTop] fun z => p * z ^ (p - 1) := calc
-  deriv (fun z => z ^ p * (1 + ε z))
-    =ᶠ[atTop] fun z => p * z ^ (p - 1) * (1 + ε z) - z ^ (p - 1) / (log z ^ 2) :=
+    deriv (fun z ↦ z ^ p * (1 + ε z)) ~[atTop] fun z ↦ p * z ^ (p - 1) := calc
+  deriv (fun z ↦ z ^ p * (1 + ε z))
+    =ᶠ[atTop] fun z ↦ p * z ^ (p - 1) * (1 + ε z) - z ^ (p - 1) / (log z ^ 2) :=
         eventually_deriv_rpow_p_mul_one_add_smoothingFn p
-  _ ~[atTop] fun z => p * z ^ (p - 1) := by
+  _ ~[atTop] fun z ↦ p * z ^ (p - 1) := by
         refine IsEquivalent.add_isLittleO ?one ?two
         case one => calc
-          (fun z => p * z ^ (p - 1) * (1 + ε z)) ~[atTop] fun z => p * z ^ (p - 1) * 1 :=
+          (fun z ↦ p * z ^ (p - 1) * (1 + ε z)) ~[atTop] fun z ↦ p * z ^ (p - 1) * 1 :=
                 IsEquivalent.mul IsEquivalent.refl isEquivalent_one_add_smoothingFn_one
-          _ = fun z => p * z ^ (p - 1) := by ext; ring
+          _ = fun z ↦ p * z ^ (p - 1) := by ext; ring
         case two => calc
-          (fun z => -(z ^ (p - 1) / (log z ^ 2))) =o[atTop] fun z => z ^ (p - 1) / 1 := by
+          (fun z ↦ -(z ^ (p - 1) / (log z ^ 2))) =o[atTop] fun z ↦ z ^ (p - 1) / 1 := by
                       simp_rw [isLittleO_neg_left, div_eq_mul_inv]
                       refine IsBigO.mul_isLittleO (isBigO_refl _ _)
                         (IsLittleO.inv_rev ?_ (by simp))
                       rw [isLittleO_const_left]
                       refine Or.inr <| Tendsto.comp tendsto_norm_atTop_atTop ?_
-                      exact Tendsto.comp (g := fun z => z ^ 2)
+                      exact Tendsto.comp (g := fun z ↦ z ^ 2)
                         (tendsto_pow_atTop (by norm_num)) tendsto_log_atTop
-          _ = fun z => z ^ (p - 1) := by ext; simp
-          _ =Θ[atTop] fun z => p * z ^ (p - 1) := by
+          _ = fun z ↦ z ^ (p - 1) := by ext; simp
+          _ =Θ[atTop] fun z ↦ p * z ^ (p - 1) := by
                       exact IsTheta.const_mul_right hp <| isTheta_refl _ _
 
 lemma isTheta_deriv_rpow_p_mul_one_sub_smoothingFn {p : ℝ} (hp : p ≠ 0) :
-    (fun x => ‖deriv (fun z => z ^ p * (1 - ε z)) x‖) =Θ[atTop] fun z => z ^ (p - 1) := by
+    (fun x ↦ ‖deriv (fun z ↦ z ^ p * (1 - ε z)) x‖) =Θ[atTop] fun z ↦ z ^ (p - 1) := by
   refine IsTheta.norm_left ?_
-  calc (fun x => deriv (fun z => z ^ p * (1 - ε z)) x) =Θ[atTop] fun z => p * z ^ (p - 1) :=
+  calc (fun x ↦ deriv (fun z ↦ z ^ p * (1 - ε z)) x) =Θ[atTop] fun z ↦ p * z ^ (p - 1) :=
             (isEquivalent_deriv_rpow_p_mul_one_sub_smoothingFn hp).isTheta
-    _ =Θ[atTop] fun z => z ^ (p - 1) :=
+    _ =Θ[atTop] fun z ↦ z ^ (p - 1) :=
             IsTheta.const_mul_left hp <| isTheta_refl _ _
 
 lemma isTheta_deriv_rpow_p_mul_one_add_smoothingFn {p : ℝ} (hp : p ≠ 0) :
-    (fun x => ‖deriv (fun z => z ^ p * (1 + ε z)) x‖) =Θ[atTop] fun z => z ^ (p - 1) := by
+    (fun x ↦ ‖deriv (fun z ↦ z ^ p * (1 + ε z)) x‖) =Θ[atTop] fun z ↦ z ^ (p - 1) := by
   refine IsTheta.norm_left ?_
-  calc (fun x => deriv (fun z => z ^ p * (1 + ε z)) x) =Θ[atTop] fun z => p * z ^ (p - 1) :=
+  calc (fun x ↦ deriv (fun z ↦ z ^ p * (1 + ε z)) x) =Θ[atTop] fun z ↦ p * z ^ (p - 1) :=
             (isEquivalent_deriv_rpow_p_mul_one_add_smoothingFn hp).isTheta
-    _ =Θ[atTop] fun z => z ^ (p - 1) :=
+    _ =Θ[atTop] fun z ↦ z ^ (p - 1) :=
             IsTheta.const_mul_left hp <| isTheta_refl _ _
 
 lemma growsPolynomially_deriv_rpow_p_mul_one_sub_smoothingFn (p : ℝ) :
-    GrowsPolynomially fun x => ‖deriv (fun z => z ^ p * (1 - ε z)) x‖ := by
+    GrowsPolynomially fun x ↦ ‖deriv (fun z ↦ z ^ p * (1 - ε z)) x‖ := by
   cases eq_or_ne p 0 with
   | inl hp => -- p = 0
-    have h₁ : (fun x => ‖deriv (fun z => z ^ p * (1 - ε z)) x‖)
-        =ᶠ[atTop] fun z => z⁻¹ / (log z ^ 2) := by
+    have h₁ : (fun x ↦ ‖deriv (fun z ↦ z ^ p * (1 - ε z)) x‖)
+        =ᶠ[atTop] fun z ↦ z⁻¹ / (log z ^ 2) := by
       filter_upwards [eventually_deriv_one_sub_smoothingFn, eventually_gt_atTop 1] with x hx hx_pos
       have : 0 ≤ x⁻¹ / (log x ^ 2) := by
         have hlog : 0 < log x := Real.log_pos hx_pos
@@ -207,11 +207,11 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_sub_smoothingFn (p : ℝ) :
     positivity
 
 lemma growsPolynomially_deriv_rpow_p_mul_one_add_smoothingFn (p : ℝ) :
-    GrowsPolynomially fun x => ‖deriv (fun z => z ^ p * (1 + ε z)) x‖ := by
+    GrowsPolynomially fun x ↦ ‖deriv (fun z ↦ z ^ p * (1 + ε z)) x‖ := by
   cases eq_or_ne p 0 with
   | inl hp => -- p = 0
-    have h₁ : (fun x => ‖deriv (fun z => z ^ p * (1 + ε z)) x‖)
-        =ᶠ[atTop] fun z => z⁻¹ / (log z ^ 2) := by
+    have h₁ : (fun x ↦ ‖deriv (fun z ↦ z ^ p * (1 + ε z)) x‖)
+        =ᶠ[atTop] fun z ↦ z⁻¹ / (log z ^ 2) := by
       filter_upwards [eventually_deriv_one_add_smoothingFn, eventually_gt_atTop 1] with x hx hx_pos
       have : 0 ≤ x⁻¹ / (log x ^ 2) := by
         have hlog : 0 < log x := Real.log_pos hx_pos
@@ -232,28 +232,28 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_add_smoothingFn (p : ℝ) :
 include R
 
 lemma isBigO_apply_r_sub_b (q : ℝ → ℝ) (hq_diff : DifferentiableOn ℝ q (Set.Ioi 1))
-    (hq_poly : GrowsPolynomially fun x => ‖deriv q x‖) (i : α) :
-    (fun n => q (r i n) - q (b i * n)) =O[atTop] fun n => (deriv q n) * (r i n - b i * n) := by
+    (hq_poly : GrowsPolynomially fun x ↦ ‖deriv q x‖) (i : α) :
+    (fun n ↦ q (r i n) - q (b i * n)) =O[atTop] fun n ↦ (deriv q n) * (r i n - b i * n) := by
   let b' := b (min_bi b) / 2
   have hb_pos : 0 < b' := by have := R.b_pos (min_bi b); positivity
   have hb_lt_one : b' < 1 := calc
     b (min_bi b) / 2 < b (min_bi b) := by exact div_two_lt_of_pos (R.b_pos (min_bi b))
                    _ < 1 := R.b_lt_one (min_bi b)
   have hb : b' ∈ Set.Ioo 0 1 := ⟨hb_pos, hb_lt_one⟩
-  have hb' : ∀ i, b' ≤ b i := fun i => calc
+  have hb' : ∀ i, b' ≤ b i := fun i ↦ calc
     b (min_bi b) / 2 ≤ b i / 2 := by gcongr; aesop
                _ ≤ b i := by exact le_of_lt <| div_two_lt_of_pos (R.b_pos i)
   obtain ⟨c₁, _, c₂, _, hq_poly⟩ := hq_poly b' hb
   rw [isBigO_iff]
   refine ⟨c₂, ?_⟩
-  have h_tendsto : Tendsto (fun x => b' * x) atTop atTop :=
+  have h_tendsto : Tendsto (fun x ↦ b' * x) atTop atTop :=
     Tendsto.const_mul_atTop hb_pos tendsto_id
   filter_upwards [hq_poly.natCast_atTop, R.eventually_bi_mul_le_r, eventually_ge_atTop R.n₀,
                   eventually_gt_atTop 0, (h_tendsto.eventually_gt_atTop 1).natCast_atTop] with
     n hn h_bi_le_r h_ge_n₀ h_n_pos h_bn
   rw [norm_mul, ← mul_assoc]
   refine Convex.norm_image_sub_le_of_norm_deriv_le
-    (s := Set.Icc (b' * n) n) (fun z hz => ?diff) (fun z hz => (hn z hz).2)
+    (s := Set.Icc (b' * n) n) (fun z hz ↦ ?diff) (fun z hz ↦ (hn z hz).2)
     (convex_Icc _ _) ?mem_Icc <| ⟨h_bi_le_r i, by exact_mod_cast (le_of_lt (R.r_lt_n i n h_ge_n₀))⟩
   case diff =>
     refine hq_diff.differentiableAt (Ioi_mem_nhds ?_)
@@ -269,71 +269,71 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
       ≤ (b i) ^ (p a b) * n ^ (p a b) * (1 - ε n) := by
   rw [Filter.eventually_all]
   intro i
-  let q : ℝ → ℝ := fun x => x ^ (p a b) * (1 - ε x)
+  let q : ℝ → ℝ := fun x ↦ x ^ (p a b) * (1 - ε x)
   have h_diff_q : DifferentiableOn ℝ q (Set.Ioi 1) := by
     refine DifferentiableOn.mul
-      (DifferentiableOn.mono (differentiableOn_rpow_const _) fun z hz => ?_)
+      (DifferentiableOn.mono (differentiableOn_rpow_const _) fun z hz ↦ ?_)
         differentiableOn_one_sub_smoothingFn
     rw [Set.mem_compl_singleton_iff]
     rw [Set.mem_Ioi] at hz
     exact ne_of_gt <| zero_lt_one.trans hz
-  have h_deriv_q : deriv q =O[atTop] fun x => x ^ ((p a b) - 1) := calc
-    deriv q = deriv fun x => (fun z => z ^ (p a b)) x * (fun z => 1 - ε z) x := by rfl
-          _ =ᶠ[atTop] fun x => deriv (fun z => z ^ (p a b)) x * (1 - ε x) +
-                  x ^ (p a b) * deriv (fun z => 1 - ε z) x := by
+  have h_deriv_q : deriv q =O[atTop] fun x ↦ x ^ ((p a b) - 1) := calc
+    deriv q = deriv fun x ↦ (fun z ↦ z ^ (p a b)) x * (fun z ↦ 1 - ε z) x := by rfl
+          _ =ᶠ[atTop] fun x ↦ deriv (fun z ↦ z ^ (p a b)) x * (1 - ε x) +
+                  x ^ (p a b) * deriv (fun z ↦ 1 - ε z) x := by
               filter_upwards [eventually_ne_atTop 0, eventually_gt_atTop 1] with x hx hx'
               rw [deriv_fun_mul] <;> aesop
-          _ =O[atTop] fun x => x ^ ((p a b) - 1) := by
+          _ =O[atTop] fun x ↦ x ^ ((p a b) - 1) := by
               refine IsBigO.add ?left ?right
               case left => calc
-                (fun x => deriv (fun z => z ^ (p a b)) x * (1 - ε x))
-                    =O[atTop] fun x => x ^ ((p a b) - 1) * (1 - ε x) := by
+                (fun x ↦ deriv (fun z ↦ z ^ (p a b)) x * (1 - ε x))
+                    =O[atTop] fun x ↦ x ^ ((p a b) - 1) * (1 - ε x) := by
                       exact IsBigO.mul (isBigO_deriv_rpow_const_atTop (p a b)) (isBigO_refl _ _)
-                  _ =O[atTop] fun x => x ^ ((p a b) - 1) * 1 := by
+                  _ =O[atTop] fun x ↦ x ^ ((p a b) - 1) * 1 := by
                       refine IsBigO.mul (isBigO_refl _ _)
                         isEquivalent_one_sub_smoothingFn_one.isBigO
-                  _ = fun x => x ^ ((p a b) - 1) := by ext; rw [mul_one]
+                  _ = fun x ↦ x ^ ((p a b) - 1) := by ext; rw [mul_one]
               case right => calc
-                (fun x => x ^ (p a b) * deriv (fun z => 1 - ε z) x)
-                    =O[atTop] (fun x => x ^ (p a b) * x⁻¹) := by
+                (fun x ↦ x ^ (p a b) * deriv (fun z ↦ 1 - ε z) x)
+                    =O[atTop] (fun x ↦ x ^ (p a b) * x⁻¹) := by
                       exact IsBigO.mul (isBigO_refl _ _) isLittleO_deriv_one_sub_smoothingFn.isBigO
-                  _ =ᶠ[atTop] fun x => x ^ ((p a b) - 1) := by
+                  _ =ᶠ[atTop] fun x ↦ x ^ ((p a b) - 1) := by
                       filter_upwards [eventually_gt_atTop 0] with x hx
                       rw [← Real.rpow_neg_one, ← Real.rpow_add hx, ← sub_eq_add_neg]
-  have h_main_norm : (fun (n : ℕ) => ‖q (r i n) - q (b i * n)‖)
-      ≤ᶠ[atTop] fun (n : ℕ) => ‖(b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n)‖ := by
+  have h_main_norm : (fun (n : ℕ) ↦ ‖q (r i n) - q (b i * n)‖)
+      ≤ᶠ[atTop] fun (n : ℕ) ↦ ‖(b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n)‖ := by
     refine IsLittleO.eventuallyLE ?_
     calc
-      (fun (n : ℕ) => q (r i n) - q (b i * n))
-          =O[atTop] fun n => (deriv q n) * (r i n - b i * n) := by
+      (fun (n : ℕ) ↦ q (r i n) - q (b i * n))
+          =O[atTop] fun n ↦ (deriv q n) * (r i n - b i * n) := by
               exact R.isBigO_apply_r_sub_b q h_diff_q
                 (growsPolynomially_deriv_rpow_p_mul_one_sub_smoothingFn (p a b)) i
-        _ =o[atTop] fun n => (deriv q n) * (n / log n ^ 2) := by
+        _ =o[atTop] fun n ↦ (deriv q n) * (n / log n ^ 2) := by
               exact IsBigO.mul_isLittleO (isBigO_refl _ _) (R.dist_r_b i)
-        _ =O[atTop] fun n => n ^ ((p a b) - 1) * (n / log n ^ 2) := by
+        _ =O[atTop] fun n ↦ n ^ ((p a b) - 1) * (n / log n ^ 2) := by
               exact IsBigO.mul (IsBigO.natCast_atTop h_deriv_q) (isBigO_refl _ _)
-        _ =ᶠ[atTop] fun n => n ^ (p a b) / (log n) ^ 2 := by
+        _ =ᶠ[atTop] fun n ↦ n ^ (p a b) / (log n) ^ 2 := by
               filter_upwards [eventually_ne_atTop 0] with n hn
               have hn' : (n : ℝ) ≠ 0 := by positivity
               simp [← mul_div_assoc, ← Real.rpow_add_one hn']
-        _ = fun (n : ℕ) => (n : ℝ) ^ (p a b) * (1 / (log n) ^ 2) := by
+        _ = fun (n : ℕ) ↦ (n : ℝ) ^ (p a b) * (1 / (log n) ^ 2) := by
               simp_rw [mul_div, mul_one]
-        _ =Θ[atTop] fun (n : ℕ) => (b i) ^ (p a b) * n ^ (p a b) * (1 / (log n) ^ 2) := by
+        _ =Θ[atTop] fun (n : ℕ) ↦ (b i) ^ (p a b) * n ^ (p a b) * (1 / (log n) ^ 2) := by
               refine IsTheta.symm ?_
               simp_rw [mul_assoc]
               refine IsTheta.const_mul_left ?_ (isTheta_refl _ _)
               have := R.b_pos i; positivity
-        _ =Θ[atTop] fun (n : ℕ) => (b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n) := by
+        _ =Θ[atTop] fun (n : ℕ) ↦ (b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n) := by
               exact IsTheta.symm <| IsTheta.mul (isTheta_refl _ _)
                 <| R.isTheta_smoothingFn_sub_self i
-  have h_main : (fun (n : ℕ) => q (r i n) - q (b i * n))
-      ≤ᶠ[atTop] fun (n : ℕ) => (b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n) := by
-    calc (fun (n : ℕ) => q (r i n) - q (b i * n))
-           ≤ᶠ[atTop] fun (n : ℕ) => ‖q (r i n) - q (b i * n)‖ := by
+  have h_main : (fun (n : ℕ) ↦ q (r i n) - q (b i * n))
+      ≤ᶠ[atTop] fun (n : ℕ) ↦ (b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n) := by
+    calc (fun (n : ℕ) ↦ q (r i n) - q (b i * n))
+           ≤ᶠ[atTop] fun (n : ℕ) ↦ ‖q (r i n) - q (b i * n)‖ := by
                 filter_upwards with _; exact le_norm_self _
-         _ ≤ᶠ[atTop] fun (n : ℕ) => ‖(b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n)‖ :=
+         _ ≤ᶠ[atTop] fun (n : ℕ) ↦ ‖(b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n)‖ :=
                 h_main_norm
-         _ =ᶠ[atTop] fun (n : ℕ) => (b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n) := by
+         _ =ᶠ[atTop] fun (n : ℕ) ↦ (b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n) := by
                 filter_upwards [eventually_gt_atTop ⌈(b i)⁻¹⌉₊, eventually_gt_atTop 1] with n hn hn'
                 refine norm_of_nonneg ?_
                 have h₁ := R.b_pos i
@@ -364,70 +364,70 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
       ≤ (r i n) ^ (p a b) * (1 + ε (r i n)) := by
   rw [Filter.eventually_all]
   intro i
-  let q : ℝ → ℝ := fun x => x ^ (p a b) * (1 + ε x)
+  let q : ℝ → ℝ := fun x ↦ x ^ (p a b) * (1 + ε x)
   have h_diff_q : DifferentiableOn ℝ q (Set.Ioi 1) := by
     refine DifferentiableOn.mul
-        (DifferentiableOn.mono (differentiableOn_rpow_const _) fun z hz => ?_)
+        (DifferentiableOn.mono (differentiableOn_rpow_const _) fun z hz ↦ ?_)
         differentiableOn_one_add_smoothingFn
     rw [Set.mem_compl_singleton_iff]
     rw [Set.mem_Ioi] at hz
     exact ne_of_gt <| zero_lt_one.trans hz
-  have h_deriv_q : deriv q =O[atTop] fun x => x ^ ((p a b) - 1) := calc
-    deriv q = deriv fun x => (fun z => z ^ (p a b)) x * (fun z => 1 + ε z) x := by rfl
-          _ =ᶠ[atTop] fun x => deriv (fun z => z ^ (p a b)) x * (1 + ε x)
-              + x ^ (p a b) * deriv (fun z => 1 + ε z) x := by
+  have h_deriv_q : deriv q =O[atTop] fun x ↦ x ^ ((p a b) - 1) := calc
+    deriv q = deriv fun x ↦ (fun z ↦ z ^ (p a b)) x * (fun z ↦ 1 + ε z) x := by rfl
+          _ =ᶠ[atTop] fun x ↦ deriv (fun z ↦ z ^ (p a b)) x * (1 + ε x)
+              + x ^ (p a b) * deriv (fun z ↦ 1 + ε z) x := by
                 filter_upwards [eventually_ne_atTop 0, eventually_gt_atTop 1] with x hx hx'
                 rw [deriv_fun_mul] <;> aesop
-          _ =O[atTop] fun x => x ^ ((p a b) - 1) := by
+          _ =O[atTop] fun x ↦ x ^ ((p a b) - 1) := by
                 refine IsBigO.add ?left ?right
                 case left => calc
-                  (fun x => deriv (fun z => z ^ (p a b)) x * (1 + ε x))
-                      =O[atTop] fun x => x ^ ((p a b) - 1) * (1 + ε x) := by
+                  (fun x ↦ deriv (fun z ↦ z ^ (p a b)) x * (1 + ε x))
+                      =O[atTop] fun x ↦ x ^ ((p a b) - 1) * (1 + ε x) := by
                         exact IsBigO.mul (isBigO_deriv_rpow_const_atTop (p a b)) (isBigO_refl _ _)
-                    _ =O[atTop] fun x => x ^ ((p a b) - 1) * 1 :=
+                    _ =O[atTop] fun x ↦ x ^ ((p a b) - 1) * 1 :=
                         IsBigO.mul (isBigO_refl _ _) isEquivalent_one_add_smoothingFn_one.isBigO
-                    _ = fun x => x ^ ((p a b) - 1) := by ext; rw [mul_one]
+                    _ = fun x ↦ x ^ ((p a b) - 1) := by ext; rw [mul_one]
                 case right => calc
-                  (fun x => x ^ (p a b) * deriv (fun z => 1 + ε z) x)
-                      =O[atTop] (fun x => x ^ (p a b) * x⁻¹) := by
+                  (fun x ↦ x ^ (p a b) * deriv (fun z ↦ 1 + ε z) x)
+                      =O[atTop] (fun x ↦ x ^ (p a b) * x⁻¹) := by
                         exact IsBigO.mul (isBigO_refl _ _)
                           isLittleO_deriv_one_add_smoothingFn.isBigO
-                    _ =ᶠ[atTop] fun x => x ^ ((p a b) - 1) := by
+                    _ =ᶠ[atTop] fun x ↦ x ^ ((p a b) - 1) := by
                         filter_upwards [eventually_gt_atTop 0] with x hx
                         rw [← Real.rpow_neg_one, ← Real.rpow_add hx, ← sub_eq_add_neg]
-  have h_main_norm : (fun (n : ℕ) => ‖q (r i n) - q (b i * n)‖)
-      ≤ᶠ[atTop] fun (n : ℕ) => ‖(b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n)‖ := by
+  have h_main_norm : (fun (n : ℕ) ↦ ‖q (r i n) - q (b i * n)‖)
+      ≤ᶠ[atTop] fun (n : ℕ) ↦ ‖(b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n)‖ := by
     refine IsLittleO.eventuallyLE ?_
     calc
-      (fun (n : ℕ) => q (r i n) - q (b i * n))
-          =O[atTop] fun n => (deriv q n) * (r i n - b i * n) := by
+      (fun (n : ℕ) ↦ q (r i n) - q (b i * n))
+          =O[atTop] fun n ↦ (deriv q n) * (r i n - b i * n) := by
             exact R.isBigO_apply_r_sub_b q h_diff_q
               (growsPolynomially_deriv_rpow_p_mul_one_add_smoothingFn (p a b)) i
-        _ =o[atTop] fun n => (deriv q n) * (n / log n ^ 2) := by
+        _ =o[atTop] fun n ↦ (deriv q n) * (n / log n ^ 2) := by
             exact IsBigO.mul_isLittleO (isBigO_refl _ _) (R.dist_r_b i)
-        _ =O[atTop] fun n => n ^ ((p a b) - 1) * (n / log n ^ 2) := by
+        _ =O[atTop] fun n ↦ n ^ ((p a b) - 1) * (n / log n ^ 2) := by
             exact IsBigO.mul (IsBigO.natCast_atTop h_deriv_q) (isBigO_refl _ _)
-        _ =ᶠ[atTop] fun n => n ^ (p a b) / (log n) ^ 2 := by
+        _ =ᶠ[atTop] fun n ↦ n ^ (p a b) / (log n) ^ 2 := by
             filter_upwards [eventually_ne_atTop 0] with n hn
             have hn' : (n : ℝ) ≠ 0 := by positivity
             simp [← mul_div_assoc, ← Real.rpow_add_one hn']
-        _ = fun (n : ℕ) => (n : ℝ) ^ (p a b) * (1 / (log n) ^ 2) := by simp_rw [mul_div, mul_one]
-        _ =Θ[atTop] fun (n : ℕ) => (b i) ^ (p a b) * n ^ (p a b) * (1 / (log n) ^ 2) := by
+        _ = fun (n : ℕ) ↦ (n : ℝ) ^ (p a b) * (1 / (log n) ^ 2) := by simp_rw [mul_div, mul_one]
+        _ =Θ[atTop] fun (n : ℕ) ↦ (b i) ^ (p a b) * n ^ (p a b) * (1 / (log n) ^ 2) := by
             refine IsTheta.symm ?_
             simp_rw [mul_assoc]
             refine IsTheta.const_mul_left ?_ (isTheta_refl _ _)
             have := R.b_pos i; positivity
-        _ =Θ[atTop] fun (n : ℕ) => (b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n) := by
+        _ =Θ[atTop] fun (n : ℕ) ↦ (b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n) := by
             exact IsTheta.symm <| IsTheta.mul (isTheta_refl _ _)
                   <| R.isTheta_smoothingFn_sub_self i
-  have h_main : (fun (n : ℕ) => q (b i * n) - q (r i n))
-      ≤ᶠ[atTop] fun (n : ℕ) => (b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n) := by
-    calc (fun (n : ℕ) => q (b i * n) - q (r i n))
-           ≤ᶠ[atTop] fun (n : ℕ) => ‖q (r i n) - q (b i * n)‖ := by
+  have h_main : (fun (n : ℕ) ↦ q (b i * n) - q (r i n))
+      ≤ᶠ[atTop] fun (n : ℕ) ↦ (b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n) := by
+    calc (fun (n : ℕ) ↦ q (b i * n) - q (r i n))
+           ≤ᶠ[atTop] fun (n : ℕ) ↦ ‖q (r i n) - q (b i * n)‖ := by
               filter_upwards with _; rw [norm_sub_rev]; exact le_norm_self _
-         _ ≤ᶠ[atTop] fun (n : ℕ) => ‖(b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n)‖ :=
+         _ ≤ᶠ[atTop] fun (n : ℕ) ↦ ‖(b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n)‖ :=
               h_main_norm
-         _ =ᶠ[atTop] fun (n : ℕ) => (b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n) := by
+         _ =ᶠ[atTop] fun (n : ℕ) ↦ (b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n) := by
               filter_upwards [eventually_gt_atTop ⌈(b i)⁻¹⌉₊, eventually_gt_atTop 1] with n hn hn'
               refine norm_of_nonneg ?_
               have h₁ := R.b_pos i
@@ -475,7 +475,7 @@ lemma base_nonempty {n : ℕ} (hn : 0 < n) : (Finset.Ico (⌊b (min_bi b) / 2 * 
 `1 - ε n` does not change the asymptotic order, but is needed for the induction step to go
 through. -/
 lemma T_isBigO_smoothingFn_mul_asympBound :
-    T =O[atTop] (fun n => (1 - ε n) * asympBound g a b n) := by
+    T =O[atTop] (fun n ↦ (1 - ε n) * asympBound g a b n) := by
   let b' := b (min_bi b) / 2
   have hb_pos : 0 < b' := R.bi_min_div_two_pos
   rw [isBigO_atTop_iff_eventually_exists]
@@ -515,11 +515,11 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
   have h_base_nonempty := R.base_nonempty n₀_pos
   let base_max : ℝ :=
     (Finset.Ico (⌊b' * n₀⌋₊) n₀).sup' h_base_nonempty
-      fun n => T n / ((1 - ε n) * asympBound g a b n)
+      fun n ↦ T n / ((1 - ε n) * asympBound g a b n)
   -- The big-O constant we are aiming for: max of the base case ratio and what we need to
   -- cancel out the `g(n)` term in the calculation below
   set C := max (2 * c₁⁻¹) base_max with hC
-  refine ⟨C, fun n hn => ?_⟩
+  refine ⟨C, fun n hn ↦ ?_⟩
   -- Base case: statement is true for `b' * n₀ ≤ n < n₀`
   have h_base : ∀ n ∈ Finset.Ico (⌊b' * n₀⌋₊) n₀, T n ≤ C * ((1 - ε n) * asympBound g a b n) := by
     intro n hn
@@ -530,7 +530,7 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
     rw [← Finset.mem_Ico] at hn
     calc T n / ((1 - ε ↑n) * asympBound g a b n)
            ≤ (Finset.Ico (⌊b' * n₀⌋₊) n₀).sup' h_base_nonempty
-                (fun z => T z / ((1 - ε z) * asympBound g a b z)) :=
+                (fun z ↦ T z / ((1 - ε z) * asympBound g a b z)) :=
                   Finset.le_sup'_of_le _ (b := n) hn le_rfl
          _ ≤ C := le_max_right _ _
   have h_asympBound_pos' : 0 < asympBound g a b n := h_asympBound_pos n hn
@@ -571,7 +571,7 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
                 * ((1 + (∑ u ∈ range (r i n), g u / u ^ ((p a b) + 1)))))) + g n with i
             · have := R.a_pos i
               positivity
-            · refine add_nonneg zero_le_one <| Finset.sum_nonneg fun j _ => ?_
+            · refine add_nonneg zero_le_one <| Finset.sum_nonneg fun j _ ↦ ?_
               rw [div_nonneg_iff]
               exact Or.inl ⟨R.g_nonneg j (by positivity), by positivity⟩
             · exact bound1 n hn i
@@ -621,7 +621,7 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
 `1 + ε n` does not change the asymptotic order, but is needed for the induction step to go
 through. -/
 lemma smoothingFn_mul_asympBound_isBigO_T :
-    (fun (n : ℕ) => (1 + ε n) * asympBound g a b n) =O[atTop] T := by
+    (fun (n : ℕ) ↦ (1 + ε n) * asympBound g a b n) =O[atTop] T := by
   let b' := b (min_bi b) / 2
   have hb_pos : 0 < b' := R.bi_min_div_two_pos
   rw [isBigO_atTop_iff_eventually_exists_pos]
@@ -665,14 +665,14 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
   -- Min of the ratio T(n) / asympBound(n) over the base case n ∈ [b * n₀, n₀)
   set base_min : ℝ :=
     (Finset.Ico (⌊b' * n₀⌋₊) n₀).inf' h_base_nonempty
-      (fun n => T n / ((1 + ε n) * asympBound g a b n)) with base_min_def
+      (fun n ↦ T n / ((1 + ε n) * asympBound g a b n)) with base_min_def
   -- The big-O constant we are aiming for: min of the base case ratio and what we need to cancel
   -- out the g(n) term in the calculation below
   let C := min (2 * c₁)⁻¹ base_min
   have hC_pos : 0 < C := by
     refine lt_min (by positivity) ?_
     obtain ⟨m, hm_mem, hm⟩ :=
-      Finset.exists_mem_eq_inf' h_base_nonempty (fun n => T n / ((1 + ε n) * asympBound g a b n))
+      Finset.exists_mem_eq_inf' h_base_nonempty (fun n ↦ T n / ((1 + ε n) * asympBound g a b n))
     calc 0 < T m / ((1 + ε m) * asympBound g a b m) := by
               have H₁ : 0 < T m := by exact R.T_pos _
               have H₂ : 0 < 1 + ε m := by rw [Finset.mem_Ico] at hm_mem
@@ -683,7 +683,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
                      _ ≤ m := by rw [Finset.mem_Ico] at hm_mem; exact hm_mem.1
               positivity
          _ = base_min := by rw [base_min_def, hm]
-  refine ⟨C, hC_pos, fun n hn => ?_⟩
+  refine ⟨C, hC_pos, fun n hn ↦ ?_⟩
   -- Base case: statement is true for `b' * n₀ ≤ n < n₀`
   have h_base : ∀ n ∈ Finset.Ico (⌊b' * n₀⌋₊) n₀, C * ((1 + ε n) * asympBound g a b n) ≤ T n := by
     intro n hn
@@ -694,7 +694,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
     rw [← Finset.mem_Ico] at hn
     calc T n / ((1 + ε ↑n) * asympBound g a b n)
            ≥ (Finset.Ico (⌊b' * n₀⌋₊) n₀).inf' h_base_nonempty
-                  fun z => T z / ((1 + ε z) * asympBound g a b z) :=
+                  fun z ↦ T z / ((1 + ε z) * asympBound g a b z) :=
                     Finset.inf'_le_of_le _ (b := n) hn <| le_refl _
          _ ≥ C := min_le_right _ _
   have h_asympBound_pos' : 0 < asympBound g a b n := h_asympBound_pos n hn
@@ -731,7 +731,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
                   ((1 + (∑ u ∈ range (r i n), g u / u ^ ((p a b) + 1)))))) + g n with i
               · have := R.a_pos i
                 positivity
-              · refine add_nonneg zero_le_one <| Finset.sum_nonneg fun j _ => ?_
+              · refine add_nonneg zero_le_one <| Finset.sum_nonneg fun j _ ↦ ?_
                 rw [div_nonneg_iff]
                 exact Or.inl ⟨R.g_nonneg j (by positivity), by positivity⟩
               · exact bound2 n hn i
@@ -781,23 +781,23 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
 
 /-- The **Akra-Bazzi theorem**: `T ∈ O(n^p (1 + ∑_u^n g(u) / u^{p+1}))` -/
 theorem isBigO_asympBound : T =O[atTop] asympBound g a b := by
-  calc T =O[atTop] (fun n => (1 - ε n) * asympBound g a b n) := by
+  calc T =O[atTop] (fun n ↦ (1 - ε n) * asympBound g a b n) := by
               exact R.T_isBigO_smoothingFn_mul_asympBound
-         _ =O[atTop] (fun n => 1 * asympBound g a b n) := by
+         _ =O[atTop] (fun n ↦ 1 * asympBound g a b n) := by
               refine IsBigO.mul (isBigO_const_of_tendsto (y := 1) ?_ one_ne_zero)
                 (isBigO_refl _ _)
-              rw [← Function.comp_def (fun n => 1 - ε n) Nat.cast]
+              rw [← Function.comp_def (fun n ↦ 1 - ε n) Nat.cast]
               exact Tendsto.comp isEquivalent_one_sub_smoothingFn_one.tendsto_const
                 tendsto_natCast_atTop_atTop
          _ = asympBound g a b := by simp
 
 /-- The **Akra-Bazzi theorem**: `T ∈ Ω(n^p (1 + ∑_u^n g(u) / u^{p+1}))` -/
 theorem isBigO_symm_asympBound : asympBound g a b =O[atTop] T := by
-  calc asympBound g a b = (fun n => 1 * asympBound g a b n) := by simp
-                 _ ~[atTop] (fun n => (1 + ε n) * asympBound g a b n) := by
+  calc asympBound g a b = (fun n ↦ 1 * asympBound g a b n) := by simp
+                 _ ~[atTop] (fun n ↦ (1 + ε n) * asympBound g a b n) := by
                             refine IsEquivalent.mul (IsEquivalent.symm ?_) IsEquivalent.refl
                             rw [Function.const_def, isEquivalent_const_iff_tendsto one_ne_zero,
-                              ← Function.comp_def (fun n => 1 + ε n) Nat.cast]
+                              ← Function.comp_def (fun n ↦ 1 + ε n) Nat.cast]
                             exact Tendsto.comp isEquivalent_one_add_smoothingFn_one.tendsto_const
                               tendsto_natCast_atTop_atTop
                  _ =O[atTop] T := R.smoothingFn_mul_asympBound_isBigO_T

@@ -88,7 +88,7 @@ theorem sup_support_add_le :
   exact (Finset.sup_mono Finsupp.support_add).trans_eq Finset.sup_union
 
 theorem le_inf_support_add : f.support.inf degt ⊓ g.support.inf degt ≤ (f + g).support.inf degt :=
-  sup_support_add_le (fun a : A => OrderDual.toDual (degt a)) f g
+  sup_support_add_le (fun a : A ↦ OrderDual.toDual (degt a)) f g
 
 end ExplicitDegrees
 
@@ -120,23 +120,23 @@ variable [AddMonoid A] [AddMonoid B] [AddLeftMono B] [AddRightMono B]
 theorem sup_support_list_prod_le (degb0 : degb 0 ≤ 0)
     (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b) :
     ∀ l : List R[A],
-      l.prod.support.sup degb ≤ (l.map fun f : R[A] => f.support.sup degb).sum
+      l.prod.support.sup degb ≤ (l.map fun f : R[A] ↦ f.support.sup degb).sum
   | [] => by
     rw [List.map_nil, Finset.sup_le_iff, List.prod_nil, List.sum_nil]
-    exact fun a ha => by rwa [Finset.mem_singleton.mp (Finsupp.support_single_subset ha)]
+    exact fun a ha ↦ by rwa [Finset.mem_singleton.mp (Finsupp.support_single_subset ha)]
   | f::fs => by
     rw [List.prod_cons, List.map_cons, List.sum_cons]
-    exact (sup_support_mul_le (@fun a b => degbm a b) _ _).trans
+    exact (sup_support_mul_le (@fun a b ↦ degbm a b) _ _).trans
         (add_le_add_left (sup_support_list_prod_le degb0 degbm fs) _)
 
 theorem le_inf_support_list_prod (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (l : List R[A]) :
-    (l.map fun f : R[A] => f.support.inf degt).sum ≤ l.prod.support.inf degt := by
+    (l.map fun f : R[A] ↦ f.support.inf degt).sum ≤ l.prod.support.inf degt := by
   refine OrderDual.ofDual_le_ofDual.mpr ?_
   refine sup_support_list_prod_le ?_ ?_ l
   · refine (OrderDual.ofDual_le_ofDual.mp ?_)
     exact degt0
-  · refine (fun a b => OrderDual.ofDual_le_ofDual.mp ?_)
+  · refine (fun a b ↦ OrderDual.ofDual_le_ofDual.mp ?_)
     exact degtm a b
 
 theorem sup_support_pow_le (degb0 : degb 0 ≤ 0) (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b)
@@ -148,7 +148,7 @@ theorem sup_support_pow_le (degb0 : degb 0 ≤ 0) (degbm : ∀ a b, degb (a + b)
 theorem le_inf_support_pow (degt0 : 0 ≤ degt 0) (degtm : ∀ a b, degt a + degt b ≤ degt (a + b))
     (n : ℕ) (f : R[A]) : n • f.support.inf degt ≤ (f ^ n).support.inf degt := by
   refine OrderDual.ofDual_le_ofDual.mpr <| sup_support_pow_le (OrderDual.ofDual_le_ofDual.mp ?_)
-      (fun a b => OrderDual.ofDual_le_ofDual.mp ?_) n f
+      (fun a b ↦ OrderDual.ofDual_le_ofDual.mp ?_) n f
   · exact degt0
   · exact degtm _ _
 
@@ -164,17 +164,17 @@ variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [AddLeftMono B] [A
 
 theorem sup_support_multiset_prod_le (degb0 : degb 0 ≤ 0)
     (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b) (m : Multiset R[A]) :
-    m.prod.support.sup degb ≤ (m.map fun f : R[A] => f.support.sup degb).sum := by
+    m.prod.support.sup degb ≤ (m.map fun f : R[A] ↦ f.support.sup degb).sum := by
   induction m using Quot.inductionOn
   rw [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.sum_coe, Multiset.prod_coe]
   exact sup_support_list_prod_le degb0 degbm _
 
 theorem le_inf_support_multiset_prod (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (m : Multiset R[A]) :
-    (m.map fun f : R[A] => f.support.inf degt).sum ≤ m.prod.support.inf degt := by
+    (m.map fun f : R[A] ↦ f.support.inf degt).sum ≤ m.prod.support.inf degt := by
   refine OrderDual.ofDual_le_ofDual.mpr <|
     sup_support_multiset_prod_le (OrderDual.ofDual_le_ofDual.mp ?_)
-      (fun a b => OrderDual.ofDual_le_ofDual.mp ?_) m
+      (fun a b ↦ OrderDual.ofDual_le_ofDual.mp ?_) m
   · exact degt0
   · exact degtm _ _
 
@@ -239,7 +239,7 @@ theorem supDegree_sub_le {f g : R'[A]} :
   rw [sub_eq_add_neg, ← supDegree_neg (f := g)]; apply supDegree_add_le
 
 theorem supDegree_sum_le {ι} {s : Finset ι} {f : ι → R[A]} :
-    (∑ i ∈ s, f i).supDegree D ≤ s.sup (fun i => (f i).supDegree D) := by
+    (∑ i ∈ s, f i).supDegree D ≤ s.sup (fun i ↦ (f i).supDegree D) := by
   classical
   exact (Finset.sup_mono Finsupp.support_finset_sum).trans_eq (Finset.sup_biUnion _ _)
 
@@ -271,10 +271,10 @@ variable [AddZeroClass A] {p q : R[A]}
 @[simp]
 theorem supDegree_zero : (0 : R[A]).supDegree D = ⊥ := by simp [supDegree]
 
-theorem ne_zero_of_supDegree_ne_bot : p.supDegree D ≠ ⊥ → p ≠ 0 := mt (fun h => h ▸ supDegree_zero)
+theorem ne_zero_of_supDegree_ne_bot : p.supDegree D ≠ ⊥ → p ≠ 0 := mt (fun h ↦ h ▸ supDegree_zero)
 
 theorem ne_zero_of_not_supDegree_le {b : B} (h : ¬ p.supDegree D ≤ b) : p ≠ 0 :=
-  ne_zero_of_supDegree_ne_bot (fun he => h <| he ▸ bot_le)
+  ne_zero_of_supDegree_ne_bot (fun he ↦ h <| he ▸ bot_le)
 
 theorem supDegree_eq_of_max {b : B} (hb : b ∈ Set.range D) (hmem : D.invFun b ∈ p.support)
     (hmax : ∀ a ∈ p.support, D a ≤ b) : p.supDegree D = b :=
@@ -285,7 +285,7 @@ variable [Add B]
 theorem supDegree_mul_le (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
     [AddLeftMono B] [AddRightMono B] :
     (p * q).supDegree D ≤ p.supDegree D + q.supDegree D :=
-  sup_support_mul_le (fun {_ _} => (hadd _ _).le) p q
+  sup_support_mul_le (fun {_ _} ↦ (hadd _ _).le) p q
 
 theorem supDegree_prod_le {R A B : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
     [SemilatticeSup B] [OrderBot B]
@@ -308,17 +308,17 @@ theorem apply_add_of_supDegree_le (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
   classical
   simp_rw [mul_apply, Finsupp.sum]
   rw [Finset.sum_eq_single ap, Finset.sum_eq_single aq, if_pos rfl]
-  · refine fun a ha hne => if_neg (fun he => ?_)
+  · refine fun a ha hne ↦ if_neg (fun he ↦ ?_)
     apply_fun D at he; simp_rw [hadd] at he
     exact (add_lt_add_left (((Finset.le_sup ha).trans hq).lt_of_ne <| hD.ne_iff.2 hne) _).ne he
   · intro h; rw [if_pos rfl, Finsupp.notMem_support_iff.1 h, mul_zero]
-  · refine fun a ha hne => Finset.sum_eq_zero (fun a' ha' => if_neg <| fun he => ?_)
+  · refine fun a ha hne ↦ Finset.sum_eq_zero (fun a' ha' ↦ if_neg <| fun he ↦ ?_)
     apply_fun D at he
     simp_rw [hadd] at he
     have := addLeftMono_of_addLeftStrictMono B
     exact (add_lt_add_of_lt_of_le (((Finset.le_sup ha).trans hp).lt_of_ne <| hD.ne_iff.2 hne)
       <| (Finset.le_sup ha').trans hq).ne he
-  · refine fun h => Finset.sum_eq_zero (fun a _ => ite_eq_right_iff.mpr <| fun _ => ?_)
+  · refine fun h ↦ Finset.sum_eq_zero (fun a _ ↦ ite_eq_right_iff.mpr <| fun _ ↦ ?_)
     rw [Finsupp.notMem_support_iff.mp h, zero_mul]
 
 end SupDegree
@@ -351,7 +351,7 @@ theorem leadingCoeff_single [Nonempty A] (hD : D.Injective) (a : A) (r : R) :
 @[simp]
 theorem leadingCoeff_zero [Nonempty A] : (0 : R[A]).leadingCoeff D = 0 := rfl
 
-lemma Monic.ne_zero [Nonempty A] [Nontrivial R] (hp : p.Monic D) : p ≠ 0 := fun h => by
+lemma Monic.ne_zero [Nonempty A] [Nontrivial R] (hp : p.Monic D) : p ≠ 0 := fun h ↦ by
   simp_rw [Monic, h, leadingCoeff_zero, zero_ne_one] at hp
 
 @[simp]
@@ -407,7 +407,7 @@ lemma supDegree_mem_support (hD : D.Injective) (hp : p ≠ 0) :
 
 @[simp]
 lemma leadingCoeff_eq_zero (hD : D.Injective) : p.leadingCoeff D = 0 ↔ p = 0 := by
-  refine ⟨(fun h => ?_).mtr, fun h => h ▸ leadingCoeff_zero⟩
+  refine ⟨(fun h ↦ ?_).mtr, fun h ↦ h ▸ leadingCoeff_zero⟩
   rw [leadingCoeff, ← Ne, ← Finsupp.mem_support_iff]
   exact supDegree_mem_support hD h
 
@@ -418,10 +418,10 @@ lemma supDegree_sub_lt_of_leadingCoeff_eq (hD : D.Injective) {R} [Ring R] {p q :
     (hd : p.supDegree D = q.supDegree D) (hc : p.leadingCoeff D = q.leadingCoeff D) :
     (p - q).supDegree D < p.supDegree D ∨ p = q := by
   rw [or_iff_not_imp_right]
-  refine fun he => (supDegree_sub_le.trans ?_).lt_of_ne ?_
+  refine fun he ↦ (supDegree_sub_le.trans ?_).lt_of_ne ?_
   · rw [hd, sup_idem]
   · rw [← sub_eq_zero, ← leadingCoeff_eq_zero hD, leadingCoeff] at he
-    refine fun h => he ?_
+    refine fun h ↦ he ?_
     rwa [h, Finsupp.sub_apply, ← leadingCoeff, hd, ← leadingCoeff, sub_eq_zero]
 
 lemma supDegree_leadingCoeff_sum_eq
@@ -433,7 +433,7 @@ lemma supDegree_leadingCoeff_sum_eq
   by_cases hs : s.erase i = ∅
   · rw [hs, Finset.sum_empty, add_zero]; exact ⟨rfl, rfl⟩
   suffices _ from ⟨supDegree_add_eq_left this, leadingCoeff_add_eq_left this⟩
-  refine supDegree_sum_lt ?_ (fun j hj => ?_)
+  refine supDegree_sum_lt ?_ (fun j hj ↦ ?_)
   · rw [Finset.nonempty_iff_ne_empty]; exact hs
   · rw [Finset.mem_erase] at hj; exact hmax j hj.2 hj.1
 
@@ -444,7 +444,7 @@ lemma sum_ne_zero_of_injOn_supDegree' (hs : ∃ i ∈ s, f i ≠ 0)
   obtain ⟨j, hj, hne⟩ := hs
   obtain ⟨i, hi, he⟩ := exists_mem_eq_sup _ ⟨j, hj⟩ (supDegree D ∘ f)
   by_cases h : ∀ k ∈ s, k = i
-  · refine (sum_eq_single_of_mem j hj (fun k hk hne => ?_)).trans_ne hne
+  · refine (sum_eq_single_of_mem j hj (fun k hk hne ↦ ?_)).trans_ne hne
     rw [h k hk, h j hj] at hne; exact hne.irrefl.elim
   push_neg at h; obtain ⟨j, hj, hne⟩ := h
   apply ne_zero_of_supDegree_ne_bot (D := D)
@@ -486,7 +486,7 @@ lemma supDegree_mul
     exact hpq
   · have := addLeftMono_of_addLeftStrictMono B
     have := addRightMono_of_addRightStrictMono B
-    exact fun a ha => (Finset.le_sup ha).trans (supDegree_mul_le hadd)
+    exact fun a ha ↦ (Finset.le_sup ha).trans (supDegree_mul_le hadd)
 
 lemma Monic.supDegree_mul_of_ne_zero_left
     (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
@@ -596,7 +596,7 @@ theorem infDegree_withTop_some_comp {s : AddMonoidAlgebra R A} (hs : s.support.N
 theorem le_infDegree_mul [AddZeroClass A] [Add T] [AddLeftMono T] [AddRightMono T]
     (D : AddHom A T) (f g : R[A]) :
     f.infDegree D + g.infDegree D ≤ (f * g).infDegree D :=
-  le_inf_support_mul (fun {a b : A} => (map_add D a b).ge) _ _
+  le_inf_support_mul (fun {a b : A} ↦ (map_add D a b).ge) _ _
 
 end InfDegree
 

@@ -37,9 +37,9 @@ variable [BraidedCategory C]
 /-- The braiding `tensorObj X Y ≅ tensorObj Y X` when `X` and `Y` are graded objects
 indexed by a commutative additive monoid. -/
 noncomputable def braiding [HasTensor X Y] [HasTensor Y X] : tensorObj X Y ≅ tensorObj Y X where
-  hom k := tensorObjDesc (fun i j hij => (β_ _ _).hom ≫
+  hom k := tensorObjDesc (fun i j hij ↦ (β_ _ _).hom ≫
     ιTensorObj Y X j i k (by simpa only [add_comm j i] using hij))
-  inv k := tensorObjDesc (fun i j hij => (β_ _ _).inv ≫
+  inv k := tensorObjDesc (fun i j hij ↦ (β_ _ _).inv ≫
     ιTensorObj X Y j i k (by simpa only [add_comm j i] using hij))
 
 variable {Y Z} in

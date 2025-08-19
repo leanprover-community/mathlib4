@@ -79,8 +79,8 @@ lemma smul_mem_smul (hm : m ∈ M) (hn : n ∈ N) : m • n ∈ M • N :=
   (le_iSup _ ⟨m, hm⟩ : _ ≤ M • N) ⟨n, hn, by rfl⟩
 
 lemma smul_le : M • N ≤ P ↔ ∀ m ∈ M, ∀ n ∈ N, m • n ∈ P :=
-  ⟨fun H _m hm _n hn => H <| smul_mem_smul hm hn, fun H =>
-    iSup_le fun ⟨m, hm⟩ => map_le_iff_le_comap.2 fun n hn => H m hm n hn⟩
+  ⟨fun H _m hm _n hn ↦ H <| smul_mem_smul hm hn, fun H ↦
+    iSup_le fun ⟨m, hm⟩ ↦ map_le_iff_le_comap.2 fun n hn ↦ H m hm n hn⟩
 
 @[elab_as_elim]
 protected lemma smul_induction_on {C : A → Prop} {a : A} (ha : a ∈ M • N)
@@ -90,11 +90,11 @@ protected lemma smul_induction_on {C : A → Prop} {a : A} (ha : a ∈ M • N)
 
 @[simp]
 lemma addSubmonoid_smul_bot (S : AddSubmonoid R) : S • (⊥ : AddSubmonoid A) = ⊥ :=
-  eq_bot_iff.2 <| smul_le.2 fun m _ n hn => by
+  eq_bot_iff.2 <| smul_le.2 fun m _ n hn ↦ by
     rw [AddSubmonoid.mem_bot] at hn ⊢; rw [hn, smul_zero]
 
 lemma smul_le_smul (h : M ≤ M') (hnp : N ≤ P) : M • N ≤ M' • P :=
-  smul_le.2 fun _m hm _n hn => smul_mem_smul (h hm) (hnp hn)
+  smul_le.2 fun _m hm _n hn ↦ smul_mem_smul (h hm) (hnp hn)
 
 lemma smul_le_smul_left (h : M ≤ M') : M • P ≤ M' • P := smul_le_smul h le_rfl
 lemma smul_le_smul_right (h : N ≤ P) : M • N ≤ M • P := smul_le_smul le_rfl h
@@ -127,7 +127,7 @@ variable [NonUnitalNonAssocSemiring R] {M N P : AddSubmonoid R}
 
 /-- Multiplication of additive submonoids of a semiring R. The additive submonoid `S * T` is the
 smallest R-submodule of `R` containing the elements `s * t` for `s ∈ S` and `t ∈ T`. -/
-protected def mul : Mul (AddSubmonoid R) := ⟨fun M N => ⨆ s : M, N.map (AddMonoidHom.mul s.1)⟩
+protected def mul : Mul (AddSubmonoid R) := ⟨fun M N ↦ ⨆ s : M, N.map (AddMonoidHom.mul s.1)⟩
 
 scoped[Pointwise] attribute [instance] AddSubmonoid.mul
 
@@ -143,11 +143,11 @@ protected lemma mul_induction_on {C : R → Prop} {r : R} (hr : r ∈ M * N)
 -- need `add_smul` to generalize to `SMul`
 lemma closure_mul_closure (S T : Set R) : closure S * closure T = closure (S * T) := by
   apply le_antisymm
-  · refine mul_le.2 fun a ha b hb => ?_
+  · refine mul_le.2 fun a ha b hb ↦ ?_
     rw [← AddMonoidHom.mulRight_apply, ← AddSubmonoid.mem_comap]
-    refine (closure_le.2 fun a' ha' => ?_) ha
+    refine (closure_le.2 fun a' ha' ↦ ?_) ha
     change b ∈ (closure (S * T)).comap (AddMonoidHom.mulLeft a')
-    refine (closure_le.2 fun b' hb' => ?_) hb
+    refine (closure_le.2 fun b' hb' ↦ ?_) hb
     change a' * b' ∈ closure (S * T)
     exact subset_closure (Set.mul_mem_mul ha' hb')
   · rw [closure_le]
@@ -162,7 +162,7 @@ lemma mul_eq_closure_mul_set (M N : AddSubmonoid R) : M * N = closure (M * N : S
 -- need `zero_smul` to generalize to `SMul`
 @[simp]
 lemma bot_mul (S : AddSubmonoid R) : ⊥ * S = ⊥ :=
-  eq_bot_iff.2 <| mul_le.2 fun m hm n _ => by rw [AddSubmonoid.mem_bot] at hm ⊢; rw [hm, zero_mul]
+  eq_bot_iff.2 <| mul_le.2 fun m hm n _ ↦ by rw [AddSubmonoid.mem_bot] at hm ⊢; rw [hm, zero_mul]
 
 variable {M N P Q : AddSubmonoid R}
 
@@ -208,14 +208,14 @@ variable [NonUnitalNonAssocRing R]
 This is available as an instance in the `Pointwise` locale. -/
 protected def hasDistribNeg : HasDistribNeg (AddSubmonoid R) where
   neg_mul x y := by
-    refine le_antisymm (mul_le.2 fun m hm n hn => ?_)
-      ((AddSubmonoid.neg_le _ _).2 <| mul_le.2 fun m hm n hn => ?_) <;>
+    refine le_antisymm (mul_le.2 fun m hm n hn ↦ ?_)
+      ((AddSubmonoid.neg_le _ _).2 <| mul_le.2 fun m hm n hn ↦ ?_) <;>
         simp only [AddSubmonoid.mem_neg, ← neg_mul] at *
     · exact mul_mem_mul hm hn
     · exact mul_mem_mul (neg_mem_neg.2 hm) hn
   mul_neg x y := by
-    refine le_antisymm (mul_le.2 fun m hm n hn => ?_)
-      ((AddSubmonoid.neg_le _ _).2 <| mul_le.2 fun m hm n hn => ?_) <;>
+    refine le_antisymm (mul_le.2 fun m hm n hn ↦ ?_)
+      ((AddSubmonoid.neg_le _ _).2 <| mul_le.2 fun m hm n hn ↦ ?_) <;>
         simp only [AddSubmonoid.mem_neg, ← mul_neg] at *
     · exact mul_mem_mul hm hn
     · exact mul_mem_mul hm (neg_mem_neg.2 hn)
@@ -243,10 +243,10 @@ variable [NonUnitalSemiring R]
 protected def semigroup : Semigroup (AddSubmonoid R) where
   mul_assoc _M _N _P :=
     le_antisymm
-      (mul_le.2 fun _mn hmn p hp => AddSubmonoid.mul_induction_on hmn
+      (mul_le.2 fun _mn hmn p hp ↦ AddSubmonoid.mul_induction_on hmn
         (fun m hm n hn ↦ mul_assoc m n p ▸ mul_mem_mul hm <| mul_mem_mul hn hp)
         fun x y ↦ (add_mul x y p).symm ▸ add_mem)
-      (mul_le.2 fun m hm _np hnp => AddSubmonoid.mul_induction_on hnp
+      (mul_le.2 fun m hm _np hnp ↦ AddSubmonoid.mul_induction_on hnp
         (fun n hn p hp ↦ mul_assoc m n p ▸ mul_mem_mul (mul_mem_mul hm hn) hp)
         fun x y ↦ (mul_add m x y) ▸ add_mem)
 

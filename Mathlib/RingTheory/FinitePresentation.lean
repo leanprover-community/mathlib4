@@ -64,7 +64,7 @@ variable {R A B}
 /-- An algebra over a Noetherian ring is finitely generated if and only if it is finitely
 presented. -/
 theorem of_finiteType [IsNoetherianRing R] : FiniteType R A ↔ FinitePresentation R A := by
-  refine ⟨fun h => ?_, fun hfp => Algebra.FiniteType.of_finitePresentation⟩
+  refine ⟨fun h ↦ ?_, fun hfp ↦ Algebra.FiniteType.of_finitePresentation⟩
   obtain ⟨n, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.1 h
   refine ⟨n, f, hf, ?_⟩
   have hnoet : IsNoetherianRing (MvPolynomial (Fin n) R) := by infer_instance
@@ -215,9 +215,9 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
   · rw [← AlgHom.range_eq_top, ← Algebra.adjoin_range_eq_range_aeval,
       Set.range_comp f MvPolynomial.X, eq_top_iff, ← @adjoin_adjoin_of_tower R A B,
       adjoin_image, adjoin_range_X, Algebra.map_top, (AlgHom.range_eq_top _).mpr hf]
-    exact fun {x} => subset_adjoin ⟨⟩
+    exact fun {x} ↦ subset_adjoin ⟨⟩
   · obtain ⟨t, ht⟩ := FiniteType.out (R := R) (A := A)
-    have := fun i : t => hf (algebraMap A B i)
+    have := fun i : t ↦ hf (algebraMap A B i)
     choose t' ht' using this
     have ht'' : Algebra.adjoin R (algebraMap A AX '' t ∪ Set.range (X : _ → AX)) = ⊤ := by
       rw [adjoin_union_eq_adjoin_adjoin, ← Subalgebra.restrictScalars_top R (A := AX)
@@ -227,7 +227,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
       apply Subalgebra.restrictScalars_injective R
       rw [← adjoin_restrictScalars, adjoin_range_X, Subalgebra.restrictScalars_top,
         Subalgebra.restrictScalars_top]
-    letI g : t → AX := fun x => MvPolynomial.C (x : A) - map (algebraMap R A) (t' x)
+    letI g : t → AX := fun x ↦ MvPolynomial.C (x : A) - map (algebraMap R A) (t' x)
     refine ⟨s.image (map (algebraMap R A)) ∪ t.attach.image g, ?_⟩
     rw [Finset.coe_union, Finset.coe_image, Finset.coe_image, Finset.attach_eq_univ,
       Finset.coe_univ, Set.image_univ]
@@ -299,12 +299,12 @@ theorem ker_fg_of_mvPolynomial {n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] A
     obtain ⟨m, f', hf', s, hs⟩ := FinitePresentation.out (R := R) (A := A)
     let RXn := MvPolynomial (Fin n) R
     let RXm := MvPolynomial (Fin m) R
-    have := fun i : Fin n => hf' (f <| X i)
+    have := fun i : Fin n ↦ hf' (f <| X i)
     choose g hg using this
-    have := fun i : Fin m => hf (f' <| X i)
+    have := fun i : Fin m ↦ hf (f' <| X i)
     choose h hh using this
     let aeval_h : RXm →ₐ[R] RXn := aeval h
-    let g' : Fin n → RXn := fun i => X i - aeval_h (g i)
+    let g' : Fin n → RXn := fun i ↦ X i - aeval_h (g i)
     refine ⟨Finset.univ.image g' ∪ s.image aeval_h, ?_⟩
     simp only [Finset.coe_image, Finset.coe_union, Finset.coe_univ, Set.image_univ]
     have hh' : ∀ x, f (aeval_h x) = f' x := by
@@ -313,7 +313,7 @@ theorem ker_fg_of_mvPolynomial {n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] A
       simp_rw [AlgHom.coe_toRingHom, hh]
       rw [AlgHom.comp_algebraMap, ← aeval_eq_eval₂Hom,
         -- Porting note: added line below
-        ← funext fun i => Function.comp_apply (f := ↑f') (g := MvPolynomial.X),
+        ← funext fun i ↦ Function.comp_apply (f := ↑f') (g := MvPolynomial.X),
         ← aeval_unique]
     let s' := Set.range g' ∪ aeval_h '' s
     have leI : Ideal.span s' ≤ RingHom.ker f.toRingHom := by
@@ -415,7 +415,7 @@ theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FinitePresentati
     (f :=
       { g with
         toFun := g
-        commutes' := fun _ => rfl })
+        commutes' := fun _ ↦ rfl })
     hg hker
 
 theorem of_surjective (f : A →+* B) (hf : Surjective f) (hker : (RingHom.ker f).FG) :

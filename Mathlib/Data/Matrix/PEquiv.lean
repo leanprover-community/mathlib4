@@ -48,7 +48,7 @@ open Matrix
 /-- `toMatrix` returns a matrix containing ones and zeros. `f.toMatrix i j` is `1` if
   `f i = some j` and `0` otherwise -/
 def toMatrix [DecidableEq n] [Zero α] [One α] (f : m ≃. n) : Matrix m n α :=
-  of fun i j => if j ∈ f i then (1 : α) else 0
+  of fun i j ↦ if j ∈ f i then (1 : α) else 0
 
 -- TODO: set as an equation lemma for `toMatrix`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
@@ -57,7 +57,7 @@ theorem toMatrix_apply [DecidableEq n] [Zero α] [One α] (f : m ≃. n) (i j) :
   rfl
 
 theorem toMatrix_mul_apply [Fintype m] [DecidableEq m] [NonAssocSemiring α] (f : l ≃. m) (i j)
-    (M : Matrix m n α) : (f.toMatrix * M :) i j = Option.casesOn (f i) 0 fun fi => M fi j := by
+    (M : Matrix m n α) : (f.toMatrix * M :) i j = Option.casesOn (f i) 0 fun fi ↦ M fi j := by
   dsimp [toMatrix, Matrix.mul_apply]
   rcases h : f i with - | fi
   · simp
@@ -108,7 +108,7 @@ theorem toMatrix_toPEquiv_mul [Fintype m] [DecidableEq m]
 theorem mul_toMatrix_toPEquiv [Fintype m] [DecidableEq n]
     [NonAssocSemiring α] (M : Matrix l m α) (f : m ≃ n) :
     (M * f.toPEquiv.toMatrix) = M.submatrix id f.symm :=
-  Matrix.ext fun i j => by
+  Matrix.ext fun i j ↦ by
     rw [PEquiv.mul_toMatrix_apply, ← Equiv.toPEquiv_symm, Equiv.toPEquiv_apply,
       Matrix.submatrix_apply, id]
 
@@ -182,7 +182,7 @@ theorem single_mul_single_right [Fintype n] [Fintype k] [DecidableEq n] [Decidab
 /-- We can also define permutation matrices by permuting the rows of the identity matrix. -/
 theorem toMatrix_toPEquiv_eq [DecidableEq n] [Zero α] [One α] (σ : Equiv.Perm n) :
     σ.toPEquiv.toMatrix = (1 : Matrix n n α).submatrix σ id :=
-  Matrix.ext fun _ _ => if_congr Option.some_inj rfl rfl
+  Matrix.ext fun _ _ ↦ if_congr Option.some_inj rfl rfl
 
 @[simp]
 lemma map_toMatrix [DecidableEq n] [NonAssocSemiring α] [NonAssocSemiring β]

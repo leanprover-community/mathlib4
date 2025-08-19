@@ -52,11 +52,11 @@ namespace Game
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): added this definition
 /-- Negation of games. -/
 instance : Neg Game where
-  neg := Quot.map Neg.neg <| fun _ _ => (neg_equiv_neg_iff).2
+  neg := Quot.map Neg.neg <| fun _ _ ↦ (neg_equiv_neg_iff).2
 
 instance : Zero Game where zero := ⟦0⟧
 instance : Add Game where
-  add := Quotient.map₂ HAdd.hAdd <| fun _ _ hx _ _ hy => PGame.add_congr hx hy
+  add := Quotient.map₂ HAdd.hAdd <| fun _ _ hx _ _ hy ↦ PGame.add_congr hx hy
 
 instance instAddCommGroupWithOneGame : AddCommGroupWithOne Game where
   zero := ⟦0⟧
@@ -70,7 +70,7 @@ instance instAddCommGroupWithOneGame : AddCommGroupWithOne Game where
   add_assoc := by
     rintro ⟨x⟩ ⟨y⟩ ⟨z⟩
     exact Quot.sound add_assoc_equiv
-  neg_add_cancel := Quotient.ind <| fun x => Quot.sound (neg_add_cancel_equiv x)
+  neg_add_cancel := Quotient.ind <| fun x ↦ Quot.sound (neg_add_cancel_equiv x)
   add_comm := by
     rintro ⟨x⟩ ⟨y⟩
     exact Quot.sound add_comm_equiv
@@ -84,7 +84,7 @@ theorem zero_def : (0 : Game) = ⟦0⟧ :=
   rfl
 
 instance instPartialOrderGame : PartialOrder Game where
-  le := Quotient.lift₂ (· ≤ ·) fun _ _ _ _ hx hy => propext (le_congr hx hy)
+  le := Quotient.lift₂ (· ≤ ·) fun _ _ _ _ hx hy ↦ propext (le_congr hx hy)
   le_refl := by
     rintro ⟨x⟩
     exact le_refl x
@@ -95,7 +95,7 @@ instance instPartialOrderGame : PartialOrder Game where
     rintro ⟨x⟩ ⟨y⟩ h₁ h₂
     apply Quot.sound
     exact ⟨h₁, h₂⟩
-  lt := Quotient.lift₂ (· < ·) fun _ _ _ _ hx hy => propext (lt_congr hx hy)
+  lt := Quotient.lift₂ (· < ·) fun _ _ _ _ hx hy ↦ propext (lt_congr hx hy)
   lt_iff_le_not_ge := by
     rintro ⟨x⟩ ⟨y⟩
     exact @lt_iff_le_not_ge _ _ x y
@@ -104,7 +104,7 @@ instance instPartialOrderGame : PartialOrder Game where
 
 If `0 ⧏ x` (less or fuzzy with), then Left can win `x` as the first player. -/
 def LF : Game → Game → Prop :=
-  Quotient.lift₂ PGame.LF fun _ _ _ _ hx hy => propext (lf_congr hx hy)
+  Quotient.lift₂ PGame.LF fun _ _ _ _ hx hy ↦ propext (lf_congr hx hy)
 
 /-- On `Game`, simp-normal inequalities should use as few negations as possible. -/
 @[simp]
@@ -122,7 +122,7 @@ theorem not_lf : ∀ {x y : Game}, ¬Game.LF x y ↔ y ≤ x := by
 
 If `x ‖ 0`, then the first player can always win `x`. -/
 def Fuzzy : Game → Game → Prop :=
-  Quotient.lift₂ PGame.Fuzzy fun _ _ _ _ hx hy => propext (fuzzy_congr hx hy)
+  Quotient.lift₂ PGame.Fuzzy fun _ _ _ _ hx hy ↦ propext (fuzzy_congr hx hy)
 
 -- Porting note: had to replace ⧏ with LF, otherwise cannot differentiate with the operator on PGame
 instance : IsTrichotomous Game LF :=
@@ -239,8 +239,8 @@ theorem quot_natCast : ∀ n : ℕ, ⟦(n : PGame)⟧ = (n : Game)
 theorem quot_eq_of_mk'_quot_eq {x y : PGame} (L : x.LeftMoves ≃ y.LeftMoves)
     (R : x.RightMoves ≃ y.RightMoves) (hl : ∀ i, (⟦x.moveLeft i⟧ : Game) = ⟦y.moveLeft (L i)⟧)
     (hr : ∀ j, (⟦x.moveRight j⟧ : Game) = ⟦y.moveRight (R j)⟧) : (⟦x⟧ : Game) = ⟦y⟧ :=
-  game_eq (.of_equiv L R (fun _ => equiv_iff_game_eq.2 (hl _))
-    (fun _ => equiv_iff_game_eq.2 (hr _)))
+  game_eq (.of_equiv L R (fun _ ↦ equiv_iff_game_eq.2 (hl _))
+    (fun _ ↦ equiv_iff_game_eq.2 (hr _)))
 
 /-! Multiplicative operations can be defined at the level of pre-games,
 but to prove their properties we need to use the abelian group structure of games.
@@ -250,7 +250,7 @@ Hence we define them here. -/
 /-- The product of `x = {xL | xR}` and `y = {yL | yR}` is
 `{xL*y + x*yL - xL*yL, xR*y + x*yR - xR*yR | xL*y + x*yR - xL*yR, xR*y + x*yL - xR*yL}`. -/
 instance : Mul PGame.{u} :=
-  ⟨fun x y => by
+  ⟨fun x y ↦ by
     induction x generalizing y with | mk xl xr _ _ IHxl IHxr => _
     induction y with | mk yl yr yL yR IHyl IHyr => _
     have y := mk yl yr yL yR
@@ -942,8 +942,8 @@ definition, the sets and elements are inductively generated. -/
 def inv' : PGame → PGame
   | ⟨l, r, L, R⟩ =>
     let l' := { i // 0 < L i }
-    let L' : l' → PGame := fun i => L i.1
-    let IHl' : l' → PGame := fun i => inv' (L i.1)
+    let L' : l' → PGame := fun i ↦ L i.1
+    let IHl' : l' → PGame := fun i ↦ inv' (L i.1)
     let IHr i := inv' (R i)
     let x := mk l r L R
     ⟨InvTy l' r false, InvTy l' r true, invVal L' R IHl' IHr x, invVal L' R IHl' IHr x⟩
@@ -956,7 +956,7 @@ theorem zero_lf_inv' : ∀ x : PGame, 0 ⧏ inv' x
 /-- `inv' 0` has exactly the same moves as `1`. -/
 def inv'Zero : inv' 0 ≡r 1 := by
   change mk _ _ _ _ ≡r 1
-  refine ⟨?_, ?_, fun i => ?_, IsEmpty.elim ?_⟩
+  refine ⟨?_, ?_, fun i ↦ ?_, IsEmpty.elim ?_⟩
   · apply Equiv.equivPUnit (InvTy _ _ _)
   · apply Equiv.equivPEmpty (InvTy _ _ _)
   · -- Porting note: we added `rfl` after the `simp`
@@ -982,7 +982,7 @@ def inv'One : inv' 1 ≡r (1 : PGame.{u}) := by
   have : IsEmpty { _i : PUnit.{u + 1} // (0 : PGame.{u}) < 0 } := by
     rw [lt_self_iff_false]
     infer_instance
-  refine ⟨?_, ?_, fun i => ?_, IsEmpty.elim ?_⟩ <;> dsimp
+  refine ⟨?_, ?_, fun i ↦ ?_, IsEmpty.elim ?_⟩ <;> dsimp
   · apply Equiv.equivPUnit
   · apply Equiv.equivOfIsEmpty
   · -- Porting note: had to add `rfl`, because `simp` only uses the built-in `rfl`.
@@ -994,10 +994,10 @@ theorem inv'_one_equiv : inv' 1 ≈ 1 :=
 
 /-- The inverse of a pre-game in terms of the inverse on positive pre-games. -/
 noncomputable instance : Inv PGame :=
-  ⟨by classical exact fun x => if x ≈ 0 then 0 else if 0 < x then inv' x else -inv' (-x)⟩
+  ⟨by classical exact fun x ↦ if x ≈ 0 then 0 else if 0 < x then inv' x else -inv' (-x)⟩
 
 noncomputable instance : Div PGame :=
-  ⟨fun x y => x * y⁻¹⟩
+  ⟨fun x y ↦ x * y⁻¹⟩
 
 theorem inv_eq_of_equiv_zero {x : PGame} (h : x ≈ 0) : x⁻¹ = 0 := by classical exact if_pos h
 

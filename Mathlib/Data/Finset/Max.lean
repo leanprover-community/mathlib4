@@ -231,7 +231,7 @@ theorem max'_le_iff {x} : s.max' H ≤ x ↔ ∀ y ∈ s, y ≤ x :=
 
 @[simp]
 theorem max'_lt_iff {x} : s.max' H < x ↔ ∀ y ∈ s, y < x :=
-  ⟨fun Hlt y hy => (s.le_max' y hy).trans_lt Hlt, fun H => H _ <| s.max'_mem _⟩
+  ⟨fun Hlt y hy ↦ (s.le_max' y hy).trans_lt Hlt, fun H ↦ H _ <| s.max'_mem _⟩
 
 @[simp]
 theorem lt_min'_iff : x < s.min' H ↔ ∀ y ∈ s, x < y :=
@@ -403,9 +403,9 @@ theorem min_erase_ne_self {s : Finset α} : (s.erase x).min ≠ x := by
 
 theorem exists_next_right {x : α} {s : Finset α} (h : ∃ y ∈ s, x < y) :
     ∃ y ∈ s, x < y ∧ ∀ z ∈ s, x < z → y ≤ z :=
-  have Hne : (s.filter (x < ·)).Nonempty := h.imp fun y hy => mem_filter.2 (by simpa)
+  have Hne : (s.filter (x < ·)).Nonempty := h.imp fun y hy ↦ mem_filter.2 (by simpa)
   have aux := mem_filter.1 (min'_mem _ Hne)
-  ⟨min' _ Hne, aux.1, by simp, fun z hzs hz => min'_le _ _ <| mem_filter.2 ⟨hzs, by simpa⟩⟩
+  ⟨min' _ Hne, aux.1, by simp, fun z hzs hz ↦ min'_le _ _ <| mem_filter.2 ⟨hzs, by simpa⟩⟩
 
 theorem exists_next_left {x : α} {s : Finset α} (h : ∃ y ∈ s, y < x) :
     ∃ y ∈ s, y < x ∧ ∀ z ∈ s, z < x → z ≤ y :=
@@ -419,21 +419,21 @@ theorem card_le_of_interleaved {s t : Finset α}
   replace h : ∀ᵉ (x ∈ s) (y ∈ s), x < y → ∃ z ∈ t, x < z ∧ z < y := by
     intro x hx y hy hxy
     rcases exists_next_right ⟨y, hy, hxy⟩ with ⟨a, has, hxa, ha⟩
-    rcases h x hx a has hxa fun z hzs hz => hz.2.not_ge <| ha _ hzs hz.1 with ⟨b, hbt, hxb, hba⟩
+    rcases h x hx a has hxa fun z hzs hz ↦ hz.2.not_ge <| ha _ hzs hz.1 with ⟨b, hbt, hxb, hba⟩
     exact ⟨b, hbt, hxb, hba.trans_le <| ha _ hy hxy⟩
-  set f : α → WithTop α := fun x => (t.filter fun y => x < y).min
+  set f : α → WithTop α := fun x ↦ (t.filter fun y ↦ x < y).min
   have f_mono : StrictMonoOn f s := by
     intro x hx y hy hxy
     rcases h x hx y hy hxy with ⟨a, hat, hxa, hay⟩
     calc
       f x ≤ a := min_le (mem_filter.2 ⟨hat, by simpa⟩)
       _ < f y :=
-        (Finset.lt_inf_iff <| WithTop.coe_lt_top a).2 fun b hb =>
+        (Finset.lt_inf_iff <| WithTop.coe_lt_top a).2 fun b hb ↦
           WithTop.coe_lt_coe.2 <| hay.trans (by simpa using (mem_filter.1 hb).2)
   calc
     s.card = (s.image f).card := (card_image_of_injOn f_mono.injOn).symm
     _ ≤ (insert ⊤ (t.image (↑)) : Finset (WithTop α)).card :=
-      card_mono <| image_subset_iff.2 fun x _ =>
+      card_mono <| image_subset_iff.2 fun x _ ↦
           insert_subset_insert _ (image_subset_image <| filter_subset _ _)
             (min_mem_insert_top_image_coe _)
     _ ≤ t.card + 1 := (card_insert_le _ _).trans (Nat.add_le_add_right card_image_le _)
@@ -444,9 +444,9 @@ theorem card_le_diff_of_interleaved {s t : Finset α}
       ∀ᵉ (x ∈ s) (y ∈ s),
         x < y → (∀ z ∈ s, z ∉ Set.Ioo x y) → ∃ z ∈ t, x < z ∧ z < y) :
     s.card ≤ (t \ s).card + 1 :=
-  card_le_of_interleaved fun x hx y hy hxy hs =>
+  card_le_of_interleaved fun x hx y hy hxy hs ↦
     let ⟨z, hzt, hxz, hzy⟩ := h x hx y hy hxy hs
-    ⟨z, mem_sdiff.2 ⟨hzt, fun hzs => hs z hzs ⟨hxz, hzy⟩⟩, hxz, hzy⟩
+    ⟨z, mem_sdiff.2 ⟨hzt, fun hzs ↦ hs z hzs ⟨hxz, hzy⟩⟩, hxz, hzy⟩
 
 /-- Induction principle for `Finset`s in a linearly ordered type: a predicate is true on all
 `s : Finset α` provided that:
@@ -498,7 +498,7 @@ theorem induction_on_max_value [DecidableEq ι] (f : ι → α) {p : Finset ι �
     simp only [mem_image] at H
     rcases H with ⟨a, has, hfa⟩
     rw [← insert_erase has]
-    refine step _ _ (notMem_erase a s) (fun x hx => ?_) (ihs a has)
+    refine step _ _ (notMem_erase a s) (fun x hx ↦ ?_) (ihs a has)
     rw [hfa]
     exact le_max' _ _ (mem_image_of_mem _ <| mem_of_mem_erase hx)
 
@@ -523,7 +523,7 @@ theorem exists_max_image (s : Finset β) (f : β → α) (h : s.Nonempty) :
     ∃ x ∈ s, ∀ x' ∈ s, f x' ≤ f x := by
   obtain ⟨y, hy⟩ := max_of_nonempty (h.image f)
   rcases mem_image.mp (mem_of_max hy) with ⟨x, hx, rfl⟩
-  exact ⟨x, hx, fun x' hx' => le_max_of_eq (mem_image_of_mem f hx') hy⟩
+  exact ⟨x, hx, fun x' hx' ↦ le_max_of_eq (mem_image_of_mem f hx') hy⟩
 
 theorem exists_min_image (s : Finset β) (f : β → α) (h : s.Nonempty) :
     ∃ x ∈ s, ∀ x' ∈ s, f x ≤ f x' :=
@@ -533,7 +533,7 @@ end ExistsMaxMin
 
 theorem isGLB_iff_isLeast [LinearOrder α] (i : α) (s : Finset α) (hs : s.Nonempty) :
     IsGLB (s : Set α) i ↔ IsLeast (↑s) i := by
-  refine ⟨fun his => ?_, IsLeast.isGLB⟩
+  refine ⟨fun his ↦ ?_, IsLeast.isGLB⟩
   suffices i = min' s hs by
     rw [this]
     exact isLeast_min' s hs

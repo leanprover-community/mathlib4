@@ -49,8 +49,8 @@ namespace PGame
   take a positive number of stones from it on their turn. -/
 noncomputable def nim (o : Ordinal.{u}) : PGame.{u} :=
   ⟨o.toType, o.toType,
-    fun x => nim ((enumIsoToType o).symm x).val,
-    fun x => nim ((enumIsoToType o).symm x).val⟩
+    fun x ↦ nim ((enumIsoToType o).symm x).val,
+    fun x ↦ nim ((enumIsoToType o).symm x).val⟩
 termination_by o
 decreasing_by all_goals exact ((enumIsoToType o).symm x).prop
 
@@ -58,12 +58,12 @@ theorem leftMoves_nim (o : Ordinal) : (nim o).LeftMoves = o.toType := by rw [nim
 theorem rightMoves_nim (o : Ordinal) : (nim o).RightMoves = o.toType := by rw [nim]; rfl
 
 theorem moveLeft_nim_heq (o : Ordinal) :
-    (nim o).moveLeft ≍ fun i : o.toType => nim ((enumIsoToType o).symm i) := by rw [nim]; rfl
+    (nim o).moveLeft ≍ fun i : o.toType ↦ nim ((enumIsoToType o).symm i) := by rw [nim]; rfl
 
 @[deprecated (since := "2025-07-05")] alias moveLeft_nim_hEq := moveLeft_nim_heq
 
 theorem moveRight_nim_heq (o : Ordinal) :
-    (nim o).moveRight ≍ fun i : o.toType => nim ((enumIsoToType o).symm i) := by rw [nim]; rfl
+    (nim o).moveRight ≍ fun i : o.toType ↦ nim ((enumIsoToType o).symm i) := by rw [nim]; rfl
 
 @[deprecated (since := "2025-07-05")] alias moveRight_nim_hEq := moveRight_nim_heq
 
@@ -161,7 +161,7 @@ theorem nim_one_moveRight (x) : (nim 1).moveRight x = nim 0 := by simp
 /-- `nim 1` has exactly the same moves as `star`. -/
 def nimOneRelabelling : nim 1 ≡r star := by
   rw [nim]
-  refine ⟨?_, ?_, fun i => ?_, fun j => ?_⟩
+  refine ⟨?_, ?_, fun i ↦ ?_, fun j ↦ ?_⟩
   any_goals dsimp; apply Equiv.ofUnique
   all_goals simpa [enumIsoToType] using nimZeroRelabelling
 
@@ -185,7 +185,7 @@ theorem neg_nim (o : Ordinal) : -nim o = nim o := by
 instance impartial_nim (o : Ordinal) : Impartial (nim o) := by
   induction o using Ordinal.induction with | _ o IH
   rw [impartial_def, neg_nim]
-  refine ⟨equiv_rfl, fun i => ?_, fun i => ?_⟩ <;> simpa using IH _ (typein_lt_self _)
+  refine ⟨equiv_rfl, fun i ↦ ?_, fun i ↦ ?_⟩ <;> simpa using IH _ (typein_lt_self _)
 
 theorem nim_fuzzy_zero_of_ne_zero {o : Ordinal} (ho : o ≠ 0) : nim o ‖ 0 := by
   rw [Impartial.fuzzy_zero_iff_lf, lf_zero_le]
@@ -195,7 +195,7 @@ theorem nim_fuzzy_zero_of_ne_zero {o : Ordinal} (ho : o ≠ 0) : nim o ‖ 0 := 
 @[simp]
 theorem nim_add_equiv_zero_iff (o₁ o₂ : Ordinal) : (nim o₁ + nim o₂ ≈ 0) ↔ o₁ = o₂ := by
   constructor
-  · refine not_imp_not.1 fun hne : _ ≠ _ => (Impartial.not_equiv_zero_iff (nim o₁ + nim o₂)).2 ?_
+  · refine not_imp_not.1 fun hne : _ ≠ _ ↦ (Impartial.not_equiv_zero_iff (nim o₁ + nim o₂)).2 ?_
     wlog h : o₁ < o₂
     · exact (fuzzy_congr_left add_comm_equiv).1 (this _ _ hne.symm (hne.lt_or_gt.resolve_left h))
     rw [Impartial.fuzzy_zero_iff_gf, zero_lf_le]
@@ -221,7 +221,7 @@ This function takes a value in `Nimber`. This is a type synonym for the ordinals
 ordering, but addition in `Nimber` is such that it corresponds to the grundy value of the addition
 of games. See that file for more information on nimbers and their arithmetic. -/
 noncomputable def grundyValue (G : PGame.{u}) : Nimber.{u} :=
-  sInf (Set.range fun i => grundyValue (G.moveLeft i))ᶜ
+  sInf (Set.range fun i ↦ grundyValue (G.moveLeft i))ᶜ
 termination_by G
 
 theorem grundyValue_eq_sInf_moveLeft (G : PGame) :
@@ -232,7 +232,7 @@ theorem grundyValue_ne_moveLeft {G : PGame} (i : G.LeftMoves) :
     grundyValue (G.moveLeft i) ≠ grundyValue G := by
   conv_rhs => rw [grundyValue_eq_sInf_moveLeft]
   have := csInf_mem (nonempty_of_not_bddAbove <|
-    Nimber.not_bddAbove_compl_of_small (Set.range fun i => grundyValue (G.moveLeft i)))
+    Nimber.not_bddAbove_compl_of_small (Set.range fun i ↦ grundyValue (G.moveLeft i)))
   rw [Set.mem_compl_iff, Set.mem_range, not_exists] at this
   exact this _
 

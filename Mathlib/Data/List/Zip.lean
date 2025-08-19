@@ -38,7 +38,7 @@ theorem zip_swap : ∀ (l₁ : List α) (l₂ : List β), (zip l₁ l₂).map Pr
 
 theorem forall_zipWith {f : α → β → γ} {p : γ → Prop} :
     ∀ {l₁ : List α} {l₂ : List β}, length l₁ = length l₂ →
-      (Forall p (zipWith f l₁ l₂) ↔ Forall₂ (fun x y => p (f x y)) l₁ l₂)
+      (Forall p (zipWith f l₁ l₂) ↔ Forall₂ (fun x y ↦ p (f x y)) l₁ l₂)
   | [], [], _ => by simp
   | a :: l₁, b :: l₂, h => by
     simp only [length_cons, succ_inj] at h
@@ -50,14 +50,14 @@ theorem unzip_swap (l : List (α × β)) : unzip (l.map Prod.swap) = (unzip l).s
 
 @[congr]
 theorem zipWith_congr (f g : α → β → γ) (la : List α) (lb : List β)
-    (h : List.Forall₂ (fun a b => f a b = g a b) la lb) : zipWith f la lb = zipWith g la lb := by
+    (h : List.Forall₂ (fun a b ↦ f a b = g a b) la lb) : zipWith f la lb = zipWith g la lb := by
   induction h with
   | nil => rfl
   | cons hfg _ ih => exact congr_arg₂ _ hfg ih
 
 theorem zipWith_zipWith_left (f : δ → γ → ε) (g : α → β → δ) :
     ∀ (la : List α) (lb : List β) (lc : List γ),
-      zipWith f (zipWith g la lb) lc = zipWith3 (fun a b c => f (g a b) c) la lb lc
+      zipWith f (zipWith g la lb) lc = zipWith3 (fun a b c ↦ f (g a b) c) la lb lc
   | [], _, _ => rfl
   | _ :: _, [], _ => rfl
   | _ :: _, _ :: _, [] => rfl
@@ -65,7 +65,7 @@ theorem zipWith_zipWith_left (f : δ → γ → ε) (g : α → β → δ) :
 
 theorem zipWith_zipWith_right (f : α → δ → ε) (g : β → γ → δ) :
     ∀ (la : List α) (lb : List β) (lc : List γ),
-      zipWith f la (zipWith g lb lc) = zipWith3 (fun a b c => f a (g b c)) la lb lc
+      zipWith f la (zipWith g lb lc) = zipWith3 (fun a b c ↦ f a (g b c)) la lb lc
   | [], _, _ => rfl
   | _ :: _, [], _ => rfl
   | _ :: _, _ :: _, [] => rfl
@@ -73,27 +73,27 @@ theorem zipWith_zipWith_right (f : α → δ → ε) (g : β → γ → δ) :
 
 @[simp]
 theorem zipWith3_same_left (f : α → α → β → γ) :
-    ∀ (la : List α) (lb : List β), zipWith3 f la la lb = zipWith (fun a b => f a a b) la lb
+    ∀ (la : List α) (lb : List β), zipWith3 f la la lb = zipWith (fun a b ↦ f a a b) la lb
   | [], _ => rfl
   | _ :: _, [] => rfl
   | _ :: as, _ :: bs => congr_arg (cons _) <| zipWith3_same_left f as bs
 
 @[simp]
 theorem zipWith3_same_mid (f : α → β → α → γ) :
-    ∀ (la : List α) (lb : List β), zipWith3 f la lb la = zipWith (fun a b => f a b a) la lb
+    ∀ (la : List α) (lb : List β), zipWith3 f la lb la = zipWith (fun a b ↦ f a b a) la lb
   | [], _ => rfl
   | _ :: _, [] => rfl
   | _ :: as, _ :: bs => congr_arg (cons _) <| zipWith3_same_mid f as bs
 
 @[simp]
 theorem zipWith3_same_right (f : α → β → β → γ) :
-    ∀ (la : List α) (lb : List β), zipWith3 f la lb lb = zipWith (fun a b => f a b b) la lb
+    ∀ (la : List α) (lb : List β), zipWith3 f la lb lb = zipWith (fun a b ↦ f a b b) la lb
   | [], _ => rfl
   | _ :: _, [] => rfl
   | _ :: as, _ :: bs => congr_arg (cons _) <| zipWith3_same_right f as bs
 
 instance (f : α → α → β) [IsSymmOp f] : IsSymmOp (zipWith f) :=
-  ⟨fun _ _ => zipWith_comm_of_comm IsSymmOp.symm_op⟩
+  ⟨fun _ _ ↦ zipWith_comm_of_comm IsSymmOp.symm_op⟩
 
 @[simp]
 theorem length_revzip (l : List α) : length (revzip l) = length l := by

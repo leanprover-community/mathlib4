@@ -77,7 +77,7 @@ attribute [to_additive existing exists_norm_le] Bornology.IsBounded.exists_norm_
 @[to_additive exists_pos_norm_le]
 lemma Bornology.IsBounded.exists_pos_norm_le' (hs : IsBounded s) : ∃ R > 0, ∀ x ∈ s, ‖x‖ ≤ R :=
   let ⟨R₀, hR₀⟩ := hs.exists_norm_le'
-  ⟨max R₀ 1, by positivity, fun x hx => (hR₀ x hx).trans <| le_max_left _ _⟩
+  ⟨max R₀ 1, by positivity, fun x hx ↦ (hR₀ x hx).trans <| le_max_left _ _⟩
 
 @[to_additive Bornology.IsBounded.exists_pos_norm_lt]
 lemma Bornology.IsBounded.exists_pos_norm_lt' (hs : IsBounded s) : ∃ R > 0, ∀ x ∈ s, ‖x‖ < R :=
@@ -92,7 +92,7 @@ lemma NormedCommGroup.cauchySeq_iff [Nonempty α] [SemilatticeSup α] {u : α �
 @[to_additive IsCompact.exists_bound_of_continuousOn]
 lemma IsCompact.exists_bound_of_continuousOn' [TopologicalSpace α] {s : Set α} (hs : IsCompact s)
     {f : α → E} (hf : ContinuousOn f s) : ∃ C, ∀ x ∈ s, ‖f x‖ ≤ C :=
-  (isBounded_iff_forall_norm_le'.1 (hs.image_of_continuousOn hf).isBounded).imp fun _C hC _x hx =>
+  (isBounded_iff_forall_norm_le'.1 (hs.image_of_continuousOn hf).isBounded).imp fun _C hC _x hx ↦
     hC _ <| Set.mem_image_of_mem _ hx
 
 @[to_additive]
@@ -110,7 +110,7 @@ operation `op : E → F → G` with an estimate `‖op x y‖ ≤ A * ‖x‖ * 
 of multiplication so that it can be applied to `(*)`, `flip (*)`, `(•)`, and `flip (•)`. -/]
 lemma Filter.Tendsto.op_one_isBoundedUnder_le' {f : α → E} {g : α → F} {l : Filter α}
     (hf : Tendsto f l (𝓝 1)) (hg : IsBoundedUnder (· ≤ ·) l (Norm.norm ∘ g)) (op : E → F → G)
-    (h_op : ∃ A, ∀ x y, ‖op x y‖ ≤ A * ‖x‖ * ‖y‖) : Tendsto (fun x => op (f x) (g x)) l (𝓝 1) := by
+    (h_op : ∃ A, ∀ x y, ‖op x y‖ ≤ A * ‖x‖ * ‖y‖) : Tendsto (fun x ↦ op (f x) (g x)) l (𝓝 1) := by
   obtain ⟨A, h_op⟩ := h_op
   rcases hg with ⟨C, hC⟩; rw [eventually_map] at hC
   rw [NormedCommGroup.tendsto_nhds_one] at hf ⊢
@@ -136,8 +136,8 @@ operation `op : E → F → G` with an estimate `‖op x y‖ ≤ ‖x‖ * ‖y
 that it can be applied to `(*)`, `flip (*)`, `(•)`, and `flip (•)`. -/]
 theorem Filter.Tendsto.op_one_isBoundedUnder_le {f : α → E} {g : α → F} {l : Filter α}
     (hf : Tendsto f l (𝓝 1)) (hg : IsBoundedUnder (· ≤ ·) l (Norm.norm ∘ g)) (op : E → F → G)
-    (h_op : ∀ x y, ‖op x y‖ ≤ ‖x‖ * ‖y‖) : Tendsto (fun x => op (f x) (g x)) l (𝓝 1) :=
-  hf.op_one_isBoundedUnder_le' hg op ⟨1, fun x y => (one_mul ‖x‖).symm ▸ h_op x y⟩
+    (h_op : ∀ x y, ‖op x y‖ ≤ ‖x‖ * ‖y‖) : Tendsto (fun x ↦ op (f x) (g x)) l (𝓝 1) :=
+  hf.op_one_isBoundedUnder_le' hg op ⟨1, fun x y ↦ (one_mul ‖x‖).symm ▸ h_op x y⟩
 
 @[to_additive tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding]
 lemma tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding' {X : Type*} [TopologicalSpace X]
@@ -165,7 +165,7 @@ lemma HasCompactMulSupport.exists_pos_le_norm [One E] (hf : HasCompactMulSupport
     ∃ R : ℝ, 0 < R ∧ ∀ x : α, R ≤ ‖x‖ → f x = 1 := by
   obtain ⟨K, ⟨hK1, hK2⟩⟩ := exists_compact_iff_hasCompactMulSupport.mpr hf
   obtain ⟨S, hS, hS'⟩ := hK1.isBounded.exists_pos_norm_le
-  refine ⟨S + 1, by positivity, fun x hx => hK2 x ((mt <| hS' x) ?_)⟩
+  refine ⟨S + 1, by positivity, fun x hx ↦ hK2 x ((mt <| hS' x) ?_)⟩
   contrapose! hx
   exact lt_add_of_le_of_pos hx zero_lt_one
 

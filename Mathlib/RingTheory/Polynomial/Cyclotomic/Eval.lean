@@ -74,7 +74,7 @@ theorem cyclotomic_pos {n : ℕ} (hn : 2 < n) {R}
   · apply pos_of_mul_pos_left
     · rwa [this]
     rw [eval_prod]
-    refine Finset.prod_nonneg fun i hi => ?_
+    refine Finset.prod_nonneg fun i hi ↦ ?_
     simp only [Finset.mem_erase, mem_properDivisors] at hi
     rw [geom_sum_pos_iff hn'.ne'] at h
     rcases h with hk | hx
@@ -96,7 +96,7 @@ theorem cyclotomic_pos {n : ℕ} (hn : 2 < n) {R}
       exact ⟨by decide, even_iff_two_dvd.mp h.1, hn⟩
     rw [eval_prod, ← Finset.prod_erase_mul _ _ h2]
     apply mul_nonpos_of_nonneg_of_nonpos
-    · refine Finset.prod_nonneg fun i hi => le_of_lt ?_
+    · refine Finset.prod_nonneg fun i hi ↦ le_of_lt ?_
       simp only [Finset.mem_erase, mem_properDivisors] at hi
       refine ih _ hi.2.2.2 (Nat.two_lt_of_ne ?_ hi.2.1 hi.1)
       rintro rfl
@@ -151,7 +151,7 @@ theorem eval_one_cyclotomic_not_prime_pow {R : Type*} [Ring R] {n : ℕ}
     swap
     · simp only [singleton_subset_iff, mem_sdiff, mem_erase, Ne, mem_divisors, dvd_refl,
         true_and, mem_image, mem_range, not_exists, not_and]
-      exact ⟨⟨hn.ne', hn'.ne'⟩, fun t _ => h hp _⟩
+      exact ⟨⟨hn.ne', hn'.ne'⟩, fun t _ ↦ h hp _⟩
     rw [← Int.natAbs_natCast p, Int.natAbs_dvd_natAbs] at hpe
     obtain ⟨t, ht⟩ := hpe
     rw [Finset.prod_singleton, ht, mul_left_comm, mul_comm, ← mul_assoc, mul_assoc] at this
@@ -199,7 +199,7 @@ theorem sub_one_pow_totient_lt_cyclotomic_eval {n : ℕ} {q : ℝ} (hn' : 2 ≤ 
   simp only [cyclotomic_eq_prod_X_sub_primitiveRoots hζ, eval_prod, eval_C, eval_X, eval_sub,
     nnnorm_prod, Units.mk0_prod]
   convert Finset.prod_lt_prod' (M := NNRealˣ) _ _
-  swap; · exact fun _ => Units.mk0 (Real.toNNReal (q - 1)) (by simp [hq'])
+  swap; · exact fun _ ↦ Units.mk0 (Real.toNNReal (q - 1)) (by simp [hq'])
   · simp only [Complex.card_primitiveRoots, prod_const, card_attach]
   · simp only [Finset.mem_attach, forall_true_left, Subtype.forall, ←
       Units.val_le_val, ← NNReal.coe_le_coe, norm_nonneg, Units.val_mk0,
@@ -266,7 +266,7 @@ theorem cyclotomic_eval_lt_add_one_pow_totient {n : ℕ} {q : ℝ} (hn' : 3 ≤ 
   simp only [cyclotomic_eq_prod_X_sub_primitiveRoots hζ, eval_prod, eval_C, eval_X, eval_sub,
     nnnorm_prod, Units.mk0_prod]
   convert Finset.prod_lt_prod' (M := NNRealˣ) _ _
-  swap; · exact fun _ => Units.mk0 (Real.toNNReal (q + 1)) (by simp; linarith only [hq'])
+  swap; · exact fun _ ↦ Units.mk0 (Real.toNNReal (q + 1)) (by simp; linarith only [hq'])
   · simp [Complex.card_primitiveRoots]
   · simp only [Finset.mem_attach, forall_true_left, Subtype.forall, ←
       Units.val_le_val, ← NNReal.coe_le_coe, Units.val_mk0,

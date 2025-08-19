@@ -81,7 +81,7 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
         Complex.slitPlane := by
       rintro ⟨x, y⟩ hxy; simpa only using hxy
     refine ContinuousOn.comp (f := Complex.equivRealProd.symm)
-      (g := Complex.arg) (fun z hz => ?_) ?_ A
+      (g := Complex.arg) (fun z hz ↦ ?_) ?_ A
     · exact (Complex.continuousAt_arg hz).continuousWithinAt
     · exact Complex.equivRealProdCLM.symm.continuous.continuousOn
 
@@ -145,7 +145,7 @@ theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [Normed
       (fun p _ ↦ hasFDerivAt_polarCoord_symm p), PartialHomeomorph.symm_source]
       simp_rw [det_fderivPolarCoordSymm]
     _ = ∫ p in polarCoord.target, p.1 • f (polarCoord.symm p) := by
-      apply setIntegral_congr_fun polarCoord.open_target.measurableSet fun x hx => ?_
+      apply setIntegral_congr_fun polarCoord.open_target.measurableSet fun x hx ↦ ?_
       rw [abs_of_pos hx.1]
 
 theorem lintegral_comp_polarCoord_symm (f : ℝ × ℝ → ℝ≥0∞) :

@@ -111,7 +111,7 @@ theorem derivative_succ_aux (n ν : ℕ) :
   · simp only [← mul_assoc]
     apply congr (congr_arg (· * ·) (congr (congr_arg (· * ·) _) rfl)) rfl
     -- Now it's just about binomial coefficients
-    exact mod_cast congr_arg (fun m : ℕ => (m : R[X])) (Nat.succ_mul_choose_eq n ν).symm
+    exact mod_cast congr_arg (fun m : ℕ ↦ (m : R[X])) (Nat.succ_mul_choose_eq n ν).symm
   · rw [← tsub_add_eq_tsub_tsub, ← mul_assoc, ← mul_assoc]; congr 1
     rw [mul_comm, ← mul_assoc, ← mul_assoc]; congr 1
     norm_cast
@@ -222,7 +222,7 @@ theorem iterate_derivative_at_1_ne_zero [CharZero R] (n ν : ℕ) (h : ν ≤ n)
 open Submodule
 
 theorem linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
-    LinearIndependent ℚ fun ν : Fin k => bernsteinPolynomial ℚ n ν := by
+    LinearIndependent ℚ fun ν : Fin k ↦ bernsteinPolynomial ℚ n ν := by
   induction' k with k ih
   · apply linearIndependent_empty_type
   · apply linearIndependent_fin_succ'.mpr
@@ -262,7 +262,7 @@ The inductive step relies on the observation that the `(n-k)`-th derivative, eva
 annihilates `bernsteinPolynomial n ν` for `ν < k`, but has a nonzero value at `ν = k`.
 -/
 theorem linearIndependent (n : ℕ) :
-    LinearIndependent ℚ fun ν : Fin (n + 1) => bernsteinPolynomial ℚ n ν :=
+    LinearIndependent ℚ fun ν : Fin (n + 1) ↦ bernsteinPolynomial ℚ n ν :=
   linearIndependent_aux n (n + 1) le_rfl
 
 theorem sum (n : ℕ) : (∑ ν ∈ Finset.range (n + 1), bernsteinPolynomial R n ν) = 1 :=
@@ -285,7 +285,7 @@ theorem sum_smul (n : ℕ) :
   let y : MvPolynomial Bool R := MvPolynomial.X false
   have pderiv_true_x : pderiv true x = 1 := by rw [pderiv_X]; rfl
   have pderiv_true_y : pderiv true y = 0 := by rw [pderiv_X]; rfl
-  let e : Bool → R[X] := fun i => cond i X (1 - X)
+  let e : Bool → R[X] := fun i ↦ cond i X (1 - X)
   -- Start with `(x+y)^n = (x+y)^n`,
   -- take the `x`-derivative, evaluate at `x=X, y=1-X`, and multiply by `X`:
   trans MvPolynomial.aeval e (pderiv true ((x + y) ^ n)) * X
@@ -302,7 +302,7 @@ theorem sum_smul (n : ℕ) :
         ring
     rw [add_pow, map_sum (pderiv true), map_sum (MvPolynomial.aeval e), Finset.sum_mul]
     -- Step inside the sum:
-    refine Finset.sum_congr rfl fun k _ => (w k).trans ?_
+    refine Finset.sum_congr rfl fun k _ ↦ (w k).trans ?_
     simp only [x, y, e, pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, nsmul_eq_mul,
       Bool.cond_true, Bool.cond_false, add_zero, mul_one, mul_zero, smul_zero, MvPolynomial.aeval_X,
       MvPolynomial.pderiv_mul, Derivation.leibniz_pow, Derivation.map_natCast, map_natCast, map_pow,
@@ -322,7 +322,7 @@ theorem sum_mul_smul (n : ℕ) :
   let y : MvPolynomial Bool R := MvPolynomial.X false
   have pderiv_true_x : pderiv true x = 1 := by rw [pderiv_X]; rfl
   have pderiv_true_y : pderiv true y = 0 := by rw [pderiv_X]; rfl
-  let e : Bool → R[X] := fun i => cond i X (1 - X)
+  let e : Bool → R[X] := fun i ↦ cond i X (1 - X)
   -- Start with `(x+y)^n = (x+y)^n`,
   -- take the second `x`-derivative, evaluate at `x=X, y=1-X`, and multiply by `X`:
   trans MvPolynomial.aeval e (pderiv true (pderiv true ((x + y) ^ n))) * X ^ 2
@@ -341,7 +341,7 @@ theorem sum_mul_smul (n : ℕ) :
     rw [add_pow, map_sum (pderiv true), map_sum (pderiv true), map_sum (MvPolynomial.aeval e),
       Finset.sum_mul]
     -- Step inside the sum:
-    refine Finset.sum_congr rfl fun k _ => (w k).trans ?_
+    refine Finset.sum_congr rfl fun k _ ↦ (w k).trans ?_
     simp only [x, y, e, pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, nsmul_eq_mul,
       Bool.cond_true, Bool.cond_false, add_zero, zero_add, mul_zero, smul_zero, mul_one,
       MvPolynomial.aeval_X,
@@ -360,10 +360,10 @@ which we'll want later.
 theorem variance (n : ℕ) :
     (∑ ν ∈ Finset.range (n + 1), (n • Polynomial.X - (ν : R[X])) ^ 2 * bernsteinPolynomial R n ν) =
       n • Polynomial.X * ((1 : R[X]) - Polynomial.X) := by
-  have p : ((((Finset.range (n + 1)).sum fun ν => (ν * (ν - 1)) • bernsteinPolynomial R n ν) +
-      (1 - (2 * n) • Polynomial.X) * (Finset.range (n + 1)).sum fun ν =>
+  have p : ((((Finset.range (n + 1)).sum fun ν ↦ (ν * (ν - 1)) • bernsteinPolynomial R n ν) +
+      (1 - (2 * n) • Polynomial.X) * (Finset.range (n + 1)).sum fun ν ↦
         ν • bernsteinPolynomial R n ν) + n ^ 2 • X ^ 2 *
-          (Finset.range (n + 1)).sum fun ν => bernsteinPolynomial R n ν) = _ :=
+          (Finset.range (n + 1)).sum fun ν ↦ bernsteinPolynomial R n ν) = _ :=
     rfl
   conv at p =>
     lhs
@@ -375,7 +375,7 @@ theorem variance (n : ℕ) :
     rhs
     rw [sum, sum_smul, sum_mul_smul, ← natCast_mul]
   calc
-    _ = _ := Finset.sum_congr rfl fun k m => ?_
+    _ = _ := Finset.sum_congr rfl fun k m ↦ ?_
     _ = _ := p
     _ = _ := ?_
   · congr 1; simp only [← natCast_mul, push_cast]

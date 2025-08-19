@@ -58,7 +58,7 @@ theorem le_top : a ≤ ⊤ :=
   OrderTop.le_top a
 
 @[simp]
-theorem isTop_top : IsTop (⊤ : α) := fun _ => le_top
+theorem isTop_top : IsTop (⊤ : α) := fun _ ↦ le_top
 
 end LE
 
@@ -103,11 +103,11 @@ variable [PartialOrder α] [OrderTop α] [Preorder β] {f : α → β} {a b : α
 
 @[simp]
 theorem isMax_iff_eq_top : IsMax a ↔ a = ⊤ :=
-  ⟨fun h => h.eq_of_le le_top, fun h _ _ => h.symm ▸ le_top⟩
+  ⟨fun h ↦ h.eq_of_le le_top, fun h _ _ ↦ h.symm ▸ le_top⟩
 
 @[simp]
 theorem isTop_iff_eq_top : IsTop a ↔ a = ⊤ :=
-  ⟨fun h => h.isMax.eq_of_le le_top, fun h _ => h.symm ▸ le_top⟩
+  ⟨fun h ↦ h.isMax.eq_of_le le_top, fun h _ ↦ h.symm ▸ le_top⟩
 
 theorem not_isMax_iff_ne_top : ¬IsMax a ↔ a ≠ ⊤ :=
   isMax_iff_eq_top.not
@@ -159,7 +159,7 @@ lemma top_notMem_iff {s : Set α} : ⊤ ∉ s ↔ ∀ x ∈ s, x < ⊤ :=
 
 variable [Nontrivial α]
 
-theorem not_isMin_top : ¬IsMin (⊤ : α) := fun h =>
+theorem not_isMin_top : ¬IsMin (⊤ : α) := fun h ↦
   let ⟨_, ha⟩ := exists_ne (⊤ : α)
   ha <| top_le_iff.1 <| h le_top
 
@@ -198,7 +198,7 @@ theorem bot_le : ⊥ ≤ a :=
   OrderBot.bot_le a
 
 @[simp]
-theorem isBot_bot : IsBot (⊥ : α) := fun _ => bot_le
+theorem isBot_bot : IsBot (⊥ : α) := fun _ ↦ bot_le
 
 end LE
 
@@ -275,11 +275,11 @@ variable [PartialOrder α] [OrderBot α] [Preorder β] {f : α → β} {a b : α
 
 @[simp]
 theorem isMin_iff_eq_bot : IsMin a ↔ a = ⊥ :=
-  ⟨fun h => h.eq_of_ge bot_le, fun h _ _ => h.symm ▸ bot_le⟩
+  ⟨fun h ↦ h.eq_of_ge bot_le, fun h _ _ ↦ h.symm ▸ bot_le⟩
 
 @[simp]
 theorem isBot_iff_eq_bot : IsBot a ↔ a = ⊥ :=
-  ⟨fun h => h.isMin.eq_of_ge bot_le, fun h _ => h.symm ▸ bot_le⟩
+  ⟨fun h ↦ h.isMin.eq_of_ge bot_le, fun h _ ↦ h.symm ▸ bot_le⟩
 
 theorem not_isMin_iff_ne_bot : ¬IsMin a ↔ a ≠ ⊥ :=
   isMin_iff_eq_bot.not
@@ -377,13 +377,13 @@ namespace Pi
 variable {ι : Type*} {α' : ι → Type*}
 
 instance [∀ i, Bot (α' i)] : Bot (∀ i, α' i) :=
-  ⟨fun _ => ⊥⟩
+  ⟨fun _ ↦ ⊥⟩
 
 @[simp]
 theorem bot_apply [∀ i, Bot (α' i)] (i : ι) : (⊥ : ∀ i, α' i) i = ⊥ :=
   rfl
 
-theorem bot_def [∀ i, Bot (α' i)] : (⊥ : ∀ i, α' i) = fun _ => ⊥ :=
+theorem bot_def [∀ i, Bot (α' i)] : (⊥ : ∀ i, α' i) = fun _ ↦ ⊥ :=
   rfl
 
 @[simp]
@@ -391,13 +391,13 @@ theorem bot_comp {α β γ : Type*} [Bot γ] (x : α → β) : (⊥ : β → γ)
   rfl
 
 instance [∀ i, Top (α' i)] : Top (∀ i, α' i) :=
-  ⟨fun _ => ⊤⟩
+  ⟨fun _ ↦ ⊤⟩
 
 @[simp]
 theorem top_apply [∀ i, Top (α' i)] (i : ι) : (⊤ : ∀ i, α' i) i = ⊤ :=
   rfl
 
-theorem top_def [∀ i, Top (α' i)] : (⊤ : ∀ i, α' i) = fun _ => ⊤ :=
+theorem top_def [∀ i, Top (α' i)] : (⊤ : ∀ i, α' i) = fun _ ↦ ⊤ :=
   rfl
 
 @[simp]
@@ -405,10 +405,10 @@ theorem top_comp {α β γ : Type*} [Top γ] (x : α → β) : (⊤ : β → γ)
   rfl
 
 instance instOrderTop [∀ i, LE (α' i)] [∀ i, OrderTop (α' i)] : OrderTop (∀ i, α' i) where
-  le_top _ := fun _ => le_top
+  le_top _ := fun _ ↦ le_top
 
 instance instOrderBot [∀ i, LE (α' i)] [∀ i, OrderBot (α' i)] : OrderBot (∀ i, α' i) where
-  bot_le _ := fun _ => bot_le
+  bot_le _ := fun _ ↦ bot_le
 
 instance instBoundedOrder [∀ i, LE (α' i)] [∀ i, BoundedOrder (α' i)] :
     BoundedOrder (∀ i, α' i) where
@@ -428,14 +428,14 @@ theorem eq_top_of_bot_eq_top (hα : (⊥ : α) = ⊤) (x : α) : x = (⊤ : α) 
   eq_top_mono bot_le hα
 
 theorem subsingleton_of_top_le_bot (h : (⊤ : α) ≤ (⊥ : α)) : Subsingleton α :=
-  ⟨fun _ _ => le_antisymm
+  ⟨fun _ _ ↦ le_antisymm
     (le_trans le_top <| le_trans h bot_le) (le_trans le_top <| le_trans h bot_le)⟩
 
 theorem subsingleton_of_bot_eq_top (hα : (⊥ : α) = (⊤ : α)) : Subsingleton α :=
   subsingleton_of_top_le_bot (ge_of_eq hα)
 
 theorem subsingleton_iff_bot_eq_top : (⊥ : α) = (⊤ : α) ↔ Subsingleton α :=
-  ⟨subsingleton_of_bot_eq_top, fun _ => Subsingleton.elim ⊥ ⊤⟩
+  ⟨subsingleton_of_bot_eq_top, fun _ ↦ Subsingleton.elim ⊥ ⊤⟩
 
 end Subsingleton
 
@@ -445,7 +445,7 @@ section lift
 /-- Pullback an `OrderTop`. -/
 abbrev OrderTop.lift [LE α] [Top α] [LE β] [OrderTop β] (f : α → β)
     (map_le : ∀ a b, f a ≤ f b → a ≤ b) (map_top : f ⊤ = ⊤) : OrderTop α :=
-  ⟨fun a =>
+  ⟨fun a ↦
     map_le _ _ <| by
       rw [map_top]
       exact le_top _⟩
@@ -454,7 +454,7 @@ abbrev OrderTop.lift [LE α] [Top α] [LE β] [OrderTop β] (f : α → β)
 /-- Pullback an `OrderBot`. -/
 abbrev OrderBot.lift [LE α] [Bot α] [LE β] [OrderBot β] (f : α → β)
     (map_le : ∀ a b, f a ≤ f b → a ≤ b) (map_bot : f ⊥ = ⊥) : OrderBot α :=
-  ⟨fun a =>
+  ⟨fun a ↦
     map_le _ _ <| by
       rw [map_bot]
       exact bot_le _⟩
@@ -576,10 +576,10 @@ instance [Bot α] : Bot (ULift.{v} α) where bot := up ⊥
 @[simp] theorem down_bot [Bot α] : down (⊥ : ULift α) = ⊥ := rfl
 
 instance [LE α] [OrderBot α] : OrderBot (ULift.{v} α) :=
-  OrderBot.lift ULift.down (fun _ _ => down_le.mp) down_bot
+  OrderBot.lift ULift.down (fun _ _ ↦ down_le.mp) down_bot
 
 instance [LE α] [OrderTop α] : OrderTop (ULift.{v} α) :=
-  OrderTop.lift ULift.down (fun _ _ => down_le.mp) down_top
+  OrderTop.lift ULift.down (fun _ _ ↦ down_le.mp) down_top
 
 instance [LE α] [BoundedOrder α] : BoundedOrder (ULift.{v} α) where
 
@@ -590,7 +590,7 @@ section Nontrivial
 variable [PartialOrder α] [BoundedOrder α] [Nontrivial α]
 
 @[simp]
-theorem bot_ne_top : (⊥ : α) ≠ ⊤ := fun h => not_subsingleton _ <| subsingleton_of_bot_eq_top h
+theorem bot_ne_top : (⊥ : α) ≠ ⊤ := fun h ↦ not_subsingleton _ <| subsingleton_of_bot_eq_top h
 
 @[simp]
 theorem top_ne_bot : (⊤ : α) ≠ ⊥ :=

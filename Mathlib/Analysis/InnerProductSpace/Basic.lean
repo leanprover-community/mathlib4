@@ -58,7 +58,7 @@ theorem inner_eq_zero_symm {x y : E} : ⟪x, y⟫ = 0 ↔ ⟪y, x⟫ = 0 := by
   rw [← inner_conj_symm]
   exact star_eq_zero
 
-instance {ι : Sort*} (v : ι → E) : IsSymm ι fun i j => ⟪v i, v j⟫ = 0 where
+instance {ι : Sort*} (v : ι → E) : IsSymm ι fun i j ↦ ⟪v i, v j⟫ = 0 where
   symm _ _ := inner_eq_zero_symm.1
 
 @[simp]
@@ -121,9 +121,9 @@ theorem inner_smul_real_right (x y : E) (r : ℝ) : ⟪x, (r : 𝕜) • y⟫ = 
 Note that in the case `𝕜 = ℝ` this is a bilinear form. -/
 @[simps!]
 def sesqFormOfInner : E →ₗ[𝕜] E →ₗ⋆[𝕜] 𝕜 :=
-  LinearMap.mk₂'ₛₗ (RingHom.id 𝕜) (starRingEnd _) (fun x y => ⟪y, x⟫)
-    (fun _x _y _z => inner_add_right _ _ _) (fun _r _x _y => inner_smul_right _ _ _)
-    (fun _x _y _z => inner_add_left _ _ _) fun _r _x _y => inner_smul_left _ _ _
+  LinearMap.mk₂'ₛₗ (RingHom.id 𝕜) (starRingEnd _) (fun x y ↦ ⟪y, x⟫)
+    (fun _x _y _z ↦ inner_add_right _ _ _) (fun _r _x _y ↦ inner_smul_right _ _ _)
+    (fun _x _y _z ↦ inner_add_left _ _ _) fun _r _x _y ↦ inner_smul_left _ _ _
 
 /-- The real inner product as a bilinear form.
 
@@ -143,24 +143,24 @@ theorem inner_sum {ι : Type*} (s : Finset ι) (f : ι → E) (x : E) :
 
 /-- An inner product with a sum on the left, `Finsupp` version. -/
 protected theorem Finsupp.sum_inner {ι : Type*} (l : ι →₀ 𝕜) (v : ι → E) (x : E) :
-    ⟪l.sum fun (i : ι) (a : 𝕜) => a • v i, x⟫ = l.sum fun (i : ι) (a : 𝕜) => conj a • ⟪v i, x⟫ := by
-  convert sum_inner (𝕜 := 𝕜) l.support (fun a => l a • v a) x
+    ⟪l.sum fun (i : ι) (a : 𝕜) ↦ a • v i, x⟫ = l.sum fun (i : ι) (a : 𝕜) ↦ conj a • ⟪v i, x⟫ := by
+  convert sum_inner (𝕜 := 𝕜) l.support (fun a ↦ l a • v a) x
   simp only [inner_smul_left, Finsupp.sum, smul_eq_mul]
 
 /-- An inner product with a sum on the right, `Finsupp` version. -/
 protected theorem Finsupp.inner_sum {ι : Type*} (l : ι →₀ 𝕜) (v : ι → E) (x : E) :
-    ⟪x, l.sum fun (i : ι) (a : 𝕜) => a • v i⟫ = l.sum fun (i : ι) (a : 𝕜) => a • ⟪x, v i⟫ := by
-  convert inner_sum (𝕜 := 𝕜) l.support (fun a => l a • v a) x
+    ⟪x, l.sum fun (i : ι) (a : 𝕜) ↦ a • v i⟫ = l.sum fun (i : ι) (a : 𝕜) ↦ a • ⟪x, v i⟫ := by
+  convert inner_sum (𝕜 := 𝕜) l.support (fun a ↦ l a • v a) x
   simp only [inner_smul_right, Finsupp.sum, smul_eq_mul]
 
 protected theorem DFinsupp.sum_inner {ι : Type*} [DecidableEq ι] {α : ι → Type*}
     [∀ i, AddZeroClass (α i)] [∀ (i) (x : α i), Decidable (x ≠ 0)] (f : ∀ i, α i → E)
-    (l : Π₀ i, α i) (x : E) : ⟪l.sum f, x⟫ = l.sum fun i a => ⟪f i a, x⟫ := by
+    (l : Π₀ i, α i) (x : E) : ⟪l.sum f, x⟫ = l.sum fun i a ↦ ⟪f i a, x⟫ := by
   simp +contextual only [DFinsupp.sum, sum_inner]
 
 protected theorem DFinsupp.inner_sum {ι : Type*} [DecidableEq ι] {α : ι → Type*}
     [∀ i, AddZeroClass (α i)] [∀ (i) (x : α i), Decidable (x ≠ 0)] (f : ∀ i, α i → E)
-    (l : Π₀ i, α i) (x : E) : ⟪x, l.sum f⟫ = l.sum fun i a => ⟪x, f i a⟫ := by
+    (l : Π₀ i, α i) (x : E) : ⟪x, l.sum f⟫ = l.sum fun i a ↦ ⟪x, f i a⟫ := by
   simp +contextual only [DFinsupp.sum, inner_sum]
 
 @[simp]
@@ -327,7 +327,7 @@ theorem real_inner_self_pos {x : F} : 0 < ⟪x, x⟫_ℝ ↔ x ≠ 0 := re_inner
 /-- A family of vectors is linearly independent if they are nonzero
 and orthogonal. -/
 theorem linearIndependent_of_ne_zero_of_inner_eq_zero {ι : Type*} {v : ι → E} (hz : ∀ i, v i ≠ 0)
-    (ho : Pairwise fun i j => ⟪v i, v j⟫ = 0) : LinearIndependent 𝕜 v := by
+    (ho : Pairwise fun i j ↦ ⟪v i, v j⟫ = 0) : LinearIndependent 𝕜 v := by
   rw [linearIndependent_iff']
   intro s g hg i hi
   have h' : g i * ⟪v i, v i⟫ = ⟪v i, ∑ j ∈ s, g j • v j⟫ := by
@@ -337,7 +337,7 @@ theorem linearIndependent_of_ne_zero_of_inner_eq_zero {ι : Type*} {v : ι → E
     · rw [inner_smul_right]
     · intro j _hj hji
       rw [inner_smul_right, ho hji.symm, mul_zero]
-    · exact fun h => False.elim (h hi)
+    · exact fun h ↦ False.elim (h hi)
   simpa [hg, hz] using h'
 
 end BasicProperties
@@ -676,7 +676,7 @@ theorem norm_inner_eq_norm_tfae (x y : E) :
       x = 0 ∨ ∃ r : 𝕜, y = r • x,
       x = 0 ∨ y ∈ 𝕜 ∙ x] := by
   tfae_have 1 → 2 := by
-    refine fun h => or_iff_not_imp_left.2 fun hx₀ => ?_
+    refine fun h ↦ or_iff_not_imp_left.2 fun hx₀ ↦ ?_
     have : ‖x‖ ^ 2 ≠ 0 := pow_ne_zero _ (norm_ne_zero_iff.2 hx₀)
     rw [← sq_eq_sq₀, mul_pow, ← mul_right_inj' this, eq_comm, ← sub_eq_zero, ← mul_sub] at h <;>
       try positivity
@@ -686,7 +686,7 @@ theorem norm_inner_eq_norm_tfae (x y : E) :
     rw [InnerProductSpace.Core.normSq_eq_zero, sub_eq_zero] at h
     rw [div_eq_inv_mul, mul_smul, h, inv_smul_smul₀]
     rwa [inner_self_ne_zero]
-  tfae_have 2 → 3 := fun h => h.imp_right fun h' => ⟨_, h'⟩
+  tfae_have 2 → 3 := fun h ↦ h.imp_right fun h' ↦ ⟨_, h'⟩
   tfae_have 3 → 1 := by
     rintro (rfl | ⟨r, rfl⟩) <;>
     simp [inner_smul_right, norm_smul, inner_self_eq_norm_sq_to_K,
@@ -704,8 +704,8 @@ theorem norm_inner_eq_norm_iff {x y : E} (hx₀ : x ≠ 0) (hy₀ : y ≠ 0) :
       (@norm_inner_eq_norm_tfae 𝕜 _ _ _ _ x y).out 0 2
     _ ↔ ∃ r : 𝕜, y = r • x := or_iff_right hx₀
     _ ↔ ∃ r : 𝕜, r ≠ 0 ∧ y = r • x :=
-      ⟨fun ⟨r, h⟩ => ⟨r, fun hr₀ => hy₀ <| h.symm ▸ smul_eq_zero.2 <| Or.inl hr₀, h⟩,
-        fun ⟨r, _hr₀, h⟩ => ⟨r, h⟩⟩
+      ⟨fun ⟨r, h⟩ ↦ ⟨r, fun hr₀ ↦ hy₀ <| h.symm ▸ smul_eq_zero.2 <| Or.inl hr₀, h⟩,
+        fun ⟨r, _hr₀, h⟩ ↦ ⟨r, h⟩⟩
 
 /-- The inner product of two vectors, divided by the product of their
 norms, has absolute value 1 if and only if they are nonzero and one is
@@ -714,8 +714,8 @@ theorem norm_inner_div_norm_mul_norm_eq_one_iff (x y : E) :
     ‖⟪x, y⟫ / (‖x‖ * ‖y‖)‖ = 1 ↔ x ≠ 0 ∧ ∃ r : 𝕜, r ≠ 0 ∧ y = r • x := by
   constructor
   · intro h
-    have hx₀ : x ≠ 0 := fun h₀ => by simp [h₀] at h
-    have hy₀ : y ≠ 0 := fun h₀ => by simp [h₀] at h
+    have hx₀ : x ≠ 0 := fun h₀ ↦ by simp [h₀] at h
+    have hy₀ : y ≠ 0 := fun h₀ ↦ by simp [h₀] at h
     refine ⟨hx₀, (norm_inner_eq_norm_iff hx₀ hy₀).1 <| eq_of_div_eq_one ?_⟩
     simpa using h
   · rintro ⟨hx, ⟨r, ⟨hr, rfl⟩⟩⟩
@@ -766,8 +766,8 @@ theorem real_inner_div_norm_mul_norm_eq_one_iff (x y : F) :
     ⟪x, y⟫_ℝ / (‖x‖ * ‖y‖) = 1 ↔ x ≠ 0 ∧ ∃ r : ℝ, 0 < r ∧ y = r • x := by
   constructor
   · intro h
-    have hx₀ : x ≠ 0 := fun h₀ => by simp [h₀] at h
-    have hy₀ : y ≠ 0 := fun h₀ => by simp [h₀] at h
+    have hx₀ : x ≠ 0 := fun h₀ ↦ by simp [h₀] at h
+    have hy₀ : y ≠ 0 := fun h₀ ↦ by simp [h₀] at h
     refine ⟨hx₀, ‖y‖ / ‖x‖, div_pos (norm_pos_iff.2 hy₀) (norm_pos_iff.2 hx₀), ?_⟩
     exact ((inner_eq_norm_mul_iff_div hx₀).1 (eq_of_div_eq_one h)).symm
   · rintro ⟨hx, ⟨r, ⟨hr, rfl⟩⟩⟩
@@ -780,7 +780,7 @@ theorem real_inner_div_norm_mul_norm_eq_neg_one_iff (x y : F) :
     ⟪x, y⟫_ℝ / (‖x‖ * ‖y‖) = -1 ↔ x ≠ 0 ∧ ∃ r : ℝ, r < 0 ∧ y = r • x := by
   rw [← neg_eq_iff_eq_neg, ← neg_div, ← inner_neg_right, ← norm_neg y,
     real_inner_div_norm_mul_norm_eq_one_iff, (@neg_surjective ℝ _).exists]
-  refine Iff.rfl.and (exists_congr fun r => ?_)
+  refine Iff.rfl.and (exists_congr fun r ↦ ?_)
   rw [neg_pos, neg_smul, neg_inj]
 
 /-- If the inner product of two unit vectors is `1`, then the two vectors are equal. One form of
@@ -866,11 +866,11 @@ abbrev InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
     NormedSpace.restrictScalars ℝ 𝕜
       E with
     norm_sq_eq_re_inner := norm_sq_eq_re_inner
-    conj_inner_symm := fun _ _ => inner_re_symm _ _
-    add_left := fun x y z => by
+    conj_inner_symm := fun _ _ ↦ inner_re_symm _ _
+    add_left := fun x y z ↦ by
       change re ⟪x + y, z⟫ = re ⟪x, z⟫ + re ⟪y, z⟫
       simp only [inner_add_left, map_add]
-    smul_left := fun x y r => by
+    smul_left := fun x y r ↦ by
       change re ⟪(r : 𝕜) • x, y⟫ = r * re ⟪x, y⟫
       simp only [inner_smul_left, conj_ofReal, re_ofReal_mul] }
 

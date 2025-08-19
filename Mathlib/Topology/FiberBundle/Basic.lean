@@ -238,15 +238,15 @@ variable (E)
 /-- The projection from a fiber bundle to its base is continuous. -/
 @[continuity]
 theorem continuous_proj : Continuous (π F E) :=
-  continuous_iff_continuousAt.2 fun x => (map_proj_nhds F x).le
+  continuous_iff_continuousAt.2 fun x ↦ (map_proj_nhds F x).le
 
 /-- The projection from a fiber bundle to its base is an open map. -/
 theorem isOpenMap_proj : IsOpenMap (π F E) :=
-  IsOpenMap.of_nhds_le fun x => (map_proj_nhds F x).ge
+  IsOpenMap.of_nhds_le fun x ↦ (map_proj_nhds F x).ge
 
 /-- The projection from a fiber bundle with a nonempty fiber to its base is a surjective
 map. -/
-theorem surjective_proj [Nonempty F] : Function.Surjective (π F E) := fun b =>
+theorem surjective_proj [Nonempty F] : Function.Surjective (π F E) := fun b ↦
   let ⟨p, _, hpb⟩ :=
     (trivializationAt F E b).proj_surjOn_baseSet (mem_baseSet_trivializationAt F E b)
   ⟨p, hpb⟩
@@ -286,15 +286,15 @@ open Trivialization
 /-- Characterization of continuous functions (at a point, within a set) into a fiber bundle. -/
 theorem continuousWithinAt_totalSpace (f : X → TotalSpace F E) {s : Set X} {x₀ : X} :
     ContinuousWithinAt f s x₀ ↔
-      ContinuousWithinAt (fun x => (f x).proj) s x₀ ∧
-        ContinuousWithinAt (fun x => ((trivializationAt F E (f x₀).proj) (f x)).2) s x₀ :=
+      ContinuousWithinAt (fun x ↦ (f x).proj) s x₀ ∧
+        ContinuousWithinAt (fun x ↦ ((trivializationAt F E (f x₀).proj) (f x)).2) s x₀ :=
   (trivializationAt F E (f x₀).proj).tendsto_nhds_iff mem_trivializationAt_proj_source
 
 /-- Characterization of continuous functions (at a point) into a fiber bundle. -/
 theorem continuousAt_totalSpace (f : X → TotalSpace F E) {x₀ : X} :
     ContinuousAt f x₀ ↔
-      ContinuousAt (fun x => (f x).proj) x₀ ∧
-        ContinuousAt (fun x => ((trivializationAt F E (f x₀).proj) (f x)).2) x₀ :=
+      ContinuousAt (fun x ↦ (f x).proj) x₀ ∧
+        ContinuousAt (fun x ↦ ((trivializationAt F E (f x₀).proj) (f x)).2) x₀ :=
   (trivializationAt F E (f x₀).proj).tendsto_nhds_iff mem_trivializationAt_proj_source
 
 end FiberBundle
@@ -317,7 +317,7 @@ theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinea
   set s : Set B := { x ∈ Icc a b | ∃ e : Trivialization F (π F E), Icc a x ⊆ e.baseSet }
   have ha : a ∈ s := ⟨left_mem_Icc.2 hab, ea, by simp [hea]⟩
   have sne : s.Nonempty := ⟨a, ha⟩
-  have hsb : b ∈ upperBounds s := fun x hx => hx.1.2
+  have hsb : b ∈ upperBounds s := fun x hx ↦ hx.1.2
   have sbd : BddAbove s := ⟨b, hsb⟩
   set c := sSup s
   have hsc : IsLUB s c := isLUB_csSup sne sbd
@@ -337,7 +337,7 @@ theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinea
       `proj` over `[a, d]`. Then we can glue `ead` and `ec` into a trivialization over `[a, c]`. -/
     obtain ⟨d, ⟨hdab, ead, had⟩, hd⟩ : ∃ d ∈ s, d ∈ Ioc c' c := hsc.exists_between hc'.2
     refine ⟨ead.piecewiseLe ec d (had ⟨hdab.1, le_rfl⟩) (hc'e hd), subset_ite.2 ?_⟩
-    exact ⟨fun x hx => had ⟨hx.1.1, hx.2⟩, fun x hx => hc'e ⟨hd.1.trans (not_le.1 hx.2), hx.1.2⟩⟩
+    exact ⟨fun x hx ↦ had ⟨hx.1.1, hx.2⟩, fun x hx ↦ hc'e ⟨hd.1.trans (not_le.1 hx.2), hx.1.2⟩⟩
   /- So, `c ∈ s`. Let `ec` be a trivialization of `proj` over `[a, c]`.  If `c = b`, then we are
     done. Otherwise we show that `proj` can be trivialized over a larger interval `[a, d]`,
     `d ∈ (c, b]`, hence `c` is not an upper bound of `s`. -/
@@ -359,7 +359,7 @@ theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinea
       ⟨trivializationAt F E d, mem_baseSet_trivializationAt F E d⟩
     refine ⟨d, hdcb,
       (ec.restrOpen (Iio d) isOpen_Iio).disjointUnion (ed.restrOpen (Ioi c) isOpen_Ioi)
-        (he.mono inter_subset_right inter_subset_right), fun x hx => ?_⟩
+        (he.mono inter_subset_right inter_subset_right), fun x hx ↦ ?_⟩
     rcases hx.2.eq_or_lt with (rfl | hxd)
     exacts [Or.inr ⟨hed, hdcb.1⟩, Or.inl ⟨had ⟨hx.1, hxd⟩, hxd⟩]
   · /- If `(c, d)` is nonempty, then take `d' ∈ (c, d)`. Since the base set of `ec` includes
@@ -390,7 +390,7 @@ structure FiberBundleCore (ι : Type*) (B : Type*) [TopologicalSpace B] (F : Typ
   coordChange : ι → ι → B → F → F
   coordChange_self : ∀ i, ∀ x ∈ baseSet i, ∀ v, coordChange i i x v = v
   continuousOn_coordChange : ∀ i j,
-    ContinuousOn (fun p : B × F => coordChange i j p.1 p.2) ((baseSet i ∩ baseSet j) ×ˢ univ)
+    ContinuousOn (fun p : B × F ↦ coordChange i j p.1 p.2) ((baseSet i ∩ baseSet j) ×ˢ univ)
   coordChange_comp : ∀ i j k, ∀ x ∈ baseSet i ∩ baseSet j ∩ baseSet k, ∀ v,
     (coordChange j k x) (coordChange i j x v) = coordChange i k x v
 
@@ -585,15 +585,15 @@ zero section of a vector bundle. Another example (not yet defined) would be the 
 section of the endomorphism bundle of a vector bundle. -/
 theorem continuous_const_section (v : F)
     (h : ∀ i j, ∀ x ∈ Z.baseSet i ∩ Z.baseSet j, Z.coordChange i j x v = v) :
-    Continuous (show B → Z.TotalSpace from fun x => ⟨x, v⟩) := by
-  refine continuous_iff_continuousAt.2 fun x => ?_
+    Continuous (show B → Z.TotalSpace from fun x ↦ ⟨x, v⟩) := by
+  refine continuous_iff_continuousAt.2 fun x ↦ ?_
   have A : Z.baseSet (Z.indexAt x) ∈ 𝓝 x :=
     IsOpen.mem_nhds (Z.isOpen_baseSet (Z.indexAt x)) (Z.mem_baseSet_at x)
   refine ((Z.localTrivAt x).toPartialHomeomorph.continuousAt_iff_continuousAt_comp_left ?_).2 ?_
   · exact A
   · apply continuousAt_id.prodMk
     simp only [mfld_simps]
-    have : ContinuousOn (fun _ : B => v) (Z.baseSet (Z.indexAt x)) := continuousOn_const
+    have : ContinuousOn (fun _ : B ↦ v) (Z.baseSet (Z.indexAt x)) := continuousOn_const
     refine (this.congr fun y hy ↦ ?_).continuousAt A
     exact h _ _ _ ⟨mem_baseSet_at _ _, hy⟩
 
@@ -730,12 +730,12 @@ def totalSpaceTopology (a : FiberPrebundle F E) : TopologicalSpace (TotalSpace F
 
 theorem continuous_symm_of_mem_pretrivializationAtlas (he : e ∈ a.pretrivializationAtlas) :
     @ContinuousOn _ _ _ a.totalSpaceTopology e.toPartialEquiv.symm e.target := by
-  refine fun z H U h => preimage_nhdsWithin_coinduced' H (le_def.1 (nhds_mono ?_) U h)
+  refine fun z H U h ↦ preimage_nhdsWithin_coinduced' H (le_def.1 (nhds_mono ?_) U h)
   exact le_iSup₂ (α := TopologicalSpace (TotalSpace F E)) e he
 
 theorem isOpen_source (e : Pretrivialization F (π F E)) :
     IsOpen[a.totalSpaceTopology] e.source := by
-  refine isOpen_iSup_iff.mpr fun e' => isOpen_iSup_iff.mpr fun _ => ?_
+  refine isOpen_iSup_iff.mpr fun e' ↦ isOpen_iSup_iff.mpr fun _ ↦ ?_
   refine isOpen_coinduced.mpr (isOpen_induced_iff.mpr ⟨e.target, e.open_target, ?_⟩)
   ext ⟨x, hx⟩
   simp only [mem_preimage, Pretrivialization.setSymm, restrict, e.mem_target, e.mem_source,
@@ -757,12 +757,12 @@ def trivializationOfMemPretrivializationAtlas (he : e ∈ a.pretrivializationAtl
   { e with
     open_source := a.isOpen_source e,
     continuousOn_toFun := by
-      refine continuousOn_iff'.mpr fun s hs => ⟨e ⁻¹' s ∩ e.source,
-        isOpen_iSup_iff.mpr fun e' => ?_, by rw [inter_assoc, inter_self]; rfl⟩
-      refine isOpen_iSup_iff.mpr fun he' => ?_
+      refine continuousOn_iff'.mpr fun s hs ↦ ⟨e ⁻¹' s ∩ e.source,
+        isOpen_iSup_iff.mpr fun e' ↦ ?_, by rw [inter_assoc, inter_self]; rfl⟩
+      refine isOpen_iSup_iff.mpr fun he' ↦ ?_
       rw [isOpen_coinduced, isOpen_induced_iff]
       obtain ⟨u, hu1, hu2⟩ := continuousOn_iff'.mp (a.continuous_trivChange _ he _ he') s hs
-      have hu3 := congr_arg (fun s => (fun x : e'.target => (x : B × F)) ⁻¹' s) hu2
+      have hu3 := congr_arg (fun s ↦ (fun x : e'.target ↦ (x : B × F)) ⁻¹' s) hu2
       simp only [Subtype.coe_preimage_self, preimage_inter, univ_inter] at hu3
       refine ⟨u ∩ e'.toPartialEquiv.target ∩ e'.toPartialEquiv.symm ⁻¹' e.source, ?_, by
         simp only [preimage_inter, inter_univ, Subtype.coe_preimage_self, hu3.symm]; rfl⟩

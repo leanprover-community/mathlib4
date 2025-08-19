@@ -44,16 +44,16 @@ In fact, the proof is identical when we do this for dependent functions to a typ
 so we do the more general case.
 -/
 theorem toTypes_isSheaf (T : X → Type*) : (presheafToTypes X T).IsSheaf :=
-  isSheaf_of_isSheafUniqueGluing_types _ fun ι U sf hsf => by
+  isSheaf_of_isSheafUniqueGluing_types _ fun ι U sf hsf ↦ by
   -- We use the sheaf condition in terms of unique gluing
   -- U is a family of open sets, indexed by `ι` and `sf` is a compatible family of sections.
   -- In the informal comments below, I'll just write `U` to represent the union.
     -- Our first goal is to define a function "lifted" to all of `U`.
     -- We do this one point at a time. Using the axiom of choice, we can pick for each
     -- `x : ↑(iSup U)` an index `i : ι` such that `x` lies in `U i`
-    choose index index_spec using fun x : ↑(iSup U) => Opens.mem_iSup.mp x.2
+    choose index index_spec using fun x : ↑(iSup U) ↦ Opens.mem_iSup.mp x.2
     -- Using this data, we can glue our functions together to a single section
-    let s : ∀ x : ↑(iSup U), T x := fun x => sf (index x) ⟨x.1, index_spec x⟩
+    let s : ∀ x : ↑(iSup U), T x := fun x ↦ sf (index x) ⟨x.1, index_spec x⟩
     refine ⟨s, ?_, ?_⟩
     · intro i
       funext x
@@ -76,7 +76,7 @@ theorem toTypes_isSheaf (T : X → Type*) : (presheafToTypes X T).IsSheaf :=
 a target type `T` satisfies the sheaf condition.
 -/
 theorem toType_isSheaf (T : Type*) : (presheafToType X T).IsSheaf :=
-  toTypes_isSheaf X fun _ => T
+  toTypes_isSheaf X fun _ ↦ T
 
 end TopCat.Presheaf
 

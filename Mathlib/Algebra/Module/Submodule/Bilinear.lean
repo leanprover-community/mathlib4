@@ -47,12 +47,12 @@ theorem apply_mem_map₂ (f : M →ₗ[R] N →ₗ[R] P) {m : M} {n : N} {p : Su
 
 theorem map₂_le {f : M →ₗ[R] N →ₗ[R] P} {p : Submodule R M} {q : Submodule R N}
     {r : Submodule R P} : map₂ f p q ≤ r ↔ ∀ m ∈ p, ∀ n ∈ q, f m n ∈ r :=
-  ⟨fun H _m hm _n hn => H <| apply_mem_map₂ _ hm hn, fun H =>
-    iSup_le fun ⟨m, hm⟩ => map_le_iff_le_comap.2 fun n hn => H m hm n hn⟩
+  ⟨fun H _m hm _n hn ↦ H <| apply_mem_map₂ _ hm hn, fun H ↦
+    iSup_le fun ⟨m, hm⟩ ↦ map_le_iff_le_comap.2 fun n hn ↦ H m hm n hn⟩
 
 variable (R) in
 theorem map₂_span_span (f : M →ₗ[R] N →ₗ[R] P) (s : Set M) (t : Set N) :
-    map₂ f (span R s) (span R t) = span R (Set.image2 (fun m n => f m n) s t) := by
+    map₂ f (span R s) (span R t) = span R (Set.image2 (fun m n ↦ f m n) s t) := by
   apply le_antisymm
   · rw [map₂_le]
     apply @span_induction R M _ _ _ s
@@ -71,21 +71,21 @@ theorem map₂_span_span (f : M →ₗ[R] N →ₗ[R] P) (s : Set M) (t : Set N)
 @[simp]
 theorem map₂_bot_right (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) : map₂ f p ⊥ = ⊥ :=
   eq_bot_iff.2 <|
-    map₂_le.2 fun m _hm n hn => by
+    map₂_le.2 fun m _hm n hn ↦ by
       rw [Submodule.mem_bot] at hn
       rw [hn, LinearMap.map_zero]; simp only [mem_bot]
 
 @[simp]
 theorem map₂_bot_left (f : M →ₗ[R] N →ₗ[R] P) (q : Submodule R N) : map₂ f ⊥ q = ⊥ :=
   eq_bot_iff.2 <|
-    map₂_le.2 fun m hm n _ => by
+    map₂_le.2 fun m hm n _ ↦ by
       rw [Submodule.mem_bot] at hm ⊢
       rw [hm, LinearMap.map_zero₂]
 
 @[gcongr, mono]
 theorem map₂_le_map₂ {f : M →ₗ[R] N →ₗ[R] P} {p₁ p₂ : Submodule R M} {q₁ q₂ : Submodule R N}
     (hp : p₁ ≤ p₂) (hq : q₁ ≤ q₂) : map₂ f p₁ q₁ ≤ map₂ f p₂ q₂ :=
-  map₂_le.2 fun _m hm _n hn => apply_mem_map₂ _ (hp hm) (hq hn)
+  map₂_le.2 fun _m hm _n hn ↦ apply_mem_map₂ _ (hp hm) (hq hn)
 
 theorem map₂_le_map₂_left {f : M →ₗ[R] N →ₗ[R] P} {p₁ p₂ : Submodule R M} {q : Submodule R N}
     (h : p₁ ≤ p₂) : map₂ f p₁ q ≤ map₂ f p₂ q :=
@@ -98,7 +98,7 @@ theorem map₂_le_map₂_right {f : M →ₗ[R] N →ₗ[R] P} {p : Submodule R 
 theorem map₂_sup_right (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) (q₁ q₂ : Submodule R N) :
     map₂ f p (q₁ ⊔ q₂) = map₂ f p q₁ ⊔ map₂ f p q₂ :=
   le_antisymm
-    (map₂_le.2 fun _m hm _np hnp =>
+    (map₂_le.2 fun _m hm _np hnp ↦
       let ⟨_n, hn, _p, hp, hnp⟩ := mem_sup.1 hnp
       mem_sup.2 ⟨_, apply_mem_map₂ _ hm hn, _, apply_mem_map₂ _ hm hp, hnp ▸ (map_add _ _ _).symm⟩)
     (sup_le (map₂_le_map₂_right le_sup_left) (map₂_le_map₂_right le_sup_right))
@@ -106,7 +106,7 @@ theorem map₂_sup_right (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) (q�
 theorem map₂_sup_left (f : M →ₗ[R] N →ₗ[R] P) (p₁ p₂ : Submodule R M) (q : Submodule R N) :
     map₂ f (p₁ ⊔ p₂) q = map₂ f p₁ q ⊔ map₂ f p₂ q :=
   le_antisymm
-    (map₂_le.2 fun _mn hmn _p hp =>
+    (map₂_le.2 fun _mn hmn _p hp ↦
       let ⟨_m, hm, _n, hn, hmn⟩ := mem_sup.1 hmn
       mem_sup.2
         ⟨_, apply_mem_map₂ _ hm hp, _, apply_mem_map₂ _ hn hp,
@@ -114,12 +114,12 @@ theorem map₂_sup_left (f : M →ₗ[R] N →ₗ[R] P) (p₁ p₂ : Submodule R
     (sup_le (map₂_le_map₂_left le_sup_left) (map₂_le_map₂_left le_sup_right))
 
 theorem image2_subset_map₂ (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) (q : Submodule R N) :
-    Set.image2 (fun m n => f m n) (↑p : Set M) (↑q : Set N) ⊆ (↑(map₂ f p q) : Set P) := by
+    Set.image2 (fun m n ↦ f m n) (↑p : Set M) (↑q : Set N) ⊆ (↑(map₂ f p q) : Set P) := by
   rintro _ ⟨i, hi, j, hj, rfl⟩
   exact apply_mem_map₂ _ hi hj
 
 theorem map₂_eq_span_image2 (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) (q : Submodule R N) :
-    map₂ f p q = span R (Set.image2 (fun m n => f m n) (p : Set M) (q : Set N)) := by
+    map₂ f p q = span R (Set.image2 (fun m n ↦ f m n) (p : Set M) (q : Set N)) := by
   rw [← map₂_span_span, span_eq, span_eq]
 
 theorem map₂_flip (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) (q : Submodule R N) :

@@ -43,7 +43,7 @@ instance instGroupWithZero [GroupWithZero α] : GroupWithZero αᵐᵒᵖ where
 instance instNoZeroDivisors [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors αᵐᵒᵖ where
   eq_zero_or_eq_zero_of_mul_eq_zero (H : op (_ * _) = op (0 : α)) :=
       Or.casesOn (eq_zero_or_eq_zero_of_mul_eq_zero <| op_injective H)
-        (fun hy => Or.inr <| unop_injective <| hy) fun hx => Or.inl <| unop_injective <| hx
+        (fun hy ↦ Or.inr <| unop_injective <| hy) fun hx ↦ Or.inl <| unop_injective <| hx
 
 instance [Mul α] [Zero α] [IsLeftCancelMulZero α] : IsRightCancelMulZero αᵐᵒᵖ where
   mul_right_cancel_of_ne_zero h _ _ eq := unop_injective <|
@@ -92,7 +92,7 @@ instance instMonoidWithZero [MonoidWithZero α] : MonoidWithZero αᵃᵒᵖ whe
 
 instance instNoZeroDivisors [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors αᵃᵒᵖ where
   eq_zero_or_eq_zero_of_mul_eq_zero (H : op (_ * _) = op (0 : α)) :=
-    Or.imp (fun hx => unop_injective hx) (fun hy => unop_injective hy)
+    Or.imp (fun hx ↦ unop_injective hx) (fun hy ↦ unop_injective hy)
     (@eq_zero_or_eq_zero_of_mul_eq_zero α _ _ _ _ _ <| op_injective H)
 
 instance instGroupWithZero [GroupWithZero α] : GroupWithZero αᵃᵒᵖ where

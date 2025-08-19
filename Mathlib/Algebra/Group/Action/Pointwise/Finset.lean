@@ -33,12 +33,12 @@ variable [DecidableEq γ]
 @[to_additive]
 instance smulCommClass_finset [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass α β (Finset γ) :=
-  ⟨fun _ _ => Commute.finset_image <| smul_comm _ _⟩
+  ⟨fun _ _ ↦ Commute.finset_image <| smul_comm _ _⟩
 
 @[to_additive]
 instance smulCommClass_finset' [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass α (Finset β) (Finset γ) :=
-  ⟨fun a s t => coe_injective <| by simp only [coe_smul_finset, coe_smul, smul_comm]⟩
+  ⟨fun a s t ↦ coe_injective <| by simp only [coe_smul_finset, coe_smul, smul_comm]⟩
 
 @[to_additive]
 instance smulCommClass_finset'' [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
@@ -49,29 +49,29 @@ instance smulCommClass_finset'' [SMul α γ] [SMul β γ] [SMulCommClass α β �
 @[to_additive]
 instance smulCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass (Finset α) (Finset β) (Finset γ) :=
-  ⟨fun s t u => coe_injective <| by simp_rw [coe_smul, smul_comm]⟩
+  ⟨fun s t u ↦ coe_injective <| by simp_rw [coe_smul, smul_comm]⟩
 
 @[to_additive]
 instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α β (Finset γ) :=
-  ⟨fun a b s => by simp only [← image_smul, image_image, smul_assoc, Function.comp_def]⟩
+  ⟨fun a b s ↦ by simp only [← image_smul, image_image, smul_assoc, Function.comp_def]⟩
 
 variable [DecidableEq β]
 
 @[to_additive]
 instance isScalarTower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α (Finset β) (Finset γ) :=
-  ⟨fun a s t => coe_injective <| by simp only [coe_smul_finset, coe_smul, smul_assoc]⟩
+  ⟨fun a s t ↦ coe_injective <| by simp only [coe_smul_finset, coe_smul, smul_assoc]⟩
 
 @[to_additive]
 instance isScalarTower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower (Finset α) (Finset β) (Finset γ) :=
-  ⟨fun a s t => coe_injective <| by simp only [coe_smul, smul_assoc]⟩
+  ⟨fun a s t ↦ coe_injective <| by simp only [coe_smul, smul_assoc]⟩
 
 @[to_additive]
 instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α β] :
     IsCentralScalar α (Finset β) :=
-  ⟨fun a s => coe_injective <| by simp only [coe_smul_finset, op_smul_eq_smul]⟩
+  ⟨fun a s ↦ coe_injective <| by simp only [coe_smul_finset, op_smul_eq_smul]⟩
 
 /-- A multiplicative action of a monoid `α` on a type `β` gives a multiplicative action of
 `Finset α` on `Finset β`. -/
@@ -112,7 +112,7 @@ theorem op_smul_finset_subset_mul : a ∈ t → op a • s ⊆ s * t :=
   image_subset_image₂_left
 
 @[to_additive (attr := simp)]
-theorem biUnion_op_smul_finset (s t : Finset α) : (t.biUnion fun a => op a • s) = s * t :=
+theorem biUnion_op_smul_finset (s t : Finset α) : (t.biUnion fun a ↦ op a • s) = s * t :=
   biUnion_image_right
 
 @[to_additive]
@@ -132,7 +132,7 @@ variable [Semigroup α] [DecidableEq α]
 @[to_additive]
 theorem op_smul_finset_mul_eq_mul_smul_finset (a : α) (s : Finset α) (t : Finset α) :
     op a • s * t = s * a • t :=
-  op_smul_finset_smul_eq_smul_smul_finset _ _ _ fun _ _ _ => mul_assoc _ _ _
+  op_smul_finset_smul_eq_smul_smul_finset _ _ _ fun _ _ _ ↦ mul_assoc _ _ _
 
 end Semigroup
 
@@ -141,7 +141,7 @@ variable [Mul α] [IsLeftCancelMul α] [DecidableEq α] {s t : Finset α} {a : �
 
 @[to_additive]
 theorem pairwiseDisjoint_smul_iff {s : Set α} {t : Finset α} :
-    s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t : Set (α × α)).InjOn fun p => p.1 * p.2 := by
+    s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t : Set (α × α)).InjOn fun p ↦ p.1 * p.2 := by
   simp_rw [← pairwiseDisjoint_coe, coe_smul_finset, Set.pairwiseDisjoint_smul_iff]
 
 end IsLeftCancelMul
@@ -216,7 +216,7 @@ the size of `t` divides the size of `s • t`. -/
 distinct!), then the size of `t` divides the size of `s +ᵥ t`. -/]
 theorem card_dvd_card_smul_right {s : Finset α} :
     ((· • t) '' (s : Set α)).PairwiseDisjoint id → t.card ∣ (s • t).card :=
-  card_dvd_card_image₂_right fun _ _ => MulAction.injective _
+  card_dvd_card_image₂_right fun _ _ ↦ MulAction.injective _
 
 variable [DecidableEq α]
 
@@ -225,9 +225,9 @@ the size of `s` divides the size of `s * t`. -/
 @[to_additive /-- If the right cosets of `s` by elements of `t` are disjoint (but not necessarily
 distinct!), then the size of `s` divides the size of `s + t`. -/]
 theorem card_dvd_card_mul_left {s t : Finset α} :
-    ((fun b => s.image fun a => a * b) '' (t : Set α)).PairwiseDisjoint id →
+    ((fun b ↦ s.image fun a ↦ a * b) '' (t : Set α)).PairwiseDisjoint id →
       s.card ∣ (s * t).card :=
-  card_dvd_card_image₂_left fun _ _ => mul_left_injective _
+  card_dvd_card_image₂_left fun _ _ ↦ mul_left_injective _
 
 /-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily distinct!), then
 the size of `t` divides the size of `s * t`. -/
@@ -235,7 +235,7 @@ the size of `t` divides the size of `s * t`. -/
 distinct!), then the size of `t` divides the size of `s + t`. -/]
 theorem card_dvd_card_mul_right {s t : Finset α} :
     ((· • t) '' (s : Set α)).PairwiseDisjoint id → t.card ∣ (s * t).card :=
-  card_dvd_card_image₂_right fun _ _ => mul_right_injective _
+  card_dvd_card_image₂_right fun _ _ ↦ mul_right_injective _
 
 @[to_additive (attr := simp)]
 lemma inv_smul_finset_distrib (a : α) (s : Finset α) : (a • s)⁻¹ = op a⁻¹ • s⁻¹ := by

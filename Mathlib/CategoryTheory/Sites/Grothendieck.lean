@@ -127,14 +127,14 @@ theorem transitive (hS : S ∈ J X) (R : Sieve X) (h : ∀ ⦃Y⦄ ⦃f : Y ⟶ 
     R ∈ J X :=
   J.transitive' hS R h
 
-theorem covering_of_eq_top : S = ⊤ → S ∈ J X := fun h => h.symm ▸ J.top_mem X
+theorem covering_of_eq_top : S = ⊤ → S ∈ J X := fun h ↦ h.symm ▸ J.top_mem X
 
 /-- If `S` is a subset of `R`, and `S` is covering, then `R` is covering as well.
 
 See also discussion after [MM92] Chapter III, Section 2, Definition 1. -/
 @[stacks 00Z5 "(2)"]
 theorem superset_covering (Hss : S ≤ R) (sjx : S ∈ J X) : R ∈ J X := by
-  apply J.transitive sjx R fun Y f hf => _
+  apply J.transitive sjx R fun Y f hf ↦ _
   intros Y f hf
   apply covering_of_eq_top
   rw [← top_le_iff, ← S.pullback_eq_top_of_mem hf]
@@ -145,19 +145,19 @@ theorem superset_covering (Hss : S ≤ R) (sjx : S ∈ J X) : R ∈ J X := by
 See also [MM92] Chapter III, Section 2, Definition 1 (iv). -/
 @[stacks 00Z5 "(1)"]
 theorem intersection_covering (rj : R ∈ J X) (sj : S ∈ J X) : R ⊓ S ∈ J X := by
-  apply J.transitive rj _ fun Y f Hf => _
+  apply J.transitive rj _ fun Y f Hf ↦ _
   intros Y f hf
   rw [Sieve.pullback_inter, R.pullback_eq_top_of_mem hf]
   simp [sj]
 
 @[simp]
 theorem intersection_covering_iff : R ⊓ S ∈ J X ↔ R ∈ J X ∧ S ∈ J X :=
-  ⟨fun h => ⟨J.superset_covering inf_le_left h, J.superset_covering inf_le_right h⟩, fun t =>
+  ⟨fun h ↦ ⟨J.superset_covering inf_le_left h, J.superset_covering inf_le_right h⟩, fun t ↦
     intersection_covering _ t.1 t.2⟩
 
 theorem bind_covering {S : Sieve X} {R : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f → Sieve Y} (hS : S ∈ J X)
     (hR : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (H : S f), R H ∈ J Y) : Sieve.bind S R ∈ J X :=
-  J.transitive hS _ fun _ f hf => superset_covering J (Sieve.le_pullback_bind S R f hf) (hR hf)
+  J.transitive hS _ fun _ f hf ↦ superset_covering J (Sieve.le_pullback_bind S R f hf) (hR hf)
 
 lemma bindOfArrows {ι : Type*} {X : C} {Z : ι → C} {f : ∀ i, Z i ⟶ X} {R : ∀ i, Presieve (Z i)}
     (h : Sieve.ofArrows Z f ∈ J X) (hR : ∀ i, Sieve.generate (R i) ∈ J _) :
@@ -244,9 +244,9 @@ theorem le_def {J₁ J₂ : GrothendieckTopology C} : J₁ ≤ J₂ ↔ (J₁ : 
 @[stacks 00Z6]
 instance : PartialOrder (GrothendieckTopology C) :=
   { instLEGrothendieckTopology with
-    le_refl := fun _ => le_def.mpr le_rfl
-    le_trans := fun _ _ _ h₁₂ h₂₃ => le_def.mpr (le_trans h₁₂ h₂₃)
-    le_antisymm := fun _ _ h₁₂ h₂₁ => GrothendieckTopology.ext (le_antisymm h₁₂ h₂₁) }
+    le_refl := fun _ ↦ le_def.mpr le_rfl
+    le_trans := fun _ _ _ h₁₂ h₂₃ ↦ le_def.mpr (le_trans h₁₂ h₂₃)
+    le_antisymm := fun _ _ h₁₂ h₂₁ ↦ GrothendieckTopology.ext (le_antisymm h₁₂ h₂₁) }
 
 @[stacks 00Z7]
 instance : InfSet (GrothendieckTopology C) where
@@ -261,7 +261,7 @@ instance : InfSet (GrothendieckTopology C) where
       transitive' := by
         rintro X S hS R h _ ⟨⟨_, J, hJ, rfl⟩, rfl⟩
         apply
-          J.transitive (hS _ ⟨⟨_, _, hJ, rfl⟩, rfl⟩) _ fun Y f hf => h hf _ ⟨⟨_, _, hJ, rfl⟩, rfl⟩ }
+          J.transitive (hS _ ⟨⟨_, _, hJ, rfl⟩, rfl⟩) _ fun Y f hf ↦ h hf _ ⟨⟨_, _, hJ, rfl⟩, rfl⟩ }
 
 lemma mem_sInf (s : Set (GrothendieckTopology C)) {X : C} (S : Sieve X) :
     S ∈ sInf s X ↔ ∀ t ∈ s, S ∈ t X := by
@@ -347,7 +347,7 @@ NB. Any category with pullbacks obviously satisfies the right Ore condition, see
 def RightOreCondition (C : Type u) [Category.{v} C] : Prop :=
   ∀ {X Y Z : C} (yx : Y ⟶ X) (zx : Z ⟶ X), ∃ (W : _) (wy : W ⟶ Y) (wz : W ⟶ Z), wy ≫ yx = wz ≫ zx
 
-theorem right_ore_of_pullbacks [Limits.HasPullbacks C] : RightOreCondition C := fun _ _ =>
+theorem right_ore_of_pullbacks [Limits.HasPullbacks C] : RightOreCondition C := fun _ _ ↦
   ⟨_, _, _, Limits.pullback.condition⟩
 
 /-- The atomic Grothendieck topology: a sieve is covering iff it is nonempty.
@@ -380,9 +380,9 @@ namespace Cover
 
 variable {J}
 
-instance : CoeOut (J.Cover X) (Sieve X) := ⟨fun S => S.1⟩
+instance : CoeOut (J.Cover X) (Sieve X) := ⟨fun S ↦ S.1⟩
 
-instance : CoeFun (J.Cover X) fun _ => ∀ ⦃Y⦄ (_ : Y ⟶ X), Prop := ⟨fun S => (S : Sieve X)⟩
+instance : CoeFun (J.Cover X) fun _ ↦ ∀ ⦃Y⦄ (_ : Y ⟶ X), Prop := ⟨fun S ↦ (S : Sieve X)⟩
 
 theorem condition (S : J.Cover X) : (S : Sieve X) ∈ J X := S.2
 
@@ -393,15 +393,15 @@ theorem ext (S T : J.Cover X) (h : ∀ ⦃Y⦄ (f : Y ⟶ X), S f ↔ T f) : S =
 instance : OrderTop (J.Cover X) :=
   { (inferInstance : Preorder (J.Cover X)) with
     top := ⟨⊤, J.top_mem _⟩
-    le_top := fun _ _ _ _ => by tauto }
+    le_top := fun _ _ _ _ ↦ by tauto }
 
 instance : SemilatticeInf (J.Cover X) :=
   { (inferInstance : Preorder _) with
-    inf := fun S T => ⟨S ⊓ T, J.intersection_covering S.condition T.condition⟩
-    le_antisymm := fun _ _ h1 h2 => ext _ _ fun {Y} f => ⟨by apply h1, by apply h2⟩
-    inf_le_left := fun _ _ _ _ hf => hf.1
-    inf_le_right := fun _ _ _ _ hf => hf.2
-    le_inf := fun _ _ _ h1 h2 _ _ h => ⟨h1 _ h, h2 _ h⟩ }
+    inf := fun S T ↦ ⟨S ⊓ T, J.intersection_covering S.condition T.condition⟩
+    le_antisymm := fun _ _ h1 h2 ↦ ext _ _ fun {Y} f ↦ ⟨by apply h1, by apply h2⟩
+    inf_le_left := fun _ _ _ _ hf ↦ hf.1
+    inf_le_right := fun _ _ _ _ hf ↦ hf.2
+    le_inf := fun _ _ _ h1 h2 _ _ h ↦ ⟨h1 _ h, h2 _ h⟩ }
 
 instance : Inhabited (J.Cover X) :=
   ⟨⊤⟩
@@ -479,17 +479,17 @@ theorem coe_pullback {Z : C} (f : Y ⟶ X) (g : Z ⟶ Y) (S : J.Cover X) :
 
 /-- The isomorphism between `S` and the pullback of `S` w.r.t. the identity. -/
 def pullbackId (S : J.Cover X) : S.pullback (𝟙 X) ≅ S :=
-  eqToIso <| Cover.ext _ _ fun Y f => by simp
+  eqToIso <| Cover.ext _ _ fun Y f ↦ by simp
 
 /-- Pulling back with respect to a composition is the composition of the pullbacks. -/
 def pullbackComp {X Y Z : C} (S : J.Cover X) (f : Z ⟶ Y) (g : Y ⟶ X) :
     S.pullback (f ≫ g) ≅ (S.pullback g).pullback f :=
-  eqToIso <| Cover.ext _ _ fun Y f => by simp
+  eqToIso <| Cover.ext _ _ fun Y f ↦ by simp
 
 /-- Combine a family of covers over a cover. -/
 def bind {X : C} (S : J.Cover X) (T : ∀ I : S.Arrow, J.Cover I.Y) : J.Cover X :=
-  ⟨Sieve.bind S fun Y f hf => T ⟨Y, f, hf⟩,
-    J.bind_covering S.condition fun _ _ _ => (T { Y := _, f := _, hf := _ }).condition⟩
+  ⟨Sieve.bind S fun Y f hf ↦ T ⟨Y, f, hf⟩,
+    J.bind_covering S.condition fun _ _ _ ↦ (T { Y := _, f := _, hf := _ }).condition⟩
 
 /-- The canonical morphism from `S.bind T` to `T`. -/
 def bindToBase {X : C} (S : J.Cover X) (T : ∀ I : S.Arrow, J.Cover I.Y) : S.bind T ⟶ S :=
@@ -587,7 +587,7 @@ using this.
 -/
 abbrev multifork {D : Type u₁} [Category.{v₁} D] (S : J.Cover X) (P : Cᵒᵖ ⥤ D) :
     Limits.Multifork (S.index P) :=
-  Limits.Multifork.ofι _ (P.obj (Opposite.op X)) (fun I => P.map I.f.op)
+  Limits.Multifork.ofι _ (P.obj (Opposite.op X)) (fun I ↦ P.map I.f.op)
     (by
       intro I
       dsimp
@@ -599,7 +599,7 @@ sheaf condition in terms of multiequalizers. -/
 noncomputable abbrev toMultiequalizer {D : Type u₁} [Category.{v₁} D] (S : J.Cover X)
     (P : Cᵒᵖ ⥤ D) [Limits.HasMultiequalizer (S.index P)] :
     P.obj (Opposite.op X) ⟶ Limits.multiequalizer (S.index P) :=
-  Limits.Multiequalizer.lift _ _ (fun I => P.map I.f.op)
+  Limits.Multiequalizer.lift _ _ (fun I ↦ P.map I.f.op)
     (by
       intro I
       dsimp only [shape, index, Relation.fst, Relation.snd]
@@ -615,13 +615,13 @@ def pullback (f : Y ⟶ X) : J.Cover X ⥤ J.Cover Y where
 
 /-- Pulling back along the identity is naturally isomorphic to the identity functor. -/
 def pullbackId (X : C) : J.pullback (𝟙 X) ≅ 𝟭 _ :=
-  NatIso.ofComponents fun S => S.pullbackId
+  NatIso.ofComponents fun S ↦ S.pullbackId
 
 /-- Pulling back along a composition is naturally isomorphic to
 the composition of the pullbacks. -/
 def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     J.pullback (f ≫ g) ≅ J.pullback g ⋙ J.pullback f :=
-  NatIso.ofComponents fun S => S.pullbackComp f g
+  NatIso.ofComponents fun S ↦ S.pullbackComp f g
 
 end GrothendieckTopology
 

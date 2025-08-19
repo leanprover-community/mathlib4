@@ -86,7 +86,7 @@ theorem bottom_row_coprime {R : Type*} [CommRing R] (g : SL(2, R)) :
 /-- Every pair `![c, d]` of coprime integers is the "bottom_row" of some element `g=[[*,*],[c,d]]`
 of `SL(2,ℤ)`. -/
 theorem bottom_row_surj {R : Type*} [CommRing R] :
-    Set.SurjOn (fun g : SL(2, R) => (↑g : Matrix (Fin 2) (Fin 2) R) 1) Set.univ
+    Set.SurjOn (fun g : SL(2, R) ↦ (↑g : Matrix (Fin 2) (Fin 2) R) 1) Set.univ
       {cd | IsCoprime (cd 0) (cd 1)} := by
   rintro cd ⟨b₀, a, gcd_eqn⟩
   let A := of ![![a, -b₀], cd]
@@ -108,21 +108,21 @@ attribute [local simp] ContinuousLinearMap.coe_smul
 /-- The function `(c,d) → |cz+d|^2` is proper, that is, preimages of bounded-above sets are finite.
 -/
 theorem tendsto_normSq_coprime_pair :
-    Filter.Tendsto (fun p : Fin 2 → ℤ => normSq ((p 0 : ℂ) * z + p 1)) cofinite atTop := by
+    Filter.Tendsto (fun p : Fin 2 → ℤ ↦ normSq ((p 0 : ℂ) * z + p 1)) cofinite atTop := by
   -- using this instance rather than the automatic `Function.module` makes unification issues in
   -- `LinearEquiv.isClosedEmbedding_of_injective` less bad later in the proof.
   letI : Module ℝ (Fin 2 → ℝ) := NormedSpace.toModule
   let π₀ : (Fin 2 → ℝ) →ₗ[ℝ] ℝ := LinearMap.proj 0
   let π₁ : (Fin 2 → ℝ) →ₗ[ℝ] ℝ := LinearMap.proj 1
   let f : (Fin 2 → ℝ) →ₗ[ℝ] ℂ := π₀.smulRight (z : ℂ) + π₁.smulRight 1
-  have f_def : ⇑f = fun p : Fin 2 → ℝ => (p 0 : ℂ) * ↑z + p 1 := by
+  have f_def : ⇑f = fun p : Fin 2 → ℝ ↦ (p 0 : ℂ) * ↑z + p 1 := by
     ext1
     dsimp only [π₀, π₁, f, LinearMap.coe_proj, real_smul, LinearMap.coe_smulRight,
       LinearMap.add_apply]
     rw [mul_one]
   have :
-    (fun p : Fin 2 → ℤ => normSq ((p 0 : ℂ) * ↑z + ↑(p 1))) =
-      normSq ∘ f ∘ fun p : Fin 2 → ℤ => ((↑) : ℤ → ℝ) ∘ p := by
+    (fun p : Fin 2 → ℤ ↦ normSq ((p 0 : ℂ) * ↑z + ↑(p 1))) =
+      normSq ∘ f ∘ fun p : Fin 2 → ℤ ↦ ((↑) : ℤ → ℝ) ∘ p := by
     ext1
     rw [f_def]
     dsimp only [Function.comp_def]
@@ -147,8 +147,8 @@ theorem tendsto_normSq_coprime_pair :
         conj_ofReal, ← ofReal_mul, add_im, ofReal_im, zero_add, inv_mul_eq_iff_eq_mul₀ hz]
       simp only [ofReal_im, ofReal_re, mul_im, zero_add, mul_zero]
   have hf' : IsClosedEmbedding f := f.isClosedEmbedding_of_injective hf
-  have h₂ : Tendsto (fun p : Fin 2 → ℤ => ((↑) : ℤ → ℝ) ∘ p) cofinite (cocompact _) := by
-    convert Tendsto.pi_map_coprodᵢ fun _ => Int.tendsto_coe_cofinite
+  have h₂ : Tendsto (fun p : Fin 2 → ℤ ↦ ((↑) : ℤ → ℝ) ∘ p) cofinite (cocompact _) := by
+    convert Tendsto.pi_map_coprodᵢ fun _ ↦ Int.tendsto_coe_cofinite
     · rw [coprodᵢ_cofinite]
     · rw [coprodᵢ_cocompact]
   exact tendsto_normSq_cocompact_atTop.comp (hf'.tendsto_cocompact.comp h₂)
@@ -183,22 +183,22 @@ def lcRow0Extend {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
 /-- The map `lcRow0` is proper, that is, preimages of cocompact sets are finite in
 `[[* , *], [c, d]]`. -/
 theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
-    Tendsto (fun g : { g : SL(2, ℤ) // g 1 = cd } => lcRow0 cd ↑(↑g : SL(2, ℝ))) cofinite
+    Tendsto (fun g : { g : SL(2, ℤ) // g 1 = cd } ↦ lcRow0 cd ↑(↑g : SL(2, ℝ))) cofinite
       (cocompact ℝ) := by
-  let mB : ℝ → Matrix (Fin 2) (Fin 2) ℝ := fun t => of ![![t, (-(1 : ℤ) : ℝ)], (↑) ∘ cd]
+  let mB : ℝ → Matrix (Fin 2) (Fin 2) ℝ := fun t ↦ of ![![t, (-(1 : ℤ) : ℝ)], (↑) ∘ cd]
   have hmB : Continuous mB := by
     refine continuous_matrix ?_
     simp only [mB, Fin.forall_fin_two, continuous_const, continuous_id', of_apply, cons_val_zero,
       cons_val_one, and_self_iff]
   refine Filter.Tendsto.of_tendsto_comp ?_ (comap_cocompact_le hmB)
-  let f₁ : SL(2, ℤ) → Matrix (Fin 2) (Fin 2) ℝ := fun g =>
+  let f₁ : SL(2, ℤ) → Matrix (Fin 2) (Fin 2) ℝ := fun g ↦
     Matrix.map (↑g : Matrix _ _ ℤ) ((↑) : ℤ → ℝ)
   have cocompact_ℝ_to_cofinite_ℤ_matrix :
-    Tendsto (fun m : Matrix (Fin 2) (Fin 2) ℤ => Matrix.map m ((↑) : ℤ → ℝ)) cofinite
+    Tendsto (fun m : Matrix (Fin 2) (Fin 2) ℤ ↦ Matrix.map m ((↑) : ℤ → ℝ)) cofinite
       (cocompact _) := by
     simpa only [coprodᵢ_cofinite, coprodᵢ_cocompact] using
-      Tendsto.pi_map_coprodᵢ fun _ : Fin 2 =>
-        Tendsto.pi_map_coprodᵢ fun _ : Fin 2 => Int.tendsto_coe_cofinite
+      Tendsto.pi_map_coprodᵢ fun _ : Fin 2 ↦
+        Tendsto.pi_map_coprodᵢ fun _ : Fin 2 ↦ Int.tendsto_coe_cofinite
   have hf₁ : Tendsto f₁ cofinite (cocompact _) :=
     cocompact_ℝ_to_cofinite_ℤ_matrix.comp Subtype.coe_injective.tendsto_cofinite
   have hf₂ : IsClosedEmbedding (lcRow0Extend hcd) :=
@@ -213,7 +213,7 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
       LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLin,
       val_planeConformalMatrix, neg_neg, mulVecLin_apply, mulVec, dotProduct, Fin.sum_univ_two,
       cons_val_one, mB, f₁]
-  · convert congr_arg (fun n : ℤ => (-n : ℝ)) g.det_coe.symm using 1
+  · convert congr_arg (fun n : ℤ ↦ (-n : ℝ)) g.det_coe.symm using 1
     simp only [Fin.zero_eta, Function.comp_apply, lcRow0Extend_apply, cons_val_zero,
       LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLin,
       mulVecLin_apply, mulVec, dotProduct, det_fin_two, f₁]
@@ -231,7 +231,7 @@ theorem smul_eq_lcRow0_add {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) (hg 
       (lcRow0 p ↑(g : SL(2, ℝ)) : ℂ) / ((p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2) +
         ((p 1 : ℂ) * z - p 0) / (((p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2) * (p 0 * z + p 1)) := by
   have nonZ1 : (p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2 ≠ 0 := mod_cast hp.sq_add_sq_ne_zero
-  have : ((↑) : ℤ → ℝ) ∘ p ≠ 0 := fun h => hp.ne_zero (by ext i; simpa using congr_fun h i)
+  have : ((↑) : ℤ → ℝ) ∘ p ≠ 0 := fun h ↦ hp.ne_zero (by ext i; simpa using congr_fun h i)
   have nonZ2 : (p 0 : ℂ) * z + p 1 ≠ 0 := by simpa using linear_ne_zero z this
   simp only [coe_specialLinearGroup_apply, hg, algebraMap_int_eq, Int.coe_castRingHom,
     Complex.ofReal_intCast]
@@ -244,9 +244,9 @@ theorem smul_eq_lcRow0_add {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) (hg 
 
 theorem tendsto_abs_re_smul {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) :
     Tendsto
-      (fun g : { g : SL(2, ℤ) // g 1 = p } => |((g : SL(2, ℤ)) • z).re|) cofinite atTop := by
+      (fun g : { g : SL(2, ℤ) // g 1 = p } ↦ |((g : SL(2, ℤ)) • z).re|) cofinite atTop := by
   suffices
-    Tendsto (fun g : (fun g : SL(2, ℤ) => g 1) ⁻¹' {p} => ((g : SL(2, ℤ)) • z).re) cofinite
+    Tendsto (fun g : (fun g : SL(2, ℤ) ↦ g 1) ⁻¹' {p} => ((g : SL(2, ℤ)) • z).re) cofinite
       (cocompact ℝ)
     by exact tendsto_norm_cocompact_atTop.comp this
   have : ((p 0 : ℝ) ^ 2 + (p 1 : ℝ) ^ 2)⁻¹ ≠ 0 := by
@@ -277,7 +277,7 @@ theorem exists_max_im : ∃ g : SL(2, ℤ), ∀ g' : SL(2, ℤ), (g' • z).im �
   obtain ⟨p, hp_coprime, hp⟩ :=
     Filter.Tendsto.exists_within_forall_le hs (tendsto_normSq_coprime_pair z)
   obtain ⟨g, -, hg⟩ := bottom_row_surj hp_coprime
-  refine ⟨g, fun g' => ?_⟩
+  refine ⟨g, fun g' ↦ ?_⟩
   rw [ModularGroup.im_smul_eq_div_normSq, ModularGroup.im_smul_eq_div_normSq,
     div_le_div_iff_of_pos_left]
   · simpa [← hg] using hp (g' 1) (bottom_row_coprime g')
@@ -296,7 +296,7 @@ theorem exists_row_one_eq_and_min_re {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0
   obtain ⟨g, hg⟩ := Filter.Tendsto.exists_forall_le (tendsto_abs_re_smul z hcd)
   refine ⟨g, g.2, ?_⟩
   intro g1 hg1
-  have : g1 ∈ (fun g : SL(2, ℤ) => g 1) ⁻¹' {cd} := by
+  have : g1 ∈ (fun g : SL(2, ℤ) ↦ g 1) ⁻¹' {cd} := by
     rw [Set.mem_preimage, Set.mem_singleton_iff]
     exact Eq.trans hg1.symm (Set.mem_singleton_iff.mp (Set.mem_preimage.mp g.2))
   exact hg ⟨g1, this⟩

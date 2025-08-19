@@ -50,12 +50,12 @@ theorem norm_le_norm_of_abs_le_abs {a b : α} (h : |a| ≤ |b|) : ‖a‖ ≤ �
 
 /-- If `α` has a solid norm, then the balls centered at the origin of `α` are solid sets. -/
 theorem LatticeOrderedAddCommGroup.isSolid_ball (r : ℝ) :
-    LatticeOrderedAddCommGroup.IsSolid (Metric.ball (0 : α) r) := fun _ hx _ hxy =>
+    LatticeOrderedAddCommGroup.IsSolid (Metric.ball (0 : α) r) := fun _ hx _ hxy ↦
   mem_ball_zero_iff.mpr ((HasSolidNorm.solid hxy).trans_lt (mem_ball_zero_iff.mp hx))
 
-instance : HasSolidNorm ℝ := ⟨fun _ _ => id⟩
+instance : HasSolidNorm ℝ := ⟨fun _ _ ↦ id⟩
 
-instance : HasSolidNorm ℚ := ⟨fun _ _ _ => by simpa only [norm, ← Rat.cast_abs, Rat.cast_le]⟩
+instance : HasSolidNorm ℚ := ⟨fun _ _ _ ↦ by simpa only [norm, ← Rat.cast_abs, Rat.cast_le]⟩
 
 end SolidNorm
 
@@ -140,10 +140,10 @@ theorem norm_sup_le_add (x y : α) : ‖x ⊔ y‖ ≤ ‖x‖ + ‖y‖ := by
 /-- Let `α` be a normed lattice ordered group. Then the infimum is jointly continuous.
 -/
 instance (priority := 100) HasSolidNorm.continuousInf : ContinuousInf α := by
-  refine ⟨continuous_iff_continuousAt.2 fun q => tendsto_iff_norm_sub_tendsto_zero.2 <| ?_⟩
-  have : ∀ p : α × α, ‖p.1 ⊓ p.2 - q.1 ⊓ q.2‖ ≤ ‖p.1 - q.1‖ + ‖p.2 - q.2‖ := fun _ =>
+  refine ⟨continuous_iff_continuousAt.2 fun q ↦ tendsto_iff_norm_sub_tendsto_zero.2 <| ?_⟩
+  have : ∀ p : α × α, ‖p.1 ⊓ p.2 - q.1 ⊓ q.2‖ ≤ ‖p.1 - q.1‖ + ‖p.2 - q.2‖ := fun _ ↦
     norm_inf_sub_inf_le_add_norm _ _ _ _
-  refine squeeze_zero (fun e => norm_nonneg _) this ?_
+  refine squeeze_zero (fun e ↦ norm_nonneg _) this ?_
   convert ((continuous_fst.tendsto q).sub <| tendsto_const_nhds).norm.add
     ((continuous_snd.tendsto q).sub <| tendsto_const_nhds).norm
   simp
@@ -168,8 +168,8 @@ theorem norm_sup_sub_sup_le_norm (x y z : α) : ‖x ⊔ z - y ⊔ z‖ ≤ ‖x
 theorem norm_inf_sub_inf_le_norm (x y z : α) : ‖x ⊓ z - y ⊓ z‖ ≤ ‖x - y‖ :=
   solid (abs_inf_sub_inf_le_abs x y z)
 
-theorem lipschitzWith_sup_right (z : α) : LipschitzWith 1 fun x => x ⊔ z :=
-  LipschitzWith.of_dist_le_mul fun x y => by
+theorem lipschitzWith_sup_right (z : α) : LipschitzWith 1 fun x ↦ x ⊔ z :=
+  LipschitzWith.of_dist_le_mul fun x y ↦ by
     rw [NNReal.coe_one, one_mul, dist_eq_norm, dist_eq_norm]
     exact norm_sup_sub_sup_le_norm x y z
 
@@ -194,7 +194,7 @@ theorem isClosed_le_of_isClosed_nonneg {G}
     [AddCommGroup G] [PartialOrder G] [IsOrderedAddMonoid G] [TopologicalSpace G]
     [ContinuousSub G] (h : IsClosed { x : G | 0 ≤ x }) :
     IsClosed { p : G × G | p.fst ≤ p.snd } := by
-  have : { p : G × G | p.fst ≤ p.snd } = (fun p : G × G => p.snd - p.fst) ⁻¹' { x : G | 0 ≤ x } :=
+  have : { p : G × G | p.fst ≤ p.snd } = (fun p : G × G ↦ p.snd - p.fst) ⁻¹' { x : G | 0 ≤ x } :=
     by ext1 p; simp only [sub_nonneg, Set.preimage_setOf_eq]
   rw [this]
   exact IsClosed.preimage (continuous_snd.sub continuous_fst) h

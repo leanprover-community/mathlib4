@@ -56,7 +56,7 @@ theorem derivedSeries_one : derivedSeries G 1 = commutator G :=
   rfl
 
 theorem derivedSeries_antitone : Antitone (derivedSeries G) :=
-  antitone_nat_of_succ_le fun n => (derivedSeries G n).commutator_le_self
+  antitone_nat_of_succ_le fun n ↦ (derivedSeries G n).commutator_le_self
 
 instance derivedSeries_characteristic (n : ℕ) : (derivedSeries G n).Characteristic := by
   induction n with
@@ -147,7 +147,7 @@ instance solvable_quotient_of_solvable (H : Subgroup G) [H.Normal] [IsSolvable G
 
 instance solvable_prod {G' : Type*} [Group G'] [IsSolvable G] [IsSolvable G'] :
     IsSolvable (G × G') :=
-  solvable_of_ker_le_range (MonoidHom.inl G G') (MonoidHom.snd G G') fun x hx =>
+  solvable_of_ker_le_range (MonoidHom.inl G G') (MonoidHom.snd G G') fun x hx ↦
     ⟨x.1, Prod.ext rfl hx.symm⟩
 
 variable (G) in
@@ -202,7 +202,7 @@ theorem IsSimpleGroup.derivedSeries_succ {n : ℕ} : derivedSeries G n.succ = co
     · rwa [h]
 
 theorem IsSimpleGroup.comm_iff_isSolvable : (∀ a b : G, a * b = b * a) ↔ IsSolvable G :=
-  ⟨isSolvable_of_comm, fun ⟨⟨n, hn⟩⟩ => by
+  ⟨isSolvable_of_comm, fun ⟨⟨n, hn⟩⟩ ↦ by
     cases n
     · intro a b
       refine (mem_bot.1 ?_).trans (mem_bot.1 ?_).symm <;>
@@ -220,7 +220,7 @@ section PermNotSolvable
 theorem not_solvable_of_mem_derivedSeries {g : G} (h1 : g ≠ 1)
     (h2 : ∀ n : ℕ, g ∈ derivedSeries G n) : ¬IsSolvable G :=
   mt (isSolvable_def _).mp
-    (not_exists_of_forall_not fun n h =>
+    (not_exists_of_forall_not fun n h ↦
       h1 (Subgroup.mem_bot.mp ((congr_arg (g ∈ ·) h).mp (h2 n))))
 
 theorem Equiv.Perm.fin_5_not_solvable : ¬IsSolvable (Equiv.Perm (Fin 5)) := by
@@ -228,7 +228,7 @@ theorem Equiv.Perm.fin_5_not_solvable : ¬IsSolvable (Equiv.Perm (Fin 5)) := by
   let y : Equiv.Perm (Fin 5) := ⟨![3, 4, 2, 0, 1], ![3, 4, 2, 0, 1], by decide, by decide⟩
   let z : Equiv.Perm (Fin 5) := ⟨![0, 3, 2, 1, 4], ![0, 3, 2, 1, 4], by decide, by decide⟩
   have key : x = z * ⁅x, y * x * y⁻¹⁆ * z⁻¹ := by unfold x y z; decide
-  refine not_solvable_of_mem_derivedSeries (show x ≠ 1 by decide) fun n => ?_
+  refine not_solvable_of_mem_derivedSeries (show x ≠ 1 by decide) fun n ↦ ?_
   induction n with
   | zero => exact mem_top x
   | succ n ih =>

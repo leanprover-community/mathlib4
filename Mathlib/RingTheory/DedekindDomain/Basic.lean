@@ -62,13 +62,13 @@ namespace Ring
 
 instance DimensionLEOne.principal_ideal_ring [IsDomain A] [IsPrincipalIdealRing A] :
     DimensionLEOne A where
-  maximalOfPrime := fun nonzero _ =>
+  maximalOfPrime := fun nonzero _ ↦
     IsPrime.to_maximal_ideal nonzero
 
 theorem DimensionLEOne.isIntegralClosure (B : Type*) [CommRing B] [IsDomain B] [Nontrivial R]
     [Algebra R A] [Algebra R B] [Algebra B A] [IsScalarTower R B A] [IsIntegralClosure B R A]
     [DimensionLEOne R] : DimensionLEOne B where
-  maximalOfPrime := fun {p} ne_bot _ =>
+  maximalOfPrime := fun {p} ne_bot _ ↦
     IsIntegralClosure.isMaximal_of_isMaximal_comap (R := R) A p
       (Ideal.IsPrime.isMaximal inferInstance (IsIntegralClosure.comap_ne_bot A ne_bot))
 
@@ -84,7 +84,7 @@ theorem DimensionLEOne.not_lt_lt [Ring.DimensionLEOne R] (p₀ p₁ p₂ : Ideal
 
 theorem DimensionLEOne.eq_bot_of_lt [Ring.DimensionLEOne R] (p P : Ideal R) [p.IsPrime]
     [P.IsPrime] (hpP : p < P) : p = ⊥ :=
-  by_contra fun hp0 => not_lt_lt ⊥ p P ⟨Ne.bot_lt hp0, hpP⟩
+  by_contra fun hp0 ↦ not_lt_lt ⊥ p P ⟨Ne.bot_lt hp0, hpP⟩
 
 end Ring
 
@@ -106,9 +106,9 @@ theorem isDedekindRing_iff (K : Type*) [CommRing K] [Algebra A K] [IsFractionRin
     IsDedekindRing A ↔
       IsNoetherianRing A ∧ DimensionLEOne A ∧
         ∀ {x : K}, IsIntegral A x → ∃ y, algebraMap A K y = x :=
-  ⟨fun _ => ⟨inferInstance, inferInstance,
-             fun {_} => (isIntegrallyClosed_iff K).mp inferInstance⟩,
-   fun ⟨hr, hd, hi⟩ => { hr, hd, (isIntegrallyClosed_iff K).mpr @hi with }⟩
+  ⟨fun _ ↦ ⟨inferInstance, inferInstance,
+             fun {_} ↦ (isIntegrallyClosed_iff K).mp inferInstance⟩,
+   fun ⟨hr, hd, hi⟩ ↦ { hr, hd, (isIntegrallyClosed_iff K).mpr @hi with }⟩
 
 /-- A Dedekind domain is an integral domain that is Noetherian, integrally closed, and
 has Krull dimension at most one.
@@ -144,9 +144,9 @@ theorem isDedekindDomain_iff (K : Type*) [CommRing K] [Algebra A K] [IsFractionR
     IsDedekindDomain A ↔
       IsDomain A ∧ IsNoetherianRing A ∧ DimensionLEOne A ∧
         ∀ {x : K}, IsIntegral A x → ∃ y, algebraMap A K y = x :=
-  ⟨fun _ => ⟨inferInstance, inferInstance, inferInstance,
-             fun {_} => (isIntegrallyClosed_iff K).mp inferInstance⟩,
-   fun ⟨hid, hr, hd, hi⟩ => { hid, hr, hd, (isIntegrallyClosed_iff K).mpr @hi with }⟩
+  ⟨fun _ ↦ ⟨inferInstance, inferInstance, inferInstance,
+             fun {_} ↦ (isIntegrallyClosed_iff K).mp inferInstance⟩,
+   fun ⟨hid, hr, hd, hi⟩ ↦ { hid, hr, hd, (isIntegrallyClosed_iff K).mpr @hi with }⟩
 
 -- See library note [lower instance priority]
 instance (priority := 100) IsPrincipalIdealRing.isDedekindDomain

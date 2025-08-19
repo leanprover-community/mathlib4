@@ -103,7 +103,7 @@ theorem ediv_eq_zero_of_lt_abs {a b : ℤ} (H1 : 0 ≤ a) (H2 : a < |b|) : a / b
 
 @[simp]
 theorem emod_abs (a b : ℤ) : a % |b| = a % b :=
-  abs_by_cases (fun i => a % i = a % b) rfl (emod_neg _ _)
+  abs_by_cases (fun i ↦ a % i = a % b) rfl (emod_neg _ _)
 
 theorem emod_lt_abs (a : ℤ) {b : ℤ} (H : b ≠ 0) : a % b < |b| := by
   rw [← emod_abs]; exact emod_lt_of_pos _ (abs_pos.2 H)
@@ -111,11 +111,11 @@ theorem emod_lt_abs (a : ℤ) {b : ℤ} (H : b ≠ 0) : a % b < |b| := by
 /-! ### properties of `/` and `%` -/
 
 theorem abs_ediv_le_abs : ∀ a b : ℤ, |a / b| ≤ |a| :=
-  suffices ∀ (a : ℤ) (n : ℕ), |a / n| ≤ |a| from fun a b =>
+  suffices ∀ (a : ℤ) (n : ℕ), |a / n| ≤ |a| from fun a b ↦
     match b, Int.eq_nat_or_neg b with
     | _, ⟨n, Or.inl rfl⟩ => this _ _
     | _, ⟨n, Or.inr rfl⟩ => by rw [Int.ediv_neg, abs_neg]; apply this
-  fun a n => by
+  fun a n ↦ by
   rw [abs_eq_natAbs, abs_eq_natAbs];
   exact ofNat_le_ofNat_of_le
     (match a, n with

@@ -208,8 +208,8 @@ def liftAlgHom {S : Type*} [Semiring S] [Algebra R S]
     LinearMap.map_mul_iff _ |>.mpr <| by aesop
 
 @[simp] lemma tprod_noncommProd {κ : Type*} (s : Finset κ) (x : κ → Π i, A i) (hx) :
-    tprod R (s.noncommProd x hx) = s.noncommProd (fun k => tprod R (x k))
-      (hx.imp fun _ _ => Commute.tprod) :=
+    tprod R (s.noncommProd x hx) = s.noncommProd (fun k ↦ tprod R (x k))
+      (hx.imp fun _ _ ↦ Commute.tprod) :=
   Finset.map_noncommProd s x _ (tprodMonoidHom R)
 
 /-- To show two algebra morphisms from finite tensor products are equal, it suffices to show that
@@ -218,10 +218,10 @@ they agree on elements of the form $1 ⊗ ⋯ ⊗ a ⊗ 1 ⊗ ⋯$. -/
 theorem algHom_ext {S : Type*} [Finite ι] [DecidableEq ι] [Semiring S] [Algebra R S]
     ⦃f g : (⨂[R] i, A i) →ₐ[R] S⦄ (h : ∀ i, f.comp (singleAlgHom i) = g.comp (singleAlgHom i)) :
     f = g :=
-  AlgHom.toLinearMap_injective <| PiTensorProduct.ext <| MultilinearMap.ext fun x =>
+  AlgHom.toLinearMap_injective <| PiTensorProduct.ext <| MultilinearMap.ext fun x ↦
     suffices f.toMonoidHom.comp (tprodMonoidHom R) = g.toMonoidHom.comp (tprodMonoidHom R) from
       DFunLike.congr_fun this x
-    MonoidHom.pi_ext fun i xi => DFunLike.congr_fun (h i) xi
+    MonoidHom.pi_ext fun i xi ↦ DFunLike.congr_fun (h i) xi
 
 end Semiring
 

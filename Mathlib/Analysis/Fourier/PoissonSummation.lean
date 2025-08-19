@@ -47,7 +47,7 @@ open ContinuousMap
 /-- The key lemma for Poisson summation: the `m`-th Fourier coefficient of the periodic function
 `∑' n : ℤ, f (x + n)` is the value at `m` of the Fourier transform of `f`. -/
 theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
-    (hf : ∀ K : Compacts ℝ, Summable fun n : ℤ => ‖(f.comp (ContinuousMap.addRight n)).restrict K‖)
+    (hf : ∀ K : Compacts ℝ, Summable fun n : ℤ ↦ ‖(f.comp (ContinuousMap.addRight n)).restrict K‖)
     (m : ℤ) : fourierCoeff (Periodic.lift <| f.periodic_tsum_comp_add_zsmul 1) m = 𝓕 f m := by
   -- NB: This proof can be shortened somewhat by telescoping together some of the steps in the calc
   -- block, but I think it's more legible this way. We start with preliminaries about the integrand.
@@ -58,7 +58,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
     simp_rw [norm_eq_iSup_norm, restrict_apply, mul_apply, norm_mul, this, one_mul]
   have eadd : ∀ (n : ℤ), e.comp (ContinuousMap.addRight n) = e := by
     intro n; ext1 x
-    have : Periodic e 1 := Periodic.comp (fun x => AddCircle.coe_add_period 1 x) (fourier (-m))
+    have : Periodic e 1 := Periodic.comp (fun x ↦ AddCircle.coe_add_period 1 x) (fourier (-m))
     simpa only [mul_one] using this.int_mul n x
   -- Now the main argument. First unwind some definitions.
   calc
@@ -74,7 +74,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
     _ = ∑' n : ℤ, ∫ x in (0 : ℝ)..1, (e * f.comp (ContinuousMap.addRight n)) x := by
       refine (intervalIntegral.tsum_intervalIntegral_eq_of_summable_norm ?_).symm
       convert hf ⟨uIcc 0 1, isCompact_uIcc⟩ using 1
-      exact funext fun n => neK _ _
+      exact funext fun n ↦ neK _ _
     _ = ∑' n : ℤ, ∫ x in (0 : ℝ)..1, (e * f).comp (ContinuousMap.addRight n) x := by
       simp only [mul_comp] at eadd ⊢
       simp_rw [eadd]
@@ -85,7 +85,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
       convert hf ⟨Icc 0 1, isCompact_Icc⟩ using 1
       simp_rw [mul_comp] at eadd ⊢
       simp_rw [eadd]
-      exact funext fun n => neK ⟨Icc 0 1, isCompact_Icc⟩ _
+      exact funext fun n ↦ neK ⟨Icc 0 1, isCompact_Icc⟩ _
     -- Minor tidying to finish
     _ = 𝓕 f m := by
       rw [fourierIntegral_real_eq_integral_exp_smul]
@@ -98,8 +98,8 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
 /-- **Poisson's summation formula**, most general form. -/
 theorem Real.tsum_eq_tsum_fourierIntegral {f : C(ℝ, ℂ)}
     (h_norm :
-      ∀ K : Compacts ℝ, Summable fun n : ℤ => ‖(f.comp <| ContinuousMap.addRight n).restrict K‖)
-    (h_sum : Summable fun n : ℤ => 𝓕 f n) (x : ℝ) :
+      ∀ K : Compacts ℝ, Summable fun n : ℤ ↦ ‖(f.comp <| ContinuousMap.addRight n).restrict K‖)
+    (h_sum : Summable fun n : ℤ ↦ 𝓕 f n) (x : ℝ) :
     ∑' n : ℤ, f (x + n) = ∑' n : ℤ, 𝓕 f n * fourier n (x : UnitAddCircle) := by
   let F : C(UnitAddCircle, ℂ) :=
     ⟨(f.periodic_tsum_comp_add_zsmul 1).lift, continuous_coinduced_dom.mpr (map_continuous _)⟩
@@ -119,8 +119,8 @@ variable {E : Type*} [NormedAddCommGroup E]
 /-- If `f` is `O(x ^ (-b))` at infinity, then so is the function
 `fun x ↦ ‖f.restrict (Icc (x + R) (x + S))‖` for any fixed `R` and `S`. -/
 theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
-    (hf : f =O[atTop] fun x : ℝ => |x| ^ (-b)) (R S : ℝ) :
-    (fun x : ℝ => ‖f.restrict (Icc (x + R) (x + S))‖) =O[atTop] fun x : ℝ => |x| ^ (-b) := by
+    (hf : f =O[atTop] fun x : ℝ ↦ |x| ^ (-b)) (R S : ℝ) :
+    (fun x : ℝ ↦ ‖f.restrict (Icc (x + R) (x + S))‖) =O[atTop] fun x : ℝ ↦ |x| ^ (-b) := by
   -- First establish an explicit estimate on decay of inverse powers.
   -- This is logically independent of the rest of the proof, but of no mathematical interest in
   -- itself, so it is proved in-line rather than being formulated as a separate lemma.
@@ -134,29 +134,29 @@ theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
   obtain ⟨c, hc, hc'⟩ := hf.exists_pos
   simp only [IsBigO, IsBigOWith, eventually_atTop] at hc' ⊢
   obtain ⟨d, hd⟩ := hc'
-  refine ⟨c * (1 / 2) ^ (-b), ⟨max (1 + max 0 (-2 * R)) (d - R), fun x hx => ?_⟩⟩
+  refine ⟨c * (1 / 2) ^ (-b), ⟨max (1 + max 0 (-2 * R)) (d - R), fun x hx ↦ ?_⟩⟩
   rw [ge_iff_le, max_le_iff] at hx
   have hx' : max 0 (-2 * R) < x := by linarith
   rw [max_lt_iff] at hx'
   rw [norm_norm, ContinuousMap.norm_le _ (by positivity)]
-  refine fun y => (hd y.1 (by linarith [hx.1, y.2.1])).trans ?_
-  have A : ∀ x : ℝ, 0 ≤ |x| ^ (-b) := fun x => by positivity
+  refine fun y ↦ (hd y.1 (by linarith [hx.1, y.2.1])).trans ?_
+  have A : ∀ x : ℝ, 0 ≤ |x| ^ (-b) := fun x ↦ by positivity
   rw [mul_assoc, mul_le_mul_left hc, norm_of_nonneg (A _), norm_of_nonneg (A _)]
   convert claim x (by linarith only [hx.1]) y.1 y.2.1
   · apply abs_of_nonneg; linarith [y.2.1]
   · exact abs_of_pos hx'.1
 
 theorem isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
-    (hf : f =O[atBot] fun x : ℝ => |x| ^ (-b)) (R S : ℝ) :
-    (fun x : ℝ => ‖f.restrict (Icc (x + R) (x + S))‖) =O[atBot] fun x : ℝ => |x| ^ (-b) := by
-  have h1 : (f.comp (ContinuousMap.mk _ continuous_neg)) =O[atTop] fun x : ℝ => |x| ^ (-b) := by
+    (hf : f =O[atBot] fun x : ℝ ↦ |x| ^ (-b)) (R S : ℝ) :
+    (fun x : ℝ ↦ ‖f.restrict (Icc (x + R) (x + S))‖) =O[atBot] fun x : ℝ ↦ |x| ^ (-b) := by
+  have h1 : (f.comp (ContinuousMap.mk _ continuous_neg)) =O[atTop] fun x : ℝ ↦ |x| ^ (-b) := by
     convert hf.comp_tendsto tendsto_neg_atTop_atBot using 1
     ext1 x; simp only [Function.comp_apply, abs_neg]
   have h2 := (isBigO_norm_Icc_restrict_atTop hb h1 (-S) (-R)).comp_tendsto tendsto_neg_atBot_atTop
-  have : (fun x : ℝ => |x| ^ (-b)) ∘ Neg.neg = fun x : ℝ => |x| ^ (-b) := by
+  have : (fun x : ℝ ↦ |x| ^ (-b)) ∘ Neg.neg = fun x : ℝ ↦ |x| ^ (-b) := by
     ext1 x; simp only [Function.comp_apply, abs_neg]
   rw [this] at h2
-  refine (isBigO_of_le _ fun x => ?_).trans h2
+  refine (isBigO_of_le _ fun x ↦ ?_).trans h2
   -- equality holds, but less work to prove `≤` alone
   rw [norm_norm, Function.comp_apply, norm_norm, ContinuousMap.norm_le _ (norm_nonneg _)]
   rintro ⟨x, hx⟩
@@ -167,8 +167,8 @@ theorem isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
   · exact ⟨by linarith [hx.2], by linarith [hx.1]⟩
 
 theorem isBigO_norm_restrict_cocompact (f : C(ℝ, E)) {b : ℝ} (hb : 0 < b)
-    (hf : f =O[cocompact ℝ] fun x : ℝ => |x| ^ (-b)) (K : Compacts ℝ) :
-    (fun x => ‖(f.comp (ContinuousMap.addRight x)).restrict K‖) =O[cocompact ℝ] (|·| ^ (-b)) := by
+    (hf : f =O[cocompact ℝ] fun x : ℝ ↦ |x| ^ (-b)) (K : Compacts ℝ) :
+    (fun x ↦ ‖(f.comp (ContinuousMap.addRight x)).restrict K‖) =O[cocompact ℝ] (|·| ^ (-b)) := by
   obtain ⟨r, hr⟩ := K.isCompact.isBounded.subset_closedBall 0
   rw [closedBall_eq_Icc, zero_add, zero_sub] at hr
   have : ∀ x : ℝ,
@@ -189,10 +189,10 @@ theorem isBigO_norm_restrict_cocompact (f : C(ℝ, E)) {b : ℝ} (hb : 0 < b)
 /-- **Poisson's summation formula**, assuming that `f` decays as
 `|x| ^ (-b)` for some `1 < b` and its Fourier transform is summable. -/
 theorem Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay_of_summable {f : ℝ → ℂ} (hc : Continuous f)
-    {b : ℝ} (hb : 1 < b) (hf : IsBigO (cocompact ℝ) f fun x : ℝ => |x| ^ (-b))
-    (hFf : Summable fun n : ℤ => 𝓕 f n) (x : ℝ) :
+    {b : ℝ} (hb : 1 < b) (hf : IsBigO (cocompact ℝ) f fun x : ℝ ↦ |x| ^ (-b))
+    (hFf : Summable fun n : ℤ ↦ 𝓕 f n) (x : ℝ) :
     ∑' n : ℤ, f (x + n) = ∑' n : ℤ, 𝓕 f n * fourier n (x : UnitAddCircle) :=
-  Real.tsum_eq_tsum_fourierIntegral (fun K => summable_of_isBigO (Real.summable_abs_int_rpow hb)
+  Real.tsum_eq_tsum_fourierIntegral (fun K ↦ summable_of_isBigO (Real.summable_abs_int_rpow hb)
     ((isBigO_norm_restrict_cocompact ⟨_, hc⟩ (zero_lt_one.trans hb) hf K).comp_tendsto
     Int.tendsto_coe_cofinite)) hFf x
 

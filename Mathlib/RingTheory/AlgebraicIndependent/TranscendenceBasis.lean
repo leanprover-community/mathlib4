@@ -89,8 +89,8 @@ theorem AlgebraicIndependent.isTranscendenceBasis_iff [Nontrivial R]
   · intro p
     use i
     intro w i' h
-    specialize p w ((↑) : w → A) i' (fun i => ⟨x i, range_subset_iff.mp h i⟩) (by ext; simp)
-    have q := congr_arg (fun s => ((↑) : w → A) '' s) p.range_eq
+    specialize p w ((↑) : w → A) i' (fun i ↦ ⟨x i, range_subset_iff.mp h i⟩) (by ext; simp)
+    have q := congr_arg (fun s ↦ ((↑) : w → A) '' s) p.range_eq
     dsimp at q
     rw [← image_univ, image_image] at q
     simpa using q
@@ -101,10 +101,10 @@ theorem IsTranscendenceBasis.isAlgebraic [Nontrivial R] (hx : IsTranscendenceBas
   intro a
   rw [← not_iff_comm.1 (hx.1.option_iff_transcendental _).symm]
   intro ai
-  have h₁ : range x ⊆ range fun o : Option ι => o.elim a x := by
+  have h₁ : range x ⊆ range fun o : Option ι ↦ o.elim a x := by
     rintro x ⟨y, rfl⟩
     exact ⟨some y, rfl⟩
-  have h₂ : range x ≠ range fun o : Option ι => o.elim a x := by
+  have h₂ : range x ≠ range fun o : Option ι ↦ o.elim a x := by
     intro h
     have : a ∈ range x := by
       rw [h]
@@ -112,7 +112,7 @@ theorem IsTranscendenceBasis.isAlgebraic [Nontrivial R] (hx : IsTranscendenceBas
     rcases this with ⟨b, rfl⟩
     have : some b = none := ai.injective rfl
     simpa
-  exact h₂ (hx.2 (Set.range fun o : Option ι => o.elim a x)
+  exact h₂ (hx.2 (Set.range fun o : Option ι ↦ o.elim a x)
     ((algebraicIndependent_subtype_range ai.injective).2 ai) h₁)
 
 theorem AlgebraicIndependent.isTranscendenceBasis_iff_isAlgebraic

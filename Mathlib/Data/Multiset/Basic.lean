@@ -67,21 +67,21 @@ end ToList
 @[elab_as_elim]
 def strongInductionOn {p : Multiset α → Sort*} (s : Multiset α) (ih : ∀ s, (∀ t < s, p t) → p s) :
     p s :=
-    (ih s) fun t _h =>
+    (ih s) fun t _h ↦
       strongInductionOn t ih
 termination_by card s
 decreasing_by exact card_lt_card _h
 
 theorem strongInductionOn_eq {p : Multiset α → Sort*} (s : Multiset α) (H) :
-    @strongInductionOn _ p s H = H s fun t _h => @strongInductionOn _ p t H := by
+    @strongInductionOn _ p s H = H s fun t _h ↦ @strongInductionOn _ p t H := by
   rw [strongInductionOn]
 
 @[elab_as_elim]
 theorem case_strongInductionOn {p : Multiset α → Prop} (s : Multiset α) (h₀ : p 0)
     (h₁ : ∀ a s, (∀ t ≤ s, p t) → p (a ::ₘ s)) : p s :=
-  Multiset.strongInductionOn s fun s =>
-    Multiset.induction_on s (fun _ => h₀) fun _a _s _ ih =>
-      (h₁ _ _) fun _t h => ih _ <| lt_of_le_of_lt h <| lt_cons_self _ _
+  Multiset.strongInductionOn s fun s ↦
+    Multiset.induction_on s (fun _ ↦ h₀) fun _a _s _ ih ↦
+      (h₁ _ _) fun _t h ↦ ih _ <| lt_of_le_of_lt h <| lt_cons_self _ _
 
 /-- Suppose that, given that `p t` can be defined on all supersets of `s` of cardinality less than
 `n`, one knows how to define `p s`. Then one can inductively define `p s` for all multisets `s` of
@@ -91,7 +91,7 @@ def strongDownwardInduction {p : Multiset α → Sort*} {n : ℕ}
     (H : ∀ t₁, (∀ {t₂ : Multiset α}, card t₂ ≤ n → t₁ < t₂ → p t₂) → card t₁ ≤ n → p t₁)
     (s : Multiset α) :
     card s ≤ n → p s :=
-  H s fun {t} ht _h =>
+  H s fun {t} ht _h ↦
     strongDownwardInduction H t ht
 termination_by n - card s
 decreasing_by simp_wf; have := (card_lt_card _h); omega
@@ -99,7 +99,7 @@ decreasing_by simp_wf; have := (card_lt_card _h); omega
 theorem strongDownwardInduction_eq {p : Multiset α → Sort*} {n : ℕ}
     (H : ∀ t₁, (∀ {t₂ : Multiset α}, card t₂ ≤ n → t₁ < t₂ → p t₂) → card t₁ ≤ n → p t₁)
     (s : Multiset α) :
-    strongDownwardInduction H s = H s fun ht _hst => strongDownwardInduction H _ ht := by
+    strongDownwardInduction H s = H s fun ht _hst ↦ strongDownwardInduction H _ ht := by
   rw [strongDownwardInduction]
 
 /-- Analogue of `strongDownwardInduction` with order of arguments swapped. -/
@@ -108,11 +108,11 @@ def strongDownwardInductionOn {p : Multiset α → Sort*} {n : ℕ} :
     ∀ s : Multiset α,
       (∀ t₁, (∀ {t₂ : Multiset α}, card t₂ ≤ n → t₁ < t₂ → p t₂) → card t₁ ≤ n → p t₁) →
         card s ≤ n → p s :=
-  fun s H => strongDownwardInduction H s
+  fun s H ↦ strongDownwardInduction H s
 
 theorem strongDownwardInductionOn_eq {p : Multiset α → Sort*} (s : Multiset α) {n : ℕ}
     (H : ∀ t₁, (∀ {t₂ : Multiset α}, card t₂ ≤ n → t₁ < t₂ → p t₂) → card t₁ ≤ n → p t₁) :
-    s.strongDownwardInductionOn H = H s fun {t} ht _h => t.strongDownwardInductionOn H ht := by
+    s.strongDownwardInductionOn H = H s fun {t} ht _h ↦ t.strongDownwardInductionOn H ht := by
   dsimp only [strongDownwardInductionOn]
   rw [strongDownwardInduction]
 
@@ -123,7 +123,7 @@ variable (p : α → Prop) [DecidablePred p] (l : Multiset α)
 /-- Given a proof `hp` that there exists a unique `a ∈ l` such that `p a`, `chooseX p l hp` returns
 that `a` together with proofs of `a ∈ l` and `p a`. -/
 def chooseX : ∀ _hp : ∃! a, a ∈ l ∧ p a, { a // a ∈ l ∧ p a } :=
-  Quotient.recOn l (fun l' ex_unique => List.chooseX p l' (ExistsUnique.exists ex_unique))
+  Quotient.recOn l (fun l' ex_unique ↦ List.chooseX p l' (ExistsUnique.exists ex_unique))
     (by
       intros a b _
       funext hp
@@ -158,9 +158,9 @@ variable (α) in
 def subsingletonEquiv [Subsingleton α] : List α ≃ Multiset α where
   toFun := ofList
   invFun :=
-    (Quot.lift id) fun (a b : List α) (h : a ~ b) =>
-      (List.ext_get h.length_eq) fun _ _ _ => Subsingleton.elim _ _
-  right_inv m := Quot.inductionOn m fun _ => rfl
+    (Quot.lift id) fun (a b : List α) (h : a ~ b) ↦
+      (List.ext_get h.length_eq) fun _ _ _ ↦ Subsingleton.elim _ _
+  right_inv m := Quot.inductionOn m fun _ ↦ rfl
 
 @[simp]
 theorem coe_subsingletonEquiv [Subsingleton α] :

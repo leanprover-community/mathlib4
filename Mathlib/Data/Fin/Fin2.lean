@@ -166,7 +166,7 @@ theorem toFin_fs {n : Nat} (i : Fin2 n) : toFin (fs i) = (toFin i).succ := rfl
 
 /-- Converts a `Fin` into a `Fin2`. -/
 def ofFin {n : Nat} (i : Fin n) : Fin2 n :=
-  i.succRec (fun _ => fz) (fun _ _ => fs)
+  i.succRec (fun _ ↦ fz) (fun _ _ ↦ fs)
 
 @[simp]
 theorem ofFin_zero (n : Nat) : ofFin 0 = @fz n := rfl
@@ -176,7 +176,7 @@ theorem ofFin_succ {n : Nat} (i : Fin n) : ofFin i.succ = fs (ofFin i) := rfl
 
 @[simp]
 theorem toFin_ofFin {n : Nat} (i : Fin n) : toFin (ofFin i) = i :=
-  i.succRec (fun _ => rfl) (fun _ _ ih => congrArg Fin.succ ih)
+  i.succRec (fun _ ↦ rfl) (fun _ _ ih ↦ congrArg Fin.succ ih)
 
 @[simp]
 theorem ofFin_toFin {n : Nat} (i : Fin2 n) : ofFin (toFin i) = i := by

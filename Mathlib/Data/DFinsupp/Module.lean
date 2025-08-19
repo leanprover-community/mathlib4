@@ -27,7 +27,7 @@ section Algebra
 /-- Dependent functions with finite support inherit a semiring action from an action on each
 coordinate. -/
 instance [∀ i, Zero (β i)] [∀ i, SMulZeroClass γ (β i)] : SMulZeroClass γ (Π₀ i, β i) where
-  smul c v := v.mapRange (fun _ => (c • ·)) fun _ => smul_zero _
+  smul c v := v.mapRange (fun _ ↦ (c • ·)) fun _ ↦ smul_zero _
   smul_zero _ := mapRange_zero _ _
 
 theorem smul_apply [∀ i, Zero (β i)] [∀ i, SMulZeroClass γ (β i)] (b : γ)
@@ -42,17 +42,17 @@ theorem coe_smul [∀ i, Zero (β i)] [∀ i, SMulZeroClass γ (β i)] (b : γ)
 instance smulCommClass {δ : Type*} [∀ i, Zero (β i)]
     [∀ i, SMulZeroClass γ (β i)] [∀ i, SMulZeroClass δ (β i)] [∀ i, SMulCommClass γ δ (β i)] :
     SMulCommClass γ δ (Π₀ i, β i) where
-  smul_comm r s m := ext fun i => by simp only [smul_apply, smul_comm r s (m i)]
+  smul_comm r s m := ext fun i ↦ by simp only [smul_apply, smul_comm r s (m i)]
 
 instance isScalarTower {δ : Type*} [∀ i, Zero (β i)]
     [∀ i, SMulZeroClass γ (β i)] [∀ i, SMulZeroClass δ (β i)] [SMul γ δ]
     [∀ i, IsScalarTower γ δ (β i)] : IsScalarTower γ δ (Π₀ i, β i) where
-  smul_assoc r s m := ext fun i => by simp only [smul_apply, smul_assoc r s (m i)]
+  smul_assoc r s m := ext fun i ↦ by simp only [smul_apply, smul_assoc r s (m i)]
 
 instance isCentralScalar [∀ i, Zero (β i)] [∀ i, SMulZeroClass γ (β i)]
     [∀ i, SMulZeroClass γᵐᵒᵖ (β i)] [∀ i, IsCentralScalar γ (β i)] :
     IsCentralScalar γ (Π₀ i, β i) where
-  op_smul_eq_smul r m := ext fun i => by simp only [smul_apply, op_smul_eq_smul r (m i)]
+  op_smul_eq_smul r m := ext fun i ↦ by simp only [smul_apply, op_smul_eq_smul r (m i)]
 
 /-- Dependent functions with finite support inherit a `DistribMulAction` structure from such a
 structure on each coordinate. -/
@@ -65,8 +65,8 @@ each coordinate. -/
 instance module [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module γ (β i)] :
     Module γ (Π₀ i, β i) :=
   { inferInstanceAs (DistribMulAction γ (Π₀ i, β i)) with
-    zero_smul := fun c => ext fun i => by simp only [smul_apply, zero_smul, zero_apply]
-    add_smul := fun c x y => ext fun i => by simp only [add_apply, smul_apply, add_smul] }
+    zero_smul := fun c ↦ ext fun i ↦ by simp only [smul_apply, zero_smul, zero_apply]
+    add_smul := fun c x y ↦ ext fun i ↦ by simp only [add_apply, smul_apply, add_smul] }
 
 end Algebra
 
@@ -131,11 +131,11 @@ variable [∀ i, Zero (β i)] [∀ i, SMulZeroClass γ (β i)]
 @[simp]
 theorem mk_smul {s : Finset ι} (c : γ) (x : ∀ i : (↑s : Set ι), β (i : ι)) :
     mk s (c • x) = c • mk s x :=
-  ext fun i => by simp only [smul_apply, mk_apply]; split_ifs <;> [rfl; rw [smul_zero]]
+  ext fun i ↦ by simp only [smul_apply, mk_apply]; split_ifs <;> [rfl; rw [smul_zero]]
 
 @[simp]
 theorem single_smul {i : ι} (c : γ) (x : β i) : single i (c • x) = c • single i x :=
-  ext fun i => by
+  ext fun i ↦ by
     simp only [smul_apply, single_apply]
     split_ifs with h
     · cases h; rfl
@@ -176,7 +176,7 @@ variable {α : ι → Type*} {δ : ∀ i, α i → Type v}
 
 instance distribMulAction₂ [Monoid γ] [∀ i j, AddMonoid (δ i j)]
     [∀ i j, DistribMulAction γ (δ i j)] : DistribMulAction γ (Π₀ (i : ι) (j : α i), δ i j) :=
-  @DFinsupp.distribMulAction ι _ (fun i => Π₀ j, δ i j) _ _ _
+  @DFinsupp.distribMulAction ι _ (fun i ↦ Π₀ j, δ i j) _ _ _
 
 end SigmaCurry
 

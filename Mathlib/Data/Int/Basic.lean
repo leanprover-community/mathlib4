@@ -69,7 +69,7 @@ end strongRec
 
 /-! ### nat abs -/
 
-lemma natAbs_surjective : natAbs.Surjective := fun n => ⟨n, natAbs_natCast n⟩
+lemma natAbs_surjective : natAbs.Surjective := fun n ↦ ⟨n, natAbs_natCast n⟩
 
 lemma pow_right_injective (h : 1 < a.natAbs) : ((a ^ ·) : ℕ → ℤ).Injective := by
   refine (?_ : (natAbs ∘ (a ^ · : ℕ → ℤ)).Injective).of_comp

@@ -42,22 +42,22 @@ def mapBifunctorHomologicalComplexObj (K₁ : HomologicalComplex C₁ c₁) :
     HomologicalComplex C₂ c₂ ⥤ HomologicalComplex₂ D c₁ c₂ where
   obj K₂ := HomologicalComplex₂.ofGradedObject c₁ c₂
       (((GradedObject.mapBifunctor F I₁ I₂).obj K₁.X).obj K₂.X)
-      (fun i₁ i₁' i₂ => (F.map (K₁.d i₁ i₁')).app (K₂.X i₂))
-      (fun i₁ i₂ i₂' => (F.obj (K₁.X i₁)).map (K₂.d i₂ i₂'))
-      (fun i₁ i₁' h₁ i₂ => by
+      (fun i₁ i₁' i₂ ↦ (F.map (K₁.d i₁ i₁')).app (K₂.X i₂))
+      (fun i₁ i₂ i₂' ↦ (F.obj (K₁.X i₁)).map (K₂.d i₂ i₂'))
+      (fun i₁ i₁' h₁ i₂ ↦ by
         dsimp
         rw [K₁.shape _ _ h₁, Functor.map_zero, zero_app])
-      (fun i₁ i₂ i₂' h₂ => by
+      (fun i₁ i₂ i₂' h₂ ↦ by
         dsimp
         rw [K₂.shape _ _ h₂, Functor.map_zero])
-      (fun i₁ i₁' i₁'' i₂ => by
+      (fun i₁ i₁' i₁'' i₂ ↦ by
         dsimp
         rw [← NatTrans.comp_app, ← Functor.map_comp, HomologicalComplex.d_comp_d,
           Functor.map_zero, zero_app])
-      (fun i₁ i₂ i₂' i₂'' => by
+      (fun i₁ i₂ i₂' i₂'' ↦ by
         dsimp
         rw [← Functor.map_comp, HomologicalComplex.d_comp_d, Functor.map_zero])
-      (fun i₁ i₁' i₂ i₂' => by
+      (fun i₁ i₁' i₂ i₂' ↦ by
         dsimp
         rw [NatTrans.naturality])
   map {K₂ K₂' φ} := HomologicalComplex₂.homMk
@@ -77,7 +77,7 @@ def mapBifunctorHomologicalComplex :
     HomologicalComplex C₁ c₁ ⥤ HomologicalComplex C₂ c₂ ⥤ HomologicalComplex₂ D c₁ c₂ where
   obj := mapBifunctorHomologicalComplexObj F c₂
   map {K₁ K₁'} f :=
-    { app := fun K₂ => HomologicalComplex₂.homMk
+    { app := fun K₂ ↦ HomologicalComplex₂.homMk
         (((GradedObject.mapBifunctor F I₁ I₂).map f.f).app K₂.X) (by
           intros
           dsimp

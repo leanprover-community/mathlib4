@@ -101,7 +101,7 @@ theorem _root_.Set.up_union (s t : Set α) : (s ∪ t).up = s.up + t.up :=
 /- Since addition on `SetSemiring` is commutative (it is set union), there is no need
 to also have the instance `AddRightMono (SetSemiring α)`. -/
 instance addLeftMono : AddLeftMono (SetSemiring α) :=
-  ⟨fun _ _ _ => union_subset_union_right _⟩
+  ⟨fun _ _ _ ↦ union_subset_union_right _⟩
 
 section Mul
 
@@ -109,11 +109,11 @@ variable [Mul α]
 
 instance : NonUnitalNonAssocSemiring (SetSemiring α) :=
   { (inferInstance : AddCommMonoid (SetSemiring α)) with
-    mul := fun s t => (image2 (· * ·) s.down t.down).up
-    zero_mul := fun _ => empty_mul
-    mul_zero := fun _ => mul_empty
-    left_distrib := fun _ _ _ => mul_union
-    right_distrib := fun _ _ _ => union_mul }
+    mul := fun s t ↦ (image2 (· * ·) s.down t.down).up
+    zero_mul := fun _ ↦ empty_mul
+    mul_zero := fun _ ↦ mul_empty
+    left_distrib := fun _ _ _ ↦ mul_union
+    right_distrib := fun _ _ _ ↦ union_mul }
 
 theorem mul_def (s t : SetSemiring α) : s * t = (s.down * t.down).up :=
   rfl
@@ -127,16 +127,16 @@ theorem _root_.Set.up_mul (s t : Set α) : (s * t).up = s.up * t.up :=
   rfl
 
 instance : NoZeroDivisors (SetSemiring α) :=
-  ⟨fun {a b} ab =>
-    a.eq_empty_or_nonempty.imp_right fun ha =>
-      b.eq_empty_or_nonempty.resolve_right fun hb =>
+  ⟨fun {a b} ab ↦
+    a.eq_empty_or_nonempty.imp_right fun ha ↦
+      b.eq_empty_or_nonempty.resolve_right fun hb ↦
         Nonempty.ne_empty ⟨_, mul_mem_mul ha.some_mem hb.some_mem⟩ ab⟩
 
 instance mulLeftMono : MulLeftMono (SetSemiring α) :=
-  ⟨fun _ _ _ => mul_subset_mul_left⟩
+  ⟨fun _ _ _ ↦ mul_subset_mul_left⟩
 
 instance mulRightMono : MulRightMono (SetSemiring α) :=
-  ⟨fun _ _ _ => mul_subset_mul_right⟩
+  ⟨fun _ _ _ ↦ mul_subset_mul_right⟩
 
 end Mul
 

@@ -75,13 +75,13 @@ variable {n}
 theorem filter_dvd_eq_divisors (h : n ≠ 0) : {d ∈ range n.succ | d ∣ n} = n.divisors := by
   ext
   simp only [divisors, mem_filter, mem_range, mem_Ico, and_congr_left_iff, iff_and_self]
-  exact fun ha _ => succ_le_iff.mpr (pos_of_dvd_of_pos ha h.bot_lt)
+  exact fun ha _ ↦ succ_le_iff.mpr (pos_of_dvd_of_pos ha h.bot_lt)
 
 @[simp]
 theorem filter_dvd_eq_properDivisors (h : n ≠ 0) : {d ∈ range n | d ∣ n} = n.properDivisors := by
   ext
   simp only [properDivisors, mem_filter, mem_range, mem_Ico, and_congr_left_iff, iff_and_self]
-  exact fun ha _ => succ_le_iff.mpr (pos_of_dvd_of_pos ha h.bot_lt)
+  exact fun ha _ ↦ succ_le_iff.mpr (pos_of_dvd_of_pos ha h.bot_lt)
 
 theorem self_notMem_properDivisors : n ∉ properDivisors n := by simp [properDivisors]
 
@@ -143,7 +143,7 @@ lemma toFinset_divisorsAntidiagonalList {n : ℕ} :
 
 lemma sorted_divisorsAntidiagonalList_fst {n : ℕ} :
     n.divisorsAntidiagonalList.Sorted (·.fst < ·.fst) := by
-  refine (List.sorted_lt_range' _ _ Nat.one_ne_zero).filterMap fun a b c d h h' ha => ?_
+  refine (List.sorted_lt_range' _ _ Nat.one_ne_zero).filterMap fun a b c d h h' ha ↦ ?_
   rw [Option.ite_none_right_eq_some, Option.some.injEq] at h h'
   simpa [← h.right, ← h'.right]
 
@@ -205,7 +205,7 @@ theorem divisor_le {m : ℕ} : n ∈ divisors m → n ≤ m := by
 
 @[gcongr]
 theorem divisors_subset_of_dvd {m : ℕ} (hzero : n ≠ 0) (h : m ∣ n) : divisors m ⊆ divisors n :=
-  Finset.subset_iff.2 fun _x hx => Nat.mem_divisors.mpr ⟨(Nat.mem_divisors.mp hx).1.trans h, hzero⟩
+  Finset.subset_iff.2 fun _x hx ↦ Nat.mem_divisors.mpr ⟨(Nat.mem_divisors.mp hx).1.trans h, hzero⟩
 
 theorem card_divisors_le_self (n : ℕ) : #n.divisors ≤ n := calc
   _ ≤ #(Ico 1 (n + 1)) := by
@@ -356,7 +356,7 @@ theorem image_snd_divisorsAntidiagonal : (divisorsAntidiagonal n).image Prod.snd
   exact image_fst_divisorsAntidiagonal
 
 theorem map_div_right_divisors :
-    n.divisors.map ⟨fun d => (d, n / d), fun _ _ => congr_arg Prod.fst⟩ =
+    n.divisors.map ⟨fun d ↦ (d, n / d), fun _ _ ↦ congr_arg Prod.fst⟩ =
       n.divisorsAntidiagonal := by
   ext ⟨d, nd⟩
   simp only [mem_map, mem_divisorsAntidiagonal, Function.Embedding.coeFn_mk, mem_divisors,
@@ -369,7 +369,7 @@ theorem map_div_right_divisors :
     exact ⟨⟨dvd_mul_right _ _, hn⟩, Nat.mul_div_cancel_left _ (left_ne_zero_of_mul hn).bot_lt⟩
 
 theorem map_div_left_divisors :
-    n.divisors.map ⟨fun d => (n / d, d), fun _ _ => congr_arg Prod.snd⟩ =
+    n.divisors.map ⟨fun d ↦ (n / d, d), fun _ _ ↦ congr_arg Prod.snd⟩ =
       n.divisorsAntidiagonal := by
   apply Finset.map_injective (Equiv.prodComm _ _).toEmbedding
   ext
@@ -407,7 +407,7 @@ theorem Prime.divisors {p : ℕ} (pp : p.Prime) : divisors p = {1, p} := by
 
 theorem Prime.properDivisors {p : ℕ} (pp : p.Prime) : properDivisors p = {1} := by
   rw [← erase_insert self_notMem_properDivisors, insert_self_properDivisors pp.ne_zero,
-    pp.divisors, pair_comm, erase_insert fun con => pp.ne_one (mem_singleton.1 con)]
+    pp.divisors, pair_comm, erase_insert fun con ↦ pp.ne_one (mem_singleton.1 con)]
 
 theorem divisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
     divisors (p ^ k) = (Finset.range (k + 1)).map ⟨(p ^ ·), Nat.pow_right_injective pp.two_le⟩ := by
@@ -438,7 +438,7 @@ theorem eq_properDivisors_of_subset_of_sum_eq_sum {s : Finset ℕ} (hsub : s ⊆
     rw [← zero_add (∑ x ∈ s, x), ← add_assoc, add_zero]
     apply add_lt_add_right
     have hlt :=
-      sum_lt_sum_of_nonempty h fun x hx => pos_of_mem_properDivisors (sdiff_subset hx)
+      sum_lt_sum_of_nonempty h fun x hx ↦ pos_of_mem_properDivisors (sdiff_subset hx)
     simp only [sum_const_zero] at hlt
     apply hlt
 
@@ -469,7 +469,7 @@ theorem Prime.prod_divisors {α : Type*} [CommMonoid α] {p : ℕ} {f : ℕ → 
 theorem properDivisors_eq_singleton_one_iff_prime : n.properDivisors = {1} ↔ n.Prime := by
   refine ⟨?_, ?_⟩
   · intro h
-    refine Nat.prime_def.mpr ⟨?_, fun m hdvd => ?_⟩
+    refine Nat.prime_def.mpr ⟨?_, fun m hdvd ↦ ?_⟩
     · match n with
       | 0 => contradiction
       | 1 => contradiction
@@ -480,7 +480,7 @@ theorem properDivisors_eq_singleton_one_iff_prime : n.properDivisors = {1} ↔ n
       · by_contra!
         simp only [nonpos_iff_eq_zero.mp this] at h
         contradiction
-  · exact fun h => Prime.properDivisors h
+  · exact fun h ↦ Prime.properDivisors h
 
 theorem sum_properDivisors_eq_one_iff_prime : ∑ x ∈ n.properDivisors, x = 1 ↔ n.Prime := by
   rcases n with - | n
@@ -488,7 +488,7 @@ theorem sum_properDivisors_eq_one_iff_prime : ∑ x ∈ n.properDivisors, x = 1 
   · cases n
     · simp [Nat.not_prime_one]
     · rw [← properDivisors_eq_singleton_one_iff_prime]
-      refine ⟨fun h => ?_, fun h => h.symm ▸ sum_singleton _ _⟩
+      refine ⟨fun h ↦ ?_, fun h ↦ h.symm ▸ sum_singleton _ _⟩
       rw [@eq_comm (Finset ℕ) _ _]
       apply
         eq_properDivisors_of_subset_of_sum_eq_sum
@@ -538,7 +538,7 @@ theorem prod_divisorsAntidiagonal {M : Type*} [CommMonoid M] (f : ℕ → ℕ �
 theorem prod_divisorsAntidiagonal' {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) {n : ℕ} :
     ∏ i ∈ n.divisorsAntidiagonal, f i.1 i.2 = ∏ i ∈ n.divisors, f (n / i) i := by
   rw [← map_swap_divisorsAntidiagonal, Finset.prod_map]
-  exact prod_divisorsAntidiagonal fun i j => f j i
+  exact prod_divisorsAntidiagonal fun i j ↦ f j i
 
 /-- The factors of `n` are the prime divisors -/
 theorem primeFactors_eq_to_filter_divisors_prime (n : ℕ) :
@@ -555,7 +555,7 @@ lemma primeFactors_filter_dvd_of_dvd {m n : ℕ} (hn : n ≠ 0) (hmn : m ∣ n) 
 
 @[simp]
 theorem image_div_divisors_eq_divisors (n : ℕ) :
-    image (fun x : ℕ => n / x) n.divisors = n.divisors := by
+    image (fun x : ℕ ↦ n / x) n.divisors = n.divisors := by
   by_cases hn : n = 0
   · simp [hn]
   ext a

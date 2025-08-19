@@ -154,7 +154,7 @@ theorem MulEquiv.restrictRootsOfUnity_symm (σ : R ≃* S) :
 theorem coe_rootsOfUnity_to_set [NeZero k] :
     ((↑) : Rˣ → _) '' (rootsOfUnity k R) = {z : R | z^k = 1} := by
   ext x
-  exact ⟨fun ⟨y,hy1,hy2⟩ => by rw [← hy2]; exact (mem_rootsOfUnity' k y).mp hy1,
+  exact ⟨fun ⟨y,hy1,hy2⟩ ↦ by rw [← hy2]; exact (mem_rootsOfUnity' k y).mp hy1,
     fun h ↦ ⟨(rootsOfUnity.mkOfPowEq x h), ⟨Subtype.coe_prop (rootsOfUnity.mkOfPowEq x h), rfl⟩⟩⟩
 
 theorem rootsOfUnity_one_set : ((↑) : Rˣ → R) '' (rootsOfUnity 1 R) = {1} := by

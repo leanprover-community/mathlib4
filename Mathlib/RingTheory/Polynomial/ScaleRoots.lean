@@ -120,18 +120,18 @@ theorem scaleRoots_eval₂_mul_of_commute {p : S[X]} (f : S →+* A) (a : A) (s 
     (hsa : Commute (f s) a) (hf : ∀ s₁ s₂, Commute (f s₁) (f s₂)) :
     eval₂ f (f s * a) (scaleRoots p s) = f s ^ p.natDegree * eval₂ f a p := by
   calc
-    _ = (scaleRoots p s).support.sum fun i =>
+    _ = (scaleRoots p s).support.sum fun i ↦
           f (coeff p i * s ^ (p.natDegree - i)) * (f s * a) ^ i := by
       simp [eval₂_eq_sum, sum_def]
-    _ = p.support.sum fun i => f (coeff p i * s ^ (p.natDegree - i)) * (f s * a) ^ i :=
-      (Finset.sum_subset (support_scaleRoots_le p s) fun i _hi hi' => by
+    _ = p.support.sum fun i ↦ f (coeff p i * s ^ (p.natDegree - i)) * (f s * a) ^ i :=
+      (Finset.sum_subset (support_scaleRoots_le p s) fun i _hi hi' ↦ by
         let this : coeff p i * s ^ (p.natDegree - i) = 0 := by simpa using hi'
         simp [this])
-    _ = p.support.sum fun i : ℕ => f (p.coeff i) * f s ^ (p.natDegree - i + i) * a ^ i :=
-      (Finset.sum_congr rfl fun i _hi => by
+    _ = p.support.sum fun i : ℕ ↦ f (p.coeff i) * f s ^ (p.natDegree - i + i) * a ^ i :=
+      (Finset.sum_congr rfl fun i _hi ↦ by
         simp_rw [f.map_mul, f.map_pow, pow_add, hsa.mul_pow, mul_assoc])
-    _ = p.support.sum fun i : ℕ => f s ^ p.natDegree * (f (p.coeff i) * a ^ i) :=
-      Finset.sum_congr rfl fun i hi => by
+    _ = p.support.sum fun i : ℕ ↦ f s ^ p.natDegree * (f (p.coeff i) * a ^ i) :=
+      Finset.sum_congr rfl fun i hi ↦ by
         rw [mul_assoc, ← map_pow, (hf _ _).left_comm, map_pow, tsub_add_cancel_of_le]
         exact le_natDegree_of_ne_zero (Polynomial.mem_support_iff.mp hi)
     _ = f s ^ p.natDegree * eval₂ f a p := by simp [← Finset.mul_sum, eval₂_eq_sum, sum_def]

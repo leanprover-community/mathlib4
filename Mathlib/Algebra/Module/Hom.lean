@@ -30,8 +30,8 @@ namespace AddMonoidHom
 
 instance instModule [Semiring R] [AddMonoid A] [AddCommMonoid B] [Module R B] :
     Module R (A →+ B) where
-  add_smul _ _ _ := ext fun _ => add_smul _ _ _
-  zero_smul _ := ext fun _ => zero_smul _ _
+  add_smul _ _ _ := ext fun _ ↦ add_smul _ _ _
+  zero_smul _ := ext fun _ ↦ zero_smul _ _
 
 instance instDomMulActModule
     {S M M₂ : Type*} [Semiring S] [AddCommMonoid M] [AddCommMonoid M₂] [Module S M] :

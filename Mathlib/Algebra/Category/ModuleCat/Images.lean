@@ -55,20 +55,20 @@ variable {f}
 /-- The universal property for the image factorisation -/
 noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.I :=
   ofHom
-  { toFun := (fun x => F'.e (Classical.indefiniteDescription _ x.2).1 : image f → F'.I)
-    map_add' := fun x y => by
+  { toFun := (fun x ↦ F'.e (Classical.indefiniteDescription _ x.2).1 : image f → F'.I)
+    map_add' := fun x y ↦ by
       apply (mono_iff_injective F'.m).1
       · infer_instance
       rw [LinearMap.map_add]
       change (F'.e ≫ F'.m) _ = (F'.e ≫ F'.m) _ + (F'.e ≫ F'.m) _
-      simp_rw [F'.fac, (Classical.indefiniteDescription (fun z => f z = _) _).2]
+      simp_rw [F'.fac, (Classical.indefiniteDescription (fun z ↦ f z = _) _).2]
       rfl
-    map_smul' := fun c x => by
+    map_smul' := fun c x ↦ by
       apply (mono_iff_injective F'.m).1
       · infer_instance
       rw [LinearMap.map_smul]
       change (F'.e ≫ F'.m) _ = _ • (F'.e ≫ F'.m) _
-      simp_rw [F'.fac, (Classical.indefiniteDescription (fun z => f z = _) _).2]
+      simp_rw [F'.fac, (Classical.indefiniteDescription (fun z ↦ f z = _) _).2]
       rfl }
 
 theorem image.lift_fac (F' : MonoFactorisation f) : image.lift F' ≫ F'.m = image.ι f := by

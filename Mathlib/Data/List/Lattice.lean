@@ -37,7 +37,7 @@ variable {α : Type*} {l₁ l₂ : List α} {p : α → Prop} {a : α}
 section Disjoint
 
 @[symm]
-theorem Disjoint.symm (d : Disjoint l₁ l₂) : Disjoint l₂ l₁ := fun _ i₂ i₁ => d i₁ i₂
+theorem Disjoint.symm (d : Disjoint l₁ l₂) : Disjoint l₂ l₁ := fun _ i₂ i₁ ↦ d i₁ i₂
 
 end Disjoint
 
@@ -66,7 +66,7 @@ theorem sublist_suffix_of_union : ∀ l₁ l₂ : List α, ∃ t, t <+ l₁ ∧ 
         simp only [cons_append, cons_union, e, insert_of_not_mem h]⟩
 
 theorem suffix_union_right (l₁ l₂ : List α) : l₂ <:+ l₁ ∪ l₂ :=
-  (sublist_suffix_of_union l₁ l₂).imp fun _ => And.right
+  (sublist_suffix_of_union l₁ l₂).imp fun _ ↦ And.right
 
 theorem union_sublist_append (l₁ l₂ : List α) : l₁ ∪ l₂ <+ l₁ ++ l₂ :=
   let ⟨_, s, e⟩ := sublist_suffix_of_union l₁ l₂
@@ -126,9 +126,9 @@ theorem mem_inter_of_mem_of_mem (h₁ : a ∈ l₁) (h₂ : a ∈ l₂) : a ∈ 
 theorem inter_subset_left {l₁ l₂ : List α} : l₁ ∩ l₂ ⊆ l₁ :=
   filter_subset' _
 
-theorem inter_subset_right {l₁ l₂ : List α} : l₁ ∩ l₂ ⊆ l₂ := fun _ => mem_of_mem_inter_right
+theorem inter_subset_right {l₁ l₂ : List α} : l₁ ∩ l₂ ⊆ l₂ := fun _ ↦ mem_of_mem_inter_right
 
-theorem subset_inter {l l₁ l₂ : List α} (h₁ : l ⊆ l₁) (h₂ : l ⊆ l₂) : l ⊆ l₁ ∩ l₂ := fun _ h =>
+theorem subset_inter {l l₁ l₂ : List α} (h₁ : l ⊆ l₁) (h₂ : l ⊆ l₂) : l ⊆ l₁ ∩ l₂ := fun _ h ↦
   mem_inter_iff.2 ⟨h₁ h, h₂ h⟩
 
 theorem inter_eq_nil_iff_disjoint : l₁ ∩ l₂ = [] ↔ Disjoint l₁ l₂ := by
@@ -139,18 +139,18 @@ alias ⟨_, Disjoint.inter_eq_nil⟩ := inter_eq_nil_iff_disjoint
 
 theorem forall_mem_inter_of_forall_left (h : ∀ x ∈ l₁, p x) (l₂ : List α) :
     ∀ x, x ∈ l₁ ∩ l₂ → p x :=
-  BAll.imp_left (fun _ => mem_of_mem_inter_left) h
+  BAll.imp_left (fun _ ↦ mem_of_mem_inter_left) h
 
 theorem forall_mem_inter_of_forall_right (l₁ : List α) (h : ∀ x ∈ l₂, p x) :
     ∀ x, x ∈ l₁ ∩ l₂ → p x :=
-  BAll.imp_left (fun _ => mem_of_mem_inter_right) h
+  BAll.imp_left (fun _ ↦ mem_of_mem_inter_right) h
 
 @[simp]
 theorem inter_reverse {xs ys : List α} : xs.inter ys.reverse = xs.inter ys := by
   simp only [List.inter, elem_eq_mem, mem_reverse]
 
 theorem Subset.inter_eq_left {xs ys : List α} (h : xs ⊆ ys) : xs ∩ ys = xs :=
-  List.filter_eq_self.mpr fun _ ha => elem_eq_true_of_mem (h ha)
+  List.filter_eq_self.mpr fun _ ha ↦ elem_eq_true_of_mem (h ha)
 
 end Inter
 

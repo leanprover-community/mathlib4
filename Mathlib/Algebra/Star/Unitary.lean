@@ -30,7 +30,7 @@ unitary
 def unitary (R : Type*) [Monoid R] [StarMul R] : Submonoid R where
   carrier := { U | star U * U = 1 ∧ U * star U = 1 }
   one_mem' := by simp only [mul_one, and_self_iff, Set.mem_setOf_eq, star_one]
-  mul_mem' := @fun U B ⟨hA₁, hA₂⟩ ⟨hB₁, hB₂⟩ => by
+  mul_mem' := @fun U B ⟨hA₁, hA₂⟩ ⟨hB₁, hB₂⟩ ↦ by
     refine ⟨?_, ?_⟩
     · calc
         star (U * B) * (U * B) = star B * star U * U * B := by simp only [mul_assoc, star_mul]
@@ -65,10 +65,10 @@ theorem star_mem {U : R} (hU : U ∈ unitary R) : star U ∈ unitary R :=
 
 @[simp]
 theorem star_mem_iff {U : R} : star U ∈ unitary R ↔ U ∈ unitary R :=
-  ⟨fun h => star_star U ▸ star_mem h, star_mem⟩
+  ⟨fun h ↦ star_star U ▸ star_mem h, star_mem⟩
 
 instance : Star (unitary R) :=
-  ⟨fun U => ⟨star U, star_mem U.prop⟩⟩
+  ⟨fun U ↦ ⟨star U, star_mem U.prop⟩⟩
 
 @[simp, norm_cast]
 theorem coe_star {U : unitary R} : ↑(star U) = (star U : R) :=
@@ -121,12 +121,12 @@ def toUnits : unitary R →* Rˣ where
   map_one' := Units.ext rfl
   map_mul' _ _ := Units.ext rfl
 
-theorem toUnits_injective : Function.Injective (toUnits : unitary R → Rˣ) := fun _ _ h =>
+theorem toUnits_injective : Function.Injective (toUnits : unitary R → Rˣ) := fun _ _ h ↦
   Subtype.ext <| Units.ext_iff.mp h
 
 theorem _root_.IsUnit.mem_unitary_iff_star_mul_self {u : R} (hu : IsUnit u) :
     u ∈ unitary R ↔ star u * u = 1 := by
-  rw [unitary.mem_iff, and_iff_left_of_imp fun h_mul => ?_]
+  rw [unitary.mem_iff, and_iff_left_of_imp fun h_mul ↦ ?_]
   lift u to Rˣ using hu
   exact left_inv_eq_right_inv h_mul u.mul_inv ▸ u.mul_inv
 
@@ -264,10 +264,10 @@ instance : CommGroup (unitary R) :=
   { inferInstanceAs (Group (unitary R)), Submonoid.toCommMonoid _ with }
 
 theorem mem_iff_star_mul_self {U : R} : U ∈ unitary R ↔ star U * U = 1 :=
-  mem_iff.trans <| and_iff_left_of_imp fun h => mul_comm (star U) U ▸ h
+  mem_iff.trans <| and_iff_left_of_imp fun h ↦ mul_comm (star U) U ▸ h
 
 theorem mem_iff_self_mul_star {U : R} : U ∈ unitary R ↔ U * star U = 1 :=
-  mem_iff.trans <| and_iff_right_of_imp fun h => mul_comm U (star U) ▸ h
+  mem_iff.trans <| and_iff_right_of_imp fun h ↦ mul_comm U (star U) ▸ h
 
 end CommMonoid
 

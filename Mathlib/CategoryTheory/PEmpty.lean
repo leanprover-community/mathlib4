@@ -55,7 +55,7 @@ variable {C}
 
 /-- Any two functors out of the empty category are isomorphic. -/
 def emptyExt (F G : Discrete.{w} PEmpty ⥤ C) : F ≅ G :=
-  Discrete.natIso fun x => x.as.elim
+  Discrete.natIso fun x ↦ x.as.elim
 
 /-- Any functor out of the empty category is isomorphic to the canonical functor from the empty
 category.
@@ -67,7 +67,7 @@ def uniqueFromEmpty (F : Discrete.{w} PEmpty ⥤ C) : F ≅ empty C :=
 `emptyExt` instead of this.
 -/
 theorem empty_ext' (F G : Discrete.{w} PEmpty ⥤ C) : F = G :=
-  Functor.ext (fun x => x.as.elim) fun x _ _ => x.as.elim
+  Functor.ext (fun x ↦ x.as.elim) fun x _ _ ↦ x.as.elim
 
 end Functor
 

@@ -40,7 +40,7 @@ including (semi)modules and algebras. -/
 class ContinuousSMul (M X : Type*) [SMul M X] [TopologicalSpace M] [TopologicalSpace X] :
     Prop where
   /-- The scalar multiplication `(•)` is continuous. -/
-  continuous_smul : Continuous fun p : M × X => p.1 • p.2
+  continuous_smul : Continuous fun p : M × X ↦ p.1 • p.2
 
 export ContinuousSMul (continuous_smul)
 
@@ -50,7 +50,7 @@ including (semi)modules and algebras. -/
 class ContinuousVAdd (M X : Type*) [VAdd M X] [TopologicalSpace M] [TopologicalSpace X] :
     Prop where
   /-- The additive action `(+ᵥ)` is continuous. -/
-  continuous_vadd : Continuous fun p : M × X => p.1 +ᵥ p.2
+  continuous_vadd : Continuous fun p : M × X ↦ p.1 +ᵥ p.2
 
 export ContinuousVAdd (continuous_vadd)
 
@@ -93,32 +93,32 @@ theorem ContinuousSMul.induced {R : Type*} {α : Type*} {β : Type*} {F : Type*}
 @[to_additive]
 theorem Filter.Tendsto.smul {f : α → M} {g : α → X} {l : Filter α} {c : M} {a : X}
     (hf : Tendsto f l (𝓝 c)) (hg : Tendsto g l (𝓝 a)) :
-    Tendsto (fun x => f x • g x) l (𝓝 <| c • a) :=
+    Tendsto (fun x ↦ f x • g x) l (𝓝 <| c • a) :=
   (continuous_smul.tendsto _).comp (hf.prodMk_nhds hg)
 
 @[to_additive]
 theorem Filter.Tendsto.smul_const {f : α → M} {l : Filter α} {c : M} (hf : Tendsto f l (𝓝 c))
-    (a : X) : Tendsto (fun x => f x • a) l (𝓝 (c • a)) :=
+    (a : X) : Tendsto (fun x ↦ f x • a) l (𝓝 (c • a)) :=
   hf.smul tendsto_const_nhds
 
 variable {f : Y → M} {g : Y → X} {b : Y} {s : Set Y}
 
 @[to_additive]
 theorem ContinuousWithinAt.smul (hf : ContinuousWithinAt f s b) (hg : ContinuousWithinAt g s b) :
-    ContinuousWithinAt (fun x => f x • g x) s b :=
+    ContinuousWithinAt (fun x ↦ f x • g x) s b :=
   Filter.Tendsto.smul hf hg
 
 @[to_additive (attr := fun_prop)]
 theorem ContinuousAt.smul (hf : ContinuousAt f b) (hg : ContinuousAt g b) :
-    ContinuousAt (fun x => f x • g x) b :=
+    ContinuousAt (fun x ↦ f x • g x) b :=
   Filter.Tendsto.smul hf hg
 
 @[to_additive (attr := fun_prop)]
 theorem ContinuousOn.smul (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
-    ContinuousOn (fun x => f x • g x) s := fun x hx => (hf x hx).smul (hg x hx)
+    ContinuousOn (fun x ↦ f x • g x) s := fun x hx ↦ (hf x hx).smul (hg x hx)
 
 @[to_additive (attr := continuity, fun_prop)]
-theorem Continuous.smul (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f x • g x :=
+theorem Continuous.smul (hf : Continuous f) (hg : Continuous g) : Continuous fun x ↦ f x • g x :=
   continuous_smul.comp (hf.prodMk hg)
 
 /-- If a scalar action is central, then its right action is continuous when its left action is. -/
@@ -126,9 +126,9 @@ theorem Continuous.smul (hf : Continuous f) (hg : Continuous g) : Continuous fun
 left action is. -/]
 instance ContinuousSMul.op [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] : ContinuousSMul Mᵐᵒᵖ X :=
   ⟨by
-    suffices Continuous fun p : M × X => MulOpposite.op p.fst • p.snd from
+    suffices Continuous fun p : M × X ↦ MulOpposite.op p.fst • p.snd from
       this.comp (MulOpposite.continuous_unop.prodMap continuous_id)
-    simpa only [op_smul_eq_smul] using (continuous_smul : Continuous fun p : M × X => _)⟩
+    simpa only [op_smul_eq_smul] using (continuous_smul : Continuous fun p : M × X ↦ _)⟩
 
 @[to_additive]
 instance MulOpposite.continuousSMul : ContinuousSMul M Xᵐᵒᵖ :=
@@ -235,7 +235,7 @@ instance Prod.continuousSMul [SMul M X] [SMul M Y] [ContinuousSMul M X] [Continu
 @[to_additive]
 instance {ι : Type*} {γ : ι → Type*} [∀ i, TopologicalSpace (γ i)] [∀ i, SMul M (γ i)]
     [∀ i, ContinuousSMul M (γ i)] : ContinuousSMul M (∀ i, γ i) :=
-  ⟨continuous_pi fun i =>
+  ⟨continuous_pi fun i ↦
       (continuous_fst.smul continuous_snd).comp <|
         continuous_fst.prodMk ((continuous_apply i).comp continuous_snd)⟩
 
@@ -254,7 +254,7 @@ theorem continuousSMul_sInf {ts : Set (TopologicalSpace X)}
       -- Porting note: needs `( :)`
       rw [← (@sInf_singleton _ _ ‹TopologicalSpace M›:)]
       exact
-        continuous_sInf_rng.2 fun t ht =>
+        continuous_sInf_rng.2 fun t ht ↦
           continuous_sInf_dom₂ (Eq.refl _) ht
             (@ContinuousSMul.continuous_smul _ _ _ _ t (h t ht))
 
@@ -267,7 +267,7 @@ theorem continuousSMul_iInf {ts' : ι → TopologicalSpace X}
 theorem continuousSMul_inf {t₁ t₂ : TopologicalSpace X} [@ContinuousSMul M X _ _ t₁]
     [@ContinuousSMul M X _ _ t₂] : @ContinuousSMul M X _ _ (t₁ ⊓ t₂) := by
   rw [inf_eq_iInf]
-  refine continuousSMul_iInf fun b => ?_
+  refine continuousSMul_iInf fun b ↦ ?_
   cases b <;> assumption
 
 end LatticeOps

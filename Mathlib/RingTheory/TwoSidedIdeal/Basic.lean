@@ -93,8 +93,8 @@ lemma le_iff {I J : TwoSidedIdeal R} : I ≤ J ↔ (I : Set R) ⊆ (J : Set R) :
 def orderIsoRingCon : TwoSidedIdeal R ≃o RingCon R where
   toFun := TwoSidedIdeal.ringCon
   invFun := .mk
-  map_rel_iff' {I J} := Iff.symm <| le_iff.trans ⟨fun h x y r => by rw [rel_iff] at r ⊢; exact h r,
-    fun h x hx => by rw [SetLike.mem_coe, mem_iff] at hx ⊢; exact h hx⟩
+  map_rel_iff' {I J} := Iff.symm <| le_iff.trans ⟨fun h x y r ↦ by rw [rel_iff] at r ⊢; exact h r,
+    fun h x hx ↦ by rw [SetLike.mem_coe, mem_iff] at hx ⊢; exact h hx⟩
 
 lemma ringCon_injective : Function.Injective (TwoSidedIdeal.ringCon (R := R)) := by
   rintro ⟨x⟩ ⟨y⟩ rfl; rfl
@@ -214,7 +214,7 @@ lemma mem_op_iff {I : TwoSidedIdeal R} {x : Rᵐᵒᵖ} : x ∈ I.op ↔ x.unop 
 
 @[simp, norm_cast]
 lemma coe_op {I : TwoSidedIdeal R} : (I.op : Set Rᵐᵒᵖ) = MulOpposite.unop ⁻¹' I :=
-  Set.ext fun _ => mem_op_iff
+  Set.ext fun _ ↦ mem_op_iff
 
 
 /-- If `I` is a two-sided ideal of `Rᵐᵒᵖ`, then `{x.unop | x ∈ I}` is a two-sided ideal in `R`. -/
@@ -228,7 +228,7 @@ lemma mem_unop_iff {I : TwoSidedIdeal Rᵐᵒᵖ} {x : R} : x ∈ I.unop ↔ Mul
 
 @[simp, norm_cast]
 lemma coe_unop {I : TwoSidedIdeal Rᵐᵒᵖ} : (I.unop : Set R) = MulOpposite.op ⁻¹' I :=
-  Set.ext fun _ => mem_unop_iff
+  Set.ext fun _ ↦ mem_unop_iff
 
 /--
 Two-sided-ideals of `A` and that of `Aᵒᵖ` corresponds bijectively to each other.

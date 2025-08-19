@@ -103,7 +103,7 @@ theorem WeakDual.CharacterSpace.exists_apply_eq_zero {a : A} (ha : ¬IsUnit a) :
 
 theorem WeakDual.CharacterSpace.mem_spectrum_iff_exists {a : A} {z : ℂ} :
     z ∈ spectrum ℂ a ↔ ∃ f : characterSpace ℂ A, f a = z := by
-  refine ⟨fun hz => ?_, ?_⟩
+  refine ⟨fun hz ↦ ?_, ?_⟩
   · obtain ⟨f, hf⟩ := WeakDual.CharacterSpace.exists_apply_eq_zero hz
     simp only [map_sub, sub_eq_zero, AlgHomClass.commutes] at hf
     exact ⟨_, hf.symm⟩
@@ -129,14 +129,14 @@ variable {A : Type*} [CommCStarAlgebra A]
 
 theorem gelfandTransform_map_star (a : A) :
     gelfandTransform ℂ A (star a) = star (gelfandTransform ℂ A a) :=
-  ContinuousMap.ext fun φ => map_star φ a
+  ContinuousMap.ext fun φ ↦ map_star φ a
 
 variable (A)
 
 /-- The Gelfand transform is an isometry when the algebra is a C⋆-algebra over `ℂ`. -/
 theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
   nontriviality A
-  refine AddMonoidHomClass.isometry_of_norm (gelfandTransform ℂ A) fun a => ?_
+  refine AddMonoidHomClass.isometry_of_norm (gelfandTransform ℂ A) fun a ↦ ?_
   /- By `spectrum.gelfandTransform_eq`, the spectra of `star a * a` and its
     `gelfandTransform` coincide. Therefore, so do their spectral radii, and since they are
     self-adjoint, so also do their norms. Applying the C⋆-property of the norm and taking square
@@ -164,7 +164,7 @@ theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A)
         dsimp
         simp only [map_star, RCLike.star_def] }
   suffices rng = ⊤ from
-    fun x => show x ∈ rng from this.symm ▸ StarSubalgebra.mem_top
+    fun x ↦ show x ∈ rng from this.symm ▸ StarSubalgebra.mem_top
   /- Because the `gelfandTransform ℂ A` is an isometry, it has closed range, and so by the
     Stone-Weierstrass theorem, it suffices to show that the image of the Gelfand transform separates
     points in `C(characterSpace ℂ A, ℂ)` and is closed under `star`. -/
@@ -173,11 +173,11 @@ theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A)
       (gelfandTransform_isometry A).isClosedEmbedding.isClosed_range)
     (StarSubalgebra.le_topologicalClosure _)
   refine h ▸ ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoints
-    _ (fun _ _ => ?_)
+    _ (fun _ _ ↦ ?_)
   /- Separating points just means that elements of the `characterSpace` which agree at all points
     of `A` are the same functional, which is just extensionality. -/
   contrapose!
-  exact fun h => Subtype.ext (ContinuousLinearMap.ext fun a =>
+  exact fun h ↦ Subtype.ext (ContinuousLinearMap.ext fun a ↦
     h (gelfandTransform ℂ A a) ⟨gelfandTransform ℂ A a, ⟨a, rfl⟩, rfl⟩)
 
 /-- The Gelfand transform as a `StarAlgEquiv` between a commutative unital C⋆-algebra over `ℂ`
@@ -186,7 +186,7 @@ and the continuous functions on its `characterSpace`. -/
 noncomputable def gelfandStarTransform : A ≃⋆ₐ[ℂ] C(characterSpace ℂ A, ℂ) :=
   StarAlgEquiv.ofBijective
     (show A →⋆ₐ[ℂ] C(characterSpace ℂ A, ℂ) from
-      { gelfandTransform ℂ A with map_star' := fun x => gelfandTransform_map_star x })
+      { gelfandTransform ℂ A with map_star' := fun x ↦ gelfandTransform_map_star x })
     (gelfandTransform_bijective A)
 
 end ComplexCStarAlgebra
@@ -210,20 +210,20 @@ noncomputable def compContinuousMap (ψ : A →⋆ₐ[𝕜] B) :
   toFun φ := equivAlgHom.symm ((equivAlgHom φ).comp ψ.toAlgHom)
   continuous_toFun :=
     Continuous.subtype_mk
-      (continuous_of_continuous_eval fun a => map_continuous <| gelfandTransform 𝕜 B (ψ a)) _
+      (continuous_of_continuous_eval fun a ↦ map_continuous <| gelfandTransform 𝕜 B (ψ a)) _
 
 variable (A) in
 /-- `WeakDual.CharacterSpace.compContinuousMap` sends the identity to the identity. -/
 @[simp]
 theorem compContinuousMap_id :
     compContinuousMap (StarAlgHom.id 𝕜 A) = ContinuousMap.id (characterSpace 𝕜 A) :=
-  ContinuousMap.ext fun _a => ext fun _x => rfl
+  ContinuousMap.ext fun _a ↦ ext fun _x ↦ rfl
 
 /-- `WeakDual.CharacterSpace.compContinuousMap` is functorial. -/
 @[simp]
 theorem compContinuousMap_comp (ψ₂ : B →⋆ₐ[𝕜] C) (ψ₁ : A →⋆ₐ[𝕜] B) :
     compContinuousMap (ψ₂.comp ψ₁) = (compContinuousMap ψ₁).comp (compContinuousMap ψ₂) :=
-  ContinuousMap.ext fun _a => ext fun _x => rfl
+  ContinuousMap.ext fun _a ↦ ext fun _x ↦ rfl
 
 end CharacterSpace
 

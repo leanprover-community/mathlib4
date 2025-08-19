@@ -58,7 +58,7 @@ auxiliary definition will make porting of Lean 3 code easier.
 Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: drop this definition. -/
 @[coe] def toFun' (e : X ≃ₕ Y) : X → Y := e.toFun
 
-instance : CoeFun (X ≃ₕ Y) fun _ => X → Y := ⟨toFun'⟩
+instance : CoeFun (X ≃ₕ Y) fun _ ↦ X → Y := ⟨toFun'⟩
 
 @[simp]
 theorem toFun_eq_coe (h : HomotopyEquiv X Y) : (h.toFun : X → Y) = h :=

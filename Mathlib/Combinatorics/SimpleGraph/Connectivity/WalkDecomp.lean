@@ -52,7 +52,7 @@ lemma takeUntil_first (p : G.Walk u v) :
 @[simp]
 lemma nil_takeUntil (p : G.Walk u v) (hwp : w ∈ p.support) :
     (p.takeUntil w hwp).Nil ↔ u = w := by
-  refine ⟨?_, fun h => by subst h; simp⟩
+  refine ⟨?_, fun h ↦ by subst h; simp⟩
   intro hnil
   cases p with
   | nil => simp only [takeUntil, eq_mpr_eq_cast] at hnil; exact hnil.eq
@@ -95,7 +95,7 @@ theorem mem_support_iff_exists_append {V : Type u} {G : SimpleGraph V} {u v w : 
     {p : G.Walk u v} : w ∈ p.support ↔ ∃ (q : G.Walk u w) (r : G.Walk w v), p = q.append r := by
   classical
   constructor
-  · exact fun h => ⟨_, _, (p.take_spec h).symm⟩
+  · exact fun h ↦ ⟨_, _, (p.take_spec h).symm⟩
   · rintro ⟨q, r, rfl⟩
     simp only [mem_support_append_iff, end_mem_support, start_mem_support, or_self_iff]
 
@@ -148,22 +148,22 @@ theorem dropUntil_copy {u v w v' w'} (p : G.Walk v w) (hv : v = v') (hw : w = w'
   rfl
 
 theorem support_takeUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
-    (p.takeUntil u h).support ⊆ p.support := fun x hx => by
+    (p.takeUntil u h).support ⊆ p.support := fun x hx ↦ by
   rw [← take_spec p h, mem_support_append_iff]
   exact Or.inl hx
 
 theorem support_dropUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
-    (p.dropUntil u h).support ⊆ p.support := fun x hx => by
+    (p.dropUntil u h).support ⊆ p.support := fun x hx ↦ by
   rw [← take_spec p h, mem_support_append_iff]
   exact Or.inr hx
 
 theorem darts_takeUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
-    (p.takeUntil u h).darts ⊆ p.darts := fun x hx => by
+    (p.takeUntil u h).darts ⊆ p.darts := fun x hx ↦ by
   rw [← take_spec p h, darts_append, List.mem_append]
   exact Or.inl hx
 
 theorem darts_dropUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
-    (p.dropUntil u h).darts ⊆ p.darts := fun x hx => by
+    (p.dropUntil u h).darts ⊆ p.darts := fun x hx ↦ by
   rw [← take_spec p h, darts_append, List.mem_append]
   exact Or.inr hx
 

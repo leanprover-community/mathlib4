@@ -254,15 +254,15 @@ def binaryProductTriangleIsoBinaryBiproductTriangle
 section
 
 variable {J : Type*} (T : J → Triangle C)
-  [HasProduct (fun j => (T j).obj₁)] [HasProduct (fun j => (T j).obj₂)]
-  [HasProduct (fun j => (T j).obj₃)] [HasProduct (fun j => (T j).obj₁⟦(1 : ℤ)⟧)]
+  [HasProduct (fun j ↦ (T j).obj₁)] [HasProduct (fun j ↦ (T j).obj₂)]
+  [HasProduct (fun j ↦ (T j).obj₃)] [HasProduct (fun j ↦ (T j).obj₁⟦(1 : ℤ)⟧)]
 
 /-- The product of a family of triangles. -/
 @[simps!]
 def productTriangle : Triangle C :=
-  Triangle.mk (Limits.Pi.map (fun j => (T j).mor₁))
-    (Limits.Pi.map (fun j => (T j).mor₂))
-    (Limits.Pi.map (fun j => (T j).mor₃) ≫ inv (piComparison _ _))
+  Triangle.mk (Limits.Pi.map (fun j ↦ (T j).mor₁))
+    (Limits.Pi.map (fun j ↦ (T j).mor₂))
+    (Limits.Pi.map (fun j ↦ (T j).mor₃) ≫ inv (piComparison _ _))
 
 /-- A projection from the product of a family of triangles. -/
 @[simps]
@@ -284,9 +284,9 @@ def productTriangle.fan : Fan T := Fan.mk (productTriangle T) (productTriangle.�
 @[simps]
 def productTriangle.lift {T' : Triangle C} (φ : ∀ j, T' ⟶ T j) :
     T' ⟶ productTriangle T where
-  hom₁ := Pi.lift (fun j => (φ j).hom₁)
-  hom₂ := Pi.lift (fun j => (φ j).hom₂)
-  hom₃ := Pi.lift (fun j => (φ j).hom₃)
+  hom₁ := Pi.lift (fun j ↦ (φ j).hom₁)
+  hom₂ := Pi.lift (fun j ↦ (φ j).hom₂)
+  hom₃ := Pi.lift (fun j ↦ (φ j).hom₃)
   comm₃ := by
     dsimp
     rw [← cancel_mono (piComparison _ _), assoc, assoc, assoc, IsIso.inv_hom_id, comp_id]
@@ -295,20 +295,20 @@ def productTriangle.lift {T' : Triangle C} (φ : ∀ j, T' ⟶ T j) :
 /-- The triangle `productTriangle T` satisfies the universal property of the categorical
 product of the triangles `T`. -/
 def productTriangle.isLimitFan : IsLimit (productTriangle.fan T) :=
-  mkFanLimit _ (fun s => productTriangle.lift T s.proj) (fun s j => by cat_disch) (by
+  mkFanLimit _ (fun s ↦ productTriangle.lift T s.proj) (fun s j ↦ by cat_disch) (by
     intro s m hm
     ext1
     all_goals
-      exact Pi.hom_ext _ _ (fun j => (by simp [← hm])))
+      exact Pi.hom_ext _ _ (fun j ↦ (by simp [← hm])))
 
 lemma productTriangle.zero₃₁ [HasZeroMorphisms C]
     (h : ∀ j, (T j).mor₃ ≫ (T j).mor₁⟦(1 : ℤ)⟧' = 0) :
     (productTriangle T).mor₃ ≫ (productTriangle T).mor₁⟦1⟧' = 0 := by
-  have : HasProduct (fun j => (T j).obj₂⟦(1 : ℤ)⟧) :=
+  have : HasProduct (fun j ↦ (T j).obj₂⟦(1 : ℤ)⟧) :=
     ⟨_, isLimitFanMkObjOfIsLimit (shiftFunctor C (1 : ℤ)) _ _
-      (productIsProduct (fun j => (T j).obj₂))⟩
+      (productIsProduct (fun j ↦ (T j).obj₂))⟩
   dsimp
-  change _ ≫ (Pi.lift (fun j => Pi.π _ j ≫ (T j).mor₁))⟦(1 : ℤ)⟧' = 0
+  change _ ≫ (Pi.lift (fun j ↦ Pi.π _ j ≫ (T j).mor₁))⟦(1 : ℤ)⟧' = 0
   rw [assoc, ← cancel_mono (piComparison _ _), zero_comp, assoc, assoc]
   ext j
   simp only [map_lift_piComparison, assoc, limit.lift_π, Fan.mk_π_app, zero_comp,

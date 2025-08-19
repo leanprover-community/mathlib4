@@ -120,7 +120,7 @@ instance instT2Space : T2Space ℂ := TopologicalSpace.t2Space_of_metrizableSpac
 /-- The natural `ContinuousLinearEquiv` from `ℂ` to `ℝ × ℝ`. -/
 @[simps! +simpRhs apply symm_apply_re symm_apply_im]
 def equivRealProdCLM : ℂ ≃L[ℝ] ℝ × ℝ :=
-  equivRealProdLm.toContinuousLinearEquivOfBounds 1 (√2) equivRealProd_apply_le' fun p =>
+  equivRealProdLm.toContinuousLinearEquivOfBounds 1 (√2) equivRealProd_apply_le' fun p ↦
     norm_le_sqrt_two_mul_max (equivRealProd.symm p)
 
 theorem equivRealProdCLM_symm_apply (p : ℝ × ℝ) :
@@ -141,7 +141,7 @@ open ContinuousLinearMap
 
 /-- Continuous linear map version of the real part function, from `ℂ` to `ℝ`. -/
 def reCLM : ℂ →L[ℝ] ℝ :=
-  reLm.mkContinuous 1 fun x => by simp [abs_re_le_norm]
+  reLm.mkContinuous 1 fun x ↦ by simp [abs_re_le_norm]
 
 @[continuity, fun_prop]
 theorem continuous_re : Continuous re :=
@@ -160,7 +160,7 @@ theorem reCLM_apply (z : ℂ) : (reCLM : ℂ → ℝ) z = z.re :=
 
 /-- Continuous linear map version of the imaginary part function, from `ℂ` to `ℝ`. -/
 def imCLM : ℂ →L[ℝ] ℝ :=
-  imLm.mkContinuous 1 fun x => by simp [abs_im_le_norm]
+  imLm.mkContinuous 1 fun x ↦ by simp [abs_im_le_norm]
 
 @[continuity, fun_prop]
 theorem continuous_im : Continuous im :=
@@ -450,14 +450,14 @@ section tsum
 variable {α : Type*} (𝕜 : Type*) [RCLike 𝕜]
 
 @[simp]
-theorem hasSum_conj {f : α → 𝕜} {x : 𝕜} : HasSum (fun x => conj (f x)) x ↔ HasSum f (conj x) :=
+theorem hasSum_conj {f : α → 𝕜} {x : 𝕜} : HasSum (fun x ↦ conj (f x)) x ↔ HasSum f (conj x) :=
   conjCLE.hasSum
 
-theorem hasSum_conj' {f : α → 𝕜} {x : 𝕜} : HasSum (fun x => conj (f x)) (conj x) ↔ HasSum f x :=
+theorem hasSum_conj' {f : α → 𝕜} {x : 𝕜} : HasSum (fun x ↦ conj (f x)) (conj x) ↔ HasSum f x :=
   conjCLE.hasSum'
 
 @[simp]
-theorem summable_conj {f : α → 𝕜} : (Summable fun x => conj (f x)) ↔ Summable f :=
+theorem summable_conj {f : α → 𝕜} : (Summable fun x ↦ conj (f x)) ↔ Summable f :=
   summable_star_iff
 
 variable {𝕜} in
@@ -465,13 +465,13 @@ theorem conj_tsum (f : α → 𝕜) : conj (∑' a, f a) = ∑' a, conj (f a) :=
   tsum_star
 
 @[simp, norm_cast]
-theorem hasSum_ofReal {f : α → ℝ} {x : ℝ} : HasSum (fun x => (f x : 𝕜)) x ↔ HasSum f x :=
-  ⟨fun h => by simpa only [RCLike.reCLM_apply, RCLike.ofReal_re] using reCLM.hasSum h,
+theorem hasSum_ofReal {f : α → ℝ} {x : ℝ} : HasSum (fun x ↦ (f x : 𝕜)) x ↔ HasSum f x :=
+  ⟨fun h ↦ by simpa only [RCLike.reCLM_apply, RCLike.ofReal_re] using reCLM.hasSum h,
     ofRealCLM.hasSum⟩
 
 @[simp, norm_cast]
-theorem summable_ofReal {f : α → ℝ} : (Summable fun x => (f x : 𝕜)) ↔ Summable f :=
-  ⟨fun h => by simpa only [RCLike.reCLM_apply, RCLike.ofReal_re] using reCLM.summable h,
+theorem summable_ofReal {f : α → ℝ} : (Summable fun x ↦ (f x : 𝕜)) ↔ Summable f :=
+  ⟨fun h ↦ by simpa only [RCLike.reCLM_apply, RCLike.ofReal_re] using reCLM.summable h,
     ofRealCLM.summable⟩
 
 @[norm_cast]
@@ -481,10 +481,10 @@ theorem ofReal_tsum (f : α → ℝ) : (↑(∑' a, f a) : 𝕜) = ∑' a, (f a 
   · rw [tsum_eq_zero_of_not_summable h,
       tsum_eq_zero_of_not_summable ((summable_ofReal _).not.mpr h), ofReal_zero]
 
-theorem hasSum_re {f : α → 𝕜} {x : 𝕜} (h : HasSum f x) : HasSum (fun x => re (f x)) (re x) :=
+theorem hasSum_re {f : α → 𝕜} {x : 𝕜} (h : HasSum f x) : HasSum (fun x ↦ re (f x)) (re x) :=
   reCLM.hasSum h
 
-theorem hasSum_im {f : α → 𝕜} {x : 𝕜} (h : HasSum f x) : HasSum (fun x => im (f x)) (im x) :=
+theorem hasSum_im {f : α → 𝕜} {x : 𝕜} (h : HasSum f x) : HasSum (fun x ↦ im (f x)) (im x) :=
   imCLM.hasSum h
 
 theorem re_tsum {f : α → 𝕜} (h : Summable f) : re (∑' a, f a) = ∑' a, re (f a) :=
@@ -496,8 +496,8 @@ theorem im_tsum {f : α → 𝕜} (h : Summable f) : im (∑' a, f a) = ∑' a, 
 variable {𝕜}
 
 theorem hasSum_iff (f : α → 𝕜) (c : 𝕜) :
-    HasSum f c ↔ HasSum (fun x => re (f x)) (re c) ∧ HasSum (fun x => im (f x)) (im c) := by
-  refine ⟨fun h => ⟨hasSum_re _ h, hasSum_im _ h⟩, ?_⟩
+    HasSum f c ↔ HasSum (fun x ↦ re (f x)) (re c) ∧ HasSum (fun x ↦ im (f x)) (im c) := by
+  refine ⟨fun h ↦ ⟨hasSum_re _ h, hasSum_im _ h⟩, ?_⟩
   rintro ⟨h₁, h₂⟩
   simpa only [re_add_im] using
     ((hasSum_ofReal 𝕜).mpr h₁).add (((hasSum_ofReal 𝕜).mpr h₂).mul_right I)
@@ -527,34 +527,34 @@ variable {α : Type*}
 
 open ComplexConjugate
 
-theorem hasSum_conj {f : α → ℂ} {x : ℂ} : HasSum (fun x => conj (f x)) x ↔ HasSum f (conj x) :=
+theorem hasSum_conj {f : α → ℂ} {x : ℂ} : HasSum (fun x ↦ conj (f x)) x ↔ HasSum f (conj x) :=
   RCLike.hasSum_conj _
 
-theorem hasSum_conj' {f : α → ℂ} {x : ℂ} : HasSum (fun x => conj (f x)) (conj x) ↔ HasSum f x :=
+theorem hasSum_conj' {f : α → ℂ} {x : ℂ} : HasSum (fun x ↦ conj (f x)) (conj x) ↔ HasSum f x :=
   RCLike.hasSum_conj' _
 
-theorem summable_conj {f : α → ℂ} : (Summable fun x => conj (f x)) ↔ Summable f :=
+theorem summable_conj {f : α → ℂ} : (Summable fun x ↦ conj (f x)) ↔ Summable f :=
   RCLike.summable_conj _
 
 theorem conj_tsum (f : α → ℂ) : conj (∑' a, f a) = ∑' a, conj (f a) :=
   RCLike.conj_tsum _
 
 @[simp, norm_cast]
-theorem hasSum_ofReal {f : α → ℝ} {x : ℝ} : HasSum (fun x => (f x : ℂ)) x ↔ HasSum f x :=
+theorem hasSum_ofReal {f : α → ℝ} {x : ℝ} : HasSum (fun x ↦ (f x : ℂ)) x ↔ HasSum f x :=
   RCLike.hasSum_ofReal _
 
 @[simp, norm_cast]
-theorem summable_ofReal {f : α → ℝ} : (Summable fun x => (f x : ℂ)) ↔ Summable f :=
+theorem summable_ofReal {f : α → ℝ} : (Summable fun x ↦ (f x : ℂ)) ↔ Summable f :=
   RCLike.summable_ofReal _
 
 @[norm_cast]
 theorem ofReal_tsum (f : α → ℝ) : (↑(∑' a, f a) : ℂ) = ∑' a, ↑(f a) :=
   RCLike.ofReal_tsum _ _
 
-theorem hasSum_re {f : α → ℂ} {x : ℂ} (h : HasSum f x) : HasSum (fun x => (f x).re) x.re :=
+theorem hasSum_re {f : α → ℂ} {x : ℂ} (h : HasSum f x) : HasSum (fun x ↦ (f x).re) x.re :=
   RCLike.hasSum_re ℂ h
 
-theorem hasSum_im {f : α → ℂ} {x : ℂ} (h : HasSum f x) : HasSum (fun x => (f x).im) x.im :=
+theorem hasSum_im {f : α → ℂ} {x : ℂ} (h : HasSum f x) : HasSum (fun x ↦ (f x).im) x.im :=
   RCLike.hasSum_im ℂ h
 
 theorem re_tsum {f : α → ℂ} (h : Summable f) : (∑' a, f a).re = ∑' a, (f a).re :=
@@ -564,7 +564,7 @@ theorem im_tsum {f : α → ℂ} (h : Summable f) : (∑' a, f a).im = ∑' a, (
   RCLike.im_tsum _ h
 
 theorem hasSum_iff (f : α → ℂ) (c : ℂ) :
-    HasSum f c ↔ HasSum (fun x => (f x).re) c.re ∧ HasSum (fun x => (f x).im) c.im :=
+    HasSum f c ↔ HasSum (fun x ↦ (f x).re) c.re ∧ HasSum (fun x ↦ (f x).im) c.im :=
   RCLike.hasSum_iff _ _
 
 end tsum

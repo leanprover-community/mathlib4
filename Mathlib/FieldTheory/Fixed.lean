@@ -101,8 +101,8 @@ theorem smul (m : M) (x : FixedPoints.subfield M F) : m • x = x :=
 -- Why is this so slow?
 @[simp]
 theorem smul_polynomial (m : M) (p : Polynomial (FixedPoints.subfield M F)) : m • p = p :=
-  Polynomial.induction_on p (fun x => by rw [Polynomial.smul_C, smul])
-    (fun p q ihp ihq => by rw [smul_add, ihp, ihq]) fun n x _ => by
+  Polynomial.induction_on p (fun x ↦ by rw [Polynomial.smul_C, smul])
+    (fun p q ihp ihq ↦ by rw [smul_add, ihp, ihq]) fun n x _ ↦ by
     rw [smul_mul', Polynomial.smul_C, smul, smul_pow', Polynomial.smul_X]
 
 instance : Algebra (FixedPoints.subfield M F) F := by infer_instance
@@ -116,22 +116,22 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
       LinearIndepOn F (MulAction.toFun G F) s := by
   classical
   have : IsEmpty ((∅ : Finset F) : Set F) := by simp
-  refine Finset.induction_on s (fun _ => linearIndependent_empty_type) fun a s has ih hs => ?_
+  refine Finset.induction_on s (fun _ ↦ linearIndependent_empty_type) fun a s has ih hs ↦ ?_
   rw [coe_insert] at hs ⊢
   rw [linearIndepOn_insert (mt mem_coe.1 has)] at hs
-  rw [linearIndepOn_insert (mt mem_coe.1 has)]; refine ⟨ih hs.1, fun ha => ?_⟩
+  rw [linearIndepOn_insert (mt mem_coe.1 has)]; refine ⟨ih hs.1, fun ha ↦ ?_⟩
   rw [Finsupp.mem_span_image_iff_linearCombination] at ha; rcases ha with ⟨l, hl, hla⟩
   rw [Finsupp.linearCombination_apply_of_mem_supported F hl] at hla
   suffices ∀ i ∈ s, l i ∈ FixedPoints.subfield G F by
-    replace hla := (sum_apply _ _ fun i => l i • toFun G F i).symm.trans (congr_fun hla 1)
+    replace hla := (sum_apply _ _ fun i ↦ l i • toFun G F i).symm.trans (congr_fun hla 1)
     simp_rw [Pi.smul_apply, toFun_apply, one_smul] at hla
-    refine hs.2 (hla ▸ Submodule.sum_mem _ fun c hcs => ?_)
+    refine hs.2 (hla ▸ Submodule.sum_mem _ fun c hcs ↦ ?_)
     change (⟨l c, this c hcs⟩ : FixedPoints.subfield G F) • c ∈ _
     exact Submodule.smul_mem _ _ <| Submodule.subset_span <| by simpa
   intro i his g
   refine
     eq_of_sub_eq_zero
-      (linearIndependent_iff'.1 (ih hs.1) s.attach (fun i => g • l i - l i) ?_ ⟨i, his⟩
+      (linearIndependent_iff'.1 (ih hs.1) s.attach (fun i ↦ g • l i - l i) ?_ ⟨i, his⟩
           (mem_attach _ _) :
         _)
   refine (sum_attach s fun i ↦ (g • l i - l i) • MulAction.toFun G F i).trans ?_
@@ -149,10 +149,10 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
     · ext x
       rw [toFun_apply, ← mul_inv_cancel_left g g', mul_smul, ← smul_mul', ← toFun_apply _ x]
   change
-    (∑ x ∈ s, g • (fun y => l y • MulAction.toFun G F y) x (g⁻¹ * g')) =
-      ∑ x ∈ s, (fun y => l y • MulAction.toFun G F y) x g'
-  rw [← smul_sum, ← sum_apply _ _ fun y => l y • toFun G F y, ←
-    sum_apply _ _ fun y => l y • toFun G F y]
+    (∑ x ∈ s, g • (fun y ↦ l y • MulAction.toFun G F y) x (g⁻¹ * g')) =
+      ∑ x ∈ s, (fun y ↦ l y • MulAction.toFun G F y) x g'
+  rw [← smul_sum, ← sum_apply _ _ fun y ↦ l y • toFun G F y, ←
+    sum_apply _ _ fun y ↦ l y • toFun G F y]
   rw [hla, toFun_apply, toFun_apply, smul_smul, mul_inv_cancel_left]
 
 section Fintype
@@ -161,7 +161,7 @@ variable [Fintype G] (x : F)
 
 /-- `minpoly G F x` is the minimal polynomial of `(x : F)` over `FixedPoints.subfield G F`. -/
 def minpoly : Polynomial (FixedPoints.subfield G F) :=
-  (prodXSubSMul G F x).toSubring (FixedPoints.subfield G F).toSubring fun _ hc g =>
+  (prodXSubSMul G F x).toSubring (FixedPoints.subfield G F).toSubring fun _ hc g ↦
     let ⟨n, _, hn⟩ := Polynomial.mem_coeffs_iff.1 hc
     hn.symm ▸ prodXSubSMul.coeff G F x g n
 
@@ -182,7 +182,7 @@ theorem eval₂' :
     Polynomial.eval₂ (Subfield.subtype <| FixedPoints.subfield G F) x (minpoly G F x) = 0 :=
   eval₂ G F x
 
-theorem ne_one : minpoly G F x ≠ (1 : Polynomial (FixedPoints.subfield G F)) := fun H =>
+theorem ne_one : minpoly G F x ≠ (1 : Polynomial (FixedPoints.subfield G F)) := fun H ↦
   have := eval₂ G F x
   (one_ne_zero : (1 : F) ≠ 0) <| by rwa [H, Polynomial.eval₂_one] at this
 
@@ -194,8 +194,8 @@ theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
     ← Subfield.toSubring_subtype_eq_subtype, Polynomial.map_toSubring _ _, prodXSubSMul]
   refine
     Fintype.prod_dvd_of_coprime
-      (Polynomial.pairwise_coprime_X_sub_C <| MulAction.injective_ofQuotientStabilizer G x) fun y =>
-      QuotientGroup.induction_on y fun g => ?_
+      (Polynomial.pairwise_coprime_X_sub_C <| MulAction.injective_ofQuotientStabilizer G x) fun y ↦
+      QuotientGroup.induction_on y fun g ↦ ?_
   rw [Polynomial.dvd_iff_isRoot, Polynomial.IsRoot.def, MulAction.ofQuotientStabilizer_mk,
     Polynomial.eval_smul',
     ← IsInvariantSubring.coe_subtypeHom' G (FixedPoints.subfield G F).toSubring,
@@ -241,7 +241,7 @@ theorem minpoly_eq_minpoly : minpoly G F x = _root_.minpoly (FixedPoints.subfiel
     (minpoly.monic G F x)
 
 theorem rank_le_card : Module.rank (FixedPoints.subfield G F) F ≤ Fintype.card G :=
-  rank_le fun s hs => by
+  rank_le fun s hs ↦ by
     simpa only [rank_fun', Cardinal.mk_coe_finset, Finset.coe_sort_coe, Cardinal.lift_natCast,
       Nat.cast_le] using
       (linearIndependent_smul_of_linearIndependent G F hs).cardinal_lift_le_rank
@@ -259,11 +259,11 @@ instance normal : Normal (FixedPoints.subfield G F) F where
       cases nonempty_fintype G
       rw [← minpoly_eq_minpoly, minpoly, coe_algebraMap, ← Subfield.toSubring_subtype_eq_subtype,
         Polynomial.map_toSubring _ (subfield G F).toSubring, prodXSubSMul]
-      exact Polynomial.splits_prod _ fun _ _ => Polynomial.splits_X_sub_C _
+      exact Polynomial.splits_prod _ fun _ _ ↦ Polynomial.splits_X_sub_C _
 
 instance isSeparable : Algebra.IsSeparable (FixedPoints.subfield G F) F := by
   classical
-  exact ⟨fun x => by
+  exact ⟨fun x ↦ by
     cases nonempty_fintype G
     rw [IsSeparable, ← minpoly_eq_minpoly,
       ← Polynomial.separable_map (FixedPoints.subfield G F).subtype, minpoly,
@@ -287,8 +287,8 @@ theorem linearIndependent_toLinearMap (R : Type u) (A : Type v) (B : Type w) [Co
     [Semiring A] [Algebra R A] [CommRing B] [IsDomain B] [Algebra R B] :
     LinearIndependent B (AlgHom.toLinearMap : (A →ₐ[R] B) → A →ₗ[R] B) :=
   have : LinearIndependent B (LinearMap.ltoFun R A B ∘ AlgHom.toLinearMap) :=
-    ((linearIndependent_monoidHom A B).comp ((↑) : (A →ₐ[R] B) → A →* B) fun _ _ hfg =>
-        AlgHom.ext fun _ => DFunLike.ext_iff.1 hfg _ :
+    ((linearIndependent_monoidHom A B).comp ((↑) : (A →ₐ[R] B) → A →* B) fun _ _ hfg ↦
+        AlgHom.ext fun _ ↦ DFunLike.ext_iff.1 hfg _ :
       _)
   this.of_comp _
 

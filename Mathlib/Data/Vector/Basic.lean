@@ -38,11 +38,11 @@ theorem toList_injective : Function.Injective (@toList α n) :=
 @[ext]
 theorem ext : ∀ {v w : Vector α n} (_ : ∀ m : Fin n, Vector.get v m = Vector.get w m), v = w
   | ⟨v, hv⟩, ⟨w, hw⟩, h =>
-    Subtype.eq (List.ext_get (by rw [hv, hw]) fun m hm _ => h ⟨m, hv ▸ hm⟩)
+    Subtype.eq (List.ext_get (by rw [hv, hw]) fun m hm _ ↦ h ⟨m, hv ▸ hm⟩)
 
 /-- The empty `Vector` is a `Subsingleton`. -/
 instance zero_subsingleton : Subsingleton (Vector α 0) :=
-  ⟨fun _ _ => Vector.ext fun m => Fin.elim0 m⟩
+  ⟨fun _ _ ↦ Vector.ext fun m ↦ Fin.elim0 m⟩
 
 @[simp]
 theorem cons_val (a : α) : ∀ v : Vector α n, (a ::ᵥ v).val = a :: v.val
@@ -50,7 +50,7 @@ theorem cons_val (a : α) : ∀ v : Vector α n, (a ::ᵥ v).val = a :: v.val
 
 theorem eq_cons_iff (a : α) (v : Vector α n.succ) (v' : Vector α n) :
     v = a ::ᵥ v' ↔ v.head = a ∧ v.tail = v' :=
-  ⟨fun h => h.symm ▸ ⟨head_cons a v', tail_cons a v'⟩, fun h =>
+  ⟨fun h ↦ h.symm ▸ ⟨head_cons a v', tail_cons a v'⟩, fun h ↦
     _root_.trans (cons_head_tail v).symm (by rw [h.1, h.2])⟩
 
 theorem ne_cons_iff (a : α) (v : Vector α n.succ) (v' : Vector α n) :
@@ -168,7 +168,7 @@ theorem ofFn_get (v : Vector α n) : ofFn (get v) = v := by
 
 /-- The natural equivalence between length-`n` vectors and functions from `Fin n`. -/
 def _root_.Equiv.vectorEquivFin (α : Type*) (n : ℕ) : Vector α n ≃ (Fin n → α) :=
-  ⟨Vector.get, Vector.ofFn, Vector.ofFn_get, fun f => funext <| Vector.get_ofFn f⟩
+  ⟨Vector.get, Vector.ofFn, Vector.ofFn_get, fun f ↦ funext <| Vector.get_ofFn f⟩
 
 theorem get_tail (x : Vector α n) (i) : x.tail.get i = x.get ⟨i.1 + 1, by omega⟩ := by
   obtain ⟨i, ih⟩ := i; dsimp
@@ -196,7 +196,7 @@ theorem singleton_tail : ∀ (v : Vector α 1), v.tail = Vector.nil
   | ⟨[_], _⟩ => rfl
 
 @[simp]
-theorem tail_ofFn {n : ℕ} (f : Fin n.succ → α) : tail (ofFn f) = ofFn fun i => f i.succ :=
+theorem tail_ofFn {n : ℕ} (f : Fin n.succ → α) : tail (ofFn f) = ofFn fun i ↦ f i.succ :=
   (ofFn_get _).symm.trans <| by
     congr
     funext i
@@ -378,11 +378,11 @@ def mOfFn {m} [Monad m] {α : Type u} : ∀ {n}, (Fin n → m α) → m (Vector 
   | 0, _ => pure nil
   | _ + 1, f => do
     let a ← f 0
-    let v ← mOfFn fun i => f i.succ
+    let v ← mOfFn fun i ↦ f i.succ
     pure (a ::ᵥ v)
 
 theorem mOfFn_pure {m} [Monad m] [LawfulMonad m] {α} :
-    ∀ {n} (f : Fin n → α), (@mOfFn m _ _ _ fun i => pure (f i)) = pure (ofFn f)
+    ∀ {n} (f : Fin n → α), (@mOfFn m _ _ _ fun i ↦ pure (f i)) = pure (ofFn f)
   | 0, _ => rfl
   | n + 1, f => by
     rw [mOfFn, @mOfFn_pure m _ _ _ n _, ofFn]
@@ -487,7 +487,7 @@ def casesOn {motive : ∀ {n}, Vector α n → Sort*} (v : Vector α m)
     (nil : motive nil)
     (cons : ∀ {n}, (hd : α) → (tl : Vector α n) → motive (Vector.cons hd tl)) :
     motive v :=
-  inductionOn (C := motive) v nil @fun _ hd tl _ => cons hd tl
+  inductionOn (C := motive) v nil @fun _ hd tl _ ↦ cons hd tl
 
 /-- Define `motive v₁ v₂` by case-analysis on `v₁ : Vector α n` and `v₂ : Vector β n`. -/
 def casesOn₂ {motive : ∀ {n}, Vector α n → Vector β n → Sort*} (v₁ : Vector α m) (v₂ : Vector β m)
@@ -495,7 +495,7 @@ def casesOn₂ {motive : ∀ {n}, Vector α n → Vector β n → Sort*} (v₁ :
     (cons : ∀ {n}, (x : α) → (y : β) → (xs : Vector α n) → (ys : Vector β n)
       → motive (x ::ᵥ xs) (y ::ᵥ ys)) :
     motive v₁ v₂ :=
-  inductionOn₂ (C := motive) v₁ v₂ nil @fun _ x y xs ys _ => cons x y xs ys
+  inductionOn₂ (C := motive) v₁ v₂ nil @fun _ x y xs ys _ ↦ cons x y xs ys
 
 /-- Define `motive v₁ v₂ v₃` by case-analysis on `v₁ : Vector α n`, `v₂ : Vector β n`, and
     `v₃ : Vector γ n`. -/
@@ -504,7 +504,7 @@ def casesOn₃ {motive : ∀ {n}, Vector α n → Vector β n → Vector γ n �
     (cons : ∀ {n}, (x : α) → (y : β) → (z : γ) → (xs : Vector α n) → (ys : Vector β n)
       → (zs : Vector γ n) → motive (x ::ᵥ xs) (y ::ᵥ ys) (z ::ᵥ zs)) :
     motive v₁ v₂ v₃ :=
-  inductionOn₃ (C := motive) v₁ v₂ v₃ nil @fun _ x y z xs ys zs _ => cons x y z xs ys zs
+  inductionOn₃ (C := motive) v₁ v₂ v₃ nil @fun _ x y z xs ys zs _ ↦ cons x y z xs ys zs
 
 /-- Cast a vector to an array. -/
 def toArray : Vector α n → Array α
@@ -698,15 +698,15 @@ instance : LawfulTraversable.{u} (flip Vector n) where
 
 -- Porting note: not porting meta instances
 -- unsafe instance reflect [reflected_univ.{u}] {α : Type u} [has_reflect α]
---     [reflected _ α] {n : ℕ} : has_reflect (Vector α n) := fun v =>
---   @Vector.inductionOn α (fun n => reflected _) n v
+--     [reflected _ α] {n : ℕ} : has_reflect (Vector α n) := fun v ↦
+--   @Vector.inductionOn α (fun n ↦ reflected _) n v
 --     ((by
 --           trace
 --             "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
 --              unsupported tactic `reflect_name #[]" :
 --           reflected _ @Vector.nil.{u}).subst
 --       q(α))
---     fun n x xs ih =>
+--     fun n x xs ih ↦
 --     (by
 --           trace
 --             "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:

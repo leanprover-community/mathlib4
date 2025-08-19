@@ -62,7 +62,7 @@ def close {X : C} (S : Sieve X) : Sieve X where
 
 /-- Any sieve is smaller than its closure. -/
 theorem le_close {X : C} (S : Sieve X) : S ≤ J₁.close S :=
-  fun _ _ hg => J₁.covering_of_eq_top (S.pullback_eq_top_of_mem hg)
+  fun _ _ hg ↦ J₁.covering_of_eq_top (S.pullback_eq_top_of_mem hg)
 
 /-- A sieve is closed for the Grothendieck topology if it contains every arrow it covers.
 In the case of the usual topology on a topological space, this means that the open cover contains
@@ -81,18 +81,18 @@ theorem covers_iff_mem_of_isClosed {X : C} {S : Sieve X} (h : J₁.IsClosed S) {
 /-- Being `J`-closed is stable under pullback. -/
 theorem isClosed_pullback {X Y : C} (f : Y ⟶ X) (S : Sieve X) :
     J₁.IsClosed S → J₁.IsClosed (S.pullback f) :=
-  fun hS Z g hg => hS (g ≫ f) (by rwa [J₁.covers_iff, Sieve.pullback_comp])
+  fun hS Z g hg ↦ hS (g ≫ f) (by rwa [J₁.covers_iff, Sieve.pullback_comp])
 
 /-- The closure of a sieve `S` is the largest closed sieve which contains `S` (justifying the name
 "closure").
 -/
 theorem le_close_of_isClosed {X : C} {S T : Sieve X} (h : S ≤ T) (hT : J₁.IsClosed T) :
     J₁.close S ≤ T :=
-  fun _ f hf => hT _ (J₁.superset_covering (Sieve.pullback_monotone f h) hf)
+  fun _ f hf ↦ hT _ (J₁.superset_covering (Sieve.pullback_monotone f h) hf)
 
 /-- The closure of a sieve is closed. -/
 theorem close_isClosed {X : C} (S : Sieve X) : J₁.IsClosed (J₁.close S) :=
-  fun _ g hg => J₁.arrow_trans g _ S hg fun _ hS => hS
+  fun _ g hg ↦ J₁.arrow_trans g _ S hg fun _ hS ↦ hS
 
 /-- A Grothendieck topology induces a natural family of closure operators on sieves. -/
 @[simps! isClosed]
@@ -165,7 +165,7 @@ theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁) :
     dsimp only [Subtype.coe_mk]
     rw [← J₁.covers_iff_mem_of_isClosed hM, ← J₁.covers_iff_mem_of_isClosed hN]
     have q : ∀ ⦃Z : C⦄ (g : Z ⟶ X) (_ : S g), M.pullback g = N.pullback g :=
-      fun Z g hg => congr_arg Subtype.val ((hM₂ g hg).trans (hN₂ g hg).symm)
+      fun Z g hg ↦ congr_arg Subtype.val ((hM₂ g hg).trans (hN₂ g hg).symm)
     have MSNS : M ⊓ S = N ⊓ S := by
       ext Z g
       rw [Sieve.inter_apply, Sieve.inter_apply]
@@ -186,7 +186,7 @@ theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁) :
       apply J₁.arrow_intersect f N S hf (J₁.pullback_stable _ hS)
   · intro x hx
     rw [Presieve.compatible_iff_sieveCompatible] at hx
-    let M := Sieve.bind S fun Y f hf => (x f hf).1
+    let M := Sieve.bind S fun Y f hf ↦ (x f hf).1
     have : ∀ ⦃Y⦄ (f : Y ⟶ X) (hf : S f), M.pullback f = (x f hf).1 := by
       intro Y f hf
       apply le_antisymm
@@ -196,7 +196,7 @@ theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁) :
         conv_lhs => congr; congr; rw [← c] -- Porting note: Originally `simp_rw [← c]`
         rw [show (x (g ≫ f') _).1 = _ from congr_arg Subtype.val (hx f' g hf')]
         apply Sieve.pullback_eq_top_of_mem _ hg
-      · apply Sieve.le_pullback_bind S fun Y f hf => (x f hf).1
+      · apply Sieve.le_pullback_bind S fun Y f hf ↦ (x f hf).1
     refine ⟨⟨_, J₁.close_isClosed M⟩, ?_⟩
     intro Y f hf
     simp only [Functor.closedSieves_obj]
@@ -260,7 +260,7 @@ def topologyOfClosureOperator (c : ∀ X : C, ClosureOperator (Sieve X))
   transitive' X S hS R hR := by
     rw [Set.mem_setOf_eq] at hS
     rw [Set.mem_setOf_eq, ← (c X).idempotent, eq_top_iff, ← hS]
-    apply (c X).monotone fun Y f hf => _
+    apply (c X).monotone fun Y f hf ↦ _
     intros Y f hf
     rw [Sieve.mem_iff_pullback_eq_top, ← hc]
     apply hR hf
@@ -269,7 +269,7 @@ def topologyOfClosureOperator (c : ∀ X : C, ClosureOperator (Sieve X))
 The topology given by the closure operator `J.close` on a Grothendieck topology is the same as `J`.
 -/
 theorem topologyOfClosureOperator_self :
-    (topologyOfClosureOperator J₁.closureOperator fun _ _ => J₁.pullback_close) = J₁ := by
+    (topologyOfClosureOperator J₁.closureOperator fun _ _ ↦ J₁.pullback_close) = J₁ := by
   ext X S
   apply GrothendieckTopology.close_eq_top_iff_mem
 

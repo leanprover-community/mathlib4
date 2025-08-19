@@ -64,7 +64,7 @@ variable [CompleteLattice α] {s : Set ι} {t : Set ι'}
 /-- Bind operation for `Set.PairwiseDisjoint`. If you want to only consider finsets of indices, you
 can use `Set.PairwiseDisjoint.biUnion_finset`. -/
 theorem PairwiseDisjoint.biUnion {s : Set ι'} {g : ι' → Set ι} {f : ι → α}
-    (hs : s.PairwiseDisjoint fun i' : ι' => ⨆ i ∈ g i', f i)
+    (hs : s.PairwiseDisjoint fun i' : ι' ↦ ⨆ i ∈ g i', f i)
     (hg : ∀ i ∈ s, (g i).PairwiseDisjoint f) : (⋃ i ∈ s, g i).PairwiseDisjoint f := by
   rintro a ha b hb hab
   simp_rw [Set.mem_iUnion] at ha hb
@@ -73,14 +73,14 @@ theorem PairwiseDisjoint.biUnion {s : Set ι'} {g : ι' → Set ι} {f : ι → 
   obtain hcd | hcd := eq_or_ne (g c) (g d)
   · exact hg d hd (hcd ▸ ha) hb hab
   · exact (hs hc hd <| ne_of_apply_ne _ hcd).mono
-      (le_iSup₂ (f := fun i _ => f i) a ha)
-      (le_iSup₂ (f := fun i _ => f i) b hb)
+      (le_iSup₂ (f := fun i _ ↦ f i) a ha)
+      (le_iSup₂ (f := fun i _ ↦ f i) b hb)
 
 /-- If the suprema of columns are pairwise disjoint and suprema of rows as well, then everything is
 pairwise disjoint. Not to be confused with `Set.PairwiseDisjoint.prod`. -/
 theorem PairwiseDisjoint.prod_left {f : ι × ι' → α}
-    (hs : s.PairwiseDisjoint fun i => ⨆ i' ∈ t, f (i, i'))
-    (ht : t.PairwiseDisjoint fun i' => ⨆ i ∈ s, f (i, i')) :
+    (hs : s.PairwiseDisjoint fun i ↦ ⨆ i' ∈ t, f (i, i'))
+    (ht : t.PairwiseDisjoint fun i' ↦ ⨆ i ∈ s, f (i, i')) :
     (s ×ˢ t : Set (ι × ι')).PairwiseDisjoint f := by
   rintro ⟨i, i'⟩ hi ⟨j, j'⟩ hj h
   rw [mem_prod] at hi hj
@@ -100,10 +100,10 @@ variable [Frame α]
 
 theorem pairwiseDisjoint_prod_left {s : Set ι} {t : Set ι'} {f : ι × ι' → α} :
     (s ×ˢ t : Set (ι × ι')).PairwiseDisjoint f ↔
-      (s.PairwiseDisjoint fun i => ⨆ i' ∈ t, f (i, i')) ∧
-        t.PairwiseDisjoint fun i' => ⨆ i ∈ s, f (i, i') := by
+      (s.PairwiseDisjoint fun i ↦ ⨆ i' ∈ t, f (i, i')) ∧
+        t.PairwiseDisjoint fun i' ↦ ⨆ i ∈ s, f (i, i') := by
   refine
-      ⟨fun h => ⟨fun i hi j hj hij => ?_, fun i hi j hj hij => ?_⟩, fun h => h.1.prod_left h.2⟩ <;>
+      ⟨fun h ↦ ⟨fun i hi j hj hij ↦ ?_, fun i hi j hj hij ↦ ?_⟩, fun h ↦ h.1.prod_left h.2⟩ <;>
     simp_rw [Function.onFun, iSup_disjoint_iff, disjoint_iSup_iff] <;>
     intro i' hi' j' hj'
   · exact h (mk_mem_prod hi hi') (mk_mem_prod hj hj') (ne_of_apply_ne Prod.fst hij)
@@ -115,7 +115,7 @@ theorem biUnion_diff_biUnion_eq {s t : Set ι} {f : ι → Set α} (h : (s ∪ t
     ((⋃ i ∈ s, f i) \ ⋃ i ∈ t, f i) = ⋃ i ∈ s \ t, f i := by
   refine
     (biUnion_diff_biUnion_subset f s t).antisymm
-      (iUnion₂_subset fun i hi a ha => (mem_diff _).2 ⟨mem_biUnion hi.1 ha, ?_⟩)
+      (iUnion₂_subset fun i hi a ha ↦ (mem_diff _).2 ⟨mem_biUnion hi.1 ha, ?_⟩)
   rw [mem_iUnion₂]; rintro ⟨j, hj, haj⟩
   exact (h (Or.inl hi.1) (Or.inr hj) (ne_of_mem_of_not_mem hj hi.2).symm).le_bot ⟨ha, haj⟩
 
@@ -124,7 +124,7 @@ theorem biUnion_diff_biUnion_eq {s t : Set ι} {f : ι → Set α} (h : (s ∪ t
 noncomputable def biUnionEqSigmaOfDisjoint {s : Set ι} {f : ι → Set α} (h : s.PairwiseDisjoint f) :
     (⋃ i ∈ s, f i) ≃ Σ i : s, f i :=
   (Equiv.setCongr (biUnion_eq_iUnion _ _)).trans <|
-    unionEqSigmaOfDisjoint fun ⟨_i, hi⟩ ⟨_j, hj⟩ ne => h hi hj fun eq => ne <| Subtype.eq eq
+    unionEqSigmaOfDisjoint fun ⟨_i, hi⟩ ⟨_j, hj⟩ ne ↦ h hi hj fun eq ↦ ne <| Subtype.eq eq
 
 @[simp]
 lemma coe_biUnionEqSigmaOfDisjoint_symm_apply {α ι : Type*} {s : Set ι}
@@ -169,9 +169,9 @@ theorem Pairwise.subset_of_biUnion_subset_biUnion (h₀ : Pairwise (Disjoint on 
   Set.PairwiseDisjoint.subset_of_biUnion_subset_biUnion (h₀.set_pairwise _) h₁ h
 
 theorem Pairwise.biUnion_injective (h₀ : Pairwise (Disjoint on f)) (h₁ : ∀ i, (f i).Nonempty) :
-    Injective fun s : Set ι => ⋃ i ∈ s, f i := fun _s _t h =>
-  ((h₀.subset_of_biUnion_subset_biUnion fun _ _ => h₁ _) <| h.subset).antisymm <|
-    (h₀.subset_of_biUnion_subset_biUnion fun _ _ => h₁ _) <| h.superset
+    Injective fun s : Set ι ↦ ⋃ i ∈ s, f i := fun _s _t h ↦
+  ((h₀.subset_of_biUnion_subset_biUnion fun _ _ ↦ h₁ _) <| h.subset).antisymm <|
+    (h₀.subset_of_biUnion_subset_biUnion fun _ _ ↦ h₁ _) <| h.superset
 
 /-- In a disjoint union we can identify the unique set an element belongs to. -/
 theorem pairwiseDisjoint_unique {y : α}

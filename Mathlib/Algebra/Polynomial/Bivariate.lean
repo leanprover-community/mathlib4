@@ -69,7 +69,7 @@ lemma evalEval_add (x y : R) (p q : R[X][Y]) :
   simp only [evalEval, eval_add]
 
 lemma evalEval_sum (x y : R) (p : R[X]) (f : ℕ → R → R[X][Y]) :
-    (p.sum f).evalEval x y = p.sum fun n a => (f n a).evalEval x y := by
+    (p.sum f).evalEval x y = p.sum fun n a ↦ (f n a).evalEval x y := by
   simp only [evalEval, eval, eval₂_sum]
 
 lemma evalEval_finset_sum {ι : Type*} (s : Finset ι) (x y : R) (f : ι → R[X][Y]) :
@@ -82,7 +82,7 @@ lemma evalEval_smul [DistribSMul S R] [IsScalarTower S R R] (x y : R) (s : S)
   simp only [evalEval, eval_smul]
 
 lemma evalEval_surjective (x y : R) : Function.Surjective <| evalEval x y :=
-  fun y => ⟨CC y, evalEval_CC ..⟩
+  fun y ↦ ⟨CC y, evalEval_CC ..⟩
 
 end Semiring
 

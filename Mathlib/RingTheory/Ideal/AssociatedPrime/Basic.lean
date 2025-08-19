@@ -72,8 +72,8 @@ theorem IsAssociatedPrime.map_of_injective (h : IsAssociatedPrime I M) (hf : Fun
 
 theorem LinearEquiv.isAssociatedPrime_iff (l : M ≃ₗ[R] M') :
     IsAssociatedPrime I M ↔ IsAssociatedPrime I M' :=
-  ⟨fun h => h.map_of_injective l l.injective,
-    fun h => h.map_of_injective l.symm l.symm.injective⟩
+  ⟨fun h ↦ h.map_of_injective l l.injective,
+    fun h ↦ h.map_of_injective l.symm l.symm.injective⟩
 
 theorem not_isAssociatedPrime_of_subsingleton [Subsingleton M] : ¬IsAssociatedPrime I M := by
   rintro ⟨hI, x, hx⟩
@@ -111,7 +111,7 @@ variable {f} {M'' : Type*} [AddCommGroup M''] [Module R M''] {g : M' →ₗ[R] M
 contained in that of `M'`. -/
 @[stacks 02M3 "first part"]
 theorem subset_of_injective (hf : Function.Injective f) :
-    associatedPrimes R M ⊆ associatedPrimes R M' := fun _I h => h.map_of_injective f hf
+    associatedPrimes R M ⊆ associatedPrimes R M' := fun _I h ↦ h.map_of_injective f hf
 
 /-- If `0 → M → M' → M''` is an exact sequence, then the set of associated primes of `M'` is
 contained in the union of those of `M` and `M''`. -/

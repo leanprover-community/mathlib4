@@ -47,10 +47,10 @@ section GaloisConnection
 
 variable {f : α → β}
 
-protected theorem image_preimage : GaloisConnection (image f) (preimage f) := fun _ _ =>
+protected theorem image_preimage : GaloisConnection (image f) (preimage f) := fun _ _ ↦
   image_subset_iff
 
-protected theorem preimage_kernImage : GaloisConnection (preimage f) (kernImage f) := fun _ _ =>
+protected theorem preimage_kernImage : GaloisConnection (preimage f) (kernImage f) := fun _ _ ↦
   subset_kernImage_iff.symm
 
 end GaloisConnection
@@ -93,7 +93,7 @@ end kernImage
 
 theorem image_projection_prod {ι : Type*} {α : ι → Type*} {v : ∀ i : ι, Set (α i)}
     (hv : (pi univ v).Nonempty) (i : ι) :
-    ((fun x : ∀ i : ι, α i => x i) '' ⋂ k, (fun x : ∀ j : ι, α j => x k) ⁻¹' v k) = v i := by
+    ((fun x : ∀ i : ι, α i ↦ x i) '' ⋂ k, (fun x : ∀ j : ι, α j ↦ x k) ⁻¹' v k) = v i := by
   classical
     apply Subset.antisymm
     · simp [iInter_subset]
@@ -101,8 +101,8 @@ theorem image_projection_prod {ι : Type*} {α : ι → Type*} {v : ∀ i : ι, 
       simp only [mem_image, mem_iInter, mem_preimage]
       rcases hv with ⟨z, hz⟩
       refine ⟨Function.update z i y, ?_, update_self i y z⟩
-      rw [@forall_update_iff ι α _ z i y fun i t => t ∈ v i]
-      exact ⟨y_in, fun j _ => by simpa using hz j⟩
+      rw [@forall_update_iff ι α _ z i y fun i t ↦ t ∈ v i]
+      exact ⟨y_in, fun j _ ↦ by simpa using hz j⟩
 
 /-! ### Bounded unions and intersections -/
 
@@ -130,7 +130,7 @@ theorem mapsTo_iUnion_iUnion {s : ι → Set α} {t : ι → Set β} {f : α →
 
 theorem mapsTo_iUnion₂_iUnion₂ {s : ∀ i, κ i → Set α} {t : ∀ i, κ i → Set β} {f : α → β}
     (H : ∀ i j, MapsTo f (s i j) (t i j)) : MapsTo f (⋃ (i) (j), s i j) (⋃ (i) (j), t i j) :=
-  mapsTo_iUnion_iUnion fun i => mapsTo_iUnion_iUnion (H i)
+  mapsTo_iUnion_iUnion fun i ↦ mapsTo_iUnion_iUnion (H i)
 
 @[simp]
 theorem mapsTo_sInter {s : Set α} {T : Set (Set β)} {f : α → β} :
@@ -148,18 +148,18 @@ theorem mapsTo_iInter₂ {s : Set α} {t : ∀ i, κ i → Set β} {f : α → �
 
 theorem mapsTo_iInter_iInter {s : ι → Set α} {t : ι → Set β} {f : α → β}
     (H : ∀ i, MapsTo f (s i) (t i)) : MapsTo f (⋂ i, s i) (⋂ i, t i) :=
-  mapsTo_iInter.2 fun i => (H i).mono_left (iInter_subset s i)
+  mapsTo_iInter.2 fun i ↦ (H i).mono_left (iInter_subset s i)
 
 theorem mapsTo_iInter₂_iInter₂ {s : ∀ i, κ i → Set α} {t : ∀ i, κ i → Set β} {f : α → β}
     (H : ∀ i j, MapsTo f (s i j) (t i j)) : MapsTo f (⋂ (i) (j), s i j) (⋂ (i) (j), t i j) :=
-  mapsTo_iInter_iInter fun i => mapsTo_iInter_iInter (H i)
+  mapsTo_iInter_iInter fun i ↦ mapsTo_iInter_iInter (H i)
 
 theorem image_iInter_subset (s : ι → Set α) (f : α → β) : (f '' ⋂ i, s i) ⊆ ⋂ i, f '' s i :=
-  (mapsTo_iInter_iInter fun i => mapsTo_image f (s i)).image_subset
+  (mapsTo_iInter_iInter fun i ↦ mapsTo_image f (s i)).image_subset
 
 theorem image_iInter₂_subset (s : ∀ i, κ i → Set α) (f : α → β) :
     (f '' ⋂ (i) (j), s i j) ⊆ ⋂ (i) (j), f '' s i j :=
-  (mapsTo_iInter₂_iInter₂ fun i hi => mapsTo_image f (s i hi)).image_subset
+  (mapsTo_iInter₂_iInter₂ fun i hi ↦ mapsTo_image f (s i hi)).image_subset
 
 theorem image_sInter_subset (S : Set (Set α)) (f : α → β) : f '' ⋂₀ S ⊆ ⋂ s ∈ S, f '' s := by
   rw [sInter_eq_biInter]
@@ -185,14 +185,14 @@ include hU
 
 theorem injective_iff_injective_of_iUnion_eq_univ :
     Injective f ↔ ∀ i, Injective ((U i).restrictPreimage f) := by
-  refine ⟨fun H i => (U i).restrictPreimage_injective H, fun H x y e => ?_⟩
+  refine ⟨fun H i ↦ (U i).restrictPreimage_injective H, fun H x y e ↦ ?_⟩
   obtain ⟨i, hi⟩ := Set.mem_iUnion.mp
       (show f x ∈ Set.iUnion U by rw [hU]; trivial)
   injection @H i ⟨x, hi⟩ ⟨y, show f y ∈ U i from e ▸ hi⟩ (Subtype.ext e)
 
 theorem surjective_iff_surjective_of_iUnion_eq_univ :
     Surjective f ↔ ∀ i, Surjective ((U i).restrictPreimage f) := by
-  refine ⟨fun H i => (U i).restrictPreimage_surjective H, fun H x => ?_⟩
+  refine ⟨fun H i ↦ (U i).restrictPreimage_surjective H, fun H x ↦ ?_⟩
   obtain ⟨i, hi⟩ :=
     Set.mem_iUnion.mp
       (show x ∈ Set.iUnion U by rw [hU]; trivial)
@@ -212,14 +212,14 @@ end
 theorem InjOn.image_iInter_eq [Nonempty ι] {s : ι → Set α} {f : α → β} (h : InjOn f (⋃ i, s i)) :
     (f '' ⋂ i, s i) = ⋂ i, f '' s i := by
   inhabit ι
-  refine Subset.antisymm (image_iInter_subset s f) fun y hy => ?_
+  refine Subset.antisymm (image_iInter_subset s f) fun y hy ↦ ?_
   simp only [mem_iInter, mem_image] at hy
   choose x hx hy using hy
-  refine ⟨x default, mem_iInter.2 fun i => ?_, hy _⟩
+  refine ⟨x default, mem_iInter.2 fun i ↦ ?_, hy _⟩
   suffices x default = x i by
     rw [this]
     apply hx
-  replace hx : ∀ i, x i ∈ ⋃ j, s j := fun i => (subset_iUnion _ _) (hx i)
+  replace hx : ∀ i, x i ∈ ⋃ j, s j := fun i ↦ (subset_iUnion _ _) (hx i)
   apply h (hx _) (hx _)
   simp only [hy]
 
@@ -252,7 +252,7 @@ theorem inj_on_iUnion_of_directed {s : ι → Set α} (hs : Directed (· ⊆ ·)
 
 
 theorem surjOn_sUnion {s : Set α} {T : Set (Set β)} {f : α → β} (H : ∀ t ∈ T, SurjOn f s t) :
-    SurjOn f s (⋃₀ T) := fun _ ⟨t, ht, hx⟩ => H t ht hx
+    SurjOn f s (⋃₀ T) := fun _ ⟨t, ht, hx⟩ ↦ H t ht hx
 
 theorem surjOn_iUnion {s : Set α} {t : ι → Set β} {f : α → β} (H : ∀ i, SurjOn f s (t i)) :
     SurjOn f s (⋃ i, t i) :=
@@ -260,46 +260,46 @@ theorem surjOn_iUnion {s : Set α} {t : ι → Set β} {f : α → β} (H : ∀ 
 
 theorem surjOn_iUnion_iUnion {s : ι → Set α} {t : ι → Set β} {f : α → β}
     (H : ∀ i, SurjOn f (s i) (t i)) : SurjOn f (⋃ i, s i) (⋃ i, t i) :=
-  surjOn_iUnion fun i => (H i).mono (subset_iUnion _ _) (Subset.refl _)
+  surjOn_iUnion fun i ↦ (H i).mono (subset_iUnion _ _) (Subset.refl _)
 
 theorem surjOn_iUnion₂ {s : Set α} {t : ∀ i, κ i → Set β} {f : α → β}
     (H : ∀ i j, SurjOn f s (t i j)) : SurjOn f s (⋃ (i) (j), t i j) :=
-  surjOn_iUnion fun i => surjOn_iUnion (H i)
+  surjOn_iUnion fun i ↦ surjOn_iUnion (H i)
 
 theorem surjOn_iUnion₂_iUnion₂ {s : ∀ i, κ i → Set α} {t : ∀ i, κ i → Set β} {f : α → β}
     (H : ∀ i j, SurjOn f (s i j) (t i j)) : SurjOn f (⋃ (i) (j), s i j) (⋃ (i) (j), t i j) :=
-  surjOn_iUnion_iUnion fun i => surjOn_iUnion_iUnion (H i)
+  surjOn_iUnion_iUnion fun i ↦ surjOn_iUnion_iUnion (H i)
 
 theorem surjOn_iInter [Nonempty ι] {s : ι → Set α} {t : Set β} {f : α → β}
     (H : ∀ i, SurjOn f (s i) t) (Hinj : InjOn f (⋃ i, s i)) : SurjOn f (⋂ i, s i) t := by
   intro y hy
   rw [Hinj.image_iInter_eq, mem_iInter]
-  exact fun i => H i hy
+  exact fun i ↦ H i hy
 
 theorem surjOn_iInter_iInter [Nonempty ι] {s : ι → Set α} {t : ι → Set β} {f : α → β}
     (H : ∀ i, SurjOn f (s i) (t i)) (Hinj : InjOn f (⋃ i, s i)) : SurjOn f (⋂ i, s i) (⋂ i, t i) :=
-  surjOn_iInter (fun i => (H i).mono (Subset.refl _) (iInter_subset _ _)) Hinj
+  surjOn_iInter (fun i ↦ (H i).mono (Subset.refl _) (iInter_subset _ _)) Hinj
 
 /-! ### `BijOn` -/
 
 
 theorem bijOn_iUnion {s : ι → Set α} {t : ι → Set β} {f : α → β} (H : ∀ i, BijOn f (s i) (t i))
     (Hinj : InjOn f (⋃ i, s i)) : BijOn f (⋃ i, s i) (⋃ i, t i) :=
-  ⟨mapsTo_iUnion_iUnion fun i => (H i).mapsTo, Hinj, surjOn_iUnion_iUnion fun i => (H i).surjOn⟩
+  ⟨mapsTo_iUnion_iUnion fun i ↦ (H i).mapsTo, Hinj, surjOn_iUnion_iUnion fun i ↦ (H i).surjOn⟩
 
 theorem bijOn_iInter [hi : Nonempty ι] {s : ι → Set α} {t : ι → Set β} {f : α → β}
     (H : ∀ i, BijOn f (s i) (t i)) (Hinj : InjOn f (⋃ i, s i)) : BijOn f (⋂ i, s i) (⋂ i, t i) :=
-  ⟨mapsTo_iInter_iInter fun i => (H i).mapsTo,
-    hi.elim fun i => (H i).injOn.mono (iInter_subset _ _),
-    surjOn_iInter_iInter (fun i => (H i).surjOn) Hinj⟩
+  ⟨mapsTo_iInter_iInter fun i ↦ (H i).mapsTo,
+    hi.elim fun i ↦ (H i).injOn.mono (iInter_subset _ _),
+    surjOn_iInter_iInter (fun i ↦ (H i).surjOn) Hinj⟩
 
 theorem bijOn_iUnion_of_directed {s : ι → Set α} (hs : Directed (· ⊆ ·) s) {t : ι → Set β}
     {f : α → β} (H : ∀ i, BijOn f (s i) (t i)) : BijOn f (⋃ i, s i) (⋃ i, t i) :=
-  bijOn_iUnion H <| inj_on_iUnion_of_directed hs fun i => (H i).injOn
+  bijOn_iUnion H <| inj_on_iUnion_of_directed hs fun i ↦ (H i).injOn
 
 theorem bijOn_iInter_of_directed [Nonempty ι] {s : ι → Set α} (hs : Directed (· ⊆ ·) s)
     {t : ι → Set β} {f : α → β} (H : ∀ i, BijOn f (s i) (t i)) : BijOn f (⋂ i, s i) (⋂ i, t i) :=
-  bijOn_iInter H <| inj_on_iUnion_of_directed hs fun i => (H i).injOn
+  bijOn_iInter H <| inj_on_iUnion_of_directed hs fun i ↦ (H i).injOn
 
 end Function
 
@@ -316,13 +316,13 @@ theorem image_iUnion₂ (f : α → β) (s : ∀ i, κ i → Set α) :
     (f '' ⋃ (i) (j), s i j) = ⋃ (i) (j), f '' s i j := by simp_rw [image_iUnion]
 
 theorem univ_subtype {p : α → Prop} : (univ : Set (Subtype p)) = ⋃ (x) (h : p x), {⟨x, h⟩} :=
-  Set.ext fun ⟨x, h⟩ => by simp [h]
+  Set.ext fun ⟨x, h⟩ ↦ by simp [h]
 
 theorem range_eq_iUnion {ι} (f : ι → α) : range f = ⋃ i, {f i} :=
-  Set.ext fun a => by simp [@eq_comm α a]
+  Set.ext fun a ↦ by simp [@eq_comm α a]
 
 theorem image_eq_iUnion (f : α → β) (s : Set α) : f '' s = ⋃ i ∈ s, {f i} :=
-  Set.ext fun b => by simp [@eq_comm β b]
+  Set.ext fun b ↦ by simp [@eq_comm β b]
 
 theorem biUnion_range {f : ι → α} {g : α → Set β} : ⋃ x ∈ range f, g x = ⋃ y, g (f y) :=
   iSup_range
@@ -372,7 +372,7 @@ end Image
 
 section Preimage
 
-theorem monotone_preimage {f : α → β} : Monotone (preimage f) := fun _ _ h => preimage_mono h
+theorem monotone_preimage {f : α → β} : Monotone (preimage f) := fun _ _ h ↦ preimage_mono h
 
 @[simp]
 theorem preimage_iUnion {f : α → β} {s : ι → Set β} : (f ⁻¹' ⋃ i, s i) = ⋃ i, f ⁻¹' s i :=
@@ -422,7 +422,7 @@ theorem prod_iUnion {s : Set α} {t : ι → Set β} : (s ×ˢ ⋃ i, t i) = ⋃
 theorem prod_iUnion₂ {s : Set α} {t : ∀ i, κ i → Set β} :
     (s ×ˢ ⋃ (i) (j), t i j) = ⋃ (i) (j), s ×ˢ t i j := by simp_rw [prod_iUnion]
 
-theorem prod_sUnion {s : Set α} {C : Set (Set β)} : s ×ˢ ⋃₀ C = ⋃₀ ((fun t => s ×ˢ t) '' C) := by
+theorem prod_sUnion {s : Set α} {C : Set (Set β)} : s ×ˢ ⋃₀ C = ⋃₀ ((fun t ↦ s ×ˢ t) '' C) := by
   simp_rw [sUnion_eq_biUnion, biUnion_image, prod_iUnion₂]
 
 theorem iUnion_prod_const {s : ι → Set α} {t : Set β} : (⋃ i, s i) ×ˢ t = ⋃ i, s i ×ˢ t := by
@@ -433,7 +433,7 @@ theorem iUnion₂_prod_const {s : ∀ i, κ i → Set α} {t : Set β} :
     (⋃ (i) (j), s i j) ×ˢ t = ⋃ (i) (j), s i j ×ˢ t := by simp_rw [iUnion_prod_const]
 
 theorem sUnion_prod_const {C : Set (Set α)} {t : Set β} :
-    ⋃₀ C ×ˢ t = ⋃₀ ((fun s : Set α => s ×ˢ t) '' C) := by
+    ⋃₀ C ×ˢ t = ⋃₀ ((fun s : Set α ↦ s ×ˢ t) '' C) := by
   simp only [sUnion_eq_biUnion, iUnion₂_prod_const, biUnion_image]
 
 theorem iUnion_prod {ι ι' α β} (s : ι → Set α) (t : ι' → Set β) :
@@ -465,15 +465,15 @@ lemma biUnion_prod' (s : Set β) (t : Set γ) (f : β × γ → Set α) :
 
 theorem sInter_prod_sInter_subset (S : Set (Set α)) (T : Set (Set β)) :
     ⋂₀ S ×ˢ ⋂₀ T ⊆ ⋂ r ∈ S ×ˢ T, r.1 ×ˢ r.2 :=
-  subset_iInter₂ fun x hx _ hy => ⟨hy.1 x.1 hx.1, hy.2 x.2 hx.2⟩
+  subset_iInter₂ fun x hx _ hy ↦ ⟨hy.1 x.1 hx.1, hy.2 x.2 hx.2⟩
 
 theorem sInter_prod_sInter {S : Set (Set α)} {T : Set (Set β)} (hS : S.Nonempty) (hT : T.Nonempty) :
     ⋂₀ S ×ˢ ⋂₀ T = ⋂ r ∈ S ×ˢ T, r.1 ×ˢ r.2 := by
   obtain ⟨s₁, h₁⟩ := hS
   obtain ⟨s₂, h₂⟩ := hT
-  refine Set.Subset.antisymm (sInter_prod_sInter_subset S T) fun x hx => ?_
+  refine Set.Subset.antisymm (sInter_prod_sInter_subset S T) fun x hx ↦ ?_
   rw [mem_iInter₂] at hx
-  exact ⟨fun s₀ h₀ => (hx (s₀, s₂) ⟨h₀, h₂⟩).1, fun s₀ h₀ => (hx (s₁, s₀) ⟨h₁, h₀⟩).2⟩
+  exact ⟨fun s₀ h₀ ↦ (hx (s₀, s₂) ⟨h₀, h₂⟩).1, fun s₀ h₀ ↦ (hx (s₁, s₀) ⟨h₁, h₀⟩).2⟩
 
 theorem sInter_prod {S : Set (Set α)} (hS : S.Nonempty) (t : Set β) :
     ⋂₀ S ×ˢ t = ⋂ s ∈ S, s ×ˢ t := by
@@ -489,7 +489,7 @@ theorem prod_iInter {s : Set α} {t : ι → Set β} [hι : Nonempty ι] :
     (s ×ˢ ⋂ i, t i) = ⋂ i, s ×ˢ t i := by
   ext x
   simp only [mem_prod, mem_iInter]
-  exact ⟨fun h i => ⟨h.1, h.2 i⟩, fun h => ⟨(h hι.some).1, fun i => (h i).2⟩⟩
+  exact ⟨fun h i ↦ ⟨h.1, h.2 i⟩, fun h ↦ ⟨(h hι.some).1, fun i ↦ (h i).2⟩⟩
 
 end Prod
 
@@ -533,22 +533,22 @@ theorem image2_iUnion₂_right (s : Set α) (t : ∀ i, κ i → Set β) :
 theorem image2_iInter_subset_left (s : ι → Set α) (t : Set β) :
     image2 f (⋂ i, s i) t ⊆ ⋂ i, image2 f (s i) t := by
   simp_rw [image2_subset_iff, mem_iInter]
-  exact fun x hx y hy i => mem_image2_of_mem (hx _) hy
+  exact fun x hx y hy i ↦ mem_image2_of_mem (hx _) hy
 
 theorem image2_iInter_subset_right (s : Set α) (t : ι → Set β) :
     image2 f s (⋂ i, t i) ⊆ ⋂ i, image2 f s (t i) := by
   simp_rw [image2_subset_iff, mem_iInter]
-  exact fun x hx y hy i => mem_image2_of_mem hx (hy _)
+  exact fun x hx y hy i ↦ mem_image2_of_mem hx (hy _)
 
 theorem image2_iInter₂_subset_left (s : ∀ i, κ i → Set α) (t : Set β) :
     image2 f (⋂ (i) (j), s i j) t ⊆ ⋂ (i) (j), image2 f (s i j) t := by
   simp_rw [image2_subset_iff, mem_iInter]
-  exact fun x hx y hy i j => mem_image2_of_mem (hx _ _) hy
+  exact fun x hx y hy i j ↦ mem_image2_of_mem (hx _ _) hy
 
 theorem image2_iInter₂_subset_right (s : Set α) (t : ∀ i, κ i → Set β) :
     image2 f s (⋂ (i) (j), t i j) ⊆ ⋂ (i) (j), image2 f s (t i j) := by
   simp_rw [image2_subset_iff, mem_iInter]
-  exact fun x hx y hy i j => mem_image2_of_mem hx (hy _ _)
+  exact fun x hx y hy i j ↦ mem_image2_of_mem hx (hy _ _)
 
 theorem image2_sInter_subset_left (S : Set (Set α)) (t : Set β) :
     image2 f (⋂₀ S) t ⊆ ⋂ s ∈ S, image2 f s t := by
@@ -560,10 +560,10 @@ theorem image2_sInter_subset_right (s : Set α) (T : Set (Set β)) :
   rw [sInter_eq_biInter]
   exact image2_iInter₂_subset_right ..
 
-theorem prod_eq_biUnion_left : s ×ˢ t = ⋃ a ∈ s, (fun b => (a, b)) '' t := by
+theorem prod_eq_biUnion_left : s ×ˢ t = ⋃ a ∈ s, (fun b ↦ (a, b)) '' t := by
   rw [iUnion_image_left, image2_mk_eq_prod]
 
-theorem prod_eq_biUnion_right : s ×ˢ t = ⋃ b ∈ t, (fun a => (a, b)) '' s := by
+theorem prod_eq_biUnion_right : s ×ˢ t = ⋃ b ∈ t, (fun a ↦ (a, b)) '' s := by
   rw [iUnion_image_right, image2_mk_eq_prod]
 
 end Image2
@@ -584,7 +584,7 @@ theorem seq_mono {s₀ s₁ : Set (α → β)} {t₀ t₁ : Set α} (hs : s₀ �
 theorem singleton_seq {f : α → β} {t : Set α} : Set.seq ({f} : Set (α → β)) t = f '' t :=
   image2_singleton_left
 
-theorem seq_singleton {s : Set (α → β)} {a : α} : Set.seq s {a} = (fun f : α → β => f a) '' s :=
+theorem seq_singleton {s : Set (α → β)} {a : α} : Set.seq s {a} = (fun f : α → β ↦ f a) '' s :=
   image2_singleton_right
 
 theorem seq_seq {s : Set (β → γ)} {t : Set (α → β)} {u : Set α} :
@@ -600,7 +600,7 @@ theorem prod_eq_seq {s : Set α} {t : Set β} : s ×ˢ t = (Prod.mk '' s).seq t 
   rw [seq_eq_image2, image2_image_left, image2_mk_eq_prod]
 
 theorem prod_image_seq_comm (s : Set α) (t : Set β) :
-    (Prod.mk '' s).seq t = seq ((fun b a => (a, b)) '' t) s := by
+    (Prod.mk '' s).seq t = seq ((fun b a ↦ (a, b)) '' t) s := by
   rw [← prod_eq_seq, ← image_swap_prod, prod_eq_seq, image_seq, ← image_comp]; rfl
 
 theorem image2_eq_seq (f : α → β → γ) (s : Set α) (t : Set β) : image2 f s t = seq (f '' s) t := by

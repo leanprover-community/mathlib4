@@ -98,20 +98,20 @@ open Finset
 @[simp]
 def varFinset [DecidableEq α] : L.Term α → Finset α
   | var i => {i}
-  | func _f ts => univ.biUnion fun i => (ts i).varFinset
+  | func _f ts => univ.biUnion fun i ↦ (ts i).varFinset
 
 /-- The `Finset` of variables from the left side of a sum used in a given term. -/
 @[simp]
 def varFinsetLeft [DecidableEq α] : L.Term (α ⊕ β) → Finset α
   | var (Sum.inl i) => {i}
   | var (Sum.inr _i) => ∅
-  | func _f ts => univ.biUnion fun i => (ts i).varFinsetLeft
+  | func _f ts => univ.biUnion fun i ↦ (ts i).varFinsetLeft
 
 /-- Relabels a term's variables along a particular function. -/
 @[simp]
 def relabel (g : α → β) : L.Term α → L.Term β
   | var i => var (g i)
-  | func f ts => func f fun {i} => (ts i).relabel g
+  | func f ts => func f fun {i} ↦ (ts i).relabel g
 
 theorem relabel_id (t : L.Term α) : t.relabel id = t := by
   induction t with
@@ -137,14 +137,14 @@ theorem relabel_comp_relabel (f : α → β) (g : β → γ) :
 /-- Relabels a term's variables along a bijection. -/
 @[simps]
 def relabelEquiv (g : α ≃ β) : L.Term α ≃ L.Term β :=
-  ⟨relabel g, relabel g.symm, fun t => by simp, fun t => by simp⟩
+  ⟨relabel g, relabel g.symm, fun t ↦ by simp, fun t ↦ by simp⟩
 
 /-- Restricts a term to use only a set of the given variables. -/
 def restrictVar [DecidableEq α] : ∀ (t : L.Term α) (_f : t.varFinset → β), L.Term β
   | var a, f => var (f ⟨a, mem_singleton_self a⟩)
   | func F ts, f =>
-    func F fun i => (ts i).restrictVar (f ∘ Set.inclusion
-      (subset_biUnion_of_mem (fun i => varFinset (ts i)) (mem_univ i)))
+    func F fun i ↦ (ts i).restrictVar (f ∘ Set.inclusion
+      (subset_biUnion_of_mem (fun i ↦ varFinset (ts i)) (mem_univ i)))
 
 /-- Restricts a term to use only a set of the given variables on the left side of a sum. -/
 def restrictVarLeft [DecidableEq α] {γ : Type*} :
@@ -152,9 +152,9 @@ def restrictVarLeft [DecidableEq α] {γ : Type*} :
   | var (Sum.inl a), f => var (Sum.inl (f ⟨a, mem_singleton_self a⟩))
   | var (Sum.inr a), _f => var (Sum.inr a)
   | func F ts, f =>
-    func F fun i =>
+    func F fun i ↦
       (ts i).restrictVarLeft (f ∘ Set.inclusion (subset_biUnion_of_mem
-        (fun i => varFinsetLeft (ts i)) (mem_univ i)))
+        (fun i ↦ varFinsetLeft (ts i)) (mem_univ i)))
 
 end Term
 
@@ -181,16 +181,16 @@ namespace Term
 def constantsToVars : L[[γ]].Term α → L.Term (γ ⊕ α)
   | var a => var (Sum.inr a)
   | @func _ _ 0 f ts =>
-    Sum.casesOn f (fun f => func f fun i => (ts i).constantsToVars) fun c => var (Sum.inl c)
+    Sum.casesOn f (fun f ↦ func f fun i ↦ (ts i).constantsToVars) fun c ↦ var (Sum.inl c)
   | @func _ _ (_n + 1) f ts =>
-    Sum.casesOn f (fun f => func f fun i => (ts i).constantsToVars) fun c => isEmptyElim c
+    Sum.casesOn f (fun f ↦ func f fun i ↦ (ts i).constantsToVars) fun c ↦ isEmptyElim c
 
 /-- Sends a term with extra variables to a term with constants. -/
 @[simp]
 def varsToConstants : L.Term (γ ⊕ α) → L[[γ]].Term α
   | var (Sum.inr a) => var a
   | var (Sum.inl c) => Constants.term (Sum.inr c)
-  | func f ts => func (Sum.inl f) fun i => (ts i).varsToConstants
+  | func f ts => func (Sum.inl f) fun i ↦ (ts i).varsToConstants
 
 /-- A bijection between terms with constants and terms with extra variables. -/
 @[simps]
@@ -234,13 +234,13 @@ instance inhabitedOfConstant [Inhabited L.Constants] : Inhabited (L.Term α) :=
 
 /-- Raises all of the `Fin`-indexed variables of a term greater than or equal to `m` by `n'`. -/
 def liftAt {n : ℕ} (n' m : ℕ) : L.Term (α ⊕ (Fin n)) → L.Term (α ⊕ (Fin (n + n'))) :=
-  relabel (Sum.map id fun i => if ↑i < m then Fin.castAdd n' i else Fin.addNat i n')
+  relabel (Sum.map id fun i ↦ if ↑i < m then Fin.castAdd n' i else Fin.addNat i n')
 
 /-- Substitutes the variables in a given term with terms. -/
 @[simp]
 def subst : L.Term α → (α → L.Term β) → L.Term β
   | var a, tf => tf a
-  | func f ts, tf => func f fun i => (ts i).subst tf
+  | func f ts, tf => func f fun i ↦ (ts i).subst tf
 
 /-- Substitutes the functions in a given term with expressions. -/
 @[simp]
@@ -267,7 +267,7 @@ open Term
 @[simp]
 def onTerm (φ : L →ᴸ L') : L.Term α → L'.Term α
   | var i => var i
-  | func f ts => func (φ.onFunction f) fun i => onTerm φ (ts i)
+  | func f ts => func (φ.onFunction f) fun i ↦ onTerm φ (ts i)
 
 @[simp]
 theorem id_onTerm : ((LHom.id L).onTerm : L.Term α → L.Term α) = id := by
@@ -347,7 +347,7 @@ def Term.bdEqual (t₁ t₂ : L.Term (α ⊕ (Fin n))) : L.BoundedFormula α n :
 
 /-- Applies a relation to terms as a bounded formula. -/
 def Relations.formula (R : L.Relations n) (ts : Fin n → L.Term α) : L.Formula α :=
-  R.boundedFormula fun i => (ts i).relabel Sum.inl
+  R.boundedFormula fun i ↦ (ts i).relabel Sum.inl
 
 /-- Applies a unary relation to a term as a formula. -/
 def Relations.formula₁ (r : L.Relations 1) (t : L.Term α) : L.Formula α :=
@@ -383,10 +383,10 @@ instance : Top (L.BoundedFormula α n) :=
   ⟨BoundedFormula.not ⊥⟩
 
 instance : Min (L.BoundedFormula α n) :=
-  ⟨fun f g => (f.imp g.not).not⟩
+  ⟨fun f g ↦ (f.imp g.not).not⟩
 
 instance : Max (L.BoundedFormula α n) :=
-  ⟨fun f g => f.not.imp g⟩
+  ⟨fun f g ↦ f.not.imp g⟩
 
 /-- The biimplication between two bounded formulas. -/
 protected def iff (φ ψ : L.BoundedFormula α n) :=
@@ -399,7 +399,7 @@ open Finset
 def freeVarFinset [DecidableEq α] : ∀ {n}, L.BoundedFormula α n → Finset α
   | _n, falsum => ∅
   | _n, equal t₁ t₂ => t₁.varFinsetLeft ∪ t₂.varFinsetLeft
-  | _n, rel _R ts => univ.biUnion fun i => (ts i).varFinsetLeft
+  | _n, rel _R ts => univ.biUnion fun i ↦ (ts i).varFinsetLeft
   | _n, imp f₁ f₂ => f₁.freeVarFinset ∪ f₂.freeVarFinset
   | _n, all f => f.freeVarFinset
 
@@ -452,8 +452,8 @@ def restrictFreeVar [DecidableEq α] :
     equal (t₁.restrictVarLeft (f ∘ Set.inclusion subset_union_left))
       (t₂.restrictVarLeft (f ∘ Set.inclusion subset_union_right))
   | _n, rel R ts, f =>
-    rel R fun i => (ts i).restrictVarLeft (f ∘ Set.inclusion
-      (subset_biUnion_of_mem (fun i => Term.varFinsetLeft (ts i)) (mem_univ i)))
+    rel R fun i ↦ (ts i).restrictVarLeft (f ∘ Set.inclusion
+      (subset_biUnion_of_mem (fun i ↦ Term.varFinsetLeft (ts i)) (mem_univ i)))
   | _n, imp φ₁ φ₂, f =>
     (φ₁.restrictFreeVar (f ∘ Set.inclusion subset_union_left)).imp
       (φ₂.restrictFreeVar (f ∘ Set.inclusion subset_union_right))
@@ -476,14 +476,14 @@ def mapTermRel {g : ℕ → ℕ} (ft : ∀ n, L.Term (α ⊕ (Fin n)) → L'.Ter
     ∀ {n}, L.BoundedFormula α n → L'.BoundedFormula β (g n)
   | _n, falsum => falsum
   | _n, equal t₁ t₂ => equal (ft _ t₁) (ft _ t₂)
-  | _n, rel R ts => rel (fr _ R) fun i => ft _ (ts i)
+  | _n, rel R ts => rel (fr _ R) fun i ↦ ft _ (ts i)
   | _n, imp φ₁ φ₂ => (φ₁.mapTermRel ft fr h).imp (φ₂.mapTermRel ft fr h)
   | n, all φ => (h n (φ.mapTermRel ft fr h)).all
 
 /-- Raises all of the `Fin`-indexed variables of a formula greater than or equal to `m` by `n'`. -/
 def liftAt : ∀ {n : ℕ} (n' _m : ℕ), L.BoundedFormula α n → L.BoundedFormula α (n + n') :=
-  fun {_} n' m φ =>
-  φ.mapTermRel (fun _ t => t.liftAt n' m) (fun _ => id) fun _ =>
+  fun {_} n' m φ ↦
+  φ.mapTermRel (fun _ t ↦ t.liftAt n' m) (fun _ ↦ id) fun _ ↦
     castLE (by rw [add_assoc, add_comm 1, add_assoc])
 
 @[simp]
@@ -492,8 +492,8 @@ theorem mapTermRel_mapTermRel {L'' : Language}
     (fr : ∀ n, L.Relations n → L'.Relations n)
     (ft' : ∀ n, L'.Term (β ⊕ Fin n) → L''.Term (γ ⊕ (Fin n)))
     (fr' : ∀ n, L'.Relations n → L''.Relations n) {n} (φ : L.BoundedFormula α n) :
-    ((φ.mapTermRel ft fr fun _ => id).mapTermRel ft' fr' fun _ => id) =
-      φ.mapTermRel (fun _ => ft' _ ∘ ft _) (fun _ => fr' _ ∘ fr _) fun _ => id := by
+    ((φ.mapTermRel ft fr fun _ ↦ id).mapTermRel ft' fr' fun _ ↦ id) =
+      φ.mapTermRel (fun _ ↦ ft' _ ∘ ft _) (fun _ ↦ fr' _ ∘ fr _) fun _ ↦ id := by
   induction φ with
   | falsum => rfl
   | equal => simp [mapTermRel]
@@ -503,7 +503,7 @@ theorem mapTermRel_mapTermRel {L'' : Language}
 
 @[simp]
 theorem mapTermRel_id_id_id {n} (φ : L.BoundedFormula α n) :
-    (φ.mapTermRel (fun _ => id) (fun _ => id) fun _ => id) = φ := by
+    (φ.mapTermRel (fun _ ↦ id) (fun _ ↦ id) fun _ ↦ id) = φ := by
   induction φ with
   | falsum => rfl
   | equal => simp [mapTermRel]
@@ -516,8 +516,8 @@ relations. -/
 @[simps]
 def mapTermRelEquiv (ft : ∀ n, L.Term (α ⊕ (Fin n)) ≃ L'.Term (β ⊕ (Fin n)))
     (fr : ∀ n, L.Relations n ≃ L'.Relations n) {n} : L.BoundedFormula α n ≃ L'.BoundedFormula β n :=
-  ⟨mapTermRel (fun n => ft n) (fun n => fr n) fun _ => id,
-    mapTermRel (fun n => (ft n).symm) (fun n => (fr n).symm) fun _ => id, fun φ => by simp, fun φ =>
+  ⟨mapTermRel (fun n ↦ ft n) (fun n ↦ fr n) fun _ ↦ id,
+    mapTermRel (fun n ↦ (ft n).symm) (fun n ↦ (fr n).symm) fun _ ↦ id, fun φ ↦ by simp, fun φ ↦
     by simp⟩
 
 /-- A function to help relabel the variables in bounded formulas. -/
@@ -546,13 +546,13 @@ theorem relabelAux_sumInl (k : ℕ) :
 
 /-- Relabels a bounded formula's variables along a particular function. -/
 def relabel (g : α → β ⊕ (Fin n)) {k} (φ : L.BoundedFormula α k) : L.BoundedFormula β (n + k) :=
-  φ.mapTermRel (fun _ t => t.relabel (relabelAux g _)) (fun _ => id) fun _ =>
+  φ.mapTermRel (fun _ t ↦ t.relabel (relabelAux g _)) (fun _ ↦ id) fun _ ↦
     castLE (ge_of_eq (add_assoc _ _ _))
 
 /-- Relabels a bounded formula's free variables along a bijection. -/
 def relabelEquiv (g : α ≃ β) {k} : L.BoundedFormula α k ≃ L.BoundedFormula β k :=
-  mapTermRelEquiv (fun _n => Term.relabelEquiv (g.sumCongr (_root_.Equiv.refl _)))
-    fun _n => _root_.Equiv.refl _
+  mapTermRelEquiv (fun _n ↦ Term.relabelEquiv (g.sumCongr (_root_.Equiv.refl _)))
+    fun _n ↦ _root_.Equiv.refl _
 
 @[simp]
 theorem relabel_falsum (g : α → β ⊕ (Fin n)) {k} :
@@ -597,12 +597,12 @@ theorem relabel_sumInl (φ : L.BoundedFormula α n) :
 
 /-- Substitutes the variables in a given formula with terms. -/
 def subst {n : ℕ} (φ : L.BoundedFormula α n) (f : α → L.Term β) : L.BoundedFormula β n :=
-  φ.mapTermRel (fun _ t => t.subst (Sum.elim (Term.relabel Sum.inl ∘ f) (var ∘ Sum.inr)))
-    (fun _ => id) fun _ => id
+  φ.mapTermRel (fun _ t ↦ t.subst (Sum.elim (Term.relabel Sum.inl ∘ f) (var ∘ Sum.inr)))
+    (fun _ ↦ id) fun _ ↦ id
 
 /-- A bijection sending formulas with constants to formulas with extra variables. -/
 def constantsVarsEquiv : L[[γ]].BoundedFormula α n ≃ L.BoundedFormula (γ ⊕ α) n :=
-  mapTermRelEquiv (fun _ => Term.constantsVarsEquivLeft) fun _ => Equiv.sumEmpty _ _
+  mapTermRelEquiv (fun _ ↦ Term.constantsVarsEquivLeft) fun _ ↦ Equiv.sumEmpty _ _
 
 /-- Turns the extra variables of a bounded formula into free variables. -/
 @[simp]
@@ -754,7 +754,7 @@ def relabel (g : α → β) : L.Formula α → L.Formula β :=
 
 /-- The graph of a function as a first-order formula. -/
 def graph (f : L.Functions n) : L.Formula (Fin (n + 1)) :=
-  Term.equal (var 0) (func f fun i => var i.succ)
+  Term.equal (var 0) (func f fun i ↦ var i.succ)
 
 /-- The negation of a formula. -/
 protected nonrec abbrev not (φ : L.Formula α) : L.Formula α :=
@@ -769,22 +769,22 @@ variable (β) in
 quantifying over all variables `Sum.inr _`. -/
 noncomputable def iAlls [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :=
   let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin β))
-  (BoundedFormula.relabel (fun a => Sum.map id e a) φ).alls
+  (BoundedFormula.relabel (fun a ↦ Sum.map id e a) φ).alls
 
 variable (β) in
 /-- `iExs f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula α` by existentially
 quantifying over all variables `Sum.inr _`. -/
 noncomputable def iExs [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :=
   let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin β))
-  (BoundedFormula.relabel (fun a => Sum.map id e a) φ).exs
+  (BoundedFormula.relabel (fun a ↦ Sum.map id e a) φ).exs
 
 variable (β) in
 /-- `iExsUnique f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula α` by existentially
 quantifying over all variables `Sum.inr _` and asserting that the solution should be unique -/
 noncomputable def iExsUnique [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :=
   iExs β <| φ ⊓ iAlls β
-    ((φ.relabel (fun a => Sum.elim (.inl ∘ .inl) .inr a)).imp <|
-      .iInf fun g => Term.equal (var (.inr g)) (var (.inl (.inr g))))
+    ((φ.relabel (fun a ↦ Sum.elim (.inl ∘ .inl) .inr a)).imp <|
+      .iInf fun g ↦ Term.equal (var (.inr g)) (var (.inl (.inr g))))
 
 /-- The biimplication between formulas, as a formula. -/
 protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=
@@ -853,8 +853,8 @@ variable (L)
 
 /-- A sentence indicating that a structure has `n` distinct elements. -/
 protected def Sentence.cardGe (n : ℕ) : L.Sentence :=
-  ((((List.finRange n ×ˢ List.finRange n).filter fun ij : _ × _ => ij.1 ≠ ij.2).map
-          fun ij : _ × _ => ∼((&ij.1).bdEqual &ij.2)).foldr
+  ((((List.finRange n ×ˢ List.finRange n).filter fun ij : _ × _ ↦ ij.1 ≠ ij.2).map
+          fun ij : _ × _ ↦ ∼((&ij.1).bdEqual &ij.2)).foldr
       (· ⊓ ·) ⊤).exs
 
 /-- A theory indicating that a structure is infinite. -/
@@ -867,7 +867,7 @@ def nonemptyTheory : L.Theory :=
 
 /-- A theory indicating that each of a set of constants is distinct. -/
 def distinctConstantsTheory (s : Set α) : L[[α]].Theory :=
-  (fun ab : α × α => ((L.con ab.1).term.equal (L.con ab.2).term).not) ''
+  (fun ab : α × α ↦ ((L.con ab.1).term.equal (L.con ab.2).term).not) ''
   (s ×ˢ s ∩ (Set.diagonal α)ᶜ)
 
 variable {L}
@@ -879,7 +879,7 @@ theorem distinctConstantsTheory_mono {s t : Set α} (h : s ⊆ t) :
   unfold distinctConstantsTheory; gcongr
 
 theorem monotone_distinctConstantsTheory :
-    Monotone (L.distinctConstantsTheory : Set α → L[[α]].Theory) := fun _s _t st =>
+    Monotone (L.distinctConstantsTheory : Set α → L[[α]].Theory) := fun _s _t st ↦
   L.distinctConstantsTheory_mono st
 
 theorem directed_distinctConstantsTheory :
@@ -889,7 +889,7 @@ theorem directed_distinctConstantsTheory :
 theorem distinctConstantsTheory_eq_iUnion (s : Set α) :
     L.distinctConstantsTheory s =
       ⋃ t : Finset s,
-        L.distinctConstantsTheory (t.map (Function.Embedding.subtype fun x => x ∈ s)) := by
+        L.distinctConstantsTheory (t.map (Function.Embedding.subtype fun x ↦ x ∈ s)) := by
   classical
     simp only [distinctConstantsTheory]
     rw [← image_iUnion, ← iUnion_inter]
@@ -897,7 +897,7 @@ theorem distinctConstantsTheory_eq_iUnion (s : Set α) :
     ext ⟨i, j⟩
     simp only [prodMk_mem_set_prod_eq, Finset.coe_map, Function.Embedding.coe_subtype, mem_iUnion,
       mem_image, Finset.mem_coe, Subtype.exists, exists_and_right, exists_eq_right]
-    refine ⟨fun h => ⟨{⟨i, h.1⟩, ⟨j, h.2⟩}, ⟨h.1, ?_⟩, ⟨h.2, ?_⟩⟩, ?_⟩
+    refine ⟨fun h ↦ ⟨{⟨i, h.1⟩, ⟨j, h.2⟩}, ⟨h.1, ?_⟩, ⟨h.2, ?_⟩⟩, ?_⟩
     · simp
     · simp
     · rintro ⟨t, ⟨is, _⟩, ⟨js, _⟩⟩

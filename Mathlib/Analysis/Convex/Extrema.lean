@@ -70,7 +70,7 @@ theorem IsMaxOn.of_isLocalMaxOn_of_concaveOn {f : E → β} {a : E} (a_in_s : a 
 
 /-- A local minimum of a convex function is a global minimum. -/
 theorem IsMinOn.of_isLocalMin_of_convex_univ {f : E → β} {a : E} (h_local_min : IsLocalMin f a)
-    (h_conv : ConvexOn ℝ univ f) : ∀ x, f a ≤ f x := fun x =>
+    (h_conv : ConvexOn ℝ univ f) : ∀ x, f a ≤ f x := fun x ↦
   (IsMinOn.of_isLocalMinOn_of_convexOn (mem_univ a) (h_local_min.on univ) h_conv) (mem_univ x)
 
 /-- A local maximum of a concave function is a global maximum. -/

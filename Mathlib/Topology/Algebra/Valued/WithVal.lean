@@ -34,7 +34,7 @@ variable {R Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
 
 /-- Type synonym for a ring equipped with the topology coming from a valuation. -/
 @[nolint unusedArguments]
-def WithVal [Ring R] : Valuation R Γ₀ → Type _ := fun _ => R
+def WithVal [Ring R] : Valuation R Γ₀ → Type _ := fun _ ↦ R
 
 namespace WithVal
 

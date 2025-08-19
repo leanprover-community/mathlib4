@@ -65,7 +65,7 @@ theorem Countable.of_equiv (α : Sort*) [Countable α] (e : α ≃ β) : Countab
   e.symm.injective.countable
 
 theorem Equiv.countable_iff (e : α ≃ β) : Countable α ↔ Countable β :=
-  ⟨fun h => @Countable.of_equiv _ _ h e, fun h => @Countable.of_equiv _ _ h e.symm⟩
+  ⟨fun h ↦ @Countable.of_equiv _ _ h e, fun h ↦ @Countable.of_equiv _ _ h e.symm⟩
 
 instance {β : Type v} [Countable β] : Countable (ULift.{u} β) :=
   Countable.of_equiv _ Equiv.ulift.symm
@@ -79,7 +79,7 @@ instance [Countable α] : Countable (PLift α) :=
   Equiv.plift.injective.countable
 
 instance (priority := 100) Subsingleton.to_countable [Subsingleton α] : Countable α :=
-  ⟨⟨fun _ => 0, fun x y _ => Subsingleton.elim x y⟩⟩
+  ⟨⟨fun _ ↦ 0, fun x y _ ↦ Subsingleton.elim x y⟩⟩
 
 instance (priority := 500) Subtype.countable [Countable α] {p : α → Prop} :
     Countable { x // p x } :=
@@ -99,7 +99,7 @@ instance (priority := 100) Prop.countable (p : Prop) : Countable p :=
   Subsingleton.to_countable
 
 instance Bool.countable : Countable Bool :=
-  ⟨⟨fun b => cond b 0 1, Bool.injective_iff.2 Nat.one_ne_zero⟩⟩
+  ⟨⟨fun b ↦ cond b 0 1, Bool.injective_iff.2 Nat.one_ne_zero⟩⟩
 
 instance Prop.countable' : Countable Prop :=
   Countable.of_equiv Bool Equiv.propEquivBool.symm
@@ -154,7 +154,7 @@ theorem Uncountable.of_equiv (α : Sort*) [Uncountable α] (e : α ≃ β) : Unc
   e.injective.uncountable
 
 theorem Equiv.uncountable_iff (e : α ≃ β) : Uncountable α ↔ Uncountable β :=
-  ⟨fun h => @Uncountable.of_equiv _ _ h e, fun h => @Uncountable.of_equiv _ _ h e.symm⟩
+  ⟨fun h ↦ @Uncountable.of_equiv _ _ h e, fun h ↦ @Uncountable.of_equiv _ _ h e.symm⟩
 
 instance {β : Type v} [Uncountable β] : Uncountable (ULift.{u} β) :=
   .of_equiv _ Equiv.ulift.symm

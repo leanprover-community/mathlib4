@@ -46,13 +46,13 @@ theorem EffectiveEpiFamily.transitive_of_finite {α : Type} [Finite α] {Y : α 
     {Y_n : (a : α) → β a → C} (π_n : (a : α) → (b : β a) → (Y_n a b ⟶ Y a))
     (H : ∀ a, EffectiveEpiFamily (Y_n a) (π_n a)) :
     EffectiveEpiFamily
-      (fun (c : Σ a, β a) => Y_n c.fst c.snd) (fun c => π_n c.fst c.snd ≫ π c.fst) := by
+      (fun (c : Σ a, β a) ↦ Y_n c.fst c.snd) (fun c ↦ π_n c.fst c.snd ≫ π c.fst) := by
   rw [← Sieve.effectiveEpimorphic_family]
-  suffices h₂ : (Sieve.generate (Presieve.ofArrows (fun (⟨a, b⟩ : Σ _, β _) => Y_n a b)
-        (fun ⟨a,b⟩ => π_n a b ≫ π a))) ∈ (coherentTopology C) X by
+  suffices h₂ : (Sieve.generate (Presieve.ofArrows (fun (⟨a, b⟩ : Σ _, β _) ↦ Y_n a b)
+        (fun ⟨a,b⟩ ↦ π_n a b ≫ π a))) ∈ (coherentTopology C) X by
     change Nonempty _
     rw [← Sieve.forallYonedaIsSheaf_iff_colimit]
-    exact fun W => coherentTopology.isSheaf_yoneda_obj W _ h₂
+    exact fun W ↦ coherentTopology.isSheaf_yoneda_obj W _ h₂
   -- Show that a covering sieve is a colimit, which implies the original set of arrows is regular
   -- epimorphic. We use the transitivity property of saturation
   apply Coverage.Saturate.transitive X (Sieve.generate (Presieve.ofArrows Y π))
@@ -92,13 +92,13 @@ theorem coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (S : Sieve X) :
       obtain ⟨rfl, _⟩ := h'
       exact ⟨Y' a', 𝟙 Y' a', π a', Presieve.ofArrows.mk a', by simp⟩
     | top Y =>
-      exact ⟨Unit, inferInstance, fun _ => Y, fun _ => (𝟙 Y), inferInstance, by simp⟩
+      exact ⟨Unit, inferInstance, fun _ ↦ Y, fun _ ↦ (𝟙 Y), inferInstance, by simp⟩
     | transitive Y R S _ _ a b =>
       obtain ⟨α, w, Y₁, π, ⟨h₁,h₂⟩⟩ := a
-      choose β _ Y_n π_n H using fun a => b (h₂ a)
-      exact ⟨(Σ a, β a), inferInstance, fun ⟨a,b⟩ => Y_n a b, fun ⟨a, b⟩ => (π_n a b) ≫ (π a),
-        EffectiveEpiFamily.transitive_of_finite _ h₁ _ (fun a => (H a).1),
-        fun c => (H c.fst).2 c.snd⟩
+      choose β _ Y_n π_n H using fun a ↦ b (h₂ a)
+      exact ⟨(Σ a, β a), inferInstance, fun ⟨a,b⟩ ↦ Y_n a b, fun ⟨a, b⟩ ↦ (π_n a b) ≫ (π a),
+        EffectiveEpiFamily.transitive_of_finite _ h₁ _ (fun a ↦ (H a).1),
+        fun c ↦ (H c.fst).2 c.snd⟩
   · exact coherentTopology.mem_sieves_of_hasEffectiveEpiFamily S
 
 end CategoryTheory

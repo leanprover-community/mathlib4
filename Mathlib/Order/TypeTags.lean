@@ -22,7 +22,7 @@ def WithBot (α : Type*) := Option α
 namespace WithBot
 
 instance [Repr α] : Repr (WithBot α) :=
-  ⟨fun o _ =>
+  ⟨fun o _ ↦
     match o with
     | none => "⊥"
     | some a => "↑" ++ repr a⟩
@@ -66,7 +66,7 @@ def WithTop (α : Type*) :=
 namespace WithTop
 
 instance [Repr α] : Repr (WithTop α) :=
-  ⟨fun o _ =>
+  ⟨fun o _ ↦
     match o with
     | none => "⊤"
     | some a => "↑" ++ repr a⟩

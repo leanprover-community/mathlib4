@@ -36,7 +36,7 @@ variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : Lis
 /-- There is only one list of an empty type -/
 instance uniqueOfIsEmpty [IsEmpty α] : Unique (List α) :=
   { instInhabitedList with
-    uniq := fun l =>
+    uniq := fun l ↦
       match l with
       | [] => rfl
       | a :: _ => isEmptyElim a }
@@ -48,12 +48,12 @@ instance : Std.LawfulIdentity (α := List α) Append.append [] where
 instance : Std.Associative (α := List α) Append.append where
   assoc := append_assoc
 
-@[simp] theorem cons_injective {a : α} : Injective (cons a) := fun _ _ => tail_eq_of_cons_eq
+@[simp] theorem cons_injective {a : α} : Injective (cons a) := fun _ _ ↦ tail_eq_of_cons_eq
 
-theorem singleton_injective : Injective fun a : α => [a] := fun _ _ h => (cons_eq_cons.1 h).1
+theorem singleton_injective : Injective fun a : α ↦ [a] := fun _ _ h ↦ (cons_eq_cons.1 h).1
 
 theorem set_of_mem_cons (l : List α) (a : α) : { x | x ∈ a :: l } = insert a { x | x ∈ l } :=
-  Set.ext fun _ => mem_cons
+  Set.ext fun _ ↦ mem_cons
 
 /-! ### mem -/
 
@@ -61,7 +61,7 @@ theorem _root_.Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α]
     {a b : α} {l : List α} (h : a ∈ b :: l) : a = b ∨ a ≠ b ∧ a ∈ l := by
   by_cases hab : a = b
   · exact Or.inl hab
-  · exact ((List.mem_cons.1 h).elim Or.inl (fun h => Or.inr ⟨hab, h⟩))
+  · exact ((List.mem_cons.1 h).elim Or.inl (fun h ↦ Or.inr ⟨hab, h⟩))
 
 lemma mem_pair {a b c : α} : a ∈ [b, c] ↔ a = b ∨ a = c := by
   rw [mem_cons, mem_singleton]
@@ -74,12 +74,12 @@ lemma mem_pair {a b c : α} : a ∈ [b, c] ↔ a = b ∨ a = c := by
 @[simp 1100, nolint simpNF]
 theorem mem_map_of_injective {f : α → β} (H : Injective f) {a : α} {l : List α} :
     f a ∈ map f l ↔ a ∈ l :=
-  ⟨fun m => let ⟨_, m', e⟩ := exists_of_mem_map m; H e ▸ m', mem_map_of_mem⟩
+  ⟨fun m ↦ let ⟨_, m', e⟩ := exists_of_mem_map m; H e ▸ m', mem_map_of_mem⟩
 
 @[simp]
 theorem _root_.Function.Involutive.exists_mem_and_apply_eq_iff {f : α → α}
     (hf : Function.Involutive f) (x : α) (l : List α) : (∃ y : α, y ∈ l ∧ f y = x) ↔ f x ∈ l :=
-  ⟨by rintro ⟨y, h, rfl⟩; rwa [hf y], fun h => ⟨f x, h, hf _⟩⟩
+  ⟨by rintro ⟨y, h, rfl⟩; rwa [hf y], fun h ↦ ⟨f x, h, hf _⟩⟩
 
 theorem mem_map_of_involutive {f : α → α} (hf : Involutive f) {a : α} {l : List α} :
     a ∈ map f l ↔ f a ∈ l := by rw [mem_map, hf.exists_mem_and_apply_eq_iff]
@@ -97,7 +97,7 @@ theorem exists_of_length_succ {n} : ∀ l : List α, l.length = n + 1 → ∃ h 
 
 @[simp] lemma length_injective_iff : Injective (List.length : List α → ℕ) ↔ Subsingleton α := by
   constructor
-  · intro h; refine ⟨fun x y => ?_⟩; (suffices [x] = [y] by simpa using this); apply h; rfl
+  · intro h; refine ⟨fun x y ↦ ?_⟩; (suffices [x] = [y] by simpa using this); apply h; rfl
   · intros hα l1 l2 hl
     induction l1 generalizing l2 <;> cases l2
     · rfl
@@ -113,22 +113,22 @@ lemma length_injective [Subsingleton α] : Injective (length : List α → ℕ) 
   length_injective_iff.mpr inferInstance
 
 theorem length_eq_two {l : List α} : l.length = 2 ↔ ∃ a b, l = [a, b] :=
-  ⟨fun _ => let [a, b] := l; ⟨a, b, rfl⟩, fun ⟨_, _, e⟩ => e ▸ rfl⟩
+  ⟨fun _ ↦ let [a, b] := l; ⟨a, b, rfl⟩, fun ⟨_, _, e⟩ ↦ e ▸ rfl⟩
 
 theorem length_eq_three {l : List α} : l.length = 3 ↔ ∃ a b c, l = [a, b, c] :=
-  ⟨fun _ => let [a, b, c] := l; ⟨a, b, c, rfl⟩, fun ⟨_, _, _, e⟩ => e ▸ rfl⟩
+  ⟨fun _ ↦ let [a, b, c] := l; ⟨a, b, c, rfl⟩, fun ⟨_, _, _, e⟩ ↦ e ▸ rfl⟩
 
 theorem length_eq_four {l : List α} : l.length = 4 ↔ ∃ a b c d, l = [a, b, c, d] :=
-  ⟨fun _ => let [a, b, c, d] := l; ⟨a, b, c, d, rfl⟩, fun ⟨_, _, _, _, e⟩ => e ▸ rfl⟩
+  ⟨fun _ ↦ let [a, b, c, d] := l; ⟨a, b, c, d, rfl⟩, fun ⟨_, _, _, _, e⟩ ↦ e ▸ rfl⟩
 
 /-! ### set-theoretic notation of lists -/
 
-instance instSingletonList : Singleton α (List α) := ⟨fun x => [x]⟩
+instance instSingletonList : Singleton α (List α) := ⟨fun x ↦ [x]⟩
 
 instance [DecidableEq α] : Insert α (List α) := ⟨List.insert⟩
 
 instance [DecidableEq α] : LawfulSingleton α (List α) :=
-  { insert_empty_eq := fun x =>
+  { insert_empty_eq := fun x ↦
       show (if x ∈ ([] : List α) then [] else [x]) = [x] from if_neg not_mem_nil }
 
 theorem singleton_eq (x : α) : ({x} : List α) = [x] :=
@@ -155,17 +155,17 @@ theorem exists_mem_cons_of {p : α → Prop} {a : α} (l : List α) (h : p a) : 
 
 theorem exists_mem_cons_of_exists {p : α → Prop} {a : α} {l : List α} : (∃ x ∈ l, p x) →
     ∃ x ∈ a :: l, p x :=
-  fun ⟨x, xl, px⟩ => ⟨x, mem_cons_of_mem _ xl, px⟩
+  fun ⟨x, xl, px⟩ ↦ ⟨x, mem_cons_of_mem _ xl, px⟩
 
 theorem or_exists_of_exists_mem_cons {p : α → Prop} {a : α} {l : List α} : (∃ x ∈ a :: l, p x) →
     p a ∨ ∃ x ∈ l, p x :=
-  fun ⟨x, xal, px⟩ =>
-    Or.elim (eq_or_mem_of_mem_cons xal) (fun h : x = a => by rw [← h]; left; exact px)
-      fun h : x ∈ l => Or.inr ⟨x, h, px⟩
+  fun ⟨x, xal, px⟩ ↦
+    Or.elim (eq_or_mem_of_mem_cons xal) (fun h : x = a ↦ by rw [← h]; left; exact px)
+      fun h : x ∈ l ↦ Or.inr ⟨x, h, px⟩
 
 theorem exists_mem_cons_iff (p : α → Prop) (a : α) (l : List α) :
     (∃ x ∈ a :: l, p x) ↔ p a ∨ ∃ x ∈ l, p x :=
-  Iff.intro or_exists_of_exists_mem_cons fun h =>
+  Iff.intro or_exists_of_exists_mem_cons fun h ↦
     Or.elim h (exists_mem_cons_of l) exists_mem_cons_of_exists
 
 /-! ### list subset -/
@@ -204,14 +204,14 @@ theorem eq_replicate_length {a : α} : ∀ {l : List α}, l = replicate l.length
 theorem replicate_add (m n) (a : α) : replicate (m + n) a = replicate m a ++ replicate n a := by
   rw [replicate_append_replicate]
 
-theorem replicate_subset_singleton (n) (a : α) : replicate n a ⊆ [a] := fun _ h =>
+theorem replicate_subset_singleton (n) (a : α) : replicate n a ⊆ [a] := fun _ h ↦
   mem_singleton.2 (eq_of_mem_replicate h)
 
 theorem subset_singleton_iff {a : α} {L : List α} : L ⊆ [a] ↔ ∃ n, L = replicate n a := by
   simp only [eq_replicate_iff, subset_def, mem_singleton, exists_eq_left']
 
 theorem replicate_right_injective {n : ℕ} (hn : n ≠ 0) : Injective (@replicate α n) :=
-  fun _ _ h => (eq_replicate_iff.1 h).2 _ <| mem_replicate.2 ⟨hn, rfl⟩
+  fun _ _ h ↦ (eq_replicate_iff.1 h).2 _ <| mem_replicate.2 ⟨hn, rfl⟩
 
 theorem replicate_right_inj {a b : α} {n : ℕ} (hn : n ≠ 0) :
     replicate n a = replicate n b ↔ a = b :=
@@ -405,10 +405,10 @@ theorem head_eq_getElem_zero {l : List α} (hl : l ≠ []) :
 
 theorem head!_eq_head? [Inhabited α] (l : List α) : head! l = (head? l).iget := by cases l <;> rfl
 
-theorem surjective_head! [Inhabited α] : Surjective (@head! α _) := fun x => ⟨[x], rfl⟩
+theorem surjective_head! [Inhabited α] : Surjective (@head! α _) := fun x ↦ ⟨[x], rfl⟩
 
 theorem surjective_head? : Surjective (@head? α) :=
-  Option.forall.2 ⟨⟨[], rfl⟩, fun x => ⟨[x], rfl⟩⟩
+  Option.forall.2 ⟨⟨[], rfl⟩, fun x ↦ ⟨[x], rfl⟩⟩
 
 theorem surjective_tail : Surjective (@tail α)
   | [] => ⟨[], rfl⟩
@@ -534,7 +534,7 @@ theorem idxOf_eq_length_iff {a : α} {l : List α} : idxOf a l = length l ↔ a 
     simp only [length, mem_cons, idxOf_cons]
     rw [cond_eq_if]
     split_ifs with h <;> simp at h
-    · exact iff_of_false (by rintro ⟨⟩) fun H => H <| Or.inl h.symm
+    · exact iff_of_false (by rintro ⟨⟩) fun H ↦ H <| Or.inl h.symm
     · simp only [Ne.symm h, false_or]
       rw [← ih]
       exact succ_inj
@@ -639,19 +639,19 @@ theorem getElem?_idxOf [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
 
 theorem idxOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy : y ∈ l) :
     idxOf x l = idxOf y l ↔ x = y :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     have x_eq_y :
         get l ⟨idxOf x l, idxOf_lt_length_iff.2 hx⟩ =
         get l ⟨idxOf y l, idxOf_lt_length_iff.2 hy⟩ := by
       simp only [h]
-    simp only [idxOf_get] at x_eq_y; exact x_eq_y, fun h => by subst h; rfl⟩
+    simp only [idxOf_get] at x_eq_y; exact x_eq_y, fun h ↦ by subst h; rfl⟩
 
 theorem get_reverse' (l : List α) (n) (hn') :
     l.reverse.get n = l.get ⟨l.length - 1 - n, hn'⟩ := by
   simp
 
 theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0, by omega⟩] := by
-  refine ext_get (by convert h) fun n h₁ h₂ => ?_
+  refine ext_get (by convert h) fun n h₁ h₂ ↦ ?_
   simp
   congr
   omega
@@ -717,7 +717,7 @@ nonrec theorem _root_.Function.Involutive.list_map {f : α → α}
 @[simp]
 theorem map_leftInverse_iff {f : α → β} {g : β → α} :
     LeftInverse (map f) (map g) ↔ LeftInverse f g :=
-  ⟨fun h x => by injection h [x], (·.list_map)⟩
+  ⟨fun h x ↦ by injection h [x], (·.list_map)⟩
 
 @[simp]
 theorem map_rightInverse_iff {f : α → β} {g : β → α} :
@@ -736,7 +736,7 @@ theorem _root_.Function.Injective.list_map {f : α → β} (h : Injective f) :
 
 @[simp]
 theorem map_injective_iff {f : α → β} : Injective (map f) ↔ Injective f := by
-  refine ⟨fun h x y hxy => ?_, (·.list_map)⟩
+  refine ⟨fun h x y hxy ↦ ?_, (·.list_map)⟩
   suffices [x] = [y] by simpa using this
   apply h
   simp [hxy]
@@ -747,7 +747,7 @@ theorem _root_.Function.Surjective.list_map {f : α → β} (h : Surjective f) :
 
 @[simp]
 theorem map_surjective_iff {f : α → β} : Surjective (map f) ↔ Surjective f := by
-  refine ⟨fun h x => ?_, (·.list_map)⟩
+  refine ⟨fun h x ↦ ?_, (·.list_map)⟩
   let ⟨[y], hxy⟩ := h [x]
   exact ⟨_, List.singleton_injective hxy⟩
 
@@ -775,7 +775,7 @@ theorem foldl_ext (f g : α → β → α) (a : α) {l : List β} (H : ∀ a : �
   | nil => rfl
   | cons hd tl ih =>
     unfold foldl
-    rw [ih _ fun a b bin => H a b <| mem_cons_of_mem _ bin, H a hd mem_cons_self]
+    rw [ih _ fun a b bin ↦ H a b <| mem_cons_of_mem _ bin, H a hd mem_cons_self]
 
 theorem foldr_ext (f g : α → β → β) (b : β) {l : List α} (H : ∀ a ∈ l, ∀ b : β, f a b = g a b) :
     foldr f b l = foldr g b l := by
@@ -802,17 +802,17 @@ theorem foldr_fixed' {f : α → β → β} {b : β} (hf : ∀ a, f a b = b) : �
   | a :: l => by rw [foldr_cons, foldr_fixed' hf l, hf a]
 
 @[simp]
-theorem foldl_fixed {a : α} : ∀ l : List β, foldl (fun a _ => a) a l = a :=
-  foldl_fixed' fun _ => rfl
+theorem foldl_fixed {a : α} : ∀ l : List β, foldl (fun a _ ↦ a) a l = a :=
+  foldl_fixed' fun _ ↦ rfl
 
 @[simp]
-theorem foldr_fixed {b : β} : ∀ l : List α, foldr (fun _ b => b) b l = b :=
-  foldr_fixed' fun _ => rfl
+theorem foldr_fixed {b : β} : ∀ l : List α, foldr (fun _ b ↦ b) b l = b :=
+  foldr_fixed' fun _ ↦ rfl
 
 @[deprecated foldr_cons_nil (since := "2025-02-10")]
 theorem foldr_eta (l : List α) : foldr cons [] l = l := foldr_cons_nil
 
-theorem reverse_foldl {l : List α} : reverse (foldl (fun t h => h :: t) [] l) = l := by
+theorem reverse_foldl {l : List α} : reverse (foldl (fun t h ↦ h :: t) [] l) = l := by
   simp
 
 theorem foldl_hom₂ (l : List ι) (f : α → β → γ) (op₁ : α → ι → α) (op₂ : β → ι → β)
@@ -834,7 +834,7 @@ theorem injective_foldl_comp {l : List (α → α)} {f : α → α}
   induction l generalizing f with
   | nil => exact hf
   | cons lh lt l_ih =>
-    apply l_ih fun _ h => hl _ (List.mem_cons_of_mem _ h)
+    apply l_ih fun _ h ↦ hl _ (List.mem_cons_of_mem _ h)
     apply Function.Injective.comp hf
     apply hl _ mem_cons_self
 
@@ -944,12 +944,12 @@ variable {m : Type v → Type w} [Monad m]
 variable [LawfulMonad m]
 
 theorem foldrM_eq_foldr (f : α → β → m β) (b l) :
-    foldrM f b l = foldr (fun a mb => mb >>= f a) (pure b) l := by induction l <;> simp [*]
+    foldrM f b l = foldr (fun a mb ↦ mb >>= f a) (pure b) l := by induction l <;> simp [*]
 
 theorem foldlM_eq_foldl (f : β → α → m β) (b l) :
-    List.foldlM f b l = foldl (fun mb a => mb >>= fun b => f b a) (pure b) l := by
+    List.foldlM f b l = foldl (fun mb a ↦ mb >>= fun b ↦ f b a) (pure b) l := by
   suffices h :
-    ∀ mb : m β, (mb >>= fun b => List.foldlM f b l) = foldl (fun mb a => mb >>= fun b => f b a) mb l
+    ∀ mb : m β, (mb >>= fun b ↦ List.foldlM f b l) = foldl (fun mb a ↦ mb >>= fun b ↦ f b a) mb l
     by simp [← h (pure b)]
   induction l with
   | nil => intro; simp
@@ -1012,7 +1012,7 @@ theorem filter_singleton {a : α} : [a].filter p = bif p a then [a] else [] :=
   rfl
 
 theorem filter_eq_foldr (p : α → Bool) (l : List α) :
-    filter p l = foldr (fun a out => bif p a then a :: out else out) [] l := by
+    filter p l = foldr (fun a out ↦ bif p a then a :: out else out) [] l := by
   induction l <;> simp [*, filter]; rfl
 
 #adaptation_note /-- nightly-2024-07-27
@@ -1050,22 +1050,22 @@ theorem monotone_filter_right (l : List α) ⦃p q : α → Bool⦄
         exact IH
 
 lemma map_filter {f : α → β} (hf : Injective f) (l : List α)
-    [DecidablePred fun b => ∃ a, p a ∧ f a = b] :
-    (l.filter p).map f = (l.map f).filter fun b => ∃ a, p a ∧ f a = b := by
+    [DecidablePred fun b ↦ ∃ a, p a ∧ f a = b] :
+    (l.filter p).map f = (l.map f).filter fun b ↦ ∃ a, p a ∧ f a = b := by
   simp [comp_def, filter_map, hf.eq_iff]
 
 @[deprecated (since := "2025-02-07")] alias map_filter' := map_filter
 
 lemma filter_attach' (l : List α) (p : {a // a ∈ l} → Bool) [DecidableEq α] :
     l.attach.filter p =
-      (l.filter fun x => ∃ h, p ⟨x, h⟩).attach.map (Subtype.map id fun _ => mem_of_mem_filter) := by
+      (l.filter fun x ↦ ∃ h, p ⟨x, h⟩).attach.map (Subtype.map id fun _ ↦ mem_of_mem_filter) := by
   classical
   refine map_injective_iff.2 Subtype.coe_injective ?_
   simp [comp_def, map_filter _ Subtype.coe_injective]
 
 lemma filter_attach (l : List α) (p : α → Bool) :
-    (l.attach.filter fun x => p x : List {x // x ∈ l}) =
-      (l.filter p).attach.map (Subtype.map id fun _ => mem_of_mem_filter) :=
+    (l.attach.filter fun x ↦ p x : List {x // x ∈ l}) =
+      (l.filter p).attach.map (Subtype.map id fun _ ↦ mem_of_mem_filter) :=
   map_injective_iff.2 Subtype.coe_injective <| by
     simp_rw [map_map, comp_def, Subtype.map, id, ← Function.comp_apply (g := Subtype.val),
       ← filter_map, attach_map_subtype_val]
@@ -1075,11 +1075,11 @@ lemma filter_comm (q) (l : List α) : filter p (filter q l) = filter q (filter p
 
 @[simp]
 theorem filter_true (l : List α) :
-    filter (fun _ => true) l = l := by induction l <;> simp [*, filter]
+    filter (fun _ ↦ true) l = l := by induction l <;> simp [*, filter]
 
 @[simp]
 theorem filter_false (l : List α) :
-    filter (fun _ => false) l = [] := by induction l <;> simp [*, filter]
+    filter (fun _ ↦ false) l = [] := by induction l <;> simp [*, filter]
 
 end Filter
 
@@ -1115,7 +1115,7 @@ theorem map_erase [DecidableEq β] {f : α → β} (finj : Injective f) {a : α}
   rw [erase_eq_eraseP, erase_eq_eraseP, eraseP_map, this]; rfl
 
 theorem map_foldl_erase [DecidableEq β] {f : α → β} (finj : Injective f) {l₁ l₂ : List α} :
-    map f (foldl List.erase l₁ l₂) = foldl (fun l a => l.erase (f a)) (map f l₁) l₂ := by
+    map f (foldl List.erase l₁ l₂) = foldl (fun l a ↦ l.erase (f a)) (map f l₁) l₂ := by
   induction l₂ generalizing l₁ <;> [rfl; simp only [foldl_cons, map_erase finj, *]]
 
 theorem erase_getElem [DecidableEq ι] {l : List ι} {i : ℕ} (hi : i < l.length) :
@@ -1202,7 +1202,7 @@ theorem Forall.imp (h : ∀ x, p x → q x) : ∀ {l : List α}, Forall p l → 
 theorem forall_map_iff {p : β → Prop} (f : α → β) : Forall p (l.map f) ↔ Forall (p ∘ f) l := by
   induction l <;> simp [*]
 
-instance (p : α → Prop) [DecidablePred p] : DecidablePred (Forall p) := fun _ =>
+instance (p : α → Prop) [DecidablePred p] : DecidablePred (Forall p) := fun _ ↦
   decidable_of_iff' _ forall_iff_forall_mem
 
 end Forall
@@ -1263,7 +1263,7 @@ section lookup
 variable [BEq α] [LawfulBEq α]
 
 lemma lookup_graph (f : α → β) {a : α} {as : List α} (h : a ∈ as) :
-    lookup a (as.map fun x => (x, f x)) = some (f a) := by
+    lookup a (as.map fun x ↦ (x, f x)) = some (f a) := by
   induction as with
   | nil => exact (not_mem_nil h).elim
   | cons a' as ih =>

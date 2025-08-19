@@ -106,7 +106,7 @@ def Exact.isLimitImage (h : S.Exact) :
   exact KernelFork.IsLimit.ofι _ _
     (fun u hu ↦ kernel.lift (cokernel.π S.f) u
       (by rw [← kernel.lift_ι S.g u hu, Category.assoc, h, comp_zero])) (by simp)
-    (fun _ _ _ hm => by rw [← cancel_mono (Abelian.image.ι S.f), hm, kernel.lift_ι])
+    (fun _ _ _ hm ↦ by rw [← cancel_mono (Abelian.image.ι S.f), hm, kernel.lift_ι])
 
 /-- If `(f, g)` is exact, then `image.ι f` is a kernel of `g`. -/
 def Exact.isLimitImage' (h : S.Exact) :
@@ -121,7 +121,7 @@ def Exact.isColimitCoimage (h : S.Exact) :
         CokernelCofork S.f) := by
   rw [exact_iff_kernel_ι_comp_cokernel_π_zero] at h
   refine CokernelCofork.IsColimit.ofπ _ _
-    (fun u hu => cokernel.desc (kernel.ι S.g) u
+    (fun u hu ↦ cokernel.desc (kernel.ι S.g) u
       (by rw [← cokernel.π_desc S.f u hu, ← Category.assoc, h, zero_comp]))
     (by simp) ?_
   intros _ _ _ _ hm

@@ -55,7 +55,7 @@ theorem mem_iSup_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ 
 @[to_additive]
 theorem coe_iSup_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ ·) S) :
     ((⨆ i, S i : Subsemigroup M) : Set M) = ⋃ i, S i :=
-  Set.ext fun x => by simp [mem_iSup_of_directed hS]
+  Set.ext fun x ↦ by simp [mem_iSup_of_directed hS]
 
 @[to_additive]
 theorem mem_sSup_of_directed_on {S : Set (Subsemigroup M)} (hS : DirectedOn (· ≤ ·) S) {x : M} :
@@ -65,7 +65,7 @@ theorem mem_sSup_of_directed_on {S : Set (Subsemigroup M)} (hS : DirectedOn (· 
 @[to_additive]
 theorem coe_sSup_of_directed_on {S : Set (Subsemigroup M)} (hS : DirectedOn (· ≤ ·) S) :
     (↑(sSup S) : Set M) = ⋃ s ∈ S, ↑s :=
-  Set.ext fun x => by simp [mem_sSup_of_directed_on hS]
+  Set.ext fun x ↦ by simp [mem_sSup_of_directed_on hS]
 
 @[to_additive]
 theorem mem_sup_left {S T : Subsemigroup M} : ∀ {x : M}, x ∈ S → x ∈ S ⊔ T := by
@@ -102,7 +102,7 @@ the supremum of `S`. -/]
 theorem iSup_induction (S : ι → Subsemigroup M) {C : M → Prop} {x₁ : M} (hx₁ : x₁ ∈ ⨆ i, S i)
     (mem : ∀ i, ∀ x₂ ∈ S i, C x₂) (mul : ∀ x y, C x → C y → C (x * y)) : C x₁ := by
   rw [iSup_eq_closure] at hx₁
-  refine closure_induction (fun x₂ hx₂ => ?_) (fun x y _ _ ↦ mul x y) hx₁
+  refine closure_induction (fun x₂ hx₂ ↦ ?_) (fun x y _ _ ↦ mul x y) hx₁
   obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hx₂
   exact mem _ _ hi
 
@@ -113,9 +113,9 @@ theorem iSup_induction' (S : ι → Subsemigroup M) {C : ∀ x, (x ∈ ⨆ i, S 
     (mem : ∀ (i) (x) (hxS : x ∈ S i), C x (mem_iSup_of_mem i ‹_›))
     (mul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x₁ : M}
     (hx₁ : x₁ ∈ ⨆ i, S i) : C x₁ hx₁ := by
-  refine Exists.elim ?_ fun (hx₁' : x₁ ∈ ⨆ i, S i) (hc : C x₁ hx₁') => hc
-  refine @iSup_induction _ _ _ S (fun x' => ∃ hx'', C x' hx'') _ hx₁
-      (fun i x₂ hx₂ => ?_) fun x₃ y => ?_
+  refine Exists.elim ?_ fun (hx₁' : x₁ ∈ ⨆ i, S i) (hc : C x₁ hx₁') ↦ hc
+  refine @iSup_induction _ _ _ S (fun x' ↦ ∃ hx'', C x' hx'') _ hx₁
+      (fun i x₂ hx₂ ↦ ?_) fun x₃ y ↦ ?_
   · exact ⟨_, mem _ _ hx₂⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
     exact ⟨_, mul _ _ _ _ Cx Cy⟩

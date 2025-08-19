@@ -74,7 +74,7 @@ theorem smul_inv_mem_fixedBy_iff_mem_fixedBy {a : α} {g : G} :
 
 @[to_additive minimalPeriod_eq_one_iff_fixedBy]
 theorem minimalPeriod_eq_one_iff_fixedBy {a : α} {g : G} :
-    Function.minimalPeriod (fun x => g • x) a = 1 ↔ a ∈ fixedBy α g :=
+    Function.minimalPeriod (fun x ↦ g • x) a = 1 ↔ a ∈ fixedBy α g :=
   Function.minimalPeriod_eq_one_iff_isFixedPt
 
 variable (α) in
@@ -144,7 +144,7 @@ theorem set_mem_fixedBy_of_subset_fixedBy {s : Set α} {g : G} (s_ss_fixedBy : s
   rw [← fixedBy_inv]
   ext x
   rw [Set.mem_inv_smul_set_iff]
-  refine ⟨fun gxs => ?xs, fun xs => (s_ss_fixedBy xs).symm ▸ xs⟩
+  refine ⟨fun gxs ↦ ?xs, fun xs ↦ (s_ss_fixedBy xs).symm ▸ xs⟩
   rw [← fixedBy_inv] at s_ss_fixedBy
   rwa [← s_ss_fixedBy gxs, inv_smul_smul] at gxs
 

@@ -55,10 +55,10 @@ theorem IsCompact.uniformContinuousAt_of_continuousAt {r : Set (β × β)} {s : 
     (hs : IsCompact s) (f : α → β) (hf : ∀ a ∈ s, ContinuousAt f a) (hr : r ∈ 𝓤 β) :
     { x : α × α | x.1 ∈ s → (f x.1, f x.2) ∈ r } ∈ 𝓤 α := by
   obtain ⟨t, ht, htsymm, htr⟩ := comp_symm_mem_uniformity_sets hr
-  choose U hU T hT hb using fun a ha =>
+  choose U hU T hT hb using fun a ha ↦
     exists_mem_nhds_ball_subset_of_mem_nhds ((hf a ha).preimage_mem_nhds <| mem_nhds_left _ ht)
   obtain ⟨fs, hsU⟩ := hs.elim_nhds_subcover' U hU
-  apply mem_of_superset ((biInter_finset_mem fs).2 fun a _ => hT a a.2)
+  apply mem_of_superset ((biInter_finset_mem fs).2 fun a _ ↦ hT a a.2)
   rintro ⟨a₁, a₂⟩ h h₁
   obtain ⟨a, ha, haU⟩ := Set.mem_iUnion₂.1 (hsU h₁)
   apply htr
@@ -67,13 +67,13 @@ theorem IsCompact.uniformContinuousAt_of_continuousAt {r : Set (β × β)} {s : 
 
 theorem Continuous.uniformContinuous_of_tendsto_cocompact {f : α → β} {x : β}
     (h_cont : Continuous f) (hx : Tendsto f (cocompact α) (𝓝 x)) : UniformContinuous f :=
-  uniformContinuous_def.2 fun r hr => by
+  uniformContinuous_def.2 fun r hr ↦ by
     obtain ⟨t, ht, htsymm, htr⟩ := comp_symm_mem_uniformity_sets hr
     obtain ⟨s, hs, hst⟩ := mem_cocompact.1 (hx <| mem_nhds_left _ ht)
     apply
       mem_of_superset
         (symmetrize_mem_uniformity <|
-          (hs.uniformContinuousAt_of_continuousAt f fun _ _ => h_cont.continuousAt) <|
+          (hs.uniformContinuousAt_of_continuousAt f fun _ _ ↦ h_cont.continuousAt) <|
             symmetrize_mem_uniformity hr)
     rintro ⟨b₁, b₂⟩ h
     by_cases h₁ : b₁ ∈ s; · exact (h.1 h₁).1

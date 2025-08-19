@@ -204,16 +204,16 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
       let Z := of (ULift.{u} <| Fin 2)
       let g : Y ⟶ Z := CompHausLike.ofHom _
         ⟨(LocallyConstant.ofIsClopen hV).map ULift.up, LocallyConstant.continuous _⟩
-      let h : Y ⟶ Z := CompHausLike.ofHom _ ⟨fun _ => ⟨1⟩, continuous_const⟩
+      let h : Y ⟶ Z := CompHausLike.ofHom _ ⟨fun _ ↦ ⟨1⟩, continuous_const⟩
       have H : h = g := by
         rw [← cancel_epi f]
         ext x
         dsimp [g, LocallyConstant.ofIsClopen]
         rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, hom_ofHom, ContinuousMap.coe_mk,
           Function.comp_apply, if_neg]
-        refine mt (fun α => hVU α) ?_
+        refine mt (fun α ↦ hVU α) ?_
         simp [U, C]
-      apply_fun fun e => (e y).down at H
+      apply_fun fun e ↦ (e y).down at H
       dsimp [g, LocallyConstant.ofIsClopen] at H
       rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
       exact top_ne_bot H
@@ -242,7 +242,7 @@ def toProfinite (S : LightDiagram) : Profinite := S.cone.pt
 @[simps!]
 instance : Category LightDiagram := InducedCategory.category toProfinite
 
-instance hasForget : ConcreteCategory LightDiagram (fun X Y => C(X.toProfinite, Y.toProfinite)) :=
+instance hasForget : ConcreteCategory LightDiagram (fun X Y ↦ C(X.toProfinite, Y.toProfinite)) :=
   InducedCategory.concreteCategory toProfinite
 
 end LightDiagram

@@ -36,7 +36,7 @@ instance : MonoidalClosed (ModuleCat.{u} R) where
   closed M :=
     { rightAdj := (linearCoyoneda R (ModuleCat.{u} R)).obj (op M)
       adj := Adjunction.mkOfHomEquiv
-            { homEquiv := fun N P => monoidalClosedHomEquiv M N P
+            { homEquiv := fun N P ↦ monoidalClosedHomEquiv M N P
               -- Porting note: this proof was automatic in mathlib3
               homEquiv_naturality_left_symm := by
                 intros

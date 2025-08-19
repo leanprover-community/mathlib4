@@ -488,9 +488,9 @@ noncomputable instance _root_.Module.End.instDivisionRing
     exact (LinearEquiv.ofBijective _ <| bijective_of_ne_zero a0).right_inv _
   inv_zero := dif_pos rfl
   nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
+  nnqsmul_def := fun _ _ ↦ rfl
   qsmul := _
-  qsmul_def := fun _ _ => rfl
+  qsmul_def := fun _ _ ↦ rfl
 
 end LinearMap
 
@@ -505,10 +505,10 @@ def Iso (X Y : Submodule R M × Submodule R M) : Prop :=
   Nonempty <| (X.2 ⧸ X.1.comap X.2.subtype) ≃ₗ[R] Y.2 ⧸ Y.1.comap Y.2.subtype
 
 theorem iso_symm {X Y : Submodule R M × Submodule R M} : Iso X Y → Iso Y X :=
-  fun ⟨f⟩ => ⟨f.symm⟩
+  fun ⟨f⟩ ↦ ⟨f.symm⟩
 
 theorem iso_trans {X Y Z : Submodule R M × Submodule R M} : Iso X Y → Iso Y Z → Iso X Z :=
-  fun ⟨f⟩ ⟨g⟩ => ⟨f.trans g⟩
+  fun ⟨f⟩ ⟨g⟩ ↦ ⟨f.trans g⟩
 
 @[nolint unusedArguments]
 theorem second_iso {X Y : Submodule R M} (_ : X ⋖ X ⊔ Y) :

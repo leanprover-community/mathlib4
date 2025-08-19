@@ -161,7 +161,7 @@ theorem add_lt_add_of_lt_of_le' {x y z t : EReal} (h : x < y) (h' : z ≤ t) (hb
 assumptions. -/
 theorem add_lt_add_of_lt_of_le {x y z t : EReal} (h : x < y) (h' : z ≤ t) (hz : z ≠ ⊥)
     (ht : t ≠ ⊤) : x + z < y + t :=
-  add_lt_add_of_lt_of_le' h h' (ne_bot_of_le_ne_bot hz h') fun ht' => (ht ht').elim
+  add_lt_add_of_lt_of_le' h h' (ne_bot_of_le_ne_bot hz h') fun ht' ↦ (ht ht').elim
 
 theorem add_lt_top {x y : EReal} (hx : x ≠ ⊤) (hy : y ≠ ⊤) : x + y < ⊤ :=
   add_lt_add hx.lt_top hy.lt_top
@@ -256,8 +256,8 @@ theorem neg_eq_zero_iff {x : EReal} : -x = 0 ↔ x = 0 :=
 
 theorem neg_strictAnti : StrictAnti (- · : EReal → EReal) :=
   WithBot.strictAnti_iff.2 ⟨WithTop.strictAnti_iff.2
-    ⟨coe_strictMono.comp_strictAnti fun _ _ => neg_lt_neg, fun _ => bot_lt_coe _⟩,
-      WithTop.forall.2 ⟨bot_lt_top, fun _ => coe_lt_top _⟩⟩
+    ⟨coe_strictMono.comp_strictAnti fun _ _ ↦ neg_lt_neg, fun _ ↦ bot_lt_coe _⟩,
+      WithTop.forall.2 ⟨bot_lt_top, fun _ ↦ coe_lt_top _⟩⟩
 
 @[simp] theorem neg_le_neg_iff {a b : EReal} : -a ≤ -b ↔ b ≤ a := neg_strictAnti.le_iff_ge
 
@@ -298,8 +298,8 @@ protected theorem lt_neg_of_lt_neg {a b : EReal} (h : a < -b) : b < -a := lt_neg
 /-- Negation as an order reversing isomorphism on `EReal`. -/
 def negOrderIso : EReal ≃o ERealᵒᵈ :=
   { Equiv.neg EReal with
-    toFun := fun x => OrderDual.toDual (-x)
-    invFun := fun x => -OrderDual.ofDual x
+    toFun := fun x ↦ OrderDual.toDual (-x)
+    invFun := fun x ↦ -OrderDual.ofDual x
     map_rel_iff' := neg_le_neg_iff }
 
 lemma neg_add {x y : EReal} (h1 : x ≠ ⊥ ∨ y ≠ ⊤) (h2 : x ≠ ⊤ ∨ y ≠ ⊥) :
@@ -675,12 +675,12 @@ lemma induction₂_neg_left {P : EReal → EReal → Prop} (neg_left : ∀ {x y}
     (zero_top : P 0 ⊤) (zero_bot : P 0 ⊥)
     (pos_top : ∀ x : ℝ, 0 < x → P x ⊤) (pos_bot : ∀ x : ℝ, 0 < x → P x ⊥)
     (coe_coe : ∀ x y : ℝ, P x y) : ∀ x y, P x y :=
-  have : ∀ y, (∀ x : ℝ, 0 < x → P x y) → ∀ x : ℝ, x < 0 → P x y := fun _ h x hx =>
+  have : ∀ y, (∀ x : ℝ, 0 < x → P x y) → ∀ x : ℝ, x < 0 → P x y := fun _ h x hx ↦
     neg_neg (x : EReal) ▸ neg_left <| h _ (neg_pos_of_neg hx)
   @induction₂ P top_top top_pos top_zero top_neg top_bot pos_top pos_bot zero_top
     coe_coe zero_bot (this _ pos_top) (this _ pos_bot) (neg_left top_top)
-    (fun x hx => neg_left <| top_pos x hx) (neg_left top_zero)
-    (fun x hx => neg_left <| top_neg x hx) (neg_left top_bot)
+    (fun x hx ↦ neg_left <| top_pos x hx) (neg_left top_zero)
+    (fun x hx ↦ neg_left <| top_neg x hx) (neg_left top_bot)
 
 /-- Induct on two ereals by performing case splits on the sign of one whenever the other is
 infinite. This version eliminates some cases by assuming that `P` is symmetric and `P x y` implies
@@ -691,12 +691,12 @@ lemma induction₂_symm_neg {P : EReal → EReal → Prop}
     (neg_left : ∀ {x y}, P x y → P (-x) y) (top_top : P ⊤ ⊤)
     (top_pos : ∀ x : ℝ, 0 < x → P ⊤ x) (top_zero : P ⊤ 0) (coe_coe : ∀ x y : ℝ, P x y) :
     ∀ x y, P x y :=
-  have neg_right : ∀ {x y}, P x y → P x (-y) := fun h => symm <| neg_left <| symm h
-  have : ∀ x, (∀ y : ℝ, 0 < y → P x y) → ∀ y : ℝ, y < 0 → P x y := fun _ h y hy =>
+  have neg_right : ∀ {x y}, P x y → P x (-y) := fun h ↦ symm <| neg_left <| symm h
+  have : ∀ x, (∀ y : ℝ, 0 < y → P x y) → ∀ y : ℝ, y < 0 → P x y := fun _ h y hy ↦
     neg_neg (y : EReal) ▸ neg_right (h _ (neg_pos_of_neg hy))
   @induction₂_neg_left P neg_left top_top top_pos top_zero (this _ top_pos) (neg_right top_top)
-    (symm top_zero) (symm <| neg_left top_zero) (fun x hx => symm <| top_pos x hx)
-    (fun x hx => symm <| neg_left <| top_pos x hx) coe_coe
+    (symm top_zero) (symm <| neg_left top_zero) (fun x hx ↦ symm <| top_pos x hx)
+    (fun x hx ↦ symm <| neg_left <| top_pos x hx) coe_coe
 
 protected lemma neg_mul (x y : EReal) : -x * y = -(x * y) := by
   induction x, y using induction₂_neg_left with
@@ -713,7 +713,7 @@ protected lemma neg_mul (x y : EReal) : -x * y = -(x * y) := by
 
 instance : HasDistribNeg EReal where
   neg_mul := EReal.neg_mul
-  mul_neg := fun x y => by
+  mul_neg := fun x y ↦ by
     rw [x.mul_comm, x.mul_comm]
     exact y.neg_mul x
 

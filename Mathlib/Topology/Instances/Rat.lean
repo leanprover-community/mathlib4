@@ -68,15 +68,15 @@ namespace Rat
 
 instance : NoncompactSpace ℚ := Int.isClosedEmbedding_coe_rat.noncompactSpace
 
-theorem uniformContinuous_add : UniformContinuous fun p : ℚ × ℚ => p.1 + p.2 :=
+theorem uniformContinuous_add : UniformContinuous fun p : ℚ × ℚ ↦ p.1 + p.2 :=
   Rat.isUniformEmbedding_coe_real.isUniformInducing.uniformContinuous_iff.2 <| by
     simp only [Function.comp_def, Rat.cast_add]
     exact Real.uniformContinuous_add.comp
       (Rat.uniformContinuous_coe_real.prodMap Rat.uniformContinuous_coe_real)
 
 theorem uniformContinuous_neg : UniformContinuous (@Neg.neg ℚ _) :=
-  Metric.uniformContinuous_iff.2 fun ε ε0 =>
-    ⟨_, ε0, fun _ _ h => by simpa only [abs_sub_comm, dist_eq, cast_neg, neg_sub_neg] using h⟩
+  Metric.uniformContinuous_iff.2 fun ε ε0 ↦
+    ⟨_, ε0, fun _ _ h ↦ by simpa only [abs_sub_comm, dist_eq, cast_neg, neg_sub_neg] using h⟩
 
 instance : IsUniformAddGroup ℚ :=
   IsUniformAddGroup.mk' Rat.uniformContinuous_add Rat.uniformContinuous_neg
@@ -86,8 +86,8 @@ instance : IsTopologicalAddGroup ℚ := inferInstance
 instance : OrderTopology ℚ := induced_orderTopology _ Rat.cast_lt exists_rat_btwn
 
 theorem uniformContinuous_abs : UniformContinuous (abs : ℚ → ℚ) :=
-  Metric.uniformContinuous_iff.2 fun ε ε0 =>
-    ⟨ε, ε0, fun _ _ h =>
+  Metric.uniformContinuous_iff.2 fun ε ε0 ↦
+    ⟨ε, ε0, fun _ _ h ↦
       lt_of_le_of_lt (by simpa [Rat.dist_eq] using abs_abs_sub_abs_le_abs_sub _ _) h⟩
 
 instance : IsTopologicalRing ℚ := inferInstance

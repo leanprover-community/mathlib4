@@ -80,7 +80,7 @@ The setoid structure on `A` defined by the equivalence relation of `IsConjRoot R
 -/
 def setoid : Setoid A where
   r := IsConjRoot R
-  iseqv := ⟨fun _ => refl, symm, trans⟩
+  iseqv := ⟨fun _ ↦ refl, symm, trans⟩
 
 /--
 Let `p` be the minimal polynomial of `x`. If `y` is a conjugate root of `x`, then `p y = 0`.
@@ -189,7 +189,7 @@ that `σ y = x`.
 -/
 theorem isConjRoot_iff_exists_algEquiv [Normal K L] {x y : L} :
     IsConjRoot K x y ↔ ∃ σ : L ≃ₐ[K] L, σ y = x :=
-  ⟨exists_algEquiv, fun ⟨_, h⟩ => h ▸ (isConjRoot_of_algEquiv _ _).symm⟩
+  ⟨exists_algEquiv, fun ⟨_, h⟩ ↦ h ▸ (isConjRoot_of_algEquiv _ _).symm⟩
 
 /--
 Let `L / K` be a normal field extension. For any two elements `x` and `y` in `L`, `y` is a
@@ -219,7 +219,7 @@ theorem isConjRoot_iff_mem_minpoly_aroots {x y : S} (h : IsIntegral K x) :
     IsConjRoot K x y ↔ y ∈ (minpoly K x).aroots S := by
   rw [Polynomial.mem_aroots, isConjRoot_iff_aeval_eq_zero h]
   simp only [iff_and_self]
-  exact fun _ => minpoly.ne_zero h
+  exact fun _ ↦ minpoly.ne_zero h
 
 /--
 `y` is a conjugate root of `x` over `K` if and only if `y` is a root of the minimal polynomial of
@@ -288,7 +288,7 @@ conjugate root of some element `algebraMap R S r` in the image of the base ring,
 theorem isConjRoot_iff_eq_algebraMap_of_injective [Nontrivial R] [NoZeroSMulDivisors R S] {r : R}
     {x : S} (hf : Function.Injective (algebraMap R S)) :
     IsConjRoot R (algebraMap R S r) x ↔ x = algebraMap R S r :=
-  ⟨fun h => eq_algebraMap_of_injective h hf, fun h => h.symm ▸ rfl⟩
+  ⟨fun h ↦ eq_algebraMap_of_injective h hf, fun h ↦ h.symm ▸ rfl⟩
 
 /--
 An element `x` is a conjugate root of some element `algebraMap R S r` in the image of the base ring
@@ -316,7 +316,7 @@ conjugate root of `0` if and only if `x = 0`.
 -/
 theorem isConjRoot_zero_iff_eq_zero_of_injective [Nontrivial R] {x : S} [NoZeroSMulDivisors R S]
     (hf : Function.Injective (algebraMap R S)) : IsConjRoot R 0 x ↔ x = 0 :=
-  ⟨fun h => eq_zero_of_injective h hf, fun h => h.symm ▸ rfl⟩
+  ⟨fun h ↦ eq_zero_of_injective h hf, fun h ↦ h.symm ▸ rfl⟩
 
 /--
 `x` is a conjugate root of `0` if and only if `x = 0`.
@@ -341,7 +341,7 @@ a conjugate root of a nonzero element `x`, then `y` is not zero.
 -/
 theorem ne_zero_of_injective [Nontrivial R] [NoZeroSMulDivisors R S] {x y : S} (hx : x ≠ 0)
     (h : IsConjRoot R x y) (hf : Function.Injective (algebraMap R S)) : y ≠ 0 :=
-  fun g => hx (eq_zero_of_injective (g ▸ h.symm) hf)
+  fun g ↦ hx (eq_zero_of_injective (g ▸ h.symm) hf)
 
 /--
 If `y` is a conjugate root of a nonzero element `x`, then `y` is not zero.
@@ -366,12 +366,12 @@ theorem notMem_iff_exists_ne_and_isConjRoot {x : L} (h : IsSeparable K x)
     _ ↔ Nontrivial ((minpoly K x).rootSet L) := Fintype.one_lt_card_iff_nontrivial
     _ ↔ ∃ y : ((minpoly K x).rootSet L), ↑y ≠ x :=
       (nontrivial_iff_exists_ne ⟨x, mem_rootSet.mpr ⟨minpoly.ne_zero h.isIntegral,
-          minpoly.aeval K x⟩⟩).trans ⟨fun ⟨y, hy⟩ => ⟨y, Subtype.coe_ne_coe.mpr hy⟩,
-          fun ⟨y, hy⟩ => ⟨y, Subtype.coe_ne_coe.mp hy⟩⟩
+          minpoly.aeval K x⟩⟩).trans ⟨fun ⟨y, hy⟩ ↦ ⟨y, Subtype.coe_ne_coe.mpr hy⟩,
+          fun ⟨y, hy⟩ ↦ ⟨y, Subtype.coe_ne_coe.mp hy⟩⟩
     _ ↔ _ :=
-      ⟨fun ⟨⟨y, hy⟩, hne⟩ => ⟨y, ⟨hne.symm,
+      ⟨fun ⟨⟨y, hy⟩, hne⟩ ↦ ⟨y, ⟨hne.symm,
           (isConjRoot_iff_mem_minpoly_rootSet h.isIntegral).mpr hy⟩⟩,
-          fun ⟨y, hne, hy⟩ => ⟨⟨y,
+          fun ⟨y, hne, hy⟩ ↦ ⟨⟨y,
           (isConjRoot_iff_mem_minpoly_rootSet h.isIntegral).mp hy⟩, hne.symm⟩⟩
 
 @[deprecated (since := "2025-05-23")]

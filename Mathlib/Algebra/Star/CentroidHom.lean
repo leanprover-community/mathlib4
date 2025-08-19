@@ -31,22 +31,22 @@ variable [NonUnitalNonAssocSemiring α] [StarRing α]
 
 instance : Star (CentroidHom α) where
   star f :=
-  { toFun := fun a => star (f (star a))
+  { toFun := fun a ↦ star (f (star a))
     map_zero' := by
       simp only [star_zero, map_zero]
-    map_add' := fun a b => by simp only [star_add, map_add]
-    map_mul_left' := fun a b => by simp only [star_mul, map_mul_right, star_star]
-    map_mul_right' := fun a b => by simp only [star_mul, map_mul_left, star_star] }
+    map_add' := fun a b ↦ by simp only [star_add, map_add]
+    map_mul_left' := fun a b ↦ by simp only [star_mul, map_mul_right, star_star]
+    map_mul_right' := fun a b ↦ by simp only [star_mul, map_mul_left, star_star] }
 
 @[simp] lemma star_apply (f : CentroidHom α) (a : α) : (star f) a = star (f (star a)) := rfl
 
 instance instStarAddMonoid : StarAddMonoid (CentroidHom α) where
-  star_involutive f := ext (fun _ => by
+  star_involutive f := ext (fun _ ↦ by
     rw [star_apply, star_apply, star_star, star_star])
-  star_add _ _ := ext fun _ => star_add _ _
+  star_add _ _ := ext fun _ ↦ star_add _ _
 
 instance : Star (Subsemiring.center (CentroidHom α)) where
-  star f := ⟨star (f : CentroidHom α), Subsemiring.mem_center_iff.mpr (fun g => ext (fun a =>
+  star f := ⟨star (f : CentroidHom α), Subsemiring.mem_center_iff.mpr (fun g ↦ ext (fun a ↦
     calc
       g (star (f (star a))) = star (star g (f (star a))) := by rw [star_apply, star_star]
       _ = star ((star g * f) (star a)) := rfl
@@ -111,7 +111,7 @@ Let `α` be a star ring with commutative centroid. Then the centroid is a star r
 def starRingOfCommCentroidHom (mul_comm : Std.Commutative (α := CentroidHom α) (· * ·)) :
     StarRing (CentroidHom α) where
   __ := instStarAddMonoid
-  star_mul _ _ := ext (fun _ => by
+  star_mul _ _ := ext (fun _ ↦ by
     rw [mul_comm.comm, star_apply, mul_apply, mul_apply, star_apply, star_apply, star_star])
 
 end NonUnitalNonAssocStarSemiring
@@ -128,7 +128,7 @@ def starCenterIsoCentroid : StarSubsemiring.center α ≃⋆+* CentroidHom α wh
   left_inv z := Subtype.ext <| by simp only [MulHom.toFun_eq_coe,
     NonUnitalRingHom.coe_toMulHom, NonUnitalStarRingHom.coe_toNonUnitalRingHom,
     starCenterToCentroid_apply, mul_one]
-  right_inv T := CentroidHom.ext <| fun _ => by
+  right_inv T := CentroidHom.ext <| fun _ ↦ by
     simp [starCenterToCentroid_apply, ← map_mul_right]
 
 @[simp]

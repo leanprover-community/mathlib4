@@ -146,7 +146,7 @@ theorem lineDeriv_zero_of_not_lineDifferentiableAt (h : ¬LineDifferentiableAt �
 
 theorem hasLineDerivAt_iff_isLittleO_nhds_zero :
     HasLineDerivAt 𝕜 f f' x v ↔
-      (fun t : 𝕜 => f (x + t • v) - f x - t • f') =o[𝓝 0] fun t => t := by
+      (fun t : 𝕜 ↦ f (x + t • v) - f x - t • f') =o[𝓝 0] fun t ↦ t := by
   simp only [HasLineDerivAt, hasDerivAt_iff_isLittleO_nhds_zero, zero_add, zero_smul, add_zero]
 
 theorem HasLineDerivAt.unique (h₀ : HasLineDerivAt 𝕜 f f₀' x v) (h₁ : HasLineDerivAt 𝕜 f f₁' x v) :

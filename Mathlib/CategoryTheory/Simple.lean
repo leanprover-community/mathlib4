@@ -55,7 +55,7 @@ theorem isIso_of_mono_of_nonzero {X Y : C} [Simple Y] {f : X ⟶ Y} [Mono f] (w 
   (Simple.mono_isIso_iff_nonzero f).mpr w
 
 theorem Simple.of_iso {X Y : C} [Simple Y] (i : X ≅ Y) : Simple X :=
-  { mono_isIso_iff_nonzero := fun f m => by
+  { mono_isIso_iff_nonzero := fun f m ↦ by
       constructor
       · intro h w
         have j : IsIso (f ≫ i.hom) := by infer_instance
@@ -72,7 +72,7 @@ theorem Simple.of_iso {X Y : C} [Simple Y] (i : X ≅ Y) : Simple X :=
         infer_instance }
 
 theorem Simple.iff_of_iso {X Y : C} (i : X ≅ Y) : Simple X ↔ Simple Y :=
-  ⟨fun _ => Simple.of_iso i.symm, fun _ => Simple.of_iso i⟩
+  ⟨fun _ ↦ Simple.of_iso i.symm, fun _ ↦ Simple.of_iso i⟩
 
 theorem kernel_zero_of_nonzero_from_simple {X Y : C} [Simple X] {f : X ⟶ Y} [HasKernel f]
     (w : f ≠ 0) : kernel.ι f = 0 := by
@@ -88,7 +88,7 @@ theorem kernel_zero_of_nonzero_from_simple {X Y : C} [Simple X] {f : X ⟶ Y} [H
 theorem epi_of_nonzero_to_simple [HasEqualizers C] {X Y : C} [Simple Y] {f : X ⟶ Y} [HasImage f]
     (w : f ≠ 0) : Epi f := by
   rw [← image.fac f]
-  haveI : IsIso (image.ι f) := isIso_of_mono_of_nonzero fun h => w (eq_zero_of_image_eq_zero h)
+  haveI : IsIso (image.ι f) := isIso_of_mono_of_nonzero fun h ↦ w (eq_zero_of_image_eq_zero h)
   apply epi_comp
 
 theorem mono_to_simple_zero_of_not_iso {X Y : C} [Simple Y] {f : X ⟶ Y} [Mono f]
@@ -131,7 +131,7 @@ variable [Abelian C]
 simple. -/
 theorem simple_of_cosimple (X : C) (h : ∀ {Z : C} (f : X ⟶ Z) [Epi f], IsIso f ↔ f ≠ 0) :
     Simple X :=
-  ⟨fun {Y} f I => by
+  ⟨fun {Y} f I ↦ by
     classical
       fconstructor
       · intros
@@ -185,8 +185,8 @@ theorem Biprod.isIso_inl_iff_isZero (X Y : C) : IsIso (biprod.inl : X ⟶ X ⊞ 
 
 /-- Any simple object in a preadditive category is indecomposable. -/
 theorem indecomposable_of_simple (X : C) [Simple X] : Indecomposable X :=
-  ⟨Simple.not_isZero X, fun Y Z i => by
-    refine or_iff_not_imp_left.mpr fun h => ?_
+  ⟨Simple.not_isZero X, fun Y Z i ↦ by
+    refine or_iff_not_imp_left.mpr fun h ↦ ?_
     rw [IsZero.iff_isSplitMono_eq_zero (biprod.inl : Y ⟶ Y ⊞ Z)] at h
     change biprod.inl ≠ 0 at h
     have : Simple (Y ⊞ Z) := Simple.of_iso i.symm

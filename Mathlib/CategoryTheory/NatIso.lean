@@ -198,11 +198,11 @@ def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
     (naturality : ∀ {X Y : C} (f : X ⟶ Y),
       F.map f ≫ (app Y).hom = (app X).hom ≫ G.map f := by cat_disch) :
     F ≅ G where
-  hom := { app := fun X => (app X).hom }
+  hom := { app := fun X ↦ (app X).hom }
   inv :=
-    { app := fun X => (app X).inv,
-      naturality := fun X Y f => by
-        have h := congr_arg (fun f => (app X).inv ≫ f ≫ (app Y).inv) (naturality f).symm
+    { app := fun X ↦ (app X).inv,
+      naturality := fun X Y f ↦ by
+        have h := congr_arg (fun f ↦ (app X).inv ≫ f ≫ (app Y).inv) (naturality f).symm
         simp only [Iso.inv_hom_id_assoc, Iso.hom_inv_id, assoc, comp_id] at h
         exact h }
 
@@ -216,7 +216,7 @@ theorem ofComponents.app (app' : ∀ X : C, F.obj X ≅ G.obj X) (naturality) (X
 /-- A natural transformation is an isomorphism if all its components are isomorphisms.
 -/
 theorem isIso_of_isIso_app (α : F ⟶ G) [∀ X : C, IsIso (α.app X)] : IsIso α :=
-  (ofComponents (fun X => asIso (α.app X)) (by simp)).isIso_hom
+  (ofComponents (fun X ↦ asIso (α.app X)) (by simp)).isIso_hom
 
 /-- Horizontal composition of natural isomorphisms. -/
 @[simps]
@@ -228,7 +228,7 @@ theorem isIso_map_iff {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) {X Y : C} (f : X
     IsIso (F₁.map f) ↔ IsIso (F₂.map f) := by
   revert F₁ F₂
   suffices ∀ {F₁ F₂ : C ⥤ D} (_ : F₁ ≅ F₂) (_ : IsIso (F₁.map f)), IsIso (F₂.map f) from
-    fun F₁ F₂ e => ⟨this e, this e.symm⟩
+    fun F₁ F₂ e ↦ ⟨this e, this e.symm⟩
   intro F₁ F₂ e hf
   exact IsIso.mk ⟨e.inv.app Y ≫ inv (F₁.map f) ≫ e.hom.app X, by cat_disch⟩
 

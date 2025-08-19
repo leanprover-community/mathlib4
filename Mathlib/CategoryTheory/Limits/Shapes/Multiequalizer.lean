@@ -238,11 +238,11 @@ variable [HasProduct I.left] [HasProduct I.right]
 
 /-- The induced map `∏ᶜ I.left ⟶ ∏ᶜ I.right` via `I.fst`. -/
 noncomputable def fstPiMap : ∏ᶜ I.left ⟶ ∏ᶜ I.right :=
-  Pi.lift fun b => Pi.π I.left (J.fst b) ≫ I.fst b
+  Pi.lift fun b ↦ Pi.π I.left (J.fst b) ≫ I.fst b
 
 /-- The induced map `∏ᶜ I.left ⟶ ∏ᶜ I.right` via `I.snd`. -/
 noncomputable def sndPiMap : ∏ᶜ I.left ⟶ ∏ᶜ I.right :=
-  Pi.lift fun b => Pi.π I.left (J.snd b) ≫ I.snd b
+  Pi.lift fun b ↦ Pi.π I.left (J.snd b) ≫ I.snd b
 
 @[reassoc (attr := simp)]
 theorem fstPiMap_π (b) : I.fstPiMap ≫ Pi.π I.right b = Pi.π I.left _ ≫ I.fst b := by
@@ -302,11 +302,11 @@ variable [HasCoproduct I.left] [HasCoproduct I.right]
 
 /-- The induced map `∐ I.left ⟶ ∐ I.right` via `I.fst`. -/
 noncomputable def fstSigmaMap : ∐ I.left ⟶ ∐ I.right :=
-  Sigma.desc fun b => I.fst b ≫ Sigma.ι _ (J.fst b)
+  Sigma.desc fun b ↦ I.fst b ≫ Sigma.ι _ (J.fst b)
 
 /-- The induced map `∐ I.left ⟶ ∐ I.right` via `I.snd`. -/
 noncomputable def sndSigmaMap : ∐ I.left ⟶ ∐ I.right :=
-  Sigma.desc fun b => I.snd b ≫ Sigma.ι _ (J.snd b)
+  Sigma.desc fun b ↦ I.snd b ≫ Sigma.ι _ (J.snd b)
 
 @[reassoc (attr := simp)]
 theorem ι_fstSigmaMap (b) : Sigma.ι I.left b ≫ I.fstSigmaMap = I.fst b ≫ Sigma.ι I.right _ := by
@@ -370,7 +370,7 @@ def ofι {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C)
     (w : ∀ b, ι (J.fst b) ≫ I.fst b = ι (J.snd b) ≫ I.snd b) : Multifork I where
   pt := P
   π :=
-    { app := fun x =>
+    { app := fun x ↦
         match x with
         | WalkingMulticospan.left _ => ι _
         | WalkingMulticospan.right b => ι (J.fst b) ≫ I.fst b
@@ -439,7 +439,7 @@ theorem pi_condition : Pi.lift K.ι ≫ I.fstPiMap = Pi.lift K.ι ≫ I.sndPiMap
 noncomputable def toPiFork (K : Multifork I) : Fork I.fstPiMap I.sndPiMap where
   pt := K.pt
   π :=
-    { app := fun x =>
+    { app := fun x ↦
         match x with
         | WalkingParallelPair.zero => Pi.lift K.ι
         | WalkingParallelPair.one => Pi.lift K.ι ≫ I.fstPiMap
@@ -464,7 +464,7 @@ variable (I)
 noncomputable def ofPiFork (c : Fork I.fstPiMap I.sndPiMap) : Multifork I where
   pt := c.pt
   π :=
-    { app := fun x =>
+    { app := fun x ↦
         match x with
         | WalkingMulticospan.left _ => c.ι ≫ Pi.π _ _
         | WalkingMulticospan.right _ => c.ι ≫ I.fstPiMap ≫ Pi.π _ _
@@ -525,11 +525,11 @@ noncomputable def multiforkEquivPiFork : Multifork I ≌ Fork I.fstPiMap I.sndPi
   functor := toPiForkFunctor I
   inverse := ofPiForkFunctor I
   unitIso :=
-    NatIso.ofComponents fun K =>
+    NatIso.ofComponents fun K ↦
       Cones.ext (Iso.refl _) (by
         rintro (_ | _) <;> simp)
   counitIso :=
-    NatIso.ofComponents fun K => Fork.ext (Iso.refl _)
+    NatIso.ofComponents fun K ↦ Fork.ext (Iso.refl _)
 
 end MulticospanIndex
 
@@ -566,7 +566,7 @@ def ofπ {J : MultispanShape.{w, w'}} (I : MultispanIndex J C)
     (w : ∀ a, I.fst a ≫ π (J.fst a) = I.snd a ≫ π (J.snd a)) : Multicofork I where
   pt := P
   ι :=
-    { app := fun x =>
+    { app := fun x ↦
         match x with
         | WalkingMultispan.left a => I.fst a ≫ π _
         | WalkingMultispan.right _ => π _
@@ -632,7 +632,7 @@ theorem sigma_condition : I.fstSigmaMap ≫ Sigma.desc K.π = I.sndSigmaMap ≫ 
 noncomputable def toSigmaCofork (K : Multicofork I) : Cofork I.fstSigmaMap I.sndSigmaMap where
   pt := K.pt
   ι :=
-    { app := fun x =>
+    { app := fun x ↦
         match x with
         | WalkingParallelPair.zero => I.fstSigmaMap ≫ Sigma.desc K.π
         | WalkingParallelPair.one => Sigma.desc K.π
@@ -652,7 +652,7 @@ variable (I)
 noncomputable def ofSigmaCofork (c : Cofork I.fstSigmaMap I.sndSigmaMap) : Multicofork I where
   pt := c.pt
   ι :=
-    { app := fun x =>
+    { app := fun x ↦
         match x with
         | WalkingMultispan.left a => (Sigma.ι I.left a :) ≫ I.fstSigmaMap ≫ c.π
         | WalkingMultispan.right b => (Sigma.ι I.right b :) ≫ c.π
@@ -733,9 +733,9 @@ noncomputable def multicoforkEquivSigmaCofork :
     Multicofork I ≌ Cofork I.fstSigmaMap I.sndSigmaMap where
   functor := toSigmaCoforkFunctor I
   inverse := ofSigmaCoforkFunctor I
-  unitIso := NatIso.ofComponents fun K => Cocones.ext (Iso.refl _) (by
+  unitIso := NatIso.ofComponents fun K ↦ Cocones.ext (Iso.refl _) (by
       rintro (_ | _) <;> simp)
-  counitIso := NatIso.ofComponents fun K =>
+  counitIso := NatIso.ofComponents fun K ↦
     Cofork.ext (Iso.refl _)
       (by
         -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): in mathlib3 this was just `ext` and I don't know why it's not here

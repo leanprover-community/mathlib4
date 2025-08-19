@@ -57,7 +57,7 @@ theorem mk_eq_zero [Zero α] [Preorder α] {x : α} (hx : 0 ≤ x) :
   Subtype.ext_iff
 
 instance add [AddZeroClass α] [Preorder α] [AddLeftMono α] : Add { x : α // 0 ≤ x } :=
-  ⟨fun x y => ⟨x + y, add_nonneg x.2 y.2⟩⟩
+  ⟨fun x y ↦ ⟨x + y, add_nonneg x.2 y.2⟩⟩
 
 @[simp]
 theorem mk_add_mk [AddZeroClass α] [Preorder α] [AddLeftMono α] {x y : α}
@@ -71,7 +71,7 @@ protected theorem coe_add [AddZeroClass α] [Preorder α] [AddLeftMono α]
   rfl
 
 instance nsmul [AddMonoid α] [Preorder α] [AddLeftMono α] : SMul ℕ { x : α // 0 ≤ x } :=
-  ⟨fun n x => ⟨n • (x : α), nsmul_nonneg x.prop n⟩⟩
+  ⟨fun n x ↦ ⟨n • (x : α), nsmul_nonneg x.prop n⟩⟩
 
 @[simp]
 theorem nsmul_mk [AddMonoid α] [Preorder α] [AddLeftMono α] (n : ℕ) {x : α}
@@ -125,7 +125,7 @@ section AddMonoid
 variable [AddMonoid α] [Preorder α] [AddLeftMono α]
 
 instance addMonoid : AddMonoid { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.addMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.addMonoid _ Nonneg.coe_zero (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 /-- Coercion `{x : α // 0 ≤ x} → α` as an `AddMonoidHom`. -/
 @[simps]
@@ -146,7 +146,7 @@ section AddCommMonoid
 variable [AddCommMonoid α] [Preorder α] [AddLeftMono α]
 
 instance addCommMonoid : AddCommMonoid { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.addCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) (fun _ _ => rfl)
+  Subtype.coe_injective.addCommMonoid _ Nonneg.coe_zero (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 end AddCommMonoid
 
@@ -155,7 +155,7 @@ section AddMonoidWithOne
 variable [AddMonoidWithOne α] [PartialOrder α] [AddLeftMono α] [ZeroLEOneClass α]
 
 instance natCast : NatCast { x : α // 0 ≤ x } :=
-  ⟨fun n => ⟨n, Nat.cast_nonneg' n⟩⟩
+  ⟨fun n ↦ ⟨n, Nat.cast_nonneg' n⟩⟩
 
 @[simp, norm_cast]
 protected theorem coe_natCast (n : ℕ) : ((↑n : { x : α // 0 ≤ x }) : α) = n :=
@@ -169,7 +169,7 @@ instance addMonoidWithOne : AddMonoidWithOne { x : α // 0 ≤ x } :=
   { Nonneg.one (α := α) with
     toNatCast := Nonneg.natCast
     natCast_zero := by ext; simp
-    natCast_succ := fun _ => by ext; simp }
+    natCast_succ := fun _ ↦ by ext; simp }
 
 end AddMonoidWithOne
 
@@ -201,8 +201,8 @@ variable [Semiring α] [PartialOrder α] [ZeroLEOneClass α]
 
 instance semiring : Semiring { x : α // 0 ≤ x } :=
   Subtype.coe_injective.semiring _ Nonneg.coe_zero Nonneg.coe_one
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ => rfl
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) fun _ ↦ rfl
 
 instance monoidWithZero : MonoidWithZero { x : α // 0 ≤ x } := by infer_instance
 
@@ -223,8 +223,8 @@ variable [CommSemiring α] [PartialOrder α] [ZeroLEOneClass α]
 
 instance commSemiring : CommSemiring { x : α // 0 ≤ x } :=
   Subtype.coe_injective.commSemiring _ Nonneg.coe_zero Nonneg.coe_one
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ => rfl
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) fun _ ↦ rfl
 
 instance commMonoidWithZero : CommMonoidWithZero { x : α // 0 ≤ x } := inferInstance
 
@@ -254,7 +254,7 @@ theorem toNonneg_le {a : α} {b : { x : α // 0 ≤ x }} : toNonneg a ≤ b ↔ 
   simp [toNonneg, hb]
 
 instance sub [Sub α] : Sub { x : α // 0 ≤ x } :=
-  ⟨fun x y => toNonneg (x - y)⟩
+  ⟨fun x y ↦ toNonneg (x - y)⟩
 
 @[simp]
 theorem mk_sub_mk [Sub α] {x y : α} (hx : 0 ≤ x) (hy : 0 ≤ y) :

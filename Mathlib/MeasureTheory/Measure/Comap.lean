@@ -38,7 +38,7 @@ If the linearity is not needed, please use `comap` instead, which works for a la
 functions. `comapₗ` is an auxiliary definition and most lemmas deal with comap. -/
 def comapₗ [MeasurableSpace α] [MeasurableSpace β] (f : α → β) : Measure β →ₗ[ℝ≥0∞] Measure α :=
   if hf : Injective f ∧ ∀ s, MeasurableSet s → MeasurableSet (f '' s) then
-    liftLinear (OuterMeasure.comap f) fun μ s hs t => by
+    liftLinear (OuterMeasure.comap f) fun μ s hs t ↦ by
       simp only [OuterMeasure.comap_apply, image_inter hf.1, image_diff hf.1]
       apply le_toOuterMeasure_caratheodory
       exact hf.2 s hs
@@ -57,7 +57,7 @@ then for each measurable set `s` we have `comap f μ s = μ (f '' s)`.
 Note that if `f` is not injective, this definition assigns `Set.univ` measure zero. -/
 def comap [MeasurableSpace α] [MeasurableSpace β] (f : α → β) (μ : Measure β) : Measure α :=
   if hf : Injective f ∧ ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ then
-    (OuterMeasure.comap f μ.toOuterMeasure).toMeasure fun s hs t => by
+    (OuterMeasure.comap f μ.toOuterMeasure).toMeasure fun s hs t ↦ by
       simp only [OuterMeasure.comap_apply, image_inter hf.1, image_diff hf.1]
       exact (measure_inter_add_diff₀ _ (hf.2 s hs)).symm
   else 0
@@ -84,7 +84,7 @@ theorem le_comap_apply (f : α → β) (μ : Measure β) (hfi : Injective f)
 theorem comap_apply (f : α → β) (hfi : Injective f)
     (hf : ∀ s, MeasurableSet s → MeasurableSet (f '' s)) (μ : Measure β) (hs : MeasurableSet s) :
     comap f μ s = μ (f '' s) :=
-  comap_apply₀ f μ hfi (fun s hs => (hf s hs).nullMeasurableSet) hs.nullMeasurableSet
+  comap_apply₀ f μ hfi (fun s hs ↦ (hf s hs).nullMeasurableSet) hs.nullMeasurableSet
 
 theorem comapₗ_eq_comap (f : α → β) (hfi : Injective f)
     (hf : ∀ s, MeasurableSet s → MeasurableSet (f '' s)) (μ : Measure β) (hs : MeasurableSet s) :

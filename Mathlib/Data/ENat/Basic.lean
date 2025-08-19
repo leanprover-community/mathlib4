@@ -224,7 +224,7 @@ theorem one_lt_top : (1 : ℕ∞) < ⊤ :=
 
 @[simp]
 theorem coe_toNat_eq_self : ENat.toNat n = n ↔ n ≠ ⊤ :=
-  ENat.recTopCoe (by decide) (fun _ => by simp [toNat_coe]) n
+  ENat.recTopCoe (by decide) (fun _ ↦ by simp [toNat_coe]) n
 
 alias ⟨_, coe_toNat⟩ := coe_toNat_eq_self
 
@@ -235,7 +235,7 @@ alias ⟨_, coe_toNat⟩ := coe_toNat_eq_self
   · simp
 
 theorem coe_toNat_le_self (n : ℕ∞) : ↑(toNat n) ≤ n :=
-  ENat.recTopCoe le_top (fun _ => le_rfl) n
+  ENat.recTopCoe le_top (fun _ ↦ le_rfl) n
 
 theorem toNat_add {m n : ℕ∞} (hm : m ≠ ⊤) (hn : n ≠ ⊤) : toNat (m + n) = toNat m + toNat n := by
   lift m to ℕ using hm
@@ -302,7 +302,7 @@ lemma coe_le_coe {n m : ℕ} : (n : ℕ∞) ≤ (m : ℕ∞) ↔ n ≤ m := by s
 @[elab_as_elim]
 theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ n : ℕ, P n → P n.succ)
     (htop : (∀ n : ℕ, P n) → P ⊤) : P a := by
-  have A : ∀ n : ℕ, P n := fun n => Nat.recOn n h0 hsuc
+  have A : ∀ n : ℕ, P n := fun n ↦ Nat.recOn n h0 hsuc
   cases a
   · exact htop A
   · exact A _
@@ -529,8 +529,8 @@ protected def _root_.MonoidWithZeroHom.ENatMap {S : Type*} [MulZeroOneClass S] [
     (hf : Function.Injective f) : ℕ∞ →*₀ WithTop S :=
   { f.toZeroHom.ENatMap, f.toMonoidHom.toOneHom.ENatMap with
     toFun := ENat.map f
-    map_mul' := fun x y => by
-      have : ∀ z, map f z = 0 ↔ z = 0 := fun z =>
+    map_mul' := fun x y ↦ by
+      have : ∀ z, map f z = 0 ↔ z = 0 := fun z ↦
         (Option.map_injective hf).eq_iff' f.toZeroHom.ENatMap.map_zero
       rcases Decidable.eq_or_ne x 0 with (rfl | hx)
       · simp

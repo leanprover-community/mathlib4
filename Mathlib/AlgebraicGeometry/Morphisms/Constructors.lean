@@ -45,7 +45,7 @@ See `diagonal_targetAffineLocally_eq_targetAffineLocally`.
 -/
 def AffineTargetMorphismProperty.diagonal (P : AffineTargetMorphismProperty) :
     AffineTargetMorphismProperty :=
-  fun {X _} f _ =>
+  fun {X _} f _ ↦
     ∀ ⦃U₁ U₂ : Scheme⦄ (f₁ : U₁ ⟶ X) (f₂ : U₂ ⟶ X) [IsAffine U₁] [IsAffine U₂] [IsOpenImmersion f₁]
       [IsOpenImmersion f₂], P (pullback.mapDesc f₁ f₂ f)
 
@@ -67,9 +67,9 @@ theorem HasAffineProperty.diagonal_of_openCover (P) {Q} [HasAffineProperty P Q]
       Q (pullback.mapDesc ((𝒰' i).map j) ((𝒰' i).map k) (𝒰.pullbackHom f i))) :
     P.diagonal f := by
   letI := isLocal_affineProperty P
-  let 𝒱 := (Scheme.Pullback.openCoverOfBase 𝒰 f f).bind fun i =>
+  let 𝒱 := (Scheme.Pullback.openCoverOfBase 𝒰 f f).bind fun i ↦
     Scheme.Pullback.openCoverOfLeftRight.{u} (𝒰' i) (𝒰' i) (pullback.snd _ _) (pullback.snd _ _)
-  have i1 : ∀ i, IsAffine (𝒱.obj i) := fun i => by dsimp [𝒱]; infer_instance
+  have i1 : ∀ i, IsAffine (𝒱.obj i) := fun i ↦ by dsimp [𝒱]; infer_instance
   apply of_openCover 𝒱
   rintro ⟨i, j, k⟩
   dsimp [𝒱]
@@ -176,7 +176,7 @@ theorem universally_isLocalAtTarget (P : MorphismProperty Scheme)
     (hP₂ : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) {ι : Type u} (U : ι → Y.Opens)
       (_ : IsOpenCover U), (∀ i, P (f ∣_ U i)) → P f) : IsLocalAtTarget P.universally := by
   apply IsLocalAtTarget.mk'
-  · exact fun {X Y} f U => P.universally.of_isPullback
+  · exact fun {X Y} f U ↦ P.universally.of_isPullback
       (isPullback_morphismRestrict f U).flip
   · intros X Y f ι U hU H X' Y' i₁ i₂ f' h
     apply hP₂ _ (fun i ↦ i₂ ⁻¹ᵁ U i)
@@ -216,7 +216,7 @@ section Topologically
 /-- `topologically P` holds for a morphism if the underlying topological map satisfies `P`. -/
 def topologically
     (P : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (_ : α → β), Prop) :
-    MorphismProperty Scheme.{u} := fun _ _ f => P f.base
+    MorphismProperty Scheme.{u} := fun _ _ f ↦ P f.base
 
 variable (P : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (_ : α → β), Prop)
 
@@ -312,7 +312,7 @@ end Topologically
 /-- `stalkwise P` holds for a morphism if all stalks satisfy `P`. -/
 def stalkwise (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop) :
     MorphismProperty Scheme.{u} :=
-  fun _ _ f => ∀ x, P (f.stalkMap x).hom
+  fun _ _ f ↦ ∀ x, P (f.stalkMap x).hom
 
 section Stalkwise
 

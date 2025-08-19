@@ -28,7 +28,7 @@ lemma one_sub (h : IsIdempotentElem a) : IsIdempotentElem (1 - a) := by
 
 @[simp]
 lemma one_sub_iff : IsIdempotentElem (1 - a) ↔ IsIdempotentElem a :=
-  ⟨fun h => sub_sub_cancel 1 a ▸ h.one_sub, IsIdempotentElem.one_sub⟩
+  ⟨fun h ↦ sub_sub_cancel 1 a ▸ h.one_sub, IsIdempotentElem.one_sub⟩
 
 @[simp]
 lemma mul_one_sub_self (h : IsIdempotentElem a) : a * (1 - a) = 0 := by
@@ -129,7 +129,7 @@ lemma commute_of_anticommute {a b : R} [NonUnitalSemiring R] [IsAddTorsionFree R
 theorem sub_iff [NonUnitalRing R] [IsAddTorsionFree R] {p q : R}
     (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
     IsIdempotentElem (q - p) ↔ p * q = p ∧ q * p = p := by
-  refine ⟨fun hqp ↦ ?_, fun ⟨h1, h2⟩ => hp.sub hq h1 h2⟩
+  refine ⟨fun hqp ↦ ?_, fun ⟨h1, h2⟩ ↦ hp.sub hq h1 h2⟩
   have h : p * (q - p) + (q - p) * p = 0 := hp.add_iff hqp |>.mp ((add_sub_cancel p q).symm ▸ hq)
   have hpq : Commute p q := by
     simp_rw [IsIdempotentElem, mul_sub, sub_mul,

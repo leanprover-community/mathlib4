@@ -61,7 +61,7 @@ namespace XgcdType
 variable (u : XgcdType)
 
 instance : SizeOf XgcdType :=
-  ⟨fun u => u.bp⟩
+  ⟨fun u ↦ u.bp⟩
 
 /-- The `Repr` instance converts terms to strings in a way that
 reflects the matrix/vector interpretation as above. -/
@@ -294,7 +294,7 @@ definition in terms of well-founded recursion.  The same fact
 needs to be introduced in all the inductive proofs of properties
 given below. -/
 def reduce (u : XgcdType) : XgcdType :=
-  dite (u.r = 0) (fun _ => u.finish) fun _h =>
+  dite (u.r = 0) (fun _ ↦ u.finish) fun _h ↦
     flip (reduce u.step)
 decreasing_by apply u.step_wf _h
 
@@ -309,10 +309,10 @@ theorem reduce_b {u : XgcdType} (h : u.r ≠ 0) : u.reduce = u.step.reduce.flip 
 theorem reduce_isReduced : ∀ u : XgcdType, u.reduce.IsReduced
   | u =>
     dite (u.r = 0)
-      (fun h => by
+      (fun h ↦ by
         rw [reduce_a h]
         exact u.finish_isReduced)
-      fun h => by
+      fun h ↦ by
       have : SizeOf.sizeOf u.step < SizeOf.sizeOf u := u.step_wf h
       rw [reduce_b h, flip_isReduced]
       apply reduce_isReduced
@@ -323,10 +323,10 @@ theorem reduce_isReduced' (u : XgcdType) : u.reduce.IsReduced' :=
 theorem reduce_isSpecial : ∀ u : XgcdType, u.IsSpecial → u.reduce.IsSpecial
   | u =>
     dite (u.r = 0)
-      (fun h hs => by
+      (fun h hs ↦ by
         rw [reduce_a h]
         exact u.finish_isSpecial hs)
-      fun h hs => by
+      fun h hs ↦ by
       have : SizeOf.sizeOf u.step < SizeOf.sizeOf u := u.step_wf h
       rw [reduce_b h]
       exact (flip_isSpecial _).mpr (reduce_isSpecial _ (u.step_isSpecial hs))
@@ -336,7 +336,7 @@ theorem reduce_isSpecial' (u : XgcdType) (hs : u.IsSpecial) : u.reduce.IsSpecial
 
 theorem reduce_v : ∀ u : XgcdType, u.reduce.v = u.v
   | u =>
-    dite (u.r = 0) (fun h => by rw [reduce_a h, finish_v u h]) fun h => by
+    dite (u.r = 0) (fun h ↦ by rw [reduce_a h, finish_v u h]) fun h ↦ by
       have : SizeOf.sizeOf u.step < SizeOf.sizeOf u := u.step_wf h
       rw [reduce_b h, flip_v, reduce_v (step u), step_v u h, Prod.swap_swap]
 

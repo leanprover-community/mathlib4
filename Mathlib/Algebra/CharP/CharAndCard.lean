@@ -56,12 +56,12 @@ the prime divisors of its cardinality. -/
 theorem prime_dvd_char_iff_dvd_card {R : Type*} [CommRing R] [Fintype R] (p : ℕ) [Fact p.Prime] :
     p ∣ ringChar R ↔ p ∣ Fintype.card R := by
   refine
-    ⟨fun h =>
+    ⟨fun h ↦
       h.trans <|
         Int.natCast_dvd_natCast.mp <|
           (CharP.intCast_eq_zero_iff R (ringChar R) (Fintype.card R)).mp <|
             mod_cast Nat.cast_card_eq_zero R,
-      fun h => ?_⟩
+      fun h ↦ ?_⟩
   by_contra h₀
   rcases exists_prime_addOrderOf_dvd_card p h with ⟨r, hr⟩
   have hr₁ := addOrderOf_nsmul_eq_zero r

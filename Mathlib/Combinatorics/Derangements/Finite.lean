@@ -30,10 +30,10 @@ open derangements Equiv Fintype
 
 variable {α : Type*} [DecidableEq α] [Fintype α]
 
-instance : DecidablePred (derangements α) := fun _ => Fintype.decidableForallFintype
+instance : DecidablePred (derangements α) := fun _ ↦ Fintype.decidableForallFintype
 
 -- Porting note: used to use the tactic delta_instance
-instance : Fintype (derangements α) := Subtype.fintype (fun (_ : Perm α) => ∀ (x_1 : α), ¬_ = x_1)
+instance : Fintype (derangements α) := Subtype.fintype (fun (_ : Perm α) ↦ ∀ (x_1 : α), ¬_ = x_1)
 
 theorem card_derangements_invariant {α β : Type*} [Fintype α] [DecidableEq α] [Fintype β]
     [DecidableEq β] (h : card α = card β) : card (derangements α) = card (derangements β) :=
@@ -46,7 +46,7 @@ theorem card_derangements_fin_add_two (n : ℕ) :
   have h1 : ∀ a : Fin (n + 1), card ({a}ᶜ : Set (Fin (n + 1))) = card (Fin n) := by
     intro a
     simp only
-      [card_ofFinset (s := Finset.filter (fun x => x ∈ ({a}ᶜ : Set (Fin (n + 1)))) Finset.univ),
+      [card_ofFinset (s := Finset.filter (fun x ↦ x ∈ ({a}ᶜ : Set (Fin (n + 1)))) Finset.univ),
       Set.mem_compl_singleton_iff, Finset.filter_ne' _ a,
       Finset.card_erase_of_mem (Finset.mem_univ a), Finset.card_fin, add_tsub_cancel_right,
       card_fin]

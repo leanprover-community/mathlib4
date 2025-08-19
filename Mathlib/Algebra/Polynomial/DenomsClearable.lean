@@ -52,7 +52,7 @@ theorem denomsClearable_C_mul_X_pow {N : ℕ} (a : R) (bu : bi * i b = 1) {n : �
 
 theorem DenomsClearable.add {N : ℕ} {f g : R[X]} :
     DenomsClearable a b N f i → DenomsClearable a b N g i → DenomsClearable a b N (f + g) i :=
-  fun ⟨Df, bf, bfu, Hf⟩ ⟨Dg, bg, bgu, Hg⟩ =>
+  fun ⟨Df, bf, bfu, Hf⟩ ⟨Dg, bg, bgu, Hg⟩ ↦
   ⟨Df + Dg, bf, bfu, by
     rw [RingHom.map_add, Polynomial.map_add, eval_add, mul_add, Hf, Hg]
     congr
@@ -61,7 +61,7 @@ theorem DenomsClearable.add {N : ℕ} {f g : R[X]} :
 theorem denomsClearable_of_natDegree_le (N : ℕ) (a : R) (bu : bi * i b = 1) :
     ∀ f : R[X], f.natDegree ≤ N → DenomsClearable a b N f i :=
   induction_with_natDegree_le _ N (denomsClearable_zero N a bu)
-    (fun _ r _ => denomsClearable_C_mul_X_pow a bu r) fun _ _ _ _ df dg => df.add dg
+    (fun _ r _ ↦ denomsClearable_C_mul_X_pow a bu r) fun _ _ _ _ df dg ↦ df.add dg
 
 /-- If `i : R → K` is a ring homomorphism, `f` is a polynomial with coefficients in `R`,
 `a, b` are elements of `R`, with `i b` invertible, then there is a `D ∈ R` such that
@@ -93,7 +93,7 @@ theorem one_le_pow_mul_abs_eval_div {K : Type*} [Field K] [LinearOrder K] [IsStr
   rw [eq_one_div_of_mul_eq_one_left bu, eq_intCast, eq_intCast, abs_mul] at Fa
   rw [abs_of_pos (pow_pos (Int.cast_pos.mpr b0) _ : 0 < (b : K) ^ _), one_div, eq_intCast] at Fa
   rw [div_eq_mul_inv, ← Fa, ← Int.cast_abs, ← Int.cast_one, Int.cast_le]
-  refine Int.le_of_lt_add_one ((lt_add_iff_pos_left 1).mpr (abs_pos.mpr fun F0 => fab ?_))
+  refine Int.le_of_lt_add_one ((lt_add_iff_pos_left 1).mpr (abs_pos.mpr fun F0 ↦ fab ?_))
   rw [eq_one_div_of_mul_eq_one_left bu, F0, one_div, eq_intCast, Int.cast_zero, zero_eq_mul] at hF
   rcases hF with hF | hF
   · exact (not_le.mpr b0 (le_of_eq (Int.cast_eq_zero.mp (pow_eq_zero hF)))).elim

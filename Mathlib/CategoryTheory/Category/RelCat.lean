@@ -92,8 +92,8 @@ theorem rel_iso_iff {X Y : RelCat} (r : X ⟶ Y) :
     have h1 := congr_fun₂ congr((· ~[($h.hom_inv_id).rel] ·))
     have h2 := congr_fun₂ congr((· ~[($h.inv_hom_id).rel] ·))
     simp only [RelCat.Hom.rel_comp_apply₂, RelCat.Hom.rel_id_apply₂, eq_iff_iff] at h1 h2
-    obtain ⟨f, hf⟩ := Classical.axiomOfChoice (fun a => (h1 a a).mpr rfl)
-    obtain ⟨g, hg⟩ := Classical.axiomOfChoice (fun a => (h2 a a).mpr rfl)
+    obtain ⟨f, hf⟩ := Classical.axiomOfChoice (fun a ↦ (h1 a a).mpr rfl)
+    obtain ⟨g, hg⟩ := Classical.axiomOfChoice (fun a ↦ (h2 a a).mpr rfl)
     suffices hif : IsIso (C := Type u) f by
       use asIso f
       ext ⟨x, y⟩

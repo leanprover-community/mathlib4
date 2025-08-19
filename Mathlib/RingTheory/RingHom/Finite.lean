@@ -140,8 +140,8 @@ theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebr
       Submodule.span R
         (IsLocalization.finsetIntegerMultiple (M.map (algebraMap R S)) s : Set S) := by
   let g : S →ₐ[R] S' :=
-    AlgHom.mk' (algebraMap S S') fun c x => by simp [Algebra.algebraMap_eq_smul_one]
-  have g_apply : ∀ x, g x = algebraMap S S' x := fun _ => rfl
+    AlgHom.mk' (algebraMap S S') fun c x ↦ by simp [Algebra.algebraMap_eq_smul_one]
+  have g_apply : ∀ x, g x = algebraMap S S' x := fun _ ↦ rfl
   -- We first obtain the `y' ∈ M` such that `s' = y' • s` is falls in the image of `S` in `S'`.
   let y := IsLocalization.commonDenomOfFinset (M.map (algebraMap R S)) s
   have hx₁ : (y : S) • (s : Set S') = g '' _ :=
@@ -213,20 +213,20 @@ theorem RingHom.finite_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.
   introv R hs H
   -- We first setup the instances
   letI := f.toAlgebra
-  letI := fun r : s => (Localization.awayMap f r).toAlgebra
+  letI := fun r : s ↦ (Localization.awayMap f r).toAlgebra
   have : ∀ r : s,
       IsLocalization ((Submonoid.powers (r : R)).map (algebraMap R S)) (Localization.Away (f r)) :=
     by intro r; rw [Submonoid.map_powers]; exact Localization.isLocalization
   haveI : ∀ r : s, IsScalarTower R (Localization.Away (r : R)) (Localization.Away (f r)) :=
-    fun r => IsScalarTower.of_algebraMap_eq'
+    fun r ↦ IsScalarTower.of_algebraMap_eq'
       (IsLocalization.map_comp (Submonoid.powers (r : R)).le_comap_map).symm
   -- By the hypothesis, we may find a finite generating set for each `Sᵣ`. This set can then be
   -- lifted into `R` by multiplying a sufficiently large power of `r`. I claim that the union of
   -- these generates `S`.
   constructor
-  replace H := fun r => (H r).1
+  replace H := fun r ↦ (H r).1
   choose s₁ s₂ using H
-  let sf := fun x : s => IsLocalization.finsetIntegerMultiple (Submonoid.powers (f x)) (s₁ x)
+  let sf := fun x : s ↦ IsLocalization.finsetIntegerMultiple (Submonoid.powers (f x)) (s₁ x)
   use s.attach.biUnion sf
   rw [Submodule.span_attach_biUnion, eq_top_iff]
   -- It suffices to show that `r ^ n • x ∈ span T` for each `r : s`, since `{ r ^ n }` spans `R`.
@@ -248,7 +248,7 @@ theorem RingHom.finite_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.
   rw [Submonoid.smul_def, ← Algebra.smul_def, smul_smul, ← pow_add] at hn₂
   simp_rw [Submonoid.map_powers] at hn₂
   use n₂ + n₁
-  exact le_iSup (fun x : s => Submodule.span R (sf x : Set S)) r hn₂
+  exact le_iSup (fun x : s ↦ Submodule.span R (sf x : Set S)) r hn₂
 
 instance {R S : Type*} [CommRing R] {P : Ideal R} [CommRing S] [Algebra R S]
     [Module.Finite R S] [P.IsPrime] :

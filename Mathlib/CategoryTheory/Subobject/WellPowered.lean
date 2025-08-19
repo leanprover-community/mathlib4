@@ -60,7 +60,7 @@ theorem essentiallySmall_monoOver_iff_small_subobject (X : C) :
 theorem wellPowered_of_essentiallySmall_monoOver [LocallySmall.{w} C]
     (h : ∀ X : C, EssentiallySmall.{w} (MonoOver X)) :
     WellPowered.{w} C :=
-  { subobject_small := fun X => (essentiallySmall_monoOver_iff_small_subobject X).mp (h X) }
+  { subobject_small := fun X ↦ (essentiallySmall_monoOver_iff_small_subobject X).mp (h X) }
 
 section
 
@@ -77,13 +77,13 @@ variable {D : Type u₂} [Category.{v₂} D]
 
 theorem wellPowered_of_equiv (e : C ≌ D) [LocallySmall.{w} C] [LocallySmall.{w} D]
     [WellPowered.{w} C] : WellPowered.{w} D :=
-  wellPowered_of_essentiallySmall_monoOver fun X =>
+  wellPowered_of_essentiallySmall_monoOver fun X ↦
     (essentiallySmall_congr (MonoOver.congr X e.symm)).2 <| by infer_instance
 
 /-- Being well-powered is preserved by equivalences. -/
 theorem wellPowered_congr (e : C ≌ D) [LocallySmall.{w} C] [LocallySmall.{w} D] :
     WellPowered.{w} C ↔ WellPowered.{w} D :=
-  ⟨fun _ => wellPowered_of_equiv e, fun _ => wellPowered_of_equiv e.symm⟩
+  ⟨fun _ ↦ wellPowered_of_equiv e, fun _ ↦ wellPowered_of_equiv e.symm⟩
 
 instance [LocallySmall.{w} C] [WellPowered.{w} C] :
     WellPowered.{w, w} (ShrinkHoms C) :=

@@ -25,7 +25,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [HasContDiffBump
   [MeasurableSpace E] {c : E} (f : ContDiffBump c) {x : E} {n : ℕ∞} {μ : Measure E}
 
 /-- A bump function normed so that `∫ x, f.normed μ x ∂μ = 1`. -/
-protected def normed (μ : Measure E) : E → ℝ := fun x => f x / ∫ x, f x ∂μ
+protected def normed (μ : Measure E) : E → ℝ := fun x ↦ f x / ∫ x, f x ∂μ
 
 theorem normed_def {μ : Measure E} (x : E) : f.normed μ x = f x / ∫ x, f x ∂μ :=
   rfl
@@ -76,8 +76,8 @@ theorem hasCompactSupport_normed : HasCompactSupport (f.normed μ) := by
   simp only [HasCompactSupport, f.tsupport_normed_eq (μ := μ), isCompact_closedBall]
 
 theorem tendsto_support_normed_smallSets {ι} {φ : ι → ContDiffBump c} {l : Filter ι}
-    (hφ : Tendsto (fun i => (φ i).rOut) l (𝓝 0)) :
-    Tendsto (fun i => Function.support fun x => (φ i).normed μ x) l (𝓝 c).smallSets := by
+    (hφ : Tendsto (fun i ↦ (φ i).rOut) l (𝓝 0)) :
+    Tendsto (fun i ↦ Function.support fun x ↦ (φ i).normed μ x) l (𝓝 c).smallSets := by
   simp_rw [NormedAddCommGroup.tendsto_nhds_zero, Real.norm_eq_abs,
     abs_eq_self.mpr (φ _).rOut_pos.le] at hφ
   rw [nhds_basis_ball.smallSets.tendsto_right_iff]

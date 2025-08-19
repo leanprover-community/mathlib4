@@ -40,13 +40,13 @@ variable {α β : TypeVec.{u} n} {F : TypeVec.{u} n → Type v} [MvFunctor F]
 
 /-- predicate lifting over multivariate functors -/
 def LiftP {α : TypeVec n} (P : ∀ i, α i → Prop) (x : F α) : Prop :=
-  ∃ u : F (fun i => Subtype (P i)), (fun i => @Subtype.val _ (P i)) <$$> u = x
+  ∃ u : F (fun i ↦ Subtype (P i)), (fun i ↦ @Subtype.val _ (P i)) <$$> u = x
 
 /-- relational lifting over multivariate functors -/
 def LiftR {α : TypeVec n} (R : ∀ ⦃i⦄, α i → α i → Prop) (x y : F α) : Prop :=
-  ∃ u : F (fun i => { p : α i × α i // R p.fst p.snd }),
-    (fun i (t : { p : α i × α i // R p.fst p.snd }) => t.val.fst) <$$> u = x ∧
-      (fun i (t : { p : α i × α i // R p.fst p.snd }) => t.val.snd) <$$> u = y
+  ∃ u : F (fun i ↦ { p : α i × α i // R p.fst p.snd }),
+    (fun i (t : { p : α i × α i // R p.fst p.snd }) ↦ t.val.fst) <$$> u = x ∧
+      (fun i (t : { p : α i × α i // R p.fst p.snd }) ↦ t.val.snd) <$$> u = y
 
 /-- given `x : F α` and a projection `i` of type vector `α`, `supp x i` is the set
 of `α.i` contained in `x` -/
@@ -54,7 +54,7 @@ def supp {α : TypeVec n} (x : F α) (i : Fin2 n) : Set (α i) :=
   { y : α i | ∀ ⦃P⦄, LiftP P x → P i y }
 
 theorem of_mem_supp {α : TypeVec n} {x : F α} {P : ∀ ⦃i⦄, α i → Prop} (h : LiftP P x) (i : Fin2 n) :
-    ∀ y ∈ supp x i, P y := fun _y hy => hy h
+    ∀ y ∈ supp x i, P y := fun _y hy ↦ hy h
 
 end MvFunctor
 
@@ -82,12 +82,12 @@ variable (P : α ⟹ «repeat» n Prop) (R : α ⊗ α ⟹ «repeat» n Prop)
 
 /-- adapt `MvFunctor.LiftP` to accept predicates as arrows -/
 def LiftP' : F α → Prop :=
-  MvFunctor.LiftP fun i x => ofRepeat <| P i x
+  MvFunctor.LiftP fun i x ↦ ofRepeat <| P i x
 
 
 /-- adapt `MvFunctor.LiftR` to accept relations as arrows -/
 def LiftR' : F α → F α → Prop :=
-  MvFunctor.LiftR @fun i x y => ofRepeat <| R i <| TypeVec.prod.mk _ x y
+  MvFunctor.LiftR @fun i x y ↦ ofRepeat <| R i <| TypeVec.prod.mk _ x y
 
 variable [LawfulMvFunctor F]
 
@@ -96,7 +96,7 @@ theorem id_map (x : F α) : TypeVec.id <$$> x = x :=
   LawfulMvFunctor.id_map x
 
 @[simp]
-theorem id_map' (x : F α) : (fun _i a => a) <$$> x = x :=
+theorem id_map' (x : F α) : (fun _i a ↦ a) <$$> x = x :=
   id_map x
 
 theorem map_map (g : α ⟹ β) (h : β ⟹ γ) (x : F α) : h <$$> g <$$> x = (h ⊚ g) <$$> x :=
@@ -144,7 +144,7 @@ variable (pp : β → Prop)
 
 private def f :
     ∀ n α,
-      (fun i : Fin2 (n + 1) => { p_1 // ofRepeat (PredLast' α pp i p_1) }) ⟹ fun i : Fin2 (n + 1) =>
+      (fun i : Fin2 (n + 1) ↦ { p_1 // ofRepeat (PredLast' α pp i p_1) }) ⟹ fun i : Fin2 (n + 1) ↦
         { p_1 : (α ::: β) i // PredLast α pp p_1 }
   | _, α, Fin2.fs i, x =>
     ⟨x.val, cast (by simp only [PredLast]; erw [const_iff_true]) x.property⟩
@@ -152,7 +152,7 @@ private def f :
 
 private def g :
     ∀ n α,
-      (fun i : Fin2 (n + 1) => { p_1 : (α ::: β) i // PredLast α pp p_1 }) ⟹ fun i : Fin2 (n + 1) =>
+      (fun i : Fin2 (n + 1) ↦ { p_1 : (α ::: β) i // PredLast α pp p_1 }) ⟹ fun i : Fin2 (n + 1) ↦
         { p_1 // ofRepeat (PredLast' α pp i p_1) }
   | _, α, Fin2.fs i, x =>
     ⟨x.val, cast (by simp only [PredLast]; erw [const_iff_true]) x.property⟩
@@ -167,7 +167,7 @@ theorem LiftP_PredLast_iff {β} (P : β → Prop) (x : F (α ::: β)) :
   · intros
     rw [MvFunctor.map_map]
     dsimp +unfoldPartialApp [(· ⊚ ·)]
-    suffices (fun i => Subtype.val) = (fun i x => (MvFunctor.f P n α i x).val) by rw [this]
+    suffices (fun i ↦ Subtype.val) = (fun i x ↦ (MvFunctor.f P n α i x).val) by rw [this]
     ext i ⟨x, _⟩
     cases i <;> rfl
 
@@ -175,17 +175,17 @@ variable (rr : β → β → Prop)
 
 private def f' :
     ∀ n α,
-      (fun i : Fin2 (n + 1) =>
+      (fun i : Fin2 (n + 1) ↦
           { p_1 : _ × _ // ofRepeat (RelLast' α rr i (TypeVec.prod.mk _ p_1.fst p_1.snd)) }) ⟹
-        fun i : Fin2 (n + 1) => { p_1 : (α ::: β) i × _ // RelLast α rr p_1.fst p_1.snd }
+        fun i : Fin2 (n + 1) ↦ { p_1 : (α ::: β) i × _ // RelLast α rr p_1.fst p_1.snd }
   | _, α, Fin2.fs i, x =>
     ⟨x.val, cast (by simp only [RelLast]; erw [repeatEq_iff_eq]) x.property⟩
   | _, _, Fin2.fz, x => ⟨x.val, x.property⟩
 
 private def g' :
     ∀ n α,
-      (fun i : Fin2 (n + 1) => { p_1 : (α ::: β) i × _ // RelLast α rr p_1.fst p_1.snd }) ⟹
-        fun i : Fin2 (n + 1) =>
+      (fun i : Fin2 (n + 1) ↦ { p_1 : (α ::: β) i × _ // RelLast α rr p_1.fst p_1.snd }) ⟹
+        fun i : Fin2 (n + 1) ↦
         { p_1 : _ × _ // ofRepeat (RelLast' α rr i (TypeVec.prod.mk _ p_1.1 p_1.2)) }
   | _, α, Fin2.fs i, x =>
     ⟨x.val, cast (by simp only [RelLast]; erw [repeatEq_iff_eq]) x.property⟩
@@ -202,8 +202,8 @@ theorem LiftR_RelLast_iff (x y : F (α ::: β)) :
     -- Porting note: proof was
     -- rw [MvFunctor.map_map, MvFunctor.map_map, (· ⊚ ·), (· ⊚ ·)]
     -- congr <;> ext i ⟨x, _⟩ <;> cases i <;> rfl
-    suffices (fun i t => t.val.fst) = ((fun i x => (MvFunctor.f' rr n α i x).val.fst))
-            ∧ (fun i t => t.val.snd) = ((fun i x => (MvFunctor.f' rr n α i x).val.snd)) by
+    suffices (fun i t ↦ t.val.fst) = ((fun i x ↦ (MvFunctor.f' rr n α i x).val.fst))
+            ∧ (fun i t ↦ t.val.snd) = ((fun i x ↦ (MvFunctor.f' rr n α i x).val.snd)) by
       rw [this.1, this.2]
     constructor <;> ext i ⟨x, _⟩ <;> cases i <;> rfl
 

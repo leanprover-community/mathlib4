@@ -43,7 +43,7 @@ theorem fg_of_fg_map_of_fg_inf_ker (f : M →ₗ[R] P) {s : Submodule R M}
     exact ⟨x, hx1, hx2⟩
   have : ∃ g : P → M, ∀ y ∈ t1, g y ∈ s ∧ f (g y) = y := by
     choose g hg1 hg2 using this
-    exists fun y => if H : y ∈ t1 then g y H else 0
+    exists fun y ↦ if H : y ∈ t1 then g y H else 0
     intro y H
     constructor
     · simp only [dif_pos H]
@@ -87,16 +87,16 @@ theorem fg_of_fg_map_of_fg_inf_ker (f : M →ₗ[R] P) {s : Submodule R M}
       intro y hy
       exact s.smul_mem _ (hg y (hl1 hy)).1
     · exact zero_smul _
-    · exact fun _ _ _ => add_smul _ _ _
+    · exact fun _ _ _ ↦ add_smul _ _ _
   · rw [LinearMap.mem_ker, f.map_sub, ← hl2]
     rw [Finsupp.linearCombination_apply, Finsupp.linearCombination_apply, Finsupp.lmapDomain_apply]
     rw [Finsupp.sum_mapDomain_index, Finsupp.sum, Finsupp.sum, map_sum]
     · rw [sub_eq_zero]
-      refine Finset.sum_congr rfl fun y hy => ?_
+      refine Finset.sum_congr rfl fun y hy ↦ ?_
       unfold id
       rw [f.map_smul, (hg y (hl1 hy)).2]
     · exact zero_smul _
-    · exact fun _ _ _ => add_smul _ _ _
+    · exact fun _ _ _ ↦ add_smul _ _ _
 
 /-- The kernel of the composition of two linear maps is finitely generated if both kernels are and
 the first morphism is surjective. -/

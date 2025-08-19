@@ -48,7 +48,7 @@ noncomputable def mkFinCons {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fi
         rintro c ⟨x, hx⟩ hc
         rw [span_b] at hx
         exact hli c x hx hc))
-    fun x _ => by
+    fun x _ ↦ by
       rw [Fin.range_cons, Submodule.mem_span_insert', span_b]
       exact hsp x
 
@@ -66,8 +66,8 @@ noncomputable def mkFinConsOfLE {n : ℕ} {N O : Submodule R M} (y : M) (yO : y 
     (b : Basis (Fin n) R N) (hNO : N ≤ O) (hli : ∀ (c : R), ∀ x ∈ N, c • y + x = 0 → c = 0)
     (hsp : ∀ z ∈ O, ∃ c : R, z + c • y ∈ N) : Basis (Fin (n + 1)) R O :=
   mkFinCons ⟨y, yO⟩ (b.map (Submodule.comapSubtypeEquivOfLe hNO).symm)
-    (fun c x hc hx => hli c x (Submodule.mem_comap.mp hc) (congr_arg ((↑) : O → M) hx))
-    fun z => hsp z z.2
+    (fun c x hc hx ↦ hli c x (Submodule.mem_comap.mp hc) (congr_arg ((↑) : O → M) hx))
+    fun z ↦ hsp z z.2
 
 @[simp]
 theorem coe_mkFinConsOfLE {n : ℕ} {N O : Submodule R M} (y : M) (yO : y ∈ O) (b : Basis (Fin n) R N)

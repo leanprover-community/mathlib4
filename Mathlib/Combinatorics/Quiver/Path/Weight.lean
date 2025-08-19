@@ -51,7 +51,7 @@ attribute [to_additive existing addWeight] weight
 @[to_additive addWeightOfEPs /-- The additive weight of a path, where the weight of an edge is
 defined by a function on its endpoints. -/]
 def weightOfEPs (w : V → V → R) : ∀ {i j : V}, Path i j → R :=
-  weight (fun {i j} (_ : i ⟶ j) => w i j)
+  weight (fun {i j} (_ : i ⟶ j) ↦ w i j)
 
 @[to_additive (attr := simp) addWeight_nil]
 lemma weight_nil (w : ∀ {i j : V}, (i ⟶ j) → R) (a : V) :

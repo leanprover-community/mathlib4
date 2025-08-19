@@ -150,9 +150,9 @@ lemma next_add' (p q : I) (hq : c.Rel q (c.next q)) :
 
 @[simps]
 instance : TotalComplexShape c c c where
-  π := fun ⟨p, q⟩ => p + q
-  ε₁ := fun _ => 1
-  ε₂ := fun ⟨p, _⟩ => c.ε p
+  π := fun ⟨p, q⟩ ↦ p + q
+  ε₁ := fun _ ↦ 1
+  ε₂ := fun ⟨p, _⟩ ↦ c.ε p
   rel₁ h q := c.rel_add h q
   rel₂ p _ _ h := c.add_rel p h
   ε₂_ε₁ h _ := by
@@ -160,7 +160,7 @@ instance : TotalComplexShape c c c where
     rw [neg_mul, one_mul, mul_one, c.ε_succ h, neg_neg]
 
 instance : TensorSigns (ComplexShape.down ℕ) where
-  ε' := MonoidHom.mk' (fun (i : ℕ) => (-1 : ℤˣ) ^ i) (pow_add (-1 : ℤˣ))
+  ε' := MonoidHom.mk' (fun (i : ℕ) ↦ (-1 : ℤˣ) ^ i) (pow_add (-1 : ℤˣ))
   rel_add p q r (hpq : q + 1 = p) := by dsimp; omega
   add_rel p q r (hpq : q + 1 = p) := by dsimp; omega
   ε'_succ := by
@@ -295,8 +295,8 @@ lemma π_symm (i₁ : I₁) (i₂ : I₂) :
 @[simps]
 def symmetryEquiv (j : I₁₂) :
     (π c₂ c₁ c₁₂ ⁻¹' {j}) ≃ (π c₁ c₂ c₁₂ ⁻¹' {j}) where
-  toFun := fun ⟨⟨i₂, i₁⟩, h⟩ => ⟨⟨i₁, i₂⟩, by simpa [π_symm] using h⟩
-  invFun := fun ⟨⟨i₁, i₂⟩, h⟩ => ⟨⟨i₂, i₁⟩, by simpa [π_symm] using h⟩
+  toFun := fun ⟨⟨i₂, i₁⟩, h⟩ ↦ ⟨⟨i₁, i₂⟩, by simpa [π_symm] using h⟩
+  invFun := fun ⟨⟨i₁, i₂⟩, h⟩ ↦ ⟨⟨i₂, i₁⟩, by simpa [π_symm] using h⟩
 
 variable {c₁}
 

@@ -23,7 +23,7 @@ namespace Set
 
 @[simp]
 theorem ordConnectedComponent_mem_nhds : ordConnectedComponent s a ∈ 𝓝 a ↔ s ∈ 𝓝 a := by
-  refine ⟨fun h => mem_of_superset h ordConnectedComponent_subset, fun h => ?_⟩
+  refine ⟨fun h ↦ mem_of_superset h ordConnectedComponent_subset, fun h ↦ ?_⟩
   rcases exists_Icc_mem_subset_of_mem_nhds h with ⟨b, c, ha, ha', hs⟩
   exact mem_of_superset ha' (subset_ordConnectedComponent ha hs)
 
@@ -55,8 +55,8 @@ theorem compl_ordConnectedSection_ordSeparatingSet_mem_nhdsGE (hd : Disjoint s (
       suffices c < y by
         rw [uIcc_of_ge (hx.2.trans this).le]
         exact ⟨hx.2.le, this.le⟩
-      refine lt_of_not_ge fun hyc => ?_
-      have hya : y < a := not_le.1 fun hay => hsub ⟨hay, hyc.trans hcb⟩ hyt
+      refine lt_of_not_ge fun hyc ↦ ?_
+      have hya : y < a := not_le.1 fun hay ↦ hsub ⟨hay, hyc.trans hcb⟩ hyt
       exact hxy (Icc_subset_uIcc ⟨hya.le, hx.1⟩) ha
 
 theorem compl_ordConnectedSection_ordSeparatingSet_mem_nhdsLE (hd : Disjoint s (closure t))
@@ -73,7 +73,7 @@ theorem compl_ordConnectedSection_ordSeparatingSet_mem_nhds (hd : Disjoint s (cl
     compl_ordConnectedSection_ordSeparatingSet_mem_nhdsGE hd ha⟩
 
 theorem ordT5Nhd_mem_nhdsSet (hd : Disjoint s (closure t)) : ordT5Nhd s t ∈ 𝓝ˢ s :=
-  bUnion_mem_nhdsSet fun x hx => ordConnectedComponent_mem_nhds.2 <| inter_mem
+  bUnion_mem_nhdsSet fun x hx ↦ ordConnectedComponent_mem_nhds.2 <| inter_mem
     (by
       rw [← mem_interior_iff_mem_nhds, interior_compl]
       exact disjoint_left.1 hd hx)
@@ -85,7 +85,7 @@ open Set
 
 /-- A linear order with order topology is a completely normal Hausdorff topological space. -/
 instance (priority := 100) OrderTopology.completelyNormalSpace : CompletelyNormalSpace X :=
-  ⟨fun s t h₁ h₂ => Filter.disjoint_iff.2
+  ⟨fun s t h₁ h₂ ↦ Filter.disjoint_iff.2
     ⟨ordT5Nhd s t, ordT5Nhd_mem_nhdsSet h₂, ordT5Nhd t s, ordT5Nhd_mem_nhdsSet h₁.symm,
       disjoint_ordT5Nhd⟩⟩
 

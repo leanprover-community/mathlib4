@@ -38,25 +38,25 @@ variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
 -/
 
 theorem hasFPowerSeriesOnBall_const {c : F} {e : E} :
-    HasFPowerSeriesOnBall (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e ⊤ := by
-  refine ⟨by simp, WithTop.top_pos, fun _ => hasSum_single 0 fun n hn => ?_⟩
+    HasFPowerSeriesOnBall (fun _ ↦ c) (constFormalMultilinearSeries 𝕜 E c) e ⊤ := by
+  refine ⟨by simp, WithTop.top_pos, fun _ ↦ hasSum_single 0 fun n hn ↦ ?_⟩
   simp [constFormalMultilinearSeries_apply_of_nonzero hn]
 
 theorem hasFPowerSeriesAt_const {c : F} {e : E} :
-    HasFPowerSeriesAt (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e :=
+    HasFPowerSeriesAt (fun _ ↦ c) (constFormalMultilinearSeries 𝕜 E c) e :=
   ⟨⊤, hasFPowerSeriesOnBall_const⟩
 
 @[fun_prop]
-theorem analyticAt_const {v : F} {x : E} : AnalyticAt 𝕜 (fun _ => v) x :=
+theorem analyticAt_const {v : F} {x : E} : AnalyticAt 𝕜 (fun _ ↦ v) x :=
   ⟨constFormalMultilinearSeries 𝕜 E v, hasFPowerSeriesAt_const⟩
 
-theorem analyticOnNhd_const {v : F} {s : Set E} : AnalyticOnNhd 𝕜 (fun _ => v) s :=
-  fun _ _ => analyticAt_const
+theorem analyticOnNhd_const {v : F} {s : Set E} : AnalyticOnNhd 𝕜 (fun _ ↦ v) s :=
+  fun _ _ ↦ analyticAt_const
 
-theorem analyticWithinAt_const {v : F} {s : Set E} {x : E} : AnalyticWithinAt 𝕜 (fun _ => v) s x :=
+theorem analyticWithinAt_const {v : F} {s : Set E} {x : E} : AnalyticWithinAt 𝕜 (fun _ ↦ v) s x :=
   analyticAt_const.analyticWithinAt
 
-theorem analyticOn_const {v : F} {s : Set E} : AnalyticOn 𝕜 (fun _ => v) s :=
+theorem analyticOn_const {v : F} {s : Set E} : AnalyticOn 𝕜 (fun _ ↦ v) s :=
   analyticOnNhd_const.analyticOn
 
 /-!
@@ -73,13 +73,13 @@ theorem HasFPowerSeriesWithinOnBall.add (hf : HasFPowerSeriesWithinOnBall f pf s
     HasFPowerSeriesWithinOnBall (f + g) (pf + pg) s x r :=
   { r_le := le_trans (le_min_iff.2 ⟨hf.r_le, hg.r_le⟩) (pf.min_radius_le_radius_add pg)
     r_pos := hf.r_pos
-    hasSum := fun hy h'y => (hf.hasSum hy h'y).add (hg.hasSum hy h'y) }
+    hasSum := fun hy h'y ↦ (hf.hasSum hy h'y).add (hg.hasSum hy h'y) }
 
 theorem HasFPowerSeriesOnBall.add (hf : HasFPowerSeriesOnBall f pf x r)
     (hg : HasFPowerSeriesOnBall g pg x r) : HasFPowerSeriesOnBall (f + g) (pf + pg) x r :=
   { r_le := le_trans (le_min_iff.2 ⟨hf.r_le, hg.r_le⟩) (pf.min_radius_le_radius_add pg)
     r_pos := hf.r_pos
-    hasSum := fun hy => (hf.hasSum hy).add (hg.hasSum hy) }
+    hasSum := fun hy ↦ (hf.hasSum hy).add (hg.hasSum hy) }
 
 theorem HasFPowerSeriesWithinAt.add
     (hf : HasFPowerSeriesWithinAt f pf s x) (hg : HasFPowerSeriesWithinAt g pg s x) :
@@ -117,7 +117,7 @@ theorem HasFPowerSeriesWithinOnBall.neg (hf : HasFPowerSeriesWithinOnBall f pf s
       rw [pf.radius_neg]
       exact hf.r_le
     r_pos := hf.r_pos
-    hasSum := fun hy h'y => (hf.hasSum hy h'y).neg }
+    hasSum := fun hy h'y ↦ (hf.hasSum hy h'y).neg }
 
 theorem HasFPowerSeriesOnBall.neg (hf : HasFPowerSeriesOnBall f pf x r) :
     HasFPowerSeriesOnBall (-f) (-pf) x r :=
@@ -125,7 +125,7 @@ theorem HasFPowerSeriesOnBall.neg (hf : HasFPowerSeriesOnBall f pf x r) :
       rw [pf.radius_neg]
       exact hf.r_le
     r_pos := hf.r_pos
-    hasSum := fun hy => (hf.hasSum hy).neg }
+    hasSum := fun hy ↦ (hf.hasSum hy).neg }
 
 theorem HasFPowerSeriesWithinAt.neg (hf : HasFPowerSeriesWithinAt f pf s x) :
     HasFPowerSeriesWithinAt (-f) (-pf) s x :=
@@ -193,13 +193,13 @@ theorem HasFPowerSeriesWithinOnBall.const_smul (hf : HasFPowerSeriesWithinOnBall
     HasFPowerSeriesWithinOnBall (c • f) (c • pf) s x r where
   r_le := le_trans hf.r_le pf.radius_le_smul
   r_pos := hf.r_pos
-  hasSum := fun hy h'y => (hf.hasSum hy h'y).const_smul _
+  hasSum := fun hy h'y ↦ (hf.hasSum hy h'y).const_smul _
 
 theorem HasFPowerSeriesOnBall.const_smul (hf : HasFPowerSeriesOnBall f pf x r) :
     HasFPowerSeriesOnBall (c • f) (c • pf) x r where
   r_le := le_trans hf.r_le pf.radius_le_smul
   r_pos := hf.r_pos
-  hasSum := fun hy => (hf.hasSum hy).const_smul _
+  hasSum := fun hy ↦ (hf.hasSum hy).const_smul _
 
 theorem HasFPowerSeriesWithinAt.const_smul (hf : HasFPowerSeriesWithinAt f pf s x) :
     HasFPowerSeriesWithinAt (c • f) (c • pf) s x :=
@@ -229,11 +229,11 @@ theorem AnalyticAt.const_smul (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (c �
 
 theorem AnalyticOn.add (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
     AnalyticOn 𝕜 (f + g) s :=
-  fun z hz => (hf z hz).add (hg z hz)
+  fun z hz ↦ (hf z hz).add (hg z hz)
 
 theorem AnalyticOnNhd.add (hf : AnalyticOnNhd 𝕜 f s) (hg : AnalyticOnNhd 𝕜 g s) :
     AnalyticOnNhd 𝕜 (f + g) s :=
-  fun z hz => (hf z hz).add (hg z hz)
+  fun z hz ↦ (hf z hz).add (hg z hz)
 
 theorem AnalyticOn.neg (hf : AnalyticOn 𝕜 f s) : AnalyticOn 𝕜 (-f) s :=
   fun z hz ↦ (hf z hz).neg
@@ -243,11 +243,11 @@ theorem AnalyticOnNhd.neg (hf : AnalyticOnNhd 𝕜 f s) : AnalyticOnNhd 𝕜 (-f
 
 theorem AnalyticOn.sub (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
     AnalyticOn 𝕜 (f - g) s :=
-  fun z hz => (hf z hz).sub (hg z hz)
+  fun z hz ↦ (hf z hz).sub (hg z hz)
 
 theorem AnalyticOnNhd.sub (hf : AnalyticOnNhd 𝕜 f s) (hg : AnalyticOnNhd 𝕜 g s) :
     AnalyticOnNhd 𝕜 (f - g) s :=
-  fun z hz => (hf z hz).sub (hg z hz)
+  fun z hz ↦ (hf z hz).sub (hg z hz)
 
 end
 
@@ -260,7 +260,7 @@ lemma FormalMultilinearSeries.radius_prod_eq_min
     (p : FormalMultilinearSeries 𝕜 E F) (q : FormalMultilinearSeries 𝕜 E G) :
     (p.prod q).radius = min p.radius q.radius := by
   apply le_antisymm
-  · refine ENNReal.le_of_forall_nnreal_lt fun r hr => ?_
+  · refine ENNReal.le_of_forall_nnreal_lt fun r hr ↦ ?_
     rw [le_min_iff]
     have := (p.prod q).isLittleO_one_of_lt_radius hr
     constructor
@@ -272,7 +272,7 @@ lemma FormalMultilinearSeries.radius_prod_eq_min
       rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.opNorm_prod]
     · apply le_max_left
     · apply le_max_right
-  · refine ENNReal.le_of_forall_nnreal_lt fun r hr => ?_
+  · refine ENNReal.le_of_forall_nnreal_lt fun r hr ↦ ?_
     rw [lt_min_iff] at hr
     have := ((p.isLittleO_one_of_lt_radius hr.1).add
       (q.isLittleO_one_of_lt_radius hr.2)).isBigO
@@ -1358,11 +1358,11 @@ theorem AnalyticAtWithin.compContinuousLinearMap (hf : AnalyticWithinAt 𝕜 f s
   ⟨p.compContinuousLinearMap u, hp.compContinuousLinearMap⟩
 
 theorem AnalyticOn.compContinuousLinearMap (hf : AnalyticOn 𝕜 f s) :
-    AnalyticOn 𝕜 (f ∘ u) (u ⁻¹' s) := fun x hx =>
+    AnalyticOn 𝕜 (f ∘ u) (u ⁻¹' s) := fun x hx ↦
   AnalyticAtWithin.compContinuousLinearMap (hf (u x) hx)
 
 theorem AnalyticOnNhd.compContinuousLinearMap (hf : AnalyticOnNhd 𝕜 f s) :
-    AnalyticOnNhd 𝕜 (f ∘ u) (u ⁻¹' s) := fun x hx =>
+    AnalyticOnNhd 𝕜 (f ∘ u) (u ⁻¹' s) := fun x hx ↦
   AnalyticAt.compContinuousLinearMap (hf (u x) hx)
 
 end compContinuousLinearMap

@@ -48,7 +48,7 @@ this is the chain map sending `x : Hⁿ → A` to `(g : Gⁿ) ↦ φ (x (f ∘ g
 noncomputable def cochainsMap :
     inhomogeneousCochains A ⟶ inhomogeneousCochains B where
   f i := ModuleCat.ofHom <|
-    φ.hom.hom.compLeft (Fin i → G) ∘ₗ LinearMap.funLeft k A (fun x : Fin i → G => (f ∘ x))
+    φ.hom.hom.compLeft (Fin i → G) ∘ₗ LinearMap.funLeft k A (fun x : Fin i → G ↦ (f ∘ x))
   comm' i j (hij : _ = _) := by
     subst hij
     ext
@@ -94,7 +94,7 @@ lemma cochainsMap_f_map_mono (hf : Function.Surjective f) [Mono φ] (i : ℕ) :
 
 instance cochainsMap_id_f_map_mono {A B : Rep k G} (φ : A ⟶ B) [Mono φ] (i : ℕ) :
     Mono ((cochainsMap (MonoidHom.id G) φ).f i) :=
-  cochainsMap_f_map_mono (MonoidHom.id G) φ (fun x => ⟨x, rfl⟩) i
+  cochainsMap_f_map_mono (MonoidHom.id G) φ (fun x ↦ ⟨x, rfl⟩) i
 
 lemma cochainsMap_f_map_epi (hf : Function.Injective f) [Epi φ] (i : ℕ) :
     Epi ((cochainsMap f φ).f i) := by
@@ -104,7 +104,7 @@ lemma cochainsMap_f_map_epi (hf : Function.Injective f) [Epi φ] (i : ℕ) :
 
 instance cochainsMap_id_f_map_epi {A B : Rep k G} (φ : A ⟶ B) [Epi φ] (i : ℕ) :
     Epi ((cochainsMap (MonoidHom.id G) φ).f i) :=
-  cochainsMap_f_map_epi (MonoidHom.id G) φ (fun _ _ h => h) i
+  cochainsMap_f_map_epi (MonoidHom.id G) φ (fun _ _ h ↦ h) i
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the induced map `Zⁿ(H, A) ⟶ Zⁿ(G, B)` sending `x : Hⁿ → A` to
@@ -382,7 +382,7 @@ alias cocyclesMap_comp_isoOneCocycles_hom := cocyclesMap_comp_isoCocycles₁_hom
 theorem mapCocycles₁_one (φ : (Action.res _ 1).obj A ⟶ B) :
     mapCocycles₁ 1 φ = 0 := by
   rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 B)).i, cyclesMap'_i]
-  refine ModuleCat.hom_ext (LinearMap.ext fun _ ↦ funext fun y => ?_)
+  refine ModuleCat.hom_ext (LinearMap.ext fun _ ↦ funext fun y ↦ ?_)
   simp [mapShortComplexH1, shortComplexH1, Pi.zero_apply y]
 
 @[deprecated (since := "2025-06-25")] alias mapOneCocycles_one := mapCocycles₁_one
@@ -433,7 +433,7 @@ noncomputable def H1InfRes :
   f := map (QuotientGroup.mk' S) (subtype _ _ <| le_comap_invariants A.ρ S) 1
   g := map S.subtype (𝟙 _) 1
   zero := by rw [← map_comp, Category.comp_id, congr (QuotientGroup.mk'_comp_subtype S)
-    (fun f φ => map f φ 1), map₁_one]
+    (fun f φ ↦ map f φ 1), map₁_one]
 
 /-- The inflation map `H¹(G ⧸ S, A^S) ⟶ H¹(G, A)` is a monomorphism. -/
 instance : Mono (H1InfRes A S).f := by
@@ -442,8 +442,8 @@ instance : Mono (H1InfRes A S).f := by
   induction x using H1_induction_on with | @h x =>
   simp_all only [H1InfRes_X₂, H1InfRes_X₁, H1InfRes_f, H1π_comp_map_apply (QuotientGroup.mk' S)]
   rcases (H1π_eq_zero_iff _).1 hx with ⟨y, hy⟩
-  refine (H1π_eq_zero_iff _).2 ⟨⟨y, fun s => ?_⟩, funext fun g => QuotientGroup.induction_on g
-    fun g => Subtype.ext <| by simpa [-SetLike.coe_eq_coe] using congr_fun hy g⟩
+  refine (H1π_eq_zero_iff _).2 ⟨⟨y, fun s ↦ ?_⟩, funext fun g ↦ QuotientGroup.induction_on g
+    fun g ↦ Subtype.ext <| by simpa [-SetLike.coe_eq_coe] using congr_fun hy g⟩
   simpa [coe_mapCocycles₁ (x := x), sub_eq_zero, (QuotientGroup.eq_one_iff s.1).2 s.2] using
     congr_fun hy s.1
 
@@ -458,8 +458,8 @@ lemma H1InfRes_exact : (H1InfRes A S).Exact := by
   rcases (H1π_eq_zero_iff _).1 hx with ⟨(y : A), hy⟩
   have h1 := (mem_cocycles₁_iff x).1 x.2
   have h2 : ∀ s ∈ S, x s = A.ρ s y - y :=
-    fun s hs => funext_iff.1 hy.symm ⟨s, hs⟩
-  refine ⟨H1π _ ⟨fun g => Quotient.liftOn' g (fun g => ⟨x.1 g - A.ρ g y + y, ?_⟩) ?_, ?_⟩, ?_⟩
+    fun s hs ↦ funext_iff.1 hy.symm ⟨s, hs⟩
+  refine ⟨H1π _ ⟨fun g ↦ Quotient.liftOn' g (fun g ↦ ⟨x.1 g - A.ρ g y + y, ?_⟩) ?_, ?_⟩, ?_⟩
   · intro s
     calc
       _ = x (s * g) - x s - A.ρ s (A.ρ g y) + (x s + y) := by

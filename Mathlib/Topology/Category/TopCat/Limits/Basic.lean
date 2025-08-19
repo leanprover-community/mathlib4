@@ -38,11 +38,11 @@ Generally you should just use `limit.cone F`, unless you need the actual definit
 def limitCone (F : J ⥤ TopCat.{max v u}) : Cone F where
   pt := TopCat.of { u : ∀ j : J, F.obj j | ∀ {i j : J} (f : i ⟶ j), F.map f (u i) = u j }
   π :=
-    { app := fun j => ofHom
-        { toFun := fun u => u.val j
+    { app := fun j ↦ ofHom
+        { toFun := fun u ↦ u.val j
           -- Porting note: `continuity` from the original mathlib3 proof failed here.
           continuous_toFun := Continuous.comp (continuous_apply _) (continuous_subtype_val) }
-      naturality := fun X Y f => by
+      naturality := fun X Y f ↦ by
         ext a
         exact (a.2 f).symm }
 
@@ -52,13 +52,13 @@ Generally you should just use `limit.isLimit F`, unless you need the actual defi
 -/
 def limitConeIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitCone.{v,u} F) where
   lift S := ofHom
-    { toFun := fun x =>
-        ⟨fun _ => S.π.app _ x, fun f => by
+    { toFun := fun x ↦
+        ⟨fun _ ↦ S.π.app _ x, fun f ↦ by
           dsimp
           rw [← S.w f]
           rfl⟩
       continuous_toFun :=
-        Continuous.subtype_mk (continuous_pi fun j => (S.π.app j).hom.2) fun x i j f => by
+        Continuous.subtype_mk (continuous_pi fun j ↦ (S.π.app j).hom.2) fun x i j f ↦ by
           dsimp
           rw [← S.w f]
           rfl }
@@ -146,7 +146,7 @@ lemma hasLimit_iff_small_sections :
 
 instance topCat_hasLimitsOfShape (J : Type v) [Category J] [Small.{u} J] :
     HasLimitsOfShape J TopCat.{u} where
-  has_limit := fun F => by
+  has_limit := fun F ↦ by
     rw [hasLimit_iff_small_sections]
     infer_instance
 
@@ -271,7 +271,7 @@ lemma hasColimit_iff_small_colimitType :
 
 instance topCat_hasColimitsOfShape (J : Type v) [Category J] [Small.{u} J] :
     HasColimitsOfShape J TopCat.{u} where
-  has_colimit := fun F => by
+  has_colimit := fun F ↦ by
     rw [hasColimit_iff_small_colimitType]
     infer_instance
 
@@ -289,8 +289,8 @@ end Colimits
 
 /-- The terminal object of `Top` is `PUnit`. -/
 def isTerminalPUnit : IsTerminal (TopCat.of PUnit.{u + 1}) :=
-  haveI : ∀ X, Unique (X ⟶ TopCat.of PUnit.{u + 1}) := fun X =>
-    ⟨⟨ofHom ⟨fun _ => PUnit.unit, continuous_const⟩⟩, fun f => by ext⟩
+  haveI : ∀ X, Unique (X ⟶ TopCat.of PUnit.{u + 1}) := fun X ↦
+    ⟨⟨ofHom ⟨fun _ ↦ PUnit.unit, continuous_const⟩⟩, fun f ↦ by ext⟩
   Limits.IsTerminal.ofUnique _
 
 /-- The terminal object of `Top` is `PUnit`. -/
@@ -299,8 +299,8 @@ def terminalIsoPUnit : ⊤_ TopCat.{u} ≅ TopCat.of PUnit :=
 
 /-- The initial object of `Top` is `PEmpty`. -/
 def isInitialPEmpty : IsInitial (TopCat.of PEmpty.{u + 1}) :=
-  haveI : ∀ X, Unique (TopCat.of PEmpty.{u + 1} ⟶ X) := fun X =>
-    ⟨⟨ofHom ⟨fun x => x.elim, by continuity⟩⟩, fun f => by ext ⟨⟩⟩
+  haveI : ∀ X, Unique (TopCat.of PEmpty.{u + 1} ⟶ X) := fun X ↦
+    ⟨⟨ofHom ⟨fun x ↦ x.elim, by continuity⟩⟩, fun f ↦ by ext ⟨⟩⟩
   Limits.IsInitial.ofUnique _
 
 /-- The initial object of `Top` is `PEmpty`. -/

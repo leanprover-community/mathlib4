@@ -30,7 +30,7 @@ instance instIntCast : IntCast (∀ i, π i) where intCast n _ := n
 theorem intCast_apply (n : ℤ) (i : ι) : (n : ∀ i, π i) i = n :=
   rfl
 
-theorem intCast_def (n : ℤ) : (n : ∀ i, π i) = fun _ => ↑n :=
+theorem intCast_def (n : ℤ) : (n : ∀ i, π i) = fun _ ↦ ↑n :=
   rfl
 
 end Pi

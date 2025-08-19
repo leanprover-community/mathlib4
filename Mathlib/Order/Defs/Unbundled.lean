@@ -55,7 +55,7 @@ instance {α : Sort*} {r : α → α → Prop} [IsTrans α r] : Trans r r r :=
   ⟨IsTrans.trans _ _ _⟩
 
 instance (priority := 100) {α : Sort*} {r : α → α → Prop} [Trans r r r] : IsTrans α r :=
-  ⟨fun _ _ _ => Trans.trans⟩
+  ⟨fun _ _ _ ↦ Trans.trans⟩
 
 /-- `IsTotal X r` means that the binary relation `r` on `X` is total, that is, that for any
 `x y : X` we have `r x y` or `r y x`. -/
@@ -128,39 +128,39 @@ lemma trichotomous [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b
 
 instance (priority := 90) isAsymm_of_isTrans_of_isIrrefl [IsTrans α r] [IsIrrefl α r] :
     IsAsymm α r :=
-  ⟨fun a _b h₁ h₂ => absurd (_root_.trans h₁ h₂) (irrefl a)⟩
+  ⟨fun a _b h₁ h₂ ↦ absurd (_root_.trans h₁ h₂) (irrefl a)⟩
 
 instance IsIrrefl.decide [DecidableRel r] [IsIrrefl α r] :
-    IsIrrefl α (fun a b => decide (r a b) = true) where
-  irrefl := fun a => by simpa using irrefl a
+    IsIrrefl α (fun a b ↦ decide (r a b) = true) where
+  irrefl := fun a ↦ by simpa using irrefl a
 
 instance IsRefl.decide [DecidableRel r] [IsRefl α r] :
-    IsRefl α (fun a b => decide (r a b) = true) where
-  refl := fun a => by simpa using refl a
+    IsRefl α (fun a b ↦ decide (r a b) = true) where
+  refl := fun a ↦ by simpa using refl a
 
 instance IsTrans.decide [DecidableRel r] [IsTrans α r] :
-    IsTrans α (fun a b => decide (r a b) = true) where
-  trans := fun a b c => by simpa using trans a b c
+    IsTrans α (fun a b ↦ decide (r a b) = true) where
+  trans := fun a b c ↦ by simpa using trans a b c
 
 instance IsSymm.decide [DecidableRel r] [IsSymm α r] :
-    IsSymm α (fun a b => decide (r a b) = true) where
-  symm := fun a b => by simpa using symm a b
+    IsSymm α (fun a b ↦ decide (r a b) = true) where
+  symm := fun a b ↦ by simpa using symm a b
 
 instance IsAntisymm.decide [DecidableRel r] [IsAntisymm α r] :
-    IsAntisymm α (fun a b => decide (r a b) = true) where
+    IsAntisymm α (fun a b ↦ decide (r a b) = true) where
   antisymm a b h₁ h₂ := antisymm (r := r) _ _ (by simpa using h₁) (by simpa using h₂)
 
 instance IsAsymm.decide [DecidableRel r] [IsAsymm α r] :
-    IsAsymm α (fun a b => decide (r a b) = true) where
-  asymm := fun a b => by simpa using asymm a b
+    IsAsymm α (fun a b ↦ decide (r a b) = true) where
+  asymm := fun a b ↦ by simpa using asymm a b
 
 instance IsTotal.decide [DecidableRel r] [IsTotal α r] :
-    IsTotal α (fun a b => decide (r a b) = true) where
-  total := fun a b => by simpa using total a b
+    IsTotal α (fun a b ↦ decide (r a b) = true) where
+  total := fun a b ↦ by simpa using total a b
 
 instance IsTrichotomous.decide [DecidableRel r] [IsTrichotomous α r] :
-    IsTrichotomous α (fun a b => decide (r a b) = true) where
-  trichotomous := fun a b => by simpa using trichotomous a b
+    IsTrichotomous α (fun a b ↦ decide (r a b) = true) where
+  trichotomous := fun a b ↦ by simpa using trichotomous a b
 
 variable (r)
 
@@ -332,10 +332,10 @@ theorem of_eq [IsRefl α r] : ∀ {a b}, a = b → r a b
 theorem comm [IsSymm α r] {a b : α} : r a b ↔ r b a :=
   ⟨symm, symm⟩
 
-theorem antisymm' [IsAntisymm α r] {a b : α} : r a b → r b a → b = a := fun h h' => antisymm h' h
+theorem antisymm' [IsAntisymm α r] {a b : α} : r a b → r b a → b = a := fun h h' ↦ antisymm h' h
 
 theorem antisymm_iff [IsRefl α r] [IsAntisymm α r] {a b : α} : r a b ∧ r b a ↔ a = b :=
-  ⟨fun h => antisymm h.1 h.2, by
+  ⟨fun h ↦ antisymm h.1 h.2, by
     rintro rfl
     exact ⟨refl _, refl _⟩⟩
 
@@ -360,17 +360,17 @@ theorem comm_of (r : α → α → Prop) [IsSymm α r] {a b : α} : r a b ↔ r 
   comm
 
 protected theorem IsAsymm.isAntisymm (r) [IsAsymm α r] : IsAntisymm α r :=
-  ⟨fun _ _ h₁ h₂ => (_root_.asymm h₁ h₂).elim⟩
+  ⟨fun _ _ h₁ h₂ ↦ (_root_.asymm h₁ h₂).elim⟩
 
 protected theorem IsAsymm.isIrrefl [IsAsymm α r] : IsIrrefl α r :=
-  ⟨fun _ h => _root_.asymm h h⟩
+  ⟨fun _ h ↦ _root_.asymm h h⟩
 
 protected theorem IsTotal.isTrichotomous (r) [IsTotal α r] : IsTrichotomous α r :=
-  ⟨fun a b => or_left_comm.1 (Or.inr <| total_of r a b)⟩
+  ⟨fun a b ↦ or_left_comm.1 (Or.inr <| total_of r a b)⟩
 
 -- see Note [lower instance priority]
 instance (priority := 100) IsTotal.to_isRefl (r) [IsTotal α r] : IsRefl α r :=
-  ⟨fun a => or_self_iff.1 <| total_of r a a⟩
+  ⟨fun a ↦ or_self_iff.1 <| total_of r a a⟩
 
 theorem ne_of_irrefl {r} [IsIrrefl α r] : ∀ {x y : α}, r x y → x ≠ y
   | _, _, h, rfl => irrefl _ h
@@ -389,7 +389,7 @@ theorem empty_relation_apply (a b : α) : EmptyRelation a b ↔ False :=
   Iff.rfl
 
 instance : IsIrrefl α EmptyRelation :=
-  ⟨fun _ => id⟩
+  ⟨fun _ ↦ id⟩
 
 theorem rel_congr_left [IsSymm α r] [IsTrans α r] {a b c : α} (h : r a b) : r a c ↔ r b c :=
   ⟨trans_of r (symm_of r h), trans_of r h⟩

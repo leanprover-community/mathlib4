@@ -40,7 +40,7 @@ theorem mem_op {x : Gᵐᵒᵖ} {S : Subgroup G} : x ∈ S.op ↔ x.unop ∈ S :
 protected def unop (H : Subgroup Gᵐᵒᵖ) : Subgroup G where
   carrier := MulOpposite.op ⁻¹' (H : Set Gᵐᵒᵖ)
   one_mem' := H.one_mem
-  mul_mem' := fun ha hb => H.mul_mem hb ha
+  mul_mem' := fun ha hb ↦ H.mul_mem hb ha
   inv_mem' := H.inv_mem
 
 @[to_additive (attr := simp)]
@@ -99,7 +99,7 @@ theorem unop_inj {S T : Subgroup Gᵐᵒᵖ} : S.unop = T.unop ↔ S = T := opEq
 /-- Bijection between a subgroup `H` and its opposite. -/
 @[to_additive (attr := simps!) /-- Bijection between an additive subgroup `H` and its opposite. -/]
 def equivOp (H : Subgroup G) : H ≃ H.op :=
-  MulOpposite.opEquiv.subtypeEquiv fun _ => Iff.rfl
+  MulOpposite.opEquiv.subtypeEquiv fun _ ↦ Iff.rfl
 
 @[to_additive]
 theorem op_normalizer (H : Subgroup G) : H.normalizer.op = H.op.normalizer := by

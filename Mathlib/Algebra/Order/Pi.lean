@@ -28,14 +28,14 @@ an ordered additive commutative monoid. -/]
 instance isOrderedMonoid {ι : Type*} {Z : ι → Type*} [∀ i, CommMonoid (Z i)]
     [∀ i, PartialOrder (Z i)] [∀ i, IsOrderedMonoid (Z i)] :
     IsOrderedMonoid (∀ i, Z i) where
-  mul_le_mul_left _ _ w _ := fun i => mul_le_mul_left' (w i) _
+  mul_le_mul_left _ _ w _ := fun i ↦ mul_le_mul_left' (w i) _
 
 @[to_additive]
 instance existsMulOfLe {ι : Type*} {α : ι → Type*} [∀ i, LE (α i)] [∀ i, Mul (α i)]
     [∀ i, ExistsMulOfLE (α i)] : ExistsMulOfLE (∀ i, α i) :=
-  ⟨fun h =>
-    ⟨fun i => (exists_mul_of_le <| h i).choose,
-      funext fun i => (exists_mul_of_le <| h i).choose_spec⟩⟩
+  ⟨fun h ↦
+    ⟨fun i ↦ (exists_mul_of_le <| h i).choose,
+      funext fun i ↦ (exists_mul_of_le <| h i).choose_spec⟩⟩
 
 /-- The product of a family of canonically ordered monoids is a canonically ordered monoid. -/
 @[to_additive
@@ -45,7 +45,7 @@ instance {ι : Type*} {Z : ι → Type*} [∀ i, Monoid (Z i)] [∀ i, PartialOr
     [∀ i, CanonicallyOrderedMul (Z i)] :
     CanonicallyOrderedMul (∀ i, Z i) where
   __ := Pi.existsMulOfLe
-  le_self_mul _ _ := fun _ => le_self_mul
+  le_self_mul _ _ := fun _ ↦ le_self_mul
 
 @[to_additive]
 instance isOrderedCancelMonoid [∀ i, CommMonoid <| f i] [∀ i, PartialOrder <| f i]
@@ -55,10 +55,10 @@ instance isOrderedCancelMonoid [∀ i, CommMonoid <| f i] [∀ i, PartialOrder <
 
 instance isOrderedRing [∀ i, Semiring (f i)] [∀ i, PartialOrder (f i)] [∀ i, IsOrderedRing (f i)] :
     IsOrderedRing (∀ i, f i) where
-  add_le_add_left _ _ hab _ := fun _ => add_le_add_left (hab _) _
-  zero_le_one := fun i => zero_le_one (α := f i)
-  mul_le_mul_of_nonneg_left _ _ _ hab hc := fun _ => mul_le_mul_of_nonneg_left (hab _) <| hc _
-  mul_le_mul_of_nonneg_right _ _ _ hab hc := fun _ => mul_le_mul_of_nonneg_right (hab _) <| hc _
+  add_le_add_left _ _ hab _ := fun _ ↦ add_le_add_left (hab _) _
+  zero_le_one := fun i ↦ zero_le_one (α := f i)
+  mul_le_mul_of_nonneg_left _ _ _ hab hc := fun _ ↦ mul_le_mul_of_nonneg_left (hab _) <| hc _
+  mul_le_mul_of_nonneg_right _ _ _ hab hc := fun _ ↦ mul_le_mul_of_nonneg_right (hab _) <| hc _
 
 end Pi
 
@@ -67,10 +67,10 @@ section const
 variable (β) [One α] [Preorder α] {a : α}
 
 @[to_additive const_nonneg_of_nonneg]
-theorem one_le_const_of_one_le (ha : 1 ≤ a) : 1 ≤ const β a := fun _ => ha
+theorem one_le_const_of_one_le (ha : 1 ≤ a) : 1 ≤ const β a := fun _ ↦ ha
 
 @[to_additive]
-theorem const_le_one_of_le_one (ha : a ≤ 1) : const β a ≤ 1 := fun _ => ha
+theorem const_le_one_of_le_one (ha : a ≤ 1) : const β a ≤ 1 := fun _ ↦ ha
 
 variable {β} [Nonempty β]
 

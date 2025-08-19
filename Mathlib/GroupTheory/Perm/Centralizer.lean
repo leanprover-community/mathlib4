@@ -465,7 +465,7 @@ theorem nat_card_range_toPermHom :
     simp only [Nat.card_eq_fintype_card, this, Set.coe_setOf, DomMulAct.stabilizer_card', hsc,
       Finset.univ_eq_attach]
     simp_rw [← CycleType.count_def]
-    apply Finset.prod_congr _ (fun _ _ => rfl)
+    apply Finset.prod_congr _ (fun _ _ ↦ rfl)
     ext n
     simp only [Finset.mem_image, Finset.mem_attach,
         true_and, Subtype.exists, exists_prop, Multiset.mem_toFinset]
@@ -556,7 +556,7 @@ theorem kerParam_range_eq :
       subtypePerm p (fun x ↦ apply_mem_fixedPoints_iff_mem_of_mem_centralizer p.2)
     simp only [SetLike.mem_coe, mem_ker_toPermHom_iff, IsCycle.forall_commute_iff] at hp
     set v : (c : g.cycleFactorsFinset) → (Subgroup.zpowers c.val) :=
-      fun c => ⟨ofSubtype
+      fun c ↦ ⟨ofSubtype
           (p.1.subtypePerm (Classical.choose (hp c.val c.prop))),
             Classical.choose_spec (hp c.val c.prop)⟩
     use (u, v)
@@ -695,7 +695,7 @@ theorem card_of_cycleType (m : Multiset ℕ) :
   · -- nonempty case
     apply symm
     apply Nat.div_eq_of_eq_mul_left
-    · have : 0 < m.prod := Multiset.prod_pos <| fun a ha => zero_lt_two.trans_le (hm.2 a ha)
+    · have : 0 < m.prod := Multiset.prod_pos <| fun a ha ↦ zero_lt_two.trans_le (hm.2 a ha)
       positivity
     rw [card_of_cycleType_mul_eq, if_pos hm]
   · -- empty case

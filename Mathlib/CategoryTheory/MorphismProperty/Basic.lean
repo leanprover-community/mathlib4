@@ -45,7 +45,7 @@ lemma MorphismProperty.le_def {P Q : MorphismProperty C} :
 instance : Inhabited (MorphismProperty C) :=
   ⟨⊤⟩
 
-lemma MorphismProperty.top_eq : (⊤ : MorphismProperty C) = fun _ _ _ => True := rfl
+lemma MorphismProperty.top_eq : (⊤ : MorphismProperty C) = fun _ _ _ ↦ True := rfl
 
 variable {C}
 
@@ -86,11 +86,11 @@ lemma iSup_iff {ι : Sort*} (W : ι → MorphismProperty C) {X Y : C} (f : X ⟶
 
 /-- The morphism property in `Cᵒᵖ` associated to a morphism property in `C` -/
 @[simp]
-def op (P : MorphismProperty C) : MorphismProperty Cᵒᵖ := fun _ _ f => P f.unop
+def op (P : MorphismProperty C) : MorphismProperty Cᵒᵖ := fun _ _ f ↦ P f.unop
 
 /-- The morphism property in `C` associated to a morphism property in `Cᵒᵖ` -/
 @[simp]
-def unop (P : MorphismProperty Cᵒᵖ) : MorphismProperty C := fun _ _ f => P f.op
+def unop (P : MorphismProperty Cᵒᵖ) : MorphismProperty C := fun _ _ f ↦ P f.op
 
 theorem unop_op (P : MorphismProperty C) : P.op.unop = P :=
   rfl
@@ -99,7 +99,7 @@ theorem op_unop (P : MorphismProperty Cᵒᵖ) : P.unop.op = P :=
   rfl
 
 /-- The inverse image of a `MorphismProperty D` by a functor `C ⥤ D` -/
-def inverseImage (P : MorphismProperty D) (F : C ⥤ D) : MorphismProperty C := fun _ _ f =>
+def inverseImage (P : MorphismProperty D) (F : C ⥤ D) : MorphismProperty C := fun _ _ f ↦
   P (F.map f)
 
 @[simp]
@@ -107,7 +107,7 @@ lemma inverseImage_iff (P : MorphismProperty D) (F : C ⥤ D) {X Y : C} (f : X �
     P.inverseImage F f ↔ P (F.map f) := by rfl
 
 /-- The image (up to isomorphisms) of a `MorphismProperty C` by a functor `C ⥤ D` -/
-def map (P : MorphismProperty C) (F : C ⥤ D) : MorphismProperty D := fun _ _ f =>
+def map (P : MorphismProperty C) (F : C ⥤ D) : MorphismProperty D := fun _ _ f ↦
   ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : P f'), Nonempty (Arrow.mk (F.map f') ≅ Arrow.mk f)
 
 lemma map_mem_map (P : MorphismProperty C) (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) (hf : P f) :
@@ -206,13 +206,13 @@ instance RespectsRight.inf (P₁ P₂ Q : MorphismProperty C) [P₁.RespectsRigh
 variable (C)
 
 /-- The `MorphismProperty C` satisfied by isomorphisms in `C`. -/
-def isomorphisms : MorphismProperty C := fun _ _ f => IsIso f
+def isomorphisms : MorphismProperty C := fun _ _ f ↦ IsIso f
 
 /-- The `MorphismProperty C` satisfied by monomorphisms in `C`. -/
-def monomorphisms : MorphismProperty C := fun _ _ f => Mono f
+def monomorphisms : MorphismProperty C := fun _ _ f ↦ Mono f
 
 /-- The `MorphismProperty C` satisfied by epimorphisms in `C`. -/
-def epimorphisms : MorphismProperty C := fun _ _ f => Epi f
+def epimorphisms : MorphismProperty C := fun _ _ f ↦ Epi f
 
 section
 
@@ -251,16 +251,16 @@ instance RespectsIso.unop (P : MorphismProperty Cᵒᵖ) [RespectsIso P] : Respe
 
 /-- The closure by isomorphisms of a `MorphismProperty` -/
 def isoClosure (P : MorphismProperty C) : MorphismProperty C :=
-  fun _ _ f => ∃ (Y₁ Y₂ : C) (f' : Y₁ ⟶ Y₂) (_ : P f'), Nonempty (Arrow.mk f' ≅ Arrow.mk f)
+  fun _ _ f ↦ ∃ (Y₁ Y₂ : C) (f' : Y₁ ⟶ Y₂) (_ : P f'), Nonempty (Arrow.mk f' ≅ Arrow.mk f)
 
 lemma le_isoClosure (P : MorphismProperty C) : P ≤ P.isoClosure :=
-  fun _ _ f hf => ⟨_, _, f, hf, ⟨Iso.refl _⟩⟩
+  fun _ _ f hf ↦ ⟨_, _, f, hf, ⟨Iso.refl _⟩⟩
 
 instance isoClosure_respectsIso (P : MorphismProperty C) :
     RespectsIso P.isoClosure where
-  precomp := fun e (he : IsIso e) f ⟨_, _, f', hf', ⟨iso⟩⟩ => ⟨_, _, f', hf',
+  precomp := fun e (he : IsIso e) f ⟨_, _, f', hf', ⟨iso⟩⟩ ↦ ⟨_, _, f', hf',
       ⟨Arrow.isoMk (asIso iso.hom.left ≪≫ asIso (inv e)) (asIso iso.hom.right) (by simp)⟩⟩
-  postcomp := fun e (he : IsIso e) f ⟨_, _, f', hf', ⟨iso⟩⟩ => ⟨_, _, f', hf',
+  postcomp := fun e (he : IsIso e) f ⟨_, _, f', hf', ⟨iso⟩⟩ ↦ ⟨_, _, f', hf',
       ⟨Arrow.isoMk (asIso iso.hom.left) (asIso iso.hom.right ≪≫ asIso e) (by simp)⟩⟩
 
 lemma monotone_isoClosure : Monotone (isoClosure (C := C)) := by
@@ -269,11 +269,11 @@ lemma monotone_isoClosure : Monotone (isoClosure (C := C)) := by
 
 theorem cancel_left_of_respectsIso (P : MorphismProperty C) [hP : RespectsIso P] {X Y Z : C}
     (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] : P (f ≫ g) ↔ P g :=
-  ⟨fun h => by simpa using RespectsIso.precomp P (inv f) (f ≫ g) h, RespectsIso.precomp P f g⟩
+  ⟨fun h ↦ by simpa using RespectsIso.precomp P (inv f) (f ≫ g) h, RespectsIso.precomp P f g⟩
 
 theorem cancel_right_of_respectsIso (P : MorphismProperty C) [hP : RespectsIso P] {X Y Z : C}
     (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] : P (f ≫ g) ↔ P f :=
-  ⟨fun h => by simpa using RespectsIso.postcomp P (inv g) (f ≫ g) h, RespectsIso.postcomp P g f⟩
+  ⟨fun h ↦ by simpa using RespectsIso.postcomp P (inv g) (f ≫ g) h, RespectsIso.postcomp P g f⟩
 
 lemma comma_iso_iff (P : MorphismProperty C) [P.RespectsIso] {A B : Type*} [Category A] [Category B]
     {L : A ⥤ C} {R : B ⥤ C} {f g : Comma L R} (e : f ≅ g) :
@@ -377,13 +377,13 @@ lemma map_eq_of_iso (P : MorphismProperty C) {F G : C ⥤ D} (e : F ≅ G) :
     P.map F = P.map G := by
   revert F G e
   suffices ∀ {F G : C ⥤ D} (_ : F ≅ G), P.map F ≤ P.map G from
-    fun F G e => le_antisymm (this e) (this e.symm)
+    fun F G e ↦ le_antisymm (this e) (this e.symm)
   intro F G e X Y f ⟨X', Y', f', hf', ⟨e'⟩⟩
   exact ⟨X', Y', f', hf', ⟨((Functor.mapArrowFunctor _ _).mapIso e.symm).app (Arrow.mk f') ≪≫ e'⟩⟩
 
 lemma map_inverseImage_le (P : MorphismProperty D) (F : C ⥤ D) :
     (P.inverseImage F).map F ≤ P.isoClosure :=
-  fun _ _ _ ⟨_, _, f, hf, ⟨e⟩⟩ => ⟨_, _, F.map f, hf, ⟨e⟩⟩
+  fun _ _ _ ⟨_, _, f, hf, ⟨e⟩⟩ ↦ ⟨_, _, F.map f, hf, ⟨e⟩⟩
 
 lemma inverseImage_equivalence_inverse_eq_map_functor
     (P : MorphismProperty D) [RespectsIso P] (E : C ≌ D) :
@@ -472,13 +472,13 @@ this is the induced morphism property on `C₁ × C₂`. -/
 def prod {C₁ C₂ : Type*} [Category C₁] [Category C₂]
     (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) :
     MorphismProperty (C₁ × C₂) :=
-  fun _ _ f => W₁ f.1 ∧ W₂ f.2
+  fun _ _ f ↦ W₁ f.1 ∧ W₂ f.2
 
 /-- If `W j` are morphism properties on categories `C j` for all `j`, this is the
 induced morphism property on the category `∀ j, C j`. -/
 def pi {J : Type w} {C : J → Type u} [∀ j, Category.{v} (C j)]
     (W : ∀ j, MorphismProperty (C j)) : MorphismProperty (∀ j, C j) :=
-  fun _ _ f => ∀ j, (W j) (f j)
+  fun _ _ f ↦ ∀ j, (W j) (f j)
 
 variable {C}
 
@@ -486,13 +486,13 @@ variable {C}
 from `W : MorphismProperty C`. -/
 def functorCategory (W : MorphismProperty C) (J : Type*) [Category J] :
     MorphismProperty (J ⥤ C) :=
-  fun _ _ f => ∀ (j : J), W (f.app j)
+  fun _ _ f ↦ ∀ (j : J), W (f.app j)
 
 /-- Given `W : MorphismProperty C`, this is the morphism property on `Arrow C` of morphisms
 whose left and right parts are in `W`. -/
 def arrow (W : MorphismProperty C) :
     MorphismProperty (Arrow C) :=
-  fun _ _ f => W f.left ∧ W f.right
+  fun _ _ f ↦ W f.left ∧ W f.right
 
 end MorphismProperty
 

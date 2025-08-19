@@ -154,12 +154,12 @@ theorem ext ⦃f g : α →ₙ+* β⦄ : (∀ x, f x = g x) → f = g :=
 
 @[simp]
 theorem mk_coe (f : α →ₙ+* β) (h₁ h₂ h₃) : NonUnitalRingHom.mk (MulHom.mk f h₁) h₂ h₃ = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
-theorem coe_addMonoidHom_injective : Injective fun f : α →ₙ+* β => (f : α →+ β) :=
+theorem coe_addMonoidHom_injective : Injective fun f : α →ₙ+* β ↦ (f : α →+ β) :=
   Injective.of_comp (f := DFunLike.coe) DFunLike.coe_injective
 
-theorem coe_mulHom_injective : Injective fun f : α →ₙ+* β => (f : α →ₙ* β) :=
+theorem coe_mulHom_injective : Injective fun f : α →ₙ+* β ↦ (f : α →ₙ* β) :=
   Injective.of_comp (f := DFunLike.coe) DFunLike.coe_injective
 
 end
@@ -174,8 +174,8 @@ protected def id (α : Type*) [NonUnitalNonAssocSemiring α] : α →ₙ+* α wh
   map_add' _ _ := rfl
 
 instance : Zero (α →ₙ+* β) :=
-  ⟨{ toFun := 0, map_mul' := fun _ _ => (mul_zero (0 : β)).symm, map_zero' := rfl,
-      map_add' := fun _ _ => (add_zero (0 : β)).symm }⟩
+  ⟨{ toFun := 0, map_mul' := fun _ _ ↦ (mul_zero (0 : β)).symm, map_zero' := rfl,
+      map_add' := fun _ _ ↦ (add_zero (0 : β)).symm }⟩
 
 instance : Inhabited (α →ₙ+* β) :=
   ⟨0⟩
@@ -241,11 +241,11 @@ theorem zero_comp (f : α →ₙ+* β) : (0 : β →ₙ+* γ).comp f = 0 := by
 
 @[simp]
 theorem comp_id (f : α →ₙ+* β) : f.comp (NonUnitalRingHom.id α) = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem id_comp (f : α →ₙ+* β) : (NonUnitalRingHom.id β).comp f = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 instance : MonoidWithZero (α →ₙ+* α) where
   one := NonUnitalRingHom.id α
@@ -274,12 +274,12 @@ theorem coe_mul (f g : α →ₙ+* α) : ⇑(f * g) = f ∘ g :=
 @[simp]
 theorem cancel_right {g₁ g₂ : β →ₙ+* γ} {f : α →ₙ+* β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 (NonUnitalRingHom.ext_iff.1 h), fun h => h ▸ rfl⟩
+  ⟨fun h ↦ ext <| hf.forall.2 (NonUnitalRingHom.ext_iff.1 h), fun h ↦ h ▸ rfl⟩
 
 @[simp]
 theorem cancel_left {g : β →ₙ+* γ} {f₁ f₂ : α →ₙ+* β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => ext fun x => hg <| by rw [← comp_apply, h, comp_apply], fun h => h ▸ rfl⟩
+  ⟨fun h ↦ ext fun x ↦ hg <| by rw [← comp_apply, h, comp_apply], fun h ↦ h ▸ rfl⟩
 
 end NonUnitalRingHom
 
@@ -439,12 +439,12 @@ theorem ext ⦃f g : α →+* β⦄ : (∀ x, f x = g x) → f = g :=
 
 @[simp]
 theorem mk_coe (f : α →+* β) (h₁ h₂ h₃ h₄) : RingHom.mk ⟨⟨f, h₁⟩, h₂⟩ h₃ h₄ = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
-theorem coe_addMonoidHom_injective : Injective (fun f : α →+* β => (f : α →+ β)) := fun _ _ h =>
+theorem coe_addMonoidHom_injective : Injective (fun f : α →+* β ↦ (f : α →+ β)) := fun _ _ h ↦
   ext <| DFunLike.congr_fun (F := α →+ β) h
 
-theorem coe_monoidHom_injective : Injective (fun f : α →+* β => (f : α →* β)) :=
+theorem coe_monoidHom_injective : Injective (fun f : α →+* β ↦ (f : α →* β)) :=
   Injective.of_comp (f := DFunLike.coe) DFunLike.coe_injective
 
 /-- Ring homomorphisms map zero to zero. -/
@@ -469,7 +469,7 @@ theorem codomain_trivial_iff_map_one_eq_zero : (0 : β) = 1 ↔ f 1 = 0 := by rw
 /-- `f : α →+* β` has a trivial codomain iff it has a trivial range. -/
 theorem codomain_trivial_iff_range_trivial : (0 : β) = 1 ↔ ∀ x, f x = 0 :=
   f.codomain_trivial_iff_map_one_eq_zero.trans
-    ⟨fun h x => by rw [← mul_one x, map_mul, h, mul_zero], fun h => h 1⟩
+    ⟨fun h x ↦ by rw [← mul_one x, map_mul, h, mul_zero], fun h ↦ h 1⟩
 
 /-- `f : α →+* β` doesn't map `1` to `0` if `β` is nontrivial -/
 theorem map_one_ne_zero [Nontrivial β] : f 1 ≠ 0 :=
@@ -478,10 +478,10 @@ theorem map_one_ne_zero [Nontrivial β] : f 1 ≠ 0 :=
 include f in
 /-- If there is a homomorphism `f : α →+* β` and `β` is nontrivial, then `α` is nontrivial. -/
 theorem domain_nontrivial [Nontrivial β] : Nontrivial α :=
-  ⟨⟨1, 0, mt (fun h => show f 1 = 0 by rw [h, map_zero]) f.map_one_ne_zero⟩⟩
+  ⟨⟨1, 0, mt (fun h ↦ show f 1 = 0 by rw [h, map_zero]) f.map_one_ne_zero⟩⟩
 
 theorem codomain_trivial (f : α →+* β) [h : Subsingleton α] : Subsingleton β :=
-  (subsingleton_or_nontrivial β).resolve_right fun _ =>
+  (subsingleton_or_nontrivial β).resolve_right fun _ ↦
     not_nontrivial_iff_subsingleton.mpr h f.domain_nontrivial
 
 end
@@ -549,11 +549,11 @@ theorem comp_apply (hnp : β →+* γ) (hmn : α →+* β) (x : α) :
 
 @[simp]
 theorem comp_id (f : α →+* β) : f.comp (id α) = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem id_comp (f : α →+* β) : (id β).comp f = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 instance instOne : One (α →+* α) where one := id _
 instance instMul : Mul (α →+* α) where mul := comp
@@ -578,12 +578,12 @@ instance instMonoid : Monoid (α →+* α) where
 @[simp]
 theorem cancel_right {g₁ g₂ : β →+* γ} {f : α →+* β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => RingHom.ext <| hf.forall.2 (RingHom.ext_iff.1 h), fun h => h ▸ rfl⟩
+  ⟨fun h ↦ RingHom.ext <| hf.forall.2 (RingHom.ext_iff.1 h), fun h ↦ h ▸ rfl⟩
 
 @[simp]
 theorem cancel_left {g : β →+* γ} {f₁ f₂ : α →+* β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => RingHom.ext fun x => hg <| by rw [← comp_apply, h, comp_apply], fun h => h ▸ rfl⟩
+  ⟨fun h ↦ RingHom.ext fun x ↦ hg <| by rw [← comp_apply, h, comp_apply], fun h ↦ h ▸ rfl⟩
 
 end RingHom
 
@@ -605,7 +605,7 @@ def mkRingHomOfMulSelfOfTwoNeZero (h : ∀ x, f (x * x) = f x * f x) (h_two : (2
     (h_one : f 1 = 1) : β →+* α :=
   { f with
     map_one' := h_one,
-    map_mul' := fun x y => by
+    map_mul' := fun x y ↦ by
       have hxy := h (x + y)
       rw [mul_add, add_mul, add_mul, f.map_add, f.map_add, f.map_add, f.map_add, h x, h y, add_mul,
         mul_add, mul_add, ← sub_eq_zero, add_comm (f x * f x + f (y * x)), ← sub_sub, ← sub_sub,

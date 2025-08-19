@@ -51,7 +51,7 @@ local notation "ℤ[i]" => GaussianInt
 namespace GaussianInt
 
 instance : Repr ℤ[i] :=
-  ⟨fun x _ => "⟨" ++ repr x.re ++ ", " ++ repr x.im ++ "⟩"⟩
+  ⟨fun x _ ↦ "⟨" ++ repr x.re ++ ", " ++ repr x.im ++ "⟩"⟩
 
 instance instCommRing : CommRing ℤ[i] :=
   Zsqrtd.commRing
@@ -154,7 +154,7 @@ theorem natAbs_norm_eq (x : ℤ[i]) :
   simp [Zsqrtd.norm]
 
 instance : Div ℤ[i] :=
-  ⟨fun x y =>
+  ⟨fun x y ↦
     let n := (norm y : ℚ)⁻¹
     let c := star y
     ⟨round ((x * c).re * n : ℚ), round ((x * c).im * n : ℚ)⟩⟩
@@ -194,7 +194,7 @@ theorem normSq_div_sub_div_lt_one (x y : ℤ[i]) :
     _ < 1 := by simp [normSq]; norm_num
 
 instance : Mod ℤ[i] :=
-  ⟨fun x y => x - y * (x / y)⟩
+  ⟨fun x y ↦ x - y * (x / y)⟩
 
 theorem mod_def (x y : ℤ[i]) : x % y = x - y * (x / y) :=
   rfl
@@ -230,11 +230,11 @@ instance : EuclideanDomain ℤ[i] :=
     quotient := (· / ·)
     remainder := (· % ·)
     quotient_zero := by simp [div_def]; rfl
-    quotient_mul_add_remainder_eq := fun _ _ => by simp [mod_def]
+    quotient_mul_add_remainder_eq := fun _ _ ↦ by simp [mod_def]
     r := _
     r_wellFounded := (measure (Int.natAbs ∘ norm)).wf
     remainder_lt := natAbs_norm_mod_lt
-    mul_left_not_lt := fun a _ hb0 => not_lt_of_ge <| norm_le_norm_mul_left a hb0 }
+    mul_left_not_lt := fun a _ hb0 ↦ not_lt_of_ge <| norm_le_norm_mul_left a hb0 }
 
 open PrincipalIdealRing
 
@@ -243,7 +243,7 @@ theorem sq_add_sq_of_nat_prime_of_not_irreducible (p : ℕ) [hp : Fact p.Prime]
   have hpu : ¬IsUnit (p : ℤ[i]) :=
     mt norm_eq_one_iff.2 <| by
       rw [norm_natCast, Int.natAbs_mul, mul_eq_one]
-      exact fun h => (ne_of_lt hp.1.one_lt).symm h.1
+      exact fun h ↦ (ne_of_lt hp.1.one_lt).symm h.1
   have hab : ∃ a b, (p : ℤ[i]) = a * b ∧ ¬IsUnit a ∧ ¬IsUnit b := by
     simpa [irreducible_iff, hpu, not_forall, not_or] using hpi
   let ⟨a, b, hpab, hau, hbu⟩ := hab

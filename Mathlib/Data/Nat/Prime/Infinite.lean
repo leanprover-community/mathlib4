@@ -31,7 +31,7 @@ theorem exists_infinite_primes (n : ℕ) : ∃ p, n ≤ p ∧ Prime p :=
   have f1 : n ! + 1 ≠ 1 := ne_of_gt <| succ_lt_succ <| factorial_pos _
   have pp : Prime p := minFac_prime f1
   have np : n ≤ p :=
-    le_of_not_ge fun h =>
+    le_of_not_ge fun h ↦
       have h₁ : p ∣ n ! := dvd_factorial (minFac_pos _) h
       have h₂ : p ∣ 1 := (Nat.dvd_add_iff_right h₁).2 (minFac_dvd _)
       pp.not_dvd_one h₂

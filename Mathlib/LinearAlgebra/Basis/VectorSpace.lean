@@ -155,7 +155,7 @@ theorem ofVectorSpace_apply_self (x : ofVectorSpaceIndex K V) : ofVectorSpace K 
 
 @[simp]
 theorem coe_ofVectorSpace : ⇑(ofVectorSpace K V) = ((↑) : _ → _) :=
-  funext fun x => ofVectorSpace_apply_self K V x
+  funext fun x ↦ ofVectorSpace_apply_self K V x
 
 theorem ofVectorSpaceIndex.linearIndependent :
     LinearIndependent K ((↑) : ofVectorSpaceIndex K V → V) := by
@@ -208,7 +208,7 @@ theorem nonzero_span_atom (v : V) (hv : v ≠ 0) : IsAtom (span K {v} : Submodul
 submodules equal to the span of a nonzero element of the module. -/
 theorem atom_iff_nonzero_span (W : Submodule K V) :
     IsAtom W ↔ ∃ v ≠ 0, W = span K {v} := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨hbot, h⟩ := h
     rcases (Submodule.ne_bot_iff W).1 hbot with ⟨v, ⟨hW, hv⟩⟩
     refine ⟨v, ⟨hv, ?_⟩⟩
@@ -221,7 +221,7 @@ theorem atom_iff_nonzero_span (W : Submodule K V) :
 
 /-- The lattice of submodules of a module over a division ring is atomistic. -/
 instance : IsAtomistic (Submodule K V) :=
-  CompleteLattice.isAtomistic_iff.2 fun W => by
+  CompleteLattice.isAtomistic_iff.2 fun W ↦ by
     refine ⟨_, submodule_eq_sSup_le_nonzero_spans W, ?_⟩
     rintro _ ⟨w, ⟨_, ⟨hw, rfl⟩⟩⟩
     exact nonzero_span_atom w hw
@@ -243,7 +243,7 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   have BC := this.subset_extend (subset_univ _)
   let hC := Basis.extend this
   haveI Vinh : Inhabited V := ⟨0⟩
-  refine ⟨(hC.constr ℕ : _ → _) (C.restrict (invFun f)), hB.ext fun b => ?_⟩
+  refine ⟨(hC.constr ℕ : _ → _) (C.restrict (invFun f)), hB.ext fun b ↦ ?_⟩
   rw [image_subset_iff] at BC
   have fb_eq : f b = hC ⟨f b, BC b.2⟩ := by
     change f b = Basis.extend this _

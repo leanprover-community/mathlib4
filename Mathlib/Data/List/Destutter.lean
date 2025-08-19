@@ -98,7 +98,7 @@ theorem destutter'_of_chain (h : l.Chain R a) : l.destutter' R a = a :: l := by
 
 @[simp]
 theorem destutter'_eq_self_iff (a) : l.destutter' R a = a :: l ↔ l.Chain R a :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     suffices Chain' R (a::l) by
       assumption
     rw [← h]
@@ -149,7 +149,7 @@ theorem destutter_idem : (l.destutter R).destutter R = l.destutter R :=
 @[simp]
 theorem destutter_eq_nil : ∀ {l : List α}, destutter R l = [] ↔ l = []
   | [] => Iff.rfl
-  | _ :: l => ⟨fun h => absurd h <| l.destutter'_ne_nil R, fun h => nomatch h⟩
+  | _ :: l => ⟨fun h ↦ absurd h <| l.destutter'_ne_nil R, fun h ↦ nomatch h⟩
 
 variable {R}
 

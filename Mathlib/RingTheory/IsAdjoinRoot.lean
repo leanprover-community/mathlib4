@@ -148,7 +148,7 @@ theorem ext_map (h' : IsAdjoinRoot S f) (eq : ∀ x, h.map x = h'.map x) : h = h
 for extensionality of the ring elements. -/
 @[ext]
 theorem ext (h' : IsAdjoinRoot S f) (eq : h.root = h'.root) : h = h' :=
-  h.ext_map h' (fun x => by rw [← h.aeval_root_eq_map, ← h'.aeval_root_eq_map, eq])
+  h.ext_map h' (fun x ↦ by rw [← h.aeval_root_eq_map, ← h'.aeval_root_eq_map, eq])
 
 /-- Choose an arbitrary representative so that `h.map (h.repr x) = x`.
 
@@ -572,11 +572,11 @@ theorem coeff_root_pow {n} (hn : n < natDegree f) : h.coeff (h.root ^ n) = Pi.si
   · calc
       h.basis.repr (h.root ^ n) ⟨i, _⟩ = h.basis.repr (h.basis ⟨n, hn⟩) ⟨i, hi⟩ := by
         rw [h.basis_apply, Fin.val_mk]
-      _ = Pi.single (M := fun _ => R) ((⟨n, hn⟩ : Fin _) : ℕ) (1 : (fun _ => R) n)
+      _ = Pi.single (M := fun _ ↦ R) ((⟨n, hn⟩ : Fin _) : ℕ) (1 : (fun _ ↦ R) n)
         ↑(⟨i, _⟩ : Fin _) := by
         rw [h.basis.repr_self, ← Finsupp.single_eq_pi_single,
           Finsupp.single_apply_left Fin.val_injective]
-      _ = Pi.single (M := fun _ => R) n 1 i := by rw [Fin.val_mk, Fin.val_mk]
+      _ = Pi.single (M := fun _ ↦ R) n 1 i := by rw [Fin.val_mk, Fin.val_mk]
   · rw [Pi.single_eq_of_ne]
     rintro rfl
     simp [hi] at hn
@@ -590,20 +590,20 @@ theorem coeff_root (hdeg : 1 < natDegree f) : h.coeff h.root = Pi.single 1 1 := 
 theorem coeff_algebraMap [Nontrivial S] (x : R) : h.coeff (algebraMap R S x) = Pi.single 0 x := by
   ext i
   rw [Algebra.algebraMap_eq_smul_one, map_smul, coeff_one, Pi.smul_apply, smul_eq_mul]
-  refine (Pi.apply_single (fun _ y => x * y) ?_ 0 1 i).trans (by simp)
+  refine (Pi.apply_single (fun _ y ↦ x * y) ?_ 0 1 i).trans (by simp)
   simp
 
 theorem ext_elem ⦃x y : S⦄ (hxy : ∀ i < natDegree f, h.coeff x i = h.coeff y i) : x = y :=
   EquivLike.injective h.basis.equivFun <|
-    funext fun i => by
+    funext fun i ↦ by
       rw [Basis.equivFun_apply, ← h.coeff_apply_coe, Basis.equivFun_apply, ← h.coeff_apply_coe,
         hxy i i.prop]
 
 theorem ext_elem_iff {x y : S} : x = y ↔ ∀ i < natDegree f, h.coeff x i = h.coeff y i :=
-  ⟨fun hxy _ _=> hxy ▸ rfl, fun hxy => h.ext_elem hxy⟩
+  ⟨fun hxy _ _↦ hxy ▸ rfl, fun hxy ↦ h.ext_elem hxy⟩
 
-theorem coeff_injective : Function.Injective h.coeff := fun _ _ hxy =>
-  h.ext_elem fun _ _ => hxy ▸ rfl
+theorem coeff_injective : Function.Injective h.coeff := fun _ _ hxy ↦
+  h.ext_elem fun _ _ ↦ hxy ▸ rfl
 
 theorem isIntegral_root : IsIntegral R h.root := ⟨f, h.monic, h.aeval_root_self⟩
 

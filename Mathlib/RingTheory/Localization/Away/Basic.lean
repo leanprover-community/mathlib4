@@ -136,7 +136,7 @@ variable {g : R →+* P}
 `g : R →+* P` such that `g x` is invertible, the homomorphism induced from `S` to `P` sending
 `z : S` to `g y * (g x)⁻ⁿ`, where `y : R, n : ℕ` are such that `z = F y * (F x)⁻ⁿ`. -/
 noncomputable def lift (hg : IsUnit (g x)) : S →+* P :=
-  IsLocalization.lift fun y : Submonoid.powers x =>
+  IsLocalization.lift fun y : Submonoid.powers x ↦
     show IsUnit (g y.1) by
       obtain ⟨n, hn⟩ := y.2
       rw [← hn, g.map_pow]
@@ -301,10 +301,10 @@ theorem away_of_isUnit_of_bijective {R : Type*} (S : Type*) [CommSemiring R] [Co
   { map_units' := by
       rintro ⟨_, n, rfl⟩
       exact (algebraMap R S).isUnit_map (hr.pow _)
-    surj' := fun z => by
+    surj' := fun z ↦ by
       obtain ⟨z', rfl⟩ := H.2 z
       exact ⟨⟨z', 1⟩, by simp⟩
-    exists_of_eq := fun {x y} => by
+    exists_of_eq := fun {x y} ↦ by
       rw [H.1.eq_iff]
       rintro rfl
       exact ⟨1, rfl⟩ }
@@ -539,11 +539,11 @@ theorem selfZPow_pow_sub (a : R) (b : B) (m d : ℤ) :
   rw [sub_eq_add_neg, selfZPow_add, mul_assoc, mul_comm _ (mk' B a 1), ← mul_assoc]
   constructor
   · intro h
-    have := congr_arg (fun s : B => s * selfZPow x B d) h
+    have := congr_arg (fun s : B ↦ s * selfZPow x B d) h
     simp only at this
     rwa [mul_assoc, mul_assoc, selfZPow_neg_mul, mul_one, mul_comm b _] at this
   · intro h
-    have := congr_arg (fun s : B => s * selfZPow x B (-d)) h
+    have := congr_arg (fun s : B ↦ s * selfZPow x B (-d)) h
     simp only at this
     rwa [mul_comm _ b, mul_assoc b _ _, selfZPow_mul_neg, mul_one] at this
 

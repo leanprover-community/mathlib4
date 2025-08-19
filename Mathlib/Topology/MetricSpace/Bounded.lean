@@ -49,7 +49,7 @@ variable [PseudoMetricSpace α]
 
 /-- Closed balls are bounded -/
 theorem isBounded_closedBall : IsBounded (closedBall x r) :=
-  isBounded_iff.2 ⟨r + r, fun y hy z hz =>
+  isBounded_iff.2 ⟨r + r, fun y hy z hz ↦
     calc dist y z ≤ dist y x + dist z x := dist_triangle_right _ _ _
     _ ≤ r + r := add_le_add hy hz⟩
 
@@ -89,7 +89,7 @@ theorem _root_.Bornology.IsBounded.subset_closedBall_lt (h : IsBounded s) (a : �
 
 theorem isBounded_closure_of_isBounded (h : IsBounded s) : IsBounded (closure s) :=
   let ⟨C, h⟩ := isBounded_iff.1 h
-  isBounded_iff.2 ⟨C, fun _a ha _b hb => isClosed_Iic.closure_subset <|
+  isBounded_iff.2 ⟨C, fun _a ha _b hb ↦ isClosed_Iic.closure_subset <|
     map_mem_closure₂ continuous_dist ha hb h⟩
 
 protected theorem _root_.Bornology.IsBounded.closure (h : IsBounded s) : IsBounded (closure s) :=
@@ -97,7 +97,7 @@ protected theorem _root_.Bornology.IsBounded.closure (h : IsBounded s) : IsBound
 
 @[simp]
 theorem isBounded_closure_iff : IsBounded (closure s) ↔ IsBounded s :=
-  ⟨fun h => h.subset subset_closure, fun h => h.closure⟩
+  ⟨fun h ↦ h.subset subset_closure, fun h ↦ h.closure⟩
 
 theorem hasBasis_cobounded_compl_closedBall (c : α) :
     (cobounded α).HasBasis (fun _ ↦ True) (fun r ↦ (closedBall c r)ᶜ) :=
@@ -145,7 +145,7 @@ theorem _root_.TotallyBounded.isBounded {s : Set α} (h : TotallyBounded s) : Is
   -- We cover the totally bounded set by finitely many balls of radius 1,
   -- and then argue that a finite union of bounded sets is bounded
   let ⟨_t, fint, subs⟩ := (totallyBounded_iff.mp h) 1 zero_lt_one
-  ((isBounded_biUnion fint).2 fun _ _ => isBounded_ball).subset subs
+  ((isBounded_biUnion fint).2 fun _ _ ↦ isBounded_ball).subset subs
 
 /-- A compact set is bounded -/
 theorem _root_.IsCompact.isBounded {s : Set α} (h : IsCompact s) : IsBounded s :=
@@ -262,7 +262,7 @@ some open neighborhood of `k` in `s`. -/
 theorem exists_isOpen_isBounded_image_inter_of_isCompact_of_continuousOn [TopologicalSpace β]
     {k s : Set β} {f : β → α} (hk : IsCompact k) (hks : k ⊆ s) (hf : ContinuousOn f s) :
     ∃ t, k ⊆ t ∧ IsOpen t ∧ IsBounded (f '' (t ∩ s)) :=
-  exists_isOpen_isBounded_image_inter_of_isCompact_of_forall_continuousWithinAt hk fun x hx =>
+  exists_isOpen_isBounded_image_inter_of_isCompact_of_forall_continuousWithinAt hk fun x hx ↦
     hf x (hks hx)
 
 /-- If a function is continuous on a neighborhood of a compact set `k`, then it is bounded on
@@ -270,7 +270,7 @@ some open neighborhood of `k`. -/
 theorem exists_isOpen_isBounded_image_of_isCompact_of_continuousOn [TopologicalSpace β]
     {k s : Set β} {f : β → α} (hk : IsCompact k) (hs : IsOpen s) (hks : k ⊆ s)
     (hf : ContinuousOn f s) : ∃ t, k ⊆ t ∧ IsOpen t ∧ IsBounded (f '' t) :=
-  exists_isOpen_isBounded_image_of_isCompact_of_forall_continuousAt hk fun _x hx =>
+  exists_isOpen_isBounded_image_of_isCompact_of_forall_continuousAt hk fun _x hx ↦
     hf.continuousAt (hs.mem_nhds (hks hx))
 
 /-- The **Heine–Borel theorem**: In a proper space, a closed bounded set is compact. -/
@@ -291,11 +291,11 @@ theorem _root_.Bornology.IsBounded.isCompact_closure [ProperSpace α] (h : IsBou
 In a proper Hausdorff space, a set is compact if and only if it is closed and bounded. -/
 theorem isCompact_iff_isClosed_bounded [T2Space α] [ProperSpace α] :
     IsCompact s ↔ IsClosed s ∧ IsBounded s :=
-  ⟨fun h => ⟨h.isClosed, h.isBounded⟩, fun h => isCompact_of_isClosed_isBounded h.1 h.2⟩
+  ⟨fun h ↦ ⟨h.isClosed, h.isBounded⟩, fun h ↦ isCompact_of_isClosed_isBounded h.1 h.2⟩
 
 theorem compactSpace_iff_isBounded_univ [ProperSpace α] :
     CompactSpace α ↔ IsBounded (univ : Set α) :=
-  ⟨@isBounded_of_compactSpace α _ _, fun hb => ⟨isCompact_of_isClosed_isBounded isClosed_univ hb⟩⟩
+  ⟨@isBounded_of_compactSpace α _ _, fun hb ↦ ⟨isCompact_of_isClosed_isBounded isClosed_univ hb⟩⟩
 
 section CompactIccSpace
 
@@ -331,7 +331,7 @@ theorem isBounded_of_bddAbove_of_bddBelow {s : Set α} (h₁ : BddAbove s) (h₂
     IsBounded s :=
   let ⟨u, hu⟩ := h₁
   let ⟨l, hl⟩ := h₂
-  (isBounded_Icc l u).subset (fun _x hx => mem_Icc.mpr ⟨hl hx, hu hx⟩)
+  (isBounded_Icc l u).subset (fun _x hx ↦ mem_Icc.mpr ⟨hl hx, hu hx⟩)
 
 end CompactIccSpace
 
@@ -384,7 +384,7 @@ theorem diam_triple :
 then `ENNReal.ofReal C` bounds the emetric diameter of this set. -/
 theorem ediam_le_of_forall_dist_le {C : ℝ} (h : ∀ x ∈ s, ∀ y ∈ s, dist x y ≤ C) :
     EMetric.diam s ≤ ENNReal.ofReal C :=
-  EMetric.diam_le fun x hx y hy => (edist_dist x y).symm ▸ ENNReal.ofReal_le_ofReal (h x hx y hy)
+  EMetric.diam_le fun x hx y hy ↦ (edist_dist x y).symm ▸ ENNReal.ofReal_le_ofReal (h x hx y hy)
 
 /-- If the distance between any two points in a set is bounded by some non-negative constant,
 this constant bounds the diameter. -/
@@ -410,8 +410,8 @@ theorem dist_le_diam_of_mem' (h : EMetric.diam s ≠ ⊤) (hx : x ∈ s) (hy : y
 /-- Characterize the boundedness of a set in terms of the finiteness of its emetric.diameter. -/
 theorem isBounded_iff_ediam_ne_top : IsBounded s ↔ EMetric.diam s ≠ ⊤ :=
   isBounded_iff.trans <| Iff.intro
-    (fun ⟨_C, hC⟩ => ne_top_of_le_ne_top ENNReal.ofReal_ne_top <| ediam_le_of_forall_dist_le hC)
-    fun h => ⟨diam s, fun _x hx _y hy => dist_le_diam_of_mem' h hx hy⟩
+    (fun ⟨_C, hC⟩ ↦ ne_top_of_le_ne_top ENNReal.ofReal_ne_top <| ediam_le_of_forall_dist_le hC)
+    fun h ↦ ⟨diam s, fun _x hx _y hy ↦ dist_le_diam_of_mem' h hx hy⟩
 
 alias ⟨_root_.Bornology.IsBounded.ediam_ne_top, _⟩ := isBounded_iff_ediam_ne_top
 
@@ -466,7 +466,7 @@ theorem diam_union' {t : Set α} (h : (s ∩ t).Nonempty) : diam (s ∪ t) ≤ d
 
 theorem diam_le_of_subset_closedBall {r : ℝ} (hr : 0 ≤ r) (h : s ⊆ closedBall x r) :
     diam s ≤ 2 * r :=
-  diam_le_of_forall_dist_le (mul_nonneg zero_le_two hr) fun a ha b hb =>
+  diam_le_of_forall_dist_le (mul_nonneg zero_le_two hr) fun a ha b hb ↦
     calc
       dist a b ≤ dist a x + dist b x := dist_triangle_right _ _ _
       _ ≤ r + r := add_le_add (h ha) (h hb)
@@ -484,7 +484,7 @@ theorem diam_ball {r : ℝ} (h : 0 ≤ r) : diam (ball x r) ≤ 2 * r :=
 is nonempty, then the total intersection is also nonempty. -/
 theorem _root_.IsComplete.nonempty_iInter_of_nonempty_biInter {s : ℕ → Set α}
     (h0 : IsComplete (s 0)) (hs : ∀ n, IsClosed (s n)) (h's : ∀ n, IsBounded (s n))
-    (h : ∀ N, (⋂ n ≤ N, s n).Nonempty) (h' : Tendsto (fun n => diam (s n)) atTop (𝓝 0)) :
+    (h : ∀ N, (⋂ n ≤ N, s n).Nonempty) (h' : Tendsto (fun n ↦ diam (s n)) atTop (𝓝 0)) :
     (⋂ n, s n).Nonempty := by
   let u N := (h N).some
   have I : ∀ n N, n ≤ N → u N ∈ s n := by
@@ -497,9 +497,9 @@ theorem _root_.IsComplete.nonempty_iInter_of_nonempty_biInter {s : ℕ → Set �
     apply cauchySeq_of_le_tendsto_0 _ _ h'
     intro m n N hm hn
     exact dist_le_diam_of_mem (h's N) (I _ _ hm) (I _ _ hn)
-  obtain ⟨x, -, xlim⟩ : ∃ x ∈ s 0, Tendsto (fun n : ℕ => u n) atTop (𝓝 x) :=
-    cauchySeq_tendsto_of_isComplete h0 (fun n => I 0 n (zero_le _)) this
-  refine ⟨x, mem_iInter.2 fun n => ?_⟩
+  obtain ⟨x, -, xlim⟩ : ∃ x ∈ s 0, Tendsto (fun n : ℕ ↦ u n) atTop (𝓝 x) :=
+    cauchySeq_tendsto_of_isComplete h0 (fun n ↦ I 0 n (zero_le _)) this
+  refine ⟨x, mem_iInter.2 fun n ↦ ?_⟩
   apply (hs n).mem_of_tendsto xlim
   filter_upwards [Ici_mem_atTop n] with p hp
   exact I n p hp
@@ -508,7 +508,7 @@ theorem _root_.IsComplete.nonempty_iInter_of_nonempty_biInter {s : ℕ → Set �
 finite intersection is nonempty, then the total intersection is also nonempty. -/
 theorem nonempty_iInter_of_nonempty_biInter [CompleteSpace α] {s : ℕ → Set α}
     (hs : ∀ n, IsClosed (s n)) (h's : ∀ n, IsBounded (s n)) (h : ∀ N, (⋂ n ≤ N, s n).Nonempty)
-    (h' : Tendsto (fun n => diam (s n)) atTop (𝓝 0)) : (⋂ n, s n).Nonempty :=
+    (h' : Tendsto (fun n ↦ diam (s n)) atTop (𝓝 0)) : (⋂ n, s n).Nonempty :=
   (hs 0).isComplete.nonempty_iInter_of_nonempty_biInter hs h's h h'
 
 end PseudoMetricSpace
@@ -561,7 +561,7 @@ theorem comap_dist_left_atTop_eq_cocompact [ProperSpace α] (x : α) :
     comap (dist x) atTop = cocompact α := by simp [cobounded_eq_cocompact]
 
 theorem tendsto_cocompact_of_tendsto_dist_comp_atTop {f : β → α} {l : Filter β} (x : α)
-    (h : Tendsto (fun y => dist (f y) x) l atTop) : Tendsto f l (cocompact α) :=
+    (h : Tendsto (fun y ↦ dist (f y) x) l atTop) : Tendsto f l (cocompact α) :=
   ((tendsto_dist_right_atTop_iff _).1 h).mono_right cobounded_le_cocompact
 
 theorem Metric.finite_isBounded_inter_isClosed [ProperSpace α] {K s : Set α} [DiscreteTopology s]

@@ -192,13 +192,13 @@ theorem range_eq_bot {f : M →ₛₗ[τ₁₂] M₂} : range f = ⊥ ↔ f = 0 
 
 theorem range_le_ker_iff {f : M →ₛₗ[τ₁₂] M₂} {g : M₂ →ₛₗ[τ₂₃] M₃} :
     range f ≤ ker g ↔ (g.comp f : M →ₛₗ[τ₁₃] M₃) = 0 :=
-  ⟨fun h => ker_eq_top.1 <| eq_top_iff'.2 fun _ => h <| ⟨_, rfl⟩, fun h x hx =>
-    mem_ker.2 <| Exists.elim hx fun y hy => by rw [← hy, ← comp_apply, h, zero_apply]⟩
+  ⟨fun h ↦ ker_eq_top.1 <| eq_top_iff'.2 fun _ ↦ h <| ⟨_, rfl⟩, fun h x hx ↦
+    mem_ker.2 <| Exists.elim hx fun y hy ↦ by rw [← hy, ← comp_apply, h, zero_apply]⟩
 
 theorem comap_le_comap_iff {f : F} (hf : range f = ⊤) {p p'} : comap f p ≤ comap f p' ↔ p ≤ p' :=
   ⟨fun H ↦ by rwa [SetLike.le_def, (range_eq_top.1 hf).forall], comap_mono⟩
 
-theorem comap_injective {f : F} (hf : range f = ⊤) : Injective (comap f) := fun _ _ h =>
+theorem comap_injective {f : F} (hf : range f = ⊤) : Injective (comap f) := fun _ _ h ↦
   le_antisymm ((comap_le_comap_iff hf).1 (le_of_eq h)) ((comap_le_comap_iff hf).1 (ge_of_eq h))
 
 -- TODO (?): generalize to semilinear maps with `f ∘ₗ g` bijective.
@@ -332,7 +332,7 @@ def MapSubtype.orderIso : Submodule R p ≃o { p' : Submodule R M // p' ≤ p } 
   toFun p' := ⟨map p.subtype p', map_subtype_le p _⟩
   invFun q := comap p.subtype q
   left_inv p' := comap_map_eq_of_injective (by exact Subtype.val_injective) p'
-  right_inv := fun ⟨q, hq⟩ => Subtype.ext_val <| by simp [map_comap_subtype p, inf_of_le_right hq]
+  right_inv := fun ⟨q, hq⟩ ↦ Subtype.ext_val <| by simp [map_comap_subtype p, inf_of_le_right hq]
   map_rel_iff' {p₁ p₂} := Subtype.coe_le_coe.symm.trans <| by
     dsimp
     rw [map_le_iff_le_comap,

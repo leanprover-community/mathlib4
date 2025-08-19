@@ -29,10 +29,10 @@ section
 variable {s : Set α} {t : Set β}
 
 theorem IsUpperSet.prod (hs : IsUpperSet s) (ht : IsUpperSet t) : IsUpperSet (s ×ˢ t) :=
-  fun _ _ h ha => ⟨hs h.1 ha.1, ht h.2 ha.2⟩
+  fun _ _ h ha ↦ ⟨hs h.1 ha.1, ht h.2 ha.2⟩
 
 theorem IsLowerSet.prod (hs : IsLowerSet s) (ht : IsLowerSet t) : IsLowerSet (s ×ˢ t) :=
-  fun _ _ h ha => ⟨hs h.1 ha.1, ht h.2 ha.2⟩
+  fun _ _ h ha ↦ ⟨hs h.1 ha.1, ht h.2 ha.2⟩
 
 end
 

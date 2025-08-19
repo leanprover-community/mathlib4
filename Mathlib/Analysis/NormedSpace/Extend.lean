@@ -43,7 +43,7 @@ variable [AddCommGroup F] [Module ℝ F] [Module 𝕜 F] [IsScalarTower ℝ 𝕜
 /-- Extend `fr : F →ₗ[ℝ] ℝ` to `F →ₗ[𝕜] 𝕜` in a way that will also be continuous and have its norm
 bounded by `‖fr‖` if `fr` is continuous. -/
 noncomputable def extendTo𝕜' (fr : F →ₗ[ℝ] ℝ) : F →ₗ[𝕜] 𝕜 := by
-  let fc : F → 𝕜 := fun x => (fr x : 𝕜) - (I : 𝕜) * fr ((I : 𝕜) • x)
+  let fc : F → 𝕜 := fun x ↦ (fr x : 𝕜) - (I : 𝕜) * fr ((I : 𝕜) • x)
   have add : ∀ x y : F, fc (x + y) = fc x + fc y := by
     intro x y
     simp only [fc, smul_add, LinearMap.map_add, ofReal_add]
@@ -123,7 +123,7 @@ theorem extendTo𝕜'_apply (fr : F →L[ℝ] ℝ) (x : F) :
 @[simp]
 theorem norm_extendTo𝕜' (fr : F →L[ℝ] ℝ) : ‖(fr.extendTo𝕜' : F →L[𝕜] 𝕜)‖ = ‖fr‖ :=
   le_antisymm (LinearMap.mkContinuous_norm_le _ (norm_nonneg _) _) <|
-    opNorm_le_bound _ (norm_nonneg _) fun x =>
+    opNorm_le_bound _ (norm_nonneg _) fun x ↦
       calc
         ‖fr x‖ = ‖re (fr.extendTo𝕜' x : 𝕜)‖ := congr_arg norm (fr.extendTo𝕜'_apply_re x).symm
         _ ≤ ‖(fr.extendTo𝕜' x : 𝕜)‖ := abs_re_le_norm _

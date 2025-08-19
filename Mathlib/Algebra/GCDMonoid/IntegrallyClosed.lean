@@ -29,7 +29,7 @@ theorem IsLocalization.surj_of_gcd_domain [GCDMonoid R] (M : Submonoid R) [IsLoc
 
 instance (priority := 100) GCDMonoid.toIsIntegrallyClosed
     [h : Nonempty (GCDMonoid R)] : IsIntegrallyClosed R :=
-  (isIntegrallyClosed_iff (FractionRing R)).mpr fun {X} ⟨p, hp₁, hp₂⟩ => by
+  (isIntegrallyClosed_iff (FractionRing R)).mpr fun {X} ⟨p, hp₁, hp₂⟩ ↦ by
     cases h
     obtain ⟨x, y, hg, he⟩ := IsLocalization.surj_of_gcd_domain (nonZeroDivisors R) X
     have :=

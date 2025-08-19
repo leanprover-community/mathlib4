@@ -40,17 +40,17 @@ protected theorem AddCircle.measurable_mk' {a : ℝ} :
 theorem isAddFundamentalDomain_Ioc {T : ℝ} (hT : 0 < T) (t : ℝ)
     (μ : Measure ℝ := by volume_tac) :
     IsAddFundamentalDomain (AddSubgroup.zmultiples T) (Ioc t (t + T)) μ := by
-  refine IsAddFundamentalDomain.mk' nullMeasurableSet_Ioc fun x => ?_
-  have : Bijective (codRestrict (fun n : ℤ => n • T) (AddSubgroup.zmultiples T) _) :=
-    (Equiv.ofInjective (fun n : ℤ => n • T) (zsmul_left_strictMono hT).injective).bijective
+  refine IsAddFundamentalDomain.mk' nullMeasurableSet_Ioc fun x ↦ ?_
+  have : Bijective (codRestrict (fun n : ℤ ↦ n • T) (AddSubgroup.zmultiples T) _) :=
+    (Equiv.ofInjective (fun n : ℤ ↦ n • T) (zsmul_left_strictMono hT).injective).bijective
   refine this.existsUnique_iff.2 ?_
   simpa only [add_comm x] using existsUnique_add_zsmul_mem_Ioc hT x t
 
 theorem isAddFundamentalDomain_Ioc' {T : ℝ} (hT : 0 < T) (t : ℝ) (μ : Measure ℝ := by volume_tac) :
     IsAddFundamentalDomain (AddSubgroup.op <| .zmultiples T) (Ioc t (t + T)) μ := by
-  refine IsAddFundamentalDomain.mk' nullMeasurableSet_Ioc fun x => ?_
-  have : Bijective (codRestrict (fun n : ℤ => n • T) (AddSubgroup.zmultiples T) _) :=
-    (Equiv.ofInjective (fun n : ℤ => n • T) (zsmul_left_strictMono hT).injective).bijective
+  refine IsAddFundamentalDomain.mk' nullMeasurableSet_Ioc fun x ↦ ?_
+  have : Bijective (codRestrict (fun n : ℤ ↦ n • T) (AddSubgroup.zmultiples T) _) :=
+    (Equiv.ofInjective (fun n : ℤ ↦ n • T) (zsmul_left_strictMono hT).injective).bijective
   refine (AddSubgroup.equivOp _).bijective.comp this |>.existsUnique_iff.2 ?_
   simpa using existsUnique_add_zsmul_mem_Ioc hT x t
 
@@ -107,7 +107,7 @@ theorem volume_closedBall {x : AddCircle T} (ε : ℝ) :
     rintro y ⟨hy₁, hy₂⟩; constructor <;> linarith
   have h₂ : (↑) ⁻¹' Metric.closedBall (0 : AddCircle T) ε ∩ I =
       if ε < T / 2 then Metric.closedBall (0 : ℝ) ε else I := by
-    conv_rhs => rw [← if_ctx_congr (Iff.rfl : ε < T / 2 ↔ ε < T / 2) h₁ fun _ => rfl, ← hT']
+    conv_rhs => rw [← if_ctx_congr (Iff.rfl : ε < T / 2 ↔ ε < T / 2) h₁ fun _ ↦ rfl, ← hT']
     apply coe_real_preimage_closedBall_inter_eq
     simpa only [hT', Real.closedBall_eq_Icc, zero_add, zero_sub] using Ioc_subset_Icc_self
   rw [addHaar_closedBall_center, add_projection_respects_measure T (-(T/2))
@@ -117,7 +117,7 @@ theorem volume_closedBall {x : AddCircle T} (ε : ℝ) :
   · simp [I, hε, min_eq_left (by linarith : T ≤ 2 * ε)]
 
 instance : IsUnifLocDoublingMeasure (volume : Measure (AddCircle T)) := by
-  refine ⟨⟨Real.toNNReal 2, Filter.Eventually.of_forall fun ε x => ?_⟩⟩
+  refine ⟨⟨Real.toNNReal 2, Filter.Eventually.of_forall fun ε x ↦ ?_⟩⟩
   simp only [volume_closedBall]
   erw [← ENNReal.ofReal_mul zero_le_two]
   apply ENNReal.ofReal_le_ofReal
@@ -129,7 +129,7 @@ instance : IsUnifLocDoublingMeasure (volume : Measure (AddCircle T)) := by
 noncomputable def measurableEquivIoc (a : ℝ) : AddCircle T ≃ᵐ Ioc a (a + T) where
   toEquiv := equivIoc T a
   measurable_toFun := measurable_of_measurable_on_compl_singleton _
-    (continuousOn_iff_continuous_restrict.mp <| continuousOn_of_forall_continuousAt fun _x hx =>
+    (continuousOn_iff_continuous_restrict.mp <| continuousOn_of_forall_continuousAt fun _x hx ↦
       continuousAt_equivIoc T a hx).measurable
   measurable_invFun := AddCircle.measurable_mk'.comp measurable_subtype_coe
 
@@ -138,7 +138,7 @@ noncomputable def measurableEquivIoc (a : ℝ) : AddCircle T ≃ᵐ Ioc a (a + T
 noncomputable def measurableEquivIco (a : ℝ) : AddCircle T ≃ᵐ Ico a (a + T) where
   toEquiv := equivIco T a
   measurable_toFun := measurable_of_measurable_on_compl_singleton _
-    (continuousOn_iff_continuous_restrict.mp <| continuousOn_of_forall_continuousAt fun _x hx =>
+    (continuousOn_iff_continuous_restrict.mp <| continuousOn_of_forall_continuousAt fun _x hx ↦
       continuousAt_equivIco T a hx).measurable
   measurable_invFun := AddCircle.measurable_mk'.comp measurable_subtype_coe
 
@@ -287,7 +287,7 @@ theorem intervalIntegral_add_eq_of_pos (hf : Periodic f T) (hT : 0 < T) (t s : �
     ∫ x in t..t + T, f x = ∫ x in s..s + T, f x := by
   simp only [integral_of_le, hT.le, le_add_iff_nonneg_right]
   haveI : VAddInvariantMeasure (AddSubgroup.zmultiples T) ℝ volume :=
-    ⟨fun c s _ => measure_preimage_add _ _ _⟩
+    ⟨fun c s _ ↦ measure_preimage_add _ _ _⟩
   apply IsAddFundamentalDomain.setIntegral_eq (G := AddSubgroup.zmultiples T)
   exacts [isAddFundamentalDomain_Ioc hT t, isAddFundamentalDomain_Ioc hT s, hf.map_vadd_zmultiples]
 
@@ -346,7 +346,7 @@ include hg
 `Y`. -/
 theorem sInf_add_zsmul_le_integral_of_pos (h_int : IntervalIntegrable g MeasureSpace.volume 0 T)
     (hT : 0 < T) (t : ℝ) :
-    (sInf ((fun t => ∫ x in (0)..t, g x) '' Icc 0 T) + ⌊t / T⌋ • ∫ x in (0)..T, g x) ≤
+    (sInf ((fun t ↦ ∫ x in (0)..t, g x) '' Icc 0 T) + ⌊t / T⌋ • ∫ x in (0)..T, g x) ≤
       ∫ x in (0)..t, g x := by
   let h'_int := hg.intervalIntegrable₀ hT h_int
   let ε := Int.fract (t / T) * T
@@ -364,7 +364,7 @@ theorem sInf_add_zsmul_le_integral_of_pos (h_int : IntervalIntegrable g MeasureS
 theorem integral_le_sSup_add_zsmul_of_pos (h_int : IntervalIntegrable g MeasureSpace.volume 0 T)
     (hT : 0 < T) (t : ℝ) :
     (∫ x in (0)..t, g x) ≤
-      sSup ((fun t => ∫ x in (0)..t, g x) '' Icc 0 T) + ⌊t / T⌋ • ∫ x in (0)..T, g x := by
+      sSup ((fun t ↦ ∫ x in (0)..t, g x) '' Icc 0 T) + ⌊t / T⌋ • ∫ x in (0)..T, g x := by
   let h'_int := hg.intervalIntegrable₀ hT h_int
   let ε := Int.fract (t / T) * T
   conv_lhs =>
@@ -378,20 +378,20 @@ theorem integral_le_sSup_add_zsmul_of_pos (h_int : IntervalIntegrable g MeasureS
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0` and `0 < ∫ x in 0..T, g x`, then
 `t ↦ ∫ x in 0..t, g x` tends to `∞` as `t` tends to `∞`. -/
 theorem tendsto_atTop_intervalIntegral_of_pos (h₀ : 0 < ∫ x in (0)..T, g x) (hT : 0 < T) :
-    Tendsto (fun t => ∫ x in (0)..t, g x) atTop atTop := by
+    Tendsto (fun t ↦ ∫ x in (0)..t, g x) atTop atTop := by
   have h_int := intervalIntegrable_of_integral_ne_zero h₀.ne'
   apply tendsto_atTop_mono (hg.sInf_add_zsmul_le_integral_of_pos h_int hT)
-  apply atTop.tendsto_atTop_add_const_left (sInf <| (fun t => ∫ x in (0)..t, g x) '' Icc 0 T)
+  apply atTop.tendsto_atTop_add_const_left (sInf <| (fun t ↦ ∫ x in (0)..t, g x) '' Icc 0 T)
   apply Tendsto.atTop_zsmul_const h₀
   exact tendsto_floor_atTop.comp (tendsto_id.atTop_mul_const (inv_pos.mpr hT))
 
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0` and `0 < ∫ x in 0..T, g x`, then
 `t ↦ ∫ x in 0..t, g x` tends to `-∞` as `t` tends to `-∞`. -/
 theorem tendsto_atBot_intervalIntegral_of_pos (h₀ : 0 < ∫ x in (0)..T, g x) (hT : 0 < T) :
-    Tendsto (fun t => ∫ x in (0)..t, g x) atBot atBot := by
+    Tendsto (fun t ↦ ∫ x in (0)..t, g x) atBot atBot := by
   have h_int := intervalIntegrable_of_integral_ne_zero h₀.ne'
   apply tendsto_atBot_mono (hg.integral_le_sSup_add_zsmul_of_pos h_int hT)
-  apply atBot.tendsto_atBot_add_const_left (sSup <| (fun t => ∫ x in (0)..t, g x) '' Icc 0 T)
+  apply atBot.tendsto_atBot_add_const_left (sSup <| (fun t ↦ ∫ x in (0)..t, g x) '' Icc 0 T)
   apply Tendsto.atBot_zsmul_const h₀
   exact tendsto_floor_atBot.comp (tendsto_id.atBot_mul_const (inv_pos.mpr hT))
 
@@ -399,14 +399,14 @@ theorem tendsto_atBot_intervalIntegral_of_pos (h₀ : 0 < ∫ x in (0)..T, g x) 
 tends to `∞` as `t` tends to `∞`. -/
 theorem tendsto_atTop_intervalIntegral_of_pos'
     (h_int : IntervalIntegrable g MeasureSpace.volume 0 T) (h₀ : ∀ x, 0 < g x) (hT : 0 < T) :
-    Tendsto (fun t => ∫ x in (0)..t, g x) atTop atTop :=
+    Tendsto (fun t ↦ ∫ x in (0)..t, g x) atTop atTop :=
   hg.tendsto_atTop_intervalIntegral_of_pos (intervalIntegral_pos_of_pos h_int h₀ hT) hT
 
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0` and `∀ x, 0 < g x`, then `t ↦ ∫ x in 0..t, g x`
 tends to `-∞` as `t` tends to `-∞`. -/
 theorem tendsto_atBot_intervalIntegral_of_pos'
     (h_int : IntervalIntegrable g MeasureSpace.volume 0 T) (h₀ : ∀ x, 0 < g x) (hT : 0 < T) :
-    Tendsto (fun t => ∫ x in (0)..t, g x) atBot atBot := by
+    Tendsto (fun t ↦ ∫ x in (0)..t, g x) atBot atBot := by
   exact hg.tendsto_atBot_intervalIntegral_of_pos (intervalIntegral_pos_of_pos h_int h₀ hT) hT
 
 end RealValued

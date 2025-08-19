@@ -48,7 +48,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
   · refine ⟨⊥, by simp, ?_, by simpa [Finset.filter_true_of_mem] using hs.symm⟩
     simp only [le_zero_iff, card_eq_zero, mem_biUnion, mem_filter, id,
       and_assoc, sdiff_eq_empty_iff_subset, subset_iff]
-    exact fun x hx a ha =>
+    exact fun x hx a ha ↦
       ⟨{a}, mem_map_of_mem _ (P.le hx ha), singleton_subset_iff.2 ha, mem_singleton_self _⟩
   -- Prove the case `m > 0` by strong induction on `s`
   induction s using Finset.strongInduction generalizing a b with | H s ih => _
@@ -89,7 +89,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
     refine ⟨R.extend ht.ne_empty sdiff_disjoint (sdiff_sup_cancel hts), ?_, ?_, ?_⟩
     · simp only [extend_parts, mem_insert, forall_eq_or_imp, and_iff_left hR₁, htn, hn]
       exact ite_eq_or_eq _ _ _
-    · exact fun x hx => (card_le_card sdiff_subset).trans (Nat.lt_succ_iff.1 <| h _ hx)
+    · exact fun x hx ↦ (card_le_card sdiff_subset).trans (Nat.lt_succ_iff.1 <| h _ hx)
     simp_rw [extend_parts, filter_insert, htn, n, m.succ_ne_self.symm.ite_eq_right_iff]
     split_ifs with ha
     · rw [hR₃, if_pos ha]
@@ -111,16 +111,16 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
     exact ite_eq_or_eq _ _ _
   · conv in _ ∈ _ => rw [← insert_erase hu₁]
     simp only [mem_insert, forall_eq_or_imp, extend_parts]
-    refine ⟨?_, fun x hx => (card_le_card ?_).trans <| hR₂ x ?_⟩
+    refine ⟨?_, fun x hx ↦ (card_le_card ?_).trans <| hR₂ x ?_⟩
     · simp only [filter_insert, if_pos htu, biUnion_insert, id]
       obtain rfl | hut := eq_or_ne u t
       · rw [sdiff_eq_empty_iff_subset.2 subset_union_left]
         exact bot_le
       refine
-        (card_le_card fun i => ?_).trans
-          (hR₂ (u \ t) <| P.mem_avoid.2 ⟨u, hu₁, fun i => hut <| i.antisymm htu, rfl⟩)
-      simpa using fun hi₁ hi₂ hi₃ =>
-        ⟨⟨hi₁, hi₂⟩, fun x hx hx' => hi₃ _ hx <| hx'.trans sdiff_subset⟩
+        (card_le_card fun i ↦ ?_).trans
+          (hR₂ (u \ t) <| P.mem_avoid.2 ⟨u, hu₁, fun i ↦ hut <| i.antisymm htu, rfl⟩)
+      simpa using fun hi₁ hi₂ hi₃ ↦
+        ⟨⟨hi₁, hi₂⟩, fun x hx hx' ↦ hi₃ _ hx <| hx'.trans sdiff_subset⟩
     · apply sdiff_subset_sdiff Subset.rfl (biUnion_subset_biUnion_of_subset_left _ _)
       exact filter_subset_filter _ (subset_insert _ _)
     simp only [avoid, ofErase, mem_erase, mem_image, bot_eq_empty]
@@ -151,7 +151,7 @@ theorem card_eq_of_mem_parts_equitabilise :
   (P.equitabilise_aux h).choose_spec.1 _
 
 theorem equitabilise_isEquipartition : (P.equitabilise h).IsEquipartition :=
-  Set.equitableOn_iff_exists_eq_eq_add_one.2 ⟨m, fun _ => card_eq_of_mem_parts_equitabilise⟩
+  Set.equitableOn_iff_exists_eq_eq_add_one.2 ⟨m, fun _ ↦ card_eq_of_mem_parts_equitabilise⟩
 
 variable (P h)
 
@@ -166,20 +166,20 @@ theorem card_filter_equitabilise_small (hm : m ≠ 0) :
     (P.equitabilise h).parts =
       {u ∈ (P.equitabilise h).parts | #u = m} ∪ {u ∈ (P.equitabilise h).parts | #u = m + 1} := by
     rw [← filter_or, filter_true_of_mem]
-    exact fun x => card_eq_of_mem_parts_equitabilise
+    exact fun x ↦ card_eq_of_mem_parts_equitabilise
   nth_rw 2 [hunion]
-  rw [sum_union, sum_const_nat fun x hx => (mem_filter.1 hx).2,
-    sum_const_nat fun x hx => (mem_filter.1 hx).2, P.card_filter_equitabilise_big]
+  rw [sum_union, sum_const_nat fun x hx ↦ (mem_filter.1 hx).2,
+    sum_const_nat fun x hx ↦ (mem_filter.1 hx).2, P.card_filter_equitabilise_big]
   refine disjoint_filter_filter' _ _ ?_
   intro x ha hb i h
   apply succ_ne_self m _
   exact (hb i h).symm.trans (ha i h)
 
 theorem card_parts_equitabilise (hm : m ≠ 0) : #(P.equitabilise h).parts = a + b := by
-  rw [← filter_true_of_mem fun x => card_eq_of_mem_parts_equitabilise, filter_or,
+  rw [← filter_true_of_mem fun x ↦ card_eq_of_mem_parts_equitabilise, filter_or,
     card_union_of_disjoint, P.card_filter_equitabilise_small _ hm, P.card_filter_equitabilise_big]
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11187): was `infer_instance`
-  exact disjoint_filter.2 fun x _ h₀ h₁ => Nat.succ_ne_self m <| h₁.symm.trans h₀
+  exact disjoint_filter.2 fun x _ h₀ h₁ ↦ Nat.succ_ne_self m <| h₁.symm.trans h₀
 
 theorem card_parts_equitabilise_subset_le :
     t ∈ P.parts → #(t \ {u ∈ (P.equitabilise h).parts | u ⊆ t}.biUnion id) ≤ m :=

@@ -58,13 +58,13 @@ lemma union_le (h₁ : s ≤ u) (h₂ : t ≤ u) : s ∪ t ≤ u := by
 
 @[simp]
 lemma mem_union : a ∈ s ∪ t ↔ a ∈ s ∨ a ∈ t :=
-  ⟨fun h => (mem_add.1 h).imp_left (mem_of_le <| Multiset.sub_le_self _ _),
+  ⟨fun h ↦ (mem_add.1 h).imp_left (mem_of_le <| Multiset.sub_le_self _ _),
     (Or.elim · (mem_of_le le_union_left) (mem_of_le le_union_right))⟩
 
 @[simp]
 lemma map_union [DecidableEq β] {f : α → β} (finj : Function.Injective f) {s t : Multiset α} :
     map f (s ∪ t) = map f s ∪ map f t :=
-  Quotient.inductionOn₂ s t fun l₁ l₂ =>
+  Quotient.inductionOn₂ s t fun l₁ l₂ ↦
     congr_arg ofList (by rw [List.map_append, List.map_diff finj])
 
 @[simp] lemma zero_union : 0 ∪ s = s := by simp [union_def, Multiset.zero_sub]
@@ -82,27 +82,27 @@ lemma count_union (a : α) (s t : Multiset α) : count a (s ∪ t) = max (count 
 /-- `s ∩ t` is the multiset such that the multiplicity of each `a` in it is the minimum of the
 multiplicity of `a` in `s` and `t`. This is the infimum of multisets. -/
 def inter (s t : Multiset α) : Multiset α :=
-  Quotient.liftOn₂ s t (fun l₁ l₂ => (l₁.bagInter l₂ : Multiset α)) fun _v₁ _v₂ _w₁ _w₂ p₁ p₂ =>
+  Quotient.liftOn₂ s t (fun l₁ l₂ ↦ (l₁.bagInter l₂ : Multiset α)) fun _v₁ _v₂ _w₁ _w₂ p₁ p₂ ↦
     Quot.sound <| p₁.bagInter p₂
 
 instance : Inter (Multiset α) := ⟨inter⟩
 
 @[simp] lemma inter_zero (s : Multiset α) : s ∩ 0 = 0 :=
-  Quot.inductionOn s fun l => congr_arg ofList l.bagInter_nil
+  Quot.inductionOn s fun l ↦ congr_arg ofList l.bagInter_nil
 
 @[simp] lemma zero_inter (s : Multiset α) : 0 ∩ s = 0 :=
-  Quot.inductionOn s fun l => congr_arg ofList l.nil_bagInter
+  Quot.inductionOn s fun l ↦ congr_arg ofList l.nil_bagInter
 
 @[simp]
 lemma cons_inter_of_pos (s : Multiset α) : a ∈ t → (a ::ₘ s) ∩ t = a ::ₘ s ∩ t.erase a :=
-  Quotient.inductionOn₂ s t fun _l₁ _l₂ h => congr_arg ofList <| cons_bagInter_of_pos _ h
+  Quotient.inductionOn₂ s t fun _l₁ _l₂ h ↦ congr_arg ofList <| cons_bagInter_of_pos _ h
 
 @[simp]
 lemma cons_inter_of_neg (s : Multiset α) : a ∉ t → (a ::ₘ s) ∩ t = s ∩ t :=
-  Quotient.inductionOn₂ s t fun _l₁ _l₂ h => congr_arg ofList <| cons_bagInter_of_neg _ h
+  Quotient.inductionOn₂ s t fun _l₁ _l₂ h ↦ congr_arg ofList <| cons_bagInter_of_neg _ h
 
 lemma inter_le_left : s ∩ t ≤ s :=
-  Quotient.inductionOn₂ s t fun _l₁ _l₂ => (bagInter_sublist_left _ _).subperm
+  Quotient.inductionOn₂ s t fun _l₁ _l₂ ↦ (bagInter_sublist_left _ _).subperm
 
 lemma inter_le_right : s ∩ t ≤ t := by
   induction s using Multiset.induction_on generalizing t with
@@ -113,7 +113,7 @@ lemma inter_le_right : s ∩ t ≤ t := by
     · simp [h, IH]
 
 lemma le_inter (h₁ : s ≤ t) (h₂ : s ≤ u) : s ≤ t ∩ u := by
-  revert s u; refine @(Multiset.induction_on t ?_ fun a t IH => ?_) <;> intros s u h₁ h₂
+  revert s u; refine @(Multiset.induction_on t ?_ fun a t IH ↦ ?_) <;> intros s u h₁ h₂
   · simpa only [zero_inter] using h₁
   by_cases h : a ∈ u
   · rw [cons_inter_of_pos _ h, ← erase_le_iff_le_cons]
@@ -123,7 +123,7 @@ lemma le_inter (h₁ : s ≤ t) (h₂ : s ≤ u) : s ≤ t ∩ u := by
 
 @[simp]
 lemma mem_inter : a ∈ s ∩ t ↔ a ∈ s ∧ a ∈ t :=
-  ⟨fun h => ⟨mem_of_le inter_le_left h, mem_of_le inter_le_right h⟩, fun ⟨h₁, h₂⟩ => by
+  ⟨fun h ↦ ⟨mem_of_le inter_le_left h, mem_of_le inter_le_right h⟩, fun ⟨h₁, h₂⟩ ↦ by
     rw [← cons_erase h₁, cons_inter_of_pos _ h₂]; apply mem_cons_self⟩
 
 instance instLattice : Lattice (Multiset α) where
@@ -190,7 +190,7 @@ lemma union_add_inter (s t : Multiset α) : s ∪ t + s ∩ t = s + t := by
 
 lemma sub_add_inter (s t : Multiset α) : s - t + s ∩ t = s := by
   rw [inter_comm]
-  revert s; refine Multiset.induction_on t (by simp) fun a t IH s => ?_
+  revert s; refine Multiset.induction_on t (by simp) fun a t IH s ↦ ?_
   by_cases h : a ∈ s
   · rw [cons_inter_of_pos _ h, sub_cons, add_cons, IH, cons_erase h]
   · rw [cons_inter_of_neg _ h, sub_cons, erase_of_notMem h, IH]
@@ -214,7 +214,7 @@ instance instDistribLattice : DistribLattice (Multiset α) where
 @[simp] lemma filter_inter (p : α → Prop) [DecidablePred p] (s t : Multiset α) :
     filter p (s ∩ t) = filter p s ∩ filter p t :=
   le_antisymm (le_inter (filter_le_filter _ inter_le_left) (filter_le_filter _ inter_le_right)) <|
-    le_filter.2 ⟨inf_le_inf (filter_le _ _) (filter_le _ _), fun _a h =>
+    le_filter.2 ⟨inf_le_inf (filter_le _ _) (filter_le _ _), fun _a h ↦
       of_mem_filter (mem_of_le inter_le_left h)⟩
 
 @[simp]
@@ -344,8 +344,8 @@ theorem disjoint_map_map {f : α → γ} {g : β → γ} {s : Multiset α} {t : 
   simp [disjoint_iff_ne]
 
 theorem map_set_pairwise {f : α → β} {r : β → β → Prop} {m : Multiset α}
-    (h : { a | a ∈ m }.Pairwise fun a₁ a₂ => r (f a₁) (f a₂)) : { b | b ∈ m.map f }.Pairwise r :=
-  fun b₁ h₁ b₂ h₂ hn => by
+    (h : { a | a ∈ m }.Pairwise fun a₁ a₂ ↦ r (f a₁) (f a₂)) : { b | b ∈ m.map f }.Pairwise r :=
+  fun b₁ h₁ b₂ h₂ hn ↦ by
     obtain ⟨⟨a₁, H₁, rfl⟩, a₂, H₂, rfl⟩ := Multiset.mem_map.1 h₁, Multiset.mem_map.1 h₂
     exact h H₁ H₂ (mt (congr_arg f) hn)
 
@@ -354,7 +354,7 @@ section Nodup
 variable {s t : Multiset α} {a : α}
 
 theorem nodup_add {s t : Multiset α} : Nodup (s + t) ↔ Nodup s ∧ Nodup t ∧ Disjoint s t :=
-  Quotient.inductionOn₂ s t fun _ _ => by simp [nodup_append, disjoint_iff_ne]
+  Quotient.inductionOn₂ s t fun _ _ ↦ by simp [nodup_append, disjoint_iff_ne]
 
 theorem disjoint_of_nodup_add {s t : Multiset α} (d : Nodup (s + t)) : Disjoint s t :=
   (nodup_add.1 d).2.2
@@ -367,8 +367,8 @@ lemma Nodup.inter_right [DecidableEq α] (s) : Nodup t → Nodup (s ∩ t) := no
 
 @[simp]
 theorem nodup_union [DecidableEq α] {s t : Multiset α} : Nodup (s ∪ t) ↔ Nodup s ∧ Nodup t :=
-  ⟨fun h => ⟨nodup_of_le le_union_left h, nodup_of_le le_union_right h⟩, fun ⟨h₁, h₂⟩ =>
-    nodup_iff_count_le_one.2 fun a => by
+  ⟨fun h ↦ ⟨nodup_of_le le_union_left h, nodup_of_le le_union_right h⟩, fun ⟨h₁, h₂⟩ ↦
+    nodup_iff_count_le_one.2 fun a ↦ by
       rw [count_union]
       exact max_le (nodup_iff_count_le_one.1 h₁ a) (nodup_iff_count_le_one.1 h₂ a)⟩
 

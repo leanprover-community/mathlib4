@@ -82,8 +82,8 @@ instance instDistribSMulUnits [Monoid M] [AddZeroClass α] [DistribSMul M α] :
 instance instDistribMulAction [Monoid M] [AddMonoid α] [DistribMulAction M α] :
     DistribMulAction Mˣ α where
   __ := instDistribSMulUnits
-  one_smul := fun b => one_smul M b
-  mul_smul := fun x y b => mul_smul (x : M) y b
+  one_smul := fun b ↦ one_smul M b
+  mul_smul := fun x y b ↦ mul_smul (x : M) y b
 
 instance instMulDistribMulAction [Monoid M] [Monoid α] [MulDistribMulAction M α] :
     MulDistribMulAction Mˣ α where
@@ -97,8 +97,8 @@ instance mulDistribMulAction' [Group G] [Monoid M] [MulDistribMulAction G M] [SM
     [IsScalarTower G M M] : MulDistribMulAction G Mˣ :=
   { Units.mulAction' with
     smul := (· • ·),
-    smul_one := fun _ => Units.ext <| smul_one _,
-    smul_mul := fun _ _ _ => Units.ext <| smul_mul' _ _ _ }
+    smul_one := fun _ ↦ Units.ext <| smul_one _,
+    smul_mul := fun _ _ _ ↦ Units.ext <| smul_mul' _ _ _ }
 
 end Units
 

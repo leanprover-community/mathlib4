@@ -25,14 +25,14 @@ This is currently not very sorted. PRs welcome!
 -/
 
 theorem Fin.preimage_apply_01_prod {α : Fin 2 → Type u} (s : Set (α 0)) (t : Set (α 1)) :
-    (fun f : ∀ i, α i => (f 0, f 1)) ⁻¹' s ×ˢ t =
+    (fun f : ∀ i, α i ↦ (f 0, f 1)) ⁻¹' s ×ˢ t =
       Set.pi Set.univ (Fin.cons s <| Fin.cons t finZeroElim) := by
   ext f
   simp [Fin.forall_fin_two]
 
 theorem Fin.preimage_apply_01_prod' {α : Type u} (s t : Set α) :
-    (fun f : Fin 2 → α => (f 0, f 1)) ⁻¹' s ×ˢ t = Set.pi Set.univ ![s, t] :=
-  @Fin.preimage_apply_01_prod (fun _ => α) s t
+    (fun f : Fin 2 → α ↦ (f 0, f 1)) ⁻¹' s ×ˢ t = Set.pi Set.univ ![s, t] :=
+  @Fin.preimage_apply_01_prod (fun _ ↦ α) s t
 
 /-- A product space `α × β` is equivalent to the space `Π i : Fin 2, γ i`, where
 `γ = Fin.cons α (Fin.cons β finZeroElim)`. See also `piFinTwoEquiv` and
@@ -45,7 +45,7 @@ def prodEquivPiFinTwo (α β : Type u) : α × β ≃ ∀ i : Fin 2, ![α, β] i
 `prodEquivPiFinTwo`. -/
 @[simps -fullyApplied]
 def finTwoArrowEquiv (α : Type*) : (Fin 2 → α) ≃ α × α :=
-  { piFinTwoEquiv fun _ => α with invFun := fun x => ![x.1, x.2] }
+  { piFinTwoEquiv fun _ ↦ α with invFun := fun x ↦ ![x.1, x.2] }
 
 /-- An equivalence that removes `i` and maps it to `none`.
 This is a version of `Fin.predAbove` that produces `Option (Fin n)` instead of
@@ -53,7 +53,7 @@ mapping both `i.castSucc` and `i.succ` to `i`. -/
 def finSuccEquiv' (i : Fin (n + 1)) : Fin (n + 1) ≃ Option (Fin n) where
   toFun := i.insertNth none some
   invFun x := x.casesOn' i (Fin.succAbove i)
-  left_inv x := Fin.succAboveCases i (by simp) (fun j => by simp) x
+  left_inv x := Fin.succAboveCases i (by simp) (fun j ↦ by simp) x
   right_inv x := by cases x <;> simp
 
 @[simp]
@@ -63,7 +63,7 @@ theorem finSuccEquiv'_at (i : Fin (n + 1)) : (finSuccEquiv' i) i = none := by
 @[simp]
 theorem finSuccEquiv'_succAbove (i : Fin (n + 1)) (j : Fin n) :
     finSuccEquiv' i (i.succAbove j) = some j :=
-  @Fin.insertNth_apply_succAbove n (fun _ => Option (Fin n)) i _ _ _
+  @Fin.insertNth_apply_succAbove n (fun _ ↦ Option (Fin n)) i _ _ _
 
 theorem finSuccEquiv'_below {i : Fin (n + 1)} {m : Fin n} (h : Fin.castSucc m < i) :
     (finSuccEquiv' i) (Fin.castSucc m) = m := by
@@ -217,9 +217,9 @@ def Equiv.embeddingFinSucc (n : ℕ) (ι : Type*) :
 /-- Equivalence between `Fin m ⊕ Fin n` and `Fin (m + n)` -/
 def finSumFinEquiv : Fin m ⊕ Fin n ≃ Fin (m + n) where
   toFun := Sum.elim (Fin.castAdd n) (Fin.natAdd m)
-  invFun i := @Fin.addCases m n (fun _ => Fin m ⊕ Fin n) Sum.inl Sum.inr i
+  invFun i := @Fin.addCases m n (fun _ ↦ Fin m ⊕ Fin n) Sum.inl Sum.inr i
   left_inv x := by rcases x with y | y <;> simp
-  right_inv x := by refine Fin.addCases (fun i => ?_) (fun i => ?_) x <;> simp
+  right_inv x := by refine Fin.addCases (fun i ↦ ?_) (fun i ↦ ?_) x <;> simp
 
 @[simp]
 theorem finSumFinEquiv_apply_left (i : Fin m) :
@@ -256,12 +256,12 @@ def finSumNatEquiv (n : ℕ) : Fin n ⊕ ℕ ≃ ℕ where
   toFun := Sum.elim Fin.val (n + ·)
   invFun i := if hi : i < n then .inl ⟨i, hi⟩ else .inr (i - n)
   left_inv i := (i.casesOn
-    (fun _ => dif_pos (Fin.is_lt _))
-    (fun _ => (dif_neg (Nat.le_add_right _ _).not_gt).trans <|
+    (fun _ ↦ dif_pos (Fin.is_lt _))
+    (fun _ ↦ (dif_neg (Nat.le_add_right _ _).not_gt).trans <|
       congrArg _ (Nat.add_sub_cancel_left _ _)))
   right_inv i := (apply_dite _ _ _ _).trans <| (i.lt_or_ge n).by_cases
-    (fun hi => dif_pos hi)
-    (fun hi => (dif_neg hi.not_gt).trans <| Nat.add_sub_cancel' hi)
+    (fun hi ↦ dif_pos hi)
+    (fun hi ↦ (dif_neg hi.not_gt).trans <| Nat.add_sub_cancel' hi)
 
 @[simp] theorem finSumNatEquiv_apply_left (i : Fin n) :
     finSumNatEquiv n (.inl i) = i := rfl
@@ -331,8 +331,8 @@ def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n) where
         _ ≤ m * n := Nat.mul_le_mul_right _ x.1.2
         ⟩
   invFun x := (x.divNat, x.modNat)
-  left_inv := fun ⟨x, y⟩ =>
-    have H : 0 < n := Nat.pos_of_ne_zero fun H => Nat.not_lt_zero y.1 <| H ▸ y.2
+  left_inv := fun ⟨x, y⟩ ↦
+    have H : 0 < n := Nat.pos_of_ne_zero fun H ↦ Nat.not_lt_zero y.1 <| H ▸ y.2
     Prod.ext
       (Fin.eq_of_val_eq <|
         calc
@@ -374,7 +374,7 @@ def Int.divModEquiv (n : ℕ) [NeZero n] : ℤ ≃ ℤ × Fin n where
     simp_rw [Fin.val_ofNat, natCast_mod, natMod,
       toNat_of_nonneg (emod_nonneg _ <| natCast_eq_zero.not.2 (NeZero.ne n)), emod_emod,
       ediv_add_emod']
-  right_inv := fun ⟨q, r, hrn⟩ => by
+  right_inv := fun ⟨q, r, hrn⟩ ↦ by
     simp only [Prod.mk_inj, Fin.ext_iff]
     obtain ⟨h1, h2⟩ := Int.natCast_nonneg r, Int.ofNat_lt.2 hrn
     rw [Int.add_comm, add_mul_ediv_right _ _ (natCast_eq_zero.not.2 (NeZero.ne n)),

@@ -173,7 +173,7 @@ theorem zero_apply [Zero β] : (0 : C_c(α, β)) x = 0 :=
   rfl
 
 instance [MulZeroClass β] [ContinuousMul β] : Mul C_c(α, β) :=
-  ⟨fun f g => ⟨f * g, HasCompactSupport.mul_left g.2⟩⟩
+  ⟨fun f g ↦ ⟨f * g, HasCompactSupport.mul_left g.2⟩⟩
 
 @[simp]
 theorem coe_mul [MulZeroClass β] [ContinuousMul β] (f g : C_c(α, β)) : ⇑(f * g) = f * g :=
@@ -192,7 +192,7 @@ instance [Zero β] [TopologicalSpace γ] [SMulZeroClass γ β] [ContinuousSMul �
 @[simp]
 theorem coe_smulc [Zero β] [TopologicalSpace γ] [SMulZeroClass γ β] [ContinuousSMul γ β]
     {F : Type*} [FunLike F α γ] [ContinuousMapClass F α γ] (f : F) (g : C_c(α, β)) :
-    ⇑(f • g) = fun x => f x • g x :=
+    ⇑(f • g) = fun x ↦ f x • g x :=
   rfl
 
 theorem smulc_apply [Zero β] [TopologicalSpace γ] [SMulZeroClass γ β] [ContinuousSMul γ β]
@@ -208,7 +208,7 @@ instance [SemigroupWithZero β] [ContinuousMul β] :
   DFunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul
 
 instance [AddZeroClass β] [ContinuousAdd β] : Add C_c(α, β) :=
-  ⟨fun f g => ⟨f + g, HasCompactSupport.add f.2 g.2⟩⟩
+  ⟨fun f g ↦ ⟨f + g, HasCompactSupport.add f.2 g.2⟩⟩
 
 @[simp]
 theorem coe_add [AddZeroClass β] [ContinuousAdd β] (f g : C_c(α, β)) : ⇑(f + g) = f + g :=
@@ -228,7 +228,7 @@ def coeFnMonoidHom [AddMonoid β] [ContinuousAdd β] : C_c(α, β) →+ α → �
 
 instance [Zero β] {R : Type*} [SMulZeroClass R β] [ContinuousConstSMul R β] :
     SMul R C_c(α, β) :=
-  ⟨fun r f => ⟨⟨r • ⇑f, (map_continuous f).const_smul r⟩, HasCompactSupport.smul_left f.2⟩⟩
+  ⟨fun r f ↦ ⟨⟨r • ⇑f, (map_continuous f).const_smul r⟩, HasCompactSupport.smul_left f.2⟩⟩
 
 @[simp, norm_cast]
 theorem coe_smul [Zero β] {R : Type*} [SMulZeroClass R β] [ContinuousConstSMul R β] (r : R)
@@ -242,12 +242,12 @@ theorem smul_apply [Zero β] {R : Type*} [SMulZeroClass R β] [ContinuousConstSM
 section AddMonoid
 
 instance [AddMonoid β] [ContinuousAdd β] : AddMonoid C_c(α, β) :=
-  DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
+  DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ ↦ rfl
 
 end AddMonoid
 
 instance [AddCommMonoid β] [ContinuousAdd β] : AddCommMonoid C_c(α, β) :=
-  DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
+  DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ ↦ rfl
 
 @[simp]
 theorem coe_sum [AddCommMonoid β] [ContinuousAdd β] {ι : Type*} (s : Finset ι) (f : ι → C_c(α, β)) :
@@ -287,17 +287,17 @@ theorem sub_apply : (f - g) x = f x - g x :=
   rfl
 
 instance : AddGroup C_c(α, β) :=
-  DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
+  DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 end AddGroup
 
 instance [AddCommGroup β] [IsTopologicalAddGroup β] : AddCommGroup C_c(α, β) :=
-  DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ =>
+  DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ ↦ rfl) fun _ _ ↦
     rfl
 
 instance [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [SMulWithZero Rᵐᵒᵖ β]
     [ContinuousConstSMul R β] [IsCentralScalar R β] : IsCentralScalar R C_c(α, β) :=
-  ⟨fun _ _ => ext fun _ => op_smul_eq_smul _ _⟩
+  ⟨fun _ _ ↦ ext fun _ ↦ op_smul_eq_smul _ _⟩
 
 instance [Zero β] {R : Type*} [Zero R] [SMulWithZero R β]
     [ContinuousConstSMul R β] : SMulWithZero R C_c(α, β) :=
@@ -313,29 +313,29 @@ instance [AddCommMonoid β] [ContinuousAdd β] {R : Type*} [Semiring R] [Module 
 
 instance [NonUnitalNonAssocSemiring β] [IsTopologicalSemiring β] :
     NonUnitalNonAssocSemiring C_c(α, β) :=
-  DFunLike.coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
+  DFunLike.coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
 
 instance [NonUnitalSemiring β] [IsTopologicalSemiring β] :
     NonUnitalSemiring C_c(α, β) :=
-  DFunLike.coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
+  DFunLike.coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
 
 instance [NonUnitalCommSemiring β] [IsTopologicalSemiring β] :
     NonUnitalCommSemiring C_c(α, β) :=
-  DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
+  DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
 
 instance [NonUnitalNonAssocRing β] [IsTopologicalRing β] :
     NonUnitalNonAssocRing C_c(α, β) :=
   DFunLike.coe_injective.nonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg coe_sub
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 instance [NonUnitalRing β] [IsTopologicalRing β] : NonUnitalRing C_c(α, β) :=
-  DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub (fun _ _ => rfl)
-    fun _ _ => rfl
+  DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub (fun _ _ ↦ rfl)
+    fun _ _ ↦ rfl
 
 instance [NonUnitalCommRing β] [IsTopologicalRing β] :
     NonUnitalCommRing C_c(α, β) :=
   DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 instance {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
     [IsTopologicalSemiring β] [Module R β] [ContinuousConstSMul R β] [IsScalarTower R β β] :
@@ -371,11 +371,11 @@ variable [TopologicalSpace β] [AddMonoid β] [StarAddMonoid β] [ContinuousStar
 
 instance : Star C_c(α, β) where
   star f :=
-    { toFun := fun x => star (f x)
+    { toFun := fun x ↦ star (f x)
       continuous_toFun := (map_continuous f).star
       hasCompactSupport' := by
         rw [HasCompactSupport, tsupport]
-        have support_star : (Function.support fun (x : α) => star (f x)) = Function.support f := by
+        have support_star : (Function.support fun (x : α) ↦ star (f x)) = Function.support f := by
           ext x
           simp only [Function.mem_support, ne_eq, star_eq_zero]
         rw [support_star]
@@ -389,11 +389,11 @@ theorem star_apply (f : C_c(α, β)) (x : α) : (star f) x = star (f x) :=
   rfl
 
 instance [TrivialStar β] : TrivialStar C_c(α, β) where
-    star_trivial f := ext fun x => star_trivial (f x)
+    star_trivial f := ext fun x ↦ star_trivial (f x)
 
 instance [ContinuousAdd β] : StarAddMonoid C_c(α, β) where
-  star_involutive f := ext fun x => star_star (f x)
-  star_add f g := ext fun x => star_add (f x) (g x)
+  star_involutive f := ext fun x ↦ star_star (f x)
+  star_add f g := ext fun x ↦ star_add (f x) (g x)
 
 end Star
 
@@ -403,7 +403,7 @@ variable {𝕜 : Type*} [Zero 𝕜] [Star 𝕜] [AddMonoid β] [StarAddMonoid β
   [ContinuousStar β] [SMulWithZero 𝕜 β] [ContinuousConstSMul 𝕜 β] [StarModule 𝕜 β]
 
 instance : StarModule 𝕜 C_c(α, β) where
-  star_smul k f := ext fun x => star_smul k (f x)
+  star_smul k f := ext fun x ↦ star_smul k (f x)
 
 end StarModule
 
@@ -414,7 +414,7 @@ variable [NonUnitalSemiring β] [StarRing β] [TopologicalSpace β] [ContinuousS
 
 instance : StarRing C_c(α, β) :=
   { CompactlySupportedContinuousMap.instStarAddMonoid with
-    star_mul := fun f g => ext fun x => star_mul (f x) (g x) }
+    star_mul := fun f g ↦ ext fun x ↦ star_mul (f x) (g x) }
 
 end StarRing
 
@@ -531,7 +531,7 @@ theorem coe_comp_to_continuous_fun (f : C_c(γ, δ)) (g : β →co γ) : ((f.com
 
 @[simp]
 theorem comp_id (f : C_c(γ, δ)) : f.comp (CocompactMap.id γ) = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem comp_assoc (f : C_c(γ, δ)) (g : β →co γ) (h : α →co β) :
@@ -581,7 +581,7 @@ section Basic
 variable [Zero β] [TopologicalSpace β] [FunLike F α β] [CompactlySupportedContinuousMapClass F α β]
 
 instance : CoeTC F (CompactlySupportedContinuousMap α β) :=
-  ⟨fun f =>
+  ⟨fun f ↦
     { toFun := f
       continuous_toFun := map_continuous f
       hasCompactSupport' := hasCompactSupport f }⟩
@@ -788,7 +788,7 @@ section toRealLinear
 
 /-- For a positive linear functional `Λ : C_c(α, ℝ≥0) → ℝ≥0`, define a `ℝ`-linear map. -/
 noncomputable def toRealLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) : C_c(α, ℝ) →ₗ[ℝ] ℝ where
-  toFun := fun f => Λ (nnrealPart f) - Λ (nnrealPart (- f))
+  toFun := fun f ↦ Λ (nnrealPart f) - Λ (nnrealPart (- f))
   map_add' f g := by
     simp only [neg_add_rev]
     obtain ⟨h, hh⟩ := exists_add_nnrealPart_add_eq f g

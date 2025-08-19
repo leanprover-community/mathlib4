@@ -85,7 +85,7 @@ theorem restrictStalkIso_inv_eq_ofRestrict {U : TopCat} (X : PresheafedSpace.{_,
     {f : U ⟶ (X : TopCat.{v})} (h : IsOpenEmbedding f) (x : U) :
     (X.restrictStalkIso h x).inv = (X.ofRestrict h).stalkMap x := by
   -- We can't use `ext` here because it would call `stalk_hom_ext` instead.
-  refine colimit.hom_ext fun V => ?_
+  refine colimit.hom_ext fun V ↦ ?_
   induction V with | op V => ?_
   let i : (h.isOpenMap.functorNhds x).obj ((OpenNhds.map f x).obj V) ⟶ V :=
     homOfLE (Set.image_preimage_subset f _)
@@ -191,7 +191,7 @@ theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
   -- I had to uglify this
   dsimp [stalkSpecializes, Hom.stalkMap, stalkFunctor, stalkPushforward]
   -- We can't use `ext` here due to https://github.com/leanprover/std4/pull/159
-  refine colimit.hom_ext fun j => ?_
+  refine colimit.hom_ext fun j ↦ ?_
   induction j with | op j => ?_
   dsimp
   simp only [colimit.ι_desc_assoc, ι_colimMap_assoc, whiskerLeft_app,

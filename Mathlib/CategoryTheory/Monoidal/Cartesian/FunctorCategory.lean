@@ -56,7 +56,7 @@ def snd : chosenProd F₁ F₂ ⟶ F₂ where
 
 /-- `Functor.chosenProd F₁ F₂` is a binary product of `F₁` and `F₂`. -/
 def isLimit : IsLimit (BinaryFan.mk (fst F₁ F₂) (snd F₁ F₂)) :=
-  evaluationJointlyReflectsLimits _ (fun j =>
+  evaluationJointlyReflectsLimits _ (fun j ↦
     (IsLimit.postcomposeHomEquiv (mapPairIso (by exact Iso.refl _) (by exact Iso.refl _)) _).1
       (IsLimit.ofIsoLimit
         (tensorProductIsBinaryProduct (X := F₁.obj j) (Y := F₂.obj j))

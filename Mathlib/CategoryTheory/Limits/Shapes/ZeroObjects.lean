@@ -90,11 +90,11 @@ def iso (hX : IsZero X) (hY : IsZero Y) : X ≅ Y where
 
 /-- A zero object is in particular initial. -/
 protected def isInitial (hX : IsZero X) : IsInitial X :=
-  @IsInitial.ofUnique _ _ X fun Y => (hX.unique_to Y).some
+  @IsInitial.ofUnique _ _ X fun Y ↦ (hX.unique_to Y).some
 
 /-- A zero object is in particular terminal. -/
 protected def isTerminal (hX : IsZero X) : IsTerminal X :=
-  @IsTerminal.ofUnique _ _ X fun Y => (hX.unique_from Y).some
+  @IsTerminal.ofUnique _ _ X fun Y ↦ (hX.unique_from Y).some
 
 /-- The (unique) isomorphism between any initial object and the zero object. -/
 def isoIsInitial (hX : IsZero X) (hY : IsInitial Y) : X ≅ Y :=
@@ -105,20 +105,20 @@ def isoIsTerminal (hX : IsZero X) (hY : IsTerminal Y) : X ≅ Y :=
   IsTerminal.uniqueUpToIso hX.isTerminal hY
 
 theorem of_iso (hY : IsZero Y) (e : X ≅ Y) : IsZero X := by
-  refine ⟨fun Z => ⟨⟨⟨e.hom ≫ hY.to_ Z⟩, fun f => ?_⟩⟩,
-    fun Z => ⟨⟨⟨hY.from_ Z ≫ e.inv⟩, fun f => ?_⟩⟩⟩
+  refine ⟨fun Z ↦ ⟨⟨⟨e.hom ≫ hY.to_ Z⟩, fun f ↦ ?_⟩⟩,
+    fun Z ↦ ⟨⟨⟨hY.from_ Z ≫ e.inv⟩, fun f ↦ ?_⟩⟩⟩
   · rw [← cancel_epi e.inv]
     apply hY.eq_of_src
   · rw [← cancel_mono e.hom]
     apply hY.eq_of_tgt
 
 theorem op (h : IsZero X) : IsZero (Opposite.op X) :=
-  ⟨fun Y => ⟨⟨⟨(h.from_ (Opposite.unop Y)).op⟩, fun _ => Quiver.Hom.unop_inj (h.eq_of_tgt _ _)⟩⟩,
-    fun Y => ⟨⟨⟨(h.to_ (Opposite.unop Y)).op⟩, fun _ => Quiver.Hom.unop_inj (h.eq_of_src _ _)⟩⟩⟩
+  ⟨fun Y ↦ ⟨⟨⟨(h.from_ (Opposite.unop Y)).op⟩, fun _ ↦ Quiver.Hom.unop_inj (h.eq_of_tgt _ _)⟩⟩,
+    fun Y ↦ ⟨⟨⟨(h.to_ (Opposite.unop Y)).op⟩, fun _ ↦ Quiver.Hom.unop_inj (h.eq_of_src _ _)⟩⟩⟩
 
 theorem unop {X : Cᵒᵖ} (h : IsZero X) : IsZero (Opposite.unop X) :=
-  ⟨fun Y => ⟨⟨⟨(h.from_ (Opposite.op Y)).unop⟩, fun _ => Quiver.Hom.op_inj (h.eq_of_tgt _ _)⟩⟩,
-    fun Y => ⟨⟨⟨(h.to_ (Opposite.op Y)).unop⟩, fun _ => Quiver.Hom.op_inj (h.eq_of_src _ _)⟩⟩⟩
+  ⟨fun Y ↦ ⟨⟨⟨(h.from_ (Opposite.op Y)).unop⟩, fun _ ↦ Quiver.Hom.op_inj (h.eq_of_tgt _ _)⟩⟩,
+    fun Y ↦ ⟨⟨⟨(h.to_ (Opposite.op Y)).unop⟩, fun _ ↦ Quiver.Hom.op_inj (h.eq_of_src _ _)⟩⟩⟩
 
 end IsZero
 
@@ -127,12 +127,12 @@ end Limits
 open CategoryTheory.Limits
 
 theorem Iso.isZero_iff {X Y : C} (e : X ≅ Y) : IsZero X ↔ IsZero Y :=
-  ⟨fun h => h.of_iso e.symm, fun h => h.of_iso e⟩
+  ⟨fun h ↦ h.of_iso e.symm, fun h ↦ h.of_iso e⟩
 
 theorem Functor.isZero (F : C ⥤ D) (hF : ∀ X, IsZero (F.obj X)) : IsZero F := by
   constructor <;> intro G <;> refine ⟨⟨⟨?_⟩, ?_⟩⟩
   · refine
-      { app := fun X => (hF _).to_ _
+      { app := fun X ↦ (hF _).to_ _
         naturality := ?_ }
     intros
     exact (hF _).eq_of_src _ _
@@ -140,7 +140,7 @@ theorem Functor.isZero (F : C ⥤ D) (hF : ∀ X, IsZero (F.obj X)) : IsZero F :
     ext
     apply (hF _).eq_of_src _ _
   · refine
-      { app := fun X => (hF _).from_ _
+      { app := fun X ↦ (hF _).from_ _
         naturality := ?_ }
     intros
     exact (hF _).eq_of_tgt _ _
@@ -159,10 +159,10 @@ class HasZeroObject : Prop where
 
 instance hasZeroObject_pUnit : HasZeroObject (Discrete PUnit) where zero :=
   ⟨⟨⟨⟩⟩,
-    { unique_to := fun ⟨⟨⟩⟩ =>
+    { unique_to := fun ⟨⟨⟩⟩ ↦
       ⟨{ default := 𝟙 _,
           uniq := by subsingleton }⟩
-      unique_from := fun ⟨⟨⟩⟩ =>
+      unique_from := fun ⟨⟨⟩⟩ ↦
       ⟨{ default := 𝟙 _,
           uniq := by subsingleton }⟩}⟩
 
@@ -203,7 +203,7 @@ def IsZero.isoZero [HasZeroObject C] {X : C} (hX : IsZero X) : X ≅ 0 :=
 
 theorem IsZero.obj [HasZeroObject D] {F : C ⥤ D} (hF : IsZero F) (X : C) : IsZero (F.obj X) := by
   let G : C ⥤ D := (CategoryTheory.Functor.const C).obj 0
-  have hG : IsZero G := Functor.isZero _ fun _ => isZero_zero _
+  have hG : IsZero G := Functor.isZero _ fun _ ↦ isZero_zero _
   let e : F ≅ G := hF.iso hG
   exact (isZero_zero _).of_iso (e.app X)
 
@@ -231,7 +231,7 @@ theorem to_zero_ext {X : C} (f g : X ⟶ 0) : f = g :=
 theorem from_zero_ext {X : C} (f g : 0 ⟶ X) : f = g :=
   (isZero_zero C).eq_of_src _ _
 
-instance (X : C) : Subsingleton (X ≅ 0) := ⟨fun f g => by ext⟩
+instance (X : C) : Subsingleton (X ≅ 0) := ⟨fun f g ↦ by ext⟩
 
 instance {X : C} (f : 0 ⟶ X) : Mono f where right_cancellation g h _ := by ext
 
@@ -274,7 +274,7 @@ def zeroIsoTerminal [HasTerminal C] : 0 ≅ ⊤_ C :=
   zeroIsTerminal.uniqueUpToIso terminalIsTerminal
 
 instance (priority := 100) initialMonoClass : InitialMonoClass C :=
-  InitialMonoClass.of_isInitial zeroIsInitial fun X => by infer_instance
+  InitialMonoClass.of_isInitial zeroIsInitial fun X ↦ by infer_instance
 
 end HasZeroObject
 
@@ -285,6 +285,6 @@ open CategoryTheory.Limits
 open ZeroObject
 
 theorem Functor.isZero_iff [HasZeroObject D] (F : C ⥤ D) : IsZero F ↔ ∀ X, IsZero (F.obj X) :=
-  ⟨fun hF X => hF.obj X, Functor.isZero _⟩
+  ⟨fun hF X ↦ hF.obj X, Functor.isZero _⟩
 
 end CategoryTheory

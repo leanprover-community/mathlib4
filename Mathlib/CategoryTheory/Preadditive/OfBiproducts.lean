@@ -59,8 +59,8 @@ theorem isUnital_leftAdd : EckmannHilton.IsUnital (· +ₗ ·) 0 := by
     · simp
     · simp [biprod.lift_snd, Category.assoc, comp_zero]
   exact {
-    left_id := fun f => by simp [hr f, leftAdd, Category.assoc, Category.comp_id, biprod.inr_desc],
-    right_id := fun f => by simp [hl f, leftAdd, Category.assoc, Category.comp_id, biprod.inl_desc]
+    left_id := fun f ↦ by simp [hr f, leftAdd, Category.assoc, Category.comp_id, biprod.inr_desc],
+    right_id := fun f ↦ by simp [hl f, leftAdd, Category.assoc, Category.comp_id, biprod.inl_desc]
   }
 
 theorem isUnital_rightAdd : EckmannHilton.IsUnital (· +ᵣ ·) 0 := by
@@ -75,8 +75,8 @@ theorem isUnital_rightAdd : EckmannHilton.IsUnital (· +ᵣ ·) 0 := by
     · simp
     · simp only [biprod.inr_desc, BinaryBicone.inr_fst_assoc, zero_comp]
   exact {
-    left_id := fun f => by simp [h₂ f, rightAdd, biprod.lift_snd_assoc, Category.id_comp],
-    right_id := fun f => by simp [h₁ f, rightAdd, biprod.lift_fst_assoc, Category.id_comp]
+    left_id := fun f ↦ by simp [h₂ f, rightAdd, biprod.lift_snd_assoc, Category.id_comp],
+    right_id := fun f ↦ by simp [h₁ f, rightAdd, biprod.lift_fst_assoc, Category.id_comp]
   }
 
 theorem distrib (f g h k : X ⟶ Y) : (f +ᵣ g) +ₗ h +ᵣ k = (f +ₗ h) +ᵣ g +ₗ k := by

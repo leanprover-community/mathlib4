@@ -45,7 +45,7 @@ namespace MutuallySingular
 theorem mk {s t : Set α} (hs : μ s = 0) (ht : ν t = 0) (hst : univ ⊆ s ∪ t) :
     MutuallySingular μ ν := by
   use toMeasurable μ s, measurableSet_toMeasurable _ _, (measure_toMeasurable _).trans hs
-  refine measure_mono_null (fun x hx => (hst trivial).resolve_left fun hxs => hx ?_) ht
+  refine measure_mono_null (fun x hx ↦ (hst trivial).resolve_left fun hxs ↦ hx ?_) ht
   exact subset_toMeasurable _ _ hxs
 
 /-- A set such that `μ h.nullSet = 0` and `ν h.nullSetᶜ = 0`. -/
@@ -79,7 +79,7 @@ theorem symm (h : ν ⟂ₘ μ) : μ ⟂ₘ ν :=
   ⟨iᶜ, hi.compl, hit, (compl_compl i).symm ▸ his⟩
 
 theorem comm : μ ⟂ₘ ν ↔ ν ⟂ₘ μ :=
-  ⟨fun h => h.symm, fun h => h.symm⟩
+  ⟨fun h ↦ h.symm, fun h ↦ h.symm⟩
 
 @[simp]
 theorem zero_left : 0 ⟂ₘ μ :=
@@ -106,16 +106,16 @@ lemma self_iff (μ : Measure α) : μ ⟂ₘ μ ↔ μ = 0 := by
 
 @[simp]
 theorem sum_left {ι : Type*} [Countable ι] {μ : ι → Measure α} : sum μ ⟂ₘ ν ↔ ∀ i, μ i ⟂ₘ ν := by
-  refine ⟨fun h i => h.mono (le_sum _ _) le_rfl, fun H => ?_⟩
+  refine ⟨fun h i ↦ h.mono (le_sum _ _) le_rfl, fun H ↦ ?_⟩
   choose s hsm hsμ hsν using H
   refine ⟨⋂ i, s i, MeasurableSet.iInter hsm, ?_, ?_⟩
   · rw [sum_apply _ (MeasurableSet.iInter hsm), ENNReal.tsum_eq_zero]
-    exact fun i => measure_mono_null (iInter_subset _ _) (hsμ i)
+    exact fun i ↦ measure_mono_null (iInter_subset _ _) (hsμ i)
   · rwa [compl_iInter, measure_iUnion_null_iff]
 
 @[simp]
 theorem sum_right {ι : Type*} [Countable ι] {ν : ι → Measure α} : μ ⟂ₘ sum ν ↔ ∀ i, μ ⟂ₘ ν i :=
-  comm.trans <| sum_left.trans <| forall_congr' fun _ => comm
+  comm.trans <| sum_left.trans <| forall_congr' fun _ ↦ comm
 
 @[simp]
 theorem add_left_iff : μ₁ + μ₂ ⟂ₘ ν ↔ μ₁ ⟂ₘ ν ∧ μ₂ ⟂ₘ ν := by

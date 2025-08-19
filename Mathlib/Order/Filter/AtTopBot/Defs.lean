@@ -46,7 +46,7 @@ theorem Ici_mem_atTop [Preorder α] (a : α) : Ici a ∈ (atTop : Filter α) :=
 theorem Ioi_mem_atTop [Preorder α] [NoTopOrder α] (x : α) : Ioi x ∈ (atTop : Filter α) :=
   let ⟨z, hz⟩ := exists_not_le x
   mem_of_superset (inter_mem (mem_atTop x) (mem_atTop z))
-    fun _ ⟨hxy, hzy⟩ => lt_of_le_not_ge hxy fun hyx => hz (hzy.trans hyx)
+    fun _ ⟨hxy, hzy⟩ ↦ lt_of_le_not_ge hxy fun hyx ↦ hz (hzy.trans hyx)
 
 theorem mem_atBot [Preorder α] (a : α) : { b : α | b ≤ a } ∈ @atBot α _ :=
   mem_iInf_of_mem a <| Subset.refl _
@@ -57,7 +57,7 @@ theorem Iic_mem_atBot [Preorder α] (a : α) : Iic a ∈ (atBot : Filter α) :=
 theorem Iio_mem_atBot [Preorder α] [NoBotOrder α] (x : α) : Iio x ∈ (atBot : Filter α) :=
   let ⟨z, hz⟩ := exists_not_ge x
   mem_of_superset (inter_mem (mem_atBot x) (mem_atBot z))
-    fun _ ⟨hyx, hyz⟩ => lt_of_le_not_ge hyx fun hxy => hz (hxy.trans hyz)
+    fun _ ⟨hyx, hyz⟩ ↦ lt_of_le_not_ge hyx fun hxy ↦ hz (hxy.trans hyz)
 
 theorem eventually_ge_atTop [Preorder α] (a : α) : ∀ᶠ x in atTop, a ≤ x :=
   mem_atTop a
@@ -69,13 +69,13 @@ theorem eventually_gt_atTop [Preorder α] [NoTopOrder α] (a : α) : ∀ᶠ x in
   Ioi_mem_atTop a
 
 theorem eventually_ne_atTop [Preorder α] [NoTopOrder α] (a : α) : ∀ᶠ x in atTop, x ≠ a :=
-  (eventually_gt_atTop a).mono fun _ => ne_of_gt
+  (eventually_gt_atTop a).mono fun _ ↦ ne_of_gt
 
 theorem eventually_lt_atBot [Preorder α] [NoBotOrder α] (a : α) : ∀ᶠ x in atBot, x < a :=
   Iio_mem_atBot a
 
 theorem eventually_ne_atBot [Preorder α] [NoBotOrder α] (a : α) : ∀ᶠ x in atBot, x ≠ a :=
-  (eventually_lt_atBot a).mono fun _ => ne_of_lt
+  (eventually_lt_atBot a).mono fun _ ↦ ne_of_lt
 
 theorem _root_.IsTop.atTop_eq [Preorder α] {a : α} (ha : IsTop a) : atTop = 𝓟 (Ici a) :=
   (iInf_le _ _).antisymm <| le_iInf fun b ↦ principal_mono.2 <| Ici_subset_Ici.2 <| ha b

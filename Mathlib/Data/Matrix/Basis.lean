@@ -28,7 +28,7 @@ variable [Zero α]
 and zeroes elsewhere.
 -/
 def single (i : m) (j : n) (a : α) : Matrix m n α :=
-  of <| fun i' j' => if i = i' ∧ j = j' then a else 0
+  of <| fun i' j' ↦ if i = i' ∧ j = j' then a else 0
 
 @[deprecated (since := "2025-05-05")] alias stdBasisMatrix := single
 
@@ -194,7 +194,7 @@ theorem ext_linearMap
     ⦃f g : Matrix m n α →ₗ[R] β⦄
     (h : ∀ i j, f ∘ₗ singleLinearMap R i j = g ∘ₗ singleLinearMap R i j) :
     f = g :=
-  LinearMap.toAddMonoidHom_injective <| ext_addMonoidHom fun i j =>
+  LinearMap.toAddMonoidHom_injective <| ext_addMonoidHom fun i j ↦
     congrArg LinearMap.toAddMonoidHom <| h i j
 
 section liftLinear
@@ -206,7 +206,7 @@ variable [Module R α] [Module R β] [Module S β] [SMulCommClass R S β]
 
 This can be thought of as the matrix version of `LinearMap.lsum`. -/
 def liftLinear : (m → n → α →ₗ[R] β) ≃ₗ[S] (Matrix m n α →ₗ[R] β) :=
-  LinearEquiv.piCongrRight (fun _ => LinearMap.lsum R _ S) ≪≫ₗ LinearMap.lsum R _ S ≪≫ₗ
+  LinearEquiv.piCongrRight (fun _ ↦ LinearMap.lsum R _ S) ≪≫ₗ LinearMap.lsum R _ S ≪≫ₗ
     LinearEquiv.congrLeft _ _ (ofLinearEquiv _)
 
 -- not `simp` to let `liftLinear_single` fire instead
@@ -271,7 +271,7 @@ variable [Zero α] (i j : n) (c : α)
 -- This simp lemma should take priority over `diag_apply`
 @[simp 1050]
 theorem diag_single_of_ne (h : i ≠ j) : diag (single i j c) = 0 :=
-  funext fun _ => if_neg fun ⟨e₁, e₂⟩ => h (e₁.trans e₂.symm)
+  funext fun _ ↦ if_neg fun ⟨e₁, e₂⟩ ↦ h (e₁.trans e₂.symm)
 
 @[deprecated (since := "2025-05-05")] alias StdBasisMatrix.diag_zero := diag_single_of_ne
 
@@ -383,12 +383,12 @@ alias diag_eq_of_commute_stdBasisMatrix := diag_eq_of_commute_single
 
 /-- `M` is a scalar matrix if it commutes with every non-diagonal `single`. -/
 theorem mem_range_scalar_of_commute_single {M : Matrix n n α}
-    (hM : Pairwise fun i j => Commute (single i j 1) M) :
+    (hM : Pairwise fun i j ↦ Commute (single i j 1) M) :
     M ∈ Set.range (Matrix.scalar n) := by
   cases isEmpty_or_nonempty n
   · exact ⟨0, Subsingleton.elim _ _⟩
   obtain ⟨i⟩ := ‹Nonempty n›
-  refine ⟨M i i, Matrix.ext fun j k => ?_⟩
+  refine ⟨M i i, Matrix.ext fun j k ↦ ?_⟩
   simp only [scalar_apply]
   obtain rfl | hkl := Decidable.eq_or_ne j k
   · rw [diagonal_apply_eq]
@@ -405,7 +405,7 @@ alias mem_range_scalar_of_commute_stdBasisMatrix := mem_range_scalar_of_commute_
 
 theorem mem_range_scalar_iff_commute_single {M : Matrix n n α} :
     M ∈ Set.range (Matrix.scalar n) ↔ ∀ (i j : n), i ≠ j → Commute (single i j 1) M := by
-  refine ⟨fun ⟨r, hr⟩ i j _ => hr ▸ Commute.symm ?_, mem_range_scalar_of_commute_single⟩
+  refine ⟨fun ⟨r, hr⟩ i j _ ↦ hr ▸ Commute.symm ?_, mem_range_scalar_of_commute_single⟩
   rw [scalar_commute_iff]
   simp
 
@@ -415,8 +415,8 @@ alias mem_range_scalar_iff_commute_stdBasisMatrix := mem_range_scalar_iff_commut
 /-- `M` is a scalar matrix if and only if it commutes with every `single`. -/
 theorem mem_range_scalar_iff_commute_single' {M : Matrix n n α} :
     M ∈ Set.range (Matrix.scalar n) ↔ ∀ (i j : n), Commute (single i j 1) M := by
-  refine ⟨fun ⟨r, hr⟩ i j => hr ▸ Commute.symm ?_,
-    fun hM => mem_range_scalar_iff_commute_single.mpr <| fun i j _ => hM i j⟩
+  refine ⟨fun ⟨r, hr⟩ i j ↦ hr ▸ Commute.symm ?_,
+    fun hM ↦ mem_range_scalar_iff_commute_single.mpr <| fun i j _ ↦ hM i j⟩
   rw [scalar_commute_iff]
   simp
 

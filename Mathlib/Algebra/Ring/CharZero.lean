@@ -50,9 +50,9 @@ lemma charZero (ϕ : R →+* S) [CharZero S] : CharZero R where
     rw [← map_natCast ϕ, ← map_natCast ϕ, h]
 
 lemma charZero_iff {ϕ : R →+* S} (hϕ : Injective ϕ) : CharZero R ↔ CharZero S :=
-  ⟨fun hR =>
+  ⟨fun hR ↦
     ⟨by intro a b h; rwa [← @Nat.cast_inj R, ← hϕ.eq_iff, map_natCast ϕ, map_natCast ϕ]⟩,
-    fun _ => ϕ.charZero⟩
+    fun _ ↦ ϕ.charZero⟩
 
 lemma injective_nat (f : ℕ →+* R) [CharZero R] : Injective f :=
   Subsingleton.elim (Nat.castRingHom _) f ▸ Nat.cast_injective

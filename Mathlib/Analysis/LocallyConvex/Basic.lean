@@ -67,7 +67,7 @@ lemma Absorbs.exists_pos (h : Absorbs 𝕜 A B) : ∃ r > 0, ∀ c : 𝕜, r ≤
   ⟨r, one_pos.trans_le hr₁, hr⟩
 
 theorem balanced_iff_smul_mem : Balanced 𝕜 s ↔ ∀ ⦃a : 𝕜⦄, ‖a‖ ≤ 1 → ∀ ⦃x : E⦄, x ∈ s → a • x ∈ s :=
-  forall₂_congr fun _a _ha => smul_set_subset_iff
+  forall₂_congr fun _a _ha ↦ smul_set_subset_iff
 
 alias ⟨Balanced.smul_mem, _⟩ := balanced_iff_smul_mem
 
@@ -75,42 +75,42 @@ theorem balanced_iff_closedBall_smul : Balanced 𝕜 s ↔ Metric.closedBall (0 
   simp [balanced_iff_smul_mem, smul_subset_iff]
 
 @[simp]
-theorem balanced_empty : Balanced 𝕜 (∅ : Set E) := fun _ _ => by rw [smul_set_empty]
+theorem balanced_empty : Balanced 𝕜 (∅ : Set E) := fun _ _ ↦ by rw [smul_set_empty]
 
 @[simp]
-theorem balanced_univ : Balanced 𝕜 (univ : Set E) := fun _a _ha => subset_univ _
+theorem balanced_univ : Balanced 𝕜 (univ : Set E) := fun _a _ha ↦ subset_univ _
 
-theorem Balanced.union (hA : Balanced 𝕜 A) (hB : Balanced 𝕜 B) : Balanced 𝕜 (A ∪ B) := fun _a ha =>
+theorem Balanced.union (hA : Balanced 𝕜 A) (hB : Balanced 𝕜 B) : Balanced 𝕜 (A ∪ B) := fun _a ha ↦
   smul_set_union.subset.trans <| union_subset_union (hA _ ha) <| hB _ ha
 
-theorem Balanced.inter (hA : Balanced 𝕜 A) (hB : Balanced 𝕜 B) : Balanced 𝕜 (A ∩ B) := fun _a ha =>
+theorem Balanced.inter (hA : Balanced 𝕜 A) (hB : Balanced 𝕜 B) : Balanced 𝕜 (A ∩ B) := fun _a ha ↦
   smul_set_inter_subset.trans <| inter_subset_inter (hA _ ha) <| hB _ ha
 
 theorem balanced_iUnion {f : ι → Set E} (h : ∀ i, Balanced 𝕜 (f i)) : Balanced 𝕜 (⋃ i, f i) :=
-  fun _a ha => (smul_set_iUnion _ _).subset.trans <| iUnion_mono fun _ => h _ _ ha
+  fun _a ha ↦ (smul_set_iUnion _ _).subset.trans <| iUnion_mono fun _ ↦ h _ _ ha
 
 theorem balanced_iUnion₂ {f : ∀ i, κ i → Set E} (h : ∀ i j, Balanced 𝕜 (f i j)) :
     Balanced 𝕜 (⋃ (i) (j), f i j) :=
-  balanced_iUnion fun _ => balanced_iUnion <| h _
+  balanced_iUnion fun _ ↦ balanced_iUnion <| h _
 
 theorem Balanced.sInter {S : Set (Set E)} (h : ∀ s ∈ S, Balanced 𝕜 s) : Balanced 𝕜 (⋂₀ S) :=
-  fun _ _ => (smul_set_sInter_subset ..).trans (fun _ _ => by aesop)
+  fun _ _ ↦ (smul_set_sInter_subset ..).trans (fun _ _ ↦ by aesop)
 
 theorem balanced_iInter {f : ι → Set E} (h : ∀ i, Balanced 𝕜 (f i)) : Balanced 𝕜 (⋂ i, f i) :=
-  fun _a ha => (smul_set_iInter_subset _ _).trans <| iInter_mono fun _ => h _ _ ha
+  fun _a ha ↦ (smul_set_iInter_subset _ _).trans <| iInter_mono fun _ ↦ h _ _ ha
 
 theorem balanced_iInter₂ {f : ∀ i, κ i → Set E} (h : ∀ i j, Balanced 𝕜 (f i j)) :
     Balanced 𝕜 (⋂ (i) (j), f i j) :=
-  balanced_iInter fun _ => balanced_iInter <| h _
+  balanced_iInter fun _ ↦ balanced_iInter <| h _
 
 theorem Balanced.mulActionHom_preimage [SMul 𝕜 F] {s : Set F} (hs : Balanced 𝕜 s)
-    (f : E →[𝕜] F) : Balanced 𝕜 (f ⁻¹' s) := fun a ha x ⟨y,⟨hy₁,hy₂⟩⟩ => by
+    (f : E →[𝕜] F) : Balanced 𝕜 (f ⁻¹' s) := fun a ha x ⟨y,⟨hy₁,hy₂⟩⟩ ↦ by
   rw [mem_preimage, ← hy₂, map_smul]
   exact hs a ha (smul_mem_smul_set hy₁)
 
 variable [SMul 𝕝 E] [SMulCommClass 𝕜 𝕝 E]
 
-theorem Balanced.smul (a : 𝕝) (hs : Balanced 𝕜 s) : Balanced 𝕜 (a • s) := fun _b hb =>
+theorem Balanced.smul (a : 𝕝) (hs : Balanced 𝕜 s) : Balanced 𝕜 (a • s) := fun _b hb ↦
   (smul_comm _ _ _).subset.trans <| smul_set_mono <| hs _ hb
 
 end SMul
@@ -120,7 +120,7 @@ section Module
 variable [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
 
 theorem Balanced.neg : Balanced 𝕜 s → Balanced 𝕜 (-s) :=
-  forall₂_imp fun _ _ h => (smul_set_neg _ _).subset.trans <| neg_subset_neg.2 h
+  forall₂_imp fun _ _ h ↦ (smul_set_neg _ _).subset.trans <| neg_subset_neg.2 h
 
 @[simp]
 theorem balanced_neg : Balanced 𝕜 (-s) ↔ Balanced 𝕜 s :=
@@ -133,14 +133,14 @@ theorem Balanced.neg_mem_iff [NormOneClass 𝕜] (h : Balanced 𝕜 s) {x : E} :
 theorem Balanced.neg_eq [NormOneClass 𝕜] (h : Balanced 𝕜 s) : -s = s :=
   Set.ext fun _ ↦ h.neg_mem_iff
 
-theorem Balanced.add (hs : Balanced 𝕜 s) (ht : Balanced 𝕜 t) : Balanced 𝕜 (s + t) := fun _a ha =>
+theorem Balanced.add (hs : Balanced 𝕜 s) (ht : Balanced 𝕜 t) : Balanced 𝕜 (s + t) := fun _a ha ↦
   (smul_add _ _ _).subset.trans <| add_subset_add (hs _ ha) <| ht _ ha
 
 theorem Balanced.sub (hs : Balanced 𝕜 s) (ht : Balanced 𝕜 t) : Balanced 𝕜 (s - t) := by
   simp_rw [sub_eq_add_neg]
   exact hs.add ht.neg
 
-theorem balanced_zero : Balanced 𝕜 (0 : Set E) := fun _a _ha => (smul_zero _).subset
+theorem balanced_zero : Balanced 𝕜 (0 : Set E) := fun _a _ha ↦ (smul_zero _).subset
 
 end Module
 
@@ -221,7 +221,7 @@ theorem Balanced.smul_eq (hs : Balanced 𝕜 s) (ha : ‖a‖ = 1) : a • s = s
 
 /-- A balanced set absorbs itself. -/
 theorem Balanced.absorbs_self (hs : Balanced 𝕜 s) : Absorbs 𝕜 s s :=
-  .of_norm ⟨1, fun _ => hs.subset_smul⟩
+  .of_norm ⟨1, fun _ ↦ hs.subset_smul⟩
 
 end NormedDivisionRing
 
@@ -256,7 +256,7 @@ protected theorem Balanced.interior (hA : Balanced 𝕜 A) (h : (0 : E) ∈ inte
   rw [← insert_eq_self.2 h]
   exact hA.zero_insert_interior
 
-protected theorem Balanced.closure (hA : Balanced 𝕜 A) : Balanced 𝕜 (closure A) := fun _a ha =>
+protected theorem Balanced.closure (hA : Balanced 𝕜 A) : Balanced 𝕜 (closure A) := fun _a ha ↦
   (image_closure_subset_closure_image <| continuous_const_smul _).trans <|
     closure_mono <| hA _ ha
 
@@ -271,8 +271,8 @@ variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
 protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (convexHull ℝ s) := by
   suffices Convex ℝ { x | ∀ a : 𝕜, ‖a‖ ≤ 1 → a • x ∈ convexHull ℝ s } by
     rw [balanced_iff_smul_mem] at hs ⊢
-    refine fun a ha x hx => convexHull_min ?_ this hx a ha
-    exact fun y hy a ha => subset_convexHull ℝ s (hs ha hy)
+    refine fun a ha x hx ↦ convexHull_min ?_ this hx a ha
+    exact fun y hy a ha ↦ subset_convexHull ℝ s (hs ha hy)
   intro x hx y hy u v hu hv huv a ha
   simp only [smul_add, ← smul_comm]
   exact convex_convexHull ℝ s (hx a ha) (hy a ha) hu hv huv
@@ -284,7 +284,7 @@ section Real
 variable [AddCommGroup E] [Module ℝ E] {s : Set E}
 
 theorem balanced_iff_neg_mem (hs : Convex ℝ s) : Balanced ℝ s ↔ ∀ ⦃x⦄, x ∈ s → -x ∈ s := by
-  refine ⟨fun h x => h.neg_mem_iff.2, fun h a ha => smul_set_subset_iff.2 fun x hx => ?_⟩
+  refine ⟨fun h x ↦ h.neg_mem_iff.2, fun h a ha ↦ smul_set_subset_iff.2 fun x hx ↦ ?_⟩
   rw [Real.norm_eq_abs, abs_le] at ha
   rw [show a = -((1 - a) / 2) + (a - -1) / 2 by ring, add_smul, neg_smul, ← smul_neg]
   exact hs (h hx) hx (div_nonneg (sub_nonneg_of_le ha.2) zero_le_two)

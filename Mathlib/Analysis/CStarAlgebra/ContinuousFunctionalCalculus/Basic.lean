@@ -87,7 +87,7 @@ theorem continuous_characterSpaceToSpectrum (x : A) :
 
 theorem bijective_characterSpaceToSpectrum :
     Function.Bijective (characterSpaceToSpectrum a) := by
-  refine ⟨fun φ ψ h => starAlgHomClass_ext ℂ ?_ ?_ ?_, ?_⟩
+  refine ⟨fun φ ψ h ↦ starAlgHomClass_ext ℂ ?_ ?_ ?_, ?_⟩
   · exact (map_continuous φ)
   · exact (map_continuous ψ)
   · simpa only [characterSpaceToSpectrum, Subtype.mk_eq_mk,

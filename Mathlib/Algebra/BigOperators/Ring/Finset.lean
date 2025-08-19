@@ -62,13 +62,13 @@ lemma _root_.Fintype.sum_mul_sum [Fintype ι] [Fintype κ] (f : ι → R) (g : �
 
 lemma _root_.Commute.sum_right (s : Finset ι) (f : ι → R) (b : R)
     (h : ∀ i ∈ s, Commute b (f i)) : Commute b (∑ i ∈ s, f i) :=
-  (Commute.multiset_sum_right _ _) fun b hb => by
+  (Commute.multiset_sum_right _ _) fun b hb ↦ by
     obtain ⟨i, hi, rfl⟩ := Multiset.mem_map.mp hb
     exact h _ hi
 
 lemma _root_.Commute.sum_left (s : Finset ι) (f : ι → R) (b : R)
     (h : ∀ i ∈ s, Commute (f i) b) : Commute (∑ i ∈ s, f i) b :=
-  ((Commute.sum_right _ _ _) fun _i hi => (h _ hi).symm).symm
+  ((Commute.sum_right _ _ _) fun _i hi ↦ (h _ hi).symm).symm
 
 lemma sum_range_succ_mul_sum_range_succ (m n : ℕ) (f g : ℕ → R) :
     (∑ i ∈ range (m + 1), f i) * ∑ i ∈ range (n + 1), g i =
@@ -82,7 +82,7 @@ section NonUnitalSemiring
 variable [NonUnitalSemiring R] {f : ι → R} {a : R}
 
 lemma dvd_sum (h : ∀ i ∈ s, a ∣ f i) : a ∣ ∑ i ∈ s, f i :=
-  Multiset.dvd_sum fun y hy => by rcases Multiset.mem_map.1 hy with ⟨x, hx, rfl⟩; exact h x hx
+  Multiset.dvd_sum fun y hy ↦ by rcases Multiset.mem_map.1 hy with ⟨x, hx, rfl⟩; exact h x hx
 
 end NonUnitalSemiring
 
@@ -130,17 +130,17 @@ lemma prod_sum {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (f
       rw [Pi.cons_same, Pi.cons_same] at this
       exact h this
     rw [prod_insert ha, pi_insert ha, ih, sum_mul, sum_biUnion h₁]
-    refine sum_congr rfl fun b _ => ?_
+    refine sum_congr rfl fun b _ ↦ ?_
     have h₂ : ∀ p₁ ∈ pi s t, ∀ p₂ ∈ pi s t, Pi.cons s a b p₁ = Pi.cons s a b p₂ → p₁ = p₂ :=
-      fun p₁ _ p₂ _ eq => Pi.cons_injective ha eq
+      fun p₁ _ p₂ _ eq ↦ Pi.cons_injective ha eq
     rw [sum_image h₂, mul_sum]
-    refine sum_congr rfl fun g _ => ?_
+    refine sum_congr rfl fun g _ ↦ ?_
     rw [attach_insert, prod_insert, prod_image]
     · simp only [Pi.cons_same]
       congr with ⟨v, hv⟩
       congr
       exact (Pi.cons_ne (by rintro rfl; exact ha hv)).symm
-    · exact fun _ _ _ _ => Subtype.eq ∘ Subtype.mk.inj
+    · exact fun _ _ _ _ ↦ Subtype.eq ∘ Subtype.mk.inj
     · simpa only [mem_image, mem_attach, Subtype.mk.injEq, true_and,
         Subtype.exists, exists_prop, exists_eq_right] using ha
 
@@ -167,12 +167,12 @@ theorem prod_add (f g : ι → R) (s : Finset ι) :
   calc
     ∏ i ∈ s, (f i + g i) =
         ∏ i ∈ s, ∑ p ∈ ({True, False} : Finset Prop), if p then f i else g i := by simp
-    _ = ∑ p ∈ (s.pi fun _ => {True, False} : Finset (∀ a ∈ s, Prop)),
+    _ = ∑ p ∈ (s.pi fun _ ↦ {True, False} : Finset (∀ a ∈ s, Prop)),
           ∏ a ∈ s.attach, if p a.1 a.2 then f a.1 else g a.1 := prod_sum _ _ _
     _ = ∑ t ∈ s.powerset, (∏ a ∈ t, f a) * ∏ a ∈ s \ t, g a :=
       sum_bij'
         (fun f _ ↦ {a ∈ s | ∃ h : a ∈ s, f a h})
-        (fun t _ a _ => a ∈ t)
+        (fun t _ a _ ↦ a ∈ t)
         (by simp)
         (by simp [Classical.em])
         (by simp_rw [mem_filter, funext_iff, eq_iff_iff, mem_pi, mem_insert]; tauto)
@@ -202,19 +202,19 @@ theorem prod_add_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → R) :
   refine Finset.induction_on_max s (by simp) ?_
   clear s
   intro a s ha ihs
-  have ha' : a ∉ s := fun ha' => lt_irrefl a (ha a ha')
+  have ha' : a ∉ s := fun ha' ↦ lt_irrefl a (ha a ha')
   rw [prod_insert ha', prod_insert ha', sum_insert ha', filter_insert, if_neg (lt_irrefl a),
     filter_true_of_mem ha, ihs, add_mul, mul_add, mul_add, add_assoc]
   congr 1
   rw [add_comm]
   congr 1
   · rw [filter_false_of_mem, prod_empty, mul_one]
-    exact (forall_mem_insert _ _ _).2 ⟨lt_irrefl a, fun i hi => (ha i hi).not_gt⟩
+    exact (forall_mem_insert _ _ _).2 ⟨lt_irrefl a, fun i hi ↦ (ha i hi).not_gt⟩
   · rw [mul_sum]
-    refine sum_congr rfl fun i hi => ?_
+    refine sum_congr rfl fun i hi ↦ ?_
     rw [filter_insert, if_neg (ha i hi).not_gt, filter_insert, if_pos (ha i hi), prod_insert,
       mul_left_comm]
-    exact mt (fun ha => (mem_filter.1 ha).1) ha'
+    exact mt (fun ha ↦ (mem_filter.1 ha).1) ha'
 
 /-- Summing `a ^ #t * b ^ (n - #t)` over all finite subsets `t` of a finset `s`
 gives `(a + b) ^ #s`. -/
@@ -222,7 +222,7 @@ theorem sum_pow_mul_eq_add_pow (a b : R) (s : Finset ι) :
     (∑ t ∈ s.powerset, a ^ #t * b ^ (#s - #t)) = (a + b) ^ #s := by
   classical
   rw [← prod_const, prod_add]
-  refine Finset.sum_congr rfl fun t ht => ?_
+  refine Finset.sum_congr rfl fun t ht ↦ ?_
   rw [prod_const, prod_const, ← card_sdiff (mem_powerset.1 ht)]
 
 /-- Summing `a^#s * b^(n-#s)` over all finite subsets `s` of a fintype of cardinality `n`
@@ -254,7 +254,7 @@ lemma prod_sub_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → R) :
       (∏ i ∈ s, f i) -
         ∑ i ∈ s, g i * (∏ j ∈ s with j < i, (f j - g j)) * ∏ j ∈ s with i < j, f j := by
   simp only [sub_eq_add_neg]
-  convert prod_add_ordered s f fun i => -g i
+  convert prod_add_ordered s f fun i ↦ -g i
   simp
 
 /-- `∏ i, (1 - f i) = 1 - ∑ i, f i * (∏ j < i, 1 - f j)`. This formula is useful in construction of
@@ -268,7 +268,7 @@ theorem prod_range_natCast_sub (n k : ℕ) :
     ∏ i ∈ range k, (n - i : R) = (∏ i ∈ range k, (n - i) : ℕ) := by
   rw [prod_natCast]
   rcases le_or_gt k n with hkn | hnk
-  · exact prod_congr rfl fun i hi => (Nat.cast_sub <| (mem_range.1 hi).le.trans hkn).symm
+  · exact prod_congr rfl fun i hi ↦ (Nat.cast_sub <| (mem_range.1 hi).le.trans hkn).symm
   · rw [← mem_range] at hnk
     rw [prod_eq_zero hnk, prod_eq_zero hnk] <;> simp
 

@@ -39,8 +39,8 @@ namespace DistribLattice
 
 
 lemma mem_ideal_sup_principal (a b : α) (J : Ideal α) : b ∈ J ⊔ principal a ↔ ∃ j ∈ J, b ≤ j ⊔ a :=
-  ⟨fun ⟨j, ⟨jJ, _, ha', bja'⟩⟩ => ⟨j, jJ, le_trans bja' (sup_le_sup_left ha' j)⟩,
-    fun ⟨j, hj, hbja⟩ => ⟨j, hj, a, le_refl a, hbja⟩⟩
+  ⟨fun ⟨j, ⟨jJ, _, ha', bja'⟩⟩ ↦ ⟨j, jJ, le_trans bja' (sup_le_sup_left ha' j)⟩,
+    fun ⟨j, hj, hbja⟩ ↦ ⟨j, hj, a, le_refl a, hbja⟩⟩
 
 theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : Set α)) :
     ∃ J : Ideal α, (IsPrime J) ∧ I ≤ J ∧ Disjoint (F : Set α) J := by
@@ -83,8 +83,8 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
   have J₁J : ↑J₁ ≠ Jset := ne_of_mem_of_not_mem' a₁J₁ ha₁
   have J₂J : ↑J₂ ≠ Jset := ne_of_mem_of_not_mem' a₂J₂ ha₂
   -- Therefore, since J is maximal, we must have Jᵢ ∉ S.
-  have J₁S : ↑J₁ ∉ S := fun h => J₁J (hmax.eq_of_le h (le_sup_left : J ≤ J₁)).symm
-  have J₂S : ↑J₂ ∉ S := fun h => J₂J (hmax.eq_of_le h (le_sup_left : J ≤ J₂)).symm
+  have J₁S : ↑J₁ ∉ S := fun h ↦ J₁J (hmax.eq_of_le h (le_sup_left : J ≤ J₁)).symm
+  have J₂S : ↑J₂ ∉ S := fun h ↦ J₂J (hmax.eq_of_le h (le_sup_left : J ≤ J₂)).symm
   -- Since Jᵢ is an ideal that contains I, we have that Jᵢ is not disjoint from F.
   have J₁F : ¬ (Disjoint (F : Set α) J₁) := by
     intro hdis

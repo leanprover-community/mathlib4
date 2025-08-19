@@ -43,7 +43,7 @@ theorem IsLocalExtrOn.range_ne_top_of_hasStrictFDerivAt
     (hextr : IsLocalExtrOn φ {x | f x = f x₀} x₀) (hf' : HasStrictFDerivAt f f' x₀)
     (hφ' : HasStrictFDerivAt φ φ' x₀) : LinearMap.range (f'.prod φ') ≠ ⊤ := by
   intro htop
-  set fφ := fun x => (f x, φ x)
+  set fφ := fun x ↦ (f x, φ x)
   have A : map φ (𝓝[f ⁻¹' {f x₀}] x₀) = 𝓝 (φ x₀) := by
     change map (Prod.snd ∘ fφ) (𝓝[fφ ⁻¹' {p | p.1 = f x₀}] x₀) = 𝓝 (φ x₀)
     rw [← map_map, nhdsWithin, map_inf_principal_preimage,
@@ -66,7 +66,7 @@ theorem IsLocalExtrOn.exists_linear_map_of_hasStrictFDerivAt
     ((LinearEquiv.refl ℝ (F →ₗ[ℝ] ℝ)).prodCongr (LinearMap.ringLmapEquivSelf ℝ ℝ ℝ).symm).trans
       (LinearMap.coprodEquiv ℝ)
   rcases e.surjective Λ' with ⟨⟨Λ, Λ₀⟩, rfl⟩
-  refine ⟨Λ, Λ₀, e.map_ne_zero_iff.1 h0, fun x => ?_⟩
+  refine ⟨Λ, Λ₀, e.map_ne_zero_iff.1 h0, fun x ↦ ?_⟩
   convert LinearMap.congr_fun (LinearMap.range_le_ker_iff.1 hΛ') x using 1
   -- squeezed `simp [mul_comm]` to speed up elaboration
   simp only [e, smul_eq_mul, LinearEquiv.trans_apply, LinearEquiv.prodCongr_apply,
@@ -85,7 +85,7 @@ theorem IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt_1d {f : E → ℝ}
   refine ⟨Λ 1, Λ₀, ?_, ?_⟩
   · contrapose! hΛ
     simp only [Prod.mk_eq_zero] at hΛ ⊢
-    refine ⟨LinearMap.ext fun x => ?_, hΛ.2⟩
+    refine ⟨LinearMap.ext fun x ↦ ?_, hΛ.2⟩
     simpa [hΛ.1] using Λ.map_smul x 1
   · ext x
     have H₁ : Λ (f' x) = f' x * Λ 1 := by
@@ -106,9 +106,9 @@ theorem IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt {ι : Type*} [Fint
     (hf' : ∀ i, HasStrictFDerivAt (f i) (f' i) x₀) (hφ' : HasStrictFDerivAt φ φ' x₀) :
     ∃ (Λ : ι → ℝ) (Λ₀ : ℝ), (Λ, Λ₀) ≠ 0 ∧ (∑ i, Λ i • f' i) + Λ₀ • φ' = 0 := by
   letI := Classical.decEq ι
-  replace hextr : IsLocalExtrOn φ {x | (fun i => f i x) = fun i => f i x₀} x₀ := by
+  replace hextr : IsLocalExtrOn φ {x | (fun i ↦ f i x) = fun i ↦ f i x₀} x₀ := by
     simpa only [funext_iff] using hextr
-  rcases hextr.exists_linear_map_of_hasStrictFDerivAt (hasStrictFDerivAt_pi.2 fun i => hf' i)
+  rcases hextr.exists_linear_map_of_hasStrictFDerivAt (hasStrictFDerivAt_pi.2 fun i ↦ hf' i)
       hφ' with
     ⟨Λ, Λ₀, h0, hsum⟩
   rcases (LinearEquiv.piRing ℝ ℝ ι ℝ).symm.surjective Λ with ⟨Λ, rfl⟩

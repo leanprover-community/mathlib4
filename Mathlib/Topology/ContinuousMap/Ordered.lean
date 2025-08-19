@@ -23,7 +23,7 @@ on continuous functions.
 -/
 
 instance partialOrder [PartialOrder β] : PartialOrder C(α, β) :=
-  PartialOrder.lift (fun f => f.toFun) (fun f g _ => by aesop)
+  PartialOrder.lift (fun f ↦ f.toFun) (fun f g _ ↦ by aesop)
 
 theorem le_def [PartialOrder β] {f g : C(α, β)} : f ≤ g ↔ ∀ a, f a ≤ g a :=
   Pi.le_def

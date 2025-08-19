@@ -68,7 +68,7 @@ theorem polar_isClosed (s : Set E) : IsClosed (X := WeakBilin B.flip) (B.polar s
     fun _ _ ↦ Metric.isClosed_closedBall.preimage (WeakBilin.eval_continuous B.flip _)
 
 @[simp]
-theorem zero_mem_polar (s : Set E) : (0 : F) ∈ B.polar s := fun _ _ => by
+theorem zero_mem_polar (s : Set E) : (0 : F) ∈ B.polar s := fun _ _ ↦ by
   simp only [map_zero, norm_zero, zero_le_one]
 
 theorem polar_nonempty (s : Set E) : Set.Nonempty (B.polar s) := by
@@ -83,8 +83,8 @@ theorem polar_eq_iInter {s : Set E} : B.polar s = ⋂ x ∈ s, { y : F | ‖B x 
 `B.flip.polar : Set F → Set E`. We use `OrderDual.toDual` and `OrderDual.ofDual` to express
 that `polar` is order-reversing. -/
 theorem polar_gc :
-    GaloisConnection (OrderDual.toDual ∘ B.polar) (B.flip.polar ∘ OrderDual.ofDual) := fun _ _ =>
-  ⟨fun h _ hx _ hy => h hy _ hx, fun h _ hx _ hy => h hy _ hx⟩
+    GaloisConnection (OrderDual.toDual ∘ B.polar) (B.flip.polar ∘ OrderDual.ofDual) := fun _ _ ↦
+  ⟨fun h _ hx _ hy ↦ h hy _ hx, fun h _ hx _ hy ↦ h hy _ hx⟩
 
 @[simp]
 theorem polar_iUnion {ι} {s : ι → Set E} : B.polar (⋃ i, s i) = ⋂ i, B.polar (s i) :=
@@ -103,8 +103,8 @@ theorem polar_empty : B.polar ∅ = Set.univ :=
 
 @[simp]
 theorem polar_singleton {a : E} : B.polar {a} = { y | ‖B a y‖ ≤ 1 } := le_antisymm
-  (fun _ hy => hy _ rfl)
-  (fun y hy => (polar_mem_iff _ _ _).mp (fun _ hb => by rw [Set.mem_singleton_iff.mp hb]; exact hy))
+  (fun _ hy ↦ hy _ rfl)
+  (fun y hy ↦ (polar_mem_iff _ _ _).mp (fun _ hb ↦ by rw [Set.mem_singleton_iff.mp hb]; exact hy))
 
 theorem mem_polar_singleton {x : E} (y : F) : y ∈ B.polar {x} ↔ ‖B x y‖ ≤ 1 := by
   simp only [polar_singleton, Set.mem_setOf_eq]
@@ -112,7 +112,7 @@ theorem mem_polar_singleton {x : E} (y : F) : y ∈ B.polar {x} ↔ ‖B x y‖ 
 theorem polar_zero : B.polar ({0} : Set E) = Set.univ := by
   simp only [polar_singleton, map_zero, zero_apply, norm_zero, zero_le_one, Set.setOf_true]
 
-theorem subset_bipolar (s : Set E) : s ⊆ B.flip.polar (B.polar s) := fun x hx y hy => by
+theorem subset_bipolar (s : Set E) : s ⊆ B.flip.polar (B.polar s) := fun x hx y hy ↦ by
   rw [B.flip_apply]
   exact hy x hx
 
@@ -124,14 +124,14 @@ theorem tripolar_eq_polar (s : Set E) : B.polar (B.flip.polar (B.polar s)) = B.p
 theorem polar_weak_closed (s : Set E) : IsClosed[WeakBilin.instTopologicalSpace B.flip]
     (B.polar s) := by
   rw [polar_eq_iInter]
-  refine isClosed_iInter fun x => isClosed_iInter fun _ => ?_
+  refine isClosed_iInter fun x ↦ isClosed_iInter fun _ ↦ ?_
   exact isClosed_le (WeakBilin.eval_continuous B.flip x).norm continuous_const
 
 theorem sInter_polar_finite_subset_eq_polar (s : Set E) :
     ⋂₀ (B.polar '' { F | F.Finite ∧ F ⊆ s }) = B.polar s := by
   ext x
   simp only [Set.sInter_image, Set.mem_setOf_eq, Set.mem_iInter, and_imp]
-  refine ⟨fun hx a ha ↦ ?_, fun hx F _ hF₂ => polar_antitone _ hF₂ hx⟩
+  refine ⟨fun hx a ha ↦ ?_, fun hx F _ hF₂ ↦ polar_antitone _ hF₂ hx⟩
   simpa [mem_polar_singleton] using hx _ (Set.finite_singleton a) (Set.singleton_subset_iff.mpr ha)
 
 end NormedRing
@@ -146,8 +146,8 @@ variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 theorem polar_univ (h : SeparatingRight B) : B.polar Set.univ = {(0 : F)} := by
   rw [Set.eq_singleton_iff_unique_mem]
-  refine ⟨by simp only [zero_mem_polar], fun y hy => h _ fun x => ?_⟩
-  refine norm_le_zero_iff.mp (le_of_forall_gt_imp_ge_of_dense fun ε hε => ?_)
+  refine ⟨by simp only [zero_mem_polar], fun y hy ↦ h _ fun x ↦ ?_⟩
+  refine norm_le_zero_iff.mp (le_of_forall_gt_imp_ge_of_dense fun ε hε ↦ ?_)
   rcases NormedField.exists_norm_lt 𝕜 hε with ⟨c, hc, hcε⟩
   calc
     ‖B x y‖ = ‖c‖ * ‖B (c⁻¹ • x) y‖ := by

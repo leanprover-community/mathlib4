@@ -41,7 +41,7 @@ theorem simply_connected_iff_unique_homotopic (X : Type*) [TopologicalSpace X] :
   simp only [simply_connected_def, equiv_punit_iff_unique,
     FundamentalGroupoid.nonempty_iff X, and_congr_right_iff, Nonempty.forall]
   intros
-  exact ⟨fun h _ _ => h _ _, fun h _ _ => h _ _⟩
+  exact ⟨fun h _ _ ↦ h _ _, fun h _ _ ↦ h _ _⟩
 
 namespace SimplyConnectedSpace
 
@@ -56,7 +56,7 @@ attribute [local instance] Path.Homotopic.setoid
 instance (priority := 100) : PathConnectedSpace X :=
   let unique_homotopic := (simply_connected_iff_unique_homotopic X).mp inferInstance
   { nonempty := unique_homotopic.1
-    joined := fun x y => ⟨(unique_homotopic.2 x y).some.default.out⟩ }
+    joined := fun x y ↦ ⟨(unique_homotopic.2 x y).some.default.out⟩ }
 
 /-- In a simply connected space, any two paths are homotopic -/
 theorem paths_homotopic {x y : X} (p₁ p₂ : Path x y) : Path.Homotopic p₁ p₂ :=
@@ -78,9 +78,9 @@ attribute [local instance] Path.Homotopic.setoid
 theorem simply_connected_iff_paths_homotopic {Y : Type*} [TopologicalSpace Y] :
     SimplyConnectedSpace Y ↔
       PathConnectedSpace Y ∧ ∀ x y : Y, Subsingleton (Path.Homotopic.Quotient x y) :=
-  ⟨by intro; constructor <;> infer_instance, fun h => by
+  ⟨by intro; constructor <;> infer_instance, fun h ↦ by
     cases h; rw [simply_connected_iff_unique_homotopic]
-    exact ⟨inferInstance, fun x y => ⟨uniqueOfSubsingleton ⟦PathConnectedSpace.somePath x y⟧⟩⟩⟩
+    exact ⟨inferInstance, fun x y ↦ ⟨uniqueOfSubsingleton ⟦PathConnectedSpace.somePath x y⟧⟩⟩⟩
 
 /-- Another version of `simply_connected_iff_paths_homotopic` -/
 theorem simply_connected_iff_paths_homotopic' {Y : Type*} [TopologicalSpace Y] :

@@ -76,7 +76,7 @@ variable [Preadditive C] [Preadditive D] [F.Additive]
 /-- The functor `F.mapTriangle` commutes with the shift. -/
 noncomputable def mapTriangleCommShiftIso (n : ℤ) :
     Triangle.shiftFunctor C n ⋙ F.mapTriangle ≅ F.mapTriangle ⋙ Triangle.shiftFunctor D n :=
-  NatIso.ofComponents (fun T => Triangle.isoMk _ _
+  NatIso.ofComponents (fun T ↦ Triangle.isoMk _ _
     ((F.commShiftIso n).app _) ((F.commShiftIso n).app _) ((F.commShiftIso n).app _)
     (by simp) (by simp) (by
       dsimp
@@ -112,7 +112,7 @@ def mapTriangleRotateIso :
     F.mapTriangle ⋙ Pretriangulated.rotate D ≅
       Pretriangulated.rotate C ⋙ F.mapTriangle :=
   NatIso.ofComponents
-    (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
+    (fun T ↦ Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
       ((F.commShiftIso (1 : ℤ)).symm.app _)
       (by simp) (by simp) (by simp)) (by cat_disch)
 
@@ -122,7 +122,7 @@ noncomputable def mapTriangleInvRotateIso [F.Additive] :
     F.mapTriangle ⋙ Pretriangulated.invRotate D ≅
       Pretriangulated.invRotate C ⋙ F.mapTriangle :=
   NatIso.ofComponents
-    (fun T => Triangle.isoMk _ _ ((F.commShiftIso (-1 : ℤ)).symm.app _) (Iso.refl _) (Iso.refl _)
+    (fun T ↦ Triangle.isoMk _ _ ((F.commShiftIso (-1 : ℤ)).symm.app _) (Iso.refl _) (Iso.refl _)
       (by simp) (by simp) (by simp)) (by cat_disch)
 
 
@@ -135,7 +135,7 @@ def mapTriangleIdIso : (𝟭 C).mapTriangle ≅ 𝟭 _ :=
 /-- The canonical isomorphism `(F ⋙ G).mapTriangle ≅ F.mapTriangle ⋙ G.mapTriangle`. -/
 @[simps!]
 def mapTriangleCompIso : (F ⋙ G).mapTriangle ≅ F.mapTriangle ⋙ G.mapTriangle :=
-  NatIso.ofComponents (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _))
+  NatIso.ofComponents (fun T ↦ Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _))
 
 /-- Two isomorphic functors `F₁` and `F₂` induce isomorphic functors
 `F₁.mapTriangle` and `F₂.mapTriangle` if the isomorphism `F₁ ≅ F₂` is compatible
@@ -143,7 +143,7 @@ with the shifts. -/
 @[simps!]
 def mapTriangleIso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) [F₁.CommShift ℤ] [F₂.CommShift ℤ]
     [NatTrans.CommShift e.hom ℤ] : F₁.mapTriangle ≅ F₂.mapTriangle :=
-  NatIso.ofComponents (fun T =>
+  NatIso.ofComponents (fun T ↦
     Triangle.isoMk _ _ (e.app _) (e.app _) (e.app _) (by simp) (by simp) (by
       dsimp
       simp only [assoc, NatTrans.shift_app_comm e.hom (1 : ℤ) T.obj₁,

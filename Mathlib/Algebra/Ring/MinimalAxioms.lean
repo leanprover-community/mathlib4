@@ -48,12 +48,12 @@ abbrev Ring.ofMinimalAxioms {R : Type u}
       simp only [left_distrib, one_mul, add_assoc]
     have := h₁.symm.trans h₂
     rwa [add_left_inj, add_right_inj] at this
-  haveI zero_mul : ∀ a, (0 : R) * a = 0 := fun a => by
+  haveI zero_mul : ∀ a, (0 : R) * a = 0 := fun a ↦ by
     have : 0 * a = 0 * a + 0 * a :=
       calc 0 * a = (0 + 0) * a := by rw [zero_add]
       _ = 0 * a + 0 * a := by rw [right_distrib]
     rwa [left_eq_add] at this
-  haveI mul_zero : ∀ a, a * (0 : R) = 0 := fun a => by
+  haveI mul_zero : ∀ a, a * (0 : R) = 0 := fun a ↦ by
     have : a * 0 = a * 0 + a * 0 :=
       calc a * 0 = a * (0 + 0) := by rw [zero_add]
       _ = a * 0 + a * 0 := by rw [left_distrib]
@@ -81,9 +81,9 @@ abbrev CommRing.ofMinimalAxioms {R : Type u}
     (mul_comm : ∀ a b : R, a * b = b * a)
     (one_mul : ∀ a : R, 1 * a = a)
     (left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c) : CommRing R :=
-  haveI mul_one : ∀ a : R, a * 1 = a := fun a => by
+  haveI mul_one : ∀ a : R, a * 1 = a := fun a ↦ by
     rw [mul_comm, one_mul]
-  haveI right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c := fun a b c => by
+  haveI right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c := fun a b c ↦ by
     rw [mul_comm, left_distrib, mul_comm, mul_comm b c]
   letI := Ring.ofMinimalAxioms add_assoc zero_add neg_add_cancel mul_assoc
     one_mul mul_one left_distrib right_distrib

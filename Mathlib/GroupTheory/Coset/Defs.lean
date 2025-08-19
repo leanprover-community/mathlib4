@@ -70,13 +70,13 @@ theorem leftRel_apply {x y : α} : leftRel s x y ↔ x⁻¹ * y ∈ s :=
     _ ↔ x⁻¹ * y ∈ s := by simp [exists_inv_mem_iff_exists_mem]
 
 @[to_additive]
-theorem leftRel_eq : ⇑(leftRel s) = fun x y => x⁻¹ * y ∈ s :=
+theorem leftRel_eq : ⇑(leftRel s) = fun x y ↦ x⁻¹ * y ∈ s :=
   funext₂ <| by
     simp only [eq_iff_iff]
     apply leftRel_apply
 
 @[to_additive]
-instance leftRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (leftRel s).r := fun x y => by
+instance leftRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (leftRel s).r := fun x y ↦ by
   rw [leftRel_eq]
   exact ‹DecidablePred (· ∈ s)› _
 
@@ -85,7 +85,7 @@ instance leftRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (leftRel s).
 @[to_additive /-- `α ⧸ s` is the quotient type representing the left cosets of `s`. If `s` is a
 normal subgroup, `α ⧸ s` is a group -/]
 instance instHasQuotientSubgroup : HasQuotient α (Subgroup α) :=
-  ⟨fun s => Quotient (leftRel s)⟩
+  ⟨fun s ↦ Quotient (leftRel s)⟩
 
 @[to_additive]
 instance [DecidablePred (· ∈ s)] : DecidableEq (α ⧸ s) :=
@@ -107,13 +107,13 @@ theorem rightRel_apply {x y : α} : rightRel s x y ↔ y * x⁻¹ ∈ s :=
     _ ↔ y * x⁻¹ ∈ s := by simp [exists_inv_mem_iff_exists_mem]
 
 @[to_additive]
-theorem rightRel_eq : ⇑(rightRel s) = fun x y => y * x⁻¹ ∈ s :=
+theorem rightRel_eq : ⇑(rightRel s) = fun x y ↦ y * x⁻¹ ∈ s :=
   funext₂ <| by
     simp only [eq_iff_iff]
     apply rightRel_apply
 
 @[to_additive]
-instance rightRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (rightRel s).r := fun x y => by
+instance rightRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (rightRel s).r := fun x y ↦ by
   rw [rightRel_eq]
   exact ‹DecidablePred (· ∈ s)› _
 
@@ -121,23 +121,23 @@ instance rightRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (rightRel s
 @[to_additive /-- Right cosets are in bijection with left cosets. -/]
 def quotientRightRelEquivQuotientLeftRel : Quotient (QuotientGroup.rightRel s) ≃ α ⧸ s where
   toFun :=
-    Quotient.map' (fun g => g⁻¹) fun a b => by
+    Quotient.map' (fun g ↦ g⁻¹) fun a b ↦ by
       rw [leftRel_apply, rightRel_apply]
-      exact fun h => (congr_arg (· ∈ s) (by simp)).mp (s.inv_mem h)
+      exact fun h ↦ (congr_arg (· ∈ s) (by simp)).mp (s.inv_mem h)
       -- Porting note: replace with `by group`
   invFun :=
-    Quotient.map' (fun g => g⁻¹) fun a b => by
+    Quotient.map' (fun g ↦ g⁻¹) fun a b ↦ by
       rw [leftRel_apply, rightRel_apply]
-      exact fun h => (congr_arg (· ∈ s) (by simp)).mp (s.inv_mem h)
+      exact fun h ↦ (congr_arg (· ∈ s) (by simp)).mp (s.inv_mem h)
       -- Porting note: replace with `by group`
   left_inv g :=
-    Quotient.inductionOn' g fun g =>
+    Quotient.inductionOn' g fun g ↦
       Quotient.sound'
         (by
           simp only [inv_inv]
           exact Quotient.exact' rfl)
   right_inv g :=
-    Quotient.inductionOn' g fun g =>
+    Quotient.inductionOn' g fun g ↦
       Quotient.sound'
         (by
           simp only [inv_inv]
@@ -220,7 +220,7 @@ theorem preimage_image_mk (N : Subgroup α) (s : Set α) :
   simp only [QuotientGroup.eq, SetLike.exists, exists_prop, Set.mem_preimage, Set.mem_iUnion,
     Set.mem_image]
   exact
-    ⟨fun ⟨y, hs, hN⟩ => ⟨_, N.inv_mem hN, by simpa using hs⟩, fun ⟨z, hz, hxz⟩ =>
+    ⟨fun ⟨y, hs, hN⟩ ↦ ⟨_, N.inv_mem hN, by simpa using hs⟩, fun ⟨z, hz, hxz⟩ ↦
       ⟨x * z, hxz, by simpa using hz⟩⟩
 
 @[to_additive]
@@ -249,10 +249,10 @@ variable {t : Subgroup α}
 @[to_additive
 /-- If two subgroups `M` and `N` of `G` are equal, their quotients are in bijection. -/]
 def quotientEquivOfEq (h : s = t) : α ⧸ s ≃ α ⧸ t where
-  toFun := Quotient.map' id fun _a _b h' => h ▸ h'
-  invFun := Quotient.map' id fun _a _b h' => h.symm ▸ h'
-  left_inv q := induction_on q fun _g => rfl
-  right_inv q := induction_on q fun _g => rfl
+  toFun := Quotient.map' id fun _a _b h' ↦ h ▸ h'
+  invFun := Quotient.map' id fun _a _b h' ↦ h.symm ▸ h'
+  left_inv q := induction_on q fun _g ↦ rfl
+  right_inv q := induction_on q fun _g ↦ rfl
 
 theorem quotientEquivOfEq_mk (h : s = t) (a : α) :
     quotientEquivOfEq h (QuotientGroup.mk a) = QuotientGroup.mk a :=

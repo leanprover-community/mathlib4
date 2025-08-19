@@ -40,7 +40,7 @@ variable [∀ {X Y : C} (f : X ⟶ Y), HasColimit (F.map f ⋙ Grothendieck.ι F
 
 @[local instance]
 lemma hasColimit_ι_comp : ∀ X, HasColimit (Grothendieck.ι F X ⋙ G) :=
-  fun X => hasColimit_of_iso (F := F.map (𝟙 _) ⋙ Grothendieck.ι F X ⋙ G) <|
+  fun X ↦ hasColimit_of_iso (F := F.map (𝟙 _) ⋙ Grothendieck.ι F X ⋙ G) <|
     (leftUnitor (Grothendieck.ι F X ⋙ G)).symm ≪≫
     (isoWhiskerRight (eqToIso (F.map_id X).symm) (Grothendieck.ι F X ⋙ G))
 
@@ -84,8 +84,8 @@ variable (H) (F) in
 def fiberwiseColim [∀ c, HasColimitsOfShape (F.obj c) H] : (Grothendieck F ⥤ H) ⥤ (C ⥤ H) where
   obj G := fiberwiseColimit G
   map α :=
-    { app := fun c => colim.map (whiskerLeft _ α)
-      naturality := fun c₁ c₂ f => by apply colimit.hom_ext; simp }
+    { app := fun c ↦ colim.map (whiskerLeft _ α)
+      naturality := fun c₁ c₂ f ↦ by apply colimit.hom_ext; simp }
   map_id G := by ext; simp; apply Functor.map_id colim
   map_comp α β := by ext; simp; apply Functor.map_comp colim
 
@@ -111,8 +111,8 @@ on `G`. -/
 @[simps]
 def coconeFiberwiseColimitOfCocone (c : Cocone G) : Cocone (fiberwiseColimit G) where
   pt := c.pt
-  ι := { app := fun X => colimit.desc _ (c.whisker (Grothendieck.ι F X)),
-         naturality := fun _ _ f => by dsimp; ext; simp }
+  ι := { app := fun X ↦ colimit.desc _ (c.whisker (Grothendieck.ι F X)),
+         naturality := fun _ _ f ↦ by dsimp; ext; simp }
 
 variable {G} in
 /-- If `c` is a colimit cocone on `G : Grothendieck F ⥤ H`, then the induced cocone on the
@@ -122,7 +122,7 @@ def isColimitCoconeFiberwiseColimitOfCocone {c : Cocone G} (hc : IsColimit c) :
   desc s := hc.desc <| Cocone.mk s.pt <| natTransIntoForgetCompFiberwiseColimit G ≫
     whiskerLeft (Grothendieck.forget F) s.ι
   fac s c := by dsimp; ext; simp
-  uniq s m hm := hc.hom_ext fun X => by
+  uniq s m hm := hc.hom_ext fun X ↦ by
     have := hm X.base
     simp only [Functor.const_obj_obj, IsColimit.fac, NatTrans.comp_app, Functor.comp_obj,
       Grothendieck.forget_obj, natTransIntoForgetCompFiberwiseColimit_app,
@@ -141,8 +141,8 @@ cocone over `G` itself. -/
 @[simps]
 def coconeOfCoconeFiberwiseColimit (c : Cocone (fiberwiseColimit G)) : Cocone G where
   pt := c.pt
-  ι := { app := fun X => colimit.ι (Grothendieck.ι F X.base ⋙ G) X.fiber ≫ c.ι.app X.base
-         naturality := fun {X Y} ⟨f, g⟩ => by
+  ι := { app := fun X ↦ colimit.ι (Grothendieck.ι F X.base ⋙ G) X.fiber ≫ c.ι.app X.base
+         naturality := fun {X Y} ⟨f, g⟩ ↦ by
           simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id]
           rw [← Category.assoc, ← c.w f, ← Category.assoc]
           simp only [fiberwiseColimit_obj, fiberwiseColimit_map, ι_colimMap_assoc,
@@ -156,8 +156,8 @@ def coconeOfCoconeFiberwiseColimit (c : Cocone (fiberwiseColimit G)) : Cocone G 
 def isColimitCoconeOfFiberwiseCocone {c : Cocone (fiberwiseColimit G)} (hc : IsColimit c) :
     IsColimit (coconeOfCoconeFiberwiseColimit c) where
   desc s := hc.desc <| Cocone.mk s.pt <|
-    { app := fun X => colimit.desc (Grothendieck.ι F X ⋙ G) (s.whisker _) }
-  uniq s m hm := hc.hom_ext <| fun X => by
+    { app := fun X ↦ colimit.desc (Grothendieck.ι F X ⋙ G) (s.whisker _) }
+  uniq s m hm := hc.hom_ext <| fun X ↦ by
     simp only [fiberwiseColimit_obj, Functor.const_obj_obj, IsColimit.fac]
     simp only [coconeOfCoconeFiberwiseColimit_pt, Functor.const_obj_obj,
       coconeOfCoconeFiberwiseColimit_ι_app, Category.assoc] at hm
@@ -211,8 +211,8 @@ variable [∀ (c : C), HasColimitsOfShape (↑(F.obj c)) H] [HasColimitsOfShape 
 between `fiberwiseColim F H ⋙ colim` and `colim`. -/
 @[simps!]
 def fiberwiseColimCompColimIso : fiberwiseColim F H ⋙ colim ≅ colim :=
-  NatIso.ofComponents (fun G => colimitFiberwiseColimitIso G)
-    fun _ => by (iterate 2 apply colimit.hom_ext; intro); simp
+  NatIso.ofComponents (fun G ↦ colimitFiberwiseColimitIso G)
+    fun _ ↦ by (iterate 2 apply colimit.hom_ext; intro); simp
 
 /-- Composing `fiberwiseColim F H` with the evaluation functor `(evaluation C H).obj c` is
 naturally isomorphic to precomposing the Grothendieck inclusion `Grothendieck.ι` to `colim`. -/

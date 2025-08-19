@@ -20,7 +20,7 @@ theorem setOf_mem_eq_empty_iff {l : List α} : { x | x ∈ l } = ∅ ↔ l = [] 
   Set.eq_empty_iff_forall_notMem.trans eq_nil_iff_forall_not_mem.symm
 
 theorem injOn_insertIdx_index_of_notMem (l : List α) (x : α) (hx : x ∉ l) :
-    Set.InjOn (fun k => l.insertIdx k x) { n | n ≤ l.length } := by
+    Set.InjOn (fun k ↦ l.insertIdx k x) { n | n ≤ l.length } := by
   induction' l with hd tl IH
   · intro n hn m hm _
     simp_all [Set.mem_singleton_iff, Set.setOf_eq_eq_singleton, length]
@@ -51,9 +51,9 @@ theorem foldr_range_subset_of_range_subset {f : β → α → α} {g : γ → α
     exact ⟨c :: m, rfl⟩
 
 theorem foldl_range_subset_of_range_subset {f : α → β → α} {g : α → γ → α}
-    (hfg : (Set.range fun a c => f c a) ⊆ Set.range fun b c => g c b) (a : α) :
+    (hfg : (Set.range fun a c ↦ f c a) ⊆ Set.range fun b c ↦ g c b) (a : α) :
     Set.range (foldl f a) ⊆ Set.range (foldl g a) := by
-  change (Set.range fun l => _) ⊆ Set.range fun l => _
+  change (Set.range fun l ↦ _) ⊆ Set.range fun l ↦ _
   -- Porting note: have to write `(foldr_reverse)` instead of `foldr_reverse`.
   simp_rw [← (foldr_reverse), Set.range_comp' _ reverse,
     reverse_involutive.bijective.surjective.range_eq, Set.image_univ]
@@ -65,7 +65,7 @@ theorem foldr_range_eq_of_range_eq {f : β → α → α} {g : γ → α → α}
     (foldr_range_subset_of_range_subset hfg.ge a)
 
 theorem foldl_range_eq_of_range_eq {f : α → β → α} {g : α → γ → α}
-    (hfg : (Set.range fun a c => f c a) = Set.range fun b c => g c b) (a : α) :
+    (hfg : (Set.range fun a c ↦ f c a) = Set.range fun b c ↦ g c b) (a : α) :
     Set.range (foldl f a) = Set.range (foldl g a) :=
   (foldl_range_subset_of_range_subset hfg.le a).antisymm
     (foldl_range_subset_of_range_subset hfg.ge a)
@@ -79,7 +79,7 @@ theorem foldl_range_eq_of_range_eq {f : α → β → α} {g : α → γ → α}
 section MapAccumr
 
 theorem mapAccumr_eq_foldr {σ : Type*} (f : α → σ → σ × β) : ∀ (as : List α) (s : σ),
-    mapAccumr f as s = List.foldr (fun a s =>
+    mapAccumr f as s = List.foldr (fun a s ↦
                                     let r := f a s.1
                                     (r.1, r.2 :: s.2)
                                   ) (s, []) as
@@ -89,7 +89,7 @@ theorem mapAccumr_eq_foldr {σ : Type*} (f : α → σ → σ × β) : ∀ (as :
 
 theorem mapAccumr₂_eq_foldr {σ φ : Type*} (f : α → β → σ → σ × φ) :
     ∀ (as : List α) (bs : List β) (s : σ),
-    mapAccumr₂ f as bs s = foldr (fun ab s =>
+    mapAccumr₂ f as bs s = foldr (fun ab s ↦
                               let r := f ab.1 ab.2 s.1
                               (r.1, r.2 :: s.2)
                             ) (s, []) (as.zip bs)

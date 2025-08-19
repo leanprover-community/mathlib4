@@ -75,7 +75,7 @@ instead. -/
 @[coe] def toFun : M → ℝ :=
   indicator (chartAt H c).source (f.toContDiffBump ∘ extChartAt I c)
 
-instance : CoeFun (SmoothBumpFunction I c) fun _ => M → ℝ :=
+instance : CoeFun (SmoothBumpFunction I c) fun _ ↦ M → ℝ :=
   ⟨toFun⟩
 
 theorem coe_def : ⇑f = indicator (chartAt H c).source (f.toContDiffBump ∘ extChartAt I c) :=
@@ -169,7 +169,7 @@ theorem eq_one : f c = 1 :=
   f.eventuallyEq_one.eq_of_nhds
 
 theorem support_mem_nhds : support f ∈ 𝓝 c :=
-  f.eventuallyEq_one.mono fun x hx => by rw [hx]; exact one_ne_zero
+  f.eventuallyEq_one.mono fun x hx ↦ by rw [hx]; exact one_ne_zero
 
 theorem tsupport_mem_nhds : tsupport f ∈ 𝓝 c :=
   mem_of_superset f.support_mem_nhds subset_closure
@@ -191,13 +191,13 @@ end FiniteDimensional
 known to include the support of `f`. These closed balls (in the model normed space `E`) intersected
 with `Set.range I` form a basis of `𝓝[range I] (extChartAt I c c)`. -/
 theorem nhdsWithin_range_basis :
-    (𝓝[range I] extChartAt I c c).HasBasis (fun _ : SmoothBumpFunction I c => True) fun f =>
+    (𝓝[range I] extChartAt I c c).HasBasis (fun _ : SmoothBumpFunction I c ↦ True) fun f ↦
       closedBall (extChartAt I c c) f.rOut ∩ range I := by
   refine ((nhdsWithin_hasBasis nhds_basis_closedBall _).restrict_subset
     (extChartAt_target_mem_nhdsWithin _)).to_hasBasis' ?_ ?_
   · rintro R ⟨hR0, hsub⟩
     exact ⟨⟨⟨R / 2, R, half_pos hR0, half_lt_self hR0⟩, hsub⟩, trivial, Subset.rfl⟩
-  · exact fun f _ => inter_mem (mem_nhdsWithin_of_mem_nhds <| closedBall_mem_nhds _ f.rOut_pos)
+  · exact fun f _ ↦ inter_mem (mem_nhdsWithin_of_mem_nhds <| closedBall_mem_nhds _ f.rOut_pos)
       self_mem_nhdsWithin
 
 variable [FiniteDimensional ℝ E]
@@ -265,29 +265,29 @@ variable (c) in
 In other words, each of these closures is a neighborhood of `c` and each neighborhood of `c`
 includes `tsupport f` for some `f : SmoothBumpFunction I c`. -/
 theorem nhds_basis_tsupport :
-    (𝓝 c).HasBasis (fun _ : SmoothBumpFunction I c => True) fun f => tsupport f := by
+    (𝓝 c).HasBasis (fun _ : SmoothBumpFunction I c ↦ True) fun f ↦ tsupport f := by
   have :
-    (𝓝 c).HasBasis (fun _ : SmoothBumpFunction I c => True) fun f =>
+    (𝓝 c).HasBasis (fun _ : SmoothBumpFunction I c ↦ True) fun f ↦
       (extChartAt I c).symm '' (closedBall (extChartAt I c c) f.rOut ∩ range I) := by
     rw [← map_extChartAt_symm_nhdsWithin_range (I := I) c]
     exact nhdsWithin_range_basis.map _
-  exact this.to_hasBasis' (fun f _ => ⟨f, trivial, f.tsupport_subset_symm_image_closedBall⟩)
-    fun f _ => f.tsupport_mem_nhds
+  exact this.to_hasBasis' (fun f _ ↦ ⟨f, trivial, f.tsupport_subset_symm_image_closedBall⟩)
+    fun f _ ↦ f.tsupport_mem_nhds
 
 /-- Given `s ∈ 𝓝 c`, the supports of smooth bump functions `f : SmoothBumpFunction I c` such that
 `tsupport f ⊆ s` form a basis of `𝓝 c`.  In other words, each of these supports is a
 neighborhood of `c` and each neighborhood of `c` includes `support f` for some
 `f : SmoothBumpFunction I c` such that `tsupport f ⊆ s`. -/
 theorem nhds_basis_support {s : Set M} (hs : s ∈ 𝓝 c) :
-    (𝓝 c).HasBasis (fun f : SmoothBumpFunction I c => tsupport f ⊆ s) fun f => support f :=
+    (𝓝 c).HasBasis (fun f : SmoothBumpFunction I c ↦ tsupport f ⊆ s) fun f ↦ support f :=
   ((nhds_basis_tsupport c).restrict_subset hs).to_hasBasis'
-    (fun f hf => ⟨f, hf.2, subset_closure⟩) fun f _ => f.support_mem_nhds
+    (fun f hf ↦ ⟨f, hf.2, subset_closure⟩) fun f _ ↦ f.support_mem_nhds
 
 variable [IsManifold I ∞ M]
 
 /-- A smooth bump function is infinitely smooth. -/
 protected theorem contMDiff : ContMDiff I 𝓘(ℝ) ∞ f := by
-  refine contMDiff_of_tsupport fun x hx => ?_
+  refine contMDiff_of_tsupport fun x hx ↦ ?_
   have : x ∈ (chartAt H c).source := f.tsupport_subset_chartAt_source hx
   refine ContMDiffAt.congr_of_eventuallyEq ?_ <| f.eqOn_source.eventuallyEq_of_mem <|
     (chartAt H c).open_source.mem_nhds this
@@ -303,12 +303,12 @@ protected theorem continuous : Continuous f :=
 on the source of the chart at `c`, then `f • g` is smooth on the whole manifold. -/
 theorem contMDiff_smul {G} [NormedAddCommGroup G] [NormedSpace ℝ G] {g : M → G}
     (hg : ContMDiffOn I 𝓘(ℝ, G) ∞ g (chartAt H c).source) :
-    ContMDiff I 𝓘(ℝ, G) ∞ fun x => f x • g x := by
-  refine contMDiff_of_tsupport fun x hx => ?_
+    ContMDiff I 𝓘(ℝ, G) ∞ fun x ↦ f x • g x := by
+  refine contMDiff_of_tsupport fun x hx ↦ ?_
   have : x ∈ (chartAt H c).source :=
   -- Porting note: was a more readable `calc`
   -- calc
-  --   x ∈ tsupport fun x => f x • g x := hx
+  --   x ∈ tsupport fun x ↦ f x • g x := hx
   --   _ ⊆ tsupport f := tsupport_smul_subset_left _ _
   --   _ ⊆ (chart_at _ c).source := f.tsupport_subset_chartAt_source
     f.tsupport_subset_chartAt_source <| tsupport_smul_subset_left _ _ hx

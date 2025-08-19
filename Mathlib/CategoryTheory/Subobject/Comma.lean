@@ -48,7 +48,7 @@ variable {S : D} {T : C ⥤ D}
     object. -/
 def projectSubobject [HasFiniteLimits C] [PreservesFiniteLimits T] {A : StructuredArrow S T} :
     Subobject A → Subobject A.right := by
-  refine Subobject.lift (fun P f hf => Subobject.mk f.right) ?_
+  refine Subobject.lift (fun P f hf ↦ Subobject.mk f.right) ?_
   intro P Q f g hf hg i hi
   refine Subobject.mk_eq_mk_of_comm _ _ ((proj S T).mapIso i) ?_
   exact congr_arg CommaMorphism.right hi
@@ -62,7 +62,7 @@ theorem projectSubobject_mk [HasFiniteLimits C] [PreservesFiniteLimits T]
 theorem projectSubobject_factors [HasFiniteLimits C] [PreservesFiniteLimits T]
     {A : StructuredArrow S T} :
     ∀ P : Subobject A, ∃ q, q ≫ T.map (projectSubobject P).arrow = A.hom :=
-  Subobject.ind _ fun P f hf =>
+  Subobject.ind _ fun P f hf ↦
     ⟨P.hom ≫ T.map (Subobject.underlyingIso _).inv, by simp [← T.map_comp]⟩
 
 /-- A subobject of the underlying object of a structured arrow can be lifted to a subobject of
@@ -101,7 +101,7 @@ def subobjectEquiv [HasFiniteLimits C] [PreservesFiniteLimits T] (A : Structured
   map_rel_iff' := by
     apply Subobject.ind₂
     intro P Q f g hf hg
-    refine ⟨fun h => Subobject.mk_le_mk_of_comm ?_ ?_, fun h => ?_⟩
+    refine ⟨fun h ↦ Subobject.mk_le_mk_of_comm ?_ ?_, fun h ↦ ?_⟩
     · exact homMk (Subobject.ofMkLEMk _ _ h)
         ((cancel_mono (T.map g.right)).1 (by simp [← T.map_comp]))
     · simp
@@ -125,7 +125,7 @@ variable {S : C ⥤ D} {T : D}
     object. -/
 def projectQuotient [HasFiniteColimits C] [PreservesFiniteColimits S] {A : CostructuredArrow S T} :
     Subobject (op A) → Subobject (op A.left) := by
-  refine Subobject.lift (fun P f hf => Subobject.mk f.unop.left.op) ?_
+  refine Subobject.lift (fun P f hf ↦ Subobject.mk f.unop.left.op) ?_
   intro P Q f g hf hg i hi
   refine Subobject.mk_eq_mk_of_comm _ _ ((proj S T).mapIso i.unop).op (Quiver.Hom.unop_inj ?_)
   have := congr_arg Quiver.Hom.unop hi
@@ -141,7 +141,7 @@ theorem projectQuotient_mk [HasFiniteColimits C] [PreservesFiniteColimits S]
 theorem projectQuotient_factors [HasFiniteColimits C] [PreservesFiniteColimits S]
     {A : CostructuredArrow S T} :
     ∀ P : Subobject (op A), ∃ q, S.map (projectQuotient P).arrow.unop ≫ q = A.hom :=
-  Subobject.ind _ fun P f hf =>
+  Subobject.ind _ fun P f hf ↦
     ⟨S.map (Subobject.underlyingIso _).unop.inv ≫ P.unop.hom, by
       dsimp
       rw [← Category.assoc, ← S.map_comp, ← unop_comp]
@@ -206,7 +206,7 @@ def quotientEquiv [HasFiniteColimits C] [PreservesFiniteColimits S] (A : Costruc
   map_rel_iff' := by
     apply Subobject.ind₂
     intro P Q f g hf hg
-    refine ⟨fun h => Subobject.mk_le_mk_of_comm ?_ ?_, fun h => ?_⟩
+    refine ⟨fun h ↦ Subobject.mk_le_mk_of_comm ?_ ?_, fun h ↦ ?_⟩
     · refine (homMk (Subobject.ofMkLEMk _ _ h).unop ((cancel_epi (S.map g.unop.left)).1 ?_)).op
       dsimp
       simp only [← S.map_comp_assoc, unop_left_comp_ofMkLEMk_unop, unop_op, CommaMorphism.w,

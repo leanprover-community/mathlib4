@@ -97,7 +97,7 @@ lemma sumOfConjugates_apply (v : W) : π.sumOfConjugates G v = ∑ g : G, π.con
 /-- In fact, the sum over `g : G` of the conjugate of `π` by `g` is a `k[G]`-linear map.
 -/
 def sumOfConjugatesEquivariant : W →ₗ[MonoidAlgebra k G] V :=
-  MonoidAlgebra.equivariantOfLinearOfComm (π.sumOfConjugates G) fun g v => by
+  MonoidAlgebra.equivariantOfLinearOfComm (π.sumOfConjugates G) fun g v ↦ by
     simp only [sumOfConjugates_apply, Finset.smul_sum, conjugate_apply]
     refine Fintype.sum_bijective (· * g) (Group.mulRight_bijective g) _ _ fun i ↦ ?_
     simp only [smul_smul, single_mul_single, mul_inv_rev, mul_inv_cancel_left, one_mul]

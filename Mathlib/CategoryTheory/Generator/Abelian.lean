@@ -34,16 +34,16 @@ theorem has_injective_coseparator [HasLimits C] [EnoughInjectives C] (G : C) (hG
     ∃ G : C, Injective G ∧ IsCoseparator G := by
   haveI : WellPowered.{v} C := wellPowered_of_isDetector G hG.isDetector
   haveI : HasProductsOfShape (Subobject (op G)) C := hasProductsOfShape_of_small _ _
-  let T : C := Injective.under (piObj fun P : Subobject (op G) => unop P)
-  refine ⟨T, inferInstance, (Preadditive.isCoseparator_iff _).2 fun X Y f hf => ?_⟩
-  refine (Preadditive.isSeparator_iff _).1 hG _ fun h => ?_
+  let T : C := Injective.under (piObj fun P : Subobject (op G) ↦ unop P)
+  refine ⟨T, inferInstance, (Preadditive.isCoseparator_iff _).2 fun X Y f hf ↦ ?_⟩
+  refine (Preadditive.isSeparator_iff _).1 hG _ fun h ↦ ?_
   suffices hh : factorThruImage (h ≫ f) = 0 by
     rw [← Limits.image.fac (h ≫ f), hh, zero_comp]
   let R := Subobject.mk (factorThruImage (h ≫ f)).op
   let q₁ : image (h ≫ f) ⟶ unop R :=
     (Subobject.underlyingIso (factorThruImage (h ≫ f)).op).unop.hom
-  let q₂ : unop (R : Cᵒᵖ) ⟶ piObj fun P : Subobject (op G) => unop P :=
-    section_ (Pi.π (fun P : Subobject (op G) => (unop P : C)) R)
+  let q₂ : unop (R : Cᵒᵖ) ⟶ piObj fun P : Subobject (op G) ↦ unop P :=
+    section_ (Pi.π (fun P : Subobject (op G) ↦ (unop P : C)) R)
   let q : image (h ≫ f) ⟶ T := q₁ ≫ q₂ ≫ Injective.ι _
   exact zero_of_comp_mono q
     (by rw [← Injective.comp_factorThru q (Limits.image.ι (h ≫ f)), Limits.image.fac_assoc,

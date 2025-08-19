@@ -87,7 +87,7 @@ lemma isRightDerivabilityStructure_iff [Φ.HasRightResolutions] (e : Φ.functor 
     Φ.IsRightDerivabilityStructure ↔ TwoSquare.GuitartExact e.hom := by
   have : Φ.IsRightDerivabilityStructure ↔
       TwoSquare.GuitartExact ((Φ.catCommSq W₁.Q W₂.Q).iso).hom :=
-    ⟨fun h => h.guitartExact', fun h => ⟨inferInstance, h⟩⟩
+    ⟨fun h ↦ h.guitartExact', fun h ↦ ⟨inferInstance, h⟩⟩
   rw [this]
   let e' := (Φ.catCommSq W₁.Q W₂.Q).iso
   let E₁ := Localization.uniq W₁.Q L₁ W₁
@@ -121,7 +121,7 @@ lemma guitartExact_of_isRightDerivabilityStructure [Φ.IsRightDerivabilityStruct
   guitartExact_of_isRightDerivabilityStructure' _ _ _ _ _
 
 instance [W₁.ContainsIdentities] : (LocalizerMorphism.id W₁).HasRightResolutions :=
-  fun X₂ => ⟨RightResolution.mk (𝟙 X₂) (W₁.id_mem X₂)⟩
+  fun X₂ ↦ ⟨RightResolution.mk (𝟙 X₂) (W₁.id_mem X₂)⟩
 
 instance [W₁.ContainsIdentities] : (LocalizerMorphism.id W₁).IsRightDerivabilityStructure := by
   rw [(LocalizerMorphism.id W₁).isRightDerivabilityStructure_iff W₁.Q W₁.Q (𝟭 W₁.Localization)
@@ -177,7 +177,7 @@ lemma guitartExact_of_isLeftDerivabilityStructure [Φ.IsLeftDerivabilityStructur
   guitartExact_of_isLeftDerivabilityStructure' _ _ _ _ _
 
 instance [W₁.ContainsIdentities] : (LocalizerMorphism.id W₁).HasLeftResolutions :=
-  fun X₂ => ⟨LeftResolution.mk (𝟙 X₂) (W₁.id_mem X₂)⟩
+  fun X₂ ↦ ⟨LeftResolution.mk (𝟙 X₂) (W₁.id_mem X₂)⟩
 
 instance [W₁.ContainsIdentities] : (LocalizerMorphism.id W₁).IsLeftDerivabilityStructure := by
   rw [(LocalizerMorphism.id W₁).isLeftDerivabilityStructure_iff W₁.Q W₁.Q (𝟭 W₁.Localization)

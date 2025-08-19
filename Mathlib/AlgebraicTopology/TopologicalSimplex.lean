@@ -28,8 +28,8 @@ open Simplicial NNReal CategoryTheory
   This is the object part of the functor `SimplexCategory.toTop`. -/
 def toTopObj (x : SimplexCategory) := { f : ToType x → ℝ≥0 | ∑ i, f i = 1 }
 
-instance (x : SimplexCategory) : CoeFun x.toTopObj fun _ => ToType x → ℝ≥0 :=
-  ⟨fun f => (f : ToType x → ℝ≥0)⟩
+instance (x : SimplexCategory) : CoeFun x.toTopObj fun _ ↦ ToType x → ℝ≥0 :=
+  ⟨fun f ↦ (f : ToType x → ℝ≥0)⟩
 
 @[ext]
 theorem toTopObj.ext {x : SimplexCategory} (f g : x.toTopObj) : (f : ToType x → ℝ≥0) = g → f = g :=
@@ -78,7 +78,7 @@ instance (x : SimplexCategory) : PathConnectedSpace x.toTopObj := by
 open Classical in
 /-- A morphism in `SimplexCategory` induces a map on the associated topological spaces. -/
 def toTopMap {x y : SimplexCategory} (f : x ⟶ y) (g : x.toTopObj) : y.toTopObj :=
-  ⟨fun i => ∑ j ∈ Finset.univ.filter (f · = i), g j, by
+  ⟨fun i ↦ ∑ j ∈ Finset.univ.filter (f · = i), g j, by
     simp only [toTopObj, Set.mem_setOf]
     rw [← Finset.sum_biUnion]
     · have hg : ∑ i : ToType x, g i = 1 := g.2
@@ -94,9 +94,9 @@ theorem coe_toTopMap {x y : SimplexCategory} (f : x ⟶ y) (g : x.toTopObj) (i :
 
 @[continuity, fun_prop]
 theorem continuous_toTopMap {x y : SimplexCategory} (f : x ⟶ y) : Continuous (toTopMap f) := by
-  refine Continuous.subtype_mk (continuous_pi fun i => ?_) _
+  refine Continuous.subtype_mk (continuous_pi fun i ↦ ?_) _
   dsimp only [coe_toTopMap]
-  exact continuous_finset_sum _ (fun j _ => (continuous_apply _).comp continuous_subtype_val)
+  exact continuous_finset_sum _ (fun j _ ↦ (continuous_apply _).comp continuous_subtype_val)
 
 /-- The functor `SimplexCategory ⥤ TopCat.{0}`
 associating the topological `n`-simplex to `⦋n⦌ : SimplexCategory`. -/
@@ -109,13 +109,13 @@ def toTop₀ : SimplexCategory ⥤ TopCat.{0} where
     intro Δ
     ext f
     simp [Finset.sum_filter]
-  map_comp := fun f g => by
+  map_comp := fun f g ↦ by
     classical
     ext h : 3
     dsimp
     rw [← Finset.sum_biUnion]
     · apply Finset.sum_congr
-      · exact Finset.ext (fun j => ⟨fun hj => by simpa using hj, fun hj => by simpa using hj⟩)
+      · exact Finset.ext (fun j ↦ ⟨fun hj ↦ by simpa using hj, fun hj ↦ by simpa using hj⟩)
       · tauto
     · apply Set.pairwiseDisjoint_filter
 

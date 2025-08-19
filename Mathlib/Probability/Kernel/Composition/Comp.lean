@@ -61,7 +61,7 @@ theorem comp_apply_univ_le (κ : Kernel α β) (η : Kernel β γ) [IsFiniteKern
   let Cη := IsFiniteKernel.bound η
   calc
     ∫⁻ b, η b Set.univ ∂κ a ≤ ∫⁻ _, Cη ∂κ a :=
-      lintegral_mono fun b => measure_le_bound η b Set.univ
+      lintegral_mono fun b ↦ measure_le_bound η b Set.univ
     _ = Cη * κ a Set.univ := MeasureTheory.lintegral_const Cη
     _ = κ a Set.univ * Cη := mul_comm _ _
 
@@ -126,7 +126,7 @@ theorem lintegral_comp (η : Kernel β γ) (κ : Kernel α β) (a : α) {g : γ 
 /-- Composition of kernels is associative. -/
 theorem comp_assoc {δ : Type*} {mδ : MeasurableSpace δ} (ξ : Kernel γ δ)
     (η : Kernel β γ) (κ : Kernel α β) : ξ ∘ₖ η ∘ₖ κ = ξ ∘ₖ (η ∘ₖ κ) := by
-  refine ext_fun fun a f hf => ?_
+  refine ext_fun fun a f hf ↦ ?_
   simp_rw [lintegral_comp _ _ _ hf, lintegral_comp _ _ _ hf.lintegral_kernel]
 
 lemma comp_discard' (κ : Kernel α β) :

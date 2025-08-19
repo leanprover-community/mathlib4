@@ -211,7 +211,7 @@ theorem bit1_succ : ∀ n : Num, n.bit1.succ = n.succ.bit0
   | pos _n => rfl
 
 theorem ofNat'_succ : ∀ {n}, ofNat' (n + 1) = ofNat' n + 1 :=
-  @(Nat.binaryRec (by simp [zero_add]) fun b n ih => by
+  @(Nat.binaryRec (by simp [zero_add]) fun b n ih ↦ by
     cases b
     · erw [ofNat'_bit true n, ofNat'_bit]
       simp only [← bit1_of_bit1, ← bit0_of_bit0, cond]
@@ -348,7 +348,7 @@ instance addMonoidWithOne : AddMonoidWithOne Num :=
     natCast := Num.ofNat'
     one := 1
     natCast_zero := ofNat'_zero
-    natCast_succ := fun _ => ofNat'_succ }
+    natCast_succ := fun _ ↦ ofNat'_succ }
 
 instance commSemiring : CommSemiring Num where
   __ := Num.addMonoid
@@ -372,7 +372,7 @@ instance partialOrder : PartialOrder Num where
   le_antisymm a b := by transfer_rw; apply le_antisymm
 
 instance isOrderedCancelAddMonoid : IsOrderedCancelAddMonoid Num where
-  add_le_add_left a b h c := by revert h; transfer_rw; exact fun h => add_le_add_left h c
+  add_le_add_left a b h c := by revert h; transfer_rw; exact fun h ↦ add_le_add_left h c
   le_of_add_le_add_left a b c := by transfer_rw; apply le_of_add_le_add_left
 
 instance linearOrder : LinearOrder Num :=
@@ -421,7 +421,7 @@ theorem of_natCast {α} [AddMonoidWithOne α] (n : ℕ) : ((n : Num) : α) = n :
 
 @[norm_cast]
 theorem of_nat_inj {m n : ℕ} : (m : Num) = n ↔ m = n :=
-  ⟨fun h => Function.LeftInverse.injective to_of_nat h, congr_arg _⟩
+  ⟨fun h ↦ Function.LeftInverse.injective to_of_nat h, congr_arg _⟩
 
 -- The priority should be `high`er than `cast_to_nat`.
 @[simp high, norm_cast]
@@ -430,7 +430,7 @@ theorem of_to_nat : ∀ n : Num, ((n : ℕ) : Num) = n :=
 
 @[norm_cast]
 theorem dvd_to_nat (m n : Num) : (m : ℕ) ∣ n ↔ m ∣ n :=
-  ⟨fun ⟨k, e⟩ => ⟨k, by rw [← of_to_nat n, e]; simp⟩, fun ⟨k, e⟩ => ⟨k, by simp [e, mul_to_nat]⟩⟩
+  ⟨fun ⟨k, e⟩ ↦ ⟨k, by rw [← of_to_nat n, e]; simp⟩, fun ⟨k, e⟩ ↦ ⟨k, by simp [e, mul_to_nat]⟩⟩
 
 end Num
 
@@ -447,7 +447,7 @@ theorem of_to_nat : ∀ n : PosNum, ((n : ℕ) : Num) = Num.pos n :=
 
 @[norm_cast]
 theorem to_nat_inj {m n : PosNum} : (m : ℕ) = n ↔ m = n :=
-  ⟨fun h => Num.pos.inj <| by rw [← PosNum.of_to_nat, ← PosNum.of_to_nat, h], congr_arg _⟩
+  ⟨fun h ↦ Num.pos.inj <| by rw [← PosNum.of_to_nat, ← PosNum.of_to_nat, h], congr_arg _⟩
 
 theorem pred'_to_nat : ∀ n, (pred' n : ℕ) = Nat.pred n
   | 1 => rfl
@@ -471,7 +471,7 @@ theorem succ'_pred' (n) : succ' (pred' n) = n :=
     rw [succ'_to_nat, pred'_to_nat, Nat.add_one, Nat.succ_pred_eq_of_pos (to_nat_pos _)]
 
 instance dvd : Dvd PosNum :=
-  ⟨fun m n => pos m ∣ pos n⟩
+  ⟨fun m n ↦ pos m ∣ pos n⟩
 
 @[norm_cast]
 theorem dvd_to_nat {m n : PosNum} : (m : ℕ) ∣ n ↔ m ∣ n :=
@@ -599,7 +599,7 @@ theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
   have := cmp_to_nat m n
   -- Porting note: `cases` didn't rewrite at `this`, so `revert` & `intro` are required.
   revert this; cases cmp m n <;> intro this <;> simp at this ⊢ <;> try { exact this } <;>
-    simp [show m ≠ n from fun e => by rw [e] at this;exact lt_irrefl _ this]
+    simp [show m ≠ n from fun e ↦ by rw [e] at this;exact lt_irrefl _ this]
 
 @[simp, norm_cast]
 theorem cast_lt [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] {m n : PosNum} :
@@ -659,14 +659,14 @@ theorem natSize_to_nat (n) : natSize n = Nat.size n := by rw [← size_eq_natSiz
 
 @[simp 999]
 theorem ofNat'_eq : ∀ n, Num.ofNat' n = n :=
-  Nat.binaryRec (by simp) fun b n IH => by tauto
+  Nat.binaryRec (by simp) fun b n IH ↦ by tauto
 
 theorem zneg_toZNum (n : Num) : -n.toZNum = n.toZNumNeg := by cases n <;> rfl
 
 theorem zneg_toZNumNeg (n : Num) : -n.toZNumNeg = n.toZNum := by cases n <;> rfl
 
 theorem toZNum_inj {m n : Num} : m.toZNum = n.toZNum ↔ m = n :=
-  ⟨fun h => by cases m <;> cases n <;> cases h <;> rfl, congr_arg _⟩
+  ⟨fun h ↦ by cases m <;> cases n <;> cases h <;> rfl, congr_arg _⟩
 
 @[simp]
 theorem cast_toZNum [Zero α] [One α] [Add α] [Neg α] : ∀ n : Num, (n.toZNum : α) = n
@@ -733,7 +733,7 @@ theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
   have := cmp_to_nat m n
   -- Porting note: `cases` didn't rewrite at `this`, so `revert` & `intro` are required.
   revert this; cases cmp m n <;> intro this <;> simp at this ⊢ <;> try { exact this } <;>
-    simp [show m ≠ n from fun e => by rw [e] at this; exact lt_irrefl _ this]
+    simp [show m ≠ n from fun e ↦ by rw [e] at this; exact lt_irrefl _ this]
 
 @[simp, norm_cast]
 theorem cast_lt [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] {m n : Num} :
@@ -795,7 +795,7 @@ theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool
 
 @[simp, norm_cast]
 theorem castNum_or : ∀ m n : Num, ↑(m ||| n) = (↑m ||| ↑n : ℕ) := by
-  apply castNum_eq_bitwise fun x y => pos (PosNum.lor x y) <;>
+  apply castNum_eq_bitwise fun x y ↦ pos (PosNum.lor x y) <;>
     (try rintro (_ | _)) <;> (try rintro (_ | _)) <;> intros <;> rfl
 
 @[simp, norm_cast]
@@ -838,13 +838,13 @@ theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n
     · apply IH
     change Nat.shiftRight m n = Nat.shiftRight (m + m + 1) (n + 1)
     rw [add_comm n 1, @Nat.shiftRight_eq _ (1 + n), Nat.shiftRight_add]
-    apply congr_arg fun x => Nat.shiftRight x n
+    apply congr_arg fun x ↦ Nat.shiftRight x n
     simp [-add_assoc, Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val, hdiv2]
   · trans
     · apply IH
     change Nat.shiftRight m n = Nat.shiftRight (m + m) (n + 1)
     rw [add_comm n 1, @Nat.shiftRight_eq _ (1 + n), Nat.shiftRight_add]
-    apply congr_arg fun x => Nat.shiftRight x n
+    apply congr_arg fun x ↦ Nat.shiftRight x n
     simp [-add_assoc, Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val, hdiv2]
 
 @[simp]
@@ -869,7 +869,7 @@ namespace Int
 
 /-- Cast a `SNum` to the corresponding integer. -/
 def ofSnum : SNum → ℤ :=
-  SNum.rec' (fun a => cond a (-1) 0) fun a _p IH => cond a (2 * IH + 1) (2 * IH)
+  SNum.rec' (fun a ↦ cond a (-1) 0) fun a _p IH ↦ cond a (2 * IH + 1) (2 * IH)
 
 instance snumCoe : Coe SNum ℤ :=
   ⟨ofSnum⟩
@@ -877,7 +877,7 @@ instance snumCoe : Coe SNum ℤ :=
 end Int
 
 instance SNum.lt : LT SNum :=
-  ⟨fun a b => (a : ℤ) < b⟩
+  ⟨fun a b ↦ (a : ℤ) < b⟩
 
 instance SNum.le : LE SNum :=
-  ⟨fun a b => (a : ℤ) ≤ b⟩
+  ⟨fun a b ↦ (a : ℤ) ≤ b⟩

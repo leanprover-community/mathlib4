@@ -195,7 +195,7 @@ lemma sum_smul_minpolyDiv_eq_X_pow (E) [Field E] [Algebra K E] [IsAlgClosed E]
       minpolyDiv K x).map σ = (X ^ r : E[X]) := by
   classical
   rw [← sub_eq_zero]
-  have : Function.Injective (fun σ : L →ₐ[K] E ↦ σ x) := fun _ _ h =>
+  have : Function.Injective (fun σ : L →ₐ[K] E ↦ σ x) := fun _ _ h ↦
     AlgHom.ext_of_adjoin_eq_top hxL (fun _ hx ↦ hx ▸ h)
   apply Polynomial.eq_zero_of_natDegree_lt_card_of_eval_eq_zero _ this
   · intro σ

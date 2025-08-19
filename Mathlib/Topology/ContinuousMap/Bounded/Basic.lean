@@ -70,7 +70,7 @@ instance instBoundedContinuousMapClass : BoundedContinuousMapClass (α →ᵇ β
   map_bounded f := f.map_bounded'
 
 instance instCoeTC [FunLike F α β] [BoundedContinuousMapClass F α β] : CoeTC F (α →ᵇ β) :=
-  ⟨fun f =>
+  ⟨fun f ↦
     { toFun := f
       continuous_toFun := map_continuous f
       map_bounded' := map_bounded f }⟩
@@ -126,40 +126,40 @@ def mkOfDiscrete [DiscreteTopology α] (f : α → β) (C : ℝ) (h : ∀ x y : 
 
 /-- The uniform distance between two bounded continuous functions. -/
 instance instDist : Dist (α →ᵇ β) :=
-  ⟨fun f g => sInf { C | 0 ≤ C ∧ ∀ x : α, dist (f x) (g x) ≤ C }⟩
+  ⟨fun f g ↦ sInf { C | 0 ≤ C ∧ ∀ x : α, dist (f x) (g x) ≤ C }⟩
 
 theorem dist_eq : dist f g = sInf { C | 0 ≤ C ∧ ∀ x : α, dist (f x) (g x) ≤ C } := rfl
 
 theorem dist_set_exists : ∃ C, 0 ≤ C ∧ ∀ x : α, dist (f x) (g x) ≤ C := by
   rcases isBounded_iff.1 (f.isBounded_range.union g.isBounded_range) with ⟨C, hC⟩
-  refine ⟨max 0 C, le_max_left _ _, fun x => (hC ?_ ?_).trans (le_max_right _ _)⟩
+  refine ⟨max 0 C, le_max_left _ _, fun x ↦ (hC ?_ ?_).trans (le_max_right _ _)⟩
     <;> [left; right]
     <;> apply mem_range_self
 
 /-- The pointwise distance is controlled by the distance between functions, by definition. -/
 theorem dist_coe_le_dist (x : α) : dist (f x) (g x) ≤ dist f g :=
-  le_csInf dist_set_exists fun _ hb => hb.2 x
+  le_csInf dist_set_exists fun _ hb ↦ hb.2 x
 
 /- This lemma will be needed in the proof of the metric space instance, but it will become
 useless afterwards as it will be superseded by the general result that the distance is nonnegative
 in metric spaces. -/
 private theorem dist_nonneg' : 0 ≤ dist f g :=
-  le_csInf dist_set_exists fun _ => And.left
+  le_csInf dist_set_exists fun _ ↦ And.left
 
 /-- The distance between two functions is controlled by the supremum of the pointwise distances. -/
 theorem dist_le (C0 : (0 : ℝ) ≤ C) : dist f g ≤ C ↔ ∀ x : α, dist (f x) (g x) ≤ C :=
-  ⟨fun h x => le_trans (dist_coe_le_dist x) h, fun H => csInf_le ⟨0, fun _ => And.left⟩ ⟨C0, H⟩⟩
+  ⟨fun h x ↦ le_trans (dist_coe_le_dist x) h, fun H ↦ csInf_le ⟨0, fun _ ↦ And.left⟩ ⟨C0, H⟩⟩
 
 theorem dist_le_iff_of_nonempty [Nonempty α] : dist f g ≤ C ↔ ∀ x, dist (f x) (g x) ≤ C :=
-  ⟨fun h x => le_trans (dist_coe_le_dist x) h,
-    fun w => (dist_le (le_trans dist_nonneg (w (Nonempty.some ‹_›)))).mpr w⟩
+  ⟨fun h x ↦ le_trans (dist_coe_le_dist x) h,
+    fun w ↦ (dist_le (le_trans dist_nonneg (w (Nonempty.some ‹_›)))).mpr w⟩
 
 theorem dist_lt_of_nonempty_compact [Nonempty α] [CompactSpace α]
     (w : ∀ x : α, dist (f x) (g x) < C) : dist f g < C := by
-  have c : Continuous fun x => dist (f x) (g x) := by fun_prop
+  have c : Continuous fun x ↦ dist (f x) (g x) := by fun_prop
   obtain ⟨x, -, le⟩ :=
     IsCompact.exists_isMaxOn isCompact_univ Set.univ_nonempty (Continuous.continuousOn c)
-  exact lt_of_le_of_lt (dist_le_iff_of_nonempty.mpr fun y => le trivial) (w x)
+  exact lt_of_le_of_lt (dist_le_iff_of_nonempty.mpr fun y ↦ le trivial) (w x)
 
 theorem dist_lt_iff_of_compact [CompactSpace α] (C0 : (0 : ℝ) < C) :
     dist f g < C ↔ ∀ x : α, dist (f x) (g x) < C := by
@@ -172,18 +172,18 @@ theorem dist_lt_iff_of_compact [CompactSpace α] (C0 : (0 : ℝ) < C) :
       convert C0
       apply le_antisymm _ dist_nonneg'
       rw [dist_eq]
-      exact csInf_le ⟨0, fun C => And.left⟩ ⟨le_rfl, fun x => False.elim (h (Nonempty.intro x))⟩
+      exact csInf_le ⟨0, fun C ↦ And.left⟩ ⟨le_rfl, fun x ↦ False.elim (h (Nonempty.intro x))⟩
 
 theorem dist_lt_iff_of_nonempty_compact [Nonempty α] [CompactSpace α] :
     dist f g < C ↔ ∀ x : α, dist (f x) (g x) < C :=
-  ⟨fun w x => lt_of_le_of_lt (dist_coe_le_dist x) w, dist_lt_of_nonempty_compact⟩
+  ⟨fun w x ↦ lt_of_le_of_lt (dist_coe_le_dist x) w, dist_lt_of_nonempty_compact⟩
 
 /-- The type of bounded continuous functions, with the uniform distance, is a pseudometric space. -/
 instance instPseudoMetricSpace : PseudoMetricSpace (α →ᵇ β) where
-  dist_self f := le_antisymm ((dist_le le_rfl).2 fun x => by simp) dist_nonneg'
+  dist_self f := le_antisymm ((dist_le le_rfl).2 fun x ↦ by simp) dist_nonneg'
   dist_comm f g := by simp [dist_eq, dist_comm]
   dist_triangle _ _ _ := (dist_le (add_nonneg dist_nonneg' dist_nonneg')).2
-    fun _ => le_trans (dist_triangle _ _ _) (add_le_add (dist_coe_le_dist _) (dist_coe_le_dist _))
+    fun _ ↦ le_trans (dist_triangle _ _ _) (add_le_add (dist_coe_le_dist _) (dist_coe_le_dist _))
 
 /-- The type of bounded continuous functions, with the uniform distance, is a metric space. -/
 instance instMetricSpace {β} [MetricSpace β] : MetricSpace (α →ᵇ β) where
@@ -197,7 +197,7 @@ theorem nndist_eq : nndist f g = sInf { C | ∀ x : α, nndist (f x) (g x) ≤ C
     simp_rw [mem_setOf_eq, ← NNReal.coe_le_coe, coe_mk, exists_prop, coe_nndist]
 
 theorem nndist_set_exists : ∃ C, ∀ x : α, nndist (f x) (g x) ≤ C :=
-  Subtype.exists.mpr <| dist_set_exists.imp fun _ ⟨ha, h⟩ => ⟨ha, h⟩
+  Subtype.exists.mpr <| dist_set_exists.imp fun _ ⟨ha, h⟩ ↦ ⟨ha, h⟩
 
 theorem nndist_coe_le_nndist (x : α) : nndist (f x) (g x) ≤ nndist f g :=
   dist_coe_le_dist x
@@ -210,7 +210,7 @@ theorem dist_eq_iSup : dist f g = ⨆ x : α, dist (f x) (g x) := by
   cases isEmpty_or_nonempty α
   · rw [iSup_of_empty', Real.sSup_empty, dist_zero_of_empty]
   refine (dist_le_iff_of_nonempty.mpr <| le_ciSup ?_).antisymm (ciSup_le dist_coe_le_dist)
-  exact dist_set_exists.imp fun C hC => forall_mem_range.2 hC.2
+  exact dist_set_exists.imp fun C hC ↦ forall_mem_range.2 hC.2
 
 theorem nndist_eq_iSup : nndist f g = ⨆ x : α, nndist (f x) (g x) :=
   Subtype.ext <| dist_eq_iSup.trans <| by simp_rw [val_eq_coe, coe_iSup, coe_nndist]
@@ -222,32 +222,32 @@ theorem edist_eq_iSup : edist f g = ⨆ x, edist (f x) (g x) := by
   exact nndist_coe_le_nndist x
 
 theorem tendsto_iff_tendstoUniformly {ι : Type*} {F : ι → α →ᵇ β} {f : α →ᵇ β} {l : Filter ι} :
-    Tendsto F l (𝓝 f) ↔ TendstoUniformly (fun i => F i) f l :=
+    Tendsto F l (𝓝 f) ↔ TendstoUniformly (fun i ↦ F i) f l :=
   Iff.intro
-    (fun h =>
-      tendstoUniformly_iff.2 fun ε ε0 =>
+    (fun h ↦
+      tendstoUniformly_iff.2 fun ε ε0 ↦
         (Metric.tendsto_nhds.mp h ε ε0).mp
-          (Eventually.of_forall fun n hn x =>
+          (Eventually.of_forall fun n hn x ↦
             lt_of_le_of_lt (dist_coe_le_dist x) (dist_comm (F n) f ▸ hn)))
-    fun h =>
-    Metric.tendsto_nhds.mpr fun _ ε_pos =>
+    fun h ↦
+    Metric.tendsto_nhds.mpr fun _ ε_pos ↦
       (h _ (dist_mem_uniformity <| half_pos ε_pos)).mp
-        (Eventually.of_forall fun n hn =>
+        (Eventually.of_forall fun n hn ↦
           lt_of_le_of_lt
-            ((dist_le (half_pos ε_pos).le).mpr fun x => dist_comm (f x) (F n x) ▸ le_of_lt (hn x))
+            ((dist_le (half_pos ε_pos).le).mpr fun x ↦ dist_comm (f x) (F n x) ▸ le_of_lt (hn x))
             (half_lt_self ε_pos))
 
 /-- The topology on `α →ᵇ β` is exactly the topology induced by the natural map to `α →ᵤ β`. -/
 theorem isInducing_coeFn : IsInducing (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) := by
   rw [isInducing_iff_nhds]
-  refine fun f => eq_of_forall_le_iff fun l => ?_
+  refine fun f ↦ eq_of_forall_le_iff fun l ↦ ?_
   rw [← tendsto_iff_comap, ← tendsto_id', tendsto_iff_tendstoUniformly,
     UniformFun.tendsto_iff_tendstoUniformly]
   simp [comp_def]
 
 -- TODO: upgrade to `IsUniformEmbedding`
 theorem isEmbedding_coeFn : IsEmbedding (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) :=
-  ⟨isInducing_coeFn, fun _ _ h => ext fun x => congr_fun h x⟩
+  ⟨isInducing_coeFn, fun _ _ h ↦ ext fun x ↦ congr_fun h x⟩
 
 variable (α) in
 /-- Constant as a continuous bounded function. -/
@@ -261,64 +261,64 @@ theorem const_apply' (a : α) (b : β) : (const α b : α → β) a = b := rfl
 instance [Inhabited β] : Inhabited (α →ᵇ β) :=
   ⟨const α default⟩
 
-theorem lipschitz_evalx (x : α) : LipschitzWith 1 fun f : α →ᵇ β => f x :=
-  LipschitzWith.mk_one fun _ _ => dist_coe_le_dist x
+theorem lipschitz_evalx (x : α) : LipschitzWith 1 fun f : α →ᵇ β ↦ f x :=
+  LipschitzWith.mk_one fun _ _ ↦ dist_coe_le_dist x
 
 theorem uniformContinuous_coe : @UniformContinuous (α →ᵇ β) (α → β) _ _ (⇑) :=
-  uniformContinuous_pi.2 fun x => (lipschitz_evalx x).uniformContinuous
+  uniformContinuous_pi.2 fun x ↦ (lipschitz_evalx x).uniformContinuous
 
-theorem continuous_coe : Continuous fun (f : α →ᵇ β) x => f x :=
+theorem continuous_coe : Continuous fun (f : α →ᵇ β) x ↦ f x :=
   UniformContinuous.continuous uniformContinuous_coe
 
 /-- When `x` is fixed, `(f : α →ᵇ β) ↦ f x` is continuous. -/
 @[continuity]
-theorem continuous_eval_const {x : α} : Continuous fun f : α →ᵇ β => f x :=
+theorem continuous_eval_const {x : α} : Continuous fun f : α →ᵇ β ↦ f x :=
   (continuous_apply x).comp continuous_coe
 
 /-- The evaluation map is continuous, as a joint function of `u` and `x`. -/
 @[continuity]
-theorem continuous_eval : Continuous fun p : (α →ᵇ β) × α => p.1 p.2 :=
-  (continuous_prod_of_continuous_lipschitzWith _ 1 fun f => f.continuous) <| lipschitz_evalx
+theorem continuous_eval : Continuous fun p : (α →ᵇ β) × α ↦ p.1 p.2 :=
+  (continuous_prod_of_continuous_lipschitzWith _ 1 fun f ↦ f.continuous) <| lipschitz_evalx
 
 /-- Bounded continuous functions taking values in a complete space form a complete space. -/
 instance instCompleteSpace [CompleteSpace β] : CompleteSpace (α →ᵇ β) :=
-  complete_of_cauchySeq_tendsto fun (f : ℕ → α →ᵇ β) (hf : CauchySeq f) => by
+  complete_of_cauchySeq_tendsto fun (f : ℕ → α →ᵇ β) (hf : CauchySeq f) ↦ by
     /- We have to show that `f n` converges to a bounded continuous function.
       For this, we prove pointwise convergence to define the limit, then check
       it is a continuous bounded function, and then check the norm convergence. -/
     rcases cauchySeq_iff_le_tendsto_0.1 hf with ⟨b, b0, b_bound, b_lim⟩
-    have f_bdd := fun x n m N hn hm => le_trans (dist_coe_le_dist x) (b_bound n m N hn hm)
-    have fx_cau : ∀ x, CauchySeq fun n => f n x :=
-      fun x => cauchySeq_iff_le_tendsto_0.2 ⟨b, b0, f_bdd x, b_lim⟩
-    choose F hF using fun x => cauchySeq_tendsto_of_complete (fx_cau x)
+    have f_bdd := fun x n m N hn hm ↦ le_trans (dist_coe_le_dist x) (b_bound n m N hn hm)
+    have fx_cau : ∀ x, CauchySeq fun n ↦ f n x :=
+      fun x ↦ cauchySeq_iff_le_tendsto_0.2 ⟨b, b0, f_bdd x, b_lim⟩
+    choose F hF using fun x ↦ cauchySeq_tendsto_of_complete (fx_cau x)
     /- `F : α → β`, `hF : ∀ (x : α), Tendsto (fun n ↦ ↑(f n) x) atTop (𝓝 (F x))`
       `F` is the desired limit function. Check that it is uniformly approximated by `f N`. -/
     have fF_bdd : ∀ x N, dist (f N x) (F x) ≤ b N :=
-      fun x N => le_of_tendsto (tendsto_const_nhds.dist (hF x))
-        (Filter.eventually_atTop.2 ⟨N, fun n hn => f_bdd x N n N (le_refl N) hn⟩)
+      fun x N ↦ le_of_tendsto (tendsto_const_nhds.dist (hF x))
+        (Filter.eventually_atTop.2 ⟨N, fun n hn ↦ f_bdd x N n N (le_refl N) hn⟩)
     refine ⟨⟨⟨F, ?_⟩, ?_⟩, ?_⟩
     · -- Check that `F` is continuous, as a uniform limit of continuous functions
-      have : TendstoUniformly (fun n x => f n x) F atTop := by
-        refine Metric.tendstoUniformly_iff.2 fun ε ε0 => ?_
-        refine ((tendsto_order.1 b_lim).2 ε ε0).mono fun n hn x => ?_
+      have : TendstoUniformly (fun n x ↦ f n x) F atTop := by
+        refine Metric.tendstoUniformly_iff.2 fun ε ε0 ↦ ?_
+        refine ((tendsto_order.1 b_lim).2 ε ε0).mono fun n hn x ↦ ?_
         rw [dist_comm]
         exact lt_of_le_of_lt (fF_bdd x n) hn
-      exact this.continuous (Eventually.of_forall fun N => (f N).continuous)
+      exact this.continuous (Eventually.of_forall fun N ↦ (f N).continuous)
     · -- Check that `F` is bounded
       rcases (f 0).bounded with ⟨C, hC⟩
-      refine ⟨C + (b 0 + b 0), fun x y => ?_⟩
+      refine ⟨C + (b 0 + b 0), fun x y ↦ ?_⟩
       calc
         dist (F x) (F y) ≤ dist (f 0 x) (f 0 y) + (dist (f 0 x) (F x) + dist (f 0 y) (F y)) :=
           dist_triangle4_left _ _ _ _
         _ ≤ C + (b 0 + b 0) := add_le_add (hC x y) (add_le_add (fF_bdd x 0) (fF_bdd y 0))
     · -- Check that `F` is close to `f N` in distance terms
-      refine tendsto_iff_dist_tendsto_zero.2 (squeeze_zero (fun _ => dist_nonneg) ?_ b_lim)
-      exact fun N => (dist_le (b0 _)).2 fun x => fF_bdd x N
+      refine tendsto_iff_dist_tendsto_zero.2 (squeeze_zero (fun _ ↦ dist_nonneg) ?_ b_lim)
+      exact fun N ↦ (dist_le (b0 _)).2 fun x ↦ fF_bdd x N
 
 /-- Composition of a bounded continuous function and a continuous function. -/
 def compContinuous {δ : Type*} [TopologicalSpace δ] (f : α →ᵇ β) (g : C(δ, α)) : δ →ᵇ β where
   toContinuousMap := f.1.comp g
-  map_bounded' := f.map_bounded'.imp fun _ hC _ _ => hC _ _
+  map_bounded' := f.map_bounded'.imp fun _ hC _ _ ↦ hC _ _
 
 @[simp]
 theorem coe_compContinuous {δ : Type*} [TopologicalSpace δ] (f : α →ᵇ β) (g : C(δ, α)) :
@@ -329,11 +329,11 @@ theorem compContinuous_apply {δ : Type*} [TopologicalSpace δ] (f : α →ᵇ �
     f.compContinuous g x = f (g x) := rfl
 
 theorem lipschitz_compContinuous {δ : Type*} [TopologicalSpace δ] (g : C(δ, α)) :
-    LipschitzWith 1 fun f : α →ᵇ β => f.compContinuous g :=
-  LipschitzWith.mk_one fun _ _ => (dist_le dist_nonneg).2 fun x => dist_coe_le_dist (g x)
+    LipschitzWith 1 fun f : α →ᵇ β ↦ f.compContinuous g :=
+  LipschitzWith.mk_one fun _ _ ↦ (dist_le dist_nonneg).2 fun x ↦ dist_coe_le_dist (g x)
 
 theorem continuous_compContinuous {δ : Type*} [TopologicalSpace δ] (g : C(δ, α)) :
-    Continuous fun f : α →ᵇ β => f.compContinuous g :=
+    Continuous fun f : α →ᵇ β ↦ f.compContinuous g :=
   (lipschitz_compContinuous g).continuous
 
 /-- Restrict a bounded continuous function to a set. -/
@@ -349,9 +349,9 @@ theorem restrict_apply (f : α →ᵇ β) (s : Set α) (x : s) : f.restrict s x 
 /-- Composition (in the target) of a bounded continuous function with a Lipschitz map again
 gives a bounded continuous function. -/
 def comp (G : β → γ) {C : ℝ≥0} (H : LipschitzWith C G) (f : α →ᵇ β) : α →ᵇ γ :=
-  ⟨⟨fun x => G (f x), H.continuous.comp f.continuous⟩,
+  ⟨⟨fun x ↦ G (f x), H.continuous.comp f.continuous⟩,
     let ⟨D, hD⟩ := f.bounded
-    ⟨max C 0 * D, fun x y =>
+    ⟨max C 0 * D, fun x y ↦
       calc
         dist (G (f x)) (G (f y)) ≤ C * dist (f x) (f y) := H.dist_le_mul _ _
         _ ≤ max C 0 * dist (f x) (f y) := by gcongr; apply le_max_left
@@ -365,8 +365,8 @@ theorem comp_apply (G : β → γ) {C : ℝ≥0} (H : LipschitzWith C G) (f : α
 /-- The composition operator (in the target) with a Lipschitz map is Lipschitz. -/
 theorem lipschitz_comp {G : β → γ} {C : ℝ≥0} (H : LipschitzWith C G) :
     LipschitzWith C (comp G H : (α →ᵇ β) → α →ᵇ γ) :=
-  LipschitzWith.of_dist_le_mul fun f g =>
-    (dist_le (mul_nonneg C.2 dist_nonneg)).2 fun x =>
+  LipschitzWith.of_dist_le_mul fun f g ↦
+    (dist_le (mul_nonneg C.2 dist_nonneg)).2 fun x ↦
       calc
         dist (G (f x)) (G (g x)) ≤ C * dist (f x) (g x) := H.dist_le_mul _ _
         _ ≤ C * dist f g := by gcongr; apply dist_coe_le_dist
@@ -417,7 +417,7 @@ theorem extend_of_empty [IsEmpty α] (f : α ↪ δ) (g : α →ᵇ β) (h : δ 
 theorem dist_extend_extend (f : α ↪ δ) (g₁ g₂ : α →ᵇ β) (h₁ h₂ : δ →ᵇ β) :
     dist (g₁.extend f h₁) (g₂.extend f h₂) =
       max (dist g₁ g₂) (dist (h₁.restrict (range f)ᶜ) (h₂.restrict (range f)ᶜ)) := by
-  refine le_antisymm ((dist_le <| le_max_iff.2 <| Or.inl dist_nonneg).2 fun x => ?_) (max_le ?_ ?_)
+  refine le_antisymm ((dist_le <| le_max_iff.2 <| Or.inl dist_nonneg).2 fun x ↦ ?_) (max_le ?_ ?_)
   · rcases em (∃ y, f y = x) with (⟨x, rfl⟩ | hx)
     · simp only [extend_apply]
       exact (dist_coe_le_dist x).trans (le_max_left _ _)
@@ -427,17 +427,17 @@ theorem dist_extend_extend (f : α ↪ δ) (g₁ g₂ : α →ᵇ β) (h₁ h₂
         dist (h₁ x) (h₂ x) = dist (h₁.restrict (range f)ᶜ x) (h₂.restrict (range f)ᶜ x) := rfl
         _ ≤ dist (h₁.restrict (range f)ᶜ) (h₂.restrict (range f)ᶜ) := dist_coe_le_dist x
         _ ≤ _ := le_max_right _ _
-  · refine (dist_le dist_nonneg).2 fun x => ?_
+  · refine (dist_le dist_nonneg).2 fun x ↦ ?_
     rw [← extend_apply f g₁ h₁, ← extend_apply f g₂ h₂]
     exact dist_coe_le_dist _
-  · refine (dist_le dist_nonneg).2 fun x => ?_
+  · refine (dist_le dist_nonneg).2 fun x ↦ ?_
     calc
       dist (h₁ x) (h₂ x) = dist (extend f g₁ h₁ x) (extend f g₂ h₂ x) := by
         rw [extend_apply' x.coe_prop, extend_apply' x.coe_prop]
       _ ≤ _ := dist_coe_le_dist _
 
-theorem isometry_extend (f : α ↪ δ) (h : δ →ᵇ β) : Isometry fun g : α →ᵇ β => extend f g h :=
-  Isometry.of_dist_eq fun g₁ g₂ => by simp
+theorem isometry_extend (f : α ↪ δ) (h : δ →ᵇ β) : Isometry fun g : α →ᵇ β ↦ extend f g h :=
+  Isometry.of_dist_eq fun g₁ g₂ ↦ by simp
 
 end Extend
 
@@ -546,8 +546,8 @@ protected def _root_.MonoidHom.compLeftContinuousBounded (α : Type*)
     (g : β →* γ) {C : NNReal} (hg : LipschitzWith C g) :
     (α →ᵇ β) →* (α →ᵇ γ) where
   toFun f := f.comp g hg
-  map_one' := ext fun _ => g.map_one
-  map_mul' _ _ := ext fun _ => g.map_mul _ _
+  map_one' := ext fun _ ↦ g.map_one
+  map_mul' _ _ := ext fun _ ↦ g.map_mul _ _
 
 end mul
 
@@ -694,13 +694,13 @@ instance instSMul : SMul 𝕜 (α →ᵇ β) where
     { toContinuousMap := c • f.toContinuousMap
       map_bounded' :=
         let ⟨b, hb⟩ := f.bounded
-        ⟨dist c 0 * b, fun x y => by
+        ⟨dist c 0 * b, fun x y ↦ by
           refine (dist_smul_pair c (f x) (f y)).trans ?_
           gcongr
           apply hb⟩ }
 
 @[simp]
-theorem coe_smul (c : 𝕜) (f : α →ᵇ β) : ⇑(c • f) = fun x => c • f x := rfl
+theorem coe_smul (c : 𝕜) (f : α →ᵇ β) : ⇑(c • f) = fun x ↦ c • f x := rfl
 
 theorem smul_apply (c : 𝕜) (f : α →ᵇ β) (x : α) : (c • f) x = c • f x := rfl
 
@@ -715,7 +715,7 @@ instance instSMulCommClass {𝕜' : Type*} [PseudoMetricSpace 𝕜'] [Zero 𝕜'
   smul_comm _ _ _ := ext fun _ ↦ smul_comm ..
 
 instance instIsCentralScalar [SMul 𝕜ᵐᵒᵖ β] [IsCentralScalar 𝕜 β] : IsCentralScalar 𝕜 (α →ᵇ β) where
-  op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
+  op_smul_eq_smul _ _ := ext fun _ ↦ op_smul_eq_smul _ _
 
 instance instIsBoundedSMul : IsBoundedSMul 𝕜 (α →ᵇ β) where
   dist_smul_pair' c f₁ f₂ := by

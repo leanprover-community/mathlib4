@@ -65,7 +65,7 @@ theorem orbit.eq_or_disjoint (a b : X) :
 
 @[to_additive]
 theorem orbit.pairwiseDisjoint :
-    (Set.range fun x : X => orbit G x).PairwiseDisjoint id := by
+    (Set.range fun x : X ↦ orbit G x).PairwiseDisjoint id := by
   rintro s ⟨x, rfl⟩ t ⟨y, rfl⟩ h
   contrapose! h
   exact (orbit.eq_or_disjoint x y).resolve_right h
@@ -73,7 +73,7 @@ theorem orbit.pairwiseDisjoint :
 /-- Orbits of an element form a partition -/
 @[to_additive /-- Orbits of an element form a partition -/]
 theorem IsPartition.of_orbits :
-    Setoid.IsPartition (Set.range fun a : X => orbit G a) := by
+    Setoid.IsPartition (Set.range fun a : X ↦ orbit G a) := by
   apply orbit.pairwiseDisjoint.isPartition_of_exists_of_ne_empty
   · intro x
     exact ⟨_, ⟨x, rfl⟩, mem_orbit_self x⟩
@@ -432,7 +432,7 @@ def IsBlockSystem (ℬ : Set (Set X)) := Setoid.IsPartition ℬ ∧ ∀ ⦃B⦄,
 @[to_additive /-- Translates of a block form a block system -/]
 theorem IsBlock.isBlockSystem [hGX : MulAction.IsPretransitive G X]
     (hB : IsBlock G B) (hBe : B.Nonempty) :
-    IsBlockSystem G (Set.range fun g : G => g • B) := by
+    IsBlockSystem G (Set.range fun g : G ↦ g • B) := by
   refine ⟨⟨?nonempty, ?cover⟩, ?mem_blocks⟩
   case mem_blocks => rintro B' ⟨g, rfl⟩; exact hB.translate g
   · simp only [Set.mem_range, not_exists]
@@ -478,7 +478,7 @@ theorem IsBlock.orbit_of_normal {N : Subgroup G} [N.Normal] (a : X) :
 /-- The orbits of a normal subgroup form a block system -/
 @[to_additive /-- The orbits of a normal subgroup form a block system -/]
 theorem IsBlockSystem.of_normal {N : Subgroup G} [N.Normal] :
-    IsBlockSystem G (Set.range fun a : X => orbit N a) := by
+    IsBlockSystem G (Set.range fun a : X ↦ orbit N a) := by
   constructor
   · apply IsPartition.of_orbits
   · intro b; rintro ⟨a, rfl⟩
@@ -595,12 +595,12 @@ and subgroups of `G` containing the stabilizer of `a` (Wielandt, th. 7.5) -/
 and subgroups of `G` containing the stabilizer of `a` (Wielandt, th. 7.5) -/]
 def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
     { B : Set X // a ∈ B ∧ IsBlock G B } ≃o Set.Ici (stabilizer G a) where
-  toFun := fun ⟨B, ha, hB⟩ => ⟨stabilizer G B, hB.stabilizer_le ha⟩
-  invFun := fun ⟨H, hH⟩ =>
+  toFun := fun ⟨B, ha, hB⟩ ↦ ⟨stabilizer G B, hB.stabilizer_le ha⟩
+  invFun := fun ⟨H, hH⟩ ↦
     ⟨MulAction.orbit H a, MulAction.mem_orbit_self a, IsBlock.of_orbit hH⟩
-  left_inv := fun ⟨_, ha, hB⟩ =>
+  left_inv := fun ⟨_, ha, hB⟩ ↦
     (id (propext Subtype.mk_eq_mk)).mpr (hB.orbit_stabilizer_eq ha)
-  right_inv := fun ⟨_, hH⟩ =>
+  right_inv := fun ⟨_, hH⟩ ↦
     (id (propext Subtype.mk_eq_mk)).mpr (stabilizer_orbit_eq hH)
   map_rel_iff' := by
     rintro ⟨B, ha, hB⟩; rintro ⟨B', ha', hB'⟩

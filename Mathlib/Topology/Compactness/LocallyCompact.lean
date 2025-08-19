@@ -66,7 +66,7 @@ theorem disjoint_nhds_cocompact [WeaklyLocallyCompactSpace X] (x : X) :
   disjoint_of_disjoint_of_mem disjoint_compl_right hx hc.compl_mem_cocompact
 
 theorem compact_basis_nhds [LocallyCompactSpace X] (x : X) :
-    (𝓝 x).HasBasis (fun s => s ∈ 𝓝 x ∧ IsCompact s) fun s => s :=
+    (𝓝 x).HasBasis (fun s ↦ s ∈ 𝓝 x ∧ IsCompact s) fun s ↦ s :=
   hasBasis_self.2 <| by simpa only [and_comm] using LocallyCompactSpace.local_compact_nhds x
 
 theorem local_compact_nhds [LocallyCompactSpace X] {x : X} {n : Set X} (h : n ∈ 𝓝 x) :
@@ -76,15 +76,15 @@ theorem local_compact_nhds [LocallyCompactSpace X] {x : X} {n : Set X} (h : n �
 theorem LocallyCompactSpace.of_hasBasis {ι : X → Type*} {p : ∀ x, ι x → Prop}
     {s : ∀ x, ι x → Set X} (h : ∀ x, (𝓝 x).HasBasis (p x) (s x))
     (hc : ∀ x i, p x i → IsCompact (s x i)) : LocallyCompactSpace X :=
-  ⟨fun x _t ht =>
+  ⟨fun x _t ht ↦
     let ⟨i, hp, ht⟩ := (h x).mem_iff.1 ht
     ⟨s x i, (h x).mem_of_mem hp, ht, hc x i hp⟩⟩
 
 instance Prod.locallyCompactSpace (X : Type*) (Y : Type*) [TopologicalSpace X]
     [TopologicalSpace Y] [LocallyCompactSpace X] [LocallyCompactSpace Y] :
     LocallyCompactSpace (X × Y) :=
-  have := fun x : X × Y => (compact_basis_nhds x.1).prod_nhds' (compact_basis_nhds x.2)
-  .of_hasBasis this fun _ _ ⟨⟨_, h₁⟩, _, h₂⟩ => h₁.prod h₂
+  have := fun x : X × Y ↦ (compact_basis_nhds x.1).prod_nhds' (compact_basis_nhds x.2)
+  .of_hasBasis this fun _ _ ⟨⟨_, h₁⟩, _, h₂⟩ ↦ h₁.prod h₂
 
 section Pi
 
@@ -93,28 +93,28 @@ variable {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, LocallyCompa
 /-- In general it suffices that all but finitely many of the spaces are compact,
   but that's not straightforward to state and use. -/
 instance Pi.locallyCompactSpace_of_finite [Finite ι] : LocallyCompactSpace (∀ i, X i) :=
-  ⟨fun t n hn => by
+  ⟨fun t n hn ↦ by
     rw [nhds_pi, Filter.mem_pi] at hn
     obtain ⟨s, -, n', hn', hsub⟩ := hn
-    choose n'' hn'' hsub' hc using fun i =>
+    choose n'' hn'' hsub' hc using fun i ↦
       LocallyCompactSpace.local_compact_nhds (t i) (n' i) (hn' i)
-    refine ⟨(Set.univ : Set ι).pi n'', ?_, subset_trans (fun _ h => ?_) hsub, isCompact_univ_pi hc⟩
-    · exact (set_pi_mem_nhds_iff (@Set.finite_univ ι _) _).mpr fun i _ => hn'' i
-    · exact fun i _ => hsub' i (h i trivial)⟩
+    refine ⟨(Set.univ : Set ι).pi n'', ?_, subset_trans (fun _ h ↦ ?_) hsub, isCompact_univ_pi hc⟩
+    · exact (set_pi_mem_nhds_iff (@Set.finite_univ ι _) _).mpr fun i _ ↦ hn'' i
+    · exact fun i _ ↦ hsub' i (h i trivial)⟩
 
 /-- For spaces that are not Hausdorff. -/
 instance Pi.locallyCompactSpace [∀ i, CompactSpace (X i)] : LocallyCompactSpace (∀ i, X i) :=
-  ⟨fun t n hn => by
+  ⟨fun t n hn ↦ by
     rw [nhds_pi, Filter.mem_pi] at hn
     obtain ⟨s, hs, n', hn', hsub⟩ := hn
-    choose n'' hn'' hsub' hc using fun i =>
+    choose n'' hn'' hsub' hc using fun i ↦
       LocallyCompactSpace.local_compact_nhds (t i) (n' i) (hn' i)
-    refine ⟨s.pi n'', ?_, subset_trans (fun _ => ?_) hsub, ?_⟩
-    · exact (set_pi_mem_nhds_iff hs _).mpr fun i _ => hn'' i
-    · exact forall₂_imp fun i _ hi' => hsub' i hi'
+    refine ⟨s.pi n'', ?_, subset_trans (fun _ ↦ ?_) hsub, ?_⟩
+    · exact (set_pi_mem_nhds_iff hs _).mpr fun i _ ↦ hn'' i
+    · exact forall₂_imp fun i _ hi' ↦ hsub' i hi'
     · classical
       rw [← Set.univ_pi_ite]
-      refine isCompact_univ_pi fun i => ?_
+      refine isCompact_univ_pi fun i ↦ ?_
       by_cases h : i ∈ s
       · rw [if_pos h]
         exact hc i

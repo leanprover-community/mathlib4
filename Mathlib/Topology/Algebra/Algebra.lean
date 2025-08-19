@@ -45,8 +45,8 @@ theorem continuous_algebraMap [ContinuousSMul R A] : Continuous (algebraMap R A)
   exact continuous_id.smul continuous_const
 
 theorem continuous_algebraMap_iff_smul [ContinuousMul A] :
-    Continuous (algebraMap R A) ↔ Continuous fun p : R × A => p.1 • p.2 := by
-  refine ⟨fun h => ?_, fun h => have : ContinuousSMul R A := ⟨h⟩; continuous_algebraMap _ _⟩
+    Continuous (algebraMap R A) ↔ Continuous fun p : R × A ↦ p.1 • p.2 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ have : ContinuousSMul R A := ⟨h⟩; continuous_algebraMap _ _⟩
   simp only [Algebra.smul_def]
   exact (h.comp continuous_fst).mul continuous_snd
 
@@ -173,7 +173,7 @@ definitional equalities. -/
 def copy (f : A →A[R] B) (f' : A → B) (h : f' = ⇑f) : A →A[R] B where
   toAlgHom := {
     toRingHom := (f : A →A[R] B).toRingHom.copy f' h
-    commutes' := fun r => by
+    commutes' := fun r ↦ by
       simp only [AlgHom.toRingHom_eq_coe, h, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
         MonoidHom.toOneHom_coe, MonoidHom.coe_coe, RingHom.coe_copy, AlgHomClass.commutes f r] }
   cont := show Continuous f' from h.symm ▸ f.continuous
@@ -206,7 +206,7 @@ theorem ext_ring [TopologicalSpace R] {f g : R →A[R] A} : f = g :=
   coe_inj.mp (ext_id _ _ _)
 
 theorem ext_ring_iff [TopologicalSpace R] {f g : R →A[R] A} : f = g ↔ f 1 = g 1 :=
-  ⟨fun h => h ▸ rfl, fun _ => ext_ring ⟩
+  ⟨fun h ↦ h ▸ rfl, fun _ ↦ ext_ring ⟩
 
 /-- If two continuous algebra maps are equal on a set `s`, then they are equal on the closure
 of the `Algebra.adjoin` of this set. -/
@@ -218,7 +218,7 @@ theorem eqOn_closure_adjoin [T2Space B] {s : Set A} {f g : A →A[R] B} (h : Set
 algebra maps equal on `s` are equal. -/
 theorem ext_on [T2Space B] {s : Set A} (hs : Dense (Algebra.adjoin R s : Set A))
     {f g : A →A[R] B} (h : Set.EqOn f g s) : f = g :=
-  ext fun x => eqOn_closure_adjoin h (hs x)
+  ext fun x ↦ eqOn_closure_adjoin h (hs x)
 
 variable [IsTopologicalSemiring A]
 
@@ -308,11 +308,11 @@ theorem comp_apply (g : B →A[R] C) (f : A →A[R] B) (x : A) : (g.comp f) x = 
 
 @[simp]
 theorem comp_id (f : A →A[R] B) : f.comp (ContinuousAlgHom.id R A) = f :=
-  ext fun _x => rfl
+  ext fun _x ↦ rfl
 
 @[simp]
 theorem id_comp (f : A →A[R] B) : (ContinuousAlgHom.id R B).comp f = f :=
-  ext fun _x => rfl
+  ext fun _x ↦ rfl
 
 theorem comp_assoc {D : Type*} [Semiring D] [Algebra R D] [TopologicalSpace D] (h : C →A[R] D)
     (g : B →A[R] C) (f : A →A[R] B) : (h.comp g).comp f = h.comp (g.comp f) :=
@@ -328,9 +328,9 @@ theorem coe_mul (f g : A →A[R] A) : ⇑(f * g) = f ∘ g := rfl
 theorem mul_apply (f g : A →A[R] A) (x : A) : (f * g) x = f (g x) := rfl
 
 instance : Monoid (A →A[R] A) where
-  mul_one _ := ext fun _ => rfl
-  one_mul _ := ext fun _ => rfl
-  mul_assoc _ _ _ := ext fun _ => rfl
+  mul_one _ := ext fun _ ↦ rfl
+  one_mul _ := ext fun _ ↦ rfl
+  mul_assoc _ _ _ := ext fun _ ↦ rfl
 
 theorem coe_pow (f : A →A[R] A) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
@@ -406,17 +406,17 @@ theorem coe_snd' : ⇑(snd R A B) = Prod.snd :=
 
 @[simp]
 theorem fst_prod_snd : (fst R A B).prod (snd R A B) = ContinuousAlgHom.id R (A × B) :=
-  ext fun ⟨_x, _y⟩ => rfl
+  ext fun ⟨_x, _y⟩ ↦ rfl
 
 @[simp]
 theorem fst_comp_prod (f : A →A[R] B) (g : A →A[R] C) :
     (fst R B C).comp (f.prod g) = f :=
-  ext fun _x => rfl
+  ext fun _x ↦ rfl
 
 @[simp]
 theorem snd_comp_prod (f : A →A[R] B) (g : A →A[R] C) :
     (snd R B C).comp (f.prod g) = g :=
-  ext fun _x => rfl
+  ext fun _x ↦ rfl
 
 /-- `Prod.map` of two continuous algebra homomorphisms. -/
 def prodMap {D : Type*} [Semiring D] [TopologicalSpace D] [Algebra R D] (f₁ : A →A[R] B)
@@ -609,10 +609,10 @@ instance isClosed (x : A) : IsClosed (elemental R x : Set A) :=
 instance [T2Space A] {x : A} : CommSemiring (elemental R x) :=
   commSemiringTopologicalClosure _
     letI : CommSemiring (adjoin R {x}) :=
-      adjoinCommSemiringOfComm R fun y hy z hz => by
+      adjoinCommSemiringOfComm R fun y hy z hz ↦ by
         rw [mem_singleton_iff] at hy hz
         rw [hy, hz]
-    fun _ _ => mul_comm _ _
+    fun _ _ ↦ mul_comm _ _
 
 instance {A : Type*} [UniformSpace A] [CompleteSpace A] [Semiring A]
     [IsTopologicalSemiring A] [Algebra R A] (x : A) :

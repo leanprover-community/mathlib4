@@ -53,7 +53,7 @@ def psumEquivSum (α β) : α ⊕' β ≃ α ⊕ β where
 /-- If `α ≃ α'` and `β ≃ β'`, then `α ⊕ β ≃ α' ⊕ β'`. This is `Sum.map` as an equivalence. -/
 @[simps apply]
 def sumCongr {α₁ α₂ β₁ β₂} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) : α₁ ⊕ β₁ ≃ α₂ ⊕ β₂ :=
-  ⟨Sum.map ea eb, Sum.map ea.symm eb.symm, fun x => by simp, fun x => by simp⟩
+  ⟨Sum.map ea eb, Sum.map ea.symm eb.symm, fun x ↦ by simp, fun x ↦ by simp⟩
 
 @[simp]
 theorem sumCongr_trans {α₁ α₂ β₁ β₂ γ₁ γ₂} (e : α₁ ≃ β₁) (f : α₂ ≃ β₂) (g : β₁ ≃ γ₁) (h : β₂ ≃ γ₂) :
@@ -126,8 +126,8 @@ end Perm
 
 /-- `Bool` is equivalent the sum of two `PUnit`s. -/
 def boolEquivPUnitSumPUnit : Bool ≃ PUnit.{u + 1} ⊕ PUnit.{v + 1} :=
-  ⟨fun b => b.casesOn (inl PUnit.unit) (inr PUnit.unit) , Sum.elim (fun _ => false) fun _ => true,
-    fun b => by cases b <;> rfl, fun s => by rcases s with (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> rfl⟩
+  ⟨fun b ↦ b.casesOn (inl PUnit.unit) (inr PUnit.unit) , Sum.elim (fun _ ↦ false) fun _ ↦ true,
+    fun b ↦ by cases b <;> rfl, fun s ↦ by rcases s with (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> rfl⟩
 
 /-- Sum of types is commutative up to an equivalence. This is `Sum.swap` as an equivalence. -/
 @[simps -fullyApplied apply]
@@ -218,18 +218,18 @@ theorem emptySum_apply_inr {α β} [IsEmpty α] (b : β) : emptySum α β (Sum.i
 sigma types to theorems about sum types. In many cases one can use `ULift` to work around this
 difficulty. -/
 def sumEquivSigmaBool (α β) : α ⊕ β ≃ Σ b, bif b then β else α :=
-  ⟨fun s => s.elim (fun x => ⟨false, x⟩) fun x => ⟨true, x⟩, fun s =>
+  ⟨fun s ↦ s.elim (fun x ↦ ⟨false, x⟩) fun x ↦ ⟨true, x⟩, fun s ↦
     match s with
     | ⟨false, a⟩ => inl a
     | ⟨true, b⟩ => inr b,
-    fun s => by cases s <;> rfl, fun s => by rcases s with ⟨_ | _, _⟩ <;> rfl⟩
+    fun s ↦ by cases s <;> rfl, fun s ↦ by rcases s with ⟨_ | _, _⟩ <;> rfl⟩
 
 -- See also `Equiv.sigmaPreimageEquiv`.
 /-- `sigmaFiberEquiv f` for `f : α → β` is the natural equivalence between
 the type of all fibres of `f` and the total space `α`. -/
 @[simps]
 def sigmaFiberEquiv {α β : Type*} (f : α → β) : (Σ y : β, { x // f x = y }) ≃ α :=
-  ⟨fun x => ↑x.2, fun x => ⟨f x, x, rfl⟩, fun ⟨_, _, rfl⟩ => rfl, fun _ => rfl⟩
+  ⟨fun x ↦ ↑x.2, fun x ↦ ⟨f x, x, rfl⟩, fun ⟨_, _, rfl⟩ ↦ rfl, fun _ ↦ rfl⟩
 
 /-- Inhabited types are equivalent to `Option β` for some `β` by identifying `default` with `none`.
 -/
@@ -323,9 +323,9 @@ with `Equiv.sumSigmaDistrib` which is indexed by sums. -/
 @[simps]
 def sigmaSumDistrib {ι} (α β : ι → Type*) :
     (Σ i, α i ⊕ β i) ≃ (Σ i, α i) ⊕ (Σ i, β i) :=
-  ⟨fun p => p.2.map (Sigma.mk p.1) (Sigma.mk p.1),
-    Sum.elim (Sigma.map id fun _ => Sum.inl) (Sigma.map id fun _ => Sum.inr), fun p => by
-    rcases p with ⟨i, a | b⟩ <;> rfl, fun p => by rcases p with (⟨i, a⟩ | ⟨i, b⟩) <;> rfl⟩
+  ⟨fun p ↦ p.2.map (Sigma.mk p.1) (Sigma.mk p.1),
+    Sum.elim (Sigma.map id fun _ ↦ Sum.inl) (Sigma.map id fun _ ↦ Sum.inr), fun p ↦ by
+    rcases p with ⟨i, a | b⟩ <;> rfl, fun p ↦ by rcases p with (⟨i, a⟩ | ⟨i, b⟩) <;> rfl⟩
 
 /-- A type indexed by  disjoint sums of types is equivalent to the sum of the sums. Compare with
 `Equiv.sigmaSumDistrib` which has the sums as the output type. -/

@@ -168,7 +168,7 @@ def diagonalRingHom [Fintype n] [DecidableEq n] : (n → α) →+* Matrix n n α
   { diagonalAddMonoidHom n α with
     toFun := diagonal
     map_one' := diagonal_one
-    map_mul' := fun _ _ => (diagonal_mul_diagonal' _ _).symm }
+    map_mul' := fun _ _ ↦ (diagonal_mul_diagonal' _ _).symm }
 
 end NonAssocSemiring
 
@@ -191,7 +191,7 @@ section Scalar
 variable [DecidableEq n] [Fintype n]
 
 @[simp]
-theorem scalar_apply (a : α) : scalar n a = diagonal fun _ => a :=
+theorem scalar_apply (a : α) : scalar n a = diagonal fun _ ↦ a :=
   rfl
 
 theorem scalar_inj [Nonempty n] {r s : α} : scalar n r = scalar n s ↔ r = s :=
@@ -202,7 +202,7 @@ theorem scalar_commute_iff {r : α} {M : Matrix n n α} :
   simp_rw [Commute, SemiconjBy, scalar_apply, ← smul_eq_diagonal_mul, ← op_smul_eq_mul_diagonal]
 
 theorem scalar_commute (r : α) (hr : ∀ r', Commute r r') (M : Matrix n n α) :
-    Commute (scalar n r) M := scalar_commute_iff.2 <| ext fun _ _ => hr _
+    Commute (scalar n r) M := scalar_commute_iff.2 <| ext fun _ _ ↦ hr _
 
 end Scalar
 
@@ -215,7 +215,7 @@ variable [CommSemiring R] [Semiring α] [Semiring β] [Algebra R α] [Algebra R 
 
 instance instAlgebra : Algebra R (Matrix n n α) where
   algebraMap := (Matrix.scalar n).comp (algebraMap R α)
-  commutes' _ _ := scalar_commute _ (fun _ => Algebra.commutes _ _) _
+  commutes' _ _ := scalar_commute _ (fun _ ↦ Algebra.commutes _ _) _
   smul_def' r x := by ext; simp [Matrix.scalar, Algebra.smul_def r]
 
 theorem algebraMap_matrix_apply {r : R} {i j : n} :
@@ -243,7 +243,7 @@ variable (R)
 def diagonalAlgHom : (n → α) →ₐ[R] Matrix n n α :=
   { diagonalRingHom n α with
     toFun := diagonal
-    commutes' := fun r => (algebraMap_eq_diagonal r).symm }
+    commutes' := fun r ↦ (algebraMap_eq_diagonal r).symm }
 
 end Algebra
 
@@ -262,7 +262,7 @@ def entryAddHom (i : m) (j : n) : AddHom (Matrix m n α) α where
 -- for unification to succeed
 lemma entryAddHom_eq_comp {i : m} {j : n} :
     entryAddHom α i j =
-      ((Pi.evalAddHom (fun _ => α) j).comp (Pi.evalAddHom _ i)).comp
+      ((Pi.evalAddHom (fun _ ↦ α) j).comp (Pi.evalAddHom _ i)).comp
         (AddHomClass.toAddHom ofAddEquiv.symm) :=
   rfl
 
@@ -287,7 +287,7 @@ def entryAddMonoidHom (i : m) (j : n) : Matrix m n α →+ α where
 -- for unification to succeed
 lemma entryAddMonoidHom_eq_comp {i : m} {j : n} :
     entryAddMonoidHom α i j =
-      ((Pi.evalAddMonoidHom (fun _ => α) j).comp (Pi.evalAddMonoidHom _ i)).comp
+      ((Pi.evalAddMonoidHom (fun _ ↦ α) j).comp (Pi.evalAddMonoidHom _ i)).comp
         (AddMonoidHomClass.toAddMonoidHom ofAddEquiv.symm) := by
   rfl
 
@@ -350,8 +350,8 @@ coefficients. This is `Matrix.map` as an `Equiv`. -/
 def mapMatrix (f : α ≃ β) : Matrix m n α ≃ Matrix m n β where
   toFun M := M.map f
   invFun M := M.map f.symm
-  left_inv _ := Matrix.ext fun _ _ => f.symm_apply_apply _
-  right_inv _ := Matrix.ext fun _ _ => f.apply_symm_apply _
+  left_inv _ := Matrix.ext fun _ _ ↦ f.symm_apply_apply _
+  right_inv _ := Matrix.ext fun _ _ ↦ f.apply_symm_apply _
 
 @[simp]
 theorem mapMatrix_refl : (Equiv.refl α).mapMatrix = Equiv.refl (Matrix m n α) :=
@@ -403,8 +403,8 @@ coefficients. This is `Matrix.map` as an `AddEquiv`. -/
 @[simps apply]
 def mapMatrix (f : α ≃+ β) : Matrix m n α ≃+ Matrix m n β :=
   { f.toEquiv.mapMatrix with
-    toFun := fun M => M.map f
-    invFun := fun M => M.map f.symm
+    toFun := fun M ↦ M.map f
+    invFun := fun M ↦ M.map f.symm
     map_add' := Matrix.map_add f (map_add f) }
 
 @[simp]
@@ -472,8 +472,8 @@ coefficients. This is `Matrix.map` as a `LinearEquiv`. -/
 def mapMatrix (f : α ≃ₛₗ[σᵣₛ] β) : Matrix m n α ≃ₛₗ[σᵣₛ] Matrix m n β :=
   { f.toEquiv.mapMatrix,
     f.toLinearMap.mapMatrix with
-    toFun := fun M => M.map f
-    invFun := fun M => M.map f.symm }
+    toFun := fun M ↦ M.map f
+    invFun := fun M ↦ M.map f.symm }
 
 @[simp]
 theorem mapMatrix_refl : (LinearEquiv.refl R α).mapMatrix = LinearEquiv.refl R (Matrix m n α) :=
@@ -510,9 +510,9 @@ coefficients. This is `Matrix.map` as a `RingHom`. -/
 @[simps]
 def mapMatrix (f : α →+* β) : Matrix m m α →+* Matrix m m β :=
   { f.toAddMonoidHom.mapMatrix with
-    toFun := fun M => M.map f
+    toFun := fun M ↦ M.map f
     map_one' := by simp
-    map_mul' := fun _ _ => Matrix.map_mul }
+    map_mul' := fun _ _ ↦ Matrix.map_mul }
 
 @[simp]
 theorem mapMatrix_id : (RingHom.id α).mapMatrix = RingHom.id (Matrix m m α) :=
@@ -536,8 +536,8 @@ coefficients. This is `Matrix.map` as a `RingEquiv`. -/
 def mapMatrix (f : α ≃+* β) : Matrix m m α ≃+* Matrix m m β :=
   { f.toRingHom.mapMatrix,
     f.toAddEquiv.mapMatrix with
-    toFun := fun M => M.map f
-    invFun := fun M => M.map f.symm }
+    toFun := fun M ↦ M.map f
+    invFun := fun M ↦ M.map f.symm }
 
 @[simp]
 theorem mapMatrix_refl : (RingEquiv.refl α).mapMatrix = RingEquiv.refl (Matrix m m α) :=
@@ -578,8 +578,8 @@ coefficients. This is `Matrix.map` as an `AlgHom`. -/
 @[simps]
 def mapMatrix (f : α →ₐ[R] β) : Matrix m m α →ₐ[R] Matrix m m β :=
   { f.toRingHom.mapMatrix with
-    toFun := fun M => M.map f
-    commutes' := fun r => Matrix.map_algebraMap r f (map_zero _) (f.commutes r) }
+    toFun := fun M ↦ M.map f
+    commutes' := fun r ↦ Matrix.map_algebraMap r f (map_zero _) (f.commutes r) }
 
 @[simp]
 theorem mapMatrix_id : (AlgHom.id R α).mapMatrix = AlgHom.id R (Matrix m m α) :=
@@ -604,8 +604,8 @@ coefficients. This is `Matrix.map` as an `AlgEquiv`. -/
 def mapMatrix (f : α ≃ₐ[R] β) : Matrix m m α ≃ₐ[R] Matrix m m β :=
   { f.toAlgHom.mapMatrix,
     f.toRingEquiv.mapMatrix with
-    toFun := fun M => M.map f
-    invFun := fun M => M.map f.symm }
+    toFun := fun M ↦ M.map f
+    invFun := fun M ↦ M.map f.symm }
 
 @[simp]
 theorem mapMatrix_refl : AlgEquiv.refl.mapMatrix = (AlgEquiv.refl : Matrix m m α ≃ₐ[R] _) :=
@@ -671,8 +671,8 @@ all of whose entries `m i j` belong to `S`. -/
 @[simps!]
 def matrix (S : Subsemiring R) : Subsemiring (Matrix n n R) where
   __ := S.toAddSubmonoid.matrix
-  mul_mem' ha hb i j := Subsemiring.sum_mem _ (fun k _ => Subsemiring.mul_mem _ (ha i k) (hb k j))
-  one_mem' := (diagonal_mem_matrix_iff (Subsemiring.zero_mem _)).mpr fun _ => Subsemiring.one_mem _
+  mul_mem' ha hb i j := Subsemiring.sum_mem _ (fun k _ ↦ Subsemiring.mul_mem _ (ha i k) (hb k j))
+  one_mem' := (diagonal_mem_matrix_iff (Subsemiring.zero_mem _)).mpr fun _ ↦ Subsemiring.one_mem _
 
 end Subsemiring
 
@@ -763,12 +763,12 @@ variable (m α)
 def transposeRingEquiv [AddCommMonoid α] [CommSemigroup α] [Fintype m] :
     Matrix m m α ≃+* (Matrix m m α)ᵐᵒᵖ :=
   { (transposeAddEquiv m m α).trans MulOpposite.opAddEquiv with
-    toFun := fun M => MulOpposite.op Mᵀ
-    invFun := fun M => M.unopᵀ
-    map_mul' := fun M N =>
+    toFun := fun M ↦ MulOpposite.op Mᵀ
+    invFun := fun M ↦ M.unopᵀ
+    map_mul' := fun M N ↦
       (congr_arg MulOpposite.op (transpose_mul M N)).trans (MulOpposite.op_mul _ _)
-    left_inv := fun M => transpose_transpose M
-    right_inv := fun M => MulOpposite.unop_injective <| transpose_transpose M.unop }
+    left_inv := fun M ↦ transpose_transpose M
+    right_inv := fun M ↦ MulOpposite.unop_injective <| transpose_transpose M.unop }
 
 variable {m α}
 
@@ -789,8 +789,8 @@ def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableE
     Matrix m m α ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ :=
   { (transposeAddEquiv m m α).trans MulOpposite.opAddEquiv,
     transposeRingEquiv m α with
-    toFun := fun M => MulOpposite.op Mᵀ
-    commutes' := fun r => by
+    toFun := fun M ↦ MulOpposite.op Mᵀ
+    commutes' := fun r ↦ by
       simp only [algebraMap_eq_diagonal, diagonal_transpose, MulOpposite.algebraMap_apply] }
 
 variable {R m α}

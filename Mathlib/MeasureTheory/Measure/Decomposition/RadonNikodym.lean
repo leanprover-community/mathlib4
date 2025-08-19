@@ -66,7 +66,7 @@ variable {μ ν : Measure α}
 `ν.withDensity (rnDeriv μ ν) = μ`. -/
 theorem absolutelyContinuous_iff_withDensity_rnDeriv_eq
     [HaveLebesgueDecomposition μ ν] : μ ≪ ν ↔ ν.withDensity (rnDeriv μ ν) = μ :=
-  ⟨withDensity_rnDeriv_eq μ ν, fun h => h ▸ withDensity_absolutelyContinuous _ _⟩
+  ⟨withDensity_rnDeriv_eq μ ν, fun h ↦ h ▸ withDensity_absolutelyContinuous _ _⟩
 
 lemma rnDeriv_pos [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν) :
     ∀ᵐ x ∂μ, 0 < μ.rnDeriv ν x := by

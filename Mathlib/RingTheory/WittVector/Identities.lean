@@ -132,7 +132,7 @@ theorem verschiebung_frobenius [CharP R p] (x : 𝕎 R) : verschiebung (frobeniu
   · rw [mul_charP_coeff_succ, verschiebung_coeff_succ, coeff_frobenius_charP]
 
 theorem verschiebung_frobenius_comm [CharP R p] :
-    Function.Commute (verschiebung : 𝕎 R → 𝕎 R) frobenius := fun x => by
+    Function.Commute (verschiebung : 𝕎 R → 𝕎 R) frobenius := fun x ↦ by
   rw [verschiebung_frobenius, frobenius_verschiebung]
 
 /-!

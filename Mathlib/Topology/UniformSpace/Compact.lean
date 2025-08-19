@@ -43,25 +43,25 @@ theorem lebesgue_number_lemma {ι : Sort*} {U : ι → Set α} (hK : IsCompact K
 
 theorem lebesgue_number_lemma_nhds' {U : (x : α) → x ∈ K → Set α} (hK : IsCompact K)
     (hU : ∀ x hx, U x hx ∈ 𝓝 x) : ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ y : K, ball x V ⊆ U y y.2 := by
-  rcases lebesgue_number_lemma (U := fun x : K => interior (U x x.2)) hK (fun _ => isOpen_interior)
-    (fun x hx => mem_iUnion.2 ⟨⟨x, hx⟩, mem_interior_iff_mem_nhds.2 (hU x hx)⟩) with ⟨V, V_uni, hV⟩
-  exact ⟨V, V_uni, fun x hx => (hV x hx).imp fun _ hy => hy.trans interior_subset⟩
+  rcases lebesgue_number_lemma (U := fun x : K ↦ interior (U x x.2)) hK (fun _ ↦ isOpen_interior)
+    (fun x hx ↦ mem_iUnion.2 ⟨⟨x, hx⟩, mem_interior_iff_mem_nhds.2 (hU x hx)⟩) with ⟨V, V_uni, hV⟩
+  exact ⟨V, V_uni, fun x hx ↦ (hV x hx).imp fun _ hy ↦ hy.trans interior_subset⟩
 
 theorem lebesgue_number_lemma_nhds {U : α → Set α} (hK : IsCompact K) (hU : ∀ x ∈ K, U x ∈ 𝓝 x) :
     ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ y, ball x V ⊆ U y := by
-  rcases lebesgue_number_lemma (U := fun x => interior (U x)) hK (fun _ => isOpen_interior)
-    (fun x hx => mem_iUnion.2 ⟨x, mem_interior_iff_mem_nhds.2 (hU x hx)⟩) with ⟨V, V_uni, hV⟩
-  exact ⟨V, V_uni, fun x hx => (hV x hx).imp fun _ hy => hy.trans interior_subset⟩
+  rcases lebesgue_number_lemma (U := fun x ↦ interior (U x)) hK (fun _ ↦ isOpen_interior)
+    (fun x hx ↦ mem_iUnion.2 ⟨x, mem_interior_iff_mem_nhds.2 (hU x hx)⟩) with ⟨V, V_uni, hV⟩
+  exact ⟨V, V_uni, fun x hx ↦ (hV x hx).imp fun _ hy ↦ hy.trans interior_subset⟩
 
 theorem lebesgue_number_lemma_nhdsWithin' {U : (x : α) → x ∈ K → Set α} (hK : IsCompact K)
     (hU : ∀ x hx, U x hx ∈ 𝓝[K] x) : ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ y : K, ball x V ∩ K ⊆ U y y.2 :=
-  (lebesgue_number_lemma_nhds' hK (fun x hx => Filter.mem_inf_principal'.1 (hU x hx))).imp
-    fun _ ⟨V_uni, hV⟩ => ⟨V_uni, fun x hx => (hV x hx).imp fun _ hy => (inter_subset _ _ _).2 hy⟩
+  (lebesgue_number_lemma_nhds' hK (fun x hx ↦ Filter.mem_inf_principal'.1 (hU x hx))).imp
+    fun _ ⟨V_uni, hV⟩ ↦ ⟨V_uni, fun x hx ↦ (hV x hx).imp fun _ hy ↦ (inter_subset _ _ _).2 hy⟩
 
 theorem lebesgue_number_lemma_nhdsWithin {U : α → Set α} (hK : IsCompact K)
     (hU : ∀ x ∈ K, U x ∈ 𝓝[K] x) : ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ y, ball x V ∩ K ⊆ U y :=
-  (lebesgue_number_lemma_nhds hK (fun x hx => Filter.mem_inf_principal'.1 (hU x hx))).imp
-    fun _ ⟨V_uni, hV⟩ => ⟨V_uni, fun x hx => (hV x hx).imp fun _ hy => (inter_subset _ _ _).2 hy⟩
+  (lebesgue_number_lemma_nhds hK (fun x hx ↦ Filter.mem_inf_principal'.1 (hU x hx))).imp
+    fun _ ⟨V_uni, hV⟩ ↦ ⟨V_uni, fun x hx ↦ (hV x hx).imp fun _ hy ↦ (inter_subset _ _ _).2 hy⟩
 
 /-- Let `U : ι → Set α` be an open cover of a compact set `K`.
 Then there exists an entourage `V`
@@ -117,7 +117,7 @@ then `{⋃ x ∈ K, UniformSpace.ball x (V i) | p i}` is a basis of `𝓝ˢ K`.
 Here "`{s i | p i}` is a basis of a filter `l`" means `Filter.HasBasis l p s`. -/
 theorem IsCompact.nhdsSet_basis_uniformity {p : ι → Prop} {V : ι → Set (α × α)}
     (hbasis : (𝓤 α).HasBasis p V) (hK : IsCompact K) :
-    (𝓝ˢ K).HasBasis p fun i => ⋃ x ∈ K, ball x (V i) where
+    (𝓝ˢ K).HasBasis p fun i ↦ ⋃ x ∈ K, ball x (V i) where
   mem_iff' U := by
     constructor
     · intro H
@@ -137,7 +137,7 @@ theorem Disjoint.exists_uniform_thickening {A B : Set α} (hA : IsCompact A) (hB
   rw [(hA.nhdsSet_basis_uniformity (Filter.basis_sets _)).mem_iff] at this
   rcases this with ⟨U, hU, hUAB⟩
   rcases comp_symm_mem_uniformity_sets hU with ⟨V, hV, hVsymm, hVU⟩
-  refine ⟨V, hV, Set.disjoint_left.mpr fun x => ?_⟩
+  refine ⟨V, hV, Set.disjoint_left.mpr fun x ↦ ?_⟩
   simp only [mem_iUnion₂]
   rintro ⟨a, ha, hxa⟩ ⟨b, hb, hxb⟩
   rw [mem_ball_symmetry hVsymm] at hxa hxb
@@ -148,8 +148,8 @@ theorem Disjoint.exists_uniform_thickening_of_basis {p : ι → Prop} {s : ι �
     (h : Disjoint A B) : ∃ i, p i ∧ Disjoint (⋃ x ∈ A, ball x (s i)) (⋃ x ∈ B, ball x (s i)) := by
   rcases h.exists_uniform_thickening hA hB with ⟨V, hV, hVAB⟩
   rcases hU.mem_iff.1 hV with ⟨i, hi, hiV⟩
-  exact ⟨i, hi, hVAB.mono (iUnion₂_mono fun a _ => ball_mono hiV a)
-    (iUnion₂_mono fun b _ => ball_mono hiV b)⟩
+  exact ⟨i, hi, hVAB.mono (iUnion₂_mono fun a _ ↦ ball_mono hiV a)
+    (iUnion₂_mono fun b _ ↦ ball_mono hiV b)⟩
 
 /-- A useful consequence of the Lebesgue number lemma: given any compact set `K` contained in an
 open set `U`, we can find an (open) entourage `V` such that the ball of size `V` about any point of
@@ -166,12 +166,12 @@ exactly the neighborhoods of the diagonal. -/
 theorem nhdsSet_diagonal_eq_uniformity [CompactSpace α] : 𝓝ˢ (diagonal α) = 𝓤 α := by
   refine nhdsSet_diagonal_le_uniformity.antisymm ?_
   have :
-    (𝓤 (α × α)).HasBasis (fun U => U ∈ 𝓤 α) fun U =>
-      (fun p : (α × α) × α × α => ((p.1.1, p.2.1), p.1.2, p.2.2)) ⁻¹' U ×ˢ U := by
+    (𝓤 (α × α)).HasBasis (fun U ↦ U ∈ 𝓤 α) fun U ↦
+      (fun p : (α × α) × α × α ↦ ((p.1.1, p.2.1), p.1.2, p.2.2)) ⁻¹' U ×ˢ U := by
     rw [uniformity_prod_eq_comap_prod]
     exact (𝓤 α).basis_sets.prod_self.comap _
-  refine (isCompact_diagonal.nhdsSet_basis_uniformity this).ge_iff.2 fun U hU => ?_
-  exact mem_of_superset hU fun ⟨x, y⟩ hxy => mem_iUnion₂.2
+  refine (isCompact_diagonal.nhdsSet_basis_uniformity this).ge_iff.2 fun U hU ↦ ?_
+  exact mem_of_superset hU fun ⟨x, y⟩ hxy ↦ mem_iUnion₂.2
     ⟨(x, x), rfl, refl_mem_uniformity hU, hxy⟩
 
 /-- On a compact uniform space, the topology determines the uniform structure, entourages are

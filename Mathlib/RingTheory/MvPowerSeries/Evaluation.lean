@@ -258,7 +258,7 @@ theorem continuous_eval₂ (hφ : Continuous φ) (ha : HasEval a) :
 
 theorem hasSum_eval₂ (hφ : Continuous φ) (ha : HasEval a) (f : MvPowerSeries σ R) :
     HasSum
-    (fun (d : σ →₀ ℕ) ↦ φ (coeff R d f) * (d.prod fun s e => (a s) ^ e))
+    (fun (d : σ →₀ ℕ) ↦ φ (coeff R d f) * (d.prod fun s e ↦ (a s) ^ e))
     (MvPowerSeries.eval₂ φ a f) := by
   rw [← coe_eval₂Hom hφ ha, eval₂Hom_eq_extend hφ ha]
   convert (hasSum_of_monomials_self f).map (eval₂Hom hφ ha) (?_) with d
@@ -268,7 +268,7 @@ theorem hasSum_eval₂ (hφ : Continuous φ) (ha : HasEval a) (f : MvPowerSeries
 
 theorem eval₂_eq_tsum (hφ : Continuous φ) (ha : HasEval a) (f : MvPowerSeries σ R) :
     MvPowerSeries.eval₂ φ a f =
-      ∑' (d : σ →₀ ℕ), φ (coeff R d f) * (d.prod fun s e => (a s) ^ e) :=
+      ∑' (d : σ →₀ ℕ), φ (coeff R d f) * (d.prod fun s e ↦ (a s) ^ e) :=
   (hasSum_eval₂ hφ ha f).tsum_eq.symm
 
 theorem eval₂_unique (hφ : Continuous φ) (ha : HasEval a)
@@ -326,14 +326,14 @@ theorem aeval_unique {ε : MvPowerSeries σ R →ₐ[R] S} (hε : Continuous ε)
   simp
 
 theorem hasSum_aeval (ha : HasEval a) (f : MvPowerSeries σ R) :
-    HasSum (fun (d : σ →₀ ℕ) ↦ (coeff R d f) • (d.prod fun s e => (a s) ^ e))
+    HasSum (fun (d : σ →₀ ℕ) ↦ (coeff R d f) • (d.prod fun s e ↦ (a s) ^ e))
       (MvPowerSeries.aeval ha f) := by
   simp_rw [coe_aeval, ← algebraMap_smul (R := R) S, smul_eq_mul]
   exact hasSum_eval₂ (continuous_algebraMap R S) ha f
 
 theorem aeval_eq_sum (ha : HasEval a) (f : MvPowerSeries σ R) :
     MvPowerSeries.aeval ha f =
-      tsum (fun (d : σ →₀ ℕ) ↦ (coeff R d f) • (d.prod fun s e => (a s) ^ e)) :=
+      tsum (fun (d : σ →₀ ℕ) ↦ (coeff R d f) • (d.prod fun s e ↦ (a s) ^ e)) :=
   (hasSum_aeval ha f).tsum_eq.symm
 
 theorem comp_aeval (ha : HasEval a)

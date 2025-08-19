@@ -45,8 +45,8 @@ def Tor (n : ℕ) : C ⥤ C ⥤ C where
 @[simps! obj_obj map_app]
 def Tor' (n : ℕ) : C ⥤ C ⥤ C :=
   Functor.flip
-    { obj := fun X => Functor.leftDerived ((tensoringRight C).obj X) n
-      map := fun f => NatTrans.leftDerived ((tensoringRight C).map f) n }
+    { obj := fun X ↦ Functor.leftDerived ((tensoringRight C).obj X) n
+      map := fun f ↦ NatTrans.leftDerived ((tensoringRight C).map f) n }
 
 -- Porting note: this specific lemma was added because otherwise the internals of
 -- `NatTrans.leftDerived` leaks into the RHS (it was already so in mathlib)

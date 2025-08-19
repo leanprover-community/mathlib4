@@ -136,7 +136,7 @@ theorem isEmbedding_postcomp (g : C(Y, Z)) (hg : IsEmbedding g) :
 
 /-- `C(·, Z)` is a functor. -/
 @[continuity, fun_prop]
-theorem continuous_precomp (f : C(X, Y)) : Continuous (fun g => g.comp f : C(Y, Z) → C(X, Z)) :=
+theorem continuous_precomp (f : C(X, Y)) : Continuous (fun g ↦ g.comp f : C(Y, Z) → C(X, Z)) :=
   continuous_compactOpen.2 fun K hK U hU ↦ by
     simpa only [mapsTo_image_iff] using isOpen_setOf_mapsTo (hK.image f.2) hU
 
@@ -175,7 +175,7 @@ variable [LocallyCompactPair Y Z]
 /-- Composition is a continuous map from `C(X, Y) × C(Y, Z)` to `C(X, Z)`,
 provided that `Y` is locally compact.
 This is Prop. 9 of Chap. X, §3, №. 4 of Bourbaki's *Topologie Générale*. -/
-theorem continuous_comp' : Continuous fun x : C(X, Y) × C(Y, Z) => x.2.comp x.1 := by
+theorem continuous_comp' : Continuous fun x : C(X, Y) × C(Y, Z) ↦ x.2.comp x.1 := by
   simp_rw [continuous_iff_continuousAt, ContinuousAt, tendsto_nhds_compactOpen]
   intro ⟨f, g⟩ K hK U hU (hKU : MapsTo (g ∘ f) K U)
   obtain ⟨L, hKL, hLc, hLU⟩ : ∃ L ∈ 𝓝ˢ (f '' K), IsCompact L ∧ MapsTo g L U :=
@@ -207,7 +207,7 @@ lemma _root_.ContinuousOn.compCM (hg : ContinuousOn g s) (hf : ContinuousOn f s)
   (hg a ha).compCM (hf a ha)
 
 lemma _root_.Continuous.compCM (hg : Continuous g) (hf : Continuous f) :
-    Continuous fun x => (g x).comp (f x) :=
+    Continuous fun x ↦ (g x).comp (f x) :=
   continuous_comp'.comp (hf.prodMk hg)
 
 end Functorial
@@ -301,7 +301,7 @@ section InfInduced
 
 /-- For any subset `s` of `X`, the restriction of continuous functions to `s` is continuous
 as a function from `C(X, Y)` to `C(s, Y)` with their respective compact-open topologies. -/
-theorem continuous_restrict (s : Set X) : Continuous fun F : C(X, Y) => F.restrict s :=
+theorem continuous_restrict (s : Set X) : Continuous fun F : C(X, Y) ↦ F.restrict s :=
   continuous_precomp <| restrict s <| .id X
 
 theorem compactOpen_le_induced (s : Set X) :
@@ -329,12 +329,12 @@ theorem nhds_compactOpen_eq_iInf_nhds_induced (f : C(X, Y)) :
 
 theorem tendsto_compactOpen_restrict {ι : Type*} {l : Filter ι} {F : ι → C(X, Y)} {f : C(X, Y)}
     (hFf : Filter.Tendsto F l (𝓝 f)) (s : Set X) :
-    Tendsto (fun i => (F i).restrict s) l (𝓝 (f.restrict s)) :=
+    Tendsto (fun i ↦ (F i).restrict s) l (𝓝 (f.restrict s)) :=
   (continuous_restrict s).continuousAt.tendsto.comp hFf
 
 theorem tendsto_compactOpen_iff_forall {ι : Type*} {l : Filter ι} (F : ι → C(X, Y)) (f : C(X, Y)) :
     Tendsto F l (𝓝 f) ↔
-      ∀ K, IsCompact K → Tendsto (fun i => (F i).restrict K) l (𝓝 (f.restrict K)) := by
+      ∀ K, IsCompact K → Tendsto (fun i ↦ (F i).restrict K) l (𝓝 (f.restrict K)) := by
   rw [compactOpen_eq_iInf_induced]
   simp [nhds_iInf, nhds_induced, Filter.tendsto_comap_iff, Function.comp_def]
 
@@ -343,7 +343,7 @@ it converges in the compact-open topology on each compact subset of `X`. -/
 theorem exists_tendsto_compactOpen_iff_forall [WeaklyLocallyCompactSpace X] [T2Space Y]
     {ι : Type*} {l : Filter ι} [Filter.NeBot l] (F : ι → C(X, Y)) :
     (∃ f, Filter.Tendsto F l (𝓝 f)) ↔
-      ∀ s : Set X, IsCompact s → ∃ f, Filter.Tendsto (fun i => (F i).restrict s) l (𝓝 f) := by
+      ∀ s : Set X, IsCompact s → ∃ f, Filter.Tendsto (fun i ↦ (F i).restrict s) l (𝓝 f) := by
   constructor
   · rintro ⟨f, hf⟩ s _
     exact ⟨f.restrict s, tendsto_compactOpen_restrict hf s⟩
@@ -407,11 +407,11 @@ theorem curry_apply (f : C(X × Y, Z)) (a : X) (b : Y) : f.curry a b = f (a, b) 
 /-- To show continuity of a map `α → C(β, γ)`, it suffices to show that its uncurried form
 α × β → γ` is continuous. -/
 theorem continuous_of_continuous_uncurry (f : X → C(Y, Z))
-    (h : Continuous (Function.uncurry fun x y => f x y)) : Continuous f :=
+    (h : Continuous (Function.uncurry fun x y ↦ f x y)) : Continuous f :=
   (curry ⟨_, h⟩).2
 
 theorem continuousOn_of_continuousOn_uncurry {s : Set X} (f : X → C(Y, Z))
-    (h : ContinuousOn (Function.uncurry fun x y => f x y) (s ×ˢ univ)) : ContinuousOn f s :=
+    (h : ContinuousOn (Function.uncurry fun x y ↦ f x y) (s ×ˢ univ)) : ContinuousOn f s :=
   continuousOn_iff_continuous_restrict.mpr <| continuous_of_continuous_uncurry _ <|
     h.comp_continuous (continuous_subtype_val.prodMap continuous_id) (fun x ↦ ⟨x.1.2, trivial⟩)
 
@@ -425,7 +425,7 @@ theorem continuous_curry [LocallyCompactSpace (X × Y)] :
 
 /-- The uncurried form of a continuous map `X → C(Y, Z)` is a continuous map `X × Y → Z`. -/
 theorem continuous_uncurry_of_continuous [LocallyCompactSpace Y] (f : C(X, C(Y, Z))) :
-    Continuous (Function.uncurry fun x y => f x y) :=
+    Continuous (Function.uncurry fun x y ↦ f x y) :=
   continuous_eval.comp <| f.continuous.prodMap continuous_id
 
 /-- The uncurried form of a continuous map `X → C(Y, Z)` as a continuous map `X × Y → Z` (if `Y` is
@@ -552,23 +552,23 @@ variable {X₀ X Y Z : Type*} [TopologicalSpace X₀] [TopologicalSpace X] [Topo
   [TopologicalSpace Z] [LocallyCompactSpace Y] {f : X₀ → X}
 
 theorem Topology.IsQuotientMap.continuous_lift_prod_left (hf : IsQuotientMap f) {g : X × Y → Z}
-    (hg : Continuous fun p : X₀ × Y => g (f p.1, p.2)) : Continuous g := by
+    (hg : Continuous fun p : X₀ × Y ↦ g (f p.1, p.2)) : Continuous g := by
   let Gf : C(X₀, C(Y, Z)) := ContinuousMap.curry ⟨_, hg⟩
-  have h : ∀ x : X, Continuous fun y => g (x, y) := by
+  have h : ∀ x : X, Continuous fun y ↦ g (x, y) := by
     intro x
     obtain ⟨x₀, rfl⟩ := hf.surjective x
     exact (Gf x₀).continuous
-  let G : X → C(Y, Z) := fun x => ⟨_, h x⟩
+  let G : X → C(Y, Z) := fun x ↦ ⟨_, h x⟩
   have : Continuous G := by
     rw [hf.continuous_iff]
     exact Gf.continuous
   exact ContinuousMap.continuous_uncurry_of_continuous ⟨G, this⟩
 
 theorem Topology.IsQuotientMap.continuous_lift_prod_right (hf : IsQuotientMap f) {g : Y × X → Z}
-    (hg : Continuous fun p : Y × X₀ => g (p.1, f p.2)) : Continuous g := by
-  have : Continuous fun p : X₀ × Y => g ((Prod.swap p).1, f (Prod.swap p).2) :=
+    (hg : Continuous fun p : Y × X₀ ↦ g (p.1, f p.2)) : Continuous g := by
+  have : Continuous fun p : X₀ × Y ↦ g ((Prod.swap p).1, f (Prod.swap p).2) :=
     hg.comp continuous_swap
-  have : Continuous fun p : X₀ × Y => (g ∘ Prod.swap) (f p.1, p.2) := this
+  have : Continuous fun p : X₀ × Y ↦ (g ∘ Prod.swap) (f p.1, p.2) := this
   exact (hf.continuous_lift_prod_left this).comp continuous_swap
 
 end IsQuotientMap

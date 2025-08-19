@@ -81,7 +81,7 @@ theorem matrix_trace_commutator_zero [Fintype n] (X Y : Matrix n n R) : Matrix.t
   calc
     _ = Matrix.trace (X * Y) - Matrix.trace (Y * X) := trace_sub _ _
     _ = Matrix.trace (X * Y) - Matrix.trace (X * Y) :=
-      (congr_arg (fun x => _ - x) (Matrix.trace_mul_comm Y X))
+      (congr_arg (fun x ↦ _ - x) (Matrix.trace_mul_comm Y X))
     _ = 0 := sub_self _
 
 namespace SpecialLinear
@@ -89,7 +89,7 @@ namespace SpecialLinear
 /-- The special linear Lie algebra: square matrices of trace zero. -/
 def sl [Fintype n] : LieSubalgebra R (Matrix n n R) :=
   { LinearMap.ker (Matrix.traceLinearMap n R R) with
-    lie_mem' := fun _ _ => LinearMap.mem_ker.2 <| matrix_trace_commutator_zero _ _ _ _ }
+    lie_mem' := fun _ _ ↦ LinearMap.mem_ker.2 <| matrix_trace_commutator_zero _ _ _ _ }
 
 theorem sl_bracket [Fintype n] (A B : sl n R) : ⁅A, B⁆.val = A.val * B.val - B.val * A.val :=
   rfl
@@ -102,7 +102,7 @@ variable {n R} [Fintype n] (i j k : n)
 
 Along with some elements produced by `singleSubSingle`, these form a natural basis of `sl n R`. -/
 def single (h : i ≠ j) : R →ₗ[R] sl n R :=
-  Matrix.singleLinearMap R i j |>.codRestrict _ fun r => Matrix.trace_single_eq_of_ne i j r h
+  Matrix.singleLinearMap R i j |>.codRestrict _ fun r ↦ Matrix.trace_single_eq_of_ne i j r h
 
 @[deprecated (since := "2025-05-06")] alias Eb := single
 
@@ -115,7 +115,7 @@ theorem val_single (h : i ≠ j) (r : R) : (single i j h r).val = Matrix.single 
 /-- The matrices with matching positive and negative elements on the diagonal are elements of
 `sl n R`. Along with `single`, a subset of these form a basis for `sl n R`. -/
 def singleSubSingle : R →ₗ[R] sl n R :=
-  LinearMap.codRestrict _ (Matrix.singleLinearMap R i i - Matrix.singleLinearMap R j j) fun r =>
+  LinearMap.codRestrict _ (Matrix.singleLinearMap R i i - Matrix.singleLinearMap R j j) fun r ↦
     LinearMap.sub_mem_ker_iff.mpr <| by simp
 
 @[simp]
@@ -175,7 +175,7 @@ theorem mem_so [Fintype n] (A : Matrix n n R) : A ∈ so n R ↔ Aᵀ = -A := by
 
 /-- The indefinite diagonal matrix with `p` 1s and `q` -1s. -/
 def indefiniteDiagonal : Matrix (p ⊕ q) (p ⊕ q) R :=
-  Matrix.diagonal <| Sum.elim (fun _ => 1) fun _ => -1
+  Matrix.diagonal <| Sum.elim (fun _ ↦ 1) fun _ ↦ -1
 
 /-- The indefinite orthogonal Lie subalgebra: skew-adjoint matrices with respect to the symmetric
 bilinear form defined by the indefinite diagonal matrix. -/
@@ -185,7 +185,7 @@ def so' [Fintype p] [Fintype q] : LieSubalgebra R (Matrix (p ⊕ q) (p ⊕ q) R)
 /-- A matrix for transforming the indefinite diagonal bilinear form into the definite one, provided
 the parameter `i` is a square root of -1. -/
 def Pso (i : R) : Matrix (p ⊕ q) (p ⊕ q) R :=
-  Matrix.diagonal <| Sum.elim (fun _ => 1) fun _ => i
+  Matrix.diagonal <| Sum.elim (fun _ ↦ 1) fun _ ↦ i
 
 variable [Fintype p] [Fintype q]
 

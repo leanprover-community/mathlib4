@@ -44,9 +44,9 @@ open Function Module
 open scoped nonZeroDivisors
 
 /-- `ℤ` with its usual ring structure is not a field. -/
-theorem Int.not_isField : ¬IsField ℤ := fun h =>
+theorem Int.not_isField : ¬IsField ℤ := fun h ↦
   Int.not_even_one <|
-    (h.mul_inv_cancel two_ne_zero).imp fun a => by rw [← two_mul]; exact Eq.symm
+    (h.mul_inv_cancel two_ne_zero).imp fun a ↦ by rw [← two_mul]; exact Eq.symm
 
 namespace NumberField
 
@@ -172,8 +172,8 @@ def mapRingHom {K L F : Type*} [Field K] [Field L] [FunLike F K L]
 def mapRingEquiv {K L E : Type*} [Field K] [Field L] [EquivLike E K L]
     [RingEquivClass E K L] (e : E) : (𝓞 K) ≃+* (𝓞 L) :=
   RingEquiv.ofRingHom (mapRingHom e) (mapRingHom (e : K ≃+* L).symm)
-    (RingHom.ext fun x => ext (EquivLike.right_inv e x.1))
-      (RingHom.ext fun x => ext (EquivLike.left_inv e x.1))
+    (RingHom.ext fun x ↦ ext (EquivLike.right_inv e x.1))
+      (RingHom.ext fun x ↦ ext (EquivLike.left_inv e x.1))
 
 end RingOfIntegers
 
@@ -199,8 +199,8 @@ def mapAlgHom {k K L F : Type*} [Field k] [Field K] [Field L] [Algebra k K]
 def mapAlgEquiv {k K L E : Type*} [Field k] [Field K] [Field L] [Algebra k K]
     [Algebra k L] [EquivLike E K L] [AlgEquivClass E k K L] (e : E) : (𝓞 K) ≃ₐ[𝓞 k] (𝓞 L) :=
   AlgEquiv.ofAlgHom (mapAlgHom e) (mapAlgHom (e : K ≃ₐ[k] L).symm)
-    (AlgHom.ext fun x => ext (EquivLike.right_inv e x.1))
-      (AlgHom.ext fun x => ext (EquivLike.left_inv e x.1))
+    (AlgHom.ext fun x ↦ ext (EquivLike.right_inv e x.1))
+      (AlgHom.ext fun x ↦ ext (EquivLike.left_inv e x.1))
 
 instance inst_isScalarTower (k K L : Type*) [Field k] [Field K] [Field L]
     [Algebra k K] [Algebra k L] [Algebra K L] [IsScalarTower k K L] :
@@ -334,7 +334,7 @@ instance extension_isNoetherian [NumberField K] [NumberField L] : IsNoetherian (
 
 /-- The kernel of the algebraMap between ring of integers is `⊥`. -/
 theorem ker_algebraMap_eq_bot : RingHom.ker (algebraMap (𝓞 K) (𝓞 L)) = ⊥ :=
-  (RingHom.ker_eq_bot_iff_eq_zero (algebraMap (𝓞 K) (𝓞 L))).mpr <| fun x hx => by
+  (RingHom.ker_eq_bot_iff_eq_zero (algebraMap (𝓞 K) (𝓞 L))).mpr <| fun x hx ↦ by
   have h : (algebraMap K L) x = (algebraMap (𝓞 K) (𝓞 L)) x := rfl
   simp only [hx, map_zero, map_eq_zero, RingOfIntegers.coe_eq_zero_iff] at h
   exact h

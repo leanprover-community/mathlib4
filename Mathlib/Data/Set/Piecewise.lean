@@ -62,20 +62,20 @@ theorem piecewise_singleton (x : α) [∀ y, Decidable (y ∈ ({x} : Set α))] [
     simp
   · simp [hy]
 
-theorem piecewise_eqOn (f g : α → β) : EqOn (s.piecewise f g) f s := fun _ =>
+theorem piecewise_eqOn (f g : α → β) : EqOn (s.piecewise f g) f s := fun _ ↦
   piecewise_eq_of_mem _ _ _
 
-theorem piecewise_eqOn_compl (f g : α → β) : EqOn (s.piecewise f g) g sᶜ := fun _ =>
+theorem piecewise_eqOn_compl (f g : α → β) : EqOn (s.piecewise f g) g sᶜ := fun _ ↦
   piecewise_eq_of_notMem _ _ _
 
 theorem piecewise_le {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α} [∀ j, Decidable (j ∈ s)]
     {f₁ f₂ g : ∀ i, δ i} (h₁ : ∀ i ∈ s, f₁ i ≤ g i) (h₂ : ∀ i ∉ s, f₂ i ≤ g i) :
-    s.piecewise f₁ f₂ ≤ g := fun i => if h : i ∈ s then by simp [*] else by simp [*]
+    s.piecewise f₁ f₂ ≤ g := fun i ↦ if h : i ∈ s then by simp [*] else by simp [*]
 
 theorem le_piecewise {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α} [∀ j, Decidable (j ∈ s)]
     {f₁ f₂ g : ∀ i, δ i} (h₁ : ∀ i ∈ s, g i ≤ f₁ i) (h₂ : ∀ i ∉ s, g i ≤ f₂ i) :
     g ≤ s.piecewise f₁ f₂ :=
-  @piecewise_le α (fun i => (δ i)ᵒᵈ) _ s _ _ _ _ h₁ h₂
+  @piecewise_le α (fun i ↦ (δ i)ᵒᵈ) _ s _ _ _ _ h₁ h₂
 
 @[gcongr]
 theorem piecewise_mono {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α}
@@ -89,7 +89,7 @@ theorem piecewise_insert_of_ne {i j : α} (h : i ≠ j) [∀ i, Decidable (i ∈
 
 @[simp]
 theorem piecewise_compl [∀ i, Decidable (i ∈ sᶜ)] : sᶜ.piecewise f g = s.piecewise g f :=
-  funext fun x => if hx : x ∈ s then by simp [hx] else by simp [hx]
+  funext fun x ↦ if hx : x ∈ s then by simp [hx] else by simp [hx]
 
 @[simp]
 theorem piecewise_range_comp {ι : Sort*} (f : ι → α) [∀ j, Decidable (j ∈ range f)]
@@ -113,7 +113,7 @@ theorem MapsTo.piecewise_ite {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {f₁
 theorem eqOn_piecewise {f f' g : α → β} {t} :
     EqOn (s.piecewise f f') g t ↔ EqOn f g (t ∩ s) ∧ EqOn f' g (t ∩ sᶜ) := by
   simp only [EqOn, ← forall_and]
-  refine forall_congr' fun a => ?_; by_cases a ∈ s <;> simp [*]
+  refine forall_congr' fun a ↦ ?_; by_cases a ∈ s <;> simp [*]
 
 theorem EqOn.piecewise_ite' {f f' g : α → β} {t t'} (h : EqOn f g (t ∩ s))
     (h' : EqOn f' g (t' ∩ sᶜ)) : EqOn (s.piecewise f f') g (s.ite t t') := by
@@ -124,26 +124,26 @@ theorem EqOn.piecewise_ite {f f' g : α → β} {t t'} (h : EqOn f g t) (h' : Eq
   (h.mono inter_subset_left).piecewise_ite' s (h'.mono inter_subset_left)
 
 theorem piecewise_preimage (f g : α → β) (t) : s.piecewise f g ⁻¹' t = s.ite (f ⁻¹' t) (g ⁻¹' t) :=
-  ext fun x => by by_cases x ∈ s <;> simp [*, Set.ite]
+  ext fun x ↦ by by_cases x ∈ s <;> simp [*, Set.ite]
 
 theorem apply_piecewise {δ' : α → Sort*} (h : ∀ i, δ i → δ' i) {x : α} :
-    h x (s.piecewise f g x) = s.piecewise (fun x => h x (f x)) (fun x => h x (g x)) x := by
+    h x (s.piecewise f g x) = s.piecewise (fun x ↦ h x (f x)) (fun x ↦ h x (g x)) x := by
   by_cases hx : x ∈ s <;> simp [hx]
 
 theorem apply_piecewise₂ {δ' δ'' : α → Sort*} (f' g' : ∀ i, δ' i) (h : ∀ i, δ i → δ' i → δ'' i)
     {x : α} :
     h x (s.piecewise f g x) (s.piecewise f' g' x) =
-      s.piecewise (fun x => h x (f x) (f' x)) (fun x => h x (g x) (g' x)) x := by
+      s.piecewise (fun x ↦ h x (f x) (f' x)) (fun x ↦ h x (g x) (g' x)) x := by
   by_cases hx : x ∈ s <;> simp [hx]
 
 theorem piecewise_op {δ' : α → Sort*} (h : ∀ i, δ i → δ' i) :
-    (s.piecewise (fun x => h x (f x)) fun x => h x (g x)) = fun x => h x (s.piecewise f g x) :=
-  funext fun _ => (apply_piecewise _ _ _ _).symm
+    (s.piecewise (fun x ↦ h x (f x)) fun x ↦ h x (g x)) = fun x ↦ h x (s.piecewise f g x) :=
+  funext fun _ ↦ (apply_piecewise _ _ _ _).symm
 
 theorem piecewise_op₂ {δ' δ'' : α → Sort*} (f' g' : ∀ i, δ' i) (h : ∀ i, δ i → δ' i → δ'' i) :
-    (s.piecewise (fun x => h x (f x) (f' x)) fun x => h x (g x) (g' x)) = fun x =>
+    (s.piecewise (fun x ↦ h x (f x) (f' x)) fun x ↦ h x (g x) (g' x)) = fun x ↦
       h x (s.piecewise f g x) (s.piecewise f' g' x) :=
-  funext fun _ => (apply_piecewise₂ _ _ _ _ _ _).symm
+  funext fun _ ↦ (apply_piecewise₂ _ _ _ _ _ _).symm
 
 @[simp]
 theorem piecewise_same : s.piecewise f f = f := by
@@ -161,7 +161,7 @@ theorem injective_piecewise_iff {f g : α → β} :
       InjOn f s ∧ InjOn g sᶜ ∧ ∀ x ∈ s, ∀ y ∉ s, f x ≠ g y := by
   rw [injective_iff_injOn_univ, ← union_compl_self s, injOn_union (@disjoint_compl_right _ _ s),
     (piecewise_eqOn s f g).injOn_iff, (piecewise_eqOn_compl s f g).injOn_iff]
-  refine and_congr Iff.rfl (and_congr Iff.rfl <| forall₄_congr fun x hx y hy => ?_)
+  refine and_congr Iff.rfl (and_congr Iff.rfl <| forall₄_congr fun x hx y hy ↦ ?_)
   rw [piecewise_eq_of_mem s f g hx, piecewise_eq_of_notMem s f g hy]
 
 theorem piecewise_mem_pi {δ : α → Type*} {t : Set α} {t' : ∀ i, Set (δ i)} {f g} (hf : f ∈ pi t t')
@@ -179,6 +179,6 @@ theorem univ_pi_piecewise {ι : Type*} {α : ι → Type*} (s : Set ι) (t t' : 
   simp [compl_eq_univ_diff]
 
 theorem univ_pi_piecewise_univ {ι : Type*} {α : ι → Type*} (s : Set ι) (t : ∀ i, Set (α i))
-    [∀ x, Decidable (x ∈ s)] : pi univ (s.piecewise t fun _ => univ) = pi s t := by simp
+    [∀ x, Decidable (x ∈ s)] : pi univ (s.piecewise t fun _ ↦ univ) = pi s t := by simp
 
 end Set

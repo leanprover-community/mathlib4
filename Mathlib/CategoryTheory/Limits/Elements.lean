@@ -35,7 +35,7 @@ variable (F : I ⥤ A.Elements)
 
 /-- (implementation) A system `(Fi, fi)_i` of elements induces an element in `lim_i A(Fi)`. -/
 noncomputable def liftedConeElement' : limit ((F ⋙ π A) ⋙ A) :=
-  Types.Limit.mk _ (fun i => (F.obj i).2) (by simp)
+  Types.Limit.mk _ (fun i ↦ (F.obj i).2) (by simp)
 
 @[simp]
 lemma π_liftedConeElement' (i : I) :
@@ -70,8 +70,8 @@ lemma map_π_liftedConeElement (i : I) :
 noncomputable def liftedCone : Cone F where
   pt := ⟨_, liftedConeElement F⟩
   π :=
-    { app := fun i => ⟨limit.π (F ⋙ π A) i, by simp⟩
-      naturality := fun i i' f => by ext; simpa using (limit.w _ _).symm }
+    { app := fun i ↦ ⟨limit.π (F ⋙ π A) i, by simp⟩
+      naturality := fun i i' f ↦ by ext; simpa using (limit.w _ _).symm }
 
 /-- (implementation) The constructed limit cone is a lift of the limit cone in `C`. -/
 noncomputable def isValidLift : (π A).mapCone (liftedCone F) ≅ limit.cone (F ⋙ π A) :=
@@ -81,7 +81,7 @@ noncomputable def isValidLift : (π A).mapCone (liftedCone F) ≅ limit.cone (F 
 noncomputable def isLimit : IsLimit (liftedCone F) where
   lift s := ⟨limit.lift (F ⋙ π A) ((π A).mapCone s), by simp⟩
   uniq s m h := ext _ _ _ <| limit.hom_ext
-    fun i => by simpa using congrArg Subtype.val (h i)
+    fun i ↦ by simpa using congrArg Subtype.val (h i)
 
 end CreatesLimitsAux
 

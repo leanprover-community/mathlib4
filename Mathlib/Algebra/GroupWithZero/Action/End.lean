@@ -45,8 +45,8 @@ variable (A) [Monoid A] [Monoid M] [MulDistribMulAction M A]
 See note [reducible non-instances]. -/
 abbrev MulDistribMulAction.compHom [Monoid N] (f : N →* M) : MulDistribMulAction N A :=
   { MulAction.compHom A f with
-    smul_one := fun x => smul_one (f x),
-    smul_mul := fun x => smul_mul' (f x) }
+    smul_one := fun x ↦ smul_one (f x),
+    smul_mul := fun x ↦ smul_mul' (f x) }
 
 end Monoid
 
@@ -68,7 +68,7 @@ theorem AddMonoid.End.smul_def [AddMonoid α] (f : AddMonoid.End α) (a : α) : 
 /-- `AddMonoid.End.applyDistribMulAction` is faithful. -/
 instance AddMonoid.End.applyFaithfulSMul [AddMonoid α] :
     FaithfulSMul (AddMonoid.End α) α :=
-  ⟨fun {_ _ h} => AddMonoidHom.ext h⟩
+  ⟨fun {_ _ h} ↦ AddMonoidHom.ext h⟩
 
 /-- Each non-zero element of a `GroupWithZero` defines an additive monoid isomorphism of an
 `AddMonoid` on which it acts distributively.

@@ -44,7 +44,7 @@ theorem set_walk_length_zero_eq_of_ne {u v : V} (h : u ≠ v) :
     {p : G.Walk u v | p.length = 0} = ∅ := by
   ext p
   simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
-  exact fun h' => absurd (Walk.eq_of_length_eq_zero h') h
+  exact fun h' ↦ absurd (Walk.eq_of_length_eq_zero h') h
 
 theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
     {p : G.Walk u v | p.length = n.succ} =
@@ -85,8 +85,8 @@ def finsetWalkLength (n : ℕ) (u v : V) : Finset (G.Walk u v) :=
       exact {Walk.nil}
     else ∅
   | n + 1 =>
-    Finset.univ.biUnion fun (w : G.neighborSet u) =>
-      (finsetWalkLength n w v).map ⟨fun p => Walk.cons w.property p, fun _ _ => by simp⟩
+    Finset.univ.biUnion fun (w : G.neighborSet u) ↦
+      (finsetWalkLength n w v).map ⟨fun p ↦ Walk.cons w.property p, fun _ _ ↦ by simp⟩
 
 theorem coe_finsetWalkLength_eq (n : ℕ) (u v : V) :
     (G.finsetWalkLength n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length = n} := by
@@ -132,7 +132,7 @@ theorem mem_finsetWalkLengthLT_iff {n : ℕ} {u v : V} {p : G.Walk u v} :
   Set.ext_iff.mp (G.coe_finsetWalkLengthLT_eq n u v) p
 
 instance fintypeSetWalkLength (u v : V) (n : ℕ) : Fintype {p : G.Walk u v | p.length = n} :=
-  Fintype.ofFinset (G.finsetWalkLength n u v) fun p => by
+  Fintype.ofFinset (G.finsetWalkLength n u v) fun p ↦ by
     rw [← Finset.mem_coe, coe_finsetWalkLength_eq]
 
 instance fintypeSubtypeWalkLength (u v : V) (n : ℕ) : Fintype {p : G.Walk u v // p.length = n} :=
@@ -147,7 +147,7 @@ theorem set_walk_length_toFinset_eq (n : ℕ) (u v : V) :
 power of the adjacency matrix. -/
 theorem card_set_walk_length_eq (u v : V) (n : ℕ) :
     Fintype.card {p : G.Walk u v | p.length = n} = #(G.finsetWalkLength n u v) :=
-  Fintype.card_ofFinset (G.finsetWalkLength n u v) fun p => by
+  Fintype.card_ofFinset (G.finsetWalkLength n u v) fun p ↦ by
     rw [← Finset.mem_coe, coe_finsetWalkLength_eq]
 
 instance fintypeSetWalkLengthLT (u v : V) (n : ℕ) : Fintype {p : G.Walk u v | p.length < n} :=
@@ -187,13 +187,13 @@ theorem reachable_iff_exists_finsetWalkLength_nonempty (u v : V) :
     G.Reachable u v ↔ ∃ n : Fin (Fintype.card V), (G.finsetWalkLength n u v).Nonempty := by
   constructor
   · intro r
-    refine r.elim_path fun p => ?_
+    refine r.elim_path fun p ↦ ?_
     refine ⟨⟨_, p.isPath.length_lt⟩, p, ?_⟩
     simp [mem_finsetWalkLength_iff]
   · rintro ⟨_, p, _⟩
     exact ⟨p⟩
 
-instance : DecidableRel G.Reachable := fun u v =>
+instance : DecidableRel G.Reachable := fun u v ↦
   decidable_of_iff' _ (reachable_iff_exists_finsetWalkLength_nonempty G u v)
 
 instance : Fintype G.ConnectedComponent :=

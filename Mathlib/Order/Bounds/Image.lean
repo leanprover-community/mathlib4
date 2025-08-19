@@ -27,7 +27,7 @@ variable [Preorder α] [Preorder β] {f : α → β} {s t : Set α} {a : α}
 
 theorem mem_upperBounds_image (Hf : MonotoneOn f t) (Hst : s ⊆ t) (Has : a ∈ upperBounds s)
     (Hat : a ∈ t) : f a ∈ upperBounds (f '' s) :=
-  forall_mem_image.2 fun _ H => Hf (Hst H) Hat (Has H)
+  forall_mem_image.2 fun _ H ↦ Hf (Hst H) Hat (Has H)
 
 theorem mem_upperBounds_image_self (Hf : MonotoneOn f t) :
     a ∈ upperBounds t → a ∈ t → f a ∈ upperBounds (f '' t) :=
@@ -35,7 +35,7 @@ theorem mem_upperBounds_image_self (Hf : MonotoneOn f t) :
 
 theorem mem_lowerBounds_image (Hf : MonotoneOn f t) (Hst : s ⊆ t) (Has : a ∈ lowerBounds s)
     (Hat : a ∈ t) : f a ∈ lowerBounds (f '' s) :=
-  forall_mem_image.2 fun _ H => Hf Hat (Hst H) (Has H)
+  forall_mem_image.2 fun _ H ↦ Hf Hat (Hst H) (Has H)
 
 theorem mem_lowerBounds_image_self (Hf : MonotoneOn f t) :
     a ∈ lowerBounds t → a ∈ t → f a ∈ lowerBounds (f '' t) :=
@@ -53,13 +53,13 @@ theorem image_lowerBounds_subset_lowerBounds_image (Hf : MonotoneOn f t) (Hst : 
 /-- The image under a monotone function on a set `t` of a subset which has an upper bound in `t`
   is bounded above. -/
 theorem map_bddAbove (Hf : MonotoneOn f t) (Hst : s ⊆ t) :
-    (upperBounds s ∩ t).Nonempty → BddAbove (f '' s) := fun ⟨C, hs, ht⟩ =>
+    (upperBounds s ∩ t).Nonempty → BddAbove (f '' s) := fun ⟨C, hs, ht⟩ ↦
   ⟨f C, Hf.mem_upperBounds_image Hst hs ht⟩
 
 /-- The image under a monotone function on a set `t` of a subset which has a lower bound in `t`
   is bounded below. -/
 theorem map_bddBelow (Hf : MonotoneOn f t) (Hst : s ⊆ t) :
-    (lowerBounds s ∩ t).Nonempty → BddBelow (f '' s) := fun ⟨C, hs, ht⟩ =>
+    (lowerBounds s ∩ t).Nonempty → BddBelow (f '' s) := fun ⟨C, hs, ht⟩ ↦
   ⟨f C, Hf.mem_lowerBounds_image Hst hs ht⟩
 
 /-- A monotone map sends a least element of a set to a least element of its image. -/
@@ -127,10 +127,10 @@ variable [Preorder α] [Preorder β] {f : α → β} (Hf : Monotone f) {a : α} 
 include Hf
 
 theorem mem_upperBounds_image (Ha : a ∈ upperBounds s) : f a ∈ upperBounds (f '' s) :=
-  forall_mem_image.2 fun _ H => Hf (Ha H)
+  forall_mem_image.2 fun _ H ↦ Hf (Ha H)
 
 theorem mem_lowerBounds_image (Ha : a ∈ lowerBounds s) : f a ∈ lowerBounds (f '' s) :=
-  forall_mem_image.2 fun _ H => Hf (Ha H)
+  forall_mem_image.2 fun _ H ↦ Hf (Ha H)
 
 theorem image_upperBounds_subset_upperBounds_image :
     f '' upperBounds s ⊆ upperBounds (f '' s) := by
@@ -248,11 +248,11 @@ include h₀ h₁
 
 theorem mem_upperBounds_image2 (ha : a ∈ upperBounds s) (hb : b ∈ upperBounds t) :
     f a b ∈ upperBounds (image2 f s t) :=
-  forall_mem_image2.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
+  forall_mem_image2.2 fun _ hx _ hy ↦ (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
 
 theorem mem_lowerBounds_image2 (ha : a ∈ lowerBounds s) (hb : b ∈ lowerBounds t) :
     f a b ∈ lowerBounds (image2 f s t) :=
-  forall_mem_image2.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
+  forall_mem_image2.2 fun _ hx _ hy ↦ (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
 
 theorem image2_upperBounds_upperBounds_subset :
     image2 f (upperBounds s) (upperBounds t) ⊆ upperBounds (image2 f s t) :=
@@ -292,11 +292,11 @@ include h₀ h₁
 
 theorem mem_upperBounds_image2_of_mem_upperBounds_of_mem_lowerBounds (ha : a ∈ upperBounds s)
     (hb : b ∈ lowerBounds t) : f a b ∈ upperBounds (image2 f s t) :=
-  forall_mem_image2.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
+  forall_mem_image2.2 fun _ hx _ hy ↦ (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
 
 theorem mem_lowerBounds_image2_of_mem_lowerBounds_of_mem_upperBounds (ha : a ∈ lowerBounds s)
     (hb : b ∈ upperBounds t) : f a b ∈ lowerBounds (image2 f s t) :=
-  forall_mem_image2.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
+  forall_mem_image2.2 fun _ hx _ hy ↦ (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
 
 theorem image2_upperBounds_lowerBounds_subset_upperBounds_image2 :
     image2 f (upperBounds s) (lowerBounds t) ⊆ upperBounds (image2 f s t) :=
@@ -338,11 +338,11 @@ include h₀ h₁
 
 theorem mem_upperBounds_image2_of_mem_lowerBounds (ha : a ∈ lowerBounds s)
     (hb : b ∈ lowerBounds t) : f a b ∈ upperBounds (image2 f s t) :=
-  forall_mem_image2.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
+  forall_mem_image2.2 fun _ hx _ hy ↦ (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
 
 theorem mem_lowerBounds_image2_of_mem_upperBounds (ha : a ∈ upperBounds s)
     (hb : b ∈ upperBounds t) : f a b ∈ lowerBounds (image2 f s t) :=
-  forall_mem_image2.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
+  forall_mem_image2.2 fun _ hx _ hy ↦ (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
 
 theorem image2_upperBounds_upperBounds_subset_upperBounds_image2 :
     image2 f (lowerBounds s) (lowerBounds t) ⊆ upperBounds (image2 f s t) :=
@@ -380,11 +380,11 @@ include h₀ h₁
 
 theorem mem_upperBounds_image2_of_mem_upperBounds_of_mem_upperBounds (ha : a ∈ lowerBounds s)
     (hb : b ∈ upperBounds t) : f a b ∈ upperBounds (image2 f s t) :=
-  forall_mem_image2.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
+  forall_mem_image2.2 fun _ hx _ hy ↦ (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
 
 theorem mem_lowerBounds_image2_of_mem_lowerBounds_of_mem_lowerBounds (ha : a ∈ upperBounds s)
     (hb : b ∈ lowerBounds t) : f a b ∈ lowerBounds (image2 f s t) :=
-  forall_mem_image2.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
+  forall_mem_image2.2 fun _ hx _ hy ↦ (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
 
 theorem image2_lowerBounds_upperBounds_subset_upperBounds_image2 :
     image2 f (lowerBounds s) (upperBounds t) ⊆ upperBounds (image2 f s t) :=
@@ -479,16 +479,16 @@ lemma bddBelow_range_prod {F : ι → α × β} :
 theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
     IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
   refine
-    ⟨fun H =>
-      ⟨⟨monotone_fst.mem_upperBounds_image H.1, fun a ha => ?_⟩,
-        ⟨monotone_snd.mem_upperBounds_image H.1, fun a ha => ?_⟩⟩,
-      fun H => ⟨?_, ?_⟩⟩
+    ⟨fun H ↦
+      ⟨⟨monotone_fst.mem_upperBounds_image H.1, fun a ha ↦ ?_⟩,
+        ⟨monotone_snd.mem_upperBounds_image H.1, fun a ha ↦ ?_⟩⟩,
+      fun H ↦ ⟨?_, ?_⟩⟩
   · suffices h : (a, p.2) ∈ upperBounds s from (H.2 h).1
-    exact fun q hq => ⟨ha <| mem_image_of_mem _ hq, (H.1 hq).2⟩
+    exact fun q hq ↦ ⟨ha <| mem_image_of_mem _ hq, (H.1 hq).2⟩
   · suffices h : (p.1, a) ∈ upperBounds s from (H.2 h).2
-    exact fun q hq => ⟨(H.1 hq).1, ha <| mem_image_of_mem _ hq⟩
-  · exact fun q hq => ⟨H.1.1 <| mem_image_of_mem _ hq, H.2.1 <| mem_image_of_mem _ hq⟩
-  · exact fun q hq =>
+    exact fun q hq ↦ ⟨(H.1 hq).1, ha <| mem_image_of_mem _ hq⟩
+  · exact fun q hq ↦ ⟨H.1.1 <| mem_image_of_mem _ hq, H.2.1 <| mem_image_of_mem _ hq⟩
+  · exact fun q hq ↦
       ⟨H.1.2 <| monotone_fst.mem_upperBounds_image hq,
         H.2.2 <| monotone_snd.mem_upperBounds_image hq⟩
 
@@ -531,28 +531,28 @@ theorem isLUB_pi {s : Set (∀ a, π a)} {f : ∀ a, π a} :
     IsLUB s f ↔ ∀ a, IsLUB (Function.eval a '' s) (f a) := by
   classical
     refine
-      ⟨fun H a => ⟨(Function.monotone_eval a).mem_upperBounds_image H.1, fun b hb => ?_⟩, fun H =>
+      ⟨fun H a ↦ ⟨(Function.monotone_eval a).mem_upperBounds_image H.1, fun b hb ↦ ?_⟩, fun H ↦
         ⟨?_, ?_⟩⟩
     · suffices h : Function.update f a b ∈ upperBounds s from Function.update_self a b f ▸ H.2 h a
-      exact fun g hg => le_update_iff.2 ⟨hb <| mem_image_of_mem _ hg, fun i _ => H.1 hg i⟩
-    · exact fun g hg a => (H a).1 (mem_image_of_mem _ hg)
-    · exact fun g hg a => (H a).2 ((Function.monotone_eval a).mem_upperBounds_image hg)
+      exact fun g hg ↦ le_update_iff.2 ⟨hb <| mem_image_of_mem _ hg, fun i _ ↦ H.1 hg i⟩
+    · exact fun g hg a ↦ (H a).1 (mem_image_of_mem _ hg)
+    · exact fun g hg a ↦ (H a).2 ((Function.monotone_eval a).mem_upperBounds_image hg)
 
 theorem isGLB_pi {s : Set (∀ a, π a)} {f : ∀ a, π a} :
     IsGLB s f ↔ ∀ a, IsGLB (Function.eval a '' s) (f a) :=
-  @isLUB_pi α (fun a => (π a)ᵒᵈ) _ s f
+  @isLUB_pi α (fun a ↦ (π a)ᵒᵈ) _ s f
 
 end Pi
 
 theorem IsGLB.of_image [Preorder α] [Preorder β] {f : α → β} (hf : ∀ {x y}, f x ≤ f y ↔ x ≤ y)
     {s : Set α} {x : α} (hx : IsGLB (f '' s) (f x)) : IsGLB s x :=
-  ⟨fun _ hy => hf.1 <| hx.1 <| mem_image_of_mem _ hy, fun _ hy =>
-    hf.1 <| hx.2 <| Monotone.mem_lowerBounds_image (fun _ _ => hf.2) hy⟩
+  ⟨fun _ hy ↦ hf.1 <| hx.1 <| mem_image_of_mem _ hy, fun _ hy ↦
+    hf.1 <| hx.2 <| Monotone.mem_lowerBounds_image (fun _ _ ↦ hf.2) hy⟩
 
 theorem IsLUB.of_image [Preorder α] [Preorder β] {f : α → β} (hf : ∀ {x y}, f x ≤ f y ↔ x ≤ y)
     {s : Set α} {x : α} (hx : IsLUB (f '' s) (f x)) : IsLUB s x :=
-  ⟨fun _ hy => hf.1 <| hx.1 <| mem_image_of_mem _ hy, fun _ hy =>
-    hf.1 <| hx.2 <| Monotone.mem_upperBounds_image (fun _ _ => hf.2) hy⟩
+  ⟨fun _ hy ↦ hf.1 <| hx.1 <| mem_image_of_mem _ hy, fun _ hy ↦
+    hf.1 <| hx.2 <| Monotone.mem_upperBounds_image (fun _ _ ↦ hf.2) hy⟩
 
 lemma BddAbove.range_mono [Preorder β] {f : α → β} (g : α → β) (h : ∀ a, f a ≤ g a)
     (hbdd : BddAbove (range g)) : BddAbove (range f) := by
@@ -566,11 +566,11 @@ lemma BddBelow.range_mono [Preorder β] (f : α → β) {g : α → β} (h : ∀
   BddAbove.range_mono (β := βᵒᵈ) f h hbdd
 
 lemma BddAbove.range_comp {γ : Type*} [Preorder β] [Preorder γ] {f : α → β} {g : β → γ}
-    (hf : BddAbove (range f)) (hg : Monotone g) : BddAbove (range (fun x => g (f x))) := by
+    (hf : BddAbove (range f)) (hg : Monotone g) : BddAbove (range (fun x ↦ g (f x))) := by
   change BddAbove (range (g ∘ f))
   simpa only [Set.range_comp] using hg.map_bddAbove hf
 
 lemma BddBelow.range_comp {γ : Type*} [Preorder β] [Preorder γ] {f : α → β} {g : β → γ}
-    (hf : BddBelow (range f)) (hg : Monotone g) : BddBelow (range (fun x => g (f x))) := by
+    (hf : BddBelow (range f)) (hg : Monotone g) : BddBelow (range (fun x ↦ g (f x))) := by
   change BddBelow (range (g ∘ f))
   simpa only [Set.range_comp] using hg.map_bddBelow hf

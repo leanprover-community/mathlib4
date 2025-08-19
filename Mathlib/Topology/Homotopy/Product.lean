@@ -60,7 +60,7 @@ variable {I A : Type*} {X : I → Type*} [∀ i, TopologicalSpace (X i)] [Topolo
 @[simps!]
 def HomotopyRel.pi (homotopies : ∀ i : I, HomotopyRel (f i) (g i) S) :
     HomotopyRel (pi f) (pi g) S :=
-  { Homotopy.pi fun i => (homotopies i).toHomotopy with
+  { Homotopy.pi fun i ↦ (homotopies i).toHomotopy with
     prop' := by
       intro t x hx
       dsimp only [coe_mk, pi_eval, toFun_eq_coe, HomotopyWith.coe_toContinuousMap]
@@ -113,11 +113,11 @@ def piHomotopy (γ₀ γ₁ : ∀ i, Path (as i) (bs i)) (H : ∀ i, Path.Homoto
 
 /-- The product of a family of path homotopy classes. -/
 def pi (γ : ∀ i, Path.Homotopic.Quotient (as i) (bs i)) : Path.Homotopic.Quotient as bs :=
-  (Quotient.map Path.pi fun x y hxy =>
+  (Quotient.map Path.pi fun x y hxy ↦
     Nonempty.map (piHomotopy x y) (Classical.nonempty_pi.mpr hxy)) (Quotient.choice γ)
 
 theorem pi_lift (γ : ∀ i, Path (as i) (bs i)) :
-    (Path.Homotopic.pi fun i => ⟦γ i⟧) = ⟦Path.pi γ⟧ := by unfold pi; simp
+    (Path.Homotopic.pi fun i ↦ ⟦γ i⟧) = ⟦Path.pi γ⟧ := by unfold pi; simp
 
 /-- Composition and products commute.
   This is `Path.trans_pi_eq_pi_trans` descended to path homotopy classes. -/
@@ -142,7 +142,7 @@ theorem proj_pi (i : ι) (paths : ∀ i, Path.Homotopic.Quotient (as i) (bs i)) 
   congr
 
 @[simp]
-theorem pi_proj (p : Path.Homotopic.Quotient as bs) : (pi fun i => proj i p) = p := by
+theorem pi_proj (p : Path.Homotopic.Quotient as bs) : (pi fun i ↦ proj i p) = p := by
   induction p using Quotient.inductionOn
   simp_rw [proj, ← Path.Homotopic.map_lift]
   erw [pi_lift]
@@ -165,7 +165,7 @@ def prodHomotopy (h₁ : Path.Homotopy p₁ p₁') (h₂ : Path.Homotopy p₂ p�
 /-- The product of path classes q₁ and q₂. This is `Path.prod` descended to the quotient. -/
 def prod (q₁ : Path.Homotopic.Quotient a₁ a₂) (q₂ : Path.Homotopic.Quotient b₁ b₂) :
     Path.Homotopic.Quotient (a₁, b₁) (a₂, b₂) :=
-  Quotient.map₂ Path.prod (fun _ _ h₁ _ _ h₂ => Nonempty.map2 prodHomotopy h₁ h₂) q₁ q₂
+  Quotient.map₂ Path.prod (fun _ _ h₁ _ _ h₂ ↦ Nonempty.map2 prodHomotopy h₁ h₂) q₁ q₂
 
 variable (p₁ p₁' p₂ p₂')
 

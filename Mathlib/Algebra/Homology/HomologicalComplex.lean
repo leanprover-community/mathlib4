@@ -224,7 +224,7 @@ theorem Hom.comm {A B : HomologicalComplex V c} (f : A.Hom B) (i j : ι) :
   · rw [A.shape i j hij, B.shape i j hij, comp_zero, zero_comp]
 
 instance (A B : HomologicalComplex V c) : Inhabited (Hom A B) :=
-  ⟨{ f := fun _ => 0 }⟩
+  ⟨{ f := fun _ ↦ 0 }⟩
 
 /-- Identity chain map. -/
 def id (A : HomologicalComplex V c) : Hom A A where f _ := 𝟙 _
@@ -269,10 +269,10 @@ theorem eqToHom_f {C₁ C₂ : HomologicalComplex V c} (h : C₁ = C₂) (n : ι
 
 -- We'll use this later to show that `HomologicalComplex V c` is preadditive when `V` is.
 theorem hom_f_injective {C₁ C₂ : HomologicalComplex V c} :
-    Function.Injective fun f : Hom C₁ C₂ => f.f := by cat_disch
+    Function.Injective fun f : Hom C₁ C₂ ↦ f.f := by cat_disch
 
 instance (X Y : HomologicalComplex V c) : Zero (X ⟶ Y) :=
-  ⟨{ f := fun _ => 0}⟩
+  ⟨{ f := fun _ ↦ 0}⟩
 
 @[simp]
 theorem zero_f (C D : HomologicalComplex V c) (i : ι) : (0 : C ⟶ D).f i = 0 :=
@@ -288,7 +288,7 @@ noncomputable def zero [HasZeroObject V] : HomologicalComplex V c where
   d _ _ := 0
 
 theorem isZero_zero [HasZeroObject V] : IsZero (zero : HomologicalComplex V c) := by
-  refine ⟨fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩
+  refine ⟨fun X ↦ ⟨⟨⟨0⟩, fun f ↦ ?_⟩⟩, fun X ↦ ⟨⟨⟨0⟩, fun f ↦ ?_⟩⟩⟩
   all_goals
     ext
     dsimp only [zero]
@@ -345,7 +345,7 @@ instance : (forget V c).Faithful where
 just picking out the `i`-th object. -/
 @[simps!]
 def forgetEval (i : ι) : forget V c ⋙ GradedObject.eval i ≅ eval V c i :=
-  NatIso.ofComponents fun _ => Iso.refl _
+  NatIso.ofComponents fun _ ↦ Iso.refl _
 
 end
 
@@ -499,11 +499,11 @@ def isoOfComponents (f : ∀ i, C₁.X i ≅ C₂.X i)
     (hf : ∀ i j, c.Rel i j → (f i).hom ≫ C₂.d i j = C₁.d i j ≫ (f j).hom := by cat_disch) :
     C₁ ≅ C₂ where
   hom :=
-    { f := fun i => (f i).hom
+    { f := fun i ↦ (f i).hom
       comm' := hf }
   inv :=
-    { f := fun i => (f i).inv
-      comm' := fun i j hij =>
+    { f := fun i ↦ (f i).inv
+      comm' := fun i j hij ↦
         calc
           (f i).inv ≫ C₁.d i j = (f i).inv ≫ (C₁.d i j ≫ (f j).hom) ≫ (f j).inv := by simp
           _ = (f i).inv ≫ ((f i).hom ≫ C₂.d i j) ≫ (f j).inv := by rw [hf i j hij]
@@ -523,7 +523,7 @@ theorem isoOfComponents_app (f : ∀ i, C₁.X i ≅ C₂.X i)
   simp
 
 theorem isIso_of_components (f : C₁ ⟶ C₂) [∀ n : ι, IsIso (f.f n)] : IsIso f :=
-  (HomologicalComplex.Hom.isoOfComponents fun n => asIso (f.f n)).isIso_hom
+  (HomologicalComplex.Hom.isoOfComponents fun n ↦ asIso (f.f n)).isIso_hom
 
 /-! Lemmas relating chain maps and `dTo`/`dFrom`. -/
 
@@ -611,10 +611,10 @@ variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 -/
 def of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0) : ChainComplex V α :=
   { X := X
-    d := fun i j => if h : i = j + 1 then eqToHom (by rw [h]) ≫ d j else 0
-    shape := fun i j w => by
+    d := fun i j ↦ if h : i = j + 1 then eqToHom (by rw [h]) ≫ d j else 0
+    shape := fun i j w ↦ by
       rw [dif_neg (Ne.symm w)]
-    d_comp_d' := fun i j k hij hjk => by
+    d_comp_d' := fun i j k hij hjk ↦ by
       dsimp at hij hjk
       substs hij hjk
       simp only [eqToHom_refl, id_comp, dite_eq_ite, ite_true, sq] }
@@ -649,7 +649,7 @@ from a dependently typed collection of morphisms.
 def ofHom (f : ∀ i : α, X i ⟶ Y i) (comm : ∀ i : α, f (i + 1) ≫ d_Y i = d_X i ≫ f i) :
     of X d_X sq_X ⟶ of Y d_Y sq_Y :=
   { f
-    comm' := fun n m => by
+    comm' := fun n m ↦ by
       by_cases h : n = m + 1
       · subst h
         simpa using comm m
@@ -680,8 +680,8 @@ and returns the next object, its differential, and the fact it composes appropri
 See also `mk'`, which only sees the previous differential in the inductive step.
 -/
 def mk : ChainComplex V ℕ :=
-  of (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).X₃) (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).g)
-    fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).zero
+  of (fun n ↦ (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).X₃) (fun n ↦ (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).g)
+    fun n ↦ (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).zero
 
 @[simp]
 theorem mk_X_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).X 0 = X₀ :=
@@ -715,7 +715,7 @@ and returns the next object, its differential, and the fact it composes appropri
 def mk' (X₀ X₁ : V) (d : X₁ ⟶ X₀)
     (succ' : ∀ {X₀ X₁ : V} (f : X₁ ⟶ X₀), Σ' (X₂ : V) (d : X₂ ⟶ X₁), d ≫ f = 0) :
     ChainComplex V ℕ :=
-  mk _ _ _ _ _ (succ' d).2.2 (fun S => succ' S.f)
+  mk _ _ _ _ _ (succ' d).2.2 (fun S ↦ succ' S.f)
 
 variable (succ' : ∀ {X₀ X₁ : V} (f : X₁ ⟶ X₀), Σ' (X₂ : V) (d : X₂ ⟶ X₁), d ≫ f = 0)
 
@@ -828,11 +828,11 @@ variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 def of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n + 1) = 0) :
     CochainComplex V α :=
   { X := X
-    d := fun i j => if h : i + 1 = j then d _ ≫ eqToHom (by rw [h]) else 0
-    shape := fun i j w => by
+    d := fun i j ↦ if h : i + 1 = j then d _ ≫ eqToHom (by rw [h]) else 0
+    shape := fun i j w ↦ by
       rw [dif_neg]
       exact w
-    d_comp_d' := fun i j k => by
+    d_comp_d' := fun i j k ↦ by
       dsimp
       split_ifs with h h' h'
       · substs h h'
@@ -870,7 +870,7 @@ from a dependently typed collection of morphisms.
 def ofHom (f : ∀ i : α, X i ⟶ Y i) (comm : ∀ i : α, f i ≫ d_Y i = d_X i ≫ f (i + 1)) :
     of X d_X sq_X ⟶ of Y d_Y sq_Y :=
   { f
-    comm' := fun n m => by
+    comm' := fun n m ↦ by
       by_cases h : n + 1 = m
       · subst h
         simpa using comm n
@@ -899,8 +899,8 @@ and returns the next object, its differential, and the fact it composes appropri
 See also `mk'`, which only sees the previous differential in the inductive step.
 -/
 def mk : CochainComplex V ℕ :=
-  of (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).X₁) (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).f)
-    fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).zero
+  of (fun n ↦ (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).X₁) (fun n ↦ (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).f)
+    fun n ↦ (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).zero
 
 @[simp]
 theorem mk_X_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).X 0 = X₀ :=
@@ -935,7 +935,7 @@ def mk' (X₀ X₁ : V) (d : X₀ ⟶ X₁)
     -- (succ' : ∀ : Σ X₀ X₁ : V, X₀ ⟶ X₁, Σ' (X₂ : V) (d : t.2.1 ⟶ X₂), t.2.2 ≫ d = 0) :
     (succ' : ∀ {X₀ X₁ : V} (f : X₀ ⟶ X₁), Σ' (X₂ : V) (d : X₁ ⟶ X₂), f ≫ d = 0) :
     CochainComplex V ℕ :=
-  mk _ _ _ _ _ (succ' d).2.2 (fun S => succ' S.g)
+  mk _ _ _ _ _ (succ' d).2.2 (fun S ↦ succ' S.g)
 
 variable (succ' : ∀ {X₀ X₁ : V} (f : X₀ ⟶ X₁), Σ' (X₂ : V) (d : X₁ ⟶ X₂), f ≫ d = 0)
 

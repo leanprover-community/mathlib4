@@ -168,10 +168,10 @@ abbrev kernel (S : Set T) := sInf (Subtype.val '' S)
 subsets of `T` and `α`. -/
 open OrderDual in
 theorem gc : GaloisConnection (α := Set T) (β := αᵒᵈ)
-    (fun S => toDual (kernel S)) (fun a => hull T (ofDual a)) := fun S a => by
+    (fun S ↦ toDual (kernel S)) (fun a ↦ hull T (ofDual a)) := fun S a ↦ by
   simp only [toDual_sInf, sSup_le_iff, mem_preimage, mem_image, Subtype.exists, exists_and_right,
     exists_eq_right, ← ofDual_le_ofDual, forall_exists_index, OrderDual.forall, ofDual_toDual]
-  exact ⟨fun h b hbS => h _ (Subtype.coe_prop b) hbS, fun h b _ hbS => h hbS⟩
+  exact ⟨fun h b hbS ↦ h _ (Subtype.coe_prop b) hbS, fun h b _ hbS ↦ h hbS⟩
 
 lemma gc_closureOperator (S : Set T) : gc.closureOperator S = hull T (kernel S) := by
   simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
@@ -194,7 +194,7 @@ def gi (hG : OrderGenerates T) : GaloisInsertion (α := Set T) (β := αᵒᵈ)
   gc.toGaloisInsertion fun a ↦ (by
     rw [OrderDual.le_toDual]
     obtain ⟨S, hS⟩ := hG a
-    exact le_of_le_of_eq (sInf_le_sInf (image_val_mono (fun c hcS => mem_preimage.mpr (mem_Ici.mpr
+    exact le_of_le_of_eq (sInf_le_sInf (image_val_mono (fun c hcS ↦ mem_preimage.mpr (mem_Ici.mpr
       (by rw [hS]; exact CompleteSemilatticeInf.sInf_le _ _ (mem_image_of_mem Subtype.val hcS))))))
       hS.symm)
 
@@ -214,7 +214,7 @@ lemma closedsGC_closureOperator [TopologicalSpace α] [IsLower α] [DecidableEq 
   simp only [GaloisConnection.closureOperator_apply, Closeds.coe_closure, closure, le_antisymm_iff]
   constructor
   · exact fun ⦃a⦄ a ↦ a (hull T (kernel S)) ⟨(isClosed_iff hT).mpr ⟨kernel S, rfl⟩,
-      image_subset_iff.mp (fun _ hbS => CompleteSemilatticeInf.sInf_le _ _ hbS)⟩
+      image_subset_iff.mp (fun _ hbS ↦ CompleteSemilatticeInf.sInf_le _ _ hbS)⟩
   · simp_rw [le_eq_subset, subset_sInter_iff]
     intro R hR
     rw [← (hull_kernel_of_isClosed hT hG hR.1), ← gc_closureOperator]

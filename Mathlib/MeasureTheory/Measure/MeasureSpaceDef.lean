@@ -121,7 +121,7 @@ def ofMeasurable (m : ∀ s : Set α, MeasurableSet s → ℝ≥0∞) (m0 : m �
         Pairwise (Disjoint on f) → m (⋃ i, f i) (MeasurableSet.iUnion h) = ∑' i, m (f i) (h i)) :
     Measure α :=
   { toOuterMeasure := inducedOuterMeasure m _ m0
-    m_iUnion := fun f hf hd =>
+    m_iUnion := fun f hf hd ↦
       show inducedOuterMeasure m _ m0 (iUnion f) = ∑' i, inducedOuterMeasure m _ m0 (f i) by
         rw [inducedOuterMeasure_eq m0 mU, mU hf hd]
         congr; funext n; rw [inducedOuterMeasure_eq m0 mU]
@@ -171,20 +171,20 @@ theorem measure_eq_iInf' (μ : Measure α) (s : Set α) :
   simp_rw [iInf_subtype, iInf_and, ← measure_eq_iInf]
 
 theorem measure_eq_inducedOuterMeasure :
-    μ s = inducedOuterMeasure (fun s _ => μ s) MeasurableSet.empty μ.empty s :=
+    μ s = inducedOuterMeasure (fun s _ ↦ μ s) MeasurableSet.empty μ.empty s :=
   measure_eq_trim _
 
 theorem toOuterMeasure_eq_inducedOuterMeasure :
-    μ.toOuterMeasure = inducedOuterMeasure (fun s _ => μ s) MeasurableSet.empty μ.empty :=
+    μ.toOuterMeasure = inducedOuterMeasure (fun s _ ↦ μ s) MeasurableSet.empty μ.empty :=
   μ.trimmed.symm
 
 theorem measure_eq_extend (hs : MeasurableSet s) :
-    μ s = extend (fun t (_ht : MeasurableSet t) => μ t) s := by
+    μ s = extend (fun t (_ht : MeasurableSet t) ↦ μ t) s := by
   rw [extend_eq]
   exact hs
 
 theorem nonempty_of_measure_ne_zero (h : μ s ≠ 0) : s.Nonempty :=
-  nonempty_iff_ne_empty.2 fun h' => h <| h'.symm ▸ measure_empty
+  nonempty_iff_ne_empty.2 fun h' ↦ h <| h'.symm ▸ measure_empty
 
 theorem measure_mono_top (h : s₁ ⊆ s₂) (h₁ : μ s₁ = ∞) : μ s₂ = ∞ :=
   top_unique <| h₁ ▸ measure_mono h
@@ -205,19 +205,19 @@ superset `t ⊇ s` such that each measure `μ i` takes the same value on `s` and
 theorem exists_measurable_superset_forall_eq [Countable ι] (μ : ι → Measure α) (s : Set α) :
     ∃ t, s ⊆ t ∧ MeasurableSet t ∧ ∀ i, μ i t = μ i s := by
   simpa only [← measure_eq_trim] using
-    OuterMeasure.exists_measurable_superset_forall_eq_trim (fun i => (μ i).toOuterMeasure) s
+    OuterMeasure.exists_measurable_superset_forall_eq_trim (fun i ↦ (μ i).toOuterMeasure) s
 
 theorem exists_measurable_superset₂ (μ ν : Measure α) (s : Set α) :
     ∃ t, s ⊆ t ∧ MeasurableSet t ∧ μ t = μ s ∧ ν t = ν s := by
   simpa only [Bool.forall_bool.trans and_comm] using
-    exists_measurable_superset_forall_eq (fun b => cond b μ ν) s
+    exists_measurable_superset_forall_eq (fun b ↦ cond b μ ν) s
 
 theorem exists_measurable_superset_of_null (h : μ s = 0) : ∃ t, s ⊆ t ∧ MeasurableSet t ∧ μ t = 0 :=
   h ▸ exists_measurable_superset μ s
 
 theorem exists_measurable_superset_iff_measure_eq_zero :
     (∃ t, s ⊆ t ∧ MeasurableSet t ∧ μ t = 0) ↔ μ s = 0 :=
-  ⟨fun ⟨_t, hst, _, ht⟩ => measure_mono_null hst ht, exists_measurable_superset_of_null⟩
+  ⟨fun ⟨_t, hst, _, ht⟩ ↦ measure_mono_null hst ht, exists_measurable_superset_of_null⟩
 
 theorem measure_biUnion_lt_top {s : Set β} {f : β → Set α} (hs : s.Finite)
     (hfin : ∀ i ∈ s, μ (f i) < ∞) : μ (⋃ i ∈ s, f i) < ∞ := by
@@ -231,7 +231,7 @@ theorem measure_union_lt_top (hs : μ s < ∞) (ht : μ t < ∞) : μ (s ∪ t) 
 
 @[simp]
 theorem measure_union_lt_top_iff : μ (s ∪ t) < ∞ ↔ μ s < ∞ ∧ μ t < ∞ := by
-  refine ⟨fun h => ⟨?_, ?_⟩, fun h => measure_union_lt_top h.1 h.2⟩
+  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ measure_union_lt_top h.1 h.2⟩
   · exact (measure_mono Set.subset_union_left).trans_lt h
   · exact (measure_mono Set.subset_union_right).trans_lt h
 
@@ -249,7 +249,7 @@ theorem measure_union_eq_top_iff : μ (s ∪ t) = ∞ ↔ μ s = ∞ ∨ μ t = 
 theorem exists_measure_pos_of_not_measure_iUnion_null [Countable ι] {s : ι → Set α}
     (hs : μ (⋃ n, s n) ≠ 0) : ∃ n, 0 < μ (s n) := by
   contrapose! hs
-  exact measure_iUnion_null fun n => nonpos_iff_eq_zero.1 (hs n)
+  exact measure_iUnion_null fun n ↦ nonpos_iff_eq_zero.1 (hs n)
 
 theorem measure_lt_top_of_subset (hst : t ⊆ s) (hs : μ s ≠ ∞) : μ t < ∞ :=
   lt_of_le_of_lt (μ.mono hst) hs.lt_top
@@ -415,10 +415,10 @@ theorem congr (hf : AEMeasurable f μ) (h : f =ᵐ[μ] g) : AEMeasurable g μ :=
 end AEMeasurable
 
 theorem aemeasurable_congr (h : f =ᵐ[μ] g) : AEMeasurable f μ ↔ AEMeasurable g μ :=
-  ⟨fun hf => AEMeasurable.congr hf h, fun hg => AEMeasurable.congr hg h.symm⟩
+  ⟨fun hf ↦ AEMeasurable.congr hf h, fun hg ↦ AEMeasurable.congr hg h.symm⟩
 
 @[simp, fun_prop, measurability]
-theorem aemeasurable_const {b : β} : AEMeasurable (fun _a : α => b) μ :=
+theorem aemeasurable_const {b : β} : AEMeasurable (fun _a : α ↦ b) μ :=
   measurable_const.aemeasurable
 
 @[measurability]
@@ -426,7 +426,7 @@ theorem aemeasurable_id : AEMeasurable id μ :=
   measurable_id.aemeasurable
 
 @[measurability]
-theorem aemeasurable_id' : AEMeasurable (fun x => x) μ :=
+theorem aemeasurable_id' : AEMeasurable (fun x ↦ x) μ :=
   measurable_id.aemeasurable
 
 theorem Measurable.comp_aemeasurable [MeasurableSpace δ] {f : α → δ} {g : δ → β} (hg : Measurable g)

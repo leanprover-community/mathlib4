@@ -40,7 +40,7 @@ variable {K : Type*} [Field K] {v : AbsoluteValue K ℝ}
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
 `f` is an isometry. -/
 theorem isometry_of_comp (h : ∀ x, ‖f x‖ = v x) : Isometry f :=
-  Isometry.of_dist_eq <| fun x y => by simp only [‹NormedField L›.dist_eq, ← f.map_sub, h]; rfl
+  Isometry.of_dist_eq <| fun x y ↦ by simp only [‹NormedField L›.dist_eq, ← f.map_sub, h]; rfl
 
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
 the pseudo metric space associated to the absolute value is the same as the pseudo metric space
@@ -95,7 +95,7 @@ then the extended embedding `v.Completion →+* L` preserves distances. -/
 theorem extensionEmbedding_dist_eq_of_comp (h : ∀ x, ‖f x‖ = v x) (x y : v.Completion) :
     dist (extensionEmbedding_of_comp h x) (extensionEmbedding_of_comp h y) =
       dist x y := by
-  refine UniformSpace.Completion.induction_on₂ x y ?_ (fun x y => ?_)
+  refine UniformSpace.Completion.induction_on₂ x y ?_ (fun x y ↦ ?_)
   · refine isClosed_eq ?_ continuous_dist
     exact continuous_iff_continuous_dist.1 UniformSpace.Completion.continuous_extension
   · simp only [extensionEmbedding_of_comp_coe]

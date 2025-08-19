@@ -344,7 +344,7 @@ instance instOne [One R] [Zero A] : One (Unitization R A) :=
   ⟨(1, 0)⟩
 
 instance instMul [Mul R] [Add A] [Mul A] [SMul R A] : Mul (Unitization R A) :=
-  ⟨fun x y => (x.1 * y.1, x.1 • y.2 + y.1 • x.2 + x.2 * y.2)⟩
+  ⟨fun x y ↦ (x.1 * y.1, x.1 • y.2 + y.1 • x.2 + x.2 * y.2)⟩
 
 @[simp]
 theorem fst_one [One R] [Zero A] : (1 : Unitization R A).fst = 1 :=
@@ -412,11 +412,11 @@ theorem inr_mul_inl [MulZeroClass R] [NonUnitalNonAssocSemiring A] [SMulZeroClas
 instance instMulOneClass [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A] :
     MulOneClass (Unitization R A) :=
   { Unitization.instOne, Unitization.instMul with
-    one_mul := fun x =>
+    one_mul := fun x ↦
       ext (one_mul x.1) <|
         show (1 : R) • x.2 + x.1 • (0 : A) + 0 * x.2 = x.2 by
           rw [one_smul, smul_zero, add_zero, zero_mul, add_zero]
-    mul_one := fun x =>
+    mul_one := fun x ↦
       ext (mul_one x.1) <|
         show (x.1 • (0 : A)) + (1 : R) • x.2 + x.2 * (0 : A) = x.2 by
           rw [smul_zero, zero_add, one_smul, mul_zero, add_zero] }
@@ -425,21 +425,21 @@ instance instNonAssocSemiring [Semiring R] [NonUnitalNonAssocSemiring A] [Module
     NonAssocSemiring (Unitization R A) :=
   { Unitization.instMulOneClass,
     Unitization.instAddCommMonoid with
-    zero_mul := fun x =>
+    zero_mul := fun x ↦
       ext (zero_mul x.1) <|
         show (0 : R) • x.2 + x.1 • (0 : A) + 0 * x.2 = 0 by
           rw [zero_smul, zero_add, smul_zero, zero_mul, add_zero]
-    mul_zero := fun x =>
+    mul_zero := fun x ↦
       ext (mul_zero x.1) <|
         show x.1 • (0 : A) + (0 : R) • x.2 + x.2 * 0 = 0 by
           rw [smul_zero, zero_add, zero_smul, mul_zero, add_zero]
-    left_distrib := fun x₁ x₂ x₃ =>
+    left_distrib := fun x₁ x₂ x₃ ↦
       ext (mul_add x₁.1 x₂.1 x₃.1) <|
         show x₁.1 • (x₂.2 + x₃.2) + (x₂.1 + x₃.1) • x₁.2 + x₁.2 * (x₂.2 + x₃.2) =
             x₁.1 • x₂.2 + x₂.1 • x₁.2 + x₁.2 * x₂.2 + (x₁.1 • x₃.2 + x₃.1 • x₁.2 + x₁.2 * x₃.2) by
           simp only [smul_add, add_smul, mul_add]
           abel
-    right_distrib := fun x₁ x₂ x₃ =>
+    right_distrib := fun x₁ x₂ x₃ ↦
       ext (add_mul x₁.1 x₂.1 x₃.1) <|
         show (x₁.1 + x₂.1) • x₃.2 + x₃.1 • (x₁.2 + x₂.2) + (x₁.2 + x₂.2) * x₃.2 =
             x₁.1 • x₃.2 + x₃.1 • x₁.2 + x₁.2 * x₃.2 + (x₂.1 • x₃.2 + x₃.1 • x₂.2 + x₂.2 * x₃.2) by
@@ -449,7 +449,7 @@ instance instNonAssocSemiring [Semiring R] [NonUnitalNonAssocSemiring A] [Module
 instance instMonoid [CommMonoid R] [NonUnitalSemiring A] [DistribMulAction R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : Monoid (Unitization R A) :=
   { Unitization.instMulOneClass with
-    mul_assoc := fun x y z =>
+    mul_assoc := fun x y z ↦
       ext (mul_assoc x.1 y.1 z.1) <|
         show (x.1 * y.1) • z.2 + z.1 • (x.1 • y.2 + y.1 • x.2 + x.2 * y.2) +
             (x.1 • y.2 + y.1 • x.2 + x.2 * y.2) * z.2 =
@@ -464,7 +464,7 @@ instance instMonoid [CommMonoid R] [NonUnitalSemiring A] [DistribMulAction R A]
 instance instCommMonoid [CommMonoid R] [NonUnitalCommSemiring A] [DistribMulAction R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : CommMonoid (Unitization R A) :=
   { Unitization.instMonoid with
-    mul_comm := fun x₁ x₂ =>
+    mul_comm := fun x₁ x₂ ↦
       ext (mul_comm x₁.1 x₂.1) <|
         show x₁.1 • x₂.2 + x₂.1 • x₁.2 + x₁.2 * x₂.2 = x₂.1 • x₁.2 + x₁.1 • x₂.2 + x₂.2 * x₁.2 by
           rw [add_comm (x₁.1 • x₂.2), mul_comm] }
@@ -510,7 +510,7 @@ section Star
 variable {R A : Type*}
 
 instance instStar [Star R] [Star A] : Star (Unitization R A) :=
-  ⟨fun ra => (star ra.fst, star ra.snd)⟩
+  ⟨fun ra ↦ (star ra.fst, star ra.snd)⟩
 
 @[simp]
 theorem fst_star [Star R] [Star A] (x : Unitization R A) : (star x).fst = star x.fst :=
@@ -543,7 +543,7 @@ instance instStarRing [CommSemiring R] [StarRing R] [NonUnitalNonAssocSemiring A
     [Module R A] [StarModule R A] :
     StarRing (Unitization R A) :=
   { Unitization.instStarAddMonoid with
-    star_mul := fun x y =>
+    star_mul := fun x y ↦
       ext (by simp [-star_mul']) (by simp [-star_mul', add_comm (star x.fst • star y.snd)]) }
 
 end Star
@@ -559,12 +559,12 @@ variable (S R A : Type*) [CommSemiring S] [CommSemiring R] [NonUnitalSemiring A]
 
 instance instAlgebra : Algebra S (Unitization R A) where
   algebraMap := (Unitization.inlRingHom R A).comp (algebraMap S R)
-  commutes' := fun s x => by
+  commutes' := fun s x ↦ by
     induction x with
     | inl_add_inr =>
       change inl (algebraMap S R s) * _ = _ * inl (algebraMap S R s)
       rw [mul_add, add_mul, inl_mul_inl, inl_mul_inl, inl_mul_inr, inr_mul_inl, mul_comm]
-  smul_def' := fun s x => by
+  smul_def' := fun s x ↦ by
     induction x with
     | inl_add_inr =>
       change _ = inl (algebraMap S R s) * _
@@ -646,7 +646,7 @@ theorem algHom_ext {F : Type*}
 lemma algHom_ext'' {F : Type*}
     [FunLike F (Unitization R A) C] [AlgHomClass F R (Unitization R A) C] {φ ψ : F}
     (h : ∀ a : A, φ a = ψ a) : φ = ψ :=
-  algHom_ext h (fun r => by simp only [AlgHomClass.commutes])
+  algHom_ext h (fun r ↦ by simp only [AlgHomClass.commutes])
 
 /-- See note [partially-applied ext lemmas] -/
 @[ext 1100]
@@ -663,9 +663,9 @@ algebra homomorphism from the unitization into `C`. This is extended to an `Equi
 reasons. -/
 @[simps]
 def _root_.NonUnitalAlgHom.toAlgHom (φ : A →ₙₐ[R] C) : Unitization R A →ₐ[R] C where
-  toFun := fun x => algebraMap R C x.fst + φ x.snd
+  toFun := fun x ↦ algebraMap R C x.fst + φ x.snd
   map_one' := by simp only [fst_one, map_one, snd_one, φ.map_zero, add_zero]
-  map_mul' := fun x y => by
+  map_mul' := fun x y ↦ by
     induction x with
     | inl_add_inr x_r x_a =>
       induction y with
@@ -676,7 +676,7 @@ def _root_.NonUnitalAlgHom.toAlgHom (φ : A →ₙₐ[R] C) : Unitization R A �
         rw [← Algebra.commutes _ (φ x_a)]
         simp only [Algebra.algebraMap_eq_smul_one, smul_one_mul, add_assoc]
   map_zero' := by simp only [fst_zero, map_zero, snd_zero, φ.map_zero, add_zero]
-  map_add' := fun x y => by
+  map_add' := fun x y ↦ by
     induction x with
     | inl_add_inr =>
       induction y with
@@ -684,7 +684,7 @@ def _root_.NonUnitalAlgHom.toAlgHom (φ : A →ₙₐ[R] C) : Unitization R A �
         simp only [fst_add, fst_inl, fst_inr, add_zero, map_add, snd_add, snd_inl, snd_inr,
           zero_add, φ.map_add]
         rw [add_add_add_comm]
-  commutes' := fun r => by
+  commutes' := fun r ↦ by
     simp only [algebraMap_eq_inl, fst_inl, snd_inl, φ.map_zero, add_zero]
 
 
@@ -731,12 +731,12 @@ to `Unitization R A →⋆ₐ[R] C`. This is the universal property of the uniti
 def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
 { toFun := fun φ ↦
   { toAlgHom := Unitization.lift φ.toNonUnitalAlgHom
-    map_star' := fun x => by
+    map_star' := fun x ↦ by
       induction x
       simp [map_star] }
   invFun := fun φ ↦ φ.toNonUnitalStarAlgHom.comp (inrNonUnitalStarAlgHom R A),
-  left_inv := fun φ => by ext; simp,
-  right_inv := fun φ => Unitization.algHom_ext'' <| by
+  left_inv := fun φ ↦ by ext; simp,
+  right_inv := fun φ ↦ Unitization.algHom_ext'' <| by
     simp }
 
 @[simp high]

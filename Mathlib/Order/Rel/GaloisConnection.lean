@@ -78,8 +78,8 @@ theorem rightDual_mem_leftFixedPoint (I : Set β) : R.rightDual I ∈ R.leftFixe
 /-- The maps `leftDual` and `rightDual` induce inverse bijections between the sets of fixed points.
 -/
 def equivFixedPoints : R.leftFixedPoints ≃ R.rightFixedPoints where
-  toFun := fun ⟨J, _⟩ => ⟨R.leftDual J, R.leftDual_mem_rightFixedPoint J⟩
-  invFun := fun ⟨I, _⟩ => ⟨R.rightDual I, R.rightDual_mem_leftFixedPoint I⟩
+  toFun := fun ⟨J, _⟩ ↦ ⟨R.leftDual J, R.leftDual_mem_rightFixedPoint J⟩
+  invFun := fun ⟨I, _⟩ ↦ ⟨R.rightDual I, R.rightDual_mem_leftFixedPoint I⟩
   left_inv J := by obtain ⟨J, hJ⟩ := J; rw [Subtype.mk.injEq, hJ]
   right_inv I := by obtain ⟨I, hI⟩ := I; rw [Subtype.mk.injEq, hI]
 

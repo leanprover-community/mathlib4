@@ -87,10 +87,10 @@ def IsEllDivSequence : Prop :=
   IsEllSequence W ∧ IsDivSequence W
 
 lemma isEllSequence_id : IsEllSequence id :=
-  fun _ _ _ => by simp_rw [id_eq]; ring1
+  fun _ _ _ ↦ by simp_rw [id_eq]; ring1
 
 lemma isDivSequence_id : IsDivSequence id :=
-  fun _ _ => Int.ofNat_dvd.mpr
+  fun _ _ ↦ Int.ofNat_dvd.mpr
 
 /-- The identity sequence is an EDS. -/
 theorem isEllDivSequence_id : IsEllDivSequence id :=
@@ -99,11 +99,11 @@ theorem isEllDivSequence_id : IsEllDivSequence id :=
 variable {W}
 
 lemma IsEllSequence.smul (h : IsEllSequence W) (x : R) : IsEllSequence (x • W) :=
-  fun m n r => by
+  fun m n r ↦ by
     linear_combination (norm := (simp_rw [Pi.smul_apply, smul_eq_mul]; ring1)) x ^ 4 * h m n r
 
 lemma IsDivSequence.smul (h : IsDivSequence W) (x : R) : IsDivSequence (x • W) :=
-  fun m n r => mul_dvd_mul_left x <| h m n r
+  fun m n r ↦ mul_dvd_mul_left x <| h m n r
 
 lemma IsEllDivSequence.smul (h : IsEllDivSequence W) (x : R) : IsEllDivSequence (x • W) :=
   ⟨h.left.smul x, h.right.smul x⟩
@@ -382,8 +382,8 @@ noncomputable def normEDSRec {P : ℕ → Sort u}
     (even : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (m + 3) → P (m + 4) → P (m + 5) → P (2 * (m + 3)))
     (odd : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (m + 3) → P (m + 4) → P (2 * (m + 2) + 1)) (n : ℕ) :
     P n :=
-  normEDSRec' zero one two three four (fun _ ih => by apply even <;> exact ih _ <| by linarith only)
-    (fun _ ih => by apply odd <;> exact ih _ <| by linarith only) n
+  normEDSRec' zero one two three four (fun _ ih ↦ by apply even <;> exact ih _ <| by linarith only)
+    (fun _ ih ↦ by apply odd <;> exact ih _ <| by linarith only) n
 
 end NormEDS
 
@@ -501,8 +501,8 @@ then we have `P n` for all `n : ℕ`. -/
 noncomputable def complEDSRec {P : ℕ → Sort u} (zero : P 0) (one : P 1)
     (even : ∀ m : ℕ, P (m + 1) → P (2 * (m + 1)))
     (odd : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (2 * (m + 1) + 1)) (n : ℕ) : P n :=
-  complEDSRec' zero one (fun _ ih => even _ <| ih _ <| by linarith only)
-    (fun _ ih => odd _ (ih _ <| by linarith only) <| ih _ <| by linarith only) n
+  complEDSRec' zero one (fun _ ih ↦ even _ <| ih _ <| by linarith only)
+    (fun _ ih ↦ odd _ (ih _ <| by linarith only) <| ih _ <| by linarith only) n
 
 end ComplEDS
 

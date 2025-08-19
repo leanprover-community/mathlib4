@@ -109,10 +109,10 @@ is more convenient to show a given cofork is a coequalizer by showing it is spli
 -/
 def IsSplitCoequalizer.isCoequalizer {Z : C} {h : Y ⟶ Z} (t : IsSplitCoequalizer f g h) :
     IsColimit t.asCofork :=
-  Cofork.IsColimit.mk' _ fun s =>
+  Cofork.IsColimit.mk' _ fun s ↦
     ⟨t.rightSection ≫ s.π, by
       dsimp
-      rw [← t.leftSection_top_assoc, s.condition, t.leftSection_bottom_assoc], fun hm => by
+      rw [← t.leftSection_top_assoc, s.condition, t.leftSection_bottom_assoc], fun hm ↦ by
       simp [← hm]⟩
 
 end

@@ -213,7 +213,7 @@ theorem exponent : Monoid.exponent (DihedralGroup n) = lcm n 2 := by
       exact (orderOf_sr 0).symm
 
 lemma not_commutative : ∀ {n : ℕ}, n ≠ 1 → n ≠ 2 →
-    ¬Std.Commutative fun (x y : DihedralGroup n) => x * y
+    ¬Std.Commutative fun (x y : DihedralGroup n) ↦ x * y
   | 0, _, _ => fun ⟨h'⟩ ↦ by simpa using h' (r 1) (sr 0)
   | n + 3, _, _ => by
     rintro ⟨h'⟩
@@ -226,7 +226,7 @@ lemma commutative_iff : Std.Commutative (fun x y : DihedralGroup n ↦ x * y) �
   mp := by contrapose!; rintro ⟨h1, h2⟩; exact not_commutative h1 h2
   mpr := by rintro (rfl | rfl) <;> exact ⟨by decide⟩
 
-lemma not_isCyclic (h1 : n ≠ 1) : ¬ IsCyclic (DihedralGroup n) := fun h => by
+lemma not_isCyclic (h1 : n ≠ 1) : ¬ IsCyclic (DihedralGroup n) := fun h ↦ by
   by_cases h2 : n = 2
   · simpa [exponent, card, h2] using h.exponent_eq_card
   · exact not_commutative h1 h2 h.commutative
@@ -245,7 +245,7 @@ $n + n + n + n*n$) of commuting elements. -/
 def oddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // Commute p.1 p.2 } ≃
     ZMod n ⊕ ZMod n ⊕ ZMod n ⊕ ZMod n × ZMod n :=
   let u := ZMod.unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn.not_two_dvd_nat)
-  have hu : ∀ a : ZMod n, a + a = 0 ↔ a = 0 := fun _ => ZMod.add_self_eq_zero_iff_eq_zero hn
+  have hu : ∀ a : ZMod n, a + a = 0 ↔ a = 0 := fun _ ↦ ZMod.add_self_eq_zero_iff_eq_zero hn
   { toFun := fun
       | ⟨⟨sr i, r _⟩, _⟩ => Sum.inl i
       | ⟨⟨r _, sr j⟩, _⟩ => Sum.inr (Sum.inl j)

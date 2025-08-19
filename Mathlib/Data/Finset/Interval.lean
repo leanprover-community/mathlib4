@@ -63,10 +63,10 @@ theorem Ioo_eq_filter_ssubsets : Ioo s t = {u ∈ t.ssubsets | s ⊂ u} :=
   rfl
 
 theorem Iic_eq_powerset : Iic s = s.powerset :=
-  filter_true_of_mem fun t _ => empty_subset t
+  filter_true_of_mem fun t _ ↦ empty_subset t
 
 theorem Iio_eq_ssubsets : Iio s = s.ssubsets :=
-  filter_true_of_mem fun t _ => empty_subset t
+  filter_true_of_mem fun t _ ↦ empty_subset t
 
 variable {s t}
 

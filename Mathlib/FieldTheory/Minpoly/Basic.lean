@@ -60,7 +60,7 @@ theorem eq_zero (hx : ¬IsIntegral A x) : minpoly A x = 0 :=
   dif_neg hx
 
 theorem ne_zero_iff [Nontrivial A] : minpoly A x ≠ 0 ↔ IsIntegral A x :=
-  ⟨fun h => of_not_not <| eq_zero.mt h, ne_zero⟩
+  ⟨fun h ↦ of_not_not <| eq_zero.mt h, ne_zero⟩
 
 theorem algHom_eq (f : B →ₐ[A] B') (hf : Function.Injective f) (x : B) :
     minpoly A (f x) = minpoly A x := by
@@ -256,13 +256,13 @@ variable {x : B}
 /-- If `a` strictly divides the minimal polynomial of `x`, then `x` cannot be a root for `a`. -/
 theorem aeval_ne_zero_of_dvdNotUnit_minpoly {a : A[X]} (hx : IsIntegral A x) (hamonic : a.Monic)
     (hdvd : DvdNotUnit a (minpoly A x)) : Polynomial.aeval x a ≠ 0 := by
-  refine fun ha => (min A x hamonic ha).not_gt (degree_lt_degree ?_)
+  refine fun ha ↦ (min A x hamonic ha).not_gt (degree_lt_degree ?_)
   obtain ⟨_, c, hu, he⟩ := hdvd
   have hcm := hamonic.of_mul_monic_left (he.subst <| monic hx)
   rw [he, hamonic.natDegree_mul hcm]
   -- TODO: port Nat.lt_add_of_zero_lt_left from lean3 core
   apply lt_add_of_pos_right
-  refine (lt_of_not_ge fun h => hu ?_)
+  refine (lt_of_not_ge fun h ↦ hu ?_)
   rw [eq_C_of_natDegree_le_zero h, ← Nat.eq_zero_of_le_zero h, ← leadingCoeff, hcm.leadingCoeff,
     C_1]
   exact isUnit_one
@@ -271,7 +271,7 @@ variable [IsDomain A] [IsDomain B]
 
 /-- A minimal polynomial is irreducible. -/
 theorem irreducible (hx : IsIntegral A x) : Irreducible (minpoly A x) := by
-  refine (irreducible_of_monic (monic hx) <| ne_one A x).2 fun f g hf hg he => ?_
+  refine (irreducible_of_monic (monic hx) <| ne_one A x).2 fun f g hf hg he ↦ ?_
   rw [← hf.isUnit_iff, ← hg.isUnit_iff]
   by_contra! h
   have heval := congr_arg (Polynomial.aeval x) he

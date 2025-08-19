@@ -33,11 +33,11 @@ variable [Preorder α] {a b c : α}
 
 @[simp]
 theorem Iic_disjoint_Ioi (h : a ≤ b) : Disjoint (Iic a) (Ioi b) :=
-  disjoint_left.mpr fun _ ha hb => (h.trans_lt hb).not_ge ha
+  disjoint_left.mpr fun _ ha hb ↦ (h.trans_lt hb).not_ge ha
 
 @[simp]
 theorem Iio_disjoint_Ici (h : a ≤ b) : Disjoint (Iio a) (Ici b) :=
-  disjoint_left.mpr fun _ ha hb => (h.trans_lt' ha).not_ge hb
+  disjoint_left.mpr fun _ ha hb ↦ (h.trans_lt' ha).not_ge hb
 
 @[simp]
 theorem Iic_disjoint_Ioc (h : a ≤ b) : Disjoint (Iic a) (Ioc b c) :=
@@ -53,7 +53,7 @@ theorem Ioc_disjoint_Ioc_same : Disjoint (Ioc a b) (Ioc b c) :=
 
 @[simp]
 theorem Ico_disjoint_Ico_same : Disjoint (Ico a b) (Ico b c) :=
-  disjoint_left.mpr fun _ hab hbc => hab.2.not_ge hbc.1
+  disjoint_left.mpr fun _ hab hbc ↦ hab.2.not_ge hbc.1
 
 @[simp]
 theorem Ici_disjoint_Iic : Disjoint (Ici a) (Iic b) ↔ ¬a ≤ b := by
@@ -102,11 +102,11 @@ theorem Iio_disjoint_Ioi_iff [DenselyOrdered α] : Disjoint (Iio a) (Ioi b) ↔ 
 
 @[simp]
 theorem iUnion_Iic : ⋃ a : α, Iic a = univ :=
-  iUnion_eq_univ_iff.2 fun x => ⟨x, right_mem_Iic⟩
+  iUnion_eq_univ_iff.2 fun x ↦ ⟨x, right_mem_Iic⟩
 
 @[simp]
 theorem iUnion_Ici : ⋃ a : α, Ici a = univ :=
-  iUnion_eq_univ_iff.2 fun x => ⟨x, left_mem_Ici⟩
+  iUnion_eq_univ_iff.2 fun x ↦ ⟨x, left_mem_Ici⟩
 
 @[simp]
 theorem iUnion_Icc_right (a : α) : ⋃ b, Icc a b = Ici a := by
@@ -174,7 +174,7 @@ theorem eq_of_Ico_disjoint {x₁ x₂ y₁ y₂ : α} (h : Disjoint (Ico x₁ x�
     (h2 : x₂ ∈ Ico y₁ y₂) : y₁ = x₂ := by
   rw [Ico_disjoint_Ico, min_eq_left (le_of_lt h2.2), le_max_iff] at h
   apply le_antisymm h2.1
-  exact h.elim (fun h => absurd hx (not_lt_of_ge h)) id
+  exact h.elim (fun h ↦ absurd hx (not_lt_of_ge h)) id
 
 @[simp]
 theorem iUnion_Ico_eq_Iio_self_iff {f : ι → α} {a : α} :
@@ -205,7 +205,7 @@ section UnionIxx
 variable [LinearOrder α] {s : Set α} {a : α} {f : ι → α}
 
 theorem IsGLB.biUnion_Ioi_eq (h : IsGLB s a) : ⋃ x ∈ s, Ioi x = Ioi a := by
-  refine (iUnion₂_subset fun x hx => ?_).antisymm fun x hx => ?_
+  refine (iUnion₂_subset fun x hx ↦ ?_).antisymm fun x hx ↦ ?_
   · exact Ioi_subset_Ioi (h.1 hx)
   · rcases h.exists_between hx with ⟨y, hys, _, hyx⟩
     exact mem_biUnion hys hyx
@@ -221,15 +221,15 @@ theorem IsLUB.iUnion_Iio_eq (h : IsLUB (range f) a) : ⋃ x, Iio (f x) = Iio a :
 
 theorem IsGLB.biUnion_Ici_eq_Ioi (a_glb : IsGLB s a) (a_notMem : a ∉ s) :
     ⋃ x ∈ s, Ici x = Ioi a := by
-  refine (iUnion₂_subset fun x hx => ?_).antisymm fun x hx => ?_
-  · exact Ici_subset_Ioi.mpr (lt_of_le_of_ne (a_glb.1 hx) fun h => (h ▸ a_notMem) hx)
+  refine (iUnion₂_subset fun x hx ↦ ?_).antisymm fun x hx ↦ ?_
+  · exact Ici_subset_Ioi.mpr (lt_of_le_of_ne (a_glb.1 hx) fun h ↦ (h ▸ a_notMem) hx)
   · rcases a_glb.exists_between hx with ⟨y, hys, _, hyx⟩
     rw [mem_iUnion₂]
     exact ⟨y, hys, hyx.le⟩
 
 theorem IsGLB.biUnion_Ici_eq_Ici (a_glb : IsGLB s a) (a_mem : a ∈ s) :
     ⋃ x ∈ s, Ici x = Ici a := by
-  refine (iUnion₂_subset fun x hx => ?_).antisymm fun x hx => ?_
+  refine (iUnion₂_subset fun x hx ↦ ?_).antisymm fun x hx ↦ ?_
   · exact Ici_subset_Ici.mpr (mem_lowerBounds.mp a_glb.1 x hx)
   · exact mem_iUnion₂.mpr ⟨a, a_mem, hx⟩
 

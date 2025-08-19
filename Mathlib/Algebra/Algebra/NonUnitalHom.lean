@@ -257,7 +257,7 @@ protected def id (R A : Type*) [Monoid R] [NonUnitalNonAssocSemiring A]
     [DistribMulAction R A] : A →ₙₐ[R] A :=
   { NonUnitalRingHom.id A with
     toFun := id
-    map_smul' := fun _ _ => rfl }
+    map_smul' := fun _ _ ↦ rfl }
 
 @[simp, norm_cast]
 theorem coe_id : ⇑(NonUnitalAlgHom.id R A) = id :=
@@ -408,7 +408,7 @@ def inr : B →ₙₐ[R] A × B :=
 variable {R A B}
 
 @[simp]
-theorem coe_inl : (inl R A B : A → A × B) = fun x => (x, 0) :=
+theorem coe_inl : (inl R A B : A → A × B) = fun x ↦ (x, 0) :=
   rfl
 
 theorem inl_apply (x : A) : inl R A B x = (x, 0) :=

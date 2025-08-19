@@ -165,7 +165,7 @@ theorem ext {A B : StructuredArrow S T} (f g : A ⟶ B) : f.right = g.right → 
   CommaMorphism.ext (Subsingleton.elim _ _)
 
 theorem ext_iff {A B : StructuredArrow S T} (f g : A ⟶ B) : f = g ↔ f.right = g.right :=
-  ⟨fun h => h ▸ rfl, ext f g⟩
+  ⟨fun h ↦ h ▸ rfl, ext f g⟩
 
 instance proj_faithful : (proj S T).Faithful where
   map_injective {_ _} := ext
@@ -305,7 +305,7 @@ variable {L : D} {R : C ⥤ D} {L' : B} {R' : A ⥤ B} {F : C ⥤ A} {G : D ⥤ 
 a natural transformation `R ⋙ G ⟶ F ⋙ R'` and a morphism `L' ⟶ G.obj L.` -/
 @[simps!]
 def map₂ : StructuredArrow L R ⥤ StructuredArrow L' R' :=
-  Comma.map (F₁ := 𝟭 (Discrete PUnit)) (Discrete.natTrans (fun _ => α)) β
+  Comma.map (F₁ := 𝟭 (Discrete PUnit)) (Discrete.natTrans (fun _ ↦ α)) β
 
 instance faithful_map₂ [F.Faithful] : (map₂ α β).Faithful := by
   apply Comma.faithful_map
@@ -329,23 +329,23 @@ def map₂CompMap₂Iso {C' : Type u₆} [Category.{v₆} C'] {D' : Type u₅} [
     map₂ (α ≫ G.map α')
       ((Functor.associator _ _ _).inv ≫ Functor.whiskerRight β' _ ≫ (Functor.associator _ _ _).hom ≫
         Functor.whiskerLeft _ β ≫ (Functor.associator _ _ _).inv) :=
-  NatIso.ofComponents (fun X => isoMk (Iso.refl _))
+  NatIso.ofComponents (fun X ↦ isoMk (Iso.refl _))
 
 end
 
 /-- `StructuredArrow.post` is a special case of `StructuredArrow.map₂` up to natural isomorphism. -/
 def postIsoMap₂ (S : C) (F : B ⥤ C) (G : C ⥤ D) :
     post S F G ≅ map₂ (F := 𝟭 _) (𝟙 _) (𝟙 (F ⋙ G)) :=
-  NatIso.ofComponents fun _ => isoMk <| Iso.refl _
+  NatIso.ofComponents fun _ ↦ isoMk <| Iso.refl _
 
 /-- `StructuredArrow.map` is a special case of `StructuredArrow.map₂` up to natural isomorphism. -/
 def mapIsoMap₂ {S S' : D} (f : S ⟶ S') : map (T := T) f ≅ map₂ (F := 𝟭 _) (G := 𝟭 _) f (𝟙 T) :=
-  NatIso.ofComponents fun _ => isoMk <| Iso.refl _
+  NatIso.ofComponents fun _ ↦ isoMk <| Iso.refl _
 
 /-- `StructuredArrow.pre` is a special case of `StructuredArrow.map₂` up to natural isomorphism. -/
 def preIsoMap₂ (S : D) (F : B ⥤ C) (G : C ⥤ D) :
     pre S F G ≅ map₂ (G := 𝟭 _) (𝟙 _) (𝟙 (F ⋙ G)) :=
-  NatIso.ofComponents fun _ => isoMk <| Iso.refl _
+  NatIso.ofComponents fun _ ↦ isoMk <| Iso.refl _
 
 /-- A structured arrow is called universal if it is initial. -/
 abbrev IsUniversal (f : StructuredArrow S T) := IsInitial f
@@ -518,7 +518,7 @@ theorem ext {A B : CostructuredArrow S T} (f g : A ⟶ B) (h : f.left = g.left) 
   CommaMorphism.ext h (Subsingleton.elim _ _)
 
 theorem ext_iff {A B : CostructuredArrow S T} (f g : A ⟶ B) : f = g ↔ f.left = g.left :=
-  ⟨fun h => h ▸ rfl, ext f g⟩
+  ⟨fun h ↦ h ▸ rfl, ext f g⟩
 
 instance proj_faithful : (proj S T).Faithful where map_injective {_ _} := ext
 
@@ -658,7 +658,7 @@ variable {U : A ⥤ B} {V : B} {F : C ⥤ A} {G : D ⥤ B}
 a natural transformation `F ⋙ U ⟶ S ⋙ G` and a morphism `G.obj T ⟶ V` -/
 @[simps!]
 def map₂ : CostructuredArrow S T ⥤ CostructuredArrow U V :=
-  Comma.map (F₂ := 𝟭 (Discrete PUnit)) α (Discrete.natTrans (fun _ => β))
+  Comma.map (F₂ := 𝟭 (Discrete PUnit)) α (Discrete.natTrans (fun _ ↦ β))
 
 instance faithful_map₂ [F.Faithful] : (map₂ α β).Faithful := by
   apply Comma.faithful_map
@@ -680,7 +680,7 @@ end
 isomorphism. -/
 def postIsoMap₂ (S : C) (F : B ⥤ C) (G : C ⥤ D) :
     post F G S ≅ map₂ (F := 𝟭 _) (𝟙 (F ⋙ G)) (𝟙 _) :=
-  NatIso.ofComponents fun _ => isoMk <| Iso.refl _
+  NatIso.ofComponents fun _ ↦ isoMk <| Iso.refl _
 
 /-- A costructured arrow is called universal if it is terminal. -/
 abbrev IsUniversal (f : CostructuredArrow S T) := IsTerminal f
@@ -847,13 +847,13 @@ def structuredArrowOpEquivalence (F : C ⥤ D) (d : D) :
   functor := StructuredArrow.toCostructuredArrow F d
   inverse := (CostructuredArrow.toStructuredArrow' F d).rightOp
   unitIso := NatIso.ofComponents
-      (fun X => (StructuredArrow.isoMk (Iso.refl _)).op)
-      fun {X Y} f => Quiver.Hom.unop_inj <| by
+      (fun X ↦ (StructuredArrow.isoMk (Iso.refl _)).op)
+      fun {X Y} f ↦ Quiver.Hom.unop_inj <| by
         apply CommaMorphism.ext <;>
           dsimp [StructuredArrow.isoMk, Comma.isoMk,StructuredArrow.homMk]; simp
   counitIso := NatIso.ofComponents
-      (fun X => CostructuredArrow.isoMk (Iso.refl _))
-      fun {X Y} f => by
+      (fun X ↦ CostructuredArrow.isoMk (Iso.refl _))
+      fun {X Y} f ↦ by
         apply CommaMorphism.ext <;>
           dsimp [CostructuredArrow.isoMk, Comma.isoMk, CostructuredArrow.homMk]; simp
 
@@ -866,13 +866,13 @@ def costructuredArrowOpEquivalence (F : C ⥤ D) (d : D) :
   functor := CostructuredArrow.toStructuredArrow F d
   inverse := (StructuredArrow.toCostructuredArrow' F d).rightOp
   unitIso := NatIso.ofComponents
-      (fun X => (CostructuredArrow.isoMk (Iso.refl _)).op)
-      fun {X Y} f => Quiver.Hom.unop_inj <| by
+      (fun X ↦ (CostructuredArrow.isoMk (Iso.refl _)).op)
+      fun {X Y} f ↦ Quiver.Hom.unop_inj <| by
         apply CommaMorphism.ext <;>
           dsimp [CostructuredArrow.isoMk, CostructuredArrow.homMk, Comma.isoMk]; simp
   counitIso := NatIso.ofComponents
-      (fun X => StructuredArrow.isoMk (Iso.refl _))
-      fun {X Y} f => by
+      (fun X ↦ StructuredArrow.isoMk (Iso.refl _))
+      fun {X Y} f ↦ by
         apply CommaMorphism.ext <;>
           dsimp [StructuredArrow.isoMk, StructuredArrow.homMk, Comma.isoMk]; simp
 
@@ -910,8 +910,8 @@ def StructuredArrow.preEquivalence (f : StructuredArrow e G) :
     StructuredArrow f (pre e F G) ≌ StructuredArrow f.right F where
   functor := preEquivalenceFunctor F f
   inverse := preEquivalenceInverse F f
-  unitIso := NatIso.ofComponents (fun _ => isoMk (isoMk (Iso.refl _)))
-  counitIso := NatIso.ofComponents (fun _ => isoMk (Iso.refl _))
+  unitIso := NatIso.ofComponents (fun _ ↦ isoMk (isoMk (Iso.refl _)))
+  counitIso := NatIso.ofComponents (fun _ ↦ isoMk (Iso.refl _))
 
 /-- The functor `StructuredArrow d T ⥤ StructuredArrow e (T ⋙ S)` that `u : e ⟶ S.obj d`
 induces via `StructuredArrow.map₂` can be expressed up to isomorphism by
@@ -920,7 +920,7 @@ def StructuredArrow.map₂IsoPreEquivalenceInverseCompProj {T : C ⥤ D} {S : D 
     (d : D) (e : E) (u : e ⟶ S.obj d) (α : T ⋙ S ⟶ T') :
     map₂ (F := 𝟭 _) u α ≅ (preEquivalence T (mk u)).inverse ⋙ proj (mk u) (pre _ T S) ⋙
       map₂ (F := 𝟭 _) (G := 𝟭 _) (𝟙 _) α :=
-  NatIso.ofComponents fun _ => isoMk (Iso.refl _)
+  NatIso.ofComponents fun _ ↦ isoMk (Iso.refl _)
 
 /-- The functor establishing the equivalence `CostructuredArrow.preEquivalence`. -/
 @[simps!]
@@ -948,8 +948,8 @@ def CostructuredArrow.preEquivalence (f : CostructuredArrow G e) :
     CostructuredArrow (pre F G e) f ≌ CostructuredArrow F f.left where
   functor := preEquivalence.functor F f
   inverse := preEquivalence.inverse F f
-  unitIso := NatIso.ofComponents (fun _ => isoMk (isoMk (Iso.refl _)))
-  counitIso := NatIso.ofComponents (fun _ => isoMk (Iso.refl _))
+  unitIso := NatIso.ofComponents (fun _ ↦ isoMk (isoMk (Iso.refl _)))
+  counitIso := NatIso.ofComponents (fun _ ↦ isoMk (Iso.refl _))
 
 /-- The functor `CostructuredArrow T d ⥤ CostructuredArrow (T ⋙ S) e` that `u : S.obj d ⟶ e`
 induces via `CostructuredArrow.map₂` can be expressed up to isomorphism by
@@ -958,7 +958,7 @@ def CostructuredArrow.map₂IsoPreEquivalenceInverseCompProj (T : C ⥤ D) (S : 
     (u : S.obj d ⟶ e) :
     map₂ (F := 𝟭 _) (U := T ⋙ S) (𝟙 (T ⋙ S)) u ≅
       (preEquivalence T (mk u)).inverse ⋙ proj (pre T S _) (mk u) :=
-  NatIso.ofComponents fun _ => isoMk (Iso.refl _)
+  NatIso.ofComponents fun _ ↦ isoMk (Iso.refl _)
 
 end Pre
 
@@ -1001,8 +1001,8 @@ def StructuredArrow.prodEquivalence :
     StructuredArrow (S, S') (T.prod T') ≌ StructuredArrow S T × StructuredArrow S' T' where
   functor := StructuredArrow.prodFunctor S S' T T'
   inverse := StructuredArrow.prodInverse S S' T T'
-  unitIso := NatIso.ofComponents (fun f => Iso.refl _) (by simp)
-  counitIso := NatIso.ofComponents (fun f => Iso.refl _) (by simp)
+  unitIso := NatIso.ofComponents (fun f ↦ Iso.refl _) (by simp)
+  counitIso := NatIso.ofComponents (fun f ↦ Iso.refl _) (by simp)
 
 end
 
@@ -1043,8 +1043,8 @@ def CostructuredArrow.prodEquivalence :
     CostructuredArrow (S.prod S') (T, T') ≌ CostructuredArrow S T × CostructuredArrow S' T' where
   functor := CostructuredArrow.prodFunctor S S' T T'
   inverse := CostructuredArrow.prodInverse S S' T T'
-  unitIso := NatIso.ofComponents (fun f => Iso.refl _) (by simp)
-  counitIso := NatIso.ofComponents (fun f => Iso.refl _) (by simp)
+  unitIso := NatIso.ofComponents (fun f ↦ Iso.refl _) (by simp)
+  counitIso := NatIso.ofComponents (fun f ↦ Iso.refl _) (by simp)
 
 end
 

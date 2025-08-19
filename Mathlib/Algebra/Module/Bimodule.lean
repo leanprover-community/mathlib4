@@ -79,10 +79,10 @@ def mk (p : AddSubmonoid M) (hA : ∀ (a : A) {m : M}, m ∈ p → a • m ∈ p
     (hB : ∀ (b : B) {m : M}, m ∈ p → b • m ∈ p) : Submodule (A ⊗[R] B) M :=
   { p with
     carrier := p
-    smul_mem' := fun ab m =>
-      TensorProduct.induction_on ab (fun _ => by simp only [zero_smul, SetLike.mem_coe, zero_mem])
-        (fun a b hm => by simpa only [TensorProduct.Algebra.smul_def] using hA a (hB b hm))
-        fun z w hz hw hm => by simpa only [add_smul] using p.add_mem (hz hm) (hw hm) }
+    smul_mem' := fun ab m ↦
+      TensorProduct.induction_on ab (fun _ ↦ by simp only [zero_smul, SetLike.mem_coe, zero_mem])
+        (fun a b hm ↦ by simpa only [TensorProduct.Algebra.smul_def] using hA a (hB b hm))
+        fun z w hz hw hm ↦ by simpa only [add_smul] using p.add_mem (hz hm) (hw hm) }
 
 theorem smul_mem (p : Submodule (A ⊗[R] B) M) (a : A) {m : M} (hm : m ∈ p) : a • m ∈ p := by
   suffices a • m = a ⊗ₜ[R] (1 : B) • m by exact this.symm ▸ p.smul_mem _ hm

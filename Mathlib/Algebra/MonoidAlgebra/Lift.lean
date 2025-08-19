@@ -43,7 +43,7 @@ and the range of either `f` or `g` is in center of `R`, then the result is a rin
 `R` is a `k`-algebra and `f = algebraMap k R`, then the result is an algebra homomorphism called
 `MonoidAlgebra.lift`. -/
 def liftNC (f : k →+ R) (g : G → R) : MonoidAlgebra k G →+ R :=
-  liftAddHom fun x : G => (AddMonoidHom.mulRight (g x)).comp f
+  liftAddHom fun x : G ↦ (AddMonoidHom.mulRight (g x)).comp f
 
 @[simp]
 theorem liftNC_single (f : k →+ R) (g : G → R) (a : G) (b : k) :
@@ -62,7 +62,7 @@ theorem liftNC_mul {g_hom : Type*} [FunLike g_hom G R] [MulHomClass g_hom G R]
     liftNC (f : k →+ R) g (a * b) = liftNC (f : k →+ R) g a * liftNC (f : k →+ R) g b := by
   conv_rhs => rw [← sum_single a, ← sum_single b]
   simp_rw [mul_def, map_finsuppSum, liftNC_single, Finsupp.sum_mul, Finsupp.mul_sum]
-  refine Finset.sum_congr rfl fun y hy => Finset.sum_congr rfl fun x _hx => ?_
+  refine Finset.sum_congr rfl fun y hy ↦ Finset.sum_congr rfl fun x _hx ↦ ?_
   simp [mul_assoc, (h_comm hy).left_comm]
 
 end Mul
@@ -88,7 +88,7 @@ def liftNCRingHom (f : k →+* R) (g : G →* R) (h_comm : ∀ x y, Commute (f x
     MonoidAlgebra k G →+* R :=
   { liftNC (f : k →+ R) g with
     map_one' := liftNC_one _ _
-    map_mul' := fun _a _b => liftNC_mul _ _ _ _ fun {_ _} _ => h_comm _ _ }
+    map_mul' := fun _a _b ↦ liftNC_mul _ _ _ _ fun {_ _} _ ↦ h_comm _ _ }
 
 @[simp]
 lemma liftNCRingHom_single (f : k →+* R) (g : G →* R) (h_comm) (a : G) (b : k) :
@@ -116,7 +116,7 @@ is a ring homomorphism and the range of either `f` or `g` is in center of `R`, t
 ring homomorphism.  If `R` is a `k`-algebra and `f = algebraMap k R`, then the result is an algebra
 homomorphism called `AddMonoidAlgebra.lift`. -/
 def liftNC (f : k →+ R) (g : Multiplicative G → R) : k[G] →+ R :=
-  liftAddHom fun x : G => (AddMonoidHom.mulRight (g <| Multiplicative.ofAdd x)).comp f
+  liftAddHom fun x : G ↦ (AddMonoidHom.mulRight (g <| Multiplicative.ofAdd x)).comp f
 
 @[simp]
 theorem liftNC_single (f : k →+ R) (g : Multiplicative G → R) (a : G) (b : k) :
@@ -160,7 +160,7 @@ def liftNCRingHom (f : k →+* R) (g : Multiplicative G →* R) (h_comm : ∀ x 
     k[G] →+* R :=
   { liftNC (f : k →+ R) g with
     map_one' := liftNC_one _ _
-    map_mul' := fun _a _b => liftNC_mul _ _ _ _ fun {_ _} _ => h_comm _ _ }
+    map_mul' := fun _a _b ↦ liftNC_mul _ _ _ _ fun {_ _} _ ↦ h_comm _ _ }
 
 @[simp]
 lemma liftNCRingHom_single (f : k →+* R) (g : Multiplicative G →* R) (h_comm) (a : G) (b : k) :

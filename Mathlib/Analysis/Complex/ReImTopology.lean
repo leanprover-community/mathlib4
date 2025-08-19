@@ -39,11 +39,11 @@ namespace Complex
 
 /-- `Complex.re` turns `ℂ` into a trivial topological fiber bundle over `ℝ`. -/
 theorem isHomeomorphicTrivialFiberBundle_re : IsHomeomorphicTrivialFiberBundle ℝ re :=
-  ⟨equivRealProdCLM.toHomeomorph, fun _ => rfl⟩
+  ⟨equivRealProdCLM.toHomeomorph, fun _ ↦ rfl⟩
 
 /-- `Complex.im` turns `ℂ` into a trivial topological fiber bundle over `ℝ`. -/
 theorem isHomeomorphicTrivialFiberBundle_im : IsHomeomorphicTrivialFiberBundle ℝ im :=
-  ⟨equivRealProdCLM.toHomeomorph.trans (Homeomorph.prodComm ℝ ℝ), fun _ => rfl⟩
+  ⟨equivRealProdCLM.toHomeomorph.trans (Homeomorph.prodComm ℝ ℝ), fun _ ↦ rfl⟩
 
 theorem isOpenMap_re : IsOpenMap re :=
   isHomeomorphicTrivialFiberBundle_re.isOpenMap_proj
@@ -181,22 +181,22 @@ variable {α ι : Type*}
 
 protected lemma TendstoUniformlyOn.re {f : ι → α → ℂ} {p : Filter ι} {g : α → ℂ} {K : Set α}
     (hf : TendstoUniformlyOn f g p K) :
-    TendstoUniformlyOn (fun n x => (f n x).re) (fun y => (g y).re) p K := by
+    TendstoUniformlyOn (fun n x ↦ (f n x).re) (fun y ↦ (g y).re) p K := by
   apply UniformContinuous.comp_tendstoUniformlyOn uniformlyContinuous_re hf
 
 protected lemma TendstoUniformly.re {f : ι → α → ℂ} {p : Filter ι} {g : α → ℂ}
     (hf : TendstoUniformly f g p) :
-    TendstoUniformly (fun n x => (f n x).re) (fun y => (g y).re) p := by
+    TendstoUniformly (fun n x ↦ (f n x).re) (fun y ↦ (g y).re) p := by
   apply UniformContinuous.comp_tendstoUniformly uniformlyContinuous_re hf
 
 protected lemma TendstoUniformlyOn.im {f : ι → α → ℂ} {p : Filter ι} {g : α → ℂ} {K : Set α}
     (hf : TendstoUniformlyOn f g p K) :
-    TendstoUniformlyOn (fun n x => (f n x).im) (fun y => (g y).im) p K := by
+    TendstoUniformlyOn (fun n x ↦ (f n x).im) (fun y ↦ (g y).im) p K := by
   apply UniformContinuous.comp_tendstoUniformlyOn uniformlyContinuous_im hf
 
 protected lemma TendstoUniformly.im {f : ι → α → ℂ} {p : Filter ι} {g : α → ℂ}
     (hf : TendstoUniformly f g p) :
-    TendstoUniformly (fun n x => (f n x).im) (fun y => (g y).im) p := by
+    TendstoUniformly (fun n x ↦ (f n x).im) (fun y ↦ (g y).im) p := by
   apply UniformContinuous.comp_tendstoUniformly uniformlyContinuous_im hf
 
 end continuity

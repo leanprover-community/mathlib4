@@ -43,7 +43,7 @@ structure Encoding (α : Type u) where
   decode_encode : ∀ x, decode (encode x) = some x
 
 theorem Encoding.encode_injective {α : Type u} (e : Encoding α) : Function.Injective e.encode := by
-  refine fun _ _ h => Option.some_injective _ ?_
+  refine fun _ _ h ↦ Option.some_injective _ ?_
   rw [← e.decode_encode, ← e.decode_encode, h]
 
 /-- An encoding plus a guarantee of finiteness of the alphabet. -/
@@ -80,7 +80,7 @@ theorem sectionΓ'Bool_inclusionBoolΓ' {b} : sectionΓ'Bool (inclusionBoolΓ' b
   cases b <;> rfl
 
 theorem inclusionBoolΓ'_injective : Function.Injective inclusionBoolΓ' :=
-  Function.HasLeftInverse.injective ⟨_, (fun _ => sectionΓ'Bool_inclusionBoolΓ')⟩
+  Function.HasLeftInverse.injective ⟨_, (fun _ ↦ sectionΓ'Bool_inclusionBoolΓ')⟩
 
 /-- An encoding function of the positive binary numbers in bool. -/
 def encodePosNum : PosNum → List Bool
@@ -104,13 +104,13 @@ def decodePosNum : List Bool → PosNum
   | _          => PosNum.one
 
 /-- A decoding function from `List Bool` to the binary numbers. -/
-def decodeNum : List Bool → Num := fun l => ite (l = []) Num.zero <| decodePosNum l
+def decodeNum : List Bool → Num := fun l ↦ ite (l = []) Num.zero <| decodePosNum l
 
 /-- A decoding function from `List Bool` to ℕ. -/
-def decodeNat : List Bool → Nat := fun l => decodeNum l
+def decodeNat : List Bool → Nat := fun l ↦ decodeNum l
 
 theorem encodePosNum_nonempty (n : PosNum) : encodePosNum n ≠ [] :=
-  PosNum.casesOn n (List.cons_ne_nil _ _) (fun _m => List.cons_ne_nil _ _) fun _m =>
+  PosNum.casesOn n (List.cons_ne_nil _ _) (fun _m ↦ List.cons_ne_nil _ _) fun _m ↦
     List.cons_ne_nil _ _
 
 @[simp] theorem decode_encodePosNum (n) : decodePosNum (encodePosNum n) = n := by
@@ -163,8 +163,8 @@ def unaryEncodeNat : Nat → List Bool
 def unaryDecodeNat : List Bool → Nat :=
   List.length
 
-@[simp] theorem unary_decode_encode_nat : ∀ n, unaryDecodeNat (unaryEncodeNat n) = n := fun n =>
-  Nat.rec rfl (fun (_m : ℕ) hm => (congr_arg Nat.succ hm.symm).symm) n
+@[simp] theorem unary_decode_encode_nat : ∀ n, unaryDecodeNat (unaryEncodeNat n) = n := fun n ↦
+  Nat.rec rfl (fun (_m : ℕ) hm ↦ (congr_arg Nat.succ hm.symm).symm) n
 
 /-- A unary fin_encoding of ℕ. -/
 def unaryFinEncodingNat : FinEncoding ℕ where

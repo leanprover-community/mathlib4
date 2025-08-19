@@ -77,7 +77,7 @@ theorem le_ker_iff_comp_subtype_eq_zero {N : Submodule R M} {f : M →ₛₗ[τ�
   rw [SetLike.le_def, LinearMap.ext_iff, Subtype.forall]; rfl
 
 theorem comp_ker_subtype (f : M →ₛₗ[τ₁₂] M₂) : f.comp (ker f).subtype = 0 :=
-  LinearMap.ext fun x => mem_ker.1 x.2
+  LinearMap.ext fun x ↦ mem_ker.1 x.2
 
 theorem ker_comp (f : M →ₛₗ[τ₁₂] M₂) (g : M₂ →ₛₗ[τ₂₃] M₃) :
     ker (g.comp f : M →ₛₗ[τ₁₃] M₃) = comap f (ker g) :=
@@ -106,7 +106,7 @@ theorem ker_eq_bot' {f : F} : ker f = ⊥ ↔ ∀ m, f m = 0 → m = 0 := by
 
 theorem ker_eq_bot_of_inverse {τ₂₁ : R₂ →+* R} [RingHomInvPair τ₁₂ τ₂₁] {f : M →ₛₗ[τ₁₂] M₂}
     {g : M₂ →ₛₗ[τ₂₁] M} (h : (g.comp f : M →ₗ[R] M) = id) : ker f = ⊥ :=
-  ker_eq_bot'.2 fun m hm => by rw [← id_apply (R := R) m, ← h, comp_apply, hm, g.map_zero]
+  ker_eq_bot'.2 fun m hm ↦ by rw [← id_apply (R := R) m, ← h, comp_apply, hm, g.map_zero]
 
 theorem le_ker_iff_map [RingHomSurjective τ₁₂] {f : F} {p : Submodule R M} :
     p ≤ ker f ↔ map f p = ⊥ := by rw [ker, eq_bot_iff, map_le_iff_le_comap]
@@ -124,11 +124,11 @@ theorem ker_restrict [AddCommMonoid M₁] [Module R M₁] {p : Submodule R M} {q
 
 @[simp]
 theorem ker_zero : ker (0 : M →ₛₗ[τ₁₂] M₂) = ⊤ :=
-  eq_top_iff'.2 fun x => by simp
+  eq_top_iff'.2 fun x ↦ by simp
 
 @[simp]
 theorem ker_eq_top {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊤ ↔ f = 0 :=
-  ⟨fun h => ext fun _ => mem_ker.1 <| h.symm ▸ trivial, fun h => h.symm ▸ ker_zero⟩
+  ⟨fun h ↦ ext fun _ ↦ mem_ker.1 <| h.symm ▸ trivial, fun h ↦ h.symm ▸ ker_zero⟩
 
 theorem exists_ne_zero_of_sSup_eq_top {f : M →ₛₗ[τ₁₂] M₂} (h : f ≠ 0) (s : Set (Submodule R M))
     (hs : sSup s = ⊤) : ∃ m ∈ s, f ∘ₛₗ m.subtype ≠ 0 := by
@@ -176,11 +176,11 @@ theorem sub_mem_ker_iff {x y} : x - y ∈ ker f ↔ f x = f y := by rw [mem_ker,
 theorem disjoint_ker' {p : Submodule R M} :
     Disjoint p (ker f) ↔ ∀ x ∈ p, ∀ y ∈ p, f x = f y → x = y :=
   disjoint_ker.trans
-    ⟨fun H x hx y hy h => eq_of_sub_eq_zero <| H _ (sub_mem hx hy) (by simp [h]),
-     fun H x h₁ h₂ => H x h₁ 0 (zero_mem _) (by simpa using h₂)⟩
+    ⟨fun H x hx y hy h ↦ eq_of_sub_eq_zero <| H _ (sub_mem hx hy) (by simp [h]),
+     fun H x h₁ h₂ ↦ H x h₁ 0 (zero_mem _) (by simpa using h₂)⟩
 
 theorem injOn_of_disjoint_ker {p : Submodule R M} {s : Set M} (h : s ⊆ p)
-    (hd : Disjoint p (ker f)) : Set.InjOn f s := fun _ hx _ hy =>
+    (hd : Disjoint p (ker f)) : Set.InjOn f s := fun _ hx _ hy ↦
   disjoint_ker'.1 hd _ (h hx) _ (h hy)
 
 variable (F) in
@@ -245,7 +245,7 @@ theorem comap_bot (f : F) : comap f ⊥ = ker f :=
 
 @[simp]
 theorem ker_subtype : ker p.subtype = ⊥ :=
-  ker_eq_bot_of_injective fun _ _ => Subtype.ext_val
+  ker_eq_bot_of_injective fun _ _ ↦ Subtype.ext_val
 
 @[simp]
 theorem ker_inclusion (p p' : Submodule R M) (h : p ≤ p') : ker (inclusion h) = ⊥ := by

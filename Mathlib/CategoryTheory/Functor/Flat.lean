@@ -85,17 +85,17 @@ theorem RepresentablyCoflat.id : RepresentablyCoflat (𝟭 C) := inferInstance
 
 instance RepresentablyFlat.comp (G : D ⥤ E) [RepresentablyFlat F]
     [RepresentablyFlat G] : RepresentablyFlat (F ⋙ G) := by
-  refine ⟨fun X => IsCofiltered.of_cone_nonempty.{0} _ (fun {J} _ _ H => ?_)⟩
+  refine ⟨fun X ↦ IsCofiltered.of_cone_nonempty.{0} _ (fun {J} _ _ H ↦ ?_)⟩
   obtain ⟨c₁⟩ := IsCofiltered.cone_nonempty (H ⋙ StructuredArrow.pre X F G)
   let H₂ : J ⥤ StructuredArrow c₁.pt.right F :=
-    { obj := fun j => StructuredArrow.mk (c₁.π.app j).right
-      map := fun {j j'} f =>
+    { obj := fun j ↦ StructuredArrow.mk (c₁.π.app j).right
+      map := fun {j j'} f ↦
         StructuredArrow.homMk (H.map f).right (congrArg CommaMorphism.right (c₁.w f)) }
   obtain ⟨c₂⟩ := IsCofiltered.cone_nonempty H₂
   simp only [H₂] at c₂
   exact ⟨⟨StructuredArrow.mk (c₁.pt.hom ≫ G.map c₂.pt.hom),
-    ⟨fun j => StructuredArrow.homMk (c₂.π.app j).right (by simp [← G.map_comp]),
-     fun j j' f => by simpa using (c₂.w f).symm⟩⟩⟩
+    ⟨fun j ↦ StructuredArrow.homMk (c₂.π.app j).right (by simp [← G.map_comp]),
+     fun j j' f ↦ by simpa using (c₂.w f).symm⟩⟩⟩
 
 section
 
@@ -113,7 +113,7 @@ theorem RepresentablyCoflat.of_iso [RepresentablyCoflat F] {G : C ⥤ D} (α : F
 end
 
 theorem representablyCoflat_op_iff : RepresentablyCoflat F.op ↔ RepresentablyFlat F := by
-  refine ⟨fun _ => ⟨fun X => ?_⟩, fun _ => ⟨fun ⟨X⟩ => ?_⟩⟩
+  refine ⟨fun _ ↦ ⟨fun X ↦ ?_⟩, fun _ ↦ ⟨fun ⟨X⟩ ↦ ?_⟩⟩
   · suffices IsFiltered (StructuredArrow X F)ᵒᵖ from isCofiltered_of_isFiltered_op _
     apply IsFiltered.of_equivalence (structuredArrowOpEquivalence _ _).symm
   · suffices IsCofiltered (CostructuredArrow F.op (op X))ᵒᵖ from isFiltered_of_isCofiltered_op _
@@ -122,7 +122,7 @@ theorem representablyCoflat_op_iff : RepresentablyCoflat F.op ↔ RepresentablyF
     apply IsCofiltered.of_equivalence (opOpEquivalence _)
 
 theorem representablyFlat_op_iff : RepresentablyFlat F.op ↔ RepresentablyCoflat F := by
-  refine ⟨fun _ => ⟨fun X => ?_⟩, fun _ => ⟨fun ⟨X⟩ => ?_⟩⟩
+  refine ⟨fun _ ↦ ⟨fun X ↦ ?_⟩, fun _ ↦ ⟨fun ⟨X⟩ ↦ ?_⟩⟩
   · suffices IsCofiltered (CostructuredArrow F X)ᵒᵖ from isFiltered_of_isCofiltered_op _
     apply IsCofiltered.of_equivalence (costructuredArrowOpEquivalence _ _).symm
   · suffices IsFiltered (StructuredArrow (op X) F.op)ᵒᵖ from isCofiltered_of_isFiltered_op _
@@ -154,7 +154,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 theorem flat_of_preservesFiniteLimits [HasFiniteLimits C] (F : C ⥤ D) [PreservesFiniteLimits F] :
     RepresentablyFlat F :=
-  ⟨fun X =>
+  ⟨fun X ↦
     haveI : HasFiniteLimits (StructuredArrow X F) := by
       apply hasFiniteLimits_of_hasFiniteLimits_of_size.{v₁} (StructuredArrow X F)
       intro J sJ fJ
@@ -185,7 +185,7 @@ noncomputable def lift : s.pt ⟶ F.obj c.pt :=
     (F.map <|
       hc.lift <|
         (Cones.postcompose
-              ({ app := fun _ => 𝟙 _ } :
+              ({ app := fun _ ↦ 𝟙 _ } :
                 (s.toStructuredArrow ⋙ pre s.pt K F) ⋙ proj s.pt F ⟶ K)).obj <|
           (StructuredArrow.proj s.pt F).mapCone s')
 
@@ -197,9 +197,9 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     (h₂ : ∀ j : J, f₂ ≫ (F.mapCone c).π.app j = s.π.app j) : f₁ = f₂ := by
   -- We can make two cones over the diagram of `s` via `f₁` and `f₂`.
   let α₁ : (F.mapCone c).toStructuredArrow ⋙ map f₁ ⟶ s.toStructuredArrow :=
-    { app := fun X => eqToHom (by simp [← h₁]) }
+    { app := fun X ↦ eqToHom (by simp [← h₁]) }
   let α₂ : (F.mapCone c).toStructuredArrow ⋙ map f₂ ⟶ s.toStructuredArrow :=
-    { app := fun X => eqToHom (by simp [← h₂]) }
+    { app := fun X ↦ eqToHom (by simp [← h₂]) }
   let c₁ : Cone (s.toStructuredArrow ⋙ pre s.pt K F) :=
     (Cones.postcompose (Functor.whiskerRight α₁ (pre s.pt K F) :)).obj
       (c.toStructuredArrowCone F f₁)
@@ -254,7 +254,7 @@ lemma preservesFiniteLimits_of_flat (F : C ⥤ D) [RepresentablyFlat F] :
   exact
     { lift := PreservesFiniteLimitsOfFlat.lift F hc
       fac := PreservesFiniteLimitsOfFlat.fac F hc
-      uniq := fun s m h => by
+      uniq := fun s m h ↦ by
         apply PreservesFiniteLimitsOfFlat.uniq F hc
         · exact h
         · exact PreservesFiniteLimitsOfFlat.fac F hc s }
@@ -276,7 +276,7 @@ lemma preservesFiniteLimits_iff_flat [HasFiniteLimits C] (F : C ⥤ D) :
 finite colimits. -/
 lemma preservesFiniteColimits_iff_coflat [HasFiniteColimits C] (F : C ⥤ D) :
     RepresentablyCoflat F ↔ PreservesFiniteColimits F :=
-  ⟨fun _ => preservesFiniteColimits_of_coflat F, fun _ => coflat_of_preservesFiniteColimits F⟩
+  ⟨fun _ ↦ preservesFiniteColimits_of_coflat F, fun _ ↦ coflat_of_preservesFiniteColimits F⟩
 
 end HasLimit
 
@@ -292,13 +292,13 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
     [∀ X : D, HasColimitsOfShape (CostructuredArrow F X) E] :
     F.lan ⋙ (evaluation D E).obj X ≅
       (Functor.whiskeringLeft _ _ E).obj (CostructuredArrow.proj F X) ⋙ colim :=
-  NatIso.ofComponents (fun G =>
+  NatIso.ofComponents (fun G ↦
     IsColimit.coconePointUniqueUpToIso
     (Functor.isPointwiseLeftKanExtensionLeftKanExtensionUnit F G X)
-    (colimit.isColimit _)) (fun {G₁ G₂} φ => by
+    (colimit.isColimit _)) (fun {G₁ G₂} φ ↦ by
       apply (Functor.isPointwiseLeftKanExtensionLeftKanExtensionUnit F G₁ X).hom_ext
       intro T
-      have h₁ := fun (G : C ⥤ E) => IsColimit.comp_coconePointUniqueUpToIso_hom
+      have h₁ := fun (G : C ⥤ E) ↦ IsColimit.comp_coconePointUniqueUpToIso_hom
         (Functor.isPointwiseLeftKanExtensionLeftKanExtensionUnit F G X) (colimit.isColimit _) T
       have h₂ := congr_app (F.lanUnit.naturality φ) T.left
       dsimp at h₁ h₂ ⊢
@@ -338,7 +338,7 @@ instance lan_preservesFiniteLimits_of_preservesFiniteLimits (F : C ⥤ D)
 
 theorem flat_iff_lan_flat (F : C ⥤ D) :
     RepresentablyFlat F ↔ RepresentablyFlat (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u₁) :=
-  ⟨fun _ => inferInstance, fun H => by
+  ⟨fun _ ↦ inferInstance, fun H ↦ by
     haveI := preservesFiniteLimits_of_flat (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u₁)
     haveI : PreservesFiniteLimits F := by
       apply preservesFiniteLimits_of_preservesFiniteLimitsOfSize.{u₁}

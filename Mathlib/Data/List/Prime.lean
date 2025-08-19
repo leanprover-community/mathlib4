@@ -32,11 +32,11 @@ theorem Prime.dvd_prod_iff {p : M} {L : List M} (pp : Prime p) : p ∣ L.prod �
       · exact ⟨L_hd, mem_cons_self, hd⟩
       · obtain ⟨x, hx1, hx2⟩ := L_ih hd
         exact ⟨x, mem_cons_of_mem L_hd hx1, hx2⟩
-  · exact fun ⟨a, ha1, ha2⟩ => dvd_trans ha2 (dvd_prod ha1)
+  · exact fun ⟨a, ha1, ha2⟩ ↦ dvd_trans ha2 (dvd_prod ha1)
 
 theorem Prime.not_dvd_prod {p : M} {L : List M} (pp : Prime p) (hL : ∀ a ∈ L, ¬p ∣ a) :
     ¬p ∣ L.prod :=
-  mt (Prime.dvd_prod_iff pp).1 <| not_exists.2 fun a => not_and.2 (hL a)
+  mt (Prime.dvd_prod_iff pp).1 <| not_exists.2 fun a ↦ not_and.2 (hL a)
 
 end CommMonoidWithZero
 
@@ -60,8 +60,8 @@ theorem perm_of_prod_eq_prod :
     absurd ha (Prime.not_dvd_one (h₂ a mem_cons_self))
   | a :: l₁, b :: l₂, h, hl₁, hl₂ => by
     classical
-      have hl₁' : ∀ p ∈ l₁, Prime p := fun p hp => hl₁ p (mem_cons_of_mem _ hp)
-      have hl₂' : ∀ p ∈ (b :: l₂).erase a, Prime p := fun p hp => hl₂ p (mem_of_mem_erase hp)
+      have hl₁' : ∀ p ∈ l₁, Prime p := fun p hp ↦ hl₁ p (mem_cons_of_mem _ hp)
+      have hl₂' : ∀ p ∈ (b :: l₂).erase a, Prime p := fun p hp ↦ hl₂ p (mem_of_mem_erase hp)
       have ha : a ∈ b :: l₂ :=
         mem_list_primes_of_dvd_prod (hl₁ a mem_cons_self) hl₂
           (h ▸ by rw [prod_cons]; exact dvd_mul_right _ _)

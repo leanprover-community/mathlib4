@@ -188,11 +188,11 @@ noncomputable def extendMap : K.extend e ⟶ L.extend e where
           extend.mapX_some φ (e.r_eq_some hi),
           extend.mapX_some φ (e.r_eq_some hj)]
         simp only [extendXIso, assoc, Iso.inv_hom_id_assoc, Hom.comm_assoc]
-      · have hj' := e.r_eq_none j' (fun j'' hj'' => hj ⟨j'', hj''⟩)
+      · have hj' := e.r_eq_none j' (fun j'' hj'' ↦ hj ⟨j'', hj''⟩)
         dsimp [extend]
         rw [extend.d_none_eq_zero' _ _ _ hj', extend.d_none_eq_zero' _ _ _ hj',
           comp_zero, zero_comp]
-    · have hi' := e.r_eq_none i' (fun i'' hi'' => hi ⟨i'', hi''⟩)
+    · have hi' := e.r_eq_none i' (fun i'' hi'' ↦ hi ⟨i'', hi''⟩)
       dsimp [extend]
       rw [extend.d_none_eq_zero _ _ _ hi', extend.d_none_eq_zero _ _ _ hi',
         comp_zero, zero_comp]
@@ -216,7 +216,7 @@ lemma extendMap_comp :
   by_cases hi' : ∃ i, e.f i = i'
   · obtain ⟨i, hi⟩ := hi'
     simp [extendMap_f _ e hi]
-  · simp [extendMap_f_eq_zero _ e i' (fun i hi => hi' ⟨i, hi⟩)]
+  · simp [extendMap_f_eq_zero _ e i' (fun i hi ↦ hi' ⟨i, hi⟩)]
 
 variable (K L M)
 
@@ -224,7 +224,7 @@ lemma extendMap_id_f (i' : ι') : (extendMap (𝟙 K) e).f i' = 𝟙 _ := by
   by_cases hi' : ∃ i, e.f i = i'
   · obtain ⟨i, hi⟩ := hi'
     simp [extendMap_f _ e hi]
-  · apply (K.isZero_extend_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_src
+  · apply (K.isZero_extend_X e i' (fun i hi ↦ hi' ⟨i, hi⟩)).eq_of_src
 
 @[simp]
 lemma extendMap_id : extendMap (𝟙 K) e = 𝟙 _ := by
@@ -232,7 +232,7 @@ lemma extendMap_id : extendMap (𝟙 K) e = 𝟙 _ := by
   by_cases hi' : ∃ i, e.f i = i'
   · obtain ⟨i, hi⟩ := hi'
     simp [extendMap_f _ e hi]
-  · apply (K.isZero_extend_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_src
+  · apply (K.isZero_extend_X e i' (fun i hi ↦ hi' ⟨i, hi⟩)).eq_of_src
 
 @[simp]
 lemma extendMap_zero : extendMap (0 : K ⟶ L) e = 0 := by
@@ -240,7 +240,7 @@ lemma extendMap_zero : extendMap (0 : K ⟶ L) e = 0 := by
   by_cases hi' : ∃ i, e.f i = i'
   · obtain ⟨i, hi⟩ := hi'
     simp [extendMap_f _ e hi]
-  · apply (K.isZero_extend_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_src
+  · apply (K.isZero_extend_X e i' (fun i hi ↦ hi' ⟨i, hi⟩)).eq_of_src
 
 /-- The canonical isomorphism `K.op.extend e.op ≅ (K.extend e).op`. -/
 noncomputable def extendOpIso : K.op.extend e.op ≅ (K.extend e).op :=
@@ -265,7 +265,7 @@ lemma extendMap_add [Preadditive C] {K L : HomologicalComplex C c} (φ φ' : K �
   by_cases hi' : ∃ i, e.f i = i'
   · obtain ⟨i, hi⟩ := hi'
     simp [extendMap_f _ e hi]
-  · apply (K.isZero_extend_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_src
+  · apply (K.isZero_extend_X e i' (fun i hi ↦ hi' ⟨i, hi⟩)).eq_of_src
 
 end HomologicalComplex
 

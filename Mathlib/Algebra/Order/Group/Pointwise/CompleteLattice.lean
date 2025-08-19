@@ -50,14 +50,14 @@ lemma csInf_inv (hs₀ : s.Nonempty) (hs₁ : BddAbove s) : sInf s⁻¹ = (sSup 
 @[to_additive]
 lemma csSup_mul (hs₀ : s.Nonempty) (hs₁ : BddAbove s) (ht₀ : t.Nonempty) (ht₁ : BddAbove t) :
     sSup (s * t) = sSup s * sSup t :=
-  csSup_image2_eq_csSup_csSup (fun _ => (OrderIso.mulRight _).to_galoisConnection)
-    (fun _ => (OrderIso.mulLeft _).to_galoisConnection) hs₀ hs₁ ht₀ ht₁
+  csSup_image2_eq_csSup_csSup (fun _ ↦ (OrderIso.mulRight _).to_galoisConnection)
+    (fun _ ↦ (OrderIso.mulLeft _).to_galoisConnection) hs₀ hs₁ ht₀ ht₁
 
 @[to_additive]
 lemma csInf_mul (hs₀ : s.Nonempty) (hs₁ : BddBelow s) (ht₀ : t.Nonempty) (ht₁ : BddBelow t) :
     sInf (s * t) = sInf s * sInf t :=
-  csInf_image2_eq_csInf_csInf (fun _ => (OrderIso.mulRight _).symm.to_galoisConnection)
-    (fun _ => (OrderIso.mulLeft _).symm.to_galoisConnection) hs₀ hs₁ ht₀ ht₁
+  csInf_image2_eq_csInf_csInf (fun _ ↦ (OrderIso.mulRight _).symm.to_galoisConnection)
+    (fun _ ↦ (OrderIso.mulLeft _).symm.to_galoisConnection) hs₀ hs₁ ht₀ ht₁
 
 @[to_additive]
 lemma csSup_div (hs₀ : s.Nonempty) (hs₁ : BddAbove s) (ht₀ : t.Nonempty) (ht₁ : BddBelow t) :
@@ -99,12 +99,12 @@ lemma sInf_inv (s : Set M) : sInf s⁻¹ = (sSup s)⁻¹ := by
 
 @[to_additive]
 lemma sSup_mul : sSup (s * t) = sSup s * sSup t :=
-  (sSup_image2_eq_sSup_sSup fun _ => (OrderIso.mulRight _).to_galoisConnection) fun _ =>
+  (sSup_image2_eq_sSup_sSup fun _ ↦ (OrderIso.mulRight _).to_galoisConnection) fun _ ↦
     (OrderIso.mulLeft _).to_galoisConnection
 
 @[to_additive]
 lemma sInf_mul : sInf (s * t) = sInf s * sInf t :=
-  (sInf_image2_eq_sInf_sInf fun _ => (OrderIso.mulRight _).symm.to_galoisConnection) fun _ =>
+  (sInf_image2_eq_sInf_sInf fun _ ↦ (OrderIso.mulRight _).symm.to_galoisConnection) fun _ ↦
     (OrderIso.mulLeft _).symm.to_galoisConnection
 
 @[to_additive]

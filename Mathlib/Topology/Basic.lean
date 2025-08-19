@@ -43,7 +43,7 @@ def TopologicalSpace.ofClosed {X : Type u} (T : Set (Set X)) (empty_mem : ∅ �
   isOpen_inter s t hs ht := by simpa only [compl_inter] using union_mem sᶜ hs tᶜ ht
   isOpen_sUnion s hs := by
     simp only [Set.compl_sUnion]
-    exact sInter_mem (compl '' s) fun z ⟨y, hy, hz⟩ => hz ▸ hs y hy
+    exact sInter_mem (compl '' s) fun z ⟨y, hy, hz⟩ ↦ hz ▸ hs y hy
 
 section TopologicalSpace
 
@@ -58,7 +58,7 @@ protected theorem TopologicalSpace.ext :
 
 protected theorem TopologicalSpace.ext_iff {t t' : TopologicalSpace X} :
     t = t' ↔ ∀ s, IsOpen[t] s ↔ IsOpen[t'] s :=
-  ⟨fun h _ => h ▸ Iff.rfl, fun h => by ext; exact h _⟩
+  ⟨fun h _ ↦ h ▸ Iff.rfl, fun h ↦ by ext; exact h _⟩
 
 theorem isOpen_fold {t : TopologicalSpace X} : t.IsOpen s = IsOpen[t] s :=
   rfl
@@ -70,7 +70,7 @@ theorem isOpen_iUnion {f : ι → Set X} (h : ∀ i, IsOpen (f i)) : IsOpen (⋃
 
 theorem isOpen_biUnion {s : Set α} {f : α → Set X} (h : ∀ i ∈ s, IsOpen (f i)) :
     IsOpen (⋃ i ∈ s, f i) :=
-  isOpen_iUnion fun i => isOpen_iUnion fun hi => h i hi
+  isOpen_iUnion fun i ↦ isOpen_iUnion fun hi ↦ h i hi
 
 theorem IsOpen.union (h₁ : IsOpen s₁) (h₂ : IsOpen s₂) : IsOpen (s₁ ∪ s₂) := by
   rw [union_eq_iUnion]; exact isOpen_iUnion (Bool.forall_bool.2 ⟨h₂, h₁⟩)
@@ -82,7 +82,7 @@ lemma isOpen_iff_of_cover {f : α → Set X} (ho : ∀ i, IsOpen (f i)) (hU : (�
   exact isOpen_iUnion fun i ↦ h i
 
 @[simp] theorem isOpen_empty : IsOpen (∅ : Set X) := by
-  rw [← sUnion_empty]; exact isOpen_sUnion fun a => False.elim
+  rw [← sUnion_empty]; exact isOpen_sUnion fun a ↦ False.elim
 
 theorem Set.Finite.isOpen_sInter {s : Set (Set X)} (hs : s.Finite) (h : ∀ t ∈ s, IsOpen t) :
     IsOpen (⋂₀ s) := by
@@ -112,7 +112,7 @@ theorem IsOpen.and : IsOpen { x | p₁ x } → IsOpen { x | p₂ x } → IsOpen 
   IsOpen.inter
 
 @[simp] theorem isOpen_compl_iff : IsOpen sᶜ ↔ IsClosed s :=
-  ⟨fun h => ⟨h⟩, fun h => h.isOpen_compl⟩
+  ⟨fun h ↦ ⟨h⟩, fun h ↦ h.isOpen_compl⟩
 
 theorem TopologicalSpace.ext_iff_isClosed {X} {t₁ t₂ : TopologicalSpace X} :
     t₁ = t₂ ↔ ∀ s, IsClosed[t₁] s ↔ IsClosed[t₂] s := by
@@ -144,7 +144,7 @@ theorem isClosed_iInter {f : ι → Set X} (h : ∀ i, IsClosed (f i)) : IsClose
 
 theorem isClosed_biInter {s : Set α} {f : α → Set X} (h : ∀ i ∈ s, IsClosed (f i)) :
     IsClosed (⋂ i ∈ s, f i) :=
-  isClosed_iInter fun i => isClosed_iInter <| h i
+  isClosed_iInter fun i ↦ isClosed_iInter <| h i
 
 @[simp]
 theorem isClosed_compl_iff {s : Set X} : IsClosed sᶜ ↔ IsOpen s := by

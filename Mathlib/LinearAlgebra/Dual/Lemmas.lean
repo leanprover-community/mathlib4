@@ -439,7 +439,7 @@ theorem dualRestrict_comp_dualLift (W : Subspace K V) : W.dualRestrict.comp W.du
   simp
 
 theorem dualRestrict_leftInverse (W : Subspace K V) :
-    Function.LeftInverse W.dualRestrict W.dualLift := fun x =>
+    Function.LeftInverse W.dualRestrict W.dualLift := fun x ↦
   show W.dualRestrict.comp W.dualLift x = x by
     rw [dualRestrict_comp_dualLift]
     rfl
@@ -604,7 +604,7 @@ The inverse of this is `Submodule.dualCopairing`. -/
 def dualQuotEquivDualAnnihilator (W : Submodule R M) :
     Module.Dual R (M ⧸ W) ≃ₗ[R] W.dualAnnihilator :=
   LinearEquiv.ofLinear
-    (W.mkQ.dualMap.codRestrict W.dualAnnihilator fun φ =>
+    (W.mkQ.dualMap.codRestrict W.dualAnnihilator fun φ ↦
       W.range_dualMap_mkQ_eq ▸ LinearMap.mem_range_self W.mkQ.dualMap φ)
     W.dualCopairing (by ext; rfl) (by ext; rfl)
 
@@ -765,7 +765,7 @@ end Module.Dual
 namespace LinearMap
 
 theorem dualPairing_nondegenerate : (dualPairing K V₁).Nondegenerate :=
-  ⟨separatingLeft_iff_ker_eq_bot.mpr ker_id, fun x => (forall_dual_apply_eq_zero_iff K x).mp⟩
+  ⟨separatingLeft_iff_ker_eq_bot.mpr ker_id, fun x ↦ (forall_dual_apply_eq_zero_iff K x).mp⟩
 
 theorem dualMap_surjective_of_injective {f : V₁ →ₗ[K] V₂} (hf : Function.Injective f) :
     Function.Surjective f.dualMap := fun φ ↦

@@ -117,7 +117,7 @@ theorem isUnit_of_coeff_isUnit_isNilpotent (hunit : IsUnit (P.coeff 0))
     exact isNilpotent_C_mul_pow_X_of_isNilpotent _ (hnil _ hdeg)
   have hdeg₂ := lt_of_le_of_lt P.eraseLead_natDegree_le (Nat.sub_lt
     (Nat.pos_of_ne_zero hdeg) zero_lt_one)
-  refine hind P₁.natDegree ?_ ?_ (fun i hi => ?_) rfl
+  refine hind P₁.natDegree ?_ ?_ (fun i hi ↦ ?_) rfl
   · simp_rw [P₁, ← h, hdeg₂]
   · simp_rw [P₁, eraseLead_coeff_of_ne _ (Ne.symm hdeg), hunit]
   · by_cases H : i ≤ P₁.natDegree
@@ -154,7 +154,7 @@ nilpotent, except its constant term which is a unit.
 See also `Polynomial.isUnit_iff'`. -/
 theorem isUnit_iff_coeff_isUnit_isNilpotent :
     IsUnit P ↔ IsUnit (P.coeff 0) ∧ (∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) :=
-  ⟨coeff_isUnit_isNilpotent_of_isUnit, fun H => isUnit_of_coeff_isUnit_isNilpotent H.1 H.2⟩
+  ⟨coeff_isUnit_isNilpotent_of_isUnit, fun H ↦ isUnit_of_coeff_isUnit_isNilpotent H.1 H.2⟩
 
 @[simp] lemma isUnit_C_add_X_mul_iff :
     IsUnit (C r + X * P) ↔ IsUnit r ∧ IsNilpotent P := by

@@ -47,11 +47,11 @@ theorem disjoint_iff_inter_eq_empty : Disjoint s t ↔ s ∩ t = ∅ :=
 
 @[simp]
 theorem union_empty (s : Finset α) : s ∪ ∅ = s :=
-  ext fun x => mem_union.trans <| by simp
+  ext fun x ↦ mem_union.trans <| by simp
 
 @[simp]
 theorem empty_union (s : Finset α) : ∅ ∪ s = s :=
-  ext fun x => mem_union.trans <| by simp
+  ext fun x ↦ mem_union.trans <| by simp
 
 @[aesop unsafe apply (rule_sets := [finsetNonempty])]
 theorem Nonempty.inl {s t : Finset α} (h : s.Nonempty) : (s ∪ t).Nonempty :=
@@ -94,10 +94,10 @@ theorem induction_on_union (P : Finset α → Finset α → Prop) (symm : ∀ {a
     (empty_right : ∀ {a}, P a ∅) (singletons : ∀ {a b}, P {a} {b})
     (union_of : ∀ {a b c}, P a c → P b c → P (a ∪ b) c) : ∀ a b, P a b := by
   intro a b
-  refine Finset.induction_on b empty_right fun x s _xs hi => symm ?_
+  refine Finset.induction_on b empty_right fun x s _xs hi ↦ symm ?_
   rw [Finset.insert_eq]
   apply union_of _ (symm hi)
-  refine Finset.induction_on a empty_right fun a t _ta hi => symm ?_
+  refine Finset.induction_on a empty_right fun a t _ta hi ↦ symm ?_
   rw [Finset.insert_eq]
   exact union_of singletons (symm hi)
 
@@ -105,16 +105,16 @@ theorem induction_on_union (P : Finset α → Finset α → Prop) (symm : ∀ {a
 
 @[simp]
 theorem inter_empty (s : Finset α) : s ∩ ∅ = ∅ :=
-  ext fun _ => mem_inter.trans <| by simp
+  ext fun _ ↦ mem_inter.trans <| by simp
 
 @[simp]
 theorem empty_inter (s : Finset α) : ∅ ∩ s = ∅ :=
-  ext fun _ => mem_inter.trans <| by simp
+  ext fun _ ↦ mem_inter.trans <| by simp
 
 @[simp]
 theorem insert_inter_of_mem {s₁ s₂ : Finset α} {a : α} (h : a ∈ s₂) :
     insert a s₁ ∩ s₂ = insert a (s₁ ∩ s₂) :=
-  ext fun x => by
+  ext fun x ↦ by
     have : x = a ∨ x ∈ s₂ ↔ x ∈ s₂ := or_iff_right_of_imp <| by rintro rfl; exact h
     simp only [mem_inter, mem_insert, or_and_left, this]
 
@@ -125,7 +125,7 @@ theorem inter_insert_of_mem {s₁ s₂ : Finset α} {a : α} (h : a ∈ s₁) :
 @[simp]
 theorem insert_inter_of_notMem {s₁ s₂ : Finset α} {a : α} (h : a ∉ s₂) :
     insert a s₁ ∩ s₂ = s₁ ∩ s₂ :=
-  ext fun x => by
+  ext fun x ↦ by
     have : ¬(x = a ∧ x ∈ s₂) := by rintro ⟨rfl, H⟩; exact h H
     simp only [mem_inter, mem_insert, or_and_right, this, false_or]
 

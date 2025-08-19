@@ -67,7 +67,7 @@ theorem pderiv_monomial {i : σ} :
   classical
   simp only [pderiv_def, mkDerivation_monomial, Finsupp.smul_sum, smul_eq_mul, ← smul_mul_assoc,
     ← (monomial _).map_smul]
-  refine (Finset.sum_eq_single i (fun j _ hne => ?_) fun hi => ?_).trans ?_
+  refine (Finset.sum_eq_single i (fun j _ hne ↦ ?_) fun hi ↦ ?_).trans ?_
   · simp [Pi.single_eq_of_ne hne]
   · rw [Finsupp.notMem_support_iff] at hi; simp [hi]
   · simp
@@ -86,7 +86,7 @@ theorem pderiv_one {i : σ} : pderiv i (1 : MvPolynomial σ R) = 0 := pderiv_C
 
 @[simp]
 theorem pderiv_X [DecidableEq σ] (i j : σ) :
-    pderiv i (X j : MvPolynomial σ R) = Pi.single (M := fun _ => _) i 1 j := by
+    pderiv i (X j : MvPolynomial σ R) = Pi.single (M := fun _ ↦ _) i 1 j := by
   rw [pderiv_def, mkDerivation_X]
 
 @[simp]
@@ -98,7 +98,7 @@ theorem pderiv_X_of_ne {i j : σ} (h : j ≠ i) : pderiv i (X j : MvPolynomial �
 
 theorem pderiv_eq_zero_of_notMem_vars {i : σ} {f : MvPolynomial σ R} (h : i ∉ f.vars) :
     pderiv i f = 0 :=
-  derivation_eq_zero_of_forall_mem_vars fun _ hj => pderiv_X_of_ne <| ne_of_mem_of_not_mem hj h
+  derivation_eq_zero_of_forall_mem_vars fun _ hj ↦ pderiv_X_of_ne <| ne_of_mem_of_not_mem hj h
 
 @[deprecated (since := "2025-05-23")]
 alias pderiv_eq_zero_of_not_mem_vars := pderiv_eq_zero_of_notMem_vars

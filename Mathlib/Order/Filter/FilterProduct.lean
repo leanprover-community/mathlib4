@@ -46,13 +46,13 @@ instance instDivisionSemiring [DivisionSemiring β] : DivisionSemiring β* where
   toSemiring := instSemiring
   __ := instGroupWithZero
   nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
+  nnqsmul_def := fun _ _ ↦ rfl
 
 instance instDivisionRing [DivisionRing β] : DivisionRing β* where
   __ := instRing
   __ := instDivisionSemiring
   qsmul := _
-  qsmul_def := fun _ _ => rfl
+  qsmul_def := fun _ _ ↦ rfl
 
 instance instSemifield [Semifield β] : Semifield β* where
   __ := instCommSemiring
@@ -80,8 +80,8 @@ theorem lt_def [Preorder β] : ((· < ·) : β* → β* → Prop) = LiftRel (· 
   exact coe_lt
 
 instance isTotal [LE β] [IsTotal β (· ≤ ·)] : IsTotal β* (· ≤ ·) :=
-  ⟨fun f g =>
-    inductionOn₂ f g fun _f _g => eventually_or.1 <| Eventually.of_forall fun _x => total_of _ _ _⟩
+  ⟨fun f g ↦
+    inductionOn₂ f g fun _f _g ↦ eventually_or.1 <| Eventually.of_forall fun _x ↦ total_of _ _ _⟩
 
 open Classical in
 /-- If `φ` is an ultrafilter then the ultraproduct is a linear order. -/
@@ -96,24 +96,24 @@ instance instIsStrictOrderedRing [Semiring β] [PartialOrder β] [IsStrictOrdere
     coe_lt.2 <| (coe_lt.1 hh).mp <| (coe_lt.1 hfg).mono fun _a ↦ mul_lt_mul_of_pos_right
 
 theorem max_def [LinearOrder β] (x y : β*) : max x y = map₂ max x y :=
-  inductionOn₂ x y fun a b => by
+  inductionOn₂ x y fun a b ↦ by
     rcases le_total (a : β*) b with h | h
     · rw [max_eq_right h, map₂_coe, coe_eq]
-      exact h.mono fun i hi => (max_eq_right hi).symm
+      exact h.mono fun i hi ↦ (max_eq_right hi).symm
     · rw [max_eq_left h, map₂_coe, coe_eq]
-      exact h.mono fun i hi => (max_eq_left hi).symm
+      exact h.mono fun i hi ↦ (max_eq_left hi).symm
 
 theorem min_def [K : LinearOrder β] (x y : β*) : min x y = map₂ min x y :=
-  inductionOn₂ x y fun a b => by
+  inductionOn₂ x y fun a b ↦ by
     rcases le_total (a : β*) b with h | h
     · rw [min_eq_left h, map₂_coe, coe_eq]
-      exact h.mono fun i hi => (min_eq_left hi).symm
+      exact h.mono fun i hi ↦ (min_eq_left hi).symm
     · rw [min_eq_right h, map₂_coe, coe_eq]
-      exact h.mono fun i hi => (min_eq_right hi).symm
+      exact h.mono fun i hi ↦ (min_eq_right hi).symm
 
 theorem abs_def [AddCommGroup β] [LinearOrder β] (x : β*) :
     |x| = map abs x :=
-  inductionOn x fun _a => rfl
+  inductionOn x fun _a ↦ rfl
 
 @[simp]
 theorem const_max [LinearOrder β] (x y : β) : (↑(max x y : β) : β*) = max ↑x ↑y := by

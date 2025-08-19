@@ -140,7 +140,7 @@ variable {K} (C)
 noncomputable def embeddingsEquivPrimitiveRoots (C : Type*) [CommRing C] [IsDomain C] [Algebra K C]
     (hirr : Irreducible (cyclotomic n K)) : (L →ₐ[K] C) ≃ primitiveRoots n C :=
   (hζ.powerBasis K).liftEquiv.trans
-    { toFun := fun x => by
+    { toFun := fun x ↦ by
         haveI := IsCyclotomicExtension.neZero' n K L
         haveI hn := NeZero.of_faithfulSMul K C n
         refine ⟨x.1, ?_⟩
@@ -148,7 +148,7 @@ noncomputable def embeddingsEquivPrimitiveRoots (C : Type*) [CommRing C] [IsDoma
         rwa [mem_primitiveRoots (NeZero.pos _), ← isRoot_cyclotomic_iff, IsRoot.def,
           ← map_cyclotomic _ (algebraMap K C), hζ.minpoly_eq_cyclotomic_of_irreducible hirr,
           ← eval₂_eq_eval_map, ← aeval_def]
-      invFun := fun x => by
+      invFun := fun x ↦ by
         haveI := IsCyclotomicExtension.neZero' n K L
         haveI hn := NeZero.of_faithfulSMul K C n
         refine ⟨x.1, ?_⟩
@@ -343,9 +343,9 @@ theorem sub_one_norm_eq_eval_cyclotomic [IsCyclotomicExtension {n} K L] (h : 2 <
     rw [← neg_sub, map_neg, map_sub, map_one, neg_eq_neg_one_mul]
   rw [prod_mul_distrib, prod_const, Finset.card_univ, AlgHom.card,
     IsCyclotomicExtension.finrank L hirr, (totient_even h).neg_one_pow, one_mul]
-  have Hprod : (Finset.univ.prod fun σ : L →ₐ[K] E => 1 - σ ζ) = eval 1 (cyclotomic' n E) := by
+  have Hprod : (Finset.univ.prod fun σ : L →ₐ[K] E ↦ 1 - σ ζ) = eval 1 (cyclotomic' n E) := by
     rw [cyclotomic', eval_prod, ← @Finset.prod_attach E E, ← univ_eq_attach]
-    refine Fintype.prod_equiv (hζ.embeddingsEquivPrimitiveRoots E hirr) _ _ fun σ => ?_
+    refine Fintype.prod_equiv (hζ.embeddingsEquivPrimitiveRoots E hirr) _ _ fun σ ↦ ?_
     simp
   have : NeZero (n : E) := NeZero.of_faithfulSMul K _ n
   rw [Hprod, cyclotomic', ← cyclotomic_eq_prod_X_sub_primitiveRoots (isRoot_cyclotomic_iff.1 hz),
@@ -444,7 +444,7 @@ theorem norm_pow_sub_one_of_prime_ne_two {k : ℕ} (hζ : IsPrimitiveRoot ζ (p 
     [hpri : Fact p.Prime] [IsCyclotomicExtension {p ^ (k + 1)} K L]
     (hirr : Irreducible (cyclotomic (p ^ (k + 1)) K)) {s : ℕ} (hs : s ≤ k) (hodd : p ≠ 2) :
     norm K (ζ ^ p ^ s - 1) = (p : K) ^ p ^ s := by
-  refine hζ.norm_pow_sub_one_of_prime_pow_ne_two hirr hs fun h => ?_
+  refine hζ.norm_pow_sub_one_of_prime_pow_ne_two hirr hs fun h ↦ ?_
   rw [← pow_one 2] at h
   replace h :=
     eq_of_prime_pow_eq (prime_iff.1 hpri.out) (prime_iff.1 Nat.prime_two) (k - s).succ_pos h
@@ -473,7 +473,7 @@ theorem norm_pow_sub_one_two {k : ℕ} (hζ : IsPrimitiveRoot ζ (2 ^ (k + 1)))
     [IsCyclotomicExtension {2 ^ (k + 1)} K L]
     (hirr : Irreducible (cyclotomic (2 ^ (k + 1)) K)) :
     norm K (ζ ^ 2 ^ k - 1) = (-2 : K) ^ 2 ^ k := by
-  have := hζ.pow_of_dvd (fun h => two_ne_zero (pow_eq_zero h)) (pow_dvd_pow 2 (le_succ k))
+  have := hζ.pow_of_dvd (fun h ↦ two_ne_zero (pow_eq_zero h)) (pow_dvd_pow 2 (le_succ k))
   rw [Nat.pow_div (le_succ k) zero_lt_two, Nat.succ_sub (le_refl k), Nat.sub_self, pow_one] at this
   have H : (-1 : L) - (1 : L) = algebraMap K L (-2) := by
     simp only [map_neg, map_ofNat]

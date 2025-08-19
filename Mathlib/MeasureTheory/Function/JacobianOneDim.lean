@@ -43,7 +43,7 @@ theorem lintegral_image_eq_lintegral_abs_deriv_mul
     ∫⁻ x in f '' s, g x = ∫⁻ x in s, ENNReal.ofReal (|f' x|) * g (f x) := by
   simpa only [det_one_smulRight] using
     lintegral_image_eq_lintegral_abs_det_fderiv_mul volume hs
-      (fun x hx => (hf' x hx).hasFDerivWithinAt) hf g
+      (fun x hx ↦ (hf' x hx).hasFDerivWithinAt) hf g
 
 /-- Integrability in the change of variable formula for differentiable functions (one-variable
 version): if a function `f` is injective and differentiable on a measurable set `s ⊆ ℝ`, then a
@@ -51,10 +51,10 @@ function `g : ℝ → F` is integrable on `f '' s` if and only if `|(f' x)| • 
 `s`. -/
 theorem integrableOn_image_iff_integrableOn_abs_deriv_smul
     (hs : MeasurableSet s) (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) (hf : InjOn f s)
-    (g : ℝ → F) : IntegrableOn g (f '' s) ↔ IntegrableOn (fun x => |f' x| • g (f x)) s := by
+    (g : ℝ → F) : IntegrableOn g (f '' s) ↔ IntegrableOn (fun x ↦ |f' x| • g (f x)) s := by
   simpa only [det_one_smulRight] using
     integrableOn_image_iff_integrableOn_abs_det_fderiv_smul volume hs
-      (fun x hx => (hf' x hx).hasFDerivWithinAt) hf g
+      (fun x hx ↦ (hf' x hx).hasFDerivWithinAt) hf g
 
 /-- Change of variable formula for differentiable functions (one-variable version): if a function
 `f` is injective and differentiable on a measurable set `s ⊆ ℝ`, then the Bochner integral of a
@@ -64,7 +64,7 @@ theorem integral_image_eq_integral_abs_deriv_smul
     (hf : InjOn f s) (g : ℝ → F) : ∫ x in f '' s, g x = ∫ x in s, |f' x| • g (f x) := by
   simpa only [det_one_smulRight] using
     integral_image_eq_integral_abs_det_fderiv_smul volume hs
-      (fun x hx => (hf' x hx).hasFDerivWithinAt) hf g
+      (fun x hx ↦ (hf' x hx).hasFDerivWithinAt) hf g
 
 /-- Technical structure theorem for monotone differentiable functions.
 
@@ -228,8 +228,8 @@ theorem integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn (hs : Measu
     IntegrableOn g (f '' s) ↔ IntegrableOn (fun x ↦ (f' x) • g (f x)) s := by
   rcases exists_decomposition_of_monotoneOn_hasDerivWithinAt hs hf hf' with
     ⟨a, b, c, h_union, ha, hb, hc, h_disj, h_disj', a_count, fb_count, deriv_b, deriv_c, inj_c⟩
-  have I : IntegrableOn (fun x => (f' x) • g (f x)) s
-      ↔ IntegrableOn (fun x => (f' x) • g (f x)) c := by
+  have I : IntegrableOn (fun x ↦ (f' x) • g (f x)) s
+      ↔ IntegrableOn (fun x ↦ (f' x) • g (f x)) c := by
     have A : IntegrableOn (fun x ↦ f' x • g (f x)) a :=
       IntegrableOn.of_measure_zero (a_count.measure_zero volume)
     have B : IntegrableOn (fun x ↦ f' x • g (f x)) b := by
@@ -397,7 +397,7 @@ lemma _root_.MeasurableEmbedding.withDensity_ofReal_comap_apply_eq_integral_abs_
       = ENNReal.ofReal (∫ x in s, |f' x| * g (f x)) :=
   hf.withDensity_ofReal_comap_apply_eq_integral_abs_deriv_mul hs
     (by filter_upwards [hg] with x hx using fun _ ↦ hx) hg_int.integrableOn
-    (fun x _ => (hf' x).hasDerivWithinAt)
+    (fun x _ ↦ (hf' x).hasDerivWithinAt)
 
 lemma _root_.MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_deriv_mul'
     (f : ℝ ≃ᵐ ℝ) {s : Set ℝ} (hs : MeasurableSet s)
@@ -407,7 +407,7 @@ lemma _root_.MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_d
       = ENNReal.ofReal (∫ x in s, |f' x| * g (f x)) := by
   rw [MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_det_fderiv_mul volume hs
       f (by filter_upwards [hg] with x hx using fun _ ↦ hx) hg_int.integrableOn
-      (fun x _ => (hf' x).hasDerivWithinAt)]
+      (fun x _ ↦ (hf' x).hasDerivWithinAt)]
   simp only [det_one_smulRight]
 
 end WithDensity

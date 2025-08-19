@@ -380,7 +380,7 @@ The type of homotopies between `f₀ f₁ : C(X, Y)`, where the intermediate map
 structure HomotopyWith (f₀ f₁ : C(X, Y)) (P : C(X, Y) → Prop) extends Homotopy f₀ f₁ where
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `toHomotopy.curry t`
   /-- the intermediate maps of the homotopy satisfy the property -/
-  prop' : ∀ t, P ⟨fun x => toFun (t, x),
+  prop' : ∀ t, P ⟨fun x ↦ toFun (t, x),
     Continuous.comp continuous_toFun (continuous_const.prodMk continuous_id')⟩
 
 namespace HomotopyWith
@@ -444,9 +444,9 @@ variable {P : C(X, Y) → Prop}
 @[simps!]
 def refl (f : C(X, Y)) (hf : P f) : HomotopyWith f f P where
   toHomotopy := Homotopy.refl f
-  prop' := fun _ => hf
+  prop' := fun _ ↦ hf
 
-instance : Inhabited (HomotopyWith (ContinuousMap.id X) (ContinuousMap.id X) fun _ => True) :=
+instance : Inhabited (HomotopyWith (ContinuousMap.id X) (ContinuousMap.id X) fun _ ↦ True) :=
   ⟨HomotopyWith.refl _ trivial⟩
 
 /--
@@ -455,7 +455,7 @@ Given a `HomotopyWith f₀ f₁ P`, we can define a `HomotopyWith f₁ f₀ P` b
 @[simps!]
 def symm {f₀ f₁ : C(X, Y)} (F : HomotopyWith f₀ f₁ P) : HomotopyWith f₁ f₀ P where
   toHomotopy := F.toHomotopy.symm
-  prop' := fun t => F.prop (σ t)
+  prop' := fun t ↦ F.prop (σ t)
 
 @[simp]
 theorem symm_symm {f₀ f₁ : C(X, Y)} (F : HomotopyWith f₀ f₁ P) : F.symm.symm = F :=
@@ -472,9 +472,9 @@ by putting the first homotopy on `[0, 1/2]` and the second on `[1/2, 1]`.
 def trans {f₀ f₁ f₂ : C(X, Y)} (F : HomotopyWith f₀ f₁ P) (G : HomotopyWith f₁ f₂ P) :
     HomotopyWith f₀ f₂ P :=
   { F.toHomotopy.trans G.toHomotopy with
-    prop' := fun t => by
+    prop' := fun t ↦ by
       simp only [Homotopy.trans]
-      change P ⟨fun _ => ite ((t : ℝ) ≤ _) _ _, _⟩
+      change P ⟨fun _ ↦ ite ((t : ℝ) ≤ _) _ _, _⟩
       split_ifs
       · exact F.extendProp _
       · exact G.extendProp _ }
@@ -646,7 +646,7 @@ theorem trans ⦃f g h : C(X, Y)⦄ (h₀ : HomotopicRel f g S) (h₁ : Homotopi
     HomotopicRel f h S :=
   h₀.map2 HomotopyRel.trans h₁
 
-theorem equivalence : Equivalence fun f g : C(X, Y) => HomotopicRel f g S :=
+theorem equivalence : Equivalence fun f g : C(X, Y) ↦ HomotopicRel f g S :=
   ⟨refl, by apply symm, by apply trans⟩
 
 theorem comp_continuousMap ⦃f₀ f₁ : C(X, Y)⦄ (h : f₀.HomotopicRel f₁ S) (g : C(Y, Z)) :

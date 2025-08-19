@@ -124,14 +124,14 @@ theorem nonempty_compl : sᶜ.Nonempty ↔ s ≠ univ :=
   (ne_univ_iff_exists_notMem s).symm
 
 theorem union_eq_compl_compl_inter_compl (s t : Set α) : s ∪ t = (sᶜ ∩ tᶜ)ᶜ :=
-  ext fun _ => or_iff_not_and_not
+  ext fun _ ↦ or_iff_not_and_not
 
 theorem inter_eq_compl_compl_union_compl (s t : Set α) : s ∩ t = (sᶜ ∪ tᶜ)ᶜ :=
-  ext fun _ => and_iff_not_or_not
+  ext fun _ ↦ and_iff_not_or_not
 
 @[simp]
 theorem union_compl_self (s : Set α) : s ∪ sᶜ = univ :=
-  eq_univ_iff_forall.2 fun _ => em _
+  eq_univ_iff_forall.2 fun _ ↦ em _
 
 @[simp]
 theorem compl_union_self (s : Set α) : sᶜ ∪ s = univ := by rw [union_comm, union_compl_self]
@@ -152,13 +152,13 @@ theorem subset_union_compl_iff_inter_subset {s t u : Set α} : s ⊆ t ∪ uᶜ 
   (@isCompl_compl _ u _).le_sup_right_iff_inf_left_le
 
 theorem compl_subset_iff_union {s t : Set α} : sᶜ ⊆ t ↔ s ∪ t = univ :=
-  Iff.symm <| eq_univ_iff_forall.trans <| forall_congr' fun _ => or_iff_not_imp_left
+  Iff.symm <| eq_univ_iff_forall.trans <| forall_congr' fun _ ↦ or_iff_not_imp_left
 
 theorem inter_subset (a b c : Set α) : a ∩ b ⊆ c ↔ a ⊆ bᶜ ∪ c :=
-  forall_congr' fun _ => and_imp.trans <| imp_congr_right fun _ => imp_iff_not_or
+  forall_congr' fun _ ↦ and_imp.trans <| imp_congr_right fun _ ↦ imp_iff_not_or
 
 theorem inter_compl_nonempty_iff {s t : Set α} : (s ∩ tᶜ).Nonempty ↔ ¬s ⊆ t :=
-  (not_subset.trans <| exists_congr fun x => by simp).symm
+  (not_subset.trans <| exists_congr fun x ↦ by simp).symm
 
 lemma subset_compl_iff_disjoint_left : s ⊆ tᶜ ↔ Disjoint t s := le_compl_iff_disjoint_left
 lemma subset_compl_iff_disjoint_right : s ⊆ tᶜ ↔ Disjoint s t := le_compl_iff_disjoint_right
@@ -184,7 +184,7 @@ lemma subset_compl_singleton_iff : s ⊆ {a}ᶜ ↔ a ∉ s := subset_compl_comm
 
 /-! ### Lemmas about set difference -/
 
-theorem notMem_diff_of_mem {s t : Set α} {x : α} (hx : x ∈ t) : x ∉ s \ t := fun h => h.2 hx
+theorem notMem_diff_of_mem {s t : Set α} {x : α} (hx : x ∈ t) : x ∉ s \ t := fun h ↦ h.2 hx
 
 @[deprecated (since := "2025-05-23")] alias not_mem_diff_of_mem := notMem_diff_of_mem
 
@@ -544,7 +544,7 @@ theorem ite_inter_of_inter_eq (t : Set α) {s₁ s₂ s : Set α} (h : s₁ ∩ 
 
 theorem subset_ite {t s s' u : Set α} : u ⊆ t.ite s s' ↔ u ∩ t ⊆ s ∧ u \ t ⊆ s' := by
   simp only [subset_def, ← forall_and]
-  refine forall_congr' fun x => ?_
+  refine forall_congr' fun x ↦ ?_
   by_cases hx : x ∈ t <;> simp [*, Set.ite]
 
 theorem ite_eq_of_subset_left (t : Set α) {s₁ s₂ : Set α} (h : s₁ ⊆ s₂) :

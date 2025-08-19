@@ -32,13 +32,13 @@ theorem mem_ordConnectedComponent : y ∈ ordConnectedComponent s x ↔ [[x, y]]
 
 theorem dual_ordConnectedComponent :
     ordConnectedComponent (ofDual ⁻¹' s) (toDual x) = ofDual ⁻¹' ordConnectedComponent s x :=
-  ext <| (Surjective.forall toDual.surjective).2 fun x => by simp [mem_ordConnectedComponent]
+  ext <| (Surjective.forall toDual.surjective).2 fun x ↦ by simp [mem_ordConnectedComponent]
 
-theorem ordConnectedComponent_subset : ordConnectedComponent s x ⊆ s := fun _ hy =>
+theorem ordConnectedComponent_subset : ordConnectedComponent s x ⊆ s := fun _ hy ↦
   hy right_mem_uIcc
 
 theorem subset_ordConnectedComponent {t} [h : OrdConnected s] (hs : x ∈ s) (ht : s ⊆ t) :
-    s ⊆ ordConnectedComponent t x := fun _ hy => (h.uIcc_subset hs hy).trans ht
+    s ⊆ ordConnectedComponent t x := fun _ hy ↦ (h.uIcc_subset hs hy).trans ht
 
 @[simp]
 theorem self_mem_ordConnectedComponent : x ∈ ordConnectedComponent s x ↔ x ∈ s := by
@@ -46,7 +46,7 @@ theorem self_mem_ordConnectedComponent : x ∈ ordConnectedComponent s x ↔ x �
 
 @[simp]
 theorem nonempty_ordConnectedComponent : (ordConnectedComponent s x).Nonempty ↔ x ∈ s :=
-  ⟨fun ⟨_, hy⟩ => hy <| left_mem_uIcc, fun h => ⟨x, self_mem_ordConnectedComponent.2 h⟩⟩
+  ⟨fun ⟨_, hy⟩ ↦ hy <| left_mem_uIcc, fun h ↦ ⟨x, self_mem_ordConnectedComponent.2 h⟩⟩
 
 @[simp]
 theorem ordConnectedComponent_eq_empty : ordConnectedComponent s x = ∅ ↔ x ∉ s := by
@@ -76,16 +76,16 @@ theorem mem_ordConnectedComponent_trans (hxy : y ∈ ordConnectedComponent s x)
 
 theorem ordConnectedComponent_eq (h : [[x, y]] ⊆ s) :
     ordConnectedComponent s x = ordConnectedComponent s y :=
-  ext fun _ =>
+  ext fun _ ↦
     ⟨mem_ordConnectedComponent_trans (mem_ordConnectedComponent_comm.2 h),
       mem_ordConnectedComponent_trans h⟩
 
 instance : OrdConnected (ordConnectedComponent s x) :=
-  ordConnected_of_uIcc_subset_left fun _ hy _ hz => (uIcc_subset_uIcc_left hz).trans hy
+  ordConnected_of_uIcc_subset_left fun _ hy _ hz ↦ (uIcc_subset_uIcc_left hz).trans hy
 
 /-- Projection from `s : Set α` to `α` sending each order connected component of `s` to a single
 point of this component. -/
-noncomputable def ordConnectedProj (s : Set α) : s → α := fun x : s =>
+noncomputable def ordConnectedProj (s : Set α) : s → α := fun x : s ↦
   (nonempty_ordConnectedComponent.2 x.2).some
 
 theorem ordConnectedProj_mem_ordConnectedComponent (s : Set α) (x : s) :
@@ -125,7 +125,7 @@ theorem dual_ordConnectedSection (s : Set α) :
   tauto
 
 theorem ordConnectedSection_subset : ordConnectedSection s ⊆ s :=
-  range_subset_iff.2 fun _ => ordConnectedComponent_subset <| Nonempty.some_mem _
+  range_subset_iff.2 fun _ ↦ ordConnectedComponent_subset <| Nonempty.some_mem _
 
 theorem eq_of_mem_ordConnectedSection_of_uIcc_subset (hx : x ∈ ordConnectedSection s)
     (hy : y ∈ ordConnectedSection s) (h : [[x, y]] ⊆ s) : x = y := by
@@ -148,7 +148,7 @@ theorem ordSeparatingSet_comm (s t : Set α) : ordSeparatingSet s t = ordSeparat
 
 theorem disjoint_left_ordSeparatingSet : Disjoint s (ordSeparatingSet s t) :=
   Disjoint.inter_right' _ <|
-    disjoint_iUnion₂_right.2 fun _ _ =>
+    disjoint_iUnion₂_right.2 fun _ _ ↦
       disjoint_compl_right.mono_right <| ordConnectedComponent_subset
 
 theorem disjoint_right_ordSeparatingSet : Disjoint t (ordSeparatingSet s t) :=
@@ -192,10 +192,10 @@ theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) := by
     hsub (this <| ordConnectedProj_mem_ordConnectedComponent _ x) (mem_range_self _)
   rintro y hy
   rw [uIcc_of_le hab, mem_Icc, ← not_lt, ← not_lt]
-  have sol1 := fun (hya : y < a) =>
+  have sol1 := fun (hya : y < a) ↦
       (disjoint_left (t := ordSeparatingSet s t)).1 disjoint_left_ordSeparatingSet has
         (hy <| Icc_subset_uIcc' ⟨hya.le, hax⟩)
-  have sol2 := fun (hby : b < y) =>
+  have sol2 := fun (hby : b < y) ↦
       (disjoint_left (t := ordSeparatingSet s t)).1 disjoint_right_ordSeparatingSet hbt
         (hy <| Icc_subset_uIcc ⟨hxb, hby.le⟩)
   exact ⟨sol1, sol2⟩

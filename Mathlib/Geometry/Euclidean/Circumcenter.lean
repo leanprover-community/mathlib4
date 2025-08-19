@@ -98,7 +98,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
       ∃ r : ℝ, ∃ p0 ∈ s, cc₃ = r • (p -ᵥ ↑((orthogonalProjection s) p)) +ᵥ p0 := by
       rwa [mem_affineSpan_insert_iff (orthogonalProjection_mem p)] at hcc₃
     have hcr₃' : ∃ r, ∀ p₁ ∈ ps, dist p₁ cc₃ = r :=
-      ⟨cr₃, fun p₁ hp₁ => dist_of_mem_subset_mk_sphere (Set.mem_insert_of_mem _ hp₁) hcr₃⟩
+      ⟨cr₃, fun p₁ hp₁ ↦ dist_of_mem_subset_mk_sphere (Set.mem_insert_of_mem _ hp₁) hcr₃⟩
     rw [exists_dist_eq_iff_exists_dist_orthogonalProjection_eq hps cc₃, hcc₃'',
       orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ hcc₃'] at hcr₃'
     obtain ⟨cr₃', hcr₃'⟩ := hcr₃'
@@ -180,9 +180,9 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
           simp
         · simp
       haveI : Nonempty ι2 := Fintype.card_pos_iff.1 (hc.symm ▸ Nat.zero_lt_succ _)
-      have ha2 : AffineIndependent ℝ fun i2 : ι2 => p i2 := ha.subtype _
+      have ha2 : AffineIndependent ℝ fun i2 : ι2 ↦ p i2 := ha.subtype _
       replace hm := hm ha2 _ hc
-      have hr : Set.range p = insert (p i) (Set.range fun i2 : ι2 => p i2) := by
+      have hr : Set.range p = insert (p i) (Set.range fun i2 : ι2 ↦ p i2) := by
         change _ = insert _ (Set.range fun i2 : { x | x ≠ i } => p i2)
         rw [← Set.image_eq_range, ← Set.image_univ, ← Set.image_insert_eq]
         congr with j
@@ -307,7 +307,7 @@ theorem circumradius_pos {n : ℕ} (s : Simplex ℝ P (n + 1)) : 0 < s.circumrad
 /-- The circumcenter of a 0-simplex equals its unique point. -/
 theorem circumcenter_eq_point (s : Simplex ℝ P 0) (i : Fin 1) : s.circumcenter = s.points i := by
   have h := s.circumcenter_mem_affineSpan
-  have : Unique (Fin 1) := ⟨⟨0, by decide⟩, fun a => by simp only [Fin.eq_zero]⟩
+  have : Unique (Fin 1) := ⟨⟨0, by decide⟩, fun a ↦ by simp only [Fin.eq_zero]⟩
   simp only [Set.range_unique, AffineSubspace.mem_affineSpan_singleton] at h
   rw [h]
   congr
@@ -317,7 +317,7 @@ theorem circumcenter_eq_point (s : Simplex ℝ P 0) (i : Fin 1) : s.circumcenter
 theorem circumcenter_eq_centroid (s : Simplex ℝ P 1) :
     s.circumcenter = Finset.univ.centroid ℝ s.points := by
   have hr :
-    Set.Pairwise Set.univ fun i j : Fin 2 =>
+    Set.Pairwise Set.univ fun i j : Fin 2 ↦
       dist (s.points i) (Finset.univ.centroid ℝ s.points) =
         dist (s.points j) (Finset.univ.centroid ℝ s.points) := by
     intro i hi j hj hij
@@ -329,7 +329,7 @@ theorem circumcenter_eq_centroid (s : Simplex ℝ P 1) :
   obtain ⟨r, hr⟩ := hr
   exact
     (s.eq_circumcenter_of_dist_eq
-        (centroid_mem_affineSpan_of_card_eq_add_one ℝ _ (Finset.card_fin 2)) fun i =>
+        (centroid_mem_affineSpan_of_card_eq_add_one ℝ _ (Finset.card_fin 2)) fun i ↦
         hr i (Set.mem_univ _)).symm
 
 /-- Reindexing a simplex along an `Equiv` of index types does not change the circumsphere. -/
@@ -367,9 +367,9 @@ spanned by that simplex is its circumcenter. -/
 theorem orthogonalProjection_eq_circumcenter_of_exists_dist_eq {n : ℕ} (s : Simplex ℝ P n) {p : P}
     (hr : ∃ r, ∀ i, dist (s.points i) p = r) :
     ↑(s.orthogonalProjectionSpan p) = s.circumcenter := by
-  change ∃ r : ℝ, ∀ i, (fun x => dist x p = r) (s.points i) at hr
+  change ∃ r : ℝ, ∀ i, (fun x ↦ dist x p = r) (s.points i) at hr
   have hr : ∃ (r : ℝ), ∀ (a : P),
-      a ∈ Set.range (fun (i : Fin (n + 1)) => s.points i) → dist a p = r := by
+      a ∈ Set.range (fun (i : Fin (n + 1)) ↦ s.points i) → dist a p = r := by
     obtain ⟨r, hr⟩ := hr
     use r
     refine Set.forall_mem_range.mpr ?_
@@ -377,7 +377,7 @@ theorem orthogonalProjection_eq_circumcenter_of_exists_dist_eq {n : ℕ} (s : Si
   rw [exists_dist_eq_iff_exists_dist_orthogonalProjection_eq (subset_affineSpan ℝ _) p] at hr
   obtain ⟨r, hr⟩ := hr
   exact
-    s.eq_circumcenter_of_dist_eq (orthogonalProjection_mem p) fun i => hr _ (Set.mem_range_self i)
+    s.eq_circumcenter_of_dist_eq (orthogonalProjection_mem p) fun i ↦ hr _ (Set.mem_range_self i)
 
 /-- If a point has the same distance from all vertices of a simplex,
 the orthogonal projection of that point onto the subspace spanned by
@@ -426,7 +426,7 @@ instance pointsWithCircumcenterIndexInhabited (n : ℕ) : Inhabited (PointsWithC
 
 /-- `pointIndex` as an embedding. -/
 def pointIndexEmbedding (n : ℕ) : Fin (n + 1) ↪ PointsWithCircumcenterIndex n :=
-  ⟨fun i => pointIndex i, fun _ _ h => by injection h⟩
+  ⟨fun i ↦ pointIndex i, fun _ _ h ↦ by injection h⟩
 
 /-- The sum of a function over `PointsWithCircumcenterIndex`. -/
 theorem sum_pointsWithCircumcenter {α : Type*} [AddCommMonoid α] {n : ℕ}
@@ -435,7 +435,7 @@ theorem sum_pointsWithCircumcenter {α : Type*} [AddCommMonoid α] {n : ℕ}
   classical
   have h : univ = insert circumcenterIndex (univ.map (pointIndexEmbedding n)) := by
     ext x
-    refine ⟨fun h => ?_, fun _ => mem_univ _⟩
+    refine ⟨fun h ↦ ?_, fun _ ↦ mem_univ _⟩
     obtain i | - := x
     · exact mem_insert_of_mem (mem_map_of_mem _ (mem_univ i))
     · exact mem_insert_self _ _
@@ -492,7 +492,7 @@ theorem point_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s : Simp
       (by simp [pointWeightsWithCircumcenter]) ?_
   intro i hi hn
   cases i
-  · have h : _ ≠ i := fun h => hn (h ▸ rfl)
+  · have h : _ ≠ i := fun h ↦ hn (h ▸ rfl)
     simp [pointWeightsWithCircumcenter, h]
   · rfl
 
@@ -521,7 +521,7 @@ theorem centroid_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s : S
     sum_pointsWithCircumcenter, centroidWeightsWithCircumcenter,
     pointsWithCircumcenter_point, zero_smul, add_zero, centroidWeights,
     ← sum_indicator_subset_of_eq_zero (Function.const (Fin (n + 1)) (#fs : ℝ)⁻¹)
-      (fun i wi => wi • (s.points i -ᵥ Classical.choice AddTorsor.nonempty)) fs.subset_univ fun _ =>
+      (fun i wi ↦ wi • (s.points i -ᵥ Classical.choice AddTorsor.nonempty)) fs.subset_univ fun _ ↦
       zero_smul ℝ _,
     Set.indicator_apply]
   congr
@@ -618,7 +618,7 @@ theorem cospherical_iff_exists_mem_of_complete {s : AffineSubspace ℝ P} {ps : 
   · rintro ⟨c, hcr⟩
     rw [exists_dist_eq_iff_exists_dist_orthogonalProjection_eq h c] at hcr
     exact ⟨orthogonalProjection s c, orthogonalProjection_mem _, hcr⟩
-  · exact fun ⟨c, _, hd⟩ => ⟨c, hd⟩
+  · exact fun ⟨c, _, hd⟩ ↦ ⟨c, hd⟩
 
 /-- Given a nonempty affine subspace, whose direction is
 finite-dimensional, that contains a set of points, those points are
@@ -646,7 +646,7 @@ theorem exists_circumradius_eq_of_cospherical_subset {s : AffineSubspace ℝ P} 
     simp [hd]
   have hc : c ∈ affineSpan ℝ (Set.range sx.points) := hsx.symm ▸ hc
   exact
-    (sx.eq_circumradius_of_dist_eq hc fun i =>
+    (sx.eq_circumradius_of_dist_eq hc fun i ↦
         hcr (sx.points i) (hsxps (Set.mem_range_self i))).symm
 
 /-- Two n-simplices among cospherical points in an n-dimensional
@@ -694,7 +694,7 @@ theorem exists_circumcenter_eq_of_cospherical_subset {s : AffineSubspace ℝ P} 
     simp [hd]
   have hc : c ∈ affineSpan ℝ (Set.range sx.points) := hsx.symm ▸ hc
   exact
-    (sx.eq_circumcenter_of_dist_eq hc fun i =>
+    (sx.eq_circumcenter_of_dist_eq hc fun i ↦
         hcr (sx.points i) (hsxps (Set.mem_range_self i))).symm
 
 /-- Two n-simplices among cospherical points in an n-dimensional
@@ -733,7 +733,7 @@ theorem exists_circumsphere_eq_of_cospherical_subset {s : AffineSubspace ℝ P} 
     ∃ c : Sphere P, ∀ sx : Simplex ℝ P n, Set.range sx.points ⊆ ps → sx.circumsphere = c := by
   obtain ⟨r, hr⟩ := exists_circumradius_eq_of_cospherical_subset h hd hc
   obtain ⟨c, hc⟩ := exists_circumcenter_eq_of_cospherical_subset h hd hc
-  exact ⟨⟨c, r⟩, fun sx hsx => Sphere.ext (hc sx hsx) (hr sx hsx)⟩
+  exact ⟨⟨c, r⟩, fun sx hsx ↦ Sphere.ext (hc sx hsx) (hr sx hsx)⟩
 
 /-- Two n-simplices among cospherical points in an n-dimensional
 subspace have the same circumsphere. -/

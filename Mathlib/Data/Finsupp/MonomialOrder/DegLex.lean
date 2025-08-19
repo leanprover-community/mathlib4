@@ -54,7 +54,7 @@ theorem ofDegLex_inj {a b : DegLex α} : ofDegLex a = ofDegLex b ↔ a = b := If
 /-- A recursor for `DegLex`. Use as `induction x`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
 protected def DegLex.rec {β : DegLex α → Sort*} (h : ∀ a, β (toDegLex a)) :
-    ∀ a, β a := fun a => h (ofDegLex a)
+    ∀ a, β a := fun a ↦ h (ofDegLex a)
 
 @[simp] lemma DegLex.forall_iff {p : DegLex α → Prop} : (∀ a, p a) ↔ ∀ a, p (toDegLex a) := Iff.rfl
 @[simp] lemma DegLex.exists_iff {p : DegLex α → Prop} : (∃ a, p a) ↔ ∃ a, p (toDegLex a) := Iff.rfl

@@ -173,10 +173,10 @@ lemma strictMono_div_right_of_pos (ha : 0 < a) : StrictMono (· / a) :=
   fun _b _c hbc ↦ div_lt_div_of_pos_right hbc ha
 
 theorem Monotone.div_const {β : Type*} [Preorder β] {f : β → α} (hf : Monotone f) {c : α}
-    (hc : 0 ≤ c) : Monotone fun x => f x / c := (monotone_div_right_of_nonneg hc).comp hf
+    (hc : 0 ≤ c) : Monotone fun x ↦ f x / c := (monotone_div_right_of_nonneg hc).comp hf
 
 theorem StrictMono.div_const {β : Type*} [Preorder β] {f : β → α} (hf : StrictMono f) {c : α}
-    (hc : 0 < c) : StrictMono fun x => f x / c := by
+    (hc : 0 < c) : StrictMono fun x ↦ f x / c := by
   simpa only [div_eq_mul_inv] using hf.mul_const (inv_pos.2 hc)
 
 -- see Note [lower instance priority]
@@ -198,8 +198,8 @@ theorem min_div_div_right {c : α} (hc : 0 ≤ c) (a b : α) : min (a / c) (b / 
 theorem max_div_div_right {c : α} (hc : 0 ≤ c) (a b : α) : max (a / c) (b / c) = max a b / c :=
   (monotone_div_right_of_nonneg hc).map_max.symm
 
-theorem one_div_strictAntiOn : StrictAntiOn (fun x : α => 1 / x) (Set.Ioi 0) :=
-  fun _ x1 _ y1 xy => (one_div_lt_one_div (Set.mem_Ioi.mp y1) (Set.mem_Ioi.mp x1)).mpr xy
+theorem one_div_strictAntiOn : StrictAntiOn (fun x : α ↦ 1 / x) (Set.Ioi 0) :=
+  fun _ x1 _ y1 xy ↦ (one_div_lt_one_div (Set.mem_Ioi.mp y1) (Set.mem_Ioi.mp x1)).mpr xy
 
 theorem one_div_pow_le_one_div_pow_of_le (a1 : 1 ≤ a) {m n : ℕ} (mn : m ≤ n) :
     1 / a ^ n ≤ 1 / a ^ m := by
@@ -211,13 +211,13 @@ theorem one_div_pow_lt_one_div_pow_of_lt (a1 : 1 < a) {m n : ℕ} (mn : m < n) :
   refine (one_div_lt_one_div ?_ ?_).2 (pow_lt_pow_right₀ a1 mn) <;>
     exact pow_pos (zero_lt_one.trans a1) _
 
-theorem one_div_pow_anti (a1 : 1 ≤ a) : Antitone fun n : ℕ => 1 / a ^ n := fun _ _ =>
+theorem one_div_pow_anti (a1 : 1 ≤ a) : Antitone fun n : ℕ ↦ 1 / a ^ n := fun _ _ ↦
   one_div_pow_le_one_div_pow_of_le a1
 
-theorem one_div_pow_strictAnti (a1 : 1 < a) : StrictAnti fun n : ℕ => 1 / a ^ n := fun _ _ =>
+theorem one_div_pow_strictAnti (a1 : 1 < a) : StrictAnti fun n : ℕ ↦ 1 / a ^ n := fun _ _ ↦
   one_div_pow_lt_one_div_pow_of_lt a1
 
-theorem inv_strictAntiOn : StrictAntiOn (fun x : α => x⁻¹) (Set.Ioi 0) := fun _ hx _ hy xy =>
+theorem inv_strictAntiOn : StrictAntiOn (fun x : α ↦ x⁻¹) (Set.Ioi 0) := fun _ hx _ hy xy ↦
   (inv_lt_inv₀ hy hx).2 xy
 
 theorem inv_pow_le_inv_pow_of_le (a1 : 1 ≤ a) {m n : ℕ} (mn : m ≤ n) : (a ^ n)⁻¹ ≤ (a ^ m)⁻¹ := by
@@ -226,10 +226,10 @@ theorem inv_pow_le_inv_pow_of_le (a1 : 1 ≤ a) {m n : ℕ} (mn : m ≤ n) : (a 
 theorem inv_pow_lt_inv_pow_of_lt (a1 : 1 < a) {m n : ℕ} (mn : m < n) : (a ^ n)⁻¹ < (a ^ m)⁻¹ := by
   convert one_div_pow_lt_one_div_pow_of_lt a1 mn using 1 <;> simp
 
-theorem inv_pow_anti (a1 : 1 ≤ a) : Antitone fun n : ℕ => (a ^ n)⁻¹ := fun _ _ =>
+theorem inv_pow_anti (a1 : 1 ≤ a) : Antitone fun n : ℕ ↦ (a ^ n)⁻¹ := fun _ _ ↦
   inv_pow_le_inv_pow_of_le a1
 
-theorem inv_pow_strictAnti (a1 : 1 < a) : StrictAnti fun n : ℕ => (a ^ n)⁻¹ := fun _ _ =>
+theorem inv_pow_strictAnti (a1 : 1 < a) : StrictAnti fun n : ℕ ↦ (a ^ n)⁻¹ := fun _ _ ↦
   inv_pow_lt_inv_pow_of_lt a1
 
 theorem le_iff_forall_one_lt_le_mul₀ {α : Type*}
@@ -239,7 +239,7 @@ theorem le_iff_forall_one_lt_le_mul₀ {α : Type*}
   obtain rfl | hb := hb.eq_or_lt
   · simp_rw [zero_mul] at h
     exact h 2 one_lt_two
-  refine le_of_forall_gt_imp_ge_of_dense fun x hbx => ?_
+  refine le_of_forall_gt_imp_ge_of_dense fun x hbx ↦ ?_
   convert h (x / b) ((one_lt_div hb).mpr hbx)
   rw [mul_div_cancel₀ _ hb.ne']
 
@@ -254,7 +254,7 @@ theorem div_nat_lt_self_of_pos_of_two_le (ha : 0 < a) {n : ℕ} (hn : 2 ≤ n) :
 
 
 theorem IsGLB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
-    IsGLB ((fun b => a * b) '' s) (a * b) := by
+    IsGLB ((fun b ↦ a * b) '' s) (a * b) := by
   rcases lt_or_eq_of_le ha with (ha | rfl)
   · exact (OrderIso.mulLeft₀ _ ha).isGLB_image'.2 hs
   · simp_rw [zero_mul]
@@ -262,13 +262,13 @@ theorem IsGLB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
     exact isGLB_singleton
 
 theorem IsGLB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
-    IsGLB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
+    IsGLB ((fun b ↦ b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
 
 /-! ### Results about `IsLUB` -/
 
 
 theorem IsLUB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
-    IsLUB ((fun b => a * b) '' s) (a * b) := by
+    IsLUB ((fun b ↦ a * b) '' s) (a * b) := by
   obtain ha | rfl := ha.lt_or_eq
   · exact (OrderIso.mulLeft₀ _ ha).isLUB_image'.2 hs
   · simp_rw [zero_mul]
@@ -281,7 +281,7 @@ theorem IsLUB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
     exact isLUB_singleton
 
 theorem IsLUB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
-    IsLUB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
+    IsLUB ((fun b ↦ b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
 
 end LinearOrderedSemifield
 
@@ -320,7 +320,7 @@ theorem div_neg_of_pos_of_neg (ha : 0 < a) (hb : b < 0) : a / b < 0 :=
 
 
 theorem div_le_iff_of_neg (hc : c < 0) : b / c ≤ a ↔ a * c ≤ b :=
-  ⟨fun h => div_mul_cancel₀ b (ne_of_lt hc) ▸ mul_le_mul_of_nonpos_right h hc.le, fun h =>
+  ⟨fun h ↦ div_mul_cancel₀ b (ne_of_lt hc) ▸ mul_le_mul_of_nonpos_right h hc.le, fun h ↦
     calc
       a = a * c * (1 / c) := mul_mul_div a (ne_of_lt hc)
       _ ≥ b * (1 / c) := mul_le_mul_of_nonpos_right h (one_div_neg.2 hc).le
@@ -604,13 +604,13 @@ lemma mul_le_of_forall_lt_of_nonneg {a b c : α} (ha : 0 ≤ a) (hc : 0 ≤ c)
 
 theorem mul_self_inj_of_nonneg (a0 : 0 ≤ a) (b0 : 0 ≤ b) : a * a = b * b ↔ a = b :=
   mul_self_eq_mul_self_iff.trans <|
-    or_iff_left_of_imp fun h => by grind
+    or_iff_left_of_imp fun h ↦ by grind
 
 theorem min_div_div_right_of_nonpos (hc : c ≤ 0) (a b : α) : min (a / c) (b / c) = max a b / c :=
-  Eq.symm <| Antitone.map_max fun _ _ => div_le_div_of_nonpos_of_le hc
+  Eq.symm <| Antitone.map_max fun _ _ ↦ div_le_div_of_nonpos_of_le hc
 
 theorem max_div_div_right_of_nonpos (hc : c ≤ 0) (a b : α) : max (a / c) (b / c) = min a b / c :=
-  Eq.symm <| Antitone.map_min fun _ _ => div_le_div_of_nonpos_of_le hc
+  Eq.symm <| Antitone.map_min fun _ _ ↦ div_le_div_of_nonpos_of_le hc
 
 theorem abs_inv (a : α) : |a⁻¹| = |a|⁻¹ :=
   map_inv₀ (absHom : α →*₀ α) a

@@ -59,7 +59,7 @@ theorem ext_cauchy {x y : Real} : x.cauchy = y.cauchy → x = y :=
 
 /-- The real numbers are isomorphic to the quotient of Cauchy sequences on the rationals. -/
 def equivCauchy : ℝ ≃ CauSeq.Completion.Cauchy (abs : ℚ → ℚ) :=
-  ⟨Real.cauchy, Real.ofCauchy, fun ⟨_⟩ => rfl, fun _ => rfl⟩
+  ⟨Real.cauchy, Real.ofCauchy, fun ⟨_⟩ ↦ rfl, fun _ ↦ rfl⟩
 
 -- irreducible doesn't work for instances: https://github.com/leanprover-community/lean/issues/511
 private irreducible_def zero : ℝ :=
@@ -96,7 +96,7 @@ instance : Mul ℝ :=
   ⟨mul⟩
 
 instance : Sub ℝ :=
-  ⟨fun a b => a + -b⟩
+  ⟨fun a b ↦ a + -b⟩
 
 noncomputable instance : Inv ℝ :=
   ⟨inv'⟩
@@ -251,9 +251,9 @@ theorem mk_eq {f g : CauSeq ℚ abs} : mk f = mk g ↔ f ≈ g :=
 
 private irreducible_def lt : ℝ → ℝ → Prop
   | ⟨x⟩, ⟨y⟩ =>
-    (Quotient.liftOn₂ x y (· < ·)) fun _ _ _ _ hf hg =>
+    (Quotient.liftOn₂ x y (· < ·)) fun _ _ _ _ hf hg ↦
       propext <|
-        ⟨fun h => lt_of_eq_of_lt (Setoid.symm hf) (lt_of_lt_of_eq h hg), fun h =>
+        ⟨fun h ↦ lt_of_eq_of_lt (Setoid.symm hf) (lt_of_lt_of_eq h hg), fun h ↦
           lt_of_eq_of_lt hf (lt_of_lt_of_eq h (Setoid.symm hg))⟩
 
 instance : LT ℝ :=
@@ -353,7 +353,7 @@ instance instIsOrderedAddMonoid : IsOrderedAddMonoid ℝ where
     simp only [le_iff_eq_or_lt]
     rintro a b ⟨rfl, h⟩
     · simp only [lt_self_iff_false, or_false, forall_const]
-    · exact fun c => Or.inr ((add_lt_add_iff_left c).2 ‹_›)
+    · exact fun c ↦ Or.inr ((add_lt_add_iff_left c).2 ‹_›)
 
 instance instIsStrictOrderedRing : IsStrictOrderedRing ℝ :=
   .of_mul_pos fun a b ↦ by
@@ -368,7 +368,7 @@ instance instIsOrderedCancelAddMonoid : IsOrderedCancelAddMonoid ℝ :=
   inferInstance
 
 private irreducible_def sup : ℝ → ℝ → ℝ
-  | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊔ ·) (fun _ _ hx _ _ hy => sup_equiv_sup hx hy) x y⟩
+  | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊔ ·) (fun _ _ hx _ _ hy ↦ sup_equiv_sup hx hy) x y⟩
 
 instance : Max ℝ :=
   ⟨sup⟩
@@ -383,7 +383,7 @@ theorem mk_sup (a b) : (mk (a ⊔ b) : ℝ) = mk a ⊔ mk b :=
   ofCauchy_sup _ _
 
 private irreducible_def inf : ℝ → ℝ → ℝ
-  | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊓ ·) (fun _ _ hx _ _ hy => inf_equiv_inf hx hy) x y⟩
+  | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊓ ·) (fun _ _ hx _ _ hy ↦ inf_equiv_inf hx hy) x y⟩
 
 instance : Min ℝ :=
   ⟨inf⟩
@@ -486,9 +486,9 @@ noncomputable instance field : Field ℝ where
     exact CauSeq.Completion.inv_mul_cancel h
   inv_zero := by simp [← ofCauchy_zero, ← ofCauchy_inv]
   nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
+  nnqsmul_def := fun _ _ ↦ rfl
   qsmul := _
-  qsmul_def := fun _ _ => rfl
+  qsmul_def := fun _ _ ↦ rfl
   nnratCast_def q := by
     rw [← ofCauchy_nnratCast, NNRat.cast_def, ofCauchy_div, ofCauchy_natCast, ofCauchy_natCast]
   ratCast_def q := by
@@ -520,7 +520,7 @@ theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j
   obtain ⟨i, H⟩ := exists_forall_ge_and h (exists_forall_ge_and hK (f.cauchy₃ <| half_pos K0))
   apply not_lt_of_ge (H _ le_rfl).1
   rw [← mk_const, mk_lt]
-  refine ⟨_, half_pos K0, i, fun j ij => ?_⟩
+  refine ⟨_, half_pos K0, i, fun j ij ↦ ?_⟩
   have := add_le_add (H _ ij).2.1 (le_of_lt (abs_lt.1 <| (H _ le_rfl).2.2 _ ij).1)
   rwa [← sub_eq_add_neg, sub_self_div_two, sub_apply, sub_add_sub_cancel] at this
 
@@ -528,16 +528,16 @@ theorem mk_le_of_forall_le {f : CauSeq ℚ abs} {x : ℝ} (h : ∃ i, ∀ j ≥ 
     mk f ≤ x := by
   obtain ⟨i, H⟩ := h
   rw [← neg_le_neg_iff, ← mk_neg]
-  exact le_mk_of_forall_le ⟨i, fun j ij => by simp [H _ ij]⟩
+  exact le_mk_of_forall_le ⟨i, fun j ij ↦ by simp [H _ ij]⟩
 
 theorem mk_near_of_forall_near {f : CauSeq ℚ abs} {x : ℝ} {ε : ℝ}
     (H : ∃ i, ∀ j ≥ i, |(f j : ℝ) - x| ≤ ε) : |mk f - x| ≤ ε :=
   abs_sub_le_iff.2
     ⟨sub_le_iff_le_add'.2 <|
         mk_le_of_forall_le <|
-          H.imp fun _ h j ij => sub_le_iff_le_add'.1 (abs_sub_le_iff.1 <| h j ij).1,
+          H.imp fun _ h j ij ↦ sub_le_iff_le_add'.1 (abs_sub_le_iff.1 <| h j ij).1,
       sub_le_comm.1 <|
-        le_mk_of_forall_le <| H.imp fun _ h j ij => sub_le_comm.1 (abs_sub_le_iff.1 <| h j ij).2⟩
+        le_mk_of_forall_le <| H.imp fun _ h j ij ↦ sub_le_comm.1 (abs_sub_le_iff.1 <| h j ij).2⟩
 
 lemma mul_add_one_le_add_one_pow {a : ℝ} (ha : 0 ≤ a) (b : ℕ) : a * b + 1 ≤ (a + 1) ^ b := by
   rcases ha.eq_or_lt with rfl | ha'

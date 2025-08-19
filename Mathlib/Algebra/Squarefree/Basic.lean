@@ -40,7 +40,7 @@ theorem IsRelPrime.of_squarefree_mul [CommMonoid R] {m n : R} (h : Squarefree (m
     IsRelPrime m n := fun c hca hcb ↦ h c (mul_dvd_mul hca hcb)
 
 @[simp]
-theorem IsUnit.squarefree [CommMonoid R] {x : R} (h : IsUnit x) : Squarefree x := fun _ hdvd =>
+theorem IsUnit.squarefree [CommMonoid R] {x : R} (h : IsUnit x) : Squarefree x := fun _ hdvd ↦
   isUnit_of_mul_isUnit_left (isUnit_of_dvd_unit hdvd h)
 
 theorem squarefree_one [CommMonoid R] : Squarefree (1 : R) :=
@@ -69,13 +69,13 @@ theorem Prime.squarefree [CancelCommMonoidWithZero R] {x : R} (h : Prime x) : Sq
   h.irreducible.squarefree
 
 theorem Squarefree.of_mul_left [Monoid R] {m n : R} (hmn : Squarefree (m * n)) : Squarefree m :=
-  fun p hp => hmn p (dvd_mul_of_dvd_left hp n)
+  fun p hp ↦ hmn p (dvd_mul_of_dvd_left hp n)
 
 theorem Squarefree.of_mul_right [CommMonoid R] {m n : R} (hmn : Squarefree (m * n)) :
-    Squarefree n := fun p hp => hmn p (dvd_mul_of_dvd_right hp m)
+    Squarefree n := fun p hp ↦ hmn p (dvd_mul_of_dvd_right hp m)
 
 theorem Squarefree.squarefree_of_dvd [Monoid R] {x y : R} (hdvd : x ∣ y) (hsq : Squarefree y) :
-    Squarefree x := fun _ h => hsq _ (h.trans hdvd)
+    Squarefree x := fun _ h ↦ hsq _ (h.trans hdvd)
 
 theorem Squarefree.eq_zero_or_one_of_pow_of_not_isUnit [Monoid R] {x : R} {n : ℕ}
     (h : Squarefree (x ^ n)) (h' : ¬ IsUnit x) :
@@ -105,7 +105,7 @@ end SquarefreeGcdOfSquarefree
 
 theorem squarefree_iff_emultiplicity_le_one [CommMonoid R] (r : R) :
     Squarefree r ↔ ∀ x : R, emultiplicity x r ≤ 1 ∨ IsUnit x := by
-  refine forall_congr' fun a => ?_
+  refine forall_congr' fun a ↦ ?_
   rw [← sq, pow_dvd_iff_le_emultiplicity, or_iff_not_imp_left, not_le, imp_congr _ Iff.rfl]
   norm_cast
   rw [← one_add_one_eq_two]

@@ -72,10 +72,10 @@ where
         ⟨∅, by simp [Ne.symm h]⟩
     | d + 1 =>
       { val := (antidiagonal n).disjiUnion
-          (fun ab => (aux d ab.2).1.map {
+          (fun ab ↦ (aux d ab.2).1.map {
               toFun := Fin.cons (ab.1)
               inj' := Fin.cons_right_injective _ })
-          (fun i _hi j _hj hij => Finset.disjoint_left.2 fun t hti htj => hij <| by
+          (fun i _hi j _hj hij ↦ Finset.disjoint_left.2 fun t hti htj ↦ hij <| by
             simp_rw [Finset.mem_map, Embedding.coeFn_mk] at hti htj
             obtain ⟨ai, hai, hij'⟩ := hti
             obtain ⟨aj, haj, rfl⟩ := htj
@@ -84,7 +84,7 @@ where
             · exact hij'.1
             · obtain ⟨-, rfl⟩ := hij'
               rw [← (aux d i.2).prop ai |>.mp hai, ← (aux d j.2).prop ai |>.mp haj])
-        property := fun f => by
+        property := fun f ↦ by
           simp_rw [mem_disjiUnion, mem_antidiagonal, mem_map, Embedding.coeFn_mk, Prod.exists,
             (aux d _).prop, Fin.sum_univ_succ]
           constructor

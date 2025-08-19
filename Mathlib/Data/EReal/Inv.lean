@@ -129,7 +129,7 @@ theorem le_iff_sign {x y : EReal} :
           sign x = SignType.pos ∧ sign y = SignType.pos ∧ x.abs ≤ y.abs := by
   constructor
   · intro h
-    refine (sign.monotone h).lt_or_eq.imp_right (fun hs => ?_)
+    refine (sign.monotone h).lt_or_eq.imp_right (fun hs ↦ ?_)
     rw [← x.sign_mul_abs, ← y.sign_mul_abs] at h
     cases hy : sign y <;> rw [hs, hy] at h ⊢
     · simp
@@ -141,7 +141,7 @@ theorem le_iff_sign {x y : EReal} :
 
 instance : CommMonoidWithZero EReal :=
   { inferInstanceAs (MulZeroOneClass EReal) with
-    mul_assoc := fun x y z => by
+    mul_assoc := fun x y z ↦ by
       rw [← sign_eq_and_abs_eq_iff_eq]
       simp only [mul_assoc, abs_mul, sign_mul, and_self_iff]
     mul_comm := EReal.mul_comm }
@@ -301,7 +301,7 @@ lemma inv_neg_of_neg_ne_bot {a : EReal} (h : a < 0) (h' : a ≠ ⊥) : a⁻¹ < 
   lift a to ℝ using ⟨ne_top_of_lt h, h'⟩
   rw [← coe_inv a]; norm_cast at *; exact inv_lt_zero.2 h
 
-lemma inv_strictAntiOn : StrictAntiOn (fun (x : EReal) => x⁻¹) (Ioi 0) := by
+lemma inv_strictAntiOn : StrictAntiOn (fun (x : EReal) ↦ x⁻¹) (Ioi 0) := by
   intro a a_0 b b_0 a_b
   simp only [mem_Ioi] at *
   lift a to ℝ using ⟨ne_top_of_lt a_b, ne_bot_of_gt a_0⟩

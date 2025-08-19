@@ -156,11 +156,11 @@ theorem aestronglyMeasurable_snd [TopologicalSpace γ] [PseudoMetrizableSpace γ
 
 theorem aestronglyMeasurable_iff [TopologicalSpace γ] [PseudoMetrizableSpace γ] [BorelSpace γ]
     (h : IdentDistrib f g μ ν) : AEStronglyMeasurable f μ ↔ AEStronglyMeasurable g ν :=
-  ⟨fun hf => h.aestronglyMeasurable_snd hf, fun hg => h.symm.aestronglyMeasurable_snd hg⟩
+  ⟨fun hf ↦ h.aestronglyMeasurable_snd hf, fun hg ↦ h.symm.aestronglyMeasurable_snd hg⟩
 
 theorem essSup_eq [ConditionallyCompleteLinearOrder γ] [TopologicalSpace γ] [OpensMeasurableSpace γ]
     [OrderClosedTopology γ] (h : IdentDistrib f g μ ν) : essSup f μ = essSup g ν := by
-  have I : ∀ a, μ {x : α | a < f x} = ν {x : β | a < g x} := fun a =>
+  have I : ∀ a, μ {x : α | a < f x} = ν {x : β | a < g x} := fun a ↦
     h.measure_mem_eq measurableSet_Ioi
   simp_rw [essSup_eq_sInf, I]
 
@@ -214,7 +214,7 @@ alias memℒp_snd := memLp_snd
 
 theorem memLp_iff [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν) :
     MemLp f p μ ↔ MemLp g p ν :=
-  ⟨fun hf => h.memLp_snd hf, fun hg => h.symm.memLp_snd hg⟩
+  ⟨fun hf ↦ h.memLp_snd hf, fun hg ↦ h.symm.memLp_snd hg⟩
 
 @[deprecated (since := "2025-02-21")]
 alias memℒp_iff := memLp_iff
@@ -226,47 +226,47 @@ theorem integrable_snd [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib
 
 theorem integrable_iff [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g μ ν) :
     Integrable f μ ↔ Integrable g ν :=
-  ⟨fun hf => h.integrable_snd hf, fun hg => h.symm.integrable_snd hg⟩
+  ⟨fun hf ↦ h.integrable_snd hf, fun hg ↦ h.symm.integrable_snd hg⟩
 
 protected theorem norm [NormedAddCommGroup γ] [OpensMeasurableSpace γ] (h : IdentDistrib f g μ ν) :
-    IdentDistrib (fun x => ‖f x‖) (fun x => ‖g x‖) μ ν :=
+    IdentDistrib (fun x ↦ ‖f x‖) (fun x ↦ ‖g x‖) μ ν :=
   h.comp measurable_norm
 
 protected theorem nnnorm [NormedAddCommGroup γ] [OpensMeasurableSpace γ]
     (h : IdentDistrib f g μ ν) :
-    IdentDistrib (fun x => ‖f x‖₊) (fun x => ‖g x‖₊) μ ν :=
+    IdentDistrib (fun x ↦ ‖f x‖₊) (fun x ↦ ‖g x‖₊) μ ν :=
   h.comp measurable_nnnorm
 
 protected theorem pow [Pow γ ℕ] [MeasurablePow γ ℕ] (h : IdentDistrib f g μ ν) {n : ℕ} :
-    IdentDistrib (fun x => f x ^ n) (fun x => g x ^ n) μ ν :=
+    IdentDistrib (fun x ↦ f x ^ n) (fun x ↦ g x ^ n) μ ν :=
   h.comp (measurable_id.pow_const n)
 
 protected theorem sq [Pow γ ℕ] [MeasurablePow γ ℕ] (h : IdentDistrib f g μ ν) :
-    IdentDistrib (fun x => f x ^ 2) (fun x => g x ^ 2) μ ν :=
+    IdentDistrib (fun x ↦ f x ^ 2) (fun x ↦ g x ^ 2) μ ν :=
   h.comp (measurable_id.pow_const 2)
 
 protected theorem coe_nnreal_ennreal {f : α → ℝ≥0} {g : β → ℝ≥0} (h : IdentDistrib f g μ ν) :
-    IdentDistrib (fun x => (f x : ℝ≥0∞)) (fun x => (g x : ℝ≥0∞)) μ ν :=
+    IdentDistrib (fun x ↦ (f x : ℝ≥0∞)) (fun x ↦ (g x : ℝ≥0∞)) μ ν :=
   h.comp measurable_coe_nnreal_ennreal
 
 @[to_additive]
 theorem mul_const [Mul γ] [MeasurableMul γ] (h : IdentDistrib f g μ ν) (c : γ) :
-    IdentDistrib (fun x => f x * c) (fun x => g x * c) μ ν :=
+    IdentDistrib (fun x ↦ f x * c) (fun x ↦ g x * c) μ ν :=
   h.comp (measurable_mul_const c)
 
 @[to_additive]
 theorem const_mul [Mul γ] [MeasurableMul γ] (h : IdentDistrib f g μ ν) (c : γ) :
-    IdentDistrib (fun x => c * f x) (fun x => c * g x) μ ν :=
+    IdentDistrib (fun x ↦ c * f x) (fun x ↦ c * g x) μ ν :=
   h.comp (measurable_const_mul c)
 
 @[to_additive]
 theorem div_const [Div γ] [MeasurableDiv γ] (h : IdentDistrib f g μ ν) (c : γ) :
-    IdentDistrib (fun x => f x / c) (fun x => g x / c) μ ν :=
+    IdentDistrib (fun x ↦ f x / c) (fun x ↦ g x / c) μ ν :=
   h.comp (MeasurableDiv.measurable_div_const c)
 
 @[to_additive]
 theorem const_div [Div γ] [MeasurableDiv γ] (h : IdentDistrib f g μ ν) (c : γ) :
-    IdentDistrib (fun x => c / f x) (fun x => c / g x) μ ν :=
+    IdentDistrib (fun x ↦ c / f x) (fun x ↦ c / g x) μ ν :=
   h.comp (MeasurableDiv.measurable_const_div c)
 
 @[to_additive]
@@ -296,18 +296,18 @@ variable {E : Type*} [MeasurableSpace E] [NormedAddCommGroup E] [BorelSpace E]
 theorem MemLp.uniformIntegrable_of_identDistrib_aux {ι : Type*} {f : ι → α → E} {j : ι} {p : ℝ≥0∞}
     (hp : 1 ≤ p) (hp' : p ≠ ∞) (hℒp : MemLp (f j) p μ) (hfmeas : ∀ i, StronglyMeasurable (f i))
     (hf : ∀ i, IdentDistrib (f i) (f j) μ μ) : UniformIntegrable f p μ := by
-  refine uniformIntegrable_of' hp hp' hfmeas fun ε hε => ?_
+  refine uniformIntegrable_of' hp hp' hfmeas fun ε hε ↦ ?_
   by_cases hι : Nonempty ι
-  swap; · exact ⟨0, fun i => False.elim (hι <| Nonempty.intro i)⟩
+  swap; · exact ⟨0, fun i ↦ False.elim (hι <| Nonempty.intro i)⟩
   obtain ⟨C, hC₁, hC₂⟩ := hℒp.eLpNorm_indicator_norm_ge_pos_le (hfmeas _) hε
-  refine ⟨⟨C, hC₁.le⟩, fun i => le_trans (le_of_eq ?_) hC₂⟩
+  refine ⟨⟨C, hC₁.le⟩, fun i ↦ le_trans (le_of_eq ?_) hC₂⟩
   have : {x | (⟨C, hC₁.le⟩ : ℝ≥0) ≤ ‖f i x‖₊} = {x | C ≤ ‖f i x‖} := by
     ext x
     simp_rw [← norm_toNNReal]
     exact Real.le_toNNReal_iff_coe_le (norm_nonneg _)
   rw [this, ← eLpNorm_norm, ← eLpNorm_norm (Set.indicator _ _)]
   simp_rw [norm_indicator_eq_indicator_norm, coe_nnnorm]
-  let F : E → ℝ := (fun x : E => if (⟨C, hC₁.le⟩ : ℝ≥0) ≤ ‖x‖₊ then ‖x‖ else 0)
+  let F : E → ℝ := (fun x : E ↦ if (⟨C, hC₁.le⟩ : ℝ≥0) ≤ ‖x‖₊ then ‖x‖ else 0)
   have F_meas : Measurable F := by
     apply measurable_norm.indicator (measurableSet_le measurable_const measurable_nnnorm)
   have : ∀ k, (fun x ↦ Set.indicator {x | C ≤ ‖f k x‖} (fun a ↦ ‖f k a‖) x) = F ∘ f k := by
@@ -324,14 +324,14 @@ alias Memℒp.uniformIntegrable_of_identDistrib_aux := MemLp.uniformIntegrable_o
 theorem MemLp.uniformIntegrable_of_identDistrib {ι : Type*} {f : ι → α → E} {j : ι} {p : ℝ≥0∞}
     (hp : 1 ≤ p) (hp' : p ≠ ∞) (hℒp : MemLp (f j) p μ) (hf : ∀ i, IdentDistrib (f i) (f j) μ μ) :
     UniformIntegrable f p μ := by
-  have hfmeas : ∀ i, AEStronglyMeasurable (f i) μ := fun i =>
+  have hfmeas : ∀ i, AEStronglyMeasurable (f i) μ := fun i ↦
     (hf i).aestronglyMeasurable_iff.2 hℒp.1
-  set g : ι → α → E := fun i => (hfmeas i).choose
-  have hgmeas : ∀ i, StronglyMeasurable (g i) := fun i => (Exists.choose_spec <| hfmeas i).1
-  have hgeq : ∀ i, g i =ᵐ[μ] f i := fun i => (Exists.choose_spec <| hfmeas i).2.symm
+  set g : ι → α → E := fun i ↦ (hfmeas i).choose
+  have hgmeas : ∀ i, StronglyMeasurable (g i) := fun i ↦ (Exists.choose_spec <| hfmeas i).1
+  have hgeq : ∀ i, g i =ᵐ[μ] f i := fun i ↦ (Exists.choose_spec <| hfmeas i).2.symm
   have hgℒp : MemLp (g j) p μ := hℒp.ae_eq (hgeq j).symm
   exact UniformIntegrable.ae_eq
-    (MemLp.uniformIntegrable_of_identDistrib_aux hp hp' hgℒp hgmeas fun i =>
+    (MemLp.uniformIntegrable_of_identDistrib_aux hp hp' hgℒp hgmeas fun i ↦
       (IdentDistrib.of_ae_eq (hgmeas i).aemeasurable (hgeq i)).trans
         ((hf i).trans <| IdentDistrib.of_ae_eq (hfmeas j).aemeasurable (hgeq j).symm)) hgeq
 

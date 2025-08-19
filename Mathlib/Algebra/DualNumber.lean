@@ -123,23 +123,23 @@ def lift :
     {fe : (A →ₐ[R] B) × B // fe.2 * fe.2 = 0 ∧ ∀ a, Commute fe.2 (fe.1 a)} ≃ (A[ε] →ₐ[R] B) := by
   refine Equiv.trans ?_ TrivSqZeroExt.liftEquiv
   exact {
-    toFun := fun fe => ⟨
+    toFun := fun fe ↦ ⟨
       (fe.val.1, MulOpposite.op fe.val.2 • fe.val.1.toLinearMap),
-      fun x y => show (fe.val.1 x * fe.val.2) * (fe.val.1 y * fe.val.2) = 0 by
+      fun x y ↦ show (fe.val.1 x * fe.val.2) * (fe.val.1 y * fe.val.2) = 0 by
         rw [(fe.prop.2 _).mul_mul_mul_comm, fe.prop.1, mul_zero],
-      fun r x => show fe.val.1 (r * x) * fe.val.2 = fe.val.1 r * (fe.val.1 x * fe.val.2) by
+      fun r x ↦ show fe.val.1 (r * x) * fe.val.2 = fe.val.1 r * (fe.val.1 x * fe.val.2) by
         rw [map_mul, mul_assoc],
-      fun r x => show fe.val.1 (x * r) * fe.val.2 = (fe.val.1 x * fe.val.2) * fe.val.1 r by
+      fun r x ↦ show fe.val.1 (x * r) * fe.val.2 = (fe.val.1 x * fe.val.2) * fe.val.1 r by
         rw [map_mul, (fe.prop.2 _).right_comm]⟩
-    invFun := fun fg => ⟨
+    invFun := fun fg ↦ ⟨
       (fg.val.1, fg.val.2 1),
       fg.prop.1 _ _,
-      fun a => show fg.val.2 1 * fg.val.1 a = fg.val.1 a * fg.val.2 1 by
+      fun a ↦ show fg.val.2 1 * fg.val.1 a = fg.val.1 a * fg.val.2 1 by
         rw [← fg.prop.2.1, ← fg.prop.2.2, smul_eq_mul, op_smul_eq_mul, mul_one, one_mul]⟩
-    left_inv := fun fe => Subtype.ext <| Prod.ext rfl <|
+    left_inv := fun fe ↦ Subtype.ext <| Prod.ext rfl <|
       show fe.val.1 1 * fe.val.2 = fe.val.2 by
         rw [map_one, one_mul]
-    right_inv := fun fg => Subtype.ext <| Prod.ext rfl <| LinearMap.ext fun x =>
+    right_inv := fun fg ↦ Subtype.ext <| Prod.ext rfl <| LinearMap.ext fun x ↦
       show fg.val.1 x * fg.val.2 1 = fg.val.2 x by
         rw [← fg.prop.2.1, smul_eq_mul, mul_one] }
 
@@ -177,13 +177,13 @@ theorem lift_apply_apply (fe : {_fe : (A →ₐ[R] B) × B // _}) (a : A[ε]) :
 /-- Lifting `DualNumber.eps` itself gives the identity. -/
 @[simp]
 theorem lift_inlAlgHom_eps :
-    lift ⟨(inlAlgHom _ _ _, ε), eps_mul_eps, fun _ => commute_eps_left _⟩ = AlgHom.id R A[ε] :=
+    lift ⟨(inlAlgHom _ _ _, ε), eps_mul_eps, fun _ ↦ commute_eps_left _⟩ = AlgHom.id R A[ε] :=
   lift.apply_symm_apply <| AlgHom.id R A[ε]
 
 @[simp]
 theorem range_inlAlgHom_sup_adjoin_eps :
     (inlAlgHom R A A).range ⊔ Algebra.adjoin R {ε} = ⊤ := by
-  refine top_unique fun x hx => ?_; clear hx
+  refine top_unique fun x hx ↦ ?_; clear hx
   rw [← x.inl_fst_add_inr_snd_eq, inr_eq_smul_eps, ← inl_mul_eq_smul]
   refine add_mem ?_ (mul_mem ?_ ?_)
   · exact le_sup_left (α := Subalgebra R _) <| Set.mem_range_self x.fst

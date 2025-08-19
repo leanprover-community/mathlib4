@@ -36,16 +36,16 @@ variable [MulOneClass M']
 
 @[to_additive]
 instance (priority := low) [SMul M' β] [SMul α β] [SMulCommClass M' α β] : SMulCommClass s α β :=
-  ⟨fun a _ _ => smul_comm (a : M') _ _⟩
+  ⟨fun a _ _ ↦ smul_comm (a : M') _ _⟩
 
 @[to_additive]
 instance (priority := low) [SMul α β] [SMul M' β] [SMulCommClass α M' β] : SMulCommClass α s β :=
-  ⟨fun a s => smul_comm a (s : M')⟩
+  ⟨fun a s ↦ smul_comm a (s : M')⟩
 
 @[to_additive]
 instance (priority := low) [SMul α β] [SMul M' α] [SMul M' β] [IsScalarTower M' α β] :
     IsScalarTower s α β :=
-  ⟨fun a => smul_assoc (a : M')⟩
+  ⟨fun a ↦ smul_assoc (a : M')⟩
 
 end MulOneClass
 

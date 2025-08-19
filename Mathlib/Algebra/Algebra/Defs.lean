@@ -194,7 +194,7 @@ See note [reducible non-instances].
 instance, since this creates another `SMul R S` instance from the supplied `RingHom` and
 this will likely create a diamond. -/
 abbrev RingHom.toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S) : Algebra R S :=
-  i.toAlgebra' fun _ => mul_comm _
+  i.toAlgebra' fun _ ↦ mul_comm _
 
 theorem RingHom.smul_toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S)
     (r : R) (s : S) :
@@ -234,7 +234,7 @@ See note [reducible non-instances]. -/
 abbrev ofModule [CommSemiring R] [Semiring A] [Module R A]
     (h₁ : ∀ (r : R) (x y : A), r • x * y = r • (x * y))
     (h₂ : ∀ (r : R) (x y : A), x * r • y = r • (x * y)) : Algebra R A :=
-  ofModule' (fun r x => by rw [h₁, one_mul]) fun r x => by rw [h₂, mul_one]
+  ofModule' (fun r x ↦ by rw [h₁, one_mul]) fun r x ↦ by rw [h₂, mul_one]
 
 section Semiring
 
@@ -281,7 +281,7 @@ theorem algebraMap_eq_smul_one (r : R) : algebraMap R A r = r • (1 : A) :=
     algebraMap R A r = algebraMap R A r * 1 := (mul_one _).symm
     _ = r • (1 : A) := (Algebra.smul_def r 1).symm
 
-theorem algebraMap_eq_smul_one' : ⇑(algebraMap R A) = fun r => r • (1 : A) :=
+theorem algebraMap_eq_smul_one' : ⇑(algebraMap R A) = fun r ↦ r • (1 : A) :=
   funext algebraMap_eq_smul_one
 
 /-- `mul_comm` for `Algebra`s when one element is from the base ring. -/
@@ -305,11 +305,11 @@ theorem right_comm (x : A) (r : R) (y : A) :
   rw [mul_assoc, commutes, ← mul_assoc]
 
 instance _root_.IsScalarTower.right : IsScalarTower R A A :=
-  ⟨fun x y z => by rw [smul_eq_mul, smul_eq_mul, smul_def, smul_def, mul_assoc]⟩
+  ⟨fun x y z ↦ by rw [smul_eq_mul, smul_eq_mul, smul_def, smul_def, mul_assoc]⟩
 
 @[simp]
 theorem _root_.RingHom.smulOneHom_eq_algebraMap : RingHom.smulOneHom = algebraMap R A :=
-  RingHom.ext fun r => (algebraMap_eq_smul_one r).symm
+  RingHom.ext fun r ↦ (algebraMap_eq_smul_one r).symm
 
 -- TODO: set up `IsScalarTower.smulCommClass` earlier so that we can actually prove this using
 -- `mul_smul_comm s x y`.
@@ -367,7 +367,7 @@ variable (R A)
 packaged as an `R`-linear map.
 -/
 protected def linearMap : R →ₗ[R] A :=
-  { algebraMap R A with map_smul' := fun x y => by simp [Algebra.smul_def] }
+  { algebraMap R A with map_smul' := fun x y ↦ by simp [Algebra.smul_def] }
 
 @[simp]
 theorem linearMap_apply (r : R) : Algebra.linearMap R A r = algebraMap R A r :=

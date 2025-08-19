@@ -79,8 +79,8 @@ lemma isLocalMin_of_deriv_Ioo {f : ℝ → ℝ} {a b c : ℝ}
     (h₁ : ∀ x ∈ Ioo b c, 0 ≤ deriv f x) : IsLocalMin f b := by
   have := isLocalMax_of_deriv_Ioo (f := -f) g₀ g₁
     (by simp_all) hd₀.neg hd₁.neg
-    (fun x hx => deriv.neg (f := f) ▸ Left.nonneg_neg_iff.mpr <|h₀ x hx)
-    (fun x hx => deriv.neg (f := f) ▸ Left.neg_nonpos_iff.mpr <|h₁ x hx)
+    (fun x hx ↦ deriv.neg (f := f) ▸ Left.nonneg_neg_iff.mpr <|h₀ x hx)
+    (fun x hx ↦ deriv.neg (f := f) ▸ Left.neg_nonpos_iff.mpr <|h₁ x hx)
   exact (neg_neg f) ▸ IsLocalMax.neg this
 
 /-- The First-Derivative Test from calculus, maxima version,
@@ -92,9 +92,9 @@ lemma isLocalMax_of_deriv' {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f b)
   obtain ⟨a, ha⟩ := (nhdsLT_basis b).eventually_iff.mp <| hd₀.and h₀
   obtain ⟨c, hc⟩ := (nhdsGT_basis b).eventually_iff.mp <| hd₁.and h₁
   exact isLocalMax_of_deriv_Ioo ha.1 hc.1 h
-    (fun _ hx => (ha.2 hx).1.differentiableWithinAt)
-    (fun _ hx => (hc.2 hx).1.differentiableWithinAt)
-    (fun _ hx => (ha.2 hx).2) (fun x hx => (hc.2 hx).2)
+    (fun _ hx ↦ (ha.2 hx).1.differentiableWithinAt)
+    (fun _ hx ↦ (hc.2 hx).1.differentiableWithinAt)
+    (fun _ hx ↦ (ha.2 hx).2) (fun x hx ↦ (hc.2 hx).2)
 
 /-- The First-Derivative Test from calculus, minima version,
 expressed in terms of left and right filters. -/
@@ -105,9 +105,9 @@ lemma isLocalMin_of_deriv' {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f b)
   obtain ⟨a, ha⟩ := (nhdsLT_basis b).eventually_iff.mp <| hd₀.and h₀
   obtain ⟨c, hc⟩ := (nhdsGT_basis b).eventually_iff.mp <| hd₁.and h₁
   exact isLocalMin_of_deriv_Ioo ha.1 hc.1 h
-    (fun _ hx => (ha.2 hx).1.differentiableWithinAt)
-    (fun _ hx => (hc.2 hx).1.differentiableWithinAt)
-    (fun _ hx => (ha.2 hx).2) (fun x hx => (hc.2 hx).2)
+    (fun _ hx ↦ (ha.2 hx).1.differentiableWithinAt)
+    (fun _ hx ↦ (hc.2 hx).1.differentiableWithinAt)
+    (fun _ hx ↦ (ha.2 hx).2) (fun x hx ↦ (hc.2 hx).2)
 
 /-- The First Derivative test, maximum version. -/
 theorem isLocalMax_of_deriv {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f b)
@@ -183,9 +183,9 @@ theorem isLocalMax_of_sign_deriv {f : ℝ → ℝ} {x₀ : ℝ} (h : ContinuousA
   have hl := deriv_pos_left_of_sign_deriv hf
   have hg := deriv_neg_right_of_sign_deriv hf
   replace hf := (nhdsLT_sup_nhdsGT x₀) ▸
-    eventually_sup.mpr ⟨hl.mono fun x hx => hx.ne', hg.mono fun x hx => hx.ne⟩
+    eventually_sup.mpr ⟨hl.mono fun x hx ↦ hx.ne', hg.mono fun x hx ↦ hx.ne⟩
   exact isLocalMax_of_deriv h (hf.mono fun x hx ↦ differentiableAt_of_deriv_ne_zero hx)
-    (hl.mono fun _ => le_of_lt) (hg.mono fun _ => le_of_lt)
+    (hl.mono fun _ ↦ le_of_lt) (hg.mono fun _ ↦ le_of_lt)
 
 /-- The First Derivative test with a hypothesis on the sign of the derivative, minimum version. -/
 theorem isLocalMin_of_sign_deriv {f : ℝ → ℝ} {x₀ : ℝ} (h : ContinuousAt f x₀)

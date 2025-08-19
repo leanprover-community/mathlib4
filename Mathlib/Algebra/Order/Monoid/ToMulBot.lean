@@ -46,7 +46,7 @@ theorem toMulBot_coe_ofAdd (x : α) :
 
 variable [Preorder α] (a b : WithZero (Multiplicative α))
 
-theorem toMulBot_strictMono : StrictMono (@toMulBot α _) := fun _ _ => id
+theorem toMulBot_strictMono : StrictMono (@toMulBot α _) := fun _ _ ↦ id
 
 @[simp]
 theorem toMulBot_le : toMulBot a ≤ toMulBot b ↔ a ≤ b :=

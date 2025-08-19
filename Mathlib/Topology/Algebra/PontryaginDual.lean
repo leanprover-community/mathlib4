@@ -88,16 +88,16 @@ theorem map_apply (f : A →ₜ* B) (x : PontryaginDual B) (y : A) :
 
 @[simp]
 theorem map_one : map (1 : A →ₜ* B) = 1 :=
-  ext fun x => ext (fun _y => OneHomClass.map_one x)
+  ext fun x ↦ ext (fun _y ↦ OneHomClass.map_one x)
 
 @[simp]
 theorem map_comp (g : B →ₜ* C) (f : A →ₜ* B) :
     map (comp g f) = ContinuousMonoidHom.comp (map f) (map g) :=
-  ext fun _x => ext fun _y => rfl
+  ext fun _x ↦ ext fun _y ↦ rfl
 
 @[simp]
 nonrec theorem map_mul (f g : A →ₜ* G) : map (f * g) = map f * map g :=
-  ext fun x => ext fun y => map_mul x (f y) (g y)
+  ext fun x ↦ ext fun y ↦ map_mul x (f y) (g y)
 
 variable (A B C G)
 

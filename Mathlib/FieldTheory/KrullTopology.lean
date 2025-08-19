@@ -85,7 +85,7 @@ alias finiteDimensional_sup := IntermediateField.finiteDimensional_sup
 /-- Given a field extension `L/K`, `galBasis K L` is the filter basis on `L ≃ₐ[K] L` whose sets
 are `Gal(L/E)` for intermediate fields `E` with `E/K` finite dimensional. -/
 def galBasis (K L : Type*) [Field K] [Field L] [Algebra K L] : FilterBasis (L ≃ₐ[K] L) where
-  sets := (fun g => g.carrier) '' fixedByFinite K L
+  sets := (fun g ↦ g.carrier) '' fixedByFinite K L
   nonempty := ⟨⊤, ⊤, top_fixedByFinite, rfl⟩
   inter_sets := by
     rintro _ _ ⟨_, ⟨E1, h_E1, rfl⟩, rfl⟩ ⟨_, ⟨E2, h_E2, rfl⟩, rfl⟩
@@ -97,7 +97,7 @@ def galBasis (K L : Type*) [Field K] [Field L] [Algebra K L] : FilterBasis (L �
 /-- A subset of `L ≃ₐ[K] L` is a member of `galBasis K L` if and only if it is the underlying set
 of `Gal(L/E)` for some finite subextension `E/K`. -/
 theorem mem_galBasis_iff (K L : Type*) [Field K] [Field L] [Algebra K L] (U : Set (L ≃ₐ[K] L)) :
-    U ∈ galBasis K L ↔ U ∈ (fun g => g.carrier) '' fixedByFinite K L :=
+    U ∈ galBasis K L ↔ U ∈ (fun g ↦ g.carrier) '' fixedByFinite K L :=
   Iff.rfl
 
 /-- For a field extension `L/K`, `galGroupBasis K L` is the group filter basis on `L ≃ₐ[K] L`
@@ -105,7 +105,7 @@ whose sets are `Gal(L/E)` for finite subextensions `E/K`. -/
 def galGroupBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
     GroupFilterBasis (L ≃ₐ[K] L) where
   toFilterBasis := galBasis K L
-  one' := fun ⟨H, _, h2⟩ => h2 ▸ H.one_mem
+  one' := fun ⟨H, _, h2⟩ ↦ h2 ▸ H.one_mem
   mul' {U} hU :=
     ⟨U, hU, by
       rcases hU with ⟨H, _, rfl⟩
@@ -114,11 +114,11 @@ def galGroupBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
   inv' {U} hU :=
     ⟨U, hU, by
       rcases hU with ⟨H, _, rfl⟩
-      exact fun _ => H.inv_mem'⟩
+      exact fun _ ↦ H.inv_mem'⟩
   conj' := by
     rintro σ U ⟨H, ⟨E, hE, rfl⟩, rfl⟩
     let F : IntermediateField K L := E.map σ.symm.toAlgHom
-    refine ⟨F.fixingSubgroup.carrier, ⟨⟨F.fixingSubgroup, ⟨F, ?_, rfl⟩, rfl⟩, fun g hg => ?_⟩⟩
+    refine ⟨F.fixingSubgroup.carrier, ⟨⟨F.fixingSubgroup, ⟨F, ?_, rfl⟩, rfl⟩, fun g hg ↦ ?_⟩⟩
     · have : FiniteDimensional K E := hE
       exact IntermediateField.finiteDimensional_map σ.symm.toAlgHom
     change σ * g * σ⁻¹ ∈ E.fixingSubgroup
@@ -189,7 +189,7 @@ theorem IntermediateField.fixingSubgroup_isClosed {K L : Type*} [Field K] [Field
 /-- If `L/K` is an algebraic extension, then the Krull topology on `L ≃ₐ[K] L` is Hausdorff. -/
 theorem krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]
     [Algebra.IsIntegral K L] : T2Space (L ≃ₐ[K] L) :=
-  { t2 := fun f g hfg => by
+  { t2 := fun f g hfg ↦ by
       let φ := f⁻¹ * g
       obtain ⟨x, hx⟩ := DFunLike.exists_ne hfg
       have hφx : φ x ≠ x := by

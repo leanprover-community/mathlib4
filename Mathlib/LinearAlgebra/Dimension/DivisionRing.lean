@@ -112,7 +112,7 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V]
 theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type*} [Fintype ι] {b : ι → V}
     (spans : ⊤ ≤ span K (Set.range b)) (card_eq : Fintype.card ι = finrank K V) :
     LinearIndependent K b :=
-  linearIndependent_iff'.mpr fun s g dependent i i_mem_s => by
+  linearIndependent_iff'.mpr fun s g dependent i i_mem_s ↦ by
     classical
     by_contra gx_ne_zero
     -- We'll derive a contradiction by showing `b '' (univ \ {i})` of cardinality `n - 1`
@@ -137,8 +137,8 @@ theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type*} [Fintyp
       exact mt Set.mem_singleton_iff.mp j_eq
     -- To show `b i ∈ span (b '' (univ \ {i}))`, we use that it's a weighted sum
     -- of the other `b j`s.
-    rw [j_eq, SetLike.mem_coe, show b i = -((g i)⁻¹ • (s.erase i).sum fun j => g j • b j) from _]
-    · refine neg_mem (smul_mem _ _ (sum_mem fun k hk => ?_))
+    rw [j_eq, SetLike.mem_coe, show b i = -((g i)⁻¹ • (s.erase i).sum fun j ↦ g j • b j) from _]
+    · refine neg_mem (smul_mem _ _ (sum_mem fun k hk ↦ ?_))
       obtain ⟨k_ne_i, _⟩ := Finset.mem_erase.mp hk
       refine smul_mem _ _ (subset_span ⟨k, ?_, rfl⟩)
       simp_all only [Set.mem_univ, Set.mem_diff, Set.mem_singleton_iff, and_self, not_false_eq_true]
@@ -146,8 +146,8 @@ theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type*} [Fintyp
     -- to have the form of the assumption `dependent`.
     apply eq_neg_of_add_eq_zero_left
     calc
-      (b i + (g i)⁻¹ • (s.erase i).sum fun j => g j • b j) =
-          (g i)⁻¹ • (g i • b i + (s.erase i).sum fun j => g j • b j) := by
+      (b i + (g i)⁻¹ • (s.erase i).sum fun j ↦ g j • b j) =
+          (g i)⁻¹ • (g i • b i + (s.erase i).sum fun j ↦ g j • b j) := by
         rw [smul_add, ← mul_smul, inv_mul_cancel₀ gx_ne_zero, one_smul]
       _ = (g i)⁻¹ • (0 : V) := congr_arg _ ?_
       _ = 0 := smul_zero _
@@ -163,8 +163,8 @@ theorem linearIndependent_iff_card_eq_finrank_span {ι : Type*} [Fintype ι] {b 
     exact (finrank_span_eq_card h).symm
   · intro hc
     let f := Submodule.subtype (span K (Set.range b))
-    let b' : ι → span K (Set.range b) := fun i =>
-      ⟨b i, mem_span.2 fun p hp => hp (Set.mem_range_self _)⟩
+    let b' : ι → span K (Set.range b) := fun i ↦
+      ⟨b i, mem_span.2 fun p hp ↦ hp (Set.mem_range_self _)⟩
     have hs : ⊤ ≤ span K (Set.range b') := by
       intro x
       have h : span K (f '' Set.range b') = map f (span K (Set.range b')) := span_image f
@@ -198,7 +198,7 @@ theorem coe_basisOfTopLeSpanOfCardEqFinrank {ι : Type*} [Fintype ι] (b : ι �
 noncomputable def finsetBasisOfTopLeSpanOfCardEqFinrank {s : Finset V}
     (le_span : ⊤ ≤ span K (s : Set V)) (card_eq : s.card = finrank K V) : Basis {x // x ∈ s} K V :=
   basisOfTopLeSpanOfCardEqFinrank ((↑) : ↥(s : Set V) → V)
-    ((@Subtype.range_coe_subtype _ fun x => x ∈ s).symm ▸ le_span)
+    ((@Subtype.range_coe_subtype _ fun x ↦ x ∈ s).symm ▸ le_span)
     (_root_.trans (Fintype.card_coe _) card_eq)
 
 /-- A set of `finrank K V` vectors forms a basis if they span the whole space. -/

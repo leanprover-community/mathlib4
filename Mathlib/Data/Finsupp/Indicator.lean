@@ -52,7 +52,7 @@ theorem indicator_apply [DecidableEq ι] : indicator s f i = if hi : i ∈ s the
   simp only [indicator, ne_eq, coe_mk]
   congr
 
-theorem indicator_injective : Injective fun f : ∀ i ∈ s, α => indicator s f := by
+theorem indicator_injective : Injective fun f : ∀ i ∈ s, α ↦ indicator s f := by
   intro a b h
   ext i hi
   rw [← indicator_of_mem hi a, ← indicator_of_mem hi b]
@@ -64,7 +64,7 @@ theorem support_indicator_subset : ((indicator s f).support : Set ι) ⊆ s := b
   by_contra h
   exact hi (indicator_of_notMem h _)
 
-lemma single_eq_indicator (b : α) : single i b = indicator {i} (fun _ _ => b) := by
+lemma single_eq_indicator (b : α) : single i b = indicator {i} (fun _ _ ↦ b) := by
   classical
   ext j
   simp [single_apply, indicator_apply, @eq_comm _ j]

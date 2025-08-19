@@ -69,12 +69,12 @@ protected abbrev Quiver.Costar.mk {u v : U} (f : u ⟶ v) : Quiver.Costar v :=
 
 /-- A prefunctor induces a map of `Quiver.Star` at every vertex. -/
 @[simps]
-def Prefunctor.star (u : U) : Quiver.Star u → Quiver.Star (φ.obj u) := fun F =>
+def Prefunctor.star (u : U) : Quiver.Star u → Quiver.Star (φ.obj u) := fun F ↦
   Quiver.Star.mk (φ.map F.2)
 
 /-- A prefunctor induces a map of `Quiver.Costar` at every vertex. -/
 @[simps]
-def Prefunctor.costar (u : U) : Quiver.Costar u → Quiver.Costar (φ.obj u) := fun F =>
+def Prefunctor.costar (u : U) : Quiver.Costar u → Quiver.Costar (φ.obj u) := fun F ↦
   Quiver.Costar.mk (φ.map F.2)
 
 @[simp]
@@ -100,23 +100,23 @@ protected structure Prefunctor.IsCovering : Prop where
 
 @[simp]
 theorem Prefunctor.IsCovering.map_injective (hφ : φ.IsCovering) {u v : U} :
-    Injective fun f : u ⟶ v => φ.map f := by
+    Injective fun f : u ⟶ v ↦ φ.map f := by
   rintro f g he
   have : φ.star u (Quiver.Star.mk f) = φ.star u (Quiver.Star.mk g) := by simpa using he
   simpa using (hφ.star_bijective u).left this
 
 theorem Prefunctor.IsCovering.comp (hφ : φ.IsCovering) (hψ : ψ.IsCovering) : (φ ⋙q ψ).IsCovering :=
-  ⟨fun _ => (hψ.star_bijective _).comp (hφ.star_bijective _),
-   fun _ => (hψ.costar_bijective _).comp (hφ.costar_bijective _)⟩
+  ⟨fun _ ↦ (hψ.star_bijective _).comp (hφ.star_bijective _),
+   fun _ ↦ (hψ.costar_bijective _).comp (hφ.costar_bijective _)⟩
 
 theorem Prefunctor.IsCovering.of_comp_right (hψ : ψ.IsCovering) (hφψ : (φ ⋙q ψ).IsCovering) :
     φ.IsCovering :=
-  ⟨fun _ => (Bijective.of_comp_iff' (hψ.star_bijective _) _).mp (hφψ.star_bijective _),
-   fun _ => (Bijective.of_comp_iff' (hψ.costar_bijective _) _).mp (hφψ.costar_bijective _)⟩
+  ⟨fun _ ↦ (Bijective.of_comp_iff' (hψ.star_bijective _) _).mp (hφψ.star_bijective _),
+   fun _ ↦ (Bijective.of_comp_iff' (hψ.costar_bijective _) _).mp (hφψ.costar_bijective _)⟩
 
 theorem Prefunctor.IsCovering.of_comp_left (hφ : φ.IsCovering) (hφψ : (φ ⋙q ψ).IsCovering)
     (φsur : Surjective φ.obj) : ψ.IsCovering := by
-  refine ⟨fun v => ?_, fun v => ?_⟩ <;> obtain ⟨u, rfl⟩ := φsur v
+  refine ⟨fun v ↦ ?_, fun v ↦ ?_⟩ <;> obtain ⟨u, rfl⟩ := φsur v
   exacts [(Bijective.of_comp_iff _ (hφ.star_bijective u)).mp (hφψ.star_bijective u),
     (Bijective.of_comp_iff _ (hφ.costar_bijective u)).mp (hφψ.costar_bijective u)]
 
@@ -156,7 +156,7 @@ protected theorem Prefunctor.symmetrifyCostar (u : U) :
 
 protected theorem Prefunctor.IsCovering.symmetrify (hφ : φ.IsCovering) :
     φ.symmetrify.IsCovering := by
-  refine ⟨fun u => ?_, fun u => ?_⟩ <;>
+  refine ⟨fun u ↦ ?_, fun u ↦ ?_⟩ <;>
   simp [φ.symmetrifyStar, φ.symmetrifyCostar, hφ.star_bijective u, hφ.costar_bijective u]
 
 /-- The path star at a vertex `u` is the type of all paths starting at `u`.
@@ -169,7 +169,7 @@ protected abbrev Quiver.PathStar.mk {u v : U} (p : Path u v) : Quiver.PathStar u
   ⟨_, p⟩
 
 /-- A prefunctor induces a map of path stars. -/
-def Prefunctor.pathStar (u : U) : Quiver.PathStar u → Quiver.PathStar (φ.obj u) := fun p =>
+def Prefunctor.pathStar (u : U) : Quiver.PathStar u → Quiver.PathStar (φ.obj u) := fun p ↦
   Quiver.PathStar.mk (φ.mapPath p.2)
 
 @[simp]
@@ -242,7 +242,7 @@ theorem Prefunctor.pathStar_surjective (hφ : ∀ u, Surjective (φ.star u)) (u 
 
 theorem Prefunctor.pathStar_bijective (hφ : ∀ u, Bijective (φ.star u)) (u : U) :
     Bijective (φ.pathStar u) :=
-  ⟨φ.pathStar_injective (fun u => (hφ u).1) _, φ.pathStar_surjective (fun u => (hφ u).2) _⟩
+  ⟨φ.pathStar_injective (fun u ↦ (hφ u).1) _, φ.pathStar_surjective (fun u ↦ (hφ u).2) _⟩
 
 namespace Prefunctor.IsCovering
 
@@ -287,10 +287,10 @@ theorem Prefunctor.bijective_costar_iff_bijective_star (u : U) :
   rw [Prefunctor.costar_conj_star φ, EquivLike.comp_bijective, EquivLike.bijective_comp]
 
 theorem Prefunctor.isCovering_of_bijective_star (h : ∀ u, Bijective (φ.star u)) : φ.IsCovering :=
-  ⟨h, fun u => (φ.bijective_costar_iff_bijective_star u).2 (h u)⟩
+  ⟨h, fun u ↦ (φ.bijective_costar_iff_bijective_star u).2 (h u)⟩
 
 theorem Prefunctor.isCovering_of_bijective_costar (h : ∀ u, Bijective (φ.costar u)) :
     φ.IsCovering :=
-  ⟨fun u => (φ.bijective_costar_iff_bijective_star u).1 (h u), h⟩
+  ⟨fun u ↦ (φ.bijective_costar_iff_bijective_star u).1 (h u), h⟩
 
 end HasInvolutiveReverse

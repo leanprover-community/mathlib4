@@ -86,7 +86,7 @@ theorem conj_eigenvalue_eq_self (hT : T.IsSymmetric) {μ : 𝕜} (hμ : HasEigen
 
 /-- The eigenspaces of a self-adjoint operator are mutually orthogonal. -/
 theorem orthogonalFamily_eigenspaces (hT : T.IsSymmetric) :
-    OrthogonalFamily 𝕜 (fun μ => eigenspace T μ) fun μ => (eigenspace T μ).subtypeₗᵢ := by
+    OrthogonalFamily 𝕜 (fun μ ↦ eigenspace T μ) fun μ ↦ (eigenspace T μ).subtypeₗᵢ := by
   rintro μ ν hμν ⟨v, hv⟩ ⟨w, hw⟩
   by_cases hv' : v = 0
   · simp [hv']
@@ -96,7 +96,7 @@ theorem orthogonalFamily_eigenspaces (hT : T.IsSymmetric) :
   simpa [inner_smul_left, inner_smul_right, hv, hw, H] using (hT v w).symm
 
 theorem orthogonalFamily_eigenspaces' (hT : T.IsSymmetric) :
-    OrthogonalFamily 𝕜 (fun μ : Eigenvalues T => eigenspace T μ) fun μ =>
+    OrthogonalFamily 𝕜 (fun μ : Eigenvalues T ↦ eigenspace T μ) fun μ ↦
       (eigenspace T μ).subtypeₗᵢ :=
   hT.orthogonalFamily_eigenspaces.comp Subtype.coe_injective
 
@@ -141,20 +141,20 @@ an internal direct sum decomposition of `E`.
 
 Note this takes `hT` as a `Fact` to allow it to be an instance. -/
 noncomputable instance directSumDecomposition [hT : Fact T.IsSymmetric] :
-    DirectSum.Decomposition fun μ : Eigenvalues T => eigenspace T μ :=
-  haveI h : ∀ μ : Eigenvalues T, CompleteSpace (eigenspace T μ) := fun μ => by infer_instance
+    DirectSum.Decomposition fun μ : Eigenvalues T ↦ eigenspace T μ :=
+  haveI h : ∀ μ : Eigenvalues T, CompleteSpace (eigenspace T μ) := fun μ ↦ by infer_instance
   hT.out.orthogonalFamily_eigenspaces'.decomposition
     (Submodule.orthogonal_eq_bot_iff.mp hT.out.orthogonalComplement_iSup_eigenspaces_eq_bot')
 
 theorem directSum_decompose_apply [_hT : Fact T.IsSymmetric] (x : E) (μ : Eigenvalues T) :
-    DirectSum.decompose (fun μ : Eigenvalues T => eigenspace T μ) x μ =
+    DirectSum.decompose (fun μ : Eigenvalues T ↦ eigenspace T μ) x μ =
       (eigenspace T μ).orthogonalProjection x :=
   rfl
 
 /-- The eigenspaces of a self-adjoint operator on a finite-dimensional inner product space `E` gives
 an internal direct sum decomposition of `E`. -/
 theorem direct_sum_isInternal (hT : T.IsSymmetric) :
-    DirectSum.IsInternal fun μ : Eigenvalues T => eigenspace T μ :=
+    DirectSum.IsInternal fun μ : Eigenvalues T ↦ eigenspace T μ :=
   hT.orthogonalFamily_eigenspaces'.isInternal_iff.mpr
     hT.orthogonalComplement_iSup_eigenspaces_eq_bot'
 
@@ -163,12 +163,12 @@ section Version1
 /-- Isometry from an inner product space `E` to the direct sum of the eigenspaces of some
 self-adjoint operator `T` on `E`. -/
 noncomputable def diagonalization (hT : T.IsSymmetric) : E ≃ₗᵢ[𝕜] PiLp 2 fun μ :
-    Eigenvalues T => eigenspace T μ :=
+    Eigenvalues T ↦ eigenspace T μ :=
   hT.direct_sum_isInternal.isometryL2OfOrthogonalFamily hT.orthogonalFamily_eigenspaces'
 
 @[simp]
 theorem diagonalization_symm_apply (hT : T.IsSymmetric)
-    (w : PiLp 2 fun μ : Eigenvalues T => eigenspace T μ) :
+    (w : PiLp 2 fun μ : Eigenvalues T ↦ eigenspace T μ) :
     hT.diagonalization.symm w = ∑ μ, w μ :=
   hT.direct_sum_isInternal.isometryL2OfOrthogonalFamily_symm_apply
     hT.orthogonalFamily_eigenspaces' w
@@ -179,12 +179,12 @@ direct sum of the eigenspaces of `T`. -/
 theorem diagonalization_apply_self_apply (hT : T.IsSymmetric) (v : E) (μ : Eigenvalues T) :
     hT.diagonalization (T v) μ = (μ : 𝕜) • hT.diagonalization v μ := by
   suffices
-    ∀ w : PiLp 2 fun μ : Eigenvalues T => eigenspace T μ,
-      T (hT.diagonalization.symm w) = hT.diagonalization.symm fun μ => (μ : 𝕜) • w μ by
+    ∀ w : PiLp 2 fun μ : Eigenvalues T ↦ eigenspace T μ,
+      T (hT.diagonalization.symm w) = hT.diagonalization.symm fun μ ↦ (μ : 𝕜) • w μ by
     simpa only [LinearIsometryEquiv.symm_apply_apply, LinearIsometryEquiv.apply_symm_apply] using
-      congr_arg (fun w => hT.diagonalization w μ) (this (hT.diagonalization v))
+      congr_arg (fun w ↦ hT.diagonalization w μ) (this (hT.diagonalization v))
   intro w
-  have hwT : ∀ μ, T (w μ) = (μ : 𝕜) • w μ := fun μ => mem_eigenspace_iff.1 (w μ).2
+  have hwT : ∀ μ, T (w μ) = (μ : 𝕜) • w μ := fun μ ↦ mem_eigenspace_iff.1 (w μ).2
   simp only [hwT, diagonalization_symm_apply, map_sum, Submodule.coe_smul_of_tower]
 
 end Version1
@@ -274,9 +274,9 @@ theorem eigenvectorBasis_apply_self_apply (hT : T.IsSymmetric) (hn : Module.finr
   suffices
     ∀ w : EuclideanSpace 𝕜 (Fin n),
       T ((hT.eigenvectorBasis hn).repr.symm w) =
-        (hT.eigenvectorBasis hn).repr.symm fun i => hT.eigenvalues hn i * w i by
+        (hT.eigenvectorBasis hn).repr.symm fun i ↦ hT.eigenvalues hn i * w i by
     simpa [OrthonormalBasis.sum_repr_symm] using
-      congr_arg (fun v => (hT.eigenvectorBasis hn).repr v i)
+      congr_arg (fun v ↦ (hT.eigenvectorBasis hn).repr v i)
         (this ((hT.eigenvectorBasis hn).repr v))
   intro w
   simp_rw [← OrthonormalBasis.sum_repr_symm, map_sum, map_smul, apply_eigenvectorBasis]

@@ -255,7 +255,7 @@ theorem continuous_subst (ha : HasSubst a)
   exact continuous_eval₂ (continuous_algebraMap _ _) ha.hasEval
 
 theorem coeff_subst_finite (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ →₀ ℕ) :
-    Set.Finite (fun d ↦ (coeff R d f) • (coeff S e (d.prod fun s e => (a s) ^ e))).support :=
+    Set.Finite (fun d ↦ (coeff R d f) • (coeff S e (d.prod fun s e ↦ (a s) ^ e))).support :=
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
   Summable.finite_support_of_discreteTopology _
@@ -263,7 +263,7 @@ theorem coeff_subst_finite (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ �
 
 theorem coeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ →₀ ℕ) :
     coeff S e (subst a f) =
-      finsum (fun d ↦ (coeff R d f) • (coeff S e (d.prod fun s e => (a s) ^ e))) := by
+      finsum (fun d ↦ (coeff R d f) • (coeff S e (d.prod fun s e ↦ (a s) ^ e))) := by
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
   have := ((hasSum_aeval ha.hasEval f).map (coeff S e) (continuous_coeff S e))
@@ -272,7 +272,7 @@ theorem coeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ →₀ �
 
 theorem constantCoeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
     constantCoeff τ S (subst a f) =
-      finsum (fun d ↦ (coeff R d f) • (constantCoeff τ S (d.prod fun s e => (a s) ^ e))) := by
+      finsum (fun d ↦ (coeff R d f) • (constantCoeff τ S (d.prod fun s e ↦ (a s) ^ e))) := by
   simp only [← coeff_zero_eq_constantCoeff_apply, coeff_subst ha f 0]
 
 theorem map_algebraMap_eq_subst_X (f : MvPowerSeries σ R) :

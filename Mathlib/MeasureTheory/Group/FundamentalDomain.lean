@@ -59,7 +59,7 @@ structure IsAddFundamentalDomain (G : Type*) {α : Type*} [Zero G] [VAdd G α] [
     (s : Set α) (μ : Measure α := by volume_tac) : Prop where
   protected nullMeasurableSet : NullMeasurableSet s μ
   protected ae_covers : ∀ᵐ x ∂μ, ∃ g : G, g +ᵥ x ∈ s
-  protected aedisjoint : Pairwise <| (AEDisjoint μ on fun g : G => g +ᵥ s)
+  protected aedisjoint : Pairwise <| (AEDisjoint μ on fun g : G ↦ g +ᵥ s)
 
 /-- A measurable set `s` is a *fundamental domain* for an action of a group `G` on a measurable
 space `α` with respect to a measure `α` if the sets `g • s`, `g : G`, are pairwise a.e. disjoint and
@@ -69,7 +69,7 @@ structure IsFundamentalDomain (G : Type*) {α : Type*} [One G] [SMul G α] [Meas
     (s : Set α) (μ : Measure α := by volume_tac) : Prop where
   protected nullMeasurableSet : NullMeasurableSet s μ
   protected ae_covers : ∀ᵐ x ∂μ, ∃ g : G, g • x ∈ s
-  protected aedisjoint : Pairwise <| (AEDisjoint μ on fun g : G => g • s)
+  protected aedisjoint : Pairwise <| (AEDisjoint μ on fun g : G ↦ g • s)
 
 variable {G H α β E : Type*}
 
@@ -85,8 +85,8 @@ is a fundamental domain for the action of `G` on `α`. -/
 theorem mk' (h_meas : NullMeasurableSet s μ) (h_exists : ∀ x : α, ∃! g : G, g • x ∈ s) :
     IsFundamentalDomain G s μ where
   nullMeasurableSet := h_meas
-  ae_covers := Eventually.of_forall fun x => (h_exists x).exists
-  aedisjoint a b hab := Disjoint.aedisjoint <| disjoint_left.2 fun x hxa hxb => by
+  ae_covers := Eventually.of_forall fun x ↦ (h_exists x).exists
+  aedisjoint a b hab := Disjoint.aedisjoint <| disjoint_left.2 fun x hxa hxb ↦ by
     rw [mem_smul_set_iff_inv_smul_mem] at hxa hxb
     exact hab (inv_injective <| (h_exists x).unique hxa hxb)
 
@@ -115,12 +115,12 @@ theorem mk_of_measure_univ_le [IsFiniteMeasure μ] [Countable G] (h_meas : NullM
     (h_ae_disjoint : ∀ g ≠ (1 : G), AEDisjoint μ (g • s) s)
     (h_qmp : ∀ g : G, QuasiMeasurePreserving (g • · : α → α) μ μ)
     (h_measure_univ_le : μ (univ : Set α) ≤ ∑' g : G, μ (g • s)) : IsFundamentalDomain G s μ :=
-  have aedisjoint : Pairwise (AEDisjoint μ on fun g : G => g • s) :=
+  have aedisjoint : Pairwise (AEDisjoint μ on fun g : G ↦ g • s) :=
     pairwise_aedisjoint_of_aedisjoint_forall_ne_one h_ae_disjoint h_qmp
   { nullMeasurableSet := h_meas
     aedisjoint
     ae_covers := by
-      replace h_meas : ∀ g : G, NullMeasurableSet (g • s) μ := fun g => by
+      replace h_meas : ∀ g : G, NullMeasurableSet (g • s) μ := fun g ↦ by
         rw [← inv_inv g, ← preimage_smul]; exact h_meas.preimage (h_qmp g⁻¹)
       have h_meas' : NullMeasurableSet {a | ∃ g : G, g • a ∈ s} μ := by
         rw [← iUnion_smul_eq_setOf_exists]; exact .iUnion h_meas
@@ -131,7 +131,7 @@ theorem mk_of_measure_univ_le [IsFiniteMeasure μ] [Countable G] (h_meas : NullM
 
 @[to_additive]
 theorem iUnion_smul_ae_eq (h : IsFundamentalDomain G s μ) : ⋃ g : G, g • s =ᵐ[μ] univ :=
-  eventuallyEq_univ.2 <| h.ae_covers.mono fun _ ⟨g, hg⟩ =>
+  eventuallyEq_univ.2 <| h.ae_covers.mono fun _ ⟨g, hg⟩ ↦
     mem_iUnion.2 ⟨g⁻¹, _, hg, inv_smul_smul _ _⟩
 
 @[to_additive]
@@ -146,14 +146,14 @@ theorem measure_ne_zero [Countable G] [SMulInvariantMeasure G α μ]
 @[to_additive]
 theorem mono (h : IsFundamentalDomain G s μ) {ν : Measure α} (hle : ν ≪ μ) :
     IsFundamentalDomain G s ν :=
-  ⟨h.1.mono_ac hle, hle h.2, h.aedisjoint.mono fun _ _ h => hle h⟩
+  ⟨h.1.mono_ac hle, hle h.2, h.aedisjoint.mono fun _ _ h ↦ hle h⟩
 
 @[to_additive]
 theorem preimage_of_equiv {ν : Measure β} (h : IsFundamentalDomain G s μ) {f : β → α}
     (hf : QuasiMeasurePreserving f ν μ) {e : G → H} (he : Bijective e)
     (hef : ∀ g, Semiconj f (e g • ·) (g • ·)) : IsFundamentalDomain H (f ⁻¹' s) ν where
   nullMeasurableSet := h.nullMeasurableSet.preimage hf
-  ae_covers := (hf.ae h.ae_covers).mono fun x ⟨g, hg⟩ => ⟨e g, by rwa [mem_preimage, hef g x]⟩
+  ae_covers := (hf.ae h.ae_covers).mono fun x ⟨g, hg⟩ ↦ ⟨e g, by rwa [mem_preimage, hef g x]⟩
   aedisjoint a b hab := by
     lift e to G ≃ H using he
     have : (e.symm a⁻¹)⁻¹ ≠ (e.symm b⁻¹)⁻¹ := by simp [hab]
@@ -167,14 +167,14 @@ theorem image_of_equiv {ν : Measure β} (h : IsFundamentalDomain G s μ) (f : �
     (hf : QuasiMeasurePreserving f.symm ν μ) (e : H ≃ G)
     (hef : ∀ g, Semiconj f (e g • ·) (g • ·)) : IsFundamentalDomain H (f '' s) ν := by
   rw [f.image_eq_preimage]
-  refine h.preimage_of_equiv hf e.symm.bijective fun g x => ?_
+  refine h.preimage_of_equiv hf e.symm.bijective fun g x ↦ ?_
   rcases f.surjective x with ⟨x, rfl⟩
   rw [← hef _ _, f.symm_apply_apply, f.symm_apply_apply, e.apply_symm_apply]
 
 @[to_additive]
 theorem pairwise_aedisjoint_of_ac {ν} (h : IsFundamentalDomain G s μ) (hν : ν ≪ μ) :
-    Pairwise fun g₁ g₂ : G => AEDisjoint ν (g₁ • s) (g₂ • s) :=
-  h.aedisjoint.mono fun _ _ H => hν H
+    Pairwise fun g₁ g₂ : G ↦ AEDisjoint ν (g₁ • s) (g₂ • s) :=
+  h.aedisjoint.mono fun _ _ H ↦ hν H
 
 @[to_additive]
 theorem smul_of_comm {G' : Type*} [Group G'] [MulAction G' α] [MeasurableSpace G']
@@ -198,16 +198,16 @@ theorem restrict_restrict (h : IsFundamentalDomain G s μ) (g : G) (t : Set α) 
 @[to_additive]
 theorem smul (h : IsFundamentalDomain G s μ) (g : G) : IsFundamentalDomain G (g • s) μ :=
   h.image_of_equiv (MulAction.toPerm g) (measurePreserving_smul _ _).quasiMeasurePreserving
-    ⟨fun g' => g⁻¹ * g' * g, fun g' => g * g' * g⁻¹, fun g' => by simp [mul_assoc], fun g' => by
+    ⟨fun g' ↦ g⁻¹ * g' * g, fun g' ↦ g * g' * g⁻¹, fun g' ↦ by simp [mul_assoc], fun g' ↦ by
       simp [mul_assoc]⟩
-    fun g' x => by simp [smul_smul, mul_assoc]
+    fun g' x ↦ by simp [smul_smul, mul_assoc]
 
 variable [Countable G] {ν : Measure α}
 
 @[to_additive]
 theorem sum_restrict_of_ac (h : IsFundamentalDomain G s μ) (hν : ν ≪ μ) :
-    (sum fun g : G => ν.restrict (g • s)) = ν := by
-  rw [← restrict_iUnion_ae (h.aedisjoint.mono fun i j h => hν h) fun g =>
+    (sum fun g : G ↦ ν.restrict (g • s)) = ν := by
+  rw [← restrict_iUnion_ae (h.aedisjoint.mono fun i j h ↦ hν h) fun g ↦
       (h.nullMeasurableSet_smul g).mono_ac hν,
     restrict_congr_set (hν h.iUnion_smul_ae_eq), restrict_univ]
 
@@ -217,7 +217,7 @@ theorem lintegral_eq_tsum_of_ac (h : IsFundamentalDomain G s μ) (hν : ν ≪ �
   rw [← lintegral_sum_measure, h.sum_restrict_of_ac hν]
 
 @[to_additive]
-theorem sum_restrict (h : IsFundamentalDomain G s μ) : (sum fun g : G => μ.restrict (g • s)) = μ :=
+theorem sum_restrict (h : IsFundamentalDomain G s μ) : (sum fun g : G ↦ μ.restrict (g • s)) = μ :=
   h.sum_restrict_of_ac (refl _)
 
 @[to_additive]
@@ -231,7 +231,7 @@ theorem lintegral_eq_tsum' (h : IsFundamentalDomain G s μ) (f : α → ℝ≥0�
   calc
     ∫⁻ x, f x ∂μ = ∑' g : G, ∫⁻ x in g • s, f x ∂μ := h.lintegral_eq_tsum f
     _ = ∑' g : G, ∫⁻ x in g⁻¹ • s, f x ∂μ := ((Equiv.inv G).tsum_eq _).symm
-    _ = ∑' g : G, ∫⁻ x in s, f (g⁻¹ • x) ∂μ := tsum_congr fun g => Eq.symm <|
+    _ = ∑' g : G, ∫⁻ x in s, f (g⁻¹ • x) ∂μ := tsum_congr fun g ↦ Eq.symm <|
       (measurePreserving_smul g⁻¹ μ).setLIntegral_comp_emb (measurableEmbedding_const_smul _) _ _
 
 @[to_additive] lemma lintegral_eq_tsum'' (h : IsFundamentalDomain G s μ) (f : α → ℝ≥0∞) :
@@ -253,7 +253,7 @@ theorem setLIntegral_eq_tsum' (h : IsFundamentalDomain G s μ) (f : α → ℝ�
     ∫⁻ x in t, f x ∂μ = ∑' g : G, ∫⁻ x in t ∩ g • s, f x ∂μ := h.setLIntegral_eq_tsum f t
     _ = ∑' g : G, ∫⁻ x in t ∩ g⁻¹ • s, f x ∂μ := ((Equiv.inv G).tsum_eq _).symm
     _ = ∑' g : G, ∫⁻ x in g⁻¹ • (g • t ∩ s), f x ∂μ := by simp only [smul_set_inter, inv_smul_smul]
-    _ = ∑' g : G, ∫⁻ x in g • t ∩ s, f (g⁻¹ • x) ∂μ := tsum_congr fun g => Eq.symm <|
+    _ = ∑' g : G, ∫⁻ x in g • t ∩ s, f (g⁻¹ • x) ∂μ := tsum_congr fun g ↦ Eq.symm <|
       (measurePreserving_smul g⁻¹ μ).setLIntegral_comp_emb (measurableEmbedding_const_smul _) _ _
 
 @[to_additive]
@@ -272,7 +272,7 @@ theorem measure_eq_tsum' (h : IsFundamentalDomain G s μ) (t : Set α) :
 @[to_additive]
 theorem measure_eq_tsum (h : IsFundamentalDomain G s μ) (t : Set α) :
     μ t = ∑' g : G, μ (g • t ∩ s) := by
-  simpa only [setLIntegral_one] using h.setLIntegral_eq_tsum' (fun _ => 1) t
+  simpa only [setLIntegral_one] using h.setLIntegral_eq_tsum' (fun _ ↦ 1) t
 
 @[to_additive]
 theorem measure_zero_of_invariant (h : IsFundamentalDomain G s μ) (t : Set α)
@@ -288,7 +288,7 @@ theorem measure_eq_card_smul_of_smul_ae_eq_self [Finite G] (h : IsFundamentalDom
     (t : Set α) (ht : ∀ g : G, (g • t : Set α) =ᵐ[μ] t) : μ t = Nat.card G • μ (t ∩ s) := by
   haveI : Fintype G := Fintype.ofFinite G
   rw [h.measure_eq_tsum]
-  replace ht : ∀ g : G, (g • t ∩ s : Set α) =ᵐ[μ] (t ∩ s : Set α) := fun g =>
+  replace ht : ∀ g : G, (g • t ∩ s : Set α) =ᵐ[μ] (t ∩ s : Set α) := fun g ↦
     ae_eq_set_inter (ht g) (ae_eq_refl s)
   simp_rw [measure_congr (ht _), tsum_fintype, Finset.sum_const, Nat.card_eq_fintype_card,
     Finset.card_univ]
@@ -304,9 +304,9 @@ protected theorem setLIntegral_eq (hs : IsFundamentalDomain G s μ) (ht : IsFund
 
 @[to_additive]
 theorem measure_set_eq (hs : IsFundamentalDomain G s μ) (ht : IsFundamentalDomain G t μ) {A : Set α}
-    (hA₀ : MeasurableSet A) (hA : ∀ g : G, (fun x => g • x) ⁻¹' A = A) : μ (A ∩ s) = μ (A ∩ t) := by
+    (hA₀ : MeasurableSet A) (hA : ∀ g : G, (fun x ↦ g • x) ⁻¹' A = A) : μ (A ∩ s) = μ (A ∩ t) := by
   have : ∫⁻ x in s, A.indicator 1 x ∂μ = ∫⁻ x in t, A.indicator 1 x ∂μ := by
-    refine hs.setLIntegral_eq ht (Set.indicator A fun _ => 1) fun g x ↦ ?_
+    refine hs.setLIntegral_eq ht (Set.indicator A fun _ ↦ 1) fun g x ↦ ?_
     convert (Set.indicator_comp_right (g • · : α → α) (g := fun _ ↦ (1 : ℝ≥0∞))).symm
     rw [hA g]
   simpa [Measure.restrict_apply hA₀, lintegral_indicator hA₀] using this
@@ -316,7 +316,7 @@ theorem measure_set_eq (hs : IsFundamentalDomain G s μ) (ht : IsFundamentalDoma
   are equal. -/]
 protected theorem measure_eq (hs : IsFundamentalDomain G s μ) (ht : IsFundamentalDomain G t μ) :
     μ s = μ t := by
-  simpa only [setLIntegral_one] using hs.setLIntegral_eq ht (fun _ => 1) fun _ _ => rfl
+  simpa only [setLIntegral_one] using hs.setLIntegral_eq ht (fun _ ↦ 1) fun _ _ ↦ rfl
 
 @[to_additive]
 protected theorem aestronglyMeasurable_on_iff {β : Type*} [TopologicalSpace β]
@@ -325,7 +325,7 @@ protected theorem aestronglyMeasurable_on_iff {β : Type*} [TopologicalSpace β]
     AEStronglyMeasurable f (μ.restrict s) ↔ AEStronglyMeasurable f (μ.restrict t) :=
   calc
     AEStronglyMeasurable f (μ.restrict s) ↔
-        AEStronglyMeasurable f (Measure.sum fun g : G => μ.restrict (g • t ∩ s)) := by
+        AEStronglyMeasurable f (Measure.sum fun g : G ↦ μ.restrict (g • t ∩ s)) := by
       simp only [← ht.restrict_restrict,
         ht.sum_restrict_of_ac restrict_le_self.absolutelyContinuous]
     _ ↔ ∀ g : G, AEStronglyMeasurable f (μ.restrict (g • (g⁻¹ • s ∩ t))) := by
@@ -334,7 +334,7 @@ protected theorem aestronglyMeasurable_on_iff {β : Type*} [TopologicalSpace β]
       inv_surjective.forall
     _ ↔ ∀ g : G, AEStronglyMeasurable f (μ.restrict (g⁻¹ • (g • s ∩ t))) := by simp only [inv_inv]
     _ ↔ ∀ g : G, AEStronglyMeasurable f (μ.restrict (g • s ∩ t)) := by
-      refine forall_congr' fun g => ?_
+      refine forall_congr' fun g ↦ ?_
       have he : MeasurableEmbedding (g⁻¹ • · : α → α) := measurableEmbedding_const_smul _
       rw [← image_smul, ← ((measurePreserving_smul g⁻¹ μ).restrict_image_emb he
         _).aestronglyMeasurable_comp_iff he]
@@ -382,7 +382,7 @@ theorem integral_eq_tsum' (h : IsFundamentalDomain G s μ) (f : α → E) (hf : 
   calc
     ∫ x, f x ∂μ = ∑' g : G, ∫ x in g • s, f x ∂μ := h.integral_eq_tsum f hf
     _ = ∑' g : G, ∫ x in g⁻¹ • s, f x ∂μ := ((Equiv.inv G).tsum_eq _).symm
-    _ = ∑' g : G, ∫ x in s, f (g⁻¹ • x) ∂μ := tsum_congr fun g =>
+    _ = ∑' g : G, ∫ x in s, f (g⁻¹ • x) ∂μ := tsum_congr fun g ↦
       (measurePreserving_smul g⁻¹ μ).setIntegral_image_emb (measurableEmbedding_const_smul _) _ _
 
 @[to_additive] lemma integral_eq_tsum'' (h : IsFundamentalDomain G s μ)
@@ -406,7 +406,7 @@ theorem setIntegral_eq_tsum' (h : IsFundamentalDomain G s μ) {f : α → E} {t 
     _ = ∑' g : G, ∫ x in t ∩ g⁻¹ • s, f x ∂μ := ((Equiv.inv G).tsum_eq _).symm
     _ = ∑' g : G, ∫ x in g⁻¹ • (g • t ∩ s), f x ∂μ := by simp only [smul_set_inter, inv_smul_smul]
     _ = ∑' g : G, ∫ x in g • t ∩ s, f (g⁻¹ • x) ∂μ :=
-      tsum_congr fun g =>
+      tsum_congr fun g ↦
         (measurePreserving_smul g⁻¹ μ).setIntegral_image_emb (measurableEmbedding_const_smul _) _ _
 
 @[to_additive]
@@ -428,13 +428,13 @@ has measure at most `μ s`. -/
   with a fundamental domain `s`, then every null-measurable set `t` such that the sets `g +ᵥ t ∩ s`
   are pairwise a.e.-disjoint has measure at most `μ s`. -/]
 theorem measure_le_of_pairwise_disjoint (hs : IsFundamentalDomain G s μ)
-    (ht : NullMeasurableSet t μ) (hd : Pairwise (AEDisjoint μ on fun g : G => g • t ∩ s)) :
+    (ht : NullMeasurableSet t μ) (hd : Pairwise (AEDisjoint μ on fun g : G ↦ g • t ∩ s)) :
     μ t ≤ μ s :=
   calc
     μ t = ∑' g : G, μ (g • t ∩ s) := hs.measure_eq_tsum t
-    _ = μ (⋃ g : G, g • t ∩ s) := Eq.symm <| measure_iUnion₀ hd fun _ =>
+    _ = μ (⋃ g : G, g • t ∩ s) := Eq.symm <| measure_iUnion₀ hd fun _ ↦
       (ht.smul _).inter hs.nullMeasurableSet
-    _ ≤ μ s := measure_mono (iUnion_subset fun _ => inter_subset_right)
+    _ ≤ μ s := measure_mono (iUnion_subset fun _ ↦ inter_subset_right)
 
 /-- If the action of a countable group `G` admits an invariant measure `μ` with a fundamental domain
 `s`, then every null-measurable set `t` of measure strictly greater than `μ s` contains two
@@ -445,7 +445,7 @@ points `x y` such that `g • x = y` for some `g ≠ 1`. -/
 theorem exists_ne_one_smul_eq (hs : IsFundamentalDomain G s μ) (htm : NullMeasurableSet t μ)
     (ht : μ s < μ t) : ∃ x ∈ t, ∃ y ∈ t, ∃ g, g ≠ (1 : G) ∧ g • x = y := by
   contrapose! ht
-  refine hs.measure_le_of_pairwise_disjoint htm (Pairwise.aedisjoint fun g₁ g₂ hne => ?_)
+  refine hs.measure_le_of_pairwise_disjoint htm (Pairwise.aedisjoint fun g₁ g₂ hne ↦ ?_)
   dsimp [Function.onFun]
   refine (Disjoint.inf_left _ ?_).inf_right _
   rw [Set.disjoint_left]
@@ -550,8 +550,8 @@ theorem fundamentalInterior_smul [Group H] [MulAction H α] [SMulCommClass H G �
 
 @[to_additive MeasureTheory.pairwise_disjoint_addFundamentalInterior]
 theorem pairwise_disjoint_fundamentalInterior :
-    Pairwise (Disjoint on fun g : G => g • fundamentalInterior G s) := by
-  refine fun a b hab => disjoint_left.2 ?_
+    Pairwise (Disjoint on fun g : G ↦ g • fundamentalInterior G s) := by
+  refine fun a b hab ↦ disjoint_left.2 ?_
   rintro _ ⟨x, hx, rfl⟩ ⟨y, hy, hxy⟩
   rw [mem_fundamentalInterior] at hx hy
   refine hx.2 (a⁻¹ * b) ?_ ?_
@@ -564,12 +564,12 @@ variable [Countable G] [MeasurableSpace G] [MeasurableSpace α] [MeasurableSMul 
 @[to_additive MeasureTheory.NullMeasurableSet.addFundamentalFrontier]
 protected theorem NullMeasurableSet.fundamentalFrontier (hs : NullMeasurableSet s μ) :
     NullMeasurableSet (fundamentalFrontier G s) μ :=
-  hs.inter <| .iUnion fun _ => .iUnion fun _ => hs.smul _
+  hs.inter <| .iUnion fun _ ↦ .iUnion fun _ ↦ hs.smul _
 
 @[to_additive MeasureTheory.NullMeasurableSet.addFundamentalInterior]
 protected theorem NullMeasurableSet.fundamentalInterior (hs : NullMeasurableSet s μ) :
     NullMeasurableSet (fundamentalInterior G s) μ :=
-  hs.diff <| .iUnion fun _ => .iUnion fun _ => hs.smul _
+  hs.diff <| .iUnion fun _ ↦ .iUnion fun _ ↦ hs.smul _
 
 end MeasurableSpace
 
@@ -585,7 +585,7 @@ section Group
 @[to_additive MeasureTheory.IsAddFundamentalDomain.measure_addFundamentalFrontier]
 theorem measure_fundamentalFrontier : μ (fundamentalFrontier G s) = 0 := by
   simpa only [fundamentalFrontier, iUnion₂_inter, one_smul, measure_iUnion_null_iff, inter_comm s,
-    Function.onFun] using fun g (hg : g ≠ 1) => hs.aedisjoint hg
+    Function.onFun] using fun g (hg : g ≠ 1) ↦ hs.aedisjoint hg
 
 @[to_additive MeasureTheory.IsAddFundamentalDomain.measure_addFundamentalInterior]
 theorem measure_fundamentalInterior : μ (fundamentalInterior G s) = μ s :=
@@ -609,8 +609,8 @@ protected theorem fundamentalInterior : IsFundamentalDomain G (fundamentalInteri
     simp only [iUnion_inv_smul, compl_sdiff, ENNReal.bot_eq_zero, himp_eq, sup_eq_union,
       @iUnion_smul_eq_setOf_exists _ _ _ _ s]
     exact measure_union_null
-      (measure_iUnion_null fun _ => measure_smul_null hs.measure_fundamentalFrontier _) hs.ae_covers
-  aedisjoint := (pairwise_disjoint_fundamentalInterior _ _).mono fun _ _ => Disjoint.aedisjoint
+      (measure_iUnion_null fun _ ↦ measure_smul_null hs.measure_fundamentalFrontier _) hs.ae_covers
+  aedisjoint := (pairwise_disjoint_fundamentalInterior _ _).mono fun _ _ ↦ Disjoint.aedisjoint
 
 end IsFundamentalDomain
 

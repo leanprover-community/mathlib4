@@ -176,10 +176,10 @@ theorem pellZd_im (n : ℕ) : (pellZd a1 n).im = yn a1 n :=
   rfl
 
 theorem isPell_nat {x y : ℕ} : IsPell (⟨x, y⟩ : ℤ√(d a1)) ↔ x * x - d a1 * y * y = 1 :=
-  ⟨fun h =>
+  ⟨fun h ↦
     (Nat.cast_inj (R := ℤ)).1
       (by rw [Int.ofNat_sub (Int.le_of_ofNat_le_ofNat <| Int.le.intro_sub _ h)]; exact h),
-    fun h =>
+    fun h ↦
     show ((x * x : ℕ) - (d a1 * y * y : ℕ) : ℤ) = 1 by
       rw [← Int.ofNat_sub <| le_of_lt <| Nat.lt_of_sub_eq_succ h, h]; rfl⟩
 
@@ -209,7 +209,7 @@ theorem pell_eq (n : ℕ) : xn a1 n * xn a1 n - d a1 * yn a1 n * yn a1 n = 1 :=
   (Nat.cast_inj (R := ℤ)).1 (by rw [Int.ofNat_sub hl]; exact h)
 
 instance dnsq : Zsqrtd.Nonsquare (d a1) :=
-  ⟨fun n h =>
+  ⟨fun n h ↦
     have : n * n + 1 = a * a := by rw [← h]; exact Nat.succ_pred_eq_of_pos (asq_pos a1)
     have na : n < a := Nat.mul_self_lt_mul_self_iff.1 (by rw [← this]; exact Nat.lt_succ_self _)
     have : (n + 1) * (n + 1) ≤ n * n + 1 := by rw [this]; exact Nat.mul_self_le_mul_self na
@@ -232,8 +232,8 @@ theorem x_pos (n) : 0 < xn a1 n :=
 
 theorem eq_pell_lem : ∀ (n) (b : ℤ√(d a1)), 1 ≤ b → IsPell b →
     b ≤ pellZd a1 n → ∃ n, b = pellZd a1 n
-  | 0, _ => fun h1 _ hl => ⟨0, @Zsqrtd.le_antisymm _ (dnsq a1) _ _ hl h1⟩
-  | n + 1, b => fun h1 hp h =>
+  | 0, _ => fun h1 _ hl ↦ ⟨0, @Zsqrtd.le_antisymm _ (dnsq a1) _ _ hl h1⟩
+  | n + 1, b => fun h1 hp h ↦
     have a1p : (0 : ℤ√(d a1)) ≤ ⟨a, 1⟩ := trivial
     have am1p : (0 : ℤ√(d a1)) ≤ ⟨a, -1⟩ := show (_ : Nat) ≤ _ by simp; exact Nat.pred_le _
     have a1m : (⟨a, 1⟩ * ⟨a, -1⟩ : ℤ√(d a1)) = 1 := isPell_norm.1 (isPell_one a1)
@@ -249,18 +249,18 @@ theorem eq_pell_lem : ∀ (n) (b : ℤ√(d a1)), 1 ≤ b → IsPell b →
           pellZd_succ, e]⟩
     else
       suffices ¬1 < b from ⟨0, show b = 1 from (Or.resolve_left (lt_or_eq_of_le h1) this).symm⟩
-      fun h1l => by
+      fun h1l ↦ by
       obtain ⟨x, y⟩ := b
       exact by
         have bm : (_ * ⟨_, _⟩ : ℤ√d a1) = 1 := Pell.isPell_norm.1 hp
         have y0l : (0 : ℤ√d a1) < ⟨x - x, y - -y⟩ :=
-          sub_lt_sub h1l fun hn : (1 : ℤ√d a1) ≤ ⟨x, -y⟩ => by
+          sub_lt_sub h1l fun hn : (1 : ℤ√d a1) ≤ ⟨x, -y⟩ ↦ by
             have t := mul_le_mul_of_nonneg_left hn (le_trans zero_le_one h1)
             rw [bm, mul_one] at t
             exact h1l t
         have yl2 : (⟨_, _⟩ : ℤ√_) < ⟨_, _⟩ :=
           show (⟨x, y⟩ - ⟨x, -y⟩ : ℤ√d a1) < ⟨a, 1⟩ - ⟨a, -1⟩ from
-            sub_lt_sub ha fun hn : (⟨x, -y⟩ : ℤ√d a1) ≤ ⟨a, -1⟩ => by
+            sub_lt_sub ha fun hn : (⟨x, -y⟩ : ℤ√d a1) ≤ ⟨a, -1⟩ ↦ by
               have t := mul_le_mul_of_nonneg_right
                       (mul_le_mul_of_nonneg_left hn (le_trans zero_le_one h1)) a1p
               rw [bm, one_mul, mul_assoc, Eq.trans (mul_comm _ _) a1m, mul_one] at t
@@ -330,7 +330,7 @@ theorem yz_sub {m n} (h : n ≤ m) : yz a1 (m - n) = xz a1 n * yz a1 m - xz a1 m
   exact congr_arg Zsqrtd.im (pellZd_sub a1 h)
 
 theorem xy_coprime (n) : (xn a1 n).Coprime (yn a1 n) :=
-  Nat.coprime_of_dvd' fun k _ kx ky => by
+  Nat.coprime_of_dvd' fun k _ kx ky ↦ by
     let p := pell_eq a1 n
     rw [← p]
     exact Nat.dvd_sub (kx.mul_left _) (ky.mul_left _)
@@ -339,8 +339,8 @@ theorem strictMono_y : StrictMono (yn a1)
   | _, 0, h => absurd h <| Nat.not_lt_zero _
   | m, n + 1, h => by
     have : yn a1 m ≤ yn a1 n :=
-      Or.elim (lt_or_eq_of_le <| Nat.le_of_succ_le_succ h) (fun hl => le_of_lt <| strictMono_y hl)
-        fun e => by rw [e]
+      Or.elim (lt_or_eq_of_le <| Nat.le_of_succ_le_succ h) (fun hl ↦ le_of_lt <| strictMono_y hl)
+        fun e ↦ by rw [e]
     simp only [yn_succ, gt_iff_lt]; refine lt_of_le_of_lt ?_ (Nat.lt_add_of_pos_left <| x_pos a1 n)
     rw [← mul_one (yn a1 m)]
     exact mul_le_mul this (le_of_lt a1) (Nat.zero_le _) (Nat.zero_le _)
@@ -349,8 +349,8 @@ theorem strictMono_x : StrictMono (xn a1)
   | _, 0, h => absurd h <| Nat.not_lt_zero _
   | m, n + 1, h => by
     have : xn a1 m ≤ xn a1 n :=
-      Or.elim (lt_or_eq_of_le <| Nat.le_of_succ_le_succ h) (fun hl => le_of_lt <| strictMono_x hl)
-        fun e => by rw [e]
+      Or.elim (lt_or_eq_of_le <| Nat.le_of_succ_le_succ h) (fun hl ↦ le_of_lt <| strictMono_x hl)
+        fun e ↦ by rw [e]
     simp only [xn_succ, gt_iff_lt]
     refine lt_of_lt_of_le (lt_of_le_of_lt this ?_) (Nat.le_add_right _ _)
     have t := Nat.mul_lt_mul_of_pos_left a1 (x_pos a1 n)
@@ -367,13 +367,13 @@ theorem y_mul_dvd (n) : ∀ k, yn a1 n ∣ yn a1 (n * k)
     rw [Nat.mul_succ, yn_add]; exact dvd_add (dvd_mul_left _ _) ((y_mul_dvd _ k).mul_right _)
 
 theorem y_dvd_iff (m n) : yn a1 m ∣ yn a1 n ↔ m ∣ n :=
-  ⟨fun h =>
+  ⟨fun h ↦
     Nat.dvd_of_mod_eq_zero <|
-      (Nat.eq_zero_or_pos _).resolve_right fun hp => by
+      (Nat.eq_zero_or_pos _).resolve_right fun hp ↦ by
         have co : Nat.Coprime (yn a1 m) (xn a1 (m * (n / m))) :=
           Nat.Coprime.symm <| (xy_coprime a1 _).coprime_dvd_right (y_mul_dvd a1 m (n / m))
         have m0 : 0 < m :=
-          m.eq_zero_or_pos.resolve_left fun e => by
+          m.eq_zero_or_pos.resolve_left fun e ↦ by
             rw [e, Nat.mod_zero] at hp;rw [e] at h
             exact _root_.ne_of_lt (strictMono_y a1 hp) (eq_zero_of_zero_dvd h).symm
         rw [← Nat.mod_add_div n m, yn_add] at h
@@ -382,7 +382,7 @@ theorem y_dvd_iff (m n) : yn a1 m ∣ yn a1 n ↔ m ∣ n :=
             (Nat.le_of_dvd (strictMono_y _ hp) <|
               co.dvd_of_dvd_mul_right <|
                 (Nat.dvd_add_iff_right <| (y_mul_dvd _ _ _).mul_left _).2 h),
-    fun ⟨k, e⟩ => by rw [e]; apply y_mul_dvd⟩
+    fun ⟨k, e⟩ ↦ by rw [e]; apply y_mul_dvd⟩
 
 theorem xy_modEq_yn (n) :
     ∀ k, xn a1 (n * k) ≡ xn a1 n ^ k [MOD yn a1 n ^ 2] ∧ yn a1 (n * k) ≡
@@ -419,7 +419,7 @@ theorem ysq_dvd_yy (n) : yn a1 n * yn a1 n ∣ yn a1 (n * yn a1 n) :=
 
 theorem dvd_of_ysq_dvd {n t} (h : yn a1 n * yn a1 n ∣ yn a1 t) : yn a1 n ∣ t :=
   have nt : n ∣ t := (y_dvd_iff a1 n t).1 <| dvd_of_mul_left_dvd h
-  n.eq_zero_or_pos.elim (fun n0 => by rwa [n0] at nt ⊢) fun n0l : 0 < n => by
+  n.eq_zero_or_pos.elim (fun n0 ↦ by rwa [n0] at nt ⊢) fun n0l : 0 < n ↦ by
     let ⟨k, ke⟩ := nt
     have : yn a1 n ∣ k * xn a1 n ^ (k - 1) :=
       Nat.dvd_of_mul_dvd_mul_right (strictMono_y a1 n0l) <|
@@ -530,7 +530,7 @@ theorem xn_modEq_x2n_sub_lem {n j} (h : j ≤ n) : xn a1 (2 * n - j) + xn a1 j �
       (Int.natCast_dvd_natCast.1 <| by simpa [xz, yz] using h1).modEq_zero_nat
 
 theorem xn_modEq_x2n_sub {n j} (h : j ≤ 2 * n) : xn a1 (2 * n - j) + xn a1 j ≡ 0 [MOD xn a1 n] :=
-  (le_total j n).elim (xn_modEq_x2n_sub_lem a1) fun jn => by
+  (le_total j n).elim (xn_modEq_x2n_sub_lem a1) fun jn ↦ by
     have : 2 * n - j + j ≤ n + j := by
       rw [tsub_add_cancel_of_le h, two_mul]; exact Nat.add_le_add_left jn _
     let t := xn_modEq_x2n_sub_lem a1 (Nat.le_of_add_le_add_right this)
@@ -554,7 +554,7 @@ theorem eq_of_xn_modEq_lem1 {i n} : ∀ {j}, i < j → j < n → xn a1 i % xn a1
   | j + 1, ij, jn => by
     suffices xn a1 j % xn a1 n < xn a1 (j + 1) % xn a1 n from
       (lt_or_eq_of_le (Nat.le_of_succ_le_succ ij)).elim
-        (fun h => lt_trans (eq_of_xn_modEq_lem1 h (le_of_lt jn)) this) fun h => by
+        (fun h ↦ lt_trans (eq_of_xn_modEq_lem1 h (le_of_lt jn)) this) fun h ↦ by
         rw [h]; exact this
     rw [Nat.mod_eq_of_lt (strictMono_x _ (Nat.lt_of_succ_lt jn)),
         Nat.mod_eq_of_lt (strictMono_x _ jn)]
@@ -563,7 +563,7 @@ theorem eq_of_xn_modEq_lem1 {i n} : ∀ {j}, i < j → j < n → xn a1 i % xn a1
 theorem eq_of_xn_modEq_lem2 {n} (h : 2 * xn a1 n = xn a1 (n + 1)) : a = 2 ∧ n = 0 := by
   rw [xn_succ, mul_comm] at h
   have : n = 0 :=
-    n.eq_zero_or_pos.resolve_right fun np =>
+    n.eq_zero_or_pos.resolve_right fun np ↦
       _root_.ne_of_lt
         (lt_of_le_of_lt (Nat.mul_le_mul_left _ a1)
           (Nat.lt_add_of_pos_right <| mul_pos (d_pos a1) (strictMono_y a1 np)))
@@ -576,7 +576,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
   | 0, ij, _, _, _ => absurd ij (Nat.not_lt_zero _)
   | j + 1, ij, j2n, jnn, ntriv =>
     have lem2 : ∀ k > n, k ≤ 2 * n → (↑(xn a1 k % xn a1 n) : ℤ) =
-        xn a1 n - xn a1 (2 * n - k) := fun k kn k2n => by
+        xn a1 n - xn a1 (2 * n - k) := fun k kn k2n ↦ by
       let k2nl :=
         lt_of_add_lt_add_right <|
           show 2 * n - k + k < n + k by
@@ -592,10 +592,10 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
       have t := xn_modEq_x2n_sub_lem a1 k2nl.le
       rw [tsub_tsub_cancel_of_le k2n] at t
       exact t.trans dvd_rfl.zero_modEq_nat
-    (lt_trichotomy j n).elim (fun jn : j < n => eq_of_xn_modEq_lem1 _ ij (lt_of_le_of_ne jn jnn))
-      fun o =>
+    (lt_trichotomy j n).elim (fun jn : j < n ↦ eq_of_xn_modEq_lem1 _ ij (lt_of_le_of_ne jn jnn))
+      fun o ↦
       o.elim
-        (fun jn : j = n => by
+        (fun jn : j = n ↦ by
           cases jn
           apply Int.lt_of_ofNat_lt_ofNat
           rw [lem2 (n + 1) (Nat.lt_succ_self _) j2n,
@@ -619,7 +619,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
             · rw [ile]
               apply lt_of_le_of_ne ll
               rw [← two_mul]
-              exact fun e =>
+              exact fun e ↦
                 ntriv <| by
                   let ⟨a2, s1⟩ :=
                     @eq_of_xn_modEq_lem2 _ a1 (n - 1)
@@ -628,18 +628,18 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
                   rw [ile, a2, n1]; exact ⟨rfl, rfl, rfl, rfl⟩
           · rw [ein, Nat.mod_self, add_zero]
             exact strictMono_x _ (Nat.pred_lt npos.ne'))
-        fun jn : j > n =>
+        fun jn : j > n ↦
         have lem1 : j ≠ n → xn a1 j % xn a1 n < xn a1 (j + 1) % xn a1 n →
             xn a1 i % xn a1 n < xn a1 (j + 1) % xn a1 n :=
-          fun jn s =>
+          fun jn s ↦
           (lt_or_eq_of_le (Nat.le_of_succ_le_succ ij)).elim
-            (fun h =>
+            (fun h ↦
               lt_trans
                 (eq_of_xn_modEq_lem3 npos h (le_of_lt (Nat.lt_of_succ_le j2n)) jn
-                    fun ⟨_, n1, _, j2⟩ => by
+                    fun ⟨_, n1, _, j2⟩ ↦ by
                       rw [n1, j2] at j2n; exact absurd j2n (by decide))
                 s)
-            fun h => by rw [h]; exact s
+            fun h ↦ by rw [h]; exact s
         lem1 (_root_.ne_of_gt jn) <|
           Int.lt_of_ofNat_lt_ofNat <| by
             rw [lem2 j jn (le_of_lt j2n), lem2 (j + 1) (Nat.le_succ_of_le jn) j2n]
@@ -652,7 +652,7 @@ theorem eq_of_xn_modEq_le {i j n} (ij : i ≤ j) (j2n : j ≤ 2 * n)
     (ntriv : ¬(a = 2 ∧ n = 1 ∧ i = 0 ∧ j = 2)) : i = j :=
   if npos : n = 0 then by simp_all
   else
-    (lt_or_eq_of_le ij).resolve_left fun ij' =>
+    (lt_or_eq_of_le ij).resolve_left fun ij' ↦
       if jn : j = n then by
         refine _root_.ne_of_gt ?_ h
         rw [jn, Nat.mod_self]
@@ -665,7 +665,7 @@ theorem eq_of_xn_modEq_le {i j n} (ij : i ≤ j) (j2n : j ≤ 2 * n)
         exact
           x0.trans
             (eq_of_xn_modEq_lem3 _ (Nat.pos_of_ne_zero npos) (Nat.succ_pos _) (le_trans ij j2n)
-              (_root_.ne_of_lt ij') fun ⟨_, n1, _, i2⟩ => by
+              (_root_.ne_of_lt ij') fun ⟨_, n1, _, i2⟩ ↦ by
               rw [n1, i2] at ij'; exact absurd ij' (by decide))
       else _root_.ne_of_lt (eq_of_xn_modEq_lem3 a1 (Nat.pos_of_ne_zero npos) ij' j2n jn ntriv) h
 
@@ -673,19 +673,19 @@ theorem eq_of_xn_modEq {i j n} (i2n : i ≤ 2 * n) (j2n : j ≤ 2 * n)
     (h : xn a1 i ≡ xn a1 j [MOD xn a1 n])
     (ntriv : a = 2 → n = 1 → (i = 0 → j ≠ 2) ∧ (i = 2 → j ≠ 0)) : i = j :=
   (le_total i j).elim
-    (fun ij => eq_of_xn_modEq_le a1 ij j2n h fun ⟨a2, n1, i0, j2⟩ => (ntriv a2 n1).left i0 j2)
-    fun ij =>
-    (eq_of_xn_modEq_le a1 ij i2n h.symm fun ⟨a2, n1, j0, i2⟩ => (ntriv a2 n1).right i2 j0).symm
+    (fun ij ↦ eq_of_xn_modEq_le a1 ij j2n h fun ⟨a2, n1, i0, j2⟩ ↦ (ntriv a2 n1).left i0 j2)
+    fun ij ↦
+    (eq_of_xn_modEq_le a1 ij i2n h.symm fun ⟨a2, n1, j0, i2⟩ ↦ (ntriv a2 n1).right i2 j0).symm
 
 theorem eq_of_xn_modEq' {i j n} (ipos : 0 < i) (hin : i ≤ n) (j4n : j ≤ 4 * n)
     (h : xn a1 j ≡ xn a1 i [MOD xn a1 n]) : j = i ∨ j + i = 4 * n :=
   have i2n : i ≤ 2 * n := by apply le_trans hin; rw [two_mul]; apply Nat.le_add_left
   (le_or_gt j (2 * n)).imp
-    (fun j2n : j ≤ 2 * n =>
-      eq_of_xn_modEq a1 j2n i2n h fun _ n1 =>
-        ⟨fun _ i2 => by rw [n1, i2] at hin; exact absurd hin (by decide), fun _ i0 =>
+    (fun j2n : j ≤ 2 * n ↦
+      eq_of_xn_modEq a1 j2n i2n h fun _ n1 ↦
+        ⟨fun _ i2 ↦ by rw [n1, i2] at hin; exact absurd hin (by decide), fun _ i0 ↦
           _root_.ne_of_gt ipos i0⟩)
-    fun j2n : 2 * n < j =>
+    fun j2n : 2 * n < j ↦
     suffices i = 4 * n - j by rw [this, add_tsub_cancel_of_le j4n]
     have j42n : 4 * n - j ≤ 2 * n := by omega
     eq_of_xn_modEq a1 i2n j42n
@@ -707,8 +707,8 @@ theorem modEq_of_xn_modEq {i j n} (ipos : 0 < i) (hin : i ≤ n)
     | succ q IH =>
       rw [Nat.mul_succ, ← add_assoc, add_comm]
       exact (xn_modEq_x4n_add _ _ _).trans IH
-  Or.imp (fun ji : j' = i => by rwa [← ji])
-    (fun ji : j' + i = 4 * n =>
+  Or.imp (fun ji : j' = i ↦ by rwa [← ji])
+    (fun ji : j' + i = 4 * n ↦
       (jj.add_right _).trans <| by
         rw [ji]
         exact dvd_rfl.modEq_zero_nat)
@@ -738,11 +738,11 @@ theorem matiyasevic {a k x y} :
           x * x - (a * a - 1) * y * y = 1 ∧ u * u - (a * a - 1) * v * v = 1 ∧
           s * s - (b * b - 1) * t * t = 1 ∧ 1 < b ∧ b ≡ 1 [MOD 4 * y] ∧
           b ≡ a [MOD u] ∧ 0 < v ∧ y * y ∣ v ∧ s ≡ x [MOD u] ∧ t ≡ k [MOD 4 * y]) :=
-  ⟨fun ⟨a1, hx, hy⟩ => by
+  ⟨fun ⟨a1, hx, hy⟩ ↦ by
     rw [← hx, ← hy]
     refine ⟨a1,
-        (Nat.eq_zero_or_pos k).elim (fun k0 => by rw [k0]; exact ⟨le_rfl, Or.inl ⟨rfl, rfl⟩⟩)
-          fun kpos => ?_⟩
+        (Nat.eq_zero_or_pos k).elim (fun k0 ↦ by rw [k0]; exact ⟨le_rfl, Or.inl ⟨rfl, rfl⟩⟩)
+          fun kpos ↦ ?_⟩
     exact
       let x := xn a1 k
       let y := yn a1 k
@@ -778,7 +778,7 @@ theorem matiyasevic {a k x y} :
       ⟨ky,
         Or.inr
           ⟨u, v, s, t, b, pell_eq _ _, pell_eq _ _, pell_eq _ _, b1, bm1, ba, vp, yv, sx, tk⟩⟩,
-    fun ⟨a1, ky, o⟩ =>
+    fun ⟨a1, ky, o⟩ ↦
     ⟨a1,
       match o with
       | Or.inl ⟨x1, y0⟩ => by
@@ -791,13 +791,13 @@ theorem matiyasevic {a k x y} :
             (tk : yn b1 j ≡ k [MOD 4 * yn a1 i])⟩,
           (ky : k ≤ yn a1 i) =>
           (Nat.eq_zero_or_pos i).elim
-            (fun i0 => by
+            (fun i0 ↦ by
               simp only [i0, yn_zero, nonpos_iff_eq_zero] at ky; rw [i0, ky]; exact ⟨rfl, rfl⟩)
-            fun ipos => by
+            fun ipos ↦ by
             suffices i = k by rw [this]; exact ⟨rfl, rfl⟩
             clear o rem xy uv st
             have iln : i ≤ n :=
-              le_of_not_gt fun hin =>
+              le_of_not_gt fun hin ↦
                 not_lt_of_ge (Nat.le_of_dvd vp (dvd_of_mul_left_dvd yv)) (strictMono_y a1 hin)
             have yd : 4 * yn a1 i ∣ 4 * n := by gcongr; exact dvd_of_ysq_dvd a1 yv
             have jk : j ≡ k [MOD 4 * yn a1 i] :=
@@ -812,7 +812,7 @@ theorem matiyasevic {a k x y} :
               have : xn a1 j ≡ xn a1 i [MOD xn a1 n] :=
                 (xy_modEq_of_modEq b1 a1 ba j).left.symm.trans sx
               (modEq_of_xn_modEq a1 ipos iln this).resolve_right
-                fun ji : j + i ≡ 0 [MOD 4 * n] =>
+                fun ji : j + i ≡ 0 [MOD 4 * n] ↦
                 not_le_of_gt ki <|
                   Nat.le_of_dvd (lt_of_lt_of_le ipos <| Nat.le_add_left _ _) <|
                     modEq_zero_iff_dvd.1 <| (jk.symm.add_right i).trans <| ji.of_dvd yd
@@ -842,7 +842,7 @@ theorem eq_pow_of_pell {m n k} :
       n ≤ w ∧ k ≤ w ∧ a * a - ((w + 1) * (w + 1) - 1) * (w * z) * (w * z) = 1) := by
   constructor
   · rintro rfl
-    refine k.eq_zero_or_pos.imp (fun k0 : k = 0 => k0.symm ▸ ⟨rfl, rfl⟩) fun hk => ⟨hk, ?_⟩
+    refine k.eq_zero_or_pos.imp (fun k0 : k = 0 ↦ k0.symm ▸ ⟨rfl, rfl⟩) fun hk ↦ ⟨hk, ?_⟩
     refine n.eq_zero_or_pos.imp (fun n0 : n = 0 ↦ n0.symm ▸ ⟨rfl, zero_pow hk.ne'⟩)
       fun hn ↦ ⟨hn, ?_⟩
     set w := max n k

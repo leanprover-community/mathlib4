@@ -30,7 +30,7 @@ variable (p : FormalMultilinearSeries 𝕜 E F)
 $\liminf_{n\to\infty} \frac{1}{\sqrt[n]{‖p n‖}}$. The actual statement uses `ℝ≥0` and some
 coercions. -/
 theorem radius_eq_liminf :
-    p.radius = liminf (fun n => (1 / (‖p n‖₊ ^ (1 / (n : ℝ)) : ℝ≥0) : ℝ≥0∞)) atTop := by
+    p.radius = liminf (fun n ↦ (1 / (‖p n‖₊ ^ (1 / (n : ℝ)) : ℝ≥0) : ℝ≥0∞)) atTop := by
   have :
     ∀ (r : ℝ≥0) {n},
       0 < n → ((r : ℝ≥0∞) ≤ 1 / ↑(‖p n‖₊ ^ (1 / (n : ℝ))) ↔ ‖p n‖₊ * r ^ n ≤ 1) := by
@@ -41,15 +41,15 @@ theorem radius_eq_liminf :
         NNReal.rpow_one r, ← mul_inv_cancel₀ this.ne', NNReal.rpow_mul, ← NNReal.mul_rpow, ←
         NNReal.one_rpow n⁻¹, NNReal.rpow_le_rpow_iff (inv_pos.2 this), mul_comm,
         NNReal.rpow_natCast]
-  apply le_antisymm <;> refine ENNReal.le_of_forall_nnreal_lt fun r hr => ?_
-  · have := ((TFAE_exists_lt_isLittleO_pow (fun n => ‖p n‖ * r ^ n) 1).out 1 7).1
+  apply le_antisymm <;> refine ENNReal.le_of_forall_nnreal_lt fun r hr ↦ ?_
+  · have := ((TFAE_exists_lt_isLittleO_pow (fun n ↦ ‖p n‖ * r ^ n) 1).out 1 7).1
       (p.isLittleO_of_lt_radius hr)
     obtain ⟨a, ha, H⟩ := this
     apply le_liminf_of_le
     · infer_param
     · rw [← eventually_map]
       refine
-        H.mp ((eventually_gt_atTop 0).mono fun n hn₀ hn => (this _ hn₀).2 (NNReal.coe_le_coe.1 ?_))
+        H.mp ((eventually_gt_atTop 0).mono fun n hn₀ hn ↦ (this _ hn₀).2 (NNReal.coe_le_coe.1 ?_))
       push_cast
       exact (le_abs_self _).trans (hn.trans (pow_le_one₀ ha.1.le ha.2.le))
   · refine p.le_radius_of_isBigO <| .of_norm_eventuallyLE ?_

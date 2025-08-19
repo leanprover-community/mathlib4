@@ -25,7 +25,7 @@ definition, we show that this isn't a primitive recursive function.
 We very broadly adapt the proof idea from
 https://www.planetmath.org/ackermannfunctionisnotprimitiverecursive. Namely, we prove that for any
 primitive recursive `f : ℕ → ℕ`, there exists `m` such that `f n < ack m n` for all `n`. This then
-implies that `fun n => ack n n` can't be primitive recursive, and so neither can `ack`. We aren't
+implies that `fun n ↦ ack n n` can't be primitive recursive, and so neither can `ack`. We aren't
 able to use the same bounds as in that proof though, since our approach of using pairing functions
 differs from their approach of using multivariate functions.
 
@@ -34,12 +34,12 @@ are the following. Assuming `∀ n, f n < ack a n` and `∀ n, g n < ack b n`, w
 
 - `∀ n, pair (f n) (g n) < ack (max a b + 3) n`.
 - `∀ n, g (f n) < ack (max a b + 2) n`.
-- `∀ n, Nat.rec (f n.unpair.1) (fun (y IH : ℕ) => g (pair n.unpair.1 (pair y IH)))
+- `∀ n, Nat.rec (f n.unpair.1) (fun (y IH : ℕ) ↦ g (pair n.unpair.1 (pair y IH)))
   n.unpair.2 < ack (max a b + 9) n`.
 
 The last one is evidently the hardest. Using `unpair_add_le`, we reduce it to the more manageable
 
-- `∀ m n, rec (f m) (fun (y IH : ℕ) => g (pair m (pair y IH))) n <
+- `∀ m n, rec (f m) (fun (y IH : ℕ) ↦ g (pair m (pair y IH))) n <
   ack (max a b + 9) (m + n)`.
 
 We then prove this by induction on `n`. Our proof crucially depends on `ack_pair_lt`, which is
@@ -172,27 +172,27 @@ theorem lt_ack_right (m n : ℕ) : n < ack m n :=
 
 -- we reorder the arguments to appease the equation compiler
 private theorem ack_strict_mono_left' : ∀ {m₁ m₂} (n), m₁ < m₂ → ack m₁ n < ack m₂ n
-  | m, 0, _ => fun h => (not_lt_zero m h).elim
-  | 0, m + 1, 0 => fun _h => by simpa using one_lt_ack_succ_right m 0
-  | 0, m + 1, n + 1 => fun h => by
+  | m, 0, _ => fun h ↦ (not_lt_zero m h).elim
+  | 0, m + 1, 0 => fun _h ↦ by simpa using one_lt_ack_succ_right m 0
+  | 0, m + 1, n + 1 => fun h ↦ by
     rw [ack_zero, ack_succ_succ]
     apply lt_of_le_of_lt (le_trans _ <| add_le_add_left (add_add_one_le_ack _ _) m) (add_lt_ack _ _)
     omega
-  | m₁ + 1, m₂ + 1, 0 => fun h => by
+  | m₁ + 1, m₂ + 1, 0 => fun h ↦ by
     simpa using ack_strict_mono_left' 1 ((add_lt_add_iff_right 1).1 h)
-  | m₁ + 1, m₂ + 1, n + 1 => fun h => by
+  | m₁ + 1, m₂ + 1, n + 1 => fun h ↦ by
     rw [ack_succ_succ, ack_succ_succ]
     exact
       (ack_strict_mono_left' _ <| (add_lt_add_iff_right 1).1 h).trans
         (ack_strictMono_right _ <| ack_strict_mono_left' n h)
 
-theorem ack_strictMono_left (n : ℕ) : StrictMono fun m => ack m n := fun _m₁ _m₂ =>
+theorem ack_strictMono_left (n : ℕ) : StrictMono fun m ↦ ack m n := fun _m₁ _m₂ ↦
   ack_strict_mono_left' n
 
-theorem ack_mono_left (n : ℕ) : Monotone fun m => ack m n :=
+theorem ack_mono_left (n : ℕ) : Monotone fun m ↦ ack m n :=
   (ack_strictMono_left n).monotone
 
-theorem ack_injective_left (n : ℕ) : Function.Injective fun m => ack m n :=
+theorem ack_injective_left (n : ℕ) : Function.Injective fun m ↦ ack m n :=
   (ack_strictMono_left n).injective
 
 @[simp]
@@ -275,21 +275,21 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
   induction hf with
   | zero => exact ⟨0, ack_pos 0⟩
   | succ =>
-    refine ⟨1, fun n => ?_⟩
+    refine ⟨1, fun n ↦ ?_⟩
     rw [succ_eq_one_add]
     apply add_lt_ack
   | left =>
-    refine ⟨0, fun n => ?_⟩
+    refine ⟨0, fun n ↦ ?_⟩
     rw [ack_zero, Nat.lt_succ_iff]
     exact unpair_left_le n
   | right =>
-    refine ⟨0, fun n => ?_⟩
+    refine ⟨0, fun n ↦ ?_⟩
     rw [ack_zero, Nat.lt_succ_iff]
     exact unpair_right_le n
   | pair hf hg IHf IHg =>
     obtain ⟨a, ha⟩ := IHf; obtain ⟨b, hb⟩ := IHg
     refine
-      ⟨max a b + 3, fun n =>
+      ⟨max a b + 3, fun n ↦
         (pair_lt_max_add_one_sq _ _).trans_le <|
           (Nat.pow_le_pow_left (add_le_add_right ?_ _) 2).trans <|
             ack_add_one_sq_lt_ack_add_three _ _⟩
@@ -298,14 +298,14 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
   | comp hf hg IHf IHg =>
     obtain ⟨a, ha⟩ := IHf; obtain ⟨b, hb⟩ := IHg
     exact
-      ⟨max a b + 2, fun n =>
+      ⟨max a b + 2, fun n ↦
         (ha _).trans <| (ack_strictMono_right a <| hb n).trans <| ack_ack_lt_ack_max_add_two a b n⟩
   | @prec f g hf hg IHf IHg =>
     obtain ⟨a, ha⟩ := IHf; obtain ⟨b, hb⟩ := IHg
     -- We prove this simpler inequality first.
     have :
       ∀ {m n},
-        rec (f m) (fun y IH => g <| pair m <| pair y IH) n < ack (max a b + 9) (m + n) := by
+        rec (f m) (fun y IH ↦ g <| pair m <| pair y IH) n < ack (max a b + 9) (m + n) := by
       intro m n
       -- We induct on n.
       induction n with
@@ -335,18 +335,18 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
             ack_succ_succ (_ + 8), add_assoc]
         exact ack_mono_left _ (Nat.add_le_add (le_max_right a b) le_rfl)
     -- The proof is now simple.
-    exact ⟨max a b + 9, fun n => this.trans_le <| ack_mono_right _ <| unpair_add_le n⟩
+    exact ⟨max a b + 9, fun n ↦ this.trans_le <| ack_mono_right _ <| unpair_add_le n⟩
 
-theorem not_nat_primrec_ack_self : ¬Nat.Primrec fun n => ack n n := fun h => by
+theorem not_nat_primrec_ack_self : ¬Nat.Primrec fun n ↦ ack n n := fun h ↦ by
   obtain ⟨m, hm⟩ := exists_lt_ack_of_nat_primrec h
   exact (hm m).false
 
-theorem not_primrec_ack_self : ¬Primrec fun n => ack n n := by
+theorem not_primrec_ack_self : ¬Primrec fun n ↦ ack n n := by
   rw [Primrec.nat_iff]
   exact not_nat_primrec_ack_self
 
 /-- The Ackermann function is not primitive recursive. -/
-theorem not_primrec₂_ack : ¬Primrec₂ ack := fun h =>
+theorem not_primrec₂_ack : ¬Primrec₂ ack := fun h ↦
   not_primrec_ack_self <| h.comp Primrec.id Primrec.id
 
 namespace Nat.Partrec.Code
@@ -376,7 +376,7 @@ lemma eval_pappAck_step_succ (c : Code) (n) :
   simp [pappAck.step, Code.eval]
 
 lemma primrec_pappAck : Primrec pappAck := by
-  suffices Primrec (Nat.rec Code.succ (fun _ c => pappAck.step c)) by
+  suffices Primrec (Nat.rec Code.succ (fun _ c ↦ pappAck.step c)) by
     convert this using 2 with n; induction n <;> simp [pappAck, *]
   apply_rules [Primrec.nat_rec₁, primrec_pappAck_step.comp, Primrec.snd]
 
@@ -390,8 +390,8 @@ lemma eval_pappAck (m n) : (pappAck m).eval n = Part.some (ack m n) := by
 /-- The Ackermann function is computable. -/
 theorem _root_.computable₂_ack : Computable₂ ack := by
   apply _root_.Partrec.of_eq_tot
-    (f := fun p : ℕ × ℕ => (pappAck p.1).eval p.2) (g := fun p : ℕ × ℕ => ack p.1 p.2)
-  · change Partrec₂ (fun m n => (pappAck m).eval n)
+    (f := fun p : ℕ × ℕ ↦ (pappAck p.1).eval p.2) (g := fun p : ℕ × ℕ ↦ ack p.1 p.2)
+  · change Partrec₂ (fun m n ↦ (pappAck m).eval n)
     apply_rules only
       [Code.eval_part.comp₂, Computable.fst, Computable.snd, primrec_pappAck.to_comp.comp]
   · simp

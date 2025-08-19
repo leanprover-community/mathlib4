@@ -74,13 +74,13 @@ def ValueGroup : Type v := Quotient (MulAction.orbitRel Aˣ K)
 instance : Inhabited (ValueGroup A K) := ⟨Quotient.mk'' 0⟩
 
 instance : LE (ValueGroup A K) :=
-  LE.mk fun x y =>
-    Quotient.liftOn₂' x y (fun a b => ∃ c : A, c • b = a)
+  LE.mk fun x y ↦
+    Quotient.liftOn₂' x y (fun a b ↦ ∃ c : A, c • b = a)
       (by
         rintro _ _ a b ⟨c, rfl⟩ ⟨d, rfl⟩; ext
         constructor
         · rintro ⟨e, he⟩; use (c⁻¹ : Aˣ) * e * d
-          apply_fun fun t => c⁻¹ • t at he
+          apply_fun fun t ↦ c⁻¹ • t at he
           simpa [mul_smul] using he
         · rintro ⟨e, he⟩; dsimp
           use c * e * (d⁻¹ : Aˣ)
@@ -92,8 +92,8 @@ instance : Zero (ValueGroup A K) := ⟨Quotient.mk'' 0⟩
 instance : One (ValueGroup A K) := ⟨Quotient.mk'' 1⟩
 
 instance : Mul (ValueGroup A K) :=
-  Mul.mk fun x y =>
-    Quotient.liftOn₂' x y (fun a b => Quotient.mk'' <| a * b)
+  Mul.mk fun x y ↦
+    Quotient.liftOn₂' x y (fun a b ↦ Quotient.mk'' <| a * b)
       (by
         rintro _ _ a b ⟨c, rfl⟩ ⟨d, rfl⟩
         apply Quotient.sound'
@@ -103,8 +103,8 @@ instance : Mul (ValueGroup A K) :=
         ring)
 
 instance : Inv (ValueGroup A K) :=
-  Inv.mk fun x =>
-    Quotient.liftOn' x (fun a => Quotient.mk'' a⁻¹)
+  Inv.mk fun x ↦
+    Quotient.liftOn' x (fun a ↦ Quotient.mk'' a⁻¹)
       (by
         rintro _ a ⟨b, rfl⟩
         apply Quotient.sound'
@@ -114,9 +114,9 @@ instance : Inv (ValueGroup A K) :=
           map_units_inv])
 
 instance : Nontrivial (ValueGroup A K) where
-  exists_pair_ne := ⟨0, 1, fun c => by
+  exists_pair_ne := ⟨0, 1, fun c ↦ by
     obtain ⟨d, hd⟩ := Quotient.exact' c
-    apply_fun fun t => d⁻¹ • t at hd
+    apply_fun fun t ↦ d⁻¹ • t at hd
     dsimp at hd
     simp only [inv_smul_smul, smul_zero, one_ne_zero] at hd⟩
 
@@ -230,10 +230,10 @@ theorem mem_integer_iff (x : K) : x ∈ (valuation A K).integer ↔ ∃ a : A, a
 noncomputable def equivInteger : A ≃+* (valuation A K).integer :=
   RingEquiv.ofBijective
     (show A →ₙ+* (valuation A K).integer from
-      { toFun := fun a => ⟨algebraMap A K a, (mem_integer_iff _ _ _).mpr ⟨a, rfl⟩⟩
-        map_mul' := fun _ _ => by ext1; exact (algebraMap A K).map_mul _ _
+      { toFun := fun a ↦ ⟨algebraMap A K a, (mem_integer_iff _ _ _).mpr ⟨a, rfl⟩⟩
+        map_mul' := fun _ _ ↦ by ext1; exact (algebraMap A K).map_mul _ _
         map_zero' := by ext1; exact (algebraMap A K).map_zero
-        map_add' := fun _ _ => by ext1; exact (algebraMap A K).map_add _ _ })
+        map_add' := fun _ _ ↦ by ext1; exact (algebraMap A K).map_add _ _ })
     (by
       constructor
       · intro x y h
@@ -298,14 +298,14 @@ variable {R : Type*}
 theorem _root_.PreValuationRing.iff_dvd_total [Semigroup R] :
     PreValuationRing R ↔ IsTotal R (· ∣ ·) := by
   classical
-  refine ⟨fun H => ⟨fun a b => ?_⟩, fun H => ⟨fun a b => ?_⟩⟩
+  refine ⟨fun H ↦ ⟨fun a b ↦ ?_⟩, fun H ↦ ⟨fun a b ↦ ?_⟩⟩
   · obtain ⟨c, rfl | rfl⟩ := PreValuationRing.cond a b <;> simp
   · obtain ⟨c, rfl⟩ | ⟨c, rfl⟩ := @IsTotal.total _ _ H a b <;> use c <;> simp
 
 theorem _root_.PreValuationRing.iff_ideal_total [CommRing R] :
     PreValuationRing R ↔ IsTotal (Ideal R) (· ≤ ·) := by
   classical
-  refine ⟨fun _ => ⟨le_total⟩, fun H => PreValuationRing.iff_dvd_total.mpr ⟨fun a b => ?_⟩⟩
+  refine ⟨fun _ ↦ ⟨le_total⟩, fun H ↦ PreValuationRing.iff_dvd_total.mpr ⟨fun a b ↦ ?_⟩⟩
   have := @IsTotal.total _ _ H (Ideal.span {a}) (Ideal.span {b})
   simp_rw [Ideal.span_singleton_le_span_singleton] at this
   exact this.symm
@@ -380,7 +380,7 @@ instance (priority := 100) [ValuationRing R] : IsBezout R := by
 
 instance (priority := 100) [IsLocalRing R] [IsBezout R] : ValuationRing R := by
   classical
-  refine iff_dvd_total.mpr ⟨fun a b => ?_⟩
+  refine iff_dvd_total.mpr ⟨fun a b ↦ ?_⟩
   obtain ⟨g, e : _ = Ideal.span _⟩ := IsBezout.span_pair_isPrincipal a b
   obtain ⟨a, rfl⟩ := Ideal.mem_span_singleton'.mp
       (show a ∈ Ideal.span {g} by rw [← e]; exact Ideal.subset_span (by simp))
@@ -414,7 +414,7 @@ end
 theorem _root_.Function.Surjective.preValuationRing {R S : Type*} [Mul R] [PreValuationRing R]
     [Mul S] (f : R →ₙ* S) (hf : Function.Surjective f) :
     PreValuationRing S :=
-  ⟨fun a b => by
+  ⟨fun a b ↦ by
     obtain ⟨⟨a, rfl⟩, ⟨b, rfl⟩⟩ := hf a, hf b
     obtain ⟨c, rfl | rfl⟩ := PreValuationRing.cond a b
     exacts [⟨f c, Or.inl <| (map_mul _ _ _).symm⟩, ⟨f c, Or.inr <| (map_mul _ _ _).symm⟩]⟩

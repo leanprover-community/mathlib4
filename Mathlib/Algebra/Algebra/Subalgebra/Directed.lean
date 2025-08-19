@@ -43,22 +43,22 @@ it on each subalgebra, and proving that it agrees on the intersection of subalge
 noncomputable def iSupLift (dir : Directed (· ≤ ·) K) (f : ∀ i, K i →ₐ[R] B)
     (hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h))
     (T : Subalgebra R A) (hT : T = iSup K) : ↥T →ₐ[R] B :=
-  { toFun := Set.iUnionLift (fun i => ↑(K i)) (fun i x => f i x)
-        (fun i j x hxi hxj => by
+  { toFun := Set.iUnionLift (fun i ↦ ↑(K i)) (fun i x ↦ f i x)
+        (fun i j x hxi hxj ↦ by
           let ⟨k, hik, hjk⟩ := dir i j
           dsimp
           rw [hf i k hik, hf j k hjk]
           rfl)
         (T : Set A) (by rw [hT, coe_iSup_of_directed dir])
-    map_one' := by apply Set.iUnionLift_const _ (fun _ => 1) <;> simp
-    map_zero' := by apply Set.iUnionLift_const _ (fun _ => 0) <;> simp
+    map_one' := by apply Set.iUnionLift_const _ (fun _ ↦ 1) <;> simp
+    map_zero' := by apply Set.iUnionLift_const _ (fun _ ↦ 0) <;> simp
     map_mul' := by
       subst hT;
-      apply Set.iUnionLift_binary (coe_iSup_of_directed dir) dir _ (fun _ => (· * ·)) <;> simp
+      apply Set.iUnionLift_binary (coe_iSup_of_directed dir) dir _ (fun _ ↦ (· * ·)) <;> simp
     map_add' := by
       subst hT;
-      apply Set.iUnionLift_binary (coe_iSup_of_directed dir) dir _ (fun _ => (· + ·)) <;> simp
-    commutes' := fun r => by apply Set.iUnionLift_const _ (fun _ => algebraMap R _ r) <;> simp }
+      apply Set.iUnionLift_binary (coe_iSup_of_directed dir) dir _ (fun _ ↦ (· + ·)) <;> simp
+    commutes' := fun r ↦ by apply Set.iUnionLift_const _ (fun _ ↦ algebraMap R _ r) <;> simp }
 
 
 @[simp]

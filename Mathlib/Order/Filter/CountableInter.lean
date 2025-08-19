@@ -42,7 +42,7 @@ class CountableInterFilter (l : Filter α) : Prop where
 variable {l : Filter α} [CountableInterFilter l]
 
 theorem countable_sInter_mem {S : Set (Set α)} (hSc : S.Countable) : ⋂₀ S ∈ l ↔ ∀ s ∈ S, s ∈ l :=
-  ⟨fun hS _s hs => mem_of_superset hS (sInter_subset_of_mem hs),
+  ⟨fun hS _s hs ↦ mem_of_superset hS (sInter_subset_of_mem hs),
     CountableInterFilter.countable_sInter_mem _ hSc⟩
 
 theorem countable_iInter_mem [Countable ι] {s : ι → Set α} : (⋂ i, s i) ∈ l ↔ ∀ i, s i ∈ l :=
@@ -57,58 +57,58 @@ theorem countable_bInter_mem {ι : Type*} {S : Set ι} (hS : S.Countable) {s : �
 theorem eventually_countable_forall [Countable ι] {p : α → ι → Prop} :
     (∀ᶠ x in l, ∀ i, p x i) ↔ ∀ i, ∀ᶠ x in l, p x i := by
   simpa only [Filter.Eventually, setOf_forall] using
-    @countable_iInter_mem _ _ l _ _ fun i => { x | p x i }
+    @countable_iInter_mem _ _ l _ _ fun i ↦ { x | p x i }
 
 theorem eventually_countable_ball {ι : Type*} {S : Set ι} (hS : S.Countable)
     {p : α → ∀ i ∈ S, Prop} :
     (∀ᶠ x in l, ∀ i hi, p x i hi) ↔ ∀ i hi, ∀ᶠ x in l, p x i hi := by
   simpa only [Filter.Eventually, setOf_forall] using
-    @countable_bInter_mem _ l _ _ _ hS fun i hi => { x | p x i hi }
+    @countable_bInter_mem _ l _ _ _ hS fun i hi ↦ { x | p x i hi }
 
 theorem EventuallyLE.countable_iUnion [Countable ι] {s t : ι → Set α} (h : ∀ i, s i ≤ᶠ[l] t i) :
     ⋃ i, s i ≤ᶠ[l] ⋃ i, t i :=
-  (eventually_countable_forall.2 h).mono fun _ hst hs => mem_iUnion.2 <| (mem_iUnion.1 hs).imp hst
+  (eventually_countable_forall.2 h).mono fun _ hst hs ↦ mem_iUnion.2 <| (mem_iUnion.1 hs).imp hst
 
 theorem EventuallyEq.countable_iUnion [Countable ι] {s t : ι → Set α} (h : ∀ i, s i =ᶠ[l] t i) :
     ⋃ i, s i =ᶠ[l] ⋃ i, t i :=
-  (EventuallyLE.countable_iUnion fun i => (h i).le).antisymm
-    (EventuallyLE.countable_iUnion fun i => (h i).symm.le)
+  (EventuallyLE.countable_iUnion fun i ↦ (h i).le).antisymm
+    (EventuallyLE.countable_iUnion fun i ↦ (h i).symm.le)
 
 theorem EventuallyLE.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
     ⋃ i ∈ S, s i ‹_› ≤ᶠ[l] ⋃ i ∈ S, t i ‹_› := by
   simp only [biUnion_eq_iUnion]
   haveI := hS.toEncodable
-  exact EventuallyLE.countable_iUnion fun i => h i i.2
+  exact EventuallyLE.countable_iUnion fun i ↦ h i i.2
 
 theorem EventuallyEq.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠ[l] t i hi) :
     ⋃ i ∈ S, s i ‹_› =ᶠ[l] ⋃ i ∈ S, t i ‹_› :=
-  (EventuallyLE.countable_bUnion hS fun i hi => (h i hi).le).antisymm
-    (EventuallyLE.countable_bUnion hS fun i hi => (h i hi).symm.le)
+  (EventuallyLE.countable_bUnion hS fun i hi ↦ (h i hi).le).antisymm
+    (EventuallyLE.countable_bUnion hS fun i hi ↦ (h i hi).symm.le)
 
 theorem EventuallyLE.countable_iInter [Countable ι] {s t : ι → Set α} (h : ∀ i, s i ≤ᶠ[l] t i) :
     ⋂ i, s i ≤ᶠ[l] ⋂ i, t i :=
-  (eventually_countable_forall.2 h).mono fun _ hst hs =>
-    mem_iInter.2 fun i => hst _ (mem_iInter.1 hs i)
+  (eventually_countable_forall.2 h).mono fun _ hst hs ↦
+    mem_iInter.2 fun i ↦ hst _ (mem_iInter.1 hs i)
 
 theorem EventuallyEq.countable_iInter [Countable ι] {s t : ι → Set α} (h : ∀ i, s i =ᶠ[l] t i) :
     ⋂ i, s i =ᶠ[l] ⋂ i, t i :=
-  (EventuallyLE.countable_iInter fun i => (h i).le).antisymm
-    (EventuallyLE.countable_iInter fun i => (h i).symm.le)
+  (EventuallyLE.countable_iInter fun i ↦ (h i).le).antisymm
+    (EventuallyLE.countable_iInter fun i ↦ (h i).symm.le)
 
 theorem EventuallyLE.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
     ⋂ i ∈ S, s i ‹_› ≤ᶠ[l] ⋂ i ∈ S, t i ‹_› := by
   simp only [biInter_eq_iInter]
   haveI := hS.toEncodable
-  exact EventuallyLE.countable_iInter fun i => h i i.2
+  exact EventuallyLE.countable_iInter fun i ↦ h i i.2
 
 theorem EventuallyEq.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠ[l] t i hi) :
     ⋂ i ∈ S, s i ‹_› =ᶠ[l] ⋂ i ∈ S, t i ‹_› :=
-  (EventuallyLE.countable_bInter hS fun i hi => (h i hi).le).antisymm
-    (EventuallyLE.countable_bInter hS fun i hi => (h i hi).symm.le)
+  (EventuallyLE.countable_bInter hS fun i hi ↦ (h i hi).le).antisymm
+    (EventuallyLE.countable_bInter hS fun i hi ↦ (h i hi).symm.le)
 
 /-- Construct a filter with countable intersection property. This constructor deduces
 `Filter.univ_sets` and `Filter.inter_sets` from the countable intersection property. -/
@@ -162,7 +162,7 @@ theorem Filter.mem_ofCountableUnion {l : Set (Set α)} {hunion hmono s} :
   Iff.rfl
 
 instance countableInterFilter_principal (s : Set α) : CountableInterFilter (𝓟 s) :=
-  ⟨fun _ _ hS => subset_sInter hS⟩
+  ⟨fun _ _ hS ↦ subset_sInter hS⟩
 
 instance countableInterFilter_bot : CountableInterFilter (⊥ : Filter α) := by
   rw [← principal_empty]
@@ -174,14 +174,14 @@ instance countableInterFilter_top : CountableInterFilter (⊤ : Filter α) := by
 
 instance (l : Filter β) [CountableInterFilter l] (f : α → β) :
     CountableInterFilter (comap f l) := by
-  refine ⟨fun S hSc hS => ?_⟩
+  refine ⟨fun S hSc hS ↦ ?_⟩
   choose! t htl ht using hS
   have : (⋂ s ∈ S, t s) ∈ l := (countable_bInter_mem hSc).2 htl
   refine ⟨_, this, ?_⟩
   simpa [preimage_iInter] using iInter₂_mono ht
 
 instance (l : Filter α) [CountableInterFilter l] (f : α → β) : CountableInterFilter (map f l) := by
-  refine ⟨fun S hSc hS => ?_⟩
+  refine ⟨fun S hSc hS ↦ ?_⟩
   simp only [mem_map, sInter_eq_biInter, preimage_iInter₂] at hS ⊢
   exact (countable_bInter_mem hSc).2 hS
 
@@ -189,25 +189,25 @@ instance (l : Filter α) [CountableInterFilter l] (f : α → β) : CountableInt
 to automatically get an instance for `residual α ⊓ 𝓟 s`. -/
 instance countableInterFilter_inf (l₁ l₂ : Filter α) [CountableInterFilter l₁]
     [CountableInterFilter l₂] : CountableInterFilter (l₁ ⊓ l₂) := by
-  refine ⟨fun S hSc hS => ?_⟩
+  refine ⟨fun S hSc hS ↦ ?_⟩
   choose s hs t ht hst using hS
   replace hs : (⋂ i ∈ S, s i ‹_›) ∈ l₁ := (countable_bInter_mem hSc).2 hs
   replace ht : (⋂ i ∈ S, t i ‹_›) ∈ l₂ := (countable_bInter_mem hSc).2 ht
-  refine mem_of_superset (inter_mem_inf hs ht) (subset_sInter fun i hi => ?_)
+  refine mem_of_superset (inter_mem_inf hs ht) (subset_sInter fun i hi ↦ ?_)
   rw [hst i hi]
   apply inter_subset_inter <;> exact iInter_subset_of_subset i (iInter_subset _ _)
 
 /-- Supremum of two `CountableInterFilter`s is a `CountableInterFilter`. -/
 instance countableInterFilter_sup (l₁ l₂ : Filter α) [CountableInterFilter l₁]
     [CountableInterFilter l₂] : CountableInterFilter (l₁ ⊔ l₂) := by
-  refine ⟨fun S hSc hS => ⟨?_, ?_⟩⟩ <;> refine (countable_sInter_mem hSc).2 fun s hs => ?_
+  refine ⟨fun S hSc hS ↦ ⟨?_, ?_⟩⟩ <;> refine (countable_sInter_mem hSc).2 fun s hs ↦ ?_
   exacts [(hS s hs).1, (hS s hs).2]
 
 instance CountableInterFilter.curry {α β : Type*} {l : Filter α} {m : Filter β}
     [CountableInterFilter l] [CountableInterFilter m] : CountableInterFilter (l.curry m) := ⟨by
   intro S Sct hS
-  simp_rw [mem_curry_iff, mem_sInter, eventually_countable_ball (p := fun _ _ _ => (_ ,_) ∈ _) Sct,
-    eventually_countable_ball (p := fun _ _ _ => ∀ᶠ (_ : β) in m, _)  Sct, ← mem_curry_iff]
+  simp_rw [mem_curry_iff, mem_sInter, eventually_countable_ball (p := fun _ _ _ ↦ (_ ,_) ∈ _) Sct,
+    eventually_countable_ball (p := fun _ _ _ ↦ ∀ᶠ (_ : β) in m, _)  Sct, ← mem_curry_iff]
   exact hS⟩
 
 namespace Filter
@@ -225,7 +225,7 @@ inductive CountableGenerateSets : Set α → Prop
 
 /-- `Filter.countableGenerate g` is the greatest `countableInterFilter` containing `g`. -/
 def countableGenerate : Filter α :=
-  ofCountableInter (CountableGenerateSets g) (fun _ => CountableGenerateSets.sInter) fun _ _ =>
+  ofCountableInter (CountableGenerateSets g) (fun _ ↦ CountableGenerateSets.sInter) fun _ _ ↦
     CountableGenerateSets.superset
 deriving CountableInterFilter
 
@@ -239,7 +239,7 @@ theorem mem_countableGenerate_iff {s : Set α} :
   · induction h with
     | @basic s hs => exact ⟨{s}, by simp [hs, subset_refl]⟩
     | univ => exact ⟨∅, by simp⟩
-    | superset _ _ ih => refine Exists.imp (fun S => ?_) ih; tauto
+    | superset _ _ ih => refine Exists.imp (fun S ↦ ?_) ih; tauto
     | @sInter S Sct _ ih =>
       choose T Tg Tct hT using ih
       refine ⟨⋃ (s) (H : s ∈ S), T s H, by simpa, Sct.biUnion Tct, ?_⟩
@@ -254,7 +254,7 @@ theorem mem_countableGenerate_iff {s : Set α} :
 theorem le_countableGenerate_iff_of_countableInterFilter {f : Filter α} [CountableInterFilter f] :
     f ≤ countableGenerate g ↔ g ⊆ f.sets := by
   constructor <;> intro h
-  · exact subset_trans (fun s => CountableGenerateSets.basic) h
+  · exact subset_trans (fun s ↦ CountableGenerateSets.basic) h
   intro s hs
   induction hs with
   | basic hs => exact h hs
@@ -267,7 +267,7 @@ variable (g)
 /-- `countableGenerate g` is the greatest `countableInterFilter` containing `g`. -/
 theorem countableGenerate_isGreatest :
     IsGreatest { f : Filter α | CountableInterFilter f ∧ g ⊆ f.sets } (countableGenerate g) := by
-  refine ⟨⟨inferInstance, fun s => CountableGenerateSets.basic⟩, ?_⟩
+  refine ⟨⟨inferInstance, fun s ↦ CountableGenerateSets.basic⟩, ?_⟩
   rintro f ⟨fct, hf⟩
   rwa [@le_countableGenerate_iff_of_countableInterFilter _ _ _ fct]
 

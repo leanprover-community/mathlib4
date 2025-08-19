@@ -37,7 +37,7 @@ variable {s : Set E}
 /-- The norm on a real normed space is convex on any convex set. See also `Seminorm.convexOn`
 and `convexOn_univ_norm`. -/
 theorem convexOn_norm (hs : Convex ℝ s) : ConvexOn ℝ s norm :=
-  ⟨hs, fun x _ y _ a b ha hb _ =>
+  ⟨hs, fun x _ y _ a b ha hb _ ↦
     calc
       ‖a • x + b • y‖ ≤ ‖a • x‖ + ‖b • y‖ := norm_add_le _ _
       _ = a * ‖x‖ + b * ‖y‖ := by
@@ -48,11 +48,11 @@ and `convexOn_norm`. -/
 theorem convexOn_univ_norm : ConvexOn ℝ univ (norm : E → ℝ) :=
   convexOn_norm convex_univ
 
-theorem convexOn_dist (z : E) (hs : Convex ℝ s) : ConvexOn ℝ s fun z' => dist z' z := by
+theorem convexOn_dist (z : E) (hs : Convex ℝ s) : ConvexOn ℝ s fun z' ↦ dist z' z := by
   simpa [dist_eq_norm, preimage_preimage] using
     (convexOn_norm (hs.translate (-z))).comp_affineMap (AffineMap.id ℝ E - AffineMap.const ℝ E z)
 
-theorem convexOn_univ_dist (z : E) : ConvexOn ℝ univ fun z' => dist z' z :=
+theorem convexOn_univ_dist (z : E) : ConvexOn ℝ univ fun z' ↦ dist z' z :=
   convexOn_dist z convex_univ
 
 theorem convex_ball (a : E) (r : ℝ) : Convex ℝ (Metric.ball a r) := by
@@ -74,7 +74,7 @@ theorem Convex.thickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (thickenin
 theorem Convex.cthickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (cthickening δ s) := by
   obtain hδ | hδ := le_total 0 δ
   · rw [cthickening_eq_iInter_thickening hδ]
-    exact convex_iInter₂ fun _ _ => hs.thickening _
+    exact convex_iInter₂ fun _ _ ↦ hs.thickening _
   · rw [cthickening_of_nonpos hδ]
     exact hs.closure
 
@@ -90,7 +90,7 @@ theorem convexHull_exists_dist_ge2 {s t : Set E} {x y : E} (hx : x ∈ convexHul
 /-- Emetric diameter of the convex hull of a set `s` equals the emetric diameter of `s`. -/
 @[simp]
 theorem convexHull_ediam (s : Set E) : EMetric.diam (convexHull ℝ s) = EMetric.diam s := by
-  refine (EMetric.diam_le fun x hx y hy => ?_).antisymm (EMetric.diam_mono <| subset_convexHull ℝ s)
+  refine (EMetric.diam_le fun x hx y hy ↦ ?_).antisymm (EMetric.diam_mono <| subset_convexHull ℝ s)
   rcases convexHull_exists_dist_ge2 hx hy with ⟨x', hx', y', hy', H⟩
   rw [edist_dist]
   apply le_trans (ENNReal.ofReal_le_ofReal H)

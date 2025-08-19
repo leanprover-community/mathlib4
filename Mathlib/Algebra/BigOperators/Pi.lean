@@ -61,7 +61,7 @@ theorem prod_mk_prod [CommMonoid M] [CommMonoid N] (s : Finset ι) (f : ι → M
 
 /-- decomposing `x : ι → R` as a sum along the canonical basis -/
 theorem pi_eq_sum_univ {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [NonAssocSemiring R]
-    (x : ι → R) : x = ∑ i, (x i) • fun j => if i = j then (1 : R) else 0 := by
+    (x : ι → R) : x = ∑ i, (x i) • fun j ↦ if i = j then (1 : R) else 0 := by
   ext
   simp
 
@@ -118,7 +118,7 @@ note [partially-applied ext lemmas]. -/
       explained in note [partially-applied ext lemmas]. -/]
 theorem MonoidHom.functions_ext' [Finite I] (N : Type*) [CommMonoid N] (g h : (∀ i, M i) →* N)
     (H : ∀ i, g.comp (MonoidHom.mulSingle M i) = h.comp (MonoidHom.mulSingle M i)) : g = h :=
-  g.functions_ext N h fun i => DFunLike.congr_fun (H i)
+  g.functions_ext N h fun i ↦ DFunLike.congr_fun (H i)
 
 end MulSingle
 
@@ -212,7 +212,7 @@ section EqOn
 theorem eqOn_finsetProd {ι α β : Type*} [CommMonoid α]
     {s : Set β} {f f' : ι → β → α} (h : ∀ (i : ι), Set.EqOn (f i) (f' i) s) (v : Finset ι) :
     Set.EqOn (∏ i ∈ v, f i) (∏ i ∈ v, f' i) s :=
-  fun t ht => by simp [funext fun i ↦ h i ht]
+  fun t ht ↦ by simp [funext fun i ↦ h i ht]
 
 @[to_additive]
 theorem eqOn_fun_finsetProd {ι α β : Type*} [CommMonoid α]

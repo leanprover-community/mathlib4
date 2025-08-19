@@ -48,7 +48,7 @@ namespace Additive
 
 /-- Reinterpret `x : α` as an element of `Additive α`. -/
 def ofMul : α ≃ Additive α :=
-  ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
+  ⟨fun x ↦ x, fun x ↦ x, fun _ ↦ rfl, fun _ ↦ rfl⟩
 
 /-- Reinterpret `x : Additive α` as an element of `α`. -/
 def toMul : Additive α ≃ α := ofMul.symm
@@ -72,7 +72,7 @@ protected lemma «exists» {p : Additive α → Prop} : (∃ a, p a) ↔ ∃ a, 
 /-- Recursion principle for `Additive`, supported by `cases` and `induction`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 def rec {motive : Additive α → Sort*} (ofMul : ∀ a, motive (ofMul a)) : ∀ a, motive a :=
-  fun a => ofMul (a.toMul)
+  fun a ↦ ofMul (a.toMul)
 
 end Additive
 
@@ -80,7 +80,7 @@ namespace Multiplicative
 
 /-- Reinterpret `x : α` as an element of `Multiplicative α`. -/
 def ofAdd : α ≃ Multiplicative α :=
-  ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
+  ⟨fun x ↦ x, fun x ↦ x, fun _ ↦ rfl, fun _ ↦ rfl⟩
 
 /-- Reinterpret `x : Multiplicative α` as an element of `α`. -/
 def toAdd : Multiplicative α ≃ α := ofAdd.symm
@@ -104,7 +104,7 @@ protected lemma «exists» {p : Multiplicative α → Prop} : (∃ a, p a) ↔ �
 /-- Recursion principle for `Multiplicative`, supported by `cases` and `induction`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 def rec {motive : Multiplicative α → Sort*} (ofAdd : ∀ a, motive (ofAdd a)) : ∀ a, motive a :=
-  fun a => ofAdd (a.toAdd)
+  fun a ↦ ofAdd (a.toAdd)
 
 end Multiplicative
 
@@ -319,7 +319,7 @@ instance Multiplicative.instCancelCommMonoid [AddCancelCommMonoid α] :
     CancelCommMonoid (Multiplicative α) where
 
 instance Additive.neg [Inv α] : Neg (Additive α) :=
-  ⟨fun x => ofAdd x.toMul⁻¹⟩
+  ⟨fun x ↦ ofAdd x.toMul⁻¹⟩
 
 @[simp]
 theorem ofMul_inv [Inv α] (x : α) : ofMul x⁻¹ = -ofMul x :=
@@ -330,7 +330,7 @@ theorem toMul_neg [Inv α] (x : Additive α) : (-x).toMul = x.toMul⁻¹ :=
   rfl
 
 instance Multiplicative.inv [Neg α] : Inv (Multiplicative α) :=
-  ⟨fun x => ofMul (-x.toAdd)⟩
+  ⟨fun x ↦ ofMul (-x.toAdd)⟩
 
 @[simp]
 theorem ofAdd_neg [Neg α] (x : α) : ofAdd (-x) = (ofAdd x)⁻¹ :=
@@ -443,8 +443,8 @@ This allows `Additive` to be used on bundled function types with a multiplicativ
 is often used for composition, without affecting the behavior of the function itself.
 -/
 instance Additive.coeToFun {α : Type*} {β : α → Sort*} [CoeFun α β] :
-    CoeFun (Additive α) fun a => β a.toMul :=
-  ⟨fun a => CoeFun.coe a.toMul⟩
+    CoeFun (Additive α) fun a ↦ β a.toMul :=
+  ⟨fun a ↦ CoeFun.coe a.toMul⟩
 
 /-- If `α` has some additive structure and coerces to a function,
 then `Multiplicative α` should also coerce to the same function.
@@ -453,8 +453,8 @@ This allows `Multiplicative` to be used on bundled function types with an additi
 is often used for composition, without affecting the behavior of the function itself.
 -/
 instance Multiplicative.coeToFun {α : Type*} {β : α → Sort*} [CoeFun α β] :
-    CoeFun (Multiplicative α) fun a => β a.toAdd :=
-  ⟨fun a => CoeFun.coe a.toAdd⟩
+    CoeFun (Multiplicative α) fun a ↦ β a.toAdd :=
+  ⟨fun a ↦ CoeFun.coe a.toAdd⟩
 
 lemma Pi.mulSingle_multiplicativeOfAdd_eq {ι : Type*} [DecidableEq ι] {M : ι → Type*}
     [(i : ι) → AddMonoid (M i)] (i : ι) (a : M i) (j : ι) :

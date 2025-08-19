@@ -38,7 +38,7 @@ def fiberwiseColimitLimitIso (K : J ⥤ Grothendieck F ⥤ H)
     [∀ c, PreservesLimitsOfShape J (colim (J := F.obj c) (C := H))] :
     fiberwiseColimit (limit K) ≅ limit (K ⋙ fiberwiseColim F H) :=
   NatIso.ofComponents
-    (fun c => HasColimit.isoOfNatIso
+    (fun c ↦ HasColimit.isoOfNatIso
        (limitCompWhiskeringLeftIsoCompLimit K (Grothendieck.ι F c)).symm ≪≫
       preservesLimitIso colim _ ≪≫
       HasLimit.isoOfNatIso
@@ -46,7 +46,7 @@ def fiberwiseColimitLimitIso (K : J ⥤ Grothendieck F ⥤ H)
         isoWhiskerLeft _ (fiberwiseColimCompEvaluationIso _).symm ≪≫
         (associator _ _ _).symm) ≪≫
       (limitObjIsoLimitCompEvaluation _ c).symm)
-    fun {c₁ c₂} f => by
+    fun {c₁ c₂} f ↦ by
       simp only [fiberwiseColimit_obj, fiberwiseColimit_map, Iso.trans_hom, Iso.symm_hom,
         Category.assoc, limitObjIsoLimitCompEvaluation_inv_limit_map]
       apply colimit.hom_ext

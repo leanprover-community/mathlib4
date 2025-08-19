@@ -172,7 +172,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
       -- we define a sequence `c n` by starting at `a₀` and then continually
       -- applying the function sending `b` to `b - f(b)/f'(b)` (Newton's method).
       -- Note that `f'.eval b` is a unit, because `b` has the same residue as `a₀` modulo `I`.
-      let c : ℕ → R := fun n => Nat.recOn n a₀ fun _ b => b - f.eval b * Ring.inverse (f'.eval b)
+      let c : ℕ → R := fun n ↦ Nat.recOn n a₀ fun _ b ↦ b - f.eval b * Ring.inverse (f'.eval b)
       have hc : ∀ n, c (n + 1) = c n - f.eval (c n) * Ring.inverse (f'.eval (c n)) := by
         intro n
         simp only [c]

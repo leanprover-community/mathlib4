@@ -73,11 +73,11 @@ def toOption (o : Part α) [Decidable o.Dom] : Option α :=
 theorem ext' : ∀ {o p : Part α}, (o.Dom ↔ p.Dom) → (∀ h₁ h₂, o.get h₁ = p.get h₂) → o = p
   | ⟨od, o⟩, ⟨pd, p⟩, H1, H2 => by
     have t : od = pd := propext H1
-    cases t; rw [show o = p from funext fun p => H2 p p]
+    cases t; rw [show o = p from funext fun p ↦ H2 p p]
 
 /-- `Part` eta expansion -/
 @[simp]
-theorem eta : ∀ o : Part α, (⟨o.Dom, fun h => o.get h⟩ : Part α) = o
+theorem eta : ∀ o : Part α, (⟨o.Dom, fun h ↦ o.get h⟩ : Part α) = o
   | ⟨_, _⟩ => rfl
 
 /-- `a ∈ o` means that `o` is defined and equal to `a` -/
@@ -91,7 +91,7 @@ theorem mem_eq (a : α) (o : Part α) : (a ∈ o) = ∃ h, o.get h = a :=
   rfl
 
 theorem dom_iff_mem : ∀ {o : Part α}, o.Dom ↔ ∃ y, y ∈ o
-  | ⟨_, f⟩ => ⟨fun h => ⟨f h, h, rfl⟩, fun ⟨_, h, rfl⟩ => h⟩
+  | ⟨_, f⟩ => ⟨fun h ↦ ⟨f h, h, rfl⟩, fun ⟨_, h, rfl⟩ ↦ h⟩
 
 theorem get_mem {o : Part α} (h) : get o h ∈ o :=
   ⟨_, rfl⟩
@@ -103,7 +103,7 @@ theorem mem_mk_iff {p : Prop} {o : p → α} {a : α} : a ∈ Part.mk p o ↔ �
 /-- `Part` extensionality -/
 @[ext]
 theorem ext {o p : Part α} (H : ∀ a, a ∈ o ↔ a ∈ p) : o = p :=
-  (ext' ⟨fun h => ((H _).1 ⟨h, rfl⟩).fst, fun h => ((H _).2 ⟨h, rfl⟩).fst⟩) fun _ _ =>
+  (ext' ⟨fun h ↦ ((H _).1 ⟨h, rfl⟩).fst, fun h ↦ ((H _).2 ⟨h, rfl⟩).fst⟩) fun _ _ ↦
     ((H _).2 ⟨_, rfl⟩).snd
 
 /-- The `none` value in `Part` has a `False` domain and an empty function. -/
@@ -114,14 +114,14 @@ instance : Inhabited (Part α) :=
   ⟨none⟩
 
 @[simp]
-theorem notMem_none (a : α) : a ∉ @none α := fun h => h.fst
+theorem notMem_none (a : α) : a ∉ @none α := fun h ↦ h.fst
 
 @[deprecated (since := "2025-05-23")] alias not_mem_none := notMem_none
 
 /-- The `some a` value in `Part` has a `True` domain and the
   function returns `a`. -/
 def some (a : α) : Part α :=
-  ⟨True, fun _ => a⟩
+  ⟨True, fun _ ↦ a⟩
 
 @[simp]
 theorem some_dom (a : α) : (some a).Dom :=
@@ -133,16 +133,16 @@ theorem mem_unique : ∀ {a b : α} {o : Part α}, a ∈ o → b ∈ o → a = b
 theorem mem_right_unique : ∀ {a : α} {o p : Part α}, a ∈ o → a ∈ p → o = p
   | _, _, _, ⟨ho, _⟩, ⟨hp, _⟩ => ext' (iff_of_true ho hp) (by simp [*])
 
-theorem Mem.left_unique : Relator.LeftUnique ((· ∈ ·) : α → Part α → Prop) := fun _ _ _ =>
+theorem Mem.left_unique : Relator.LeftUnique ((· ∈ ·) : α → Part α → Prop) := fun _ _ _ ↦
   mem_unique
 
-theorem Mem.right_unique : Relator.RightUnique ((· ∈ ·) : α → Part α → Prop) := fun _ _ _ =>
+theorem Mem.right_unique : Relator.RightUnique ((· ∈ ·) : α → Part α → Prop) := fun _ _ _ ↦
   mem_right_unique
 
 theorem get_eq_of_mem {o : Part α} {a} (h : a ∈ o) (h') : get o h' = a :=
   mem_unique ⟨_, rfl⟩ h
 
-protected theorem subsingleton (o : Part α) : Set.Subsingleton { a | a ∈ o } := fun _ ha _ hb =>
+protected theorem subsingleton (o : Part α) : Set.Subsingleton { a | a ∈ o } := fun _ ha _ hb ↦
   mem_unique ha hb
 
 @[simp]
@@ -154,16 +154,16 @@ theorem mem_some (a : α) : a ∈ some a :=
 
 @[simp]
 theorem mem_some_iff {a b} : b ∈ (some a : Part α) ↔ b = a :=
-  ⟨fun ⟨_, e⟩ => e.symm, fun e => ⟨trivial, e.symm⟩⟩
+  ⟨fun ⟨_, e⟩ ↦ e.symm, fun e ↦ ⟨trivial, e.symm⟩⟩
 
 theorem eq_some_iff {a : α} {o : Part α} : o = some a ↔ a ∈ o :=
-  ⟨fun e => e.symm ▸ mem_some _, fun ⟨h, e⟩ => e ▸ ext' (iff_true_intro h) fun _ _ => rfl⟩
+  ⟨fun e ↦ e.symm ▸ mem_some _, fun ⟨h, e⟩ ↦ e ▸ ext' (iff_true_intro h) fun _ _ ↦ rfl⟩
 
 theorem eq_none_iff {o : Part α} : o = none ↔ ∀ a, a ∉ o :=
-  ⟨fun e => e.symm ▸ notMem_none, fun h => ext (by simpa)⟩
+  ⟨fun e ↦ e.symm ▸ notMem_none, fun h ↦ ext (by simpa)⟩
 
 theorem eq_none_iff' {o : Part α} : o = none ↔ ¬o.Dom :=
-  ⟨fun e => e.symm ▸ id, fun h => eq_none_iff.2 fun _ h' => h h'.fst⟩
+  ⟨fun e ↦ e.symm ▸ id, fun h ↦ eq_none_iff.2 fun _ h' ↦ h h'.fst⟩
 
 @[simp]
 theorem not_none_dom : ¬(none : Part α).Dom :=
@@ -181,14 +181,14 @@ theorem none_ne_some (x : α) : none ≠ some x :=
 theorem ne_none_iff {o : Part α} : o ≠ none ↔ ∃ x, o = some x := by
   constructor
   · rw [Ne, eq_none_iff', not_not]
-    exact fun h => ⟨o.get h, eq_some_iff.2 (get_mem h)⟩
+    exact fun h ↦ ⟨o.get h, eq_some_iff.2 (get_mem h)⟩
   · rintro ⟨x, rfl⟩
     apply some_ne_none
 
 theorem eq_none_or_eq_some (o : Part α) : o = none ∨ ∃ x, o = some x :=
   or_iff_not_imp_left.2 ne_none_iff.1
 
-theorem some_injective : Injective (@Part.some α) := fun _ _ h =>
+theorem some_injective : Injective (@Part.some α) := fun _ _ h ↦
   congr_fun (eq_of_heq (Part.mk.inj h).2) trivial
 
 @[simp]
@@ -200,14 +200,14 @@ theorem some_get {a : Part α} (ha : a.Dom) : Part.some (Part.get a ha) = a :=
   Eq.symm (eq_some_iff.2 ⟨ha, rfl⟩)
 
 theorem get_eq_iff_eq_some {a : Part α} {ha : a.Dom} {b : α} : a.get ha = b ↔ a = some b :=
-  ⟨fun h => by simp [h.symm], fun h => by simp [h]⟩
+  ⟨fun h ↦ by simp [h.symm], fun h ↦ by simp [h]⟩
 
 theorem get_eq_get_of_eq (a : Part α) (ha : a.Dom) {b : Part α} (h : a = b) :
     a.get ha = b.get (h ▸ ha) := by
   congr
 
 theorem get_eq_iff_mem {o : Part α} {a : α} (h : o.Dom) : o.get h = a ↔ a ∈ o :=
-  ⟨fun H => ⟨h, H⟩, fun ⟨_, H⟩ => H⟩
+  ⟨fun H ↦ ⟨h, H⟩, fun ⟨_, H⟩ ↦ H⟩
 
 theorem eq_get_iff_mem {o : Part α} {a : α} (h : o.Dom) : a = o.get h ↔ a ∈ o :=
   eq_comm.trans (get_eq_iff_mem h)
@@ -251,7 +251,7 @@ theorem getOrElse_some (a : α) (d : α) [Decidable (some a).Dom] : getOrElse (s
 theorem mem_toOption {o : Part α} [Decidable o.Dom] {a : α} : a ∈ toOption o ↔ a ∈ o := by
   unfold toOption
   by_cases h : o.Dom <;> simp [h]
-  · exact ⟨fun h => ⟨_, h⟩, fun ⟨_, h⟩ => h⟩
+  · exact ⟨fun h ↦ ⟨_, h⟩, fun ⟨_, h⟩ ↦ h⟩
   · exact mt Exists.fst h
 
 @[simp]
@@ -263,7 +263,7 @@ protected theorem Dom.toOption {o : Part α} [Decidable o.Dom] (h : o.Dom) : o.t
   dif_pos h
 
 theorem toOption_eq_none_iff {a : Part α} [Decidable a.Dom] : a.toOption = Option.none ↔ ¬a.Dom :=
-  Ne.dite_eq_right_iff fun _ => Option.some_ne_none _
+  Ne.dite_eq_right_iff fun _ ↦ Option.some_ne_none _
 
 @[simp]
 theorem elim_toOption {α β : Type*} (a : Part α) [Decidable a.Dom] (b : β) (f : α → β) :
@@ -282,8 +282,8 @@ def ofOption : Option α → Part α
 
 @[simp]
 theorem mem_ofOption {a : α} : ∀ {o : Option α}, a ∈ ofOption o ↔ a ∈ o
-  | Option.none => ⟨fun h => h.fst.elim, fun h => Option.noConfusion h⟩
-  | Option.some _ => ⟨fun h => congr_arg Option.some h.snd, fun h => ⟨trivial, Option.some.inj h⟩⟩
+  | Option.none => ⟨fun h ↦ h.fst.elim, fun h ↦ Option.noConfusion h⟩
+  | Option.some _ => ⟨fun h ↦ congr_arg Option.some h.snd, fun h ↦ ⟨trivial, Option.some.inj h⟩⟩
 
 @[simp]
 theorem ofOption_dom {α} : ∀ o : Option α, (ofOption o).Dom ↔ o.isSome
@@ -291,7 +291,7 @@ theorem ofOption_dom {α} : ∀ o : Option α, (ofOption o).Dom ↔ o.isSome
   | Option.some a => by simp [ofOption]
 
 theorem ofOption_eq_get {α} (o : Option α) : ofOption o = ⟨_, @Option.get _ o⟩ :=
-  Part.ext' (ofOption_dom o) fun h₁ h₂ => by
+  Part.ext' (ofOption_dom o) fun h₁ h₂ ↦ by
     cases o
     · simp at h₂
     · rfl
@@ -313,7 +313,7 @@ theorem coe_some (a : α) : (Option.some a : Part α) = some a :=
 @[elab_as_elim]
 protected theorem induction_on {P : Part α → Prop} (a : Part α) (hnone : P none)
     (hsome : ∀ a : α, P (some a)) : P a :=
-  (Classical.em a.Dom).elim (fun h => Part.some_get h ▸ hsome _) fun h =>
+  (Classical.em a.Dom).elim (fun h ↦ Part.some_get h ▸ hsome _) fun h ↦
     (eq_none_iff'.2 h).symm ▸ hnone
 
 instance ofOptionDecidable : ∀ o : Option α, Decidable (ofOption o).Dom
@@ -325,12 +325,12 @@ theorem to_ofOption (o : Option α) : toOption (ofOption o) = o := by cases o <;
 
 @[simp]
 theorem of_toOption (o : Part α) [Decidable o.Dom] : ofOption (toOption o) = o :=
-  ext fun _ => mem_ofOption.trans mem_toOption
+  ext fun _ ↦ mem_ofOption.trans mem_toOption
 
 /-- `Part α` is (classically) equivalent to `Option α`. -/
 noncomputable def equivOption : Part α ≃ Option α :=
   haveI := Classical.dec
-  ⟨fun o => toOption o, ofOption, fun o => of_toOption o, fun o =>
+  ⟨fun o ↦ toOption o, ofOption, fun o ↦ of_toOption o, fun o ↦
     Eq.trans (by dsimp; congr) (to_ofOption o)⟩
 
 /-- We give `Part α` the order where everything is greater than `none`. -/
@@ -339,7 +339,7 @@ instance : PartialOrder (Part
   le x y := ∀ i, i ∈ x → i ∈ y
   le_refl _ _ := id
   le_trans _ _ _ f g _ := g _ ∘ f _
-  le_antisymm _ _ f g := Part.ext fun _ => ⟨f _, g _⟩
+  le_antisymm _ _ f g := Part.ext fun _ ↦ ⟨f _, g _⟩
 
 instance : OrderBot (Part α) where
   bot := none
@@ -360,12 +360,12 @@ theorem le_total_of_le_of_le {x y : Part α} (z : Part α) (hx : x ≤ z) (hy : 
 /-- `assert p f` is a bind-like operation which appends an additional condition
   `p` to the domain and uses `f` to produce the value. -/
 def assert (p : Prop) (f : p → Part α) : Part α :=
-  ⟨∃ h : p, (f h).Dom, fun ha => (f ha.fst).get ha.snd⟩
+  ⟨∃ h : p, (f h).Dom, fun ha ↦ (f ha.fst).get ha.snd⟩
 
 /-- The bind operation has value `g (f.get)`, and is defined when all the
   parts are defined. -/
 protected def bind (f : Part α) (g : α → Part β) : Part β :=
-  assert (Dom f) fun b => g (f.get b)
+  assert (Dom f) fun b ↦ g (f.get b)
 
 /-- The map operation for `Part` just maps the value and maintains the same domain. -/
 @[simps]
@@ -377,13 +377,13 @@ theorem mem_map (f : α → β) {o : Part α} : ∀ {a}, a ∈ o → f a ∈ map
 
 @[simp]
 theorem mem_map_iff (f : α → β) {o : Part α} {b} : b ∈ map f o ↔ ∃ a ∈ o, f a = b :=
-  ⟨fun hb => match b, hb with
+  ⟨fun hb ↦ match b, hb with
     | _, ⟨_, rfl⟩ => ⟨_, ⟨_, rfl⟩, rfl⟩,
-    fun ⟨_, h₁, h₂⟩ => h₂ ▸ mem_map f h₁⟩
+    fun ⟨_, h₁, h₂⟩ ↦ h₂ ▸ mem_map f h₁⟩
 
 @[simp]
 theorem map_none (f : α → β) : map f none = none :=
-  eq_none_iff.2 fun a => by simp
+  eq_none_iff.2 fun a ↦ by simp
 
 @[simp]
 theorem map_some (f : α → β) (a : α) : map f (some a) = some (f a) :=
@@ -394,9 +394,9 @@ theorem mem_assert {p : Prop} {f : p → Part α} : ∀ {a} (h : p), a ∈ f h �
 
 @[simp]
 theorem mem_assert_iff {p : Prop} {f : p → Part α} {a} : a ∈ assert p f ↔ ∃ h : p, a ∈ f h :=
-  ⟨fun ha => match a, ha with
+  ⟨fun ha ↦ match a, ha with
     | _, ⟨_, rfl⟩ => ⟨_, ⟨_, rfl⟩⟩,
-    fun ⟨_, h⟩ => mem_assert _ h⟩
+    fun ⟨_, h⟩ ↦ mem_assert _ h⟩
 
 theorem assert_pos {p : Prop} {f : p → Part α} (h : p) : assert p f = f h := by
   dsimp [assert]
@@ -418,14 +418,14 @@ theorem mem_bind {f : Part α} {g : α → Part β} : ∀ {a b}, a ∈ f → b �
 
 @[simp]
 theorem mem_bind_iff {f : Part α} {g : α → Part β} {b} : b ∈ f.bind g ↔ ∃ a ∈ f, b ∈ g a :=
-  ⟨fun hb => match b, hb with
+  ⟨fun hb ↦ match b, hb with
     | _, ⟨⟨_, _⟩, rfl⟩ => ⟨_, ⟨_, rfl⟩, ⟨_, rfl⟩⟩,
-    fun ⟨_, h₁, h₂⟩ => mem_bind h₁ h₂⟩
+    fun ⟨_, h₁, h₂⟩ ↦ mem_bind h₁ h₂⟩
 
 protected theorem Dom.bind {o : Part α} (h : o.Dom) (f : α → Part β) : o.bind f = f (o.get h) := by
   ext b
   simp only [Part.mem_bind_iff]
-  refine ⟨?_, fun hb => ⟨o.get h, Part.get_mem _, hb⟩⟩
+  refine ⟨?_, fun hb ↦ ⟨o.get h, Part.get_mem _, hb⟩⟩
   rintro ⟨a, ha, hb⟩
   rwa [Part.get_eq_of_mem ha]
 
@@ -434,7 +434,7 @@ theorem Dom.of_bind {f : α → Part β} {a : Part α} (h : (a.bind f).Dom) : a.
 
 @[simp]
 theorem bind_none (f : α → Part β) : none.bind f = none :=
-  eq_none_iff.2 fun a => by simp
+  eq_none_iff.2 fun a ↦ by simp
 
 @[simp]
 theorem bind_some (a : α) (f : α → Part β) : (some a).bind f = f a :=
@@ -443,32 +443,32 @@ theorem bind_some (a : α) (f : α → Part β) : (some a).bind f = f a :=
 theorem bind_of_mem {o : Part α} {a : α} (h : a ∈ o) (f : α → Part β) : o.bind f = f a := by
   rw [eq_some_iff.2 h, bind_some]
 
-theorem bind_some_eq_map (f : α → β) (x : Part α) : x.bind (fun y => some (f y)) = map f x :=
+theorem bind_some_eq_map (f : α → β) (x : Part α) : x.bind (fun y ↦ some (f y)) = map f x :=
   ext <| by simp [eq_comm]
 
 theorem bind_toOption (f : α → Part β) (o : Part α) [Decidable o.Dom] [∀ a, Decidable (f a).Dom]
     [Decidable (o.bind f).Dom] :
-    (o.bind f).toOption = o.toOption.elim Option.none fun a => (f a).toOption := by
+    (o.bind f).toOption = o.toOption.elim Option.none fun a ↦ (f a).toOption := by
   by_cases h : o.Dom
   · simp_rw [h.toOption, h.bind]
     rfl
   · rw [Part.toOption_eq_none_iff.2 h]
-    exact Part.toOption_eq_none_iff.2 fun ho => h ho.of_bind
+    exact Part.toOption_eq_none_iff.2 fun ho ↦ h ho.of_bind
 
 theorem bind_assoc {γ} (f : Part α) (g : α → Part β) (k : β → Part γ) :
-    (f.bind g).bind k = f.bind fun x => (g x).bind k :=
-  ext fun a => by
+    (f.bind g).bind k = f.bind fun x ↦ (g x).bind k :=
+  ext fun a ↦ by
     simp only [mem_bind_iff]
-    exact ⟨fun ⟨_, ⟨_, h₁, h₂⟩, h₃⟩ => ⟨_, h₁, _, h₂, h₃⟩,
-           fun ⟨_, h₁, _, h₂, h₃⟩ => ⟨_, ⟨_, h₁, h₂⟩, h₃⟩⟩
+    exact ⟨fun ⟨_, ⟨_, h₁, h₂⟩, h₃⟩ ↦ ⟨_, h₁, _, h₂, h₃⟩,
+           fun ⟨_, h₁, _, h₂, h₃⟩ ↦ ⟨_, ⟨_, h₁, h₂⟩, h₃⟩⟩
 
 @[simp]
 theorem bind_map {γ} (f : α → β) (x) (g : β → Part γ) :
-    (map f x).bind g = x.bind fun y => g (f y) := by rw [← bind_some_eq_map, bind_assoc]; simp
+    (map f x).bind g = x.bind fun y ↦ g (f y) := by rw [← bind_some_eq_map, bind_assoc]; simp
 
 @[simp]
 theorem map_bind {γ} (f : α → Part β) (x : Part α) (g : β → γ) :
-    map g (x.bind f) = x.bind fun y => map g (f y) := by
+    map g (x.bind f) = x.bind fun y ↦ map g (f y) := by
   rw [← bind_some_eq_map, bind_assoc]; simp [bind_some_eq_map]
 
 theorem map_map (g : β → γ) (f : α → β) (o : Part α) : map g (map f o) = map (g ∘ f) o := by
@@ -489,16 +489,16 @@ instance : LawfulMonad
   --Porting TODO : In Lean3 these were automatic by a tactic
   seqLeft_eq x y := ext'
     (by simp [SeqLeft.seqLeft, Part.bind, assert, Seq.seq, const, (· <$> ·), and_comm])
-    (fun _ _ => rfl)
+    (fun _ _ ↦ rfl)
   seqRight_eq x y := ext'
     (by simp [SeqRight.seqRight, Part.bind, assert, Seq.seq, const, (· <$> ·)])
-    (fun _ _ => rfl)
+    (fun _ _ ↦ rfl)
   pure_seq x y := ext'
     (by simp [Seq.seq, Part.bind, assert, (· <$> ·), pure])
-    (fun _ _ => rfl)
+    (fun _ _ ↦ rfl)
   bind_map x y := ext'
     (by simp [(· >>= ·), Part.bind, assert, Seq.seq, (· <$> ·)] )
-    (fun _ _ => rfl)
+    (fun _ _ ↦ rfl)
 
 theorem map_id' {f : α → α} (H : ∀ x : α, f x = x) (o) : map f o = o := by
   rw [show f = id from funext H]; exact id_map o
@@ -538,12 +538,12 @@ theorem bind_le {α} (x : Part α) (f : α → Part β) (y : Part β) :
 
 -- TODO: if `MonadFail` is defined, define the below instance.
 -- instance : MonadFail Part :=
---   { Part.monad with fail := fun _ _ => none }
+--   { Part.monad with fail := fun _ _ ↦ none }
 
 /-- `restrict p o h` replaces the domain of `o` with `p`, and is well defined when
   `p` implies `o` is defined. -/
 def restrict (p : Prop) (o : Part α) (H : p → o.Dom) : Part α :=
-  ⟨p, fun h => o.get (H h)⟩
+  ⟨p, fun h ↦ o.get (H h)⟩
 
 @[simp]
 theorem mem_restrict (p : Prop) (o : Part α) (h : p → o.Dom) (a : α) :
@@ -611,13 +611,13 @@ theorem one_def [One α] : (1 : Part α) = some 1 := rfl
 theorem inv_def [Inv α] (a : Part α) : a⁻¹ = Part.map (· ⁻¹) a := rfl
 
 @[to_additive]
-theorem div_def [Div α] (a b : Part α) : a / b = bind a fun y => map (y / ·) b := rfl
+theorem div_def [Div α] (a b : Part α) : a / b = bind a fun y ↦ map (y / ·) b := rfl
 
-theorem mod_def [Mod α] (a b : Part α) : a % b = bind a fun y => map (y % ·) b := rfl
-theorem append_def [Append α] (a b : Part α) : a ++ b = bind a fun y => map (y ++ ·) b := rfl
-theorem inter_def [Inter α] (a b : Part α) : a ∩ b = bind a fun y => map (y ∩ ·) b := rfl
-theorem union_def [Union α] (a b : Part α) : a ∪ b = bind a fun y => map (y ∪ ·) b := rfl
-theorem sdiff_def [SDiff α] (a b : Part α) : a \ b = bind a fun y => map (y \ ·) b := rfl
+theorem mod_def [Mod α] (a b : Part α) : a % b = bind a fun y ↦ map (y % ·) b := rfl
+theorem append_def [Append α] (a b : Part α) : a ++ b = bind a fun y ↦ map (y ++ ·) b := rfl
+theorem inter_def [Inter α] (a b : Part α) : a ∩ b = bind a fun y ↦ map (y ∩ ·) b := rfl
+theorem union_def [Union α] (a b : Part α) : a ∪ b = bind a fun y ↦ map (y ∪ ·) b := rfl
+theorem sdiff_def [SDiff α] (a b : Part α) : a \ b = bind a fun y ↦ map (y \ ·) b := rfl
 
 end
 

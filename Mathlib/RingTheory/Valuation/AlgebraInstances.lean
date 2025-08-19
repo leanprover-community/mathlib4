@@ -55,13 +55,13 @@ instance : IsScalarTower v.valuationSubring L E := Subring.instIsScalarTowerSubt
 instance algebra :
     Algebra (integralClosure v.valuationSubring L) (integralClosure v.valuationSubring E) :=
   RingHom.toAlgebra
-    { toFun := fun k => ⟨algebraMap L E k, IsIntegral.algebraMap k.2⟩
+    { toFun := fun k ↦ ⟨algebraMap L E k, IsIntegral.algebraMap k.2⟩
       map_zero' :=
         Subtype.ext <| by simp only [Subalgebra.coe_zero, map_zero]
       map_one' := Subtype.ext <| by simp only [Subalgebra.coe_one, map_one]
-      map_add' := fun x y =>
+      map_add' := fun x y ↦
         Subtype.ext <| by simp only [map_add, Subalgebra.coe_add]
-      map_mul' := fun x y =>
+      map_mul' := fun x y ↦
         Subtype.ext <| by simp only [Subalgebra.coe_mul, map_mul] }
 
 /-- A ring equivalence between the integral closure of the valuation subring of `K` in `L`

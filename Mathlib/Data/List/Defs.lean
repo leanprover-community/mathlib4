@@ -57,7 +57,7 @@ def takeI [Inhabited α] (n : Nat) (l : List α) : List α :=
 /-- `findM tac l` returns the first element of `l` on which `tac` succeeds, and
 fails otherwise. -/
 def findM {α} {m : Type u → Type v} [Alternative m] (tac : α → m PUnit) : List α → m α :=
-  List.firstM fun a => (tac a) $> a
+  List.firstM fun a ↦ (tac a) $> a
 
 /-- `findM? p l` returns the first element `a` of `l` for which `p a` returns
 true. `findM?` short-circuits, so `p` is not necessarily run on every `a` in
@@ -96,7 +96,7 @@ variable {m : Type v → Type w} [Monad m]
 /-- Monadic variant of `foldlIdx`. -/
 def foldlIdxM {α β} (f : ℕ → β → α → m β) (b : β) (as : List α) : m β :=
   as.foldlIdx
-    (fun i ma b => do
+    (fun i ma b ↦ do
       let a ← ma
       f i a b)
     (pure b)
@@ -104,7 +104,7 @@ def foldlIdxM {α β} (f : ℕ → β → α → m β) (b : β) (as : List α) :
 /-- Monadic variant of `foldrIdx`. -/
 def foldrIdxM {α β} (f : ℕ → α → β → m β) (b : β) (as : List α) : m β :=
   as.foldrIdx
-    (fun i a mb => do
+    (fun i a mb ↦ do
       let b ← mb
       f i a b)
     (pure b)
@@ -150,7 +150,7 @@ defined) is the list of lists of the form `insert_nth n t (ys ++ ts)` for `0 ≤
 def permutationsAux2 (t : α) (ts : List α) (r : List β) : List α → (List α → β) → List α × List β
   | [], _ => (ts, r)
   | y :: ys, f =>
-    let (us, zs) := permutationsAux2 t ts r ys (fun x : List α => f (y :: x))
+    let (us, zs) := permutationsAux2 t ts r ys (fun x : List α ↦ f (y :: x))
     (y :: us, f (t :: y :: us) :: zs)
 
 /-- A recursor for pairs of lists. To have `C l₁ l₂` for all `l₁`, `l₂`, it suffices to have it for
@@ -167,8 +167,8 @@ def permutationsAux.rec {C : List α → List α → Sort v} (H0 : ∀ is, C [] 
 /-- An auxiliary function for defining `permutations`. `permutationsAux ts is` is the set of all
 permutations of `is ++ ts` that do not fix `ts`. -/
 def permutationsAux : List α → List α → List (List α) :=
-  permutationsAux.rec (fun _ => []) fun t ts is IH1 IH2 =>
-    foldr (fun y r => (permutationsAux2 t ts r y id).2) IH1 (is :: IH2)
+  permutationsAux.rec (fun _ ↦ []) fun t ts is IH1 IH2 ↦
+    foldr (fun y r ↦ (permutationsAux2 t ts r y id).2) IH1 (is :: IH2)
 
 /-- List of all permutations of `l`.
 
@@ -269,14 +269,14 @@ variable (p : α → Prop) [DecidablePred p] (l : List α)
 choose the first element with this property. This version returns both `a` and proofs
 of `a ∈ l` and `p a`. -/
 def chooseX : ∀ l : List α, ∀ _ : ∃ a, a ∈ l ∧ p a, { a // a ∈ l ∧ p a }
-  | [], hp => False.elim (Exists.elim hp fun _ h => not_mem_nil h.left)
+  | [], hp => False.elim (Exists.elim hp fun _ h ↦ not_mem_nil h.left)
   | l :: ls, hp =>
     if pl : p l then ⟨l, ⟨mem_cons.mpr <| Or.inl rfl, pl⟩⟩
     else
       -- pattern matching on `hx` too makes this not reducible!
       let ⟨a, ha⟩ :=
         chooseX ls
-          (hp.imp fun _ ⟨o, h₂⟩ => ⟨(mem_cons.mp o).resolve_left fun e => pl <| e ▸ h₂, h₂⟩)
+          (hp.imp fun _ ⟨o, h₂⟩ ↦ ⟨(mem_cons.mp o).resolve_left fun e ↦ pl <| e ▸ h₂, h₂⟩)
       ⟨a, mem_cons.mpr <| Or.inr ha.1, ha.2⟩
 
 /-- Given a decidable predicate `p` and a proof of existence of `a ∈ l` such that `p a`,
@@ -318,7 +318,7 @@ map₂Left' prod.mk [1] ['a', 'b'] = ([(1, some 'a')], ['b'])
 @[simp]
 def map₂Left' (f : α → Option β → γ) : List α → List β → List γ × List β
   | [], bs => ([], bs)
-  | a :: as, [] => ((a :: as).map fun a => f a none, [])
+  | a :: as, [] => ((a :: as).map fun a ↦ f a none, [])
   | a :: as, b :: bs =>
     let rec' := map₂Left' f as bs
     (f a (some b) :: rec'.fst, rec'.snd)
@@ -353,7 +353,7 @@ map₂Left f as bs = (map₂Left' f as bs).fst
 @[simp]
 def map₂Left (f : α → Option β → γ) : List α → List β → List γ
   | [], _ => []
-  | a :: as, [] => (a :: as).map fun a => f a none
+  | a :: as, [] => (a :: as).map fun a ↦ f a none
   | a :: as, b :: bs => f a (some b) :: map₂Left f as bs
 
 /-- Right-biased version of `List.map₂`. `map₂Right f as bs` applies `f` to each
@@ -375,7 +375,7 @@ def map₂Right (f : Option α → β → γ) (as : List α) (bs : List β) : Li
 /-- Asynchronous version of `List.map`.
 -/
 def mapAsyncChunked {α β} (f : α → β) (xs : List α) (chunk_size := 1024) : List β :=
-  ((xs.toChunks chunk_size).map fun xs => Task.spawn fun _ => List.map f xs).flatMap Task.get
+  ((xs.toChunks chunk_size).map fun xs ↦ Task.spawn fun _ ↦ List.map f xs).flatMap Task.get
 
 
 /-!

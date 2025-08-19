@@ -49,7 +49,7 @@ variable {p : R[X]}
 theorem integralNormalization_coeff {i : ℕ} :
     (integralNormalization p).coeff i =
       if p.degree = i then 1 else coeff p i * p.leadingCoeff ^ (p.natDegree - 1 - i) := by
-  have : p.coeff i = 0 → p.degree ≠ i := fun hc hd => coeff_ne_zero_of_eq_degree hd hc
+  have : p.coeff i = 0 → p.degree ≠ i := fun hc hd ↦ coeff_ne_zero_of_eq_degree hd hc
   simp +contextual [sum_def, integralNormalization, coeff_monomial, this,
     mem_support_iff]
 
@@ -75,7 +75,7 @@ theorem integralNormalization_coeff_ne_natDegree {i : ℕ} (hi : i ≠ natDegree
 
 theorem monic_integralNormalization (hp : p ≠ 0) : Monic (integralNormalization p) :=
   monic_of_degree_le p.natDegree
-    (Finset.sup_le fun i h =>
+    (Finset.sup_le fun i h ↦
       WithBot.coe_le_coe.2 <| le_natDegree_of_mem_supp i <| support_integralNormalization_subset h)
     (integralNormalization_coeff_natDegree hp)
 
@@ -170,7 +170,7 @@ theorem support_integralNormalization {f : R[X]} :
   have : IsDomain R := {}
   by_cases hf : f = 0; · simp [hf]
   ext i
-  refine ⟨fun h => support_integralNormalization_subset h, ?_⟩
+  refine ⟨fun h ↦ support_integralNormalization_subset h, ?_⟩
   simp only [integralNormalization_coeff, mem_support_iff]
   intro hfi
   split_ifs with hi <;> simp [hf, hfi]

@@ -33,7 +33,7 @@ variable {G : Type*} [Group G]
 
 variable (R A G) in
 instance instHopfAlgebraStruct : HopfAlgebraStruct R (MonoidAlgebra A G) where
-  antipode := Finsupp.lsum R fun g => Finsupp.lsingle g⁻¹ ∘ₗ antipode R
+  antipode := Finsupp.lsum R fun g ↦ Finsupp.lsingle g⁻¹ ∘ₗ antipode R
 
 @[simp]
 lemma antipode_single (g : G) (a : A) :
@@ -60,7 +60,7 @@ variable {G : Type*} [AddGroup G]
 
 variable (R A G) in
 instance instHopfAlgebraStruct : HopfAlgebraStruct R A[G] where
-  antipode := Finsupp.lsum R fun g => Finsupp.lsingle (-g) ∘ₗ antipode R
+  antipode := Finsupp.lsum R fun g ↦ Finsupp.lsingle (-g) ∘ₗ antipode R
 
 @[simp]
 lemma antipode_single (g : G) (a : A) :

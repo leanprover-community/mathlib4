@@ -38,7 +38,7 @@ namespace Matrix
 /-- `Matrix.hadamard` (denoted as `⊙` within the Matrix namespace) defines the Hadamard product,
 which is the pointwise product of two matrices of the same size. -/
 def hadamard [Mul α] (A : Matrix m n α) (B : Matrix m n α) : Matrix m n α :=
-  of fun i j => A i j * B i j
+  of fun i j ↦ A i j * B i j
 
 -- TODO: set as an equation lemma for `hadamard`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
@@ -54,29 +54,29 @@ variable (A : Matrix m n α) (B : Matrix m n α) (C : Matrix m n α)
 
 -- commutativity
 theorem hadamard_comm [CommMagma α] : A ⊙ B = B ⊙ A :=
-  ext fun _ _ => mul_comm _ _
+  ext fun _ _ ↦ mul_comm _ _
 
 -- associativity
 theorem hadamard_assoc [Semigroup α] : A ⊙ B ⊙ C = A ⊙ (B ⊙ C) :=
-  ext fun _ _ => mul_assoc _ _ _
+  ext fun _ _ ↦ mul_assoc _ _ _
 
 -- distributivity
 theorem hadamard_add [Distrib α] : A ⊙ (B + C) = A ⊙ B + A ⊙ C :=
-  ext fun _ _ => left_distrib _ _ _
+  ext fun _ _ ↦ left_distrib _ _ _
 
 theorem add_hadamard [Distrib α] : (B + C) ⊙ A = B ⊙ A + C ⊙ A :=
-  ext fun _ _ => right_distrib _ _ _
+  ext fun _ _ ↦ right_distrib _ _ _
 
 -- scalar multiplication
 section Scalar
 
 @[simp]
 theorem smul_hadamard [Mul α] [SMul R α] [IsScalarTower R α α] (k : R) : (k • A) ⊙ B = k • A ⊙ B :=
-  ext fun _ _ => smul_mul_assoc _ _ _
+  ext fun _ _ ↦ smul_mul_assoc _ _ _
 
 @[simp]
 theorem hadamard_smul [Mul α] [SMul R α] [SMulCommClass R α α] (k : R) : A ⊙ (k • B) = k • A ⊙ B :=
-  ext fun _ _ => mul_smul_comm _ _ _
+  ext fun _ _ ↦ mul_smul_comm _ _ _
 
 end Scalar
 
@@ -86,11 +86,11 @@ variable [MulZeroClass α]
 
 @[simp]
 theorem hadamard_zero : A ⊙ (0 : Matrix m n α) = 0 :=
-  ext fun _ _ => mul_zero _
+  ext fun _ _ ↦ mul_zero _
 
 @[simp]
 theorem zero_hadamard : (0 : Matrix m n α) ⊙ A = 0 :=
-  ext fun _ _ => zero_mul _
+  ext fun _ _ ↦ zero_mul _
 
 end Zero
 
@@ -99,11 +99,11 @@ section One
 variable [DecidableEq n] [MulZeroOneClass α]
 variable (M : Matrix n n α)
 
-theorem hadamard_one : M ⊙ (1 : Matrix n n α) = diagonal fun i => M i i := by
+theorem hadamard_one : M ⊙ (1 : Matrix n n α) = diagonal fun i ↦ M i i := by
   ext i j
   by_cases h : i = j <;> simp [h]
 
-theorem one_hadamard : (1 : Matrix n n α) ⊙ M = diagonal fun i => M i i := by
+theorem one_hadamard : (1 : Matrix n n α) ⊙ M = diagonal fun i ↦ M i i := by
   ext i j
   by_cases h : i = j <;> simp [h]
 
@@ -115,7 +115,7 @@ variable [DecidableEq m] [DecidableEq n] [MulZeroClass α]
 
 theorem single_hadamard_single_eq (i : m) (j : n) (a b : α) :
     single i j a ⊙ single i j b = single i j (a * b) :=
-  ext fun _ _ => (apply_ite₂ _ _ _ _ _ _).trans (congr_arg _ <| zero_mul 0)
+  ext fun _ _ ↦ (apply_ite₂ _ _ _ _ _ _).trans (congr_arg _ <| zero_mul 0)
 
 @[deprecated (since := "2025-05-05")]
 alias stdBasisMatrix_hadamard_stdBasisMatrix_eq := single_hadamard_single_eq
@@ -134,7 +134,7 @@ variable [DecidableEq n] [MulZeroClass α]
 
 theorem diagonal_hadamard_diagonal (v : n → α) (w : n → α) :
     diagonal v ⊙ diagonal w = diagonal (v * w) :=
-  ext fun _ _ => (apply_ite₂ _ _ _ _ _ _).trans (congr_arg _ <| zero_mul 0)
+  ext fun _ _ ↦ (apply_ite₂ _ _ _ _ _ _).trans (congr_arg _ <| zero_mul 0)
 
 end Diagonal
 

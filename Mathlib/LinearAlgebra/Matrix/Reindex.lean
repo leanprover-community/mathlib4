@@ -39,8 +39,8 @@ variable [Semiring R] [AddCommMonoid A] [Module R A]
 `Matrix.reindex`, is a linear equivalence. -/
 def reindexLinearEquiv (eₘ : m ≃ m') (eₙ : n ≃ n') : Matrix m n A ≃ₗ[R] Matrix m' n' A :=
   { reindex eₘ eₙ with
-    map_add' := fun _ _ => rfl
-    map_smul' := fun _ _ => rfl }
+    map_add' := fun _ _ ↦ rfl
+    map_smul' := fun _ _ ↦ rfl }
 
 @[simp]
 theorem reindexLinearEquiv_apply (eₘ : m ≃ m') (eₙ : n ≃ n') (M : Matrix m n A) :
@@ -55,7 +55,7 @@ theorem reindexLinearEquiv_symm (eₘ : m ≃ m') (eₙ : n ≃ n') :
 @[simp]
 theorem reindexLinearEquiv_refl_refl :
     reindexLinearEquiv R A (Equiv.refl m) (Equiv.refl n) = LinearEquiv.refl R _ :=
-  LinearEquiv.ext fun _ => rfl
+  LinearEquiv.ext fun _ ↦ rfl
 
 theorem reindexLinearEquiv_trans (e₁ : m ≃ m') (e₂ : n ≃ n') (e₁' : m' ≃ m'') (e₂' : n' ≃ n'') :
     (reindexLinearEquiv R A e₁ e₂).trans (reindexLinearEquiv R A e₁' e₂') =
@@ -111,8 +111,8 @@ map that reindexes a matrix's rows and columns with equivalent types,
 def reindexAlgEquiv (e : m ≃ n) : Matrix m m A ≃ₐ[R] Matrix n n A :=
   { reindexLinearEquiv A A e e with
     toFun := reindex e e
-    map_mul' := fun a b => (reindexLinearEquiv_mul A A e e e a b).symm
-    commutes' := fun r => by simp [algebraMap, Algebra.algebraMap] }
+    map_mul' := fun a b ↦ (reindexLinearEquiv_mul A A e e e a b).symm
+    commutes' := fun r ↦ by simp [algebraMap, Algebra.algebraMap] }
 
 @[simp]
 theorem reindexAlgEquiv_apply (e : m ≃ n) (M : Matrix m m A) :
@@ -126,7 +126,7 @@ theorem reindexAlgEquiv_symm (e : m ≃ n) : (reindexAlgEquiv R A e).symm =
 
 @[simp]
 theorem reindexAlgEquiv_refl : reindexAlgEquiv R A (Equiv.refl m) = AlgEquiv.refl :=
-  AlgEquiv.ext fun _ => rfl
+  AlgEquiv.ext fun _ ↦ rfl
 
 theorem reindexAlgEquiv_mul (e : m ≃ n) (M : Matrix m m A) (N : Matrix m m A) :
     reindexAlgEquiv R A e (M * N) = reindexAlgEquiv R A e M * reindexAlgEquiv R A e N :=

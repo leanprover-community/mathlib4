@@ -72,7 +72,7 @@ theorem mul (h : PythagoreanTriple x y z) (k : ℤ) : PythagoreanTriple (k * x) 
 `(x, y, z)` is also a triple. -/
 theorem mul_iff (k : ℤ) (hk : k ≠ 0) :
     PythagoreanTriple (k * x) (k * y) (k * z) ↔ PythagoreanTriple x y z := by
-  refine ⟨?_, fun h => h.mul k⟩
+  refine ⟨?_, fun h ↦ h.mul k⟩
   simp only [PythagoreanTriple]
   intro h
   rw [← mul_left_inj' (mul_ne_zero hk hk)]
@@ -260,7 +260,7 @@ def circleEquivGen (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) :
       convert hk 1
       rw [one_pow 2, h2]
     field_simp [hk x, h2, add_assoc, add_comm, add_sub_cancel, mul_comm]
-  right_inv := fun ⟨⟨x, y⟩, hxy, hy⟩ => by
+  right_inv := fun ⟨⟨x, y⟩, hxy, hy⟩ ↦ by
     change x ^ 2 + y ^ 2 = 1 at hxy
     have h2 : y + 1 ≠ 0 := mt eq_neg_of_add_eq_zero_left hy
     have h3 : (y + 1) ^ 2 + x ^ 2 = 2 * (y + 1) := by

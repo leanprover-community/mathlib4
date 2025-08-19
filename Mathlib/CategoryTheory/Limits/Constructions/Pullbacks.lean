@@ -35,11 +35,11 @@ theorem hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair {C : Type u} [
           rw [Category.assoc, equalizer.condition]
           simp [e]
       isLimit :=
-        PullbackCone.IsLimit.mk _ (fun s => equalizer.lift
+        PullbackCone.IsLimit.mk _ (fun s ↦ equalizer.lift
           (prod.lift (s.π.app WalkingCospan.left) (s.π.app WalkingCospan.right)) <| by
             rw [← Category.assoc, limit.lift_π, ← Category.assoc, limit.lift_π]
             exact PullbackCone.condition _)
-          (by simp [π₁, e]) (by simp [π₂, e]) fun s m h₁ h₂ => by
+          (by simp [π₁, e]) (by simp [π₂, e]) fun s m h₁ h₂ ↦ by
           ext
           · dsimp; simpa using h₁
           · simpa using h₂ }
@@ -53,7 +53,7 @@ As usual, this is not an instance, since there may be a more direct way to const
 pullbacks. -/
 theorem hasPullbacks_of_hasBinaryProducts_of_hasEqualizers (C : Type u) [Category.{v} C]
     [HasBinaryProducts C] [HasEqualizers C] : HasPullbacks C :=
-  { has_limit := fun F => hasLimit_of_iso (diagramIsoCospan F).symm }
+  { has_limit := fun F ↦ hasLimit_of_iso (diagramIsoCospan F).symm }
 
 end
 
@@ -71,11 +71,11 @@ theorem hasColimit_span_of_hasColimit_pair_of_hasColimit_parallelPair {C : Type 
           rw [← Category.assoc, ← Category.assoc, coequalizer.condition]
       isColimit :=
         PushoutCocone.IsColimit.mk _
-          (fun s => coequalizer.desc
+          (fun s ↦ coequalizer.desc
               (coprod.desc (s.ι.app WalkingSpan.left) (s.ι.app WalkingSpan.right)) <| by
             rw [Category.assoc, colimit.ι_desc, Category.assoc, colimit.ι_desc]
             exact PushoutCocone.condition _)
-          (by simp [ι₁, c]) (by simp [ι₂, c]) fun s m h₁ h₂ => by
+          (by simp [ι₁, c]) (by simp [ι₂, c]) fun s m h₁ h₂ ↦ by
           ext
           · simpa using h₁
           · simpa using h₂ }

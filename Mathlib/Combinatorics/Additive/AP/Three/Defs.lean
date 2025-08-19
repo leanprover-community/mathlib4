@@ -80,7 +80,7 @@ theorem ThreeGPFree.mono (h : t ⊆ s) (hs : ThreeGPFree s) : ThreeGPFree t :=
   fun _ ha _ hb _ hc ↦ hs (h ha) (h hb) (h hc)
 
 @[to_additive (attr := simp)]
-theorem threeGPFree_empty : ThreeGPFree (∅ : Set α) := fun _ _ _ ha => ha.elim
+theorem threeGPFree_empty : ThreeGPFree (∅ : Set α) := fun _ _ _ ha ↦ ha.elim
 
 @[to_additive]
 theorem Set.Subsingleton.threeGPFree (hs : s.Subsingleton) : ThreeGPFree s :=
@@ -99,7 +99,7 @@ theorem ThreeGPFree.prod {t : Set β} (hs : ThreeGPFree s) (ht : ThreeGPFree t) 
 theorem threeGPFree_pi {ι : Type*} {α : ι → Type*} [∀ i, Monoid (α i)] {s : ∀ i, Set (α i)}
     (hs : ∀ i, ThreeGPFree (s i)) : ThreeGPFree ((univ : Set ι).pi s) :=
   fun _ ha _ hb _ hc h ↦
-  funext fun i => hs i (ha i trivial) (hb i trivial) (hc i trivial) <| congr_fun h i
+  funext fun i ↦ hs i (ha i trivial) (hb i trivial) (hc i trivial) <| congr_fun h i
 
 end Monoid
 
@@ -205,7 +205,7 @@ theorem threeGPFree_insert_of_lt (hs : ∀ i ∈ s, i < a) :
       ThreeGPFree s ∧ ∀ ⦃b⦄, b ∈ s → ∀ ⦃c⦄, c ∈ s → a * c = b * b → a = b := by
   refine threeGPFree_insert.trans ?_
   rw [← and_assoc]
-  exact and_iff_left fun b hb c hc h => ((mul_lt_mul_of_lt_of_lt (hs _ hb) (hs _ hc)).ne h).elim
+  exact and_iff_left fun b hb c hc h ↦ ((mul_lt_mul_of_lt_of_lt (hs _ hb) (hs _ hc)).ne h).elim
 
 end OrderedCancelCommMonoid
 
@@ -222,7 +222,7 @@ theorem threeGPFree_smul_set₀ (ha : a ≠ 0) : ThreeGPFree (a • s) ↔ Three
     mul_left_cancel₀ ha
       (hs (Set.mem_image_of_mem _ hb) (Set.mem_image_of_mem _ hc) (Set.mem_image_of_mem _ hd) <| by
         rw [smul_eq_mul, smul_eq_mul, mul_mul_mul_comm, h, mul_mul_mul_comm]),
-    fun hs => hs.smul_set₀ ha⟩
+    fun hs ↦ hs.smul_set₀ ha⟩
 
 end CancelCommMonoidWithZero
 
@@ -230,7 +230,7 @@ section Nat
 
 theorem threeAPFree_iff_eq_right {s : Set ℕ} :
     ThreeAPFree s ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → ∀ ⦃c⦄, c ∈ s → a + c = b + b → a = c := by
-  refine forall₄_congr fun a _ha b hb => forall₃_congr fun c hc habc => ⟨?_, ?_⟩
+  refine forall₄_congr fun a _ha b hb ↦ forall₃_congr fun c hc habc ↦ ⟨?_, ?_⟩
   · rintro rfl
     exact (add_left_cancel habc).symm
   · rintro rfl
@@ -258,7 +258,7 @@ The usual Roth number corresponds to `addRothNumber (Finset.range n)`, see `roth
 def mulRothNumber : Finset α →o ℕ :=
   ⟨fun s ↦ Nat.findGreatest (fun m ↦ ∃ t ⊆ s, #t = m ∧ ThreeGPFree (t : Set α)) #s, by
     rintro t u htu
-    refine Nat.findGreatest_mono (fun m => ?_) (card_le_card htu)
+    refine Nat.findGreatest_mono (fun m ↦ ?_) (card_le_card htu)
     rintro ⟨v, hvt, hv⟩
     exact ⟨v, hvt.trans htu, hv⟩⟩
 
@@ -400,7 +400,7 @@ Trivially, `rothNumberNat N ≤ N`, but Roth's theorem (proved in 1953) shows th
 A significant refinement of Roth's theorem by Bloom and Sisask announced in 2020 gives
 `rothNumberNat N = O(N / (log N)^(1+c))` for an absolute constant `c`. -/
 def rothNumberNat : ℕ →o ℕ :=
-  ⟨fun n => addRothNumber (range n), addRothNumber.mono.comp range_mono⟩
+  ⟨fun n ↦ addRothNumber (range n), addRothNumber.mono.comp range_mono⟩
 
 theorem rothNumberNat_def (n : ℕ) : rothNumberNat n = addRothNumber (range n) :=
   rfl
@@ -416,7 +416,7 @@ theorem rothNumberNat_spec (n : ℕ) :
 practice. -/
 theorem ThreeAPFree.le_rothNumberNat (s : Finset ℕ) (hs : ThreeAPFree (s : Set ℕ))
     (hsn : ∀ x ∈ s, x < n) (hsk : #s = k) : k ≤ rothNumberNat n :=
-  hsk.ge.trans <| hs.le_addRothNumber fun x hx => mem_range.2 <| hsn x hx
+  hsk.ge.trans <| hs.le_addRothNumber fun x hx ↦ mem_range.2 <| hsn x hx
 
 /-- The Roth number is a subadditive function. Note that by Fekete's lemma this shows that
 the limit `rothNumberNat N / N` exists, but Roth's theorem gives the stronger result that this

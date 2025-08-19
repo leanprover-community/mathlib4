@@ -147,7 +147,7 @@ theorem enumOrd_zero : enumOrd s 0 = sInf s := by
 
 /-- An order isomorphism between an unbounded set of ordinals and the ordinals. -/
 noncomputable def enumOrdOrderIso (s : Set Ordinal) (hs : ¬ BddAbove s) : Ordinal ≃o s :=
-  StrictMono.orderIsoOfSurjective (fun o => ⟨_, enumOrd_mem hs o⟩) (enumOrd_strictMono hs) fun s =>
+  StrictMono.orderIsoOfSurjective (fun o ↦ ⟨_, enumOrd_mem hs o⟩) (enumOrd_strictMono hs) fun s ↦
     let ⟨a, ha⟩ := enumOrd_surjective hs s.prop
     ⟨a, Subtype.eq ha⟩
 

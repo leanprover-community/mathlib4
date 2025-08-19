@@ -223,14 +223,14 @@ instance (c : BinaryBicone P Q) : IsSplitEpi c.snd :=
 def toBiconeFunctor {X Y : C} : BinaryBicone X Y ⥤ Bicone (pairFunction X Y) where
   obj b :=
     { pt := b.pt
-      π := fun j => WalkingPair.casesOn j b.fst b.snd
-      ι := fun j => WalkingPair.casesOn j b.inl b.inr
-      ι_π := fun j j' => by
+      π := fun j ↦ WalkingPair.casesOn j b.fst b.snd
+      ι := fun j ↦ WalkingPair.casesOn j b.inl b.inr
+      ι_π := fun j j' ↦ by
         rcases j with ⟨⟩ <;> rcases j' with ⟨⟩ <;> simp }
   map f := {
     hom := f.hom
-    wπ := fun i => WalkingPair.casesOn i f.wfst f.wsnd
-    wι := fun i => WalkingPair.casesOn i f.winl f.winr }
+    wπ := fun i ↦ WalkingPair.casesOn i f.wfst f.wsnd
+    wι := fun i ↦ WalkingPair.casesOn i f.winl f.winr }
 
 /-- A shorthand for `toBiconeFunctor.obj` -/
 abbrev toBicone {X Y : C} (b : BinaryBicone X Y) : Bicone (pairFunction X Y) :=
@@ -239,13 +239,13 @@ abbrev toBicone {X Y : C} (b : BinaryBicone X Y) : Bicone (pairFunction X Y) :=
 /-- A binary bicone is a limit cone if and only if the corresponding bicone is a limit cone. -/
 def toBiconeIsLimit {X Y : C} (b : BinaryBicone X Y) :
     IsLimit b.toBicone.toCone ≃ IsLimit b.toCone :=
-  IsLimit.equivIsoLimit <| Cones.ext (Iso.refl _) fun ⟨as⟩ => by cases as <;> simp
+  IsLimit.equivIsoLimit <| Cones.ext (Iso.refl _) fun ⟨as⟩ ↦ by cases as <;> simp
 
 /-- A binary bicone is a colimit cocone if and only if the corresponding bicone is a colimit
 cocone. -/
 def toBiconeIsColimit {X Y : C} (b : BinaryBicone X Y) :
     IsColimit b.toBicone.toCocone ≃ IsColimit b.toCocone :=
-  IsColimit.equivIsoColimit <| Cocones.ext (Iso.refl _) fun ⟨as⟩ => by cases as <;> simp
+  IsColimit.equivIsoColimit <| Cocones.ext (Iso.refl _) fun ⟨as⟩ ↦ by cases as <;> simp
 
 end BinaryBicone
 
@@ -275,13 +275,13 @@ abbrev toBinaryBicone {X Y : C} (b : Bicone (pairFunction X Y)) : BinaryBicone X
 cone. -/
 def toBinaryBiconeIsLimit {X Y : C} (b : Bicone (pairFunction X Y)) :
     IsLimit b.toBinaryBicone.toCone ≃ IsLimit b.toCone :=
-  IsLimit.equivIsoLimit <| Cones.ext (Iso.refl _) fun j => by rcases j with ⟨⟨⟩⟩ <;> simp
+  IsLimit.equivIsoLimit <| Cones.ext (Iso.refl _) fun j ↦ by rcases j with ⟨⟨⟩⟩ <;> simp
 
 /-- A bicone over a pair is a colimit cocone if and only if the corresponding binary bicone is a
 colimit cocone. -/
 def toBinaryBiconeIsColimit {X Y : C} (b : Bicone (pairFunction X Y)) :
     IsColimit b.toBinaryBicone.toCocone ≃ IsColimit b.toCocone :=
-  IsColimit.equivIsoColimit <| Cocones.ext (Iso.refl _) fun j => by rcases j with ⟨⟨⟩⟩ <;> simp
+  IsColimit.equivIsoColimit <| Cocones.ext (Iso.refl _) fun j ↦ by rcases j with ⟨⟨⟩⟩ <;> simp
 
 end Bicone
 
@@ -298,8 +298,8 @@ def BinaryBicone.toBiconeIsBilimit {X Y : C} (b : BinaryBicone X Y) :
     b.toBicone.IsBilimit ≃ b.IsBilimit where
   toFun h := ⟨b.toBiconeIsLimit h.isLimit, b.toBiconeIsColimit h.isColimit⟩
   invFun h := ⟨b.toBiconeIsLimit.symm h.isLimit, b.toBiconeIsColimit.symm h.isColimit⟩
-  left_inv := fun ⟨h, h'⟩ => by dsimp only; simp
-  right_inv := fun ⟨h, h'⟩ => by dsimp only; simp
+  left_inv := fun ⟨h, h'⟩ ↦ by dsimp only; simp
+  right_inv := fun ⟨h, h'⟩ ↦ by dsimp only; simp
 
 /-- A bicone over a pair is a bilimit bicone if and only if the corresponding binary bicone is a
 bilimit. -/
@@ -307,8 +307,8 @@ def Bicone.toBinaryBiconeIsBilimit {X Y : C} (b : Bicone (pairFunction X Y)) :
     b.toBinaryBicone.IsBilimit ≃ b.IsBilimit where
   toFun h := ⟨b.toBinaryBiconeIsLimit h.isLimit, b.toBinaryBiconeIsColimit h.isColimit⟩
   invFun h := ⟨b.toBinaryBiconeIsLimit.symm h.isLimit, b.toBinaryBiconeIsColimit.symm h.isColimit⟩
-  left_inv := fun ⟨h, h'⟩ => by dsimp only; simp
-  right_inv := fun ⟨h, h'⟩ => by dsimp only; simp
+  left_inv := fun ⟨h, h'⟩ ↦ by dsimp only; simp
+  right_inv := fun ⟨h, h'⟩ ↦ by dsimp only; simp
 
 /-- A bicone over `P Q : C`, which is both a limit cone and a colimit cocone. -/
 structure BinaryBiproductData (P Q : C) where
@@ -369,7 +369,7 @@ attribute [instance 100] HasBinaryBiproducts.has_binary_biproduct
 This is not an instance as typically in concrete categories there will be
 an alternative construction with nicer definitional properties. -/
 theorem hasBinaryBiproducts_of_finite_biproducts [HasFiniteBiproducts C] : HasBinaryBiproducts C :=
-  { has_binary_biproduct := fun P Q =>
+  { has_binary_biproduct := fun P Q ↦
       HasBinaryBiproduct.mk
         { bicone := (biproduct.bicone (pairFunction P Q)).toBinaryBicone
           isBilimit := (Bicone.toBinaryBiconeIsBilimit _).symm (biproduct.isBilimit _) } }
@@ -630,7 +630,7 @@ theorem biprod.conePointUniqueUpToIso_inv (X Y : C) [HasBinaryBiproduct X Y] {b 
     (hb : b.IsBilimit) :
     (hb.isLimit.conePointUniqueUpToIso (BinaryBiproduct.isLimit _ _)).inv =
       biprod.desc b.inl b.inr := by
-  refine biprod.hom_ext' _ _ (hb.isLimit.hom_ext fun j => ?_) (hb.isLimit.hom_ext fun j => ?_)
+  refine biprod.hom_ext' _ _ (hb.isLimit.hom_ext fun j ↦ ?_) (hb.isLimit.hom_ext fun j ↦ ?_)
   all_goals
     simp only [Category.assoc, IsLimit.conePointUniqueUpToIso_inv_comp]
     rcases j with ⟨⟨⟩⟩
@@ -732,25 +732,25 @@ variable {c}
 
 /-- The fork defined in `BinaryBicone.fstKernelFork` is indeed a kernel. -/
 def BinaryBicone.isLimitFstKernelFork (i : IsLimit c.toCone) : IsLimit c.fstKernelFork :=
-  Fork.IsLimit.mk' _ fun s =>
-    ⟨s.ι ≫ c.snd, by apply BinaryFan.IsLimit.hom_ext i <;> simp, fun hm => by simp [← hm]⟩
+  Fork.IsLimit.mk' _ fun s ↦
+    ⟨s.ι ≫ c.snd, by apply BinaryFan.IsLimit.hom_ext i <;> simp, fun hm ↦ by simp [← hm]⟩
 
 /-- The fork defined in `BinaryBicone.sndKernelFork` is indeed a kernel. -/
 def BinaryBicone.isLimitSndKernelFork (i : IsLimit c.toCone) : IsLimit c.sndKernelFork :=
-  Fork.IsLimit.mk' _ fun s =>
-    ⟨s.ι ≫ c.fst, by apply BinaryFan.IsLimit.hom_ext i <;> simp, fun hm => by simp [← hm]⟩
+  Fork.IsLimit.mk' _ fun s ↦
+    ⟨s.ι ≫ c.fst, by apply BinaryFan.IsLimit.hom_ext i <;> simp, fun hm ↦ by simp [← hm]⟩
 
 /-- The cofork defined in `BinaryBicone.inlCokernelCofork` is indeed a cokernel. -/
 def BinaryBicone.isColimitInlCokernelCofork (i : IsColimit c.toCocone) :
     IsColimit c.inlCokernelCofork :=
-  Cofork.IsColimit.mk' _ fun s =>
-    ⟨c.inr ≫ s.π, by apply BinaryCofan.IsColimit.hom_ext i <;> simp, fun hm => by simp [← hm]⟩
+  Cofork.IsColimit.mk' _ fun s ↦
+    ⟨c.inr ≫ s.π, by apply BinaryCofan.IsColimit.hom_ext i <;> simp, fun hm ↦ by simp [← hm]⟩
 
 /-- The cofork defined in `BinaryBicone.inrCokernelCofork` is indeed a cokernel. -/
 def BinaryBicone.isColimitInrCokernelCofork (i : IsColimit c.toCocone) :
     IsColimit c.inrCokernelCofork :=
-  Cofork.IsColimit.mk' _ fun s =>
-    ⟨c.inl ≫ s.π, by apply BinaryCofan.IsColimit.hom_ext i <;> simp, fun hm => by simp [← hm]⟩
+  Cofork.IsColimit.mk' _ fun s ↦
+    ⟨c.inl ≫ s.π, by apply BinaryCofan.IsColimit.hom_ext i <;> simp, fun hm ↦ by simp [← hm]⟩
 
 end BinaryBicone
 
@@ -976,11 +976,11 @@ theorem isIso_left_of_isIso_biprod_map {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z)
     [IsIso (biprod.map f g)] : IsIso f :=
   ⟨⟨biprod.inl ≫ inv (biprod.map f g) ≫ biprod.fst,
       ⟨by
-        have t := congrArg (fun p : W ⊞ X ⟶ W ⊞ X => biprod.inl ≫ p ≫ biprod.fst)
+        have t := congrArg (fun p : W ⊞ X ⟶ W ⊞ X ↦ biprod.inl ≫ p ≫ biprod.fst)
           (IsIso.hom_inv_id (biprod.map f g))
         simp only [Category.id_comp, Category.assoc, biprod.inl_map_assoc] at t
         simp [t], by
-        have t := congrArg (fun p : Y ⊞ Z ⟶ Y ⊞ Z => biprod.inl ≫ p ≫ biprod.fst)
+        have t := congrArg (fun p : Y ⊞ Z ⟶ Y ⊞ Z ↦ biprod.inl ≫ p ≫ biprod.fst)
           (IsIso.inv_hom_id (biprod.map f g))
         simp only [Category.id_comp, Category.assoc, biprod.map_fst] at t
         simp only [Category.assoc]

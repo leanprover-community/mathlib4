@@ -24,10 +24,10 @@ theorem MonoidAlgebra.mem_ideal_span_of_image [Monoid G] [Semiring k] {s : Set G
     x ∈ Ideal.span (MonoidAlgebra.of k G '' s) ↔ ∀ m ∈ x.support, ∃ m' ∈ s, ∃ d, m = d * m' := by
   let RHS : Ideal (MonoidAlgebra k G) :=
     { carrier := { p | ∀ m : G, m ∈ p.support → ∃ m' ∈ s, ∃ d, m = d * m' }
-      add_mem' := fun {x y} hx hy m hm => by
+      add_mem' := fun {x y} hx hy m hm ↦ by
         classical exact (Finset.mem_union.1 <| Finsupp.support_add hm).elim (hx m) (hy m)
-      zero_mem' := fun m hm => by cases hm
-      smul_mem' := fun x y hy m hm => by
+      zero_mem' := fun m hm ↦ by cases hm
+      smul_mem' := fun x y hy m hm ↦ by
         classical
         rw [smul_eq_mul, mul_def] at hm
         replace hm := Finset.mem_biUnion.mp (Finsupp.support_sum hm)
@@ -35,7 +35,7 @@ theorem MonoidAlgebra.mem_ideal_span_of_image [Monoid G] [Semiring k] {s : Set G
         replace hm := Finset.mem_biUnion.mp (Finsupp.support_sum hm)
         obtain ⟨ym, hym, hm⟩ := hm
         obtain rfl := Finset.mem_singleton.mp (Finsupp.support_single_subset hm)
-        refine (hy _ hym).imp fun sm p => And.imp_right ?_ p
+        refine (hy _ hym).imp fun sm p ↦ And.imp_right ?_ p
         rintro ⟨d, rfl⟩
         exact ⟨xm * d, (mul_assoc _ _ _).symm⟩ }
   change _ ↔ x ∈ RHS

@@ -66,11 +66,11 @@ variable {n : Type u} [DecidableEq n] [Fintype n]
 variable {α : Type v} [CommRing α] [StarRing α] {A : Matrix n n α}
 
 theorem mem_unitaryGroup_iff : A ∈ Matrix.unitaryGroup n α ↔ A * star A = 1 := by
-  refine ⟨And.right, fun hA => ⟨?_, hA⟩⟩
+  refine ⟨And.right, fun hA ↦ ⟨?_, hA⟩⟩
   simpa only [mul_eq_one_comm] using hA
 
 theorem mem_unitaryGroup_iff' : A ∈ Matrix.unitaryGroup n α ↔ star A * A = 1 := by
-  refine ⟨And.left, fun hA => ⟨hA, ?_⟩⟩
+  refine ⟨And.left, fun hA ↦ ⟨hA, ?_⟩⟩
   rwa [mul_eq_one_comm] at hA
 
 theorem det_of_mem_unitary {A : Matrix n n α} (hA : A ∈ Matrix.unitaryGroup n α) :
@@ -84,7 +84,7 @@ namespace UnitaryGroup
 instance coeMatrix : Coe (unitaryGroup n α) (Matrix n n α) :=
   ⟨Subtype.val⟩
 
-instance coeFun : CoeFun (unitaryGroup n α) fun _ => n → n → α where coe A := A.val
+instance coeFun : CoeFun (unitaryGroup n α) fun _ ↦ n → n → α where coe A := A.val
 
 /-- `Matrix.UnitaryGroup.toLin' A` is matrix multiplication of vectors by `A`, as a linear map.
 
@@ -95,7 +95,7 @@ def toLin' (A : unitaryGroup n α) :=
   Matrix.toLin' A.1
 
 theorem ext_iff (A B : unitaryGroup n α) : A = B ↔ ∀ i j, A i j = B i j :=
-  Subtype.ext_iff_val.trans ⟨fun h i j => congr_fun (congr_fun h i) j, Matrix.ext⟩
+  Subtype.ext_iff_val.trans ⟨fun h i j ↦ congr_fun (congr_fun h i) j, Matrix.ext⟩
 
 @[ext]
 theorem ext (A B : unitaryGroup n α) : (∀ i j, A i j = B i j) → A = B :=
@@ -144,11 +144,11 @@ equivalence. -/
 def toLinearEquiv (A : unitaryGroup n α) : (n → α) ≃ₗ[α] n → α :=
   { Matrix.toLin' A.1 with
     invFun := toLin' A⁻¹
-    left_inv := fun x =>
+    left_inv := fun x ↦
       calc
         (toLin' A⁻¹).comp (toLin' A) x = (toLin' (A⁻¹ * A)) x := by rw [← toLin'_mul]
         _ = x := by rw [inv_mul_cancel, toLin'_one, id_apply]
-    right_inv := fun x =>
+    right_inv := fun x ↦
       calc
         (toLin' A).comp (toLin' A⁻¹) x = toLin' (A * A⁻¹) x := by rw [← toLin'_mul]
         _ = x := by rw [mul_inv_cancel, toLin'_one, id_apply] }
@@ -172,7 +172,7 @@ theorem toGL_mul (A B : unitaryGroup n α) : toGL (A * B) = toGL A * toGL B := U
 /-- `Matrix.unitaryGroup.embeddingGL` is the embedding from `Matrix.unitaryGroup n α` to
 `LinearMap.GeneralLinearGroup n α`. -/
 def embeddingGL : unitaryGroup n α →* GeneralLinearGroup α (n → α) :=
-  ⟨⟨fun A => toGL A, toGL_one⟩, toGL_mul⟩
+  ⟨⟨fun A ↦ toGL A, toGL_one⟩, toGL_mul⟩
 
 end UnitaryGroup
 

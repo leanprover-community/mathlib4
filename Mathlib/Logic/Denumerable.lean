@@ -41,7 +41,7 @@ variable [Denumerable α] [Denumerable β]
 open Encodable
 
 theorem decode_isSome (α) [Denumerable α] (n : ℕ) : (decode (α := α) n).isSome :=
-  Option.isSome_iff_exists.2 <| (decode_inv n).imp fun _ => And.left
+  Option.isSome_iff_exists.2 <| (decode_inv n).imp fun _ ↦ And.left
 
 /-- Returns the `n`-th element of `α` indexed by the decoding. -/
 def ofNat (α) [Denumerable α] (n : ℕ) : α :=
@@ -82,7 +82,7 @@ def mk' {α} (e : α ≃ ℕ) : Denumerable α where
 way. -/
 def ofEquiv (α) {β} [Denumerable α] (e : β ≃ α) : Denumerable β :=
   { Encodable.ofEquiv _ e with
-    decode_inv := fun n => by
+    decode_inv := fun n ↦ by
       simp [decode_ofEquiv, encode_ofEquiv] }
 
 @[simp]
@@ -98,7 +98,7 @@ def equiv₂ (α β) [Denumerable α] [Denumerable β] : α ≃ β :=
   (eqv α).trans (eqv β).symm
 
 instance nat : Denumerable ℕ :=
-  ⟨fun _ => ⟨_, rfl, rfl⟩⟩
+  ⟨fun _ ↦ ⟨_, rfl, rfl⟩⟩
 
 @[simp]
 theorem ofNat_nat (n) : ofNat ℕ n = n :=
@@ -106,7 +106,7 @@ theorem ofNat_nat (n) : ofNat ℕ n = n :=
 
 /-- If `α` is denumerable, then so is `Option α`. -/
 instance option : Denumerable (Option α) :=
-  ⟨fun n => by
+  ⟨fun n ↦ by
     cases n with
     | zero =>
       refine ⟨none, ?_, encode_none⟩
@@ -118,7 +118,7 @@ instance option : Denumerable (Option α) :=
 
 /-- If `α` and `β` are denumerable, then so is their sum. -/
 instance sum : Denumerable (α ⊕ β) :=
-  ⟨fun n => by
+  ⟨fun n ↦ by
     suffices ∃ a ∈ @decodeSum α β _ _ n, encodeSum a = bit (bodd n) (div2 n) by simpa [bit_decomp]
     simp only [decodeSum, boddDiv2_eq, decode_eq_ofNat, Option.map_some,
       Option.mem_def, Sum.exists]
@@ -130,7 +130,7 @@ variable {γ : α → Type*} [∀ a, Denumerable (γ a)]
 
 /-- A denumerable collection of denumerable types is denumerable. -/
 instance sigma : Denumerable (Sigma γ) :=
-  ⟨fun n => by simp⟩
+  ⟨fun n ↦ by simp⟩
 
 @[simp]
 theorem sigma_ofNat_val (n : ℕ) :
@@ -184,11 +184,11 @@ section Classical
 theorem exists_succ (x : s) : ∃ n, (x : ℕ) + n + 1 ∈ s := by
   by_contra h
   have (a : ℕ) (ha : a ∈ s) : a < x + 1 :=
-    lt_of_not_ge fun hax => h ⟨a - (x + 1), by rwa [Nat.add_right_comm, Nat.add_sub_cancel' hax]⟩
+    lt_of_not_ge fun hax ↦ h ⟨a - (x + 1), by rwa [Nat.add_right_comm, Nat.add_sub_cancel' hax]⟩
   classical
   exact Fintype.false
     ⟨(((Multiset.range (succ x)).filter (· ∈ s)).pmap
-      (fun (y : ℕ) (hy : y ∈ s) => Subtype.mk y hy) (by simp [-Multiset.range_succ])).toFinset,
+      (fun (y : ℕ) (hy : y ∈ s) ↦ Subtype.mk y hy) (by simp [-Multiset.range_succ])).toFinset,
       by simpa [Subtype.ext_iff_val, Multiset.mem_filter, -Multiset.range_succ] ⟩
 
 end Classical
@@ -209,7 +209,7 @@ theorem succ_le_of_lt {x y : s} (h : y < x) : succ y ≤ x :=
 theorem le_succ_of_forall_lt_le {x y : s} (h : ∀ z < x, z ≤ y) : x ≤ succ y :=
   have hx : ∃ m, (y : ℕ) + m + 1 ∈ s := exists_succ _
   show (x : ℕ) ≤ (y : ℕ) + Nat.find hx + 1 from
-    le_of_not_gt fun hxy =>
+    le_of_not_gt fun hxy ↦
       (h ⟨_, Nat.find_spec hx⟩ hxy).not_gt <|
         (by omega : (y : ℕ) < (y : ℕ) + Nat.find hx + 1)
 
@@ -219,7 +219,7 @@ theorem lt_succ_self (x : s) : x < succ x :=
     _ < (succ x) := Nat.lt_succ_self (x + _)
 
 theorem lt_succ_iff_le {x y : s} : x < succ y ↔ x ≤ y :=
-  ⟨fun h => le_of_not_gt fun h' => not_le_of_gt h (succ_le_of_lt h'), fun h =>
+  ⟨fun h ↦ le_of_not_gt fun h' ↦ not_le_of_gt h (succ_le_of_lt h'), fun h ↦
     lt_of_le_of_lt h (lt_succ_self _)⟩
 
 /-- Returns the `n`-th element of a set, according to the usual ordering of `ℕ`. -/
@@ -230,20 +230,20 @@ def ofNat (s : Set ℕ) [DecidablePred (· ∈ s)] [Infinite s] : ℕ → s
 theorem ofNat_surjective : Surjective (ofNat s)
   | ⟨x, hx⟩ => by
     set t : List s :=
-      ((List.range x).filter fun y => y ∈ s).pmap
-        (fun (y : ℕ) (hy : y ∈ s) => ⟨y, hy⟩)
+      ((List.range x).filter fun y ↦ y ∈ s).pmap
+        (fun (y : ℕ) (hy : y ∈ s) ↦ ⟨y, hy⟩)
         (by intros a ha; simpa using (List.mem_filter.mp ha).2) with ht
     have hmt : ∀ {y : s}, y ∈ t ↔ y < ⟨x, hx⟩ := by
       simp [List.mem_filter, Subtype.ext_iff_val, ht]
     cases hmax : List.maximum t with
     | bot =>
-      refine ⟨0, le_antisymm bot_le (le_of_not_gt fun h => List.not_mem_nil (a := (⊥ : s)) ?_)⟩
+      refine ⟨0, le_antisymm bot_le (le_of_not_gt fun h ↦ List.not_mem_nil (a := (⊥ : s)) ?_)⟩
       rwa [← List.maximum_eq_bot.1 hmax, hmt]
     | coe m =>
       have wf : ↑m < x := by simpa using hmt.mp (List.maximum_mem hmax)
       rcases ofNat_surjective m with ⟨a, rfl⟩
       refine ⟨a + 1, le_antisymm (succ_le_of_lt wf) ?_⟩
-      exact le_succ_of_forall_lt_le fun z hz => List.le_maximum_of_mem (hmt.2 hz) hmax
+      exact le_succ_of_forall_lt_le fun z hz ↦ List.le_maximum_of_mem (hmt.2 hz) hmax
   termination_by n => n.val
 
 @[simp]
@@ -274,12 +274,12 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
     have h₂ : {x ∈ range (succ (ofNat s n)) | x ∈ s} =
         insert ↑(ofNat s n) {x ∈ range (ofNat s n) | x ∈ s} := by
       simp only [Finset.ext_iff, mem_insert, mem_range, mem_filter]
-      exact fun m =>
-        ⟨fun h => by
+      exact fun m ↦
+        ⟨fun h ↦ by
           simp only [h.2, and_true]
           exact Or.symm (lt_or_eq_of_le ((@lt_succ_iff_le _ _ _ ⟨m, h.2⟩ _).1 h.1)),
-         fun h =>
-          h.elim (fun h => h.symm ▸ ⟨lt_succ_self _, (ofNat s n).prop⟩) fun h =>
+         fun h ↦
+          h.elim (fun h ↦ h.symm ▸ ⟨lt_succ_self _, (ofNat s n).prop⟩) fun h ↦
             ⟨h.1.trans (lt_succ_self _), h.2⟩⟩
     simp only [toFunAux_eq, ofNat] at ih ⊢
     conv =>
@@ -312,7 +312,7 @@ end Denumerable
 
 /-- See also `nonempty_encodable`, `nonempty_fintype`. -/
 theorem nonempty_denumerable (α : Type*) [Countable α] [Infinite α] : Nonempty (Denumerable α) :=
-  (nonempty_encodable α).map fun h => @Denumerable.ofEncodableOfInfinite _ h _
+  (nonempty_encodable α).map fun h ↦ @Denumerable.ofEncodableOfInfinite _ h _
 
 theorem nonempty_denumerable_iff {α : Type*} :
     Nonempty (Denumerable α) ↔ Countable α ∧ Infinite α :=

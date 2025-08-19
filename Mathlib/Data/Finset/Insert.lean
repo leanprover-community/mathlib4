@@ -59,7 +59,7 @@ variable {s : Finset α} {a b : α}
 This differs from `insert a ∅` in that it does not require a `DecidableEq` instance for `α`.
 -/
 instance : Singleton α (Finset α) :=
-  ⟨fun a => ⟨{a}, nodup_singleton a⟩⟩
+  ⟨fun a ↦ ⟨{a}, nodup_singleton a⟩⟩
 
 @[simp]
 theorem singleton_val (a : α) : ({a} : Finset α).1 = {a} :=
@@ -85,7 +85,7 @@ theorem val_eq_singleton_iff {a : α} {s : Finset α} : s.val = {a} ↔ s = {a} 
   rw [← val_inj]
   rfl
 
-theorem singleton_injective : Injective (singleton : α → Finset α) := fun _a _b h =>
+theorem singleton_injective : Injective (singleton : α → Finset α) := fun _a _b h ↦
   mem_singleton.1 (h ▸ mem_singleton_self _)
 
 @[simp]
@@ -156,7 +156,7 @@ protected theorem Nonempty.subset_singleton_iff {s : Finset α} {a : α} (h : s.
   subset_singleton_iff.trans <| or_iff_right h.ne_empty
 
 theorem subset_singleton_iff' {s : Finset α} {a : α} : s ⊆ {a} ↔ ∀ b ∈ s, b = a :=
-  forall₂_congr fun _ _ => mem_singleton
+  forall₂_congr fun _ _ ↦ mem_singleton
 
 @[simp]
 theorem ssubset_singleton_iff {s : Finset α} {a : α} : s ⊂ {a} ↔ s = ∅ := by grind
@@ -187,7 +187,7 @@ theorem nontrivial_iff_ne_singleton (ha : a ∈ s) : s.Nontrivial ↔ s ≠ {a} 
   ⟨Nontrivial.ne_singleton, (eq_singleton_or_nontrivial ha).resolve_left⟩
 
 theorem Nonempty.exists_eq_singleton_or_nontrivial : s.Nonempty → (∃ a, s = {a}) ∨ s.Nontrivial :=
-  fun ⟨a, ha⟩ => (eq_singleton_or_nontrivial ha).imp_left <| Exists.intro a
+  fun ⟨a, ha⟩ ↦ (eq_singleton_or_nontrivial ha).imp_left <| Exists.intro a
 
 @[simp, norm_cast] lemma nontrivial_coe : (s : Set α).Nontrivial ↔ s.Nontrivial := .rfl
 
@@ -197,7 +197,7 @@ lemma Nontrivial.not_subset_singleton (hs : s.Nontrivial) : ¬s ⊆ {a} :=
   mod_cast hs.coe.not_subset_singleton
 
 instance instNontrivial [Nonempty α] : Nontrivial (Finset α) :=
-  ‹Nonempty α›.elim fun a => ⟨⟨{a}, ∅, singleton_ne_empty _⟩⟩
+  ‹Nonempty α›.elim fun a ↦ ⟨⟨{a}, ∅, singleton_ne_empty _⟩⟩
 
 instance [IsEmpty α] : Unique (Finset α) where
   default := ∅
@@ -210,14 +210,14 @@ instance (i : α) : Unique ({i} : Finset α) where
 @[simp]
 lemma default_singleton (i : α) : ((default : ({i} : Finset α)) : α) = i := rfl
 
-instance Nontrivial.instDecidablePred : DecidablePred (Finset.Nontrivial (α := α)) := fun s =>
+instance Nontrivial.instDecidablePred : DecidablePred (Finset.Nontrivial (α := α)) := fun s ↦
   /-
   We don't use `Finset.one_lt_card_iff_nontrivial`
   because `Finset.card` is defined in a different file.
   -/
-  Quotient.recOnSubsingleton (motive := fun (s : Multiset α) =>
+  Quotient.recOnSubsingleton (motive := fun (s : Multiset α) ↦
       (h : s.Nodup) → Decidable (Finset.Nontrivial ⟨s, h⟩))
-    s.val (fun l h => match l with
+    s.val (fun l h ↦ match l with
       | [] => isFalse (by simp)
       | [_] => isFalse (by simp [Finset.toSet])
       | a :: b :: _ => isTrue ⟨a, by simp, b, by simp,
@@ -317,12 +317,12 @@ theorem cons_swap (hb : b ∉ s) (ha : a ∉ s.cons b hb) :
 /-- Split the added element of cons off a Pi type. -/
 @[simps!]
 def consPiProd (f : α → Type*) (has : a ∉ s) (x : Π i ∈ cons a s has, f i) : f a × Π i ∈ s, f i :=
-  (x a (mem_cons_self a s), fun i hi => x i (mem_cons_of_mem hi))
+  (x a (mem_cons_self a s), fun i hi ↦ x i (mem_cons_of_mem hi))
 
 /-- Combine a product with a pi type to pi of cons. -/
 def prodPiCons [DecidableEq α] (f : α → Type*) {a : α} (has : a ∉ s) (x : f a × Π i ∈ s, f i) :
     (Π i ∈ cons a s has, f i) :=
-  fun i hi =>
+  fun i hi ↦
     if h : i = a then cast (congrArg f h.symm) x.1 else x.2 i (mem_of_mem_cons_of_ne hi h)
 
 /-- The equivalence between pi types on cons and the product. -/
@@ -345,7 +345,7 @@ variable [DecidableEq α] {s t : Finset α} {a b : α} {f : α → β}
 
 /-- `insert a s` is the set `{a} ∪ s` containing `a` and the elements of `s`. -/
 instance : Insert α (Finset α) :=
-  ⟨fun a s => ⟨_, s.2.ndinsert a⟩⟩
+  ⟨fun a s ↦ ⟨_, s.2.ndinsert a⟩⟩
 
 theorem insert_def (a : α) (s : Finset α) : insert a s = ⟨_, s.2.ndinsert a⟩ :=
   rfl
@@ -386,7 +386,7 @@ alias eq_of_mem_insert_of_not_mem := eq_of_mem_insert_of_notMem
 
 @[simp]
 theorem cons_eq_insert (a s h) : @cons α a s h = insert a s :=
-  ext fun a => by simp
+  ext fun a ↦ by simp
 
 @[simp, norm_cast]
 theorem coe_insert (a : α) (s : Finset α) : ↑(insert a s) = (insert a s : Set α) := by grind
@@ -395,7 +395,7 @@ theorem mem_insert_coe {s : Finset α} {x y : α} : x ∈ insert y s ↔ x ∈ i
   simp
 
 instance : LawfulSingleton α (Finset α) :=
-  ⟨fun a => by ext; simp⟩
+  ⟨fun a ↦ by ext; simp⟩
 
 @[simp]
 theorem insert_eq_of_mem (h : a ∈ s) : insert a s = s :=
@@ -403,7 +403,7 @@ theorem insert_eq_of_mem (h : a ∈ s) : insert a s = s :=
 
 @[simp]
 theorem insert_eq_self : insert a s = s ↔ a ∈ s :=
-  ⟨fun h => h ▸ mem_insert_self _ _, insert_eq_of_mem⟩
+  ⟨fun h ↦ h ▸ mem_insert_self _ _, insert_eq_of_mem⟩
 
 theorem insert_ne_self : insert a s ≠ s ↔ a ∉ s :=
   insert_eq_self.not
@@ -448,7 +448,7 @@ theorem insert_subset_iff : insert a s ⊆ t ↔ a ∈ t ∧ s ⊆ t := by grind
 theorem insert_subset (ha : a ∈ t) (hs : s ⊆ t) : insert a s ⊆ t :=
   insert_subset_iff.mpr ⟨ha,hs⟩
 
-@[simp] theorem subset_insert (a : α) (s : Finset α) : s ⊆ insert a s := fun _b => mem_insert_of_mem
+@[simp] theorem subset_insert (a : α) (s : Finset α) : s ⊆ insert a s := fun _b ↦ mem_insert_of_mem
 
 @[gcongr, simp]
 theorem insert_subset_insert (a : α) {s t : Finset α} (h : s ⊆ t) : insert a s ⊆ insert a t := by
@@ -458,9 +458,9 @@ theorem insert_subset_insert (a : α) {s t : Finset α} (h : s ⊆ t) : insert a
   simp_rw [← coe_subset]; simp [-coe_subset, ha]
 
 theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
-  ⟨fun h => eq_of_mem_insert_of_notMem (h ▸ mem_insert_self _ _) ha, congr_arg (insert · s)⟩
+  ⟨fun h ↦ eq_of_mem_insert_of_notMem (h ▸ mem_insert_self _ _) ha, congr_arg (insert · s)⟩
 
-theorem insert_inj_on (s : Finset α) : Set.InjOn (fun a => insert a s) sᶜ := fun _ h _ _ =>
+theorem insert_inj_on (s : Finset α) : Set.InjOn (fun a ↦ insert a s) sᶜ := fun _ h _ _ ↦
   (insert_inj h).1
 
 theorem ssubset_iff : s ⊂ t ↔ ∃ a ∉ s, insert a s ⊆ t := mod_cast @Set.ssubset_iff_insert α s t
@@ -487,7 +487,7 @@ theorem cons_induction_on {α : Type*} {motive : Finset α → Prop} (s : Finset
 protected theorem induction {α : Type*} {motive : Finset α → Prop} [DecidableEq α]
     (empty : motive ∅)
     (insert : ∀ (a : α) (s : Finset α), a ∉ s → motive s → motive (insert a s)) : ∀ s, motive s :=
-  cons_induction empty fun a s ha => (s.cons_eq_insert a ha).symm ▸ insert a s ha
+  cons_induction empty fun a s ha ↦ (s.cons_eq_insert a ha).symm ▸ insert a s ha
 
 /-- To prove a proposition about an arbitrary `Finset α`,
 it suffices to prove it for the empty `Finset`,
@@ -509,8 +509,8 @@ then it holds for the `Finset` obtained by inserting a new element of `S`.
 theorem induction_on' {α : Type*} {motive : Finset α → Prop} [DecidableEq α] (S : Finset α)
     (empty : motive ∅)
     (insert : ∀ (a s), a ∈ S → s ⊆ S → a ∉ s → motive s → motive (insert a s)) : motive S :=
-  @Finset.induction_on α (fun T => T ⊆ S → motive T) _ S (fun _ => empty)
-    (fun a s has hqs hs =>
+  @Finset.induction_on α (fun T ↦ T ⊆ S → motive T) _ S (fun _ ↦ empty)
+    (fun a s has hqs hs ↦
       let ⟨hS, sS⟩ := Finset.insert_subset_iff.1 hs
       insert a s hS sS has (hqs sS))
     (Finset.Subset.refl S)
@@ -538,18 +538,18 @@ lemma Nonempty.exists_cons_eq {α} {s : Finset α} (hs : s.Nonempty) : ∃ t a h
 def subtypeInsertEquivOption {t : Finset α} {x : α} (h : x ∉ t) :
     { i // i ∈ insert x t } ≃ Option { i // i ∈ t } where
   toFun y := if h : ↑y = x then none else some ⟨y, (mem_insert.mp y.2).resolve_left h⟩
-  invFun y := (y.elim ⟨x, mem_insert_self _ _⟩) fun z => ⟨z, mem_insert_of_mem z.2⟩
+  invFun y := (y.elim ⟨x, mem_insert_self _ _⟩) fun z ↦ ⟨z, mem_insert_of_mem z.2⟩
   left_inv y := by grind
   right_inv := by rintro (_ | y) <;> grind
 
 /-- Split the added element of insert off a Pi type. -/
 @[simps!]
 def insertPiProd (f : α → Type*) (x : Π i ∈ insert a s, f i) : f a × Π i ∈ s, f i :=
-  (x a (mem_insert_self a s), fun i hi => x i (mem_insert_of_mem hi))
+  (x a (mem_insert_self a s), fun i hi ↦ x i (mem_insert_of_mem hi))
 
 /-- Combine a product with a pi type to pi of insert. -/
 def prodPiInsert (f : α → Type*) {a : α} (x : f a × Π i ∈ s, f i) : (Π i ∈ insert a s, f i) :=
-  fun i hi =>
+  fun i hi ↦
     if h : i = a then cast (congrArg f h.symm) x.1 else x.2 i (mem_of_mem_insert_of_ne hi h)
 
 /-- The equivalence between pi types on insert and the product. -/
@@ -635,7 +635,7 @@ theorem toList_singleton : ∀ a, ({a} : Finset α).toList = [a] :=
 
 open scoped List in
 theorem toList_cons {a : α} {s : Finset α} (h : a ∉ s) : (cons a s h).toList ~ a :: s.toList :=
-  (List.perm_ext_iff_of_nodup (nodup_toList _) (by simp [h, nodup_toList s])).2 fun x => by
+  (List.perm_ext_iff_of_nodup (nodup_toList _) (by simp [h, nodup_toList s])).2 fun x ↦ by
     simp only [List.mem_cons, Finset.mem_toList, Finset.mem_cons]
 
 open scoped List in
@@ -650,14 +650,14 @@ section Pairwise
 variable {s : Finset α}
 
 theorem pairwise_cons' {a : α} (ha : a ∉ s) (r : β → β → Prop) (f : α → β) :
-    Pairwise (r on fun a : s.cons a ha => f a) ↔
-    Pairwise (r on fun a : s => f a) ∧ ∀ b ∈ s, r (f a) (f b) ∧ r (f b) (f a) := by
+    Pairwise (r on fun a : s.cons a ha ↦ f a) ↔
+    Pairwise (r on fun a : s ↦ f a) ∧ ∀ b ∈ s, r (f a) (f b) ∧ r (f b) (f a) := by
   simp only [pairwise_subtype_iff_pairwise_finset', Finset.coe_cons, Set.pairwise_insert]
   grind
 
 theorem pairwise_cons {a : α} (ha : a ∉ s) (r : α → α → Prop) :
-    Pairwise (r on fun a : s.cons a ha => a) ↔
-      Pairwise (r on fun a : s => a) ∧ ∀ b ∈ s, r a b ∧ r b a :=
+    Pairwise (r on fun a : s.cons a ha ↦ a) ↔
+      Pairwise (r on fun a : s ↦ a) ∧ ∀ b ∈ s, r a b ∧ r b a :=
   pairwise_cons' ha r id
 
 end Pairwise

@@ -55,7 +55,7 @@ theorem StrongEpi.mk' {f : P ⟶ Q} [Epi f]
       (_ : Mono z) (u : P ⟶ X) (v : Q ⟶ Y) (sq : CommSq u f z v), sq.HasLift) :
     StrongEpi f :=
   { epi := inferInstance
-    llp := fun {X Y} z hz => ⟨fun {u v} sq => hf X Y z hz u v sq⟩ }
+    llp := fun {X Y} z hz ↦ ⟨fun {u v} sq ↦ hf X Y z hz u v sq⟩ }
 
 /-- A strong monomorphism `f` is a monomorphism which has the right lifting property
 with respect to epimorphisms. -/
@@ -69,7 +69,7 @@ theorem StrongMono.mk' {f : P ⟶ Q} [Mono f]
     (hf : ∀ (X Y : C) (z : X ⟶ Y) (_ : Epi z) (u : X ⟶ P)
       (v : Y ⟶ Q) (sq : CommSq u z f v), sq.HasLift) : StrongMono f where
   mono := inferInstance
-  rlp := fun {X Y} z hz => ⟨fun {u v} sq => hf X Y z hz u v sq⟩
+  rlp := fun {X Y} z hz ↦ ⟨fun {u v} sq ↦ hf X Y z hz u v sq⟩
 
 attribute [instance 100] StrongEpi.llp
 
@@ -102,7 +102,7 @@ theorem strongMono_comp [StrongMono f] [StrongMono g] : StrongMono (f ≫ g) :=
 /-- If `f ≫ g` is a strong epimorphism, then so is `g`. -/
 theorem strongEpi_of_strongEpi [StrongEpi (f ≫ g)] : StrongEpi g :=
   { epi := epi_of_epi f g
-    llp := fun {X Y} z _ => by
+    llp := fun {X Y} z _ ↦ by
       constructor
       intro u v sq
       have h₀ : (f ≫ u) ≫ z = (f ≫ g) ≫ v := by simp only [Category.assoc, sq.w]
@@ -114,7 +114,7 @@ theorem strongEpi_of_strongEpi [StrongEpi (f ≫ g)] : StrongEpi g :=
 /-- If `f ≫ g` is a strong monomorphism, then so is `f`. -/
 theorem strongMono_of_strongMono [StrongMono (f ≫ g)] : StrongMono f :=
   { mono := mono_of_mono f g
-    rlp := fun {X Y} z => by
+    rlp := fun {X Y} z ↦ by
       intros
       constructor
       intro u v sq
@@ -137,7 +137,7 @@ theorem StrongEpi.of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
   { epi := by
       rw [Arrow.iso_w' e]
       infer_instance
-    llp := fun {X Y} z => by
+    llp := fun {X Y} z ↦ by
       intro
       apply HasLiftingProperty.of_arrow_iso_left e z }
 
@@ -146,7 +146,7 @@ theorem StrongMono.of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
   { mono := by
       rw [Arrow.iso_w' e]
       infer_instance
-    rlp := fun {X Y} z => by
+    rlp := fun {X Y} z ↦ by
       intro
       apply HasLiftingProperty.of_arrow_iso_right z e }
 

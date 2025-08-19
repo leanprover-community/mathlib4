@@ -28,7 +28,7 @@ variable (R : Type u) {A : Type v} [CommRing R] [Ring A] [Algebra R A]
 
 @[nontriviality]
 theorem is_transcendental_of_subsingleton [Subsingleton R] (x : A) : Transcendental R x :=
-  fun ⟨p, h, _⟩ => h <| Subsingleton.elim p 0
+  fun ⟨p, h, _⟩ ↦ h <| Subsingleton.elim p 0
 
 variable {R}
 
@@ -169,7 +169,7 @@ theorem IsLocalization.isAlgebraic [Nontrivial R] (M : Submonoid R) [IsLocalizat
 open IsScalarTower
 
 protected theorem IsAlgebraic.algebraMap {a : S} :
-    IsAlgebraic R a → IsAlgebraic R (algebraMap S A a) := fun ⟨f, hf₁, hf₂⟩ =>
+    IsAlgebraic R a → IsAlgebraic R (algebraMap S A a) := fun ⟨f, hf₁, hf₂⟩ ↦
   ⟨f, hf₁, by rw [aeval_algebraMap_apply, hf₂, map_zero]⟩
 
 section
@@ -606,7 +606,7 @@ theorem inv_eq_of_aeval_divX_ne_zero {x : L} {p : K[X]} (aeval_ne : aeval x (div
 theorem inv_eq_of_root_of_coeff_zero_ne_zero {x : L} {p : K[X]} (aeval_eq : aeval x p = 0)
     (coeff_zero_ne : p.coeff 0 ≠ 0) : x⁻¹ = -(aeval x (divX p) / algebraMap _ _ (p.coeff 0)) := by
   convert inv_eq_of_aeval_divX_ne_zero (p := p) (L := L)
-    (mt (fun h => (algebraMap K L).injective ?_) coeff_zero_ne) using 1
+    (mt (fun h ↦ (algebraMap K L).injective ?_) coeff_zero_ne) using 1
   · rw [aeval_eq, zero_sub, div_neg]
   rw [RingHom.map_zero]
   convert aeval_eq
@@ -646,7 +646,7 @@ theorem Subalgebra.inv_mem_of_algebraic {x : A} (hx : IsAlgebraic K (x : L)) :
 @[stacks 0BID]
 theorem Subalgebra.isField_of_algebraic [Algebra.IsAlgebraic K L] : IsField A :=
   { show Nontrivial A by infer_instance, Subalgebra.toCommRing A with
-    mul_inv_cancel := fun {a} ha =>
+    mul_inv_cancel := fun {a} ha ↦
       ⟨⟨a⁻¹, A.inv_mem_of_algebraic (Algebra.IsAlgebraic.isAlgebraic (a : L))⟩,
         Subtype.ext (mul_inv_cancel₀ (mt (Subalgebra.coe_eq_zero _).mp ha))⟩ }
 

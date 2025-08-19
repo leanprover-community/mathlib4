@@ -99,7 +99,7 @@ private lemma pairwiseDisjoint_fibers : Set.PairwiseDisjoint ↑t fun a ↦ s.fi
 @[simp] lemma disjiUnion_filter_eq (s : Finset α) (t : Finset β) (f : α → β) :
     t.disjiUnion (fun a ↦ s.filter (f · = a)) pairwiseDisjoint_fibers =
       s.filter fun c ↦ f c ∈ t :=
-  ext fun b => by simpa using and_comm
+  ext fun b ↦ by simpa using and_comm
 
 lemma disjiUnion_filter_eq_of_maps_to (h : ∀ x ∈ s, f x ∈ t) :
     t.disjiUnion (fun a ↦ s.filter (f · = a)) pairwiseDisjoint_fibers = s := by
@@ -109,19 +109,19 @@ end DecidableEq
 
 theorem map_disjiUnion {f : α ↪ β} {s : Finset α} {t : β → Finset γ} {h} :
     (s.map f).disjiUnion t h =
-      s.disjiUnion (fun a => t (f a)) fun _ ha _ hb hab =>
+      s.disjiUnion (fun a ↦ t (f a)) fun _ ha _ hb hab ↦
         h (mem_map_of_mem _ ha) (mem_map_of_mem _ hb) (f.injective.ne hab) :=
   eq_of_veq <| Multiset.bind_map _ _ _
 
 theorem disjiUnion_map {s : Finset α} {t : α → Finset β} {f : β ↪ γ} {h} :
     (s.disjiUnion t h).map f =
-      s.disjiUnion (fun a => (t a).map f) (h.mono' fun _ _ ↦ (disjoint_map _).2) :=
+      s.disjiUnion (fun a ↦ (t a).map f) (h.mono' fun _ _ ↦ (disjoint_map _).2) :=
   eq_of_veq <| Multiset.map_bind _ _ _
 
 variable {f : α → β} {op : β → β → β} [hc : Std.Commutative op] [ha : Std.Associative op]
 
 theorem fold_disjiUnion {ι : Type*} {s : Finset ι} {t : ι → Finset α} {b : ι → β} {b₀ : β} (h) :
-    (s.disjiUnion t h).fold op (s.fold op b₀ b) f = s.fold op b₀ fun i => (t i).fold op (b i) f :=
+    (s.disjiUnion t h).fold op (s.fold op b₀ b) f = s.fold op b₀ fun i ↦ (t i).fold op (b i) f :=
   (congr_arg _ <| Multiset.map_bind _ _ _).trans (Multiset.fold_bind _ _ _ _ _)
 
 end DisjiUnion
@@ -223,20 +223,20 @@ lemma disjoint_biUnion_right (s : Finset β) (t : Finset α) (f : α → Finset 
   simpa only [_root_.disjoint_comm] using disjoint_biUnion_left t f s
 
 theorem image_biUnion [DecidableEq γ] {f : α → β} {s : Finset α} {t : β → Finset γ} :
-    (s.image f).biUnion t = s.biUnion fun a => t (f a) :=
+    (s.image f).biUnion t = s.biUnion fun a ↦ t (f a) :=
   haveI := Classical.decEq α
-  Finset.induction_on s rfl fun a s _ ih => by simp only [image_insert, biUnion_insert, ih]
+  Finset.induction_on s rfl fun a s _ ih ↦ by simp only [image_insert, biUnion_insert, ih]
 
 theorem biUnion_image [DecidableEq γ] {s : Finset α} {t : α → Finset β} {f : β → γ} :
-    (s.biUnion t).image f = s.biUnion fun a => (t a).image f :=
+    (s.biUnion t).image f = s.biUnion fun a ↦ (t a).image f :=
   haveI := Classical.decEq α
-  Finset.induction_on s rfl fun a s _ ih => by simp only [biUnion_insert, image_union, ih]
+  Finset.induction_on s rfl fun a s _ ih ↦ by simp only [biUnion_insert, image_union, ih]
 
 theorem image_biUnion_filter_eq [DecidableEq α] (s : Finset β) (g : β → α) :
-    ((s.image g).biUnion fun a => s.filter fun c => g c = a) = s :=
-  biUnion_filter_eq_of_maps_to fun _ => mem_image_of_mem g
+    ((s.image g).biUnion fun a ↦ s.filter fun c ↦ g c = a) = s :=
+  biUnion_filter_eq_of_maps_to fun _ ↦ mem_image_of_mem g
 
-theorem biUnion_singleton {f : α → β} : (s.biUnion fun a => {f a}) = s.image f := by grind
+theorem biUnion_singleton {f : α → β} : (s.biUnion fun a ↦ {f a}) = s.image f := by grind
 
 end BUnion
 end Finset

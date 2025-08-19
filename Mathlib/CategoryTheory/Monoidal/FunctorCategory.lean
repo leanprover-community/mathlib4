@@ -81,9 +81,9 @@ instance functorCategoryMonoidalStruct : MonoidalCategoryStruct (C ⥤ D) where
   whiskerLeft F _ _ α := FunctorCategory.whiskerLeft F α
   whiskerRight α F := FunctorCategory.whiskerRight α F
   tensorUnit := (CategoryTheory.Functor.const C).obj (𝟙_ D)
-  leftUnitor F := NatIso.ofComponents fun X => λ_ (F.obj X)
-  rightUnitor F := NatIso.ofComponents fun X => ρ_ (F.obj X)
-  associator F G H := NatIso.ofComponents fun X => α_ (F.obj X) (G.obj X) (H.obj X)
+  leftUnitor F := NatIso.ofComponents fun X ↦ λ_ (F.obj X)
+  rightUnitor F := NatIso.ofComponents fun X ↦ ρ_ (F.obj X)
+  associator F G H := NatIso.ofComponents fun X ↦ α_ (F.obj X) (G.obj X) (H.obj X)
 
 @[simp]
 theorem tensorUnit_obj {X} : (𝟙_ (C ⥤ D)).obj X = 𝟙_ D :=
@@ -165,7 +165,7 @@ the natural pointwise monoidal structure on the functor category `C ⥤ D`
 is also braided.
 -/
 instance functorCategoryBraided : BraidedCategory (C ⥤ D) where
-  braiding F G := NatIso.ofComponents fun _ => β_ _ _
+  braiding F G := NatIso.ofComponents fun _ ↦ β_ _ _
   hexagon_forward F G H := by ext X; apply hexagon_forward
   hexagon_reverse F G H := by ext X; apply hexagon_reverse
 

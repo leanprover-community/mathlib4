@@ -34,7 +34,7 @@ section BundledHoms
 @[to_additive]
 instance decidableEqMulEquivFintype {α β : Type*} [DecidableEq β] [Fintype α] [Mul α] [Mul β] :
     DecidableEq (α ≃* β) :=
-  fun a b => decidable_of_iff ((a : α → β) = b) (Injective.eq_iff DFunLike.coe_injective)
+  fun a b ↦ decidable_of_iff ((a : α → β) = b) (Injective.eq_iff DFunLike.coe_injective)
 
 end BundledHoms
 

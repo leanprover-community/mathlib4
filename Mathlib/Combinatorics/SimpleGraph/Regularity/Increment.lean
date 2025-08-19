@@ -52,7 +52,7 @@ with a slightly higher energy. This is helpful since the energy is bounded by a 
 `Finpartition.energy_le_one`), so this process eventually terminates and yields a
 not-too-big uniform equipartition. -/
 noncomputable def increment : Finpartition (univ : Finset α) :=
-  P.bind fun _ => chunk hP G ε
+  P.bind fun _ ↦ chunk hP G ε
 
 open Finpartition Finpartition.IsEquipartition
 
@@ -67,7 +67,7 @@ theorem card_increment (hPα : #P.parts * 16 ^ #P.parts ≤ card α) (hPG : ¬P.
   rw [increment, card_bind]
   simp_rw [chunk, apply_dite Finpartition.parts, apply_dite card, sum_dite]
   rw [sum_const_nat, sum_const_nat, univ_eq_attach, univ_eq_attach, card_attach, card_attach]
-  any_goals exact fun x hx => card_parts_equitabilise _ _ (Nat.div_pos hPα' hPpos).ne'
+  any_goals exact fun x hx ↦ card_parts_equitabilise _ _ (Nat.div_pos hPα' hPpos).ne'
   rw [Nat.sub_add_cancel a_add_one_le_four_pow_parts_card,
     Nat.sub_add_cancel ((Nat.le_succ _).trans a_add_one_le_four_pow_parts_card), ← add_mul]
   congr
@@ -77,7 +77,7 @@ variable (hP G ε)
 
 theorem increment_isEquipartition : (increment hP G ε).IsEquipartition := by
   simp_rw [IsEquipartition, Set.equitableOn_iff_exists_eq_eq_add_one]
-  refine ⟨m, fun A hA => ?_⟩
+  refine ⟨m, fun A hA ↦ ?_⟩
   rw [mem_coe, increment, mem_bind] at hA
   obtain ⟨U, hU, hA⟩ := hA
   exact card_eq_of_mem_parts_chunk hA
@@ -95,7 +95,7 @@ private theorem distinctPairs_increment :
   simp only [distinctPairs, increment, mem_offDiag, bind_parts, mem_biUnion, Prod.exists,
     mem_product, mem_attach, true_and, Subtype.exists, and_imp,
     mem_offDiag, forall_exists_index, Ne]
-  refine fun U V hUV hUi hVj => ⟨⟨_, hUV.1, hUi⟩, ⟨_, hUV.2.1, hVj⟩, ?_⟩
+  refine fun U V hUV hUi hVj ↦ ⟨⟨_, hUV.1, hUi⟩, ⟨_, hUV.2.1, hVj⟩, ?_⟩
   rintro rfl
   obtain ⟨i, hi⟩ := nonempty_of_mem_parts _ hUi
   exact hUV.2.2 (P.disjoint.elim_finset hUV.1 hUV.2.1 i (Finpartition.le _ hUi hi) <|

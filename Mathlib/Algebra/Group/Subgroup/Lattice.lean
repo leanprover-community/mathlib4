@@ -94,7 +94,7 @@ variable (H K : Subgroup G)
 /-- The subgroup `G` of the group `G`. -/
 @[to_additive /-- The `AddSubgroup G` of the `AddGroup G`. -/]
 instance : Top (Subgroup G) :=
-  ⟨{ (⊤ : Submonoid G) with inv_mem' := fun _ => Set.mem_univ _ }⟩
+  ⟨{ (⊤ : Submonoid G) with inv_mem' := fun _ ↦ Set.mem_univ _ }⟩
 
 /-- The top subgroup is isomorphic to the group.
 
@@ -133,7 +133,7 @@ theorem coe_bot : ((⊥ : Subgroup G) : Set G) = {1} :=
 
 @[to_additive]
 instance : Unique (⊥ : Subgroup G) :=
-  ⟨⟨1⟩, fun g => Subtype.ext g.2⟩
+  ⟨⟨1⟩, fun g ↦ Subtype.ext g.2⟩
 
 @[to_additive (attr := simp)]
 theorem top_toSubmonoid : (⊤ : Subgroup G).toSubmonoid = ⊤ :=
@@ -159,16 +159,16 @@ theorem coe_eq_univ {H : Subgroup G} : (H : Set G) = Set.univ ↔ H = ⊤ :=
 
 @[to_additive]
 theorem coe_eq_singleton {H : Subgroup G} : (∃ g : G, (H : Set G) = {g}) ↔ H = ⊥ :=
-  ⟨fun ⟨g, hg⟩ =>
+  ⟨fun ⟨g, hg⟩ ↦
     haveI : Subsingleton (H : Set G) := by
       rw [hg]
       infer_instance
     H.eq_bot_of_subsingleton,
-    fun h => ⟨1, SetLike.ext'_iff.mp h⟩⟩
+    fun h ↦ ⟨1, SetLike.ext'_iff.mp h⟩⟩
 
 @[to_additive]
 theorem nontrivial_iff_exists_ne_one (H : Subgroup G) : Nontrivial H ↔ ∃ x ∈ H, x ≠ (1 : G) := by
-  rw [Subtype.nontrivial_iff_exists_ne (fun x => x ∈ H) (1 : H)]
+  rw [Subtype.nontrivial_iff_exists_ne (fun x ↦ x ∈ H) (1 : H)]
   simp
 
 @[to_additive]
@@ -201,9 +201,9 @@ lemma ne_bot_iff_exists_ne_one {H : Subgroup G} : H ≠ ⊥ ↔ ∃ a : ↥H, a 
 /-- The inf of two subgroups is their intersection. -/
 @[to_additive /-- The inf of two `AddSubgroup`s is their intersection. -/]
 instance : Min (Subgroup G) :=
-  ⟨fun H₁ H₂ =>
+  ⟨fun H₁ H₂ ↦
     { H₁.toSubmonoid ⊓ H₂.toSubmonoid with
-      inv_mem' := fun ⟨hx, hx'⟩ => ⟨H₁.inv_mem hx, H₂.inv_mem hx'⟩ }⟩
+      inv_mem' := fun ⟨hx, hx'⟩ ↦ ⟨H₁.inv_mem hx, H₂.inv_mem hx'⟩ }⟩
 
 @[to_additive (attr := simp)]
 theorem coe_inf (p p' : Subgroup G) : ((p ⊓ p' : Subgroup G) : Set G) = (p : Set G) ∩ p' :=
@@ -215,10 +215,10 @@ theorem mem_inf {p p' : Subgroup G} {x : G} : x ∈ p ⊓ p' ↔ x ∈ p ∧ x �
 
 @[to_additive]
 instance : InfSet (Subgroup G) :=
-  ⟨fun s =>
+  ⟨fun s ↦
     { (⨅ S ∈ s, Subgroup.toSubmonoid S).copy (⋂ S ∈ s, ↑S) (by simp) with
-      inv_mem' := fun {x} hx =>
-        Set.mem_biInter fun i h => i.inv_mem (by apply Set.mem_iInter₂.1 hx i h) }⟩
+      inv_mem' := fun {x} hx ↦
+        Set.mem_biInter fun i h ↦ i.inv_mem (by apply Set.mem_iInter₂.1 hx i h) }⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_sInf (H : Set (Subgroup G)) : ((sInf H : Subgroup G) : Set G) = ⋂ s ∈ H, ↑s :=
@@ -239,16 +239,16 @@ theorem coe_iInf {ι : Sort*} {S : ι → Subgroup G} : (↑(⨅ i, S i) : Set G
 /-- Subgroups of a group form a complete lattice. -/
 @[to_additive /-- The `AddSubgroup`s of an `AddGroup` form a complete lattice. -/]
 instance : CompleteLattice (Subgroup G) :=
-  { completeLatticeOfInf (Subgroup G) fun _s =>
+  { completeLatticeOfInf (Subgroup G) fun _s ↦
       IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf with
     bot := ⊥
-    bot_le := fun S _x hx => (mem_bot.1 hx).symm ▸ S.one_mem
+    bot_le := fun S _x hx ↦ (mem_bot.1 hx).symm ▸ S.one_mem
     top := ⊤
-    le_top := fun _S x _hx => mem_top x
+    le_top := fun _S x _hx ↦ mem_top x
     inf := (· ⊓ ·)
-    le_inf := fun _a _b _c ha hb _x hx => ⟨ha hx, hb hx⟩
-    inf_le_left := fun _a _b _x => And.left
-    inf_le_right := fun _a _b _x => And.right }
+    le_inf := fun _a _b _c ha hb _x hx ↦ ⟨ha hx, hb hx⟩
+    inf_le_left := fun _a _b _x ↦ And.left
+    inf_le_right := fun _a _b _x ↦ And.right }
 
 @[to_additive]
 theorem mem_sup_left {S T : Subgroup G} : ∀ {x : G}, x ∈ S → x ∈ S ⊔ T :=
@@ -274,12 +274,12 @@ theorem mem_sSup_of_mem {S : Set (Subgroup G)} {s : Subgroup G} (hs : s ∈ S) :
 
 @[to_additive (attr := simp)]
 theorem subsingleton_iff : Subsingleton (Subgroup G) ↔ Subsingleton G :=
-  ⟨fun _ =>
-    ⟨fun x y =>
-      have : ∀ i : G, i = 1 := fun i =>
+  ⟨fun _ ↦
+    ⟨fun x y ↦
+      have : ∀ i : G, i = 1 := fun i ↦
         mem_bot.mp <| Subsingleton.elim (⊤ : Subgroup G) ⊥ ▸ mem_top i
       (this x).trans (this y).symm⟩,
-    fun _ => ⟨fun x y => Subgroup.ext fun i => Subsingleton.elim 1 i ▸ by simp⟩⟩
+    fun _ ↦ ⟨fun x y ↦ Subgroup.ext fun i ↦ Subsingleton.elim 1 i ▸ by simp⟩⟩
 
 @[to_additive (attr := simp)]
 theorem nontrivial_iff : Nontrivial (Subgroup G) ↔ Nontrivial G :=
@@ -289,7 +289,7 @@ theorem nontrivial_iff : Nontrivial (Subgroup G) ↔ Nontrivial G :=
 
 @[to_additive]
 instance [Subsingleton G] : Unique (Subgroup G) :=
-  ⟨⟨⊥⟩, fun a => @Subsingleton.elim _ (subsingleton_iff.mpr ‹_›) a _⟩
+  ⟨⟨⊥⟩, fun a ↦ @Subsingleton.elim _ (subsingleton_iff.mpr ‹_›) a _⟩
 
 @[to_additive]
 instance [Nontrivial G] : Nontrivial (Subgroup G) :=
@@ -302,7 +302,7 @@ instance [Nontrivial G] : Nontrivial (⊤ : Subgroup G) := by
 
 @[to_additive]
 theorem eq_top_iff' : H = ⊤ ↔ ∀ x : G, x ∈ H :=
-  eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
+  eq_top_iff.trans ⟨fun h m ↦ h <| mem_top m, fun h m _ ↦ h m⟩
 
 /-- The `Subgroup` generated by a set. -/
 @[to_additive /-- The `AddSubgroup` generated by a set -/]
@@ -318,13 +318,13 @@ theorem mem_closure {x : G} : x ∈ closure k ↔ ∀ K : Subgroup G, k ⊆ K �
 /-- The subgroup generated by a set includes the set. -/
 @[to_additive (attr := simp, aesop safe 20 (rule_sets := [SetLike]))
   /-- The `AddSubgroup` generated by a set includes the set. -/]
-theorem subset_closure : k ⊆ closure k := fun _ hx => mem_closure.2 fun _ hK => hK hx
+theorem subset_closure : k ⊆ closure k := fun _ hx ↦ mem_closure.2 fun _ hK ↦ hK hx
 
 @[to_additive (attr := aesop 80% (rule_sets := [SetLike]))]
 theorem mem_closure_of_mem {s : Set G} {x : G} (hx : x ∈ s) : x ∈ closure s := subset_closure hx
 
 @[to_additive]
-theorem notMem_of_notMem_closure {P : G} (hP : P ∉ closure k) : P ∉ k := fun h =>
+theorem notMem_of_notMem_closure {P : G} (hP : P ∉ closure k) : P ∉ k := fun h ↦
   hP (subset_closure h)
 
 @[deprecated (since := "2025-05-23")]
@@ -339,7 +339,7 @@ open Set
 @[to_additive (attr := simp)
   /-- An additive subgroup `K` includes `closure k` if and only if it includes `k` -/]
 theorem closure_le : closure k ≤ K ↔ k ⊆ K :=
-  ⟨Subset.trans subset_closure, fun h => sInf_le h⟩
+  ⟨Subset.trans subset_closure, fun h ↦ sInf_le h⟩
 
 @[to_additive]
 theorem closure_eq_of_le (h₁ : k ⊆ K) (h₂ : K ≤ closure k) : closure k = K :=
@@ -453,7 +453,7 @@ the element. -/
       natural number multiples of the element. -/]
 theorem mem_closure_singleton {x y : G} : y ∈ closure ({x} : Set G) ↔ ∃ n : ℤ, x ^ n = y := by
   refine
-    ⟨fun hy => closure_induction ?_ ?_ ?_ ?_ hy, fun ⟨n, hn⟩ =>
+    ⟨fun hy ↦ closure_induction ?_ ?_ ?_ ?_ hy, fun ⟨n, hn⟩ ↦
       hn ▸ zpow_mem (subset_closure <| mem_singleton x) n⟩
   · intro y hy
     rw [eq_of_mem_singleton hy]
@@ -479,7 +479,7 @@ theorem le_closure_toSubmonoid (S : Set G) : Submonoid.closure S ≤ (closure S)
 @[to_additive]
 theorem closure_eq_top_of_mclosure_eq_top {S : Set G} (h : Submonoid.closure S = ⊤) :
     closure S = ⊤ :=
-  (eq_top_iff' _).2 fun _ => le_closure_toSubmonoid _ <| h.symm ▸ trivial
+  (eq_top_iff' _).2 fun _ ↦ le_closure_toSubmonoid _ <| h.symm ▸ trivial
 
 @[to_additive (attr := simp)]
 theorem closure_insert_one (s : Set G) : closure (insert 1 s) = closure s := by
@@ -543,7 +543,7 @@ variable {C : Type*} [CommGroup C] {s t : Subgroup C} {x : C}
 
 @[to_additive]
 theorem mem_sup : x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [sup_eq_closure] at h
     refine Subgroup.closure_induction ?_ ?_ ?_ ?_ h
     · rintro y (h | h)
@@ -579,14 +579,14 @@ theorem disjoint_def' {H₁ H₂ : Subgroup G} :
 theorem disjoint_iff_mul_eq_one {H₁ H₂ : Subgroup G} :
     Disjoint H₁ H₂ ↔ ∀ {x y : G}, x ∈ H₁ → y ∈ H₂ → x * y = 1 → x = 1 ∧ y = 1 :=
   disjoint_def'.trans
-    ⟨fun h x y hx hy hxy =>
+    ⟨fun h x y hx hy hxy ↦
       let hx1 : x = 1 := h hx (H₂.inv_mem hy) (eq_inv_iff_mul_eq_one.mpr hxy)
       ⟨hx1, by simpa [hx1] using hxy⟩,
-      fun h _ _ hx hy hxy => (h hx (H₂.inv_mem hy) (mul_inv_eq_one.mpr hxy)).1⟩
+      fun h _ _ hx hy hxy ↦ (h hx (H₂.inv_mem hy) (mul_inv_eq_one.mpr hxy)).1⟩
 
 @[to_additive]
 theorem mul_injective_of_disjoint {H₁ H₂ : Subgroup G} (h : Disjoint H₁ H₂) :
-    Function.Injective (fun g => g.1 * g.2 : H₁ × H₂ → G) := by
+    Function.Injective (fun g ↦ g.1 * g.2 : H₁ × H₂ → G) := by
   intro x y hxy
   rw [← inv_mul_eq_iff_eq_mul, ← mul_assoc, ← mul_inv_eq_one, mul_assoc] at hxy
   replace hxy := disjoint_iff_mul_eq_one.mp h (y.1⁻¹ * x.1).prop (x.2 * y.2⁻¹).prop hxy

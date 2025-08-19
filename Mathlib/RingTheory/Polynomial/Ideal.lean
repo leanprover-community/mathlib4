@@ -40,7 +40,7 @@ theorem ker_evalRingHom (x : R) : RingHom.ker (evalRingHom x) = Ideal.span {X - 
 @[simp]
 theorem ker_modByMonicHom {q : R[X]} (hq : q.Monic) :
     LinearMap.ker (Polynomial.modByMonicHom q) = (Ideal.span {q}).restrictScalars R :=
-  Submodule.ext fun _ => (mem_ker_modByMonic hq).trans Ideal.mem_span_singleton.symm
+  Submodule.ext fun _ ↦ (mem_ker_modByMonic hq).trans Ideal.mem_span_singleton.symm
 
 @[simp]
 lemma ker_constantCoeff : RingHom.ker constantCoeff = .span {(X : R[X])} := by

@@ -34,7 +34,7 @@ theorem invOf_two_add_invOf_two [NonAssocSemiring R] [Invertible (2 : R)] :
 
 theorem pos_of_invertible_cast [NonAssocSemiring R] [Nontrivial R] (n : ℕ) [Invertible (n : R)] :
     0 < n :=
-  Nat.zero_lt_of_ne_zero fun h => Invertible.ne_zero (n : R) (h ▸ Nat.cast_zero)
+  Nat.zero_lt_of_ne_zero fun h ↦ Invertible.ne_zero (n : R) (h ▸ Nat.cast_zero)
 
 theorem invOf_add_invOf [Semiring R] (a b : R) [Invertible a] [Invertible b] :
     ⅟a + ⅟b = ⅟a * (a + b) * ⅟b := by

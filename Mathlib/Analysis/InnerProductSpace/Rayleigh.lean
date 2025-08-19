@@ -147,7 +147,7 @@ theorem eq_smul_self_of_isLocalExtrOn_real (hT : IsSelfAdjoint T) {x₀ : F}
     apply smul_right_injective F hb
     simp [c, eq_neg_of_add_eq_zero_left h₂, ← mul_smul, this]
   convert hc
-  have := congr_arg (fun x => ⟪x, x₀⟫_ℝ) hc
+  have := congr_arg (fun x ↦ ⟪x, x₀⟫_ℝ) hc
   field_simp [inner_smul_left, real_inner_self_eq_norm_mul_norm, sq] at this ⊢
   exact this
 
@@ -263,7 +263,7 @@ theorem hasEigenvalue_iInf_of_finiteDimensional [Nontrivial E] (hT : T.IsSymmetr
 
 theorem subsingleton_of_no_eigenvalue_finiteDimensional (hT : T.IsSymmetric)
     (hT' : ∀ μ : 𝕜, Module.End.eigenspace (T : E →ₗ[𝕜] E) μ = ⊥) : Subsingleton E :=
-  (subsingleton_or_nontrivial E).resolve_right fun _h =>
+  (subsingleton_or_nontrivial E).resolve_right fun _h ↦
     absurd (hT' _) hT.hasEigenvalue_iSup_of_finiteDimensional
 
 end IsSymmetric

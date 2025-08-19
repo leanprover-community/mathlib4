@@ -38,7 +38,7 @@ theorem insert_def (x : α) (s : Set α) : insert x s = { y | y = x ∨ y ∈ s 
   rfl
 
 @[simp, grind]
-theorem subset_insert (x : α) (s : Set α) : s ⊆ insert x s := fun _ => Or.inr
+theorem subset_insert (x : α) (s : Set α) : s ⊆ insert x s := fun _ ↦ Or.inr
 
 theorem mem_insert (x : α) (s : Set α) : x ∈ insert x s :=
   Or.inl rfl
@@ -140,14 +140,14 @@ def subtypeInsertEquivOption
     [DecidableEq α] {t : Set α} {x : α} (h : x ∉ t) :
     { i // i ∈ insert x t } ≃ Option { i // i ∈ t } where
   toFun y := if h : ↑y = x then none else some ⟨y, by grind⟩
-  invFun y := (y.elim ⟨x, mem_insert _ _⟩) fun z => ⟨z, by grind⟩
+  invFun y := (y.elim ⟨x, mem_insert _ _⟩) fun z ↦ ⟨z, by grind⟩
   left_inv y := by grind
   right_inv := by rintro (_ | y) <;> grind
 
 /-! ### Lemmas about singletons -/
 
 instance : LawfulSingleton α (Set α) :=
-  ⟨fun x => Set.ext fun a => by
+  ⟨fun x ↦ Set.ext fun a ↦ by
     simp only [mem_empty_iff_false, mem_insert_iff, or_false]
     exact Iff.rfl⟩
 
@@ -169,7 +169,7 @@ theorem setOf_eq_eq_singleton {a : α} : { n | n = a } = {a} :=
 
 @[simp]
 theorem setOf_eq_eq_singleton' {a : α} : { x | a = x } = {a} :=
-  ext fun _ => eq_comm
+  ext fun _ ↦ eq_comm
 
 -- TODO: again, annotation needed
 -- Not `@[simp]` since `mem_singleton_iff` proves it.
@@ -183,7 +183,7 @@ theorem eq_of_mem_singleton {x y : α} (h : x ∈ ({y} : Set α)) : x = y :=
 theorem singleton_eq_singleton_iff {x y : α} : {x} = ({y} : Set α) ↔ x = y :=
   Set.ext_iff.trans eq_iff_eq_cancel_left
 
-theorem singleton_injective : Injective (singleton : α → Set α) := fun _ _ =>
+theorem singleton_injective : Injective (singleton : α → Set α) := fun _ _ ↦
   singleton_eq_singleton_iff.mp
 
 theorem mem_singleton_of_eq {x y : α} (H : x = y) : x ∈ ({y} : Set α) :=
@@ -244,14 +244,14 @@ theorem notMem_singleton_empty {s : Set α} : s ∉ ({∅} : Set (Set α)) ↔ s
 @[deprecated (since := "2025-05-24")] alias nmem_singleton_empty := notMem_singleton_empty
 
 instance uniqueSingleton (a : α) : Unique (↥({a} : Set α)) :=
-  ⟨⟨⟨a, mem_singleton a⟩⟩, fun ⟨_, h⟩ => Subtype.eq h⟩
+  ⟨⟨⟨a, mem_singleton a⟩⟩, fun ⟨_, h⟩ ↦ Subtype.eq h⟩
 
 theorem eq_singleton_iff_unique_mem : s = {a} ↔ a ∈ s ∧ ∀ x ∈ s, x = a :=
   Subset.antisymm_iff.trans <| and_comm.trans <| and_congr_left' singleton_subset_iff
 
 theorem eq_singleton_iff_nonempty_unique_mem : s = {a} ↔ s.Nonempty ∧ ∀ x ∈ s, x = a :=
   eq_singleton_iff_unique_mem.trans <|
-    and_congr_left fun H => ⟨fun h' => ⟨_, h'⟩, fun ⟨x, h⟩ => H x h ▸ h⟩
+    and_congr_left fun H ↦ ⟨fun h' ↦ ⟨_, h'⟩, fun ⟨x, h⟩ ↦ H x h ▸ h⟩
 
 theorem setOf_mem_list_eq_replicate {l : List α} {a : α} :
     { x | x ∈ l } = {a} ↔ ∃ n > 0, l = List.replicate n a := by
@@ -285,7 +285,7 @@ theorem Nonempty.subset_singleton_iff (h : s.Nonempty) : s ⊆ {a} ↔ s = {a} :
 theorem ssubset_singleton_iff {s : Set α} {x : α} : s ⊂ {x} ↔ s = ∅ := by
   rw [ssubset_iff_subset_ne, subset_singleton_iff_eq, or_and_right, and_not_self_iff, or_false,
     and_iff_left_iff_imp]
-  exact fun h => h ▸ (singleton_ne_empty _).symm
+  exact fun h ↦ h ▸ (singleton_ne_empty _).symm
 
 theorem eq_empty_of_ssubset_singleton {s : Set α} {x : α} (hs : s ⊂ {x}) : s = ∅ :=
   ssubset_singleton_iff.1 hs
@@ -325,8 +325,8 @@ theorem disjoint_insert_right : Disjoint s (insert a t) ↔ a ∉ s ∧ Disjoint
   rw [disjoint_comm, disjoint_insert_left, disjoint_comm]
 
 theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
-  ⟨fun h => eq_of_mem_insert_of_notMem (h ▸ mem_insert a s) ha,
-    congr_arg (fun x => insert x s)⟩
+  ⟨fun h ↦ eq_of_mem_insert_of_notMem (h ▸ mem_insert a s) ha,
+    congr_arg (fun x ↦ insert x s)⟩
 
 @[simp]
 theorem insert_diff_eq_singleton {a : α} {s : Set α} (h : a ∉ s) : insert a s \ s = {a} := by grind

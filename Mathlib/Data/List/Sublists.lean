@@ -36,26 +36,26 @@ theorem sublists'_singleton (a : α) : sublists' [a] = [[], [a]] :=
 
 /-- Auxiliary helper definition for `sublists'` -/
 def sublists'Aux (a : α) (r₁ r₂ : List (List α)) : List (List α) :=
-  r₁.foldl (init := r₂) fun r l => r ++ [a :: l]
+  r₁.foldl (init := r₂) fun r l ↦ r ++ [a :: l]
 
 theorem sublists'Aux_eq_array_foldl (a : α) : ∀ (r₁ r₂ : List (List α)),
     sublists'Aux a r₁ r₂ = ((r₁.toArray).foldl (init := r₂.toArray)
-      (fun r l => r.push (a :: l))).toList := by
+      (fun r l ↦ r.push (a :: l))).toList := by
   intro r₁ r₂
   rw [sublists'Aux, Array.foldl_toList]
-  have := List.foldl_hom Array.toList (g₁ := fun r l => r.push (a :: l))
-    (g₂ := fun r l => r ++ [a :: l]) (l := r₁) (init := r₂.toArray) (by simp)
+  have := List.foldl_hom Array.toList (g₁ := fun r l ↦ r.push (a :: l))
+    (g₂ := fun r l ↦ r ++ [a :: l]) (l := r₁) (init := r₂.toArray) (by simp)
   simpa using this
 
 theorem sublists'_eq_sublists'Aux (l : List α) :
-    sublists' l = l.foldr (fun a r => sublists'Aux a r r) [[]] := by
+    sublists' l = l.foldr (fun a r ↦ sublists'Aux a r r) [[]] := by
   simp only [sublists', sublists'Aux_eq_array_foldl]
   rw [← List.foldr_hom Array.toList]
   · intros _ _; congr
 
 theorem sublists'Aux_eq_map (a : α) (r₁ : List (List α)) : ∀ (r₂ : List (List α)),
     sublists'Aux a r₁ r₂ = r₂ ++ map (cons a) r₁ :=
-  List.reverseRecOn r₁ (fun _ => by simp [sublists'Aux]) fun r₁ l ih r₂ => by
+  List.reverseRecOn r₁ (fun _ ↦ by simp [sublists'Aux]) fun r₁ l ih r₂ ↦ by
     rw [map_append, map_singleton, ← append_assoc, ← ih, sublists'Aux, foldl_append, foldl]
     simp [sublists'Aux]
 
@@ -68,7 +68,7 @@ theorem sublists'_cons (a : α) (l : List α) :
 theorem mem_sublists' {s t : List α} : s ∈ sublists' t ↔ s <+ t := by
   induction' t with a t IH generalizing s
   · simp only [sublists'_nil, mem_singleton]
-    exact ⟨fun h => by rw [h], eq_nil_of_sublist_nil⟩
+    exact ⟨fun h ↦ by rw [h], eq_nil_of_sublist_nil⟩
   simp only [sublists'_cons, mem_append, IH, mem_map]
   constructor <;> intro h
   · rcases h with (h | ⟨s, h, rfl⟩)
@@ -95,24 +95,24 @@ theorem sublists_singleton (a : α) : sublists [a] = [[], [a]] :=
 
 /-- Auxiliary helper function for `sublists` -/
 def sublistsAux (a : α) (r : List (List α)) : List (List α) :=
-  r.foldl (init := []) fun r l => r ++ [l, a :: l]
+  r.foldl (init := []) fun r l ↦ r ++ [l, a :: l]
 
 theorem sublistsAux_eq_array_foldl :
-    sublistsAux = fun (a : α) (r : List (List α)) =>
+    sublistsAux = fun (a : α) (r : List (List α)) ↦
       (r.toArray.foldl (init := #[])
-        fun r l => (r.push l).push (a :: l)).toList := by
+        fun r l ↦ (r.push l).push (a :: l)).toList := by
   funext a r
   simp only [sublistsAux]
-  have := foldl_hom Array.toList (g₁ := fun r l => (r.push l).push (a :: l))
-    (g₂ := fun r l => r ++ [l, a :: l]) (l := r) (init := #[]) (by simp)
+  have := foldl_hom Array.toList (g₁ := fun r l ↦ (r.push l).push (a :: l))
+    (g₂ := fun r l ↦ r ++ [l, a :: l]) (l := r) (init := #[]) (by simp)
   simpa using this
 
 theorem sublistsAux_eq_flatMap :
-    sublistsAux = fun (a : α) (r : List (List α)) => r.flatMap fun l => [l, a :: l] :=
-  funext fun a => funext fun r =>
+    sublistsAux = fun (a : α) (r : List (List α)) ↦ r.flatMap fun l ↦ [l, a :: l] :=
+  funext fun a ↦ funext fun r ↦
   List.reverseRecOn r
     (by simp [sublistsAux])
-    (fun r l ih => by
+    (fun r l ih ↦ by
       rw [flatMap_append, ← ih, flatMap_singleton, sublistsAux, foldl_append]
       simp [sublistsAux])
 
@@ -125,7 +125,7 @@ theorem sublistsAux_eq_flatMap :
     · intros _ _; congr
 
 theorem sublists_append (l₁ l₂ : List α) :
-    sublists (l₁ ++ l₂) = (sublists l₂) >>= (fun x => (sublists l₁).map (· ++ x)) := by
+    sublists (l₁ ++ l₂) = (sublists l₂) >>= (fun x ↦ (sublists l₁).map (· ++ x)) := by
   simp only [sublists, foldr_append]
   induction l₁ with
   | nil => simp
@@ -134,14 +134,14 @@ theorem sublists_append (l₁ l₂ : List α) :
     simp [List.flatMap, flatten_flatten, Function.comp_def]
 
 theorem sublists_cons (a : α) (l : List α) :
-    sublists (a :: l) = sublists l >>= (fun x => [x, a :: x]) :=
+    sublists (a :: l) = sublists l >>= (fun x ↦ [x, a :: x]) :=
   show sublists ([a] ++ l) = _ by
   rw [sublists_append]
   simp only [sublists_singleton, map_cons, bind_eq_flatMap, nil_append, cons_append, map_nil]
 
 @[simp]
 theorem sublists_concat (l : List α) (a : α) :
-    sublists (l ++ [a]) = sublists l ++ map (fun x => x ++ [a]) (sublists l) := by
+    sublists (l ++ [a]) = sublists l ++ map (fun x ↦ x ++ [a]) (sublists l) := by
   rw [sublists_append, sublists_singleton, bind_eq_flatMap, flatMap_cons, flatMap_cons, flatMap_nil,
      map_id'' append_nil, append_nil]
 
@@ -280,13 +280,13 @@ theorem mem_sublistsLen_self {l l' : List α} (h : l' <+ l) :
 @[simp]
 theorem mem_sublistsLen {n} {l l' : List α} :
     l' ∈ sublistsLen n l ↔ l' <+ l ∧ length l' = n :=
-  ⟨fun h =>
+  ⟨fun h ↦
     ⟨mem_sublists'.1 ((sublistsLen_sublist_sublists' _ _).subset h), length_of_sublistsLen h⟩,
-    fun ⟨h₁, h₂⟩ => h₂ ▸ mem_sublistsLen_self h₁⟩
+    fun ⟨h₁, h₂⟩ ↦ h₂ ▸ mem_sublistsLen_self h₁⟩
 
 theorem sublistsLen_of_length_lt {n} {l : List α} (h : l.length < n) : sublistsLen n l = [] :=
-  eq_nil_iff_forall_not_mem.mpr fun _ =>
-    mem_sublistsLen.not.mpr fun ⟨hs, hl⟩ => (h.trans_eq hl.symm).not_ge (Sublist.length_le hs)
+  eq_nil_iff_forall_not_mem.mpr fun _ ↦
+    mem_sublistsLen.not.mpr fun ⟨hs, hl⟩ ↦ (h.trans_eq hl.symm).not_ge (Sublist.length_le hs)
 
 @[simp]
 theorem sublistsLen_length : ∀ l : List α, sublistsLen l.length l = [l]
@@ -303,7 +303,7 @@ theorem Pairwise.sublists' {R} :
   | _, @Pairwise.cons _ _ a l H₁ H₂ => by
     simp only [sublists'_cons, pairwise_append, pairwise_map, mem_sublists', mem_map, exists_imp,
       and_imp]
-    refine ⟨H₂.sublists', H₂.sublists'.imp fun l₁ => Lex.cons l₁, ?_⟩
+    refine ⟨H₂.sublists', H₂.sublists'.imp fun l₁ ↦ Lex.cons l₁, ?_⟩
     rintro l₁ sl₁ x l₂ _ rfl
     rcases l₁ with - | ⟨b, l₁⟩; · constructor
     exact Lex.rel (H₁ _ <| sl₁.subset mem_cons_self)
@@ -315,8 +315,8 @@ theorem pairwise_sublists {R} {l : List α} (H : Pairwise R l) :
 
 @[simp]
 theorem nodup_sublists {l : List α} : Nodup (sublists l) ↔ Nodup l :=
-  ⟨fun h => (h.sublist (map_pure_sublist_sublists _)).of_map _, fun h =>
-    (pairwise_sublists h).imp @fun l₁ l₂ h => by simpa using h.to_ne⟩
+  ⟨fun h ↦ (h.sublist (map_pure_sublist_sublists _)).of_map _, fun h ↦
+    (pairwise_sublists h).imp @fun l₁ l₂ h ↦ by simpa using h.to_ne⟩
 
 @[simp]
 theorem nodup_sublists' {l : List α} : Nodup (sublists' l) ↔ Nodup l := by
@@ -328,7 +328,7 @@ protected alias ⟨Nodup.of_sublists', _⟩ := nodup_sublists'
 
 theorem nodup_sublistsLen (n : ℕ) {l : List α} (h : Nodup l) : (sublistsLen n l).Nodup := by
   have : Pairwise (· ≠ ·) l.sublists' := Pairwise.imp
-    (fun h => Lex.to_ne (by convert h using 3; simp [eq_comm])) h.sublists'
+    (fun h ↦ Lex.to_ne (by convert h using 3; simp [eq_comm])) h.sublists'
   exact this.sublist (sublistsLen_sublist_sublists' _ _)
 
 theorem sublists_map (f : α → β) : ∀ (l : List α),
@@ -391,7 +391,7 @@ theorem revzip_sublists' (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip 
     · exact (IH _ _ h).cons _
 
 theorem range_bind_sublistsLen_perm (l : List α) :
-    ((List.range (l.length + 1)).flatMap fun n => sublistsLen n l) ~ sublists' l := by
+    ((List.range (l.length + 1)).flatMap fun n ↦ sublistsLen n l) ~ sublists' l := by
   induction' l with h tl l_ih
   · simp [range_succ]
   · simp_rw [range_succ_eq_map, length, flatMap_cons, flatMap_map, sublistsLen_succ_cons,
@@ -402,8 +402,8 @@ theorem range_bind_sublistsLen_perm (l : List α) :
     refine Perm.append ?_ (l_ih.map _)
     rw [List.range_succ, flatMap_append, flatMap_singleton,
       sublistsLen_of_length_lt (Nat.lt_succ_self _), append_nil,
-      ← List.flatMap_map Nat.succ fun n => sublistsLen n tl,
-      ← flatMap_cons (f := fun n => sublistsLen n tl), ← range_succ_eq_map]
+      ← List.flatMap_map Nat.succ fun n ↦ sublistsLen n tl,
+      ← flatMap_cons (f := fun n ↦ sublistsLen n tl), ← range_succ_eq_map]
     exact l_ih
 
 end List

@@ -245,7 +245,7 @@ theorem get?_of_eq_some_of_get?_intFractPair_stream_fr_ne_zero {ifp_n : IntFract
 
 open Int IntFractPair
 
-theorem of_s_head_aux (v : K) : (of v).s.get? 0 = (IntFractPair.stream v 1).bind (some ∘ fun p =>
+theorem of_s_head_aux (v : K) : (of v).s.get? 0 = (IntFractPair.stream v 1).bind (some ∘ fun p ↦
     { a := 1
       b := p.b }) := by
   rw [of, IntFractPair.seq1]
@@ -271,7 +271,7 @@ theorem of_s_of_int (a : ℤ) : (of (a : K)).s = Stream'.Seq.nil :=
     induction n with
     | zero => rw [of_s_head_aux, stream_succ_of_int, Option.bind]
     | succ n ih => exact (of (a : K)).s.prop ih
-  Stream'.Seq.ext fun n => (h n).trans (Stream'.Seq.get?_nil n).symm
+  Stream'.Seq.ext fun n ↦ (h n).trans (Stream'.Seq.get?_nil n).symm
 
 variable {K} (v)
 
@@ -297,7 +297,7 @@ theorem of_s_succ (n : ℕ) : (of v).s.get? (n + 1) = (of (fract v)⁻¹).s.get?
 `K` as the coefficient sequence of that of the inverse of the fractional part of `v`.
 -/
 theorem of_s_tail : (of v).s.tail = (of (fract v)⁻¹).s :=
-  Stream'.Seq.ext fun n => Stream'.Seq.get?_tail (of v).s n ▸ of_s_succ v n
+  Stream'.Seq.ext fun n ↦ Stream'.Seq.get?_tail (of v).s n ▸ of_s_succ v n
 
 variable (K) (n)
 

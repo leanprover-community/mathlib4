@@ -19,4 +19,4 @@ variable {α : Type*}
       additive group. -/]
 instance Units.isOrderedMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
     IsOrderedMonoid αˣ :=
-  { mul_le_mul_left := fun _ _ h _ => (mul_le_mul_left' (α := α) h _) }
+  { mul_le_mul_left := fun _ _ h _ ↦ (mul_le_mul_left' (α := α) h _) }

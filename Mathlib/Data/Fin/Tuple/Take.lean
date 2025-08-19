@@ -36,7 +36,7 @@ theorem take_zero (v : (i : Fin n) → α i) : take 0 n.zero_le v = fun i ↦ el
 
 @[simp]
 theorem take_one {α : Fin (n + 1) → Sort*} (v : (i : Fin (n + 1)) → α i) :
-    take 1 (Nat.le_add_left 1 n) v = (fun i => v (castLE (Nat.le_add_left 1 n) i)) := by
+    take 1 (Nat.le_add_left 1 n) v = (fun i ↦ v (castLE (Nat.le_add_left 1 n) i)) := by
   ext i
   simp only [take]
 
@@ -143,12 +143,12 @@ theorem take_append_right {n' : ℕ} {α : Sort*} (m : ℕ) (h : m ≤ n') (u : 
 /-- `Fin.take` intertwines with `List.take` via `List.ofFn`. -/
 theorem ofFn_take_eq_take_ofFn {α : Type*} {m : ℕ} (h : m ≤ n) (v : Fin n → α) :
     List.ofFn (take m h v) = (List.ofFn v).take m :=
-  List.ext_get (by simp [h]) (fun n h1 h2 => by simp)
+  List.ext_get (by simp [h]) (fun n h1 h2 ↦ by simp)
 
 /-- Alternative version of `take_eq_take_list_ofFn` with `l : List α` instead of `v : Fin n → α`. -/
 theorem ofFn_take_get {α : Type*} {m : ℕ} (l : List α) (h : m ≤ l.length) :
     List.ofFn (take m h l.get) = l.take m :=
-  List.ext_get (by simp [h]) (fun n h1 h2 => by simp)
+  List.ext_get (by simp [h]) (fun n h1 h2 ↦ by simp)
 
 /-- `Fin.take` intertwines with `List.take` via `List.get`. -/
 theorem get_take_eq_take_get_comp_cast {α : Type*} {m : ℕ} (l : List α) (h : m ≤ l.length) :

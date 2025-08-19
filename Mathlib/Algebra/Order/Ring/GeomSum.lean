@@ -25,7 +25,7 @@ section Semiring
 variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] {n : ℕ} {x : R}
 
 lemma geom_sum_pos (hx : 0 ≤ x) (hn : n ≠ 0) : 0 < ∑ i ∈ range n, x ^ i :=
-  sum_pos' (fun _ _ => pow_nonneg hx _) ⟨0, mem_range.2 hn.bot_lt, by simp⟩
+  sum_pos' (fun _ _ ↦ pow_nonneg hx _) ⟨0, mem_range.2 hn.bot_lt, by simp⟩
 
 end Semiring
 
@@ -117,9 +117,9 @@ lemma Odd.geom_sum_pos (h : Odd n) : 0 < ∑ i ∈ range n, x ^ i := by
   · exact geom_sum_pos' hx k.succ.succ_ne_zero
 
 lemma geom_sum_pos_iff (hn : n ≠ 0) : 0 < ∑ i ∈ range n, x ^ i ↔ Odd n ∨ 0 < x + 1 := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · rw [or_iff_not_imp_left, ← not_le, Nat.not_odd_iff_even]
-    refine fun hn hx => h.not_ge ?_
+    refine fun hn hx ↦ h.not_ge ?_
     simpa [if_pos hn] using geom_sum_alternating_of_le_neg_one hx n
   · rintro (hn | hx')
     · exact hn.geom_sum_pos
@@ -138,7 +138,7 @@ lemma geom_sum_ne_zero (hx : x ≠ -1) (hn : n ≠ 0) : ∑ i ∈ range n, x ^ i
   · exact (geom_sum_pos' h n.succ.succ_ne_zero).ne'
 
 lemma geom_sum_eq_zero_iff_neg_one (hn : n ≠ 0) : ∑ i ∈ range n, x ^ i = 0 ↔ x = -1 ∧ Even n := by
-  refine ⟨fun h => ?_, @fun ⟨h, hn⟩ => by simp only [h, hn, neg_one_geom_sum, if_true]⟩
+  refine ⟨fun h ↦ ?_, @fun ⟨h, hn⟩ ↦ by simp only [h, hn, neg_one_geom_sum, if_true]⟩
   contrapose! h
   have hx := eq_or_ne x (-1)
   rcases hx with hx | hx

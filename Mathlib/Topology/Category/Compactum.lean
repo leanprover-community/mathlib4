@@ -101,7 +101,7 @@ def adj : free ⊣ forget :=
   Monad.adj _
 
 instance : CoeSort Compactum Type* :=
-  ⟨fun X => X.A⟩
+  ⟨fun X ↦ X.A⟩
 
 instance {X Y : Compactum} : FunLike (X ⟶ Y) X Y where
   coe f := f.f
@@ -151,7 +151,7 @@ instance {X : Compactum} : TopologicalSpace X where
   IsOpen U := ∀ F : Ultrafilter X, X.str F ∈ U → U ∈ F
   isOpen_univ _ _ := Filter.univ_sets _
   isOpen_inter _ _ h3 h4 _ h6 := Filter.inter_sets _ (h3 _ h6.1) (h4 _ h6.2)
-  isOpen_sUnion := fun _ h1 _ ⟨T, hT, h2⟩ =>
+  isOpen_sUnion := fun _ h1 _ ⟨T, hT, h2⟩ ↦
     mem_of_superset (h1 T hT _ h2) (Set.subset_sUnion_of_mem hT)
 
 theorem isClosed_iff {X : Compactum} (S : Set X) :
@@ -194,7 +194,7 @@ private theorem basic_inter {X : Compactum} (A B : Set X) : basic (A ∩ B) = ba
   · rintro ⟨h1, h2⟩
     exact inter_mem h1 h2
 
-private theorem subset_cl {X : Compactum} (A : Set X) : A ⊆ cl A := fun a ha =>
+private theorem subset_cl {X : Compactum} (A : Set X) : A ⊆ cl A := fun a ha ↦
   ⟨X.incl a, ha, by simp⟩
 
 private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
@@ -231,7 +231,7 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
   suffices ∀ T : fsu, ι T ⊆ C1 → (⋂₀ ι T).Nonempty by
     obtain ⟨G, h1⟩ := exists_ultrafilter_of_finite_inter_nonempty _ this
     use X.join G
-    have : G.map X.str = F := Ultrafilter.coe_le_coe.1 fun S hS => h1 (Or.inr ⟨S, hS, rfl⟩)
+    have : G.map X.str = F := Ultrafilter.coe_le_coe.1 fun S hS ↦ h1 (Or.inr ⟨S, hS, rfl⟩)
     rw [join_distrib, this]
     exact ⟨h1 (Or.inl rfl), rfl⟩
   -- C2 is closed under finite intersections (by construction!).
@@ -318,9 +318,9 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
   -- It suffices to show that the intersection of any finite subset of T1 is nonempty.
   suffices ∀ F : fsu, ↑F ⊆ T1 → (⋂₀ ι F).Nonempty by
     obtain ⟨G, h1⟩ := Ultrafilter.exists_ultrafilter_of_finite_inter_nonempty _ this
-    have c1 : X.join G = F := Ultrafilter.coe_le_coe.1 fun P hP => h1 (Or.inr ⟨P, hP, rfl⟩)
+    have c1 : X.join G = F := Ultrafilter.coe_le_coe.1 fun P hP ↦ h1 (Or.inr ⟨P, hP, rfl⟩)
     have c2 : G.map X.str = X.incl x := by
-      refine Ultrafilter.coe_le_coe.1 fun P hP => ?_
+      refine Ultrafilter.coe_le_coe.1 fun P hP ↦ ?_
       apply mem_of_superset (h1 (Or.inl rfl))
       rintro x ⟨rfl⟩
       exact hP
@@ -332,7 +332,7 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
   exact finiteInterClosure.basic (@hT t ht)
 
 theorem le_nhds_of_str_eq {X : Compactum} (F : Ultrafilter X) (x : X) : X.str F = x → ↑F ≤ 𝓝 x :=
-  fun h => le_nhds_iff.mpr fun s hx hs => hs _ <| by rwa [h]
+  fun h ↦ le_nhds_iff.mpr fun s hx hs ↦ hs _ <| by rwa [h]
 
 -- All the hard work above boils down to this `T2Space` instance.
 instance {X : Compactum} : T2Space X := by
@@ -408,7 +408,7 @@ end Compactum
 /-- The functor functor from Compactum to CompHaus. -/
 def compactumToCompHaus : Compactum ⥤ CompHaus where
   obj X := { toTop := TopCat.of X, prop := trivial }
-  map := fun f => CompHausLike.ofHom _
+  map := fun f ↦ CompHausLike.ofHom _
     { toFun := f
       continuous_toFun := Compactum.continuous_of_hom _ }
 
@@ -425,7 +425,7 @@ instance faithful : compactumToCompHaus.Faithful where
     intro _ _ _ _ h
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` gets confused by coercion using forget.
     apply Monad.Algebra.Hom.ext
-    apply congrArg (fun f => f.hom.toFun) h
+    apply congrArg (fun f ↦ f.hom.toFun) h
 
 /-- This definition is used to prove essential surjectivity of `compactumToCompHaus`. -/
 noncomputable def isoOfTopologicalSpace {D : CompHaus} :
@@ -433,20 +433,20 @@ noncomputable def isoOfTopologicalSpace {D : CompHaus} :
   hom := CompHausLike.ofHom _
     { toFun := id
       continuous_toFun :=
-        continuous_def.2 fun _ h => by
+        continuous_def.2 fun _ h ↦ by
           rw [isOpen_iff_ultrafilter'] at h
           exact h }
   inv := CompHausLike.ofHom _
     { toFun := id
       continuous_toFun :=
-        continuous_def.2 fun _ h1 => by
+        continuous_def.2 fun _ h1 ↦ by
           rw [isOpen_iff_ultrafilter']
           intro _ h2
           exact h1 _ h2 }
 
 /-- The functor `compactumToCompHaus` is essentially surjective. -/
 instance essSurj : compactumToCompHaus.EssSurj :=
-  { mem_essImage := fun X => ⟨Compactum.ofTopologicalSpace X, ⟨isoOfTopologicalSpace⟩⟩ }
+  { mem_essImage := fun X ↦ ⟨Compactum.ofTopologicalSpace X, ⟨isoOfTopologicalSpace⟩⟩ }
 
 /-- The functor `compactumToCompHaus` is an equivalence of categories. -/
 instance isEquivalence : compactumToCompHaus.IsEquivalence where
@@ -457,7 +457,7 @@ end compactumToCompHaus
 `compactumToCompHaus`. -/
 def compactumToCompHausCompForget :
     compactumToCompHaus ⋙ CategoryTheory.forget CompHaus ≅ Compactum.forget :=
-  NatIso.ofComponents fun _ => eqToIso rfl
+  NatIso.ofComponents fun _ ↦ eqToIso rfl
 
 /-
 TODO: `forget CompHaus` is monadic, as it is isomorphic to the composition

@@ -70,7 +70,7 @@ variable (A : Matrix n n α) (b : n → α)
 def cramerMap (i : n) : α :=
   (A.updateCol i b).det
 
-theorem cramerMap_is_linear (i : n) : IsLinearMap α fun b => cramerMap A b i :=
+theorem cramerMap_is_linear (i : n) : IsLinearMap α fun b ↦ cramerMap A b i :=
   { map_add := det_updateCol_add _ _
     map_smul := det_updateCol_smul _ _ }
 
@@ -121,7 +121,7 @@ theorem cramer_one : cramer (1 : Matrix n n α) = 1 := by
 
 theorem cramer_smul (r : α) (A : Matrix n n α) :
     cramer (r • A) = r ^ (Fintype.card n - 1) • cramer A :=
-  LinearMap.ext fun _ => funext fun _ => det_updateCol_smul_left _ _ _ _
+  LinearMap.ext fun _ ↦ funext fun _ ↦ det_updateCol_smul_left _ _ _ _
 
 @[simp]
 theorem cramer_subsingleton_apply [Subsingleton n] (A : Matrix n n α) (b : n → α) (i : n) :
@@ -141,11 +141,11 @@ theorem sum_cramer {β} (s : Finset β) (f : β → n → α) :
 
 /-- Use linearity of `cramer` and vector evaluation to take `cramer A _ i` out of a summation. -/
 theorem sum_cramer_apply {β} (s : Finset β) (f : n → β → α) (i : n) :
-    (∑ x ∈ s, cramer A (fun j => f j x) i) = cramer A (fun j : n => ∑ x ∈ s, f j x) i :=
+    (∑ x ∈ s, cramer A (fun j ↦ f j x) i) = cramer A (fun j : n ↦ ∑ x ∈ s, f j x) i :=
   calc
-    (∑ x ∈ s, cramer A (fun j => f j x) i) = (∑ x ∈ s, cramer A fun j => f j x) i :=
+    (∑ x ∈ s, cramer A (fun j ↦ f j x) i) = (∑ x ∈ s, cramer A fun j ↦ f j x) i :=
       (Finset.sum_apply i s _).symm
-    _ = cramer A (fun j : n => ∑ x ∈ s, f j x) i := by
+    _ = cramer A (fun j : n ↦ ∑ x ∈ s, f j x) i := by
       rw [sum_cramer, cramer_apply, cramer_apply]
       simp only [updateCol]
       congr with j
@@ -183,9 +183,9 @@ These will hold for any matrix over a commutative ring.
   facts about the `cramer` map.
 -/
 def adjugate (A : Matrix n n α) : Matrix n n α :=
-  of fun i => cramer Aᵀ (Pi.single i 1)
+  of fun i ↦ cramer Aᵀ (Pi.single i 1)
 
-theorem adjugate_def (A : Matrix n n α) : adjugate A = of fun i => cramer Aᵀ (Pi.single i 1) :=
+theorem adjugate_def (A : Matrix n n α) : adjugate A = of fun i ↦ cramer Aᵀ (Pi.single i 1) :=
   rfl
 
 theorem adjugate_apply (A : Matrix n n α) (i j : n) :
@@ -301,14 +301,14 @@ theorem adjugate_one : adjugate (1 : Matrix n n α) = 1 := by
 
 @[simp]
 theorem adjugate_diagonal (v : n → α) :
-    adjugate (diagonal v) = diagonal fun i => ∏ j ∈ Finset.univ.erase i, v j := by
+    adjugate (diagonal v) = diagonal fun i ↦ ∏ j ∈ Finset.univ.erase i, v j := by
   ext i j
   simp only [adjugate_def, cramer_apply, diagonal_transpose, of_apply]
   obtain rfl | hij := eq_or_ne i j
   · rw [diagonal_apply_eq, diagonal_updateCol_single, det_diagonal,
       prod_update_of_mem (Finset.mem_univ _), sdiff_singleton_eq_erase, one_mul]
   · rw [diagonal_apply_ne _ hij]
-    refine det_eq_zero_of_row_eq_zero j fun k => ?_
+    refine det_eq_zero_of_row_eq_zero j fun k ↦ ?_
     obtain rfl | hjk := eq_or_ne k j
     · rw [updateCol_self, Pi.single_eq_of_ne' hij]
     · rw [updateCol_ne hjk, diagonal_apply_ne' _ hjk]
@@ -318,7 +318,7 @@ theorem _root_.RingHom.map_adjugate {R S : Type*} [CommRing R] [CommRing S] (f :
   ext i k
   have : Pi.single i (1 : S) = f ∘ Pi.single i 1 := by
     rw [← f.map_one]
-    exact Pi.single_op (fun _ => f) (fun _ => f.map_zero) i (1 : R)
+    exact Pi.single_op (fun _ ↦ f) (fun _ ↦ f.map_zero) i (1 : R)
   rw [adjugate_apply, RingHom.mapMatrix_apply, map_apply, RingHom.mapMatrix_apply, this, ←
     map_updateRow, ← RingHom.mapMatrix_apply, ← RingHom.map_det, ← adjugate_apply]
 
@@ -356,7 +356,7 @@ theorem adjugate_fin_one (A : Matrix (Fin 1) (Fin 1) α) : adjugate A = 1 :=
 theorem adjugate_fin_succ_eq_det_submatrix {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) α) (i j) :
     adjugate A i j = (-1) ^ (j + i : ℕ) * det (A.submatrix j.succAbove i.succAbove) := by
   simp_rw [adjugate_apply, det_succ_row _ j, updateRow_self, submatrix_updateRow_succAbove]
-  rw [Fintype.sum_eq_single i fun h hjk => ?_, Pi.single_eq_same, mul_one]
+  rw [Fintype.sum_eq_single i fun h hjk ↦ ?_, Pi.single_eq_same, mul_one]
   rw [Pi.single_eq_of_ne hjk, mul_zero, zero_mul]
 
 theorem adjugate_fin_two (A : Matrix (Fin 2) (Fin 2) α) :
@@ -441,7 +441,7 @@ theorem adjugate_mul_distrib_aux (A B : Matrix n n α) (hA : IsLeftRegular A.det
 /-- Proof follows from "The trace Cayley-Hamilton theorem" by Darij Grinberg, Section 5.3
 -/
 theorem adjugate_mul_distrib (A B : Matrix n n α) : adjugate (A * B) = adjugate B * adjugate A := by
-  let g : Matrix n n α → Matrix n n α[X] := fun M =>
+  let g : Matrix n n α → Matrix n n α[X] := fun M ↦
     M.map Polynomial.C + (Polynomial.X : α[X]) • (1 : Matrix n n α[X])
   let f' : Matrix n n α[X] →+* Matrix n n α := (Polynomial.evalRingHom 0).mapMatrix
   have f'_inv : ∀ M, f' (g M) = M := by
@@ -493,7 +493,7 @@ theorem adjugate_adjugate (A : Matrix n n α) (h : Fintype.card n ≠ 1) :
       ← AlgHom.map_det, ← map_pow (MvPolynomial.aeval fun p : n × n ↦ A p.1 p.2),
       AlgHom.mapMatrix_apply, AlgHom.mapMatrix_apply, Matrix.map_smul' _ _ _ (map_mul _)]
   have h_card' : Fintype.card n - 2 + 1 = Fintype.card n - 1 := by simp [h_card]
-  have is_reg : IsSMulRegular (MvPolynomial (n × n) ℤ) (det A') := fun x y =>
+  have is_reg : IsSMulRegular (MvPolynomial (n × n) ℤ) (det A') := fun x y ↦
     mul_left_cancel₀ (det_mvPolynomialX_ne_zero n ℤ)
   apply is_reg.matrix
   simp only

@@ -127,7 +127,7 @@ def over (X : C) : GrothendieckTopology (Over X) where
     change _ ∈ J _ at h₁ ⊢
     rw [Sieve.overEquiv_pullback]
     exact J.pullback_stable _ h₁
-  transitive' Y S (hS : _ ∈ J _) R hR := J.transitive hS _ (fun Z f hf => by
+  transitive' Y S (hS : _ ∈ J _) R hR := J.transitive hS _ (fun Z f hf ↦ by
     have hf' : _ ∈ J _ := hR ((Sieve.overEquiv_iff _ _).1 hf)
     rw [Sieve.overEquiv_pullback] at hf'
     exact hf')

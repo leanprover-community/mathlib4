@@ -23,7 +23,7 @@ linear ordered field. -/
 instance OrderRingHom.subsingleton [Field α] [LinearOrder α]
     [Field β] [LinearOrder β] [IsStrictOrderedRing β] [Archimedean β] :
     Subsingleton (α →+*o β) :=
-  ⟨fun f g => by
+  ⟨fun f g ↦ by
     ext x
     by_contra! h' : f x ≠ g x
     wlog h : f x < g x with h₂

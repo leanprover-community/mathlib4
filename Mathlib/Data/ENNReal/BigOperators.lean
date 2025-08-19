@@ -53,10 +53,10 @@ theorem iInf_sum {ι α : Type*} {f : ι → α → ℝ≥0∞} {s : Finset α} 
   induction' s using Finset.cons_induction_on with a s ha ih
   · simp only [Finset.sum_empty, ciInf_const]
   · simp only [Finset.sum_cons, ← ih]
-    refine (iInf_add_iInf fun i j => ?_).symm
-    refine (h (Finset.cons a s ha) i j).imp fun k hk => ?_
+    refine (iInf_add_iInf fun i j ↦ ?_).symm
+    refine (h (Finset.cons a s ha) i j).imp fun k hk ↦ ?_
     rw [Finset.forall_mem_cons] at hk
-    exact add_le_add hk.1.1 (Finset.sum_le_sum fun a ha => (hk.2 a ha).2)
+    exact add_le_add hk.1.1 (Finset.sum_le_sum fun a ha ↦ (hk.2 a ha).2)
 
 end OperationsAndInfty
 

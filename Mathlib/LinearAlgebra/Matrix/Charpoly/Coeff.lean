@@ -67,7 +67,7 @@ theorem charpoly_sub_diagonal_degree_lt :
   apply lt_of_le_of_lt degree_le_natDegree _
   rw [Nat.cast_lt]
   apply lt_of_le_of_lt _ (Equiv.Perm.fixed_point_card_lt_of_ne_one (ne_of_mem_erase hc))
-  apply le_trans (Polynomial.natDegree_prod_le univ fun i : n => charmatrix M (c i) i) _
+  apply le_trans (Polynomial.natDegree_prod_le univ fun i : n ↦ charmatrix M (c i) i) _
   rw [card_eq_sum_ones]; rw [sum_filter]; apply sum_le_sum
   intros
   apply charmatrix_apply_natDegree_le
@@ -118,7 +118,7 @@ theorem charpoly_monic (M : Matrix n n R) : M.charpoly.Monic := by
   · rw [charpoly, det_of_card_zero h]
     apply monic_one
   have mon : (∏ i : n, (X - C (M i i))).Monic := by
-    apply monic_prod_of_monic univ fun i : n => X - C (M i i)
+    apply monic_prod_of_monic univ fun i : n ↦ X - C (M i i)
     simp [monic_X_sub_C]
   rw [← sub_add_cancel (∏ i : n, (X - C (M i i))) M.charpoly] at mon
   rw [Monic] at *
@@ -134,14 +134,14 @@ theorem charpoly_monic (M : Matrix n n R) : M.charpoly.Monic := by
 theorem trace_eq_neg_charpoly_coeff [Nonempty n] (M : Matrix n n R) :
     trace M = -M.charpoly.coeff (Fintype.card n - 1) := by
   rw [charpoly_coeff_eq_prod_coeff_of_le _ le_rfl, Fintype.card,
-    prod_X_sub_C_coeff_card_pred univ (fun i : n => M i i) Fintype.card_pos, neg_neg, trace]
+    prod_X_sub_C_coeff_card_pred univ (fun i : n ↦ M i i) Fintype.card_pos, neg_neg, trace]
   simp_rw [diag_apply]
 
 theorem matPolyEquiv_symm_map_eval (M : (Matrix n n R)[X]) (r : R) :
     (matPolyEquiv.symm M).map (eval r) = M.eval (scalar n r) := by
   suffices ((aeval r).mapMatrix.comp matPolyEquiv.symm.toAlgHom : (Matrix n n R)[X] →ₐ[R] _) =
       (eval₂AlgHom' (AlgHom.id R _) (scalar n r)
-        fun x => (scalar_commute _ (Commute.all _) _).symm) from
+        fun x ↦ (scalar_commute _ (Commute.all _) _).symm) from
     DFunLike.congr_fun this M
   ext : 1
   · ext M : 1

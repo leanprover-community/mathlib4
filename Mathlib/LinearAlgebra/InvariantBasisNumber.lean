@@ -127,7 +127,7 @@ theorem le_of_fin_injective [StrongRankCondition R] {n m : ℕ} (f : (Fin n → 
 theorem strongRankCondition_iff_succ :
     StrongRankCondition R ↔
       ∀ (n : ℕ) (f : (Fin (n + 1) → R) →ₗ[R] Fin n → R), ¬Function.Injective f := by
-  refine ⟨fun h n => fun f hf => ?_, fun h => ⟨@fun n m f hf => ?_⟩⟩
+  refine ⟨fun h n ↦ fun f hf ↦ ?_, fun h ↦ ⟨@fun n m f hf ↦ ?_⟩⟩
   · letI : StrongRankCondition R := h
     exact Nat.not_succ_le_self n (le_of_fin_injective R f hf)
   · by_contra H
@@ -239,14 +239,14 @@ theorem nontrivial_of_invariantBasisNumber : Nontrivial R := by
   refine zero_ne_one (eq_of_fin_equiv R ?_)
   haveI := not_nontrivial_iff_subsingleton.1 h
   haveI : Subsingleton (Fin 1 → R) :=
-    Subsingleton.intro fun a b => funext fun x => Subsingleton.elim _ _
+    Subsingleton.intro fun a b ↦ funext fun x ↦ Subsingleton.elim _ _
   exact
     { toFun := 0
       invFun := 0
       map_add' := by simp
       map_smul' := by simp
-      left_inv := fun _ => by simp [eq_iff_true_of_subsingleton]
-      right_inv := fun _ => by simp [eq_iff_true_of_subsingleton] }
+      left_inv := fun _ ↦ by simp [eq_iff_true_of_subsingleton]
+      right_inv := fun _ ↦ by simp [eq_iff_true_of_subsingleton] }
 
 end
 
@@ -282,10 +282,10 @@ variable {R : Type u} [CommRing R] (I : Ideal R) {ι : Type v} [Fintype ι] {ι'
 
 /-- An `R`-linear map `R^n → R^m` induces a function `R^n/I^n → R^m/I^m`. -/
 private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
-    (ι → R) ⧸ Ideal.pi (fun _ ↦ I) → (ι' → R) ⧸ Ideal.pi fun _ ↦ I := fun x =>
-  Quotient.liftOn' x (fun y => Ideal.Quotient.mk _ (e y))
+    (ι → R) ⧸ Ideal.pi (fun _ ↦ I) → (ι' → R) ⧸ Ideal.pi fun _ ↦ I := fun x ↦
+  Quotient.liftOn' x (fun y ↦ Ideal.Quotient.mk _ (e y))
     (by
-      refine fun a b hab => Ideal.Quotient.eq.2 fun h => ?_
+      refine fun a b hab ↦ Ideal.Quotient.eq.2 fun h ↦ ?_
       rw [Submodule.quotientRel_def] at hab
       rw [← LinearMap.map_sub]
       exact Ideal.map_pi _ _ hab e h)
@@ -318,7 +318,7 @@ We prove this instance separately to avoid dependency on
 `Mathlib/LinearAlgebra/Charpoly/Basic.lean` or `Mathlib/LinearAlgebra/Matrix/ToLin.lean`. -/
 instance (priority := 100) invariantBasisNumber_of_nontrivial_of_commRing {R : Type u} [CommRing R]
     [Nontrivial R] : InvariantBasisNumber R :=
-  ⟨fun e =>
+  ⟨fun e ↦
     let ⟨I, _hI⟩ := Ideal.exists_maximal R
     eq_of_fin_equiv (R ⧸ I)
       ((Ideal.piQuotEquiv _ _).symm ≪≫ₗ inducedEquiv _ e ≪≫ₗ Ideal.piQuotEquiv _ _)⟩

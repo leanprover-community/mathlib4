@@ -75,7 +75,7 @@ lemma isConnected :
     ⟨(fromRightResolution Φ L y).obj (Classical.arbitrary _)⟩
   suffices ∀ (X : w.CostructuredArrowDownwards y),
       ∃ Y, Zigzag X ((fromRightResolution Φ L y).obj Y) by
-    refine zigzag_isConnected (fun X X' => ?_)
+    refine zigzag_isConnected (fun X X' ↦ ?_)
     obtain ⟨Y, hX⟩ := this X
     obtain ⟨Y', hX'⟩ := this X'
     exact hX.trans ((zigzag_obj_of_zigzag _ (isPreconnected_zigzag Y Y')).trans hX'.symm)

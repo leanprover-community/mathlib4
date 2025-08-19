@@ -40,8 +40,8 @@ local notation "G_ab" => TopologicalAbelianization
 namespace TopologicalAbelianization
 
 instance commGroup : CommGroup (G_ab G) where
-  mul_comm := fun x y =>
-    Quotient.inductionOn₂' x y fun a b =>
+  mul_comm := fun x y ↦
+    Quotient.inductionOn₂' x y fun a b ↦
       Quotient.sound' <|
         QuotientGroup.leftRel_apply.mpr <| by
           have h : (a * b)⁻¹ * (b * a) = ⁅b⁻¹, a⁻¹⁆ := by group

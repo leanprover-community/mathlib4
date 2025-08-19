@@ -49,17 +49,17 @@ def whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι �
 /-- Associator for the vertical composition of oplax natural transformations. -/
 @[simps!]
 def associator (η : F ⟶ G) (θ : G ⟶ H) (ι : H ⟶ I) : (η ≫ θ) ≫ ι ≅ η ≫ θ ≫ ι :=
-  ModificationIso.ofComponents (fun a => α_ (η.app a) (θ.app a) (ι.app a)) (by simp)
+  ModificationIso.ofComponents (fun a ↦ α_ (η.app a) (θ.app a) (ι.app a)) (by simp)
 
 /-- Left unitor for the vertical composition of oplax natural transformations. -/
 @[simps!]
 def leftUnitor (η : F ⟶ G) : 𝟙 F ≫ η ≅ η :=
-  ModificationIso.ofComponents (fun a => λ_ (η.app a)) (by simp)
+  ModificationIso.ofComponents (fun a ↦ λ_ (η.app a)) (by simp)
 
 /-- Right unitor for the vertical composition of oplax natural transformations. -/
 @[simps!]
 def rightUnitor (η : F ⟶ G) : η ≫ 𝟙 G ≅ η :=
-  ModificationIso.ofComponents (fun a => ρ_ (η.app a)) (by simp)
+  ModificationIso.ofComponents (fun a ↦ ρ_ (η.app a)) (by simp)
 
 variable (B C)
 

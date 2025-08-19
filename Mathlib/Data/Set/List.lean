@@ -20,12 +20,12 @@ variable {α β : Type*} (l : List α)
 namespace Set
 
 theorem range_list_map (f : α → β) : range (map f) = { l | ∀ x ∈ l, x ∈ range f } := by
-  refine antisymm (range_subset_iff.2 fun l => forall_mem_map.2 fun y _ => mem_range_self _)
-      fun l hl => ?_
+  refine antisymm (range_subset_iff.2 fun l ↦ forall_mem_map.2 fun y _ ↦ mem_range_self _)
+      fun l hl ↦ ?_
   induction l with
   | nil => exact ⟨[], rfl⟩
   | cons a l ihl =>
-    rcases ihl fun x hx => hl x <| subset_cons_self _ _ hx with ⟨l, rfl⟩
+    rcases ihl fun x hx ↦ hl x <| subset_cons_self _ _ hx with ⟨l, rfl⟩
     rcases hl a mem_cons_self with ⟨a, rfl⟩
     exact ⟨a :: l, map_cons⟩
 
@@ -40,18 +40,18 @@ theorem range_list_get : range l.get = { x | x ∈ l } := by
 theorem range_list_getElem? :
     range (l[·]? : ℕ → Option α) = insert none (some '' { x | x ∈ l }) := by
   rw [← range_list_get, ← range_comp]
-  refine (range_subset_iff.2 fun n => ?_).antisymm (insert_subset_iff.2 ⟨?_, ?_⟩)
+  refine (range_subset_iff.2 fun n ↦ ?_).antisymm (insert_subset_iff.2 ⟨?_, ?_⟩)
   · exact (le_or_gt l.length n).imp getElem?_eq_none_iff.mpr
-      (fun hlt => ⟨⟨_, hlt⟩, (getElem?_eq_getElem hlt).symm⟩)
+      (fun hlt ↦ ⟨⟨_, hlt⟩, (getElem?_eq_getElem hlt).symm⟩)
   · exact ⟨_, getElem?_eq_none_iff.mpr le_rfl⟩
-  · exact range_subset_iff.2 fun k => ⟨_, getElem?_eq_getElem _⟩
+  · exact range_subset_iff.2 fun k ↦ ⟨_, getElem?_eq_getElem _⟩
 
 @[deprecated (since := "2025-02-15")] alias range_list_get? := range_list_getElem?
 
 @[simp]
-theorem range_list_getD (d : α) : (range fun n : Nat => l[n]?.getD d) = insert d { x | x ∈ l } :=
+theorem range_list_getD (d : α) : (range fun n : Nat ↦ l[n]?.getD d) = insert d { x | x ∈ l } :=
   calc
-    (range fun n => l[n]?.getD d) = (fun o : Option α => o.getD d) '' range (l[·]?) := by
+    (range fun n ↦ l[n]?.getD d) = (fun o : Option α ↦ o.getD d) '' range (l[·]?) := by
       simp only [← range_comp, Function.comp_def]
       rfl
     _ = insert d { x | x ∈ l } := by
@@ -68,7 +68,7 @@ end Set
 /-- If each element of a list can be lifted to some type, then the whole list can be
 lifted to this type. -/
 instance List.canLift (c) (p) [CanLift α β c p] :
-    CanLift (List α) (List β) (List.map c) fun l => ∀ x ∈ l, p x where
+    CanLift (List α) (List β) (List.map c) fun l ↦ ∀ x ∈ l, p x where
   prf l H := by
     rw [← Set.mem_range, Set.range_list_map]
-    exact fun a ha => CanLift.prf a (H a ha)
+    exact fun a ha ↦ CanLift.prf a (H a ha)

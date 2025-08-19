@@ -53,18 +53,18 @@ get a well-order that extend our original order `r`. Another way to view this is
 arbitrary well-order to serve as a tiebreak between two elements of same rank.
 -/
 noncomputable def wellOrderExtension : LinearOrder α :=
-  @LinearOrder.lift' α (Ordinal ×ₗ Cardinal) _ (fun a : α => (rank r a, embeddingToCardinal a))
-    fun _ _ h => embeddingToCardinal.injective <| congr_arg Prod.snd h
+  @LinearOrder.lift' α (Ordinal ×ₗ Cardinal) _ (fun a : α ↦ (rank r a, embeddingToCardinal a))
+    fun _ _ h ↦ embeddingToCardinal.injective <| congr_arg Prod.snd h
 
 instance wellOrderExtension.isWellFounded_lt : IsWellFounded α (wellOrderExtension r).lt :=
-  ⟨InvImage.wf (fun a : α => (rank r a, embeddingToCardinal a)) <|
+  ⟨InvImage.wf (fun a : α ↦ (rank r a, embeddingToCardinal a)) <|
     Ordinal.lt_wf.prod_lex Cardinal.lt_wf⟩
 
 instance wellOrderExtension.isWellOrder_lt : IsWellOrder α (wellOrderExtension r).lt where
 
 /-- Any well-founded relation can be extended to a well-ordering on that type. -/
 theorem exists_well_order_ge : ∃ s, r ≤ s ∧ IsWellOrder α s :=
-  ⟨(wellOrderExtension r).lt, fun _ _ h => Prod.Lex.left _ _ (rank_lt_of_rel h), ⟨⟩⟩
+  ⟨(wellOrderExtension r).lt, fun _ _ h ↦ Prod.Lex.left _ _ (rank_lt_of_rel h), ⟨⟩⟩
 
 end IsWellFounded
 
@@ -85,5 +85,5 @@ instance WellOrderExtension.wellFoundedLT [LT α] [WellFoundedLT α] :
   IsWellFounded.wellOrderExtension.isWellFounded_lt (α := α) (· < ·)
 
 theorem toWellOrderExtension_strictMono [Preorder α] [WellFoundedLT α] :
-    StrictMono (toWellOrderExtension : α → WellOrderExtension α) := fun _ _ h =>
+    StrictMono (toWellOrderExtension : α → WellOrderExtension α) := fun _ _ h ↦
   Prod.Lex.left _ _ <| IsWellFounded.rank_lt_of_rel h

@@ -27,8 +27,8 @@ variable {α : Type u} {J : Type w} [SmallCategory J] [FinCategory J]
 def finiteLimitCone [SemilatticeInf α] [OrderTop α] (F : J ⥤ α) : LimitCone F where
   cone :=
     { pt := Finset.univ.inf F.obj
-      π := { app := fun _ => homOfLE (Finset.inf_le (Fintype.complete _)) } }
-  isLimit := { lift := fun s => homOfLE (Finset.le_inf fun j _ => (s.π.app j).down.down) }
+      π := { app := fun _ ↦ homOfLE (Finset.inf_le (Fintype.complete _)) } }
+  isLimit := { lift := fun s ↦ homOfLE (Finset.le_inf fun j _ ↦ (s.π.app j).down.down) }
 
 /--
 The colimit cocone over any functor from a finite diagram into a `SemilatticeSup` with `OrderBot`.
@@ -37,20 +37,20 @@ The colimit cocone over any functor from a finite diagram into a `SemilatticeSup
 def finiteColimitCocone [SemilatticeSup α] [OrderBot α] (F : J ⥤ α) : ColimitCocone F where
   cocone :=
     { pt := Finset.univ.sup F.obj
-      ι := { app := fun _ => homOfLE (Finset.le_sup (Fintype.complete _)) } }
-  isColimit := { desc := fun s => homOfLE (Finset.sup_le fun j _ => (s.ι.app j).down.down) }
+      ι := { app := fun _ ↦ homOfLE (Finset.le_sup (Fintype.complete _)) } }
+  isColimit := { desc := fun s ↦ homOfLE (Finset.sup_le fun j _ ↦ (s.ι.app j).down.down) }
 
 -- see Note [lower instance priority]
 instance (priority := 100) hasFiniteLimits_of_semilatticeInf_orderTop [SemilatticeInf α]
     [OrderTop α] : HasFiniteLimits α := ⟨by
   intro J 𝒥₁ 𝒥₂
-  exact { has_limit := fun F => HasLimit.mk (finiteLimitCone F) }⟩
+  exact { has_limit := fun F ↦ HasLimit.mk (finiteLimitCone F) }⟩
 
 -- see Note [lower instance priority]
 instance (priority := 100) hasFiniteColimits_of_semilatticeSup_orderBot [SemilatticeSup α]
     [OrderBot α] : HasFiniteColimits α := ⟨by
   intro J 𝒥₁ 𝒥₂
-  exact { has_colimit := fun F => HasColimit.mk (finiteColimitCocone F) }⟩
+  exact { has_colimit := fun F ↦ HasColimit.mk (finiteColimitCocone F) }⟩
 
 /-- The limit of a functor from a finite diagram into a `SemilatticeInf` with `OrderTop` is the
 infimum of the objects in the image.
@@ -166,9 +166,9 @@ variable {α : Type u} [CompleteLattice α] {J : Type w} [Category.{w'} J]
 def limitCone (F : J ⥤ α) : LimitCone F where
   cone :=
     { pt := iInf F.obj
-      π := { app := fun _ => homOfLE (CompleteLattice.sInf_le _ _ (Set.mem_range_self _)) } }
+      π := { app := fun _ ↦ homOfLE (CompleteLattice.sInf_le _ _ (Set.mem_range_self _)) } }
   isLimit :=
-    { lift := fun s =>
+    { lift := fun s ↦
         homOfLE (CompleteLattice.le_sInf _ _ (by rintro _ ⟨j, rfl⟩; exact (s.π.app j).le)) }
 
 /-- The colimit cocone over any functor into a complete lattice.
@@ -177,18 +177,18 @@ def limitCone (F : J ⥤ α) : LimitCone F where
 def colimitCocone (F : J ⥤ α) : ColimitCocone F where
   cocone :=
     { pt := iSup F.obj
-      ι := { app := fun _ => homOfLE (CompleteLattice.le_sSup _ _ (Set.mem_range_self _)) } }
+      ι := { app := fun _ ↦ homOfLE (CompleteLattice.le_sSup _ _ (Set.mem_range_self _)) } }
   isColimit :=
-    { desc := fun s =>
+    { desc := fun s ↦
         homOfLE (CompleteLattice.sSup_le _ _ (by rintro _ ⟨j, rfl⟩; exact (s.ι.app j).le)) }
 
 -- see Note [lower instance priority]
 instance (priority := 100) hasLimits_of_completeLattice : HasLimitsOfSize.{w, w'} α where
-  has_limits_of_shape _ := { has_limit := fun F => HasLimit.mk (limitCone F) }
+  has_limits_of_shape _ := { has_limit := fun F ↦ HasLimit.mk (limitCone F) }
 
 -- see Note [lower instance priority]
 instance (priority := 100) hasColimits_of_completeLattice : HasColimitsOfSize.{w, w'} α where
-  has_colimits_of_shape _ := { has_colimit := fun F => HasColimit.mk (colimitCocone F) }
+  has_colimits_of_shape _ := { has_colimit := fun F ↦ HasColimit.mk (colimitCocone F) }
 
 /-- The limit of a functor into a complete lattice is the infimum of the objects in the image.
 -/

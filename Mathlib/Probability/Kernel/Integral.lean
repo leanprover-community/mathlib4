@@ -31,7 +31,7 @@ lemma IsFiniteKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]
 
 lemma IsMarkovKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]
     (κ : Kernel α β) [IsMarkovKernel κ] {s : Set β} (hs : MeasurableSet s) :
-    Integrable (fun x => (κ x).real s) μ :=
+    Integrable (fun x ↦ (κ x).real s) μ :=
   IsFiniteKernel.integrable μ κ hs
 
 lemma integral_congr_ae₂ {f g : α → β → E} {μ : Measure α} (h : ∀ᵐ a ∂μ, f a =ᵐ[κ a] g a) :

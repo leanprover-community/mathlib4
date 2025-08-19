@@ -112,7 +112,7 @@ class CircularPreorder (α : Type*) extends Btw α, SBtw α where
   /-- If `b` is between `a` and `c`, then `c` is between `b` and `a`.
   This is motivated by imagining three points on a circle. -/
   btw_cyclic_left {a b c : α} : btw a b c → btw b c a
-  sbtw := fun a b c => btw a b c ∧ ¬btw c b a
+  sbtw := fun a b c ↦ btw a b c ∧ ¬btw c b a
   /-- Strict betweenness is given by betweenness in one direction and non-betweenness in the other.
 
   I.e., if `b` is between `a` and `c` but not between `c` and `a`, then we say `b` is strictly
@@ -183,7 +183,7 @@ theorem not_btw_of_sbtw {a b c : α} (h : sbtw a b c) : ¬btw c b a :=
 
 alias SBtw.sbtw.not_btw := not_btw_of_sbtw
 
-theorem not_sbtw_of_btw {a b c : α} (h : btw a b c) : ¬sbtw c b a := fun h' => h'.not_btw h
+theorem not_sbtw_of_btw {a b c : α} (h : btw a b c) : ¬sbtw c b a := fun h' ↦ h'.not_btw h
 
 alias Btw.btw.not_sbtw := not_sbtw_of_btw
 
@@ -193,7 +193,7 @@ theorem sbtw_of_btw_not_btw {a b c : α} (habc : btw a b c) (hcba : ¬btw c b a)
 alias Btw.btw.sbtw_of_not_btw := sbtw_of_btw_not_btw
 
 theorem sbtw_cyclic_left {a b c : α} (h : sbtw a b c) : sbtw b c a :=
-  h.btw.cyclic_left.sbtw_of_not_btw fun h' => h.not_btw h'.cyclic_left
+  h.btw.cyclic_left.sbtw_of_not_btw fun h' ↦ h.not_btw h'.cyclic_left
 
 alias SBtw.sbtw.cyclic_left := sbtw_cyclic_left
 
@@ -222,11 +222,11 @@ theorem sbtw_asymm {a b c : α} (h : sbtw a b c) : ¬sbtw c b a :=
 
 alias SBtw.sbtw.not_sbtw := sbtw_asymm
 
-theorem sbtw_irrefl_left_right {a b : α} : ¬sbtw a b a := fun h => h.not_btw h.btw
+theorem sbtw_irrefl_left_right {a b : α} : ¬sbtw a b a := fun h ↦ h.not_btw h.btw
 
-theorem sbtw_irrefl_left {a b : α} : ¬sbtw a a b := fun h => sbtw_irrefl_left_right h.cyclic_left
+theorem sbtw_irrefl_left {a b : α} : ¬sbtw a a b := fun h ↦ sbtw_irrefl_left_right h.cyclic_left
 
-theorem sbtw_irrefl_right {a b : α} : ¬sbtw a b b := fun h => sbtw_irrefl_left_right h.cyclic_right
+theorem sbtw_irrefl_right {a b : α} : ¬sbtw a b b := fun h ↦ sbtw_irrefl_left_right h.cyclic_right
 
 theorem sbtw_irrefl (a : α) : ¬sbtw a a a :=
   sbtw_irrefl_left_right
@@ -382,7 +382,7 @@ abbrev Preorder.toCircularPreorder (α : Type*) [Preorder α] : CircularPreorder
 See note [reducible non-instances]. -/
 abbrev PartialOrder.toCircularPartialOrder (α : Type*) [PartialOrder α] : CircularPartialOrder α :=
   { Preorder.toCircularPreorder α with
-    btw_antisymm := fun {a b c} => by
+    btw_antisymm := fun {a b c} ↦ by
       rintro (⟨hab, hbc⟩ | ⟨hbc, hca⟩ | ⟨hca, hab⟩) (⟨hcb, hba⟩ | ⟨hba, hac⟩ | ⟨hac, hcb⟩)
       · exact Or.inl (hab.antisymm hba)
       · exact Or.inl (hab.antisymm hba)
@@ -398,7 +398,7 @@ abbrev PartialOrder.toCircularPartialOrder (α : Type*) [PartialOrder α] : Circ
 See note [reducible non-instances]. -/
 abbrev LinearOrder.toCircularOrder (α : Type*) [LinearOrder α] : CircularOrder α :=
   { PartialOrder.toCircularPartialOrder α with
-    btw_total := fun a b c => by
+    btw_total := fun a b c ↦ by
       rcases le_total a b with hab | hba <;> rcases le_total b c with hbc | hcb <;>
         rcases le_total c a with hca | hac
       · exact Or.inl (Or.inl ⟨hab, hbc⟩)
@@ -416,25 +416,25 @@ abbrev LinearOrder.toCircularOrder (α : Type*) [LinearOrder α] : CircularOrder
 namespace OrderDual
 
 instance btw (α : Type*) [Btw α] : Btw αᵒᵈ :=
-  ⟨fun a b c : α => Btw.btw c b a⟩
+  ⟨fun a b c : α ↦ Btw.btw c b a⟩
 
 instance sbtw (α : Type*) [SBtw α] : SBtw αᵒᵈ :=
-  ⟨fun a b c : α => SBtw.sbtw c b a⟩
+  ⟨fun a b c : α ↦ SBtw.sbtw c b a⟩
 
 instance circularPreorder (α : Type*) [CircularPreorder α] : CircularPreorder αᵒᵈ :=
   { OrderDual.btw α,
     OrderDual.sbtw α with
-    btw_refl := fun _ => @btw_refl α _ _
-    btw_cyclic_left := fun {_ _ _} => @btw_cyclic_right α _ _ _ _
-    sbtw_trans_left := fun {_ _ _ _} habc hbdc => hbdc.trans_right habc
-    sbtw_iff_btw_not_btw := fun {a b c} => @sbtw_iff_btw_not_btw α _ c b a }
+    btw_refl := fun _ ↦ @btw_refl α _ _
+    btw_cyclic_left := fun {_ _ _} ↦ @btw_cyclic_right α _ _ _ _
+    sbtw_trans_left := fun {_ _ _ _} habc hbdc ↦ hbdc.trans_right habc
+    sbtw_iff_btw_not_btw := fun {a b c} ↦ @sbtw_iff_btw_not_btw α _ c b a }
 
 instance circularPartialOrder (α : Type*) [CircularPartialOrder α] : CircularPartialOrder αᵒᵈ :=
   { OrderDual.circularPreorder α with
-    btw_antisymm := fun {_ _ _} habc hcba => @btw_antisymm α _ _ _ _ hcba habc }
+    btw_antisymm := fun {_ _ _} habc hcba ↦ @btw_antisymm α _ _ _ _ hcba habc }
 
 instance (α : Type*) [CircularOrder α] : CircularOrder αᵒᵈ :=
   { OrderDual.circularPartialOrder α with
-    btw_total := fun {a b c} => @btw_total α _ c b a }
+    btw_total := fun {a b c} ↦ @btw_total α _ c b a }
 
 end OrderDual

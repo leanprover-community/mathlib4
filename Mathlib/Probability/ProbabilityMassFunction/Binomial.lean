@@ -23,7 +23,7 @@ open ENNReal NNReal
 /-- The binomial `PMF`: the probability of observing exactly `i` “heads” in a sequence of `n`
 independent coin tosses, each having probability `p` of coming up “heads”. -/
 def binomial (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) : PMF (Fin (n + 1)) :=
-  .ofFintype (fun i =>
+  .ofFintype (fun i ↦
       ↑(p^(i : ℕ) * (1-p)^((Fin.last n - i) : ℕ) * (n.choose i : ℕ))) (by
     dsimp only
     norm_cast

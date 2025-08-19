@@ -22,7 +22,7 @@ variable {X Y : Type*} [TopologicalSpace X]
 
 theorem rtendsto_nhds {r : SetRel Y X} {l : Filter Y} {x : X} :
     RTendsto r l (𝓝 x) ↔ ∀ s, IsOpen s → x ∈ s → r.core s ∈ l :=
-  all_mem_nhds_filter _ _ (fun _s _t => id) _
+  all_mem_nhds_filter _ _ (fun _s _t ↦ id) _
 
 theorem rtendsto'_nhds {r : SetRel Y X} {l : Filter Y} {x : X} :
     RTendsto' r l (𝓝 x) ↔ ∀ s, IsOpen s → x ∈ s → r.preimage s ∈ l := by

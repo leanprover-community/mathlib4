@@ -27,7 +27,7 @@ variable {m n A R : Type*} [Unique m] [Unique n]
 @[simps]
 def uniqueEquiv : Matrix m n A ≃ A where
   toFun M := M default default
-  invFun a := .of fun _ _ => a
+  invFun a := .of fun _ _ ↦ a
   left_inv M := by ext i j; simp [Subsingleton.elim i default, Subsingleton.elim j default]
   right_inv a := by simp
 

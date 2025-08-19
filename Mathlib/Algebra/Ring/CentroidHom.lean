@@ -116,7 +116,7 @@ theorem toAddMonoidHom_eq_coe (f : CentroidHom α) : f.toAddMonoidHom = f :=
   rfl
 
 theorem coe_toAddMonoidHom_injective : Injective ((↑) : CentroidHom α → α →+ α) :=
-  fun _f _g h => ext fun a ↦
+  fun _f _g h ↦ ext fun a ↦
     haveI := DFunLike.congr_fun h a
     this
 
@@ -245,13 +245,13 @@ instance instSMul : SMul M (CentroidHom α) where
         rw [map_mul_right f, ← smul_mul_assoc] }
 
 instance [SMul M N] [IsScalarTower M N α] : IsScalarTower M N (CentroidHom α) where
-  smul_assoc _ _ _ := ext fun _ => smul_assoc _ _ _
+  smul_assoc _ _ _ := ext fun _ ↦ smul_assoc _ _ _
 
 instance [SMulCommClass M N α] : SMulCommClass M N (CentroidHom α) where
-  smul_comm _ _ _ := ext fun _ => smul_comm _ _ _
+  smul_comm _ _ _ := ext fun _ ↦ smul_comm _ _ _
 
 instance [DistribMulAction Mᵐᵒᵖ α] [IsCentralScalar M α] : IsCentralScalar M (CentroidHom α) where
-  op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
+  op_smul_eq_smul _ _ := ext fun _ ↦ op_smul_eq_smul _ _
 
 instance isScalarTowerRight : IsScalarTower M (CentroidHom α) (CentroidHom α) where
   smul_assoc _ _ _ := rfl
@@ -455,7 +455,7 @@ def centerToCentroidCenter :
   map_zero' := by
     simp only [ZeroMemClass.coe_zero, map_zero]
     exact rfl
-  map_add' := fun _ _ => by
+  map_add' := fun _ _ ↦ by
     dsimp
     simp only [map_add]
     rfl
@@ -484,7 +484,7 @@ lemma centerToCentroid_apply (z : NonUnitalSubsemiring.center α) (a : α) :
 lemma _root_.NonUnitalNonAssocSemiring.mem_center_iff (a : α) :
     a ∈ NonUnitalSubsemiring.center α ↔ R a = L a ∧ (L a) ∈ RingHom.rangeS (toEndRingHom α) := by
   constructor
-  · exact fun ha ↦ ⟨AddMonoidHom.ext <| fun _ => (IsMulCentral.comm ha _).symm,
+  · exact fun ha ↦ ⟨AddMonoidHom.ext <| fun _ ↦ (IsMulCentral.comm ha _).symm,
       ⟨centerToCentroid ⟨a, ha⟩, rfl⟩⟩
   · rintro ⟨hc, ⟨T, hT⟩⟩
     have e1 (d : α) : T d = a * d := congr($hT d)
@@ -524,7 +524,7 @@ def centerIsoCentroid : Subsemiring.center α ≃+* CentroidHom α :=
       ⟨T 1, by constructor <;> simp [commute_iff_eq, ← map_mul_left, ← map_mul_right]⟩
     left_inv := fun z ↦ Subtype.ext <| by simp only [MulHom.toFun_eq_coe,
       NonUnitalRingHom.coe_toMulHom, centerToCentroid_apply, mul_one]
-    right_inv := fun T ↦ CentroidHom.ext <| fun _ => by rw [MulHom.toFun_eq_coe,
+    right_inv := fun T ↦ CentroidHom.ext <| fun _ ↦ by rw [MulHom.toFun_eq_coe,
       NonUnitalRingHom.coe_toMulHom, centerToCentroid_apply, ← map_mul_right, one_mul] }
 
 end NonAssocSemiring

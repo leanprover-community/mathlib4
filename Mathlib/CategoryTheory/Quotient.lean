@@ -174,7 +174,7 @@ theorem functor_homRel_eq_compClosure_eqvGen {X Y : C} (f g : X ⟶ Y) :
   Quot.eq
 
 theorem compClosure.congruence :
-    Congruence fun X Y => Relation.EqvGen (@CompClosure C _ r X Y) := by
+    Congruence fun X Y ↦ Relation.EqvGen (@CompClosure C _ r X Y) := by
   convert inferInstanceAs (Congruence (functor r).homRel)
   ext
   rw [functor_homRel_eq_compClosure_eqvGen]
@@ -253,8 +253,8 @@ variable (r)
 to do so after precomposing with `Quotient.functor r`. -/
 def natTransLift {F G : Quotient r ⥤ D} (τ : Quotient.functor r ⋙ F ⟶ Quotient.functor r ⋙ G) :
     F ⟶ G where
-  app := fun ⟨X⟩ => τ.app X
-  naturality := fun ⟨X⟩ ⟨Y⟩ => by
+  app := fun ⟨X⟩ ↦ τ.app X
+  naturality := fun ⟨X⟩ ⟨Y⟩ ↦ by
     rintro ⟨f⟩
     exact τ.naturality f
 

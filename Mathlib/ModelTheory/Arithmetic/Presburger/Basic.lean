@@ -37,7 +37,7 @@ inductive presburgerFunc : ℕ → Type
 /-- The language of Presburger arithmetic, defined as (0, 1, +). -/
 def Language.presburger : Language :=
   { Functions := presburgerFunc
-    Relations := fun _ => Empty }
+    Relations := fun _ ↦ Empty }
   deriving IsAlgebraic
 
 namespace Language.presburger

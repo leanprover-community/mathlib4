@@ -157,7 +157,7 @@ theorem sin_gt_sub_cube {x : ℝ} (h : 0 < x) (h' : x ≤ 1) : x - x ^ 3 / 4 < s
 
 /-- The derivative of `tan x - x` is `1/(cos x)^2 - 1` away from the zeroes of cos. -/
 theorem deriv_tan_sub_id (x : ℝ) (h : cos x ≠ 0) :
-    deriv (fun y : ℝ => tan y - y) x = 1 / cos x ^ 2 - 1 :=
+    deriv (fun y : ℝ ↦ tan y - y) x = 1 / cos x ^ 2 - 1 :=
   HasDerivAt.deriv <| by simpa using (hasDerivAt_tan h).add (hasDerivAt_id x).neg
 
 /-- For all `0 < x < π/2` we have `x < tan x`.
@@ -178,8 +178,8 @@ theorem lt_tan {x : ℝ} (h1 : 0 < x) (h2 : x < π / 2) : x < tan x := by
     intro z hz
     simp only [mem_setOf_eq]
     exact (cos_pos hz).ne'
-  have tan_minus_id_cts : ContinuousOn (fun y : ℝ => tan y - y) U := tan_cts_U.sub continuousOn_id
-  have deriv_pos (y : ℝ) (hy : y ∈ interior U) : 0 < deriv (fun y' : ℝ => tan y' - y') y := by
+  have tan_minus_id_cts : ContinuousOn (fun y : ℝ ↦ tan y - y) U := tan_cts_U.sub continuousOn_id
+  have deriv_pos (y : ℝ) (hy : y ∈ interior U) : 0 < deriv (fun y' : ℝ ↦ tan y' - y') y := by
     have := cos_pos (interior_subset hy)
     simp only [deriv_tan_sub_id y this.ne', one_div, gt_iff_lt, sub_pos]
     norm_cast

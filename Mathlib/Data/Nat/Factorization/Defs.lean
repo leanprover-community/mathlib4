@@ -102,8 +102,8 @@ theorem eq_of_factorization_eq {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)
 
 
 /-- Every nonzero natural number has a unique prime factorization -/
-theorem factorization_inj : Set.InjOn factorization { x : ℕ | x ≠ 0 } := fun a ha b hb h =>
-  eq_of_factorization_eq ha hb fun p => by simp [h]
+theorem factorization_inj : Set.InjOn factorization { x : ℕ | x ≠ 0 } := fun a ha b hb h ↦
+  eq_of_factorization_eq ha hb fun p ↦ by simp [h]
 
 @[simp]
 theorem factorization_zero : factorization 0 = 0 := by ext; simp [factorization]
@@ -166,13 +166,13 @@ theorem factorization_le_iff_dvd {d n : ℕ} (hd : d ≠ 0) (hn : n ≠ 0) :
 the power of `p` in `S.prod g` equals the sum over `x ∈ S` of the powers of `p` in `g x`.
 Generalises `factorization_mul`, which is the special case where `#S = 2` and `g = id`. -/
 theorem factorization_prod {α : Type*} {S : Finset α} {g : α → ℕ} (hS : ∀ x ∈ S, g x ≠ 0) :
-    (S.prod g).factorization = S.sum fun x => (g x).factorization := by
+    (S.prod g).factorization = S.sum fun x ↦ (g x).factorization := by
   classical
     ext p
     refine Finset.induction_on' S ?_ ?_
     · simp
     · intro x T hxS hTS hxT IH
-      have hT : T.prod g ≠ 0 := prod_ne_zero_iff.mpr fun x hx => hS x (hTS hx)
+      have hT : T.prod g ≠ 0 := prod_ne_zero_iff.mpr fun x hx ↦ hS x (hTS hx)
       simp [prod_insert hxT, sum_insert hxT, IH, factorization_mul (hS x hxS) hT]
 
 /-- For any `p`, the power of `p` in `n^k` is `k` times the power in `n` -/
@@ -217,21 +217,21 @@ lemma factorization_minFac_ne_zero {n : ℕ} (hn : 1 < n) :
 the product `∏ (a : ℕ) ∈ f.support, a ^ f a`. -/
 theorem prod_pow_factorization_eq_self {f : ℕ →₀ ℕ} (hf : ∀ p : ℕ, p ∈ f.support → Prime p) :
     (f.prod (· ^ ·)).factorization = f := by
-  have h : ∀ x : ℕ, x ∈ f.support → x ^ f x ≠ 0 := fun p hp =>
+  have h : ∀ x : ℕ, x ∈ f.support → x ^ f x ≠ 0 := fun p hp ↦
     pow_ne_zero _ (Prime.ne_zero (hf p hp))
   simp only [Finsupp.prod, factorization_prod h]
   conv =>
     rhs
     rw [(sum_single f).symm]
-  exact sum_congr rfl fun p hp => Prime.factorization_pow (hf p hp)
+  exact sum_congr rfl fun p hp ↦ Prime.factorization_pow (hf p hp)
 
 /-- The equiv between `ℕ+` and `ℕ →₀ ℕ` with support in the primes. -/
 def factorizationEquiv : ℕ+ ≃ { f : ℕ →₀ ℕ | ∀ p ∈ f.support, Prime p } where
-  toFun := fun ⟨n, _⟩ => ⟨n.factorization, fun _ => prime_of_mem_primeFactors⟩
-  invFun := fun ⟨f, hf⟩ =>
-    ⟨f.prod _, prod_pow_pos_of_zero_notMem_support fun H => not_prime_zero (hf 0 H)⟩
-  left_inv := fun ⟨_, hx⟩ => Subtype.ext <| factorization_prod_pow_eq_self hx.ne.symm
-  right_inv := fun ⟨_, hf⟩ => Subtype.ext <| prod_pow_factorization_eq_self hf
+  toFun := fun ⟨n, _⟩ ↦ ⟨n.factorization, fun _ ↦ prime_of_mem_primeFactors⟩
+  invFun := fun ⟨f, hf⟩ ↦
+    ⟨f.prod _, prod_pow_pos_of_zero_notMem_support fun H ↦ not_prime_zero (hf 0 H)⟩
+  left_inv := fun ⟨_, hx⟩ ↦ Subtype.ext <| factorization_prod_pow_eq_self hx.ne.symm
+  right_inv := fun ⟨_, hf⟩ ↦ Subtype.ext <| prod_pow_factorization_eq_self hf
 
 /-! ### Factorization and coprimes -/
 

@@ -131,8 +131,8 @@ include adj in
 lemma isLocalization [F.Full] [F.Faithful] :
     G.IsLocalization ((MorphismProperty.isomorphisms C₂).inverseImage G) := by
   let W := ((MorphismProperty.isomorphisms C₂).inverseImage G)
-  have hG : W.IsInvertedBy G := fun _ _ _ hf => hf
-  have : ∀ (X : C₁), IsIso ((whiskerRight adj.unit W.Q).app X) := fun X =>
+  have hG : W.IsInvertedBy G := fun _ _ _ hf ↦ hf
+  have : ∀ (X : C₁), IsIso ((whiskerRight adj.unit W.Q).app X) := fun X ↦
     Localization.inverts W.Q W _ (by
       change IsIso _
       infer_instance)

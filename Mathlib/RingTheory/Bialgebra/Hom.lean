@@ -66,7 +66,7 @@ instance (priority := 100) toAlgHomClass : AlgHomClass F R A B where
   map_one := map_one
   map_add := map_add
   map_zero := map_zero
-  commutes := fun c r => by
+  commutes := fun c r ↦ by
     simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one]
 
 /-- Turn an element of a type `F` satisfying `BialgHomClass F R A B` into an actual
@@ -112,12 +112,12 @@ instance funLike : FunLike (A →ₐc[R] B) A B where
     simp_all
 
 instance bialgHomClass : BialgHomClass (A →ₐc[R] B) R A B where
-  map_add := fun f => f.map_add'
-  map_smulₛₗ := fun f => f.map_smul'
-  counit_comp := fun f => f.counit_comp
-  map_comp_comul := fun f => f.map_comp_comul
-  map_mul := fun f => f.map_mul'
-  map_one := fun f => f.map_one'
+  map_add := fun f ↦ f.map_add'
+  map_smulₛₗ := fun f ↦ f.map_smul'
+  counit_comp := fun f ↦ f.counit_comp
+  map_comp_comul := fun f ↦ f.map_comp_comul
+  map_mul := fun f ↦ f.map_mul'
+  map_one := fun f ↦ f.map_one'
 
 /-- See Note [custom simps projection] -/
 def Simps.apply {R α β : Type*} [CommSemiring R]
@@ -182,11 +182,11 @@ theorem coe_fn_inj {φ₁ φ₂ : A →ₐc[R] B} : (φ₁ : A → B) = φ₂ �
   DFunLike.coe_fn_eq
 
 theorem coe_coalgHom_injective : Function.Injective ((↑) : (A →ₐc[R] B) → A →ₗc[R] B) :=
-  fun φ₁ φ₂ H => coe_fn_injective <|
+  fun φ₁ φ₂ H ↦ coe_fn_injective <|
     show ((φ₁ : A →ₗc[R] B) : A → B) = ((φ₂ : A →ₗc[R] B) : A → B) from congr_arg _ H
 
 theorem coe_algHom_injective : Function.Injective ((↑) : (A →ₐc[R] B) → A →ₐ[R] B) :=
-  fun φ₁ φ₂ H => coe_fn_injective <|
+  fun φ₁ φ₂ H ↦ coe_fn_injective <|
     show ((φ₁ : A →ₐ[R] B) : A → B) = ((φ₂ : A →ₐ[R] B) : A → B) from congr_arg _ H
 
 theorem coe_linearMap_injective : Function.Injective ((↑) : (A →ₐc[R] B) → A →ₗ[R] B) :=
@@ -269,15 +269,15 @@ theorem comp_toAlgHom (φ₁ : B →ₐc[R] C) (φ₂ : A →ₐc[R] B) :
 
 @[simp]
 theorem comp_id : φ.comp (BialgHom.id R A) = φ :=
-  ext fun _x => rfl
+  ext fun _x ↦ rfl
 
 @[simp]
 theorem id_comp : (BialgHom.id R B).comp φ = φ :=
-  ext fun _x => rfl
+  ext fun _x ↦ rfl
 
 theorem comp_assoc (φ₁ : C →ₐc[R] D) (φ₂ : B →ₐc[R] C) (φ₃ : A →ₐc[R] B) :
     (φ₁.comp φ₂).comp φ₃ = φ₁.comp (φ₂.comp φ₃) :=
-  ext fun _x => rfl
+  ext fun _x ↦ rfl
 
 theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul A B R' R] (r : R')
     (x : A) : φ (r • x) = r • φ x :=
@@ -288,8 +288,8 @@ instance End : Monoid (A →ₐc[R] A) where
   mul := comp
   mul_assoc _ _ _ := rfl
   one := BialgHom.id R A
-  one_mul _ := ext fun _ => rfl
-  mul_one _ := ext fun _ => rfl
+  one_mul _ := ext fun _ ↦ rfl
+  mul_one _ := ext fun _ ↦ rfl
 
 @[simp]
 theorem one_apply (x : A) : (1 : A →ₐc[R] A) x = x :=
@@ -323,7 +323,7 @@ theorem counitBialgHom_toCoalgHom :
     counitBialgHom R A = Coalgebra.counitCoalgHom R A := rfl
 
 instance subsingleton_to_ring : Subsingleton (A →ₐc[R] R) :=
-  ⟨fun _ _ => BialgHom.coe_coalgHom_injective (Subsingleton.elim _ _)⟩
+  ⟨fun _ _ ↦ BialgHom.coe_coalgHom_injective (Subsingleton.elim _ _)⟩
 
 @[ext high]
 theorem ext_to_ring (f g : A →ₐc[R] R) : f = g := Subsingleton.elim _ _

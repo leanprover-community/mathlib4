@@ -240,7 +240,7 @@ private noncomputable def fiberPerm (b : F.obj A) : F.obj X ≃ F.obj X := by
 
 /-- Twisting `u` by `fiberPerm h b` yields an inclusion of `A` into `selfProd F X`. -/
 private noncomputable def selfProdPermIncl (b : F.obj A) : A ⟶ selfProd F X :=
-  u ≫ (Pi.whiskerEquiv (fiberPerm h b) (fun _ => Iso.refl X)).inv
+  u ≫ (Pi.whiskerEquiv (fiberPerm h b) (fun _ ↦ Iso.refl X)).inv
 
 private instance [Mono u] (b : F.obj A) : Mono (selfProdPermIncl h b) := mono_comp _ _
 

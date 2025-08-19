@@ -49,7 +49,7 @@ variable [Semiring R]
 @[simps]
 def toPowerSeries : HahnSeries ℕ R ≃+* PowerSeries R where
   toFun f := PowerSeries.mk f.coeff
-  invFun f := ⟨fun n => PowerSeries.coeff R n f, .of_linearOrder _⟩
+  invFun f := ⟨fun n ↦ PowerSeries.coeff R n f, .of_linearOrder _⟩
   left_inv f := by
     ext
     simp
@@ -83,7 +83,7 @@ variable (Γ R) [Semiring Γ] [PartialOrder Γ] [IsStrictOrderedRing Γ]
 
 /-- Casts a power series as a Hahn series with coefficients from a `StrictOrderedSemiring`. -/
 def ofPowerSeries : PowerSeries R →+* HahnSeries Γ R :=
-  (HahnSeries.embDomainRingHom (Nat.castAddMonoidHom Γ) Nat.strictMono_cast.injective fun _ _ =>
+  (HahnSeries.embDomainRingHom (Nat.castAddMonoidHom Γ) Nat.strictMono_cast.injective fun _ _ ↦
         Nat.cast_le).comp
     (RingEquiv.toRingHom toPowerSeries.symm)
 
@@ -196,7 +196,7 @@ variable (R) [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
 @[simps!]
 def toPowerSeriesAlg : HahnSeries ℕ A ≃ₐ[R] PowerSeries A :=
   { toPowerSeries with
-    commutes' := fun r => by
+    commutes' := fun r ↦ by
       ext n
       cases n <;> simp [algebraMap_apply, PowerSeries.algebraMap_apply] }
 
@@ -206,7 +206,7 @@ variable (Γ) [Semiring Γ] [PartialOrder Γ] [IsStrictOrderedRing Γ]
   is an algebra homomorphism. -/
 @[simps!]
 def ofPowerSeriesAlg : PowerSeries A →ₐ[R] HahnSeries Γ A :=
-  (HahnSeries.embDomainAlgHom (Nat.castAddMonoidHom Γ) Nat.strictMono_cast.injective fun _ _ =>
+  (HahnSeries.embDomainAlgHom (Nat.castAddMonoidHom Γ) Nat.strictMono_cast.injective fun _ _ ↦
         Nat.cast_le).comp
     (AlgEquiv.toAlgHom (toPowerSeriesAlg R).symm)
 

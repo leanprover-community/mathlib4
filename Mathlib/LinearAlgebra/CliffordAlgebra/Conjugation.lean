@@ -41,7 +41,7 @@ section Involute
 
 /-- Grade involution, inverting the sign of each basis vector. -/
 def involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q :=
-  CliffordAlgebra.lift Q ⟨-ι Q, fun m => by simp⟩
+  CliffordAlgebra.lift Q ⟨-ι Q, fun m ↦ by simp⟩
 
 @[simp]
 theorem involute_ι (m : M) : involute (ι Q m) = -ι Q m :=
@@ -73,7 +73,7 @@ open MulOpposite
 /-- `CliffordAlgebra.reverse` as an `AlgHom` to the opposite algebra -/
 def reverseOp : CliffordAlgebra Q →ₐ[R] (CliffordAlgebra Q)ᵐᵒᵖ :=
   CliffordAlgebra.lift Q
-    ⟨(MulOpposite.opLinearEquiv R).toLinearMap ∘ₗ ι Q, fun m => unop_injective <| by simp⟩
+    ⟨(MulOpposite.opLinearEquiv R).toLinearMap ∘ₗ ι Q, fun m ↦ unop_injective <| by simp⟩
 
 @[simp]
 theorem reverseOp_ι (m : M) : reverseOp (ι Q m) = op (ι Q m) := lift_ι_apply _ _ _
@@ -82,8 +82,8 @@ theorem reverseOp_ι (m : M) : reverseOp (ι Q m) = op (ι Q m) := lift_ι_apply
 @[simps! apply]
 def reverseOpEquiv : CliffordAlgebra Q ≃ₐ[R] (CliffordAlgebra Q)ᵐᵒᵖ :=
   AlgEquiv.ofAlgHom reverseOp (AlgHom.opComm reverseOp)
-    (AlgHom.unop.injective <| hom_ext <| LinearMap.ext fun _ => by simp)
-    (hom_ext <| LinearMap.ext fun _ => by simp)
+    (AlgHom.unop.injective <| hom_ext <| LinearMap.ext fun _ ↦ by simp)
+    (hom_ext <| LinearMap.ext fun _ ↦ by simp)
 
 @[simp]
 theorem reverseOpEquiv_opComm :

@@ -18,7 +18,7 @@ Let `α` and `ι` by types and let `f : α → ι`
   in `(Equiv.Perm α)ᵈᵐᵃ` is the set of `g : (Equiv.Perm α)ᵈᵐᵃ` such that `f ∘ (mk.symm g) = f`.
 
   The natural equivalence from `stabilizer (Perm α)ᵈᵐᵃ f` to `{ g : Perm α // p ∘ g = f }`
-  can be obtained as `subtypeEquiv mk.symm (fun _ => mem_stabilizer_iff)`
+  can be obtained as `subtypeEquiv mk.symm (fun _ ↦ mem_stabilizer_iff)`
 
 * `DomMulAct.stabilizerMulEquiv` is the `MulEquiv` from
   the MulOpposite of this stabilizer to the product,
@@ -119,12 +119,12 @@ theorem stabilizer_card' :
     Fintype.card {g : Perm α // f ∘ g = f} =
       ∏ i ∈ Finset.univ.image f, (Fintype.card ({a // f a = i}))! := by
   set φ : α → Finset.univ.image f :=
-    Set.codRestrict f (Finset.univ.image f) (fun a => by simp)
+    Set.codRestrict f (Finset.univ.image f) (fun a ↦ by simp)
   suffices ∀ g : Perm α, f ∘ g = f ↔ φ ∘ g = φ by
     simp only [this, stabilizer_card]
-    apply Finset.prod_bij (fun g _ => g.val)
-    · exact fun g _ => Finset.coe_mem g
-    · exact fun g _ g' _ =>  SetCoe.ext
+    apply Finset.prod_bij (fun g _ ↦ g.val)
+    · exact fun g _ ↦ Finset.coe_mem g
+    · exact fun g _ g' _ ↦  SetCoe.ext
     · simp
     · intro i _
       apply congr_arg

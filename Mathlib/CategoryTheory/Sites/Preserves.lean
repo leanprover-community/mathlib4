@@ -109,7 +109,7 @@ theorem isSheafFor_of_preservesProduct [PreservesLimit (Discrete.functor (fun x 
     ht₂ (F.map ((opCoproductIsoProduct' hc (productIsProduct _)).hom) y) (by simp [← hy])]
 
 variable [HasInitial C] [∀ i, Mono (c.inj i)]
-  (hd : Pairwise fun i j => IsPullback (initial.to _) (initial.to _) (c.inj i) (c.inj j))
+  (hd : Pairwise fun i j ↦ IsPullback (initial.to _) (initial.to _) (c.inj i) (c.inj j))
 
 include hd hF hI in
 /--

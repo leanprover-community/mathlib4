@@ -55,24 +55,24 @@ the constant zero, the successor, left and right projections, each oracle `g ∈
 and is closed under pairing, composition, primitive recursion, and μ-recursion.
 -/
 inductive RecursiveIn (O : Set (ℕ →. ℕ)) : (ℕ →. ℕ) → Prop
-  | zero : RecursiveIn O fun _ => 0
+  | zero : RecursiveIn O fun _ ↦ 0
   | succ : RecursiveIn O Nat.succ
-  | left : RecursiveIn O fun n => (Nat.unpair n).1
-  | right : RecursiveIn O fun n => (Nat.unpair n).2
+  | left : RecursiveIn O fun n ↦ (Nat.unpair n).1
+  | right : RecursiveIn O fun n ↦ (Nat.unpair n).2
   | oracle : ∀ g ∈ O, RecursiveIn O g
   | pair {f h : ℕ →. ℕ} (hf : RecursiveIn O f) (hh : RecursiveIn O h) :
-      RecursiveIn O fun n => (Nat.pair <$> f n <*> h n)
+      RecursiveIn O fun n ↦ (Nat.pair <$> f n <*> h n)
   | comp {f h : ℕ →. ℕ} (hf : RecursiveIn O f) (hh : RecursiveIn O h) :
-      RecursiveIn O fun n => h n >>= f
+      RecursiveIn O fun n ↦ h n >>= f
   | prec {f h : ℕ →. ℕ} (hf : RecursiveIn O f) (hh : RecursiveIn O h) :
-      RecursiveIn O fun p =>
+      RecursiveIn O fun p ↦
         let (a, n) := Nat.unpair p
-        n.rec (f a) fun y IH => do
+        n.rec (f a) fun y IH ↦ do
           let i ← IH
           h (Nat.pair a (Nat.pair y i))
   | rfind {f : ℕ →. ℕ} (hf : RecursiveIn O f) :
-      RecursiveIn O fun a =>
-        Nat.rfind fun n => (fun m => m = 0) <$> f (Nat.pair a n)
+      RecursiveIn O fun a ↦
+        Nat.rfind fun n ↦ (fun m ↦ m = 0) <$> f (Nat.pair a n)
 /--
 `f` is Turing reducible to `g` if `f` is partial recursive given access to the oracle `g`
 -/
@@ -104,7 +104,7 @@ lemma Nat.Partrec.turingReducible (pF : Nat.Partrec f) : f ≤ᵀ g := by
 If a function is recursive in the constant zero function,
 then it is partial recursive.
 -/
-lemma TuringReducible.partrec_of_zero (fRecInZero : f ≤ᵀ fun _ => Part.some 0) : Nat.Partrec f := by
+lemma TuringReducible.partrec_of_zero (fRecInZero : f ≤ᵀ fun _ ↦ Part.some 0) : Nat.Partrec f := by
   induction fRecInZero with repeat {constructor}
   | oracle _ hg => rw [Set.mem_singleton_iff] at hg; rw [hg]; exact Nat.Partrec.zero
   | pair | comp | prec | rfind => repeat {constructor; assumption; try assumption}

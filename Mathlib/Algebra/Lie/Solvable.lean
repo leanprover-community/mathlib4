@@ -51,7 +51,7 @@ derived series are also ideals of the enclosing algebra.
 See also `LieIdeal.derivedSeries_eq_derivedSeriesOfIdeal_comap` and
 `LieIdeal.derivedSeries_eq_derivedSeriesOfIdeal_map` below. -/
 def derivedSeriesOfIdeal (k : ℕ) : LieIdeal R L → LieIdeal R L :=
-  (fun I => ⁅I, I⁆)^[k]
+  (fun I ↦ ⁅I, I⁆)^[k]
 
 @[simp]
 theorem derivedSeriesOfIdeal_zero : derivedSeriesOfIdeal R L 0 I = I :=
@@ -61,7 +61,7 @@ theorem derivedSeriesOfIdeal_zero : derivedSeriesOfIdeal R L 0 I = I :=
 theorem derivedSeriesOfIdeal_succ (k : ℕ) :
     derivedSeriesOfIdeal R L (k + 1) I =
       ⁅derivedSeriesOfIdeal R L k I, derivedSeriesOfIdeal R L k I⁆ :=
-  Function.iterate_succ_apply' (fun I => ⁅I, I⁆) k I
+  Function.iterate_succ_apply' (fun I ↦ ⁅I, I⁆) k I
 
 /-- The derived series of Lie ideals of a Lie algebra. -/
 abbrev derivedSeries (k : ℕ) : LieIdeal R L :=
@@ -105,8 +105,8 @@ theorem derivedSeriesOfIdeal_antitone {k l : ℕ} (h : l ≤ k) : D k I ≤ D l 
 theorem derivedSeriesOfIdeal_add_le_add (J : LieIdeal R L) (k l : ℕ) :
     D (k + l) (I + J) ≤ D k I + D l J := by
   let D₁ : LieIdeal R L →o LieIdeal R L :=
-    { toFun := fun I => ⁅I, I⁆
-      monotone' := fun I J h => LieSubmodule.mono_lie h h }
+    { toFun := fun I ↦ ⁅I, I⁆
+      monotone' := fun I J h ↦ LieSubmodule.mono_lie h h }
   have h₁ : ∀ I J : LieIdeal R L, D₁ (I ⊔ J) ≤ D₁ I ⊔ J := by
     simp [D₁, LieSubmodule.lie_le_right, LieSubmodule.lie_le_left, le_sup_of_le_right]
   rw [← D₁.iterate_sup_le_sup_iff] at h₁
@@ -358,7 +358,7 @@ def radical :=
 instance radicalIsSolvable [IsNoetherian R L] : IsSolvable (radical R L) := by
   have hwf := LieSubmodule.wellFoundedGT_of_noetherian R L L
   rw [← CompleteLattice.isSupClosedCompact_iff_wellFoundedGT] at hwf
-  refine hwf { I : LieIdeal R L | IsSolvable I } ⟨⊥, ?_⟩ fun I hI J hJ => ?_
+  refine hwf { I : LieIdeal R L | IsSolvable I } ⟨⊥, ?_⟩ fun I hI J hJ ↦ ?_
   · exact LieAlgebra.isSolvableBot R L
   · rw [Set.mem_setOf_eq] at hI hJ ⊢
     apply LieAlgebra.isSolvableAdd R L
@@ -366,7 +366,7 @@ instance radicalIsSolvable [IsNoetherian R L] : IsSolvable (radical R L) := by
 /-- The `→` direction of this lemma is actually true without the `IsNoetherian` assumption. -/
 theorem LieIdeal.solvable_iff_le_radical [IsNoetherian R L] (I : LieIdeal R L) :
     IsSolvable I ↔ I ≤ radical R L :=
-  ⟨fun h => le_sSup h, fun h => le_solvable_ideal_solvable h inferInstance⟩
+  ⟨fun h ↦ le_sSup h, fun h ↦ le_solvable_ideal_solvable h inferInstance⟩
 
 theorem center_le_radical : center R L ≤ radical R L :=
   have h : IsSolvable (center R L) := inferInstance

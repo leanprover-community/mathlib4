@@ -130,7 +130,7 @@ variable (f : A →ₐ[R] B) (g : B →ₐ[R] C)
 functorial. -/
 def toLieHom : A →ₗ⁅R⁆ B :=
   { f.toLinearMap with
-    map_lie' := fun {_ _} => by simp [LieRing.of_associative_ring_bracket] }
+    map_lie' := fun {_ _} ↦ by simp [LieRing.of_associative_ring_bracket] }
 
 instance : Coe (A →ₐ[R] B) (A →ₗ⁅R⁆ B) :=
   ⟨toLieHom⟩
@@ -171,9 +171,9 @@ See also `LieModule.toModuleHom`. -/
 @[simps]
 def LieModule.toEnd : L →ₗ⁅R⁆ Module.End R M where
   toFun x :=
-    { toFun := fun m => ⁅x, m⁆
+    { toFun := fun m ↦ ⁅x, m⁆
       map_add' := lie_add x
-      map_smul' := fun t => lie_smul t x }
+      map_smul' := fun t ↦ lie_smul t x }
   map_add' x y := by ext m; apply add_lie
   map_smul' t x := by ext m; apply smul_lie
   map_lie' {x y} := by ext m; apply lie_lie
@@ -371,7 +371,7 @@ end AdjointAction
 def lieSubalgebraOfSubalgebra (R : Type u) [CommRing R] (A : Type v) [Ring A] [Algebra R A]
     (A' : Subalgebra R A) : LieSubalgebra R A :=
   { Subalgebra.toSubmodule A' with
-    lie_mem' := fun {x y} hx hy => by
+    lie_mem' := fun {x y} hx hy ↦ by
       change ⁅x, y⁆ ∈ A'; change x ∈ A' at hx; change y ∈ A' at hy
       rw [LieRing.of_associative_ring_bracket]
       have hxy := A'.mul_mem hx hy
@@ -387,7 +387,7 @@ variable (e : M₁ ≃ₗ[R] M₂)
 /-- A linear equivalence of two modules induces a Lie algebra equivalence of their endomorphisms. -/
 def lieConj : Module.End R M₁ ≃ₗ⁅R⁆ Module.End R M₂ :=
   { e.conj with
-    map_lie' := fun {f g} =>
+    map_lie' := fun {f g} ↦
       show e.conj ⁅f, g⁆ = ⁅e.conj f, e.conj g⁆ by
         simp only [LieRing.of_associative_ring_bracket, Module.End.mul_eq_comp, e.conj_comp,
           map_sub] }
@@ -412,7 +412,7 @@ variable (e : A₁ ≃ₐ[R] A₂)
 def toLieEquiv : A₁ ≃ₗ⁅R⁆ A₂ :=
   { e.toLinearEquiv with
     toFun := e.toFun
-    map_lie' := fun {x y} => by
+    map_lie' := fun {x y} ↦ by
       have : e.toEquiv.toFun = e := rfl
       simp_rw [LieRing.of_associative_ring_bracket, this, map_sub, map_mul] }
 

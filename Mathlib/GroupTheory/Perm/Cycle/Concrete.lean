@@ -83,7 +83,7 @@ theorem isCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) : IsCycle (formPer
 theorem pairwise_sameCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) :
     Pairwise l.formPerm.SameCycle l :=
   Pairwise.imp_mem.mpr
-    (pairwise_of_forall fun _ _ hx hy =>
+    (pairwise_of_forall fun _ _ hx hy ↦
       (isCycle_formPerm hl hn).sameCycle ((formPerm_apply_mem_ne_self_iff _ hl _ hx).mpr hn)
         ((formPerm_apply_mem_ne_self_iff _ hl _ hy).mpr hn))
 
@@ -123,7 +123,7 @@ variable [DecidableEq α] (s : Cycle α)
 where each element in the list is permuted to the next one, defined as `formPerm`.
 -/
 def formPerm : ∀ s : Cycle α, Nodup s → Equiv.Perm α :=
-  fun s => Quotient.hrecOn s (fun l _ => List.formPerm l) fun l₁ l₂ (h : l₁ ~r l₂) => by
+  fun s ↦ Quotient.hrecOn s (fun l _ ↦ List.formPerm l) fun l₁ l₂ (h : l₁ ~r l₂) ↦ by
     apply Function.hfunext
     · ext
       exact h.nodup_iff
@@ -309,7 +309,7 @@ theorem SameCycle.toList_isRotated {f : Perm α} {x y : α} (h : SameCycle f x y
 
 theorem pow_apply_mem_toList_iff_mem_support {n : ℕ} : (p ^ n) x ∈ p.toList x ↔ x ∈ p.support := by
   rw [mem_toList_iff, and_iff_right_iff_imp]
-  refine fun _ => SameCycle.symm ?_
+  refine fun _ ↦ SameCycle.symm ?_
   rw [sameCycle_pow_left]
 
 theorem toList_formPerm_nil (x : α) : toList (formPerm ([] : List α)) x = [] := by simp
@@ -324,7 +324,7 @@ theorem toList_formPerm_nontrivial (l : List α) (hl : 2 ≤ l.length) (hn : Nod
     rintro _ rfl
     simp at hl
   rw [toList, hc.cycleOf_eq (mem_support.mp _), hs, card_toFinset, dedup_eq_self.mpr hn]
-  · refine ext_getElem (by simp) fun k hk hk' => ?_
+  · refine ext_getElem (by simp) fun k hk hk' ↦ ?_
     simp only [get_eq_getElem, getElem_iterate, iterate_eq_pow, formPerm_pow_apply_getElem _ hn,
       zero_add, Nat.mod_eq_of_lt hk']
   · simp [hs]
@@ -362,7 +362,7 @@ in the support of `f` in `Finset.univ`, and iterating on using
 -/
 def toCycle (f : Perm α) (hf : IsCycle f) : Cycle α :=
   Multiset.recOn (Finset.univ : Finset α).val (Quot.mk _ [])
-    (fun x _ l => if f x = x then l else toList f x)
+    (fun x _ l ↦ if f x = x then l else toList f x)
     (by
       intro x y _ s
       refine heq_of_eq ?_
@@ -465,7 +465,7 @@ The forward direction is implemented by finding this `Cycle α` using `Fintype.c
 -/
 def isoCycle' : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s.Nontrivial } :=
   let f : { s : Cycle α // s.Nodup ∧ s.Nontrivial } → { f : Perm α // IsCycle f } :=
-    fun s => ⟨(s : Cycle α).formPerm s.prop.left, (s : Cycle α).isCycle_formPerm _ s.prop.right⟩
+    fun s ↦ ⟨(s : Cycle α).formPerm s.prop.left, (s : Cycle α).isCycle_formPerm _ s.prop.right⟩
   { toFun := Fintype.bijInv (show Function.Bijective f by
       rw [Function.bijective_iff_existsUnique]
       rintro ⟨f, hf⟩
@@ -501,7 +501,7 @@ unsafe instance instRepr [Repr α] : Repr (Perm α) where
     -- Obtain a list of formats which represents disjoint cycles.
     letI l := Quot.unquot <| Multiset.map repr <| Multiset.pmap toCycle
       (Perm.cycleFactorsFinset f).val
-      fun _ hg => (mem_cycleFactorsFinset_iff.mp (Finset.mem_def.mpr hg)).left
+      fun _ hg ↦ (mem_cycleFactorsFinset_iff.mp (Finset.mem_def.mpr hg)).left
     -- And intercalate `*`s.
     match l with
     | []  => "1"

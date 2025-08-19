@@ -31,7 +31,7 @@ instance : Inhabited FinTopCat :=
   ⟨{ toTop := TopCat.of PEmpty }⟩
 
 instance : CoeSort FinTopCat (Type u) :=
-  ⟨fun X => X.toTop⟩
+  ⟨fun X ↦ X.toTop⟩
 
 attribute [instance] fintype
 

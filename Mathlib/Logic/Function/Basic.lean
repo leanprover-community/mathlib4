@@ -127,7 +127,7 @@ lemma Injective.dite (p : α → Prop) [DecidablePred p]
     {f : {a : α // p a} → β} {f' : {a : α // ¬ p a} → β}
     (hf : Injective f) (hf' : Injective f')
     (im_disj : ∀ {x x' : α} {hx : p x} {hx' : ¬ p x'}, f ⟨x, hx⟩ ≠ f' ⟨x', hx'⟩) :
-    Function.Injective (fun x ↦ if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) := fun x₁ x₂ h => by
+    Function.Injective (fun x ↦ if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) := fun x₁ x₂ h ↦ by
   dsimp only at h
   by_cases h₁ : p x₁ <;> by_cases h₂ : p x₂
   · rw [dif_pos h₁, dif_pos h₂] at h; injection (hf h)
@@ -344,7 +344,7 @@ noncomputable def partialInv {α β} (f : α → β) (b : β) : Option α :=
 
 theorem partialInv_of_injective {α β} {f : α → β} (I : Injective f) : IsPartialInv f (partialInv f)
   | a, b =>
-  ⟨fun h =>
+  ⟨fun h ↦
     open scoped Classical in
     have hpi : partialInv f b = if h : ∃ a, f a = b then some (Classical.choose h) else none :=
       rfl
@@ -354,7 +354,7 @@ theorem partialInv_of_injective {α β} {f : α → β} (I : Injective f) : IsPa
             subst h
             apply Classical.choose_spec h'
     else by rw [hpi, dif_neg h'] at h; contradiction,
-  fun e => e ▸ have h : ∃ a', f a' = f a := ⟨_, rfl⟩
+  fun e ↦ e ▸ have h : ∃ a', f a' = f a := ⟨_, rfl⟩
               (dif_pos h).trans (congr_arg _ (I <| Classical.choose_spec h))⟩
 
 theorem partialInv_left {α β} {f : α → β} (I : Injective f) : ∀ x, partialInv f (f x) = some x :=
@@ -596,7 +596,7 @@ lemma rec_update {ι κ : Sort*} {α : κ → Sort*} [DecidableEq ι] [Decidable
 lemma _root_.Option.rec_update {α : Type*} {β : Option α → Sort*} [DecidableEq α]
     (f : β none) (g : ∀ a, β (.some a)) (a : α) (x : β (.some a)) :
     Option.rec f (update g a x) = update (Option.rec f g) (.some a) x :=
-  Function.rec_update (@Option.some.inj _) (Option.rec f) (fun _ _ => rfl) (fun
+  Function.rec_update (@Option.some.inj _) (Option.rec f) (fun _ _ ↦ rfl) (fun
     | _, _, .some _, h => (h _ rfl).elim
     | _, _, .none, _ => rfl) _ _ _
 
@@ -655,7 +655,7 @@ theorem _root_.Pi.map_injective
     Injective (Pi.map f) ↔ ∀ i, Injective (f i) where
   mp h i x y hxy := by
     classical
-    have : Inhabited (∀ i, α i) := ⟨fun _ => Classical.choice inferInstance⟩
+    have : Inhabited (∀ i, α i) := ⟨fun _ ↦ Classical.choice inferInstance⟩
     replace h := @h (Function.update default i x) (Function.update default i y) ?_
     · simpa using congrFun h i
     rw [Pi.map_update, Pi.map_update, hxy]
@@ -693,7 +693,7 @@ theorem extend_def (f : α → β) (g : α → γ) (e' : β → γ) (b : β) [De
   congr
 
 lemma Injective.factorsThrough (hf : Injective f) (g : α → γ) : g.FactorsThrough f :=
-  fun _ _ h => congr_arg g (hf h)
+  fun _ _ h ↦ congr_arg g (hf h)
 
 lemma FactorsThrough.extend_apply {g : α → γ} (hf : g.FactorsThrough f) (e' : β → γ) (a : α) :
     extend f g e' (f a) = g a := by
@@ -734,9 +734,9 @@ theorem Injective.extend_comp {α₁ α₂ α₃ : Sort*} {f₁₂ : α₁ → �
     exact fun h ↦ h₃ (Exists.casesOn h fun c hc ↦ Exists.intro (f₁₂ c) (hc))
 
 lemma factorsThrough_iff (g : α → γ) [Nonempty γ] : g.FactorsThrough f ↔ ∃ (e : β → γ), g = e ∘ f :=
-  ⟨fun hf => ⟨extend f g (const β (Classical.arbitrary γ)),
-      funext (fun x => by simp only [comp_apply, hf.extend_apply])⟩,
-  fun h _ _ hf => by rw [Classical.choose_spec h, comp_apply, comp_apply, hf]⟩
+  ⟨fun hf ↦ ⟨extend f g (const β (Classical.arbitrary γ)),
+      funext (fun x ↦ by simp only [comp_apply, hf.extend_apply])⟩,
+  fun h _ _ hf ↦ by rw [Classical.choose_spec h, comp_apply, comp_apply, hf]⟩
 
 lemma apply_extend {δ} {g : α → γ} (F : γ → δ) (f : α → β) (e' : β → γ) (b : β) :
     F (extend f g e' b) = extend f (F ∘ g) (F ∘ e') b :=
@@ -751,7 +751,7 @@ theorem extend_injective (hf : Injective f) (e' : β → γ) : Injective fun g �
 
 lemma FactorsThrough.extend_comp {g : α → γ} (e' : β → γ) (hf : FactorsThrough g f) :
     extend f g e' ∘ f = g :=
-  funext fun a => hf.extend_apply e' a
+  funext fun a ↦ hf.extend_apply e' a
 
 @[simp]
 lemma extend_const (f : α → β) (c : γ) : extend f (fun _ ↦ c) (fun _ ↦ c) = fun _ ↦ c :=

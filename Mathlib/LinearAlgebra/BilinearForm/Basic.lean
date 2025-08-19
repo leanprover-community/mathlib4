@@ -87,8 +87,8 @@ lemma smul_right_of_tower (r : S) (x y : M) : B x (r • y) = r • B x y := by
 variable {D : BilinForm R M} {D₁ : BilinForm R₁ M₁}
 
 -- TODO: instantiate `FunLike`
-theorem coe_injective : Function.Injective ((fun B x y => B x y) : BilinForm R M → M → M → R) :=
-  fun B D h => by
+theorem coe_injective : Function.Injective ((fun B x y ↦ B x y) : BilinForm R M → M → M → R) :=
+  fun B D h ↦ by
     ext x y
     apply congrFun₂ h
 
@@ -118,7 +118,7 @@ theorem sub_apply (x y : M₁) : (B₁ - D₁) x y = B₁ x y - D₁ x y :=
 /-- `coeFn` as an `AddMonoidHom` -/
 @[simps]
 def coeFnAddMonoidHom : BilinForm R M →+ M → M → R where
-  toFun := fun B x y => B x y
+  toFun := fun B x y ↦ B x y
   map_zero' := rfl
   map_add' _ _ := rfl
 

@@ -80,7 +80,7 @@ def op : LocalizerMorphism W₁.op W₂.op where
 variable (L₁ : C₁ ⥤ D₁) [L₁.IsLocalization W₁] (L₂ : C₂ ⥤ D₂) [L₂.IsLocalization W₂]
 
 lemma inverts : W₁.IsInvertedBy (Φ.functor ⋙ L₂) :=
-  fun _ _ _ hf => Localization.inverts L₂ W₂ _ (Φ.map _ hf)
+  fun _ _ _ hf ↦ Localization.inverts L₂ W₂ _ (Φ.map _ hf)
 
 /-- When `Φ : LocalizerMorphism W₁ W₂` and that `L₁` and `L₂` are localization functors
 for `W₁` and `W₂`, then `Φ.localizedFunctor L₁ L₂` is the induced functor on the
@@ -129,8 +129,8 @@ lemma isEquivalence_imp [G.IsEquivalence] : G'.IsEquivalence :=
   Functor.isEquivalence_of_comp_left E₁.functor G'
 
 lemma isEquivalence_iff : G.IsEquivalence ↔ G'.IsEquivalence :=
-  ⟨fun _ => Φ.isEquivalence_imp L₁ L₂ G L₁' L₂' G',
-    fun _ => Φ.isEquivalence_imp L₁' L₂' G' L₁ L₂ G⟩
+  ⟨fun _ ↦ Φ.isEquivalence_imp L₁ L₂ G L₁' L₂' G',
+    fun _ ↦ Φ.isEquivalence_imp L₁' L₂' G' L₁ L₂ G⟩
 
 end
 

@@ -50,8 +50,8 @@ instance TopCat.of.hasGroupoid [HasGroupoid M G] : HasGroupoid (TopCat.of M) G :
 and let `M`, `M'` be charted spaces modelled on the model spaces of those groupoids.  Then there is
 an induced `LocalPredicate` on the functions from `M` to `M'`, given by `LiftProp P`. -/
 def StructureGroupoid.LocalInvariantProp.localPredicate (hG : LocalInvariantProp G G' P) :
-    TopCat.LocalPredicate fun _ : TopCat.of M => M' where
-  pred {U : Opens (TopCat.of M)} := fun f : U → M' => ChartedSpace.LiftProp P f
+    TopCat.LocalPredicate fun _ : TopCat.of M ↦ M' where
+  pred {U : Opens (TopCat.of M)} := fun f : U → M' ↦ ChartedSpace.LiftProp P f
   res := by
     intro U V i f h x
     have hUV : U ≤ V := CategoryTheory.leOfHom i
@@ -77,7 +77,7 @@ def StructureGroupoid.LocalInvariantProp.sheaf (hG : LocalInvariantProp G G' P) 
   TopCat.subsheafToTypes (hG.localPredicate M M')
 
 instance StructureGroupoid.LocalInvariantProp.sheafHasCoeToFun (hG : LocalInvariantProp G G' P)
-    (U : (Opens (TopCat.of M))ᵒᵖ) : CoeFun ((hG.sheaf M M').val.obj U) fun _ => ↑(unop U) → M' where
+    (U : (Opens (TopCat.of M))ᵒᵖ) : CoeFun ((hG.sheaf M M').val.obj U) fun _ ↦ ↑(unop U) → M' where
   coe a := a.1
 
 theorem StructureGroupoid.LocalInvariantProp.section_spec (hG : LocalInvariantProp G G' P)

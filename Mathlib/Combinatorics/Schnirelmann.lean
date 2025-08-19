@@ -54,11 +54,11 @@ section
 variable {A : Set ℕ} [DecidablePred (· ∈ A)]
 
 lemma schnirelmannDensity_nonneg : 0 ≤ schnirelmannDensity A :=
-  Real.iInf_nonneg (fun _ => by positivity)
+  Real.iInf_nonneg (fun _ ↦ by positivity)
 
 lemma schnirelmannDensity_le_div {n : ℕ} (hn : n ≠ 0) :
     schnirelmannDensity A ≤ #{a ∈ Ioc 0 n | a ∈ A} / n :=
-  ciInf_le ⟨0, fun _ ⟨_, hx⟩ => hx ▸ by positivity⟩ (⟨n, hn.bot_lt⟩ : {n : ℕ // 0 < n})
+  ciInf_le ⟨0, fun _ ⟨_, hx⟩ ↦ hx ▸ by positivity⟩ (⟨n, hn.bot_lt⟩ : {n : ℕ // 0 < n})
 
 /--
 For any natural `n`, the Schnirelmann density multiplied by `n` is bounded by `|A ∩ {1, ..., n}|`.
@@ -126,7 +126,7 @@ lemma schnirelmannDensity_eq_one_iff : schnirelmannDensity A = 1 ↔ {0}ᶜ ⊆ 
     apply (schnirelmannDensity_le_of_notMem hx').trans_lt
     simpa only [one_div, sub_lt_self_iff, inv_pos, Nat.cast_pos, pos_iff_ne_zero] using hx
   · intro h
-    refine le_ciInf fun ⟨n, hn⟩ => ?_
+    refine le_ciInf fun ⟨n, hn⟩ ↦ ?_
     rw [one_le_div (Nat.cast_pos.2 hn), Nat.cast_le, filter_true_of_mem, Nat.card_Ioc, Nat.sub_zero]
     rintro x hx
     exact h (mem_Ioc.1 hx).1.ne'
@@ -136,7 +136,7 @@ lemma schnirelmannDensity_eq_one_iff_of_zero_mem (hA : 0 ∈ A) :
     schnirelmannDensity A = 1 ↔ A = Set.univ := by
   rw [schnirelmannDensity_eq_one_iff]
   constructor
-  · refine fun h => Set.eq_univ_of_forall fun x => ?_
+  · refine fun h ↦ Set.eq_univ_of_forall fun x ↦ ?_
     rcases eq_or_ne x 0 with rfl | hx
     · exact hA
     · exact h hx
@@ -145,7 +145,7 @@ lemma schnirelmannDensity_eq_one_iff_of_zero_mem (hA : 0 ∈ A) :
 
 lemma le_schnirelmannDensity_iff {x : ℝ} :
     x ≤ schnirelmannDensity A ↔ ∀ n : ℕ, 0 < n → x ≤ #{a ∈ Ioc 0 n | a ∈ A} / n :=
-  (le_ciInf_iff ⟨0, fun _ ⟨_, hx⟩ => hx ▸ by positivity⟩).trans Subtype.forall
+  (le_ciInf_iff ⟨0, fun _ ⟨_, hx⟩ ↦ hx ▸ by positivity⟩).trans Subtype.forall
 
 lemma schnirelmannDensity_lt_iff {x : ℝ} :
     schnirelmannDensity A < x ↔ ∃ n : ℕ, 0 < n ∧ #{a ∈ Ioc 0 n | a ∈ A} / n < x := by
@@ -268,6 +268,6 @@ lemma schnirelmannDensity_setOf_modeq_one {m : ℕ} :
   simp only [Set.mem_setOf_eq, Nat.ModEq, Nat.one_mod_eq_one.mpr hm]
 
 lemma schnirelmannDensity_setOf_Odd : schnirelmannDensity (setOf Odd) = 2⁻¹ := by
-  have h : setOf Odd = {n | n % 2 = 1} := Set.ext fun _ => Nat.odd_iff
+  have h : setOf Odd = {n | n % 2 = 1} := Set.ext fun _ ↦ Nat.odd_iff
   simp only [h]
   rw [schnirelmannDensity_setOf_mod_eq_one (by norm_num1), Nat.cast_two]

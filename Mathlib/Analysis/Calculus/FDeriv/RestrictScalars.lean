@@ -69,10 +69,10 @@ theorem DifferentiableWithinAt.restrictScalars (h : DifferentiableWithinAt 𝕜'
 
 @[fun_prop]
 theorem DifferentiableOn.restrictScalars (h : DifferentiableOn 𝕜' f s) : DifferentiableOn 𝕜 f s :=
-  fun x hx => (h x hx).restrictScalars 𝕜
+  fun x hx ↦ (h x hx).restrictScalars 𝕜
 
 @[fun_prop]
-theorem Differentiable.restrictScalars (h : Differentiable 𝕜' f) : Differentiable 𝕜 f := fun x =>
+theorem Differentiable.restrictScalars (h : Differentiable 𝕜' f) : Differentiable 𝕜 f := fun x ↦
   (h x).restrictScalars 𝕜
 
 @[fun_prop]

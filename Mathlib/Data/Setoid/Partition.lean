@@ -46,11 +46,11 @@ theorem eq_of_mem_eqv_class {c : Set (Set α)} (H : ∀ a, ∃! b ∈ c, a ∈ b
 /-- Makes an equivalence relation from a set of sets partitioning α. -/
 def mkClasses (c : Set (Set α)) (H : ∀ a, ∃! b ∈ c, a ∈ b) : Setoid α where
   r x y := ∀ s ∈ c, x ∈ s → y ∈ s
-  iseqv.refl := fun _ _ _ hx => hx
-  iseqv.symm := fun {x _y} h s hs hy => by
+  iseqv.refl := fun _ _ _ hx ↦ hx
+  iseqv.symm := fun {x _y} h s hs hy ↦ by
     obtain ⟨t, ⟨ht, hx⟩, _⟩ := H x
     rwa [eq_of_mem_eqv_class H hs hy ht (h t ht hx)]
-  iseqv.trans := fun {_x _ _} h1 h2 s hs hx => h2 s hs (h1 s hs hx)
+  iseqv.trans := fun {_x _ _} h1 h2 s hs hx ↦ h2 s hs (h1 s hs hx)
 
 /-- Makes the equivalence classes of an equivalence relation. -/
 def classes (r : Setoid α) : Set (Set α) :=
@@ -60,7 +60,7 @@ theorem mem_classes (r : Setoid α) (y) : { x | r x y } ∈ r.classes :=
   ⟨y, rfl⟩
 
 theorem classes_ker_subset_fiber_set {β : Type*} (f : α → β) :
-    (Setoid.ker f).classes ⊆ Set.range fun y => { x | f x = y } := by
+    (Setoid.ker f).classes ⊆ Set.range fun y ↦ { x | f x = y } := by
   rintro s ⟨x, rfl⟩
   rw [Set.mem_range]
   exact ⟨f x, rfl⟩
@@ -76,19 +76,19 @@ theorem card_classes_ker_le {α β : Type*} [Fintype β] (f : α → β)
 /-- Two equivalence relations are equal iff all their equivalence classes are equal. -/
 theorem eq_iff_classes_eq {r₁ r₂ : Setoid α} :
     r₁ = r₂ ↔ ∀ x, { y | r₁ x y } = { y | r₂ x y } :=
-  ⟨fun h _x => h ▸ rfl, fun h => ext fun x => Set.ext_iff.1 <| h x⟩
+  ⟨fun h _x ↦ h ▸ rfl, fun h ↦ ext fun x ↦ Set.ext_iff.1 <| h x⟩
 
 theorem rel_iff_exists_classes (r : Setoid α) {x y} : r x y ↔ ∃ c ∈ r.classes, x ∈ c ∧ y ∈ c :=
-  ⟨fun h => ⟨_, r.mem_classes y, h, r.refl' y⟩, fun ⟨c, ⟨z, hz⟩, hx, hy⟩ => by
+  ⟨fun h ↦ ⟨_, r.mem_classes y, h, r.refl' y⟩, fun ⟨c, ⟨z, hz⟩, hx, hy⟩ ↦ by
     subst c
     exact r.trans' hx (r.symm' hy)⟩
 
 /-- Two equivalence relations are equal iff their equivalence classes are equal. -/
 theorem classes_inj {r₁ r₂ : Setoid α} : r₁ = r₂ ↔ r₁.classes = r₂.classes :=
-  ⟨fun h => h ▸ rfl, fun h => ext fun a b => by simp only [rel_iff_exists_classes, h]⟩
+  ⟨fun h ↦ h ▸ rfl, fun h ↦ ext fun a b ↦ by simp only [rel_iff_exists_classes, h]⟩
 
 /-- The empty set is not an equivalence class. -/
-theorem empty_notMem_classes {r : Setoid α} : ∅ ∉ r.classes := fun ⟨y, hy⟩ =>
+theorem empty_notMem_classes {r : Setoid α} : ∅ ∉ r.classes := fun ⟨y, hy⟩ ↦
   Set.notMem_empty y <| hy.symm ▸ r.refl' y
 
 @[deprecated (since := "2025-05-23")] alias empty_not_mem_classes := empty_notMem_classes
@@ -98,7 +98,7 @@ theorem classes_eqv_classes {r : Setoid α} (a) : ∃! b ∈ r.classes, a ∈ b 
   ExistsUnique.intro { x | r x a } ⟨r.mem_classes a, r.refl' _⟩ <| by
     rintro y ⟨⟨_, rfl⟩, ha⟩
     ext x
-    exact ⟨fun hx => r.trans' hx (r.symm' ha), fun hx => r.trans' hx ha⟩
+    exact ⟨fun hx ↦ r.trans' hx (r.symm' ha), fun hx ↦ r.trans' hx ha⟩
 
 /-- If x ∈ α is in 2 equivalence classes, the equivalence classes are equal. -/
 theorem eq_of_mem_classes {r : Setoid α} {x b} (hc : b ∈ r.classes) (hb : x ∈ b) {b'}
@@ -121,7 +121,7 @@ theorem eq_eqv_class_of_mem {c : Set (Set α)} (H : ∀ a, ∃! b ∈ c, a ∈ b
 partitioning α are elements of the set of sets. -/
 theorem eqv_class_mem {c : Set (Set α)} (H : ∀ a, ∃! b ∈ c, a ∈ b) {y} :
     { x | mkClasses c H x y } ∈ c :=
-  (H y).elim fun _ hc _ => eq_eqv_class_of_mem H hc.1 hc.2 ▸ hc.1
+  (H y).elim fun _ hc _ ↦ eq_eqv_class_of_mem H hc.1 hc.2 ▸ hc.1
 
 theorem eqv_class_mem' {c : Set (Set α)} (H : ∀ a, ∃! b ∈ c, a ∈ b) {x} :
     { y : α | mkClasses c H x y } ∈ c := by
@@ -130,15 +130,15 @@ theorem eqv_class_mem' {c : Set (Set α)} (H : ∀ a, ∃! b ∈ c, a ∈ b) {x}
 
 /-- Distinct elements of a set of sets partitioning α are disjoint. -/
 theorem eqv_classes_disjoint {c : Set (Set α)} (H : ∀ a, ∃! b ∈ c, a ∈ b) :
-    c.PairwiseDisjoint id := fun _b₁ h₁ _b₂ h₂ h =>
-  Set.disjoint_left.2 fun x hx1 hx2 =>
-    (H x).elim fun _b _hc _hx => h <| eq_of_mem_eqv_class H h₁ hx1 h₂ hx2
+    c.PairwiseDisjoint id := fun _b₁ h₁ _b₂ h₂ h ↦
+  Set.disjoint_left.2 fun x hx1 hx2 ↦
+    (H x).elim fun _b _hc _hx ↦ h <| eq_of_mem_eqv_class H h₁ hx1 h₂ hx2
 
 /-- A set of disjoint sets covering α partition α (classical). -/
 theorem eqv_classes_of_disjoint_union {c : Set (Set α)} (hu : Set.sUnion c = @Set.univ α)
     (H : c.PairwiseDisjoint id) (a) : ∃! b ∈ c, a ∈ b :=
   let ⟨b, hc, ha⟩ := Set.mem_sUnion.1 <| show a ∈ _ by rw [hu]; exact Set.mem_univ a
-  ExistsUnique.intro b ⟨hc, ha⟩ fun _ hc' => H.elim_set hc'.1 hc _ hc'.2 ha
+  ExistsUnique.intro b ⟨hc, ha⟩ fun _ hc' ↦ H.elim_set hc'.1 hc _ hc'.2 ha
 
 /-- Makes an equivalence relation from a set of disjoints sets covering α. -/
 def setoidOfDisjointUnion {c : Set (Set α)} (hu : Set.sUnion c = @Set.univ α)
@@ -148,13 +148,13 @@ def setoidOfDisjointUnion {c : Set (Set α)} (hu : Set.sUnion c = @Set.univ α)
 /-- The equivalence relation made from the equivalence classes of an equivalence relation `r`
 equals `r`. -/
 theorem mkClasses_classes (r : Setoid α) : mkClasses r.classes classes_eqv_classes = r :=
-  ext fun x _y =>
-    ⟨fun h => r.symm' (h { z | r z x } (r.mem_classes x) <| r.refl' x), fun h _b hb hx =>
+  ext fun x _y ↦
+    ⟨fun h ↦ r.symm' (h { z | r z x } (r.mem_classes x) <| r.refl' x), fun h _b hb hx ↦
       eq_of_mem_classes (r.mem_classes x) (r.refl' x) hb hx ▸ r.symm' h⟩
 
 @[simp]
 theorem sUnion_classes (r : Setoid α) : ⋃₀ r.classes = Set.univ :=
-  Set.eq_univ_of_forall fun x => Set.mem_sUnion.2 ⟨{ y | r y x }, ⟨x, rfl⟩, Setoid.refl _⟩
+  Set.eq_univ_of_forall fun x ↦ Set.mem_sUnion.2 ⟨{ y | r y x }, ⟨x, rfl⟩, Setoid.refl _⟩
 
 /-- The equivalence between the quotient by an equivalence relation and its
 type of equivalence classes. -/
@@ -192,7 +192,7 @@ def IsPartition (c : Set (Set α)) := ∅ ∉ c ∧ ∀ a, ∃! b ∈ c, a ∈ b
 /-- A partition of `α` does not contain the empty set. -/
 theorem nonempty_of_mem_partition {c : Set (Set α)} (hc : IsPartition c) {s} (h : s ∈ c) :
     s.Nonempty :=
-  Set.nonempty_iff_ne_empty.2 fun hs0 => hc.1 <| hs0 ▸ h
+  Set.nonempty_iff_ne_empty.2 fun hs0 ↦ hc.1 <| hs0 ▸ h
 
 theorem isPartition_classes (r : Setoid α) : IsPartition r.classes :=
   ⟨empty_notMem_classes, classes_eqv_classes⟩
@@ -211,7 +211,7 @@ lemma _root_.Set.PairwiseDisjoint.isPartition_of_exists_of_ne_empty {α : Type*}
   exact ⟨a, hb₁.2, hb₂.2⟩
 
 theorem IsPartition.sUnion_eq_univ {c : Set (Set α)} (hc : IsPartition c) : ⋃₀ c = Set.univ :=
-  Set.eq_univ_of_forall fun x =>
+  Set.eq_univ_of_forall fun x ↦
     Set.mem_sUnion.2 <|
       let ⟨t, ht⟩ := hc.2 x
       ⟨t, by
@@ -237,7 +237,7 @@ theorem classes_mkClasses (c : Set (Set α)) (hc : IsPartition c) :
 
 /-- Defining `≤` on partitions as the `≤` defined on their induced equivalence relations. -/
 instance Partition.le : LE (Subtype (@IsPartition α)) :=
-  ⟨fun x y => mkClasses x.1 x.2.2 ≤ mkClasses y.1 y.2.2⟩
+  ⟨fun x y ↦ mkClasses x.1 x.2.2 ≤ mkClasses y.1 y.2.2⟩
 
 /-- Defining a partial order on partitions as the partial order on their induced
 equivalence relations. -/
@@ -316,7 +316,7 @@ open scoped Function -- required for scoped `on` notation
 noncomputable def IndexedPartition.mk' {ι α : Type*} (s : ι → Set α)
     (dis : Pairwise (Disjoint on s)) (nonempty : ∀ i, (s i).Nonempty)
     (ex : ∀ x, ∃ i, x ∈ s i) : IndexedPartition s where
-  eq_of_mem {_x _i _j} hxi hxj := by_contradiction fun h => (dis h).le_bot ⟨hxi, hxj⟩
+  eq_of_mem {_x _i _j} hxi hxj := by_contradiction fun h ↦ (dis h).le_bot ⟨hxi, hxj⟩
   some i := (nonempty i).some
   some_mem i := (nonempty i).choose_spec
   index x := (ex x).choose
@@ -329,8 +329,8 @@ open Set
 variable {ι α : Type*} {s : ι → Set α}
 
 /-- On a unique index set there is the obvious trivial partition -/
-instance [Unique ι] [Inhabited α] : Inhabited (IndexedPartition fun _i : ι => (Set.univ : Set α)) :=
-  ⟨{  eq_of_mem := fun {_x _i _j} _hi _hj => Subsingleton.elim _ _
+instance [Unique ι] [Inhabited α] : Inhabited (IndexedPartition fun _i : ι ↦ (Set.univ : Set α)) :=
+  ⟨{  eq_of_mem := fun {_x _i _j} _hi _hj ↦ Subsingleton.elim _ _
       some := default
       some_mem := Set.mem_univ
       index := default
@@ -350,14 +350,14 @@ theorem iUnion : ⋃ i, s i = univ := by
   simp [hs.exists_mem x]
 
 include hs in
-theorem disjoint : Pairwise (Disjoint on s) := fun {_i _j} h =>
-  disjoint_left.mpr fun {_x} hxi hxj => h (hs.eq_of_mem hxi hxj)
+theorem disjoint : Pairwise (Disjoint on s) := fun {_i _j} h ↦
+  disjoint_left.mpr fun {_x} hxi hxj ↦ h (hs.eq_of_mem hxi hxj)
 
 theorem mem_iff_index_eq {x i} : x ∈ s i ↔ hs.index x = i :=
-  ⟨fun hxi => (hs.eq_of_mem hxi (hs.mem_index x)).symm, fun h => h ▸ hs.mem_index _⟩
+  ⟨fun hxi ↦ (hs.eq_of_mem hxi (hs.mem_index x)).symm, fun h ↦ h ▸ hs.mem_index _⟩
 
 theorem eq (i) : s i = { x | hs.index x = i } :=
-  Set.ext fun _ => hs.mem_iff_index_eq
+  Set.ext fun _ ↦ hs.mem_iff_index_eq
 
 /-- The equivalence relation associated to an indexed partition. Two
 elements are equivalent if they belong to the same set of the partition. -/
@@ -417,18 +417,18 @@ theorem out_proj (x : α) : hs.out (hs.proj x) = hs.some (hs.index x) :=
 
 /-- The indices of `Quotient.out` and `IndexedPartition.out` are equal. -/
 theorem index_out (x : hs.Quotient) : hs.index x.out = hs.index (hs.out x) :=
-  Quotient.inductionOn' x fun x => (Setoid.ker_apply_mk_out x).trans (hs.index_some _).symm
+  Quotient.inductionOn' x fun x ↦ (Setoid.ker_apply_mk_out x).trans (hs.index_some _).symm
 
 /-- This lemma is analogous to `Quotient.out_eq'`. -/
 @[simp]
 theorem proj_out (x : hs.Quotient) : hs.proj (hs.out x) = x :=
-  Quotient.inductionOn' x fun x => Quotient.sound' <| hs.some_index x
+  Quotient.inductionOn' x fun x ↦ Quotient.sound' <| hs.some_index x
 
 theorem class_of {x : α} : setOf (hs.setoid x) = s (hs.index x) :=
-  Set.ext fun _y => eq_comm.trans hs.mem_iff_index_eq.symm
+  Set.ext fun _y ↦ eq_comm.trans hs.mem_iff_index_eq.symm
 
 theorem proj_fiber (x : hs.Quotient) : hs.proj ⁻¹' {x} = s (hs.equivQuotient.symm x) :=
-  Quotient.inductionOn' x fun x => by
+  Quotient.inductionOn' x fun x ↦ by
     ext y
     simp only [Set.mem_preimage, Set.mem_singleton_iff, hs.mem_iff_index_eq]
     exact Quotient.eq''
@@ -436,7 +436,7 @@ theorem proj_fiber (x : hs.Quotient) : hs.proj ⁻¹' {x} = s (hs.equivQuotient.
 /-- Combine functions with disjoint domains into a new function.
 You can use the regular expression `def.*piecewise` to search for
 other ways to define piecewise functions in mathlib4. -/
-def piecewise {β : Type*} (f : ι → α → β) : α → β := fun x => f (hs.index x) x
+def piecewise {β : Type*} (f : ι → α → β) : α → β := fun x ↦ f (hs.index x) x
 
 lemma piecewise_apply {β : Type*} {f : ι → α → β} (x : α) : hs.piecewise f x = f (hs.index x) x :=
   rfl
@@ -448,7 +448,7 @@ domains and pairwise disjoint ranges can be glued together
 to form an injective function. -/
 theorem piecewise_inj {β : Type*} {f : ι → α → β}
     (h_injOn : ∀ i, InjOn (f i) (s i))
-    (h_disjoint : PairwiseDisjoint (univ : Set ι) fun i => (f i) '' (s i)) :
+    (h_disjoint : PairwiseDisjoint (univ : Set ι) fun i ↦ (f i) '' (s i)) :
     Injective (piecewise hs f) := by
   intro x y h
   suffices hs.index x = hs.index y by

@@ -73,7 +73,7 @@ theorem map_app (f : Q₁.IsometryEquiv Q₂) (m : M₁) : Q₂ (f m) = Q₁ m :
 /-- The identity isometric equivalence between a quadratic form and itself. -/
 @[refl]
 def refl (Q : QuadraticMap R M N) : Q.IsometryEquiv Q :=
-  { LinearEquiv.refl R M with map_app' := fun _ => rfl }
+  { LinearEquiv.refl R M with map_app' := fun _ ↦ rfl }
 
 /-- The inverse isometric equivalence of an isometric equivalence between two quadratic forms. -/
 @[symm]
@@ -105,11 +105,11 @@ theorem refl (Q : QuadraticMap R M N) : Q.Equivalent Q :=
 
 @[symm]
 theorem symm (h : Q₁.Equivalent Q₂) : Q₂.Equivalent Q₁ :=
-  h.elim fun f => ⟨f.symm⟩
+  h.elim fun f ↦ ⟨f.symm⟩
 
 @[trans]
 theorem trans (h : Q₁.Equivalent Q₂) (h' : Q₂.Equivalent Q₃) : Q₁.Equivalent Q₃ :=
-  h'.elim <| h.elim fun f g => ⟨f.trans g⟩
+  h'.elim <| h.elim fun f g ↦ ⟨f.trans g⟩
 
 end Equivalent
 
@@ -139,9 +139,9 @@ squares. -/
 noncomputable def isometryEquivWeightedSumSquares (Q : QuadraticForm K V)
     (v : Basis (Fin (Module.finrank K V)) K V)
     (hv₁ : (associated (R := K) Q).IsOrthoᵢ v) :
-    Q.IsometryEquiv (weightedSumSquares K fun i => Q (v i)) := by
+    Q.IsometryEquiv (weightedSumSquares K fun i ↦ Q (v i)) := by
   let iso := Q.isometryEquivBasisRepr v
-  refine ⟨iso, fun m => ?_⟩
+  refine ⟨iso, fun m ↦ ?_⟩
   convert iso.map_app m
   rw [basisRepr_eq_of_iIsOrtho _ _ hv₁]
 
@@ -160,6 +160,6 @@ theorem equivalent_weightedSumSquares_units_of_nondegenerate' (Q : QuadraticForm
   obtain ⟨v, hv₁⟩ := exists_orthogonal_basis (associated_isSymm K Q)
   have hv₂ := hv₁.not_isOrtho_basis_self_of_separatingLeft hQ
   simp_rw [LinearMap.IsOrtho, associated_eq_self_apply] at hv₂
-  exact ⟨fun i => Units.mk0 _ (hv₂ i), ⟨Q.isometryEquivWeightedSumSquares v hv₁⟩⟩
+  exact ⟨fun i ↦ Units.mk0 _ (hv₂ i), ⟨Q.isometryEquivWeightedSumSquares v hv₁⟩⟩
 
 end QuadraticForm

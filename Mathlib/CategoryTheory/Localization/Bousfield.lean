@@ -47,8 +47,8 @@ variable (P : ObjectProperty C)
 /-- Given `P : ObjectProperty C`, this is the class of morphisms `f : X ⟶ Y`
 such that for all `Z : C` such that `P Z`, the precomposition with `f` induces
 a bijection `(Y ⟶ Z) ≃ (X ⟶ Z)`. -/
-def W : MorphismProperty C := fun _ _ f =>
-  ∀ Z, P Z → Function.Bijective (fun (g : _ ⟶ Z) => f ≫ g)
+def W : MorphismProperty C := fun _ _ f ↦
+  ∀ Z, P Z → Function.Bijective (fun (g : _ ⟶ Z) ↦ f ≫ g)
 
 variable {P} in
 /-- The bijection `(Y ⟶ Z) ≃ (X ⟶ Z)` induced by `f : X ⟶ Y` when `LeftBousfield.W P f`
@@ -86,7 +86,7 @@ instance : (W P).HasTwoOutOfThreeProperty where
     rw [← Function.Bijective.of_comp_iff' (hf Z hZ)]
     simpa using hfg Z hZ
 
-lemma W_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] : W P f := fun Z _ => by
+lemma W_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] : W P f := fun Z _ ↦ by
   constructor
   · intro g₁ g₂ _
     simpa only [← cancel_epi f]

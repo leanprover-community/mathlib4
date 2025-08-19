@@ -64,7 +64,7 @@ end MulAction
 
 instance instInfiniteProdSubtypeCommute [Mul α] [Infinite α] :
     Infinite { p : α × α // Commute p.1 p.2 } :=
-  Infinite.of_injective (fun a => ⟨⟨a, a⟩, rfl⟩) (by intro; simp)
+  Infinite.of_injective (fun a ↦ ⟨⟨a, a⟩, rfl⟩) (by intro; simp)
 
 open Fintype
 

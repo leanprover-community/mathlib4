@@ -140,7 +140,7 @@ lemma equation_neg (x y : R) : W'.Equation x (W'.negY x y) ↔ W'.Equation x y :
 lemma nonsingular_neg (x y : R) : W'.Nonsingular x (W'.negY x y) ↔ W'.Nonsingular x y := by
   rw [nonsingular_iff, equation_neg, ← negY, negY_negY, ← @ne_comm _ y, nonsingular_iff]
   exact and_congr_right' <| (iff_congr not_and_or.symm not_and_or.symm).mpr <|
-    not_congr <| and_congr_left fun h => by rw [← h]
+    not_congr <| and_congr_left fun h ↦ by rw [← h]
 
 @[deprecated (since := "2025-02-01")] alias nonsingular_neg_of := nonsingular_neg
 @[deprecated (since := "2025-02-01")] alias nonsingular_neg_iff := nonsingular_neg
@@ -271,7 +271,7 @@ lemma addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁
       -((X - C x₁) * (X - C x₂) * (X - C (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂))) := by
   rw [addPolynomial_eq, neg_inj, Cubic.prod_X_sub_C_eq, Cubic.toPoly_injective]
   by_cases hx : x₁ = x₂
-  · have hy : y₁ ≠ W.negY x₂ y₂ := fun h => hxy ⟨hx, h⟩
+  · have hy : y₁ ≠ W.negY x₂ y₂ := fun h ↦ hxy ⟨hx, h⟩
     rcases hx, Y_eq_of_Y_ne h₁ h₂ hx hy with ⟨rfl, rfl⟩
     rw [equation_iff] at h₁ h₂
     rw [slope_of_Y_ne rfl hy]
@@ -434,10 +434,10 @@ lemma map_slope [DecidableEq F] [DecidableEq K] (f : F →+* K) (x₁ x₂ y₁ 
   by_cases hx : x₁ = x₂
   · by_cases hy : y₁ = W.negY x₂ y₂
     · rw [slope_of_Y_eq (congr_arg f hx) <| by rw [hy, map_negY], slope_of_Y_eq hx hy, map_zero]
-    · rw [slope_of_Y_ne (congr_arg f hx) <| map_negY f x₂ y₂ ▸ fun h => hy <| f.injective h,
+    · rw [slope_of_Y_ne (congr_arg f hx) <| map_negY f x₂ y₂ ▸ fun h ↦ hy <| f.injective h,
         map_negY, slope_of_Y_ne hx hy]
       map_simp
-  · rw [slope_of_X_ne fun h => hx <| f.injective h, slope_of_X_ne hx]
+  · rw [slope_of_X_ne fun h ↦ hx <| f.injective h, slope_of_X_ne hx]
     map_simp
 
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebra R B] [Algebra S B]

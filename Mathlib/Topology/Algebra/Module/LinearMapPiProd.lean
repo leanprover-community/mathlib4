@@ -117,17 +117,17 @@ theorem coe_snd' : ⇑(snd R M₁ M₂) = Prod.snd :=
 
 @[simp]
 theorem fst_prod_snd : (fst R M₁ M₂).prod (snd R M₁ M₂) = id R (M₁ × M₂) :=
-  ext fun ⟨_x, _y⟩ => rfl
+  ext fun ⟨_x, _y⟩ ↦ rfl
 
 @[simp]
 theorem fst_comp_prod (f : M₁ →L[R] M₂) (g : M₁ →L[R] M₃) :
     (fst R M₂ M₃).comp (f.prod g) = f :=
-  ext fun _x => rfl
+  ext fun _x ↦ rfl
 
 @[simp]
 theorem snd_comp_prod (f : M₁ →L[R] M₂) (g : M₁ →L[R] M₃) :
     (snd R M₂ M₃).comp (f.prod g) = g :=
-  ext fun _x => rfl
+  ext fun _x ↦ rfl
 
 /-- `Prod.map` of two continuous linear maps. -/
 def prodMap (f₁ : M₁ →L[R] M₂) (f₂ : M₃ →L[R] M₄) :
@@ -155,14 +155,14 @@ variable {R : Type*} [Semiring R] {M : Type*} [TopologicalSpace M] [AddCommMonoi
 /-- `pi` construction for continuous linear functions. From a family of continuous linear functions
 it produces a continuous linear function into a family of topological modules. -/
 def pi (f : ∀ i, M →L[R] φ i) : M →L[R] ∀ i, φ i :=
-  ⟨LinearMap.pi fun i => f i, continuous_pi fun i => (f i).continuous⟩
+  ⟨LinearMap.pi fun i ↦ f i, continuous_pi fun i ↦ (f i).continuous⟩
 
 @[simp]
-theorem coe_pi' (f : ∀ i, M →L[R] φ i) : ⇑(pi f) = fun c i => f i c :=
+theorem coe_pi' (f : ∀ i, M →L[R] φ i) : ⇑(pi f) = fun c i ↦ f i c :=
   rfl
 
 @[simp]
-theorem coe_pi (f : ∀ i, M →L[R] φ i) : (pi f : M →ₗ[R] ∀ i, φ i) = LinearMap.pi fun i => f i :=
+theorem coe_pi (f : ∀ i, M →L[R] φ i) : (pi f : M →ₗ[R] ∀ i, φ i) = LinearMap.pi fun i ↦ f i :=
   rfl
 
 theorem pi_apply (f : ∀ i, M →L[R] φ i) (c : M) (i : ι) : pi f c i = f i c :=
@@ -172,11 +172,11 @@ theorem pi_eq_zero (f : ∀ i, M →L[R] φ i) : pi f = 0 ↔ ∀ i, f i = 0 := 
   simp only [ContinuousLinearMap.ext_iff, pi_apply, funext_iff]
   exact forall_swap
 
-theorem pi_zero : pi (fun _ => 0 : ∀ i, M →L[R] φ i) = 0 :=
-  ext fun _ => rfl
+theorem pi_zero : pi (fun _ ↦ 0 : ∀ i, M →L[R] φ i) = 0 :=
+  ext fun _ ↦ rfl
 
 theorem pi_comp (f : ∀ i, M →L[R] φ i) (g : M₂ →L[R] M) :
-    (pi f).comp g = pi fun i => (f i).comp g :=
+    (pi f).comp g = pi fun i ↦ (f i).comp g :=
   rfl
 
 /-- The projections from a family of topological modules are continuous linear maps. -/
@@ -273,8 +273,8 @@ variable (S : Type*) [Semiring S]
 @[simps apply]
 def prodₗ : ((M →L[R] M₂) × (M →L[R] M₃)) ≃ₗ[S] M →L[R] M₂ × M₃ :=
   { prodEquiv with
-    map_add' := fun _f _g => rfl
-    map_smul' := fun _c _f => rfl }
+    map_add' := fun _f _g ↦ rfl
+    map_smul' := fun _c _f ↦ rfl }
 
 end SMul
 

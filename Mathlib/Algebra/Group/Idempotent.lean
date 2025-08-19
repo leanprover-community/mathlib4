@@ -75,13 +75,13 @@ section Monoid
 variable [Monoid M] {a : M}
 
 lemma pow (n : ℕ) (h : IsIdempotentElem a) : IsIdempotentElem (a ^ n) :=
-  Nat.recOn n ((pow_zero a).symm ▸ one) fun n _ =>
+  Nat.recOn n ((pow_zero a).symm ▸ one) fun n _ ↦
     show a ^ n.succ * a ^ n.succ = a ^ n.succ by
       conv_rhs => rw [← h.eq]
       rw [← sq, ← sq, ← pow_mul, ← pow_mul']
 
 lemma pow_succ_eq (n : ℕ) (h : IsIdempotentElem a) : a ^ (n + 1) = a :=
-  Nat.recOn n ((Nat.zero_add 1).symm ▸ pow_one a) fun n ih => by rw [pow_succ, ih, h.eq]
+  Nat.recOn n ((Nat.zero_add 1).symm ▸ pow_one a) fun n ih ↦ by rw [pow_succ, ih, h.eq]
 
 theorem pow_eq (h : IsIdempotentElem a) {n : ℕ} (hn : n ≠ 0) : a ^ n = a := by
   obtain ⟨i, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hn

@@ -75,4 +75,4 @@ open MulOpposite
 /-- `Monoid.toOppositeMulAction` is faithful on nontrivial cancellative monoids with zero. -/
 instance CancelMonoidWithZero.toFaithfulSMul_opposite [CancelMonoidWithZero α]
     [Nontrivial α] : FaithfulSMul αᵐᵒᵖ α :=
-  ⟨fun h => unop_injective <| mul_left_cancel₀ one_ne_zero (h 1)⟩
+  ⟨fun h ↦ unop_injective <| mul_left_cancel₀ one_ne_zero (h 1)⟩

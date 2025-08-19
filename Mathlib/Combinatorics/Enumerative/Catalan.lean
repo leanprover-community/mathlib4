@@ -63,7 +63,7 @@ theorem catalan_succ (n : ℕ) : catalan (n + 1) = ∑ i : Fin n.succ, catalan i
 
 theorem catalan_succ' (n : ℕ) :
     catalan (n + 1) = ∑ ij ∈ antidiagonal n, catalan ij.1 * catalan ij.2 := by
-  rw [catalan_succ, Nat.sum_antidiagonal_eq_sum_range_succ (fun x y => catalan x * catalan y) n,
+  rw [catalan_succ, Nat.sum_antidiagonal_eq_sum_range_succ (fun x y ↦ catalan x * catalan y) n,
     sum_range]
 
 @[simp]
@@ -120,9 +120,9 @@ theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n 
       rw [hd _ m_le_d, hd _ d_minus_x_le_d]
       norm_cast
     · trans (∑ i : Fin d.succ, (gosperCatalan (d + 1) (i + 1) - gosperCatalan (d + 1) i))
-      · refine sum_congr rfl fun i _ => ?_
+      · refine sum_congr rfl fun i _ ↦ ?_
         rw [gosper_trick i.is_le, mul_div]
-      · rw [← sum_range fun i => gosperCatalan (d + 1) (i + 1) - gosperCatalan (d + 1) i,
+      · rw [← sum_range fun i ↦ gosperCatalan (d + 1) (i + 1) - gosperCatalan (d + 1) i,
             sum_range_sub, Nat.succ_eq_add_one]
         rw [gosper_catalan_sub_eq_central_binom_div d]
         norm_cast
@@ -141,13 +141,13 @@ namespace Tree
 /-- Given two finsets, find all trees that can be formed with
   left child in `a` and right child in `b` -/
 abbrev pairwiseNode (a b : Finset (Tree Unit)) : Finset (Tree Unit) :=
-  (a ×ˢ b).map ⟨fun x => x.1 △ x.2, fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ => fun h => by simpa using h⟩
+  (a ×ˢ b).map ⟨fun x ↦ x.1 △ x.2, fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ ↦ fun h ↦ by simpa using h⟩
 
 /-- A Finset of all trees with `n` nodes. See `mem_treesOfNodesEq` -/
 def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
   | 0 => {nil}
   | n + 1 =>
-    (antidiagonal n).attach.biUnion fun ijh =>
+    (antidiagonal n).attach.biUnion fun ijh ↦
       pairwiseNode (treesOfNumNodesEq ijh.1.1) (treesOfNumNodesEq ijh.1.2)
   decreasing_by
     · simp_wf; have := fst_le ijh.2; omega
@@ -158,7 +158,7 @@ theorem treesOfNumNodesEq_zero : treesOfNumNodesEq 0 = {nil} := by rw [treesOfNu
 
 theorem treesOfNumNodesEq_succ (n : ℕ) :
     treesOfNumNodesEq (n + 1) =
-      (antidiagonal n).biUnion fun ij =>
+      (antidiagonal n).biUnion fun ij ↦
         pairwiseNode (treesOfNumNodesEq ij.1) (treesOfNumNodesEq ij.2) := by
   rw [treesOfNumNodesEq]
   ext

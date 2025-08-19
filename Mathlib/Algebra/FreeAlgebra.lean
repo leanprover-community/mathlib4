@@ -252,11 +252,11 @@ instance : Inhabited (FreeAlgebra R X) :=
 
 instance instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra A X) where
   algebraMap := ({
-      toFun := fun r => Quot.mk _ r
+      toFun := fun r ↦ Quot.mk _ r
       map_one' := rfl
-      map_mul' := fun _ _ => Quot.sound Rel.mul_scalar
+      map_mul' := fun _ _ ↦ Quot.sound Rel.mul_scalar
       map_zero' := rfl
-      map_add' := fun _ _ => Quot.sound Rel.add_scalar } : A →+* FreeAlgebra A X).comp
+      map_add' := fun _ _ ↦ Quot.sound Rel.add_scalar } : A →+* FreeAlgebra A X).comp
       (algebraMap R A)
   commutes' _ := by
     rintro ⟨⟩
@@ -564,7 +564,7 @@ theorem induction {motive : FreeAlgebra R X → Prop}
 @[simp]
 theorem adjoin_range_ι : Algebra.adjoin R (Set.range (ι R : X → FreeAlgebra R X)) = ⊤ := by
   set S := Algebra.adjoin R (Set.range (ι R : X → FreeAlgebra R X))
-  refine top_unique fun x hx => ?_; clear hx
+  refine top_unique fun x hx ↦ ?_; clear hx
   induction x with
   | grade0 => exact S.algebraMap_mem _
   | add x y hx hy => exact S.add_mem hx hy

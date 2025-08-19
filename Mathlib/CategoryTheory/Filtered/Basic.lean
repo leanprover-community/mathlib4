@@ -176,10 +176,10 @@ variable {D : Type u₁} [Category.{v₁} D]
 filtered or empty.
 -/
 theorem of_right_adjoint {L : D ⥤ C} {R : C ⥤ D} (h : L ⊣ R) : IsFilteredOrEmpty D :=
-  { cocone_objs := fun X Y =>
+  { cocone_objs := fun X Y ↦
       ⟨R.obj (max (L.obj X) (L.obj Y)),
         h.homEquiv _ _ (leftToMax _ _), h.homEquiv _ _ (rightToMax _ _), ⟨⟩⟩
-    cocone_maps := fun X Y f g =>
+    cocone_maps := fun X Y f g ↦
       ⟨R.obj (coeq (L.map f) (L.map g)), h.homEquiv _ _ (coeqHom _ _), by
         rw [← h.homEquiv_naturality_left, ← h.homEquiv_naturality_left, coeq_condition]⟩ }
 
@@ -231,10 +231,10 @@ theorem sup_exists :
   classical
   induction' H using Finset.induction with h' H' nmf h''
   · obtain ⟨S, f⟩ := sup_objs_exists O
-    exact ⟨S, fun mX => (f mX).some, by rintro - - - - - ⟨⟩⟩
+    exact ⟨S, fun mX ↦ (f mX).some, by rintro - - - - - ⟨⟩⟩
   · obtain ⟨X, Y, mX, mY, f⟩ := h'
     obtain ⟨S', T', w'⟩ := h''
-    refine ⟨coeq (f ≫ T' mY) (T' mX), fun mZ => T' mZ ≫ coeqHom (f ≫ T' mY) (T' mX), ?_⟩
+    refine ⟨coeq (f ≫ T' mY) (T' mX), fun mZ ↦ T' mZ ≫ coeqHom (f ≫ T' mY) (T' mX), ?_⟩
     intro X' Y' mX' mY' f' mf'
     rw [← Category.assoc]
     by_cases h : X = X' ∧ Y = Y'
@@ -279,11 +279,11 @@ theorem cocone_nonempty (F : J ⥤ C) : Nonempty (Cocone F) := by
   classical
   let O := Finset.univ.image F.obj
   let H : Finset (Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) :=
-    Finset.univ.biUnion   fun X : J =>
-      Finset.univ.biUnion fun Y : J =>
-        Finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp [O], by simp [O], F.map f⟩
+    Finset.univ.biUnion   fun X : J ↦
+      Finset.univ.biUnion fun Y : J ↦
+        Finset.univ.image fun f : X ⟶ Y ↦ ⟨F.obj X, F.obj Y, by simp [O], by simp [O], F.map f⟩
   obtain ⟨Z, f, w⟩ := sup_exists O H
-  refine ⟨⟨Z, ⟨fun X => f (by simp [O]), ?_⟩⟩⟩
+  refine ⟨⟨Z, ⟨fun X ↦ f (by simp [O]), ?_⟩⟩⟩
   intro j j' g
   dsimp
   simp only [Category.comp_id]
@@ -340,10 +340,10 @@ theorem of_cocone_nonempty (h : ∀ {J : Type w} [SmallCategory J] [FinCategory 
   apply IsFiltered.mk
 
 theorem of_hasFiniteColimits [HasFiniteColimits C] : IsFiltered C :=
-  of_cocone_nonempty.{v} C fun F => ⟨colimit.cocone F⟩
+  of_cocone_nonempty.{v} C fun F ↦ ⟨colimit.cocone F⟩
 
 theorem of_isTerminal {X : C} (h : IsTerminal X) : IsFiltered C :=
-  of_cocone_nonempty.{v} _ fun {_} _ _ _ => ⟨⟨X, ⟨fun _ => h.from _, fun _ _ _ => h.hom_ext _ _⟩⟩⟩
+  of_cocone_nonempty.{v} _ fun {_} _ _ _ ↦ ⟨⟨X, ⟨fun _ ↦ h.from _, fun _ _ _ ↦ h.hom_ext _ _⟩⟩⟩
 
 instance (priority := 100) of_hasTerminal [HasTerminal C] : IsFiltered C :=
   of_isTerminal _ terminalIsTerminal
@@ -352,7 +352,7 @@ instance (priority := 100) of_hasTerminal [HasTerminal C] : IsFiltered C :=
 in `w` admits a cocone. -/
 theorem iff_cocone_nonempty : IsFiltered C ↔
     ∀ {J : Type w} [SmallCategory J] [FinCategory J] (F : J ⥤ C), Nonempty (Cocone F) :=
-  ⟨fun _ _ _ _ F => cocone_nonempty F, of_cocone_nonempty C⟩
+  ⟨fun _ _ _ _ F ↦ cocone_nonempty F, of_cocone_nonempty C⟩
 
 end OfCocone
 
@@ -592,7 +592,7 @@ theorem cospan {i j j' : C} (f : j ⟶ i) (f' : j' ⟶ i) :
   ⟨k, e ≫ G, e ≫ G', by simpa only [Category.assoc] using he⟩
 
 theorem _root_.CategoryTheory.Functor.ranges_directed (F : C ⥤ Type*) (j : C) :
-    Directed (· ⊇ ·) fun f : Σ' i, i ⟶ j => Set.range (F.map f.2) := fun ⟨i, ij⟩ ⟨k, kj⟩ => by
+    Directed (· ⊇ ·) fun f : Σ' i, i ⟶ j ↦ Set.range (F.map f.2) := fun ⟨i, ij⟩ ⟨k, kj⟩ ↦ by
   let ⟨l, li, lk, e⟩ := cospan ij kj
   refine ⟨⟨l, lk ≫ kj⟩, e ▸ ?_, ?_⟩ <;> simp_rw [F.map_comp] <;> apply Set.range_comp_subset_range
 
@@ -631,10 +631,10 @@ variable {D : Type u₁} [Category.{v₁} D]
 then `D` is cofiltered or empty.
 -/
 theorem of_left_adjoint {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R) : IsCofilteredOrEmpty D :=
-  { cone_objs := fun X Y =>
+  { cone_objs := fun X Y ↦
       ⟨L.obj (min (R.obj X) (R.obj Y)), (h.homEquiv _ X).symm (minToLeft _ _),
         (h.homEquiv _ Y).symm (minToRight _ _), ⟨⟩⟩
-    cone_maps := fun X Y f g =>
+    cone_maps := fun X Y f g ↦
       ⟨L.obj (eq (R.map f) (R.map g)), (h.homEquiv _ _).symm (eqHom _ _), by
         rw [← h.homEquiv_naturality_right_symm, ← h.homEquiv_naturality_right_symm, eq_condition]⟩ }
 
@@ -686,10 +686,10 @@ theorem inf_exists :
   classical
   induction' H using Finset.induction with h' H' nmf h''
   · obtain ⟨S, f⟩ := inf_objs_exists O
-    exact ⟨S, fun mX => (f mX).some, by rintro - - - - - ⟨⟩⟩
+    exact ⟨S, fun mX ↦ (f mX).some, by rintro - - - - - ⟨⟩⟩
   · obtain ⟨X, Y, mX, mY, f⟩ := h'
     obtain ⟨S', T', w'⟩ := h''
-    refine ⟨eq (T' mX ≫ f) (T' mY), fun mZ => eqHom (T' mX ≫ f) (T' mY) ≫ T' mZ, ?_⟩
+    refine ⟨eq (T' mX ≫ f) (T' mY), fun mZ ↦ eqHom (T' mX ≫ f) (T' mY) ≫ T' mZ, ?_⟩
     intro X' Y' mX' mY' f' mf'
     rw [Category.assoc]
     by_cases h : X = X' ∧ Y = Y'
@@ -734,11 +734,11 @@ theorem cone_nonempty (F : J ⥤ C) : Nonempty (Cone F) := by
   classical
   let O := Finset.univ.image F.obj
   let H : Finset (Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) :=
-    Finset.univ.biUnion fun X : J =>
-      Finset.univ.biUnion fun Y : J =>
-        Finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp [O], by simp [O], F.map f⟩
+    Finset.univ.biUnion fun X : J ↦
+      Finset.univ.biUnion fun Y : J ↦
+        Finset.univ.image fun f : X ⟶ Y ↦ ⟨F.obj X, F.obj Y, by simp [O], by simp [O], F.map f⟩
   obtain ⟨Z, f, w⟩ := inf_exists O H
-  refine ⟨⟨Z, ⟨fun X => f (by simp [O]), ?_⟩⟩⟩
+  refine ⟨⟨Z, ⟨fun X ↦ f (by simp [O]), ?_⟩⟩⟩
   intro j j' g
   dsimp
   simp only [Category.id_comp]
@@ -798,10 +798,10 @@ theorem of_cone_nonempty (h : ∀ {J : Type w} [SmallCategory J] [FinCategory J]
   apply IsCofiltered.mk
 
 theorem of_hasFiniteLimits [HasFiniteLimits C] : IsCofiltered C :=
-  of_cone_nonempty.{v} C fun F => ⟨limit.cone F⟩
+  of_cone_nonempty.{v} C fun F ↦ ⟨limit.cone F⟩
 
 theorem of_isInitial {X : C} (h : IsInitial X) : IsCofiltered C :=
-  of_cone_nonempty.{v} _ fun {_} _ _ _ => ⟨⟨X, ⟨fun _ => h.to _, fun _ _ _ => h.hom_ext _ _⟩⟩⟩
+  of_cone_nonempty.{v} _ fun {_} _ _ _ ↦ ⟨⟨X, ⟨fun _ ↦ h.to _, fun _ _ _ ↦ h.hom_ext _ _⟩⟩⟩
 
 instance (priority := 100) of_hasInitial [HasInitial C] : IsCofiltered C :=
   of_isInitial _ initialIsInitial
@@ -810,7 +810,7 @@ instance (priority := 100) of_hasInitial [HasInitial C] : IsCofiltered C :=
 in `w` admits a cocone. -/
 theorem iff_cone_nonempty : IsCofiltered C ↔
     ∀ {J : Type w} [SmallCategory J] [FinCategory J] (F : J ⥤ C), Nonempty (Cone F) :=
-  ⟨fun _ _ _ _ F => cone_nonempty F, of_cone_nonempty C⟩
+  ⟨fun _ _ _ _ F ↦ cone_nonempty F, of_cone_nonempty C⟩
 
 end OfCone
 
@@ -894,20 +894,20 @@ variable {α : Type w} {I : α → Type u₁} [∀ i, Category.{v₁} (I i)]
 
 open IsFiltered in
 instance [∀ i, IsFilteredOrEmpty (I i)] : IsFilteredOrEmpty (∀ i, I i) where
-  cocone_objs k l := ⟨fun s => max (k s) (l s), fun s => leftToMax (k s) (l s),
-    fun s => rightToMax (k s) (l s), trivial⟩
-  cocone_maps k l f g := ⟨fun s => coeq (f s) (g s), fun s => coeqHom (f s) (g s),
-    funext fun s => by simp [coeq_condition (f s) (g s)]⟩
+  cocone_objs k l := ⟨fun s ↦ max (k s) (l s), fun s ↦ leftToMax (k s) (l s),
+    fun s ↦ rightToMax (k s) (l s), trivial⟩
+  cocone_maps k l f g := ⟨fun s ↦ coeq (f s) (g s), fun s ↦ coeqHom (f s) (g s),
+    funext fun s ↦ by simp [coeq_condition (f s) (g s)]⟩
 
 attribute [local instance] IsFiltered.nonempty in
 instance [∀ i, IsFiltered (I i)] : IsFiltered (∀ i, I i) where
 
 open IsCofiltered in
 instance [∀ i, IsCofilteredOrEmpty (I i)] : IsCofilteredOrEmpty (∀ i, I i) where
-  cone_objs k l := ⟨fun s => min (k s) (l s), fun s => minToLeft (k s) (l s),
-    fun s => minToRight (k s) (l s), trivial⟩
-  cone_maps k l f g := ⟨fun s => eq (f s) (g s), fun s => eqHom (f s) (g s),
-    funext fun s => by simp [eq_condition (f s) (g s)]⟩
+  cone_objs k l := ⟨fun s ↦ min (k s) (l s), fun s ↦ minToLeft (k s) (l s),
+    fun s ↦ minToRight (k s) (l s), trivial⟩
+  cone_maps k l f g := ⟨fun s ↦ eq (f s) (g s), fun s ↦ eqHom (f s) (g s),
+    funext fun s ↦ by simp [eq_condition (f s) (g s)]⟩
 
 attribute [local instance] IsCofiltered.nonempty in
 instance [∀ i, IsCofiltered (I i)] : IsCofiltered (∀ i, I i) where

@@ -32,8 +32,8 @@ def curryLeft (f : M [⋀^Fin n.succ]→ₗ[R] N) : M →ₗ[R] M [⋀^Fin n]→
     { f.toMultilinearMap.curryLeft m with
       map_eq_zero_of_eq' v i j hv hij :=
         f.map_eq_zero_of_eq _ (by simpa) ((Fin.succ_injective _).ne hij) }
-  map_add' _ _ := ext fun _ => f.map_vecCons_add _ _ _
-  map_smul' _ _ := ext fun _ => f.map_vecCons_smul _ _ _
+  map_add' _ _ := ext fun _ ↦ f.map_vecCons_add _ _ _
+  map_smul' _ _ := ext fun _ ↦ f.map_vecCons_smul _ _ _
 
 @[simp]
 theorem curryLeft_apply_apply (f : M [⋀^Fin n.succ]→ₗ[R] N) (x : M) (v : Fin n → M) :
@@ -67,7 +67,7 @@ def curryLeftLinearMap :
 @[simp]
 theorem curryLeft_same (f : M [⋀^Fin n.succ.succ]→ₗ[R] N) (m : M) :
     (f.curryLeft m).curryLeft m = 0 :=
-  ext fun _ => f.map_eq_zero_of_eq _ (by simp) Fin.zero_ne_one
+  ext fun _ ↦ f.map_eq_zero_of_eq _ (by simp) Fin.zero_ne_one
 
 @[simp]
 theorem curryLeft_compAlternatingMap (g : N →ₗ[R] N₂)

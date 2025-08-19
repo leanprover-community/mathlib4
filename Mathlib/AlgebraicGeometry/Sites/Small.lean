@@ -85,7 +85,7 @@ def overPretopology : Pretopology (Over S) where
   transitive := by
     rintro X _ T ⟨𝒰, h, rfl⟩ H
     choose V h hV using H
-    refine ⟨𝒰.bind (fun j => V ((𝒰.map j).asOver S) ⟨j⟩), inferInstance, ?_⟩
+    refine ⟨𝒰.bind (fun j ↦ V ((𝒰.map j).asOver S) ⟨j⟩), inferInstance, ?_⟩
     convert Presieve.ofArrows_bind _ (fun j ↦ (𝒰.map j).asOver S) _
       (fun Y f H j ↦ ((V f H).obj j).asOver S) (fun Y f H j ↦ ((V f H).map j).asOver S)
     apply hV

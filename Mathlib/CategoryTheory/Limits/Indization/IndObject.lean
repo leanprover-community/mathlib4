@@ -112,10 +112,10 @@ instance : P.toCostructuredArrow.Final :=
 def yoneda (X : C) : IndObjectPresentation (yoneda.obj X) where
   I := Discrete PUnit.{v + 1}
   F := Functor.fromPUnit X
-  ι := { app := fun _ => 𝟙 _ }
+  ι := { app := fun _ ↦ 𝟙 _ }
   isColimit :=
-    { desc := fun s => s.ι.app ⟨PUnit.unit⟩
-      uniq := fun _ _ h => h ⟨PUnit.unit⟩ }
+    { desc := fun s ↦ s.ι.app ⟨PUnit.unit⟩
+      uniq := fun _ _ h ↦ h ⟨PUnit.unit⟩ }
 
 end IndObjectPresentation
 
@@ -179,8 +179,8 @@ theorem isIndObject_of_isFiltered_of_finallySmall (A : Cᵒᵖ ⥤ Type v)
 Theorem 6.1.5 of [Kashiwara2006] -/
 theorem isIndObject_iff (A : Cᵒᵖ ⥤ Type v) : IsIndObject A ↔
     (IsFiltered (CostructuredArrow yoneda A) ∧ FinallySmall.{v} (CostructuredArrow yoneda A)) :=
-  ⟨fun h => ⟨h.isFiltered, h.finallySmall⟩,
-   fun ⟨_, _⟩ => isIndObject_of_isFiltered_of_finallySmall A⟩
+  ⟨fun h ↦ ⟨h.isFiltered, h.finallySmall⟩,
+   fun ⟨_, _⟩ ↦ isIndObject_of_isFiltered_of_finallySmall A⟩
 
 /-- If a limit already exists in `C`, then the limit of the image of the diagram under the Yoneda
 embedding is an ind-object. -/
@@ -199,7 +199,7 @@ they are left-exact. -/
 lemma isIndObject_iff_preservesFiniteLimits [HasFiniteColimits C] (A : Cᵒᵖ ⥤ Type u) :
     IsIndObject A ↔ PreservesFiniteLimits A :=
   (isIndObject_iff A).trans <| by
-    refine ⟨fun ⟨h₁, h₂⟩ => ?_, fun h => ⟨?_, ?_⟩⟩
+    refine ⟨fun ⟨h₁, h₂⟩ ↦ ?_, fun h ↦ ⟨?_, ?_⟩⟩
     · apply preservesFiniteLimits_of_isFiltered_costructuredArrow_yoneda
     · exact isFiltered_costructuredArrow_yoneda_of_preservesFiniteLimits A
     · have := essentiallySmallSelf (CostructuredArrow yoneda A)

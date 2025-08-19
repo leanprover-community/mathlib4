@@ -62,8 +62,8 @@ def integer : Subalgebra R K :=
   {
     (⨅ (v) (_ : v ∉ S), (v.valuation K).valuationSubring.toSubring).copy
         {x : K | ∀ (v) (_ : v ∉ S), v.valuation K x ≤ 1} <|
-      Set.ext fun _ => by simp [SetLike.mem_coe] with
-    algebraMap_mem' := fun x v _ => v.valuation_le_one x }
+      Set.ext fun _ ↦ by simp [SetLike.mem_coe] with
+    algebraMap_mem' := fun x v _ ↦ v.valuation_le_one x }
 
 theorem integer_eq :
     (S.integer K).toSubring =
@@ -104,7 +104,7 @@ namespace Set
 def unit : Subgroup Kˣ :=
   (⨅ (v) (_ : v ∉ S), (v.valuation K).valuationSubring.unitGroup).copy
       {x : Kˣ | ∀ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation K x = 1} <|
-    Set.ext fun _ => by
+    Set.ext fun _ ↦ by
       -- Porting note: was
       -- simpa only [SetLike.mem_coe, Subgroup.mem_iInf, Valuation.mem_unitGroup_iff]
       simp only [mem_setOf, SetLike.mem_coe, Subgroup.mem_iInf, Valuation.mem_unitGroup_iff]
@@ -121,12 +121,12 @@ theorem unit_valuation_eq_one (x : S.unit K) {v : HeightOneSpectrum R} (hv : v �
 @[simps apply_val_coe symm_apply_coe]
 def unitEquivUnitsInteger : S.unit K ≃* (S.integer K)ˣ where
   toFun x :=
-    ⟨⟨((x : Kˣ) : K), fun v hv => (x.property v hv).le⟩,
-      ⟨((x⁻¹ : Kˣ) : K), fun v hv => (x⁻¹.property v hv).le⟩,
+    ⟨⟨((x : Kˣ) : K), fun v hv ↦ (x.property v hv).le⟩,
+      ⟨((x⁻¹ : Kˣ) : K), fun v hv ↦ (x⁻¹.property v hv).le⟩,
       Subtype.ext x.val.val_inv, Subtype.ext x.val.inv_val⟩
   invFun x :=
-    ⟨Units.mk0 x fun hx => x.ne_zero (ZeroMemClass.coe_eq_zero.mp hx),
-    fun v hv =>
+    ⟨Units.mk0 x fun hx ↦ x.ne_zero (ZeroMemClass.coe_eq_zero.mp hx),
+    fun v hv ↦
       eq_one_of_one_le_mul_left (x.val.property v hv) (x.inv.property v hv) <|
         Eq.ge <| by
           -- Porting note: was

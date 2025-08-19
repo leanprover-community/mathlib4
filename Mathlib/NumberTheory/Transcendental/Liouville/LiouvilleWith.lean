@@ -50,7 +50,7 @@ def LiouvilleWith (p x : ℝ) : Prop :=
 /-- For `p = 1` (hence, for any `p ≤ 1`), the condition `LiouvilleWith p x` is trivial. -/
 theorem liouvilleWith_one (x : ℝ) : LiouvilleWith 1 x := by
   use 2
-  refine ((eventually_gt_atTop 0).mono fun n hn => ?_).frequently
+  refine ((eventually_gt_atTop 0).mono fun n hn ↦ ?_).frequently
   have hn' : (0 : ℝ) < n := by simpa
   have : x < ↑(⌊x * ↑n⌋ + 1) / ↑n := by
     rw [lt_div_iff₀ hn', Int.cast_add, Int.cast_one]
@@ -123,10 +123,10 @@ theorem mul_rat (h : LiouvilleWith p x) (hr : r ≠ 0) : LiouvilleWith p (x * r)
 /-- The product `x * r`, `r : ℚ`, `r ≠ 0`, is a Liouville number with exponent `p` if and only if
 `x` satisfies the same condition. -/
 theorem mul_rat_iff (hr : r ≠ 0) : LiouvilleWith p (x * r) ↔ LiouvilleWith p x :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     simpa only [mul_assoc, ← Rat.cast_mul, mul_inv_cancel₀ hr, Rat.cast_one, mul_one] using
       h.mul_rat (inv_ne_zero hr),
-    fun h => h.mul_rat hr⟩
+    fun h ↦ h.mul_rat hr⟩
 
 /-- The product `r * x`, `r : ℚ`, `r ≠ 0`, is a Liouville number with exponent `p` if and only if
 `x` satisfies the same condition. -/
@@ -176,7 +176,7 @@ theorem add_rat (h : LiouvilleWith p x) (r : ℚ) : LiouvilleWith p (x + r) := b
 
 @[simp]
 theorem add_rat_iff : LiouvilleWith p (x + r) ↔ LiouvilleWith p x :=
-  ⟨fun h => by simpa using h.add_rat (-r), fun h => h.add_rat r⟩
+  ⟨fun h ↦ by simpa using h.add_rat (-r), fun h ↦ h.add_rat r⟩
 
 @[simp]
 theorem rat_add_iff : LiouvilleWith p (r + x) ↔ LiouvilleWith p x := by rw [add_comm, add_rat_iff]
@@ -221,7 +221,7 @@ protected theorem neg (h : LiouvilleWith p x) : LiouvilleWith p (-x) := by
 
 @[simp]
 theorem neg_iff : LiouvilleWith p (-x) ↔ LiouvilleWith p x :=
-  ⟨fun h => neg_neg x ▸ h.neg, LiouvilleWith.neg⟩
+  ⟨fun h ↦ neg_neg x ▸ h.neg, LiouvilleWith.neg⟩
 
 @[simp]
 theorem sub_rat_iff : LiouvilleWith p (x - r) ↔ LiouvilleWith p x := by
@@ -294,20 +294,20 @@ variable {x : ℝ}
 exists a numerator `a` such that `x ≠ a / b` and `|x - a / b| < 1 / b ^ n`. -/
 theorem frequently_exists_num (hx : Liouville x) (n : ℕ) :
     ∃ᶠ b : ℕ in atTop, ∃ a : ℤ, x ≠ a / b ∧ |x - a / b| < 1 / (b : ℝ) ^ n := by
-  refine Classical.not_not.1 fun H => ?_
+  refine Classical.not_not.1 fun H ↦ ?_
   simp only [not_exists, not_frequently, not_and, not_lt,
     eventually_atTop] at H
   rcases H with ⟨N, hN⟩
   have : ∀ b > (1 : ℕ), ∀ᶠ m : ℕ in atTop, ∀ a : ℤ, 1 / (b : ℝ) ^ m ≤ |x - a / b| := by
     intro b hb
     replace hb : (1 : ℝ) < b := Nat.one_lt_cast.2 hb
-    have H : Tendsto (fun m => 1 / (b : ℝ) ^ m : ℕ → ℝ) atTop (𝓝 0) := by
+    have H : Tendsto (fun m ↦ 1 / (b : ℝ) ^ m : ℕ → ℝ) atTop (𝓝 0) := by
       simp only [one_div]
       exact tendsto_inv_atTop_zero.comp (tendsto_pow_atTop_atTop_of_one_lt hb)
     refine (H.eventually (hx.irrational.eventually_forall_le_dist_cast_div b)).mono ?_
-    exact fun m hm a => hm a
+    exact fun m hm a ↦ hm a
   have : ∀ᶠ m : ℕ in atTop, ∀ b < N, 1 < b → ∀ a : ℤ, 1 / (b : ℝ) ^ m ≤ |x - a / b| :=
-    (finite_lt_nat N).eventually_all.2 fun b _hb => eventually_imp_distrib_left.2 (this b)
+    (finite_lt_nat N).eventually_all.2 fun b _hb ↦ eventually_imp_distrib_left.2 (this b)
   rcases (this.and (eventually_ge_atTop n)).exists with ⟨m, hm, hnm⟩
   rcases hx m with ⟨a, b, hb, hne, hlt⟩
   lift b to ℕ using zero_le_one.trans hb.le; norm_cast at hb; push_cast at hne hlt
@@ -330,7 +330,7 @@ end Liouville
 /-- A number satisfies the Liouville condition with any exponent if and only if it is a Liouville
 number. -/
 theorem forall_liouvilleWith_iff {x : ℝ} : (∀ p, LiouvilleWith p x) ↔ Liouville x := by
-  refine ⟨fun H n => ?_, Liouville.liouvilleWith⟩
+  refine ⟨fun H n ↦ ?_, Liouville.liouvilleWith⟩
   rcases ((eventually_gt_atTop 1).and_frequently
     ((H (n + 1)).frequently_lt_rpow_neg (lt_add_one (n : ℝ)))).exists
     with ⟨b, hb, a, hne, hlt⟩

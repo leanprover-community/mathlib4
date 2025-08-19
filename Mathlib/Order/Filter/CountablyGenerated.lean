@@ -49,7 +49,7 @@ structure CountableFilterBasis (α : Type*) extends FilterBasis α where
 
 -- For illustration purposes, the countable filter basis defining `(atTop : Filter ℕ)`
 instance Nat.inhabitedCountableFilterBasis : Inhabited (CountableFilterBasis ℕ) :=
-  ⟨⟨default, countable_range fun n => Ici n⟩⟩
+  ⟨⟨default, countable_range fun n ↦ Ici n⟩⟩
 
 theorem HasCountableBasis.isCountablyGenerated {f : Filter α} {p : ι → Prop} {s : ι → Set α}
     (h : f.HasCountableBasis p s) : f.IsCountablyGenerated :=
@@ -61,11 +61,11 @@ theorem HasBasis.isCountablyGenerated [Countable ι] {f : Filter α} {p : ι →
 
 theorem antitone_seq_of_seq (s : ℕ → Set α) :
     ∃ t : ℕ → Set α, Antitone t ∧ ⨅ i, 𝓟 (s i) = ⨅ i, 𝓟 (t i) := by
-  use fun n => ⋂ m ≤ n, s m; constructor
-  · exact fun i j hij => biInter_mono (Iic_subset_Iic.2 hij) fun n _ => Subset.rfl
+  use fun n ↦ ⋂ m ≤ n, s m; constructor
+  · exact fun i j hij ↦ biInter_mono (Iic_subset_Iic.2 hij) fun n _ ↦ Subset.rfl
   apply le_antisymm <;> rw [le_iInf_iff] <;> intro i
   · rw [le_principal_iff]
-    refine (biInter_mem (finite_le_nat _)).2 fun j _ => ?_
+    refine (biInter_mem (finite_le_nat _)).2 fun j _ ↦ ?_
     exact mem_iInf_of_mem j (mem_principal_self _)
   · refine iInf_le_of_le i (principal_mono.2 <| iInter₂_subset i ?_)
     rfl
@@ -79,7 +79,7 @@ theorem countable_biInf_eq_iInf_seq' [CompleteLattice α] {B : Set ι} (Bcbl : B
     (f : ι → α) {i₀ : ι} (h : f i₀ = ⊤) : ∃ x : ℕ → ι, ⨅ t ∈ B, f t = ⨅ i, f (x i) := by
   rcases B.eq_empty_or_nonempty with hB | Bnonempty
   · rw [hB, iInf_emptyset]
-    use fun _ => i₀
+    use fun _ ↦ i₀
     simp [h]
   · exact countable_biInf_eq_iInf_seq Bcbl Bnonempty f
 
@@ -98,8 +98,8 @@ protected theorem HasAntitoneBasis.mem [Preorder ι] {l : Filter α} {s : ι →
   hs.toHasBasis.mem_of_mem trivial
 
 theorem HasAntitoneBasis.hasBasis_ge [Preorder ι] [IsDirected ι (· ≤ ·)] {l : Filter α}
-    {s : ι → Set α} (hs : l.HasAntitoneBasis s) (i : ι) : l.HasBasis (fun j => i ≤ j) s :=
-  hs.1.to_hasBasis (fun j _ => (exists_ge_ge i j).imp fun _k hk => ⟨hk.1, hs.2 hk.2⟩) fun j _ =>
+    {s : ι → Set α} (hs : l.HasAntitoneBasis s) (i : ι) : l.HasBasis (fun j ↦ i ≤ j) s :=
+  hs.1.to_hasBasis (fun j _ ↦ (exists_ge_ge i j).imp fun _k hk ↦ ⟨hk.1, hs.2 hk.2⟩) fun j _ ↦
     ⟨j, trivial, Subset.rfl⟩
 
 /-- If `f` is countably generated and `f.HasBasis p s`, then `f` admits a decreasing basis
@@ -108,27 +108,27 @@ sequence `i n` such that `p (i n)` for all `n` and `s (i n)` is a decreasing seq
 forms a basis of `f`. -/
 theorem HasBasis.exists_antitone_subbasis {f : Filter α} [h : f.IsCountablyGenerated]
     {p : ι' → Prop} {s : ι' → Set α} (hs : f.HasBasis p s) :
-    ∃ x : ℕ → ι', (∀ i, p (x i)) ∧ f.HasAntitoneBasis fun i => s (x i) := by
+    ∃ x : ℕ → ι', (∀ i, p (x i)) ∧ f.HasAntitoneBasis fun i ↦ s (x i) := by
   obtain ⟨x', hx'⟩ : ∃ x : ℕ → Set α, f = ⨅ i, 𝓟 (x i) := by
     rcases h with ⟨s, hsc, rfl⟩
     rw [generate_eq_biInf]
     exact countable_biInf_principal_eq_seq_iInf hsc
-  have : ∀ i, x' i ∈ f := fun i => hx'.symm ▸ (iInf_le (fun i => 𝓟 (x' i)) i) (mem_principal_self _)
-  let x : ℕ → { i : ι' // p i } := fun n =>
-    Nat.recOn n (hs.index _ <| this 0) fun n xn =>
+  have : ∀ i, x' i ∈ f := fun i ↦ hx'.symm ▸ (iInf_le (fun i ↦ 𝓟 (x' i)) i) (mem_principal_self _)
+  let x : ℕ → { i : ι' // p i } := fun n ↦
+    Nat.recOn n (hs.index _ <| this 0) fun n xn ↦
       hs.index _ <| inter_mem (this <| n + 1) (hs.mem_of_mem xn.2)
-  have x_anti : Antitone fun i => s (x i).1 :=
-    antitone_nat_of_succ_le fun i => (hs.set_index_subset _).trans inter_subset_right
+  have x_anti : Antitone fun i ↦ s (x i).1 :=
+    antitone_nat_of_succ_le fun i ↦ (hs.set_index_subset _).trans inter_subset_right
   have x_subset : ∀ i, s (x i).1 ⊆ x' i := by
     rintro (_ | i)
     exacts [hs.set_index_subset _, (hs.set_index_subset _).trans inter_subset_left]
-  refine ⟨fun i => (x i).1, fun i => (x i).2, ?_⟩
-  have : (⨅ i, 𝓟 (s (x i).1)).HasAntitoneBasis fun i => s (x i).1 := .iInf_principal x_anti
+  refine ⟨fun i ↦ (x i).1, fun i ↦ (x i).2, ?_⟩
+  have : (⨅ i, 𝓟 (s (x i).1)).HasAntitoneBasis fun i ↦ s (x i).1 := .iInf_principal x_anti
   convert this
   exact
-    le_antisymm (le_iInf fun i => le_principal_iff.2 <| by cases i <;> apply hs.set_index_mem)
+    le_antisymm (le_iInf fun i ↦ le_principal_iff.2 <| by cases i <;> apply hs.set_index_mem)
       (hx'.symm ▸
-        le_iInf fun i => le_principal_iff.2 <| this.1.mem_iff.2 ⟨i, trivial, x_subset i⟩)
+        le_iInf fun i ↦ le_principal_iff.2 <| this.1.mem_iff.2 ⟨i, trivial, x_subset i⟩)
 
 /-- A countably generated filter admits a basis formed by an antitone sequence of sets. -/
 theorem exists_antitone_basis (f : Filter α) [f.IsCountablyGenerated] :
@@ -198,7 +198,7 @@ theorem isCountablyGenerated_iff_exists_antitone_basis {f : Filter α} :
 
 @[instance]
 theorem isCountablyGenerated_principal (s : Set α) : IsCountablyGenerated (𝓟 s) :=
-  isCountablyGenerated_of_seq ⟨fun _ => s, iInf_const.symm⟩
+  isCountablyGenerated_of_seq ⟨fun _ ↦ s, iInf_const.symm⟩
 
 @[instance]
 theorem isCountablyGenerated_pure (a : α) : IsCountablyGenerated (pure a) := by
@@ -215,10 +215,10 @@ theorem isCountablyGenerated_top : IsCountablyGenerated (⊤ : Filter α) :=
 
 instance iInf.isCountablyGenerated {ι : Sort*} {α : Type*} [Countable ι] (f : ι → Filter α)
     [∀ i, IsCountablyGenerated (f i)] : IsCountablyGenerated (⨅ i, f i) := by
-  choose s hs using fun i => exists_antitone_basis (f i)
+  choose s hs using fun i ↦ exists_antitone_basis (f i)
   rw [← PLift.down_surjective.iInf_comp]
-  refine HasCountableBasis.isCountablyGenerated ⟨.iInf fun n => (hs _).1, ?_⟩
-  refine (countable_range <| Sigma.map ((↑) : Finset (PLift ι) → Set (PLift ι)) fun _ => id).mono ?_
+  refine HasCountableBasis.isCountablyGenerated ⟨.iInf fun n ↦ (hs _).1, ?_⟩
+  refine (countable_range <| Sigma.map ((↑) : Finset (PLift ι) → Set (PLift ι)) fun _ ↦ id).mono ?_
   rintro ⟨I, f⟩ ⟨hI, -⟩
   lift I to Finset (PLift ι) using hI
   exact ⟨⟨I, f⟩, rfl⟩

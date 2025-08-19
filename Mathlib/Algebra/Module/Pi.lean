@@ -25,16 +25,16 @@ variable {f : I → Type v}
 namespace Pi
 
 theorem _root_.IsSMulRegular.pi {α : Type*} [∀ i, SMul α <| f i] {k : α}
-    (hk : ∀ i, IsSMulRegular (f i) k) : IsSMulRegular (∀ i, f i) k := fun _ _ h =>
-  funext fun i => hk i (congr_fun h i :)
+    (hk : ∀ i, IsSMulRegular (f i) k) : IsSMulRegular (∀ i, f i) k := fun _ _ h ↦
+  funext fun i ↦ hk i (congr_fun h i :)
 
 variable (I f)
 
 instance module (α) {r : Semiring α} {m : ∀ i, AddCommMonoid <| f i} [∀ i, Module α <| f i] :
     @Module α (∀ i : I, f i) r (@Pi.addCommMonoid I f m) :=
   { Pi.distribMulAction _ with
-    add_smul := fun _ _ _ => funext fun _ => add_smul _ _ _
-    zero_smul := fun _ => funext fun _ => zero_smul α _ }
+    add_smul := fun _ _ _ ↦ funext fun _ ↦ add_smul _ _ _
+    zero_smul := fun _ ↦ funext fun _ ↦ zero_smul α _ }
 
 /- Extra instance to short-circuit type class resolution.
 For unknown reasons, this is necessary for certain inference problems. E.g., for this to succeed:

@@ -190,9 +190,9 @@ corresponding to the component at `G` of the "coevaluation" natural morphism
 def coev_app : G ⟶ H where
   app c :=
     Wedge.IsLimit.lift (ℌ.isLimitWedge c)
-      (fun c' => MonoidalClosed.curry <|
+      (fun c' ↦ MonoidalClosed.curry <|
         (DayConvolution.unit F G).app (c', c))
-        (fun {c' c''} f => by
+        (fun {c' c''} f ↦ by
           have := DayConvolution.unit_naturality F G f (𝟙 c)
           simp only [Functor.map_id, tensorHom_id] at this
           replace this := congrArg MonoidalClosed.curry this

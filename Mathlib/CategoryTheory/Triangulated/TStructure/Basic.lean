@@ -108,16 +108,16 @@ lemma shift_ge (a n n' : ℤ) (hn' : a + n = n') :
     exact t.ge_shift _ _ _ hn' X hX
 
 lemma le_monotone : Monotone t.le := by
-  let H := fun (a : ℕ) => ∀ (n : ℤ), t.le n ≤ t.le (n + a)
+  let H := fun (a : ℕ) ↦ ∀ (n : ℤ), t.le n ≤ t.le (n + a)
   suffices ∀ (a : ℕ), H a by
     intro n₀ n₁ h
     obtain ⟨a, ha⟩ := Int.nonneg_def.1 h
     obtain rfl : n₁ = n₀ + a := by omega
     apply this
-  have H_zero : H 0 := fun n => by
+  have H_zero : H 0 := fun n ↦ by
     simp only [Nat.cast_zero, add_zero]
     rfl
-  have H_one : H 1 := fun n X hX => by
+  have H_one : H 1 := fun n X hX ↦ by
     rw [← t.shift_le n 1 (n + (1 : ℕ)) rfl, ObjectProperty.prop_shift_iff]
     rw [← t.shift_le n 0 n (add_zero n), ObjectProperty.prop_shift_iff] at hX
     exact t.le_zero_le _ hX
@@ -131,16 +131,16 @@ lemma le_monotone : Monotone t.le := by
   · exact H_add a 1 _ rfl ha H_one
 
 lemma ge_antitone : Antitone t.ge := by
-  let H := fun (a : ℕ) => ∀ (n : ℤ), t.ge (n + a) ≤ t.ge n
+  let H := fun (a : ℕ) ↦ ∀ (n : ℤ), t.ge (n + a) ≤ t.ge n
   suffices ∀ (a : ℕ), H a by
     intro n₀ n₁ h
     obtain ⟨a, ha⟩ := Int.nonneg_def.1 h
     obtain rfl : n₁ = n₀ + a := by omega
     apply this
-  have H_zero : H 0 := fun n => by
+  have H_zero : H 0 := fun n ↦ by
     simp only [Nat.cast_zero, add_zero]
     rfl
-  have H_one : H 1 := fun n X hX => by
+  have H_one : H 1 := fun n X hX ↦ by
     rw [← t.shift_ge n 1 (n + (1 : ℕ)) (by simp), ObjectProperty.prop_shift_iff] at hX
     rw [← t.shift_ge n 0 n (add_zero n)]
     exact t.ge_one_le _ hX

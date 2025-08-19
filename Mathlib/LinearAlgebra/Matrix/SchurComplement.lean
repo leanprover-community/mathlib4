@@ -196,7 +196,7 @@ theorem inv_fromBlocks_zero₂₁_of_isUnit_iff (A : Matrix m m α) (B : Matrix 
     simp_rw [← invOf_eq_nonsing_inv, invOf_fromBlocks_zero₂₁_eq]
   · have hD := hAD.not.mp hA
     have : ¬IsUnit (fromBlocks A B 0 D) :=
-      isUnit_fromBlocks_zero₂₁.not.mpr (not_and'.mpr fun _ => hA)
+      isUnit_fromBlocks_zero₂₁.not.mpr (not_and'.mpr fun _ ↦ hA)
     simp_rw [nonsing_inv_eq_ringInverse, Ring.inverse_non_unit _ hA, Ring.inverse_non_unit _ hD,
       Ring.inverse_non_unit _ this, Matrix.zero_mul, neg_zero, fromBlocks_zero]
 
@@ -213,7 +213,7 @@ theorem inv_fromBlocks_zero₁₂_of_isUnit_iff (A : Matrix m m α) (C : Matrix 
     simp_rw [← invOf_eq_nonsing_inv, invOf_fromBlocks_zero₁₂_eq]
   · have hD := hAD.not.mp hA
     have : ¬IsUnit (fromBlocks A 0 C D) :=
-      isUnit_fromBlocks_zero₁₂.not.mpr (not_and'.mpr fun _ => hA)
+      isUnit_fromBlocks_zero₁₂.not.mpr (not_and'.mpr fun _ ↦ hA)
     simp_rw [nonsing_inv_eq_ringInverse, Ring.inverse_non_unit _ hA, Ring.inverse_non_unit _ hD,
       Ring.inverse_non_unit _ this, Matrix.zero_mul, neg_zero, fromBlocks_zero]
 
@@ -506,12 +506,12 @@ theorem PosSemidef.fromBlocks₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A :
     (fromBlocks A B Bᴴ D).PosSemidef ↔ (D - Bᴴ * A⁻¹ * B).PosSemidef := by
   rw [PosSemidef, IsHermitian.fromBlocks₁₁ _ _ hA.1]
   constructor
-  · refine fun h => ⟨h.1, fun x => ?_⟩
+  · refine fun h ↦ ⟨h.1, fun x ↦ ?_⟩
     have := h.2 (-((A⁻¹ * B) *ᵥ x) ⊕ᵥ x)
     rw [dotProduct_mulVec, schur_complement_eq₁₁ B D _ _ hA.1, neg_add_cancel, dotProduct_zero,
       zero_add] at this
     rw [dotProduct_mulVec]; exact this
-  · refine fun h => ⟨h.1, fun x => ?_⟩
+  · refine fun h ↦ ⟨h.1, fun x ↦ ?_⟩
     rw [dotProduct_mulVec, ← Sum.elim_comp_inl_inr x, schur_complement_eq₁₁ B D _ _ hA.1]
     apply le_add_of_nonneg_of_le
     · rw [← dotProduct_mulVec]

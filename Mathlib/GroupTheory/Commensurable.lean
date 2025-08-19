@@ -53,12 +53,12 @@ theorem trans {H K L : Subgroup G} (hhk : Commensurable H K) (hkl : Commensurabl
   ⟨Subgroup.relindex_ne_zero_trans hhk.1 hkl.1, Subgroup.relindex_ne_zero_trans hkl.2 hhk.2⟩
 
 theorem equivalence : Equivalence (@Commensurable G _) :=
-  ⟨Commensurable.refl, fun h => Commensurable.symm h, fun h₁ h₂ => Commensurable.trans h₁ h₂⟩
+  ⟨Commensurable.refl, fun h ↦ Commensurable.symm h, fun h₁ h₂ ↦ Commensurable.trans h₁ h₂⟩
 
 /-- Equivalence of `K/H ⊓ K` with `gKg⁻¹/gHg⁻¹ ⊓ gKg⁻¹` -/
 def quotConjEquiv (H K : Subgroup G) (g : ConjAct G) :
     K ⧸ H.subgroupOf K ≃ (g • K : Subgroup G) ⧸ (g • H).subgroupOf (g • K) :=
-  Quotient.congr (K.equivSMul g).toEquiv fun a b => by
+  Quotient.congr (K.equivSMul g).toEquiv fun a b ↦ by
     dsimp
     rw [← Quotient.eq'', ← Quotient.eq'', QuotientGroup.eq, QuotientGroup.eq,
       Subgroup.mem_subgroupOf, Subgroup.mem_subgroupOf, ← map_inv, ← map_mul,
@@ -97,8 +97,8 @@ theorem commensurator_mem_iff (H : Subgroup G) (g : G) :
     g ∈ commensurator H ↔ Commensurable (ConjAct.toConjAct g • H) H := Iff.rfl
 
 theorem eq {H K : Subgroup G} (hk : Commensurable H K) : commensurator H = commensurator K :=
-  Subgroup.ext fun x =>
+  Subgroup.ext fun x ↦
     let hx := (commensurable_conj x).1 hk
-    ⟨fun h => hx.symm.trans (h.trans hk), fun h => hx.trans (h.trans hk.symm)⟩
+    ⟨fun h ↦ hx.symm.trans (h.trans hk), fun h ↦ hx.trans (h.trans hk.symm)⟩
 
 end Commensurable

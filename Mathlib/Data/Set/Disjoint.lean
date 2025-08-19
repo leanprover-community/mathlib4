@@ -34,7 +34,7 @@ theorem _root_.Disjoint.inter_eq : Disjoint s t → s ∩ t = ∅ :=
   Disjoint.eq_bot
 
 theorem disjoint_left : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → a ∉ t :=
-  disjoint_iff_inf_le.trans <| forall_congr' fun _ => not_and
+  disjoint_iff_inf_le.trans <| forall_congr' fun _ ↦ not_and
 
 alias ⟨_root_.Disjoint.notMem_of_mem_left, _⟩ := disjoint_left
 

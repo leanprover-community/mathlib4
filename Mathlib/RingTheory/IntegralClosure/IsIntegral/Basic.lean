@@ -191,12 +191,12 @@ theorem fg_adjoin_of_finite {s : Set A} (hfs : s.Finite) (his : ∀ x ∈ s, IsI
     (Algebra.adjoin R s).toSubmodule.FG := by
   induction s, hfs using Set.Finite.induction_on with
   | empty =>
-    refine ⟨{1}, Submodule.ext fun x => ?_⟩
+    refine ⟨{1}, Submodule.ext fun x ↦ ?_⟩
     rw [Algebra.adjoin_empty, Finset.coe_singleton, ← one_eq_span, Algebra.toSubmodule_bot]
   | @insert a s _ _ ih =>
     rw [← Set.union_singleton, Algebra.adjoin_union_coe_submodule]
     exact FG.mul
-      (ih fun i hi => his i <| Set.mem_insert_of_mem a hi)
+      (ih fun i hi ↦ his i <| Set.mem_insert_of_mem a hi)
       (his a <| Set.mem_insert a s).fg_adjoin_singleton
 
 theorem Algebra.finite_adjoin_of_finite_of_isIntegral {s : Set A} (hf : s.Finite)

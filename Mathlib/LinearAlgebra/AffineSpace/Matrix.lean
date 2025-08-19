@@ -34,7 +34,7 @@ rows are the barycentric coordinates of `q` with respect to `p`.
 
 It is an affine equivalent of `Basis.toMatrix`. -/
 noncomputable def toMatrix {ι' : Type*} (q : ι' → P) : Matrix ι' ι k :=
-  fun i j => b.coord j (q i)
+  fun i j ↦ b.coord j (q i)
 
 @[simp]
 theorem toMatrix_apply {ι' : Type*} (q : ι' → P) (i : ι') (j : ι) :
@@ -64,7 +64,7 @@ theorem affineIndependent_of_toMatrix_right_inv [Fintype ι] [Finite ι'] [Decid
       ← Finset.univ.affineCombination_eq_linear_combination _ _ hw₂,
       ← Function.comp_def (b.coord j) p, ← Finset.univ.map_affineCombination p w₁ hw₁,
       ← Finset.univ.map_affineCombination p w₂ hw₂, hweq]
-  replace hweq' := congr_arg (fun w => w ᵥ* A) hweq'
+  replace hweq' := congr_arg (fun w ↦ w ᵥ* A) hweq'
   simpa only [Matrix.vecMul_vecMul, hA, Matrix.vecMul_one] using hweq'
 
 /-- Given a family of points `p : ι' → P` and an affine basis `b`, if the matrix whose rows are the

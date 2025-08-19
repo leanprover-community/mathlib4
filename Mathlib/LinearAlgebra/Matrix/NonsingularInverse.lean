@@ -158,7 +158,7 @@ theorem isUnit_det_transpose (h : IsUnit A.det) : IsUnit Aᵀ.det := by
 
 /-- The inverse of a square matrix, when it is invertible (and zero otherwise). -/
 noncomputable instance inv : Inv (Matrix n n α) :=
-  ⟨fun A => Ring.inverse A.det • A.adjugate⟩
+  ⟨fun A ↦ Ring.inverse A.det • A.adjugate⟩
 
 theorem inv_def (A : Matrix n n α) : A⁻¹ = Ring.inverse A.det • A.adjugate :=
   rfl
@@ -262,25 +262,25 @@ theorem inv_mul_cancel_left_of_invertible (B : Matrix n m α) [Invertible A] : A
 
 theorem inv_mul_eq_iff_eq_mul_of_invertible (A B C : Matrix n n α) [Invertible A] :
     A⁻¹ * B = C ↔ B = A * C :=
-  ⟨fun h => by rw [← h, mul_inv_cancel_left_of_invertible],
-   fun h => by rw [h, inv_mul_cancel_left_of_invertible]⟩
+  ⟨fun h ↦ by rw [← h, mul_inv_cancel_left_of_invertible],
+   fun h ↦ by rw [h, inv_mul_cancel_left_of_invertible]⟩
 
 theorem mul_inv_eq_iff_eq_mul_of_invertible (A B C : Matrix n n α) [Invertible A] :
     B * A⁻¹ = C ↔ B = C * A :=
-  ⟨fun h => by rw [← h, inv_mul_cancel_right_of_invertible],
-   fun h => by rw [h, mul_inv_cancel_right_of_invertible]⟩
+  ⟨fun h ↦ by rw [← h, inv_mul_cancel_right_of_invertible],
+   fun h ↦ by rw [h, mul_inv_cancel_right_of_invertible]⟩
 
 lemma inv_mulVec_eq_vec {A : Matrix n n α} [Invertible A]
     {u v : n → α} (hM : u = A.mulVec v) : A⁻¹.mulVec u = v := by
   rw [hM, Matrix.mulVec_mulVec, Matrix.inv_mul_of_invertible, Matrix.one_mulVec]
 
 lemma mul_right_injective_of_invertible [Invertible A] :
-    Function.Injective (fun (x : Matrix n m α) => A * x) :=
-  fun _ _ h => by simpa only [inv_mul_cancel_left_of_invertible] using congr_arg (A⁻¹ * ·) h
+    Function.Injective (fun (x : Matrix n m α) ↦ A * x) :=
+  fun _ _ h ↦ by simpa only [inv_mul_cancel_left_of_invertible] using congr_arg (A⁻¹ * ·) h
 
 lemma mul_left_injective_of_invertible [Invertible A] :
-    Function.Injective (fun (x : Matrix m n α) => x * A) :=
-  fun a x hax => by simpa only [mul_inv_cancel_right_of_invertible] using congr_arg (· * A⁻¹) hax
+    Function.Injective (fun (x : Matrix m n α) ↦ x * A) :=
+  fun a x hax ↦ by simpa only [mul_inv_cancel_right_of_invertible] using congr_arg (· * A⁻¹) hax
 
 lemma mul_right_inj_of_invertible [Invertible A] {x y : Matrix n m α} : A * x = A * y ↔ x = y :=
   (mul_right_injective_of_invertible A).eq_iff
@@ -294,12 +294,12 @@ section InjectiveMul
 variable [Fintype n] [Fintype m] [DecidableEq m] [CommRing α]
 
 lemma mul_left_injective_of_inv (A : Matrix m n α) (B : Matrix n m α) (h : A * B = 1) :
-    Function.Injective (fun x : Matrix l m α => x * A) := fun _ _ g => by
+    Function.Injective (fun x : Matrix l m α ↦ x * A) := fun _ _ g ↦ by
   simpa only [Matrix.mul_assoc, Matrix.mul_one, h] using congr_arg (· * B) g
 
 lemma mul_right_injective_of_inv (A : Matrix m n α) (B : Matrix n m α) (h : A * B = 1) :
-    Function.Injective (fun x : Matrix m l α => B * x) :=
-  fun _ _ g => by simpa only [← Matrix.mul_assoc, Matrix.one_mul, h] using congr_arg (A * ·) g
+    Function.Injective (fun x : Matrix m l α ↦ B * x) :=
+  fun _ _ g ↦ by simpa only [← Matrix.mul_assoc, Matrix.one_mul, h] using congr_arg (A * ·) g
 
 end InjectiveMul
 
@@ -315,7 +315,7 @@ theorem vecMul_surjective_iff_exists_left_inverse
   cases nonempty_fintype n
   refine ⟨fun h ↦ ?_, fun ⟨B, hBA⟩ y ↦ ⟨y ᵥ* B, by simp [hBA]⟩⟩
   choose rows hrows using (h <| Pi.single · 1)
-  refine ⟨Matrix.of rows, Matrix.ext fun i j => ?_⟩
+  refine ⟨Matrix.of rows, Matrix.ext fun i j ↦ ?_⟩
   rw [mul_apply_eq_vecMul, one_eq_pi_single, ← hrows]
   rfl
 
@@ -524,14 +524,14 @@ theorem invOf_diagonal_eq {α} [Semiring α] (v : n → α) [Invertible v] [Inve
 def invertibleOfDiagonalInvertible (v : n → α) [Invertible (diagonal v)] : Invertible v where
   invOf := diag (⅟(diagonal v))
   invOf_mul_self :=
-    funext fun i => by
+    funext fun i ↦ by
       letI : Invertible (diagonal v).det := detInvertibleOfInvertible _
       rw [invOf_eq, diag_smul, adjugate_diagonal, diag_diagonal]
       dsimp
       rw [mul_assoc, prod_erase_mul _ _ (Finset.mem_univ _), ← det_diagonal]
       exact mul_invOf_self _
   mul_invOf_self :=
-    funext fun i => by
+    funext fun i ↦ by
       letI : Invertible (diagonal v).det := detInvertibleOfInvertible _
       rw [invOf_eq, diag_smul, adjugate_diagonal, diag_diagonal]
       dsimp
@@ -567,7 +567,7 @@ end Diagonal
 
 /-- The inverse of a 1×1 or 0×0 matrix is always diagonal.
 
-While we could write this as `of fun _ _ => Ring.inverse (A default default)` on the RHS, this is
+While we could write this as `of fun _ _ ↦ Ring.inverse (A default default)` on the RHS, this is
 less useful because:
 
 * It wouldn't work for 0×0 matrices.
@@ -578,7 +578,7 @@ to replace `Ring.inverse` with `⁻¹`.
 -/
 @[simp]
 theorem inv_subsingleton [Subsingleton m] [Fintype m] [DecidableEq m] (A : Matrix m m α) :
-    A⁻¹ = diagonal fun i => Ring.inverse (A i i) := by
+    A⁻¹ = diagonal fun i ↦ Ring.inverse (A i i) := by
   rw [inv_def, adjugate_subsingleton, smul_one_eq_diagonal]
   congr! with i
   exact det_eq_elem_of_subsingleton _ _
@@ -719,7 +719,7 @@ theorem inv_kronecker [Fintype m] [DecidableEq m]
   · cases isEmpty_or_nonempty n
     · subsingleton
     have hAB : ¬IsUnit (A ⊗ₖ B).det := by
-      refine mt (fun hAB => ?_) hA
+      refine mt (fun hAB ↦ ?_) hA
       rw [det_kronecker] at hAB
       exact (isUnit_pow_iff Fintype.card_ne_zero).mp (isUnit_of_mul_isUnit_left hAB)
     rw [nonsing_inv_apply_not_isUnit _ hA, zero_kronecker, nonsing_inv_apply_not_isUnit _ hAB]
@@ -727,7 +727,7 @@ theorem inv_kronecker [Fintype m] [DecidableEq m]
   · cases isEmpty_or_nonempty m
     · subsingleton
     have hAB : ¬IsUnit (A ⊗ₖ B).det := by
-      refine mt (fun hAB => ?_) hB
+      refine mt (fun hAB ↦ ?_) hB
       rw [det_kronecker] at hAB
       exact (isUnit_pow_iff Fintype.card_ne_zero).mp (isUnit_of_mul_isUnit_right hAB)
     rw [nonsing_inv_apply_not_isUnit _ hB, kronecker_zero, nonsing_inv_apply_not_isUnit _ hAB]

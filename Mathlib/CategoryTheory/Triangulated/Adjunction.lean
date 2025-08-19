@@ -84,7 +84,7 @@ lemma isTriangulated_rightAdjoint [F.IsTriangulated] : G.IsTriangulated where
       have eq' := comp_distTriang_mor_zero₁₂ _ mem
       dsimp at eq eq'
       rw [eq, assoc, assoc, eq', comp_zero, comp_zero]
-    have := isIso_of_yoneda_map_bijective (adj.homEquiv _ _ h) (fun Y => by
+    have := isIso_of_yoneda_map_bijective (adj.homEquiv _ _ h) (fun Y ↦ by
       constructor
       · intro φ₁ φ₂ hφ
         rw [← cancel_mono (adj.homEquiv _ _ h)]

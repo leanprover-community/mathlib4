@@ -58,10 +58,10 @@ def equivPUnit [HasZeroObject C] : C ≌ Discrete PUnit.{w + 1} where
   functor := Functor.star C
   inverse := Functor.fromPUnit 0
   unitIso := NatIso.ofComponents
-      (fun X =>
+      (fun X ↦
         { hom := default
           inv := default })
-      fun _ => Subsingleton.elim _ _
+      fun _ ↦ Subsingleton.elim _ _
   counitIso := Functor.punitExt _ _
 
 end CategoryTheory

@@ -56,7 +56,7 @@ theorem mem_supported {s : Set α} (p : α →₀ M) : p ∈ supported M R s ↔
 
 theorem mem_supported' {s : Set α} (p : α →₀ M) :
     p ∈ supported M R s ↔ ∀ x ∉ s, p x = 0 := by
-  haveI := Classical.decPred fun x : α => x ∈ s; simp [mem_supported, Set.subset_def, not_imp_comm]
+  haveI := Classical.decPred fun x : α ↦ x ∈ s; simp [mem_supported, Set.subset_def, not_imp_comm]
 
 theorem mem_supported_support (p : α →₀ M) : p ∈ Finsupp.supported M R (p.support : Set α) := by
   rw [Finsupp.mem_supported]
@@ -66,12 +66,12 @@ theorem single_mem_supported {s : Set α} {a : α} (b : M) (h : a ∈ s) :
   Set.Subset.trans support_single_subset (Finset.singleton_subset_set_iff.2 h)
 
 theorem supported_eq_span_single (s : Set α) :
-    supported R R s = span R ((fun i => single i 1) '' s) := by
-  refine (span_eq_of_le _ ?_ (SetLike.le_def.2 fun l hl => ?_)).symm
+    supported R R s = span R ((fun i ↦ single i 1) '' s) := by
+  refine (span_eq_of_le _ ?_ (SetLike.le_def.2 fun l hl ↦ ?_)).symm
   · rintro _ ⟨_, hp, rfl⟩
     exact single_mem_supported R 1 hp
   · rw [← l.sum_single]
-    refine sum_mem fun i il => ?_
+    refine sum_mem fun i il ↦ ?_
     rw [show single i (l i) = l i • single i 1 by simp]
     exact smul_mem _ (l i) (subset_span (mem_image_of_mem _ (hl il)))
 
@@ -85,9 +85,9 @@ variable (M)
 def restrictDom (s : Set α) [DecidablePred (· ∈ s)] : (α →₀ M) →ₗ[R] supported M R s :=
   LinearMap.codRestrict _
     { toFun := filter (· ∈ s)
-      map_add' := fun _ _ => filter_add
-      map_smul' := fun _ _ => filter_smul } fun l =>
-    (mem_supported' _ _).2 fun _ => filter_apply_neg (· ∈ s) l
+      map_add' := fun _ _ ↦ filter_add
+      map_smul' := fun _ _ ↦ filter_smul } fun l ↦
+    (mem_supported' _ _).2 fun _ ↦ filter_apply_neg (· ∈ s) l
 
 variable {M R}
 
@@ -111,21 +111,21 @@ theorem range_restrictDom (s : Set α) [DecidablePred (· ∈ s)] :
   range_eq_top.2 <|
     Function.RightInverse.surjective <| LinearMap.congr_fun (restrictDom_comp_subtype s)
 
-theorem supported_mono {s t : Set α} (st : s ⊆ t) : supported M R s ≤ supported M R t := fun _ h =>
+theorem supported_mono {s t : Set α} (st : s ⊆ t) : supported M R s ≤ supported M R t := fun _ h ↦
   Set.Subset.trans h st
 
 @[simp]
 theorem supported_empty : supported M R (∅ : Set α) = ⊥ :=
-  eq_bot_iff.2 fun l h => (Submodule.mem_bot R).2 <| by ext; simp_all [mem_supported']
+  eq_bot_iff.2 fun l h ↦ (Submodule.mem_bot R).2 <| by ext; simp_all [mem_supported']
 
 @[simp]
 theorem supported_univ : supported M R (Set.univ : Set α) = ⊤ :=
-  eq_top_iff.2 fun _ _ => Set.subset_univ _
+  eq_top_iff.2 fun _ _ ↦ Set.subset_univ _
 
 theorem supported_iUnion {δ : Type*} (s : δ → Set α) :
     supported M R (⋃ i, s i) = ⨆ i, supported M R (s i) := by
-  refine le_antisymm ?_ (iSup_le fun i => supported_mono <| Set.subset_iUnion _ _)
-  haveI := Classical.decPred fun x => x ∈ ⋃ i, s i
+  refine le_antisymm ?_ (iSup_le fun i ↦ supported_mono <| Set.subset_iUnion _ _)
+  haveI := Classical.decPred fun x ↦ x ∈ ⋃ i, s i
   suffices
     LinearMap.range ((Submodule.subtype _).comp (restrictDom M R (⋃ i, s i))) ≤
       ⨆ i, supported M R (s i) by
@@ -140,7 +140,7 @@ theorem supported_iUnion {δ : Type*} (s : δ → Set α) :
     · simp only [mem_comap, coe_comp, coe_subtype, Function.comp_apply, restrictDom_apply,
         mem_iUnion, h, filter_single_of_pos]
       obtain ⟨i, hi⟩ := h
-      exact le_iSup (fun i => supported M R (s i)) i (single_mem_supported R _ hi)
+      exact le_iSup (fun i ↦ supported M R (s i)) i (single_mem_supported R _ hi)
     · simp [h]
 
 theorem supported_union (s t : Set α) :
@@ -149,7 +149,7 @@ theorem supported_union (s t : Set α) :
 
 theorem supported_iInter {ι : Type*} (s : ι → Set α) :
     supported M R (⋂ i, s i) = ⨅ i, supported M R (s i) :=
-  Submodule.ext fun x => by simp [mem_supported, subset_iInter_iff]
+  Submodule.ext fun x ↦ by simp [mem_supported, subset_iInter_iff]
 
 theorem supported_inter (s t : Set α) :
     supported M R (s ∩ t) = supported M R s ⊓ supported M R t := by
@@ -161,7 +161,7 @@ theorem disjoint_supported_supported {s t : Set α} (h : Disjoint s t) :
 
 theorem disjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
     Disjoint (supported M R s) (supported M R t) ↔ Disjoint s t := by
-  refine ⟨fun h => Set.disjoint_left.mpr fun x hx1 hx2 => ?_, disjoint_supported_supported⟩
+  refine ⟨fun h ↦ Set.disjoint_left.mpr fun x hx1 hx2 ↦ ?_, disjoint_supported_supported⟩
   rcases exists_ne (0 : M) with ⟨y, hy⟩
   have := h.le_bot ⟨single_mem_supported R y hx1, single_mem_supported R y hx2⟩
   rw [mem_bot, single_eq_zero] at this
@@ -211,11 +211,11 @@ theorem lmapDomain_supported (f : α → α') (s : Set α) :
           (supported_comap_lmapDomain M R _ _))
       ?_
   intro l hl
-  refine ⟨(lmapDomain M R (Function.invFunOn f s) : (α' →₀ M) →ₗ[R] α →₀ M) l, fun x hx => ?_, ?_⟩
+  refine ⟨(lmapDomain M R (Function.invFunOn f s) : (α' →₀ M) →ₗ[R] α →₀ M) l, fun x hx ↦ ?_, ?_⟩
   · rcases Finset.mem_image.1 (mapDomain_support hx) with ⟨c, hc, rfl⟩
     exact Function.invFunOn_mem (by simpa using hl hc)
   · rw [← LinearMap.comp_apply, ← lmapDomain_comp]
-    refine (mapDomain_congr fun c hc => ?_).trans mapDomain_id
+    refine (mapDomain_congr fun c hc ↦ ?_).trans mapDomain_id
     exact Function.invFunOn_eq (by simpa using hl hc)
 
 theorem lmapDomain_disjoint_ker (f : α → α') {s : Set α}
@@ -225,9 +225,9 @@ theorem lmapDomain_disjoint_ker (f : α → α') {s : Set α}
   rintro l ⟨h₁, h₂⟩
   rw [SetLike.mem_coe, mem_ker, lmapDomain_apply, mapDomain] at h₂
   simp only [mem_bot]; ext x
-  haveI := Classical.decPred fun x => x ∈ s
+  haveI := Classical.decPred fun x ↦ x ∈ s
   by_cases xs : x ∈ s
-  · have : Finsupp.sum l (fun a => Finsupp.single (f a)) (f x) = 0 := by
+  · have : Finsupp.sum l (fun a ↦ Finsupp.single (f a)) (f x) = 0 := by
       rw [h₂]
       rfl
     rw [Finsupp.sum_apply, Finsupp.sum_eq_single x, single_eq_same] at this
@@ -244,8 +244,8 @@ end LMapDomain
 /-- An equivalence of sets induces a linear equivalence of `Finsupp`s supported on those sets. -/
 noncomputable def congr {α' : Type*} (s : Set α) (t : Set α') (e : s ≃ t) :
     supported M R s ≃ₗ[R] supported M R t := by
-  haveI := Classical.decPred fun x => x ∈ s
-  haveI := Classical.decPred fun x => x ∈ t
+  haveI := Classical.decPred fun x ↦ x ∈ s
+  haveI := Classical.decPred fun x ↦ x ∈ t
   exact Finsupp.supportedEquivFinsupp s ≪≫ₗ
     (Finsupp.domLCongr e ≪≫ₗ (Finsupp.supportedEquivFinsupp t).symm)
 

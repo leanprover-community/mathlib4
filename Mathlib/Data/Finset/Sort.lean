@@ -78,7 +78,7 @@ theorem map_sort (f : α ↪ β) (s : Finset α)
 theorem _root_.StrictMonoOn.map_finsetSort [LinearOrder α] [LinearOrder β]
     (f : α ↪ β) (s : Finset α) (hf : StrictMonoOn f s) :
     (s.sort (· ≤ ·)).map f = (s.map f).sort (· ≤ ·) :=
-  Finset.map_sort _ _ _ _ fun _a ha _b hb => (hf.le_iff_le ha hb).symm
+  Finset.map_sort _ _ _ _ fun _a ha _b hb ↦ (hf.le_iff_le ha hb).symm
 
 theorem sort_cons {a : α} {s : Finset α} (h₁ : ∀ b ∈ s, r a b) (h₂ : a ∉ s) :
     sort r (cons a s h₂) = a :: sort r s := by
@@ -167,7 +167,7 @@ the cardinality of `s` is `k`. We use this instead of an iso `Fin s.card ≃o s`
 casting issues in further uses of this function. -/
 def orderIsoOfFin (s : Finset α) {k : ℕ} (h : s.card = k) : Fin k ≃o s :=
   OrderIso.trans (Fin.castOrderIso ((length_sort (α := α) (· ≤ ·)).trans h).symm) <|
-    (s.sort_sorted_lt.getIso _).trans <| OrderIso.setCongr _ _ <| Set.ext fun _ => mem_sort _
+    (s.sort_sorted_lt.getIso _).trans <| OrderIso.setCongr _ _ <| Set.ext fun _ ↦ mem_sort _
 
 /-- Given a finset `s` of cardinality `k` in a linear order `α`, the map `orderEmbOfFin s h` is
 the increasing bijection between `Fin k` and `s` as an order embedding into `α`. Here, `h` is a
@@ -243,7 +243,7 @@ theorem orderEmbOfFin_unique {s : Finset α} {k : ℕ} (h : s.card = k) {f : Fin
     (hfs : ∀ x, f x ∈ s) (hmono : StrictMono f) : f = s.orderEmbOfFin h := by
   rw [← hmono.range_inj (s.orderEmbOfFin h).strictMono, range_orderEmbOfFin, ← Set.image_univ,
     ← coe_univ, ← coe_image, coe_inj]
-  refine eq_of_subset_of_card_le (fun x hx => ?_) ?_
+  refine eq_of_subset_of_card_le (fun x hx ↦ ?_) ?_
   · rcases mem_image.1 hx with ⟨x, _, rfl⟩
     exact hfs x
   · rw [h, card_image_of_injective _ hmono.injective, card_univ, Fintype.card_fin]
@@ -309,7 +309,7 @@ end Finset
 
 namespace Fin
 
-theorem sort_univ (n : ℕ) : Finset.univ.sort (fun x y : Fin n => x ≤ y) = List.finRange n :=
+theorem sort_univ (n : ℕ) : Finset.univ.sort (fun x y : Fin n ↦ x ≤ y) = List.finRange n :=
   List.eq_of_perm_of_sorted
     (List.perm_of_nodup_nodup_toFinset_eq
       (Finset.univ.sort_nodup _) (List.nodup_finRange n) (by simp))

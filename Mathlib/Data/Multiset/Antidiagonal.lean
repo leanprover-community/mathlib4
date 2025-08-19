@@ -42,7 +42,7 @@ theorem mem_antidiagonal {s : Multiset α} {x : Multiset α × Multiset α} :
     x ∈ antidiagonal s ↔ x.1 + x.2 = s :=
   Quotient.inductionOn s fun l ↦ by
     dsimp only [quot_mk_to_coe, antidiagonal_coe]
-    refine ⟨fun h => revzip_powersetAux h, fun h ↦ ?_⟩
+    refine ⟨fun h ↦ revzip_powersetAux h, fun h ↦ ?_⟩
     have _ := Classical.decEq α
     simp only [revzip_powersetAux_lemma l revzip_powersetAux, h.symm, mem_coe,
       List.mem_map, mem_powersetAux]

@@ -92,13 +92,13 @@ theorem integral_comp_smul (f : E → F) (R : ℝ) :
   · simp only [zero_smul, integral_const]
     rcases Nat.eq_zero_or_pos (finrank ℝ E) with (hE | hE)
     · have : Subsingleton E := finrank_zero_iff.1 hE
-      have : f = fun _ => f 0 := by ext x; rw [Subsingleton.elim x 0]
+      have : f = fun _ ↦ f 0 := by ext x; rw [Subsingleton.elim x 0]
       conv_rhs => rw [this]
       simp only [hE, pow_zero, inv_one, abs_one, one_smul, integral_const]
     · have : Nontrivial E := finrank_pos_iff.1 hE
       simp [zero_pow hE.ne', measure_univ_of_isAddLeftInvariant, measureReal_def]
   · calc
-      (∫ x, f (R • x) ∂μ) = ∫ y, f y ∂Measure.map (fun x => R • x) μ :=
+      (∫ x, f (R • x) ∂μ) = ∫ y, f y ∂Measure.map (fun x ↦ R • x) μ :=
         (integral_map_equiv (Homeomorph.smul (isUnit_iff_ne_zero.2 hR).unit).toMeasurableEquiv
             f).symm
       _ = |(R ^ finrank ℝ E)⁻¹| • ∫ x, f x ∂μ := by
@@ -169,11 +169,11 @@ variable {F : Type*} [NormedAddCommGroup F]
 
 theorem integrable_comp_smul_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ]
-    (f : E → F) {R : ℝ} (hR : R ≠ 0) : Integrable (fun x => f (R • x)) μ ↔ Integrable f μ := by
+    (f : E → F) {R : ℝ} (hR : R ≠ 0) : Integrable (fun x ↦ f (R • x)) μ ↔ Integrable f μ := by
   -- reduce to one-way implication
   suffices
-    ∀ {g : E → F} (_ : Integrable g μ) {S : ℝ} (_ : S ≠ 0), Integrable (fun x => g (S • x)) μ by
-    refine ⟨fun hf => ?_, fun hf => this hf hR⟩
+    ∀ {g : E → F} (_ : Integrable g μ) {S : ℝ} (_ : S ≠ 0), Integrable (fun x ↦ g (S • x)) μ by
+    refine ⟨fun hf ↦ ?_, fun hf ↦ this hf hR⟩
     convert this hf (inv_ne_zero hR)
     rw [← mul_smul, mul_inv_cancel₀ hR, one_smul]
   -- now prove
@@ -185,31 +185,31 @@ theorem integrable_comp_smul_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace
 
 theorem Integrable.comp_smul {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] {μ : Measure E} [IsAddHaarMeasure μ]
-    {f : E → F} (hf : Integrable f μ) {R : ℝ} (hR : R ≠ 0) : Integrable (fun x => f (R • x)) μ :=
+    {f : E → F} (hf : Integrable f μ) {R : ℝ} (hR : R ≠ 0) : Integrable (fun x ↦ f (R • x)) μ :=
   (integrable_comp_smul_iff μ f hR).2 hf
 
 theorem integrable_comp_mul_left_iff (g : ℝ → F) {R : ℝ} (hR : R ≠ 0) :
-    (Integrable fun x => g (R * x)) ↔ Integrable g := by
+    (Integrable fun x ↦ g (R * x)) ↔ Integrable g := by
   simpa only [smul_eq_mul] using integrable_comp_smul_iff volume g hR
 
 theorem Integrable.comp_mul_left' {g : ℝ → F} (hg : Integrable g) {R : ℝ} (hR : R ≠ 0) :
-    Integrable fun x => g (R * x) :=
+    Integrable fun x ↦ g (R * x) :=
   (integrable_comp_mul_left_iff g hR).2 hg
 
 theorem integrable_comp_mul_right_iff (g : ℝ → F) {R : ℝ} (hR : R ≠ 0) :
-    (Integrable fun x => g (x * R)) ↔ Integrable g := by
+    (Integrable fun x ↦ g (x * R)) ↔ Integrable g := by
   simpa only [mul_comm] using integrable_comp_mul_left_iff g hR
 
 theorem Integrable.comp_mul_right' {g : ℝ → F} (hg : Integrable g) {R : ℝ} (hR : R ≠ 0) :
-    Integrable fun x => g (x * R) :=
+    Integrable fun x ↦ g (x * R) :=
   (integrable_comp_mul_right_iff g hR).2 hg
 
 theorem integrable_comp_div_iff (g : ℝ → F) {R : ℝ} (hR : R ≠ 0) :
-    (Integrable fun x => g (x / R)) ↔ Integrable g :=
+    (Integrable fun x ↦ g (x / R)) ↔ Integrable g :=
   integrable_comp_mul_right_iff g (inv_ne_zero hR)
 
 theorem Integrable.comp_div {g : ℝ → F} (hg : Integrable g) {R : ℝ} (hR : R ≠ 0) :
-    Integrable fun x => g (x / R) :=
+    Integrable fun x ↦ g (x / R) :=
   (integrable_comp_div_iff g hR).2 hg
 
 section InnerProductSpace

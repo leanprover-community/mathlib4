@@ -48,7 +48,7 @@ variable {R : Type*} [Monoid R] (S : Submonoid R) [OreSet S] (X) [MulAction R X]
 def oreEqv : Setoid (X × S) where
   r rs rs' := ∃ (u : S) (v : R), u • rs'.1 = v • rs.1 ∧ u * rs'.2 = v * rs.2
   iseqv := by
-    refine ⟨fun _ => ⟨1, 1, by simp⟩, ?_, ?_⟩
+    refine ⟨fun _ ↦ ⟨1, 1, by simp⟩, ?_, ?_⟩
     · rintro ⟨r, s⟩ ⟨r', s'⟩ ⟨u, v, hru, hsu⟩; dsimp only at *
       rcases oreCondition (s : R) s' with ⟨r₂, s₂, h₁⟩
       rcases oreCondition r₂ u with ⟨r₃, s₃, h₂⟩
@@ -154,7 +154,7 @@ invariant under expansion on the left. -/]
 def liftExpand {C : Sort*} (P : X → S → C)
     (hP : ∀ (r : X) (t : R) (s : S) (ht : t * s ∈ S), P r s = P (t • r) ⟨t * s, ht⟩) :
     X[S⁻¹] → C :=
-  Quotient.lift (fun p : X × S => P p.1 p.2) fun (r₁, s₁) (r₂, s₂) ⟨u, v, hr₂, hs₂⟩ => by
+  Quotient.lift (fun p : X × S ↦ P p.1 p.2) fun (r₁, s₁) (r₂, s₂) ⟨u, v, hr₂, hs₂⟩ ↦ by
     dsimp at *
     have s₁vS : v * s₁ ∈ S := by
       rw [← hs₂, ← S.coe_mul]
@@ -180,10 +180,10 @@ def lift₂Expand {C : Sort*} (P : X → S → X → S → C)
         P r₁ s₁ r₂ s₂ = P (t₁ • r₁) ⟨t₁ * s₁, ht₁⟩ (t₂ • r₂) ⟨t₂ * s₂, ht₂⟩) :
     X[S⁻¹] → X[S⁻¹] → C :=
   liftExpand
-    (fun r₁ s₁ => liftExpand (P r₁ s₁) fun r₂ t₂ s₂ ht₂ => by
+    (fun r₁ s₁ ↦ liftExpand (P r₁ s₁) fun r₂ t₂ s₂ ht₂ ↦ by
       have := hP r₁ 1 s₁ (by simp) r₂ t₂ s₂ ht₂
       simp [this])
-    fun r₁ t₁ s₁ ht₁ => by
+    fun r₁ t₁ s₁ ht₁ ↦ by
     ext x; cases x with | _ r₂ s₂
     dsimp only
     rw [liftExpand_of, liftExpand_of, hP r₁ t₁ s₁ ht₁ r₂ 1 s₂ (by simp)]; simp
@@ -227,7 +227,7 @@ private theorem smul'_char (r₁ : R) (r₂ : X) (s₁ s₂ : S) (u : S) (v : R)
 /-- The multiplication on the Ore localization of monoids. -/
 @[to_additive]
 private def smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
-  liftExpand (smul' r s) fun r₁ r₂ s' hs => by
+  liftExpand (smul' r s) fun r₁ r₂ s' hs ↦ by
     rcases oreCondition r s' with ⟨r₁', s₁', h₁⟩
     rw [smul'_char _ _ _ _ _ _ h₁]
     rcases oreCondition r ⟨_, hs⟩ with ⟨r₂', s₂', h₂⟩
@@ -250,7 +250,7 @@ private def smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
 @[to_additive (attr := irreducible)
   /-- the vector addition on the Ore localization of additive monoids. -/]
 protected def smul : R[S⁻¹] → X[S⁻¹] → X[S⁻¹] :=
-  liftExpand smul'' fun r₁ r₂ s hs => by
+  liftExpand smul'' fun r₁ r₂ s hs ↦ by
     ext x
     cases x with | _ x s₂
     change OreLocalization.smul' r₁ s x s₂ = OreLocalization.smul' (r₂ * r₁) ⟨_, hs⟩ x s₂
@@ -471,7 +471,7 @@ to a morphism `R[S⁻¹] →* T`. -/
   additive-units of `T`, to a morphism `AddOreLocalization R S →+ T`. -/]
 def universalMulHom (hf : ∀ s : S, f s = fS s) : R[S⁻¹] →* T where
   toFun x :=
-    x.liftExpand (fun r s => ((fS s)⁻¹ : Units T) * f r) fun r t s ht => by
+    x.liftExpand (fun r s ↦ ((fS s)⁻¹ : Units T) * f r) fun r t s ht ↦ by
       simp only [smul_eq_mul]
       have : (fS ⟨t * s, ht⟩ : T) = f t * fS s := by
         simp only [← hf, MonoidHom.map_mul]
@@ -612,7 +612,7 @@ theorem oreDiv_mul_oreDiv_comm {r₁ r₂ : R} {s₁ s₂ : S} :
 
 @[to_additive]
 instance : CommMonoid R[S⁻¹] where
-  mul_comm := fun x y => by
+  mul_comm := fun x y ↦ by
     cases x with | _ r₁ s₁
     cases y with | _ r₂ s₂
     rw [oreDiv_mul_oreDiv_comm, oreDiv_mul_oreDiv_comm, mul_comm r₁, mul_comm s₁]

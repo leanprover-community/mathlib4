@@ -52,13 +52,13 @@ protected theorem IsLowerSet.thickening' (hs : IsLowerSet s) (ε : ℝ) :
 protected theorem IsUpperSet.cthickening' (hs : IsUpperSet s) (ε : ℝ) :
     IsUpperSet (cthickening ε s) := by
   rw [cthickening_eq_iInter_thickening'']
-  exact isUpperSet_iInter₂ fun δ _ => hs.thickening' _
+  exact isUpperSet_iInter₂ fun δ _ ↦ hs.thickening' _
 
 @[to_additive IsLowerSet.cthickening]
 protected theorem IsLowerSet.cthickening' (hs : IsLowerSet s) (ε : ℝ) :
     IsLowerSet (cthickening ε s) := by
   rw [cthickening_eq_iInter_thickening'']
-  exact isLowerSet_iInter₂ fun δ _ => hs.thickening' _
+  exact isLowerSet_iInter₂ fun δ _ ↦ hs.thickening' _
 
 @[to_additive upperClosure_interior_subset] lemma upperClosure_interior_subset' (s : Set α) :
     (upperClosure (interior s) : Set α) ⊆ interior (upperClosure s) :=
@@ -83,13 +83,13 @@ theorem IsUpperSet.mem_interior_of_forall_lt (hs : IsUpperSet s) (hx : x ∈ clo
   obtain ⟨z, hz, hxz⟩ := Metric.mem_closure_iff.1 hx _ hε
   rw [dist_pi_lt_iff hε] at hxz
   have hyz : ∀ i, z i < y i := by
-    refine fun i => (hxy _).trans_le' (sub_le_iff_le_add'.1 <| (le_abs_self _).trans ?_)
+    refine fun i ↦ (hxy _).trans_le' (sub_le_iff_le_add'.1 <| (le_abs_self _).trans ?_)
     rw [← Real.norm_eq_abs, ← dist_eq_norm']
     exact (hxz _).le
   obtain ⟨δ, hδ, hyz⟩ := Pi.exists_forall_pos_add_lt hyz
   refine mem_interior.2 ⟨ball y δ, ?_, isOpen_ball, mem_ball_self hδ⟩
   rintro w hw
-  refine hs (fun i => ?_) hz
+  refine hs (fun i ↦ ?_) hz
   simp_rw [ball_pi _ hδ, Real.ball_eq_Ioo] at hw
   exact ((lt_sub_iff_add_lt.2 <| hyz _).trans (hw _ <| mem_univ _).1).le
 
@@ -100,14 +100,14 @@ theorem IsLowerSet.mem_interior_of_forall_lt (hs : IsLowerSet s) (hx : x ∈ clo
   obtain ⟨z, hz, hxz⟩ := Metric.mem_closure_iff.1 hx _ hε
   rw [dist_pi_lt_iff hε] at hxz
   have hyz : ∀ i, y i < z i := by
-    refine fun i =>
+    refine fun i ↦
       (lt_sub_iff_add_lt.2 <| hxy _).trans_le (sub_le_comm.1 <| (le_abs_self _).trans ?_)
     rw [← Real.norm_eq_abs, ← dist_eq_norm]
     exact (hxz _).le
   obtain ⟨δ, hδ, hyz⟩ := Pi.exists_forall_pos_add_lt hyz
   refine mem_interior.2 ⟨ball y δ, ?_, isOpen_ball, mem_ball_self hδ⟩
   rintro w hw
-  refine hs (fun i => ?_) hz
+  refine hs (fun i ↦ ?_) hz
   simp_rw [ball_pi _ hδ, Real.ball_eq_Ioo] at hw
   exact ((hw _ <| mem_univ _).2.trans <| hyz _).le
 
@@ -154,7 +154,7 @@ theorem IsUpperSet.exists_subset_ball (hs : IsUpperSet s) (hx : x ∈ closure s)
     simp only [zero_lt_three, abs_of_pos, zero_lt_four, abs_of_pos hδ]
     ring
   obtain ⟨y, hy, hxy⟩ := Metric.mem_closure_iff.1 hx _ (div_pos hδ zero_lt_four)
-  refine fun z hz => hs.mem_interior_of_forall_lt (subset_closure hy) fun i => ?_
+  refine fun z hz ↦ hs.mem_interior_of_forall_lt (subset_closure hy) fun i ↦ ?_
   rw [mem_closedBall, dist_eq_norm'] at hz
   rw [dist_eq_norm] at hxy
   replace hxy := (norm_le_pi_norm _ i).trans hxy.le
@@ -172,7 +172,7 @@ theorem IsLowerSet.exists_subset_ball (hs : IsLowerSet s) (hx : x ∈ closure s)
       zero_lt_four, abs_of_pos hδ]
     ring
   obtain ⟨y, hy, hxy⟩ := Metric.mem_closure_iff.1 hx _ (div_pos hδ zero_lt_four)
-  refine fun z hz => hs.mem_interior_of_forall_lt (subset_closure hy) fun i => ?_
+  refine fun z hz ↦ hs.mem_interior_of_forall_lt (subset_closure hy) fun i ↦ ?_
   rw [mem_closedBall, dist_eq_norm'] at hz
   rw [dist_eq_norm] at hxy
   replace hxy := (norm_le_pi_norm _ i).trans hxy.le

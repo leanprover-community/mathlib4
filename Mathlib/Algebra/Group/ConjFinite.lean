@@ -25,7 +25,7 @@ instance [Fintype α] [DecidableRel (IsConj : α → α → Prop)] : Fintype (Co
 instance [Finite α] : Finite (ConjClasses α) :=
   Quotient.finite _
 
-instance [DecidableEq α] [Fintype α] : DecidableRel (IsConj : α → α → Prop) := fun a b =>
+instance [DecidableEq α] [Fintype α] : DecidableRel (IsConj : α → α → Prop) := fun a b ↦
   inferInstanceAs (Decidable (∃ c : αˣ, c.1 * a = b * c.1))
 
 instance conjugatesOf.fintype [Fintype α] [DecidableRel (IsConj : α → α → Prop)] {a : α} :
@@ -37,6 +37,6 @@ namespace ConjClasses
 variable [Fintype α] [DecidableRel (IsConj : α → α → Prop)]
 
 instance {x : ConjClasses α} : Fintype (carrier x) :=
-  Quotient.recOnSubsingleton x fun _ => conjugatesOf.fintype
+  Quotient.recOnSubsingleton x fun _ ↦ conjugatesOf.fintype
 
 end ConjClasses

@@ -38,8 +38,8 @@ protected abbrev Function.Surjective.mulZeroClass [Mul M₀'] [Zero M₀'] (f : 
     MulZeroClass M₀' where
   mul := (· * ·)
   zero := 0
-  mul_zero := hf.forall.2 fun x => by simp only [← zero, ← mul, mul_zero]
-  zero_mul := hf.forall.2 fun x => by simp only [← zero, ← mul, zero_mul]
+  mul_zero := hf.forall.2 fun x ↦ by simp only [← zero, ← mul, mul_zero]
+  zero_mul := hf.forall.2 fun x ↦ by simp only [← zero, ← mul, zero_mul]
 
 end MulZeroClass
 
@@ -62,14 +62,14 @@ protected theorem Function.Injective.isLeftCancelMulZero
   mul_left_cancel_of_ne_zero Hne _ _ He := by
     have := congr_arg f He
     rw [mul, mul] at this
-    exact hf (mul_left_cancel₀ (fun Hfa => Hne <| hf <| by rw [Hfa, zero]) this)
+    exact hf (mul_left_cancel₀ (fun Hfa ↦ Hne <| hf <| by rw [Hfa, zero]) this)
 
 protected theorem Function.Injective.isRightCancelMulZero
     [IsRightCancelMulZero M₀'] : IsRightCancelMulZero M₀ where
   mul_right_cancel_of_ne_zero Hne _ _ He := by
     have := congr_arg f He
     rw [mul, mul] at this
-    exact hf (mul_right_cancel₀ (fun Hfa => Hne <| hf <| by rw [Hfa, zero]) this)
+    exact hf (mul_right_cancel₀ (fun Hfa ↦ Hne <| hf <| by rw [Hfa, zero]) this)
 
 protected theorem Function.Injective.isCancelMulZero
     [IsCancelMulZero M₀'] : IsCancelMulZero M₀ where
@@ -199,7 +199,7 @@ protected abbrev Function.Injective.groupWithZero [Zero G₀'] [Mul G₀'] [One 
     hf.divInvMonoid f one mul inv div npow zpow,
     domain_nontrivial f zero one with
     inv_zero := hf <| by rw [inv, zero, inv_zero],
-    mul_inv_cancel := fun x hx => hf <| by
+    mul_inv_cancel := fun x hx ↦ hf <| by
       rw [one, mul, inv, mul_inv_cancel₀ ((hf.ne_iff' zero).2 hx)] }
 
 /-- Push forward a `GroupWithZero` along a surjective function.
@@ -212,7 +212,7 @@ protected abbrev Function.Surjective.groupWithZero [Zero G₀'] [Mul G₀'] [One
     GroupWithZero G₀' :=
   { hf.monoidWithZero f zero one mul npow, hf.divInvMonoid f one mul inv div npow zpow with
     inv_zero := by rw [← zero, ← inv, inv_zero],
-    mul_inv_cancel := hf.forall.2 fun x hx => by
+    mul_inv_cancel := hf.forall.2 fun x hx ↦ by
         rw [← inv, ← mul, mul_inv_cancel₀ (mt (congr_arg f) fun h ↦ hx (h.trans zero)), one]
     exists_pair_ne := ⟨0, 1, h01⟩ }
 

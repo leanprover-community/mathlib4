@@ -26,7 +26,7 @@ open Simplicial CategoryTheory Limits
 
 namespace SimplexCategory
 
-instance {n m : ℕ} : DecidableEq (⦋n⦌ ⟶ ⦋m⦌) := fun a b =>
+instance {n m : ℕ} : DecidableEq (⦋n⦌ ⟶ ⦋m⦌) := fun a b ↦
   decidable_of_iff (a.toOrderHom = b.toOrderHom) SimplexCategory.Hom.ext_iff.symm
 
 section Init
@@ -36,7 +36,7 @@ lemma congr_toOrderHom_apply {a b : SimplexCategory} {f g : a ⟶ b} (h : f = g)
 
 /-- The constant morphism from ⦋0⦌. -/
 def const (x y : SimplexCategory) (i : Fin (y.len + 1)) : x ⟶ y :=
-  Hom.mk <| ⟨fun _ => i, by tauto⟩
+  Hom.mk <| ⟨fun _ ↦ i, by tauto⟩
 
 @[simp]
 lemma const_eq_id : const ⦋0⦌ ⦋0⦌ 0 = 𝟙 _ := by aesop
@@ -162,8 +162,8 @@ def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
 def subinterval {n} (j l : ℕ) (hjl : j + l ≤ n) :
     ⦋l⦌ ⟶ ⦋n⦌ :=
   SimplexCategory.mkHom {
-    toFun := fun i => ⟨i.1 + j, (by omega)⟩
-    monotone' := fun i i' hii' => by simpa only [Fin.mk_le_mk, add_le_add_iff_right] using hii'
+    toFun := fun i ↦ ⟨i.1 + j, (by omega)⟩
+    monotone' := fun i i' hii' ↦ by simpa only [Fin.mk_le_mk, add_le_add_iff_right] using hii'
   }
 
 lemma const_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin (l + 1)) :
@@ -250,7 +250,7 @@ theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
 
 theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : i.castSucc < j) :
     δ i ≫ δ j =
-      δ (j.pred fun (hj : j = 0) => by simp [hj, Fin.not_lt_zero] at H) ≫
+      δ (j.pred fun (hj : j = 0) ↦ by simp [hj, Fin.not_lt_zero] at H) ≫
         δ (Fin.castSucc i) := by
   rw [← δ_comp_δ]
   · rw [Fin.succ_pred]
@@ -358,7 +358,7 @@ theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : j.castSucc
 @[reassoc]
 theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < i) :
     δ i ≫ σ j = σ (j.castLT ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le))) ≫
-      δ (i.pred fun (hi : i = 0) => by simp only [Fin.not_lt_zero, hi] at H) := by
+      δ (i.pred fun (hi : i = 0) ↦ by simp only [Fin.not_lt_zero, hi] at H) := by
   rw [← δ_comp_σ_of_gt]
   · simp
   · rw [Fin.castSucc_castLT, ← Fin.succ_lt_succ_iff, Fin.succ_pred]
@@ -527,7 +527,7 @@ theorem skeletalFunctor.coe_map {Δ₁ Δ₂ : SimplexCategory} (f : Δ₁ ⟶ �
     ↑(skeletalFunctor.map f).hom = f.toOrderHom :=
   rfl
 
-theorem skeletal : Skeletal SimplexCategory := fun X Y ⟨I⟩ => by
+theorem skeletal : Skeletal SimplexCategory := fun X Y ⟨I⟩ ↦ by
   suffices Fintype.card (Fin (X.len + 1)) = Fintype.card (Fin (Y.len + 1)) by
     ext
     simpa
@@ -583,7 +583,7 @@ lemma isSkeletonOf :
 
 section Concrete
 
-instance : ConcreteCategory SimplexCategory (fun i j => Fin (i.len + 1) →o Fin (j.len + 1)) where
+instance : ConcreteCategory SimplexCategory (fun i j ↦ Fin (i.len + 1) →o Fin (j.len + 1)) where
   hom := Hom.toOrderHom
   ofHom f := Hom.mk f
 
@@ -642,12 +642,12 @@ instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
   simpa only [epi_iff_surjective] using Fin.predAbove_surjective i
 
 instance : (forget SimplexCategory).ReflectsIsomorphisms :=
-  ⟨fun f hf =>
+  ⟨fun f hf ↦
     Iso.isIso_hom
       { hom := f
         inv := Hom.mk
             { toFun := inv ((forget SimplexCategory).map f)
-              monotone' := fun y₁ y₂ h => by
+              monotone' := fun y₁ y₂ h ↦ by
                 by_cases h' : y₁ < y₂
                 · by_contra h''
                   apply not_le.mpr h'
@@ -699,24 +699,24 @@ def orderIsoOfIso {x y : SimplexCategory} (e : x ≅ y) : Fin (x.len + 1) ≃o F
   Equiv.toOrderIso
     { toFun := e.hom.toOrderHom
       invFun := e.inv.toOrderHom
-      left_inv := fun i => by
-        simpa only using congr_arg (fun φ => (Hom.toOrderHom φ) i) e.hom_inv_id
-      right_inv := fun i => by
-        simpa only using congr_arg (fun φ => (Hom.toOrderHom φ) i) e.inv_hom_id }
+      left_inv := fun i ↦ by
+        simpa only using congr_arg (fun φ ↦ (Hom.toOrderHom φ) i) e.hom_inv_id
+      right_inv := fun i ↦ by
+        simpa only using congr_arg (fun φ ↦ (Hom.toOrderHom φ) i) e.inv_hom_id }
     e.hom.toOrderHom.monotone e.inv.toOrderHom.monotone
 
 theorem iso_eq_iso_refl {x : SimplexCategory} (e : x ≅ x) : e = Iso.refl x := by
   have h : (Finset.univ : Finset (Fin (x.len + 1))).card = x.len + 1 := Finset.card_fin (x.len + 1)
-  have eq₁ := Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso e) i)
+  have eq₁ := Finset.orderEmbOfFin_unique' h fun i ↦ Finset.mem_univ ((orderIsoOfIso e) i)
   have eq₂ :=
-    Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso (Iso.refl x)) i)
+    Finset.orderEmbOfFin_unique' h fun i ↦ Finset.mem_univ ((orderIsoOfIso (Iso.refl x)) i)
   ext : 2
-  convert congr_arg (fun φ => (OrderEmbedding.toOrderHom φ)) (eq₁.trans eq₂.symm)
+  convert congr_arg (fun φ ↦ (OrderEmbedding.toOrderHom φ)) (eq₁.trans eq₂.symm)
   ext i : 2
   rfl
 
 theorem eq_id_of_isIso {x : SimplexCategory} (f : x ⟶ x) [IsIso f] : f = 𝟙 _ :=
-  congr_arg (fun φ : _ ≅ _ => φ.hom) (iso_eq_iso_refl (asIso f))
+  congr_arg (fun φ : _ ≅ _ ↦ φ.hom) (iso_eq_iso_refl (asIso f))
 
 theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋n + 1⦌ ⟶ Δ')
     (i : Fin (n + 1)) (hi : θ.toOrderHom (Fin.castSucc i) = θ.toOrderHom i.succ) :

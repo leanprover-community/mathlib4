@@ -83,9 +83,9 @@ theorem coe_toCLM (φ : characterSpace 𝕜 A) : ⇑(toCLM φ) = φ :=
 /-- Elements of the character space are non-unital algebra homomorphisms. -/
 instance instNonUnitalAlgHomClass : NonUnitalAlgHomClass (characterSpace 𝕜 A) 𝕜 A 𝕜 :=
   { CharacterSpace.instContinuousLinearMapClass with
-    map_smulₛₗ := fun φ => map_smul φ
-    map_zero := fun φ => map_zero φ
-    map_mul := fun φ => φ.prop.2 }
+    map_smulₛₗ := fun φ ↦ map_smul φ
+    map_zero := fun φ ↦ map_zero φ
+    map_mul := fun φ ↦ φ.prop.2 }
 
 /-- An element of the character space, as a non-unital algebra homomorphism. -/
 def toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : A →ₙₐ[𝕜] 𝕜 where
@@ -100,8 +100,8 @@ theorem coe_toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : ⇑(toNonUnitalAlgH
   rfl
 
 instance instIsEmpty [Subsingleton A] : IsEmpty (characterSpace 𝕜 A) :=
-  ⟨fun φ => φ.prop.1 <|
-    ContinuousLinearMap.ext fun x => by
+  ⟨fun φ ↦ φ.prop.1 <|
+    ContinuousLinearMap.ext fun x ↦ by
       rw [show x = 0 from Subsingleton.elim x 0, map_zero, map_zero] ⟩
 
 variable (𝕜 A)
@@ -111,16 +111,16 @@ theorem union_zero :
   le_antisymm (by
       rintro φ (hφ | rfl)
       · exact hφ.2
-      · exact fun _ _ => by exact (zero_mul (0 : 𝕜)).symm)
-    fun φ hφ => Or.elim (em <| φ = 0) Or.inr fun h₀ => Or.inl ⟨h₀, hφ⟩
+      · exact fun _ _ ↦ by exact (zero_mul (0 : 𝕜)).symm)
+    fun φ hφ ↦ Or.elim (em <| φ = 0) Or.inr fun h₀ ↦ Or.inl ⟨h₀, hφ⟩
 
 /-- The `characterSpace 𝕜 A` along with `0` is always a closed set in `WeakDual 𝕜 A`. -/
 theorem union_zero_isClosed [T2Space 𝕜] [ContinuousMul 𝕜] :
     IsClosed (characterSpace 𝕜 A ∪ {0}) := by
   simp only [union_zero, Set.setOf_forall]
   exact
-    isClosed_iInter fun x =>
-      isClosed_iInter fun y =>
+    isClosed_iInter fun x ↦
+      isClosed_iInter fun y ↦
         isClosed_eq (eval_continuous _) <| (eval_continuous _).mul (eval_continuous _)
 
 end NonUnitalNonAssocSemiring
@@ -132,15 +132,15 @@ variable [CommRing 𝕜] [NoZeroDivisors 𝕜] [TopologicalSpace 𝕜] [Continuo
 
 /-- In a unital algebra, elements of the character space are algebra homomorphisms. -/
 instance instAlgHomClass : AlgHomClass (characterSpace 𝕜 A) 𝕜 A 𝕜 :=
-  haveI map_one' : ∀ φ : characterSpace 𝕜 A, φ 1 = 1 := fun φ => by
+  haveI map_one' : ∀ φ : characterSpace 𝕜 A, φ 1 = 1 := fun φ ↦ by
     have h₁ : φ 1 * (1 - φ 1) = 0 := by rw [mul_sub, sub_eq_zero, mul_one, ← map_mul φ, one_mul]
     rcases mul_eq_zero.mp h₁ with (h₂ | h₂)
-    · have : ∀ a, φ (a * 1) = 0 := fun a => by simp only [map_mul φ, h₂, mul_zero]
+    · have : ∀ a, φ (a * 1) = 0 := fun a ↦ by simp only [map_mul φ, h₂, mul_zero]
       exact False.elim (φ.prop.1 <| ContinuousLinearMap.ext <| by simpa only [mul_one] using this)
     · exact (sub_eq_zero.mp h₂).symm
   { CharacterSpace.instNonUnitalAlgHomClass with
     map_one := map_one'
-    commutes := fun φ r => by
+    commutes := fun φ r ↦ by
       rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_self, RingHom.id_apply]
       rw [map_smul, Algebra.id.smul_eq_mul, map_one' φ, mul_one] }
 
@@ -215,7 +215,7 @@ The character space itself consists of all algebra homomorphisms from `A` to `�
 @[simps]
 def gelfandTransform : A →ₐ[𝕜] C(characterSpace 𝕜 A, 𝕜) where
   toFun a :=
-    { toFun := fun φ => φ a
+    { toFun := fun φ ↦ φ a
       continuous_toFun := (eval_continuous a).comp continuous_induced_dom }
   map_one' := by ext a; simp only [coe_mk, coe_one, Pi.one_apply, map_one a]
   map_mul' a b := by ext; simp only [map_mul, coe_mk, coe_mul, Pi.mul_apply]

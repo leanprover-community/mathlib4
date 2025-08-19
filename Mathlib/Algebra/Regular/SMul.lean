@@ -61,12 +61,12 @@ variable [SMul R M] [SMul R S] [SMul S M] [IsScalarTower R S M]
 
 /-- The product of `M`-regular elements is `M`-regular. -/
 theorem smul (ra : IsSMulRegular M a) (rs : IsSMulRegular M s) : IsSMulRegular M (a • s) :=
-  fun _ _ ab => rs (ra ((smul_assoc _ _ _).symm.trans (ab.trans (smul_assoc _ _ _))))
+  fun _ _ ab ↦ rs (ra ((smul_assoc _ _ _).symm.trans (ab.trans (smul_assoc _ _ _))))
 
 /-- If an element `b` becomes `M`-regular after multiplying it on the left by an `M`-regular
 element, then `b` is `M`-regular. -/
 theorem of_smul (a : R) (ab : IsSMulRegular M (a • s)) : IsSMulRegular M s :=
-  @Function.Injective.of_comp _ _ _ (fun m : M => a • m) _ fun c d cd => by
+  @Function.Injective.of_comp _ _ _ (fun m : M ↦ a • m) _ fun c d cd ↦ by
   dsimp only [Function.comp_def] at cd
   rw [← smul_assoc, ← smul_assoc] at cd
   exact ab cd
@@ -117,7 +117,7 @@ variable (M)
 
 /-- One is always `M`-regular. -/
 @[simp]
-theorem one : IsSMulRegular M (1 : R) := fun a b ab => by
+theorem one : IsSMulRegular M (1 : R) := fun a b ab ↦ by
   dsimp only [Function.comp_def] at ab
   rw [one_smul, one_smul] at ab
   assumption
@@ -163,11 +163,11 @@ variable [MonoidWithZero R] [Zero M] [MulActionWithZero R M]
 
 /-- The element `0` is `M`-regular if and only if `M` is trivial. -/
 protected theorem subsingleton (h : IsSMulRegular M (0 : R)) : Subsingleton M :=
-  ⟨fun a b => h (by dsimp only [Function.comp_def]; repeat' rw [MulActionWithZero.zero_smul])⟩
+  ⟨fun a b ↦ h (by dsimp only [Function.comp_def]; repeat' rw [MulActionWithZero.zero_smul])⟩
 
 /-- The element `0` is `M`-regular if and only if `M` is trivial. -/
 theorem zero_iff_subsingleton : IsSMulRegular M (0 : R) ↔ Subsingleton M :=
-  ⟨fun h => h.subsingleton, fun H a b _ => @Subsingleton.elim _ H a b⟩
+  ⟨fun h ↦ h.subsingleton, fun H a b _ ↦ @Subsingleton.elim _ H a b⟩
 
 /-- The `0` element is not `M`-regular, on a non-trivial module. -/
 theorem not_zero_iff : ¬IsSMulRegular M (0 : R) ↔ Nontrivial M := by
@@ -192,7 +192,7 @@ variable [CommSemigroup R] [SMul R M] [IsScalarTower R R M]
 /-- A product is `M`-regular if and only if the factors are. -/
 theorem mul_iff : IsSMulRegular M (a * b) ↔ IsSMulRegular M a ∧ IsSMulRegular M b := by
   rw [← mul_and_mul_iff]
-  exact ⟨fun ab => ⟨ab, by rwa [mul_comm]⟩, fun rab => rab.1⟩
+  exact ⟨fun ab ↦ ⟨ab, by rwa [mul_comm]⟩, fun rab ↦ rab.1⟩
 
 end CommSemigroup
 

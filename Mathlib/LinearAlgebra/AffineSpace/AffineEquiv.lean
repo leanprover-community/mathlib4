@@ -121,7 +121,7 @@ theorem coeFn_injective : @Injective (P₁ ≃ᵃ[k] P₂) (P₁ → P₂) (⇑)
 @[norm_cast]
 theorem coeFn_inj {e e' : P₁ ≃ᵃ[k] P₂} : (e : P₁ → P₂) = e' ↔ e = e' := by simp
 
-theorem toEquiv_injective : Injective (toEquiv : (P₁ ≃ᵃ[k] P₂) → P₁ ≃ P₂) := fun _ _ H =>
+theorem toEquiv_injective : Injective (toEquiv : (P₁ ≃ᵃ[k] P₂) → P₁ ≃ P₂) := fun _ _ H ↦
   ext <| Equiv.ext_iff.1 H
 
 @[simp]
@@ -139,7 +139,7 @@ one base point. Namely, this function takes a map `e : P₁ → P₂`, a linear 
 def mk' (e : P₁ → P₂) (e' : V₁ ≃ₗ[k] V₂) (p : P₁) (h : ∀ p' : P₁, e p' = e' (p' -ᵥ p) +ᵥ e p) :
     P₁ ≃ᵃ[k] P₂ where
   toFun := e
-  invFun := fun q' : P₂ => e'.symm (q' -ᵥ e p) +ᵥ p
+  invFun := fun q' : P₂ ↦ e'.symm (q' -ᵥ e p) +ᵥ p
   left_inv p' := by simp [h p', vadd_vsub, vsub_vadd]
   right_inv q' := by simp [h (e'.symm (q' -ᵥ e p) +ᵥ p), vadd_vsub, vsub_vadd]
   linear := e'
@@ -295,15 +295,15 @@ theorem trans_apply (e : P₁ ≃ᵃ[k] P₂) (e' : P₂ ≃ᵃ[k] P₃) (p : P�
 
 theorem trans_assoc (e₁ : P₁ ≃ᵃ[k] P₂) (e₂ : P₂ ≃ᵃ[k] P₃) (e₃ : P₃ ≃ᵃ[k] P₄) :
     (e₁.trans e₂).trans e₃ = e₁.trans (e₂.trans e₃) :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem trans_refl (e : P₁ ≃ᵃ[k] P₂) : e.trans (refl k P₂) = e :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem refl_trans (e : P₁ ≃ᵃ[k] P₂) : (refl k P₁).trans e = e :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem self_trans_symm (e : P₁ ≃ᵃ[k] P₂) : e.trans e.symm = refl k P₁ :=
@@ -367,7 +367,7 @@ def equivUnitsAffineMap : (P₁ ≃ᵃ[k] P₁) ≃* (P₁ →ᵃ[k] P₁)ˣ whe
       right_inv := AffineMap.congr_fun u.mul_inv
       linear :=
         LinearMap.GeneralLinearGroup.generalLinearEquiv _ _ <| Units.map AffineMap.linearHom u
-      map_vadd' := fun _ _ => (u : P₁ →ᵃ[k] P₁).map_vadd _ _ }
+      map_vadd' := fun _ _ ↦ (u : P₁ →ᵃ[k] P₁).map_vadd _ _ }
   map_mul' _ _ := rfl
 
 variable (k)
@@ -391,7 +391,7 @@ theorem coe_constVSub (p : P₁) : ⇑(constVSub k p) = (p -ᵥ ·) :=
   rfl
 
 @[simp]
-theorem coe_constVSub_symm (p : P₁) : ⇑(constVSub k p).symm = fun v : V₁ => -v +ᵥ p :=
+theorem coe_constVSub_symm (p : P₁) : ⇑(constVSub k p).symm = fun v : V₁ ↦ -v +ᵥ p :=
   rfl
 
 variable (P₁)
@@ -417,7 +417,7 @@ theorem constVAdd_add (v w : V₁) :
 
 @[simp]
 theorem constVAdd_symm (v : V₁) : (constVAdd k P₁ v).symm = constVAdd k P₁ (-v) :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 /-- A more bundled version of `AffineEquiv.constVAdd`. -/
 @[simps]
@@ -455,7 +455,7 @@ theorem coe_homothetyUnitsMulHom_apply_symm (p : P) (t : Rˣ) :
 theorem coe_homothetyUnitsMulHom_eq_homothetyHom_coe (p : P) :
     ((↑) : (P ≃ᵃ[R] P) → P →ᵃ[R] P) ∘ homothetyUnitsMulHom p =
       AffineMap.homothetyHom p ∘ ((↑) : Rˣ → R) :=
-  funext fun _ => rfl
+  funext fun _ ↦ rfl
 
 end Homothety
 
@@ -497,12 +497,12 @@ theorem pointReflection_fixed_iff_of_injective_two_nsmul {x y : P₁}
 
 theorem injective_pointReflection_left_of_injective_two_nsmul
     (h : Injective (2 • · : V₁ → V₁)) (y : P₁) :
-    Injective fun x : P₁ => pointReflection k x y :=
+    Injective fun x : P₁ ↦ pointReflection k x y :=
   Equiv.injective_pointReflection_left_of_injective_two_nsmul h y
 
 theorem injective_pointReflection_left_of_module [Invertible (2 : k)] :
-    ∀ y, Injective fun x : P₁ => pointReflection k x y :=
-  injective_pointReflection_left_of_injective_two_nsmul k fun x y h => by
+    ∀ y, Injective fun x : P₁ ↦ pointReflection k x y :=
+  injective_pointReflection_left_of_injective_two_nsmul k fun x y h ↦ by
     dsimp at h
     rwa [two_nsmul, two_nsmul, ← two_smul k x, ← two_smul k y,
       (isUnit_of_invertible (2 : k)).smul_left_cancel] at h

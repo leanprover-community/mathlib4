@@ -30,11 +30,11 @@ variable {μ} {s t u v : Set α}
 family of measurable null sets `t i` such that `s i \ t i` are pairwise disjoint. -/
 theorem exists_null_pairwise_disjoint_diff [Countable ι] {s : ι → Set α}
     (hd : Pairwise (AEDisjoint μ on s)) : ∃ t : ι → Set α, (∀ i, MeasurableSet (t i)) ∧
-    (∀ i, μ (t i) = 0) ∧ Pairwise (Disjoint on fun i => s i \ t i) := by
-  refine ⟨fun i => toMeasurable μ (s i ∩ ⋃ j ∈ ({i}ᶜ : Set ι), s j), fun i =>
-    measurableSet_toMeasurable _ _, fun i => ?_, ?_⟩
+    (∀ i, μ (t i) = 0) ∧ Pairwise (Disjoint on fun i ↦ s i \ t i) := by
+  refine ⟨fun i ↦ toMeasurable μ (s i ∩ ⋃ j ∈ ({i}ᶜ : Set ι), s j), fun i ↦
+    measurableSet_toMeasurable _ _, fun i ↦ ?_, ?_⟩
   · simp only [measure_toMeasurable, inter_iUnion]
-    exact (measure_biUnion_null_iff <| to_countable _).2 fun j hj => hd (Ne.symm hj)
+    exact (measure_biUnion_null_iff <| to_countable _).2 fun j hj ↦ hd (Ne.symm hj)
   · simp only [Pairwise, disjoint_left, onFun, mem_diff, not_and, and_imp, Classical.not_not]
     intro i j hne x hi hU hj
     replace hU : x ∉ s i ∩ iUnion fun j ↦ iUnion fun _ ↦ s j :=
@@ -50,7 +50,7 @@ protected theorem eq (h : AEDisjoint μ s t) : μ (s ∩ t) = 0 :=
 @[symm]
 protected theorem symm (h : AEDisjoint μ s t) : AEDisjoint μ t s := by rwa [AEDisjoint, inter_comm]
 
-protected theorem symmetric : Symmetric (AEDisjoint μ) := fun _ _ => AEDisjoint.symm
+protected theorem symmetric : Symmetric (AEDisjoint μ) := fun _ _ ↦ AEDisjoint.symm
 
 protected theorem comm : AEDisjoint μ s t ↔ AEDisjoint μ t s :=
   ⟨AEDisjoint.symm, AEDisjoint.symm⟩
@@ -60,11 +60,11 @@ protected theorem _root_.Disjoint.aedisjoint (h : Disjoint s t) : AEDisjoint μ 
 
 protected theorem _root_.Pairwise.aedisjoint {f : ι → Set α} (hf : Pairwise (Disjoint on f)) :
     Pairwise (AEDisjoint μ on f) :=
-  hf.mono fun _i _j h => h.aedisjoint
+  hf.mono fun _i _j h ↦ h.aedisjoint
 
 protected theorem _root_.Set.PairwiseDisjoint.aedisjoint {f : ι → Set α} {s : Set ι}
     (hf : s.PairwiseDisjoint f) : s.Pairwise (AEDisjoint μ on f) :=
-  hf.mono' fun _i _j h => h.aedisjoint
+  hf.mono' fun _i _j h ↦ h.aedisjoint
 
 theorem mono_ae (h : AEDisjoint μ s t) (hu : u ≤ᵐ[μ] s) (hv : v ≤ᵐ[μ] t) : AEDisjoint μ u v :=
   measure_mono_null_ae (hu.inter hv) h
@@ -117,8 +117,8 @@ set `u`. -/
 theorem exists_disjoint_diff (h : AEDisjoint μ s t) :
     ∃ u, MeasurableSet u ∧ μ u = 0 ∧ Disjoint (s \ u) t :=
   ⟨toMeasurable μ (s ∩ t), measurableSet_toMeasurable _ _, (measure_toMeasurable _).trans h,
-    disjoint_sdiff_self_left.mono_left (b := s \ t) fun x hx => by
-      simpa using ⟨hx.1, fun hxt => hx.2 <| subset_toMeasurable _ _ ⟨hx.1, hxt⟩⟩⟩
+    disjoint_sdiff_self_left.mono_left (b := s \ t) fun x hx ↦ by
+      simpa using ⟨hx.1, fun hxt ↦ hx.2 <| subset_toMeasurable _ _ ⟨hx.1, hxt⟩⟩⟩
 
 theorem of_null_right (h : μ t = 0) : AEDisjoint μ s t :=
   measure_mono_null inter_subset_right h

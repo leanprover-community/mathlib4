@@ -69,21 +69,21 @@ variable {mα : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ] {f
 
 theorem measurableSet_image (hf : MeasurableEmbedding f) :
     MeasurableSet (f '' s) ↔ MeasurableSet s :=
-  ⟨fun h => by simpa only [hf.injective.preimage_image] using hf.measurable h, fun h =>
+  ⟨fun h ↦ by simpa only [hf.injective.preimage_image] using hf.measurable h, fun h ↦
     hf.measurableSet_image' h⟩
 
 theorem id : MeasurableEmbedding (id : α → α) :=
-  ⟨injective_id, measurable_id, fun s hs => by rwa [image_id]⟩
+  ⟨injective_id, measurable_id, fun s hs ↦ by rwa [image_id]⟩
 
 theorem comp (hg : MeasurableEmbedding g) (hf : MeasurableEmbedding f) :
     MeasurableEmbedding (g ∘ f) :=
-  ⟨hg.injective.comp hf.injective, hg.measurable.comp hf.measurable, fun s hs => by
+  ⟨hg.injective.comp hf.injective, hg.measurable.comp hf.measurable, fun s hs ↦ by
     rwa [image_comp, hg.measurableSet_image, hf.measurableSet_image]⟩
 
 theorem subtype_coe (hs : MeasurableSet s) : MeasurableEmbedding ((↑) : s → α) where
   injective := Subtype.coe_injective
   measurable := measurable_subtype_coe
-  measurableSet_image' := fun _ => MeasurableSet.subtype_image hs
+  measurableSet_image' := fun _ ↦ MeasurableSet.subtype_image hs
 
 theorem measurableSet_range (hf : MeasurableEmbedding f) : MeasurableSet (range f) := by
   rw [← image_univ]
@@ -94,7 +94,7 @@ theorem measurableSet_preimage (hf : MeasurableEmbedding f) {s : Set β} :
   rw [← image_preimage_eq_inter_range, hf.measurableSet_image]
 
 theorem measurable_rangeSplitting (hf : MeasurableEmbedding f) :
-    Measurable (rangeSplitting f) := fun s hs => by
+    Measurable (rangeSplitting f) := fun s hs ↦ by
   rwa [preimage_rangeSplitting hf.injective,
     ← (subtype_coe hf.measurableSet_range).measurableSet_image, ← image_comp,
     coe_comp_rangeFactorization, hf.measurableSet_image]
@@ -109,12 +109,12 @@ theorem measurable_extend (hf : MeasurableEmbedding f) {g : α → γ} {g' : β 
 
 theorem exists_measurable_extend (hf : MeasurableEmbedding f) {g : α → γ} (hg : Measurable g)
     (hne : β → Nonempty γ) : ∃ g' : β → γ, Measurable g' ∧ g' ∘ f = g :=
-  ⟨extend f g fun x => Classical.choice (hne x),
-    hf.measurable_extend hg (measurable_const' fun _ _ => rfl),
-    funext fun _ => hf.injective.extend_apply _ _ _⟩
+  ⟨extend f g fun x ↦ Classical.choice (hne x),
+    hf.measurable_extend hg (measurable_const' fun _ _ ↦ rfl),
+    funext fun _ ↦ hf.injective.extend_apply _ _ _⟩
 
 theorem measurable_comp_iff (hg : MeasurableEmbedding g) : Measurable (g ∘ f) ↔ Measurable f := by
-  refine ⟨fun H => ?_, hg.measurable.comp⟩
+  refine ⟨fun H ↦ ?_, hg.measurable.comp⟩
   suffices Measurable ((rangeSplitting g ∘ rangeFactorization g) ∘ f) by
     rwa [(rightInverse_rangeSplitting hg.injective).comp_eq_id] at this
   exact hg.measurable_rangeSplitting.comp H.subtype_mk
@@ -156,7 +156,7 @@ end gluing
 theorem MeasurableSet.exists_measurable_proj {_ : MeasurableSpace α}
     (hs : MeasurableSet s) (hne : s.Nonempty) : ∃ f : α → s, Measurable f ∧ ∀ x : s, f x = x :=
   let ⟨f, hfm, hf⟩ :=
-    (MeasurableEmbedding.subtype_coe hs).exists_measurable_extend measurable_id fun _ =>
+    (MeasurableEmbedding.subtype_coe hs).exists_measurable_extend measurable_id fun _ ↦
       hne.to_subtype
   ⟨f, hfm, congr_fun hf⟩
 
@@ -314,7 +314,7 @@ lemma preimage_image (e : α ≃ᵐ β) (s : Set α) : e ⁻¹' (e '' s) = s := 
 @[simp]
 theorem measurableSet_preimage (e : α ≃ᵐ β) {s : Set β} :
     MeasurableSet (e ⁻¹' s) ↔ MeasurableSet s :=
-  ⟨fun h => by simpa only [symm_preimage_preimage] using e.symm.measurable h, fun h =>
+  ⟨fun h ↦ by simpa only [symm_preimage_preimage] using e.symm.measurable h, fun h ↦
     e.measurable h⟩
 
 @[simp]
@@ -328,7 +328,7 @@ theorem measurableSet_image (e : α ≃ᵐ β) :
 protected theorem measurableEmbedding (e : α ≃ᵐ β) : MeasurableEmbedding e where
   injective := e.injective
   measurable := e.measurable
-  measurableSet_image' := fun _ => e.measurableSet_image.2
+  measurableSet_image' := fun _ ↦ e.measurableSet_image.2
 
 /-- Equal measurable spaces are equivalent. -/
 protected def cast {α β} [i₁ : MeasurableSpace α] [i₂ : MeasurableSpace β] (h : α = β)
@@ -350,10 +350,10 @@ def ulift.{u, v} {α : Type u} [MeasurableSpace α] : ULift.{v, u} α ≃ᵐ α 
 protected theorem measurable_comp_iff {f : β → γ} (e : α ≃ᵐ β) :
     Measurable (f ∘ e) ↔ Measurable f :=
   Iff.intro
-    (fun hfe => by
+    (fun hfe ↦ by
       have : Measurable (f ∘ (e.symm.trans e).toEquiv) := hfe.comp e.symm.measurable
       rwa [coe_toEquiv, symm_trans_self] at this)
-    fun h => h.comp e.measurable
+    fun h ↦ h.comp e.measurable
 
 /-- Any two types with unique elements are measurably equivalent. -/
 def ofUniqueOfUnique (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] [Unique α] [Unique β] :
@@ -475,11 +475,11 @@ variable {π π' : δ' → Type*} [∀ x, MeasurableSpace (π x)] [∀ x, Measur
 /-- A family of measurable equivalences `Π a, β₁ a ≃ᵐ β₂ a` generates a measurable equivalence
   between `Π a, β₁ a` and `Π a, β₂ a`. -/
 def piCongrRight (e : ∀ a, π a ≃ᵐ π' a) : (∀ a, π a) ≃ᵐ ∀ a, π' a where
-  toEquiv := .piCongrRight fun a => (e a).toEquiv
+  toEquiv := .piCongrRight fun a ↦ (e a).toEquiv
   measurable_toFun :=
-    measurable_pi_lambda _ fun i => (e i).measurable_toFun.comp (measurable_pi_apply i)
+    measurable_pi_lambda _ fun i ↦ (e i).measurable_toFun.comp (measurable_pi_apply i)
   measurable_invFun :=
-    measurable_pi_lambda _ fun i => (e i).measurable_invFun.comp (measurable_pi_apply i)
+    measurable_pi_lambda _ fun i ↦ (e i).measurable_invFun.comp (measurable_pi_apply i)
 
 variable (π) in
 /-- Moving a dependent type along an equivalence of coordinates, as a measurable equivalence. -/
@@ -488,7 +488,7 @@ def piCongrLeft (f : δ ≃ δ') : (∀ b, π (f b)) ≃ᵐ ∀ a, π a where
   measurable_toFun := measurable_piCongrLeft f
   measurable_invFun := by
     rw [measurable_pi_iff]
-    exact fun i => measurable_pi_apply (f i)
+    exact fun i ↦ measurable_pi_apply (f i)
 
 theorem coe_piCongrLeft (f : δ ≃ δ') :
     ⇑(MeasurableEquiv.piCongrLeft π f) = f.piCongrLeft π := by rfl
@@ -552,7 +552,7 @@ def piFinTwo (α : Fin 2 → Type*) [∀ i, MeasurableSpace (α i)] : (∀ i, α
 /-- The space `Fin 2 → α` is measurably equivalent to `α × α`. -/
 @[simps! -fullyApplied]
 def finTwoArrow : (Fin 2 → α) ≃ᵐ α × α :=
-  piFinTwo fun _ => α
+  piFinTwo fun _ ↦ α
 
 /-- Measurable equivalence between `Π j : Fin (n + 1), α j` and
 `α i × Π j : Fin n, α (Fin.succAbove i j)`.
@@ -562,10 +562,10 @@ Measurable version of `Fin.insertNthEquiv`. -/
 def piFinSuccAbove {n : ℕ} (α : Fin (n + 1) → Type*) [∀ i, MeasurableSpace (α i)]
     (i : Fin (n + 1)) : (∀ j, α j) ≃ᵐ α i × ∀ j, α (i.succAbove j) where
   toEquiv := (Fin.insertNthEquiv α i).symm
-  measurable_toFun := (measurable_pi_apply i).prodMk <| measurable_pi_iff.2 fun _ =>
+  measurable_toFun := (measurable_pi_apply i).prodMk <| measurable_pi_iff.2 fun _ ↦
     measurable_pi_apply _
   measurable_invFun := measurable_pi_iff.2 <| i.forall_iff_succAbove.2
-    ⟨by simp [measurable_fst], fun j => by simpa using (measurable_pi_apply _).comp measurable_snd⟩
+    ⟨by simp [measurable_fst], fun j ↦ by simpa using (measurable_pi_apply _).comp measurable_snd⟩
 
 variable (π)
 
@@ -695,7 +695,7 @@ theorem of_measurable_inverse (hf₁ : Measurable f) (hf₂ : MeasurableSet (ran
 `α → β` and `β → α`, we can find a measurable equivalence `α ≃ᵐ β`. -/
 noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : MeasurableEmbedding f)
     (hg : MeasurableEmbedding g) : α ≃ᵐ β := by
-  let F : Set α → Set α := fun A => (g '' (f '' A)ᶜ)ᶜ
+  let F : Set α → Set α := fun A ↦ (g '' (f '' A)ᶜ)ᶜ
   -- We follow the proof of the usual SB theorem in mathlib,
   -- the crux of which is finding a fixed point of this F.
   -- However, we must find this fixed point manually instead of invoking Knaster-Tarski
@@ -714,9 +714,9 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
       simp [F, B]
     rw [this]
     exact (hg.equivImage _).symm
-  have Fmono : ∀ {A B}, A ⊆ B → F A ⊆ F B := fun h =>
+  have Fmono : ∀ {A B}, A ⊆ B → F A ⊆ F B := fun h ↦
     compl_subset_compl.mpr <| Set.image_mono <| compl_subset_compl.mpr <| Set.image_mono h
-  let X : ℕ → Set α := fun n => F^[n] univ
+  let X : ℕ → Set α := fun n ↦ F^[n] univ
   refine ⟨iInter X, ?_, ?_⟩
   · refine MeasurableSet.iInter fun n ↦ ?_
     induction n with
@@ -776,7 +776,7 @@ end MeasurableEmbedding
 
 theorem MeasurableSpace.comap_compl {m' : MeasurableSpace β} [BooleanAlgebra β]
     (h : Measurable (compl : β → β)) (f : α → β) :
-    MeasurableSpace.comap (fun a => (f a)ᶜ) inferInstance =
+    MeasurableSpace.comap (fun a ↦ (f a)ᶜ) inferInstance =
       MeasurableSpace.comap f inferInstance := by
   rw [← Function.comp_def, ← MeasurableSpace.comap_comp]
   congr

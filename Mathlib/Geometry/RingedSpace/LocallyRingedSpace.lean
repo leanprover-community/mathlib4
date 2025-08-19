@@ -58,7 +58,7 @@ def toTopCat : TopCat :=
   X.1.carrier
 
 instance : CoeSort LocallyRingedSpace (Type u) :=
-  ⟨fun X : LocallyRingedSpace => (X.toTopCat : Type _)⟩
+  ⟨fun X : LocallyRingedSpace ↦ (X.toTopCat : Type _)⟩
 
 instance (x : X) : IsLocalRing (X.presheaf.stalk x) :=
   X.isLocalRing x
@@ -119,14 +119,14 @@ theorem isLocalHomValStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : 
 /-- The identity morphism on a locally ringed space. -/
 @[simps! toShHom]
 def id (X : LocallyRingedSpace.{u}) : Hom X X :=
-  ⟨𝟙 X.toSheafedSpace, fun x => by dsimp; erw [PresheafedSpace.stalkMap.id]; infer_instance⟩
+  ⟨𝟙 X.toSheafedSpace, fun x ↦ by dsimp; erw [PresheafedSpace.stalkMap.id]; infer_instance⟩
 
 instance (X : LocallyRingedSpace.{u}) : Inhabited (Hom X X) :=
   ⟨id X⟩
 
 /-- Composition of morphisms of locally ringed spaces. -/
 def comp {X Y Z : LocallyRingedSpace.{u}} (f : Hom X Y) (g : Hom Y Z) : Hom X Z :=
-  ⟨f.toShHom ≫ g.toShHom, fun x => by
+  ⟨f.toShHom ≫ g.toShHom, fun x ↦ by
     dsimp
     erw [PresheafedSpace.stalkMap.comp]
     infer_instance⟩
@@ -185,7 +185,7 @@ See also `isoOfSheafedSpaceIso`.
 @[simps! toShHom]
 def homOfSheafedSpaceHomOfIsIso {X Y : LocallyRingedSpace.{u}}
     (f : X.toSheafedSpace ⟶ Y.toSheafedSpace) [IsIso f] : X ⟶ Y :=
-  Hom.mk f fun _ =>
+  Hom.mk f fun _ ↦
     -- Here we need to see that the stalk maps are really local ring homomorphisms.
     -- This can be solved by type class inference, because stalk maps of isomorphisms
     -- are isomorphisms and isomorphisms are local ring homomorphisms.
@@ -229,7 +229,7 @@ def restrict {U : TopCat} (X : LocallyRingedSpace.{u}) {f : U ⟶ X.toTopCat}
 /-- The canonical map from the restriction to the subspace. -/
 def ofRestrict {U : TopCat} (X : LocallyRingedSpace.{u})
     {f : U ⟶ X.toTopCat} (h : IsOpenEmbedding f) : X.restrict h ⟶ X :=
-  ⟨X.toPresheafedSpace.ofRestrict h, fun _ => inferInstance⟩
+  ⟨X.toPresheafedSpace.ofRestrict h, fun _ ↦ inferInstance⟩
 
 /-- The restriction of a locally ringed space `X` to the top subspace is isomorphic to `X` itself.
 -/
@@ -270,9 +270,9 @@ instance : EmptyCollection LocallyRingedSpace.{u} := ⟨LocallyRingedSpace.empty
 
 /-- The canonical map from the empty locally ringed space. -/
 def emptyTo (X : LocallyRingedSpace.{u}) : ∅ ⟶ X :=
-  ⟨⟨ofHom ⟨fun x => PEmpty.elim x, by fun_prop⟩,
-    { app := fun U => CommRingCat.ofHom <| by refine ⟨⟨⟨0, ?_⟩, ?_⟩, ?_, ?_⟩ <;> intros <;> rfl }⟩,
-    fun x => PEmpty.elim x⟩
+  ⟨⟨ofHom ⟨fun x ↦ PEmpty.elim x, by fun_prop⟩,
+    { app := fun U ↦ CommRingCat.ofHom <| by refine ⟨⟨⟨0, ?_⟩, ?_⟩, ?_, ?_⟩ <;> intros <;> rfl }⟩,
+    fun x ↦ PEmpty.elim x⟩
 
 noncomputable
 instance {X : LocallyRingedSpace.{u}} : Unique (∅ ⟶ X) where

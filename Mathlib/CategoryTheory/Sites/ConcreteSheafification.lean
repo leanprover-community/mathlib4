@@ -46,8 +46,8 @@ variable {FD : D → D → Type*} {CD : D → Type t} [∀ X Y, FunLike (FD X Y)
 variable [ConcreteCategory.{t} D FD]
 
 instance {X} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) :
-    CoeFun (Meq P S) fun _ => ∀ I : S.Arrow, ToType (P.obj (op I.Y)) :=
-  ⟨fun x => x.1⟩
+    CoeFun (Meq P S) fun _ ↦ ∀ I : S.Arrow, ToType (P.obj (op I.Y)) :=
+  ⟨fun x ↦ x.1⟩
 
 lemma congr_apply {X} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) {Y}
     {f g : Y ⟶ X} (h : f = g) (hf : S f) :
@@ -66,7 +66,7 @@ theorem condition {X} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) (I : S.R
 
 /-- Refine a term of `Meq P T` with respect to a refinement `S ⟶ T` of covers. -/
 def refine {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq P T) (e : S ⟶ T) : Meq P S :=
-  ⟨fun I => x ⟨I.Y, I.f, (leOfHom e) _ I.hf⟩, fun I =>
+  ⟨fun I ↦ x ⟨I.Y, I.f, (leOfHom e) _ I.hf⟩, fun I ↦
     x.condition (GrothendieckTopology.Cover.Relation.mk' (I.r.map e))⟩
 
 @[simp]
@@ -77,7 +77,7 @@ theorem refine_apply {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq P T)
 /-- Pull back a term of `Meq P S` with respect to a morphism `f : Y ⟶ X` in `C`. -/
 def pullback {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) (f : Y ⟶ X) :
     Meq P ((J.pullback f).obj S) :=
-  ⟨fun I => x ⟨_, I.f ≫ f, I.hf⟩, fun I =>
+  ⟨fun I ↦ x ⟨_, I.f ≫ f, I.hf⟩, fun I ↦
     x.condition (GrothendieckTopology.Cover.Relation.mk' I.r.base)⟩
 
 @[simp]
@@ -92,7 +92,7 @@ theorem pullback_refine {Y X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (h : S �
 
 /-- Make a term of `Meq P S`. -/
 def mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : ToType (P.obj (op X))) : Meq P S :=
-  ⟨fun I => P.map I.f.op x, fun I => by
+  ⟨fun I ↦ P.map I.f.op x, fun I ↦ by
     simp only [← ConcreteCategory.comp_apply, ← P.map_comp, ← op_comp, I.r.w]⟩
 
 theorem mk_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : ToType (P.obj (op X))) (I : S.Arrow) :
@@ -222,7 +222,7 @@ theorem eq_mk_iff_exists {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq 
     use op S, h1.op, h2.op
     apply Concrete.multiequalizer_ext
     intro i
-    apply_fun fun ee => ee i at e
+    apply_fun fun ee ↦ ee i at e
     convert e using 1
     all_goals
       dsimp [diagram]
@@ -239,7 +239,7 @@ theorem sep {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) (x y : ToType ((J.plusOb
   simp only [res_mk_eq_mk_pullback] at h
   -- Next, using our assumption,
   -- choose covers over which the pullbacks of these representatives become equal.
-  choose W h1 h2 hh using fun I : S.Arrow => (eq_mk_iff_exists _ _).mp (h I)
+  choose W h1 h2 hh using fun I : S.Arrow ↦ (eq_mk_iff_exists _ _).mp (h I)
   -- To prove equality, it suffices to prove that there exists a cover over which
   -- the representatives become equal.
   rw [eq_mk_iff_exists]
@@ -271,7 +271,7 @@ theorem sep {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) (x y : ToType ((J.plusOb
   let IS : S.Arrow := I.fromMiddle
   specialize hh IS
   let IW : (W IS).Arrow := I.toMiddle
-  apply_fun fun e => e IW at hh
+  apply_fun fun e ↦ e IW at hh
   convert hh using 1
   · exact x.congr_apply I.middle_spec.symm _
   · exact y.congr_apply I.middle_spec.symm _
@@ -287,7 +287,7 @@ theorem inj_of_sep (P : Cᵒᵖ ⥤ D)
   obtain ⟨W, h1, h2, hh⟩ := h
   apply hsep X W
   intro I
-  apply_fun fun e => e I at hh
+  apply_fun fun e ↦ e I at hh
   exact hh
 
 /-- An auxiliary definition to be used in the proof of `exists_of_sep` below.
@@ -328,11 +328,11 @@ theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
     ∃ t : ToType ((J.plusObj P).obj (op X)), Meq.mk S t = s := by
   have inj : ∀ X : C, Function.Injective ((J.toPlus P).app (op X)) := inj_of_sep _ hsep
   -- Choose representatives for the given local sections.
-  choose T t ht using fun I => exists_rep (s I)
+  choose T t ht using fun I ↦ exists_rep (s I)
   -- Construct a large cover over which we will define a representative that will
   -- provide the gluing of the given local sections.
   let B : J.Cover X := S.bind T
-  choose Z e1 e2 he2 _ _ using fun I : B.Arrow => I.hf
+  choose Z e1 e2 he2 _ _ using fun I : B.Arrow ↦ I.hf
   -- Construct a compatible system of local sections over this large cover, using the chosen
   -- representatives of our local sections.
   -- The compatibility here follows from the separatedness assumption.
@@ -390,7 +390,7 @@ theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
     apply sep P S _ _
     intro I
     apply_fun Meq.equiv _ _ at h
-    apply_fun fun e => e I at h
+    apply_fun fun e ↦ e I at h
     dsimp only [ConcreteCategory.forget_map_eq_coe] at h
     convert h <;> erw [Meq.equiv_apply] <;>
       rw [← ConcreteCategory.comp_apply, Multiequalizer.lift_ι] <;>
@@ -564,7 +564,7 @@ instance plusPlusSheaf_preservesZeroMorphisms [Preadditive D] :
     (plusPlusSheaf J D).PreservesZeroMorphisms where
   map_zero F G := by
     ext : 3
-    refine colimit.hom_ext (fun j => ?_)
+    refine colimit.hom_ext (fun j ↦ ?_)
     erw [colimit.ι_map, comp_zero]
     simp
 
@@ -572,15 +572,15 @@ instance plusPlusSheaf_preservesZeroMorphisms [Preadditive D] :
 @[simps! unit_app counit_app_val]
 noncomputable def plusPlusAdjunction : plusPlusSheaf J D ⊣ sheafToPresheaf J D :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun P Q =>
-        { toFun := fun e => J.toSheafify P ≫ e.val
-          invFun := fun e => ⟨J.sheafifyLift e Q.2⟩
-          left_inv := fun _ => Sheaf.Hom.ext <| (J.sheafifyLift_unique _ _ _ rfl).symm
-          right_inv := fun _ => J.toSheafify_sheafifyLift _ _ }
+    { homEquiv := fun P Q ↦
+        { toFun := fun e ↦ J.toSheafify P ≫ e.val
+          invFun := fun e ↦ ⟨J.sheafifyLift e Q.2⟩
+          left_inv := fun _ ↦ Sheaf.Hom.ext <| (J.sheafifyLift_unique _ _ _ rfl).symm
+          right_inv := fun _ ↦ J.toSheafify_sheafifyLift _ _ }
       homEquiv_naturality_left_symm := by
         intro P Q R η γ; ext1; dsimp; symm
         apply J.sheafifyMap_sheafifyLift
-      homEquiv_naturality_right := fun η γ => by
+      homEquiv_naturality_right := fun η γ ↦ by
         dsimp
         rw [Category.assoc] }
 
@@ -592,6 +592,6 @@ instance presheaf_mono_of_mono {F G : Sheaf J D} (f : F ⟶ G) [Mono f] : Mono f
 
 include instCC in
 theorem Sheaf.Hom.mono_iff_presheaf_mono {F G : Sheaf J D} (f : F ⟶ G) : Mono f ↔ Mono f.1 :=
-  ⟨fun m => by infer_instance, fun m => by exact Sheaf.Hom.mono_of_presheaf_mono J D f⟩
+  ⟨fun m ↦ by infer_instance, fun m ↦ by exact Sheaf.Hom.mono_of_presheaf_mono J D f⟩
 
 end CategoryTheory

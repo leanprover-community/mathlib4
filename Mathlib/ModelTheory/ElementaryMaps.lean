@@ -103,7 +103,7 @@ theorem elementarilyEquivalent (f : M ↪ₑ[L] N) : M ≅[L] N :=
 theorem injective (φ : M ↪ₑ[L] N) : Function.Injective φ := by
   intro x y
   have h :=
-    φ.map_formula ((var 0).equal (var 1) : L.Formula (Fin 2)) fun i => if i = 0 then x else y
+    φ.map_formula ((var 0).equal (var 1) : L.Formula (Fin 2)) fun i ↦ if i = 0 then x else y
   rw [Formula.realize_equal, Formula.realize_equal] at h
   simp only [Term.realize, Fin.one_eq_zero_iff, if_true,
     Function.comp_apply] at h
@@ -212,7 +212,7 @@ abbrev elementaryDiagram : L[[M]].Theory :=
 @[simps]
 def ElementaryEmbedding.ofModelsElementaryDiagram (N : Type*) [L.Structure N] [L[[M]].Structure N]
     [(lhomWithConstants L M).IsExpansionOn N] [N ⊨ L.elementaryDiagram M] : M ↪ₑ[L] N :=
-  ⟨((↑) : L[[M]].Constants → N) ∘ Sum.inr, fun n φ x => by
+  ⟨((↑) : L[[M]].Constants → N) ∘ Sum.inr, fun n φ x ↦ by
     refine
       _root_.trans ?_
         ((realize_iff_of_model_completeTheory M N
@@ -241,8 +241,8 @@ theorem isElementary_of_exists (f : M ↪[L] N)
       φ.Realize (f ∘ default) (f ∘ xs) ↔ φ.Realize default xs by
     intro n φ x
     exact φ.realize_relabel_sumInr.symm.trans (_root_.trans (h n _ _) φ.realize_relabel_sumInr)
-  refine fun n φ => φ.recOn ?_ ?_ ?_ ?_ ?_
-  · exact fun {_} _ => Iff.rfl
+  refine fun n φ ↦ φ.recOn ?_ ?_ ?_ ?_ ?_
+  · exact fun {_} _ ↦ Iff.rfl
   · intros
     simp [BoundedFormula.Realize, ← Sum.comp_elim, HomClass.realize_term]
   · intros
@@ -252,7 +252,7 @@ theorem isElementary_of_exists (f : M ↪[L] N)
     simp [ih1, ih2]
   · intro n φ ih xs
     simp only [BoundedFormula.realize_all]
-    refine ⟨fun h a => ?_, ?_⟩
+    refine ⟨fun h a ↦ ?_, ?_⟩
     · rw [← ih, Fin.comp_snoc]
       exact h (f a)
     · contrapose!
@@ -260,7 +260,7 @@ theorem isElementary_of_exists (f : M ↪[L] N)
       obtain ⟨b, hb⟩ := htv n φ.not xs a (by
           rw [BoundedFormula.realize_not, ← Unique.eq_default (f ∘ default)]
           exact ha)
-      refine ⟨b, fun h => hb (Eq.mp ?_ ((ih _).2 h))⟩
+      refine ⟨b, fun h ↦ hb (Eq.mp ?_ ((ih _).2 h))⟩
       rw [Unique.eq_default (f ∘ default), Fin.comp_snoc]
 
 /-- Bundles an embedding satisfying the Tarski-Vaught test as an elementary embedding. -/
@@ -271,7 +271,7 @@ def toElementaryEmbedding (f : M ↪[L] N)
         φ.Realize default (Fin.snoc (f ∘ x) a : _ → N) →
           ∃ b : M, φ.Realize default (Fin.snoc (f ∘ x) (f b) : _ → N)) :
     M ↪ₑ[L] N :=
-  ⟨f, fun _ => f.isElementary_of_exists htv⟩
+  ⟨f, fun _ ↦ f.isElementary_of_exists htv⟩
 
 end Embedding
 

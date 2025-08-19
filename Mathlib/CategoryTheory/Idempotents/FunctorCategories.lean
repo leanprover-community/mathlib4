@@ -54,23 +54,23 @@ variable (J C)
 
 instance functor_category_isIdempotentComplete [IsIdempotentComplete C] :
     IsIdempotentComplete (J ⥤ C) := by
-  refine ⟨fun F p hp => ?_⟩
+  refine ⟨fun F p hp ↦ ?_⟩
   have hC := (isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent C).mp inferInstance
-  haveI : ∀ j : J, HasEqualizer (𝟙 _) (p.app j) := fun j => hC _ _ (congr_app hp j)
+  haveI : ∀ j : J, HasEqualizer (𝟙 _) (p.app j) := fun j ↦ hC _ _ (congr_app hp j)
   /- We construct the direct factor `Y` associated to `p : F ⟶ F` by computing
       the equalizer of the identity and `p.app j` on each object `(j : J)`. -/
   let Y : J ⥤ C :=
-    { obj := fun j => Limits.equalizer (𝟙 _) (p.app j)
-      map := fun {j j'} φ =>
+    { obj := fun j ↦ Limits.equalizer (𝟙 _) (p.app j)
+      map := fun {j j'} φ ↦
         equalizer.lift (Limits.equalizer.ι (𝟙 _) (p.app j) ≫ F.map φ)
           (by rw [comp_id, assoc, p.naturality φ, ← assoc, ← Limits.equalizer.condition, comp_id]) }
   let i : Y ⟶ F :=
-    { app := fun j => equalizer.ι _ _
-      naturality := fun _ _ _ => by rw [equalizer.lift_ι] }
+    { app := fun j ↦ equalizer.ι _ _
+      naturality := fun _ _ _ ↦ by rw [equalizer.lift_ι] }
   let e : F ⟶ Y :=
-    { app := fun j =>
+    { app := fun j ↦
         equalizer.lift (p.app j) (by simpa only [comp_id] using (congr_app hp j).symm)
-      naturality := fun j j' φ => equalizer.hom_ext (by simp [Y]) }
+      naturality := fun j j' φ ↦ equalizer.hom_ext (by simp [Y]) }
   use Y, i, e
   constructor
   · ext j
@@ -112,8 +112,8 @@ def karoubiFunctorCategoryEmbedding : Karoubi (J ⥤ C) ⥤ J ⥤ Karoubi C wher
 instance : (karoubiFunctorCategoryEmbedding J C).Full where
   map_surjective {P Q} f :=
     ⟨{f :=
-        { app := fun j => (f.app j).f
-          naturality := fun j j' φ => by
+        { app := fun j ↦ (f.app j).f
+          naturality := fun j j' φ ↦ by
             rw [← Karoubi.comp_p_assoc]
             have h := hom_ext_iff.mp (f.naturality φ)
             simp only [comp_f] at h

@@ -153,7 +153,7 @@ variable (W') in
 If `P` is a projective point representative on `W`, then `W.negMap ⟦P⟧` is definitionally equivalent
 to `W.neg P`. -/
 def negMap (P : PointClass R) : PointClass R :=
-  P.map W'.neg fun _ _ => neg_equiv
+  P.map W'.neg fun _ _ ↦ neg_equiv
 
 lemma negMap_eq (P : Fin 3 → R) : W'.negMap ⟦P⟧ = ⟦W'.neg P⟧ :=
   rfl
@@ -292,7 +292,7 @@ variable (W') in
 If `P` and `Q` are two projective point representatives on `W`, then `W.addMap ⟦P⟧ ⟦Q⟧` is
 definitionally equivalent to `W.add P Q`. -/
 noncomputable def addMap (P Q : PointClass R) : PointClass R :=
-  Quotient.map₂ W'.add (fun _ _ hP _ _ hQ => add_equiv hP hQ) P Q
+  Quotient.map₂ W'.add (fun _ _ hP _ _ hQ ↦ add_equiv hP hQ) P Q
 
 lemma addMap_eq (P Q : Fin 3 → R) : W'.addMap ⟦P⟧ ⟦Q⟧ = ⟦W'.add P Q⟧ :=
   rfl
@@ -300,7 +300,7 @@ lemma addMap_eq (P Q : Fin 3 → R) : W'.addMap ⟦P⟧ ⟦Q⟧ = ⟦W'.add P Q�
 lemma addMap_of_Z_eq_zero_left {P : Fin 3 → F} {Q : PointClass F} (hP : W.Nonsingular P)
     (hQ : W.NonsingularLift Q) (hPz : P z = 0) : W.addMap ⟦P⟧ Q = Q := by
   revert hQ
-  refine Q.inductionOn (motive := fun Q => _ → W.addMap _ Q = Q) fun Q hQ => ?_
+  refine Q.inductionOn (motive := fun Q ↦ _ → W.addMap _ Q = Q) fun Q hQ ↦ ?_
   by_cases hQz : Q z = 0
   · rw [addMap_eq, add_of_Z_eq_zero hP hQ hPz hQz,
       smul_eq _ <| (isUnit_Y_of_Z_eq_zero hP hPz).pow 4, Quotient.eq]
@@ -311,7 +311,7 @@ lemma addMap_of_Z_eq_zero_left {P : Fin 3 → F} {Q : PointClass F} (hP : W.Nons
 lemma addMap_of_Z_eq_zero_right {P : PointClass F} {Q : Fin 3 → F} (hP : W.NonsingularLift P)
     (hQ : W.Nonsingular Q) (hQz : Q z = 0) : W.addMap P ⟦Q⟧ = P := by
   revert hP
-  refine P.inductionOn (motive := fun P => _ → W.addMap P _ = P) fun P hP => ?_
+  refine P.inductionOn (motive := fun P ↦ _ → W.addMap P _ = P) fun P hP ↦ ?_
   by_cases hPz : P z = 0
   · rw [addMap_eq, add_of_Z_eq_zero hP hQ hPz hQz,
       smul_eq _ <| (isUnit_Y_of_Z_eq_zero hP hPz).pow 4, Quotient.eq]
@@ -435,7 +435,7 @@ lemma toAffine_of_singular {P : Fin 3 → F} (hP : ¬W.Nonsingular P) : toAffine
   rw [toAffine, dif_neg <| not_and_of_not_left _ hP]
 
 lemma toAffine_of_Z_eq_zero {P : Fin 3 → F} (hPz : P z = 0) : toAffine W P = 0 := by
-  rw [toAffine, dif_neg <| not_and_not_right.mpr fun _ => hPz]
+  rw [toAffine, dif_neg <| not_and_not_right.mpr fun _ ↦ hPz]
 
 lemma toAffine_zero : toAffine W ![0, 1, 0] = 0 :=
   toAffine_of_Z_eq_zero rfl
@@ -517,7 +517,7 @@ corresponding nonsingular point in affine coordinates.
 If `hP` is the nonsingular condition underlying a nonsingular projective point `P` on `W`, then
 `toAffineLift ⟨hP⟩` is definitionally equivalent to `toAffine W P`. -/
 noncomputable def toAffineLift (P : W.Point) : W.toAffine.Point :=
-  P.point.lift _ fun _ _ => toAffine_of_equiv
+  P.point.lift _ fun _ _ ↦ toAffine_of_equiv
 
 lemma toAffineLift_eq {P : Fin 3 → F} (hP : W.NonsingularLift ⟦P⟧) :
     toAffineLift ⟨hP⟩ = toAffine W P :=

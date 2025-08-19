@@ -27,7 +27,7 @@ variable {R : Type u} {M : Type v} {N : Type w}
 
 @[to_additive]
 instance smulLeft [SMul R M] : SMul (ULift R) M :=
-  ⟨fun s x => s.down • x⟩
+  ⟨fun s x ↦ s.down • x⟩
 
 @[to_additive (attr := simp)]
 theorem smul_def [SMul R M] (s : ULift R) (x : M) : s • x = s.down • x :=
@@ -35,18 +35,18 @@ theorem smul_def [SMul R M] (s : ULift R) (x : M) : s • x = s.down • x :=
 
 instance isScalarTower [SMul R M] [SMul M N] [SMul R N] [IsScalarTower R M N] :
     IsScalarTower (ULift R) M N :=
-  ⟨fun x y z => show (x.down • y) • z = x.down • y • z from smul_assoc _ _ _⟩
+  ⟨fun x y z ↦ show (x.down • y) • z = x.down • y • z from smul_assoc _ _ _⟩
 
 instance isScalarTower' [SMul R M] [SMul M N] [SMul R N] [IsScalarTower R M N] :
     IsScalarTower R (ULift M) N :=
-  ⟨fun x y z => show (x • y.down) • z = x • y.down • z from smul_assoc _ _ _⟩
+  ⟨fun x y z ↦ show (x • y.down) • z = x • y.down • z from smul_assoc _ _ _⟩
 
 instance isScalarTower'' [SMul R M] [SMul M N] [SMul R N] [IsScalarTower R M N] :
     IsScalarTower R M (ULift N) :=
-  ⟨fun x y z => show up ((x • y) • z.down) = ⟨x • y • z.down⟩ by rw [smul_assoc]⟩
+  ⟨fun x y z ↦ show up ((x • y) • z.down) = ⟨x • y • z.down⟩ by rw [smul_assoc]⟩
 
 instance [SMul R M] [SMul Rᵐᵒᵖ M] [IsCentralScalar R M] : IsCentralScalar R (ULift M) :=
-  ⟨fun r m => congr_arg up <| op_smul_eq_smul r m.down⟩
+  ⟨fun r m ↦ congr_arg up <| op_smul_eq_smul r m.down⟩
 
 @[to_additive]
 instance mulAction [Monoid R] [MulAction R M] : MulAction (ULift R) M where
@@ -57,11 +57,11 @@ instance mulAction [Monoid R] [MulAction R M] : MulAction (ULift R) M where
 @[to_additive]
 instance mulAction' [Monoid R] [MulAction R M] : MulAction R (ULift M) where
   smul := (· • ·)
-  mul_smul := fun _ _ _ => congr_arg ULift.up <| mul_smul _ _ _
-  one_smul := fun _ => congr_arg ULift.up <| one_smul _ _
+  mul_smul := fun _ _ _ ↦ congr_arg ULift.up <| mul_smul _ _ _
+  one_smul := fun _ ↦ congr_arg ULift.up <| one_smul _ _
 
 instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass (ULift R) M :=
-  { ULift.smulLeft with smul_zero := fun _ => smul_zero _ }
+  { ULift.smulLeft with smul_zero := fun _ ↦ smul_zero _ }
 
 instance smulZeroClass' [Zero M] [SMulZeroClass R M] : SMulZeroClass R (ULift M) where
   smul_zero c := by { ext; simp [smul_zero] }
@@ -90,16 +90,16 @@ instance mulDistribMulAction [Monoid R] [Monoid M] [MulDistribMulAction R M] :
 instance mulDistribMulAction' [Monoid R] [Monoid M] [MulDistribMulAction R M] :
     MulDistribMulAction R (ULift M) :=
   { ULift.mulAction' with
-    smul_one := fun _ => by
+    smul_one := fun _ ↦ by
       ext
       simp [smul_one]
-    smul_mul := fun _ _ _ => by
+    smul_mul := fun _ _ _ ↦ by
       ext
       simp [smul_mul'] }
 
 instance smulWithZero [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero (ULift R) M :=
   { ULift.smulLeft with
-    smul_zero := fun _ => smul_zero _
+    smul_zero := fun _ ↦ smul_zero _
     zero_smul := zero_smul _ }
 
 instance smulWithZero' [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (ULift M) where
@@ -120,14 +120,14 @@ instance mulActionWithZero' [MonoidWithZero R] [Zero M] [MulActionWithZero R M] 
 
 instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module (ULift R) M :=
   { ULift.smulWithZero with
-    add_smul := fun _ _ => add_smul _ _
+    add_smul := fun _ _ ↦ add_smul _ _
     smul_add := smul_add
     one_smul := one_smul _
     mul_smul := mul_smul }
 
 instance module' [Semiring R] [AddCommMonoid M] [Module R M] : Module R (ULift M) :=
   { ULift.smulWithZero' with
-    add_smul := fun _ _ _ => ULift.ext _ _ <| add_smul _ _ _
+    add_smul := fun _ _ _ ↦ ULift.ext _ _ <| add_smul _ _ _
     one_smul := one_smul _
     mul_smul := mul_smul
     smul_add := smul_add }

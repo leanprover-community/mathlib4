@@ -99,7 +99,7 @@ theorem Nat.Prime.mod_four_ne_three_of_dvd_isSquare_neg_one {p n : ℕ} (hpp : p
 `n` is not divisible by a prime `q` such that `q % 4 = 3`. -/
 theorem ZMod.isSquare_neg_one_iff {n : ℕ} (hn : Squarefree n) :
     IsSquare (-1 : ZMod n) ↔ ∀ {q : ℕ}, q.Prime → q ∣ n → q % 4 ≠ 3 := by
-  refine ⟨fun H q hqp hqd => hqp.mod_four_ne_three_of_dvd_isSquare_neg_one hqd H, fun H => ?_⟩
+  refine ⟨fun H q hqp hqd ↦ hqp.mod_four_ne_three_of_dvd_isSquare_neg_one hqd H, fun H ↦ ?_⟩
   induction n using induction_on_primes with
   | zero => exact False.elim (hn.ne_zero rfl)
   | one => exact ⟨0, by simp only [mul_zero, eq_iff_true_of_subsingleton]⟩
@@ -110,7 +110,7 @@ theorem ZMod.isSquare_neg_one_iff {n : ℕ} (hn : Squarefree n) :
       exact hpp.not_isUnit (hn p <| mul_dvd_mul_left p <| hpp.dvd_iff_not_coprime.mpr hc)
     have hp₁ := ZMod.exists_sq_eq_neg_one_iff.mpr (H hpp (dvd_mul_right p n))
     exact ZMod.isSquare_neg_one_mul hcp hp₁
-      (ih hn.of_mul_right fun hqp hqd => H hqp <| dvd_mul_of_dvd_right hqd _)
+      (ih hn.of_mul_right fun hqp hqd ↦ H hqp <| dvd_mul_of_dvd_right hqd _)
 
 /-- If `n` is a squarefree natural number, then `-1` is a square modulo `n` if and only if
 `n` has no divisor `q` that is `≡ 3 mod 4`. -/
@@ -118,11 +118,11 @@ theorem ZMod.isSquare_neg_one_iff' {n : ℕ} (hn : Squarefree n) :
     IsSquare (-1 : ZMod n) ↔ ∀ {q : ℕ}, q ∣ n → q % 4 ≠ 3 := by
   have help : ∀ a b : ZMod 4, a ≠ 3 → b ≠ 3 → a * b ≠ 3 := by decide
   rw [ZMod.isSquare_neg_one_iff hn]
-  refine ⟨?_, fun H q _ => H⟩
+  refine ⟨?_, fun H q _ ↦ H⟩
   intro H
-  refine @induction_on_primes _ ?_ ?_ (fun p q hp hq hpq => ?_)
-  · exact fun _ => by simp
-  · exact fun _ => by simp
+  refine @induction_on_primes _ ?_ ?_ (fun p q hp hq hpq ↦ ?_)
+  · exact fun _ ↦ by simp
+  · exact fun _ ↦ by simp
   · replace hp := H hp (dvd_of_mul_right_dvd hpq)
     replace hq := hq (dvd_of_mul_left_dvd hpq)
     rw [show 3 = 3 % 4 by simp, Ne, ← ZMod.natCast_eq_natCast_iff'] at hp hq ⊢
@@ -202,12 +202,12 @@ the right hand side holds, since `padicValNat q 0 = 0` by definition.) -/
 theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
     (∃ x y : ℕ, n = x ^ 2 + y ^ 2) ↔ ∀ {q : ℕ}, q.Prime → q % 4 = 3 → Even (padicValNat q n) := by
   rcases n.eq_zero_or_pos with (rfl | hn₀)
-  · exact ⟨fun _ q _ _ => (@padicValNat.zero q).symm ▸ Even.zero, fun _ => ⟨0, 0, rfl⟩⟩
+  · exact ⟨fun _ q _ _ ↦ (@padicValNat.zero q).symm ▸ Even.zero, fun _ ↦ ⟨0, 0, rfl⟩⟩
   -- now `0 < n`
   rw [Nat.eq_sq_add_sq_iff_eq_sq_mul]
-  refine ⟨fun H q hq h => ?_, fun H => ?_⟩
+  refine ⟨fun H q hq h ↦ ?_, fun H ↦ ?_⟩
   · obtain ⟨a, b, h₁, h₂⟩ := H
-    have hqb := padicValNat.eq_zero_of_not_dvd fun hf =>
+    have hqb := padicValNat.eq_zero_of_not_dvd fun hf ↦
       (hq.mod_four_ne_three_of_dvd_isSquare_neg_one hf h₂) h
     have hab : a ^ 2 * b ≠ 0 := h₁ ▸ hn₀.ne'
     have ha₂ := left_ne_zero_of_mul hab
@@ -217,7 +217,7 @@ theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
     simp_rw [h₁, padicValNat.mul ha₂ hb, padicValNat.pow 2 ha, hqb, add_zero]
     exact even_two_mul _
   · obtain ⟨b, a, hb₀, ha₀, hab, hb⟩ := Nat.sq_mul_squarefree_of_pos hn₀
-    refine ⟨a, b, hab.symm, (ZMod.isSquare_neg_one_iff hb).mpr fun {q} hqp hqb hq4 => ?_⟩
+    refine ⟨a, b, hab.symm, (ZMod.isSquare_neg_one_iff hb).mpr fun {q} hqp hqb hq4 ↦ ?_⟩
     refine Nat.not_even_iff_odd.2 ?_ (H hqp hq4)
     have hqb' : padicValNat q b = 1 :=
       b.factorization_def hqp ▸ le_antisymm (hb.natFactorization_le_one _)

@@ -65,7 +65,7 @@ theorem Subsingleton.convexIndependent [Subsingleton ι] (p : ι → E) : Convex
 /-- A convex independent family is injective. -/
 protected theorem ConvexIndependent.injective {p : ι → E} (hc : ConvexIndependent 𝕜 p) :
     Function.Injective p := by
-  refine fun i j hij => hc {j} i ?_
+  refine fun i j hij ↦ hc {j} i ?_
   rw [hij, Set.image_singleton, convexHull_singleton]
   exact Set.mem_singleton _
 
@@ -80,15 +80,15 @@ theorem ConvexIndependent.comp_embedding {ι' : Type*} (f : ι' ↪ ι) {p : ι 
 /-- If a family is convex independent, so is any subfamily indexed by a subtype of the index type.
 -/
 protected theorem ConvexIndependent.subtype {p : ι → E} (hc : ConvexIndependent 𝕜 p) (s : Set ι) :
-    ConvexIndependent 𝕜 fun i : s => p i :=
+    ConvexIndependent 𝕜 fun i : s ↦ p i :=
   hc.comp_embedding (Embedding.subtype _)
 
 /-- If an indexed family of points is convex independent, so is the corresponding set of points. -/
 protected theorem ConvexIndependent.range {p : ι → E} (hc : ConvexIndependent 𝕜 p) :
     ConvexIndependent 𝕜 ((↑) : Set.range p → E) := by
-  let f : Set.range p → ι := fun x => x.property.choose
-  have hf : ∀ x, p (f x) = x := fun x => x.property.choose_spec
-  let fe : Set.range p ↪ ι := ⟨f, fun x₁ x₂ he => Subtype.ext (hf x₁ ▸ hf x₂ ▸ he ▸ rfl)⟩
+  let f : Set.range p → ι := fun x ↦ x.property.choose
+  have hf : ∀ x, p (f x) = x := fun x ↦ x.property.choose_spec
+  let fe : Set.range p ↪ ι := ⟨f, fun x₁ x₂ he ↦ Subtype.ext (hf x₁ ▸ hf x₂ ▸ he ▸ rfl)⟩
   convert hc.comp_embedding fe
   ext
   rw [Embedding.coeFn_mk, comp_apply, hf]
@@ -101,9 +101,9 @@ protected theorem ConvexIndependent.mono {s t : Set E} (hc : ConvexIndependent �
 /-- The range of an injective indexed family of points is convex independent iff that family is. -/
 theorem Function.Injective.convexIndependent_iff_set {p : ι → E} (hi : Function.Injective p) :
     ConvexIndependent 𝕜 ((↑) : Set.range p → E) ↔ ConvexIndependent 𝕜 p :=
-  ⟨fun hc =>
+  ⟨fun hc ↦
     hc.comp_embedding
-      (⟨fun i => ⟨p i, Set.mem_range_self _⟩, fun _ _ h => hi (Subtype.mk_eq_mk.1 h)⟩ :
+      (⟨fun i ↦ ⟨p i, Set.mem_range_self _⟩, fun _ _ h ↦ hi (Subtype.mk_eq_mk.1 h)⟩ :
         ι ↪ Set.range p),
     ConvexIndependent.range⟩
 
@@ -112,13 +112,13 @@ points given by a subset of the index type if and only if the point's index is i
 @[simp]
 protected theorem ConvexIndependent.mem_convexHull_iff {p : ι → E} (hc : ConvexIndependent 𝕜 p)
     (s : Set ι) (i : ι) : p i ∈ convexHull 𝕜 (p '' s) ↔ i ∈ s :=
-  ⟨hc _ _, fun hi => subset_convexHull 𝕜 _ (Set.mem_image_of_mem p hi)⟩
+  ⟨hc _ _, fun hi ↦ subset_convexHull 𝕜 _ (Set.mem_image_of_mem p hi)⟩
 
 /-- If a family is convex independent, a point in the family is not in the convex hull of the other
 points. See `convexIndependent_set_iff_notMem_convexHull_diff` for the `Set` version. -/
 theorem convexIndependent_iff_notMem_convexHull_diff {p : ι → E} :
     ConvexIndependent 𝕜 p ↔ ∀ i s, p i ∉ convexHull 𝕜 (p '' (s \ {i})) := by
-  refine ⟨fun hc i s h => ?_, fun h s i hi => ?_⟩
+  refine ⟨fun hc i s h ↦ ?_, fun h s i hi ↦ ?_⟩
   · rw [hc.mem_convexHull_iff] at h
     exact h.2 (Set.mem_singleton _)
   · by_contra H
@@ -167,7 +167,7 @@ open scoped Classical in
 theorem convexIndependent_iff_finset {p : ι → E} :
     ConvexIndependent 𝕜 p ↔
       ∀ (s : Finset ι) (x : ι), p x ∈ convexHull 𝕜 (s.image p : Set E) → x ∈ s := by
-  refine ⟨fun hc s x hx => hc s x ?_, fun h s x hx => ?_⟩
+  refine ⟨fun hc s x hx ↦ hc s x ?_, fun h s x hx ↦ ?_⟩
   · rwa [Finset.coe_image] at hx
   have hp : Injective p := by
     rintro a b hab
@@ -183,14 +183,14 @@ theorem convexIndependent_iff_finset {p : ι → E} :
   suffices x ∈ t.preimage p hp.injOn by rwa [mem_preimage, ← mem_coe] at this
   refine h _ x ?_
   rwa [t.image_preimage p hp.injOn, filter_true_of_mem]
-  exact fun y hy => s.image_subset_range p (ht <| mem_coe.2 hy)
+  exact fun y hy ↦ s.image_subset_range p (ht <| mem_coe.2 hy)
 
 /-! ### Extreme points -/
 
 
 theorem Convex.convexIndependent_extremePoints (hs : Convex 𝕜 s) :
     ConvexIndependent 𝕜 ((↑) : s.extremePoints 𝕜 → E) :=
-  convexIndependent_set_iff_notMem_convexHull_diff.2 fun _ hx h =>
+  convexIndependent_set_iff_notMem_convexHull_diff.2 fun _ hx h ↦
     (extremePoints_convexHull_subset
           (inter_extremePoints_subset_extremePoints_of_subset
             (convexHull_min (Set.diff_subset.trans extremePoints_subset) hs) ⟨h, hx⟩)).2

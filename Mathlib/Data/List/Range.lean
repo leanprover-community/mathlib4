@@ -39,7 +39,7 @@ theorem chain'_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
 theorem chain_range_succ (r : ℕ → ℕ → Prop) (n a : ℕ) :
     Chain r a (range n.succ) ↔ r a 0 ∧ ∀ m < n, r m m.succ := by
   rw [range_succ_eq_map, chain_cons, and_congr_right_iff, ← chain'_range_succ, range_succ_eq_map]
-  exact fun _ => Iff.rfl
+  exact fun _ ↦ Iff.rfl
 
 section Ranges
 
@@ -70,7 +70,7 @@ theorem ranges_disjoint (l : List ℕ) :
       apply Pairwise.imp _ hl
       intro u v
       apply disjoint_map
-      exact fun u v => Nat.add_left_cancel
+      exact fun u v ↦ Nat.add_left_cancel
 
 /-- The lengths of the members of `l.ranges` are those given by `l` -/
 theorem ranges_length (l : List ℕ) :

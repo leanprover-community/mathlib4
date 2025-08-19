@@ -173,7 +173,7 @@ lemma Icc_insert_succ_right (h : a ≤ b + 1) : insert (b + 1) (Icc a b) = Icc a
   omega
 
 theorem image_sub_const_Ico (h : c ≤ a) :
-    ((Ico a b).image fun x => x - c) = Ico (a - c) (b - c) := by
+    ((Ico a b).image fun x ↦ x - c) = Ico (a - c) (b - c) := by
   ext x
   simp_rw [mem_image, mem_Ico]
   refine ⟨?_, fun h ↦ ⟨x + c, by omega⟩⟩
@@ -181,7 +181,7 @@ theorem image_sub_const_Ico (h : c ≤ a) :
   omega
 
 theorem Ico_image_const_sub_eq_Ico (hac : a ≤ c) :
-    ((Ico a b).image fun x => c - x) = Ico (c + 1 - b) (c + 1 - a) := by
+    ((Ico a b).image fun x ↦ c - x) = Ico (c + 1 - b) (c + 1 - a) := by
   ext x
   simp_rw [mem_image, mem_Ico]
   refine ⟨?_, fun h ↦ ⟨c - x, by omega⟩⟩
@@ -277,7 +277,7 @@ end List
 namespace Finset
 
 theorem range_image_pred_top_sub (n : ℕ) :
-    ((Finset.range n).image fun j => n - 1 - j) = Finset.range n := by
+    ((Finset.range n).image fun j ↦ n - 1 - j) = Finset.range n := by
   cases n
   · rw [range_zero, image_empty]
   · rw [Finset.range_eq_Ico, Nat.Ico_image_const_sub_eq_Ico (Nat.zero_le _)]
@@ -302,7 +302,7 @@ variable {P : ℕ → Prop}
 theorem Nat.decreasing_induction_of_not_bddAbove (h : ∀ n, P (n + 1) → P n)
     (hP : ¬BddAbove { x | P x }) (n : ℕ) : P n :=
   let ⟨_, hm, hl⟩ := not_bddAbove_iff.1 hP n
-  decreasingInduction (fun _ _ => h _) hm hl.le
+  decreasingInduction (fun _ _ ↦ h _) hm hl.le
 
 @[elab_as_elim]
 lemma Nat.strong_decreasing_induction (base : ∃ n, ∀ m > n, P m) (step : ∀ n, (∀ m > n, P m) → P n)
@@ -323,7 +323,7 @@ theorem Nat.decreasing_induction_of_infinite
 
 theorem Nat.cauchy_induction' (seed : ℕ) (h : ∀ n, P (n + 1) → P n) (hs : P seed)
     (hi : ∀ x, seed ≤ x → P x → ∃ y, x < y ∧ P y) (n : ℕ) : P n := by
-  apply Nat.decreasing_induction_of_infinite h fun hf => _
+  apply Nat.decreasing_induction_of_infinite h fun hf ↦ _
   intro hf
   obtain ⟨m, hP, hm⟩ := hf.exists_maximal ⟨seed, hs⟩
   obtain ⟨y, hl, hy⟩ := hi m (le_of_not_gt <| not_lt_iff_le_imp_ge.2 <| hm hs) hP
@@ -331,11 +331,11 @@ theorem Nat.cauchy_induction' (seed : ℕ) (h : ∀ n, P (n + 1) → P n) (hs : 
 
 theorem Nat.cauchy_induction (h : ∀ n, P (n + 1) → P n) (seed : ℕ) (hs : P seed) (f : ℕ → ℕ)
     (hf : ∀ x, seed ≤ x → P x → x < f x ∧ P (f x)) (n : ℕ) : P n :=
-  seed.cauchy_induction' h hs (fun x hl hx => ⟨f x, hf x hl hx⟩) n
+  seed.cauchy_induction' h hs (fun x hl hx ↦ ⟨f x, hf x hl hx⟩) n
 
 theorem Nat.cauchy_induction_mul (h : ∀ (n : ℕ), P (n + 1) → P n) (k seed : ℕ) (hk : 1 < k)
     (hs : P seed.succ) (hm : ∀ x, seed < x → P x → P (k * x)) (n : ℕ) : P n := by
-  apply Nat.cauchy_induction h _ hs (k * ·) fun x hl hP => ⟨_, hm x hl hP⟩
+  apply Nat.cauchy_induction h _ hs (k * ·) fun x hl hP ↦ ⟨_, hm x hl hP⟩
   intro _ hl _
   convert (Nat.mul_lt_mul_right <| seed.succ_pos.trans_le hl).2 hk
   rw [one_mul]

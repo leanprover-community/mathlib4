@@ -43,7 +43,7 @@ theorem cardinalMk_lift_le_mul :
     Cardinal.lift.{u} #{ x : A // IsAlgebraic R x } ≤ Cardinal.lift.{v} #R[X] * ℵ₀ := by
   rw [← mk_uLift, ← mk_uLift]
   choose g hg₁ hg₂ using fun x : { x : A | IsAlgebraic R x } => x.coe_prop
-  refine lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le g fun f => ?_
+  refine lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le g fun f ↦ ?_
   rw [lift_le_aleph0, le_aleph0_iff_set_countable]
   suffices MapsTo (↑) (g ⁻¹' {f}) (f.rootSet A) from
     this.countable_of_injOn Subtype.coe_injective.injOn (f.rootSet_finite A).countable
@@ -59,7 +59,7 @@ theorem cardinalMk_lift_le_max :
 theorem cardinalMk_lift_of_infinite [Infinite R] :
     Cardinal.lift.{u} #{ x : A // IsAlgebraic R x } = Cardinal.lift.{v} #R :=
   ((cardinalMk_lift_le_max R A).trans_eq (max_eq_left <| aleph0_le_mk _)).antisymm <|
-    lift_mk_le'.2 ⟨⟨fun x => ⟨algebraMap R A x, isAlgebraic_algebraMap _⟩, fun _ _ h =>
+    lift_mk_le'.2 ⟨⟨fun x ↦ ⟨algebraMap R A x, isAlgebraic_algebraMap _⟩, fun _ _ h ↦
       FaithfulSMul.algebraMap_injective R A (Subtype.ext_iff.1 h)⟩⟩
 
 variable [Countable R]

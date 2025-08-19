@@ -38,7 +38,7 @@ open scoped RealInnerProductSpace
 namespace Quaternion
 
 instance : Inner ℝ ℍ :=
-  ⟨fun a b => (a * star b).re⟩
+  ⟨fun a b ↦ (a * star b).re⟩
 
 theorem inner_self (a : ℍ) : ⟪a, a⟫ = normSq a :=
   rfl
@@ -49,11 +49,11 @@ theorem inner_def (a b : ℍ) : ⟪a, b⟫ = (a * star b).re :=
 noncomputable instance : NormedAddCommGroup ℍ :=
   @InnerProductSpace.Core.toNormedAddCommGroup ℝ ℍ _ _ _
     { toInner := inferInstance
-      conj_inner_symm := fun x y => by simp [inner_def, mul_comm]
-      re_inner_nonneg := fun _ => normSq_nonneg
-      definite := fun _ => normSq_eq_zero.1
-      add_left := fun x y z => by simp only [inner_def, add_mul, add_re]
-      smul_left := fun x y r => by simp [inner_def] }
+      conj_inner_symm := fun x y ↦ by simp [inner_def, mul_comm]
+      re_inner_nonneg := fun _ ↦ normSq_nonneg
+      definite := fun _ ↦ normSq_eq_zero.1
+      add_left := fun x y z ↦ by simp only [inner_def, add_mul, add_re]
+      smul_left := fun x y r ↦ by simp [inner_def] }
 
 noncomputable instance : InnerProductSpace ℝ ℍ :=
   InnerProductSpace.ofCore _
@@ -158,8 +158,8 @@ lemma norm_toLp_equivTuple (x : ℍ) : ‖WithLp.toLp 2 (equivTuple ℝ x)‖ = 
 noncomputable def linearIsometryEquivTuple : ℍ ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin 4) :=
   { (QuaternionAlgebra.linearEquivTuple (-1 : ℝ) (0 : ℝ) (-1 : ℝ)).trans
       (WithLp.linearEquiv 2 ℝ (Fin 4 → ℝ)).symm with
-    toFun := fun a => !₂[a.1, a.2, a.3, a.4]
-    invFun := fun a => ⟨a 0, a 1, a 2, a 3⟩
+    toFun := fun a ↦ !₂[a.1, a.2, a.3, a.4]
+    invFun := fun a ↦ ⟨a 0, a 1, a 2, a 3⟩
     norm_map' := norm_toLp_equivTuple }
 
 @[continuity]
@@ -169,26 +169,26 @@ theorem continuous_coe : Continuous (coe : ℝ → ℍ) :=
 @[continuity]
 theorem continuous_normSq : Continuous (normSq : ℍ → ℝ) := by
   simpa [← normSq_eq_norm_mul_self] using
-    (continuous_norm.mul continuous_norm : Continuous fun q : ℍ => ‖q‖ * ‖q‖)
+    (continuous_norm.mul continuous_norm : Continuous fun q : ℍ ↦ ‖q‖ * ‖q‖)
 
 @[continuity]
-theorem continuous_re : Continuous fun q : ℍ => q.re :=
+theorem continuous_re : Continuous fun q : ℍ ↦ q.re :=
   (continuous_apply 0).comp linearIsometryEquivTuple.continuous
 
 @[continuity]
-theorem continuous_imI : Continuous fun q : ℍ => q.imI :=
+theorem continuous_imI : Continuous fun q : ℍ ↦ q.imI :=
   (continuous_apply 1).comp linearIsometryEquivTuple.continuous
 
 @[continuity]
-theorem continuous_imJ : Continuous fun q : ℍ => q.imJ :=
+theorem continuous_imJ : Continuous fun q : ℍ ↦ q.imJ :=
   (continuous_apply 2).comp linearIsometryEquivTuple.continuous
 
 @[continuity]
-theorem continuous_imK : Continuous fun q : ℍ => q.imK :=
+theorem continuous_imK : Continuous fun q : ℍ ↦ q.imK :=
   (continuous_apply 3).comp linearIsometryEquivTuple.continuous
 
 @[continuity]
-theorem continuous_im : Continuous fun q : ℍ => q.im := by
+theorem continuous_im : Continuous fun q : ℍ ↦ q.im := by
   simpa only [← sub_self_re] using continuous_id.sub (continuous_coe.comp continuous_re)
 
 instance : CompleteSpace ℍ :=
@@ -201,14 +201,14 @@ section infinite_sum
 variable {α : Type*}
 
 @[simp, norm_cast]
-theorem hasSum_coe {f : α → ℝ} {r : ℝ} : HasSum (fun a => (f a : ℍ)) (↑r : ℍ) ↔ HasSum f r :=
-  ⟨fun h => by
+theorem hasSum_coe {f : α → ℝ} {r : ℝ} : HasSum (fun a ↦ (f a : ℍ)) (↑r : ℍ) ↔ HasSum f r :=
+  ⟨fun h ↦ by
     simpa only using
     h.map (show ℍ →ₗ[ℝ] ℝ from QuaternionAlgebra.reₗ _ _ _) continuous_re,
-    fun h => by simpa only using h.map (algebraMap ℝ ℍ) (continuous_algebraMap _ _)⟩
+    fun h ↦ by simpa only using h.map (algebraMap ℝ ℍ) (continuous_algebraMap _ _)⟩
 
 @[simp, norm_cast]
-theorem summable_coe {f : α → ℝ} : (Summable fun a => (f a : ℍ)) ↔ Summable f := by
+theorem summable_coe {f : α → ℝ} : (Summable fun a ↦ (f a : ℍ)) ↔ Summable f := by
   simpa only using
     Summable.map_iff_of_leftInverse (algebraMap ℝ ℍ) (show ℍ →ₗ[ℝ] ℝ from
       QuaternionAlgebra.reₗ _ _ _)

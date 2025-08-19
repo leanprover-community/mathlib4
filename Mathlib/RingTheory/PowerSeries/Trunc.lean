@@ -43,13 +43,13 @@ theorem coeff_trunc (m) (n) (φ : R⟦X⟧) :
 
 @[simp]
 theorem trunc_zero (n) : trunc n (0 : R⟦X⟧) = 0 :=
-  Polynomial.ext fun m => by
+  Polynomial.ext fun m ↦ by
     rw [coeff_trunc, LinearMap.map_zero, Polynomial.coeff_zero]
     split_ifs <;> rfl
 
 @[simp]
 theorem trunc_one (n) : trunc (n + 1) (1 : R⟦X⟧) = 1 :=
-  Polynomial.ext fun m => by
+  Polynomial.ext fun m ↦ by
     rw [coeff_trunc, coeff_one, Polynomial.coeff_one]
     split_ifs with h _ h'
     · rfl
@@ -59,13 +59,13 @@ theorem trunc_one (n) : trunc (n + 1) (1 : R⟦X⟧) = 1 :=
 
 @[simp]
 theorem trunc_C (n) (a : R) : trunc (n + 1) (C R a) = Polynomial.C a :=
-  Polynomial.ext fun m => by
+  Polynomial.ext fun m ↦ by
     rw [coeff_trunc, coeff_C, Polynomial.coeff_C]
     split_ifs with H <;> first | rfl | try simp_all
 
 @[simp]
 theorem trunc_add (n) (φ ψ : R⟦X⟧) : trunc n (φ + ψ) = trunc n φ + trunc n ψ :=
-  Polynomial.ext fun m => by
+  Polynomial.ext fun m ↦ by
     simp only [coeff_trunc, Polynomial.coeff_add]
     split_ifs with H
     · rfl

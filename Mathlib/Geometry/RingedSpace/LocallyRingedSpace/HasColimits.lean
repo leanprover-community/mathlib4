@@ -71,9 +71,9 @@ noncomputable def coproduct : LocallyRingedSpace where
 noncomputable def coproductCofan : Cocone F where
   pt := coproduct F
   ι :=
-    { app := fun j => ⟨colimit.ι (C := SheafedSpace.{u+1, u, u} CommRingCat.{u})
+    { app := fun j ↦ ⟨colimit.ι (C := SheafedSpace.{u+1, u, u} CommRingCat.{u})
         (F ⋙ forgetToSheafedSpace) j, inferInstance⟩
-      naturality := fun ⟨j⟩ ⟨j'⟩ ⟨⟨(f : j = j')⟩⟩ => by subst f; simp }
+      naturality := fun ⟨j⟩ ⟨j'⟩ ⟨⟨(f : j = j')⟩⟩ ↦ by subst f; simp }
 
 /-- The explicit coproduct cofan constructed in `coproduct_cofan` is indeed a colimit. -/
 noncomputable def coproductCofanIsColimit : IsColimit (coproductCofan F) where
@@ -101,17 +101,17 @@ noncomputable def coproductCofanIsColimit : IsColimit (coproductCofan F) where
     (colimit.ι_desc (C := SheafedSpace.{u+1, u, u} CommRingCat.{u}) _ _)
   uniq s f h :=
     LocallyRingedSpace.Hom.ext'
-      (IsColimit.uniq _ (forgetToSheafedSpace.mapCocone s) f.toShHom fun j =>
+      (IsColimit.uniq _ (forgetToSheafedSpace.mapCocone s) f.toShHom fun j ↦
         congr_arg LocallyRingedSpace.Hom.toShHom (h j))
 
 instance : HasColimitsOfShape (Discrete ι) LocallyRingedSpace.{u} :=
-  ⟨fun F => ⟨⟨⟨_, coproductCofanIsColimit F⟩⟩⟩⟩
+  ⟨fun F ↦ ⟨⟨⟨_, coproductCofanIsColimit F⟩⟩⟩⟩
 
 noncomputable instance : PreservesColimitsOfShape (Discrete.{v} ι) forgetToSheafedSpace.{u} :=
-  ⟨fun {G} =>
+  ⟨fun {G} ↦
     preservesColimit_of_preserves_colimit_cocone (coproductCofanIsColimit G)
       ((colimit.isColimit (C := SheafedSpace.{u+1, u, u} CommRingCat.{u}) _).ofIsoColimit
-        (Cocones.ext (Iso.refl _) fun _ => Category.comp_id _))⟩
+        (Cocones.ext (Iso.refl _) fun _ ↦ Category.comp_id _))⟩
 
 end HasCoproducts
 
@@ -303,7 +303,7 @@ instance : HasCoequalizers LocallyRingedSpace :=
 
 noncomputable instance preservesCoequalizer :
     PreservesColimitsOfShape WalkingParallelPair forgetToSheafedSpace.{v} :=
-  ⟨fun {F} => by
+  ⟨fun {F} ↦ by
     -- Porting note: was `apply preservesColimitOfIsoDiagram ...` and the proof that preservation
     -- of colimit is provided later
     suffices PreservesColimit (parallelPair (F.map WalkingParallelPairHom.left)

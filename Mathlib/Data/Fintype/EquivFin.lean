@@ -61,10 +61,10 @@ def truncEquivFin (α) [DecidableEq α] [Fintype α] : Trunc (α ≃ Fin (card �
   unfold card Finset.card
   exact
     Quot.recOnSubsingleton
-      (motive := fun s : Multiset α =>
+      (motive := fun s : Multiset α ↦
         (∀ x : α, x ∈ s) → s.Nodup → Trunc (α ≃ Fin (Multiset.card s)))
       univ.val
-      (fun l (h : ∀ x : α, x ∈ l) (nd : l.Nodup) => Trunc.mk (nd.getEquivOfForallMemList _ h).symm)
+      (fun l (h : ∀ x : α, x ∈ l) (nd : l.Nodup) ↦ Trunc.mk (nd.getEquivOfForallMemList _ h).symm)
       mem_univ_val univ.2
 
 /-- There is (noncomputably) an equivalence between `α` and `Fin (card α)`.
@@ -90,10 +90,10 @@ def truncFinBijection (α) [Fintype α] : Trunc { f : Fin (card α) → α // Bi
   unfold card Finset.card
   refine
     Quot.recOnSubsingleton
-      (motive := fun s : Multiset α =>
+      (motive := fun s : Multiset α ↦
         (∀ x : α, x ∈ s) → s.Nodup → Trunc {f : Fin (Multiset.card s) → α // Bijective f})
       univ.val
-      (fun l (h : ∀ x : α, x ∈ l) (nd : l.Nodup) => Trunc.mk (nd.getBijectionOfForallMemList _ h))
+      (fun l (h : ∀ x : α, x ∈ l) (nd : l.Nodup) ↦ Trunc.mk (nd.getBijectionOfForallMemList _ h))
       mem_univ_val univ.2
 
 end Fintype
@@ -110,7 +110,7 @@ See `Fintype.equivFinOfCardEq` for the noncomputable definition,
 and `Fintype.truncEquivFin` and `Fintype.equivFin` for the bijection `α ≃ Fin (card α)`.
 -/
 def truncEquivFinOfCardEq [DecidableEq α] {n : ℕ} (h : Fintype.card α = n) : Trunc (α ≃ Fin n) :=
-  (truncEquivFin α).map fun e => e.trans (finCongr h)
+  (truncEquivFin α).map fun e ↦ e.trans (finCongr h)
 
 /-- If the cardinality of `α` is `n`, there is noncomputably a bijection between `α` and `Fin n`.
 
@@ -128,7 +128,7 @@ and `Fintype.truncEquivFinOfCardEq` and `Fintype.equivFinOfCardEq` for
 the specialization to `Fin`.
 -/
 def truncEquivOfCardEq [DecidableEq α] [DecidableEq β] (h : card α = card β) : Trunc (α ≃ β) :=
-  (truncEquivFinOfCardEq h).bind fun e => (truncEquivFin β).map fun e' => e.trans e'.symm
+  (truncEquivFinOfCardEq h).bind fun e ↦ (truncEquivFin β).map fun e' ↦ e.trans e'.symm
 
 /-- Two `Fintype`s with the same cardinality are (noncomputably) in bijection.
 
@@ -144,10 +144,10 @@ noncomputable def equivOfCardEq (h : card α = card β) : α ≃ β := by
 end
 
 theorem card_eq {α β} [_F : Fintype α] [_G : Fintype β] : card α = card β ↔ Nonempty (α ≃ β) :=
-  ⟨fun h =>
+  ⟨fun h ↦
     haveI := Classical.propDecidable
     (truncEquivOfCardEq h).nonempty,
-    fun ⟨f⟩ => card_congr f⟩
+    fun ⟨f⟩ ↦ card_congr f⟩
 
 end Fintype
 
@@ -166,7 +166,7 @@ instance (priority := 900) Finite.of_fintype (α : Type*) [Fintype α] : Finite 
   Fintype.finite ‹_›
 
 theorem finite_iff_nonempty_fintype (α : Type*) : Finite α ↔ Nonempty (Fintype α) :=
-  ⟨fun _ => nonempty_fintype α, fun ⟨_⟩ => inferInstance⟩
+  ⟨fun _ ↦ nonempty_fintype α, fun ⟨_⟩ ↦ inferInstance⟩
 
 /-- Noncomputably get a `Fintype` instance from a `Finite` instance. This is not an
 instance because we want `Fintype` instances to be useful for computations. -/
@@ -205,31 +205,31 @@ variable [Fintype α] [Fintype β]
 theorem card_eq_one_iff : card α = 1 ↔ ∃ x : α, ∀ y, y = x := by
   rw [← card_unit, card_eq]
   exact
-    ⟨fun ⟨a⟩ => ⟨a.symm (), fun y => a.injective (Subsingleton.elim _ _)⟩,
-     fun ⟨x, hx⟩ =>
-      ⟨⟨fun _ => (), fun _ => x, fun _ => (hx _).trans (hx _).symm, fun _ =>
+    ⟨fun ⟨a⟩ ↦ ⟨a.symm (), fun y ↦ a.injective (Subsingleton.elim _ _)⟩,
+     fun ⟨x, hx⟩ ↦
+      ⟨⟨fun _ ↦ (), fun _ ↦ x, fun _ ↦ (hx _).trans (hx _).symm, fun _ ↦
           Subsingleton.elim _ _⟩⟩⟩
 
 theorem card_eq_one_iff_nonempty_unique : card α = 1 ↔ Nonempty (Unique α) :=
-  ⟨fun h =>
+  ⟨fun h ↦
     let ⟨d, h⟩ := Fintype.card_eq_one_iff.mp h
     ⟨{  default := d
         uniq := h }⟩,
-    fun ⟨_h⟩ => Fintype.card_unique⟩
+    fun ⟨_h⟩ ↦ Fintype.card_unique⟩
 
 theorem card_le_one_iff : card α ≤ 1 ↔ ∀ a b : α, a = b :=
   let n := card α
   have hn : n = card α := rfl
   match n, hn with
   | 0, ha =>
-    ⟨fun _h => fun a => (card_eq_zero_iff.1 ha.symm).elim a, fun _ => ha ▸ Nat.le_succ _⟩
+    ⟨fun _h ↦ fun a ↦ (card_eq_zero_iff.1 ha.symm).elim a, fun _ ↦ ha ▸ Nat.le_succ _⟩
   | 1, ha =>
-    ⟨fun _h => fun a b => by
+    ⟨fun _h ↦ fun a b ↦ by
       let ⟨x, hx⟩ := card_eq_one_iff.1 ha.symm
-      rw [hx a, hx b], fun _ => ha ▸ le_rfl⟩
+      rw [hx a, hx b], fun _ ↦ ha ▸ le_rfl⟩
   | n + 2, ha =>
-    ⟨fun h => False.elim <| by rw [← ha] at h; cases h with | step h => cases h; , fun h =>
-      card_unit ▸ card_le_of_injective (fun _ => ()) fun _ _ _ => h _ _⟩
+    ⟨fun h ↦ False.elim <| by rw [← ha] at h; cases h with | step h => cases h; , fun h ↦
+      card_unit ▸ card_le_of_injective (fun _ ↦ ()) fun _ _ _ ↦ h _ _⟩
 
 theorem card_le_one_iff_subsingleton : card α ≤ 1 ↔ Subsingleton α :=
   card_le_one_iff.trans subsingleton_iff.symm
@@ -262,12 +262,12 @@ variable [Fintype α] [Fintype β]
 
 theorem bijective_iff_injective_and_card (f : α → β) :
     Bijective f ↔ Injective f ∧ card α = card β :=
-  ⟨fun h => ⟨h.1, card_of_bijective h⟩, fun h =>
+  ⟨fun h ↦ ⟨h.1, card_of_bijective h⟩, fun h ↦
     ⟨h.1, h.1.surjective_of_fintype <| equivOfCardEq h.2⟩⟩
 
 theorem bijective_iff_surjective_and_card (f : α → β) :
     Bijective f ↔ Surjective f ∧ card α = card β :=
-  ⟨fun h => ⟨h.2, card_of_bijective h⟩, fun h =>
+  ⟨fun h ↦ ⟨h.2, card_of_bijective h⟩, fun h ↦
     ⟨h.1.injective_of_fintype <| equivOfCardEq h.2, h.1⟩⟩
 
 theorem _root_.Function.LeftInverse.rightInverse_of_card_le {f : α → β} {g : β → α}
@@ -354,8 +354,8 @@ theorem toEmbedding_equivOfFiniteSelfEmbedding [Finite α] (e : α ↪ α) :
 /-- A constructive embedding of a fintype `α` in another fintype `β` when `card α ≤ card β`. -/
 def truncOfCardLE [Fintype α] [Fintype β] [DecidableEq α] [DecidableEq β]
     (h : Fintype.card α ≤ Fintype.card β) : Trunc (α ↪ β) :=
-  (Fintype.truncEquivFin α).bind fun ea =>
-    (Fintype.truncEquivFin β).map fun eb =>
+  (Fintype.truncEquivFin α).bind fun ea ↦
+    (Fintype.truncEquivFin β).map fun eb ↦
       ea.toEmbedding.trans ((Fin.castLEEmb h).trans eb.symm.toEmbedding)
 
 theorem nonempty_of_card_le [Fintype α] [Fintype β] (h : Fintype.card α ≤ Fintype.card β) :
@@ -363,7 +363,7 @@ theorem nonempty_of_card_le [Fintype α] [Fintype β] (h : Fintype.card α ≤ F
 
 theorem nonempty_iff_card_le [Fintype α] [Fintype β] :
     Nonempty (α ↪ β) ↔ Fintype.card α ≤ Fintype.card β :=
-  ⟨fun ⟨e⟩ => Fintype.card_le_of_embedding e, nonempty_of_card_le⟩
+  ⟨fun ⟨e⟩ ↦ Fintype.card_le_of_embedding e, nonempty_of_card_le⟩
 
 theorem exists_of_card_le_finset [Fintype α] {s : Finset β} (h : Fintype.card α ≤ #s) :
     ∃ f : α ↪ β, Set.range f ⊆ s := by
@@ -381,7 +381,7 @@ namespace Fintype
 
 theorem card_lt_of_surjective_not_injective [Fintype α] [Fintype β] (f : α → β)
     (h : Function.Surjective f) (h' : ¬Function.Injective f) : card β < card α :=
-  card_lt_of_injective_not_surjective _ (Function.injective_surjInv h) fun hg =>
+  card_lt_of_injective_not_surjective _ (Function.injective_surjInv h) fun hg ↦
     have w : Function.Bijective (Function.surjInv h) := ⟨Function.injective_surjInv h, hg⟩
     h' <| h.injective_of_fintype (Equiv.ofBijective _ w).symm
 
@@ -392,7 +392,7 @@ protected theorem Fintype.false [Infinite α] (_h : Fintype α) : False :=
 
 @[simp]
 theorem isEmpty_fintype {α : Type*} : IsEmpty (Fintype α) ↔ Infinite α :=
-  ⟨fun ⟨h⟩ => ⟨fun h' => (@nonempty_fintype α h').elim h⟩, fun ⟨h⟩ => ⟨fun h' => h h'.finite⟩⟩
+  ⟨fun ⟨h⟩ ↦ ⟨fun h' ↦ (@nonempty_fintype α h').elim h⟩, fun ⟨h⟩ ↦ ⟨fun h' ↦ h h'.finite⟩⟩
 
 /-- A non-infinite type is a fintype. -/
 noncomputable def fintypeOfNotInfinite {α : Type*} (h : ¬Infinite α) : Fintype α :=
@@ -418,7 +418,7 @@ theorem of_not_fintype (h : Fintype α → False) : Infinite α :=
 /-- If `s : Set α` is a proper subset of `α` and `f : α → s` is injective, then `α` is infinite. -/
 theorem of_injective_to_set {s : Set α} (hs : s ≠ Set.univ) {f : α → s} (hf : Injective f) :
     Infinite α :=
-  of_not_fintype fun h => by
+  of_not_fintype fun h ↦ by
     classical
       refine lt_irrefl (Fintype.card α) ?_
       calc
@@ -433,7 +433,7 @@ theorem of_surjective_from_set {s : Set α} (hs : s ≠ Set.univ) {f : s → α}
   of_injective_to_set hs (injective_surjInv hf)
 
 theorem exists_notMem_finset [Infinite α] (s : Finset α) : ∃ x, x ∉ s :=
-  not_forall.1 fun h => Fintype.false ⟨s, h⟩
+  not_forall.1 fun h ↦ Fintype.false ⟨s, h⟩
 
 @[deprecated (since := "2025-05-23")] alias exists_not_mem_finset := exists_notMem_finset
 
@@ -446,10 +446,10 @@ instance (priority := 100) (α : Type*) [Infinite α] : Nontrivial α :=
 protected theorem nonempty (α : Type*) [Infinite α] : Nonempty α := by infer_instance
 
 theorem of_injective {α β} [Infinite β] (f : β → α) (hf : Injective f) : Infinite α :=
-  ⟨fun _I => (Finite.of_injective f hf).false⟩
+  ⟨fun _I ↦ (Finite.of_injective f hf).false⟩
 
 theorem of_surjective {α β} [Infinite β] (f : α → β) (hf : Surjective f) : Infinite α :=
-  ⟨fun _I => (Finite.of_surjective f hf).false⟩
+  ⟨fun _I ↦ (Finite.of_surjective f hf).false⟩
 
 instance {β : α → Type*} [Infinite α] [∀ a, Nonempty (β a)] : Infinite ((a : α) × β a) :=
   Infinite.of_surjective Sigma.fst Sigma.fst_surjective
@@ -469,11 +469,11 @@ instance : Infinite ℕ :=
     exact (Finset.range _).card_le_univ.not_gt ((Nat.lt_succ_self _).trans_eq (card_range _).symm)
 
 instance Int.infinite : Infinite ℤ :=
-  Infinite.of_injective Int.ofNat fun _ _ => Int.ofNat.inj
+  Infinite.of_injective Int.ofNat fun _ _ ↦ Int.ofNat.inj
 
 instance [Nonempty α] : Infinite (Multiset α) :=
   let ⟨x⟩ := ‹Nonempty α›
-  Infinite.of_injective (fun n => Multiset.replicate n x) (Multiset.replicate_left_injective _)
+  Infinite.of_injective (fun n ↦ Multiset.replicate n x) (Multiset.replicate_left_injective _)
 
 instance [Nonempty α] : Infinite (List α) :=
   Infinite.of_surjective ((↑) : List α → Multiset α) Quot.mk_surjective
@@ -512,7 +512,7 @@ private noncomputable def natEmbeddingAux (α : Type*) [Infinite α] : ℕ → �
     letI := Classical.decEq α
     Classical.choose
       (exists_notMem_finset
-        ((Multiset.range n).pmap (fun m (_ : m < n) => natEmbeddingAux _ m) fun _ =>
+        ((Multiset.range n).pmap (fun m (_ : m < n) ↦ natEmbeddingAux _ m) fun _ ↦
             Multiset.mem_range.1).toFinset)
 
 private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
@@ -564,10 +564,10 @@ noncomputable def fintypeOfFinsetCardLe {ι : Type*} (n : ℕ) (w : ∀ s : Fins
   exact Nat.not_succ_le_self n w
 
 theorem not_injective_infinite_finite {α β} [Infinite α] [Finite β] (f : α → β) : ¬Injective f :=
-  fun hf => (Finite.of_injective f hf).false
+  fun hf ↦ (Finite.of_injective f hf).false
 
 instance Function.Embedding.is_empty {α β} [Infinite α] [Finite β] : IsEmpty (α ↪ β) :=
-  ⟨fun f => not_injective_infinite_finite f f.2⟩
+  ⟨fun f ↦ not_injective_infinite_finite f f.2⟩
 
 theorem not_surjective_finite_infinite {α β} [Finite α] [Infinite β] (f : α → β) : ¬Surjective f :=
-  fun hf => (Infinite.of_surjective f hf).not_finite ‹_›
+  fun hf ↦ (Infinite.of_surjective f hf).not_finite ‹_›

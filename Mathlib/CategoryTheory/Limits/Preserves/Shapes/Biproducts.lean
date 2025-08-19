@@ -131,9 +131,9 @@ attribute [instance 100] PreservesBiproducts.preserves
 smaller universe level. -/
 lemma preservesBiproducts_shrink (F : C ⥤ D) [PreservesZeroMorphisms F]
     [PreservesBiproducts.{max w₁ w₂} F] : PreservesBiproducts.{w₁} F :=
-  ⟨fun {_} =>
-    ⟨fun {_} =>
-      ⟨fun {b} ib =>
+  ⟨fun {_} ↦
+    ⟨fun {_} ↦
+      ⟨fun {b} ib ↦
         ⟨((F.mapBicone b).whiskerIsBilimitIff _).toFun
           (isBilimitOfPreserves F ((b.whiskerIsBilimitIff Equiv.ulift.{w₂}).invFun ib))⟩⟩⟩⟩
 
@@ -171,13 +171,13 @@ lemma preservesBinaryBiproduct_of_preservesBiproduct (F : C ⥤ D)
         IsLimit.ofIsoLimit
             ((IsLimit.postcomposeHomEquiv (diagramIsoPair _) _).symm
               (isBilimitOfPreserves F (b.toBiconeIsBilimit.symm hb)).isLimit) <|
-          Cones.ext (Iso.refl _) fun j => by
+          Cones.ext (Iso.refl _) fun j ↦ by
             rcases j with ⟨⟨⟩⟩ <;> simp
       isColimit :=
         IsColimit.ofIsoColimit
             ((IsColimit.precomposeInvEquiv (diagramIsoPair _) _).symm
               (isBilimitOfPreserves F (b.toBiconeIsBilimit.symm hb)).isColimit) <|
-          Cocones.ext (Iso.refl _) fun j => by
+          Cocones.ext (Iso.refl _) fun j ↦ by
             rcases j with ⟨⟨⟩⟩ <;> simp }⟩
 
 /-- A functor that preserves biproducts of a pair preserves binary biproducts. -/
@@ -204,7 +204,7 @@ variable [HasBiproduct (F.obj ∘ f)]
 /-- As for products, any functor between categories with biproducts gives rise to a morphism
 `F.obj (⨁ f) ⟶ ⨁ (F.obj ∘ f)`. -/
 def biproductComparison : F.obj (⨁ f) ⟶ ⨁ F.obj ∘ f :=
-  biproduct.lift fun j => F.map (biproduct.π f j)
+  biproduct.lift fun j ↦ F.map (biproduct.π f j)
 
 @[reassoc (attr := simp)]
 theorem biproductComparison_π (j : J) :
@@ -214,7 +214,7 @@ theorem biproductComparison_π (j : J) :
 /-- As for coproducts, any functor between categories with biproducts gives rise to a morphism
 `⨁ (F.obj ∘ f) ⟶ F.obj (⨁ f)` -/
 def biproductComparison' : ⨁ F.obj ∘ f ⟶ F.obj (⨁ f) :=
-  biproduct.desc fun j => F.map (biproduct.ι f j)
+  biproduct.desc fun j ↦ F.map (biproduct.ι f j)
 
 @[reassoc (attr := simp)]
 theorem ι_biproductComparison' (j : J) :
@@ -265,12 +265,12 @@ abbrev mapBiproduct : F.obj (⨁ f) ≅ ⨁ F.obj ∘ f :=
   biproduct.uniqueUpToIso _ (isBilimitOfPreserves _ (biproduct.isBilimit _))
 
 theorem mapBiproduct_hom :
-    haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
-    (mapBiproduct F f).hom = biproduct.lift fun j => F.map (biproduct.π f j) := rfl
+    haveI : HasBiproduct fun j ↦ F.obj (f j) := hasBiproduct_of_preserves F f
+    (mapBiproduct F f).hom = biproduct.lift fun j ↦ F.map (biproduct.π f j) := rfl
 
 theorem mapBiproduct_inv :
-    haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
-    (mapBiproduct F f).inv = biproduct.desc fun j => F.map (biproduct.ι f j) := rfl
+    haveI : HasBiproduct fun j ↦ F.obj (f j) := hasBiproduct_of_preserves F f
+    (mapBiproduct F f).inv = biproduct.desc fun j ↦ F.map (biproduct.ι f j) := rfl
 
 end Bicone
 
@@ -365,22 +365,22 @@ variable {J : Type w₁} (f : J → C) [HasBiproduct f] [PreservesBiproduct f F]
 
 theorem biproduct.map_lift_mapBiprod (g : ∀ j, W ⟶ f j) :
     -- Porting note: we need haveI to tell Lean about hasBiproduct_of_preserves F f
-    haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
-    F.map (biproduct.lift g) ≫ (F.mapBiproduct f).hom = biproduct.lift fun j => F.map (g j) := by
+    haveI : HasBiproduct fun j ↦ F.obj (f j) := hasBiproduct_of_preserves F f
+    F.map (biproduct.lift g) ≫ (F.mapBiproduct f).hom = biproduct.lift fun j ↦ F.map (g j) := by
   ext j
   dsimp only [Function.comp_def]
   simp only [mapBiproduct_hom, Category.assoc, biproduct.lift_π, ← F.map_comp]
 
 theorem biproduct.mapBiproduct_inv_map_desc (g : ∀ j, f j ⟶ W) :
     -- Porting note: we need haveI to tell Lean about hasBiproduct_of_preserves F f
-    haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
-    (F.mapBiproduct f).inv ≫ F.map (biproduct.desc g) = biproduct.desc fun j => F.map (g j) := by
+    haveI : HasBiproduct fun j ↦ F.obj (f j) := hasBiproduct_of_preserves F f
+    (F.mapBiproduct f).inv ≫ F.map (biproduct.desc g) = biproduct.desc fun j ↦ F.map (g j) := by
   ext j
   dsimp only [Function.comp_def]
   simp only [mapBiproduct_inv, ← Category.assoc, biproduct.ι_desc ,← F.map_comp]
 
 theorem biproduct.mapBiproduct_hom_desc (g : ∀ j, f j ⟶ W) :
-    ((F.mapBiproduct f).hom ≫ biproduct.desc fun j => F.map (g j)) = F.map (biproduct.desc g) := by
+    ((F.mapBiproduct f).hom ≫ biproduct.desc fun j ↦ F.map (g j)) = F.map (biproduct.desc g) := by
   rw [← biproduct.mapBiproduct_inv_map_desc, Iso.hom_inv_id_assoc]
 
 end Bicone

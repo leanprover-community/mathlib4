@@ -44,7 +44,7 @@ generated all the sets in the sigma-algebra.
 This construction is very similar to that of the Borel hierarchy. -/
 def generateMeasurableRec (s : Set (Set α)) (i : Ordinal) : Set (Set α) :=
   let S := ⋃ j < i, generateMeasurableRec s j
-  s ∪ {∅} ∪ compl '' S ∪ Set.range fun f : ℕ → S => ⋃ n, (f n).1
+  s ∪ {∅} ∪ compl '' S ∪ Set.range fun f : ℕ → S ↦ ⋃ n, (f n).1
 termination_by i
 
 theorem self_subset_generateMeasurableRec (s : Set (Set α)) (i : Ordinal) :
@@ -67,13 +67,13 @@ theorem iUnion_mem_generateMeasurableRec {s : Set (Set α)} {i : Ordinal} {f : �
     (hf : ∀ n, ∃ j < i, f n ∈ generateMeasurableRec s j) :
     ⋃ n, f n ∈ generateMeasurableRec s i := by
   unfold generateMeasurableRec
-  exact mem_union_right _ ⟨fun n => ⟨f n, let ⟨j, hj, hf⟩ := hf n; mem_iUnion₂.2 ⟨j, hj, hf⟩⟩, rfl⟩
+  exact mem_union_right _ ⟨fun n ↦ ⟨f n, let ⟨j, hj, hf⟩ := hf n; mem_iUnion₂.2 ⟨j, hj, hf⟩⟩, rfl⟩
 
 theorem generateMeasurableRec_mono (s : Set (Set α)) : Monotone (generateMeasurableRec s) := by
   intro i j h x hx
   rcases h.eq_or_lt with (rfl | h)
   · exact hx
-  · convert iUnion_mem_generateMeasurableRec fun _ => ⟨i, h, hx⟩
+  · convert iUnion_mem_generateMeasurableRec fun _ ↦ ⟨i, h, hx⟩
     exact (iUnion_const x).symm
 
 /-- An inductive principle for the elements of `generateMeasurableRec`. -/
@@ -88,7 +88,7 @@ theorem generateMeasurableRec_induction {s : Set (Set α)} {i : Ordinal} {t : Se
   intro k
   apply WellFoundedLT.induction k
   intro k IH hk t
-  replace IH := fun j hj => IH j hj (hj.le.trans hk)
+  replace IH := fun j hj ↦ IH j hj (hj.le.trans hk)
   unfold generateMeasurableRec
   rintro (((ht | rfl) | ht) | ⟨f, rfl⟩)
   · exact hs t ht
@@ -104,7 +104,7 @@ theorem generateMeasurableRec_induction {s : Set (Set α)} {i : Ordinal} {t : Se
 theorem generateMeasurableRec_omega1 (s : Set (Set α)) :
     generateMeasurableRec s (ω₁ : Ordinal.{v}) =
       ⋃ i < (ω₁ : Ordinal.{v}), generateMeasurableRec s i := by
-  apply (iUnion₂_subset fun i h => generateMeasurableRec_mono s h.le).antisymm'
+  apply (iUnion₂_subset fun i h ↦ generateMeasurableRec_mono s h.le).antisymm'
   intro t ht
   rw [mem_iUnion₂]
   refine generateMeasurableRec_induction ?_ ?_ ?_ ?_ ht
@@ -115,18 +115,18 @@ theorem generateMeasurableRec_omega1 (s : Set (Set α)) :
     exact ⟨_, (isSuccLimit_omega 1).succ_lt hj,
       compl_mem_generateMeasurableRec (Order.lt_succ j) hj'⟩
   · intro f H
-    choose I hI using fun n => (H n).1
+    choose I hI using fun n ↦ (H n).1
     simp_rw [exists_prop] at hI
-    refine ⟨_, Ordinal.lsub_lt_ord_lift ?_ fun n => (hI n).1,
-      iUnion_mem_generateMeasurableRec fun n => ⟨_, Ordinal.lt_lsub I n, (hI n).2⟩⟩
+    refine ⟨_, Ordinal.lsub_lt_ord_lift ?_ fun n ↦ (hI n).1,
+      iUnion_mem_generateMeasurableRec fun n ↦ ⟨_, Ordinal.lt_lsub I n, (hI n).2⟩⟩
     rw [mk_nat, lift_aleph0, isRegular_aleph_one.cof_omega_eq]
     exact aleph0_lt_aleph_one
 
 theorem generateMeasurableRec_subset (s : Set (Set α)) (i : Ordinal) :
     generateMeasurableRec s i ⊆ { t | GenerateMeasurable s t } := by
   apply WellFoundedLT.induction i
-  exact fun i IH t ht => generateMeasurableRec_induction .basic .empty
-    (fun u _ ⟨j, hj, hj'⟩ => .compl _ (IH j hj hj')) (fun f H => .iUnion _ fun n => (H n).1) ht
+  exact fun i IH t ht ↦ generateMeasurableRec_induction .basic .empty
+    (fun u _ ⟨j, hj, hj'⟩ ↦ .compl _ (IH j hj hj')) (fun f H ↦ .iUnion _ fun n ↦ (H n).1) ht
 
 /-- `generateMeasurableRec s ω₁` generates precisely the smallest sigma-algebra containing `s`. -/
 theorem generateMeasurable_eq_rec (s : Set (Set α)) :

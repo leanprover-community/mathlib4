@@ -75,14 +75,14 @@ instance (priority := low) {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpa
   is_topological_valuation := mem_nhds_zero_iff
 
 theorem hasBasis_nhds (x : R) :
-    (𝓝 x).HasBasis (fun _ => True)
-      fun γ : (ValueGroupWithZero R)ˣ => { z | v (z - x) < γ } := by
+    (𝓝 x).HasBasis (fun _ ↦ True)
+      fun γ : (ValueGroupWithZero R)ˣ ↦ { z | v (z - x) < γ } := by
   simp [Filter.hasBasis_iff, mem_nhds_iff']
 
 variable (R) in
 theorem hasBasis_nhds_zero :
-    (𝓝 (0 : R)).HasBasis (fun _ => True)
-      fun γ : (ValueGroupWithZero R)ˣ => { x | v x < γ } := by
+    (𝓝 (0 : R)).HasBasis (fun _ ↦ True)
+      fun γ : (ValueGroupWithZero R)ˣ ↦ { x | v x < γ } := by
   convert hasBasis_nhds (0 : R); rw [sub_zero]
 
 @[deprecated (since := "2025-08-01")]
@@ -117,7 +117,7 @@ theorem isOpen_ball (r : ValueGroupWithZero R) :
     rw [mem_nhds_iff']
     simp only [setOf_subset_setOf]
     exact ⟨Units.mk0 _ hr,
-      fun y hy => (sub_add_cancel y x).symm ▸ ((v).map_add _ x).trans_lt (max_lt hy hx)⟩
+      fun y hy ↦ (sub_add_cancel y x).symm ▸ ((v).map_add _ x).trans_lt (max_lt hy hx)⟩
 
 @[deprecated (since := "2025-08-01")]
 alias _root_.ValuativeTopology.isOpen_ball := isOpen_ball
@@ -145,7 +145,7 @@ lemma isOpen_closedBall {r : ValueGroupWithZero R} (hr : r ≠ 0) :
   intro x hx
   rw [mem_nhds_iff']
   simp only [setOf_subset_setOf]
-  exact ⟨Units.mk0 _ hr, fun y hy => (sub_add_cancel y x).symm ▸
+  exact ⟨Units.mk0 _ hr, fun y hy ↦ (sub_add_cancel y x).symm ▸
     le_trans ((v).map_add _ _) (max_le (le_of_lt hy) hx)⟩
 
 @[deprecated (since := "2025-08-01")]
@@ -158,7 +158,7 @@ theorem isClosed_closedBall (r : ValueGroupWithZero R) :
   simp only [mem_compl_iff, mem_setOf_eq, not_le] at hx
   rw [mem_nhds_iff']
   have hx' : v x ≠ 0 := ne_of_gt <| lt_of_le_of_lt zero_le' <| hx
-  exact ⟨Units.mk0 _ hx', fun y hy hy' => ne_of_lt hy <| Valuation.map_sub_swap v x y ▸
+  exact ⟨Units.mk0 _ hx', fun y hy hy' ↦ ne_of_lt hy <| Valuation.map_sub_swap v x y ▸
       (Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' hx)⟩
 
 @[deprecated (since := "2025-08-01")]

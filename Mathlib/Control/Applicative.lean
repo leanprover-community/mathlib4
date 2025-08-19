@@ -38,7 +38,7 @@ theorem Applicative.ext {F} :
     ∀ {A1 : Applicative F} {A2 : Applicative F} [@LawfulApplicative F A1] [@LawfulApplicative F A2],
       (∀ {α : Type u} (x : α), @Pure.pure _ A1.toPure _ x = @Pure.pure _ A2.toPure _ x) →
       (∀ {α β : Type u} (f : F (α → β)) (x : F α),
-          @Seq.seq _ A1.toSeq _ _ f (fun _ => x) = @Seq.seq _ A2.toSeq _ _ f (fun _ => x)) →
+          @Seq.seq _ A1.toSeq _ _ f (fun _ ↦ x) = @Seq.seq _ A2.toSeq _ _ f (fun _ ↦ x)) →
       A1 = A2
   | { toFunctor := F1, seq := s1, pure := p1, seqLeft := sl1, seqRight := sr1 },
     { toFunctor := F2, seq := s2, pure := p2, seqLeft := sl2, seqRight := sr2 },
@@ -82,7 +82,7 @@ variable {α β γ : Type v}
 theorem map_pure (f : α → β) (x : α) : (f <$> pure x : Comp F G β) = pure (f x) :=
   Comp.ext <| by simp
 
-theorem seq_pure (f : Comp F G (α → β)) (x : α) : f <*> pure x = (fun g : α → β => g x) <$> f :=
+theorem seq_pure (f : Comp F G (α → β)) (x : α) : f <*> pure x = (fun g : α → β ↦ g x) <$> f :=
   Comp.ext <| by simp [functor_norm]
 
 theorem seq_assoc (x : Comp F G α) (f : Comp F G (α → β)) (g : Comp F G (β → γ)) :
@@ -104,12 +104,12 @@ instance instLawfulApplicativeComp : LawfulApplicative (Comp F G) where
 theorem applicative_id_comp {F} [AF : Applicative F] [LawfulApplicative F] :
     @instApplicativeComp Id F _ _ = AF :=
   @Applicative.ext F _ _ (instLawfulApplicativeComp (F := Id)) _
-    (fun _ => rfl) (fun _ _ => rfl)
+    (fun _ ↦ rfl) (fun _ _ ↦ rfl)
 
 theorem applicative_comp_id {F} [AF : Applicative F] [LawfulApplicative F] :
     @Comp.instApplicativeComp F Id _ _ = AF :=
   @Applicative.ext F _ _ (instLawfulApplicativeComp (G := Id)) _
-    (fun _ => rfl) (fun f x => show id <$> f <*> x = f <*> x by rw [id_map])
+    (fun _ ↦ rfl) (fun f x ↦ show id <$> f <*> x = f <*> x by rw [id_map])
 
 open CommApplicative
 

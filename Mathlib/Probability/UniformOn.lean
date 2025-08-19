@@ -118,7 +118,7 @@ theorem pred_true_of_uniformOn_eq_one (h : uniformOn s t = 1) : s ⊆ t := by
   replace h := ENNReal.eq_inv_of_mul_eq_one_left h
   rw [inv_inv, Measure.count_apply_finite _ hsf, Measure.count_apply_finite _ (hsf.inter_of_left _),
     Nat.cast_inj] at h
-  suffices s ∩ t = s by exact this ▸ fun x hx => hx.2
+  suffices s ∩ t = s by exact this ▸ fun x hx ↦ hx.2
   rw [← @Set.Finite.toFinset_inj _ _ _ (hsf.inter_of_left _) hsf]
   exact Finset.eq_of_subset_of_card_le (Set.Finite.toFinset_mono s.inter_subset_left) h.ge
 

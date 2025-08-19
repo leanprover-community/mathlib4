@@ -95,7 +95,7 @@ variable (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop
 
 /-- For `P` a property of ring homomorphisms, `sourceAffineLocally P` holds for `f : X ⟶ Y`
 whenever `P` holds for the restriction of `f` on every affine open subset of `X`. -/
-def sourceAffineLocally : AffineTargetMorphismProperty := fun X _ f _ =>
+def sourceAffineLocally : AffineTargetMorphismProperty := fun X _ f _ ↦
   ∀ U : X.affineOpens, P (f.appLE ⊤ U le_top).hom
 
 /-- For `P` a property of ring homomorphisms, `affineLocally P` holds for `f : X ⟶ Y` if for each
@@ -132,7 +132,7 @@ theorem sourceAffineLocally_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y)
   rw [(affineOpensRestrict (f ⁻¹ᵁ U)).forall_congr_left, Subtype.forall]
   refine forall₂_congr fun V h ↦ ?_
   have := (affineOpensRestrict (f ⁻¹ᵁ U)).apply_symm_apply ⟨V, h⟩
-  exact f.appLE_congr _ (Opens.ι_image_top _) congr($(this).1.1) (fun f => P f.hom)
+  exact f.appLE_congr _ (Opens.ι_image_top _) congr($(this).1.1) (fun f ↦ P f.hom)
 
 theorem affineLocally_iff_affineOpens_le {X Y : Scheme.{u}} (f : X ⟶ Y) :
     affineLocally.{u} P f ↔
@@ -151,7 +151,7 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso P)
       simp only [Scheme.Hom.appLE, Opens.map_top, CommRingCat.comp_apply]
       rw [Scheme.basicOpen_res]
       simpa using hU
-    rw [← f.appLE_congr _ rfl this (fun f => P f.hom),
+    rw [← f.appLE_congr _ rfl this (fun f ↦ P f.hom),
       IsAffineOpen.appLE_eq_away_map f (isAffineOpen_top Y) U.2 _ r]
     simp only [CommRingCat.hom_ofHom]
     apply (config := { allowSynthFailures := true }) h₂
@@ -207,7 +207,7 @@ lemma exists_basicOpen_le_appLE_of_appLE_of_isAffine
     congr
     apply X.presheaf.map_comp
   refine ⟨r, s, hBx, ers, ?_⟩
-  · rw [f.appLE_congr _ hBrr' hBss' (fun f => P f.hom), heq]
+  · rw [f.appLE_congr _ hBrr' hBss' (fun f ↦ P f.hom), heq]
     apply hPa _ s' _
     rw [U₂.2.appLE_eq_away_map f V₂.2]
     exact hPl _ _ _ _ h₂
@@ -327,7 +327,7 @@ theorem of_source_openCover [IsAffine Y]
       Subtype.range_coe.symm).inv.app _), ← CommRingCat.hom_comp, ← Scheme.comp_appTop,
       IsOpenImmersion.isoOfRangeEq_inv_fac_assoc, Scheme.comp_appTop,
       Scheme.Opens.ι_appTop, Scheme.Hom.appTop, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map] at H
-    exact (f.appLE_congr _ rfl (by simp) (fun f => Q f.hom)).mp H
+    exact (f.appLE_congr _ rfl (by simp) (fun f ↦ Q f.hom)).mp H
 
 theorem iff_of_source_openCover [IsAffine Y] (𝒰 : X.OpenCover) [∀ i, IsAffine (𝒰.obj i)] :
     P f ↔ ∀ i, Q ((𝒰.map i ≫ f).appTop).hom :=
@@ -350,7 +350,7 @@ theorem of_iSup_eq_top [IsAffine Y] {ι : Type*}
     P f := by
   have (i : _) : IsAffine ((X.openCoverOfISupEqTop _ hU).obj i) := (U i).2
   refine of_source_openCover (X.openCoverOfISupEqTop _ hU) fun i ↦ ?_
-  simpa [Scheme.Hom.app_eq_appLE] using (f.appLE_congr _ rfl (by simp) (fun f => Q f.hom)).mp (H i)
+  simpa [Scheme.Hom.app_eq_appLE] using (f.appLE_congr _ rfl (by simp) (fun f ↦ Q f.hom)).mp (H i)
 
 theorem iff_of_iSup_eq_top [IsAffine Y] {ι : Type*}
     (U : ι → X.affineOpens) (hU : ⨆ i, (U i : Opens X) = ⊤) :

@@ -78,7 +78,7 @@ variable {J : Type w} [Category.{t} J] (F : J ⥤ C) [PreservesLimit F (forget C
 
 theorem to_product_injective_of_isLimit
     {D : Cone F} (hD : IsLimit D) :
-    Function.Injective fun (x : ToType D.pt) (j : J) => D.π.app j x := by
+    Function.Injective fun (x : ToType D.pt) (j : J) ↦ D.π.app j x := by
   let E := (forget C).mapCone D
   intro (x : E.pt) y H
   apply (Types.isLimitEquivSections (isLimitOfPreserves _ hD)).injective
@@ -86,7 +86,7 @@ theorem to_product_injective_of_isLimit
   exact funext_iff.mp H j
 
 theorem isLimit_ext {D : Cone F} (hD : IsLimit D) (x y : ToType D.pt) :
-    (∀ j, D.π.app j x = D.π.app j y) → x = y := fun h =>
+    (∀ j, D.π.app j x = D.π.app j y) → x = y := fun h ↦
   Concrete.to_product_injective_of_isLimit _ hD (funext h)
 
 theorem limit_ext [HasLimit F] (x y : ToType (limit F)) :
@@ -122,7 +122,7 @@ section
 variable [PreservesColimit F (forget C)]
 
 theorem from_union_surjective_of_isColimit {D : Cocone F} (hD : IsColimit D) :
-    let ff : (Σ j : J, ToType (F.obj j)) → ToType D.pt := fun a => D.ι.app a.1 a.2
+    let ff : (Σ j : J, ToType (F.obj j)) → ToType D.pt := fun a ↦ D.ι.app a.1 a.2
     Function.Surjective ff := by
   intro ff x
   let E : Cocone (F ⋙ forget C) := (forget C).mapCocone D

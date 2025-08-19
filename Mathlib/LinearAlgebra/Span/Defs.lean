@@ -59,18 +59,18 @@ theorem mem_span : x ∈ span R s ↔ ∀ p : Submodule R M, s ⊆ p → x ∈ p
   mem_iInter₂
 
 @[simp, aesop safe 20 (rule_sets := [SetLike])]
-theorem subset_span : s ⊆ span R s := fun _ h => mem_span.2 fun _ hp => hp h
+theorem subset_span : s ⊆ span R s := fun _ h ↦ mem_span.2 fun _ hp ↦ hp h
 
 @[aesop 80% (rule_sets := [SetLike])]
 theorem mem_span_of_mem {s : Set M} {x : M} (hx : x ∈ s) : x ∈ span R s := subset_span hx
 
 theorem span_le {p} : span R s ≤ p ↔ s ⊆ p :=
-  ⟨Subset.trans subset_span, fun ss _ h => mem_span.1 h _ ss⟩
+  ⟨Subset.trans subset_span, fun ss _ h ↦ mem_span.1 h _ ss⟩
 
 @[gcongr] theorem span_mono (h : s ⊆ t) : span R s ≤ span R t :=
   span_le.2 <| Subset.trans h subset_span
 
-theorem span_monotone : Monotone (span R : Set M → Submodule R M) := fun _ _ => span_mono
+theorem span_monotone : Monotone (span R : Set M → Submodule R M) := fun _ _ ↦ span_mono
 
 theorem span_eq_of_le (h₁ : s ⊆ p) (h₂ : p ≤ span R s) : span R s = p :=
   le_antisymm (span_le.2 h₁) h₂
@@ -218,9 +218,9 @@ theorem span_nat_eq (s : AddSubmonoid M) : (span ℕ (s : Set M)).toAddSubmonoid
 theorem span_int_eq_addSubgroup_closure {M : Type*} [AddCommGroup M] (s : Set M) :
     (span ℤ s).toAddSubgroup = AddSubgroup.closure s :=
   Eq.symm <|
-    AddSubgroup.closure_eq_of_le _ subset_span fun _ hx =>
-      span_induction (fun _ hx => AddSubgroup.subset_closure hx) (AddSubgroup.zero_mem _)
-        (fun _ _ _ _ => AddSubgroup.add_mem _) (fun _ _ _ _ => AddSubgroup.zsmul_mem _ ‹_› _) hx
+    AddSubgroup.closure_eq_of_le _ subset_span fun _ hx ↦
+      span_induction (fun _ hx ↦ AddSubgroup.subset_closure hx) (AddSubgroup.zero_mem _)
+        (fun _ _ _ _ ↦ AddSubgroup.add_mem _) (fun _ _ _ _ ↦ AddSubgroup.zsmul_mem _ ‹_› _) hx
 
 @[simp]
 theorem span_int_eq {M : Type*} [AddCommGroup M] (s : AddSubgroup M) :
@@ -331,7 +331,7 @@ section
 variable {p p'}
 
 theorem mem_sup : x ∈ p ⊔ p' ↔ ∃ y ∈ p, ∃ z ∈ p', y + z = x :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [← span_eq p, ← span_eq p', ← span_union] at h
     refine span_induction ?_ ?_ ?_ ?_ h
     · rintro y (h | h)
@@ -352,7 +352,7 @@ theorem mem_sup' : x ∈ p ⊔ p' ↔ ∃ (y : p) (z : p'), (y : M) + z = x :=
 theorem codisjoint_iff_exists_add_eq :
     Codisjoint p p' ↔ ∀ z, ∃ x y, x ∈ p ∧ y ∈ p' ∧ x + y = z := by
   rw [codisjoint_iff, eq_top_iff']
-  exact forall_congr' (fun z => mem_sup.trans <| by simp)
+  exact forall_congr' (fun z ↦ mem_sup.trans <| by simp)
 
 @[deprecated (since := "2025-07-05")]
 alias ⟨exists_add_eq_of_codisjoint, _⟩ := codisjoint_iff_exists_add_eq
@@ -389,7 +389,7 @@ theorem nontrivial_span_singleton {x : M} (h : x ≠ 0) : Nontrivial (R ∙ x) :
     exact h H⟩
 
 theorem mem_span_singleton {y : M} : (x ∈ R ∙ y) ↔ ∃ a : R, a • y = x :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     refine span_induction ?_ ?_ ?_ ?_ h
     · rintro y (rfl | ⟨⟨_⟩⟩)
       exact ⟨1, by simp⟩
@@ -415,7 +415,7 @@ theorem span_zero_singleton : (R ∙ (0 : M)) = ⊥ := by
   simp [mem_span_singleton, eq_comm]
 
 theorem span_singleton_eq_range (y : M) : ↑(R ∙ y) = range ((· • y) : R → M) :=
-  Set.ext fun _ => mem_span_singleton
+  Set.ext fun _ ↦ mem_span_singleton
 
 theorem span_singleton_smul_le {S} [SMul S R] [SMul S M] [IsScalarTower S R M]
     (r : S) (x : M) : (R ∙ r • x) ≤ R ∙ x := by
@@ -469,8 +469,8 @@ theorem mem_span_triple {w x y z : M} :
 @[simp]
 theorem span_eq_bot : span R (s : Set M) = ⊥ ↔ ∀ x ∈ s, (x : M) = 0 :=
   eq_bot_iff.trans
-    ⟨fun H _ h => (mem_bot R).1 <| H <| subset_span h, fun H =>
-      span_le.2 fun x h => (mem_bot R).2 <| H x h⟩
+    ⟨fun H _ h ↦ (mem_bot R).1 <| H <| subset_span h, fun H ↦
+      span_le.2 fun x h ↦ (mem_bot R).2 <| H x h⟩
 
 theorem span_singleton_eq_bot : (R ∙ x) = ⊥ ↔ x = 0 := by simp
 
@@ -482,8 +482,8 @@ theorem span_singleton_le_iff_mem (m : M) (p : Submodule R M) : (R ∙ m) ≤ p 
   rw [span_le, singleton_subset_iff, SetLike.mem_coe]
 
 theorem iSup_span {ι : Sort*} (p : ι → Set M) : ⨆ i, span R (p i) = span R (⋃ i, p i) :=
-  le_antisymm (iSup_le fun i => span_mono <| subset_iUnion _ i) <|
-    span_le.mpr <| iUnion_subset fun i _ hm => mem_iSup_of_mem i <| subset_span hm
+  le_antisymm (iSup_le fun i ↦ span_mono <| subset_iUnion _ i) <|
+    span_le.mpr <| iUnion_subset fun i _ hm ↦ mem_iSup_of_mem i <| subset_span hm
 
 theorem iSup_eq_span {ι : Sort*} (p : ι → Submodule R M) : ⨆ i, p i = span R (⋃ i, ↑(p i)) := by
   simp_rw [← iSup_span, span_eq]
@@ -526,7 +526,7 @@ such that the element is contained in the span of the subset. -/
 theorem mem_span_finite_of_mem_span {S : Set M} {x : M} (hx : x ∈ span R S) :
     ∃ T : Finset M, ↑T ⊆ S ∧ x ∈ span R (T : Set M) := by
   classical
-  refine span_induction (fun x hx => ?_) ?_ ?_ ?_ hx
+  refine span_induction (fun x hx ↦ ?_) ?_ ?_ ?_ hx
   · refine ⟨{x}, ?_, ?_⟩
     · rwa [Finset.coe_singleton, Set.singleton_subset_iff]
     · rw [Finset.coe_singleton]

@@ -27,11 +27,11 @@ variable [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] {s t : Multiset 
 
 @[to_additive sum_nonneg]
 lemma one_le_prod_of_one_le : (∀ x ∈ s, (1 : α) ≤ x) → 1 ≤ s.prod :=
-  Quotient.inductionOn s fun l hl => by simpa using List.one_le_prod_of_one_le hl
+  Quotient.inductionOn s fun l hl ↦ by simpa using List.one_le_prod_of_one_le hl
 
 @[to_additive]
 lemma single_le_prod : (∀ x ∈ s, (1 : α) ≤ x) → ∀ x ∈ s, x ≤ s.prod :=
-  Quotient.inductionOn s fun l hl x hx => by simpa using List.single_le_prod hl x hx
+  Quotient.inductionOn s fun l hl x hx ↦ by simpa using List.single_le_prod hl x hx
 
 @[to_additive sum_le_card_nsmul]
 lemma prod_le_pow_card (s : Multiset α) (n : α) (h : ∀ x ∈ s, x ≤ n) : s.prod ≤ n ^ card s := by
@@ -43,7 +43,7 @@ lemma all_one_of_le_one_le_of_prod_eq_one :
     (∀ x ∈ s, (1 : α) ≤ x) → s.prod = 1 → ∀ x ∈ s, x = (1 : α) :=
   Quotient.inductionOn s (by
     simp only [quot_mk_to_coe, prod_coe, mem_coe]
-    exact fun l => List.all_one_of_le_one_le_of_prod_eq_one)
+    exact fun l ↦ List.all_one_of_le_one_le_of_prod_eq_one)
 
 @[to_additive]
 lemma prod_le_prod_of_rel_le (h : s.Rel (· ≤ ·) t) : s.prod ≤ t.prod := by
@@ -85,7 +85,7 @@ lemma le_prod_of_submultiplicative_on_pred (f : α → β)
   refine Multiset.induction ?_ ?_
   · simp [le_of_eq h_one]
   intro a s hs hpsa
-  have hps : ∀ x, x ∈ s → p x := fun x hx => hpsa x (mem_cons_of_mem hx)
+  have hps : ∀ x, x ∈ s → p x := fun x hx ↦ hpsa x (mem_cons_of_mem hx)
   have hp_prod : p s.prod := prod_induction p s hp_mul hp_one hps
   rw [prod_cons, map_cons, prod_cons]
   exact (h_mul a s.prod (hpsa a (mem_cons_self a s)) hp_prod).trans (mul_le_mul_left' (hs hps) _)
@@ -93,7 +93,7 @@ lemma le_prod_of_submultiplicative_on_pred (f : α → β)
 @[to_additive le_sum_of_subadditive]
 lemma le_prod_of_submultiplicative (f : α → β) (h_one : f 1 = 1)
     (h_mul : ∀ a b, f (a * b) ≤ f a * f b) (s : Multiset α) : f s.prod ≤ (s.map f).prod :=
-  le_prod_of_submultiplicative_on_pred f (fun _ => True) h_one trivial (fun x y _ _ => h_mul x y)
+  le_prod_of_submultiplicative_on_pred f (fun _ ↦ True) h_one trivial (fun x y _ _ ↦ h_mul x y)
     (by simp) s (by simp)
 
 @[to_additive le_sum_nonempty_of_subadditive_on_pred]
@@ -107,7 +107,7 @@ lemma le_prod_nonempty_of_submultiplicative_on_pred (f : α → β) (p : α → 
   rw [prod_cons, map_cons, prod_cons]
   by_cases hs_empty : s = ∅
   · simp [hs_empty]
-  have hsa_restrict : ∀ x, x ∈ s → p x := fun x hx => hsa_prop x (mem_cons_of_mem hx)
+  have hsa_restrict : ∀ x, x ∈ s → p x := fun x hx ↦ hsa_prop x (mem_cons_of_mem hx)
   have hp_sup : p s.prod := prod_induction_nonempty p hp_mul hs_empty hsa_restrict
   have hp_a : p a := hsa_prop a (mem_cons_self a s)
   exact (h_mul a _ hp_a hp_sup).trans (mul_le_mul_left' (hs hs_empty hsa_restrict) _)
@@ -115,7 +115,7 @@ lemma le_prod_nonempty_of_submultiplicative_on_pred (f : α → β) (p : α → 
 @[to_additive le_sum_nonempty_of_subadditive]
 lemma le_prod_nonempty_of_submultiplicative (f : α → β) (h_mul : ∀ a b, f (a * b) ≤ f a * f b)
     (s : Multiset α) (hs_nonempty : s ≠ ∅) : f s.prod ≤ (s.map f).prod :=
-  le_prod_nonempty_of_submultiplicative_on_pred f (fun _ => True) (by simp [h_mul]) (by simp) s
+  le_prod_nonempty_of_submultiplicative_on_pred f (fun _ ↦ True) (by simp [h_mul]) (by simp) s
     hs_nonempty (by simp)
 
 end
@@ -134,7 +134,7 @@ lemma prod_lt_prod' (hle : ∀ i ∈ s, f i ≤ g i) (hlt : ∃ i ∈ s, f i < g
 lemma prod_lt_prod_of_nonempty' (hs : s ≠ ∅) (hfg : ∀ i ∈ s, f i < g i) :
     (s.map f).prod < (s.map g).prod := by
   obtain ⟨i, hi⟩ := exists_mem_of_ne_zero hs
-  exact prod_lt_prod' (fun i hi => le_of_lt (hfg i hi)) ⟨i, hi, hfg i hi⟩
+  exact prod_lt_prod' (fun i hi ↦ le_of_lt (hfg i hi)) ⟨i, hi, hfg i hi⟩
 
 end OrderedCancelCommMonoid
 

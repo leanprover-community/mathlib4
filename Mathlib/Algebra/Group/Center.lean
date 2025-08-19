@@ -143,7 +143,7 @@ lemma centralizer_subset (h : S ⊆ T) : centralizer T ⊆ centralizer S := fun 
 lemma subset_centralizer_centralizer : S ⊆ S.centralizer.centralizer := by
   intro x hx
   simp only [Set.mem_centralizer_iff]
-  exact fun y hy => (hy x hx).symm
+  exact fun y hy ↦ (hy x hx).symm
 
 @[to_additive (attr := simp) addCentralizer_addCentralizer_addCentralizer]
 lemma centralizer_centralizer_centralizer (S : Set M) :
@@ -179,15 +179,15 @@ theorem centralizer_prod {N : Type*} [Mul N] {S : Set M} {T : Set N}
     Prod.mul_def, Prod.eq_iff_fst_eq_snd_eq]
   obtain ⟨b, hb⟩ := hS
   obtain ⟨c, hc⟩ := hT
-  exact ⟨fun h => ⟨fun y hy => (h y c hy hc).1, fun y hy => (h b y hb hy).2⟩,
-    fun h y z hy hz => ⟨h.1 _ hy, h.2 _ hz⟩⟩
+  exact ⟨fun h ↦ ⟨fun y hy ↦ (h y c hy hc).1, fun y hy ↦ (h b y hb hy).2⟩,
+    fun h y z hy hz ↦ ⟨h.1 _ hy, h.2 _ hz⟩⟩
 
 @[to_additive prod_addCentralizer_subset_addCentralizer_prod]
 theorem prod_centralizer_subset_centralizer_prod {N : Type*} [Mul N] (S : Set M) (T : Set N) :
     S.centralizer ×ˢ T.centralizer ⊆ (S ×ˢ T).centralizer := by
   rw [subset_def]
   simp only [mem_prod, and_imp, Prod.forall, mem_centralizer_iff, Prod.mk_mul_mk, Prod.mk.injEq]
-  exact fun a b ha hb c d hc hd => ⟨ha c hc, hb d hd⟩
+  exact fun a b ha hb c d hc hd ↦ ⟨ha c hc, hb d hd⟩
 
 @[to_additive addCenter_prod]
 theorem center_prod {N : Type*} [Mul N] :
@@ -195,35 +195,35 @@ theorem center_prod {N : Type*} [Mul N] :
   ext x
   simp only [mem_prod, mem_center_iff, isMulCentral_iff, commute_iff_eq, Prod.ext_iff]
   exact ⟨
-    fun ⟨h1, h2, h3⟩ => ⟨
-      ⟨ fun a => (h1 (a, x.2)).1,
-        fun b c => (h2 (b, x.2) (c, x.2)).1,
-        fun a b => (h3 (a, x.2) (b, x.2)).1⟩,
-      ⟨ fun a => (h1 (x.1, a)).2,
-        fun a b => (h2 (x.1, a) (x.1, b)).2,
-        fun a b => (h3 (x.1, a) (x.1, b)).2⟩⟩,
-    fun ⟨⟨h1, h2, h3⟩, ⟨h4, h5, h6⟩⟩ => ⟨
-      fun _ => ⟨h1 _, h4 _⟩,
-      fun _ _ => ⟨h2 _ _, h5 _ _⟩,
-      fun _ _ => ⟨h3 _ _, h6 _ _⟩⟩⟩
+    fun ⟨h1, h2, h3⟩ ↦ ⟨
+      ⟨ fun a ↦ (h1 (a, x.2)).1,
+        fun b c ↦ (h2 (b, x.2) (c, x.2)).1,
+        fun a b ↦ (h3 (a, x.2) (b, x.2)).1⟩,
+      ⟨ fun a ↦ (h1 (x.1, a)).2,
+        fun a b ↦ (h2 (x.1, a) (x.1, b)).2,
+        fun a b ↦ (h3 (x.1, a) (x.1, b)).2⟩⟩,
+    fun ⟨⟨h1, h2, h3⟩, ⟨h4, h5, h6⟩⟩ ↦ ⟨
+      fun _ ↦ ⟨h1 _, h4 _⟩,
+      fun _ _ ↦ ⟨h2 _ _, h5 _ _⟩,
+      fun _ _ ↦ ⟨h3 _ _, h6 _ _⟩⟩⟩
 
 open Function in
 @[to_additive addCenter_pi]
 theorem center_pi {ι : Type*} {A : ι → Type*} [Π i, Mul (A i)] :
-    center (Π i, A i) = univ.pi (fun i => center (A i)) := by
+    center (Π i, A i) = univ.pi (fun i ↦ center (A i)) := by
   classical
   ext x
   simp only [mem_pi, mem_center_iff, isMulCentral_iff, mem_univ, forall_true_left,
     commute_iff_eq, funext_iff, Pi.mul_def]
   exact ⟨
-    fun ⟨h1, h2, h3⟩ i => ⟨
-      fun a => by simpa using h1 (update x i a) i,
-      fun b c => by simpa using h2 (update x i b) (update x i c) i,
-      fun a b => by simpa using h3 (update x i a) (update x i b) i⟩,
-    fun h => ⟨
-      fun a i => (h i).1 (a i),
-      fun b c i => (h i).2.1 (b i) (c i),
-      fun a b i => (h i).2.2 (a i) (b i)⟩⟩
+    fun ⟨h1, h2, h3⟩ i ↦ ⟨
+      fun a ↦ by simpa using h1 (update x i a) i,
+      fun b c ↦ by simpa using h2 (update x i b) (update x i c) i,
+      fun a b ↦ by simpa using h3 (update x i a) (update x i b) i⟩,
+    fun h ↦ ⟨
+      fun a i ↦ (h i).1 (a i),
+      fun b c i ↦ (h i).2.1 (b i) (c i),
+      fun a b i ↦ (h i).2.2 (a i) (b i)⟩⟩
 
 end Mul
 
@@ -255,7 +255,7 @@ lemma centralizer_univ : centralizer univ = center M :=
 -- TODO Add `instance : Decidable (IsMulCentral a)` for `instance decidableMemCenter [Mul M]`
 @[to_additive decidableMemAddCenter]
 instance decidableMemCenter [∀ a : M, Decidable <| ∀ b : M, b * a = a * b] :
-    DecidablePred (· ∈ center M) := fun _ => decidable_of_iff' _ (Semigroup.mem_center_iff)
+    DecidablePred (· ∈ center M) := fun _ ↦ decidable_of_iff' _ (Semigroup.mem_center_iff)
 
 end Semigroup
 
@@ -266,7 +266,7 @@ variable (M)
 
 @[to_additive (attr := simp) addCenter_eq_univ]
 theorem center_eq_univ : center M = univ :=
-  (Subset.antisymm (subset_univ _)) fun _ _ => Semigroup.mem_center_iff.mpr (fun _ => mul_comm _ _)
+  (Subset.antisymm (subset_univ _)) fun _ _ ↦ Semigroup.mem_center_iff.mpr (fun _ ↦ mul_comm _ _)
 
 @[to_additive (attr := simp) addCentralizer_eq_univ]
 lemma centralizer_eq_univ : centralizer S = univ :=
@@ -293,7 +293,7 @@ variable [Monoid M]
 
 @[to_additive subset_addCenter_add_units]
 theorem subset_center_units : ((↑) : Mˣ → M) ⁻¹' center M ⊆ Set.center Mˣ :=
-  fun _ ha => by
+  fun _ ha ↦ by
   rw [_root_.Semigroup.mem_center_iff]
   intro _
   rw [← Units.val_inj, Units.val_mul, Units.val_mul, ha.comm]

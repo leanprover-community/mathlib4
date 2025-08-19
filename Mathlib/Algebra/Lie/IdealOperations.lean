@@ -69,7 +69,7 @@ variable [LieAlgebra R L] [LieModule R L M₂] (I J : LieIdeal R L)
 /-- Given a Lie module `M` over a Lie algebra `L`, the set of Lie ideals of `L` acts on the set
 of submodules of `M`. -/
 instance hasBracket : Bracket (LieIdeal R L) (LieSubmodule R L M) :=
-  ⟨fun I N => lieSpan R L { ⁅(x : L), (n : M)⁆ | (x : I) (n : N) }⟩
+  ⟨fun I N ↦ lieSpan R L { ⁅(x : L), (n : M)⁆ | (x : I) (n : N) }⟩
 
 theorem lieIdeal_oper_eq_span :
     ⁅I, N⁆ = lieSpan R L { ⁅(x : L), (n : M)⁆ | (x : I) (n : N) } :=
@@ -92,7 +92,7 @@ theorem lieIdeal_oper_eq_linear_span [LieModule R L M] :
       · simp only [lie_zero, Submodule.zero_mem]
       · intro m₁ m₂ _ _ hm₁ hm₂; rw [lie_add]; exact Submodule.add_mem _ hm₁ hm₂
       · intro t m'' _ hm''; rw [lie_smul]; exact Submodule.smul_mem _ t hm''
-    change _ ≤ ({ Submodule.span R s with lie_mem := fun hm' => aux _ _ hm' } : LieSubmodule R L M)
+    change _ ≤ ({ Submodule.span R s with lie_mem := fun hm' ↦ aux _ _ hm' } : LieSubmodule R L M)
     rw [lieIdeal_oper_eq_span, lieSpan_le]
     exact Submodule.subset_span
   · rw [lieIdeal_oper_eq_span]; apply submodule_span_le_lieSpan
@@ -110,7 +110,7 @@ theorem lieIdeal_oper_eq_linear_span' [LieModule R L M] :
 
 theorem lie_le_iff : ⁅I, N⁆ ≤ N' ↔ ∀ x ∈ I, ∀ m ∈ N, ⁅x, m⁆ ∈ N' := by
   rw [lieIdeal_oper_eq_span, LieSubmodule.lieSpan_le]
-  refine ⟨fun h x hx m hm => h ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩, ?_⟩
+  refine ⟨fun h x hx m hm ↦ h ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩, ?_⟩
   rintro h _ ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩
   exact h x hx m hm
 
@@ -148,7 +148,7 @@ theorem bot_lie : ⁅(⊥ : LieIdeal R L), N⁆ = ⊥ := by
 
 theorem lie_eq_bot_iff : ⁅I, N⁆ = ⊥ ↔ ∀ x ∈ I, ∀ m ∈ N, ⁅(x : L), m⁆ = 0 := by
   rw [lieIdeal_oper_eq_span, LieSubmodule.lieSpan_eq_bot_iff]
-  refine ⟨fun h x hx m hm => h ⁅x, m⁆ ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩, ?_⟩
+  refine ⟨fun h x hx m hm ↦ h ⁅x, m⁆ ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩, ?_⟩
   rintro h - ⟨⟨x, hx⟩, ⟨⟨n, hn⟩, rfl⟩⟩
   exact h x hx n hn
 

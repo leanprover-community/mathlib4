@@ -29,30 +29,30 @@ of connected *open* sets. Note that it is equivalent to each point having a basi
 equivalence later in `locallyConnectedSpace_iff_connected_basis`. -/
 class LocallyConnectedSpace (α : Type*) [TopologicalSpace α] : Prop where
   /-- Open connected neighborhoods form a basis of the neighborhoods filter. -/
-  open_connected_basis : ∀ x, (𝓝 x).HasBasis (fun s : Set α => IsOpen s ∧ x ∈ s ∧ IsConnected s) id
+  open_connected_basis : ∀ x, (𝓝 x).HasBasis (fun s : Set α ↦ IsOpen s ∧ x ∈ s ∧ IsConnected s) id
 
 theorem locallyConnectedSpace_iff_hasBasis_isOpen_isConnected :
     LocallyConnectedSpace α ↔
-      ∀ x, (𝓝 x).HasBasis (fun s : Set α => IsOpen s ∧ x ∈ s ∧ IsConnected s) id :=
+      ∀ x, (𝓝 x).HasBasis (fun s : Set α ↦ IsOpen s ∧ x ∈ s ∧ IsConnected s) id :=
   ⟨@LocallyConnectedSpace.open_connected_basis _ _, LocallyConnectedSpace.mk⟩
 
 theorem locallyConnectedSpace_iff_subsets_isOpen_isConnected :
     LocallyConnectedSpace α ↔
       ∀ x, ∀ U ∈ 𝓝 x, ∃ V : Set α, V ⊆ U ∧ IsOpen V ∧ x ∈ V ∧ IsConnected V := by
   simp_rw [locallyConnectedSpace_iff_hasBasis_isOpen_isConnected]
-  refine forall_congr' fun _ => ?_
+  refine forall_congr' fun _ ↦ ?_
   constructor
   · intro h U hU
     rcases h.mem_iff.mp hU with ⟨V, hV, hVU⟩
     exact ⟨V, hVU, hV⟩
-  · exact fun h => ⟨fun U => ⟨fun hU =>
+  · exact fun h ↦ ⟨fun U ↦ ⟨fun hU ↦
       let ⟨V, hVU, hV⟩ := h U hU
-      ⟨V, hV, hVU⟩, fun ⟨V, ⟨hV, hxV, _⟩, hVU⟩ => mem_nhds_iff.mpr ⟨V, hVU, hV, hxV⟩⟩⟩
+      ⟨V, hV, hVU⟩, fun ⟨V, ⟨hV, hxV, _⟩, hVU⟩ ↦ mem_nhds_iff.mpr ⟨V, hVU, hV, hxV⟩⟩⟩
 
 /-- A space with discrete topology is a locally connected space. -/
 instance (priority := 100) DiscreteTopology.toLocallyConnectedSpace (α) [TopologicalSpace α]
     [DiscreteTopology α] : LocallyConnectedSpace α :=
-  locallyConnectedSpace_iff_subsets_isOpen_isConnected.2 fun x _U hU =>
+  locallyConnectedSpace_iff_subsets_isOpen_isConnected.2 fun x _U hU ↦
     ⟨{x}, singleton_subset_iff.2 <| mem_of_mem_nhds hU, isOpen_discrete _, rfl,
       isConnected_singleton⟩
 
@@ -83,10 +83,10 @@ theorem locallyConnectedSpace_iff_connectedComponentIn_open :
       ∀ F : Set α, IsOpen F → ∀ x ∈ F, IsOpen (connectedComponentIn F x) := by
   constructor
   · intro h
-    exact fun F hF x _ => hF.connectedComponentIn
+    exact fun F hF x _ ↦ hF.connectedComponentIn
   · intro h
     rw [locallyConnectedSpace_iff_subsets_isOpen_isConnected]
-    refine fun x U hU =>
+    refine fun x U hU ↦
         ⟨connectedComponentIn (interior U) x,
           (connectedComponentIn_subset _ _).trans interior_subset, h _ isOpen_interior x ?_,
           mem_connectedComponentIn ?_, isConnected_connectedComponentIn_iff.mpr ?_⟩ <;>
@@ -100,24 +100,24 @@ theorem locallyConnectedSpace_iff_connected_subsets :
     rcases h x U hxU with ⟨V, hVU, hV₁, hxV, hV₂⟩
     exact ⟨V, hV₁.mem_nhds hxV, hV₂.isPreconnected, hVU⟩
   · rw [locallyConnectedSpace_iff_connectedComponentIn_open]
-    refine fun h U hU x _ => isOpen_iff_mem_nhds.mpr fun y hy => ?_
+    refine fun h U hU x _ ↦ isOpen_iff_mem_nhds.mpr fun y hy ↦ ?_
     rw [connectedComponentIn_eq hy]
     rcases h y U (hU.mem_nhds <| (connectedComponentIn_subset _ _) hy) with ⟨V, hVy, hV, hVU⟩
     exact Filter.mem_of_superset hVy (hV.subset_connectedComponentIn (mem_of_mem_nhds hVy) hVU)
 
 theorem locallyConnectedSpace_iff_connected_basis :
     LocallyConnectedSpace α ↔
-      ∀ x, (𝓝 x).HasBasis (fun s : Set α => s ∈ 𝓝 x ∧ IsPreconnected s) id := by
+      ∀ x, (𝓝 x).HasBasis (fun s : Set α ↦ s ∈ 𝓝 x ∧ IsPreconnected s) id := by
   rw [locallyConnectedSpace_iff_connected_subsets]
-  exact forall_congr' fun x => Filter.hasBasis_self.symm
+  exact forall_congr' fun x ↦ Filter.hasBasis_self.symm
 
 theorem locallyConnectedSpace_of_connected_bases {ι : Type*} (b : α → ι → Set α) (p : α → ι → Prop)
     (hbasis : ∀ x, (𝓝 x).HasBasis (p x) (b x))
     (hconnected : ∀ x i, p x i → IsPreconnected (b x i)) : LocallyConnectedSpace α := by
   rw [locallyConnectedSpace_iff_connected_basis]
-  exact fun x =>
+  exact fun x ↦
     (hbasis x).to_hasBasis
-      (fun i hi => ⟨b x i, ⟨(hbasis x).mem_of_mem hi, hconnected x i hi⟩, subset_rfl⟩) fun s hs =>
+      (fun i hi ↦ ⟨b x i, ⟨(hbasis x).mem_of_mem hi, hconnected x i hi⟩, subset_rfl⟩) fun s hs ↦
       ⟨(hbasis x).index s hs.1, ⟨(hbasis x).property_index hs.1, (hbasis x).set_index_subset hs.1⟩⟩
 
 lemma Topology.IsOpenEmbedding.locallyConnectedSpace [LocallyConnectedSpace α] [TopologicalSpace β]

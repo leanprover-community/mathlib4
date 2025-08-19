@@ -57,7 +57,7 @@ namespace NumberField.InfinitePlace
 
 instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K ℝ where
   coe w x := w.1 x
-  coe_injective' _ _ h := Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)
+  coe_injective' _ _ h := Subtype.eq (AbsoluteValue.ext fun x ↦ congr_fun h x)
 
 lemma coe_apply {K : Type*} [Field K] (v : InfinitePlace K) (x : K) : v x = v.1 x := rfl
 
@@ -84,7 +84,7 @@ theorem mk_embedding (w : InfinitePlace K) : mk (embedding w) = w := Subtype.ext
 
 @[simp]
 theorem mk_conjugate_eq (φ : K →+* ℂ) : mk (ComplexEmbedding.conjugate φ) = mk φ := by
-  refine DFunLike.ext _ _ (fun x => ?_)
+  refine DFunLike.ext _ _ (fun x ↦ ?_)
   rw [apply, apply, ComplexEmbedding.conjugate_coe_eq, Complex.norm_conj]
 
 theorem norm_embedding_eq (w : InfinitePlace K) (x : K) :
@@ -111,10 +111,10 @@ theorem eq_of_embedding_eq_conjugate {v₁ v₂ : InfinitePlace K}
   rw [← mk_embedding v₁, h, mk_conjugate_eq, mk_embedding]
 
 theorem eq_iff_eq (x : K) (r : ℝ) : (∀ w : InfinitePlace K, w x = r) ↔ ∀ φ : K →+* ℂ, ‖φ x‖ = r :=
-  ⟨fun hw φ => hw (mk φ), by rintro hφ ⟨w, ⟨φ, rfl⟩⟩; exact hφ φ⟩
+  ⟨fun hw φ ↦ hw (mk φ), by rintro hφ ⟨w, ⟨φ, rfl⟩⟩; exact hφ φ⟩
 
 theorem le_iff_le (x : K) (r : ℝ) : (∀ w : InfinitePlace K, w x ≤ r) ↔ ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r :=
-  ⟨fun hw φ => hw (mk φ), by rintro hφ ⟨w, ⟨φ, rfl⟩⟩; exact hφ φ⟩
+  ⟨fun hw φ ↦ hw (mk φ), by rintro hφ ⟨w, ⟨φ, rfl⟩⟩; exact hφ φ⟩
 
 theorem pos_iff {w : InfinitePlace K} {x : K} : 0 < w x ↔ x ≠ 0 := AbsoluteValue.pos_iff w.1
 
@@ -170,13 +170,13 @@ theorem embedding_mk_eq_of_isReal {φ : K →+* ℂ} (h : ComplexEmbedding.IsRea
 
 theorem isReal_iff {w : InfinitePlace K} :
     IsReal w ↔ ComplexEmbedding.IsReal (embedding w) := by
-  refine ⟨?_, fun h => ⟨embedding w, h, mk_embedding w⟩⟩
+  refine ⟨?_, fun h ↦ ⟨embedding w, h, mk_embedding w⟩⟩
   rintro ⟨φ, ⟨hφ, rfl⟩⟩
   rwa [embedding_mk_eq_of_isReal hφ]
 
 theorem isComplex_iff {w : InfinitePlace K} :
     IsComplex w ↔ ¬ComplexEmbedding.IsReal (embedding w) := by
-  refine ⟨?_, fun h => ⟨embedding w, h, mk_embedding w⟩⟩
+  refine ⟨?_, fun h ↦ ⟨embedding w, h, mk_embedding w⟩⟩
   rintro ⟨φ, ⟨hφ, rfl⟩⟩
   contrapose! hφ
   cases mk_eq_iff.mp (mk_embedding (mk φ)) with
@@ -297,14 +297,14 @@ theorem sum_mult_eq [NumberField K] :
     ∑ w : InfinitePlace K, mult w = Module.finrank ℚ K := by
   classical
   rw [← Embeddings.card K ℂ, Fintype.card, Finset.card_eq_sum_ones, ← Finset.univ.sum_fiberwise
-    (fun φ => InfinitePlace.mk φ)]
+    (fun φ ↦ InfinitePlace.mk φ)]
   exact Finset.sum_congr rfl
-    (fun _ _ => by rw [Finset.sum_const, smul_eq_mul, mul_one, card_filter_mk_eq])
+    (fun _ _ ↦ by rw [Finset.sum_const, smul_eq_mul, mul_one, card_filter_mk_eq])
 
 /-- The map from real embeddings to real infinite places as an equiv -/
 noncomputable def mkReal :
     { φ : K →+* ℂ // ComplexEmbedding.IsReal φ } ≃ { w : InfinitePlace K // IsReal w } := by
-  refine (Equiv.ofBijective (fun φ => ⟨mk φ, ?_⟩) ⟨fun φ ψ h => ?_, fun w => ?_⟩)
+  refine (Equiv.ofBijective (fun φ ↦ ⟨mk φ, ?_⟩) ⟨fun φ ψ h ↦ ?_, fun w ↦ ?_⟩)
   · exact ⟨φ, φ.prop, rfl⟩
   · rwa [Subtype.mk.injEq, mk_eq_iff, ComplexEmbedding.isReal_iff.mp φ.prop, or_self,
       ← Subtype.ext_iff] at h
@@ -313,7 +313,7 @@ noncomputable def mkReal :
 /-- The map from nonreal embeddings to complex infinite places -/
 noncomputable def mkComplex :
     { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ } → { w : InfinitePlace K // IsComplex w } :=
-  Subtype.map mk fun φ hφ => ⟨φ, hφ, rfl⟩
+  Subtype.map mk fun φ hφ ↦ ⟨φ, hφ, rfl⟩
 
 @[simp]
 theorem mkReal_coe (φ : { φ : K →+* ℂ // ComplexEmbedding.IsReal φ }) :
@@ -331,9 +331,9 @@ theorem prod_eq_abs_norm (x : K) :
     ∏ w : InfinitePlace K, w x ^ mult w = abs (Algebra.norm ℚ x) := by
   classical
   convert (congr_arg (‖·‖) (@Algebra.norm_eq_prod_embeddings ℚ _ _ _ _ ℂ _ _ _ _ _ x)).symm
-  · rw [norm_prod, ← Fintype.prod_equiv RingHom.equivRatAlgHom (fun f => ‖f x‖)
-      (fun φ => ‖φ x‖) fun _ => by simp [RingHom.equivRatAlgHom_apply]]
-    rw [← Finset.prod_fiberwise Finset.univ mk (fun φ => ‖φ x‖)]
+  · rw [norm_prod, ← Fintype.prod_equiv RingHom.equivRatAlgHom (fun f ↦ ‖f x‖)
+      (fun φ ↦ ‖φ x‖) fun _ ↦ by simp [RingHom.equivRatAlgHom_apply]]
+    rw [← Finset.prod_fiberwise Finset.univ mk (fun φ ↦ ‖φ x‖)]
     have (w : InfinitePlace K) (φ) (hφ : φ ∈ ({φ | mk φ = w} : Finset _)) :
         ‖φ x‖ = w x := by rw [← (Finset.mem_filter.mp hφ).2, apply]
     simp_rw [Finset.prod_congr rfl (this _), Finset.prod_const, card_filter_mk_eq]
@@ -415,14 +415,14 @@ theorem card_complex_embeddings :
     card { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ } = 2 * nrComplexPlaces K := by
   suffices ∀ w : { w : InfinitePlace K // IsComplex w },
      #{φ : {φ //¬ ComplexEmbedding.IsReal φ} | mkComplex φ = w} = 2 by
-    rw [Fintype.card, Finset.card_eq_sum_ones, ← Finset.sum_fiberwise _ (fun φ => mkComplex φ)]
+    rw [Fintype.card, Finset.card_eq_sum_ones, ← Finset.sum_fiberwise _ (fun φ ↦ mkComplex φ)]
     simp_rw [Finset.sum_const, this, smul_eq_mul, mul_one, Fintype.card, Finset.card_eq_sum_ones,
       Finset.mul_sum, Finset.sum_const, smul_eq_mul, mul_one]
   rintro ⟨w, hw⟩
   convert card_filter_mk_eq w
   · rw [← Fintype.card_subtype, ← Fintype.card_subtype]
-    refine Fintype.card_congr (Equiv.ofBijective ?_ ⟨fun _ _ h => ?_, fun ⟨φ, hφ⟩ => ?_⟩)
-    · exact fun ⟨φ, hφ⟩ => ⟨φ.val, by rwa [Subtype.ext_iff] at hφ⟩
+    refine Fintype.card_congr (Equiv.ofBijective ?_ ⟨fun _ _ h ↦ ?_, fun ⟨φ, hφ⟩ ↦ ?_⟩)
+    · exact fun ⟨φ, hφ⟩ ↦ ⟨φ.val, by rwa [Subtype.ext_iff] at hφ⟩
     · rwa [Subtype.mk_eq_mk, ← Subtype.ext_iff, ← Subtype.ext_iff] at h
     · refine ⟨⟨⟨φ, not_isReal_of_mk_isComplex (hφ.symm ▸ hw)⟩, ?_⟩, rfl⟩
       rwa [Subtype.ext_iff, mkComplex_coe]

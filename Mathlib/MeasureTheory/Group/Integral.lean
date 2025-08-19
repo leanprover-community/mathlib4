@@ -29,18 +29,18 @@ variable [Group G] [MeasurableInv G]
 
 @[to_additive]
 theorem Integrable.comp_inv [IsInvInvariant μ] {f : G → F} (hf : Integrable f μ) :
-    Integrable (fun t => f t⁻¹) μ :=
+    Integrable (fun t ↦ f t⁻¹) μ :=
   (hf.mono_measure (map_inv_eq_self μ).le).comp_measurable measurable_inv
 
 @[to_additive]
 theorem integral_inv_eq_self (f : G → E) (μ : Measure G) [IsInvInvariant μ] :
     ∫ x, f x⁻¹ ∂μ = ∫ x, f x ∂μ := by
-  have h : MeasurableEmbedding fun x : G => x⁻¹ := (MeasurableEquiv.inv G).measurableEmbedding
+  have h : MeasurableEmbedding fun x : G ↦ x⁻¹ := (MeasurableEquiv.inv G).measurableEmbedding
   rw [← h.integral_map, map_inv_eq_self]
 
 @[to_additive]
 theorem IntegrableOn.comp_inv [IsInvInvariant μ] {f : G → F} {s : Set G} (hf : IntegrableOn f s μ) :
-    IntegrableOn (fun x => f x⁻¹) s⁻¹ μ := by
+    IntegrableOn (fun x ↦ f x⁻¹) s⁻¹ μ := by
   apply (integrable_map_equiv (MeasurableEquiv.inv G) f).mp
   have : s⁻¹ = MeasurableEquiv.inv G ⁻¹' s := by simp
   rw [this, ← MeasurableEquiv.restrict_map]
@@ -55,22 +55,22 @@ variable [IsInvInvariant μ]
 
 @[to_additive]
 theorem IntegrableOn.comp_inv_Iic {c : G} {f : G → F} (hf : IntegrableOn f (Set.Ici c⁻¹) μ) :
-    IntegrableOn (fun x => f x⁻¹) (Set.Iic c) μ := by
+    IntegrableOn (fun x ↦ f x⁻¹) (Set.Iic c) μ := by
   simpa using hf.comp_inv
 
 @[to_additive]
 theorem IntegrableOn.comp_inv_Ici {c : G} {f : G → F} (hf : IntegrableOn f (Set.Iic c⁻¹) μ) :
-    IntegrableOn (fun x => f x⁻¹) (Set.Ici c) μ := by
+    IntegrableOn (fun x ↦ f x⁻¹) (Set.Ici c) μ := by
   simpa using hf.comp_inv
 
 @[to_additive]
 theorem IntegrableOn.comp_inv_Iio {c : G} {f : G → F} (hf : IntegrableOn f (Set.Ioi c⁻¹) μ) :
-    IntegrableOn (fun x => f x⁻¹) (Set.Iio c) μ := by
+    IntegrableOn (fun x ↦ f x⁻¹) (Set.Iio c) μ := by
   simpa using hf.comp_inv
 
 @[to_additive]
 theorem IntegrableOn.comp_inv_Ioi {c : G} {f : G → F} (hf : IntegrableOn f (Set.Iio c⁻¹) μ) :
-    IntegrableOn (fun x => f x⁻¹) (Set.Ioi c) μ := by
+    IntegrableOn (fun x ↦ f x⁻¹) (Set.Ioi c) μ := by
   simpa using hf.comp_inv
 
 end MeasurableInvOrder
@@ -86,7 +86,7 @@ left-invariant measure. -/
       left-invariant measure. -/]
 theorem integral_mul_left_eq_self [IsMulLeftInvariant μ] (f : G → E) (g : G) :
     (∫ x, f (g * x) ∂μ) = ∫ x, f x ∂μ := by
-  have h_mul : MeasurableEmbedding fun x => g * x := (MeasurableEquiv.mulLeft g).measurableEmbedding
+  have h_mul : MeasurableEmbedding fun x ↦ g * x := (MeasurableEquiv.mulLeft g).measurableEmbedding
   rw [← h_mul.integral_map, map_mul_left_eq_self]
 
 /-- Translating a function by right-multiplication does not change its integral with respect to a
@@ -96,7 +96,7 @@ right-invariant measure. -/
       right-invariant measure. -/]
 theorem integral_mul_right_eq_self [IsMulRightInvariant μ] (f : G → E) (g : G) :
     (∫ x, f (x * g) ∂μ) = ∫ x, f x ∂μ := by
-  have h_mul : MeasurableEmbedding fun x => x * g :=
+  have h_mul : MeasurableEmbedding fun x ↦ x * g :=
     (MeasurableEquiv.mulRight g).measurableEmbedding
   rw [← h_mul.integral_map, map_mul_right_eq_self]
 
@@ -125,17 +125,17 @@ theorem integral_eq_zero_of_mul_right_eq_neg [IsMulRightInvariant μ] (hf' : ∀
 
 @[to_additive]
 theorem Integrable.comp_mul_left {f : G → F} [IsMulLeftInvariant μ] (hf : Integrable f μ) (g : G) :
-    Integrable (fun t => f (g * t)) μ :=
+    Integrable (fun t ↦ f (g * t)) μ :=
   (hf.mono_measure (map_mul_left_eq_self μ g).le).comp_measurable <| measurable_const_mul g
 
 @[to_additive]
 theorem Integrable.comp_mul_right {f : G → F} [IsMulRightInvariant μ] (hf : Integrable f μ)
-    (g : G) : Integrable (fun t => f (t * g)) μ :=
+    (g : G) : Integrable (fun t ↦ f (t * g)) μ :=
   (hf.mono_measure (map_mul_right_eq_self μ g).le).comp_measurable <| measurable_mul_const g
 
 @[to_additive]
 theorem Integrable.comp_div_right {f : G → F} [IsMulRightInvariant μ] (hf : Integrable f μ)
-    (g : G) : Integrable (fun t => f (t / g)) μ := by
+    (g : G) : Integrable (fun t ↦ f (t / g)) μ := by
   simp_rw [div_eq_mul_inv]
   exact hf.comp_mul_right g⁻¹
 
@@ -143,20 +143,20 @@ variable [MeasurableInv G]
 
 @[to_additive]
 theorem Integrable.comp_div_left {f : G → F} [IsInvInvariant μ] [IsMulLeftInvariant μ]
-    (hf : Integrable f μ) (g : G) : Integrable (fun t => f (g / t)) μ :=
+    (hf : Integrable f μ) (g : G) : Integrable (fun t ↦ f (g / t)) μ :=
   ((measurePreserving_div_left μ g).integrable_comp hf.aestronglyMeasurable).mpr hf
 
 @[to_additive]
 theorem integrable_comp_div_left (f : G → F) [IsInvInvariant μ] [IsMulLeftInvariant μ] (g : G) :
-    Integrable (fun t => f (g / t)) μ ↔ Integrable f μ := by
-  refine ⟨fun h => ?_, fun h => h.comp_div_left g⟩
+    Integrable (fun t ↦ f (g / t)) μ ↔ Integrable f μ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.comp_div_left g⟩
   convert h.comp_inv.comp_mul_left g⁻¹
   simp_rw [div_inv_eq_mul, mul_inv_cancel_left]
 
 @[to_additive]
 theorem integral_div_left_eq_self (f : G → E) (μ : Measure G) [IsInvInvariant μ]
     [IsMulLeftInvariant μ] (x' : G) : (∫ x, f (x' / x) ∂μ) = ∫ x, f x ∂μ := by
-  simp_rw [div_eq_mul_inv, integral_inv_eq_self (fun x => f (x' * x)) μ,
+  simp_rw [div_eq_mul_inv, integral_inv_eq_self (fun x ↦ f (x' * x)) μ,
     integral_mul_left_eq_self f x']
 
 end MeasurableMul
@@ -168,7 +168,7 @@ variable [Group G] [MeasurableSpace α] [MulAction G α] [MeasurableSMul G α]
 @[to_additive]
 theorem integral_smul_eq_self {μ : Measure α} [SMulInvariantMeasure G α μ] (f : α → E) {g : G} :
     (∫ x, f (g • x) ∂μ) = ∫ x, f x ∂μ := by
-  have h : MeasurableEmbedding fun x : α => g • x := (MeasurableEquiv.smul g).measurableEmbedding
+  have h : MeasurableEmbedding fun x : α ↦ g • x := (MeasurableEquiv.smul g).measurableEmbedding
   rw [← h.integral_map, MeasureTheory.map_smul]
 
 end SMul

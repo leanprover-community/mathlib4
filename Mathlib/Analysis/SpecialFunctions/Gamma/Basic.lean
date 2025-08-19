@@ -48,11 +48,11 @@ namespace Real
 
 /-- Asymptotic bound for the `Γ` function integrand. -/
 theorem Gamma_integrand_isLittleO (s : ℝ) :
-    (fun x : ℝ => exp (-x) * x ^ s) =o[atTop] fun x : ℝ => exp (-(1 / 2) * x) := by
-  refine isLittleO_of_tendsto (fun x hx => ?_) ?_
+    (fun x : ℝ ↦ exp (-x) * x ^ s) =o[atTop] fun x : ℝ ↦ exp (-(1 / 2) * x) := by
+  refine isLittleO_of_tendsto (fun x hx ↦ ?_) ?_
   · exfalso; exact (exp_pos (-(1 / 2) * x)).ne' hx
-  have : (fun x : ℝ => exp (-x) * x ^ s / exp (-(1 / 2) * x)) =
-      (fun x : ℝ => exp (1 / 2 * x) / x ^ s)⁻¹ := by
+  have : (fun x : ℝ ↦ exp (-x) * x ^ s / exp (-(1 / 2) * x)) =
+      (fun x : ℝ ↦ exp (1 / 2 * x) / x ^ s)⁻¹ := by
     ext1 x
     field_simp [exp_ne_zero, exp_neg, ← Real.exp_add]
     left
@@ -62,7 +62,7 @@ theorem Gamma_integrand_isLittleO (s : ℝ) :
 
 /-- The Euler integral for the `Γ` function converges for positive real `s`. -/
 theorem GammaIntegral_convergent {s : ℝ} (h : 0 < s) :
-    IntegrableOn (fun x : ℝ => exp (-x) * x ^ (s - 1)) (Ioi 0) := by
+    IntegrableOn (fun x : ℝ ↦ exp (-x) * x ^ (s - 1)) (Ioi 0) := by
   rw [← Ioc_union_Ioi_eq_Ioi (@zero_le_one ℝ _ _ _ _), integrableOn_union]
   constructor
   · rw [← integrableOn_Icc_iff_integrableOn_Ioc]
@@ -85,13 +85,13 @@ equal but not definitionally so. We use the first of these throughout. -/
 
 This is proved by reduction to the real case. -/
 theorem GammaIntegral_convergent {s : ℂ} (hs : 0 < s.re) :
-    IntegrableOn (fun x => (-x).exp * x ^ (s - 1) : ℝ → ℂ) (Ioi 0) := by
+    IntegrableOn (fun x ↦ (-x).exp * x ^ (s - 1) : ℝ → ℂ) (Ioi 0) := by
   constructor
   · refine ContinuousOn.aestronglyMeasurable ?_ measurableSet_Ioi
     apply (continuous_ofReal.comp continuous_neg.rexp).continuousOn.mul
     apply continuousOn_of_forall_continuousAt
     intro x hx
-    have : ContinuousAt (fun x : ℂ => x ^ (s - 1)) ↑x :=
+    have : ContinuousAt (fun x : ℂ ↦ x ^ (s - 1)) ↑x :=
       continuousAt_cpow_const <| ofReal_mem_slitPlane.2 hx
     exact ContinuousAt.comp this continuous_ofReal.continuousAt
   · rw [← hasFiniteIntegral_norm_iff]
@@ -112,7 +112,7 @@ def GammaIntegral (s : ℂ) : ℂ :=
 
 theorem GammaIntegral_conj (s : ℂ) : GammaIntegral (conj s) = conj (GammaIntegral s) := by
   rw [GammaIntegral, GammaIntegral, ← integral_conj]
-  refine setIntegral_congr_fun measurableSet_Ioi fun x hx => ?_
+  refine setIntegral_congr_fun measurableSet_Ioi fun x hx ↦ ?_
   dsimp only
   rw [RingHom.map_mul, conj_ofReal, cpow_def_of_ne_zero (ofReal_ne_zero.mpr (ne_of_gt hx)),
     cpow_def_of_ne_zero (ofReal_ne_zero.mpr (ne_of_gt hx)), ← exp_conj, RingHom.map_mul, ←
@@ -120,7 +120,7 @@ theorem GammaIntegral_conj (s : ℂ) : GammaIntegral (conj s) = conj (GammaInteg
 
 theorem GammaIntegral_ofReal (s : ℝ) :
     GammaIntegral ↑s = ↑(∫ x : ℝ in Ioi 0, Real.exp (-x) * x ^ (s - 1)) := by
-  have : ∀ r : ℝ, Complex.ofReal r = @RCLike.ofReal ℂ _ r := fun r => rfl
+  have : ∀ r : ℝ, Complex.ofReal r = @RCLike.ofReal ℂ _ r := fun r ↦ rfl
   rw [GammaIntegral]
   conv_rhs => rw [this, ← _root_.integral_ofReal]
   refine setIntegral_congr_fun measurableSet_Ioi ?_
@@ -148,31 +148,31 @@ def partialGamma (s : ℂ) (X : ℝ) : ℂ :=
   ∫ x in (0)..X, (-x).exp * x ^ (s - 1)
 
 theorem tendsto_partialGamma {s : ℂ} (hs : 0 < s.re) :
-    Tendsto (fun X : ℝ => partialGamma s X) atTop (𝓝 <| GammaIntegral s) :=
+    Tendsto (fun X : ℝ ↦ partialGamma s X) atTop (𝓝 <| GammaIntegral s) :=
   intervalIntegral_tendsto_integral_Ioi 0 (GammaIntegral_convergent hs) tendsto_id
 
 private theorem Gamma_integrand_intervalIntegrable (s : ℂ) {X : ℝ} (hs : 0 < s.re) (hX : 0 ≤ X) :
-    IntervalIntegrable (fun x => (-x).exp * x ^ (s - 1) : ℝ → ℂ) volume 0 X := by
+    IntervalIntegrable (fun x ↦ (-x).exp * x ^ (s - 1) : ℝ → ℂ) volume 0 X := by
   rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hX]
   exact IntegrableOn.mono_set (GammaIntegral_convergent hs) Ioc_subset_Ioi_self
 
 private theorem Gamma_integrand_deriv_integrable_A {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) :
-    IntervalIntegrable (fun x => -((-x).exp * x ^ s) : ℝ → ℂ) volume 0 X := by
+    IntervalIntegrable (fun x ↦ -((-x).exp * x ^ s) : ℝ → ℂ) volume 0 X := by
   convert (Gamma_integrand_intervalIntegrable (s + 1) _ hX).neg
   · simp only [ofReal_exp, ofReal_neg, add_sub_cancel_right]; rfl
   · simp only [add_re, one_re]; linarith
 
 private theorem Gamma_integrand_deriv_integrable_B {s : ℂ} (hs : 0 < s.re) {Y : ℝ} (hY : 0 ≤ Y) :
-    IntervalIntegrable (fun x : ℝ => (-x).exp * (s * x ^ (s - 1)) : ℝ → ℂ) volume 0 Y := by
-  have : (fun x => (-x).exp * (s * x ^ (s - 1)) : ℝ → ℂ) =
-      (fun x => s * ((-x).exp * x ^ (s - 1)) : ℝ → ℂ) := by ext1; ring
+    IntervalIntegrable (fun x : ℝ ↦ (-x).exp * (s * x ^ (s - 1)) : ℝ → ℂ) volume 0 Y := by
+  have : (fun x ↦ (-x).exp * (s * x ^ (s - 1)) : ℝ → ℂ) =
+      (fun x ↦ s * ((-x).exp * x ^ (s - 1)) : ℝ → ℂ) := by ext1; ring
   rw [this, intervalIntegrable_iff_integrableOn_Ioc_of_le hY]
   constructor
   · refine (continuousOn_const.mul ?_).aestronglyMeasurable measurableSet_Ioc
     apply (continuous_ofReal.comp continuous_neg.rexp).continuousOn.mul
     apply continuousOn_of_forall_continuousAt
     intro x hx
-    refine (?_ : ContinuousAt (fun x : ℂ => x ^ (s - 1)) _).comp continuous_ofReal.continuousAt
+    refine (?_ : ContinuousAt (fun x : ℂ ↦ x ^ (s - 1)) _).comp continuous_ofReal.continuousAt
     exact continuousAt_cpow_const <| ofReal_mem_slitPlane.2 hx.1
   rw [← hasFiniteIntegral_norm_iff]
   simp_rw [norm_mul]
@@ -188,12 +188,12 @@ private theorem Gamma_integrand_deriv_integrable_B {s : ℂ} (hs : 0 < s.re) {Y 
 theorem partialGamma_add_one {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) :
     partialGamma (s + 1) X = s * partialGamma s X - (-X).exp * X ^ s := by
   rw [partialGamma, partialGamma, add_sub_cancel_right]
-  have F_der_I : ∀ x : ℝ, x ∈ Ioo 0 X → HasDerivAt (fun x => (-x).exp * x ^ s : ℝ → ℂ)
+  have F_der_I : ∀ x : ℝ, x ∈ Ioo 0 X → HasDerivAt (fun x ↦ (-x).exp * x ^ s : ℝ → ℂ)
       (-((-x).exp * x ^ s) + (-x).exp * (s * x ^ (s - 1))) x := by
     intro x hx
-    have d1 : HasDerivAt (fun y : ℝ => (-y).exp) (-(-x).exp) x := by
+    have d1 : HasDerivAt (fun y : ℝ ↦ (-y).exp) (-(-x).exp) x := by
       simpa using (hasDerivAt_neg x).exp
-    have d2 : HasDerivAt (fun y : ℝ => (y : ℂ) ^ s) (s * x ^ (s - 1)) x := by
+    have d2 : HasDerivAt (fun y : ℝ ↦ (y : ℂ) ^ s) (s * x ^ (s - 1)) x := by
       have t := @HasDerivAt.cpow_const _ _ _ s (hasDerivAt_id ↑x) ?_
       · simpa only [mul_one] using t.comp_ofReal
       · exact ofReal_mem_slitPlane.2 hx.1
@@ -203,13 +203,13 @@ theorem partialGamma_add_one {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) 
     (Gamma_integrand_deriv_integrable_A hs hX).add (Gamma_integrand_deriv_integrable_B hs hX)
   have int_eval := integral_eq_sub_of_hasDerivAt_of_le hX cont.continuousOn F_der_I der_ible
   -- We are basically done here but manipulating the output into the right form is fiddly.
-  apply_fun fun x : ℂ => -x at int_eval
+  apply_fun fun x : ℂ ↦ -x at int_eval
   rw [intervalIntegral.integral_add (Gamma_integrand_deriv_integrable_A hs hX)
       (Gamma_integrand_deriv_integrable_B hs hX),
     intervalIntegral.integral_neg, neg_add, neg_neg] at int_eval
   rw [eq_sub_of_add_eq int_eval, sub_neg_eq_add, neg_sub, add_comm, add_sub]
-  have : (fun x => (-x).exp * (s * x ^ (s - 1)) : ℝ → ℂ) =
-      (fun x => s * (-x).exp * x ^ (s - 1) : ℝ → ℂ) := by ext1; ring
+  have : (fun x ↦ (-x).exp * (s * x ^ (s - 1)) : ℝ → ℂ) =
+      (fun x ↦ s * (-x).exp * x ^ (s - 1) : ℝ → ℂ) := by ext1; ring
   rw [this]
   rw [← intervalIntegral.integral_const_mul, ofReal_zero, zero_cpow]
   · rw [mul_zero, add_zero]; congr 2; ext1; ring
@@ -221,18 +221,18 @@ theorem GammaIntegral_add_one {s : ℂ} (hs : 0 < s.re) :
   suffices Tendsto (s + 1).partialGamma atTop (𝓝 <| s * GammaIntegral s) by
     refine tendsto_nhds_unique ?_ this
     apply tendsto_partialGamma; rw [add_re, one_re]; linarith
-  have : (fun X : ℝ => s * partialGamma s X - X ^ s * (-X).exp) =ᶠ[atTop]
+  have : (fun X : ℝ ↦ s * partialGamma s X - X ^ s * (-X).exp) =ᶠ[atTop]
       (s + 1).partialGamma := by
     apply eventuallyEq_of_mem (Ici_mem_atTop (0 : ℝ))
     intro X hX
     rw [partialGamma_add_one hs (mem_Ici.mp hX)]
     ring_nf
   refine Tendsto.congr' this ?_
-  suffices Tendsto (fun X => -X ^ s * (-X).exp : ℝ → ℂ) atTop (𝓝 0) by
+  suffices Tendsto (fun X ↦ -X ^ s * (-X).exp : ℝ → ℂ) atTop (𝓝 0) by
     simpa using Tendsto.add (Tendsto.const_mul s (tendsto_partialGamma hs)) this
   rw [tendsto_zero_iff_norm_tendsto_zero]
   have :
-      (fun e : ℝ => ‖-(e : ℂ) ^ s * (-e).exp‖) =ᶠ[atTop] fun e : ℝ => e ^ s.re * (-1 * e).exp := by
+      (fun e : ℝ ↦ ‖-(e : ℂ) ^ s * (-e).exp‖) =ᶠ[atTop] fun e : ℝ ↦ e ^ s.re * (-1 * e).exp := by
     refine eventuallyEq_of_mem (Ioi_mem_atTop 0) ?_
     intro x hx; dsimp only
     rw [norm_mul, norm_neg, norm_cpow_eq_rpow_re_of_pos hx,
@@ -249,7 +249,7 @@ section GammaDef
 /-- The `n`th function in this family is `Γ(s)` if `-n < s.re`, and junk otherwise. -/
 noncomputable def GammaAux : ℕ → ℂ → ℂ
   | 0 => GammaIntegral
-  | n + 1 => fun s : ℂ => GammaAux n (s + 1) / s
+  | n + 1 => fun s : ℂ ↦ GammaAux n (s + 1) / s
 
 theorem GammaAux_recurrence1 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
     GammaAux n s = GammaAux n (s + 1) / s := by
@@ -407,10 +407,10 @@ theorem Gamma_eq_integral {s : ℝ} (hs : 0 < s) :
   simp_rw [← Complex.ofReal_one, ← Complex.ofReal_sub]
   suffices ∫ x : ℝ in Ioi 0, ↑(exp (-x)) * (x : ℂ) ^ ((s - 1 : ℝ) : ℂ) =
       ∫ x : ℝ in Ioi 0, ((exp (-x) * x ^ (s - 1) : ℝ) : ℂ) by
-    have cc : ∀ r : ℝ, Complex.ofReal r = @RCLike.ofReal ℂ _ r := fun r => rfl
+    have cc : ∀ r : ℝ, Complex.ofReal r = @RCLike.ofReal ℂ _ r := fun r ↦ rfl
     conv_lhs => rw [this]; enter [1, 2, x]; rw [cc]
     rw [_root_.integral_ofReal, ← cc, Complex.ofReal_re]
-  refine setIntegral_congr_fun measurableSet_Ioi fun x hx => ?_
+  refine setIntegral_congr_fun measurableSet_Ioi fun x hx ↦ ?_
   push_cast
   rw [Complex.ofReal_cpow (le_of_lt hx)]
   push_cast; rfl
@@ -450,7 +450,7 @@ theorem Gamma_neg_nat_eq_zero (n : ℕ) : Gamma (-n) = 0 := by
 
 theorem Gamma_pos_of_pos {s : ℝ} (hs : 0 < s) : 0 < Gamma s := by
   rw [Gamma_eq_integral hs]
-  have : (Function.support fun x : ℝ => exp (-x) * x ^ (s - 1)) ∩ Ioi 0 = Ioi 0 := by
+  have : (Function.support fun x : ℝ ↦ exp (-x) * x ^ (s - 1)) ∩ Ioi 0 = Ioi 0 := by
     rw [inter_eq_right]
     intro x hx
     rw [Function.mem_support]
@@ -459,7 +459,7 @@ theorem Gamma_pos_of_pos {s : ℝ} (hs : 0 < s) : 0 < Gamma s := by
   · rw [this, volume_Ioi, ← ENNReal.ofReal_zero]
     exact ENNReal.ofReal_lt_top
   · refine eventually_of_mem (self_mem_ae_restrict measurableSet_Ioi) ?_
-    exact fun x hx => (mul_pos (exp_pos _) (rpow_pos_of_pos hx _)).le
+    exact fun x hx ↦ (mul_pos (exp_pos _) (rpow_pos_of_pos hx _)).le
   · exact GammaIntegral_convergent hs
 
 theorem Gamma_nonneg_of_nonneg {s : ℝ} (hs : 0 ≤ s) : 0 ≤ Gamma s := by

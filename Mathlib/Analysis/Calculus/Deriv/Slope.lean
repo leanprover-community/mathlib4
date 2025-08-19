@@ -260,7 +260,7 @@ theorem HasDerivWithinAt.limsup_norm_slope_le (hf : HasDerivWithinAt f f' s x) (
   rw [← nhdsWithin_union, diff_union_self, nhdsWithin_union, mem_sup] at C
   filter_upwards [C.1]
   simp only [norm_smul, mem_Iio, norm_inv]
-  exact fun _ => id
+  exact fun _ ↦ id
 
 /-- If `f` has derivative `f'` within `s` at `x`, then for any `r > ‖f'‖` the ratio
 `(‖f z‖ - ‖f x‖) / ‖z - x‖` is less than `r` in some neighborhood of `x` within `s`.

@@ -82,11 +82,11 @@ variable [Semiring R] {p q : R[X]}
 
 theorem forall_iff_forall_finsupp (P : R[X] → Prop) :
     (∀ p, P p) ↔ ∀ q : R[ℕ], P ⟨q⟩ :=
-  ⟨fun h q => h ⟨q⟩, fun h ⟨p⟩ => h p⟩
+  ⟨fun h q ↦ h ⟨q⟩, fun h ⟨p⟩ ↦ h p⟩
 
 theorem exists_iff_exists_finsupp (P : R[X] → Prop) :
     (∃ p, P p) ↔ ∃ q : R[ℕ], P ⟨q⟩ :=
-  ⟨fun ⟨⟨p⟩, hp⟩ => ⟨p, hp⟩, fun ⟨q, hq⟩ => ⟨⟨q⟩, hq⟩⟩
+  ⟨fun ⟨⟨p⟩, hp⟩ ↦ ⟨p, hp⟩, fun ⟨q, hq⟩ ↦ ⟨⟨q⟩, hq⟩⟩
 
 @[simp]
 theorem eta (f : R[X]) : Polynomial.ofFinsupp f.toFinsupp = f := by constructor
@@ -123,7 +123,7 @@ instance neg' {R : Type u} [Ring R] : Neg R[X] :=
   ⟨neg⟩
 
 instance sub {R : Type u} [Ring R] : Sub R[X] :=
-  ⟨fun a b => a + -b⟩
+  ⟨fun a b ↦ a + -b⟩
 
 instance mul' : Mul R[X] :=
   ⟨mul⟩
@@ -240,7 +240,7 @@ theorem _root_.IsSMulRegular.polynomial {S : Type*} [SMulZeroClass S R] {a : S}
   | ⟨_x⟩, ⟨_y⟩, h => congr_arg _ <| ha.finsupp (Polynomial.ofFinsupp.inj h)
 
 theorem toFinsupp_injective : Function.Injective (toFinsupp : R[X] → AddMonoidAlgebra _ _) :=
-  fun ⟨_x⟩ ⟨_y⟩ => congr_arg _
+  fun ⟨_x⟩ ⟨_y⟩ ↦ congr_arg _
 
 @[simp]
 theorem toFinsupp_inj {a b : R[X]} : a.toFinsupp = b.toFinsupp ↔ a = b :=
@@ -284,8 +284,8 @@ theorem toFinsupp_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : R[X]).toFinsupp =
 
 instance semiring : Semiring R[X] :=
   fast_instance% Function.Injective.semiring toFinsupp toFinsupp_injective toFinsupp_zero
-    toFinsupp_one toFinsupp_add toFinsupp_mul (fun _ _ => toFinsupp_nsmul _ _) toFinsupp_pow
-    fun _ => rfl
+    toFinsupp_one toFinsupp_add toFinsupp_mul (fun _ _ ↦ toFinsupp_nsmul _ _) toFinsupp_pow
+    fun _ ↦ rfl
 
 instance distribSMul {S} [DistribSMul S R] : DistribSMul S R[X] :=
   fast_instance% Function.Injective.distribSMul ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩
@@ -297,7 +297,7 @@ instance distribMulAction {S} [Monoid S] [DistribMulAction S R] : DistribMulActi
 
 instance faithfulSMul {S} [SMulZeroClass S R] [FaithfulSMul S R] : FaithfulSMul S R[X] where
   eq_of_smul_eq_smul {_s₁ _s₂} h :=
-    eq_of_smul_eq_smul fun a : ℕ →₀ R => congr_arg toFinsupp (h ⟨a⟩)
+    eq_of_smul_eq_smul fun a : ℕ →₀ R ↦ congr_arg toFinsupp (h ⟨a⟩)
 
 instance module {S} [Semiring S] [Module S R] : Module S R[X] :=
   fast_instance% Function.Injective.module _ ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩
@@ -701,7 +701,7 @@ theorem subsingleton_iff_subsingleton : Subsingleton R[X] ↔ Subsingleton R :=
     infer_instance⟩
 
 theorem Nontrivial.of_polynomial_ne (h : p ≠ q) : Nontrivial R :=
-  (subsingleton_or_nontrivial R).resolve_left fun _hI => h <| Subsingleton.elim _ _
+  (subsingleton_or_nontrivial R).resolve_left fun _hI ↦ h <| Subsingleton.elim _ _
 
 theorem forall_eq_iff_forall_eq : (∀ f g : R[X], f = g) ↔ ∀ a b : R, a = b := by
   simpa only [← subsingleton_iff] using subsingleton_iff_subsingleton
@@ -734,12 +734,12 @@ theorem addHom_ext {M : Type*} [AddZeroClass M] {f g : R[X] →+ M}
 @[ext high]
 theorem addHom_ext' {M : Type*} [AddZeroClass M] {f g : R[X] →+ M}
     (h : ∀ n, f.comp (monomial n).toAddMonoidHom = g.comp (monomial n).toAddMonoidHom) : f = g :=
-  addHom_ext fun n => DFunLike.congr_fun (h n)
+  addHom_ext fun n ↦ DFunLike.congr_fun (h n)
 
 @[ext high]
 theorem lhom_ext' {M : Type*} [AddCommMonoid M] [Module R M] {f g : R[X] →ₗ[R] M}
     (h : ∀ n, f.comp (monomial n) = g.comp (monomial n)) : f = g :=
-  LinearMap.toAddMonoidHom_injective <| addHom_ext fun n => LinearMap.congr_fun (h n)
+  LinearMap.toAddMonoidHom_injective <| addHom_ext fun n ↦ LinearMap.congr_fun (h n)
 
 -- this has the same content as the subsingleton
 theorem eq_zero_of_eq_zero (h : (0 : R) = (1 : R)) (p : R[X]) : p = 0 := by
@@ -845,7 +845,7 @@ theorem sum_eq_of_subset {S : Type*} [AddCommMonoid S] {p : R[X]} (f : ℕ → R
 
 /-- Expressing the product of two polynomials as a double sum. -/
 theorem mul_eq_sum_sum :
-    p * q = ∑ i ∈ p.support, q.sum fun j a => (monomial (i + j)) (p.coeff i * a) := by
+    p * q = ∑ i ∈ p.support, q.sum fun j a ↦ (monomial (i + j)) (p.coeff i * a) := by
   apply toFinsupp_injective
   rcases p with ⟨⟩; rcases q with ⟨⟩
   simp_rw [sum, coeff, toFinsupp_sum, support, toFinsupp_mul, toFinsupp_monomial,
@@ -881,26 +881,26 @@ theorem sum_add' {S : Type*} [AddCommMonoid S] (p : R[X]) (f g : ℕ → R → S
     p.sum (f + g) = p.sum f + p.sum g := by simp [sum_def, Finset.sum_add_distrib]
 
 theorem sum_add {S : Type*} [AddCommMonoid S] (p : R[X]) (f g : ℕ → R → S) :
-    (p.sum fun n x => f n x + g n x) = p.sum f + p.sum g :=
+    (p.sum fun n x ↦ f n x + g n x) = p.sum f + p.sum g :=
   sum_add' _ _ _
 
 theorem sum_smul_index {S : Type*} [AddCommMonoid S] (p : R[X]) (b : R) (f : ℕ → R → S)
-    (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a => f n (b * a) :=
+    (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a ↦ f n (b * a) :=
   Finsupp.sum_smul_index hf
 
 theorem sum_smul_index' {S T : Type*} [DistribSMul T R] [AddCommMonoid S] (p : R[X]) (b : T)
-    (f : ℕ → R → S) (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a => f n (b • a) :=
+    (f : ℕ → R → S) (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a ↦ f n (b • a) :=
   Finsupp.sum_smul_index' hf
 
 protected theorem smul_sum {S T : Type*} [AddCommMonoid S] [DistribSMul T S] (p : R[X]) (b : T)
-    (f : ℕ → R → S) : b • p.sum f = p.sum fun n a => b • f n a :=
+    (f : ℕ → R → S) : b • p.sum f = p.sum fun n a ↦ b • f n a :=
   Finsupp.smul_sum
 
 @[simp]
-theorem sum_monomial_eq : ∀ p : R[X], (p.sum fun n a => monomial n a) = p
+theorem sum_monomial_eq : ∀ p : R[X], (p.sum fun n a ↦ monomial n a) = p
   | ⟨_p⟩ => (ofFinsupp_sum _ _).symm.trans (congr_arg _ <| Finsupp.sum_single _)
 
-theorem sum_C_mul_X_pow_eq (p : R[X]) : (p.sum fun n a => C a * X ^ n) = p := by
+theorem sum_C_mul_X_pow_eq (p : R[X]) : (p.sum fun n a ↦ C a * X ^ n) = p := by
   simp_rw [C_mul_X_pow_eq_monomial, sum_monomial_eq]
 
 @[elab_as_elim]
@@ -913,7 +913,7 @@ protected theorem induction_on {motive : R[X] → Prop} (p : R[X]) (C : ∀ a, m
     induction n with
     | zero => rw [pow_zero, mul_one]; exact C a
     | succ n ih => exact monomial _ _ ih
-  have B : ∀ s : Finset ℕ, motive (s.sum fun n : ℕ => Polynomial.C (p.coeff n) * X ^ n) := by
+  have B : ∀ s : Finset ℕ, motive (s.sum fun n : ℕ ↦ Polynomial.C (p.coeff n) * X ^ n) := by
     apply Finset.induction
     · convert C 0
       exact C_0.symm
@@ -931,7 +931,7 @@ and it holds for monomials.
 protected theorem induction_on' {motive : R[X] → Prop} (p : R[X])
     (add : ∀ p q, motive p → motive q → motive (p + q))
     (monomial : ∀ (n : ℕ) (a : R), motive (monomial n a)) : motive p :=
-  Polynomial.induction_on p (monomial 0) add fun n a _h =>
+  Polynomial.induction_on p (monomial 0) add fun n a _h ↦
     by rw [C_mul_X_pow_eq_monomial]; exact monomial _ _
 
 /-- `erase p n` is the polynomial `p` in which the `X^n` term has been erased. -/
@@ -964,7 +964,7 @@ theorem coeff_erase (p : R[X]) (n i : ℕ) :
     (p.erase n).coeff i = if i = n then 0 else p.coeff i := by
   rcases p with ⟨⟩
   simp only [erase_def, coeff]
-  exact ite_congr rfl (fun _ => rfl) (fun _ => rfl)
+  exact ite_congr rfl (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 @[simp]
 theorem erase_zero (n : ℕ) : (0 : R[X]).erase n = 0 :=
@@ -1029,7 +1029,7 @@ end Update
 /-- The finset of nonzero coefficients of a polynomial. -/
 def coeffs (p : R[X]) : Finset R :=
   letI := Classical.decEq R
-  Finset.image (fun n => p.coeff n) p.support
+  Finset.image (fun n ↦ p.coeff n) p.support
 
 @[simp]
 theorem coeffs_zero : coeffs (0 : R[X]) = ∅ :=
@@ -1103,8 +1103,8 @@ theorem toFinsupp_intCast (z : ℤ) : (z : R[X]).toFinsupp = z := rfl
 instance ring : Ring R[X] :=
   fast_instance% Function.Injective.ring toFinsupp toFinsupp_injective (toFinsupp_zero (R := R))
       toFinsupp_one toFinsupp_add
-      toFinsupp_mul toFinsupp_neg toFinsupp_sub (fun _ _ => toFinsupp_nsmul _ _)
-      (fun _ _ => toFinsupp_zsmul _ _) toFinsupp_pow (fun _ => rfl) fun _ => rfl
+      toFinsupp_mul toFinsupp_neg toFinsupp_sub (fun _ _ ↦ toFinsupp_nsmul _ _)
+      (fun _ _ ↦ toFinsupp_zsmul _ _) toFinsupp_pow (fun _ ↦ rfl) fun _ ↦ rfl
 
 @[simp]
 theorem coeff_neg (p : R[X]) (n : ℕ) : coeff (-p) n = -coeff p n := by
@@ -1156,7 +1156,7 @@ instance nontrivial [Nontrivial R] : Nontrivial R[X] := by
 
 @[simp]
 theorem X_ne_zero [Nontrivial R] : (X : R[X]) ≠ 0 :=
-  mt (congr_arg fun p => coeff p 1) (by simp)
+  mt (congr_arg fun p ↦ coeff p 1) (by simp)
 
 instance [NoZeroDivisors R] : NoZeroDivisors R[X] :=
   (toFinsuppIso R).injective.noZeroDivisors _ (map_zero _) (map_mul _)
@@ -1192,17 +1192,17 @@ end DivisionRing
 
 @[simp]
 theorem nontrivial_iff [Semiring R] : Nontrivial R[X] ↔ Nontrivial R :=
-  ⟨fun h =>
+  ⟨fun h ↦
     let ⟨_r, _s, hrs⟩ := @exists_pair_ne _ h
     Nontrivial.of_polynomial_ne hrs,
-    fun h => @Polynomial.nontrivial _ _ h⟩
+    fun h ↦ @Polynomial.nontrivial _ _ h⟩
 
 section repr
 
 variable [Semiring R]
 
 protected instance repr [Repr R] [DecidableEq R] : Repr R[X] :=
-  ⟨fun p prec =>
+  ⟨fun p prec ↦
     let termPrecAndReprs : List (WithTop ℕ × Lean.Format) :=
       List.map (fun
         | 0 => (max_prec, "C " ++ reprArg (coeff p 0))

@@ -93,7 +93,7 @@ variable [SemilatticeSup α]
 
 theorem exists_ge_and_iff_exists {P : α → Prop} {x₀ : α} (hP : Monotone P) :
     (∃ x, x₀ ≤ x ∧ P x) ↔ ∃ x, P x :=
-  ⟨fun h => h.imp fun _ h => h.2, fun ⟨x, hx⟩ => ⟨x ⊔ x₀, le_sup_right, hP le_sup_left hx⟩⟩
+  ⟨fun h ↦ h.imp fun _ h ↦ h.2, fun ⟨x, hx⟩ ↦ ⟨x ⊔ x₀, le_sup_right, hP le_sup_left hx⟩⟩
 
 lemma exists_and_iff_of_monotone {P Q : α → Prop} (hP : Monotone P) (hQ : Monotone Q) :
     ((∃ x, P x) ∧ ∃ x, Q x) ↔ (∃ x, P x ∧ Q x) :=

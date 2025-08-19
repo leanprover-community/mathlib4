@@ -103,11 +103,11 @@ theorem Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral [NumberField K]
     ← one_mul (discr ℚ b), Basis.coe_reindex, discr_reindex]
   congr
   have hint : IsIntegral ℤ ((b.reindex (b.indexEquiv b')).toMatrix b').det :=
-    IsIntegral.det fun i j => h _ _
+    IsIntegral.det fun i j ↦ h _ _
   obtain ⟨r, hr⟩ := IsIntegrallyClosed.isIntegral_iff.1 hint
   have hunit : IsUnit r := by
     have : IsIntegral ℤ (b'.toMatrix (b.reindex (b.indexEquiv b'))).det :=
-      IsIntegral.det fun i j => h' _ _
+      IsIntegral.det fun i j ↦ h' _ _
     obtain ⟨r', hr'⟩ := IsIntegrallyClosed.isIntegral_iff.1 this
     refine isUnit_iff_exists_inv.2 ⟨r', ?_⟩
     suffices algebraMap ℤ ℚ (r * r') = 1 by

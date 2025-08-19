@@ -119,7 +119,7 @@ theorem IsLimit.isIso_limMap_π {F : J ⥤ C} [HasLimit F] {c : Cone F} (hc : Is
 
 theorem Cone.isLimit_iff_isIso_limMap_π {F : J ⥤ C} [HasLimit F] (c : Cone F) :
     Nonempty (IsLimit c) ↔ IsIso (limMap c.π) :=
-  ⟨fun ⟨h⟩ => IsLimit.isIso_limMap_π h, fun _ => ⟨c.isLimitOfIsIsoLimMapπ⟩⟩
+  ⟨fun ⟨h⟩ ↦ IsLimit.isIso_limMap_π h, fun _ ↦ ⟨c.isLimitOfIsIsoLimMapπ⟩⟩
 
 /-- If `J` is connected, `F : J ⥤ C` and `C` is a cocone on `F`, then to check that `c` is a
 colimit it is sufficient to check that `colimMap c.ι` is an isomorphism. The converse is also
@@ -142,7 +142,7 @@ theorem IsColimit.isIso_colimMap_ι {F : J ⥤ C} [HasColimit F] {c : Cocone F} 
 
 theorem Cocone.isColimit_iff_isIso_colimMap_ι {F : J ⥤ C} [HasColimit F] (c : Cocone F) :
     Nonempty (IsColimit c) ↔ IsIso (colimMap c.ι) :=
-  ⟨fun ⟨h⟩ => IsColimit.isIso_colimMap_ι h, fun _ => ⟨c.isColimitOfIsIsoColimMapι⟩⟩
+  ⟨fun ⟨h⟩ ↦ IsColimit.isIso_colimMap_ι h, fun _ ↦ ⟨c.isColimitOfIsIsoColimMapι⟩⟩
 
 end
 
@@ -212,15 +212,15 @@ Note that this functor does not preserve the two most obvious disconnected limit
 lemma prod_preservesConnectedLimits [IsConnected J] (X : C) :
     PreservesLimitsOfShape J (prod.functor.obj X) where
   preservesLimit {K} :=
-    { preserves := fun {c} l => ⟨{
-          lift := fun s =>
+    { preserves := fun {c} l ↦ ⟨{
+          lift := fun s ↦
             prod.lift (s.π.app (Classical.arbitrary _) ≫ Limits.prod.fst) (l.lift (forgetCone s))
-          fac := fun s j => by
+          fac := fun s j ↦ by
             apply Limits.prod.hom_ext
             · erw [assoc, limMap_π, comp_id, limit.lift_π]
               exact (nat_trans_from_is_connected (s.π ≫ γ₁ X) j (Classical.arbitrary _)).symm
             · simp
-          uniq := fun s m L => by
+          uniq := fun s m L ↦ by
             apply Limits.prod.hom_ext
             · erw [limit.lift_π, ← L (Classical.arbitrary J), assoc, limMap_π, comp_id]
               rfl

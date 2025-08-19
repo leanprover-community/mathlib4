@@ -135,7 +135,7 @@ theorem LinearMap.dualMap_injective_of_surjective {f : M₁ →ₗ[R] M₂} (hf 
   intro φ ψ h
   ext x
   obtain ⟨y, rfl⟩ := hf x
-  exact congr_arg (fun g : Module.Dual R M₁ => g y) h
+  exact congr_arg (fun g : Module.Dual R M₁ ↦ g y) h
 
 /-- The `Linear_equiv` version of `LinearMap.dualMap`. -/
 def LinearEquiv.dualMap (f : M₁ ≃ₗ[R] M₂) : Dual R M₂ ≃ₗ[R] Dual R M₁ where
@@ -243,7 +243,7 @@ lemma dualMap_dualMap_eq_iff_of_injective
     (h : Injective (Dual.eval R M')) :
     f.dualMap.dualMap = g.dualMap.dualMap ↔ f = g := by
   simp only [← Dual.eval_comp_comp_evalEquiv_eq]
-  refine ⟨fun hfg => ?_, fun a ↦ congrArg (Dual.eval R M').comp
+  refine ⟨fun hfg ↦ ?_, fun a ↦ congrArg (Dual.eval R M').comp
     (congrFun (congrArg LinearMap.comp a) (evalEquiv R M).symm.toLinearMap)⟩
   rw [propext (cancel_left h), LinearEquiv.eq_comp_toLinearMap_iff] at hfg
   exact hfg
@@ -340,7 +340,7 @@ def dualAnnihilator {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M
 theorem mem_dualAnnihilator (φ : Module.Dual R M) : φ ∈ W.dualAnnihilator ↔ ∀ w ∈ W, φ w = 0 := by
   refine LinearMap.mem_ker.trans ?_
   simp_rw [LinearMap.ext_iff, dualRestrict_apply]
-  exact ⟨fun h w hw => h ⟨w, hw⟩, fun h w => h w.1 w.2⟩
+  exact ⟨fun h w hw ↦ h ⟨w, hw⟩, fun h w ↦ h w.1 w.2⟩
 
 /-- That $\operatorname{ker}(\iota^* : V^* \to W^*) = \operatorname{ann}(W)$.
 This is the definition of the dual annihilator of the submodule $W$. -/
@@ -399,7 +399,7 @@ theorem dualAnnihilator_top : (⊤ : Submodule R M).dualAnnihilator = ⊥ := by
   rw [eq_bot_iff]
   intro v
   simp_rw [mem_dualAnnihilator, mem_bot, mem_top, forall_true_left]
-  exact fun h => LinearMap.ext h
+  exact fun h ↦ LinearMap.ext h
 
 @[simp]
 theorem dualCoannihilator_bot : (⊥ : Submodule R (Module.Dual R M)).dualCoannihilator = ⊤ :=
@@ -458,7 +458,7 @@ theorem iSup_dualAnnihilator_le_iInf {ι : Sort*} (U : ι → Submodule R M) :
     ⨆ i : ι, (U i).dualAnnihilator ≤ (⨅ i : ι, U i).dualAnnihilator := by
   rw [le_dualAnnihilator_iff_le_dualCoannihilator, dualCoannihilator_iSup_eq]
   apply iInf_mono
-  exact fun i : ι => le_dualAnnihilator_dualCoannihilator (U i)
+  exact fun i : ι ↦ le_dualAnnihilator_dualCoannihilator (U i)
 
 @[simp]
 lemma coe_dualAnnihilator_span (s : Set M) :

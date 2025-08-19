@@ -48,7 +48,7 @@ which does not have a cluster point at 0 is a Cauchy filter
 a field.
 -/
 class CompletableTopField : Prop extends T0Space K where
-  nice : ∀ F : Filter K, Cauchy F → 𝓝 0 ⊓ F = ⊥ → Cauchy (map (fun x => x⁻¹) F)
+  nice : ∀ F : Filter K, Cauchy F → 𝓝 0 ⊓ F = ⊥ → Cauchy (map (fun x ↦ x⁻¹) F)
 
 namespace UniformSpace
 
@@ -61,7 +61,7 @@ variable {K}
 
 /-- extension of inversion to the completion of a field. -/
 def hatInv : hat K → hat K :=
-  isDenseInducing_coe.extend fun x : K => (↑x⁻¹ : hat K)
+  isDenseInducing_coe.extend fun x : K ↦ (↑x⁻¹ : hat K)
 
 @[fun_prop]
 theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
@@ -71,8 +71,8 @@ theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
   intro y y_ne
   rw [mem_compl_singleton_iff] at y_ne
   apply CompleteSpace.complete
-  have : (fun (x : K) => (↑x⁻¹ : hat K)) =
-      ((fun (y : K) => (↑y : hat K))∘(fun (x : K) => (x⁻¹ : K))) := by
+  have : (fun (x : K) ↦ (↑x⁻¹ : hat K)) =
+      ((fun (y : K) ↦ (↑y : hat K))∘(fun (x : K) ↦ (x⁻¹ : K))) := by
     unfold Function.comp
     simp
   rw [this, ← Filter.map_map]
@@ -95,7 +95,7 @@ The value of `hat_inv` at zero is not really specified, although it's probably z
 Here we explicitly enforce the `inv_zero` axiom.
 -/
 instance instInvCompletion : Inv (hat K) :=
-  ⟨fun x => if x = 0 then 0 else hatInv x⟩
+  ⟨fun x ↦ if x = 0 then 0 else hatInv x⟩
 
 variable [IsTopologicalDivisionRing K]
 
@@ -114,14 +114,14 @@ theorem coe_inv (x : K) : (x : hat K)⁻¹ = ((x⁻¹ : K) : hat K) := by
   · conv_lhs => dsimp [Inv.inv]
     rw [if_neg]
     · exact hatInv_extends h
-    · exact fun H => h (isDenseEmbedding_coe.injective H)
+    · exact fun H ↦ h (isDenseEmbedding_coe.injective H)
 
 variable [IsUniformAddGroup K]
 
 theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
   haveI : T1Space (hat K) := T2Space.t1Space
-  let f := fun x : hat K => x * hatInv x
-  let c := (fun (x : K) => (x : hat K))
+  let f := fun x : hat K ↦ x * hatInv x
+  let c := (fun (x : K) ↦ (x : hat K))
   change f x = 1
   have cont : ContinuousAt f x := by
     fun_prop (disch := assumption)
@@ -145,13 +145,13 @@ theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
   rwa [closure_singleton, mem_singleton_iff] at fxclo
 
 instance instField : Field (hat K) where
-  mul_inv_cancel := fun x x_ne => by simp only [Inv.inv, if_neg x_ne, mul_hatInv_cancel x_ne]
+  mul_inv_cancel := fun x x_ne ↦ by simp only [Inv.inv, if_neg x_ne, mul_hatInv_cancel x_ne]
   inv_zero := by simp only [Inv.inv, ite_true]
   -- TODO: use a better defeq
   nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
+  nnqsmul_def := fun _ _ ↦ rfl
   qsmul := _
-  qsmul_def := fun _ _ => rfl
+  qsmul_def := fun _ _ ↦ rfl
 
 instance : IsTopologicalDivisionRing (hat K) :=
   { Completion.topologicalRing with
@@ -177,7 +177,7 @@ instance Subfield.completableTopField (K : Subfield L) : CompletableTopField K w
     let i : K →+* L := K.subtype
     have hi : IsUniformInducing i := isUniformEmbedding_subtype_val.isUniformInducing
     rw [← hi.cauchy_map_iff] at F_cau ⊢
-    rw [map_comm (show (i ∘ fun x => x⁻¹) = (fun x => x⁻¹) ∘ i by ext; rfl)]
+    rw [map_comm (show (i ∘ fun x ↦ x⁻¹) = (fun x ↦ x⁻¹) ∘ i by ext; rfl)]
     apply CompletableTopField.nice _ F_cau
     rw [← Filter.push_pull', ← map_zero i, ← hi.isInducing.nhds_eq_comap, inf_F, Filter.map_bot]
 
@@ -192,7 +192,7 @@ instance (priority := 100) completableTopField_of_complete (L : Type*) [Field L]
       exact cau_F.1.ne hF
     exact Filter.Tendsto.cauchy_map <|
       calc
-        map (fun x => x⁻¹) F ≤ map (fun x => x⁻¹) (𝓝 x) := map_mono hx
+        map (fun x ↦ x⁻¹) F ≤ map (fun x ↦ x⁻¹) (𝓝 x) := map_mono hx
         _ ≤ 𝓝 x⁻¹ := continuousAt_inv₀ hx'
 
 variable {α β : Type*} [Field β] [b : UniformSpace β] [CompletableTopField β]
@@ -204,9 +204,9 @@ theorem IsUniformInducing.completableTopField
     [UniformSpace α] [T0Space α]
     {f : α →+* β} (hf : IsUniformInducing f) :
     CompletableTopField α := by
-  refine CompletableTopField.mk (fun F F_cau inf_F => ?_)
+  refine CompletableTopField.mk (fun F F_cau inf_F ↦ ?_)
   rw [← IsUniformInducing.cauchy_map_iff hf] at F_cau ⊢
-  have h_comm : (f ∘ fun x => x⁻¹) = (fun x => x⁻¹) ∘ f := by
+  have h_comm : (f ∘ fun x ↦ x⁻¹) = (fun x ↦ x⁻¹) ∘ f := by
     ext; simp only [Function.comp_apply, map_inv₀]
   rw [Filter.map_comm h_comm]
   apply CompletableTopField.nice _ F_cau

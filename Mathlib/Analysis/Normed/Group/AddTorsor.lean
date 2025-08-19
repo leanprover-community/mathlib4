@@ -45,7 +45,7 @@ variable {α V P W Q : Type*} [SeminormedAddCommGroup V] [PseudoMetricSpace P] [
   [NormedAddCommGroup W] [MetricSpace Q] [NormedAddTorsor W Q]
 
 instance (priority := 100) NormedAddTorsor.to_isIsIsometricVAdd : IsIsometricVAdd V P :=
-  ⟨fun c => Isometry.of_dist_eq fun x y => by
+  ⟨fun c ↦ Isometry.of_dist_eq fun x y ↦ by
     simp [NormedAddTorsor.dist_eq_norm']⟩
 
 /-- A `SeminormedAddCommGroup` is a `NormedAddTorsor` over itself. -/
@@ -57,7 +57,7 @@ instance (priority := 100) SeminormedAddCommGroup.toNormedAddTorsor : NormedAddT
 instance AffineSubspace.toNormedAddTorsor {R : Type*} [Ring R] [Module R V]
     (s : AffineSubspace R P) [Nonempty s] : NormedAddTorsor s.direction s :=
   { AffineSubspace.toAddTorsor s with
-    dist_eq_norm' := fun x y => NormedAddTorsor.dist_eq_norm' x.val y.val }
+    dist_eq_norm' := fun x y ↦ NormedAddTorsor.dist_eq_norm' x.val y.val }
 
 section
 
@@ -118,7 +118,7 @@ addition/subtraction of `x : P`. -/
 @[simps!]
 def IsometryEquiv.vaddConst (x : P) : V ≃ᵢ P where
   toEquiv := Equiv.vaddConst x
-  isometry_toFun := Isometry.of_dist_eq fun _ _ => dist_vadd_cancel_right _ _ _
+  isometry_toFun := Isometry.of_dist_eq fun _ _ ↦ dist_vadd_cancel_right _ _ _
 
 @[simp]
 theorem dist_vsub_cancel_left (x y z : P) : dist (x -ᵥ y) (x -ᵥ z) = dist y z := by
@@ -133,7 +133,7 @@ subtraction from `x : P`. -/
 @[simps!]
 def IsometryEquiv.constVSub (x : P) : P ≃ᵢ V where
   toEquiv := Equiv.constVSub x
-  isometry_toFun := Isometry.of_dist_eq fun _ _ => dist_vsub_cancel_left _ _ _
+  isometry_toFun := Isometry.of_dist_eq fun _ _ ↦ dist_vsub_cancel_left _ _ _
 
 @[simp]
 theorem dist_vsub_cancel_right (x y z : P) : dist (x -ᵥ z) (y -ᵥ z) = dist x y :=
@@ -197,7 +197,7 @@ def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [NormedAddCommGroup
 
 theorem LipschitzWith.vadd [PseudoEMetricSpace α] {f : α → V} {g : α → P} {Kf Kg : ℝ≥0}
     (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) : LipschitzWith (Kf + Kg) (f +ᵥ g) :=
-  fun x y =>
+  fun x y ↦
   calc
     edist (f x +ᵥ g x) (f y +ᵥ g y) ≤ edist (f x) (f y) + edist (g x) (g y) :=
       edist_vadd_vadd_le _ _ _ _
@@ -206,23 +206,23 @@ theorem LipschitzWith.vadd [PseudoEMetricSpace α] {f : α → V} {g : α → P}
 
 theorem LipschitzWith.vsub [PseudoEMetricSpace α] {f g : α → P} {Kf Kg : ℝ≥0}
     (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) : LipschitzWith (Kf + Kg) (f -ᵥ g) :=
-  fun x y =>
+  fun x y ↦
   calc
     edist (f x -ᵥ g x) (f y -ᵥ g y) ≤ edist (f x) (f y) + edist (g x) (g y) :=
       edist_vsub_vsub_le _ _ _ _
     _ ≤ Kf * edist x y + Kg * edist x y := add_le_add (hf x y) (hg x y)
     _ = (Kf + Kg) * edist x y := (add_mul _ _ _).symm
 
-theorem uniformContinuous_vadd : UniformContinuous fun x : V × P => x.1 +ᵥ x.2 :=
+theorem uniformContinuous_vadd : UniformContinuous fun x : V × P ↦ x.1 +ᵥ x.2 :=
   (LipschitzWith.prod_fst.vadd LipschitzWith.prod_snd).uniformContinuous
 
-theorem uniformContinuous_vsub : UniformContinuous fun x : P × P => x.1 -ᵥ x.2 :=
+theorem uniformContinuous_vsub : UniformContinuous fun x : P × P ↦ x.1 -ᵥ x.2 :=
   (LipschitzWith.prod_fst.vsub LipschitzWith.prod_snd).uniformContinuous
 
 instance (priority := 100) NormedAddTorsor.to_continuousVAdd : ContinuousVAdd V P where
   continuous_vadd := uniformContinuous_vadd.continuous
 
-theorem continuous_vsub : Continuous fun x : P × P => x.1 -ᵥ x.2 :=
+theorem continuous_vsub : Continuous fun x : P × P ↦ x.1 -ᵥ x.2 :=
   uniformContinuous_vsub.continuous
 
 theorem Filter.Tendsto.vsub {l : Filter α} {f g : α → P} {x y : P} (hf : Tendsto f l (𝓝 x))
@@ -263,12 +263,12 @@ variable {R : Type*} [Ring R] [TopologicalSpace R] [Module R V] [ContinuousSMul 
 
 theorem Filter.Tendsto.lineMap {l : Filter α} {f₁ f₂ : α → P} {g : α → R} {p₁ p₂ : P} {c : R}
     (h₁ : Tendsto f₁ l (𝓝 p₁)) (h₂ : Tendsto f₂ l (𝓝 p₂)) (hg : Tendsto g l (𝓝 c)) :
-    Tendsto (fun x => AffineMap.lineMap (f₁ x) (f₂ x) (g x)) l (𝓝 <| AffineMap.lineMap p₁ p₂ c) :=
+    Tendsto (fun x ↦ AffineMap.lineMap (f₁ x) (f₂ x) (g x)) l (𝓝 <| AffineMap.lineMap p₁ p₂ c) :=
   (hg.smul (h₂.vsub h₁)).vadd h₁
 
 theorem Filter.Tendsto.midpoint [Invertible (2 : R)] {l : Filter α} {f₁ f₂ : α → P} {p₁ p₂ : P}
     (h₁ : Tendsto f₁ l (𝓝 p₁)) (h₂ : Tendsto f₂ l (𝓝 p₂)) :
-    Tendsto (fun x => midpoint R (f₁ x) (f₂ x)) l (𝓝 <| midpoint R p₁ p₂) :=
+    Tendsto (fun x ↦ midpoint R (f₁ x) (f₂ x)) l (𝓝 <| midpoint R p₁ p₂) :=
   h₁.lineMap h₂ tendsto_const_nhds
 
 end

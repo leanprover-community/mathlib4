@@ -97,9 +97,9 @@ def sigmaUncurry [∀ i j, Zero (δ i j)] [DecidableEq ι] (f : Π₀ (i) (j), �
     Π₀ i : Σ _, _, δ i.1 i.2 where
   toFun i := f i.1 i.2
   support' :=
-    f.support'.bind fun s =>
-      (Trunc.finChoice (fun i : ↥s.val.toFinset => (f i).support')).map fun fs =>
-        ⟨s.val.toFinset.attach.val.bind fun i => (fs i).val.map (Sigma.mk i.val), by
+    f.support'.bind fun s ↦
+      (Trunc.finChoice (fun i : ↥s.val.toFinset ↦ (f i).support')).map fun fs ↦
+        ⟨s.val.toFinset.attach.val.bind fun i ↦ (fs i).val.map (Sigma.mk i.val), by
           rintro ⟨i, a⟩
           cases s.prop i with
           | inl hi =>

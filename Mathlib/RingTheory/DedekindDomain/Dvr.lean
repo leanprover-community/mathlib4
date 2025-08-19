@@ -65,7 +65,7 @@ theorem Ring.DimensionLEOne.localization {R : Type*} (Rₘ : Type*) [CommRing R]
     [CommRing Rₘ] [Algebra R Rₘ] {M : Submonoid R} [IsLocalization M Rₘ] (hM : M ≤ R⁰)
     [h : Ring.DimensionLEOne R] : Ring.DimensionLEOne Rₘ := ⟨by
   intro p hp0 hpp
-  refine Ideal.isMaximal_def.mpr ⟨hpp.ne_top, Ideal.maximal_of_no_maximal fun P hpP hPm => ?_⟩
+  refine Ideal.isMaximal_def.mpr ⟨hpp.ne_top, Ideal.maximal_of_no_maximal fun P hpP hPm ↦ ?_⟩
   have hpP' : (⟨p, hpp⟩ : { p : Ideal Rₘ // p.IsPrime }) < ⟨P, hPm.isPrime⟩ := hpP
   rw [← (IsLocalization.orderIsoOfPrime M Rₘ).lt_iff_lt] at hpP'
   haveI : Ideal.IsPrime (Ideal.comap (algebraMap R Rₘ) p) :=
@@ -85,7 +85,7 @@ theorem IsLocalization.isDedekindDomain [IsDedekindDomain A] {M : Submonoid A} (
     exact IsUnit.mk0 _ (mt IsFractionRing.to_map_eq_zero_iff.mp (nonZeroDivisors.ne_zero (hM hy)))
   letI : Algebra Aₘ (FractionRing A) := RingHom.toAlgebra (IsLocalization.lift h)
   haveI : IsScalarTower A Aₘ (FractionRing A) :=
-    IsScalarTower.of_algebraMap_eq fun x => (IsLocalization.lift_eq h x).symm
+    IsScalarTower.of_algebraMap_eq fun x ↦ (IsLocalization.lift_eq h x).symm
   haveI : IsFractionRing Aₘ (FractionRing A) :=
     IsFractionRing.isFractionRing_of_isDomain_of_isLocalization M _ _
   refine (isDedekindDomain_iff _ (FractionRing A)).mpr ⟨?_, ?_, ?_, ?_⟩
@@ -140,7 +140,7 @@ theorem IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain [IsDed
 are also Dedekind domains in the sense of Noetherian domains where the localization at every
 nonzero prime ideal is a DVR. -/
 instance IsDedekindDomain.isDedekindDomainDvr [IsDedekindDomain A] : IsDedekindDomainDvr A where
-  is_dvr_at_nonzero_prime := fun _ hP _ =>
+  is_dvr_at_nonzero_prime := fun _ hP _ ↦
     IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain A hP _
 
 instance IsDedekindDomainDvr.ring_dimensionLEOne [h : IsDedekindDomainDvr A] :
@@ -150,12 +150,12 @@ instance IsDedekindDomainDvr.ring_dimensionLEOne [h : IsDedekindDomainDvr A] :
     rcases p.exists_le_maximal (Ideal.IsPrime.ne_top hpp) with ⟨q, hq, hpq⟩
     let f := (IsLocalization.orderIsoOfPrime q.primeCompl (Localization.AtPrime q)).symm
     let P := f ⟨p, hpp, hpq.disjoint_compl_left⟩
-    let Q := f ⟨q, hq.isPrime, Set.disjoint_left.mpr fun _ a => a⟩
+    let Q := f ⟨q, hq.isPrime, Set.disjoint_left.mpr fun _ a ↦ a⟩
     have hinj : Function.Injective (algebraMap A (Localization.AtPrime q)) :=
       IsLocalization.injective (Localization.AtPrime q) q.primeCompl_le_nonZeroDivisors
-    have hp1 : P.1 ≠ ⊥ := fun x => hp ((p.map_eq_bot_iff_of_injective hinj).mp x)
+    have hp1 : P.1 ≠ ⊥ := fun x ↦ hp ((p.map_eq_bot_iff_of_injective hinj).mp x)
     have hq1 : Q.1 ≠ ⊥ :=
-      fun x => (ne_bot_of_le_ne_bot hp hpq) ((q.map_eq_bot_iff_of_injective hinj).mp x)
+      fun x ↦ (ne_bot_of_le_ne_bot hp hpq) ((q.map_eq_bot_iff_of_injective hinj).mp x)
     rcases (IsDiscreteValuationRing.iff_pid_with_one_nonzero_prime (Localization.AtPrime q)).mp
       (h.is_dvr_at_nonzero_prime q (ne_bot_of_le_ne_bot hp hpq) hq.isPrime) with ⟨_, huq⟩
     rw [show p = q from Subtype.val_inj.mpr <| f.injective <|

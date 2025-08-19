@@ -282,7 +282,7 @@ lemma map_baseChange {S : Type s} [CommRing S] [Algebra R S] {A : Type v} [CommR
   congr_arg W.map <| g.comp_algebraMap_of_tower R
 
 lemma map_injective {f : R →+* A} (hf : Function.Injective f) :
-    Function.Injective <| map (f := f) := fun _ _ h => by
+    Function.Injective <| map (f := f) := fun _ _ h ↦ by
   rcases mk.inj h with ⟨_, _, _, _, _⟩
   ext <;> apply_fun _ using hf <;> assumption
 

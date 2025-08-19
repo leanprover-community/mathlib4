@@ -101,11 +101,11 @@ theorem IsPositive.inner_nonneg_right {T : E →ₗ[𝕜] E} (hT : IsPositive T)
 theorem isPositive_zero : IsPositive (0 : E →ₗ[𝕜] E) := ⟨.zero, by simp⟩
 
 @[simp]
-theorem isPositive_one : IsPositive (1 : E →ₗ[𝕜] E) := ⟨.id, fun _ => inner_self_nonneg⟩
+theorem isPositive_one : IsPositive (1 : E →ₗ[𝕜] E) := ⟨.id, fun _ ↦ inner_self_nonneg⟩
 
 @[simp]
 theorem isPositive_natCast {n : ℕ} : IsPositive (n : E →ₗ[𝕜] E) := by
-  refine ⟨IsSymmetric.natCast n, fun x => ?_⟩
+  refine ⟨IsSymmetric.natCast n, fun x ↦ ?_⟩
   simp only [Module.End.natCast_apply, ← Nat.cast_smul_eq_nsmul 𝕜, inner_smul_left, map_natCast,
     mul_re, natCast_re, inner_self_im, mul_zero, sub_zero]
   exact mul_nonneg n.cast_nonneg' inner_self_nonneg
@@ -117,7 +117,7 @@ theorem isPositive_ofNat {n : ℕ} [n.AtLeastTwo] : IsPositive (ofNat(n) : E →
 @[aesop safe apply]
 theorem IsPositive.add {T S : E →ₗ[𝕜] E} (hT : T.IsPositive) (hS : S.IsPositive) :
     (T + S).IsPositive := by
-  refine ⟨hT.isSymmetric.add hS.isSymmetric, fun x => ?_⟩
+  refine ⟨hT.isSymmetric.add hS.isSymmetric, fun x ↦ ?_⟩
   rw [add_apply, inner_add_left, map_add]
   exact add_nonneg (hT.re_inner_nonneg_left x) (hS.re_inner_nonneg_left x)
 
@@ -127,7 +127,7 @@ theorem IsPositive.smul_of_nonneg {T : E →ₗ[𝕜] E} (hT : T.IsPositive) {c 
     (c • T).IsPositive := by
   have hc' : starRingEnd 𝕜 c = c := by
     simp [conj_eq_iff_im, ← (le_iff_re_im.mp hc).right]
-  refine ⟨hT.left.smul hc', fun x => ?_⟩
+  refine ⟨hT.left.smul hc', fun x ↦ ?_⟩
   rw [smul_apply, inner_smul_left, hc', mul_re, conj_eq_iff_im.mp hc', zero_mul, sub_zero]
   exact mul_nonneg ((re_nonneg_of_nonneg hc').mpr hc) (re_inner_nonneg_left hT x)
 
@@ -164,7 +164,7 @@ end PartialOrder
 /-- An idempotent linear map is positive iff it is symmetric. -/
 theorem IsIdempotentElem.isPositive_iff_isSymmetric {T : E →ₗ[𝕜] E} (hT : IsIdempotentElem T) :
     T.IsPositive ↔ T.IsSymmetric := by
-  refine ⟨fun h => h.isSymmetric, fun h => ⟨h, fun x => ?_⟩⟩
+  refine ⟨fun h ↦ h.isSymmetric, fun h ↦ ⟨h, fun x ↦ ?_⟩⟩
   rw [← hT.eq, Module.End.mul_apply, h]
   exact inner_self_nonneg
 
@@ -230,7 +230,7 @@ theorem isPositive_zero : IsPositive (0 : E →L[𝕜] E) :=
 
 @[simp]
 theorem isPositive_one : IsPositive (1 : E →L[𝕜] E) :=
-  ⟨.one _, fun _ => inner_self_nonneg⟩
+  ⟨.one _, fun _ ↦ inner_self_nonneg⟩
 
 @[simp]
 theorem isPositive_natCast {n : ℕ} : IsPositive (n : E →L[𝕜] E) :=
@@ -254,7 +254,7 @@ theorem IsPositive.smul_of_nonneg {T : E →L[𝕜] E} (hT : T.IsPositive) {c : 
 @[aesop safe apply]
 theorem IsPositive.conj_adjoint {T : E →L[𝕜] E} (hT : T.IsPositive) (S : E →L[𝕜] F) :
     (S ∘L T ∘L S†).IsPositive := by
-  refine ⟨hT.isSelfAdjoint.conj_adjoint S, fun x => ?_⟩
+  refine ⟨hT.isSelfAdjoint.conj_adjoint S, fun x ↦ ?_⟩
   rw [reApplyInnerSelf, comp_apply, ← adjoint_inner_right]
   exact hT.re_inner_nonneg_left _
 

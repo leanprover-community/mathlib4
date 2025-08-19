@@ -91,7 +91,7 @@ theorem sSup_le_iff : sSup s ≤ a ↔ ∀ b ∈ s, b ≤ a :=
   isLUB_le_iff (isLUB_sSup s)
 
 theorem le_sSup_iff : a ≤ sSup s ↔ ∀ b ∈ upperBounds s, a ≤ b :=
-  ⟨fun h _ hb => le_trans h (sSup_le hb), fun hb => hb _ fun _ => le_sSup⟩
+  ⟨fun h _ hb ↦ le_trans h (sSup_le hb), fun hb ↦ hb _ fun _ ↦ le_sSup⟩
 
 theorem le_iSup_iff {s : ι → α} : a ≤ iSup s ↔ ∀ b, (∀ i, s i ≤ b) → a ≤ b := by
   simp [iSup, le_sSup_iff, upperBounds]
@@ -120,7 +120,7 @@ theorem le_sInf : (∀ b ∈ s, a ≤ b) → a ≤ sInf s :=
   CompleteSemilatticeInf.le_sInf s a
 
 theorem isGLB_sInf (s : Set α) : IsGLB s (sInf s) :=
-  ⟨fun _ => sInf_le, fun _ => le_sInf⟩
+  ⟨fun _ ↦ sInf_le, fun _ ↦ le_sInf⟩
 
 lemma isGLB_iff_sInf_eq : IsGLB s a ↔ sInf s = a :=
   ⟨(isGLB_sInf s).unique, by rintro rfl; exact isGLB_sInf _⟩
@@ -139,7 +139,7 @@ theorem le_sInf_iff : a ≤ sInf s ↔ ∀ b ∈ s, a ≤ b :=
   le_isGLB_iff (isGLB_sInf s)
 
 theorem sInf_le_iff : sInf s ≤ a ↔ ∀ b ∈ lowerBounds s, b ≤ a :=
-  ⟨fun h _ hb => le_trans (le_sInf hb) h, fun hb => hb _ fun _ => sInf_le⟩
+  ⟨fun h _ hb ↦ le_trans (le_sInf hb) h, fun hb ↦ hb _ fun _ ↦ sInf_le⟩
 
 theorem iInf_le_iff {s : ι → α} : iInf s ≤ a ↔ ∀ b, (∀ i, b ≤ s i) → b ≤ a := by
   simp [iInf, sInf_le_iff, lowerBounds]
@@ -189,12 +189,12 @@ def completeLatticeOfInf (α : Type*) [H1 : PartialOrder α] [H2 : InfSet α]
   inf_le_right _ _ := (isGLB_sInf _).1 <| mem_insert_of_mem _ <| mem_singleton _
   inf_le_left _ _ := (isGLB_sInf _).1 <| mem_insert _ _
   sup_le a b c hac hbc := (isGLB_sInf _).1 <| by simp [*]
-  le_sup_left _ _ := (isGLB_sInf _).2 fun _ => And.left
-  le_sup_right _ _ := (isGLB_sInf _).2 fun _ => And.right
+  le_sup_left _ _ := (isGLB_sInf _).2 fun _ ↦ And.left
+  le_sup_right _ _ := (isGLB_sInf _).2 fun _ ↦ And.right
   le_sInf s _ ha := (isGLB_sInf s).2 ha
   sInf_le s _ ha := (isGLB_sInf s).1 ha
   sSup s := sInf (upperBounds s)
-  le_sSup s _ ha := (isGLB_sInf (upperBounds s)).2 fun _ hb => hb ha
+  le_sSup s _ ha := (isGLB_sInf (upperBounds s)).2 fun _ hb ↦ hb ha
   sSup_le s _ ha := (isGLB_sInf (upperBounds s)).1 ha
 
 /-- Any `CompleteSemilatticeInf` is in fact a `CompleteLattice`.
@@ -204,7 +204,7 @@ see the doc-string on `completeLatticeOfInf`.
 -/
 def completeLatticeOfCompleteSemilatticeInf (α : Type*) [CompleteSemilatticeInf α] :
     CompleteLattice α :=
-  completeLatticeOfInf α fun s => isGLB_sInf s
+  completeLatticeOfInf α fun s ↦ isGLB_sInf s
 
 /-- Create a `CompleteLattice` from a `PartialOrder` and `SupSet`
 that returns the least upper bound of a set. Usually this constructor provides
@@ -234,12 +234,12 @@ def completeLatticeOfSup (α : Type*) [H1 : PartialOrder α] [H2 : SupSet α]
   le_sup_right _ _ := (isLUB_sSup _).1 <| mem_insert_of_mem _ <| mem_singleton _
   inf a b := sSup { x | x ≤ a ∧ x ≤ b }
   le_inf a b c hab hac := (isLUB_sSup _).1 <| by simp [*]
-  inf_le_left _ _ := (isLUB_sSup _).2 fun _ => And.left
-  inf_le_right _ _ := (isLUB_sSup _).2 fun _ => And.right
+  inf_le_left _ _ := (isLUB_sSup _).2 fun _ ↦ And.left
+  inf_le_right _ _ := (isLUB_sSup _).2 fun _ ↦ And.right
   sInf s := sSup (lowerBounds s)
   sSup_le s _ ha := (isLUB_sSup s).2 ha
   le_sSup s _ ha := (isLUB_sSup s).1 ha
-  sInf_le s _ ha := (isLUB_sSup (lowerBounds s)).2 fun _ hb => hb ha
+  sInf_le s _ ha := (isLUB_sSup (lowerBounds s)).2 fun _ hb ↦ hb ha
   le_sInf s _ ha := (isLUB_sSup (lowerBounds s)).1 ha
 
 /-- Any `CompleteSemilatticeSup` is in fact a `CompleteLattice`.
@@ -249,7 +249,7 @@ see the doc-string on `completeLatticeOfSup`.
 -/
 def completeLatticeOfCompleteSemilatticeSup (α : Type*) [CompleteSemilatticeSup α] :
     CompleteLattice α :=
-  completeLatticeOfSup α fun s => isLUB_sSup s
+  completeLatticeOfSup α fun s ↦ isLUB_sSup s
 
 /-- A complete linear order is a linear order whose lattice structure is complete. -/
 -- Note that we do not use `extends LinearOrder α`,
@@ -346,9 +346,9 @@ theorem sInf_lt_iff : sInf s < b ↔ ∃ a ∈ s, a < b :=
   isGLB_lt_iff <| isGLB_sInf s
 
 theorem sSup_eq_top : sSup s = ⊤ ↔ ∀ b < ⊤, ∃ a ∈ s, b < a :=
-  ⟨fun h _ hb => lt_sSup_iff.1 <| hb.trans_eq h.symm, fun h =>
+  ⟨fun h _ hb ↦ lt_sSup_iff.1 <| hb.trans_eq h.symm, fun h ↦
     top_unique <|
-      le_of_not_gt fun h' =>
+      le_of_not_gt fun h' ↦
         let ⟨_, ha, h⟩ := h _ h'
         (h.trans_le <| le_sSup ha).false⟩
 

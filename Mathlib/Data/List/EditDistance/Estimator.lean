@@ -15,7 +15,7 @@ as proved in `Mathlib/Data/List/EditDistance/Bounds.lean`.
 
 In this file we package that fact as an instance of
 ```
-Estimator (Thunk.mk fun _ => levenshtein C xs ys) (LevenshteinEstimator C xs ys)
+Estimator (Thunk.mk fun _ ↦ levenshtein C xs ys) (LevenshteinEstimator C xs ys)
 ```
 allowing us to use the `Estimator` framework for Levenshtein distances.
 
@@ -57,7 +57,7 @@ structure LevenshteinEstimator' : Type where
     | [] => (distances.1[0]'(distances.2), ys.length)
     | _ => (List.minimum_of_length_pos distances.2, suff.length)) = bound
 
-instance : EstimatorData (Thunk.mk fun _ => (levenshtein C xs ys, ys.length))
+instance : EstimatorData (Thunk.mk fun _ ↦ (levenshtein C xs ys, ys.length))
     (LevenshteinEstimator' C xs ys) where
   bound e := e.bound
   improve e := match e.pre_rev, e.split with
@@ -72,7 +72,7 @@ instance : EstimatorData (Thunk.mk fun _ => (levenshtein C xs ys, ys.length))
         bound_eq := rfl }
 
 instance estimator' :
-    Estimator (Thunk.mk fun _ => (levenshtein C xs ys, ys.length))
+    Estimator (Thunk.mk fun _ ↦ (levenshtein C xs ys, ys.length))
       (LevenshteinEstimator' C xs ys) where
   bound_le e := match e.pre_rev, e.split, e.bound_eq with
   | [], split, eq => by
@@ -126,11 +126,11 @@ instance estimator' :
 
 /-- An estimator for Levenshtein distances. -/
 def LevenshteinEstimator : Type _ :=
-  Estimator.fst (Thunk.mk fun _ => (levenshtein C xs ys, ys.length)) (LevenshteinEstimator' C xs ys)
+  Estimator.fst (Thunk.mk fun _ ↦ (levenshtein C xs ys, ys.length)) (LevenshteinEstimator' C xs ys)
 
 instance [∀ a : δ × ℕ, WellFoundedGT { x // x ≤ a }] :
-    Estimator (Thunk.mk fun _ => levenshtein C xs ys) (LevenshteinEstimator C xs ys) :=
-  Estimator.fstInst (Thunk.mk fun _ => _) (Thunk.mk fun _ => _) (estimator' C xs ys)
+    Estimator (Thunk.mk fun _ ↦ levenshtein C xs ys) (LevenshteinEstimator C xs ys) :=
+  Estimator.fstInst (Thunk.mk fun _ ↦ _) (Thunk.mk fun _ ↦ _) (estimator' C xs ys)
 
 /-- The initial estimator for Levenshtein distances. -/
 instance (C : Levenshtein.Cost α β δ) (xs : List α) (ys : List β) :

@@ -86,7 +86,7 @@ class ValuationClass (F) (R Γ₀ : outParam Type*) [LinearOrderedCommMonoidWith
 export ValuationClass (map_add_le_max)
 
 instance [FunLike F R Γ₀] [ValuationClass F R Γ₀] : CoeTC F (Valuation R Γ₀) :=
-  ⟨fun f =>
+  ⟨fun f ↦
     { toFun := f
       map_one' := map_one f
       map_zero' := map_zero f
@@ -168,8 +168,8 @@ theorem map_sum_le {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hf :
     v (∑ i ∈ s, f i) ≤ g := by
   classical
   refine
-    Finset.induction_on s (fun _ => v.map_zero ▸ zero_le')
-      (fun a s has ih hf => ?_) hf
+    Finset.induction_on s (fun _ ↦ v.map_zero ▸ zero_le')
+      (fun a s has ih hf ↦ ?_) hf
   rw [Finset.forall_mem_insert] at hf; rw [Finset.sum_insert has]
   exact v.map_add_le hf.1 (ih hf.2)
 
@@ -177,8 +177,8 @@ theorem map_sum_lt {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg :
     (hf : ∀ i ∈ s, v (f i) < g) : v (∑ i ∈ s, f i) < g := by
   classical
   refine
-    Finset.induction_on s (fun _ => v.map_zero ▸ (zero_lt_iff.2 hg))
-      (fun a s has ih hf => ?_) hf
+    Finset.induction_on s (fun _ ↦ v.map_zero ▸ (zero_lt_iff.2 hg))
+      (fun a s has ih hf ↦ ?_) hf
   rw [Finset.forall_mem_insert] at hf; rw [Finset.sum_insert has]
   exact v.map_add_lt hf.1 (ih hf.2)
 
@@ -219,7 +219,7 @@ theorem ne_zero_of_isUnit [Nontrivial Γ₀] (v : Valuation K Γ₀) (x : K) (hx
 def comap {S : Type*} [Ring S] (f : S →+* R) (v : Valuation R Γ₀) : Valuation S Γ₀ :=
   { v.toMonoidWithZeroHom.comp f.toMonoidWithZeroHom with
     toFun := v ∘ f
-    map_add_le_max' := fun x y => by simp only [comp_apply, v.map_add, map_add] }
+    map_add_le_max' := fun x y ↦ by simp only [comp_apply, v.map_add, map_add] }
 
 @[simp]
 theorem comap_apply {S : Type*} [Ring S] (f : S →+* R) (v : Valuation R Γ₀) (s : S) :
@@ -227,18 +227,18 @@ theorem comap_apply {S : Type*} [Ring S] (f : S →+* R) (v : Valuation R Γ₀)
 
 @[simp]
 theorem comap_id : v.comap (RingHom.id R) = v :=
-  ext fun _r => rfl
+  ext fun _r ↦ rfl
 
 theorem comap_comp {S₁ : Type*} {S₂ : Type*} [Ring S₁] [Ring S₂] (f : S₁ →+* S₂) (g : S₂ →+* R) :
     v.comap (g.comp f) = (v.comap g).comap f :=
-  ext fun _r => rfl
+  ext fun _r ↦ rfl
 
 /-- A `≤`-preserving group homomorphism `Γ₀ → Γ'₀` induces a map `Valuation R Γ₀ → Valuation R Γ'₀`.
 -/
 def map (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f) (v : Valuation R Γ₀) : Valuation R Γ'₀ :=
   { MonoidWithZeroHom.comp f v.toMonoidWithZeroHom with
     toFun := f ∘ v
-    map_add_le_max' := fun r s =>
+    map_add_le_max' := fun r s ↦
       calc
         f (v (r + s)) ≤ f (max (v r) (v s)) := hf (v.map_add r s)
         _ = max (f (v r)) (f (v s)) := hf.map_max
@@ -505,13 +505,13 @@ variable [Ring R] [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMono
   {v : Valuation R Γ₀} {v₁ : Valuation R Γ₀} {v₂ : Valuation R Γ'₀} {v₃ : Valuation R Γ''₀}
 
 @[refl]
-theorem refl : v.IsEquiv v := fun _ _ => Iff.refl _
+theorem refl : v.IsEquiv v := fun _ _ ↦ Iff.refl _
 
 @[symm]
-theorem symm (h : v₁.IsEquiv v₂) : v₂.IsEquiv v₁ := fun _ _ => Iff.symm (h _ _)
+theorem symm (h : v₁.IsEquiv v₂) : v₂.IsEquiv v₁ := fun _ _ ↦ Iff.symm (h _ _)
 
 @[trans]
-theorem trans (h₁₂ : v₁.IsEquiv v₂) (h₂₃ : v₂.IsEquiv v₃) : v₁.IsEquiv v₃ := fun _ _ =>
+theorem trans (h₁₂ : v₁.IsEquiv v₂) (h₂₃ : v₂.IsEquiv v₃) : v₁.IsEquiv v₃ := fun _ _ ↦
   Iff.trans (h₁₂ _ _) (h₂₃ _ _)
 
 theorem of_eq {v' : Valuation R Γ₀} (h : v = v') : v.IsEquiv v' := by subst h; rfl
@@ -519,7 +519,7 @@ theorem of_eq {v' : Valuation R Γ₀} (h : v = v') : v.IsEquiv v' := by subst h
 theorem map {v' : Valuation R Γ₀} (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f) (inf : Injective f)
     (h : v.IsEquiv v') : (v.map f hf).IsEquiv (v'.map f hf) :=
   let H : StrictMono f := hf.strictMono_of_injective inf
-  fun r s =>
+  fun r s ↦
   calc
     f (v r) ≤ f (v s) ↔ v r ≤ v s := by rw [H.le_iff_le]
     _ ↔ v' r ≤ v' s := h r s
@@ -527,7 +527,7 @@ theorem map {v' : Valuation R Γ₀} (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f
 
 /-- `comap` preserves equivalence. -/
 theorem comap {S : Type*} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :
-    (v₁.comap f).IsEquiv (v₂.comap f) := fun r s => h (f r) (f s)
+    (v₁.comap f).IsEquiv (v₂.comap f) := fun r s ↦ h (f r) (f s)
 
 theorem val_eq (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = v₂ s := by
   simpa only [le_antisymm_iff] using and_congr (h r s) (h s r)
@@ -559,8 +559,8 @@ section
 
 theorem isEquiv_of_map_strictMono [LinearOrderedCommMonoidWithZero Γ₀]
     [LinearOrderedCommMonoidWithZero Γ'₀] [Ring R] {v : Valuation R Γ₀} (f : Γ₀ →*₀ Γ'₀)
-    (H : StrictMono f) : IsEquiv (v.map f H.monotone) v := fun _x _y =>
-  ⟨H.le_iff_le.mp, fun h => H.monotone h⟩
+    (H : StrictMono f) : IsEquiv (v.map f H.monotone) v := fun _x _y ↦
+  ⟨H.le_iff_le.mp, fun h ↦ H.monotone h⟩
 
 theorem isEquiv_iff_val_lt_val [LinearOrderedCommMonoidWithZero Γ₀]
     [LinearOrderedCommMonoidWithZero Γ'₀] {v : Valuation K Γ₀} {v' : Valuation K Γ'₀} :
@@ -692,12 +692,12 @@ theorem mem_supp_iff (x : R) : x ∈ supp v ↔ v x = 0 :=
 
 /-- The support of a valuation is a prime ideal. -/
 instance [Nontrivial Γ₀] [NoZeroDivisors Γ₀] : Ideal.IsPrime (supp v) :=
-  ⟨fun h =>
+  ⟨fun h ↦
     one_ne_zero (α := Γ₀) <|
       calc
         1 = v 1 := v.map_one.symm
         _ = 0 := by rw [← mem_supp_iff, h]; exact Submodule.mem_top,
-   fun {x y} hxy => by
+   fun {x y} hxy ↦ by
     simp only [mem_supp_iff] at hxy ⊢
     rw [v.map_mul x y] at hxy
     exact eq_zero_or_eq_zero_of_mul_eq_zero hxy⟩
@@ -714,7 +714,7 @@ theorem map_add_supp (a : R) {s : R} (h : s ∈ supp v) : v (a + s) = v a := by
 
 theorem comap_supp {S : Type*} [CommRing S] (f : S →+* R) :
     supp (v.comap f) = Ideal.comap f v.supp :=
-  Ideal.ext fun x => by rw [mem_supp_iff, Ideal.mem_comap, mem_supp_iff, comap_apply]
+  Ideal.ext fun x ↦ by rw [mem_supp_iff, Ideal.mem_comap, mem_supp_iff, comap_apply]
 
 end Supp
 
@@ -889,7 +889,7 @@ def map (f : Γ₀ →+ Γ'₀) (ht : f ⊤ = ⊤) (hf : Monotone f) (v : AddVal
     { toFun := f
       map_mul' := f.map_add
       map_one' := f.map_zero
-      map_zero' := ht } (fun _ _ h => hf h) v
+      map_zero' := ht } (fun _ _ h ↦ hf h) v
 
 @[simp]
 lemma map_apply (f : Γ₀ →+ Γ'₀) (ht : f ⊤ = ⊤) (hf : Monotone f) (v : AddValuation R Γ₀) (r : R) :
@@ -984,7 +984,7 @@ theorem map {v' : AddValuation R Γ₀} (f : Γ₀ →+ Γ'₀) (ht : f ⊤ = �
     { toFun := f
       map_mul' := f.map_add
       map_one' := f.map_zero
-      map_zero' := ht } (fun _x _y h => hf h) inf h
+      map_zero' := ht } (fun _x _y h ↦ hf h) inf h
 
 /-- `comap` preserves equivalence. -/
 theorem comap {S : Type*} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :

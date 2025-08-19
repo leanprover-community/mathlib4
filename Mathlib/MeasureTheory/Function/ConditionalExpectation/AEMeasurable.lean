@@ -44,7 +44,7 @@ theorem ae_eq_trim_iff_of_aestronglyMeasurable {α β} [TopologicalSpace β] [Me
     (hfm : AEStronglyMeasurable[m] f μ) (hgm : AEStronglyMeasurable[m] g μ) :
     hfm.mk f =ᵐ[μ.trim hm] hgm.mk g ↔ f =ᵐ[μ] g :=
   (hfm.stronglyMeasurable_mk.ae_eq_trim_iff hm  hgm.stronglyMeasurable_mk).trans
-    ⟨fun h => hfm.ae_eq_mk.trans (h.trans hgm.ae_eq_mk.symm), fun h =>
+    ⟨fun h ↦ hfm.ae_eq_mk.trans (h.trans hgm.ae_eq_mk.symm), fun h ↦
       hfm.ae_eq_mk.symm.trans (h.trans hgm.ae_eq_mk)⟩
 
 @[deprecated (since := "2025-04-09")]
@@ -121,7 +121,7 @@ theorem mem_lpMeas_self {m0 : MeasurableSpace α} (μ : Measure α) (f : Lp F p 
 theorem mem_lpMeas_indicatorConstLp {m m0 : MeasurableSpace α} (hm : m ≤ m0) {μ : Measure α}
     {s : Set α} (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) {c : F} :
     indicatorConstLp p (hm s hs) hμs c ∈ lpMeas F 𝕜 m p μ :=
-  ⟨s.indicator fun _ : α => c, (@stronglyMeasurable_const _ _ m _ _).indicator hs,
+  ⟨s.indicator fun _ : α ↦ c, (@stronglyMeasurable_const _ _ m _ _).indicator hs,
     indicatorConstLp_coeFn⟩
 
 section CompleteSubspace
@@ -248,7 +248,7 @@ theorem lpMeasSubgroupToLpTrim_neg (hm : m ≤ m0) (f : lpMeasSubgroup F m p μ)
   refine (Lp.stronglyMeasurable _).ae_eq_trim_of_stronglyMeasurable hm (Lp.stronglyMeasurable _).neg
     <| (lpMeasSubgroupToLpTrim_ae_eq hm _).trans <|
     ((Lp.coeFn_neg _).trans ?_).trans  (lpMeasSubgroupToLpTrim_ae_eq hm f).symm.neg
-  exact Eventually.of_forall fun x => by rfl
+  exact Eventually.of_forall fun x ↦ by rfl
 
 theorem lpMeasSubgroupToLpTrim_sub (hm : m ≤ m0) (f g : lpMeasSubgroup F m p μ) :
     lpMeasSubgroupToLpTrim F p μ hm (f - g) =
@@ -264,7 +264,7 @@ theorem lpMeasToLpTrim_smul (hm : m ≤ m0) (c : 𝕜) (f : lpMeas F 𝕜 m p μ
   · exact (Lp.stronglyMeasurable _).const_smul c
   refine (lpMeasToLpTrim_ae_eq hm _).trans ?_
   refine (Lp.coeFn_smul _ _).trans ?_
-  refine (lpMeasToLpTrim_ae_eq hm f).mono fun x hx => ?_
+  refine (lpMeasToLpTrim_ae_eq hm f).mono fun x hx ↦ ?_
   simp only [Pi.smul_apply, hx]
 
 /-- `lpMeasSubgroupToLpTrim` preserves the norm. -/
@@ -276,7 +276,7 @@ theorem lpMeasSubgroupToLpTrim_norm_map [hp : Fact (1 ≤ p)] (hm : m ≤ m0)
 
 theorem isometry_lpMeasSubgroupToLpTrim [hp : Fact (1 ≤ p)] (hm : m ≤ m0) :
     Isometry (lpMeasSubgroupToLpTrim F p μ hm) :=
-  Isometry.of_dist_eq fun f g => by
+  Isometry.of_dist_eq fun f g ↦ by
     rw [dist_eq_norm, ← lpMeasSubgroupToLpTrim_sub, lpMeasSubgroupToLpTrim_norm_map,
       dist_eq_norm]
 
@@ -404,7 +404,7 @@ theorem Lp.induction_stronglyMeasurable_aux (hm : m ≤ m0) (hp_ne_top : p ≠ �
   rw [hfg]
   refine
     @Lp.induction α F m _ p (μ.trim hm) _ hp_ne_top
-      (fun g => P ((lpMeasToLpTrimLie F ℝ p μ hm).symm g)) ?_ ?_ ?_ g
+      (fun g ↦ P ((lpMeasToLpTrimLie F ℝ p μ hm).symm g)) ?_ ?_ ?_ g
   · intro b t ht hμt
     rw [@Lp.simpleFunc.coe_indicatorConst _ _ m, lpMeasToLpTrimLie_symm_indicator ht hμt.ne b]
     have hμt' : μ t < ∞ := (le_trim hm).trans_lt hμt
@@ -497,7 +497,7 @@ to a sub-σ-algebra `m` in a normed space, it suffices to show that
 -/
 @[elab_as_elim]
 theorem MemLp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) (P : (α → F) → Prop)
-    (h_ind : ∀ (c : F) ⦃s⦄, MeasurableSet[m] s → μ s < ∞ → P (s.indicator fun _ => c))
+    (h_ind : ∀ (c : F) ⦃s⦄, MeasurableSet[m] s → μ s < ∞ → P (s.indicator fun _ ↦ c))
     (h_add : ∀ ⦃f g : α → F⦄, Disjoint (Function.support f) (Function.support g) →
       MemLp f p μ → MemLp g p μ → StronglyMeasurable[m] f → StronglyMeasurable[m] g →
         P f → P g → P (f + g))
@@ -509,7 +509,7 @@ theorem MemLp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ �
   have hfm_Lp : AEStronglyMeasurable[m] f_Lp μ := hfm.congr hf.coeFn_toLp.symm
   refine h_ae hf.coeFn_toLp (Lp.memLp _) ?_
   change P f_Lp
-  refine Lp.induction_stronglyMeasurable hm hp_ne_top (fun f => P f) ?_ ?_ h_closed f_Lp hfm_Lp
+  refine Lp.induction_stronglyMeasurable hm hp_ne_top (fun f ↦ P f) ?_ ?_ h_closed f_Lp hfm_Lp
   · intro c s hs hμs
     rw [Lp.simpleFunc.coe_indicatorConst]
     refine h_ae indicatorConstLp_coeFn.symm ?_ (h_ind c hs hμs)

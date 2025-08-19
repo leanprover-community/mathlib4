@@ -77,12 +77,12 @@ theorem IsClosable.leIsClosable {f g : E →ₗ.[R] F} (hf : f.IsClosable) (hfg 
     exact Submodule.topologicalClosure_mono (le_graph_of_le hfg)
   use g.graph.topologicalClosure.toLinearPMap
   rw [Submodule.toLinearPMap_graph_eq]
-  exact fun _ hx hx' => f'.graph_fst_eq_zero_snd (this hx) hx'
+  exact fun _ hx hx' ↦ f'.graph_fst_eq_zero_snd (this hx) hx'
 
 /-- The closure is unique. -/
 theorem IsClosable.existsUnique {f : E →ₗ.[R] F} (hf : f.IsClosable) :
     ∃! f' : E →ₗ.[R] F, f.graph.topologicalClosure = f'.graph := by
-  refine existsUnique_of_exists_of_unique hf fun _ _ hy₁ hy₂ => eq_of_eq_graph ?_
+  refine existsUnique_of_exists_of_unique hf fun _ _ hy₁ hy₂ ↦ eq_of_eq_graph ?_
   rw [← hy₁, ← hy₂]
 
 open Classical in
@@ -129,7 +129,7 @@ theorem IsClosable.closureIsClosable {f : E →ₗ.[R] F} (hf : f.IsClosable) : 
 
 theorem isClosable_iff_exists_closed_extension {f : E →ₗ.[R] F} :
     f.IsClosable ↔ ∃ g : E →ₗ.[R] F, g.IsClosed ∧ f ≤ g :=
-  ⟨fun h => ⟨f.closure, h.closure_isClosed, f.le_closure⟩, fun ⟨_, hg, h⟩ =>
+  ⟨fun h ↦ ⟨f.closure, h.closure_isClosed, f.le_closure⟩, fun ⟨_, hg, h⟩ ↦
     hg.isClosable.leIsClosable h⟩
 
 /-! ### The core of a linear operator -/

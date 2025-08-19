@@ -182,22 +182,22 @@ protected theorem isLocalHomeomorphOn (hf : IsCoveringMapOn f s) :
   let he := e.mem_source.2 h
   refine
     ⟨e.toPartialHomeomorph.trans
-        { toFun := fun p => p.1
-          invFun := fun p => ⟨p, x, rfl⟩
+        { toFun := fun p ↦ p.1
+          invFun := fun p ↦ ⟨p, x, rfl⟩
           source := e.baseSet ×ˢ ({⟨x, rfl⟩} : Set (f ⁻¹' {f x}))
           target := e.baseSet
           open_source :=
             e.open_baseSet.prod (singletons_open_iff_discrete.2 (hf (f x) hx).1 ⟨x, rfl⟩)
           open_target := e.open_baseSet
-          map_source' := fun p => And.left
-          map_target' := fun p hp => ⟨hp, rfl⟩
-          left_inv' := fun p hp => Prod.ext rfl hp.2.symm
-          right_inv' := fun p _ => rfl
+          map_source' := fun p ↦ And.left
+          map_target' := fun p hp ↦ ⟨hp, rfl⟩
+          left_inv' := fun p hp ↦ Prod.ext rfl hp.2.symm
+          right_inv' := fun p _ ↦ rfl
           continuousOn_toFun := continuousOn_fst
           continuousOn_invFun := by fun_prop },
       ⟨he, by rwa [e.toPartialHomeomorph.symm_symm, e.proj_toFun x he],
         (hf (f x) hx).toTrivialization_apply⟩,
-      fun p h => (e.proj_toFun p h.1).symm⟩
+      fun p h ↦ (e.proj_toFun p h.1).symm⟩
 
 end IsCoveringMapOn
 
@@ -298,10 +298,10 @@ variable {f}
 
 protected theorem IsFiberBundle.isCoveringMap {F : Type*} [TopologicalSpace F] [DiscreteTopology F]
     (hf : ∀ x : X, ∃ e : Trivialization F f, x ∈ e.baseSet) : IsCoveringMap f :=
-  IsCoveringMap.mk f (fun _ => F) (fun x => Classical.choose (hf x)) fun x =>
+  IsCoveringMap.mk f (fun _ ↦ F) (fun x ↦ Classical.choose (hf x)) fun x ↦
     Classical.choose_spec (hf x)
 
 protected theorem FiberBundle.isCoveringMap {F : Type*} {E : X → Type*} [TopologicalSpace F]
     [DiscreteTopology F] [TopologicalSpace (Bundle.TotalSpace F E)] [∀ x, TopologicalSpace (E x)]
     [FiberBundle F E] : IsCoveringMap (π F E) :=
-  IsFiberBundle.isCoveringMap fun x => ⟨trivializationAt F E x, mem_baseSet_trivializationAt F E x⟩
+  IsFiberBundle.isCoveringMap fun x ↦ ⟨trivializationAt F E x, mem_baseSet_trivializationAt F E x⟩

@@ -33,7 +33,7 @@ section Option
 
 /-- Restrict a finitely supported function on `Option α` to a finitely supported function on `α`. -/
 def some [Zero M] (f : Option α →₀ M) : α →₀ M :=
-  f.comapDomain Option.some fun _ => by simp
+  f.comapDomain Option.some fun _ ↦ by simp
 
 @[simp]
 theorem some_apply [Zero M] (f : Option α →₀ M) (a : α) : f.some a = f (Option.some a) :=
@@ -89,7 +89,7 @@ theorem eq_option_embedding_update_none_iff [Zero M] {n : Option α →₀ M} {m
 theorem prod_option_index [AddZeroClass M] [CommMonoid N] (f : Option α →₀ M)
     (b : Option α → M → N) (h_zero : ∀ o, b o 0 = 1)
     (h_add : ∀ o m₁ m₂, b o (m₁ + m₂) = b o m₁ * b o m₂) :
-    f.prod b = b none (f none) * f.some.prod fun a => b (Option.some a) := by
+    f.prod b = b none (f none) * f.some.prod fun a ↦ b (Option.some a) := by
   classical
     induction f using induction_linear with
     | zero => simp [some_zero, h_zero]
@@ -102,8 +102,8 @@ theorem prod_option_index [AddZeroClass M] [CommMonoid N] (f : Option α →₀ 
 
 theorem sum_option_index_smul [Semiring R] [AddCommMonoid M] [Module R M] (f : Option α →₀ R)
     (b : Option α → M) :
-    (f.sum fun o r => r • b o) = f none • b none + f.some.sum fun a r => r • b (Option.some a) :=
-  f.sum_option_index _ (fun _ => zero_smul _ _) fun _ _ _ => add_smul _ _ _
+    (f.sum fun o r ↦ r • b o) = f none • b none + f.some.sum fun a r ↦ r • b (Option.some a) :=
+  f.sum_option_index _ (fun _ ↦ zero_smul _ _) fun _ _ _ ↦ add_smul _ _ _
 
 @[simp] lemma some_embDomain_some [Zero M] (f : α →₀ M) : (f.embDomain .some).some = f := by
   ext; rw [some_apply]; exact embDomain_apply _ _ _

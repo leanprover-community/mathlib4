@@ -229,7 +229,7 @@ variable {ψ χ} (M N)
 /-- The identity map as an equivariant map. -/
 @[to_additive /-- The identity map as an equivariant map. -/]
 protected def id : X →[M] X :=
-  ⟨id, fun _ _ => rfl⟩
+  ⟨id, fun _ _ ↦ rfl⟩
 
 variable {M N Z}
 
@@ -251,7 +251,7 @@ variable {φ ψ χ X Y Z}
 @[to_additive /-- Composition of two equivariant maps. -/]
 def comp (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) [κ : CompTriple φ ψ χ] :
     X →ₑ[χ] Z :=
-  ⟨g ∘ f, fun m x =>
+  ⟨g ∘ f, fun m x ↦
     calc
       g (f (m • x)) = g (φ m • f x) := by rw [map_smulₛₗ]
       _ = ψ (φ m) • g (f x) := by rw [map_smulₛₗ]
@@ -266,12 +266,12 @@ theorem comp_apply
 @[to_additive (attr := simp)]
 theorem id_comp (f : X →ₑ[φ] Y) :
     (MulActionHom.id N).comp f = f :=
-  ext fun x => by rw [comp_apply, id_apply]
+  ext fun x ↦ by rw [comp_apply, id_apply]
 
 @[to_additive (attr := simp)]
 theorem comp_id (f : X →ₑ[φ] Y) :
     f.comp (MulActionHom.id M) = f :=
-  ext fun x => by rw [comp_apply, id_apply]
+  ext fun x ↦ by rw [comp_apply, id_apply]
 
 @[to_additive (attr := simp)]
 theorem comp_assoc {Q T : Type*} [SMul Q T]
@@ -280,7 +280,7 @@ theorem comp_assoc {Q T : Type*} [SMul Q T]
     [CompTriple φ ψ χ] [CompTriple χ η θ]
     [CompTriple ψ η ζ] [CompTriple φ ζ θ] :
     h.comp (g.comp f) = (h.comp g).comp f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 variable {φ' : N → M}
 variable {Y₁ : Type*} [SMul M Y₁]
@@ -322,7 +322,7 @@ theorem inverse'_inverse'
     {k₁ : Function.LeftInverse φ' φ} {k₂ : Function.RightInverse φ' φ}
     {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
     inverse' (inverse' f g k₂ h₁ h₂) f k₁ h₂ h₁ = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[to_additive]
 theorem comp_inverse' {f : X →ₑ[φ] Y} {g : Y → X}
@@ -683,7 +683,7 @@ variable (M)
 
 /-- The identity map as an equivariant additive monoid homomorphism. -/
 protected def id : A →+[M] A :=
-  ⟨MulActionHom.id _, rfl, fun _ _ => rfl⟩
+  ⟨MulActionHom.id _, rfl, fun _ _ ↦ rfl⟩
 
 @[simp]
 theorem id_apply (x : A) : DistribMulActionHom.id M x = x := by
@@ -692,7 +692,7 @@ theorem id_apply (x : A) : DistribMulActionHom.id M x = x := by
 variable {M C ψ χ}
 
 instance : Zero (A →ₑ+[φ] B) :=
-  ⟨{ (0 : A →+ B) with map_smul' := fun m _ => by simp }⟩
+  ⟨{ (0 : A →+ B) with map_smul' := fun m _ ↦ by simp }⟩
 
 instance : One (A →+[M] A) :=
   ⟨DistribMulActionHom.id M⟩
@@ -727,11 +727,11 @@ theorem comp_apply
 
 @[simp]
 theorem id_comp (f : A →ₑ+[φ] B) : comp (DistribMulActionHom.id N) f = f :=
-  ext fun x => by rw [comp_apply, id_apply]
+  ext fun x ↦ by rw [comp_apply, id_apply]
 
 @[simp]
 theorem comp_id (f : A →ₑ+[φ] B) : f.comp (DistribMulActionHom.id M) = f :=
-  ext fun x => by rw [comp_apply, id_apply]
+  ext fun x ↦ by rw [comp_apply, id_apply]
 
 @[simp]
 theorem comp_assoc {Q D : Type*} [Monoid Q] [AddMonoid D] [DistribMulAction Q D]
@@ -740,7 +740,7 @@ theorem comp_assoc {Q D : Type*} [Monoid Q] [AddMonoid D] [DistribMulAction Q D]
     [MonoidHom.CompTriple φ ψ χ] [MonoidHom.CompTriple χ η θ]
     [MonoidHom.CompTriple ψ η ζ] [MonoidHom.CompTriple φ ζ θ] :
     h.comp (g.comp f) = (h.comp g).comp f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 /-- The inverse of a bijective `DistribMulActionHom` is a `DistribMulActionHom`. -/
 @[simps]
@@ -891,7 +891,7 @@ variable (M) {R}
 
 /-- The identity map as an equivariant ring homomorphism. -/
 protected def id : R →+*[M] R :=
-  ⟨DistribMulActionHom.id _, rfl, (fun _ _ => rfl)⟩
+  ⟨DistribMulActionHom.id _, rfl, (fun _ _ ↦ rfl)⟩
 
 @[simp]
 theorem id_apply (x : R) : MulSemiringActionHom.id M x = x :=
@@ -918,11 +918,11 @@ theorem comp_apply (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) [MonoidHom.Comp
 
 @[simp]
 theorem id_comp (f : R →ₑ+*[φ] S) : (MulSemiringActionHom.id N).comp f = f :=
-  ext fun x => by rw [comp_apply, id_apply]
+  ext fun x ↦ by rw [comp_apply, id_apply]
 
 @[simp]
 theorem comp_id (f : R →ₑ+*[φ] S) : f.comp (MulSemiringActionHom.id M) = f :=
-  ext fun x => by rw [comp_apply, id_apply]
+  ext fun x ↦ by rw [comp_apply, id_apply]
 
 /-- The inverse of a bijective `MulSemiringActionHom` is a `MulSemiringActionHom`. -/
 @[simps]
@@ -952,5 +952,5 @@ end DistribMulAction
 lemma IsSMulRegular.of_injective {R M : Type*} [SMul R M]
     {N F} [SMul R N] [FunLike F M N] [MulActionHomClass F R M N]
     (f : F) {r : R} (h1 : Function.Injective f) (h2 : IsSMulRegular N r) :
-    IsSMulRegular M r := fun x y h3 => h1 <| h2 <|
+    IsSMulRegular M r := fun x y h3 ↦ h1 <| h2 <|
   (map_smulₛₗ f r x).symm.trans ((congrArg f h3).trans (map_smulₛₗ f r y))

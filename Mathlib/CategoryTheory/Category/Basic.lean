@@ -100,7 +100,7 @@ scoped infixr:80 " ≫ " => CategoryStruct.comp -- type as \gg
 syntax (name := sorryIfSorry) "sorry_if_sorry" : tactic
 
 open Lean Meta Elab.Tactic in
-@[tactic sorryIfSorry, inherit_doc sorryIfSorry] def evalSorryIfSorry : Tactic := fun _ => do
+@[tactic sorryIfSorry, inherit_doc sorryIfSorry] def evalSorryIfSorry : Tactic := fun _ ↦ do
   let goalType ← getMainTarget
   if goalType.hasSorry then
     closeMainGoal `sorry_if_sorry (← mkSorry goalType true)
@@ -247,12 +247,12 @@ theorem eq_of_comp_right_eq {f g : Y ⟶ Z} (w : ∀ {X : C} (h : X ⟶ Y), h �
   convert w (𝟙 Y) <;> simp
 
 theorem eq_of_comp_left_eq' (f g : X ⟶ Y)
-    (w : (fun {Z} (h : Y ⟶ Z) => f ≫ h) = fun {Z} (h : Y ⟶ Z) => g ≫ h) : f = g :=
-  eq_of_comp_left_eq @fun Z h => by convert congr_fun (congr_fun w Z) h
+    (w : (fun {Z} (h : Y ⟶ Z) ↦ f ≫ h) = fun {Z} (h : Y ⟶ Z) ↦ g ≫ h) : f = g :=
+  eq_of_comp_left_eq @fun Z h ↦ by convert congr_fun (congr_fun w Z) h
 
 theorem eq_of_comp_right_eq' (f g : Y ⟶ Z)
-    (w : (fun {X} (h : X ⟶ Y) => h ≫ f) = fun {X} (h : X ⟶ Y) => h ≫ g) : f = g :=
-  eq_of_comp_right_eq @fun X h => by convert congr_fun (congr_fun w X) h
+    (w : (fun {X} (h : X ⟶ Y) ↦ h ≫ f) = fun {X} (h : X ⟶ Y) ↦ h ≫ g) : f = g :=
+  eq_of_comp_right_eq @fun X h ↦ by convert congr_fun (congr_fun w X) h
 
 theorem id_of_comp_left_id (f : X ⟶ X) (w : ∀ {Y : C} (g : X ⟶ Y), f ≫ g = g) : f = 𝟙 X := by
   convert w (𝟙 X)
@@ -291,25 +291,25 @@ class Mono (f : X ⟶ Y) : Prop where
   right_cancellation : ∀ {Z : C} (g h : Z ⟶ X), g ≫ f = h ≫ f → g = h
 
 instance (X : C) : Epi (𝟙 X) :=
-  ⟨fun g h w => by aesop⟩
+  ⟨fun g h w ↦ by aesop⟩
 
 instance (X : C) : Mono (𝟙 X) :=
-  ⟨fun g h w => by aesop⟩
+  ⟨fun g h w ↦ by aesop⟩
 
 theorem cancel_epi (f : X ⟶ Y) [Epi f] {g h : Y ⟶ Z} : f ≫ g = f ≫ h ↔ g = h :=
-  ⟨fun p => Epi.left_cancellation g h p, congr_arg _⟩
+  ⟨fun p ↦ Epi.left_cancellation g h p, congr_arg _⟩
 
 theorem cancel_epi_assoc_iff (f : X ⟶ Y) [Epi f] {g h : Y ⟶ Z} {W : C} {k l : Z ⟶ W} :
     (f ≫ g) ≫ k = (f ≫ h) ≫ l ↔ g ≫ k = h ≫ l :=
-  ⟨fun p => (cancel_epi f).1 <| by simpa using p, fun p => by simp only [Category.assoc, p]⟩
+  ⟨fun p ↦ (cancel_epi f).1 <| by simpa using p, fun p ↦ by simp only [Category.assoc, p]⟩
 
 theorem cancel_mono (f : X ⟶ Y) [Mono f] {g h : Z ⟶ X} : g ≫ f = h ≫ f ↔ g = h :=
   -- Porting note: in Lean 3 we could just write `congr_arg _` here.
-  ⟨fun p => Mono.right_cancellation g h p, congr_arg (fun k => k ≫ f)⟩
+  ⟨fun p ↦ Mono.right_cancellation g h p, congr_arg (fun k ↦ k ≫ f)⟩
 
 theorem cancel_mono_assoc_iff (f : X ⟶ Y) [Mono f] {g h : Z ⟶ X} {W : C} {k l : W ⟶ Z} :
     k ≫ (g ≫ f) = l ≫ (h ≫ f) ↔ k ≫ g = l ≫ h :=
-  ⟨fun p => (cancel_mono f).1 <| by simpa using p, fun p => by simp only [← Category.assoc, p]⟩
+  ⟨fun p ↦ (cancel_mono f).1 <| by simpa using p, fun p ↦ by simp only [← Category.assoc, p]⟩
 
 theorem cancel_epi_id (f : X ⟶ Y) [Epi f] {h : Y ⟶ Y} : f ≫ h = f ↔ h = 𝟙 Y := by
   convert cancel_epi f
@@ -322,7 +322,7 @@ theorem cancel_mono_id (f : X ⟶ Y) [Mono f] {g : X ⟶ X} : g ≫ f = f ↔ g 
 /-- The composition of epimorphisms is again an epimorphism. This version takes `Epi f` and `Epi g`
 as typeclass arguments. For a version taking them as explicit arguments, see `epi_comp'`. -/
 instance epi_comp {X Y Z : C} (f : X ⟶ Y) [Epi f] (g : Y ⟶ Z) [Epi g] : Epi (f ≫ g) :=
-  ⟨fun _ _ w => (cancel_epi g).1 <| (cancel_epi_assoc_iff f).1 w⟩
+  ⟨fun _ _ w ↦ (cancel_epi g).1 <| (cancel_epi_assoc_iff f).1 w⟩
 
 /-- The composition of epimorphisms is again an epimorphism. This version takes `Epi f` and `Epi g`
 as explicit arguments. For a version taking them as typeclass arguments, see `epi_comp`. -/
@@ -333,7 +333,7 @@ theorem epi_comp' {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} (hf : Epi f) (hg : Epi
 `Mono g` as typeclass arguments. For a version taking them as explicit arguments, see `mono_comp'`.
 -/
 instance mono_comp {X Y Z : C} (f : X ⟶ Y) [Mono f] (g : Y ⟶ Z) [Mono g] : Mono (f ≫ g) :=
-  ⟨fun _ _ w => (cancel_mono f).1 <| (cancel_mono_assoc_iff g).1 w⟩
+  ⟨fun _ _ w ↦ (cancel_mono f).1 <| (cancel_mono_assoc_iff g).1 w⟩
 
 /-- The composition of monomorphisms is again a monomorphism. This version takes `Mono f` and
 `Mono g` as explicit arguments. For a version taking them as typeclass arguments, see `mono_comp`.
@@ -343,14 +343,14 @@ theorem mono_comp' {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} (hf : Mono f) (hg : M
   inferInstance
 
 theorem mono_of_mono {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Mono (f ≫ g)] : Mono f :=
-  ⟨fun _ _ w => (cancel_mono (f ≫ g)).1 <| by simp only [← Category.assoc, w]⟩
+  ⟨fun _ _ w ↦ (cancel_mono (f ≫ g)).1 <| by simp only [← Category.assoc, w]⟩
 
 theorem mono_of_mono_fac {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Mono h]
     (w : f ≫ g = h) : Mono f := by
   subst h; exact mono_of_mono f g
 
 theorem epi_of_epi {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Epi (f ≫ g)] : Epi g :=
-  ⟨fun _ _ w => (cancel_epi (f ≫ g)).1 <| by simp only [Category.assoc, w]⟩
+  ⟨fun _ _ w ↦ (cancel_epi (f ≫ g)).1 <| by simp only [Category.assoc, w]⟩
 
 theorem epi_of_epi_fac {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Epi h]
     (w : f ≫ g = h) : Epi g := by

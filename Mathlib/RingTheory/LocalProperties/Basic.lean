@@ -186,7 +186,7 @@ theorem RingHom.ofLocalizationSpan_iff_finite :
   · intro h s; exact h s
   · intro h s hs hs'
     obtain ⟨s', h₁, h₂⟩ := (Ideal.span_eq_top_iff_finite s).mp hs
-    exact h s' h₂ fun x => hs' ⟨_, h₁ x.prop⟩
+    exact h s' h₂ fun x ↦ hs' ⟨_, h₁ x.prop⟩
 
 theorem RingHom.ofLocalizationSpanTarget_iff_finite :
     RingHom.OfLocalizationSpanTarget @P ↔ RingHom.OfLocalizationFiniteSpanTarget @P := by
@@ -198,7 +198,7 @@ theorem RingHom.ofLocalizationSpanTarget_iff_finite :
   · intro h s; exact h s
   · intro h s hs hs'
     obtain ⟨s', h₁, h₂⟩ := (Ideal.span_eq_top_iff_finite s).mp hs
-    exact h s' h₂ fun x => hs' ⟨_, h₁ x.prop⟩
+    exact h s' h₂ fun x ↦ hs' ⟨_, h₁ x.prop⟩
 
 open TensorProduct
 
@@ -211,7 +211,7 @@ lemma RingHom.OfLocalizationSpan.mk (hP : RingHom.RespectsIso P)
     OfLocalizationSpan P := by
   introv R hs hf
   algebraize [f]
-  let _ := fun r : R => (Localization.awayMap (algebraMap R S) r).toAlgebra
+  let _ := fun r : R ↦ (Localization.awayMap (algebraMap R S) r).toAlgebra
   refine H s hs (fun r hr ↦ ?_)
   have : algebraMap (Localization.Away r) (Localization.Away r ⊗[R] S) =
       ((IsLocalization.Away.tensorRightEquiv S r (Localization.Away r)).symm : _ →+* _).comp
@@ -506,7 +506,7 @@ theorem ideal_eq_bot_of_localization' (I : Ideal R)
     (h : ∀ (J : Ideal R) (_ : J.IsMaximal),
       Ideal.map (algebraMap R (Localization.AtPrime J)) I = ⊥) :
     I = ⊥ :=
-  Ideal.eq_of_localization_maximal fun P hP => by simpa using h P hP
+  Ideal.eq_of_localization_maximal fun P hP ↦ by simpa using h P hP
 
 theorem eq_zero_of_localization (r : R)
     (h : ∀ (J : Ideal R) (_ : J.IsMaximal), algebraMap R (Localization.AtPrime J) r = 0) :

@@ -143,11 +143,11 @@ theorem comp_apply (f : Q →ᴬ[R] Q₂) (g : P →ᴬ[R] Q) (p : P) : f.comp g
 
 @[simp]
 theorem comp_id (f : P →ᴬ[R] Q) : f.comp (id R P) = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem id_comp (f : P →ᴬ[R] Q) : (id R Q).comp f = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 /-- The continuous affine map sending `0` to `p₀` and `1` to `p₁` -/
 def lineMap (p₀ p₁ : P) [TopologicalSpace R] [TopologicalSpace V]
@@ -216,7 +216,7 @@ theorem coe_sub (f g : P →ᴬ[R] W) : ⇑(f - g) = f - g := rfl
 theorem sub_apply (f g : P →ᴬ[R] W) (x : P) : (f - g) x = f x - g x := rfl
 
 instance : Neg (P →ᴬ[R] W) :=
-  { neg := fun f => { -(f : P →ᵃ[R] W) with cont := f.continuous.neg } }
+  { neg := fun f ↦ { -(f : P →ᵃ[R] W) with cont := f.continuous.neg } }
 
 @[norm_cast, simp]
 theorem coe_neg (f : P →ᴬ[R] W) : ⇑(-f) = -f := rfl

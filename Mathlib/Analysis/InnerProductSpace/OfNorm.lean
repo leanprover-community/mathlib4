@@ -100,7 +100,7 @@ private def innerProp' (r : 𝕜) : Prop :=
 variable {E}
 
 theorem _root_.Continuous.inner_ {f g : ℝ → E} (hf : Continuous f) (hg : Continuous g) :
-    Continuous fun x => inner_ 𝕜 (f x) (g x) := by
+    Continuous fun x ↦ inner_ 𝕜 (f x) (g x) := by
   unfold _root_.inner_
   fun_prop
 
@@ -195,7 +195,7 @@ private theorem real_prop (r : ℝ) : innerProp' E (r : 𝕜) := by
   intro x y
   revert r
   rw [← funext_iff]
-  refine Rat.isDenseEmbedding_coe_real.dense.equalizer ?_ ?_ (funext fun X => ?_)
+  refine Rat.isDenseEmbedding_coe_real.dense.equalizer ?_ ?_ (funext fun X ↦ ?_)
   · exact (continuous_ofReal.smul continuous_const).inner_ continuous_const
   · exact (continuous_conj.comp continuous_ofReal).mul continuous_const
   · simp only [Function.comp_apply, RCLike.ofReal_ratCast, rat_prop _ _]
@@ -232,7 +232,7 @@ noncomputable def InnerProductSpace.ofNorm
     norm_sq_eq_re_inner := inner_.norm_sq
     conj_inner_symm := inner_.conj_symm
     add_left := InnerProductSpaceable.add_left
-    smul_left := fun _ _ _ => innerProp _ _ _ }
+    smul_left := fun _ _ _ ↦ innerProp _ _ _ }
 
 variable (E)
 variable [InnerProductSpaceable E]
@@ -246,7 +246,7 @@ theorem nonempty_innerProductSpace : Nonempty (InnerProductSpace 𝕜 E) :=
       norm_sq_eq_re_inner := inner_.norm_sq
       conj_inner_symm := inner_.conj_symm
       add_left := add_left
-      smul_left := fun _ _ _ => innerProp _ _ _ }⟩
+      smul_left := fun _ _ _ ↦ innerProp _ _ _ }⟩
 
 variable {𝕜 E}
 variable [NormedSpace ℝ E]

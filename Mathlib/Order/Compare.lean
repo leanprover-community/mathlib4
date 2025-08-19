@@ -52,19 +52,19 @@ theorem swap_eq_iff_eq_swap {o o' : Ordering} : o.swap = o' ↔ o = o'.swap := b
   rw [← swap_inj, swap_swap]
 
 theorem Compares.eq_lt [Preorder α] : ∀ {o} {a b : α}, Compares o a b → (o = lt ↔ a < b)
-  | lt, _, _, h => ⟨fun _ => h, fun _ => rfl⟩
-  | eq, a, b, h => ⟨fun h => by injection h, fun h' => (ne_of_lt h' h).elim⟩
-  | gt, a, b, h => ⟨fun h => by injection h, fun h' => (lt_asymm h h').elim⟩
+  | lt, _, _, h => ⟨fun _ ↦ h, fun _ ↦ rfl⟩
+  | eq, a, b, h => ⟨fun h ↦ by injection h, fun h' ↦ (ne_of_lt h' h).elim⟩
+  | gt, a, b, h => ⟨fun h ↦ by injection h, fun h' ↦ (lt_asymm h h').elim⟩
 
 theorem Compares.ne_lt [Preorder α] : ∀ {o} {a b : α}, Compares o a b → (o ≠ lt ↔ b ≤ a)
-  | lt, _, _, h => ⟨absurd rfl, fun h' => (not_le_of_gt h h').elim⟩
-  | eq, _, _, h => ⟨fun _ => ge_of_eq h, fun _ h => by injection h⟩
-  | gt, _, _, h => ⟨fun _ => le_of_lt h, fun _ h => by injection h⟩
+  | lt, _, _, h => ⟨absurd rfl, fun h' ↦ (not_le_of_gt h h').elim⟩
+  | eq, _, _, h => ⟨fun _ ↦ ge_of_eq h, fun _ h ↦ by injection h⟩
+  | gt, _, _, h => ⟨fun _ ↦ le_of_lt h, fun _ h ↦ by injection h⟩
 
 theorem Compares.eq_eq [Preorder α] : ∀ {o} {a b : α}, Compares o a b → (o = eq ↔ a = b)
-  | lt, a, b, h => ⟨fun h => by injection h, fun h' => (ne_of_lt h h').elim⟩
-  | eq, _, _, h => ⟨fun _ => h, fun _ => rfl⟩
-  | gt, a, b, h => ⟨fun h => by injection h, fun h' => (ne_of_gt h h').elim⟩
+  | lt, a, b, h => ⟨fun h ↦ by injection h, fun h' ↦ (ne_of_lt h h').elim⟩
+  | eq, _, _, h => ⟨fun _ ↦ h, fun _ ↦ rfl⟩
+  | gt, a, b, h => ⟨fun h ↦ by injection h, fun h' ↦ (ne_of_gt h h').elim⟩
 
 theorem Compares.eq_gt [Preorder α] {o} {a b : α} (h : Compares o a b) : o = gt ↔ b < a :=
   swap_eq_iff_eq_swap.symm.trans h.swap.eq_lt
@@ -90,7 +90,7 @@ theorem Compares.inj [Preorder α] {o₁} :
 
 theorem compares_iff_of_compares_impl [LinearOrder α] [Preorder β] {a b : α} {a' b' : β}
     (h : ∀ {o}, Compares o a b → Compares o a' b') (o) : Compares o a b ↔ Compares o a' b' := by
-  refine ⟨h, fun ho => ?_⟩
+  refine ⟨h, fun ho ↦ ?_⟩
   rcases lt_trichotomy a b with hab | hab | hab
   · have hab : Compares Ordering.lt a b := hab
     rwa [ho.inj (h hab)]
@@ -147,15 +147,15 @@ theorem cmp_ofDual [LT α] [DecidableLT α] (x y : αᵒᵈ) : cmp (ofDual x) (o
 /-- Generate a linear order structure from a preorder and `cmp` function. -/
 def linearOrderOfCompares [Preorder α] (cmp : α → α → Ordering)
     (h : ∀ a b, (cmp a b).Compares a b) : LinearOrder α :=
-  let H : DecidableLE α := fun a b => decidable_of_iff _ (h a b).ne_gt
+  let H : DecidableLE α := fun a b ↦ decidable_of_iff _ (h a b).ne_gt
   { inferInstanceAs (Preorder α) with
-    le_antisymm := fun a b => (h a b).le_antisymm,
-    le_total := fun a b => (h a b).le_total,
+    le_antisymm := fun a b ↦ (h a b).le_antisymm,
+    le_total := fun a b ↦ (h a b).le_total,
     toMin := minOfLe,
     toMax := maxOfLe,
     toDecidableLE := H,
-    toDecidableLT := fun a b => decidable_of_iff _ (h a b).eq_lt,
-    toDecidableEq := fun a b => decidable_of_iff _ (h a b).eq_eq }
+    toDecidableLT := fun a b ↦ decidable_of_iff _ (h a b).eq_lt,
+    toDecidableEq := fun a b ↦ decidable_of_iff _ (h a b).eq_eq }
 
 variable [LinearOrder α] (x y : α)
 
@@ -177,8 +177,8 @@ theorem cmp_self_eq_eq : cmp x x = Ordering.eq := by rw [cmp_eq_eq_iff]
 variable {x y} {β : Type*} [LinearOrder β] {x' y' : β}
 
 theorem cmp_eq_cmp_symm : cmp x y = cmp x' y' ↔ cmp y x = cmp y' x' :=
-  ⟨fun h => by rwa [← cmp_swap x', ← cmp_swap, swap_inj],
-   fun h => by rwa [← cmp_swap y', ← cmp_swap, swap_inj]⟩
+  ⟨fun h ↦ by rwa [← cmp_swap x', ← cmp_swap, swap_inj],
+   fun h ↦ by rwa [← cmp_swap y', ← cmp_swap, swap_inj]⟩
 
 theorem lt_iff_lt_of_cmp_eq_cmp (h : cmp x y = cmp x' y') : x < y ↔ x' < y' := by
   rw [← cmp_eq_lt_iff, ← cmp_eq_lt_iff, h]

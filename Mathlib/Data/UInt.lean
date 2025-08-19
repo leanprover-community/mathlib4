@@ -87,16 +87,16 @@ run_cmd
       open $typeName (toBitVec_one toBitVec_mul toBitVec_pow) in
       instance instCommMonoid : CommMonoid $typeName :=
         Function.Injective.commMonoid toBitVec toBitVec_injective
-          toBitVec_one (fun _ _ => toBitVec_mul) (fun _ _ => toBitVec_pow _ _)
+          toBitVec_one (fun _ _ ↦ toBitVec_mul) (fun _ _ ↦ toBitVec_pow _ _)
 
       open $typeName (
         toBitVec_zero toBitVec_add toBitVec_mul toBitVec_neg toBitVec_sub toBitVec_nsmul
         toBitVec_zsmul) in
       instance instNonUnitalCommRing : NonUnitalCommRing $typeName :=
         Function.Injective.nonUnitalCommRing toBitVec toBitVec_injective
-          toBitVec_zero (fun _ _ => toBitVec_add) (fun _ _ => toBitVec_mul) (fun _ => toBitVec_neg)
-          (fun _ _ => toBitVec_sub)
-          (fun _ _ => toBitVec_nsmul _ _) (fun _ _ => toBitVec_zsmul _ _)
+          toBitVec_zero (fun _ _ ↦ toBitVec_add) (fun _ _ ↦ toBitVec_mul) (fun _ ↦ toBitVec_neg)
+          (fun _ _ ↦ toBitVec_sub)
+          (fun _ _ ↦ toBitVec_nsmul _ _) (fun _ _ ↦ toBitVec_zsmul _ _)
 
       attribute [local instance] intCast natCast
 
@@ -106,10 +106,10 @@ run_cmd
         toBitVec_natCast toBitVec_intCast) in
       local instance instCommRing : CommRing $typeName :=
         Function.Injective.commRing toBitVec toBitVec_injective
-          toBitVec_zero toBitVec_one (fun _ _ => toBitVec_add) (fun _ _ => toBitVec_mul)
-          (fun _ => toBitVec_neg) (fun _ _ => toBitVec_sub)
-          (fun _ _ => toBitVec_nsmul _ _) (fun _ _ => toBitVec_zsmul _ _)
-          (fun _ _ => toBitVec_pow _ _)
+          toBitVec_zero toBitVec_one (fun _ _ ↦ toBitVec_add) (fun _ _ ↦ toBitVec_mul)
+          (fun _ ↦ toBitVec_neg) (fun _ _ ↦ toBitVec_sub)
+          (fun _ _ ↦ toBitVec_nsmul _ _) (fun _ _ ↦ toBitVec_zsmul _ _)
+          (fun _ _ ↦ toBitVec_pow _ _)
           toBitVec_natCast toBitVec_intCast
 
       namespace CommRing

@@ -111,9 +111,9 @@ theorem tendsto_verticalIntegral (hb : 0 < b.re) (c : ℝ) :
   rw [tendsto_zero_iff_norm_tendsto_zero]
   refine
     tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds ?_
-      (Eventually.of_forall fun _ => norm_nonneg _)
+      (Eventually.of_forall fun _ ↦ norm_nonneg _)
       ((eventually_ge_atTop (0 : ℝ)).mp
-        (Eventually.of_forall fun T hT => verticalIntegral_norm_le hb c hT))
+        (Eventually.of_forall fun T hT ↦ verticalIntegral_norm_le hb c hT))
   rw [(by ring : 0 = 2 * |c| * 0)]
   refine (tendsto_exp_atBot.comp (tendsto_neg_atTop_atBot.comp ?_)).const_mul _
   apply tendsto_atTop_add_const_right
@@ -122,7 +122,7 @@ theorem tendsto_verticalIntegral (hb : 0 < b.re) (c : ℝ) :
   exact (tendsto_const_mul_atTop_of_pos hb).mpr tendsto_id
 
 theorem integrable_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
-    Integrable fun x : ℝ => cexp (-b * (x + c * I) ^ 2) := by
+    Integrable fun x : ℝ ↦ cexp (-b * (x + c * I) ^ 2) := by
   refine
     ⟨(Complex.continuous_exp.comp
           (continuous_const.mul
@@ -131,7 +131,7 @@ theorem integrable_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
   rw [← hasFiniteIntegral_norm_iff]
   simp_rw [norm_cexp_neg_mul_sq_add_mul_I' hb.ne', neg_sub _ (c ^ 2 * _),
     sub_eq_add_neg _ (b.re * _), Real.exp_add]
-  suffices Integrable fun x : ℝ => exp (-(b.re * x ^ 2)) by
+  suffices Integrable fun x : ℝ ↦ exp (-(b.re * x ^ 2)) by
     exact (Integrable.comp_sub_right this (b.im * c / b.re)).hasFiniteIntegral.const_mul _
   simp_rw [← neg_mul]
   apply integrable_exp_neg_mul_sq hb
@@ -143,14 +143,14 @@ theorem integral_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
       (intervalIntegral_tendsto_integral (integrable_cexp_neg_mul_sq_add_real_mul_I hb c)
         tendsto_neg_atTop_atBot tendsto_id)
       ?_
-  set I₁ := fun T => ∫ x : ℝ in -T..T, cexp (-b * (x + c * I) ^ 2) with HI₁
-  let I₂ := fun T : ℝ => ∫ x : ℝ in -T..T, cexp (-b * (x : ℂ) ^ 2)
-  let I₄ := fun T : ℝ => ∫ y : ℝ in (0 : ℝ)..c, cexp (-b * (T + y * I) ^ 2)
-  let I₅ := fun T : ℝ => ∫ y : ℝ in (0 : ℝ)..c, cexp (-b * (-T + y * I) ^ 2)
+  set I₁ := fun T ↦ ∫ x : ℝ in -T..T, cexp (-b * (x + c * I) ^ 2) with HI₁
+  let I₂ := fun T : ℝ ↦ ∫ x : ℝ in -T..T, cexp (-b * (x : ℂ) ^ 2)
+  let I₄ := fun T : ℝ ↦ ∫ y : ℝ in (0 : ℝ)..c, cexp (-b * (T + y * I) ^ 2)
+  let I₅ := fun T : ℝ ↦ ∫ y : ℝ in (0 : ℝ)..c, cexp (-b * (-T + y * I) ^ 2)
   have C : ∀ T : ℝ, I₂ T - I₁ T + I * I₄ T - I * I₅ T = 0 := by
     intro T
     have :=
-      integral_boundary_rect_eq_zero_of_differentiableOn (fun z => cexp (-b * z ^ 2)) (-T)
+      integral_boundary_rect_eq_zero_of_differentiableOn (fun z ↦ cexp (-b * z ^ 2)) (-T)
         (T + c * I)
         (by
           refine Differentiable.differentiableOn (Differentiable.const_mul ?_ _).cexp
@@ -159,13 +159,13 @@ theorem integral_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
       ofReal_re, add_re, mul_re, I_re, mul_zero, I_im, tsub_zero, add_im, mul_im,
       mul_one, zero_add, Algebra.id.smul_eq_mul, ofReal_neg] using this
   simp_rw [id, ← HI₁]
-  have : I₁ = fun T : ℝ => I₂ T + verticalIntegral b c T := by
+  have : I₁ = fun T : ℝ ↦ I₂ T + verticalIntegral b c T := by
     ext1 T
     specialize C T
     rw [sub_eq_zero] at C
     unfold verticalIntegral
     rw [intervalIntegral.integral_const_mul, intervalIntegral.integral_sub]
-    · simp_rw [(fun a b => by rw [sq]; ring_nf : ∀ a b : ℂ, (a - b * I) ^ 2 = (-a + b * I) ^ 2)]
+    · simp_rw [(fun a b ↦ by rw [sq]; ring_nf : ∀ a b : ℂ, (a - b * I) ^ 2 = (-a + b * I) ^ 2)]
       change I₁ T = I₂ T + I * (I₄ T - I₅ T)
       rw [mul_sub, ← C]
       abel
@@ -211,7 +211,7 @@ theorem _root_.fourierIntegral_gaussian (hb : 0 < b.re) (t : ℂ) :
     mul_neg, div_neg, neg_neg, mul_pow, I_sq, neg_one_mul, mul_comm]
 
 theorem _root_.fourierIntegral_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
-    (𝓕 fun x : ℝ => cexp (-π * b * x ^ 2 + 2 * π * c * x)) = fun t : ℝ =>
+    (𝓕 fun x : ℝ ↦ cexp (-π * b * x ^ 2 + 2 * π * c * x)) = fun t : ℝ ↦
     1 / b ^ (1 / 2 : ℂ) * cexp (-π / b * (t + I * c) ^ 2) := by
   haveI : b ≠ 0 := by contrapose! hb; rw [hb, zero_re]
   have h : (-↑π * b).re < 0 := by

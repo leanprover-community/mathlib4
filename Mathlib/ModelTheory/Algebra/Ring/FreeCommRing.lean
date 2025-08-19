@@ -34,10 +34,10 @@ private theorem exists_term_realize_eq_freeCommRing (p : FreeCommRing α) :
       (t.realize FreeCommRing.of : FreeCommRing α) = p :=
   FreeCommRing.induction_on p
     ⟨-1, by simp⟩
-    (fun a => ⟨Term.var a, by simp [Term.realize]⟩)
-    (fun x y ⟨t₁, ht₁⟩ ⟨t₂, ht₂⟩ =>
+    (fun a ↦ ⟨Term.var a, by simp [Term.realize]⟩)
+    (fun x y ⟨t₁, ht₁⟩ ⟨t₂, ht₂⟩ ↦
       ⟨t₁ + t₂, by simp_all⟩)
-    (fun x y ⟨t₁, ht₁⟩ ⟨t₂, ht₂⟩ =>
+    (fun x y ⟨t₁, ht₁⟩ ⟨t₂, ht₂⟩ ↦
       ⟨t₁ * t₂, by simp_all⟩)
 
 end

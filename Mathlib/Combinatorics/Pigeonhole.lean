@@ -235,7 +235,7 @@ theorem exists_card_fiber_lt_of_card_lt_nsmul (ht : #s < #t • b) :
   simp_rw [cast_card] at ht ⊢
   exact
     exists_sum_fiber_lt_of_sum_fiber_nonneg_of_sum_lt_nsmul
-      (fun _ _ => sum_nonneg fun _ _ => zero_le_one) ht
+      (fun _ _ ↦ sum_nonneg fun _ _ ↦ zero_le_one) ht
 
 /-- The pigeonhole principle for finitely many pigeons counted by heads: there is a pigeonhole with
 at most as many pigeons as the floor of the average number of pigeons across all pigeonholes.  ("The
@@ -273,7 +273,7 @@ theorem exists_card_fiber_le_of_card_le_nsmul (ht : t.Nonempty) (hb : #s ≤ #t 
   simp_rw [cast_card] at hb ⊢
   refine
     exists_sum_fiber_le_of_sum_fiber_nonneg_of_sum_le_nsmul
-      (fun _ _ => sum_nonneg fun _ _ => zero_le_one) ht hb
+      (fun _ _ ↦ sum_nonneg fun _ _ ↦ zero_le_one) ht hb
 
 /-- The pigeonhole principle for finitely many pigeons counted by heads: given a function `f`, a
 finite sets `s` in its domain, a finite set `t` in its codomain, and a natural number `n` such that
@@ -308,7 +308,7 @@ version: there is a pigeonhole with the total weight of pigeons in it greater th
 the total number of pigeonholes times `b` is less than the total weight of all pigeons. -/
 theorem exists_lt_sum_fiber_of_nsmul_lt_sum (hb : card β • b < ∑ x, w x) :
     ∃ y, b < ∑ x with f x = y, w x :=
-  let ⟨y, _, hy⟩ := exists_lt_sum_fiber_of_maps_to_of_nsmul_lt_sum (fun _ _ => mem_univ _) hb
+  let ⟨y, _, hy⟩ := exists_lt_sum_fiber_of_maps_to_of_nsmul_lt_sum (fun _ _ ↦ mem_univ _) hb
   ⟨y, hy⟩
 
 /-- The pigeonhole principle for finitely many pigeons of different weights, non-strict inequality
@@ -318,7 +318,7 @@ all pigeons. -/
 theorem exists_le_sum_fiber_of_nsmul_le_sum [Nonempty β] (hb : card β • b ≤ ∑ x, w x) :
     ∃ y, b ≤ ∑ x with f x = y, w x :=
   let ⟨y, _, hy⟩ :=
-    exists_le_sum_fiber_of_maps_to_of_nsmul_le_sum (fun _ _ => mem_univ _) univ_nonempty hb
+    exists_le_sum_fiber_of_maps_to_of_nsmul_le_sum (fun _ _ ↦ mem_univ _) univ_nonempty hb
   ⟨y, hy⟩
 
 /-- The pigeonhole principle for finitely many pigeons of different weights, strict inequality
@@ -345,7 +345,7 @@ with at least as many pigeons as the ceiling of the average number of pigeons ac
 pigeonholes. -/
 theorem exists_lt_card_fiber_of_nsmul_lt_card (hb : card β • b < card α) :
     ∃ y : β, b < #{x | f x = y} :=
-  let ⟨y, _, h⟩ := exists_lt_card_fiber_of_nsmul_lt_card_of_maps_to (fun _ _ => mem_univ _) hb
+  let ⟨y, _, h⟩ := exists_lt_card_fiber_of_nsmul_lt_card_of_maps_to (fun _ _ ↦ mem_univ _) hb
   ⟨y, h⟩
 
 /-- The strong pigeonhole principle for finitely many pigeons and pigeonholes.
@@ -387,7 +387,7 @@ See also `Fintype.exists_lt_card_fiber_of_nsmul_lt_card` for a stronger statemen
 theorem exists_le_card_fiber_of_nsmul_le_card [Nonempty β] (hb : card β • b ≤ card α) :
     ∃ y : β, b ≤ #{x | f x = y} :=
   let ⟨y, _, h⟩ :=
-    exists_le_card_fiber_of_nsmul_le_card_of_maps_to (fun _ _ => mem_univ _) univ_nonempty hb
+    exists_le_card_fiber_of_nsmul_le_card_of_maps_to (fun _ _ ↦ mem_univ _) univ_nonempty hb
   ⟨y, h⟩
 
 /-- The strong pigeonhole principle for finitely many pigeons and pigeonholes.  Given a function `f`
@@ -425,7 +425,7 @@ open Set
 that are equal mod `k`. -/
 theorem exists_lt_modEq_of_infinite {s : Set ℕ} (hs : s.Infinite) {k : ℕ} (hk : 0 < k) :
     ∃ m ∈ s, ∃ n ∈ s, m < n ∧ m ≡ n [MOD k] :=
-  (hs.exists_lt_map_eq_of_mapsTo fun n _ => show n % k ∈ Iio k from Nat.mod_lt n hk) <|
+  (hs.exists_lt_map_eq_of_mapsTo fun n _ ↦ show n % k ∈ Iio k from Nat.mod_lt n hk) <|
     finite_lt_nat k
 
 end Nat

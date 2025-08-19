@@ -82,7 +82,7 @@ abbrev ofHom {X Y : Type v} [Ring X] [Ring Y]
 
 lemma Hom.toBialgHom_injective (V W : HopfAlgCat.{v} R) :
     Function.Injective (Hom.toBialgHom : Hom V W → _) :=
-  fun ⟨f⟩ ⟨g⟩ _ => by congr
+  fun ⟨f⟩ ⟨g⟩ _ ↦ by congr
 
 @[ext]
 lemma hom_ext {X Y : HopfAlgCat.{v} R} (f g : X ⟶ Y) (h : f.toBialgHom = g.toBialgHom) :
@@ -99,8 +99,8 @@ lemma hom_ext {X Y : HopfAlgCat.{v} R} (f g : X ⟶ Y) (h : f.toBialgHom = g.toB
 
 instance hasForgetToBialgebra : HasForget₂ (HopfAlgCat R) (BialgCat R) where
   forget₂ :=
-    { obj := fun X => BialgCat.of R X
-      map := fun {_ _} f => BialgCat.ofHom f.toBialgHom }
+    { obj := fun X ↦ BialgCat.of R X
+      map := fun {_ _} f ↦ BialgCat.ofHom f.toBialgHom }
 
 @[simp]
 theorem forget₂_bialgebra_obj (X : HopfAlgCat R) :
@@ -156,8 +156,8 @@ variable {X Y Z : HopfAlgCat.{v} R}
 def toHopfAlgEquiv (i : X ≅ Y) : X ≃ₐc[R] Y :=
   { i.hom.toBialgHom with
     invFun := i.inv.toBialgHom
-    left_inv := fun x => BialgHom.congr_fun (congr_arg HopfAlgCat.Hom.toBialgHom i.3) x
-    right_inv := fun x => BialgHom.congr_fun (congr_arg HopfAlgCat.Hom.toBialgHom i.4) x }
+    left_inv := fun x ↦ BialgHom.congr_fun (congr_arg HopfAlgCat.Hom.toBialgHom i.3) x
+    right_inv := fun x ↦ BialgHom.congr_fun (congr_arg HopfAlgCat.Hom.toBialgHom i.4) x }
 
 @[simp] theorem toHopfAlgEquiv_toBialgHom (i : X ≅ Y) :
     (i.toHopfAlgEquiv : X →ₐc[R] Y) = i.hom.1 := rfl

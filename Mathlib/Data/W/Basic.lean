@@ -35,7 +35,7 @@ elements of `α` and the children of a node labeled `a` are indexed by elements 
 inductive WType {α : Type*} (β : α → Type*)
   | mk (a : α) (f : β a → WType β) : WType β
 
-instance : Inhabited (WType fun _ : Unit => Empty) :=
+instance : Inhabited (WType fun _ : Unit ↦ Empty) :=
   ⟨WType.mk Unit.unit Empty.elim⟩
 
 namespace WType
@@ -72,7 +72,7 @@ def equivSigma : WType β ≃ Σ a : α, β a → WType β where
 
 /-- The canonical map from `WType β` into any type `γ` given a map `(Σ a : α, β a → γ) → γ`. -/
 def elim (γ : Type*) (fγ : (Σ a : α, β a → γ) → γ) : WType β → γ
-  | ⟨a, f⟩ => fγ ⟨a, fun b => elim γ fγ (f b)⟩
+  | ⟨a, f⟩ => fγ ⟨a, fun b ↦ elim γ fγ (f b)⟩
 
 theorem elim_injective (γ : Type*) (fγ : (Σ a : α, β a → γ) → γ)
     (fγ_injective : Function.Injective fγ) : Function.Injective (elim γ fγ)
@@ -82,17 +82,17 @@ theorem elim_injective (γ : Type*) (fγ : (Σ a : α, β a → γ) → γ)
     exact elim_injective γ fγ fγ_injective (congr_fun (eq_of_heq h) x :)
 
 instance [hα : IsEmpty α] : IsEmpty (WType β) :=
-  ⟨fun w => WType.recOn w (IsEmpty.elim hα)⟩
+  ⟨fun w ↦ WType.recOn w (IsEmpty.elim hα)⟩
 
 theorem infinite_of_nonempty_of_isEmpty (a b : α) [ha : Nonempty (β a)] [he : IsEmpty (β b)] :
     Infinite (WType β) :=
   ⟨by
     intro hf
-    have hba : b ≠ a := fun h => ha.elim (IsEmpty.elim' (show IsEmpty (β a) from h ▸ he))
+    have hba : b ≠ a := fun h ↦ ha.elim (IsEmpty.elim' (show IsEmpty (β a) from h ▸ he))
     refine
       not_injective_infinite_finite
-        (fun n : ℕ =>
-          show WType β from Nat.recOn n ⟨b, IsEmpty.elim' he⟩ fun _ ih => ⟨a, fun _ => ih⟩)
+        (fun n : ℕ ↦
+          show WType β from Nat.recOn n ⟨b, IsEmpty.elim' he⟩ fun _ ih ↦ ⟨a, fun _ ↦ ih⟩)
         ?_
     intro n m h
     induction' n with n ih generalizing m
@@ -106,7 +106,7 @@ variable [∀ a : α, Fintype (β a)]
 
 /-- The depth of a finitely branching tree. -/
 def depth : WType β → ℕ
-  | ⟨_, f⟩ => (Finset.sup Finset.univ fun n => depth (f n)) + 1
+  | ⟨_, f⟩ => (Finset.sup Finset.univ fun n ↦ depth (f n)) + 1
 
 theorem depth_pos (t : WType β) : 0 < t.depth := by
   cases t
@@ -130,24 +130,24 @@ private abbrev WType' {α : Type*} (β : α → Type*) [∀ a : α, Fintype (β 
 variable [∀ a : α, Encodable (β a)]
 
 private def encodable_zero : Encodable (WType' β 0) :=
-  let f : WType' β 0 → Empty := fun ⟨_, h⟩ => False.elim <| not_lt_of_ge h (WType.depth_pos _)
+  let f : WType' β 0 → Empty := fun ⟨_, h⟩ ↦ False.elim <| not_lt_of_ge h (WType.depth_pos _)
   let finv : Empty → WType' β 0 := by
     intro x
     cases x
-  have : ∀ x, finv (f x) = x := fun ⟨_, h⟩ => False.elim <| not_lt_of_ge h (WType.depth_pos _)
+  have : ∀ x, finv (f x) = x := fun ⟨_, h⟩ ↦ False.elim <| not_lt_of_ge h (WType.depth_pos _)
   Encodable.ofLeftInverse f finv this
 
 private def f (n : ℕ) : WType' β (n + 1) → Σ a : α, β a → WType' β n
   | ⟨t, h⟩ => by
     obtain ⟨a, f⟩ := t
-    have h₀ : ∀ i : β a, WType.depth (f i) ≤ n := fun i =>
+    have h₀ : ∀ i : β a, WType.depth (f i) ≤ n := fun i ↦
       Nat.le_of_lt_succ (lt_of_lt_of_le (WType.depth_lt_depth_mk a f i) h)
-    exact ⟨a, fun i : β a => ⟨f i, h₀ i⟩⟩
+    exact ⟨a, fun i : β a ↦ ⟨f i, h₀ i⟩⟩
 
 private def finv (n : ℕ) : (Σ a : α, β a → WType' β n) → WType' β (n + 1)
   | ⟨a, f⟩ =>
-    let f' := fun i : β a => (f i).val
-    have : WType.depth ⟨a, f'⟩ ≤ n + 1 := Nat.add_le_add_right (Finset.sup_le fun b _ => (f b).2) 1
+    let f' := fun i : β a ↦ (f i).val
+    have : WType.depth ⟨a, f'⟩ ≤ n + 1 := Nat.add_le_add_right (Finset.sup_le fun b _ ↦ (f b).2) 1
     ⟨⟨a, f'⟩, this⟩
 
 variable [Encodable α]
@@ -161,10 +161,10 @@ private def encodable_succ (n : Nat) (_ : Encodable (WType' β n)) : Encodable (
 /-- `WType` is encodable when `α` is an encodable fintype and for every `a : α`, `β a` is
 encodable. -/
 instance : Encodable (WType β) := by
-  haveI h' : ∀ n, Encodable (WType' β n) := fun n => Nat.rec encodable_zero encodable_succ n
-  let f : WType β → Σ n, WType' β n := fun t => ⟨t.depth, ⟨t, le_rfl⟩⟩
-  let finv : (Σ n, WType' β n) → WType β := fun p => p.2.1
-  have : ∀ t, finv (f t) = t := fun t => rfl
+  haveI h' : ∀ n, Encodable (WType' β n) := fun n ↦ Nat.rec encodable_zero encodable_succ n
+  let f : WType β → Σ n, WType' β n := fun t ↦ ⟨t.depth, ⟨t, le_rfl⟩⟩
+  let finv : (Σ n, WType' β n) → WType β := fun p ↦ p.2.1
+  have : ∀ t, finv (f t) = t := fun t ↦ rfl
   exact Encodable.ofLeftInverse f finv this
 
 end WType

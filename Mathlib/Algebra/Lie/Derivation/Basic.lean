@@ -73,7 +73,7 @@ initialize_simps_projections LieDerivation (toFun → apply)
 attribute [coe] toLinearMap
 
 instance instCoeToLinearMap : Coe (LieDerivation R L M) (L →ₗ[R] M) :=
-  ⟨fun D => D.toLinearMap⟩
+  ⟨fun D ↦ D.toLinearMap⟩
 
 @[simp]
 theorem mk_coe (f : L →ₗ[R] M) (h₁) : ((⟨f, h₁⟩ : LieDerivation R L M) : L → M) = f :=
@@ -118,7 +118,7 @@ theorem eqOn_lieSpan {s : Set L} (h : Set.EqOn D1 D2 s) :
 are equal on the whole Lie algebra. -/
 theorem ext_of_lieSpan_eq_top (s : Set L) (hs : LieSubalgebra.lieSpan R L s = ⊤)
     (h : Set.EqOn D1 D2 s) : D1 = D2 :=
-  ext fun _ => eqOn_lieSpan h <| hs.symm ▸ trivial
+  ext fun _ ↦ eqOn_lieSpan h <| hs.symm ▸ trivial
 
 section
 
@@ -130,7 +130,7 @@ theorem iterate_apply_lie (D : LieDerivation R L L) (n : ℕ) (a b : L) :
   induction n with
   | zero => simp
   | succ n ih =>
-    rw [sum_antidiagonal_choose_succ_nsmul (M := L) (fun i j => ⁅D^[i] a, D^[j] b⁆) n]
+    rw [sum_antidiagonal_choose_succ_nsmul (M := L) (fun i j ↦ ⁅D^[i] a, D^[j] b⁆) n]
     simp only [Function.iterate_succ_apply', ih, map_sum, map_nsmul, apply_lie_eq_add, smul_add,
       sum_add_distrib, add_right_inj]
     refine sum_congr rfl fun ⟨i, j⟩ hij ↦ ?_
@@ -147,7 +147,7 @@ end
 instance instZero : Zero (LieDerivation R L M) where
   zero :=
     { toLinearMap := 0
-      leibniz' := fun a b => by simp only [LinearMap.zero_apply, lie_zero, sub_self] }
+      leibniz' := fun a b ↦ by simp only [LinearMap.zero_apply, lie_zero, sub_self] }
 
 @[simp]
 theorem coe_zero : ⇑(0 : LieDerivation R L M) = 0 :=
@@ -187,8 +187,8 @@ protected theorem map_sub : D (a - b) = D a - D b :=
   map_sub D a b
 
 instance instNeg : Neg (LieDerivation R L M) :=
-  ⟨fun D =>
-    mk (-D) fun a b => by
+  ⟨fun D ↦
+    mk (-D) fun a b ↦ by
       simp only [LinearMap.neg_apply, coeFn_coe, apply_lie_eq_sub,
         neg_sub, lie_neg, sub_neg_eq_add, add_comm, ← sub_eq_add_neg] ⟩
 
@@ -204,8 +204,8 @@ theorem neg_apply : (-D) a = -D a :=
   rfl
 
 instance instSub : Sub (LieDerivation R L M) :=
-  ⟨fun D1 D2 =>
-    mk (D1 - D2 : L →ₗ[R] M) fun a b => by
+  ⟨fun D1 D2 ↦
+    mk (D1 - D2 : L →ₗ[R] M) fun a b ↦ by
       simp only [LinearMap.sub_apply, coeFn_coe, apply_lie_eq_sub, lie_sub, sub_sub_sub_comm]⟩
 
 @[simp]
@@ -234,7 +234,7 @@ variable [Monoid T] [DistribMulAction T M] [SMulCommClass R T M] [SMulBracketCom
 instance instSMul : SMul S (LieDerivation R L M) where
   smul r D :=
     { toLinearMap := r • D
-      leibniz' := fun a b => by simp only [LinearMap.smul_apply, coeFn_coe, apply_lie_eq_sub,
+      leibniz' := fun a b ↦ by simp only [LinearMap.smul_apply, coeFn_coe, apply_lie_eq_sub,
         smul_sub, SMulBracketCommClass.smul_bracket_comm] }
 
 @[simp]
@@ -250,12 +250,12 @@ theorem smul_apply (r : S) (D : LieDerivation R L M) : (r • D) a = r • D a :
 
 instance instSMulBase : SMulBracketCommClass R L M := ⟨fun s l a ↦ (lie_smul s l a).symm⟩
 
-instance instSMulNat : SMulBracketCommClass ℕ L M := ⟨fun s l a => (lie_nsmul l a s).symm⟩
+instance instSMulNat : SMulBracketCommClass ℕ L M := ⟨fun s l a ↦ (lie_nsmul l a s).symm⟩
 
-instance instSMulInt : SMulBracketCommClass ℤ L M := ⟨fun s l a => (lie_zsmul l a s).symm⟩
+instance instSMulInt : SMulBracketCommClass ℤ L M := ⟨fun s l a ↦ (lie_zsmul l a s).symm⟩
 
 instance instAddCommGroup : AddCommGroup (LieDerivation R L M) :=
-  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
+  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 /-- `coe_fn` as an `AddMonoidHom`. -/
 def coeFnAddMonoidHom : LieDerivation R L M →+ L → M where
@@ -270,10 +270,10 @@ instance : DistribMulAction S (LieDerivation R L M) :=
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
 
 instance [SMul S T] [IsScalarTower S T M] : IsScalarTower S T (LieDerivation R L M) :=
-  ⟨fun _ _ _ => ext fun _ => smul_assoc _ _ _⟩
+  ⟨fun _ _ _ ↦ ext fun _ ↦ smul_assoc _ _ _⟩
 
 instance [SMulCommClass S T M] : SMulCommClass S T (LieDerivation R L M) :=
-  ⟨fun _ _ _ => ext fun _ => smul_comm _ _ _⟩
+  ⟨fun _ _ _ ↦ ext fun _ ↦ smul_comm _ _ _⟩
 
 end Scalar
 
@@ -289,7 +289,7 @@ variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
 
 /-- The commutator of two Lie derivations on a Lie algebra is a Lie derivation. -/
 instance instBracket : Bracket (LieDerivation R L L) (LieDerivation R L L) where
-  bracket D1 D2 := LieDerivation.mk ⁅(D1 : Module.End R L), (D2 : Module.End R L)⁆ (fun a b => by
+  bracket D1 D2 := LieDerivation.mk ⁅(D1 : Module.End R L), (D2 : Module.End R L)⁆ (fun a b ↦ by
     simp only [Ring.lie_def, apply_lie_eq_add, coeFn_coe,
       LinearMap.sub_apply, Module.End.mul_apply, map_add, sub_lie, lie_sub, ← lie_skew b]
     abel)
@@ -315,7 +315,7 @@ instance : LieRing (LieDerivation R L L) where
 
 /-- The set of Lie derivations from a Lie algebra `L` to itself is a Lie algebra. -/
 instance instLieAlgebra : LieAlgebra R (LieDerivation R L L) where
-  lie_smul := fun r d e => by ext a; simp only [commutator_apply, map_smul, smul_sub, smul_apply]
+  lie_smul := fun r d e ↦ by ext a; simp only [commutator_apply, map_smul, smul_sub, smul_apply]
 
 @[simp] lemma lie_apply (D₁ D₂ : LieDerivation R L L) (x : L) :
     ⁅D₁, D₂⁆ x = D₁ (D₂ x) - D₂ (D₁ x) :=

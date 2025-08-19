@@ -135,7 +135,7 @@ lemma ext {x y : PGame} (hl : x.LeftMoves = y.LeftMoves) (hr : x.RightMoves = y.
 /-- Construct a pre-game from list of pre-games describing the available moves for Left and Right.
 -/
 def ofLists (L R : List PGame.{u}) : PGame.{u} :=
-  mk (ULift (Fin L.length)) (ULift (Fin R.length)) (fun i => L[i.down.1]) fun j ↦ R[j.down.1]
+  mk (ULift (Fin L.length)) (ULift (Fin R.length)) (fun i ↦ L[i.down.1]) fun j ↦ R[j.down.1]
 
 theorem leftMoves_ofLists (L R : List PGame) : (ofLists L R).LeftMoves = ULift (Fin L.length) :=
   rfl
@@ -179,7 +179,7 @@ Both this and `PGame.recOn` describe Conway induction on games. -/
 @[elab_as_elim]
 def moveRecOn {C : PGame → Sort*} (x : PGame)
     (IH : ∀ y : PGame, (∀ i, C (y.moveLeft i)) → (∀ j, C (y.moveRight j)) → C y) : C x :=
-  x.recOn fun yl yr yL yR => IH (mk yl yr yL yR)
+  x.recOn fun yl yr yL yR ↦ IH (mk yl yr yL yR)
 
 /-- `IsOption x y` means that `x` is either a left or right option for `y`. -/
 @[mk_iff]
@@ -196,9 +196,9 @@ theorem IsOption.mk_right {xl xr : Type u} (xL : xl → PGame) (xR : xr → PGam
   @IsOption.moveRight (mk _ _ _ _) i
 
 theorem wf_isOption : WellFounded IsOption :=
-  ⟨fun x =>
-    moveRecOn x fun x IHl IHr =>
-      Acc.intro x fun y h => by
+  ⟨fun x ↦
+    moveRecOn x fun x IHl IHr ↦
+      Acc.intro x fun y h ↦ by
         induction h with
         | moveLeft i => exact IHl i
         | moveRight j => exact IHr j⟩
@@ -303,7 +303,7 @@ instance : Inhabited PGame :=
 
 /-- The pre-game `One` is defined by `1 = { 0 | }`. -/
 instance instOnePGame : One PGame :=
-  ⟨⟨PUnit, PEmpty, fun _ => 0, PEmpty.elim⟩⟩
+  ⟨⟨PUnit, PEmpty, fun _ ↦ 0, PEmpty.elim⟩⟩
 
 @[simp]
 theorem one_leftMoves : LeftMoves 1 = PUnit :=
@@ -483,7 +483,7 @@ variable {x y : PGame.{u}}
 def mk' (L : y.LeftMoves ≃ x.LeftMoves) (R : y.RightMoves ≃ x.RightMoves)
     (hL : ∀ i, x.moveLeft (L i) ≡r y.moveLeft i) (hR : ∀ j, x.moveRight (R j) ≡r y.moveRight j) :
     x ≡r y :=
-  ⟨L.symm, R.symm, fun i => by simpa using hL (L.symm i), fun j => by simpa using hR (R.symm j)⟩
+  ⟨L.symm, R.symm, fun i ↦ by simpa using hL (L.symm i), fun j ↦ by simpa using hR (R.symm j)⟩
 
 /-- The equivalence between left moves of `x` and `y` given by the relabelling. -/
 def leftMovesEquiv : x ≡r y → x.LeftMoves ≃ y.LeftMoves
@@ -533,7 +533,7 @@ def moveRightSymm :
 /-- The identity relabelling. -/
 @[refl]
 def refl (x : PGame) : x ≡r x :=
-  ⟨Equiv.refl _, Equiv.refl _, fun _ => refl _, fun _ => refl _⟩
+  ⟨Equiv.refl _, Equiv.refl _, fun _ ↦ refl _, fun _ ↦ refl _⟩
 termination_by x
 
 instance (x : PGame) : Inhabited (x ≡r x) :=
@@ -542,13 +542,13 @@ instance (x : PGame) : Inhabited (x ≡r x) :=
 /-- Flip a relabelling. -/
 @[symm]
 def symm : ∀ {x y : PGame}, x ≡r y → y ≡r x
-  | _, _, ⟨L, R, hL, hR⟩ => mk' L R (fun i => (hL i).symm) fun j => (hR j).symm
+  | _, _, ⟨L, R, hL, hR⟩ => mk' L R (fun i ↦ (hL i).symm) fun j ↦ (hR j).symm
 
 /-- Transitivity of relabelling. -/
 @[trans]
 def trans : ∀ {x y z : PGame}, x ≡r y → y ≡r z → x ≡r z
   | _, _, _, ⟨L₁, R₁, hL₁, hR₁⟩, ⟨L₂, R₂, hL₂, hR₂⟩ =>
-    ⟨L₁.trans L₂, R₁.trans R₂, fun i => (hL₁ i).trans (hL₂ _), fun j => (hR₁ j).trans (hR₂ _)⟩
+    ⟨L₁.trans L₂, R₁.trans R₂, fun i ↦ (hL₁ i).trans (hL₂ _), fun j ↦ (hR₁ j).trans (hR₂ _)⟩
 
 /-- Any game without left or right moves is a relabelling of 0. -/
 def isEmpty (x : PGame) [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves] : x ≡r 0 :=
@@ -580,19 +580,19 @@ theorem relabel_moveRight {x : PGame} {xl' xr'} (el : xl' ≃ x.LeftMoves) (er :
 def relabelRelabelling {x : PGame} {xl' xr'} (el : xl' ≃ x.LeftMoves) (er : xr' ≃ x.RightMoves) :
     x ≡r relabel el er :=
   -- Porting note: needed to add `rfl`
-  Relabelling.mk' el er (fun i => by simp; rfl) (fun j => by simp; rfl)
+  Relabelling.mk' el er (fun i ↦ by simp; rfl) (fun j ↦ by simp; rfl)
 
 /-! ### Inserting an option -/
 
 /-- The pregame constructed by inserting `x'` as a new left option into x. -/
 def insertLeft (x x' : PGame.{u}) : PGame :=
   match x with
-  | mk xl xr xL xR => mk (xl ⊕ PUnit) xr (Sum.elim xL fun _ => x') xR
+  | mk xl xr xL xR => mk (xl ⊕ PUnit) xr (Sum.elim xL fun _ ↦ x') xR
 
 /-- The pregame constructed by inserting `x'` as a new right option into x. -/
 def insertRight (x x' : PGame.{u}) : PGame :=
   match x with
-  | mk xl xr xL xR => mk xl (xr ⊕ PUnit) xL (Sum.elim xR fun _ => x')
+  | mk xl xr xL xR => mk xl (xr ⊕ PUnit) xL (Sum.elim xR fun _ ↦ x')
 
 /-- Inserting on the left and right commutes. -/
 theorem insertRight_insertLeft {x x' x'' : PGame} :

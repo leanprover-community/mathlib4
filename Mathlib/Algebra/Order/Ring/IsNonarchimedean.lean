@@ -181,7 +181,7 @@ open Finset in
 /-- Ultrametric inequality with `Finset.sum`. -/
 lemma apply_sum_le_sup_of_isNonarchimedean {α β : Type*} [AddCommMonoid α] {f : α → R}
     (nonarch : IsNonarchimedean f) {s : Finset β} (hnonempty : s.Nonempty) {l : β → α} :
-    f (∑ i ∈ s, l i) ≤ s.sup' hnonempty fun i => f (l i) := by
+    f (∑ i ∈ s, l i) ≤ s.sup' hnonempty fun i ↦ f (l i) := by
   induction hnonempty using Nonempty.cons_induction with
   | singleton i => simp
   | cons i s _ hs hind =>
@@ -198,7 +198,7 @@ theorem add_pow_le {F α : Type*} [CommRing α] [FunLike F α R] [ZeroHomClass F
     [NonnegHomClass F α R] [SubmultiplicativeHomClass F α R] {f : F} (hna : IsNonarchimedean f)
     (n : ℕ) (a b : α) : ∃ m < n + 1, f ((a + b) ^ n) ≤ f (a ^ m) * f (b ^ (n - m)) := by
   obtain ⟨m, hm_lt, hM⟩ := finset_image_add hna
-    (fun m => a ^ m * b ^ (n - m) * ↑(n.choose m)) (Finset.range (n + 1))
+    (fun m ↦ a ^ m * b ^ (n - m) * ↑(n.choose m)) (Finset.range (n + 1))
   simp only [Finset.nonempty_range_iff, ne_eq, Nat.succ_ne_zero, not_false_iff, Finset.mem_range,
     forall_true_left] at hm_lt
   refine ⟨m, hm_lt, ?_⟩

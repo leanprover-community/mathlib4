@@ -61,10 +61,10 @@ instance [Nonempty P] : Nonempty (Sphere P) :=
   ⟨⟨Classical.arbitrary P, 0⟩⟩
 
 instance : Coe (Sphere P) (Set P) :=
-  ⟨fun s => Metric.sphere s.center s.radius⟩
+  ⟨fun s ↦ Metric.sphere s.center s.radius⟩
 
 instance : Membership P (Sphere P) :=
-  ⟨fun s p => p ∈ (s : Set P)⟩
+  ⟨fun s p ↦ p ∈ (s : Set P)⟩
 
 theorem Sphere.mk_center (c : P) (r : ℝ) : (⟨c, r⟩ : Sphere P).center = c :=
   rfl
@@ -115,7 +115,7 @@ theorem Sphere.ne_iff {s₁ s₂ : Sphere P} :
 
 theorem Sphere.center_eq_iff_eq_of_mem {s₁ s₂ : Sphere P} {p : P} (hs₁ : p ∈ s₁) (hs₂ : p ∈ s₂) :
     s₁.center = s₂.center ↔ s₁ = s₂ := by
-  refine ⟨fun h => Sphere.ext h ?_, fun h => h ▸ rfl⟩
+  refine ⟨fun h ↦ Sphere.ext h ?_, fun h ↦ h ▸ rfl⟩
   rw [mem_sphere] at hs₁ hs₂
   rw [← hs₁, ← hs₂, h]
 
@@ -151,7 +151,7 @@ theorem cospherical_def (ps : Set P) :
 /-- A set of points is cospherical if and only if they lie in some sphere. -/
 theorem cospherical_iff_exists_sphere {ps : Set P} :
     Cospherical ps ↔ ∃ s : Sphere P, ps ⊆ (s : Set P) := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨c, r, h⟩
     exact ⟨⟨c, r⟩, h⟩
   · rcases h with ⟨s, h⟩
@@ -165,12 +165,12 @@ theorem Sphere.cospherical (s : Sphere P) : Cospherical (s : Set P) :=
 theorem Cospherical.subset {ps₁ ps₂ : Set P} (hs : ps₁ ⊆ ps₂) (hc : Cospherical ps₂) :
     Cospherical ps₁ := by
   rcases hc with ⟨c, r, hcr⟩
-  exact ⟨c, r, fun p hp => hcr p (hs hp)⟩
+  exact ⟨c, r, fun p hp ↦ hcr p (hs hp)⟩
 
 /-- The empty set is cospherical. -/
 theorem cospherical_empty [Nonempty P] : Cospherical (∅ : Set P) :=
   let ⟨p⟩ := ‹Nonempty P›
-  ⟨p, 0, fun _ => False.elim⟩
+  ⟨p, 0, fun _ ↦ False.elim⟩
 
 /-- A single point is cospherical. -/
 theorem cospherical_singleton (p : P) : Cospherical ({p} : Set P) := by
@@ -336,7 +336,7 @@ theorem Cospherical.affineIndependent {s : Set P} (hs : Cospherical s) {p : Fin 
     have he : p 1 = p 0 := by simpa [h] using hv 1
     exact (by decide : (1 : Fin 3) ≠ 0) (hpi he)
   rcases hs with ⟨c, r, hs⟩
-  have hs' := fun i => hs (p i) (Set.mem_of_mem_of_subset (Set.mem_range_self _) hps)
+  have hs' := fun i ↦ hs (p i) (Set.mem_of_mem_of_subset (Set.mem_range_self _) hps)
   choose f hf using hv
   have hsd : ∀ i, dist (f i • v +ᵥ p 0) c = r := by
     intro i
@@ -352,7 +352,7 @@ theorem Cospherical.affineIndependent {s : Set P} (hs : Cospherical s) {p : Fin 
     rw [h, ← hf j] at hi
     exact hpi hi
   simp_rw [← hsd 0, hf0, zero_smul, zero_vadd, dist_smul_vadd_eq_dist (p 0) c hv0] at hsd
-  have hfn0 : ∀ i, i ≠ 0 → f i ≠ 0 := fun i => (hfi.ne_iff' hf0).2
+  have hfn0 : ∀ i, i ≠ 0 → f i ≠ 0 := fun i ↦ (hfi.ne_iff' hf0).2
   have hfn0' : ∀ i, i ≠ 0 → f i = -2 * ⟪v, p 0 -ᵥ c⟫ / ⟪v, v⟫ := by
     intro i hi
     have hsdi := hsd i

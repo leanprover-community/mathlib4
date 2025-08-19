@@ -166,7 +166,7 @@ theorem prod_congr' {a b : ℕ} (f : Fin b → M) (h : a = b) :
 @[to_additive]
 theorem prod_univ_add {a b : ℕ} (f : Fin (a + b) → M) :
     (∏ i : Fin (a + b), f i) = (∏ i : Fin a, f (castAdd b i)) * ∏ i : Fin b, f (natAdd a i) := by
-  rw [Fintype.prod_equiv finSumFinEquiv.symm f fun i => f (finSumFinEquiv.toFun i)]
+  rw [Fintype.prod_equiv finSumFinEquiv.symm f fun i ↦ f (finSumFinEquiv.toFun i)]
   · apply Fintype.prod_sum_type
   · intro x
     simp only [Equiv.toFun_as_coe, Equiv.apply_symm_apply]
@@ -453,12 +453,12 @@ theorem partialProd_succ' (f : Fin (n + 1) → M) (j : Fin (n + 1)) :
 @[to_additive]
 lemma partialProd_init {f : Fin (n + 1) → M} (i : Fin (n + 1)) :
     partialProd (init f) i = partialProd f i.castSucc :=
-  i.inductionOn (by simp) fun i hi => by simp_all [init, partialProd_succ]
+  i.inductionOn (by simp) fun i hi ↦ by simp_all [init, partialProd_succ]
 
 @[to_additive]
 theorem partialProd_left_inv {G : Type*} [Group G] (f : Fin (n + 1) → G) :
-    (f 0 • partialProd fun i : Fin n => (f i.castSucc)⁻¹ * f i.succ) = f :=
-  funext fun x => Fin.inductionOn x (by simp) fun x hx => by
+    (f 0 • partialProd fun i : Fin n ↦ (f i.castSucc)⁻¹ * f i.succ) = f :=
+  funext fun x ↦ Fin.inductionOn x (by simp) fun x hx ↦ by
     simp only [Pi.smul_apply, smul_eq_mul] at hx ⊢
     rw [partialProd_succ, ← mul_assoc, hx, mul_inv_cancel_left]
 
@@ -532,7 +532,7 @@ end Fin
 @[simps!]
 def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
   Equiv.ofRightInverseOfCardLE (le_of_eq <| by simp_rw [Fintype.card_fun, Fintype.card_fin])
-    (fun f => ⟨∑ i, f i * m ^ (i : ℕ), by
+    (fun f ↦ ⟨∑ i, f i * m ^ (i : ℕ), by
       induction n with
       | zero => simp
       | succ n ih =>
@@ -542,14 +542,14 @@ def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
         refine (Nat.add_lt_add_of_lt_of_le (ih _) <| Nat.mul_le_mul_right _
           (Fin.is_le _)).trans_eq ?_
         rw [← one_add_mul (_ : ℕ), add_comm, pow_succ']⟩)
-    (fun a b => ⟨a / m ^ (b : ℕ) % m, by
+    (fun a b ↦ ⟨a / m ^ (b : ℕ) % m, by
       rcases n with - | n
       · exact b.elim0
       rcases m with - | m
       · rw [zero_pow n.succ_ne_zero] at a
         exact a.elim0
       · exact Nat.mod_lt _ m.succ_pos⟩)
-    fun a => by
+    fun a ↦ by
       dsimp
       induction n with
       | zero => subsingleton [(finCongr <| pow_zero _).subsingleton]
@@ -573,7 +573,7 @@ theorem finFunctionFinEquiv_single {m n : ℕ} [NeZero m] (i : Fin n) (j : Fin m
 /-- Equivalence between `∀ i : Fin m, Fin (n i)` and `Fin (∏ i : Fin m, n i)`. -/
 def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃ Fin (∏ i : Fin m, n i) :=
   Equiv.ofRightInverseOfCardLE (le_of_eq <| by simp_rw [Fintype.card_pi, Fintype.card_fin])
-    (fun f => ⟨∑ i, f i * ∏ j, n (Fin.castLE i.is_lt.le j), by
+    (fun f ↦ ⟨∑ i, f i * ∏ j, n (Fin.castLE i.is_lt.le j), by
       induction m with
       | zero => simp
       | succ m ih =>
@@ -588,7 +588,7 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
       · exact isEmptyElim fn
       refine (Nat.add_lt_add_of_lt_of_le (ih _) <| Nat.mul_le_mul_right _ (Fin.is_le _)).trans_eq ?_
       rw [← one_add_mul (_ : ℕ), mul_comm, add_comm]⟩)
-    (fun a b => ⟨(a / ∏ j : Fin b, n (Fin.castLE b.is_lt.le j)) % n b, by
+    (fun a b ↦ ⟨(a / ∏ j : Fin b, n (Fin.castLE b.is_lt.le j)) % n b, by
       cases m
       · exact b.elim0
       rcases h : n b with nb | nb
@@ -606,11 +606,11 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
         simp_rw [Fin.forall_iff, Fin.ext_iff] at ih
         ext
         simp_rw [Fin.sum_univ_succ, Fin.cons_succ]
-        have := fun i : Fin n =>
+        have := fun i : Fin n ↦
           Fintype.prod_equiv (finCongr <| Fin.val_succ i)
-            (fun j => (Fin.cons x xs : _ → ℕ) (Fin.castLE (Fin.is_lt _).le j))
-            (fun j => (Fin.cons x xs : _ → ℕ) (Fin.castLE (Nat.succ_le_succ (Fin.is_lt _).le) j))
-            fun j => rfl
+            (fun j ↦ (Fin.cons x xs : _ → ℕ) (Fin.castLE (Fin.is_lt _).le j))
+            (fun j ↦ (Fin.cons x xs : _ → ℕ) (Fin.castLE (Nat.succ_le_succ (Fin.is_lt _).le) j))
+            fun j ↦ rfl
         simp_rw [this]
         clear this
         simp_rw [Fin.val_zero, Fintype.prod_empty, Nat.div_one, mul_one, Fin.cons_zero,

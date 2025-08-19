@@ -126,7 +126,7 @@ numbers of the form `n /. d` with `d ≠ 0`. -/
 @[elab_as_elim]
 def numDenCasesOn'.{u} {C : ℚ → Sort u} (a : ℚ) (H : ∀ (n : ℤ) (d : ℕ), d ≠ 0 → C (n /. d)) :
     C a :=
-  numDenCasesOn a fun n d h _ => H n d h.ne'
+  numDenCasesOn a fun n d h _ ↦ H n d h.ne'
 
 /-- Define a (dependent) function or prove `∀ r : ℚ, p r` by dealing with rational
 numbers of the form `mk' n d` with `d ≠ 0`. -/
@@ -250,9 +250,9 @@ protected lemma neg_add_cancel : -a + a = 0 := by
 lemma divInt_one_one : 1 /. 1 = 1 := by rw [divInt_one, intCast_one]
 
 protected theorem mul_assoc : a * b * c = a * (b * c) :=
-  numDenCasesOn' a fun n₁ d₁ h₁ =>
-    numDenCasesOn' b fun n₂ d₂ h₂ =>
-      numDenCasesOn' c fun n₃ d₃ h₃ => by
+  numDenCasesOn' a fun n₁ d₁ h₁ ↦
+    numDenCasesOn' b fun n₂ d₂ h₂ ↦
+      numDenCasesOn' c fun n₃ d₃ h₃ ↦ by
         simp [Int.mul_comm, Nat.mul_assoc, Int.mul_left_comm]
 
 protected theorem add_mul : (a + b) * c = a * c + b * c :=
@@ -361,7 +361,7 @@ theorem den_zero : Rat.den 0 = 1 :=
 lemma zero_of_num_zero {q : ℚ} (hq : q.num = 0) : q = 0 := by simpa [hq] using q.num_divInt_den.symm
 
 theorem zero_iff_num_zero {q : ℚ} : q = 0 ↔ q.num = 0 :=
-  ⟨fun _ => by simp [*], zero_of_num_zero⟩
+  ⟨fun _ ↦ by simp [*], zero_of_num_zero⟩
 
 -- `Not `@[simp]` as `num_ofNat` is stronger.
 theorem num_one : (1 : ℚ).num = 1 :=
@@ -372,10 +372,10 @@ theorem den_one : (1 : ℚ).den = 1 :=
   rfl
 
 theorem mk_num_ne_zero_of_ne_zero {q : ℚ} {n d : ℤ} (hq : q ≠ 0) (hqnd : q = n /. d) : n ≠ 0 :=
-  fun this => hq <| by simpa [this] using hqnd
+  fun this ↦ hq <| by simpa [this] using hqnd
 
 theorem mk_denom_ne_zero_of_ne_zero {q : ℚ} {n d : ℤ} (hq : q ≠ 0) (hqnd : q = n /. d) : d ≠ 0 :=
-  fun this => hq <| by simpa [this] using hqnd
+  fun this ↦ hq <| by simpa [this] using hqnd
 
 theorem divInt_ne_zero_of_ne_zero {n d : ℤ} (h : n ≠ 0) (hd : d ≠ 0) : n /. d ≠ 0 :=
   (divInt_ne_zero hd).mpr h
@@ -417,10 +417,10 @@ lemma eq_num_of_isInt {q : ℚ} (h : q.isInt) : q = q.num := by
   exact (Rat.coe_int_num_of_den_eq_one h).symm
 
 theorem den_eq_one_iff (r : ℚ) : r.den = 1 ↔ ↑r.num = r :=
-  ⟨Rat.coe_int_num_of_den_eq_one, fun h => h ▸ Rat.den_intCast r.num⟩
+  ⟨Rat.coe_int_num_of_den_eq_one, fun h ↦ h ▸ Rat.den_intCast r.num⟩
 
-instance canLift : CanLift ℚ ℤ (↑) fun q => q.den = 1 :=
-  ⟨fun q hq => ⟨q.num, coe_int_num_of_den_eq_one hq⟩⟩
+instance canLift : CanLift ℚ ℤ (↑) fun q ↦ q.den = 1 :=
+  ⟨fun q hq ↦ ⟨q.num, coe_int_num_of_den_eq_one hq⟩⟩
 
 -- Will be subsumed by `Int.coe_inj` after we have defined
 -- `LinearOrderedField ℚ` (which implies characteristic zero).
@@ -439,6 +439,6 @@ cases r with
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 def divCasesOn {C : ℚ → Sort*} (a : ℚ)
     (div : ∀ (n : ℤ) (d : ℕ), d ≠ 0 → n.natAbs.Coprime d → C (n / d)) : C a :=
-  a.casesOn fun n d nz red => by rw [Rat.mk'_eq_divInt, Rat.divInt_eq_div]; exact div n d nz red
+  a.casesOn fun n d nz red ↦ by rw [Rat.mk'_eq_divInt, Rat.divInt_eq_div]; exact div n d nz red
 
 end Rat

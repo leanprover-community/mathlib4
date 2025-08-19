@@ -119,7 +119,7 @@ instance (priority := 100) instMonoidHomClass
     [MulOneClass M] [MulOneClass N] [MulEquivClass F M N] :
     MonoidHomClass F M N :=
   { MulEquivClass.instMulHomClass F with
-    map_one := fun e =>
+    map_one := fun e ↦
       calc
         e 1 = e 1 * 1 := (mul_one _).symm
         _ = e 1 * e (EquivLike.inv e (1 : N) : M) :=
@@ -192,7 +192,7 @@ theorem coe_mk (f : M ≃ N) (hf : ∀ x y, f (x * y) = f x * f y) : (mk f hf : 
 
 @[to_additive (attr := simp)]
 theorem mk_coe (e : M ≃* N) (e' h₁ h₂ h₃) : (⟨⟨e, e', h₁, h₂⟩, h₃⟩ : M ≃* N) = e :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[to_additive (attr := simp)]
 theorem toEquiv_eq_coe (f : M ≃* N) : f.toEquiv = f :=
@@ -253,7 +253,7 @@ section refl
 /-- The identity map is a multiplicative isomorphism. -/
 @[to_additive (attr := refl) /-- The identity map is an additive isomorphism. -/]
 def refl (M : Type*) [Mul M] : M ≃* M :=
-  { Equiv.refl _ with map_mul' := fun _ _ => rfl }
+  { Equiv.refl _ with map_mul' := fun _ _ ↦ rfl }
 
 @[to_additive]
 instance : Inhabited (M ≃* M) := ⟨refl M⟩
@@ -303,7 +303,7 @@ theorem symm_bijective : Function.Bijective (symm : (M ≃* N) → N ≃* M) :=
 
 @[to_additive (attr := simp)]
 theorem mk_coe' (e : M ≃* N) (f h₁ h₂ h₃) : (MulEquiv.mk ⟨f, e, h₁, h₂⟩ h₃ : N ≃* M) = e.symm :=
-  symm_bijective.injective <| ext fun _ => rfl
+  symm_bijective.injective <| ext fun _ ↦ rfl
 
 @[to_additive (attr := simp)]
 theorem symm_mk (f : M ≃ N) (h) :
@@ -400,7 +400,7 @@ section trans
 @[to_additive (attr := trans) /-- Transitivity of addition-preserving isomorphisms -/]
 def trans (h1 : M ≃* N) (h2 : N ≃* P) : M ≃* P :=
   { h1.toEquiv.trans h2.toEquiv with
-    map_mul' := fun x y => show h2 (h1 (x * y)) = h2 (h1 x) * h2 (h1 y) by
+    map_mul' := fun x y ↦ show h2 (h1 (x * y)) = h2 (h1 x) * h2 (h1 y) by
       rw [map_mul, map_mul] }
 
 @[to_additive (attr := simp)]

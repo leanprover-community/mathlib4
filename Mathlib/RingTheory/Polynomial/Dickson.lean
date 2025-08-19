@@ -233,7 +233,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
         ⋃ x ∈ { x : K | ∃ y : K, x = y + y⁻¹ ∧ y ≠ 0 }, { y | x = y + y⁻¹ ∨ y = 0 }  by
       rw [this]
       clear this
-      refine h.biUnion fun x _ => ?_
+      refine h.biUnion fun x _ ↦ ?_
       -- The following quadratic polynomial has as solutions the `y` for which `x = y + y⁻¹`.
       let φ : K[X] := X ^ 2 - C x * X + 1
       have hφ : φ ≠ 0 := by

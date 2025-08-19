@@ -123,8 +123,8 @@ or avoid mentioning a basis at all using `LinearMap.det`.
 -/
 irreducible_def detAux : Trunc (Basis ι A M) → (M →ₗ[A] M) →* A :=
   Trunc.lift
-    (fun b : Basis ι A M => detMonoidHom.comp (toMatrixAlgEquiv b : (M →ₗ[A] M) →* Matrix ι ι A))
-    fun b c => MonoidHom.ext <| det_toMatrix_eq_det_toMatrix b c
+    (fun b : Basis ι A M ↦ detMonoidHom.comp (toMatrixAlgEquiv b : (M →ₗ[A] M) →* Matrix ι ι A))
+    fun b c ↦ MonoidHom.ext <| det_toMatrix_eq_det_toMatrix b c
 
 /-- Unfold lemma for `detAux`.
 
@@ -271,7 +271,7 @@ theorem det_eq_one_of_finrank_eq_zero {𝕜 : Type*} [Field 𝕜] {M : Type*} [A
     [Module 𝕜 M] (h : Module.finrank 𝕜 M = 0) (f : M →ₗ[𝕜] M) :
     LinearMap.det (f : M →ₗ[𝕜] M) = 1 := by
   classical
-    refine @LinearMap.det_cases M _ 𝕜 _ _ _ (fun t => t = 1) f ?_ rfl
+    refine @LinearMap.det_cases M _ 𝕜 _ _ _ (fun t ↦ t = 1) f ?_ rfl
     intro s b
     have : IsEmpty s := by
       rw [← Fintype.card_eq_zero_iff]
@@ -515,7 +515,7 @@ theorem det_isEmpty [IsEmpty ι] : e.det = AlternatingMap.constOfIsEmpty R M ι 
   exact Matrix.det_isEmpty
 
 /-- `Basis.det` is not the zero map. -/
-theorem det_ne_zero [Nontrivial R] : e.det ≠ 0 := fun h => by simpa [h] using e.det_self
+theorem det_ne_zero [Nontrivial R] : e.det ≠ 0 := fun h ↦ by simpa [h] using e.det_self
 
 theorem smul_det {G} [Group G] [DistribMulAction G M] [SMulCommClass G R M]
     (g : G) (v : ι → M) :
@@ -548,7 +548,7 @@ end Module.Basis
 /-- Any alternating map to `R` where `ι` has the cardinality of a basis equals the determinant
 map with respect to that basis, multiplied by the value of that alternating map on that basis. -/
 theorem AlternatingMap.eq_smul_basis_det (f : M [⋀^ι]→ₗ[R] R) : f = f e • e.det := by
-  refine Basis.ext_alternating e fun i h => ?_
+  refine Basis.ext_alternating e fun i h ↦ ?_
   let σ : Equiv.Perm ι := Equiv.ofBijective i (Finite.injective_iff_bijective.1 h)
   change f (e ∘ σ) = (f e • e.det) (e ∘ σ)
   simp [AlternatingMap.map_perm, Basis.det_self]
@@ -556,11 +556,11 @@ theorem AlternatingMap.eq_smul_basis_det (f : M [⋀^ι]→ₗ[R] R) : f = f e �
 @[simp]
 theorem AlternatingMap.map_basis_eq_zero_iff {ι : Type*} [Finite ι] (e : Basis ι R M)
     (f : M [⋀^ι]→ₗ[R] R) : f e = 0 ↔ f = 0 :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     cases nonempty_fintype ι
     letI := Classical.decEq ι
     simpa [h] using f.eq_smul_basis_det e,
-   fun h => h.symm ▸ AlternatingMap.zero_apply _⟩
+   fun h ↦ h.symm ▸ AlternatingMap.zero_apply _⟩
 
 theorem AlternatingMap.map_basis_ne_zero_iff {ι : Type*} [Finite ι] (e : Basis ι R M)
     (f : M [⋀^ι]→ₗ[R] R) : f e ≠ 0 ↔ f ≠ 0 :=
@@ -608,7 +608,7 @@ theorem det_reindex {ι' : Type*} [Fintype ι'] [DecidableEq ι'] (b : Basis ι 
 
 theorem det_reindex' {ι' : Type*} [Fintype ι'] [DecidableEq ι'] (b : Basis ι R M)
     (e : ι ≃ ι') : (b.reindex e).det = b.det.domDomCongr e :=
-  AlternatingMap.ext fun _ => det_reindex _ _ _
+  AlternatingMap.ext fun _ ↦ det_reindex _ _ _
 
 theorem det_reindex_symm {ι' : Type*} [Fintype ι'] [DecidableEq ι'] (b : Basis ι R M)
     (v : ι → M) (e : ι' ≃ ι) : (b.reindex e.symm).det (v ∘ e) = b.det v := by
@@ -658,10 +658,10 @@ theorem det_unitsSMul (e : Basis ι R M) (w : ι → Rˣ) :
     (e.unitsSMul w).det = (↑(∏ i, w i)⁻¹ : R) • e.det := by
   ext f
   change
-    (Matrix.det fun i j => (e.unitsSMul w).repr (f j) i) =
-      (↑(∏ i, w i)⁻¹ : R) • Matrix.det fun i j => e.repr (f j) i
+    (Matrix.det fun i j ↦ (e.unitsSMul w).repr (f j) i) =
+      (↑(∏ i, w i)⁻¹ : R) • Matrix.det fun i j ↦ e.repr (f j) i
   simp only [e.repr_unitsSMul]
-  convert Matrix.det_mul_column (fun i => (↑(w i)⁻¹ : R)) fun i j => e.repr (f j) i
+  convert Matrix.det_mul_column (fun i ↦ (↑(w i)⁻¹ : R)) fun i j ↦ e.repr (f j) i
   simp [← Finset.prod_inv_distrib]
 
 /-- The determinant of a basis constructed by `unitsSMul` is the product of the given units. -/

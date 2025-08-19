@@ -36,7 +36,7 @@ variable {X : TopCat.{w}}
 type the type of dependent pairs `(V, f)`, where `f : V ⟶ U` is in `R`.
 -/
 def coveringOfPresieve (U : Opens X) (R : Presieve U) : (Σ V, { f : V ⟶ U // R f }) → Opens X :=
-  fun f => f.1
+  fun f ↦ f.1
 
 @[simp]
 theorem coveringOfPresieve_apply (U : Opens X) (R : Presieve U) (f : Σ V, { f : V ⟶ U // R f }) :
@@ -67,7 +67,7 @@ on `Y` by declaring that a morphism `f : V ⟶ Y` is a member of the presieve if
 there exists an index `i : ι` such that `V = U i`.
 -/
 def presieveOfCoveringAux {ι : Type v} (U : ι → Opens X) (Y : Opens X) : Presieve Y :=
-  fun V _ => ∃ i, V = U i
+  fun V _ ↦ ∃ i, V = U i
 
 /-- Take `Y` to be `iSup U` and obtain a presieve over `iSup U`. -/
 def presieveOfCovering {ι : Type v} (U : ι → Opens X) : Presieve (iSup U) :=
@@ -81,7 +81,7 @@ theorem covering_presieve_eq_self {Y : Opens X} (R : Presieve Y) :
     presieveOfCoveringAux (coveringOfPresieve Y R) Y = R := by
   funext Z
   ext f
-  exact ⟨fun ⟨⟨_, f', h⟩, rfl⟩ => by rwa [Subsingleton.elim f f'], fun h => ⟨⟨Z, f, h⟩, rfl⟩⟩
+  exact ⟨fun ⟨⟨_, f', h⟩, rfl⟩ ↦ by rwa [Subsingleton.elim f f'], fun h ↦ ⟨⟨Z, f, h⟩, rfl⟩⟩
 
 namespace presieveOfCovering
 
@@ -213,7 +213,7 @@ variable (F : X.Presheaf C) (F' : Sheaf C X)
 
 /-- The empty component of a sheaf is terminal. -/
 def isTerminalOfEmpty (F : Sheaf C X) : Limits.IsTerminal (F.val.obj (op ⊥)) :=
-  F.isTerminalOfBotCover ⊥ (fun _ h => h.elim)
+  F.isTerminalOfBotCover ⊥ (fun _ h ↦ h.elim)
 
 /-- A variant of `isTerminalOfEmpty` that is easier to `apply`. -/
 def isTerminalOfEqEmpty (F : X.Sheaf C) {U : Opens X} (h : U = ⊥) :

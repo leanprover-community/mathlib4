@@ -123,11 +123,11 @@ def lift :
     { f : M →ₗ[R] A // ∀ m, f m * f m = algebraMap _ _ (Q m) } ≃ (CliffordAlgebra Q →ₐ[R] A) where
   toFun f :=
     RingQuot.liftAlgHom R
-      ⟨TensorAlgebra.lift R (f : M →ₗ[R] A), fun x y (h : Rel Q x y) => by
+      ⟨TensorAlgebra.lift R (f : M →ₗ[R] A), fun x y (h : Rel Q x y) ↦ by
         induction h
         rw [AlgHom.commutes, map_mul, TensorAlgebra.lift_ι_apply, f.prop]⟩
   invFun F :=
-    ⟨F.toLinearMap.comp (ι Q), fun m => by
+    ⟨F.toLinearMap.comp (ι Q), fun m ↦ by
       rw [LinearMap.comp_apply, AlgHom.toLinearMap_apply, comp_ι_sq_scalar]⟩
   left_inv f := by
     ext x
@@ -187,7 +187,7 @@ theorem induction {C : CliffordAlgebra Q → Prop}
       algebraMap_mem' := algebraMap }
   let of : { f : M →ₗ[R] s // ∀ m, f m * f m = _root_.algebraMap _ _ (Q m) } :=
     ⟨(CliffordAlgebra.ι Q).codRestrict (Subalgebra.toSubmodule s) ι,
-      fun m => Subtype.eq <| ι_sq_scalar Q m⟩
+      fun m ↦ Subtype.eq <| ι_sq_scalar Q m⟩
   -- the mapping through the subalgebra is the identity
   have of_id : s.val.comp (lift Q of) = AlgHom.id R (CliffordAlgebra Q) := by
     ext x
@@ -201,7 +201,7 @@ theorem induction {C : CliffordAlgebra Q → Prop}
 
 @[simp]
 theorem adjoin_range_ι : Algebra.adjoin R (Set.range (ι Q)) = ⊤ := by
-  refine top_unique fun x hx => ?_; clear hx
+  refine top_unique fun x hx ↦ ?_; clear hx
   induction x using induction with
   | algebraMap => exact algebraMap_mem _ _
   | add x y hx hy => exact add_mem hx hy
@@ -235,7 +235,7 @@ theorem forall_mul_self_eq_iff {A : Type*} [Ring A] [Algebra R A] (h2 : IsUnit (
       (LinearMap.mul R A).compl₂ f ∘ₗ f + (LinearMap.mul R A).flip.compl₂ f ∘ₗ f =
         Q.polarBilin.compr₂ (Algebra.linearMap R A) := by
   simp_rw [DFunLike.ext_iff]
-  refine ⟨mul_add_swap_eq_polar_of_forall_mul_self_eq _, fun h x => ?_⟩
+  refine ⟨mul_add_swap_eq_polar_of_forall_mul_self_eq _, fun h x ↦ ?_⟩
   change ∀ x y : M, f x * f y + f y * f x = algebraMap R A (QuadraticMap.polar Q x y) at h
   apply h2.mul_left_cancel
   rw [two_mul, two_mul, h x x, QuadraticMap.polar_self, two_smul, map_add]
@@ -294,7 +294,7 @@ See `CliffordAlgebra.equivOfIsometry` for the case when `f` is a `QuadraticForm.
 def map (f : Q₁ →qᵢ Q₂) :
     CliffordAlgebra Q₁ →ₐ[R] CliffordAlgebra Q₂ :=
   CliffordAlgebra.lift Q₁
-    ⟨ι Q₂ ∘ₗ f.toLinearMap, fun m => (ι_sq_scalar _ _).trans <| RingHom.congr_arg _ <| f.map_app m⟩
+    ⟨ι Q₂ ∘ₗ f.toLinearMap, fun m ↦ (ι_sq_scalar _ _).trans <| RingHom.congr_arg _ <| f.map_app m⟩
 
 @[simp]
 theorem map_comp_ι (f : Q₁ →qᵢ Q₂) :
@@ -328,7 +328,7 @@ a linear retraction `g` that also preserves the quadratic forms, then `CliffordA
 is a retraction of `CliffordAlgebra.map f`. -/
 lemma leftInverse_map_of_leftInverse {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     (f : Q₁ →qᵢ Q₂) (g : Q₂ →qᵢ Q₁) (h : LeftInverse g f) : LeftInverse (map g) (map f) := by
-  refine fun x => ?_
+  refine fun x ↦ ?_
   replace h : g.comp f = QuadraticMap.Isometry.id Q₁ := DFunLike.ext _ _ h
   rw [← AlgHom.comp_apply, map_comp_map, h, map_id, AlgHom.coe_id, id_eq]
 

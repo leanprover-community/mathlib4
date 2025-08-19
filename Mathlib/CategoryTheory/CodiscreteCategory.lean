@@ -100,7 +100,7 @@ open Opposite
 def oppositeEquivalence (A : Type*) : (Codiscrete A)ᵒᵖ ≌ Codiscrete A where
   functor := functor (fun x ↦ Codiscrete.as x.unop)
   inverse := (functor (fun x ↦ Codiscrete.as x.unop)).rightOp
-  unitIso := NatIso.ofComponents (fun _ => by exact Iso.refl _)
+  unitIso := NatIso.ofComponents (fun _ ↦ by exact Iso.refl _)
   counitIso := natIso
 
 /-- `Codiscrete.functorToCat` turns a type into a codiscrete category. -/
@@ -120,9 +120,9 @@ def equivFunctorToCodiscrete {C : Type u} [Category.{v} C] {A : Type w} :
 /-- The functor that turns a type into a codiscrete category is right adjoint to the objects
 functor. -/
 def adj : objects ⊣ functorToCat := mkOfHomEquiv {
-  homEquiv := fun _ _ => equivFunctorToCodiscrete
-  homEquiv_naturality_left_symm := fun _ _ => rfl
-  homEquiv_naturality_right := fun _ _ => rfl }
+  homEquiv := fun _ _ ↦ equivFunctorToCodiscrete
+  homEquiv_naturality_left_symm := fun _ _ ↦ rfl
+  homEquiv_naturality_right := fun _ _ ↦ rfl }
 
 /-- Components of the unit of the adjunction `Cat.objects ⊣ Codiscrete.functorToCat`. -/
 def unitApp (C : Type u) [Category.{v} C] : C ⥤ Codiscrete C := functor id

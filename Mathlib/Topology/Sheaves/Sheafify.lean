@@ -46,14 +46,14 @@ attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /--
 The prelocal predicate on functions into the stalks, asserting that the function is equal to a germ.
 -/
-def isGerm : PrelocalPredicate fun x => F.stalk x where
+def isGerm : PrelocalPredicate fun x ↦ F.stalk x where
   pred {U} f := ∃ g : F.obj (op U), ∀ x : U, f x = F.germ U x.1 x.2 g
-  res := fun i _ ⟨g, p⟩ => ⟨F.map i.op g, fun x ↦ (p (i x)).trans (F.germ_res_apply i x x.2 g).symm⟩
+  res := fun i _ ⟨g, p⟩ ↦ ⟨F.map i.op g, fun x ↦ (p (i x)).trans (F.germ_res_apply i x x.2 g).symm⟩
 
 /-- The local predicate on functions into the stalks,
 asserting that the function is locally equal to a germ.
 -/
-def isLocallyGerm : LocalPredicate fun x => F.stalk x :=
+def isLocallyGerm : LocalPredicate fun x ↦ F.stalk x :=
   (isGerm F).sheafify
 
 end Sheafify
@@ -70,7 +70,7 @@ sending each section to its germs.
 (This forms the unit of the adjunction.)
 -/
 def toSheafify : F ⟶ F.sheafify.1 where
-  app U f := ⟨fun x => F.germ _ x x.2 f, PrelocalPredicate.sheafifyOf ⟨f, fun x => rfl⟩⟩
+  app U f := ⟨fun x ↦ F.germ _ x x.2 f, PrelocalPredicate.sheafifyOf ⟨f, fun x ↦ rfl⟩⟩
   naturality U U' f := by
     ext x
     apply Subtype.ext -- Porting note: Added `apply`
@@ -90,8 +90,8 @@ theorem stalkToFiber_surjective (x : X) : Function.Surjective (F.stalkToFiber x)
   obtain ⟨U, m, s, rfl⟩ := F.germ_exist _ t
   use ⟨U, m⟩
   fconstructor
-  · exact fun y => F.germ _ _ y.2 s
-  · exact ⟨PrelocalPredicate.sheafifyOf ⟨s, fun _ => rfl⟩, rfl⟩
+  · exact fun y ↦ F.germ _ _ y.2 s
+  · exact ⟨PrelocalPredicate.sheafifyOf ⟨s, fun _ ↦ rfl⟩, rfl⟩
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 theorem stalkToFiber_injective (x : X) : Function.Injective (F.stalkToFiber x) := by

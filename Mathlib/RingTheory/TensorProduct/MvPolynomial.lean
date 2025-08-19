@@ -131,7 +131,7 @@ noncomputable def rTensorAlgHom :
   Algebra.TensorProduct.lift
     (mapAlgHom Algebra.TensorProduct.includeLeft)
     ((IsScalarTower.toAlgHom R (S ⊗[R] N) _).comp Algebra.TensorProduct.includeRight)
-    (fun p n => by simp [commute_iff_eq, algebraMap_eq, mul_comm])
+    (fun p n ↦ by simp [commute_iff_eq, algebraMap_eq, mul_comm])
 
 @[simp]
 lemma coeff_rTensorAlgHom_tmul

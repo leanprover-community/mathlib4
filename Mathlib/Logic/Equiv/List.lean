@@ -53,7 +53,7 @@ def decodeList : ℕ → Option (List α)
 /-- If `α` is encodable, then so is `List α`. This uses the `pair` and `unpair` functions from
 `Data.Nat.Pairing`. -/
 instance _root_.List.encodable : Encodable (List α) :=
-  ⟨encodeList, decodeList, fun l => by
+  ⟨encodeList, decodeList, fun l ↦ by
     induction l <;> simp [encodeList, decodeList, unpair_pair, encodek, *]⟩
 
 instance _root_.List.countable {α : Type*} [Countable α] : Countable (List α) := by
@@ -100,13 +100,13 @@ instance _root_.Finset.countable [Countable α] : Countable (Finset α) :=
 
 /-- A listable type with decidable equality is encodable. -/
 def encodableOfList [DecidableEq α] (l : List α) (H : ∀ x, x ∈ l) : Encodable α :=
-  ⟨fun a => idxOf a l, (l[·]?), fun _ => getElem?_idxOf (H _)⟩
+  ⟨fun a ↦ idxOf a l, (l[·]?), fun _ ↦ getElem?_idxOf (H _)⟩
 
 /-- A finite type is encodable. Because the encoding is not unique, we wrap it in `Trunc` to
 preserve computability. -/
 def _root_.Fintype.truncEncodable (α : Type*) [DecidableEq α] [Fintype α] : Trunc (Encodable α) :=
-  @Quot.recOnSubsingleton _ _ (fun s : Multiset α => (∀ x : α, x ∈ s) → Trunc (Encodable α)) _
-    Finset.univ.1 (fun l H => Trunc.mk <| encodableOfList l H) Finset.mem_univ
+  @Quot.recOnSubsingleton _ _ (fun s : Multiset α ↦ (∀ x : α, x ∈ s) → Trunc (Encodable α)) _
+    Finset.univ.1 (fun l H ↦ Trunc.mk <| encodableOfList l H) Finset.mem_univ
 
 /-- A noncomputable way to arbitrarily choose an ordering on a finite type.
 It is not made into a global instance, since it involves an arbitrary choice.

@@ -27,7 +27,7 @@ protected def Ideal.closure (I : Ideal R) : Ideal R :=
     AddSubmonoid.topologicalClosure
       I.toAddSubmonoid with
     carrier := closure I
-    smul_mem' := fun c _ hx => map_mem_closure (mulLeft_continuous _) hx fun _ => I.mul_mem_left c }
+    smul_mem' := fun c _ hx ↦ map_mem_closure (mulLeft_continuous _) hx fun _ ↦ I.mul_mem_left c }
 
 @[simp]
 theorem Ideal.coe_closure (I : Ideal R) : (I.closure : Set R) = closure I :=
@@ -59,7 +59,7 @@ theorem QuotientRing.isOpenMap_coe : IsOpenMap (mk N) :=
 theorem QuotientRing.isOpenQuotientMap_mk : IsOpenQuotientMap (mk N) :=
   QuotientAddGroup.isOpenQuotientMap_mk
 
-theorem QuotientRing.isQuotientMap_coe_coe : IsQuotientMap fun p : R × R => (mk N p.1, mk N p.2) :=
+theorem QuotientRing.isQuotientMap_coe_coe : IsQuotientMap fun p : R × R ↦ (mk N p.1, mk N p.2) :=
   ((isOpenQuotientMap_mk N).prodMap (isOpenQuotientMap_mk N)).isQuotientMap
 
 instance topologicalRing_quotient : IsTopologicalRing (R ⧸ N) where

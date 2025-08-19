@@ -96,7 +96,7 @@ given by `K.homology j'` where `e.f j = j'`. -/
 noncomputable def homologyData :
     ((K.truncGE' e).sc' i j k).HomologyData :=
   ShortComplex.HomologyData.ofIsLimitKernelFork _
-    ((K.truncGE' e).shape _ _ (fun hij => e.not_boundaryGE_next hij hj)) _
+    ((K.truncGE' e).shape _ _ (fun hij ↦ e.not_boundaryGE_next hij hj)) _
     (isLimitKernelFork K e j k hk hj' hj)
 
 /-- Computation of the `right.g'` field of `truncGE'.homologyData K e i j k hk hj' hj`. -/
@@ -188,7 +188,7 @@ lemma quasiIso_πTruncGE_iff_isSupported :
     QuasiIso (K.πTruncGE e) ↔ K.IsSupported e := by
   constructor
   · intro
-    refine ⟨fun i' hi' => ?_⟩
+    refine ⟨fun i' hi' ↦ ?_⟩
     rw [exactAt_iff_of_quasiIsoAt (K.πTruncGE e) i']
     exact (K.truncGE e).exactAt_of_isSupported e i' hi'
   · intro
@@ -204,7 +204,7 @@ lemma acyclic_truncGE_iff_isSupportedOutside :
     (K.truncGE e).Acyclic ↔ K.IsSupportedOutside e := by
   constructor
   · intro hK
-    exact ⟨fun i =>
+    exact ⟨fun i ↦
       by simpa only [exactAt_iff_of_quasiIsoAt (K.πTruncGE e)] using hK (e.f i)⟩
   · intro hK i'
     by_cases hi' : ∃ i, e.f i = i'

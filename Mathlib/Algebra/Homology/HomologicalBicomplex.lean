@@ -43,12 +43,12 @@ variable {C c₁ c₂}
 /-- The graded object indexed by `I₁ × I₂` induced by a bicomplex. -/
 def toGradedObject (K : HomologicalComplex₂ C c₁ c₂) :
     GradedObject (I₁ × I₂) C :=
-  fun ⟨i₁, i₂⟩ => (K.X i₁).X i₂
+  fun ⟨i₁, i₂⟩ ↦ (K.X i₁).X i₂
 
 /-- The morphism of graded objects induced by a morphism of bicomplexes. -/
 def toGradedObjectMap {K L : HomologicalComplex₂ C c₁ c₂} (φ : K ⟶ L) :
     K.toGradedObject ⟶ L.toGradedObject :=
-  fun ⟨i₁, i₂⟩ => (φ.f i₁).f i₂
+  fun ⟨i₁, i₂⟩ ↦ (φ.f i₁).f i₂
 
 @[simp]
 lemma toGradedObjectMap_apply {K L : HomologicalComplex₂ C c₁ c₂} (φ : K ⟶ L) (i₁ : I₁) (i₂ : I₂) :
@@ -85,12 +85,12 @@ and vertical differentials satisfying suitable relations. -/
 def ofGradedObject :
     HomologicalComplex₂ C c₁ c₂ where
   X i₁ :=
-    { X := fun i₂ => X ⟨i₁, i₂⟩
-      d := fun i₂ i₂' => d₂ i₁ i₂ i₂'
+    { X := fun i₂ ↦ X ⟨i₁, i₂⟩
+      d := fun i₂ i₂' ↦ d₂ i₁ i₂ i₂'
       shape := shape₂ i₁
       d_comp_d' := by intros; apply d₂_comp_d₂ }
   d i₁ i₁' :=
-    { f := fun i₂ => d₁ i₁ i₁' i₂
+    { f := fun i₂ ↦ d₁ i₁ i₁' i₂
       comm' := by intros; apply comm }
   shape i₁ i₁' h := by
     ext i₂
@@ -115,7 +115,7 @@ def homMk {K L : HomologicalComplex₂ C c₁ c₂}
     (comm₂ : ∀ i₁ i₂ i₂', c₂.Rel i₂ i₂' →
       f ⟨i₁, i₂⟩ ≫ (L.X i₁).d i₂ i₂' = (K.X i₁).d i₂ i₂' ≫ f ⟨i₁, i₂'⟩) : K ⟶ L where
   f i₁ :=
-    { f := fun i₂ => f ⟨i₁, i₂⟩
+    { f := fun i₂ ↦ f ⟨i₁, i₂⟩
       comm' := comm₂ i₁ }
   comm' i₁ i₁' h₁ := by
     ext i₂
@@ -147,10 +147,10 @@ exchanging the horizontal and vertical directions.
 @[simps]
 def flip (K : HomologicalComplex₂ C c₁ c₂) : HomologicalComplex₂ C c₂ c₁ where
   X i :=
-    { X := fun j => (K.X j).X i
-      d := fun j j' => (K.d j j').f i
-      shape := fun _ _ w => K.shape_f _ _ w i }
-  d i i' := { f := fun j => (K.X j).d i i' }
+    { X := fun j ↦ (K.X j).X i
+      d := fun j j' ↦ (K.d j j').f i
+      shape := fun _ _ w ↦ K.shape_f _ _ w i }
+  d i i' := { f := fun j ↦ (K.X j).d i i' }
   shape i i' w := by
     ext j
     exact (K.X j).shape i i' w
@@ -166,8 +166,8 @@ def flipFunctor :
     HomologicalComplex₂ C c₁ c₂ ⥤ HomologicalComplex₂ C c₂ c₁ where
   obj K := K.flip
   map {K L} f :=
-    { f := fun i =>
-        { f := fun j => (f.f j).f i
+    { f := fun i ↦
+        { f := fun j ↦ (f.f j).f i
           comm' := by intros; simp }
       comm' := by intros; ext; simp }
 
@@ -175,16 +175,16 @@ def flipFunctor :
 @[simps!]
 def flipEquivalenceUnitIso :
     𝟭 (HomologicalComplex₂ C c₁ c₂) ≅ flipFunctor C c₁ c₂ ⋙ flipFunctor C c₂ c₁ :=
-  NatIso.ofComponents (fun K => HomologicalComplex.Hom.isoOfComponents (fun i₁ =>
-    HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)
+  NatIso.ofComponents (fun K ↦ HomologicalComplex.Hom.isoOfComponents (fun i₁ ↦
+    HomologicalComplex.Hom.isoOfComponents (fun _ ↦ Iso.refl _)
     (by simp)) (by cat_disch)) (by cat_disch)
 
 /-- Auxiliary definition for `HomologicalComplex₂.flipEquivalence`. -/
 @[simps!]
 def flipEquivalenceCounitIso :
     flipFunctor C c₂ c₁ ⋙ flipFunctor C c₁ c₂ ≅ 𝟭 (HomologicalComplex₂ C c₂ c₁) :=
-  NatIso.ofComponents (fun K => HomologicalComplex.Hom.isoOfComponents (fun i₂ =>
-    HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)
+  NatIso.ofComponents (fun K ↦ HomologicalComplex.Hom.isoOfComponents (fun i₂ ↦
+    HomologicalComplex.Hom.isoOfComponents (fun _ ↦ Iso.refl _)
     (by simp)) (by cat_disch)) (by cat_disch)
 
 /-- Flipping a complex of complexes over the diagonal, as an equivalence of categories. -/

@@ -43,7 +43,7 @@ theorem natDegree_comp_le : natDegree (p.comp q) ≤ natDegree p * natDegree q :
         _ = _ := congr_arg degree comp_eq_sum_left
         _ ≤ _ := degree_sum_le _ _
         _ ≤ _ :=
-          Finset.sup_le fun n hn =>
+          Finset.sup_le fun n hn ↦
             calc
               degree (C (coeff p n) * q ^ n) ≤ degree (C (coeff p n)) + degree (q ^ n) :=
                 degree_mul_le _ _
@@ -67,7 +67,7 @@ theorem natDegree_comp_eq_of_mul_ne_zero (h : p.leadingCoeff * q.leadingCoeff ^ 
   rwa [coeff_comp_degree_mul_degree hq]
 
 theorem degree_pos_of_root {p : R[X]} (hp : p ≠ 0) (h : IsRoot p a) : 0 < degree p :=
-  lt_of_not_ge fun hlt => by
+  lt_of_not_ge fun hlt ↦ by
     have := eq_C_of_degree_le_zero hlt
     rw [IsRoot, this, eval_C] at h
     simp only [h, RingHom.map_zero] at this
@@ -78,8 +78,8 @@ theorem natDegree_le_iff_coeff_eq_zero : p.natDegree ≤ n ↔ ∀ N : ℕ, n < 
 
 theorem natDegree_add_le_iff_left {n : ℕ} (p q : R[X]) (qn : q.natDegree ≤ n) :
     (p + q).natDegree ≤ n ↔ p.natDegree ≤ n := by
-  refine ⟨fun h => ?_, fun h => natDegree_add_le_of_degree_le h qn⟩
-  refine natDegree_le_iff_coeff_eq_zero.mpr fun m hm => ?_
+  refine ⟨fun h ↦ ?_, fun h ↦ natDegree_add_le_of_degree_le h qn⟩
+  refine natDegree_le_iff_coeff_eq_zero.mpr fun m hm ↦ ?_
   convert natDegree_le_iff_coeff_eq_zero.mp h m hm using 1
   rw [coeff_add, natDegree_le_iff_coeff_eq_zero.mp qn _ hm, add_zero]
 
@@ -181,24 +181,24 @@ open scoped Function -- required for scoped `on` notation
 
 theorem degree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
     (h : Set.Pairwise { i | i ∈ s ∧ f i ≠ 0 } (Ne on degree ∘ f)) :
-    degree (s.sum f) = s.sup fun i => degree (f i) := by
+    degree (s.sum f) = s.sup fun i ↦ degree (f i) := by
   classical
   induction' s using Finset.induction_on with x s hx IH
   · simp
   · simp only [hx, Finset.sum_insert, not_false_iff, Finset.sup_insert]
-    specialize IH (h.mono fun _ => by simp +contextual)
+    specialize IH (h.mono fun _ ↦ by simp +contextual)
     rcases lt_trichotomy (degree (f x)) (degree (s.sum f)) with (H | H | H)
     · rw [← IH, sup_eq_right.mpr H.le, degree_add_eq_right_of_degree_lt H]
     · rcases s.eq_empty_or_nonempty with (rfl | hs)
       · simp
-      obtain ⟨y, hy, hy'⟩ := Finset.exists_mem_eq_sup s hs fun i => degree (f i)
+      obtain ⟨y, hy, hy'⟩ := Finset.exists_mem_eq_sup s hs fun i ↦ degree (f i)
       rw [IH, hy'] at H
       by_cases hx0 : f x = 0
       · simp [hx0, IH]
       have hy0 : f y ≠ 0 := by
         contrapose! H
         simpa [H, degree_eq_bot] using hx0
-      refine absurd H (h ?_ ?_ fun H => hx ?_)
+      refine absurd H (h ?_ ?_ fun H ↦ hx ?_)
       · simp [hx0]
       · simp [hy, hy0]
       · exact H.symm ▸ hy
@@ -206,7 +206,7 @@ theorem degree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
 
 theorem natDegree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
     (h : Set.Pairwise { i | i ∈ s ∧ f i ≠ 0 } (Ne on natDegree ∘ f)) :
-    natDegree (s.sum f) = s.sup fun i => natDegree (f i) := by
+    natDegree (s.sum f) = s.sup fun i ↦ natDegree (f i) := by
   by_cases H : ∃ x ∈ s, f x ≠ 0
   · obtain ⟨x, hx, hx'⟩ := H
     have hs : s.Nonempty := ⟨x, hx⟩
@@ -221,7 +221,7 @@ theorem natDegree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
         by_cases hb' : f b = 0
         · simpa [hb'] using hs
         rw [degree_eq_natDegree hb', Nat.cast_withBot]
-        exact Finset.le_sup' (fun i : S => (natDegree (f i) : WithBot ℕ)) hb
+        exact Finset.le_sup' (fun i : S ↦ (natDegree (f i) : WithBot ℕ)) hb
       · rw [Finset.sup'_le_iff]
         intro b hb
         simp only [Finset.le_sup'_iff, Function.comp_apply]
@@ -230,7 +230,7 @@ theorem natDegree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
           contrapose! hx'
           simpa [← Nat.cast_withBot, hb', degree_eq_bot] using hx'
         exact ⟨b, hb, (degree_eq_natDegree hb').ge⟩
-    · exact h.imp fun x y hxy hxy' => hxy (natDegree_eq_of_degree_eq hxy')
+    · exact h.imp fun x y hxy hxy' ↦ hxy (natDegree_eq_of_degree_eq hxy')
   · push_neg at H
     rw [Finset.sum_eq_zero H, natDegree_zero, eq_comm, show 0 = ⊥ from rfl, Finset.sup_eq_bot_iff]
     intro x hx
@@ -240,7 +240,7 @@ variable [Semiring S]
 
 theorem natDegree_pos_of_eval₂_root {p : R[X]} (hp : p ≠ 0) (f : R →+* S) {z : S}
     (hz : eval₂ f z p = 0) (inj : ∀ x : R, f x = 0 → x = 0) : 0 < natDegree p :=
-  lt_of_not_ge fun hlt => by
+  lt_of_not_ge fun hlt ↦ by
     have A : p = C (p.coeff 0) := eq_C_of_natDegree_le_zero hlt
     rw [A, eval₂_C] at hz
     simp only [inj (p.coeff 0) hz, RingHom.map_zero] at A

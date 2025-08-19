@@ -69,7 +69,7 @@ theorem coe_sups : (↑(s ⊻ t) : Set α) = ↑s ⊻ ↑t :=
 
 theorem card_sups_le : #(s ⊻ t) ≤ #s * #t := card_image₂_le _ _ _
 
-theorem card_sups_iff : #(s ⊻ t) = #s * #t ↔ (s ×ˢ t : Set (α × α)).InjOn fun x => x.1 ⊔ x.2 :=
+theorem card_sups_iff : #(s ⊻ t) = #s * #t ↔ (s ×ˢ t : Set (α × α)).InjOn fun x ↦ x.1 ⊔ x.2 :=
   card_image₂_iff
 
 variable {s s₁ s₂ t t₁ t₂ u}
@@ -213,7 +213,7 @@ theorem coe_infs : (↑(s ⊼ t) : Set α) = ↑s ⊼ ↑t :=
 
 theorem card_infs_le : #(s ⊼ t) ≤ #s * #t := card_image₂_le _ _ _
 
-theorem card_infs_iff : #(s ⊼ t) = #s * #t ↔ (s ×ˢ t : Set (α × α)).InjOn fun x => x.1 ⊓ x.2 :=
+theorem card_infs_iff : #(s ⊼ t) = #s * #t ↔ (s ×ˢ t : Set (α × α)).InjOn fun x ↦ x.1 ⊓ x.2 :=
   card_image₂_iff
 
 variable {s s₁ s₂ t t₁ t₂ u}
@@ -391,7 +391,7 @@ variable [SemilatticeSup α] [OrderBot α] [DecidableRel (α := α) Disjoint]
 
 /-- The finset of elements of the form `a ⊔ b` where `a ∈ s`, `b ∈ t` and `a` and `b` are disjoint.
 -/
-def disjSups : Finset α := {ab ∈ s ×ˢ t | Disjoint ab.1 ab.2}.image fun ab => ab.1 ⊔ ab.2
+def disjSups : Finset α := {ab ∈ s ×ˢ t | Disjoint ab.1 ab.2}.image fun ab ↦ ab.1 ⊔ ab.2
 
 @[inherit_doc]
 scoped[FinsetFamily] infixl:74 " ○ " => Finset.disjSups
@@ -404,7 +404,7 @@ theorem mem_disjSups : c ∈ s ○ t ↔ ∃ a ∈ s, ∃ b ∈ t, Disjoint a b 
 
 theorem disjSups_subset_sups : s ○ t ⊆ s ⊻ t := by
   simp_rw [subset_iff, mem_sups, mem_disjSups]
-  exact fun c ⟨a, b, ha, hb, _, hc⟩ => ⟨a, b, ha, hb, hc⟩
+  exact fun c ⟨a, b, ha, hb, _, hc⟩ ↦ ⟨a, b, ha, hb, hc⟩
 
 variable (s t)
 
@@ -425,7 +425,7 @@ theorem disjSups_subset_right (hs : s₁ ⊆ s₂) : s₁ ○ t ⊆ s₂ ○ t :
 theorem forall_disjSups_iff {p : α → Prop} :
     (∀ c ∈ s ○ t, p c) ↔ ∀ a ∈ s, ∀ b ∈ t, Disjoint a b → p (a ⊔ b) := by
   simp_rw [mem_disjSups]
-  refine ⟨fun h a ha b hb hab => h _ ⟨_, ha, _, hb, hab, rfl⟩, ?_⟩
+  refine ⟨fun h a ha b hb hab ↦ h _ ⟨_, ha, _, hb, hab, rfl⟩, ?_⟩
   rintro h _ ⟨a, ha, b, hb, hab, rfl⟩
   exact h _ ha _ hb hab
 
@@ -435,11 +435,11 @@ theorem disjSups_subset_iff : s ○ t ⊆ u ↔ ∀ a ∈ s, ∀ b ∈ t, Disjoi
 
 theorem Nonempty.of_disjSups_left : (s ○ t).Nonempty → s.Nonempty := by
   simp_rw [Finset.Nonempty, mem_disjSups]
-  exact fun ⟨_, a, ha, _⟩ => ⟨a, ha⟩
+  exact fun ⟨_, a, ha, _⟩ ↦ ⟨a, ha⟩
 
 theorem Nonempty.of_disjSups_right : (s ○ t).Nonempty → t.Nonempty := by
   simp_rw [Finset.Nonempty, mem_disjSups]
-  exact fun ⟨_, _, _, b, hb, _⟩ => ⟨b, hb⟩
+  exact fun ⟨_, _, _, b, hb, _⟩ ↦ ⟨b, hb⟩
 
 @[simp]
 theorem disjSups_empty_left : ∅ ○ t = ∅ := by simp [disjSups]

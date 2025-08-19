@@ -193,7 +193,7 @@ theorem laverage_union_mem_openSegment (hd : AEDisjoint μ s t) (ht : NullMeasur
     ⟨μ s / (μ s + μ t), μ t / (μ s + μ t), ENNReal.div_pos hs₀ <| add_ne_top.2 ⟨hsμ, htμ⟩,
       ENNReal.div_pos ht₀ <| add_ne_top.2 ⟨hsμ, htμ⟩, ?_, (laverage_union hd ht).symm⟩
   rw [← ENNReal.add_div,
-    ENNReal.div_self (add_eq_zero.not.2 fun h => hs₀ h.1) (add_ne_top.2 ⟨hsμ, htμ⟩)]
+    ENNReal.div_self (add_eq_zero.not.2 fun h ↦ hs₀ h.1) (add_ne_top.2 ⟨hsμ, htμ⟩)]
 
 theorem laverage_union_mem_segment (hd : AEDisjoint μ s t) (ht : NullMeasurableSet t μ)
     (hsμ : μ s ≠ ∞) (htμ : μ t ≠ ∞) :
@@ -205,7 +205,7 @@ theorem laverage_union_mem_segment (hd : AEDisjoint μ s t) (ht : NullMeasurable
   · refine
       ⟨μ s / (μ s + μ t), μ t / (μ s + μ t), zero_le _, zero_le _, ?_, (laverage_union hd ht).symm⟩
     rw [← ENNReal.add_div,
-      ENNReal.div_self (add_eq_zero.not.2 fun h => hs₀ h.1) (add_ne_top.2 ⟨hsμ, htμ⟩)]
+      ENNReal.div_self (add_eq_zero.not.2 fun h ↦ hs₀ h.1) (add_ne_top.2 ⟨hsμ, htμ⟩)]
 
 theorem laverage_mem_openSegment_compl_self [IsFiniteMeasure μ] (hs : NullMeasurableSet s μ)
     (hs₀ : μ s ≠ 0) (hsc₀ : μ sᶜ ≠ 0) :
@@ -433,7 +433,7 @@ theorem integral_sub_average (μ : Measure α) [IsFiniteMeasure μ] (f : α → 
     ∫ x, f x - ⨍ a, f a ∂μ ∂μ = 0 := by
   by_cases hf : Integrable f μ
   · rw [integral_sub hf (integrable_const _), integral_average, sub_self]
-  refine integral_undef fun h => hf ?_
+  refine integral_undef fun h ↦ hf ?_
   convert h.add (integrable_const (⨍ a, f a ∂μ))
   exact (sub_add_cancel _ _).symm
 
@@ -468,7 +468,7 @@ theorem ofReal_setAverage {f : α → ℝ} (hf : IntegrableOn f s μ) (hf₀ : 0
 theorem toReal_laverage {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hf' : ∀ᵐ x ∂μ, f x ≠ ∞) :
     (⨍⁻ x, f x ∂μ).toReal = ⨍ x, (f x).toReal ∂μ := by
     rw [average_eq, laverage_eq, smul_eq_mul, toReal_div, div_eq_inv_mul, ←
-      integral_toReal hf (hf'.mono fun _ => lt_top_iff_ne_top.2), measureReal_def]
+      integral_toReal hf (hf'.mono fun _ ↦ lt_top_iff_ne_top.2), measureReal_def]
 
 theorem toReal_setLAverage {f : α → ℝ≥0∞} (hf : AEMeasurable f (μ.restrict s))
     (hf' : ∀ᵐ x ∂μ.restrict s, f x ≠ ∞) :
@@ -486,7 +486,7 @@ variable {N : Set α} {f : α → ℝ}
 measure. -/
 theorem measure_le_setAverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞) (hf : IntegrableOn f s μ) :
     0 < μ ({x ∈ s | f x ≤ ⨍ a in s, f a ∂μ}) := by
-  refine pos_iff_ne_zero.2 fun H => ?_
+  refine pos_iff_ne_zero.2 fun H ↦ ?_
   replace H : (μ.restrict s) {x | f x ≤ ⨍ a in s, f a ∂μ} = 0 := by
     rwa [restrict_apply₀, inter_comm]
     exact AEStronglyMeasurable.nullMeasurableSet_le hf.1 aestronglyMeasurable_const
@@ -499,7 +499,7 @@ theorem measure_le_setAverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞) (hf
   · exact hf.sub (integrableOn_const hμ₁)
   · rwa [pos_iff_ne_zero, inter_comm, ← diff_compl, ← diff_inter_self_eq_diff, measure_diff_null]
     refine measure_mono_null ?_ (measure_inter_eq_zero_of_restrict H)
-    exact inter_subset_inter_left _ fun a ha => (sub_eq_zero.1 <| of_not_not ha).le
+    exact inter_subset_inter_left _ fun a ha ↦ (sub_eq_zero.1 <| of_not_not ha).le
 
 /-- **First moment method**. An integrable function is greater than its mean on a set of positive
 measure. -/

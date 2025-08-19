@@ -111,14 +111,14 @@ theorem toLp_norm_le {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 
 
 theorem toLp_inj {f g : α →ᵇ E} [μ.IsOpenPosMeasure] :
     toLp (E := E) p μ 𝕜 f = toLp (E := E) p μ 𝕜 g ↔ f = g := by
-  refine ⟨fun h => ?_, by tauto⟩
+  refine ⟨fun h ↦ ?_, by tauto⟩
   rw [← DFunLike.coe_fn_eq, ← (map_continuous f).ae_eq_iff_eq μ (map_continuous g)]
   refine (coeFn_toLp p μ 𝕜 f).symm.trans (EventuallyEq.trans ?_ <| coeFn_toLp p μ 𝕜 g)
   rw [h]
 
 theorem toLp_injective [μ.IsOpenPosMeasure] :
     Function.Injective (⇑(toLp p μ 𝕜 : (α →ᵇ E) →L[𝕜] Lp E p μ)) :=
-  fun _f _g hfg => (toLp_inj μ).mp hfg
+  fun _f _g hfg ↦ (toLp_inj μ).mp hfg
 
 end BoundedContinuousFunction
 

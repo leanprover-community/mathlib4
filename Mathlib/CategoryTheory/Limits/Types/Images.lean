@@ -40,7 +40,7 @@ variable {f}
 
 /-- the universal property for the image factorisation -/
 noncomputable def Image.lift (F' : MonoFactorisation f) : Image f ⟶ F'.I :=
-  (fun x => F'.e (Classical.indefiniteDescription _ x.2).1 : Image f → F'.I)
+  (fun x ↦ F'.e (Classical.indefiniteDescription _ x.2).1 : Image f → F'.I)
 
 theorem Image.lift_fac (F' : MonoFactorisation f) : Image.lift F' ≫ F'.m = Image.ι f := by
   funext x
@@ -70,7 +70,7 @@ instance : HasImages (Type u) where
 instance : HasImageMaps (Type u) where
   has_image_map {f g} st :=
     HasImageMap.transport st (monoFactorisation f.hom) (isImage g.hom)
-      (fun x => ⟨st.right x.1, ⟨st.left (Classical.choose x.2), by
+      (fun x ↦ ⟨st.right x.1, ⟨st.left (Classical.choose x.2), by
         have p := st.w
         replace p := congr_fun p (Classical.choose x.2)
         simp only [Functor.id_obj, Functor.id_map, types_comp_apply] at p

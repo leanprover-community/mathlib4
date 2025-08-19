@@ -24,11 +24,11 @@ instance Real.instCompleteSpace : CompleteSpace ℝ := by
   apply complete_of_cauchySeq_tendsto
   intro u hu
   let c : CauSeq ℝ abs := ⟨u, Metric.cauchySeq_iff'.1 hu⟩
-  refine ⟨c.lim, fun s h => ?_⟩
+  refine ⟨c.lim, fun s h ↦ ?_⟩
   rcases Metric.mem_nhds_iff.1 h with ⟨ε, ε0, hε⟩
   have := c.equiv_lim ε ε0
   simp only [mem_map, mem_atTop_sets]
-  exact this.imp fun N hN n hn => hε (hN n hn)
+  exact this.imp fun N hN n hn ↦ hε (hN n hn)
 
 namespace NNReal
 
@@ -55,7 +55,7 @@ def _root_.ContinuousMap.coeNNRealReal : C(ℝ≥0, ℝ) :=
 lemma coeNNRealReal_zero : ContinuousMap.coeNNRealReal 0 = 0 := rfl
 
 instance ContinuousMap.canLift {X : Type*} [TopologicalSpace X] :
-    CanLift C(X, ℝ) C(X, ℝ≥0) ContinuousMap.coeNNRealReal.comp fun f => ∀ x, 0 ≤ f x where
-  prf f hf := ⟨⟨fun x => ⟨f x, hf x⟩, f.2.subtype_mk _⟩, DFunLike.ext' rfl⟩
+    CanLift C(X, ℝ) C(X, ℝ≥0) ContinuousMap.coeNNRealReal.comp fun f ↦ ∀ x, 0 ≤ f x where
+  prf f hf := ⟨⟨fun x ↦ ⟨f x, hf x⟩, f.2.subtype_mk _⟩, DFunLike.ext' rfl⟩
 
 end NNReal

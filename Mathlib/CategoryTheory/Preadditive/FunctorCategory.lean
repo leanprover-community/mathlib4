@@ -21,19 +21,19 @@ open CategoryTheory.Limits Preadditive
 variable {C D : Type*} [Category C] [Category D] [Preadditive D]
 
 instance {F G : C ⥤ D} : Zero (F ⟶ G) where
-  zero := { app := fun _ => 0 }
+  zero := { app := fun _ ↦ 0 }
 
 instance {F G : C ⥤ D} : Add (F ⟶ G) where
-  add α β := { app := fun X => α.app X + β.app X }
+  add α β := { app := fun X ↦ α.app X + β.app X }
 
 instance {F G : C ⥤ D} : Neg (F ⟶ G) where
-  neg α := { app := fun X => -α.app X }
+  neg α := { app := fun X ↦ -α.app X }
 
 instance functorCategoryPreadditive : Preadditive (C ⥤ D) where
   homGroup F G :=
     { nsmul := nsmulRec
       zsmul := zsmulRec
-      sub := fun α β => { app := fun X => α.app X - β.app X }
+      sub := fun α β ↦ { app := fun X ↦ α.app X - β.app X }
       add_assoc := by
         intros
         ext

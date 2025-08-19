@@ -42,7 +42,7 @@ theorem supDegree_eq_natDegree (p : R[X]) : p.toFinsupp.supDegree id = p.natDegr
 theorem le_natDegree_of_mem_supp (a : ℕ) : a ∈ p.support → a ≤ natDegree p :=
   le_natDegree_of_ne_zero ∘ mem_support_iff.mp
 
-theorem supp_subset_range (h : natDegree p < m) : p.support ⊆ Finset.range m := fun _n hn =>
+theorem supp_subset_range (h : natDegree p < m) : p.support ⊆ Finset.range m := fun _n hn ↦
   mem_range.2 <| (le_natDegree_of_mem_supp _ hn).trans_lt h
 
 theorem supp_subset_range_natDegree_succ : p.support ⊆ Finset.range (natDegree p + 1) :=
@@ -62,7 +62,7 @@ theorem sum_over_range' [AddCommMonoid S] (p : R[X]) {f : ℕ → R → S} (h : 
   rcases p with ⟨⟩
   have := supp_subset_range w
   simp only [Polynomial.sum, support, coeff] at this ⊢
-  exact Finsupp.sum_of_support_subset _ this _ fun n _hn => h n
+  exact Finsupp.sum_of_support_subset _ this _ fun n _hn ↦ h n
 
 /-- We can reexpress a sum over `p.support` as a sum over `range (p.natDegree + 1)`.
 -/
@@ -78,7 +78,7 @@ theorem sum_fin [AddCommMonoid S] (f : ℕ → R → S) (hf : ∀ i, f i 0 = 0) 
     intro i _
     exact hf i
   rw [sum_over_range' _ hf n ((natDegree_lt_iff_degree_lt hp).mpr hn),
-    Fin.sum_univ_eq_sum_range fun i => f i (p.coeff i)]
+    Fin.sum_univ_eq_sum_range fun i ↦ f i (p.coeff i)]
 
 theorem as_sum_range' (p : R[X]) (n : ℕ) (w : p.natDegree < n) :
     p = ∑ i ∈ range n, monomial i (coeff p i) :=

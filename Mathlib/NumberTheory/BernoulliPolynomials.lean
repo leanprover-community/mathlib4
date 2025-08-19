@@ -71,7 +71,7 @@ theorem bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
 theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli n := by
   rw [bernoulli, eval_finset_sum, sum_range_succ]
   have : ∑ x ∈ range n, _root_.bernoulli x * n.choose x * 0 ^ (n - x) = 0 := by
-    apply sum_eq_zero fun x hx => _
+    apply sum_eq_zero fun x hx ↦ _
     intros x hx
     simp [tsub_eq_zero_iff_le, mem_range.1 hx]
   simp [this]
@@ -94,7 +94,7 @@ theorem derivative_bernoulli_add_one (k : ℕ) :
   rw [range_add_one, sum_insert notMem_range_self, tsub_self, cast_zero, mul_zero,
     map_zero, zero_add, mul_sum]
   -- the rest of the sum is termwise equal:
-  refine sum_congr (by rfl) fun m _ => ?_
+  refine sum_congr (by rfl) fun m _ ↦ ?_
   conv_rhs => rw [← Nat.cast_one, ← Nat.cast_add, ← C_eq_natCast, C_mul_monomial, mul_comm]
   rw [mul_assoc, mul_assoc, ← Nat.cast_mul, ← Nat.cast_mul]
   congr 3
@@ -128,7 +128,7 @@ nonrec theorem sum_bernoulli (n : ℕ) :
   simp only [add_eq_left, mul_one, cast_one, cast_add, add_tsub_cancel_left,
     choose_succ_self_right, one_smul, _root_.bernoulli_zero, sum_singleton, zero_add,
     map_add, range_one, mul_one]
-  apply sum_eq_zero fun x hx => _
+  apply sum_eq_zero fun x hx ↦ _
   have f : ∀ x ∈ range n, ¬n + 1 - x = 1 := by grind
   intro x hx
   rw [sum_bernoulli]
@@ -155,7 +155,7 @@ theorem sum_range_pow_eq_bernoulli_sub (n p : ℕ) :
     rw [← sum_flip _, sum_range_succ]
     simp only [tsub_self, tsub_zero, choose_zero_right, cast_one, mul_one, _root_.pow_zero,
       add_tsub_cancel_right]
-    apply sum_congr rfl fun x hx => _
+    apply sum_congr rfl fun x hx ↦ _
     intro x hx
     apply congr_arg₂ _ (congr_arg₂ _ _ _) rfl
     · rw [Nat.sub_sub_self (mem_range_le hx)]
@@ -170,7 +170,7 @@ theorem bernoulli_succ_eval (n p : ℕ) : (bernoulli p.succ).eval (n : ℚ) =
 
 theorem bernoulli_eval_one_add (n : ℕ) (x : ℚ) :
     (bernoulli n).eval (1 + x) = (bernoulli n).eval x + n * x ^ (n - 1) := by
-  refine Nat.strong_induction_on n fun d hd => ?_
+  refine Nat.strong_induction_on n fun d hd ↦ ?_
   have nz : ((d.succ : ℕ) : ℚ) ≠ 0 := by norm_cast
   apply (mul_right_inj' nz).1
   rw [← smul_eq_mul, ← eval_smul, bernoulli_eq_sub_sum, mul_add, ← smul_eq_mul, ← eval_smul,
@@ -200,7 +200,7 @@ variable {A : Type*} [CommRing A] [Algebra ℚ A]
 -- This name should probably be updated afterwards
 /-- The theorem that $(e^X - 1) * ∑ Bₙ(t)* X^n/n! = Xe^{tX}$ -/
 theorem bernoulli_generating_function (t : A) :
-    (mk fun n => aeval t ((1 / n ! : ℚ) • bernoulli n)) * (exp A - 1) =
+    (mk fun n ↦ aeval t ((1 / n ! : ℚ) • bernoulli n)) * (exp A - 1) =
       PowerSeries.X * rescale t (exp A) := by
   -- check equality of power series by checking coefficients of X^n
   ext n

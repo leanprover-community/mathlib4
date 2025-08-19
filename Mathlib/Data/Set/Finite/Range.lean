@@ -88,7 +88,7 @@ theorem finite_range (f : ι → α) [Finite ι] : (range f).Finite :=
 theorem Finite.dependent_image {s : Set α} (hs : s.Finite) (F : ∀ i ∈ s, β) :
     {y : β | ∃ x hx, F x hx = y}.Finite := by
   have := hs.to_subtype
-  simpa [range] using finite_range fun x : s => F x x.2
+  simpa [range] using finite_range fun x : s ↦ F x x.2
 
 end SetFiniteConstructors
 

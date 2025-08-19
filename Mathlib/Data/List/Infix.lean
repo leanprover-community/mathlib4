@@ -114,7 +114,7 @@ theorem concat_get_prefix {x y : List α} (h : x <+: y) (hl : x.length < y.lengt
 
 instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <:+: l₂)
   | [], l₂ => isTrue ⟨[], l₂, rfl⟩
-  | a :: l₁, [] => isFalse fun ⟨s, t, te⟩ => by simp at te
+  | a :: l₁, [] => isFalse fun ⟨s, t, te⟩ ↦ by simp at te
   | l₁, b :: l₂ =>
     letI := l₁.decidableInfix l₂
     @decidable_of_decidable_of_iff (l₁ <+: b :: l₂ ∨ l₁ <:+: l₂) _ _
@@ -147,20 +147,20 @@ section InitsTails
 theorem mem_inits : ∀ s t : List α, s ∈ inits t ↔ s <+: t
   | s, [] =>
     suffices s = nil ↔ s <+: nil by simpa only [inits, mem_singleton]
-    ⟨fun h => h.symm ▸ prefix_rfl, eq_nil_of_prefix_nil⟩
+    ⟨fun h ↦ h.symm ▸ prefix_rfl, eq_nil_of_prefix_nil⟩
   | s, a :: t =>
     suffices (s = nil ∨ ∃ l ∈ inits t, a :: l = s) ↔ s <+: a :: t by simpa
-    ⟨fun o =>
+    ⟨fun o ↦
       match s, o with
       | _, Or.inl rfl => ⟨_, rfl⟩
       | s, Or.inr ⟨r, hr, hs⟩ => by
         let ⟨s, ht⟩ := (mem_inits _ _).1 hr
         rw [← hs, ← ht]; exact ⟨s, rfl⟩,
-      fun mi =>
+      fun mi ↦
       match s, mi with
       | [], ⟨_, rfl⟩ => Or.inl rfl
       | b :: s, ⟨r, hr⟩ =>
-        (List.noConfusion hr) fun ba (st : s ++ r = t) =>
+        (List.noConfusion hr) fun ba (st : s ++ r = t) ↦
           Or.inr <| by rw [ba]; exact ⟨_, (mem_inits _ _).2 ⟨_, st⟩, rfl⟩⟩
 
 @[simp]
@@ -171,29 +171,29 @@ theorem mem_tails : ∀ s t : List α, s ∈ tails t ↔ s <:+ t
     simp only [tails, mem_cons, mem_tails s t]
     exact
       show s = a :: t ∨ s <:+ t ↔ s <:+ a :: t from
-        ⟨fun o =>
+        ⟨fun o ↦
           match s, t, o with
           | _, t, Or.inl rfl => suffix_rfl
           | s, _, Or.inr ⟨l, rfl⟩ => ⟨a :: l, rfl⟩,
-          fun e =>
+          fun e ↦
           match s, t, e with
           | _, t, ⟨[], rfl⟩ => Or.inl rfl
-          | s, t, ⟨b :: l, he⟩ => List.noConfusion he fun _ lt => Or.inr ⟨l, lt⟩⟩
+          | s, t, ⟨b :: l, he⟩ => List.noConfusion he fun _ lt ↦ Or.inr ⟨l, lt⟩⟩
 
-theorem inits_cons (a : α) (l : List α) : inits (a :: l) = [] :: l.inits.map fun t => a :: t := by
+theorem inits_cons (a : α) (l : List α) : inits (a :: l) = [] :: l.inits.map fun t ↦ a :: t := by
   simp
 
 theorem tails_cons (a : α) (l : List α) : tails (a :: l) = (a :: l) :: l.tails := by simp
 
 @[simp]
-theorem inits_append : ∀ s t : List α, inits (s ++ t) = s.inits ++ t.inits.tail.map fun l => s ++ l
+theorem inits_append : ∀ s t : List α, inits (s ++ t) = s.inits ++ t.inits.tail.map fun l ↦ s ++ l
   | [], [] => by simp
   | [], a :: t => by simp
   | a :: s, t => by simp [inits_append s t, Function.comp_def]
 
 @[simp]
 theorem tails_append :
-    ∀ s t : List α, tails (s ++ t) = (s.tails.map fun l => l ++ t) ++ t.tails.tail
+    ∀ s t : List α, tails (s ++ t) = (s.tails.map fun l ↦ l ++ t) ++ t.tails.tail
   | [], [] => by simp
   | [], a :: t => by simp
   | a :: s, t => by simp [tails_append s t]

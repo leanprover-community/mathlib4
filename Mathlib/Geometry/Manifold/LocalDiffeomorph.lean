@@ -79,8 +79,8 @@ structure PartialDiffeomorph extends PartialEquiv M N where
 /-- Coercion of a `PartialDiffeomorph` to function.
 Note that a `PartialDiffeomorph` is not `DFunLike` (like `PartialHomeomorph`),
 as `toFun` doesn't determine `invFun` outside of `target`. -/
-instance : CoeFun (PartialDiffeomorph I J M N n) fun _ => M → N :=
-  ⟨fun Φ => Φ.toFun⟩
+instance : CoeFun (PartialDiffeomorph I J M N n) fun _ ↦ M → N :=
+  ⟨fun Φ ↦ Φ.toFun⟩
 
 variable {I J M N n}
 

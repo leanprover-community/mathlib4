@@ -86,7 +86,7 @@ def liftFSucc {Y Z : C} (P : ProjectiveResolution Y) (Q : ProjectiveResolution Z
 def lift {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y) (Q : ProjectiveResolution Z) :
     P.complex ⟶ Q.complex :=
   ChainComplex.mkHom _ _ (liftFZero f _ _) (liftFOne f _ _) (liftFOne_zero_comm f P Q)
-    fun n ⟨g, g', w⟩ => ⟨(liftFSucc P Q n g g' w).1, (liftFSucc P Q n g g' w).2⟩
+    fun n ⟨g, g', w⟩ ↦ ⟨(liftFSucc P Q n g g' w).1, (liftFSucc P Q n g g' w).2⟩
 
 /-- The resolution maps intertwine the lift of a morphism and that morphism. -/
 @[reassoc (attr := simp)]
@@ -148,7 +148,7 @@ lemma liftHomotopyZeroSucc_comp {Y Z : C} {P : ProjectiveResolution Y} {Q : Proj
 def liftHomotopyZero {Y Z : C} {P : ProjectiveResolution Y} {Q : ProjectiveResolution Z}
     (f : P.complex ⟶ Q.complex) (comm : f ≫ Q.π = 0) : Homotopy f 0 :=
   Homotopy.mkInductive _ (liftHomotopyZeroZero f comm) (by simp )
-    (liftHomotopyZeroOne f comm) (by simp) fun n ⟨g, g', w⟩ =>
+    (liftHomotopyZeroOne f comm) (by simp) fun n ⟨g, g', w⟩ ↦
     ⟨liftHomotopyZeroSucc f n g g' w, by simp⟩
 
 /-- Two lifts of the same morphism are homotopic. -/
@@ -286,7 +286,7 @@ variable (Z : C)
 /-- Auxiliary definition for `ProjectiveResolution.of`. -/
 def ofComplex : ChainComplex C ℕ :=
   ChainComplex.mk' (Projective.over Z) (Projective.syzygies (Projective.π Z))
-    (Projective.d (Projective.π Z)) (fun f => ⟨_, Projective.d f, by simp⟩)
+    (Projective.d (Projective.π Z)) (fun f ↦ ⟨_, Projective.d f, by simp⟩)
 
 lemma ofComplex_d_1_0 :
     (ofComplex Z).d 1 0 = d (Projective.π Z) := by
@@ -313,7 +313,7 @@ irreducible_def of : ProjectiveResolution Z where
   complex := ofComplex Z
   π := (ChainComplex.toSingle₀Equiv _ _).symm ⟨Projective.π Z, by
           rw [ofComplex_d_1_0, assoc, kernel.condition, comp_zero]⟩
-  quasiIso := ⟨fun n => by
+  quasiIso := ⟨fun n ↦ by
     cases n
     · rw [ChainComplex.quasiIsoAt₀_iff, ShortComplex.quasiIso_iff_of_zeros']
       · dsimp

@@ -64,11 +64,11 @@ protected instance [∀ i, LT (α i)] : LT (Σ i, α i) where
 
 @[simp]
 theorem mk_le_mk_iff [∀ i, LE (α i)] {i : ι} {a b : α i} : (⟨i, a⟩ : Sigma α) ≤ ⟨i, b⟩ ↔ a ≤ b :=
-  ⟨fun ⟨_, _, _, h⟩ => h, Sigma.LE.fiber _ _ _⟩
+  ⟨fun ⟨_, _, _, h⟩ ↦ h, Sigma.LE.fiber _ _ _⟩
 
 @[simp]
 theorem mk_lt_mk_iff [∀ i, LT (α i)] {i : ι} {a b : α i} : (⟨i, a⟩ : Sigma α) < ⟨i, b⟩ ↔ a < b :=
-  ⟨fun ⟨_, _, _, h⟩ => h, Sigma.LT.fiber _ _ _⟩
+  ⟨fun ⟨_, _, _, h⟩ ↦ h, Sigma.LT.fiber _ _ _⟩
 
 theorem le_def [∀ i, LE (α i)] {a b : Σ i, α i} : a ≤ b ↔ ∃ h : a.1 = b.1, h.rec a.2 ≤ b.2 := by
   constructor
@@ -89,11 +89,11 @@ theorem lt_def [∀ i, LT (α i)] {a b : Σ i, α i} : a < b ↔ ∃ h : a.1 = b
     exact LT.fiber _ _ _ h
 
 protected instance preorder [∀ i, Preorder (α i)] : Preorder (Σ i, α i) :=
-  { le_refl := fun ⟨i, a⟩ => Sigma.LE.fiber i a a le_rfl,
+  { le_refl := fun ⟨i, a⟩ ↦ Sigma.LE.fiber i a a le_rfl,
     le_trans := by
       rintro _ _ _ ⟨i, a, b, hab⟩ ⟨_, _, c, hbc⟩
       exact LE.fiber i a c (hab.trans hbc),
-    lt_iff_le_not_ge := fun _ _ => by
+    lt_iff_le_not_ge := fun _ _ ↦ by
       constructor
       · rintro ⟨i, a, b, hab⟩
         rwa [mk_le_mk_iff, mk_le_mk_iff, ← lt_iff_le_not_ge]
@@ -122,11 +122,11 @@ notation3 "Σₗ "(...)", "r:(scoped p => _root_.Lex (Sigma p)) => r
 
 /-- The lexicographical `≤` on a sigma type. -/
 protected instance LE [LT ι] [∀ i, LE (α i)] : LE (Σₗ i, α i) where
-  le := Lex (· < ·) fun _ => (· ≤ ·)
+  le := Lex (· < ·) fun _ ↦ (· ≤ ·)
 
 /-- The lexicographical `<` on a sigma type. -/
 protected instance LT [LT ι] [∀ i, LT (α i)] : LT (Σₗ i, α i) where
-  lt := Lex (· < ·) fun _ => (· < ·)
+  lt := Lex (· < ·) fun _ ↦ (· < ·)
 
 theorem le_def [LT ι] [∀ i, LE (α i)] {a b : Σₗ i, α i} :
     a ≤ b ↔ a.1 < b.1 ∨ ∃ h : a.1 = b.1, h.rec a.2 ≤ b.2 :=
@@ -139,10 +139,10 @@ theorem lt_def [LT ι] [∀ i, LT (α i)] {a b : Σₗ i, α i} :
 /-- The lexicographical preorder on a sigma type. -/
 instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ i, α i) :=
   { Sigma.Lex.LE, Sigma.Lex.LT with
-    le_refl := fun ⟨_, a⟩ => Lex.right a a le_rfl,
-    le_trans := fun _ _ _ => trans_of ((Lex (· < ·)) fun _ => (· ≤ ·)),
+    le_refl := fun ⟨_, a⟩ ↦ Lex.right a a le_rfl,
+    le_trans := fun _ _ _ ↦ trans_of ((Lex (· < ·)) fun _ ↦ (· ≤ ·)),
     lt_iff_le_not_ge := by
-      refine fun a b => ⟨fun hab => ⟨hab.mono_right fun i a b => le_of_lt, ?_⟩, ?_⟩
+      refine fun a b ↦ ⟨fun hab ↦ ⟨hab.mono_right fun i a b ↦ le_of_lt, ?_⟩, ?_⟩
       · rintro (⟨b, a, hji⟩ | ⟨b, a, hba⟩) <;> obtain ⟨_, _, hij⟩ | ⟨_, _, hab⟩ := hab
         · exact hij.not_gt hji
         · exact lt_irrefl _ hji
@@ -150,13 +150,13 @@ instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ i, α
         · exact hab.not_ge hba
       · rintro ⟨⟨a, b, hij⟩ | ⟨a, b, hab⟩, hba⟩
         · exact Sigma.Lex.left _ _ hij
-        · exact Sigma.Lex.right _ _ (hab.lt_of_not_ge fun h => hba <| Sigma.Lex.right _ _ h) }
+        · exact Sigma.Lex.right _ _ (hab.lt_of_not_ge fun h ↦ hba <| Sigma.Lex.right _ _ h) }
 
 /-- The lexicographical partial order on a sigma type. -/
 instance partialOrder [Preorder ι] [∀ i, PartialOrder (α i)] :
     PartialOrder (Σₗ i, α i) :=
   { Lex.preorder with
-    le_antisymm := fun _ _ => antisymm_of ((Lex (· < ·)) fun _ => (· ≤ ·)) }
+    le_antisymm := fun _ _ ↦ antisymm_of ((Lex (· < ·)) fun _ ↦ (· ≤ ·)) }
 
 
 
@@ -164,7 +164,7 @@ instance partialOrder [Preorder ι] [∀ i, PartialOrder (α i)] :
 instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] :
     LinearOrder (Σₗ i, α i) :=
   { Lex.partialOrder with
-    le_total := total_of ((Lex (· < ·)) fun _ => (· ≤ ·)),
+    le_total := total_of ((Lex (· < ·)) fun _ ↦ (· ≤ ·)),
     toDecidableEq := Sigma.instDecidableEqSigma
     toDecidableLE := Lex.decidable _ _
     toDecidableLT := Lex.decidable _ _ }
@@ -173,7 +173,7 @@ instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] :
 instance orderBot [PartialOrder ι] [OrderBot ι] [∀ i, Preorder (α i)] [OrderBot (α ⊥)] :
     OrderBot (Σₗ i, α i) where
   bot := ⟨⊥, ⊥⟩
-  bot_le := fun ⟨a, b⟩ => by
+  bot_le := fun ⟨a, b⟩ ↦ by
     obtain rfl | ha := eq_bot_or_bot_lt a
     · exact Lex.right _ _ bot_le
     · exact Lex.left _ _ ha
@@ -182,7 +182,7 @@ instance orderBot [PartialOrder ι] [OrderBot ι] [∀ i, Preorder (α i)] [Orde
 instance orderTop [PartialOrder ι] [OrderTop ι] [∀ i, Preorder (α i)] [OrderTop (α ⊤)] :
     OrderTop (Σₗ i, α i) where
   top := ⟨⊤, ⊤⟩
-  le_top := fun ⟨a, b⟩ => by
+  le_top := fun ⟨a, b⟩ ↦ by
     obtain rfl | ha := eq_top_or_lt_top a
     · exact Lex.right _ _ le_top
     · exact Lex.left _ _ ha

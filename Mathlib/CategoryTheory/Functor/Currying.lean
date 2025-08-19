@@ -31,16 +31,16 @@ variable {B : Type u₁} [Category.{v₁} B] {C : Type u₂} [Category.{v₂} C]
 @[simps]
 def uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E where
   obj F :=
-    { obj := fun X => (F.obj X.1).obj X.2
-      map := fun {X} {Y} f => (F.map f.1).app X.2 ≫ (F.obj Y.1).map f.2
-      map_comp := fun f g => by
+    { obj := fun X ↦ (F.obj X.1).obj X.2
+      map := fun {X} {Y} f ↦ (F.map f.1).app X.2 ≫ (F.obj Y.1).map f.2
+      map_comp := fun f g ↦ by
         simp only [prod_comp_fst, prod_comp_snd, Functor.map_comp, NatTrans.comp_app,
           Category.assoc]
         slice_lhs 2 3 => rw [← NatTrans.naturality]
         rw [Category.assoc] }
   map T :=
-    { app := fun X => (T.app X.1).app X.2
-      naturality := fun X Y f => by
+    { app := fun X ↦ (T.app X.1).app X.2
+      naturality := fun X Y f ↦ by
         simp only [Category.assoc]
         slice_lhs 2 3 => rw [NatTrans.naturality]
         slice_lhs 1 2 => rw [← NatTrans.comp_app, NatTrans.naturality, NatTrans.comp_app]
@@ -50,15 +50,15 @@ def uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E where
 -/
 def curryObj (F : C × D ⥤ E) : C ⥤ D ⥤ E where
   obj X :=
-    { obj := fun Y => F.obj (X, Y)
-      map := fun g => F.map (𝟙 X, g)
-      map_id := fun Y => by simp only; rw [← prod_id]; exact F.map_id ⟨X,Y⟩
-      map_comp := fun f g => by simp [← F.map_comp]}
+    { obj := fun Y ↦ F.obj (X, Y)
+      map := fun g ↦ F.map (𝟙 X, g)
+      map_id := fun Y ↦ by simp only; rw [← prod_id]; exact F.map_id ⟨X,Y⟩
+      map_comp := fun f g ↦ by simp [← F.map_comp]}
   map f :=
-    { app := fun Y => F.map (f, 𝟙 Y)
-      naturality := fun {Y} {Y'} g => by simp [← F.map_comp] }
-  map_id := fun X => by ext Y; exact F.map_id _
-  map_comp := fun f g => by ext Y; simp [← F.map_comp]
+    { app := fun Y ↦ F.map (f, 𝟙 Y)
+      naturality := fun {Y} {Y'} g ↦ by simp [← F.map_comp] }
+  map_id := fun X ↦ by ext Y; exact F.map_id _
+  map_comp := fun f g ↦ by ext Y; simp [← F.map_comp]
 
 /-- The currying functor, taking a functor `(C × D) ⥤ E` and producing a functor `C ⥤ (D ⥤ E)`.
 -/
@@ -66,12 +66,12 @@ def curryObj (F : C × D ⥤ E) : C ⥤ D ⥤ E where
 def curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E where
   obj F := curryObj F
   map T :=
-    { app := fun X =>
-        { app := fun Y => T.app (X, Y)
-          naturality := fun Y Y' g => by
+    { app := fun X ↦
+        { app := fun Y ↦ T.app (X, Y)
+          naturality := fun Y Y' g ↦ by
             dsimp [curryObj]
             rw [NatTrans.naturality] }
-      naturality := fun X X' f => by
+      naturality := fun X X' f ↦ by
         ext; dsimp [curryObj]
         rw [NatTrans.naturality] }
 
@@ -123,13 +123,13 @@ def curryObjProdComp {C' D' : Type*} [Category C'] [Category D']
 /-- `F.flip` is isomorphic to uncurrying `F`, swapping the variables, and currying. -/
 @[simps!]
 def flipIsoCurrySwapUncurry (F : C ⥤ D ⥤ E) : F.flip ≅ curry.obj (Prod.swap _ _ ⋙ uncurry.obj F) :=
-  NatIso.ofComponents fun d => NatIso.ofComponents fun _ => Iso.refl _
+  NatIso.ofComponents fun d ↦ NatIso.ofComponents fun _ ↦ Iso.refl _
 
 /-- The uncurrying of `F.flip` is isomorphic to
 swapping the factors followed by the uncurrying of `F`. -/
 @[simps!]
 def uncurryObjFlip (F : C ⥤ D ⥤ E) : uncurry.obj F.flip ≅ Prod.swap _ _ ⋙ uncurry.obj F :=
-  NatIso.ofComponents fun _ => Iso.refl _
+  NatIso.ofComponents fun _ ↦ Iso.refl _
 
 variable (B C D E)
 
@@ -144,7 +144,7 @@ def whiskeringRight₂ : (C ⥤ D ⥤ E) ⥤ (B ⥤ C) ⥤ (B ⥤ D) ⥤ B ⥤ E
 variable {B C D E}
 
 lemma uncurry_obj_curry_obj (F : B × C ⥤ D) : uncurry.obj (curry.obj F) = F :=
-  Functor.ext (by simp) (fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ ⟨f₁, f₂⟩ => by
+  Functor.ext (by simp) (fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ ⟨f₁, f₂⟩ ↦ by
     dsimp
     simp only [← F.map_comp, Category.id_comp, Category.comp_id, prod_comp])
 
@@ -153,7 +153,7 @@ lemma curry_obj_injective {F₁ F₂ : C × D ⥤ E} (h : curry.obj F₁ = curry
   rw [← uncurry_obj_curry_obj F₁, ← uncurry_obj_curry_obj F₂, h]
 
 lemma curry_obj_uncurry_obj (F : B ⥤ C ⥤ D) : curry.obj (uncurry.obj F) = F :=
-  Functor.ext (fun _ => Functor.ext (by simp) (by simp)) (by cat_disch)
+  Functor.ext (fun _ ↦ Functor.ext (by simp) (by simp)) (by cat_disch)
 
 lemma uncurry_obj_injective {F₁ F₂ : B ⥤ C ⥤ D} (h : uncurry.obj F₁ = uncurry.obj F₂) :
     F₁ = F₂ := by
@@ -167,13 +167,13 @@ lemma flip_injective {F₁ F₂ : B ⥤ C ⥤ D} (h : F₁.flip = F₂.flip) :
 
 lemma uncurry_obj_curry_obj_flip_flip (F₁ : B ⥤ C) (F₂ : D ⥤ E) (G : C × E ⥤ H) :
     uncurry.obj (F₂ ⋙ (F₁ ⋙ curry.obj G).flip).flip = (F₁.prod F₂) ⋙ G :=
-  Functor.ext (by simp) (fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ ⟨f₁, f₂⟩ => by
+  Functor.ext (by simp) (fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ ⟨f₁, f₂⟩ ↦ by
     dsimp
     simp only [Category.id_comp, Category.comp_id, ← G.map_comp, prod_comp])
 
 lemma uncurry_obj_curry_obj_flip_flip' (F₁ : B ⥤ C) (F₂ : D ⥤ E) (G : C × E ⥤ H) :
     uncurry.obj (F₁ ⋙ (F₂ ⋙ (curry.obj G).flip).flip) = (F₁.prod F₂) ⋙ G :=
-  Functor.ext (by simp) (fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ ⟨f₁, f₂⟩ => by
+  Functor.ext (by simp) (fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ ⟨f₁, f₂⟩ ↦ by
     dsimp
     simp only [Category.id_comp, Category.comp_id, ← G.map_comp, prod_comp])
 

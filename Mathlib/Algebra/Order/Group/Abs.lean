@@ -148,25 +148,25 @@ theorem mabs_le_max_mabs_mabs (hab : a ≤ b) (hbc : b ≤ c) : |b|ₘ ≤ max |
 omit [IsOrderedMonoid G] in
 @[to_additive]
 theorem min_mabs_mabs_le_mabs_max : min |a|ₘ |b|ₘ ≤ |max a b|ₘ :=
-  (le_total a b).elim (fun h => (min_le_right _ _).trans_eq <| congr_arg _ (max_eq_right h).symm)
-    fun h => (min_le_left _ _).trans_eq <| congr_arg _ (max_eq_left h).symm
+  (le_total a b).elim (fun h ↦ (min_le_right _ _).trans_eq <| congr_arg _ (max_eq_right h).symm)
+    fun h ↦ (min_le_left _ _).trans_eq <| congr_arg _ (max_eq_left h).symm
 
 omit [IsOrderedMonoid G] in
 @[to_additive]
 theorem min_mabs_mabs_le_mabs_min : min |a|ₘ |b|ₘ ≤ |min a b|ₘ :=
-  (le_total a b).elim (fun h => (min_le_left _ _).trans_eq <| congr_arg _ (min_eq_left h).symm)
-    fun h => (min_le_right _ _).trans_eq <| congr_arg _ (min_eq_right h).symm
+  (le_total a b).elim (fun h ↦ (min_le_left _ _).trans_eq <| congr_arg _ (min_eq_left h).symm)
+    fun h ↦ (min_le_right _ _).trans_eq <| congr_arg _ (min_eq_right h).symm
 
 omit [IsOrderedMonoid G] in
 @[to_additive]
 theorem mabs_max_le_max_mabs_mabs : |max a b|ₘ ≤ max |a|ₘ |b|ₘ :=
-  (le_total a b).elim (fun h => (congr_arg _ <| max_eq_right h).trans_le <| le_max_right _ _)
-    fun h => (congr_arg _ <| max_eq_left h).trans_le <| le_max_left _ _
+  (le_total a b).elim (fun h ↦ (congr_arg _ <| max_eq_right h).trans_le <| le_max_right _ _)
+    fun h ↦ (congr_arg _ <| max_eq_left h).trans_le <| le_max_left _ _
 
 omit [IsOrderedMonoid G] in
 @[to_additive]
 theorem mabs_min_le_max_mabs_mabs : |min a b|ₘ ≤ max |a|ₘ |b|ₘ :=
-  (le_total a b).elim (fun h => (congr_arg _ <| min_eq_left h).trans_le <| le_max_left _ _) fun h =>
+  (le_total a b).elim (fun h ↦ (congr_arg _ <| min_eq_left h).trans_le <| le_max_left _ _) fun h ↦
     (congr_arg _ <| min_eq_right h).trans_le <| le_max_right _ _
 
 @[to_additive]
@@ -252,7 +252,7 @@ variable [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] {a b c : G}
 theorem apply_abs_le_mul_of_one_le' {H : Type*} [MulOneClass H] [LE H]
     [MulLeftMono H] [MulRightMono H] {f : G → H}
     {a : G} (h₁ : 1 ≤ f a) (h₂ : 1 ≤ f (-a)) : f |a| ≤ f a * f (-a) :=
-  (le_total a 0).rec (fun ha => (abs_of_nonpos ha).symm ▸ le_mul_of_one_le_left' h₁) fun ha =>
+  (le_total a 0).rec (fun ha ↦ (abs_of_nonpos ha).symm ▸ le_mul_of_one_le_left' h₁) fun ha ↦
     (abs_of_nonneg ha).symm ▸ le_mul_of_one_le_right' h₂
 
 @[to_additive]

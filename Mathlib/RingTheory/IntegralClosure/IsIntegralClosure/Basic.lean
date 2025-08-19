@@ -111,9 +111,9 @@ variable (f : R →+* S) (R A)
 
 theorem mem_integralClosure_iff_mem_fg {r : A} :
     r ∈ integralClosure R A ↔ ∃ M : Subalgebra R A, M.toSubmodule.FG ∧ r ∈ M :=
-  ⟨fun hr =>
+  ⟨fun hr ↦
     ⟨Algebra.adjoin R {r}, hr.fg_adjoin_singleton, Algebra.subset_adjoin rfl⟩,
-    fun ⟨M, Hf, hrM⟩ => .of_mem_of_fg M Hf _ hrM⟩
+    fun ⟨M, Hf, hrM⟩ ↦ .of_mem_of_fg M Hf _ hrM⟩
 
 variable {R A}
 
@@ -126,7 +126,7 @@ theorem adjoin_le_integralClosure {x : A} (hx : IsIntegral R x) :
 theorem le_integralClosure_iff_isIntegral {S : Subalgebra R A} :
     S ≤ integralClosure R A ↔ Algebra.IsIntegral R S :=
   SetLike.forall.symm.trans <|
-    (forall_congr' fun x =>
+    (forall_congr' fun x ↦
       show IsIntegral R (algebraMap S A x) ↔ IsIntegral R x from
         isIntegral_algebraMap_iff Subtype.coe_injective).trans
       Algebra.isIntegral_def.symm
@@ -164,7 +164,7 @@ theorem integralClosure_map_algEquiv [Algebra R S] (f : A ≃ₐ[R] S) :
 them. -/
 def AlgHom.mapIntegralClosure [Algebra R S] (f : A →ₐ[R] S) :
     integralClosure R A →ₐ[R] integralClosure R S :=
-  (f.restrictDomain (integralClosure R A)).codRestrict (integralClosure R S) (fun ⟨_, h⟩ => h.map f)
+  (f.restrictDomain (integralClosure R A)).codRestrict (integralClosure R S) (fun ⟨_, h⟩ ↦ h.map f)
 
 @[simp]
 theorem AlgHom.coe_mapIntegralClosure [Algebra R S] (f : A →ₐ[R] S)
@@ -211,7 +211,7 @@ theorem IsIntegral.of_mem_closure' (G : Set A) (hG : ∀ x ∈ G, IsIntegral R x
     (fun _ _ ↦ IsIntegral.neg) (fun _ _ _ _ ↦ IsIntegral.mul) hx
 
 theorem IsIntegral.of_mem_closure'' {S : Type*} [CommRing S] {f : R →+* S} (G : Set S)
-    (hG : ∀ x ∈ G, f.IsIntegralElem x) : ∀ x ∈ Subring.closure G, f.IsIntegralElem x := fun x hx =>
+    (hG : ∀ x ∈ G, f.IsIntegralElem x) : ∀ x ∈ Subring.closure G, f.IsIntegralElem x := fun x hx ↦
   @IsIntegral.of_mem_closure' R S _ _ f.toAlgebra G hG x hx
 
 theorem IsIntegral.pow {x : B} (h : IsIntegral R x) (n : ℕ) : IsIntegral R (x ^ n) :=
@@ -243,7 +243,7 @@ theorem IsIntegral.sum {α : Type*} {s : Finset α} (f : α → A) (h : ∀ x �
 theorem IsIntegral.det {n : Type*} [Fintype n] [DecidableEq n] {M : Matrix n n A}
     (h : ∀ i j, IsIntegral R (M i j)) : IsIntegral R M.det := by
   rw [Matrix.det_apply]
-  exact IsIntegral.sum _ fun σ _hσ ↦ (IsIntegral.prod _ fun i _hi => h _ _).zsmul _
+  exact IsIntegral.sum _ fun σ _hσ ↦ (IsIntegral.prod _ fun i _hi ↦ h _ _).zsmul _
 
 @[simp]
 theorem IsIntegral.pow_iff {x : A} {n : ℕ} (hn : 0 < n) : IsIntegral R (x ^ n) ↔ IsIntegral R x :=
@@ -292,13 +292,13 @@ theorem RingHom.isIntegralElem_leadingCoeff_mul (h : p.eval₂ f x = 0) :
     f.IsIntegralElem (f p.leadingCoeff * x) := by
   by_cases h' : 1 ≤ p.natDegree
   · use integralNormalization p
-    have : p ≠ 0 := fun h'' => by
+    have : p ≠ 0 := fun h'' ↦ by
       rw [h'', natDegree_zero] at h'
       exact Nat.not_succ_le_zero 0 h'
     use monic_integralNormalization this
     rw [integralNormalization_eval₂_leadingCoeff_mul h' f x, h, mul_zero]
   · by_cases hp : p.map f = 0
-    · apply_fun fun q => coeff q p.natDegree at hp
+    · apply_fun fun q ↦ coeff q p.natDegree at hp
       rw [coeff_map, coeff_zero, coeff_natDegree] at hp
       rw [hp, zero_mul]
       exact f.isIntegralElem_zero
@@ -350,7 +350,7 @@ section IsIntegralClosure
 instance integralClosure.isIntegralClosure (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] :
     IsIntegralClosure (integralClosure R A) R A where
   algebraMap_injective' := Subtype.coe_injective
-  isIntegral_iff {x} := ⟨fun h => ⟨⟨x, h⟩, rfl⟩, by rintro ⟨⟨_, h⟩, rfl⟩; exact h⟩
+  isIntegral_iff {x} := ⟨fun h ↦ ⟨⟨x, h⟩, rfl⟩, by rintro ⟨⟨_, h⟩, rfl⟩; exact h⟩
 
 namespace IsIntegralClosure
 
@@ -368,13 +368,13 @@ protected theorem isIntegral [Algebra R A] [IsScalarTower R A B] (x : A) : IsInt
     show IsIntegral R (algebraMap A B x) from isIntegral_iff.mpr ⟨x, rfl⟩
 
 theorem isIntegral_algebra [Algebra R A] [IsScalarTower R A B] : Algebra.IsIntegral R A :=
-  ⟨fun x => IsIntegralClosure.isIntegral R B x⟩
+  ⟨fun x ↦ IsIntegralClosure.isIntegral R B x⟩
 
 theorem noZeroSMulDivisors [SMul R A] [IsScalarTower R A B] [NoZeroSMulDivisors R B] :
     NoZeroSMulDivisors R A := by
   refine
     Function.Injective.noZeroSMulDivisors _ (IsIntegralClosure.algebraMap_injective A R B)
-      (map_zero _) fun _ _ => ?_
+      (map_zero _) fun _ _ ↦ ?_
   simp only [Algebra.algebraMap_eq_smul_one, IsScalarTower.smul_assoc]
 
 variable {R} (A) {B}
@@ -523,8 +523,8 @@ lemma IsIntegralClosure.tower_top {B C : Type*} [CommSemiring C] [CommRing B]
     [IsIntegralClosure C R B] [Algebra.IsIntegral R A] :
     IsIntegralClosure C A B :=
   ⟨IsIntegralClosure.algebraMap_injective _ R _,
-   fun hx => (IsIntegralClosure.isIntegral_iff).mp (isIntegral_trans (R := R) _ hx),
-   fun hx => ((IsIntegralClosure.isIntegral_iff (R := R)).mpr hx).tower_top⟩
+   fun hx ↦ (IsIntegralClosure.isIntegral_iff).mp (isIntegral_trans (R := R) _ hx),
+   fun hx ↦ ((IsIntegralClosure.isIntegral_iff (R := R)).mpr hx).tower_top⟩
 
 theorem RingHom.isIntegral_of_surjective (hf : Function.Surjective f) : f.IsIntegral :=
   fun x ↦ (hf x).recOn fun _y hy ↦ hy ▸ f.isIntegralElem_map
@@ -597,7 +597,7 @@ theorem isIntegral_quotientMap_iff {I : Ideal S} :
   -- Porting note: added type ascription
   have : (Ideal.quotientMap I f le_rfl).comp g = (Ideal.Quotient.mk I).comp f :=
     Ideal.quotientMap_comp_mk le_rfl
-  refine ⟨fun h => ?_, fun h => RingHom.IsIntegral.tower_top g _ (this ▸ h)⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ RingHom.IsIntegral.tower_top g _ (this ▸ h)⟩
   refine this ▸ RingHom.IsIntegral.trans g (Ideal.quotientMap I f le_rfl) ?_ h
   exact g.isIntegral_of_surjective Ideal.Quotient.mk_surjective
 

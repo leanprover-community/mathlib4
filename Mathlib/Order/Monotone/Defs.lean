@@ -456,11 +456,11 @@ theorem monotone_fst : Monotone (@Prod.fst α β) := fun _ _ ↦ And.left
 theorem monotone_snd : Monotone (@Prod.snd α β) := fun _ _ ↦ And.right
 
 theorem monotone_prodMk_iff {f : γ → α} {g : γ → β} :
-    Monotone (fun x => (f x, g x)) ↔ Monotone f ∧ Monotone g := by
+    Monotone (fun x ↦ (f x, g x)) ↔ Monotone f ∧ Monotone g := by
   simp_rw [Monotone, Prod.mk_le_mk, forall_and]
 
 theorem Monotone.prodMk {f : γ → α} {g : γ → β} (hf : Monotone f) (hg : Monotone g) :
-    Monotone (fun x => (f x, g x)) :=
+    Monotone (fun x ↦ (f x, g x)) :=
   monotone_prodMk_iff.2 ⟨hf, hg⟩
 
 theorem Monotone.prodMap (hf : Monotone f) (hg : Monotone g) : Monotone (Prod.map f g) :=
@@ -476,15 +476,15 @@ theorem Antitone.prodMap (hf : Antitone f) (hg : Antitone g) : Antitone (Prod.ma
 alias Antitone.prod_map := Antitone.prodMap
 
 lemma monotone_prod_iff {h : α × β → γ} :
-    Monotone h ↔ (∀ a, Monotone (fun b => h (a, b))) ∧ (∀ b, Monotone (fun a => h (a, b))) where
-  mp h := ⟨fun _ _ _ hab => h (Prod.mk_le_mk_iff_right.mpr hab),
-    fun _ _ _ hab => h (Prod.mk_le_mk_iff_left.mpr hab)⟩
+    Monotone h ↔ (∀ a, Monotone (fun b ↦ h (a, b))) ∧ (∀ b, Monotone (fun a ↦ h (a, b))) where
+  mp h := ⟨fun _ _ _ hab ↦ h (Prod.mk_le_mk_iff_right.mpr hab),
+    fun _ _ _ hab ↦ h (Prod.mk_le_mk_iff_left.mpr hab)⟩
   mpr h _ _ hab := le_trans (h.1 _ (Prod.mk_le_mk.mp hab).2) (h.2 _ (Prod.mk_le_mk.mp hab).1)
 
 lemma antitone_prod_iff {h : α × β → γ} :
-    Antitone h ↔ (∀ a, Antitone (fun b => h (a, b))) ∧ (∀ b, Antitone (fun a => h (a, b))) where
-  mp h := ⟨fun _ _ _ hab => h (Prod.mk_le_mk_iff_right.mpr hab),
-    fun _ _ _ hab => h (Prod.mk_le_mk_iff_left.mpr hab)⟩
+    Antitone h ↔ (∀ a, Antitone (fun b ↦ h (a, b))) ∧ (∀ b, Antitone (fun a ↦ h (a, b))) where
+  mp h := ⟨fun _ _ _ hab ↦ h (Prod.mk_le_mk_iff_right.mpr hab),
+    fun _ _ _ hab ↦ h (Prod.mk_le_mk_iff_left.mpr hab)⟩
   mpr h _ _ hab := le_trans (h.1 _ (Prod.mk_le_mk.mp hab).2) (h.2 _ (Prod.mk_le_mk.mp hab).1)
 
 end Preorder
@@ -518,9 +518,9 @@ namespace Function
 variable [Preorder α] [DecidableEq ι] [∀ i, Preorder (π i)] {f : ∀ i, π i} {i : ι}
 
 -- Porting note: Dot notation breaks in `f.update i`
-theorem update_mono : Monotone (update f i) := fun _ _ => update_le_update_iff'.2
+theorem update_mono : Monotone (update f i) := fun _ _ ↦ update_le_update_iff'.2
 
-theorem update_strictMono : StrictMono (update f i) := fun _ _ => update_lt_update_iff.2
+theorem update_strictMono : StrictMono (update f i) := fun _ _ ↦ update_lt_update_iff.2
 
 theorem const_mono : Monotone (const β : α → β → α) := fun _ _ h _ ↦ h
 

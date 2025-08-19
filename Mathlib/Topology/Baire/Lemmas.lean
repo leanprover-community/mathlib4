@@ -69,7 +69,7 @@ theorem mem_residual {s : Set X} : s ∈ residual X ↔ ∃ t ⊆ s, IsGδ t ∧
   constructor
   · rw [mem_residual_iff]
     rintro ⟨S, hSo, hSd, Sct, Ss⟩
-    refine ⟨_, Ss, ⟨_, fun t ht => hSo _ ht, Sct, rfl⟩, ?_⟩
+    refine ⟨_, Ss, ⟨_, fun t ht ↦ hSo _ ht, Sct, rfl⟩, ?_⟩
     exact dense_sInter_of_isOpen hSo Sct hSd
   rintro ⟨t, ts, ho, hd⟩
   exact mem_of_superset (residual_of_dense_Gδ ho hd) ts
@@ -98,7 +98,7 @@ theorem not_isMeagre_of_isOpen {s : Set X} (hs : IsOpen s) (hne : s.Nonempty) : 
 theorem dense_sInter_of_Gδ {S : Set (Set X)} (ho : ∀ s ∈ S, IsGδ s) (hS : S.Countable)
     (hd : ∀ s ∈ S, Dense s) : Dense (⋂₀ S) :=
   dense_of_mem_residual ((countable_sInter_mem hS).mpr
-    (fun _ hs => residual_of_dense_Gδ (ho _ hs) (hd _ hs)))
+    (fun _ hs ↦ residual_of_dense_Gδ (ho _ hs) (hd _ hs)))
 
 /-- Baire theorem: a countable intersection of dense Gδ sets is dense. Formulated here with
 an index set which is a countable type. -/
@@ -112,7 +112,7 @@ theorem dense_biInter_of_Gδ {S : Set α} {f : ∀ x ∈ S, Set X} (ho : ∀ s (
     (hS : S.Countable) (hd : ∀ s (H : s ∈ S), Dense (f s H)) : Dense (⋂ s ∈ S, f s ‹_›) := by
   rw [biInter_eq_iInter]
   haveI := hS.to_subtype
-  exact dense_iInter_of_Gδ (fun s => ho s s.2) fun s => hd s s.2
+  exact dense_iInter_of_Gδ (fun s ↦ ho s s.2) fun s ↦ hd s s.2
 
 /-- Baire theorem: the intersection of two dense Gδ sets is dense. -/
 theorem Dense.inter_of_Gδ {s t : Set X} (hs : IsGδ s) (ht : IsGδ t) (hsc : Dense s)
@@ -126,12 +126,12 @@ theorem IsGδ.dense_iUnion_interior_of_closed [Countable ι] {s : Set X} (hs : I
     {f : ι → Set X} (hc : ∀ i, IsClosed (f i)) (hU : s ⊆ ⋃ i, f i) :
     Dense (⋃ i, interior (f i)) := by
   let g i := (frontier (f i))ᶜ
-  have hgo : ∀ i, IsOpen (g i) := fun i => isClosed_frontier.isOpen_compl
+  have hgo : ∀ i, IsOpen (g i) := fun i ↦ isClosed_frontier.isOpen_compl
   have hgd : Dense (⋂ i, g i) := by
-    refine dense_iInter_of_isOpen hgo fun i x => ?_
+    refine dense_iInter_of_isOpen hgo fun i x ↦ ?_
     rw [closure_compl, interior_frontier (hc _)]
     exact id
-  refine (hd.inter_of_Gδ hs (.iInter_of_isOpen fun i => (hgo i)) hgd).mono ?_
+  refine (hd.inter_of_Gδ hs (.iInter_of_isOpen fun i ↦ (hgo i)) hgd).mono ?_
   rintro x ⟨hxs, hxg⟩
   rw [mem_iInter] at hxg
   rcases mem_iUnion.1 (hU hxs) with ⟨i, hi⟩

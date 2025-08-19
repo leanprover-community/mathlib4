@@ -18,7 +18,7 @@ open Encodable
 instance Finset.encodable [Encodable α] : Encodable (Finset α) :=
   haveI := decidableEqOfEncodable α
   ofEquiv { s : Multiset α // s.Nodup }
-    ⟨fun ⟨a, b⟩ => ⟨a, b⟩, fun ⟨a, b⟩ => ⟨a, b⟩, fun ⟨_, _⟩ => rfl, fun ⟨_, _⟩ => rfl⟩
+    ⟨fun ⟨a, b⟩ ↦ ⟨a, b⟩, fun ⟨a, b⟩ ↦ ⟨a, b⟩, fun ⟨_, _⟩ ↦ rfl, fun ⟨_, _⟩ ↦ rfl⟩
 
 namespace Encodable
 
@@ -97,12 +97,12 @@ def raise'Finset (l : List ℕ) (n : ℕ) : Finset ℕ :=
 in `Finset.encodable`. -/
 instance finset : Denumerable (Finset α) :=
   mk'
-    ⟨fun s : Finset α => encode <| lower' ((s.map (eqv α).toEmbedding).sort (· ≤ ·)) 0, fun n =>
-      Finset.map (eqv α).symm.toEmbedding (raise'Finset (ofNat (List ℕ) n) 0), fun s =>
+    ⟨fun s : Finset α ↦ encode <| lower' ((s.map (eqv α).toEmbedding).sort (· ≤ ·)) 0, fun n ↦
+      Finset.map (eqv α).symm.toEmbedding (raise'Finset (ofNat (List ℕ) n) 0), fun s ↦
       Finset.eq_of_veq <| by
         simp [-Multiset.map_coe, raise'Finset,
-          raise_lower' (fun n _ => Nat.zero_le n) (Finset.sort_sorted_lt _)],
-      fun n => by
+          raise_lower' (fun n _ ↦ Nat.zero_le n) (Finset.sort_sorted_lt _)],
+      fun n ↦ by
       simp [-Multiset.map_coe, Finset.map, raise'Finset, Finset.sort,
         List.mergeSort_eq_self _ (raise'_sorted _ _).le_of_lt, lower_raise']⟩
 

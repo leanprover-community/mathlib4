@@ -87,7 +87,7 @@ theorem leftInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
   | 1 => simp -- TODO: why?
   | n + 2 =>
     simp only [leftInv, neg_inj]
-    refine Finset.sum_congr rfl fun c cuniv => ?_
+    refine Finset.sum_congr rfl fun c cuniv ↦ ?_
     rcases c with ⟨c, hc⟩
     ext v
     simp [IH _ hc]
@@ -110,7 +110,7 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
     have A :
       (Finset.univ : Finset (Composition (n + 2))) =
         {c | Composition.length c < n + 2}.toFinset ∪ {Composition.ones (n + 2)} := by
-      refine Subset.antisymm (fun c _ => ?_) (subset_univ _)
+      refine Subset.antisymm (fun c _ ↦ ?_) (subset_univ _)
       by_cases h : c.length < n + 2
       · simp [h]
       · simp [Composition.eq_ones_iff_le_length.2 (not_lt.1 h)]
@@ -120,24 +120,24 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
       simp
     have C :
       ((p.leftInv i x (Composition.ones (n + 2)).length)
-          fun j : Fin (Composition.ones n.succ.succ).length =>
-          p 1 fun _ => v ((Fin.castLE (Composition.length_le _)) j)) =
-        p.leftInv i x (n + 2) fun j : Fin (n + 2) => p 1 fun _ => v j := by
-      apply FormalMultilinearSeries.congr _ (Composition.ones_length _) fun j hj1 hj2 => ?_
-      exact FormalMultilinearSeries.congr _ rfl fun k _ _ => by congr
+          fun j : Fin (Composition.ones n.succ.succ).length ↦
+          p 1 fun _ ↦ v ((Fin.castLE (Composition.length_le _)) j)) =
+        p.leftInv i x (n + 2) fun j : Fin (n + 2) ↦ p 1 fun _ ↦ v j := by
+      apply FormalMultilinearSeries.congr _ (Composition.ones_length _) fun j hj1 hj2 ↦ ?_
+      exact FormalMultilinearSeries.congr _ rfl fun k _ _ ↦ by congr
     have D :
-      (p.leftInv i x (n + 2) fun j : Fin (n + 2) => p 1 fun _ => v j) =
+      (p.leftInv i x (n + 2) fun j : Fin (n + 2) ↦ p 1 fun _ ↦ v j) =
         -∑ c ∈ {c : Composition (n + 2) | c.length < n + 2}.toFinset,
             (p.leftInv i x c.length) (p.applyComposition c v) := by
       simp only [leftInv, ContinuousMultilinearMap.neg_apply, neg_inj,
         ContinuousMultilinearMap.sum_apply]
       convert
         (sum_toFinset_eq_subtype
-          (fun c : Composition (n + 2) => c.length < n + 2)
-          (fun c : Composition (n + 2) =>
+          (fun c : Composition (n + 2) ↦ c.length < n + 2)
+          (fun c : Composition (n + 2) ↦
           (ContinuousMultilinearMap.compAlongComposition
             (p.compContinuousLinearMap (i.symm : F →L[𝕜] E)) c (p.leftInv i x c.length))
-            fun j : Fin (n + 2) => p 1 fun _ : Fin 1 => v j)).symm.trans
+            fun j : Fin (n + 2) ↦ p 1 fun _ : Fin 1 ↦ v j)).symm.trans
           _
       simp only [compContinuousLinearMap_applyComposition,
         ContinuousMultilinearMap.compAlongComposition_apply]
@@ -170,7 +170,7 @@ noncomputable def rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
   | 0 => ContinuousMultilinearMap.uncurry0 𝕜 _ x
   | 1 => (continuousMultilinearCurryFin1 𝕜 F E).symm i.symm
   | n + 2 =>
-    let q : FormalMultilinearSeries 𝕜 F E := fun k => if k < n + 2 then rightInv p i x k else 0;
+    let q : FormalMultilinearSeries 𝕜 F E := fun k ↦ if k < n + 2 then rightInv p i x k else 0;
     -(i.symm : F →L[𝕜] E).compContinuousMultilinearMap ((p.comp q) (n + 2))
 
 @[simp]
@@ -200,12 +200,12 @@ theorem comp_rightInv_aux1 {n : ℕ} (hn : 0 < n) (p : FormalMultilinearSeries �
     (q : FormalMultilinearSeries 𝕜 F E) (v : Fin n → F) :
     p.comp q n v =
       ∑ c ∈ {c : Composition n | 1 < c.length}.toFinset,
-          p c.length (q.applyComposition c v) + p 1 fun _ => q n v := by
+          p c.length (q.applyComposition c v) + p 1 fun _ ↦ q n v := by
   classical
   have A :
     (Finset.univ : Finset (Composition n)) =
       {c | 1 < Composition.length c}.toFinset ∪ {Composition.single n hn} := by
-    refine Subset.antisymm (fun c _ => ?_) (subset_univ _)
+    refine Subset.antisymm (fun c _ ↦ ?_) (subset_univ _)
     by_cases h : 1 < c.length
     · simp [h]
     · have : c.length = 1 := by
@@ -218,8 +218,8 @@ theorem comp_rightInv_aux1 {n : ℕ} (hn : 0 < n) (p : FormalMultilinearSeries �
     simp
   have C :
     p (Composition.single n hn).length (q.applyComposition (Composition.single n hn) v) =
-      p 1 fun _ : Fin 1 => q n v := by
-    apply p.congr (Composition.single_length hn) fun j hj1 _ => ?_
+      p 1 fun _ : Fin 1 ↦ q n v := by
+    apply p.congr (Composition.single_length hn) fun j hj1 _ ↦ ?_
     simp [applyComposition_single]
   simp [FormalMultilinearSeries.comp, A, Finset.sum_union B, C, -Set.toFinset_setOf,
     -add_right_inj, -Composition.single_length, -Finset.union_singleton]
@@ -227,11 +227,11 @@ theorem comp_rightInv_aux1 {n : ℕ} (hn : 0 < n) (p : FormalMultilinearSeries �
 theorem comp_rightInv_aux2 (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E) (n : ℕ)
     (v : Fin (n + 2) → F) :
     ∑ c ∈ {c : Composition (n + 2) | 1 < c.length}.toFinset,
-        p c.length (applyComposition (fun k : ℕ => ite (k < n + 2) (p.rightInv i x k) 0) c v) =
+        p c.length (applyComposition (fun k : ℕ ↦ ite (k < n + 2) (p.rightInv i x k) 0) c v) =
       ∑ c ∈ {c : Composition (n + 2) | 1 < c.length}.toFinset,
         p c.length ((p.rightInv i x).applyComposition c v) := by
   have N : 0 < n + 2 := by simp
-  refine sum_congr rfl fun c hc => p.congr rfl fun j hj1 hj2 => ?_
+  refine sum_congr rfl fun c hc ↦ p.congr rfl fun j hj1 hj2 ↦ ?_
   have : ∀ k, c.blocksFun k < n + 2 := by
     simp only [Set.mem_toFinset (s := {c : Composition (n + 2) | 1 < c.length}),
       Set.mem_setOf_eq] at hc
@@ -271,7 +271,7 @@ theorem rightInv_coeff (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] 
     congr (config := { closePost := false }) 1
     ext v
     have N : 0 < n + 2 := by norm_num
-    have : ((p 1) fun _ : Fin 1 => 0) = 0 := ContinuousMultilinearMap.map_zero _
+    have : ((p 1) fun _ : Fin 1 ↦ 0) = 0 := ContinuousMultilinearMap.map_zero _
     simp [comp_rightInv_aux1 N, this, comp_rightInv_aux2, -Set.toFinset_setOf]
 
 /-! ### Coincidence of the left and the right inverse -/
@@ -386,12 +386,12 @@ theorem radius_right_inv_pos_of_radius_pos_aux1 (n : ℕ) (p : ℕ → ℝ) (hp 
       rw [sum_sigma']
       gcongr
       · intro x _ _
-        exact prod_nonneg fun j _ => mul_nonneg hr (mul_nonneg (pow_nonneg ha _) (hp _))
+        exact prod_nonneg fun j _ ↦ mul_nonneg hr (mul_nonneg (pow_nonneg ha _) (hp _))
       rintro ⟨k, c⟩ hd
       simp only [Set.mem_toFinset (s := {c | 1 < Composition.length c}), mem_Ico, mem_sigma,
         Set.mem_setOf_eq] at hd
       simp only [mem_compPartialSumTarget_iff]
-      refine ⟨hd.2, c.length_le.trans_lt hd.1.2, fun j => ?_⟩
+      refine ⟨hd.2, c.length_le.trans_lt hd.1.2, fun j ↦ ?_⟩
       have : c ≠ Composition.single k (zero_lt_two.trans_le hd.1.1) := by
         simp [Composition.eq_single_iff_length, ne_of_gt hd.2]
       rw [Composition.ne_single_iff] at this
@@ -408,12 +408,12 @@ theorem radius_right_inv_pos_of_radius_pos_aux1 (n : ℕ) (p : ℕ → ℝ) (hp 
     _ = ∑ j ∈ Ico 2 (n + 1), r ^ j * (∑ k ∈ Ico 1 n, a ^ k * p k) ^ j := by
       rw [compPartialSumSource,
         ← sum_sigma' (Ico 2 (n + 1))
-          (fun k : ℕ => (Fintype.piFinset fun _ : Fin k => Ico 1 n : Finset (Fin k → ℕ)))
-          (fun n e => ∏ j : Fin n, r * (a ^ e j * p (e j)))]
+          (fun k : ℕ ↦ (Fintype.piFinset fun _ : Fin k ↦ Ico 1 n : Finset (Fin k → ℕ)))
+          (fun n e ↦ ∏ j : Fin n, r * (a ^ e j * p (e j)))]
       congr! with j
       simp only [← @MultilinearMap.mkPiAlgebra_apply ℝ (Fin j) _ ℝ]
       simp only [←
-        MultilinearMap.map_sum_finset (MultilinearMap.mkPiAlgebra ℝ (Fin j) ℝ) fun _ (m : ℕ) =>
+        MultilinearMap.map_sum_finset (MultilinearMap.mkPiAlgebra ℝ (Fin j) ℝ) fun _ (m : ℕ) ↦
           r * (a ^ m * p m)]
       simp only [MultilinearMap.mkPiAlgebra_apply]
       simp [prod_const, ← mul_sum, mul_pow]
@@ -471,8 +471,8 @@ theorem radius_rightInv_pos_of_radius_pos_aux2 {x : E} {n : ℕ} (hn : 2 ≤ n +
       gcongr _ + _ * _ * ?_
       simp_rw [mul_pow]
       apply
-        radius_right_inv_pos_of_radius_pos_aux1 n (fun k => ‖p.rightInv i x k‖)
-          (fun k => norm_nonneg _) hr ha
+        radius_right_inv_pos_of_radius_pos_aux1 n (fun k ↦ ‖p.rightInv i x k‖)
+          (fun k ↦ norm_nonneg _) hr ha
 
 /-- If a a formal multilinear series has a positive radius of convergence, then its right inverse
 also has a positive radius of convergence. -/
@@ -489,12 +489,12 @@ theorem radius_rightInv_pos_of_radius_pos
     ∃ (a : _) (apos : 0 < a),
       2 * I * C * r ^ 2 * (I + 1) ^ 2 * a ≤ 1 ∧ r * (I + 1) * a ≤ 1 / 2 := by
     have :
-      Tendsto (fun a => 2 * I * C * r ^ 2 * (I + 1) ^ 2 * a) (𝓝 0)
+      Tendsto (fun a ↦ 2 * I * C * r ^ 2 * (I + 1) ^ 2 * a) (𝓝 0)
         (𝓝 (2 * I * C * r ^ 2 * (I + 1) ^ 2 * 0)) :=
       tendsto_const_nhds.mul tendsto_id
     have A : ∀ᶠ a in 𝓝 0, 2 * I * C * r ^ 2 * (I + 1) ^ 2 * a < 1 := by
       apply (tendsto_order.1 this).2; simp [zero_lt_one]
-    have : Tendsto (fun a => r * (I + 1) * a) (𝓝 0) (𝓝 (r * (I + 1) * 0)) :=
+    have : Tendsto (fun a ↦ r * (I + 1) * a) (𝓝 0) (𝓝 (r * (I + 1) * 0)) :=
       tendsto_const_nhds.mul tendsto_id
     have B : ∀ᶠ a in 𝓝 0, r * (I + 1) * a < 1 / 2 := by
       apply (tendsto_order.1 this).2; simp
@@ -541,7 +541,7 @@ theorem radius_rightInv_pos_of_radius_pos
   calc
     ‖p.rightInv i x n‖ * (a' : ℝ) ^ n = a ^ n * ‖p.rightInv i x n‖ := mul_comm _ _
     _ ≤ ∑ k ∈ Ico 1 (n + 1), a ^ k * ‖p.rightInv i x k‖ :=
-      (haveI : ∀ k ∈ Ico 1 (n + 1), 0 ≤ a ^ k * ‖p.rightInv i x k‖ := fun k _ => by positivity
+      (haveI : ∀ k ∈ Ico 1 (n + 1), 0 ≤ a ^ k * ‖p.rightInv i x k‖ := fun k _ ↦ by positivity
       single_le_sum this (by simp [hn]))
     _ ≤ (I + 1) * a := IRec (n + 1) (by norm_num)
 
@@ -575,15 +575,15 @@ lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
     EMetric.ball_mem_nhds 0 (lt_min h0.r_pos (by exact_mod_cast r1_pos))
   filter_upwards [this] with y hy
   have hy0 : y ∈ EMetric.ball 0 r0 := EMetric.ball_subset_ball (min_le_left _ _) hy
-  have A : HasSum (fun i : Σ n, Composition n => q.compAlongComposition p i.2 fun _j => y)
+  have A : HasSum (fun i : Σ n, Composition n ↦ q.compAlongComposition p i.2 fun _j ↦ y)
       (f (x + y)) := by
-    have cau : CauchySeq fun s : Finset (Σ n, Composition n) =>
-        ∑ i ∈ s, q.compAlongComposition p i.2 fun _j => y := by
+    have cau : CauchySeq fun s : Finset (Σ n, Composition n) ↦
+        ∑ i ∈ s, q.compAlongComposition p i.2 fun _j ↦ y := by
       apply cauchySeq_finset_of_norm_bounded (NNReal.summable_coe.2 hr1) _
       simp only [coe_nnnorm, NNReal.coe_mul, NNReal.coe_pow]
       rintro ⟨n, c⟩
       calc
-        ‖(compAlongComposition q p c) fun _j : Fin n => y‖ ≤
+        ‖(compAlongComposition q p c) fun _j : Fin n ↦ y‖ ≤
             ‖compAlongComposition q p c‖ * ∏ _j : Fin n, ‖y‖ := by
           apply ContinuousMultilinearMap.le_opNorm
         _ ≤ ‖compAlongComposition q p c‖ * (r1 : ℝ) ^ n := by
@@ -595,10 +595,10 @@ lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
           rwa [enorm_le_coe, ← NNReal.coe_le_coe, coe_nnnorm] at this
     apply HasSum.of_sigma (fun b ↦ hasSum_fintype _) ?_ cau
     simpa [FormalMultilinearSeries.comp] using h0.hasSum hy0
-  have B : Tendsto (fun (n : ℕ × ℕ) => ∑ i ∈ compPartialSumTarget 0 n.1 n.2,
-      q.compAlongComposition p i.2 fun _j => y) atTop (𝓝 (f (x + y))) := by
+  have B : Tendsto (fun (n : ℕ × ℕ) ↦ ∑ i ∈ compPartialSumTarget 0 n.1 n.2,
+      q.compAlongComposition p i.2 fun _j ↦ y) atTop (𝓝 (f (x + y))) := by
     apply Tendsto.comp A compPartialSumTarget_tendsto_prod_atTop
-  have C : Tendsto (fun (n : ℕ × ℕ) => q.partialSum n.1 (∑ a ∈ Finset.Ico 1 n.2, p a fun _b ↦ y))
+  have C : Tendsto (fun (n : ℕ × ℕ) ↦ q.partialSum n.1 (∑ a ∈ Finset.Ico 1 n.2, p a fun _b ↦ y))
       atTop (𝓝 (f (x + y))) := by simpa [comp_partialSum] using B
   apply C.congr'
   filter_upwards [Ici_mem_atTop (0, 1)]
@@ -613,7 +613,7 @@ lemma HasFPowerSeriesAt.eventually_hasSum_of_comp {f : E → F} {g : F → G}
     {q : FormalMultilinearSeries 𝕜 F G} {p : FormalMultilinearSeries 𝕜 E F} {x : E}
     (hgf : HasFPowerSeriesAt (g ∘ f) (q.comp p) x) (hf : HasFPowerSeriesAt f p x)
     (hq : 0 < q.radius) :
-    ∀ᶠ y in 𝓝 0, HasSum (fun n : ℕ => q n fun _ : Fin n => (f (x + y) - f x)) (g (f (x + y))) := by
+    ∀ᶠ y in 𝓝 0, HasSum (fun n : ℕ ↦ q n fun _ : Fin n ↦ (f (x + y) - f x)) (g (f (x + y))) := by
   have : ∀ᶠ y in 𝓝 (0 : E), f (x + y) - f x ∈ EMetric.ball 0 q.radius := by
     have A : ContinuousAt (fun y ↦ f (x + y) - f x) 0 := by
       apply ContinuousAt.sub _ continuousAt_const
@@ -642,7 +642,7 @@ lemma HasFPowerSeriesAt.eventually_hasSum_of_comp {f : E → F} {g : F → G}
       exact (HasFPowerSeriesAt.coeff_zero hf fun _ ↦ 0).symm
     apply u_closed.mem_of_tendsto this
     filter_upwards [Ici_mem_atTop b₀] with b hb using vu (hab _ _ ha hb)
-  have C : CauchySeq (fun (s : Finset ℕ) ↦ ∑ n ∈ s, q n fun _ : Fin n => (f (x + y) - f x)) := by
+  have C : CauchySeq (fun (s : Finset ℕ) ↦ ∑ n ∈ s, q n fun _ : Fin n ↦ (f (x + y) - f x)) := by
     have Z := q.summable_norm_apply (x := f (x + y) - f x) h''y
     exact cauchySeq_finset_of_norm_bounded Z (fun i ↦ le_rfl)
   exact tendsto_nhds_of_cauchySeq_of_subseq C tendsto_finset_range L

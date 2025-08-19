@@ -42,7 +42,7 @@ open scoped ArithmeticFunction
 namespace to indicate that it is bundled as an `ArithmeticFunction` rather than being the usual
 real logarithm. -/
 noncomputable def log : ArithmeticFunction ℝ :=
-  ⟨fun n => Real.log n, by simp⟩
+  ⟨fun n ↦ Real.log n, by simp⟩
 
 @[simp]
 theorem log_apply {n : ℕ} : log n = Real.log n :=
@@ -59,7 +59,7 @@ This is also available in the `ArithmeticFunction.vonMangoldt` locale, allowing 
 access to the notation.
 -/
 noncomputable def vonMangoldt : ArithmeticFunction ℝ :=
-  ⟨fun n => if IsPrimePow n then Real.log (minFac n) else 0, if_neg not_isPrimePow_zero⟩
+  ⟨fun n ↦ if IsPrimePow n then Real.log (minFac n) else 0, if_neg not_isPrimePow_zero⟩
 
 @[inherit_doc] scoped[ArithmeticFunction] notation "Λ" => ArithmeticFunction.vonMangoldt
 
@@ -126,7 +126,7 @@ theorem moebius_mul_log_eq_vonMangoldt : (μ : ArithmeticFunction ℝ) * log = �
 theorem sum_moebius_mul_log_eq {n : ℕ} : (∑ d ∈ n.divisors, (μ d : ℝ) * log d) = -Λ n := by
   simp only [← log_mul_moebius_eq_vonMangoldt, mul_comm log, mul_apply, log_apply, intCoe_apply, ←
     Finset.sum_neg_distrib, neg_mul_eq_mul_neg]
-  rw [sum_divisorsAntidiagonal fun i j => (μ i : ℝ) * -Real.log j]
+  rw [sum_divisorsAntidiagonal fun i j ↦ (μ i : ℝ) * -Real.log j]
   have : (∑ i ∈ n.divisors, (μ i : ℝ) * -Real.log (n / i : ℕ)) =
       ∑ i ∈ n.divisors, ((μ i : ℝ) * Real.log i - μ i * Real.log n) := by
     apply sum_congr rfl
@@ -145,7 +145,7 @@ theorem vonMangoldt_le_log : ∀ {n : ℕ}, Λ n ≤ Real.log (n : ℝ)
   | 0 => by simp
   | n + 1 => by
     rw [← vonMangoldt_sum]
-    exact single_le_sum (by exact fun _ _ => vonMangoldt_nonneg)
+    exact single_le_sum (by exact fun _ _ ↦ vonMangoldt_nonneg)
       (mem_divisors_self _ n.succ_ne_zero)
 
 end ArithmeticFunction

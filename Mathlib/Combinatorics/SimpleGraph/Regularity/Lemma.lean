@@ -99,7 +99,7 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
   -- so it must instead be `ε`-uniform and we won.
     obtain ⟨P, hP₁, hP₂, hP₃, hP₄⟩ := h (⌊4 / ε ^ 5⌋₊ + 1)
     refine ⟨P, hP₁, (le_initialBound _ _).trans hP₂, hP₃.trans ?_,
-      hP₄.resolve_right fun hPenergy => lt_irrefl (1 : ℝ) ?_⟩
+      hP₄.resolve_right fun hPenergy ↦ lt_irrefl (1 : ℝ) ?_⟩
     · rw [iterate_succ_apply', stepBound, bound]
       gcongr
       norm_num

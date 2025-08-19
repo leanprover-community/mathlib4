@@ -61,11 +61,11 @@ lemma zpow_lt_zpow_iff_right (ha : 1 < a) : a ^ m < a ^ n ↔ m < n :=
 variable (α)
 
 @[to_additive zsmul_strictMono_right]
-lemma zpow_left_strictMono (hn : 0 < n) : StrictMono ((· ^ n) : α → α) := fun a b hab => by
+lemma zpow_left_strictMono (hn : 0 < n) : StrictMono ((· ^ n) : α → α) := fun a b hab ↦ by
   rw [← one_lt_div', ← div_zpow]; exact one_lt_zpow (one_lt_div'.2 hab) hn
 
 @[to_additive zsmul_mono_right]
-lemma zpow_left_mono (hn : 0 ≤ n) : Monotone ((· ^ n) : α → α) := fun a b hab => by
+lemma zpow_left_mono (hn : 0 ≤ n) : Monotone ((· ^ n) : α → α) := fun a b hab ↦ by
   rw [← one_le_div', ← div_zpow]; exact one_le_zpow (one_le_div'.2 hab) hn
 
 variable {α}

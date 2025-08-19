@@ -100,10 +100,10 @@ def comparisonLeftAdjointHomEquiv (A : adj.toMonad.Algebra) (B : D)
         adj.counit_naturality, adj.left_triangle_components_assoc]
       apply eq_comm
     _ ≃ (A ⟶ (comparison adj).obj B) :=
-      { toFun := fun g =>
+      { toFun := fun g ↦
           { f := _
             h := g.prop }
-        invFun := fun f => ⟨f.f, f.h⟩ }
+        invFun := fun f ↦ ⟨f.f, f.h⟩ }
 
 /-- Construct the adjunction to the comparison functor.
 -/
@@ -113,7 +113,7 @@ def leftAdjointComparison
     adj.toMonad.Algebra ⥤ D := by
   refine
     Adjunction.leftAdjointOfEquiv (G := comparison adj)
-      (F_obj := fun A => comparisonLeftAdjointObj adj A) (fun A B => ?_) ?_
+      (F_obj := fun A ↦ comparisonLeftAdjointObj adj A) (fun A B ↦ ?_) ?_
   · apply comparisonLeftAdjointHomEquiv
   · intro A B B' g h
     ext1
@@ -254,7 +254,7 @@ class HasCoequalizerOfIsSplitPair (G : D ⥤ C) : Prop where
 instance [HasCoequalizerOfIsSplitPair G] : ∀ (A : Algebra adj.toMonad),
     HasCoequalizer (F.map A.a)
       (adj.counit.app (F.obj A.A)) :=
-  fun _ => HasCoequalizerOfIsSplitPair.out G _ _
+  fun _ ↦ HasCoequalizerOfIsSplitPair.out G _ _
 
 -- Porting note: added these to replace parametric instances https://github.com/leanprover/lean4/issues/2311
 -- [∀ ⦃A B⦄ (f g : A ⟶ B) [G.IsSplitPair f g], PreservesColimit (parallelPair f g) G]
@@ -268,7 +268,7 @@ instance {A B} (f g : A ⟶ B) [G.IsSplitPair f g] [PreservesColimitOfIsSplitPai
 
 instance [PreservesColimitOfIsSplitPair G] : ∀ (A : Algebra adj.toMonad),
     PreservesColimit (parallelPair (F.map A.a) (NatTrans.app adj.counit (F.obj A.A))) G :=
-  fun _ => PreservesColimitOfIsSplitPair.out _ _
+  fun _ ↦ PreservesColimitOfIsSplitPair.out _ _
 
 -- Porting note: added these to replace parametric instances https://github.com/leanprover/lean4/issues/2311
 -- [∀ ⦃A B⦄ (f g : A ⟶ B) [G.IsSplitPair f g], ReflectsColimit (parallelPair f g) G] :
@@ -283,7 +283,7 @@ instance {A B} (f g : A ⟶ B) [G.IsSplitPair f g] [ReflectsColimitOfIsSplitPair
 instance [ReflectsColimitOfIsSplitPair G] : ∀ (A : Algebra adj.toMonad),
     ReflectsColimit (parallelPair (F.map A.a)
       (NatTrans.app adj.counit (F.obj A.A))) G :=
-  fun _ => ReflectsColimitOfIsSplitPair.out _ _
+  fun _ ↦ ReflectsColimitOfIsSplitPair.out _ _
 
 /-- To show `G` is a monadic right adjoint, we can show it preserves and reflects `G`-split
 coequalizers, and `D` has them.
@@ -333,7 +333,7 @@ instance {A B} (f g : A ⟶ B) [G.IsSplitPair f g] [CreatesColimitOfIsSplitPair 
 instance [CreatesColimitOfIsSplitPair G] : ∀ (A : Algebra adj.toMonad),
     CreatesColimit (parallelPair (F.map A.a)
       (NatTrans.app adj.counit (F.obj A.A))) G :=
-  fun _ => CreatesColimitOfIsSplitPair.out _ _
+  fun _ ↦ CreatesColimitOfIsSplitPair.out _ _
 
 /--
 **Beck's monadicity theorem**: if `G` has a left adjoint and creates coequalizers of `G`-split
@@ -345,7 +345,7 @@ def monadicOfCreatesGSplitCoequalizers [CreatesColimitOfIsSplitPair G] :
   have I {A B} (f g : A ⟶ B) [G.IsSplitPair f g] : HasColimit (parallelPair f g ⋙ G) := by
     rw [hasColimit_iff_of_iso (diagramIsoParallelPair.{v₁} _)]
     exact inferInstanceAs <| HasCoequalizer (G.map f) (G.map g)
-  have : HasCoequalizerOfIsSplitPair G := ⟨fun _ _ => hasColimit_of_created (parallelPair _ _) G⟩
+  have : HasCoequalizerOfIsSplitPair G := ⟨fun _ _ ↦ hasColimit_of_created (parallelPair _ _) G⟩
   have : PreservesColimitOfIsSplitPair G := ⟨by intros; infer_instance⟩
   have : ReflectsColimitOfIsSplitPair G := ⟨by intros; infer_instance⟩
   exact monadicOfHasPreservesReflectsGSplitCoequalizers adj
@@ -356,7 +356,7 @@ coequalizers of `G`-split pairs and `C` has coequalizers of `G`-split pairs, the
 def monadicOfHasPreservesGSplitCoequalizersOfReflectsIsomorphisms [G.ReflectsIsomorphisms]
     [HasCoequalizerOfIsSplitPair G] [PreservesColimitOfIsSplitPair G] :
     MonadicRightAdjoint G := by
-  have : ReflectsColimitOfIsSplitPair G := ⟨fun f g _ => by
+  have : ReflectsColimitOfIsSplitPair G := ⟨fun f g _ ↦ by
     have := HasCoequalizerOfIsSplitPair.out G f g
     apply reflectsColimit_of_reflectsIsomorphisms⟩
   apply monadicOfHasPreservesReflectsGSplitCoequalizers adj
@@ -380,7 +380,7 @@ instance {A B} (f g : A ⟶ B) [IsReflexivePair f g] [PreservesColimitOfIsReflex
 instance [PreservesColimitOfIsReflexivePair G] : ∀ X : Algebra adj.toMonad,
     PreservesColimit (parallelPair (F.map X.a)
       (NatTrans.app adj.counit (F.obj X.A))) G :=
-  fun _ => PreservesColimitOfIsReflexivePair.out _ _
+  fun _ ↦ PreservesColimitOfIsReflexivePair.out _ _
 
 variable [PreservesColimitOfIsReflexivePair G]
 

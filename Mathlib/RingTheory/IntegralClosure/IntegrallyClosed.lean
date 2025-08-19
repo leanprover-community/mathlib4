@@ -77,7 +77,7 @@ variable {A B : Type*} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 theorem AlgHom.isIntegrallyClosedIn (f : A →ₐ[R] B) (hf : Function.Injective f) :
     IsIntegrallyClosedIn R B → IsIntegrallyClosedIn R A := by
   rintro ⟨inj, cl⟩
-  refine ⟨Function.Injective.of_comp (f := f) ?_, fun hx => ?_, ?_⟩
+  refine ⟨Function.Injective.of_comp (f := f) ?_, fun hx ↦ ?_, ?_⟩
   · convert inj
     aesop
   · obtain ⟨y, fx_eq⟩ := cl.mp ((isIntegral_algHom_iff f hf).mpr hx)
@@ -153,7 +153,7 @@ theorem integralClosure_eq_bot_iff (hRA : Function.Injective (algebraMap R A)) :
   refine eq_bot_iff.trans ?_
   constructor
   · intro h
-    refine ⟨ hRA, fun hx => Set.mem_range.mp (Algebra.mem_bot.mp (h hx)), ?_⟩
+    refine ⟨ hRA, fun hx ↦ Set.mem_range.mp (Algebra.mem_bot.mp (h hx)), ?_⟩
     rintro ⟨y, rfl⟩
     apply isIntegral_algebraMap
   · intro h x hx

@@ -83,7 +83,7 @@ lemma isLocallyInjective_of_injective (hφ : ∀ (X : Cᵒᵖ), Function.Injecti
     simp [h]
 
 instance [IsIso φ] : IsLocallyInjective J φ :=
-  isLocallyInjective_of_injective J φ (fun X => Function.Bijective.injective (by
+  isLocallyInjective_of_injective J φ (fun X ↦ Function.Bijective.injective (by
     rw [← isIso_iff_bijective]
     change IsIso ((forget D).map (φ.app X))
     infer_instance))
@@ -98,7 +98,7 @@ lemma isLocallyInjective_forget_iff :
     IsLocallyInjective J (Functor.whiskerRight φ (forget D)) ↔ IsLocallyInjective J φ := by
   constructor
   · intro
-    exact ⟨fun x y h => equalizerSieve_mem J (Functor.whiskerRight φ (forget D)) x y h⟩
+    exact ⟨fun x y h ↦ equalizerSieve_mem J (Functor.whiskerRight φ (forget D)) x y h⟩
   · intro
     infer_instance
 
@@ -108,7 +108,7 @@ lemma isLocallyInjective_iff_equalizerSieve_mem_imp :
   constructor
   · intro _ X x y h
     let S := equalizerSieve (φ.app _ x) (φ.app _ y)
-    let T : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X.unop⦄ (_ : S f), Sieve Y := fun Y f _ =>
+    let T : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X.unop⦄ (_ : S f), Sieve Y := fun Y f _ ↦
       equalizerSieve (F₁.map f.op x) ((F₁.map f.op y))
     refine J.superset_covering ?_ (J.transitive h (Sieve.bind S.1 T) ?_)
     · rintro Y f ⟨Z, a, g, hg, ha, rfl⟩
@@ -119,7 +119,7 @@ lemma isLocallyInjective_iff_equalizerSieve_mem_imp :
       rw [NatTrans.naturality_apply, NatTrans.naturality_apply]
       exact hf
   · intro hφ
-    exact ⟨fun {X} x y h => hφ x y (by simp [h])⟩
+    exact ⟨fun {X} x y h ↦ hφ x y (by simp [h])⟩
 
 lemma equalizerSieve_mem_of_equalizerSieve_app_mem
     {X : Cᵒᵖ} (x y : ToType (F₁.obj X)) (h : equalizerSieve (φ.app _ x) (φ.app _ y) ∈ J X.unop)
@@ -164,13 +164,13 @@ lemma isLocallyInjective_iff_injective_of_separated
     IsLocallyInjective J φ ↔ ∀ (X : Cᵒᵖ), Function.Injective (φ.app X) := by
   constructor
   · intro _ X x y h
-    exact (hsep _ (equalizerSieve_mem J φ x y h)).ext (fun _ _ hf => hf)
+    exact (hsep _ (equalizerSieve_mem J φ x y h)).ext (fun _ _ hf ↦ hf)
   · apply isLocallyInjective_of_injective
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance (F : Cᵒᵖ ⥤ Type w) (G : Subpresheaf F) :
     IsLocallyInjective J G.ι :=
-  isLocallyInjective_of_injective _ _ (fun X => by
+  isLocallyInjective_of_injective _ _ (fun X ↦ by
     intro ⟨x, _⟩ ⟨y, _⟩ h
     exact Subtype.ext h)
 
@@ -185,7 +185,7 @@ instance isLocallyInjective_toPlus (P : Cᵒᵖ ⥤ Type max u v) :
   equalizerSieve_mem {X} x y h := by
     rw [toPlus_eq_mk, toPlus_eq_mk, eq_mk_iff_exists] at h
     obtain ⟨W, h₁, h₂, eq⟩ := h
-    exact J.superset_covering (fun Y f hf => congr_fun (congr_arg Subtype.val eq) ⟨Y, f, hf⟩) W.2
+    exact J.superset_covering (fun Y f hf ↦ congr_fun (congr_arg Subtype.val eq) ⟨Y, f, hf⟩) W.2
 
 instance isLocallyInjective_toSheafify (P : Cᵒᵖ ⥤ Type max u v) :
     IsLocallyInjective J (J.toSheafify P) := by

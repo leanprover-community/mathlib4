@@ -50,7 +50,7 @@ a proof that all the elements are prime, then we can regard it
 as a multiset of primes.  The next block of results records
 obvious properties of these coercions.
 -/
-def toNatMultiset : PrimeMultiset → Multiset ℕ := fun v => v.map (↑)
+def toNatMultiset : PrimeMultiset → Multiset ℕ := fun v ↦ v.map (↑)
 
 instance coeNat : Coe PrimeMultiset (Multiset ℕ) :=
   ⟨toNatMultiset⟩
@@ -75,7 +75,7 @@ theorem coeNat_prime (v : PrimeMultiset) (p : ℕ) (h : p ∈ (v : Multiset ℕ)
   exact h_eq ▸ hp'
 
 /-- Converts a `PrimeMultiset` to a `Multiset ℕ+`. -/
-def toPNatMultiset : PrimeMultiset → Multiset ℕ+ := fun v => v.map (↑)
+def toPNatMultiset : PrimeMultiset → Multiset ℕ+ := fun v ↦ v.map (↑)
 
 instance coePNat : Coe PrimeMultiset (Multiset ℕ+) :=
   ⟨toPNatMultiset⟩
@@ -100,7 +100,7 @@ theorem coePNat_prime (v : PrimeMultiset) (p : ℕ+) (h : p ∈ (v : Multiset �
   exact h_eq ▸ hp'
 
 instance coeMultisetPNatNat : Coe (Multiset ℕ+) (Multiset ℕ) :=
-  ⟨fun v => v.map (↑)⟩
+  ⟨fun v ↦ v.map (↑)⟩
 
 theorem coePNat_nat (v : PrimeMultiset) : ((v : Multiset ℕ+) : Multiset ℕ) = (v : Multiset ℕ) := by
   change (v.map ((↑) : Nat.Primes → ℕ+)).map Subtype.val = v.map Subtype.val
@@ -121,7 +121,7 @@ theorem prod_ofPrime (p : Nat.Primes) : (ofPrime p).prod = (p : ℕ+) :=
 
 /-- If a `Multiset ℕ` consists only of primes, it can be recast as a `PrimeMultiset`. -/
 def ofNatMultiset (v : Multiset ℕ) (h : ∀ p : ℕ, p ∈ v → p.Prime) : PrimeMultiset :=
-  @Multiset.pmap ℕ Nat.Primes Nat.Prime (fun p hp => ⟨p, hp⟩) v h
+  @Multiset.pmap ℕ Nat.Primes Nat.Prime (fun p hp ↦ ⟨p, hp⟩) v h
 
 theorem to_ofNatMultiset (v : Multiset ℕ) (h) : (ofNatMultiset v h : Multiset ℕ) = v := by
   dsimp [ofNatMultiset, toNatMultiset]
@@ -132,11 +132,11 @@ theorem prod_ofNatMultiset (v : Multiset ℕ) (h) :
 
 /-- If a `Multiset ℕ+` consists only of primes, it can be recast as a `PrimeMultiset`. -/
 def ofPNatMultiset (v : Multiset ℕ+) (h : ∀ p : ℕ+, p ∈ v → p.Prime) : PrimeMultiset :=
-  @Multiset.pmap ℕ+ Nat.Primes PNat.Prime (fun p hp => ⟨(p : ℕ), hp⟩) v h
+  @Multiset.pmap ℕ+ Nat.Primes PNat.Prime (fun p hp ↦ ⟨(p : ℕ), hp⟩) v h
 
 theorem to_ofPNatMultiset (v : Multiset ℕ+) (h) : (ofPNatMultiset v h : Multiset ℕ+) = v := by
   dsimp [ofPNatMultiset, toPNatMultiset]
-  have : (fun (p : ℕ+) (h : p.Prime) => ((↑) : Nat.Primes → ℕ+) ⟨p, h⟩) = fun p _ => id p := by
+  have : (fun (p : ℕ+) (h : p.Prime) ↦ ((↑) : Nat.Primes → ℕ+) ⟨p, h⟩) = fun p _ ↦ id p := by
     funext p h
     apply Subtype.eq
     rfl

@@ -84,7 +84,7 @@ For the standard basis over `R` on the finite-dimensional space `η → R` see `
 protected noncomputable def basis (s : ∀ j, Basis (ιs j) R (Ms j)) :
     Basis (Σ j, ιs j) R (∀ j, Ms j) :=
   Basis.ofRepr
-    ((LinearEquiv.piCongrRight fun j => (s j).repr) ≪≫ₗ
+    ((LinearEquiv.piCongrRight fun j ↦ (s j).repr) ≪≫ₗ
       (Finsupp.sigmaFinsuppLEquivPiFinsupp R).symm)
 
 @[simp]
@@ -203,7 +203,7 @@ variable {ι : Type*} (R : Type*) (M : Type*) [Semiring R] [AddCommMonoid M] [Mo
 instance _root_.Module.Free.pi (M : ι → Type*) [Finite ι] [∀ i : ι, AddCommMonoid (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] : Module.Free R (∀ i, M i) :=
   let ⟨_⟩ := nonempty_fintype ι
-  .of_basis <| Pi.basis fun i => Module.Free.chooseBasis R (M i)
+  .of_basis <| Pi.basis fun i ↦ Module.Free.chooseBasis R (M i)
 
 variable (ι) in
 /-- The product of finitely many free modules is free (non-dependent version to help with typeclass

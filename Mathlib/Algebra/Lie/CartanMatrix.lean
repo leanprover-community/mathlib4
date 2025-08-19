@@ -113,19 +113,19 @@ local notation "ad" => LieAlgebra.ad R (FreeLieAlgebra R (Generators B))
 
 /-- The terms corresponding to the `⁅H, H⁆`-relations. -/
 def HH : B × B → FreeLieAlgebra R (Generators B) :=
-  uncurry fun i j => ⁅H i, H j⁆
+  uncurry fun i j ↦ ⁅H i, H j⁆
 
 /-- The terms corresponding to the `⁅E, F⁆`-relations. -/
 def EF [DecidableEq B] : B × B → FreeLieAlgebra R (Generators B) :=
-  uncurry fun i j => if i = j then ⁅E i, F i⁆ - H i else ⁅E i, F j⁆
+  uncurry fun i j ↦ if i = j then ⁅E i, F i⁆ - H i else ⁅E i, F j⁆
 
 /-- The terms corresponding to the `⁅H, E⁆`-relations. -/
 def HE : B × B → FreeLieAlgebra R (Generators B) :=
-  uncurry fun i j => ⁅H i, E j⁆ - A i j • E j
+  uncurry fun i j ↦ ⁅H i, E j⁆ - A i j • E j
 
 /-- The terms corresponding to the `⁅H, F⁆`-relations. -/
 def HF : B × B → FreeLieAlgebra R (Generators B) :=
-  uncurry fun i j => ⁅H i, F j⁆ + A i j • F j
+  uncurry fun i j ↦ ⁅H i, F j⁆ + A i j • F j
 
 /-- The terms corresponding to the `ad E`-relations.
 
@@ -133,13 +133,13 @@ Note that we use `Int.toNat` so that we can take the power and that we do not bo
 restricting to the case `i ≠ j` since these relations are zero anyway. We also defensively
 ensure this with `adE_of_eq_eq_zero`. -/
 def adE : B × B → FreeLieAlgebra R (Generators B) :=
-  uncurry fun i j => ad (E i) ^ (-A i j).toNat <| ⁅E i, E j⁆
+  uncurry fun i j ↦ ad (E i) ^ (-A i j).toNat <| ⁅E i, E j⁆
 
 /-- The terms corresponding to the `ad F`-relations.
 
 See also `adE` docstring. -/
 def adF : B × B → FreeLieAlgebra R (Generators B) :=
-  uncurry fun i j => ad (F i) ^ (-A i j).toNat <| ⁅F i, F j⁆
+  uncurry fun i j ↦ ad (F i) ^ (-A i j).toNat <| ⁅F i, F j⁆
 
 private theorem adE_of_eq_eq_zero (i : B) (h : A i i = 2) : adE R A ⟨i, i⟩ = 0 := by
   have h' : (-2 : ℤ).toNat = 0 := rfl

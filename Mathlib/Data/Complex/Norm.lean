@@ -200,7 +200,7 @@ protected theorem range_norm : range (‖·‖ : ℂ → ℝ) = Set.Ici 0 :=
 
 @[simp]
 theorem range_normSq : range normSq = Ici 0 :=
-  Subset.antisymm (range_subset_iff.2 normSq_nonneg) fun x hx =>
+  Subset.antisymm (range_subset_iff.2 normSq_nonneg) fun x hx ↦
     ⟨√x, by rw [normSq_ofReal, Real.mul_self_sqrt hx]⟩
 
 theorem norm_le_abs_re_add_abs_im (z : ℂ) : ‖z‖ ≤ |z.re| + |z.im| := by
@@ -370,7 +370,7 @@ theorem lim_im (f : CauSeq ℂ (‖·‖)) : lim (cauSeqIm f) = (lim f).im := by
 theorem isCauSeq_conj (f : CauSeq ℂ (‖·‖)) :
     IsCauSeq (‖·‖) fun n ↦ conj (f n) := fun ε ε0 ↦
   let ⟨i, hi⟩ := f.2 ε ε0
-  ⟨i, fun j hj => by
+  ⟨i, fun j hj ↦ by
     simp_rw [← RingHom.map_sub, norm_conj]; exact hi j hj⟩
 
 /-- The complex conjugate of a complex Cauchy sequence, as a complex Cauchy sequence. -/
@@ -388,7 +388,7 @@ noncomputable def cauSeqNorm (f : CauSeq ℂ (‖·‖)) : CauSeq ℝ abs :=
 theorem lim_norm (f : CauSeq ℂ (‖·‖)) : lim (cauSeqNorm f) = ‖lim f‖ :=
   lim_eq_of_equiv_const fun ε ε0 ↦
     let ⟨i, hi⟩ := equiv_lim f ε ε0
-    ⟨i, fun j hj => lt_of_le_of_lt (abs_norm_sub_norm_le _ _) (hi j hj)⟩
+    ⟨i, fun j hj ↦ lt_of_le_of_lt (abs_norm_sub_norm_le _ _) (hi j hj)⟩
 
 @[deprecated (since := "2025-02-16")] alias isCauSeq_abs := isCauSeq_norm
 @[deprecated (since := "2025-02-16")] alias cauSeqAbs := cauSeqNorm

@@ -39,12 +39,12 @@ def seq : ∀ {m}, (Fin m → α → β) → (Fin m → α) → Fin m → β
   | _ + 1, f, v => Matrix.vecCons (f 0 (v 0)) (seq (Matrix.vecTail f) (Matrix.vecTail v))
 
 @[simp]
-theorem seq_eq : ∀ {m} (f : Fin m → α → β) (v : Fin m → α), seq f v = fun i => f i (v i)
+theorem seq_eq : ∀ {m} (f : Fin m → α → β) (v : Fin m → α), seq f v = fun i ↦ f i (v i)
   | 0, _, _ => Subsingleton.elim _ _
   | n + 1, f, v =>
-    funext fun i => by
+    funext fun i ↦ by
       simp_rw [seq, seq_eq]
-      refine i.cases ?_ fun i => ?_
+      refine i.cases ?_ fun i ↦ ?_
       · rfl
       · rw [Matrix.cons_val_succ]
         rfl
@@ -53,7 +53,7 @@ example {f₁ f₂ : α → β} (a₁ a₂ : α) : seq ![f₁, f₂] ![a₁, a�
 
 /-- `FinVec.map f v = ![f (v 0), f (v 1), ...]` -/
 def map (f : α → β) {m} : (Fin m → α) → Fin m → β :=
-  seq fun _ => f
+  seq fun _ ↦ f
 
 /-- This can be used to prove
 ```lean
@@ -88,7 +88,7 @@ example (a : Fin 2 → α) : a = ![a 0, a 1] :=
 /-- `∀` with better defeq for `∀ x : Fin m → α, P x`. -/
 def Forall : ∀ {m} (_ : (Fin m → α) → Prop), Prop
   | 0, P => P ![]
-  | _ + 1, P => ∀ x : α, Forall fun v => P (Matrix.vecCons x v)
+  | _ + 1, P => ∀ x : α, Forall fun v ↦ P (Matrix.vecCons x v)
 
 /-- This can be used to prove
 ```lean
@@ -109,7 +109,7 @@ example (P : (Fin 2 → α) → Prop) : (∀ f, P f) ↔ ∀ a₀ a₁, P ![a₀
 /-- `∃` with better defeq for `∃ x : Fin m → α, P x`. -/
 def Exists : ∀ {m} (_ : (Fin m → α) → Prop), Prop
   | 0, P => P ![]
-  | _ + 1, P => ∃ x : α, Exists fun v => P (Matrix.vecCons x v)
+  | _ + 1, P => ∃ x : α, Exists fun v ↦ P (Matrix.vecCons x v)
 
 /-- This can be used to prove
 ```lean
@@ -130,7 +130,7 @@ example (P : (Fin 2 → α) → Prop) : (∃ f, P f) ↔ ∃ a₀ a₁, P ![a₀
 def sum [Add α] [Zero α] : ∀ {m} (_ : Fin m → α), α
   | 0, _ => 0
   | 1, v => v 0
-  | _ + 2, v => sum (fun i => v (Fin.castSucc i)) + v (Fin.last _)
+  | _ + 2, v => sum (fun i ↦ v (Fin.castSucc i)) + v (Fin.last _)
 
 -- `to_additive` without `existing` fails, see
 -- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/to_additive.20complains.20about.20equation.20lemmas/near/508910537
@@ -139,7 +139,7 @@ def sum [Add α] [Zero α] : ∀ {m} (_ : Fin m → α), α
 def prod [Mul α] [One α] : ∀ {m} (_ : Fin m → α), α
   | 0, _ => 1
   | 1, v => v 0
-  | _ + 2, v => prod (fun i => v (Fin.castSucc i)) * v (Fin.last _)
+  | _ + 2, v => prod (fun i ↦ v (Fin.castSucc i)) * v (Fin.last _)
 
 /-- This can be used to prove
 ```lean
@@ -219,7 +219,7 @@ namespace Fin
 open Qq Lean FinVec
 
 /-- Rewrites `∏ i : Fin n, f i` as `f 0 * f 1 * ... * f (n - 1)` when `n` is a numeral. -/
-simproc_decl prod_univ_ofNat (∏ _ : Fin _, _) := .ofQ fun u _ e => do
+simproc_decl prod_univ_ofNat (∏ _ : Fin _, _) := .ofQ fun u _ e ↦ do
   match u, e with
   | .succ _, ~q(@Finset.prod (Fin $n) _ $inst (@Finset.univ _ $instF) $f) => do
     match (generalizing := false) n.nat? with
@@ -233,7 +233,7 @@ simproc_decl prod_univ_ofNat (∏ _ : Fin _, _) := .ofQ fun u _ e => do
   | _, _ => return .continue
 
 /-- Rewrites `∑ i : Fin n, f i` as `f 0 + f 1 + ... + f (n - 1)` when `n` is a numeral. -/
-simproc_decl sum_univ_ofNat (∑ _ : Fin _, _) := .ofQ fun u _ e => do
+simproc_decl sum_univ_ofNat (∑ _ : Fin _, _) := .ofQ fun u _ e ↦ do
   match u, e with
   | .succ _, ~q(@Finset.sum (Fin $n) _ $inst (@Finset.univ _ $instF) $f) => do
     match n.nat? with

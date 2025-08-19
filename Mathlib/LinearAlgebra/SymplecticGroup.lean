@@ -145,7 +145,7 @@ theorem transpose_mem (hA : A ∈ symplecticGroup l R) : Aᵀ ∈ symplecticGrou
 
 @[simp]
 theorem transpose_mem_iff : Aᵀ ∈ symplecticGroup l R ↔ A ∈ symplecticGroup l R :=
-  ⟨fun hA => by simpa using transpose_mem hA, transpose_mem⟩
+  ⟨fun hA ↦ by simpa using transpose_mem hA, transpose_mem⟩
 
 theorem mem_iff' : A ∈ symplecticGroup l R ↔ Aᵀ * J l R * A = J l R := by
   rw [← transpose_mem_iff, mem_iff, transpose_transpose]
@@ -177,7 +177,7 @@ theorem inv_eq_symplectic_inv (A : Matrix (l ⊕ l) (l ⊕ l) R) (hA : A ∈ sym
 
 instance : Group (symplecticGroup l R) :=
   { SymplecticGroup.hasInv, Submonoid.toMonoid _ with
-    inv_mul_cancel := fun A => by
+    inv_mul_cancel := fun A ↦ by
       apply Subtype.ext
       simp only [Submonoid.coe_one, Submonoid.coe_mul, Matrix.neg_mul, coe_inv]
       exact inv_left_mul_aux A.2 }

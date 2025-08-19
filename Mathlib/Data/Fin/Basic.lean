@@ -433,7 +433,7 @@ lemma succ_injective (n : ℕ) : Injective (@Fin.succ n) := fun a b ↦ by simp 
 
 @[simp]
 theorem exists_succ_eq {x : Fin (n + 1)} : (∃ y, Fin.succ y = x) ↔ x ≠ 0 :=
-  ⟨fun ⟨_, hy⟩ => hy ▸ succ_ne_zero _, x.cases (fun h => h.irrefl.elim) (fun _ _ => ⟨_, rfl⟩)⟩
+  ⟨fun ⟨_, hy⟩ ↦ hy ▸ succ_ne_zero _, x.cases (fun h ↦ h.irrefl.elim) (fun _ _ ↦ ⟨_, rfl⟩)⟩
 
 theorem exists_succ_eq_of_ne_zero {x : Fin (n + 1)} (h : x ≠ 0) :
     ∃ y, Fin.succ y = x := exists_succ_eq.mpr h
@@ -466,7 +466,7 @@ This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 @[simp]
 theorem le_zero_iff' {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
-  ⟨fun h => Fin.ext <| by rw [Nat.eq_zero_of_le_zero h]; rfl, by rintro rfl; exact Nat.le_refl _⟩
+  ⟨fun h ↦ Fin.ext <| by rw [Nat.eq_zero_of_le_zero h]; rfl, by rintro rfl; exact Nat.le_refl _⟩
 
 -- TODO: Move to Batteries
 @[simp] lemma castLE_inj {hmn : m ≤ n} {a b : Fin m} : castLE hmn a = castLE hmn b ↔ a = b := by
@@ -496,7 +496,7 @@ lemma castSucc_injective (n : ℕ) : Injective (@Fin.castSucc n) := castAdd_inje
 
 @[simp]
 theorem range_castLE {n k : ℕ} (h : n ≤ k) : Set.range (castLE h) = { i : Fin k | (i : ℕ) < n } :=
-  Set.ext fun x => ⟨fun ⟨y, hy⟩ => hy ▸ y.2, fun hx => ⟨⟨x, hx⟩, rfl⟩⟩
+  Set.ext fun x ↦ ⟨fun ⟨y, hy⟩ ↦ hy ▸ y.2, fun hx ↦ ⟨⟨x, hx⟩, rfl⟩⟩
 
 @[simp]
 theorem coe_of_injective_castLE_symm {n k : ℕ} (h : n ≤ k) (i : Fin k) (hi) :
@@ -505,10 +505,10 @@ theorem coe_of_injective_castLE_symm {n k : ℕ} (h : n ≤ k) (i : Fin k) (hi) 
   exact congr_arg Fin.val (Equiv.apply_ofInjective_symm _ _)
 
 theorem leftInverse_cast (eq : n = m) : LeftInverse (Fin.cast eq.symm) (Fin.cast eq) :=
-  fun _ => rfl
+  fun _ ↦ rfl
 
 theorem rightInverse_cast (eq : n = m) : RightInverse (Fin.cast eq.symm) (Fin.cast eq) :=
-  fun _ => rfl
+  fun _ ↦ rfl
 
 @[simp]
 theorem cast_inj (eq : n = m) {a b : Fin n} : a.cast eq = b.cast eq ↔ a = b := by
@@ -582,7 +582,7 @@ alias exists_castSucc_eq_of_ne_last := eq_castSucc_of_ne_last
 
 theorem forall_fin_succ' {P : Fin (n + 1) → Prop} :
     (∀ i, P i) ↔ (∀ i : Fin n, P i.castSucc) ∧ P (.last _) :=
-  ⟨fun H => ⟨fun _ => H _, H _⟩, fun ⟨H0, H1⟩ i => Fin.lastCases H1 H0 i⟩
+  ⟨fun H ↦ ⟨fun _ ↦ H _, H _⟩, fun ⟨H0, H1⟩ i ↦ Fin.lastCases H1 H0 i⟩
 
 -- to match `Fin.eq_zero_or_eq_succ`
 theorem eq_castSucc_or_eq_last {n : Nat} (i : Fin (n + 1)) :
@@ -594,8 +594,8 @@ theorem castSucc_ne_last {n : ℕ} (i : Fin n) : i.castSucc ≠ .last n :=
 
 theorem exists_fin_succ' {P : Fin (n + 1) → Prop} :
     (∃ i, P i) ↔ (∃ i : Fin n, P i.castSucc) ∨ P (.last _) :=
-  ⟨fun ⟨i, h⟩ => Fin.lastCases Or.inr (fun i hi => Or.inl ⟨i, hi⟩) i h,
-   fun h => h.elim (fun ⟨i, hi⟩ => ⟨i.castSucc, hi⟩) (fun h => ⟨.last _, h⟩)⟩
+  ⟨fun ⟨i, h⟩ ↦ Fin.lastCases Or.inr (fun i hi ↦ Or.inl ⟨i, hi⟩) i h,
+   fun h ↦ h.elim (fun ⟨i, hi⟩ ↦ ⟨i.castSucc, hi⟩) (fun h ↦ ⟨.last _, h⟩)⟩
 
 /--
 The `Fin.castSucc_zero` in `Lean` only applies in `Fin (n+1)`.
@@ -745,7 +745,7 @@ theorem castSucc_castPred (i : Fin (n + 1)) (h : i ≠ last n) :
 
 theorem castPred_eq_iff_eq_castSucc (i : Fin (n + 1)) (hi : i ≠ last _) (j : Fin n) :
     castPred i hi = j ↔ i = castSucc j :=
-  ⟨fun h => by rw [← h, castSucc_castPred], fun h => by simp_rw [h, castPred_castSucc]⟩
+  ⟨fun h ↦ by rw [← h, castSucc_castPred], fun h ↦ by simp_rw [h, castPred_castSucc]⟩
 
 @[simp]
 theorem castPred_mk (i : ℕ) (h₁ : i < n) (h₂ := h₁.trans (Nat.lt_succ_self _))
@@ -1040,14 +1040,14 @@ lemma exists_succAbove_eq {x y : Fin (n + 1)} (h : x ≠ y) : ∃ z, y.succAbove
 
 /-- The range of `p.succAbove` is everything except `p`. -/
 @[simp] lemma range_succAbove (p : Fin (n + 1)) : Set.range p.succAbove = {p}ᶜ :=
-  Set.ext fun _ => exists_succAbove_eq_iff
+  Set.ext fun _ ↦ exists_succAbove_eq_iff
 
 @[simp] lemma range_succ (n : ℕ) : Set.range (Fin.succ : Fin n → Fin (n + 1)) = {0}ᶜ := by
   rw [← succAbove_zero, range_succAbove]
 
 /-- `succAbove` is injective at the pivot -/
-lemma succAbove_left_injective : Injective (@succAbove n) := fun _ _ h => by
-  simpa [range_succAbove] using congr_arg (fun f : Fin n → Fin (n + 1) => (Set.range f)ᶜ) h
+lemma succAbove_left_injective : Injective (@succAbove n) := fun _ _ h ↦ by
+  simpa [range_succAbove] using congr_arg (fun f : Fin n → Fin (n + 1) ↦ (Set.range f)ᶜ) h
 
 /-- `succAbove` is injective at the pivot -/
 @[simp] lemma succAbove_left_inj {x y : Fin (n + 1)} : x.succAbove = y.succAbove ↔ x = y :=
@@ -1357,7 +1357,7 @@ theorem liftFun_iff_succ {α : Type*} (r : α → α → Prop) [IsTrans α r] {f
   constructor
   · intro H i
     exact H i.castSucc_lt_succ
-  · refine fun H i => Fin.induction (fun h ↦ ?_) ?_
+  · refine fun H i ↦ Fin.induction (fun h ↦ ?_) ?_
     · simp at h
     · intro j ihj hij
       rw [← le_castSucc_iff] at hij

@@ -34,19 +34,19 @@ def fromRows (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) : Matrix (m₁ �
 /-- Concatenate together two matrices B₁[m × n₁] and B₂[m × n₂] with the same rows (M) to get a
 bigger matrix indexed by [m × (n₁ ⊕ n₂)] -/
 def fromCols (B₁ : Matrix m n₁ R) (B₂ : Matrix m n₂ R) : Matrix m (n₁ ⊕ n₂) R :=
-  of fun i => Sum.elim (B₁ i) (B₂ i)
+  of fun i ↦ Sum.elim (B₁ i) (B₂ i)
 
 /-- Given a column partitioned matrix extract the first column -/
-def toCols₁ (A : Matrix m (n₁ ⊕ n₂) R) : Matrix m n₁ R := of fun i j => (A i (Sum.inl j))
+def toCols₁ (A : Matrix m (n₁ ⊕ n₂) R) : Matrix m n₁ R := of fun i j ↦ (A i (Sum.inl j))
 
 /-- Given a column partitioned matrix extract the second column -/
-def toCols₂ (A : Matrix m (n₁ ⊕ n₂) R) : Matrix m n₂ R := of fun i j => (A i (Sum.inr j))
+def toCols₂ (A : Matrix m (n₁ ⊕ n₂) R) : Matrix m n₂ R := of fun i j ↦ (A i (Sum.inr j))
 
 /-- Given a row partitioned matrix extract the first row -/
-def toRows₁ (A : Matrix (m₁ ⊕ m₂) n R) : Matrix m₁ n R := of fun i j => (A (Sum.inl i) j)
+def toRows₁ (A : Matrix (m₁ ⊕ m₂) n R) : Matrix m₁ n R := of fun i j ↦ (A (Sum.inl i) j)
 
 /-- Given a row partitioned matrix extract the second row -/
-def toRows₂ (A : Matrix (m₁ ⊕ m₂) n R) : Matrix m₂ n R := of fun i j => (A (Sum.inr i) j)
+def toRows₂ (A : Matrix (m₁ ⊕ m₂) n R) : Matrix m₂ n R := of fun i j ↦ (A (Sum.inr i) j)
 
 @[simp]
 lemma fromRows_apply_inl (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) (i : m₁) (j : n) :

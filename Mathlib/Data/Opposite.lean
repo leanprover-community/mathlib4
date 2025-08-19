@@ -49,9 +49,9 @@ namespace Opposite
 
 variable {α}
 
-theorem op_injective : Function.Injective (op : α → αᵒᵖ) := fun _ _ => congr_arg Opposite.unop
+theorem op_injective : Function.Injective (op : α → αᵒᵖ) := fun _ _ ↦ congr_arg Opposite.unop
 
-theorem unop_injective : Function.Injective (unop : αᵒᵖ → α) := fun ⟨_⟩⟨_⟩ => by simp
+theorem unop_injective : Function.Injective (unop : αᵒᵖ → α) := fun ⟨_⟩⟨_⟩ ↦ by simp
 
 @[simp]
 theorem op_unop (x : αᵒᵖ) : op (unop x) = x :=
@@ -103,7 +103,7 @@ instance [Subsingleton α] : Subsingleton αᵒᵖ := unop_injective.subsingleto
 
 /-- A deprecated alias for `Opposite.rec`. -/
 @[deprecated Opposite.rec (since := "2025-04-04")]
-protected def rec' {F : αᵒᵖ → Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
+protected def rec' {F : αᵒᵖ → Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X ↦ h (unop X)
 
 /-- If `X` is `u`-small, also `Xᵒᵖ` is `u`-small.
 Note: This is not an instance, because it tends to mislead typeclass search. -/

@@ -271,7 +271,7 @@ theorem gfpApprox_mono_left : Monotone (gfpApprox : (α →o α) → _) := by
   exact lfpApprox_mono_left this
 
 theorem gfpApprox_mono_mid : Monotone (gfpApprox f) :=
-  fun _ _ h => lfpApprox_mono_mid f.dual h
+  fun _ _ h ↦ lfpApprox_mono_mid f.dual h
 
 /-- The approximations of the greatest fixed point stabilize at a fixed point of `f` -/
 theorem gfpApprox_eq_of_mem_fixedPoints {a b : Ordinal} (h_init : f x ≤ x) (h_ab : a ≤ b)

@@ -116,7 +116,7 @@ structure IsFiveWheelLike (G : SimpleGraph α) (r k : ℕ) (v w₁ w₂ : α) (s
   card_inter : #(s ∩ t) = k
 
 lemma exists_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartite
-    (h : Maximal (fun H => H.CliqueFree (r + 2)) G) (hnc : ¬ G.IsCompleteMultipartite) :
+    (h : Maximal (fun H ↦ H.CliqueFree (r + 2)) G) (hnc : ¬ G.IsCompleteMultipartite) :
     ∃ v w₁ w₂ s t, G.IsFiveWheelLike r #(s ∩ t) v w₁ w₂ s t := by
   obtain ⟨v, w₁, w₂, p3⟩ := exists_isPathGraph3Compl_of_not_isCompleteMultipartite hnc
   obtain ⟨s, h1, h2, h3, h4⟩ := exists_of_maximal_cliqueFree_not_adj h p3.ne_fst p3.not_adj_fst
@@ -190,7 +190,7 @@ Any maximally `Kᵣ₊₂`-free graph that is not complete-multipartite contains
 `IsFiveWheelLike` structure `Wᵣ,ₖ` for some `k < r`. (It is maximal in terms of `k`.)
 -/
 lemma exists_max_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartite
-    (h : Maximal (fun H => H.CliqueFree (r + 2)) G) (hnc : ¬ G.IsCompleteMultipartite) :
+    (h : Maximal (fun H ↦ H.CliqueFree (r + 2)) G) (hnc : ¬ G.IsCompleteMultipartite) :
     ∃ k v w₁ w₂ s t, G.IsFiveWheelLike r k v w₁ w₂ s t ∧ k < r ∧
       ∀ j, k < j → G.FiveWheelLikeFree r j := by
   obtain ⟨_, _, _, s, t, hw⟩ :=
@@ -208,7 +208,7 @@ lemma CliqueFree.fiveWheelLikeFree_of_le (h : G.CliqueFree (r + 2)) (hk : r ≤ 
 
 /-- A maximally `Kᵣ₊₁`-free graph is `r`-colorable iff it is complete-multipartite. -/
 theorem colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree
-    (h : Maximal (fun H => H.CliqueFree (r + 1)) G) : G.Colorable r ↔ G.IsCompleteMultipartite := by
+    (h : Maximal (fun H ↦ H.CliqueFree (r + 1)) G) : G.Colorable r ↔ G.IsCompleteMultipartite := by
   match r with
   | 0 => exact ⟨fun _ ↦ fun x ↦ cliqueFree_one.1 h.1 |>.elim' x,
                 fun _ ↦ G.colorable_zero_iff.2 <| cliqueFree_one.1 h.1⟩

@@ -181,9 +181,9 @@ theorem induction₂_symm {P : EReal → EReal → Prop} (symm : ∀ {x y}, P x 
     (top_neg : ∀ x : ℝ, x < 0 → P ⊤ x) (top_bot : P ⊤ ⊥) (pos_bot : ∀ x : ℝ, 0 < x → P x ⊥)
     (coe_coe : ∀ x y : ℝ, P x y) (zero_bot : P 0 ⊥) (neg_bot : ∀ x : ℝ, x < 0 → P x ⊥)
     (bot_bot : P ⊥ ⊥) : ∀ x y, P x y :=
-  @induction₂ P top_top top_pos top_zero top_neg top_bot (fun _ h => symm <| top_pos _ h)
-    pos_bot (symm top_zero) coe_coe zero_bot (fun _ h => symm <| top_neg _ h) neg_bot (symm top_bot)
-    (fun _ h => symm <| pos_bot _ h) (symm zero_bot) (fun _ h => symm <| neg_bot _ h) bot_bot
+  @induction₂ P top_top top_pos top_zero top_neg top_bot (fun _ h ↦ symm <| top_pos _ h)
+    pos_bot (symm top_zero) coe_coe zero_bot (fun _ h ↦ symm <| top_neg _ h) neg_bot (symm top_bot)
+    (fun _ h ↦ symm <| pos_bot _ h) (symm zero_bot) (fun _ h ↦ symm <| neg_bot _ h) bot_bot
 
 protected theorem mul_comm (x y : EReal) : x * y = y * x := by
   induction x <;> induction y  <;>
@@ -202,13 +202,13 @@ protected theorem zero_mul : ∀ x : EReal, 0 * x = 0
 
 instance : MulZeroOneClass EReal where
   one_mul := EReal.one_mul
-  mul_one := fun x => by rw [EReal.mul_comm, EReal.one_mul]
+  mul_one := fun x ↦ by rw [EReal.mul_comm, EReal.one_mul]
   zero_mul := EReal.zero_mul
-  mul_zero := fun x => by rw [EReal.mul_comm, EReal.zero_mul]
+  mul_zero := fun x ↦ by rw [EReal.mul_comm, EReal.zero_mul]
 
 /-! ### Real coercion -/
 
-instance canLift : CanLift EReal ℝ (↑) fun r => r ≠ ⊤ ∧ r ≠ ⊥ where
+instance canLift : CanLift EReal ℝ (↑) fun r ↦ r ≠ ⊤ ∧ r ≠ ⊥ where
   prf x hx := by
     induction x
     · simp at hx
@@ -567,7 +567,7 @@ theorem coe_ennreal_top : ((⊤ : ℝ≥0∞) : EReal) = ⊤ :=
   rfl
 
 theorem coe_ennreal_strictMono : StrictMono ((↑) : ℝ≥0∞ → EReal) :=
-  WithTop.strictMono_iff.2 ⟨fun _ _ => EReal.coe_lt_coe_iff.2, fun _ => coe_lt_top _⟩
+  WithTop.strictMono_iff.2 ⟨fun _ _ ↦ EReal.coe_lt_coe_iff.2, fun _ ↦ coe_lt_top _⟩
 
 theorem coe_ennreal_injective : Injective ((↑) : ℝ≥0∞ → EReal) :=
   coe_ennreal_strictMono.injective
@@ -616,10 +616,10 @@ theorem coe_ennreal_nonneg (x : ℝ≥0∞) : (0 : EReal) ≤ x :=
   coe_ennreal_le_coe_ennreal_iff.2 (zero_le x)
 
 @[simp] theorem range_coe_ennreal : range ((↑) : ℝ≥0∞ → EReal) = Set.Ici 0 :=
-  Subset.antisymm (range_subset_iff.2 coe_ennreal_nonneg) fun x => match x with
-    | ⊥ => fun h => absurd h bot_lt_zero.not_ge
-    | ⊤ => fun _ => ⟨⊤, rfl⟩
-    | (x : ℝ) => fun h => ⟨.some ⟨x, EReal.coe_nonneg.1 h⟩, rfl⟩
+  Subset.antisymm (range_subset_iff.2 coe_ennreal_nonneg) fun x ↦ match x with
+    | ⊥ => fun h ↦ absurd h bot_lt_zero.not_ge
+    | ⊤ => fun _ ↦ ⟨⊤, rfl⟩
+    | (x : ℝ) => fun h ↦ ⟨.some ⟨x, EReal.coe_nonneg.1 h⟩, rfl⟩
 
 instance : CanLift EReal ℝ≥0∞ (↑) (0 ≤ ·) := ⟨range_coe_ennreal.ge⟩
 
@@ -795,19 +795,19 @@ theorem exists_rat_btwn_of_lt :
 
 theorem lt_iff_exists_rat_btwn {a b : EReal} :
     a < b ↔ ∃ x : ℚ, a < (x : ℝ) ∧ ((x : ℝ) : EReal) < b :=
-  ⟨fun hab => exists_rat_btwn_of_lt hab, fun ⟨_x, ax, xb⟩ => ax.trans xb⟩
+  ⟨fun hab ↦ exists_rat_btwn_of_lt hab, fun ⟨_x, ax, xb⟩ ↦ ax.trans xb⟩
 
 theorem lt_iff_exists_real_btwn {a b : EReal} : a < b ↔ ∃ x : ℝ, a < x ∧ (x : EReal) < b :=
-  ⟨fun hab =>
+  ⟨fun hab ↦
     let ⟨x, ax, xb⟩ := exists_rat_btwn_of_lt hab
     ⟨(x : ℝ), ax, xb⟩,
-    fun ⟨_x, ax, xb⟩ => ax.trans xb⟩
+    fun ⟨_x, ax, xb⟩ ↦ ax.trans xb⟩
 
 /-- The set of numbers in `EReal` that are not equal to `±∞` is equivalent to `ℝ`. -/
 def neTopBotEquivReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ ℝ where
   toFun x := EReal.toReal x
   invFun x := ⟨x, by simp⟩
-  left_inv := fun ⟨x, hx⟩ => by
+  left_inv := fun ⟨x, hx⟩ ↦ by
     lift x to ℝ
     · simpa [not_or, and_comm] using hx
     · simp

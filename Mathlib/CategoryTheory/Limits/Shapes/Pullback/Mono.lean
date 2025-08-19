@@ -46,14 +46,14 @@ variable {f : X ⟶ Z} {g : Y ⟶ Z}
 /-- Monomorphisms are stable under pullback in the first argument. -/
 theorem mono_snd_of_is_pullback_of_mono {t : PullbackCone f g} (ht : IsLimit t) [Mono f] :
     Mono t.snd := by
-  refine ⟨fun {W} h k i => IsLimit.hom_ext ht ?_ i⟩
+  refine ⟨fun {W} h k i ↦ IsLimit.hom_ext ht ?_ i⟩
   rw [← cancel_mono f, Category.assoc, Category.assoc, condition]
   apply reassoc_of% i
 
 /-- Monomorphisms are stable under pullback in the second argument. -/
 theorem mono_fst_of_is_pullback_of_mono {t : PullbackCone f g} (ht : IsLimit t) [Mono g] :
     Mono t.fst := by
-  refine ⟨fun {W} h k i => IsLimit.hom_ext ht i ?_⟩
+  refine ⟨fun {W} h k i ↦ IsLimit.hom_ext ht i ?_⟩
   rw [← cancel_mono g, Category.assoc, Category.assoc, ← condition]
   apply reassoc_of% i
 
@@ -62,8 +62,8 @@ The pullback cone `(𝟙 X, 𝟙 X)` for the pair `(f, f)` is a limit if `f` is 
 shown in `mono_of_pullback_is_id`.
 -/
 def isLimitMkIdId (f : X ⟶ Y) [Mono f] : IsLimit (mk (𝟙 X) (𝟙 X) rfl : PullbackCone f f) :=
-  IsLimit.mk _ (fun s => s.fst) (fun _ => Category.comp_id _)
-    (fun s => by rw [← cancel_mono f, Category.comp_id, s.condition]) fun s m m₁ _ => by
+  IsLimit.mk _ (fun s ↦ s.fst) (fun _ ↦ Category.comp_id _)
+    (fun s ↦ by rw [← cancel_mono f, Category.comp_id, s.condition]) fun s m m₁ _ ↦ by
     simpa using m₁
 
 /--
@@ -72,7 +72,7 @@ given in `PullbackCone.is_id_of_mono`.
 -/
 theorem mono_of_isLimitMkIdId (f : X ⟶ Y) (t : IsLimit (mk (𝟙 X) (𝟙 X) rfl : PullbackCone f f)) :
     Mono f :=
-  ⟨fun {Z} g h eq => by
+  ⟨fun {Z} g h eq ↦ by
     rcases PullbackCone.IsLimit.lift' t _ _ eq with ⟨_, rfl, rfl⟩
     rfl⟩
 
@@ -85,12 +85,12 @@ def isLimitOfFactors (f : X ⟶ Z) (g : Y ⟶ Z) (h : W ⟶ Z) [Mono h] (x : X �
       (PullbackCone.mk _ _
         (show s.fst ≫ x = s.snd ≫ y from
           (cancel_mono h).1 <| by simp only [Category.assoc, hxh, hyh, s.condition])) :=
-  PullbackCone.isLimitAux' _ fun t =>
+  PullbackCone.isLimitAux' _ fun t ↦
     have : fst t ≫ x ≫ h = snd t ≫ y ≫ h := by  -- Porting note: reassoc workaround
       rw [← Category.assoc, ← Category.assoc]
       apply congrArg (· ≫ h) t.condition
     ⟨hs.lift (PullbackCone.mk t.fst t.snd <| by rw [← hxh, ← hyh, this]),
-      ⟨hs.fac _ WalkingCospan.left, hs.fac _ WalkingCospan.right, fun hr hr' => by
+      ⟨hs.fac _ WalkingCospan.left, hs.fac _ WalkingCospan.right, fun hr hr' ↦ by
         apply PullbackCone.IsLimit.hom_ext hs <;>
               simp only [PullbackCone.mk_fst, PullbackCone.mk_snd] at hr hr' ⊢ <;>
             simp only [hr, hr'] <;>
@@ -131,10 +131,10 @@ instance pullback.snd_of_mono {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullba
 instance mono_pullback_to_prod {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
     [HasPullback f g] [HasBinaryProduct X Y] :
     Mono (prod.lift (pullback.fst f g) (pullback.snd f g)) :=
-  ⟨fun {W} i₁ i₂ h => by
+  ⟨fun {W} i₁ i₂ h ↦ by
     ext
-    · simpa using congrArg (fun f => f ≫ prod.fst) h
-    · simpa using congrArg (fun f => f ≫ prod.snd) h⟩
+    · simpa using congrArg (fun f ↦ f ≫ prod.fst) h
+    · simpa using congrArg (fun f ↦ f ≫ prod.snd) h⟩
 
 /-- The pullback of `f, g` is also the pullback of `f ≫ i, g ≫ i` for any mono `i`. -/
 noncomputable def pullbackIsPullbackOfCompMono (f : X ⟶ W) (g : Y ⟶ W) (i : W ⟶ Z) [Mono i]
@@ -226,19 +226,19 @@ variable {f : X ⟶ Y} {g : X ⟶ Z}
 
 theorem epi_inr_of_is_pushout_of_epi {t : PushoutCocone f g} (ht : IsColimit t) [Epi f] :
     Epi t.inr :=
-  ⟨fun {W} h k i => IsColimit.hom_ext ht (by simp [← cancel_epi f, t.condition_assoc, i]) i⟩
+  ⟨fun {W} h k i ↦ IsColimit.hom_ext ht (by simp [← cancel_epi f, t.condition_assoc, i]) i⟩
 
 theorem epi_inl_of_is_pushout_of_epi {t : PushoutCocone f g} (ht : IsColimit t) [Epi g] :
     Epi t.inl :=
-  ⟨fun {W} h k i => IsColimit.hom_ext ht i (by simp [← cancel_epi g, ← t.condition_assoc, i])⟩
+  ⟨fun {W} h k i ↦ IsColimit.hom_ext ht i (by simp [← cancel_epi g, ← t.condition_assoc, i])⟩
 
 /--
 The pushout cocone `(𝟙 X, 𝟙 X)` for the pair `(f, f)` is a colimit if `f` is an epi. The converse is
 shown in `epi_of_isColimit_mk_id_id`.
 -/
 def isColimitMkIdId (f : X ⟶ Y) [Epi f] : IsColimit (mk (𝟙 Y) (𝟙 Y) rfl : PushoutCocone f f) :=
-  IsColimit.mk _ (fun s => s.inl) (fun _ => Category.id_comp _)
-    (fun s => by rw [← cancel_epi f, Category.id_comp, s.condition]) fun s m m₁ _ => by
+  IsColimit.mk _ (fun s ↦ s.inl) (fun _ ↦ Category.id_comp _)
+    (fun s ↦ by rw [← cancel_epi f, Category.id_comp, s.condition]) fun s m m₁ _ ↦ by
     simpa using m₁
 
 /-- `f` is an epi if the pushout cocone `(𝟙 X, 𝟙 X)` is a colimit for the pair `(f, f)`.
@@ -246,7 +246,7 @@ The converse is given in `PushoutCocone.isColimitMkIdId`.
 -/
 theorem epi_of_isColimitMkIdId (f : X ⟶ Y)
     (t : IsColimit (mk (𝟙 Y) (𝟙 Y) rfl : PushoutCocone f f)) : Epi f :=
-  ⟨fun {Z} g h eq => by
+  ⟨fun {Z} g h eq ↦ by
     rcases PushoutCocone.IsColimit.desc' t _ _ eq with ⟨_, rfl, rfl⟩
     rfl⟩
 
@@ -262,9 +262,9 @@ def isColimitOfFactors (f : X ⟶ Y) (g : X ⟶ Z) (h : X ⟶ W) [Epi h] (x : W 
       rw [← Category.assoc]; apply congrArg (· ≫ inr s) hhy
     IsColimit (PushoutCocone.mk _ _ (show x ≫ s.inl = y ≫ s.inr from
           (cancel_epi h).1 <| by rw [reassoc₁, reassoc₂, s.condition])) :=
-  PushoutCocone.isColimitAux' _ fun t => ⟨hs.desc (PushoutCocone.mk t.inl t.inr <| by
+  PushoutCocone.isColimitAux' _ fun t ↦ ⟨hs.desc (PushoutCocone.mk t.inl t.inr <| by
     rw [← hhx, ← hhy, Category.assoc, Category.assoc, t.condition]),
-      ⟨hs.fac _ WalkingSpan.left, hs.fac _ WalkingSpan.right, fun hr hr' => by
+      ⟨hs.fac _ WalkingSpan.left, hs.fac _ WalkingSpan.right, fun hr hr' ↦ by
         apply PushoutCocone.IsColimit.hom_ext hs
         · simp only [PushoutCocone.mk_inl, PushoutCocone.mk_inr] at hr hr' ⊢
           simp only [hr]
@@ -308,10 +308,10 @@ instance pushout.inr_of_epi {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout 
 instance epi_coprod_to_pushout {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
     [HasPushout f g] [HasBinaryCoproduct Y Z] :
     Epi (coprod.desc (pushout.inl f g) (pushout.inr f g)) :=
-  ⟨fun {W} i₁ i₂ h => by
+  ⟨fun {W} i₁ i₂ h ↦ by
     ext
-    · simpa using congrArg (fun f => coprod.inl ≫ f) h
-    · simpa using congrArg (fun f => coprod.inr ≫ f) h⟩
+    · simpa using congrArg (fun f ↦ coprod.inl ≫ f) h
+    · simpa using congrArg (fun f ↦ coprod.inr ≫ f) h⟩
 
 /-- The pushout of `f, g` is also the pullback of `h ≫ f, h ≫ g` for any epi `h`. -/
 noncomputable def pushoutIsPushoutOfEpiComp (f : X ⟶ Y) (g : X ⟶ Z) (h : W ⟶ X) [Epi h]

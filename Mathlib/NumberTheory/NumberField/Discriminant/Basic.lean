@@ -72,7 +72,7 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
   dsimp only [M]
   rw [Matrix.map_apply, Basis.toMatrix_apply, Basis.coe_reindex, Function.comp_apply,
     Equiv.symm_symm, latticeBasis_apply, ← commMap_canonical_eq_mixed, Complex.ofRealHom_eq_coe,
-    stdBasis_repr_eq_matrixToStdBasis_mul K _ (fun _ => rfl)]
+    stdBasis_repr_eq_matrixToStdBasis_mul K _ (fun _ ↦ rfl)]
   rfl
 
 open scoped Classical in
@@ -200,7 +200,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
   -- The sequence `a n` is a lower bound for `|discr K|`. We prove below by induction an uniform
   -- lower bound for this sequence from which we deduce the result.
   rw [mul_comm 2 _]
-  let a : ℕ → ℝ := fun n => (n : ℝ) ^ (n * 2) / ((4 / π) ^ n * (n.factorial : ℝ) ^ 2)
+  let a : ℕ → ℝ := fun n ↦ (n : ℝ) ^ (n * 2) / ((4 / π) ^ n * (n.factorial : ℝ) ^ 2)
   suffices ∀ n, 2 ≤ n → (4 / 9 : ℝ) * (3 * π / 4) ^ n ≤ a n by
     refine le_trans (this (finrank ℚ K) h) ?_
     simp only [a]

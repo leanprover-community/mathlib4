@@ -24,14 +24,14 @@ section Category
 variable {C : Type u} [Category.{v} C]
 
 /-- An object `X` is isomorphic to an object `Y`, if `X ≅ Y` is not empty. -/
-def IsIsomorphic : C → C → Prop := fun X Y => Nonempty (X ≅ Y)
+def IsIsomorphic : C → C → Prop := fun X Y ↦ Nonempty (X ≅ Y)
 
 variable (C)
 
 /-- `IsIsomorphic` defines a setoid. -/
 def isIsomorphicSetoid : Setoid C where
   r := IsIsomorphic
-  iseqv := ⟨fun X => ⟨Iso.refl X⟩, fun ⟨α⟩ => ⟨α.symm⟩, fun ⟨α⟩ ⟨β⟩ => ⟨α.trans β⟩⟩
+  iseqv := ⟨fun X ↦ ⟨Iso.refl X⟩, fun ⟨α⟩ ↦ ⟨α.symm⟩, fun ⟨α⟩ ⟨β⟩ ↦ ⟨α.trans β⟩⟩
 
 end Category
 
@@ -39,7 +39,7 @@ end Category
 -/
 def isomorphismClasses : Cat.{v, u} ⥤ Type u where
   obj C := Quotient (isIsomorphicSetoid C.α)
-  map {_ _} F := Quot.map F.obj fun _ _ ⟨f⟩ => ⟨F.mapIso f⟩
+  map {_ _} F := Quot.map F.obj fun _ _ ⟨f⟩ ↦ ⟨F.mapIso f⟩
   map_id {C} := by  -- Porting note: this used to be `tidy`
     apply funext; intro x
     apply @Quot.recOn _ _ _ x

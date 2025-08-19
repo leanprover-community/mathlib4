@@ -45,7 +45,7 @@ attribute [local instance] subsetSupSet
 open Classical in
 @[simp]
 theorem subset_sSup_def [Inhabited s] :
-    @sSup s _ = fun t =>
+    @sSup s _ = fun t ↦
       if ht : t.Nonempty ∧ BddAbove t ∧ sSup ((↑) '' t : Set α) ∈ s
       then ⟨sSup ((↑) '' t : Set α), ht.2.2⟩
       else default :=
@@ -84,7 +84,7 @@ attribute [local instance] subsetInfSet
 open Classical in
 @[simp]
 theorem subset_sInf_def [Inhabited s] :
-    @sInf s _ = fun t =>
+    @sInf s _ = fun t ↦
       if ht : t.Nonempty ∧ BddBelow t ∧ sInf ((↑) '' t : Set α) ∈ s
       then ⟨sInf ((↑) '' t : Set α), ht.2.2⟩ else
       default :=
@@ -165,8 +165,8 @@ conditionally complete linear order. -/
 noncomputable instance ordConnectedSubsetConditionallyCompleteLinearOrder [Inhabited s]
     [OrdConnected s] : ConditionallyCompleteLinearOrder s :=
   subsetConditionallyCompleteLinearOrder s
-    (fun h => sSup_within_of_ordConnected h)
-    (fun h => sInf_within_of_ordConnected h)
+    (fun h ↦ sSup_within_of_ordConnected h)
+    (fun h ↦ sInf_within_of_ordConnected h)
 
 end OrdConnected
 

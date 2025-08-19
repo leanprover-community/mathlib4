@@ -129,7 +129,7 @@ theorem comap_surjective (f : V ↪ W) : Function.Surjective (SimpleGraph.comap 
 
 theorem map_le_iff_le_comap (f : V ↪ W) (G : SimpleGraph V) (G' : SimpleGraph W) :
     G.map f ≤ G' ↔ G ≤ G'.comap f :=
-  ⟨fun h _ _ ha => h ⟨_, _, ha, rfl, rfl⟩, by
+  ⟨fun h _ _ ha ↦ h ⟨_, _, ha, rfl, rfl⟩, by
     rintro h _ _ ⟨u, v, ha, rfl, rfl⟩
     exact h ha⟩
 
@@ -241,7 +241,7 @@ theorem map_adj {v w : V} (h : G.Adj v w) : G'.Adj (f v) (f w) :=
   f.map_rel' h
 
 theorem map_mem_edgeSet {e : Sym2 V} (h : e ∈ G.edgeSet) : e.map f ∈ G'.edgeSet :=
-  Sym2.ind (fun _ _ => f.map_rel') e h
+  Sym2.ind (fun _ _ ↦ f.map_rel') e h
 
 theorem apply_mem_neighborSet {v w : V} (h : w ∈ G.neighborSet v) : f w ∈ G'.neighborSet (f v) :=
   map_adj f h
@@ -336,7 +336,7 @@ abbrev toHom : G →g G' :=
   f.map_rel_iff
 
 theorem map_mem_edgeSet_iff {e : Sym2 V} : e.map f ∈ G'.edgeSet ↔ e ∈ G.edgeSet :=
-  Sym2.ind (fun _ _ => f.map_adj_iff) e
+  Sym2.ind (fun _ _ ↦ f.map_adj_iff) e
 
 theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w ∈ G.neighborSet v :=
   map_adj_iff f
@@ -484,7 +484,7 @@ theorem map_adj_iff {v w : V} : G'.Adj (f v) (f w) ↔ G.Adj v w :=
   f.map_rel_iff
 
 theorem map_mem_edgeSet_iff {e : Sym2 V} : e.map f ∈ G'.edgeSet ↔ e ∈ G.edgeSet :=
-  Sym2.ind (fun _ _ => f.map_adj_iff) e
+  Sym2.ind (fun _ _ ↦ f.map_adj_iff) e
 
 theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w ∈ G.neighborSet v :=
   map_adj_iff f

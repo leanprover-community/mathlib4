@@ -88,7 +88,7 @@ def curry₃ObjProdComp (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) (F₃ : C�
 @[simps!]
 def bifunctorComp₁₂Iso (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C₃ ⥤ E) :
     bifunctorComp₁₂ F₁₂ G ≅ curry.obj (uncurry.obj F₁₂ ⋙ G) :=
-  NatIso.ofComponents (fun _ => NatIso.ofComponents (fun _ => Iso.refl _))
+  NatIso.ofComponents (fun _ ↦ NatIso.ofComponents (fun _ ↦ Iso.refl _))
 
 /-- `bifunctorComp₂₃` can be described in terms of the curryfication of functors. -/
 @[simps!]

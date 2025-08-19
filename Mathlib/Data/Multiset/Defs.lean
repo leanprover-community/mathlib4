@@ -106,13 +106,13 @@ instance [DecidableEq α] (l₁ l₂ : List α) : Decidable (isSetoid α l₁ l�
   inferInstanceAs (Decidable (l₁ ~ l₂))
 
 instance decidableEq [DecidableEq α] : DecidableEq (Multiset α)
-  | s₁, s₂ => Quotient.recOnSubsingleton₂ s₁ s₂ fun _ _ => decidable_of_iff' _ Quotient.eq_iff_equiv
+  | s₁, s₂ => Quotient.recOnSubsingleton₂ s₁ s₂ fun _ _ ↦ decidable_of_iff' _ Quotient.eq_iff_equiv
 
 section Mem
 
 /-- `a ∈ s` means that `a` has nonzero multiplicity in `s`. -/
 def Mem (s : Multiset α) (a : α) : Prop :=
-  Quot.liftOn s (fun l => a ∈ l) fun l₁ l₂ (e : l₁ ~ l₂) => propext <| e.mem_iff
+  Quot.liftOn s (fun l ↦ a ∈ l) fun l₁ l₂ (e : l₁ ~ l₂) ↦ propext <| e.mem_iff
 
 instance : Membership α (Multiset α) :=
   ⟨Mem⟩
@@ -143,7 +143,7 @@ instance : HasSubset (Multiset α) :=
   ⟨Multiset.Subset⟩
 
 instance : HasSSubset (Multiset α) :=
-  ⟨fun s t => s ⊆ t ∧ ¬t ⊆ s⟩
+  ⟨fun s t ↦ s ⊆ t ∧ ¬t ⊆ s⟩
 
 instance instIsNonstrictStrictOrder : IsNonstrictStrictOrder (Multiset α) (· ⊆ ·) (· ⊂ ·) where
   right_iff_left_not_left _ _ := Iff.rfl
@@ -153,9 +153,9 @@ theorem coe_subset {l₁ l₂ : List α} : (l₁ : Multiset α) ⊆ l₂ ↔ l�
   Iff.rfl
 
 @[simp]
-theorem Subset.refl (s : Multiset α) : s ⊆ s := fun _ h => h
+theorem Subset.refl (s : Multiset α) : s ⊆ s := fun _ h ↦ h
 
-theorem Subset.trans {s t u : Multiset α} : s ⊆ t → t ⊆ u → s ⊆ u := fun h₁ h₂ _ m => h₂ (h₁ m)
+theorem Subset.trans {s t u : Multiset α} : s ⊆ t → t ⊆ u → s ⊆ u := fun h₁ h₂ _ m ↦ h₂ (h₁ m)
 
 theorem subset_iff {s t : Multiset α} : s ⊆ t ↔ ∀ ⦃x⦄, x ∈ s → x ∈ t :=
   Iff.rfl
@@ -171,7 +171,7 @@ end Subset
 /-- `s ≤ t` means that `s` is a sublist of `t` (up to permutation).
   Equivalently, `s ≤ t` means that `count a s ≤ count a t` for all `a`. -/
 protected def Le (s t : Multiset α) : Prop :=
-  (Quotient.liftOn₂ s t (· <+~ ·)) fun _ _ _ _ p₁ p₂ =>
+  (Quotient.liftOn₂ s t (· <+~ ·)) fun _ _ _ _ p₁ p₂ ↦
     propext (p₂.subperm_left.trans p₁.subperm_right)
 
 instance : PartialOrder (Multiset α) where
@@ -181,14 +181,14 @@ instance : PartialOrder (Multiset α) where
   le_antisymm := by rintro ⟨l₁⟩ ⟨l₂⟩ h₁ h₂; exact Quot.sound (Subperm.antisymm h₁ h₂)
 
 instance decidableLE [DecidableEq α] : DecidableLE (Multiset α) :=
-  fun s t => Quotient.recOnSubsingleton₂ s t List.decidableSubperm
+  fun s t ↦ Quotient.recOnSubsingleton₂ s t List.decidableSubperm
 
 section
 
 variable {s t : Multiset α} {a : α}
 
 theorem subset_of_le : s ≤ t → s ⊆ t :=
-  Quotient.inductionOn₂ s t fun _ _ => Subperm.subset
+  Quotient.inductionOn₂ s t fun _ _ ↦ Subperm.subset
 
 alias Le.subset := subset_of_le
 
@@ -207,7 +207,7 @@ theorem coe_le {l₁ l₂ : List α} : (l₁ : Multiset α) ≤ l₂ ↔ l₁ <+
 @[elab_as_elim]
 theorem leInductionOn {C : Multiset α → Multiset α → Prop} {s t : Multiset α} (h : s ≤ t)
     (H : ∀ {l₁ l₂ : List α}, l₁ <+ l₂ → C l₁ l₂) : C s t :=
-  Quotient.inductionOn₂ s t (fun l₁ _ ⟨l, p, s⟩ => (show ⟦l⟧ = ⟦l₁⟧ from Quot.sound p) ▸ H s) h
+  Quotient.inductionOn₂ s t (fun l₁ _ ⟨l, p, s⟩ ↦ (show ⟦l⟧ = ⟦l₁⟧ from Quot.sound p) ▸ H s) h
 
 end
 
@@ -216,7 +216,7 @@ end
 
 /-- The cardinality of a multiset is the sum of the multiplicities
   of all its elements, or simply the length of the underlying list. -/
-def card : Multiset α → ℕ := Quot.lift length fun _l₁ _l₂ => Perm.length_eq
+def card : Multiset α → ℕ := Quot.lift length fun _l₁ _l₂ ↦ Perm.length_eq
 
 @[simp]
 theorem coe_card (l : List α) : card (l : Multiset α) = length l :=
@@ -227,14 +227,14 @@ theorem card_le_card {s t : Multiset α} (h : s ≤ t) : card s ≤ card t :=
   leInductionOn h Sublist.length_le
 
 theorem eq_of_le_of_card_le {s t : Multiset α} (h : s ≤ t) : card t ≤ card s → s = t :=
-  leInductionOn h fun s h₂ => congr_arg _ <| s.eq_of_length_le h₂
+  leInductionOn h fun s h₂ ↦ congr_arg _ <| s.eq_of_length_le h₂
 
 @[gcongr]
 theorem card_lt_card {s t : Multiset α} (h : s < t) : card s < card t :=
-  lt_of_not_ge fun h₂ => _root_.ne_of_lt h <| eq_of_le_of_card_le (le_of_lt h) h₂
+  lt_of_not_ge fun h₂ ↦ _root_.ne_of_lt h <| eq_of_le_of_card_le (le_of_lt h) h₂
 
 @[mono]
-theorem card_mono : Monotone (@card α) := fun _a _b => card_le_card
+theorem card_mono : Monotone (@card α) := fun _a _b ↦ card_le_card
 
 lemma card_strictMono : StrictMono (card : Multiset α → ℕ) := fun _ _ ↦ card_lt_card
 
@@ -251,11 +251,11 @@ theorem coe_reverse (l : List α) : (reverse l : Multiset α) = l :=
 /-- Lift of the list `pmap` operation. Map a partial function `f` over a multiset
   `s` whose elements are all in the domain of `f`. -/
 nonrec def pmap {p : α → Prop} (f : ∀ a, p a → β) (s : Multiset α) : (∀ a ∈ s, p a) → Multiset β :=
-  Quot.recOn s (fun l H => ↑(pmap f l H)) fun l₁ l₂ (pp : l₁ ~ l₂) =>
-    funext fun H₂ : ∀ a ∈ l₂, p a =>
-      have H₁ : ∀ a ∈ l₁, p a := fun a h => H₂ a (pp.subset h)
-      have : ∀ {s₂ e H}, @Eq.ndrec (Multiset α) l₁ (fun s => (∀ a ∈ s, p a) → Multiset β)
-          (fun _ => ↑(pmap f l₁ H₁)) s₂ e H = ↑(pmap f l₁ H₁) := by
+  Quot.recOn s (fun l H ↦ ↑(pmap f l H)) fun l₁ l₂ (pp : l₁ ~ l₂) ↦
+    funext fun H₂ : ∀ a ∈ l₂, p a ↦
+      have H₁ : ∀ a ∈ l₁, p a := fun a h ↦ H₂ a (pp.subset h)
+      have : ∀ {s₂ e H}, @Eq.ndrec (Multiset α) l₁ (fun s ↦ (∀ a ∈ s, p a) → Multiset β)
+          (fun _ ↦ ↑(pmap f l₁ H₁)) s₂ e H = ↑(pmap f l₁ H₁) := by
         intro s₂ e _; subst e; rfl
       this.trans <| Quot.sound <| pp.pmap f
 
@@ -266,21 +266,21 @@ theorem coe_pmap {p : α → Prop} (f : ∀ a, p a → β) (l : List α) (H : �
 
 theorem pmap_congr {p q : α → Prop} {f : ∀ a, p a → β} {g : ∀ a, q a → β} (s : Multiset α) :
     ∀ {H₁ H₂}, (∀ a ∈ s, ∀ (h₁ h₂), f a h₁ = g a h₂) → pmap f s H₁ = pmap g s H₂ :=
-  @(Quot.inductionOn s (fun l _H₁ _H₂ h => congr_arg _ <| List.pmap_congr_left l h))
+  @(Quot.inductionOn s (fun l _H₁ _H₂ h ↦ congr_arg _ <| List.pmap_congr_left l h))
 
 @[simp]
 theorem mem_pmap {p : α → Prop} {f : ∀ a, p a → β} {s H b} :
     b ∈ pmap f s H ↔ ∃ (a : _) (h : a ∈ s), f a (H a h) = b :=
-  Quot.inductionOn s (fun _l _H => List.mem_pmap) H
+  Quot.inductionOn s (fun _l _H ↦ List.mem_pmap) H
 
 @[simp]
 theorem card_pmap {p : α → Prop} (f : ∀ a, p a → β) (s H) : card (pmap f s H) = card s :=
-  Quot.inductionOn s (fun _l _H => length_pmap) H
+  Quot.inductionOn s (fun _l _H ↦ length_pmap) H
 
 /-- "Attach" a proof that `a ∈ s` to each element `a` in `s` to produce
   a multiset on `{x // x ∈ s}`. -/
 def attach (s : Multiset α) : Multiset { x // x ∈ s } :=
-  pmap Subtype.mk s fun _a => id
+  pmap Subtype.mk s fun _a ↦ id
 
 @[simp]
 theorem coe_attach (l : List α) : @Eq (Multiset { x // x ∈ l }) (@attach α l) l.attach :=
@@ -288,7 +288,7 @@ theorem coe_attach (l : List α) : @Eq (Multiset { x // x ∈ l }) (@attach α l
 
 @[simp]
 theorem mem_attach (s : Multiset α) : ∀ x, x ∈ s.attach :=
-  Quot.inductionOn s fun _l => List.mem_attach _
+  Quot.inductionOn s fun _l ↦ List.mem_attach _
 
 @[simp]
 theorem card_attach {m : Multiset α} : card (attach m) = card m :=
@@ -302,30 +302,30 @@ variable {m : Multiset α}
 so is the predicate that all elements of a multiset satisfy `p`. -/
 protected def decidableForallMultiset {p : α → Prop} [∀ a, Decidable (p a)] :
     Decidable (∀ a ∈ m, p a) :=
-  Quotient.recOnSubsingleton m fun l => decidable_of_iff (∀ a ∈ l, p a) <| by simp
+  Quotient.recOnSubsingleton m fun l ↦ decidable_of_iff (∀ a ∈ l, p a) <| by simp
 
 instance decidableDforallMultiset {p : ∀ a ∈ m, Prop} [_hp : ∀ (a) (h : a ∈ m), Decidable (p a h)] :
     Decidable (∀ (a) (h : a ∈ m), p a h) :=
   @decidable_of_iff _ _
-    (Iff.intro (fun h a ha => h ⟨a, ha⟩ (mem_attach _ _)) fun h ⟨_a, _ha⟩ _ => h _ _)
-    (@Multiset.decidableForallMultiset _ m.attach (fun a => p a.1 a.2) _)
+    (Iff.intro (fun h a ha ↦ h ⟨a, ha⟩ (mem_attach _ _)) fun h ⟨_a, _ha⟩ _ ↦ h _ _)
+    (@Multiset.decidableForallMultiset _ m.attach (fun a ↦ p a.1 a.2) _)
 
 /-- decidable equality for functions whose domain is bounded by multisets -/
 instance decidableEqPiMultiset {β : α → Type*} [∀ a, DecidableEq (β a)] :
-    DecidableEq (∀ a ∈ m, β a) := fun f g =>
+    DecidableEq (∀ a ∈ m, β a) := fun f g ↦
   decidable_of_iff (∀ (a) (h : a ∈ m), f a h = g a h) (by simp [funext_iff])
 
 /-- If `p` is a decidable predicate,
 so is the existence of an element in a multiset satisfying `p`. -/
 protected def decidableExistsMultiset {p : α → Prop} [DecidablePred p] : Decidable (∃ x ∈ m, p x) :=
-  Quotient.recOnSubsingleton m fun l => decidable_of_iff (∃ a ∈ l, p a) <| by simp
+  Quotient.recOnSubsingleton m fun l ↦ decidable_of_iff (∃ a ∈ l, p a) <| by simp
 
 instance decidableDexistsMultiset {p : ∀ a ∈ m, Prop} [_hp : ∀ (a) (h : a ∈ m), Decidable (p a h)] :
     Decidable (∃ (a : _) (h : a ∈ m), p a h) :=
   @decidable_of_iff _ _
-    (Iff.intro (fun ⟨⟨a, ha₁⟩, _, ha₂⟩ => ⟨a, ha₁, ha₂⟩) fun ⟨a, ha₁, ha₂⟩ =>
+    (Iff.intro (fun ⟨⟨a, ha₁⟩, _, ha₂⟩ ↦ ⟨a, ha₁, ha₂⟩) fun ⟨a, ha₁, ha₂⟩ ↦
       ⟨⟨a, ha₁⟩, mem_attach _ _, ha₂⟩)
-    (@Multiset.decidableExistsMultiset { a // a ∈ m } m.attach (fun a => p a.1 a.2) _)
+    (@Multiset.decidableExistsMultiset { a // a ∈ m } m.attach (fun a ↦ p a.1 a.2) _)
 
 end Decidable
 
@@ -340,30 +340,30 @@ theorem pairwise_coe_iff {r : α → α → Prop} {l : List α} :
 
 theorem pairwise_coe_iff_pairwise {r : α → α → Prop} (hr : Symmetric r) {l : List α} :
     Multiset.Pairwise r l ↔ l.Pairwise r :=
-  Iff.intro (fun ⟨_l', Eq, h⟩ => ((Quotient.exact Eq).pairwise_iff @hr).2 h) fun h => ⟨l, rfl, h⟩
+  Iff.intro (fun ⟨_l', Eq, h⟩ ↦ ((Quotient.exact Eq).pairwise_iff @hr).2 h) fun h ↦ ⟨l, rfl, h⟩
 
 section Nodup
 
 /-- `Nodup s` means that `s` has no duplicates, i.e. the multiplicity of
   any element is at most 1. -/
 def Nodup (s : Multiset α) : Prop :=
-  Quot.liftOn s List.Nodup fun _ _ p => propext p.nodup_iff
+  Quot.liftOn s List.Nodup fun _ _ p ↦ propext p.nodup_iff
 
 @[simp]
 theorem coe_nodup {l : List α} : @Nodup α l ↔ l.Nodup :=
   Iff.rfl
 
 theorem Nodup.ext {s t : Multiset α} : Nodup s → Nodup t → (s = t ↔ ∀ a, a ∈ s ↔ a ∈ t) :=
-  Quotient.inductionOn₂ s t fun _ _ d₁ d₂ => Quotient.eq.trans <| perm_ext_iff_of_nodup d₁ d₂
+  Quotient.inductionOn₂ s t fun _ _ d₁ d₂ ↦ Quotient.eq.trans <| perm_ext_iff_of_nodup d₁ d₂
 
 theorem le_iff_subset {s t : Multiset α} : Nodup s → (s ≤ t ↔ s ⊆ t) :=
-  Quotient.inductionOn₂ s t fun _ _ d => ⟨subset_of_le, d.subperm⟩
+  Quotient.inductionOn₂ s t fun _ _ d ↦ ⟨subset_of_le, d.subperm⟩
 
 theorem nodup_of_le {s t : Multiset α} (h : s ≤ t) : Nodup t → Nodup s :=
-  Multiset.leInductionOn h fun {_ _} => Nodup.sublist
+  Multiset.leInductionOn h fun {_ _} ↦ Nodup.sublist
 
 instance nodupDecidable [DecidableEq α] (s : Multiset α) : Decidable (Nodup s) :=
-  Quotient.recOnSubsingleton s fun l => l.nodupDecidable
+  Quotient.recOnSubsingleton s fun l ↦ l.nodupDecidable
 
 end Nodup
 
@@ -376,7 +376,7 @@ This has to be defined before the definition of `Finset`, otherwise its automati
 -/
 protected
 def sizeOf [SizeOf α] (s : Multiset α) : ℕ :=
-  (Quot.liftOn s SizeOf.sizeOf) fun _ _ => Perm.sizeOf_eq_sizeOf
+  (Quot.liftOn s SizeOf.sizeOf) fun _ _ ↦ Perm.sizeOf_eq_sizeOf
 
 instance [SizeOf α] : SizeOf (Multiset α) :=
   ⟨Multiset.sizeOf⟩

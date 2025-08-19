@@ -110,7 +110,7 @@ then the cardinality of `b` is bounded by the cardinality of `s`.
 theorem infinite_basis_le_maximal_linearIndependent' {ι : Type w} (b : Basis ι R M) [Infinite ι]
     {κ : Type w'} (v : κ → M) (i : LinearIndependent R v) (m : i.Maximal) :
     Cardinal.lift.{w'} #ι ≤ Cardinal.lift.{w} #κ := by
-  let Φ := fun k : κ => (b.repr (v k)).support
+  let Φ := fun k : κ ↦ (b.repr (v k)).support
   have w₁ : #ι ≤ #(Set.range Φ) := by
     apply Cardinal.le_range_of_union_finset_eq_top
     exact union_support_maximal_linearIndependent_eq_range_basis b v i m

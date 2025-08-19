@@ -53,7 +53,7 @@ namespace Functor
 /-- Given a functor `C ⥤ D` from a pretriangulated category, this is the set of
 triangles in `D` that are in the essential image of distinguished triangles of `C`. -/
 def essImageDistTriang : Set (Triangle D) :=
-  fun T => ∃ (T' : Triangle C) (_ : T ≅ L.mapTriangle.obj T'), T' ∈ distTriang C
+  fun T ↦ ∃ (T' : Triangle C) (_ : T ≅ L.mapTriangle.obj T'), T' ∈ distTriang C
 
 lemma essImageDistTriang_mem_of_iso {T₁ T₂ : Triangle D} (e : T₂ ≅ T₁)
     (h : T₁ ∈ L.essImageDistTriang) : T₂ ∈ L.essImageDistTriang := by
@@ -198,7 +198,7 @@ def pretriangulated : Pretriangulated D where
 instance isTriangulated_functor :
     letI : Pretriangulated D := pretriangulated L W; L.IsTriangulated :=
   letI : Pretriangulated D := pretriangulated L W
-  ⟨fun T hT => ⟨T, Iso.refl _, hT⟩⟩
+  ⟨fun T hT ↦ ⟨T, Iso.refl _, hT⟩⟩
 
 end
 

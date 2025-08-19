@@ -50,13 +50,13 @@ theorem opNNNorm_le_bound (f : E →SL[σ₁₂] F) (M : ℝ≥0) (hM : ∀ x, �
 /-- If one controls the norm of every `A x`, `‖x‖₊ ≠ 0`, then one controls the norm of `A`. -/
 theorem opNNNorm_le_bound' (f : E →SL[σ₁₂] F) (M : ℝ≥0) (hM : ∀ x, ‖x‖₊ ≠ 0 → ‖f x‖₊ ≤ M * ‖x‖₊) :
     ‖f‖₊ ≤ M :=
-  opNorm_le_bound' f (zero_le M) fun x hx => hM x <| by rwa [← NNReal.coe_ne_zero]
+  opNorm_le_bound' f (zero_le M) fun x hx ↦ hM x <| by rwa [← NNReal.coe_ne_zero]
 
 /-- For a continuous real linear map `f`, if one controls the norm of every `f x`, `‖x‖₊ = 1`, then
 one controls the norm of `f`. -/
 theorem opNNNorm_le_of_unit_nnnorm [NormedAlgebra ℝ 𝕜] {f : E →SL[σ₁₂] F} {C : ℝ≥0}
     (hf : ∀ x, ‖x‖₊ = 1 → ‖f x‖₊ ≤ C) : ‖f‖₊ ≤ C :=
-  opNorm_le_of_unit_norm C.coe_nonneg fun x hx => hf x <| by rwa [← NNReal.coe_eq_one]
+  opNorm_le_of_unit_norm C.coe_nonneg fun x hx ↦ hf x <| by rwa [← NNReal.coe_eq_one]
 
 theorem opNNNorm_le_of_lipschitz {f : E →SL[σ₁₂] F} {K : ℝ≥0} (hf : LipschitzWith K f) :
     ‖f‖₊ ≤ K :=
@@ -92,8 +92,8 @@ theorem lipschitz (f : E →SL[σ₁₂] F) : LipschitzWith ‖f‖₊ f :=
   AddMonoidHomClass.lipschitz_of_bound_nnnorm f _ f.le_opNNNorm
 
 /-- Evaluation of a continuous linear map `f` at a point is Lipschitz continuous in `f`. -/
-theorem lipschitz_apply (x : E) : LipschitzWith ‖x‖₊ fun f : E →SL[σ₁₂] F => f x :=
-  lipschitzWith_iff_norm_sub_le.2 fun f g => ((f - g).le_opNorm x).trans_eq (mul_comm _ _)
+theorem lipschitz_apply (x : E) : LipschitzWith ‖x‖₊ fun f : E →SL[σ₁₂] F ↦ f x :=
+  lipschitzWith_iff_norm_sub_le.2 fun f g ↦ ((f - g).le_opNorm x).trans_eq (mul_comm _ _)
 
 theorem exists_mul_lt_apply_of_lt_opNNNorm (f : E →SL[σ₁₂] F) {r : ℝ≥0} (hr : r < ‖f‖₊) :
     ∃ x, r * ‖x‖₊ < ‖f x‖₊ := by
@@ -129,7 +129,7 @@ theorem exists_lt_apply_of_lt_opNNNorm (f : E →SL[σ₁₂] F) {r : ℝ≥0}
     (hr : r < ‖f‖₊) : ∃ x : E, ‖x‖₊ < 1 ∧ r < ‖f x‖₊ := by
   obtain ⟨y, hy⟩ := f.exists_mul_lt_apply_of_lt_opNNNorm hr
   have hy' : ‖y‖₊ ≠ 0 :=
-    nnnorm_ne_zero_iff.2 fun heq => by
+    nnnorm_ne_zero_iff.2 fun heq ↦ by
       simp [heq, nnnorm_zero, map_zero] at hy
   have hfy : ‖f y‖₊ ≠ 0 := (zero_le'.trans_lt hy).ne'
   rw [← inv_inv ‖f y‖₊, NNReal.lt_inv_iff_mul_lt (inv_ne_zero hfy), mul_assoc, mul_comm ‖y‖₊, ←
@@ -147,21 +147,21 @@ theorem exists_lt_apply_of_lt_opNorm (f : E →SL[σ₁₂] F) {r : ℝ}
     exact f.exists_lt_apply_of_lt_opNNNorm hr
 
 theorem sSup_unit_ball_eq_nnnorm (f : E →SL[σ₁₂] F) :
-    sSup ((fun x => ‖f x‖₊) '' ball 0 1) = ‖f‖₊ := by
+    sSup ((fun x ↦ ‖f x‖₊) '' ball 0 1) = ‖f‖₊ := by
   refine csSup_eq_of_forall_le_of_forall_lt_exists_gt ((nonempty_ball.mpr zero_lt_one).image _) ?_
-    fun ub hub => ?_
+    fun ub hub ↦ ?_
   · rintro - ⟨x, hx, rfl⟩
     simpa only [mul_one] using f.le_opNorm_of_le (mem_ball_zero_iff.1 hx).le
   · obtain ⟨x, hx, hxf⟩ := f.exists_lt_apply_of_lt_opNNNorm hub
     exact ⟨_, ⟨x, mem_ball_zero_iff.2 hx, rfl⟩, hxf⟩
 
 theorem sSup_unit_ball_eq_norm (f : E →SL[σ₁₂] F) :
-    sSup ((fun x => ‖f x‖) '' ball 0 1) = ‖f‖ := by
+    sSup ((fun x ↦ ‖f x‖) '' ball 0 1) = ‖f‖ := by
   simpa only [NNReal.coe_sSup, Set.image_image] using NNReal.coe_inj.2 f.sSup_unit_ball_eq_nnnorm
 
 theorem sSup_unitClosedBall_eq_nnnorm (f : E →SL[σ₁₂] F) :
-    sSup ((fun x => ‖f x‖₊) '' closedBall 0 1) = ‖f‖₊ := by
-  have hbdd : ∀ y ∈ (fun x => ‖f x‖₊) '' closedBall 0 1, y ≤ ‖f‖₊ := by
+    sSup ((fun x ↦ ‖f x‖₊) '' closedBall 0 1) = ‖f‖₊ := by
+  have hbdd : ∀ y ∈ (fun x ↦ ‖f x‖₊) '' closedBall 0 1, y ≤ ‖f‖₊ := by
     rintro - ⟨x, hx, rfl⟩
     exact f.unit_le_opNorm x (mem_closedBall_zero_iff.1 hx)
   refine le_antisymm (csSup_le ((nonempty_closedBall.mpr zero_le_one).image _) hbdd) ?_
@@ -170,7 +170,7 @@ theorem sSup_unitClosedBall_eq_nnnorm (f : E →SL[σ₁₂] F) :
     (Set.image_mono ball_subset_closedBall)
 
 theorem sSup_unitClosedBall_eq_norm (f : E →SL[σ₁₂] F) :
-    sSup ((fun x => ‖f x‖) '' closedBall 0 1) = ‖f‖ := by
+    sSup ((fun x ↦ ‖f x‖) '' closedBall 0 1) = ‖f‖ := by
   simpa only [NNReal.coe_sSup, Set.image_image] using
     NNReal.coe_inj.2 f.sSup_unitClosedBall_eq_nnnorm
 
@@ -189,12 +189,12 @@ theorem exists_nnnorm_eq_one_lt_apply_of_lt_opNNNorm [NormedAlgebra ℝ 𝕜]
 /-- When the domain is a real normed space, `ContinuousLinearMap.sSup_unitClosedBall_eq_nnnorm` can
 be tightened to take the supremum over only the `Metric.sphere`. -/
 theorem sSup_sphere_eq_nnnorm [NormedAlgebra ℝ 𝕜] (f : E →SL[σ₁₂] F) :
-    sSup ((fun x => ‖f x‖₊) '' Metric.sphere 0 1) = ‖f‖₊ := by
+    sSup ((fun x ↦ ‖f x‖₊) '' Metric.sphere 0 1) = ‖f‖₊ := by
   cases subsingleton_or_nontrivial E
   · simp [sphere_eq_empty_of_subsingleton one_ne_zero]
   have : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
   refine csSup_eq_of_forall_le_of_forall_lt_exists_gt
-      ((NormedSpace.sphere_nonempty.mpr zero_le_one).image _) ?_ fun ub hub => ?_
+      ((NormedSpace.sphere_nonempty.mpr zero_le_one).image _) ?_ fun ub hub ↦ ?_
   · rintro - ⟨x, hx, rfl⟩
     simpa only [mul_one] using f.le_opNorm_of_le (mem_sphere_zero_iff_norm.1 hx).le
   · obtain ⟨x, hx, hxf⟩ := f.exists_nnnorm_eq_one_lt_apply_of_lt_opNNNorm hub
@@ -203,7 +203,7 @@ theorem sSup_sphere_eq_nnnorm [NormedAlgebra ℝ 𝕜] (f : E →SL[σ₁₂] F)
 /-- When the domain is a real normed space, `ContinuousLinearMap.sSup_unitClosedBall_eq_norm` can be
 tightened to take the supremum over only the `Metric.sphere`. -/
 theorem sSup_sphere_eq_norm [NormedAlgebra ℝ 𝕜] (f : E →SL[σ₁₂] F) :
-    sSup ((fun x => ‖f x‖) '' Metric.sphere 0 1) = ‖f‖ := by
+    sSup ((fun x ↦ ‖f x‖) '' Metric.sphere 0 1) = ‖f‖ := by
   simpa only [NNReal.coe_sSup, Set.image_image] using NNReal.coe_inj.2 f.sSup_sphere_eq_nnnorm
 
 end ContinuousLinearMap

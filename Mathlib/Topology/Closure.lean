@@ -37,10 +37,10 @@ theorem mem_interior : x ∈ interior s ↔ ∃ t ⊆ s, IsOpen t ∧ x ∈ t :=
 
 @[simp]
 theorem isOpen_interior : IsOpen (interior s) :=
-  isOpen_sUnion fun _ => And.left
+  isOpen_sUnion fun _ ↦ And.left
 
 theorem interior_subset : interior s ⊆ s :=
-  sUnion_subset fun _ => And.right
+  sUnion_subset fun _ ↦ And.right
 
 theorem interior_maximal (h₁ : t ⊆ s) (h₂ : IsOpen t) : t ⊆ interior s :=
   subset_sUnion_of_mem ⟨h₂, h₁⟩
@@ -49,16 +49,16 @@ theorem IsOpen.interior_eq (h : IsOpen s) : interior s = s :=
   interior_subset.antisymm (interior_maximal (Subset.refl s) h)
 
 theorem interior_eq_iff_isOpen : interior s = s ↔ IsOpen s :=
-  ⟨fun h => h ▸ isOpen_interior, IsOpen.interior_eq⟩
+  ⟨fun h ↦ h ▸ isOpen_interior, IsOpen.interior_eq⟩
 
 theorem subset_interior_iff_isOpen : s ⊆ interior s ↔ IsOpen s := by
   simp only [interior_eq_iff_isOpen.symm, Subset.antisymm_iff, interior_subset, true_and]
 
 theorem IsOpen.subset_interior_iff (h₁ : IsOpen s) : s ⊆ interior t ↔ s ⊆ t :=
-  ⟨fun h => Subset.trans h interior_subset, fun h₂ => interior_maximal h₂ h₁⟩
+  ⟨fun h ↦ Subset.trans h interior_subset, fun h₂ ↦ interior_maximal h₂ h₁⟩
 
 theorem subset_interior_iff : t ⊆ interior s ↔ ∃ U, IsOpen U ∧ t ⊆ U ∧ U ⊆ s :=
-  ⟨fun h => ⟨interior s, isOpen_interior, h, interior_subset⟩, fun ⟨_U, hU, htU, hUs⟩ =>
+  ⟨fun h ↦ ⟨interior s, isOpen_interior, h, interior_subset⟩, fun ⟨_U, hU, htU, hUs⟩ ↦
     htU.trans (interior_maximal hUs hU)⟩
 
 lemma interior_subset_iff : interior s ⊆ t ↔ ∀ U, IsOpen U → U ⊆ s → U ⊆ t := by
@@ -81,7 +81,7 @@ theorem interior_univ : interior (univ : Set X) = univ :=
 
 @[simp]
 theorem interior_eq_univ : interior s = univ ↔ s = univ :=
-  ⟨fun h => univ_subset_iff.mp <| h.symm.trans_le interior_subset, fun h => h.symm ▸ interior_univ⟩
+  ⟨fun h ↦ univ_subset_iff.mp <| h.symm.trans_le interior_subset, fun h ↦ h.symm ▸ interior_univ⟩
 
 @[simp]
 theorem interior_interior : interior (interior s) = interior s :=
@@ -133,9 +133,9 @@ theorem interior_union_inter_interior_compl_right_subset :
 
 theorem interior_union_isClosed_of_interior_empty (h₁ : IsClosed s)
     (h₂ : interior t = ∅) : interior (s ∪ t) = interior s :=
-  have : interior (s ∪ t) ⊆ s := fun x ⟨u, ⟨(hu₁ : IsOpen u), (hu₂ : u ⊆ s ∪ t)⟩, (hx₁ : x ∈ u)⟩ =>
-    by_contradiction fun hx₂ : x ∉ s =>
-      have : u \ s ⊆ t := fun _ ⟨h₁, h₂⟩ => Or.resolve_left (hu₂ h₁) h₂
+  have : interior (s ∪ t) ⊆ s := fun x ⟨u, ⟨(hu₁ : IsOpen u), (hu₂ : u ⊆ s ∪ t)⟩, (hx₁ : x ∈ u)⟩ ↦
+    by_contradiction fun hx₂ : x ∉ s ↦
+      have : u \ s ⊆ t := fun _ ⟨h₁, h₂⟩ ↦ Or.resolve_left (hu₂ h₁) h₂
       have : u \ s ⊆ interior t := by rwa [(IsOpen.sdiff hu₁ h₁).subset_interior_iff]
       have : u \ s ⊆ ∅ := by rwa [h₂] at this
       this ⟨hx₁, hx₂⟩
@@ -146,11 +146,11 @@ theorem isOpen_iff_forall_mem_open : IsOpen s ↔ ∀ x ∈ s, ∃ t, t ⊆ s �
   simp only [subset_def, mem_interior]
 
 theorem interior_iInter_subset (s : ι → Set X) : interior (⋂ i, s i) ⊆ ⋂ i, interior (s i) :=
-  subset_iInter fun _ => interior_mono <| iInter_subset _ _
+  subset_iInter fun _ ↦ interior_mono <| iInter_subset _ _
 
 theorem interior_iInter₂_subset (p : ι → Sort*) (s : ∀ i, p i → Set X) :
     interior (⋂ (i) (j), s i j) ⊆ ⋂ (i) (j), interior (s i j) :=
-  (interior_iInter_subset _).trans <| iInter_mono fun _ => interior_iInter_subset _
+  (interior_iInter_subset _).trans <| iInter_mono fun _ ↦ interior_iInter_subset _
 
 theorem interior_sInter_subset (S : Set (Set X)) : interior (⋂₀ S) ⊆ ⋂ s ∈ S, interior s :=
   calc
@@ -158,7 +158,7 @@ theorem interior_sInter_subset (S : Set (Set X)) : interior (⋂₀ S) ⊆ ⋂ s
     _ ⊆ ⋂ s ∈ S, interior s := interior_iInter₂_subset _ _
 
 theorem Filter.HasBasis.lift'_interior {l : Filter X} {p : ι → Prop} {s : ι → Set X}
-    (h : l.HasBasis p s) : (l.lift' interior).HasBasis p fun i => interior (s i) :=
+    (h : l.HasBasis p s) : (l.lift' interior).HasBasis p fun i ↦ interior (s i) :=
   h.lift' fun _ _ ↦ interior_mono
 
 theorem Filter.lift'_interior_le (l : Filter X) : l.lift' interior ≤ l := fun _s hs ↦
@@ -175,12 +175,12 @@ section Closure
 
 @[simp]
 theorem isClosed_closure : IsClosed (closure s) :=
-  isClosed_sInter fun _ => And.left
+  isClosed_sInter fun _ ↦ And.left
 
 theorem subset_closure : s ⊆ closure s :=
-  subset_sInter fun _ => And.right
+  subset_sInter fun _ ↦ And.right
 
-theorem notMem_of_notMem_closure {P : X} (hP : P ∉ closure s) : P ∉ s := fun h =>
+theorem notMem_of_notMem_closure {P : X} (hP : P ∉ closure s) : P ∉ s := fun h ↦
   hP (subset_closure h)
 
 @[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
@@ -203,7 +203,7 @@ theorem IsClosed.closure_subset (hs : IsClosed s) : closure s ⊆ s :=
   closure_minimal (Subset.refl _) hs
 
 theorem IsClosed.closure_subset_iff (h₁ : IsClosed t) : closure s ⊆ t ↔ s ⊆ t :=
-  ⟨Subset.trans subset_closure, fun h => closure_minimal h h₁⟩
+  ⟨Subset.trans subset_closure, fun h ↦ closure_minimal h h₁⟩
 
 theorem IsClosed.mem_iff_closure_subset (hs : IsClosed s) :
     x ∈ s ↔ closure ({x} : Set X) ⊆ s :=
@@ -213,7 +213,7 @@ theorem IsClosed.mem_iff_closure_subset (hs : IsClosed s) :
 theorem closure_mono (h : s ⊆ t) : closure s ⊆ closure t :=
   closure_minimal (Subset.trans h subset_closure) isClosed_closure
 
-theorem monotone_closure (X : Type*) [TopologicalSpace X] : Monotone (@closure X _) := fun _ _ =>
+theorem monotone_closure (X : Type*) [TopologicalSpace X] : Monotone (@closure X _) := fun _ _ ↦
   closure_mono
 
 theorem closure_inter_subset : closure (s ∩ t) ⊆ closure s ∩ closure t :=
@@ -230,7 +230,7 @@ theorem isClosed_of_closure_subset (h : closure s ⊆ s) : IsClosed s := by
   rw [subset_closure.antisymm h]; exact isClosed_closure
 
 theorem closure_eq_iff_isClosed : closure s = s ↔ IsClosed s :=
-  ⟨fun h => h ▸ isClosed_closure, IsClosed.closure_eq⟩
+  ⟨fun h ↦ h ▸ isClosed_closure, IsClosed.closure_eq⟩
 
 theorem closure_subset_iff_isClosed : closure s ⊆ s ↔ IsClosed s :=
   ⟨isClosed_of_closure_subset, IsClosed.closure_subset⟩
@@ -240,7 +240,7 @@ theorem closure_empty : closure (∅ : Set X) = ∅ :=
 
 @[simp]
 theorem closure_empty_iff (s : Set X) : closure s = ∅ ↔ s = ∅ :=
-  ⟨subset_eq_empty subset_closure, fun h => h.symm ▸ closure_empty⟩
+  ⟨subset_eq_empty subset_closure, fun h ↦ h.symm ▸ closure_empty⟩
 
 @[simp]
 theorem closure_nonempty_iff : (closure s).Nonempty ↔ s.Nonempty := by
@@ -329,35 +329,35 @@ theorem closure_inter_of_codisjoint_interior (h : Codisjoint (interior s) (inter
 
 theorem mem_closure_iff :
     x ∈ closure s ↔ ∀ o, IsOpen o → x ∈ o → (o ∩ s).Nonempty :=
-  ⟨fun h o oo ao =>
-    by_contradiction fun os =>
-      have : s ⊆ oᶜ := fun x xs xo => os ⟨x, xo, xs⟩
+  ⟨fun h o oo ao ↦
+    by_contradiction fun os ↦
+      have : s ⊆ oᶜ := fun x xs xo ↦ os ⟨x, xo, xs⟩
       closure_minimal this (isClosed_compl_iff.2 oo) h ao,
-    fun H _ ⟨h₁, h₂⟩ =>
-    by_contradiction fun nc =>
+    fun H _ ⟨h₁, h₂⟩ ↦
+    by_contradiction fun nc ↦
       let ⟨_, hc, hs⟩ := H _ h₁.isOpen_compl nc
       hc (h₂ hs)⟩
 
 theorem closure_inter_open_nonempty_iff (h : IsOpen t) :
     (closure s ∩ t).Nonempty ↔ (s ∩ t).Nonempty :=
-  ⟨fun ⟨_x, hxcs, hxt⟩ => inter_comm t s ▸ mem_closure_iff.1 hxcs t h hxt, fun h =>
+  ⟨fun ⟨_x, hxcs, hxt⟩ ↦ inter_comm t s ▸ mem_closure_iff.1 hxcs t h hxt, fun h ↦
     h.mono <| inf_le_inf_right t subset_closure⟩
 
 theorem Filter.le_lift'_closure (l : Filter X) : l ≤ l.lift' closure :=
-  le_lift'.2 fun _ h => mem_of_superset h subset_closure
+  le_lift'.2 fun _ h ↦ mem_of_superset h subset_closure
 
 theorem Filter.HasBasis.lift'_closure {l : Filter X} {p : ι → Prop} {s : ι → Set X}
-    (h : l.HasBasis p s) : (l.lift' closure).HasBasis p fun i => closure (s i) :=
+    (h : l.HasBasis p s) : (l.lift' closure).HasBasis p fun i ↦ closure (s i) :=
   h.lift' (monotone_closure X)
 
 theorem Filter.HasBasis.lift'_closure_eq_self {l : Filter X} {p : ι → Prop} {s : ι → Set X}
     (h : l.HasBasis p s) (hc : ∀ i, p i → IsClosed (s i)) : l.lift' closure = l :=
-  le_antisymm (h.ge_iff.2 fun i hi => (hc i hi).closure_eq ▸ mem_lift' (h.mem_of_mem hi))
+  le_antisymm (h.ge_iff.2 fun i hi ↦ (hc i hi).closure_eq ▸ mem_lift' (h.mem_of_mem hi))
     l.le_lift'_closure
 
 @[simp]
 theorem Filter.lift'_closure_eq_bot {l : Filter X} : l.lift' closure = ⊥ ↔ l = ⊥ :=
-  ⟨fun h => bot_unique <| h ▸ l.le_lift'_closure, fun h =>
+  ⟨fun h ↦ bot_unique <| h ▸ l.le_lift'_closure, fun h ↦
     h.symm ▸ by rw [lift'_bot (monotone_closure _), closure_empty, principal_empty]⟩
 
 theorem dense_iff_closure_eq : Dense s ↔ closure s = univ :=
@@ -380,7 +380,7 @@ protected alias ⟨_, Dense.closure⟩ := dense_closure
 alias ⟨Dense.of_closure, _⟩ := dense_closure
 
 @[simp]
-theorem dense_univ : Dense (univ : Set X) := fun _ => subset_closure trivial
+theorem dense_univ : Dense (univ : Set X) := fun _ ↦ subset_closure trivial
 
 /-- A set is dense if and only if it has a nonempty intersection with each nonempty open set. -/
 theorem dense_iff_inter_open :
@@ -401,7 +401,7 @@ theorem Dense.exists_mem_open (hs : Dense s) {U : Set X} (ho : IsOpen U)
   ⟨x, hx.2, hx.1⟩
 
 theorem Dense.nonempty_iff (hs : Dense s) : s.Nonempty ↔ Nonempty X :=
-  ⟨fun ⟨x, _⟩ => ⟨x⟩, fun ⟨x⟩ =>
+  ⟨fun ⟨x, _⟩ ↦ ⟨x⟩, fun ⟨x⟩ ↦
     let ⟨y, hy⟩ := hs.inter_open_nonempty _ isOpen_univ ⟨x, trivial⟩
     ⟨y, hy.2⟩⟩
 
@@ -409,7 +409,7 @@ theorem Dense.nonempty [h : Nonempty X] (hs : Dense s) : s.Nonempty :=
   hs.nonempty_iff.2 h
 
 @[mono]
-theorem Dense.mono (h : s₁ ⊆ s₂) (hd : Dense s₁) : Dense s₂ := fun x =>
+theorem Dense.mono (h : s₁ ⊆ s₂) (hd : Dense s₁) : Dense s₂ := fun x ↦
   closure_mono h (hd x)
 
 lemma DenseRange.of_comp {α β : Type*} {f : α → X} {g : β → α}
@@ -422,7 +422,7 @@ theorem dense_compl_singleton_iff_not_open :
   constructor
   · intro hd ho
     exact (hd.inter_open_nonempty _ ho (singleton_nonempty _)).ne_empty (inter_compl_self _)
-  · refine fun ho => dense_iff_inter_open.2 fun U hU hne => inter_compl_nonempty_iff.2 fun hUx => ?_
+  · refine fun ho ↦ dense_iff_inter_open.2 fun U hU hne ↦ inter_compl_nonempty_iff.2 fun hUx ↦ ?_
     obtain rfl : U = {x} := eq_singleton_iff_nonempty_unique_mem.2 ⟨hne, hUx⟩
     exact ho hU
 

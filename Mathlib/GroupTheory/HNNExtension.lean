@@ -38,7 +38,7 @@ open Monoid Coprod Multiplicative Subgroup Function
 /-- The relation we quotient the coproduct by to form an `HNNExtension`. -/
 def HNNExtension.con (G : Type*) [Group G] (A B : Subgroup G) (φ : A ≃* B) :
     Con (G ∗ Multiplicative ℤ) :=
-  conGen (fun x y => ∃ (a : A),
+  conGen (fun x y ↦ ∃ (a : A),
     x = inr (ofAdd 1) * inl (a : G) ∧
     y = inl (φ a : G) * inr (ofAdd 1))
 
@@ -197,7 +197,7 @@ structure ReducedWord : Type _ where
   `HNNExtension G A B φ` -/
   toList : List (ℤˣ × G)
   /-- There are no sequences of the form `t^u * g * t^-u` where `g ∈ toSubgroup A B u` -/
-  chain : toList.Chain' (fun a b => a.2 ∈ toSubgroup A B a.1 → a.1 = b.1)
+  chain : toList.Chain' (fun a b ↦ a.2 ∈ toSubgroup A B a.1 → a.1 = b.1)
 
 /-- The empty reduced word. -/
 @[simps]
@@ -209,7 +209,7 @@ def ReducedWord.empty : ReducedWord G A B :=
 variable {G A B}
 /-- The product of a `ReducedWord` as an element of the `HNNExtension` -/
 def ReducedWord.prod : ReducedWord G A B → HNNExtension G A B φ :=
-  fun w => of w.head * (w.toList.map (fun x => t ^ (x.1 : ℤ) * of x.2)).prod
+  fun w ↦ of w.head * (w.toList.map (fun x ↦ t ^ (x.1 : ℤ) * of x.2)).prod
 
 /-- Given a `TransversalPair`, we can make a normal form for words in the `HNNExtension G A B φ`.
 The normal form is a `head`, which is an element of `G`, followed by the product list of pairs,
@@ -248,7 +248,7 @@ def ofGroup (g : G) : NormalWord d :=
 instance : Inhabited (NormalWord d) := ⟨empty⟩
 
 instance : MulAction G (NormalWord d) :=
-  { smul := fun g w => { w with head := g * w.head }
+  { smul := fun g w ↦ { w with head := g * w.head }
     one_smul := by simp [instHSMul]
     mul_smul := by simp [instHSMul, mul_assoc] }
 
@@ -298,7 +298,7 @@ def consRecOn {motive : NormalWord d → Sort*} (w : NormalWord d)
     exact cons g a.1
       { head := a.2
         toList := l
-        mem_set := fun _ _ h => mem_set _ _ (List.mem_cons_of_mem _ h),
+        mem_set := fun _ _ h ↦ mem_set _ _ (List.mem_cons_of_mem _ h),
         chain := (List.chain'_cons'.1 chain).2 }
       (mem_set a.1 a.2 List.mem_cons_self)
       (by simpa using (List.chain'_cons'.1 chain).1)
@@ -358,7 +358,7 @@ def Cancels (u : ℤˣ) (w : NormalWord d) : Prop :=
 def unitsSMulWithCancel (u : ℤˣ) (w : NormalWord d) : Cancels u w → NormalWord d :=
   consRecOn w
     (by simp [Cancels, ofGroup]; tauto)
-    (fun g _ w _ _ _ can =>
+    (fun g _ w _ _ _ can ↦
       (toSubgroupEquiv φ u ⟨g, can.1⟩ : G) • w)
 
 /-- Multiplying `t^u` by a `NormalWord`, `w` and putting the result in normal form. -/
@@ -450,8 +450,8 @@ theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
 noncomputable def unitsSMulEquiv : NormalWord d ≃ NormalWord d :=
   { toFun := unitsSMul φ 1
     invFun := unitsSMul φ (-1),
-    left_inv := fun _ => by rw [unitsSMul_neg]
-    right_inv := fun w => by convert unitsSMul_neg _ _ w; simp }
+    left_inv := fun _ ↦ by rw [unitsSMul_neg]
+    right_inv := fun w ↦ by convert unitsSMul_neg _ _ w; simp }
 
 theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
     unitsSMul φ 1 ((g : G) • w) = (φ g : G) • (unitsSMul φ 1 w) := by
@@ -581,17 +581,17 @@ theorem prod_smul_empty (w : NormalWord d) :
 variable (d)
 /-- The equivalence between elements of the HNN extension and words in normal form. -/
 noncomputable def equiv : HNNExtension G A B φ ≃ NormalWord d :=
-  { toFun := fun g => g • empty,
-    invFun := fun w => w.prod φ,
-    left_inv := fun g => by simp [prod_smul]
-    right_inv := fun w => by simp }
+  { toFun := fun g ↦ g • empty,
+    invFun := fun w ↦ w.prod φ,
+    left_inv := fun g ↦ by simp [prod_smul]
+    right_inv := fun w ↦ by simp }
 
 theorem prod_injective : Injective
-    (fun w => w.prod φ : NormalWord d → HNNExtension G A B φ) :=
+    (fun w ↦ w.prod φ : NormalWord d → HNNExtension G A B φ) :=
   (equiv φ d).symm.injective
 
 instance : FaithfulSMul (HNNExtension G A B φ) (NormalWord d) :=
-  ⟨fun h => by simpa using congr_arg (fun w => w.prod φ) (h empty)⟩
+  ⟨fun h ↦ by simpa using congr_arg (fun w ↦ w.prod φ) (h empty)⟩
 
 end NormalWord
 
@@ -602,7 +602,7 @@ theorem of_injective : Function.Injective (of : G → HNNExtension G A B φ) := 
   refine Function.Injective.of_comp
     (f := ((· • ·) : HNNExtension G A B φ → NormalWord d → NormalWord d)) ?_
   intros _ _ h
-  exact eq_of_smul_eq_smul (fun w : NormalWord d =>
+  exact eq_of_smul_eq_smul (fun w : NormalWord d ↦
     by simp_all [funext_iff, of_smul_eq_smul])
 
 namespace ReducedWord

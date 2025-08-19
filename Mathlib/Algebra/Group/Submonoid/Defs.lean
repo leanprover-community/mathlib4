@@ -205,14 +205,14 @@ protected theorem mul_mem {x y : M} : x ∈ S → y ∈ S → x * y ∈ S :=
 instance : Top (Submonoid M) :=
   ⟨{  carrier := Set.univ
       one_mem' := Set.mem_univ 1
-      mul_mem' := fun _ _ => Set.mem_univ _ }⟩
+      mul_mem' := fun _ _ ↦ Set.mem_univ _ }⟩
 
 /-- The trivial submonoid `{1}` of a monoid `M`. -/
 @[to_additive /-- The trivial `AddSubmonoid` `{0}` of an `AddMonoid` `M`. -/]
 instance : Bot (Submonoid M) :=
   ⟨{  carrier := {1}
       one_mem' := Set.mem_singleton 1
-      mul_mem' := fun ha hb => by
+      mul_mem' := fun ha hb ↦ by
         simp only [Set.mem_singleton_iff] at *
         rw [ha, hb, mul_one] }⟩
 
@@ -239,10 +239,10 @@ theorem coe_bot : ((⊥ : Submonoid M) : Set M) = {1} :=
 /-- The inf of two submonoids is their intersection. -/
 @[to_additive /-- The inf of two `AddSubmonoid`s is their intersection. -/]
 instance : Min (Submonoid M) :=
-  ⟨fun S₁ S₂ =>
+  ⟨fun S₁ S₂ ↦
     { carrier := S₁ ∩ S₂
       one_mem' := ⟨S₁.one_mem, S₂.one_mem⟩
-      mul_mem' := fun ⟨hx, hx'⟩ ⟨hy, hy'⟩ => ⟨S₁.mul_mem hx hy, S₂.mul_mem hx' hy'⟩ }⟩
+      mul_mem' := fun ⟨hx, hx'⟩ ⟨hy, hy'⟩ ↦ ⟨S₁.mul_mem hx hy, S₂.mul_mem hx' hy'⟩ }⟩
 
 @[to_additive (attr := simp)]
 theorem coe_inf (p p' : Submonoid M) : ((p ⊓ p' : Submonoid M) : Set M) = (p : Set M) ∩ p' :=
@@ -254,13 +254,13 @@ theorem mem_inf {p p' : Submonoid M} {x : M} : x ∈ p ⊓ p' ↔ x ∈ p ∧ x 
 
 @[to_additive (attr := simp)]
 theorem subsingleton_iff : Subsingleton (Submonoid M) ↔ Subsingleton M :=
-  ⟨fun _ =>
-    ⟨fun x y =>
-      have : ∀ i : M, i = 1 := fun i =>
+  ⟨fun _ ↦
+    ⟨fun x y ↦
+      have : ∀ i : M, i = 1 := fun i ↦
         mem_bot.mp <| Subsingleton.elim (⊤ : Submonoid M) ⊥ ▸ mem_top i
       (this x).trans (this y).symm⟩,
-    fun _ =>
-    ⟨fun x y => Submonoid.ext fun i => Subsingleton.elim 1 i ▸ by simp⟩⟩
+    fun _ ↦
+    ⟨fun x y ↦ Submonoid.ext fun i ↦ Subsingleton.elim 1 i ▸ by simp⟩⟩
 
 @[to_additive (attr := simp)]
 theorem nontrivial_iff : Nontrivial (Submonoid M) ↔ Nontrivial M :=
@@ -270,7 +270,7 @@ theorem nontrivial_iff : Nontrivial (Submonoid M) ↔ Nontrivial M :=
 
 @[to_additive]
 instance [Subsingleton M] : Unique (Submonoid M) :=
-  ⟨⟨⊥⟩, fun a => @Subsingleton.elim _ (subsingleton_iff.mpr ‹_›) a _⟩
+  ⟨⟨⊥⟩, fun a ↦ @Subsingleton.elim _ (subsingleton_iff.mpr ‹_›) a _⟩
 
 @[to_additive]
 instance [Nontrivial M] : Nontrivial (Submonoid M) :=
@@ -293,11 +293,11 @@ def eqLocusM (f g : M →* N) : Submonoid M where
 
 @[to_additive (attr := simp)]
 theorem eqLocusM_same (f : M →* N) : f.eqLocusM f = ⊤ :=
-  SetLike.ext fun _ => eq_self_iff_true _
+  SetLike.ext fun _ ↦ eq_self_iff_true _
 
 @[to_additive]
 theorem eq_of_eqOn_topM {f g : M →* N} (h : Set.EqOn f g (⊤ : Submonoid M)) : f = g :=
-  ext fun _ => h trivial
+  ext fun _ ↦ h trivial
 
 end MonoidHom
 
@@ -335,13 +335,13 @@ variable {A : Type*} [MulOneClass M] [SetLike A M] [hA : SubmonoidClass A M] (S'
 /-- An `AddSubmonoid` of an `AddMonoid` inherits a scalar multiplication. -/
 instance AddSubmonoidClass.nSMul {M} [AddMonoid M] {A : Type*} [SetLike A M]
     [AddSubmonoidClass A M] (S : A) : SMul ℕ S :=
-  ⟨fun n a => ⟨n • a.1, nsmul_mem a.2 n⟩⟩
+  ⟨fun n a ↦ ⟨n • a.1, nsmul_mem a.2 n⟩⟩
 
 namespace SubmonoidClass
 
 /-- A submonoid of a monoid inherits a power operator. -/
 instance nPow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] (S : A) : Pow S ℕ :=
-  ⟨fun a n => ⟨a.1 ^ n, pow_mem a.2 n⟩⟩
+  ⟨fun a n ↦ ⟨a.1 ^ n, pow_mem a.2 n⟩⟩
 
 attribute [to_additive existing nSMul] nPow
 
@@ -361,21 +361,21 @@ theorem mk_pow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] {S 
   /-- An `AddSubmonoid` of a unital additive magma inherits a unital additive magma structure. -/]
 instance (priority := 75) toMulOneClass {M : Type*} [MulOneClass M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : MulOneClass S := fast_instance%
-  Subtype.coe_injective.mulOneClass Subtype.val rfl (fun _ _ => rfl)
+  Subtype.coe_injective.mulOneClass Subtype.val rfl (fun _ _ ↦ rfl)
 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a monoid inherits a monoid structure. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits an `AddMonoid` structure. -/]
 instance (priority := 75) toMonoid {M : Type*} [Monoid M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : Monoid S := fast_instance%
-  Subtype.coe_injective.monoid Subtype.val rfl (fun _ _ => rfl) (fun _ _ => rfl)
+  Subtype.coe_injective.monoid Subtype.val rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a `CommMonoid` is a `CommMonoid`. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`. -/]
 instance (priority := 75) toCommMonoid {M} [CommMonoid M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : CommMonoid S := fast_instance%
-  Subtype.coe_injective.commMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.commMonoid Subtype.val rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
 @[to_additive /-- The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`. -/]
@@ -405,7 +405,7 @@ variable {M : Type*} [MulOneClass M] (S : Submonoid M)
 /-- A submonoid of a monoid inherits a multiplication. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits an addition. -/]
 instance mul : Mul S :=
-  ⟨fun a b => ⟨a.1 * b.1, S.mul_mem a.2 b.2⟩⟩
+  ⟨fun a b ↦ ⟨a.1 * b.1, S.mul_mem a.2 b.2⟩⟩
 
 /-- A submonoid of a monoid inherits a 1. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits a zero. -/]
@@ -441,7 +441,7 @@ theorem one_def : (1 : S) = ⟨1, S.one_mem⟩ :=
   /-- An `AddSubmonoid` of a unital additive magma inherits a unital additive magma structure. -/]
 instance toMulOneClass {M : Type*} [MulOneClass M] (S : Submonoid M) :
     MulOneClass S := fast_instance%
-  Subtype.coe_injective.mulOneClass Subtype.val rfl fun _ _ => rfl
+  Subtype.coe_injective.mulOneClass Subtype.val rfl fun _ _ ↦ rfl
 
 @[to_additive]
 protected theorem pow_mem {M : Type*} [Monoid M] (S : Submonoid M) {x : M} (hx : x ∈ S) (n : ℕ) :
@@ -451,25 +451,25 @@ protected theorem pow_mem {M : Type*} [Monoid M] (S : Submonoid M) {x : M} (hx :
 /-- A submonoid of a monoid inherits a monoid structure. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits an `AddMonoid` structure. -/]
 instance toMonoid {M : Type*} [Monoid M] (S : Submonoid M) : Monoid S := fast_instance%
-  Subtype.coe_injective.monoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.monoid Subtype.val rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 /-- A submonoid of a `CommMonoid` is a `CommMonoid`. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`. -/]
 instance toCommMonoid {M} [CommMonoid M] (S : Submonoid M) : CommMonoid S := fast_instance%
-  Subtype.coe_injective.commMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.commMonoid Subtype.val rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 /-- A submonoid of a left cancellative unital magma inherits left cancellation. -/
 @[to_additive
   /-- An `AddSubmonoid` of a left cancellative unital additive magma inherits left cancellation. -/]
 instance isLeftCancelMul [IsLeftCancelMul M] (S : Submonoid M) : IsLeftCancelMul S :=
-  Subtype.coe_injective.isLeftCancelMul Subtype.val fun _ _ => rfl
+  Subtype.coe_injective.isLeftCancelMul Subtype.val fun _ _ ↦ rfl
 
 /-- A submonoid of a right cancellative unital magma inherits right cancellation. -/
 @[to_additive
   /-- An `AddSubmonoid` of a right cancellative unital additive magma inherits right
   cancellation. -/]
 instance isRightCancelMul [IsRightCancelMul M] (S : Submonoid M) : IsRightCancelMul S :=
-  Subtype.coe_injective.isRightCancelMul Subtype.val fun _ _ => rfl
+  Subtype.coe_injective.isRightCancelMul Subtype.val fun _ _ ↦ rfl
 
 /-- A submonoid of a cancellative unital magma inherits cancellation. -/
 @[to_additive

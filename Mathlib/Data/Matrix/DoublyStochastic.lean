@@ -47,7 +47,7 @@ def doublyStochastic (R n : Type*) [Fintype n] [DecidableEq n] [Semiring R] [Par
     Submonoid (Matrix n n R) where
   carrier := {M | (∀ i j, 0 ≤ M i j) ∧ M *ᵥ 1 = 1 ∧ 1 ᵥ* M = 1 }
   mul_mem' {M N} hM hN := by
-    refine ⟨fun i j => sum_nonneg fun i _ => mul_nonneg (hM.1 _ _) (hN.1 _ _), ?_, ?_⟩
+    refine ⟨fun i j ↦ sum_nonneg fun i _ ↦ mul_nonneg (hM.1 _ _) (hN.1 _ _), ?_, ?_⟩
     next => rw [← mulVec_mulVec, hN.2.1, hM.2.1]
     next => rw [← vecMul_vecMul, hM.2.2, hN.2.2]
   one_mem' := by simp [zero_le_one_elem]
@@ -85,7 +85,7 @@ lemma one_vecMul_of_mem_doublyStochastic (hM : M ∈ doublyStochastic R n) : 1 �
 lemma le_one_of_mem_doublyStochastic (hM : M ∈ doublyStochastic R n) {i j : n} :
     M i j ≤ 1 := by
   rw [← sum_row_of_mem_doublyStochastic hM i]
-  exact single_le_sum (fun k _ => hM.1 _ k) (mem_univ j)
+  exact single_le_sum (fun k _ ↦ hM.1 _ k) (mem_univ j)
 
 /-- The set of doubly stochastic matrices is convex. -/
 lemma convex_doublyStochastic : Convex R (doublyStochastic R n : Set (Matrix n n R)) := by
@@ -97,7 +97,7 @@ lemma convex_doublyStochastic : Convex R (doublyStochastic R n : Set (Matrix n n
 lemma permMatrix_mem_doublyStochastic {σ : Equiv.Perm n} :
     σ.permMatrix R ∈ doublyStochastic R n := by
   rw [mem_doublyStochastic_iff_sum]
-  refine ⟨fun i j => ?g1, ?g2, ?g3⟩
+  refine ⟨fun i j ↦ ?g1, ?g2, ?g3⟩
   case g1 => aesop
   case g2 => simp [Equiv.toPEquiv_apply]
   case g3 => simp [Equiv.toPEquiv_apply, ← Equiv.eq_symm_apply]
@@ -124,7 +124,7 @@ lemma exists_mem_doublyStochastic_eq_smul_iff {M : Matrix n n R} {s : R} (hs : 0
     rintro ⟨M', hM', rfl⟩
     rw [mem_doublyStochastic_iff_sum] at hM'
     simp only [smul_apply, smul_eq_mul, ← mul_sum]
-    exact ⟨fun i j => mul_nonneg hs (hM'.1 _ _), by simp [hM']⟩
+    exact ⟨fun i j ↦ mul_nonneg hs (hM'.1 _ _), by simp [hM']⟩
   rcases eq_or_lt_of_le hs with rfl | hs
   case inl =>
     simp only [zero_smul, exists_and_right, and_imp]

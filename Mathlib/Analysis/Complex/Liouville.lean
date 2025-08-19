@@ -51,7 +51,7 @@ theorem norm_deriv_le_aux [CompleteSpace F] {c : ℂ} {R C : ℝ} {f : ℂ → F
     (hf : DiffContOnCl ℂ f (ball c R)) (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
     ‖deriv f c‖ ≤ C / R := by
   have : ∀ z ∈ sphere c R, ‖(z - c) ^ (-2 : ℤ) • f z‖ ≤ C / (R * R) :=
-    fun z (hz : ‖z - c‖ = R) => by
+    fun z (hz : ‖z - c‖ = R) ↦ by
     simpa [-mul_inv_rev, norm_smul, hz, zpow_two, ← div_eq_inv_mul] using
       (div_le_div_iff_of_pos_right (mul_pos hR hR)).2 (hC z hz)
   calc
@@ -76,7 +76,7 @@ theorem norm_deriv_le_of_forall_mem_sphere_norm_le {c : ℂ} {R C : ℝ} {f : �
       rw [this.deriv]
       exact (UniformSpace.Completion.norm_coe _).symm
     _ ≤ C / R :=
-      norm_deriv_le_aux hR (e.differentiable.comp_diffContOnCl hd) fun z hz =>
+      norm_deriv_le_aux hR (e.differentiable.comp_diffContOnCl hd) fun z hz ↦
         (UniformSpace.Completion.norm_coe _).trans_le (hC z hz)
 
 /-- An auxiliary lemma for Liouville's theorem `Differentiable.apply_eq_apply_of_bounded`. -/
@@ -87,12 +87,12 @@ theorem liouville_theorem_aux {f : ℂ → F} (hf : Differentiable ℂ f) (hb : 
   obtain ⟨C, C₀, hC⟩ : ∃ C > (0 : ℝ), ∀ z, ‖f z‖ ≤ C := by
     rcases isBounded_iff_forall_norm_le.1 hb with ⟨C, hC⟩
     exact
-      ⟨max C 1, lt_max_iff.2 (Or.inr zero_lt_one), fun z =>
+      ⟨max C 1, lt_max_iff.2 (Or.inr zero_lt_one), fun z ↦
         (hC (f z) (mem_range_self _)).trans (le_max_left _ _)⟩
-  refine norm_le_zero_iff.1 (le_of_forall_gt_imp_ge_of_dense fun ε ε₀ => ?_)
+  refine norm_le_zero_iff.1 (le_of_forall_gt_imp_ge_of_dense fun ε ε₀ ↦ ?_)
   calc
     ‖deriv f c‖ ≤ C / (C / ε) :=
-      norm_deriv_le_of_forall_mem_sphere_norm_le (div_pos C₀ ε₀) hf.diffContOnCl fun z _ => hC z
+      norm_deriv_le_of_forall_mem_sphere_norm_le (div_pos C₀ ε₀) hf.diffContOnCl fun z _ ↦ hC z
     _ = ε := div_div_cancel₀ C₀.lt.ne'
 
 end Complex
@@ -104,7 +104,7 @@ open Complex
 /-- **Liouville's theorem**: a complex differentiable bounded function `f : E → F` is a constant. -/
 theorem apply_eq_apply_of_bounded {f : E → F} (hf : Differentiable ℂ f) (hb : IsBounded (range f))
     (z w : E) : f z = f w := by
-  set g : ℂ → F := f ∘ fun t : ℂ => t • (w - z) + z
+  set g : ℂ → F := f ∘ fun t : ℂ ↦ t • (w - z) + z
   suffices g 0 = g 1 by simpa [g]
   apply liouville_theorem_aux
   exacts [hf.comp ((differentiable_id.smul_const (w - z)).add_const z),
@@ -113,12 +113,12 @@ theorem apply_eq_apply_of_bounded {f : E → F} (hf : Differentiable ℂ f) (hb 
 /-- **Liouville's theorem**: a complex differentiable bounded function is a constant. -/
 theorem exists_const_forall_eq_of_bounded {f : E → F} (hf : Differentiable ℂ f)
     (hb : IsBounded (range f)) : ∃ c, ∀ z, f z = c :=
-  ⟨f 0, fun _ => hf.apply_eq_apply_of_bounded hb _ _⟩
+  ⟨f 0, fun _ ↦ hf.apply_eq_apply_of_bounded hb _ _⟩
 
 /-- **Liouville's theorem**: a complex differentiable bounded function is a constant. -/
 theorem exists_eq_const_of_bounded {f : E → F} (hf : Differentiable ℂ f)
     (hb : IsBounded (range f)) : ∃ c, f = const E c :=
-  (hf.exists_const_forall_eq_of_bounded hb).imp fun _ => funext
+  (hf.exists_const_forall_eq_of_bounded hb).imp fun _ ↦ funext
 
 /-- A corollary of Liouville's theorem where the function tends to a finite value at infinity
 (i.e., along `Filter.cocompact`, which in proper spaces coincides with `Bornology.cobounded`). -/

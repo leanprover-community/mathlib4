@@ -29,7 +29,7 @@ variable {F : Type*}
 theorem map_inf [SemilatticeInf α] [LinearOrder β] [FunLike F β α]
     [RelHomClass F (· < ·) (· < ·)] (a : F) (m n : β) :
     a (m ⊓ n) = a m ⊓ a n :=
-  (StrictMono.monotone fun _ _ => map_rel a).map_inf m n
+  (StrictMono.monotone fun _ _ ↦ map_rel a).map_inf m n
 
 theorem map_sup [SemilatticeSup α] [LinearOrder β] [FunLike F β α]
     [RelHomClass F (· > ·) (· > ·)] (a : F) (m n : β) :
@@ -86,22 +86,22 @@ theorem coe_inclusionEmbedding (r : α → α → Prop) {s t : Set α} (h : s �
   rfl
 
 instance (r : α → α → Prop) [IsRefl α r] (p : α → Prop) : IsRefl _ (Subrel r p) :=
-  ⟨fun x => @IsRefl.refl α r _ x⟩
+  ⟨fun x ↦ @IsRefl.refl α r _ x⟩
 
 instance (r : α → α → Prop) [IsSymm α r] (p : α → Prop) : IsSymm _ (Subrel r p) :=
-  ⟨fun x y => @IsSymm.symm α r _ x y⟩
+  ⟨fun x y ↦ @IsSymm.symm α r _ x y⟩
 
 instance (r : α → α → Prop) [IsAsymm α r] (p : α → Prop) : IsAsymm _ (Subrel r p) :=
-  ⟨fun x y => @IsAsymm.asymm α r _ x y⟩
+  ⟨fun x y ↦ @IsAsymm.asymm α r _ x y⟩
 
 instance (r : α → α → Prop) [IsTrans α r] (p : α → Prop) : IsTrans _ (Subrel r p) :=
-  ⟨fun x y z => @IsTrans.trans α r _ x y z⟩
+  ⟨fun x y z ↦ @IsTrans.trans α r _ x y z⟩
 
 instance (r : α → α → Prop) [IsIrrefl α r] (p : α → Prop) : IsIrrefl _ (Subrel r p) :=
-  ⟨fun x => @IsIrrefl.irrefl α r _ x⟩
+  ⟨fun x ↦ @IsIrrefl.irrefl α r _ x⟩
 
 instance (r : α → α → Prop) [IsTrichotomous α r] (p : α → Prop) : IsTrichotomous _ (Subrel r p) :=
-  ⟨fun x y => by rw [Subtype.eq_iff]; exact @IsTrichotomous.trichotomous α r _ x y⟩
+  ⟨fun x y ↦ by rw [Subtype.eq_iff]; exact @IsTrichotomous.trichotomous α r _ x y⟩
 
 instance (r : α → α → Prop) [IsWellFounded α r] (p : α → Prop) : IsWellFounded _ (Subrel r p) :=
   (Subrel.relEmbedding r p).isWellFounded

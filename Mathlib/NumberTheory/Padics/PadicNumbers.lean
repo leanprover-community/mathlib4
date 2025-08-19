@@ -311,11 +311,11 @@ open PadicSeq
 /-
 private unsafe def index_simp_core (hh hf hg : expr)
     (at_ : Interactive.Loc := Interactive.Loc.ns [none]) : tactic Unit := do
-  let [v1, v2, v3] ← [hh, hf, hg].mapM fun n => tactic.mk_app `` stationary_point [n] <|> return n
+  let [v1, v2, v3] ← [hh, hf, hg].mapM fun n ↦ tactic.mk_app `` stationary_point [n] <|> return n
   let e1 ← tactic.mk_app `` lift_index_left_left [hh, v2, v3] <|> return q(True)
   let e2 ← tactic.mk_app `` lift_index_left [hf, v1, v3] <|> return q(True)
   let e3 ← tactic.mk_app `` lift_index_right [hg, v1, v2] <|> return q(True)
-  let sl ← [e1, e2, e3].foldlM (fun s e => simp_lemmas.add s e) simp_lemmas.mk
+  let sl ← [e1, e2, e3].foldlM (fun s e ↦ simp_lemmas.add s e) simp_lemmas.mk
   when at_ (tactic.simp_target sl >> tactic.skip)
   let hs ← at_.get_locals
   hs (tactic.simp_hyp sl [])
@@ -767,9 +767,9 @@ theorem complete' : ∃ q : ℚ_[p], ∀ ε > 0, ∃ N, ∀ i ≥ N, padicNormE 
 
 theorem complete'' : ∃ q : ℚ_[p], ∀ ε > 0, ∃ N, ∀ i ≥ N, padicNormE (f i - q : ℚ_[p]) < ε := by
   obtain ⟨x, hx⟩ := complete' f
-  refine ⟨x, fun ε hε => ?_⟩
+  refine ⟨x, fun ε hε ↦ ?_⟩
   obtain ⟨N, hN⟩ := hx ε hε
-  refine ⟨N, fun i hi => ?_⟩
+  refine ⟨N, fun i hi ↦ ?_⟩
   rw [padicNormE.map_sub]
   exact hN i hi
 end Complete
@@ -963,7 +963,7 @@ variable {p : ℕ} [hp : Fact p.Prime]
 
 instance complete : CauSeq.IsComplete ℚ_[p] norm where
   isComplete f := by
-    have cau_seq_norm_e : IsCauSeq padicNormE f := fun ε hε => by
+    have cau_seq_norm_e : IsCauSeq padicNormE f := fun ε hε ↦ by
       have h := isCauSeq f ε (mod_cast hε)
       dsimp [norm] at h
       exact mod_cast h
@@ -1021,7 +1021,7 @@ theorem valuation_zero : valuation (0 : ℚ_[p]) = 0 :=
   dif_pos ((const_equiv p).2 rfl)
 
 theorem norm_eq_zpow_neg_valuation {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : ℝ) ^ (-x.valuation) := by
-  refine Quotient.inductionOn' x fun f hf => ?_
+  refine Quotient.inductionOn' x fun f hf ↦ ?_
   change (PadicSeq.norm _ : ℝ) = (p : ℝ) ^ (-PadicSeq.valuation _)
   rw [PadicSeq.norm_eq_zpow_neg_valuation]
   · rw [Rat.cast_zpow, Rat.cast_natCast]

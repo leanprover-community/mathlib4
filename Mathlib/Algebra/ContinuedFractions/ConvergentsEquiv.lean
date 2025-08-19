@@ -93,7 +93,7 @@ def squashSeq (s : Stream'.Seq <| Pair K) (n : ℕ) : Stream'.Seq (Pair K) :=
   | ⟨some gp_n, some gp_succ_n⟩ =>
     Stream'.Seq.nats.zipWith
       -- return the squashed value at position `n`; otherwise, do nothing.
-      (fun n' gp => if n' = n then ⟨gp_n.a, gp_n.b + gp_succ_n.a / gp_succ_n.b⟩ else gp) s
+      (fun n' gp ↦ if n' = n then ⟨gp_n.a, gp_n.b + gp_succ_n.a / gp_succ_n.b⟩ else gp) s
   | _ => s
 
 /-! We now prove some simple lemmas about the squashed sequence -/

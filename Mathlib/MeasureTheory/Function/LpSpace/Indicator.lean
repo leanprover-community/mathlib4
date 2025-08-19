@@ -12,7 +12,7 @@ import Mathlib.Order.Filter.IndicatorFunction
 # Indicator of a set as an element of `Lp`
 
 For a set `s` with `(hs : MeasurableSet s)` and `(hμs : μ s < ∞)`, we build
-`indicatorConstLp p hs hμs c`, the element of `Lp` corresponding to `s.indicator (fun _ => c)`.
+`indicatorConstLp p hs hμs c`, the element of `Lp` corresponding to `s.indicator (fun _ ↦ c)`.
 
 ## Main definitions
 
@@ -33,15 +33,15 @@ namespace MeasureTheory
 for any `p < ∞`. Given here as an existential `∀ ε > 0, ∃ η > 0, ...` to avoid later
 management of `ℝ≥0∞`-arithmetic. -/
 theorem exists_eLpNorm_indicator_le (hp : p ≠ ∞) (c : E) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
-    ∃ η : ℝ≥0, 0 < η ∧ ∀ s : Set α, μ s ≤ η → eLpNorm (s.indicator fun _ => c) p μ ≤ ε := by
+    ∃ η : ℝ≥0, 0 < η ∧ ∀ s : Set α, μ s ≤ η → eLpNorm (s.indicator fun _ ↦ c) p μ ≤ ε := by
   rcases eq_or_ne p 0 with (rfl | h'p)
-  · exact ⟨1, zero_lt_one, fun s _ => by simp⟩
+  · exact ⟨1, zero_lt_one, fun s _ ↦ by simp⟩
   have hp₀ : 0 < p := bot_lt_iff_ne_bot.2 h'p
   have hp₀' : 0 ≤ 1 / p.toReal := div_nonneg zero_le_one ENNReal.toReal_nonneg
   have hp₀'' : 0 < p.toReal := ENNReal.toReal_pos hp₀.ne' hp
   obtain ⟨η, hη_pos, hη_le⟩ : ∃ η : ℝ≥0, 0 < η ∧ ‖c‖ₑ * (η : ℝ≥0∞) ^ (1 / p.toReal) ≤ ε := by
     have :
-      Filter.Tendsto (fun x : ℝ≥0 => ((‖c‖₊ * x ^ (1 / p.toReal) : ℝ≥0) : ℝ≥0∞)) (𝓝 0)
+      Filter.Tendsto (fun x : ℝ≥0 ↦ ((‖c‖₊ * x ^ (1 / p.toReal) : ℝ≥0) : ℝ≥0∞)) (𝓝 0)
         (𝓝 (0 : ℝ≥0)) := by
       rw [ENNReal.tendsto_coe]
       convert (NNReal.continuousAt_rpow_const (Or.inr hp₀')).tendsto.const_mul _
@@ -51,7 +51,7 @@ theorem exists_eLpNorm_indicator_le (hp : p ≠ ∞) (c : E) {ε : ℝ≥0∞} (
     obtain ⟨η, hη, hηδ⟩ := exists_between hδ
     refine ⟨η, hη, ?_⟩
     simpa only [← ENNReal.coe_rpow_of_nonneg _ hp₀', enorm, ← ENNReal.coe_mul] using hδε' hηδ
-  refine ⟨η, hη_pos, fun s hs => ?_⟩
+  refine ⟨η, hη_pos, fun s hs ↦ ?_⟩
   refine (eLpNorm_indicator_const_le _ _).trans (le_trans ?_ hη_le)
   exact mul_le_mul_left' (ENNReal.rpow_le_rpow hs hp₀') _
 
@@ -89,7 +89,7 @@ variable {s : Set α} {hs : MeasurableSet s} {hμs : μ s ≠ ∞} {c : E}
 
 /-- Indicator of a set as an element of `Lp`. -/
 def indicatorConstLp (p : ℝ≥0∞) (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) : Lp E p μ :=
-  MemLp.toLp (s.indicator fun _ => c) (memLp_indicator_const p hs c (Or.inr hμs))
+  MemLp.toLp (s.indicator fun _ ↦ c) (memLp_indicator_const p hs c (Or.inr hμs))
 
 /-- A version of `Set.indicator_add` for `MeasureTheory.indicatorConstLp` -/
 theorem indicatorConstLp_add {c' : E} :
@@ -105,14 +105,14 @@ theorem indicatorConstLp_sub {c' : E} :
   simp_rw [indicatorConstLp, ← MemLp.toLp_sub, indicator_sub]
   rfl
 
-theorem indicatorConstLp_coeFn : ⇑(indicatorConstLp p hs hμs c) =ᵐ[μ] s.indicator fun _ => c :=
+theorem indicatorConstLp_coeFn : ⇑(indicatorConstLp p hs hμs c) =ᵐ[μ] s.indicator fun _ ↦ c :=
   MemLp.coeFn_toLp (memLp_indicator_const p hs c (Or.inr hμs))
 
 theorem indicatorConstLp_coeFn_mem : ∀ᵐ x : α ∂μ, x ∈ s → indicatorConstLp p hs hμs c x = c :=
-  indicatorConstLp_coeFn.mono fun _x hx hxs => hx.trans (Set.indicator_of_mem hxs _)
+  indicatorConstLp_coeFn.mono fun _x hx hxs ↦ hx.trans (Set.indicator_of_mem hxs _)
 
 theorem indicatorConstLp_coeFn_notMem : ∀ᵐ x : α ∂μ, x ∉ s → indicatorConstLp p hs hμs c x = 0 :=
-  indicatorConstLp_coeFn.mono fun _x hx hxs => hx.trans (Set.indicator_of_notMem hxs _)
+  indicatorConstLp_coeFn.mono fun _x hx hxs ↦ hx.trans (Set.indicator_of_notMem hxs _)
 
 @[deprecated (since := "2025-05-24")]
 alias indicatorConstLp_coeFn_nmem := indicatorConstLp_coeFn_notMem
@@ -203,7 +203,7 @@ theorem memLp_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (suppor
     (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
     MemLp (f + g) p μ ↔ MemLp f p μ ∧ MemLp g p μ := by
   borelize E
-  refine ⟨fun hfg => ⟨?_, ?_⟩, fun h => h.1.add h.2⟩
+  refine ⟨fun hfg ↦ ⟨?_, ?_⟩, fun h ↦ h.1.add h.2⟩
   · rw [← Set.indicator_add_eq_left h]; exact hfg.indicator (measurableSet_support hf.measurable)
   · rw [← Set.indicator_add_eq_right h]; exact hfg.indicator (measurableSet_support hg.measurable)
 
@@ -311,7 +311,7 @@ theorem indicatorConstLp_eq_toSpanSingleton_compLp {s : Set α} [NormedSpace ℝ
     (ContinuousLinearMap.toSpanSingleton ℝ x).coeFn_compLp (indicatorConstLp 2 hs hμs (1 : ℝ))
   rw [← EventuallyEq] at h_compLp
   refine EventuallyEq.trans ?_ h_compLp.symm
-  refine (@indicatorConstLp_coeFn _ _ _ 2 μ _ s hs hμs (1 : ℝ)).mono fun y hy => ?_
+  refine (@indicatorConstLp_coeFn _ _ _ 2 μ _ s hs hμs (1 : ℝ)).mono fun y hy ↦ ?_
   dsimp only
   rw [hy]
   simp_rw [ContinuousLinearMap.toSpanSingleton_apply]

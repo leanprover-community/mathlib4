@@ -103,7 +103,7 @@ lemma support_mul_subset_left (f g : ι → M₀) : support (fun x ↦ f x * g x
   fun x hfg hf ↦ hfg <| by simp only [hf, zero_mul]
 
 lemma support_mul_subset_right (f g : ι → M₀) : support (fun x ↦ f x * g x) ⊆ support g :=
-  fun x hfg hg => hfg <| by simp only [hg, mul_zero]
+  fun x hfg hg ↦ hfg <| by simp only [hg, mul_zero]
 
 variable [NoZeroDivisors M₀]
 

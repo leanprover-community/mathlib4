@@ -62,11 +62,11 @@ polynomials over the ground ring.
 -/
 @[simps]
 def pUnitAlgEquiv : MvPolynomial PUnit R ≃ₐ[R] R[X] where
-  toFun := eval₂ Polynomial.C fun _ => Polynomial.X
+  toFun := eval₂ Polynomial.C fun _ ↦ Polynomial.X
   invFun := Polynomial.eval₂ MvPolynomial.C (X PUnit.unit)
   left_inv := by
     let f : R[X] →+* MvPolynomial PUnit R := Polynomial.eval₂RingHom MvPolynomial.C (X PUnit.unit)
-    let g : MvPolynomial PUnit R →+* R[X] := eval₂Hom Polynomial.C fun _ => Polynomial.X
+    let g : MvPolynomial PUnit R →+* R[X] := eval₂Hom Polynomial.C fun _ ↦ Polynomial.X
     change ∀ p, f.comp g p = p
     apply is_id
     · ext a
@@ -76,8 +76,8 @@ def pUnitAlgEquiv : MvPolynomial PUnit R ≃ₐ[R] R[X] where
       dsimp [f, g]
       rw [eval₂_X, Polynomial.eval₂_X]
   right_inv p :=
-    Polynomial.induction_on p (fun a => by rw [Polynomial.eval₂_C, MvPolynomial.eval₂_C])
-    (fun p q hp hq => by rw [Polynomial.eval₂_add, MvPolynomial.eval₂_add, hp, hq]) fun p n _ => by
+    Polynomial.induction_on p (fun a ↦ by rw [Polynomial.eval₂_C, MvPolynomial.eval₂_C])
+    (fun p q hp hq ↦ by rw [Polynomial.eval₂_add, MvPolynomial.eval₂_add, hp, hq]) fun p n _ ↦ by
       rw [Polynomial.eval₂_mul, Polynomial.eval₂_pow, Polynomial.eval₂_X, Polynomial.eval₂_C,
         eval₂_mul, eval₂_C, eval₂_pow, eval₂_X]
   map_mul' _ _ := eval₂_mul _ _
@@ -120,7 +120,7 @@ theorem mapEquiv_symm [CommSemiring S₁] [CommSemiring S₂] (e : S₁ ≃+* S�
 @[simp]
 theorem mapEquiv_trans [CommSemiring S₁] [CommSemiring S₂] [CommSemiring S₃] (e : S₁ ≃+* S₂)
     (f : S₂ ≃+* S₃) : (mapEquiv σ e).trans (mapEquiv σ f) = mapEquiv σ (e.trans f) :=
-  RingEquiv.ext fun p => by
+  RingEquiv.ext fun p ↦ by
     simp only [RingEquiv.coe_trans, comp_apply, mapEquiv_apply, RingEquiv.coe_ringHom_trans,
       map_map]
 
@@ -190,7 +190,7 @@ with coefficients in multivariable polynomials in the other type.
 See `sumRingEquiv` for the ring isomorphism.
 -/
 def sumToIter : MvPolynomial (S₁ ⊕ S₂) R →+* MvPolynomial S₁ (MvPolynomial S₂ R) :=
-  eval₂Hom (C.comp C) fun bc => Sum.recOn bc X (C ∘ X)
+  eval₂Hom (C.comp C) fun bc ↦ Sum.recOn bc X (C ∘ X)
 
 @[simp]
 theorem sumToIter_C (a : R) : sumToIter R S₁ S₂ (C a) = C (C a) :=
@@ -347,7 +347,7 @@ polynomials with coefficients in `MvPolynomial S₁ R`.
 -/
 @[simps! -isSimp]
 def optionEquivLeft : MvPolynomial (Option S₁) R ≃ₐ[R] Polynomial (MvPolynomial S₁ R) :=
-  AlgEquiv.ofAlgHom (MvPolynomial.aeval fun o => o.elim Polynomial.X fun s => Polynomial.C (X s))
+  AlgEquiv.ofAlgHom (MvPolynomial.aeval fun o ↦ o.elim Polynomial.X fun s ↦ Polynomial.C (X s))
     (Polynomial.aevalTower (MvPolynomial.rename some) (X none))
     (by ext : 2 <;> simp) (by ext i : 2; cases i <;> simp)
 
@@ -398,7 +398,7 @@ theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Op
   -- turn this into a def `Polynomial.mapAlgHom`
   let φ : (MvPolynomial S₁ R)[X] →ₐ[R] R[X] :=
     { Polynomial.mapRingHom (eval s) with
-      commutes' := fun r => by
+      commutes' := fun r ↦ by
         convert Polynomial.map_C (eval s)
         exact (eval_C _).symm }
   change
@@ -462,8 +462,8 @@ multivariable polynomials with coefficients in polynomials.
 -/
 @[simps!]
 def optionEquivRight : MvPolynomial (Option S₁) R ≃ₐ[R] MvPolynomial S₁ R[X] :=
-  AlgEquiv.ofAlgHom (MvPolynomial.aeval fun o => o.elim (C Polynomial.X) X)
-    (MvPolynomial.aevalTower (Polynomial.aeval (X none)) fun i => X (Option.some i))
+  AlgEquiv.ofAlgHom (MvPolynomial.aeval fun o ↦ o.elim (C Polynomial.X) X)
+    (MvPolynomial.aevalTower (Polynomial.aeval (X none)) fun i ↦ X (Option.some i))
     (by
       ext : 2 <;>
         simp only [MvPolynomial.algebraMap_eq, Option.elim, AlgHom.coe_comp, AlgHom.id_comp,
@@ -493,8 +493,8 @@ def finSuccEquiv : MvPolynomial (Fin (n + 1)) R ≃ₐ[R] Polynomial (MvPolynomi
 
 theorem finSuccEquiv_eq :
     (finSuccEquiv R n : MvPolynomial (Fin (n + 1)) R →+* Polynomial (MvPolynomial (Fin n) R)) =
-      eval₂Hom (Polynomial.C.comp (C : R →+* MvPolynomial (Fin n) R)) fun i : Fin (n + 1) =>
-        Fin.cases Polynomial.X (fun k => Polynomial.C (X k)) i := by
+      eval₂Hom (Polynomial.C.comp (C : R →+* MvPolynomial (Fin n) R)) fun i : Fin (n + 1) ↦
+        Fin.cases Polynomial.X (fun k ↦ Polynomial.C (X k)) i := by
   ext i : 2
   · simp only [finSuccEquiv, optionEquivLeft_apply, aeval_C, AlgEquiv.coe_trans, RingHom.coe_coe,
       coe_eval₂Hom, comp_apply, renameEquiv_apply, eval₂_C, RingHom.coe_comp, rename_C]
@@ -504,14 +504,14 @@ theorem finSuccEquiv_eq :
 theorem finSuccEquiv_apply (p : MvPolynomial (Fin (n + 1)) R) :
     finSuccEquiv R n p =
       eval₂Hom (Polynomial.C.comp (C : R →+* MvPolynomial (Fin n) R))
-        (fun i : Fin (n + 1) => Fin.cases Polynomial.X (fun k => Polynomial.C (X k)) i) p := by
+        (fun i : Fin (n + 1) ↦ Fin.cases Polynomial.X (fun k ↦ Polynomial.C (X k)) i) p := by
   rw [← finSuccEquiv_eq, RingHom.coe_coe]
 
 theorem finSuccEquiv_comp_C_eq_C {R : Type u} [CommSemiring R] (n : ℕ) :
     (↑(MvPolynomial.finSuccEquiv R n).symm : Polynomial (MvPolynomial (Fin n) R) →+* _).comp
         (Polynomial.C.comp MvPolynomial.C) =
       (MvPolynomial.C : R →+* MvPolynomial (Fin n.succ) R) := by
-  refine RingHom.ext fun x => ?_
+  refine RingHom.ext fun x ↦ ?_
   rw [RingHom.comp_apply]
   refine
     (MvPolynomial.finSuccEquiv R n).injective
@@ -556,7 +556,7 @@ theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (
   -- turn this into a def `Polynomial.mapAlgHom`
   let φ : (MvPolynomial (Fin n) R)[X] →ₐ[R] R[X] :=
     { Polynomial.mapRingHom (eval s) with
-      commutes' := fun r => by
+      commutes' := fun r ↦ by
         convert Polynomial.map_C (eval s)
         exact (eval_C _).symm }
   change
@@ -595,7 +595,7 @@ lemma totalDegree_coeff_finSuccEquiv_add_le (f : MvPolynomial (Fin (n + 1)) R) (
     exact hi
   -- Let σ be a monomial index of ((finSuccEquiv R n p).coeff i) of maximal total degree
   have ⟨σ, hσ1, hσ2⟩ := Finset.exists_mem_eq_sup (support _) hf'_sup
-                          (fun s => Finsupp.sum s fun _ e => e)
+                          (fun s ↦ Finsupp.sum s fun _ e ↦ e)
   -- Then cons i σ is a monomial index of p with total degree equal to the desired bound
   let σ' : Fin (n + 1) →₀ ℕ := cons i σ
   convert le_totalDegree (s := σ') _
@@ -604,7 +604,7 @@ lemma totalDegree_coeff_finSuccEquiv_add_le (f : MvPolynomial (Fin (n + 1)) R) (
     exact hσ1
 
 theorem support_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
-    (finSuccEquiv R n f).support = Finset.image (fun m : Fin (n + 1) →₀ ℕ => m 0) f.support := by
+    (finSuccEquiv R n f).support = Finset.image (fun m : Fin (n + 1) →₀ ℕ ↦ m 0) f.support := by
   ext i
   rw [Polynomial.mem_support_iff, Finset.mem_image, Finsupp.ne_iff]
   constructor
@@ -654,9 +654,9 @@ theorem support_finSuccEquiv_nonempty {f : MvPolynomial (Fin (n + 1)) R} (h : f 
 theorem degree_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} (h : f ≠ 0) :
     (finSuccEquiv R n f).degree = degreeOf 0 f := by
   -- TODO: these should be lemmas
-  have h₀ : ∀ {α β : Type _} (f : α → β), (fun x => x) ∘ f = f := fun f => rfl
-  have h₁ : ∀ {α β : Type _} (f : α → β), f ∘ (fun x => x) = f := fun f => rfl
-  have h' : ((finSuccEquiv R n f).support.sup fun x => x) = degreeOf 0 f := by
+  have h₀ : ∀ {α β : Type _} (f : α → β), (fun x ↦ x) ∘ f = f := fun f ↦ rfl
+  have h₁ : ∀ {α β : Type _} (f : α → β), f ∘ (fun x ↦ x) = f := fun f ↦ rfl
+  have h' : ((finSuccEquiv R n f).support.sup fun x ↦ x) = degreeOf 0 f := by
     rw [degreeOf_eq_sup, support_finSuccEquiv, Finset.sup_image, h₀]
   rw [Polynomial.degree, ← h', Nat.cast_withBot,
     Finset.coe_sup_of_nonempty (support_finSuccEquiv_nonempty h), Finset.max_eq_sup_coe, h₁]
@@ -673,7 +673,7 @@ theorem degreeOf_coeff_finSuccEquiv (p : MvPolynomial (Fin (n + 1)) R) (j : Fin 
   intro m hm
   rw [← Finsupp.cons_succ j i m]
   exact Finset.le_sup
-    (f := fun (g : Fin (Nat.succ n) →₀ ℕ) => g (Fin.succ j))
+    (f := fun (g : Fin (Nat.succ n) →₀ ℕ) ↦ g (Fin.succ j))
     (support_coeff_finSuccEquiv.1 hm)
 
 /-- Consider a multivariate polynomial `φ` whose variables are indexed by `Option σ`,

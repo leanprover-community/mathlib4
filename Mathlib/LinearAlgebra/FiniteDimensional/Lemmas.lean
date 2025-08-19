@@ -156,7 +156,7 @@ theorem injective_iff_surjective_of_finrank_eq_finrank [FiniteDimensional K V]
     [FiniteDimensional K V₂] (H : finrank K V = finrank K V₂) {f : V →ₗ[K] V₂} :
     Function.Injective f ↔ Function.Surjective f := by
   have := finrank_range_add_finrank_ker f
-  rw [← ker_eq_bot, ← range_eq_top]; refine ⟨fun h => ?_, fun h => ?_⟩
+  rw [← ker_eq_bot, ← range_eq_top]; refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [h, finrank_bot, add_zero, H] at this
     exact eq_top_of_finrank_eq this
   · rw [h, finrank_top, H] at this
@@ -196,7 +196,7 @@ theorem finrank_lt_finrank_of_lt {s t : Submodule K V} [FiniteDimensional K t] (
     finrank_lt <| by simp [not_le_of_gt hst]
 
 theorem finrank_strictMono [FiniteDimensional K V] :
-    StrictMono fun s : Submodule K V => finrank K s := fun _ _ => finrank_lt_finrank_of_lt
+    StrictMono fun s : Submodule K V ↦ finrank K s := fun _ _ ↦ finrank_lt_finrank_of_lt
 
 theorem finrank_add_eq_of_isCompl [FiniteDimensional K V] {U W : Submodule K V} (h : IsCompl U W) :
     finrank K U + finrank K W = finrank K V := by
@@ -298,7 +298,7 @@ section finrank_eq_one
 theorem is_simple_module_of_finrank_eq_one {A} [Semiring A] [Module A V] [SMul K A]
     [IsScalarTower K A V] (h : finrank K V = 1) : IsSimpleOrder (Submodule A V) := by
   haveI := nontrivial_of_finrank_eq_succ h
-  refine ⟨fun S => or_iff_not_imp_left.2 fun hn => ?_⟩
+  refine ⟨fun S ↦ or_iff_not_imp_left.2 fun hn ↦ ?_⟩
   rw [← restrictScalars_inj K] at hn ⊢
   haveI : FiniteDimensional _ _ := .of_finrank_eq_succ h
   refine eq_top_of_finrank_eq ((Submodule.finrank_le _).antisymm ?_)
@@ -318,7 +318,7 @@ theorem Subalgebra.isSimpleOrder_of_finrank (hr : finrank F E = 2) :
     IsSimpleOrder (Subalgebra F E) :=
   let i := nontrivial_of_finrank_pos (zero_lt_two.trans_eq hr.symm)
   { toNontrivial :=
-      ⟨⟨⊥, ⊤, fun h => by cases hr.symm.trans (Subalgebra.bot_eq_top_iff_finrank_eq_one.1 h)⟩⟩
+      ⟨⟨⊥, ⊤, fun h ↦ by cases hr.symm.trans (Subalgebra.bot_eq_top_iff_finrank_eq_one.1 h)⟩⟩
     eq_bot_or_eq_top := by
       intro S
       haveI : FiniteDimensional F E := .of_finrank_eq_succ hr
@@ -364,7 +364,7 @@ theorem exists_ker_pow_eq_ker_pow_succ [FiniteDimensional K V] (f : End K V) :
           n.succ ≤ (finrank K ↑(LinearMap.ker (f ^ n))).succ :=
             Nat.succ_le_succ (ih (Nat.le_of_succ_le hn))
           _ ≤ finrank K ↑(LinearMap.ker (f ^ n.succ)) := Nat.succ_le_of_lt h_finrank_lt_finrank
-    have h_any_n_lt : ∀ n, n ≤ (finrank K V).succ → n ≤ finrank K V := fun n hn =>
+    have h_any_n_lt : ∀ n, n ≤ (finrank K V).succ → n ≤ finrank K V := fun n hn ↦
       (h_le_ker_pow n hn).trans (Submodule.finrank_le _)
     exact Nat.not_succ_le_self _ (h_any_n_lt (finrank K V).succ (finrank K V).succ.le_refl)
 

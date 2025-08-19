@@ -28,7 +28,7 @@ class Productive (s : WSeq α) : Prop where
   get?_terminates : ∀ n, (get? s n).Terminates
 
 theorem productive_iff (s : WSeq α) : Productive s ↔ ∀ n, (get? s n).Terminates :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
 
 instance get?_terminates (s : WSeq α) [h : Productive s] : ∀ n, (get? s n).Terminates :=
   h.get?_terminates
@@ -37,24 +37,24 @@ instance head_terminates (s : WSeq α) [Productive s] : (head s).Terminates :=
   s.get?_terminates 0
 
 instance productive_tail (s : WSeq α) [Productive s] : Productive (tail s) :=
-  ⟨fun n => by rw [get?_tail]; infer_instance⟩
+  ⟨fun n ↦ by rw [get?_tail]; infer_instance⟩
 
 instance productive_dropn (s : WSeq α) [Productive s] (n) : Productive (drop s n) :=
-  ⟨fun m => by rw [← get?_add]; infer_instance⟩
+  ⟨fun m ↦ by rw [← get?_add]; infer_instance⟩
 
 open Computation
 
 instance productive_ofSeq (s : Seq α) : Productive (ofSeq s) :=
-  ⟨fun n => by rw [get?_ofSeq]; infer_instance⟩
+  ⟨fun n ↦ by rw [get?_ofSeq]; infer_instance⟩
 
 theorem productive_congr {s t : WSeq α} (h : s ~ʷ t) : Productive s ↔ Productive t := by
-  simp only [productive_iff]; exact forall_congr' fun n => terminates_congr <| get?_congr h _
+  simp only [productive_iff]; exact forall_congr' fun n ↦ terminates_congr <| get?_congr h _
 
 /-- Given a productive weak sequence, we can collapse all the `think`s to
   produce a sequence. -/
 def toSeq (s : WSeq α) [Productive s] : Seq α :=
-  ⟨fun n => (get? s n).get,
-   fun {n} h => by
+  ⟨fun n ↦ (get? s n).get,
+   fun {n} h ↦ by
     cases e : Computation.get (get? s (n + 1))
     · assumption
     have := Computation.mem_of_get_eq _ e

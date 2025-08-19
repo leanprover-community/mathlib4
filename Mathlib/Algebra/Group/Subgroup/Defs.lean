@@ -89,7 +89,7 @@ attribute [aesop 90% (rule_sets := [SetLike])] inv_mem neg_mem
 @[to_additive (attr := simp)]
 theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] {H : S}
     {x : G} : x⁻¹ ∈ H ↔ x ∈ H :=
-  ⟨fun h => inv_inv x ▸ inv_mem h, inv_mem⟩
+  ⟨fun h ↦ inv_inv x ▸ inv_mem h, inv_mem⟩
 
 variable {M S : Type*} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] {H K : S}
 
@@ -119,18 +119,18 @@ theorem exists_inv_mem_iff_exists_mem {P : G → Prop} :
 
 @[to_additive]
 theorem mul_mem_cancel_right {x y : G} (h : x ∈ H) : y * x ∈ H ↔ y ∈ H :=
-  ⟨fun hba => by simpa using mul_mem hba (inv_mem h), fun hb => mul_mem hb h⟩
+  ⟨fun hba ↦ by simpa using mul_mem hba (inv_mem h), fun hb ↦ mul_mem hb h⟩
 
 @[to_additive]
 theorem mul_mem_cancel_left {x y : G} (h : x ∈ H) : x * y ∈ H ↔ y ∈ H :=
-  ⟨fun hab => by simpa using mul_mem (inv_mem h) hab, mul_mem h⟩
+  ⟨fun hab ↦ by simpa using mul_mem (inv_mem h) hab, mul_mem h⟩
 
 namespace InvMemClass
 
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive /-- An additive subgroup of an `AddGroup` inherits an inverse. -/]
 instance inv {G S : Type*} [Inv G] [SetLike S G] [InvMemClass S G] {H : S} : Inv H :=
-  ⟨fun a => ⟨a⁻¹, inv_mem a.2⟩⟩
+  ⟨fun a ↦ ⟨a⁻¹, inv_mem a.2⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_inv (x : H) : (x⁻¹).1 = x.1⁻¹ :=
@@ -155,17 +155,17 @@ theorem subset_union {H K L : S} : (H : Set G) ⊆ K ∪ L ↔ H ≤ K ∨ H ≤
 /-- A subgroup of a group inherits a division -/
 @[to_additive /-- An additive subgroup of an `AddGroup` inherits a subtraction. -/]
 instance div {G S : Type*} [DivInvMonoid G] [SetLike S G] [SubgroupClass S G] {H : S} : Div H :=
-  ⟨fun a b => ⟨a / b, div_mem a.2 b.2⟩⟩
+  ⟨fun a b ↦ ⟨a / b, div_mem a.2 b.2⟩⟩
 
 /-- An additive subgroup of an `AddGroup` inherits an integer scaling. -/
 instance _root_.AddSubgroupClass.zsmul {M S} [SubNegMonoid M] [SetLike S M]
     [AddSubgroupClass S M] {H : S} : SMul ℤ H :=
-  ⟨fun n a => ⟨n • a.1, zsmul_mem a.2 n⟩⟩
+  ⟨fun n a ↦ ⟨n • a.1, zsmul_mem a.2 n⟩⟩
 
 /-- A subgroup of a group inherits an integer power. -/
 @[to_additive existing]
 instance zpow {M S} [DivInvMonoid M] [SetLike S M] [SubgroupClass S M] {H : S} : Pow H ℤ :=
-  ⟨fun a n => ⟨a.1 ^ n, zpow_mem a.2 n⟩⟩
+  ⟨fun a n ↦ ⟨a.1 ^ n, zpow_mem a.2 n⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_div (x y : H) : (x / y).1 = x.1 / y.1 :=
@@ -177,22 +177,22 @@ variable (H)
 /-- A subgroup of a group inherits a group structure. -/
 @[to_additive /-- An additive subgroup of an `AddGroup` inherits an `AddGroup` structure. -/]
 instance (priority := 75) toGroup : Group H := fast_instance%
-  Subtype.coe_injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.group _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 -- Prefer subclasses of `CommGroup` over subclasses of `SubgroupClass`.
 /-- A subgroup of a `CommGroup` is a `CommGroup`. -/
 @[to_additive /-- An additive subgroup of an `AddCommGroup` is an `AddCommGroup`. -/]
 instance (priority := 75) toCommGroup {G : Type*} [CommGroup G] [SetLike S G] [SubgroupClass S G] :
     CommGroup H := fast_instance%
-  Subtype.coe_injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.commGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive (attr := coe)
   /-- The natural group hom from an additive subgroup of `AddGroup` `G` to `G`. -/]
 protected def subtype : H →* G where
-  toFun := ((↑) : H → G); map_one' := rfl; map_mul' := fun _ _ => rfl
+  toFun := ((↑) : H → G); map_one' := rfl; map_mul' := fun _ _ ↦ rfl
 
 variable {H} in
 @[to_additive (attr := simp)]
@@ -227,7 +227,7 @@ theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
 @[to_additive
 /-- The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`. -/]
 def inclusion {H K : S} (h : H ≤ K) : H →* K :=
-  MonoidHom.mk' (fun x => ⟨x, h x.prop⟩) fun _ _ => rfl
+  MonoidHom.mk' (fun x ↦ ⟨x, h x.prop⟩) fun _ _ ↦ rfl
 
 @[to_additive (attr := simp)]
 theorem inclusion_self (x : H) : inclusion le_rfl x = x := by
@@ -347,7 +347,7 @@ theorem mem_toSubmonoid (K : Subgroup G) (x : G) : x ∈ K.toSubmonoid ↔ x ∈
 
 @[to_additive]
 theorem toSubmonoid_injective : Function.Injective (toSubmonoid : Subgroup G → Submonoid G) :=
-  fun p q h => by
+  fun p q h ↦ by
     have := SetLike.ext'_iff.1 h
     rw [coe_toSubmonoid, coe_toSubmonoid] at this
     exact SetLike.ext'_iff.2 this
@@ -357,7 +357,7 @@ theorem toSubmonoid_inj {p q : Subgroup G} : p.toSubmonoid = q.toSubmonoid ↔ p
   toSubmonoid_injective.eq_iff
 
 @[to_additive (attr := mono)]
-theorem toSubmonoid_strictMono : StrictMono (toSubmonoid : Subgroup G → Submonoid G) := fun _ _ =>
+theorem toSubmonoid_strictMono : StrictMono (toSubmonoid : Subgroup G → Submonoid G) := fun _ _ ↦
   id
 
 @[to_additive (attr := mono)]
@@ -449,11 +449,11 @@ def ofDiv (s : Set G) (hsn : s.Nonempty) (hs : ∀ᵉ (x ∈ s) (y ∈ s), x * y
   have one_mem : (1 : G) ∈ s := by
     let ⟨x, hx⟩ := hsn
     simpa using hs x hx x hx
-  have inv_mem : ∀ x, x ∈ s → x⁻¹ ∈ s := fun x hx => by simpa using hs 1 one_mem x hx
+  have inv_mem : ∀ x, x ∈ s → x⁻¹ ∈ s := fun x hx ↦ by simpa using hs 1 one_mem x hx
   { carrier := s
     one_mem' := one_mem
     inv_mem' := inv_mem _
-    mul_mem' := fun hx hy => by simpa using hs _ hx _ (inv_mem _ hy) }
+    mul_mem' := fun hx hy ↦ by simpa using hs _ hx _ (inv_mem _ hy) }
 
 /-- A subgroup of a group inherits a multiplication. -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits an addition. -/]
@@ -468,30 +468,30 @@ instance one : One H :=
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits an inverse. -/]
 instance inv : Inv H :=
-  ⟨fun a => ⟨a⁻¹, H.inv_mem a.2⟩⟩
+  ⟨fun a ↦ ⟨a⁻¹, H.inv_mem a.2⟩⟩
 
 /-- A subgroup of a group inherits a division -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits a subtraction. -/]
 instance div : Div H :=
-  ⟨fun a b => ⟨a / b, H.div_mem a.2 b.2⟩⟩
+  ⟨fun a b ↦ ⟨a / b, H.div_mem a.2 b.2⟩⟩
 
 /-- An `AddSubgroup` of an `AddGroup` inherits a natural scaling. -/
 instance _root_.AddSubgroup.nsmul {G} [AddGroup G] {H : AddSubgroup G} : SMul ℕ H :=
-  ⟨fun n a => ⟨n • a, H.nsmul_mem a.2 n⟩⟩
+  ⟨fun n a ↦ ⟨n • a, H.nsmul_mem a.2 n⟩⟩
 
 /-- A subgroup of a group inherits a natural power -/
 @[to_additive existing]
 protected instance npow : Pow H ℕ :=
-  ⟨fun a n => ⟨a ^ n, H.pow_mem a.2 n⟩⟩
+  ⟨fun a n ↦ ⟨a ^ n, H.pow_mem a.2 n⟩⟩
 
 /-- An `AddSubgroup` of an `AddGroup` inherits an integer scaling. -/
 instance _root_.AddSubgroup.zsmul {G} [AddGroup G] {H : AddSubgroup G} : SMul ℤ H :=
-  ⟨fun n a => ⟨n • a, H.zsmul_mem a.2 n⟩⟩
+  ⟨fun n a ↦ ⟨n • a, H.zsmul_mem a.2 n⟩⟩
 
 /-- A subgroup of a group inherits an integer power -/
 @[to_additive existing]
 instance zpow : Pow H ℤ :=
-  ⟨fun a n => ⟨a ^ n, H.zpow_mem a.2 n⟩⟩
+  ⟨fun a n ↦ ⟨a ^ n, H.zpow_mem a.2 n⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_mul (x y : H) : (↑(x * y) : G) = ↑x * ↑y :=
@@ -527,14 +527,14 @@ theorem mk_eq_one {g : G} {h} : (⟨g, h⟩ : H) = 1 ↔ g = 1 := Submonoid.mk_e
 /-- A subgroup of a group inherits a group structure. -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits an `AddGroup` structure. -/]
 instance toGroup {G : Type*} [Group G] (H : Subgroup G) : Group H := fast_instance%
-  Subtype.coe_injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.group _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 /-- A subgroup of a `CommGroup` is a `CommGroup`. -/
 @[to_additive /-- An `AddSubgroup` of an `AddCommGroup` is an `AddCommGroup`. -/]
 instance toCommGroup {G : Type*} [CommGroup G] (H : Subgroup G) : CommGroup H := fast_instance%
-  Subtype.coe_injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.commGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive /-- The natural group hom from an `AddSubgroup` of `AddGroup` `G` to `G`. -/]
@@ -563,7 +563,7 @@ alias _root_.AddSubgroup.coeSubtype := AddSubgroup.coe_subtype
 @[to_additive
 /-- The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`. -/]
 def inclusion {H K : Subgroup G} (h : H ≤ K) : H →* K :=
-  MonoidHom.mk' (fun x => ⟨x, h x.2⟩) fun _ _ => rfl
+  MonoidHom.mk' (fun x ↦ ⟨x, h x.2⟩) fun _ _ ↦ rfl
 
 @[to_additive (attr := simp)]
 theorem coe_inclusion {H K : Subgroup G} {h : H ≤ K} (a : H) : (inclusion h a : G) = a := by
@@ -684,11 +684,11 @@ theorem mem_normalizer_iff'' {g : G} : g ∈ H.normalizer ↔ ∀ h : G, h ∈ H
 
 @[to_additive]
 theorem mem_normalizer_iff' {g : G} : g ∈ H.normalizer ↔ ∀ n, n * g ∈ H ↔ g * n ∈ H :=
-  ⟨fun h n => by rw [h, mul_assoc, mul_inv_cancel_right], fun h n => by
+  ⟨fun h n ↦ by rw [h, mul_assoc, mul_inv_cancel_right], fun h n ↦ by
     rw [mul_assoc, ← h, inv_mul_cancel_right]⟩
 
 @[to_additive]
-theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
+theorem le_normalizer : H ≤ normalizer H := fun x xH n ↦ by
   rw [H.mul_mem_cancel_right (H.inv_mem xH), H.mul_mem_cancel_left xH]
 
 end Normalizer

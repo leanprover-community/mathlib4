@@ -52,7 +52,7 @@ def projectivePresentation (X : Profinite.{u}) : ProjectivePresentation X where
   p := of <| Ultrafilter X
   f := CompHausLike.ofHom _ ⟨_, continuous_ultrafilter_extend id⟩
   projective := Profinite.projective_ultrafilter X
-  epi := ConcreteCategory.epi_of_surjective _ fun x =>
+  epi := ConcreteCategory.epi_of_surjective _ fun x ↦
     ⟨(pure x : Ultrafilter X), congr_fun (ultrafilter_extend_extends (𝟙 X)) x⟩
 
 instance : EnoughProjectives Profinite.{u} where presentation X := ⟨projectivePresentation X⟩

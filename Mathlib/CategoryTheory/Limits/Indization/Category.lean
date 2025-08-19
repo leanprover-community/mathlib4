@@ -189,7 +189,7 @@ noncomputable def Ind.colimitPresentationCompYoneda (X : Ind C) :
           IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) X.presentation.isColimit
 
 instance : RepresentablyCoflat (Ind.yoneda (C := C)) := by
-  refine ⟨fun X => ?_⟩
+  refine ⟨fun X ↦ ?_⟩
   suffices IsFiltered (CostructuredArrow yoneda ((Ind.inclusion C).obj X)) from
     IsFiltered.of_equivalence
       ((CostructuredArrow.post Ind.yoneda (Ind.inclusion C) X).asEquivalence.trans
@@ -234,17 +234,17 @@ instance {α : Type w} [SmallCategory α] [FinCategory α] [HasColimitsOfShape �
 
 instance {α : Type v} [Finite α] [HasColimitsOfShape (Discrete α) C] :
     HasColimitsOfShape (Discrete α) (Ind C) := by
-  refine ⟨fun F => ?_⟩
-  let I : α → Type v := fun s => (F.obj ⟨s⟩).presentation.I
-  let G : ∀ s, I s ⥤ C := fun s => (F.obj ⟨s⟩).presentation.F
-  let iso : Discrete.functor (fun s => Pi.eval I s ⋙ G s) ⋙
+  refine ⟨fun F ↦ ?_⟩
+  let I : α → Type v := fun s ↦ (F.obj ⟨s⟩).presentation.I
+  let G : ∀ s, I s ⥤ C := fun s ↦ (F.obj ⟨s⟩).presentation.F
+  let iso : Discrete.functor (fun s ↦ Pi.eval I s ⋙ G s) ⋙
       (whiskeringRight _ _ _).obj Ind.yoneda ⋙ colim ≅ F := by
-    refine Discrete.natIso (fun s => ?_)
+    refine Discrete.natIso (fun s ↦ ?_)
     refine (Functor.Final.colimitIso (Pi.eval I s.as) (G s.as ⋙ Ind.yoneda)) ≪≫ ?_
     exact Ind.colimitPresentationCompYoneda _
   -- The actual proof happens during typeclass resolution in the following line, which deduces
   -- ```
-  -- HasColimit Discrete.functor (fun s => Pi.eval I s ⋙ G s) ⋙
+  -- HasColimit Discrete.functor (fun s ↦ Pi.eval I s ⋙ G s) ⋙
   --    (whiskeringRight _ _ _).obj Ind.yoneda ⋙ colim
   -- ```
   -- from the fact that finite limits commute with filtered colimits and from the fact that
@@ -253,7 +253,7 @@ instance {α : Type v} [Finite α] [HasColimitsOfShape (Discrete α) C] :
 
 instance [HasFiniteCoproducts C] : HasCoproducts.{v} (Ind C) :=
   have : HasFiniteCoproducts (Ind C) :=
-    ⟨fun _ => hasColimitsOfShape_of_equivalence (Discrete.equivalence Equiv.ulift)⟩
+    ⟨fun _ ↦ hasColimitsOfShape_of_equivalence (Discrete.equivalence Equiv.ulift)⟩
   hasCoproducts_of_finite_and_filtered
 
 /-- Given an `IndParallelPairPresentation f g`, we can understand the parallel pair `(f, g)` as
@@ -269,7 +269,7 @@ noncomputable def IndParallelPairPresentation.parallelPairIsoParallelPairCompInd
 
 instance [HasColimitsOfShape WalkingParallelPair C] :
     HasColimitsOfShape WalkingParallelPair (Ind C) := by
-  refine ⟨fun F => ?_⟩
+  refine ⟨fun F ↦ ?_⟩
   obtain ⟨P⟩ := nonempty_indParallelPairPresentation (F.obj WalkingParallelPair.zero).2
     (F.obj WalkingParallelPair.one).2 (Ind.inclusion _ |>.map <| F.map WalkingParallelPairHom.left)
     (Ind.inclusion _ |>.map <| F.map WalkingParallelPairHom.right)

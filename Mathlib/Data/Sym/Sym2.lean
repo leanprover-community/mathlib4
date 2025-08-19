@@ -185,8 +185,8 @@ def lift : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ } 
     Quot.lift (uncurry ↑f) <| by
       rintro _ _ ⟨⟩
       exacts [rfl, f.prop _ _]
-  invFun F := ⟨curry (F ∘ Sym2.mk), fun _ _ => congr_arg F eq_swap⟩
-  right_inv _ := funext <| Sym2.ind fun _ _ => rfl
+  invFun F := ⟨curry (F ∘ Sym2.mk), fun _ _ ↦ congr_arg F eq_swap⟩
+  right_inv _ := funext <| Sym2.ind fun _ _ ↦ rfl
 
 @[simp]
 theorem lift_mk (f : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ }) (a₁ a₂ : α) :
@@ -205,15 +205,15 @@ def lift₂ :
       (Sym2 α → Sym2 β → γ) where
   toFun f :=
     Quotient.lift₂ (s₁ := Sym2.Rel.setoid α) (s₂ := Sym2.Rel.setoid β)
-      (fun (a : α × α) (b : β × β) => f.1 a.1 a.2 b.1 b.2)
+      (fun (a : α × α) (b : β × β) ↦ f.1 a.1 a.2 b.1 b.2)
       (by
         rintro _ _ _ _ ⟨⟩ ⟨⟩
         exacts [rfl, (f.2 _ _ _ _).2, (f.2 _ _ _ _).1, (f.2 _ _ _ _).1.trans (f.2 _ _ _ _).2])
   invFun F :=
-    ⟨fun a₁ a₂ b₁ b₂ => F s(a₁, a₂) s(b₁, b₂), fun a₁ a₂ b₁ b₂ => by
+    ⟨fun a₁ a₂ b₁ b₂ ↦ F s(a₁, a₂) s(b₁, b₂), fun a₁ a₂ b₁ b₂ ↦ by
       constructor
       exacts [congr_arg₂ F eq_swap rfl, congr_arg₂ F rfl eq_swap]⟩
-  right_inv _ := funext₂ fun a b => Sym2.inductionOn₂ a b fun _ _ _ _ => rfl
+  right_inv _ := funext₂ fun a b ↦ Sym2.inductionOn₂ a b fun _ _ _ _ ↦ rfl
 
 @[simp]
 theorem lift₂_mk
@@ -254,7 +254,7 @@ theorem map_pair_eq (f : α → β) (x y : α) : map f s(x, y) = s(f x, f y) :=
 
 theorem map.injective {f : α → β} (hinj : Injective f) : Injective (map f) := by
   intro z z'
-  refine Sym2.inductionOn₂ z z' (fun x y x' y' => ?_)
+  refine Sym2.inductionOn₂ z z' (fun x y x' y' ↦ ?_)
   simp [hinj.eq_iff]
 
 /-- `mk a` as an embedding. This is the symmetric version of `Function.Embedding.sectL`. -/
@@ -272,11 +272,11 @@ def _root_.Function.Embedding.sym2Map (f : α ↪ β) : Sym2 α ↪ Sym2 β wher
   inj' := map.injective f.injective
 
 lemma lift_comp_map {g : γ → α} (f : {f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁}) :
-    lift f ∘ map g = lift ⟨fun (c₁ c₂ : γ) => f.val (g c₁) (g c₂), fun _ _ => f.prop _ _⟩ :=
+    lift f ∘ map g = lift ⟨fun (c₁ c₂ : γ) ↦ f.val (g c₁) (g c₂), fun _ _ ↦ f.prop _ _⟩ :=
   lift.symm_apply_eq.mp rfl
 
 lemma lift_map_apply {g : γ → α} (f : {f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁}) (p : Sym2 γ) :
-    lift f (map g p) = lift ⟨fun (c₁ c₂ : γ) => f.val (g c₁) (g c₂), fun _ _ => f.prop _ _⟩ p := by
+    lift f (map g p) = lift ⟨fun (c₁ c₂ : γ) ↦ f.val (g c₁) (g c₂), fun _ _ ↦ f.prop _ _⟩ p := by
   conv_rhs => rw [← lift_comp_map, comp_apply]
 
 section Membership
@@ -341,7 +341,7 @@ theorem out_snd_mem (e : Sym2 α) : e.out.2 ∈ e :=
   ⟨e.out.1, by rw [eq_swap, Sym2.mk, e.out_eq]⟩
 
 theorem ball {p : α → Prop} {a b : α} : (∀ c ∈ s(a, b), p c) ↔ p a ∧ p b := by
-  refine ⟨fun h => ⟨h _ <| mem_mk_left _ _, h _ <| mem_mk_right _ _⟩, fun h c hc => ?_⟩
+  refine ⟨fun h ↦ ⟨h _ <| mem_mk_left _ _, h _ <| mem_mk_right _ _⟩, fun h c hc ↦ ?_⟩
   obtain rfl | rfl := Sym2.mem_iff.1 hc
   · exact h.1
   · exact h.2
@@ -375,7 +375,7 @@ theorem eq_of_ne_mem {x y : α} {z z' : Sym2 α} (h : x ≠ y) (h1 : x ∈ z) (h
   ((mem_and_mem_iff h).mp ⟨h1, h2⟩).trans ((mem_and_mem_iff h).mp ⟨h3, h4⟩).symm
 
 instance Mem.decidable [DecidableEq α] (x : α) (z : Sym2 α) : Decidable (x ∈ z) :=
-  z.recOnSubsingleton fun ⟨_, _⟩ => decidable_of_iff' _ mem_iff
+  z.recOnSubsingleton fun ⟨_, _⟩ ↦ decidable_of_iff' _ mem_iff
 
 end Membership
 
@@ -395,7 +395,7 @@ theorem map_congr {f g : α → β} {s : Sym2 α} (h : ∀ x ∈ s, f x = g x) :
 
 /-- Note: `Sym2.map_id` will not simplify `Sym2.map id z` due to `Sym2.map_congr`. -/
 @[simp]
-theorem map_id' : (map fun x : α => x) = id :=
+theorem map_id' : (map fun x : α ↦ x) = id :=
   map_id
 
 /--
@@ -406,11 +406,11 @@ satisfy `p`, using the proof to apply `f`.
 def pmap {P : α → Prop} (f : ∀ a, P a → β) (s : Sym2 α) : (∀ a ∈ s, P a) → Sym2 β :=
   let g (p : α × α) (H : ∀ a ∈ Sym2.mk p, P a) : Sym2 β :=
     s(f p.1 (H p.1 <| mem_mk_left _ _), f p.2 (H p.2 <| mem_mk_right _ _))
-  Quot.recOn s g fun p q hpq => funext fun Hq => by
+  Quot.recOn s g fun p q hpq ↦ funext fun Hq ↦ by
     rw [rel_iff'] at hpq
-    have Hp : ∀ a ∈ Sym2.mk p, P a := fun a hmem =>
+    have Hp : ∀ a ∈ Sym2.mk p, P a := fun a hmem ↦
       Hq a (Sym2.mk_eq_mk_iff.2 hpq ▸ hmem : a ∈ Sym2.mk q)
-    have h : ∀ {s₂ e H}, Eq.ndrec (motive := fun s => (∀ a ∈ s, P a) → Sym2 β) (g p) (b := s₂) e H =
+    have h : ∀ {s₂ e H}, Eq.ndrec (motive := fun s ↦ (∀ a ∈ s, P a) → Sym2 β) (g p) (b := s₂) e H =
       g p Hp := by
       rintro s₂ rfl _
       rfl
@@ -435,22 +435,22 @@ lemma mem_pmap_iff {P : α → Prop} (f : ∀ a, P a → β) (z : Sym2 α) (h : 
   aesop
 
 lemma pmap_eq_map {P : α → Prop} (f : α → β) (z : Sym2 α) (h : ∀ a ∈ z, P a) :
-    z.pmap (fun a _ => f a) h = z.map f := by
+    z.pmap (fun a _ ↦ f a) h = z.map f := by
   cases z; rfl
 
 lemma map_pmap {Q : β → Prop} (f : α → β) (g : ∀ b, Q b → γ) (z : Sym2 α) (h : ∀ b ∈ z.map f, Q b) :
     (z.map f).pmap g h =
-    z.pmap (fun a ha => g (f a) (h (f a) (mem_map.mpr ⟨a, ha, rfl⟩))) (fun _ ha => ha) := by
+    z.pmap (fun a ha ↦ g (f a) (h (f a) (mem_map.mpr ⟨a, ha, rfl⟩))) (fun _ ha ↦ ha) := by
   cases z; rfl
 
 lemma pmap_map {P : α → Prop} {Q : β → Prop} (f : ∀ a, P a → β) (g : β → γ)
     (z : Sym2 α) (h : ∀ a ∈ z, P a) (h' : ∀ b ∈ z.pmap f h, Q b) :
-    (z.pmap f h).map g = z.pmap (fun a ha => g (f a (h a ha))) (fun _ ha ↦ ha) := by
+    (z.pmap f h).map g = z.pmap (fun a ha ↦ g (f a (h a ha))) (fun _ ha ↦ ha) := by
   cases z; rfl
 
 lemma pmap_pmap {P : α → Prop} {Q : β → Prop} (f : ∀ a, P a → β) (g : ∀ b, Q b → γ)
     (z : Sym2 α) (h : ∀ a ∈ z, P a) (h' : ∀ b ∈ z.pmap f h, Q b) :
-    (z.pmap f h).pmap g h' = z.pmap (fun a ha => g (f a (h a ha))
+    (z.pmap f h).pmap g h' = z.pmap (fun a ha ↦ g (f a (h a ha))
     (h' _ ((mem_pmap_iff f z h _).mpr ⟨a, ha, rfl⟩))) (fun _ ha ↦ ha) := by
   cases z; rfl
 
@@ -480,20 +480,20 @@ of this diagonal in `Sym2 α`.
 -/
 def diag (x : α) : Sym2 α := s(x, x)
 
-theorem diag_injective : Function.Injective (Sym2.diag : α → Sym2 α) := fun x y h => by
+theorem diag_injective : Function.Injective (Sym2.diag : α → Sym2 α) := fun x y h ↦ by
   cases Sym2.exact h <;> rfl
 
 /-- A predicate for testing whether an element of `Sym2 α` is on the diagonal.
 -/
 def IsDiag : Sym2 α → Prop :=
-  lift ⟨Eq, fun _ _ => propext eq_comm⟩
+  lift ⟨Eq, fun _ _ ↦ propext eq_comm⟩
 
 theorem mk_isDiag_iff {x y : α} : IsDiag s(x, y) ↔ x = y :=
   Iff.rfl
 
 @[simp]
 theorem isDiag_iff_proj_eq (z : α × α) : IsDiag (Sym2.mk z) ↔ z.1 = z.2 :=
-  Prod.recOn z fun _ _ => mk_isDiag_iff
+  Prod.recOn z fun _ _ ↦ mk_isDiag_iff
 
 protected lemma IsDiag.map : e.IsDiag → (e.map f).IsDiag := Sym2.ind (fun _ _ ↦ congr_arg f) e
 
@@ -510,10 +510,10 @@ theorem IsDiag.mem_range_diag {z : Sym2 α} : IsDiag z → z ∈ Set.range (@dia
   exact ⟨_, rfl⟩
 
 theorem isDiag_iff_mem_range_diag (z : Sym2 α) : IsDiag z ↔ z ∈ Set.range (@diag α) :=
-  ⟨IsDiag.mem_range_diag, fun ⟨i, hi⟩ => hi ▸ diag_isDiag i⟩
+  ⟨IsDiag.mem_range_diag, fun ⟨i, hi⟩ ↦ hi ▸ diag_isDiag i⟩
 
 instance IsDiag.decidablePred (α : Type u) [DecidableEq α] : DecidablePred (@IsDiag α) :=
-  fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (isDiag_iff_proj_eq a)
+  fun z ↦ z.recOnSubsingleton fun a ↦ decidable_of_iff' _ (isDiag_iff_proj_eq a)
 
 theorem other_ne {a : α} {z : Sym2 α} (hd : ¬IsDiag z) (h : a ∈ z) : Mem.other h ≠ a := by
   contrapose! hd
@@ -533,7 +533,7 @@ variable {r : α → α → Prop}
 of elements that are related.
 -/
 def fromRel (sym : Symmetric r) : Set (Sym2 α) :=
-  setOf (lift ⟨r, fun _ _ => propext ⟨(sym ·), (sym ·)⟩⟩)
+  setOf (lift ⟨r, fun _ _ ↦ propext ⟨(sym ·), (sym ·)⟩⟩)
 
 @[simp]
 theorem fromRel_proj_prop {sym : Symmetric r} {z : α × α} : Sym2.mk z ∈ fromRel sym ↔ r z.1 z.2 :=
@@ -542,30 +542,30 @@ theorem fromRel_proj_prop {sym : Symmetric r} {z : α × α} : Sym2.mk z ∈ fro
 theorem fromRel_prop {sym : Symmetric r} {a b : α} : s(a, b) ∈ fromRel sym ↔ r a b :=
   Iff.rfl
 
-theorem fromRel_bot : fromRel (fun (_ _ : α) z => z : Symmetric ⊥) = ∅ := by
-  apply Set.eq_empty_of_forall_notMem fun e => _
+theorem fromRel_bot : fromRel (fun (_ _ : α) z ↦ z : Symmetric ⊥) = ∅ := by
+  apply Set.eq_empty_of_forall_notMem fun e ↦ _
   apply Sym2.ind
   simp [-Set.bot_eq_empty, Prop.bot_eq_false]
 
-theorem fromRel_top : fromRel (fun (_ _ : α) z => z : Symmetric ⊤) = Set.univ := by
-  apply Set.eq_univ_of_forall fun e => _
+theorem fromRel_top : fromRel (fun (_ _ : α) z ↦ z : Symmetric ⊤) = Set.univ := by
+  apply Set.eq_univ_of_forall fun e ↦ _
   apply Sym2.ind
   simp [-Set.top_eq_univ, Prop.top_eq_true]
 
-theorem fromRel_ne : fromRel (fun (_ _ : α) z => z.symm : Symmetric Ne) = {z | ¬IsDiag z} := by
+theorem fromRel_ne : fromRel (fun (_ _ : α) z ↦ z.symm : Symmetric Ne) = {z | ¬IsDiag z} := by
   ext z; exact z.ind (by simp)
 
 theorem fromRel_irreflexive {sym : Symmetric r} :
     Irreflexive r ↔ ∀ {z}, z ∈ fromRel sym → ¬IsDiag z :=
   { mp := by intro h; apply Sym2.ind; aesop
-    mpr := fun h _ hr => h (fromRel_prop.mpr hr) rfl }
+    mpr := fun h _ hr ↦ h (fromRel_prop.mpr hr) rfl }
 
 theorem mem_fromRel_irrefl_other_ne {sym : Symmetric r} (irrefl : Irreflexive r) {a : α}
     {z : Sym2 α} (hz : z ∈ fromRel sym) (h : a ∈ z) : Mem.other h ≠ a :=
   other_ne (fromRel_irreflexive.mp irrefl hz) h
 
 instance fromRel.decidablePred (sym : Symmetric r) [h : DecidableRel r] :
-    DecidablePred (· ∈ Sym2.fromRel sym) := fun z => z.recOnSubsingleton fun _ => h _ _
+    DecidablePred (· ∈ Sym2.fromRel sym) := fun z ↦ z.recOnSubsingleton fun _ ↦ h _ _
 
 lemma fromRel_relationMap {r : α → α → Prop} (hr : Symmetric r) (f : α → β) :
     fromRel (Relation.map_symmetric hr f) = Sym2.map f '' Sym2.fromRel hr := by
@@ -584,13 +584,13 @@ def ToRel (s : Set (Sym2 α)) (x y : α) : Prop :=
 theorem toRel_prop (s : Set (Sym2 α)) (x y : α) : ToRel s x y ↔ s(x, y) ∈ s :=
   Iff.rfl
 
-theorem toRel_symmetric (s : Set (Sym2 α)) : Symmetric (ToRel s) := fun x y => by simp [eq_swap]
+theorem toRel_symmetric (s : Set (Sym2 α)) : Symmetric (ToRel s) := fun x y ↦ by simp [eq_swap]
 
 theorem toRel_fromRel (sym : Symmetric r) : ToRel (fromRel sym) = r :=
   rfl
 
 theorem fromRel_toRel (s : Set (Sym2 α)) : fromRel (toRel_symmetric s) = s :=
-  Set.ext fun z => Sym2.ind (fun _ _ => Iff.rfl) z
+  Set.ext fun z ↦ Sym2.ind (fun _ _ ↦ Iff.rfl) z
 
 end Relations
 
@@ -677,7 +677,7 @@ private theorem perm_card_two_iff {a₁ b₁ a₂ b₂ : α} :
 /-- The symmetric square is equivalent to length-2 vectors up to permutations. -/
 def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
   toFun :=
-    Quot.map (fun x : α × α => ⟨[x.1, x.2], rfl⟩)
+    Quot.map (fun x : α × α ↦ ⟨[x.1, x.2], rfl⟩)
       (by
         rintro _ _ ⟨_⟩
         · constructor; apply List.Perm.refl
@@ -702,7 +702,7 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
         apply Sym2.Rel.swap)
   left_inv := by apply Sym2.ind; aesop (add norm unfold [Sym2.fromVector])
   right_inv x := by
-    refine x.recOnSubsingleton fun x => ?_
+    refine x.recOnSubsingleton fun x ↦ ?_
     obtain ⟨x, hx⟩ := x
     obtain - | ⟨-, x⟩ := x
     · simp at hx
@@ -731,7 +731,7 @@ section Decidable
 /-- Given `[DecidableEq α]` and `[Fintype α]`, the following instance gives `Fintype (Sym2 α)`.
 -/
 instance instDecidableRel [DecidableEq α] : DecidableRel (Rel α) :=
-  fun _ _ => decidable_of_iff' _ rel_iff
+  fun _ _ ↦ decidable_of_iff' _ rel_iff
 
 section
 attribute [local instance] Sym2.Rel.setoid
@@ -759,13 +759,13 @@ private def pairOther [DecidableEq α] (a : α) (z : α × α) : α :=
 This is the computable version of `Mem.other`. -/
 @[aesop norm unfold (rule_sets := [Sym2])]
 def Mem.other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : α :=
-  Sym2.rec (fun s _ => pairOther a s) (by
+  Sym2.rec (fun s _ ↦ pairOther a s) (by
     clear h z
     intro x y h
     ext hy
     convert_to Sym2.pairOther a x = _
     · have : ∀ {c e h}, @Eq.ndrec (Sym2 α) (Sym2.mk x)
-          (fun x => a ∈ x → α) (fun _ => Sym2.pairOther a x) c e h = Sym2.pairOther a x := by
+          (fun x ↦ a ∈ x → α) (fun _ ↦ Sym2.pairOther a x) c e h = Sym2.pairOther a x := by
           intro _ e _; subst e; rfl
       apply this
     · rw [mem_iff] at hy
@@ -843,7 +843,7 @@ unsafe instance [Repr α] : Repr (Sym2 α) where
 
 lemma lift_smul_lift {α R N} [SMul R N] (f : { f : α → α → R // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ })
     (g : { g : α → α → N // ∀ a₁ a₂, g a₁ a₂ = g a₂ a₁ }) :
-    lift f • lift g = lift ⟨f.val • g.val, fun _ _ => by
+    lift f • lift g = lift ⟨f.val • g.val, fun _ _ ↦ by
       rw [Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', f.prop, g.prop]⟩ := by
   ext ⟨i,j⟩
   simp_all only [Pi.smul_apply', lift_mk]
@@ -869,7 +869,7 @@ variable {s : Set α}
 /--
 For a set `s : Set α`, `s.sym2` is the set of all unordered pairs of elements from `s`.
 -/
-def sym2 (s : Set α) : Set (Sym2 α) := fromRel (r := fun x y ↦ x ∈ s ∧ y ∈ s) (fun _ _ => .symm)
+def sym2 (s : Set α) : Set (Sym2 α) := fromRel (r := fun x y ↦ x ∈ s ∧ y ∈ s) (fun _ _ ↦ .symm)
 
 @[simp] lemma mk'_mem_sym2_iff {xy : α × α} : Sym2.mk xy ∈ s.sym2 ↔ xy ∈ s ×ˢ s := Iff.rfl
 lemma mk_mem_sym2_iff {x y : α} : s(x, y) ∈ s.sym2 ↔ x ∈ s ∧ y ∈ s := Iff.rfl

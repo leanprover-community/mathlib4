@@ -198,9 +198,9 @@ variable (f : F)
 
 theorem monotone_iff_map_nonneg [iamhc : AddMonoidHomClass F α β] :
     Monotone (f : α → β) ↔ ∀ a, 0 ≤ a → 0 ≤ f a :=
-  ⟨fun h a => by
+  ⟨fun h a ↦ by
     rw [← map_zero f]
-    apply h, fun h a b hl => by
+    apply h, fun h a b hl ↦ by
     rw [← sub_add_cancel b a, map_add f]
     exact le_add_of_nonneg_left (h _ <| sub_nonneg.2 hl)⟩
 
@@ -217,7 +217,7 @@ theorem antitone_iff_map_nonneg : Antitone (f : α → β) ↔ ∀ a ≤ 0, 0 �
 
 theorem strictMono_iff_map_pos :
     StrictMono (f : α → β) ↔ ∀ a, 0 < a → 0 < f a := by
-  refine ⟨fun h a => ?_, fun h a b hl => ?_⟩
+  refine ⟨fun h a ↦ ?_, fun h a b hl ↦ ?_⟩
   · rw [← map_zero f]
     apply h
   · rw [← sub_add_cancel b a, map_add f]
@@ -293,11 +293,11 @@ theorem coe_orderHom (f : α →*o β) : ((f : α →o β) : α → β) = f :=
   rfl
 
 @[to_additive]
-theorem toMonoidHom_injective : Injective (toMonoidHom : _ → α →* β) := fun f g h =>
+theorem toMonoidHom_injective : Injective (toMonoidHom : _ → α →* β) := fun f g h ↦
   ext <| by convert DFunLike.ext_iff.1 h using 0
 
 @[to_additive]
-theorem toOrderHom_injective : Injective (toOrderHom : _ → α →o β) := fun f g h =>
+theorem toOrderHom_injective : Injective (toOrderHom : _ → α →o β) := fun f g h ↦
   ext <| by convert DFunLike.ext_iff.1 h using 0
 
 /-- Copy of an `OrderMonoidHom` with a new `toFun` equal to the old one. Useful to fix
@@ -371,12 +371,12 @@ theorem id_comp (f : α →*o β) : (OrderMonoidHom.id β).comp f = f :=
 @[to_additive (attr := simp)]
 theorem cancel_right {g₁ g₂ : β →*o γ} {f : α →*o β} (hf : Function.Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun _ => by congr⟩
+  ⟨fun h ↦ ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun _ ↦ by congr⟩
 
 @[to_additive (attr := simp)]
 theorem cancel_left {g : β →*o γ} {f₁ f₂ : α →*o β} (hg : Function.Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+  ⟨fun h ↦ ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 /-- `1` is the homomorphism sending all elements to `1`. -/
 @[to_additive /-- `0` is the homomorphism sending all elements to `0`. -/]
@@ -397,7 +397,7 @@ theorem one_comp (f : α →*o β) : (1 : β →*o γ).comp f = 1 :=
 
 @[to_additive (attr := simp)]
 theorem comp_one (f : β →*o γ) : f.comp (1 : α →*o β) = 1 :=
-  ext fun _ => map_one f
+  ext fun _ ↦ map_one f
 
 end Preorder
 
@@ -412,7 +412,7 @@ sending `a` to `f a * g a`. -/
 @[to_additive /-- For two ordered additive monoid morphisms `f` and `g`, their product is the
 ordered additive monoid morphism sending `a` to `f a + g a`. -/]
 instance [IsOrderedMonoid β] : Mul (α →*o β) :=
-  ⟨fun f g => { (f * g : α →* β) with monotone' := f.monotone'.mul' g.monotone' }⟩
+  ⟨fun f g ↦ { (f * g : α →* β) with monotone' := f.monotone'.mul' g.monotone' }⟩
 
 @[to_additive (attr := simp)]
 theorem coe_mul [IsOrderedMonoid β] (f g : α →*o β) : ⇑(f * g) = f * g :=
@@ -430,7 +430,7 @@ theorem mul_comp [IsOrderedMonoid γ] (g₁ g₂ : β →*o γ) (f : α →*o β
 @[to_additive]
 theorem comp_mul [IsOrderedMonoid β] [IsOrderedMonoid γ] (g : β →*o γ) (f₁ f₂ : α →*o β) :
     g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ :=
-  ext fun _ => map_mul g _ _
+  ext fun _ ↦ map_mul g _ _
 
 end Mul
 
@@ -521,11 +521,11 @@ theorem coe_orderIso (f : α ≃*o β) : ((f : α →o β) : α → β) = f :=
   rfl
 
 @[to_additive]
-theorem toMulEquiv_injective : Injective (toMulEquiv : _ → α ≃* β) := fun f g h =>
+theorem toMulEquiv_injective : Injective (toMulEquiv : _ → α ≃* β) := fun f g h ↦
   ext <| by convert DFunLike.ext_iff.1 h using 0
 
 @[to_additive]
-theorem toOrderIso_injective : Injective (toOrderIso : _ → α ≃o β) := fun f g h =>
+theorem toOrderIso_injective : Injective (toOrderIso : _ → α ≃o β) := fun f g h ↦
   ext <| by convert DFunLike.ext_iff.1 h using 0
 
 variable (α)
@@ -584,12 +584,12 @@ theorem refl_trans (f : α ≃*o β) : (OrderMonoidIso.refl α).trans f = f :=
 @[to_additive (attr := simp)]
 theorem cancel_right {g₁ g₂ : α ≃*o β} {f : β ≃*o γ} (hf : Function.Injective f) :
     g₁.trans f = g₂.trans f ↔ g₁ = g₂ :=
-  ⟨fun h => ext fun a => hf <| by rw [← trans_apply, h, trans_apply], by rintro rfl; rfl⟩
+  ⟨fun h ↦ ext fun a ↦ hf <| by rw [← trans_apply, h, trans_apply], by rintro rfl; rfl⟩
 
 @[to_additive (attr := simp)]
 theorem cancel_left {g : α ≃*o β} {f₁ f₂ : β ≃*o γ} (hg : Function.Surjective g) :
     g.trans f₁ = g.trans f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => ext <| hg.forall.2 <| DFunLike.ext_iff.1 h, fun _ => by congr⟩
+  ⟨fun h ↦ ext <| hg.forall.2 <| DFunLike.ext_iff.1 h, fun _ ↦ by congr⟩
 
 @[to_additive (attr := simp)]
 theorem toMulEquiv_eq_coe (f : α ≃*o β) : f.toMulEquiv = f :=

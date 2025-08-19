@@ -70,7 +70,7 @@ def mk₂'ₛₗ (f : M → N → P) (H1 : ∀ m₁ m₂ n, f (m₁ + m₂) n = 
   toFun m :=
     { toFun := f m
       map_add' := H3 m
-      map_smul' := fun c => H4 c m }
+      map_smul' := fun c ↦ H4 c m }
   map_add' m₁ m₂ := LinearMap.ext <| H1 m₁ m₂
   map_smul' c m := LinearMap.ext <| H2 c m
 
@@ -97,7 +97,7 @@ theorem mk₂'_apply (f : M → N → Pₗ) {H1 H2 H3 H4} (m : M) (n : N) :
     (mk₂' R S f H1 H2 H3 H4 : M →ₗ[R] N →ₗ[S] Pₗ) m n = f m n := rfl
 
 theorem ext₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (H : ∀ m n, f m n = g m n) : f = g :=
-  LinearMap.ext fun m => LinearMap.ext fun n => H m n
+  LinearMap.ext fun m ↦ LinearMap.ext fun n ↦ H m n
 
 theorem congr_fun₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (h : f = g) (x y) : f x y = g x y :=
   LinearMap.congr_fun (LinearMap.congr_fun h x) y
@@ -112,12 +112,12 @@ attribute [local instance] SMulCommClass.symm
 /-- Given a linear map from `M` to linear maps from `N` to `P`, i.e., a bilinear map from `M × N` to
 `P`, change the order of variables and get a linear map from `N` to linear maps from `M` to `P`. -/
 def flip (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) : N →ₛₗ[σ₁₂] M →ₛₗ[ρ₁₂] P :=
-  mk₂'ₛₗ σ₁₂ ρ₁₂ (fun n m => f m n) (fun _ _ m => (f m).map_add _ _)
-    (fun _ _  m  => (f m).map_smulₛₗ _ _)
-    (fun n m₁ m₂ => by simp only [map_add, add_apply])
+  mk₂'ₛₗ σ₁₂ ρ₁₂ (fun n m ↦ f m n) (fun _ _ m ↦ (f m).map_add _ _)
+    (fun _ _  m  ↦ (f m).map_smulₛₗ _ _)
+    (fun n m₁ m₂ ↦ by simp only [map_add, add_apply])
     -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 changed `map_smulₛₗ` into `map_smulₛₗ _`.
     -- It looks like we now run out of assignable metavariables.
-    (fun c n  m  => by simp only [map_smulₛₗ _, smul_apply])
+    (fun c n  m  ↦ by simp only [map_smulₛₗ _, smul_apply])
 
 end
 
@@ -128,10 +128,10 @@ attribute [local instance] SMulCommClass.symm
 
 @[simp]
 theorem flip_flip (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) : f.flip.flip = f :=
-  LinearMap.ext₂ fun _x _y => (f.flip.flip_apply _ _).trans (f.flip_apply _ _)
+  LinearMap.ext₂ fun _x _y ↦ (f.flip.flip_apply _ _).trans (f.flip_apply _ _)
 
 theorem flip_inj {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (H : flip f = flip g) : f = g :=
-  ext₂ fun m n => show flip f n m = flip g n m by rw [H]
+  ext₂ fun m n ↦ show flip f n m = flip g n m by rw [H]
 
 theorem map_zero₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (y) : f 0 y = 0 :=
   (flip f y).map_zero
@@ -158,9 +158,9 @@ theorem map_sum₂ {ι : Type*} (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂]
 /-- Restricting a bilinear map in the second entry -/
 def domRestrict₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (q : Submodule S N) : M →ₛₗ[ρ₁₂] q →ₛₗ[σ₁₂] P where
   toFun m := (f m).domRestrict q
-  map_add' m₁ m₂ := LinearMap.ext fun _ => by simp only [map_add, domRestrict_apply, add_apply]
+  map_add' m₁ m₂ := LinearMap.ext fun _ ↦ by simp only [map_add, domRestrict_apply, add_apply]
   map_smul' c m :=
-    LinearMap.ext fun _ => by simp only [f.map_smulₛₗ, domRestrict_apply, smul_apply]
+    LinearMap.ext fun _ ↦ by simp only [f.map_smulₛₗ, domRestrict_apply, smul_apply]
 
 theorem domRestrict₂_apply (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (q : Submodule S N) (x : M) (y : q) :
     f.domRestrict₂ q x y = f x y := rfl
@@ -411,8 +411,8 @@ to `M →ₛₗ[σ₁₃] P`. -/
 def llcomp : (N →ₛₗ[σ₂₃] P) →ₗ[R₃] (M →ₛₗ[σ₁₂] N) →ₛₗ[σ₂₃] M →ₛₗ[σ₁₃] P :=
   flip
     { toFun := lcompₛₗ _ P σ₂₃
-      map_add' := fun _f _f' => ext₂ fun g _x => g.map_add _ _
-      map_smul' := fun (_c : R₂) _f => ext₂ fun g _x => g.map_smulₛₗ _ _ }
+      map_add' := fun _f _f' ↦ ext₂ fun g _x ↦ g.map_add _ _
+      map_smul' := fun (_c : R₂) _f ↦ ext₂ fun g _x ↦ g.map_smulₛₗ _ _ }
 
 variable {M N P}
 
@@ -465,7 +465,7 @@ variable (R M)
 
 /-- Scalar multiplication as a bilinear map `R → M → M`. -/
 def lsmul : R →ₗ[R] M →ₗ[R] M :=
-  mk₂ R (· • ·) add_smul (fun _ _ _ => mul_smul _ _ _) smul_add fun r s m => by
+  mk₂ R (· • ·) add_smul (fun _ _ _ ↦ mul_smul _ _ _) smul_add fun r s m ↦ by
     simp only [smul_smul, mul_comm]
 
 variable {R}

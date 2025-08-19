@@ -48,7 +48,7 @@ open Submodule
 @[coe]
 def toFun' (f : E →ₗ.[R] F) : f.domain → F := f.toFun
 
-instance : CoeFun (E →ₗ.[R] F) fun f : E →ₗ.[R] F => f.domain → F :=
+instance : CoeFun (E →ₗ.[R] F) fun f : E →ₗ.[R] F ↦ f.domain → F :=
   ⟨toFun'⟩
 
 @[simp]
@@ -85,12 +85,12 @@ theorem dExt_iff {f g : E →ₗ.[R] F} :
     f = g ↔
       ∃ _domain_eq : f.domain = g.domain,
         ∀ ⦃x : f.domain⦄ ⦃y : g.domain⦄ (_h : (x : E) = y), f x = g y :=
-  ⟨fun EQ =>
+  ⟨fun EQ ↦
     EQ ▸
-      ⟨rfl, fun x y h => by
+      ⟨rfl, fun x y h ↦ by
         congr
         exact mod_cast h⟩,
-    fun ⟨deq, feq⟩ => dExt deq feq⟩
+    fun ⟨deq, feq⟩ ↦ dExt deq feq⟩
 
 theorem ext' {s : Submodule R E} {f g : s →ₗ[R] F} (h : f = g) : mk s f = mk s g :=
   h ▸ rfl
@@ -159,8 +159,8 @@ theorem mkSpanSingleton'_apply_self (x : E) (y : F) (H : ∀ c : R, c • x = 0 
 This version works for modules over division rings. -/
 noncomputable abbrev mkSpanSingleton {K E F : Type*} [DivisionRing K] [AddCommGroup E] [Module K E]
     [AddCommGroup F] [Module K F] (x : E) (y : F) (hx : x ≠ 0) : E →ₗ.[K] F :=
-  mkSpanSingleton' x y fun c hc =>
-    (smul_eq_zero.1 hc).elim (fun hc => by rw [hc, zero_smul]) fun hx' => absurd hx' hx
+  mkSpanSingleton' x y fun c hc ↦
+    (smul_eq_zero.1 hc).elim (fun hc ↦ by rw [hc, zero_smul]) fun hx' ↦ absurd hx' hx
 
 theorem mkSpanSingleton_apply (K : Type*) {E F : Type*} [DivisionRing K] [AddCommGroup E]
     [Module K E] [AddCommGroup F] [Module K F] {x : E} (hx : x ≠ 0) (y : F) :
@@ -189,7 +189,7 @@ theorem snd_apply (p : Submodule R E) (p' : Submodule R F) (x : p.prod p') :
   rfl
 
 instance le : LE (E →ₗ.[R] F) :=
-  ⟨fun f g => f.domain ≤ g.domain ∧ ∀ ⦃x : f.domain⦄ ⦃y : g.domain⦄ (_h : (x : E) = y), f x = g y⟩
+  ⟨fun f g ↦ f.domain ≤ g.domain ∧ ∀ ⦃x : f.domain⦄ ⦃y : g.domain⦄ (_h : (x : E) = y), f x = g y⟩
 
 theorem apply_comp_inclusion {T S : E →ₗ.[R] F} (h : T ≤ S) (x : T.domain) :
     T x = S (Submodule.inclusion h.1 x) :=
@@ -224,45 +224,45 @@ instance inhabited : Inhabited (E →ₗ.[R] F) :=
 
 instance semilatticeInf : SemilatticeInf (E →ₗ.[R] F) where
   le := (· ≤ ·)
-  le_refl f := ⟨le_refl f.domain, fun _ _ h => Subtype.eq h ▸ rfl⟩
-  le_trans := fun _ _ _ ⟨fg_le, fg_eq⟩ ⟨gh_le, gh_eq⟩ =>
-    ⟨le_trans fg_le gh_le, fun x _ hxz =>
+  le_refl f := ⟨le_refl f.domain, fun _ _ h ↦ Subtype.eq h ▸ rfl⟩
+  le_trans := fun _ _ _ ⟨fg_le, fg_eq⟩ ⟨gh_le, gh_eq⟩ ↦
+    ⟨le_trans fg_le gh_le, fun x _ hxz ↦
       have hxy : (x : E) = inclusion fg_le x := rfl
       (fg_eq hxy).trans (gh_eq <| hxy.symm.trans hxz)⟩
   le_antisymm _ _ fg gf := eq_of_le_of_domain_eq fg (le_antisymm fg.1 gf.1)
-  inf f g := ⟨f.eqLocus g, f.toFun.comp <| inclusion fun _x hx => hx.fst⟩
+  inf f g := ⟨f.eqLocus g, f.toFun.comp <| inclusion fun _x hx ↦ hx.fst⟩
   le_inf := by
     intro f g h ⟨fg_le, fg_eq⟩ ⟨fh_le, fh_eq⟩
-    exact ⟨fun x hx =>
+    exact ⟨fun x hx ↦
       ⟨fg_le hx, fh_le hx,
       (fg_eq (x := ⟨x, hx⟩) rfl).symm.trans (fh_eq rfl)⟩,
-      fun x ⟨y, yg, hy⟩ h => fg_eq h⟩
-  inf_le_left f _ := ⟨fun _ hx => hx.fst, fun _ _ h => congr_arg f <| Subtype.eq <| h⟩
+      fun x ⟨y, yg, hy⟩ h ↦ fg_eq h⟩
+  inf_le_left f _ := ⟨fun _ hx ↦ hx.fst, fun _ _ h ↦ congr_arg f <| Subtype.eq <| h⟩
   inf_le_right _ g :=
-    ⟨fun _ hx => hx.snd.fst, fun ⟨_, _, _, hx⟩ _ h => hx.trans <| congr_arg g <| Subtype.eq <| h⟩
+    ⟨fun _ hx ↦ hx.snd.fst, fun ⟨_, _, _, hx⟩ _ h ↦ hx.trans <| congr_arg g <| Subtype.eq <| h⟩
 
 instance orderBot : OrderBot (E →ₗ.[R] F) where
   bot := ⊥
   bot_le f :=
-    ⟨bot_le, fun x y h => by
+    ⟨bot_le, fun x y h ↦ by
       have hx : x = 0 := Subtype.eq ((mem_bot R).1 x.2)
       have hy : y = 0 := Subtype.eq (h.symm.trans (congr_arg _ hx))
       rw [hx, hy, map_zero, map_zero]⟩
 
 theorem le_of_eqLocus_ge {f g : E →ₗ.[R] F} (H : f.domain ≤ f.eqLocus g) : f ≤ g :=
   suffices f ≤ f ⊓ g from le_trans this inf_le_right
-  ⟨H, fun _x _y hxy => ((inf_le_left : f ⊓ g ≤ f).2 hxy.symm).symm⟩
+  ⟨H, fun _x _y hxy ↦ ((inf_le_left : f ⊓ g ≤ f).2 hxy.symm).symm⟩
 
-theorem domain_mono : StrictMono (@domain R _ E _ _ F _ _) := fun _f _g hlt =>
-  lt_of_le_of_ne hlt.1.1 fun heq => ne_of_lt hlt <| eq_of_le_of_domain_eq (le_of_lt hlt) heq
+theorem domain_mono : StrictMono (@domain R _ E _ _ F _ _) := fun _f _g hlt ↦
+  lt_of_le_of_ne hlt.1.1 fun heq ↦ ne_of_lt hlt <| eq_of_le_of_domain_eq (le_of_lt hlt) heq
 
 private theorem sup_aux (f g : E →ₗ.[R] F)
     (h : ∀ (x : f.domain) (y : g.domain), (x : E) = y → f x = g y) :
     ∃ fg : ↥(f.domain ⊔ g.domain) →ₗ[R] F,
       ∀ (x : f.domain) (y : g.domain) (z : ↥(f.domain ⊔ g.domain)),
         (x : E) + y = ↑z → fg z = f x + g y := by
-  choose x hx y hy hxy using fun z : ↥(f.domain ⊔ g.domain) => mem_sup.1 z.prop
-  set fg := fun z => f ⟨x z, hx z⟩ + g ⟨y z, hy z⟩
+  choose x hx y hy hxy using fun z : ↥(f.domain ⊔ g.domain) ↦ mem_sup.1 z.prop
+  set fg := fun z ↦ f ⟨x z, hx z⟩ + g ⟨y z, hy z⟩
   have fg_eq : ∀ (x' : f.domain) (y' : g.domain) (z' : ↥(f.domain ⊔ g.domain))
       (_H : (x' : E) + y' = z'), fg z' = f x' + g y' := by
     intro x' y' z' H
@@ -304,14 +304,14 @@ theorem sup_apply {f g : E →ₗ.[R] F} (H : ∀ (x : f.domain) (y : g.domain),
 
 protected theorem left_le_sup (f g : E →ₗ.[R] F)
     (h : ∀ (x : f.domain) (y : g.domain), (x : E) = y → f x = g y) : f ≤ f.sup g h := by
-  refine ⟨le_sup_left, fun z₁ z₂ hz => ?_⟩
+  refine ⟨le_sup_left, fun z₁ z₂ hz ↦ ?_⟩
   rw [← add_zero (f _), ← g.map_zero]
   refine (sup_apply h _ _ _ ?_).symm
   simpa
 
 protected theorem right_le_sup (f g : E →ₗ.[R] F)
     (h : ∀ (x : f.domain) (y : g.domain), (x : E) = y → f x = g y) : g ≤ f.sup g h := by
-  refine ⟨le_sup_right, fun z₁ z₂ hz => ?_⟩
+  refine ⟨le_sup_right, fun z₁ z₂ hz ↦ ?_⟩
   rw [← zero_add (g _), ← f.map_zero]
   refine (sup_apply h _ _ _ ?_).symm
   simpa
@@ -352,7 +352,7 @@ variable {M N : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass R M F]
 variable [Monoid N] [DistribMulAction N F] [SMulCommClass R N F]
 
 instance instSMul : SMul M (E →ₗ.[R] F) :=
-  ⟨fun a f =>
+  ⟨fun a f ↦
     { domain := f.domain
       toFun := a • f.toFun }⟩
 
@@ -368,20 +368,20 @@ theorem coe_smul (a : M) (f : E →ₗ.[R] F) : ⇑(a • f) = a • ⇑f :=
   rfl
 
 instance instSMulCommClass [SMulCommClass M N F] : SMulCommClass M N (E →ₗ.[R] F) :=
-  ⟨fun a b f => ext' <| smul_comm a b f.toFun⟩
+  ⟨fun a b f ↦ ext' <| smul_comm a b f.toFun⟩
 
 instance instIsScalarTower [SMul M N] [IsScalarTower M N F] : IsScalarTower M N (E →ₗ.[R] F) :=
-  ⟨fun a b f => ext' <| smul_assoc a b f.toFun⟩
+  ⟨fun a b f ↦ ext' <| smul_assoc a b f.toFun⟩
 
 instance instMulAction : MulAction M (E →ₗ.[R] F) where
   smul := (· • ·)
-  one_smul := fun ⟨_s, f⟩ => ext' <| one_smul M f
+  one_smul := fun ⟨_s, f⟩ ↦ ext' <| one_smul M f
   mul_smul a b f := ext' <| mul_smul a b f.toFun
 
 end SMul
 
 instance instNeg : Neg (E →ₗ.[R] F) :=
-  ⟨fun f => ⟨f.domain, -f.toFun⟩⟩
+  ⟨fun f ↦ ⟨f.domain, -f.toFun⟩⟩
 
 @[simp]
 theorem neg_domain (f : E →ₗ.[R] F) : (-f).domain = f.domain := rfl
@@ -391,7 +391,7 @@ theorem neg_apply (f : E →ₗ.[R] F) (x) : (-f) x = -f x :=
   rfl
 
 instance instInvolutiveNeg : InvolutiveNeg (E →ₗ.[R] F) :=
-  ⟨fun f => by
+  ⟨fun f ↦ by
     ext x y hxy
     · rfl
     · simp only [neg_apply, neg_neg]⟩
@@ -399,7 +399,7 @@ instance instInvolutiveNeg : InvolutiveNeg (E →ₗ.[R] F) :=
 section Add
 
 instance instAdd : Add (E →ₗ.[R] F) :=
-  ⟨fun f g =>
+  ⟨fun f g ↦
     { domain := f.domain ⊓ g.domain
       toFun := f.toFun.comp (inclusion (inf_le_left : f.domain ⊓ g.domain ≤ _))
         + g.toFun.comp (inclusion (inf_le_right : f.domain ⊓ g.domain ≤ _)) }⟩
@@ -410,17 +410,17 @@ theorem add_apply (f g : E →ₗ.[R] F) (x : (f.domain ⊓ g.domain : Submodule
     (f + g) x = f ⟨x, x.prop.1⟩ + g ⟨x, x.prop.2⟩ := rfl
 
 instance instAddSemigroup : AddSemigroup (E →ₗ.[R] F) :=
-  ⟨fun f g h => by
+  ⟨fun f g h ↦ by
     ext x y hxy
     · simp only [add_domain, inf_assoc]
     · simp only [add_apply, add_assoc]⟩
 
 instance instAddZeroClass : AddZeroClass (E →ₗ.[R] F) :=
-  ⟨fun f => by
+  ⟨fun f ↦ by
     ext x y hxy
     · simp [add_domain]
     · simp only [add_apply, zero_apply, zero_add],
-  fun f => by
+  fun f ↦ by
     ext x y hxy
     · simp [add_domain]
     · simp only [add_apply, zero_apply, add_zero]⟩
@@ -433,7 +433,7 @@ instance instAddMonoid : AddMonoid (E →ₗ.[R] F) where
   nsmul := nsmulRec
 
 instance instAddCommMonoid : AddCommMonoid (E →ₗ.[R] F) :=
-  ⟨fun f g => by
+  ⟨fun f g ↦ by
     ext x y hxy
     · simp only [add_domain, inf_comm]
     · simp only [add_apply, add_comm]⟩
@@ -443,7 +443,7 @@ end Add
 section VAdd
 
 instance instVAdd : VAdd (E →ₗ[R] F) (E →ₗ.[R] F) :=
-  ⟨fun f g =>
+  ⟨fun f g ↦
     { domain := g.domain
       toFun := f.comp g.domain.subtype + g.toFun }⟩
 
@@ -461,15 +461,15 @@ theorem coe_vadd (f : E →ₗ[R] F) (g : E →ₗ.[R] F) : ⇑(f +ᵥ g) = ⇑(
 
 instance instAddAction : AddAction (E →ₗ[R] F) (E →ₗ.[R] F) where
   vadd := (· +ᵥ ·)
-  zero_vadd := fun ⟨_s, _f⟩ => ext' <| zero_add _
-  add_vadd := fun _f₁ _f₂ ⟨_s, _g⟩ => ext' <| LinearMap.ext fun _x => add_assoc _ _ _
+  zero_vadd := fun ⟨_s, _f⟩ ↦ ext' <| zero_add _
+  add_vadd := fun _f₁ _f₂ ⟨_s, _g⟩ ↦ ext' <| LinearMap.ext fun _x ↦ add_assoc _ _ _
 
 end VAdd
 
 section Sub
 
 instance instSub : Sub (E →ₗ.[R] F) :=
-  ⟨fun f g =>
+  ⟨fun f g ↦
     { domain := f.domain ⊓ g.domain
       toFun := f.toFun.comp (inclusion (inf_le_left : f.domain ⊓ g.domain ≤ _))
         - g.toFun.comp (inclusion (inf_le_right : f.domain ⊓ g.domain ≤ _)) }⟩
@@ -512,7 +512,7 @@ variable {K : Type*} [DivisionRing K] [Module K E] [Module K F]
 /-- Extend a `LinearPMap` to `f.domain ⊔ K ∙ x`. -/
 noncomputable def supSpanSingleton (f : E →ₗ.[K] F) (x : E) (y : F) (hx : x ∉ f.domain) :
     E →ₗ.[K] F :=
-  f.sup (mkSpanSingleton x y fun h₀ => hx <| h₀.symm ▸ f.domain.zero_mem) <|
+  f.sup (mkSpanSingleton x y fun h₀ ↦ hx <| h₀.symm ▸ f.domain.zero_mem) <|
     sup_h_of_disjoint _ _ <| by simpa [disjoint_span_singleton] using fun h ↦ False.elim <| hx h
 
 @[simp]
@@ -566,7 +566,7 @@ private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·)
     apply Classical.indefiniteDescription
     have := (mem_sSup_of_directed (cne.image _) hdir).1 x.2
     rwa [Set.exists_mem_image, ← bex_def, SetCoe.exists'] at this
-  set f : ↥(sSup (domain '' c)) → F := fun x => (P x).val.val ⟨x, (P x).property⟩
+  set f : ↥(sSup (domain '' c)) → F := fun x ↦ (P x).val.val ⟨x, (P x).property⟩
   have f_eq : ∀ (p : c) (x : ↥(sSup (domain '' c))) (y : p.1.1) (_hxy : (x : E) = y),
       f x = p.1 y := by
     intro p x y hxy
@@ -583,7 +583,7 @@ private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·)
     simp only [RingHom.id_apply]
     rw [f_eq (P x).1 (c • x) (c • ⟨x, (P x).2⟩) rfl, ← map_smul]
   · intro p hpc
-    refine ⟨le_sSup <| Set.mem_image_of_mem domain hpc, fun x y hxy => Eq.symm ?_⟩
+    refine ⟨le_sSup <| Set.mem_image_of_mem domain hpc, fun x y hxy ↦ Eq.symm ?_⟩
     exact f_eq ⟨p, hpc⟩ _ _ hxy.symm
 
 protected noncomputable def sSup (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·) c) : E →ₗ.[R] F :=
@@ -606,7 +606,7 @@ protected theorem le_sSup {c : Set (E →ₗ.[R] F)} (hc : DirectedOn (· ≤ ·
 protected theorem sSup_le {c : Set (E →ₗ.[R] F)} (hc : DirectedOn (· ≤ ·) c) {g : E →ₗ.[R] F}
     (hg : ∀ f ∈ c, f ≤ g) : LinearPMap.sSup c hc ≤ g :=
   le_of_eqLocus_ge <|
-    sSup_le fun _ ⟨f, hf, Eq⟩ =>
+    sSup_le fun _ ⟨f, hf, Eq⟩ ↦
       Eq ▸
         have : f ≤ LinearPMap.sSup c hc ⊓ g := le_inf (LinearPMap.le_sSup _ hf) (hg f hf)
         this.1
@@ -662,13 +662,13 @@ def coprod (f : E →ₗ.[R] G) (g : F →ₗ.[R] G) : E × F →ₗ.[R] G where
   domain := f.domain.prod g.domain
   toFun :=
     -- Porting note: This is just
-    -- `(f.comp (LinearPMap.fst f.domain g.domain) fun x => x.2.1).toFun +`
-    -- `  (g.comp (LinearPMap.snd f.domain g.domain) fun x => x.2.2).toFun`,
+    -- `(f.comp (LinearPMap.fst f.domain g.domain) fun x ↦ x.2.1).toFun +`
+    -- `  (g.comp (LinearPMap.snd f.domain g.domain) fun x ↦ x.2.2).toFun`,
     HAdd.hAdd
       (α := f.domain.prod g.domain →ₗ[R] G)
       (β := f.domain.prod g.domain →ₗ[R] G)
-      (f.comp (LinearPMap.fst f.domain g.domain) fun x => x.2.1).toFun
-      (g.comp (LinearPMap.snd f.domain g.domain) fun x => x.2.2).toFun
+      (f.comp (LinearPMap.fst f.domain g.domain) fun x ↦ x.2.1).toFun
+      (g.comp (LinearPMap.snd f.domain g.domain) fun x ↦ x.2.2).toFun
 
 @[simp]
 theorem coprod_apply (f : E →ₗ.[R] G) (g : F →ₗ.[R] G) (x) :
@@ -693,7 +693,7 @@ theorem domRestrict_apply {f : E →ₗ.[R] F} {S : Submodule R E} ⦃x : ↥(S 
   exact LinearPMap.mk_apply _ _ _
 
 theorem domRestrict_le {f : E →ₗ.[R] F} {S : Submodule R E} : f.domRestrict S ≤ f :=
-  ⟨by simp, fun _ _ hxy => domRestrict_apply hxy⟩
+  ⟨by simp, fun _ _ hxy ↦ domRestrict_apply hxy⟩
 
 /-! ### Graph -/
 
@@ -893,14 +893,14 @@ Helper definition for `LinearPMap`. -/
 noncomputable def toLinearPMapAux (g : Submodule R (E × F))
     (hg : ∀ (x : E × F) (_hx : x ∈ g) (_hx' : x.fst = 0), x.snd = 0) :
     g.map (LinearMap.fst R E F) →ₗ[R] F where
-  toFun := fun x => valFromGraph hg x.2
-  map_add' := fun v w => by
+  toFun := fun x ↦ valFromGraph hg x.2
+  map_add' := fun v w ↦ by
     have hadd := (g.map (LinearMap.fst R E F)).add_mem v.2 w.2
     have hvw := valFromGraph_mem hg hadd
     have hvw' := g.add_mem (valFromGraph_mem hg v.2) (valFromGraph_mem hg w.2)
     rw [Prod.mk_add_mk] at hvw'
     exact (existsUnique_from_graph @hg hadd).unique hvw hvw'
-  map_smul' := fun a v => by
+  map_smul' := fun a v ↦ by
     have hsmul := (g.map (LinearMap.fst R E F)).smul_mem a v.2
     have hav := valFromGraph_mem hg hsmul
     have hav' := g.smul_mem a (valFromGraph_mem hg v.2)

@@ -118,13 +118,13 @@ arrow category composed with `F`. -/
 noncomputable def leftKanExtensionIsoFiberwiseColimit [HasLeftKanExtension L F] :
     leftKanExtension L F ≅ fiberwiseColimit (grothendieckProj L ⋙ F) :=
   letI : ∀ X, HasColimit (Grothendieck.ι (functor L) X ⋙ grothendieckProj L ⋙ F) :=
-      fun X => hasColimit_of_iso <| Iso.symm <|
+      fun X ↦ hasColimit_of_iso <| Iso.symm <|
         isoWhiskerRight (eqToIso ((functor L).map_id X)) _ ≪≫
         Functor.leftUnitor (Grothendieck.ι (functor L) X ⋙ grothendieckProj L ⋙ F)
   Iso.symm <| NatIso.ofComponents
-    (fun X => HasColimit.isoOfNatIso (isoWhiskerRight (ιCompGrothendieckProj L X) F) ≪≫
+    (fun X ↦ HasColimit.isoOfNatIso (isoWhiskerRight (ιCompGrothendieckProj L X) F) ≪≫
       (leftKanExtensionObjIsoColimit L F X).symm)
-    fun f => colimit.hom_ext (by simp)
+    fun f ↦ colimit.hom_ext (by simp)
 
 end
 
@@ -136,8 +136,8 @@ variable (H) in
 /-- The left Kan extension functor `L.Lan` is left adjoint to the precomposition by `L`. -/
 noncomputable def lanAdjunction : L.lan ⊣ (whiskeringLeft C D H).obj L :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun F G => homEquivOfIsLeftKanExtension _ (L.lanUnit.app F) G
-      homEquiv_naturality_left_symm := fun {F₁ F₂ G} f α =>
+    { homEquiv := fun F G ↦ homEquivOfIsLeftKanExtension _ (L.lanUnit.app F) G
+      homEquiv_naturality_left_symm := fun {F₁ F₂ G} f α ↦
         hom_ext_of_isLeftKanExtension _ (L.lanUnit.app F₁) _ _ (by
           ext X
           dsimp [homEquivOfIsLeftKanExtension]
@@ -145,7 +145,7 @@ noncomputable def lanAdjunction : L.lan ⊣ (whiskeringLeft C D H).obj L :=
           have h := congr_app (L.lanUnit.naturality f) X
           dsimp at h ⊢
           rw [← h, assoc, descOfIsLeftKanExtension_fac_app] )
-      homEquiv_naturality_right := fun {F G₁ G₂} β f => by
+      homEquiv_naturality_right := fun {F G₁ G₂} β f ↦ by
         dsimp [homEquivOfIsLeftKanExtension]
         rw [assoc] }
 
@@ -319,7 +319,7 @@ variable (H) in
 precomposition by `L`. -/
 noncomputable def ranAdjunction : (whiskeringLeft C D H).obj L ⊣ L.ran :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun F G =>
+    { homEquiv := fun F G ↦
         (homEquivOfIsRightKanExtension (α := L.ranCounit.app G) _ F).symm
       homEquiv_naturality_right := fun {F G₁ G₂} β f ↦
         hom_ext_of_isRightKanExtension _ (L.ranCounit.app G₂) _ _ (by

@@ -27,7 +27,7 @@ namespace ObjectProperty
 
 /-- Given a predicate `P : C → Prop` on objects of a category equipped with a shift by `A`,
 this is the predicate which is satisfied by `X` if `P (X⟦a⟧)`. -/
-def shift (a : A) : ObjectProperty C := fun X => P (X⟦a⟧)
+def shift (a : A) : ObjectProperty C := fun X ↦ P (X⟦a⟧)
 
 lemma prop_shift_iff (a : A) (X : C) : P.shift a X ↔ P (X⟦a⟧) := Iff.rfl
 

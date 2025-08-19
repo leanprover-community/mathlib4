@@ -65,7 +65,7 @@ namespace FromTypes
 /-- Constant `n`-ary function with value `t`. -/
 def const : {n : ℕ} → (p : Fin n → Type u) → {τ : Type u} → (t : τ) → FromTypes p τ
   | 0,     _, _, t => t
-  | n + 1, p, τ, t => fun _ => @const n (vecTail p) τ t
+  | n + 1, p, τ, t => fun _ ↦ @const n (vecTail p) τ t
 
 @[simp]
 theorem const_zero (p : Fin 0 → Type u) {τ : Type u} (t : τ) : const p t = t :=
@@ -73,7 +73,7 @@ theorem const_zero (p : Fin 0 → Type u) {τ : Type u} (t : τ) : const p t = t
 
 @[simp]
 theorem const_succ {n} (p : Fin (n + 1) → Type u) {τ : Type u} (t : τ) :
-    const p t = fun _ => const (vecTail p) t := rfl
+    const p t = fun _ ↦ const (vecTail p) t := rfl
 
 theorem const_succ_apply {n} (p : Fin (n + 1) → Type u) {τ : Type u} (t : τ)
     (x : p 0) : const p t x = const (vecTail p) t := rfl

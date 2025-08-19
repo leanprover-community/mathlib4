@@ -34,7 +34,7 @@ variable {X Y : C} (α : X ≅ Y)
 /-- An isomorphism between two objects defines a monoid isomorphism between their
 monoid of endomorphisms. -/
 def conj : End X ≃* End Y :=
-  { homCongr α α with map_mul' := fun f g => homCongr_comp α α α g f }
+  { homCongr α α with map_mul' := fun f g ↦ homCongr_comp α α α g f }
 
 theorem conj_apply (f : End X) : α.conj f = α.inv ≫ f ≫ α.hom :=
   rfl

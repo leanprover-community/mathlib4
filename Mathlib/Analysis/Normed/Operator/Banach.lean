@@ -40,8 +40,8 @@ structure NonlinearRightInverse where
   bound' : ∀ y, ‖toFun y‖ ≤ nnnorm * ‖y‖
   right_inv' : ∀ y, f (toFun y) = y
 
-instance : CoeFun (NonlinearRightInverse f) fun _ => F → E :=
-  ⟨fun fsymm => fsymm.toFun⟩
+instance : CoeFun (NonlinearRightInverse f) fun _ ↦ F → E :=
+  ⟨fun fsymm ↦ fsymm.toFun⟩
 
 @[simp]
 theorem NonlinearRightInverse.right_inv {f : E →SL[σ] F} (fsymm : NonlinearRightInverse f) (y : F) :
@@ -87,18 +87,18 @@ is within distance `‖y‖/2` of `y`, to apply an iterative process. -/
 theorem exists_approx_preimage_norm_le (surj : Surjective f) :
     ∃ C ≥ 0, ∀ y, ∃ x, dist (f x) y ≤ 1 / 2 * ‖y‖ ∧ ‖x‖ ≤ C * ‖y‖ := by
   have A : ⋃ n : ℕ, closure (f '' ball 0 n) = Set.univ := by
-    refine Subset.antisymm (subset_univ _) fun y _ => ?_
+    refine Subset.antisymm (subset_univ _) fun y _ ↦ ?_
     rcases surj y with ⟨x, hx⟩
     rcases exists_nat_gt ‖x‖ with ⟨n, hn⟩
     refine mem_iUnion.2 ⟨n, subset_closure ?_⟩
     refine (mem_image _ _ _).2 ⟨x, ⟨?_, hx⟩⟩
     rwa [mem_ball, dist_eq_norm, sub_zero]
   have : ∃ (n : ℕ) (x : _), x ∈ interior (closure (f '' ball 0 n)) :=
-    nonempty_interior_of_iUnion_of_closed (fun n => isClosed_closure) A
+    nonempty_interior_of_iUnion_of_closed (fun n ↦ isClosed_closure) A
   simp only [mem_interior_iff_mem_nhds, Metric.mem_nhds_iff] at this
   rcases this with ⟨n, a, ε, ⟨εpos, H⟩⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
-  refine ⟨(ε / 2)⁻¹ * ‖c‖ * 2 * n, by positivity, fun y => ?_⟩
+  refine ⟨(ε / 2)⁻¹ * ‖c‖ * 2 * n, by positivity, fun y ↦ ?_⟩
   rcases eq_or_ne y 0 with rfl | hy
   · use 0
     simp
@@ -177,7 +177,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
     intro y
     rw [← dist_eq_norm, dist_comm]
     exact (hg y).1
-  refine ⟨2 * C + 1, by linarith, fun y => ?_⟩
+  refine ⟨2 * C + 1, by linarith, fun y ↦ ?_⟩
   have hnle : ∀ n : ℕ, ‖h^[n] y‖ ≤ (1 / 2) ^ n * ‖y‖ := by
     intro n
     induction n with
@@ -193,8 +193,8 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
     calc
       C * ‖h^[n] y‖ ≤ C * ((1 / 2) ^ n * ‖y‖) := mul_le_mul_of_nonneg_left (hnle n) C0
       _ = (1 / 2) ^ n * (C * ‖y‖) := by ring
-  have sNu : Summable fun n => ‖u n‖ := by
-    refine .of_nonneg_of_le (fun n => norm_nonneg _) ule ?_
+  have sNu : Summable fun n ↦ ‖u n‖ := by
+    refine .of_nonneg_of_le (fun n ↦ norm_nonneg _) ule ?_
     exact Summable.mul_right _ (summable_geometric_of_lt_one (by simp) (by norm_num))
   have su : Summable u := sNu.of_norm
   let x := tsum u
@@ -212,15 +212,15 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
     induction n with
     | zero => simp [f.map_zero]
     | succ n IH => rw [sum_range_succ, f.map_add, IH, iterate_succ_apply', sub_add]
-  have : Tendsto (fun n => ∑ i ∈ Finset.range n, u i) atTop (𝓝 x) := su.hasSum.tendsto_sum_nat
-  have L₁ : Tendsto (fun n => f (∑ i ∈ Finset.range n, u i)) atTop (𝓝 (f x)) :=
+  have : Tendsto (fun n ↦ ∑ i ∈ Finset.range n, u i) atTop (𝓝 x) := su.hasSum.tendsto_sum_nat
+  have L₁ : Tendsto (fun n ↦ f (∑ i ∈ Finset.range n, u i)) atTop (𝓝 (f x)) :=
     (f.continuous.tendsto _).comp this
   simp only [fsumeq] at L₁
-  have L₂ : Tendsto (fun n => y - h^[n] y) atTop (𝓝 (y - 0)) := by
+  have L₂ : Tendsto (fun n ↦ y - h^[n] y) atTop (𝓝 (y - 0)) := by
     refine tendsto_const_nhds.sub ?_
     rw [tendsto_iff_norm_sub_tendsto_zero]
     simp only [sub_zero]
-    refine squeeze_zero (fun _ => norm_nonneg _) hnle ?_
+    refine squeeze_zero (fun _ ↦ norm_nonneg _) hnle ?_
     rw [← zero_mul ‖y‖]
     refine (_root_.tendsto_pow_atTop_nhds_zero_of_lt_one ?_ ?_).mul tendsto_const_nhds <;> norm_num
   have feq : f x = y - 0 := tendsto_nhds_unique L₁ L₂
@@ -232,10 +232,10 @@ open. -/
 protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
   intro s hs
   rcases exists_preimage_norm_le f surj with ⟨C, Cpos, hC⟩
-  refine isOpen_iff.2 fun y yfs => ?_
+  refine isOpen_iff.2 fun y yfs ↦ ?_
   rcases yfs with ⟨x, xs, fxy⟩
   rcases isOpen_iff.1 hs x xs with ⟨ε, εpos, hε⟩
-  refine ⟨ε / C, div_pos εpos Cpos, fun z hz => ?_⟩
+  refine ⟨ε / C, div_pos εpos Cpos, fun z hz ↦ ?_⟩
   rcases hC (z - y) with ⟨w, wim, wnorm⟩
   have : f (x + w) = z := by rw [f.map_add, wim, fxy, add_sub_cancel]
   rw [← this]
@@ -288,8 +288,8 @@ theorem exists_nonlinearRightInverse_of_surjective (f : E →SL[σ] F)
   use {
       toFun := fsymm
       nnnorm := ⟨C, hC.lt.le⟩
-      bound' := fun y => (h y).2
-      right_inv' := fun y => (h y).1 }
+      bound' := fun y ↦ (h y).2
+      right_inv' := fun y ↦ (h y).1 }
   exact hC
 
 end
@@ -512,7 +512,7 @@ theorem LinearMap.continuous_of_isClosed_graph (hg : IsClosed (g.graph : Set <| 
     Continuous g := by
   letI : CompleteSpace g.graph := completeSpace_coe_iff_isComplete.mpr hg.isComplete
   let φ₀ : E →ₗ[𝕜] E × F := LinearMap.id.prod g
-  have : Function.LeftInverse Prod.fst φ₀ := fun x => rfl
+  have : Function.LeftInverse Prod.fst φ₀ := fun x ↦ rfl
   let φ : E ≃ₗ[𝕜] g.graph :=
     (LinearEquiv.ofLeftInverse this).trans (LinearEquiv.ofEq _ _ g.graph_eq_range_prod.symm)
   let ψ : g.graph ≃L[𝕜] E :=

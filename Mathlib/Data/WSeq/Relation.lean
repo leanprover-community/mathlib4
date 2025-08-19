@@ -46,7 +46,7 @@ theorem LiftRelO.imp {R S : α → β → Prop} {C D : WSeq α → WSeq β → P
 
 theorem LiftRelO.imp_right (R : α → β → Prop) {C D : WSeq α → WSeq β → Prop}
     (H : ∀ s t, C s t → D s t) {o p} : LiftRelO R C o p → LiftRelO R D o p :=
-  LiftRelO.imp (fun _ _ => id) H
+  LiftRelO.imp (fun _ _ ↦ id) H
 
 theorem LiftRelO.swap (R : α → β → Prop) (C) :
     swap (LiftRelO R C) = LiftRelO (swap R) (swap C) := by
@@ -74,14 +74,14 @@ theorem liftRel_destruct {R : α → β → Prop} {s : WSeq α} {t : WSeq β} :
   | ⟨R, h1, h2⟩ => by
     refine Computation.LiftRel.imp ?_ _ _ (h2 h1)
     apply LiftRelO.imp_right
-    exact fun s' t' h' => ⟨R, h', @h2⟩
+    exact fun s' t' h' ↦ ⟨R, h', @h2⟩
 
 theorem liftRel_destruct_iff {R : α → β → Prop} {s : WSeq α} {t : WSeq β} :
     LiftRel R s t ↔ Computation.LiftRel (LiftRelO R (LiftRel R)) (destruct s) (destruct t) :=
-  ⟨liftRel_destruct, fun h =>
-    ⟨fun s t =>
+  ⟨liftRel_destruct, fun h ↦
+    ⟨fun s t ↦
       LiftRel R s t ∨ Computation.LiftRel (LiftRelO R (LiftRel R)) (destruct s) (destruct t),
-      Or.inr h, fun {s t} h => by
+      Or.inr h, fun {s t} h ↦ by
       have h : Computation.LiftRel (LiftRelO R (LiftRel R)) (destruct s) (destruct t) := by
         obtain h | h := h
         · exact liftRel_destruct h
@@ -94,15 +94,15 @@ theorem liftRel_destruct_iff {R : α → β → Prop} {s : WSeq α} {t : WSeq β
 
 theorem LiftRel.swap_lem {R : α → β → Prop} {s1 s2} (h : LiftRel R s1 s2) :
     LiftRel (swap R) s2 s1 := by
-  refine ⟨swap (LiftRel R), h, fun {s t} (h : LiftRel R t s) => ?_⟩
+  refine ⟨swap (LiftRel R), h, fun {s t} (h : LiftRel R t s) ↦ ?_⟩
   rw [← LiftRelO.swap, Computation.LiftRel.swap]
   apply liftRel_destruct h
 
 theorem LiftRel.swap (R : α → β → Prop) : swap (LiftRel R) = LiftRel (swap R) :=
-  funext fun _ => funext fun _ => propext ⟨LiftRel.swap_lem, LiftRel.swap_lem⟩
+  funext fun _ ↦ funext fun _ ↦ propext ⟨LiftRel.swap_lem, LiftRel.swap_lem⟩
 
-theorem LiftRel.refl (R : α → α → Prop) (H : Reflexive R) : Reflexive (LiftRel R) := fun s => by
-  refine ⟨(· = ·), rfl, fun {s t} (h : s = t) => ?_⟩
+theorem LiftRel.refl (R : α → α → Prop) (H : Reflexive R) : Reflexive (LiftRel R) := fun s ↦ by
+  refine ⟨(· = ·), rfl, fun {s t} (h : s = t) ↦ ?_⟩
   rw [← h]
   apply Computation.LiftRel.refl
   intro a
@@ -113,18 +113,18 @@ theorem LiftRel.refl (R : α → α → Prop) (H : Reflexive R) : Reflexive (Lif
     apply H
 
 theorem LiftRel.symm (R : α → α → Prop) (H : Symmetric R) : Symmetric (LiftRel R) :=
-  fun s1 s2 (h : Function.swap (LiftRel R) s2 s1) => by rwa [LiftRel.swap, H.swap_eq] at h
+  fun s1 s2 (h : Function.swap (LiftRel R) s2 s1) ↦ by rwa [LiftRel.swap, H.swap_eq] at h
 
 theorem LiftRel.trans (R : α → α → Prop) (H : Transitive R) : Transitive (LiftRel R) :=
-  fun s t u h1 h2 => by
-  refine ⟨fun s u => ∃ t, LiftRel R s t ∧ LiftRel R t u, ⟨t, h1, h2⟩, fun {s u} h => ?_⟩
+  fun s t u h1 h2 ↦ by
+  refine ⟨fun s u ↦ ∃ t, LiftRel R s t ∧ LiftRel R t u, ⟨t, h1, h2⟩, fun {s u} h ↦ ?_⟩
   rcases h with ⟨t, h1, h2⟩
   have h1 := liftRel_destruct h1
   have h2 := liftRel_destruct h2
   refine
     Computation.liftRel_def.2
       ⟨(Computation.terminates_of_liftRel h1).trans (Computation.terminates_of_liftRel h2),
-        fun {a c} ha hc => ?_⟩
+        fun {a c} ha hc ↦ ?_⟩
   rcases h1.left ha with ⟨b, hb, t1⟩
   have t2 := Computation.rel_of_liftRel h2 hb hc
   obtain - | a := a <;> obtain - | c := c
@@ -190,7 +190,7 @@ theorem liftRel_dropn_destruct {R : α → β → Prop} {s t} (H : LiftRel R s t
     simp only [drop, destruct_tail]
     apply liftRel_bind
     · apply liftRel_dropn_destruct H n
-    exact fun {a b} o =>
+    exact fun {a b} o ↦
       match a, b, o with
       | none, none, _ => by simp
       | some (a, s), some (b, t), ⟨_, h2⟩ => by simpa [tail.aux] using liftRel_destruct h2
@@ -231,7 +231,7 @@ theorem think_congr {s t : WSeq α} (h : s ~ʷ t) : think s ~ʷ think t := by
   unfold Equiv; simpa using h
 
 theorem head_congr : ∀ {s t : WSeq α}, s ~ʷ t → head s ~ head t := by
-  suffices ∀ {s t : WSeq α}, s ~ʷ t → ∀ {o}, o ∈ head s → o ∈ head t from fun s t h o =>
+  suffices ∀ {s t : WSeq α}, s ~ʷ t → ∀ {o}, o ∈ head s → o ∈ head t from fun s t h o ↦
     ⟨this h, this h.symm⟩
   intro s t h o ho
   rcases @Computation.exists_of_mem_map _ _ _ _ (destruct s) ho with ⟨ds, dsm, dse⟩
@@ -260,7 +260,7 @@ theorem flatten_equiv {c : Computation (WSeq α)} {s} (h : s ∈ c) : flatten c 
 theorem liftRel_flatten {R : α → β → Prop} {c1 : Computation (WSeq α)} {c2 : Computation (WSeq β)}
     (h : c1.LiftRel (LiftRel R) c2) : LiftRel R (flatten c1) (flatten c2) :=
   let S s t := ∃ c1 c2, s = flatten c1 ∧ t = flatten c2 ∧ Computation.LiftRel (LiftRel R) c1 c2
-  ⟨S, ⟨c1, c2, rfl, rfl, h⟩, fun {s t} h =>
+  ⟨S, ⟨c1, c2, rfl, rfl, h⟩, fun {s t} h ↦
     match s, t, h with
     | _, _, ⟨c1, c2, rfl, rfl, h⟩ => by
       simp only [destruct_flatten]; apply liftRel_bind _ _ h
@@ -294,12 +294,12 @@ theorem get?_congr {s t : WSeq α} (h : s ~ʷ t) (n) : get? s n ~ get? t n :=
 
 theorem mem_congr {s t : WSeq α} (h : s ~ʷ t) (a) : a ∈ s ↔ a ∈ t :=
   suffices ∀ {s t : WSeq α}, s ~ʷ t → a ∈ s → a ∈ t from ⟨this h, this h.symm⟩
-  fun {_ _} h as =>
+  fun {_ _} h as ↦
   let ⟨_, hn⟩ := exists_get?_of_mem as
   get?_mem ((get?_congr h _ _).1 hn)
 
 theorem Equiv.ext {s t : WSeq α} (h : ∀ n, get? s n ~ get? t n) : s ~ʷ t :=
-  ⟨fun s t => ∀ n, get? s n ~ get? t n, h, fun {s t} h => by
+  ⟨fun s t ↦ ∀ n, get? s n ~ get? t n, h, fun {s t} h ↦ by
     refine liftRel_def.2 ⟨?_, ?_⟩
     · rw [← head_terminates_iff, ← head_terminates_iff]
       exact terminates_congr (h 0)
@@ -312,7 +312,7 @@ theorem Equiv.ext {s t : WSeq α} (h : ∀ n, get? s n ~ get? t n) : s ~ʷ t :=
         obtain ⟨b, t'⟩ := b
         injection mem_unique (Computation.mem_map _ ma) ((h 0 _).2 (Computation.mem_map _ mb)) with
           ab
-        refine ⟨ab, fun n => ?_⟩
+        refine ⟨ab, fun n ↦ ?_⟩
         refine
           (get?_congr (flatten_equiv (Computation.mem_map _ ma)) n).symm.trans
             ((?_ : get? (tail s) n ~ get? (tail t) n).trans
@@ -323,8 +323,8 @@ theorem Equiv.ext {s t : WSeq α} (h : ∀ n, get? s n ~ get? t n) : s ~ʷ t :=
 theorem liftRel_map {δ} (R : α → β → Prop) (S : γ → δ → Prop) {s1 : WSeq α} {s2 : WSeq β}
     {f1 : α → γ} {f2 : β → δ} (h1 : LiftRel R s1 s2) (h2 : ∀ {a b}, R a b → S (f1 a) (f2 b)) :
     LiftRel S (map f1 s1) (map f2 s2) :=
-  ⟨fun s1 s2 => ∃ s t, s1 = map f1 s ∧ s2 = map f2 t ∧ LiftRel R s t, ⟨s1, s2, rfl, rfl, h1⟩,
-    fun {s1 s2} h =>
+  ⟨fun s1 s2 ↦ ∃ s t, s1 = map f1 s ∧ s2 = map f2 t ∧ LiftRel R s t, ⟨s1, s2, rfl, rfl, h1⟩,
+    fun {s1 s2} h ↦
     match s1, s2, h with
     | _, _, ⟨s, t, rfl, rfl, h⟩ => by
       simp only [exists_and_left, destruct_map]
@@ -339,12 +339,12 @@ theorem liftRel_map {δ} (R : α → β → Prop) (S : γ → δ → Prop) {s1 :
         exact ⟨h2 r, s, rfl, t, rfl, h⟩⟩
 
 theorem map_congr (f : α → β) {s t : WSeq α} (h : s ~ʷ t) : map f s ~ʷ map f t :=
-  liftRel_map _ _ h fun {_ _} => congr_arg _
+  liftRel_map _ _ h fun {_ _} ↦ congr_arg _
 
 theorem liftRel_append (R : α → β → Prop) {s1 s2 : WSeq α} {t1 t2 : WSeq β} (h1 : LiftRel R s1 t1)
     (h2 : LiftRel R s2 t2) : LiftRel R (append s1 s2) (append t1 t2) :=
-  ⟨fun s t => LiftRel R s t ∨ ∃ s1 t1, s = append s1 s2 ∧ t = append t1 t2 ∧ LiftRel R s1 t1,
-    Or.inr ⟨s1, t1, rfl, rfl, h1⟩, fun {s t} h =>
+  ⟨fun s t ↦ LiftRel R s t ∨ ∃ s1 t1, s = append s1 s2 ∧ t = append t1 t2 ∧ LiftRel R s1 t1,
+    Or.inr ⟨s1, t1, rfl, rfl, h1⟩, fun {s t} h ↦
     match s, t, h with
     | s, t, Or.inl h => by
       apply Computation.LiftRel.imp _ _ _ (liftRel_destruct h)
@@ -420,13 +420,13 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
 
 theorem liftRel_join (R : α → β → Prop) {S : WSeq (WSeq α)} {T : WSeq (WSeq β)}
     (h : LiftRel (LiftRel R) S T) : LiftRel R (join S) (join T) :=
-  ⟨fun s1 s2 =>
+  ⟨fun s1 s2 ↦
     ∃ s t S T,
       s1 = append s (join S) ∧ s2 = append t (join T) ∧ LiftRel R s t ∧ LiftRel (LiftRel R) S T,
-    ⟨nil, nil, S, T, by simp, by simp, by simp, h⟩, fun {s1 s2} ⟨s, t, S, T, h1, h2, st, ST⟩ => by
+    ⟨nil, nil, S, T, by simp, by simp, by simp, h⟩, fun {s1 s2} ⟨s, t, S, T, h1, h2, st, ST⟩ ↦ by
     rw [h1, h2]; rw [destruct_append, destruct_append]
     apply Computation.liftRel_bind _ _ (liftRel_destruct st)
-    exact fun {o p} h =>
+    exact fun {o p} h ↦
       match o, p, h with
       | some (a, s), some (b, t), ⟨h1, h2⟩ => by
         simpa using ⟨h1, s, t, S, rfl, T, rfl, h2, ST⟩
@@ -434,14 +434,14 @@ theorem liftRel_join (R : α → β → Prop) {S : WSeq (WSeq α)} {T : WSeq (WS
         -- We do not `dsimp` with `LiftRelO` since `liftRel_join.lem` uses `LiftRelO`.
         dsimp only [destruct_append.aux, Computation.LiftRel]; constructor
         · intro
-          apply liftRel_join.lem _ ST fun _ _ => id
+          apply liftRel_join.lem _ ST fun _ _ ↦ id
         · intro b mb
           rw [← LiftRelO.swap]
           apply liftRel_join.lem (swap R)
           · rw [← LiftRel.swap R, ← LiftRel.swap]
             apply ST
           · rw [← LiftRel.swap R, ← LiftRel.swap (LiftRel R)]
-            exact fun s1 s2 ⟨s, t, S, T, h1, h2, st, ST⟩ => ⟨t, s, T, S, h2, h1, st, ST⟩
+            exact fun s1 s2 ⟨s, t, S, T, h1, h2, st, ST⟩ ↦ ⟨t, s, T, S, h2, h1, st, ST⟩
           · exact mb⟩
 
 theorem join_congr {S T : WSeq (WSeq α)} (h : LiftRel Equiv S T) : join S ~ʷ join T :=
@@ -454,17 +454,17 @@ theorem liftRel_bind {δ} (R : α → β → Prop) (S : γ → δ → Prop) {s1 
 
 theorem bind_congr {s1 s2 : WSeq α} {f1 f2 : α → WSeq β} (h1 : s1 ~ʷ s2) (h2 : ∀ a, f1 a ~ʷ f2 a) :
     bind s1 f1 ~ʷ bind s2 f2 :=
-  liftRel_bind _ _ h1 fun {a b} h => by rw [h]; apply h2
+  liftRel_bind _ _ h1 fun {a b} h ↦ by rw [h]; apply h2
 
 @[simp]
 theorem join_ret (s : WSeq α) : join (ret s) ~ʷ s := by simpa [ret] using think_equiv _
 
 @[simp]
 theorem join_map_ret (s : WSeq α) : join (map ret s) ~ʷ s := by
-  refine ⟨fun s1 s2 => join (map ret s2) = s1, rfl, ?_⟩
+  refine ⟨fun s1 s2 ↦ join (map ret s2) = s1, rfl, ?_⟩
   intro s' s h; rw [← h]
-  apply liftRel_rec fun c1 c2 => ∃ s, c1 = destruct (join (map ret s)) ∧ c2 = destruct s
-  · exact fun {c1 c2} h =>
+  apply liftRel_rec fun c1 c2 ↦ ∃ s, c1 = destruct (join (map ret s)) ∧ c2 = destruct s
+  · exact fun {c1 c2} h ↦
       match c1, c2, h with
       | _, _, ⟨s, rfl, rfl⟩ => by
         clear h
@@ -477,13 +477,13 @@ theorem join_map_ret (s : WSeq α) : join (map ret s) ~ʷ s := by
 @[simp]
 theorem join_append (S T : WSeq (WSeq α)) : join (append S T) ~ʷ append (join S) (join T) := by
   refine
-    ⟨fun s1 s2 =>
+    ⟨fun s1 s2 ↦
       ∃ s S T, s1 = append s (join (append S T)) ∧ s2 = append s (append (join S) (join T)),
       ⟨nil, S, T, by simp, by simp⟩, ?_⟩
   intro s1 s2 h
   apply
     liftRel_rec
-      (fun c1 c2 =>
+      (fun c1 c2 ↦
         ∃ (s : WSeq α) (S T : _),
           c1 = destruct (append s (join (append S T))) ∧
             c2 = destruct (append s (append (join S) (join T))))
@@ -517,7 +517,7 @@ theorem ret_bind (a : α) (f : α → WSeq β) : bind (ret a) f ~ʷ f a := by si
 @[simp]
 theorem join_join (SS : WSeq (WSeq (WSeq α))) : join (join SS) ~ʷ join (map join SS) := by
   refine
-    ⟨fun s1 s2 =>
+    ⟨fun s1 s2 ↦
       ∃ s S SS,
         s1 = append s (join (append S (join SS))) ∧
           s2 = append s (append (join S) (join (map join SS))),
@@ -525,7 +525,7 @@ theorem join_join (SS : WSeq (WSeq (WSeq α))) : join (join SS) ~ʷ join (map jo
   intro s1 s2 h
   apply
     liftRel_rec
-      (fun c1 c2 =>
+      (fun c1 c2 ↦
         ∃ s S SS,
           c1 = destruct (append s (join (append S (join SS)))) ∧
             c2 = destruct (append s (append (join S) (join (map join SS)))))
@@ -551,14 +551,14 @@ theorem join_join (SS : WSeq (WSeq (WSeq α))) : join (join SS) ~ʷ join (map jo
 
 @[simp]
 theorem bind_assoc_comp (s : WSeq α) (f : α → WSeq β) (g : β → WSeq γ) :
-    bind (bind s f) g ~ʷ bind s ((fun y : WSeq β => bind y g) ∘ f) := by
+    bind (bind s f) g ~ʷ bind s ((fun y : WSeq β ↦ bind y g) ∘ f) := by
   simp only [bind, map_join]
   rw [← map_comp f (map g), ← Function.comp_def, comp_assoc, map_comp (map g ∘ f) join s]
   exact join_join (map (map g ∘ f) s)
 
 @[simp]
 theorem bind_assoc (s : WSeq α) (f : α → WSeq β) (g : β → WSeq γ) :
-    bind (bind s f) g ~ʷ bind s fun x : α => bind (f x) g := by
+    bind (bind s f) g ~ʷ bind s fun x : α ↦ bind (f x) g := by
   exact bind_assoc_comp s f g
 
 end Stream'.WSeq

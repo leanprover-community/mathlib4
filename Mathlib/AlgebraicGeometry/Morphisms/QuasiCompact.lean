@@ -41,7 +41,7 @@ class QuasiCompact (f : X ⟶ Y) : Prop where
   isCompact_preimage : ∀ U : Set Y, IsOpen U → IsCompact U → IsCompact (f.base ⁻¹' U)
 
 theorem quasiCompact_iff_spectral : QuasiCompact f ↔ IsSpectralMap f.base :=
-  ⟨fun ⟨h⟩ => ⟨by fun_prop, h⟩, fun h => ⟨h.2⟩⟩
+  ⟨fun ⟨h⟩ ↦ ⟨by fun_prop, h⟩, fun h ↦ ⟨h.2⟩⟩
 
 instance (priority := 900) quasiCompact_of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     QuasiCompact f := by
@@ -65,25 +65,25 @@ instance quasiCompact_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiCo
 theorem isCompactOpen_iff_eq_finset_affine_union {X : Scheme} (U : Set X) :
     IsCompact U ∧ IsOpen U ↔ ∃ s : Set X.affineOpens, s.Finite ∧ U = ⋃ i ∈ s, i := by
   apply Opens.IsBasis.isCompact_open_iff_eq_finite_iUnion
-    (fun (U : X.affineOpens) => (U : X.Opens))
+    (fun (U : X.affineOpens) ↦ (U : X.Opens))
   · rw [Subtype.range_coe]; exact isBasis_affine_open X
-  · exact fun i => i.2.isCompact
+  · exact fun i ↦ i.2.isCompact
 
 theorem isCompactOpen_iff_eq_basicOpen_union {X : Scheme} [IsAffine X] (U : Set X) :
     IsCompact U ∧ IsOpen U ↔
       ∃ s : Set Γ(X, ⊤), s.Finite ∧ U = ⋃ i ∈ s, X.basicOpen i :=
   (isBasis_basicOpen X).isCompact_open_iff_eq_finite_iUnion _
-    (fun _ => ((isAffineOpen_top _).basicOpen _).isCompact) _
+    (fun _ ↦ ((isAffineOpen_top _).basicOpen _).isCompact) _
 
 theorem quasiCompact_iff_forall_affine :
     QuasiCompact f ↔
       ∀ U : Y.Opens, IsAffineOpen U → IsCompact (f ⁻¹ᵁ U : Set X) := by
   rw [quasiCompact_iff]
-  refine ⟨fun H U hU => H U U.isOpen hU.isCompact, ?_⟩
+  refine ⟨fun H U hU ↦ H U U.isOpen hU.isCompact, ?_⟩
   intro H U hU hU'
   obtain ⟨S, hS, rfl⟩ := (isCompactOpen_iff_eq_finset_affine_union U).mp ⟨hU', hU⟩
   simp only [Set.preimage_iUnion]
-  exact Set.Finite.isCompact_biUnion hS (fun i _ => H i i.prop)
+  exact Set.Finite.isCompact_biUnion hS (fun i _ ↦ H i i.prop)
 
 theorem isCompact_basicOpen (X : Scheme) {U : X.Opens} (hU : IsCompact (U : Set X))
     (f : Γ(X, U)) : IsCompact (X.basicOpen f : Set X) := by
@@ -95,7 +95,7 @@ theorem isCompact_basicOpen (X : Scheme) {U : X.Opens} (hU : IsCompact (U : Set 
     use V.1 ⊓ X.basicOpen f
     have : V.1.1 ⟶ U := by
       apply homOfLE; change _ ⊆ (U : Set X); rw [e]
-      convert Set.subset_iUnion₂ (s := fun (U : X.affineOpens) (_ : U ∈ s) => (U : Set X))
+      convert Set.subset_iUnion₂ (s := fun (U : X.affineOpens) (_ : U ∈ s) ↦ (U : Set X))
         V V.prop using 1
     erw [← X.toLocallyRingedSpace.toRingedSpace.basicOpen_res this.op]
     exact IsAffineOpen.basicOpen V.1.prop _
@@ -109,7 +109,7 @@ theorem isCompact_basicOpen (X : Scheme) {U : X.Opens} (hU : IsCompact (U : Set 
     -- Porting note: had to make explicit the first given parameter to `Set.subset_iUnion₂`
     exact Set.Subset.trans (Set.Subset.rfl : _ ≤ g ⟨i, hi⟩)
       (@Set.subset_iUnion₂ _ _ _
-        (fun (i : X.affineOpens) (_ : i ∈ Set.range g) => (i : Set X.toPresheafedSpace)) _
+        (fun (i : X.affineOpens) (_ : i ∈ Set.range g) ↦ (i : Set X.toPresheafedSpace)) _
         (Set.mem_range_self ⟨i, hi⟩))
   · rintro ⟨i, hi⟩ ⟨⟨j, hj⟩, hj'⟩
     rw [← hj']
@@ -140,7 +140,7 @@ instance : HasAffineProperty @QuasiCompact (fun X _ _ _ ↦ CompactSpace X) wher
         rw [← hS]
         dsimp [Opens.map]
         simp only [Opens.iSup_mk, Opens.coe_mk, Set.preimage_iUnion]
-        exact isCompact_iUnion fun i => isCompact_iff_compactSpace.mpr (hS' i)
+        exact isCompact_iUnion fun i ↦ isCompact_iff_compactSpace.mpr (hS' i)
       · exact isAffineOpen_top _
 
 theorem quasiCompact_over_affine_iff {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y] :
@@ -237,7 +237,7 @@ theorem compact_open_induction_on {P : X.Opens → Prop} (S : X.Opens)
     P S := by
   classical
   obtain ⟨s, hs, hs'⟩ := (isCompactOpen_iff_eq_finset_affine_union S.1).mp ⟨hS, S.2⟩
-  replace hs' : S = iSup fun i : s => (i : X.Opens) := by ext1; simpa using hs'
+  replace hs' : S = iSup fun i : s ↦ (i : X.Opens) := by ext1; simpa using hs'
   subst hs'
   apply @Set.Finite.induction_on _ _ _ hs
   · convert h₁; rw [iSup_eq_bot]; rintro ⟨_, h⟩; exact h.elim
@@ -264,12 +264,12 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
     (H : x |_ (X.basicOpen f) = 0) :
     ∃ n : ℕ, f ^ n * x = 0 := by
   obtain ⟨s, hs, e⟩ := (isCompactOpen_iff_eq_finset_affine_union U.1).mp ⟨hU, U.2⟩
-  replace e : U = iSup fun i : s => (i : X.Opens) := by
+  replace e : U = iSup fun i : s ↦ (i : X.Opens) := by
     ext1; simpa using e
   have h₁ (i : s) : i.1.1 ≤ U := by
     rw [e]
-    exact le_iSup (fun (i : s) => (i : Opens (X.toPresheafedSpace))) _
-  have H' := fun i : s =>
+    exact le_iSup (fun (i : s) ↦ (i : Opens (X.toPresheafedSpace))) _
+  have H' := fun i : s ↦
     exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen X i.1.2
       (X.presheaf.map (homOfLE (h₁ i)).op x) (X.presheaf.map (homOfLE (h₁ i)).op f) ?_
   swap
@@ -286,14 +286,14 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
   use Finset.univ.sup n
   suffices ∀ i : s, X.presheaf.map (homOfLE (h₁ i)).op (f ^ Finset.univ.sup n * x) = 0 by
     subst e
-    apply TopCat.Sheaf.eq_of_locally_eq X.sheaf fun i : s => (i : X.Opens)
+    apply TopCat.Sheaf.eq_of_locally_eq X.sheaf fun i : s ↦ (i : X.Opens)
     intro i
     change _ = (X.sheaf.val.map _) 0
     rw [map_zero]
     apply this
   intro i
   replace hn :=
-    congr_arg (fun x => X.presheaf.map (homOfLE (h₁ i)).op (f ^ (Finset.univ.sup n - n i)) * x)
+    congr_arg (fun x ↦ X.presheaf.map (homOfLE (h₁ i)).op (f ^ (Finset.univ.sup n - n i)) * x)
       (hn i)
   dsimp at hn
   simp only [← map_mul, ← map_pow] at hn

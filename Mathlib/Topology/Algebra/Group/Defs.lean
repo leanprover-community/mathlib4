@@ -35,7 +35,7 @@ variable {G α X : Type*} [TopologicalSpace X]
 over `M`, for example, is obtained by requiring the instances `AddGroup M` and
 `ContinuousAdd M` and `ContinuousNeg M`. -/
 class ContinuousNeg (G : Type u) [TopologicalSpace G] [Neg G] : Prop where
-  continuous_neg : Continuous fun a : G => -a
+  continuous_neg : Continuous fun a : G ↦ -a
 
 attribute [continuity, fun_prop] ContinuousNeg.continuous_neg
 
@@ -44,7 +44,7 @@ is obtained by requiring the instances `Group M` and `ContinuousMul M` and
 `ContinuousInv M`. -/
 @[to_additive (attr := continuity)]
 class ContinuousInv (G : Type u) [TopologicalSpace G] [Inv G] : Prop where
-  continuous_inv : Continuous fun a : G => a⁻¹
+  continuous_inv : Continuous fun a : G ↦ a⁻¹
 
 attribute [continuity, fun_prop] ContinuousInv.continuous_inv
 
@@ -63,26 +63,26 @@ assuming additionally that the limit is nonzero, use `Filter.Tendsto.inv₀`. -/
   /-- If a function converges to a value in an additive topological group, then its
   negation converges to the negation of this value. -/]
 theorem Filter.Tendsto.inv {f : α → G} {l : Filter α} {y : G} (h : Tendsto f l (𝓝 y)) :
-    Tendsto (fun x => (f x)⁻¹) l (𝓝 y⁻¹) :=
+    Tendsto (fun x ↦ (f x)⁻¹) l (𝓝 y⁻¹) :=
   (continuous_inv.tendsto y).comp h
 
 variable {f : X → G} {s : Set X} {x : X}
 
 @[to_additive (attr := continuity, fun_prop)]
-theorem Continuous.inv (hf : Continuous f) : Continuous fun x => (f x)⁻¹ :=
+theorem Continuous.inv (hf : Continuous f) : Continuous fun x ↦ (f x)⁻¹ :=
   continuous_inv.comp hf
 
 @[to_additive]
 nonrec theorem ContinuousWithinAt.inv (hf : ContinuousWithinAt f s x) :
-    ContinuousWithinAt (fun x => (f x)⁻¹) s x :=
+    ContinuousWithinAt (fun x ↦ (f x)⁻¹) s x :=
   hf.inv
 
 @[to_additive (attr := fun_prop)]
-nonrec theorem ContinuousAt.inv (hf : ContinuousAt f x) : ContinuousAt (fun x => (f x)⁻¹) x :=
+nonrec theorem ContinuousAt.inv (hf : ContinuousAt f x) : ContinuousAt (fun x ↦ (f x)⁻¹) x :=
   hf.inv
 
 @[to_additive (attr := fun_prop)]
-theorem ContinuousOn.inv (hf : ContinuousOn f s) : ContinuousOn (fun x => (f x)⁻¹) s := fun x hx ↦
+theorem ContinuousOn.inv (hf : ContinuousOn f s) : ContinuousOn (fun x ↦ (f x)⁻¹) s := fun x hx ↦
   (hf x hx).inv
 
 end ContinuousInv
@@ -115,14 +115,14 @@ class IsTopologicalGroup (G : Type*) [TopologicalSpace G] [Group G] : Prop
 /-- A typeclass saying that `p : G × G ↦ p.1 - p.2` is a continuous function. This property
 automatically holds for topological additive groups but it also holds, e.g., for `ℝ≥0`. -/
 class ContinuousSub (G : Type*) [TopologicalSpace G] [Sub G] : Prop where
-  continuous_sub : Continuous fun p : G × G => p.1 - p.2
+  continuous_sub : Continuous fun p : G × G ↦ p.1 - p.2
 
 /-- A typeclass saying that `p : G × G ↦ p.1 / p.2` is a continuous function. This property
 automatically holds for topological groups. Lemmas using this class have primes.
 The unprimed version is for `GroupWithZero`. -/
 @[to_additive existing]
 class ContinuousDiv (G : Type*) [TopologicalSpace G] [Div G] : Prop where
-  continuous_div' : Continuous fun p : G × G => p.1 / p.2
+  continuous_div' : Continuous fun p : G × G ↦ p.1 / p.2
 
 -- see Note [lower instance priority]
 @[to_additive]
@@ -141,27 +141,27 @@ variable [TopologicalSpace G] [Div G] [ContinuousDiv G]
 
 @[to_additive sub]
 theorem Filter.Tendsto.div' {f g : α → G} {l : Filter α} {a b : G} (hf : Tendsto f l (𝓝 a))
-    (hg : Tendsto g l (𝓝 b)) : Tendsto (fun x => f x / g x) l (𝓝 (a / b)) :=
+    (hg : Tendsto g l (𝓝 b)) : Tendsto (fun x ↦ f x / g x) l (𝓝 (a / b)) :=
   (continuous_div'.tendsto (a, b)).comp (hf.prodMk_nhds hg)
 
 variable {f g : X → G} {s : Set X} {x : X}
 
 @[to_additive (attr := fun_prop) sub]
 nonrec theorem ContinuousAt.div' (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
-    ContinuousAt (fun x => f x / g x) x :=
+    ContinuousAt (fun x ↦ f x / g x) x :=
   hf.div' hg
 
 @[to_additive sub]
 theorem ContinuousWithinAt.div' (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
-    ContinuousWithinAt (fun x => f x / g x) s x :=
+    ContinuousWithinAt (fun x ↦ f x / g x) s x :=
   Filter.Tendsto.div' hf hg
 
 @[to_additive (attr := fun_prop) sub]
 theorem ContinuousOn.div' (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
-    ContinuousOn (fun x => f x / g x) s := fun x hx => (hf x hx).div' (hg x hx)
+    ContinuousOn (fun x ↦ f x / g x) s := fun x hx ↦ (hf x hx).div' (hg x hx)
 
 @[to_additive (attr := continuity, fun_prop) sub]
-theorem Continuous.div' (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f x / g x :=
+theorem Continuous.div' (hf : Continuous f) (hg : Continuous g) : Continuous fun x ↦ f x / g x :=
   continuous_div'.comp₂ hf hg
 
 end ContinuousDiv

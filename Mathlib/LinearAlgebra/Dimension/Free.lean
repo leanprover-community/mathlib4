@@ -135,12 +135,12 @@ end
 /-- Two vector spaces are isomorphic if and only if they have the same dimension. -/
 theorem LinearEquiv.nonempty_equiv_iff_lift_rank_eq : Nonempty (M ≃ₗ[R] M') ↔
     Cardinal.lift.{v'} (Module.rank R M) = Cardinal.lift.{v} (Module.rank R M') :=
-  ⟨fun ⟨h⟩ => LinearEquiv.lift_rank_eq h, fun h => nonempty_linearEquiv_of_lift_rank_eq h⟩
+  ⟨fun ⟨h⟩ ↦ LinearEquiv.lift_rank_eq h, fun h ↦ nonempty_linearEquiv_of_lift_rank_eq h⟩
 
 /-- Two vector spaces are isomorphic if and only if they have the same dimension. -/
 theorem LinearEquiv.nonempty_equiv_iff_rank_eq :
     Nonempty (M ≃ₗ[R] M₁) ↔ Module.rank R M = Module.rank R M₁ :=
-  ⟨fun ⟨h⟩ => LinearEquiv.rank_eq h, fun h => nonempty_linearEquiv_of_rank_eq h⟩
+  ⟨fun ⟨h⟩ ↦ LinearEquiv.rank_eq h, fun h ↦ nonempty_linearEquiv_of_rank_eq h⟩
 
 /-- Two finite and free modules are isomorphic if they have the same (finite) rank. -/
 theorem FiniteDimensional.nonempty_linearEquiv_of_finrank_eq
@@ -151,7 +151,7 @@ theorem FiniteDimensional.nonempty_linearEquiv_of_finrank_eq
 /-- Two finite and free modules are isomorphic if and only if they have the same (finite) rank. -/
 theorem FiniteDimensional.nonempty_linearEquiv_iff_finrank_eq [Module.Finite R M]
     [Module.Finite R M'] : Nonempty (M ≃ₗ[R] M') ↔ finrank R M = finrank R M' :=
-  ⟨fun ⟨h⟩ => h.finrank_eq, fun h => nonempty_linearEquiv_of_finrank_eq h⟩
+  ⟨fun ⟨h⟩ ↦ h.finrank_eq, fun h ↦ nonempty_linearEquiv_of_finrank_eq h⟩
 
 variable (M M')
 
@@ -246,9 +246,9 @@ noncomputable def basisUnique (ι : Type*) [Unique ι]
 theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
     {h : finrank R M = 1} {v : M} {i : ι} :
     (basisUnique ι h).repr v i = 0 ↔ v = 0 :=
-  ⟨fun hv =>
-    (basisUnique ι h).repr.map_eq_zero_iff.mp (Finsupp.ext fun j => Subsingleton.elim i j ▸ hv),
-    fun hv => by rw [hv, LinearEquiv.map_zero, Finsupp.zero_apply]⟩
+  ⟨fun hv ↦
+    (basisUnique ι h).repr.map_eq_zero_iff.mp (Finsupp.ext fun j ↦ Subsingleton.elim i j ▸ hv),
+    fun hv ↦ by rw [hv, LinearEquiv.map_zero, Finsupp.zero_apply]⟩
 
 end Module
 

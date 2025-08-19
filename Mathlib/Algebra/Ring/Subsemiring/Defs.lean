@@ -38,9 +38,9 @@ instance (priority := 74) AddSubmonoidWithOneClass.toAddMonoidWithOne
     [AddSubmonoidWithOneClass S R] : AddMonoidWithOne s :=
   { AddSubmonoidClass.toAddMonoid s with
     one := ⟨_, one_mem s⟩
-    natCast := fun n => ⟨n, natCast_mem s n⟩
+    natCast := fun n ↦ ⟨n, natCast_mem s n⟩
     natCast_zero := Subtype.ext Nat.cast_zero
-    natCast_succ := fun _ => Subtype.ext (Nat.cast_succ _) }
+    natCast_succ := fun _ ↦ Subtype.ext (Nat.cast_succ _) }
 
 end AddSubmonoidWithOneClass
 
@@ -71,14 +71,14 @@ namespace SubsemiringClass
 -- Prefer subclasses of `NonAssocSemiring` over subclasses of `SubsemiringClass`.
 /-- A subsemiring of a `NonAssocSemiring` inherits a `NonAssocSemiring` structure -/
 instance (priority := 75) toNonAssocSemiring : NonAssocSemiring s := fast_instance%
-  Subtype.coe_injective.nonAssocSemiring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ => rfl
+  Subtype.coe_injective.nonAssocSemiring Subtype.val rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) fun _ ↦ rfl
 
 instance nontrivial [Nontrivial R] : Nontrivial s :=
-  nontrivial_of_ne 0 1 fun H => zero_ne_one (congr_arg Subtype.val H)
+  nontrivial_of_ne 0 1 fun H ↦ zero_ne_one (congr_arg Subtype.val H)
 
 instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s :=
-  Subtype.coe_injective.noZeroDivisors _ rfl fun _ _ => rfl
+  Subtype.coe_injective.noZeroDivisors _ rfl fun _ _ ↦ rfl
 
 /-- The natural ring hom from a subsemiring of semiring `R` to `R`. -/
 def subtype : s →+* R :=
@@ -101,8 +101,8 @@ lemma subtype_injective :
 /-- A subsemiring of a `Semiring` is a `Semiring`. -/
 instance (priority := 75) toSemiring {R} [Semiring R] [SetLike S R] [SubsemiringClass S R] :
     Semiring s := fast_instance%
-  Subtype.coe_injective.semiring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+  Subtype.coe_injective.semiring Subtype.val rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) fun _ ↦ rfl
 
 @[simp, norm_cast]
 theorem coe_pow {R} [Monoid R] [SetLike S R] [SubmonoidClass S R] (x : s) (n : ℕ) :
@@ -114,8 +114,8 @@ theorem coe_pow {R} [Monoid R] [SetLike S R] [SubmonoidClass S R] (x : s) (n : �
 /-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
 instance toCommSemiring {R} [CommSemiring R] [SetLike S R] [SubsemiringClass S R] :
     CommSemiring s := fast_instance%
-  Subtype.coe_injective.commSemiring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+  Subtype.coe_injective.commSemiring Subtype.val rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) fun _ ↦ rfl
 
 end SubsemiringClass
 
@@ -216,7 +216,7 @@ theorem toAddSubmonoid_injective :
 
 lemma toNonUnitalSubsemiring_injective :
     Function.Injective (toNonUnitalSubsemiring : Subsemiring R → _) :=
-  fun S₁ S₂ h => SetLike.ext'_iff.2 (
+  fun S₁ S₂ h ↦ SetLike.ext'_iff.2 (
     show (S₁.toNonUnitalSubsemiring : Set R) = S₂ from SetLike.ext'_iff.1 h)
 
 @[simp]
@@ -296,7 +296,7 @@ theorem coe_mul (x y : s) : ((x * y : s) : R) = (x * y : R) :=
   rfl
 
 instance nontrivial [Nontrivial R] : Nontrivial s :=
-  nontrivial_of_ne 0 1 fun H => zero_ne_one (congr_arg Subtype.val H)
+  nontrivial_of_ne 0 1 fun H ↦ zero_ne_one (congr_arg Subtype.val H)
 
 protected theorem pow_mem {R : Type*} [Semiring R] (s : Subsemiring R) {x : R} (hx : x ∈ s)
     (n : ℕ) : x ^ n ∈ s :=
@@ -319,7 +319,7 @@ theorem coe_pow {R} [Semiring R] (s : Subsemiring R) (x : s) (n : ℕ) :
 
 /-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
 instance toCommSemiring {R} [CommSemiring R] (s : Subsemiring R) : CommSemiring s :=
-  { s.toSemiring with mul_comm := fun _ _ => Subtype.eq <| mul_comm _ _ }
+  { s.toSemiring with mul_comm := fun _ _ ↦ Subtype.eq <| mul_comm _ _ }
 
 /-- The natural ring hom from a subsemiring of semiring `R` to `R`. -/
 def subtype : s →+* R :=
@@ -373,7 +373,7 @@ namespace Subsemiring
 
 /-- The inf of two subsemirings is their intersection. -/
 instance : Min (Subsemiring R) :=
-  ⟨fun s t =>
+  ⟨fun s t ↦
     { s.toSubmonoid ⊓ t.toSubmonoid, s.toAddSubmonoid ⊓ t.toAddSubmonoid with carrier := s ∩ t }⟩
 
 @[simp]
@@ -407,7 +407,7 @@ def eqLocusS (f g : R →+* S) : Subsemiring R :=
 
 @[simp]
 theorem eqLocusS_same (f : R →+* S) : f.eqLocusS f = ⊤ :=
-  SetLike.ext fun _ => eq_self_iff_true _
+  SetLike.ext fun _ ↦ eq_self_iff_true _
 
 end RingHom
 

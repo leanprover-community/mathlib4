@@ -55,7 +55,7 @@ theorem restrictScalars_self (V : Submodule R M) : V.restrictScalars R = V :=
 variable (R M)
 
 theorem restrictScalars_injective :
-    Function.Injective (restrictScalars S : Submodule R M → Submodule S M) := fun _ _ h =>
+    Function.Injective (restrictScalars S : Submodule R M → Submodule S M) := fun _ _ h ↦
   ext <| Set.ext_iff.1 (SetLike.ext'_iff.1 h :)
 
 @[simp]
@@ -84,7 +84,7 @@ as turning it into a type and adding a module structure. -/
 @[simps +simpRhs]
 def restrictScalarsEquiv (p : Submodule R M) : p.restrictScalars S ≃ₗ[R] p :=
   { AddEquiv.refl p with
-    map_smul' := fun _ _ => rfl }
+    map_smul' := fun _ _ ↦ rfl }
 
 @[simp]
 theorem restrictScalars_bot : restrictScalars S (⊥ : Submodule R M) = ⊥ :=

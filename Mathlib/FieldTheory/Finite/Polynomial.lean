@@ -123,10 +123,10 @@ variable [Field K] [Fintype K] [Finite σ]
 
 theorem map_restrict_dom_evalₗ : (restrictDegree σ K (Fintype.card K - 1)).map (evalₗ K σ) = ⊤ := by
   cases nonempty_fintype σ
-  refine top_unique (SetLike.le_def.2 fun e _ => mem_map.2 ?_)
+  refine top_unique (SetLike.le_def.2 fun e _ ↦ mem_map.2 ?_)
   classical
   refine ⟨∑ n : σ → K, e n • indicator n, ?_, ?_⟩
-  · exact sum_mem fun c _ => smul_mem _ _ (indicator_mem_restrictDegree _)
+  · exact sum_mem fun c _ ↦ smul_mem _ _ (indicator_mem_restrictDegree _)
   · ext n
     simp only [evalₗ_apply, map_sum, smul_eval]
     rw [Finset.sum_eq_single n] <;>
@@ -183,11 +183,11 @@ theorem rank_R [Fintype σ] : Module.rank K (R σ K) = Fintype.card (σ → K) :
         (Finsupp.supportedEquivFinsupp { s : σ →₀ ℕ | ∀ n : σ, s n ≤ Fintype.card K - 1 })
     _ = #{ s : σ →₀ ℕ | ∀ n : σ, s n ≤ Fintype.card K - 1 } := by rw [rank_finsupp_self']
     _ = #{ s : σ → ℕ | ∀ n : σ, s n < Fintype.card K } := by
-      refine Quotient.sound ⟨Equiv.subtypeEquiv Finsupp.equivFunOnFinite fun f => ?_⟩
-      refine forall_congr' fun n => le_tsub_iff_right ?_
+      refine Quotient.sound ⟨Equiv.subtypeEquiv Finsupp.equivFunOnFinite fun f ↦ ?_⟩
+      refine forall_congr' fun n ↦ le_tsub_iff_right ?_
       exact Fintype.card_pos_iff.2 ⟨0⟩
     _ = #(σ → { n // n < Fintype.card K }) :=
-      (@Equiv.subtypePiEquivPi σ (fun _ => ℕ) fun _ n => n < Fintype.card K).cardinal_eq
+      (@Equiv.subtypePiEquivPi σ (fun _ ↦ ℕ) fun _ n ↦ n < Fintype.card K).cardinal_eq
     _ = #(σ → Fin (Fintype.card K)) :=
       (Equiv.arrowCongr (Equiv.refl σ) Fin.equivSubtype.symm).cardinal_eq
     _ = #(σ → K) := (Equiv.arrowCongr (Equiv.refl σ) (Fintype.equivFin K).symm).cardinal_eq

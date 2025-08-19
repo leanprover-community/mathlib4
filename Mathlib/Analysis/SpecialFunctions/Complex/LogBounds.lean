@@ -373,11 +373,11 @@ lemma tendsto_mul_log_one_add_of_tendsto {g : ℝ → ℝ} {t : ℝ}
   rw [Complex.ofReal_log (by linarith), Complex.ofReal_add, Complex.ofReal_one]
 
 theorem tendsto_mul_log_one_add_div_atTop (t : ℝ) :
-    Tendsto (fun x => x * log (1 + t / x)) atTop (𝓝 t) :=
+    Tendsto (fun x ↦ x * log (1 + t / x)) atTop (𝓝 t) :=
   tendsto_mul_log_one_add_of_tendsto <|
     tendsto_const_nhds.congr' <|
       (EventuallyEq.div_mul_cancel_atTop tendsto_id).symm.trans <|
-        .of_eq <| funext fun _ => mul_comm _ _
+        .of_eq <| funext fun _ ↦ mul_comm _ _
 
 @[deprecated (since := "2025-05-22")]
 alias tendsto_mul_log_one_plus_div_atTop := tendsto_mul_log_one_add_div_atTop

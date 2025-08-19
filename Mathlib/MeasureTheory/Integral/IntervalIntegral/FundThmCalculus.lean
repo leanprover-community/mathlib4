@@ -258,7 +258,7 @@ theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae' [IsMeasurablyGenera
     [TendstoIxxClass Ioc l l'] (hfm : StronglyMeasurableAtFilter f l' μ)
     (hf : Tendsto f (l' ⊓ ae μ) (𝓝 c)) (hl : μ.FiniteAtFilter l') (hu : Tendsto u lt l)
     (hv : Tendsto v lt l) :
-    (fun t => (∫ x in u t..v t, f x ∂μ) - ∫ _ in u t..v t, c ∂μ) =o[lt] fun t =>
+    (fun t ↦ (∫ x in u t..v t, f x ∂μ) - ∫ _ in u t..v t, c ∂μ) =o[lt] fun t ↦
       ∫ _ in u t..v t, (1 : ℝ) ∂μ := by
   by_cases hE : CompleteSpace E; swap
   · simp [intervalIntegral, integral, hE]
@@ -286,11 +286,11 @@ theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_le'
     [TendstoIxxClass Ioc l l'] (hfm : StronglyMeasurableAtFilter f l' μ)
     (hf : Tendsto f (l' ⊓ ae μ) (𝓝 c)) (hl : μ.FiniteAtFilter l') (hu : Tendsto u lt l)
     (hv : Tendsto v lt l) (huv : u ≤ᶠ[lt] v) :
-    (fun t => (∫ x in u t..v t, f x ∂μ) - μ.real (Ioc (u t) (v t)) • c) =o[lt] fun t =>
+    (fun t ↦ (∫ x in u t..v t, f x ∂μ) - μ.real (Ioc (u t) (v t)) • c) =o[lt] fun t ↦
       μ.real (Ioc (u t) (v t)) :=
   (measure_integral_sub_linear_isLittleO_of_tendsto_ae' hfm hf hl hu hv).congr'
-    (huv.mono fun x hx => by simp [integral_const', hx])
-    (huv.mono fun x hx => by simp [integral_const', hx])
+    (huv.mono fun x hx ↦ by simp [integral_const', hx])
+    (huv.mono fun x hx ↦ by simp [integral_const', hx])
 
 /-- **Fundamental theorem of calculus-1**, local version for any measure.
 Let filters `l` and `l'` be related by `TendstoIxxClass Ioc`.
@@ -307,11 +307,11 @@ theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_ge'
     [TendstoIxxClass Ioc l l'] (hfm : StronglyMeasurableAtFilter f l' μ)
     (hf : Tendsto f (l' ⊓ ae μ) (𝓝 c)) (hl : μ.FiniteAtFilter l') (hu : Tendsto u lt l)
     (hv : Tendsto v lt l) (huv : v ≤ᶠ[lt] u) :
-    (fun t => (∫ x in u t..v t, f x ∂μ) + μ.real (Ioc (v t) (u t)) • c) =o[lt] fun t =>
+    (fun t ↦ (∫ x in u t..v t, f x ∂μ) + μ.real (Ioc (v t) (u t)) • c) =o[lt] fun t ↦
       μ.real (Ioc (v t) (u t)) :=
   (measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_le' hfm hf hl hv hu
           huv).neg_left.congr_left
-    fun t => by simp [integral_symm (u t), add_comm]
+    fun t ↦ by simp [integral_symm (u t), add_comm]
 
 section IsLocallyFiniteMeasure
 
@@ -333,7 +333,7 @@ a statement that works in both cases `u ≤ v` and `v ≤ u`. -/
 theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae [FTCFilter a l l']
     (hfm : StronglyMeasurableAtFilter f l' μ) (hf : Tendsto f (l' ⊓ ae μ) (𝓝 c))
     (hu : Tendsto u lt l) (hv : Tendsto v lt l) :
-    (fun t => (∫ x in u t..v t, f x ∂μ) - ∫ _ in u t..v t, c ∂μ) =o[lt] fun t =>
+    (fun t ↦ (∫ x in u t..v t, f x ∂μ) - ∫ _ in u t..v t, c ∂μ) =o[lt] fun t ↦
       ∫ _ in u t..v t, (1 : ℝ) ∂μ :=
   haveI := FTCFilter.meas_gen l
   measure_integral_sub_linear_isLittleO_of_tendsto_ae' hfm hf (FTCFilter.finiteAt_inner l) hu hv
@@ -350,7 +350,7 @@ theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_le
     [CompleteSpace E] [FTCFilter a l l']
     (hfm : StronglyMeasurableAtFilter f l' μ) (hf : Tendsto f (l' ⊓ ae μ) (𝓝 c))
     (hu : Tendsto u lt l) (hv : Tendsto v lt l) (huv : u ≤ᶠ[lt] v) :
-    (fun t => (∫ x in u t..v t, f x ∂μ) - μ.real (Ioc (u t) (v t)) • c) =o[lt] fun t =>
+    (fun t ↦ (∫ x in u t..v t, f x ∂μ) - μ.real (Ioc (u t) (v t)) • c) =o[lt] fun t ↦
       μ.real (Ioc (u t) (v t)) :=
   haveI := FTCFilter.meas_gen l
   measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_le' hfm hf (FTCFilter.finiteAt_inner l) hu
@@ -368,7 +368,7 @@ theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_ge
     [CompleteSpace E] [FTCFilter a l l']
     (hfm : StronglyMeasurableAtFilter f l' μ) (hf : Tendsto f (l' ⊓ ae μ) (𝓝 c))
     (hu : Tendsto u lt l) (hv : Tendsto v lt l) (huv : v ≤ᶠ[lt] u) :
-    (fun t => (∫ x in u t..v t, f x ∂μ) + μ.real (Ioc (v t) (u t)) • c) =o[lt] fun t =>
+    (fun t ↦ (∫ x in u t..v t, f x ∂μ) + μ.real (Ioc (v t) (u t)) • c) =o[lt] fun t ↦
       μ.real (Ioc (v t) (u t)) :=
   haveI := FTCFilter.meas_gen l
   measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_ge' hfm hf (FTCFilter.finiteAt_inner l) hu
@@ -391,10 +391,10 @@ theorem measure_integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae
     (hmeas_b : StronglyMeasurableAtFilter f lb' μ) (ha_lim : Tendsto f (la' ⊓ ae μ) (𝓝 ca))
     (hb_lim : Tendsto f (lb' ⊓ ae μ) (𝓝 cb)) (hua : Tendsto ua lt la) (hva : Tendsto va lt la)
     (hub : Tendsto ub lt lb) (hvb : Tendsto vb lt lb) :
-    (fun t =>
+    (fun t ↦
         ((∫ x in va t..vb t, f x ∂μ) - ∫ x in ua t..ub t, f x ∂μ) -
           ((∫ _ in ub t..vb t, cb ∂μ) - ∫ _ in ua t..va t, ca ∂μ)) =o[lt]
-      fun t => ‖∫ _ in ua t..va t, (1 : ℝ) ∂μ‖ + ‖∫ _ in ub t..vb t, (1 : ℝ) ∂μ‖ := by
+      fun t ↦ ‖∫ _ in ua t..va t, (1 : ℝ) ∂μ‖ + ‖∫ _ in ub t..vb t, (1 : ℝ) ∂μ‖ := by
   haveI := FTCFilter.meas_gen la; haveI := FTCFilter.meas_gen lb
   refine
     ((measure_integral_sub_linear_isLittleO_of_tendsto_ae hmeas_a ha_lim hua hva).neg_left.add_add
@@ -427,8 +427,8 @@ Then `∫ x in a..v, f x ∂μ - ∫ x in a..u, f x ∂μ = ∫ x in u..v, c ∂
 theorem measure_integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_right
     (hab : IntervalIntegrable f μ a b) (hmeas : StronglyMeasurableAtFilter f lb' μ)
     (hf : Tendsto f (lb' ⊓ ae μ) (𝓝 c)) (hu : Tendsto u lt lb) (hv : Tendsto v lt lb) :
-    (fun t => ((∫ x in a..v t, f x ∂μ) - ∫ x in a..u t, f x ∂μ) - ∫ _ in u t..v t, c ∂μ) =o[lt]
-      fun t => ∫ _ in u t..v t, (1 : ℝ) ∂μ := by
+    (fun t ↦ ((∫ x in a..v t, f x ∂μ) - ∫ x in a..u t, f x ∂μ) - ∫ _ in u t..v t, c ∂μ) =o[lt]
+      fun t ↦ ∫ _ in u t..v t, (1 : ℝ) ∂μ := by
   simpa using
     measure_integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae hab stronglyMeasurableAt_bot
       hmeas ((tendsto_bot : Tendsto _ ⊥ (𝓝 (0 : E))).mono_left inf_le_left) hf
@@ -446,8 +446,8 @@ as `u` and `v` tend to `la`.
 theorem measure_integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_left
     (hab : IntervalIntegrable f μ a b) (hmeas : StronglyMeasurableAtFilter f la' μ)
     (hf : Tendsto f (la' ⊓ ae μ) (𝓝 c)) (hu : Tendsto u lt la) (hv : Tendsto v lt la) :
-    (fun t => ((∫ x in v t..b, f x ∂μ) - ∫ x in u t..b, f x ∂μ) + ∫ _ in u t..v t, c ∂μ) =o[lt]
-      fun t => ∫ _ in u t..v t, (1 : ℝ) ∂μ := by
+    (fun t ↦ ((∫ x in v t..b, f x ∂μ) - ∫ x in u t..b, f x ∂μ) + ∫ _ in u t..v t, c ∂μ) =o[lt]
+      fun t ↦ ∫ _ in u t..v t, (1 : ℝ) ∂μ := by
   simpa using
     measure_integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae hab hmeas
       stronglyMeasurableAt_bot hf ((tendsto_bot : Tendsto _ ⊥ (𝓝 (0 : E))).mono_left inf_le_left) hu
@@ -487,7 +487,7 @@ as both `u` and `v` tend to `l`. -/
 theorem integral_sub_linear_isLittleO_of_tendsto_ae [FTCFilter a l l']
     (hfm : StronglyMeasurableAtFilter f l') (hf : Tendsto f (l' ⊓ ae volume) (𝓝 c)) {u v : ι → ℝ}
     (hu : Tendsto u lt l) (hv : Tendsto v lt l) :
-    (fun t => (∫ x in u t..v t, f x) - (v t - u t) • c) =o[lt] (v - u) := by
+    (fun t ↦ (∫ x in u t..v t, f x) - (v t - u t) • c) =o[lt] (v - u) := by
   simpa [integral_const] using measure_integral_sub_linear_isLittleO_of_tendsto_ae hfm hf hu hv
 
 /-- **Fundamental theorem of calculus-1**, strict differentiability at filter in both endpoints.
@@ -505,10 +505,10 @@ theorem integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae
     (hmeas_b : StronglyMeasurableAtFilter f lb') (ha_lim : Tendsto f (la' ⊓ ae volume) (𝓝 ca))
     (hb_lim : Tendsto f (lb' ⊓ ae volume) (𝓝 cb)) (hua : Tendsto ua lt la) (hva : Tendsto va lt la)
     (hub : Tendsto ub lt lb) (hvb : Tendsto vb lt lb) :
-    (fun t =>
+    (fun t ↦
         ((∫ x in va t..vb t, f x) - ∫ x in ua t..ub t, f x) -
           ((vb t - ub t) • cb - (va t - ua t) • ca)) =o[lt]
-      fun t => ‖va t - ua t‖ + ‖vb t - ub t‖ := by
+      fun t ↦ ‖va t - ua t‖ + ‖vb t - ub t‖ := by
   simpa [integral_const]
     using measure_integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae hab hmeas_a hmeas_b
       ha_lim hb_lim hua hva hub hvb
@@ -523,7 +523,7 @@ This lemma could've been formulated using `HasStrictDerivAtFilter` if we had thi
 theorem integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_right
     (hab : IntervalIntegrable f volume a b) (hmeas : StronglyMeasurableAtFilter f lb')
     (hf : Tendsto f (lb' ⊓ ae volume) (𝓝 c)) (hu : Tendsto u lt lb) (hv : Tendsto v lt lb) :
-    (fun t => ((∫ x in a..v t, f x) - ∫ x in a..u t, f x) - (v t - u t) • c) =o[lt] (v - u) := by
+    (fun t ↦ ((∫ x in a..v t, f x) - ∫ x in a..u t, f x) - (v t - u t) • c) =o[lt] (v - u) := by
   simpa only [integral_const, smul_eq_mul, mul_one] using
     measure_integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_right hab hmeas hf hu hv
 
@@ -537,7 +537,7 @@ This lemma could've been formulated using `HasStrictDerivAtFilter` if we had thi
 theorem integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_left
     (hab : IntervalIntegrable f volume a b) (hmeas : StronglyMeasurableAtFilter f la')
     (hf : Tendsto f (la' ⊓ ae volume) (𝓝 c)) (hu : Tendsto u lt la) (hv : Tendsto v lt la) :
-    (fun t => ((∫ x in v t..b, f x) - ∫ x in u t..b, f x) + (v t - u t) • c) =o[lt] (v - u) := by
+    (fun t ↦ ((∫ x in v t..b, f x) - ∫ x in u t..b, f x) + (v t - u t) • c) =o[lt] (v - u) := by
   simpa only [integral_const, smul_eq_mul, mul_one] using
     measure_integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_left hab hmeas hf hu hv
 
@@ -582,7 +582,7 @@ in the sense of strict differentiability. -/
 theorem integral_hasStrictFDerivAt_of_tendsto_ae (hf : IntervalIntegrable f volume a b)
     (hmeas_a : StronglyMeasurableAtFilter f (𝓝 a)) (hmeas_b : StronglyMeasurableAtFilter f (𝓝 b))
     (ha : Tendsto f (𝓝 a ⊓ ae volume) (𝓝 ca)) (hb : Tendsto f (𝓝 b ⊓ ae volume) (𝓝 cb)) :
-    HasStrictFDerivAt (fun p : ℝ × ℝ => ∫ x in p.1..p.2, f x)
+    HasStrictFDerivAt (fun p : ℝ × ℝ ↦ ∫ x in p.1..p.2, f x)
       ((snd ℝ ℝ ℝ).smulRight cb - (fst ℝ ℝ ℝ).smulRight ca) (a, b) := by
   have :=
     integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae hf hmeas_a hmeas_b ha hb
@@ -602,7 +602,7 @@ strict differentiability. -/
 theorem integral_hasStrictFDerivAt (hf : IntervalIntegrable f volume a b)
     (hmeas_a : StronglyMeasurableAtFilter f (𝓝 a)) (hmeas_b : StronglyMeasurableAtFilter f (𝓝 b))
     (ha : ContinuousAt f a) (hb : ContinuousAt f b) :
-    HasStrictFDerivAt (fun p : ℝ × ℝ => ∫ x in p.1..p.2, f x)
+    HasStrictFDerivAt (fun p : ℝ × ℝ ↦ ∫ x in p.1..p.2, f x)
       ((snd ℝ ℝ ℝ).smulRight (f b) - (fst ℝ ℝ ℝ).smulRight (f a)) (a, b) :=
   integral_hasStrictFDerivAt_of_tendsto_ae hf hmeas_a hmeas_b (ha.mono_left inf_le_left)
     (hb.mono_left inf_le_left)
@@ -613,7 +613,7 @@ If `f : ℝ → E` is integrable on `a..b` and `f x` has a finite limit `c` almo
 `u ↦ ∫ x in a..u, f x` has derivative `c` at `b` in the sense of strict differentiability. -/
 theorem integral_hasStrictDerivAt_of_tendsto_ae_right (hf : IntervalIntegrable f volume a b)
     (hmeas : StronglyMeasurableAtFilter f (𝓝 b)) (hb : Tendsto f (𝓝 b ⊓ ae volume) (𝓝 c)) :
-    HasStrictDerivAt (fun u => ∫ x in a..u, f x) c b :=
+    HasStrictDerivAt (fun u ↦ ∫ x in a..u, f x) c b :=
   .of_isLittleO <|
     integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_right hf hmeas hb continuousAt_snd
       continuousAt_fst
@@ -624,7 +624,7 @@ If `f : ℝ → E` is integrable on `a..b` and `f` is continuous at `b`, then `u
 derivative `f b` at `b` in the sense of strict differentiability. -/
 theorem integral_hasStrictDerivAt_right (hf : IntervalIntegrable f volume a b)
     (hmeas : StronglyMeasurableAtFilter f (𝓝 b)) (hb : ContinuousAt f b) :
-    HasStrictDerivAt (fun u => ∫ x in a..u, f x) (f b) b :=
+    HasStrictDerivAt (fun u ↦ ∫ x in a..u, f x) (f b) b :=
   integral_hasStrictDerivAt_of_tendsto_ae_right hf hmeas (hb.mono_left inf_le_left)
 
 /-- **Fundamental theorem of calculus-1**, strict differentiability in the left endpoint.
@@ -633,7 +633,7 @@ If `f : ℝ → E` is integrable on `a..b` and `f x` has a finite limit `c` almo
 `u ↦ ∫ x in u..b, f x` has derivative `-c` at `a` in the sense of strict differentiability. -/
 theorem integral_hasStrictDerivAt_of_tendsto_ae_left (hf : IntervalIntegrable f volume a b)
     (hmeas : StronglyMeasurableAtFilter f (𝓝 a)) (ha : Tendsto f (𝓝 a ⊓ ae volume) (𝓝 c)) :
-    HasStrictDerivAt (fun u => ∫ x in u..b, f x) (-c) a := by
+    HasStrictDerivAt (fun u ↦ ∫ x in u..b, f x) (-c) a := by
   simpa only [← integral_symm] using
     (integral_hasStrictDerivAt_of_tendsto_ae_right hf.symm hmeas ha).fun_neg
 
@@ -643,7 +643,7 @@ If `f : ℝ → E` is integrable on `a..b` and `f` is continuous at `a`, then `u
 derivative `-f a` at `a` in the sense of strict differentiability. -/
 theorem integral_hasStrictDerivAt_left (hf : IntervalIntegrable f volume a b)
     (hmeas : StronglyMeasurableAtFilter f (𝓝 a)) (ha : ContinuousAt f a) :
-    HasStrictDerivAt (fun u => ∫ x in u..b, f x) (-f a) a := by
+    HasStrictDerivAt (fun u ↦ ∫ x in u..b, f x) (-f a) a := by
   simpa only [← integral_symm] using (integral_hasStrictDerivAt_right hf.symm hmeas ha).fun_neg
 
 /-- **Fundamental theorem of calculus-1**, strict differentiability in the right endpoint.
@@ -651,7 +651,7 @@ theorem integral_hasStrictDerivAt_left (hf : IntervalIntegrable f volume a b)
 If `f : ℝ → E` is continuous, then `u ↦ ∫ x in a..u, f x` has derivative `f b` at `b` in the sense
 of strict differentiability. -/
 theorem _root_.Continuous.integral_hasStrictDerivAt {f : ℝ → E} (hf : Continuous f) (a b : ℝ) :
-    HasStrictDerivAt (fun u => ∫ x : ℝ in a..u, f x) (f b) b :=
+    HasStrictDerivAt (fun u ↦ ∫ x : ℝ in a..u, f x) (f b) b :=
   integral_hasStrictDerivAt_right (hf.intervalIntegrable _ _) (hf.stronglyMeasurableAtFilter _ _)
     hf.continuousAt
 
@@ -659,7 +659,7 @@ theorem _root_.Continuous.integral_hasStrictDerivAt {f : ℝ → E} (hf : Contin
 
 If `f : ℝ → E` is continuous, then the derivative of `u ↦ ∫ x in a..u, f x` at `b` is `f b`. -/
 theorem _root_.Continuous.deriv_integral (f : ℝ → E) (hf : Continuous f) (a b : ℝ) :
-    deriv (fun u => ∫ x : ℝ in a..u, f x) b = f b :=
+    deriv (fun u ↦ ∫ x : ℝ in a..u, f x) b = f b :=
   (hf.integral_hasStrictDerivAt a b).hasDerivAt.deriv
 
 /-!
@@ -676,7 +676,7 @@ finite limits `ca` and `cb` almost surely as `x` tends to `a` and `b`, respectiv
 theorem integral_hasFDerivAt_of_tendsto_ae (hf : IntervalIntegrable f volume a b)
     (hmeas_a : StronglyMeasurableAtFilter f (𝓝 a)) (hmeas_b : StronglyMeasurableAtFilter f (𝓝 b))
     (ha : Tendsto f (𝓝 a ⊓ ae volume) (𝓝 ca)) (hb : Tendsto f (𝓝 b ⊓ ae volume) (𝓝 cb)) :
-    HasFDerivAt (fun p : ℝ × ℝ => ∫ x in p.1..p.2, f x)
+    HasFDerivAt (fun p : ℝ × ℝ ↦ ∫ x in p.1..p.2, f x)
       ((snd ℝ ℝ ℝ).smulRight cb - (fst ℝ ℝ ℝ).smulRight ca) (a, b) :=
   (integral_hasStrictFDerivAt_of_tendsto_ae hf hmeas_a hmeas_b ha hb).hasFDerivAt
 
@@ -686,7 +686,7 @@ ca` at `(a, b)`. -/
 theorem integral_hasFDerivAt (hf : IntervalIntegrable f volume a b)
     (hmeas_a : StronglyMeasurableAtFilter f (𝓝 a)) (hmeas_b : StronglyMeasurableAtFilter f (𝓝 b))
     (ha : ContinuousAt f a) (hb : ContinuousAt f b) :
-    HasFDerivAt (fun p : ℝ × ℝ => ∫ x in p.1..p.2, f x)
+    HasFDerivAt (fun p : ℝ × ℝ ↦ ∫ x in p.1..p.2, f x)
       ((snd ℝ ℝ ℝ).smulRight (f b) - (fst ℝ ℝ ℝ).smulRight (f a)) (a, b) :=
   (integral_hasStrictFDerivAt hf hmeas_a hmeas_b ha hb).hasFDerivAt
 
@@ -696,7 +696,7 @@ derivative of `(u, v) ↦ ∫ x in u..v, f x` at `(a, b)` equals `(u, v) ↦ v �
 theorem fderiv_integral_of_tendsto_ae (hf : IntervalIntegrable f volume a b)
     (hmeas_a : StronglyMeasurableAtFilter f (𝓝 a)) (hmeas_b : StronglyMeasurableAtFilter f (𝓝 b))
     (ha : Tendsto f (𝓝 a ⊓ ae volume) (𝓝 ca)) (hb : Tendsto f (𝓝 b ⊓ ae volume) (𝓝 cb)) :
-    fderiv ℝ (fun p : ℝ × ℝ => ∫ x in p.1..p.2, f x) (a, b) =
+    fderiv ℝ (fun p : ℝ × ℝ ↦ ∫ x in p.1..p.2, f x) (a, b) =
       (snd ℝ ℝ ℝ).smulRight cb - (fst ℝ ℝ ℝ).smulRight ca :=
   (integral_hasFDerivAt_of_tendsto_ae hf hmeas_a hmeas_b ha hb).fderiv
 
@@ -706,7 +706,7 @@ equals `(u, v) ↦ v • cb - u • ca`. -/
 theorem fderiv_integral (hf : IntervalIntegrable f volume a b)
     (hmeas_a : StronglyMeasurableAtFilter f (𝓝 a)) (hmeas_b : StronglyMeasurableAtFilter f (𝓝 b))
     (ha : ContinuousAt f a) (hb : ContinuousAt f b) :
-    fderiv ℝ (fun p : ℝ × ℝ => ∫ x in p.1..p.2, f x) (a, b) =
+    fderiv ℝ (fun p : ℝ × ℝ ↦ ∫ x in p.1..p.2, f x) (a, b) =
       (snd ℝ ℝ ℝ).smulRight (f b) - (fst ℝ ℝ ℝ).smulRight (f a) :=
   (integral_hasFDerivAt hf hmeas_a hmeas_b ha hb).fderiv
 
@@ -714,56 +714,56 @@ theorem fderiv_integral (hf : IntervalIntegrable f volume a b)
 finite limit `c` almost surely at `b`, then `u ↦ ∫ x in a..u, f x` has derivative `c` at `b`. -/
 theorem integral_hasDerivAt_of_tendsto_ae_right (hf : IntervalIntegrable f volume a b)
     (hmeas : StronglyMeasurableAtFilter f (𝓝 b)) (hb : Tendsto f (𝓝 b ⊓ ae volume) (𝓝 c)) :
-    HasDerivAt (fun u => ∫ x in a..u, f x) c b :=
+    HasDerivAt (fun u ↦ ∫ x in a..u, f x) c b :=
   (integral_hasStrictDerivAt_of_tendsto_ae_right hf hmeas hb).hasDerivAt
 
 /-- **Fundamental theorem of calculus-1**: if `f : ℝ → E` is integrable on `a..b` and `f` is
 continuous at `b`, then `u ↦ ∫ x in a..u, f x` has derivative `f b` at `b`. -/
 theorem integral_hasDerivAt_right (hf : IntervalIntegrable f volume a b)
     (hmeas : StronglyMeasurableAtFilter f (𝓝 b)) (hb : ContinuousAt f b) :
-    HasDerivAt (fun u => ∫ x in a..u, f x) (f b) b :=
+    HasDerivAt (fun u ↦ ∫ x in a..u, f x) (f b) b :=
   (integral_hasStrictDerivAt_right hf hmeas hb).hasDerivAt
 
 /-- Fundamental theorem of calculus: if `f : ℝ → E` is integrable on `a..b` and `f` has a finite
 limit `c` almost surely at `b`, then the derivative of `u ↦ ∫ x in a..u, f x` at `b` equals `c`. -/
 theorem deriv_integral_of_tendsto_ae_right (hf : IntervalIntegrable f volume a b)
     (hmeas : StronglyMeasurableAtFilter f (𝓝 b)) (hb : Tendsto f (𝓝 b ⊓ ae volume) (𝓝 c)) :
-    deriv (fun u => ∫ x in a..u, f x) b = c :=
+    deriv (fun u ↦ ∫ x in a..u, f x) b = c :=
   (integral_hasDerivAt_of_tendsto_ae_right hf hmeas hb).deriv
 
 /-- Fundamental theorem of calculus: if `f : ℝ → E` is integrable on `a..b` and `f` is continuous
 at `b`, then the derivative of `u ↦ ∫ x in a..u, f x` at `b` equals `f b`. -/
 theorem deriv_integral_right (hf : IntervalIntegrable f volume a b)
     (hmeas : StronglyMeasurableAtFilter f (𝓝 b)) (hb : ContinuousAt f b) :
-    deriv (fun u => ∫ x in a..u, f x) b = f b :=
+    deriv (fun u ↦ ∫ x in a..u, f x) b = f b :=
   (integral_hasDerivAt_right hf hmeas hb).deriv
 
 /-- **Fundamental theorem of calculus-1**: if `f : ℝ → E` is integrable on `a..b` and `f x` has a
 finite limit `c` almost surely at `a`, then `u ↦ ∫ x in u..b, f x` has derivative `-c` at `a`. -/
 theorem integral_hasDerivAt_of_tendsto_ae_left (hf : IntervalIntegrable f volume a b)
     (hmeas : StronglyMeasurableAtFilter f (𝓝 a)) (ha : Tendsto f (𝓝 a ⊓ ae volume) (𝓝 c)) :
-    HasDerivAt (fun u => ∫ x in u..b, f x) (-c) a :=
+    HasDerivAt (fun u ↦ ∫ x in u..b, f x) (-c) a :=
   (integral_hasStrictDerivAt_of_tendsto_ae_left hf hmeas ha).hasDerivAt
 
 /-- **Fundamental theorem of calculus-1**: if `f : ℝ → E` is integrable on `a..b` and `f` is
 continuous at `a`, then `u ↦ ∫ x in u..b, f x` has derivative `-f a` at `a`. -/
 theorem integral_hasDerivAt_left (hf : IntervalIntegrable f volume a b)
     (hmeas : StronglyMeasurableAtFilter f (𝓝 a)) (ha : ContinuousAt f a) :
-    HasDerivAt (fun u => ∫ x in u..b, f x) (-f a) a :=
+    HasDerivAt (fun u ↦ ∫ x in u..b, f x) (-f a) a :=
   (integral_hasStrictDerivAt_left hf hmeas ha).hasDerivAt
 
 /-- Fundamental theorem of calculus: if `f : ℝ → E` is integrable on `a..b` and `f` has a finite
 limit `c` almost surely at `a`, then the derivative of `u ↦ ∫ x in u..b, f x` at `a` equals `-c`. -/
 theorem deriv_integral_of_tendsto_ae_left (hf : IntervalIntegrable f volume a b)
     (hmeas : StronglyMeasurableAtFilter f (𝓝 a)) (hb : Tendsto f (𝓝 a ⊓ ae volume) (𝓝 c)) :
-    deriv (fun u => ∫ x in u..b, f x) a = -c :=
+    deriv (fun u ↦ ∫ x in u..b, f x) a = -c :=
   (integral_hasDerivAt_of_tendsto_ae_left hf hmeas hb).deriv
 
 /-- Fundamental theorem of calculus: if `f : ℝ → E` is integrable on `a..b` and `f` is continuous
 at `a`, then the derivative of `u ↦ ∫ x in u..b, f x` at `a` equals `-f a`. -/
 theorem deriv_integral_left (hf : IntervalIntegrable f volume a b)
     (hmeas : StronglyMeasurableAtFilter f (𝓝 a)) (hb : ContinuousAt f a) :
-    deriv (fun u => ∫ x in u..b, f x) a = -f a :=
+    deriv (fun u ↦ ∫ x in u..b, f x) a = -f a :=
   (integral_hasDerivAt_left hf hmeas hb).deriv
 
 /-!
@@ -787,7 +787,7 @@ theorem integral_hasFDerivWithinAt_of_tendsto_ae (hf : IntervalIntegrable f volu
     {s t : Set ℝ} [FTCFilter a (𝓝[s] a) la] [FTCFilter b (𝓝[t] b) lb]
     (hmeas_a : StronglyMeasurableAtFilter f la) (hmeas_b : StronglyMeasurableAtFilter f lb)
     (ha : Tendsto f (la ⊓ ae volume) (𝓝 ca)) (hb : Tendsto f (lb ⊓ ae volume) (𝓝 cb)) :
-    HasFDerivWithinAt (fun p : ℝ × ℝ => ∫ x in p.1..p.2, f x)
+    HasFDerivWithinAt (fun p : ℝ × ℝ ↦ ∫ x in p.1..p.2, f x)
       ((snd ℝ ℝ ℝ).smulRight cb - (fst ℝ ℝ ℝ).smulRight ca) (s ×ˢ t) (a, b) := by
   rw [HasFDerivWithinAt, nhdsWithin_prod_eq]
   have :=
@@ -815,7 +815,7 @@ theorem integral_hasFDerivWithinAt (hf : IntervalIntegrable f volume a b)
     (hmeas_a : StronglyMeasurableAtFilter f la) (hmeas_b : StronglyMeasurableAtFilter f lb)
     {s t : Set ℝ} [FTCFilter a (𝓝[s] a) la] [FTCFilter b (𝓝[t] b) lb] (ha : Tendsto f la (𝓝 <| f a))
     (hb : Tendsto f lb (𝓝 <| f b)) :
-    HasFDerivWithinAt (fun p : ℝ × ℝ => ∫ x in p.1..p.2, f x)
+    HasFDerivWithinAt (fun p : ℝ × ℝ ↦ ∫ x in p.1..p.2, f x)
       ((snd ℝ ℝ ℝ).smulRight (f b) - (fst ℝ ℝ ℝ).smulRight (f a)) (s ×ˢ t) (a, b) :=
   integral_hasFDerivWithinAt_of_tendsto_ae hf hmeas_a hmeas_b (ha.mono_left inf_le_left)
     (hb.mono_left inf_le_left)
@@ -844,7 +844,7 @@ theorem fderivWithin_integral_of_tendsto_ae (hf : IntervalIntegrable f volume a 
     (ha : Tendsto f (la ⊓ ae volume) (𝓝 ca)) (hb : Tendsto f (lb ⊓ ae volume) (𝓝 cb))
     (hs : UniqueDiffWithinAt ℝ s a := by uniqueDiffWithinAt_Ici_Iic_univ)
     (ht : UniqueDiffWithinAt ℝ t b := by uniqueDiffWithinAt_Ici_Iic_univ) :
-    fderivWithin ℝ (fun p : ℝ × ℝ => ∫ x in p.1..p.2, f x) (s ×ˢ t) (a, b) =
+    fderivWithin ℝ (fun p : ℝ × ℝ ↦ ∫ x in p.1..p.2, f x) (s ×ˢ t) (a, b) =
       (snd ℝ ℝ ℝ).smulRight cb - (fst ℝ ℝ ℝ).smulRight ca :=
   (integral_hasFDerivWithinAt_of_tendsto_ae hf hmeas_a hmeas_b ha hb).fderivWithin <| hs.prod ht
 
@@ -854,7 +854,7 @@ then `u ↦ ∫ x in a..u, f x` has right (resp., left) derivative `c` at `b`. -
 theorem integral_hasDerivWithinAt_of_tendsto_ae_right (hf : IntervalIntegrable f volume a b)
     {s t : Set ℝ} [FTCFilter b (𝓝[s] b) (𝓝[t] b)] (hmeas : StronglyMeasurableAtFilter f (𝓝[t] b))
     (hb : Tendsto f (𝓝[t] b ⊓ ae volume) (𝓝 c)) :
-    HasDerivWithinAt (fun u => ∫ x in a..u, f x) c s b :=
+    HasDerivWithinAt (fun u ↦ ∫ x in a..u, f x) c s b :=
   .of_isLittleO <| integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_right hf hmeas hb
     (tendsto_const_pure.mono_right FTCFilter.pure_le) tendsto_id
 
@@ -863,7 +863,7 @@ from the left or from the right at `b`, then `u ↦ ∫ x in a..u, f x` has left
 derivative `f b` at `b`. -/
 theorem integral_hasDerivWithinAt_right (hf : IntervalIntegrable f volume a b) {s t : Set ℝ}
     [FTCFilter b (𝓝[s] b) (𝓝[t] b)] (hmeas : StronglyMeasurableAtFilter f (𝓝[t] b))
-    (hb : ContinuousWithinAt f t b) : HasDerivWithinAt (fun u => ∫ x in a..u, f x) (f b) s b :=
+    (hb : ContinuousWithinAt f t b) : HasDerivWithinAt (fun u ↦ ∫ x in a..u, f x) (f b) s b :=
   integral_hasDerivWithinAt_of_tendsto_ae_right hf hmeas (hb.mono_left inf_le_left)
 
 /-- Fundamental theorem of calculus: if `f : ℝ → E` is integrable on `a..b` and `f x` has a finite
@@ -873,7 +873,7 @@ theorem derivWithin_integral_of_tendsto_ae_right (hf : IntervalIntegrable f volu
     {s t : Set ℝ} [FTCFilter b (𝓝[s] b) (𝓝[t] b)] (hmeas : StronglyMeasurableAtFilter f (𝓝[t] b))
     (hb : Tendsto f (𝓝[t] b ⊓ ae volume) (𝓝 c))
     (hs : UniqueDiffWithinAt ℝ s b := by uniqueDiffWithinAt_Ici_Iic_univ) :
-    derivWithin (fun u => ∫ x in a..u, f x) s b = c :=
+    derivWithin (fun u ↦ ∫ x in a..u, f x) s b = c :=
   (integral_hasDerivWithinAt_of_tendsto_ae_right hf hmeas hb).derivWithin hs
 
 /-- Fundamental theorem of calculus: if `f : ℝ → E` is integrable on `a..b` and `f x` is continuous
@@ -883,7 +883,7 @@ theorem derivWithin_integral_right (hf : IntervalIntegrable f volume a b) {s t :
     [FTCFilter b (𝓝[s] b) (𝓝[t] b)] (hmeas : StronglyMeasurableAtFilter f (𝓝[t] b))
     (hb : ContinuousWithinAt f t b)
     (hs : UniqueDiffWithinAt ℝ s b := by uniqueDiffWithinAt_Ici_Iic_univ) :
-    derivWithin (fun u => ∫ x in a..u, f x) s b = f b :=
+    derivWithin (fun u ↦ ∫ x in a..u, f x) s b = f b :=
   (integral_hasDerivWithinAt_right hf hmeas hb).derivWithin hs
 
 /-- Fundamental theorem of calculus: if `f : ℝ → E` is integrable on `a..b` and `f x` has a finite
@@ -892,7 +892,7 @@ then `u ↦ ∫ x in u..b, f x` has right (resp., left) derivative `-c` at `a`. 
 theorem integral_hasDerivWithinAt_of_tendsto_ae_left (hf : IntervalIntegrable f volume a b)
     {s t : Set ℝ} [FTCFilter a (𝓝[s] a) (𝓝[t] a)] (hmeas : StronglyMeasurableAtFilter f (𝓝[t] a))
     (ha : Tendsto f (𝓝[t] a ⊓ ae volume) (𝓝 c)) :
-    HasDerivWithinAt (fun u => ∫ x in u..b, f x) (-c) s a := by
+    HasDerivWithinAt (fun u ↦ ∫ x in u..b, f x) (-c) s a := by
   simp only [integral_symm b]
   exact (integral_hasDerivWithinAt_of_tendsto_ae_right hf.symm hmeas ha).neg
 
@@ -901,7 +901,7 @@ from the left or from the right at `a`, then `u ↦ ∫ x in u..b, f x` has left
 derivative `-f a` at `a`. -/
 theorem integral_hasDerivWithinAt_left (hf : IntervalIntegrable f volume a b) {s t : Set ℝ}
     [FTCFilter a (𝓝[s] a) (𝓝[t] a)] (hmeas : StronglyMeasurableAtFilter f (𝓝[t] a))
-    (ha : ContinuousWithinAt f t a) : HasDerivWithinAt (fun u => ∫ x in u..b, f x) (-f a) s a :=
+    (ha : ContinuousWithinAt f t a) : HasDerivWithinAt (fun u ↦ ∫ x in u..b, f x) (-f a) s a :=
   integral_hasDerivWithinAt_of_tendsto_ae_left hf hmeas (ha.mono_left inf_le_left)
 
 /-- Fundamental theorem of calculus: if `f : ℝ → E` is integrable on `a..b` and `f x` has a finite
@@ -911,7 +911,7 @@ theorem derivWithin_integral_of_tendsto_ae_left (hf : IntervalIntegrable f volum
     [FTCFilter a (𝓝[s] a) (𝓝[t] a)] (hmeas : StronglyMeasurableAtFilter f (𝓝[t] a))
     (ha : Tendsto f (𝓝[t] a ⊓ ae volume) (𝓝 c))
     (hs : UniqueDiffWithinAt ℝ s a := by uniqueDiffWithinAt_Ici_Iic_univ) :
-    derivWithin (fun u => ∫ x in u..b, f x) s a = -c :=
+    derivWithin (fun u ↦ ∫ x in u..b, f x) s a = -c :=
   (integral_hasDerivWithinAt_of_tendsto_ae_left hf hmeas ha).derivWithin hs
 
 /-- Fundamental theorem of calculus: if `f : ℝ → E` is integrable on `a..b` and `f x` is continuous
@@ -921,18 +921,18 @@ theorem derivWithin_integral_left (hf : IntervalIntegrable f volume a b) {s t : 
     [FTCFilter a (𝓝[s] a) (𝓝[t] a)] (hmeas : StronglyMeasurableAtFilter f (𝓝[t] a))
     (ha : ContinuousWithinAt f t a)
     (hs : UniqueDiffWithinAt ℝ s a := by uniqueDiffWithinAt_Ici_Iic_univ) :
-    derivWithin (fun u => ∫ x in u..b, f x) s a = -f a :=
+    derivWithin (fun u ↦ ∫ x in u..b, f x) s a = -f a :=
   (integral_hasDerivWithinAt_left hf hmeas ha).derivWithin hs
 
 /-- The integral of a continuous function is differentiable on a real set `s`. -/
 theorem differentiable_integral_of_continuous (hcont : Continuous f) :
-    Differentiable ℝ (fun u => ∫ x in a..u, f x) := fun _ ↦
+    Differentiable ℝ (fun u ↦ ∫ x in a..u, f x) := fun _ ↦
   (integral_hasDerivAt_right (hcont.intervalIntegrable _ _)
     hcont.aestronglyMeasurable.stronglyMeasurableAtFilter hcont.continuousAt).differentiableAt
 
 /-- The integral of a continuous function is differentiable on a real set `s`. -/
 theorem differentiableOn_integral_of_continuous {s : Set ℝ} (hcont : Continuous f) :
-    DifferentiableOn ℝ (fun u => ∫ x in a..u, f x) s :=
+    DifferentiableOn ℝ (fun u ↦ ∫ x in a..u, f x) s :=
   (differentiable_integral_of_continuous hcont).differentiableOn
 
 end FTC1
@@ -972,7 +972,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
     (hcont : ContinuousOn g (Icc a b)) (hderiv : ∀ x ∈ Ico a b, HasDerivWithinAt g (g' x) (Ioi x) x)
     (φint : IntegrableOn φ (Icc a b)) (hφg : ∀ x ∈ Ico a b, g' x ≤ φ x) :
     g b - g a ≤ ∫ y in a..b, φ y := by
-  refine le_of_forall_pos_le_add fun ε εpos => ?_
+  refine le_of_forall_pos_le_add fun ε εpos ↦ ?_
   -- Bound from above `g'` by a lower-semicontinuous function `G'`.
   rcases exists_lt_lowerSemicontinuous_integral_lt φ φint εpos with
     ⟨G', f_lt_G', G'cont, G'int, G'lt_top, hG'⟩
@@ -980,7 +980,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
   set s := {t | g t - g a ≤ ∫ u in a..t, (G' u).toReal} ∩ Icc a b
   -- the set `s` of points where this property holds is closed.
   have s_closed : IsClosed s := by
-    have : ContinuousOn (fun t => (g t - g a, ∫ u in a..t, (G' u).toReal)) (Icc a b) := by
+    have : ContinuousOn (fun t ↦ (g t - g a, ∫ u in a..t, (G' u).toReal)) (Icc a b) := by
       rw [← uIcc_of_le hab] at G'int hcont ⊢
       exact (hcont.sub continuousOn_const).prodMk (continuousOn_primitive_interval G'int)
     simp only [s, inter_comm]
@@ -990,7 +990,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
     -- with `t < b` admits another point in `s` slightly to its right
     -- (this is a sort of real induction).
     refine s_closed.Icc_subset_of_forall_exists_gt
-      (by simp only [integral_same, mem_setOf_eq, sub_self, le_rfl]) fun t ht v t_lt_v => ?_
+      (by simp only [integral_same, mem_setOf_eq, sub_self, le_rfl]) fun t ht v t_lt_v ↦ ?_
     obtain ⟨y, g'_lt_y', y_lt_G'⟩ : ∃ y : ℝ, (g' t : EReal) < y ∧ (y : EReal) < G' t :=
       EReal.lt_iff_exists_real_btwn.1 ((EReal.coe_le_coe_iff.2 (hφg t ht.2)).trans_lt (f_lt_G' t))
     -- bound from below the increase of `∫ x in a..u, G' x` on the right of `t`, using the lower
@@ -1071,7 +1071,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le (hab : a ≤ b) (hcont : Continu
   · simp
   set s := {t | g b - g t ≤ ∫ u in t..b, φ u} ∩ Icc a b
   have s_closed : IsClosed s := by
-    have : ContinuousOn (fun t => (g b - g t, ∫ u in t..b, φ u)) (Icc a b) := by
+    have : ContinuousOn (fun t ↦ (g b - g t, ∫ u in t..b, φ u)) (Icc a b) := by
       rw [← uIcc_of_le hab] at hcont φint ⊢
       exact (continuousOn_const.sub hcont).prodMk (continuousOn_primitive_interval_left φint)
     simp only [s, inter_comm]
@@ -1082,8 +1082,8 @@ theorem sub_le_integral_of_hasDeriv_right_of_le (hab : a ≤ b) (hcont : Continu
     refine ⟨?_, ⟨ht.1.le, ht.2⟩⟩
     exact
       sub_le_integral_of_hasDeriv_right_of_le_Ico ht.2 (hcont.mono (Icc_subset_Icc ht.1.le le_rfl))
-        (fun x hx => hderiv x ⟨ht.1.trans_le hx.1, hx.2⟩)
-        (φint.mono_set (Icc_subset_Icc ht.1.le le_rfl)) fun x hx => hφg x ⟨ht.1.trans_le hx.1, hx.2⟩
+        (fun x hx ↦ hderiv x ⟨ht.1.trans_le hx.1, hx.2⟩)
+        (φint.mono_set (Icc_subset_Icc ht.1.le le_rfl)) fun x hx ↦ hφg x ⟨ht.1.trans_le hx.1, hx.2⟩
   rw [closure_Ioc a_lt_b.ne] at A
   exact (A (left_mem_Icc.2 hab)).1
 
@@ -1092,8 +1092,8 @@ theorem integral_le_sub_of_hasDeriv_right_of_le (hab : a ≤ b) (hcont : Continu
     (hderiv : ∀ x ∈ Ioo a b, HasDerivWithinAt g (g' x) (Ioi x) x) (φint : IntegrableOn φ (Icc a b))
     (hφg : ∀ x ∈ Ioo a b, φ x ≤ g' x) : (∫ y in a..b, φ y) ≤ g b - g a := by
   rw [← neg_le_neg_iff]
-  convert sub_le_integral_of_hasDeriv_right_of_le hab hcont.neg (fun x hx => (hderiv x hx).neg)
-    φint.neg fun x hx => neg_le_neg (hφg x hx) using 1
+  convert sub_le_integral_of_hasDeriv_right_of_le hab hcont.neg (fun x hx ↦ (hderiv x hx).neg)
+    φint.neg fun x hx ↦ neg_le_neg (hφg x hx) using 1
   · abel
   · simp only [← integral_neg]; rfl
 
@@ -1101,8 +1101,8 @@ theorem integral_le_sub_of_hasDeriv_right_of_le (hab : a ≤ b) (hcont : Continu
 theorem integral_eq_sub_of_hasDeriv_right_of_le_real (hab : a ≤ b)
     (hcont : ContinuousOn g (Icc a b)) (hderiv : ∀ x ∈ Ioo a b, HasDerivWithinAt g (g' x) (Ioi x) x)
     (g'int : IntegrableOn g' (Icc a b)) : ∫ y in a..b, g' y = g b - g a :=
-  le_antisymm (integral_le_sub_of_hasDeriv_right_of_le hab hcont hderiv g'int fun _ _ => le_rfl)
-    (sub_le_integral_of_hasDeriv_right_of_le hab hcont hderiv g'int fun _ _ => le_rfl)
+  le_antisymm (integral_le_sub_of_hasDeriv_right_of_le hab hcont hderiv g'int fun _ _ ↦ le_rfl)
+    (sub_le_integral_of_hasDeriv_right_of_le hab hcont hderiv g'int fun _ _ ↦ le_rfl)
 
 variable [CompleteSpace E] {f f' : ℝ → E}
 
@@ -1112,10 +1112,10 @@ variable [CompleteSpace E] {f f' : ℝ → E}
 theorem integral_eq_sub_of_hasDeriv_right_of_le (hab : a ≤ b) (hcont : ContinuousOn f (Icc a b))
     (hderiv : ∀ x ∈ Ioo a b, HasDerivWithinAt f (f' x) (Ioi x) x)
     (f'int : IntervalIntegrable f' volume a b) : ∫ y in a..b, f' y = f b - f a := by
-  refine (NormedSpace.eq_iff_forall_dual_eq ℝ).2 fun g => ?_
+  refine (NormedSpace.eq_iff_forall_dual_eq ℝ).2 fun g ↦ ?_
   rw [← g.intervalIntegral_comp_comm f'int, g.map_sub]
   exact integral_eq_sub_of_hasDeriv_right_of_le_real hab (g.continuous.comp_continuousOn hcont)
-    (fun x hx => g.hasFDerivAt.comp_hasDerivWithinAt x (hderiv x hx))
+    (fun x hx ↦ g.hasFDerivAt.comp_hasDerivWithinAt x (hderiv x hx))
     (g.integrable_comp ((intervalIntegrable_iff_integrableOn_Icc_of_le hab enorm_ne_top).1 f'int))
 
 /-- Fundamental theorem of calculus-2: If `f : ℝ → E` is continuous on `[a, b]` and
@@ -1136,7 +1136,7 @@ theorem integral_eq_sub_of_hasDeriv_right (hcont : ContinuousOn f (uIcc a b))
 theorem integral_eq_sub_of_hasDerivAt_of_le (hab : a ≤ b) (hcont : ContinuousOn f (Icc a b))
     (hderiv : ∀ x ∈ Ioo a b, HasDerivAt f (f' x) x) (hint : IntervalIntegrable f' volume a b) :
     ∫ y in a..b, f' y = f b - f a :=
-  integral_eq_sub_of_hasDeriv_right_of_le hab hcont (fun x hx => (hderiv x hx).hasDerivWithinAt)
+  integral_eq_sub_of_hasDeriv_right_of_le hab hcont (fun x hx ↦ (hderiv x hx).hasDerivWithinAt)
     hint
 
 /-- Fundamental theorem of calculus-2: If `f : ℝ → E` has a derivative at `f' x` for all `x` in
@@ -1144,7 +1144,7 @@ theorem integral_eq_sub_of_hasDerivAt_of_le (hab : a ≤ b) (hcont : ContinuousO
 theorem integral_eq_sub_of_hasDerivAt (hderiv : ∀ x ∈ uIcc a b, HasDerivAt f (f' x) x)
     (hint : IntervalIntegrable f' volume a b) : ∫ y in a..b, f' y = f b - f a :=
   integral_eq_sub_of_hasDeriv_right (HasDerivAt.continuousOn hderiv)
-    (fun _x hx => (hderiv _ (mem_Icc_of_Ioo hx)).hasDerivWithinAt) hint
+    (fun _x hx ↦ (hderiv _ (mem_Icc_of_Ioo hx)).hasDerivWithinAt) hint
 
 theorem integral_eq_sub_of_hasDerivAt_of_tendsto (hab : a < b) {fa fb}
     (hderiv : ∀ x ∈ Ioo a b, HasDerivAt f (f' x) x) (hint : IntervalIntegrable f' volume a b)
@@ -1152,14 +1152,14 @@ theorem integral_eq_sub_of_hasDerivAt_of_tendsto (hab : a < b) {fa fb}
     ∫ y in a..b, f' y = fb - fa := by
   set F : ℝ → E := update (update f a fa) b fb
   have Fderiv : ∀ x ∈ Ioo a b, HasDerivAt F (f' x) x := by
-    refine fun x hx => (hderiv x hx).congr_of_eventuallyEq ?_
+    refine fun x hx ↦ (hderiv x hx).congr_of_eventuallyEq ?_
     filter_upwards [Ioo_mem_nhds hx.1 hx.2] with _ hy
     unfold F
     rw [update_of_ne hy.2.ne, update_of_ne hy.1.ne']
   have hcont : ContinuousOn F (Icc a b) := by
     rw [continuousOn_update_iff, continuousOn_update_iff, Icc_diff_right, Ico_diff_left]
-    refine ⟨⟨fun z hz => (hderiv z hz).continuousAt.continuousWithinAt, ?_⟩, ?_⟩
-    · exact fun _ => ha.mono_left (nhdsWithin_mono _ Ioo_subset_Ioi_self)
+    refine ⟨⟨fun z hz ↦ (hderiv z hz).continuousAt.continuousWithinAt, ?_⟩, ?_⟩
+    · exact fun _ ↦ ha.mono_left (nhdsWithin_mono _ Ioo_subset_Ioi_self)
     · rintro -
       refine (hb.congr' ?_).mono_left (nhdsWithin_mono _ Ico_subset_Iio_self)
       filter_upwards [Ioo_mem_nhdsLT hab] with _ hz using (update_of_ne hz.1.ne' _ _).symm
@@ -1171,7 +1171,7 @@ its derivative is integrable on `[a, b]`, then `∫ y in a..b, deriv f y` equals
 See also `integral_deriv_of_contDiffOn_Icc` for a similar theorem assuming that `f` is `C^1`. -/
 theorem integral_deriv_eq_sub (hderiv : ∀ x ∈ [[a, b]], DifferentiableAt ℝ f x)
     (hint : IntervalIntegrable (deriv f) volume a b) : ∫ y in a..b, deriv f y = f b - f a :=
-  integral_eq_sub_of_hasDerivAt (fun x hx => (hderiv x hx).hasDerivAt) hint
+  integral_eq_sub_of_hasDerivAt (fun x hx ↦ (hderiv x hx).hasDerivAt) hint
 
 theorem integral_deriv_eq_sub' (f) (hderiv : deriv f = f')
     (hdiff : ∀ x ∈ uIcc a b, DifferentiableAt ℝ f x) (hcont : ContinuousOn f' (uIcc a b)) :
@@ -1210,7 +1210,7 @@ theorem integrableOn_deriv_right_of_nonneg (hcont : ContinuousOn g (Icc a b))
   rw [integrableOn_Ioc_iff_integrableOn_Ioo]
   have meas_g' : AEMeasurable g' (volume.restrict (Ioo a b)) := by
     apply (aemeasurable_derivWithin_Ioi g _).congr
-    refine (ae_restrict_mem measurableSet_Ioo).mono fun x hx => ?_
+    refine (ae_restrict_mem measurableSet_Ioo).mono fun x hx ↦ ?_
     exact (hderiv x hx).derivWithin (uniqueDiffWithinAt_Ioi _)
   suffices H : (∫⁻ x in Ioo a b, ‖g' x‖₊) ≤ ENNReal.ofReal (g b - g a) from
     ⟨meas_g'.aestronglyMeasurable, H.trans_lt ENNReal.ofReal_lt_top⟩
@@ -1229,7 +1229,7 @@ theorem integrableOn_deriv_right_of_nonneg (hcont : ContinuousOn g (Icc a b))
   rw [A] at hf
   have B : (∫ x : ℝ in Ioo a b, F x) ≤ g b - g a := by
     rw [← integral_Ioc_eq_integral_Ioo, ← intervalIntegral.integral_of_le hab.le]
-    refine integral_le_sub_of_hasDeriv_right_of_le hab.le hcont hderiv ?_ fun x hx => ?_
+    refine integral_le_sub_of_hasDeriv_right_of_le hab.le hcont hderiv ?_ fun x hx ↦ ?_
     · rwa [integrableOn_Icc_iff_integrableOn_Ioo]
     · convert NNReal.coe_le_coe.2 (fle x)
       simp only [Real.norm_of_nonneg (g'pos x hx), coe_nnnorm]
@@ -1240,7 +1240,7 @@ Ioc version. -/
 theorem integrableOn_deriv_of_nonneg (hcont : ContinuousOn g (Icc a b))
     (hderiv : ∀ x ∈ Ioo a b, HasDerivAt g (g' x) x) (g'pos : ∀ x ∈ Ioo a b, 0 ≤ g' x) :
     IntegrableOn g' (Ioc a b) :=
-  integrableOn_deriv_right_of_nonneg hcont (fun x hx => (hderiv x hx).hasDerivWithinAt) g'pos
+  integrableOn_deriv_right_of_nonneg hcont (fun x hx ↦ (hderiv x hx).hasDerivWithinAt) g'pos
 
 /-- When the derivative of a function is nonnegative, then it is automatically integrable,
 interval version. -/

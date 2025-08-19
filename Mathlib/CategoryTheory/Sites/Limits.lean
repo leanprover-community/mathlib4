@@ -61,8 +61,8 @@ def multiforkEvaluationCone (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshe
     Cone (F ⋙ sheafToPresheaf J D ⋙ (evaluation Cᵒᵖ D).obj (op X)) where
   pt := S.pt
   π :=
-    { app := fun k => (Presheaf.isLimitOfIsSheaf J (F.obj k).1 W (F.obj k).2).lift <|
-        Multifork.ofι _ S.pt (fun i => S.ι i ≫ (E.π.app k).app (op i.Y))
+    { app := fun k ↦ (Presheaf.isLimitOfIsSheaf J (F.obj k).1 W (F.obj k).2).lift <|
+        Multifork.ofι _ S.pt (fun i ↦ S.ι i ≫ (E.π.app k).app (op i.Y))
           (by
             intro i
             simp only [Category.assoc]
@@ -94,7 +94,7 @@ This is used below in `isSheaf_of_isLimit` to show that the limit presheaf is in
 def isLimitMultiforkOfIsLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPresheaf J D))
     (hE : IsLimit E) (X : C) (W : J.Cover X) : IsLimit (W.multifork E.pt) :=
   Multifork.IsLimit.mk _
-    (fun S => (isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X)) hE).lift <|
+    (fun S ↦ (isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X)) hE).lift <|
       multiforkEvaluationCone F E X W S)
     (by
       intro S i
@@ -136,18 +136,18 @@ theorem isSheaf_of_isLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshea
   exact ⟨isLimitMultiforkOfIsLimit _ _ hE _ _⟩
 
 instance (F : K ⥤ Sheaf J D) : CreatesLimit F (sheafToPresheaf J D) :=
-  createsLimitOfReflectsIso fun E hE =>
+  createsLimitOfReflectsIso fun E hE ↦
     { liftedCone := ⟨⟨E.pt, isSheaf_of_isLimit _ _ hE⟩,
-        ⟨fun _ => ⟨E.π.app _⟩, fun _ _ _ => Sheaf.Hom.ext <| E.π.naturality _⟩⟩
-      validLift := Cones.ext (eqToIso rfl) fun j => by simp
+        ⟨fun _ ↦ ⟨E.π.app _⟩, fun _ _ _ ↦ Sheaf.Hom.ext <| E.π.naturality _⟩⟩
+      validLift := Cones.ext (eqToIso rfl) fun j ↦ by simp
       makesLimit :=
-        { lift := fun S => ⟨hE.lift ((sheafToPresheaf J D).mapCone S)⟩
-          fac := fun S j => by
+        { lift := fun S ↦ ⟨hE.lift ((sheafToPresheaf J D).mapCone S)⟩
+          fac := fun S j ↦ by
             ext1
             apply hE.fac ((sheafToPresheaf J D).mapCone S) j
-          uniq := fun S m hm => by
+          uniq := fun S m hm ↦ by
             ext1
-            exact hE.uniq ((sheafToPresheaf J D).mapCone S) m.val fun j =>
+            exact hE.uniq ((sheafToPresheaf J D).mapCone S) m.val fun j ↦
               congr_arg Hom.val (hm j) } }
 
 instance createsLimitsOfShape : CreatesLimitsOfShape K (sheafToPresheaf J D) where
@@ -199,7 +199,7 @@ noncomputable def isColimitSheafifyCocone {F : K ⥤ Sheaf J D}
     (isColimitOfPreserves _ hE)
 
 instance [HasColimitsOfShape K D] : HasColimitsOfShape K (Sheaf J D) :=
-  ⟨fun _ => HasColimit.mk
+  ⟨fun _ ↦ HasColimit.mk
     ⟨sheafifyCocone (colimit.cocone _), isColimitSheafifyCocone _ (colimit.isColimit _)⟩⟩
 
 instance [HasFiniteCoproducts D] : HasFiniteCoproducts (Sheaf J D) :=
@@ -221,16 +221,16 @@ topology (see `Mathlib/CategoryTheory/Sites/Coherent/ExtensiveColimits.lean`).
 def createsColimitOfIsSheaf (F : K ⥤ Sheaf J D)
     (h : ∀ (c : Cocone (F ⋙ sheafToPresheaf J D)) (_ : IsColimit c), Presheaf.IsSheaf J c.pt) :
     CreatesColimit F (sheafToPresheaf J D) :=
-  createsColimitOfReflectsIso fun E hE =>
+  createsColimitOfReflectsIso fun E hE ↦
     { liftedCocone := ⟨⟨E.pt, h _ hE⟩,
-        ⟨fun _ => ⟨E.ι.app _⟩, fun _ _ _ => Sheaf.Hom.ext <| E.ι.naturality _⟩⟩
-      validLift := Cocones.ext (eqToIso rfl) fun j => by simp
+        ⟨fun _ ↦ ⟨E.ι.app _⟩, fun _ _ _ ↦ Sheaf.Hom.ext <| E.ι.naturality _⟩⟩
+      validLift := Cocones.ext (eqToIso rfl) fun j ↦ by simp
       makesColimit :=
-        { desc := fun S => ⟨hE.desc ((sheafToPresheaf J D).mapCocone S)⟩
-          fac := fun S j => by ext1; dsimp; rw [hE.fac]; rfl
-          uniq := fun S m hm => by
+        { desc := fun S ↦ ⟨hE.desc ((sheafToPresheaf J D).mapCocone S)⟩
+          fac := fun S j ↦ by ext1; dsimp; rw [hE.fac]; rfl
+          uniq := fun S m hm ↦ by
             ext1
-            exact hE.uniq ((sheafToPresheaf J D).mapCocone S) m.val fun j =>
+            exact hE.uniq ((sheafToPresheaf J D).mapCocone S) m.val fun j ↦
               congr_arg Hom.val (hm j) } }
 
 variable {D : Type w} [Category.{max v u} D]

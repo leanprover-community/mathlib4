@@ -53,20 +53,20 @@ def Subgroup.ofUnits (S : Subgroup Mˣ) : Submonoid M := S.toSubmonoid.map (coeH
 
 @[to_additive]
 lemma Submonoid.units_mono : Monotone (Submonoid.units (M := M)) :=
-  fun _ _ hST _ ⟨h₁, h₂⟩ => ⟨hST h₁, hST h₂⟩
+  fun _ _ hST _ ⟨h₁, h₂⟩ ↦ ⟨hST h₁, hST h₂⟩
 
 @[to_additive (attr := simp)]
 lemma Submonoid.ofUnits_units_le (S : Submonoid M) : S.units.ofUnits ≤ S :=
-  fun  _ ⟨_, hm, he⟩ => he ▸ hm.1
+  fun  _ ⟨_, hm, he⟩ ↦ he ▸ hm.1
 
 @[to_additive]
 lemma Subgroup.ofUnits_mono : Monotone (Subgroup.ofUnits (M := M)) :=
-  fun _ _ hST _ ⟨x, hx, hy⟩ => ⟨x, hST hx, hy⟩
+  fun _ _ hST _ ⟨x, hx, hy⟩ ↦ ⟨x, hST hx, hy⟩
 
 @[to_additive (attr := simp)]
 lemma Subgroup.units_ofUnits_eq (S : Subgroup Mˣ) : S.ofUnits.units = S :=
-  Subgroup.ext (fun _ =>
-  ⟨fun ⟨⟨_, hm, he⟩, _⟩ => (Units.ext he) ▸ hm, fun hm => ⟨⟨_, hm, rfl⟩, _, S.inv_mem hm, rfl⟩⟩)
+  Subgroup.ext (fun _ ↦
+  ⟨fun ⟨⟨_, hm, he⟩, _⟩ ↦ (Units.ext he) ▸ hm, fun hm ↦ ⟨⟨_, hm, rfl⟩, _, S.inv_mem hm, rfl⟩⟩)
 
 /-- A Galois coinsertion exists between the coercion from a subgroup of units to a submonoid and
 the reduction from a submonoid to its unit group. -/
@@ -134,9 +134,9 @@ lemma inv_mem_units_iff (S : Submonoid M) {x : Mˣ} : x⁻¹ ∈ S.units ↔ x �
 @[to_additive /-- The equivalence between the additive subgroup of additive units of
 `S` and the type of additive units of `S`. -/]
 def unitsEquivUnitsType (S : Submonoid M) : S.units ≃* Sˣ where
-  toFun := fun ⟨_, h⟩ => ⟨⟨_, h.1⟩, ⟨_, h.2⟩, S.mk_mul_mk_inv_eq_one h, S.mk_inv_mul_mk_eq_one h⟩
-  invFun := fun x => ⟨⟨_, _, S.coe_val_mul_coe_inv_val, S.coe_inv_val_mul_coe_val⟩, ⟨x.1.2, x.2.2⟩⟩
-  map_mul' := fun _ _ => rfl
+  toFun := fun ⟨_, h⟩ ↦ ⟨⟨_, h.1⟩, ⟨_, h.2⟩, S.mk_mul_mk_inv_eq_one h, S.mk_inv_mul_mk_eq_one h⟩
+  invFun := fun x ↦ ⟨⟨_, _, S.coe_val_mul_coe_inv_val, S.coe_inv_val_mul_coe_val⟩, ⟨x.1.2, x.2.2⟩⟩
+  map_mul' := fun _ _ ↦ rfl
 
 @[to_additive (attr := simp)]
 lemma units_top : (⊤ : Submonoid M).units = ⊤ := ofUnits_units_gc.u_top
@@ -240,17 +240,17 @@ lemma mem_ofUnits_of_isUnit_of_unit_mem (S : Subgroup Mˣ) {x : M} (h₁ : IsUni
 @[to_additive]
 lemma mem_ofUnits_iff_exists_isUnit (S : Subgroup Mˣ) (x : M) :
     x ∈ S.ofUnits ↔ ∃ h : IsUnit x, h.unit ∈ S :=
-  ⟨fun h => ⟨S.isUnit_of_mem_ofUnits h, S.unit_mem_of_mem_ofUnits h⟩,
-  fun ⟨hm, he⟩ => S.mem_ofUnits_of_isUnit_of_unit_mem hm he⟩
+  ⟨fun h ↦ ⟨S.isUnit_of_mem_ofUnits h, S.unit_mem_of_mem_ofUnits h⟩,
+  fun ⟨hm, he⟩ ↦ S.mem_ofUnits_of_isUnit_of_unit_mem hm he⟩
 
 /-- The equivalence between the coercion of a subgroup `S` of `Mˣ` to a submonoid of `M` and
 the subgroup itself as a type. -/
 @[to_additive /-- The equivalence between the coercion of an additive subgroup `S` of
 `Mˣ` to an additive submonoid of `M` and the additive subgroup itself as a type. -/]
 noncomputable def ofUnitsEquivType (S : Subgroup Mˣ) : S.ofUnits ≃* S where
-  toFun := fun x => ⟨S.unit_of_mem_ofUnits x.2, S.unit_of_mem_ofUnits_spec_mem⟩
-  invFun := fun x => ⟨x.1, ⟨x.1, x.2, rfl⟩⟩
-  map_mul' := fun _ _ => Subtype.ext (Units.ext rfl)
+  toFun := fun x ↦ ⟨S.unit_of_mem_ofUnits x.2, S.unit_of_mem_ofUnits_spec_mem⟩
+  invFun := fun x ↦ ⟨x.1, ⟨x.1, x.2, rfl⟩⟩
+  map_mul' := fun _ _ ↦ Subtype.ext (Units.ext rfl)
 
 @[to_additive (attr := simp)]
 lemma ofUnits_bot : (⊥ : Subgroup Mˣ).ofUnits = ⊥ := ofUnits_units_gc.l_bot

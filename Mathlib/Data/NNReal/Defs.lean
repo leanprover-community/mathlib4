@@ -112,7 +112,7 @@ instance : Coe ℝ≥0 ℝ := ⟨toReal⟩
 theorem val_eq_coe (n : ℝ≥0) : n.val = n :=
   rfl
 
-instance canLift : CanLift ℝ ℝ≥0 toReal fun r => 0 ≤ r :=
+instance canLift : CanLift ℝ ℝ≥0 toReal fun r ↦ 0 ≤ r :=
   Subtype.canLift _
 
 @[ext] protected theorem eq {n m : ℝ≥0} : (n : ℝ) = (m : ℝ) → n = m :=
@@ -317,12 +317,12 @@ noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 @[simp, norm_cast] lemma coe_le_one : (r : ℝ) ≤ 1 ↔ r ≤ 1 := by rw [← coe_le_coe, coe_one]
 @[simp, norm_cast] lemma coe_lt_one : (r : ℝ) < 1 ↔ r < 1 := by rw [← coe_lt_coe, coe_one]
 
-@[mono] lemma coe_mono : Monotone ((↑) : ℝ≥0 → ℝ) := fun _ _ => NNReal.coe_le_coe.2
+@[mono] lemma coe_mono : Monotone ((↑) : ℝ≥0 → ℝ) := fun _ _ ↦ NNReal.coe_le_coe.2
 
 /-- Alias for the use of `gcongr` -/
 @[gcongr] alias ⟨_, GCongr.toReal_le_toReal⟩ := coe_le_coe
 
-protected theorem _root_.Real.toNNReal_mono : Monotone Real.toNNReal := fun _ _ h =>
+protected theorem _root_.Real.toNNReal_mono : Monotone Real.toNNReal := fun _ _ h ↦
   max_le_max h (le_refl 0)
 
 @[simp]
@@ -347,7 +347,7 @@ theorem _root_.Real.toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
 
 /-- `Real.toNNReal` and `NNReal.toReal : ℝ≥0 → ℝ` form a Galois insertion. -/
 def gi : GaloisInsertion Real.toNNReal (↑) :=
-  GaloisInsertion.monotoneIntro NNReal.coe_mono Real.toNNReal_mono Real.le_coe_toNNReal fun _ =>
+  GaloisInsertion.monotoneIntro NNReal.coe_mono Real.toNNReal_mono Real.le_coe_toNNReal fun _ ↦
     Real.toNNReal_coe
 
 -- note that anything involving the (decidability of the) linear order,
@@ -393,7 +393,7 @@ isomorphic to the interval `Set.Iic a`. -/
 -- Turning `NNReal` into a structure may be the best way to go here.
 -- @[simps!? apply_coe_coe]
 def orderIsoIccZeroCoe (a : ℝ≥0) : Set.Icc (0 : ℝ) a ≃o Set.Iic a where
-  toEquiv := Equiv.Set.sep (Set.Ici 0) fun x : ℝ => x ≤ a
+  toEquiv := Equiv.Set.sep (Set.Ici 0) fun x : ℝ ↦ x ≤ a
   map_rel_iff' := Iff.rfl
 
 @[simp]
@@ -413,13 +413,13 @@ theorem coe_image {s : Set ℝ≥0} :
 
 theorem bddAbove_coe {s : Set ℝ≥0} : BddAbove (((↑) : ℝ≥0 → ℝ) '' s) ↔ BddAbove s :=
   Iff.intro
-    (fun ⟨b, hb⟩ =>
-      ⟨Real.toNNReal b, fun ⟨y, _⟩ hys =>
+    (fun ⟨b, hb⟩ ↦
+      ⟨Real.toNNReal b, fun ⟨y, _⟩ hys ↦
         show y ≤ max b 0 from le_max_of_le_left <| hb <| Set.mem_image_of_mem _ hys⟩)
-    fun ⟨b, hb⟩ => ⟨b, fun _ ⟨_, hx, eq⟩ => eq ▸ hb hx⟩
+    fun ⟨b, hb⟩ ↦ ⟨b, fun _ ⟨_, hx, eq⟩ ↦ eq ▸ hb hx⟩
 
 theorem bddBelow_coe (s : Set ℝ≥0) : BddBelow (((↑) : ℝ≥0 → ℝ) '' s) :=
-  ⟨0, fun _ ⟨q, _, eq⟩ => eq ▸ q.2⟩
+  ⟨0, fun _ ⟨q, _, eq⟩ ↦ eq ▸ q.2⟩
 
 noncomputable instance : ConditionallyCompleteLinearOrderBot ℝ≥0 :=
   Nonneg.conditionallyCompleteLinearOrderBot 0
@@ -470,12 +470,12 @@ instance mulLeftMono : MulLeftMono ℝ≥0 := inferInstance
 theorem lt_iff_exists_rat_btwn (a b : ℝ≥0) :
     a < b ↔ ∃ q : ℚ, 0 ≤ q ∧ a < Real.toNNReal q ∧ Real.toNNReal q < b :=
   Iff.intro
-    (fun h : (↑a : ℝ) < (↑b : ℝ) =>
+    (fun h : (↑a : ℝ) < (↑b : ℝ) ↦
       let ⟨q, haq, hqb⟩ := exists_rat_btwn h
       have : 0 ≤ (q : ℝ) := le_trans a.2 <| le_of_lt haq
       ⟨q, Rat.cast_nonneg.1 this, by
         simp [Real.coe_toNNReal _ this, NNReal.coe_lt_coe.symm, haq, hqb]⟩)
-    fun ⟨_, _, haq, hqb⟩ => lt_trans haq hqb
+    fun ⟨_, _, haq, hqb⟩ ↦ lt_trans haq hqb
 
 theorem bot_eq_zero : (⊥ : ℝ≥0) = 0 := rfl
 
@@ -596,7 +596,7 @@ theorem lt_of_toNNReal_lt {r p : ℝ} (h : r.toNNReal < p.toNNReal) : r < p :=
 
 theorem toNNReal_lt_toNNReal_iff_of_nonneg {r p : ℝ} (hr : 0 ≤ r) :
     Real.toNNReal r < Real.toNNReal p ↔ r < p :=
-  toNNReal_lt_toNNReal_iff'.trans ⟨And.left, fun h => ⟨h, lt_of_le_of_lt hr h⟩⟩
+  toNNReal_lt_toNNReal_iff'.trans ⟨And.left, fun h ↦ ⟨h, lt_of_le_of_lt hr h⟩⟩
 
 lemma toNNReal_le_toNNReal_iff' {r p : ℝ} : r.toNNReal ≤ p.toNNReal ↔ r ≤ p ∨ r ≤ 0 := by
   simp_rw [← not_lt, toNNReal_lt_toNNReal_iff', not_and_or]
@@ -655,7 +655,7 @@ theorem le_toNNReal_iff_coe_le {r : ℝ≥0} {p : ℝ} (hp : 0 ≤ p) : r ≤ Re
   rw [← NNReal.coe_le_coe, Real.coe_toNNReal p hp]
 
 theorem le_toNNReal_iff_coe_le' {r : ℝ≥0} {p : ℝ} (hr : 0 < r) : r ≤ Real.toNNReal p ↔ ↑r ≤ p :=
-  (le_or_gt 0 p).elim le_toNNReal_iff_coe_le fun hp => by
+  (le_or_gt 0 p).elim le_toNNReal_iff_coe_le fun hp ↦ by
     simp only [(hp.trans_le r.coe_nonneg).not_ge, toNNReal_eq_zero.2 hp.le, hr.not_ge]
 
 theorem toNNReal_lt_iff_lt_coe {r : ℝ} {p : ℝ≥0} (ha : 0 ≤ r) : Real.toNNReal r < p ↔ r < ↑p := by
@@ -754,10 +754,10 @@ theorem div_le_of_le_mul' {a b c : ℝ≥0} (h : a ≤ b * c) : a / b ≤ c :=
   div_le_of_le_mul <| mul_comm b c ▸ h
 
 theorem mul_lt_of_lt_div {a b r : ℝ≥0} (h : a < b / r) : a * r < b :=
-  (lt_div_iff₀ <| pos_iff_ne_zero.2 fun hr => False.elim <| by simp [hr] at h).1 h
+  (lt_div_iff₀ <| pos_iff_ne_zero.2 fun hr ↦ False.elim <| by simp [hr] at h).1 h
 
 theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0} (h : ∀ a < 1, a * x ≤ y) : x ≤ y :=
-  le_of_forall_lt_imp_le_of_dense fun a ha => by
+  le_of_forall_lt_imp_le_of_dense fun a ha ↦ by
     have hx : x ≠ 0 := pos_iff_ne_zero.1 (lt_of_le_of_lt (zero_le _) ha)
     have hx' : x⁻¹ ≠ 0 := by rwa [Ne, inv_eq_zero]
     have : a * x⁻¹ < 1 := by rwa [← lt_inv_iff_mul_lt hx', inv_inv]
@@ -849,12 +849,12 @@ theorem preimage_coe_nnreal_real (h : s.OrdConnected) : ((↑) ⁻¹' s : Set �
   h.preimage_mono NNReal.coe_mono
 
 theorem image_coe_nnreal_real (h : t.OrdConnected) : ((↑) '' t : Set ℝ).OrdConnected :=
-  ⟨forall_mem_image.2 fun x hx =>
-      forall_mem_image.2 fun _y hy z hz => ⟨⟨z, x.2.trans hz.1⟩, h.out hx hy hz, rfl⟩⟩
+  ⟨forall_mem_image.2 fun x hx ↦
+      forall_mem_image.2 fun _y hy z hz ↦ ⟨⟨z, x.2.trans hz.1⟩, h.out hx hy hz, rfl⟩⟩
 
 -- TODO: does it generalize to a `GaloisInsertion`?
 theorem image_real_toNNReal (h : s.OrdConnected) : (Real.toNNReal '' s).OrdConnected := by
-  refine ⟨forall_mem_image.2 fun x hx => forall_mem_image.2 fun y hy z hz => ?_⟩
+  refine ⟨forall_mem_image.2 fun x hx ↦ forall_mem_image.2 fun y hy z hz ↦ ?_⟩
   rcases le_total y 0 with hy₀ | hy₀
   · rw [mem_Icc, Real.toNNReal_of_nonpos hy₀, nonpos_iff_eq_zero] at hz
     exact ⟨y, hy, (toNNReal_of_nonpos hy₀).trans hz.2.symm⟩

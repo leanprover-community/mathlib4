@@ -186,7 +186,7 @@ theorem continuousAt_extend_symm {x : M} (h : x ∈ f.source) :
     ContinuousAt (f.extend I).symm (f.extend I x) :=
   continuousAt_extend_symm' f <| (f.extend I).map_source <| by rwa [f.extend_source]
 
-theorem continuousOn_extend_symm : ContinuousOn (f.extend I).symm (f.extend I).target := fun _ h =>
+theorem continuousOn_extend_symm : ContinuousOn (f.extend I).symm (f.extend I).target := fun _ h ↦
   (continuousAt_extend_symm' _ h).continuousWithinAt
 
 theorem extend_symm_continuousWithinAt_comp_right_iff {X} [TopologicalSpace X] {g : M → X}
@@ -564,7 +564,7 @@ theorem continuousAt_extChartAt_symm (x : M) :
 
 theorem continuousOn_extChartAt_symm (x : M) :
     ContinuousOn (extChartAt I x).symm (extChartAt I x).target :=
-  fun _y hy => (continuousAt_extChartAt_symm'' hy).continuousWithinAt
+  fun _y hy ↦ (continuousAt_extChartAt_symm'' hy).continuousWithinAt
 
 lemma extChartAt_target_subset_closure_interior {x : M} :
     (extChartAt I x).target ⊆ closure (interior (extChartAt I x).target) := by

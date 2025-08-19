@@ -33,7 +33,7 @@ theorem contraction_of_isPowMul_of_boundedWrt {F : Type*} {α : outParam (Type*)
     [FunLike F α ℝ] [RingSeminormClass F α ℝ] {β : Type*} [Ring β] (nα : F) {nβ : β → ℝ}
     (hβ : IsPowMul nβ) {f : α →+* β} (hf : f.IsBoundedWrt nα nβ) (x : α) : nβ (f x) ≤ nα x := by
   obtain ⟨C, hC0, hC⟩ := hf
-  have hlim : Tendsto (fun n : ℕ => C ^ (1 / (n : ℝ)) * nα x) atTop (𝓝 (nα x)) := by
+  have hlim : Tendsto (fun n : ℕ ↦ C ^ (1 / (n : ℝ)) * nα x) atTop (𝓝 (nα x)) := by
     nth_rewrite 2 [← one_mul (nα x)]
     exact ((rpow_zero C ▸ ContinuousAt.tendsto (continuousAt_const_rpow (ne_of_gt hC0))).comp
       (tendsto_const_div_atTop_nhds_zero_nat 1)).mul tendsto_const_nhds

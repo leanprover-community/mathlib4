@@ -96,10 +96,10 @@ theorem norm_le_dual_bound (x : E) {M : ℝ} (hMp : 0 ≤ M)
         _ = M := by rw [hf₁, mul_one]
 
 theorem eq_zero_of_forall_dual_eq_zero {x : E} (h : ∀ f : StrongDual 𝕜 E, f x = (0 : 𝕜)) : x = 0 :=
-  norm_le_zero_iff.mp (norm_le_dual_bound 𝕜 x le_rfl fun f => by simp [h f])
+  norm_le_zero_iff.mp (norm_le_dual_bound 𝕜 x le_rfl fun f ↦ by simp [h f])
 
 theorem eq_zero_iff_forall_dual_eq_zero (x : E) : x = 0 ↔ ∀ g : StrongDual 𝕜 E, g x = 0 :=
-  ⟨fun hx => by simp [hx], fun h => eq_zero_of_forall_dual_eq_zero 𝕜 h⟩
+  ⟨fun hx ↦ by simp [hx], fun h ↦ eq_zero_of_forall_dual_eq_zero 𝕜 h⟩
 
 /-- See also `geometric_hahn_banach_point_point`. -/
 theorem eq_iff_forall_dual_eq {x y : E} : x = y ↔ ∀ g : StrongDual 𝕜 E, g x = g y := by
@@ -130,7 +130,7 @@ variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 theorem isClosed_polar (s : Set E) : IsClosed (StrongDual.polar 𝕜 s) := by
   dsimp only [StrongDual.polar]
   simp only [LinearMap.polar_eq_iInter, LinearMap.flip_apply]
-  refine isClosed_biInter fun z _ => ?_
+  refine isClosed_biInter fun z _ ↦ ?_
   exact isClosed_Iic.preimage (ContinuousLinearMap.apply 𝕜 𝕜 z).continuous.norm
 
 @[simp]
@@ -150,7 +150,7 @@ theorem smul_mem_polar {s : Set E} {x' : StrongDual 𝕜 E} {c : 𝕜} (hc : ∀
   by_cases c_zero : c = 0
   · simp only [c_zero, inv_zero, zero_smul]
     exact (strongDualPairing 𝕜 E).flip.zero_mem_polar _
-  have eq : ∀ z, ‖c⁻¹ • x' z‖ = ‖c⁻¹‖ * ‖x' z‖ := fun z => norm_smul c⁻¹ _
+  have eq : ∀ z, ‖c⁻¹ • x' z‖ = ‖c⁻¹‖ * ‖x' z‖ := fun z ↦ norm_smul c⁻¹ _
   have le : ∀ z, z ∈ s → ‖c⁻¹ • x' z‖ ≤ ‖c⁻¹‖ * ‖c‖ := by
     intro z hzs
     rw [eq z]
@@ -165,7 +165,7 @@ theorem polar_ball_subset_closedBall_div {c : 𝕜} (hc : 1 < ‖c‖) {r : ℝ}
   rw [StrongDual.mem_polar_iff] at hx'
   simp only [mem_closedBall_zero_iff, mem_ball_zero_iff] at *
   have hcr : 0 < ‖c‖ / r := div_pos (zero_lt_one.trans hc) hr
-  refine ContinuousLinearMap.opNorm_le_of_shell hr hcr.le hc fun x h₁ h₂ => ?_
+  refine ContinuousLinearMap.opNorm_le_of_shell hr hcr.le hc fun x h₁ h₂ ↦ ?_
   calc
     ‖x' x‖ ≤ 1 := hx' _ h₂
     _ ≤ ‖c‖ / r * ‖x‖ := (inv_le_iff_one_le_mul₀' hcr).1 (by rwa [inv_div])
@@ -174,7 +174,7 @@ variable (𝕜)
 
 theorem closedBall_inv_subset_polar_closedBall {r : ℝ} :
     closedBall (0 : StrongDual 𝕜 E) r⁻¹ ⊆ StrongDual.polar 𝕜 (closedBall (0 : E) r) :=
-  fun x' hx' x hx =>
+  fun x' hx' x hx ↦
   calc
     ‖x' x‖ ≤ ‖x'‖ * ‖x‖ := x'.le_opNorm x
     _ ≤ r⁻¹ * r :=
@@ -191,7 +191,7 @@ theorem polar_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [
   refine Subset.antisymm ?_ (closedBall_inv_subset_polar_closedBall 𝕜)
   intro x' h
   simp only [mem_closedBall_zero_iff]
-  refine ContinuousLinearMap.opNorm_le_of_ball hr (inv_nonneg.mpr hr.le) fun z _ => ?_
+  refine ContinuousLinearMap.opNorm_le_of_ball hr (inv_nonneg.mpr hr.le) fun z _ ↦ ?_
   simpa only [one_div] using LinearMap.bound_of_ball_bound' hr 1 x'.toLinearMap h z
 
 theorem polar_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
@@ -246,7 +246,7 @@ variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F] [IsScalarTower ℝ 𝕜 𝕜]
 
 theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
   rw [polar_eq_biInter_preimage]
-  exact AbsConvex.iInter₂ fun i hi =>
+  exact AbsConvex.iInter₂ fun i hi ↦
     ⟨balanced_closedBall_zero.mulActionHom_preimage (f := (B i : (F →ₑ[(RingHom.id 𝕜)] 𝕜))),
       (convex_closedBall _ _).linear_preimage (B i)⟩
 

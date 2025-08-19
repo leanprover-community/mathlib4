@@ -55,11 +55,11 @@ noncomputable def coneOfPreserves [PreservesLimit (F ⋙ snd L R) R] (c₁ : Con
       right := c₂.pt
       hom := (isLimitOfPreserves R t₂).lift (limitAuxiliaryCone _ c₁) }
   π :=
-    { app := fun j =>
+    { app := fun j ↦
         { left := c₁.π.app j
           right := c₂.π.app j
           w := ((isLimitOfPreserves R t₂).fac (limitAuxiliaryCone F c₁) j).symm }
-      naturality := fun j₁ j₂ t => by
+      naturality := fun j₁ j₂ t ↦ by
         ext
         · simp [← c₁.w t]
         · simp [← c₂.w t] }
@@ -73,15 +73,15 @@ noncomputable def coneOfPreservesIsLimit [PreservesLimit (F ⋙ snd L R) R] {c�
     { left := t₁.lift ((fst L R).mapCone s)
       right := t₂.lift ((snd L R).mapCone s)
       w :=
-        (isLimitOfPreserves R t₂).hom_ext fun j => by
+        (isLimitOfPreserves R t₂).hom_ext fun j ↦ by
           rw [coneOfPreserves_pt_hom, assoc, assoc, (isLimitOfPreserves R t₂).fac,
             limitAuxiliaryCone_π_app, ← L.map_comp_assoc, t₁.fac, R.mapCone_π_app,
             ← R.map_comp, t₂.fac]
           exact (s.π.app j).w }
   uniq s m w := by
     apply CommaMorphism.ext
-    · exact t₁.uniq ((fst L R).mapCone s) _ (fun j => by simp [← w])
-    · exact t₂.uniq ((snd L R).mapCone s) _ (fun j => by simp [← w])
+    · exact t₁.uniq ((fst L R).mapCone s) _ (fun j ↦ by simp [← w])
+    · exact t₂.uniq ((snd L R).mapCone s) _ (fun j ↦ by simp [← w])
 
 /-- (Implementation). An auxiliary cocone which is useful in order to construct colimits
 in the comma category. -/
@@ -102,11 +102,11 @@ noncomputable def coconeOfPreserves [PreservesColimit (F ⋙ fst L R) L] {c₁ :
       right := c₂.pt
       hom := (isColimitOfPreserves L t₁).desc (colimitAuxiliaryCocone _ c₂) }
   ι :=
-    { app := fun j =>
+    { app := fun j ↦
         { left := c₁.ι.app j
           right := c₂.ι.app j
           w := (isColimitOfPreserves L t₁).fac (colimitAuxiliaryCocone _ c₂) j }
-      naturality := fun j₁ j₂ t => by
+      naturality := fun j₁ j₂ t ↦ by
         ext
         · simp [← c₁.w t]
         · simp [← c₂.w t] }
@@ -121,15 +121,15 @@ noncomputable def coconeOfPreservesIsColimit [PreservesColimit (F ⋙ fst L R) L
     { left := t₁.desc ((fst L R).mapCocone s)
       right := t₂.desc ((snd L R).mapCocone s)
       w :=
-        (isColimitOfPreserves L t₁).hom_ext fun j => by
+        (isColimitOfPreserves L t₁).hom_ext fun j ↦ by
           rw [coconeOfPreserves_pt_hom, (isColimitOfPreserves L t₁).fac_assoc,
             colimitAuxiliaryCocone_ι_app, assoc, ← R.map_comp, t₂.fac, L.mapCocone_ι_app, ←
             L.map_comp_assoc, t₁.fac]
           exact (s.ι.app j).w }
   uniq s m w := by
     apply CommaMorphism.ext
-    · exact t₁.uniq ((fst L R).mapCocone s) _ (fun j => by simp [← w])
-    · exact t₂.uniq ((snd L R).mapCocone s) _ (fun j => by simp [← w])
+    · exact t₁.uniq ((fst L R).mapCocone s) _ (fun j ↦ by simp [← w])
+    · exact t₂.uniq ((snd L R).mapCocone s) _ (fun j ↦ by simp [← w])
 
 instance hasLimit (F : J ⥤ Comma L R) [HasLimit (F ⋙ fst L R)] [HasLimit (F ⋙ snd L R)]
     [PreservesLimit (F ⋙ snd L R) R] : HasLimit F :=
@@ -140,7 +140,7 @@ instance hasLimitsOfShape [HasLimitsOfShape J A] [HasLimitsOfShape J B]
 
 instance hasLimitsOfSize [HasLimitsOfSize.{w, w'} A] [HasLimitsOfSize.{w, w'} B]
     [PreservesLimitsOfSize.{w, w'} R] : HasLimitsOfSize.{w, w'} (Comma L R) :=
-  ⟨fun _ _ => inferInstance⟩
+  ⟨fun _ _ ↦ inferInstance⟩
 
 instance hasColimit (F : J ⥤ Comma L R) [HasColimit (F ⋙ fst L R)] [HasColimit (F ⋙ snd L R)]
     [PreservesColimit (F ⋙ fst L R) L] : HasColimit F :=
@@ -151,7 +151,7 @@ instance hasColimitsOfShape [HasColimitsOfShape J A] [HasColimitsOfShape J B]
 
 instance hasColimitsOfSize [HasColimitsOfSize.{w, w'} A] [HasColimitsOfSize.{w, w'} B]
     [PreservesColimitsOfSize.{w, w'} L] : HasColimitsOfSize.{w, w'} (Comma L R) :=
-  ⟨fun _ _ => inferInstance⟩
+  ⟨fun _ _ ↦ inferInstance⟩
 
 instance preservesColimitsOfShape_fst [HasColimitsOfShape J A] [HasColimitsOfShape J B]
     [PreservesColimitsOfShape J L] : PreservesColimitsOfShape J (Comma.fst L R) where
@@ -180,7 +180,7 @@ instance hasLimit (F : J ⥤ Arrow T) [i₁ : HasLimit (F ⋙ leftFunc)] [i₂ :
 instance hasLimitsOfShape [HasLimitsOfShape J T] : HasLimitsOfShape J (Arrow T) where
 
 instance hasLimits [HasLimits T] : HasLimits (Arrow T) :=
-  ⟨fun _ _ => inferInstance⟩
+  ⟨fun _ _ ↦ inferInstance⟩
 
 instance hasColimit (F : J ⥤ Arrow T) [i₁ : HasColimit (F ⋙ leftFunc)]
     [i₂ : HasColimit (F ⋙ rightFunc)] : HasColimit F := by
@@ -191,7 +191,7 @@ instance hasColimit (F : J ⥤ Arrow T) [i₁ : HasColimit (F ⋙ leftFunc)]
 instance hasColimitsOfShape [HasColimitsOfShape J T] : HasColimitsOfShape J (Arrow T) where
 
 instance hasColimits [HasColimits T] : HasColimits (Arrow T) :=
-  ⟨fun _ _ => inferInstance⟩
+  ⟨fun _ _ ↦ inferInstance⟩
 
 instance preservesColimitsOfShape_leftFunc [HasColimitsOfShape J T] :
     PreservesColimitsOfShape J (Arrow.leftFunc : _ ⥤ T) := by
@@ -218,15 +218,15 @@ instance hasLimitsOfShape [HasLimitsOfShape J A] [PreservesLimitsOfShape J G] :
 
 instance hasLimitsOfSize [HasLimitsOfSize.{w, w'} A] [PreservesLimitsOfSize.{w, w'} G] :
     HasLimitsOfSize.{w, w'} (StructuredArrow X G) :=
-  ⟨fun J hJ => by infer_instance⟩
+  ⟨fun J hJ ↦ by infer_instance⟩
 
 noncomputable instance createsLimit [i : PreservesLimit (F ⋙ proj X G) G] :
     CreatesLimit F (proj X G) :=
   letI : PreservesLimit (F ⋙ Comma.snd (Functor.fromPUnit X) G) G := i
-  createsLimitOfReflectsIso fun _ t =>
+  createsLimitOfReflectsIso fun _ t ↦
     { liftedCone := Comma.coneOfPreserves F punitCone t
       makesLimit := Comma.coneOfPreservesIsLimit _ punitConeIsLimit _
-      validLift := Cones.ext (Iso.refl _) fun _ => (id_comp _).symm }
+      validLift := Cones.ext (Iso.refl _) fun _ ↦ (id_comp _).symm }
 
 noncomputable instance createsLimitsOfShape [PreservesLimitsOfShape J G] :
     CreatesLimitsOfShape J (proj X G) where
@@ -240,7 +240,7 @@ instance mono_right_of_mono [HasPullbacks A] [PreservesLimitsOfShape WalkingCosp
 
 theorem mono_iff_mono_right [HasPullbacks A] [PreservesLimitsOfShape WalkingCospan G]
     {Y Z : StructuredArrow X G} (f : Y ⟶ Z) : Mono f ↔ Mono f.right :=
-  ⟨fun _ => inferInstance, fun _ => mono_of_mono_right f⟩
+  ⟨fun _ ↦ inferInstance, fun _ ↦ mono_of_mono_right f⟩
 
 end StructuredArrow
 
@@ -263,15 +263,15 @@ instance hasColimitsOfShape [HasColimitsOfShape J A] [PreservesColimitsOfShape J
 
 instance hasColimitsOfSize [HasColimitsOfSize.{w, w'} A] [PreservesColimitsOfSize.{w, w'} G] :
     HasColimitsOfSize.{w, w'} (CostructuredArrow G X) :=
-  ⟨fun _ _ => inferInstance⟩
+  ⟨fun _ _ ↦ inferInstance⟩
 
 noncomputable instance createsColimit [i : PreservesColimit (F ⋙ proj G X) G] :
     CreatesColimit F (proj G X) :=
   letI : PreservesColimit (F ⋙ Comma.fst G (Functor.fromPUnit X)) G := i
-  createsColimitOfReflectsIso fun _ t =>
+  createsColimitOfReflectsIso fun _ t ↦
     { liftedCocone := Comma.coconeOfPreserves F t punitCocone
       makesColimit := Comma.coconeOfPreservesIsColimit _ _ punitCoconeIsColimit
-      validLift := Cocones.ext (Iso.refl _) fun _ => comp_id _ }
+      validLift := Cocones.ext (Iso.refl _) fun _ ↦ comp_id _ }
 
 noncomputable instance createsColimitsOfShape [PreservesColimitsOfShape J G] :
     CreatesColimitsOfShape J (proj G X) where
@@ -285,7 +285,7 @@ instance epi_left_of_epi [HasPushouts A] [PreservesColimitsOfShape WalkingSpan G
 
 theorem epi_iff_epi_left [HasPushouts A] [PreservesColimitsOfShape WalkingSpan G]
     {Y Z : CostructuredArrow G X} (f : Y ⟶ Z) : Epi f ↔ Epi f.left :=
-  ⟨fun _ => inferInstance, fun _ => epi_of_epi_left f⟩
+  ⟨fun _ ↦ inferInstance, fun _ ↦ epi_of_epi_left f⟩
 
 end CostructuredArrow
 

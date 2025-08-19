@@ -27,13 +27,13 @@ variable {p} {G}
 namespace IsPGroup
 
 theorem iff_orderOf [hp : Fact p.Prime] : IsPGroup p G ↔ ∀ g : G, ∃ k : ℕ, orderOf g = p ^ k :=
-  forall_congr' fun g =>
-    ⟨fun ⟨_, hk⟩ =>
-      Exists.imp (fun _ h => h.right)
+  forall_congr' fun g ↦
+    ⟨fun ⟨_, hk⟩ ↦
+      Exists.imp (fun _ h ↦ h.right)
         ((Nat.dvd_prime_pow hp.out).mp (orderOf_dvd_of_pow_eq_one hk)),
-      Exists.imp fun k hk => by rw [← hk, pow_orderOf_eq_one]⟩
+      Exists.imp fun k hk ↦ by rw [← hk, pow_orderOf_eq_one]⟩
 
-theorem of_card {n : ℕ} (hG : Nat.card G = p ^ n) : IsPGroup p G := fun g =>
+theorem of_card {n : ℕ} (hG : Nat.card G = p ^ n) : IsPGroup p G := fun g ↦
   ⟨n, by rw [← hG, pow_card_eq_one']⟩
 
 theorem of_bot : IsPGroup p (⊥ : Subgroup G) :=
@@ -41,7 +41,7 @@ theorem of_bot : IsPGroup p (⊥ : Subgroup G) :=
 
 theorem iff_card [Fact p.Prime] [Finite G] : IsPGroup p G ↔ ∃ n : ℕ, Nat.card G = p ^ n := by
   have hG : Nat.card G ≠ 0 := Nat.card_pos.ne'
-  refine ⟨fun h => ?_, fun ⟨n, hn⟩ => of_card hn⟩
+  refine ⟨fun h ↦ ?_, fun ⟨n, hn⟩ ↦ of_card hn⟩
   suffices ∀ q ∈ (Nat.card G).primeFactorsList, q = p by
     use (Nat.card G).primeFactorsList.length
     rw [← List.prod_replicate, ← List.eq_replicate_of_mem this, Nat.prod_primeFactorsList hG]
@@ -62,14 +62,14 @@ include hG
 theorem of_injective {H : Type*} [Group H] (ϕ : H →* G) (hϕ : Function.Injective ϕ) :
     IsPGroup p H := by
   simp_rw [IsPGroup, ← hϕ.eq_iff, ϕ.map_pow, ϕ.map_one]
-  exact fun h => hG (ϕ h)
+  exact fun h ↦ hG (ϕ h)
 
 theorem to_subgroup (H : Subgroup G) : IsPGroup p H :=
   hG.of_injective H.subtype Subtype.coe_injective
 
 theorem of_surjective {H : Type*} [Group H] (ϕ : G →* H) (hϕ : Function.Surjective ϕ) :
     IsPGroup p H := by
-  refine fun h => Exists.elim (hϕ h) fun g hg => Exists.imp (fun k hk => ?_) (hG g)
+  refine fun h ↦ Exists.elim (hϕ h) fun g hg ↦ Exists.imp (fun k hk ↦ ?_) (hG g)
   rw [← hg, ← ϕ.map_pow, hk, ϕ.map_one]
 
 theorem to_quotient (H : Subgroup G) [H.Normal] : IsPGroup p (G ⧸ H) :=
@@ -84,15 +84,15 @@ theorem orderOf_coprime {n : ℕ} (hn : p.Coprime n) (g : G) : (orderOf g).Copri
 
 /-- If `gcd(p,n) = 1`, then the `n`th power map is a bijection. -/
 noncomputable def powEquiv {n : ℕ} (hn : p.Coprime n) : G ≃ G :=
-  let h : ∀ g : G, (Nat.card (Subgroup.zpowers g)).Coprime n := fun g =>
+  let h : ∀ g : G, (Nat.card (Subgroup.zpowers g)).Coprime n := fun g ↦
     (Nat.card_zpowers g).symm ▸ hG.orderOf_coprime hn g
   { toFun := (· ^ n)
-    invFun := fun g => (powCoprime (h g)).symm ⟨g, Subgroup.mem_zpowers g⟩
-    left_inv := fun g =>
+    invFun := fun g ↦ (powCoprime (h g)).symm ⟨g, Subgroup.mem_zpowers g⟩
+    left_inv := fun g ↦
       Subtype.ext_iff.1 <|
         (powCoprime (h (g ^ n))).left_inv
           ⟨g, _, Subtype.ext_iff.1 <| (powCoprime (h g)).left_inv ⟨g, Subgroup.mem_zpowers g⟩⟩
-    right_inv := fun g =>
+    right_inv := fun g ↦
       Subtype.ext_iff.1 <| (powCoprime (h g)).right_inv ⟨g, Subgroup.mem_zpowers g⟩ }
 
 @[simp]
@@ -128,13 +128,13 @@ theorem card_eq_or_dvd : Nat.card G = 1 ∨ p ∣ Nat.card G := by
     exact Or.inr ⟨0, rfl⟩
 
 theorem nontrivial_iff_card [Finite G] : Nontrivial G ↔ ∃ n > 0, Nat.card G = p ^ n :=
-  ⟨fun hGnt =>
+  ⟨fun hGnt ↦
     let ⟨k, hk⟩ := iff_card.1 hG
     ⟨k,
-      Nat.pos_of_ne_zero fun hk0 => by
+      Nat.pos_of_ne_zero fun hk0 ↦ by
         rw [hk0, pow_zero] at hk; exact Finite.one_lt_card.ne' hk,
       hk⟩,
-    fun ⟨_, hk0, hk⟩ =>
+    fun ⟨_, hk0, hk⟩ ↦
     Finite.one_lt_card_iff_nontrivial.1 <|
       hk.symm ▸ one_lt_pow₀ (Fact.out (p := p.Prime)).one_lt (ne_of_gt hk0)⟩
 
@@ -167,13 +167,13 @@ theorem card_modEq_card_fixedPoints : Nat.card α ≡ Nat.card (fixedPoints G α
       ∀ x,
         card { y // (Quotient.mk'' y : Quotient (orbitRel G α)) = Quotient.mk'' x } =
           card (orbit G x) :=
-      fun x => by simp only [Quotient.eq'']; congr
+      fun x ↦ by simp only [Quotient.eq'']; congr
     refine
       Eq.symm
-        (Finset.sum_bij_ne_zero (fun a _ _ => Quotient.mk'' a.1) (fun _ _ _ => Finset.mem_univ _)
-          (fun a₁ _ _ a₂ _ _ h =>
+        (Finset.sum_bij_ne_zero (fun a _ _ ↦ Quotient.mk'' a.1) (fun _ _ _ ↦ Finset.mem_univ _)
+          (fun a₁ _ _ a₂ _ _ h ↦
             Subtype.eq (mem_fixedPoints'.mp a₂.2 a₁.1 (Quotient.exact' h)))
-          (fun b => Quotient.inductionOn' b fun b _ hb => ?_) fun a ha _ => by
+          (fun b ↦ Quotient.inductionOn' b fun b _ hb ↦ ?_) fun a ha _ ↦ by
           rw [key, mem_fixedPoints_iff_card_orbit_eq_one.mp a.2])
     obtain ⟨k, hk⟩ := hG.card_orbit b
     rw [Nat.card_eq_fintype_card] at hk
@@ -207,7 +207,7 @@ theorem exists_fixed_point_of_prime_dvd_card_of_fixed_point (hpα : p ∣ Nat.ca
   rw [Finite.one_lt_card_iff_nontrivial] at hα
   exact
     let ⟨⟨b, hb⟩, hba⟩ := exists_ne (⟨a, ha⟩ : fixedPoints G α)
-    ⟨b, hb, fun hab => hba (by simp_rw [hab])⟩
+    ⟨b, hb, fun hab ↦ hba (by simp_rw [hab])⟩
 
 theorem center_nontrivial [Nontrivial G] [Finite G] : Nontrivial (Subgroup.center G) := by
   classical
@@ -227,7 +227,7 @@ theorem bot_lt_center [Nontrivial G] [Finite G] : ⊥ < Subgroup.center G := by
 end GIsPGroup
 
 theorem to_le {H K : Subgroup G} (hK : IsPGroup p K) (hHK : H ≤ K) : IsPGroup p H :=
-  hK.of_injective (Subgroup.inclusion hHK) fun a b h =>
+  hK.of_injective (Subgroup.inclusion hHK) fun a b h ↦
     Subtype.ext (by
       change ((Subgroup.inclusion hHK) a : G) = (Subgroup.inclusion hHK) b
       apply Subtype.ext_iff.mp h)
@@ -254,7 +254,7 @@ theorem comap_of_ker_isPGroup {H : Subgroup G} (hH : IsPGroup p H) {K : Type*} [
 
 theorem ker_isPGroup_of_injective {K : Type*} [Group K] {ϕ : K →* G} (hϕ : Function.Injective ϕ) :
     IsPGroup p ϕ.ker :=
-  (congr_arg (fun Q : Subgroup K => IsPGroup p Q) (ϕ.ker_eq_bot_iff.mpr hϕ)).mpr IsPGroup.of_bot
+  (congr_arg (fun Q : Subgroup K ↦ IsPGroup p Q) (ϕ.ker_eq_bot_iff.mpr hϕ)).mpr IsPGroup.of_bot
 
 theorem comap_of_injective {H : Subgroup G} (hH : IsPGroup p H) {K : Type*} [Group K] (ϕ : K →* G)
     (hϕ : Function.Injective ϕ) : IsPGroup p (H.comap ϕ) :=
@@ -278,7 +278,7 @@ theorem to_sup_of_normal_right' {H K : Subgroup G} (hH : IsPGroup p H) (hK : IsP
   let hHK' :=
     to_sup_of_normal_right (hH.of_equiv (Subgroup.subgroupOfEquivOfLe hHK).symm)
       (hK.of_equiv (Subgroup.subgroupOfEquivOfLe Subgroup.le_normalizer).symm)
-  ((congr_arg (fun H : Subgroup K.normalizer => IsPGroup p H)
+  ((congr_arg (fun H : Subgroup K.normalizer ↦ IsPGroup p H)
             (Subgroup.sup_subgroupOf_eq hHK Subgroup.le_normalizer)).mp
         hHK').of_equiv
     (Subgroup.subgroupOfEquivOfLe (sup_le hHK Subgroup.le_normalizer))

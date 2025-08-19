@@ -44,15 +44,15 @@ namespace Lex
 
 /-- The lexicographical `≤` on a sigma type. -/
 instance le [LT ι] [∀ i, LE (α i)] : LE (Σₗ' i, α i) :=
-  ⟨Lex (· < ·) fun _ => (· ≤ ·)⟩
+  ⟨Lex (· < ·) fun _ ↦ (· ≤ ·)⟩
 
 /-- The lexicographical `<` on a sigma type. -/
 instance lt [LT ι] [∀ i, LT (α i)] : LT (Σₗ' i, α i) :=
-  ⟨Lex (· < ·) fun _ => (· < ·)⟩
+  ⟨Lex (· < ·) fun _ ↦ (· < ·)⟩
 
 instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ' i, α i) :=
   { Lex.le, Lex.lt with
-    le_refl := fun ⟨_, _⟩ => Lex.right _ le_rfl,
+    le_refl := fun ⟨_, _⟩ ↦ Lex.right _ le_rfl,
     le_trans := by
       rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ ⟨a₃, b₃⟩ ⟨h₁r⟩ ⟨h₂r⟩
       · left
@@ -66,7 +66,7 @@ instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ' i, �
         apply le_trans
         repeat' assumption,
     lt_iff_le_not_ge := by
-      refine fun a b => ⟨fun hab => ⟨hab.mono_right fun i a b => le_of_lt, ?_⟩, ?_⟩
+      refine fun a b ↦ ⟨fun hab ↦ ⟨hab.mono_right fun i a b ↦ le_of_lt, ?_⟩, ?_⟩
       · rintro (⟨i, a, hji⟩ | ⟨i, hba⟩) <;> obtain ⟨_, _, hij⟩ | ⟨_, hab⟩ := hab
         · exact hij.not_gt hji
         · exact lt_irrefl _ hji
@@ -74,7 +74,7 @@ instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ' i, �
         · exact hab.not_ge hba
       · rintro ⟨⟨j, b, hij⟩ | ⟨i, hab⟩, hba⟩
         · exact Lex.left _ _ hij
-        · exact Lex.right _ (hab.lt_of_not_ge fun h => hba <| Lex.right _ h) }
+        · exact Lex.right _ (hab.lt_of_not_ge fun h ↦ hba <| Lex.right _ h) }
 
 /-- Dictionary / lexicographic partial_order for dependent pairs. -/
 instance partialOrder [PartialOrder ι] [∀ i, PartialOrder (α i)] : PartialOrder (Σₗ' i, α i) :=
@@ -104,7 +104,7 @@ instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] : LinearOrder 
 instance orderBot [PartialOrder ι] [OrderBot ι] [∀ i, Preorder (α i)] [OrderBot (α ⊥)] :
     OrderBot (Σₗ' i, α i) where
   bot := ⟨⊥, ⊥⟩
-  bot_le := fun ⟨a, b⟩ => by
+  bot_le := fun ⟨a, b⟩ ↦ by
     obtain rfl | ha := eq_bot_or_bot_lt a
     · exact Lex.right _ bot_le
     · exact Lex.left _ _ ha
@@ -113,7 +113,7 @@ instance orderBot [PartialOrder ι] [OrderBot ι] [∀ i, Preorder (α i)] [Orde
 instance orderTop [PartialOrder ι] [OrderTop ι] [∀ i, Preorder (α i)] [OrderTop (α ⊤)] :
     OrderTop (Σₗ' i, α i) where
   top := ⟨⊤, ⊤⟩
-  le_top := fun ⟨a, b⟩ => by
+  le_top := fun ⟨a, b⟩ ↦ by
     obtain rfl | ha := eq_top_or_lt_top a
     · exact Lex.right _ le_top
     · exact Lex.left _ _ ha

@@ -84,7 +84,7 @@ lemma mulEnergy_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : Eₘ[s₁, t₁
 
 @[to_additive] lemma le_mulEnergy : #s * #t ≤ Eₘ[s, t] := by
   rw [← card_product]
-  exact card_le_card_of_injOn (fun x => ((x.1, x.1), x.2, x.2)) (by simp [Set.MapsTo]) (by simp)
+  exact card_le_card_of_injOn (fun x ↦ ((x.1, x.1), x.2, x.2)) (by simp [Set.MapsTo]) (by simp)
 
 @[to_additive] lemma le_mulEnergy_self : #s ^ 2 ≤ Eₘ[s] := sq #s ▸ le_mulEnergy
 
@@ -103,7 +103,7 @@ variable (s t)
 variable {s t}
 
 @[to_additive (attr := simp)] lemma mulEnergy_pos_iff : 0 < Eₘ[s, t] ↔ s.Nonempty ∧ t.Nonempty where
-  mp h := of_not_not fun H => by
+  mp h := of_not_not fun H ↦ by
     simp_rw [not_and_or, not_nonempty_iff_eq_empty] at H
     obtain rfl | rfl := H <;> simp at h
   mpr h := mulEnergy_pos h.1 h.2
@@ -178,7 +178,7 @@ variable [CommGroup α] [Fintype α] (s t : Finset α)
 @[to_additive (attr := simp)]
 lemma mulEnergy_univ_left : Eₘ[univ, t] = Fintype.card α * t.card ^ 2 := by
   simp only [mulEnergy, univ_product_univ, Fintype.card, sq, ← card_product]
-  let f : α × α × α → (α × α) × α × α := fun x => ((x.1 * x.2.2, x.1 * x.2.1), x.2)
+  let f : α × α × α → (α × α) × α × α := fun x ↦ ((x.1 * x.2.2, x.1 * x.2.1), x.2)
   have : (↑((univ : Finset α) ×ˢ t ×ˢ t) : Set (α × α × α)).InjOn f := by
     rintro ⟨a₁, b₁, c₁⟩ _ ⟨a₂, b₂, c₂⟩ h₂ h
     simp_rw [f, Prod.ext_iff] at h
@@ -188,7 +188,7 @@ lemma mulEnergy_univ_left : Eₘ[univ, t] = Fintype.card α * t.card ^ 2 := by
   congr with a
   simp only [mem_filter, mem_product, mem_univ, true_and, mem_image,
     Prod.exists]
-  refine ⟨fun h => ⟨a.1.1 * a.2.2⁻¹, _, _, h.1, by simp [f, mul_right_comm, h.2]⟩, ?_⟩
+  refine ⟨fun h ↦ ⟨a.1.1 * a.2.2⁻¹, _, _, h.1, by simp [f, mul_right_comm, h.2]⟩, ?_⟩
   rintro ⟨b, c, d, hcd, rfl⟩
   simpa [f, mul_right_comm]
 

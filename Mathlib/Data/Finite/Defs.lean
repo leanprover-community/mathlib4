@@ -99,7 +99,7 @@ class inductive Finite (α : Sort*) : Prop
   | intro {n : ℕ} : α ≃ Fin n → Finite _
 
 theorem finite_iff_exists_equiv_fin {α : Sort*} : Finite α ↔ ∃ n, Nonempty (α ≃ Fin n) :=
-  ⟨fun ⟨e⟩ => ⟨_, ⟨e⟩⟩, fun ⟨_, ⟨e⟩⟩ => ⟨e⟩⟩
+  ⟨fun ⟨e⟩ ↦ ⟨_, ⟨e⟩⟩, fun ⟨_, ⟨e⟩⟩ ↦ ⟨e⟩⟩
 
 theorem Finite.exists_equiv_fin (α : Sort*) [h : Finite α] : ∃ n : ℕ, Nonempty (α ≃ Fin n) :=
   finite_iff_exists_equiv_fin.mp h
@@ -108,7 +108,7 @@ theorem Finite.of_equiv (α : Sort*) [h : Finite α] (f : α ≃ β) : Finite β
   let ⟨e⟩ := h; ⟨f.symm.trans e⟩
 
 theorem Equiv.finite_iff (f : α ≃ β) : Finite α ↔ Finite β :=
-  ⟨fun _ => Finite.of_equiv _ f, fun _ => Finite.of_equiv _ f.symm⟩
+  ⟨fun _ ↦ Finite.of_equiv _ f, fun _ ↦ Finite.of_equiv _ f.symm⟩
 
 theorem Function.Bijective.finite_iff {f : α → β} (h : Bijective f) : Finite α ↔ Finite β :=
   (Equiv.ofBijective f h).finite_iff
@@ -134,7 +134,7 @@ class Infinite (α : Sort*) : Prop where
 
 @[simp]
 theorem not_finite_iff_infinite : ¬Finite α ↔ Infinite α :=
-  ⟨Infinite.mk, fun h => h.1⟩
+  ⟨Infinite.mk, fun h ↦ h.1⟩
 
 @[simp]
 theorem not_infinite_iff_finite : ¬Infinite α ↔ Finite α :=

@@ -32,12 +32,12 @@ and the units of the monoid of continuous maps. -/
 continuous addition and the additive units of the additive monoid of continuous maps. -/]
 def unitsLift : C(X, Mˣ) ≃ C(X, M)ˣ where
   toFun f :=
-    { val := ⟨fun x => f x, Units.continuous_val.comp f.continuous⟩
-      inv := ⟨fun x => ↑(f x)⁻¹, Units.continuous_val.comp (continuous_inv.comp f.continuous)⟩
-      val_inv := ext fun _ => Units.mul_inv _
-      inv_val := ext fun _ => Units.inv_mul _ }
+    { val := ⟨fun x ↦ f x, Units.continuous_val.comp f.continuous⟩
+      inv := ⟨fun x ↦ ↑(f x)⁻¹, Units.continuous_val.comp (continuous_inv.comp f.continuous)⟩
+      val_inv := ext fun _ ↦ Units.mul_inv _
+      inv_val := ext fun _ ↦ Units.inv_mul _ }
   invFun f :=
-    { toFun := fun x =>
+    { toFun := fun x ↦
         ⟨(f : C(X, M)) x, (↑f⁻¹ : C(X, M)) x,
           ContinuousMap.congr_fun f.mul_inv x, ContinuousMap.congr_fun f.inv_mul x⟩
       continuous_toFun := continuous_induced_rng.2 <|
@@ -61,11 +61,11 @@ section NormedRing
 variable [NormedRing R] [CompleteSpace R]
 
 theorem continuous_isUnit_unit {f : C(X, R)} (h : ∀ x, IsUnit (f x)) :
-    Continuous fun x => (h x).unit := by
+    Continuous fun x ↦ (h x).unit := by
   refine
     continuous_induced_rng.2
       (Continuous.prodMk f.continuous
-        (MulOpposite.continuous_op.comp (continuous_iff_continuousAt.mpr fun x => ?_)))
+        (MulOpposite.continuous_op.comp (continuous_iff_continuousAt.mpr fun x ↦ ?_)))
   have := NormedRing.inverse_continuousAt (h x).unit
   simp only
   simp only [← Ring.inverse_unit, IsUnit.unit_spec] at this ⊢
@@ -79,12 +79,12 @@ noncomputable def unitsOfForallIsUnit {f : C(X, R)} (h : ∀ x, IsUnit (f x)) : 
   continuous_toFun := continuous_isUnit_unit h
 
 instance canLift :
-    CanLift C(X, R) C(X, Rˣ) (fun f => ⟨fun x => f x, Units.continuous_val.comp f.continuous⟩)
-      fun f => ∀ x, IsUnit (f x) where
+    CanLift C(X, R) C(X, Rˣ) (fun f ↦ ⟨fun x ↦ f x, Units.continuous_val.comp f.continuous⟩)
+      fun f ↦ ∀ x, IsUnit (f x) where
   prf f h := ⟨unitsOfForallIsUnit h, by ext; rfl⟩
 
 theorem isUnit_iff_forall_isUnit (f : C(X, R)) : IsUnit f ↔ ∀ x, IsUnit (f x) :=
-  Iff.intro (fun h => fun x => ⟨unitsLift.symm h.unit x, rfl⟩) fun h =>
+  Iff.intro (fun h ↦ fun x ↦ ⟨unitsLift.symm h.unit x, rfl⟩) fun h ↦
     ⟨ContinuousMap.unitsLift (unitsOfForallIsUnit h), by ext; rfl⟩
 
 end NormedRing

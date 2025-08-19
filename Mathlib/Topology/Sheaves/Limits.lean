@@ -47,9 +47,9 @@ instance [HasLimits C] (X : TopCat.{v}) : HasLimitsOfSize.{v, v} (Sheaf.{v} C X)
 theorem isSheaf_of_isLimit [HasLimitsOfShape J C] {X : TopCat} (F : J ⥤ Presheaf.{v} C X)
     (H : ∀ j, (F.obj j).IsSheaf) {c : Cone F} (hc : IsLimit c) : c.pt.IsSheaf := by
   let F' : J ⥤ Sheaf C X :=
-    { obj := fun j => ⟨F.obj j, H j⟩
-      map := fun f => ⟨F.map f⟩ }
-  let e : F' ⋙ Sheaf.forget C X ≅ F := NatIso.ofComponents fun _ => Iso.refl _
+    { obj := fun j ↦ ⟨F.obj j, H j⟩
+      map := fun f ↦ ⟨F.map f⟩ }
+  let e : F' ⋙ Sheaf.forget C X ≅ F := NatIso.ofComponents fun _ ↦ Iso.refl _
   exact Presheaf.isSheaf_of_iso
     ((isLimitOfPreserves (Sheaf.forget C X) (limit.isLimit F')).conePointsIsoOfNatIso hc e)
     (limit F').2

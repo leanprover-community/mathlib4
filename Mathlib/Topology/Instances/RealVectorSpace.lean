@@ -22,9 +22,9 @@ variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [Conti
 theorem map_real_smul {G} [FunLike G E F] [AddMonoidHomClass G E F] (f : G) (hf : Continuous f)
     (c : ℝ) (x : E) :
     f (c • x) = c • f x :=
-  suffices (fun c : ℝ => f (c • x)) = fun c : ℝ => c • f x from congr_fun this c
+  suffices (fun c : ℝ ↦ f (c • x)) = fun c : ℝ ↦ c • f x from congr_fun this c
   Rat.isDenseEmbedding_coe_real.dense.equalizer (hf.comp <| continuous_id.smul continuous_const)
-    (continuous_id.smul continuous_const) (funext fun r => map_ratCast_smul f ℝ ℝ r x)
+    (continuous_id.smul continuous_const) (funext fun r ↦ map_ratCast_smul f ℝ ℝ r x)
 
 namespace AddMonoidHom
 
@@ -52,4 +52,4 @@ topological `ℝ`-algebra `A` (e.g. `A = ℂ`) and any topological group that is
 `ℝ`-module and a topological `A`-module, these structures agree. -/
 instance (priority := 900) Real.isScalarTower [T2Space E] {A : Type*} [TopologicalSpace A] [Ring A]
     [Algebra ℝ A] [Module A E] [ContinuousSMul ℝ A] [ContinuousSMul A E] : IsScalarTower ℝ A E :=
-  ⟨fun r x y => map_real_smul ((smulAddHom A E).flip y) (continuous_id.smul continuous_const) r x⟩
+  ⟨fun r x y ↦ map_real_smul ((smulAddHom A E).flip y) (continuous_id.smul continuous_const) r x⟩

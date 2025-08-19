@@ -75,7 +75,7 @@ theorem ι_eq_zero : ι (0 : QuadraticForm R Unit) = 0 :=
 
 /-- Since the vector space is empty the ring is commutative. -/
 instance : CommRing (CliffordAlgebra (0 : QuadraticForm R Unit)) where
-  mul_comm := fun x y => by
+  mul_comm := fun x y ↦ by
     induction x using CliffordAlgebra.induction with
     | algebraMap r => apply Algebra.commutes
     | ι x => simp
@@ -103,7 +103,7 @@ theorem involute_eq_id :
 protected def equiv : CliffordAlgebra (0 : QuadraticForm R Unit) ≃ₐ[R] R :=
   AlgEquiv.ofAlgHom
     (CliffordAlgebra.lift (0 : QuadraticForm R Unit) <|
-      ⟨0, fun _ : Unit => (zero_mul (0 : R)).trans (algebraMap R _).map_zero.symm⟩)
+      ⟨0, fun _ : Unit ↦ (zero_mul (0 : R)).trans (algebraMap R _).map_zero.symm⟩)
     (Algebra.ofId R _) (by ext)
     (by ext : 1; rw [ι_eq_zero, LinearMap.comp_zero, LinearMap.comp_zero])
 
@@ -128,7 +128,7 @@ theorem Q_apply (r : ℝ) : Q r = -(r * r) :=
 `CliffordAlgebraComplex.Q` above can be converted to `ℂ`. -/
 def toComplex : CliffordAlgebra Q →ₐ[ℝ] ℂ :=
   CliffordAlgebra.lift Q
-    ⟨LinearMap.toSpanSingleton _ _ Complex.I, fun r => by
+    ⟨LinearMap.toSpanSingleton _ _ Complex.I, fun r ↦ by
       dsimp [LinearMap.toSpanSingleton, LinearMap.id]
       rw [mul_mul_mul_comm]
       simp⟩
@@ -189,7 +189,7 @@ protected def equiv : CliffordAlgebra Q ≃ₐ[ℝ] ℂ :=
 
 TODO: prove this is true for all `CliffordAlgebra`s over a 1-dimensional vector space. -/
 instance : CommRing (CliffordAlgebra Q) where
-  mul_comm := fun x y =>
+  mul_comm := fun x y ↦
     CliffordAlgebraComplex.equiv.injective <| by
       rw [map_mul, mul_comm, map_mul]
 
@@ -256,9 +256,9 @@ variable {c₁ c₂}
 `CliffordAlgebraQuaternion.Q` can be converted to `ℍ[R,c₁,c₂]`. -/
 def toQuaternion : CliffordAlgebra (Q c₁ c₂) →ₐ[R] ℍ[R,c₁,0,c₂] :=
   CliffordAlgebra.lift (Q c₁ c₂)
-    ⟨{  toFun := fun v => (⟨0, v.1, v.2, 0⟩ : ℍ[R,c₁,0,c₂])
-        map_add' := fun v₁ v₂ => by simp
-        map_smul' := fun r v => by dsimp; rw [mul_zero] }, fun v => by
+    ⟨{  toFun := fun v ↦ (⟨0, v.1, v.2, 0⟩ : ℍ[R,c₁,0,c₂])
+        map_add' := fun v₁ v₂ ↦ by simp
+        map_smul' := fun r v ↦ by dsimp; rw [mul_zero] }, fun v ↦ by
       dsimp
       ext
       all_goals dsimp; ring⟩
@@ -351,11 +351,11 @@ theorem ι_mul_ι (r₁ r₂) : ι (0 : QuadraticForm R R) r₁ * ι (0 : Quadra
 the dual numbers. -/
 protected def equiv : CliffordAlgebra (0 : QuadraticForm R R) ≃ₐ[R] R[ε] :=
   AlgEquiv.ofAlgHom
-    (CliffordAlgebra.lift (0 : QuadraticForm R R) ⟨inrHom R _, fun m => inr_mul_inr _ m m⟩)
+    (CliffordAlgebra.lift (0 : QuadraticForm R R) ⟨inrHom R _, fun m ↦ inr_mul_inr _ m m⟩)
     (DualNumber.lift ⟨
       (Algebra.ofId _ _, ι (R := R) _ 1),
       ι_mul_ι (1 : R) 1,
-      fun _ => (Algebra.commutes _ _).symm⟩)
+      fun _ ↦ (Algebra.commutes _ _).symm⟩)
     (by
       ext : 1
       -- This used to be a single `simp` before https://github.com/leanprover/lean4/pull/2644

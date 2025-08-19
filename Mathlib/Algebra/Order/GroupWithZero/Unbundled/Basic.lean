@@ -109,36 +109,36 @@ local notation3 "α>0" => { x : α // 0 < x }
 variable [PartialOrder α]
 
 theorem posMulMono_iff_covariant_pos :
-    PosMulMono α ↔ CovariantClass α>0 α (fun x y => x * y) (· ≤ ·) :=
-  ⟨@PosMulMono.to_covariantClass_pos_mul_le _ _ _ _, fun h =>
+    PosMulMono α ↔ CovariantClass α>0 α (fun x y ↦ x * y) (· ≤ ·) :=
+  ⟨@PosMulMono.to_covariantClass_pos_mul_le _ _ _ _, fun h ↦
     { elim a b c h := by
         obtain ha | ha := a.prop.eq_or_lt
         · simp [← ha]
-        · exact @CovariantClass.elim α>0 α (fun x y => x * y) (· ≤ ·) _ ⟨_, ha⟩ _ _ h }⟩
+        · exact @CovariantClass.elim α>0 α (fun x y ↦ x * y) (· ≤ ·) _ ⟨_, ha⟩ _ _ h }⟩
 
 theorem mulPosMono_iff_covariant_pos :
-    MulPosMono α ↔ CovariantClass α>0 α (fun x y => y * x) (· ≤ ·) :=
-  ⟨@MulPosMono.to_covariantClass_pos_mul_le _ _ _ _, fun h =>
+    MulPosMono α ↔ CovariantClass α>0 α (fun x y ↦ y * x) (· ≤ ·) :=
+  ⟨@MulPosMono.to_covariantClass_pos_mul_le _ _ _ _, fun h ↦
     { elim a b c h := by
         obtain ha | ha := a.prop.eq_or_lt
         · simp [← ha]
-        · exact @CovariantClass.elim α>0 α (fun x y => y * x) (· ≤ ·) _ ⟨_, ha⟩ _ _ h }⟩
+        · exact @CovariantClass.elim α>0 α (fun x y ↦ y * x) (· ≤ ·) _ ⟨_, ha⟩ _ _ h }⟩
 
 theorem posMulReflectLT_iff_contravariant_pos :
-    PosMulReflectLT α ↔ ContravariantClass α>0 α (fun x y => x * y) (· < ·) :=
-  ⟨@PosMulReflectLT.to_contravariantClass_pos_mul_lt _ _ _ _, fun h =>
+    PosMulReflectLT α ↔ ContravariantClass α>0 α (fun x y ↦ x * y) (· < ·) :=
+  ⟨@PosMulReflectLT.to_contravariantClass_pos_mul_lt _ _ _ _, fun h ↦
     { elim a b c h := by
         obtain ha | ha := a.prop.eq_or_lt
         · simp [← ha] at h
-        · exact @ContravariantClass.elim α>0 α (fun x y => x * y) (· < ·) _ ⟨_, ha⟩ _ _ h }⟩
+        · exact @ContravariantClass.elim α>0 α (fun x y ↦ x * y) (· < ·) _ ⟨_, ha⟩ _ _ h }⟩
 
 theorem mulPosReflectLT_iff_contravariant_pos :
-    MulPosReflectLT α ↔ ContravariantClass α>0 α (fun x y => y * x) (· < ·) :=
-  ⟨@MulPosReflectLT.to_contravariantClass_pos_mul_lt _ _ _ _, fun h =>
+    MulPosReflectLT α ↔ ContravariantClass α>0 α (fun x y ↦ y * x) (· < ·) :=
+  ⟨@MulPosReflectLT.to_contravariantClass_pos_mul_lt _ _ _ _, fun h ↦
     { elim a b c h := by
         obtain ha | ha := a.prop.eq_or_lt
         · simp [← ha] at h
-        · exact @ContravariantClass.elim α>0 α (fun x y => y * x) (· < ·) _ ⟨_, ha⟩ _ _ h }⟩
+        · exact @ContravariantClass.elim α>0 α (fun x y ↦ y * x) (· < ·) _ ⟨_, ha⟩ _ _ h }⟩
 
 -- see Note [lower instance priority]
 instance (priority := 100) PosMulStrictMono.toPosMulMono [PosMulStrictMono α] : PosMulMono α :=
@@ -152,7 +152,7 @@ instance (priority := 100) MulPosStrictMono.toMulPosMono [MulPosStrictMono α] :
 instance (priority := 100) PosMulReflectLE.toPosMulReflectLT [PosMulReflectLE α] :
     PosMulReflectLT α :=
   posMulReflectLT_iff_contravariant_pos.2
-    ⟨fun a b c h =>
+    ⟨fun a b c h ↦
       (le_of_mul_le_mul_of_pos_left h.le a.2).lt_of_ne <| by
         rintro rfl
         simp at h⟩
@@ -161,17 +161,17 @@ instance (priority := 100) PosMulReflectLE.toPosMulReflectLT [PosMulReflectLE α
 instance (priority := 100) MulPosReflectLE.toMulPosReflectLT [MulPosReflectLE α] :
     MulPosReflectLT α :=
   mulPosReflectLT_iff_contravariant_pos.2
-    ⟨fun a b c h =>
+    ⟨fun a b c h ↦
       (le_of_mul_le_mul_of_pos_right h.le a.2).lt_of_ne <| by
         rintro rfl
         simp at h⟩
 
 theorem mul_left_cancel_iff_of_pos [PosMulReflectLE α] (a0 : 0 < a) : a * b = a * c ↔ b = c :=
-  ⟨fun h => (le_of_mul_le_mul_of_pos_left h.le a0).antisymm <|
+  ⟨fun h ↦ (le_of_mul_le_mul_of_pos_left h.le a0).antisymm <|
     le_of_mul_le_mul_of_pos_left h.ge a0, congr_arg _⟩
 
 theorem mul_right_cancel_iff_of_pos [MulPosReflectLE α] (b0 : 0 < b) : a * b = c * b ↔ a = c :=
-  ⟨fun h => (le_of_mul_le_mul_of_pos_right h.le b0).antisymm <|
+  ⟨fun h ↦ (le_of_mul_le_mul_of_pos_right h.le b0).antisymm <|
     le_of_mul_le_mul_of_pos_right h.ge b0, congr_arg (· * b)⟩
 
 theorem mul_eq_mul_iff_eq_and_eq_of_pos [PosMulStrictMono α] [MulPosStrictMono α]
@@ -201,37 +201,37 @@ variable [LinearOrder α]
 theorem pos_and_pos_or_neg_and_neg_of_mul_pos [PosMulMono α] [MulPosMono α] (hab : 0 < a * b) :
     0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 := by
   rcases lt_trichotomy a 0 with (ha | rfl | ha)
-  · refine Or.inr ⟨ha, lt_imp_lt_of_le_imp_le (fun hb => ?_) hab⟩
+  · refine Or.inr ⟨ha, lt_imp_lt_of_le_imp_le (fun hb ↦ ?_) hab⟩
     exact mul_nonpos_of_nonpos_of_nonneg ha.le hb
   · rw [zero_mul] at hab
     exact hab.false.elim
-  · refine Or.inl ⟨ha, lt_imp_lt_of_le_imp_le (fun hb => ?_) hab⟩
+  · refine Or.inl ⟨ha, lt_imp_lt_of_le_imp_le (fun hb ↦ ?_) hab⟩
     exact mul_nonpos_of_nonneg_of_nonpos ha.le hb
 
 theorem neg_of_mul_pos_right [PosMulMono α] [MulPosMono α] (h : 0 < a * b) (ha : a ≤ 0) : b < 0 :=
-  ((pos_and_pos_or_neg_and_neg_of_mul_pos h).resolve_left fun h => h.1.not_ge ha).2
+  ((pos_and_pos_or_neg_and_neg_of_mul_pos h).resolve_left fun h ↦ h.1.not_ge ha).2
 
 theorem neg_of_mul_pos_left [PosMulMono α] [MulPosMono α] (h : 0 < a * b) (ha : b ≤ 0) : a < 0 :=
-  ((pos_and_pos_or_neg_and_neg_of_mul_pos h).resolve_left fun h => h.2.not_ge ha).1
+  ((pos_and_pos_or_neg_and_neg_of_mul_pos h).resolve_left fun h ↦ h.2.not_ge ha).1
 
 theorem neg_iff_neg_of_mul_pos [PosMulMono α] [MulPosMono α] (hab : 0 < a * b) : a < 0 ↔ b < 0 :=
   ⟨neg_of_mul_pos_right hab ∘ le_of_lt, neg_of_mul_pos_left hab ∘ le_of_lt⟩
 
 theorem Left.neg_of_mul_neg_right [PosMulMono α] (h : a * b < 0) (a0 : 0 ≤ a) : b < 0 :=
-  lt_of_not_ge fun b0 : b ≥ 0 => (Left.mul_nonneg a0 b0).not_gt h
+  lt_of_not_ge fun b0 : b ≥ 0 ↦ (Left.mul_nonneg a0 b0).not_gt h
 
 alias neg_of_mul_neg_right := Left.neg_of_mul_neg_right
 
 theorem Right.neg_of_mul_neg_right [MulPosMono α] (h : a * b < 0) (a0 : 0 ≤ a) : b < 0 :=
-  lt_of_not_ge fun b0 : b ≥ 0 => (Right.mul_nonneg a0 b0).not_gt h
+  lt_of_not_ge fun b0 : b ≥ 0 ↦ (Right.mul_nonneg a0 b0).not_gt h
 
 theorem Left.neg_of_mul_neg_left [PosMulMono α] (h : a * b < 0) (b0 : 0 ≤ b) : a < 0 :=
-  lt_of_not_ge fun a0 : a ≥ 0 => (Left.mul_nonneg a0 b0).not_gt h
+  lt_of_not_ge fun a0 : a ≥ 0 ↦ (Left.mul_nonneg a0 b0).not_gt h
 
 alias neg_of_mul_neg_left := Left.neg_of_mul_neg_left
 
 theorem Right.neg_of_mul_neg_left [MulPosMono α] (h : a * b < 0) (b0 : 0 ≤ b) : a < 0 :=
-  lt_of_not_ge fun a0 : a ≥ 0 => (Right.mul_nonneg a0 b0).not_gt h
+  lt_of_not_ge fun a0 : a ≥ 0 ↦ (Right.mul_nonneg a0 b0).not_gt h
 
 end LinearOrder
 
@@ -413,7 +413,7 @@ lemma pow_lt_one₀ [PosMulMono M₀] (h₀ : 0 ≤ a) (h₁ : a < 1) : ∀ {n :
     rw [pow_succ']; exact mul_lt_one_of_nonneg_of_lt_one_left h₀ h₁ (pow_le_one₀ h₀ h₁.le)
 
 lemma pow_right_mono₀ [ZeroLEOneClass M₀] [PosMulMono M₀] (h : 1 ≤ a) : Monotone (a ^ ·) :=
-  monotone_nat_of_le_succ fun n => by
+  monotone_nat_of_le_succ fun n ↦ by
     rw [pow_succ]; exact le_mul_of_one_le_right (pow_nonneg (zero_le_one.trans h) _) h
 
 lemma one_le_pow₀ [ZeroLEOneClass M₀] [PosMulMono M₀] (ha : 1 ≤ a) {n : ℕ} : 1 ≤ a ^ n :=
@@ -540,7 +540,7 @@ variable [ZeroLEOneClass M₀]
 
 /-- See also `pow_right_strictMono'`. -/
 lemma pow_right_strictMono₀ (h : 1 < a) : StrictMono (a ^ ·) :=
-  strictMono_nat_of_lt_succ fun n => by
+  strictMono_nat_of_lt_succ fun n ↦ by
     simpa only [one_mul, pow_succ] using lt_mul_right (pow_pos (zero_le_one.trans_lt h) _) h
 
 @[gcongr]
@@ -558,7 +558,7 @@ lemma lt_self_pow₀ (h : 1 < a) (hm : 1 < m) : a < a ^ m := by
 end ZeroLEOneClass
 
 lemma pow_right_strictAnti₀ (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti (a ^ ·) :=
-  strictAnti_nat_of_succ_lt fun n => by
+  strictAnti_nat_of_succ_lt fun n ↦ by
     have : ZeroLEOneClass M₀ := ⟨(h₀.trans h₁).le⟩
     simpa only [pow_succ, mul_one] using mul_lt_mul_of_pos_left h₁ (pow_pos h₀ n)
 
@@ -676,10 +676,10 @@ end ZeroLEOneClass
 variable [MulPosMono M₀]
 
 lemma lt_of_pow_lt_pow_left₀ (n : ℕ) (hb : 0 ≤ b) (h : a ^ n < b ^ n) : a < b :=
-  lt_of_not_ge fun hn => not_lt_of_ge (pow_le_pow_left₀ hb hn _) h
+  lt_of_not_ge fun hn ↦ not_lt_of_ge (pow_le_pow_left₀ hb hn _) h
 
 lemma le_of_pow_le_pow_left₀ (hn : n ≠ 0) (hb : 0 ≤ b) (h : a ^ n ≤ b ^ n) : a ≤ b :=
-  le_of_not_gt fun h1 => not_le_of_gt (pow_lt_pow_left₀ h1 hb hn) h
+  le_of_not_gt fun h1 ↦ not_le_of_gt (pow_lt_pow_left₀ h1 hb hn) h
 
 lemma sq_eq_sq₀ (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ 2 = b ^ 2 ↔ a = b := by
   simp [ha, hb]
@@ -705,29 +705,29 @@ section PartialOrder
 variable [PartialOrder α]
 
 theorem PosMulMono.toPosMulStrictMono [PosMulMono α] : PosMulStrictMono α where
-  elim := fun x _ _ h => (mul_le_mul_of_nonneg_left h.le x.2.le).lt_of_ne
+  elim := fun x _ _ h ↦ (mul_le_mul_of_nonneg_left h.le x.2.le).lt_of_ne
     (h.ne ∘ mul_left_cancel₀ x.2.ne')
 
 theorem posMulMono_iff_posMulStrictMono : PosMulMono α ↔ PosMulStrictMono α :=
   ⟨@PosMulMono.toPosMulStrictMono α _ _, @PosMulStrictMono.toPosMulMono α _ _⟩
 
 theorem MulPosMono.toMulPosStrictMono [MulPosMono α] : MulPosStrictMono α where
-  elim := fun x _ _ h => (mul_le_mul_of_nonneg_right h.le x.2.le).lt_of_ne
+  elim := fun x _ _ h ↦ (mul_le_mul_of_nonneg_right h.le x.2.le).lt_of_ne
     (h.ne ∘ mul_right_cancel₀ x.2.ne')
 
 theorem mulPosMono_iff_mulPosStrictMono : MulPosMono α ↔ MulPosStrictMono α :=
   ⟨@MulPosMono.toMulPosStrictMono α _ _, @MulPosStrictMono.toMulPosMono α _ _⟩
 
 theorem PosMulReflectLT.toPosMulReflectLE [PosMulReflectLT α] : PosMulReflectLE α where
-  elim := fun x _ _ h =>
-    h.eq_or_lt.elim (le_of_eq ∘ mul_left_cancel₀ x.2.ne.symm) fun h' =>
+  elim := fun x _ _ h ↦
+    h.eq_or_lt.elim (le_of_eq ∘ mul_left_cancel₀ x.2.ne.symm) fun h' ↦
       (lt_of_mul_lt_mul_left h' x.2.le).le
 
 theorem posMulReflectLE_iff_posMulReflectLT : PosMulReflectLE α ↔ PosMulReflectLT α :=
   ⟨@PosMulReflectLE.toPosMulReflectLT α _ _, @PosMulReflectLT.toPosMulReflectLE α _ _⟩
 
 theorem MulPosReflectLT.toMulPosReflectLE [MulPosReflectLT α] : MulPosReflectLE α where
-  elim := fun x _ _ h => h.eq_or_lt.elim (le_of_eq ∘ mul_right_cancel₀ x.2.ne.symm) fun h' =>
+  elim := fun x _ _ h ↦ h.eq_or_lt.elim (le_of_eq ∘ mul_right_cancel₀ x.2.ne.symm) fun h' ↦
     (lt_of_mul_lt_mul_right h' x.2.le).le
 
 theorem mulPosReflectLE_iff_mulPosReflectLT : MulPosReflectLE α ↔ MulPosReflectLT α :=

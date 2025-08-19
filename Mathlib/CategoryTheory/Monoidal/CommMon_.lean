@@ -311,7 +311,7 @@ variable (C)
 def commMonToLaxBraided : CommMon_ C ⥤ LaxBraidedFunctor (Discrete PUnit.{u + 1}) C where
   obj A := LaxBraidedFunctor.of (commMonToLaxBraidedObj A)
   map f :=
-    { hom := { app := fun _ => f.hom }
+    { hom := { app := fun _ ↦ f.hom }
       isMonoidal := { } }
 
 /-- Implementation of `CommMon_.equivLaxBraidedFunctorPUnit`. -/

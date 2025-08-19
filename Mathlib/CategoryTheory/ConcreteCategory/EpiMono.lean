@@ -61,11 +61,11 @@ variable (C)
 
 lemma surjective_le_epimorphisms :
     MorphismProperty.surjective C ≤ epimorphisms C :=
-  fun _ _ _ hf => (forget C).epi_of_epi_map ((epi_iff_surjective _).2 hf)
+  fun _ _ _ hf ↦ (forget C).epi_of_epi_map ((epi_iff_surjective _).2 hf)
 
 lemma injective_le_monomorphisms :
     MorphismProperty.injective C ≤ monomorphisms C :=
-  fun _ _ _ hf => (forget C).mono_of_mono_map ((mono_iff_injective _).2 hf)
+  fun _ _ _ hf ↦ (forget C).mono_of_mono_map ((mono_iff_injective _).2 hf)
 
 lemma surjective_eq_epimorphisms_iff :
     MorphismProperty.surjective C = epimorphisms C ↔ (forget C).PreservesEpimorphisms := by

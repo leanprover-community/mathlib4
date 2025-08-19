@@ -209,7 +209,7 @@ theorem eqOn_closure_span [T2Space M₂] {s : Set M₁} {f g : M₁ →SL[σ₁�
 linear maps equal on `s` are equal. -/
 theorem ext_on [T2Space M₂] {s : Set M₁} (hs : Dense (Submodule.span R₁ s : Set M₁))
     {f g : M₁ →SL[σ₁₂] M₂} (h : Set.EqOn f g s) : f = g :=
-  ext fun x => eqOn_closure_span h (hs x)
+  ext fun x ↦ eqOn_closure_span h (hs x)
 
 /-- Under a continuous linear map, the image of the `TopologicalClosure` of a submodule is
 contained in the `TopologicalClosure` of its image. -/
@@ -239,11 +239,11 @@ variable [DistribMulAction S₂ M₂] [SMulCommClass R₂ S₂ M₂] [Continuous
 variable [DistribMulAction T₂ M₂] [SMulCommClass R₂ T₂ M₂] [ContinuousConstSMul T₂ M₂]
 
 instance instSMul : SMul S₂ (M₁ →SL[σ₁₂] M₂) where
-  smul c f := ⟨c • (f : M₁ →ₛₗ[σ₁₂] M₂), (f.2.const_smul _ : Continuous fun x => c • f x)⟩
+  smul c f := ⟨c • (f : M₁ →ₛₗ[σ₁₂] M₂), (f.2.const_smul _ : Continuous fun x ↦ c • f x)⟩
 
 instance mulAction : MulAction S₂ (M₁ →SL[σ₁₂] M₂) where
-  one_smul _f := ext fun _x => one_smul _ _
-  mul_smul _a _b _f := ext fun _x => mul_smul _ _ _
+  one_smul _f := ext fun _x ↦ one_smul _ _
+  mul_smul _a _b _f := ext fun _x ↦ mul_smul _ _ _
 
 theorem smul_apply (c : S₂) (f : M₁ →SL[σ₁₂] M₂) (x : M₁) : (c • f) x = c • f x :=
   rfl
@@ -260,10 +260,10 @@ theorem coe_smul' (c : S₂) (f : M₁ →SL[σ₁₂] M₂) :
 
 instance isScalarTower [SMul S₂ T₂] [IsScalarTower S₂ T₂ M₂] :
     IsScalarTower S₂ T₂ (M₁ →SL[σ₁₂] M₂) :=
-  ⟨fun a b f => ext fun x => smul_assoc a b (f x)⟩
+  ⟨fun a b f ↦ ext fun x ↦ smul_assoc a b (f x)⟩
 
 instance smulCommClass [SMulCommClass S₂ T₂ M₂] : SMulCommClass S₂ T₂ (M₁ →SL[σ₁₂] M₂) :=
-  ⟨fun a b f => ext fun x => smul_comm a b (f x)⟩
+  ⟨fun a b f ↦ ext fun x ↦ smul_comm a b (f x)⟩
 
 end SMulMonoid
 
@@ -355,7 +355,7 @@ section Add
 variable [ContinuousAdd M₂]
 
 instance add : Add (M₁ →SL[σ₁₂] M₂) :=
-  ⟨fun f g => ⟨f + g, f.2.add g.2⟩⟩
+  ⟨fun f g ↦ ⟨f + g, f.2.add g.2⟩⟩
 
 @[simp]
 theorem add_apply (f g : M₁ →SL[σ₁₂] M₂) (x : M₁) : (f + g) x = f x + g x :=
@@ -401,7 +401,7 @@ instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
 @[simp, norm_cast]
 theorem coe_sum {ι : Type*} (t : Finset ι) (f : ι → M₁ →SL[σ₁₂] M₂) :
     ↑(∑ d ∈ t, f d) = (∑ d ∈ t, f d : M₁ →ₛₗ[σ₁₂] M₂) :=
-  map_sum (AddMonoidHom.mk ⟨((↑) : (M₁ →SL[σ₁₂] M₂) → M₁ →ₛₗ[σ₁₂] M₂), rfl⟩ fun _ _ => rfl) _ _
+  map_sum (AddMonoidHom.mk ⟨((↑) : (M₁ →SL[σ₁₂] M₂) → M₁ →ₛₗ[σ₁₂] M₂), rfl⟩ fun _ _ ↦ rfl) _ _
 
 @[simp, norm_cast]
 theorem coe_sum' {ι : Type*} (t : Finset ι) (f : ι → M₁ →SL[σ₁₂] M₂) :
@@ -441,11 +441,11 @@ theorem comp_apply (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M�
 
 @[simp]
 theorem comp_id (f : M₁ →SL[σ₁₂] M₂) : f.comp (id R₁ M₁) = f :=
-  ext fun _x => rfl
+  ext fun _x ↦ rfl
 
 @[simp]
 theorem id_comp (f : M₁ →SL[σ₁₂] M₂) : (id R₂ M₂).comp f = f :=
-  ext fun _x => rfl
+  ext fun _x ↦ rfl
 
 section
 
@@ -519,11 +519,11 @@ theorem mul_apply (f g : M₁ →L[R₁] M₁) (x : M₁) : (f * g) x = f (g x) 
   rfl
 
 instance monoidWithZero : MonoidWithZero (M₁ →L[R₁] M₁) where
-  mul_zero f := ext fun _ => map_zero f
-  zero_mul _ := ext fun _ => rfl
-  mul_one _ := ext fun _ => rfl
-  one_mul _ := ext fun _ => rfl
-  mul_assoc _ _ _ := ext fun _ => rfl
+  mul_zero f := ext fun _ ↦ map_zero f
+  zero_mul _ := ext fun _ ↦ rfl
+  mul_one _ := ext fun _ ↦ rfl
+  one_mul _ := ext fun _ ↦ rfl
+  mul_assoc _ _ _ := ext fun _ ↦ rfl
 
 theorem coe_pow (f : M₁ →L[R₁] M₁) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
@@ -534,8 +534,8 @@ instance instNatCast [ContinuousAdd M₁] : NatCast (M₁ →L[R₁] M₁) where
 instance semiring [ContinuousAdd M₁] : Semiring (M₁ →L[R₁] M₁) where
   __ := ContinuousLinearMap.monoidWithZero
   __ := ContinuousLinearMap.addCommMonoid
-  left_distrib f g h := ext fun x => map_add f (g x) (h x)
-  right_distrib _ _ _ := ext fun _ => LinearMap.add_apply _ _ _
+  left_distrib f g h := ext fun x ↦ map_add f (g x) (h x)
+  right_distrib _ _ _ := ext fun _ ↦ LinearMap.add_apply _ _ _
   toNatCast := instNatCast
   natCast_zero := zero_smul ℕ (1 : M₁ →L[R₁] M₁)
   natCast_succ n := AddMonoid.nsmul_succ n (1 : M₁ →L[R₁] M₁)
@@ -574,7 +574,7 @@ protected theorem smul_def (f : M₁ →L[R₁] M₁) (a : M₁) : f • a = f a
 
 /-- `ContinuousLinearMap.applyModule` is faithful. -/
 instance applyFaithfulSMul : FaithfulSMul (M₁ →L[R₁] M₁) M₁ :=
-  ⟨fun {_ _} => ContinuousLinearMap.ext⟩
+  ⟨fun {_ _} ↦ ContinuousLinearMap.ext⟩
 
 instance applySMulCommClass : SMulCommClass R₁ (M₁ →L[R₁] M₁) M₁ where
   smul_comm r e m := (e.map_smul r m).symm
@@ -673,7 +673,7 @@ section
 variable {R S : Type*} [Semiring R] [Semiring S] [Module R M₁] [Module R M₂] [Module R S]
   [Module S M₂] [IsScalarTower R S M₂] [TopologicalSpace S] [ContinuousSMul S M₂]
 
-/-- The linear map `fun x => c x • f`.  Associates to a scalar-valued linear map and an element of
+/-- The linear map `fun x ↦ c x • f`.  Associates to a scalar-valued linear map and an element of
 `M₂` the `M₂`-valued linear map obtained by multiplying the two (a.k.a. tensoring by `M₂`).
 See also `ContinuousLinearMap.smulRightₗ` and `ContinuousLinearMap.smulRightL`. -/
 def smulRight (c : M₁ →L[R] S) (f : M₂) : M₁ →L[R] M₂ :=
@@ -768,7 +768,7 @@ section
 variable [IsTopologicalAddGroup M₂]
 
 instance neg : Neg (M →SL[σ₁₂] M₂) :=
-  ⟨fun f => ⟨-f, f.2.neg⟩⟩
+  ⟨fun f ↦ ⟨-f, f.2.neg⟩⟩
 
 @[simp]
 theorem neg_apply (f : M →SL[σ₁₂] M₂) (x : M) : (-f) x = -f x :=
@@ -787,7 +787,7 @@ theorem toContinuousAddMonoidHom_neg (f : M →SL[σ₁₂] M₂) :
     ↑(-f) = -(f : ContinuousAddMonoidHom M M₂) := rfl
 
 instance sub : Sub (M →SL[σ₁₂] M₂) :=
-  ⟨fun f g => ⟨f - g, f.2.sub g.2⟩⟩
+  ⟨fun f g ↦ ⟨f - g, f.2.sub g.2⟩⟩
 
 instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) where
   __ := ContinuousLinearMap.addCommMonoid
@@ -871,7 +871,7 @@ variable {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
 `LinearMap.range f₂`. -/
 def projKerOfRightInverse [IsTopologicalAddGroup M] (f₁ : M →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M)
     (h : Function.RightInverse f₂ f₁) : M →L[R] LinearMap.ker f₁ :=
-  (id R M - f₂.comp f₁).codRestrict (LinearMap.ker f₁) fun x => by simp [h (f₁ x)]
+  (id R M - f₂.comp f₁).codRestrict (LinearMap.ker f₁) fun x ↦ by simp [h (f₁ x)]
 
 @[simp]
 theorem coe_projKerOfRightInverse_apply [IsTopologicalAddGroup M] (f₁ : M →SL[σ₁₂] M₂)
@@ -905,9 +905,9 @@ protected theorem isOpenMap_of_ne_zero [TopologicalSpace R] [DivisionRing R] [Co
     [AddCommGroup M] [TopologicalSpace M] [ContinuousAdd M] [Module R M] [ContinuousSMul R M]
     (f : M →L[R] R) (hf : f ≠ 0) : IsOpenMap f :=
   let ⟨x, hx⟩ := exists_ne_zero hf
-  IsOpenMap.of_sections fun y =>
-    ⟨fun a => y + (a - f y) • (f x)⁻¹ • x, Continuous.continuousAt <| by fun_prop, by simp,
-      fun a => by simp [hx]⟩
+  IsOpenMap.of_sections fun y ↦
+    ⟨fun a ↦ y + (a - f y) • (f x)⁻¹ • x, Continuous.continuousAt <| by fun_prop, by simp,
+      fun a ↦ by simp [hx]⟩
 
 end DivisionRing
 
@@ -946,8 +946,8 @@ theorem comp_smulₛₗ [SMulCommClass R₂ R₂ M₂] [SMulCommClass R₃ R₃ 
     ContinuousLinearMap.map_smulₛₗ]
 
 instance distribMulAction [ContinuousAdd M₂] : DistribMulAction S₃ (M →SL[σ₁₂] M₂) where
-  smul_add a f g := ext fun x => smul_add a (f x) (g x)
-  smul_zero a := ext fun _ => smul_zero a
+  smul_add a f g := ext fun x ↦ smul_add a (f x) (g x)
+  smul_zero a := ext fun _ ↦ smul_zero a
 
 end SMulMonoid
 
@@ -967,12 +967,12 @@ variable {R R₂ R₃ S S₃ : Type*} [Semiring R] [Semiring R₂] [Semiring R�
 variable [ContinuousAdd M₂] [ContinuousAdd M₃] [ContinuousAdd N₂]
 
 instance module : Module S₃ (M →SL[σ₁₃] M₃) where
-  zero_smul _ := ext fun _ => zero_smul S₃ _
-  add_smul _ _ _ := ext fun _ => add_smul _ _ _
+  zero_smul _ := ext fun _ ↦ zero_smul S₃ _
+  add_smul _ _ _ := ext fun _ ↦ add_smul _ _ _
 
 instance isCentralScalar [Module S₃ᵐᵒᵖ M₃] [IsCentralScalar S₃ M₃] :
     IsCentralScalar S₃ (M →SL[σ₁₃] M₃) where
-  op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
+  op_smul_eq_smul _ _ := ext fun _ ↦ op_smul_eq_smul _ _
 
 variable (S) [ContinuousAdd N₃]
 
@@ -1003,7 +1003,7 @@ variable {R S T M M₂ : Type*} [Semiring R] [Semiring S] [Semiring T] [Module R
   [SMulCommClass S T M₂]
 
 /-- Given `c : E →L[R] S`, `c.smulRightₗ` is the linear map from `F` to `E →L[R] F`
-sending `f` to `fun e => c e • f`. See also `ContinuousLinearMap.smulRightL`. -/
+sending `f` to `fun e ↦ c e • f`. See also `ContinuousLinearMap.smulRightL`. -/
 def smulRightₗ (c : M →L[R] S) : M₂ →ₗ[T] M →L[R] M₂ where
   toFun := c.smulRight
   map_add' x y := by
@@ -1029,7 +1029,7 @@ variable {R : Type*} [CommRing R] {M : Type*} [TopologicalSpace M] [AddCommGroup
 variable [IsTopologicalAddGroup M₂] [ContinuousConstSMul R M₂]
 
 instance algebra : Algebra R (M₂ →L[R] M₂) :=
-  Algebra.ofModule smul_comp fun _ _ _ => comp_smul _ _ _
+  Algebra.ofModule smul_comp fun _ _ _ ↦ comp_smul _ _ _
 
 @[simp] theorem algebraMap_apply (r : R) (m : M₂) : algebraMap R (M₂ →L[R] M₂) r m = r • m := rfl
 
@@ -1120,7 +1120,7 @@ def ClosedComplemented (p : Submodule R M) : Prop :=
 theorem ClosedComplemented.exists_isClosed_isCompl {p : Submodule R M} [T1Space p]
     (h : ClosedComplemented p) :
     ∃ q : Submodule R M, IsClosed (q : Set M) ∧ IsCompl p q :=
-  Exists.elim h fun f hf => ⟨ker f, isClosed_ker f, LinearMap.isCompl_of_proj hf⟩
+  Exists.elim h fun f hf ↦ ⟨ker f, isClosed_ker f, LinearMap.isCompl_of_proj hf⟩
 
 protected theorem ClosedComplemented.isClosed [IsTopologicalAddGroup M] [T1Space M]
     {p : Submodule R M} (h : ClosedComplemented p) : IsClosed (p : Set M) := by
@@ -1130,11 +1130,11 @@ protected theorem ClosedComplemented.isClosed [IsTopologicalAddGroup M] [T1Space
 
 @[simp]
 theorem closedComplemented_bot : ClosedComplemented (⊥ : Submodule R M) :=
-  ⟨0, fun x => by simp only [zero_apply, eq_zero_of_bot_submodule x]⟩
+  ⟨0, fun x ↦ by simp only [zero_apply, eq_zero_of_bot_submodule x]⟩
 
 @[simp]
 theorem closedComplemented_top : ClosedComplemented (⊤ : Submodule R M) :=
-  ⟨(id R M).codRestrict ⊤ fun _x => trivial, fun x => Subtype.ext_iff_val.2 <| by simp⟩
+  ⟨(id R M).codRestrict ⊤ fun _x ↦ trivial, fun x ↦ Subtype.ext_iff_val.2 <| by simp⟩
 
 end Submodule
 

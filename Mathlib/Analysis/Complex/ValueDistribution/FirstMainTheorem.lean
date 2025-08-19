@@ -51,7 +51,7 @@ theorem abs_characteristic_sub_characteristic_shift_le {r : ℝ} (h : Meromorphi
     circleIntegrable_posLog_norm_meromorphicOn (fun x a ↦ h x trivial)
   have h₂f : CircleIntegrable (fun x ↦ log⁺ ‖f x - a₀‖) 0 r := by
     apply circleIntegrable_posLog_norm_meromorphicOn
-    apply MeromorphicOn.sub (fun x a => h x trivial) (MeromorphicOn.const a₀)
+    apply MeromorphicOn.sub (fun x a ↦ h x trivial) (MeromorphicOn.const a₀)
   rw [← Pi.sub_apply, characteristic_sub_characteristic_eq_proximity_sub_proximity h]
   simp only [proximity, reduceDIte, Pi.sub_apply, ← circleAverage_sub h₁f h₂f]
   apply le_trans abs_circleAverage_le_circleAverage_abs

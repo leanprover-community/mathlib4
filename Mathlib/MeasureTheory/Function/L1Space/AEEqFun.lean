@@ -61,7 +61,7 @@ end
 section
 
 theorem Integrable.neg {f : α →ₘ[μ] β} : Integrable f → Integrable (-f) :=
-  induction_on f fun _f hfm hfi => (integrable_mk _).2 ((integrable_mk hfm).1 hfi).neg
+  induction_on f fun _f hfm hfi ↦ (integrable_mk _).2 ((integrable_mk hfm).1 hfi).neg
 
 section
 
@@ -70,7 +70,7 @@ theorem integrable_iff_mem_L1 {f : α →ₘ[μ] β} : Integrable f ↔ f ∈ (�
 
 -- TODO: generalise these lemmas to `ENormedSpace` or similar
 theorem Integrable.add {f g : α →ₘ[μ] β} : Integrable f → Integrable g → Integrable (f + g) := by
-  refine induction_on₂ f g fun f hf g hg hfi hgi => ?_
+  refine induction_on₂ f g fun f hf g hg hfi hgi ↦ ?_
   simp only [integrable_mk, mk_add_mk] at hfi hgi ⊢
   exact hfi.add hgi
 
@@ -85,7 +85,7 @@ section IsBoundedSMul
 variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
 
 theorem Integrable.smul {c : 𝕜} {f : α →ₘ[μ] β} : Integrable f → Integrable (c • f) :=
-  induction_on f fun _f hfm hfi => (integrable_mk _).2 <|
+  induction_on f fun _f hfm hfi ↦ (integrable_mk _).2 <|
     by simpa using ((integrable_mk hfm).1 hfi).smul c
 
 end IsBoundedSMul
@@ -224,7 +224,7 @@ theorem edist_toL1_zero (f : α → β) (hf : Integrable f μ) :
 variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
 
 theorem toL1_smul (f : α → β) (hf : Integrable f μ) (k : 𝕜) :
-    toL1 (fun a => k • f a) (hf.smul k) = k • toL1 f hf :=
+    toL1 (fun a ↦ k • f a) (hf.smul k) = k • toL1 f hf :=
   rfl
 
 theorem toL1_smul' (f : α → β) (hf : Integrable f μ) (k : 𝕜) :

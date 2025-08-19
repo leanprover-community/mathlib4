@@ -29,7 +29,7 @@ variable {m n : ℕ}
 @[instance] abbrev instSuccOrder : SuccOrder ℕ :=
   SuccOrder.ofSuccLeIff succ Nat.succ_le
 
-instance instSuccAddOrder : SuccAddOrder ℕ := ⟨fun _ => rfl⟩
+instance instSuccAddOrder : SuccAddOrder ℕ := ⟨fun _ ↦ rfl⟩
 
 -- so that Lean reads `Nat.pred` through `pred_order.pred`
 @[instance] abbrev instPredOrder : PredOrder ℕ where
@@ -44,7 +44,7 @@ instance instSuccAddOrder : SuccAddOrder ℕ := ⟨fun _ => rfl⟩
     · exact (a.not_lt_zero h).elim
     · exact le_of_succ_le_succ h
 
-instance instPredSubOrder : PredSubOrder ℕ := ⟨fun _ => rfl⟩
+instance instPredSubOrder : PredSubOrder ℕ := ⟨fun _ ↦ rfl⟩
 
 @[simp]
 theorem succ_eq_succ : Order.succ = succ :=
@@ -66,10 +66,10 @@ protected theorem pred_iterate (a : ℕ) : ∀ n, pred^[n] a = a - n
 lemma le_succ_iff_eq_or_le : m ≤ n.succ ↔ m = n.succ ∨ m ≤ n := Order.le_succ_iff_eq_or_le
 
 instance : IsSuccArchimedean ℕ :=
-  ⟨fun {a} {b} h => ⟨b - a, by rw [succ_eq_succ, Nat.succ_iterate, add_tsub_cancel_of_le h]⟩⟩
+  ⟨fun {a} {b} h ↦ ⟨b - a, by rw [succ_eq_succ, Nat.succ_iterate, add_tsub_cancel_of_le h]⟩⟩
 
 instance : IsPredArchimedean ℕ :=
-  ⟨fun {a} {b} h => ⟨b - a, by rw [pred_eq_pred, Nat.pred_iterate, tsub_tsub_cancel_of_le h]⟩⟩
+  ⟨fun {a} {b} h ↦ ⟨b - a, by rw [pred_eq_pred, Nat.pred_iterate, tsub_tsub_cancel_of_le h]⟩⟩
 
 lemma forall_ne_zero_iff (P : ℕ → Prop) :
     (∀ i, i ≠ 0 → P i) ↔ (∀ i, P (i + 1)) :=
@@ -79,7 +79,7 @@ end Nat
 
 @[simp, norm_cast]
 theorem Fin.coe_covBy_iff {n : ℕ} {a b : Fin n} : (a : ℕ) ⋖ b ↔ a ⋖ b :=
-  and_congr_right' ⟨fun h _c hc => h hc, fun h c ha hb => @h ⟨c, hb.trans b.prop⟩ ha hb⟩
+  and_congr_right' ⟨fun h _c hc ↦ h hc, fun h c ha hb ↦ @h ⟨c, hb.trans b.prop⟩ ha hb⟩
 
 alias ⟨_, CovBy.coe_fin⟩ := Fin.coe_covBy_iff
 

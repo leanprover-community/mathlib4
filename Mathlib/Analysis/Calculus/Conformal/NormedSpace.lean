@@ -57,7 +57,7 @@ def ConformalAt (f : X → Y) (x : X) :=
 theorem conformalAt_id (x : X) : ConformalAt _root_.id x :=
   ⟨id ℝ X, hasFDerivAt_id _, isConformalMap_id⟩
 
-theorem conformalAt_const_smul {c : ℝ} (h : c ≠ 0) (x : X) : ConformalAt (fun x' : X => c • x') x :=
+theorem conformalAt_const_smul {c : ℝ} (h : c ≠ 0) (x : X) : ConformalAt (fun x' : X ↦ c • x') x :=
   ⟨c • ContinuousLinearMap.id ℝ X, (hasFDerivAt_id x).const_smul c, isConformalMap_const_smul h⟩
 
 @[nontriviality]
@@ -107,9 +107,9 @@ section GlobalConformality
 def Conformal (f : X → Y) :=
   ∀ x : X, ConformalAt f x
 
-theorem conformal_id : Conformal (id : X → X) := fun x => conformalAt_id x
+theorem conformal_id : Conformal (id : X → X) := fun x ↦ conformalAt_id x
 
-theorem conformal_const_smul {c : ℝ} (h : c ≠ 0) : Conformal fun x : X => c • x := fun x =>
+theorem conformal_const_smul {c : ℝ} (h : c ≠ 0) : Conformal fun x : X ↦ c • x := fun x ↦
   conformalAt_const_smul h x
 
 namespace Conformal
@@ -117,14 +117,14 @@ namespace Conformal
 theorem conformalAt {f : X → Y} (h : Conformal f) (x : X) : ConformalAt f x :=
   h x
 
-theorem differentiable {f : X → Y} (h : Conformal f) : Differentiable ℝ f := fun x =>
+theorem differentiable {f : X → Y} (h : Conformal f) : Differentiable ℝ f := fun x ↦
   (h x).differentiableAt
 
 theorem comp {f : X → Y} {g : Y → Z} (hf : Conformal f) (hg : Conformal g) : Conformal (g ∘ f) :=
-  fun x => (hg <| f x).comp x (hf x)
+  fun x ↦ (hg <| f x).comp x (hf x)
 
 theorem const_smul {f : X → Y} (hf : Conformal f) {c : ℝ} (hc : c ≠ 0) : Conformal (c • f) :=
-  fun x => (hf x).const_smul hc
+  fun x ↦ (hf x).const_smul hc
 
 end Conformal
 

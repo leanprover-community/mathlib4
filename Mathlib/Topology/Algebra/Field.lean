@@ -23,13 +23,13 @@ variable {K : Type*} [DivisionRing K] [TopologicalSpace K]
 /-- Left-multiplication by a nonzero element of a topological division ring is proper, i.e.,
 inverse images of compact sets are compact. -/
 theorem Filter.tendsto_cocompact_mul_left₀ [ContinuousMul K] {a : K} (ha : a ≠ 0) :
-    Filter.Tendsto (fun x : K => a * x) (Filter.cocompact K) (Filter.cocompact K) :=
+    Filter.Tendsto (fun x : K ↦ a * x) (Filter.cocompact K) (Filter.cocompact K) :=
   Filter.tendsto_cocompact_mul_left (inv_mul_cancel₀ ha)
 
 /-- Right-multiplication by a nonzero element of a topological division ring is proper, i.e.,
 inverse images of compact sets are compact. -/
 theorem Filter.tendsto_cocompact_mul_right₀ [ContinuousMul K] {a : K} (ha : a ≠ 0) :
-    Filter.Tendsto (fun x : K => x * a) (Filter.cocompact K) (Filter.cocompact K) :=
+    Filter.Tendsto (fun x : K ↦ x * a) (Filter.cocompact K) (Filter.cocompact K) :=
   Filter.tendsto_cocompact_mul_right (mul_inv_cancel₀ ha)
 
 /-- Compact Hausdorff topological fields are finite. -/
@@ -57,7 +57,7 @@ itself a subfield. -/
 def Subfield.topologicalClosure (K : Subfield α) : Subfield α :=
   { K.toSubring.topologicalClosure with
     carrier := _root_.closure (K : Set α)
-    inv_mem' := fun x hx => by
+    inv_mem' := fun x hx ↦ by
       rcases eq_or_ne x 0 with (rfl | h)
       · rwa [inv_zero]
       · rw [← inv_coe_set, ← Set.image_inv_eq_inv]
@@ -88,7 +88,7 @@ happens to be a field is enough.
 variable {𝕜 : Type*} [Field 𝕜] [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
 
 /--
-The map `fun x => a * x + b`, as a homeomorphism from `𝕜` (a topological field) to itself,
+The map `fun x ↦ a * x + b`, as a homeomorphism from `𝕜` (a topological field) to itself,
 when `a ≠ 0`.
 -/
 @[simps]
@@ -165,10 +165,10 @@ theorem IsPreconnected.eq_or_eq_neg_of_sq_eq [Field 𝕜] [HasContinuousInv₀ �
     (hS : IsPreconnected S) (hf : ContinuousOn f S) (hg : ContinuousOn g S)
     (hsq : EqOn (f ^ 2) (g ^ 2) S) (hg_ne : ∀ {x : α}, x ∈ S → g x ≠ 0) :
     EqOn f g S ∨ EqOn f (-g) S := by
-  have hsq : EqOn ((f / g) ^ 2) 1 S := fun x hx => by
+  have hsq : EqOn ((f / g) ^ 2) 1 S := fun x hx ↦ by
     simpa [div_eq_one_iff_eq (pow_ne_zero _ (hg_ne hx)), div_pow] using hsq hx
   simpa +contextual [EqOn, div_eq_iff (hg_ne _)]
-    using hS.eq_one_or_eq_neg_one_of_sq_eq (hf.div hg fun z => hg_ne) hsq
+    using hS.eq_one_or_eq_neg_one_of_sq_eq (hf.div hg fun z ↦ hg_ne) hsq
 
 /-- If `f, g` are functions `α → 𝕜`, both continuous on a preconnected set `S`, with
 `f ^ 2 = g ^ 2` on `S`, and `g z ≠ 0` all `z ∈ S`, then as soon as `f = g` holds at
@@ -176,7 +176,7 @@ one point of `S` it holds for all points. -/
 theorem IsPreconnected.eq_of_sq_eq [Field 𝕜] [HasContinuousInv₀ 𝕜] [ContinuousMul 𝕜]
     (hS : IsPreconnected S) (hf : ContinuousOn f S) (hg : ContinuousOn g S)
     (hsq : EqOn (f ^ 2) (g ^ 2) S) (hg_ne : ∀ {x : α}, x ∈ S → g x ≠ 0) {y : α} (hy : y ∈ S)
-    (hy' : f y = g y) : EqOn f g S := fun x hx => by
+    (hy' : f y = g y) : EqOn f g S := fun x hx ↦ by
   rcases hS.eq_or_eq_neg_of_sq_eq hf hg @hsq @hg_ne with (h | h)
   · exact h hx
   · rw [h _, Pi.neg_apply, neg_eq_iff_add_eq_zero, ← two_mul, mul_eq_zero,

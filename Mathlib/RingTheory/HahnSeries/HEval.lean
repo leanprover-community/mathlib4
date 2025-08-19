@@ -45,7 +45,7 @@ variable [CommRing V] [Algebra R V]
 
 The scalar multiples are given by the coefficients of a power series. -/
 abbrev powerSeriesFamily (x : HahnSeries Γ V) (f : PowerSeries R) : SummableFamily Γ V ℕ :=
-  smulFamily (fun n => f.coeff R n) (powers x)
+  smulFamily (fun n ↦ f.coeff R n) (powers x)
 
 theorem powerSeriesFamily_of_not_orderTop_pos {x : HahnSeries Γ V} (hx : ¬ 0 < x.orderTop)
     (f : PowerSeries R) :
@@ -82,7 +82,7 @@ theorem powerSeriesFamily_smul {x : HahnSeries Γ V} (f : PowerSeries R) (r : R)
 theorem support_powerSeriesFamily_subset {x : HahnSeries Γ V} (a b : PowerSeries R) (g : Γ) :
     ((powerSeriesFamily x (a * b)).coeff g).support ⊆
     (((powerSeriesFamily x a).mul (powerSeriesFamily x b)).coeff g).support.image
-      fun i => i.1 + i.2 := by
+      fun i ↦ i.1 + i.2 := by
   by_cases h : 0 < x.orderTop
   · simp only [coeff_support, Set.Finite.toFinset_subset, support_subset_iff]
     intro n hn
@@ -121,8 +121,8 @@ theorem hsum_powerSeriesFamily_mul {x : HahnSeries Γ V} (a b : PowerSeries R) :
     simp only [coeff_support, mul_toFun, smulFamily_toFun, Algebra.mul_smul_comm,
       Algebra.smul_mul_assoc, HahnSeries.coeff_smul, PowerSeries.coeff_mul, sum_smul]
     rw [sum_sigma']
-    refine (Finset.sum_of_injOn (fun x => ⟨x.1 + x.2, x⟩) (fun _ _ _ _ => by simp) ?_ ?_
-      (fun _ _ => by simp [smul_smul, mul_comm, pow_add])).symm
+    refine (Finset.sum_of_injOn (fun x ↦ ⟨x.1 + x.2, x⟩) (fun _ _ _ _ ↦ by simp) ?_ ?_
+      (fun _ _ ↦ by simp [smul_smul, mul_comm, pow_add])).symm
     · intro ij hij
       simp only [coe_sigma, coe_image, Set.mem_sigma_iff, Set.mem_image, Prod.exists, mem_coe,
         mem_antidiagonal, and_true]
@@ -165,7 +165,7 @@ def heval : PowerSeries R →ₐ[R] HahnSeries Γ R where
     simp only [hsum, smulFamily_toFun, coeff_one, powers_toFun, ite_smul, one_smul, zero_smul]
     ext g
     simp only
-    rw [finsum_eq_single _ (0 : ℕ) (fun n hn => by simp [hn])]
+    rw [finsum_eq_single _ (0 : ℕ) (fun n hn ↦ by simp [hn])]
     simp
   map_mul' a b := by
     simp only [← hsum_mul, hsum_powerSeriesFamily_mul]
@@ -178,7 +178,7 @@ def heval : PowerSeries R →ₐ[R] HahnSeries Γ R where
     simp only [algebraMap_eq]
     ext g
     simp only [coeff_hsum, smulFamily_toFun, coeff_C, powers_toFun, ite_smul, zero_smul]
-    rw [finsum_eq_single _ 0 fun n hn => by simp [hn]]
+    rw [finsum_eq_single _ 0 fun n hn ↦ by simp [hn]]
     by_cases hg : g = 0 <;> simp [hg, Algebra.algebraMap_eq_smul_one]
 
 theorem heval_mul {a b : PowerSeries R} :
@@ -211,7 +211,7 @@ theorem coeff_heval (f : PowerSeries R) (g : Γ) :
 
 theorem coeff_heval_zero (f : PowerSeries R) :
     (heval x f).coeff 0 = PowerSeries.constantCoeff R f := by
-  rw [coeff_heval, finsum_eq_single (fun n => ((powerSeriesFamily x f).coeff 0) n) 0,
+  rw [coeff_heval, finsum_eq_single (fun n ↦ ((powerSeriesFamily x f).coeff 0) n) 0,
     ← PowerSeries.coeff_zero_eq_constantCoeff_apply]
   · simp
   · intro n hn

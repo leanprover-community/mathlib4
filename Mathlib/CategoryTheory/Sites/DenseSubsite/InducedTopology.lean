@@ -105,11 +105,11 @@ lemma mem_inducedTopology_sieves_iff {X : C} (S : Sieve X) :
 
 /-- `G` is cover-lifting wrt the induced topology. -/
 instance inducedTopology_isCocontinuous : G.IsCocontinuous (G.inducedTopology K) K :=
-  ⟨@fun _ S hS => LocallyCoverDense.functorPushforward_functorPullback_mem ⟨S, hS⟩⟩
+  ⟨@fun _ S hS ↦ LocallyCoverDense.functorPushforward_functorPullback_mem ⟨S, hS⟩⟩
 
 /-- `G` is cover-preserving wrt the induced topology. -/
 theorem inducedTopology_coverPreserving : CoverPreserving (G.inducedTopology K) K G :=
-  ⟨@fun _ _ hS => hS⟩
+  ⟨@fun _ _ hS ↦ hS⟩
 
 instance (priority := 900) locallyCoverDense_of_isCoverDense [G.IsCoverDense K] :
     G.LocallyCoverDense K where

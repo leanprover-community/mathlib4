@@ -61,7 +61,7 @@ def rotation (θ : Real.Angle) : V ≃ₗᵢ[ℝ] V :=
       Real.Angle.sin θ • (LinearIsometryEquiv.toLinearEquiv J).toLinearMap)
     (by
       ext x
-      convert congr_arg (fun t : ℝ => t • x) θ.cos_sq_add_sin_sq using 1
+      convert congr_arg (fun t : ℝ ↦ t • x) θ.cos_sq_add_sin_sq using 1
       · simp only [o.rightAngleRotation_rightAngleRotation, o.rotationAux_apply,
           Function.comp_apply, id, LinearEquiv.coe_coe, LinearIsometry.coe_toLinearMap,
           LinearIsometryEquiv.coe_toLinearEquiv, map_smul, map_sub, LinearMap.coe_comp,
@@ -70,7 +70,7 @@ def rotation (θ : Real.Angle) : V ≃ₗᵢ[ℝ] V :=
       · simp)
     (by
       ext x
-      convert congr_arg (fun t : ℝ => t • x) θ.cos_sq_add_sin_sq using 1
+      convert congr_arg (fun t : ℝ ↦ t • x) θ.cos_sq_add_sin_sq using 1
       · simp only [o.rightAngleRotation_rightAngleRotation, o.rotationAux_apply,
           Function.comp_apply, id, LinearEquiv.coe_coe, LinearIsometry.coe_toLinearMap,
           LinearIsometryEquiv.coe_toLinearEquiv, map_add, map_smul, LinearMap.coe_comp,
@@ -150,7 +150,7 @@ theorem rotation_rotation (θ₁ θ₂ : Real.Angle) (x : V) :
 @[simp]
 theorem rotation_trans (θ₁ θ₂ : Real.Angle) :
     (o.rotation θ₁).trans (o.rotation θ₂) = o.rotation (θ₂ + θ₁) :=
-  LinearIsometryEquiv.ext fun _ => by rw [← rotation_rotation, LinearIsometryEquiv.trans_apply]
+  LinearIsometryEquiv.ext fun _ ↦ by rw [← rotation_rotation, LinearIsometryEquiv.trans_apply]
 
 /-- Rotating the first of two vectors by `θ` scales their Kähler form by `cos θ - sin θ * I`. -/
 @[simp]
@@ -423,7 +423,7 @@ the second is a multiple of a `π / 2` rotation of that vector. -/
 theorem inner_eq_zero_iff_eq_zero_or_eq_smul_rotation_pi_div_two {x y : V} :
     ⟪x, y⟫ = 0 ↔ x = 0 ∨ ∃ r : ℝ, r • o.rotation (π / 2 : ℝ) x = y := by
   rw [← o.eq_zero_or_oangle_eq_iff_inner_eq_zero]
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with (rfl | rfl | h | h)
     · exact Or.inl rfl
     · exact Or.inr ⟨0, zero_smul _ _⟩

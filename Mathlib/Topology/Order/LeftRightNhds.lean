@@ -48,14 +48,14 @@ theorem TFAE_mem_nhdsGT {a b : α} (hab : a < b) (s : Set α) :
     rw [nhdsWithin_Ioc_eq_nhdsGT hab]
   tfae_have 1 ↔ 3 := by
     rw [nhdsWithin_Ioo_eq_nhdsGT hab]
-  tfae_have 4 → 5 := fun ⟨u, umem, hu⟩ => ⟨u, umem.1, hu⟩
+  tfae_have 4 → 5 := fun ⟨u, umem, hu⟩ ↦ ⟨u, umem.1, hu⟩
   tfae_have 5 → 1
   | ⟨u, hau, hu⟩ => mem_of_superset (Ioo_mem_nhdsGT hau) hu
   tfae_have 1 → 4
   | h => by
     rcases mem_nhdsWithin_iff_exists_mem_nhds_inter.1 h with ⟨v, va, hv⟩
     rcases exists_Ico_subset_of_mem_nhds' va hab with ⟨u, au, hu⟩
-    exact ⟨u, au, fun x hx => hv ⟨hu ⟨le_of_lt hx.1, hx.2⟩, hx.1⟩⟩
+    exact ⟨u, au, fun x hx ↦ hv ⟨hu ⟨le_of_lt hx.1, hx.2⟩, hx.1⟩⟩
   tfae_finish
 
 theorem mem_nhdsGT_iff_exists_mem_Ioc_Ioo_subset {a u' : α} {s : Set α} (hu' : a < u') :
@@ -70,7 +70,7 @@ theorem mem_nhdsGT_iff_exists_Ioo_subset' {a u' : α} {s : Set α} (hu' : a < u'
 
 theorem nhdsGT_basis_of_exists_gt {a : α} (h : ∃ b, a < b) : (𝓝[>] a).HasBasis (a < ·) (Ioo a) :=
   let ⟨_, h⟩ := h
-  ⟨fun _ => mem_nhdsGT_iff_exists_Ioo_subset' h⟩
+  ⟨fun _ ↦ mem_nhdsGT_iff_exists_Ioo_subset' h⟩
 
 lemma nhdsGT_basis [NoMaxOrder α] (a : α) : (𝓝[>] a).HasBasis (a < ·) (Ioo a) :=
   nhdsGT_basis_of_exists_gt <| exists_gt a
@@ -156,7 +156,7 @@ theorem mem_nhdsGT_iff_exists_Ioc_subset [NoMaxOrder α] [DenselyOrdered α] {a 
   constructor
   · rintro ⟨u, au, as⟩
     rcases exists_between au with ⟨v, hv⟩
-    exact ⟨v, hv.1, fun x hx => as ⟨hx.1, lt_of_le_of_lt hx.2 hv.2⟩⟩
+    exact ⟨v, hv.1, fun x hx ↦ as ⟨hx.1, lt_of_le_of_lt hx.2 hv.2⟩⟩
   · rintro ⟨u, au, as⟩
     exact ⟨u, au, Subset.trans Ioo_subset_Ioc_self as⟩
 
@@ -202,7 +202,7 @@ theorem mem_nhdsLT_iff_exists_Ico_subset [NoMinOrder α] [DenselyOrdered α] {a 
 
 theorem nhdsLT_basis_of_exists_lt {a : α} (h : ∃ b, b < a) : (𝓝[<] a).HasBasis (· < a) (Ioo · a) :=
   let ⟨_, h⟩ := h
-  ⟨fun _ => mem_nhdsLT_iff_exists_Ioo_subset' h⟩
+  ⟨fun _ ↦ mem_nhdsLT_iff_exists_Ioo_subset' h⟩
 
 theorem nhdsLT_basis [NoMinOrder α] (a : α) : (𝓝[<] a).HasBasis (· < a) (Ioo · a) :=
   nhdsLT_basis_of_exists_lt <| exists_lt a
@@ -232,7 +232,7 @@ theorem TFAE_mem_nhdsGE {a b : α} (hab : a < b) (s : Set α) :
   tfae_have 1 ↔ 3 := by
     rw [nhdsWithin_Ico_eq_nhdsGE hab]
   tfae_have 1 ↔ 5 := (nhdsGE_basis_of_exists_gt ⟨b, hab⟩).mem_iff
-  tfae_have 4 → 5 := fun ⟨u, umem, hu⟩ => ⟨u, umem.1, hu⟩
+  tfae_have 4 → 5 := fun ⟨u, umem, hu⟩ ↦ ⟨u, umem.1, hu⟩
   tfae_have 5 → 4
   | ⟨u, hua, hus⟩ => ⟨min u b, ⟨lt_min hua hab, min_le_right _ _⟩,
       (Ico_subset_Ico_right <| min_le_left _ _).trans hus⟩
@@ -255,8 +255,8 @@ theorem mem_nhdsGE_iff_exists_Ico_subset [NoMaxOrder α] {a : α} {s : Set α} :
   let ⟨_, hu'⟩ := exists_gt a
   mem_nhdsGE_iff_exists_Ico_subset' hu'
 
-theorem nhdsGE_basis_Ico [NoMaxOrder α] (a : α) : (𝓝[≥] a).HasBasis (fun u => a < u) (Ico a) :=
-  ⟨fun _ => mem_nhdsGE_iff_exists_Ico_subset⟩
+theorem nhdsGE_basis_Ico [NoMaxOrder α] (a : α) : (𝓝[≥] a).HasBasis (fun u ↦ a < u) (Ico a) :=
+  ⟨fun _ ↦ mem_nhdsGE_iff_exists_Ico_subset⟩
 
 /-- The filter of right neighborhoods has a basis of closed intervals. -/
 theorem nhdsGE_basis_Icc [NoMaxOrder α] [DenselyOrdered α] {a : α} :
@@ -332,14 +332,14 @@ variable {l : Filter β} {f g : β → α}
 theorem nhds_eq_iInf_mabs_div (a : α) : 𝓝 a = ⨅ r > 1, 𝓟 { b | |a / b|ₘ < r } := by
   simp only [nhds_eq_order, mabs_lt, setOf_and, ← inf_principal, iInf_inf_eq]
   refine (congr_arg₂ _ ?_ ?_).trans (inf_comm ..)
-  · refine (Equiv.divLeft a).iInf_congr fun x => ?_; simp [Ioi]
-  · refine (Equiv.divRight a).iInf_congr fun x => ?_; simp [Iio]
+  · refine (Equiv.divLeft a).iInf_congr fun x ↦ ?_; simp [Ioi]
+  · refine (Equiv.divRight a).iInf_congr fun x ↦ ?_; simp [Iio]
 
 @[to_additive]
 theorem orderTopology_of_nhds_mabs {α : Type*} [TopologicalSpace α] [CommGroup α] [LinearOrder α]
     [IsOrderedMonoid α]
     (h_nhds : ∀ a : α, 𝓝 a = ⨅ r > 1, 𝓟 { b | |a / b|ₘ < r }) : OrderTopology α := by
-  refine ⟨TopologicalSpace.ext_nhds fun a => ?_⟩
+  refine ⟨TopologicalSpace.ext_nhds fun a ↦ ?_⟩
   rw [h_nhds]
   letI := Preorder.topology α; letI : OrderTopology α := ⟨rfl⟩
   exact (nhds_eq_iInf_mabs_div a).symm
@@ -359,18 +359,18 @@ if `f` tends to `C` and `g` tends to `atTop` then `f * g` tends to `atTop`. -/
 @[to_additive add_atTop /-- In a linearly ordered additive commutative group with the order
 topology, if `f` tends to `C` and `g` tends to `atTop` then `f + g` tends to `atTop`. -/]
 theorem Filter.Tendsto.mul_atTop' {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Tendsto g l atTop) :
-    Tendsto (fun x => f x * g x) l atTop := by
+    Tendsto (fun x ↦ f x * g x) l atTop := by
   nontriviality α
   obtain ⟨C', hC'⟩ : ∃ C', C' < C := exists_lt C
   refine tendsto_atTop_mul_left_of_le' _ C' ?_ hg
-  exact (hf.eventually (lt_mem_nhds hC')).mono fun x => le_of_lt
+  exact (hf.eventually (lt_mem_nhds hC')).mono fun x ↦ le_of_lt
 
 /-- In a linearly ordered commutative group with the order topology,
 if `f` tends to `C` and `g` tends to `atBot` then `f * g` tends to `atBot`. -/
 @[to_additive add_atBot /-- In a linearly ordered additive commutative group with the order
 topology, if `f` tends to `C` and `g` tends to `atBot` then `f + g` tends to `atBot`. -/]
 theorem Filter.Tendsto.mul_atBot' {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Tendsto g l atBot) :
-    Tendsto (fun x => f x * g x) l atBot :=
+    Tendsto (fun x ↦ f x * g x) l atBot :=
   Filter.Tendsto.mul_atTop' (α := αᵒᵈ) hf hg
 
 /-- In a linearly ordered commutative group with the order topology,
@@ -378,7 +378,7 @@ if `f` tends to `atTop` and `g` tends to `C` then `f * g` tends to `atTop`. -/
 @[to_additive atTop_add /-- In a linearly ordered additive commutative group with the order
 topology, if `f` tends to `atTop` and `g` tends to `C` then `f + g` tends to `atTop`. -/]
 theorem Filter.Tendsto.atTop_mul' {C : α} (hf : Tendsto f l atTop) (hg : Tendsto g l (𝓝 C)) :
-    Tendsto (fun x => f x * g x) l atTop := by
+    Tendsto (fun x ↦ f x * g x) l atTop := by
   conv in _ * _ => rw [mul_comm]
   exact hg.mul_atTop' hf
 
@@ -387,21 +387,21 @@ if `f` tends to `atBot` and `g` tends to `C` then `f * g` tends to `atBot`. -/
 @[to_additive atBot_add /-- In a linearly ordered additive commutative group with the order
 topology, if `f` tends to `atBot` and `g` tends to `C` then `f + g` tends to `atBot`. -/]
 theorem Filter.Tendsto.atBot_mul' {C : α} (hf : Tendsto f l atBot) (hg : Tendsto g l (𝓝 C)) :
-    Tendsto (fun x => f x * g x) l atBot := by
+    Tendsto (fun x ↦ f x * g x) l atBot := by
   conv in _ * _ => rw [mul_comm]
   exact hg.mul_atBot' hf
 
 @[to_additive]
 theorem nhds_basis_mabs_div_lt [NoMaxOrder α] (a : α) :
-    (𝓝 a).HasBasis (fun ε : α => (1 : α) < ε) fun ε => { b | |b / a|ₘ < ε } := by
+    (𝓝 a).HasBasis (fun ε : α ↦ (1 : α) < ε) fun ε ↦ { b | |b / a|ₘ < ε } := by
   simp only [nhds_eq_iInf_mabs_div, mabs_div_comm (a := a)]
-  refine hasBasis_biInf_principal' (fun x hx y hy => ?_) (exists_gt _)
-  exact ⟨min x y, lt_min hx hy, fun _ hz => hz.trans_le (min_le_left _ _),
-    fun _ hz => hz.trans_le (min_le_right _ _)⟩
+  refine hasBasis_biInf_principal' (fun x hx y hy ↦ ?_) (exists_gt _)
+  exact ⟨min x y, lt_min hx hy, fun _ hz ↦ hz.trans_le (min_le_left _ _),
+    fun _ hz ↦ hz.trans_le (min_le_right _ _)⟩
 
 @[to_additive]
 theorem nhds_basis_Ioo_one_lt [NoMaxOrder α] (a : α) :
-    (𝓝 a).HasBasis (fun ε : α => (1 : α) < ε) fun ε => Ioo (a / ε) (a * ε) := by
+    (𝓝 a).HasBasis (fun ε : α ↦ (1 : α) < ε) fun ε ↦ Ioo (a / ε) (a * ε) := by
   convert nhds_basis_mabs_div_lt a
   simp only [Ioo, mabs_lt, ← div_lt_iff_lt_mul, inv_lt_div_iff_lt_mul, div_lt_comm]
 
@@ -416,7 +416,7 @@ theorem nhds_basis_Icc_one_lt [NoMaxOrder α] [DenselyOrdered α] (a : α) :
 variable (α) in
 @[to_additive]
 theorem nhds_basis_one_mabs_lt [NoMaxOrder α] :
-    (𝓝 (1 : α)).HasBasis (fun ε : α => (1 : α) < ε) fun ε => { b | |b|ₘ < ε } := by
+    (𝓝 (1 : α)).HasBasis (fun ε : α ↦ (1 : α) < ε) fun ε ↦ { b | |b|ₘ < ε } := by
   simpa using nhds_basis_mabs_div_lt (1 : α)
 
 @[deprecated (since := "2025-03-18")]
@@ -431,7 +431,7 @@ form a basis of neighborhoods of `a`.
 
 This upper bound for `ε` guarantees that all elements of these intervals are positive. -/]
 theorem nhds_basis_Ioo_one_lt_of_one_lt [NoMaxOrder α] {a : α} (ha : 1 < a) :
-    (𝓝 a).HasBasis (fun ε : α => (1 : α) < ε ∧ ε ≤ a) fun ε => Ioo (a / ε) (a * ε) :=
+    (𝓝 a).HasBasis (fun ε : α ↦ (1 : α) < ε ∧ ε ≤ a) fun ε ↦ Ioo (a / ε) (a * ε) :=
   (nhds_basis_Ioo_one_lt a).restrict fun ε hε ↦
     ⟨min a ε, lt_min ha hε, min_le_left _ _, by gcongr <;> apply min_le_right⟩
 

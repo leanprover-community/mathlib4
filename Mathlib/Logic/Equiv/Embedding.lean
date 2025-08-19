@@ -27,8 +27,8 @@ def sumEmbeddingEquivProdEmbeddingDisjoint {α β γ : Type*} :
       simp only at h
       have : Sum.inl a = Sum.inr b := f.injective h
       simp only [reduceCtorEq] at this⟩
-  invFun := fun ⟨⟨f, g⟩, disj⟩ =>
-    ⟨fun x =>
+  invFun := fun ⟨⟨f, g⟩, disj⟩ ↦
+    ⟨fun x ↦
       match x with
       | Sum.inl a => f a
       | Sum.inr b => g b, by
@@ -44,7 +44,7 @@ def sumEmbeddingEquivProdEmbeddingDisjoint {α β γ : Type*} :
     dsimp only
     ext x
     cases x <;> simp!
-  right_inv := fun ⟨⟨f, g⟩, _⟩ => by
+  right_inv := fun ⟨⟨f, g⟩, _⟩ ↦ by
     simp only
     constructor
 
@@ -54,16 +54,16 @@ def codRestrict (α : Type*) {β : Type*} (bs : Set β) :
     { f : α ↪ β // ∀ a, f a ∈ bs } ≃
       (α ↪ bs) where
   toFun f := (f : α ↪ β).codRestrict bs f.prop
-  invFun f := ⟨f.trans (Function.Embedding.subtype _), fun a => (f a).prop⟩
+  invFun f := ⟨f.trans (Function.Embedding.subtype _), fun a ↦ (f a).prop⟩
 
 /-- Pairs of embeddings with disjoint ranges are equivalent to a dependent sum of embeddings,
 in which the second embedding cannot take values in the range of the first. -/
 def prodEmbeddingDisjointEquivSigmaEmbeddingRestricted {α β γ : Type*} :
     { f : (α ↪ γ) × (β ↪ γ) // Disjoint (Set.range f.1) (Set.range f.2) } ≃
       Σ f : α ↪ γ, β ↪ ↥(Set.range f)ᶜ :=
-  (subtypeProdEquivSigmaSubtype fun (a : α ↪ γ) (b : β ↪ _) =>
+  (subtypeProdEquivSigmaSubtype fun (a : α ↪ γ) (b : β ↪ _) ↦
         Disjoint (Set.range a) (Set.range b)).trans <|
-    Equiv.sigmaCongrRight fun a =>
+    Equiv.sigmaCongrRight fun a ↦
       (subtypeEquivProp <| by
             ext f
             rw [← Set.range_subset_iff, Set.subset_compl_iff_disjoint_right, disjoint_comm]).trans
@@ -81,7 +81,7 @@ def sumEmbeddingEquivSigmaEmbeddingRestricted {α β γ : Type*} :
 def uniqueEmbeddingEquivResult {α β : Type*} [Unique α] :
     (α ↪ β) ≃ β where
   toFun f := f default
-  invFun x := ⟨fun _ => x, fun _ _ _ => Subsingleton.elim _ _⟩
+  invFun x := ⟨fun _ ↦ x, fun _ _ _ ↦ Subsingleton.elim _ _⟩
   left_inv _ := by
     ext x
     simp_rw [Function.Embedding.coeFn_mk]

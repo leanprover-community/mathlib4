@@ -111,7 +111,7 @@ private theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₁ (I
     (f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹) (s : Set ℝⁿ⁺¹)
     (hs : s.Countable) (Hc : ContinuousOn f (Box.Icc I))
     (Hd : ∀ x ∈ (Box.Icc I) \ s, HasFDerivWithinAt f (f' x) (Box.Icc I) x)
-    (Hi : IntegrableOn (fun x => ∑ i, f' x (e i) i) (Box.Icc I)) :
+    (Hi : IntegrableOn (fun x ↦ ∑ i, f' x (e i) i) (Box.Icc I)) :
     (∫ x in Box.Icc I, ∑ i, f' x (e i) i) =
       ∑ i : Fin (n + 1),
         ((∫ x in Box.Icc (I.face i), f (i.insertNth (I.upper i) x) i) -
@@ -122,10 +122,10 @@ private theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₁ (I
   have A := (Hi.mono_set Box.coe_subset_Icc).hasBoxIntegral ⊥ rfl
   have B :=
     hasIntegral_GP_divergence_of_forall_hasDerivWithinAt I f f' (s ∩ Box.Icc I)
-      (hs.mono inter_subset_left) (fun x hx => Hc _ hx.2) fun x hx =>
-      Hd _ ⟨hx.1, fun h => hx.2 ⟨h, hx.1⟩⟩
+      (hs.mono inter_subset_left) (fun x hx ↦ Hc _ hx.2) fun x hx ↦
+      Hd _ ⟨hx.1, fun h ↦ hx.2 ⟨h, hx.1⟩⟩
   rw [continuousOn_pi] at Hc
-  refine (A.unique B).trans (sum_congr rfl fun i _ => ?_)
+  refine (A.unique B).trans (sum_congr rfl fun i _ ↦ ?_)
   refine congr_arg₂ Sub.sub ?_ ?_
   · have := Box.continuousOn_face_Icc (Hc i) (Set.right_mem_Icc.2 (I.lower_le_upper i))
     have := (this.integrableOn_compact (μ := volume) (Box.isCompact_Icc _)).mono_set
@@ -152,24 +152,24 @@ private theorem integral_divergence_of_hasFDerivAt_off_countable_aux₂ (I : Box
   /- Choose a monotone sequence `J k` of subboxes that cover the interior of `I` and prove that
     these boxes satisfy the assumptions of the previous lemma. -/
   rcases I.exists_seq_mono_tendsto with ⟨J, hJ_sub, hJl, hJu⟩
-  have hJ_sub' : ∀ k, Box.Icc (J k) ⊆ Box.Icc I := fun k => (hJ_sub k).trans I.Ioo_subset_Icc
-  have hJ_le : ∀ k, J k ≤ I := fun k => Box.le_iff_Icc.2 (hJ_sub' k)
-  have HcJ : ∀ k, ContinuousOn f (Box.Icc (J k)) := fun k => Hc.mono (hJ_sub' k)
+  have hJ_sub' : ∀ k, Box.Icc (J k) ⊆ Box.Icc I := fun k ↦ (hJ_sub k).trans I.Ioo_subset_Icc
+  have hJ_le : ∀ k, J k ≤ I := fun k ↦ Box.le_iff_Icc.2 (hJ_sub' k)
+  have HcJ : ∀ k, ContinuousOn f (Box.Icc (J k)) := fun k ↦ Hc.mono (hJ_sub' k)
   have HdJ : ∀ (k), ∀ x ∈ (Box.Icc (J k)) \ s, HasFDerivWithinAt f (f' x) (Box.Icc (J k)) x :=
-    fun k x hx => (Hd x ⟨hJ_sub k hx.1, hx.2⟩).hasFDerivWithinAt
-  have HiJ : ∀ k, IntegrableOn (∑ i, f' · (e i) i) (Box.Icc (J k)) volume := fun k =>
+    fun k x hx ↦ (Hd x ⟨hJ_sub k hx.1, hx.2⟩).hasFDerivWithinAt
+  have HiJ : ∀ k, IntegrableOn (∑ i, f' · (e i) i) (Box.Icc (J k)) volume := fun k ↦
     Hi.mono_set (hJ_sub' k)
   -- Apply the previous lemma to `J k`.
-  have HJ_eq := fun k =>
+  have HJ_eq := fun k ↦
     integral_divergence_of_hasFDerivWithinAt_off_countable_aux₁ (J k) f f' s hs (HcJ k) (HdJ k)
       (HiJ k)
   -- Note that the LHS of `HJ_eq k` tends to the LHS of the goal as `k → ∞`.
   have hI_tendsto :
-    Tendsto (fun k => ∫ x in Box.Icc (J k), ∑ i, f' x (e i) i) atTop
+    Tendsto (fun k ↦ ∫ x in Box.Icc (J k), ∑ i, f' x (e i) i) atTop
       (𝓝 (∫ x in Box.Icc I, ∑ i, f' x (e i) i)) := by
     simp only [IntegrableOn, ← Measure.restrict_congr_set (Box.Ioo_ae_eq_Icc _)] at Hi ⊢
     rw [← Box.iUnion_Ioo_of_tendsto J.monotone hJl hJu] at Hi ⊢
-    exact tendsto_setIntegral_of_monotone (fun k => (J k).measurableSet_Ioo)
+    exact tendsto_setIntegral_of_monotone (fun k ↦ (J k).measurableSet_Ioo)
       (Box.Ioo.comp J).monotone Hi
   -- Thus it suffices to prove the same about the RHS.
   refine tendsto_nhds_unique_of_eventuallyEq hI_tendsto ?_ (Eventually.of_forall HJ_eq)
@@ -179,43 +179,43 @@ private theorem integral_divergence_of_hasFDerivAt_off_countable_aux₂ (I : Box
     integrals over the back sides. In order to avoid repeating ourselves, we formulate a lemma. -/
   suffices ∀ (i : Fin (n + 1)) (c : ℕ → ℝ) (d), (∀ k, c k ∈ Icc (I.lower i) (I.upper i)) →
     Tendsto c atTop (𝓝 d) →
-      Tendsto (fun k => ∫ x in Box.Icc ((J k).face i), f (i.insertNth (c k) x) i) atTop
+      Tendsto (fun k ↦ ∫ x in Box.Icc ((J k).face i), f (i.insertNth (c k) x) i) atTop
         (𝓝 <| ∫ x in Box.Icc (I.face i), f (i.insertNth d x) i) by
     rw [Box.Icc_eq_pi] at hJ_sub'
-    refine tendsto_finset_sum _ fun i _ => (this _ _ _ ?_ (hJu _)).sub (this _ _ _ ?_ (hJl _))
-    exacts [fun k => hJ_sub' k (J k).upper_mem_Icc _ trivial, fun k =>
+    refine tendsto_finset_sum _ fun i _ ↦ (this _ _ _ ?_ (hJu _)).sub (this _ _ _ ?_ (hJl _))
+    exacts [fun k ↦ hJ_sub' k (J k).upper_mem_Icc _ trivial, fun k ↦
       hJ_sub' k (J k).lower_mem_Icc _ trivial]
   intro i c d hc hcd
   /- First we prove that the integrals of the restriction of `f` to `{x | x i = d}` over increasing
     boxes `((J k).face i).Icc` tend to the desired limit. The proof mostly repeats the one above. -/
   have hd : d ∈ Icc (I.lower i) (I.upper i) :=
     isClosed_Icc.mem_of_tendsto hcd (Eventually.of_forall hc)
-  have Hic : ∀ k, IntegrableOn (fun x => f (i.insertNth (c k) x) i) (Box.Icc (I.face i)) := fun k =>
+  have Hic : ∀ k, IntegrableOn (fun x ↦ f (i.insertNth (c k) x) i) (Box.Icc (I.face i)) := fun k ↦
     (Box.continuousOn_face_Icc ((continuous_apply i).comp_continuousOn Hc) (hc k)).integrableOn_Icc
-  have Hid : IntegrableOn (fun x => f (i.insertNth d x) i) (Box.Icc (I.face i)) :=
+  have Hid : IntegrableOn (fun x ↦ f (i.insertNth d x) i) (Box.Icc (I.face i)) :=
     (Box.continuousOn_face_Icc ((continuous_apply i).comp_continuousOn Hc) hd).integrableOn_Icc
   have H :
-    Tendsto (fun k => ∫ x in Box.Icc ((J k).face i), f (i.insertNth d x) i) atTop
+    Tendsto (fun k ↦ ∫ x in Box.Icc ((J k).face i), f (i.insertNth d x) i) atTop
       (𝓝 <| ∫ x in Box.Icc (I.face i), f (i.insertNth d x) i) := by
     have hIoo : (⋃ k, Box.Ioo ((J k).face i)) = Box.Ioo (I.face i) :=
       Box.iUnion_Ioo_of_tendsto ((Box.monotone_face i).comp J.monotone)
-        (tendsto_pi_nhds.2 fun _ => hJl _) (tendsto_pi_nhds.2 fun _ => hJu _)
+        (tendsto_pi_nhds.2 fun _ ↦ hJl _) (tendsto_pi_nhds.2 fun _ ↦ hJu _)
     simp only [IntegrableOn, ← Measure.restrict_congr_set (Box.Ioo_ae_eq_Icc _), ← hIoo] at Hid ⊢
-    exact tendsto_setIntegral_of_monotone (fun k => ((J k).face i).measurableSet_Ioo)
+    exact tendsto_setIntegral_of_monotone (fun k ↦ ((J k).face i).measurableSet_Ioo)
       (Box.Ioo.monotone.comp ((Box.monotone_face i).comp J.monotone)) Hid
   /- Thus it suffices to show that the distance between the integrals of the restrictions of `f` to
     `{x | x i = c k}` and `{x | x i = d}` over `((J k).face i).Icc` tends to zero as `k → ∞`. Choose
     `ε > 0`. -/
-  refine H.congr_dist (Metric.nhds_basis_closedBall.tendsto_right_iff.2 fun ε εpos => ?_)
-  have hvol_pos : ∀ J : Box (Fin n), 0 < ∏ j, (J.upper j - J.lower j) := fun J =>
-    prod_pos fun j hj => sub_pos.2 <| J.lower_lt_upper _
+  refine H.congr_dist (Metric.nhds_basis_closedBall.tendsto_right_iff.2 fun ε εpos ↦ ?_)
+  have hvol_pos : ∀ J : Box (Fin n), 0 < ∏ j, (J.upper j - J.lower j) := fun J ↦
+    prod_pos fun j hj ↦ sub_pos.2 <| J.lower_lt_upper _
   /- Choose `δ > 0` such that for any `x y ∈ I.Icc` at distance at most `δ`, the distance between
     `f x` and `f y` is at most `ε / volume (I.face i).Icc`, then the distance between the integrals
     is at most `(ε / volume (I.face i).Icc) * volume ((J k).face i).Icc ≤ ε`. -/
   rcases Metric.uniformContinuousOn_iff_le.1 (I.isCompact_Icc.uniformContinuousOn_of_continuous Hc)
       (ε / ∏ j, ((I.face i).upper j - (I.face i).lower j)) (div_pos εpos (hvol_pos (I.face i)))
     with ⟨δ, δpos, hδ⟩
-  refine (hcd.eventually (Metric.ball_mem_nhds _ δpos)).mono fun k hk => ?_
+  refine (hcd.eventually (Metric.ball_mem_nhds _ δpos)).mono fun k hk ↦ ?_
   have Hsub : Box.Icc ((J k).face i) ⊆ Box.Icc (I.face i) :=
     Box.le_iff_Icc.1 (Box.face_mono (hJ_le _) i)
   rw [mem_closedBall_zero_iff, Real.norm_eq_abs, abs_of_nonneg dist_nonneg, dist_eq_norm,
@@ -225,7 +225,7 @@ private theorem integral_divergence_of_hasFDerivAt_off_countable_aux₂ (I : Box
         (ε / ∏ j, ((I.face i).upper j - (I.face i).lower j)) *
           (volume (Box.Icc ((J k).face i))).toReal := by
       refine norm_setIntegral_le_of_norm_le_const (((J k).face i).measure_Icc_lt_top _)
-        fun x hx => ?_
+        fun x hx ↦ ?_
       rw [← dist_eq_norm]
       calc
         dist (f (i.insertNth d x) i) (f (i.insertNth (c k) x) i) ≤
@@ -267,8 +267,8 @@ of `f : ℝⁿ⁺¹ → Eⁿ⁺¹` to these faces are given by `f ∘ backFace i
 theorem integral_divergence_of_hasFDerivAt_off_countable (hle : a ≤ b)
     (f : ℝⁿ⁺¹ → Eⁿ⁺¹) (f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹)
     (s : Set ℝⁿ⁺¹) (hs : s.Countable) (Hc : ContinuousOn f (Icc a b))
-    (Hd : ∀ x ∈ (Set.pi univ fun i => Ioo (a i) (b i)) \ s, HasFDerivAt f (f' x) x)
-    (Hi : IntegrableOn (fun x => ∑ i, f' x (e i) i) (Icc a b)) :
+    (Hd : ∀ x ∈ (Set.pi univ fun i ↦ Ioo (a i) (b i)) \ s, HasFDerivAt f (f' x) x)
+    (Hi : IntegrableOn (fun x ↦ ∑ i, f' x (e i) i) (Icc a b)) :
     (∫ x in Icc a b, ∑ i, f' x (e i) i) =
       ∑ i : Fin (n + 1),
         ((∫ x in face i, f (frontFace i x) i) - ∫ x in face i, f (backFace i x) i) := by
@@ -276,7 +276,7 @@ theorem integral_divergence_of_hasFDerivAt_off_countable (hle : a ≤ b)
   · -- First we sort out the trivial case `∃ i, a i = b i`.
     rw [volume_pi, ← setIntegral_congr_set Measure.univ_pi_Ioc_ae_eq_Icc]
     have hi' : Ioc (a i) (b i) = ∅ := Ioc_eq_empty hi.not_lt
-    have : (pi Set.univ fun j => Ioc (a j) (b j)) = ∅ := univ_pi_eq_empty hi'
+    have : (pi Set.univ fun j ↦ Ioc (a j) (b j)) = ∅ := univ_pi_eq_empty hi'
     rw [this, setIntegral_empty, sum_eq_zero]
     rintro j -
     rcases eq_or_ne i j with (rfl | hne)
@@ -288,7 +288,7 @@ theorem integral_divergence_of_hasFDerivAt_off_countable (hle : a ≤ b)
       rw [setIntegral_congr_set this, setIntegral_congr_set this, setIntegral_empty,
         setIntegral_empty, sub_self]
   · -- In the non-trivial case `∀ i, a i < b i`, we apply a lemma we proved above.
-    have hlt : ∀ i, a i < b i := fun i => (hle i).lt_of_ne fun hi => hne ⟨i, hi⟩
+    have hlt : ∀ i, a i < b i := fun i ↦ (hle i).lt_of_ne fun hi ↦ hne ⟨i, hi⟩
     exact integral_divergence_of_hasFDerivAt_off_countable_aux₂ ⟨a, b, hlt⟩ f f' s hs Hc Hd Hi
 
 @[deprecated (since := "2025-05-02")]
@@ -302,14 +302,14 @@ theorem integral_divergence_of_hasFDerivAt_off_countable' (hle : a ≤ b)
     (f : Fin (n + 1) → ℝⁿ⁺¹ → E)
     (f' : Fin (n + 1) → ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] E) (s : Set ℝⁿ⁺¹)
     (hs : s.Countable) (Hc : ∀ i, ContinuousOn (f i) (Icc a b))
-    (Hd : ∀ x ∈ (pi Set.univ fun i => Ioo (a i) (b i)) \ s, ∀ (i), HasFDerivAt (f i) (f' i x) x)
-    (Hi : IntegrableOn (fun x => ∑ i, f' i x (e i)) (Icc a b)) :
+    (Hd : ∀ x ∈ (pi Set.univ fun i ↦ Ioo (a i) (b i)) \ s, ∀ (i), HasFDerivAt (f i) (f' i x) x)
+    (Hi : IntegrableOn (fun x ↦ ∑ i, f' i x (e i)) (Icc a b)) :
     (∫ x in Icc a b, ∑ i, f' i x (e i)) =
       ∑ i : Fin (n + 1), ((∫ x in face i, f i (frontFace i x)) -
         ∫ x in face i, f i (backFace i x)) :=
-  integral_divergence_of_hasFDerivAt_off_countable a b hle (fun x i => f i x)
-    (fun x => ContinuousLinearMap.pi fun i => f' i x) s hs (continuousOn_pi.2 Hc)
-    (fun x hx => hasFDerivAt_pi.2 (Hd x hx)) Hi
+  integral_divergence_of_hasFDerivAt_off_countable a b hle (fun x i ↦ f i x)
+    (fun x ↦ ContinuousLinearMap.pi fun i ↦ f' i x) s hs (continuousOn_pi.2 Hc)
+    (fun x hx ↦ hasFDerivAt_pi.2 (Hd x hx)) Hi
 
 @[deprecated (since := "2025-05-02")]
 alias integral_divergence_of_hasFDerivWithinAt_off_countable' :=
@@ -348,11 +348,11 @@ theorem integral_divergence_of_hasFDerivAt_off_countable_of_equiv {F : Type*}
             ∫ x in Icc (eL a ∘ i.succAbove) (eL b ∘ i.succAbove),
               f i (eL.symm <| i.insertNth (eL a i) x)) := by
       refine integral_divergence_of_hasFDerivAt_off_countable' (eL a) (eL b)
-        ((he_ord _ _).2 hle) (fun i x => f i (eL.symm x))
-        (fun i x => f' i (eL.symm x) ∘L (eL.symm : ℝⁿ⁺¹ →L[ℝ] F)) (eL.symm ⁻¹' s)
+        ((he_ord _ _).2 hle) (fun i x ↦ f i (eL.symm x))
+        (fun i x ↦ f' i (eL.symm x) ∘L (eL.symm : ℝⁿ⁺¹ →L[ℝ] F)) (eL.symm ⁻¹' s)
         (hs.preimage eL.symm.injective) ?_ ?_ ?_
-      · exact fun i => (Hc i).comp eL.symm.continuousOn hIcc'.subset
-      · refine fun x hx i => (Hd (eL.symm x) ⟨?_, hx.2⟩ i).comp x eL.symm.hasFDerivAt
+      · exact fun i ↦ (Hc i).comp eL.symm.continuousOn hIcc'.subset
+      · refine fun x hx i ↦ (Hd (eL.symm x) ⟨?_, hx.2⟩ i).comp x eL.symm.hasFDerivAt
         rw [← hIcc]
         refine preimage_interior_subset_interior_preimage eL.continuous ?_
         simpa only [Set.mem_preimage, eL.apply_symm_apply, ← pi_univ_Icc,
@@ -388,9 +388,9 @@ theorem integral_eq_of_hasDerivAt_off_countable_of_le [CompleteSpace E] (f f' : 
     (Hd : ∀ x ∈ Ioo a b \ s, HasDerivAt f (f' x) x) (Hi : IntervalIntegrable f' volume a b) :
     ∫ x in a..b, f' x = f b - f a := by
   set e : ℝ ≃L[ℝ] ℝ¹ := (ContinuousLinearEquiv.funUnique (Fin 1) ℝ ℝ).symm
-  have e_symm : ∀ x, e.symm x = x 0 := fun x => rfl
-  set F' : ℝ → ℝ →L[ℝ] E := fun x => smulRight (1 : ℝ →L[ℝ] ℝ) (f' x)
-  have hF' : ∀ x y, F' x y = y • f' x := fun x y => rfl
+  have e_symm : ∀ x, e.symm x = x 0 := fun x ↦ rfl
+  set F' : ℝ → ℝ →L[ℝ] E := fun x ↦ smulRight (1 : ℝ →L[ℝ] ℝ) (f' x)
+  have hF' : ∀ x y, F' x y = y • f' x := fun x y ↦ rfl
   calc
     ∫ x in a..b, f' x = ∫ x in Icc a b, f' x := by
       rw [intervalIntegral.integral_of_le hle, setIntegral_congr_set Ioc_ae_eq_Icc]
@@ -401,9 +401,9 @@ theorem integral_eq_of_hasDerivAt_off_countable_of_le [CompleteSpace E] (f f' : 
               f (e.symm <| i.insertNth (e a i) x)) := by
       simp only [← interior_Icc] at Hd
       refine
-        integral_divergence_of_hasFDerivAt_off_countable_of_equiv e ?_ ?_ (fun _ => f)
-          (fun _ => F') s hs a b hle (fun _ => Hc) (fun x hx _ => Hd x hx) _ ?_ ?_
-      · exact fun x y => (OrderIso.funUnique (Fin 1) ℝ).symm.le_iff_le
+        integral_divergence_of_hasFDerivAt_off_countable_of_equiv e ?_ ?_ (fun _ ↦ f)
+          (fun _ ↦ F') s hs a b hle (fun _ ↦ Hc) (fun x hx _ ↦ Hd x hx) _ ?_ ?_
+      · exact fun x y ↦ (OrderIso.funUnique (Fin 1) ℝ).symm.le_iff_le
       · exact (volume_preserving_funUnique (Fin 1) ℝ).symm _
       · intro x; rw [Fin.sum_univ_one, hF', e_symm, Pi.single_eq_same, one_smul]
       · rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hle] at Hi
@@ -451,7 +451,7 @@ theorem integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le (f g : �
     (Hcf : ContinuousOn f (Icc a b)) (Hcg : ContinuousOn g (Icc a b))
     (Hdf : ∀ x ∈ Ioo a.1 b.1 ×ˢ Ioo a.2 b.2 \ s, HasFDerivAt f (f' x) x)
     (Hdg : ∀ x ∈ Ioo a.1 b.1 ×ˢ Ioo a.2 b.2 \ s, HasFDerivAt g (g' x) x)
-    (Hi : IntegrableOn (fun x => f' x (1, 0) + g' x (0, 1)) (Icc a b)) :
+    (Hi : IntegrableOn (fun x ↦ f' x (1, 0) + g' x (0, 1)) (Icc a b)) :
     (∫ x in Icc a b, f' x (1, 0) + g' x (0, 1)) =
       (((∫ x in a.1..b.1, g (x, b.2)) - ∫ x in a.1..b.1, g (x, a.2)) +
           ∫ y in a.2..b.2, f (b.1, y)) -
@@ -465,8 +465,8 @@ theorem integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le (f g : �
             ∫ x in Icc (e a ∘ i.succAbove) (e b ∘ i.succAbove),
               ![f, g] i (e.symm <| i.insertNth (e a i) x)) := by
       refine integral_divergence_of_hasFDerivAt_off_countable_of_equiv e ?_ ?_ ![f, g]
-        ![f', g'] s hs a b hle ?_ (fun x hx => ?_) _ ?_ Hi
-      · exact fun x y => (OrderIso.finTwoArrowIso ℝ).symm.le_iff_le
+        ![f', g'] s hs a b hle ?_ (fun x hx ↦ ?_) _ ?_ Hi
+      · exact fun x y ↦ (OrderIso.finTwoArrowIso ℝ).symm.le_iff_le
       · exact (volume_preserving_finTwoArrow ℝ).symm _
       · exact Fin.forall_fin_two.2 ⟨Hcf, Hcg⟩
       · rw [Icc_prod_eq, interior_prod_eq, interior_Icc, interior_Icc] at hx
@@ -475,7 +475,7 @@ theorem integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le (f g : �
     _ = ((∫ y in Icc a.2 b.2, f (b.1, y)) - ∫ y in Icc a.2 b.2, f (a.1, y)) +
           ((∫ x in Icc a.1 b.1, g (x, b.2)) - ∫ x in Icc a.1 b.1, g (x, a.2)) := by
       have : ∀ (a b : ℝ¹) (f : ℝ¹ → E),
-          ∫ x in Icc a b, f x = ∫ x in Icc (a 0) (b 0), f fun _ => x := fun a b f ↦ by
+          ∫ x in Icc a b, f x = ∫ x in Icc (a 0) (b 0), f fun _ ↦ x := fun a b f ↦ by
         convert (((volume_preserving_funUnique (Fin 1) ℝ).symm _).setIntegral_preimage_emb
           (MeasurableEquiv.measurableEmbedding _) f _).symm
         exact ((OrderIso.funUnique (Fin 1) ℝ).symm.preimage_Icc a b).symm
@@ -508,7 +508,7 @@ theorem integral2_divergence_prod_of_hasFDerivAt_off_countable (f g : ℝ × ℝ
       HasFDerivAt f (f' x) x)
     (Hdg : ∀ x ∈ Ioo (min a₁ b₁) (max a₁ b₁) ×ˢ Ioo (min a₂ b₂) (max a₂ b₂) \ s,
       HasFDerivAt g (g' x) x)
-    (Hi : IntegrableOn (fun x => f' x (1, 0) + g' x (0, 1)) ([[a₁, b₁]] ×ˢ [[a₂, b₂]])) :
+    (Hi : IntegrableOn (fun x ↦ f' x (1, 0) + g' x (0, 1)) ([[a₁, b₁]] ×ˢ [[a₂, b₂]])) :
     (∫ x in a₁..b₁, ∫ y in a₂..b₂, f' (x, y) (1, 0) + g' (x, y) (0, 1)) =
       (((∫ x in a₁..b₁, g (x, b₂)) - ∫ x in a₁..b₁, g (x, a₂)) + ∫ y in a₂..b₂, f (b₁, y)) -
         ∫ y in a₂..b₂, f (a₁, y) := by

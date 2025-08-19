@@ -577,10 +577,10 @@ end Lattice
 variable [DistribLattice α] [BoundedOrder α] {a b : α}
 
 theorem IsComplemented.sup : IsComplemented a → IsComplemented b → IsComplemented (a ⊔ b) :=
-  fun ⟨a', ha⟩ ⟨b', hb⟩ => ⟨a' ⊓ b', ha.sup_inf hb⟩
+  fun ⟨a', ha⟩ ⟨b', hb⟩ ↦ ⟨a' ⊓ b', ha.sup_inf hb⟩
 
 theorem IsComplemented.inf : IsComplemented a → IsComplemented b → IsComplemented (a ⊓ b) :=
-  fun ⟨a', ha⟩ ⟨b', hb⟩ => ⟨a' ⊔ b', ha.inf_sup hb⟩
+  fun ⟨a', ha⟩ ⟨b', hb⟩ ↦ ⟨a' ⊔ b', ha.inf_sup hb⟩
 
 end IsComplemented
 
@@ -659,10 +659,10 @@ end Lattice
 variable [DistribLattice α] [BoundedOrder α] {a b : Complementeds α}
 
 instance : Max (Complementeds α) :=
-  ⟨fun a b => ⟨a ⊔ b, a.2.sup b.2⟩⟩
+  ⟨fun a b ↦ ⟨a ⊔ b, a.2.sup b.2⟩⟩
 
 instance : Min (Complementeds α) :=
-  ⟨fun a b => ⟨a ⊓ b, a.2.inf b.2⟩⟩
+  ⟨fun a b ↦ ⟨a ⊓ b, a.2.inf b.2⟩⟩
 
 @[simp, norm_cast]
 theorem coe_sup (a b : Complementeds α) : ↑(a ⊔ b) = (a : α) ⊔ b := rfl
@@ -694,7 +694,7 @@ theorem isCompl_coe : IsCompl (a : α) b ↔ IsCompl a b := by
   simp_rw [isCompl_iff, disjoint_coe, codisjoint_coe]
 
 instance : ComplementedLattice (Complementeds α) :=
-  ⟨fun ⟨a, b, h⟩ => ⟨⟨b, a, h.symm⟩, isCompl_coe.1 h⟩⟩
+  ⟨fun ⟨a, b, h⟩ ↦ ⟨⟨b, a, h.symm⟩, isCompl_coe.1 h⟩⟩
 
 end Complementeds
 end IsCompl

@@ -67,7 +67,7 @@ structure Pretopology where
 
 namespace Pretopology
 
-instance : CoeFun (Pretopology C) fun _ => ∀ X : C, Set (Presieve X) :=
+instance : CoeFun (Pretopology C) fun _ ↦ ∀ X : C, Set (Presieve X) :=
   ⟨coverings⟩
 
 variable {C}
@@ -82,16 +82,16 @@ variable (C)
 
 instance : PartialOrder (Pretopology C) :=
   { Pretopology.LE with
-    le_refl := fun _ => le_def.mpr le_rfl
-    le_trans := fun _ _ _ h₁₂ h₂₃ => le_def.mpr (le_trans h₁₂ h₂₃)
-    le_antisymm := fun _ _ h₁₂ h₂₁ => Pretopology.ext (le_antisymm h₁₂ h₂₁) }
+    le_refl := fun _ ↦ le_def.mpr le_rfl
+    le_trans := fun _ _ _ h₁₂ h₂₃ ↦ le_def.mpr (le_trans h₁₂ h₂₃)
+    le_antisymm := fun _ _ h₁₂ h₂₁ ↦ Pretopology.ext (le_antisymm h₁₂ h₂₁) }
 
 instance orderTop : OrderTop (Pretopology C) where
   top :=
-    { coverings := fun _ => Set.univ
-      has_isos := fun _ _ _ _ => Set.mem_univ _
-      pullbacks := fun _ _ _ _ _ => Set.mem_univ _
-      transitive := fun _ _ _ _ _ => Set.mem_univ _ }
+    { coverings := fun _ ↦ Set.univ
+      has_isos := fun _ _ _ _ ↦ Set.mem_univ _
+      pullbacks := fun _ _ _ _ _ ↦ Set.mem_univ _
+      transitive := fun _ _ _ _ _ ↦ Set.mem_univ _ }
   le_top _ _ _ _ := Set.mem_univ _
 
 instance : Inhabited (Pretopology C) :=
@@ -105,7 +105,7 @@ See also [MM92] Chapter III, Section 2, Equation (2).
 @[stacks 00ZC]
 def toGrothendieck (K : Pretopology C) : GrothendieckTopology C where
   sieves X S := ∃ R ∈ K X, R ≤ (S : Presieve _)
-  top_mem' _ := ⟨Presieve.singleton (𝟙 _), K.has_isos _, fun _ _ _ => ⟨⟩⟩
+  top_mem' _ := ⟨Presieve.singleton (𝟙 _), K.has_isos _, fun _ _ _ ↦ ⟨⟩⟩
   pullback_stable' X Y S g := by
     rintro ⟨R, hR, RS⟩
     refine ⟨_, K.pullbacks g _ hR, ?_⟩
@@ -115,7 +115,7 @@ def toGrothendieck (K : Pretopology C) : GrothendieckTopology C where
   transitive' := by
     rintro X S ⟨R', hR', RS⟩ R t
     choose t₁ t₂ t₃ using t
-    refine ⟨_, K.transitive _ _ hR' fun _ f hf => t₂ (RS _ hf), ?_⟩
+    refine ⟨_, K.transitive _ _ hR' fun _ f hf ↦ t₂ (RS _ hf), ?_⟩
     rintro Y _ ⟨Z, g, f, hg, hf, rfl⟩
     apply t₃ (RS _ hg) _ hf
 

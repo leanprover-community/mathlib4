@@ -45,8 +45,8 @@ theorem lcm_eq_nat_lcm (m n : ℕ) : lcm m n = Nat.lcm m n :=
 instance : NormalizedGCDMonoid ℕ :=
   { (inferInstance : GCDMonoid ℕ),
     (inferInstance : NormalizationMonoid ℕ) with
-    normalize_gcd := fun _ _ => normalize_eq _
-    normalize_lcm := fun _ _ => normalize_eq _ }
+    normalize_gcd := fun _ _ ↦ normalize_eq _
+    normalize_lcm := fun _ _ ↦ normalize_eq _ }
 
 namespace Int
 
@@ -59,7 +59,7 @@ instance normalizationMonoid : NormalizationMonoid ℤ where
     rcases hna.lt_or_gt with ha | ha <;> rcases hnb.lt_or_gt with hb | hb <;>
       simp [Int.mul_nonneg_iff, ha.le, ha.not_ge, hb.le, hb.not_ge]
   normUnit_coe_units u :=
-    (units_eq_one_or u).elim (fun eq => eq.symm ▸ if_pos Int.one_nonneg) fun eq =>
+    (units_eq_one_or u).elim (fun eq ↦ eq.symm ▸ if_pos Int.one_nonneg) fun eq ↦
       eq.symm ▸ if_neg (not_le_of_gt <| show (-1 : ℤ) < 0 by decide)
 
 theorem normUnit_eq (z : ℤ) : normUnit z = if 0 ≤ z then 1 else -1 := rfl
@@ -112,8 +112,8 @@ instance : GCDMonoid ℤ where
 instance : NormalizedGCDMonoid ℤ :=
   { Int.normalizationMonoid,
     (inferInstance : GCDMonoid ℤ) with
-    normalize_gcd := fun _ _ => normalize_coe_nat _
-    normalize_lcm := fun _ _ => normalize_coe_nat _ }
+    normalize_gcd := fun _ _ ↦ normalize_coe_nat _
+    normalize_lcm := fun _ _ ↦ normalize_coe_nat _ }
 
 theorem coe_gcd (i j : ℤ) : ↑(Int.gcd i j) = GCDMonoid.gcd i j :=
   rfl

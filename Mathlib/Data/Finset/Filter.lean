@@ -130,7 +130,7 @@ theorem filter_ssubset {s : Finset α} : s.filter p ⊂ s ↔ ∃ x ∈ s, ¬p x
 
 variable (p)
 
-theorem filter_filter (s : Finset α) : (s.filter p).filter q = s.filter fun a => p a ∧ q a := by
+theorem filter_filter (s : Finset α) : (s.filter p).filter q = s.filter fun a ↦ p a ∧ q a := by
   grind
 
 theorem filter_comm (s : Finset α) : (s.filter p).filter q = (s.filter q).filter p := by
@@ -141,10 +141,10 @@ theorem filter_congr_decidable (s : Finset α) (p : α → Prop) (h : DecidableP
     [DecidablePred p] : @filter α p h s = s.filter p := by congr
 
 @[simp]
-theorem filter_True {h} (s : Finset α) : @filter _ (fun _ => True) h s = s := by ext; simp
+theorem filter_True {h} (s : Finset α) : @filter _ (fun _ ↦ True) h s = s := by ext; simp
 
 @[simp]
-theorem filter_False {h} (s : Finset α) : @filter _ (fun _ => False) h s = ∅ := by ext; simp
+theorem filter_False {h} (s : Finset α) : @filter _ (fun _ ↦ False) h s = ∅ := by ext; simp
 
 variable {p q}
 
@@ -164,7 +164,7 @@ theorem filter_false_of_mem (h : ∀ x ∈ s, ¬p x) : s.filter p = ∅ := filte
 
 @[simp]
 theorem filter_const (p : Prop) [Decidable p] (s : Finset α) :
-    (s.filter fun _a => p) = if p then s else ∅ := by split_ifs <;> simp [*]
+    (s.filter fun _a ↦ p) = if p then s else ∅ := by split_ifs <;> simp [*]
 
 theorem filter_congr {s : Finset α} (H : ∀ x ∈ s, p x ↔ q x) : filter p s = filter q s :=
   eq_of_veq <| Multiset.filter_congr H
@@ -176,10 +176,10 @@ theorem filter_empty : filter p ∅ = ∅ :=
   subset_empty.1 <| filter_subset _ _
 
 @[gcongr]
-theorem filter_subset_filter {s t : Finset α} (h : s ⊆ t) : s.filter p ⊆ t.filter p := fun _a ha =>
+theorem filter_subset_filter {s t : Finset α} (h : s ⊆ t) : s.filter p ⊆ t.filter p := fun _a ha ↦
   mem_filter.2 ⟨h (mem_filter.1 ha).1, (mem_filter.1 ha).2⟩
 
-theorem monotone_filter_left : Monotone (filter p) := fun _ _ => filter_subset_filter p
+theorem monotone_filter_left : Monotone (filter p) := fun _ _ ↦ filter_subset_filter p
 
 @[gcongr]
 theorem monotone_filter_right (s : Finset α) ⦃p q : α → Prop⦄ [DecidablePred p] [DecidablePred q]
@@ -188,10 +188,10 @@ theorem monotone_filter_right (s : Finset α) ⦃p q : α → Prop⦄ [Decidable
 
 @[simp, norm_cast]
 theorem coe_filter (s : Finset α) : ↑(s.filter p) = ({ x ∈ ↑s | p x } : Set α) :=
-  Set.ext fun _ => mem_filter
+  Set.ext fun _ ↦ mem_filter
 
 theorem subset_coe_filter_of_subset_forall (s : Finset α) {t : Set α} (h₁ : t ⊆ s)
-    (h₂ : ∀ x ∈ t, p x) : t ⊆ s.filter p := fun x hx => (s.coe_filter p).symm ▸ ⟨h₁ hx, h₂ x hx⟩
+    (h₂ : ∀ x ∈ t, p x) : t ⊆ s.filter p := fun x hx ↦ (s.coe_filter p).symm ▸ ⟨h₁ hx, h₂ x hx⟩
 
 theorem disjoint_filter_filter {s t : Finset α}
     {p q : α → Prop} [DecidablePred p] [DecidablePred q] :

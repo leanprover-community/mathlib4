@@ -60,9 +60,9 @@ theorem Ideal.exists_minimalPrimes_le [J.IsPrime] (e : I ≤ J) : ∃ p ∈ I.mi
   rintro (c : Set (Ideal R)) hc hc' J' hJ'
   refine
     ⟨OrderDual.toDual (sInf c),
-      ⟨Ideal.sInf_isPrime_of_isChain ⟨J', hJ'⟩ hc'.symm fun x hx => (hc hx).1, ?_⟩, ?_⟩
+      ⟨Ideal.sInf_isPrime_of_isChain ⟨J', hJ'⟩ hc'.symm fun x hx ↦ (hc hx).1, ?_⟩, ?_⟩
   · rw [OrderDual.ofDual_toDual, le_sInf_iff]
-    exact fun _ hx => (hc hx).2
+    exact fun _ hx ↦ (hc hx).2
   · rintro z hz
     rw [OrderDual.le_toDual]
     exact sInf_le hz
@@ -84,10 +84,10 @@ theorem Ideal.radical_minimalPrimes : I.radical.minimalPrimes = I.minimalPrimes 
   refine ⟨?_, ?_⟩ <;> rintro ⟨⟨a, ha⟩, b⟩
   · refine ⟨⟨a, a.radical_le_iff.1 ha⟩, ?_⟩
     simp only [and_imp] at *
-    exact fun _ h2 h3 h4 => b h2 (h2.radical_le_iff.2 h3) h4
+    exact fun _ h2 h3 h4 ↦ b h2 (h2.radical_le_iff.2 h3) h4
   · refine ⟨⟨a, a.radical_le_iff.2 ha⟩, ?_⟩
     simp only [and_imp] at *
-    exact fun _ h2 h3 h4 => b h2 (h2.radical_le_iff.1 h3) h4
+    exact fun _ h2 h3 h4 ↦ b h2 (h2.radical_le_iff.1 h3) h4
 
 @[simp]
 theorem Ideal.sInf_minimalPrimes : sInf I.minimalPrimes = I.radical := by
@@ -111,18 +111,18 @@ variable {R S : Type*} [CommRing R] [CommRing S] {I J : Ideal R}
 theorem Ideal.minimalPrimes_eq_subsingleton (hI : I.IsPrimary) : I.minimalPrimes = {I.radical} := by
   ext J
   constructor
-  · exact fun H =>
+  · exact fun H ↦
       let e := H.1.1.radical_le_iff.mpr H.1.2
       (H.2 ⟨Ideal.isPrime_radical hI, Ideal.le_radical⟩ e).antisymm e
   · rintro (rfl : J = I.radical)
-    exact ⟨⟨Ideal.isPrime_radical hI, Ideal.le_radical⟩, fun _ H _ => H.1.radical_le_iff.mpr H.2⟩
+    exact ⟨⟨Ideal.isPrime_radical hI, Ideal.le_radical⟩, fun _ H _ ↦ H.1.radical_le_iff.mpr H.2⟩
 
 theorem Ideal.minimalPrimes_eq_subsingleton_self [I.IsPrime] : I.minimalPrimes = {I} := by
   ext J
   constructor
-  · exact fun H => (H.2 ⟨inferInstance, rfl.le⟩ H.1.2).antisymm H.1.2
+  · exact fun H ↦ (H.2 ⟨inferInstance, rfl.le⟩ H.1.2).antisymm H.1.2
   · rintro (rfl : J = I)
-    exact ⟨⟨inferInstance, rfl.le⟩, fun _ h _ => h.2⟩
+    exact ⟨⟨inferInstance, rfl.le⟩, fun _ h _ ↦ h.2⟩
 
 variable (R) in
 theorem IsDomain.minimalPrimes_eq_singleton_bot [IsDomain R] :

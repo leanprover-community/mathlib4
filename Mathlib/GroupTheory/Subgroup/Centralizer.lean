@@ -48,7 +48,7 @@ theorem centralizer_univ : centralizer Set.univ = center G :=
 
 @[to_additive]
 theorem le_centralizer_iff : H ≤ centralizer K ↔ K ≤ centralizer H :=
-  ⟨fun h x hx _y hy => (h hy x hx).symm, fun h x hx _y hy => (h hy x hx).symm⟩
+  ⟨fun h x hx _y hy ↦ (h hy x hx).symm, fun h x hx _y hy ↦ (h hy x hx).symm⟩
 
 @[to_additive]
 theorem center_le_centralizer (s) : center G ≤ centralizer s :=
@@ -77,14 +77,14 @@ instance normal_centralizer [H.Normal] : (centralizer H : Subgroup G).Normal whe
 @[to_additive]
 instance characteristic_centralizer [hH : H.Characteristic] :
     (centralizer (H : Set G)).Characteristic := by
-  refine Subgroup.characteristic_iff_comap_le.mpr fun ϕ g hg h hh => ϕ.injective ?_
+  refine Subgroup.characteristic_iff_comap_le.mpr fun ϕ g hg h hh ↦ ϕ.injective ?_
   rw [map_mul, map_mul]
   exact hg (ϕ h) (Subgroup.characteristic_iff_le_comap.mp hH ϕ hh)
 
 @[to_additive]
 theorem le_centralizer_iff_isMulCommutative : K ≤ centralizer K ↔ IsMulCommutative K :=
-  ⟨fun h => ⟨⟨fun x y => Subtype.ext (h y.2 x x.2)⟩⟩,
-    fun h x hx y hy => congr_arg Subtype.val (h.1.1 ⟨y, hy⟩ ⟨x, hx⟩)⟩
+  ⟨fun h ↦ ⟨⟨fun x y ↦ Subtype.ext (h y.2 x x.2)⟩⟩,
+    fun h x hx y hy ↦ congr_arg Subtype.val (h.1.1 ⟨y, hy⟩ ⟨x, hx⟩)⟩
 
 @[deprecated (since := "2025-04-09")] alias le_centralizer_iff_isCommutative :=
   le_centralizer_iff_isMulCommutative

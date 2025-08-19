@@ -731,9 +731,9 @@ lemma Nat.stabilises_of_monotone {f : ℕ → ℕ} {b n : ℕ} (hfmono : Monoton
     | m + 1, hmb => (strictMono _ <| m.le_succ.trans hmb).trans_lt <| (hfmono m.le_succ).lt_of_ne <|
         hfb _ <| Nat.le_of_succ_le_succ hmb
     exact ⟨b + 1, strictMono _ le_rfl⟩
-  replace key : ∀ k : ℕ, f (m + k) = f (m + k + 1) ∧ f (m + k) = f m := fun k =>
-    Nat.rec ⟨hm, rfl⟩ (fun k ih => ⟨hfstab _ ih.1, ih.1.symm.trans ih.2⟩) k
-  replace key : ∀ k ≥ m, f k = f m := fun k hk =>
+  replace key : ∀ k : ℕ, f (m + k) = f (m + k + 1) ∧ f (m + k) = f m := fun k ↦
+    Nat.rec ⟨hm, rfl⟩ (fun k ih ↦ ⟨hfstab _ ih.1, ih.1.symm.trans ih.2⟩) k
+  replace key : ∀ k ≥ m, f k = f m := fun k hk ↦
     (congr_arg f (Nat.add_sub_of_le hk)).symm.trans (key (k - m)).2
   exact (key n (hmb.trans hbn)).trans (key b hmb).symm
 

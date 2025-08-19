@@ -38,9 +38,9 @@ variable {u : ℕ → ℝ} (h : Subadditive u)
 this limit is given in `Subadditive.tendsto_lim` -/
 @[nolint unusedArguments, irreducible]
 protected def lim (_h : Subadditive u) :=
-  sInf ((fun n : ℕ => u n / n) '' Ici 1)
+  sInf ((fun n : ℕ ↦ u n / n) '' Ici 1)
 
-theorem lim_le_div (hbdd : BddBelow (range fun n => u n / n)) {n : ℕ} (hn : n ≠ 0) :
+theorem lim_le_div (hbdd : BddBelow (range fun n ↦ u n / n)) {n : ℕ} (hn : n ≠ 0) :
     h.lim ≤ u n / n := by
   rw [Subadditive.lim]
   exact csInf_le (hbdd.mono <| image_subset_range _ _) ⟨n, hn.bot_lt, rfl⟩
@@ -60,17 +60,17 @@ include h in
 theorem eventually_div_lt_of_div_lt {L : ℝ} {n : ℕ} (hn : n ≠ 0) (hL : u n / n < L) :
     ∀ᶠ p in atTop, u p / p < L := by
   /- It suffices to prove the statement for each arithmetic progression `(n * · + r)`. -/
-  refine .atTop_of_arithmetic hn fun r _ => ?_
+  refine .atTop_of_arithmetic hn fun r _ ↦ ?_
   /- `(k * u n + u r) / (k * n + r)` tends to `u n / n < L`, hence
   `(k * u n + u r) / (k * n + r) < L` for sufficiently large `k`. -/
-  have A : Tendsto (fun x : ℝ => (u n + u r / x) / (n + r / x)) atTop (𝓝 ((u n + 0) / (n + 0))) :=
+  have A : Tendsto (fun x : ℝ ↦ (u n + u r / x) / (n + r / x)) atTop (𝓝 ((u n + 0) / (n + 0))) :=
     (tendsto_const_nhds.add <| tendsto_const_nhds.div_atTop tendsto_id).div
       (tendsto_const_nhds.add <| tendsto_const_nhds.div_atTop tendsto_id) <| by simpa
-  have B : Tendsto (fun x => (x * u n + u r) / (x * n + r)) atTop (𝓝 (u n / n)) := by
+  have B : Tendsto (fun x ↦ (x * u n + u r) / (x * n + r)) atTop (𝓝 (u n / n)) := by
     rw [add_zero, add_zero] at A
-    refine A.congr' <| (eventually_ne_atTop 0).mono fun x hx => ?_
+    refine A.congr' <| (eventually_ne_atTop 0).mono fun x hx ↦ ?_
     simp only [add_div' _ _ _ hx, div_div_div_cancel_right₀ hx, mul_comm]
-  refine ((B.comp tendsto_natCast_atTop_atTop).eventually (gt_mem_nhds hL)).mono fun k hk => ?_
+  refine ((B.comp tendsto_natCast_atTop_atTop).eventually (gt_mem_nhds hL)).mono fun k hk ↦ ?_
   /- Finally, we use an upper estimate on `u (k * n + r)` to get an estimate on
   `u (k * n + r) / (k * n + r)`. -/
   rw [mul_comm]
@@ -80,11 +80,11 @@ theorem eventually_div_lt_of_div_lt {L : ℝ} {n : ℕ} (hn : n ≠ 0) (hL : u n
   apply h.apply_mul_add_le
 
 /-- Fekete's lemma: a subadditive sequence which is bounded below converges. -/
-theorem tendsto_lim (hbdd : BddBelow (range fun n => u n / n)) :
-    Tendsto (fun n => u n / n) atTop (𝓝 h.lim) := by
-  refine tendsto_order.2 ⟨fun l hl => ?_, fun L hL => ?_⟩
+theorem tendsto_lim (hbdd : BddBelow (range fun n ↦ u n / n)) :
+    Tendsto (fun n ↦ u n / n) atTop (𝓝 h.lim) := by
+  refine tendsto_order.2 ⟨fun l hl ↦ ?_, fun L hL ↦ ?_⟩
   · refine eventually_atTop.2
-      ⟨1, fun n hn => hl.trans_le (h.lim_le_div hbdd (zero_lt_one.trans_le hn).ne')⟩
+      ⟨1, fun n hn ↦ hl.trans_le (h.lim_le_div hbdd (zero_lt_one.trans_le hn).ne')⟩
   · obtain ⟨n, npos, hn⟩ : ∃ n : ℕ, 0 < n ∧ u n / n < L := by
       rw [Subadditive.lim] at hL
       rcases exists_lt_of_csInf_lt (by simp) hL with ⟨x, hx, xL⟩

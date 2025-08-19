@@ -83,7 +83,7 @@ namespace CompHausLike
 attribute [instance] is_compact is_hausdorff
 
 instance : CoeSort (CompHausLike P) (Type u) :=
-  ⟨fun X => X.toTop⟩
+  ⟨fun X ↦ X.toTop⟩
 
 instance category : Category (CompHausLike P) :=
   InducedCategory.category toTop
@@ -206,15 +206,15 @@ theorem mono_iff_injective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) :
     Mono f ↔ Function.Injective f := by
   constructor
   · intro hf x₁ x₂ h
-    let g₁ : X ⟶ X := ofHom _ ⟨fun _ => x₁, continuous_const⟩
-    let g₂ : X ⟶ X := ofHom _ ⟨fun _ => x₂, continuous_const⟩
+    let g₁ : X ⟶ X := ofHom _ ⟨fun _ ↦ x₁, continuous_const⟩
+    let g₂ : X ⟶ X := ofHom _ ⟨fun _ ↦ x₂, continuous_const⟩
     have : g₁ ≫ f = g₂ ≫ f := by ext; exact h
     exact CategoryTheory.congr_fun ((cancel_mono _).mp this) x₁
   · rw [← CategoryTheory.mono_iff_injective]
     apply (forget (CompHausLike P)).mono_of_mono_map
 
 /-- Any continuous function on compact Hausdorff spaces is a closed map. -/
-theorem isClosedMap {X Y : CompHausLike.{u} P} (f : X ⟶ Y) : IsClosedMap f := fun _ hC =>
+theorem isClosedMap {X Y : CompHausLike.{u} P} (f : X ⟶ Y) : IsClosedMap f := fun _ hC ↦
   (hC.isCompact.image f.hom.continuous).isClosed
 
 /-- Any continuous bijection of compact Hausdorff spaces is an isomorphism. -/

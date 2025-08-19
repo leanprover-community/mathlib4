@@ -212,7 +212,7 @@ def cofanPtIsoSelf : (cofan X.I X.toFun).pt ≅ X :=
 @[reassoc (attr := simp)]
 lemma inj_comp_cofanPtIsoSelf_hom (i : X.I) :
     (cofan X.I X.toFun).inj i ≫ (cofanPtIsoSelf X).hom = .fromIncl i (𝟙 (X.obj i)) :=
-  hom_ext rfl (fun i => by aesop)
+  hom_ext rfl (fun i ↦ by aesop)
 
 @[reassoc (attr := simp)]
 lemma fromIncl_comp_cofanPtIsoSelf_inv (i : X.I) :

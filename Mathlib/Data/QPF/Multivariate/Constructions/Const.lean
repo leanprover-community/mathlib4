@@ -50,7 +50,7 @@ protected theorem mk_get (x : Const n A α) : Const.mk (Const.get x) = x := rfl
 protected theorem get_mk (x : A) : Const.get (Const.mk x : Const n A α) = x := rfl
 
 /-- `map` for constant functor -/
-protected def map : Const n A α → Const n A β := fun x => x
+protected def map : Const n A α → Const n A β := fun x ↦ x
 
 instance MvFunctor : MvFunctor (Const n A) where map _f := Const.map
 
@@ -62,8 +62,8 @@ instance mvqpf : @MvQPF _ (Const n A) where
   P := MvPFunctor.const n A
   abs x := MvPFunctor.const.get x
   repr x := MvPFunctor.const.mk n x
-  abs_repr := fun _ => const.get_mk _
-  abs_map := fun _ => const.get_map _
+  abs_repr := fun _ ↦ const.get_mk _
+  abs_map := fun _ ↦ const.get_map _
 
 end Const
 

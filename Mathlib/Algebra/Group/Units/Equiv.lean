@@ -35,8 +35,8 @@ of their groups of units. -/
 def mapEquiv (h : M ≃* N) : Mˣ ≃* Nˣ :=
   { map h.toMonoidHom with
     invFun := map h.symm.toMonoidHom,
-    left_inv := fun u => ext <| h.left_inv u,
-    right_inv := fun u => ext <| h.right_inv u }
+    left_inv := fun u ↦ ext <| h.left_inv u,
+    right_inv := fun u ↦ ext <| h.right_inv u }
 
 @[simp]
 theorem mapEquiv_symm (h : M ≃* N) : (mapEquiv h).symm = mapEquiv h.symm :=
@@ -57,7 +57,7 @@ def mulLeft (u : Mˣ) : Equiv.Perm M where
 
 @[to_additive (attr := simp)]
 theorem mulLeft_symm (u : Mˣ) : u.mulLeft.symm = u⁻¹.mulLeft :=
-  Equiv.ext fun _ => rfl
+  Equiv.ext fun _ ↦ rfl
 
 @[to_additive]
 theorem mulLeft_bijective (a : Mˣ) : Function.Bijective ((a * ·) : M → M) :=
@@ -74,7 +74,7 @@ def mulRight (u : Mˣ) : Equiv.Perm M where
 
 @[to_additive (attr := simp)]
 theorem mulRight_symm (u : Mˣ) : u.mulRight.symm = u⁻¹.mulRight :=
-  Equiv.ext fun _ => rfl
+  Equiv.ext fun _ ↦ rfl
 
 @[to_additive]
 theorem mulRight_bijective (a : Mˣ) : Function.Bijective ((· * a) : M → M) :=
@@ -105,7 +105,7 @@ theorem mulLeft_symm_apply (a : G) : ((Equiv.mulLeft a).symm : G → G) = (a⁻�
 
 @[to_additive (attr := simp)]
 theorem mulLeft_symm (a : G) : (Equiv.mulLeft a).symm = Equiv.mulLeft a⁻¹ :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[to_additive]
 theorem _root_.Group.mulLeft_bijective (a : G) : Function.Bijective (a * ·) :=
@@ -117,17 +117,17 @@ protected def mulRight (a : G) : Perm G :=
   (toUnits a).mulRight
 
 @[to_additive (attr := simp)]
-theorem coe_mulRight (a : G) : ⇑(Equiv.mulRight a) = fun x => x * a :=
+theorem coe_mulRight (a : G) : ⇑(Equiv.mulRight a) = fun x ↦ x * a :=
   rfl
 
 @[to_additive (attr := simp)]
 theorem mulRight_symm (a : G) : (Equiv.mulRight a).symm = Equiv.mulRight a⁻¹ :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 /-- Extra simp lemma that `dsimp` can use. `simp` will never use this. -/
 @[to_additive (attr := simp)
 /-- Extra simp lemma that `dsimp` can use. `simp` will never use this. -/]
-theorem mulRight_symm_apply (a : G) : ((Equiv.mulRight a).symm : G → G) = fun x => x * a⁻¹ :=
+theorem mulRight_symm_apply (a : G) : ((Equiv.mulRight a).symm : G → G) = fun x ↦ x * a⁻¹ :=
   rfl
 
 @[to_additive]
@@ -145,7 +145,7 @@ protected def divLeft (a : G) : G ≃ G where
 @[to_additive]
 theorem divLeft_eq_inv_trans_mulLeft (a : G) :
     Equiv.divLeft a = (Equiv.inv G).trans (Equiv.mulLeft a) :=
-  ext fun _ => div_eq_mul_inv _ _
+  ext fun _ ↦ div_eq_mul_inv _ _
 
 /-- A version of `Equiv.mulRight a⁻¹ b` that is defeq to `b / a`. -/
 @[to_additive (attr := simps) /-- A version of `Equiv.addRight (-a) b` that is defeq to `b - a`. -/]
@@ -157,7 +157,7 @@ protected def divRight (a : G) : G ≃ G where
 
 @[to_additive]
 theorem divRight_eq_mulRight_inv (a : G) : Equiv.divRight a = Equiv.mulRight a⁻¹ :=
-  ext fun _ => div_eq_mul_inv _ _
+  ext fun _ ↦ div_eq_mul_inv _ _
 
 end Group
 

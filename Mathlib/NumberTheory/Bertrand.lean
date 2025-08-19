@@ -49,8 +49,8 @@ This is not best possible: it actually holds for 464 ≤ x.
 -/
 theorem real_main_inequality {x : ℝ} (x_large : (512 : ℝ) ≤ x) :
     x * (2 * x) ^ √(2 * x) * 4 ^ (2 * x / 3) ≤ 4 ^ x := by
-  let f : ℝ → ℝ := fun x => log x + √(2 * x) * log (2 * x) - log 4 / 3 * x
-  have hf' : ∀ x, 0 < x → 0 < x * (2 * x) ^ √(2 * x) / 4 ^ (x / 3) := fun x h =>
+  let f : ℝ → ℝ := fun x ↦ log x + √(2 * x) * log (2 * x) - log 4 / 3 * x
+  have hf' : ∀ x, 0 < x → 0 < x * (2 * x) ^ √(2 * x) / 4 ^ (x / 3) := fun x h ↦
     div_pos (mul_pos h (rpow_pos_of_pos (mul_pos two_pos h) _)) (rpow_pos_of_pos four_pos _)
   have hf : ∀ x, 0 < x → f x = log (x * (2 * x) ^ √(2 * x) / 4 ^ (x / 3)) := by
     intro x h5
@@ -155,26 +155,26 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_large : 2 < n)
   let S := {p ∈ Finset.range (2 * n / 3 + 1) | Nat.Prime p}
   let f x := x ^ n.centralBinom.factorization x
   have : ∏ x ∈ S, f x = ∏ x ∈ Finset.range (2 * n / 3 + 1), f x := by
-    refine Finset.prod_filter_of_ne fun p _ h => ?_
+    refine Finset.prod_filter_of_ne fun p _ h ↦ ?_
     contrapose! h; dsimp only [f]
     rw [factorization_eq_zero_of_non_prime n.centralBinom h, _root_.pow_zero]
   rw [centralBinom_factorization_small n n_large no_prime, ← this, ←
     Finset.prod_filter_mul_prod_filter_not S (· ≤ sqrt (2 * n))]
   apply mul_le_mul'
-  · refine (Finset.prod_le_prod' fun p _ => (?_ : f p ≤ 2 * n)).trans ?_
+  · refine (Finset.prod_le_prod' fun p _ ↦ (?_ : f p ≤ 2 * n)).trans ?_
     · exact pow_factorization_choose_le (mul_pos two_pos n_pos)
     have : (Finset.Icc 1 (sqrt (2 * n))).card = sqrt (2 * n) := by rw [card_Icc, Nat.add_sub_cancel]
     rw [Finset.prod_const]
-    refine pow_right_mono₀ n2_pos ((Finset.card_le_card fun x hx => ?_).trans this.le)
+    refine pow_right_mono₀ n2_pos ((Finset.card_le_card fun x hx ↦ ?_).trans this.le)
     obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hx
     exact Finset.mem_Icc.mpr ⟨(Finset.mem_filter.1 h1).2.one_lt.le, h2⟩
   · refine le_trans ?_ (primorial_le_4_pow (2 * n / 3))
-    refine (Finset.prod_le_prod' fun p hp => (?_ : f p ≤ p)).trans ?_
+    refine (Finset.prod_le_prod' fun p hp ↦ (?_ : f p ≤ p)).trans ?_
     · obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hp
       refine (pow_right_mono₀ (Finset.mem_filter.1 h1).2.one_lt.le ?_).trans (pow_one p).le
       exact Nat.factorization_choose_le_one (sqrt_lt'.mp <| not_le.1 h2)
     refine Finset.prod_le_prod_of_subset_of_one_le' (Finset.filter_subset _ _) ?_
-    exact fun p hp _ => (Finset.mem_filter.1 hp).2.one_lt.le
+    exact fun p hp _ ↦ (Finset.mem_filter.1 hp).2.one_lt.le
 
 namespace Nat
 
@@ -224,7 +224,7 @@ theorem exists_prime_lt_and_le_two_mul (n : ℕ) (hn0 : n ≠ 0) :
       let i : Term := quote i
       evalTactic <| ←
         `(tactic| refine exists_prime_lt_and_le_two_mul_succ $i (by norm_num1) (by norm_num1) ?_)
-  exact fun h2 => ⟨2, prime_two, h2, Nat.mul_le_mul_left 2 (Nat.pos_of_ne_zero hn0)⟩
+  exact fun h2 ↦ ⟨2, prime_two, h2, Nat.mul_le_mul_left 2 (Nat.pos_of_ne_zero hn0)⟩
 
 alias bertrand := Nat.exists_prime_lt_and_le_two_mul
 

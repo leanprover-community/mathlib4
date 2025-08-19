@@ -147,7 +147,7 @@ theorem minpoly_eq_pow {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
     lt_of_lt_of_le (Nat.cast_lt.2 one_lt_two)
       (le_emultiplicity_of_pow_dvd (dvd_trans habs prod))
   have hfree : Squarefree (X ^ n - 1 : (ZMod p)[X]) :=
-    (separable_X_pow_sub_C 1 (fun h => hdiv <| (ZMod.natCast_eq_zero_iff n p).1 h)
+    (separable_X_pow_sub_C 1 (fun h ↦ hdiv <| (ZMod.natCast_eq_zero_iff n p).1 h)
         one_ne_zero).squarefree
   rcases (squarefree_iff_emultiplicity_le_one (X ^ n - 1)).1 hfree
       (map (Int.castRingHom (ZMod p)) P) with hle | hunit

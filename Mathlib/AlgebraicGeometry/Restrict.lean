@@ -294,7 +294,7 @@ isomorphic to the structure sheaf. -/
 @[simps!]
 def Scheme.restrictFunctorΓ : X.restrictFunctor.op ⋙ (Over.forget X).op ⋙ Scheme.Γ ≅ X.presheaf :=
   NatIso.ofComponents
-    (fun U => X.presheaf.mapIso ((eqToIso (unop U).isOpenEmbedding_obj_top).symm.op :))
+    (fun U ↦ X.presheaf.mapIso ((eqToIso (unop U).isOpenEmbedding_obj_top).symm.op :))
     (by
       intro U V i
       dsimp
@@ -533,13 +533,13 @@ instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] (U : Y.Opens) : IsIso (f ∣
   delta morphismRestrict; infer_instance
 
 theorem morphismRestrict_base_coe {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (x) :
-    @Coe.coe U Y (⟨fun x => x.1⟩) ((f ∣_ U).base x) = f.base x.1 :=
-  congr_arg (fun f => (Scheme.Hom.toLRSHom f).base x)
+    @Coe.coe U Y (⟨fun x ↦ x.1⟩) ((f ∣_ U).base x) = f.base x.1 :=
+  congr_arg (fun f ↦ (Scheme.Hom.toLRSHom f).base x)
     (morphismRestrict_ι f U)
 
 theorem morphismRestrict_base {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) :
     ⇑(f ∣_ U).base = U.1.restrictPreimage f.base :=
-  funext fun x => Subtype.ext (morphismRestrict_base_coe f U x)
+  funext fun x ↦ Subtype.ext (morphismRestrict_base_coe f U x)
 
 theorem image_morphismRestrict_preimage {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V : Opens U) :
     (f ⁻¹ᵁ U).ι ''ᵁ ((f ∣_ U) ⁻¹ᵁ V) = f ⁻¹ᵁ (U.ι ''ᵁ V) := by

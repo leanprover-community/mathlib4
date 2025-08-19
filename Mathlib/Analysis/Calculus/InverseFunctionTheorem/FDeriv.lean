@@ -70,12 +70,12 @@ theorem approximates_deriv_on_nhds {f : E → F} {f' : E →L[𝕜] F} {a : E}
     (hf : HasStrictFDerivAt f f' a) {c : ℝ≥0} (hc : Subsingleton E ∨ 0 < c) :
     ∃ s ∈ 𝓝 a, ApproximatesLinearOn f f' s c := by
   rcases hc with hE | hc
-  · refine ⟨univ, IsOpen.mem_nhds isOpen_univ trivial, fun x _ y _ => ?_⟩
+  · refine ⟨univ, IsOpen.mem_nhds isOpen_univ trivial, fun x _ y _ ↦ ?_⟩
     simp [@Subsingleton.elim E hE x y]
   have := hf.isLittleO.def hc
   rw [nhds_prod_eq, Filter.Eventually, mem_prod_same_iff] at this
   rcases this with ⟨s, has, hs⟩
-  exact ⟨s, has, fun x hx y hy => hs (mk_mem_prod hx hy)⟩
+  exact ⟨s, has, fun x hx y hy ↦ hs (mk_mem_prod hx hy)⟩
 
 theorem map_nhds_eq_of_surj [CompleteSpace E] [CompleteSpace F] {f : E → F} {f' : E →L[𝕜] F} {a : E}
     (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) (h : LinearMap.range f' = ⊤) :
@@ -95,10 +95,10 @@ theorem approximates_deriv_on_open_nhds (hf : HasStrictFDerivAt f (f' : E →L[�
     ∃ s : Set E, a ∈ s ∧ IsOpen s ∧
       ApproximatesLinearOn f (f' : E →L[𝕜] F) s (‖(f'.symm : F →L[𝕜] E)‖₊⁻¹ / 2) := by
   simp only [← and_assoc]
-  refine ((nhds_basis_opens a).exists_iff fun s t => ApproximatesLinearOn.mono_set).1 ?_
+  refine ((nhds_basis_opens a).exists_iff fun s t ↦ ApproximatesLinearOn.mono_set).1 ?_
   exact
     hf.approximates_deriv_on_nhds <|
-      f'.subsingleton_or_nnnorm_symm_pos.imp id fun hf' => half_pos <| inv_pos.2 hf'
+      f'.subsingleton_or_nnnorm_symm_pos.imp id fun hf' ↦ half_pos <| inv_pos.2 hf'
 
 variable (f)
 variable [CompleteSpace E]
@@ -110,7 +110,7 @@ of this `PartialHomeomorph` has derivative `f'.symm`. -/
 def toPartialHomeomorph (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) : PartialHomeomorph E F :=
   ApproximatesLinearOn.toPartialHomeomorph f (Classical.choose hf.approximates_deriv_on_open_nhds)
     (Classical.choose_spec hf.approximates_deriv_on_open_nhds).2.2
-    (f'.subsingleton_or_nnnorm_symm_pos.imp id fun hf' =>
+    (f'.subsingleton_or_nnnorm_symm_pos.imp id fun hf' ↦
       NNReal.half_lt_self <| ne_of_gt <| inv_pos.2 hf')
     (Classical.choose_spec hf.approximates_deriv_on_open_nhds).2.1
 
@@ -186,11 +186,11 @@ For a version assuming `f (g y) = y` and continuity of `g` at `f a` but not `[Co
 see `of_local_left_inverse`. -/
 theorem to_local_left_inverse (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) {g : F → E}
     (hg : ∀ᶠ x in 𝓝 a, g (f x) = x) : HasStrictFDerivAt g (f'.symm : F →L[𝕜] E) (f a) :=
-  hf.to_localInverse.congr_of_eventuallyEq <| (hf.localInverse_unique hg).mono fun _ => Eq.symm
+  hf.to_localInverse.congr_of_eventuallyEq <| (hf.localInverse_unique hg).mono fun _ ↦ Eq.symm
 
 end HasStrictFDerivAt
 
 /-- If a function has an invertible strict derivative at all points, then it is an open map. -/
 theorem isOpenMap_of_hasStrictFDerivAt_equiv [CompleteSpace E] {f : E → F} {f' : E → E ≃L[𝕜] F}
     (hf : ∀ x, HasStrictFDerivAt f (f' x : E →L[𝕜] F) x) : IsOpenMap f :=
-  isOpenMap_iff_nhds_le.2 fun x => (hf x).map_nhds_eq_of_equiv.ge
+  isOpenMap_iff_nhds_le.2 fun x ↦ (hf x).map_nhds_eq_of_equiv.ge

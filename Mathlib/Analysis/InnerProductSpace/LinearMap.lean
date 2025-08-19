@@ -94,7 +94,7 @@ for all `x`.
 -/
 theorem ext_inner_map (S T : V →ₗ[ℂ] V) : (∀ x : V, ⟪S x, x⟫_ℂ = ⟪T x, x⟫_ℂ) ↔ S = T := by
   rw [← sub_eq_zero, ← inner_map_self_eq_zero]
-  refine forall_congr' fun x => ?_
+  refine forall_congr' fun x ↦ ?_
   rw [LinearMap.sub_apply, inner_sub_left, sub_eq_zero]
 
 end Complex
@@ -122,7 +122,7 @@ theorem LinearIsometryEquiv.inner_map_eq_flip (f : E ≃ₗᵢ[𝕜] E') (x : E)
 
 /-- A linear map that preserves the inner product is a linear isometry. -/
 def LinearMap.isometryOfInner (f : E →ₗ[𝕜] E') (h : ∀ x y, ⟪f x, f y⟫ = ⟪x, y⟫) : E →ₗᵢ[𝕜] E' :=
-  ⟨f, fun x => by simp only [@norm_eq_sqrt_re_inner 𝕜, h]⟩
+  ⟨f, fun x ↦ by simp only [@norm_eq_sqrt_re_inner 𝕜, h]⟩
 
 @[simp]
 theorem LinearMap.coe_isometryOfInner (f : E →ₗ[𝕜] E') (h) : ⇑(f.isometryOfInner h) = f :=
@@ -158,11 +158,11 @@ variable (𝕜)
 
 /-- The inner product as a sesquilinear map. -/
 def innerₛₗ : E →ₗ⋆[𝕜] E →ₗ[𝕜] 𝕜 :=
-  LinearMap.mk₂'ₛₗ _ _ (fun v w => ⟪v, w⟫) inner_add_left (fun _ _ _ => inner_smul_left _ _ _)
-    inner_add_right fun _ _ _ => inner_smul_right _ _ _
+  LinearMap.mk₂'ₛₗ _ _ (fun v w ↦ ⟪v, w⟫) inner_add_left (fun _ _ _ ↦ inner_smul_left _ _ _)
+    inner_add_right fun _ _ _ ↦ inner_smul_right _ _ _
 
 @[simp]
-theorem innerₛₗ_apply_coe (v : E) : ⇑(innerₛₗ 𝕜 v) = fun w => ⟪v, w⟫ :=
+theorem innerₛₗ_apply_coe (v : E) : ⇑(innerₛₗ 𝕜 v) = fun w ↦ ⟪v, w⟫ :=
   rfl
 
 @[simp]
@@ -185,11 +185,11 @@ variable {F}
 in `InnerProductSpace.Dual` is a version of this given as a linear isometry (resp. linear
 isometric equivalence). -/
 def innerSL : E →L⋆[𝕜] E →L[𝕜] 𝕜 :=
-  LinearMap.mkContinuous₂ (innerₛₗ 𝕜) 1 fun x y => by
+  LinearMap.mkContinuous₂ (innerₛₗ 𝕜) 1 fun x y ↦ by
     simp only [norm_inner_le_norm, one_mul, innerₛₗ_apply]
 
 @[simp]
-theorem innerSL_apply_coe (v : E) : ⇑(innerSL 𝕜 v) = fun w => ⟪v, w⟫ :=
+theorem innerSL_apply_coe (v : E) : ⇑(innerSL 𝕜 v) = fun w ↦ ⟪v, w⟫ :=
   rfl
 
 @[simp]
@@ -245,7 +245,7 @@ variable (𝕜)
 @[simp]
 theorem innerSL_apply_norm (x : E) : ‖innerSL 𝕜 x‖ = ‖x‖ := by
   refine
-    le_antisymm ((innerSL 𝕜 x).opNorm_le_bound (norm_nonneg _) fun y => norm_inner_le_norm _ _) ?_
+    le_antisymm ((innerSL 𝕜 x).opNorm_le_bound (norm_nonneg _) fun y ↦ norm_inner_le_norm _ _) ?_
   rcases (norm_nonneg x).eq_or_lt' with (h | h)
   · simp [h]
   · refine (mul_le_mul_right h).mp ?_

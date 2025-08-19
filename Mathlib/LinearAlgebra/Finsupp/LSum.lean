@@ -35,13 +35,13 @@ section SMul
 variable {α : Type*} {β : Type*} {R R₂ : Type*} {M M₂ : Type*}
 
 theorem smul_sum [Zero β] [AddCommMonoid M] [DistribSMul R M] {v : α →₀ β} {c : R} {h : α → β → M} :
-    c • v.sum h = v.sum fun a b => c • h a b :=
+    c • v.sum h = v.sum fun a b ↦ c • h a b :=
   Finset.smul_sum
 
 @[simp]
 theorem sum_smul_index_semilinearMap' [Semiring R] [Semiring R₂] [AddCommMonoid M] [Module R M]
     [AddCommMonoid M₂] [Module R₂ M₂] {σ : R →+* R₂} {v : α →₀ M} {c : R} {h : α → M →ₛₗ[σ] M₂} :
-    ((c • v).sum fun a => h a) = σ c • v.sum fun a => h a := by
+    ((c • v).sum fun a ↦ h a) = σ c • v.sum fun a ↦ h a := by
   rw [Finsupp.sum_smul_index', Finsupp.smul_sum]
   · simp only [map_smulₛₗ]
   · intro i
@@ -49,7 +49,7 @@ theorem sum_smul_index_semilinearMap' [Semiring R] [Semiring R₂] [AddCommMonoi
 
 theorem sum_smul_index_linearMap' [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M₂]
     [Module R M₂] {v : α →₀ M} {c : R} {h : α → M →ₗ[R] M₂} :
-    ((c • v).sum fun a => h a) = c • v.sum fun a => h a :=
+    ((c • v).sum fun a ↦ h a) = c • v.sum fun a ↦ h a :=
   sum_smul_index_semilinearMap'
 
 end SMul
@@ -92,9 +92,9 @@ See note [bundled maps over different rings] for why separate `R` and `S` semiri
 -/
 def lsum : (α → M →ₛₗ[σ] N) ≃ₗ[S] (α →₀ M) →ₛₗ[σ] N where
   toFun F :=
-    { toFun := fun d => d.sum fun i => F i
-      map_add' := (liftAddHom (α := α) (M := M) (N := N) fun x => (F x).toAddMonoidHom).map_add
-      map_smul' := fun c f => by simp [sum_smul_index', smul_sum] }
+    { toFun := fun d ↦ d.sum fun i ↦ F i
+      map_add' := (liftAddHom (α := α) (M := M) (N := N) fun x ↦ (F x).toAddMonoidHom).map_add
+      map_smul' := fun c f ↦ by simp [sum_smul_index', smul_sum] }
   invFun F x := F.comp (lsingle x)
   left_inv F := by
     ext x y
@@ -110,10 +110,10 @@ def lsum : (α → M →ₛₗ[σ] N) ≃ₗ[S] (α →₀ M) →ₛₗ[σ] N wh
     simp
 
 @[simp]
-theorem coe_lsum (f : α → M →ₛₗ[σ] N) : (lsum S f : (α →₀ M) → N) = fun d => d.sum fun i => f i :=
+theorem coe_lsum (f : α → M →ₛₗ[σ] N) : (lsum S f : (α →₀ M) → N) = fun d ↦ d.sum fun i ↦ f i :=
   rfl
 
-theorem lsum_apply (f : α → M →ₛₗ[σ] N) (l : α →₀ M) : Finsupp.lsum S f l = l.sum fun b => f b :=
+theorem lsum_apply (f : α → M →ₛₗ[σ] N) (l : α →₀ M) : Finsupp.lsum S f l = l.sum fun b ↦ f b :=
   rfl
 
 theorem lsum_single (f : α → M →ₛₗ[σ] N) (i : α) (m : M) :
@@ -145,7 +145,7 @@ theorem lift_symm_apply (f) (x) : ((lift M R X).symm f) x = f (single x 1) :=
   rfl
 
 @[simp]
-theorem lift_apply (f) (g) : ((lift M R X) f) g = g.sum fun x r => r • f x :=
+theorem lift_apply (f) (g) : ((lift M R X) f) g = g.sum fun x r ↦ r • f x :=
   rfl
 
 /-- Given compatible `S` and `R`-module structures on `M` and a type `X`, the set of functions
@@ -186,17 +186,17 @@ theorem domLCongr_apply {α₁ : Type*} {α₂ : Type*} (e : α₁ ≃ α₂) (v
 
 @[simp]
 theorem domLCongr_refl : Finsupp.domLCongr (Equiv.refl α) = LinearEquiv.refl R (α →₀ M) :=
-  LinearEquiv.ext fun _ => equivMapDomain_refl _
+  LinearEquiv.ext fun _ ↦ equivMapDomain_refl _
 
 theorem domLCongr_trans {α₁ α₂ α₃ : Type*} (f : α₁ ≃ α₂) (f₂ : α₂ ≃ α₃) :
     (Finsupp.domLCongr f).trans (Finsupp.domLCongr f₂) =
       (Finsupp.domLCongr (f.trans f₂) : (_ →₀ M) ≃ₗ[R] _) :=
-  LinearEquiv.ext fun _ => (equivMapDomain_trans _ _ _).symm
+  LinearEquiv.ext fun _ ↦ (equivMapDomain_trans _ _ _).symm
 
 @[simp]
 theorem domLCongr_symm {α₁ α₂ : Type*} (f : α₁ ≃ α₂) :
     ((Finsupp.domLCongr f).symm : (_ →₀ M) ≃ₗ[R] _) = Finsupp.domLCongr f.symm :=
-  LinearEquiv.ext fun _ => rfl
+  LinearEquiv.ext fun _ ↦ rfl
 
 theorem domLCongr_single {α₁ : Type*} {α₂ : Type*} (e : α₁ ≃ α₂) (i : α₁) (m : M) :
     (Finsupp.domLCongr e : _ ≃ₗ[R] _) (Finsupp.single i m) = Finsupp.single (e i) m := by
@@ -261,7 +261,7 @@ open Finsupp Function
 -- See also `LinearMap.splittingOfFunOnFintypeSurjective`
 /-- A surjective linear map to finitely supported functions has a splitting. -/
 def splittingOfFinsuppSurjective (f : M →ₗ[R] α →₀ R) (s : Surjective f) : (α →₀ R) →ₗ[R] M :=
-  Finsupp.lift _ _ _ fun x : α => (s (Finsupp.single x 1)).choose
+  Finsupp.lift _ _ _ fun x : α ↦ (s (Finsupp.single x 1)).choose
 
 theorem splittingOfFinsuppSurjective_splits (f : M →ₗ[R] α →₀ R) (s : Surjective f) :
     f.comp (splittingOfFinsuppSurjective f s) = LinearMap.id := by
@@ -273,7 +273,7 @@ theorem splittingOfFinsuppSurjective_splits (f : M →ₗ[R] α →₀ R) (s : S
   · rw [zero_smul]
 
 theorem leftInverse_splittingOfFinsuppSurjective (f : M →ₗ[R] α →₀ R) (s : Surjective f) :
-    LeftInverse f (splittingOfFinsuppSurjective f s) := fun g =>
+    LeftInverse f (splittingOfFinsuppSurjective f s) := fun g ↦
   LinearMap.congr_fun (splittingOfFinsuppSurjective_splits f s) g
 
 theorem splittingOfFinsuppSurjective_injective (f : M →ₗ[R] α →₀ R) (s : Surjective f) :
@@ -294,11 +294,11 @@ variable {γ : Type*} [Zero γ]
 section Finsupp
 
 theorem coe_finsupp_sum (t : ι →₀ γ) (g : ι → γ → M →ₛₗ[σ₁₂] M₂) :
-    ⇑(t.sum g) = t.sum fun i d => g i d := rfl
+    ⇑(t.sum g) = t.sum fun i d ↦ g i d := rfl
 
 @[simp]
 theorem finsupp_sum_apply (t : ι →₀ γ) (g : ι → γ → M →ₛₗ[σ₁₂] M₂) (b : M) :
-    (t.sum g) b = t.sum fun i d => g i d b :=
+    (t.sum g) b = t.sum fun i d ↦ g i d b :=
   sum_apply _ _ _
 
 end Finsupp

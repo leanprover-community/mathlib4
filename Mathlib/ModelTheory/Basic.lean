@@ -68,7 +68,7 @@ abbrev IsRelational : Prop := ∀ n, IsEmpty (L.Functions n)
 abbrev IsAlgebraic : Prop := ∀ n, IsEmpty (L.Relations n)
 
 /-- The empty language has no symbols. -/
-protected def empty : Language := ⟨fun _ => Empty, fun _ => Empty⟩
+protected def empty : Language := ⟨fun _ ↦ Empty, fun _ ↦ Empty⟩
   deriving IsAlgebraic, IsRelational
 
 instance : Inhabited Language :=
@@ -76,7 +76,7 @@ instance : Inhabited Language :=
 
 /-- The sum of two languages consists of the disjoint union of their symbols. -/
 protected def sum (L' : Language.{u', v'}) : Language :=
-  ⟨fun n => L.Functions n ⊕ L'.Functions n, fun n => L.Relations n ⊕ L'.Relations n⟩
+  ⟨fun n ↦ L.Functions n ⊕ L'.Functions n, fun n ↦ L.Relations n ⊕ L'.Relations n⟩
 
 /-- The type of constants in a given language. -/
 protected abbrev Constants :=
@@ -94,15 +94,15 @@ variable {L} {L' : Language.{u', v'}}
 
 theorem card_eq_card_functions_add_card_relations :
     L.card =
-      (Cardinal.sum fun l => Cardinal.lift.{v} #(L.Functions l)) +
-        Cardinal.sum fun l => Cardinal.lift.{u} #(L.Relations l) := by
+      (Cardinal.sum fun l ↦ Cardinal.lift.{v} #(L.Functions l)) +
+        Cardinal.sum fun l ↦ Cardinal.lift.{u} #(L.Relations l) := by
   simp only [card, mk_sum, mk_sigma, lift_sum]
 
 instance isRelational_sum [L.IsRelational] [L'.IsRelational] : IsRelational (L.sum L') :=
-  fun _ => instIsEmptySum
+  fun _ ↦ instIsEmptySum
 
 instance isAlgebraic_sum [L.IsAlgebraic] [L'.IsAlgebraic] : IsAlgebraic (L.sum L') :=
-  fun _ => instIsEmptySum
+  fun _ ↦ instIsEmptySum
 
 @[simp]
 theorem card_empty : Language.empty.card = 0 := by simp only [card, mk_sum, mk_sigma, mk_eq_zero,
@@ -112,7 +112,7 @@ theorem card_empty : Language.empty.card = 0 := by simp only [card, mk_sum, mk_s
 
 instance isEmpty_empty : IsEmpty Language.empty.Symbols := by
   simp only [Language.Symbols, isEmpty_sum, isEmpty_sigma]
-  exact ⟨fun _ => inferInstance, fun _ => inferInstance⟩
+  exact ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
 
 instance Countable.countable_functions [h : Countable L.Symbols] : Countable (Σ l, L.Functions l) :=
   @Function.Injective.countable _ _ h _ Sum.inl_injective
@@ -133,7 +133,7 @@ theorem card_sum :
     (L.sum L').card = Cardinal.lift.{max u' v'} L.card + Cardinal.lift.{max u v} L'.card := by
   simp only [card, mk_sum, mk_sigma, card_functions_sum, sum_add_distrib', lift_add, lift_sum,
     lift_lift, card_relations_sum, add_assoc,
-    add_comm (Cardinal.sum fun i => (#(L'.Functions i)).lift)]
+    add_comm (Cardinal.sum fun i ↦ (#(L'.Functions i)).lift)]
 
 /-- Passes a `DecidableEq` instance on a type of function symbols through the  `Language`
 constructor. Despite the fact that this is proven by `inferInstance`, it is still needed -
@@ -157,10 +157,10 @@ variable (L) (M : Type w)
 class Structure where
   /-- Interpretation of the function symbols -/
   funMap : ∀ {n}, L.Functions n → (Fin n → M) → M := by
-    exact fun {n} => isEmptyElim
+    exact fun {n} ↦ isEmptyElim
   /-- Interpretation of the relation symbols -/
   RelMap : ∀ {n}, L.Relations n → (Fin n → M) → Prop := by
-    exact fun {n} => isEmptyElim
+    exact fun {n} ↦ isEmptyElim
 
 variable (N : Type w') [L.Structure M] [L.Structure N]
 
@@ -356,7 +356,7 @@ end Hom
 
 /-- Any element of a `HomClass` can be realized as a first_order homomorphism. -/
 @[simps] def HomClass.toHom {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
-    [HomClass L F M N] : F → M →[L] N := fun φ =>
+    [HomClass L F M N] : F → M →[L] N := fun φ ↦
   ⟨φ, HomClass.map_fun φ, HomClass.map_rel φ⟩
 
 namespace Embedding
@@ -428,7 +428,7 @@ theorem injective (f : M ↪[L] N) : Function.Injective f :=
 def ofInjective [L.IsAlgebraic] {f : M →[L] N} (hf : Function.Injective f) : M ↪[L] N :=
   { f with
     inj' := hf
-    map_rel' := fun {_} r x => StrongHomClass.map_rel f r x }
+    map_rel' := fun {_} r x ↦ StrongHomClass.map_rel f r x }
 
 @[simp]
 theorem coeFn_ofInjective [L.IsAlgebraic] {f : M →[L] N} (hf : Function.Injective f) :
@@ -511,7 +511,7 @@ end Embedding
 
 /-- Any element of an injective `StrongHomClass` can be realized as a first_order embedding. -/
 @[simps] def StrongHomClass.toEmbedding {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
-    [EmbeddingLike F M N] [StrongHomClass L F M N] : F → M ↪[L] N := fun φ =>
+    [EmbeddingLike F M N] [StrongHomClass L F M N] : F → M ↪[L] N := fun φ ↦
   ⟨⟨φ, EmbeddingLike.injective φ⟩, StrongHomClass.map_fun φ, StrongHomClass.map_rel φ⟩
 
 namespace Equiv
@@ -536,12 +536,12 @@ instance : StrongHomClass L (M ≃[L] N) M N where
 @[symm]
 def symm (f : M ≃[L] N) : N ≃[L] M :=
   { f.toEquiv.symm with
-    map_fun' := fun n f' {x} => by
+    map_fun' := fun n f' {x} ↦ by
       simp only [Equiv.toFun_as_coe]
       rw [Equiv.symm_apply_eq]
       refine Eq.trans ?_ (f.map_fun' f' (f.toEquiv.symm ∘ x)).symm
       rw [← Function.comp_assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp]
-    map_rel' := fun n r {x} => by
+    map_rel' := fun n r {x} ↦ by
       simp only [Equiv.toFun_as_coe]
       refine (f.map_rel' r (f.toEquiv.symm ∘ x)).symm.trans ?_
       rw [← Function.comp_assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp] }
@@ -725,7 +725,7 @@ end Equiv
 
 /-- Any element of a bijective `StrongHomClass` can be realized as a first_order isomorphism. -/
 @[simps] def StrongHomClass.toEquiv {F M N} [L.Structure M] [L.Structure N] [EquivLike F M N]
-    [StrongHomClass L F M N] : F → M ≃[L] N := fun φ =>
+    [StrongHomClass L F M N] : F → M ≃[L] N := fun φ ↦
   ⟨⟨φ, EquivLike.inv φ, EquivLike.left_inv φ, EquivLike.right_inv φ⟩, StrongHomClass.map_fun φ,
     StrongHomClass.map_rel φ⟩
 
@@ -773,25 +773,25 @@ section Empty
 def emptyStructure : Language.empty.Structure M where
 
 instance : Unique (Language.empty.Structure M) :=
-  ⟨⟨Language.emptyStructure⟩, fun a => by
+  ⟨⟨Language.emptyStructure⟩, fun a ↦ by
     ext _ f <;> exact Empty.elim f⟩
 
 variable [Language.empty.Structure M] [Language.empty.Structure N]
 
 instance (priority := 100) strongHomClassEmpty {F} [FunLike F M N] :
     StrongHomClass Language.empty F M N :=
-  ⟨fun _ _ f => Empty.elim f, fun _ _ r => Empty.elim r⟩
+  ⟨fun _ _ f ↦ Empty.elim f, fun _ _ r ↦ Empty.elim r⟩
 
 @[simp]
 theorem empty.nonempty_embedding_iff :
     Nonempty (M ↪[Language.empty] N) ↔ Cardinal.lift.{w'} #M ≤ Cardinal.lift.{w} #N :=
-  _root_.trans ⟨Nonempty.map fun f => f.toEmbedding, Nonempty.map StrongHomClass.toEmbedding⟩
+  _root_.trans ⟨Nonempty.map fun f ↦ f.toEmbedding, Nonempty.map StrongHomClass.toEmbedding⟩
     Cardinal.lift_mk_le'.symm
 
 @[simp]
 theorem empty.nonempty_equiv_iff :
     Nonempty (M ≃[Language.empty] N) ↔ Cardinal.lift.{w'} #M = Cardinal.lift.{w} #N :=
-  _root_.trans ⟨Nonempty.map fun f => f.toEquiv, Nonempty.map fun f => { toEquiv := f }⟩
+  _root_.trans ⟨Nonempty.map fun f ↦ f.toEquiv, Nonempty.map fun f ↦ { toEquiv := f }⟩
     Cardinal.lift_mk_eq'.symm
 
 /-- Makes a `Language.empty.Hom` out of any function.
@@ -815,15 +815,15 @@ variable {L : Language} {M : Type*} {N : Type*} [L.Structure M]
 /-- A structure induced by a bijection. -/
 @[simps!]
 def inducedStructure (e : M ≃ N) : L.Structure N :=
-  ⟨fun f x => e (funMap f (e.symm ∘ x)), fun r x => RelMap r (e.symm ∘ x)⟩
+  ⟨fun f x ↦ e (funMap f (e.symm ∘ x)), fun r x ↦ RelMap r (e.symm ∘ x)⟩
 
 /-- A bijection as a first-order isomorphism with the induced structure on the codomain. -/
 def inducedStructureEquiv (e : M ≃ N) : @Language.Equiv L M N _ (inducedStructure e) := by
   letI : L.Structure N := inducedStructure e
   exact
   { e with
-    map_fun' := @fun n f x => by simp [← Function.comp_assoc e.symm e x]
-    map_rel' := @fun n r x => by simp [← Function.comp_assoc e.symm e x] }
+    map_fun' := @fun n f x ↦ by simp [← Function.comp_assoc e.symm e x]
+    map_rel' := @fun n r x ↦ by simp [← Function.comp_assoc e.symm e x] }
 
 @[simp]
 theorem toEquiv_inducedStructureEquiv (e : M ≃ N) :

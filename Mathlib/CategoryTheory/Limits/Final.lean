@@ -110,13 +110,13 @@ instance initial_op_of_final (F : C ⥤ D) [Final F] : Initial F.op where
 
 theorem final_of_initial_op (F : C ⥤ D) [Initial F.op] : Final F :=
   {
-    out := fun d =>
+    out := fun d ↦
       @isConnected_of_isConnected_op _ _
         (isConnected_of_equivalent (structuredArrowOpEquivalence F d).symm) }
 
 theorem initial_of_final_op (F : C ⥤ D) [Final F.op] : Initial F :=
   {
-    out := fun d =>
+    out := fun d ↦
       @isConnected_of_isConnected_op _ _
         (isConnected_of_equivalent (costructuredArrowOpEquivalence F d).symm) }
 
@@ -124,9 +124,9 @@ attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
 
 /-- If a functor `R : D ⥤ C` is a right adjoint, it is final. -/
 theorem final_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Final R :=
-  { out := fun c =>
+  { out := fun c ↦
       let u : StructuredArrow c R := StructuredArrow.mk (adj.unit.app c)
-      @zigzag_isConnected _ _ ⟨u⟩ fun f g =>
+      @zigzag_isConnected _ _ ⟨u⟩ fun f g ↦
         Relation.ReflTransGen.trans
           (Relation.ReflTransGen.single
             (show Zag f u from
@@ -137,9 +137,9 @@ theorem final_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Final 
 
 /-- If a functor `L : C ⥤ D` is a left adjoint, it is initial. -/
 theorem initial_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Initial L :=
-  { out := fun d =>
+  { out := fun d ↦
       let u : CostructuredArrow L d := CostructuredArrow.mk (adj.counit.app d)
-      @zigzag_isConnected _ _ ⟨u⟩ fun f g =>
+      @zigzag_isConnected _ _ ⟨u⟩ fun f g ↦
         Relation.ReflTransGen.trans
           (Relation.ReflTransGen.single
             (show Zag f u from
@@ -158,13 +158,13 @@ theorem final_of_natIso {F F' : C ⥤ D} [Final F] (i : F ≅ F') : Final F' whe
   out _ := isConnected_of_equivalent (StructuredArrow.mapNatIso i)
 
 theorem final_natIso_iff {F F' : C ⥤ D} (i : F ≅ F') : Final F ↔ Final F' :=
-  ⟨fun _ => final_of_natIso i, fun _ => final_of_natIso i.symm⟩
+  ⟨fun _ ↦ final_of_natIso i, fun _ ↦ final_of_natIso i.symm⟩
 
 theorem initial_of_natIso {F F' : C ⥤ D} [Initial F] (i : F ≅ F') : Initial F' where
   out _ := isConnected_of_equivalent (CostructuredArrow.mapNatIso i)
 
 theorem initial_natIso_iff {F F' : C ⥤ D} (i : F ≅ F') : Initial F ↔ Initial F' :=
-  ⟨fun _ => initial_of_natIso i, fun _ => initial_of_natIso i.symm⟩
+  ⟨fun _ ↦ initial_of_natIso i, fun _ ↦ initial_of_natIso i.symm⟩
 
 namespace Final
 
@@ -206,7 +206,7 @@ def induction {d : D} (Z : ∀ (X : C) (_ : d ⟶ F.obj X), Sort*)
     {X₀ : C} {k₀ : d ⟶ F.obj X₀} (z : Z X₀ k₀) : Z (lift F d) (homToLift F d) := by
   apply Nonempty.some
   apply
-    @isPreconnected_induction _ _ _ (fun Y : StructuredArrow d F => Z Y.right Y.hom) _ _
+    @isPreconnected_induction _ _ _ (fun Y : StructuredArrow d F ↦ Z Y.right Y.hom) _ _
       (StructuredArrow.mk k₀) z
   · intro j₁ j₂ f a
     fapply h₁ _ _ _ _ f.right _ a
@@ -226,13 +226,13 @@ def extendCocone : Cocone (F ⋙ G) ⥤ Cocone G where
   obj c :=
     { pt := c.pt
       ι :=
-        { app := fun X => G.map (homToLift F X) ≫ c.ι.app (lift F X)
-          naturality := fun X Y f => by
+        { app := fun X ↦ G.map (homToLift F X) ≫ c.ι.app (lift F X)
+          naturality := fun X Y f ↦ by
             dsimp; simp only [Category.comp_id]
             -- This would be true if we'd chosen `lift F X` to be `lift F Y`
             -- and `homToLift F X` to be `f ≫ homToLift F Y`.
             apply
-              induction F fun Z k =>
+              induction F fun Z k ↦
                 G.map f ≫ G.map (homToLift F Y) ≫ c.ι.app (lift F Y) = G.map k ≫ c.ι.app Z
             · intro Z₁ Z₂ k₁ k₂ g a z
               rw [← a, Functor.map_comp, Category.assoc, ← Functor.comp_map, c.w, z]
@@ -246,7 +246,7 @@ def extendCocone : Cocone (F ⋙ G) ⥤ Cocone G where
 is given explicitly. -/
 lemma extendCocone_obj_ι_app' (c : Cocone (F ⋙ G)) {X : D} {Y : C} (f : X ⟶ F.obj Y) :
     (extendCocone.obj c).ι.app X = G.map f ≫ c.ι.app Y := by
-  apply induction (k₀ := f) (z := rfl) F fun Z g =>
+  apply induction (k₀ := f) (z := rfl) F fun Z g ↦
     G.map g ≫ c.ι.app Z = G.map f ≫ c.ι.app Y
   · intro _ _ _ _ _ h₁ h₂
     simp [← h₁, ← Functor.comp_map, c.ι.naturality, h₂]
@@ -258,7 +258,7 @@ theorem colimit_cocone_comp_aux (s : Cocone (F ⋙ G)) (j : C) :
     G.map (homToLift F (F.obj j)) ≫ s.ι.app (lift F (F.obj j)) = s.ι.app j := by
   -- This point is that this would be true if we took `lift (F.obj j)` to just be `j`
   -- and `homToLift (F.obj j)` to be `𝟙 (F.obj j)`.
-  apply induction F fun X k => G.map k ≫ s.ι.app X = (s.ι.app j :)
+  apply induction F fun X k ↦ G.map k ≫ s.ι.app X = (s.ι.app j :)
   · intro j₁ j₂ k₁ k₂ f w h
     rw [← w]
     rw [← s.w f] at h
@@ -279,8 +279,8 @@ for any `G : D ⥤ E`.
 def coconesEquiv : Cocone (F ⋙ G) ≌ Cocone G where
   functor := extendCocone
   inverse := Cocones.whiskering F
-  unitIso := NatIso.ofComponents fun c => Cocones.ext (Iso.refl _)
-  counitIso := NatIso.ofComponents fun c => Cocones.ext (Iso.refl _)
+  unitIso := NatIso.ofComponents fun c ↦ Cocones.ext (Iso.refl _)
+  counitIso := NatIso.ofComponents fun c ↦ Cocones.ext (Iso.refl _)
 
 variable {G}
 
@@ -357,7 +357,7 @@ theorem ι_colimitIso_inv [HasColimit G] (X : C) :
 colimit is isomorpic to taking the colimit on the codomain of `F`. -/
 def colimIso [HasColimitsOfShape D E] [HasColimitsOfShape C E] :
     (whiskeringLeft _ _ _).obj F ⋙ colim ≅ colim (J := D) (C := E) :=
-  NatIso.ofComponents (fun G => colimitIso F G) fun f => by
+  NatIso.ofComponents (fun G ↦ colimitIso F G) fun f ↦ by
     simp only [comp_obj, whiskeringLeft_obj_obj, colim_obj, comp_map, whiskeringLeft_obj_map,
       colim_map, colimitIso_hom]
     ext
@@ -406,7 +406,7 @@ def createsColimitOfComp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
 
 include F in
 theorem hasColimitsOfShape_of_final [HasColimitsOfShape C E] : HasColimitsOfShape D E where
-  has_colimit := fun _ => hasColimit_of_comp F
+  has_colimit := fun _ ↦ hasColimit_of_comp F
 
 include F in
 theorem preservesColimitsOfShape_of_final {B : Type u₄} [Category.{v₄} B] (H : E ⥤ B)
@@ -464,7 +464,7 @@ end Final
 -/
 theorem final_of_colimit_comp_coyoneda_iso_pUnit
     (I : ∀ d, colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit) : Final F :=
-  ⟨fun d => by
+  ⟨fun d ↦ by
     have : Nonempty (StructuredArrow d F) := by
       have := (I d).inv PUnit.unit
       obtain ⟨j, y, rfl⟩ := Limits.Types.jointly_surjective'.{v, v} this
@@ -485,7 +485,7 @@ about `colimit (F ⋙ coyoneda.obj (Opposite.op d))` for each `d : D` into a sin
 the presheaf `colimit (F ⋙ yoneda)`. -/
 theorem final_of_isTerminal_colimit_comp_yoneda
     (h : IsTerminal (colimit (F ⋙ yoneda))) : Final F := by
-  refine final_of_colimit_comp_coyoneda_iso_pUnit _ (fun d => ?_)
+  refine final_of_colimit_comp_coyoneda_iso_pUnit _ (fun d ↦ ?_)
   refine Types.isTerminalEquivIsoPUnit _ ?_
   let b := IsTerminal.isTerminalObj ((evaluation _ _).obj (Opposite.op d)) _ h
   exact b.ofIso <| preservesColimitIso ((evaluation _ _).obj (Opposite.op d)) (F ⋙ yoneda)
@@ -506,8 +506,8 @@ section SmallCategory
 variable {C : Type v} [Category.{v} C] {D : Type v} [Category.{v} D] (F : C ⥤ D)
 
 theorem final_iff_isIso_colimit_pre : Final F ↔ ∀ G : D ⥤ Type v, IsIso (colimit.pre G F) :=
-  ⟨fun _ => inferInstance,
-   fun _ => final_of_colimit_comp_coyoneda_iso_pUnit _ fun _ => Final.colimitCompCoyonedaIso _ _⟩
+  ⟨fun _ ↦ inferInstance,
+   fun _ ↦ final_of_colimit_comp_coyoneda_iso_pUnit _ fun _ ↦ Final.colimitCompCoyonedaIso _ _⟩
 
 end SmallCategory
 
@@ -551,7 +551,7 @@ def induction {d : D} (Z : ∀ (X : C) (_ : F.obj X ⟶ d), Sort*)
     {X₀ : C} {k₀ : F.obj X₀ ⟶ d} (z : Z X₀ k₀) : Z (lift F d) (homToLift F d) := by
   apply Nonempty.some
   apply
-    @isPreconnected_induction _ _ _ (fun Y : CostructuredArrow F d => Z Y.left Y.hom) _ _
+    @isPreconnected_induction _ _ _ (fun Y : CostructuredArrow F d ↦ Z Y.left Y.hom) _ _
       (CostructuredArrow.mk k₀) z
   · intro j₁ j₂ f a
     fapply h₁ _ _ _ _ f.left _ a
@@ -571,13 +571,13 @@ def extendCone : Cone (F ⋙ G) ⥤ Cone G where
   obj c :=
     { pt := c.pt
       π :=
-        { app := fun d => c.π.app (lift F d) ≫ G.map (homToLift F d)
-          naturality := fun X Y f => by
+        { app := fun d ↦ c.π.app (lift F d) ≫ G.map (homToLift F d)
+          naturality := fun X Y f ↦ by
             dsimp; simp only [Category.id_comp, Category.assoc]
             -- This would be true if we'd chosen `lift F Y` to be `lift F X`
             -- and `homToLift F Y` to be `homToLift F X ≫ f`.
             apply
-              induction F fun Z k =>
+              induction F fun Z k ↦
                 (c.π.app Z ≫ G.map k : c.pt ⟶ _) =
                   c.π.app (lift F X) ≫ G.map (homToLift F X) ≫ G.map f
             · intro Z₁ Z₂ k₁ k₂ g a z
@@ -594,7 +594,7 @@ def extendCone : Cone (F ⋙ G) ⥤ Cone G where
 is given explicitly. -/
 lemma extendCone_obj_π_app' (c : Cone (F ⋙ G)) {X : C} {Y : D} (f : F.obj X ⟶ Y) :
     (extendCone.obj c).π.app Y = c.π.app X ≫ G.map f := by
-  apply induction (k₀ := f) (z := rfl) F fun Z g =>
+  apply induction (k₀ := f) (z := rfl) F fun Z g ↦
     c.π.app Z ≫ G.map g = c.π.app X ≫ G.map f
   · intro _ _ _ _ _ h₁ h₂
     simp [← h₂, ← h₁, ← Functor.comp_map]
@@ -606,7 +606,7 @@ theorem limit_cone_comp_aux (s : Cone (F ⋙ G)) (j : C) :
     s.π.app (lift F (F.obj j)) ≫ G.map (homToLift F (F.obj j)) = s.π.app j := by
   -- This point is that this would be true if we took `lift (F.obj j)` to just be `j`
   -- and `homToLift (F.obj j)` to be `𝟙 (F.obj j)`.
-  apply induction F fun X k => s.π.app X ≫ G.map k = (s.π.app j :)
+  apply induction F fun X k ↦ s.π.app X ≫ G.map k = (s.π.app j :)
   · intro j₁ j₂ k₁ k₂ f w h
     rw [← s.w f]
     rw [← w] at h
@@ -627,8 +627,8 @@ for any `G : D ⥤ E`.
 def conesEquiv : Cone (F ⋙ G) ≌ Cone G where
   functor := extendCone
   inverse := Cones.whiskering F
-  unitIso := NatIso.ofComponents fun c => Cones.ext (Iso.refl _)
-  counitIso := NatIso.ofComponents fun c => Cones.ext (Iso.refl _)
+  unitIso := NatIso.ofComponents fun c ↦ Cones.ext (Iso.refl _)
+  counitIso := NatIso.ofComponents fun c ↦ Cones.ext (Iso.refl _)
 
 variable {G}
 
@@ -694,7 +694,7 @@ def limitIso [HasLimit G] : limit (F ⋙ G) ≅ limit G :=
 limit is isomorpic to taking the limit on the codomain of `F`. -/
 def limIso [HasLimitsOfShape D E] [HasLimitsOfShape C E] :
     (whiskeringLeft _ _ _).obj F ⋙ lim ≅ lim (J := D) (C := E) :=
-  Iso.symm <| NatIso.ofComponents (fun G => (limitIso F G).symm) fun f => by
+  Iso.symm <| NatIso.ofComponents (fun G ↦ (limitIso F G).symm) fun f ↦ by
     simp only [comp_obj, whiskeringLeft_obj_obj, lim_obj, comp_map, whiskeringLeft_obj_map, lim_map,
       Iso.symm_hom, limitIso_inv]
     ext
@@ -742,7 +742,7 @@ def createsLimitOfComp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
 
 include F in
 theorem hasLimitsOfShape_of_initial [HasLimitsOfShape C E] : HasLimitsOfShape D E where
-  has_limit := fun _ => hasLimit_of_comp F
+  has_limit := fun _ ↦ hasLimit_of_comp F
 
 include F in
 theorem preservesLimitsOfShape_of_initial {B : Type u₄} [Category.{v₄} B] (H : E ⥤ B)
@@ -806,19 +806,19 @@ theorem initial_of_equivalence_comp [IsEquivalence F] [Initial (F ⋙ G)] : Init
 
 /-- See also the strictly more general `final_iff_comp_final_full_faithful` below. -/
 theorem final_iff_comp_equivalence [IsEquivalence G] : Final F ↔ Final (F ⋙ G) :=
-  ⟨fun _ => final_comp_equivalence _ _, fun _ => final_of_comp_full_faithful _ G⟩
+  ⟨fun _ ↦ final_comp_equivalence _ _, fun _ ↦ final_of_comp_full_faithful _ G⟩
 
 /-- See also the strictly more general `final_iff_final_comp` below. -/
 theorem final_iff_equivalence_comp [IsEquivalence F] : Final G ↔ Final (F ⋙ G) :=
-  ⟨fun _ => final_equivalence_comp _ _, fun _ => final_of_equivalence_comp F _⟩
+  ⟨fun _ ↦ final_equivalence_comp _ _, fun _ ↦ final_of_equivalence_comp F _⟩
 
 /-- See also the strictly more general `initial_iff_comp_initial_full_faithful` below. -/
 theorem initial_iff_comp_equivalence [IsEquivalence G] : Initial F ↔ Initial (F ⋙ G) :=
-  ⟨fun _ => initial_comp_equivalence _ _, fun _ => initial_of_comp_full_faithful _ G⟩
+  ⟨fun _ ↦ initial_comp_equivalence _ _, fun _ ↦ initial_of_comp_full_faithful _ G⟩
 
 /-- See also the strictly more general `initial_iff_initial_comp` below. -/
 theorem initial_iff_equivalence_comp [IsEquivalence F] : Initial G ↔ Initial (F ⋙ G) :=
-  ⟨fun _ => initial_equivalence_comp _ _, fun _ => initial_of_equivalence_comp F _⟩
+  ⟨fun _ ↦ initial_equivalence_comp _ _, fun _ ↦ initial_of_equivalence_comp F _⟩
 
 instance final_comp [hF : Final F] [hG : Final G] : Final (F ⋙ G) := by
   let s₁ : C ≌ AsSmall.{max u₁ v₁ u₂ v₂ u₃ v₃} C := AsSmall.equiv
@@ -876,17 +876,17 @@ theorem initial_of_comp_full_faithful' [Full G] [Faithful G] [Initial (F ⋙ G)]
 
 theorem final_iff_comp_final_full_faithful [Final G] [Full G] [Faithful G] :
     Final F ↔ Final (F ⋙ G) :=
-  ⟨fun _ => final_comp _ _, fun _ => final_of_comp_full_faithful F G⟩
+  ⟨fun _ ↦ final_comp _ _, fun _ ↦ final_of_comp_full_faithful F G⟩
 
 theorem initial_iff_comp_initial_full_faithful [Initial G] [Full G] [Faithful G] :
     Initial F ↔ Initial (F ⋙ G) :=
-  ⟨fun _ => initial_comp _ _, fun _ => initial_of_comp_full_faithful F G⟩
+  ⟨fun _ ↦ initial_comp _ _, fun _ ↦ initial_of_comp_full_faithful F G⟩
 
 theorem final_iff_final_comp [Final F] : Final G ↔ Final (F ⋙ G) :=
-  ⟨fun _ => final_comp _ _, fun _ => final_of_final_comp F G⟩
+  ⟨fun _ ↦ final_comp _ _, fun _ ↦ final_of_final_comp F G⟩
 
 theorem initial_iff_initial_comp [Initial F] : Initial G ↔ Initial (F ⋙ G) :=
-  ⟨fun _ => initial_comp _ _, fun _ => initial_of_initial_comp F G⟩
+  ⟨fun _ ↦ initial_comp _ _, fun _ ↦ initial_of_initial_comp F G⟩
 
 end
 
@@ -929,7 +929,7 @@ theorem IsFilteredOrEmpty.of_final (F : C ⥤ D) [Final F] [IsFilteredOrEmpty C]
     Final.homToLift F X ≫ F.map (IsFiltered.leftToMax _ _),
     ⟨Final.homToLift F Y ≫ F.map (IsFiltered.rightToMax _ _), trivial⟩⟩
   cocone_maps {X Y} f g := by
-    let P : StructuredArrow X F → Prop := fun h => ∃ (Z : C) (q₁ : h.right ⟶ Z)
+    let P : StructuredArrow X F → Prop := fun h ↦ ∃ (Z : C) (q₁ : h.right ⟶ Z)
       (q₂ : Final.lift F Y ⟶ Z), h.hom ≫ F.map q₁ = f ≫ Final.homToLift F Y ≫ F.map q₂
     rsuffices ⟨Z, q₁, q₂, h⟩ : Nonempty (P (StructuredArrow.mk (g ≫ Final.homToLift F Y)))
     · refine ⟨F.obj (IsFiltered.coeq q₁ q₂),
@@ -988,14 +988,14 @@ open Functor
 /-- The functor `StructuredArrow.pre X T S` is final if `T` is final. -/
 instance StructuredArrow.final_pre (T : C ⥤ D) [Final T] (S : D ⥤ E) (X : E) :
     Final (pre X T S) := by
-  refine ⟨fun f => ?_⟩
+  refine ⟨fun f ↦ ?_⟩
   rw [isConnected_iff_of_equivalence (StructuredArrow.preEquivalence T f)]
   exact Final.out f.right
 
 /-- The functor `CostructuredArrow.pre X T S` is initial if `T` is initial. -/
 instance CostructuredArrow.initial_pre (T : C ⥤ D) [Initial T] (S : D ⥤ E) (X : E) :
     Initial (CostructuredArrow.pre T S X) := by
-  refine ⟨fun f => ?_⟩
+  refine ⟨fun f ↦ ?_⟩
   rw [isConnected_iff_of_equivalence (CostructuredArrow.preEquivalence T f)]
   exact Initial.out f.left
 
@@ -1013,9 +1013,9 @@ open Functor
 action on fibers being the identity. -/
 def Grothendieck.structuredArrowToStructuredArrowPre (d : D) (f : F.obj d) :
     StructuredArrow d G ⥤q StructuredArrow ⟨d, f⟩ (pre F G) where
-  obj := fun X => StructuredArrow.mk (Y := ⟨X.right, (F.map X.hom).obj f⟩)
+  obj := fun X ↦ StructuredArrow.mk (Y := ⟨X.right, (F.map X.hom).obj f⟩)
     (Grothendieck.Hom.mk (by exact X.hom) (by dsimp; exact 𝟙 _))
-  map := fun g => StructuredArrow.homMk
+  map := fun g ↦ StructuredArrow.homMk
     (Grothendieck.Hom.mk (by exact g.right)
       (eqToHom (by dsimp; rw [← StructuredArrow.w g, map_comp, Cat.comp_obj])))
     (by
@@ -1052,11 +1052,11 @@ def Grothendieck.fiberwiseColimitMapCompEquivalence {C : Type u₁} [Category.{v
     {F G : C ⥤ Cat.{v₂, u₂}} (α : F ⟶ G) [∀ X, Final (α.app X)] (H : Grothendieck G ⥤ Type u₂) :
     fiberwiseColimit (map α ⋙ H) ≅ fiberwiseColimit H :=
   NatIso.ofComponents
-    (fun X =>
+    (fun X ↦
       HasColimit.isoOfNatIso ((Functor.associator _ _ _).symm ≪≫
         isoWhiskerRight (ιCompMap α X) H ≪≫  Functor.associator _ _ _) ≪≫
       Final.colimitIso (α.app X) (ι G X ⋙ H))
-    (fun f => colimit.hom_ext <| fun d => by
+    (fun f ↦ colimit.hom_ext <| fun d ↦ by
       simp only [map, Cat.comp_obj, comp_obj, ι_obj, fiberwiseColimit_obj, fiberwiseColimit_map,
         ιNatTrans, ιCompMap, Iso.trans_hom, Category.assoc, ι_colimMap_assoc, NatTrans.comp_app,
         whiskerRight_app, Functor.comp_map, Cat.eqToHom_app, map_id, Category.comp_id,
@@ -1088,7 +1088,7 @@ lemma Grothendieck.final_map {F G : C ⥤ Cat.{v₂, u₂}} (α : F ⟶ G) [hα 
   let F' : AsSmall C ⥤ Cat := sC.inverse ⋙ F ⋙ Cat.asSmallFunctor.{max v₁ u₁ v₂ u₂}
   let G' : AsSmall C ⥤ Cat := sC.inverse ⋙ G ⋙ Cat.asSmallFunctor.{max v₁ u₁ v₂ u₂}
   let α' : F' ⟶ G' := whiskerLeft _ (whiskerRight α _)
-  have : ∀ X, Final (α'.app X) := fun X =>
+  have : ∀ X, Final (α'.app X) := fun X ↦
     inferInstanceAs (AsSmall.equiv.inverse ⋙ _ ⋙ AsSmall.equiv.functor).Final
   have hα' : (map α').Final := final_map_small _
   dsimp only [α', ← Equivalence.symm_functor] at hα'
@@ -1109,7 +1109,7 @@ variable {D' : Type u₄} [Category.{v₄} D']
 variable (F : C ⥤ D) (G : C' ⥤ D')
 
 instance [F.Final] [G.Final] : (F.prod G).Final where
-  out := fun ⟨d, d'⟩ => isConnected_of_equivalent (StructuredArrow.prodEquivalence d d' F G).symm
+  out := fun ⟨d, d'⟩ ↦ isConnected_of_equivalent (StructuredArrow.prodEquivalence d d' F G).symm
 
 end Prod
 
@@ -1119,10 +1119,10 @@ namespace ObjectProperty
 the inclusion functor it is enough to consider arrows to objects outside of the subcategory. -/
 theorem initial_ι {C : Type u₁} [Category.{v₁} C] (P : ObjectProperty C)
     (h : ∀ d, ¬ P d → IsConnected (CostructuredArrow P.ι d)) :
-    P.ι.Initial := .mk <| fun d => by
+    P.ι.Initial := .mk <| fun d ↦ by
   by_cases hd : P d
   · have : Nonempty (CostructuredArrow P.ι d) := ⟨⟨d, hd⟩, ⟨⟨⟩⟩, 𝟙 _⟩
-    refine zigzag_isConnected fun ⟨c₁, ⟨⟨⟩⟩, g₁⟩ ⟨c₂, ⟨⟨⟩⟩, g₂⟩ =>
+    refine zigzag_isConnected fun ⟨c₁, ⟨⟨⟩⟩, g₁⟩ ⟨c₂, ⟨⟨⟩⟩, g₂⟩ ↦
       Zigzag.trans (j₂ := ⟨⟨d, hd⟩, ⟨⟨⟩⟩, 𝟙 _⟩) (.of_hom ?_) (.of_inv ?_)
     · apply CostructuredArrow.homMk g₁
     · apply CostructuredArrow.homMk g₂

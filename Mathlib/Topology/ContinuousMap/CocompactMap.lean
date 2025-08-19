@@ -150,14 +150,14 @@ theorem comp_assoc (f : CocompactMap γ δ) (g : CocompactMap β γ) (h : Cocomp
 
 @[simp]
 theorem id_comp (f : CocompactMap α β) : (CocompactMap.id _).comp f = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem comp_id (f : CocompactMap α β) : f.comp (CocompactMap.id _) = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 theorem tendsto_of_forall_preimage {f : α → β} (h : ∀ s, IsCompact s → IsCompact (f ⁻¹' s)) :
-    Tendsto f (cocompact α) (cocompact β) := fun s hs =>
+    Tendsto f (cocompact α) (cocompact β) := fun s hs ↦
   match mem_cocompact.mp hs with
   | ⟨t, ht, hts⟩ =>
     mem_map.mpr (mem_cocompact.mpr ⟨f ⁻¹' t, h t ht, by simpa using preimage_mono hts⟩)
@@ -193,7 +193,7 @@ def Homeomorph.toCocompactMap {α β : Type*} [TopologicalSpace α] [Topological
   toFun := f
   continuous_toFun := f.continuous
   cocompact_tendsto' := by
-    refine CocompactMap.tendsto_of_forall_preimage fun K hK => ?_
+    refine CocompactMap.tendsto_of_forall_preimage fun K hK ↦ ?_
     have := K.preimage_equiv_eq_image_symm f.toEquiv
     simp only [coe_toEquiv] at this
     rw [this]

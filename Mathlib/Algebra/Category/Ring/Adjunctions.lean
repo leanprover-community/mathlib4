@@ -52,7 +52,7 @@ def adj : free ⊣ forget CommRingCat.{u} :=
           invFun := fun f ↦ ofHom <| homEquiv.symm f
           left_inv := fun f ↦ congrArg ofHom (homEquiv.left_inv f.hom)
           right_inv := fun f ↦ homEquiv.right_inv f }
-      homEquiv_naturality_left_symm := fun {_ _ Y} f g =>
+      homEquiv_naturality_left_symm := fun {_ _ Y} f g ↦
         hom_ext <| RingHom.ext fun x ↦ eval₂_cast_comp f (Int.castRingHom Y) g x }
 
 instance : (forget CommRingCat.{u}).IsRightAdjoint :=

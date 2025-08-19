@@ -100,7 +100,7 @@ for which we can define the following two functions:
   `⋃ a, ns a = Set.univ`.
 
 For the example of `f = atTop`, we can take
-`p = bddAbove` and `ns : ι → Set ι := fun i => Set.Iic i`.
+`p = bddAbove` and `ns : ι → Set ι := fun i ↦ Set.Iic i`.
 -/
 
 theorem Kernel.indep_biSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα)
@@ -134,12 +134,12 @@ theorem Kernel.indep_iSup_directed_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : 
   replace h_indep := h_indep.congr η_eq
   apply Indep.congr (Filter.EventuallyEq.symm η_eq)
   apply indep_iSup_of_directed_le
-  · exact fun a => indep_biSup_limsup h_le h_indep hf (hnsp a)
-  · exact fun a => iSup₂_le fun n _ => h_le n
+  · exact fun a ↦ indep_biSup_limsup h_le h_indep hf (hnsp a)
+  · exact fun a ↦ iSup₂_le fun n _ ↦ h_le n
   · exact limsup_le_iSup.trans (iSup_le h_le)
   · intro a b
     obtain ⟨c, hc⟩ := hns a b
-    refine ⟨c, ?_, ?_⟩ <;> refine iSup_mono fun n => iSup_mono' fun hn => ⟨?_, le_rfl⟩
+    refine ⟨c, ?_, ?_⟩ <;> refine iSup_mono fun n ↦ iSup_mono' fun hn ↦ ⟨?_, le_rfl⟩
     · exact hc.1 hn
     · exact hc.2 hn
 
@@ -164,7 +164,7 @@ theorem Kernel.indep_iSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s 
     rw [← this]
     exact indep_iSup_directed_limsup h_le h_indep hf hns hnsp
   rw [iSup_comm]
-  refine iSup_congr fun n => ?_
+  refine iSup_congr fun n ↦ ?_
   have h : ⨆ (i : β) (_ : n ∈ ns i), s n = ⨆ _ : ∃ i, n ∈ ns i, s n := by rw [iSup_exists]
   haveI : Nonempty (∃ i : β, n ∈ ns i) := ⟨hns_univ n⟩
   rw [h, iSup_const]
@@ -241,16 +241,16 @@ variable [SemilatticeSup ι] [NoMaxOrder ι] [Nonempty ι]
 theorem Kernel.indep_limsup_atTop_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα) :
     Indep (limsup s atTop) (limsup s atTop) κ μα := by
   let ns : ι → Set ι := Set.Iic
-  have hnsp : ∀ i, BddAbove (ns i) := fun i => bddAbove_Iic
+  have hnsp : ∀ i, BddAbove (ns i) := fun i ↦ bddAbove_Iic
   refine indep_limsup_self h_le h_indep ?_ ?_ hnsp ?_
   · simp only [mem_atTop_sets, Set.mem_compl_iff, BddAbove, upperBounds, Set.Nonempty]
     rintro t ⟨a, ha⟩
     obtain ⟨b, hb⟩ : ∃ b, a < b := exists_gt a
-    refine ⟨b, fun c hc hct => ?_⟩
+    refine ⟨b, fun c hc hct ↦ ?_⟩
     suffices ∀ i ∈ t, i < c from lt_irrefl c (this c hct)
-    exact fun i hi => (ha hi).trans_lt (hb.trans_le hc)
-  · exact Monotone.directed_le fun i j hij k hki => le_trans hki hij
-  · exact fun n => ⟨n, le_rfl⟩
+    exact fun i hi ↦ (ha hi).trans_lt (hb.trans_le hc)
+  · exact Monotone.directed_le fun i j hij k hki ↦ le_trans hki hij
+  · exact fun n ↦ ⟨n, le_rfl⟩
 
 theorem indep_limsup_atTop_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) :
     Indep (limsup s atTop) (limsup s atTop) μ :=
@@ -295,16 +295,16 @@ variable [SemilatticeInf ι] [NoMinOrder ι] [Nonempty ι]
 theorem Kernel.indep_limsup_atBot_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα) :
     Indep (limsup s atBot) (limsup s atBot) κ μα := by
   let ns : ι → Set ι := Set.Ici
-  have hnsp : ∀ i, BddBelow (ns i) := fun i => bddBelow_Ici
+  have hnsp : ∀ i, BddBelow (ns i) := fun i ↦ bddBelow_Ici
   refine indep_limsup_self h_le h_indep ?_ ?_ hnsp ?_
   · simp only [mem_atBot_sets, Set.mem_compl_iff, BddBelow, lowerBounds, Set.Nonempty]
     rintro t ⟨a, ha⟩
     obtain ⟨b, hb⟩ : ∃ b, b < a := exists_lt a
-    refine ⟨b, fun c hc hct => ?_⟩
+    refine ⟨b, fun c hc hct ↦ ?_⟩
     suffices ∀ i ∈ t, c < i from lt_irrefl c (this c hct)
-    exact fun i hi => hc.trans_lt (hb.trans_le (ha hi))
+    exact fun i hi ↦ hc.trans_lt (hb.trans_le (ha hi))
   · exact Antitone.directed_le fun _ _ ↦ Set.Ici_subset_Ici.2
-  · exact fun n => ⟨n, le_rfl⟩
+  · exact fun n ↦ ⟨n, le_rfl⟩
 
 theorem indep_limsup_atBot_self
     (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) :

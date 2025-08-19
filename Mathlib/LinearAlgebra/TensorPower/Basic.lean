@@ -45,7 +45,7 @@ namespace PiTensorProduct
 are equal after a canonical reindexing. -/
 @[ext (iff := false)]
 theorem gradedMonoid_eq_of_reindex_cast {ιι : Type*} {ι : ιι → Type*} :
-    ∀ {a b : GradedMonoid fun ii => ⨂[R] _ : ι ii, M} (h : a.fst = b.fst),
+    ∀ {a b : GradedMonoid fun ii ↦ ⨂[R] _ : ι ii, M} (h : a.fst = b.fst),
       reindex R (fun _ ↦ M) (Equiv.cast <| congr_arg ι h) a.snd = b.snd → a = b
   | ⟨ai, a⟩, ⟨bi, b⟩ => fun (hi : ai = bi) (h : reindex R (fun _ ↦ M) _ a = b) => by
     subst hi
@@ -60,9 +60,9 @@ open scoped TensorProduct DirectSum
 open PiTensorProduct
 
 /-- As a graded monoid, `⨂[R]^i M` has a `1 : ⨂[R]^0 M`. -/
-instance gOne : GradedMonoid.GOne fun i => ⨂[R]^i M where one := tprod R <| @Fin.elim0 M
+instance gOne : GradedMonoid.GOne fun i ↦ ⨂[R]^i M where one := tprod R <| @Fin.elim0 M
 
-local notation "ₜ1" => @GradedMonoid.GOne.one ℕ (fun i => ⨂[R]^i M) _ _
+local notation "ₜ1" => @GradedMonoid.GOne.one ℕ (fun i ↦ ⨂[R]^i M) _ _
 
 theorem gOne_def : ₜ1 = tprod R (@Fin.elim0 M) :=
   rfl
@@ -72,11 +72,11 @@ def mulEquiv {n m : ℕ} : ⨂[R]^n M ⊗[R] (⨂[R]^m) M ≃ₗ[R] (⨂[R]^(n +
   (tmulEquiv R M).trans (reindex R (fun _ ↦ M) finSumFinEquiv)
 
 /-- As a graded monoid, `⨂[R]^i M` has a `(*) : ⨂[R]^i M → ⨂[R]^j M → ⨂[R]^(i + j) M`. -/
-instance gMul : GradedMonoid.GMul fun i => ⨂[R]^i M where
+instance gMul : GradedMonoid.GMul fun i ↦ ⨂[R]^i M where
   mul {i j} a b :=
     (TensorProduct.mk R _ _).compr₂ (↑(mulEquiv : _ ≃ₗ[R] (⨂[R]^(i + j)) M)) a b
 
-local infixl:70 " ₜ* " => @GradedMonoid.GMul.mul ℕ (fun i => ⨂[R]^i M) _ _ _ _
+local infixl:70 " ₜ* " => @GradedMonoid.GMul.mul ℕ (fun i ↦ ⨂[R]^i M) _ _ _ _
 
 theorem gMul_def {i j} (a : ⨂[R]^i M) (b : (⨂[R]^j) M) :
     a ₜ* b = @mulEquiv R M _ _ _ i j (a ⊗ₜ b) :=
@@ -117,14 +117,14 @@ theorem cast_cast {i j k} (h : i = j) (h' : j = k) (a : ⨂[R]^i M) :
   reindex_reindex _ _ _
 
 @[ext (iff := false)]
-theorem gradedMonoid_eq_of_cast {a b : GradedMonoid fun n => ⨂[R] _ : Fin n, M} (h : a.fst = b.fst)
+theorem gradedMonoid_eq_of_cast {a b : GradedMonoid fun n ↦ ⨂[R] _ : Fin n, M} (h : a.fst = b.fst)
     (h2 : cast R M h a.snd = b.snd) : a = b := by
   refine gradedMonoid_eq_of_reindex_cast h ?_
   rw [cast] at h2
   rw [← finCongr_eq_equivCast, ← h2]
 
 theorem cast_eq_cast {i j} (h : i = j) :
-    ⇑(cast R M h) = _root_.cast (congrArg (fun i => ⨂[R]^i M) h) := by
+    ⇑(cast R M h) = _root_.cast (congrArg (fun i ↦ ⨂[R]^i M) h) := by
   subst h
   rw [cast_refl]
   rfl
@@ -168,17 +168,17 @@ theorem mul_one {n} (a : ⨂[R]^n M) : cast R M (add_zero _) (a ₜ* ₜ1) = a :
 
 theorem mul_assoc {na nb nc} (a : (⨂[R]^na) M) (b : (⨂[R]^nb) M) (c : (⨂[R]^nc) M) :
     cast R M (add_assoc _ _ _) (a ₜ* b ₜ* c) = a ₜ* (b ₜ* c) := by
-  let mul : ∀ n m : ℕ, ⨂[R]^n M →ₗ[R] (⨂[R]^m) M →ₗ[R] (⨂[R]^(n + m)) M := fun n m =>
+  let mul : ∀ n m : ℕ, ⨂[R]^n M →ₗ[R] (⨂[R]^m) M →ₗ[R] (⨂[R]^(n + m)) M := fun n m ↦
     (TensorProduct.mk R _ _).compr₂ ↑(mulEquiv : _ ≃ₗ[R] (⨂[R]^(n + m)) M)
   -- replace `a`, `b`, `c` with `tprod R a`, `tprod R b`, `tprod R c`
   let e : (⨂[R]^(na + nb + nc)) M ≃ₗ[R] (⨂[R]^(na + (nb + nc))) M := cast R M (add_assoc _ _ _)
   let lhs : (⨂[R]^na) M →ₗ[R] (⨂[R]^nb) M →ₗ[R] (⨂[R]^nc) M →ₗ[R] (⨂[R]^(na + (nb + nc))) M :=
     (LinearMap.llcomp R _ _ _ ((mul _ nc).compr₂ e.toLinearMap)).comp (mul na nb)
-  have lhs_eq : ∀ a b c, lhs a b c = e (a ₜ* b ₜ* c) := fun _ _ _ => rfl
+  have lhs_eq : ∀ a b c, lhs a b c = e (a ₜ* b ₜ* c) := fun _ _ _ ↦ rfl
   let rhs : (⨂[R]^na) M →ₗ[R] (⨂[R]^nb) M →ₗ[R] (⨂[R]^nc) M →ₗ[R] (⨂[R]^(na + (nb + nc))) M :=
     (LinearMap.llcomp R _ _ _ (LinearMap.lflip (R := R)).toLinearMap <|
         (LinearMap.llcomp R _ _ _ (mul na _).flip).comp (mul nb nc)).flip
-  have rhs_eq : ∀ a b c, rhs a b c = a ₜ* (b ₜ* c) := fun _ _ _ => rfl
+  have rhs_eq : ∀ a b c, rhs a b c = a ₜ* (b ₜ* c) := fun _ _ _ ↦ rfl
   suffices lhs = rhs from
     LinearMap.congr_fun (LinearMap.congr_fun (LinearMap.congr_fun this a) b) c
   ext a b c
@@ -190,11 +190,11 @@ theorem mul_assoc {na nb nc} (a : (⨂[R]^na) M) (b : (⨂[R]^nb) M) (c : (⨂[R
   rw [Fin.coe_cast, Fin.coe_cast]
 
 -- for now we just use the default for the `gnpow` field as it's easier.
-instance gmonoid : GradedMonoid.GMonoid fun i => ⨂[R]^i M :=
+instance gmonoid : GradedMonoid.GMonoid fun i ↦ ⨂[R]^i M :=
   { TensorPower.gMul, TensorPower.gOne with
-    one_mul := fun _ => gradedMonoid_eq_of_cast (zero_add _) (one_mul _)
-    mul_one := fun _ => gradedMonoid_eq_of_cast (add_zero _) (mul_one _)
-    mul_assoc := fun _ _ _ => gradedMonoid_eq_of_cast (add_assoc _ _ _) (mul_assoc _ _ _) }
+    one_mul := fun _ ↦ gradedMonoid_eq_of_cast (zero_add _) (one_mul _)
+    mul_one := fun _ ↦ gradedMonoid_eq_of_cast (add_zero _) (mul_one _)
+    mul_assoc := fun _ _ _ ↦ gradedMonoid_eq_of_cast (add_assoc _ _ _) (mul_assoc _ _ _) }
 
 /-- The canonical map from `R` to `⨂[R]^0 M` corresponding to the `algebraMap` of the tensor
 algebra. -/
@@ -222,22 +222,22 @@ theorem algebraMap₀_mul_algebraMap₀ (r s : R) :
   rw [← smul_eq_mul, LinearEquiv.map_smul]
   exact algebraMap₀_mul r (@algebraMap₀ R M _ _ _ s)
 
-instance gsemiring : DirectSum.GSemiring fun i => ⨂[R]^i M :=
+instance gsemiring : DirectSum.GSemiring fun i ↦ ⨂[R]^i M :=
   { TensorPower.gmonoid with
-    mul_zero := fun _ => LinearMap.map_zero _
-    zero_mul := fun _ => LinearMap.map_zero₂ _ _
-    mul_add := fun _ _ _ => LinearMap.map_add _ _ _
-    add_mul := fun _ _ _ => LinearMap.map_add₂ _ _ _ _
-    natCast := fun n => algebraMap₀ (n : R)
+    mul_zero := fun _ ↦ LinearMap.map_zero _
+    zero_mul := fun _ ↦ LinearMap.map_zero₂ _ _
+    mul_add := fun _ _ _ ↦ LinearMap.map_add _ _ _
+    add_mul := fun _ _ _ ↦ LinearMap.map_add₂ _ _ _ _
+    natCast := fun n ↦ algebraMap₀ (n : R)
     natCast_zero := by simp only [Nat.cast_zero, map_zero]
-    natCast_succ := fun n => by simp only [Nat.cast_succ, map_add, algebraMap₀_one] }
+    natCast_succ := fun n ↦ by simp only [Nat.cast_succ, map_add, algebraMap₀_one] }
 
 example : Semiring (⨁ n : ℕ, ⨂[R]^n M) := by infer_instance
 
 /-- The tensor powers form a graded algebra.
 
 Note that this instance implies `Algebra R (⨁ n : ℕ, ⨂[R]^n M)` via `DirectSum.Algebra`. -/
-instance galgebra : DirectSum.GAlgebra R fun i => ⨂[R]^i M where
+instance galgebra : DirectSum.GAlgebra R fun i ↦ ⨂[R]^i M where
   toFun := (algebraMap₀ : R ≃ₗ[R] (⨂[R]^0) M).toLinearMap.toAddMonoidHom
   map_one := algebraMap₀_one
   map_mul r s := gradedMonoid_eq_of_cast rfl (by

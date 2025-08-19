@@ -135,7 +135,7 @@ variable (J : Type u) [Category.{v} J]
 /-- The converse is true if `J` is filtered, see `finallySmall_of_small_weakly_terminal_set`. -/
 theorem FinallySmall.exists_small_weakly_terminal_set [FinallySmall.{w} J] :
     ∃ (s : Set J) (_ : Small.{w} s), ∀ i, ∃ j ∈ s, Nonempty (i ⟶ j) := by
-  refine ⟨Set.range (fromFinalModel J).obj, inferInstance, fun i => ?_⟩
+  refine ⟨Set.range (fromFinalModel J).obj, inferInstance, fun i ↦ ?_⟩
   obtain ⟨f⟩ : Nonempty (StructuredArrow i (fromFinalModel J)) := IsConnected.is_nonempty
   exact ⟨(fromFinalModel J).obj f.right, Set.mem_range_self _, ⟨f.hom⟩⟩
 
@@ -144,13 +144,13 @@ theorem finallySmall_of_small_weakly_terminal_set [IsFilteredOrEmpty J] (s : Set
     (hs : ∀ i, ∃ j ∈ s, Nonempty (i ⟶ j)) : FinallySmall.{v} J := by
   suffices Functor.Final (ObjectProperty.ι (· ∈ s)) from
     finallySmall_of_final_of_essentiallySmall (ObjectProperty.ι (· ∈ s))
-  refine Functor.final_of_exists_of_isFiltered_of_fullyFaithful _ (fun i => ?_)
+  refine Functor.final_of_exists_of_isFiltered_of_fullyFaithful _ (fun i ↦ ?_)
   obtain ⟨j, hj₁, hj₂⟩ := hs i
   exact ⟨⟨j, hj₁⟩, hj₂⟩
 
 theorem finallySmall_iff_exists_small_weakly_terminal_set [IsFilteredOrEmpty J] :
     FinallySmall.{v} J ↔ ∃ (s : Set J) (_ : Small.{v} s), ∀ i, ∃ j ∈ s, Nonempty (i ⟶ j) := by
-  refine ⟨fun _ => FinallySmall.exists_small_weakly_terminal_set _, fun h => ?_⟩
+  refine ⟨fun _ ↦ FinallySmall.exists_small_weakly_terminal_set _, fun h ↦ ?_⟩
   rcases h with ⟨s, hs, hs'⟩
   exact finallySmall_of_small_weakly_terminal_set s hs'
 
@@ -163,7 +163,7 @@ variable (J : Type u) [Category.{v} J]
 /-- The converse is true if `J` is cofiltered, see `initiallySmall_of_small_weakly_initial_set`. -/
 theorem InitiallySmall.exists_small_weakly_initial_set [InitiallySmall.{w} J] :
     ∃ (s : Set J) (_ : Small.{w} s), ∀ i, ∃ j ∈ s, Nonempty (j ⟶ i) := by
-  refine ⟨Set.range (fromInitialModel J).obj, inferInstance, fun i => ?_⟩
+  refine ⟨Set.range (fromInitialModel J).obj, inferInstance, fun i ↦ ?_⟩
   obtain ⟨f⟩ : Nonempty (CostructuredArrow (fromInitialModel J) i) := IsConnected.is_nonempty
   exact ⟨(fromInitialModel J).obj f.left, Set.mem_range_self _, ⟨f.hom⟩⟩
 
@@ -172,13 +172,13 @@ theorem initiallySmall_of_small_weakly_initial_set [IsCofilteredOrEmpty J] (s : 
     (hs : ∀ i, ∃ j ∈ s, Nonempty (j ⟶ i)) : InitiallySmall.{v} J := by
   suffices Functor.Initial (ObjectProperty.ι (· ∈ s)) from
     initiallySmall_of_initial_of_essentiallySmall (ObjectProperty.ι (· ∈ s))
-  refine Functor.initial_of_exists_of_isCofiltered_of_fullyFaithful _ (fun i => ?_)
+  refine Functor.initial_of_exists_of_isCofiltered_of_fullyFaithful _ (fun i ↦ ?_)
   obtain ⟨j, hj₁, hj₂⟩ := hs i
   exact ⟨⟨j, hj₁⟩, hj₂⟩
 
 theorem initiallySmall_iff_exists_small_weakly_initial_set [IsCofilteredOrEmpty J] :
     InitiallySmall.{v} J ↔ ∃ (s : Set J) (_ : Small.{v} s), ∀ i, ∃ j ∈ s, Nonempty (j ⟶ i) := by
-  refine ⟨fun _ => InitiallySmall.exists_small_weakly_initial_set _, fun h => ?_⟩
+  refine ⟨fun _ ↦ InitiallySmall.exists_small_weakly_initial_set _, fun h ↦ ?_⟩
   rcases h with ⟨s, hs, hs'⟩
   exact initiallySmall_of_small_weakly_initial_set s hs'
 

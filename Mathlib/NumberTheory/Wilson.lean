@@ -47,7 +47,7 @@ theorem wilsons_lemma : ((p - 1)! : ZMod p) = -1 := by
           prod_univ_units_id_eq_neg_one, Units.coeHom_apply, Units.val_neg, Units.val_one]
   have hp : 0 < p := (Fact.out (p := p.Prime)).pos
   symm
-  refine prod_bij (fun a _ => (a : ZMod p).val) ?_ ?_ ?_ ?_
+  refine prod_bij (fun a _ ↦ (a : ZMod p).val) ?_ ?_ ?_ ?_
   · intro a ha
     rw [mem_Ico, ← Nat.succ_sub hp, Nat.add_one_sub_one]
     constructor
@@ -91,7 +91,7 @@ theorem prime_of_fac_equiv_neg_one (h : ((n - 1)! : ZMod n) = -1) (h1 : n ≠ 1)
 
 /-- **Wilson's Theorem**: For `n ≠ 1`, `(n-1)!` is congruent to `-1` modulo `n` iff n is prime. -/
 theorem prime_iff_fac_equiv_neg_one (h : n ≠ 1) : Prime n ↔ ((n - 1)! : ZMod n) = -1 := by
-  refine ⟨fun h1 => ?_, fun h2 => prime_of_fac_equiv_neg_one h2 h⟩
+  refine ⟨fun h1 ↦ ?_, fun h2 ↦ prime_of_fac_equiv_neg_one h2 h⟩
   haveI := Fact.mk h1
   exact ZMod.wilsons_lemma n
 

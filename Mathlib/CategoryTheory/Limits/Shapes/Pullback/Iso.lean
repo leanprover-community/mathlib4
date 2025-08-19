@@ -53,7 +53,7 @@ theorem pullbackConeOfLeftIso_π_app_right : (pullbackConeOfLeftIso f g).π.app 
 
 /-- Verify that the constructed limit cone is indeed a limit. -/
 def pullbackConeOfLeftIsoIsLimit : IsLimit (pullbackConeOfLeftIso f g) :=
-  PullbackCone.isLimitAux' _ fun s => ⟨s.snd, by simp [← s.condition_assoc]⟩
+  PullbackCone.isLimitAux' _ fun s ↦ ⟨s.snd, by simp [← s.condition_assoc]⟩
 
 theorem hasPullback_of_left_iso : HasPullback f g :=
   ⟨⟨⟨_, pullbackConeOfLeftIsoIsLimit f g⟩⟩⟩
@@ -104,7 +104,7 @@ theorem pullbackConeOfRightIso_π_app_right : (pullbackConeOfRightIso f g).π.ap
 
 /-- Verify that the constructed limit cone is indeed a limit. -/
 def pullbackConeOfRightIsoIsLimit : IsLimit (pullbackConeOfRightIso f g) :=
-  PullbackCone.isLimitAux' _ fun s => ⟨s.fst, by simp [s.condition_assoc]⟩
+  PullbackCone.isLimitAux' _ fun s ↦ ⟨s.fst, by simp [s.condition_assoc]⟩
 
 theorem hasPullback_of_right_iso : HasPullback f g :=
   ⟨⟨⟨_, pullbackConeOfRightIsoIsLimit f g⟩⟩⟩
@@ -155,7 +155,7 @@ theorem pushoutCoconeOfLeftIso_ι_app_right : (pushoutCoconeOfLeftIso f g).ι.ap
 
 /-- Verify that the constructed cocone is indeed a colimit. -/
 def pushoutCoconeOfLeftIsoIsLimit : IsColimit (pushoutCoconeOfLeftIso f g) :=
-  PushoutCocone.isColimitAux' _ fun s => ⟨s.inr, by simp [← s.condition]⟩
+  PushoutCocone.isColimitAux' _ fun s ↦ ⟨s.inr, by simp [← s.condition]⟩
 
 theorem hasPushout_of_left_iso : HasPushout f g :=
   ⟨⟨⟨_, pushoutCoconeOfLeftIsoIsLimit f g⟩⟩⟩
@@ -206,7 +206,7 @@ theorem pushoutCoconeOfRightIso_ι_app_right :
 
 /-- Verify that the constructed cocone is indeed a colimit. -/
 def pushoutCoconeOfRightIsoIsLimit : IsColimit (pushoutCoconeOfRightIso f g) :=
-  PushoutCocone.isColimitAux' _ fun s => ⟨s.inl, by simp [← s.condition]⟩
+  PushoutCocone.isColimitAux' _ fun s ↦ ⟨s.inl, by simp [← s.condition]⟩
 
 theorem hasPushout_of_right_iso : HasPushout f g :=
   ⟨⟨⟨_, pushoutCoconeOfRightIsoIsLimit f g⟩⟩⟩

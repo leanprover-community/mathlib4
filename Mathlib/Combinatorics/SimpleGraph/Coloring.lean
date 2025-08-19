@@ -108,10 +108,10 @@ theorem Coloring.card_colorClasses_le [Fintype α] [Fintype C.colorClasses] :
   convert Setoid.card_classes_ker_le C
 
 theorem Coloring.not_adj_of_mem_colorClass {c : α} {v w : V} (hv : v ∈ C.colorClass c)
-    (hw : w ∈ C.colorClass c) : ¬G.Adj v w := fun h => C.valid h (Eq.trans hv (Eq.symm hw))
+    (hw : w ∈ C.colorClass c) : ¬G.Adj v w := fun h ↦ C.valid h (Eq.trans hv (Eq.symm hw))
 
 theorem Coloring.color_classes_independent (c : α) : IsAntichain G.Adj (C.colorClass c) :=
-  fun _ hv _ hw _ => C.not_adj_of_mem_colorClass hv hw
+  fun _ hv _ hw _ ↦ C.not_adj_of_mem_colorClass hv hw
 
 -- TODO make this computable
 noncomputable instance [Fintype V] [Fintype α] : Fintype (Coloring G α) := by
@@ -126,7 +126,7 @@ def Colorable (n : ℕ) : Prop := Nonempty (G.Coloring (Fin n))
 
 /-- The coloring of an empty graph. -/
 def coloringOfIsEmpty [IsEmpty V] : G.Coloring α :=
-  Coloring.mk isEmptyElim fun {v} => isEmptyElim v
+  Coloring.mk isEmptyElim fun {v} ↦ isEmptyElim v
 
 theorem colorable_of_isEmpty [IsEmpty V] (n : ℕ) : G.Colorable n :=
   ⟨G.coloringOfIsEmpty⟩
@@ -142,7 +142,7 @@ lemma colorable_zero_iff : G.Colorable 0 ↔ IsEmpty V :=
   ⟨G.isEmpty_of_colorable_zero, fun _ ↦ G.colorable_of_isEmpty 0⟩
 
 /-- The "tautological" coloring of a graph, using the vertices of the graph as colors. -/
-def selfColoring : G.Coloring V := Coloring.mk id fun {_ _} => G.ne_of_adj
+def selfColoring : G.Coloring V := Coloring.mk id fun {_ _} ↦ G.ne_of_adj
 
 /-- The chromatic number of a graph is the minimal number of colors needed to color it.
 This is `⊤` (infinity) iff `G` isn't colorable with finitely many colors.
@@ -233,7 +233,7 @@ theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     exact Fin.is_lt (C.1 v)
   · rintro ⟨C, Cf⟩
     refine ⟨Coloring.mk ?_ ?_⟩
-    · exact fun v => ⟨C v, Cf v⟩
+    · exact fun v ↦ ⟨C v, Cf v⟩
     · rintro v w hvw
       simp only [Fin.mk_eq_mk, Ne]
       exact C.valid hvw
@@ -243,7 +243,7 @@ theorem colorable_set_nonempty_of_colorable {n : ℕ} (hc : G.Colorable n) :
   ⟨n, hc⟩
 
 theorem chromaticNumber_bddBelow : BddBelow { n : ℕ | G.Colorable n } :=
-  ⟨0, fun _ _ => zero_le _⟩
+  ⟨0, fun _ _ ↦ zero_le _⟩
 
 theorem Colorable.chromaticNumber_le {n : ℕ} (hc : G.Colorable n) : G.chromaticNumber ≤ n := by
   rw [hc.chromaticNumber_eq_sInf]
@@ -283,7 +283,7 @@ theorem colorable_chromaticNumber_of_fintype (G : SimpleGraph V) [Finite V] :
 theorem chromaticNumber_le_one_of_subsingleton (G : SimpleGraph V) [Subsingleton V] :
     G.chromaticNumber ≤ 1 := by
   rw [← Nat.cast_one, chromaticNumber_le_iff_colorable]
-  refine ⟨Coloring.mk (fun _ => 0) ?_⟩
+  refine ⟨Coloring.mk (fun _ ↦ 0) ?_⟩
   intros v w
   cases Subsingleton.elim v w
   simp
@@ -331,11 +331,11 @@ theorem chromaticNumber_le_of_forall_imp {V' : Type*} {G' : SimpleGraph V'}
 
 theorem chromaticNumber_mono (G' : SimpleGraph V)
     (h : G ≤ G') : G.chromaticNumber ≤ G'.chromaticNumber :=
-  chromaticNumber_le_of_forall_imp fun _ => Colorable.mono_left h
+  chromaticNumber_le_of_forall_imp fun _ ↦ Colorable.mono_left h
 
 theorem chromaticNumber_mono_of_embedding {V' : Type*} {G' : SimpleGraph V'}
     (f : G ↪g G') : G.chromaticNumber ≤ G'.chromaticNumber :=
-  chromaticNumber_le_of_forall_imp fun _ => Colorable.of_embedding f
+  chromaticNumber_le_of_forall_imp fun _ ↦ Colorable.of_embedding f
 
 lemma card_le_chromaticNumber_iff_forall_surjective [Fintype α] :
     card α ≤ G.chromaticNumber ↔ ∀ C : G.Coloring α, Surjective C := by
@@ -390,7 +390,7 @@ theorem chromaticNumber_top_eq_top_of_infinite (V : Type*) [Infinite V] :
 /-- The bicoloring of a complete bipartite graph using whether a vertex
 is on the left or on the right. -/
 def CompleteBipartiteGraph.bicoloring (V W : Type*) : (completeBipartiteGraph V W).Coloring Bool :=
-  Coloring.mk (fun v => v.isRight)
+  Coloring.mk (fun v ↦ v.isRight)
     (by
       intro v w
       cases v <;> cases w <;> simp)
@@ -415,7 +415,7 @@ theorem CompleteBipartiteGraph.chromaticNumber {V W : Type*} [Nonempty V] [Nonem
 theorem IsClique.card_le_of_coloring {s : Finset V} (h : G.IsClique s) [Fintype α]
     (C : G.Coloring α) : s.card ≤ Fintype.card α := by
   rw [isClique_iff_induce_eq] at h
-  have f : G.induce ↑s ↪g G := Embedding.comap (Function.Embedding.subtype fun x => x ∈ ↑s) G
+  have f : G.induce ↑s ↪g G := Embedding.comap (Function.Embedding.subtype fun x ↦ x ∈ ↑s) G
   rw [h] at f
   convert Fintype.card_le_of_injective _ (C.comp f.toHom).injective_of_top_hom using 1
   simp

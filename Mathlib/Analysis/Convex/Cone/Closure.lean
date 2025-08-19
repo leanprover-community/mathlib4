@@ -26,7 +26,7 @@ construction is mainly used for defining maps between proper cones. -/
 protected def closure (K : ConvexCone 𝕜 E) : ConvexCone 𝕜 E where
   carrier := closure ↑K
   smul_mem' c hc _ h₁ :=
-    map_mem_closure (continuous_id'.const_smul c) h₁ fun _ h₂ => K.smul_mem hc h₂
+    map_mem_closure (continuous_id'.const_smul c) h₁ fun _ h₂ ↦ K.smul_mem hc h₂
   add_mem' _ h₁ _ h₂ := map_mem_closure₂ continuous_add h₁ h₂ K.add_mem
 
 @[simp, norm_cast]

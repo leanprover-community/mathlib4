@@ -192,7 +192,7 @@ def compEquivalenceFromModelInverseIso : L ⋙ (equivalenceFromModel L W).invers
     _ ≅ W.Q := rightUnitor _
 
 theorem essSurj (W) [L.IsLocalization W] : L.EssSurj :=
-  ⟨fun X =>
+  ⟨fun X ↦
     ⟨(Construction.objEquiv W).invFun ((equivalenceFromModel L W).inverse.obj X),
       Nonempty.intro
         ((qCompEquivalenceFromModelFunctorIso L W).symm.app _ ≪≫
@@ -208,10 +208,10 @@ instance : (whiskeringLeftFunctor L W E).IsEquivalence := by
   let iso : (whiskeringLeft (MorphismProperty.Localization W) D E).obj
     (equivalenceFromModel L W).functor ⋙
       (Construction.whiskeringLeftEquivalence W E).functor ≅ whiskeringLeftFunctor L W E :=
-    NatIso.ofComponents (fun F => eqToIso (by
+    NatIso.ofComponents (fun F ↦ eqToIso (by
       ext
       change (W.Q ⋙ Localization.Construction.lift L (inverts L W)) ⋙ F = L ⋙ F
-      rw [Construction.fac])) (fun τ => by
+      rw [Construction.fac])) (fun τ ↦ by
         ext
         dsimp [Construction.whiskeringLeftEquivalence, equivalenceFromModel, whiskerLeft]
         erw [NatTrans.comp_app, NatTrans.comp_app, eqToHom_app, eqToHom_app, eqToHom_refl,
@@ -331,13 +331,13 @@ theorem comp_liftNatTrans (F₁ F₂ F₃ : C ⥤ E) (F₁' F₂' F₃' : D ⥤ 
     [h₂ : Lifting L W F₂ F₂'] [h₃ : Lifting L W F₃ F₃'] (τ : F₁ ⟶ F₂) (τ' : F₂ ⟶ F₃) :
     liftNatTrans L W F₁ F₂ F₁' F₂' τ ≫ liftNatTrans L W F₂ F₃ F₂' F₃' τ' =
       liftNatTrans L W F₁ F₃ F₁' F₃' (τ ≫ τ') :=
-  natTrans_ext L W fun X => by
+  natTrans_ext L W fun X ↦ by
     simp only [NatTrans.comp_app, liftNatTrans_app, assoc, Iso.inv_hom_id_app_assoc]
 
 @[simp]
 theorem liftNatTrans_id (F : C ⥤ E) (F' : D ⥤ E) [h : Lifting L W F F'] :
     liftNatTrans L W F F F' F' (𝟙 F) = 𝟙 F' :=
-  natTrans_ext L W fun X => by
+  natTrans_ext L W fun X ↦ by
     simp only [liftNatTrans_app, NatTrans.id_app, id_comp, Iso.hom_inv_id_app]
     rfl
 

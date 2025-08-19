@@ -53,9 +53,9 @@ theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] 
       apply Set.inter_subset_left
     rw [← absorbing_eq_self] at hm
     exact hm.2
-  refine zorn_superset _ fun c hcs hc => ?_
+  refine zorn_superset _ fun c hcs hc ↦ ?_
   refine
-    ⟨⋂₀ c, ⟨isClosed_sInter fun t ht => (hcs ht).1, ?_, fun m hm m' hm' => ?_⟩, fun s hs =>
+    ⟨⋂₀ c, ⟨isClosed_sInter fun t ht ↦ (hcs ht).1, ?_, fun m hm m' hm' ↦ ?_⟩, fun s hs ↦
       Set.sInter_subset_of_mem hs⟩
   · obtain rfl | hcnemp := c.eq_empty_or_nonempty
     · rw [Set.sInter_empty]
@@ -65,9 +65,9 @@ theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] 
         ((↑) : c → Set M) ?_ ?_ ?_ ?_
     · exact Set.sInter_eq_iInter
     · refine DirectedOn.directed_val (IsChain.directedOn hc.symm)
-    exacts [fun i => (hcs i.prop).2.1, fun i => (hcs i.prop).1.isCompact, fun i => (hcs i.prop).1]
+    exacts [fun i ↦ (hcs i.prop).2.1, fun i ↦ (hcs i.prop).1.isCompact, fun i ↦ (hcs i.prop).1]
   · rw [Set.mem_sInter]
-    exact fun t ht => (hcs ht).2.2 m (Set.mem_sInter.mp hm t ht) m' (Set.mem_sInter.mp hm' t ht)
+    exact fun t ht ↦ (hcs ht).2.2 m (Set.mem_sInter.mp hm t ht) m' (Set.mem_sInter.mp hm' t ht)
 
 /-- A version of `exists_idempotent_of_compact_t2_of_continuous_mul_left` where the idempotent lies
 in some specified nonempty compact subsemigroup. -/
@@ -81,11 +81,11 @@ theorem exists_idempotent_in_compact_subsemigroup {M} [Semigroup M] [Topological
     ∃ m ∈ s, m * m = m := by
   let M' := { m // m ∈ s }
   letI : Semigroup M' :=
-    { mul := fun p q => ⟨p.1 * q.1, s_add _ p.2 _ q.2⟩
-      mul_assoc := fun p q r => Subtype.eq (mul_assoc _ _ _) }
+    { mul := fun p q ↦ ⟨p.1 * q.1, s_add _ p.2 _ q.2⟩
+      mul_assoc := fun p q r ↦ Subtype.eq (mul_assoc _ _ _) }
   haveI : CompactSpace M' := isCompact_iff_compactSpace.mp s_compact
   haveI : Nonempty M' := nonempty_subtype.mpr snemp
-  have : ∀ p : M', Continuous (· * p) := fun p =>
+  have : ∀ p : M', Continuous (· * p) := fun p ↦
     ((continuous_mul_left p.1).comp continuous_subtype_val).subtype_mk _
   obtain ⟨⟨m, hm⟩, idem⟩ := exists_idempotent_of_compact_t2_of_continuous_mul_left this
   exact ⟨m, hm, Subtype.ext_iff.mp idem⟩

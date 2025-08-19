@@ -70,7 +70,7 @@ decreasing_by exact bitwise_rec_lemma n0
 def binaryRec' {motive : Nat → Sort u} (z : motive 0)
     (f : ∀ b n, (n = 0 → b = true) → motive n → motive (bit b n)) :
     ∀ n, motive n :=
-  binaryRec z fun b n ih =>
+  binaryRec z fun b n ih ↦
     if h : n = 0 → b = true then f b n h ih
     else
       have : bit b n = 0 := by
@@ -83,7 +83,7 @@ def binaryRec' {motive : Nat → Sort u} (z : motive 0)
 def binaryRecFromOne {motive : Nat → Sort u} (z₀ : motive 0) (z₁ : motive 1)
     (f : ∀ b n, n ≠ 0 → motive n → motive (bit b n)) :
     ∀ n, motive n :=
-  binaryRec' z₀ fun b n h ih =>
+  binaryRec' z₀ fun b n h ih ↦
     if h' : n = 0 then
       have : bit b n = bit true 0 := by
         rw [h', h h']

@@ -47,11 +47,11 @@ theorem prod_map_atBot_eq {α₁ α₂ β₁ β₂ : Type*} [Preorder β₁] [Pr
     (u₁ : β₁ → α₁) (u₂ : β₂ → α₂) : map u₁ atBot ×ˢ map u₂ atBot = map (Prod.map u₁ u₂) atBot :=
   @prod_map_atTop_eq _ _ β₁ᵒᵈ β₂ᵒᵈ _ _ _ _
 
-theorem tendsto_atBot_diagonal [Preorder α] : Tendsto (fun a : α => (a, a)) atBot atBot := by
+theorem tendsto_atBot_diagonal [Preorder α] : Tendsto (fun a : α ↦ (a, a)) atBot atBot := by
   rw [← prod_atBot_atBot_eq]
   exact tendsto_id.prodMk tendsto_id
 
-theorem tendsto_atTop_diagonal [Preorder α] : Tendsto (fun a : α => (a, a)) atTop atTop := by
+theorem tendsto_atTop_diagonal [Preorder α] : Tendsto (fun a : α ↦ (a, a)) atTop atTop := by
   rw [← prod_atTop_atTop_eq]
   exact tendsto_id.prodMk tendsto_id
 

@@ -192,7 +192,7 @@ variable [Module R Q] [IsScalarTower R S Q]
 noncomputable nonrec def IsBaseChange.lift (g : M →ₗ[R] Q) : N →ₗ[S] Q :=
   { h.lift
       (((Algebra.linearMap S <| Module.End S (M →ₗ[R] Q)).flip g).restrictScalars R) with
-    map_smul' := fun r x => by
+    map_smul' := fun r x ↦ by
       let F := ((Algebra.linearMap S <| Module.End S (M →ₗ[R] Q)).flip g).restrictScalars R
       have hF : ∀ (s : S) (m : M), h.lift F (s • f m) = s • g m := h.lift_eq F
       change h.lift F (r • x) = r • h.lift F x
@@ -219,7 +219,7 @@ include h
 nonrec theorem IsBaseChange.inductionOn (x : N) (motive : N → Prop) (zero : motive 0)
     (tmul : ∀ m : M, motive (f m)) (smul : ∀ (s : S) (n), motive n → motive (s • n))
     (add : ∀ n₁ n₂, motive n₁ → motive n₂ → motive (n₁ + n₂)) : motive x :=
-  h.inductionOn x zero (fun _ _ => smul _ _ (tmul _)) add
+  h.inductionOn x zero (fun _ _ ↦ smul _ _ (tmul _)) add
 
 theorem IsBaseChange.algHom_ext (g₁ g₂ : N →ₗ[S] Q) (e : ∀ x, g₁ (f x) = g₂ (f x)) : g₁ = g₂ := by
   ext x
@@ -253,7 +253,7 @@ variable {R M N S}
 /-- The base change of `M` along `R → S` is linearly equivalent to `S ⊗[R] M`. -/
 noncomputable nonrec def IsBaseChange.equiv : S ⊗[R] M ≃ₗ[S] N :=
   { h.equiv with
-    map_smul' := fun r x => by
+    map_smul' := fun r x ↦ by
       change h.equiv (r • x) = r • h.equiv x
       refine TensorProduct.induction_on x ?_ ?_ ?_
       · rw [smul_zero, map_zero, smul_zero]
@@ -315,8 +315,8 @@ theorem IsBaseChange.of_lift_unique
   let f'' : S ⊗[R] M →ₗ[S] N := by
     refine
       { f' with
-        map_smul' := fun s x =>
-          TensorProduct.induction_on x ?_ (fun s' y => smul_assoc s s' _) fun x y hx hy => ?_ }
+        map_smul' := fun s x ↦
+          TensorProduct.induction_on x ?_ (fun s' y ↦ smul_assoc s s' _) fun x y hx hy ↦ ?_ }
     · dsimp; rw [map_zero, smul_zero, map_zero, smul_zero]
     · dsimp at *; rw [smul_add, map_add, map_add, smul_add, hx, hy]
   simp_rw [DFunLike.ext_iff, LinearMap.comp_apply, LinearMap.restrictScalars_apply] at hg
@@ -339,9 +339,9 @@ theorem IsBaseChange.iff_lift_unique :
         ∀ [Module R Q] [Module S Q],
           ∀ [IsScalarTower R S Q],
             ∀ g : M →ₗ[R] Q, ∃! g' : N →ₗ[S] Q, (g'.restrictScalars R).comp f = g :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     intros Q _ _ _ _ g
-    exact ⟨h.lift g, h.lift_comp g, fun g' e => h.algHom_ext' _ _ (e.trans (h.lift_comp g).symm)⟩,
+    exact ⟨h.lift g, h.lift_comp g, fun g' e ↦ h.algHom_ext' _ _ (e.trans (h.lift_comp g).symm)⟩,
     IsBaseChange.of_lift_unique f⟩
 
 theorem IsBaseChange.ofEquiv (e : M ≃ₗ[R] N) : IsBaseChange R e.toLinearMap := by
@@ -371,11 +371,11 @@ theorem IsBaseChange.comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {g : N →
   intro Q _ _ _ _ i
   letI := Module.compHom Q (algebraMap S T)
   haveI : IsScalarTower S T Q :=
-    ⟨fun x y z => by
+    ⟨fun x y z ↦ by
       rw [Algebra.smul_def, mul_smul]
       rfl⟩
   have : IsScalarTower R S Q := by
-    refine ⟨fun x y z => ?_⟩
+    refine ⟨fun x y z ↦ ?_⟩
     change (IsScalarTower.toAlgHom R S T) (x • y) • z = x • algebraMap S T y • z
     rw [map_smul, smul_assoc]
     rfl
@@ -523,7 +523,7 @@ theorem Algebra.pushoutDesc_left [Algebra.IsPushout R S R' S'] {A : Type*} [Semi
 theorem Algebra.lift_algHom_comp_left [Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]
     [Algebra R A] (f : S →ₐ[R] A) (g : R' →ₐ[R] A) (H) :
     (Algebra.pushoutDesc S' f g H).comp (toAlgHom R S S') = f :=
-  AlgHom.ext fun x => (Algebra.pushoutDesc_left S' f g H x :)
+  AlgHom.ext fun x ↦ (Algebra.pushoutDesc_left S' f g H x :)
 
 @[simp]
 theorem Algebra.pushoutDesc_right [Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]
@@ -534,7 +534,7 @@ theorem Algebra.pushoutDesc_right [Algebra.IsPushout R S R' S'] {A : Type*} [Sem
 theorem Algebra.lift_algHom_comp_right [Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]
     [Algebra R A] (f : S →ₐ[R] A) (g : R' →ₐ[R] A) (H) :
     (Algebra.pushoutDesc S' f g H).comp (toAlgHom R R' S') = g :=
-  AlgHom.ext fun x => (Algebra.pushoutDesc_right S' f g H x :)
+  AlgHom.ext fun x ↦ (Algebra.pushoutDesc_right S' f g H x :)
 
 @[ext (iff := false)]
 theorem Algebra.IsPushout.algHom_ext [H : Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]

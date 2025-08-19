@@ -184,7 +184,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
               -- absorb the newly-created integrals into `∫⋯∫`
               congr! 2
               · rw [lmarginal_singleton]
-              refine prod_congr rfl fun j hj => ?_
+              refine prod_congr rfl fun j hj ↦ ?_
               have hi' : i ∉ ({j} : Finset ι) := by
                 simp only [Finset.mem_singleton] at hj ⊢
                 exact fun h ↦ hi (h ▸ hj)

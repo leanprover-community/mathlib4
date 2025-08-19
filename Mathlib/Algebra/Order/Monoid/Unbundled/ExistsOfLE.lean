@@ -39,7 +39,7 @@ export ExistsAddOfLE (exists_add_of_le)
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) Group.existsMulOfLE (α : Type u) [Group α] [LE α] : ExistsMulOfLE α :=
-  ⟨fun {a b} _ => ⟨a⁻¹ * b, (mul_inv_cancel_left _ _).symm⟩⟩
+  ⟨fun {a b} _ ↦ ⟨a⁻¹ * b, (mul_inv_cancel_left _ _).symm⟩⟩
 
 section MulOneClass
 variable [MulOneClass α] [Preorder α] [ExistsMulOfLE α] {a b : α}
@@ -69,18 +69,18 @@ variable [LinearOrder α] [DenselyOrdered α] [Monoid α] [ExistsMulOfLE α]
 
 @[to_additive]
 theorem le_of_forall_one_lt_le_mul (h : ∀ ε : α, 1 < ε → a ≤ b * ε) : a ≤ b :=
-  le_of_forall_gt_imp_ge_of_dense fun x hxb => by
+  le_of_forall_gt_imp_ge_of_dense fun x hxb ↦ by
     obtain ⟨ε, rfl⟩ := exists_mul_of_le hxb.le
     exact h _ (one_lt_of_lt_mul_right hxb)
 
 @[to_additive]
 theorem le_of_forall_one_lt_lt_mul' (h : ∀ ε : α, 1 < ε → a < b * ε) : a ≤ b :=
-  le_of_forall_one_lt_le_mul fun ε hε => (h ε hε).le
+  le_of_forall_one_lt_le_mul fun ε hε ↦ (h ε hε).le
 
 @[to_additive]
 theorem le_iff_forall_one_lt_lt_mul' [MulLeftStrictMono α] :
     a ≤ b ↔ ∀ ε, 1 < ε → a < b * ε :=
-  ⟨fun h _ => lt_mul_of_le_of_one_lt h, le_of_forall_one_lt_lt_mul'⟩
+  ⟨fun h _ ↦ lt_mul_of_le_of_one_lt h, le_of_forall_one_lt_lt_mul'⟩
 
 @[to_additive]
 theorem le_iff_forall_one_lt_le_mul [MulLeftStrictMono α] :

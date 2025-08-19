@@ -30,8 +30,8 @@ variable [DecidableEq ι] [∀ i, Zero (α i)] {s : Finset ι} {f : Π₀ i, α 
 /-- Finitely supported product of finsets. -/
 def dfinsupp (s : Finset ι) (t : ∀ i, Finset (α i)) : Finset (Π₀ i, α i) :=
   (s.pi t).map
-    ⟨fun f => DFinsupp.mk s fun i => f i i.2, by
-      refine (mk_injective _).comp fun f g h => ?_
+    ⟨fun f ↦ DFinsupp.mk s fun i ↦ f i i.2, by
+      refine (mk_injective _).comp fun f g h ↦ ?_
       ext i hi
       convert congr_fun h ⟨i, hi⟩⟩
 
@@ -45,22 +45,22 @@ theorem mem_dfinsupp_iff : f ∈ s.dfinsupp t ↔ f.support ⊆ s ∧ ∀ i ∈ 
   refine mem_map.trans ⟨?_, ?_⟩
   · rintro ⟨f, hf, rfl⟩
     rw [Function.Embedding.coeFn_mk]
-    refine ⟨support_mk_subset, fun i hi => ?_⟩
+    refine ⟨support_mk_subset, fun i hi ↦ ?_⟩
     convert mem_pi.1 hf i hi
     exact mk_of_mem hi
-  · refine fun h => ⟨fun i _ => f i, mem_pi.2 h.2, ?_⟩
+  · refine fun h ↦ ⟨fun i _ ↦ f i, mem_pi.2 h.2, ?_⟩
     ext i
     dsimp
-    exact ite_eq_left_iff.2 fun hi => (notMem_support_iff.1 fun H => hi <| h.1 H).symm
+    exact ite_eq_left_iff.2 fun hi ↦ (notMem_support_iff.1 fun H ↦ hi <| h.1 H).symm
 
 /-- When `t` is supported on `s`, `f ∈ s.dfinsupp t` precisely means that `f` is pointwise in `t`.
 -/
 @[simp]
 theorem mem_dfinsupp_iff_of_support_subset {t : Π₀ i, Finset (α i)} (ht : t.support ⊆ s) :
     f ∈ s.dfinsupp t ↔ ∀ i, f i ∈ t i := by
-  refine mem_dfinsupp_iff.trans (forall_and.symm.trans <| forall_congr' fun i =>
-      ⟨ fun h => ?_,
-        fun h => ⟨fun hi => ht <| mem_support_iff.2 fun H => mem_support_iff.1 hi ?_, fun _ => h⟩⟩)
+  refine mem_dfinsupp_iff.trans (forall_and.symm.trans <| forall_congr' fun i ↦
+      ⟨ fun h ↦ ?_,
+        fun h ↦ ⟨fun hi ↦ ht <| mem_support_iff.2 fun H ↦ mem_support_iff.1 hi ?_, fun _ ↦ h⟩⟩)
   · by_cases hi : i ∈ s
     · exact h.2 hi
     · rw [notMem_support_iff.1 (mt h.1 hi), notMem_support_iff.1 (notMem_mono ht hi)]
@@ -78,7 +78,7 @@ variable [∀ i, Zero (α i)] {f : Π₀ i, α i} {i : ι} {a : α i}
 /-- Pointwise `Finset.singleton` bundled as a `DFinsupp`. -/
 def singleton (f : Π₀ i, α i) : Π₀ i, Finset (α i) where
   toFun i := {f i}
-  support' := f.support'.map fun s => ⟨s.1, fun i => (s.prop i).imp id (congr_arg _)⟩
+  support' := f.support'.map fun s ↦ ⟨s.1, fun i ↦ (s.prop i).imp id (congr_arg _)⟩
 
 theorem mem_singleton_apply_iff : a ∈ f.singleton i ↔ a = f i :=
   mem_singleton
@@ -93,9 +93,9 @@ variable [∀ i, Zero (α i)] [∀ i, PartialOrder (α i)] [∀ i, LocallyFinite
 /-- Pointwise `Finset.Icc` bundled as a `DFinsupp`. -/
 def rangeIcc (f g : Π₀ i, α i) : Π₀ i, Finset (α i) where
   toFun i := Icc (f i) (g i)
-  support' := f.support'.bind fun fs => g.support'.map fun gs =>
+  support' := f.support'.bind fun fs ↦ g.support'.map fun gs ↦
     ⟨ fs.1 + gs.1,
-      fun i => or_iff_not_imp_left.2 fun h => by
+      fun i ↦ or_iff_not_imp_left.2 fun h ↦ by
         have hf : f i = 0 := (fs.prop i).resolve_left
             (Multiset.notMem_mono (Multiset.Le.subset <| Multiset.le_add_right _ _) h)
         have hg : g i = 0 := (gs.prop i).resolve_left
@@ -110,7 +110,7 @@ theorem mem_rangeIcc_apply_iff : a ∈ f.rangeIcc g i ↔ f i ≤ a ∧ a ≤ g 
 
 theorem support_rangeIcc_subset [DecidableEq ι] [∀ i, DecidableEq (α i)] :
     (f.rangeIcc g).support ⊆ f.support ∪ g.support := by
-  refine fun x hx => ?_
+  refine fun x hx ↦ ?_
   by_contra h
   refine notMem_support_iff.2 ?_ hx
   rw [rangeIcc_apply, notMem_support_iff.1 (notMem_mono subset_union_left h),
@@ -134,7 +134,7 @@ theorem mem_pi {f : Π₀ i, Finset (α i)} {g : Π₀ i, α i} : g ∈ f.pi ↔
 @[simp]
 theorem card_pi (f : Π₀ i, Finset (α i)) : #f.pi = f.prod fun i ↦ #(f i) := by
   rw [pi, card_dfinsupp]
-  exact Finset.prod_congr rfl fun i _ => by simp only [Pi.natCast_apply, Nat.cast_id]
+  exact Finset.prod_congr rfl fun i _ ↦ by simp only [Pi.natCast_apply, Nat.cast_id]
 
 end Pi
 
@@ -145,8 +145,8 @@ variable [∀ i, PartialOrder (α i)] [∀ i, Zero (α i)] [∀ i, LocallyFinite
 
 instance instLocallyFiniteOrder : LocallyFiniteOrder (Π₀ i, α i) :=
   LocallyFiniteOrder.ofIcc (Π₀ i, α i)
-    (fun f g => (f.support ∪ g.support).dfinsupp <| f.rangeIcc g)
-    (fun f g x => by
+    (fun f g ↦ (f.support ∪ g.support).dfinsupp <| f.rangeIcc g)
+    (fun f g x ↦ by
       refine (mem_dfinsupp_iff_of_support_subset <| support_rangeIcc_subset).trans ?_
       simp_rw [mem_rangeIcc_apply_iff, forall_and]
       rfl)

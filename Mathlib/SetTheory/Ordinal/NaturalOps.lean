@@ -123,7 +123,7 @@ theorem lt_one_iff_zero {o : NatOrdinal} : o < 1 ↔ o = 0 :=
 
 /-- A recursor for `NatOrdinal`. Use as `induction x`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
-protected def rec {β : NatOrdinal → Sort*} (h : ∀ a, β (toNatOrdinal a)) : ∀ a, β a := fun a =>
+protected def rec {β : NatOrdinal → Sort*} (h : ∀ a, β (toNatOrdinal a)) : ∀ a, β a := fun a ↦
   h (toOrdinal a)
 
 /-- `Ordinal.induction` but for `NatOrdinal`. -/
@@ -234,9 +234,9 @@ termination_by (a, b)
 theorem blsub_nadd_of_mono {f : ∀ c < a ♯ b, Ordinal.{max u v}}
     (hf : ∀ {i j} (hi hj), i ≤ j → f i hi ≤ f j hj) :
     blsub.{u, v} _ f =
-      max (blsub.{u, v} a fun a' ha' => f (a' ♯ b) <| nadd_lt_nadd_right ha' b)
-        (blsub.{u, v} b fun b' hb' => f (a ♯ b') <| nadd_lt_nadd_left hb' a) := by
-  apply (blsub_le_iff.2 fun i h => _).antisymm (max_le _ _)
+      max (blsub.{u, v} a fun a' ha' ↦ f (a' ♯ b) <| nadd_lt_nadd_right ha' b)
+        (blsub.{u, v} b fun b' hb' ↦ f (a ♯ b') <| nadd_lt_nadd_left hb' a) := by
+  apply (blsub_le_iff.2 fun i h ↦ _).antisymm (max_le _ _)
   · intro i h
     rcases lt_nadd_iff.1 h with (⟨a', ha', hi⟩ | ⟨b', hb', hi⟩)
     · exact lt_max_of_lt_left ((hf h (nadd_lt_nadd_right ha' b) hi).trans_lt (lt_blsub _ _ ha'))
@@ -322,7 +322,7 @@ namespace NatOrdinal
 open Ordinal NaturalOps
 
 instance : Add NatOrdinal := ⟨nadd⟩
-instance : SuccAddOrder NatOrdinal := ⟨fun x => (nadd_one x).symm⟩
+instance : SuccAddOrder NatOrdinal := ⟨fun x ↦ (nadd_one x).symm⟩
 
 theorem lt_add_iff {a b c : NatOrdinal} :
     a < b + c ↔ (∃ b' < b, a ≤ b' + c) ∨ ∃ c' < c, a ≤ b + c' :=
@@ -333,13 +333,13 @@ theorem add_le_iff {a b c : NatOrdinal} :
   Ordinal.nadd_le_iff
 
 instance : AddLeftStrictMono NatOrdinal.{u} :=
-  ⟨fun a _ _ h => nadd_lt_nadd_left h a⟩
+  ⟨fun a _ _ h ↦ nadd_lt_nadd_left h a⟩
 
 instance : AddLeftMono NatOrdinal.{u} :=
-  ⟨fun a _ _ h => nadd_le_nadd_left h a⟩
+  ⟨fun a _ _ h ↦ nadd_le_nadd_left h a⟩
 
 instance : AddLeftReflectLE NatOrdinal.{u} :=
-  ⟨fun a b c h => by
+  ⟨fun a b c h ↦ by
     by_contra! h'
     exact h.not_gt (add_lt_add_left h' a)⟩
 
@@ -353,8 +353,8 @@ instance : AddCommMonoid NatOrdinal :=
     nsmul := nsmulRec }
 
 instance : IsOrderedCancelAddMonoid NatOrdinal :=
-  { add_le_add_left := fun _ _ => add_le_add_left
-    le_of_add_le_add_left := fun _ _ _ => le_of_add_le_add_left }
+  { add_le_add_left := fun _ _ ↦ add_le_add_left
+    le_of_add_le_add_left := fun _ _ _ ↦ le_of_add_le_add_left }
 
 instance : AddMonoidWithOne NatOrdinal :=
   AddMonoidWithOne.unary
@@ -489,9 +489,9 @@ theorem nmul_nadd_le {a' b' : Ordinal} (ha : a' ≤ a) (hb : b' ≤ b) :
   · exact le_rfl
 
 theorem lt_nmul_iff : c < a ⨳ b ↔ ∃ a' < a, ∃ b' < b, c ♯ a' ⨳ b' ≤ a' ⨳ b ♯ a ⨳ b' := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · rw [nmul] at h
-    simpa using notMem_of_lt_csInf h ⟨0, fun _ _ => bot_le⟩
+    simpa using notMem_of_lt_csInf h ⟨0, fun _ _ ↦ bot_le⟩
   · rintro ⟨a', ha, b', hb, h⟩
     have := h.trans_lt (nmul_nadd_lt ha hb)
     rwa [nadd_lt_nadd_iff_right] at this
@@ -511,7 +511,7 @@ termination_by (a, b)
 @[simp]
 theorem nmul_zero (a) : a ⨳ 0 = 0 := by
   rw [← Ordinal.le_zero, nmul_le_iff]
-  exact fun _ _ a ha => (Ordinal.not_lt_zero a ha).elim
+  exact fun _ _ a ha ↦ (Ordinal.not_lt_zero a ha).elim
 
 @[simp]
 theorem zero_nmul (a) : 0 ⨳ a = 0 := by rw [nmul_comm, nmul_zero]
@@ -547,8 +547,8 @@ theorem nmul_le_nmul_right (h : a ≤ b) (c) : a ⨳ c ≤ b ⨳ c := by
   exact nmul_le_nmul_left h c
 
 theorem nmul_nadd (a b c : Ordinal) : a ⨳ (b ♯ c) = a ⨳ b ♯ a ⨳ c := by
-  refine le_antisymm (nmul_le_iff.2 fun a' ha d hd => ?_)
-    (nadd_le_iff.2 ⟨fun d hd => ?_, fun d hd => ?_⟩)
+  refine le_antisymm (nmul_le_iff.2 fun a' ha d hd ↦ ?_)
+    (nadd_le_iff.2 ⟨fun d hd ↦ ?_, fun d hd ↦ ?_⟩)
   · rw [nmul_nadd]
     rcases lt_nadd_iff.1 hd with (⟨b', hb, hd⟩ | ⟨c', hc, hd⟩)
     · have := nadd_lt_nadd_of_lt_of_le (nmul_nadd_lt ha hb) (nmul_nadd_le ha.le hd)
@@ -697,8 +697,8 @@ instance : CommSemiring NatOrdinal :=
     mul_comm := nmul_comm }
 
 instance : IsOrderedRing NatOrdinal :=
-  { mul_le_mul_of_nonneg_left := fun _ _ c h _ => nmul_le_nmul_left h c
-    mul_le_mul_of_nonneg_right := fun _ _ c h _ => nmul_le_nmul_right h c }
+  { mul_le_mul_of_nonneg_left := fun _ _ c h _ ↦ nmul_le_nmul_left h c
+    mul_le_mul_of_nonneg_right := fun _ _ c h _ ↦ nmul_le_nmul_right h c }
 
 end NatOrdinal
 

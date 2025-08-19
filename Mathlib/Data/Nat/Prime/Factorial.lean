@@ -21,8 +21,8 @@ theorem Prime.dvd_factorial : ∀ {n p : ℕ} (_ : Prime p), p ∣ n ! ↔ p ≤
   | n + 1, p, hp => by
     rw [factorial_succ, hp.dvd_mul, Prime.dvd_factorial hp]
     exact
-      ⟨fun h => h.elim (le_of_dvd (succ_pos _)) le_succ_of_le, fun h =>
-        (_root_.lt_or_eq_of_le h).elim (Or.inr ∘ le_of_lt_succ) fun h => Or.inl <| by rw [h]⟩
+      ⟨fun h ↦ h.elim (le_of_dvd (succ_pos _)) le_succ_of_le, fun h ↦
+        (_root_.lt_or_eq_of_le h).elim (Or.inr ∘ le_of_lt_succ) fun h ↦ Or.inl <| by rw [h]⟩
 
 theorem coprime_factorial_iff {m n : ℕ} (hm : m ≠ 1) :
     m.Coprime n ! ↔ n < m.minFac := by

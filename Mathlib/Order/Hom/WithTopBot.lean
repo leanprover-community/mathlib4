@@ -48,7 +48,7 @@ theorem toDualBotEquiv_symm_top [LE α] : WithTop.toDualBotEquiv.symm (⊤ : (Wi
 
 theorem coe_toDualBotEquiv [LE α] :
     (WithTop.toDualBotEquiv : WithTop αᵒᵈ → (WithBot α)ᵒᵈ) = toDual ∘ WithTop.ofDual :=
-  funext fun _ => rfl
+  funext fun _ ↦ rfl
 
 /-- Embedding into `WithTop α`. -/
 @[simps]
@@ -121,7 +121,7 @@ theorem toDualTopEquiv_symm_bot [LE α] : WithBot.toDualTopEquiv.symm (⊥ : (Wi
 
 theorem coe_toDualTopEquiv_eq [LE α] :
     (WithBot.toDualTopEquiv : WithBot αᵒᵈ → (WithTop α)ᵒᵈ) = toDual ∘ WithBot.ofDual :=
-  funext fun _ => rfl
+  funext fun _ ↦ rfl
 
 /-- Embedding into `WithBot α`. -/
 @[simps]

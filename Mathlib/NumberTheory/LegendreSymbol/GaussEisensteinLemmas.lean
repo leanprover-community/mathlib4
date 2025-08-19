@@ -26,13 +26,13 @@ namespace ZMod
   of the integer in `(-p/2, p/2]` that is congruent to `a * x mod p` is the set
   of nonzero natural numbers `x` such that `x ≤ p / 2`. -/
 theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a : ZMod p)
-    (hap : a ≠ 0) : ((Ico 1 (p / 2).succ).1.map fun (x : ℕ) => (a * x).valMinAbs.natAbs) =
-    (Ico 1 (p / 2).succ).1.map fun a => a := by
+    (hap : a ≠ 0) : ((Ico 1 (p / 2).succ).1.map fun (x : ℕ) ↦ (a * x).valMinAbs.natAbs) =
+    (Ico 1 (p / 2).succ).1.map fun a ↦ a := by
   have he : ∀ {x}, x ∈ Ico 1 (p / 2).succ → x ≠ 0 ∧ x ≤ p / 2 := by
     simp +contextual [Nat.lt_succ_iff, Nat.succ_le_iff, pos_iff_ne_zero]
-  have hep : ∀ {x}, x ∈ Ico 1 (p / 2).succ → x < p := fun hx =>
+  have hep : ∀ {x}, x ∈ Ico 1 (p / 2).succ → x < p := fun hx ↦
     lt_of_le_of_lt (he hx).2 (Nat.div_lt_self hp.1.pos (by decide))
-  have hpe : ∀ {x}, x ∈ Ico 1 (p / 2).succ → ¬p ∣ x := fun hx hpx =>
+  have hpe : ∀ {x}, x ∈ Ico 1 (p / 2).succ → ¬p ∣ x := fun hx hpx ↦
     not_lt_of_ge (le_of_dvd (Nat.pos_of_ne_zero (he hx).1) hpx) (hep hx)
   have hmem : ∀ (x : ℕ) (_ : x ∈ Ico 1 (p / 2).succ),
       (a * x : ZMod p).valMinAbs.natAbs ∈ Ico 1 (p / 2).succ := by
@@ -54,8 +54,8 @@ theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a 
       · rw [mul_neg, mul_div_cancel₀ _ hap, natAbs_valMinAbs_neg, valMinAbs_def_pos,
           val_cast_of_lt (hep hb), if_pos (le_of_lt_succ (mem_Ico.1 hb).2), Int.natAbs_natCast]
   exact Multiset.map_eq_map_of_bij_of_nodup _ _ (Finset.nodup _) (Finset.nodup _)
-    (fun x _ => (a * x : ZMod p).valMinAbs.natAbs) hmem
-    (inj_on_of_surj_on_of_card_le _ hmem hsurj le_rfl) hsurj (fun _ _ => rfl)
+    (fun x _ ↦ (a * x : ZMod p).valMinAbs.natAbs) hmem
+    (inj_on_of_surj_on_of_card_le _ hmem hsurj le_rfl) hsurj (fun _ _ ↦ rfl)
 
 private theorem gauss_lemma_aux₁ (p : ℕ) [Fact p.Prime] {a : ℤ} (hap : (a : ZMod p) ≠ 0) :
     (a ^ (p / 2) * (p / 2)! : ZMod p) =
@@ -67,7 +67,7 @@ private theorem gauss_lemma_aux₁ (p : ℕ) [Fact p.Prime] {a : ℤ} (hap : (a 
     _ = ∏ x ∈ Ico 1 (p / 2).succ, ↑((a * x : ZMod p).val) := by simp
     _ = ∏ x ∈ Ico 1 (p / 2).succ, (if (a * x : ZMod p).val ≤ p / 2 then (1 : ZMod p) else -1) *
         (a * x : ZMod p).valMinAbs.natAbs :=
-      (prod_congr rfl fun _ _ => by
+      (prod_congr rfl fun _ _ ↦ by
         simp only [natCast_natAbs_valMinAbs]
         split_ifs <;> simp)
     _ = (-1 : ZMod p) ^ #{x ∈ Ico 1 (p / 2).succ | ¬(a * x.cast : ZMod p).val ≤ p / 2} *
@@ -75,9 +75,9 @@ private theorem gauss_lemma_aux₁ (p : ℕ) [Fact p.Prime] {a : ℤ} (hap : (a 
       have :
           (∏ x ∈ Ico 1 (p / 2).succ, if (a * x : ZMod p).val ≤ p / 2 then (1 : ZMod p) else -1) =
           ∏ x ∈ Ico 1 (p / 2).succ with ¬(a * x.cast : ZMod p).val ≤ p / 2, -1 :=
-        prod_bij_ne_one (fun x _ _ => x)
-          (fun x => by split_ifs <;> (dsimp; simp_all))
-          (fun _ _ _ _ _ _ => id) (fun b h _ => ⟨b, by simp_all [-not_le]⟩)
+        prod_bij_ne_one (fun x _ _ ↦ x)
+          (fun x ↦ by split_ifs <;> (dsimp; simp_all))
+          (fun _ _ _ _ _ _ ↦ id) (fun b h _ ↦ ⟨b, by simp_all [-not_le]⟩)
           (by intros; split_ifs at * <;> simp_all)
       rw [prod_mul_distrib, this, prod_const]
     _ = (-1 : ZMod p) ^ #{x ∈ Ico 1 (p / 2).succ | ¬(a * x.cast : ZMod p).val ≤ p / 2} *
@@ -149,8 +149,8 @@ theorem div_eq_filter_card {a b c : ℕ} (hb0 : 0 < b) (hc : a / b ≤ c) :
   calc
     a / b = #(Ico 1 (a / b).succ) := by simp
     _ = #{x ∈ Ico 1 c.succ | x * b ≤ a} :=
-      congr_arg _ <| Finset.ext fun x => by
-        have : x * b ≤ a → x ≤ c := fun h => le_trans (by rwa [le_div_iff_mul_le hb0]) hc
+      congr_arg _ <| Finset.ext fun x ↦ by
+        have : x * b ≤ a → x ≤ c := fun h ↦ le_trans (by rwa [le_div_iff_mul_le hb0]) hc
         simp [Nat.lt_succ_iff, le_div_iff_mul_le hb0]; tauto
 
 /-- The given sum is the number of integer points in the triangle formed by the diagonal of the
@@ -163,7 +163,7 @@ private theorem sum_Ico_eq_card_lt {p q : ℕ} :
     calc
       ∑ a ∈ Ico 1 (p / 2).succ, a * q / p =
           ∑ a ∈ Ico 1 (p / 2).succ, #{x ∈ Ico 1 (q / 2).succ | x * p ≤ a * q} :=
-        Finset.sum_congr rfl fun x hx => div_eq_filter_card (Nat.pos_of_ne_zero hp0) <|
+        Finset.sum_congr rfl fun x hx ↦ div_eq_filter_card (Nat.pos_of_ne_zero hp0) <|
           calc
             x * q / p ≤ p / 2 * q / p := by have := le_of_lt_succ (mem_Ico.mp hx).2; gcongr
             _ ≤ _ := Nat.div_mul_div_le_div _ _ _
@@ -179,13 +179,13 @@ theorem sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 
     #{x ∈ Ico 1 (q / 2).succ ×ˢ Ico 1 (p / 2).succ | x.2 * q ≤ x.1 * p} =
       #{x ∈ Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ | x.1 * q ≤ x.2 * p} :=
     card_equiv (Equiv.prodComm _ _)
-      (fun ⟨_, _⟩ => by
+      (fun ⟨_, _⟩ ↦ by
         simp +contextual only [mem_filter, Prod.swap_prod_mk,
           mem_product, Equiv.prodComm_apply, and_assoc, and_left_comm])
   have hdisj :
     Disjoint {x ∈ Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ | x.2 * p ≤ x.1 * q}
       {x ∈ Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ | x.1 * q ≤ x.2 * p} := by
-    apply disjoint_filter.2 fun x hx hpq hqp => ?_
+    apply disjoint_filter.2 fun x hx hpq hqp ↦ ?_
     have hxp : x.1 < p := lt_of_le_of_lt
       (show x.1 ≤ p / 2 by simp_all only [Nat.lt_succ_iff, mem_Ico, mem_product])
       (Nat.div_lt_self hp.1.pos (by decide))
@@ -198,7 +198,7 @@ theorem sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 
       {x ∈ Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ | x.2 * p ≤ x.1 * q} ∪
         {x ∈ Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ | x.1 * q ≤ x.2 * p} =
       Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ :=
-    Finset.ext fun x => by
+    Finset.ext fun x ↦ by
       have := le_total (x.2 * p) (x.1 * q)
       simp only [mem_union, mem_filter, mem_Ico, mem_product]
       tauto

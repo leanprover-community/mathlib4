@@ -43,8 +43,8 @@ instance (P : ProfiniteGrp) : SmallCategory (OpenNormalSubgroup P) :=
 /-- The functor from `OpenNormalSubgroup P` to `FiniteGrp` sending `U` to `P ⧸ U`,
 where `P : ProfiniteGrp`. -/
 def toFiniteQuotientFunctor (P : ProfiniteGrp) : OpenNormalSubgroup P ⥤ FiniteGrp where
-  obj := fun H => FiniteGrp.of (P ⧸ H.toSubgroup)
-  map := fun fHK => FiniteGrp.ofHom (QuotientGroup.map _ _ (.id _) (leOfHom fHK))
+  obj := fun H ↦ FiniteGrp.of (P ⧸ H.toSubgroup)
+  map := fun fHK ↦ FiniteGrp.ofHom (QuotientGroup.map _ _ (.id _) (leOfHom fHK))
   map_id _ := ConcreteCategory.ext <| QuotientGroup.map_id _
   map_comp f g := ConcreteCategory.ext <| (QuotientGroup.map_comp_map
     _ _ _ (.id _) (.id _) (leOfHom f) (leOfHom g)).symm
@@ -53,7 +53,7 @@ def toFiniteQuotientFunctor (P : ProfiniteGrp) : OpenNormalSubgroup P ⥤ Finite
 open normal subgroups ordered by inclusion -/
 def toLimit_fun (P : ProfiniteGrp.{u}) : P →*
     limit (toFiniteQuotientFunctor P ⋙ forget₂ FiniteGrp ProfiniteGrp) where
-  toFun p := ⟨fun _ => QuotientGroup.mk p, fun _ ↦ fun _ _ ↦ rfl⟩
+  toFun p := ⟨fun _ ↦ QuotientGroup.mk p, fun _ ↦ fun _ _ ↦ rfl⟩
   map_one' := Subtype.val_inj.mp rfl
   map_mul' _ _ := Subtype.val_inj.mp rfl
 
@@ -86,11 +86,11 @@ theorem denseRange_toLimit (P : ProfiniteGrp.{u}) : DenseRange (toLimit P) := by
   rintro U ⟨s, hsO, hsv⟩ ⟨⟨spc, hspc⟩, uDefaultSpec⟩
   simp_rw [← hsv, Set.mem_preimage] at uDefaultSpec
   rcases (isOpen_pi_iff.mp hsO) _ uDefaultSpec with ⟨J, fJ, hJ1, hJ2⟩
-  let M := iInf (fun (j : J) => j.1.1.1)
-  have hM : M.Normal := Subgroup.normal_iInf_normal fun j => j.1.isNormal'
+  let M := iInf (fun (j : J) ↦ j.1.1.1)
+  have hM : M.Normal := Subgroup.normal_iInf_normal fun j ↦ j.1.isNormal'
   have hMOpen : IsOpen (M : Set P) := by
     rw [Subgroup.coe_iInf]
-    exact isOpen_iInter_of_finite fun i => i.1.1.isOpen'
+    exact isOpen_iInter_of_finite fun i ↦ i.1.1.isOpen'
   let m : OpenNormalSubgroup P := { M with isOpen' := hMOpen }
   rcases QuotientGroup.mk'_surjective M (spc m) with ⟨origin, horigin⟩
   use (toLimit P) origin
@@ -98,7 +98,7 @@ theorem denseRange_toLimit (P : ProfiniteGrp.{u}) : DenseRange (toLimit P) := by
   rw [← hsv]
   apply hJ2
   intro a a_in_J
-  let M_to_Na : m ⟶ a := (iInf_le (fun (j : J) => j.1.1.1) ⟨a, a_in_J⟩).hom
+  let M_to_Na : m ⟶ a := (iInf_le (fun (j : J) ↦ j.1.1.1) ⟨a, a_in_J⟩).hom
   rw [← (P.toLimit origin).property M_to_Na]
   change (P.toFiniteQuotientFunctor.map M_to_Na) (QuotientGroup.mk' M origin) ∈ _
   rw [horigin]
@@ -116,7 +116,7 @@ theorem toLimit_injective (P : ProfiniteGrp.{u}) : Function.Injective (toLimit P
   intro x h
   by_contra xne1
   rcases exist_openNormalSubgroup_sub_open_nhds_of_one (isOpen_compl_singleton)
-    (Set.mem_compl_singleton_iff.mpr fun a => xne1 a.symm) with ⟨H, hH⟩
+    (Set.mem_compl_singleton_iff.mpr fun a ↦ xne1 a.symm) with ⟨H, hH⟩
   exact hH ((QuotientGroup.eq_one_iff x).mp (congrFun (Subtype.val_inj.mpr h) H)) rfl
 
 /-- The topological group isomorphism between a profinite group and the projective limit of

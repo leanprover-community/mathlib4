@@ -16,7 +16,7 @@ variable {R : Type*} [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] {a : R
 @[simp]
 theorem invOf_pos [Invertible a] : 0 < ⅟a ↔ 0 < a :=
   haveI : 0 < a * ⅟a := by simp only [mul_invOf_self, zero_lt_one]
-  ⟨fun h => pos_of_mul_pos_left this h.le, fun h => pos_of_mul_pos_right this h.le⟩
+  ⟨fun h ↦ pos_of_mul_pos_left this h.le, fun h ↦ pos_of_mul_pos_right this h.le⟩
 
 @[simp]
 theorem invOf_nonpos [Invertible a] : ⅟a ≤ 0 ↔ a ≤ 0 := by simp only [← not_lt, invOf_pos]
@@ -24,7 +24,7 @@ theorem invOf_nonpos [Invertible a] : ⅟a ≤ 0 ↔ a ≤ 0 := by simp only [�
 @[simp]
 theorem invOf_nonneg [Invertible a] : 0 ≤ ⅟a ↔ 0 ≤ a :=
   haveI : 0 < a * ⅟a := by simp only [mul_invOf_self, zero_lt_one]
-  ⟨fun h => (pos_of_mul_pos_left this h).le, fun h => (pos_of_mul_pos_right this h).le⟩
+  ⟨fun h ↦ (pos_of_mul_pos_left this h).le, fun h ↦ (pos_of_mul_pos_right this h).le⟩
 
 @[simp]
 theorem invOf_lt_zero [Invertible a] : ⅟a < 0 ↔ a < 0 := by simp only [← not_le, invOf_nonneg]

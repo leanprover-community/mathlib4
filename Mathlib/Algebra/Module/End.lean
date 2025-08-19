@@ -37,9 +37,9 @@ This is a stronger version of `DistribMulAction.toAddMonoidEnd` -/
 @[simps! apply_apply]
 def Module.toAddMonoidEnd : R →+* AddMonoid.End M :=
   { DistribMulAction.toAddMonoidEnd R M with
-    map_zero' := AddMonoidHom.ext fun r => by simp
+    map_zero' := AddMonoidHom.ext fun r ↦ by simp
     map_add' x y :=
-      AddMonoidHom.ext fun r => by simp [(AddMonoidHom.add_apply), add_smul] }
+      AddMonoidHom.ext fun r ↦ by simp [(AddMonoidHom.add_apply), add_smul] }
 
 /-- A convenience alias for `Module.toAddMonoidEnd` as an `AddMonoidHom`, usually to allow the
 use of `AddMonoidHom.flip`. -/
@@ -102,7 +102,7 @@ theorem int_smul_eq_zsmul (h : Module ℤ M) (n : ℤ) (x : M) : @SMul.smul ℤ 
 should normally have exactly one `ℤ`-module structure by design. -/
 def AddCommGroup.uniqueIntModule : Unique (Module ℤ M) where
   default := by infer_instance
-  uniq P := (Module.ext' P _) fun n => by convert int_smul_eq_zsmul P n
+  uniq P := (Module.ext' P _) fun n ↦ by convert int_smul_eq_zsmul P n
 
 end AddCommGroup
 

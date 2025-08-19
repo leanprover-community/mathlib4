@@ -29,17 +29,17 @@ variable [Monoid R] [MulAction R M] [One M]
 
 instance : One (SubMulAction R M) where
   one :=
-    { carrier := Set.range fun r : R => r • (1 : M)
-      smul_mem' := fun r _ ⟨r', hr'⟩ => hr' ▸ ⟨r * r', mul_smul _ _ _⟩ }
+    { carrier := Set.range fun r : R ↦ r • (1 : M)
+      smul_mem' := fun r _ ⟨r', hr'⟩ ↦ hr' ▸ ⟨r * r', mul_smul _ _ _⟩ }
 
-theorem coe_one : ↑(1 : SubMulAction R M) = Set.range fun r : R => r • (1 : M) :=
+theorem coe_one : ↑(1 : SubMulAction R M) = Set.range fun r : R ↦ r • (1 : M) :=
   rfl
 
 @[simp]
 theorem mem_one {x : M} : x ∈ (1 : SubMulAction R M) ↔ ∃ r : R, r • (1 : M) = x :=
   Iff.rfl
 
-theorem subset_coe_one : (1 : Set M) ⊆ (1 : SubMulAction R M) := fun _ hx =>
+theorem subset_coe_one : (1 : Set M) ⊆ (1 : SubMulAction R M) := fun _ hx ↦
   ⟨1, (one_smul _ _).trans hx.symm⟩
 
 end One
@@ -51,7 +51,7 @@ variable [Monoid R] [MulAction R M] [Mul M] [IsScalarTower R M M]
 instance : Mul (SubMulAction R M) where
   mul p q :=
     { carrier := Set.image2 (· * ·) p q
-      smul_mem' := fun r _ ⟨m₁, hm₁, m₂, hm₂, h⟩ =>
+      smul_mem' := fun r _ ⟨m₁, hm₁, m₂, hm₂, h⟩ ↦
         h ▸ smul_mul_assoc r m₁ m₂ ▸ Set.mul_mem_mul (p.smul_mem _ hm₁) hm₂ }
 
 @[norm_cast]
@@ -81,7 +81,7 @@ instance : MulOneClass (SubMulAction R M) where
   one_mul a := by
     ext x
     simp only [mem_mul, mem_one, smul_mul_assoc, exists_exists_eq_and, one_mul]
-    refine ⟨?_, fun hx => ⟨1, x, hx, one_smul _ _⟩⟩
+    refine ⟨?_, fun hx ↦ ⟨1, x, hx, one_smul _ _⟩⟩
     rintro ⟨r, y, hy, rfl⟩
     exact smul_mem _ _ hy
 

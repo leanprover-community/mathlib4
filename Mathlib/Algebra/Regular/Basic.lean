@@ -31,12 +31,12 @@ variable [Mul R]
 
 @[to_additive] theorem IsLeftRegular.right_of_commute {a : R}
     (ca : ∀ b, Commute a b) (h : IsLeftRegular a) : IsRightRegular a :=
-  fun x y xy => h <| (ca x).trans <| xy.trans <| (ca y).symm
+  fun x y xy ↦ h <| (ca x).trans <| xy.trans <| (ca y).symm
 
 @[to_additive] theorem IsRightRegular.left_of_commute {a : R}
     (ca : ∀ b, Commute a b) (h : IsRightRegular a) : IsLeftRegular a := by
   simp only [@Commute.symm_iff R _ a] at ca
-  exact fun x y xy => h <| (ca x).trans <| xy.trans <| (ca y).symm
+  exact fun x y xy ↦ h <| (ca x).trans <| xy.trans <| (ca y).symm
 
 @[to_additive] theorem Commute.isRightRegular_iff {a : R} (ca : ∀ b, Commute a b) :
     IsRightRegular a ↔ IsLeftRegular a :=
@@ -44,7 +44,7 @@ variable [Mul R]
 
 @[to_additive]
 theorem Commute.isRegular_iff {a : R} (ca : ∀ b, Commute a b) : IsRegular a ↔ IsLeftRegular a :=
-  ⟨fun h => h.left, fun h => ⟨h, h.right_of_commute ca⟩⟩
+  ⟨fun h ↦ h.left, fun h ↦ ⟨h, h.right_of_commute ca⟩⟩
 
 end Mul
 
@@ -84,14 +84,14 @@ is left-regular. -/
 left an add-left-regular element is add-left-regular. -/]
 theorem mul_isLeftRegular_iff (b : R) (ha : IsLeftRegular a) :
     IsLeftRegular (a * b) ↔ IsLeftRegular b :=
-  ⟨fun ab => IsLeftRegular.of_mul ab, fun ab => IsLeftRegular.mul ha ab⟩
+  ⟨fun ab ↦ IsLeftRegular.of_mul ab, fun ab ↦ IsLeftRegular.mul ha ab⟩
 
 /-- If an element `b` becomes right-regular after multiplying it on the right by a right-regular
 element, then `b` is right-regular. -/
 @[to_additive /-- If an element `b` becomes add-right-regular after adding to it on the right
 an add-right-regular element, then `b` is add-right-regular. -/]
 theorem IsRightRegular.of_mul (ab : IsRightRegular (b * a)) : IsRightRegular b := by
-  refine fun x y xy => ab (?_ : x * (b * a) = y * (b * a))
+  refine fun x y xy ↦ ab (?_ : x * (b * a) = y * (b * a))
   rw [← mul_assoc, ← mul_assoc]
   exact congr_arg (· * a) xy
 
@@ -102,7 +102,7 @@ element is right-regular. -/
 an add-right-regular element is add-right-regular. -/]
 theorem mul_isRightRegular_iff (b : R) (ha : IsRightRegular a) :
     IsRightRegular (b * a) ↔ IsRightRegular b :=
-  ⟨fun ab => IsRightRegular.of_mul ab, fun ab => IsRightRegular.mul ab ha⟩
+  ⟨fun ab ↦ IsRightRegular.of_mul ab, fun ab ↦ IsRightRegular.mul ab ha⟩
 
 /-- Two elements `a` and `b` are regular if and only if both products `a * b` and `b * a`
 are regular. -/
@@ -135,7 +135,7 @@ variable [MulOneClass R]
 /-- If multiplying by `1` on either side is the identity, `1` is regular. -/
 @[to_additive /-- If adding `0` on either side is the identity, `0` is regular. -/]
 theorem isRegular_one : IsRegular (1 : R) :=
-  ⟨fun a b ab => (one_mul a).symm.trans (Eq.trans ab (one_mul b)), fun a b ab =>
+  ⟨fun a b ab ↦ (one_mul a).symm.trans (Eq.trans ab (one_mul b)), fun a b ab ↦
     (mul_one a).symm.trans (Eq.trans ab (mul_one b))⟩
 
 end MulOneClass
@@ -148,7 +148,7 @@ variable [CommSemigroup R] {a b : R}
 @[to_additive /-- A sum is add-regular if and only if the summands are. -/]
 theorem isRegular_mul_iff : IsRegular (a * b) ↔ IsRegular a ∧ IsRegular b := by
   refine Iff.trans ?_ isRegular_mul_and_mul_iff
-  exact ⟨fun ab => ⟨ab, by rwa [mul_comm]⟩, fun rab => rab.1⟩
+  exact ⟨fun ab ↦ ⟨ab, by rwa [mul_comm]⟩, fun rab ↦ rab.1⟩
 
 end CommSemigroup
 

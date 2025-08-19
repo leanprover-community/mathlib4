@@ -146,9 +146,9 @@ theorem lintegral_nnnorm_condExpL2_le (hs : MeasurableSet[m] s) (hμs : μ s ≠
   have hg_meas : StronglyMeasurable[m] g := h_meas.choose_spec.1
   have hg_eq : g =ᵐ[μ] condExpL2 ℝ ℝ hm f := h_meas.choose_spec.2.symm
   have hg_eq_restrict : g =ᵐ[μ.restrict s] condExpL2 ℝ ℝ hm f := ae_restrict_of_ae hg_eq
-  have hg_nnnorm_eq : (fun x => (‖g x‖₊ : ℝ≥0∞)) =ᵐ[μ.restrict s] fun x =>
+  have hg_nnnorm_eq : (fun x ↦ (‖g x‖₊ : ℝ≥0∞)) =ᵐ[μ.restrict s] fun x ↦
       (‖(condExpL2 ℝ ℝ hm f : α → ℝ) x‖₊ : ℝ≥0∞) := by
-    refine hg_eq_restrict.mono fun x hx => ?_
+    refine hg_eq_restrict.mono fun x hx ↦ ?_
     dsimp only
     simp_rw [hx]
   rw [lintegral_congr_ae hg_nnnorm_eq.symm]
@@ -160,13 +160,13 @@ theorem lintegral_nnnorm_condExpL2_le (hs : MeasurableSet[m] s) (hμs : μ s ≠
     exact integrableOn_condExpL2_of_measure_ne_top hm hμs f
   · intro t ht hμt
     rw [← integral_condExpL2_eq_of_fin_meas_real f ht hμt.ne]
-    exact setIntegral_congr_ae (hm t ht) (hg_eq.mono fun x hx _ => hx)
+    exact setIntegral_congr_ae (hm t ht) (hg_eq.mono fun x hx _ ↦ hx)
 
 theorem condExpL2_ae_eq_zero_of_ae_eq_zero (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) {f : Lp ℝ 2 μ}
     (hf : f =ᵐ[μ.restrict s] 0) : condExpL2 ℝ ℝ hm f =ᵐ[μ.restrict s] (0 : α → ℝ) := by
   suffices h_nnnorm_eq_zero : ∫⁻ x in s, ‖(condExpL2 ℝ ℝ hm f : α → ℝ) x‖₊ ∂μ = 0 by
     rw [lintegral_eq_zero_iff] at h_nnnorm_eq_zero
-    · refine h_nnnorm_eq_zero.mono fun x hx => ?_
+    · refine h_nnnorm_eq_zero.mono fun x hx ↦ ?_
       dsimp only at hx
       rw [Pi.zero_apply] at hx ⊢
       · rwa [ENNReal.coe_eq_zero, nnnorm_eq_zero] at hx
@@ -175,7 +175,7 @@ theorem condExpL2_ae_eq_zero_of_ae_eq_zero (hs : MeasurableSet[m] s) (hμs : μ 
   refine le_antisymm ?_ (zero_le _)
   refine (lintegral_nnnorm_condExpL2_le hs hμs f).trans (le_of_eq ?_)
   rw [lintegral_eq_zero_iff]
-  · refine hf.mono fun x hx => ?_
+  · refine hf.mono fun x hx ↦ ?_
     dsimp only
     rw [hx]
     simp
@@ -187,9 +187,9 @@ theorem lintegral_nnnorm_condExpL2_indicator_le_real (hs : MeasurableSet s) (hμ
   refine (lintegral_nnnorm_condExpL2_le ht hμt _).trans (le_of_eq ?_)
   have h_eq :
     ∫⁻ x in t, ‖(indicatorConstLp 2 hs hμs (1 : ℝ)) x‖₊ ∂μ =
-      ∫⁻ x in t, s.indicator (fun _ => (1 : ℝ≥0∞)) x ∂μ := by
+      ∫⁻ x in t, s.indicator (fun _ ↦ (1 : ℝ≥0∞)) x ∂μ := by
     refine lintegral_congr_ae (ae_restrict_of_ae ?_)
-    refine (@indicatorConstLp_coeFn _ _ _ 2 _ _ _ hs hμs (1 : ℝ)).mono fun x hx => ?_
+    refine (@indicatorConstLp_coeFn _ _ _ 2 _ _ _ hs hμs (1 : ℝ)).mono fun x hx ↦ ?_
     dsimp only
     rw [hx]
     classical
@@ -204,15 +204,15 @@ end Real
 `condExpL2_comp_continuousLinearMap` for a more general result about commuting with continuous
 linear maps. -/
 theorem condExpL2_const_inner (hm : m ≤ m0) (f : Lp E 2 μ) (c : E) :
-    condExpL2 𝕜 𝕜 hm (((Lp.memLp f).const_inner c).toLp fun a => ⟪c, f a⟫) =ᵐ[μ]
-    fun a => ⟪c, (condExpL2 E 𝕜 hm f : α → E) a⟫ := by
-  have h_mem_Lp : MemLp (fun a => ⟪c, (condExpL2 E 𝕜 hm f : α → E) a⟫) 2 μ := by
+    condExpL2 𝕜 𝕜 hm (((Lp.memLp f).const_inner c).toLp fun a ↦ ⟪c, f a⟫) =ᵐ[μ]
+    fun a ↦ ⟪c, (condExpL2 E 𝕜 hm f : α → E) a⟫ := by
+  have h_mem_Lp : MemLp (fun a ↦ ⟪c, (condExpL2 E 𝕜 hm f : α → E) a⟫) 2 μ := by
     refine MemLp.const_inner _ ?_; exact Lp.memLp _
-  have h_eq : h_mem_Lp.toLp _ =ᵐ[μ] fun a => ⟪c, (condExpL2 E 𝕜 hm f : α → E) a⟫ :=
+  have h_eq : h_mem_Lp.toLp _ =ᵐ[μ] fun a ↦ ⟪c, (condExpL2 E 𝕜 hm f : α → E) a⟫ :=
     h_mem_Lp.coeFn_toLp
   refine EventuallyEq.trans ?_ h_eq
   refine Lp.ae_eq_of_forall_setIntegral_eq' 𝕜 hm _ _ two_ne_zero ENNReal.coe_ne_top
-    (fun s _ hμs => integrableOn_condExpL2_of_measure_ne_top hm hμs.ne _) ?_ ?_ ?_ ?_
+    (fun s _ hμs ↦ integrableOn_condExpL2_of_measure_ne_top hm hμs.ne _) ?_ ?_ ?_ ?_
   · intro s _ hμs
     rw [IntegrableOn, integrable_congr (ae_restrict_of_ae h_eq)]
     exact (integrableOn_condExpL2_of_measure_ne_top hm hμs.ne _).const_inner _
@@ -223,7 +223,7 @@ theorem condExpL2_const_inner (hm : m ≤ m0) (f : Lp E 2 μ) (c : E) :
       ← inner_condExpL2_left_eq_right, condExpL2_indicator_of_measurable _ hs,
       L2.inner_indicatorConstLp_eq_setIntegral_inner 𝕜 f (hm s hs) c hμs.ne,
       setIntegral_congr_ae (hm s hs)
-        ((MemLp.coeFn_toLp ((Lp.memLp f).const_inner c)).mono fun x hx _ => hx)]
+        ((MemLp.coeFn_toLp ((Lp.memLp f).const_inner c)).mono fun x hx _ ↦ hx)]
   · exact lpMeas.aestronglyMeasurable _
   · refine AEStronglyMeasurable.congr ?_ h_eq.symm
     exact (lpMeas.aestronglyMeasurable _).const_inner
@@ -244,8 +244,8 @@ theorem integral_condExpL2_eq (hm : m ≤ m0) (f : Lp E' 2 μ) (hs : MeasurableS
       ((integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennreal.elim hμs).const_inner c)]
   have h_ae_eq_f := MemLp.coeFn_toLp (E := 𝕜) ((Lp.memLp f).const_inner c)
   rw [sub_eq_zero, ←
-    setIntegral_congr_ae (hm s hs) ((condExpL2_const_inner hm f c).mono fun x hx _ => hx), ←
-    setIntegral_congr_ae (hm s hs) (h_ae_eq_f.mono fun x hx _ => hx)]
+    setIntegral_congr_ae (hm s hs) ((condExpL2_const_inner hm f c).mono fun x hx _ ↦ hx), ←
+    setIntegral_congr_ae (hm s hs) (h_ae_eq_f.mono fun x hx _ ↦ hx)]
   exact integral_condExpL2_eq_of_fin_meas_real _ hs hμs
 
 variable {E'' 𝕜' : Type*} [RCLike 𝕜'] [NormedAddCommGroup E''] [InnerProductSpace 𝕜' E'']
@@ -257,7 +257,7 @@ theorem condExpL2_comp_continuousLinearMap (hm : m ≤ m0) (T : E' →L[ℝ] E''
     (condExpL2 E'' 𝕜' hm (T.compLp f) : α →₂[μ] E'') =ᵐ[μ]
     T.compLp (condExpL2 E' 𝕜 hm f : α →₂[μ] E') := by
   refine Lp.ae_eq_of_forall_setIntegral_eq' 𝕜' hm _ _ two_ne_zero ENNReal.coe_ne_top
-    (fun s _ hμs => integrableOn_condExpL2_of_measure_ne_top hm hμs.ne _) (fun s _ hμs =>
+    (fun s _ hμs ↦ integrableOn_condExpL2_of_measure_ne_top hm hμs.ne _) (fun s _ hμs ↦
       integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennreal.elim hμs.ne) ?_ ?_ ?_
   · intro s hs hμs
     rw [T.setIntegral_compLp _ (hm s hs),
@@ -281,7 +281,7 @@ variable (𝕜)
 
 theorem condExpL2_indicator_ae_eq_smul (hm : m ≤ m0) (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     (x : E') :
-    condExpL2 E' 𝕜 hm (indicatorConstLp 2 hs hμs x) =ᵐ[μ] fun a =>
+    condExpL2 E' 𝕜 hm (indicatorConstLp 2 hs hμs x) =ᵐ[μ] fun a ↦
       (condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs (1 : ℝ)) : α → ℝ) a • x := by
   rw [indicatorConstLp_eq_toSpanSingleton_compLp hs hμs x]
   have h_comp :=
@@ -311,7 +311,7 @@ theorem setLIntegral_nnnorm_condExpL2_indicator_le (hm : m ≤ m0) (hs : Measura
     ∫⁻ a in t, ‖(condExpL2 E' 𝕜 hm (indicatorConstLp 2 hs hμs x) : α → E') a‖₊ ∂μ =
         ∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a • x‖₊ ∂μ :=
       setLIntegral_congr_fun_ae (hm t ht)
-        ((condExpL2_indicator_ae_eq_smul 𝕜 hm hs hμs x).mono fun a ha _ => by rw [ha])
+        ((condExpL2_indicator_ae_eq_smul 𝕜 hm hs hμs x).mono fun a ha _ ↦ by rw [ha])
     _ = (∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a‖₊ ∂μ) * ‖x‖₊ := by
       simp_rw [nnnorm_smul, ENNReal.coe_mul]
       rw [lintegral_mul_const]
@@ -322,7 +322,7 @@ theorem setLIntegral_nnnorm_condExpL2_indicator_le (hm : m ≤ m0) (hs : Measura
 theorem lintegral_nnnorm_condExpL2_indicator_le (hm : m ≤ m0) (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     (x : E') [SigmaFinite (μ.trim hm)] :
     ∫⁻ a, ‖(condExpL2 E' 𝕜 hm (indicatorConstLp 2 hs hμs x) : α → E') a‖₊ ∂μ ≤ μ s * ‖x‖₊ := by
-  refine lintegral_le_of_forall_fin_meas_trim_le hm (μ s * ‖x‖₊) fun t ht hμt => ?_
+  refine lintegral_le_of_forall_fin_meas_trim_le hm (μ s * ‖x‖₊) fun t ht hμt ↦ ?_
   refine (setLIntegral_nnnorm_condExpL2_indicator_le hm hs hμs x ht hμt).trans ?_
   gcongr
   apply Set.inter_subset_left
@@ -335,7 +335,7 @@ theorem integrable_condExpL2_indicator (hm : m ≤ m0) [SigmaFinite (μ.trim hm)
   refine integrable_of_forall_fin_meas_le' hm (μ s * ‖x‖₊)
     (ENNReal.mul_lt_top hμs.lt_top ENNReal.coe_lt_top) ?_ ?_
   · exact Lp.aestronglyMeasurable _
-  · refine fun t ht hμt =>
+  · refine fun t ht hμt ↦
       (setLIntegral_nnnorm_condExpL2_indicator_le hm hs hμs x ht hμt).trans ?_
     gcongr
     apply Set.inter_subset_left
@@ -374,7 +374,7 @@ theorem condExpIndSMul_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (hs 
     (toSpanSingleton ℝ x).smul_compLpL c, smul_apply]
 
 theorem condExpIndSMul_ae_eq_smul (hm : m ≤ m0) (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : G) :
-    condExpIndSMul hm hs hμs x =ᵐ[μ] fun a =>
+    condExpIndSMul hm hs hμs x =ᵐ[μ] fun a ↦
       (condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a • x :=
   (toSpanSingleton ℝ x).coeFn_compLpL _
 
@@ -385,7 +385,7 @@ theorem setLIntegral_nnnorm_condExpIndSMul_le (hm : m ≤ m0) (hs : MeasurableSe
     ∫⁻ a in t, ‖condExpIndSMul hm hs hμs x a‖₊ ∂μ =
         ∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a • x‖₊ ∂μ :=
       setLIntegral_congr_fun_ae (hm t ht)
-        ((condExpIndSMul_ae_eq_smul hm hs hμs x).mono fun a ha _ => by rw [ha])
+        ((condExpIndSMul_ae_eq_smul hm hs hμs x).mono fun a ha _ ↦ by rw [ha])
     _ = (∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a‖₊ ∂μ) * ‖x‖₊ := by
       simp_rw [nnnorm_smul, ENNReal.coe_mul]
       rw [lintegral_mul_const]
@@ -395,7 +395,7 @@ theorem setLIntegral_nnnorm_condExpIndSMul_le (hm : m ≤ m0) (hs : MeasurableSe
 
 theorem lintegral_nnnorm_condExpIndSMul_le (hm : m ≤ m0) (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     (x : G) [SigmaFinite (μ.trim hm)] : ∫⁻ a, ‖condExpIndSMul hm hs hμs x a‖₊ ∂μ ≤ μ s * ‖x‖₊ := by
-  refine lintegral_le_of_forall_fin_meas_trim_le hm (μ s * ‖x‖₊) fun t ht hμt => ?_
+  refine lintegral_le_of_forall_fin_meas_trim_le hm (μ s * ‖x‖₊) fun t ht hμt ↦ ?_
   refine (setLIntegral_nnnorm_condExpIndSMul_le hm hs hμs x ht hμt).trans ?_
   gcongr
   apply Set.inter_subset_left
@@ -407,7 +407,7 @@ theorem integrable_condExpIndSMul (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hs
   refine integrable_of_forall_fin_meas_le' hm (μ s * ‖x‖₊)
     (ENNReal.mul_lt_top hμs.lt_top ENNReal.coe_lt_top) ?_ ?_
   · exact Lp.aestronglyMeasurable _
-  · refine fun t ht hμt => (setLIntegral_nnnorm_condExpIndSMul_le hm hs hμs x ht hμt).trans ?_
+  · refine fun t ht hμt ↦ (setLIntegral_nnnorm_condExpIndSMul_le hm hs hμs x ht hμt).trans ?_
     gcongr
     apply Set.inter_subset_left
 
@@ -433,7 +433,7 @@ theorem setIntegral_condExpIndSMul (hs : MeasurableSet[m] s) (ht : MeasurableSet
     ∫ a in s, (condExpIndSMul hm ht hμt x) a ∂μ =
         ∫ a in s, (condExpL2 ℝ ℝ hm (indicatorConstLp 2 ht hμt 1) : α → ℝ) a • x ∂μ :=
       setIntegral_congr_ae (hm s hs)
-        ((condExpIndSMul_ae_eq_smul hm ht hμt x).mono fun _ hx _ => hx)
+        ((condExpIndSMul_ae_eq_smul hm ht hμt x).mono fun _ hx _ ↦ hx)
     _ = (∫ a in s, (condExpL2 ℝ ℝ hm (indicatorConstLp 2 ht hμt 1) : α → ℝ) a ∂μ) • x :=
       (integral_smul_const _ x)
     _ = μ.real (t ∩ s) • x := by rw [setIntegral_condExpL2_indicator hs ht hμs hμt]
@@ -455,7 +455,7 @@ theorem condExpL2_indicator_nonneg (hm : m ≤ m0) (hs : MeasurableSet s) (hμs 
     rw [← setIntegral_trim hm h.stronglyMeasurable_mk ht]
     have h_ae :
         ∀ᵐ x ∂μ, x ∈ t → h.mk _ x = (condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) x := by
-      filter_upwards [h.ae_eq_mk] with x hx using fun _ => hx.symm
+      filter_upwards [h.ae_eq_mk] with x hx using fun _ ↦ hx.symm
     rw [setIntegral_congr_ae (hm t ht) h_ae,
       setIntegral_condExpL2_indicator ht hs ((le_trim hm).trans_lt hμt).ne hμs]
     exact ENNReal.toReal_nonneg

@@ -68,7 +68,7 @@ lemma not_boundaryGE_next' [e.IsRelIff] {j k : ι} (hj : ¬ e.BoundaryGE j) (hk 
 
 variable {e} in
 lemma BoundaryGE.notMem {j : ι} (hj : e.BoundaryGE j) {i' : ι'} (hi' : c'.Rel i' (e.f j))
-    (a : ι) : e.f a ≠ i' := fun ha =>
+    (a : ι) : e.f a ≠ i' := fun ha ↦
   hj.2 a (by simpa only [ha] using hi')
 
 @[deprecated (since := "2025-05-23")] alias BoundaryGE.not_mem := BoundaryGE.notMem
@@ -123,7 +123,7 @@ lemma not_boundaryLE_prev' [e.IsRelIff] {i j : ι} (hj : ¬ e.BoundaryLE j) (hk 
 
 variable {e} in
 lemma BoundaryLE.notMem {j : ι} (hj : e.BoundaryLE j) {k' : ι'} (hk' : c'.Rel (e.f j) k')
-    (a : ι) : e.f a ≠ k' := fun ha =>
+    (a : ι) : e.f a ≠ k' := fun ha ↦
   hj.2 a (by simpa only [ha] using hk')
 
 @[deprecated (since := "2025-05-23")] alias BoundaryLE.not_mem := BoundaryLE.notMem

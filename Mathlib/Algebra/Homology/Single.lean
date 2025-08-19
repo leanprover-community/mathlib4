@@ -33,10 +33,10 @@ variable {ι : Type*} [DecidableEq ι] (c : ComplexShape ι)
 -/
 noncomputable def single (j : ι) : V ⥤ HomologicalComplex V c where
   obj A :=
-    { X := fun i => if i = j then A else 0
-      d := fun _ _ => 0 }
+    { X := fun i ↦ if i = j then A else 0
+      d := fun _ _ ↦ 0 }
   map f :=
-    { f := fun i => if h : i = j then eqToHom (by dsimp; rw [if_pos h]) ≫ f ≫
+    { f := fun i ↦ if h : i = j then eqToHom (by dsimp; rw [if_pos h]) ≫ f ≫
               eqToHom (by dsimp; rw [if_pos h]) else 0 }
   map_id A := by
     ext
@@ -96,7 +96,7 @@ variable (V)
 /-- The natural isomorphism `single V c j ⋙ eval V c j ≅ 𝟭 V`. -/
 @[simps!]
 noncomputable def singleCompEvalIsoSelf (j : ι) : single V c j ⋙ eval V c j ≅ 𝟭 V :=
-  NatIso.ofComponents (singleObjXSelf c j) (fun {A B} f => by simp [single_map_f_self])
+  NatIso.ofComponents (singleObjXSelf c j) (fun {A B} f ↦ by simp [single_map_f_self])
 
 lemma isZero_single_comp_eval (j i : ι) (hi : i ≠ j) : IsZero (single V c j ⋙ eval V c i) :=
   Functor.isZero _ (fun _ ↦ isZero_single_obj_X c _ _ _ hi)
@@ -217,7 +217,7 @@ are the same as morphisms `f : C.X 0 ⟶ X` such that `C.d 1 0 ≫ f = 0`.
 noncomputable def toSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
     (C ⟶ (single₀ V).obj X) ≃ { f : C.X 0 ⟶ X // C.d 1 0 ≫ f = 0 } where
   toFun φ := ⟨φ.f 0, by rw [← φ.comm 1 0, HomologicalComplex.single_obj_d, comp_zero]⟩
-  invFun f := HomologicalComplex.mkHomToSingle f.1 (fun i hi => by
+  invFun f := HomologicalComplex.mkHomToSingle f.1 (fun i hi ↦ by
     obtain rfl : i = 1 := by simpa using hi.symm
     exact f.2)
   left_inv φ := by cat_disch
@@ -236,7 +236,7 @@ to an `ℕ`-indexed chain complex `C` are the same as morphisms `f : X → C.X 0
 noncomputable def fromSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
     ((single₀ V).obj X ⟶ C) ≃ (X ⟶ C.X 0) where
   toFun f := f.f 0
-  invFun f := HomologicalComplex.mkHomFromSingle f (fun i hi => by simp at hi)
+  invFun f := HomologicalComplex.mkHomFromSingle f (fun i hi ↦ by simp at hi)
   left_inv := by cat_disch
   right_inv := by cat_disch
 
@@ -283,7 +283,7 @@ are the same as morphisms `f : X ⟶ C.X 0` such that `f ≫ C.d 0 1 = 0`. -/
 noncomputable def fromSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
     ((single₀ V).obj X ⟶ C) ≃ { f : X ⟶ C.X 0 // f ≫ C.d 0 1 = 0 } where
   toFun φ := ⟨φ.f 0, by rw [φ.comm 0 1, HomologicalComplex.single_obj_d, zero_comp]⟩
-  invFun f := HomologicalComplex.mkHomFromSingle f.1 (fun i hi => by
+  invFun f := HomologicalComplex.mkHomFromSingle f.1 (fun i hi ↦ by
     obtain rfl : i = 1 := by simpa using hi.symm
     exact f.2)
   left_inv φ := by cat_disch
@@ -302,7 +302,7 @@ to an `ℕ`-indexed cochain complex `C` are the same as morphisms `f : C.X 0 ⟶
 noncomputable def toSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
     (C ⟶ (single₀ V).obj X) ≃ (C.X 0 ⟶ X) where
   toFun f := f.f 0
-  invFun f := HomologicalComplex.mkHomToSingle f (fun i hi => by simp at hi)
+  invFun f := HomologicalComplex.mkHomToSingle f (fun i hi ↦ by simp at hi)
   left_inv := by cat_disch
   right_inv := by cat_disch
 

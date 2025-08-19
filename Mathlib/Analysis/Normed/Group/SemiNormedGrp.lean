@@ -148,7 +148,7 @@ theorem zero_apply {V W : SemiNormedGrp} (x : V) : (0 : V ⟶ W) x = 0 :=
 instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGrp where
 
 theorem isZero_of_subsingleton (V : SemiNormedGrp) [Subsingleton V] : Limits.IsZero V := by
-  refine ⟨fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩
+  refine ⟨fun X ↦ ⟨⟨⟨0⟩, fun f ↦ ?_⟩⟩, fun X ↦ ⟨⟨⟨0⟩, fun f ↦ ?_⟩⟩⟩
   · ext x; have : x = 0 := Subsingleton.elim _ _; simp only [this, map_zero]
   · ext; apply Subsingleton.elim
 
@@ -200,8 +200,8 @@ theorem hom_zsum {V W : SemiNormedGrp} (n : ℤ) (f : V ⟶ W) : (n • f).hom =
   rfl
 
 instance Hom.addCommGroup {V W : SemiNormedGrp} : AddCommGroup (V ⟶ W) :=
-  Function.Injective.addCommGroup _ ConcreteCategory.hom_injective rfl (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+  Function.Injective.addCommGroup _ ConcreteCategory.hom_injective rfl (fun _ _ ↦ rfl)
+    (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 end SemiNormedGrp
 
@@ -242,7 +242,7 @@ instance instFunLike (X Y : SemiNormedGrp₁) :
   coe_injective' _ _ h := Subtype.val_inj.mp (NormedAddGroupHom.coe_injective h)
 
 instance : ConcreteCategory SemiNormedGrp₁
-    fun X Y => { f : NormedAddGroupHom X Y // f.NormNoninc } where
+    fun X Y ↦ { f : NormedAddGroupHom X Y // f.NormNoninc } where
   hom f := ⟨f.1, f.2⟩
   ofHom f := ⟨f.1, f.2⟩
 
@@ -267,7 +267,7 @@ def Hom.Simps.hom (M N : SemiNormedGrp₁.{u}) (f : Hom M N) : NormedAddGroupHom
 
 initialize_simps_projections Hom (hom' → hom)
 
-instance (X Y : SemiNormedGrp₁) : CoeFun (X ⟶ Y) (fun _ => X → Y) where
+instance (X Y : SemiNormedGrp₁) : CoeFun (X ⟶ Y) (fun _ ↦ X → Y) where
   coe f := f.hom.1
 
 theorem mkHom_apply {M N : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
@@ -342,8 +342,8 @@ def mkIso {M N : SemiNormedGrp} (f : M ≅ N) (i : f.hom.hom.NormNoninc) (i' : f
 
 instance : HasForget₂ SemiNormedGrp₁ SemiNormedGrp where
   forget₂ :=
-    { obj := fun X => SemiNormedGrp.of X
-      map := fun f => SemiNormedGrp.ofHom f.1 }
+    { obj := fun X ↦ SemiNormedGrp.of X
+      map := fun f ↦ SemiNormedGrp.ofHom f.1 }
 
 theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGrp₁.of V : Type u) = V :=
   rfl
@@ -368,7 +368,7 @@ theorem zero_apply {V W : SemiNormedGrp₁} (x : V) : (0 : V ⟶ W) x = 0 :=
 instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGrp₁ where
 
 theorem isZero_of_subsingleton (V : SemiNormedGrp₁) [Subsingleton V] : Limits.IsZero V := by
-  refine ⟨fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩
+  refine ⟨fun X ↦ ⟨⟨⟨0⟩, fun f ↦ ?_⟩⟩, fun X ↦ ⟨⟨⟨0⟩, fun f ↦ ?_⟩⟩⟩
   · ext x; have : x = 0 := Subsingleton.elim _ _; simp only [this, map_zero]
   · ext; apply Subsingleton.elim
 
@@ -376,7 +376,7 @@ instance hasZeroObject : Limits.HasZeroObject SemiNormedGrp₁.{u} :=
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
 
 theorem iso_isometry {V W : SemiNormedGrp₁} (i : V ≅ W) : Isometry i.hom := by
-  change Isometry (⟨⟨i.hom, map_zero _⟩, fun _ _ => map_add _ _ _⟩ : V →+ W)
+  change Isometry (⟨⟨i.hom, map_zero _⟩, fun _ _ ↦ map_add _ _ _⟩ : V →+ W)
   refine AddMonoidHomClass.isometry_of_norm _ ?_
   intro v
   apply le_antisymm (i.hom.2 v)

@@ -167,7 +167,7 @@ namespace CommShift
 
 variable (C) in
 instance id : CommShift (𝟭 C) A where
-  iso := fun _ => rightUnitor _ ≪≫ (leftUnitor _).symm
+  iso := fun _ ↦ rightUnitor _ ≪≫ (leftUnitor _).symm
 
 instance comp [F.CommShift A] [G.CommShift A] : (F ⋙ G).CommShift A where
   iso a := (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight (F.commShiftIso a) _ ≪≫
@@ -178,7 +178,7 @@ instance comp [F.CommShift A] [G.CommShift A] : (F ⋙ G).CommShift A where
     dsimp
     simp only [id_comp, comp_id, commShiftIso_zero, isoZero_hom_app, ← Functor.map_comp_assoc,
       assoc, Iso.inv_hom_id_app, id_obj, comp_map, comp_obj]
-  add := fun a b => by
+  add := fun a b ↦ by
     ext X
     dsimp
     simp only [commShiftIso_add, isoAdd_hom_app]
@@ -301,7 +301,7 @@ end
 namespace CommShift
 
 instance of_iso_inv [NatTrans.CommShift e.hom A] :
-    NatTrans.CommShift e.inv A := ⟨fun a => by
+    NatTrans.CommShift e.inv A := ⟨fun a ↦ by
   ext X
   dsimp
   rw [← cancel_epi (e.hom.app (X⟦a⟧)), e.hom_inv_id_app_assoc, ← shift_app_comm_assoc,
@@ -323,7 +323,7 @@ instance comp [NatTrans.CommShift τ A] [NatTrans.CommShift τ' A] :
     NatTrans.CommShift (τ ≫ τ') A where
 
 instance whiskerRight [NatTrans.CommShift τ A] :
-    NatTrans.CommShift (Functor.whiskerRight τ G) A := ⟨fun a => by
+    NatTrans.CommShift (Functor.whiskerRight τ G) A := ⟨fun a ↦ by
   ext X
   simp only [Functor.whiskerRight_twice, comp_app, Functor.commShiftIso_comp_hom_app,
     Functor.associator_hom_app, Functor.whiskerRight_app, Functor.comp_map,
@@ -376,7 +376,7 @@ lemma ofIso_compatibility :
     letI := ofIso e A
     NatTrans.CommShift e.hom A := by
   letI := ofIso e A
-  refine ⟨fun a => ?_⟩
+  refine ⟨fun a ↦ ?_⟩
   dsimp [commShiftIso, ofIso]
   rw [← whiskerLeft_comp_assoc, e.hom_inv_id, whiskerLeft_id', id_comp]
 

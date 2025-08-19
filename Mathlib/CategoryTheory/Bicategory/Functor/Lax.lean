@@ -126,8 +126,8 @@ lemma map₂_rightUnitor_hom {a b : B} (f : a ⟶ b) :
 @[simps]
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : LaxFunctor B B where
   toPrelaxFunctor := PrelaxFunctor.id B
-  mapId := fun a => 𝟙 (𝟙 a)
-  mapComp := fun f g => 𝟙 (f ≫ g)
+  mapId := fun a ↦ 𝟙 (𝟙 a)
+  mapComp := fun f g ↦ 𝟙 (f ≫ g)
 
 instance : Inhabited (LaxFunctor B B) :=
   ⟨id B⟩
@@ -137,15 +137,15 @@ instance : Inhabited (LaxFunctor B B) :=
 def comp {D : Type u₃} [Bicategory.{w₃, v₃} D] (F : LaxFunctor B C) (G : LaxFunctor C D) :
     LaxFunctor B D where
   toPrelaxFunctor := PrelaxFunctor.comp F.toPrelaxFunctor G.toPrelaxFunctor
-  mapId := fun a => G.mapId (F.obj a) ≫ G.map₂ (F.mapId a)
-  mapComp := fun f g => G.mapComp (F.map f) (F.map g) ≫ G.map₂ (F.mapComp f g)
-  mapComp_naturality_left := fun η g => by
+  mapId := fun a ↦ G.mapId (F.obj a) ≫ G.map₂ (F.mapId a)
+  mapComp := fun f g ↦ G.mapComp (F.map f) (F.map g) ≫ G.map₂ (F.mapComp f g)
+  mapComp_naturality_left := fun η g ↦ by
     dsimp
     rw [assoc, ← G.map₂_comp, mapComp_naturality_left, G.map₂_comp, mapComp_naturality_left_assoc]
-  mapComp_naturality_right := fun f _ _ η => by
+  mapComp_naturality_right := fun f _ _ η ↦ by
     dsimp
     rw [assoc, ← G.map₂_comp, mapComp_naturality_right, G.map₂_comp, mapComp_naturality_right_assoc]
-  map₂_associator := fun f g h => by
+  map₂_associator := fun f g h ↦ by
     dsimp
     slice_rhs 1 3 =>
       rw [Bicategory.whiskerLeft_comp, assoc, ← mapComp_naturality_right, ← map₂_associator_assoc]
@@ -154,11 +154,11 @@ def comp {D : Type u₃} [Bicategory.{w₃, v₃} D] (F : LaxFunctor B C) (G : L
     slice_lhs 1 3 =>
       rw [comp_whiskerRight, assoc, ← G.mapComp_naturality_left_assoc]
     simp only [assoc]
-  map₂_leftUnitor := fun f => by
+  map₂_leftUnitor := fun f ↦ by
     dsimp
     simp only [map₂_leftUnitor, PrelaxFunctor.map₂_comp, assoc, mapComp_naturality_left_assoc,
       comp_whiskerRight]
-  map₂_rightUnitor := fun f => by
+  map₂_rightUnitor := fun f ↦ by
     dsimp
     simp only [map₂_rightUnitor, PrelaxFunctor.map₂_comp, assoc, mapComp_naturality_right_assoc,
       Bicategory.whiskerLeft_comp]

@@ -15,7 +15,7 @@ namespace Equiv
 
 /-- The natural equivalence between arrays and lists. -/
 def arrayEquivList (α : Type*) : Array α ≃ List α :=
-  ⟨Array.toList, Array.mk, fun _ => rfl, fun _ => rfl⟩
+  ⟨Array.toList, Array.mk, fun _ ↦ rfl, fun _ ↦ rfl⟩
 
 end Equiv
 
@@ -35,10 +35,10 @@ instance for `array` was)
 -- variable {n : ℕ}
 
 -- instance : Traversable (Array' n) :=
---   @Equiv.traversable (flip Vector n) _ (fun α => Equiv.vectorEquivArray α n) _
+--   @Equiv.traversable (flip Vector n) _ (fun α ↦ Equiv.vectorEquivArray α n) _
 
 -- instance : LawfulTraversable (Array' n) :=
---   @Equiv.isLawfulTraversable (flip Vector n) _ (fun α => Equiv.vectorEquivArray α n) _ _
+--   @Equiv.isLawfulTraversable (flip Vector n) _ (fun α ↦ Equiv.vectorEquivArray α n) _ _
 
 -- end Array'
 

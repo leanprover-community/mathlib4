@@ -112,8 +112,8 @@ variable {n : ℕ} {σ τ : Type*} [DecidableEq σ] [DecidableEq τ]
 `Sym τ n` corresponding to a given partition. -/
 def ofSymShapeEquiv (μ : Partition n) (e : σ ≃ τ) :
     {x : Sym σ n // ofSym x = μ} ≃ {x : Sym τ n // ofSym x = μ} where
-  toFun := fun x => ⟨Sym.equivCongr e x, by simp [ofSym_map, x.2]⟩
-  invFun := fun x => ⟨Sym.equivCongr e.symm x, by simp [ofSym_map, x.2]⟩
+  toFun := fun x ↦ ⟨Sym.equivCongr e x, by simp [ofSym_map, x.2]⟩
+  invFun := fun x ↦ ⟨Sym.equivCongr e.symm x, by simp [ofSym_map, x.2]⟩
   left_inv := by intro x; simp
   right_inv := by intro x; simp
 
@@ -126,13 +126,13 @@ instance {n : ℕ} : Inhabited (Partition n) := ⟨indiscrete n⟩
   simp [indiscrete, filter_eq_self, hn]
 
 @[simp] lemma partition_zero_parts (p : Partition 0) : p.parts = 0 :=
-  eq_zero_of_forall_notMem fun _ h => (p.parts_pos h).ne' <| sum_eq_zero_iff.1 p.parts_sum _ h
+  eq_zero_of_forall_notMem fun _ h ↦ (p.parts_pos h).ne' <| sum_eq_zero_iff.1 p.parts_sum _ h
 
 instance UniquePartitionZero : Unique (Partition 0) where
   uniq _ := Partition.ext <| by simp
 
 @[simp] lemma partition_one_parts (p : Partition 1) : p.parts = {1} := by
-  have h : p.parts = replicate (card p.parts) 1 := eq_replicate_card.2 fun x hx =>
+  have h : p.parts = replicate (card p.parts) 1 := eq_replicate_card.2 fun x hx ↦
     ((le_sum_of_mem hx).trans_eq p.parts_sum).antisymm (p.parts_pos hx)
   have h' : card p.parts = 1 := by simpa using (congrArg sum h.symm).trans p.parts_sum
   rw [h, h', replicate_one]
@@ -154,7 +154,7 @@ theorem count_ofSums_of_ne_zero {n : ℕ} {l : Multiset ℕ} (hl : l.sum = n) {i
 
 theorem count_ofSums_zero {n : ℕ} {l : Multiset ℕ} (hl : l.sum = n) :
     (ofSums n l hl).parts.count 0 = 0 :=
-  count_filter_of_neg fun h => h rfl
+  count_filter_of_neg fun h ↦ h rfl
 
 /-- Show there are finitely many partitions by considering the surjection from compositions to
 partitions.
@@ -164,11 +164,11 @@ instance (n : ℕ) : Fintype (Partition n) :=
 
 /-- The finset of those partitions in which every part is odd. -/
 def odds (n : ℕ) : Finset (Partition n) :=
-  Finset.univ.filter fun c => ∀ i ∈ c.parts, ¬Even i
+  Finset.univ.filter fun c ↦ ∀ i ∈ c.parts, ¬Even i
 
 /-- The finset of those partitions in which each part is used at most once. -/
 def distincts (n : ℕ) : Finset (Partition n) :=
-  Finset.univ.filter fun c => c.parts.Nodup
+  Finset.univ.filter fun c ↦ c.parts.Nodup
 
 /-- The finset of those partitions in which every part is odd and used at most once. -/
 def oddDistincts (n : ℕ) : Finset (Partition n) :=

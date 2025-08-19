@@ -95,7 +95,7 @@ Useful to fix definitional equalities. -/
 protected def copy (S : NonUnitalStarSubsemiring R) (s : Set R) (hs : s = ↑S) :
     NonUnitalStarSubsemiring R :=
   { S.toNonUnitalSubsemiring.copy s hs with
-    star_mem' := fun {x} (hx : x ∈ s) => by
+    star_mem' := fun {x} (hx : x ∈ s) ↦ by
       change star x ∈ s
       rw [hs] at hx ⊢
       exact S.star_mem' hx }

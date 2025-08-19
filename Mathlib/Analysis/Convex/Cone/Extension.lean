@@ -79,7 +79,7 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     replace := nonneg _ this
     rwa [f.map_sub, sub_nonneg] at this
   refine ⟨f.supSpanSingleton y (-c) hy, ?_, ?_⟩
-  · refine lt_iff_le_not_ge.2 ⟨f.left_le_sup _ _, fun H => ?_⟩
+  · refine lt_iff_le_not_ge.2 ⟨f.left_le_sup _ _, fun H ↦ ?_⟩
     replace H := LinearPMap.domain_mono.monotone H
     rw [LinearPMap.domain_supSpanSingleton, sup_le_iff, span_le, singleton_subset_iff] at H
     exact hy H.2
@@ -144,8 +144,8 @@ theorem riesz_extension (s : ConvexCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
   rcases RieszExtension.exists_top s f nonneg dense
     with ⟨⟨g_dom, g⟩, ⟨-, hfg⟩, rfl : g_dom = ⊤, hgs⟩
   refine ⟨g.comp (LinearMap.id.codRestrict ⊤ fun _ ↦ trivial), ?_, ?_⟩
-  · exact fun x => (hfg rfl).symm
-  · exact fun x hx => hgs ⟨x, _⟩ hx
+  · exact fun x ↦ (hfg rfl).symm
+  · exact fun x hx ↦ hgs ⟨x, _⟩ hx
 
 /-- **Hahn-Banach theorem**: if `N : E → ℝ` is a sublinear map, `f` is a linear map
 defined on a subspace of `E`, and `f x ≤ N x` for all `x` in the domain of `f`,
@@ -157,11 +157,11 @@ theorem exists_extension_of_le_sublinear (f : E →ₗ.[ℝ] ℝ) (N : E → ℝ
     ∃ g : E →ₗ[ℝ] ℝ, (∀ x : f.domain, g x = f x) ∧ ∀ x, g x ≤ N x := by
   let s : ConvexCone ℝ (E × ℝ) :=
     { carrier := { p : E × ℝ | N p.1 ≤ p.2 }
-      smul_mem' := fun c hc p hp =>
+      smul_mem' := fun c hc p hp ↦
         calc
           N (c • p.1) = c * N p.1 := N_hom c hc p.1
           _ ≤ c * p.2 := mul_le_mul_of_nonneg_left hp hc.le
-      add_mem' := fun x hx y hy => (N_add _ _).trans (add_le_add hx hy) }
+      add_mem' := fun x hx y hy ↦ (N_add _ _).trans (add_le_add hx hy) }
   set f' := (-f).coprod (LinearMap.id.toPMap ⊤)
   have hf'_nonneg : ∀ x : f'.domain, x.1 ∈ s → 0 ≤ f' x := fun x (hx : N x.1.1 ≤ x.1.2) ↦ by
     simpa [f'] using le_trans (hf ⟨x.1.1, x.2.1⟩) hx

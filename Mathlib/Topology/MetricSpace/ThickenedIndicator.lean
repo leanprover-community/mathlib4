@@ -46,14 +46,14 @@ these values using `infEdist _ E`.
 `thickenedIndicatorAux` is the unbundled `ℝ≥0∞`-valued function. See `thickenedIndicator`
 for the (bundled) bounded continuous function with `ℝ≥0`-values. -/
 def thickenedIndicatorAux (δ : ℝ) (E : Set α) : α → ℝ≥0∞ :=
-  fun x : α => (1 : ℝ≥0∞) - infEdist x E / ENNReal.ofReal δ
+  fun x : α ↦ (1 : ℝ≥0∞) - infEdist x E / ENNReal.ofReal δ
 
 theorem continuous_thickenedIndicatorAux {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) :
     Continuous (thickenedIndicatorAux δ E) := by
   unfold thickenedIndicatorAux
-  let f := fun x : α => (⟨1, infEdist x E / ENNReal.ofReal δ⟩ : ℝ≥0 × ℝ≥0∞)
-  let sub := fun p : ℝ≥0 × ℝ≥0∞ => (p.1 : ℝ≥0∞) - p.2
-  rw [show (fun x : α => (1 : ℝ≥0∞) - infEdist x E / ENNReal.ofReal δ) = sub ∘ f by rfl]
+  let f := fun x : α ↦ (⟨1, infEdist x E / ENNReal.ofReal δ⟩ : ℝ≥0 × ℝ≥0∞)
+  let sub := fun p : ℝ≥0 × ℝ≥0∞ ↦ (p.1 : ℝ≥0∞) - p.2
+  rw [show (fun x : α ↦ (1 : ℝ≥0∞) - infEdist x E / ENNReal.ofReal δ) = sub ∘ f by rfl]
   apply (@ENNReal.continuous_nnreal_sub 1).comp
   apply (ENNReal.continuous_div_const (ENNReal.ofReal δ) _).comp continuous_infEdist
   norm_num [δ_pos]
@@ -90,10 +90,10 @@ theorem thickenedIndicatorAux_zero {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) {x 
 
 theorem thickenedIndicatorAux_mono {δ₁ δ₂ : ℝ} (hle : δ₁ ≤ δ₂) (E : Set α) :
     thickenedIndicatorAux δ₁ E ≤ thickenedIndicatorAux δ₂ E :=
-  fun _ => tsub_le_tsub (@rfl ℝ≥0∞ 1).le (ENNReal.div_le_div rfl.le (ofReal_le_ofReal hle))
+  fun _ ↦ tsub_le_tsub (@rfl ℝ≥0∞ 1).le (ENNReal.div_le_div rfl.le (ofReal_le_ofReal hle))
 
 theorem indicator_le_thickenedIndicatorAux (δ : ℝ) (E : Set α) :
-    (E.indicator fun _ => (1 : ℝ≥0∞)) ≤ thickenedIndicatorAux δ E := by
+    (E.indicator fun _ ↦ (1 : ℝ≥0∞)) ≤ thickenedIndicatorAux δ E := by
   intro a
   by_cases h : a ∈ E
   · simp only [h, indicator_of_mem, thickenedIndicatorAux_one δ E h, le_refl]
@@ -101,7 +101,7 @@ theorem indicator_le_thickenedIndicatorAux (δ : ℝ) (E : Set α) :
 
 theorem thickenedIndicatorAux_subset (δ : ℝ) {E₁ E₂ : Set α} (subset : E₁ ⊆ E₂) :
     thickenedIndicatorAux δ E₁ ≤ thickenedIndicatorAux δ E₂ :=
-  fun _ => tsub_le_tsub (@rfl ℝ≥0∞ 1).le (ENNReal.div_le_div (infEdist_anti subset) rfl.le)
+  fun _ ↦ tsub_le_tsub (@rfl ℝ≥0∞ 1).le (ENNReal.div_le_div (infEdist_anti subset) rfl.le)
 
 /-- As the thickening radius δ tends to 0, the δ-thickened indicator of a set E (in α) tends
 pointwise (i.e., w.r.t. the product topology on `α → ℝ≥0∞`) to the indicator function of the
@@ -112,16 +112,16 @@ This statement is for the unbundled `ℝ≥0∞`-valued functions `thickenedIndi
 bounded continuous functions. -/
 theorem thickenedIndicatorAux_tendsto_indicator_closure {δseq : ℕ → ℝ}
     (δseq_lim : Tendsto δseq atTop (𝓝 0)) (E : Set α) :
-    Tendsto (fun n => thickenedIndicatorAux (δseq n) E) atTop
-      (𝓝 (indicator (closure E) fun _ => (1 : ℝ≥0∞))) := by
+    Tendsto (fun n ↦ thickenedIndicatorAux (δseq n) E) atTop
+      (𝓝 (indicator (closure E) fun _ ↦ (1 : ℝ≥0∞))) := by
   rw [tendsto_pi_nhds]
   intro x
   by_cases x_mem_closure : x ∈ closure E
   · simp_rw [thickenedIndicatorAux_one_of_mem_closure _ E x_mem_closure]
-    rw [show (indicator (closure E) fun _ => (1 : ℝ≥0∞)) x = 1 by
+    rw [show (indicator (closure E) fun _ ↦ (1 : ℝ≥0∞)) x = 1 by
         simp only [x_mem_closure, indicator_of_mem]]
     exact tendsto_const_nhds
-  · rw [show (closure E).indicator (fun _ => (1 : ℝ≥0∞)) x = 0 by
+  · rw [show (closure E).indicator (fun _ ↦ (1 : ℝ≥0∞)) x = 0 by
         simp only [x_mem_closure, indicator_of_notMem, not_false_iff]]
     rcases exists_real_pos_lt_infEdist_of_notMem_closure x_mem_closure with ⟨ε, ⟨ε_pos, ε_lt⟩⟩
     rw [Metric.tendsto_nhds] at δseq_lim
@@ -143,7 +143,7 @@ these values using `infEdist _ E`.
 See `thickenedIndicatorAux` for the unbundled `ℝ≥0∞`-valued function. -/
 @[simps]
 def thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) : α →ᵇ ℝ≥0 where
-  toFun := fun x : α => (thickenedIndicatorAux δ E x).toNNReal
+  toFun := fun x : α ↦ (thickenedIndicatorAux δ E x).toNNReal
   continuous_toFun := by
     apply ContinuousOn.comp_continuous continuousOn_toNNReal
       (continuous_thickenedIndicatorAux δ_pos E)
@@ -193,7 +193,7 @@ theorem thickenedIndicator_zero {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) {x : �
   rw [thickenedIndicator_apply, thickenedIndicatorAux_zero δ_pos E x_out, toNNReal_zero]
 
 theorem indicator_le_thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) :
-    (E.indicator fun _ => (1 : ℝ≥0)) ≤ thickenedIndicator δ_pos E := by
+    (E.indicator fun _ ↦ (1 : ℝ≥0)) ≤ thickenedIndicator δ_pos E := by
   intro a
   by_cases h : a ∈ E
   · simp only [h, indicator_of_mem, thickenedIndicator_one δ_pos E h, le_refl]
@@ -206,7 +206,7 @@ theorem thickenedIndicator_mono {δ₁ δ₂ : ℝ} (δ₁_pos : 0 < δ₁) (δ�
   apply thickenedIndicatorAux_mono hle
 
 theorem thickenedIndicator_subset {δ : ℝ} (δ_pos : 0 < δ) {E₁ E₂ : Set α} (subset : E₁ ⊆ E₂) :
-    ⇑(thickenedIndicator δ_pos E₁) ≤ thickenedIndicator δ_pos E₂ := fun x =>
+    ⇑(thickenedIndicator δ_pos E₁) ≤ thickenedIndicator δ_pos E₂ := fun x ↦
   (toNNReal_le_toNNReal thickenedIndicatorAux_lt_top.ne thickenedIndicatorAux_lt_top.ne).mpr
     (thickenedIndicatorAux_subset δ subset x)
 
@@ -218,13 +218,13 @@ the topology on `α →ᵇ ℝ≥0`. Coercions to functions `α → ℝ≥0` are
 instance is the product topology (the topology of pointwise convergence). -/
 theorem thickenedIndicator_tendsto_indicator_closure {δseq : ℕ → ℝ} (δseq_pos : ∀ n, 0 < δseq n)
     (δseq_lim : Tendsto δseq atTop (𝓝 0)) (E : Set α) :
-    Tendsto (fun n : ℕ => ((↑) : (α →ᵇ ℝ≥0) → α → ℝ≥0) (thickenedIndicator (δseq_pos n) E)) atTop
-      (𝓝 (indicator (closure E) fun _ => (1 : ℝ≥0))) := by
+    Tendsto (fun n : ℕ ↦ ((↑) : (α →ᵇ ℝ≥0) → α → ℝ≥0) (thickenedIndicator (δseq_pos n) E)) atTop
+      (𝓝 (indicator (closure E) fun _ ↦ (1 : ℝ≥0))) := by
   have key := thickenedIndicatorAux_tendsto_indicator_closure δseq_lim E
   rw [tendsto_pi_nhds] at *
   intro x
-  rw [show indicator (closure E) (fun _ => (1 : ℝ≥0)) x =
-        (indicator (closure E) (fun _ => (1 : ℝ≥0∞)) x).toNNReal
+  rw [show indicator (closure E) (fun _ ↦ (1 : ℝ≥0)) x =
+        (indicator (closure E) (fun _ ↦ (1 : ℝ≥0∞)) x).toNNReal
       by refine (congr_fun (comp_indicator_const 1 ENNReal.toNNReal toNNReal_zero) x).symm]
   refine Tendsto.comp (tendsto_toNNReal ?_) (key x)
   by_cases x_mem : x ∈ closure E <;> simp [x_mem]

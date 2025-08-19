@@ -70,10 +70,10 @@ variable {α : Type*} {M : Type u} {N : Type v} {P : Type w} [Monoid M] [Monoid 
 @[to_additive /-- The additive homomorphism on `AddUnit`s induced by an `AddMonoidHom`. -/]
 def map (f : M →* N) : Mˣ →* Nˣ :=
   MonoidHom.mk'
-    (fun u => ⟨f u.val, f u.inv,
+    (fun u ↦ ⟨f u.val, f u.inv,
       by rw [← f.map_mul, u.val_inv, f.map_one],
       by rw [← f.map_mul, u.inv_val, f.map_one]⟩)
-    fun x y => ext (f.map_mul x y)
+    fun x y ↦ ext (f.map_mul x y)
 
 @[to_additive (attr := simp)]
 theorem coe_map (f : M →* N) (x : Mˣ) : ↑(map f x) = f x := rfl
@@ -91,7 +91,7 @@ theorem map_comp (f : M →* N) (g : N →* P) : map (g.comp f) = (map g).comp (
 
 @[to_additive]
 lemma map_injective {f : M →* N} (hf : Function.Injective f) :
-    Function.Injective (map f) := fun _ _ e => ext (hf (congr_arg val e))
+    Function.Injective (map f) := fun _ _ e ↦ ext (hf (congr_arg val e))
 
 variable (M)
 
@@ -166,9 +166,9 @@ and `f.toHomUnits` is the corresponding monoid homomorphism from `G` to `Mˣ`. -
   then its image lies in the `AddUnits` of `M`,
   and `f.toHomUnits` is the corresponding homomorphism from `G` to `AddUnits M`. -/]
 def toHomUnits (f : G →* M) : G →* Mˣ :=
-  Units.liftRight f (fun g => ⟨f g, f g⁻¹, map_mul_eq_one f (mul_inv_cancel _),
+  Units.liftRight f (fun g ↦ ⟨f g, f g⁻¹, map_mul_eq_one f (mul_inv_cancel _),
     map_mul_eq_one f (inv_mul_cancel _)⟩)
-    fun _ => rfl
+    fun _ ↦ rfl
 
 @[to_additive (attr := simp)]
 theorem coe_toHomUnits (f : G →* M) (g : G) : (f.toHomUnits g : M) = f g := rfl
@@ -217,7 +217,7 @@ to `f : M →* Nˣ`. See also `Units.liftRight` for a computable version. -/
   /-- If a homomorphism `f : M →+ N` sends each element to an `IsAddUnit`, then it can be
   lifted to `f : M →+ AddUnits N`. See also `AddUnits.liftRight` for a computable version. -/]
 noncomputable def liftRight (f : M →* N) (hf : ∀ x, IsUnit (f x)) : M →* Nˣ :=
-  (Units.liftRight f fun x => (hf x).unit) fun _ => rfl
+  (Units.liftRight f fun x ↦ (hf x).unit) fun _ ↦ rfl
 
 @[to_additive]
 theorem coe_liftRight (f : M →* N) (hf : ∀ x, IsUnit (f x)) (x) :
@@ -277,6 +277,6 @@ theorem isLocalHom_toMonoidHom (f : F) [IsLocalHom f] :
 
 theorem MonoidHom.isLocalHom_of_comp (f : R →* S) (g : S →* T) [IsLocalHom (g.comp f)] :
     IsLocalHom f :=
-  ⟨fun _ ha => (isUnit_map_iff (g.comp f) _).mp (ha.map g)⟩
+  ⟨fun _ ha ↦ (isUnit_map_iff (g.comp f) _).mp (ha.map g)⟩
 
 end IsLocalHom

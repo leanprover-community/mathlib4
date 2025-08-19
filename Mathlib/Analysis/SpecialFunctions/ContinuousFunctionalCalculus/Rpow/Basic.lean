@@ -116,12 +116,12 @@ lemma nnrpow_one (a : A) (ha : 0 ≤ a := by cfc_tac) : a ^ (1 : ℝ≥0) = a :=
 
 lemma nnrpow_two (a : A) (ha : 0 ≤ a := by cfc_tac) : a ^ (2 : ℝ≥0) = a * a := by
   simp only [nnrpow_def, NNReal.nnrpow_def, NNReal.coe_ofNat, NNReal.rpow_ofNat, pow_two]
-  change cfcₙ (fun z : ℝ≥0 => id z * id z) a = a * a
+  change cfcₙ (fun z : ℝ≥0 ↦ id z * id z) a = a * a
   rw [cfcₙ_mul id id a, cfcₙ_id ℝ≥0 a]
 
 lemma nnrpow_three (a : A) (ha : 0 ≤ a := by cfc_tac) : a ^ (3 : ℝ≥0) = a * a * a := by
   simp only [nnrpow_def, NNReal.nnrpow_def, NNReal.coe_ofNat, NNReal.rpow_ofNat, pow_three]
-  change cfcₙ (fun z : ℝ≥0 => id z * (id z * id z)) a = a * a * a
+  change cfcₙ (fun z : ℝ≥0 ↦ id z * (id z * id z)) a = a * a * a
   rw [cfcₙ_mul id _ a, cfcₙ_mul id _ a, ← mul_assoc, cfcₙ_id ℝ≥0 a]
 
 @[simp]
@@ -199,7 +199,7 @@ variable {ι : Type*} {C : ι → Type*} [∀ i, PartialOrder (C i)] [∀ i, Non
 /- Note that there is higher-priority instance of `Pow (∀ i, C i) ℝ≥0` coming from the `Pow`
 instance for pi types, hence the direct use of `nnrpow` here. -/
 lemma nnrpow_map_pi {c : ∀ i, C i} {x : ℝ≥0} (hc : ∀ i, 0 ≤ c i := by cfc_tac) :
-    nnrpow c x = fun i => (c i) ^ x := by
+    nnrpow c x = fun i ↦ (c i) ^ x := by
   simp only [nnrpow_def]
   unfold nnrpow
   exact cfcₙ_map_pi (S := ℝ) _ c
@@ -308,7 +308,7 @@ variable {ι : Type*} {C : ι → Type*} [∀ i, PartialOrder (C i)] [∀ i, Non
   [NonnegSpectrumClass ℝ (∀ i, C i)] [∀ i, NonnegSpectrumClass ℝ (C i)]
 
 lemma sqrt_map_pi {c : ∀ i, C i} (hc : ∀ i, 0 ≤ c i := by cfc_tac) :
-    sqrt c = fun i => sqrt (c i) := by
+    sqrt c = fun i ↦ sqrt (c i) := by
   simp only [sqrt_eq_nnrpow]
   exact nnrpow_map_pi
 
@@ -327,7 +327,7 @@ variable {A : Type*} [PartialOrder A] [Ring A] [StarRing A] [TopologicalSpace A]
 /- ## `rpow` -/
 
 /-- Real powers of operators, based on the unital continuous functional calculus. -/
-noncomputable def rpow (a : A) (y : ℝ) : A := cfc (fun x : ℝ≥0 => x ^ y) a
+noncomputable def rpow (a : A) (y : ℝ) : A := cfc (fun x : ℝ≥0 ↦ x ^ y) a
 
 /-- Enable `a ^ y` notation for `CFC.rpow`. This is a low-priority instance to make sure it does
 not take priority over other instances when they are available (such as `Pow ℝ ℝ`). -/
@@ -340,7 +340,7 @@ lemma rpow_eq_pow {a : A} {y : ℝ} : rpow a y = a ^ y := rfl
 @[simp]
 lemma rpow_nonneg {a : A} {y : ℝ} : 0 ≤ a ^ y := cfc_predicate _ a
 
-lemma rpow_def {a : A} {y : ℝ} : a ^ y = cfc (fun x : ℝ≥0 => x ^ y) a := rfl
+lemma rpow_def {a : A} {y : ℝ} : a ^ y = cfc (fun x : ℝ≥0 ↦ x ^ y) a := rfl
 
 lemma rpow_one (a : A) (ha : 0 ≤ a := by cfc_tac) : a ^ (1 : ℝ) = a := by
   simp only [rpow_def, NNReal.rpow_one, cfc_id' ℝ≥0 a]
@@ -379,7 +379,7 @@ lemma rpow_rpow [IsTopologicalRing A] [T2Space A]
   have ha₁' : 0 ∉ spectrum ℝ≥0 a := spectrum.zero_notMem _ ha₁
   simp only [rpow_def]
   rw [← cfc_comp _ _ a ha₂]
-  refine cfc_congr fun _ _ => ?_
+  refine cfc_congr fun _ _ ↦ ?_
   simp [NNReal.rpow_mul]
 
 lemma rpow_rpow_inv [IsTopologicalRing A] [T2Space A]
@@ -396,7 +396,7 @@ lemma rpow_rpow_of_exponent_nonneg [IsTopologicalRing A] [T2Space A] (a : A) (x 
     (hx : 0 ≤ x) (hy : 0 ≤ y) (ha₂ : 0 ≤ a := by cfc_tac) : (a ^ x) ^ y = a ^ (x * y) := by
   simp only [rpow_def]
   rw [← cfc_comp _ _ a]
-  refine cfc_congr fun _ _ => ?_
+  refine cfc_congr fun _ _ ↦ ?_
   simp [NNReal.rpow_mul]
 
 lemma rpow_mul_rpow_neg {a : A} (x : ℝ) (ha : IsUnit a)
@@ -422,8 +422,8 @@ lemma rpow_neg [IsTopologicalRing A] [T2Space A] (a : Aˣ) (x : ℝ)
     (ha' : (0 : A) ≤ a := by cfc_tac) : (a : A) ^ (-x) = (↑a⁻¹ : A) ^ x := by
   suffices h₁ : ContinuousOn (fun z ↦ z ^ x) (Inv.inv '' (spectrum ℝ≥0 (a : A))) by
     rw [← cfc_inv_id (R := ℝ≥0) a, rpow_def, rpow_def,
-        ← cfc_comp' (fun z => z ^ x) (Inv.inv : ℝ≥0 → ℝ≥0) (a : A) h₁]
-    refine cfc_congr fun _ _ => ?_
+        ← cfc_comp' (fun z ↦ z ^ x) (Inv.inv : ℝ≥0 → ℝ≥0) (a : A) h₁]
+    refine cfc_congr fun _ _ ↦ ?_
     simp [NNReal.rpow_neg, NNReal.inv_rpow]
   refine NNReal.continuousOn_rpow_const (.inl ?_)
   rintro ⟨z, hz, hz'⟩
@@ -432,7 +432,7 @@ lemma rpow_neg [IsTopologicalRing A] [T2Space A] (a : Aˣ) (x : ℝ)
 lemma rpow_intCast (a : Aˣ) (n : ℤ) (ha : (0 : A) ≤ a := by cfc_tac) :
     (a : A) ^ (n : ℝ) = (↑(a ^ n) : A) := by
   rw [← cfc_zpow (R := ℝ≥0) a n, rpow_def]
-  refine cfc_congr fun _ _ => ?_
+  refine cfc_congr fun _ _ ↦ ?_
   simp
 
 /-- `a ^ x` bundled as an element of `Aˣ` for `a : Aˣ`. -/
@@ -454,9 +454,9 @@ lemma spectrum_rpow (a : A) (x : ℝ)
 lemma isUnit_rpow_iff (a : A) (y : ℝ) (hy : y ≠ 0) (ha : 0 ≤ a := by cfc_tac) :
     IsUnit (a ^ y) ↔ IsUnit a := by
   nontriviality A
-  refine ⟨fun h => ?_, fun h => h.cfcRpow y ha⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ h.cfcRpow y ha⟩
   rw [rpow_def] at h
-  by_cases hf : ContinuousOn (fun x : ℝ≥0 => x ^ y) (spectrum ℝ≥0 a)
+  by_cases hf : ContinuousOn (fun x : ℝ≥0 ↦ x ^ y) (spectrum ℝ≥0 a)
   · rw [isUnit_cfc_iff _ a hf] at h
     refine spectrum.isUnit_of_zero_notMem ℝ≥0 ?_
     intro h0
@@ -512,8 +512,8 @@ variable {ι : Type*} {C : ι → Type*} [∀ i, PartialOrder (C i)] [∀ i, Rin
 instance for pi types, hence the direct use of `rpow` here. -/
 lemma rpow_map_pi {c : ∀ i, C i} {x : ℝ} (hc : ∀ i, IsUnit (c i))
     (hc' : ∀ i, 0 ≤ c i := by cfc_tac) :
-    rpow c x = fun i => (c i) ^ x := by
-  have hc'' : ∀ i, 0 ∉ spectrum ℝ≥0 (c i) := fun i => spectrum.zero_notMem _ (hc i)
+    rpow c x = fun i ↦ (c i) ^ x := by
+  have hc'' : ∀ i, 0 ∉ spectrum ℝ≥0 (c i) := fun i ↦ spectrum.zero_notMem _ (hc i)
   simp only [rpow_def]
   unfold rpow
   exact cfc_map_pi (S := ℝ) _ c

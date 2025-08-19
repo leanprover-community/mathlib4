@@ -115,8 +115,8 @@ theorem Colorable.of_sum_right {n : ℕ} (h : (G ⊕g H).Colorable n) : H.Colora
 
 @[simp]
 theorem colorable_sum {n : ℕ} : (G ⊕g H).Colorable n ↔ G.Colorable n ∧ H.Colorable n :=
-  ⟨fun cGH => ⟨cGH.of_sum_left, cGH.of_sum_right⟩,
-    fun ⟨cG, cH⟩ => by rw [← n.max_self]; exact cG.sum_max cH⟩
+  ⟨fun cGH ↦ ⟨cGH.of_sum_left, cGH.of_sum_right⟩,
+    fun ⟨cG, cH⟩ ↦ by rw [← n.max_self]; exact cG.sum_max cH⟩
 
 theorem chromaticNumber_le_sum_left : G.chromaticNumber ≤ (G ⊕g H).chromaticNumber :=
   chromaticNumber_le_of_forall_imp (fun _ h ↦ h.of_sum_left)
@@ -127,7 +127,7 @@ theorem chromaticNumber_le_sum_right : H.chromaticNumber ≤ (G ⊕g H).chromati
 @[simp]
 theorem chromaticNumber_sum :
     (G ⊕g H).chromaticNumber = max G.chromaticNumber H.chromaticNumber := by
-  refine eq_max chromaticNumber_le_sum_left chromaticNumber_le_sum_right fun {d} hG hH => ?_
+  refine eq_max chromaticNumber_le_sum_left chromaticNumber_le_sum_right fun {d} hG hH ↦ ?_
   cases d with
   | top => simp
   | coe n =>

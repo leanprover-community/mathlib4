@@ -56,7 +56,7 @@ variable {M}
 
 /-- The action of the functor `QuotSMulTop r` on morphisms. -/
 def map : (M →ₗ[R] M') →ₗ[R] QuotSMulTop r M →ₗ[R] QuotSMulTop r M' :=
-  Submodule.mapQLinear _ _ ∘ₗ LinearMap.id.codRestrict _ fun _ =>
+  Submodule.mapQLinear _ _ ∘ₗ LinearMap.id.codRestrict _ fun _ ↦
     map_le_iff_le_comap.mp <| le_of_eq_of_le (map_pointwise_smul _ _ _) <|
       smul_mono_right r le_top
 
@@ -74,14 +74,14 @@ variable (M)
 
 @[simp]
 lemma map_id : map r (LinearMap.id : M →ₗ[R] M) = .id :=
-  DFunLike.ext _ _ <| (mkQ_surjective _).forall.mpr fun _ => rfl
+  DFunLike.ext _ _ <| (mkQ_surjective _).forall.mpr fun _ ↦ rfl
 
 variable {M}
 
 @[simp]
 lemma map_comp (g : M' →ₗ[R] M'') (f : M →ₗ[R] M') :
     map r (g ∘ₗ f) = map r g ∘ₗ map r f :=
-  DFunLike.ext _ _ <| (mkQ_surjective _).forall.mpr fun _ => rfl
+  DFunLike.ext _ _ <| (mkQ_surjective _).forall.mpr fun _ ↦ rfl
 
 lemma equivQuotTensor_naturality_mk (f : M →ₗ[R] M') (x : M) :
     equivQuotTensor r M' (map r f (Submodule.Quotient.mk x)) =

@@ -56,7 +56,7 @@ def projectivePresentation (X : CompHaus) : ProjectivePresentation X where
   f := CompHausLike.ofHom _ ⟨_, continuous_ultrafilter_extend id⟩
   projective := CompHaus.projective_ultrafilter X
   epi :=
-    ConcreteCategory.epi_of_surjective _ fun x =>
+    ConcreteCategory.epi_of_surjective _ fun x ↦
       ⟨(pure x : Ultrafilter X), congr_fun (ultrafilter_extend_extends (𝟙 X)) x⟩
 
 instance : EnoughProjectives CompHaus where presentation X := ⟨projectivePresentation X⟩

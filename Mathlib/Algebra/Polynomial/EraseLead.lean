@@ -87,7 +87,7 @@ theorem ne_natDegree_of_mem_eraseLead_support {a : ℕ} (h : a ∈ (eraseLead f)
     a ≠ f.natDegree :=
   (lt_natDegree_of_mem_eraseLead_support h).ne
 
-theorem natDegree_notMem_eraseLead_support : f.natDegree ∉ (eraseLead f).support := fun h =>
+theorem natDegree_notMem_eraseLead_support : f.natDegree ∉ (eraseLead f).support := fun h ↦
   ne_natDegree_of_mem_eraseLead_support h rfl
 
 @[deprecated (since := "2025-05-23")]
@@ -304,7 +304,7 @@ theorem mono_map_natDegree_eq {S F : Type*} [Semiring S]
     (fc : ∀ {n m}, k ≤ n → n < m → fu n < fu m) (φ_k : ∀ {f : R[X]}, f.natDegree < k → φ f = 0)
     (φ_mon_nat : ∀ n c, c ≠ 0 → (φ (monomial n c)).natDegree = fu n) :
     (φ p).natDegree = fu p.natDegree := by
-  refine induction_with_natDegree_le (fun p => (φ p).natDegree = fu p.natDegree)
+  refine induction_with_natDegree_le (fun p ↦ (φ p).natDegree = fu p.natDegree)
     p.natDegree (by simp [fu0]) ?_ ?_ _ rfl.le
   · intro n r r0 _
     rw [natDegree_C_mul_X_pow _ _ r0, C_mul_X_pow_eq_monomial, φ_mon_nat _ _ r0]
@@ -323,15 +323,15 @@ theorem map_natDegree_eq_sub {S F : Type*} [Semiring S]
     {p : R[X]} {k : ℕ} (φ_k : ∀ f : R[X], f.natDegree < k → φ f = 0)
     (φ_mon : ∀ n c, c ≠ 0 → (φ (monomial n c)).natDegree = n - k) :
     (φ p).natDegree = p.natDegree - k :=
-  mono_map_natDegree_eq k (fun j => j - k) (by simp_all)
-    (@fun _ _ h => (tsub_lt_tsub_iff_right h).mpr)
+  mono_map_natDegree_eq k (fun j ↦ j - k) (by simp_all)
+    (@fun _ _ h ↦ (tsub_lt_tsub_iff_right h).mpr)
     (φ_k _) φ_mon
 
 theorem map_natDegree_eq_natDegree {S F : Type*} [Semiring S]
     [FunLike F R[X] S[X]] [AddMonoidHomClass F R[X] S[X]]
     {φ : F} (p) (φ_mon_nat : ∀ n c, c ≠ 0 → (φ (monomial n c)).natDegree = n) :
     (φ p).natDegree = p.natDegree :=
-  (map_natDegree_eq_sub (fun _ h => (Nat.not_lt_zero _ h).elim) (by simpa)).trans
+  (map_natDegree_eq_sub (fun _ h ↦ (Nat.not_lt_zero _ h).elim) (by simpa)).trans
     p.natDegree.sub_zero
 
 theorem card_support_eq' {n : ℕ} (k : Fin n → ℕ) (x : Fin n → R) (hk : Function.Injective k)
@@ -340,21 +340,21 @@ theorem card_support_eq' {n : ℕ} (k : Fin n → ℕ) (x : Fin n → R) (hk : F
     rw [this, univ.card_image_of_injective hk, card_fin]
   simp_rw [Finset.ext_iff, mem_support_iff, finset_sum_coeff, coeff_C_mul_X_pow, mem_image,
     mem_univ, true_and]
-  refine fun i => ⟨fun h => ?_, ?_⟩
+  refine fun i ↦ ⟨fun h ↦ ?_, ?_⟩
   · obtain ⟨j, _, h⟩ := exists_ne_zero_of_sum_ne_zero h
     exact ⟨j, (ite_ne_right_iff.mp h).1.symm⟩
   · rintro ⟨j, _, rfl⟩
     rw [sum_eq_single_of_mem j (mem_univ j), if_pos rfl]
     · exact hx j
-    · exact fun m _ hmj => if_neg fun h => hmj.symm (hk h)
+    · exact fun m _ hmj ↦ if_neg fun h ↦ hmj.symm (hk h)
 
 theorem card_support_eq {n : ℕ} :
     #f.support = n ↔
       ∃ (k : Fin n → ℕ) (x : Fin n → R) (_ : StrictMono k) (_ : ∀ i, x i ≠ 0),
         f = ∑ i, C (x i) * X ^ k i := by
-  refine ⟨?_, fun ⟨k, x, hk, hx, hf⟩ => hf.symm ▸ card_support_eq' k x hk.injective hx⟩
+  refine ⟨?_, fun ⟨k, x, hk, hx, hf⟩ ↦ hf.symm ▸ card_support_eq' k x hk.injective hx⟩
   induction n generalizing f with
-  | zero => exact fun hf => ⟨0, 0, fun x => x.elim0, fun x => x.elim0, card_support_eq_zero.mp hf⟩
+  | zero => exact fun hf ↦ ⟨0, 0, fun x ↦ x.elim0, fun x ↦ x.elim0, card_support_eq_zero.mp hf⟩
   | succ n hn =>
     intro h
     obtain ⟨k, x, hk, hx, hf⟩ := hn (card_support_eraseLead' h)
@@ -362,8 +362,8 @@ theorem card_support_eq {n : ℕ} :
       rintro ⟨i, hi⟩
       exact i.castSucc_lt_last.ne hi
     refine
-      ⟨Function.extend Fin.castSucc k fun _ => f.natDegree,
-        Function.extend Fin.castSucc x fun _ => f.leadingCoeff, ?_, ?_, ?_⟩
+      ⟨Function.extend Fin.castSucc k fun _ ↦ f.natDegree,
+        Function.extend Fin.castSucc x fun _ ↦ f.leadingCoeff, ?_, ?_, ?_⟩
     · intro i j hij
       have hi : i ∈ Set.range (Fin.castSucc : Fin n → Fin (n + 1)) := by
         simp only [Fin.range_castSucc, Nat.succ_eq_add_one, Set.mem_setOf_eq]
@@ -381,7 +381,7 @@ theorem card_support_eq {n : ℕ} :
         · exact hx i
         · intro j _ hji
           rw [coeff_C_mul, coeff_X_pow, if_neg (hk.injective.ne hji.symm), mul_zero]
-        · exact fun hi => (hi (mem_univ i)).elim
+        · exact fun hi ↦ (hi (mem_univ i)).elim
     · intro i
       by_cases hi : ∃ i₀, Fin.castSucc i₀ = i
       · obtain ⟨i, rfl⟩ := hi
@@ -396,7 +396,7 @@ theorem card_support_eq {n : ℕ} :
 
 theorem card_support_eq_one : #f.support = 1 ↔
     ∃ (k : ℕ) (x : R) (_ : x ≠ 0), f = C x * X ^ k := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · obtain ⟨k, x, _, hx, rfl⟩ := card_support_eq.mp h
     exact ⟨k 0, x 0, hx 0, Fin.sum_univ_one _⟩
   · rintro ⟨k, x, hx, rfl⟩
@@ -406,7 +406,7 @@ theorem card_support_eq_two :
     #f.support = 2 ↔
       ∃ (k m : ℕ) (_ : k < m) (x y : R) (_ : x ≠ 0) (_ : y ≠ 0),
         f = C x * X ^ k + C y * X ^ m := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · obtain ⟨k, x, hk, hx, rfl⟩ := card_support_eq.mp h
     refine ⟨k 0, k 1, hk Nat.zero_lt_one, x 0, x 1, hx 0, hx 1, ?_⟩
     rw [Fin.sum_univ_castSucc, Fin.sum_univ_one]
@@ -418,7 +418,7 @@ theorem card_support_eq_three :
     #f.support = 3 ↔
       ∃ (k m n : ℕ) (_ : k < m) (_ : m < n) (x y z : R) (_ : x ≠ 0) (_ : y ≠ 0) (_ : z ≠ 0),
         f = C x * X ^ k + C y * X ^ m + C z * X ^ n := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · obtain ⟨k, x, hk, hx, rfl⟩ := card_support_eq.mp h
     refine
       ⟨k 0, k 1, k 2, hk Nat.zero_lt_one, hk (Nat.lt_succ_self 1), x 0, x 1, x 2, hx 0, hx 1, hx 2,

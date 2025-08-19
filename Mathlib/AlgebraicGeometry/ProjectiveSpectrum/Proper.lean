@@ -260,7 +260,7 @@ theorem valuativeCriterion_existence_aux
       · rw [Nat.add_sub_cancel]; ring
     rw [map_div₀, div_le_iff₀ ((pow_pos ((Valuation.pos_iff _).mpr hunit.ne_zero) _).trans_eq
       (Valuation.map_pow _ _ _).symm), one_mul, ← pow_le_pow_iff_left₀ zero_le' zero_le'
-        (mul_pos (hdi j) (Finset.prod_pos fun i _ => hdi i)).ne.symm]
+        (mul_pos (hdi j) (Finset.prod_pos fun i _ ↦ hdi i)).ne.symm]
     calc
       _ = (∏ i, ψ i ^ (d i * ai i)) * ψ i₀ ^ (d i₀ * a * (d j - 1)) := by
           simp only [ψ, ← map_pow, ← map_prod, ← map_mul]

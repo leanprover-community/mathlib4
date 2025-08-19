@@ -104,7 +104,7 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
         convert RingHom.congr_fun h z using 1
         exact (IsDenseInducing.extend_eq di hc.continuous z).symm
   · let j : { x // x ∈ closure (id '' { x | (K : Set ℂ) x }) } → (K.topologicalClosure : Set ℂ) :=
-      fun x =>
+      fun x ↦
       ⟨x, by
         convert x.prop
         simp only [id, Set.image_id']

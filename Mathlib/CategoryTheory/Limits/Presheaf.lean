@@ -424,9 +424,9 @@ variable [∀ (P : Cᵒᵖ ⥤ Type max w v₁ v₂), F.op.HasLeftKanExtension P
 /-- `F ⋙ uliftYoneda` is naturally isomorphic to `uliftYoneda ⋙ F.op.lan`. -/
 noncomputable def compULiftYonedaIsoULiftYonedaCompLan :
     F ⋙ uliftYoneda.{max w v₁} ≅ uliftYoneda.{max w v₂} ⋙ F.op.lan :=
-  NatIso.ofComponents (fun X => Functor.leftKanExtensionUnique _
+  NatIso.ofComponents (fun X ↦ Functor.leftKanExtensionUnique _
     (uliftYonedaMap.{w} F X) (F.op.lan.obj _) (F.op.lanUnit.app (uliftYoneda.obj X)))
-    (fun {X Y} f => by
+    (fun {X Y} f ↦ by
       apply uliftYonedaEquiv.injective
       have eq₁ := congr_fun
         ((uliftYoneda.{max w v₁}.obj (F.obj Y)).descOfIsLeftKanExtension_fac_app
@@ -677,7 +677,7 @@ theorem final_toCostructuredArrow_comp_pre {c : Cocone (F ⋙ yoneda)} (hc : IsC
   let isc : IsColimit ((Over.forget _).mapCocone _) := isColimitOfPreserves _
     (colimit.isColimit ((c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) ⋙
       CostructuredArrow.toOver yoneda c.pt))
-  exact Over.isoMk (hc.coconePointUniqueUpToIso isc) (hc.hom_ext fun i => by simp)
+  exact Over.isoMk (hc.coconePointUniqueUpToIso isc) (hc.hom_ext fun i ↦ by simp)
 
 @[deprecated (since := "2025-08-16")] alias restrictedYoneda := restrictedULiftYoneda
 @[deprecated (since := "2025-08-16")] alias isExtensionAlongYoneda := isExtensionAlongULiftYoneda

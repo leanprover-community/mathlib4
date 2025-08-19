@@ -34,7 +34,7 @@ variable {J : Type} [SmallCategory J] [FinCategory J]
 variable {k : Type u} [Ring k]
 
 instance {J : Type} [Finite J] (Z : J → ModuleCat.{v} k) [∀ j, Module.Finite k (Z j)] :
-    Module.Finite k (∏ᶜ fun j => Z j : ModuleCat.{v} k) :=
+    Module.Finite k (∏ᶜ fun j ↦ Z j : ModuleCat.{v} k) :=
   haveI : Module.Finite k (ModuleCat.of k (∀ j, Z j)) := by unfold ModuleCat.of; infer_instance
   (Module.Finite.equiv_iff (ModuleCat.piIsoPi Z).toLinearEquiv).mpr inferInstance
 

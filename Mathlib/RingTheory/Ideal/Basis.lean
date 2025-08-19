@@ -42,7 +42,7 @@ theorem basisSpanSingleton_apply (b : Basis ι R S) {x : S} (hx : x ≠ 0) (i : 
 theorem constr_basisSpanSingleton {N : Type*} [Semiring N] [Module N S] [SMulCommClass R N S]
     (b : Basis ι R S) {x : S} (hx : x ≠ 0) :
     (b.constr N).toFun (((↑) : _ → S) ∘ (basisSpanSingleton b hx)) = Algebra.lmul R S x :=
-  b.ext fun i => by simp
+  b.ext fun i ↦ by simp
 
 end Ideal
 
@@ -51,7 +51,7 @@ end Ideal
 `x ∈ I` iff it is a linear combination of basis vectors. -/
 theorem Basis.mem_ideal_iff {ι R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
     {I : Ideal S} (b : Basis ι R I) {x : S} :
-    x ∈ I ↔ ∃ c : ι →₀ R, x = Finsupp.sum c fun i x => x • (b i : S) :=
+    x ∈ I ↔ ∃ c : ι →₀ R, x = Finsupp.sum c fun i x ↦ x • (b i : S) :=
   (b.map ((I.restrictScalarsEquiv R _ _).restrictScalars R).symm).mem_submodule_iff
 
 /-- If `I : Ideal S` has a finite basis over `R`,

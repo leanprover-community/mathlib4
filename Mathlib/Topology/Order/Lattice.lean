@@ -32,7 +32,7 @@ open Topology
 -/
 class ContinuousInf (L : Type*) [TopologicalSpace L] [Min L] : Prop where
   /-- The infimum is continuous -/
-  continuous_inf : Continuous fun p : L × L => p.1 ⊓ p.2
+  continuous_inf : Continuous fun p : L × L ↦ p.1 ⊓ p.2
 
 /-- Let `L` be a topological space and let `L×L` be equipped with the product topology and let
 `⊓:L×L → L` be a supremum. Then `L` is said to have *(jointly) continuous supremum* if the map
@@ -40,7 +40,7 @@ class ContinuousInf (L : Type*) [TopologicalSpace L] [Min L] : Prop where
 -/
 class ContinuousSup (L : Type*) [TopologicalSpace L] [Max L] : Prop where
   /-- The supremum is continuous -/
-  continuous_sup : Continuous fun p : L × L => p.1 ⊔ p.2
+  continuous_sup : Continuous fun p : L × L ↦ p.1 ⊔ p.2
 
 -- see Note [lower instance priority]
 instance (priority := 100) OrderDual.continuousSup (L : Type*) [TopologicalSpace L] [Min L]
@@ -71,21 +71,21 @@ instance (priority := 100) LinearOrder.topologicalLattice {L : Type*} [Topologic
 variable {L X : Type*} [TopologicalSpace L] [TopologicalSpace X]
 
 @[continuity]
-theorem continuous_inf [Min L] [ContinuousInf L] : Continuous fun p : L × L => p.1 ⊓ p.2 :=
+theorem continuous_inf [Min L] [ContinuousInf L] : Continuous fun p : L × L ↦ p.1 ⊓ p.2 :=
   ContinuousInf.continuous_inf
 
 @[continuity, fun_prop]
 theorem Continuous.inf [Min L] [ContinuousInf L] {f g : X → L} (hf : Continuous f)
-    (hg : Continuous g) : Continuous fun x => f x ⊓ g x :=
+    (hg : Continuous g) : Continuous fun x ↦ f x ⊓ g x :=
   continuous_inf.comp (hf.prodMk hg :)
 
 @[continuity]
-theorem continuous_sup [Max L] [ContinuousSup L] : Continuous fun p : L × L => p.1 ⊔ p.2 :=
+theorem continuous_sup [Max L] [ContinuousSup L] : Continuous fun p : L × L ↦ p.1 ⊔ p.2 :=
   ContinuousSup.continuous_sup
 
 @[continuity, fun_prop]
 theorem Continuous.sup [Max L] [ContinuousSup L] {f g : X → L} (hf : Continuous f)
-    (hg : Continuous g) : Continuous fun x => f x ⊔ g x :=
+    (hg : Continuous g) : Continuous fun x ↦ f x ⊔ g x :=
   continuous_sup.comp (hf.prodMk hg :)
 
 namespace Filter.Tendsto
@@ -99,7 +99,7 @@ lemma sup_nhds' [Max L] [ContinuousSup L] (hf : Tendsto f l (𝓝 x)) (hg : Tend
   (continuous_sup.tendsto _).comp (hf.prodMk_nhds hg)
 
 lemma sup_nhds [Max L] [ContinuousSup L] (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
-    Tendsto (fun i => f i ⊔ g i) l (𝓝 (x ⊔ y)) :=
+    Tendsto (fun i ↦ f i ⊔ g i) l (𝓝 (x ⊔ y)) :=
   hf.sup_nhds' hg
 
 lemma inf_nhds' [Min L] [ContinuousInf L] (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
@@ -107,7 +107,7 @@ lemma inf_nhds' [Min L] [ContinuousInf L] (hf : Tendsto f l (𝓝 x)) (hg : Tend
   (continuous_inf.tendsto _).comp (hf.prodMk_nhds hg)
 
 lemma inf_nhds [Min L] [ContinuousInf L] (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
-    Tendsto (fun i => f i ⊓ g i) l (𝓝 (x ⊓ y)) :=
+    Tendsto (fun i ↦ f i ⊓ g i) l (𝓝 (x ⊓ y)) :=
   hf.inf_nhds' hg
 
 end SupInf

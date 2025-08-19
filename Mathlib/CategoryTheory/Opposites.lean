@@ -33,12 +33,12 @@ section Quiver
 variable [Quiver.{v₁} C]
 
 theorem Quiver.Hom.op_inj {X Y : C} :
-    Function.Injective (Quiver.Hom.op : (X ⟶ Y) → (Opposite.op Y ⟶ Opposite.op X)) := fun _ _ H =>
+    Function.Injective (Quiver.Hom.op : (X ⟶ Y) → (Opposite.op Y ⟶ Opposite.op X)) := fun _ _ H ↦
   congr_arg Quiver.Hom.unop H
 
 theorem Quiver.Hom.unop_inj {X Y : Cᵒᵖ} :
     Function.Injective (Quiver.Hom.unop : (X ⟶ Y) → (Opposite.unop Y ⟶ Opposite.unop X)) :=
-  fun _ _ H => congr_arg Quiver.Hom.op H
+  fun _ _ H ↦ congr_arg Quiver.Hom.op H
 
 @[simp]
 theorem Quiver.Hom.unop_op {X Y : C} (f : X ⟶ Y) : f.op.unop = f :=
@@ -135,7 +135,7 @@ theorem isIso_of_op {X Y : C} (f : X ⟶ Y) [IsIso f.op] : IsIso f :=
   ⟨⟨(inv f.op).unop, ⟨Quiver.Hom.op_inj (by simp), Quiver.Hom.op_inj (by simp)⟩⟩⟩
 
 theorem isIso_op_iff {X Y : C} (f : X ⟶ Y) : IsIso f.op ↔ IsIso f :=
-  ⟨fun _ => isIso_of_op _, fun _ => inferInstance⟩
+  ⟨fun _ ↦ isIso_of_op _, fun _ ↦ inferInstance⟩
 
 theorem isIso_unop_iff {X Y : Cᵒᵖ} (f : X ⟶ Y) : IsIso f.unop ↔ IsIso f := by
   rw [← isIso_op_iff f.unop, Quiver.Hom.op_unop]
@@ -177,12 +177,12 @@ protected def unop (F : Cᵒᵖ ⥤ Dᵒᵖ) : C ⥤ D where
 /-- The isomorphism between `F.op.unop` and `F`. -/
 @[simps!]
 def opUnopIso (F : C ⥤ D) : F.op.unop ≅ F :=
-  NatIso.ofComponents fun _ => Iso.refl _
+  NatIso.ofComponents fun _ ↦ Iso.refl _
 
 /-- The isomorphism between `F.unop.op` and `F`. -/
 @[simps!]
 def unopOpIso (F : Cᵒᵖ ⥤ Dᵒᵖ) : F.unop.op ≅ F :=
-  NatIso.ofComponents fun _ => Iso.refl _
+  NatIso.ofComponents fun _ ↦ Iso.refl _
 
 variable (C D)
 
@@ -192,8 +192,8 @@ variable (C D)
 def opHom : (C ⥤ D)ᵒᵖ ⥤ Cᵒᵖ ⥤ Dᵒᵖ where
   obj F := (unop F).op
   map α :=
-    { app := fun X => (α.unop.app (unop X)).op
-      naturality := fun _ _ f => Quiver.Hom.unop_inj (α.unop.naturality f.unop).symm }
+    { app := fun X ↦ (α.unop.app (unop X)).op
+      naturality := fun _ _ f ↦ Quiver.Hom.unop_inj (α.unop.naturality f.unop).symm }
 
 /-- Take the "unopposite" of a functor is functorial.
 -/
@@ -202,8 +202,8 @@ def opInv : (Cᵒᵖ ⥤ Dᵒᵖ) ⥤ (C ⥤ D)ᵒᵖ where
   obj F := op F.unop
   map α :=
     Quiver.Hom.op
-      { app := fun X => (α.app (op X)).unop
-        naturality := fun _ _ f => Quiver.Hom.op_inj <| (α.naturality f.op).symm }
+      { app := fun X ↦ (α.app (op X)).unop
+        naturality := fun _ _ f ↦ Quiver.Hom.op_inj <| (α.naturality f.op).symm }
 
 variable {C D}
 
@@ -314,12 +314,12 @@ end
 /-- The isomorphism between `F.leftOp.rightOp` and `F`. -/
 @[simps!]
 def leftOpRightOpIso (F : C ⥤ Dᵒᵖ) : F.leftOp.rightOp ≅ F :=
-  NatIso.ofComponents fun _ => Iso.refl _
+  NatIso.ofComponents fun _ ↦ Iso.refl _
 
 /-- The isomorphism between `F.rightOp.leftOp` and `F`. -/
 @[simps!]
 def rightOpLeftOpIso (F : Cᵒᵖ ⥤ D) : F.rightOp.leftOp ≅ F :=
-  NatIso.ofComponents fun _ => Iso.refl _
+  NatIso.ofComponents fun _ ↦ Iso.refl _
 
 /-- Whenever possible, it is advisable to use the isomorphism `rightOpLeftOpIso`
 instead of this equality of functors. -/
@@ -776,34 +776,34 @@ def opUnopEquiv : (C ⥤ D)ᵒᵖ ≌ Cᵒᵖ ⥤ Dᵒᵖ where
   functor := opHom _ _
   inverse := opInv _ _
   unitIso :=
-    NatIso.ofComponents (fun F => F.unop.opUnopIso.op)
+    NatIso.ofComponents (fun F ↦ F.unop.opUnopIso.op)
       (by
         intro F G f
         dsimp [opUnopIso]
         rw [show f = f.unop.op by simp, ← op_comp, ← op_comp]
         congr 1
         cat_disch)
-  counitIso := NatIso.ofComponents fun F => F.unopOpIso
+  counitIso := NatIso.ofComponents fun F ↦ F.unopOpIso
 
 /-- The equivalence of functor categories induced by `leftOp` and `rightOp`.
 -/
 @[simps!]
 def leftOpRightOpEquiv : (Cᵒᵖ ⥤ D)ᵒᵖ ≌ C ⥤ Dᵒᵖ where
   functor :=
-    { obj := fun F => F.unop.rightOp
-      map := fun η => NatTrans.rightOp η.unop }
+    { obj := fun F ↦ F.unop.rightOp
+      map := fun η ↦ NatTrans.rightOp η.unop }
   inverse :=
-    { obj := fun F => op F.leftOp
-      map := fun η => η.leftOp.op }
+    { obj := fun F ↦ op F.leftOp
+      map := fun η ↦ η.leftOp.op }
   unitIso :=
-    NatIso.ofComponents (fun F => F.unop.rightOpLeftOpIso.op)
+    NatIso.ofComponents (fun F ↦ F.unop.rightOpLeftOpIso.op)
       (by
         intro F G η
         dsimp
         rw [show η = η.unop.op by simp, ← op_comp, ← op_comp]
         congr 1
         cat_disch)
-  counitIso := NatIso.ofComponents fun F => F.leftOpRightOpIso
+  counitIso := NatIso.ofComponents fun F ↦ F.leftOpRightOpIso
 
 instance {F : C ⥤ D} [EssSurj F] : EssSurj F.op where
   mem_essImage X := ⟨op _, ⟨(F.objObjPreimageIso X.unop).op.symm⟩⟩

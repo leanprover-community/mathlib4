@@ -208,7 +208,7 @@ theorem finite_ACF_prime_not_realize_of_ACF_zero_realize
         realize_zero, ← CharP.charP_iff_prime_eq_zero hp]
       intro _
       exact hqp <| CharP.eq K this inferInstance
-  let s : Finset Nat.Primes := T0.attach.biUnion (fun φ => f φ.1 (hT0 φ.2))
+  let s : Finset Nat.Primes := T0.attach.biUnion (fun φ ↦ f φ.1 (hT0 φ.2))
   have hs : ∀ (p : Nat.Primes) ψ, ψ ∈ T0 → p ∉ s → Theory.ACF p ⊨ᵇ ψ := by
     intro p ψ hψ hpψ
     simp only [s, Finset.mem_biUnion, Finset.mem_attach, true_and,
@@ -216,18 +216,18 @@ theorem finite_ACF_prime_not_realize_of_ACF_zero_realize
     exact (f ψ (hT0 hψ)).2 p (hpψ _ hψ)
   refine Set.Finite.subset (Finset.finite_toSet s) (Set.compl_subset_comm.2 ?_)
   intro p hp
-  exact Theory.models_of_models_theory (fun ψ hψ => hs p ψ hψ hp) h
+  exact Theory.models_of_models_theory (fun ψ hψ ↦ hs p ψ hψ hp) h
 
 /-- The **Lefschetz principle**. A first order sentence is modeled by the theory
 of algebraically closed fields of characteristic zero if and only if it is modeled by
 the theory of algebraically closed fields of characteristic `p` for infinitely many `p`. -/
 theorem ACF_zero_realize_iff_infinite_ACF_prime_realize {φ : Language.ring.Sentence} :
     Theory.ACF 0 ⊨ᵇ φ ↔ Set.Infinite { p : Nat.Primes | Theory.ACF p ⊨ᵇ φ } := by
-  refine ⟨fun h => Set.infinite_of_finite_compl
+  refine ⟨fun h ↦ Set.infinite_of_finite_compl
       (finite_ACF_prime_not_realize_of_ACF_zero_realize φ h),
     not_imp_not.1 ?_⟩
   simpa [(ACF_isComplete (Or.inr rfl)).models_not_iff,
-      fun p : Nat.Primes => (ACF_isComplete (Or.inl p.2)).models_not_iff] using
+      fun p : Nat.Primes ↦ (ACF_isComplete (Or.inl p.2)).models_not_iff] using
     finite_ACF_prime_not_realize_of_ACF_zero_realize φ.not
 
 /-- Another statement of the **Lefschetz principle**. A first order sentence is modeled by the
@@ -236,8 +236,8 @@ theory of algebraically closed fields of characteristic `p` for all but finitely
 -/
 theorem ACF_zero_realize_iff_finite_ACF_prime_not_realize {φ : Language.ring.Sentence} :
     Theory.ACF 0 ⊨ᵇ φ ↔ Set.Finite { p : Nat.Primes | Theory.ACF p ⊨ᵇ φ }ᶜ :=
-  ⟨fun h => finite_ACF_prime_not_realize_of_ACF_zero_realize φ h,
-    fun h => ACF_zero_realize_iff_infinite_ACF_prime_realize.2
+  ⟨fun h ↦ finite_ACF_prime_not_realize_of_ACF_zero_realize φ h,
+    fun h ↦ ACF_zero_realize_iff_infinite_ACF_prime_realize.2
       (Set.infinite_of_finite_compl h)⟩
 
 

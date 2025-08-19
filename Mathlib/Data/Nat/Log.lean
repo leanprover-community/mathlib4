@@ -88,14 +88,14 @@ theorem pow_le_iff_le_log {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) :
       rw [Nat.add_le_add_iff_right, ← ih (y / b) (div_lt_self
         (Nat.pos_iff_ne_zero.2 hy) hb) (Nat.div_pos h.1 b_pos).ne', le_div_iff_mul_le b_pos,
         pow_succ', Nat.mul_comm]
-    · exact iff_of_false (fun hby => h ⟨(le_self_pow x.succ_ne_zero _).trans hby, hb⟩)
+    · exact iff_of_false (fun hby ↦ h ⟨(le_self_pow x.succ_ne_zero _).trans hby, hb⟩)
         (not_succ_le_zero _)
 
 theorem lt_pow_iff_log_lt {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) : y < b ^ x ↔ log b y < x :=
   lt_iff_lt_of_le_iff_le (pow_le_iff_le_log hb hy)
 
 theorem pow_le_of_le_log {b x y : ℕ} (hy : y ≠ 0) (h : x ≤ log b y) : b ^ x ≤ y := by
-  refine (le_or_gt b 1).elim (fun hb => ?_) fun hb => (pow_le_iff_le_log hb hy).2 h
+  refine (le_or_gt b 1).elim (fun hb ↦ ?_) fun hb ↦ (pow_le_iff_le_log hb hy).2 h
   rw [log_of_left_le_one hb, Nat.le_zero] at h
   rwa [h, Nat.pow_zero, one_le_iff_ne_zero]
 
@@ -155,7 +155,7 @@ theorem log_eq_one_iff' {b n : ℕ} : log b n = 1 ↔ b ≤ n ∧ n < b * b := b
 
 theorem log_eq_one_iff {b n : ℕ} : log b n = 1 ↔ n < b * b ∧ 1 < b ∧ b ≤ n :=
   log_eq_one_iff'.trans
-    ⟨fun h => ⟨h.2, lt_mul_self_iff.1 (h.1.trans_lt h.2), h.1⟩, fun h => ⟨h.2.2, h.1⟩⟩
+    ⟨fun h ↦ ⟨h.2, lt_mul_self_iff.1 (h.1.trans_lt h.2), h.1⟩, fun h ↦ ⟨h.2.2, h.1⟩⟩
 
 @[simp]
 theorem log_mul_base {b n : ℕ} (hb : 1 < b) (hn : n ≠ 0) : log b (n * b) = log b n + 1 := by
@@ -168,7 +168,7 @@ theorem pow_log_le_add_one (b : ℕ) : ∀ x, b ^ log b x ≤ x + 1
   | x + 1 => (pow_log_le_self b x.succ_ne_zero).trans (x + 1).le_succ
 
 theorem log_monotone {b : ℕ} : Monotone (log b) := by
-  refine monotone_nat_of_le_succ fun n => ?_
+  refine monotone_nat_of_le_succ fun n ↦ ?_
   rcases le_or_gt b 1 with hb | hb
   · rw [log_of_left_le_one hb]
     exact zero_le _
@@ -199,7 +199,7 @@ theorem log_anti_left {b c n : ℕ} (hc : 1 < c) (hb : c ≤ b) : log b n ≤ lo
     c ^ log b n ≤ b ^ log b n := Nat.pow_le_pow_left hb _
     _ ≤ n := pow_log_le_self _ hn
 
-theorem log_antitone_left {n : ℕ} : AntitoneOn (fun b => log b n) (Set.Ioi 1) := fun _ hc _ _ hb =>
+theorem log_antitone_left {n : ℕ} : AntitoneOn (fun b ↦ log b n) (Set.Ioi 1) := fun _ hc _ _ hb ↦
   log_anti_left (Set.mem_Iio.1 hc) hb
 
 @[gcongr, mono]
@@ -251,10 +251,10 @@ decreasing_by
   decreasing_trivial
 
 theorem clog_of_left_le_one {b : ℕ} (hb : b ≤ 1) (n : ℕ) : clog b n = 0 := by
-  rw [clog, dif_neg fun h : 1 < b ∧ 1 < n => h.1.not_ge hb]
+  rw [clog, dif_neg fun h : 1 < b ∧ 1 < n ↦ h.1.not_ge hb]
 
 theorem clog_of_right_le_one {n : ℕ} (hn : n ≤ 1) (b : ℕ) : clog b n = 0 := by
-  rw [clog, dif_neg fun h : 1 < b ∧ 1 < n => h.2.not_ge hn]
+  rw [clog, dif_neg fun h : 1 < b ∧ 1 < n ↦ h.2.not_ge hn]
 
 @[simp] lemma clog_zero_left (n : ℕ) : clog 0 n = 0 := clog_of_left_le_one (Nat.zero_le _) _
 
@@ -284,7 +284,7 @@ theorem le_pow_iff_clog_le {b : ℕ} (hb : 1 < b) {x y : ℕ} : x ≤ b ^ y ↔ 
   induction x using Nat.strong_induction_on generalizing y with | h x ih => ?_
   cases y
   · rw [Nat.pow_zero]
-    refine ⟨fun h => (clog_of_right_le_one h b).le, ?_⟩
+    refine ⟨fun h ↦ (clog_of_right_le_one h b).le, ?_⟩
     simp_rw [← not_lt]
     contrapose!
     exact clog_pos hb
@@ -325,10 +325,10 @@ theorem clog_anti_left {b c n : ℕ} (hc : 1 < c) (hb : c ≤ b) : clog b n ≤ 
     n ≤ c ^ clog c n := le_pow_clog hc _
     _ ≤ b ^ clog c n := Nat.pow_le_pow_left hb _
 
-theorem clog_monotone (b : ℕ) : Monotone (clog b) := fun _ _ => clog_mono_right _
+theorem clog_monotone (b : ℕ) : Monotone (clog b) := fun _ _ ↦ clog_mono_right _
 
-theorem clog_antitone_left {n : ℕ} : AntitoneOn (fun b : ℕ => clog b n) (Set.Ioi 1) :=
-  fun _ hc _ _ hb => clog_anti_left (Set.mem_Iio.1 hc) hb
+theorem clog_antitone_left {n : ℕ} : AntitoneOn (fun b : ℕ ↦ clog b n) (Set.Ioi 1) :=
+  fun _ hc _ _ hb ↦ clog_anti_left (Set.mem_Iio.1 hc) hb
 
 @[mono, gcongr]
 theorem clog_mono {b c m n : ℕ} (hc : 1 < c) (hb : c ≤ b) (hmn : m ≤ n) :
@@ -435,7 +435,7 @@ private lemma logC_step {m pw q e : ℕ} (hpw : 1 < pw) (hqe : logC.step m pw hp
       rw [Nat.pow_succ, Nat.mul_assoc, Nat.pow_mul, Nat.pow_two, Nat.mul_assoc]
       refine ⟨(ih hqe').1.trans' (Nat.mul_le_mul_left _ (Nat.mul_div_le _ _)),
         Nat.div_lt_of_lt_mul (ih hqe').2.1, (ih hqe').2.2.1.trans_le ?_,
-        fun _ => Nat.div_pos (le_of_not_gt hqpw) (by omega)⟩
+        fun _ ↦ Nat.div_pos (le_of_not_gt hqpw) (by omega)⟩
       exact Nat.mul_le_mul_left _ (Nat.lt_mul_div_succ _ (zero_lt_of_lt hpw))
 
 private lemma logC_spec {b m : ℕ} (hb : 1 < b) (hm : 0 < m) :

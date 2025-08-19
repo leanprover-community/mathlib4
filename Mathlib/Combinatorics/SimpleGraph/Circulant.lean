@@ -51,7 +51,7 @@ theorem circulantGraph_eq_symm : circulantGraph s = circulantGraph (s ∪ (-s)) 
   exact Or.symm h
 
 instance [DecidableEq G] [DecidablePred (· ∈ s)] : DecidableRel (circulantGraph s).Adj :=
-  fun _ _ => inferInstanceAs (Decidable (_ ∧ _))
+  fun _ _ ↦ inferInstanceAs (Decidable (_ ∧ _))
 
 theorem circulantGraph_adj_translate {s : Set G} {u v d : G} :
     (circulantGraph s).Adj (u + d) (v + d) ↔ (circulantGraph s).Adj u v := by simp
@@ -62,7 +62,7 @@ def cycleGraph : (n : ℕ) → SimpleGraph (Fin n)
   | _ + 1 => circulantGraph {1}
 
 instance : (n : ℕ) → DecidableRel (cycleGraph n).Adj
-  | 0 => fun _ _ => inferInstanceAs (Decidable False)
+  | 0 => fun _ _ ↦ inferInstanceAs (Decidable False)
   | _ + 1 => inferInstanceAs (DecidableRel (circulantGraph _).Adj)
 
 theorem cycleGraph_zero_adj {u v : Fin 0} : ¬(cycleGraph 0).Adj u v := id

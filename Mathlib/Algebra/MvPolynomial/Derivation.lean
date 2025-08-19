@@ -30,15 +30,15 @@ variable (R)
 /-- The derivation on `MvPolynomial σ R` that takes value `f i` on `X i`, as a linear map.
 Use `MvPolynomial.mkDerivation` instead. -/
 def mkDerivationₗ (f : σ → A) : MvPolynomial σ R →ₗ[R] A :=
-  Finsupp.lsum R fun xs : σ →₀ ℕ =>
+  Finsupp.lsum R fun xs : σ →₀ ℕ ↦
     (LinearMap.ringLmapEquivSelf R R A).symm <|
-      xs.sum fun i k => monomial (xs - Finsupp.single i 1) (k : R) • f i
+      xs.sum fun i k ↦ monomial (xs - Finsupp.single i 1) (k : R) • f i
 
 end
 
 theorem mkDerivationₗ_monomial (f : σ → A) (s : σ →₀ ℕ) (r : R) :
     mkDerivationₗ R f (monomial s r) =
-      r • s.sum fun i k => monomial (s - Finsupp.single i 1) (k : R) • f i :=
+      r • s.sum fun i k ↦ monomial (s - Finsupp.single i 1) (k : R) • f i :=
   sum_monomial_eq <| LinearMap.map_zero _
 
 theorem mkDerivationₗ_C (f : σ → A) (r : R) : mkDerivationₗ R f (C r) = 0 :=
@@ -75,14 +75,14 @@ theorem derivation_eq_zero_of_forall_mem_vars {D : Derivation R (MvPolynomial σ
 @[ext]
 theorem derivation_ext {D₁ D₂ : Derivation R (MvPolynomial σ R) A} (h : ∀ i, D₁ (X i) = D₂ (X i)) :
     D₁ = D₂ :=
-  Derivation.ext fun _ => derivation_eq_of_forall_mem_vars fun i _ => h i
+  Derivation.ext fun _ ↦ derivation_eq_of_forall_mem_vars fun i _ ↦ h i
 
 variable [IsScalarTower R (MvPolynomial σ R) A]
 
 theorem leibniz_iff_X (D : MvPolynomial σ R →ₗ[R] A) (h₁ : D 1 = 0) :
     (∀ p q, D (p * q) = p • D q + q • D p) ↔ ∀ s i, D (monomial s 1 * X i) =
     (monomial s 1 : MvPolynomial σ R) • D (X i) + (X i : MvPolynomial σ R) • D (monomial s 1) := by
-  refine ⟨fun H p i => H _ _, fun H => ?_⟩
+  refine ⟨fun H p i ↦ H _ _, fun H ↦ ?_⟩
   have hC : ∀ r, D (C r) = 0 := by intro r; rw [C_eq_smul_one, D.map_smul, h₁, smul_zero]
   have : ∀ p i, D (p * X i) = p • D (X i) + (X i : MvPolynomial σ R) • D p := by
     intro p i
@@ -107,14 +107,14 @@ def mkDerivation (f : σ → A) : Derivation R (MvPolynomial σ R) A where
   toLinearMap := mkDerivationₗ R f
   map_one_eq_zero' := mkDerivationₗ_C _ 1
   leibniz' :=
-    (leibniz_iff_X (mkDerivationₗ R f) (mkDerivationₗ_C _ 1)).2 fun s i => by
+    (leibniz_iff_X (mkDerivationₗ R f) (mkDerivationₗ_C _ 1)).2 fun s i ↦ by
       simp only [mkDerivationₗ_monomial, X, monomial_mul, one_smul, one_mul]
       rw [Finsupp.sum_add_index'] <;>
         [skip; simp; (intros; simp only [Nat.cast_add, (monomial _).map_add, add_smul])]
       rw [Finsupp.sum_single_index, Finsupp.sum_single_index] <;> [skip; simp; simp]
       rw [tsub_self, add_tsub_cancel_right, Nat.cast_one, ← C_apply, C_1, one_smul, add_comm,
         Finsupp.smul_sum]
-      refine congr_arg₂ (· + ·) rfl (Finset.sum_congr rfl fun j hj => ?_); dsimp only
+      refine congr_arg₂ (· + ·) rfl (Finset.sum_congr rfl fun j hj ↦ ?_); dsimp only
       rw [smul_smul, monomial_mul, one_mul, add_comm s, add_tsub_assoc_of_le]
       rwa [Finsupp.single_le_iff, Nat.succ_le_iff, pos_iff_ne_zero, ← Finsupp.mem_support_iff]
 
@@ -124,18 +124,18 @@ theorem mkDerivation_X (f : σ → A) (i : σ) : mkDerivation R f (X i) = f i :=
 
 theorem mkDerivation_monomial (f : σ → A) (s : σ →₀ ℕ) (r : R) :
     mkDerivation R f (monomial s r) =
-      r • s.sum fun i k => monomial (s - Finsupp.single i 1) (k : R) • f i :=
+      r • s.sum fun i k ↦ monomial (s - Finsupp.single i 1) (k : R) • f i :=
   mkDerivationₗ_monomial f s r
 
 /-- `MvPolynomial.mkDerivation` as a linear equivalence. -/
 def mkDerivationEquiv : (σ → A) ≃ₗ[R] Derivation R (MvPolynomial σ R) A :=
   LinearEquiv.symm <|
     { invFun := mkDerivation R
-      toFun := fun D i => D (X i)
-      map_add' := fun _ _ => rfl
-      map_smul' := fun _ _ => rfl
-      left_inv := fun _ => derivation_ext <| mkDerivation_X _ _
-      right_inv := fun _ => funext <| mkDerivation_X _ _ }
+      toFun := fun D i ↦ D (X i)
+      map_add' := fun _ _ ↦ rfl
+      map_smul' := fun _ _ ↦ rfl
+      left_inv := fun _ ↦ derivation_ext <| mkDerivation_X _ _
+      right_inv := fun _ ↦ funext <| mkDerivation_X _ _ }
 
 end
 

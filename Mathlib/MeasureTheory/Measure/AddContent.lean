@@ -70,7 +70,7 @@ structure AddContent (C : Set (Set α)) where
     toFun (⋃₀ I) = ∑ u ∈ I, toFun u
 
 instance : Inhabited (AddContent C) :=
-  ⟨{toFun := fun _ => 0
+  ⟨{toFun := fun _ ↦ 0
     empty' := by simp
     sUnion' := by simp }⟩
 
@@ -103,14 +103,14 @@ lemma addContent_union' (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C) (h_d
   · simp only [coe_pair, Set.insert_subset_iff, hs, ht, Set.singleton_subset_iff, and_self_iff]
   · simp only [coe_pair, Set.pairwiseDisjoint_insert, pairwiseDisjoint_singleton,
       mem_singleton_iff, Ne, id, forall_eq, true_and]
-    exact fun _ => h_dis
+    exact fun _ ↦ h_dis
   · simp only [coe_pair, sUnion_insert, sUnion_singleton]
     exact hst
   convert h
   · simp only [coe_pair, sUnion_insert, sUnion_singleton]
   · rw [sum_insert, sum_singleton]
     simp only [Finset.mem_singleton]
-    refine fun hs_eq_t => hs_empty ?_
+    refine fun hs_eq_t ↦ hs_empty ?_
     rw [← hs_eq_t] at h_dis
     exact Disjoint.eq_bot_of_self h_dis
 

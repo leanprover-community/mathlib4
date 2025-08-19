@@ -222,7 +222,7 @@ protected theorem absorbs (hs : Absorbent M s) {x : α} : Absorbs M s {x} := hs 
 
 theorem absorbs_finite (hs : Absorbent M s) (ht : t.Finite) : Absorbs M s t := by
   rw [← Set.biUnion_of_singleton t]
-  exact .biUnion ht fun _ _ => hs.absorbs
+  exact .biUnion ht fun _ _ ↦ hs.absorbs
 
 end SMul
 

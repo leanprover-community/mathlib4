@@ -56,8 +56,8 @@ noncomputable def nearestPtInd (e : ℕ → α) : ℕ → α →ₛ ℕ
   | 0 => const α 0
   | N + 1 =>
     piecewise (⋂ k ≤ N, { x | edist (e (N + 1)) x < edist (e k) x })
-      (MeasurableSet.iInter fun _ =>
-        MeasurableSet.iInter fun _ =>
+      (MeasurableSet.iInter fun _ ↦
+        MeasurableSet.iInter fun _ ↦
           measurableSet_lt measurable_edist_right measurable_edist_right)
       (const α <| N + 1) (nearestPtInd e N)
 
@@ -105,11 +105,11 @@ theorem edist_nearestPt_le (e : ℕ → α) (x : α) {k N : ℕ} (hk : k ≤ N) 
       exacts [(ihN hlN).trans hxl, ihN (Nat.lt_succ_iff.1 hk)]
 
 theorem tendsto_nearestPt {e : ℕ → α} {x : α} (hx : x ∈ closure (range e)) :
-    Tendsto (fun N => nearestPt e N x) atTop (𝓝 x) := by
-  refine (atTop_basis.tendsto_iff nhds_basis_eball).2 fun ε hε => ?_
+    Tendsto (fun N ↦ nearestPt e N x) atTop (𝓝 x) := by
+  refine (atTop_basis.tendsto_iff nhds_basis_eball).2 fun ε hε ↦ ?_
   rcases EMetric.mem_closure_iff.1 hx ε hε with ⟨_, ⟨N, rfl⟩, hN⟩
   rw [edist_comm] at hN
-  exact ⟨N, trivial, fun n hn => (edist_nearestPt_le e x hn).trans_lt hN⟩
+  exact ⟨N, trivial, fun n hn ↦ (edist_nearestPt_le e x hn).trans_lt hN⟩
 
 variable [MeasurableSpace β] {f : β → α}
 
@@ -118,7 +118,7 @@ variable [MeasurableSpace β] {f : β → α}
 noncomputable def approxOn (f : β → α) (hf : Measurable f) (s : Set α) (y₀ : α) (h₀ : y₀ ∈ s)
     [SeparableSpace s] (n : ℕ) : β →ₛ α :=
   haveI : Nonempty s := ⟨⟨y₀, h₀⟩⟩
-  comp (nearestPt (fun k => Nat.casesOn k y₀ ((↑) ∘ denseSeq s) : ℕ → α) n) f hf
+  comp (nearestPt (fun k ↦ Nat.casesOn k y₀ ((↑) ∘ denseSeq s) : ℕ → α) n) f hf
 
 @[simp]
 theorem approxOn_zero {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
@@ -149,7 +149,7 @@ theorem approxOn_comp {γ : Type*} [MeasurableSpace γ] {f : β → α} (hf : Me
 
 theorem tendsto_approxOn {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
     [SeparableSpace s] {x : β} (hx : f x ∈ closure s) :
-    Tendsto (fun n => approxOn f hf s y₀ h₀ n x) atTop (𝓝 <| f x) := by
+    Tendsto (fun n ↦ approxOn f hf s y₀ h₀ n x) atTop (𝓝 <| f x) := by
   haveI : Nonempty s := ⟨⟨y₀, h₀⟩⟩
   rw [← @Subtype.range_coe _ s, ← image_univ, ← (denseRange_denseSeq s).closure_eq] at hx
   simp -iota only [approxOn, coe_comp]

@@ -32,8 +32,8 @@ def imageOfDf (f : R[X]) : Set (PrimeSpectrum R) :=
   { p : PrimeSpectrum R | ∃ i : ℕ, coeff f i ∉ p.asIdeal }
 
 theorem isOpen_imageOfDf : IsOpen (imageOfDf f) := by
-  rw [imageOfDf, setOf_exists fun i (x : PrimeSpectrum R) => coeff f i ∉ x.asIdeal]
-  exact isOpen_iUnion fun i => isOpen_basicOpen
+  rw [imageOfDf, setOf_exists fun i (x : PrimeSpectrum R) ↦ coeff f i ∉ x.asIdeal]
+  exact isOpen_iUnion fun i ↦ isOpen_basicOpen
 
 /-- If a point of `Spec R[x]` is not contained in the vanishing set of `f`, then its image in
 `Spec R` is contained in the open set where at least one of the coefficients of `f` is non-zero.
@@ -48,12 +48,12 @@ morphism `C⁺ : Spec R[x] → Spec R`. -/
 theorem imageOfDf_eq_comap_C_compl_zeroLocus :
     imageOfDf f = PrimeSpectrum.comap (C : R →+* R[X]) '' (zeroLocus {f})ᶜ := by
   ext x
-  refine ⟨fun hx => ⟨⟨map C x.asIdeal, isPrime_map_C_of_isPrime x.isPrime⟩, ⟨?_, ?_⟩⟩, ?_⟩
+  refine ⟨fun hx ↦ ⟨⟨map C x.asIdeal, isPrime_map_C_of_isPrime x.isPrime⟩, ⟨?_, ?_⟩⟩, ?_⟩
   · rw [mem_compl_iff, mem_zeroLocus, singleton_subset_iff]
     obtain ⟨i, hi⟩ := hx
-    exact fun a => hi (mem_map_C_iff.mp a i)
+    exact fun a ↦ hi (mem_map_C_iff.mp a i)
   · ext x
-    refine ⟨fun h => ?_, fun h => subset_span (mem_image_of_mem C.1 h)⟩
+    refine ⟨fun h ↦ ?_, fun h ↦ subset_span (mem_image_of_mem C.1 h)⟩
     rw [← @coeff_C_zero R x _]
     exact mem_map_C_iff.mp h 0
   · rintro ⟨xli, complement, rfl⟩
@@ -66,7 +66,7 @@ theorem isOpenMap_comap_C : IsOpenMap (PrimeSpectrum.comap (C : R →+* R[X])) :
   rw [← compl_compl U, ← z, ← iUnion_of_singleton_coe s, zeroLocus_iUnion, compl_iInter,
     image_iUnion]
   simp_rw [← imageOfDf_eq_comap_C_compl_zeroLocus]
-  exact isOpen_iUnion fun f => isOpen_imageOfDf
+  exact isOpen_iUnion fun f ↦ isOpen_imageOfDf
 
 end Polynomial
 

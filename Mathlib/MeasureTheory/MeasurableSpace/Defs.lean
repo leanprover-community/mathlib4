@@ -103,8 +103,8 @@ protected theorem MeasurableSet.iUnion [Countable ι] ⦃f : ι → Set α⦄
   cases isEmpty_or_nonempty ι
   · simp
   · rcases exists_surjective_nat ι with ⟨e, he⟩
-    rw [← iUnion_congr_of_surjective _ he (fun _ => rfl)]
-    exact m.measurableSet_iUnion _ fun _ => h _
+    rw [← iUnion_congr_of_surjective _ he (fun _ ↦ rfl)]
+    exact m.measurableSet_iUnion _ fun _ ↦ h _
 
 protected theorem MeasurableSet.biUnion {f : β → Set α} {s : Set β} (hs : s.Countable)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋃ b ∈ s, f b) := by
@@ -132,11 +132,11 @@ theorem Set.Finite.measurableSet_sUnion {s : Set (Set α)} (hs : s.Finite)
 @[measurability]
 theorem MeasurableSet.iInter [Countable ι] {f : ι → Set α} (h : ∀ b, MeasurableSet (f b)) :
     MeasurableSet (⋂ b, f b) :=
-  .of_compl <| by rw [compl_iInter]; exact .iUnion fun b => (h b).compl
+  .of_compl <| by rw [compl_iInter]; exact .iUnion fun b ↦ (h b).compl
 
 theorem MeasurableSet.biInter {f : β → Set α} {s : Set β} (hs : s.Countable)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋂ b ∈ s, f b) :=
-  .of_compl <| by rw [compl_iInter₂]; exact .biUnion hs fun b hb => (h b hb).compl
+  .of_compl <| by rw [compl_iInter₂]; exact .biUnion hs fun b hb ↦ (h b hb).compl
 
 theorem Set.Finite.measurableSet_biInter {f : β → Set α} {s : Set β} (hs : s.Finite)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋂ b ∈ s, f b) :=
@@ -217,7 +217,7 @@ theorem MeasurableSpace.measurableSet_injective : Injective (@MeasurableSet α)
 @[ext]
 theorem MeasurableSpace.ext {m₁ m₂ : MeasurableSpace α}
     (h : ∀ s : Set α, MeasurableSet[m₁] s ↔ MeasurableSet[m₂] s) : m₁ = m₂ :=
-  measurableSet_injective <| funext fun s => propext (h s)
+  measurableSet_injective <| funext fun s ↦ propext (h s)
 
 /-- A typeclass mixin for `MeasurableSpace`s such that each singleton is measurable. -/
 class MeasurableSingletonClass (α : Type*) [MeasurableSpace α] : Prop where
@@ -247,16 +247,16 @@ protected theorem MeasurableSet.insert {s : Set α} (hs : MeasurableSet s) (a : 
 theorem measurableSet_insert {a : α} {s : Set α} :
     MeasurableSet (insert a s) ↔ MeasurableSet s := by
   classical
-  exact ⟨fun h =>
+  exact ⟨fun h ↦
     if ha : a ∈ s then by rwa [← insert_eq_of_mem ha]
     else insert_diff_self_of_notMem ha ▸ h.diff (.singleton _),
-    fun h => h.insert a⟩
+    fun h ↦ h.insert a⟩
 
 theorem Set.Subsingleton.measurableSet {s : Set α} (hs : s.Subsingleton) : MeasurableSet s :=
   hs.induction_on .empty .singleton
 
 theorem Set.Finite.measurableSet {s : Set α} (hs : s.Finite) : MeasurableSet s :=
-  Finite.induction_on _ hs .empty fun _ _ hsm => hsm.insert _
+  Finite.induction_on _ hs .empty fun _ _ hsm ↦ hsm.insert _
 
 @[measurability]
 protected theorem Finset.measurableSet (s : Finset α) : MeasurableSet (↑s : Set α) :=
@@ -264,7 +264,7 @@ protected theorem Finset.measurableSet (s : Finset α) : MeasurableSet (↑s : S
 
 theorem Set.Countable.measurableSet {s : Set α} (hs : s.Countable) : MeasurableSet s := by
   rw [← biUnion_of_singleton s]
-  exact .biUnion hs fun b _ => .singleton b
+  exact .biUnion hs fun b _ ↦ .singleton b
 
 end MeasurableSingletonClass
 
@@ -297,7 +297,7 @@ theorem le_def {α} {a b : MeasurableSpace α} : a ≤ b ↔ a.MeasurableSet' �
 instance : PartialOrder (MeasurableSpace α) :=
   { PartialOrder.lift (@MeasurableSet α) measurableSet_injective with
     le := LE.le
-    lt := fun m₁ m₂ => m₁ ≤ m₂ ∧ ¬m₂ ≤ m₁ }
+    lt := fun m₁ m₂ ↦ m₁ ≤ m₂ ∧ ¬m₂ ≤ m₁ }
 
 /-- The smallest σ-algebra containing a collection `s` of basic sets -/
 inductive GenerateMeasurable (s : Set (Set α)) : Set α → Prop
@@ -330,17 +330,17 @@ theorem generateFrom_induction (C : Set (Set α))
 
 theorem generateFrom_le {s : Set (Set α)} {m : MeasurableSpace α}
     (h : ∀ t ∈ s, MeasurableSet[m] t) : generateFrom s ≤ m :=
-  fun t (ht : GenerateMeasurable s t) =>
-  ht.recOn h .empty (fun _ _ => .compl) fun _ _ hf => .iUnion hf
+  fun t (ht : GenerateMeasurable s t) ↦
+  ht.recOn h .empty (fun _ _ ↦ .compl) fun _ _ hf ↦ .iUnion hf
 
 theorem generateFrom_le_iff {s : Set (Set α)} (m : MeasurableSpace α) :
     generateFrom s ≤ m ↔ s ⊆ { t | MeasurableSet[m] t } :=
-  Iff.intro (fun h _ hu => h _ <| measurableSet_generateFrom hu) fun h => generateFrom_le h
+  Iff.intro (fun h _ hu ↦ h _ <| measurableSet_generateFrom hu) fun h ↦ generateFrom_le h
 
 @[simp]
 theorem generateFrom_measurableSet [MeasurableSpace α] :
     generateFrom { s : Set α | MeasurableSet s } = ‹_› :=
-  le_antisymm (generateFrom_le fun _ => id) fun _ => measurableSet_generateFrom
+  le_antisymm (generateFrom_le fun _ ↦ id) fun _ ↦ measurableSet_generateFrom
 
 theorem forall_generateFrom_mem_iff_mem_iff {S : Set (Set α)} {x y : α} :
     (∀ s, MeasurableSet[generateFrom S] s → (x ∈ s ↔ y ∈ s)) ↔ (∀ s ∈ S, x ∈ s ↔ y ∈ s) := by
@@ -364,7 +364,7 @@ theorem mkOfClosure_sets {s : Set (Set α)} {hs : { t | MeasurableSet[generateFr
 
 /-- We get a Galois insertion between `σ`-algebras on `α` and `Set (Set α)` by using `generate_from`
   on one side and the collection of measurable sets on the other side. -/
-def giGenerateFrom : GaloisInsertion (@generateFrom α) fun m => { t | MeasurableSet[m] t } where
+def giGenerateFrom : GaloisInsertion (@generateFrom α) fun m ↦ { t | MeasurableSet[m] t } where
   gc _ := generateFrom_le_iff
   le_l_u _ _ := measurableSet_generateFrom
   choice g hg := MeasurableSpace.mkOfClosure g <| le_antisymm hg <| (generateFrom_le_iff _).1 le_rfl
@@ -409,13 +409,13 @@ theorem generateFrom_insert_empty (S : Set (Set α)) :
 
 theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ ∨ s = univ :=
   let b : MeasurableSpace α :=
-    { MeasurableSet' := fun s => s = ∅ ∨ s = univ
+    { MeasurableSet' := fun s ↦ s = ∅ ∨ s = univ
       measurableSet_empty := Or.inl rfl
       measurableSet_compl := by simp +contextual [or_imp]
-      measurableSet_iUnion := fun _ hf => sUnion_mem_empty_univ (forall_mem_range.2 hf) }
+      measurableSet_iUnion := fun _ hf ↦ sUnion_mem_empty_univ (forall_mem_range.2 hf) }
   have : b = ⊥ :=
-    bot_unique fun _ hs =>
-      hs.elim (fun s => s.symm ▸ @measurableSet_empty _ ⊥) fun s =>
+    bot_unique fun _ hs ↦
+      hs.elim (fun s ↦ s.symm ▸ @measurableSet_empty _ ⊥) fun s ↦
         s.symm ▸ @MeasurableSet.univ _ ⊥
   this ▸ Iff.rfl
 
@@ -485,28 +485,28 @@ end MeasureTheory
 section MeasurableFunctions
 
 @[measurability]
-theorem measurable_id {_ : MeasurableSpace α} : Measurable (@id α) := fun _ => id
+theorem measurable_id {_ : MeasurableSpace α} : Measurable (@id α) := fun _ ↦ id
 
 @[fun_prop, measurability]
-theorem measurable_id' {_ : MeasurableSpace α} : Measurable fun a : α => a := measurable_id
+theorem measurable_id' {_ : MeasurableSpace α} : Measurable fun a : α ↦ a := measurable_id
 
 protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace β}
     {_ : MeasurableSpace γ} {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
     Measurable (g ∘ f) :=
-  fun _ h => hf (hg h)
+  fun _ h ↦ hf (hg h)
 
 -- This is needed due to reducibility issues with the `measurability` tactic.
 @[fun_prop, aesop safe 50 (rule_sets := [Measurable])]
 protected theorem Measurable.comp' {_ : MeasurableSpace α} {_ : MeasurableSpace β}
     {_ : MeasurableSpace γ} {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
-    Measurable (fun x => g (f x)) := Measurable.comp hg hf
+    Measurable (fun x ↦ g (f x)) := Measurable.comp hg hf
 
 @[simp, fun_prop, measurability]
 theorem measurable_const {_ : MeasurableSpace α} {_ : MeasurableSpace β} {a : α} :
-    Measurable fun _ : β => a := fun s _ => .const (a ∈ s)
+    Measurable fun _ : β ↦ a := fun s _ ↦ .const (a ∈ s)
 
 theorem Measurable.le {α} {m m0 : MeasurableSpace α} {_ : MeasurableSpace β} (hm : m ≤ m0)
-    {f : α → β} (hf : Measurable[m] f) : Measurable[m0] f := fun _ hs => hm _ (hf hs)
+    {f : α → β} (hf : Measurable[m] f) : Measurable[m0] f := fun _ hs ↦ hm _ (hf hs)
 
 end MeasurableFunctions
 

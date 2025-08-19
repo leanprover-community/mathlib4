@@ -135,30 +135,30 @@ private theorem _root_.Acc.shortlex {a : α} {b : List α} (aca : Acc r a)
   | intro xa _ iha =>
     induction acb with
     | intro xb _ ihb =>
-      refine Acc.intro (xa :: xb) fun p lt => ?_
+      refine Acc.intro (xa :: xb) fun p lt ↦ ?_
       rcases shortlex_def.mp lt with h1 | ⟨h2len, h2lex⟩
       · exact ih _ h1
       · cases h2lex with
         | nil => simp at h2len
         | @cons x xs _ h =>
           simp only [length_cons, add_left_inj] at h2len
-          refine ihb _ (of_lex h2len h) fun l hl => ?_
+          refine ihb _ (of_lex h2len h) fun l hl ↦ ?_
           apply ih
           rw [List.length_cons, ← h2len]
           exact hl
         | @rel x xs _ _ h =>
           simp only [List.length_cons, add_left_inj] at h2len
-          refine iha _ h (ih xs (by rw [h2len]; simp)) fun l hl => ?_
+          refine iha _ h (ih xs (by rw [h2len]; simp)) fun l hl ↦ ?_
           apply ih
           rw [List.length_cons, ← h2len]
           exact hl
 
-theorem wf (h : WellFounded r) : WellFounded (Shortlex r) := .intro fun a => by
+theorem wf (h : WellFounded r) : WellFounded (Shortlex r) := .intro fun a ↦ by
   induction len_a : a.length using Nat.caseStrongRecOn generalizing a with
   | zero =>
     rw [List.length_eq_zero_iff] at len_a
     rw [len_a]
-    exact Acc.intro _ <| fun _ ylt => (not_shortlex_nil_right ylt).elim
+    exact Acc.intro _ <| fun _ ylt ↦ (not_shortlex_nil_right ylt).elim
   | ind n ih =>
     obtain ⟨head, tail, rfl⟩ := List.exists_of_length_succ a len_a
     rw [List.length_cons, add_left_inj] at len_a

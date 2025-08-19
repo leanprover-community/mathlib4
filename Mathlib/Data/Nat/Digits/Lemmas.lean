@@ -22,16 +22,16 @@ namespace Nat
 variable {n : ℕ}
 
 theorem ofDigits_eq_sum_mapIdx_aux (b : ℕ) (l : List ℕ) :
-    (l.zipWith ((fun a i : ℕ => a * b ^ (i + 1))) (List.range l.length)).sum =
-      b * (l.zipWith (fun a i => a * b ^ i) (List.range l.length)).sum := by
+    (l.zipWith ((fun a i : ℕ ↦ a * b ^ (i + 1))) (List.range l.length)).sum =
+      b * (l.zipWith (fun a i ↦ a * b ^ i) (List.range l.length)).sum := by
   suffices
-    l.zipWith (fun a i : ℕ => a * b ^ (i + 1)) (List.range l.length) =
-      l.zipWith (fun a i=> b * (a * b ^ i)) (List.range l.length)
+    l.zipWith (fun a i : ℕ ↦ a * b ^ (i + 1)) (List.range l.length) =
+      l.zipWith (fun a i↦ b * (a * b ^ i)) (List.range l.length)
     by simp [this]
   congr; ext; simp [pow_succ]; ring
 
 theorem ofDigits_eq_sum_mapIdx (b : ℕ) (L : List ℕ) :
-    ofDigits b L = (L.mapIdx fun i a => a * b ^ i).sum := by
+    ofDigits b L = (L.mapIdx fun i a ↦ a * b ^ i).sum := by
   rw [List.mapIdx_eq_zipIdx_map, List.zipIdx_eq_zip_range', List.map_zip_eq_zipWith,
     ofDigits_eq_foldr, ← List.range_eq_range']
   induction' L with hd tl hl
@@ -96,7 +96,7 @@ theorem digits_append_digits {b m n : ℕ} (hb : 0 < b) :
   rcases eq_or_lt_of_le (Nat.succ_le_of_lt hb) with (rfl | hb)
   · simp
   rw [← ofDigits_digits_append_digits]
-  refine (digits_ofDigits b hb _ (fun l hl => ?_) (fun h_append => ?_)).symm
+  refine (digits_ofDigits b hb _ (fun l hl ↦ ?_) (fun h_append ↦ ?_)).symm
   · rcases (List.mem_append.mp hl) with (h | h) <;> exact digits_lt_base hb h
   · by_cases h : digits b m = []
     · simp only [h, List.append_nil] at h_append ⊢
@@ -160,7 +160,7 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits {p : ℕ}
   · induction' L with hd tl ih
     · simp [ofDigits]
     · simp only [List.length_cons, List.sum_cons, self_div_pow_eq_ofDigits_drop _ _ h,
-          digits_ofDigits p h (hd :: tl) h_lt (fun _ => h_ne_zero)]
+          digits_ofDigits p h (hd :: tl) h_lt (fun _ ↦ h_ne_zero)]
       simp only [ofDigits]
       rw [sum_range_succ, Nat.cast_id]
       simp only [List.drop, List.drop_length]
@@ -204,11 +204,11 @@ theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits {p : ℕ} (n : ℕ) :
 /-! ### Binary -/
 
 
-theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1 0 := by
+theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b ↦ cond b 1 0 := by
   induction' n using Nat.binaryRecFromOne with b n h ih
   · simp
   · simp
-  rw [bits_append_bit _ _ fun hn => absurd hn h]
+  rw [bits_append_bit _ _ fun hn ↦ absurd hn h]
   cases b
   · rw [digits_def' one_lt_two]
     · simpa [Nat.bit]
@@ -289,7 +289,7 @@ theorem zmodeq_ofDigits_digits (b b' : ℕ) (c : ℤ) (h : b' ≡ c [ZMOD b]) (n
   apply ofDigits_zmodeq' _ _ _ h
 
 theorem ofDigits_neg_one :
-    ∀ L : List ℕ, ofDigits (-1 : ℤ) L = (L.map fun n : ℕ => (n : ℤ)).alternatingSum
+    ∀ L : List ℕ, ofDigits (-1 : ℤ) L = (L.map fun n : ℕ ↦ (n : ℤ)).alternatingSum
   | [] => rfl
   | [n] => by simp [ofDigits, List.alternatingSum]
   | a :: b :: t => by

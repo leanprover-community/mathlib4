@@ -784,7 +784,7 @@ class _root_.CategoryTheory.CategoryWithHomology : Prop where
 attribute [instance] CategoryWithHomology.hasHomology
 
 instance [CategoryWithHomology C] : CategoryWithHomology Cᵒᵖ :=
-  ⟨fun S => HasHomology.mk' S.unop.homologyData.op⟩
+  ⟨fun S ↦ HasHomology.mk' S.unop.homologyData.op⟩
 
 /-- The homology functor `ShortComplex C ⥤ C` for a category `C` with homology. -/
 @[simps]
@@ -1053,7 +1053,7 @@ variable (C)
 which relates the homology in `C` and in `Cᵒᵖ`. -/
 noncomputable def homologyFunctorOpNatIso [CategoryWithHomology C] :
     (homologyFunctor C).op ≅ opFunctor C ⋙ homologyFunctor Cᵒᵖ :=
-  NatIso.ofComponents (fun S => S.unop.homologyOpIso.symm)
+  NatIso.ofComponents (fun S ↦ S.unop.homologyOpIso.symm)
     (fun _ ↦ homologyOpIso_inv_naturality _)
 
 variable {C} {A : C}

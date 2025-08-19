@@ -49,7 +49,7 @@ section ProdMk
 
 theorem ContMDiffWithinAt.prodMk {f : M → M'} {g : M → N'} (hf : ContMDiffWithinAt I I' n f s x)
     (hg : ContMDiffWithinAt I J' n g s x) :
-    ContMDiffWithinAt I (I'.prod J') n (fun x => (f x, g x)) s x := by
+    ContMDiffWithinAt I (I'.prod J') n (fun x ↦ (f x, g x)) s x := by
   rw [contMDiffWithinAt_iff] at *
   exact ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
@@ -58,7 +58,7 @@ alias ContMDiffWithinAt.prod_mk := ContMDiffWithinAt.prodMk
 
 theorem ContMDiffWithinAt.prodMk_space {f : M → E'} {g : M → F'}
     (hf : ContMDiffWithinAt I 𝓘(𝕜, E') n f s x) (hg : ContMDiffWithinAt I 𝓘(𝕜, F') n g s x) :
-    ContMDiffWithinAt I 𝓘(𝕜, E' × F') n (fun x => (f x, g x)) s x := by
+    ContMDiffWithinAt I 𝓘(𝕜, E' × F') n (fun x ↦ (f x, g x)) s x := by
   rw [contMDiffWithinAt_iff] at *
   exact ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
@@ -66,7 +66,7 @@ theorem ContMDiffWithinAt.prodMk_space {f : M → E'} {g : M → F'}
 alias ContMDiffWithinAt.prod_mk_space := ContMDiffWithinAt.prodMk_space
 
 nonrec theorem ContMDiffAt.prodMk {f : M → M'} {g : M → N'} (hf : ContMDiffAt I I' n f x)
-    (hg : ContMDiffAt I J' n g x) : ContMDiffAt I (I'.prod J') n (fun x => (f x, g x)) x :=
+    (hg : ContMDiffAt I J' n g x) : ContMDiffAt I (I'.prod J') n (fun x ↦ (f x, g x)) x :=
   hf.prodMk hg
 
 @[deprecated (since := "2025-03-08")]
@@ -74,35 +74,35 @@ alias ContMDiffAt.prod_mk := ContMDiffAt.prodMk
 
 nonrec theorem ContMDiffAt.prodMk_space {f : M → E'} {g : M → F'}
     (hf : ContMDiffAt I 𝓘(𝕜, E') n f x) (hg : ContMDiffAt I 𝓘(𝕜, F') n g x) :
-    ContMDiffAt I 𝓘(𝕜, E' × F') n (fun x => (f x, g x)) x :=
+    ContMDiffAt I 𝓘(𝕜, E' × F') n (fun x ↦ (f x, g x)) x :=
   hf.prodMk_space hg
 
 @[deprecated (since := "2025-03-08")]
 alias ContMDiffAt.prod_mk_space := ContMDiffAt.prodMk_space
 
 theorem ContMDiffOn.prodMk {f : M → M'} {g : M → N'} (hf : ContMDiffOn I I' n f s)
-    (hg : ContMDiffOn I J' n g s) : ContMDiffOn I (I'.prod J') n (fun x => (f x, g x)) s :=
-  fun x hx => (hf x hx).prodMk (hg x hx)
+    (hg : ContMDiffOn I J' n g s) : ContMDiffOn I (I'.prod J') n (fun x ↦ (f x, g x)) s :=
+  fun x hx ↦ (hf x hx).prodMk (hg x hx)
 
 @[deprecated (since := "2025-03-08")]
 alias ContMDiffOn.prod_mk := ContMDiffOn.prodMk
 
 theorem ContMDiffOn.prodMk_space {f : M → E'} {g : M → F'} (hf : ContMDiffOn I 𝓘(𝕜, E') n f s)
-    (hg : ContMDiffOn I 𝓘(𝕜, F') n g s) : ContMDiffOn I 𝓘(𝕜, E' × F') n (fun x => (f x, g x)) s :=
-  fun x hx => (hf x hx).prodMk_space (hg x hx)
+    (hg : ContMDiffOn I 𝓘(𝕜, F') n g s) : ContMDiffOn I 𝓘(𝕜, E' × F') n (fun x ↦ (f x, g x)) s :=
+  fun x hx ↦ (hf x hx).prodMk_space (hg x hx)
 
 @[deprecated (since := "2025-03-08")]
 alias ContMDiffOn.prod_mk_space := ContMDiffOn.prodMk_space
 
 nonrec theorem ContMDiff.prodMk {f : M → M'} {g : M → N'} (hf : ContMDiff I I' n f)
-    (hg : ContMDiff I J' n g) : ContMDiff I (I'.prod J') n fun x => (f x, g x) := fun x =>
+    (hg : ContMDiff I J' n g) : ContMDiff I (I'.prod J') n fun x ↦ (f x, g x) := fun x ↦
   (hf x).prodMk (hg x)
 
 @[deprecated (since := "2025-03-08")]
 alias ContMDiff.prod_mk := ContMDiff.prodMk
 
 theorem ContMDiff.prodMk_space {f : M → E'} {g : M → F'} (hf : ContMDiff I 𝓘(𝕜, E') n f)
-    (hg : ContMDiff I 𝓘(𝕜, F') n g) : ContMDiff I 𝓘(𝕜, E' × F') n fun x => (f x, g x) := fun x =>
+    (hg : ContMDiff I 𝓘(𝕜, F') n g) : ContMDiff I 𝓘(𝕜, E' × F') n fun x ↦ (f x, g x) := fun x ↦
   (hf x).prodMk_space (hg x)
 
 @[deprecated (since := "2025-03-08")]
@@ -117,35 +117,35 @@ theorem contMDiffWithinAt_fst {s : Set (M × N)} {p : M × N} :
   /- porting note: `simp` fails to apply lemmas to `ModelProd`. Was
   rw [contMDiffWithinAt_iff']
   refine' ⟨continuousWithinAt_fst, _⟩
-  refine' contDiffWithinAt_fst.congr (fun y hy => _) _
+  refine' contDiffWithinAt_fst.congr (fun y hy ↦ _) _
   · simp only [mfld_simps] at hy
     simp only [hy, mfld_simps]
   · simp only [mfld_simps]
   -/
   rw [contMDiffWithinAt_iff']
-  refine ⟨continuousWithinAt_fst, contDiffWithinAt_fst.congr (fun y hy => ?_) ?_⟩
+  refine ⟨continuousWithinAt_fst, contDiffWithinAt_fst.congr (fun y hy ↦ ?_) ?_⟩
   · exact (extChartAt I p.1).right_inv ⟨hy.1.1.1, hy.1.2.1⟩
   · exact (extChartAt I p.1).right_inv <| (extChartAt I p.1).map_source (mem_extChartAt_source _)
 
 theorem ContMDiffWithinAt.fst {f : N → M × M'} {s : Set N} {x : N}
     (hf : ContMDiffWithinAt J (I.prod I') n f s x) :
-    ContMDiffWithinAt J I n (fun x => (f x).1) s x :=
+    ContMDiffWithinAt J I n (fun x ↦ (f x).1) s x :=
   contMDiffWithinAt_fst.comp x hf (mapsTo_image f s)
 
 theorem contMDiffAt_fst {p : M × N} : ContMDiffAt (I.prod J) I n Prod.fst p :=
   contMDiffWithinAt_fst
 
-theorem contMDiffOn_fst {s : Set (M × N)} : ContMDiffOn (I.prod J) I n Prod.fst s := fun _ _ =>
+theorem contMDiffOn_fst {s : Set (M × N)} : ContMDiffOn (I.prod J) I n Prod.fst s := fun _ _ ↦
   contMDiffWithinAt_fst
 
-theorem contMDiff_fst : ContMDiff (I.prod J) I n (@Prod.fst M N) := fun _ => contMDiffAt_fst
+theorem contMDiff_fst : ContMDiff (I.prod J) I n (@Prod.fst M N) := fun _ ↦ contMDiffAt_fst
 
 theorem ContMDiffAt.fst {f : N → M × M'} {x : N} (hf : ContMDiffAt J (I.prod I') n f x) :
-    ContMDiffAt J I n (fun x => (f x).1) x :=
+    ContMDiffAt J I n (fun x ↦ (f x).1) x :=
   contMDiffAt_fst.comp x hf
 
 theorem ContMDiff.fst {f : N → M × M'} (hf : ContMDiff J (I.prod I') n f) :
-    ContMDiff J I n fun x => (f x).1 :=
+    ContMDiff J I n fun x ↦ (f x).1 :=
   contMDiff_fst.comp hf
 
 theorem contMDiffWithinAt_snd {s : Set (M × N)} {p : M × N} :
@@ -153,35 +153,35 @@ theorem contMDiffWithinAt_snd {s : Set (M × N)} {p : M × N} :
   /- porting note: `simp` fails to apply lemmas to `ModelProd`. Was
   rw [contMDiffWithinAt_iff']
   refine' ⟨continuousWithinAt_snd, _⟩
-  refine' contDiffWithinAt_snd.congr (fun y hy => _) _
+  refine' contDiffWithinAt_snd.congr (fun y hy ↦ _) _
   · simp only [mfld_simps] at hy
     simp only [hy, mfld_simps]
   · simp only [mfld_simps]
   -/
   rw [contMDiffWithinAt_iff']
-  refine ⟨continuousWithinAt_snd, contDiffWithinAt_snd.congr (fun y hy => ?_) ?_⟩
+  refine ⟨continuousWithinAt_snd, contDiffWithinAt_snd.congr (fun y hy ↦ ?_) ?_⟩
   · exact (extChartAt J p.2).right_inv ⟨hy.1.1.2, hy.1.2.2⟩
   · exact (extChartAt J p.2).right_inv <| (extChartAt J p.2).map_source (mem_extChartAt_source _)
 
 theorem ContMDiffWithinAt.snd {f : N → M × M'} {s : Set N} {x : N}
     (hf : ContMDiffWithinAt J (I.prod I') n f s x) :
-    ContMDiffWithinAt J I' n (fun x => (f x).2) s x :=
+    ContMDiffWithinAt J I' n (fun x ↦ (f x).2) s x :=
   contMDiffWithinAt_snd.comp x hf (mapsTo_image f s)
 
 theorem contMDiffAt_snd {p : M × N} : ContMDiffAt (I.prod J) J n Prod.snd p :=
   contMDiffWithinAt_snd
 
-theorem contMDiffOn_snd {s : Set (M × N)} : ContMDiffOn (I.prod J) J n Prod.snd s := fun _ _ =>
+theorem contMDiffOn_snd {s : Set (M × N)} : ContMDiffOn (I.prod J) J n Prod.snd s := fun _ _ ↦
   contMDiffWithinAt_snd
 
-theorem contMDiff_snd : ContMDiff (I.prod J) J n (@Prod.snd M N) := fun _ => contMDiffAt_snd
+theorem contMDiff_snd : ContMDiff (I.prod J) J n (@Prod.snd M N) := fun _ ↦ contMDiffAt_snd
 
 theorem ContMDiffAt.snd {f : N → M × M'} {x : N} (hf : ContMDiffAt J (I.prod I') n f x) :
-    ContMDiffAt J I' n (fun x => (f x).2) x :=
+    ContMDiffAt J I' n (fun x ↦ (f x).2) x :=
   contMDiffAt_snd.comp x hf
 
 theorem ContMDiff.snd {f : N → M × M'} (hf : ContMDiff J (I.prod I') n f) :
-    ContMDiff J I' n fun x => (f x).2 :=
+    ContMDiff J I' n fun x ↦ (f x).2 :=
   contMDiff_snd.comp hf
 
 end Projections
@@ -189,7 +189,7 @@ end Projections
 theorem contMDiffWithinAt_prod_iff (f : M → M' × N') :
     ContMDiffWithinAt I (I'.prod J') n f s x ↔
       ContMDiffWithinAt I I' n (Prod.fst ∘ f) s x ∧ ContMDiffWithinAt I J' n (Prod.snd ∘ f) s x :=
-  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.prodMk h.2⟩
+  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.1.prodMk h.2⟩
 
 theorem contMDiffWithinAt_prod_module_iff (f : M → F₁ × F₂) :
     ContMDiffWithinAt I 𝓘(𝕜, F₁ × F₂) n f s x ↔
@@ -225,7 +225,7 @@ theorem contMDiffOn_prod_module_iff (f : M → F₁ × F₂) :
 theorem contMDiff_prod_iff (f : M → M' × N') :
     ContMDiff I (I'.prod J') n f ↔
       ContMDiff I I' n (Prod.fst ∘ f) ∧ ContMDiff I J' n (Prod.snd ∘ f) :=
-  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => by convert h.1.prodMk h.2⟩
+  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ by convert h.1.prodMk h.2⟩
 
 theorem contMDiff_prod_module_iff (f : M → F₁ × F₂) :
     ContMDiff I 𝓘(𝕜, F₁ × F₂) n f ↔
@@ -235,7 +235,7 @@ theorem contMDiff_prod_module_iff (f : M → F₁ × F₂) :
 
 theorem contMDiff_prod_assoc :
     ContMDiff ((I.prod I').prod J) (I.prod (I'.prod J)) n
-      fun x : (M × M') × N => (x.1.1, x.1.2, x.2) :=
+      fun x : (M × M') × N ↦ (x.1.1, x.1.2, x.2) :=
   contMDiff_fst.fst.prodMk <| contMDiff_fst.snd.prodMk contMDiff_snd
 
 section prodMap
@@ -308,22 +308,22 @@ variable {ι : Type*} [Fintype ι] {Fi : ι → Type*} [∀ i, NormedAddCommGrou
 
 theorem contMDiffWithinAt_pi_space :
     ContMDiffWithinAt I 𝓘(𝕜, ∀ i, Fi i) n φ s x ↔
-      ∀ i, ContMDiffWithinAt I 𝓘(𝕜, Fi i) n (fun x => φ x i) s x := by
+      ∀ i, ContMDiffWithinAt I 𝓘(𝕜, Fi i) n (fun x ↦ φ x i) s x := by
   simp only [contMDiffWithinAt_iff, continuousWithinAt_pi, contDiffWithinAt_pi, forall_and,
     extChartAt_model_space_eq_id, Function.comp_def, PartialEquiv.refl_coe, id]
 
 theorem contMDiffOn_pi_space :
-    ContMDiffOn I 𝓘(𝕜, ∀ i, Fi i) n φ s ↔ ∀ i, ContMDiffOn I 𝓘(𝕜, Fi i) n (fun x => φ x i) s :=
-  ⟨fun h i x hx => contMDiffWithinAt_pi_space.1 (h x hx) i, fun h x hx =>
-    contMDiffWithinAt_pi_space.2 fun i => h i x hx⟩
+    ContMDiffOn I 𝓘(𝕜, ∀ i, Fi i) n φ s ↔ ∀ i, ContMDiffOn I 𝓘(𝕜, Fi i) n (fun x ↦ φ x i) s :=
+  ⟨fun h i x hx ↦ contMDiffWithinAt_pi_space.1 (h x hx) i, fun h x hx ↦
+    contMDiffWithinAt_pi_space.2 fun i ↦ h i x hx⟩
 
 theorem contMDiffAt_pi_space :
-    ContMDiffAt I 𝓘(𝕜, ∀ i, Fi i) n φ x ↔ ∀ i, ContMDiffAt I 𝓘(𝕜, Fi i) n (fun x => φ x i) x :=
+    ContMDiffAt I 𝓘(𝕜, ∀ i, Fi i) n φ x ↔ ∀ i, ContMDiffAt I 𝓘(𝕜, Fi i) n (fun x ↦ φ x i) x :=
   contMDiffWithinAt_pi_space
 
 theorem contMDiff_pi_space :
-    ContMDiff I 𝓘(𝕜, ∀ i, Fi i) n φ ↔ ∀ i, ContMDiff I 𝓘(𝕜, Fi i) n fun x => φ x i :=
-  ⟨fun h i x => contMDiffAt_pi_space.1 (h x) i, fun h x => contMDiffAt_pi_space.2 fun i => h i x⟩
+    ContMDiff I 𝓘(𝕜, ∀ i, Fi i) n φ ↔ ∀ i, ContMDiff I 𝓘(𝕜, Fi i) n fun x ↦ φ x i :=
+  ⟨fun h i x ↦ contMDiffAt_pi_space.1 (h x) i, fun h x ↦ contMDiffAt_pi_space.2 fun i ↦ h i x⟩
 
 end PiSpace
 

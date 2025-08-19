@@ -173,7 +173,7 @@ end GenContFract
 variable (v)
 
 theorem GenContFract.of_isSimpContFract :
-    (of v).IsSimpContFract := fun _ _ nth_partNum_eq =>
+    (of v).IsSimpContFract := fun _ _ nth_partNum_eq ↦
   of_partNum_eq_one nth_partNum_eq
 
 /-- Creates the simple continued fraction of a value. -/
@@ -181,7 +181,7 @@ nonrec def SimpContFract.of : SimpContFract K :=
   ⟨of v, GenContFract.of_isSimpContFract v⟩
 
 theorem SimpContFract.of_isContFract :
-    (SimpContFract.of v).IsContFract := fun _ _ nth_partDen_eq =>
+    (SimpContFract.of v).IsContFract := fun _ _ nth_partDen_eq ↦
   lt_of_lt_of_le zero_lt_one (of_one_le_get?_partDen nth_partDen_eq)
 
 /-- Creates the continued fraction of a value. -/

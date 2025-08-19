@@ -33,9 +33,9 @@ noncomputable def fintypeSubtypeDvd {M : Type*} [CancelCommMonoidWithZero M]
   -- and has image exactly the divisors of `y`.
   refine
     Fintype.ofFinset
-      (((normalizedFactors y).powerset.toFinset ×ˢ (Finset.univ : Finset Mˣ)).image fun s =>
+      (((normalizedFactors y).powerset.toFinset ×ˢ (Finset.univ : Finset Mˣ)).image fun s ↦
         (s.snd : M) * s.fst.prod)
-      fun x => ?_
+      fun x ↦ ?_
   simp only [Finset.mem_image, Finset.mem_product, Finset.mem_univ, and_true,
     Multiset.mem_toFinset, Multiset.mem_powerset]
   constructor
@@ -46,7 +46,7 @@ noncomputable def fintypeSubtypeDvd {M : Type*} [CancelCommMonoidWithZero M]
     exact Multiset.prod_dvd_prod_of_le hs
   · rintro (h : x ∣ y)
     have hx : x ≠ 0 := by
-      refine mt (fun hx => ?_) hy
+      refine mt (fun hx ↦ ?_) hy
       rwa [hx, zero_dvd_iff] at h
     obtain ⟨u, hu⟩ := prod_normalizedFactors hx
     refine ⟨⟨normalizedFactors x, u⟩, ?_, (mul_comm _ _).trans hu⟩

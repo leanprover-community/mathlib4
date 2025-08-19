@@ -180,7 +180,7 @@ For cancelling left multiplication in the modulus, see `Nat.ModEq.of_mul_left`. 
 protected theorem mul_left_cancel' {a b c m : ℕ} (hc : c ≠ 0) :
     c * a ≡ c * b [MOD c * m] → a ≡ b [MOD m] := by
   simp only [modEq_iff_dvd, Int.natCast_mul, ← Int.mul_sub]
-  exact fun h => (Int.dvd_of_mul_dvd_mul_left (Int.ofNat_ne_zero.mpr hc) h)
+  exact fun h ↦ (Int.dvd_of_mul_dvd_mul_left (Int.ofNat_ne_zero.mpr hc) h)
 
 protected theorem mul_left_cancel_iff' {a b c m : ℕ} (hc : c ≠ 0) :
     c * a ≡ c * b [MOD c * m] ↔ a ≡ b [MOD m] :=
@@ -192,7 +192,7 @@ For cancelling right multiplication in the modulus, see `Nat.ModEq.of_mul_right`
 protected theorem mul_right_cancel' {a b c m : ℕ} (hc : c ≠ 0) :
     a * c ≡ b * c [MOD m * c] → a ≡ b [MOD m] := by
   simp only [modEq_iff_dvd, Int.natCast_mul, ← Int.sub_mul]
-  exact fun h => (Int.dvd_of_mul_dvd_mul_right (Int.ofNat_ne_zero.mpr hc) h)
+  exact fun h ↦ (Int.dvd_of_mul_dvd_mul_right (Int.ofNat_ne_zero.mpr hc) h)
 
 protected theorem mul_right_cancel_iff' {a b c m : ℕ} (hc : c ≠ 0) :
     a * c ≡ b * c [MOD m * c] ↔ a ≡ b [MOD m] :=
@@ -228,7 +228,7 @@ lemma modEq_one : a ≡ b [MOD 1] := modEq_of_dvd <| one_dvd _
 namespace ModEq
 
 theorem le_of_lt_add (h1 : a ≡ b [MOD m]) (h2 : a < b + m) : a ≤ b :=
-  (le_total a b).elim id fun h3 =>
+  (le_total a b).elim id fun h3 ↦
     Nat.le_of_sub_eq_zero
       (eq_zero_of_dvd_of_lt ((modEq_iff_dvd' h3).mp h1.symm) (by omega))
 
@@ -319,8 +319,8 @@ def chineseRemainder' (h : a ≡ b [MOD gcd n m]) : { k // k ≡ a [MOD n] ∧ k
         have hnonzero : (gcd n m : ℤ) ≠ 0 := by
           norm_cast
           rw [Nat.gcd_eq_zero_iff, not_and]
-          exact fun _ => hm
-        have hcoedvd : ∀ t, (gcd n m : ℤ) ∣ t * (b - a) := fun t => h.dvd.mul_left _
+          exact fun _ ↦ hm
+        have hcoedvd : ∀ t, (gcd n m : ℤ) ∣ t * (b - a) := fun t ↦ h.dvd.mul_left _
         have := gcd_eq_gcd_ab n m
         constructor <;> rw [Int.emod_def, ← sub_add] <;>
             refine Int.dvd_add ?_ (dvd_mul_of_dvd_left ?_ _) <;>
@@ -367,12 +367,12 @@ theorem chineseRemainder_modEq_unique (co : n.Coprime m) {a b z}
 
 theorem modEq_and_modEq_iff_modEq_mul {a b m n : ℕ} (hmn : m.Coprime n) :
     a ≡ b [MOD m] ∧ a ≡ b [MOD n] ↔ a ≡ b [MOD m * n] :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [Nat.modEq_iff_dvd, Nat.modEq_iff_dvd, ← Int.dvd_natAbs, Int.natCast_dvd_natCast,
       ← Int.dvd_natAbs, Int.natCast_dvd_natCast] at h
     rw [Nat.modEq_iff_dvd, ← Int.dvd_natAbs, Int.natCast_dvd_natCast]
     exact hmn.mul_dvd_of_dvd_of_dvd h.1 h.2,
-   fun h => ⟨h.of_mul_right _, h.of_mul_left _⟩⟩
+   fun h ↦ ⟨h.of_mul_right _, h.of_mul_left _⟩⟩
 
 theorem coprime_of_mul_modEq_one (b : ℕ) {a n : ℕ} (h : a * b ≡ 1 [MOD n]) : a.Coprime n := by
   obtain ⟨g, hh⟩ := Nat.gcd_dvd_right a n
@@ -432,7 +432,7 @@ theorem add_div_le_add_div (a b c : ℕ) : a / c + b / c ≤ (a + b) / c :=
 
 theorem le_mod_add_mod_of_dvd_add_of_not_dvd {a b c : ℕ} (h : c ∣ a + b) (ha : ¬c ∣ a) :
     c ≤ a % c + b % c :=
-  by_contradiction fun hc => by
+  by_contradiction fun hc ↦ by
     have : (a + b) % c = a % c + b % c := add_mod_of_add_mod_lt (lt_of_not_ge hc)
     simp_all [dvd_iff_mod_eq_zero]
 
@@ -446,7 +446,7 @@ theorem odd_mul_odd {n m : ℕ} : n % 2 = 1 → m % 2 = 1 → n * m % 2 = 1 := b
 
 theorem odd_mul_odd_div_two {m n : ℕ} (hm1 : m % 2 = 1) (hn1 : n % 2 = 1) :
     m * n / 2 = m * (n / 2) + m / 2 :=
-  have hn0 : 0 < n := Nat.pos_of_ne_zero fun h => by simp_all
+  have hn0 : 0 < n := Nat.pos_of_ne_zero fun h ↦ by simp_all
   mul_right_injective₀ two_ne_zero <| by
     dsimp
     rw [mul_add, two_mul_odd_div_two hm1, mul_left_comm, two_mul_odd_div_two hn1,
@@ -462,9 +462,9 @@ theorem odd_of_mod_four_eq_three {n : ℕ} : n % 4 = 3 → n % 2 = 1 := by
 /-- A natural number is odd iff it has residue `1` or `3` mod `4`. -/
 theorem odd_mod_four_iff {n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3 :=
   have help : ∀ m : ℕ, m < 4 → m % 2 = 1 → m = 1 ∨ m = 3 := by decide
-  ⟨fun hn =>
+  ⟨fun hn ↦
     help (n % 4) (mod_lt n (by omega)) <| (mod_mod_of_dvd n (by decide : 2 ∣ 4)).trans hn,
-    fun h => Or.elim h odd_of_mod_four_eq_one odd_of_mod_four_eq_three⟩
+    fun h ↦ Or.elim h odd_of_mod_four_eq_one odd_of_mod_four_eq_three⟩
 
 lemma mod_eq_of_modEq {a b n} (h : a ≡ b [MOD n]) (hb : b < n) : a % n = b :=
   Eq.trans h (mod_eq_of_lt hb)

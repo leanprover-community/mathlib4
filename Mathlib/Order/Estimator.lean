@@ -74,7 +74,7 @@ abbrev Estimator.trivial.{u} {α : Type u} (a : α) : Type u := { b : α // b = 
 instance {a : α} : Bot (Estimator.trivial a) := ⟨⟨a, rfl⟩⟩
 
 instance : WellFoundedGT Unit where
-  wf := ⟨fun .unit => ⟨Unit.unit, nofun⟩⟩
+  wf := ⟨fun .unit ↦ ⟨Unit.unit, nofun⟩⟩
 
 instance (a : α) : WellFoundedGT (Estimator.trivial a) :=
   let f : Estimator.trivial a ≃o Unit := RelIso.ofUniqueOfRefl _ _
@@ -209,7 +209,7 @@ instance [DecidableLT α] {a : Thunk α} {b : Thunk β}
   bound e := (bound (a.prod b) e.inner).1
   improve e :=
     let bd := (bound (a.prod b) e.inner).1
-    Estimator.improveUntil (a.prod b) (fun p => bd < p.1) e.inner
+    Estimator.improveUntil (a.prod b) (fun p ↦ bd < p.1) e.inner
       |>.toOption |>.map Estimator.fst.mk
 
 /-- Given an estimator for a pair, we can extract an estimator for the first factor. -/
@@ -221,15 +221,15 @@ def Estimator.fstInst [DecidableLT α] [∀ (p : α × β), WellFoundedGT { q //
   bound_le e := (Estimator.bound_le e.inner : bound (a.prod b) e.inner ≤ (a.get, b.get)).1
   improve_spec e := by
     let bd := (bound (a.prod b) e.inner).1
-    have := Estimator.improveUntil_spec (a.prod b) (fun p => bd < p.1) e.inner
+    have := Estimator.improveUntil_spec (a.prod b) (fun p ↦ bd < p.1) e.inner
     revert this
     simp only [EstimatorData.improve, decide_eq_true_eq]
     match Estimator.improveUntil (a.prod b) _ _ with
     | .error _ =>
       simp only
-      exact fun w =>
+      exact fun w ↦
         eq_of_le_of_not_lt
           (Estimator.bound_le e.inner : bound (a.prod b) e.inner ≤ (a.get, b.get)).1 w
-    | .ok e' => exact fun w => w
+    | .ok e' => exact fun w ↦ w
 
 end fst

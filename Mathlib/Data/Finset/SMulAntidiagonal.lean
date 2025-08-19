@@ -87,7 +87,7 @@ theorem smulAntidiagonal_mono_right {a : P} {hs : s.IsPWO} {ht : t.IsPWO} (h : v
 @[to_additive]
 theorem support_smulAntidiagonal_subset_smul {hs : s.IsPWO} {ht : t.IsPWO} :
     { a | (SMulAntidiagonal hs ht a).Nonempty } ⊆ (s • t) :=
-  fun a ⟨b, hb⟩ => by
+  fun a ⟨b, hb⟩ ↦ by
   rw [mem_smulAntidiagonal] at hb
   rw [Set.mem_smul]
   use b.1
@@ -112,7 +112,7 @@ theorem smulAntidiagonal_min_smul_min [LinearOrder G] [LinearOrder P] [SMul G P]
   constructor
   · rintro ⟨has, hat, hst⟩
     obtain rfl :=
-      (hs.min_le hns has).eq_of_not_lt fun hlt =>
+      (hs.min_le hns has).eq_of_not_lt fun hlt ↦
         (SMul.smul_lt_smul_of_lt_of_le hlt <| ht.min_le hnt hat).ne' hst
     exact ⟨rfl, IsCancelSMul.left_cancel _ _ _ hst⟩
   · rintro ⟨rfl, rfl⟩

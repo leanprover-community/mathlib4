@@ -43,13 +43,13 @@ end Stonean
 
 /-- The Stone-Cech compactification functor from types to Stonean spaces. -/
 noncomputable def typeToStonean : Type u ⥤ Stonean.{u} :=
-  leftAdjointOfEquiv (G := forget _) Stonean.stoneCechEquivalence fun _ _ _ _ _ => rfl
+  leftAdjointOfEquiv (G := forget _) Stonean.stoneCechEquivalence fun _ _ _ _ _ ↦ rfl
 
 namespace Stonean
 
 /-- The Stone-Cech compactification functor is left adjoint to the forgetful functor. -/
 noncomputable def stoneCechAdjunction : typeToStonean ⊣ (forget Stonean) :=
-  adjunctionOfEquivLeft (G := forget _) stoneCechEquivalence fun _ _ _ _ _ => rfl
+  adjunctionOfEquivLeft (G := forget _) stoneCechEquivalence fun _ _ _ _ _ ↦ rfl
 
 /-- The forgetful functor from Stonean spaces, being a right adjoint, preserves limits. -/
 noncomputable instance forget.preservesLimits : Limits.PreservesLimits (forget Stonean) :=

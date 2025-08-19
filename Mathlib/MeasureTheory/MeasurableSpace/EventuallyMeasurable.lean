@@ -40,7 +40,7 @@ on `α`, modulo a given σ-filter `l` on `α`. -/
 def eventuallyMeasurableSpace (l : Filter α) [CountableInterFilter l] : MeasurableSpace α where
   MeasurableSet' s := ∃ t, MeasurableSet t ∧ s =ᶠ[l] t
   measurableSet_empty := ⟨∅, MeasurableSet.empty, EventuallyEq.refl _ _ ⟩
-  measurableSet_compl := fun _ ⟨t, ht, hts⟩ => ⟨tᶜ, ht.compl, hts.compl⟩
+  measurableSet_compl := fun _ ⟨t, ht, hts⟩ ↦ ⟨tᶜ, ht.compl, hts.compl⟩
   measurableSet_iUnion s hs := by
     choose t ht hts using hs
     exact ⟨⋃ i, t i, MeasurableSet.iUnion ht, EventuallyEq.countable_iUnion hts⟩
@@ -61,7 +61,7 @@ theorem MeasurableSet.eventuallyMeasurableSet (hs : MeasurableSet s) :
   ⟨s, hs, EventuallyEq.refl _ _⟩
 
 theorem le_eventuallyMeasurableSpace : m ≤ eventuallyMeasurableSpace m l :=
-  fun _ hs => hs.eventuallyMeasurableSet
+  fun _ hs ↦ hs.eventuallyMeasurableSet
 
 @[deprecated (since := "2025-06-21")] alias EventuallyMeasurableSpace.measurable_le :=
   le_eventuallyMeasurableSpace
@@ -80,7 +80,7 @@ section instances
 
 instance eventuallyMeasurableSingleton [MeasurableSingletonClass α] :
     @MeasurableSingletonClass α (eventuallyMeasurableSpace m l) :=
-  @MeasurableSingletonClass.mk _ (_) <| fun x => (MeasurableSet.singleton x).eventuallyMeasurableSet
+  @MeasurableSingletonClass.mk _ (_) <| fun x ↦ (MeasurableSet.singleton x).eventuallyMeasurableSet
 
 @[deprecated (since := "2025-06-21")] alias EventuallyMeasurableSpace.measurableSingleton :=
   eventuallyMeasurableSingleton
@@ -114,7 +114,7 @@ theorem Measurable.comp_eventuallyMeasurable (hh : Measurable h) (hf : Eventuall
 is `EventuallyMeasurable`. -/
 theorem EventuallyMeasurable.congr
     (hf : EventuallyMeasurable m l f) (hgf : g =ᶠ[l] f) : EventuallyMeasurable m l g :=
-  fun _ hs => EventuallyMeasurableSet.congr (hf hs)
+  fun _ hs ↦ EventuallyMeasurableSet.congr (hf hs)
     (hgf.preimage _)
 
 /-- A function which is `EventuallyEq` to some `Measurable` function is `EventuallyMeasurable`. -/

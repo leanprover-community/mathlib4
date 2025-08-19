@@ -26,7 +26,7 @@ finset `Fintype.piFinset t` of all functions taking values in `t a` for all `a`.
 analogue of `Finset.pi` where the base finset is `univ` (but formally they are not the same, as
 there is an additional condition `i ∈ Finset.univ` in the `Finset.pi` definition). -/
 def piFinset (t : ∀ a, Finset (δ a)) : Finset (∀ a, δ a) :=
-  (Finset.univ.pi t).map ⟨fun f a => f a (mem_univ a), fun _ _ =>
+  (Finset.univ.pi t).map ⟨fun f a ↦ f a (mem_univ a), fun _ _ ↦
     by simp +contextual [funext_iff]⟩
 
 @[simp]
@@ -38,23 +38,23 @@ theorem mem_piFinset {t : ∀ a, Finset (δ a)} {f : ∀ a, δ a} : f ∈ piFins
     rw [← hgf]
     exact hg a
   · simp only [piFinset, mem_map, forall_prop_of_true, mem_univ, mem_pi]
-    exact fun hf => ⟨fun a _ => f a, hf, rfl⟩
+    exact fun hf ↦ ⟨fun a _ ↦ f a, hf, rfl⟩
 
 @[simp]
 theorem coe_piFinset (t : ∀ a, Finset (δ a)) :
-    (piFinset t : Set (∀ a, δ a)) = Set.pi Set.univ fun a => t a :=
-  Set.ext fun x => by
+    (piFinset t : Set (∀ a, δ a)) = Set.pi Set.univ fun a ↦ t a :=
+  Set.ext fun x ↦ by
     rw [Set.mem_univ_pi]
     exact Fintype.mem_piFinset
 
 theorem piFinset_subset (t₁ t₂ : ∀ a, Finset (δ a)) (h : ∀ a, t₁ a ⊆ t₂ a) :
-    piFinset t₁ ⊆ piFinset t₂ := fun _ hg => mem_piFinset.2 fun a => h a <| mem_piFinset.1 hg a
+    piFinset t₁ ⊆ piFinset t₂ := fun _ hg ↦ mem_piFinset.2 fun a ↦ h a <| mem_piFinset.1 hg a
 
 @[simp]
 theorem piFinset_eq_empty : piFinset s = ∅ ↔ ∃ i, s i = ∅ := by simp [piFinset]
 
 @[simp]
-theorem piFinset_empty [Nonempty α] : piFinset (fun _ => ∅ : ∀ i, Finset (δ i)) = ∅ := by simp
+theorem piFinset_empty [Nonempty α] : piFinset (fun _ ↦ ∅ : ∀ i, Finset (δ i)) = ∅ := by simp
 
 @[simp]
 lemma piFinset_nonempty : (piFinset s).Nonempty ↔ ∀ a, (s a).Nonempty := by simp [piFinset]
@@ -70,16 +70,16 @@ lemma piFinset_of_isEmpty [IsEmpty α] (s : ∀ a, Finset (γ a)) : piFinset s =
   eq_univ_of_forall fun _ ↦ by simp
 
 @[simp]
-theorem piFinset_singleton (f : ∀ i, δ i) : piFinset (fun i => {f i} : ∀ i, Finset (δ i)) = {f} :=
-  ext fun _ => by simp only [funext_iff, Fintype.mem_piFinset, mem_singleton]
+theorem piFinset_singleton (f : ∀ i, δ i) : piFinset (fun i ↦ {f i} : ∀ i, Finset (δ i)) = {f} :=
+  ext fun _ ↦ by simp only [funext_iff, Fintype.mem_piFinset, mem_singleton]
 
 theorem piFinset_subsingleton {f : ∀ i, Finset (δ i)} (hf : ∀ i, (f i : Set (δ i)).Subsingleton) :
-    (Fintype.piFinset f : Set (∀ i, δ i)).Subsingleton := fun _ ha _ hb =>
-  funext fun _ => hf _ (mem_piFinset.1 ha _) (mem_piFinset.1 hb _)
+    (Fintype.piFinset f : Set (∀ i, δ i)).Subsingleton := fun _ ha _ hb ↦
+  funext fun _ ↦ hf _ (mem_piFinset.1 ha _) (mem_piFinset.1 hb _)
 
 theorem piFinset_disjoint_of_disjoint (t₁ t₂ : ∀ a, Finset (δ a)) {a : α}
     (h : Disjoint (t₁ a) (t₂ a)) : Disjoint (piFinset t₁) (piFinset t₂) :=
-  disjoint_iff_ne.2 fun f₁ hf₁ f₂ hf₂ eq₁₂ =>
+  disjoint_iff_ne.2 fun f₁ hf₁ f₂ hf₂ eq₁₂ ↦
     disjoint_iff_ne.1 h (f₁ a) (mem_piFinset.1 hf₁ a) (f₂ a) (mem_piFinset.1 hf₂ a)
       (congr_fun eq₁₂ a)
 
@@ -138,12 +138,12 @@ end Fintype
 /-- A dependent product of fintypes, indexed by a fintype, is a fintype. -/
 instance Pi.instFintype {α : Type*} {β : α → Type*} [DecidableEq α] [Fintype α]
     [∀ a, Fintype (β a)] : Fintype (∀ a, β a) :=
-  ⟨Fintype.piFinset fun _ => univ, by simp⟩
+  ⟨Fintype.piFinset fun _ ↦ univ, by simp⟩
 
 @[simp]
 theorem Fintype.piFinset_univ {α : Type*} {β : α → Type*} [DecidableEq α] [Fintype α]
     [∀ a, Fintype (β a)] :
-    (Fintype.piFinset fun a : α => (Finset.univ : Finset (β a))) =
+    (Fintype.piFinset fun a : α ↦ (Finset.univ : Finset (β a))) =
       (Finset.univ : Finset (∀ a, β a)) :=
   rfl
 
@@ -168,7 +168,7 @@ noncomputable instance RelEmbedding.instFintype {α β} [Fintype α] [Fintype β
 @[simp]
 theorem Finset.univ_pi_univ {α : Type*} {β : α → Type*} [DecidableEq α] [Fintype α]
     [∀ a, Fintype (β a)] :
-    (Finset.univ.pi fun a : α => (Finset.univ : Finset (β a))) = Finset.univ := by
+    (Finset.univ.pi fun a : α ↦ (Finset.univ : Finset (β a))) = Finset.univ := by
   ext; simp
 
 /-! ### Diagonal -/
@@ -220,6 +220,6 @@ end SetFiniteConstructors
 
 theorem forall_finite_image_eval_iff {δ : Type*} [Finite δ] {κ : δ → Type*} {s : Set (∀ d, κ d)} :
     (∀ d, (eval d '' s).Finite) ↔ s.Finite :=
-  ⟨fun h => (Finite.pi h).subset <| subset_pi_eval_image _ _, fun h _ => h.image _⟩
+  ⟨fun h ↦ (Finite.pi h).subset <| subset_pi_eval_image _ _, fun h _ ↦ h.image _⟩
 
 end Set

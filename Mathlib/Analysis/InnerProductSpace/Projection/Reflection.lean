@@ -32,7 +32,7 @@ variable [K.HasOrthogonalProjection]
 /-- Auxiliary definition for `reflection`: the reflection as a linear equivalence. -/
 def reflectionLinearEquiv : E ≃ₗ[𝕜] E :=
   LinearEquiv.ofInvolutive
-    (2 • (K.starProjection.toLinearMap) - LinearMap.id) fun x => by
+    (2 • (K.starProjection.toLinearMap) - LinearMap.id) fun x ↦ by
     simp [two_smul, starProjection_eq_self_iff.mpr]
 
 /-- Reflection in a complete subspace of an inner product space.  The word "reflection" is

@@ -61,7 +61,7 @@ If each structured arrow category on `G` has an initial object, construct a left
 is shown that it is a left adjoint in `adjunctionOfStructuredArrowInitials`.
 -/
 def leftAdjointOfStructuredArrowInitials : C ⥤ D :=
-  Adjunction.leftAdjointOfEquiv (leftAdjointOfStructuredArrowInitialsAux G) fun _ _ => by simp
+  Adjunction.leftAdjointOfEquiv (leftAdjointOfStructuredArrowInitialsAux G) fun _ _ ↦ by simp
 
 /--
 If each structured arrow category on `G` has an initial object, we have a constructed left adjoint
@@ -105,7 +105,7 @@ It is shown that it is a right adjoint in `adjunctionOfStructuredArrowInitials`.
 -/
 def rightAdjointOfCostructuredArrowTerminals : C ⥤ D :=
   Adjunction.rightAdjointOfEquiv (rightAdjointOfCostructuredArrowTerminalsAux G)
-      fun B₁ B₂ A f g => by
+      fun B₁ B₂ A f g ↦ by
     rw [← Equiv.eq_symm_apply]
     simp
 
@@ -150,12 +150,12 @@ end
 
 theorem isRightAdjoint_iff_hasInitial_structuredArrow {G : D ⥤ C} :
     G.IsRightAdjoint ↔ ∀ A, HasInitial (StructuredArrow A G) :=
-  ⟨fun _ A => (mkInitialOfLeftAdjoint _ (Adjunction.ofIsRightAdjoint G) A).hasInitial,
-    fun _ => isRightAdjointOfStructuredArrowInitials _⟩
+  ⟨fun _ A ↦ (mkInitialOfLeftAdjoint _ (Adjunction.ofIsRightAdjoint G) A).hasInitial,
+    fun _ ↦ isRightAdjointOfStructuredArrowInitials _⟩
 
 theorem isLeftAdjoint_iff_hasTerminal_costructuredArrow {F : C ⥤ D} :
     F.IsLeftAdjoint ↔ ∀ A, HasTerminal (CostructuredArrow F A) :=
-  ⟨fun _ A => (mkTerminalOfRightAdjoint _ (Adjunction.ofIsLeftAdjoint F) A).hasTerminal,
-    fun _ => isLeftAdjoint_of_costructuredArrowTerminals _⟩
+  ⟨fun _ A ↦ (mkTerminalOfRightAdjoint _ (Adjunction.ofIsLeftAdjoint F) A).hasTerminal,
+    fun _ ↦ isLeftAdjoint_of_costructuredArrowTerminals _⟩
 
 end CategoryTheory

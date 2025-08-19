@@ -119,7 +119,7 @@ def AddHom.mulOp {M N} [Add M] [Add N] : AddHom M N ≃ AddHom Mᵐᵒᵖ Nᵐ�
   invFun f :=
     { toFun := MulOpposite.unop ∘ f ∘ MulOpposite.op,
       map_add' :=
-        fun x y => congrArg MulOpposite.unop (f.map_add (MulOpposite.op x) (MulOpposite.op y)) }
+        fun x y ↦ congrArg MulOpposite.unop (f.map_add (MulOpposite.op x) (MulOpposite.op y)) }
 
 /-- The 'unopposite' of an additive semigroup hom `αᵐᵒᵖ →+ βᵐᵒᵖ`. Inverse to
 `AddHom.mul_op`. -/
@@ -165,7 +165,7 @@ def AddMonoidHom.mulOp {M N} [AddZeroClass M] [AddZeroClass N] : (M →+ N) ≃ 
     { toFun := MulOpposite.unop ∘ f ∘ MulOpposite.op,
       map_zero' := congrArg MulOpposite.unop f.map_zero,
       map_add' :=
-        fun x y => congrArg MulOpposite.unop (f.map_add (MulOpposite.op x) (MulOpposite.op y)) }
+        fun x y ↦ congrArg MulOpposite.unop (f.map_add (MulOpposite.op x) (MulOpposite.op y)) }
 
 /-- The 'unopposite' of an additive monoid hom `αᵐᵒᵖ →+ βᵐᵒᵖ`. Inverse to
 `AddMonoidHom.mul_op`. -/
@@ -215,6 +215,6 @@ lemma AddMonoidHom.mul_op_ext {α β} [AddZeroClass α] [AddZeroClass β] (f g :
       f.comp (opAddEquiv : α ≃+ αᵐᵒᵖ).toAddMonoidHom =
         g.comp (opAddEquiv : α ≃+ αᵐᵒᵖ).toAddMonoidHom) :
     f = g :=
-  AddMonoidHom.ext <| MulOpposite.rec' fun x => (DFunLike.congr_fun h :) x
+  AddMonoidHom.ext <| MulOpposite.rec' fun x ↦ (DFunLike.congr_fun h :) x
 
 end Ext

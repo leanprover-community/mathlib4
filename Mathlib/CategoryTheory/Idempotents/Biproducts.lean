@@ -45,17 +45,17 @@ the biproduct of a functor `J ⥤ Karoubi C` when the category `C` is additive. 
 @[simps]
 def bicone [HasFiniteBiproducts C] {J : Type} [Finite J] (F : J → Karoubi C) : Bicone F where
   pt :=
-    { X := biproduct fun j => (F j).X
-      p := biproduct.map fun j => (F j).p
+    { X := biproduct fun j ↦ (F j).X
+      p := biproduct.map fun j ↦ (F j).p
       idem := by
         ext
         simp only [assoc, biproduct.map_π, biproduct.map_π_assoc, idem] }
   π j :=
-    { f := (biproduct.map fun j => (F j).p) ≫ Bicone.π _ j
+    { f := (biproduct.map fun j ↦ (F j).p) ≫ Bicone.π _ j
       comm := by
         simp only [assoc, biproduct.bicone_π, biproduct.map_π, biproduct.map_π_assoc, (F j).idem] }
   ι j :=
-    { f := biproduct.ι (fun j => (F j).X) j ≫ biproduct.map fun j => (F j).p
+    { f := biproduct.ι (fun j ↦ (F j).X) j ≫ biproduct.map fun j ↦ (F j).p
       comm := by simp only [biproduct.ι_map, assoc, idem_assoc] }
   ι_π j j' := by
     split_ifs with h
@@ -69,11 +69,11 @@ def bicone [HasFiniteBiproducts C] {J : Type} [Finite J] (F : J → Karoubi C) :
 end Biproducts
 
 theorem karoubi_hasFiniteBiproducts [HasFiniteBiproducts C] : HasFiniteBiproducts (Karoubi C) :=
-  { out := fun n =>
-      { has_biproduct := fun F => by
+  { out := fun n ↦
+      { has_biproduct := fun F ↦ by
           apply hasBiproduct_of_total (Biproducts.bicone F)
           simp only [hom_ext_iff]
-          refine biproduct.hom_ext' _ _ (fun j => ?_)
+          refine biproduct.hom_ext' _ _ (fun j ↦ ?_)
           simp only [Biproducts.bicone_pt_X, sum_hom, comp_f, Biproducts.bicone_π_f,
             biproduct.bicone_π, biproduct.map_π, Biproducts.bicone_ι_f, biproduct.ι_map, assoc,
             idem_assoc, id_f, Biproducts.bicone_pt_p, comp_sum]

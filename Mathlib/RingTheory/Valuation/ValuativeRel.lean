@@ -134,7 +134,7 @@ lemma rel_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : (x * x') �
     _ ≤ᵥ y * y' := rel_mul_right _ h1
 
 theorem rel_add_cases (x y : R) : x + y ≤ᵥ x ∨ x + y ≤ᵥ y :=
-  (rel_total y x).imp (fun h => rel_add .rfl h) (fun h => rel_add h .rfl)
+  (rel_total y x).imp (fun h ↦ rel_add .rfl h) (fun h ↦ rel_add h .rfl)
 
 variable (R) in
 /-- The submonoid of elements `x : R` whose valuation is positive. -/
@@ -170,7 +170,7 @@ lemma val_posSubmonoid_ne_zero (x : posSubmonoid R) :
 variable (R) in
 /-- The setoid used to construct `ValueGroupWithZero R`. -/
 def valueSetoid : Setoid (R × posSubmonoid R) where
-  r := fun (x, s) (y, t) => x * t ≤ᵥ y * s ∧ y * s ≤ᵥ x * t
+  r := fun (x, s) (y, t) ↦ x * t ≤ᵥ y * s ∧ y * s ≤ᵥ x * t
   iseqv := {
     refl ru := ⟨rel_refl _, rel_refl _⟩
     symm h := ⟨h.2, h.1⟩
@@ -214,14 +214,14 @@ theorem ValueGroupWithZero.exact {x y : R} {t s : posSubmonoid R}
 protected
 theorem ValueGroupWithZero.ind {motive : ValueGroupWithZero R → Prop} (mk : ∀ x y, motive (.mk x y))
     (t : ValueGroupWithZero R) : motive t :=
-  Quotient.ind (fun (x, y) => mk x y) t
+  Quotient.ind (fun (x, y) ↦ mk x y) t
 
 /-- Lifts a function `R → posSubmonoid R → α` to the value group-with-zero of `R`. -/
 protected
 def ValueGroupWithZero.lift {α : Sort*} (f : R → posSubmonoid R → α)
     (hf : ∀ (x y : R) (t s : posSubmonoid R), x * t ≤ᵥ y * s → y * s ≤ᵥ x * t → f x s = f y t)
     (t : ValueGroupWithZero R) : α :=
-  Quotient.lift (fun (x, y) => f x y) (fun (x, t) (y, s) ⟨h₁, h₂⟩ => hf x y s t h₁ h₂) t
+  Quotient.lift (fun (x, y) ↦ f x y) (fun (x, t) (y, s) ⟨h₁, h₂⟩ ↦ hf x y s t h₁ h₂) t
 
 @[simp] protected
 theorem ValueGroupWithZero.lift_mk {α : Sort*} (f : R → posSubmonoid R → α)
@@ -236,8 +236,8 @@ def ValueGroupWithZero.lift₂ {α : Sort*} (f : R → posSubmonoid R → R → 
       x * t ≤ᵥ y * s → y * s ≤ᵥ x * t → z * u ≤ᵥ w * v → w * v ≤ᵥ z * u →
       f x s z v = f y t w u)
     (t₁ : ValueGroupWithZero R) (t₂ : ValueGroupWithZero R) : α :=
-  Quotient.lift₂ (fun (x, t) (y, s) => f x t y s)
-    (fun (x, t) (z, v) (y, s) (w, u) ⟨h₁, h₂⟩ ⟨h₃, h₄⟩ => hf x y z w s t u v h₁ h₂ h₃ h₄) t₁ t₂
+  Quotient.lift₂ (fun (x, t) (y, s) ↦ f x t y s)
+    (fun (x, t) (z, v) (y, s) (w, u) ⟨h₁, h₂⟩ ⟨h₃, h₄⟩ ↦ hf x y z w s t u v h₁ h₂ h₃ h₄) t₁ t₂
 
 @[simp] protected
 lemma ValueGroupWithZero.lift₂_mk {α : Sort*} (f : R → posSubmonoid R → R → posSubmonoid R → α)
@@ -257,8 +257,8 @@ instance : Zero (ValueGroupWithZero R) where
 @[simp]
 theorem ValueGroupWithZero.mk_eq_zero (x : R) (y : posSubmonoid R) :
     ValueGroupWithZero.mk x y = 0 ↔ x ≤ᵥ 0 :=
-  ⟨fun h => by simpa using ValueGroupWithZero.mk_eq_mk.mp h,
-    fun h => ValueGroupWithZero.sound (by simpa using h) (by simp)⟩
+  ⟨fun h ↦ by simpa using ValueGroupWithZero.mk_eq_mk.mp h,
+    fun h ↦ ValueGroupWithZero.sound (by simpa using h) (by simp)⟩
 
 @[simp]
 theorem ValueGroupWithZero.mk_zero (x : posSubmonoid R) : ValueGroupWithZero.mk 0 x = 0 :=
@@ -292,7 +292,7 @@ theorem ValueGroupWithZero.lift_one {α : Sort*} (f : R → posSubmonoid R → �
   rfl
 
 instance : Mul (ValueGroupWithZero R) where
-  mul := ValueGroupWithZero.lift₂ (fun a b c d => .mk (a * c) (b * d)) <| by
+  mul := ValueGroupWithZero.lift₂ (fun a b c d ↦ .mk (a * c) (b * d)) <| by
     intro x y z w t s u v h₁ h₂ h₃ h₄
     apply ValueGroupWithZero.sound
     · rw [Submonoid.coe_mul, Submonoid.coe_mul,
@@ -325,17 +325,17 @@ instance : CommMonoidWithZero (ValueGroupWithZero R) where
     simp [mul_assoc]
   one_mul := ValueGroupWithZero.ind <| by simp [← ValueGroupWithZero.mk_one_one]
   mul_one := ValueGroupWithZero.ind <| by simp [← ValueGroupWithZero.mk_one_one]
-  zero_mul := ValueGroupWithZero.ind <| fun _ _ => by
+  zero_mul := ValueGroupWithZero.ind <| fun _ _ ↦ by
     rw [← ValueGroupWithZero.mk_zero 1, ValueGroupWithZero.mk_mul_mk]
     simp
-  mul_zero := ValueGroupWithZero.ind <| fun _ _ => by
+  mul_zero := ValueGroupWithZero.ind <| fun _ _ ↦ by
     rw [← ValueGroupWithZero.mk_zero 1, ValueGroupWithZero.mk_mul_mk]
     simp
   mul_comm a b := by
     induction a using ValueGroupWithZero.ind
     induction b using ValueGroupWithZero.ind
     simp [mul_comm]
-  npow n := ValueGroupWithZero.lift (fun a b => ValueGroupWithZero.mk (a ^ n) (b ^ n)) <| by
+  npow n := ValueGroupWithZero.lift (fun a b ↦ ValueGroupWithZero.mk (a ^ n) (b ^ n)) <| by
     intro x y t s h₁ h₂
     induction n with
     | zero => simp
@@ -347,10 +347,10 @@ instance : CommMonoidWithZero (ValueGroupWithZero R) where
   npow_succ n := ValueGroupWithZero.ind (by simp [pow_succ])
 
 instance : LE (ValueGroupWithZero R) where
-  le := ValueGroupWithZero.lift₂ (fun a s b t => a * t ≤ᵥ b * s) <| by
+  le := ValueGroupWithZero.lift₂ (fun a s b t ↦ a * t ≤ᵥ b * s) <| by
     intro x y z w t s u v h₁ h₂ h₃ h₄
     by_cases hw : w ≤ᵥ 0 <;> by_cases hz : z ≤ᵥ 0
-    · refine propext ⟨fun h => rel_trans ?_ (zero_rel _), fun h => rel_trans ?_ (zero_rel _)⟩
+    · refine propext ⟨fun h ↦ rel_trans ?_ (zero_rel _), fun h ↦ rel_trans ?_ (zero_rel _)⟩
       · apply rel_mul_cancel (s * v).prop
         rw [mul_right_comm, Submonoid.coe_mul, ← mul_assoc]
         apply rel_trans (rel_mul_right (u : R) (rel_mul_right (v : R) h₂))
@@ -371,7 +371,7 @@ instance : LE (ValueGroupWithZero R) where
     · absurd hw
       apply rel_mul_cancel v.prop
       simpa using rel_trans h₄ (rel_mul_right (u : R) hz)
-    · refine propext ⟨fun h => ?_, fun h => ?_⟩
+    · refine propext ⟨fun h ↦ ?_, fun h ↦ ?_⟩
       · apply rel_mul_cancel s.prop
         apply rel_mul_cancel hz
         calc y * u * s * z
@@ -394,7 +394,7 @@ theorem ValueGroupWithZero.mk_le_mk (x y : R) (t s : posSubmonoid R) :
     ValueGroupWithZero.mk x t ≤ ValueGroupWithZero.mk y s ↔ x * s ≤ᵥ y * t := Iff.rfl
 
 instance : LinearOrder (ValueGroupWithZero R) where
-  le_refl := ValueGroupWithZero.ind fun _ _ => .rfl
+  le_refl := ValueGroupWithZero.ind fun _ _ ↦ .rfl
   le_trans a b c hab hbc := by
     induction a using ValueGroupWithZero.ind with | mk a₁ a₂
     induction b using ValueGroupWithZero.ind with | mk b₁ b₂
@@ -430,7 +430,7 @@ instance : Bot (ValueGroupWithZero R) where
 theorem ValueGroupWithZero.bot_eq_zero : (⊥ : ValueGroupWithZero R) = 0 := rfl
 
 instance : OrderBot (ValueGroupWithZero R) where
-  bot_le := ValueGroupWithZero.ind fun x y => by
+  bot_le := ValueGroupWithZero.ind fun x y ↦ by
     rw [ValueGroupWithZero.bot_eq_zero, ← ValueGroupWithZero.mk_zero 1, ValueGroupWithZero.mk_le_mk]
     simp
 
@@ -446,7 +446,7 @@ instance : IsOrderedMonoid (ValueGroupWithZero R) where
     exact hab
 
 instance : Inv (ValueGroupWithZero R) where
-  inv := ValueGroupWithZero.lift (fun x s => by
+  inv := ValueGroupWithZero.lift (fun x s ↦ by
     classical exact if h : x ≤ᵥ 0 then 0 else .mk s ⟨x, h⟩) <| by
     intro x y t s h₁ h₂
     by_cases hx : x ≤ᵥ 0 <;> by_cases hy : y ≤ᵥ 0
@@ -470,13 +470,13 @@ theorem ValueGroupWithZero.inv_mk (x : R) (y : posSubmonoid R) (hx : ¬x ≤ᵥ 
 instance : LinearOrderedCommGroupWithZero (ValueGroupWithZero R) where
   zero_le_one := bot_le
   exists_pair_ne := by
-    refine ⟨0, 1, fun h => ?_⟩
+    refine ⟨0, 1, fun h ↦ ?_⟩
     apply ge_of_eq at h
     rw [← ValueGroupWithZero.mk_zero 1, ← ValueGroupWithZero.mk_one_one,
       ValueGroupWithZero.mk_le_mk] at h
     simp [not_rel_one_zero] at h
   inv_zero := dif_pos .rfl
-  mul_inv_cancel := ValueGroupWithZero.ind fun x y h => by
+  mul_inv_cancel := ValueGroupWithZero.ind fun x y h ↦ by
     rw [ne_eq, ← ValueGroupWithZero.mk_zero 1, ValueGroupWithZero.mk_eq_mk] at h
     simp only [Submonoid.coe_one, mul_one, zero_mul, zero_rel, and_true] at h
     rw [ValueGroupWithZero.inv_mk x y h, ← ValueGroupWithZero.mk_one_one,
@@ -759,7 +759,7 @@ variable (A B) in
   This is used in constructing `ValuativeExtension.mapValueGroupWithZero`. -/
 @[simps]
 def mapPosSubmonoid : posSubmonoid A →* posSubmonoid B where
-  toFun := fun ⟨a,ha⟩ => ⟨algebraMap _ _ a,
+  toFun := fun ⟨a,ha⟩ ↦ ⟨algebraMap _ _ a,
     by simpa only [posSubmonoid_def, ← (algebraMap A B).map_zero, rel_iff_rel] using ha⟩
   map_one' := by simp
   map_mul' := by simp

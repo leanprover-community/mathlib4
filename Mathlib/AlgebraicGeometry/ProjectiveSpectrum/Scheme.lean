@@ -327,10 +327,10 @@ theorem num_mem_carrier_iff (hm : 0 < m) (q : Spec.T A⁰_ f)
 
 theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg q)
     (hb : b ∈ carrier f_deg q) : a + b ∈ carrier f_deg q := by
-  refine fun i => (q.2.mem_or_mem ?_).elim id id
+  refine fun i ↦ (q.2.mem_or_mem ?_).elim id id
   change (HomogeneousLocalization.mk ⟨_, _, _, _⟩ : A⁰_ f) ∈ q.1; dsimp only [Subtype.coe_mk]
   simp_rw [← pow_add, map_add, add_pow, mul_comm, ← nsmul_eq_mul]
-  let g : ℕ → A⁰_ f := fun j => (m + m).choose j •
+  let g : ℕ → A⁰_ f := fun j ↦ (m + m).choose j •
       if h2 : m + m < j then (0 : A⁰_ f)
       else
         if h1 : j ≤ m then
@@ -355,12 +355,12 @@ theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg
     apply GradedMonoid.toGradedMul.mul_mem (i := (j-m) • i) (j := (m + m - j) • i) <;> mem_tac_aux
     rw [← add_smul]; congr; omega
   convert_to ∑ i ∈ range (m + m + 1), g i ∈ q.1; swap
-  · refine q.1.sum_mem fun j _ => nsmul_mem ?_ _; split_ifs
+  · refine q.1.sum_mem fun j _ ↦ nsmul_mem ?_ _; split_ifs
     exacts [q.1.zero_mem, q.1.mul_mem_left _ (hb i), q.1.mul_mem_right _ (ha i)]
   rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk]
   change _ = (algebraMap (HomogeneousLocalization.Away 𝒜 f) (Localization.Away f)) _
   dsimp only [Subtype.coe_mk]; rw [map_sum, mk_sum]
-  apply Finset.sum_congr rfl fun j hj => _
+  apply Finset.sum_congr rfl fun j hj ↦ _
   intro j hj
   change _ = HomogeneousLocalization.val _
   rw [HomogeneousLocalization.val_smul]
@@ -376,7 +376,7 @@ theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg
 variable (hm : 0 < m) (q : Spec.T A⁰_ f)
 include hm
 
-theorem carrier.zero_mem : (0 : A) ∈ carrier f_deg q := fun i => by
+theorem carrier.zero_mem : (0 : A) ∈ carrier f_deg q := fun i ↦ by
   convert Submodule.zero_mem q.1 using 1
   rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk,
     HomogeneousLocalization.val_zero]; simp_rw [map_zero, zero_pow hm.ne']
@@ -409,7 +409,7 @@ theorem carrier.smul_mem (c x : A) (hx : x ∈ carrier f_deg q) : c • x ∈ ca
     rw [(_ : m • (i - n) = _)]
     · mem_tac
     · simp only [smul_eq_mul, mul_comm]
-  · simp_rw [add_smul]; exact fun _ _ => carrier.add_mem f_deg q
+  · simp_rw [add_smul]; exact fun _ _ ↦ carrier.add_mem f_deg q
 
 /-- For a prime ideal `q` in `A⁰_f`, the set `{a | aᵢᵐ/fⁱ ∈ q}` as an ideal.
 -/
@@ -421,9 +421,9 @@ def carrier.asIdeal : Ideal A where
 
 
 theorem carrier.asIdeal.homogeneous : (carrier.asIdeal f_deg hm q).IsHomogeneous 𝒜 :=
-  fun i a ha j =>
-  (em (i = j)).elim (fun h => h ▸ by simpa only [proj_apply, decompose_coe, of_eq_same] using ha _)
-    fun h => by
+  fun i a ha j ↦
+  (em (i = j)).elim (fun h ↦ h ▸ by simpa only [proj_apply, decompose_coe, of_eq_same] using ha _)
+    fun h ↦ by
     simpa only [proj_apply, decompose_of_mem_ne 𝒜 (Submodule.coe_mem (decompose 𝒜 a i)) h,
       zero_pow hm.ne', map_zero] using carrier.zero_mem f_deg hm q j
 
@@ -432,7 +432,7 @@ theorem carrier.asIdeal.homogeneous : (carrier.asIdeal f_deg hm q).IsHomogeneous
 def carrier.asHomogeneousIdeal : HomogeneousIdeal 𝒜 :=
   ⟨carrier.asIdeal f_deg hm q, carrier.asIdeal.homogeneous f_deg hm q⟩
 
-theorem carrier.denom_notMem : f ∉ carrier.asIdeal f_deg hm q := fun rid =>
+theorem carrier.denom_notMem : f ∉ carrier.asIdeal f_deg hm q := fun rid ↦
   q.isPrime.ne_top <|
     (Ideal.eq_top_iff_one _).mpr
       (by
@@ -446,14 +446,14 @@ theorem carrier.denom_notMem : f ∉ carrier.asIdeal f_deg hm q := fun rid =>
 @[deprecated (since := "2025-05-23")] alias carrier.denom_not_mem := carrier.denom_notMem
 
 theorem carrier.relevant : ¬HomogeneousIdeal.irrelevant 𝒜 ≤ carrier.asHomogeneousIdeal f_deg hm q :=
-  fun rid => carrier.denom_notMem f_deg hm q <| rid <| DirectSum.decompose_of_mem_ne 𝒜 f_deg hm.ne'
+  fun rid ↦ carrier.denom_notMem f_deg hm q <| rid <| DirectSum.decompose_of_mem_ne 𝒜 f_deg hm.ne'
 
-theorem carrier.asIdeal.ne_top : carrier.asIdeal f_deg hm q ≠ ⊤ := fun rid =>
+theorem carrier.asIdeal.ne_top : carrier.asIdeal f_deg hm q ≠ ⊤ := fun rid ↦
   carrier.denom_notMem f_deg hm q (rid.symm ▸ Submodule.mem_top)
 
 theorem carrier.asIdeal.prime : (carrier.asIdeal f_deg hm q).IsPrime :=
   (carrier.asIdeal.homogeneous f_deg hm q).isPrime_of_homogeneous_mem_or_mem
-    (carrier.asIdeal.ne_top f_deg hm q) fun {x y} ⟨nx, hnx⟩ ⟨ny, hny⟩ hxy =>
+    (carrier.asIdeal.ne_top f_deg hm q) fun {x y} ⟨nx, hnx⟩ ⟨ny, hny⟩ hxy ↦
     show (∀ _, _ ∈ _) ∨ ∀ _, _ ∈ _ by
       rw [← and_forall_ne nx, and_iff_left, ← and_forall_ne ny, and_iff_left]
       · apply q.2.mem_or_mem; convert hxy (nx + ny) using 1
@@ -473,7 +473,7 @@ theorem carrier.asIdeal.prime : (carrier.asIdeal f_deg hm q).IsPrime :=
         · first | exact hnx | exact hny
 
 /-- The function `Spec A⁰_f → Proj|D(f)` sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}`. -/
-def toFun : (Spec.T A⁰_ f) → Proj.T| pbo f := fun q =>
+def toFun : (Spec.T A⁰_ f) → Proj.T| pbo f := fun q ↦
   ⟨⟨carrier.asHomogeneousIdeal f_deg hm q, carrier.asIdeal.prime f_deg hm q,
       carrier.relevant f_deg hm q⟩,
     (ProjectiveSpectrum.mem_basicOpen _ f _).mp <| carrier.denom_notMem f_deg hm q⟩
@@ -660,7 +660,7 @@ lemma toSpec_base_apply_eq_comap {f} (x : Proj| pbo f) :
 
 lemma toSpec_base_apply_eq {f} (x : Proj| pbo f) :
     (toSpec 𝒜 f).base x = ProjIsoSpecTopComponent.toSpec 𝒜 f x :=
-  toSpec_base_apply_eq_comap 𝒜 x |>.trans <| PrimeSpectrum.ext <| Ideal.ext fun z =>
+  toSpec_base_apply_eq_comap 𝒜 x |>.trans <| PrimeSpectrum.ext <| Ideal.ext fun z ↦
   show ¬ IsUnit _ ↔ z ∈ ProjIsoSpecTopComponent.ToSpec.carrier _ by
   obtain ⟨z, rfl⟩ := z.mk_surjective
   rw [← HomogeneousLocalization.isUnit_iff_isUnit_val,
@@ -686,7 +686,7 @@ lemma toSpec_preimage_basicOpen {f}
       Opens.comap ⟨_, continuous_subtype_val⟩ (pbo t.num.1) :=
   Opens.ext <| Opens.map_coe _ _ ▸ by
   convert (ProjIsoSpecTopComponent.ToSpec.preimage_basicOpen f t)
-  exact funext fun _ => toSpec_base_apply_eq _ _
+  exact funext fun _ ↦ toSpec_base_apply_eq _ _
 
 @[reassoc]
 lemma toOpen_toSpec_val_c_app (f) (U) :

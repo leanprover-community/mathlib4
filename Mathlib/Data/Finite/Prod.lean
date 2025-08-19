@@ -42,20 +42,20 @@ instance Pi.finite {α : Sort*} {β : α → Sort*} [Finite α] [∀ a, Finite (
     Finite (∀ a, β a) := by
   classical
   haveI := Fintype.ofFinite (PLift α)
-  haveI := fun a => Fintype.ofFinite (PLift (β a))
+  haveI := fun a ↦ Fintype.ofFinite (PLift (β a))
   exact
     Finite.of_equiv (∀ a : PLift α, PLift (β (Equiv.plift a)))
-      (Equiv.piCongr Equiv.plift fun _ => Equiv.plift)
+      (Equiv.piCongr Equiv.plift fun _ ↦ Equiv.plift)
 
 instance Function.Embedding.finite {α β : Sort*} [Finite β] : Finite (α ↪ β) := by
   rcases isEmpty_or_nonempty (α ↪ β) with _ | h
   · infer_instance
-  · refine h.elim fun f => ?_
+  · refine h.elim fun f ↦ ?_
     haveI : Finite α := Finite.of_injective _ f.injective
     exact Finite.of_injective _ DFunLike.coe_injective
 
 instance Equiv.finite_right {α β : Sort*} [Finite β] : Finite (α ≃ β) :=
-  Finite.of_injective Equiv.toEmbedding fun e₁ e₂ h => Equiv.ext <| by
+  Finite.of_injective Equiv.toEmbedding fun e₁ e₂ h ↦ Equiv.ext <| by
     convert DFunLike.congr_fun h using 0
 
 instance Equiv.finite_left {α β : Sort*} [Finite α] : Finite (α ≃ β) :=
@@ -148,20 +148,20 @@ protected theorem Finite.prod (hs : s.Finite) (ht : t.Finite) : (s ×ˢ t : Set 
   apply toFinite
 
 theorem Finite.of_prod_left (h : (s ×ˢ t : Set (α × β)).Finite) : t.Nonempty → s.Finite :=
-  fun ⟨b, hb⟩ => (h.image Prod.fst).subset fun a ha => ⟨(a, b), ⟨ha, hb⟩, rfl⟩
+  fun ⟨b, hb⟩ ↦ (h.image Prod.fst).subset fun a ha ↦ ⟨(a, b), ⟨ha, hb⟩, rfl⟩
 
 theorem Finite.of_prod_right (h : (s ×ˢ t : Set (α × β)).Finite) : s.Nonempty → t.Finite :=
-  fun ⟨a, ha⟩ => (h.image Prod.snd).subset fun b hb => ⟨(a, b), ⟨ha, hb⟩, rfl⟩
+  fun ⟨a, ha⟩ ↦ (h.image Prod.snd).subset fun b hb ↦ ⟨(a, b), ⟨ha, hb⟩, rfl⟩
 
 protected theorem Infinite.prod_left (hs : s.Infinite) (ht : t.Nonempty) : (s ×ˢ t).Infinite :=
-  fun h => hs <| h.of_prod_left ht
+  fun h ↦ hs <| h.of_prod_left ht
 
 protected theorem Infinite.prod_right (ht : t.Infinite) (hs : s.Nonempty) : (s ×ˢ t).Infinite :=
-  fun h => ht <| h.of_prod_right hs
+  fun h ↦ ht <| h.of_prod_right hs
 
 protected theorem infinite_prod :
     (s ×ˢ t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · simp_rw [Set.Infinite, @and_comm ¬_, ← Classical.not_imp]
     by_contra!
     exact h ((this.1 h.nonempty.snd).prod <| this.2 h.nonempty.fst)
@@ -197,8 +197,8 @@ theorem Finite.toFinset_offDiag {s : Set α} [DecidableEq α] (hs : s.Finite) :
 
 theorem finite_image_fst_and_snd_iff {s : Set (α × β)} :
     (Prod.fst '' s).Finite ∧ (Prod.snd '' s).Finite ↔ s.Finite :=
-  ⟨fun h => (h.1.prod h.2).subset fun _ h => ⟨mem_image_of_mem _ h, mem_image_of_mem _ h⟩,
-    fun h => ⟨h.image _, h.image _⟩⟩
+  ⟨fun h ↦ (h.1.prod h.2).subset fun _ h ↦ ⟨mem_image_of_mem _ h, mem_image_of_mem _ h⟩,
+    fun h ↦ ⟨h.image _, h.image _⟩⟩
 
 /-! ### Infinite sets -/
 
@@ -209,16 +209,16 @@ section Image2
 variable {f : α → β → γ} {s : Set α} {t : Set β} {a : α} {b : β}
 
 protected theorem Infinite.image2_left (hs : s.Infinite) (hb : b ∈ t)
-    (hf : InjOn (fun a => f a b) s) : (image2 f s t).Infinite :=
+    (hf : InjOn (fun a ↦ f a b) s) : (image2 f s t).Infinite :=
   (hs.image hf).mono <| image_subset_image2_left hb
 
 protected theorem Infinite.image2_right (ht : t.Infinite) (ha : a ∈ s) (hf : InjOn (f a) t) :
     (image2 f s t).Infinite :=
   (ht.image hf).mono <| image_subset_image2_right ha
 
-theorem infinite_image2 (hfs : ∀ b ∈ t, InjOn (fun a => f a b) s) (hft : ∀ a ∈ s, InjOn (f a) t) :
+theorem infinite_image2 (hfs : ∀ b ∈ t, InjOn (fun a ↦ f a b) s) (hft : ∀ a ∈ s, InjOn (f a) t) :
     (image2 f s t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty := by
-  refine ⟨fun h => Set.infinite_prod.1 ?_, ?_⟩
+  refine ⟨fun h ↦ Set.infinite_prod.1 ?_, ?_⟩
   · rw [← image_uncurry_prod] at h
     exact h.of_image _
   · rintro (⟨hs, b, hb⟩ | ⟨ht, a, ha⟩)

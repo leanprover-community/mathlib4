@@ -31,7 +31,7 @@ namespace UnbundledHom
 
 variable (c : Type u → Type u) (hom : ∀ ⦃α β⦄, c α → c β → (α → β) → Prop) [𝒞 : UnbundledHom hom]
 
-instance bundledHom : BundledHom fun α β (Iα : c α) (Iβ : c β) => Subtype (hom Iα Iβ) where
+instance bundledHom : BundledHom fun α β (Iα : c α) (Iβ : c β) ↦ Subtype (hom Iα Iβ) where
   toFun _ _ := Subtype.val
   id Iα := ⟨id, hom_id Iα⟩
   id_toFun _ := rfl
@@ -50,7 +50,7 @@ variable (obj : ∀ ⦃α⦄, c α → c' α)
 /-- A custom constructor for forgetful functor
 between concrete categories defined using `UnbundledHom`. -/
 def mkHasForget₂ : HasForget₂ (Bundled c) (Bundled c') :=
-  BundledHom.mkHasForget₂ obj (fun f => ⟨f.val, map f.property⟩) fun _ => rfl
+  BundledHom.mkHasForget₂ obj (fun f ↦ ⟨f.val, map f.property⟩) fun _ ↦ rfl
 
 end HasForget₂
 

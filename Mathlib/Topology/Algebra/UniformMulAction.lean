@@ -60,7 +60,7 @@ This can't be an instance due to it forming a loop with
 theorem uniformContinuousConstSMul_of_continuousConstSMul [Monoid R] [AddGroup M]
     [DistribMulAction R M] [UniformSpace M] [IsUniformAddGroup M] [ContinuousConstSMul R M] :
     UniformContinuousConstSMul R M :=
-  ⟨fun r =>
+  ⟨fun r ↦
     uniformContinuous_of_continuousAt_zero (DistribMulAction.toAddMonoidHom M r)
       (Continuous.continuousAt (continuous_const_smul r))⟩
 
@@ -81,7 +81,7 @@ variable [SMul M X]
 @[to_additive]
 instance (priority := 100) UniformContinuousConstSMul.to_continuousConstSMul
     [UniformContinuousConstSMul M X] : ContinuousConstSMul M X :=
-  ⟨fun c => (uniformContinuous_const_smul c).continuous⟩
+  ⟨fun c ↦ (uniformContinuous_const_smul c).continuous⟩
 
 variable {M X Y}
 
@@ -109,7 +109,7 @@ instance (priority := 100) UniformContinuousConstSMul.op [SMul Mᵐᵒᵖ X] [Is
 @[to_additive]
 instance MulOpposite.uniformContinuousConstSMul [UniformContinuousConstSMul M X] :
     UniformContinuousConstSMul M Xᵐᵒᵖ :=
-  ⟨fun c =>
+  ⟨fun c ↦
     MulOpposite.uniformContinuous_op.comp <| MulOpposite.uniformContinuous_unop.const_smul c⟩
 
 end SMul
@@ -117,7 +117,7 @@ end SMul
 @[to_additive]
 instance IsUniformGroup.to_uniformContinuousConstSMul {G : Type u} [Group G] [UniformSpace G]
     [IsUniformGroup G] : UniformContinuousConstSMul G G :=
-  ⟨fun _ => uniformContinuous_const.mul uniformContinuous_id⟩
+  ⟨fun _ ↦ uniformContinuous_const.mul uniformContinuous_id⟩
 
 section Ring
 
@@ -132,11 +132,11 @@ theorem UniformContinuous.mul_const' [UniformContinuousConstSMul Rᵐᵒᵖ R] {
   hf.const_smul (MulOpposite.op a)
 
 theorem uniformContinuous_mul_left' [UniformContinuousConstSMul R R] (a : R) :
-    UniformContinuous fun b : R => a * b :=
+    UniformContinuous fun b : R ↦ a * b :=
   uniformContinuous_id.const_mul' _
 
 theorem uniformContinuous_mul_right' [UniformContinuousConstSMul Rᵐᵒᵖ R] (a : R) :
-    UniformContinuous fun b : R => b * a :=
+    UniformContinuous fun b : R ↦ b * a :=
   uniformContinuous_id.mul_const' _
 
 theorem UniformContinuous.div_const' {R β : Type*} [DivisionRing R] [UniformSpace R]
@@ -147,7 +147,7 @@ theorem UniformContinuous.div_const' {R β : Type*} [DivisionRing R] [UniformSpa
 
 theorem uniformContinuous_div_const' {R : Type*} [DivisionRing R] [UniformSpace R]
     [UniformContinuousConstSMul Rᵐᵒᵖ R] (a : R) :
-    UniformContinuous fun b : R => b / a :=
+    UniformContinuous fun b : R ↦ b / a :=
   uniformContinuous_id.div_const' _
 
 end Ring
@@ -187,7 +187,7 @@ variable [SMul M X]
 
 @[to_additive]
 noncomputable instance : SMul M (Completion X) :=
-  ⟨fun c => Completion.map (c • ·)⟩
+  ⟨fun c ↦ Completion.map (c • ·)⟩
 
 @[to_additive]
 theorem smul_def (c : M) (x : Completion X) : c • x = Completion.map (c • ·) x :=
@@ -195,30 +195,30 @@ theorem smul_def (c : M) (x : Completion X) : c • x = Completion.map (c • ·
 
 @[to_additive]
 instance : UniformContinuousConstSMul M (Completion X) :=
-  ⟨fun _ => uniformContinuous_map⟩
+  ⟨fun _ ↦ uniformContinuous_map⟩
 
 @[to_additive]
 instance instIsScalarTower [SMul N X] [SMul M N] [UniformContinuousConstSMul M X]
     [UniformContinuousConstSMul N X] [IsScalarTower M N X] : IsScalarTower M N (Completion X) :=
-  ⟨fun m n x => by
+  ⟨fun m n x ↦ by
     have : _ = (_ : Completion X → Completion X) :=
       map_comp (uniformContinuous_const_smul m) (uniformContinuous_const_smul n)
     refine Eq.trans ?_ (congr_fun this.symm x)
-    exact congr_arg (fun f => Completion.map f x) (funext (smul_assoc _ _))⟩
+    exact congr_arg (fun f ↦ Completion.map f x) (funext (smul_assoc _ _))⟩
 
 @[to_additive]
 instance [SMul N X] [SMulCommClass M N X] [UniformContinuousConstSMul M X]
     [UniformContinuousConstSMul N X] : SMulCommClass M N (Completion X) :=
-  ⟨fun m n x => by
+  ⟨fun m n x ↦ by
     have hmn : m • n • x = (Completion.map (SMul.smul m) ∘ Completion.map (SMul.smul n)) x := rfl
     have hnm : n • m • x = (Completion.map (SMul.smul n) ∘ Completion.map (SMul.smul m)) x := rfl
     rw [hmn, hnm, map_comp, map_comp]
-    · exact congr_arg (fun f => Completion.map f x) (funext (smul_comm _ _))
+    · exact congr_arg (fun f ↦ Completion.map f x) (funext (smul_comm _ _))
     repeat' exact uniformContinuous_const_smul _⟩
 
 @[to_additive]
 instance [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] : IsCentralScalar M (Completion X) :=
-  ⟨fun c a => (congr_arg fun f => Completion.map f a) <| funext (op_smul_eq_smul c)⟩
+  ⟨fun c a ↦ (congr_arg fun f ↦ Completion.map f a) <| funext (op_smul_eq_smul c)⟩
 
 variable {M X}
 variable [UniformContinuousConstSMul M X]
@@ -233,9 +233,9 @@ end SMul
 noncomputable instance [Monoid M] [MulAction M X] [UniformContinuousConstSMul M X] :
     MulAction M (Completion X) where
   smul := (· • ·)
-  one_smul := ext' (continuous_const_smul _) continuous_id fun a => by rw [← coe_smul, one_smul]
+  one_smul := ext' (continuous_const_smul _) continuous_id fun a ↦ by rw [← coe_smul, one_smul]
   mul_smul x y :=
-    ext' (continuous_const_smul _) ((continuous_const_smul _).const_smul _) fun a => by
+    ext' (continuous_const_smul _) ((continuous_const_smul _).const_smul _) fun a ↦ by
       simp only [← coe_smul, mul_smul]
 
 end Completion

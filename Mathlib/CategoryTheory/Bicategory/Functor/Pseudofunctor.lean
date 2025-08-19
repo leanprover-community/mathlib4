@@ -108,8 +108,8 @@ variable (F : Pseudofunctor B C)
 @[simps]
 def toOplax : OplaxFunctor B C where
   toPrelaxFunctor := F.toPrelaxFunctor
-  mapId := fun a => (F.mapId a).hom
-  mapComp := fun f g => (F.mapComp f g).hom
+  mapId := fun a ↦ (F.mapId a).hom
+  mapComp := fun f g ↦ (F.mapComp f g).hom
 
 instance hasCoeToOplax : Coe (Pseudofunctor B C) (OplaxFunctor B C) :=
   ⟨toOplax⟩
@@ -118,8 +118,8 @@ instance hasCoeToOplax : Coe (Pseudofunctor B C) (OplaxFunctor B C) :=
 @[simps]
 def toLax : LaxFunctor B C where
   toPrelaxFunctor := F.toPrelaxFunctor
-  mapId := fun a => (F.mapId a).inv
-  mapComp := fun f g => (F.mapComp f g).inv
+  mapId := fun a ↦ (F.mapId a).inv
+  mapComp := fun f g ↦ (F.mapComp f g).inv
   map₂_leftUnitor f := by
     rw [← F.map₂Iso_inv, eq_inv_comp, comp_inv_eq]
     simp
@@ -134,8 +134,8 @@ instance hasCoeToLax : Coe (Pseudofunctor B C) (LaxFunctor B C) :=
 @[simps]
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : Pseudofunctor B B where
   toPrelaxFunctor := PrelaxFunctor.id B
-  mapId := fun a => Iso.refl (𝟙 a)
-  mapComp := fun f g => Iso.refl (f ≫ g)
+  mapId := fun a ↦ Iso.refl (𝟙 a)
+  mapComp := fun f g ↦ Iso.refl (f ≫ g)
 
 instance : Inhabited (Pseudofunctor B B) :=
   ⟨id B⟩
@@ -144,8 +144,8 @@ instance : Inhabited (Pseudofunctor B B) :=
 @[simps]
 def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D where
   toPrelaxFunctor := F.toPrelaxFunctor.comp G.toPrelaxFunctor
-  mapId := fun a => G.map₂Iso (F.mapId a) ≪≫ G.mapId (F.obj a)
-  mapComp := fun f g => (G.map₂Iso (F.mapComp f g)) ≪≫ G.mapComp (F.map f) (F.map g)
+  mapId := fun a ↦ G.map₂Iso (F.mapId a) ≪≫ G.mapId (F.obj a)
+  mapComp := fun f g ↦ (G.map₂Iso (F.mapComp f g)) ≪≫ G.mapComp (F.map f) (F.map g)
   -- Note: whilst these are all provable by `cat_disch`, the proof is very slow
   map₂_whisker_left f η := by simp
   map₂_whisker_right η h := by simp
@@ -270,13 +270,13 @@ def mkOfOplax (F : OplaxFunctor B C) (F' : F.PseudoCore) : Pseudofunctor B C whe
   toPrelaxFunctor := F.toPrelaxFunctor
   mapId := F'.mapIdIso
   mapComp := F'.mapCompIso
-  map₂_whisker_left := fun f g h η => by
+  map₂_whisker_left := fun f g h η ↦ by
     rw [F'.mapCompIso_hom f g, ← F.mapComp_naturality_right_assoc, ← F'.mapCompIso_hom f h,
       hom_inv_id, comp_id]
-  map₂_whisker_right := fun η h => by
+  map₂_whisker_right := fun η h ↦ by
     rw [F'.mapCompIso_hom _ h, ← F.mapComp_naturality_left_assoc, ← F'.mapCompIso_hom _ h,
       hom_inv_id, comp_id]
-  map₂_associator := fun f g h => by
+  map₂_associator := fun f g h ↦ by
     rw [F'.mapCompIso_hom (f ≫ g) h, F'.mapCompIso_hom f g, ← F.map₂_associator_assoc, ←
       F'.mapCompIso_hom f (g ≫ h), ← F'.mapCompIso_hom g h, whiskerLeft_hom_inv_assoc,
       hom_inv_id, comp_id]
@@ -286,15 +286,15 @@ def mkOfOplax (F : OplaxFunctor B C) (F' : F.PseudoCore) : Pseudofunctor B C whe
 noncomputable def mkOfOplax' (F : OplaxFunctor B C) [∀ a, IsIso (F.mapId a)]
     [∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), IsIso (F.mapComp f g)] : Pseudofunctor B C where
   toPrelaxFunctor := F.toPrelaxFunctor
-  mapId := fun a => asIso (F.mapId a)
-  mapComp := fun f g => asIso (F.mapComp f g)
-  map₂_whisker_left := fun f g h η => by
+  mapId := fun a ↦ asIso (F.mapId a)
+  mapComp := fun f g ↦ asIso (F.mapComp f g)
+  map₂_whisker_left := fun f g h η ↦ by
     dsimp
     rw [← assoc, IsIso.eq_comp_inv, F.mapComp_naturality_right]
-  map₂_whisker_right := fun η h => by
+  map₂_whisker_right := fun η h ↦ by
     dsimp
     rw [← assoc, IsIso.eq_comp_inv, F.mapComp_naturality_left]
-  map₂_associator := fun f g h => by
+  map₂_associator := fun f g h ↦ by
     dsimp
     simp only [← assoc]
     rw [IsIso.eq_comp_inv, ← Bicategory.inv_whiskerLeft, IsIso.eq_comp_inv]
@@ -323,8 +323,8 @@ def mkOfLax (F : LaxFunctor B C) (F' : F.PseudoCore) : Pseudofunctor B C where
 noncomputable def mkOfLax' (F : LaxFunctor B C) [∀ a, IsIso (F.mapId a)]
     [∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), IsIso (F.mapComp f g)] : Pseudofunctor B C :=
   mkOfLax F
-  { mapIdIso := fun a => (asIso (F.mapId a)).symm
-    mapCompIso := fun f g => (asIso (F.mapComp f g)).symm }
+  { mapIdIso := fun a ↦ (asIso (F.mapId a)).symm
+    mapCompIso := fun f g ↦ (asIso (F.mapComp f g)).symm }
 
 end
 

@@ -90,9 +90,9 @@ with `0 < k ≤ n` and `|k*ξ - j| ≤ 1/(n+1)`.
 See also `Real.exists_nat_abs_mul_sub_round_le`. -/
 theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     ∃ j k : ℤ, 0 < k ∧ k ≤ n ∧ |↑k * ξ - j| ≤ 1 / (n + 1) := by
-  let f : ℤ → ℤ := fun m => ⌊fract (ξ * m) * (n + 1)⌋
+  let f : ℤ → ℤ := fun m ↦ ⌊fract (ξ * m) * (n + 1)⌋
   have hn : 0 < (n : ℝ) + 1 := mod_cast Nat.succ_pos _
-  have hfu := fun m : ℤ => mul_lt_of_lt_one_left hn <| fract_lt_one (ξ * ↑m)
+  have hfu := fun m : ℤ ↦ mul_lt_of_lt_one_left hn <| fract_lt_one (ξ * ↑m)
   conv in |_| ≤ _ => rw [mul_comm, le_div_iff₀ hn, ← abs_of_pos hn, ← abs_mul]
   let D := Icc (0 : ℤ) n
   by_cases H : ∃ m ∈ D, f m = n
@@ -101,7 +101,7 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     have hm₀ : 0 < m := by
       have hf₀ : f 0 = 0 := by
         simp only [f, cast_zero, mul_zero, fract_zero, zero_mul, floor_zero]
-      refine Ne.lt_of_le (fun h => n_pos.ne ?_) (mem_Icc.mp hm).1
+      refine Ne.lt_of_le (fun h ↦ n_pos.ne ?_) (mem_Icc.mp hm).1
       exact mod_cast hf₀.symm.trans (h.symm ▸ hf : f 0 = n)
     refine ⟨⌊ξ * m⌋ + 1, m, hm₀, (mem_Icc.mp hm).2, ?_⟩
     rw [cast_add, ← sub_sub, sub_mul, cast_one, one_mul, abs_le]
@@ -110,8 +110,8 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     simpa only [neg_add_cancel_comm_assoc] using hf'
   · simp_rw [not_exists, not_and] at H
     have hD : #(Ico (0 : ℤ) n) < #D := by rw [card_Icc, card_Ico]; exact lt_add_one n
-    have hfu' : ∀ m, f m ≤ n := fun m => lt_add_one_iff.mp (floor_lt.mpr (mod_cast hfu m))
-    have hwd : ∀ m : ℤ, m ∈ D → f m ∈ Ico (0 : ℤ) n := fun x hx =>
+    have hfu' : ∀ m, f m ≤ n := fun m ↦ lt_add_one_iff.mp (floor_lt.mpr (mod_cast hfu m))
+    have hwd : ∀ m : ℤ, m ∈ D → f m ∈ Ico (0 : ℤ) n := fun x hx ↦
       mem_Ico.mpr
         ⟨floor_nonneg.mpr (mul_nonneg (fract_nonneg (ξ * x)) hn.le), Ne.lt_of_le (H x hx) (hfu' x)⟩
     obtain ⟨x, hx, y, hy, x_lt_y, hxy⟩ : ∃ x ∈ D, ∃ y ∈ D, x < y ∧ f x = f y := by
@@ -193,9 +193,9 @@ theorem exists_rat_abs_sub_lt_and_lt_of_irrational {ξ : ℝ} (hξ : Irrational 
 rational approximations to `ξ`. -/
 theorem infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational {ξ : ℝ} (hξ : Irrational ξ) :
     {q : ℚ | |ξ - q| < 1 / (q.den : ℝ) ^ 2}.Infinite := by
-  refine Or.resolve_left (Set.finite_or_infinite _) fun h => ?_
+  refine Or.resolve_left (Set.finite_or_infinite _) fun h ↦ ?_
   obtain ⟨q, _, hq⟩ :=
-    exists_min_image {q : ℚ | |ξ - q| < 1 / (q.den : ℝ) ^ 2} (fun q => |ξ - q|) h
+    exists_min_image {q : ℚ | |ξ - q| < 1 / (q.den : ℝ) ^ 2} (fun q ↦ |ξ - q|) h
       ⟨⌊ξ⌋, by simp [abs_of_nonneg, Int.fract_lt_one]⟩
   obtain ⟨q', hmem, hbetter⟩ := exists_rat_abs_sub_lt_and_lt_of_irrational hξ q
   exact lt_irrefl _ (lt_of_le_of_lt (hq q' hmem) hbetter)
@@ -249,7 +249,7 @@ theorem den_le_and_le_num_le_of_sub_lt_one_div_den_sq {ξ q : ℚ}
 /-- A rational number has only finitely many good rational approximations. -/
 theorem finite_rat_abs_sub_lt_one_div_den_sq (ξ : ℚ) :
     {q : ℚ | |ξ - q| < 1 / (q.den : ℚ) ^ 2}.Finite := by
-  let f : ℚ → ℤ × ℕ := fun q => (q.num, q.den)
+  let f : ℚ → ℤ × ℕ := fun q ↦ (q.num, q.den)
   set s := {q : ℚ | |ξ - q| < 1 / (q.den : ℚ) ^ 2}
   have hinj : Function.Injective f := by
     intro a b hab
@@ -265,7 +265,7 @@ theorem finite_rat_abs_sub_lt_one_div_den_sq (ξ : ℚ) :
     simp only [prod_singleton, mem_image, mem_Icc]
     exact ⟨q.num, hn, hq₂⟩
   refine (Finite.subset ?_ H).of_finite_image hinj.injOn
-  exact Finite.biUnion (finite_Ioc _ _) fun x _ => Finite.prod (finite_Icc _ _) (finite_singleton _)
+  exact Finite.biUnion (finite_Ioc _ _) fun x _ ↦ Finite.prod (finite_Icc _ _) (finite_singleton _)
 
 end Rat
 
@@ -274,7 +274,7 @@ end Rat
 theorem Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational (ξ : ℝ) :
     {q : ℚ | |ξ - q| < 1 / (q.den : ℝ) ^ 2}.Infinite ↔ Irrational ξ := by
   refine
-    ⟨fun h => (irrational_iff_ne_rational ξ).mpr fun a b _ H => Set.not_infinite.mpr ?_ h,
+    ⟨fun h ↦ (irrational_iff_ne_rational ξ).mpr fun a b _ H ↦ Set.not_infinite.mpr ?_ h,
       Real.infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational⟩
   convert Rat.finite_rat_abs_sub_lt_one_div_den_sq ((a : ℚ) / b) with q
   rw [H, (by (push_cast; rfl) : (1 : ℝ) / (q.den : ℝ) ^ 2 = (1 / (q.den : ℚ) ^ 2 : ℚ))]
@@ -383,7 +383,7 @@ private theorem aux₁ : 0 < fract ξ := by
   have hv₀ : (0 : ℝ) < v := cast_pos.mpr (zero_lt_two.trans_le hv)
   obtain ⟨hv₁, hv₂⟩ := aux₀ (zero_lt_two.trans_le hv)
   obtain ⟨hcop, _, h⟩ := h
-  refine fract_pos.mpr fun hf => ?_
+  refine fract_pos.mpr fun hf ↦ ?_
   rw [hf] at h
   have H : (2 * v - 1 : ℝ) < 1 := by
     refine (mul_lt_iff_lt_one_right hv₀).1 ((inv_lt_inv₀ hv₀ (mul_pos hv₁ hv₂)).1 (h.trans_le' ?_))
@@ -426,7 +426,7 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
     exact mod_cast this.trans h
   have huv_cop : IsCoprime (u - ⌊ξ⌋ * v) v := by
     rwa [sub_eq_add_neg, ← neg_mul, IsCoprime.add_mul_right_left_iff]
-  refine ⟨lt_of_le_of_ne' hu₀ fun hf => ?_, lt_of_le_of_ne hu₁ fun hf => ?_⟩ <;>
+  refine ⟨lt_of_le_of_ne' hu₀ fun hf ↦ ?_, lt_of_le_of_ne hu₁ fun hf ↦ ?_⟩ <;>
     · rw [hf] at huv_cop
       simp only [isCoprime_zero_left, isCoprime_self, isUnit_iff] at huv_cop
       rcases huv_cop with huv_cop | huv_cop <;> linarith only [hv, huv_cop]
@@ -472,7 +472,7 @@ private theorem aux₃ :
 
 -- The conditions `ass ξ u v` persist in the inductive step.
 private theorem invariant : ContfracLegendre.Ass (fract ξ)⁻¹ v (u - ⌊ξ⌋ * v) := by
-  refine ⟨?_, fun huv => ?_, mod_cast aux₃ hv h⟩
+  refine ⟨?_, fun huv ↦ ?_, mod_cast aux₃ hv h⟩
   · rw [sub_eq_add_neg, ← neg_mul, isCoprime_comm, IsCoprime.add_mul_right_left_iff]
     exact h.1
   · obtain hv₀' := (aux₀ (zero_lt_two.trans_le hv)).2
@@ -541,7 +541,7 @@ then `q` is a convergent of the continued fraction expansion of `ξ`.
 This version uses `Real.convergent`. -/
 theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ) ^ 2)) :
     ∃ n, q = ξ.convergent n := by
-  refine q.num_div_den ▸ exists_rat_eq_convergent' ⟨?_, fun hd => ?_, ?_⟩
+  refine q.num_div_den ▸ exists_rat_eq_convergent' ⟨?_, fun hd ↦ ?_, ?_⟩
   · exact isCoprime_iff_nat_coprime.mpr (natAbs_natCast q.den ▸ q.reduced)
   · rw [← q.den_eq_one_iff.mp (Nat.cast_eq_one.mp hd)] at h
     simpa only [Rat.den_intCast, Nat.cast_one, one_pow, mul_one] using (abs_lt.mp h).1

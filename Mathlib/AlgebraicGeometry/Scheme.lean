@@ -536,8 +536,8 @@ This is almost never needed in practical use cases. Use `ΓSpecIso` instead.
 -/
 def SpecΓIdentity : Scheme.Spec.rightOp ⋙ Scheme.Γ ≅ 𝟭 _ :=
   Iso.symm <| NatIso.ofComponents.{u,u,u+1,u+1}
-    (fun R => asIso (StructureSheaf.toOpen R ⊤))
-    (fun {X Y} f => by convert Spec_Γ_naturality (R := X) (S := Y) f)
+    (fun R ↦ asIso (StructureSheaf.toOpen R ⊤))
+    (fun {X Y} f ↦ by convert Spec_Γ_naturality (R := X) (S := Y) f)
 
 variable (R : CommRingCat.{u})
 

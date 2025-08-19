@@ -135,7 +135,7 @@ theorem ne_zero_iff_exists_coeff_ne_zero_and_weight :
 /-- The weighted order of a mv_power_series -/
 def weightedOrder (f : MvPowerSeries σ R) : ℕ∞ := by
   classical
-  exact dite (f = 0) (fun _ => ⊤) fun h =>
+  exact dite (f = 0) (fun _ ↦ ⊤) fun h ↦
     Nat.find ((ne_zero_iff_exists_coeff_ne_zero_and_weight w).mp h)
 
 @[simp] theorem weightedOrder_zero : (0 : MvPowerSeries σ R).weightedOrder w = ⊤ := by
@@ -336,10 +336,10 @@ theorem eq_zero_iff_forall_coeff_eq_zero_and :
 theorem ne_zero_iff_exists_coeff_ne_zero_and_degree :
     f ≠ 0 ↔ (∃ n : ℕ, ∃ d : σ →₀ ℕ, coeff R d f ≠ 0 ∧ degree d = n) := by
   simp_rw [degree_eq_weight_one]
-  exact ne_zero_iff_exists_coeff_ne_zero_and_weight (fun _ => 1)
+  exact ne_zero_iff_exists_coeff_ne_zero_and_weight (fun _ ↦ 1)
 
 /-- The order of a mv_power_series -/
-def order (f : MvPowerSeries σ R) : ℕ∞ := weightedOrder (fun _ => 1) f
+def order (f : MvPowerSeries σ R) : ℕ∞ := weightedOrder (fun _ ↦ 1) f
 
 @[simp]
 theorem order_zero : (0 : MvPowerSeries σ R).order = ⊤ :=

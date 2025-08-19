@@ -59,7 +59,7 @@ open Matrix
 open scoped Matrix
 
 theorem Algebra.traceForm_toMatrix_powerBasis (h : PowerBasis R S) :
-    BilinForm.toMatrix h.basis (traceForm R S) = of fun i j => trace R S (h.gen ^ (i.1 + j.1)) := by
+    BilinForm.toMatrix h.basis (traceForm R S) = of fun i j ↦ trace R S (h.gen ^ (i.1 + j.1)) := by
   ext; rw [traceForm_toMatrix, of_apply, pow_add, h.basis_eq_pow, h.basis_eq_pow]
 
 section EqSumRoots
@@ -213,7 +213,7 @@ variable (F) (E : Type*) [Field E] [Algebra K E]
 theorem trace_eq_sum_embeddings_gen (pb : PowerBasis K L)
     (hE : (minpoly K pb.gen).Splits (algebraMap K E)) (hfx : IsSeparable K pb.gen) :
     algebraMap K E (Algebra.trace K L pb.gen) =
-      (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).sum fun σ => σ pb.gen := by
+      (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).sum fun σ ↦ σ pb.gen := by
   letI := Classical.decEq E
   -- Porting note: the following `letI` was not needed.
   letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
@@ -222,7 +222,7 @@ theorem trace_eq_sum_embeddings_gen (pb : PowerBasis K L)
     Multiset.map_id]
   · exact nodup_roots ((separable_map _).mpr hfx)
   -- Porting note: the following goal does not exist in mathlib3.
-  · exact (fun x => x.1)
+  · exact (fun x ↦ x.1)
   · intro x; rfl
   · intro σ
     rw [PowerBasis.liftEquiv'_apply_coe]
@@ -233,14 +233,14 @@ theorem sum_embeddings_eq_finrank_mul [FiniteDimensional K F] [Algebra.IsSeparab
     (pb : PowerBasis K L) :
     ∑ σ : F →ₐ[K] E, σ (algebraMap L F pb.gen) =
       finrank L F •
-        (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).sum fun σ : L →ₐ[K] E => σ pb.gen := by
+        (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).sum fun σ : L →ₐ[K] E ↦ σ pb.gen := by
   haveI : FiniteDimensional L F := FiniteDimensional.right K L F
   haveI : Algebra.IsSeparable L F := Algebra.isSeparable_tower_top_of_isSeparable K L F
   letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
   letI : ∀ f : L →ₐ[K] E, Fintype (haveI := f.toRingHom.toAlgebra; AlgHom L F E) := ?_
-  · rw [Fintype.sum_equiv algHomEquivSigma (fun σ : F →ₐ[K] E => _) fun σ => σ.1 pb.gen, ←
+  · rw [Fintype.sum_equiv algHomEquivSigma (fun σ : F →ₐ[K] E ↦ _) fun σ ↦ σ.1 pb.gen, ←
       Finset.univ_sigma_univ, Finset.sum_sigma, ← Finset.sum_nsmul]
-    · refine Finset.sum_congr rfl fun σ _ => ?_
+    · refine Finset.sum_congr rfl fun σ _ ↦ ?_
       letI : Algebra L E := σ.toRingHom.toAlgebra
       -- Porting note: `Finset.card_univ` was inside `simp only`.
       simp only [Finset.sum_const]
@@ -341,7 +341,7 @@ open Finset
 /-- Given an `A`-algebra `B` and `b`, a `κ`-indexed family of elements of `B`, we define
 `traceMatrix A b` as the matrix whose `(i j)`-th element is the trace of `b i * b j`. -/
 noncomputable def traceMatrix (b : κ → B) : Matrix κ κ A :=
-  of fun i j => traceForm A B (b i) (b j)
+  of fun i j ↦ traceForm A B (b i) (b j)
 
 -- TODO: set as an equation lemma for `traceMatrix`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
@@ -358,8 +358,8 @@ theorem traceMatrix_of_matrix_vecMul [Fintype κ] (b : κ → B) (P : Matrix κ 
   ext (α β)
   rw [traceMatrix_apply, vecMul, dotProduct, vecMul, dotProduct, Matrix.mul_apply,
     BilinForm.sum_left,
-    Fintype.sum_congr _ _ fun i : κ =>
-      BilinForm.sum_right _ _ (b i * P.map (algebraMap A B) i α) fun y : κ =>
+    Fintype.sum_congr _ _ fun i : κ ↦
+      BilinForm.sum_right _ _ (b i * P.map (algebraMap A B) i α) fun y : κ ↦
         b y * P.map (algebraMap A B) y β,
     sum_comm]
   congr; ext x
@@ -385,7 +385,7 @@ theorem traceMatrix_of_basis [Fintype κ] [DecidableEq κ] (b : Basis κ A B) :
   rw [traceMatrix_apply, traceForm_apply, traceForm_toMatrix]
 
 theorem traceMatrix_of_basis_mulVec (b : Basis ι A B) (z : B) :
-    traceMatrix A b *ᵥ b.equivFun z = fun i => trace A B (z * b i) := by
+    traceMatrix A b *ᵥ b.equivFun z = fun i ↦ trace A B (z * b i) := by
   ext i
   rw [← replicateCol_apply (ι := Fin 1) (traceMatrix A b *ᵥ b.equivFun z) i 0, replicateCol_mulVec,
     Matrix.mul_apply, traceMatrix]
@@ -412,7 +412,7 @@ variable (A)
   `σ (b i)`. It is mostly useful for fields when `Fintype.card κ = finrank A B` and `C` is
   algebraically closed. -/
 def embeddingsMatrix (b : κ → B) : Matrix κ (B →ₐ[A] C) C :=
-  of fun i (σ : B →ₐ[A] C) => σ (b i)
+  of fun i (σ : B →ₐ[A] C) ↦ σ (b i)
 
 -- TODO: set as an equation lemma for `embeddingsMatrix`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
@@ -432,7 +432,7 @@ variable {A}
 
 theorem embeddingsMatrixReindex_eq_vandermonde (pb : PowerBasis A B)
     (e : Fin pb.dim ≃ (B →ₐ[A] C)) :
-    embeddingsMatrixReindex A C pb.basis e = (vandermonde fun i => e i pb.gen)ᵀ := by
+    embeddingsMatrixReindex A C pb.basis e = (vandermonde fun i ↦ e i pb.gen)ᵀ := by
   ext i j
   simp [embeddingsMatrixReindex, embeddingsMatrix]
 
@@ -463,7 +463,7 @@ variable (pb : PowerBasis K L)
 
 theorem det_traceMatrix_ne_zero' [Algebra.IsSeparable K L] : det (traceMatrix K pb.basis) ≠ 0 := by
   suffices algebraMap K (AlgebraicClosure L) (det (traceMatrix K pb.basis)) ≠ 0 by
-    refine mt (fun ht => ?_) this
+    refine mt (fun ht ↦ ?_) this
     rw [ht, RingHom.map_zero]
   haveI : FiniteDimensional K L := pb.finite
   let e : Fin pb.dim ≃ (L →ₐ[K] AlgebraicClosure L) := (Fintype.equivFinOfCardEq ?_).symm

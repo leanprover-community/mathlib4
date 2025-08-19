@@ -72,7 +72,7 @@ lemma centralizer_coe_image_includeLeft_eq_center_tensorProduct
     rw [mem_centralizer_iff] at hw
     let ℬ := Module.Free.chooseBasis R B
     obtain ⟨b, rfl⟩ := TensorProduct.eq_repr_basis_right ℬ w
-    refine Subalgebra.sum_mem _ fun j hj => ⟨⟨b j, ?_⟩ ⊗ₜ[R] ℬ j, by simp⟩
+    refine Subalgebra.sum_mem _ fun j hj ↦ ⟨⟨b j, ?_⟩ ⊗ₜ[R] ℬ j, by simp⟩
     rw [Subalgebra.mem_centralizer_iff]
     intro x hx
     suffices x • b = b.mapRange (· * x) (by simp) from Finsupp.ext_iff.1 this j

@@ -52,7 +52,7 @@ def constPUnitFunctor : C ⥤ Type w := (Functor.const C).obj PUnit.{w + 1}
 @[simps]
 def pUnitCocone : Cocone (constPUnitFunctor.{w} C) where
   pt := PUnit
-  ι := { app := fun _ => id }
+  ι := { app := fun _ ↦ id }
 
 /-- If `C` is connected, the cocone on `constPUnitFunctor` with cone point `PUnit` is a colimit
 cocone. -/
@@ -77,7 +77,7 @@ instance instSubsingletonColimitPUnit
     obtain ⟨c, ⟨⟩, rfl⟩ := jointly_surjective' a
     obtain ⟨d, ⟨⟩, rfl⟩ := jointly_surjective' b
     apply constant_of_preserves_morphisms (colimit.ι (constPUnitFunctor C) · PUnit.unit)
-    exact fun c d f => colimit_sound f rfl
+    exact fun c d f ↦ colimit_sound f rfl
 
 /-- Given a connected index category, the colimit of the constant unit-valued functor is `PUnit`. -/
 noncomputable def colimitConstPUnitIsoPUnit [IsConnected C] :
@@ -102,15 +102,15 @@ singleton. -/
 theorem isConnected_iff_colimit_constPUnitFunctor_iso_pUnit
     [HasColimit (constPUnitFunctor.{w} C)] :
     IsConnected C ↔ Nonempty (colimit (constPUnitFunctor.{w} C) ≅ PUnit) := by
-  refine ⟨fun _ => ⟨colimitConstPUnitIsoPUnit.{w} C⟩, fun ⟨h⟩ => ?_⟩
+  refine ⟨fun _ ↦ ⟨colimitConstPUnitIsoPUnit.{w} C⟩, fun ⟨h⟩ ↦ ?_⟩
   have : Nonempty C := nonempty_of_nonempty_colimit <| Nonempty.map h.inv inferInstance
-  refine zigzag_isConnected <| fun c d => ?_
+  refine zigzag_isConnected <| fun c d ↦ ?_
   refine zigzag_of_eqvGen_colimitTypeRel _ (constPUnitFunctor C) ⟨c, PUnit.unit⟩ ⟨d, PUnit.unit⟩ ?_
   exact colimit_eq <| h.toEquiv.injective rfl
 
 theorem isConnected_iff_isColimit_pUnitCocone :
     IsConnected C ↔ Nonempty (IsColimit (pUnitCocone.{w} C)) := by
-  refine ⟨fun inst => ⟨isColimitPUnitCocone C⟩, fun ⟨h⟩ => ?_⟩
+  refine ⟨fun inst ↦ ⟨isColimitPUnitCocone C⟩, fun ⟨h⟩ ↦ ?_⟩
   let colimitCocone : ColimitCocone (constPUnitFunctor C) := ⟨pUnitCocone.{w} C, h⟩
   have : HasColimit (constPUnitFunctor.{w} C) := ⟨⟨colimitCocone⟩⟩
   simp only [isConnected_iff_colimit_constPUnitFunctor_iso_pUnit.{w} C]

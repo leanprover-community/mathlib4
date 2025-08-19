@@ -39,7 +39,7 @@ def WithOne (α) :=
   Option α
 
 instance WithZero.instRepr [Repr α] : Repr (WithZero α) :=
-  ⟨fun o _ =>
+  ⟨fun o _ ↦
     match o with
     | none => "0"
     | some a => "↑" ++ repr a⟩
@@ -48,7 +48,7 @@ namespace WithOne
 
 @[to_additive existing]
 instance [Repr α] : Repr (WithOne α) :=
-  ⟨fun o _ =>
+  ⟨fun o _ ↦
     match o with
     | none => "1"
     | some a => "↑" ++ repr a⟩
@@ -67,7 +67,7 @@ instance instMul [Mul α] : Mul (WithOne α) :=
 
 @[to_additive]
 instance instInv [Inv α] : Inv (WithOne α) :=
-  ⟨fun a => Option.map Inv.inv a⟩
+  ⟨fun a ↦ Option.map Inv.inv a⟩
 
 @[to_additive]
 instance instInvOneClass [Inv α] : InvOneClass (WithOne α) :=
@@ -146,7 +146,7 @@ theorem ne_one_iff_exists {x : WithOne α} : x ≠ 1 ↔ ∃ a : α, ↑a = x :=
   Option.ne_none_iff_exists
 
 @[to_additive]
-instance instCanLift : CanLift (WithOne α) α (↑) fun a => a ≠ 1 where
+instance instCanLift : CanLift (WithOne α) α (↑) fun a ↦ a ≠ 1 where
   prf _ := ne_one_iff_exists.1
 
 @[to_additive (attr := simp, norm_cast)]

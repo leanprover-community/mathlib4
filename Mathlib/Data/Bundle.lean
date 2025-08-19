@@ -93,11 +93,11 @@ theorem TotalSpace.range_mk (b : B) : range ((↑) : E b → TotalSpace F E) = �
     exact ⟨x, rfl⟩
 
 /-- Notation for the direct sum of two bundles over the same base. -/
-notation:100 E₁ " ×ᵇ " E₂ => fun x => E₁ x × E₂ x
+notation:100 E₁ " ×ᵇ " E₂ => fun x ↦ E₁ x × E₂ x
 
 /-- `Bundle.Trivial B F` is the trivial bundle over `B` of fiber `F`. -/
 @[reducible, nolint unusedArguments]
-def Trivial (B : Type*) (F : Type*) : B → Type _ := fun _ => F
+def Trivial (B : Type*) (F : Type*) : B → Type _ := fun _ ↦ F
 
 /-- The trivial bundle, unlike other bundles, has a canonical projection on the fiber. -/
 def TotalSpace.trivialSnd (B : Type*) (F : Type*) : TotalSpace F (Bundle.Trivial B F) → F :=
@@ -105,7 +105,7 @@ def TotalSpace.trivialSnd (B : Type*) (F : Type*) : TotalSpace F (Bundle.Trivial
 
 /-- A trivial bundle is equivalent to the product `B × F`. -/
 @[simps (attrs := [`mfld_simps])]
-def TotalSpace.toProd (B F : Type*) : (TotalSpace F fun _ : B => F) ≃ B × F where
+def TotalSpace.toProd (B F : Type*) : (TotalSpace F fun _ : B ↦ F) ≃ B × F where
   toFun x := (x.1, x.2)
   invFun x := ⟨x.1, x.2⟩
 
@@ -115,7 +115,7 @@ variable {B' : Type*}
 
 /-- The pullback of a bundle `E` over a base `B` under a map `f : B' → B`, denoted by
 `Bundle.Pullback f E` or `f *ᵖ E`, is the bundle over `B'` whose fiber over `b'` is `E (f b')`. -/
-def Pullback (f : B' → B) (E : B → Type*) : B' → Type _ := fun x => E (f x)
+def Pullback (f : B' → B) (E : B → Type*) : B' → Type _ := fun x ↦ E (f x)
 
 @[inherit_doc]
 notation f " *ᵖ " E:arg => Pullback f E
@@ -126,11 +126,11 @@ instance {f : B' → B} {x : B'} [Nonempty (E (f x))] : Nonempty ((f *ᵖ E) x) 
 /-- Natural embedding of the total space of `f *ᵖ E` into `B' × TotalSpace F E`. -/
 @[simp]
 def pullbackTotalSpaceEmbedding (f : B' → B) : TotalSpace F (f *ᵖ E) → B' × TotalSpace F E :=
-  fun z => (z.proj, TotalSpace.mk (f z.proj) z.2)
+  fun z ↦ (z.proj, TotalSpace.mk (f z.proj) z.2)
 
 /-- The base map `f : B' → B` lifts to a canonical map on the total spaces. -/
 @[simps (attrs := [`mfld_simps])]
-def Pullback.lift (f : B' → B) : TotalSpace F (f *ᵖ E) → TotalSpace F E := fun z => ⟨f z.proj, z.2⟩
+def Pullback.lift (f : B' → B) : TotalSpace F (f *ᵖ E) → TotalSpace F E := fun z ↦ ⟨f z.proj, z.2⟩
 
 @[simp, mfld_simps]
 theorem Pullback.lift_mk (f : B' → B) (x : B') (y : E (f x)) :

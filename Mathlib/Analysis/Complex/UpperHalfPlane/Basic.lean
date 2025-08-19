@@ -38,8 +38,8 @@ instance : Inhabited ℍ :=
 
 @[simp, norm_cast] theorem ext_iff' {a b : ℍ} : (a : ℂ) = b ↔ a = b := UpperHalfPlane.ext_iff.symm
 
-instance canLift : CanLift ℂ ℍ ((↑) : ℍ → ℂ) fun z => 0 < z.im :=
-  Subtype.canLift fun (z : ℂ) => 0 < z.im
+instance canLift : CanLift ℂ ℍ ((↑) : ℍ → ℂ) fun z ↦ 0 < z.im :=
+  Subtype.canLift fun (z : ℂ) ↦ 0 < z.im
 
 /-- Imaginary part -/
 def im (z : ℍ) :=

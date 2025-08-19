@@ -240,7 +240,7 @@ theorem coe_le_iff {x : WithZero α} : (a : WithZero α) ≤ x ↔ ∃ b : α, x
 
 instance instMulLeftMono [Mul α] [MulLeftMono α] :
     MulLeftMono (WithZero α) := by
-  refine ⟨fun a b c hbc => ?_⟩
+  refine ⟨fun a b c hbc ↦ ?_⟩
   induction a; · exact zero_le _
   induction b; · exact zero_le _
   rcases WithZero.coe_le_iff.1 hbc with ⟨c, rfl, hbc'⟩
@@ -249,7 +249,7 @@ instance instMulLeftMono [Mul α] [MulLeftMono α] :
 
 protected lemma addLeftMono [AddZeroClass α] [AddLeftMono α]
     (h : ∀ a : α, 0 ≤ a) : AddLeftMono (WithZero α) := by
-  refine ⟨fun a b c hbc => ?_⟩
+  refine ⟨fun a b c hbc ↦ ?_⟩
   induction a
   · rwa [zero_add, zero_add]
   induction b
@@ -263,11 +263,11 @@ protected lemma addLeftMono [AddZeroClass α] [AddLeftMono α]
     exact add_le_add_left hbc' _
 
 instance instExistsAddOfLE [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (WithZero α) :=
-  ⟨fun {a b} => by
+  ⟨fun {a b} ↦ by
     induction a
-    · exact fun _ => ⟨b, (zero_add b).symm⟩
+    · exact fun _ ↦ ⟨b, (zero_add b).symm⟩
     induction b
-    · exact fun h => (WithBot.not_coe_le_bot _ h).elim
+    · exact fun h ↦ (WithBot.not_coe_le_bot _ h).elim
     intro h
     obtain ⟨c, rfl⟩ := exists_add_of_le (WithZero.coe_le_coe.1 h)
     exact ⟨c, rfl⟩⟩
@@ -329,7 +329,7 @@ instance instPartialOrder : PartialOrder (WithZero α) := WithBot.partialOrder
 
 instance instMulLeftReflectLT [Mul α] [MulLeftReflectLT α] :
     MulLeftReflectLT (WithZero α) := by
-  refine ⟨fun a b c h => ?_⟩
+  refine ⟨fun a b c h ↦ ?_⟩
   have := ((zero_le _).trans_lt h).ne'
   induction a
   · simp at this
@@ -368,7 +368,7 @@ end LinearOrder
 
 instance isOrderedMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
     IsOrderedMonoid (WithZero α) where
-  mul_le_mul_left := fun _ _ => mul_le_mul_left'
+  mul_le_mul_left := fun _ _ ↦ mul_le_mul_left'
 
 /-
 Note 1 : the below is not an instance because it requires `zero_le`. It seems
@@ -388,7 +388,7 @@ protected lemma isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrder
 instance instCanonicallyOrderedAdd [AddZeroClass α] [Preorder α] [CanonicallyOrderedAdd α] :
     CanonicallyOrderedAdd (WithZero α) :=
   { WithZero.instExistsAddOfLE with
-    le_self_add := fun a b => by
+    le_self_add := fun a b ↦ by
       induction a
       · exact bot_le
       induction b

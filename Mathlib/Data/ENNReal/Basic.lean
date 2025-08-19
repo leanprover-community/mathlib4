@@ -149,7 +149,7 @@ noncomputable instance : LinearOrderedAddCommMonoidWithTop ℝ≥0∞ :=
   inferInstanceAs (LinearOrderedAddCommMonoidWithTop (WithTop ℝ≥0))
 
 -- RFC: redefine using pattern matching?
-noncomputable instance : Inv ℝ≥0∞ := ⟨fun a => sInf { b | 1 ≤ a * b }⟩
+noncomputable instance : Inv ℝ≥0∞ := ⟨fun a ↦ sInf { b | 1 ≤ a * b }⟩
 
 noncomputable instance : DivInvMonoid ℝ≥0∞ where
 
@@ -160,7 +160,7 @@ noncomputable instance : LinearOrderedCommMonoidWithZero ℝ≥0∞ :=
   { inferInstanceAs (LinearOrderedAddCommMonoidWithTop ℝ≥0∞),
       inferInstanceAs (CommSemiring ℝ≥0∞) with
     bot_le _ := bot_le
-    mul_le_mul_left := fun _ _ => mul_le_mul_left'
+    mul_le_mul_left := fun _ _ ↦ mul_le_mul_left'
     zero_le_one := zero_le 1 }
 
 instance : Unique (AddUnits ℝ≥0∞) where
@@ -220,7 +220,7 @@ theorem coe_toNNReal : ∀ {a : ℝ≥0∞}, a ≠ ∞ → ↑a.toNNReal = a
 
 @[simp]
 theorem coe_comp_toNNReal_comp {ι : Type*} {f : ι → ℝ≥0∞} (hf : ∀ x, f x ≠ ∞) :
-    (fun (x : ℝ≥0) => (x : ℝ≥0∞)) ∘ ENNReal.toNNReal ∘ f = f := by
+    (fun (x : ℝ≥0) ↦ (x : ℝ≥0∞)) ∘ ENNReal.toNNReal ∘ f = f := by
   ext x
   simp [coe_toNNReal (hf x)]
 
@@ -342,13 +342,13 @@ theorem ofReal_ne_top {r : ℝ} : ENNReal.ofReal r ≠ ∞ := coe_ne_top
 
 @[simp]
 theorem ofReal_toReal_eq_iff : ENNReal.ofReal a.toReal = a ↔ a ≠ ⊤ :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [← h]
     exact ofReal_ne_top, ofReal_toReal⟩
 
 @[simp]
 theorem toReal_ofReal_eq_iff {a : ℝ} : (ENNReal.ofReal a).toReal = a ↔ 0 ≤ a :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [← h]
     exact toReal_nonneg, toReal_ofReal⟩
 
@@ -374,9 +374,9 @@ attribute [gcongr] ENNReal.coe_le_coe_of_le
 alias ⟨_, coe_lt_coe_of_lt⟩ := coe_lt_coe
 attribute [gcongr] ENNReal.coe_lt_coe_of_lt
 
-theorem coe_mono : Monotone ofNNReal := fun _ _ => coe_le_coe.2
+theorem coe_mono : Monotone ofNNReal := fun _ _ ↦ coe_le_coe.2
 
-theorem coe_strictMono : StrictMono ofNNReal := fun _ _ => coe_lt_coe.2
+theorem coe_strictMono : StrictMono ofNNReal := fun _ _ ↦ coe_lt_coe.2
 
 @[simp, norm_cast] theorem coe_eq_zero : (↑r : ℝ≥0∞) = 0 ↔ r = 0 := coe_inj
 
@@ -441,11 +441,11 @@ instance _root_.fact_one_le_top_ennreal : Fact ((1 : ℝ≥0∞) ≤ ∞) :=
 def neTopEquivNNReal : { a | a ≠ ∞ } ≃ ℝ≥0 where
   toFun x := ENNReal.toNNReal x
   invFun x := ⟨x, coe_ne_top⟩
-  left_inv := fun x => Subtype.eq <| coe_toNNReal x.2
+  left_inv := fun x ↦ Subtype.eq <| coe_toNNReal x.2
   right_inv := toNNReal_coe
 
 theorem cinfi_ne_top [InfSet α] (f : ℝ≥0∞ → α) : ⨅ x : { x // x ≠ ∞ }, f x = ⨅ x : ℝ≥0, f x :=
-  Eq.symm <| neTopEquivNNReal.symm.surjective.iInf_congr _ fun _ => rfl
+  Eq.symm <| neTopEquivNNReal.symm.surjective.iInf_congr _ fun _ ↦ rfl
 
 theorem iInf_ne_top [CompleteLattice α] (f : ℝ≥0∞ → α) :
     ⨅ (x) (_ : x ≠ ∞), f x = ⨅ x : ℝ≥0, f x := by rw [iInf_subtype', cinfi_ne_top]
@@ -573,26 +573,26 @@ theorem max_zero_right : max a 0 = a :=
 
 theorem lt_iff_exists_rat_btwn :
     a < b ↔ ∃ q : ℚ, 0 ≤ q ∧ a < Real.toNNReal q ∧ (Real.toNNReal q : ℝ≥0∞) < b :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rcases lt_iff_exists_coe.1 h with ⟨p, rfl, _⟩
     rcases exists_between h with ⟨c, pc, cb⟩
     rcases lt_iff_exists_coe.1 cb with ⟨r, rfl, _⟩
     rcases (NNReal.lt_iff_exists_rat_btwn _ _).1 (coe_lt_coe.1 pc) with ⟨q, hq0, pq, qr⟩
     exact ⟨q, hq0, coe_lt_coe.2 pq, lt_trans (coe_lt_coe.2 qr) cb⟩,
-      fun ⟨_, _, qa, qb⟩ => lt_trans qa qb⟩
+      fun ⟨_, _, qa, qb⟩ ↦ lt_trans qa qb⟩
 
 theorem lt_iff_exists_real_btwn :
     a < b ↔ ∃ r : ℝ, 0 ≤ r ∧ a < ENNReal.ofReal r ∧ (ENNReal.ofReal r : ℝ≥0∞) < b :=
-  ⟨fun h =>
+  ⟨fun h ↦
     let ⟨q, q0, aq, qb⟩ := ENNReal.lt_iff_exists_rat_btwn.1 h
     ⟨q, Rat.cast_nonneg.2 q0, aq, qb⟩,
-    fun ⟨_, _, qa, qb⟩ => lt_trans qa qb⟩
+    fun ⟨_, _, qa, qb⟩ ↦ lt_trans qa qb⟩
 
 theorem lt_iff_exists_nnreal_btwn : a < b ↔ ∃ r : ℝ≥0, a < r ∧ (r : ℝ≥0∞) < b :=
   WithTop.lt_iff_exists_coe_btwn
 
 theorem lt_iff_exists_add_pos_lt : a < b ↔ ∃ r : ℝ≥0, 0 < r ∧ a + r < b := by
-  refine ⟨fun hab => ?_, fun ⟨r, _, hr⟩ => lt_of_le_of_lt le_self_add hr⟩
+  refine ⟨fun hab ↦ ?_, fun ⟨r, _, hr⟩ ↦ lt_of_le_of_lt le_self_add hr⟩
   rcases lt_iff_exists_nnreal_btwn.1 hab with ⟨c, ac, cb⟩
   lift a to ℝ≥0 using ac.ne_top
   rw [coe_lt_coe] at ac
@@ -617,12 +617,12 @@ protected theorem exists_nat_gt {r : ℝ≥0∞} (h : r ≠ ∞) : ∃ n : ℕ, 
 theorem iUnion_Iio_coe_nat : ⋃ n : ℕ, Iio (n : ℝ≥0∞) = {∞}ᶜ := by
   ext x
   rw [mem_iUnion]
-  exact ⟨fun ⟨n, hn⟩ => ne_top_of_lt hn, ENNReal.exists_nat_gt⟩
+  exact ⟨fun ⟨n, hn⟩ ↦ ne_top_of_lt hn, ENNReal.exists_nat_gt⟩
 
 @[simp]
 theorem iUnion_Iic_coe_nat : ⋃ n : ℕ, Iic (n : ℝ≥0∞) = {∞}ᶜ :=
-  Subset.antisymm (iUnion_subset fun n _x hx => ne_top_of_le_ne_top (natCast_ne_top n) hx) <|
-    iUnion_Iio_coe_nat ▸ iUnion_mono fun _ => Iio_subset_Iic_self
+  Subset.antisymm (iUnion_subset fun n _x hx ↦ ne_top_of_le_ne_top (natCast_ne_top n) hx) <|
+    iUnion_Iio_coe_nat ▸ iUnion_mono fun _ ↦ Iio_subset_Iic_self
 
 @[simp]
 theorem iUnion_Ioc_coe_nat : ⋃ n : ℕ, Ioc a n = Ioi a \ {∞} := by
@@ -716,7 +716,7 @@ theorem preimage_coe_nnreal_ennreal (h : u.OrdConnected) : ((↑) ⁻¹' u : Set
 
 -- TODO: generalize to `WithTop`
 theorem image_coe_nnreal_ennreal (h : t.OrdConnected) : ((↑) '' t : Set ℝ≥0∞).OrdConnected := by
-  refine ⟨forall_mem_image.2 fun x hx => forall_mem_image.2 fun y hy z hz => ?_⟩
+  refine ⟨forall_mem_image.2 fun x hx ↦ forall_mem_image.2 fun y hy z hz ↦ ?_⟩
   rcases ENNReal.le_coe_iff.1 hz.2 with ⟨z, rfl, -⟩
   exact mem_image_of_mem _ (h.out hx hy ⟨ENNReal.coe_le_coe.1 hz.1, ENNReal.coe_le_coe.1 hz.2⟩)
 

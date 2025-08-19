@@ -143,12 +143,12 @@ lemma isStrictlySupportedOutside₁_iff :
     K.IsStrictlySupportedOutside e₁ ↔ K.IsStrictlySupported e₂ := by
   constructor
   · intro h
-    exact ⟨fun i hi => by
+    exact ⟨fun i hi ↦ by
       obtain ⟨i₁, rfl⟩ := ac.exists_i₁ i hi
       exact h.isZero i₁⟩
   · intro _
-    exact ⟨fun i₁ => K.isZero_X_of_isStrictlySupported e₂ _
-      (fun i₂ => (ac.disjoint i₁ i₂).symm)⟩
+    exact ⟨fun i₁ ↦ K.isZero_X_of_isStrictlySupported e₂ _
+      (fun i₂ ↦ (ac.disjoint i₁ i₂).symm)⟩
 
 lemma isStrictlySupportedOutside₂_iff :
     K.IsStrictlySupportedOutside e₂ ↔ K.IsStrictlySupported e₁ :=
@@ -158,12 +158,12 @@ lemma isSupportedOutside₁_iff :
     K.IsSupportedOutside e₁ ↔ K.IsSupported e₂ := by
   constructor
   · intro h
-    exact ⟨fun i hi => by
+    exact ⟨fun i hi ↦ by
       obtain ⟨i₁, rfl⟩ := ac.exists_i₁ i hi
       exact h.exactAt i₁⟩
   · intro _
-    exact ⟨fun i₁ => K.exactAt_of_isSupported e₂ _
-      (fun i₂ => (ac.disjoint i₁ i₂).symm)⟩
+    exact ⟨fun i₁ ↦ K.exactAt_of_isSupported e₂ _
+      (fun i₂ ↦ (ac.disjoint i₁ i₂).symm)⟩
 
 lemma isSupportedOutside₂_iff :
     K.IsSupportedOutside e₂ ↔ K.IsSupported e₁ :=
@@ -205,10 +205,10 @@ variable {i₁ : ι₁} {i₂ : ι₂} (h : ac.Boundary i₁ i₂)
 include h
 
 lemma fst : e₁.BoundaryLE i₁ :=
-  e₁.boundaryLE h (fun _ => ac.disjoint _ _)
+  e₁.boundaryLE h (fun _ ↦ ac.disjoint _ _)
 
 lemma snd : e₂.BoundaryGE i₂ :=
-  e₂.boundaryGE h (fun _ => ac.symm.disjoint _ _)
+  e₂.boundaryGE h (fun _ ↦ ac.symm.disjoint _ _)
 
 end
 
@@ -226,14 +226,14 @@ lemma exists₁ {i₁ : ι₁} (h : e₁.BoundaryLE i₁) :
     ∃ i₂, ac.Boundary i₁ i₂ := by
   obtain ⟨h₁, h₂⟩ := h
   obtain ⟨i₂, hi₂⟩ := ac.exists_i₂ (c.next (e₁.f i₁))
-    (fun i₁' hi₁' => h₂ i₁' (by simpa only [← hi₁'] using h₁))
+    (fun i₁' hi₁' ↦ h₂ i₁' (by simpa only [← hi₁'] using h₁))
   exact ⟨i₂, by simpa only [hi₂] using h₁⟩
 
 lemma exists₂ {i₂ : ι₂} (h : e₂.BoundaryGE i₂) :
     ∃ i₁, ac.Boundary i₁ i₂ := by
   obtain ⟨h₁, h₂⟩ := h
   obtain ⟨i₁, hi₁⟩ := ac.exists_i₁ (c.prev (e₂.f i₂))
-    (fun i₂' hi₂' => h₂ i₂' (by simpa only [← hi₂'] using h₁))
+    (fun i₂' hi₂' ↦ h₂ i₂' (by simpa only [← hi₂'] using h₁))
   exact ⟨i₁, by simpa only [hi₁] using h₁⟩
 
 /-- If `ac : AreComplementary e₁ e₂` (with `e₁ : ComplexShape.Embedding c₁ c` and
@@ -257,14 +257,14 @@ lemma of_boundaryGE {i₂ : ι₂} (h : e₂.BoundaryGE i₂) :
 /-- The bijection `Subtype e₁.BoundaryLE ≃ Subtype e₂.BoundaryGE` when
 `e₁` and `e₂` are complementary embeddings of complex shapes. -/
 noncomputable def equiv : Subtype e₁.BoundaryLE ≃ Subtype e₂.BoundaryGE where
-  toFun := fun ⟨i₁, h⟩ => ⟨_, (of_boundaryLE ac h).snd⟩
-  invFun := fun ⟨i₂, h⟩ => ⟨_, (of_boundaryGE ac h).fst⟩
-  left_inv := fun ⟨i₁, h⟩ => by
+  toFun := fun ⟨i₁, h⟩ ↦ ⟨_, (of_boundaryLE ac h).snd⟩
+  invFun := fun ⟨i₂, h⟩ ↦ ⟨_, (of_boundaryGE ac h).fst⟩
+  left_inv := fun ⟨i₁, h⟩ ↦ by
     ext
     have h' := of_boundaryLE ac h
     have h'' := of_boundaryGE ac h'.snd
     exact fst_inj h'' h'
-  right_inv := fun ⟨i₂, h⟩ => by
+  right_inv := fun ⟨i₂, h⟩ ↦ by
     ext
     have h' := of_boundaryGE ac h
     have h'' := of_boundaryLE ac h'.fst
@@ -315,7 +315,7 @@ instance : QuasiIso (K.shortComplexTruncLEX₃ToTruncGE ac) where
     · have h₁ := ((ac.isSupportedOutside₁_iff (K.truncGE e₂)).2 inferInstance).exactAt i₁
       have h₂ := (K.shortComplexTruncLE_X₃_isSupportedOutside e₁).exactAt i₁
       simpa only [quasiIsoAt_iff_exactAt _ _ h₂] using h₁
-    · have := quasiIsoAt_shortComplexTruncLE_g K e₁ (e₂.f i₂) (fun _ => ac.disjoint _ _)
+    · have := quasiIsoAt_shortComplexTruncLE_g K e₁ (e₂.f i₂) (fun _ ↦ ac.disjoint _ _)
       rw [← quasiIsoAt_iff_comp_left (K.shortComplexTruncLE e₁).g
         (K.shortComplexTruncLEX₃ToTruncGE ac), g_shortComplexTruncLEX₃ToTruncGE]
       dsimp

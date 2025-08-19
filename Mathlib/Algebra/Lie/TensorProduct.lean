@@ -82,7 +82,7 @@ variable (R L M N P Q)
 tensor-hom adjunction is equivariant with respect to the `L` action. -/
 def lift : (M →ₗ[R] N →ₗ[R] P) ≃ₗ⁅R,L⁆ M ⊗[R] N →ₗ[R] P :=
   { TensorProduct.lift.equiv R M N P with
-    map_lie' := fun {x f} => by
+    map_lie' := fun {x f} ↦ by
       ext m n
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
         AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars,
@@ -116,7 +116,7 @@ variable {R L M N P Q}
 `M ⊗ N → P ⊗ Q`. -/
 nonrec def map (f : M →ₗ⁅R,L⁆ P) (g : N →ₗ⁅R,L⁆ Q) : M ⊗[R] N →ₗ⁅R,L⁆ P ⊗[R] Q :=
   { map (f : M →ₗ[R] P) (g : N →ₗ[R] Q) with
-    map_lie' := fun {x t} => by
+    map_lie' := fun {x t} ↦ by
       simp only [LinearMap.toFun_eq_coe]
       refine t.induction_on ?_ ?_ ?_
       · simp only [LinearMap.map_zero, lie_zero]
@@ -160,7 +160,7 @@ variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 def toModuleHom : L ⊗[R] M →ₗ⁅R,L⁆ M :=
   TensorProduct.LieModule.liftLie R L L M M
     { (toEnd R L M : L →ₗ[R] M →ₗ[R] M) with
-      map_lie' := fun {x m} => by ext n; simp [LieRing.of_associative_ring_bracket] }
+      map_lie' := fun {x m} ↦ by ext n; simp [LieRing.of_associative_ring_bracket] }
 
 @[simp]
 theorem toModuleHom_apply (x : L) (m : M) : toModuleHom R L M (x ⊗ₜ m) = ⁅x, m⁆ := by

@@ -57,9 +57,9 @@ lemma prod_uniq (F₁ F₂ : (W₁.Localization × W₂.Localization ⥤ E))
 noncomputable def prodLift₁ [W₂.ContainsIdentities]
     (hF : (W₁.prod W₂).IsInvertedBy F) :
     W₁.Localization ⥤ C₂ ⥤ E :=
-  Construction.lift (curry.obj F) (fun _ _ f₁ hf₁ => by
+  Construction.lift (curry.obj F) (fun _ _ f₁ hf₁ ↦ by
     haveI : ∀ (X₂ : C₂), IsIso (((curry.obj F).map f₁).app X₂) :=
-      fun X₂ => hF _ ⟨hf₁, MorphismProperty.id_mem _ _⟩
+      fun X₂ ↦ hF _ ⟨hf₁, MorphismProperty.id_mem _ _⟩
     apply NatIso.isIso_of_isIso_app)
 
 variable (hF : (W₁.prod W₂).IsInvertedBy F)
@@ -77,7 +77,7 @@ noncomputable def prodLift :
   refine uncurry.obj (Construction.lift (prodLift₁ F hF).flip ?_).flip
   intro _ _ f₂ hf₂
   haveI : ∀ (X₁ : W₁.Localization),
-      IsIso (((Functor.flip (prodLift₁ F hF)).map f₂).app X₁) := fun X₁ => by
+      IsIso (((Functor.flip (prodLift₁ F hF)).map f₂).app X₁) := fun X₁ ↦ by
     obtain ⟨X₁, rfl⟩ := (Construction.objEquiv W₁).surjective X₁
     exact ((MorphismProperty.isomorphisms E).arrow_mk_iso_iff
       (((Functor.mapArrowFunctor _ _).mapIso
@@ -102,8 +102,8 @@ property of the localized category of the product. -/
 noncomputable def prod :
     StrictUniversalPropertyFixedTarget (W₁.Q.prod W₂.Q) (W₁.prod W₂) E where
   inverts := (Localization.inverts W₁.Q W₁).prod (Localization.inverts W₂.Q W₂)
-  lift := fun F hF => prodLift F hF
-  fac := fun F hF => prod_fac F hF
+  lift := fun F hF ↦ prodLift F hF
+  fac := fun F hF ↦ prod_fac F hF
   uniq := prod_uniq
 
 end StrictUniversalPropertyFixedTarget

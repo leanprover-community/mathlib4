@@ -77,33 +77,33 @@ theorem colimitLimitToLimitColimit_injective :
     dsimp at x y
     -- Since the images of `x` and `y` are equal in a limit, they are equal componentwise
     -- (indexed by `j : J`),
-    replace h := fun j => congr_arg (limit.π (curry.obj F ⋙ colim) j) h
+    replace h := fun j ↦ congr_arg (limit.π (curry.obj F ⋙ colim) j) h
     -- and they are equations in a filtered colimit,
     -- so for each `j` we have some place `k j` to the right of both `kx` and `ky`
     simp? [colimit_eq_iff] at h says
       simp only [Functor.comp_obj, colim_obj, ι_colimitLimitToLimitColimit_π_apply,
         colimit_eq_iff, curry_obj_obj_obj, curry_obj_obj_map] at h
     let k j := (h j).choose
-    let f : ∀ j, kx ⟶ k j := fun j => (h j).choose_spec.choose
-    let g : ∀ j, ky ⟶ k j := fun j => (h j).choose_spec.choose_spec.choose
+    let f : ∀ j, kx ⟶ k j := fun j ↦ (h j).choose_spec.choose
+    let g : ∀ j, ky ⟶ k j := fun j ↦ (h j).choose_spec.choose_spec.choose
     -- where the images of the components of the representatives become equal:
     have w :
       ∀ j, F.map (𝟙 j ×ₘ f j) (limit.π ((curry.obj (swap K J ⋙ F)).obj kx) j x) =
           F.map (𝟙 j ×ₘ g j) (limit.π ((curry.obj (swap K J ⋙ F)).obj ky) j y) :=
-      fun j => (h j).choose_spec.choose_spec.choose_spec
+      fun j ↦ (h j).choose_spec.choose_spec.choose_spec
     -- We now use that `K` is filtered, picking some point to the right of all these
     -- morphisms `f j` and `g j`.
     let O : Finset K := Finset.univ.image k ∪ {kx, ky}
     have kxO : kx ∈ O := Finset.mem_union.mpr (Or.inr (by simp))
     have kyO : ky ∈ O := Finset.mem_union.mpr (Or.inr (by simp))
-    have kjO : ∀ j, k j ∈ O := fun j => Finset.mem_union.mpr (Or.inl (by simp))
+    have kjO : ∀ j, k j ∈ O := fun j ↦ Finset.mem_union.mpr (Or.inl (by simp))
     let H : Finset (Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) :=
-      (Finset.univ.image fun j : J =>
+      (Finset.univ.image fun j : J ↦
           ⟨kx, k j, kxO, Finset.mem_union.mpr (Or.inl (by simp)), f j⟩) ∪
-        Finset.univ.image fun j : J => ⟨ky, k j, kyO, Finset.mem_union.mpr (Or.inl (by simp)), g j⟩
+        Finset.univ.image fun j : J ↦ ⟨ky, k j, kyO, Finset.mem_union.mpr (Or.inl (by simp)), g j⟩
     obtain ⟨S, T, W⟩ := IsFiltered.sup_exists O H
     have fH : ∀ j, (⟨kx, k j, kxO, kjO j, f j⟩ : Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H :=
-      fun j =>
+      fun j ↦
       Finset.mem_union.mpr
         (Or.inl
           (by
@@ -113,7 +113,7 @@ theorem colimitLimitToLimitColimit_injective :
             simp only ))
     have gH :
       ∀ j, (⟨ky, k j, kyO, kjO j, g j⟩ : Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H :=
-      fun j =>
+      fun j ↦
       Finset.mem_union.mpr
         (Or.inr
           (by
@@ -160,24 +160,24 @@ theorem colimitLimitToLimitColimit_surjective :
     intro x
     -- This consists of some coherent family of elements in the various colimits,
     -- and so our first task is to pick representatives of these elements.
-    have z := fun j => jointly_surjective' (limit.π (curry.obj F ⋙ Limits.colim) j x)
+    have z := fun j ↦ jointly_surjective' (limit.π (curry.obj F ⋙ Limits.colim) j x)
     -- `k : J ⟶ K` records where the representative of the
     -- element in the `j`-th element of `x` lives
-    let k : J → K := fun j => (z j).choose
+    let k : J → K := fun j ↦ (z j).choose
     -- `y j : F.obj (j, k j)` is the representative
-    let y : ∀ j, F.obj (j, k j) := fun j => (z j).choose_spec.choose
+    let y : ∀ j, F.obj (j, k j) := fun j ↦ (z j).choose_spec.choose
     -- and we record that these representatives, when mapped back into the relevant colimits,
     -- are actually the components of `x`.
     have e : ∀ j,
         colimit.ι ((curry.obj F).obj j) (k j) (y j) = limit.π (curry.obj F ⋙ Limits.colim) j x :=
-      fun j => (z j).choose_spec.choose_spec
+      fun j ↦ (z j).choose_spec.choose_spec
     clear_value k y
     -- A little tidying up of things we no longer need.
     clear z
     -- As a first step, we use that `K` is filtered to pick some point `k' : K` above all the `k j`
     let k' : K := IsFiltered.sup (Finset.univ.image k) ∅
     -- and name the morphisms as `g j : k j ⟶ k'`.
-    have g : ∀ j, k j ⟶ k' := fun j => IsFiltered.toSup (Finset.univ.image k) ∅ (by simp)
+    have g : ∀ j, k j ⟶ k' := fun j ↦ IsFiltered.toSup (Finset.univ.image k) ∅ (by simp)
     clear_value k'
     -- Recalling that the components of `x`, which are indexed by `j : J`, are "coherent",
     -- in other words preserved by morphisms in the `J` direction,
@@ -197,14 +197,14 @@ theorem colimitLimitToLimitColimit_surjective :
     -- where these images of `y j` and `y j'` become equal.
     simp_rw [colimit_eq_iff] at w
     -- We take a moment to restate `w` more conveniently.
-    let kf : ∀ {j j'} (_ : j ⟶ j'), K := fun f => (w f).choose
-    let gf : ∀ {j j'} (f : j ⟶ j'), k' ⟶ kf f := fun f => (w f).choose_spec.choose
-    let hf : ∀ {j j'} (f : j ⟶ j'), k' ⟶ kf f := fun f =>
+    let kf : ∀ {j j'} (_ : j ⟶ j'), K := fun f ↦ (w f).choose
+    let gf : ∀ {j j'} (f : j ⟶ j'), k' ⟶ kf f := fun f ↦ (w f).choose_spec.choose
+    let hf : ∀ {j j'} (f : j ⟶ j'), k' ⟶ kf f := fun f ↦
       (w f).choose_spec.choose_spec.choose
     have wf :
       ∀ {j j'} (f : j ⟶ j'),
         F.map (𝟙 j' ×ₘ (g j' ≫ gf f)) (y j') = F.map (f ×ₘ (g j ≫ hf f)) (y j) :=
-      fun {j j'} f => by
+      fun {j j'} f ↦ by
       have q :
         ((curry.obj F).obj j').map (gf f) (F.map (𝟙 j' ×ₘ g j') (y j')) =
           ((curry.obj F).obj j').map (hf f) (F.map (f ×ₘ g j) (y j)) :=
@@ -220,9 +220,9 @@ theorem colimitLimitToLimitColimit_surjective :
     -- the morphisms `gf f : k' ⟶ kh f` and `hf f : k' ⟶ kf f`.
     -- At this point we're relying on there being only finitely morphisms in `J`.
     let O :=
-      (Finset.univ.biUnion fun j => Finset.univ.biUnion fun j' => Finset.univ.image
+      (Finset.univ.biUnion fun j ↦ Finset.univ.biUnion fun j' ↦ Finset.univ.image
         (@kf j j')) ∪ {k'}
-    have kfO : ∀ {j j'} (f : j ⟶ j'), kf f ∈ O := fun {j} {j'} f =>
+    have kfO : ∀ {j j'} (f : j ⟶ j'), kf f ∈ O := fun {j} {j'} f ↦
       Finset.mem_union.mpr
         (Or.inl
           (Finset.mem_biUnion.mpr ⟨j, Finset.mem_univ j,
@@ -230,14 +230,14 @@ theorem colimitLimitToLimitColimit_surjective :
               Finset.mem_image.mpr ⟨f, Finset.mem_univ _, rfl⟩⟩⟩))
     have k'O : k' ∈ O := Finset.mem_union.mpr (Or.inr (Finset.mem_singleton.mpr rfl))
     let H : Finset (Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) :=
-      Finset.univ.biUnion fun j : J =>
-        Finset.univ.biUnion fun j' : J =>
-          Finset.univ.biUnion fun f : j ⟶ j' =>
+      Finset.univ.biUnion fun j : J ↦
+        Finset.univ.biUnion fun j' : J ↦
+          Finset.univ.biUnion fun f : j ⟶ j' ↦
             {⟨k', kf f, k'O, kfO f, gf f⟩, ⟨k', kf f, k'O, kfO f, hf f⟩}
     obtain ⟨k'', i', s'⟩ := IsFiltered.sup_exists O H
     -- We then restate this slightly more conveniently, as a family of morphism `i f : kf f ⟶ k''`,
     -- satisfying `gf f ≫ i f = hf f' ≫ i f'`.
-    let i : ∀ {j j'} (f : j ⟶ j'), kf f ⟶ k'' := fun {j} {j'} f => i' (kfO f)
+    let i : ∀ {j j'} (f : j ⟶ j'), kf f ⟶ k'' := fun {j} {j'} f ↦ i' (kfO f)
     have s : ∀ {j₁ j₂ j₃ j₄} (f : j₁ ⟶ j₂) (f' : j₃ ⟶ j₄), gf f ≫ i f = hf f' ≫ i f' := by
       intros j₁ j₂ j₃ j₄ f f'
       rw [s', s']
@@ -275,7 +275,7 @@ theorem colimitLimitToLimitColimit_surjective :
       apply Limit.mk
       swap
       ·-- We construct the elements as the images of the `y j`.
-        exact fun j => F.map (𝟙 j ×ₘ (g j ≫ gf (𝟙 j) ≫ i (𝟙 j))) (y j)
+        exact fun j ↦ F.map (𝟙 j ×ₘ (g j ≫ gf (𝟙 j) ≫ i (𝟙 j))) (y j)
       · -- After which it's just a calculation, using `s` and `wf`, to see they are coherent.
         dsimp
         intro j j' f
@@ -327,7 +327,7 @@ noncomputable instance filtered_colim_preservesFiniteLimits_of_types :
     PreservesFiniteLimits (colim : (K ⥤ Type v) ⥤ _) := by
   apply preservesFiniteLimits_of_preservesFiniteLimitsOfSize.{v₂}
   intro J _ _
-  refine ⟨fun {F} => ⟨fun {c} hc => ⟨IsLimit.ofIsoLimit (limit.isLimit _) ?_⟩⟩⟩
+  refine ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨IsLimit.ofIsoLimit (limit.isLimit _) ?_⟩⟩⟩
   symm
   trans colim.mapCone (limit.cone F)
   · exact Functor.mapIso _ (hc.uniqueUpToIso (limit.isLimit F))

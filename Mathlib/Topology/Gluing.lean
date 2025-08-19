@@ -112,7 +112,7 @@ def Rel (a b : Σ i, ((D.U i : TopCat) : Type _)) : Prop :=
   ∃ x : D.V (a.1, b.1), D.f _ _ x = a.2 ∧ D.f _ _ (D.t _ _ x) = b.2
 
 theorem rel_equiv : Equivalence D.Rel :=
-  ⟨fun x => ⟨inv (D.f _ _) x.2, IsIso.inv_hom_id_apply (D.f x.fst x.fst) _,
+  ⟨fun x ↦ ⟨inv (D.f _ _) x.2, IsIso.inv_hom_id_apply (D.f x.fst x.fst) _,
     -- Use `elementwise_of%` elaborator instead of `IsIso.inv_hom_id_apply` to work around
     -- `ConcreteCategory`/`HasForget` mismatch:
     by simp [elementwise_of% IsIso.inv_hom_id (D.f x.fst x.fst)]⟩, by
@@ -265,7 +265,7 @@ theorem open_image_open (i : D.J) (U : Opens (𝖣.U i)) : IsOpen (𝖣.ι i '' 
   exact U.isOpen
 
 theorem ι_isOpenEmbedding (i : D.J) : IsOpenEmbedding (𝖣.ι i) :=
-  .of_continuous_injective_isOpenMap (𝖣.ι i).hom.continuous_toFun (D.ι_injective i) fun U h =>
+  .of_continuous_injective_isOpenMap (𝖣.ι i).hom.continuous_toFun (D.ι_injective i) fun U h ↦
     D.open_image_open i ⟨U, h⟩
 
 /-- A family of gluing data consists of
@@ -328,7 +328,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
   V i := (Opens.toTopCat _).obj (h.V i.1 i.2)
   f i j := (h.V i j).inclusion'
   f_id i := (h.V_id i).symm ▸ (Opens.inclusionTopIso (h.U i)).isIso_hom
-  f_open := fun i j : h.J => (h.V i j).isOpenEmbedding
+  f_open := fun i j : h.J ↦ (h.V i j).isOpenEmbedding
   t := h.t
   t_id i := by ext; rw [h.t_id]; rfl
   t' := h.t'
@@ -351,7 +351,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
     convert congr_arg Subtype.val (h.t_inv k i ⟨x, hx'⟩) using 3
     refine Subtype.ext ?_
     exact h.cocycle i j k ⟨x, hx⟩ hx'
-  f_mono _ _ := (TopCat.mono_iff_injective _).mpr fun _ _ h => Subtype.ext h
+  f_mono _ _ := (TopCat.mono_iff_injective _).mpr fun _ _ h ↦ Subtype.ext h
 
 variable {α : Type u} [TopologicalSpace α] {J : Type u} (U : J → Opens α)
 
@@ -360,20 +360,20 @@ variable {α : Type u} [TopologicalSpace α] {J : Type u} (U : J → Opens α)
 def ofOpenSubsets : TopCat.GlueData.{u} :=
   mk'.{u}
     { J
-      U := fun i => (Opens.toTopCat <| TopCat.of α).obj (U i)
-      V := fun _ j => (Opens.map <| Opens.inclusion' _).obj (U j)
-      t := fun i j => ofHom ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by fun_prop⟩
-      V_id := fun i => by ext; simp
-      t_id := fun i => by ext; rfl
-      t_inter := fun _ _ _ _ hx => hx
-      cocycle := fun _ _ _ _ _ => rfl }
+      U := fun i ↦ (Opens.toTopCat <| TopCat.of α).obj (U i)
+      V := fun _ j ↦ (Opens.map <| Opens.inclusion' _).obj (U j)
+      t := fun i j ↦ ofHom ⟨fun x ↦ ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by fun_prop⟩
+      V_id := fun i ↦ by ext; simp
+      t_id := fun i ↦ by ext; rfl
+      t_inter := fun _ _ _ _ hx ↦ hx
+      cocycle := fun _ _ _ _ _ ↦ rfl }
 
 /-- The canonical map from the glue of a family of open subsets `α` into `α`.
 This map is an open embedding (`fromOpenSubsetsGlue_isOpenEmbedding`),
 and its range is `⋃ i, (U i : Set α)` (`range_fromOpenSubsetsGlue`).
 -/
 def fromOpenSubsetsGlue : (ofOpenSubsets U).toGlueData.glued ⟶ TopCat.of α :=
-  Multicoequalizer.desc _ _ (fun _ => Opens.inclusion' _) (by rintro ⟨i, j⟩; ext x; rfl)
+  Multicoequalizer.desc _ _ (fun _ ↦ Opens.inclusion' _) (by rintro ⟨i, j⟩; ext x; rfl)
 
 @[simp, elementwise nosimp]
 theorem ι_fromOpenSubsetsGlue (i : J) :

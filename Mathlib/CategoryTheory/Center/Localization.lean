@@ -47,11 +47,11 @@ lemma ext_of_localization (r s : CatCenter D)
 
 lemma localization_one :
     (1 : CatCenter C).localization L W = 1 :=
-  ext_of_localization L W _ _ (fun X => by simp)
+  ext_of_localization L W _ _ (fun X ↦ by simp)
 
 lemma localization_mul :
     (r * s).localization L W = r.localization L W * s.localization L W :=
-  ext_of_localization L W _ _ (fun X => by simp)
+  ext_of_localization L W _ _ (fun X ↦ by simp)
 
 section Preadditive
 
@@ -59,11 +59,11 @@ variable [Preadditive C] [Preadditive D] [L.Additive]
 
 lemma localization_zero :
     (0 : CatCenter C).localization L W = 0 :=
-  ext_of_localization L W _ _ (fun X => by simp)
+  ext_of_localization L W _ _ (fun X ↦ by simp)
 
 lemma localization_add :
     (r + s).localization L W = r.localization L W + s.localization L W :=
-  ext_of_localization L W _ _ (fun X => by
+  ext_of_localization L W _ _ (fun X ↦ by
     rw [localization_app, NatTrans.app_add, NatTrans.app_add, L.map_add,
       localization_app, localization_app])
 

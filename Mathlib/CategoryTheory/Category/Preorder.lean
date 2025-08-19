@@ -47,7 +47,7 @@ instance (priority := 100) smallCategory (α : Type u) [Preorder α] : SmallCate
   comp f g := ⟨⟨le_trans _ _ _ f.down.down g.down.down⟩⟩
 
 instance subsingleton_hom {α : Type u} [Preorder α] (U V : α) : Subsingleton (U ⟶ V) :=
-  ⟨fun _ _ => ULift.ext _ _ (Subsingleton.elim _ _ )⟩
+  ⟨fun _ _ ↦ ULift.ext _ _ (Subsingleton.elim _ _ )⟩
 
 end Preorder
 
@@ -117,11 +117,11 @@ theorem le_of_op_hom {x y : Xᵒᵖ} (h : x ⟶ y) : unop y ≤ unop x :=
 
 instance uniqueToTop [OrderTop X] {x : X} : Unique (x ⟶ ⊤) where
   default := homOfLE le_top
-  uniq := fun a => by rfl
+  uniq := fun a ↦ by rfl
 
 instance uniqueFromBot [OrderBot X] {x : X} : Unique (⊥ ⟶ x) where
   default := homOfLE bot_le
-  uniq := fun a => by rfl
+  uniq := fun a ↦ by rfl
 
 variable (X) in
 /-- The equivalence of categories from the order dual of a preordered type `X`
@@ -129,11 +129,11 @@ to the opposite category of the preorder `X`. -/
 @[simps]
 def orderDualEquivalence : Xᵒᵈ ≌ Xᵒᵖ where
   functor :=
-    { obj := fun x => op (OrderDual.ofDual x)
-      map := fun f => (homOfLE (leOfHom f)).op }
+    { obj := fun x ↦ op (OrderDual.ofDual x)
+      map := fun f ↦ (homOfLE (leOfHom f)).op }
   inverse :=
-    { obj := fun x => OrderDual.toDual x.unop
-      map := fun f => (homOfLE (leOfHom f.unop)) }
+    { obj := fun x ↦ OrderDual.toDual x.unop
+      map := fun f ↦ (homOfLE (leOfHom f.unop)) }
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
@@ -176,7 +176,7 @@ namespace CategoryTheory.Functor
 
 /-- A functor between preorder categories is monotone. -/
 @[mono]
-theorem monotone (f : X ⥤ Y) : Monotone f.obj := fun _ _ hxy => (f.map hxy.hom).le
+theorem monotone (f : X ⥤ Y) : Monotone f.obj := fun _ _ hxy ↦ (f.map hxy.hom).le
 
 /-- A functor `X ⥤ Y` between preorder categories as an `OrderHom`. -/
 @[simps!]
@@ -234,9 +234,9 @@ def Equivalence.toOrderIso (e : X ≌ Y) : X ≃o Y where
   left_inv a := (e.unitIso.app a).to_eq.symm
   right_inv b := (e.counitIso.app b).to_eq
   map_rel_iff' {a a'} :=
-    ⟨fun h =>
+    ⟨fun h ↦
       ((Equivalence.unit e).app a ≫ e.inverse.map h.hom ≫ (Equivalence.unitInv e).app a').le,
-      fun h : a ≤ a' => (e.functor.map h.hom).le⟩
+      fun h : a ≤ a' ↦ (e.functor.map h.hom).le⟩
 
 -- `@[simps]` on `Equivalence.toOrderIso` produces lemmas that fail the `simpNF` linter,
 -- so we provide them by hand:

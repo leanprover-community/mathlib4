@@ -64,7 +64,7 @@ open Function
 namespace LinearOrderedAddCommGroup
 
 instance instNeg [AddCommGroup α] : Neg (WithTop α) where
-  neg := Option.map fun a : α => -a
+  neg := Option.map fun a : α ↦ -a
 
 /-- If `α` has subtraction, we can extend the subtraction to `WithTop α`, by
 setting `x - ⊤ = ⊤` and `⊤ - x = ⊤`. This definition is only registered as an instance on linearly

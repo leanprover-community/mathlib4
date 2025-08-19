@@ -462,7 +462,7 @@ theorem descPochhammer_smeval_add [Ring R] {r s : R} (k : ℕ) (h : Commute r s)
   | zero => simp
   | succ k ih =>
     rw [descPochhammer_succ_right, mul_comm, smeval_mul, sum_antidiagonal_choose_succ_mul
-      fun i j => ((descPochhammer ℤ i).smeval r * (descPochhammer ℤ j).smeval s),
+      fun i j ↦ ((descPochhammer ℤ i).smeval r * (descPochhammer ℤ j).smeval s),
       ← sum_add_distrib, smeval_sub, smeval_X, smeval_natCast, pow_zero, pow_one, ih, mul_sum]
     refine sum_congr rfl ?_
     intro ij hij -- try to move descPochhammers to right, gather multipliers.

@@ -93,7 +93,7 @@ theorem inf_orthogonal_eq_bot : K ⊓ Kᗮ = ⊥ := by
   rw [eq_bot_iff]
   intro x
   rw [mem_inf]
-  exact fun ⟨hx, ho⟩ => inner_self_eq_zero.1 (ho x hx)
+  exact fun ⟨hx, ho⟩ ↦ inner_self_eq_zero.1 (ho x hx)
 
 /-- `K` and `Kᗮ` have trivial intersection. -/
 theorem orthogonal_disjoint : Disjoint K Kᗮ := by simp [disjoint_iff, K.inf_orthogonal_eq_bot]
@@ -112,7 +112,7 @@ theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, LinearMap.ker (innerSL 𝕜 (v :
 /-- The orthogonal complement of any submodule `K` is closed. -/
 theorem isClosed_orthogonal : IsClosed (Kᗮ : Set E) := by
   rw [orthogonal_eq_inter K]
-  convert isClosed_iInter <| fun v : K => ContinuousLinearMap.isClosed_ker (innerSL 𝕜 (v : E))
+  convert isClosed_iInter <| fun v : K ↦ ContinuousLinearMap.isClosed_ker (innerSL 𝕜 (v : E))
   simp only [iInf_coe]
 
 /-- In a complete space, the orthogonal complement of any submodule `K` is complete. -/
@@ -124,8 +124,8 @@ variable (𝕜 E)
 /-- `orthogonal` gives a `GaloisConnection` between
 `Submodule 𝕜 E` and its `OrderDual`. -/
 theorem orthogonal_gc :
-    @GaloisConnection (Submodule 𝕜 E) (Submodule 𝕜 E)ᵒᵈ _ _ orthogonal orthogonal := fun _K₁ _K₂ =>
-  ⟨fun h _v hv _u hu => inner_left_of_mem_orthogonal hv (h hu), fun h _v hv _u hu =>
+    @GaloisConnection (Submodule 𝕜 E) (Submodule 𝕜 E)ᵒᵈ _ _ orthogonal orthogonal := fun _K₁ _K₂ ↦
+  ⟨fun h _v hv _u hu ↦ inner_left_of_mem_orthogonal hv (h hu), fun h _v hv _u hu ↦
     inner_left_of_mem_orthogonal hv (h hu)⟩
 
 variable {𝕜 E}
@@ -163,7 +163,7 @@ theorem top_orthogonal_eq_bot : (⊤ : Submodule 𝕜 E)ᗮ = ⊥ := by
   ext x
   rw [mem_bot, mem_orthogonal]
   exact
-    ⟨fun h => inner_self_eq_zero.mp (h x mem_top), by
+    ⟨fun h ↦ inner_self_eq_zero.mp (h x mem_top), by
       rintro rfl
       simp⟩
 
@@ -189,10 +189,10 @@ lemma orthogonal_closure (K : Submodule 𝕜 E) : K.topologicalClosureᗮ = Kᗮ
     fun x hx y hy ↦ closure_minimal hx (isClosed_eq (by fun_prop) (by fun_prop)) hy
 
 theorem orthogonalFamily_self :
-    OrthogonalFamily 𝕜 (fun b => ↥(cond b K Kᗮ)) fun b => (cond b K Kᗮ).subtypeₗᵢ
+    OrthogonalFamily 𝕜 (fun b ↦ ↥(cond b K Kᗮ)) fun b ↦ (cond b K Kᗮ).subtypeₗᵢ
   | true, true => absurd rfl
-  | true, false => fun _ x y => inner_right_of_mem_orthogonal x.prop y.prop
-  | false, true => fun _ x y => inner_left_of_mem_orthogonal y.prop x.prop
+  | true, false => fun _ x y ↦ inner_right_of_mem_orthogonal x.prop y.prop
+  | false, true => fun _ x y ↦ inner_left_of_mem_orthogonal y.prop x.prop
   | false, false => absurd rfl
 
 end Submodule
@@ -230,7 +230,7 @@ theorem IsOrtho.symm {U V : Submodule 𝕜 E} (h : U ⟂ V) : V ⟂ U :=
 theorem isOrtho_comm {U V : Submodule 𝕜 E} : U ⟂ V ↔ V ⟂ U :=
   ⟨IsOrtho.symm, IsOrtho.symm⟩
 
-theorem symmetric_isOrtho : Symmetric (IsOrtho : Submodule 𝕜 E → Submodule 𝕜 E → Prop) := fun _ _ =>
+theorem symmetric_isOrtho : Symmetric (IsOrtho : Submodule 𝕜 E → Submodule 𝕜 E → Prop) := fun _ _ ↦
   IsOrtho.symm
 
 theorem IsOrtho.inner_eq {U V : Submodule 𝕜 E} (h : U ⟂ V) {u v : E} (hu : u ∈ U) (hv : v ∈ V) :
@@ -238,7 +238,7 @@ theorem IsOrtho.inner_eq {U V : Submodule 𝕜 E} (h : U ⟂ V) {u v : E} (hu : 
   h.symm hv _ hu
 
 theorem isOrtho_iff_inner_eq {U V : Submodule 𝕜 E} : U ⟂ V ↔ ∀ u ∈ U, ∀ v ∈ V, ⟪u, v⟫ = 0 :=
-  forall₄_congr fun _u _hu _v _hv => inner_eq_zero_symm
+  forall₄_congr fun _u _hu _v _hv ↦ inner_eq_zero_symm
 
 /- TODO: generalize `Submodule.map₂` to semilinear maps, so that we can state
 `U ⟂ V ↔ Submodule.map₂ (innerₛₗ 𝕜) U V ≤ ⊥`. -/
@@ -262,7 +262,7 @@ theorem IsOrtho.mono {U₁ V₁ U₂ V₂ : Submodule 𝕜 E} (hU : U₂ ≤ U�
 
 @[simp]
 theorem isOrtho_self {U : Submodule 𝕜 E} : U ⟂ U ↔ U = ⊥ :=
-  ⟨fun h => eq_bot_iff.mpr fun x hx => inner_self_eq_zero.mp (h hx x hx), fun h =>
+  ⟨fun h ↦ eq_bot_iff.mpr fun x hx ↦ inner_self_eq_zero.mp (h hx x hx), fun h ↦
     h.symm ▸ isOrtho_bot_left⟩
 
 @[simp]
@@ -281,7 +281,7 @@ theorem IsOrtho.ge {U V : Submodule 𝕜 E} (h : U ⟂ V) : V ≤ Uᗮ :=
 
 @[simp]
 theorem isOrtho_top_right {U : Submodule 𝕜 E} : U ⟂ ⊤ ↔ U = ⊥ :=
-  ⟨fun h => eq_bot_iff.mpr fun _x hx => inner_self_eq_zero.mp (h hx _ mem_top), fun h =>
+  ⟨fun h ↦ eq_bot_iff.mpr fun _x hx ↦ inner_self_eq_zero.mp (h hx _ mem_top), fun h ↦
     h.symm ▸ isOrtho_bot_left⟩
 
 @[simp]
@@ -342,14 +342,14 @@ theorem IsOrtho.comap (f : E →ₗᵢ[𝕜] F) {U V : Submodule 𝕜 F} (h : U 
 
 @[simp]
 theorem IsOrtho.map_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 E} : U.map f ⟂ V.map f ↔ U ⟂ V :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     have hf : ∀ p : Submodule 𝕜 E, (p.map f).comap f.toLinearIsometry = p :=
       comap_map_eq_of_injective f.injective
     simpa only [hf] using h.comap f.toLinearIsometry, IsOrtho.map f.toLinearIsometry⟩
 
 @[simp]
 theorem IsOrtho.comap_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 F} : U.comap f ⟂ V.comap f ↔ U ⟂ V :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     have hf : ∀ p : Submodule 𝕜 F, (p.comap f).map f.toLinearIsometry = p :=
       map_comap_eq_of_surjective f.surjective
     simpa only [hf] using h.map f.toLinearIsometry, IsOrtho.comap f.toLinearIsometry⟩
@@ -358,16 +358,16 @@ end Submodule
 
 open scoped Function in -- required for scoped `on` notation
 theorem orthogonalFamily_iff_pairwise {ι} {V : ι → Submodule 𝕜 E} :
-    (OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) ↔ Pairwise ((· ⟂ ·) on V) :=
-  forall₃_congr fun _i _j _hij =>
+    (OrthogonalFamily 𝕜 (fun i ↦ V i) fun i ↦ (V i).subtypeₗᵢ) ↔ Pairwise ((· ⟂ ·) on V) :=
+  forall₃_congr fun _i _j _hij ↦
     Subtype.forall.trans <|
-      forall₂_congr fun _x _hx => Subtype.forall.trans <|
-        forall₂_congr fun _y _hy => inner_eq_zero_symm
+      forall₂_congr fun _x _hx ↦ Subtype.forall.trans <|
+        forall₂_congr fun _y _hy ↦ inner_eq_zero_symm
 
 alias ⟨OrthogonalFamily.pairwise, OrthogonalFamily.of_pairwise⟩ := orthogonalFamily_iff_pairwise
 
 /-- Two submodules in an orthogonal family with different indices are orthogonal. -/
 theorem OrthogonalFamily.isOrtho {ι} {V : ι → Submodule 𝕜 E}
-    (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) {i j : ι} (hij : i ≠ j) :
+    (hV : OrthogonalFamily 𝕜 (fun i ↦ V i) fun i ↦ (V i).subtypeₗᵢ) {i j : ι} (hij : i ≠ j) :
     V i ⟂ V j :=
   hV.pairwise hij

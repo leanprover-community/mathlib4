@@ -29,11 +29,11 @@ variable [Preorder α] [Preorder β] {s t : Set α} {x : α}
 
 /-- The greatest upper set containing a given set. -/
 def upperClosure (s : Set α) : UpperSet α :=
-  ⟨{ x | ∃ a ∈ s, a ≤ x }, fun _ _ hle h => h.imp fun _x hx => ⟨hx.1, hx.2.trans hle⟩⟩
+  ⟨{ x | ∃ a ∈ s, a ≤ x }, fun _ _ hle h ↦ h.imp fun _x hx ↦ ⟨hx.1, hx.2.trans hle⟩⟩
 
 /-- The least lower set containing a given set. -/
 def lowerClosure (s : Set α) : LowerSet α :=
-  ⟨{ x | ∃ a ∈ s, x ≤ a }, fun _ _ hle h => h.imp fun _x hx => ⟨hx.1, hle.trans hx.2⟩⟩
+  ⟨{ x | ∃ a ∈ s, x ≤ a }, fun _ _ hle h ↦ h.imp fun _x hx ↦ ⟨hx.1, hle.trans hx.2⟩⟩
 
 -- TODO: move `GaloisInsertion`s up, use them to prove lemmas
 
@@ -62,15 +62,15 @@ instance instDecidablePredMemUpperClosure [DecidablePred (∃ a ∈ s, a ≤ ·)
 instance instDecidablePredMemLowerClosure [DecidablePred (∃ a ∈ s, · ≤ a)] :
     DecidablePred (· ∈ lowerClosure s) := ‹DecidablePred _›
 
-theorem subset_upperClosure : s ⊆ upperClosure s := fun x hx => ⟨x, hx, le_rfl⟩
+theorem subset_upperClosure : s ⊆ upperClosure s := fun x hx ↦ ⟨x, hx, le_rfl⟩
 
-theorem subset_lowerClosure : s ⊆ lowerClosure s := fun x hx => ⟨x, hx, le_rfl⟩
+theorem subset_lowerClosure : s ⊆ lowerClosure s := fun x hx ↦ ⟨x, hx, le_rfl⟩
 
 theorem upperClosure_min (h : s ⊆ t) (ht : IsUpperSet t) : ↑(upperClosure s) ⊆ t :=
-  fun _a ⟨_b, hb, hba⟩ => ht hba <| h hb
+  fun _a ⟨_b, hb, hba⟩ ↦ ht hba <| h hb
 
 theorem lowerClosure_min (h : s ⊆ t) (ht : IsLowerSet t) : ↑(lowerClosure s) ⊆ t :=
-  fun _a ⟨_b, hb, hab⟩ => ht hab <| h hb
+  fun _a ⟨_b, hb, hab⟩ ↦ ht hab <| h hb
 
 protected theorem IsUpperSet.upperClosure (hs : IsUpperSet s) : ↑(upperClosure s) = s :=
   (upperClosure_min Subset.rfl hs).antisymm subset_upperClosure
@@ -128,14 +128,14 @@ theorem gc_lowerClosure_coe :
 /-- `upperClosure` forms a reversed Galois insertion with the coercion from upper sets to sets. -/
 def giUpperClosureCoe :
     GaloisInsertion (toDual ∘ upperClosure : Set α → (UpperSet α)ᵒᵈ) ((↑) ∘ ofDual) where
-  choice s hs := toDual (⟨s, fun a _b hab ha => hs ⟨a, ha, hab⟩⟩ : UpperSet α)
+  choice s hs := toDual (⟨s, fun a _b hab ha ↦ hs ⟨a, ha, hab⟩⟩ : UpperSet α)
   gc := gc_upperClosure_coe
   le_l_u _ := subset_upperClosure
   choice_eq _s hs := ofDual.injective <| SetLike.coe_injective <| subset_upperClosure.antisymm hs
 
 /-- `lowerClosure` forms a Galois insertion with the coercion from lower sets to sets. -/
 def giLowerClosureCoe : GaloisInsertion (lowerClosure : Set α → LowerSet α) (↑) where
-  choice s hs := ⟨s, fun a _b hba ha => hs ⟨a, ha, hba⟩⟩
+  choice s hs := ⟨s, fun a _b hba ha ↦ hs ⟨a, ha, hba⟩⟩
   gc := gc_lowerClosure_coe
   le_l_u _ := subset_lowerClosure
   choice_eq _s hs := SetLike.coe_injective <| subset_lowerClosure.antisymm hs
@@ -207,11 +207,11 @@ theorem lowerClosure_sUnion (S : Set (Set α)) : lowerClosure (⋃₀ S) = ⨆ s
 theorem Set.OrdConnected.upperClosure_inter_lowerClosure (h : s.OrdConnected) :
     ↑(upperClosure s) ∩ ↑(lowerClosure s) = s :=
   (subset_inter subset_upperClosure subset_lowerClosure).antisymm'
-    fun _a ⟨⟨_b, hb, hba⟩, _c, hc, hac⟩ => h.out hb hc ⟨hba, hac⟩
+    fun _a ⟨⟨_b, hb, hba⟩, _c, hc, hac⟩ ↦ h.out hb hc ⟨hba, hac⟩
 
 theorem ordConnected_iff_upperClosure_inter_lowerClosure :
     s.OrdConnected ↔ ↑(upperClosure s) ∩ ↑(lowerClosure s) = s := by
-  refine ⟨Set.OrdConnected.upperClosure_inter_lowerClosure, fun h => ?_⟩
+  refine ⟨Set.OrdConnected.upperClosure_inter_lowerClosure, fun h ↦ ?_⟩
   rw [← h]
   exact (UpperSet.upper _).ordConnected.inter (LowerSet.lower _).ordConnected
 

@@ -75,7 +75,7 @@ variable [PreservesLimitsOfShape J G] [HasLimitsOfShape J D] [HasLimitsOfShape J
 functorial wrt `F`. -/
 @[simps!]
 def preservesLimitNatIso : lim ⋙ G ≅ (Functor.whiskeringRight J C D).obj G ⋙ lim :=
-  NatIso.ofComponents (fun F => preservesLimitIso G F)
+  NatIso.ofComponents (fun F ↦ preservesLimitIso G F)
     (by
       intro _ _ f
       apply limit.hom_ext; intro j
@@ -142,7 +142,7 @@ variable [PreservesColimitsOfShape J G] [HasColimitsOfShape J D] [HasColimitsOfS
 is functorial wrt `F`. -/
 @[simps!]
 def preservesColimitNatIso : colim ⋙ G ≅ (Functor.whiskeringRight J C D).obj G ⋙ colim :=
-  NatIso.ofComponents (fun F => preservesColimitIso G F)
+  NatIso.ofComponents (fun F ↦ preservesColimitIso G F)
     (by
       intro _ _ f
       rw [← Iso.inv_comp_eq, ← Category.assoc, ← Iso.eq_comp_inv]

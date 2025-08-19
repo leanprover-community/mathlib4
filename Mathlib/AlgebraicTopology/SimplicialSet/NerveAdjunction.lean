@@ -86,9 +86,9 @@ def toNerve₂.mk.app (n : SimplexCategory.Truncated 2) :
   obtain ⟨n, hn⟩ := n
   induction' n using SimplexCategory.rec with n
   match n with
-  | 0 => exact fun x => .mk₀ (F.obj x)
-  | 1 => exact fun f => .mk₁ (F.map ⟨f, rfl, rfl⟩)
-  | 2 => exact fun φ => .mk₂ (F.map (ev01₂ φ)) (F.map (ev12₂ φ))
+  | 0 => exact fun x ↦ .mk₀ (F.obj x)
+  | 1 => exact fun f ↦ .mk₁ (F.map ⟨f, rfl, rfl⟩)
+  | 2 => exact fun φ ↦ .mk₂ (F.map (ev01₂ φ)) (F.map (ev12₂ φ))
 
 @[simp] theorem toNerve₂.mk.app_zero (x : X _⦋0⦌₂) : mk.app F ⦋0⦌₂ x = .mk₀ (F.obj x) := rfl
 
@@ -128,7 +128,7 @@ instance (C : Type u) [Category C] : Mono (nerve₂.seagull C) where
 /-- Naturality of the components defined by `toNerve₂.mk.app` as a morphism property of
 maps in `SimplexCategory.Truncated 2`. -/
 abbrev toNerve₂.mk.naturalityProperty : MorphismProperty (SimplexCategory.Truncated 2) :=
-  (MorphismProperty.naturalityProperty (fun n => toNerve₂.mk.app F n.unop)).unop
+  (MorphismProperty.naturalityProperty (fun n ↦ toNerve₂.mk.app F n.unop)).unop
 
 lemma ReflPrefunctor.congr_mk₁_map
     {Y : Type u'} [ReflQuiver.{v'} Y] {C : Type u} [Category.{v} C]
@@ -302,15 +302,15 @@ theorem toNerve₂.ext (F G : X ⟶ nerveFunctor₂.obj (Cat.of C))
   | 0 => apply eq₀
   | 1 => apply eq₁
   | 2 =>
-    apply Functor.hext (fun i : Fin 3 => ?_) (fun (i j : Fin 3) k => ?_)
+    apply Functor.hext (fun i : Fin 3 ↦ ?_) (fun (i j : Fin 3) k ↦ ?_)
     · let pt : ⦋0⦌₂ ⟶ ⦋2⦌₂ := SimplexCategory.const _ _ i
       refine congr(($(F.naturality pt.op) x).obj 0).symm.trans ?_
       refine .trans ?_ congr(($(G.naturality pt.op) x).obj 0)
       exact congr($(eq₀ _).obj 0)
     · let ar : ⦋1⦌₂ ⟶ ⦋2⦌₂ := mkOfLe _ _ k.le
-      have h1 := congr_arg_heq (fun x => x.map' 0 1) (congr_fun (F.naturality (op ar)) x)
-      have h2 := congr_arg_heq (fun x => x.map' 0 1) (congr_fun (G.naturality (op ar)) x)
-      exact h1.symm.trans <| .trans (congr_arg_heq (fun x => x.map' 0 1) (eq₁ _)) h2
+      have h1 := congr_arg_heq (fun x ↦ x.map' 0 1) (congr_fun (F.naturality (op ar)) x)
+      have h2 := congr_arg_heq (fun x ↦ x.map' 0 1) (congr_fun (G.naturality (op ar)) x)
+      exact h1.symm.trans <| .trans (congr_arg_heq (fun x ↦ x.map' 0 1) (eq₁ _)) h2
 
 /-- The components of the 2-truncated nerve adjunction unit. -/
 def nerve₂Adj.unit.app (X : SSet.Truncated.{u} 2) :

@@ -93,8 +93,8 @@ lemma quasiIsoAt_iff_exactAt' (f : K ⟶ L) (i : ι) [K.HasHomology i] [L.HasHom
 lemma exactAt_iff_of_quasiIsoAt (f : K ⟶ L) (i : ι)
     [K.HasHomology i] [L.HasHomology i] [QuasiIsoAt f i] :
     K.ExactAt i ↔ L.ExactAt i :=
-  ⟨fun hK => (quasiIsoAt_iff_exactAt f i hK).1 inferInstance,
-    fun hL => (quasiIsoAt_iff_exactAt' f i hL).1 inferInstance⟩
+  ⟨fun hK ↦ (quasiIsoAt_iff_exactAt f i hK).1 inferInstance,
+    fun hL ↦ (quasiIsoAt_iff_exactAt' f i hL).1 inferInstance⟩
 
 instance (f : K ⟶ L) (i : ι) [K.HasHomology i] [L.HasHomology i] [hf : QuasiIsoAt f i] :
     IsIso (homologyMap f i) := by
@@ -139,7 +139,7 @@ class QuasiIso (f : K ⟶ L) [∀ i, K.HasHomology i] [∀ i, L.HasHomology i] :
 
 lemma quasiIso_iff (f : K ⟶ L) [∀ i, K.HasHomology i] [∀ i, L.HasHomology i] :
     QuasiIso f ↔ ∀ i, QuasiIsoAt f i :=
-  ⟨fun h => h.quasiIsoAt, fun h => ⟨h⟩⟩
+  ⟨fun h ↦ h.quasiIsoAt, fun h ↦ ⟨h⟩⟩
 
 attribute [instance] QuasiIso.quasiIsoAt
 
@@ -289,7 +289,7 @@ variable (C c)
 
 /-- The morphism property on `HomologicalComplex C c` given by quasi-isomorphisms. -/
 def quasiIso [CategoryWithHomology C] :
-    MorphismProperty (HomologicalComplex C c) := fun _ _ f => QuasiIso f
+    MorphismProperty (HomologicalComplex C c) := fun _ _ f ↦ QuasiIso f
 
 variable {C c} [CategoryWithHomology C]
 

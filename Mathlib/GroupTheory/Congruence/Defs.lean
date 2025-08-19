@@ -151,7 +151,7 @@ theorem rel_mk {s : Setoid M} {h a b} : Con.mk s h a b ↔ r a b :=
   /-- Given a type `M` with an addition, `x, y ∈ M`, and an additive congruence relation
 `c` on `M`, `(x, y) ∈ M × M` iff `x` is related to `y` by `c`. -/]
 instance instMembershipProd : Membership (M × M) (Con M) :=
-  ⟨fun c x => c x.1 x.2⟩
+  ⟨fun c x ↦ c x.1 x.2⟩
 
 variable {c}
 
@@ -277,7 +277,7 @@ multiplication. -/
 @[to_additive /-- The addition induced on the quotient by an additive congruence relation on a type
 with an addition. -/]
 instance hasMul : Mul c.Quotient :=
-  ⟨Quotient.map₂ (· * ·) fun _ _ h1 _ _ h2 => c.mul h1 h2⟩
+  ⟨Quotient.map₂ (· * ·) fun _ _ h1 _ _ h2 ↦ c.mul h1 h2⟩
 
 variable {c}
 
@@ -314,18 +314,18 @@ theorem le_def {c d : Con M} : c ≤ d ↔ ∀ {x y}, c x y → d x y :=
 an addition. -/]
 instance : InfSet (Con M) where
   sInf S :=
-    { r := fun x y => ∀ c : Con M, c ∈ S → c x y
-      iseqv := ⟨fun x c _ => c.refl x, fun h c hc => c.symm <| h c hc,
-        fun h1 h2 c hc => c.trans (h1 c hc) <| h2 c hc⟩
-      mul' := fun h1 h2 c hc => c.mul (h1 c hc) <| h2 c hc }
+    { r := fun x y ↦ ∀ c : Con M, c ∈ S → c x y
+      iseqv := ⟨fun x c _ ↦ c.refl x, fun h c hc ↦ c.symm <| h c hc,
+        fun h1 h2 c hc ↦ c.trans (h1 c hc) <| h2 c hc⟩
+      mul' := fun h1 h2 c hc ↦ c.mul (h1 c hc) <| h2 c hc }
 
 /-- The infimum of a set of congruence relations is the same as the infimum of the set's image
 under the map to the underlying equivalence relation. -/
 @[to_additive /-- The infimum of a set of additive congruence relations is the same as the infimum
 of the set's image under the map to the underlying equivalence relation. -/]
 theorem sInf_toSetoid (S : Set (Con M)) : (sInf S).toSetoid = sInf (toSetoid '' S) :=
-  Setoid.ext fun x y =>
-    ⟨fun h r ⟨c, hS, hr⟩ => by rw [← hr]; exact h c hS, fun h c hS => h c.toSetoid ⟨c, hS, rfl⟩⟩
+  Setoid.ext fun x y ↦
+    ⟨fun h r ⟨c, hS, hr⟩ ↦ by rw [← hr]; exact h c hS, fun h c hS ↦ h c.toSetoid ⟨c, hS, rfl⟩⟩
 
 /-- The infimum of a set of congruence relations is the same as the infimum of the set's image
 under the map to the underlying binary relation. -/
@@ -346,24 +346,24 @@ theorem coe_iInf {ι : Sort*} (f : ι → Con M) : ⇑(iInf f) = ⨅ i, ⇑(f i)
 instance : PartialOrder (Con M) where
   le_refl _ _ _ := id
   le_trans _ _ _ h1 h2 _ _ h := h2 <| h1 h
-  le_antisymm _ _ hc hd := ext fun _ _ => ⟨fun h => hc h, fun h => hd h⟩
+  le_antisymm _ _ hc hd := ext fun _ _ ↦ ⟨fun h ↦ hc h, fun h ↦ hd h⟩
 
 /-- The complete lattice of congruence relations on a given type with a multiplication. -/
 @[to_additive /-- The complete lattice of additive congruence relations on a given type with
 an addition. -/]
 instance : CompleteLattice (Con M) where
-  __ := completeLatticeOfInf (Con M) fun s =>
-      ⟨fun r hr x y h => (h : ∀ r ∈ s, (r : Con M) x y) r hr, fun r hr x y h r' hr' =>
+  __ := completeLatticeOfInf (Con M) fun s ↦
+      ⟨fun r hr x y h ↦ (h : ∀ r ∈ s, (r : Con M) x y) r hr, fun r hr x y h r' hr' ↦
         hr hr'
           h⟩
-  inf c d := ⟨c.toSetoid ⊓ d.toSetoid, fun h1 h2 => ⟨c.mul h1.1 h2.1, d.mul h1.2 h2.2⟩⟩
-  inf_le_left _ _ := fun _ _ h => h.1
-  inf_le_right _ _ := fun _ _ h => h.2
-  le_inf  _ _ _ hb hc := fun _ _ h => ⟨hb h, hc h⟩
+  inf c d := ⟨c.toSetoid ⊓ d.toSetoid, fun h1 h2 ↦ ⟨c.mul h1.1 h2.1, d.mul h1.2 h2.2⟩⟩
+  inf_le_left _ _ := fun _ _ h ↦ h.1
+  inf_le_right _ _ := fun _ _ h ↦ h.2
+  le_inf  _ _ _ hb hc := fun _ _ h ↦ ⟨hb h, hc h⟩
   top := { Setoid.completeLattice.top with mul' := by tauto }
-  le_top _ := fun _ _ _ => trivial
-  bot := { Setoid.completeLattice.bot with mul' := fun h1 h2 => h1 ▸ h2 ▸ rfl }
-  bot_le c := fun x _ h => h ▸ c.refl x
+  le_top _ := fun _ _ _ ↦ trivial
+  bot := { Setoid.completeLattice.bot with mul' := fun h1 h2 ↦ h1 ▸ h2 ▸ rfl }
+  bot_le c := fun x _ h ↦ h ▸ c.refl x
 
 /-- The infimum of two congruence relations equals the infimum of the underlying binary
 operations. -/
@@ -385,14 +385,14 @@ containing a binary relation `r` equals the infimum of the set of additive congr
 containing `r`. -/]
 theorem conGen_eq (r : M → M → Prop) : conGen r = sInf { s : Con M | ∀ x y, r x y → s x y } :=
   le_antisymm
-    (le_sInf (fun s hs x y (hxy : (conGen r) x y) =>
+    (le_sInf (fun s hs x y (hxy : (conGen r) x y) ↦
       show s x y by
-        apply ConGen.Rel.recOn (motive := fun x y _ => s x y) hxy
-        · exact fun x y h => hs x y h
+        apply ConGen.Rel.recOn (motive := fun x y _ ↦ s x y) hxy
+        · exact fun x y h ↦ hs x y h
         · exact s.refl'
-        · exact fun _ => s.symm'
-        · exact fun _ _ => s.trans'
-        · exact fun _ _ => s.mul))
+        · exact fun _ ↦ s.symm'
+        · exact fun _ _ ↦ s.trans'
+        · exact fun _ _ ↦ s.mul))
     (sInf_le ConGen.Rel.of)
 
 /-- The smallest congruence relation containing a binary relation `r` is contained in any
@@ -408,13 +408,13 @@ containing `s` contains the smallest congruence relation containing `r`. -/
 smallest additive congruence relation containing `s` contains the smallest additive congruence
 relation containing `r`. -/]
 theorem conGen_mono {r s : M → M → Prop} (h : ∀ x y, r x y → s x y) : conGen r ≤ conGen s :=
-  conGen_le fun x y hr => ConGen.Rel.of _ _ <| h x y hr
+  conGen_le fun x y hr ↦ ConGen.Rel.of _ _ <| h x y hr
 
 /-- Congruence relations equal the smallest congruence relation in which they are contained. -/
 @[to_additive (attr := simp) addConGen_of_addCon /-- Additive congruence relations equal the
 smallest additive congruence relation in which they are contained. -/]
 theorem conGen_of_con (c : Con M) : conGen c = c :=
-  le_antisymm (by rw [conGen_eq]; exact sInf_le fun _ _ => id) ConGen.Rel.of
+  le_antisymm (by rw [conGen_eq]; exact sInf_le fun _ _ ↦ id) ConGen.Rel.of
 
 /-- The map sending a binary relation to the smallest congruence relation in which it is
 contained is idempotent. -/
@@ -427,7 +427,7 @@ the binary relation '`x` is related to `y` by `c` or `d`'. -/
 @[to_additive sup_eq_addConGen /-- The supremum of additive congruence relations `c, d` equals the
 smallest additive congruence relation containing the binary relation '`x` is related to `y`
 by `c` or `d`'. -/]
-theorem sup_eq_conGen (c d : Con M) : c ⊔ d = conGen fun x y => c x y ∨ d x y := by
+theorem sup_eq_conGen (c d : Con M) : c ⊔ d = conGen fun x y ↦ c x y ∨ d x y := by
   rw [conGen_eq]
   apply congr_arg sInf
   simp only [le_def, or_imp, ← forall_and]
@@ -444,11 +444,11 @@ containing the binary relation 'there exists `c ∈ S` such that `x` is related 
 equals the smallest additive congruence relation containing the binary relation 'there exists
 `c ∈ S` such that `x` is related to `y` by `c`'. -/]
 theorem sSup_eq_conGen (S : Set (Con M)) :
-    sSup S = conGen fun x y => ∃ c : Con M, c ∈ S ∧ c x y := by
+    sSup S = conGen fun x y ↦ ∃ c : Con M, c ∈ S ∧ c x y := by
   rw [conGen_eq]
   apply congr_arg sInf
   ext
-  exact ⟨fun h _ _ ⟨r, hr⟩ => h hr.1 hr.2, fun h r hS _ _ hr => h _ _ ⟨r, hS, hr⟩⟩
+  exact ⟨fun h _ _ ⟨r, hr⟩ ↦ h hr.1 hr.2, fun h r hS _ _ hr ↦ h _ _ ⟨r, hS, hr⟩⟩
 
 /-- The supremum of a set of congruence relations is the same as the smallest congruence relation
 containing the supremum of the set's image under the map to the underlying binary relation. -/
@@ -469,7 +469,7 @@ binary relations on `M`. -/
 an addition `M` into binary relations on `M`. -/]
 protected def gi : @GaloisInsertion (M → M → Prop) (Con M) _ _ conGen DFunLike.coe where
   choice r _ := conGen r
-  gc _ c := ⟨fun H _ _ h => H <| ConGen.Rel.of _ _ h, @fun H => conGen_of_con c ▸ conGen_mono H⟩
+  gc _ c := ⟨fun H _ _ h ↦ H <| ConGen.Rel.of _ _ h, @fun H ↦ conGen_of_con c ▸ conGen_mono H⟩
   le_l_u x := (conGen_of_con x).symm ▸ le_refl x
   choice_eq _ _ := rfl
 
@@ -484,7 +484,7 @@ an addition-preserving map `f : M → N` induces an additive congruence relation
 defined by '`x ≈ y` iff `f(x)` is related to `f(y)` by `c`.' -/]
 def comap (f : M → N) (H : ∀ x y, f (x * y) = f x * f y) (c : Con N) : Con M :=
   { c.toSetoid.comap f with
-    mul' := @fun w x y z h1 h2 => show c (f (w * y)) (f (x * z)) by rw [H, H]; exact c.mul h1 h2 }
+    mul' := @fun w x y z h1 h2 ↦ show c (f (w * y)) (f (x * z)) by rw [H, H]; exact c.mul h1 h2 }
 
 @[to_additive (attr := simp)]
 theorem comap_rel {f : M → N} (H : ∀ x y, f (x * y) = f x * f y) {c : Con N} {x y : M} :
@@ -508,8 +508,8 @@ variable [MulOneClass M] (c : Con M)
 an `AddMonoid`. -/]
 instance mulOneClass : MulOneClass c.Quotient where
   one := ((1 : M) : c.Quotient)
-  mul_one x := Quotient.inductionOn' x fun _ => congr_arg ((↑) : M → c.Quotient) <| mul_one _
-  one_mul x := Quotient.inductionOn' x fun _ => congr_arg ((↑) : M → c.Quotient) <| one_mul _
+  mul_one x := Quotient.inductionOn' x fun _ ↦ congr_arg ((↑) : M → c.Quotient) <| mul_one _
+  one_mul x := Quotient.inductionOn' x fun _ ↦ congr_arg ((↑) : M → c.Quotient) <| one_mul _
 
 variable {c}
 
@@ -548,36 +548,36 @@ instance one [MulOneClass M] (c : Con M) : One c.Quotient where
 
 instance _root_.AddCon.Quotient.nsmul {M : Type*} [AddMonoid M] (c : AddCon M) :
     SMul ℕ c.Quotient where
-  smul n := (Quotient.map' (n • ·)) fun _ _ => c.nsmul n
+  smul n := (Quotient.map' (n • ·)) fun _ _ ↦ c.nsmul n
 
 @[to_additive existing AddCon.Quotient.nsmul]
 instance {M : Type*} [Monoid M] (c : Con M) : Pow c.Quotient ℕ where
-  pow x n := Quotient.map' (fun x => x ^ n) (fun _ _ => c.pow n) x
+  pow x n := Quotient.map' (fun x ↦ x ^ n) (fun _ _ ↦ c.pow n) x
 
 /-- The quotient of a semigroup by a congruence relation is a semigroup. -/
 @[to_additive /-- The quotient of an `AddSemigroup` by an additive congruence relation is
 an `AddSemigroup`. -/]
 instance semigroup {M : Type*} [Semigroup M] (c : Con M) : Semigroup c.Quotient := fast_instance%
-  Function.Surjective.semigroup _ Quotient.mk''_surjective fun _ _ => rfl
+  Function.Surjective.semigroup _ Quotient.mk''_surjective fun _ _ ↦ rfl
 
 /-- The quotient of a commutative semigroup by a congruence relation is a semigroup. -/
 @[to_additive /-- The quotient of an `AddCommSemigroup` by an additive congruence relation is
 an `AddCommSemigroup`. -/]
 instance commSemigroup {M : Type*} [CommSemigroup M] (c : Con M) : CommSemigroup c.Quotient :=
-  Function.Surjective.commSemigroup _ Quotient.mk''_surjective fun _ _ => rfl
+  Function.Surjective.commSemigroup _ Quotient.mk''_surjective fun _ _ ↦ rfl
 
 /-- The quotient of a monoid by a congruence relation is a monoid. -/
 @[to_additive /-- The quotient of an `AddMonoid` by an additive congruence relation is
 an `AddMonoid`. -/]
 instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient := fast_instance%
-  Function.Surjective.monoid _ Quotient.mk''_surjective rfl (fun _ _ => rfl) fun _ _ => rfl
+  Function.Surjective.monoid _ Quotient.mk''_surjective rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 /-- The quotient of a `CommMonoid` by a congruence relation is a `CommMonoid`. -/
 @[to_additive /-- The quotient of an `AddCommMonoid` by an additive congruence
 relation is an `AddCommMonoid`. -/]
 instance commMonoid {M : Type*} [CommMonoid M] (c : Con M) : CommMonoid c.Quotient := fast_instance%
   fast_instance% Function.Surjective.commMonoid _ Quotient.mk''_surjective rfl
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 /-- Sometimes, a group is defined as a quotient of a monoid by a congruence relation.
 Usually, the inverse operation is defined as `Setoid.map f _` for some `f`.
@@ -610,11 +610,11 @@ variable [Group M] (c : Con M)
 /-- Multiplicative congruence relations preserve inversion. -/
 @[to_additive /-- Additive congruence relations preserve negation. -/]
 protected theorem inv {x y} (h : c x y) : c x⁻¹ y⁻¹ :=
-  c.map_of_mul_left_rel_one Inv.inv (fun x => by simp only [inv_mul_cancel, c.refl 1]) h
+  c.map_of_mul_left_rel_one Inv.inv (fun x ↦ by simp only [inv_mul_cancel, c.refl 1]) h
 
 /-- Multiplicative congruence relations preserve division. -/
 @[to_additive /-- Additive congruence relations preserve subtraction. -/]
-protected theorem div : ∀ {w x y z}, c w x → c y z → c (w / y) (x / z) := @fun w x y z h1 h2 => by
+protected theorem div : ∀ {w x y z}, c w x → c y z → c (w / y) (x / z) := @fun w x y z h1 h2 ↦ by
   simpa only [div_eq_mul_inv] using c.mul h1 (c.inv h2)
 
 /-- Multiplicative congruence relations preserve integer powers. -/
@@ -628,40 +628,40 @@ inversion. -/
 @[to_additive /-- The negation induced on the quotient by an additive congruence relation on a type
 with a negation. -/]
 instance hasInv : Inv c.Quotient :=
-  ⟨(Quotient.map' Inv.inv) fun _ _ => c.inv⟩
+  ⟨(Quotient.map' Inv.inv) fun _ _ ↦ c.inv⟩
 
 /-- The division induced on the quotient by a congruence relation on a type with a
 division. -/
 @[to_additive /-- The subtraction induced on the quotient by an additive congruence relation on a
 type with a subtraction. -/]
 instance hasDiv : Div c.Quotient :=
-  ⟨(Quotient.map₂ (· / ·)) fun _ _ h₁ _ _ h₂ => c.div h₁ h₂⟩
+  ⟨(Quotient.map₂ (· / ·)) fun _ _ h₁ _ _ h₂ ↦ c.div h₁ h₂⟩
 
 /-- The integer scaling induced on the quotient by a congruence relation on a type with a
 subtraction. -/
 instance _root_.AddCon.Quotient.zsmul {M : Type*} [AddGroup M] (c : AddCon M) :
     SMul ℤ c.Quotient :=
-  ⟨fun z => (Quotient.map' (z • ·)) fun _ _ => c.zsmul z⟩
+  ⟨fun z ↦ (Quotient.map' (z • ·)) fun _ _ ↦ c.zsmul z⟩
 
 /-- The integer power induced on the quotient by a congruence relation on a type with a
 division. -/
 @[to_additive existing AddCon.Quotient.zsmul]
 instance zpowinst : Pow c.Quotient ℤ :=
-  ⟨fun x z => Quotient.map' (fun x => x ^ z) (fun _ _ h => c.zpow z h) x⟩
+  ⟨fun x z ↦ Quotient.map' (fun x ↦ x ^ z) (fun _ _ h ↦ c.zpow z h) x⟩
 
 /-- The quotient of a group by a congruence relation is a group. -/
 @[to_additive /-- The quotient of an `AddGroup` by an additive congruence relation is
 an `AddGroup`. -/]
 instance group : Group c.Quotient := fast_instance%
   Function.Surjective.group Quotient.mk'' Quotient.mk''_surjective
-    rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 /-- The quotient of a `CommGroup` by a congruence relation is a `CommGroup`. -/
 @[to_additive /-- The quotient of an `AddCommGroup` by an additive congruence
 relation is an `AddCommGroup`. -/]
 instance commGroup {M : Type*} [CommGroup M] (c : Con M) : CommGroup c.Quotient := fast_instance%
-  Function.Surjective.commGroup _ Quotient.mk''_surjective rfl (fun _ _ => rfl) (fun _ => rfl)
-      (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+  Function.Surjective.commGroup _ Quotient.mk''_surjective rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+      (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 end Groups
 
@@ -678,11 +678,11 @@ def liftOnUnits (u : Units c.Quotient) (f : ∀ x y : M, c (x * y) 1 → c (y * 
     (Hf : ∀ x y hxy hyx x' y' hxy' hyx',
       c x x' → c y y' → f x y hxy hyx = f x' y' hxy' hyx') : α := by
   refine
-    Con.hrecOn₂ (cN := c) (φ := fun x y => x * y = 1 → y * x = 1 → α) (u : c.Quotient)
+    Con.hrecOn₂ (cN := c) (φ := fun x y ↦ x * y = 1 → y * x = 1 → α) (u : c.Quotient)
       (↑u⁻¹ : c.Quotient)
-      (fun (x y : M) (hxy : (x * y : c.Quotient) = 1) (hyx : (y * x : c.Quotient) = 1) =>
+      (fun (x y : M) (hxy : (x * y : c.Quotient) = 1) (hyx : (y * x : c.Quotient) = 1) ↦
         f x y (c.eq.1 hxy) (c.eq.1 hyx))
-      (fun x y x' y' hx hy => ?_) u.3 u.4
+      (fun x y x' y' hx hy ↦ ?_) u.3 u.4
   refine Function.hfunext ?_ ?_
   · rw [c.eq.2 hx, c.eq.2 hy]
   · rintro Hxy Hxy' -

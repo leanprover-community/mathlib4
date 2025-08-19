@@ -63,7 +63,7 @@ namespace LocallyRingedSpace
 variable (X : LocallyRingedSpace.{u})
 
 /-- The canonical map from the underlying set to the prime spectrum of `Γ(X)`. -/
-def toΓSpecFun : X → PrimeSpectrum (Γ.obj (op X)) := fun x =>
+def toΓSpecFun : X → PrimeSpectrum (Γ.obj (op X)) := fun x ↦
   comap (X.presheaf.Γgerm x).hom (IsLocalRing.closedPoint (X.presheaf.stalk x))
 
 theorem notMem_prime_iff_unit_in_stalk (r : Γ.obj (op X)) (x : X) :
@@ -299,7 +299,7 @@ theorem right_triangle (R : CommRingCat) :
   apply LocallyRingedSpace.comp_ring_hom_ext
   · ext (p : PrimeSpectrum R)
     dsimp
-    refine PrimeSpectrum.ext (Ideal.ext fun x => ?_)
+    refine PrimeSpectrum.ext (Ideal.ext fun x ↦ ?_)
     rw [← IsLocalization.AtPrime.to_map_mem_maximal_iff ((structureSheaf R).presheaf.stalk p)
         p.asIdeal x]
     rfl

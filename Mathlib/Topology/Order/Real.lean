@@ -36,7 +36,7 @@ instance : T5Space EReal := inferInstance
 instance : T2Space EReal := inferInstance
 
 lemma denseRange_ratCast : DenseRange (fun r : ℚ ↦ ((r : ℝ) : EReal)) :=
-  dense_of_exists_between fun _ _ h => exists_range_iff.2 <| exists_rat_btwn_of_lt h
+  dense_of_exists_between fun _ _ h ↦ exists_range_iff.2 <| exists_rat_btwn_of_lt h
 
 end EReal
 

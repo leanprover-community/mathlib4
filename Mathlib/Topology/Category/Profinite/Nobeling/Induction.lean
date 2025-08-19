@@ -113,7 +113,7 @@ variable (S : Profinite.{u})
 open scoped Classical in
 /-- The embedding `S → (I → Bool)` where `I` is the set of clopens of `S`. -/
 noncomputable
-def Nobeling.ι : S → ({C : Set S // IsClopen C} → Bool) := fun s C => decide (s ∈ C.1)
+def Nobeling.ι : S → ({C : Set S // IsClopen C} → Bool) := fun s C ↦ decide (s ∈ C.1)
 
 open scoped Classical in
 /-- The map `Nobeling.ι` is a closed embedding. -/

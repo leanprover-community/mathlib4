@@ -153,7 +153,7 @@ lemma height_le_iff' {a : α} {n : ℕ∞} :
     height a ≤ n ↔ ∀ ⦃p : LTSeries α⦄, p.last = a → p.length ≤ n := by
   constructor
   · rw [height_le_iff]
-    exact fun h p hlast => h (le_of_eq hlast)
+    exact fun h p hlast ↦ h (le_of_eq hlast)
   · exact height_le
 
 /--
@@ -256,7 +256,7 @@ lemma coheight_eq_index_of_length_eq_head_coheight {p : LTSeries α} (h : p.leng
   simpa using height_eq_index_of_length_eq_height_last (α := αᵒᵈ) (p := p.reverse) (by simpa) i.rev
 
 lemma height_mono : Monotone (α := α) height :=
-  fun _ _ hab ↦ biSup_mono (fun _ hla => hla.trans hab)
+  fun _ _ hab ↦ biSup_mono (fun _ hla ↦ hla.trans hab)
 
 @[gcongr] protected lemma _root_.GCongr.height_le_height (a b : α) (hab : a ≤ b) :
     height a ≤ height b := height_mono hab
@@ -472,7 +472,7 @@ lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
       apply LTSeries.strictMono
       simp [Fin.last]; omega
     · exact height_eq_index_of_length_eq_height_last (by simp [hlen, hp, hx]) ⟨n, by omega⟩
-  mpr := fun ⟨y, hyx, hy⟩ =>
+  mpr := fun ⟨y, hyx, hy⟩ ↦
     hy ▸ height_strictMono hyx (lt_of_le_of_lt (height_mono hyx.le) hfin)
 
 lemma coe_lt_coheight_iff {x : α} {n : ℕ} (hfin : coheight x < ⊤) :
@@ -520,7 +520,7 @@ lemma coheight_eq_coe_iff {x : α} {n : ℕ} :
 
 /-- The elements of finite height `n` are the minimal elements among those of height `≥ n`. -/
 lemma height_eq_coe_iff_minimal_le_height {a : α} {n : ℕ} :
-    height a = n ↔ Minimal (fun y => n ≤ height y) a := by
+    height a = n ↔ Minimal (fun y ↦ n ≤ height y) a := by
   by_cases hfin : height a < ⊤
   · cases hn : n with
     | zero => simp
@@ -535,7 +535,7 @@ lemma height_eq_coe_iff_minimal_le_height {a : α} {n : ℕ} :
 
 /-- The elements of finite coheight `n` are the maximal elements among those of coheight `≥ n`. -/
 lemma coheight_eq_coe_iff_maximal_le_coheight {a : α} {n : ℕ} :
-    coheight a = n ↔ Maximal (fun y => n ≤ coheight y) a :=
+    coheight a = n ↔ Maximal (fun y ↦ n ≤ coheight y) a :=
   height_eq_coe_iff_minimal_le_height (α := αᵒᵈ)
 
 lemma one_lt_height_iff {x : α} : 1 < Order.height x ↔ ∃ y z, z < y ∧ y < x := by
@@ -762,7 +762,7 @@ lemma krullDim_eq_iSup_height_of_nonempty [Nonempty α] : krullDim α = ↑(⨆ 
   apply le_antisymm
   · apply iSup_le
     intro p
-    suffices p.length ≤ ⨆ (a : α), height a from (WithBot.unbotD_le_iff fun _ => this).mp this
+    suffices p.length ≤ ⨆ (a : α), height a from (WithBot.unbotD_le_iff fun _ ↦ this).mp this
     apply le_iSup_of_le p.last (length_le_height_last (p := p))
   · rw [WithBot.coe_iSup (by bddDefault)]
     apply iSup_le
@@ -834,7 +834,7 @@ lemma height_top_eq_krullDim [OrderTop α] : height (⊤ : α) = krullDim α := 
   simp only [WithBot.coe_inj]
   apply le_antisymm
   · exact height_le fun p _ ↦ le_iSup_of_le p le_rfl
-  · exact iSup_le fun _ => length_le_height le_top
+  · exact iSup_le fun _ ↦ length_le_height le_top
 
 @[simp] -- not as useful as a simp lemma as it looks, due to the coe on the left
 lemma coheight_bot_eq_krullDim [OrderBot α] : coheight (⊥ : α) = krullDim α := by
@@ -938,7 +938,7 @@ proof_wanted coheight_of_linearOrder {α : Type*} [LinearOrder α] (a : α) :
   obtain ⟨f, hstrictmono⟩ := Nat.exists_strictMono ↑(Set.Ioi a)
   apply coheight_eq_top_iff.mpr
   intro m
-  use {length := m, toFun := fun i => if i = 0 then a else f i, step := ?step }
+  use {length := m, toFun := fun i ↦ if i = 0 then a else f i, step := ?step }
   case h => simp [RelSeries.head]
   case step =>
     intro ⟨i, hi⟩
@@ -978,11 +978,11 @@ lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
     -- essentially p' := (p.drop 1).map unbot
     let p' : LTSeries α := {
       length := p.length - 1
-      toFun := fun ⟨i, hi⟩ => (p ⟨i+1, by omega⟩).unbot (by
+      toFun := fun ⟨i, hi⟩ ↦ (p ⟨i+1, by omega⟩).unbot (by
         apply ne_bot_of_gt (a := p.head)
         apply p.strictMono
         exact compare_gt_iff_gt.mp rfl)
-      step := fun i => by simpa [WithBot.unbot_lt_iff] using p.step ⟨i + 1, by omega⟩ }
+      step := fun i ↦ by simpa [WithBot.unbot_lt_iff] using p.step ⟨i + 1, by omega⟩ }
     have hlast' : p'.last = x := by
       simp only [p', RelSeries.last, WithBot.unbot_eq_iff, ← hlast, Fin.last]
       congr
@@ -1006,13 +1006,13 @@ lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
     -- essentially p' := p.map untop
     let p' : LTSeries α := {
       length := p.length
-      toFun := fun i => (p i).untop (by
+      toFun := fun i ↦ (p i).untop (by
         apply WithTop.lt_top_iff_ne_top.mp
         apply lt_of_le_of_lt
         · exact p.monotone (Fin.le_last _)
         · rw [RelSeries.last] at hlast
           simp [hlast])
-      step := fun i => by simpa [WithTop.untop_lt_iff, WithTop.coe_untop] using p.step i }
+      step := fun i ↦ by simpa [WithTop.untop_lt_iff, WithTop.coe_untop] using p.step i }
     have hlast' : p'.last = x := by
       simp only [p', RelSeries.last, WithTop.untop_eq_iff, ← hlast]
     suffices p'.length ≤ height p'.last by

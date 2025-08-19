@@ -43,8 +43,8 @@ variable [F.PreservesFiniteEffectiveEpiFamilies] [F.ReflectsFiniteEffectiveEpiFa
 instance : F.IsCoverDense (coherentTopology _) := by
   refine F.isCoverDense_of_generate_singleton_functor_π_mem _ fun B ↦ ⟨_, F.effectiveEpiOver B, ?_⟩
   apply Coverage.Saturate.of
-  refine ⟨Unit, inferInstance, fun _ => F.effectiveEpiOverObj B,
-    fun _ => F.effectiveEpiOver B, ?_ , ?_⟩
+  refine ⟨Unit, inferInstance, fun _ ↦ F.effectiveEpiOverObj B,
+    fun _ ↦ F.effectiveEpiOver B, ?_ , ?_⟩
   · funext; ext -- Do we want `Presieve.ext`?
     refine ⟨fun ⟨⟩ ↦ ⟨()⟩, ?_⟩
     rintro ⟨⟩
@@ -58,9 +58,9 @@ theorem exists_effectiveEpiFamily_iff_mem_induced (X : C) (S : Sieve X) :
     (S ∈ F.inducedTopology (coherentTopology _) X) := by
   refine ⟨fun ⟨α, _, Y, π, ⟨H₁, H₂⟩⟩ ↦ ?_, fun hS ↦ ?_⟩
   · apply (mem_sieves_iff_hasEffectiveEpiFamily (Sieve.functorPushforward _ S)).mpr
-    refine ⟨α, inferInstance, fun i => F.obj (Y i),
-      fun i => F.map (π i), ⟨?_,
-      fun a => Sieve.image_mem_functorPushforward F S (H₂ a)⟩⟩
+    refine ⟨α, inferInstance, fun i ↦ F.obj (Y i),
+      fun i ↦ F.map (π i), ⟨?_,
+      fun a ↦ Sieve.image_mem_functorPushforward F S (H₂ a)⟩⟩
     exact F.map_finite_effectiveEpiFamily _ _
   · obtain ⟨α, _, Y, π, ⟨H₁, H₂⟩⟩ := (mem_sieves_iff_hasEffectiveEpiFamily _).mp hS
     refine ⟨α, inferInstance, ?_⟩

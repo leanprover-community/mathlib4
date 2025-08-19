@@ -178,7 +178,7 @@ category. -/
 @[simps! hom_app_obj hom_app_map inv_app_obj_obj inv_app_obj_map inv_app_map]
 def OneTruncation₂.ofNerve₂.natIso :
     nerveFunctor₂.{u,u} ⋙ SSet.oneTruncation₂ ≅ ReflQuiv.forget :=
-  NatIso.ofComponents (fun C => OneTruncation₂.ofNerve₂ C) (by
+  NatIso.ofComponents (fun C ↦ OneTruncation₂.ofNerve₂ C) (by
   · intro C D F
     fapply ReflPrefunctor.ext <;> simp
     · exact fun _ ↦ rfl

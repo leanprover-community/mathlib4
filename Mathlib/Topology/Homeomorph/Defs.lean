@@ -233,7 +233,7 @@ theorem isOpen_preimage (h : X ≃ₜ Y) {s : Set Y} : IsOpen (h ⁻¹' s) ↔ I
 theorem isOpen_image (h : X ≃ₜ Y) {s : Set X} : IsOpen (h '' s) ↔ IsOpen s := by
   rw [← preimage_symm, isOpen_preimage]
 
-protected theorem isOpenMap (h : X ≃ₜ Y) : IsOpenMap h := fun _ => h.isOpen_image.2
+protected theorem isOpenMap (h : X ≃ₜ Y) : IsOpenMap h := fun _ ↦ h.isOpen_image.2
 
 protected theorem isOpenQuotientMap (h : X ≃ₜ Y) : IsOpenQuotientMap h :=
   ⟨h.surjective, h.continuous, h.isOpenMap⟩
@@ -246,7 +246,7 @@ theorem isClosed_preimage (h : X ≃ₜ Y) {s : Set Y} : IsClosed (h ⁻¹' s) �
 theorem isClosed_image (h : X ≃ₜ Y) {s : Set X} : IsClosed (h '' s) ↔ IsClosed s := by
   rw [← preimage_symm, isClosed_preimage]
 
-protected theorem isClosedMap (h : X ≃ₜ Y) : IsClosedMap h := fun _ => h.isClosed_image.2
+protected theorem isClosedMap (h : X ≃ₜ Y) : IsClosedMap h := fun _ ↦ h.isClosed_image.2
 
 theorem isOpenEmbedding (h : X ≃ₜ Y) : IsOpenEmbedding h :=
   .of_isEmbedding_isOpenMap h.isEmbedding h.isOpenMap
@@ -290,14 +290,14 @@ theorem comp_continuousAt_iff' (h : X ≃ₜ Y) (f : Y → Z) (x : X) :
 
 @[simp]
 theorem comp_isOpenMap_iff (h : X ≃ₜ Y) {f : Z → X} : IsOpenMap (h ∘ f) ↔ IsOpenMap f := by
-  refine ⟨?_, fun hf => h.isOpenMap.comp hf⟩
+  refine ⟨?_, fun hf ↦ h.isOpenMap.comp hf⟩
   intro hf
   rw [← Function.id_comp f, ← h.symm_comp_self, Function.comp_assoc]
   exact h.symm.isOpenMap.comp hf
 
 @[simp]
 theorem comp_isOpenMap_iff' (h : X ≃ₜ Y) {f : Y → Z} : IsOpenMap (f ∘ h) ↔ IsOpenMap f := by
-  refine ⟨?_, fun hf => hf.comp h.isOpenMap⟩
+  refine ⟨?_, fun hf ↦ hf.comp h.isOpenMap⟩
   intro hf
   rw [← Function.comp_id f, ← h.self_comp_symm, ← Function.comp_assoc]
   exact hf.comp h.symm.isOpenMap

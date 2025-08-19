@@ -87,10 +87,10 @@ def ι : F.obj ⟨op S⟩ ⥤ ∫ F where
 /-- The natural isomorphism encoding `comp_const`. -/
 @[simps!]
 def compIso : (ι F S) ⋙ forget F ≅ (const (F.obj ⟨op S⟩)).obj S :=
-  NatIso.ofComponents (fun a => eqToIso rfl)
+  NatIso.ofComponents (fun a ↦ eqToIso rfl)
 
 lemma comp_const : (ι F S) ⋙ forget F = (const (F.obj ⟨op S⟩)).obj S :=
-  Functor.ext_of_iso (compIso F S) (fun _ ↦ rfl) (fun _ => rfl)
+  Functor.ext_of_iso (compIso F S) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 noncomputable instance : (Fiber.inducedFunctor (comp_const F S)).Full where
   map_surjective {X Y} f := by

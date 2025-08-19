@@ -114,7 +114,7 @@ theorem id_f {P : Karoubi C} : Hom.f (𝟙 P) = P.p := rfl
 /-- It is possible to coerce an object of `C` into an object of `Karoubi C`.
 See also the functor `toKaroubi`. -/
 instance coe : CoeTC C (Karoubi C) :=
-  ⟨fun X => ⟨X, 𝟙 X, by rw [comp_id]⟩⟩
+  ⟨fun X ↦ ⟨X, 𝟙 X, by rw [comp_id]⟩⟩
 
 theorem coe_X (X : C) : (X : Karoubi C).X = X := by simp
 
@@ -139,7 +139,7 @@ def toKaroubi : C ⥤ Karoubi C where
 instance : (toKaroubi C).Full where map_surjective f := ⟨f.f, rfl⟩
 
 instance : (toKaroubi C).Faithful where
-  map_injective := fun h => congr_arg Karoubi.Hom.f h
+  map_injective := fun h ↦ congr_arg Karoubi.Hom.f h
 
 variable {C}
 
@@ -213,7 +213,7 @@ instance : IsIdempotentComplete (Karoubi C) := by
   simp [hp]
 
 instance [IsIdempotentComplete C] : (toKaroubi C).EssSurj :=
-  ⟨fun P => by
+  ⟨fun P ↦ by
     rcases IsIdempotentComplete.idempotents_split P.X P.p P.idem with ⟨Y, i, e, ⟨h₁, h₂⟩⟩
     use Y
     exact

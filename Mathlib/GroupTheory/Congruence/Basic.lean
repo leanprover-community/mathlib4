@@ -51,13 +51,13 @@ by `c` and `x₂` is related to `y₂` by `d`. -/
 is related to `y₁` by `c` and `x₂` is related to `y₂` by `d`. -/]
 protected def prod (c : Con M) (d : Con N) : Con (M × N) :=
   { c.toSetoid.prod d.toSetoid with
-    mul' := fun h1 h2 => ⟨c.mul h1.1 h2.1, d.mul h1.2 h2.2⟩ }
+    mul' := fun h1 h2 ↦ ⟨c.mul h1.1 h2.1, d.mul h1.2 h2.2⟩ }
 
 /-- The product of an indexed collection of congruence relations. -/
 @[to_additive /-- The product of an indexed collection of additive congruence relations. -/]
 def pi {ι : Type*} {f : ι → Type*} [∀ i, Mul (f i)] (C : ∀ i, Con (f i)) : Con (∀ i, f i) :=
-  { @piSetoid _ _ fun i => (C i).toSetoid with
-    mul' := fun h1 h2 i => (C i).mul (h1 i) (h2 i) }
+  { @piSetoid _ _ fun i ↦ (C i).toSetoid with
+    mul' := fun h1 h2 i ↦ (C i).mul (h1 i) (h2 i) }
 
 /-- Makes an isomorphism of quotients by two congruence relations, given that the relations are
 equal. -/
@@ -65,7 +65,7 @@ equal. -/
 given that the relations are equal. -/]
 protected def congr {c d : Con M} (h : c = d) : c.Quotient ≃* d.Quotient :=
   { Quotient.congr (Equiv.refl M) <| by apply Con.ext_iff.mp h with
-    map_mul' := fun x y => by rcases x with ⟨⟩; rcases y with ⟨⟩; rfl }
+    map_mul' := fun x y ↦ by rcases x with ⟨⟩; rcases y with ⟨⟩; rfl }
 
 @[to_additive (attr := simp)]
 theorem congr_mk {c d : Con M} (h : c = d) (a : M) :
@@ -140,7 +140,7 @@ variable {c}
 is an equivalence relation. -/
 @[to_additive /-- The additive congruence relation on an `AddMonoid` `M` from
 an `AddSubmonoid` of `M × M` for which membership is an equivalence relation. -/]
-def ofSubmonoid (N : Submonoid (M × M)) (H : Equivalence fun x y => (x, y) ∈ N) : Con M where
+def ofSubmonoid (N : Submonoid (M × M)) (H : Equivalence fun x y ↦ (x, y) ∈ N) : Con M where
   r x y := (x, y) ∈ N
   iseqv := H
   mul' := N.mul_mem
@@ -151,7 +151,7 @@ elements are `(x, y)` such that `x` is related to `y` by `c`. -/
 to the `AddSubmonoid` of `M × M` whose elements are `(x, y)` such that `x`
 is related to `y` by `c`. -/]
 instance toSubmonoid : Coe (Con M) (Submonoid (M × M)) :=
-  ⟨fun c => c.submonoid⟩
+  ⟨fun c ↦ c.submonoid⟩
 
 @[to_additive]
 theorem mem_coe {c : Con M} {x y} : (x, y) ∈ (↑c : Submonoid (M × M)) ↔ (x, y) ∈ c :=
@@ -159,11 +159,11 @@ theorem mem_coe {c : Con M} {x y} : (x, y) ∈ (↑c : Submonoid (M × M)) ↔ (
 
 @[to_additive]
 theorem to_submonoid_inj (c d : Con M) (H : (c : Submonoid (M × M)) = d) : c = d :=
-  ext fun x y => show (x, y) ∈ c.submonoid ↔ (x, y) ∈ d from H ▸ Iff.rfl
+  ext fun x y ↦ show (x, y) ∈ c.submonoid ↔ (x, y) ∈ d from H ▸ Iff.rfl
 
 @[to_additive]
 theorem le_iff {c d : Con M} : c ≤ d ↔ (c : Submonoid (M × M)) ≤ d :=
-  ⟨fun h _ H => h H, fun h x y hc => h <| show (x, y) ∈ c from hc⟩
+  ⟨fun h _ H ↦ h H, fun h x y hc ↦ h <| show (x, y) ∈ c from hc⟩
 
 variable (x y : M)
 
@@ -181,14 +181,14 @@ quotient. -/
 constant on `c`'s equivalence classes, `f` has the same image as the homomorphism that `f` induces
 on the quotient. -/]
 theorem lift_range (H : c ≤ ker f) : MonoidHom.mrange (c.lift f H) = MonoidHom.mrange f :=
-  Submonoid.ext fun x => ⟨by rintro ⟨⟨y⟩, hy⟩; exact ⟨y, hy⟩, fun ⟨y, hy⟩ => ⟨↑y, hy⟩⟩
+  Submonoid.ext fun x ↦ ⟨by rintro ⟨⟨y⟩, hy⟩; exact ⟨y, hy⟩, fun ⟨y, hy⟩ ↦ ⟨↑y, hy⟩⟩
 
 /-- Given a monoid homomorphism `f`, the induced homomorphism on the quotient by `f`'s kernel has
 the same image as `f`. -/
 @[to_additive (attr := simp) /-- Given an `AddMonoid` homomorphism `f`, the induced homomorphism
 on the quotient by `f`'s kernel has the same image as `f`. -/]
 theorem kerLift_range_eq : MonoidHom.mrange (kerLift f) = MonoidHom.mrange f :=
-  lift_range fun _ _ => id
+  lift_range fun _ _ ↦ id
 
 variable (c)
 
@@ -201,9 +201,9 @@ noncomputable def quotientKerEquivRange (f : M →* P) : (ker f).Quotient ≃* M
           (kerLift f).mrangeRestrict) <|
       ((Equiv.bijective (@MulEquiv.toEquiv (MonoidHom.mrange (kerLift f)) _ _ _ <|
           MulEquiv.submonoidCongr kerLift_range_eq)).comp
-        ⟨fun x y h =>
+        ⟨fun x y h ↦
           kerLift_injective f <| by rcases x with ⟨⟩; rcases y with ⟨⟩; injections,
-          fun ⟨w, z, hz⟩ => ⟨z, by rcases hz with ⟨⟩; rfl⟩⟩) with
+          fun ⟨w, z, hz⟩ ↦ ⟨z, by rcases hz with ⟨⟩; rfl⟩⟩) with
     map_mul' := MonoidHom.map_mul _ }
 
 /-- The first isomorphism theorem for monoids in the case of a homomorphism with right inverse. -/
@@ -215,8 +215,8 @@ def quotientKerEquivOfRightInverse (f : M →* P) (g : P → M) (hf : Function.R
   { kerLift f with
     toFun := kerLift f
     invFun := (↑) ∘ g
-    left_inv := fun x => kerLift_injective _ (by rw [Function.comp_apply, kerLift_mk, hf])
-    right_inv := fun x => by (conv_rhs => rw [← hf x]); rfl }
+    left_inv := fun x ↦ kerLift_injective _ (by rw [Function.comp_apply, kerLift_mk, hf])
+    right_inv := fun x ↦ by (conv_rhs => rw [← hf x]); rfl }
 
 /-- The first isomorphism theorem for Monoids in the case of a surjective homomorphism.
 
@@ -266,9 +266,9 @@ noncomputable def comapQuotientEquiv (f : N →* M) :
 def quotientQuotientEquivQuotient (c d : Con M) (h : c ≤ d) :
     (ker (c.map d h)).Quotient ≃* d.Quotient :=
   { Setoid.quotientQuotientEquivQuotient c.toSetoid d.toSetoid h with
-    map_mul' := fun x y =>
-      Con.induction_on₂ x y fun w z =>
-        Con.induction_on₂ w z fun a b =>
+    map_mul' := fun x y ↦
+      Con.induction_on₂ x y fun w z ↦
+        Con.induction_on₂ w z fun a b ↦
           show _ = d.mk' a * d.mk' b by rw [← d.mk'.map_mul]; rfl }
 
 end MulOneClass
@@ -287,7 +287,7 @@ section Actions
 @[to_additive]
 instance instSMul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M) :
     SMul α c.Quotient where
-  smul a := (Quotient.map' (a • ·)) fun _ _ => c.smul a
+  smul a := (Quotient.map' (a • ·)) fun _ _ ↦ c.smul a
 
 @[to_additive]
 theorem coe_smul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M)
@@ -297,28 +297,28 @@ theorem coe_smul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M 
 instance instSMulCommClass {α β M : Type*} [MulOneClass M] [SMul α M] [SMul β M]
     [IsScalarTower α M M] [IsScalarTower β M M] [SMulCommClass α β M] (c : Con M) :
     SMulCommClass α β c.Quotient where
-  smul_comm a b := Quotient.ind' fun m => congr_arg Quotient.mk'' <| smul_comm a b m
+  smul_comm a b := Quotient.ind' fun m ↦ congr_arg Quotient.mk'' <| smul_comm a b m
 
 instance instIsScalarTower {α β M : Type*} [MulOneClass M] [SMul α β] [SMul α M] [SMul β M]
     [IsScalarTower α M M] [IsScalarTower β M M] [IsScalarTower α β M] (c : Con M) :
     IsScalarTower α β c.Quotient where
-  smul_assoc a b := Quotient.ind' fun m => congr_arg Quotient.mk'' <| smul_assoc a b m
+  smul_assoc a b := Quotient.ind' fun m ↦ congr_arg Quotient.mk'' <| smul_assoc a b m
 
 instance instIsCentralScalar {α M : Type*} [MulOneClass M] [SMul α M] [SMul αᵐᵒᵖ M]
     [IsScalarTower α M M] [IsScalarTower αᵐᵒᵖ M M] [IsCentralScalar α M] (c : Con M) :
     IsCentralScalar α c.Quotient where
-  op_smul_eq_smul a := Quotient.ind' fun m => congr_arg Quotient.mk'' <| op_smul_eq_smul a m
+  op_smul_eq_smul a := Quotient.ind' fun m ↦ congr_arg Quotient.mk'' <| op_smul_eq_smul a m
 
 @[to_additive]
 instance mulAction {α M : Type*} [Monoid α] [MulOneClass M] [MulAction α M] [IsScalarTower α M M]
     (c : Con M) : MulAction α c.Quotient where
-  one_smul := Quotient.ind' fun _ => congr_arg Quotient.mk'' <| one_smul _ _
-  mul_smul _ _ := Quotient.ind' fun _ => congr_arg Quotient.mk'' <| mul_smul _ _ _
+  one_smul := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| one_smul _ _
+  mul_smul _ _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| mul_smul _ _ _
 
 instance mulDistribMulAction {α M : Type*} [Monoid α] [Monoid M] [MulDistribMulAction α M]
     [IsScalarTower α M M] (c : Con M) : MulDistribMulAction α c.Quotient :=
-  { smul_one := fun _ => congr_arg Quotient.mk'' <| smul_one _
-    smul_mul := fun _ => Quotient.ind₂' fun _ _ => congr_arg Quotient.mk'' <| smul_mul' _ _ _ }
+  { smul_one := fun _ ↦ congr_arg Quotient.mk'' <| smul_one _
+    smul_mul := fun _ ↦ Quotient.ind₂' fun _ _ ↦ congr_arg Quotient.mk'' <| smul_mul' _ _ _ }
 
 end Actions
 

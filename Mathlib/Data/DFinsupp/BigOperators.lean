@@ -78,14 +78,14 @@ def prod [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMon
 theorem _root_.map_dfinsuppProd
     {R S H : Type*} [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
     [CommMonoid R] [CommMonoid S] [FunLike H R S] [MonoidHomClass H R S] (h : H) (f : Π₀ i, β i)
-    (g : ∀ i, β i → R) : h (f.prod g) = f.prod fun a b => h (g a b) :=
+    (g : ∀ i, β i → R) : h (f.prod g) = f.prod fun a b ↦ h (g a b) :=
   map_prod _ _ _
 
 @[to_additive]
 theorem prod_mapRange_index {β₁ : ι → Type v₁} {β₂ : ι → Type v₂} [∀ i, Zero (β₁ i)]
     [∀ i, Zero (β₂ i)] [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] [∀ (i) (x : β₂ i), Decidable (x ≠ 0)]
     [CommMonoid γ] {f : ∀ i, β₁ i → β₂ i} {hf : ∀ i, f i 0 = 0} {g : Π₀ i, β₁ i} {h : ∀ i, β₂ i → γ}
-    (h0 : ∀ i, h i 0 = 1) : (mapRange f hf g).prod h = g.prod fun i b => h i (f i b) := by
+    (h0 : ∀ i, h i 0 = 1) : (mapRange f hf g).prod h = g.prod fun i b ↦ h i (f i b) := by
   rw [mapRange_def]
   refine (Finset.prod_subset support_mk_subset ?_).trans ?_
   · intro i h1 h2
@@ -115,7 +115,7 @@ theorem prod_single_index [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x
 @[to_additive]
 theorem prod_neg_index [∀ i, AddGroup (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
     {g : Π₀ i, β i} {h : ∀ i, β i → γ} (h0 : ∀ i, h i 0 = 1) :
-    (-g).prod h = g.prod fun i b => h i (-b) :=
+    (-g).prod h = g.prod fun i b ↦ h i (-b) :=
   prod_mapRange_index h0
 
 @[to_additive]
@@ -123,54 +123,54 @@ theorem prod_comm {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type*} {β₂ : ι�
     [DecidableEq ι₂] [∀ i, Zero (β₁ i)] [∀ i, Zero (β₂ i)] [∀ (i) (x : β₁ i), Decidable (x ≠ 0)]
     [∀ (i) (x : β₂ i), Decidable (x ≠ 0)] [CommMonoid γ] (f₁ : Π₀ i, β₁ i) (f₂ : Π₀ i, β₂ i)
     (h : ∀ i, β₁ i → ∀ i, β₂ i → γ) :
-    (f₁.prod fun i₁ x₁ => f₂.prod fun i₂ x₂ => h i₁ x₁ i₂ x₂) =
-      f₂.prod fun i₂ x₂ => f₁.prod fun i₁ x₁ => h i₁ x₁ i₂ x₂ :=
+    (f₁.prod fun i₁ x₁ ↦ f₂.prod fun i₂ x₂ ↦ h i₁ x₁ i₂ x₂) =
+      f₂.prod fun i₂ x₂ ↦ f₁.prod fun i₁ x₁ ↦ h i₁ x₁ i₂ x₂ :=
   Finset.prod_comm
 
 @[simp]
 theorem sum_apply {ι} {β : ι → Type v} {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ → Type v₁}
     [∀ i₁, Zero (β₁ i₁)] [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] [∀ i, AddCommMonoid (β i)]
     {f : Π₀ i₁, β₁ i₁} {g : ∀ i₁, β₁ i₁ → Π₀ i, β i} {i₂ : ι} :
-    (f.sum g) i₂ = f.sum fun i₁ b => g i₁ b i₂ :=
+    (f.sum g) i₂ = f.sum fun i₁ b ↦ g i₁ b i₂ :=
   map_sum (evalAddMonoidHom i₂) _ f.support
 
 theorem support_sum {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ → Type v₁} [∀ i₁, Zero (β₁ i₁)]
     [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] [∀ i, AddCommMonoid (β i)]
     [∀ (i) (x : β i), Decidable (x ≠ 0)] {f : Π₀ i₁, β₁ i₁} {g : ∀ i₁, β₁ i₁ → Π₀ i, β i} :
-    (f.sum g).support ⊆ f.support.biUnion fun i => (g i (f i)).support := by
+    (f.sum g).support ⊆ f.support.biUnion fun i ↦ (g i (f i)).support := by
   have :
     ∀ i₁ : ι,
-      (f.sum fun (i : ι₁) (b : β₁ i) => (g i b) i₁) ≠ 0 → ∃ i : ι₁, f i ≠ 0 ∧ ¬(g i (f i)) i₁ = 0 :=
-    fun i₁ h =>
+      (f.sum fun (i : ι₁) (b : β₁ i) ↦ (g i b) i₁) ≠ 0 → ∃ i : ι₁, f i ≠ 0 ∧ ¬(g i (f i)) i₁ = 0 :=
+    fun i₁ h ↦
     let ⟨i, hi, Ne⟩ := Finset.exists_ne_zero_of_sum_ne_zero h
     ⟨i, mem_support_iff.1 hi, Ne⟩
   simpa [Finset.subset_iff, mem_support_iff, Finset.mem_biUnion, sum_apply] using this
 
 @[to_additive (attr := simp)]
 theorem prod_one [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
-    {f : Π₀ i, β i} : (f.prod fun _ _ => (1 : γ)) = 1 :=
+    {f : Π₀ i, β i} : (f.prod fun _ _ ↦ (1 : γ)) = 1 :=
   Finset.prod_const_one
 
 @[to_additive (attr := simp)]
 theorem prod_mul [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
     {f : Π₀ i, β i} {h₁ h₂ : ∀ i, β i → γ} :
-    (f.prod fun i b => h₁ i b * h₂ i b) = f.prod h₁ * f.prod h₂ :=
+    (f.prod fun i b ↦ h₁ i b * h₂ i b) = f.prod h₁ * f.prod h₂ :=
   Finset.prod_mul_distrib
 
 @[to_additive (attr := simp)]
 theorem prod_inv [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
     [DivisionCommMonoid γ] {f : Π₀ i, β i} {h : ∀ i, β i → γ} :
-    (f.prod fun i b => (h i b)⁻¹) = (f.prod h)⁻¹ :=
+    (f.prod fun i b ↦ (h i b)⁻¹) = (f.prod h)⁻¹ :=
   (map_prod (invMonoidHom : γ →* γ) _ f.support).symm
 
 @[to_additive]
 theorem prod_eq_one [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
     {f : Π₀ i, β i} {h : ∀ i, β i → γ} (hyp : ∀ i, h i (f i) = 1) : f.prod h = 1 :=
-  Finset.prod_eq_one fun i _ => hyp i
+  Finset.prod_eq_one fun i _ ↦ hyp i
 
 theorem smul_sum {α : Type*} [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
     [AddCommMonoid γ] [DistribSMul α γ] {f : Π₀ i, β i} {h : ∀ i, β i → γ} {c : α} :
-    c • f.sum h = f.sum fun a b => c • h a b :=
+    c • f.sum h = f.sum fun a b ↦ c • h a b :=
   Finset.smul_sum
 
 @[to_additive]
@@ -218,7 +218,7 @@ also an `ZeroHom`.
 def sumZeroHom [∀ i, Zero (β i)] [AddCommMonoid γ] (φ : ∀ i, ZeroHom (β i) γ) :
     ZeroHom (Π₀ i, β i) γ where
   toFun f :=
-    (f.support'.lift fun s => ∑ i ∈ Multiset.toFinset s.1, φ i (f i)) <| by
+    (f.support'.lift fun s ↦ ∑ i ∈ Multiset.toFinset s.1, φ i (f i)) <| by
       rintro ⟨sx, hx⟩ ⟨sy, hy⟩
       dsimp only [Subtype.coe_mk, toFun_eq_coe] at *
       have H1 : sx.toFinset ∩ sy.toFinset ⊆ sx.toFinset := Finset.inter_subset_left
@@ -237,7 +237,7 @@ def sumZeroHom [∀ i, Zero (β i)] [AddCommMonoid γ] (φ : ∀ i, ZeroHom (β 
         rw [Finset.mem_inter] at H2
         simp only [Multiset.mem_toFinset] at H1 H2
         convert map_zero (φ i)
-        exact (hx i).resolve_left (mt (fun H3 => And.intro H3 H1) H2)
+        exact (hx i).resolve_left (mt (fun H3 ↦ And.intro H3 H1) H2)
   map_zero' := by
     simp only [toFun_eq_coe, coe_zero, Pi.zero_apply, map_zero, Finset.sum_const_zero]; rfl
 
@@ -253,14 +253,14 @@ theorem sumZeroHom_piSingle [∀ i, Zero (β i)] [AddCommMonoid γ] (i) (φ : Ze
   ext ⟨f, sf, hf⟩
   change (∑ i ∈ _, _) = _
   dsimp
-  rw [Finset.sum_eq_single i (fun j _ hji => ?_) (fun hi => ?_), Pi.single_eq_same]
+  rw [Finset.sum_eq_single i (fun j _ hji ↦ ?_) (fun hi ↦ ?_), Pi.single_eq_same]
   · simp [hji]
   · simp [(hf i).resolve_left (by simpa using hi)]
 
 /-- While we didn't need decidable instances to define it, we do to reduce it to a sum -/
 theorem sumZeroHom_apply [∀ i, AddZeroClass (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
     [AddCommMonoid γ] (φ : ∀ i, ZeroHom (β i) γ) (f : Π₀ i, β i) :
-    sumZeroHom φ f = f.sum fun x => φ x := by
+    sumZeroHom φ f = f.sum fun x ↦ φ x := by
   rcases f with ⟨f, s, hf⟩
   change (∑ i ∈ _, _) = ∑ i ∈ _ with _, _
   rw [Finset.sum_filter, Finset.sum_congr rfl]
@@ -277,7 +277,7 @@ also an `AddMonoidHom`.
 @[simps toZeroHom]
 def sumAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i →+ γ) :
     (Π₀ i, β i) →+ γ where
-  __ := sumZeroHom fun i => φ i |>.toZeroHom
+  __ := sumZeroHom fun i ↦ φ i |>.toZeroHom
   map_add' := by
     rintro ⟨f, sf, hf⟩ ⟨g, sg, hg⟩
     change (∑ i ∈ _, _) = (∑ i ∈ _, _) + ∑ i ∈ _, _
@@ -311,23 +311,23 @@ theorem sumAddHom_piSingle [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (i) (
     rw [DFinsupp.sumAddHom_toZeroHom]
     conv_lhs =>
       enter [1, i]
-      rw [Pi.apply_single (fun i (x : β i →+ γ) => x.toZeroHom) (fun _ => rfl)]
+      rw [Pi.apply_single (fun i (x : β i →+ γ) ↦ x.toZeroHom) (fun _ ↦ rfl)]
 
 @[simp]
 theorem sumAddHom_comp_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (f : ∀ i, β i →+ γ)
     (i : ι) : (sumAddHom f).comp (singleAddHom β i) = f i :=
-  AddMonoidHom.ext fun x => sumAddHom_single f i x
+  AddMonoidHom.ext fun x ↦ sumAddHom_single f i x
 
 /-- While we didn't need decidable instances to define it, we do to reduce it to a sum -/
 theorem sumAddHom_apply [∀ i, AddZeroClass (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
-    [AddCommMonoid γ] (φ : ∀ i, β i →+ γ) (f : Π₀ i, β i) : sumAddHom φ f = f.sum fun x => φ x :=
+    [AddCommMonoid γ] (φ : ∀ i, β i →+ γ) (f : Π₀ i, β i) : sumAddHom φ f = f.sum fun x ↦ φ x :=
   sumZeroHom_apply _ _
 
 theorem sumAddHom_comm {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type*} {β₂ : ι₂ → Type*} {γ : Type*}
     [DecidableEq ι₁] [DecidableEq ι₂] [∀ i, AddZeroClass (β₁ i)] [∀ i, AddZeroClass (β₂ i)]
     [AddCommMonoid γ] (f₁ : Π₀ i, β₁ i) (f₂ : Π₀ i, β₂ i) (h : ∀ i j, β₁ i →+ β₂ j →+ γ) :
-    sumAddHom (fun i₂ => sumAddHom (fun i₁ => h i₁ i₂) f₁) f₂ =
-      sumAddHom (fun i₁ => sumAddHom (fun i₂ => (h i₁ i₂).flip) f₂) f₁ := by
+    sumAddHom (fun i₂ ↦ sumAddHom (fun i₁ ↦ h i₁ i₂) f₁) f₂ =
+      sumAddHom (fun i₁ ↦ sumAddHom (fun i₂ ↦ (h i₁ i₂).flip) f₂) f₁ := by
   obtain ⟨⟨f₁, s₁, h₁⟩, ⟨f₂, s₂, h₂⟩⟩ := f₁, f₂
   simpa [sumAddHom, sumZeroHom, AddMonoidHom.finset_sum_apply, AddMonoidHom.coe_mk,
       AddMonoidHom.flip_apply, Trunc.lift, toFun_eq_coe, ZeroHom.coe_mk, coe_mk']
@@ -359,19 +359,19 @@ theorem liftAddHom_comp_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (
 /-- The `DFinsupp` version of `Finsupp.comp_liftAddHom` -/
 theorem comp_liftAddHom {δ : Type*} [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] [AddCommMonoid δ]
     (g : γ →+ δ) (f : ∀ i, β i →+ γ) :
-    g.comp (liftAddHom f) = liftAddHom fun a => g.comp (f a) :=
+    g.comp (liftAddHom f) = liftAddHom fun a ↦ g.comp (f a) :=
   liftAddHom.symm_apply_eq.1 <|
-    funext fun a => by
+    funext fun a ↦ by
       rw [liftAddHom_symm_apply, AddMonoidHom.comp_assoc, liftAddHom_comp_single]
 
 @[simp]
 theorem sumAddHom_zero [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] :
-    (sumAddHom fun i => (0 : β i →+ γ)) = 0 :=
+    (sumAddHom fun i ↦ (0 : β i →+ γ)) = 0 :=
   map_zero liftAddHom
 
 @[simp]
 theorem sumAddHom_add [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (g : ∀ i, β i →+ γ)
-    (h : ∀ i, β i →+ γ) : (sumAddHom fun i => g i + h i) = sumAddHom g + sumAddHom h :=
+    (h : ∀ i, β i →+ γ) : (sumAddHom fun i ↦ g i + h i) = sumAddHom g + sumAddHom h :=
   map_add liftAddHom _ _
 
 @[simp]
@@ -380,13 +380,13 @@ theorem sumAddHom_singleAddHom [∀ i, AddCommMonoid (β i)] :
   liftAddHom_singleAddHom
 
 theorem comp_sumAddHom {δ : Type*} [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] [AddCommMonoid δ]
-    (g : γ →+ δ) (f : ∀ i, β i →+ γ) : g.comp (sumAddHom f) = sumAddHom fun a => g.comp (f a) :=
+    (g : γ →+ δ) (f : ∀ i, β i →+ γ) : g.comp (sumAddHom f) = sumAddHom fun a ↦ g.comp (f a) :=
   comp_liftAddHom _ _
 
 theorem sum_sub_index [∀ i, AddGroup (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [AddCommGroup γ]
     {f g : Π₀ i, β i} {h : ∀ i, β i → γ} (h_sub : ∀ i b₁ b₂, h i (b₁ - b₂) = h i b₁ - h i b₂) :
     (f - g).sum h = f.sum h - g.sum h := by
-  have := (liftAddHom fun a => AddMonoidHom.ofMapSub (h a) (h_sub a)).map_sub f g
+  have := (liftAddHom fun a ↦ AddMonoidHom.ofMapSub (h a) (h_sub a)).map_sub f g
   rw [liftAddHom_apply, sumAddHom_apply, sumAddHom_apply, sumAddHom_apply] at this
   exact this
 
@@ -406,7 +406,7 @@ theorem prod_sum_index {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ �
     [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ] {f : Π₀ i₁, β₁ i₁}
     {g : ∀ i₁, β₁ i₁ → Π₀ i, β i} {h : ∀ i, β i → γ} (h_zero : ∀ i, h i 0 = 1)
     (h_add : ∀ i b₁ b₂, h i (b₁ + b₂) = h i b₁ * h i b₂) :
-    (f.sum g).prod h = f.prod fun i b => (g i b).prod h :=
+    (f.sum g).prod h = f.prod fun i b ↦ (g i b).prod h :=
   (prod_finset_sum_index h_zero h_add).symm
 
 @[simp]
@@ -419,7 +419,7 @@ theorem sum_single [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable 
 @[to_additive]
 theorem prod_subtypeDomain_index [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
     [CommMonoid γ] {v : Π₀ i, β i} {p : ι → Prop} [DecidablePred p] {h : ∀ i, β i → γ}
-    (hp : ∀ x ∈ v.support, p x) : (v.subtypeDomain p).prod (fun i b => h i b) = v.prod h := by
+    (hp : ∀ x ∈ v.support, p x) : (v.subtypeDomain p).prod (fun i b ↦ h i b) = v.prod h := by
   refine Finset.prod_bij (fun p _ ↦ p) ?_ ?_ ?_ ?_ <;> aesop
 
 theorem subtypeDomain_sum {ι} {β : ι → Type v} [∀ i, AddCommMonoid (β i)] {s : Finset γ}
@@ -431,7 +431,7 @@ theorem subtypeDomain_finsupp_sum {ι} {β : ι → Type v} {δ : γ → Type x}
     [∀ c, Zero (δ c)] [∀ (c) (x : δ c), Decidable (x ≠ 0)]
     [∀ i, AddCommMonoid (β i)] {p : ι → Prop} [DecidablePred p]
     {s : Π₀ c, δ c} {h : ∀ c, δ c → Π₀ i, β i} :
-    (s.sum h).subtypeDomain p = s.sum fun c d => (h c d).subtypeDomain p :=
+    (s.sum h).subtypeDomain p = s.sum fun c d ↦ (h c d).subtypeDomain p :=
   subtypeDomain_sum
 
 end ProdAndSum
@@ -461,7 +461,7 @@ variable [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_dfinsuppProd [MulOneClass R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S) :
-    ⇑(f.prod g) = f.prod fun a b => ⇑(g a b) :=
+    ⇑(f.prod g) = f.prod fun a b ↦ ⇑(g a b) :=
   coe_finset_prod _ _
 
 @[deprecated (since := "2025-04-06")]
@@ -471,7 +471,7 @@ alias coe_dfinsupp_prod := coe_dfinsuppProd
 
 @[to_additive]
 theorem dfinsuppProd_apply [MulOneClass R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S)
-    (r : R) : (f.prod g) r = f.prod fun a b => (g a b) r :=
+    (r : R) : (f.prod g) r = f.prod fun a b ↦ (g a b) r :=
   finset_prod_apply _ _ _
 
 @[deprecated (since := "2025-04-06")]
@@ -493,14 +493,14 @@ open DFinsupp
 @[simp]
 theorem map_dfinsuppSumAddHom [AddCommMonoid R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (h : R →+ S) (f : Π₀ i, β i) (g : ∀ i, β i →+ R) :
-    h (sumAddHom g f) = sumAddHom (fun i => h.comp (g i)) f :=
+    h (sumAddHom g f) = sumAddHom (fun i ↦ h.comp (g i)) f :=
   DFunLike.congr_fun (comp_liftAddHom h g) f
 
 @[deprecated (since := "2025-04-06")] alias map_dfinsupp_sumAddHom := map_dfinsuppSumAddHom
 
 theorem dfinsuppSumAddHom_apply [AddZeroClass R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (f : Π₀ i, β i) (g : ∀ i, β i →+ R →+ S) (r : R) :
-    (sumAddHom g f) r = sumAddHom (fun i => (eval r).comp (g i)) f :=
+    (sumAddHom g f) r = sumAddHom (fun i ↦ (eval r).comp (g i)) f :=
   map_dfinsuppSumAddHom (eval r) f g
 
 @[deprecated (since := "2025-04-06")] alias dfinsupp_sumAddHom_apply := dfinsuppSumAddHom_apply
@@ -508,7 +508,7 @@ theorem dfinsuppSumAddHom_apply [AddZeroClass R] [AddCommMonoid S] [∀ i, AddZe
 @[simp, norm_cast]
 theorem coe_dfinsuppSumAddHom [AddZeroClass R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (f : Π₀ i, β i) (g : ∀ i, β i →+ R →+ S) :
-    ⇑(sumAddHom g f) = sumAddHom (fun i => (coeFn R S).comp (g i)) f :=
+    ⇑(sumAddHom g f) = sumAddHom (fun i ↦ (coeFn R S).comp (g i)) f :=
   map_dfinsuppSumAddHom (coeFn R S) f g
 
 @[deprecated (since := "2025-04-06")] alias coe_dfinsupp_sumAddHom := coe_dfinsuppSumAddHom
@@ -523,7 +523,7 @@ open DFinsupp
 @[simp]
 theorem map_dfinsuppSumAddHom [NonAssocSemiring R] [NonAssocSemiring S] [∀ i, AddZeroClass (β i)]
     (h : R →+* S) (f : Π₀ i, β i) (g : ∀ i, β i →+ R) :
-    h (sumAddHom g f) = sumAddHom (fun i => h.toAddMonoidHom.comp (g i)) f :=
+    h (sumAddHom g f) = sumAddHom (fun i ↦ h.toAddMonoidHom.comp (g i)) f :=
   DFunLike.congr_fun (comp_liftAddHom h.toAddMonoidHom g) f
 
 @[deprecated (since := "2025-04-06")] alias map_dfinsupp_sumAddHom := map_dfinsuppSumAddHom
@@ -539,7 +539,7 @@ open DFinsupp
 @[simp]
 theorem map_dfinsuppSumAddHom [AddCommMonoid R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (h : R ≃+ S) (f : Π₀ i, β i) (g : ∀ i, β i →+ R) :
-    h (sumAddHom g f) = sumAddHom (fun i => h.toAddMonoidHom.comp (g i)) f :=
+    h (sumAddHom g f) = sumAddHom (fun i ↦ h.toAddMonoidHom.comp (g i)) f :=
   DFunLike.congr_fun (comp_liftAddHom h.toAddMonoidHom g) f
 
 @[deprecated (since := "2025-04-06")] alias map_dfinsupp_sumAddHom := map_dfinsuppSumAddHom

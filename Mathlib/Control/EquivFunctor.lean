@@ -75,7 +75,7 @@ or `map_comp_map` when not applied.
 @[simp]
 theorem mapEquiv_trans {γ : Type u₀} (ab : α ≃ β) (bc : β ≃ γ) :
     (mapEquiv f ab).trans (mapEquiv f bc) = mapEquiv f (ab.trans bc) :=
-  Equiv.ext fun x => by simp [mapEquiv, map_trans']
+  Equiv.ext fun x ↦ by simp [mapEquiv, map_trans']
 
 end
 
@@ -93,7 +93,7 @@ theorem mapEquiv.injective (f : Type u₀ → Type u₁)
     [Applicative f] [LawfulApplicative f] {α β : Type u₀}
     (h : ∀ γ, Function.Injective (pure : γ → f γ)) :
       Function.Injective (@EquivFunctor.mapEquiv f _ α β) :=
-  fun e₁ e₂ H =>
-    Equiv.ext fun x => h β (by simpa [EquivFunctor.map] using Equiv.congr_fun H (pure x))
+  fun e₁ e₂ H ↦
+    Equiv.ext fun x ↦ h β (by simpa [EquivFunctor.map] using Equiv.congr_fun H (pure x))
 
 end EquivFunctor

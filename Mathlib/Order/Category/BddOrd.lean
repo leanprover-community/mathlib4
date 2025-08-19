@@ -149,8 +149,8 @@ instance hasForgetToPartOrd : HasForget₂ BddOrd PartOrd where
 
 instance hasForgetToBipointed : HasForget₂ BddOrd Bipointed where
   forget₂ :=
-    { obj := fun X => ⟨X, ⊥, ⊤⟩
-      map := fun f => ⟨f, f.hom.map_bot', f.hom.map_top'⟩ }
+    { obj := fun X ↦ ⟨X, ⊥, ⊤⟩
+      map := fun f ↦ ⟨f, f.hom.map_bot', f.hom.map_top'⟩ }
   forget_comp := rfl
 
 /-- `OrderDual` as a functor. -/
@@ -172,8 +172,8 @@ def Iso.mk {α β : BddOrd.{u}} (e : α ≃o β) : α ≅ β where
 def dualEquiv : BddOrd ≌ BddOrd where
   functor := dual
   inverse := dual
-  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
-  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  unitIso := NatIso.ofComponents fun X ↦ Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X ↦ Iso.mk <| OrderIso.dualDual X
 
 end BddOrd
 

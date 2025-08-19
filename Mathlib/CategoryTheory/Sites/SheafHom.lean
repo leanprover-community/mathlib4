@@ -76,7 +76,7 @@ variable (F G)
 /-- The sections of the presheaf `presheafHom F G` identify to morphisms `F ⟶ G`. -/
 def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
   toFun s :=
-    { app := fun X => (s.1 X).app ⟨Over.mk (𝟙 _)⟩
+    { app := fun X ↦ (s.1 X).app ⟨Over.mk (𝟙 _)⟩
       naturality := by
         rintro ⟨X₁⟩ ⟨X₂⟩ ⟨f : X₂ ⟶ X₁⟩
         dsimp
@@ -84,7 +84,7 @@ def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
           (Over.homMk f : Over.mk f ⟶ Over.mk (𝟙 X₁)).op)
         rw [← s.2 f.op, presheafHom_map_app_op_mk_id]
         rfl }
-  invFun f := ⟨fun _ => Functor.whiskerLeft _ f, fun _ => rfl⟩
+  invFun f := ⟨fun _ ↦ Functor.whiskerLeft _ f, fun _ ↦ rfl⟩
   left_inv s := by
     dsimp
     ext ⟨X⟩ ⟨Y : Over X⟩
@@ -130,7 +130,7 @@ lemma exists_app (hx : x.Compatible) (g : Y ⟶ X) :
   let c : Cone ((Presieve.diagram (Sieve.pullback g S).arrows).op ⋙ G) :=
     { pt := F.obj (op Y)
       π :=
-        { app := fun ⟨Z, hZ⟩ => F.map Z.hom.op ≫ (x _ hZ).app (op (Over.mk (𝟙 _)))
+        { app := fun ⟨Z, hZ⟩ ↦ F.map Z.hom.op ≫ (x _ hZ).app (op (Over.mk (𝟙 _)))
           naturality := by
             rintro ⟨Z₁, hZ₁⟩ ⟨Z₂, hZ₂⟩ ⟨f : Z₂ ⟶ Z₁⟩
             dsimp
@@ -166,7 +166,7 @@ lemma presheafHom_isSheafFor :
   intro x hx
   apply existsUnique_of_exists_of_unique
   · refine ⟨
-      { app := fun Y => app hG x hx Y.unop.hom
+      { app := fun Y ↦ app hG x hx Y.unop.hom
         naturality := by
           rintro ⟨Y₁ : Over X⟩ ⟨Y₂ : Over X⟩ ⟨φ : Y₂ ⟶ Y₁⟩
           apply (hG Y₂.hom).hom_ext
@@ -203,14 +203,14 @@ lemma Presheaf.IsSheaf.hom (hG : Presheaf.IsSheaf J G) :
   rw [isSheaf_iff_isSheaf_of_type]
   intro X S hS
   exact presheafHom_isSheafFor F G S
-    (fun _ _ => ((Presheaf.isSheaf_iff_isLimit J G).1 hG _ (J.pullback_stable _ hS)).some)
+    (fun _ _ ↦ ((Presheaf.isSheaf_iff_isLimit J G).1 hG _ (J.pullback_stable _ hS)).some)
 
 
 /-- The underlying presheaf of `sheafHom F G`. It is isomorphic to `presheafHom F.1 G.1`
 (see `sheafHom'Iso`), but has better definitional properties. -/
 def sheafHom' (F G : Sheaf J A) : Cᵒᵖ ⥤ Type _ where
   obj X := (J.overPullback A X.unop).obj F ⟶ (J.overPullback A X.unop).obj G
-  map f := fun φ => (J.overMapPullback A f.unop).map φ
+  map f := fun φ ↦ (J.overMapPullback A f.unop).map φ
   map_id X := by
     ext φ : 2
     exact congr_fun ((presheafHom F.1 G.1).map_id X) φ.1
@@ -222,7 +222,7 @@ def sheafHom' (F G : Sheaf J A) : Cᵒᵖ ⥤ Type _ where
 def sheafHom'Iso (F G : Sheaf J A) :
     sheafHom' F G ≅ presheafHom F.1 G.1 :=
   NatIso.ofComponents
-    (fun _ => Sheaf.homEquiv.toIso) (fun _ => rfl)
+    (fun _ ↦ Sheaf.homEquiv.toIso) (fun _ ↦ rfl)
 
 /-- Given two sheaves `F` and `G` on a site `(C, J)` with values in a category `A`,
 this `sheafHom F G` is the sheaf of types which sends an object `X : C`

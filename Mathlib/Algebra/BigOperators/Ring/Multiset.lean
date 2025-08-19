@@ -41,10 +41,10 @@ section NonUnitalNonAssocSemiring
 variable [NonUnitalNonAssocSemiring R] {a : R} {s : Multiset ι} {f : ι → R}
 
 lemma sum_map_mul_left : sum (s.map fun i ↦ a * f i) = a * sum (s.map f) :=
-  Multiset.induction_on s (by simp) fun i s ih => by simp [ih, mul_add]
+  Multiset.induction_on s (by simp) fun i s ih ↦ by simp [ih, mul_add]
 
 lemma sum_map_mul_right : sum (s.map fun i ↦ f i * a) = sum (s.map f) * a :=
-  Multiset.induction_on s (by simp) fun a s ih => by simp [ih, add_mul]
+  Multiset.induction_on s (by simp) fun a s ih ↦ by simp [ih, add_mul]
 
 end NonUnitalNonAssocSemiring
 
@@ -91,6 +91,6 @@ theorem multiset_sum_right (a : R) (h : ∀ b ∈ s, Commute a b) : Commute a s.
   exact Commute.list_sum_right _ _ h
 
 theorem multiset_sum_left (b : R) (h : ∀ a ∈ s, Commute a b) : Commute s.sum b :=
-  ((Commute.multiset_sum_right _ _) fun _ ha => (h _ ha).symm).symm
+  ((Commute.multiset_sum_right _ _) fun _ ha ↦ (h _ ha).symm).symm
 
 end Commute

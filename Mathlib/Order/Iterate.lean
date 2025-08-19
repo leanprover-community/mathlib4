@@ -43,8 +43,8 @@ theorem seq_le_seq (hf : Monotone f) (n : ℕ) (h₀ : x 0 ≤ y 0) (hx : ∀ k 
   | zero => exact h₀
   | succ n ihn =>
     refine (hx _ n.lt_succ_self).trans ((hf <| ihn ?_ ?_).trans (hy _ n.lt_succ_self))
-    · exact fun k hk => hx _ (hk.trans n.lt_succ_self)
-    · exact fun k hk => hy _ (hk.trans n.lt_succ_self)
+    · exact fun k hk ↦ hx _ (hk.trans n.lt_succ_self)
+    · exact fun k hk ↦ hy _ (hk.trans n.lt_succ_self)
 
 theorem seq_pos_lt_seq_of_lt_of_le (hf : Monotone f) {n : ℕ} (hn : 0 < n) (h₀ : x 0 ≤ y 0)
     (hx : ∀ k < n, x (k + 1) < f (x k)) (hy : ∀ k < n, f (y k) ≤ y (k + 1)) : x n < y n := by
@@ -55,7 +55,7 @@ theorem seq_pos_lt_seq_of_lt_of_le (hf : Monotone f) {n : ℕ} (hn : 0 < n) (h�
   cases n with
   | zero => exact h₀
   | succ n =>
-    refine (ihn n.zero_lt_succ (fun k hk => hx _ ?_) fun k hk => hy _ ?_).le <;>
+    refine (ihn n.zero_lt_succ (fun k hk ↦ hx _ ?_) fun k hk ↦ hy _ ?_).le <;>
     exact hk.trans n.succ.lt_succ_self
 
 theorem seq_pos_lt_seq_of_le_of_lt (hf : Monotone f) {n : ℕ} (hn : 0 < n) (h₀ : x 0 ≤ y 0)
@@ -87,7 +87,7 @@ variable {β : Type*} {g : β → β} {h : β → α}
 open Function
 
 theorem le_iterate_comp_of_le (hf : Monotone f) (H : h ∘ g ≤ f ∘ h) (n : ℕ) :
-    h ∘ g^[n] ≤ f^[n] ∘ h := fun x => by
+    h ∘ g^[n] ≤ f^[n] ∘ h := fun x ↦ by
   apply hf.seq_le_seq n <;> intros <;>
     simp [iterate_succ', -iterate_succ, comp_apply, id_eq, le_refl]
   case hx => exact H _
@@ -128,12 +128,12 @@ theorem id_le_iterate_of_id_le (h : id ≤ f) (n : ℕ) : id ≤ f^[n] := by
 theorem iterate_le_id_of_le_id (h : f ≤ id) (n : ℕ) : f^[n] ≤ id :=
   @id_le_iterate_of_id_le αᵒᵈ _ f h n
 
-theorem monotone_iterate_of_id_le (h : id ≤ f) : Monotone fun m => f^[m] :=
-  monotone_nat_of_le_succ fun n x => by
+theorem monotone_iterate_of_id_le (h : id ≤ f) : Monotone fun m ↦ f^[m] :=
+  monotone_nat_of_le_succ fun n x ↦ by
     rw [iterate_succ_apply']
     exact h _
 
-theorem antitone_iterate_of_le_id (h : f ≤ id) : Antitone fun m => f^[m] := fun m n hmn =>
+theorem antitone_iterate_of_le_id (h : f ≤ id) : Antitone fun m ↦ f^[m] := fun m n hmn ↦
   @monotone_iterate_of_id_le αᵒᵈ _ f h m n hmn
 
 end Preorder
@@ -209,14 +209,14 @@ variable {α : Type*} [Preorder α] {f : α → α} {x : α}
 
 /-- If `f` is a monotone map and `x ≤ f x` at some point `x`, then the iterates `f^[n] x` form
 a monotone sequence. -/
-theorem monotone_iterate_of_le_map (hf : Monotone f) (hx : x ≤ f x) : Monotone fun n => f^[n] x :=
-  monotone_nat_of_le_succ fun n => by
+theorem monotone_iterate_of_le_map (hf : Monotone f) (hx : x ≤ f x) : Monotone fun n ↦ f^[n] x :=
+  monotone_nat_of_le_succ fun n ↦ by
     rw [iterate_succ_apply]
     exact hf.iterate n hx
 
 /-- If `f` is a monotone map and `f x ≤ x` at some point `x`, then the iterates `f^[n] x` form
 an antitone sequence. -/
-theorem antitone_iterate_of_map_le (hf : Monotone f) (hx : f x ≤ x) : Antitone fun n => f^[n] x :=
+theorem antitone_iterate_of_map_le (hf : Monotone f) (hx : f x ≤ x) : Antitone fun n ↦ f^[n] x :=
   hf.dual.monotone_iterate_of_le_map hx
 
 end Monotone
@@ -228,15 +228,15 @@ variable {α : Type*} [Preorder α] {f : α → α} {x : α}
 /-- If `f` is a strictly monotone map and `x < f x` at some point `x`, then the iterates `f^[n] x`
 form a strictly monotone sequence. -/
 theorem strictMono_iterate_of_lt_map (hf : StrictMono f) (hx : x < f x) :
-    StrictMono fun n => f^[n] x :=
-  strictMono_nat_of_lt_succ fun n => by
+    StrictMono fun n ↦ f^[n] x :=
+  strictMono_nat_of_lt_succ fun n ↦ by
     rw [iterate_succ_apply]
     exact hf.iterate n hx
 
 /-- If `f` is a strictly antitone map and `f x < x` at some point `x`, then the iterates `f^[n] x`
 form a strictly antitone sequence. -/
 theorem strictAnti_iterate_of_map_lt (hf : StrictMono f) (hx : f x < x) :
-    StrictAnti fun n => f^[n] x :=
+    StrictAnti fun n ↦ f^[n] x :=
   hf.dual.strictMono_iterate_of_lt_map hx
 
 end StrictMono

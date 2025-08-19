@@ -71,7 +71,7 @@ theorem continuous_right_toIcoMod : ContinuousWithinAt (toIcoMod hp a) (Ici x) x
   let d := toIcoDiv hp a x • p
   have hd := toIcoMod_mem_Ico hp a x
   simp_rw [subset_def, mem_inter_iff]
-  refine ⟨_, ⟨l + d, min (a + p) u + d, ?_, fun x => id⟩, fun y => ?_⟩ <;>
+  refine ⟨_, ⟨l + d, min (a + p) u + d, ?_, fun x ↦ id⟩, fun y ↦ ?_⟩ <;>
     simp_rw [← sub_mem_Ioo_iff_left, mem_Ioo, lt_min_iff]
   · exact ⟨hxI.1, hd.2, hxI.2⟩
   · rintro ⟨h, h'⟩
@@ -80,11 +80,11 @@ theorem continuous_right_toIcoMod : ContinuousWithinAt (toIcoMod hp a) (Ici x) x
     exacts [⟨h.1, h.2.2⟩, ⟨hd.1.trans (sub_le_sub_right h' _), h.2.1⟩]
 
 theorem continuous_left_toIocMod : ContinuousWithinAt (toIocMod hp a) (Iic x) x := by
-  rw [(funext fun y => Eq.trans (by rw [neg_neg]) <| toIocMod_neg _ _ _ :
-      toIocMod hp a = (fun x => p - x) ∘ toIcoMod hp (-a) ∘ Neg.neg)]
+  rw [(funext fun y ↦ Eq.trans (by rw [neg_neg]) <| toIocMod_neg _ _ _ :
+      toIocMod hp a = (fun x ↦ p - x) ∘ toIcoMod hp (-a) ∘ Neg.neg)]
   exact
     (continuous_sub_left _).continuousAt.comp_continuousWithinAt <|
-      (continuous_right_toIcoMod _ _ _).comp continuous_neg.continuousWithinAt fun y => neg_le_neg
+      (continuous_right_toIcoMod _ _ _).comp continuous_neg.continuousWithinAt fun y ↦ neg_le_neg
 
 variable {x}
 
@@ -93,7 +93,7 @@ theorem toIcoMod_eventuallyEq_toIocMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) 
   IsOpen.mem_nhds
       (by
         rw [Ico_eq_locus_Ioc_eq_iUnion_Ioo]
-        exact isOpen_iUnion fun i => isOpen_Ioo) <|
+        exact isOpen_iUnion fun i ↦ isOpen_Ioo) <|
     (not_modEq_iff_toIcoMod_eq_toIocMod hp).1 <| not_modEq_iff_ne_mod_zmultiples.2 hx.symm
 
 theorem continuousAt_toIcoMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) : ContinuousAt (toIcoMod hp a) x :=
@@ -193,7 +193,7 @@ variable {p a}
 
 theorem coe_eq_coe_iff_of_mem_Ico {x y : 𝕜} (hx : x ∈ Ico a (a + p)) (hy : y ∈ Ico a (a + p)) :
     (x : AddCircle p) = y ↔ x = y := by
-  refine ⟨fun h => ?_, by tauto⟩
+  refine ⟨fun h ↦ ?_, by tauto⟩
   suffices (⟨x, hx⟩ : Ico a (a + p)) = ⟨y, hy⟩ by exact Subtype.mk.inj this
   apply_fun equivIco p a at h
   rw [← (equivIco p a).right_inv ⟨x, hx⟩, ← (equivIco p a).right_inv ⟨y, hy⟩]
@@ -388,7 +388,7 @@ variable {p}
 theorem addOrderOf_period_div {n : ℕ} (h : 0 < n) : addOrderOf ((p / n : 𝕜) : AddCircle p) = n := by
   rw [addOrderOf_eq_iff h]
   replace h : 0 < (n : 𝕜) := Nat.cast_pos.2 h
-  refine ⟨?_, fun m hn h0 => ?_⟩ <;> simp only [Ne, ← coe_nsmul, nsmul_eq_mul]
+  refine ⟨?_, fun m hn h0 ↦ ?_⟩ <;> simp only [Ne, ← coe_nsmul, nsmul_eq_mul]
   · rw [mul_div_cancel₀ _ h.ne', coe_period]
   rw [coe_eq_zero_of_pos_iff p hp.out (mul_pos (Nat.cast_pos.2 h0) <| div_pos hp.out h)]
   rintro ⟨k, hk⟩
@@ -483,9 +483,9 @@ satisfies `0 ≤ m < n`. -/
 def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
     { u : AddCircle p | addOrderOf u = n } ≃ { m | m < n ∧ m.gcd n = 1 } :=
   Equiv.symm <|
-    Equiv.ofBijective (fun m => ⟨↑((m : 𝕜) / n * p), addOrderOf_div_of_gcd_eq_one hn m.prop.2⟩)
+    Equiv.ofBijective (fun m ↦ ⟨↑((m : 𝕜) / n * p), addOrderOf_div_of_gcd_eq_one hn m.prop.2⟩)
       (by
-        refine ⟨fun m₁ m₂ h => Subtype.ext ?_, fun u => ?_⟩
+        refine ⟨fun m₁ m₂ h ↦ Subtype.ext ?_, fun u ↦ ?_⟩
         · simp_rw [Subtype.mk_eq_mk, natCast_div_mul_eq_nsmul] at h
           refine nsmul_injOn_Iio_addOrderOf ?_ ?_ h <;> rw [addOrderOf_period_div hn]
           exacts [m₁.2.1, m₂.2.1]
@@ -574,12 +574,12 @@ def equivIccQuot : 𝕋 ≃ Quot (EndpointIdent p a) where
           ((equivIco p a).right_inv ⟨a, le_refl a, lt_add_of_pos_right a hp.out⟩)
 
 theorem equivIccQuot_comp_mk_eq_toIcoMod :
-    equivIccQuot p a ∘ Quotient.mk'' = fun x =>
+    equivIccQuot p a ∘ Quotient.mk'' = fun x ↦
       Quot.mk _ ⟨toIcoMod hp.out a x, Ico_subset_Icc_self <| toIcoMod_mem_Ico _ _ x⟩ :=
   rfl
 
 theorem equivIccQuot_comp_mk_eq_toIocMod :
-    equivIccQuot p a ∘ Quotient.mk'' = fun x =>
+    equivIccQuot p a ∘ Quotient.mk'' = fun x ↦
       Quot.mk _ ⟨toIocMod hp.out a x, Ioc_subset_Icc_self <| toIocMod_mem_Ioc _ _ x⟩ := by
   rw [equivIccQuot_comp_mk_eq_toIcoMod]
   funext x

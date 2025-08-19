@@ -61,14 +61,14 @@ theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type v) (U : Sieve X) (B : ∀ ⦃Y⦄ 
     Presieve.IsSheafFor P (Sieve.bind (U : Presieve X) B : Presieve X) := by
   intro s hs
   let y : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : U f), Presieve.FamilyOfElements P (B hf : Presieve Y) :=
-    fun Y f hf Z g hg => s _ (Presieve.bind_comp _ _ hg)
+    fun Y f hf Z g hg ↦ s _ (Presieve.bind_comp _ _ hg)
   have hy : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : U f), (y hf).Compatible := by
     intro Y f H Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ comm
     apply hs
     apply reassoc_of% comm
   let t : Presieve.FamilyOfElements P (U : Presieve X) :=
-    fun Y f hf => (hB hf).amalgamate (y hf) (hy hf)
-  have ht : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : U f), (y hf).IsAmalgamation (t f hf) := fun Y f hf =>
+    fun Y f hf ↦ (hB hf).amalgamate (y hf) (hy hf)
+  have ht : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : U f), (y hf).IsAmalgamation (t f hf) := fun Y f hf ↦
     (hB hf).isAmalgamation _
   have hT : t.Compatible := by
     rw [Presieve.compatible_iff_sieveCompatible]
@@ -113,7 +113,7 @@ theorem isSheafFor_trans (P : Cᵒᵖ ⥤ Type v) (R S : Sieve X)
     (hR' : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (_ : S f), Presieve.IsSeparatedFor P (R.pullback f : Presieve Y))
     (hS : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (_ : R f), Presieve.IsSheafFor P (S.pullback f : Presieve Y)) :
     Presieve.IsSheafFor P (S : Presieve X) := by
-  have : (bind R fun Y f _ => S.pullback f : Presieve X) ≤ S := by
+  have : (bind R fun Y f _ ↦ S.pullback f : Presieve X) ≤ S := by
     rintro Z f ⟨W, f, g, hg, hf : S _, rfl⟩
     apply hf
   apply Presieve.isSheafFor_subsieve_aux P this
@@ -122,7 +122,7 @@ theorem isSheafFor_trans (P : Cᵒᵖ ⥤ Type v) (R S : Sieve X)
     rw [← pullback_comp]
     apply (hS (R.downward_closed hf _)).isSeparatedFor
   · intro Y f hf
-    have : Sieve.pullback f (bind R fun T (k : T ⟶ X) (_ : R k) => pullback k S) =
+    have : Sieve.pullback f (bind R fun T (k : T ⟶ X) (_ : R k) ↦ pullback k S) =
         R.pullback f := by
       ext Z g
       constructor
@@ -166,7 +166,7 @@ def finestTopology (Ps : Set (Cᵒᵖ ⥤ Type v)) : GrothendieckTopology C :=
 
 /-- Check that if `P ∈ Ps`, then `P` is indeed a sheaf for the finest topology on `Ps`. -/
 theorem sheaf_for_finestTopology (Ps : Set (Cᵒᵖ ⥤ Type v)) (h : P ∈ Ps) :
-    Presieve.IsSheaf (finestTopology Ps) P := fun X S hS => by
+    Presieve.IsSheaf (finestTopology Ps) P := fun X S hS ↦ by
   simpa using hS _ ⟨⟨_, _, ⟨_, h, rfl⟩, rfl⟩, rfl⟩ _ (𝟙 _)
 
 /--
@@ -187,7 +187,7 @@ def canonicalTopology (C : Type u) [Category.{v} C] : GrothendieckTopology C :=
 
 /-- `yoneda.obj X` is a sheaf for the canonical topology. -/
 theorem isSheaf_yoneda_obj (X : C) : Presieve.IsSheaf (canonicalTopology C) (yoneda.obj X) :=
-  fun _ _ hS => sheaf_for_finestTopology _ (Set.mem_range_self _) _ hS
+  fun _ _ hS ↦ sheaf_for_finestTopology _ (Set.mem_range_self _) _ hS
 
 /-- A representable functor is a sheaf for the canonical topology. -/
 theorem isSheaf_of_isRepresentable (P : Cᵒᵖ ⥤ Type v) [P.IsRepresentable] :

@@ -139,9 +139,9 @@ theorem smul_apply (f : SlashInvariantForm Γ k) (n : α) (z : ℍ) : (n • f) 
 end smul
 
 instance instNeg : Neg (SlashInvariantForm Γ k) :=
-  ⟨fun f =>
+  ⟨fun f ↦
     { toFun := -f
-      slash_action_eq' := fun γ hγ => by rw [SlashAction.neg_slash, slash_action_eqn f γ hγ] }⟩
+      slash_action_eq' := fun γ hγ ↦ by rw [SlashAction.neg_slash, slash_action_eqn f γ hγ] }⟩
 
 @[simp]
 theorem coe_neg (f : SlashInvariantForm Γ k) : ⇑(-f) = -f :=
@@ -152,7 +152,7 @@ theorem neg_apply (f : SlashInvariantForm Γ k) (z : ℍ) : (-f) z = -f z :=
   rfl
 
 instance instSub : Sub (SlashInvariantForm Γ k) :=
-  ⟨fun f g => f + -g⟩
+  ⟨fun f g ↦ f + -g⟩
 
 @[simp]
 theorem coe_sub (f g : SlashInvariantForm Γ k) : ⇑(f - g) = f - g :=
@@ -175,7 +175,7 @@ theorem coeHom_injective : Function.Injective (@coeHom Γ k) :=
   DFunLike.coe_injective
 
 instance : Module ℂ (SlashInvariantForm Γ k) :=
-  coeHom_injective.module ℂ coeHom fun _ _ => rfl
+  coeHom_injective.module ℂ coeHom fun _ _ ↦ rfl
 
 /-- The `SlashInvariantForm` corresponding to `Function.const _ x`. -/
 @[simps -fullyApplied]

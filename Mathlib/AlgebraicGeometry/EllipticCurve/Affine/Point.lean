@@ -116,7 +116,7 @@ open scoped Classical in
 variable (W') in
 /-- The power basis `{1, Y}` for `R[W]` over `R[X]`. -/
 protected noncomputable def basis : Basis (Fin 2) R[X] W'.CoordinateRing :=
-  (subsingleton_or_nontrivial R).by_cases (fun _ => default) fun _ =>
+  (subsingleton_or_nontrivial R).by_cases (fun _ ↦ default) fun _ ↦
     (AdjoinRoot.powerBasis' monic_polynomial).basis.reindex <| finCongr natDegree_polynomial
 
 lemma basis_apply (n : Fin 2) :
@@ -186,7 +186,7 @@ protected lemma map_smul (f : R →+* S) (x : R[X]) (y : W'.CoordinateRing) :
   rfl
 
 lemma map_injective {f : R →+* S} (hf : Function.Injective f) : Function.Injective <| map W' f :=
-  (injective_iff_map_eq_zero _).mpr fun y hy => by
+  (injective_iff_map_eq_zero _).mpr fun y hy ↦ by
     obtain ⟨p, q, rfl⟩ := exists_smul_basis_eq y
     simp_rw [map_add, CoordinateRing.map_smul, map_one, map_mk, map_X] at hy
     obtain ⟨hp, hq⟩ := smul_basis_eq_zero hy
@@ -275,7 +275,7 @@ lemma XYIdeal_eq₂ [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation
     XYIdeal W x₂ (C y₂) = XYIdeal W x₂ (linePolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) := by
   have hy₂ : y₂ = (linePolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂).eval x₂ := by
     by_cases hx : x₁ = x₂
-    · have hy : y₁ ≠ W.negY x₂ y₂ := fun h => hxy ⟨hx, h⟩
+    · have hy : y₁ ≠ W.negY x₂ y₂ := fun h ↦ hxy ⟨hx, h⟩
       rcases hx, Y_eq_of_Y_ne h₁ h₂ hx hy with ⟨rfl, rfl⟩
       simp [linePolynomial]
     · field_simp [linePolynomial, slope_of_X_ne hx, sub_ne_zero_of_ne hx]
@@ -325,7 +325,7 @@ lemma XYIdeal_mul_XYIdeal [DecidableEq F] {x₁ x₂ y₁ y₂ : F}
         XYIdeal W (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂)
           (C <| W.addY x₁ x₂ y₁ <| W.slope x₁ x₂ y₁ y₂) := by
   have sup_rw : ∀ a b c d : Ideal W.CoordinateRing, a ⊔ (b ⊔ (c ⊔ d)) = a ⊔ d ⊔ b ⊔ c :=
-    fun _ _ c _ => by rw [← sup_assoc, sup_comm c, sup_sup_sup_comm, ← sup_assoc]
+    fun _ _ c _ ↦ by rw [← sup_assoc, sup_comm c, sup_sup_sup_comm, ← sup_assoc]
   rw [XYIdeal_add_eq, XIdeal, mul_comm, XYIdeal_eq₁ x₁ y₁ <| W.slope x₁ x₂ y₁ y₂, XYIdeal,
     XYIdeal_eq₂ h₁ h₂ hxy, XYIdeal, span_pair_mul_span_pair]
   simp_rw [span_insert, sup_rw, Ideal.sup_mul, span_singleton_mul_span_singleton]
@@ -342,7 +342,7 @@ lemma XYIdeal_mul_XYIdeal [DecidableEq F] {x₁ x₂ y₁ y₂ : F}
     mem_map_iff_of_surjective _ AdjoinRoot.mk_surjective, ← span_insert, mem_span_insert',
     mem_span_singleton']
   by_cases hx : x₁ = x₂
-  · have hy : y₁ ≠ W.negY x₂ y₂ := fun h => hxy ⟨hx, h⟩
+  · have hy : y₁ ≠ W.negY x₂ y₂ := fun h ↦ hxy ⟨hx, h⟩
     rcases hx, Y_eq_of_Y_ne h₁ h₂ hx hy with ⟨rfl, rfl⟩
     let y := (y₁ - W.negY x₁ y₁) ^ 2
     replace hxy := pow_ne_zero 2 <| sub_ne_zero_of_ne hy
@@ -548,30 +548,30 @@ lemma add_self_of_Y_eq {x₁ y₁ : F} {h₁ : W.Nonsingular x₁ y₁} (hy : y�
 -- @[simp] -- Not a good simp lemma, since `hy` is not in simp normal form.
 lemma add_of_Y_ne {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
     (hy : y₁ ≠ W.negY x₂ y₂) :
-    some h₁ + some h₂ = some (nonsingular_add h₁ h₂ fun hxy => hy hxy.right) :=
-  add_some fun hxy => hy hxy.right
+    some h₁ + some h₂ = some (nonsingular_add h₁ h₂ fun hxy ↦ hy hxy.right) :=
+  add_some fun hxy ↦ hy hxy.right
 
 lemma add_of_Y_ne' {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
     (hy : y₁ ≠ W.negY x₂ y₂) :
-    some h₁ + some h₂ = -some (nonsingular_negAdd h₁ h₂ fun hxy => hy hxy.right) :=
+    some h₁ + some h₂ = -some (nonsingular_negAdd h₁ h₂ fun hxy ↦ hy hxy.right) :=
   add_of_Y_ne hy
 
 -- @[simp] -- Not a good simp lemma, since `hy` is not in simp normal form.
 lemma add_self_of_Y_ne {x₁ y₁ : F} {h₁ : W.Nonsingular x₁ y₁} (hy : y₁ ≠ W.negY x₁ y₁) :
-    some h₁ + some h₁ = some (nonsingular_add h₁ h₁ fun hxy => hy hxy.right) :=
+    some h₁ + some h₁ = some (nonsingular_add h₁ h₁ fun hxy ↦ hy hxy.right) :=
   add_of_Y_ne hy
 
 lemma add_self_of_Y_ne' {x₁ y₁ : F} {h₁ : W.Nonsingular x₁ y₁} (hy : y₁ ≠ W.negY x₁ y₁) :
-    some h₁ + some h₁ = -some (nonsingular_negAdd h₁ h₁ fun hxy => hy hxy.right) :=
+    some h₁ + some h₁ = -some (nonsingular_negAdd h₁ h₁ fun hxy ↦ hy hxy.right) :=
   add_of_Y_ne hy
 
 @[simp]
 lemma add_of_X_ne {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
-    (hx : x₁ ≠ x₂) : some h₁ + some h₂ = some (nonsingular_add h₁ h₂ fun hxy => hx hxy.left) :=
-  add_some fun hxy => hx hxy.left
+    (hx : x₁ ≠ x₂) : some h₁ + some h₂ = some (nonsingular_add h₁ h₂ fun hxy ↦ hx hxy.left) :=
+  add_some fun hxy ↦ hx hxy.left
 
 lemma add_of_X_ne' {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
-    (hx : x₁ ≠ x₂) : some h₁ + some h₂ = -some (nonsingular_negAdd h₁ h₂ fun hxy => hx hxy.left) :=
+    (hx : x₁ ≠ x₂) : some h₁ + some h₂ = -some (nonsingular_negAdd h₁ h₂ fun hxy ↦ hx hxy.left) :=
   add_of_X_ne hx
 
 variable [DecidableEq K] [DecidableEq L]
@@ -611,8 +611,8 @@ private lemma add_eq_zero (P Q : W.Point) : P + Q = 0 ↔ P = -Q := by
   · rw [neg_some, some.injEq]
     constructor
     · contrapose
-      exact fun hxy => by simpa only [add_some hxy] using some_ne_zero _
-    · exact fun ⟨hx, hy⟩ => add_of_Y_eq hx hy
+      exact fun hxy ↦ by simpa only [add_some hxy] using some_ne_zero _
+    · exact fun ⟨hx, hy⟩ ↦ add_of_Y_eq hx hy
 
 lemma toClass_eq_zero (P : W.Point) : toClass P = 0 ↔ P = 0 := by
   constructor
@@ -661,7 +661,7 @@ noncomputable def map : W'⟮F⟯ →+ W'⟮K⟯ where
     · rw [add_of_Y_eq hxy.left hxy.right,
         add_of_Y_eq (congr_arg _ hxy.left) <| by rw [hxy.right, baseChange_negY]]
     · simp only [add_some hxy, ← baseChange_addX, ← baseChange_addY, ← baseChange_slope]
-      rw [add_some fun h => hxy ⟨f.injective h.1, f.injective (W'.baseChange_negY f .. ▸ h).2⟩]
+      rw [add_some fun h ↦ hxy ⟨f.injective h.1, f.injective (W'.baseChange_negY f .. ▸ h).2⟩]
 
 @[deprecated (since := "2025-02-01")] alias mapFun := map
 

@@ -62,7 +62,7 @@ theorem dedup_sublist : ∀ l : List α, dedup l <+ l :=
 theorem dedup_subset : ∀ l : List α, dedup l ⊆ l :=
   pwFilter_subset
 
-theorem subset_dedup (l : List α) : l ⊆ dedup l := fun _ => mem_dedup.2
+theorem subset_dedup (l : List α) : l ⊆ dedup l := fun _ ↦ mem_dedup.2
 
 theorem nodup_dedup : ∀ l : List α, Nodup (dedup l) :=
   pairwise_pwFilter
@@ -84,8 +84,8 @@ theorem dedup_eq_self {l : List α} : dedup l = l ↔ Nodup l :=
 
 theorem dedup_eq_cons (l : List α) (a : α) (l' : List α) :
     l.dedup = a :: l' ↔ a ∈ l ∧ a ∉ l' ∧ l.dedup.tail = l' := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
-  · refine ⟨mem_dedup.1 (h.symm ▸ mem_cons_self), fun ha => ?_, by rw [h, tail_cons]⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · refine ⟨mem_dedup.1 (h.symm ▸ mem_cons_self), fun ha ↦ ?_, by rw [h, tail_cons]⟩
     have := count_pos_iff.2 ha
     have : count a l.dedup ≤ 1 := nodup_iff_count_le_one.1 (nodup_dedup l) a
     rw [h, count_cons_self] at this
@@ -166,7 +166,7 @@ theorem count_dedup (l : List α) (a : α) : l.dedup.count a = if a ∈ l then 1
   simp_rw [count_eq_of_nodup <| nodup_dedup l, mem_dedup]
 
 theorem Perm.dedup {l₁ l₂ : List α} (p : l₁ ~ l₂) : dedup l₁ ~ dedup l₂ :=
-  perm_iff_count.2 fun a =>
+  perm_iff_count.2 fun a ↦
     if h : a ∈ l₁ then by
       simp [h, nodup_dedup, p.subset h]
     else by

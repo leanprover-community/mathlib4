@@ -41,8 +41,8 @@ def Prj.abs ⦃α : TypeVec n⦄ : Prj.P i α → Prj i α
   | ⟨_x, f⟩ => f _ ⟨⟨rfl⟩⟩
 
 /-- Representation function of the `QPF` instance -/
-def Prj.repr ⦃α : TypeVec n⦄ : Prj i α → Prj.P i α := fun x : α i =>
-  ⟨⟨⟩, fun j ⟨⟨h⟩⟩ => (h.rec x : α j)⟩
+def Prj.repr ⦃α : TypeVec n⦄ : Prj i α → Prj.P i α := fun x : α i ↦
+  ⟨⟨⟩, fun j ⟨⟨h⟩⟩ ↦ (h.rec x : α j)⟩
 
 instance Prj.mvqpf : MvQPF (Prj i) where
   P := Prj.P i

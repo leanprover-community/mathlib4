@@ -322,7 +322,7 @@ theorem nontrivial_iff : Nontrivial (Submodule R M) ↔ Nontrivial M :=
 variable {R}
 
 instance [Subsingleton M] : Unique (Submodule R M) :=
-  ⟨⟨⊥⟩, fun a => @Subsingleton.elim _ ((subsingleton_iff R).mpr ‹_›) a _⟩
+  ⟨⟨⊥⟩, fun a ↦ @Subsingleton.elim _ ((subsingleton_iff R).mpr ‹_›) a _⟩
 
 instance unique' [Subsingleton R] : Unique (Submodule R M) := by
   haveI := Module.subsingleton R M; infer_instance
@@ -347,11 +347,11 @@ theorem eq_zero_of_coe_mem_of_disjoint (hpq : Disjoint p q) {a : p} (ha : (a : M
 
 theorem mem_right_iff_eq_zero_of_disjoint {p p' : Submodule R M} (h : Disjoint p p') {x : p} :
     (x : M) ∈ p' ↔ x = 0 :=
-  ⟨fun hx => coe_eq_zero.1 <| disjoint_def.1 h x x.2 hx, fun h => h.symm ▸ p'.zero_mem⟩
+  ⟨fun hx ↦ coe_eq_zero.1 <| disjoint_def.1 h x x.2 hx, fun h ↦ h.symm ▸ p'.zero_mem⟩
 
 theorem mem_left_iff_eq_zero_of_disjoint {p p' : Submodule R M} (h : Disjoint p p') {x : p'} :
     (x : M) ∈ p ↔ x = 0 :=
-  ⟨fun hx => coe_eq_zero.1 <| disjoint_def.1 h x hx x.2, fun h => h.symm ▸ p.zero_mem⟩
+  ⟨fun hx ↦ coe_eq_zero.1 <| disjoint_def.1 h x hx x.2, fun h ↦ h.symm ▸ p.zero_mem⟩
 
 end Submodule
 

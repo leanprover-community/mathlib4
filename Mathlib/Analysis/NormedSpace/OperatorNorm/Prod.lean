@@ -43,13 +43,13 @@ section OpNorm
 @[simp]
 theorem opNorm_prod (f : E →L[𝕜] F) (g : E →L[𝕜] G) : ‖f.prod g‖ = ‖(f, g)‖ :=
   le_antisymm
-      (opNorm_le_bound _ (norm_nonneg _) fun x => by
+      (opNorm_le_bound _ (norm_nonneg _) fun x ↦ by
         simpa only [prod_apply, Prod.norm_def, max_mul_of_nonneg, norm_nonneg] using
           max_le_max (le_opNorm f x) (le_opNorm g x)) <|
     max_le
-      (opNorm_le_bound _ (norm_nonneg _) fun x =>
+      (opNorm_le_bound _ (norm_nonneg _) fun x ↦
         (le_max_left _ _).trans ((f.prod g).le_opNorm x))
-      (opNorm_le_bound _ (norm_nonneg _) fun x =>
+      (opNorm_le_bound _ (norm_nonneg _) fun x ↦
         (le_max_right _ _).trans ((f.prod g).le_opNorm x))
 
 
@@ -63,7 +63,7 @@ noncomputable def prodₗᵢ (R : Type*)
     [Semiring R] [Module R F] [Module R G] [ContinuousConstSMul R F]
     [ContinuousConstSMul R G] [SMulCommClass 𝕜 R F] [SMulCommClass 𝕜 R G] :
     (E →L[𝕜] F) × (E →L[𝕜] G) ≃ₗᵢ[R] E →L[𝕜] F × G :=
-  ⟨prodₗ R, fun ⟨f, g⟩ => opNorm_prod f g⟩
+  ⟨prodₗ R, fun ⟨f, g⟩ ↦ opNorm_prod f g⟩
 
 end OpNorm
 
@@ -93,10 +93,10 @@ noncomputable def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) �
     have Ψ₂ : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) →L[𝕜] M₃ →L[𝕜] M₄ :=
       ContinuousLinearMap.snd 𝕜 (M₁ →L[𝕜] M₂) (M₃ →L[𝕜] M₄)
     Φ₁' ∘L Φ₁ ∘L Ψ₁ + Φ₂' ∘L Φ₂ ∘L Ψ₂)
-    (fun p : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) => p.1.prodMap p.2) (by
+    (fun p : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) ↦ p.1.prodMap p.2) (by
       apply funext
       rintro ⟨φ, ψ⟩
-      refine ContinuousLinearMap.ext fun ⟨x₁, x₂⟩ => ?_
+      refine ContinuousLinearMap.ext fun ⟨x₁, x₂⟩ ↦ ?_
       simp)
 
 variable {M₁ M₂ M₃ M₄}
@@ -109,23 +109,23 @@ theorem prodMapL_apply (p : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄)) :
 variable {X : Type*} [TopologicalSpace X]
 
 theorem _root_.Continuous.prod_mapL {f : X → M₁ →L[𝕜] M₂} {g : X → M₃ →L[𝕜] M₄} (hf : Continuous f)
-    (hg : Continuous g) : Continuous fun x => (f x).prodMap (g x) :=
+    (hg : Continuous g) : Continuous fun x ↦ (f x).prodMap (g x) :=
   (prodMapL 𝕜 M₁ M₂ M₃ M₄).continuous.comp (hf.prodMk hg)
 
 theorem _root_.Continuous.prod_map_equivL {f : X → M₁ ≃L[𝕜] M₂} {g : X → M₃ ≃L[𝕜] M₄}
-    (hf : Continuous fun x => (f x : M₁ →L[𝕜] M₂)) (hg : Continuous fun x => (g x : M₃ →L[𝕜] M₄)) :
-    Continuous fun x => ((f x).prodCongr (g x) : M₁ × M₃ →L[𝕜] M₂ × M₄) :=
+    (hf : Continuous fun x ↦ (f x : M₁ →L[𝕜] M₂)) (hg : Continuous fun x ↦ (g x : M₃ →L[𝕜] M₄)) :
+    Continuous fun x ↦ ((f x).prodCongr (g x) : M₁ × M₃ →L[𝕜] M₂ × M₄) :=
   (prodMapL 𝕜 M₁ M₂ M₃ M₄).continuous.comp (hf.prodMk hg)
 
 theorem _root_.ContinuousOn.prod_mapL {f : X → M₁ →L[𝕜] M₂} {g : X → M₃ →L[𝕜] M₄} {s : Set X}
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
-    ContinuousOn (fun x => (f x).prodMap (g x)) s :=
+    ContinuousOn (fun x ↦ (f x).prodMap (g x)) s :=
   ((prodMapL 𝕜 M₁ M₂ M₃ M₄).continuous.comp_continuousOn (hf.prodMk hg) :)
 
 theorem _root_.ContinuousOn.prod_map_equivL {f : X → M₁ ≃L[𝕜] M₂} {g : X → M₃ ≃L[𝕜] M₄} {s : Set X}
-    (hf : ContinuousOn (fun x => (f x : M₁ →L[𝕜] M₂)) s)
-    (hg : ContinuousOn (fun x => (g x : M₃ →L[𝕜] M₄)) s) :
-    ContinuousOn (fun x => ((f x).prodCongr (g x) : M₁ × M₃ →L[𝕜] M₂ × M₄)) s :=
+    (hf : ContinuousOn (fun x ↦ (f x : M₁ →L[𝕜] M₂)) s)
+    (hg : ContinuousOn (fun x ↦ (g x : M₃ →L[𝕜] M₄)) s) :
+    ContinuousOn (fun x ↦ ((f x).prodCongr (g x) : M₁ × M₃ →L[𝕜] M₂ × M₄)) s :=
   hf.prod_mapL _ hg
 
 end Prod

@@ -121,13 +121,13 @@ theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : F α) :
   constructor
   · rintro ⟨y, hy⟩
     rcases h : repr y with ⟨a, f⟩
-    use a, fun i j => (f i j).val
+    use a, fun i j ↦ (f i j).val
     constructor
     · rw [← hy, ← abs_repr y, h, ← abs_map]; rfl
     intro i j
     apply (f i j).property
   rintro ⟨a, f, h₀, h₁⟩
-  use abs ⟨a, fun i j => ⟨f i j, h₁ i j⟩⟩
+  use abs ⟨a, fun i j ↦ ⟨f i j, h₁ i j⟩⟩
   rw [← abs_map, h₀]; rfl
 
 theorem liftR_iff {α : TypeVec n} (r : ∀ ⦃i⦄, α i → α i → Prop) (x y : F α) :
@@ -135,7 +135,7 @@ theorem liftR_iff {α : TypeVec n} (r : ∀ ⦃i⦄, α i → α i → Prop) (x 
   constructor
   · rintro ⟨u, xeq, yeq⟩
     rcases h : repr u with ⟨a, f⟩
-    use a, fun i j => (f i j).val.fst, fun i j => (f i j).val.snd
+    use a, fun i j ↦ (f i j).val.fst, fun i j ↦ (f i j).val.snd
     constructor
     · rw [← xeq, ← abs_repr u, h, ← abs_map]; rfl
     constructor
@@ -143,7 +143,7 @@ theorem liftR_iff {α : TypeVec n} (r : ∀ ⦃i⦄, α i → α i → Prop) (x 
     intro i j
     exact (f i j).property
   rintro ⟨a, f₀, f₁, xeq, yeq, h⟩
-  use abs ⟨a, fun i j => ⟨(f₀ i j, f₁ i j), h i j⟩⟩
+  use abs ⟨a, fun i j ↦ ⟨(f₀ i j, f₁ i j), h i j⟩⟩
   dsimp; constructor
   · rw [xeq, ← abs_map]; rfl
   rw [yeq, ← abs_map]; rfl
@@ -154,7 +154,7 @@ theorem mem_supp {α : TypeVec n} (x : F α) (i) (u : α i) :
     u ∈ supp x i ↔ ∀ a f, abs ⟨a, f⟩ = x → u ∈ f i '' univ := by
   rw [supp]; dsimp; constructor
   · intro h a f haf
-    have : LiftP (fun i u => u ∈ f i '' univ) x := by
+    have : LiftP (fun i u ↦ u ∈ f i '' univ) x := by
       rw [liftP_iff]
       refine ⟨a, f, haf.symm, ?_⟩
       intro i u
@@ -222,7 +222,7 @@ theorem liftP_iff_of_isUniform (h : q.IsUniform) {α : TypeVec n} (x : F α) (p 
     rw [← hi]
     apply hf
   intro h'
-  refine ⟨a, f, rfl, fun _ i => h' _ _ ?_⟩
+  refine ⟨a, f, rfl, fun _ i ↦ h' _ _ ?_⟩
   rw [supp_eq_of_isUniform h]
   exact ⟨i, mem_univ i, rfl⟩
 

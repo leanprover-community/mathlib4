@@ -28,12 +28,12 @@ theorem exists_hasDerivWithinAt_eq_of_gt_of_lt (hab : a ≤ b)
     (hmb : m < f' b) : m ∈ f' '' Ioo a b := by
   rcases hab.eq_or_lt with (rfl | hab')
   · exact (lt_asymm hma hmb).elim
-  set g : ℝ → ℝ := fun x => f x - m * x
+  set g : ℝ → ℝ := fun x ↦ f x - m * x
   have hg : ∀ x ∈ Icc a b, HasDerivWithinAt g (f' x - m) (Icc a b) x := by
     intro x hx
     simpa using (hf x hx).sub ((hasDerivWithinAt_id x _).const_mul m)
   obtain ⟨c, cmem, hc⟩ : ∃ c ∈ Icc a b, IsMinOn g (Icc a b) c :=
-    isCompact_Icc.exists_isMinOn (nonempty_Icc.2 <| hab) fun x hx => (hg x hx).continuousWithinAt
+    isCompact_Icc.exists_isMinOn (nonempty_Icc.2 <| hab) fun x hx ↦ (hg x hx).continuousWithinAt
   have cmem' : c ∈ Ioo a b := by
     rcases cmem.1.eq_or_lt with (rfl | hac)
     -- Show that `c` can't be equal to `a`
@@ -63,7 +63,7 @@ theorem exists_hasDerivWithinAt_eq_of_lt_of_gt (hab : a ≤ b)
     (hf : ∀ x ∈ Icc a b, HasDerivWithinAt f (f' x) (Icc a b) x) {m : ℝ} (hma : m < f' a)
     (hmb : f' b < m) : m ∈ f' '' Ioo a b :=
   let ⟨c, cmem, hc⟩ :=
-    exists_hasDerivWithinAt_eq_of_gt_of_lt hab (fun x hx => (hf x hx).neg) (neg_lt_neg hma)
+    exists_hasDerivWithinAt_eq_of_gt_of_lt hab (fun x hx ↦ (hf x hx).neg) (neg_lt_neg hma)
       (neg_lt_neg hmb)
   ⟨c, cmem, neg_injective hc⟩
 
@@ -75,12 +75,12 @@ theorem Set.OrdConnected.image_hasDerivWithinAt {s : Set ℝ} (hs : OrdConnected
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ - m ⟨hma, hmb⟩
   rcases le_total a b with hab | hab
   · have : Icc a b ⊆ s := hs.out ha hb
-    rcases exists_hasDerivWithinAt_eq_of_gt_of_lt hab (fun x hx => (hf x <| this hx).mono this) hma
+    rcases exists_hasDerivWithinAt_eq_of_gt_of_lt hab (fun x hx ↦ (hf x <| this hx).mono this) hma
         hmb with
       ⟨c, cmem, hc⟩
     exact ⟨c, this <| Ioo_subset_Icc_self cmem, hc⟩
   · have : Icc b a ⊆ s := hs.out hb ha
-    rcases exists_hasDerivWithinAt_eq_of_lt_of_gt hab (fun x hx => (hf x <| this hx).mono this) hmb
+    rcases exists_hasDerivWithinAt_eq_of_lt_of_gt hab (fun x hx ↦ (hf x <| this hx).mono this) hmb
         hma with
       ⟨c, cmem, hc⟩
     exact ⟨c, this <| Ioo_subset_Icc_self cmem, hc⟩
@@ -89,13 +89,13 @@ theorem Set.OrdConnected.image_hasDerivWithinAt {s : Set ℝ} (hs : OrdConnected
 set, `derivWithin` version. -/
 theorem Set.OrdConnected.image_derivWithin {s : Set ℝ} (hs : OrdConnected s)
     (hf : DifferentiableOn ℝ f s) : OrdConnected (derivWithin f s '' s) :=
-  hs.image_hasDerivWithinAt fun x hx => (hf x hx).hasDerivWithinAt
+  hs.image_hasDerivWithinAt fun x hx ↦ (hf x hx).hasDerivWithinAt
 
 /-- **Darboux's theorem**: the image of a `Set.OrdConnected` set under `f'` is a `Set.OrdConnected`
 set, `deriv` version. -/
 theorem Set.OrdConnected.image_deriv {s : Set ℝ} (hs : OrdConnected s)
     (hf : ∀ x ∈ s, DifferentiableAt ℝ f x) : OrdConnected (deriv f '' s) :=
-  hs.image_hasDerivWithinAt fun x hx => (hf x hx).hasDerivAt.hasDerivWithinAt
+  hs.image_hasDerivWithinAt fun x hx ↦ (hf x hx).hasDerivAt.hasDerivWithinAt
 
 /-- **Darboux's theorem**: the image of a convex set under `f'` is a convex set,
 `HasDerivWithinAt` version. -/

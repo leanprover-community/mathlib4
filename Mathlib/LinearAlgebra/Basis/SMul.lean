@@ -55,10 +55,10 @@ instance : MulAction G (Basis ι R M) :=
   Function.Injective.mulAction _ DFunLike.coe_injective coe_smul
 
 instance [SMulCommClass G G' M] : SMulCommClass G G' (Basis ι R M) where
-  smul_comm _g _g' _b := DFunLike.ext _ _ fun _ => smul_comm _ _ _
+  smul_comm _g _g' _b := DFunLike.ext _ _ fun _ ↦ smul_comm _ _ _
 
 instance [SMul G G'] [IsScalarTower G G' M] : IsScalarTower G G' (Basis ι R M) where
-  smul_assoc _g _g' _b := DFunLike.ext _ _ fun _ => smul_assoc _ _ _
+  smul_assoc _g _g' _b := DFunLike.ext _ _ fun _ ↦ smul_assoc _ _ _
 
 end SMul
 
@@ -73,7 +73,7 @@ theorem groupSMul_span_eq_top {G : Type*} [Group G] [SMul G R] [MulAction G M]
   intro j hj
   rw [← hv] at hj
   rw [Submodule.mem_span] at hj ⊢
-  refine fun p hp => hj p fun u hu => ?_
+  refine fun p hp ↦ hj p fun u hu ↦ ?_
   obtain ⟨i, rfl⟩ := hu
   have : ((w i)⁻¹ • (1 : R)) • w i • v i ∈ p := p.smul_mem ((w i)⁻¹ • (1 : R)) (hp ⟨i, rfl⟩)
   rwa [smul_one_smul, inv_smul_smul] at this
@@ -122,11 +122,11 @@ theorem coord_unitsSMul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (i : ι) :
 @[simp]
 theorem repr_unitsSMul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (v : M) (i : ι) :
     (e.unitsSMul w).repr v i = (w i)⁻¹ • e.repr v i :=
-  congr_arg (fun f : M →ₗ[R₂] R₂ => f v) (e.coord_unitsSMul w i)
+  congr_arg (fun f : M →ₗ[R₂] R₂ ↦ f v) (e.coord_unitsSMul w i)
 
 /-- A version of `unitsSMul` that uses `IsUnit`. -/
 def isUnitSMul (v : Basis ι R M) {w : ι → R} (hw : ∀ i, IsUnit (w i)) : Basis ι R M :=
-  unitsSMul v fun i => (hw i).unit
+  unitsSMul v fun i ↦ (hw i).unit
 
 theorem isUnitSMul_apply {v : Basis ι R M} {w : ι → R} (hw : ∀ i, IsUnit (w i)) (i : ι) :
     v.isUnitSMul hw i = w i • v i :=

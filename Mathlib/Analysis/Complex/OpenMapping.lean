@@ -48,19 +48,19 @@ theorem DiffContOnCl.ball_subset_image_closedBall (h : DiffContOnCl ℂ f (ball 
     at `z₀` so it is not constant on the disk, which implies that its infimum is equal to `0` and
     hence that `v` is in the range of `f`. -/
   rintro v hv
-  have h1 : DiffContOnCl ℂ (fun z => f z - v) (ball z₀ r) := h.sub_const v
-  have h2 : ContinuousOn (fun z => ‖f z - v‖) (closedBall z₀ r) :=
+  have h1 : DiffContOnCl ℂ (fun z ↦ f z - v) (ball z₀ r) := h.sub_const v
+  have h2 : ContinuousOn (fun z ↦ ‖f z - v‖) (closedBall z₀ r) :=
     continuous_norm.comp_continuousOn (closure_ball z₀ hr.ne.symm ▸ h1.continuousOn)
   have h3 : AnalyticOnNhd ℂ f (ball z₀ r) := h.differentiableOn.analyticOnNhd isOpen_ball
-  have h4 : ∀ z ∈ sphere z₀ r, ε / 2 ≤ ‖f z - v‖ := fun z hz => by
+  have h4 : ∀ z ∈ sphere z₀ r, ε / 2 ≤ ‖f z - v‖ := fun z hz ↦ by
     linarith [hf z hz, show ‖v - f z₀‖ < ε / 2 from mem_ball.mp hv,
       norm_sub_sub_norm_sub_le_norm_sub (f z) v (f z₀)]
   have h5 : ‖f z₀ - v‖ < ε / 2 := by simpa [← dist_eq_norm, dist_comm] using mem_ball.mp hv
-  obtain ⟨z, hz1, hz2⟩ : ∃ z ∈ ball z₀ r, IsLocalMin (fun z => ‖f z - v‖) z :=
-    exists_isLocalMin_mem_ball h2 (mem_closedBall_self hr.le) fun z hz => h5.trans_le (h4 z hz)
+  obtain ⟨z, hz1, hz2⟩ : ∃ z ∈ ball z₀ r, IsLocalMin (fun z ↦ ‖f z - v‖) z :=
+    exists_isLocalMin_mem_ball h2 (mem_closedBall_self hr.le) fun z hz ↦ h5.trans_le (h4 z hz)
   refine ⟨z, ball_subset_closedBall hz1, sub_eq_zero.mp ?_⟩
   have h6 := h1.differentiableOn.eventually_differentiableAt (isOpen_ball.mem_nhds hz1)
-  refine (eventually_eq_or_eq_zero_of_isLocalMin_norm h6 hz2).resolve_left fun key => ?_
+  refine (eventually_eq_or_eq_zero_of_isLocalMin_norm h6 hz2).resolve_left fun key ↦ ?_
   have h7 : ∀ᶠ w in 𝓝 z, f w = f z := by filter_upwards [key] with h; simp
   replace h7 : ∃ᶠ w in 𝓝[≠] z, f w = f z := (h7.filter_mono nhdsWithin_le_nhds).frequently
   have h8 : IsPreconnected (ball z₀ r) := (convex_ball z₀ r).isPreconnected
@@ -78,8 +78,8 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux (hf : AnalyticAt 
     is not constant in a neighborhood of `z₀`, then it is nonzero, and therefore bounded below, on
     every small enough circle around `z₀` and then `DiffContOnCl.ball_subset_image_closedBall`
     provides an explicit ball centered at `f z₀` contained in the range of `f`. -/
-  refine or_iff_not_imp_left.mpr fun h => ?_
-  refine (nhds_basis_ball.le_basis_iff (nhds_basis_closedBall.map f)).mpr fun R hR => ?_
+  refine or_iff_not_imp_left.mpr fun h ↦ ?_
+  refine (nhds_basis_ball.le_basis_iff (nhds_basis_closedBall.map f)).mpr fun R hR ↦ ?_
   have h1 := (hf.eventually_eq_or_eventually_ne analyticAt_const).resolve_left h
   have h2 : ∀ᶠ z in 𝓝 z₀, AnalyticAt ℂ f z := (isOpen_analyticAt ℂ f).eventually_mem hf
   obtain ⟨ρ, hρ, h3, h4⟩ :
@@ -93,14 +93,14 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux (hf : AnalyticAt 
   have hr : 0 < r := lt_inf_iff.mpr ⟨hρ, hR⟩
   have h5 : closedBall z₀ r ⊆ closedBall z₀ ρ := closedBall_subset_closedBall inf_le_left
   have h6 : DiffContOnCl ℂ f (ball z₀ r) := h3.mono (ball_subset_ball inf_le_left)
-  have h7 : ∀ z ∈ sphere z₀ r, f z ≠ f z₀ := fun z hz =>
+  have h7 : ∀ z ∈ sphere z₀ r, f z ≠ f z₀ := fun z hz ↦
     h4 z (h5 (sphere_subset_closedBall hz)) (ne_of_mem_sphere hz hr.ne.symm)
   have h8 : (sphere z₀ r).Nonempty := NormedSpace.sphere_nonempty.mpr hr.le
-  have h9 : ContinuousOn (fun x => ‖f x - f z₀‖) (sphere z₀ r) := continuous_norm.comp_continuousOn
+  have h9 : ContinuousOn (fun x ↦ ‖f x - f z₀‖) (sphere z₀ r) := continuous_norm.comp_continuousOn
     ((h6.sub_const (f z₀)).continuousOn_ball.mono sphere_subset_closedBall)
   obtain ⟨x, hx, hfx⟩ := (isCompact_sphere z₀ r).exists_isMinOn h8 h9
   refine ⟨‖f x - f z₀‖ / 2, half_pos (norm_sub_pos_iff.mpr (h7 x hx)), ?_⟩
-  exact (h6.ball_subset_image_closedBall hr (fun z hz => hfx hz) (not_eventually.mp h)).trans
+  exact (h6.ball_subset_image_closedBall hr (fun z hz ↦ hfx hz) (not_eventually.mp h)).trans
     (by gcongr; exact inf_le_right)
 
 /-- The *open mapping theorem* for holomorphic functions, local version: is a function `g : E → ℂ`
@@ -115,19 +115,19 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : Anal
     any ball centered at `z₀` on which it is analytic, and in particular `g` is eventually constant.
     If on the other hand there is one line along which `g` is not eventually constant, then the
     one-dimensional version of the open mapping theorem can be used to conclude. -/
-  let ray : E → ℂ → E := fun z t => z₀ + t • z
-  let gray : E → ℂ → ℂ := fun z => g ∘ ray z
+  let ray : E → ℂ → E := fun z t ↦ z₀ + t • z
+  let gray : E → ℂ → ℂ := fun z ↦ g ∘ ray z
   obtain ⟨r, hr, hgr⟩ := isOpen_iff.mp (isOpen_analyticAt ℂ g) z₀ hg
   have h1 : ∀ z ∈ sphere (0 : E) 1, AnalyticOnNhd ℂ (gray z) (ball 0 r) := by
-    refine fun z hz t ht => AnalyticAt.comp ?_ ?_
+    refine fun z hz t ht ↦ AnalyticAt.comp ?_ ?_
     · exact hgr (by simpa [ray, norm_smul, mem_sphere_zero_iff_norm.mp hz] using ht)
     · exact analyticAt_const.add
         ((ContinuousLinearMap.smulRight (ContinuousLinearMap.id ℂ ℂ) z).analyticAt t)
   by_cases h : ∀ z ∈ sphere (0 : E) 1, ∀ᶠ t in 𝓝 0, gray z t = gray z 0
   · left
     -- If g is eventually constant along every direction, then it is eventually constant
-    refine eventually_of_mem (ball_mem_nhds z₀ hr) fun z hz => ?_
-    refine (eq_or_ne z z₀).casesOn (congr_arg g) fun h' => ?_
+    refine eventually_of_mem (ball_mem_nhds z₀ hr) fun z hz ↦ ?_
+    refine (eq_or_ne z z₀).casesOn (congr_arg g) fun h' ↦ ?_
     replace h' : ‖z - z₀‖ ≠ 0 := by simpa only [Ne, norm_eq_zero, sub_eq_zero]
     let w : E := ‖z - z₀‖⁻¹ • (z - z₀)
     have h3 : ∀ t ∈ ball (0 : ℂ) r, gray w t = g z₀ := by
@@ -148,7 +148,7 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : Anal
     have h7 := h1.eventually_constant_or_nhds_le_map_nhds_aux.resolve_left hrz
     rw [show gray z 0 = g z₀ by simp [gray, ray], ← map_compose] at h7
     refine h7.trans (map_mono ?_)
-    have h10 : Continuous fun t : ℂ => z₀ + t • z :=
+    have h10 : Continuous fun t : ℂ ↦ z₀ + t • z :=
       continuous_const.add (continuous_id'.smul continuous_const)
     simpa using h10.tendsto 0
 
@@ -161,7 +161,7 @@ theorem AnalyticOnNhd.is_constant_or_isOpen (hg : AnalyticOnNhd ℂ g U) (hU : I
   · obtain ⟨z₀, hz₀, h⟩ := h
     exact Or.inl ⟨g z₀, hg.eqOn_of_preconnected_of_eventuallyEq analyticOnNhd_const hU hz₀ h⟩
   · push_neg at h
-    refine Or.inr fun s hs1 hs2 => isOpen_iff_mem_nhds.mpr ?_
+    refine Or.inr fun s hs1 hs2 ↦ isOpen_iff_mem_nhds.mpr ?_
     rintro z ⟨w, hw1, rfl⟩
     exact (hg w (hs1 hw1)).eventually_constant_or_nhds_le_map_nhds.resolve_left (h w (hs1 hw1))
         (image_mem_map (hs2.mem_nhds hw1))

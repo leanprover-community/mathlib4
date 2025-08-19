@@ -55,18 +55,18 @@ variable {K L : Type*} [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
 /-- Given `f : Aut_K(L) → Lˣ`, the sum `∑ f(φ) • φ` for `φ ∈ Aut_K(L)`, as a function `L → L`. -/
 noncomputable def aux (f : (L ≃ₐ[K] L) → Lˣ) : L → L :=
   Finsupp.linearCombination L (fun φ : L ≃ₐ[K] L ↦ (φ : L → L))
-    (Finsupp.equivFunOnFinite.symm (fun φ => (f φ : L)))
+    (Finsupp.equivFunOnFinite.symm (fun φ ↦ (f φ : L)))
 
 theorem aux_ne_zero (f : (L ≃ₐ[K] L) → Lˣ) : aux f ≠ 0 :=
 /- the set `Aut_K(L)` is linearly independent in the `L`-vector space `L → L`, by Dedekind's
 linear independence of characters -/
-  have : LinearIndependent L (fun (f : L ≃ₐ[K] L) => (f : L → L)) :=
+  have : LinearIndependent L (fun (f : L ≃ₐ[K] L) ↦ (f : L → L)) :=
     LinearIndependent.comp (ι' := L ≃ₐ[K] L)
-      (linearIndependent_monoidHom L L) (fun f => f)
-      (fun x y h => by ext; exact DFunLike.ext_iff.1 h _)
+      (linearIndependent_monoidHom L L) (fun f ↦ f)
+      (fun x y h ↦ by ext; exact DFunLike.ext_iff.1 h _)
   have h := linearIndependent_iff.1 this
-    (Finsupp.equivFunOnFinite.symm (fun φ => (f φ : L)))
-  fun H => Units.ne_zero (f 1) (DFunLike.ext_iff.1 (h H) 1)
+    (Finsupp.equivFunOnFinite.symm (fun φ ↦ (f φ : L)))
+  fun H ↦ Units.ne_zero (f 1) (DFunLike.ext_iff.1 (h H) 1)
 
 end Hilbert90
 section
@@ -81,7 +81,7 @@ theorem isMulCoboundary₁_of_isMulCocycle₁_of_aut_to_units
     IsMulCoboundary₁ f := by
 /- Let `z : L` be such that `∑ f(h) * h(z) ≠ 0`, for `h ∈ Aut_K(L)` -/
   obtain ⟨z, hz⟩ : ∃ z, aux f z ≠ 0 :=
-    not_forall.1 (fun H => aux_ne_zero f <| funext <| fun x => H x)
+    not_forall.1 (fun H ↦ aux_ne_zero f <| funext <| fun x ↦ H x)
   have : aux f z = ∑ h, f h * h z := by simp [aux, Finsupp.linearCombination, Finsupp.sum_fintype]
 /- Let `β = (∑ f(h) * h(z))⁻¹.` -/
   use (Units.mk0 (aux f z) hz)⁻¹
@@ -91,8 +91,8 @@ theorem isMulCoboundary₁_of_isMulCocycle₁_of_aut_to_units
     map_inv, div_inv_eq_mul, inv_mul_eq_iff_eq_mul, Units.ext_iff, this,
     Units.val_mul, Units.coe_map, Units.val_mk0, MonoidHom.coe_coe] at hf ⊢
   simp_rw [map_sum, map_mul, Finset.sum_mul, mul_assoc, mul_comm _ (f _ : L), ← mul_assoc, ← hf g]
-  exact eq_comm.1 (Fintype.sum_bijective (fun i => g * i)
-    (Group.mulLeft_bijective g) _ _ (fun i => rfl))
+  exact eq_comm.1 (Fintype.sum_bijective (fun i ↦ g * i)
+    (Group.mulLeft_bijective g) _ _ (fun i ↦ rfl))
 
 @[deprecated (since := "2025-06-26")]
 alias isMulOneCoboundary_of_isMulOneCocycle_of_aut_to_units :=
@@ -105,7 +105,7 @@ variable (K L : Type) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
 first group cohomology `H¹(Aut_K(L), Lˣ)` is trivial. -/
 noncomputable instance H1ofAutOnUnitsUnique : Unique (H1 (Rep.ofAlgebraAutOnUnits K L)) where
   default := 0
-  uniq := fun a => H1_induction_on a fun x => (H1π_eq_zero_iff _).2 <| by
+  uniq := fun a ↦ H1_induction_on a fun x ↦ (H1π_eq_zero_iff _).2 <| by
     refine (coboundariesOfIsMulCoboundary₁ ?_).2
     rcases isMulCoboundary₁_of_isMulCocycle₁_of_aut_to_units x.1
       (isMulCocycle₁_of_mem_cocycles₁ _ x.2) with ⟨β, hβ⟩

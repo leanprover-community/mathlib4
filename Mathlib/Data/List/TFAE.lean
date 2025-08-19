@@ -31,8 +31,8 @@ theorem tfae_nil : TFAE [] :=
 theorem tfae_singleton (p) : TFAE [p] := by simp [TFAE, -eq_iff_iff]
 
 theorem tfae_cons_of_mem {a b} {l : List Prop} (h : b ∈ l) : TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l :=
-  ⟨fun H => ⟨H a (by simp) b (Mem.tail a h),
-    fun _ hp _ hq => H _ (Mem.tail a hp) _ (Mem.tail a hq)⟩,
+  ⟨fun H ↦ ⟨H a (by simp) b (Mem.tail a h),
+    fun _ hp _ hq ↦ H _ (Mem.tail a hp) _ (Mem.tail a hq)⟩,
       by
         rintro ⟨ab, H⟩ p (_ | ⟨_, hp⟩) q (_ | ⟨_, hq⟩)
         · rfl
@@ -48,7 +48,7 @@ theorem tfae_cons_self {a} {l : List Prop} : TFAE (a :: a :: l) ↔ TFAE (a :: l
   simp [tfae_cons_cons]
 
 theorem tfae_of_forall (b : Prop) (l : List Prop) (h : ∀ a ∈ l, a ↔ b) : TFAE l :=
-  fun _a₁ h₁ _a₂ h₂ => (h _ h₁).trans (h _ h₂).symm
+  fun _a₁ h₁ _a₂ h₂ ↦ (h _ h₁).trans (h _ h₂).symm
 
 theorem tfae_of_cycle {a b} {l : List Prop} (h_chain : List.Chain (· → ·) a (b :: l))
     (h_last : getLastD l b → a) : TFAE (a :: b :: l) := by

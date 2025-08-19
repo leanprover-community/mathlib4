@@ -314,7 +314,7 @@ lemma cfc_apply : cfc f a = cfcHom (a := a) ha ⟨_, hf.restrict⟩ := by
 
 lemma cfc_apply_pi {ι : Type*} (f : ι → R → R) (a : A) (ha : p a := by cfc_tac)
     (hf : ∀ i, ContinuousOn (f i) (spectrum R a) := by cfc_cont_tac) :
-    (fun i => cfc (f i) a) = (fun i => cfcHom (a := a) ha ⟨_, (hf i).restrict⟩) := by
+    (fun i ↦ cfc (f i) a) = (fun i ↦ cfcHom (a := a) ha ⟨_, (hf i).restrict⟩) := by
   ext i
   simp only [cfc_apply (f i) a ha (hf i)]
 
@@ -476,13 +476,13 @@ lemma cfc_add (f g : R → R) (hf : ContinuousOn f (spectrum R a) := by cfc_cont
 
 lemma cfc_const_add (r : R) (f : R → R) (a : A)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
-    cfc (fun x => r + f x) a = algebraMap R A r + cfc f a := by
-  have : (fun z => r + f z) = (fun z => (fun _ => r) z + f z) := by ext; simp
+    cfc (fun x ↦ r + f x) a = algebraMap R A r + cfc f a := by
+  have : (fun z ↦ r + f z) = (fun z ↦ (fun _ ↦ r) z + f z) := by ext; simp
   rw [this, cfc_add a _ _ (continuousOn_const (c := r)) hf, cfc_const r a ha]
 
 lemma cfc_add_const (r : R) (f : R → R) (a : A)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
-    cfc (fun x => f x + r) a = cfc f a + algebraMap R A r := by
+    cfc (fun x ↦ f x + r) a = cfc f a + algebraMap R A r := by
   rw [add_comm (cfc f a)]
   conv_lhs => simp only [add_comm]
   exact cfc_const_add r f a hf ha
@@ -492,12 +492,12 @@ lemma cfc_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
     (hf : ∀ i ∈ s, ContinuousOn (f i) (spectrum R a) := by cfc_cont_tac) :
     cfc (∑ i ∈ s, f i)  a = ∑ i ∈ s, cfc (f i) a := by
   by_cases ha : p a
-  · have hsum : s.sum f = fun z => ∑ i ∈ s, f i z := by ext; simp
+  · have hsum : s.sum f = fun z ↦ ∑ i ∈ s, f i z := by ext; simp
     have hf' : ContinuousOn (∑ i : s, f i) (spectrum R a) := by
       rw [sum_coe_sort s, hsum]
-      exact continuousOn_finset_sum s fun i hi => hf i hi
+      exact continuousOn_finset_sum s fun i hi ↦ hf i hi
     rw [← sum_coe_sort s, ← sum_coe_sort s]
-    rw [cfc_apply_pi _ a _ (fun ⟨i, hi⟩ => hf i hi), ← map_sum, cfc_apply _ a ha hf']
+    rw [cfc_apply_pi _ a _ (fun ⟨i, hi⟩ ↦ hf i hi), ← map_sum, cfc_apply _ a ha hf']
     congr 1
     ext
     simp
@@ -656,7 +656,7 @@ include instCFC in
 lemma CFC.spectrum_algebraMap_eq [Nontrivial A] (r : R) :
     spectrum R (algebraMap R A r) = {r} := by
   have hp : p 0 := cfc_predicate_zero R
-  rw [← cfc_const r 0 hp, cfc_map_spectrum (fun _ => r) 0 hp]
+  rw [← cfc_const r 0 hp, cfc_map_spectrum (fun _ ↦ r) 0 hp]
   exact Set.Nonempty.image_const (⟨0, spectrum.zero_mem (R := R) not_isUnit_zero⟩) _
 
 include instCFC in

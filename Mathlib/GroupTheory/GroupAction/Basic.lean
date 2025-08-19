@@ -91,7 +91,7 @@ theorem mem_fixedPoints_iff_card_orbit_eq_one {a : α} [Fintype (orbit M a)] :
 
 @[to_additive instDecidablePredMemSetFixedByAddOfDecidableEq]
 instance (m : M) [DecidableEq β] :
-    DecidablePred fun b : β => b ∈ MulAction.fixedBy β m := fun b ↦ by
+    DecidablePred fun b : β ↦ b ∈ MulAction.fixedBy β m := fun b ↦ by
   simp only [MulAction.mem_fixedBy]
   infer_instance
 

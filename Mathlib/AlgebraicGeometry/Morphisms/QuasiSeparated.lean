@@ -178,10 +178,10 @@ instance [CompactSpace X] [QuasiSeparatedSpace Y] (f g : X ⟶ Y) :
 
 theorem QuasiSeparated.of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated (f ≫ g)] :
     QuasiSeparated f := by
-  let 𝒰 := (Z.affineCover.pullbackCover g).bind fun x => Scheme.affineCover _
+  let 𝒰 := (Z.affineCover.pullbackCover g).bind fun x ↦ Scheme.affineCover _
   have (i : _) : IsAffine (𝒰.obj i) := by dsimp [𝒰]; infer_instance
   apply HasAffineProperty.of_openCover
-    ((Z.affineCover.pullbackCover g).bind fun x => Scheme.affineCover _)
+    ((Z.affineCover.pullbackCover g).bind fun x ↦ Scheme.affineCover _)
   rintro ⟨i, j⟩; dsimp at i j
   refine @quasiSeparatedSpace_of_quasiSeparated _ _ ?_
     (HasAffineProperty.of_isPullback (.of_hasPullback _ (Z.affineCover.map i)) ‹_›) ?_
@@ -276,15 +276,15 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
           (S ⊓ U.1).2⟩
     haveI := hs'.to_subtype
     cases nonempty_fintype s
-    replace hs : S ⊓ U.1 = iSup fun i : s => (i : X.Opens) := by ext1; simpa using hs
+    replace hs : S ⊓ U.1 = iSup fun i : s ↦ (i : X.Opens) := by ext1; simpa using hs
     have hs₁ (i : s) : i.1.1 ≤ S := by
       refine le_trans ?_ (inf_le_left (b := U.1))
       rw [hs]
-      exact le_iSup (fun (i : s) => (i : X.Opens)) i
+      exact le_iSup (fun (i : s) ↦ (i : X.Opens)) i
     have hs₂ (i : s) : i.1.1 ≤ U.1 := by
       refine le_trans ?_ (inf_le_right (a := S))
       rw [hs]
-      exact le_iSup (fun (i : s) => (i : X.Opens)) i
+      exact le_iSup (fun (i : s) ↦ (i : X.Opens)) i
     -- On each affine open in the intersection, we have `f ^ (n + n₂) * y₁ = f ^ (n + n₁) * y₂`
     -- for some `n` since `f ^ n₂ * y₁ = f ^ (n₁ + n₂) * x = f ^ n₁ * y₂` on `X_f`.
     have := fun i ↦ exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux
@@ -297,9 +297,9 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
           (X.presheaf.map (homOfLE le_sup_left).op f ^ (Finset.univ.sup n + n₂) * y₁) =
         X.presheaf.map (homOfLE <| inf_le_right).op
           (X.presheaf.map (homOfLE le_sup_right).op f ^ (Finset.univ.sup n + n₁) * y₂) := by
-      fapply X.sheaf.eq_of_locally_eq' fun i : s => i.1.1
-      · refine fun i => homOfLE ?_; rw [hs]
-        exact le_iSup (fun (i : s) => (i : X.Opens)) i
+      fapply X.sheaf.eq_of_locally_eq' fun i : s ↦ i.1.1
+      · refine fun i ↦ homOfLE ?_; rw [hs]
+        exact le_iSup (fun (i : s) ↦ (i : X.Opens)) i
       · exact le_of_eq hs
       · intro i
         -- This unfolds `X.sheaf`

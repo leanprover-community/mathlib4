@@ -91,7 +91,7 @@ theorem ofLower_inj {a b : WithLower α} : ofLower a = ofLower b ↔ a = b :=
 
 /-- A recursor for `WithLower`. Use as `induction x`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
-protected def rec {β : WithLower α → Sort*} (h : ∀ a, β (toLower a)) : ∀ a, β a := fun a =>
+protected def rec {β : WithLower α → Sort*} (h : ∀ a, β (toLower a)) : ∀ a, β a := fun a ↦
   h (ofLower a)
 
 instance [Nonempty α] : Nonempty (WithLower α) := ‹Nonempty α›
@@ -144,7 +144,7 @@ lemma ofUpper_inj {a b : WithUpper α} : ofUpper a = ofUpper b ↔ a = b := Iff.
 
 /-- A recursor for `WithUpper`. Use as `induction x`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
-protected def rec {β : WithUpper α → Sort*} (h : ∀ a, β (toUpper a)) : ∀ a, β a := fun a =>
+protected def rec {β : WithUpper α → Sort*} (h : ∀ a, β (toUpper a)) : ∀ a, β a := fun a ↦
   h (ofUpper a)
 
 instance [Nonempty α] : Nonempty (WithUpper α) := ‹Nonempty α›
@@ -243,7 +243,7 @@ instance : ClosedIciTopology α :=
 /-- The upper closure of a finite set is closed in the lower topology. -/
 theorem isClosed_upperClosure (h : s.Finite) : IsClosed (upperClosure s : Set α) := by
   simp only [← UpperSet.iInf_Ici, UpperSet.coe_iInf]
-  exact h.isClosed_biUnion fun _ _ => isClosed_Ici
+  exact h.isClosed_biUnion fun _ _ ↦ isClosed_Ici
 
 /-- Every set open in the lower topology is a lower set. -/
 theorem isLowerSet_of_isOpen (h : IsOpen s) : IsLowerSet s := by
@@ -268,7 +268,7 @@ The closure of a singleton `{a}` in the lower topology is the left-closed right-
 -/
 @[simp]
 theorem closure_singleton (a : α) : closure {a} = Ici a :=
-  Subset.antisymm ((closure_minimal fun _ h => h.ge) <| isClosed_Ici) <|
+  Subset.antisymm ((closure_minimal fun _ h ↦ h.ge) <| isClosed_Ici) <|
     (isUpperSet_of_isClosed isClosed_closure).Ici_subset <| subset_closure rfl
 
 protected theorem isTopologicalBasis : IsTopologicalBasis (lowerBasis α) := by
@@ -277,7 +277,7 @@ protected theorem isTopologicalBasis : IsTopologicalBasis (lowerBasis α) := by
   ext s
   constructor
   · rintro ⟨F, hF, rfl⟩
-    refine ⟨(fun a => (Ici a)ᶜ) '' F, ⟨hF.image _, image_subset_iff.2 fun _ _ => ⟨_, rfl⟩⟩, ?_⟩
+    refine ⟨(fun a ↦ (Ici a)ᶜ) '' F, ⟨hF.image _, image_subset_iff.2 fun _ _ ↦ ⟨_, rfl⟩⟩, ?_⟩
     simp only [sInter_image]
   · rintro ⟨F, ⟨hF, hs⟩, rfl⟩
     haveI := hF.to_subtype
@@ -302,7 +302,7 @@ variable [PartialOrder α] [TopologicalSpace α] [IsLower α]
 -- see Note [lower instance priority]
 /-- The lower topology on a partial order is T₀. -/
 instance (priority := 90) t0Space : T0Space α :=
-  (t0Space_iff_inseparable α).2 fun x y h =>
+  (t0Space_iff_inseparable α).2 fun x y h ↦
     Ici_injective <| by simpa only [inseparable_iff_closure_eq, closure_singleton] using h
 
 end PartialOrder
@@ -347,7 +347,7 @@ lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ ∃ a, (
       by_contra hUS'
       apply hU
       rw [hS2]
-      exact sUnion_eq_univ_iff.mpr (fun a => ⟨univ, hUS', trivial⟩)
+      exact sUnion_eq_univ_iff.mpr (fun a ↦ ⟨univ, hUS', trivial⟩)
     use sSup {a | (Ici a)ᶜ ∈ S}
     rw [hS2, sUnion_eq_compl_sInter_compl, compl_inj_iff]
     apply le_antisymm
@@ -487,7 +487,7 @@ instance instIsLowerProd [Preorder α] [TopologicalSpace α] [IsLower α]
     simp_rw [coe_upperClosure, compl_iUnion, prod_eq, preimage_iInter, preimage_compl]
     -- without `let`, `refine` tries to use the product topology and fails
     let _ : TopologicalSpace (α × β) := lower (α × β)
-    refine (hs.isOpen_biInter fun a _ => ?_).inter (ht.isOpen_biInter fun b _ => ?_)
+    refine (hs.isOpen_biInter fun a _ ↦ ?_).inter (ht.isOpen_biInter fun b _ ↦ ?_)
     · exact GenerateOpen.basic _ ⟨(a, ⊥), by simp [Ici_prod_eq, prod_univ]⟩
     · exact GenerateOpen.basic _ ⟨(⊥, b), by simp [Ici_prod_eq, univ_prod]⟩
 
@@ -504,9 +504,9 @@ variable [CompleteLattice α] [CompleteLattice β] [TopologicalSpace α] [IsLowe
   [TopologicalSpace β] [IsLower β]
 
 protected lemma _root_.sInfHom.continuous (f : sInfHom α β) : Continuous f := by
-  refine IsLower.continuous_iff_Ici.2 fun b => ?_
+  refine IsLower.continuous_iff_Ici.2 fun b ↦ ?_
   convert isClosed_Ici (a := sInf <| f ⁻¹' Ici b)
-  refine Subset.antisymm (fun a => sInf_le) fun a ha => le_trans ?_ <|
+  refine Subset.antisymm (fun a ↦ sInf_le) fun a ha ↦ le_trans ?_ <|
     OrderHomClass.mono (f : α →o β) ha
   refine LE.le.trans ?_ (map_sInf f _).ge
   simp
@@ -547,7 +547,7 @@ instance : IsUpper Prop where
     rw [Topology.upper, sierpinskiSpace, ← generateFrom_insert_empty]
     congr
     exact le_antisymm
-      (fun h hs => by
+      (fun h hs ↦ by
         simp only [compl_Iic, mem_setOf_eq]
         rw [← Ioi_True, ← Ioi_False] at hs
         rcases hs with (rfl | rfl)

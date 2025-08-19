@@ -63,7 +63,7 @@ theorem Ideal.eq_span_singleton_of_mem_of_notMem_sq_of_notMem_prime_ne {P : Idea
                  Submodule.mem_top]
     exact hxQ _ hQp hQ
   · exact
-      (Multiset.count_eq_zero.mpr fun hQi =>
+      (Multiset.count_eq_zero.mpr fun hQi ↦
           hQp
             (isPrime_of_prime
               (irreducible_iff_prime.mp (irreducible_of_normalized_factor _ hQi)))).le
@@ -115,7 +115,7 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
     simp_rw [s, Finset.mem_erase, hf.mem_toFinset]
     rintro M hM M' ⟨hne, hM'⟩
     exact Ideal.IsMaximal.coprime_of_ne hM hM' hne.symm
-  have nle : ∀ M ∈ s, ¬⨅ M' ∈ s.erase M, M' ≤ M := fun M hM =>
+  have nle : ∀ M ∈ s, ¬⨅ M' ∈ s.erase M, M' ≤ M := fun M hM ↦
     left_lt_sup.1
       ((hf.mem_toFinset.1 hM).ne_top.lt_top.trans_eq (Ideal.sup_iInf_eq_top <| coprime M hM).symm)
   have : ∀ M ∈ s, ∃ a ∈ I, ∃ b ∈ I', a * b ∉ IsLocalization.coeSubmodule A M := by
@@ -126,12 +126,12 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
           hinv.symm)
     exact hxM (Submodule.mul_le.2 h hx)
   choose! a ha b hb hm using this
-  choose! u hu hum using fun M hM => SetLike.not_le_iff_exists.1 (nle M hM)
+  choose! u hu hum using fun M hM ↦ SetLike.not_le_iff_exists.1 (nle M hM)
   let v := ∑ M ∈ s, u M • b M
-  have hv : v ∈ I' := Submodule.sum_mem _ fun M hM => Submodule.smul_mem _ _ <| hb M hM
+  have hv : v ∈ I' := Submodule.sum_mem _ fun M hM ↦ Submodule.smul_mem _ _ <| hb M hM
   refine
     FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top
-      (Units.mkOfMulEqOne I I' hinv') hv (of_not_not fun h => ?_)
+      (Units.mkOfMulEqOne I I' hinv') hv (of_not_not fun h ↦ ?_)
   obtain ⟨M, hM, hJM⟩ := Ideal.exists_le_maximal _ h
   replace hM := hf.mem_toFinset.2 hM
   have : ∀ a ∈ I, ∀ b ∈ I', ∃ c, algebraMap R _ c = a * b := by
@@ -154,7 +154,7 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
     -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify the value of `f`
     exact Submodule.mem_map_of_mem (f := Algebra.linearMap _ _)
         (((hf.mem_toFinset.1 hM).isPrime.mem_or_mem hdM).resolve_left <| hum M hM)
-  · refine Submodule.sum_mem _ fun M' hM' => ?_
+  · refine Submodule.sum_mem _ fun M' hM' ↦ ?_
     rw [Finset.mem_erase] at hM'
     obtain ⟨c, hc⟩ := this _ (ha M hM) _ (hb M' hM'.2)
     rw [← hc, Algebra.smul_def, ← map_mul]
@@ -176,7 +176,7 @@ theorem Ideal.IsPrincipal.of_finite_maximals_of_isUnit (hf : {I : Ideal R | I.Is
 /-- A Dedekind domain is a PID if its set of primes is finite. -/
 theorem IsPrincipalIdealRing.of_finite_primes [IsDedekindDomain R]
     (h : {I : Ideal R | I.IsPrime}.Finite) : IsPrincipalIdealRing R :=
-  ⟨fun I => by
+  ⟨fun I ↦ by
     obtain rfl | hI := eq_or_ne I ⊥
     · exact bot_isPrincipal
     apply Ideal.IsPrincipal.of_finite_maximals_of_isUnit
@@ -206,7 +206,7 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [IsDomain S]
       p.primeCompl_le_nonZeroDivisors
   letI : Algebra (Localization.AtPrime p) Sₚ := localizationAlgebra p.primeCompl S
   haveI : IsScalarTower R (Localization.AtPrime p) Sₚ :=
-    IsScalarTower.of_algebraMap_eq fun x => by
+    IsScalarTower.of_algebraMap_eq fun x ↦ by
       rw [IsScalarTower.algebraMap_apply R S]
       exact (IsLocalization.map_eq (T := Algebra.algebraMapSubmonoid S (primeCompl p))
         (Submonoid.le_comap_map _) x).symm
@@ -241,14 +241,14 @@ then the localization `Sₚ` of `S` at `p` is a PID. -/
 theorem IsDedekindDomain.isPrincipalIdealRing_localization_over_prime [IsDomain S] :
     IsPrincipalIdealRing Sₚ := by
   letI := Classical.decEq (Ideal Sₚ)
-  letI := Classical.decPred fun P : Ideal Sₚ => P.IsPrime
+  letI := Classical.decPred fun P : Ideal Sₚ ↦ P.IsPrime
   refine
     IsPrincipalIdealRing.of_finite_primes
       (Set.Finite.ofFinset
         {P ∈ {⊥} ∪ (normalizedFactors (Ideal.map (algebraMap R Sₚ) p)).toFinset | P.IsPrime}
-        fun P => ?_)
+        fun P ↦ ?_)
   rw [Finset.mem_filter, Finset.mem_union, Finset.mem_singleton, Set.mem_setOf,
     Multiset.mem_toFinset]
   exact
-    and_iff_right_of_imp fun hP =>
+    and_iff_right_of_imp fun hP ↦
       or_iff_not_imp_left.mpr (IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime S p hp0 hP)

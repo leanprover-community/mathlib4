@@ -42,7 +42,7 @@ inductive graphRel : ℕ → Type
   deriving DecidableEq
 
 /-- The language consisting of a single relation representing adjacency. -/
-protected def graph : Language := ⟨fun _ => Empty, graphRel⟩
+protected def graph : Language := ⟨fun _ ↦ Empty, graphRel⟩
   deriving IsRelational
 
 /-- The symbol representing the adjacency relation. -/
@@ -50,7 +50,7 @@ abbrev adj : Language.graph.Relations 2 := .adj
 
 /-- Any simple graph can be thought of as a structure in the language of graphs. -/
 def _root_.SimpleGraph.structure (G : SimpleGraph V) : Language.graph.Structure V where
-  RelMap | .adj => (fun x => G.Adj (x 0) (x 1))
+  RelMap | .adj => (fun x ↦ G.Adj (x 0) (x 1))
 
 namespace graph
 
@@ -66,8 +66,8 @@ protected def Theory.simpleGraph : Language.graph.Theory :=
 @[simp]
 theorem Theory.simpleGraph_model_iff [Language.graph.Structure V] :
     V ⊨ Theory.simpleGraph ↔
-      (Irreflexive fun x y : V => RelMap adj ![x, y]) ∧
-        Symmetric fun x y : V => RelMap adj ![x, y] := by
+      (Irreflexive fun x y : V ↦ RelMap adj ![x, y]) ∧
+        Symmetric fun x y : V ↦ RelMap adj ![x, y] := by
   simp [Theory.simpleGraph]
 
 instance simpleGraph_model (G : SimpleGraph V) :

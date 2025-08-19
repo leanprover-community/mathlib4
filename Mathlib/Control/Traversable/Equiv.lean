@@ -59,7 +59,7 @@ protected theorem comp_map {α β γ : Type u} (g : α → β) (h : β → γ) (
 protected theorem lawfulFunctor : @LawfulFunctor _ (Equiv.functor eqv) :=
   -- Porting note: why is `_inst` required here?
   let _inst := Equiv.functor eqv; {
-    map_const := fun {_ _} => rfl
+    map_const := fun {_ _} ↦ rfl
     id_map := Equiv.id_map eqv
     comp_map := Equiv.comp_map eqv }
 

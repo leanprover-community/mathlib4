@@ -73,18 +73,18 @@ section AnyRel
 variable {f : β → α} {s t : Set α} {x y : α}
 
 theorem wellFoundedOn_iff :
-    s.WellFoundedOn r ↔ WellFounded fun a b : α => r a b ∧ a ∈ s ∧ b ∈ s := by
-  have f : RelEmbedding (Subrel r (· ∈ s)) fun a b : α => r a b ∧ a ∈ s ∧ b ∈ s :=
+    s.WellFoundedOn r ↔ WellFounded fun a b : α ↦ r a b ∧ a ∈ s ∧ b ∈ s := by
+  have f : RelEmbedding (Subrel r (· ∈ s)) fun a b : α ↦ r a b ∧ a ∈ s ∧ b ∈ s :=
     ⟨⟨(↑), Subtype.coe_injective⟩, by simp⟩
-  refine ⟨fun h => ?_, f.wellFounded⟩
+  refine ⟨fun h ↦ ?_, f.wellFounded⟩
   rw [WellFounded.wellFounded_iff_has_min]
   intro t ht
   by_cases hst : (s ∩ t).Nonempty
   · rw [← Subtype.preimage_coe_nonempty] at hst
     rcases h.has_min (Subtype.val ⁻¹' t) hst with ⟨⟨m, ms⟩, mt, hm⟩
-    exact ⟨m, mt, fun x xt ⟨xm, xs, _⟩ => hm ⟨x, xs⟩ xt xm⟩
+    exact ⟨m, mt, fun x xt ⟨xm, xs, _⟩ ↦ hm ⟨x, xs⟩ xt xm⟩
   · rcases ht with ⟨m, mt⟩
-    exact ⟨m, mt, fun x _ ⟨_, _, ms⟩ => hst ⟨m, ⟨ms, mt⟩⟩⟩
+    exact ⟨m, mt, fun x _ ⟨_, _, ms⟩ ↦ hst ⟨m, ⟨ms, mt⟩⟩⟩
 
 @[simp]
 theorem wellFoundedOn_univ : (univ : Set α).WellFoundedOn r ↔ WellFounded r := by
@@ -95,8 +95,8 @@ theorem _root_.WellFounded.wellFoundedOn : WellFounded r → s.WellFoundedOn r :
 
 @[simp]
 theorem wellFoundedOn_range : (range f).WellFoundedOn r ↔ WellFounded (r on f) := by
-  let f' : β → range f := fun c => ⟨f c, c, rfl⟩
-  refine ⟨fun h => (InvImage.wf f' h).mono fun c c' => id, fun h => ⟨?_⟩⟩
+  let f' : β → range f := fun c ↦ ⟨f c, c, rfl⟩
+  refine ⟨fun h ↦ (InvImage.wf f' h).mono fun c c' ↦ id, fun h ↦ ⟨?_⟩⟩
   rintro ⟨_, c, rfl⟩
   refine Acc.of_downward_closed f' ?_ _ ?_
   · rintro _ ⟨_, c', rfl⟩ -
@@ -111,7 +111,7 @@ namespace WellFoundedOn
 
 protected theorem induction (hs : s.WellFoundedOn r) (hx : x ∈ s) {P : α → Prop}
     (hP : ∀ y ∈ s, (∀ z ∈ s, r z y → P z) → P y) : P x := by
-  let Q : s → Prop := fun y => P y
+  let Q : s → Prop := fun y ↦ P y
   change Q ⟨x, hx⟩
   refine WellFounded.induction hs ⟨x, hx⟩ ?_
   simpa only [Subtype.forall]
@@ -119,11 +119,11 @@ protected theorem induction (hs : s.WellFoundedOn r) (hx : x ∈ s) {P : α → 
 protected theorem mono (h : t.WellFoundedOn r') (hle : r ≤ r') (hst : s ⊆ t) :
     s.WellFoundedOn r := by
   rw [wellFoundedOn_iff] at *
-  exact Subrelation.wf (fun xy => ⟨hle _ _ xy.1, hst xy.2.1, hst xy.2.2⟩) h
+  exact Subrelation.wf (fun xy ↦ ⟨hle _ _ xy.1, hst xy.2.1, hst xy.2.2⟩) h
 
 theorem mono' (h : ∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), r' a b → r a b) :
     s.WellFoundedOn r → s.WellFoundedOn r' :=
-  Subrelation.wf @fun a b => h _ a.2 _ b.2
+  Subrelation.wf @fun a b ↦ h _ a.2 _ b.2
 
 theorem subset (h : t.WellFoundedOn r) (hst : s ⊆ t) : s.WellFoundedOn r :=
   h.mono le_rfl hst
@@ -138,15 +138,15 @@ theorem acc_iff_wellFoundedOn {α} {r : α → α → Prop} {a : α} :
       WellFoundedOn { b | ReflTransGen r b a } r,
       WellFoundedOn { b | TransGen r b a } r] := by
   tfae_have 1 → 2 := by
-    refine fun h => ⟨fun b => InvImage.accessible Subtype.val ?_⟩
+    refine fun h ↦ ⟨fun b ↦ InvImage.accessible Subtype.val ?_⟩
     rw [← acc_transGen_iff] at h ⊢
     obtain h' | h' := reflTransGen_iff_eq_or_transGen.1 b.2
     · rwa [h'] at h
     · exact h.inv h'
-  tfae_have 2 → 3 := fun h => h.subset fun _ => TransGen.to_reflTransGen
+  tfae_have 2 → 3 := fun h ↦ h.subset fun _ ↦ TransGen.to_reflTransGen
   tfae_have 3 → 1 := by
-    refine fun h => Acc.intro _ (fun b hb => (h.apply ⟨b, .single hb⟩).of_fibration Subtype.val ?_)
-    exact fun ⟨c, hc⟩ d h => ⟨⟨d, .head h hc⟩, h, rfl⟩
+    refine fun h ↦ Acc.intro _ (fun b hb ↦ (h.apply ⟨b, .single hb⟩).of_fibration Subtype.val ?_)
+    exact fun ⟨c, hc⟩ d h ↦ ⟨⟨d, .head h hc⟩, h, rfl⟩
   tfae_finish
 
 end WellFoundedOn
@@ -157,9 +157,9 @@ section IsStrictOrder
 
 variable [IsStrictOrder α r] {s t : Set α}
 
-instance IsStrictOrder.subset : IsStrictOrder α fun a b : α => r a b ∧ a ∈ s ∧ b ∈ s where
-  toIsIrrefl := ⟨fun a con => irrefl_of r a con.1⟩
-  toIsTrans := ⟨fun _ _ _ ab bc => ⟨trans_of r ab.1 bc.1, ab.2.1, bc.2.2⟩⟩
+instance IsStrictOrder.subset : IsStrictOrder α fun a b : α ↦ r a b ∧ a ∈ s ∧ b ∈ s where
+  toIsIrrefl := ⟨fun a con ↦ irrefl_of r a con.1⟩
+  toIsTrans := ⟨fun _ _ _ ab bc ↦ ⟨trans_of r ab.1 bc.1, ab.2.1, bc.2.2⟩⟩
 
 theorem wellFoundedOn_iff_no_descending_seq :
     s.WellFoundedOn r ↔ ∀ f : ((· > ·) : ℕ → ℕ → Prop) ↪r r, ¬∀ n, f n ∈ s := by
@@ -167,7 +167,7 @@ theorem wellFoundedOn_iff_no_descending_seq :
     not_nonempty_iff, not_iff_not]
   constructor
   · rintro ⟨⟨f, hf⟩⟩
-    have H : ∀ n, f n ∈ s := fun n => (hf.2 n.lt_succ_self).2.2
+    have H : ∀ n, f n ∈ s := fun n ↦ (hf.2 n.lt_succ_self).2.2
     refine ⟨⟨f, ?_⟩, H⟩
     simpa only [H, and_true] using @hf
   · rintro ⟨⟨f, hf⟩, hfs : ∀ n, f n ∈ s⟩
@@ -183,7 +183,7 @@ theorem WellFoundedOn.union (hs : s.WellFoundedOn r) (ht : t.WellFoundedOn r) :
 
 @[simp]
 theorem wellFoundedOn_union : (s ∪ t).WellFoundedOn r ↔ s.WellFoundedOn r ∧ t.WellFoundedOn r :=
-  ⟨fun h => ⟨h.subset subset_union_left, h.subset subset_union_right⟩, fun h =>
+  ⟨fun h ↦ ⟨h.subset subset_union_left, h.subset subset_union_right⟩, fun h ↦
     h.1.union h.2⟩
 
 end IsStrictOrder
@@ -231,7 +231,7 @@ variable [Preorder α] {s t : Set α} {a : α}
 theorem isWF_iff_no_descending_seq :
     IsWF s ↔ ∀ f : ℕ → α, StrictAnti f → ¬∀ n, f n ∈ s :=
   wellFoundedOn_iff_no_descending_seq.trans
-    ⟨fun H f hf => H ⟨⟨f, hf.injective⟩, hf.lt_iff_gt⟩, fun H f => H f fun _ _ => f.map_rel_iff.2⟩
+    ⟨fun H f hf ↦ H ⟨⟨f, hf.injective⟩, hf.lt_iff_gt⟩, fun H f ↦ H f fun _ _ ↦ f.map_rel_iff.2⟩
 
 end Preorder
 
@@ -294,7 +294,7 @@ theorem PartiallyWellOrderedOn.image_of_monotone_on (hs : s.PartiallyWellOrdered
 -- TODO: prove this in terms of `IsAntichain.finite_of_wellQuasiOrdered`
 theorem _root_.IsAntichain.finite_of_partiallyWellOrderedOn (ha : IsAntichain r s)
     (hp : s.PartiallyWellOrderedOn r) : s.Finite := by
-  refine not_infinite.1 fun hi => ?_
+  refine not_infinite.1 fun hi ↦ ?_
   obtain ⟨m, n, hmn, h⟩ := hp (hi.natEmbedding _)
   exact hmn.ne ((hi.natEmbedding _).injective <| Subtype.val_injective <|
     ha.eq (hi.natEmbedding _ m).2 (hi.natEmbedding _ n).2 h)
@@ -329,11 +329,11 @@ protected theorem PartiallyWellOrderedOn.insert (h : PartiallyWellOrderedOn s r)
 
 theorem partiallyWellOrderedOn_iff_finite_antichains [IsSymm α r] :
     s.PartiallyWellOrderedOn r ↔ ∀ t, t ⊆ s → IsAntichain r t → t.Finite := by
-  refine ⟨fun h t ht hrt => hrt.finite_of_partiallyWellOrderedOn (h.mono ht), ?_⟩
+  refine ⟨fun h t ht hrt ↦ hrt.finite_of_partiallyWellOrderedOn (h.mono ht), ?_⟩
   rw [partiallyWellOrderedOn_iff_exists_lt]
   intro hs f hf
   by_contra! H
-  refine infinite_range_of_injective (fun m n hmn => ?_) (hs _ (range_subset_iff.2 hf) ?_)
+  refine infinite_range_of_injective (fun m n hmn ↦ ?_) (hs _ (range_subset_iff.2 hf) ?_)
   · obtain h | h | h := lt_trichotomy m n
     · refine (H _ _ h ?_).elim
       rw [hmn]
@@ -365,15 +365,15 @@ theorem partiallyWellOrderedOn_iff_exists_monotone_subseq :
 
 protected theorem PartiallyWellOrderedOn.prod {t : Set β} (hs : PartiallyWellOrderedOn s r)
     (ht : PartiallyWellOrderedOn t r') :
-    PartiallyWellOrderedOn (s ×ˢ t) fun x y : α × β => r x.1 y.1 ∧ r' x.2 y.2 := by
+    PartiallyWellOrderedOn (s ×ˢ t) fun x y : α × β ↦ r x.1 y.1 ∧ r' x.2 y.2 := by
   rw [partiallyWellOrderedOn_iff_exists_lt]
   intro f hf
-  obtain ⟨g₁, h₁⟩ := hs.exists_monotone_subseq fun n => (hf n).1
-  obtain ⟨m, n, hlt, hle⟩ := ht.exists_lt fun n => (hf _).2
+  obtain ⟨g₁, h₁⟩ := hs.exists_monotone_subseq fun n ↦ (hf n).1
+  obtain ⟨m, n, hlt, hle⟩ := ht.exists_lt fun n ↦ (hf _).2
   exact ⟨g₁ m, g₁ n, g₁.strictMono hlt, h₁ _ _ hlt.le, hle⟩
 
 theorem PartiallyWellOrderedOn.wellFoundedOn (h : s.PartiallyWellOrderedOn r) :
-    s.WellFoundedOn fun a b => r a b ∧ ¬ r b a :=
+    s.WellFoundedOn fun a b ↦ r a b ∧ ¬ r b a :=
   h.wellFounded
 
 end IsPreorder
@@ -454,7 +454,7 @@ theorem IsPWO.exists_le_minimal {a} (hs : s.IsPWO) (ha : a ∈ s) :
   let t : Set s := {x | x ≤ a}
   let h : t.Nonempty := ⟨⟨a, ha⟩, le_rfl⟩
   refine ⟨hs.wellFounded.min t h, hs.wellFounded.min_mem t h,
-    (hs.wellFounded.min t h).2, fun y hy hle => ?_⟩
+    (hs.wellFounded.min t h).2, fun y hy hle ↦ ?_⟩
   by_contra hnle
   exact hs.wellFounded.not_lt_min t h (x := ⟨y, hy⟩) (hle.trans (hs.wellFounded.min_mem t h))
     ⟨hle, hnle⟩
@@ -469,7 +469,7 @@ theorem IsPWO.exists_minimalFor (f : ι → α) (s : Set ι) (h : (f '' s).IsPWO
     ∃ i, MinimalFor (· ∈ s) f i := by
   obtain ⟨_, h⟩ := h.exists_minimal (hs.image _)
   obtain ⟨a, ha, rfl⟩ := h.1
-  exact ⟨a, ha, fun b hb => h.2 (mem_image_of_mem _ hb)⟩
+  exact ⟨a, ha, fun b hb ↦ h.2 (mem_image_of_mem _ hb)⟩
 
 end IsPWO
 
@@ -559,11 +559,11 @@ protected theorem wellFoundedOn [IsStrictOrder α r] (s : Finset α) :
 
 theorem wellFoundedOn_sup [IsStrictOrder α r] (s : Finset ι) {f : ι → Set α} :
     (s.sup f).WellFoundedOn r ↔ ∀ i ∈ s, (f i).WellFoundedOn r :=
-  Finset.cons_induction_on s (by simp) fun a s ha hs => by simp [-sup_set_eq_biUnion, hs]
+  Finset.cons_induction_on s (by simp) fun a s ha hs ↦ by simp [-sup_set_eq_biUnion, hs]
 
 theorem partiallyWellOrderedOn_sup (s : Finset ι) {f : ι → Set α} :
     (s.sup f).PartiallyWellOrderedOn r ↔ ∀ i ∈ s, (f i).PartiallyWellOrderedOn r :=
-  Finset.cons_induction_on s (by simp) fun a s ha hs => by simp [-sup_set_eq_biUnion, hs]
+  Finset.cons_induction_on s (by simp) fun a s ha hs ↦ by simp [-sup_set_eq_biUnion, hs]
 
 theorem isWF_sup [Preorder α] (s : Finset ι) {f : ι → Set α} :
     (s.sup f).IsWF ↔ ∀ i ∈ s, (f i).IsWF :=
@@ -647,11 +647,11 @@ theorem IsWF.min_le (hs : s.IsWF) (hn : s.Nonempty) (ha : a ∈ s) : hs.min hn �
   le_of_not_gt (hs.not_lt_min hn ha)
 
 theorem IsWF.le_min_iff (hs : s.IsWF) (hn : s.Nonempty) : a ≤ hs.min hn ↔ ∀ b, b ∈ s → a ≤ b :=
-  ⟨fun ha _b hb => le_trans ha (hs.min_le hn hb), fun h => h _ (hs.min_mem _)⟩
+  ⟨fun ha _b hb ↦ le_trans ha (hs.min_le hn hb), fun h ↦ h _ (hs.min_mem _)⟩
 
 theorem IsWF.min_le_min_of_subset {hs : s.IsWF} {hsn : s.Nonempty} {ht : t.IsWF} {htn : t.Nonempty}
     (hst : s ⊆ t) : ht.min htn ≤ hs.min hsn :=
-  (IsWF.le_min_iff _ _).2 fun _b hb => ht.min_le htn (hst hb)
+  (IsWF.le_min_iff _ _).2 fun _b hb ↦ ht.min_le htn (hst hb)
 
 theorem IsWF.min_union (hs : s.IsWF) (hsn : s.Nonempty) (ht : t.IsWF) (htn : t.Nonempty) :
     (hs.union ht).min (union_nonempty.2 (Or.intro_left _ hsn)) =
@@ -676,12 +676,12 @@ theorem BddBelow.wellFoundedOn_lt : BddBelow s → s.WellFoundedOn (· < ·) := 
   rw [wellFoundedOn_iff_no_descending_seq]
   rintro ⟨a, ha⟩ f hf
   refine infinite_range_of_injective f.injective ?_
-  exact (finite_Icc a <| f 0).subset <| range_subset_iff.2 <| fun n =>
+  exact (finite_Icc a <| f 0).subset <| range_subset_iff.2 <| fun n ↦
     ⟨ha <| hf _,
-      antitone_iff_forall_lt.2 (fun a b hab => (f.map_rel_iff.2 hab).le) <| Nat.zero_le _⟩
+      antitone_iff_forall_lt.2 (fun a b hab ↦ (f.map_rel_iff.2 hab).le) <| Nat.zero_le _⟩
 
 theorem BddAbove.wellFoundedOn_gt : BddAbove s → s.WellFoundedOn (· > ·) :=
-  fun h => h.dual.wellFoundedOn_lt
+  fun h ↦ h.dual.wellFoundedOn_lt
 
 theorem BddBelow.isWF : BddBelow s → IsWF s :=
   BddBelow.wellFoundedOn_lt
@@ -724,7 +724,7 @@ def IsBadSeq (r : α → α → Prop) (s : Set α) (f : ℕ → α) : Prop :=
 theorem iff_forall_not_isBadSeq (r : α → α → Prop) (s : Set α) :
     s.PartiallyWellOrderedOn r ↔ ∀ f, ¬IsBadSeq r s f := by
   rw [partiallyWellOrderedOn_iff_exists_lt]
-  exact forall_congr' fun f => by simp [IsBadSeq]
+  exact forall_congr' fun f ↦ by simp [IsBadSeq]
 
 /-- This indicates that every bad sequence `g` that agrees with `f` on the first `n`
   terms has `rk (f n) ≤ rk (g n)`. -/
@@ -739,21 +739,21 @@ noncomputable def minBadSeqOfBadSeq (r : α → α → Prop) (rk : α → ℕ) (
     { g : ℕ → α // (∀ m : ℕ, m < n → f m = g m) ∧ IsBadSeq r s g ∧ IsMinBadSeq r rk s n g } := by
   classical
     have h : ∃ (k : ℕ) (g : ℕ → α), (∀ m, m < n → f m = g m) ∧ IsBadSeq r s g ∧ rk (g n) = k :=
-      ⟨_, f, fun _ _ => rfl, hf, rfl⟩
+      ⟨_, f, fun _ _ ↦ rfl, hf, rfl⟩
     obtain ⟨h1, h2, h3⟩ := Classical.choose_spec (Nat.find_spec h)
-    refine ⟨Classical.choose (Nat.find_spec h), h1, by convert h2, fun g hg1 hg2 con => ?_⟩
-    refine Nat.find_min h ?_ ⟨g, fun m mn => (h1 m mn).trans (hg1 m mn), con, rfl⟩
+    refine ⟨Classical.choose (Nat.find_spec h), h1, by convert h2, fun g hg1 hg2 con ↦ ?_⟩
+    refine Nat.find_min h ?_ ⟨g, fun m mn ↦ (h1 m mn).trans (hg1 m mn), con, rfl⟩
     rwa [← h3]
 
 theorem exists_min_bad_of_exists_bad (r : α → α → Prop) (rk : α → ℕ) (s : Set α) :
     (∃ f, IsBadSeq r s f) → ∃ f, IsBadSeq r s f ∧ ∀ n, IsMinBadSeq r rk s n f := by
   rintro ⟨f0, hf0 : IsBadSeq r s f0⟩
   let fs : ∀ n : ℕ, { f : ℕ → α // IsBadSeq r s f ∧ IsMinBadSeq r rk s n f } := by
-    refine Nat.rec ?_ fun n fn => ?_
+    refine Nat.rec ?_ fun n fn ↦ ?_
     · exact ⟨(minBadSeqOfBadSeq r rk s 0 f0 hf0).1, (minBadSeqOfBadSeq r rk s 0 f0 hf0).2.2⟩
     · exact ⟨(minBadSeqOfBadSeq r rk s (n + 1) fn.1 fn.2.1).1,
         (minBadSeqOfBadSeq r rk s (n + 1) fn.1 fn.2.1).2.2⟩
-  have h : ∀ m n, m ≤ n → (fs m).1 m = (fs n).1 m := fun m n mn => by
+  have h : ∀ m n, m ≤ n → (fs m).1 m = (fs n).1 m := fun m n mn ↦ by
     obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le mn; clear mn
     induction k with
     | zero => rfl
@@ -761,11 +761,11 @@ theorem exists_min_bad_of_exists_bad (r : α → α → Prop) (rk : α → ℕ) 
       rw [ih, (minBadSeqOfBadSeq r rk s (m + k + 1) (fs (m + k)).1 (fs (m + k)).2.1).2.1 m
         (Nat.lt_succ_iff.2 (Nat.add_le_add_left k.zero_le m))]
       rfl
-  refine ⟨fun n => (fs n).1 n, ⟨fun n => (fs n).2.1.1 n, fun m n mn => ?_⟩, fun n g hg1 hg2 => ?_⟩
+  refine ⟨fun n ↦ (fs n).1 n, ⟨fun n ↦ (fs n).2.1.1 n, fun m n mn ↦ ?_⟩, fun n g hg1 hg2 ↦ ?_⟩
   · dsimp
     rw [h m n mn.le]
     exact (fs n).2.1.2 m n mn
-  · refine (fs n).2.2 g (fun m mn => ?_) hg2
+  · refine (fs n).2.2 g (fun m mn ↦ ?_) hg2
     rw [← h m n mn.le, ← hg1 m mn]
 
 theorem iff_not_exists_isMinBadSeq (rk : α → ℕ) {s : Set α} :
@@ -788,19 +788,19 @@ theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsPreo
   inhabit α
   rw [iff_not_exists_isMinBadSeq List.length]
   rintro ⟨f, hf1, hf2⟩
-  have hnil : ∀ n, f n ≠ List.nil := fun n con =>
+  have hnil : ∀ n, f n ≠ List.nil := fun n con ↦
     hf1.2 n n.succ n.lt_succ_self (con.symm ▸ List.SublistForall₂.nil)
-  obtain ⟨g, hg⟩ := h.exists_monotone_subseq fun n => hf1.1 n _ (List.head!_mem_self (hnil n))
+  obtain ⟨g, hg⟩ := h.exists_monotone_subseq fun n ↦ hf1.1 n _ (List.head!_mem_self (hnil n))
   have hf' :=
-    hf2 (g 0) (fun n => if n < g 0 then f n else List.tail (f (g (n - g 0))))
-      (fun m hm => (if_pos hm).symm) ?_
+    hf2 (g 0) (fun n ↦ if n < g 0 then f n else List.tail (f (g (n - g 0))))
+      (fun m hm ↦ (if_pos hm).symm) ?_
   swap
   · simp only [if_neg (lt_irrefl (g 0)), Nat.sub_self]
     rw [List.length_tail, ← Nat.pred_eq_sub_one]
-    exact Nat.pred_lt fun con => hnil _ (List.length_eq_zero_iff.1 con)
+    exact Nat.pred_lt fun con ↦ hnil _ (List.length_eq_zero_iff.1 con)
   rw [IsBadSeq] at hf'
   push_neg at hf'
-  obtain ⟨m, n, mn, hmn⟩ := hf' fun n x hx => by
+  obtain ⟨m, n, mn, hmn⟩ := hf' fun n x hx ↦ by
     split_ifs at hx with hn
     exacts [hf1.1 _ _ hx, hf1.1 _ _ (List.tail_subset _ hx)]
   by_cases hn : n < g 0
@@ -817,14 +817,14 @@ theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsPreo
       exact List.SublistForall₂.cons (hg _ _ (le_of_lt mn)) hmn
 
 theorem subsetProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
-    (hα : ((fun (x : α ×ₗ β) => (ofLex x).1) '' s).IsPWO)
+    (hα : ((fun (x : α ×ₗ β) ↦ (ofLex x).1) '' s).IsPWO)
     (hβ : ∀ a, {y | toLex (a, y) ∈ s}.IsPWO) : s.IsPWO := by
   rw [IsPWO, partiallyWellOrderedOn_iff_exists_lt]
   intro f hf
   rw [isPWO_iff_exists_monotone_subseq] at hα
-  obtain ⟨g, hg⟩ : ∃ (g : (ℕ ↪o ℕ)), Monotone fun n => (ofLex f (g n)).1 :=
-    hα (fun n => (ofLex f n).1) (fun k => mem_image_of_mem (fun x => (ofLex x).1) (hf k))
-  have hhg : ∀ n, (ofLex f (g 0)).1 ≤ (ofLex f (g n)).1 := fun n => hg n.zero_le
+  obtain ⟨g, hg⟩ : ∃ (g : (ℕ ↪o ℕ)), Monotone fun n ↦ (ofLex f (g n)).1 :=
+    hα (fun n ↦ (ofLex f n).1) (fun k ↦ mem_image_of_mem (fun x ↦ (ofLex x).1) (hf k))
+  have hhg : ∀ n, (ofLex f (g 0)).1 ≤ (ofLex f (g n)).1 := fun n ↦ hg n.zero_le
   by_cases hc : ∃ n, (ofLex f (g 0)).1 < (ofLex f (g n)).1
   · obtain ⟨n, hn⟩ := hc
     use (g 0), (g n)
@@ -849,12 +849,12 @@ theorem subsetProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
       · exact hg' (Nat.zero_le 1)
 
 theorem imageProdLex [Preorder α] [Preorder β] {s : Set (α ×ₗ β)}
-    (hαβ : s.IsPWO) : ((fun (x : α ×ₗ β) => (ofLex x).1)'' s).IsPWO :=
+    (hαβ : s.IsPWO) : ((fun (x : α ×ₗ β) ↦ (ofLex x).1)'' s).IsPWO :=
   IsPWO.image_of_monotone hαβ Prod.Lex.monotone_fst
 
 theorem fiberProdLex [Preorder α] [Preorder β] {s : Set (α ×ₗ β)}
     (hαβ : s.IsPWO) (a : α) : {y | toLex (a, y) ∈ s}.IsPWO := by
-  let f : α ×ₗ β → β := fun x => (ofLex x).2
+  let f : α ×ₗ β → β := fun x ↦ (ofLex x).2
   have h : {y | toLex (a, y) ∈ s} = f '' (s ∩ (fun x ↦ (ofLex x).1) ⁻¹' {a}) := by
     ext x
     simp [f]
@@ -884,7 +884,7 @@ theorem Pi.isPWO {α : ι → Type*} [∀ i, LinearOrder (α i)] [∀ i, IsWellO
   cases nonempty_fintype ι
   suffices ∀ (s : Finset ι) (f : ℕ → ∀ s, α s),
     ∃ g : ℕ ↪o ℕ, ∀ ⦃a b : ℕ⦄, a ≤ b → ∀ x, x ∈ s → (f ∘ g) a x ≤ (f ∘ g) b x by
-    refine isPWO_iff_exists_monotone_subseq.2 fun f _ => ?_
+    refine isPWO_iff_exists_monotone_subseq.2 fun f _ ↦ ?_
     simpa only [Finset.mem_univ, true_imp_iff] using this Finset.univ f
   refine Finset.cons_induction ?_ ?_
   · intro f
@@ -893,7 +893,7 @@ theorem Pi.isPWO {α : ι → Type*} [∀ i, LinearOrder (α i)] [∀ i, IsWellO
   · intro x s hx ih f
     obtain ⟨g, hg⟩ := (IsPWO.of_linearOrder univ).exists_monotone_subseq (f := (f · x)) mem_univ
     obtain ⟨g', hg'⟩ := ih (f ∘ g)
-    refine ⟨g'.trans g, fun a b hab => (Finset.forall_mem_cons _ _).2 ?_⟩
+    refine ⟨g'.trans g, fun a b hab ↦ (Finset.forall_mem_cons _ _).2 ?_⟩
     exact ⟨hg (OrderHomClass.mono g' hab), hg' hab⟩
 
 section ProdLex
@@ -903,9 +903,9 @@ variable {rα : α → α → Prop} {rβ : β → β → Prop} {f : γ → α} {
 we only require it to be well-founded on fibers of `f`. -/
 theorem WellFounded.prod_lex_of_wellFoundedOn_fiber (hα : WellFounded (rα on f))
     (hβ : ∀ a, (f ⁻¹' {a}).WellFoundedOn (rβ on g)) :
-    WellFounded (Prod.Lex rα rβ on fun c => (f c, g c)) := by
-  refine ((psigma_lex (wellFoundedOn_range.2 hα) fun a => hβ a).onFun
-    (f := fun c => ⟨⟨_, c, rfl⟩, c, rfl⟩)).mono fun c c' h => ?_
+    WellFounded (Prod.Lex rα rβ on fun c ↦ (f c, g c)) := by
+  refine ((psigma_lex (wellFoundedOn_range.2 hα) fun a ↦ hβ a).onFun
+    (f := fun c ↦ ⟨⟨_, c, rfl⟩, c, rfl⟩)).mono fun c c' h ↦ ?_
   obtain h' | h' := Prod.lex_iff.1 h
   · exact PSigma.Lex.left _ _ h'
   · dsimp only [InvImage, (· on ·)] at h' ⊢
@@ -914,9 +914,9 @@ theorem WellFounded.prod_lex_of_wellFoundedOn_fiber (hα : WellFounded (rα on f
 
 theorem Set.WellFoundedOn.prod_lex_of_wellFoundedOn_fiber (hα : s.WellFoundedOn (rα on f))
     (hβ : ∀ a, (s ∩ f ⁻¹' {a}).WellFoundedOn (rβ on g)) :
-    s.WellFoundedOn (Prod.Lex rα rβ on fun c => (f c, g c)) :=
+    s.WellFoundedOn (Prod.Lex rα rβ on fun c ↦ (f c, g c)) :=
   WellFounded.prod_lex_of_wellFoundedOn_fiber hα
-    fun a ↦ ((hβ a).onFun (f := fun x => ⟨x, x.1.2, x.2⟩)).mono (fun _ _ h ↦ ‹_›)
+    fun a ↦ ((hβ a).onFun (f := fun x ↦ ⟨x, x.1.2, x.2⟩)).mono (fun _ _ h ↦ ‹_›)
 
 end ProdLex
 
@@ -928,9 +928,9 @@ variable {rι : ι → ι → Prop} {rπ : ∀ i, π i → π i → Prop} {f : �
 require it to be well-founded on fibers of `f`. -/
 theorem WellFounded.sigma_lex_of_wellFoundedOn_fiber (hι : WellFounded (rι on f))
     (hπ : ∀ i, (f ⁻¹' {i}).WellFoundedOn (rπ i on g i)) :
-    WellFounded (Sigma.Lex rι rπ on fun c => ⟨f c, g (f c) c⟩) := by
-  refine ((psigma_lex (wellFoundedOn_range.2 hι) fun a => hπ a).onFun
-    (f := fun c => ⟨⟨_, c, rfl⟩, c, rfl⟩)).mono fun c c' h => ?_
+    WellFounded (Sigma.Lex rι rπ on fun c ↦ ⟨f c, g (f c) c⟩) := by
+  refine ((psigma_lex (wellFoundedOn_range.2 hι) fun a ↦ hπ a).onFun
+    (f := fun c ↦ ⟨⟨_, c, rfl⟩, c, rfl⟩)).mono fun c c' h ↦ ?_
   obtain h' | ⟨h', h''⟩ := Sigma.lex_iff.1 h
   · exact PSigma.Lex.left _ _ h'
   · dsimp only [InvImage, (· on ·)] at h' ⊢
@@ -945,10 +945,10 @@ theorem WellFounded.sigma_lex_of_wellFoundedOn_fiber (hι : WellFounded (rι on 
 
 theorem Set.WellFoundedOn.sigma_lex_of_wellFoundedOn_fiber (hι : s.WellFoundedOn (rι on f))
     (hπ : ∀ i, (s ∩ f ⁻¹' {i}).WellFoundedOn (rπ i on g i)) :
-    s.WellFoundedOn (Sigma.Lex rι rπ on fun c => ⟨f c, g (f c) c⟩) := by
-  change WellFounded (Sigma.Lex rι rπ on fun c : s => ⟨f c, g (f c) c⟩)
+    s.WellFoundedOn (Sigma.Lex rι rπ on fun c ↦ ⟨f c, g (f c) c⟩) := by
+  change WellFounded (Sigma.Lex rι rπ on fun c : s ↦ ⟨f c, g (f c) c⟩)
   exact
-    @WellFounded.sigma_lex_of_wellFoundedOn_fiber _ s _ _ rπ (fun c => f c) (fun i c => g _ c) hι
-      fun i => ((hπ i).onFun (f := fun x => ⟨x, x.1.2, x.2⟩)).mono (fun b c h => ‹_›)
+    @WellFounded.sigma_lex_of_wellFoundedOn_fiber _ s _ _ rπ (fun c ↦ f c) (fun i c ↦ g _ c) hι
+      fun i ↦ ((hπ i).onFun (f := fun x ↦ ⟨x, x.1.2, x.2⟩)).mono (fun b c h ↦ ‹_›)
 
 end SigmaLex

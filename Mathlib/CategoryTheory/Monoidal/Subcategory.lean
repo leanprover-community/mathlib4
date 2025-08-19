@@ -177,14 +177,14 @@ variable [MonoidalClosed C] [P.IsMonoidalClosed]
 instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) where
   closed X :=
     { rightAdj := P.lift (P.ι ⋙ ihom X.1)
-        fun Y => P.prop_ihom X.2 Y.2
+        fun Y ↦ P.prop_ihom X.2 Y.2
       adj :=
         { unit :=
-          { app := fun Y => (ihom.coev X.1).app Y.1
-            naturality := fun _ _ f => ihom.coev_naturality X.1 f }
+          { app := fun Y ↦ (ihom.coev X.1).app Y.1
+            naturality := fun _ _ f ↦ ihom.coev_naturality X.1 f }
           counit :=
-          { app := fun Y => (ihom.ev X.1).app Y.1
-            naturality := fun _ _ f => ihom.ev_naturality X.1 f }
+          { app := fun Y ↦ (ihom.ev X.1).app Y.1
+            naturality := fun _ _ f ↦ ihom.ev_naturality X.1 f }
           left_triangle_components := fun X ↦
             by simp [FullSubcategory.comp_def, FullSubcategory.id_def]
           right_triangle_components := fun Y ↦

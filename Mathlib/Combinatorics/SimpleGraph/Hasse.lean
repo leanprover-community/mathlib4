@@ -75,18 +75,18 @@ section LinearOrder
 variable [LinearOrder α]
 
 theorem hasse_preconnected_of_succ [SuccOrder α] [IsSuccArchimedean α] : (hasse α).Preconnected :=
-  fun a b => by
+  fun a b ↦ by
   rw [reachable_iff_reflTransGen]
   exact
-    reflTransGen_of_succ _ (fun c hc => Or.inl <| covBy_succ_of_not_isMax hc.2.not_isMax)
-      fun c hc => Or.inr <| covBy_succ_of_not_isMax hc.2.not_isMax
+    reflTransGen_of_succ _ (fun c hc ↦ Or.inl <| covBy_succ_of_not_isMax hc.2.not_isMax)
+      fun c hc ↦ Or.inr <| covBy_succ_of_not_isMax hc.2.not_isMax
 
 theorem hasse_preconnected_of_pred [PredOrder α] [IsPredArchimedean α] : (hasse α).Preconnected :=
-  fun a b => by
+  fun a b ↦ by
   rw [reachable_iff_reflTransGen, ← reflTransGen_swap]
   exact
-    reflTransGen_of_pred _ (fun c hc => Or.inl <| pred_covBy_of_not_isMin hc.1.not_isMin)
-      fun c hc => Or.inr <| pred_covBy_of_not_isMin hc.1.not_isMin
+    reflTransGen_of_pred _ (fun c hc ↦ Or.inl <| pred_covBy_of_not_isMin hc.1.not_isMin)
+      fun c hc ↦ Or.inr <| pred_covBy_of_not_isMin hc.1.not_isMin
 
 end LinearOrder
 

@@ -90,7 +90,7 @@ noncomputable def unitIsoAux (F : C ⥤ AddCommGrp.{v}) [PreservesFiniteLimits F
 /-- Implementation, see `leftExactFunctorForgetEquivalence`. -/
 noncomputable def unitIso : 𝟭 (C ⥤ₗ AddCommGrp) ≅
     (LeftExactFunctor.whiskeringRight _ _ _).obj (LeftExactFunctor.of (forget _)) ⋙ inverse :=
-  NatIso.ofComponents (fun F => InducedCategory.isoMk (NatIso.ofComponents (fun X =>
+  NatIso.ofComponents (fun F ↦ InducedCategory.isoMk (NatIso.ofComponents (fun X ↦
     commGroupAddCommGroupEquivalence.counitIso.app _ ≪≫
       (CommGrp.toAddCommGrp.mapIso (commGrpTypeEquivalenceCommGrp.counitIso.app
         (AddCommGrp.toCommGrp.obj (F.obj.obj X)))).symm ≪≫

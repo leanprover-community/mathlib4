@@ -167,30 +167,30 @@ open AddMonoidHom (flip_apply coe_comp compHom)
 @[simps]
 def gMulHom {i j} : A i →+ A j →+ A (i + j) where
   toFun a :=
-    { toFun := fun b => GradedMonoid.GMul.mul a b
+    { toFun := fun b ↦ GradedMonoid.GMul.mul a b
       map_zero' := GNonUnitalNonAssocSemiring.mul_zero _
       map_add' := GNonUnitalNonAssocSemiring.mul_add _ }
-  map_zero' := AddMonoidHom.ext fun a => GNonUnitalNonAssocSemiring.zero_mul a
-  map_add' _ _ := AddMonoidHom.ext fun _ => GNonUnitalNonAssocSemiring.add_mul _ _ _
+  map_zero' := AddMonoidHom.ext fun a ↦ GNonUnitalNonAssocSemiring.zero_mul a
+  map_add' _ _ := AddMonoidHom.ext fun _ ↦ GNonUnitalNonAssocSemiring.add_mul _ _ _
 
 /-- The multiplication from the `Mul` instance, as a bundled homomorphism. -/
 -- See note [non-reducible instance]
 @[reducible]
 def mulHom : (⨁ i, A i) →+ (⨁ i, A i) →+ ⨁ i, A i :=
-  DirectSum.toAddMonoid fun _ =>
+  DirectSum.toAddMonoid fun _ ↦
     AddMonoidHom.flip <|
-      DirectSum.toAddMonoid fun _ =>
+      DirectSum.toAddMonoid fun _ ↦
         AddMonoidHom.flip <| (DirectSum.of A _).compHom.comp <| gMulHom A
 
 instance instMul : Mul (⨁ i, A i) where
-  mul := fun a b => mulHom A a b
+  mul := fun a b ↦ mulHom A a b
 
 instance : NonUnitalNonAssocSemiring (⨁ i, A i) :=
   { (inferInstance : AddCommMonoid _) with
-    zero_mul := fun _ => by simp only [Mul.mul, HMul.hMul, map_zero, AddMonoidHom.zero_apply]
-    mul_zero := fun _ => by simp only [Mul.mul, HMul.hMul, AddMonoidHom.map_zero]
-    left_distrib := fun _ _ _ => by simp only [Mul.mul, HMul.hMul, AddMonoidHom.map_add]
-    right_distrib := fun _ _ _ => by
+    zero_mul := fun _ ↦ by simp only [Mul.mul, HMul.hMul, map_zero, AddMonoidHom.zero_apply]
+    mul_zero := fun _ ↦ by simp only [Mul.mul, HMul.hMul, AddMonoidHom.map_zero]
+    left_distrib := fun _ _ _ ↦ by simp only [Mul.mul, HMul.hMul, AddMonoidHom.map_add]
+    right_distrib := fun _ _ _ ↦ by
       simp only [Mul.mul, HMul.hMul, AddMonoidHom.map_add, AddMonoidHom.add_apply] }
 
 variable {A}
@@ -228,7 +228,7 @@ private nonrec theorem mul_one (x : ⨁ i, A i) : x * 1 = x := by
   exact of_eq_of_gradedMonoid_eq (mul_one <| GradedMonoid.mk i xi)
 
 private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
-  -- (`fun a b c => a * b * c` as a bundled hom) = (`fun a b c => a * (b * c)` as a bundled hom)
+  -- (`fun a b c ↦ a * b * c` as a bundled hom) = (`fun a b c ↦ a * (b * c)` as a bundled hom)
   suffices AddMonoidHom.mulLeft₃ = AddMonoidHom.mulRight₃ by
       simpa only [AddMonoidHom.mulLeft₃_apply, AddMonoidHom.mulRight₃_apply] using
         DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this a) b) c
@@ -239,7 +239,7 @@ private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
   exact of_eq_of_gradedMonoid_eq (_root_.mul_assoc (GradedMonoid.mk ai ax) ⟨bi, bx⟩ ⟨ci, cx⟩)
 
 instance instNatCast : NatCast (⨁ i, A i) where
-  natCast := fun n => of _ _ (GSemiring.natCast n)
+  natCast := fun n ↦ of _ _ (GSemiring.natCast n)
 
 /-- The `Semiring` structure derived from `GSemiring A`. -/
 instance semiring : Semiring (⨁ i, A i) :=
@@ -249,7 +249,7 @@ instance semiring : Semiring (⨁ i, A i) :=
     mul_assoc := mul_assoc A
     toNatCast := instNatCast _
     natCast_zero := by simp only [NatCast.natCast, GSemiring.natCast_zero, map_zero]
-    natCast_succ := fun n => by
+    natCast_succ := fun n ↦ by
       simp_rw [NatCast.natCast, GSemiring.natCast_succ]
       rw [map_add]
       rfl }
@@ -263,7 +263,7 @@ theorem ofPow {i} (a : A i) (n : ℕ) :
     exact of_eq_of_gradedMonoid_eq (pow_succ (GradedMonoid.mk _ a) n).symm
 
 theorem ofList_dProd {α} (l : List α) (fι : α → ι) (fA : ∀ a, A (fι a)) :
-    of A _ (l.dProd fι fA) = (l.map fun a => of A (fι a) (fA a)).prod := by
+    of A _ (l.dProd fι fA) = (l.map fun a ↦ of A (fι a) (fA a)).prod := by
   induction l with
   | nil => simp only [List.map_nil, List.prod_nil, List.dProd_nil]; rfl
   | cons head tail =>
@@ -273,12 +273,12 @@ theorem ofList_dProd {α} (l : List α) (fι : α → ι) (fA : ∀ a, A (fι a)
     rfl
 
 theorem list_prod_ofFn_of_eq_dProd (n : ℕ) (fι : Fin n → ι) (fA : ∀ a, A (fι a)) :
-    (List.ofFn fun a => of A (fι a) (fA a)).prod = of A _ ((List.finRange n).dProd fι fA) := by
+    (List.ofFn fun a ↦ of A (fι a) (fA a)).prod = of A _ ((List.finRange n).dProd fι fA) := by
   rw [List.ofFn_eq_map, ofList_dProd]
 
 theorem mul_eq_dfinsuppSum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
     a * a'
-      = a.sum fun _ ai => a'.sum fun _ aj => DirectSum.of _ _ <| GradedMonoid.GMul.mul ai aj := by
+      = a.sum fun _ ai ↦ a'.sum fun _ aj ↦ DirectSum.of _ _ <| GradedMonoid.GMul.mul ai aj := by
   change mulHom _ a a' = _
   -- Porting note: I have no idea how the proof from ml3 worked it used to be
   -- simpa only [mul_hom, to_add_monoid, dfinsupp.lift_add_hom_apply, dfinsupp.sum_add_hom_apply,
@@ -343,9 +343,9 @@ variable [∀ i, AddCommGroup (A i)] [AddMonoid ι] [GRing A]
 instance ring : Ring (⨁ i, A i) :=
   { DirectSum.semiring A,
     (inferInstance : AddCommGroup (⨁ i, A i)) with
-    toIntCast.intCast := fun z => of A 0 <| (GRing.intCast z)
-    intCast_ofNat := fun _ => congrArg (of A 0) <| GRing.intCast_ofNat _
-    intCast_negSucc := fun _ =>
+    toIntCast.intCast := fun z ↦ of A 0 <| (GRing.intCast z)
+    intCast_ofNat := fun _ ↦ congrArg (of A 0) <| GRing.intCast_ofNat _
+    intCast_negSucc := fun _ ↦
       (congrArg (of A 0) <| GRing.intCast_negSucc_ofNat _).trans <| map_neg _ _}
 
 end Ring
@@ -431,7 +431,7 @@ theorem of_zero_ofNat (n : ℕ) [n.AtLeastTwo] : of A 0 ofNat(n) = ofNat(n) :=
 instance GradeZero.semiring : Semiring (A 0) :=
   Function.Injective.semiring (of A 0) DFinsupp.single_injective (of A 0).map_zero (of_zero_one A)
     (of A 0).map_add (of_zero_mul A) (fun _ _ ↦ (of A 0).map_nsmul _ _)
-    (fun _ _ => of_zero_pow _ _ _) (of_natCast A)
+    (fun _ _ ↦ of_zero_pow _ _ _) (of_natCast A)
 
 /-- `of A 0` is a `RingHom`, using the `DirectSum.GradeZero.semiring` structure. -/
 def ofZeroRingHom : A 0 →+* ⨁ i, A i :=
@@ -444,7 +444,7 @@ in an overall `Module (A 0) (⨁ i, A i)` structure via `DirectSum.module`.
 -/
 instance GradeZero.module {i} : Module (A 0) (A i) :=
   letI := Module.compHom (⨁ i, A i) (ofZeroRingHom A)
-  DFinsupp.single_injective.module (A 0) (of A i) fun a => of_zero_smul A a
+  DFinsupp.single_injective.module (A 0) (of A i) fun a ↦ of_zero_smul A a
 
 end Semiring
 
@@ -456,7 +456,7 @@ variable [∀ i, AddCommMonoid (A i)] [AddCommMonoid ι] [GCommSemiring A]
 instance GradeZero.commSemiring : CommSemiring (A 0) :=
   Function.Injective.commSemiring (of A 0) DFinsupp.single_injective (of A 0).map_zero
     (of_zero_one A) (of A 0).map_add (of_zero_mul A) (fun _ _ ↦ map_nsmul _ _ _)
-    (fun _ _ => of_zero_pow _ _ _) (of_natCast A)
+    (fun _ _ ↦ of_zero_pow _ _ _) (of_natCast A)
 
 end CommSemiring
 
@@ -487,7 +487,7 @@ theorem of_intCast (n : ℤ) : of A 0 n = n := by
 instance GradeZero.ring : Ring (A 0) :=
   Function.Injective.ring (of A 0) DFinsupp.single_injective (of A 0).map_zero (of_zero_one A)
     (of A 0).map_add (of_zero_mul A) (of A 0).map_neg (of A 0).map_sub (fun _ _ ↦ map_nsmul _ _ _)
-    (fun _ _ ↦ map_zsmul _ _ _) (fun _ _ => of_zero_pow _ _ _) (of_natCast A) (of_intCast A)
+    (fun _ _ ↦ map_zsmul _ _ _) (fun _ _ ↦ of_zero_pow _ _ _) (of_natCast A) (of_intCast A)
 
 end Ring
 
@@ -499,7 +499,7 @@ variable [∀ i, AddCommGroup (A i)] [AddCommMonoid ι] [GCommRing A]
 instance GradeZero.commRing : CommRing (A 0) :=
   Function.Injective.commRing (of A 0) DFinsupp.single_injective (of A 0).map_zero (of_zero_one A)
     (of A 0).map_add (of_zero_mul A) (of A 0).map_neg (of A 0).map_sub (fun _ _ ↦ map_nsmul _ _ _)
-    (fun _ _ ↦ map_zsmul _ _ _) (fun _ _ => of_zero_pow _ _ _) (of_natCast A) (of_intCast A)
+    (fun _ _ ↦ map_zsmul _ _ _) (fun _ _ ↦ of_zero_pow _ _ _) (of_natCast A) (of_intCast A)
 
 end CommRing
 
@@ -521,7 +521,7 @@ theorem ringHom_ext' ⦃F G : (⨁ i, A i) →+* R⦄
 
 /-- Two `RingHom`s out of a direct sum are equal if they agree on the generators. -/
 theorem ringHom_ext ⦃f g : (⨁ i, A i) →+* R⦄ (h : ∀ i x, f (of A i x) = g (of A i x)) : f = g :=
-  ringHom_ext' fun i => AddMonoidHom.ext <| h i
+  ringHom_ext' fun i ↦ AddMonoidHom.ext <| h i
 
 /-- A family of `AddMonoidHom`s preserving `DirectSum.One.one` and `DirectSum.Mul.mul`
 describes a `RingHom`s on `⨁ i, A i`. This is a stronger version of `DirectSum.toMonoid`.
@@ -568,7 +568,7 @@ def liftRingHom :
         f GradedMonoid.GOne.one = 1 ∧
           ∀ {i j} (ai : A i) (aj : A j), f (GradedMonoid.GMul.mul ai aj) = f ai * f aj } ≃
       ((⨁ i, A i) →+* R) where
-  toFun f := toSemiring (fun _ => f.1) f.2.1 f.2.2
+  toFun f := toSemiring (fun _ ↦ f.1) f.2.1 f.2.2
   invFun F :=
     ⟨by intro i; exact (F : (⨁ i, A i) →+ R).comp (of _ i),
       by
@@ -581,7 +581,7 @@ def liftRingHom :
       rw [← F.map_mul (of A i ai), of_mul_of ai]⟩
   left_inv f := by
     ext xi xv
-    exact toAddMonoid_of (fun _ => f.1) xi xv
+    exact toAddMonoid_of (fun _ ↦ f.1) xi xv
   right_inv F := by
     apply RingHom.coe_addMonoidHom_injective
     refine DirectSum.addHom_ext' (fun xi ↦ AddMonoidHom.ext (fun xv ↦ ?_))
@@ -601,7 +601,7 @@ variable (ι)
 /-- A direct sum of copies of a `NonUnitalNonAssocSemiring` inherits the multiplication structure.
 -/
 instance NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring {R : Type*} [AddMonoid ι]
-    [NonUnitalNonAssocSemiring R] : DirectSum.GNonUnitalNonAssocSemiring fun _ : ι => R :=
+    [NonUnitalNonAssocSemiring R] : DirectSum.GNonUnitalNonAssocSemiring fun _ : ι ↦ R :=
   { -- Porting note: removed Mul.gMul ι with and we seem ok
     mul_zero := mul_zero
     zero_mul := zero_mul
@@ -610,7 +610,7 @@ instance NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring {R : Type
 
 /-- A direct sum of copies of a `Semiring` inherits the multiplication structure. -/
 instance Semiring.directSumGSemiring {R : Type*} [AddMonoid ι] [Semiring R] :
-    DirectSum.GSemiring fun _ : ι => R where
+    DirectSum.GSemiring fun _ : ι ↦ R where
   __ := NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring ι
   __ := Monoid.gMonoid ι
   natCast n := n
@@ -619,7 +619,7 @@ instance Semiring.directSumGSemiring {R : Type*} [AddMonoid ι] [Semiring R] :
 
 /-- A direct sum of copies of a `Ring` inherits the multiplication structure. -/
 instance Ring.directSumGRing {R : Type*} [AddMonoid ι] [Ring R] :
-    DirectSum.GRing fun _ : ι => R where
+    DirectSum.GRing fun _ : ι ↦ R where
   __ := Semiring.directSumGSemiring ι
   intCast z := z
   intCast_ofNat := Int.cast_natCast
@@ -634,13 +634,13 @@ example {R : Type*} [AddMonoid ι] [Semiring R] (i j : ι) (a b : R) :
 
 /-- A direct sum of copies of a `CommSemiring` inherits the commutative multiplication structure. -/
 instance CommSemiring.directSumGCommSemiring {R : Type*} [AddCommMonoid ι] [CommSemiring R] :
-    DirectSum.GCommSemiring fun _ : ι => R where
+    DirectSum.GCommSemiring fun _ : ι ↦ R where
   __ := Semiring.directSumGSemiring ι
   __ := CommMonoid.gCommMonoid ι
 
 /-- A direct sum of copies of a `CommRing` inherits the commutative multiplication structure. -/
 instance CommRing.directSumGCommRing {R : Type*} [AddCommMonoid ι] [CommRing R] :
-    DirectSum.GCommRing fun _ : ι => R where
+    DirectSum.GCommRing fun _ : ι ↦ R where
   __ := Ring.directSumGRing ι
   __ := CommMonoid.gCommMonoid ι
 

@@ -28,7 +28,7 @@ theorem isPrimePow_def : IsPrimePow n ↔ ∃ (p : R) (k : ℕ), Prime p ∧ 0 <
 natural `k` such that `n` can be written as `p^(k+1)`. -/
 theorem isPrimePow_iff_pow_succ : IsPrimePow n ↔ ∃ (p : R) (k : ℕ), Prime p ∧ p ^ (k + 1) = n :=
   (isPrimePow_def _).trans
-    ⟨fun ⟨p, k, hp, hk, hn⟩ => ⟨p, k - 1, hp, by rwa [Nat.sub_add_cancel hk]⟩, fun ⟨_, _, hp, hn⟩ =>
+    ⟨fun ⟨p, k, hp, hk, hn⟩ ↦ ⟨p, k - 1, hp, by rwa [Nat.sub_add_cancel hk]⟩, fun ⟨_, _, hp, hn⟩ ↦
       ⟨_, _, hp, Nat.succ_pos', hn⟩⟩
 
 theorem not_isPrimePow_zero [NoZeroDivisors R] : ¬IsPrimePow (0 : R) := by
@@ -41,7 +41,7 @@ theorem IsPrimePow.not_unit {n : R} (h : IsPrimePow n) : ¬IsUnit n :=
   let ⟨_p, _k, hp, hk, hn⟩ := h
   hn ▸ (isUnit_pow_iff hk.ne').not.mpr hp.not_unit
 
-theorem IsUnit.not_isPrimePow {n : R} (h : IsUnit n) : ¬IsPrimePow n := fun h' => h'.not_unit h
+theorem IsUnit.not_isPrimePow {n : R} (h : IsUnit n) : ¬IsPrimePow n := fun h' ↦ h'.not_unit h
 
 theorem not_isPrimePow_one : ¬IsPrimePow (1 : R) :=
   isUnit_one.not_isPrimePow
@@ -53,10 +53,10 @@ theorem IsPrimePow.pow {n : R} (hn : IsPrimePow n) {k : ℕ} (hk : k ≠ 0) : Is
   let ⟨p, k', hp, hk', hn⟩ := hn
   ⟨p, k * k', hp, mul_pos hk.bot_lt hk', by rw [pow_mul', hn]⟩
 
-theorem IsPrimePow.ne_zero [NoZeroDivisors R] {n : R} (h : IsPrimePow n) : n ≠ 0 := fun t =>
+theorem IsPrimePow.ne_zero [NoZeroDivisors R] {n : R} (h : IsPrimePow n) : n ≠ 0 := fun t ↦
   not_isPrimePow_zero (t ▸ h)
 
-theorem IsPrimePow.ne_one {n : R} (h : IsPrimePow n) : n ≠ 1 := fun t =>
+theorem IsPrimePow.ne_one {n : R} (h : IsPrimePow n) : n ≠ 1 := fun t ↦
   not_isPrimePow_one (t ▸ h)
 
 section Nat
@@ -70,7 +70,7 @@ theorem Nat.Prime.isPrimePow {p : ℕ} (hp : p.Prime) : IsPrimePow p :=
 theorem isPrimePow_nat_iff_bounded (n : ℕ) :
     IsPrimePow n ↔ ∃ p : ℕ, p ≤ n ∧ ∃ k : ℕ, k ≤ n ∧ p.Prime ∧ 0 < k ∧ p ^ k = n := by
   rw [isPrimePow_nat_iff]
-  refine Iff.symm ⟨fun ⟨p, _, k, _, hp, hk, hn⟩ => ⟨p, k, hp, hk, hn⟩, ?_⟩
+  refine Iff.symm ⟨fun ⟨p, _, k, _, hp, hk, hn⟩ ↦ ⟨p, k, hp, hk, hn⟩, ?_⟩
   rintro ⟨p, k, hp, hk, rfl⟩
   refine ⟨p, ?_, k, (Nat.lt_pow_self hp.one_lt).le, hp, hk, rfl⟩
   conv => { lhs; rw [← (pow_one p)] }

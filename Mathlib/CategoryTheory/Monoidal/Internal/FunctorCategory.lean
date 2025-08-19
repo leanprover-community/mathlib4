@@ -70,7 +70,7 @@ to a functor into the category of monoid objects.
 def functor : Mon_ (C ⥤ D) ⥤ C ⥤ Mon_ D where
   obj A := functorObj A.X
   map f :=
-  { app := fun X =>
+  { app := fun X ↦
     { hom := f.hom.app X
       is_mon_hom :=
         { one_hom := congr_app (IsMon_Hom.one_hom f.hom) X
@@ -92,23 +92,23 @@ to a monoid object in the functor category
 def inverse : (C ⥤ Mon_ D) ⥤ Mon_ (C ⥤ D) where
   obj := inverseObj
   map α := .mk'
-    { app := fun X => (α.app X).hom
-      naturality := fun _ _ f => congr_arg Mon_.Hom.hom (α.naturality f) }
+    { app := fun X ↦ (α.app X).hom
+      naturality := fun _ _ f ↦ congr_arg Mon_.Hom.hom (α.naturality f) }
 
 /-- The unit for the equivalence `Mon_ (C ⥤ D) ≌ C ⥤ Mon_ D`.
 -/
 @[simps!]
 def unitIso : 𝟭 (Mon_ (C ⥤ D)) ≅ functor ⋙ inverse :=
-  NatIso.ofComponents (fun A =>
-  { hom := .mk' { app := fun _ => 𝟙 _ }
-    inv := .mk' { app := fun _ => 𝟙 _ } })
+  NatIso.ofComponents (fun A ↦
+  { hom := .mk' { app := fun _ ↦ 𝟙 _ }
+    inv := .mk' { app := fun _ ↦ 𝟙 _ } })
 
 /-- The counit for the equivalence `Mon_ (C ⥤ D) ≌ C ⥤ Mon_ D`.
 -/
 @[simps!]
 def counitIso : inverse ⋙ functor ≅ 𝟭 (C ⥤ Mon_ D) :=
-  NatIso.ofComponents (fun A =>
-    NatIso.ofComponents (fun X => { hom := { hom := 𝟙 _ }, inv := { hom := 𝟙 _ } }))
+  NatIso.ofComponents (fun A ↦
+    NatIso.ofComponents (fun X ↦ { hom := { hom := 𝟙 _ }, inv := { hom := 𝟙 _ } }))
 
 end MonFunctorCategoryEquivalence
 
@@ -161,7 +161,7 @@ to a functor into the category of comonoid objects.
 def functor : Comon_ (C ⥤ D) ⥤ C ⥤ Comon_ D where
   obj A := functorObj A.X
   map f :=
-  { app := fun X =>
+  { app := fun X ↦
     { hom := f.hom.app X
       is_comon_hom :=
         { hom_counit := congr_app (IsComon_Hom.hom_counit f.hom) X
@@ -184,8 +184,8 @@ private def inverse : (C ⥤ Comon_ D) ⥤ Comon_ (C ⥤ D) where
   obj := inverseObj
   map α :=
     { hom :=
-      { app := fun X => (α.app X).hom
-        naturality := fun _ _ f => congr_arg Comon_.Hom.hom (α.naturality f) }
+      { app := fun X ↦ (α.app X).hom
+        naturality := fun _ _ f ↦ congr_arg Comon_.Hom.hom (α.naturality f) }
       is_comon_hom :=
         { hom_counit := by ext x; dsimp; rw [IsComon_Hom.hom_counit (α.app x).hom]
           hom_comul := by ext x; dsimp; rw [IsComon_Hom.hom_comul (α.app x).hom] } }
@@ -194,16 +194,16 @@ private def inverse : (C ⥤ Comon_ D) ⥤ Comon_ (C ⥤ D) where
 -/
 @[simps!]
 private def unitIso : 𝟭 (Comon_ (C ⥤ D)) ≅ functor ⋙ inverse :=
-  NatIso.ofComponents (fun A =>
-    { hom := .mk' { app := fun _ => 𝟙 _ }
-      inv := .mk' { app := fun _ => 𝟙 _ } })
+  NatIso.ofComponents (fun A ↦
+    { hom := .mk' { app := fun _ ↦ 𝟙 _ }
+      inv := .mk' { app := fun _ ↦ 𝟙 _ } })
 
 /-- The counit for the equivalence `Mon_ (C ⥤ D) ≌ C ⥤ Mon_ D`.
 -/
 @[simps!]
 def counitIso : inverse ⋙ functor ≅ 𝟭 (C ⥤ Comon_ D) :=
-  NatIso.ofComponents (fun A =>
-    NatIso.ofComponents (fun X => { hom := { hom := 𝟙 _ }, inv := { hom := 𝟙 _ } }) )
+  NatIso.ofComponents (fun A ↦
+    NatIso.ofComponents (fun X ↦ { hom := { hom := 𝟙 _ }, inv := { hom := 𝟙 _ } }) )
 
 end ComonFunctorCategoryEquivalence
 
@@ -233,10 +233,10 @@ to a functor into the category of commutative monoid objects.
 def functor : CommMon_ (C ⥤ D) ⥤ C ⥤ CommMon_ D where
   obj A :=
     { (monFunctorCategoryEquivalence C D).functor.obj A.toMon_ with
-      obj := fun X =>
+      obj := fun X ↦
         { ((monFunctorCategoryEquivalence C D).functor.obj A.toMon_).obj X with
           comm := { mul_comm := congr_app (IsCommMon.mul_comm A.X) X } } }
-  map f := { app := fun X => ((monFunctorCategoryEquivalence C D).functor.map f).app X }
+  map f := { app := fun X ↦ ((monFunctorCategoryEquivalence C D).functor.map f).app X }
 
 /-- Functor translating a functor into the category of commutative monoid objects
 to a commutative monoid object in the functor category
@@ -252,16 +252,16 @@ def inverse : (C ⥤ CommMon_ D) ⥤ CommMon_ (C ⥤ D) where
 -/
 @[simps!]
 def unitIso : 𝟭 (CommMon_ (C ⥤ D)) ≅ functor ⋙ inverse :=
-  NatIso.ofComponents (fun A =>
-    { hom := .mk' { app := fun _ => 𝟙 _ }
-      inv := .mk' { app := fun _ => 𝟙 _ } })
+  NatIso.ofComponents (fun A ↦
+    { hom := .mk' { app := fun _ ↦ 𝟙 _ }
+      inv := .mk' { app := fun _ ↦ 𝟙 _ } })
 
 /-- The counit for the equivalence `CommMon_ (C ⥤ D) ≌ C ⥤ CommMon_ D`.
 -/
 @[simps!]
 def counitIso : inverse ⋙ functor ≅ 𝟭 (C ⥤ CommMon_ D) :=
-  NatIso.ofComponents (fun A =>
-    NatIso.ofComponents (fun X => { hom := { hom := 𝟙 _ }, inv := { hom := 𝟙 _ } }) )
+  NatIso.ofComponents (fun A ↦
+    NatIso.ofComponents (fun X ↦ { hom := { hom := 𝟙 _ }, inv := { hom := 𝟙 _ } }) )
 
 end CommMonFunctorCategoryEquivalence
 

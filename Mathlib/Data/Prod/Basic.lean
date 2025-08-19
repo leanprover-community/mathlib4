@@ -248,29 +248,29 @@ open Function
 @[simp]
 theorem map_injective [Nonempty α] [Nonempty β] {f : α → γ} {g : β → δ} :
     Injective (map f g) ↔ Injective f ∧ Injective g :=
-  ⟨fun h =>
-    ⟨fun a₁ a₂ ha => by
+  ⟨fun h ↦
+    ⟨fun a₁ a₂ ha ↦ by
       inhabit β
       injection
-        @h (a₁, default) (a₂, default) (congr_arg (fun c : γ => Prod.mk c (g default)) ha :),
-      fun b₁ b₂ hb => by
+        @h (a₁, default) (a₂, default) (congr_arg (fun c : γ ↦ Prod.mk c (g default)) ha :),
+      fun b₁ b₂ hb ↦ by
       inhabit α
       injection @h (default, b₁) (default, b₂) (congr_arg (Prod.mk (f default)) hb :)⟩,
-    fun h => h.1.prodMap h.2⟩
+    fun h ↦ h.1.prodMap h.2⟩
 
 @[simp]
 theorem map_surjective [Nonempty γ] [Nonempty δ] {f : α → γ} {g : β → δ} :
     Surjective (map f g) ↔ Surjective f ∧ Surjective g :=
-  ⟨fun h =>
-    ⟨fun c => by
+  ⟨fun h ↦
+    ⟨fun c ↦ by
       inhabit δ
       obtain ⟨⟨a, b⟩, h⟩ := h (c, default)
       exact ⟨a, congr_arg Prod.fst h⟩,
-      fun d => by
+      fun d ↦ by
       inhabit γ
       obtain ⟨⟨a, b⟩, h⟩ := h (default, d)
       exact ⟨b, congr_arg Prod.snd h⟩⟩,
-    fun h => h.1.prodMap h.2⟩
+    fun h ↦ h.1.prodMap h.2⟩
 
 @[simp]
 theorem map_bijective [Nonempty α] [Nonempty β] {f : α → γ} {g : β → δ} :
@@ -282,14 +282,14 @@ theorem map_bijective [Nonempty α] [Nonempty β] {f : α → γ} {g : β → δ
 @[simp]
 theorem map_leftInverse [Nonempty β] [Nonempty δ] {f₁ : α → β} {g₁ : γ → δ} {f₂ : β → α}
     {g₂ : δ → γ} : LeftInverse (map f₁ g₁) (map f₂ g₂) ↔ LeftInverse f₁ f₂ ∧ LeftInverse g₁ g₂ :=
-  ⟨fun h =>
-    ⟨fun b => by
+  ⟨fun h ↦
+    ⟨fun b ↦ by
       inhabit δ
       exact congr_arg Prod.fst (h (b, default)),
-      fun d => by
+      fun d ↦ by
       inhabit β
       exact congr_arg Prod.snd (h (default, d))⟩,
-    fun h => h.1.prodMap h.2 ⟩
+    fun h ↦ h.1.prodMap h.2 ⟩
 
 @[simp]
 theorem map_rightInverse [Nonempty α] [Nonempty γ] {f₁ : α → β} {g₁ : γ → δ} {f₂ : β → α}

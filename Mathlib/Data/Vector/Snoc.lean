@@ -24,7 +24,7 @@ variable {α β σ φ : Type*} {n : ℕ} {x : α} {s : σ} (xs : Vector α n)
 
 /-- Append a single element to the end of a vector -/
 def snoc : Vector α n → α → Vector α (n + 1) :=
-  fun xs x => xs ++ x ::ᵥ Vector.nil
+  fun xs x ↦ xs ++ x ::ᵥ Vector.nil
 
 /-! ## Simplification lemmas -/
 
@@ -82,10 +82,10 @@ def revInductionOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vec
     (snoc : ∀ {n : ℕ} (xs : Vector α n) (x : α), C xs → C (xs.snoc x)) :
     C v :=
   cast (by simp) <| inductionOn
-    (C := fun v => C v.reverse)
+    (C := fun v ↦ C v.reverse)
     v.reverse
     nil
-    (@fun n x xs (r : C xs.reverse) => cast (by simp) <| snoc xs.reverse x r)
+    (@fun n x xs (r : C xs.reverse) ↦ cast (by simp) <| snoc xs.reverse x r)
 
 /-- Define `C v w` by *reverse* induction on a pair of vectors `v : Vector α n` and
 `w : Vector β n`. -/
@@ -97,11 +97,11 @@ def revInductionOn₂ {C : ∀ {n : ℕ}, Vector α n → Vector β n → Sort*}
       C xs ys → C (xs.snoc x) (ys.snoc y)) :
     C v w :=
   cast (by simp) <| inductionOn₂
-    (C := fun v w => C v.reverse w.reverse)
+    (C := fun v w ↦ C v.reverse w.reverse)
     v.reverse
     w.reverse
     nil
-    (@fun n x y xs ys (r : C xs.reverse ys.reverse) =>
+    (@fun n x y xs ys (r : C xs.reverse ys.reverse) ↦
       cast (by simp) <| snoc xs.reverse ys.reverse x y r)
 
 /-- Define `C v` by *reverse* case analysis, i.e. by handling the cases `nil` and `xs.snoc x`
@@ -111,7 +111,7 @@ def revCasesOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vector 
     (nil : C nil)
     (snoc : ∀ {n : ℕ} (xs : Vector α n) (x : α), C (xs.snoc x)) :
     C v :=
-  revInductionOn v nil fun xs x _ => snoc xs x
+  revInductionOn v nil fun xs x _ ↦ snoc xs x
 
 end Induction
 

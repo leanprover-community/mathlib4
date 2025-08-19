@@ -37,7 +37,7 @@ def Factors {X Y : C} (P : MonoOver Y) (f : X ⟶ Y) : Prop :=
 
 theorem factors_congr {X : C} {f g : MonoOver X} {Y : C} (h : Y ⟶ X) (e : f ≅ g) :
     f.Factors h ↔ g.Factors h :=
-  ⟨fun ⟨u, hu⟩ => ⟨u ≫ ((MonoOver.forget _).map e.hom).left, by simp [hu]⟩, fun ⟨u, hu⟩ =>
+  ⟨fun ⟨u, hu⟩ ↦ ⟨u ≫ ((MonoOver.forget _).map e.hom).left, by simp [hu]⟩, fun ⟨u, hu⟩ ↦
     ⟨u ≫ ((MonoOver.forget _).map e.inv).left, by simp [hu]⟩⟩
 
 /-- `P.factorThru f h` provides a factorisation of `f : X ⟶ Y` through some `P : MonoOver Y`,
@@ -54,7 +54,7 @@ namespace Subobject
 Given `h : P.Factors f`, you can recover the morphism as `P.factorThru f h`.
 -/
 def Factors {X Y : C} (P : Subobject Y) (f : X ⟶ Y) : Prop :=
-  Quotient.liftOn' P (fun P => P.Factors f)
+  Quotient.liftOn' P (fun P ↦ P.Factors f)
     (by
       rintro P Q ⟨h⟩
       apply propext
@@ -74,7 +74,7 @@ theorem mk_factors_self (f : X ⟶ Y) [Mono f] : (mk f).Factors f :=
 
 theorem factors_iff {X Y : C} (P : Subobject Y) (f : X ⟶ Y) :
     P.Factors f ↔ (representative.obj P).Factors f :=
-  Quot.inductionOn P fun _ => MonoOver.factors_congr _ (representativeIso _).symm
+  Quot.inductionOn P fun _ ↦ MonoOver.factors_congr _ (representativeIso _).symm
 
 theorem factors_self {X : C} (P : Subobject X) : P.Factors P.arrow :=
   (factors_iff _ _).mpr ⟨𝟙 (P : C), by simp⟩
@@ -94,7 +94,7 @@ theorem factors_zero [HasZeroMorphisms C] {X Y : C} {P : Subobject Y} : P.Factor
 theorem factors_of_le {Y Z : C} {P Q : Subobject Y} (f : Z ⟶ Y) (h : P ≤ Q) :
     P.Factors f → Q.Factors f := by
   simp only [factors_iff]
-  exact fun ⟨u, hu⟩ => ⟨u ≫ ofLE _ _ h, by simp [← hu]⟩
+  exact fun ⟨u, hu⟩ ↦ ⟨u ≫ ofLE _ _ h, by simp [← hu]⟩
 
 /-- `P.factorThru f h` provides a factorisation of `f : X ⟶ Y` through some `P : Subobject Y`,
 given the evidence `h : P.Factors f` that such a factorisation exists. -/

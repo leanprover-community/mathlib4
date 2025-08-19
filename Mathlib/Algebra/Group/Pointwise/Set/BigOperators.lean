@@ -24,7 +24,7 @@ variable [Monoid α] [Monoid β] [MonoidHomClass F α β]
 
 @[to_additive]
 theorem image_list_prod (f : F) :
-    ∀ l : List (Set α), (f : α → β) '' l.prod = (l.map fun s => f '' s).prod
+    ∀ l : List (Set α), (f : α → β) '' l.prod = (l.map fun s ↦ f '' s).prod
   | [] => image_one.trans <| congr_arg singleton (map_one f)
   | a :: as => by rw [List.map_cons, List.prod_cons, List.prod_cons, image_mul, image_list_prod _ _]
 
@@ -36,7 +36,7 @@ variable [CommMonoid α] [CommMonoid β] [MonoidHomClass F α β]
 
 @[to_additive]
 theorem image_multiset_prod (f : F) :
-    ∀ m : Multiset (Set α), (f : α → β) '' m.prod = (m.map fun s => f '' s).prod :=
+    ∀ m : Multiset (Set α), (f : α → β) '' m.prod = (m.map fun s ↦ f '' s).prod :=
   Quotient.ind <| by
     simpa only [Multiset.quot_mk_to_coe, Multiset.prod_coe, Multiset.map_coe] using
       image_list_prod f
@@ -149,14 +149,14 @@ theorem finset_prod_singleton {M ι : Type*} [CommMonoid M] (s : Finset ι) (I :
 /-- The n-ary version of `Set.image_mul_prod`. -/
 @[to_additive /-- The n-ary version of `Set.add_image_prod`. -/]
 theorem image_finset_prod_pi (l : Finset ι) (S : ι → Set α) :
-    (fun f : ι → α => ∏ i ∈ l, f i) '' (l : Set ι).pi S = ∏ i ∈ l, S i := by
+    (fun f : ι → α ↦ ∏ i ∈ l, f i) '' (l : Set ι).pi S = ∏ i ∈ l, S i := by
   ext
   simp_rw [mem_finset_prod, mem_image, mem_pi, exists_prop, Finset.mem_coe]
 
 /-- A special case of `Set.image_finset_prod_pi` for `Finset.univ`. -/
 @[to_additive /-- A special case of `Set.image_finset_sum_pi` for `Finset.univ`. -/]
 theorem image_fintype_prod_pi [Fintype ι] (S : ι → Set α) :
-    (fun f : ι → α => ∏ i, f i) '' univ.pi S = ∏ i, S i := by
+    (fun f : ι → α ↦ ∏ i, f i) '' univ.pi S = ∏ i, S i := by
   simpa only [Finset.coe_univ] using image_finset_prod_pi Finset.univ S
 
 end CommMonoid

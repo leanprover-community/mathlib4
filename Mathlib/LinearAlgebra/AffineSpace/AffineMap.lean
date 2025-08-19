@@ -65,7 +65,7 @@ instance AffineMap.instFunLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*
     [Ring k] [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
     [AffineSpace V2 P2] : FunLike (P1 →ᵃ[k] P2) P1 P2 where
   coe := AffineMap.toFun
-  coe_injective' := fun ⟨f, f_linear, f_add⟩ ⟨g, g_linear, g_add⟩ => fun (h : f = g) => by
+  coe_injective' := fun ⟨f, f_linear, f_add⟩ ⟨g, g_linear, g_add⟩ ↦ fun (h : f = g) ↦ by
     obtain ⟨p⟩ := (AddTorsor.nonempty : Nonempty P1)
     congr with v
     apply vadd_right_cancel (f p)
@@ -177,7 +177,7 @@ variable {k P1}
 
 theorem linear_eq_zero_iff_exists_const (f : P1 →ᵃ[k] P2) :
     f.linear = 0 ↔ ∃ q, f = const k P1 q := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · use f (Classical.arbitrary P1)
     ext
     rw [coe_const, Function.const_apply, ← @vsub_eq_zero_iff_eq V2, ← f.linearMap_vsub, h,
@@ -210,9 +210,9 @@ section SMul
 variable {R : Type*} [Monoid R] [DistribMulAction R V2] [SMulCommClass k R V2]
 /-- The space of affine maps to a module inherits an `R`-action from the action on its codomain. -/
 instance mulAction : MulAction R (P1 →ᵃ[k] V2) where
-  smul c f := ⟨c • ⇑f, c • f.linear, fun p v => by simp [smul_add]⟩
-  one_smul _ := ext fun _ => one_smul _ _
-  mul_smul _ _ _ := ext fun _ => mul_smul _ _ _
+  smul c f := ⟨c • ⇑f, c • f.linear, fun p v ↦ by simp [smul_add]⟩
+  one_smul _ := ext fun _ ↦ one_smul _ _
+  mul_smul _ _ _ := ext fun _ ↦ mul_smul _ _ _
 
 @[simp, norm_cast]
 theorem coe_smul (c : R) (f : P1 →ᵃ[k] V2) : ⇑(c • f) = c • ⇑f :=
@@ -224,20 +224,20 @@ theorem smul_linear (t : R) (f : P1 →ᵃ[k] V2) : (t • f).linear = t • f.l
 
 instance isCentralScalar [DistribMulAction Rᵐᵒᵖ V2] [IsCentralScalar R V2] :
     IsCentralScalar R (P1 →ᵃ[k] V2) where
-  op_smul_eq_smul _r _x := ext fun _ => op_smul_eq_smul _ _
+  op_smul_eq_smul _r _x := ext fun _ ↦ op_smul_eq_smul _ _
 
 end SMul
 
-instance : Zero (P1 →ᵃ[k] V2) where zero := ⟨0, 0, fun _ _ => (zero_vadd _ _).symm⟩
+instance : Zero (P1 →ᵃ[k] V2) where zero := ⟨0, 0, fun _ _ ↦ (zero_vadd _ _).symm⟩
 
 instance : Add (P1 →ᵃ[k] V2) where
-  add f g := ⟨f + g, f.linear + g.linear, fun p v => by simp [add_add_add_comm]⟩
+  add f g := ⟨f + g, f.linear + g.linear, fun p v ↦ by simp [add_add_add_comm]⟩
 
 instance : Sub (P1 →ᵃ[k] V2) where
-  sub f g := ⟨f - g, f.linear - g.linear, fun p v => by simp [sub_add_sub_comm]⟩
+  sub f g := ⟨f - g, f.linear - g.linear, fun p v ↦ by simp [sub_add_sub_comm]⟩
 
 instance : Neg (P1 →ᵃ[k] V2) where
-  neg f := ⟨-f, -f.linear, fun p v => by simp [add_comm, map_vadd f]⟩
+  neg f := ⟨-f, -f.linear, fun p v ↦ by simp [add_comm, map_vadd f]⟩
 
 @[simp, norm_cast]
 theorem coe_zero : ⇑(0 : P1 →ᵃ[k] V2) = 0 :=
@@ -273,22 +273,22 @@ theorem neg_linear (f : P1 →ᵃ[k] V2) : (-f).linear = -f.linear :=
 
 /-- The set of affine maps to a vector space is an additive commutative group. -/
 instance : AddCommGroup (P1 →ᵃ[k] V2) :=
-  coeFn_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_smul _ _)
-    fun _ _ => coe_smul _ _
+  coeFn_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ ↦ coe_smul _ _)
+    fun _ _ ↦ coe_smul _ _
 
 /-- The space of affine maps from `P1` to `P2` is an affine space over the space of affine maps
 from `P1` to the vector space `V2` corresponding to `P2`. -/
 instance : AffineSpace (P1 →ᵃ[k] V2) (P1 →ᵃ[k] P2) where
   vadd f g :=
-    ⟨fun p => f p +ᵥ g p, f.linear + g.linear,
-      fun p v => by simp [vadd_vadd, add_right_comm]⟩
-  zero_vadd f := ext fun p => zero_vadd _ (f p)
-  add_vadd f₁ f₂ f₃ := ext fun p => add_vadd (f₁ p) (f₂ p) (f₃ p)
+    ⟨fun p ↦ f p +ᵥ g p, f.linear + g.linear,
+      fun p v ↦ by simp [vadd_vadd, add_right_comm]⟩
+  zero_vadd f := ext fun p ↦ zero_vadd _ (f p)
+  add_vadd f₁ f₂ f₃ := ext fun p ↦ add_vadd (f₁ p) (f₂ p) (f₃ p)
   vsub f g :=
-    ⟨fun p => f p -ᵥ g p, f.linear - g.linear, fun p v => by
+    ⟨fun p ↦ f p -ᵥ g p, f.linear - g.linear, fun p v ↦ by
       simp [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, sub_add_eq_add_sub]⟩
-  vsub_vadd' f g := ext fun p => vsub_vadd (f p) (g p)
-  vadd_vsub' f g := ext fun p => vadd_vsub (f p) (g p)
+  vsub_vadd' f g := ext fun p ↦ vsub_vadd (f p) (g p)
+  vadd_vsub' f g := ext fun p ↦ vadd_vsub (f p) (g p)
 
 @[simp]
 theorem vadd_apply (f : P1 →ᵃ[k] V2) (g : P1 →ᵃ[k] P2) (p : P1) : (f +ᵥ g) p = f p +ᵥ g p :=
@@ -373,11 +373,11 @@ theorem comp_apply (f : P2 →ᵃ[k] P3) (g : P1 →ᵃ[k] P2) (p : P1) : f.comp
 
 @[simp]
 theorem comp_id (f : P1 →ᵃ[k] P2) : f.comp (id k P1) = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 @[simp]
 theorem id_comp (f : P1 →ᵃ[k] P2) : (id k P2).comp f = f :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 theorem comp_assoc (f₃₄ : P3 →ᵃ[k] P4) (f₂₃ : P2 →ᵃ[k] P3) (f₁₂ : P1 →ᵃ[k] P2) :
     (f₃₄.comp f₂₃).comp f₁₂ = f₃₄.comp (f₂₃.comp f₁₂) :=
@@ -441,7 +441,7 @@ theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
 def lineMap (p₀ p₁ : P1) : k →ᵃ[k] P1 :=
   ((LinearMap.id : k →ₗ[k] k).smulRight (p₁ -ᵥ p₀)).toAffineMap +ᵥ const k k p₀
 
-theorem coe_lineMap (p₀ p₁ : P1) : (lineMap p₀ p₁ : k → P1) = fun c => c • (p₁ -ᵥ p₀) +ᵥ p₀ :=
+theorem coe_lineMap (p₀ p₁ : P1) : (lineMap p₀ p₁ : k → P1) = fun c ↦ c • (p₁ -ᵥ p₀) +ᵥ p₀ :=
   rfl
 
 theorem lineMap_apply (p₀ p₁ : P1) (c : k) : lineMap p₀ p₁ c = c • (p₁ -ᵥ p₀) +ᵥ p₀ :=
@@ -500,7 +500,7 @@ theorem lineMap_eq_right_iff [NoZeroSMulDivisors k V1] {p₀ p₁ : P1} {c : k} 
 
 variable (k) in
 theorem lineMap_injective [NoZeroSMulDivisors k V1] {p₀ p₁ : P1} (h : p₀ ≠ p₁) :
-    Function.Injective (lineMap p₀ p₁ : k → P1) := fun _c₁ _c₂ hc =>
+    Function.Injective (lineMap p₀ p₁ : k → P1) := fun _c₁ _c₂ hc ↦
   (lineMap_eq_lineMap_iff.mp hc).resolve_left h
 
 @[simp]
@@ -588,22 +588,22 @@ lemma lineMap_anti [LinearOrder k] [Preorder V1] [AddLeftMono V1] [SMulPosMono k
 
 /-- Decomposition of an affine map in the special case when the point space and vector space
 are the same. -/
-theorem decomp (f : V1 →ᵃ[k] V2) : (f : V1 → V2) = ⇑f.linear + fun _ => f 0 := by
+theorem decomp (f : V1 →ᵃ[k] V2) : (f : V1 → V2) = ⇑f.linear + fun _ ↦ f 0 := by
   ext x
   calc
     f x = f.linear x +ᵥ f 0 := by rw [← f.map_vadd, vadd_eq_add, add_zero]
-    _ = (f.linear + fun _ : V1 => f 0) x := rfl
+    _ = (f.linear + fun _ : V1 ↦ f 0) x := rfl
 
 /-- Decomposition of an affine map in the special case when the point space and vector space
 are the same. -/
-theorem decomp' (f : V1 →ᵃ[k] V2) : (f.linear : V1 → V2) = ⇑f - fun _ => f 0 := by
+theorem decomp' (f : V1 →ᵃ[k] V2) : (f.linear : V1 → V2) = ⇑f - fun _ ↦ f 0 := by
   rw [decomp]
   simp only [LinearMap.map_zero, Pi.add_apply, add_sub_cancel_right, zero_add]
 
 theorem image_uIcc {k : Type*} [Field k] [LinearOrder k] [IsStrictOrderedRing k]
     (f : k →ᵃ[k] k) (a b : k) :
     f '' Set.uIcc a b = Set.uIcc (f a) (f b) := by
-  have : ⇑f = (fun x => x + f 0) ∘ fun x => x * (f 1 - f 0) := by
+  have : ⇑f = (fun x ↦ x + f 0) ∘ fun x ↦ x * (f 1 - f 0) := by
     ext x
     change f x = x • (f 1 -ᵥ f 0) +ᵥ f 0
     rw [← f.linearMap_vsub, ← f.linear.map_smul, ← f.map_vadd]
@@ -653,8 +653,8 @@ variable [Monoid R] [DistribMulAction R V2] [SMulCommClass k R V2]
 
 /-- The space of affine maps to a module inherits an `R`-action from the action on its codomain. -/
 instance distribMulAction : DistribMulAction R (P1 →ᵃ[k] V2) where
-  smul_add _ _ _ := ext fun _ => smul_add _ _ _
-  smul_zero _ := ext fun _ => smul_zero _
+  smul_add _ _ _ := ext fun _ ↦ smul_add _ _ _
+  smul_zero _ := ext fun _ ↦ smul_zero _
 
 end DistribMulAction
 
@@ -665,8 +665,8 @@ variable [Semiring R] [Module R V2] [SMulCommClass k R V2]
 /-- The space of affine maps taking values in an `R`-module is an `R`-module. -/
 instance : Module R (P1 →ᵃ[k] V2) :=
   { AffineMap.distribMulAction with
-    add_smul := fun _ _ _ => ext fun _ => add_smul _ _ _
-    zero_smul := fun _ => ext fun _ => zero_smul _ _ }
+    add_smul := fun _ _ _ ↦ ext fun _ ↦ add_smul _ _ _
+    zero_smul := fun _ ↦ ext fun _ ↦ zero_smul _ _ }
 
 variable (R)
 
@@ -714,7 +714,7 @@ variable (fp : (i : ι) → (P1 →ᵃ[k] φp i)) (fv : (i : ι) → (P1 →ᵃ[
 theorem pi_apply (c : P1) (i : ι) : pi fp c i = fp i c :=
   rfl
 
-theorem pi_comp (g : P3 →ᵃ[k] P1) : (pi fp).comp g = pi (fun i => (fp i).comp g) :=
+theorem pi_comp (g : P3 →ᵃ[k] P1) : (pi fp).comp g = pi (fun i ↦ (fp i).comp g) :=
   rfl
 
 theorem pi_eq_zero : pi fv = 0 ↔ ∀ i, fv i = 0 := by
@@ -725,7 +725,7 @@ theorem pi_zero : pi (fun _ ↦ 0 : (i : ι) → P1 →ᵃ[k] φv i) = 0 := by
   ext; rfl
 
 theorem proj_pi (i : ι) : (proj i).comp (pi fp) = fp i :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 section Ext
 
 variable [Finite ι] [DecidableEq ι] {f g : ((i : ι) → φv i) →ᵃ[k] P2}
@@ -762,7 +762,7 @@ note [partially-applied ext lemmas]. Analogous to `LinearMap.pi_ext'` -/
 @[ext (iff := false)]
 theorem pi_ext_nonempty' [Nonempty ι] (h : ∀ i, f.comp (LinearMap.single _ _ i).toAffineMap =
     g.comp (LinearMap.single _ _ i).toAffineMap) : f = g := by
-  refine pi_ext_nonempty fun i x => ?_
+  refine pi_ext_nonempty fun i x ↦ ?_
   convert AffineMap.congr_fun (h i) x
 
 end Ext

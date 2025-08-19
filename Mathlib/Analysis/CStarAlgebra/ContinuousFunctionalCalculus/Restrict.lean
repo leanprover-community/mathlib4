@@ -63,7 +63,7 @@ def starAlgHom {R : Type u} {S : Type v} {A : Type w} [Semifield R]
     (ContinuousMap.compStarAlgHom (spectrum S a) (.ofId R S) (algebraMapCLM R S).continuous).comp <|
       ContinuousMap.compStarAlgHom' R R
         ⟨Subtype.map f h.subset_preimage, (map_continuous f).subtype_map
-          fun x (hx : x ∈ spectrum S a) => h.subset_preimage hx⟩
+          fun x (hx : x ∈ spectrum S a) ↦ h.subset_preimage hx⟩
 
 variable {R S A : Type*} {p q : A → Prop}
 variable [Semifield R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
@@ -202,7 +202,7 @@ def nonUnitalStarAlgHom {R : Type u} {S : Type v} {A : Type w} [Semifield R]
     (nonUnitalStarAlgHom_postcomp (σₙ S a) (StarAlgHom.ofId R S) (algebraMapCLM R S).continuous)
       |>.comp <| nonUnitalStarAlgHom_precomp R
         ⟨⟨Subtype.map f h.subset_preimage, (map_continuous f).subtype_map
-          fun x (hx : x ∈ σₙ S a) => h.subset_preimage hx⟩, Subtype.ext h.map_zero⟩
+          fun x (hx : x ∈ σₙ S a) ↦ h.subset_preimage hx⟩, Subtype.ext h.map_zero⟩
 
 variable {R S A : Type*} {p q : A → Prop}
 variable [Semifield R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]

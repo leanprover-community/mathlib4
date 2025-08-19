@@ -129,7 +129,7 @@ lemma measure_null_iff_singleton (hs : s.Countable) : μ s = 0 ↔ ∀ x ∈ s, 
 If `μ (S \ s n)` tends to zero along some nontrivial filter (usually `Filter.atTop` on `ι = ℕ`),
 then `μ S = ⨆ n, μ (s n)`. -/
 theorem measure_iUnion_of_tendsto_zero {ι} (μ : F) {s : ι → Set α} (l : Filter ι) [NeBot l]
-    (h0 : Tendsto (fun k => μ ((⋃ n, s n) \ s k)) l (𝓝 0)) : μ (⋃ n, s n) = ⨆ n, μ (s n) := by
+    (h0 : Tendsto (fun k ↦ μ ((⋃ n, s n) \ s k)) l (𝓝 0)) : μ (⋃ n, s n) = ⨆ n, μ (s n) := by
   refine le_antisymm ?_ <| iSup_le fun n ↦ measure_mono <| subset_iUnion _ _
   set S := ⋃ n, s n
   set M := ⨆ n, μ (s n)
@@ -148,7 +148,7 @@ theorem measure_null_of_locally_null [TopologicalSpace α] [SecondCountableTopol
   choose t ht using TopologicalSpace.countable_cover_nhdsWithin hxu
   rcases ht with ⟨ts, t_count, ht⟩
   apply measure_mono_null ht
-  exact (measure_biUnion_null_iff t_count).2 fun x hx => hu₀ x (ts hx)
+  exact (measure_biUnion_null_iff t_count).2 fun x hx ↦ hu₀ x (ts hx)
 
 /-- If `m s ≠ 0`, then for some point `x ∈ s` and any `t ∈ 𝓝[s] x` we have `0 < m t`. -/
 theorem exists_mem_forall_mem_nhdsWithin_pos_measure [TopologicalSpace α]
@@ -167,7 +167,7 @@ variable {α β : Type*} {m : OuterMeasure α}
 /-- If `s : ι → Set α` is a sequence of sets, `S = ⋃ n, s n`, and `m (S \ s n)` tends to zero along
 some nontrivial filter (usually `atTop` on `ι = ℕ`), then `m S = ⨆ n, m (s n)`. -/
 theorem iUnion_of_tendsto_zero {ι} (m : OuterMeasure α) {s : ι → Set α} (l : Filter ι) [NeBot l]
-    (h0 : Tendsto (fun k => m ((⋃ n, s n) \ s k)) l (𝓝 0)) : m (⋃ n, s n) = ⨆ n, m (s n) :=
+    (h0 : Tendsto (fun k ↦ m ((⋃ n, s n) \ s k)) l (𝓝 0)) : m (⋃ n, s n) = ⨆ n, m (s n) :=
   measure_iUnion_of_tendsto_zero m l h0
 
 /-- If `s : ℕ → Set α` is a monotone sequence of sets such that `∑' k, m (s (k + 1) \ s k) ≠ ∞`,
@@ -177,7 +177,7 @@ theorem iUnion_nat_of_monotone_of_tsum_ne_top (m : OuterMeasure α) {s : ℕ →
     m (⋃ n, s n) = ⨆ n, m (s n) := by
   classical
   refine measure_iUnion_of_tendsto_zero m atTop ?_
-  refine tendsto_nhds_bot_mono' (ENNReal.tendsto_sum_nat_add _ h0) fun n => ?_
+  refine tendsto_nhds_bot_mono' (ENNReal.tendsto_sum_nat_add _ h0) fun n ↦ ?_
   refine (m.mono ?_).trans (measure_iUnion_le _)
   -- Current goal: `(⋃ k, s k) \ s n ⊆ ⋃ k, s (k + n + 1) \ s (k + n)`
   have h' : Monotone s := @monotone_nat_of_le_succ (Set α) _ _ h_mono
@@ -193,7 +193,7 @@ theorem iUnion_nat_of_monotone_of_tsum_ne_top (m : OuterMeasure α) {s : ℕ →
   · rwa [this]
   · rw [← Nat.succ_le_iff, Nat.succ_eq_add_one, this]
 
-theorem coe_fn_injective : Injective fun (μ : OuterMeasure α) (s : Set α) => μ s :=
+theorem coe_fn_injective : Injective fun (μ : OuterMeasure α) (s : Set α) ↦ μ s :=
   DFunLike.coe_injective
 
 @[ext]
@@ -204,7 +204,7 @@ theorem ext {μ₁ μ₂ : OuterMeasure α} (h : ∀ s, μ₁ s = μ₂ s) : μ�
 sets `s`, and gets `μ₁ ∅ = μ₂ ∅` from `MeasureTheory.OuterMeasure.empty'`. -/
 theorem ext_nonempty {μ₁ μ₂ : OuterMeasure α} (h : ∀ s : Set α, s.Nonempty → μ₁ s = μ₂ s) :
     μ₁ = μ₂ :=
-  ext fun s => s.eq_empty_or_nonempty.elim (fun he => by simp [he]) (h s)
+  ext fun s ↦ s.eq_empty_or_nonempty.elim (fun he ↦ by simp [he]) (h s)
 
 end OuterMeasure
 

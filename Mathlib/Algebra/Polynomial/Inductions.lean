@@ -49,10 +49,10 @@ theorem X_mul_divX_add (p : R[X]) : X * divX p + C (p.coeff 0) = p :=
 
 @[simp]
 theorem divX_C (a : R) : divX (C a) = 0 :=
-  ext fun n => by simp [coeff_divX]
+  ext fun n ↦ by simp [coeff_divX]
 
 theorem divX_eq_zero_iff : divX p = 0 ↔ p = C (p.coeff 0) :=
-  ⟨fun h => by simpa [eq_comm, h] using divX_mul_X_add p, fun h => by rw [h, divX_C]⟩
+  ⟨fun h ↦ by simpa [eq_comm, h] using divX_mul_X_add p, fun h ↦ by rw [h, divX_C]⟩
 
 theorem divX_add : divX (p + q) = divX p + divX q :=
   ext <| by simp
@@ -81,7 +81,7 @@ noncomputable
 def divX_hom : R[X] →+ R[X] :=
   { toFun := divX
     map_zero' := divX_zero
-    map_add' := fun _ _ => divX_add }
+    map_add' := fun _ _ ↦ divX_add }
 
 @[simp] theorem divX_hom_toFun : divX_hom p = divX p := rfl
 
@@ -122,7 +122,7 @@ theorem degree_divX_lt (hp0 : p ≠ 0) : (divX p).degree < p.degree := by
               rw [← zero_add (degree X), degree_mul' this]
               exact add_le_add
                 (by rw [zero_le_degree_iff, Ne, divX_eq_zero_iff]
-                    exact fun h0 => h (h0.symm ▸ degree_C_le))
+                    exact fun h0 ↦ h (h0.symm ▸ degree_C_le))
                     le_rfl
         rw [degree_add_eq_left_of_degree_lt this]; exact degree_lt_degree_mul_X hXp0
     _ = degree p := congr_arg _ (divX_mul_X_add _)
@@ -141,7 +141,7 @@ noncomputable def recOnHorner {M : R[X] → Sort*} (p : R[X]) (M0 : M 0)
       if hcp0 : coeff p 0 = 0 then by
         rw [hcp0, C_0, add_zero]
         exact
-          MX _ (fun h : divX p = 0 => by simp [h, hcp0] at hp) (recOnHorner (divX p) M0 MC MX)
+          MX _ (fun h : divX p = 0 ↦ by simp [h, hcp0] at hp) (recOnHorner (divX p) M0 MC MX)
       else
         MC _ _ (coeff_mul_X_zero _) hcp0
           (if hpX0 : divX p = 0 then show M (divX p * X) by rw [hpX0, zero_mul]; exact M0
@@ -161,18 +161,18 @@ See `natDegree_ne_zero_induction_on` for a similar statement involving no explic
 theorem degree_pos_induction_on {P : R[X] → Prop} (p : R[X]) (h0 : 0 < degree p)
     (hC : ∀ {a}, a ≠ 0 → P (C a * X)) (hX : ∀ {p}, 0 < degree p → P p → P (p * X))
     (hadd : ∀ {p} {a}, 0 < degree p → P p → P (p + C a)) : P p :=
-  recOnHorner p (fun h => by rw [degree_zero] at h; exact absurd h (by decide))
-    (fun p a heq0 _ ih h0 =>
+  recOnHorner p (fun h ↦ by rw [degree_zero] at h; exact absurd h (by decide))
+    (fun p a heq0 _ ih h0 ↦
       (have : 0 < degree p :=
-        (lt_of_not_ge fun h =>
+        (lt_of_not_ge fun h ↦
           not_lt_of_ge (degree_C_le (a := a)) <|
             by rwa [eq_C_of_degree_le_zero h, ← C_add,heq0,zero_add] at h0)
       hadd this (ih this)))
-    (fun p _ ih h0' =>
+    (fun p _ ih h0' ↦
       if h0 : 0 < degree p then hX h0 (ih h0)
       else by
         rw [eq_C_of_degree_le_zero (le_of_not_gt h0)] at h0' ⊢
-        exact hC fun h : coeff p 0 = 0 => by simp [h] at h0')
+        exact hC fun h : coeff p 0 = 0 ↦ by simp [h] at h0')
     h0
 
 /-- A property holds for all polynomials of non-zero `natDegree` with coefficients in a
@@ -189,9 +189,9 @@ See `degree_pos_induction_on` for a similar statement involving more explicit mu
 theorem natDegree_ne_zero_induction_on {M : R[X] → Prop} {f : R[X]} (f0 : f.natDegree ≠ 0)
     (h_C_add : ∀ {a p}, M p → M (C a + p)) (h_add : ∀ {p q}, M p → M q → M (p + q))
     (h_monomial : ∀ {n : ℕ} {a : R}, a ≠ 0 → n ≠ 0 → M (monomial n a)) : M f := by
-  suffices f.natDegree = 0 ∨ M f from Or.recOn this (fun h => (f0 h).elim) id
+  suffices f.natDegree = 0 ∨ M f from Or.recOn this (fun h ↦ (f0 h).elim) id
   refine Polynomial.induction_on f ?_ ?_ ?_
-  · exact fun a => Or.inl (natDegree_C _)
+  · exact fun a ↦ Or.inl (natDegree_C _)
   · rintro p q (hp | hp) (hq | hq)
     · refine Or.inl ?_
       rw [eq_C_of_natDegree_eq_zero hp, eq_C_of_natDegree_eq_zero hq, ← C_add, natDegree_C]

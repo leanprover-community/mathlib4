@@ -58,8 +58,8 @@ namespace Language
 instance equivSetoid : Setoid (CategoryTheory.Bundled L.Structure) where
   r M N := Nonempty (M ≃[L] N)
   iseqv :=
-    ⟨fun M => ⟨Equiv.refl L M⟩, fun {_ _} => Nonempty.map Equiv.symm, fun {_ _} _ =>
-      Nonempty.map2 fun MN NP => NP.comp MN⟩
+    ⟨fun M ↦ ⟨Equiv.refl L M⟩, fun {_ _} ↦ Nonempty.map Equiv.symm, fun {_ _} _ ↦
+      Nonempty.map2 fun MN NP ↦ NP.comp MN⟩
 
 variable (T : L.Theory)
 
@@ -140,8 +140,8 @@ def reduct {L' : Language} (φ : L →ᴸ L') (M : (φ.onTheory T).ModelType) : 
   arbitrarily. -/
 @[simps]
 noncomputable def defaultExpansion {L' : Language} {φ : L →ᴸ L'} (h : φ.Injective)
-    [∀ (n) (f : L'.Functions n), Decidable (f ∈ Set.range fun f : L.Functions n => φ.onFunction f)]
-    [∀ (n) (r : L'.Relations n), Decidable (r ∈ Set.range fun r : L.Relations n => φ.onRelation r)]
+    [∀ (n) (f : L'.Functions n), Decidable (f ∈ Set.range fun f : L.Functions n ↦ φ.onFunction f)]
+    [∀ (n) (r : L'.Relations n), Decidable (r ∈ Set.range fun r : L.Relations n ↦ φ.onRelation r)]
     (M : T.ModelType) [Inhabited M] : (φ.onTheory T).ModelType where
   Carrier := M
   struc := φ.defaultExpansion M
@@ -161,7 +161,7 @@ instance rightStructure {L' : Language} {T : (L.sum L').Theory} (M : T.ModelType
 @[simps]
 def subtheoryModel (M : T.ModelType) {T' : L.Theory} (h : T' ⊆ T) : T'.ModelType where
   Carrier := M
-  is_model := ⟨fun _φ hφ => realize_sentence_of_mem T (h hφ)⟩
+  is_model := ⟨fun _φ hφ ↦ realize_sentence_of_mem T (h hφ)⟩
 
 instance subtheoryModel_models (M : T.ModelType) {T' : L.Theory} (h : T' ⊆ T) :
     M.subtheoryModel h ⊨ T :=

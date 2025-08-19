@@ -23,7 +23,7 @@ namespace AlexDisc
 attribute [instance] is_alexandrovDiscrete
 
 instance : CoeSort AlexDisc (Type _) :=
-  ⟨fun X => X.toTopCat⟩
+  ⟨fun X ↦ X.toTopCat⟩
 
 instance category : Category AlexDisc :=
   InducedCategory.category toTopCat

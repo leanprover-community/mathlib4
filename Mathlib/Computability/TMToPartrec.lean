@@ -206,18 +206,18 @@ compile_inductive% Λ'
 instance Λ'.instInhabited : Inhabited Λ' :=
   ⟨Λ'.ret Cont'.halt⟩
 
-instance Λ'.instDecidableEq : DecidableEq Λ' := fun a b => by
+instance Λ'.instDecidableEq : DecidableEq Λ' := fun a b ↦ by
   induction a generalizing b <;> cases b <;> first
     | apply Decidable.isFalse; rintro ⟨⟨⟩⟩; done
     | exact decidable_of_iff' _ (by simp [funext_iff]; rfl)
 
 /-- The type of TM2 statements used by this machine. -/
 def Stmt' :=
-  TM2.Stmt (fun _ : K' => Γ') Λ' (Option Γ') deriving Inhabited
+  TM2.Stmt (fun _ : K' ↦ Γ') Λ' (Option Γ') deriving Inhabited
 
 /-- The type of TM2 configurations used by this machine. -/
 def Cfg' :=
-  TM2.Cfg (fun _ : K' => Γ') Λ' (Option Γ') deriving Inhabited
+  TM2.Cfg (fun _ : K' ↦ Γ') Λ' (Option Γ') deriving Inhabited
 
 open TM2.Stmt
 
@@ -233,21 +233,21 @@ attribute [nolint simpNF] natEnd.eq_3
 /-- Pop a value from the stack and place the result in local store. -/
 @[simp]
 def pop' (k : K') : Stmt' → Stmt' :=
-  pop k fun _ v => v
+  pop k fun _ v ↦ v
 
 /-- Peek a value from the stack and place the result in local store. -/
 @[simp]
 def peek' (k : K') : Stmt' → Stmt' :=
-  peek k fun _ v => v
+  peek k fun _ v ↦ v
 
 /-- Push the value in the local store to the given stack. -/
 @[simp]
 def push' (k : K') : Stmt' → Stmt' :=
-  push k fun x => x.iget
+  push k fun x ↦ x.iget
 
 /-- Move everything from the `rev` stack to the `main` stack (reversed). -/
 def unrev :=
-  Λ'.move (fun _ => false) rev main
+  Λ'.move (fun _ ↦ false) rev main
 
 /-- Move elements from `k₁` to `k₂` while `p` holds, with the last element being left on `k₁`. -/
 def moveExcl (p k₁ k₂ q) :=
@@ -256,27 +256,27 @@ def moveExcl (p k₁ k₂ q) :=
 /-- Move elements from `k₁` to `k₂` without reversion, by performing a double move via the `rev`
 stack. -/
 def move₂ (p k₁ k₂ q) :=
-  moveExcl p k₁ rev <| Λ'.move (fun _ => false) rev k₂ q
+  moveExcl p k₁ rev <| Λ'.move (fun _ ↦ false) rev k₂ q
 
 /-- Assuming `trList v` is on the front of stack `k`, remove it, and push `v.headI` onto `main`.
 See the section documentation. -/
 def head (k : K') (q : Λ') : Λ' :=
   Λ'.move natEnd k rev <|
-    (Λ'.push rev fun _ => some Γ'.cons) <|
-      Λ'.read fun s =>
-        (if s = some Γ'.consₗ then id else Λ'.clear (fun x => x = Γ'.consₗ) k) <| unrev q
+    (Λ'.push rev fun _ ↦ some Γ'.cons) <|
+      Λ'.read fun s ↦
+        (if s = some Γ'.consₗ then id else Λ'.clear (fun x ↦ x = Γ'.consₗ) k) <| unrev q
 
 /-- The program that evaluates code `c` with continuation `k`. This expects an initial state where
 `trList v` is on `main`, `trContStack k` is on `stack`, and `aux` and `rev` are empty.
 See the section documentation for details. -/
 @[simp]
 def trNormal : Code → Cont' → Λ'
-  | Code.zero', k => (Λ'.push main fun _ => some Γ'.cons) <| Λ'.ret k
+  | Code.zero', k => (Λ'.push main fun _ ↦ some Γ'.cons) <| Λ'.ret k
   | Code.succ, k => head main <| Λ'.succ <| Λ'.ret k
   | Code.tail, k => Λ'.clear natEnd main <| Λ'.ret k
   | Code.cons f fs, k =>
-    (Λ'.push stack fun _ => some Γ'.consₗ) <|
-      Λ'.move (fun _ => false) main rev <| Λ'.copy <| trNormal f (Cont'.cons₁ fs k)
+    (Λ'.push stack fun _ ↦ some Γ'.consₗ) <|
+      Λ'.move (fun _ ↦ false) main rev <| Λ'.copy <| trNormal f (Cont'.cons₁ fs k)
   | Code.comp f g, k => trNormal g (Cont'.comp f k)
   | Code.case f g, k => Λ'.pred (trNormal f k) (trNormal g k)
   | Code.fix f, k => trNormal f (Cont'.fix f k)
@@ -285,98 +285,98 @@ def trNormal : Code → Cont' → Λ'
 def tr : Λ' → Stmt'
   | Λ'.move p k₁ k₂ q =>
     pop' k₁ <|
-      branch (fun s => s.elim true p) (goto fun _ => q)
-        (push' k₂ <| goto fun _ => Λ'.move p k₁ k₂ q)
+      branch (fun s ↦ s.elim true p) (goto fun _ ↦ q)
+        (push' k₂ <| goto fun _ ↦ Λ'.move p k₁ k₂ q)
   | Λ'.push k f q =>
-    branch (fun s => (f s).isSome) ((push k fun s => (f s).iget) <| goto fun _ => q)
-      (goto fun _ => q)
+    branch (fun s ↦ (f s).isSome) ((push k fun s ↦ (f s).iget) <| goto fun _ ↦ q)
+      (goto fun _ ↦ q)
   | Λ'.read q => goto q
   | Λ'.clear p k q =>
-    pop' k <| branch (fun s => s.elim true p) (goto fun _ => q) (goto fun _ => Λ'.clear p k q)
+    pop' k <| branch (fun s ↦ s.elim true p) (goto fun _ ↦ q) (goto fun _ ↦ Λ'.clear p k q)
   | Λ'.copy q =>
     pop' rev <|
-      branch Option.isSome (push' main <| push' stack <| goto fun _ => Λ'.copy q) (goto fun _ => q)
+      branch Option.isSome (push' main <| push' stack <| goto fun _ ↦ Λ'.copy q) (goto fun _ ↦ q)
   | Λ'.succ q =>
     pop' main <|
-      branch (fun s => s = some Γ'.bit1) ((push rev fun _ => Γ'.bit0) <| goto fun _ => Λ'.succ q) <|
-        branch (fun s => s = some Γ'.cons)
-          ((push main fun _ => Γ'.cons) <| (push main fun _ => Γ'.bit1) <| goto fun _ => unrev q)
-          ((push main fun _ => Γ'.bit1) <| goto fun _ => unrev q)
+      branch (fun s ↦ s = some Γ'.bit1) ((push rev fun _ ↦ Γ'.bit0) <| goto fun _ ↦ Λ'.succ q) <|
+        branch (fun s ↦ s = some Γ'.cons)
+          ((push main fun _ ↦ Γ'.cons) <| (push main fun _ ↦ Γ'.bit1) <| goto fun _ ↦ unrev q)
+          ((push main fun _ ↦ Γ'.bit1) <| goto fun _ ↦ unrev q)
   | Λ'.pred q₁ q₂ =>
     pop' main <|
-      branch (fun s => s = some Γ'.bit0)
-          ((push rev fun _ => Γ'.bit1) <| goto fun _ => Λ'.pred q₁ q₂) <|
-        branch (fun s => natEnd s.iget) (goto fun _ => q₁)
+      branch (fun s ↦ s = some Γ'.bit0)
+          ((push rev fun _ ↦ Γ'.bit1) <| goto fun _ ↦ Λ'.pred q₁ q₂) <|
+        branch (fun s ↦ natEnd s.iget) (goto fun _ ↦ q₁)
           (peek' main <|
-            branch (fun s => natEnd s.iget) (goto fun _ => unrev q₂)
-              ((push rev fun _ => Γ'.bit0) <| goto fun _ => unrev q₂))
+            branch (fun s ↦ natEnd s.iget) (goto fun _ ↦ unrev q₂)
+              ((push rev fun _ ↦ Γ'.bit0) <| goto fun _ ↦ unrev q₂))
   | Λ'.ret (Cont'.cons₁ fs k) =>
-    goto fun _ =>
-      move₂ (fun _ => false) main aux <|
-        move₂ (fun s => s = Γ'.consₗ) stack main <|
-          move₂ (fun _ => false) aux stack <| trNormal fs (Cont'.cons₂ k)
-  | Λ'.ret (Cont'.cons₂ k) => goto fun _ => head stack <| Λ'.ret k
-  | Λ'.ret (Cont'.comp f k) => goto fun _ => trNormal f k
+    goto fun _ ↦
+      move₂ (fun _ ↦ false) main aux <|
+        move₂ (fun s ↦ s = Γ'.consₗ) stack main <|
+          move₂ (fun _ ↦ false) aux stack <| trNormal fs (Cont'.cons₂ k)
+  | Λ'.ret (Cont'.cons₂ k) => goto fun _ ↦ head stack <| Λ'.ret k
+  | Λ'.ret (Cont'.comp f k) => goto fun _ ↦ trNormal f k
   | Λ'.ret (Cont'.fix f k) =>
     pop' main <|
-      goto fun s =>
+      goto fun s ↦
         cond (natEnd s.iget) (Λ'.ret k) <| Λ'.clear natEnd main <| trNormal f (Cont'.fix f k)
-  | Λ'.ret Cont'.halt => (load fun _ => none) <| halt
+  | Λ'.ret Cont'.halt => (load fun _ ↦ none) <| halt
 
 @[simp]
 theorem tr_move (p k₁ k₂ q) : tr (Λ'.move p k₁ k₂ q) =
-    pop' k₁ (branch (fun s => s.elim true p) (goto fun _ => q)
-      (push' k₂ <| goto fun _ => Λ'.move p k₁ k₂ q)) := rfl
+    pop' k₁ (branch (fun s ↦ s.elim true p) (goto fun _ ↦ q)
+      (push' k₂ <| goto fun _ ↦ Λ'.move p k₁ k₂ q)) := rfl
 
 @[simp]
-theorem tr_push (k f q) : tr (Λ'.push k f q) = branch (fun s => (f s).isSome)
-    ((push k fun s => (f s).iget) <| goto fun _ => q) (goto fun _ => q) := rfl
+theorem tr_push (k f q) : tr (Λ'.push k f q) = branch (fun s ↦ (f s).isSome)
+    ((push k fun s ↦ (f s).iget) <| goto fun _ ↦ q) (goto fun _ ↦ q) := rfl
 
 @[simp]
 theorem tr_read (q) : tr (Λ'.read q) = goto q := rfl
 
 @[simp]
 theorem tr_clear (p k q) : tr (Λ'.clear p k q) = pop' k (branch
-    (fun s => s.elim true p) (goto fun _ => q) (goto fun _ => Λ'.clear p k q)) := rfl
+    (fun s ↦ s.elim true p) (goto fun _ ↦ q) (goto fun _ ↦ Λ'.clear p k q)) := rfl
 
 @[simp]
 theorem tr_copy (q) : tr (Λ'.copy q) = pop' rev (branch Option.isSome
-    (push' main <| push' stack <| goto fun _ => Λ'.copy q) (goto fun _ => q)) := rfl
+    (push' main <| push' stack <| goto fun _ ↦ Λ'.copy q) (goto fun _ ↦ q)) := rfl
 
 @[simp]
-theorem tr_succ (q) : tr (Λ'.succ q) = pop' main (branch (fun s => s = some Γ'.bit1)
-    ((push rev fun _ => Γ'.bit0) <| goto fun _ => Λ'.succ q) <|
-      branch (fun s => s = some Γ'.cons)
-        ((push main fun _ => Γ'.cons) <| (push main fun _ => Γ'.bit1) <| goto fun _ => unrev q)
-        ((push main fun _ => Γ'.bit1) <| goto fun _ => unrev q)) := rfl
+theorem tr_succ (q) : tr (Λ'.succ q) = pop' main (branch (fun s ↦ s = some Γ'.bit1)
+    ((push rev fun _ ↦ Γ'.bit0) <| goto fun _ ↦ Λ'.succ q) <|
+      branch (fun s ↦ s = some Γ'.cons)
+        ((push main fun _ ↦ Γ'.cons) <| (push main fun _ ↦ Γ'.bit1) <| goto fun _ ↦ unrev q)
+        ((push main fun _ ↦ Γ'.bit1) <| goto fun _ ↦ unrev q)) := rfl
 
 @[simp]
-theorem tr_pred (q₁ q₂) : tr (Λ'.pred q₁ q₂) = pop' main (branch (fun s => s = some Γ'.bit0)
-    ((push rev fun _ => Γ'.bit1) <| goto fun _ => Λ'.pred q₁ q₂) <|
-    branch (fun s => natEnd s.iget) (goto fun _ => q₁)
+theorem tr_pred (q₁ q₂) : tr (Λ'.pred q₁ q₂) = pop' main (branch (fun s ↦ s = some Γ'.bit0)
+    ((push rev fun _ ↦ Γ'.bit1) <| goto fun _ ↦ Λ'.pred q₁ q₂) <|
+    branch (fun s ↦ natEnd s.iget) (goto fun _ ↦ q₁)
       (peek' main <|
-        branch (fun s => natEnd s.iget) (goto fun _ => unrev q₂)
-          ((push rev fun _ => Γ'.bit0) <| goto fun _ => unrev q₂))) := rfl
+        branch (fun s ↦ natEnd s.iget) (goto fun _ ↦ unrev q₂)
+          ((push rev fun _ ↦ Γ'.bit0) <| goto fun _ ↦ unrev q₂))) := rfl
 
 @[simp]
-theorem tr_ret_cons₁ (fs k) : tr (Λ'.ret (Cont'.cons₁ fs k)) = goto fun _ =>
-    move₂ (fun _ => false) main aux <|
-      move₂ (fun s => s = Γ'.consₗ) stack main <|
-        move₂ (fun _ => false) aux stack <| trNormal fs (Cont'.cons₂ k) := rfl
+theorem tr_ret_cons₁ (fs k) : tr (Λ'.ret (Cont'.cons₁ fs k)) = goto fun _ ↦
+    move₂ (fun _ ↦ false) main aux <|
+      move₂ (fun s ↦ s = Γ'.consₗ) stack main <|
+        move₂ (fun _ ↦ false) aux stack <| trNormal fs (Cont'.cons₂ k) := rfl
 
 @[simp]
 theorem tr_ret_cons₂ (k) : tr (Λ'.ret (Cont'.cons₂ k)) =
-    goto fun _ => head stack <| Λ'.ret k := rfl
+    goto fun _ ↦ head stack <| Λ'.ret k := rfl
 
 @[simp]
-theorem tr_ret_comp (f k) : tr (Λ'.ret (Cont'.comp f k)) = goto fun _ => trNormal f k := rfl
+theorem tr_ret_comp (f k) : tr (Λ'.ret (Cont'.comp f k)) = goto fun _ ↦ trNormal f k := rfl
 
 @[simp]
-theorem tr_ret_fix (f k) : tr (Λ'.ret (Cont'.fix f k)) = pop' main (goto fun s =>
+theorem tr_ret_fix (f k) : tr (Λ'.ret (Cont'.fix f k)) = pop' main (goto fun s ↦
     cond (natEnd s.iget) (Λ'.ret k) <| Λ'.clear natEnd main <| trNormal f (Cont'.fix f k)) := rfl
 
 @[simp]
-theorem tr_ret_halt : tr (Λ'.ret Cont'.halt) = (load fun _ => none) halt := rfl
+theorem tr_ret_halt : tr (Λ'.ret Cont'.halt) = (load fun _ ↦ none) halt := rfl
 
 /-- Translating a `Cont` continuation to a `Cont'` continuation simply entails dropping all the
 data. This data is instead encoded in `trContStack` in the configuration. -/
@@ -534,7 +534,7 @@ def splitAtPred {α} (p : α → Bool) : List α → List α × Option α × Lis
 theorem splitAtPred_eq {α} (p : α → Bool) :
     ∀ L l₁ o l₂,
       (∀ x ∈ l₁, p x = false) →
-        Option.elim' (L = l₁ ∧ l₂ = []) (fun a => p a = true ∧ L = l₁ ++ a::l₂) o →
+        Option.elim' (L = l₁ ∧ l₂ = []) (fun a ↦ p a = true ∧ L = l₁ ++ a::l₂) o →
           splitAtPred p L = (l₁, o, l₂)
   | [], _, none, _, _, ⟨rfl, rfl⟩ => rfl
   | [], l₁, some o, l₂, _, ⟨_, h₃⟩ => by simp at h₃
@@ -544,14 +544,14 @@ theorem splitAtPred_eq {α} (p : α → Bool) :
     rcases o with - | o
     · rcases l₁ with - | ⟨a', l₁⟩ <;> rcases h₂ with ⟨⟨⟩, rfl⟩
       rw [h₁ a (List.Mem.head _), cond, IH L none [] _ ⟨rfl, rfl⟩]
-      exact fun x h => h₁ x (List.Mem.tail _ h)
+      exact fun x h ↦ h₁ x (List.Mem.tail _ h)
     · rcases l₁ with - | ⟨a', l₁⟩ <;> rcases h₂ with ⟨h₂, ⟨⟩⟩
       · rw [h₂, cond]
       rw [h₁ a (List.Mem.head _), cond, IH l₁ (some o) l₂ _ ⟨h₂, _⟩] <;> try rfl
-      exact fun x h => h₁ x (List.Mem.tail _ h)
+      exact fun x h ↦ h₁ x (List.Mem.tail _ h)
 
-theorem splitAtPred_false {α} (L : List α) : splitAtPred (fun _ => false) L = (L, none, []) :=
-  splitAtPred_eq _ _ _ _ _ (fun _ _ => rfl) ⟨rfl, rfl⟩
+theorem splitAtPred_false {α} (L : List α) : splitAtPred (fun _ ↦ false) L = (L, none, []) :=
+  splitAtPred_eq _ _ _ _ _ (fun _ _ ↦ rfl) ⟨rfl, rfl⟩
 
 theorem move_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k₁ ≠ k₂)
     (e : splitAtPred p (S k₁) = (L₁, o, L₂)) :
@@ -682,7 +682,7 @@ theorem trList_ne_consₗ : ∀ (l), ∀ x ∈ trList l, x ≠ Γ'.consₗ
 theorem head_main_ok {q s L} {c d : List Γ'} :
     Reaches₁ (TM2.step tr) ⟨some (head main q), s, K'.elim (trList L) [] c d⟩
       ⟨some q, none, K'.elim (trList [L.headI]) [] c d⟩ := by
-  let o : Option Γ' := List.casesOn L none fun _ _ => some Γ'.cons
+  let o : Option Γ' := List.casesOn L none fun _ _ ↦ some Γ'.cons
   refine
     (move_ok (by decide)
           (splitAtPred_eq _ _ (trNat L.headI) o (trList L.tail) (trNat_natEnd _) ?_)).trans
@@ -693,7 +693,7 @@ theorem head_main_ok {q s L} {c d : List Γ'} :
     Function.update_self, trList]
   rw [if_neg (show o ≠ some Γ'.consₗ by cases L <;> simp [o])]
   refine (clear_ok (splitAtPred_eq _ _ _ none [] ?_ ⟨rfl, rfl⟩)).trans ?_
-  · exact fun x h => Bool.decide_false (trList_ne_consₗ _ _ h)
+  · exact fun x h ↦ Bool.decide_false (trList_ne_consₗ _ _ h)
   convert unrev_ok using 2; simp [List.reverseAux_eq]
 
 theorem head_stack_ok {q s L₁ L₂ L₃} :
@@ -725,7 +725,7 @@ theorem head_stack_ok {q s L₁ L₂ L₃} :
       TransGen.trans
         (clear_ok
           (splitAtPred_eq _ _ (trList L₂) (some Γ'.consₗ) L₃
-            (fun x h => Bool.decide_false (trList_ne_consₗ _ _ h)) ⟨rfl, by simp⟩))
+            (fun x h ↦ Bool.decide_false (trList_ne_consₗ _ _ h)) ⟨rfl, by simp⟩))
         ?_
     convert unrev_ok using 2
     simp [List.reverseAux_eq]
@@ -768,7 +768,7 @@ theorem succ_ok {q s n} {c d : List Γ'} :
 
 theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
     Reaches₁ (TM2.step tr) ⟨some (Λ'.pred q₁ q₂), s, K'.elim (trList v) [] c d⟩
-      (v.headI.rec ⟨some q₁, s', K'.elim (trList v.tail) [] c d⟩ fun n _ =>
+      (v.headI.rec ⟨some q₁, s', K'.elim (trList v.tail) [] c d⟩ fun n _ ↦
         ⟨some q₂, s', K'.elim (trList (n::v.tail)) [] c d⟩) := by
   rcases v with (_ | ⟨_ | n, v⟩)
   · refine ⟨none, TransGen.single ?_⟩
@@ -821,7 +821,7 @@ theorem trNormal_respects (c k v s) :
   | zero' => refine ⟨_, ⟨s, rfl⟩, TransGen.single ?_⟩; simp
   | succ => refine ⟨_, ⟨none, rfl⟩, head_main_ok.trans succ_ok⟩
   | tail =>
-    let o : Option Γ' := List.casesOn v none fun _ _ => some Γ'.cons
+    let o : Option Γ' := List.casesOn v none fun _ _ ↦ some Γ'.cons
     refine ⟨_, ⟨o, rfl⟩, ?_⟩; convert clear_ok _ using 2
     · simp; rfl
     swap
@@ -862,7 +862,7 @@ theorem tr_ret_respects (k v s) : ∃ b₂,
     refine (move₂_ok (L₁ := ?_) (o := ?_) (L₂ := ?_) (by decide) rfl ?_).trans ?_
     pick_goal 4
     · exact splitAtPred_eq _ _ _ (some Γ'.consₗ) _
-        (fun x h => Bool.decide_false (trList_ne_consₗ _ _ h)) ⟨rfl, rfl⟩
+        (fun x h ↦ Bool.decide_false (trList_ne_consₗ _ _ h)) ⟨rfl, rfl⟩
     refine (move₂_ok (by decide) ?_ (splitAtPred_false _)).trans ?_; · rfl
     simp only [TM2.step, Option.mem_def, Option.elim, elim_update_stack, elim_main,
       List.append_nil, elim_update_main, id_eq, elim_update_aux,
@@ -898,7 +898,7 @@ theorem tr_ret_respects (k v s) : ∃ b₂,
       convert clear_ok (splitAtPred_eq _ _ (trNat v.headI).tail (some Γ'.cons) _ _ _) using 2
       · simp
         convert rfl
-      · exact fun x h => trNat_natEnd _ _ (List.tail_subset _ h)
+      · exact fun x h ↦ trNat_natEnd _ _ (List.tail_subset _ h)
       · exact ⟨rfl, this.2⟩
 
 theorem tr_respects : Respects step (TM2.step tr) TrCfg
@@ -915,9 +915,9 @@ theorem tr_init (c v) :
 
 theorem tr_eval (c v) : eval (TM2.step tr) (init c v) = halt <$> Code.eval c v := by
   obtain ⟨i, h₁, h₂⟩ := tr_init c v
-  refine Part.ext fun x => ?_
+  refine Part.ext fun x ↦ ?_
   rw [reaches_eval h₂.to_reflTransGen]; simp only [Part.map_eq_map, Part.mem_map_iff]
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · obtain ⟨c, hc₁, hc₂⟩ := tr_eval_rev tr_respects h₁ h
     simp [stepNormal_eval] at hc₂
     obtain ⟨v', hv, rfl⟩ := hc₂
@@ -933,7 +933,7 @@ theorem tr_eval (c v) : eval (TM2.step tr) (init c v) = halt <$> Code.eval c v :
 def trStmts₁ : Λ' → Finset Λ'
   | Q@(Λ'.move _ _ _ q) => insert Q <| trStmts₁ q
   | Q@(Λ'.push _ _ q) => insert Q <| trStmts₁ q
-  | Q@(Λ'.read q) => insert Q <| Finset.univ.biUnion fun s => trStmts₁ (q s)
+  | Q@(Λ'.read q) => insert Q <| Finset.univ.biUnion fun s ↦ trStmts₁ (q s)
   | Q@(Λ'.clear _ _ q) => insert Q <| trStmts₁ q
   | Q@(Λ'.copy q) => insert Q <| trStmts₁ q
   | Q@(Λ'.succ q) => insert Q <| insert (unrev q) <| trStmts₁ q
@@ -947,7 +947,7 @@ theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trSt
   all_goals
     simp +contextual only [trStmts₁, Finset.mem_insert, Finset.mem_union,
       or_imp, Finset.mem_singleton, Finset.Subset.refl, imp_true_iff, true_and]
-    repeat exact fun h => Finset.Subset.trans (q_ih h) (Finset.subset_insert _ _)
+    repeat exact fun h ↦ Finset.Subset.trans (q_ih h) (Finset.subset_insert _ _)
   · simp
     intro s h x h'
     simp only [Finset.mem_biUnion, Finset.mem_univ, true_and, Finset.mem_insert]
@@ -958,7 +958,7 @@ theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trSt
     · intro h x h'
       simp only [Finset.mem_insert]
       exact Or.inr (Or.inr <| q_ih h h')
-  · refine ⟨fun h x h' => ?_, fun _ x h' => ?_, fun h x h' => ?_⟩ <;> simp
+  · refine ⟨fun h x h' ↦ ?_, fun _ x h' ↦ ?_, fun h x h' ↦ ?_⟩ <;> simp
     · exact Or.inr (Or.inr <| Or.inl <| q₁_ih h h')
     · rcases Finset.mem_insert.1 h' with h' | h' <;> simp [h', unrev]
     · exact Or.inr (Or.inr <| Or.inr <| q₂_ih h h')
@@ -977,9 +977,9 @@ def codeSupp' : Code → Cont' → Finset Λ'
     trStmts₁ (trNormal c k) ∪
       (codeSupp' f (Cont'.cons₁ fs k) ∪
         (trStmts₁
-            (move₂ (fun _ => false) main aux <|
-              move₂ (fun s => s = Γ'.consₗ) stack main <|
-                move₂ (fun _ => false) aux stack <| trNormal fs (Cont'.cons₂ k)) ∪
+            (move₂ (fun _ ↦ false) main aux <|
+              move₂ (fun s ↦ s = Γ'.consₗ) stack main <|
+                move₂ (fun _ ↦ false) aux stack <| trNormal fs (Cont'.cons₂ k)) ∪
           (codeSupp' fs (Cont'.cons₂ k) ∪ trStmts₁ (head stack <| Λ'.ret k))))
   | c@(Code.comp f g), k =>
     trStmts₁ (trNormal c k) ∪
@@ -999,9 +999,9 @@ theorem codeSupp'_self (c k) : trStmts₁ (trNormal c k) ⊆ codeSupp' c k := by
 def contSupp : Cont' → Finset Λ'
   | Cont'.cons₁ fs k =>
     trStmts₁
-        (move₂ (fun _ => false) main aux <|
-          move₂ (fun s => s = Γ'.consₗ) stack main <|
-            move₂ (fun _ => false) aux stack <| trNormal fs (Cont'.cons₂ k)) ∪
+        (move₂ (fun _ ↦ false) main aux <|
+          move₂ (fun s ↦ s = Γ'.consₗ) stack main <|
+            move₂ (fun _ ↦ false) aux stack <| trNormal fs (Cont'.cons₂ k)) ∪
       (codeSupp' fs (Cont'.cons₂ k) ∪ (trStmts₁ (head stack <| Λ'.ret k) ∪ contSupp k))
   | Cont'.cons₂ k => trStmts₁ (head stack <| Λ'.ret k) ∪ contSupp k
   | Cont'.comp f k => codeSupp' f k ∪ contSupp k
@@ -1061,9 +1061,9 @@ theorem codeSupp_fix (f k) :
 theorem contSupp_cons₁ (fs k) :
     contSupp (Cont'.cons₁ fs k) =
       trStmts₁
-          (move₂ (fun _ => false) main aux <|
-            move₂ (fun s => s = Γ'.consₗ) stack main <|
-              move₂ (fun _ => false) aux stack <| trNormal fs (Cont'.cons₂ k)) ∪
+          (move₂ (fun _ ↦ false) main aux <|
+            move₂ (fun s ↦ s = Γ'.consₗ) stack main <|
+              move₂ (fun _ ↦ false) aux stack <| trNormal fs (Cont'.cons₂ k)) ∪
         codeSupp fs (Cont'.cons₂ k) := by
   simp [codeSupp, contSupp]
 
@@ -1118,16 +1118,16 @@ theorem supports_biUnion {K : Option Γ' → Finset Λ'} {S} :
     Supports (Finset.univ.biUnion K) S ↔ ∀ a, Supports (K a) S := by
   simpa [Supports] using forall_swap
 
-theorem head_supports {S k q} (H : (q : Λ').Supports S) : (head k q).Supports S := fun _ => by
+theorem head_supports {S k q} (H : (q : Λ').Supports S) : (head k q).Supports S := fun _ ↦ by
   dsimp only; split_ifs <;> exact H
 
 theorem ret_supports {S k} (H₁ : contSupp k ⊆ S) : TM2.SupportsStmt S (tr (Λ'.ret k)) := by
-  have W := fun {q} => trStmts₁_self q
+  have W := fun {q} ↦ trStmts₁_self q
   cases k with
   | halt => trivial
-  | cons₁ => rw [contSupp_cons₁, Finset.union_subset_iff] at H₁; exact fun _ => H₁.1 W
-  | cons₂ => rw [contSupp_cons₂, Finset.union_subset_iff] at H₁; exact fun _ => H₁.1 W
-  | comp => rw [contSupp_comp] at H₁; exact fun _ => H₁ (codeSupp_self _ _ W)
+  | cons₁ => rw [contSupp_cons₁, Finset.union_subset_iff] at H₁; exact fun _ ↦ H₁.1 W
+  | cons₂ => rw [contSupp_cons₂, Finset.union_subset_iff] at H₁; exact fun _ ↦ H₁.1 W
+  | comp => rw [contSupp_comp] at H₁; exact fun _ ↦ H₁ (codeSupp_self _ _ W)
   | fix =>
     rw [contSupp_fix] at H₁
     have L := @Finset.mem_union_left; have R := @Finset.mem_union_right
@@ -1137,7 +1137,7 @@ theorem ret_supports {S k} (H₁ : contSupp k ⊆ S) : TM2.SupportsStmt S (tr (�
 
 theorem trStmts₁_supports {S q} (H₁ : (q : Λ').Supports S) (HS₁ : trStmts₁ q ⊆ S) :
     Supports (trStmts₁ q) S := by
-  have W := fun {q} => trStmts₁_self q
+  have W := fun {q} ↦ trStmts₁_self q
   induction q with
   | move _ _ _ q q_ih => _ | clear _ _ q q_ih => _ | copy q q_ih => _ | push _ _ q q_ih => _
   | read q q_ih => _ | succ q q_ih => _ | pred q₁ q₂ q₁_ih q₂_ih => _ | ret => _ <;>
@@ -1145,21 +1145,21 @@ theorem trStmts₁_supports {S q} (H₁ : (q : Λ').Supports S) (HS₁ : trStmts
   any_goals
     obtain ⟨h₁, h₂⟩ := Finset.insert_subset_iff.1 HS₁
     first | have h₃ := h₂ W | try simp [Finset.subset_iff] at h₂
-  · exact supports_insert.2 ⟨⟨fun _ => h₃, fun _ => h₁⟩, q_ih H₁ h₂⟩ -- move
-  · exact supports_insert.2 ⟨⟨fun _ => h₃, fun _ => h₁⟩, q_ih H₁ h₂⟩ -- clear
-  · exact supports_insert.2 ⟨⟨fun _ => h₁, fun _ => h₃⟩, q_ih H₁ h₂⟩ -- copy
-  · exact supports_insert.2 ⟨⟨fun _ => h₃, fun _ => h₃⟩, q_ih H₁ h₂⟩ -- push
-  · refine supports_insert.2 ⟨fun _ => h₂ _ W, ?_⟩ -- read
-    exact supports_biUnion.2 fun _ => q_ih _ (H₁ _) fun _ h => h₂ _ h
-  · refine supports_insert.2 ⟨⟨fun _ => h₁, fun _ => h₂.1, fun _ => h₂.1⟩, ?_⟩ -- succ
-    exact supports_insert.2 ⟨⟨fun _ => h₂.2 _ W, fun _ => h₂.1⟩, q_ih H₁ h₂.2⟩
+  · exact supports_insert.2 ⟨⟨fun _ ↦ h₃, fun _ ↦ h₁⟩, q_ih H₁ h₂⟩ -- move
+  · exact supports_insert.2 ⟨⟨fun _ ↦ h₃, fun _ ↦ h₁⟩, q_ih H₁ h₂⟩ -- clear
+  · exact supports_insert.2 ⟨⟨fun _ ↦ h₁, fun _ ↦ h₃⟩, q_ih H₁ h₂⟩ -- copy
+  · exact supports_insert.2 ⟨⟨fun _ ↦ h₃, fun _ ↦ h₃⟩, q_ih H₁ h₂⟩ -- push
+  · refine supports_insert.2 ⟨fun _ ↦ h₂ _ W, ?_⟩ -- read
+    exact supports_biUnion.2 fun _ ↦ q_ih _ (H₁ _) fun _ h ↦ h₂ _ h
+  · refine supports_insert.2 ⟨⟨fun _ ↦ h₁, fun _ ↦ h₂.1, fun _ ↦ h₂.1⟩, ?_⟩ -- succ
+    exact supports_insert.2 ⟨⟨fun _ ↦ h₂.2 _ W, fun _ ↦ h₂.1⟩, q_ih H₁ h₂.2⟩
   · refine -- pred
-      supports_insert.2 ⟨⟨fun _ => h₁, fun _ => h₂.2 _ (Or.inl W),
-                          fun _ => h₂.1, fun _ => h₂.1⟩, ?_⟩
-    refine supports_insert.2 ⟨⟨fun _ => h₂.2 _ (Or.inr W), fun _ => h₂.1⟩, ?_⟩
+      supports_insert.2 ⟨⟨fun _ ↦ h₁, fun _ ↦ h₂.2 _ (Or.inl W),
+                          fun _ ↦ h₂.1, fun _ ↦ h₂.1⟩, ?_⟩
+    refine supports_insert.2 ⟨⟨fun _ ↦ h₂.2 _ (Or.inr W), fun _ ↦ h₂.1⟩, ?_⟩
     refine supports_union.2 ⟨?_, ?_⟩
-    · exact q₁_ih H₁.1 fun _ h => h₂.2 _ (Or.inl h)
-    · exact q₂_ih H₁.2 fun _ h => h₂.2 _ (Or.inr h)
+    · exact q₁_ih H₁.1 fun _ h ↦ h₂.2 _ (Or.inl h)
+    · exact q₂_ih H₁.2 fun _ h ↦ h₂.2 _ (Or.inr h)
   · exact supports_singleton.2 (ret_supports H₁)  -- ret
 
 theorem trStmts₁_supports' {S q K} (H₁ : (q : Λ').Supports S) (H₂ : trStmts₁ q ∪ K ⊆ S)
@@ -1186,9 +1186,9 @@ theorem codeSupp'_supports {S c k} (H : codeSupp c k ⊆ S) : Supports (codeSupp
   induction c generalizing k with
   | cons f fs IHf IHfs =>
     have H' := H; simp only [codeSupp_cons, Finset.union_subset_iff] at H'
-    refine trStmts₁_supports' (trNormal_supports H) (Finset.union_subset_left H) fun h => ?_
+    refine trStmts₁_supports' (trNormal_supports H) (Finset.union_subset_left H) fun h ↦ ?_
     refine supports_union.2 ⟨IHf H'.2, ?_⟩
-    refine trStmts₁_supports' (trNormal_supports ?_) (Finset.union_subset_right h) fun h => ?_
+    refine trStmts₁_supports' (trNormal_supports ?_) (Finset.union_subset_right h) fun h ↦ ?_
     · simp only [codeSupp, Finset.union_subset_iff, contSupp] at h H ⊢
       exact ⟨h.2.2.1, h.2.2.2, H.2⟩
     refine supports_union.2 ⟨IHfs ?_, ?_⟩
@@ -1199,21 +1199,21 @@ theorem codeSupp'_supports {S c k} (H : codeSupp c k ⊆ S) : Supports (codeSupp
         (Finset.union_subset_right h)
   | comp f g IHf IHg =>
     have H' := H; rw [codeSupp_comp] at H'; have H' := Finset.union_subset_right H'
-    refine trStmts₁_supports' (trNormal_supports H) (Finset.union_subset_left H) fun h => ?_
+    refine trStmts₁_supports' (trNormal_supports H) (Finset.union_subset_left H) fun h ↦ ?_
     refine supports_union.2 ⟨IHg H', ?_⟩
-    refine trStmts₁_supports' (trNormal_supports ?_) (Finset.union_subset_right h) fun _ => ?_
+    refine trStmts₁_supports' (trNormal_supports ?_) (Finset.union_subset_right h) fun _ ↦ ?_
     · simp only [codeSupp', codeSupp, Finset.union_subset_iff] at h H ⊢
       exact ⟨h.2.2, H.2⟩
     exact IHf (Finset.union_subset_right H')
   | case f g IHf IHg =>
     have H' := H; simp only [codeSupp_case, Finset.union_subset_iff] at H'
-    refine trStmts₁_supports' (trNormal_supports H) (Finset.union_subset_left H) fun _ => ?_
+    refine trStmts₁_supports' (trNormal_supports H) (Finset.union_subset_left H) fun _ ↦ ?_
     exact supports_union.2 ⟨IHf H'.2.1, IHg H'.2.2⟩
   | fix f IHf =>
     have H' := H; simp only [codeSupp_fix, Finset.union_subset_iff] at H'
-    refine trStmts₁_supports' (trNormal_supports H) (Finset.union_subset_left H) fun h => ?_
+    refine trStmts₁_supports' (trNormal_supports H) (Finset.union_subset_left H) fun h ↦ ?_
     refine supports_union.2 ⟨IHf H'.2, ?_⟩
-    refine trStmts₁_supports' (trNormal_supports ?_) (Finset.union_subset_right h) fun _ => ?_
+    refine trStmts₁_supports' (trNormal_supports ?_) (Finset.union_subset_right h) fun _ ↦ ?_
     · simp only [codeSupp', codeSupp, Finset.union_subset_iff, contSupp, trStmts₁,
         Finset.insert_subset_iff] at h H ⊢
       exact ⟨h.1, ⟨H.1.1, h⟩, H.2⟩
@@ -1225,7 +1225,7 @@ theorem contSupp_supports {S k} (H : contSupp k ⊆ S) : Supports (contSupp k) S
   | halt => simp [contSupp_halt, Supports]
   | cons₁ f k IH =>
     have H₁ := H; rw [contSupp_cons₁] at H₁; have H₂ := Finset.union_subset_right H₁
-    refine trStmts₁_supports' (trNormal_supports H₂) H₁ fun h => ?_
+    refine trStmts₁_supports' (trNormal_supports H₂) H₁ fun h ↦ ?_
     refine supports_union.2 ⟨codeSupp'_supports H₂, ?_⟩
     simp only [codeSupp, contSupp_cons₂, Finset.union_subset_iff] at H₂
     exact trStmts₁_supports' (head_supports H₂.2.2) (Finset.union_subset_right h) IH
@@ -1248,7 +1248,7 @@ states in `codeSupp c k`, so this is a finite state machine. Even though the und
 state labels `Λ'` is infinite, for a given partial recursive function `c` and continuation `k`,
 only finitely many states are accessed, corresponding roughly to subterms of `c`. -/
 theorem tr_supports (c k) : @TM2.Supports _ _ _ _ ⟨trNormal c k⟩ tr (codeSupp c k) :=
-  ⟨codeSupp_self _ _ (trStmts₁_self _), fun _ => codeSupp_supports (Finset.Subset.refl _) _⟩
+  ⟨codeSupp_self _ _ (trStmts₁_self _), fun _ ↦ codeSupp_supports (Finset.Subset.refl _) _⟩
 
 end
 

@@ -224,7 +224,7 @@ theorem mulLeft_bound (x : α) : ∀ y : α, ‖AddMonoidHom.mulLeft x y‖ ≤ 
   norm_mul_le x
 
 /-- In a seminormed ring, the right-multiplication `AddMonoidHom` is bounded. -/
-theorem mulRight_bound (x : α) : ∀ y : α, ‖AddMonoidHom.mulRight x y‖ ≤ ‖x‖ * ‖y‖ := fun y => by
+theorem mulRight_bound (x : α) : ∀ y : α, ‖AddMonoidHom.mulRight x y‖ ≤ ‖x‖ * ‖y‖ := fun y ↦ by
   rw [mul_comm]
   exact norm_mul_le y x
 
@@ -382,7 +382,7 @@ theorem nnnorm_pow_le' (a : α) : ∀ {n : ℕ}, 0 < n → ‖a ^ n‖₊ ≤ �
 See also `nnnorm_pow_le'`. -/
 theorem nnnorm_pow_le [NormOneClass α] (a : α) (n : ℕ) : ‖a ^ n‖₊ ≤ ‖a‖₊ ^ n :=
   Nat.recOn n (by simp only [pow_zero, nnnorm_one, le_rfl])
-    fun k _hk => nnnorm_pow_le' a k.succ_pos
+    fun k _hk ↦ nnnorm_pow_le' a k.succ_pos
 
 /-- If `α` is a seminormed ring, then `‖a ^ n‖ ≤ ‖a‖ ^ n` for `n > 0`. See also `norm_pow_le`. -/
 theorem norm_pow_le' (a : α) {n : ℕ} (h : 0 < n) : ‖a ^ n‖ ≤ ‖a‖ ^ n := by
@@ -392,10 +392,10 @@ theorem norm_pow_le' (a : α) {n : ℕ} (h : 0 < n) : ‖a ^ n‖ ≤ ‖a‖ ^ 
 See also `norm_pow_le'`. -/
 theorem norm_pow_le [NormOneClass α] (a : α) (n : ℕ) : ‖a ^ n‖ ≤ ‖a‖ ^ n :=
   Nat.recOn n (by simp only [pow_zero, norm_one, le_rfl])
-    fun n _hn => norm_pow_le' a n.succ_pos
+    fun n _hn ↦ norm_pow_le' a n.succ_pos
 
 theorem eventually_norm_pow_le (a : α) : ∀ᶠ n : ℕ in atTop, ‖a ^ n‖ ≤ ‖a‖ ^ n :=
-  eventually_atTop.mpr ⟨1, fun _b h => norm_pow_le' a (Nat.succ_le_iff.mp h)⟩
+  eventually_atTop.mpr ⟨1, fun _b h ↦ norm_pow_le' a (Nat.succ_le_iff.mp h)⟩
 
 instance ULift.seminormedRing : SeminormedRing (ULift α) :=
   { ULift.nonUnitalSeminormedRing, ULift.ring with }
@@ -601,7 +601,7 @@ instance MulOpposite.instNormedCommRing : NormedCommRing αᵐᵒᵖ where
 /-- The restriction of a power-multiplicative function to a subalgebra is power-multiplicative. -/
 theorem IsPowMul.restriction {R S : Type*} [CommRing R] [Ring S] [Algebra R S]
     (A : Subalgebra R S) {f : S → ℝ} (hf_pm : IsPowMul f) :
-    IsPowMul fun x : A => f x.val := fun x n hn => by
+    IsPowMul fun x : A ↦ f x.val := fun x n hn ↦ by
   simpa [SubsemiringClass.coe_pow] using hf_pm (↑x) hn
 
 end NormedCommRing

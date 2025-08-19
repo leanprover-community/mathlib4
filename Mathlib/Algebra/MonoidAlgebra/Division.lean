@@ -87,12 +87,12 @@ theorem divOf_add (x : k[G]) (a b : G) : x /ᵒᶠ (a + b) = x /ᵒᶠ a /ᵒᶠ
 @[simps]
 noncomputable def divOfHom : Multiplicative G →* AddMonoid.End k[G] where
   toFun g :=
-    { toFun := fun x => divOf x g.toAdd
+    { toFun := fun x ↦ divOf x g.toAdd
       map_zero' := zero_divOf _
-      map_add' := fun x y => add_divOf x y g.toAdd }
+      map_add' := fun x y ↦ add_divOf x y g.toAdd }
   map_one' := AddMonoidHom.ext divOf_zero
   map_mul' g₁ g₂ :=
-    AddMonoidHom.ext fun _x =>
+    AddMonoidHom.ext fun _x ↦
       (congr_arg _ (add_comm g₁.toAdd g₂.toAdd)).trans
         (divOf_add _ _ _)
 
@@ -116,8 +116,8 @@ end divOf
 
 /-- The remainder upon division by `of' k G g`. -/
 noncomputable def modOf (x : k[G]) (g : G) : k[G] :=
-  letI := Classical.decPred fun g₁ => ∃ g₂, g₁ = g + g₂
-  x.filter fun g₁ => ¬∃ g₂, g₁ = g + g₂
+  letI := Classical.decPred fun g₁ ↦ ∃ g₂, g₁ = g + g₂
+  x.filter fun g₁ ↦ ¬∃ g₂, g₁ = g + g₂
 
 local infixl:70 " %ᵒᶠ " => modOf
 

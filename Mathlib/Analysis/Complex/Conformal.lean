@@ -114,7 +114,7 @@ theorem isConformalMap_iff_is_complex_or_conj_linear :
           ∃ map : ℂ →L[ℂ] ℂ, map.restrictScalars ℝ = g ∘L ↑conjCLE) ∧
         g ≠ 0 := by
   constructor
-  · exact fun h => ⟨h.is_complex_or_conj_linear, h.ne_zero⟩
+  · exact fun h ↦ ⟨h.is_complex_or_conj_linear, h.ne_zero⟩
   · rintro ⟨⟨map, rfl⟩ | ⟨map, hmap⟩, h₂⟩
     · refine isConformalMap_complex_linear ?_
       contrapose! h₂ with w
@@ -158,7 +158,7 @@ theorem conformalAt_iff_differentiableAt_or_differentiableAt_comp_conj {f : ℂ 
   · rw [differentiableAt_iff_restrictScalars ℝ h_diff]
   rw [← conj_conj z] at h_diff
   rw [differentiableAt_iff_restrictScalars ℝ (h_diff.comp _ conjCLE.differentiableAt)]
-  refine exists_congr fun g => rfl.congr ?_
+  refine exists_congr fun g ↦ rfl.congr ?_
   have : fderiv ℝ conj (conj z) = _ := conjCLE.fderiv
   simp [fderiv_comp _ h_diff conjCLE.differentiableAt, this]
 

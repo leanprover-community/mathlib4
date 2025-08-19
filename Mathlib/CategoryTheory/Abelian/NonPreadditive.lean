@@ -106,7 +106,7 @@ instance : Epi (Abelian.factorThruImage f) :=
   let i := kernel.ι (cokernel.π f)
   -- It will suffice to consider some g : I ⟶ R such that p ≫ g = 0 and show that g = 0.
   NormalMonoCategory.epi_of_zero_cancel
-  _ fun R (g : I ⟶ R) (hpg : p ≫ g = 0) => by
+  _ fun R (g : I ⟶ R) (hpg : p ≫ g = 0) ↦ by
   -- Since C is abelian, u := ker g ≫ i is the kernel of some morphism h.
   let u := kernel.ι g ≫ i
   haveI hu := normalMonoOfMono u
@@ -142,7 +142,7 @@ instance : Mono (Abelian.factorThruCoimage f) :=
   let I := Abelian.coimage f
   let i := Abelian.factorThruCoimage f
   let p := cokernel.π (kernel.ι f)
-  NormalEpiCategory.mono_of_cancel_zero _ fun R (g : R ⟶ I) (hgi : g ≫ i = 0) => by
+  NormalEpiCategory.mono_of_cancel_zero _ fun R (g : R ⟶ I) (hgi : g ≫ i = 0) ↦ by
     -- Since C is abelian, u := p ≫ coker g is the cokernel of some morphism h.
     let u := p ≫ cokernel.π g
     haveI hu := normalEpiOfEpi u
@@ -230,7 +230,7 @@ instance mono_r {A : C} : Mono (r A) := by
 instance epi_r {A : C} : Epi (r A) := by
   have hlp : prod.lift (𝟙 A) (0 : A ⟶ A) ≫ Limits.prod.snd = 0 := prod.lift_snd _ _
   let hp1 : IsLimit (KernelFork.ofι (prod.lift (𝟙 A) (0 : A ⟶ A)) hlp) := by
-    refine Fork.IsLimit.mk _ (fun s => Fork.ι s ≫ Limits.prod.fst) ?_ ?_
+    refine Fork.IsLimit.mk _ (fun s ↦ Fork.ι s ≫ Limits.prod.fst) ?_ ?_
     · intro s
       apply Limits.prod.hom_ext <;> simp
     · intro s m h
@@ -295,21 +295,21 @@ section
 -- We write `f - g` for `prod.lift f g ≫ σ`.
 /-- Subtraction of morphisms in a `NonPreadditiveAbelian` category. -/
 def hasSub {X Y : C} : Sub (X ⟶ Y) :=
-  ⟨fun f g => prod.lift f g ≫ σ⟩
+  ⟨fun f g ↦ prod.lift f g ≫ σ⟩
 
 attribute [local instance] hasSub
 
 -- We write `-f` for `0 - f`.
 /-- Negation of morphisms in a `NonPreadditiveAbelian` category. -/
 def hasNeg {X Y : C} : Neg (X ⟶ Y) where
-  neg := fun f => 0 - f
+  neg := fun f ↦ 0 - f
 
 attribute [local instance] hasNeg
 
 -- We write `f + g` for `f - (-g)`.
 /-- Addition of morphisms in a `NonPreadditiveAbelian` category. -/
 def hasAdd {X Y : C} : Add (X ⟶ Y) :=
-  ⟨fun f g => f - -g⟩
+  ⟨fun f g ↦ f - -g⟩
 
 attribute [local instance] hasAdd
 
@@ -401,9 +401,9 @@ def preadditive : Preadditive C where
       zero := 0
       zero_add := neg_neg
       add_zero := add_zero
-      neg := fun f => -f
+      neg := fun f ↦ -f
       neg_add_cancel := neg_add_cancel
-      sub_eq_add_neg := fun f g => (add_neg f g).symm -- Porting note: autoParam failed
+      sub_eq_add_neg := fun f g ↦ (add_neg f g).symm -- Porting note: autoParam failed
       add_comm := add_comm
       nsmul := nsmulRec
       zsmul := zsmulRec }

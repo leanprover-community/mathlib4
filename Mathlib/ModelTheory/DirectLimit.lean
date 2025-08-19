@@ -50,11 +50,11 @@ variable {G' : ℕ → Type w} [∀ i, L.Structure (G' i)] (f' : ∀ n : ℕ, G'
 /-- Given a chain of embeddings of structures indexed by `ℕ`, defines a `DirectedSystem` by
 composing them. -/
 def natLERec (m n : ℕ) (h : m ≤ n) : G' m ↪[L] G' n :=
-  Nat.leRecOn h (@fun k g => (f' k).comp g) (Embedding.refl L _)
+  Nat.leRecOn h (@fun k g ↦ (f' k).comp g) (Embedding.refl L _)
 
 @[simp]
 theorem coe_natLERec (m n : ℕ) (h : m ≤ n) :
-    (natLERec f' m n h : G' m → G' n) = Nat.leRecOn h (@fun k => f' k) := by
+    (natLERec f' m n h : G' m → G' n) = Nat.leRecOn h (@fun k ↦ f' k) := by
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
   ext x
   induction k with
@@ -66,9 +66,9 @@ theorem coe_natLERec (m n : ℕ) (h : m ≤ n) :
     erw [Nat.leRecOn_succ le_self_add, natLERec, Nat.leRecOn_succ le_self_add, ← natLERec,
       Embedding.comp_apply, ih]
 
-instance natLERec.directedSystem : DirectedSystem G' fun i j h => natLERec f' i j h :=
-  ⟨fun _ _ => congr (congr rfl (Nat.leRecOn_self _)) rfl,
-   fun _ _ _ hij hjk => by simp [Nat.leRecOn_trans hij hjk]⟩
+instance natLERec.directedSystem : DirectedSystem G' fun i j h ↦ natLERec f' i j h :=
+  ⟨fun _ _ ↦ congr (congr rfl (Nat.leRecOn_self _)) rfl,
+   fun _ _ _ hij hjk ↦ by simp [Nat.leRecOn_trans hij hjk]⟩
 
 end DirectedSystem
 
@@ -96,11 +96,11 @@ def unify {α : Type*} (x : α → Σˣ f) (i : ι) (h : i ∈ upperBounds (rang
     (a : α) : G i :=
   f (x a).1 i (h (mem_range_self a)) (x a).2
 
-variable [DirectedSystem G fun i j h => f i j h]
+variable [DirectedSystem G fun i j h ↦ f i j h]
 
 @[simp]
 theorem unify_sigma_mk_self {α : Type*} {i : ι} {x : α → G i} :
-    (unify f (fun a => .mk f i (x a)) i fun _ ⟨_, hj⟩ =>
+    (unify f (fun a ↦ .mk f i (x a)) i fun _ ⟨_, hj⟩ ↦
       _root_.trans (le_of_eq hj.symm) (refl _)) = x := by
   ext a
   rw [unify]
@@ -109,7 +109,7 @@ theorem unify_sigma_mk_self {α : Type*} {i : ι} {x : α → G i} :
 theorem comp_unify {α : Type*} {x : α → Σˣ f} {i j : ι} (ij : i ≤ j)
     (h : i ∈ upperBounds (range (Sigma.fst ∘ x))) :
     f i j ij ∘ unify f x i h = unify f x j
-      fun k hk => _root_.trans (mem_upperBounds.1 h k hk) ij := by
+      fun k hk ↦ _root_.trans (mem_upperBounds.1 h k hk) ij := by
   ext a
   simp [unify, DirectedSystem.map_map]
 
@@ -120,12 +120,12 @@ variable (G)
 namespace DirectLimit
 
 /-- The directed limit glues together the structures along the embeddings. -/
-def setoid [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] : Setoid (Σˣ f) where
-  r := fun ⟨i, x⟩ ⟨j, y⟩ => ∃ (k : ι) (ik : i ≤ k) (jk : j ≤ k), f i k ik x = f j k jk y
+def setoid [DirectedSystem G fun i j h ↦ f i j h] [IsDirected ι (· ≤ ·)] : Setoid (Σˣ f) where
+  r := fun ⟨i, x⟩ ⟨j, y⟩ ↦ ∃ (k : ι) (ik : i ≤ k) (jk : j ≤ k), f i k ik x = f j k jk y
   iseqv :=
-    ⟨fun ⟨i, _⟩ => ⟨i, refl i, refl i, rfl⟩, @fun ⟨_, _⟩ ⟨_, _⟩ ⟨k, ik, jk, h⟩ =>
+    ⟨fun ⟨i, _⟩ ↦ ⟨i, refl i, refl i, rfl⟩, @fun ⟨_, _⟩ ⟨_, _⟩ ⟨k, ik, jk, h⟩ ↦
       ⟨k, jk, ik, h.symm⟩,
-      @fun ⟨i, x⟩ ⟨j, y⟩ ⟨k, z⟩ ⟨ij, hiij, hjij, hij⟩ ⟨jk, hjjk, hkjk, hjk⟩ => by
+      @fun ⟨i, x⟩ ⟨j, y⟩ ⟨k, z⟩ ⟨ij, hiij, hjij, hij⟩ ⟨jk, hjjk, hkjk, hjk⟩ ↦ by
         obtain ⟨ijk, hijijk, hjkijk⟩ := directed_of (· ≤ ·) ij jk
         refine ⟨ijk, le_trans hiij hijijk, le_trans hkjk hjkijk, ?_⟩
         rw [← DirectedSystem.map_map, hij, DirectedSystem.map_map]
@@ -140,34 +140,34 @@ noncomputable def sigmaStructure [IsDirected ι (· ≤ ·)] [Nonempty ι] : L.S
   funMap F x :=
     ⟨_,
       funMap F
-        (unify f x (Classical.choose (Finite.bddAbove_range fun a => (x a).1))
-          (Classical.choose_spec (Finite.bddAbove_range fun a => (x a).1)))⟩
+        (unify f x (Classical.choose (Finite.bddAbove_range fun a ↦ (x a).1))
+          (Classical.choose_spec (Finite.bddAbove_range fun a ↦ (x a).1)))⟩
   RelMap R x :=
     RelMap R
-      (unify f x (Classical.choose (Finite.bddAbove_range fun a => (x a).1))
-        (Classical.choose_spec (Finite.bddAbove_range fun a => (x a).1)))
+      (unify f x (Classical.choose (Finite.bddAbove_range fun a ↦ (x a).1))
+        (Classical.choose_spec (Finite.bddAbove_range fun a ↦ (x a).1)))
 
 end DirectLimit
 
 /-- The direct limit of a directed system is the structures glued together along the embeddings. -/
-def DirectLimit [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] :=
+def DirectLimit [DirectedSystem G fun i j h ↦ f i j h] [IsDirected ι (· ≤ ·)] :=
   Quotient (DirectLimit.setoid G f)
 
 attribute [local instance] DirectLimit.setoid DirectLimit.sigmaStructure
 
-instance [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] [Inhabited ι]
+instance [DirectedSystem G fun i j h ↦ f i j h] [IsDirected ι (· ≤ ·)] [Inhabited ι]
     [Inhabited (G default)] : Inhabited (DirectLimit G f) :=
   ⟨⟦⟨default, default⟩⟧⟩
 
 namespace DirectLimit
 
-variable [IsDirected ι (· ≤ ·)] [DirectedSystem G fun i j h => f i j h]
+variable [IsDirected ι (· ≤ ·)] [DirectedSystem G fun i j h ↦ f i j h]
 
 theorem equiv_iff {x y : Σˣ f} {i : ι} (hx : x.1 ≤ i) (hy : y.1 ≤ i) :
     x ≈ y ↔ (f x.1 i hx) x.2 = (f y.1 i hy) y.2 := by
   cases x
   cases y
-  refine ⟨fun xy => ?_, fun xy => ⟨i, hx, hy, xy⟩⟩
+  refine ⟨fun xy ↦ ?_, fun xy ↦ ⟨i, hx, hy, xy⟩⟩
   obtain ⟨j, _, _, h⟩ := xy
   obtain ⟨k, ik, jk⟩ := directed_of (· ≤ ·) i j
   have h := congr_arg (f j k jk) h
@@ -193,20 +193,20 @@ variable [Nonempty ι]
 theorem exists_unify_eq {α : Type*} [Finite α] {x y : α → Σˣ f} (xy : x ≈ y) :
     ∃ (i : ι) (hx : i ∈ upperBounds (range (Sigma.fst ∘ x)))
       (hy : i ∈ upperBounds (range (Sigma.fst ∘ y))), unify f x i hx = unify f y i hy := by
-  obtain ⟨i, hi⟩ := Finite.bddAbove_range (Sum.elim (fun a => (x a).1) fun a => (y a).1)
+  obtain ⟨i, hi⟩ := Finite.bddAbove_range (Sum.elim (fun a ↦ (x a).1) fun a ↦ (y a).1)
   rw [Sum.elim_range, upperBounds_union] at hi
   simp_rw [← Function.comp_apply (f := Sigma.fst)] at hi
-  exact ⟨i, hi.1, hi.2, funext fun a => (equiv_iff G f _ _).1 (xy a)⟩
+  exact ⟨i, hi.1, hi.2, funext fun a ↦ (equiv_iff G f _ _).1 (xy a)⟩
 
 theorem funMap_equiv_unify {n : ℕ} (F : L.Functions n) (x : Fin n → Σˣ f) (i : ι)
     (hi : i ∈ upperBounds (range (Sigma.fst ∘ x))) :
     funMap F x ≈ .mk f _ (funMap F (unify f x i hi)) :=
-  funMap_unify_equiv G f F x (Classical.choose (Finite.bddAbove_range fun a => (x a).1)) i _ hi
+  funMap_unify_equiv G f F x (Classical.choose (Finite.bddAbove_range fun a ↦ (x a).1)) i _ hi
 
 theorem relMap_equiv_unify {n : ℕ} (R : L.Relations n) (x : Fin n → Σˣ f) (i : ι)
     (hi : i ∈ upperBounds (range (Sigma.fst ∘ x))) :
     RelMap R x = RelMap R (unify f x i hi) :=
-  relMap_unify_equiv G f R x (Classical.choose (Finite.bddAbove_range fun a => (x a).1)) i _ hi
+  relMap_unify_equiv G f R x (Classical.choose (Finite.bddAbove_range fun a ↦ (x a).1)) i _ hi
 
 /-- The direct limit `setoid` respects the structure `sigmaStructure`, so quotienting by it
   gives rise to a valid structure. -/
@@ -230,26 +230,26 @@ noncomputable instance instStructureDirectLimit : L.Structure (DirectLimit G f) 
 
 @[simp]
 theorem funMap_quotient_mk'_sigma_mk' {n : ℕ} {F : L.Functions n} {i : ι} {x : Fin n → G i} :
-    funMap F (fun a => (⟦.mk f i (x a)⟧ : DirectLimit G f)) = ⟦.mk f i (funMap F x)⟧ := by
+    funMap F (fun a ↦ (⟦.mk f i (x a)⟧ : DirectLimit G f)) = ⟦.mk f i (funMap F x)⟧ := by
   simp only [funMap_quotient_mk', Quotient.eq]
   obtain ⟨k, ik, jk⟩ :=
-    directed_of (· ≤ ·) i (Classical.choose (Finite.bddAbove_range fun _ : Fin n => i))
+    directed_of (· ≤ ·) i (Classical.choose (Finite.bddAbove_range fun _ : Fin n ↦ i))
   refine ⟨k, jk, ik, ?_⟩
   simp only [Embedding.map_fun, comp_unify]
   rfl
 
 @[simp]
 theorem relMap_quotient_mk'_sigma_mk' {n : ℕ} {R : L.Relations n} {i : ι} {x : Fin n → G i} :
-    RelMap R (fun a => (⟦.mk f i (x a)⟧ : DirectLimit G f)) = RelMap R x := by
+    RelMap R (fun a ↦ (⟦.mk f i (x a)⟧ : DirectLimit G f)) = RelMap R x := by
   rw [relMap_quotient_mk']
   obtain ⟨k, _, _⟩ :=
-    directed_of (· ≤ ·) i (Classical.choose (Finite.bddAbove_range fun _ : Fin n => i))
-  rw [relMap_equiv_unify G f R (fun a => .mk f i (x a)) i]
+    directed_of (· ≤ ·) i (Classical.choose (Finite.bddAbove_range fun _ : Fin n ↦ i))
+  rw [relMap_equiv_unify G f R (fun a ↦ .mk f i (x a)) i]
   rw [unify_sigma_mk_self]
 
 theorem exists_quotient_mk'_sigma_mk'_eq {α : Type*} [Finite α] (x : α → DirectLimit G f) :
-    ∃ (i : ι) (y : α → G i), x = fun a => ⟦.mk f i (y a)⟧ := by
-  obtain ⟨i, hi⟩ := Finite.bddAbove_range fun a => (x a).out.1
+    ∃ (i : ι) (y : α → G i), x = fun a ↦ ⟦.mk f i (y a)⟧ := by
+  obtain ⟨i, hi⟩ := Finite.bddAbove_range fun a ↦ (x a).out.1
   refine ⟨i, unify f (Quotient.out ∘ x) i hi, ?_⟩
   ext a
   rw [Quotient.eq_mk_iff_out, unify]
@@ -265,7 +265,7 @@ variable (L ι)
 
 /-- The canonical map from a component to the direct limit. -/
 noncomputable def of (i : ι) : G i ↪[L] DirectLimit G f where
-  toFun := fun a => ⟦.mk f i a⟧
+  toFun := fun a ↦ ⟦.mk f i a⟧
   inj' x y h := by
     rw [Quotient.eq] at h
     obtain ⟨j, h1, _, h3⟩ := h
@@ -275,7 +275,7 @@ noncomputable def of (i : ι) : G i ↪[L] DirectLimit G f where
     rfl
   map_rel' := by
     intro n R x
-    change RelMap R (fun a => (⟦.mk f i (x a)⟧ : DirectLimit G f)) ↔ _
+    change RelMap R (fun a ↦ (⟦.mk f i (x a)⟧ : DirectLimit G f)) ↔ _
     simp only [relMap_quotient_mk'_sigma_mk']
 
 
@@ -330,7 +330,7 @@ to a unique map out of the direct limit. -/
 noncomputable def lift (g : ∀ i, G i ↪[L] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
     DirectLimit G f ↪[L] P where
   toFun :=
-    Quotient.lift (fun x : Σˣ f => (g x.1) x.2) fun x y xy => by
+    Quotient.lift (fun x : Σˣ f ↦ (g x.1) x.2) fun x y xy ↦ by
       simp only
       obtain ⟨i, hx, hy⟩ := directed_of (· ≤ ·) x.1 y.1
       rw [← Hg x.1 i hx, ← Hg y.1 i hy]
@@ -365,9 +365,9 @@ theorem lift_of {i} (x : G i) : lift L ι G f g Hg (of L ι G f i x) = g i x := 
 
 theorem lift_unique (F : DirectLimit G f ↪[L] P) (x) :
     F x =
-      lift L ι G f (fun i => F.comp <| of L ι G f i)
-        (fun i j hij x => by rw [F.comp_apply, F.comp_apply, of_f]) x :=
-  DirectLimit.inductionOn x fun i x => by rw [lift_of]; rfl
+      lift L ι G f (fun i ↦ F.comp <| of L ι G f i)
+        (fun i j hij x ↦ by rw [F.comp_apply, F.comp_apply, of_f]) x :=
+  DirectLimit.inductionOn x fun i x ↦ by rw [lift_of]; rfl
 
 lemma range_lift : (lift L ι G f g Hg).toHom.range = ⨆ i, (g i).toHom.range := by
   simp_rw [Hom.range_eq_map]
@@ -379,7 +379,7 @@ variable (L ι G f)
 variable (G' : ι → Type w') [∀ i, L.Structure (G' i)]
 variable (f' : ∀ i j, i ≤ j → G' i ↪[L] G' j)
 variable (g : ∀ i, G i ≃[L] G' i)
-variable [DirectedSystem G' fun i j h => f' i j h]
+variable [DirectedSystem G' fun i j h ↦ f' i j h]
 
 /-- The isomorphism between limits of isomorphic systems. -/
 noncomputable def equiv_lift (H_commuting : ∀ i j hij x, g j (f i j hij x) = f' i j hij (g i x)) :
@@ -406,10 +406,10 @@ variable {L ι G f}
 /-- The direct limit of countably many countably generated structures is countably generated. -/
 theorem cg {ι : Type*} [Countable ι] [Preorder ι] [IsDirected ι (· ≤ ·)] [Nonempty ι]
     {G : ι → Type w} [∀ i, L.Structure (G i)] (f : ∀ i j, i ≤ j → G i ↪[L] G j)
-    (h : ∀ i, Structure.CG L (G i)) [DirectedSystem G fun i j h => f i j h] :
+    (h : ∀ i, Structure.CG L (G i)) [DirectedSystem G fun i j h ↦ f i j h] :
     Structure.CG L (DirectLimit G f) := by
   refine ⟨⟨⋃ i, DirectLimit.of L ι G f i '' Classical.choose (h i).out, ?_, ?_⟩⟩
-  · exact Set.countable_iUnion fun i => Set.Countable.image (Classical.choose_spec (h i).out).1 _
+  · exact Set.countable_iUnion fun i ↦ Set.Countable.image (Classical.choose_spec (h i).out).1 _
   · rw [eq_top_iff, Substructure.closure_iUnion]
     simp_rw [← Embedding.coe_toHom, Substructure.closure_image]
     rw [le_iSup_iff]
@@ -422,7 +422,7 @@ theorem cg {ι : Type*} [Countable ι] [Preorder ι] [IsDirected ι (· ≤ ·)]
 
 instance cg' {ι : Type*} [Countable ι] [Preorder ι] [IsDirected ι (· ≤ ·)] [Nonempty ι]
     {G : ι → Type w} [∀ i, L.Structure (G i)] (f : ∀ i j, i ≤ j → G i ↪[L] G j)
-    [h : ∀ i, Structure.CG L (G i)] [DirectedSystem G fun i j h => f i j h] :
+    [h : ∀ i, Structure.CG L (G i)] [DirectedSystem G fun i j h ↦ f i j h] :
     Structure.CG L (DirectLimit G f) :=
   cg f h
 

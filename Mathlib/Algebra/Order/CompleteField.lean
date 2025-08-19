@@ -63,7 +63,7 @@ instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_archimedea
       by_contra! h
       obtain ⟨x, h⟩ := h
       have := csSup_le (range_nonempty Nat.cast)
-        (forall_mem_range.2 fun m =>
+        (forall_mem_range.2 fun m ↦
           le_sub_iff_add_le.2 <| le_csSup ⟨x, forall_mem_range.2 h⟩ ⟨m+1, Nat.cast_succ m⟩)
       linarith)
 
@@ -91,7 +91,7 @@ another linear ordered field. -/
 def cutMap (a : α) : Set β :=
   (Rat.cast : ℚ → β) '' {t | ↑t < a}
 
-theorem cutMap_mono (h : a₁ ≤ a₂) : cutMap β a₁ ⊆ cutMap β a₂ := image_mono fun _ => h.trans_lt'
+theorem cutMap_mono (h : a₁ ≤ a₂) : cutMap β a₁ ⊆ cutMap β a₂ := image_mono fun _ ↦ h.trans_lt'
 
 variable {β}
 
@@ -121,10 +121,10 @@ theorem cutMap_nonempty (a : α) : (cutMap β a).Nonempty :=
 
 theorem cutMap_bddAbove (a : α) : BddAbove (cutMap β a) := by
   obtain ⟨q, hq⟩ := exists_rat_gt a
-  exact ⟨q, forall_mem_image.2 fun r hr => mod_cast (hq.trans' hr).le⟩
+  exact ⟨q, forall_mem_image.2 fun r hr ↦ mod_cast (hq.trans' hr).le⟩
 
 theorem cutMap_add (a b : α) : cutMap β (a + b) = cutMap β a + cutMap β b := by
-  refine (image_subset_iff.2 fun q hq => ?_).antisymm ?_
+  refine (image_subset_iff.2 fun q hq ↦ ?_).antisymm ?_
   · rw [mem_setOf_eq, ← sub_lt_iff_lt_add] at hq
     obtain ⟨q₁, hq₁q, hq₁ab⟩ := exists_rat_btwn hq
     refine ⟨q₁, by rwa [coe_mem_cutMap_iff], q - q₁, ?_, add_sub_cancel _ _⟩
@@ -159,12 +159,12 @@ def inducedMap (x : α) : β :=
 
 variable [Archimedean α]
 
-theorem inducedMap_mono : Monotone (inducedMap α β) := fun _ _ h =>
+theorem inducedMap_mono : Monotone (inducedMap α β) := fun _ _ h ↦
   csSup_le_csSup (cutMap_bddAbove β _) (cutMap_nonempty β _) (cutMap_mono β h)
 
 theorem inducedMap_rat (q : ℚ) : inducedMap α β (q : α) = q := by
   refine csSup_eq_of_forall_le_of_forall_lt_exists_gt
-    (cutMap_nonempty β (q : α)) (fun x h => ?_) fun w h => ?_
+    (cutMap_nonempty β (q : α)) (fun x h ↦ ?_) fun w h ↦ ?_
   · rw [cutMap_coe] at h
     obtain ⟨r, h, rfl⟩ := h
     exact le_of_lt h
@@ -184,7 +184,7 @@ theorem inducedMap_nonneg (ha : 0 ≤ a) : 0 ≤ inducedMap α β a :=
   (inducedMap_zero α _).ge.trans <| inducedMap_mono _ _ ha
 
 theorem coe_lt_inducedMap_iff : (q : β) < inducedMap α β a ↔ (q : α) < a := by
-  refine ⟨fun h => ?_, fun hq => ?_⟩
+  refine ⟨fun h ↦ ?_, fun hq ↦ ?_⟩
   · rw [← inducedMap_rat α] at h
     exact (inducedMap_mono α β).reflect_lt h
   · obtain ⟨q', hq, hqa⟩ := exists_rat_btwn hq
@@ -192,18 +192,18 @@ theorem coe_lt_inducedMap_iff : (q : β) < inducedMap α β a ↔ (q : α) < a :
     exact mod_cast hq
 
 theorem lt_inducedMap_iff : b < inducedMap α β a ↔ ∃ q : ℚ, b < q ∧ (q : α) < a :=
-  ⟨fun h => (exists_rat_btwn h).imp fun _ => And.imp_right coe_lt_inducedMap_iff.1,
-    fun ⟨q, hbq, hqa⟩ => hbq.trans <| by rwa [coe_lt_inducedMap_iff]⟩
+  ⟨fun h ↦ (exists_rat_btwn h).imp fun _ ↦ And.imp_right coe_lt_inducedMap_iff.1,
+    fun ⟨q, hbq, hqa⟩ ↦ hbq.trans <| by rwa [coe_lt_inducedMap_iff]⟩
 
 @[simp]
 theorem inducedMap_self (b : β) : inducedMap β β b = b :=
-  eq_of_forall_rat_lt_iff_lt fun _ => coe_lt_inducedMap_iff
+  eq_of_forall_rat_lt_iff_lt fun _ ↦ coe_lt_inducedMap_iff
 
 variable (α β)
 
 @[simp]
 theorem inducedMap_inducedMap (a : α) : inducedMap β γ (inducedMap α β a) = inducedMap α γ a :=
-  eq_of_forall_rat_lt_iff_lt fun q => by
+  eq_of_forall_rat_lt_iff_lt fun q ↦ by
     rw [coe_lt_inducedMap_iff, coe_lt_inducedMap_iff, Iff.comm, coe_lt_inducedMap_iff]
 
 theorem inducedMap_inv_self (b : β) : inducedMap γ β (inducedMap β γ b) = b := by
@@ -265,7 +265,7 @@ def inducedOrderRingHom : α →+*o β :=
         · exact this x h
         -- prove that the (Sup of rationals less than x) ^ 2 is the Sup of the set of rationals less
         -- than (x ^ 2) by showing it is an upper bound and any smaller number is not an upper bound
-      refine fun x hx => csSup_eq_of_forall_le_of_forall_lt_exists_gt (cutMap_nonempty β _) ?_ ?_
+      refine fun x hx ↦ csSup_eq_of_forall_le_of_forall_lt_exists_gt (cutMap_nonempty β _) ?_ ?_
       · exact le_inducedMap_mul_self_of_mem_cutMap hx
       · exact exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self hx)
       (two_ne_zero) (inducedMap_one _ _) with
@@ -279,7 +279,7 @@ def inducedOrderRingIso : β ≃+*o γ :=
     right_inv := inducedMap_inv_self _ _
     map_le_map_iff' := by
       dsimp
-      refine ⟨fun h => ?_, fun h => inducedMap_mono _ _ h⟩
+      refine ⟨fun h ↦ ?_, fun h ↦ inducedMap_mono _ _ h⟩
       convert inducedMap_mono γ β h <;>
       · rw [inducedOrderRingHom, AddMonoidHom.coe_fn_mkRingHomOfMulSelfOfTwoNeZero, inducedAddHom]
         dsimp
@@ -317,7 +317,7 @@ variable {R S : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R]
   [Ring S] [LinearOrder S] [IsStrictOrderedRing S]
 
 theorem ringHom_monotone (hR : ∀ r : R, 0 ≤ r → ∃ s : R, s ^ 2 = r) (f : R →+* S) : Monotone f :=
-  (monotone_iff_map_nonneg f).2 fun r h => by
+  (monotone_iff_map_nonneg f).2 fun r h ↦ by
     obtain ⟨s, rfl⟩ := hR r h; rw [map_pow]; apply sq_nonneg
 
 end Real

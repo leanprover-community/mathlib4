@@ -49,7 +49,7 @@ namespace Opposite
 /-- A triangle in `Cᵒᵖ` shall be distinguished iff it corresponds to a distinguished
 triangle in `C` via the equivalence `triangleOpEquivalence C : (Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ`. -/
 def distinguishedTriangles : Set (Triangle Cᵒᵖ) :=
-  fun T => ((triangleOpEquivalence C).inverse.obj T).unop ∈ distTriang C
+  fun T ↦ ((triangleOpEquivalence C).inverse.obj T).unop ∈ distTriang C
 
 variable {C}
 

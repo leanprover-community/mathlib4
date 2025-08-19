@@ -37,8 +37,8 @@ instance : HasFiniteBiproducts AddCommGrp :=
 @[simps! cone_pt isLimit_lift]
 def binaryProductLimitCone (G H : AddCommGrp.{u}) : Limits.LimitCone (pair G H) where
   cone := BinaryFan.mk (ofHom (AddMonoidHom.fst G H)) (ofHom (AddMonoidHom.snd G H))
-  isLimit := BinaryFan.IsLimit.mk _ (fun l r => ofHom (AddMonoidHom.prod l.hom r.hom))
-    (fun _ _ => rfl) (fun _ _ => rfl) (by cat_disch)
+  isLimit := BinaryFan.IsLimit.mk _ (fun l r ↦ ofHom (AddMonoidHom.prod l.hom r.hom))
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (by cat_disch)
 
 @[simp]
 theorem binaryProductLimitCone_cone_π_app_left (G H : AddCommGrp.{u}) :
@@ -92,11 +92,11 @@ def lift (s : Fan f) : s.pt ⟶ AddCommGrp.of (∀ j, f j) :=
 def productLimitCone : Limits.LimitCone (Discrete.functor f) where
   cone :=
     { pt := AddCommGrp.of (∀ j, f j)
-      π := Discrete.natTrans fun j => ofHom <| Pi.evalAddMonoidHom (fun j => f j) j.as }
+      π := Discrete.natTrans fun j ↦ ofHom <| Pi.evalAddMonoidHom (fun j ↦ f j) j.as }
   isLimit :=
     { lift := lift.{_, u} f
-      fac := fun _ _ => rfl
-      uniq := fun s m w => by
+      fac := fun _ _ ↦ rfl
+      uniq := fun s m w ↦ by
         ext x j
         exact CategoryTheory.congr_fun (w ⟨j⟩) x }
 
@@ -115,7 +115,7 @@ noncomputable def biproductIsoPi (f : J → AddCommGrp.{u}) :
 
 @[simp, elementwise]
 theorem biproductIsoPi_inv_comp_π (f : J → AddCommGrp.{u}) (j : J) :
-    (biproductIsoPi f).inv ≫ biproduct.π f j = ofHom (Pi.evalAddMonoidHom (fun j => f j) j) :=
+    (biproductIsoPi f).inv ≫ biproduct.π f j = ofHom (Pi.evalAddMonoidHom (fun j ↦ f j) j) :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ (Discrete.mk j)
 
 end AddCommGrp

@@ -102,7 +102,7 @@ theorem norm_half_period_eq : ‖(↑(p / 2) : AddCircle p)‖ = |p| / 2 := by
     one_mul, (by linarith : p / 2 - p = -(p / 2)), abs_neg, abs_div, abs_two]
 
 theorem norm_coe_eq_abs_iff {x : ℝ} (hp : p ≠ 0) : ‖(x : AddCircle p)‖ = |x| ↔ |x| ≤ |p| / 2 := by
-  refine ⟨fun hx => hx ▸ norm_le_half_period p hp, fun hx => ?_⟩
+  refine ⟨fun hx ↦ hx ▸ norm_le_half_period p hp, fun hx ↦ ?_⟩
   suffices ∀ p : ℝ, 0 < p → |x| ≤ p / 2 → ‖(x : AddCircle p)‖ = |x| by
     rcases hp.symm.lt_or_gt with (hp | hp)
     · rw [abs_eq_self.mpr hp.le] at hx
@@ -128,7 +128,7 @@ open Metric
 
 theorem closedBall_eq_univ_of_half_period_le (hp : p ≠ 0) (x : AddCircle p) {ε : ℝ}
     (hε : |p| / 2 ≤ ε) : closedBall x ε = univ :=
-  eq_univ_iff_forall.mpr fun x => by
+  eq_univ_iff_forall.mpr fun x ↦ by
     simpa only [mem_closedBall, dist_eq_norm] using (norm_le_half_period p hp).trans hε
 
 @[simp]
@@ -144,7 +144,7 @@ theorem coe_real_preimage_closedBall_eq_iUnion (x ε : ℝ) :
   ext y
   simp only [dist_eq_norm, mem_preimage, mem_closedBall, zsmul_eq_mul, mem_iUnion, Real.norm_eq_abs,
     ← QuotientAddGroup.mk_sub, norm_eq, ← sub_sub]
-  refine ⟨fun h => ⟨round (p⁻¹ * (y - x)), h⟩, ?_⟩
+  refine ⟨fun h ↦ ⟨round (p⁻¹ * (y - x)), h⟩, ?_⟩
   rintro ⟨n, hn⟩
   rw [← mul_le_mul_left (abs_pos.mpr <| inv_ne_zero hp), ← abs_mul, mul_sub, mul_comm _ p,
     inv_mul_cancel_left₀ hp] at hn ⊢

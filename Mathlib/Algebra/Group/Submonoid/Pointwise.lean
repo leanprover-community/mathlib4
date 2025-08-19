@@ -71,7 +71,7 @@ theorem coe_mul_self_eq (s : Submonoid M) : (s : Set M) * s = s := by
 
 @[to_additive]
 theorem closure_mul_le (S T : Set M) : closure (S * T) ≤ closure S ⊔ closure T :=
-  sInf_le fun _x ⟨_s, hs, _t, ht, hx⟩ => hx ▸
+  sInf_le fun _x ⟨_s, hs, _t, ht, hx⟩ ↦ hx ▸
     (closure S ⊔ closure T).mul_mem (SetLike.le_def.mp le_sup_left <| subset_closure hs)
       (SetLike.le_def.mp le_sup_right <| subset_closure ht)
 
@@ -93,7 +93,7 @@ lemma closure_pow {n : ℕ} (hs : 1 ∈ s) (hn : n ≠ 0) : closure (s ^ n) = cl
 @[to_additive]
 theorem sup_eq_closure_mul (H K : Submonoid M) : H ⊔ K = closure ((H : Set M) * (K : Set M)) :=
   le_antisymm
-    (sup_le (fun h hh => subset_closure ⟨h, hh, 1, K.one_mem, mul_one h⟩) fun k hk =>
+    (sup_le (fun h hh ↦ subset_closure ⟨h, hh, 1, K.one_mem, mul_one h⟩) fun k hk ↦
       subset_closure ⟨1, H.one_mem, k, hk, one_mul k⟩)
     ((closure_mul_le _ _).trans <| by rw [closure_eq, closure_eq])
 
@@ -122,7 +122,7 @@ variable [Group G]
 protected def inv : Inv (Submonoid G) where
   inv S :=
     { carrier := (S : Set G)⁻¹
-      mul_mem' := fun ha hb => by rw [mem_inv, mul_inv_rev]; exact mul_mem hb ha
+      mul_mem' := fun ha hb ↦ by rw [mem_inv, mul_inv_rev]; exact mul_mem hb ha
       one_mem' := mem_inv.2 <| by rw [inv_one]; exact S.one_mem' }
 
 scoped[Pointwise] attribute [instance] Submonoid.inv AddSubmonoid.neg
@@ -138,7 +138,7 @@ theorem mem_inv {g : G} {S : Submonoid G} : g ∈ S⁻¹ ↔ g⁻¹ ∈ S :=
 /-- Inversion is involutive on submonoids. -/
 @[to_additive /-- Inversion is involutive on additive submonoids. -/]
 def involutiveInv : InvolutiveInv (Submonoid G) :=
-  SetLike.coe_injective.involutiveInv _ fun _ => rfl
+  SetLike.coe_injective.involutiveInv _ fun _ ↦ rfl
 
 scoped[Pointwise] attribute [instance] Submonoid.involutiveInv AddSubmonoid.involutiveNeg
 
@@ -211,7 +211,7 @@ protected def pointwiseMulAction : MulAction α (Submonoid M) where
     change S.map _ = S
     simpa only [map_one] using S.map_id
   mul_smul _ _ S :=
-    (congr_arg (fun f : Monoid.End M => S.map f) (MonoidHom.map_mul _ _ _)).trans
+    (congr_arg (fun f : Monoid.End M ↦ S.map f) (MonoidHom.map_mul _ _ _)).trans
       (S.map_map _ _).symm
 
 scoped[Pointwise] attribute [instance] Submonoid.pointwiseMulAction
@@ -224,7 +224,7 @@ theorem smul_mem_pointwise_smul (m : M) (a : α) (S : Submonoid M) : m ∈ S →
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set M))
 
 instance : CovariantClass α (Submonoid M) HSMul.hSMul LE.le :=
-  ⟨fun _ _ => image_mono⟩
+  ⟨fun _ _ ↦ image_mono⟩
 
 theorem mem_smul_pointwise_iff_exists (m : M) (a : α) (S : Submonoid M) :
     m ∈ a • S ↔ ∃ s : M, s ∈ S ∧ a • s = m :=
@@ -242,7 +242,7 @@ theorem smul_closure (a : α) (s : Set M) : a • closure s = closure (a • s) 
 
 lemma pointwise_isCentralScalar [MulDistribMulAction αᵐᵒᵖ M] [IsCentralScalar α M] :
     IsCentralScalar α (Submonoid M) :=
-  ⟨fun _ S => (congr_arg fun f : Monoid.End M => S.map f) <| MonoidHom.ext <| op_smul_eq_smul _⟩
+  ⟨fun _ S ↦ (congr_arg fun f : Monoid.End M ↦ S.map f) <| MonoidHom.ext <| op_smul_eq_smul _⟩
 
 scoped[Pointwise] attribute [instance] Submonoid.pointwise_isCentralScalar
 
@@ -285,6 +285,6 @@ theorem submonoid_closure (hpos : ∀ x : α, x ∈ s → 1 ≤ x) (h : s.IsPWO)
     IsPWO (Submonoid.closure s : Set α) := by
   rw [Submonoid.closure_eq_image_prod]
   refine (h.partiallyWellOrderedOn_sublistForall₂ (· ≤ ·)).image_of_monotone_on ?_
-  exact fun l1 _ l2 hl2 h12 => h12.prod_le_prod' fun x hx => hpos x <| hl2 x hx
+  exact fun l1 _ l2 hl2 h12 ↦ h12.prod_le_prod' fun x hx ↦ hpos x <| hl2 x hx
 
 end Set.IsPWO

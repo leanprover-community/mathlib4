@@ -67,8 +67,8 @@ structure MulChar extends MonoidHom R R' where
   map_nonunit' : ∀ a : R, ¬IsUnit a → toFun a = 0
 
 instance MulChar.instFunLike : FunLike (MulChar R R') R R' :=
-  ⟨fun χ => χ.toFun,
-    fun χ₀ χ₁ h => by cases χ₀; cases χ₁; congr; apply MonoidHom.ext (fun _ => congr_fun h _)⟩
+  ⟨fun χ ↦ χ.toFun,
+    fun χ₀ χ₁ h ↦ by cases χ₀; cases χ₁; congr; apply MonoidHom.ext (fun _ ↦ congr_fun h _)⟩
 
 /-- This is the corresponding extension of `MonoidHomClass`. -/
 class MulCharClass (F : Type*) (R R' : outParam Type*) [CommMonoid R]
@@ -96,7 +96,7 @@ variable (R R') in
 the value `1` on units. -/
 @[simps]
 noncomputable def trivial : MulChar R R' where
-  toFun := by classical exact fun x => if IsUnit x then 1 else 0
+  toFun := by classical exact fun x ↦ if IsUnit x then 1 else 0
   map_nonunit' := by
     intro a ha
     simp only [ha, if_false]
@@ -153,7 +153,7 @@ theorem coe_toUnitHom (χ : MulChar R R') (a : Rˣ) : ↑(χ.toUnitHom a) = χ a
 
 /-- Turn a homomorphism between unit groups into a `MulChar`. -/
 noncomputable def ofUnitHom (f : Rˣ →* R'ˣ) : MulChar R R' where
-  toFun := by classical exact fun x => if hx : IsUnit x then f hx.unit else 0
+  toFun := by classical exact fun x ↦ if hx : IsUnit x then f hx.unit else 0
   map_one' := by
     have h1 : (isUnit_one.unit : Rˣ) = 1 := Units.ext rfl
     simp only [h1, dif_pos, Units.val_eq_one, map_one, isUnit_one]
@@ -253,7 +253,7 @@ lemma one_apply {x : R} (hx : IsUnit x) : (1 : MulChar R R') x = 1 := one_apply_
 def mul (χ χ' : MulChar R R') : MulChar R R' :=
   { χ.toMonoidHom * χ'.toMonoidHom with
     toFun := χ * χ'
-    map_nonunit' := fun a ha => by simp only [map_nonunit χ ha, zero_mul, Pi.mul_apply] }
+    map_nonunit' := fun a ha ↦ by simp only [map_nonunit χ ha, zero_mul, Pi.mul_apply] }
 
 instance hasMul : Mul (MulChar R R') :=
   ⟨mul⟩
@@ -276,8 +276,8 @@ protected theorem mul_one (χ : MulChar R R') : χ * 1 = χ := by
 /-- The inverse of a multiplicative character. We define it as `inverse ∘ χ`. -/
 noncomputable def inv (χ : MulChar R R') : MulChar R R' :=
   { MonoidWithZero.inverse.toMonoidHom.comp χ.toMonoidHom with
-    toFun := fun a => MonoidWithZero.inverse (χ a)
-    map_nonunit' := fun a ha => by simp [map_nonunit _ ha] }
+    toFun := fun a ↦ MonoidWithZero.inverse (χ a)
+    map_nonunit' := fun a ha ↦ by simp [map_nonunit _ ha] }
 
 noncomputable instance hasInv : Inv (MulChar R R') :=
   ⟨inv⟩
@@ -413,8 +413,8 @@ theorem IsQuadratic.eq_of_eq_coe {χ : MulChar R ℤ} (hχ : IsQuadratic χ) {χ
 @[simps]
 def ringHomComp (χ : MulChar R R') (f : R' →+* R'') : MulChar R R'' :=
   { f.toMonoidHom.comp χ.toMonoidHom with
-    toFun := fun a => f (χ a)
-    map_nonunit' := fun a ha => by simp only [map_nonunit χ ha, map_zero] }
+    toFun := fun a ↦ f (χ a)
+    map_nonunit' := fun a ha ↦ by simp only [map_nonunit χ ha, map_zero] }
 
 @[simp]
 lemma ringHomComp_one (f : R' →+* R'') : (1 : MulChar R R').ringHomComp f = 1 := by
@@ -559,7 +559,7 @@ theorem sum_one_eq_card_units [DecidableEq R] :
     (∑ a, (1 : MulChar R R') a) = Fintype.card Rˣ := by
   calc
     (∑ a, (1 : MulChar R R') a) = ∑ a : R, if IsUnit a then 1 else 0 :=
-      Finset.sum_congr rfl fun a _ => ?_
+      Finset.sum_congr rfl fun a _ ↦ ?_
     _ = ((Finset.univ : Finset R).filter IsUnit).card := Finset.sum_boole _ _
     _ = (Finset.univ.map ⟨((↑) : Rˣ → R), Units.val_injective⟩).card := ?_
     _ = Fintype.card Rˣ := congr_arg _ (Finset.card_map _)

@@ -53,7 +53,7 @@ protected abbrev Localization.AtPrime :=
 namespace IsLocalization
 
 theorem AtPrime.nontrivial [IsLocalization.AtPrime S P] : Nontrivial S :=
-  nontrivial_of_ne (0 : S) 1 fun hze => by
+  nontrivial_of_ne (0 : S) 1 fun hze ↦ by
     rw [← (algebraMap R S).map_one, ← (algebraMap R S).map_zero] at hze
     obtain ⟨t, ht⟩ := (eq_iff_exists P.primeCompl S).1 hze
     have htz : (t : R) = 0 := by simpa using ht.symm
@@ -68,8 +68,8 @@ theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
     (by
       intro x y hx hy hu
       obtain ⟨z, hxyz⟩ := isUnit_iff_exists_inv.1 hu
-      have : ∀ {r : R} {s : P.primeCompl}, mk' S r s ∈ nonunits S → r ∈ P := fun {r s} =>
-        not_imp_comm.1 fun nr => isUnit_iff_exists_inv.2 ⟨mk' S ↑s (⟨r, nr⟩ : P.primeCompl),
+      have : ∀ {r : R} {s : P.primeCompl}, mk' S r s ∈ nonunits S → r ∈ P := fun {r s} ↦
+        not_imp_comm.1 fun nr ↦ isUnit_iff_exists_inv.2 ⟨mk' S ↑s (⟨r, nr⟩ : P.primeCompl),
           mk'_mul_mk'_eq_one' _ _ <| show r ∈ P.primeCompl from nr⟩
       rcases mk'_surjective P.primeCompl x with ⟨rx, sx, hrx⟩
       rcases mk'_surjective P.primeCompl y with ⟨ry, sy, hry⟩
@@ -133,10 +133,10 @@ order-preserving bijection with the interval (-∞, I] in the prime spectrum of 
     ⟨⟨fun p ↦ ⟨⟨p, p.2.1⟩, p.2.2⟩, fun p ↦ ⟨p.1.1, p.1.2, p.2⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
 
 theorem isUnit_to_map_iff (x : R) : IsUnit ((algebraMap R S) x) ↔ x ∈ I.primeCompl :=
-  ⟨fun h hx =>
+  ⟨fun h hx ↦
     (isPrime_of_isPrime_disjoint I.primeCompl S I hI disjoint_compl_left).ne_top <|
       (Ideal.map (algebraMap R S) I).eq_top_of_isUnit_mem (Ideal.mem_map_of_mem _ hx) h,
-    fun h => map_units S ⟨x, h⟩⟩
+    fun h ↦ map_units S ⟨x, h⟩⟩
 
 -- Can't use typeclasses to infer the `IsLocalRing` instance, so use an `optParam` instead
 -- (since `IsLocalRing` is a `Prop`, there should be no unification issues.)
@@ -148,10 +148,10 @@ theorem to_map_mem_maximal_iff (x : R) (h : IsLocalRing S := isLocalRing S I) :
 
 theorem comap_maximalIdeal (h : IsLocalRing S := isLocalRing S I) :
     (IsLocalRing.maximalIdeal S).comap (algebraMap R S) = I :=
-  Ideal.ext fun x => by simpa only [Ideal.mem_comap] using to_map_mem_maximal_iff _ I x
+  Ideal.ext fun x ↦ by simpa only [Ideal.mem_comap] using to_map_mem_maximal_iff _ I x
 
 theorem isUnit_mk'_iff (x : R) (y : I.primeCompl) : IsUnit (mk' S x y) ↔ x ∈ I.primeCompl :=
-  ⟨fun h hx => mk'_mem_iff.mpr ((to_map_mem_maximal_iff S I x).mpr hx) h, fun h =>
+  ⟨fun h hx ↦ mk'_mem_iff.mpr ((to_map_mem_maximal_iff S I x).mpr hx) h, fun h ↦
     isUnit_iff_exists_inv.mpr ⟨mk' S ↑y ⟨x, h⟩, mk'_mul_mk'_eq_one ⟨x, h⟩ y⟩⟩
 
 theorem mk'_mem_maximal_iff (x : R) (y : I.primeCompl) (h : IsLocalRing S := isLocalRing S I) :
@@ -199,10 +199,10 @@ lemma AtPrime.eq_maximalIdeal_iff_comap_eq {J : Ideal (Localization.AtPrime I)} 
 
 theorem le_comap_primeCompl_iff {J : Ideal P} [J.IsPrime] {f : R →+* P} :
     I.primeCompl ≤ J.primeCompl.comap f ↔ J.comap f ≤ I :=
-  ⟨fun h x hx => by
+  ⟨fun h x hx ↦ by
     contrapose! hx
     exact h hx,
-   fun h _ hx hfxJ => hx (h hfxJ)⟩
+   fun h _ hx hfxJ ↦ hx (h hfxJ)⟩
 
 variable (I)
 
@@ -230,11 +230,11 @@ theorem localRingHom_mk' (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.
 @[instance]
 theorem isLocalHom_localRingHom (J : Ideal P) [hJ : J.IsPrime] (f : R →+* P)
     (hIJ : I = J.comap f) : IsLocalHom (localRingHom I J f hIJ) :=
-  IsLocalHom.mk fun x hx => by
+  IsLocalHom.mk fun x hx ↦ by
     rcases IsLocalization.mk'_surjective I.primeCompl x with ⟨r, s, rfl⟩
     rw [localRingHom_mk'] at hx
     rw [AtPrime.isUnit_mk'_iff] at hx ⊢
-    exact fun hr => hx ((SetLike.ext_iff.mp hIJ r).mp hr)
+    exact fun hr ↦ hx ((SetLike.ext_iff.mp hIJ r).mp hr)
 
 theorem localRingHom_unique (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.comap f)
     {j : Localization.AtPrime I →+* Localization.AtPrime J}
@@ -243,14 +243,14 @@ theorem localRingHom_unique (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I =
 
 @[simp]
 theorem localRingHom_id : localRingHom I I (RingHom.id R) (Ideal.comap_id I).symm = RingHom.id _ :=
-  localRingHom_unique _ _ _ _ fun _ => rfl
+  localRingHom_unique _ _ _ _ fun _ ↦ rfl
 
 -- Porting note: simplifier won't pick up this lemma, so deleted @[simp]
 theorem localRingHom_comp {S : Type*} [CommSemiring S] (J : Ideal S) [hJ : J.IsPrime] (K : Ideal P)
     [hK : K.IsPrime] (f : R →+* S) (hIJ : I = J.comap f) (g : S →+* P) (hJK : J = K.comap g) :
     localRingHom I K (g.comp f) (by rw [hIJ, hJK, Ideal.comap_comap f g]) =
       (localRingHom J K g hJK).comp (localRingHom I J f hIJ) :=
-  localRingHom_unique _ _ _ _ fun r => by
+  localRingHom_unique _ _ _ _ fun r ↦ by
     simp only [Function.comp_apply, RingHom.coe_comp, localRingHom_to_map]
 
 namespace AtPrime

@@ -29,7 +29,7 @@ Specifically, note that if you have `α = {1,2}`, and `μ {1} = 2`, `μ {2} = 0`
 `ν {2} = 2`, `ν {1} = 0`, then `(μ - ν) {1, 2} = 2`. However, if `μ ≤ ν`, and
 `ν univ ≠ ∞`, then `(μ - ν) + ν = μ`. -/
 noncomputable instance instSub {α : Type*} [MeasurableSpace α] : Sub (Measure α) :=
-  ⟨fun μ ν => sInf { τ | μ ≤ τ + ν }⟩
+  ⟨fun μ ν ↦ sInf { τ | μ ≤ τ + ν }⟩
 
 variable {α : Type*} {m : MeasurableSpace α} {μ ν : Measure α} {s : Set α}
 
@@ -69,7 +69,7 @@ theorem sub_apply [IsFiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ �
     (μ - ν) s = μ s - ν s := by
   -- We begin by defining `measure_sub`, which will be equal to `(μ - ν)`.
   let measure_sub : Measure α := MeasureTheory.Measure.ofMeasurable
-    (fun (t : Set α) (_ : MeasurableSet t) => μ t - ν t) (by simp)
+    (fun (t : Set α) (_ : MeasurableSet t) ↦ μ t - ν t) (by simp)
     (fun g h_meas h_disj ↦ by
       simp only [measure_iUnion h_disj h_meas]
       rw [ENNReal.tsum_sub _ (h₂ <| g ·)]
@@ -130,7 +130,7 @@ theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
     · ext1 t h_meas_t
       simp [restrict_apply h_meas_t, restrict_apply (h_meas_t.inter h_meas_s), inter_assoc]
   · refine sInf_le_sInf_of_isCoinitialFor ?_
-    refine forall_mem_image.2 fun t h_t_in => ⟨t.restrict s, ?_, le_rfl⟩
+    refine forall_mem_image.2 fun t h_t_in ↦ ⟨t.restrict s, ?_, le_rfl⟩
     rw [Set.mem_setOf_eq, ← restrict_add]
     exact restrict_mono Subset.rfl h_t_in
 

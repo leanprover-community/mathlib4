@@ -13,7 +13,7 @@ import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 This file defines a type copy of `E →L[𝕜] F` (where `E` and `F` are topological vector spaces)
 which is endowed with the weak operator topology (WOT) rather than the topology of bounded
 convergence (which is the usual one induced by the operator norm in the normed setting).
-The WOT is defined as the coarsest topology such that the functional `fun A => y (A x)` is
+The WOT is defined as the coarsest topology such that the functional `fun A ↦ y (A x)` is
 continuous for any `x : E` and `y : F →L[𝕜] 𝕜`. Equivalently, a function `f` tends to
 `A : E →WOT[𝕜] F` along filter `l` iff `y (f a x)` tends to `y (A x)` along the same filter.
 
@@ -169,19 +169,19 @@ variable [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
 
 variable (𝕜) (E) (F) in
 /-- The function that induces the topology on `E →WOT[𝕜] F`, namely the function that takes
-an `A` and maps it to `fun ⟨x, y⟩ => y (A x)` in `E × F⋆ → 𝕜`, bundled as a linear map to make
+an `A` and maps it to `fun ⟨x, y⟩ ↦ y (A x)` in `E × F⋆ → 𝕜`, bundled as a linear map to make
 it easier to prove that it is a TVS. -/
 def inducingFn : (E →WOT[𝕜] F) →ₗ[𝕜] (E × F⋆ → 𝕜) where
-  toFun := fun A ⟨x, y⟩ => y (A x)
-  map_add' := fun x y => by ext; simp
-  map_smul' := fun x y => by ext; simp
+  toFun := fun A ⟨x, y⟩ ↦ y (A x)
+  map_add' := fun x y ↦ by ext; simp
+  map_smul' := fun x y ↦ by ext; simp
 
 @[simp]
 lemma inducingFn_apply {f : E →WOT[𝕜] F} {x : E} {y : F⋆} :
     inducingFn 𝕜 E F f (x, y) = y (f x) :=
   rfl
 
-/-- The weak operator topology is the coarsest topology such that `fun A => y (A x)` is
+/-- The weak operator topology is the coarsest topology such that `fun A ↦ y (A x)` is
 continuous for all `x, y`. -/
 instance instTopologicalSpace : TopologicalSpace (E →WOT[𝕜] F) :=
   .induced (inducingFn _ _ _) Pi.topologicalSpace
@@ -190,18 +190,18 @@ instance instTopologicalSpace : TopologicalSpace (E →WOT[𝕜] F) :=
 lemma continuous_inducingFn : Continuous (inducingFn 𝕜 E F) :=
   continuous_induced_dom
 
-lemma continuous_dual_apply (x : E) (y : F⋆) : Continuous fun (A : E →WOT[𝕜] F) => y (A x) := by
+lemma continuous_dual_apply (x : E) (y : F⋆) : Continuous fun (A : E →WOT[𝕜] F) ↦ y (A x) := by
   refine (continuous_pi_iff.mp continuous_inducingFn) ⟨x, y⟩
 
 @[fun_prop]
 lemma continuous_of_dual_apply_continuous {α : Type*} [TopologicalSpace α] {g : α → E →WOT[𝕜] F}
-    (h : ∀ x (y : F⋆), Continuous fun a => y (g a x)) : Continuous g :=
-  continuous_induced_rng.2 (continuous_pi_iff.mpr fun p => h p.1 p.2)
+    (h : ∀ x (y : F⋆), Continuous fun a ↦ y (g a x)) : Continuous g :=
+  continuous_induced_rng.2 (continuous_pi_iff.mpr fun p ↦ h p.1 p.2)
 
 lemma isInducing_inducingFn : IsInducing (inducingFn 𝕜 E F) := ⟨rfl⟩
 
 lemma isEmbedding_inducingFn [SeparatingDual 𝕜 F] : IsEmbedding (inducingFn 𝕜 E F) := by
-  refine Function.Injective.isEmbedding_induced fun A B hAB => ?_
+  refine Function.Injective.isEmbedding_induced fun A B hAB ↦ ?_
   rw [ContinuousLinearMapWOT.ext_dual_iff]
   simpa [funext_iff] using hAB
 
@@ -210,11 +210,11 @@ open Filter in
 `A : E →WOT[𝕜] F` along filter `l` iff `y (f a x)` tends to `y (A x)` along the same filter. -/
 lemma tendsto_iff_forall_dual_apply_tendsto {α : Type*} {l : Filter α} {f : α → E →WOT[𝕜] F}
     {A : E →WOT[𝕜] F} :
-    Tendsto f l (𝓝 A) ↔ ∀ x (y : F⋆), Tendsto (fun a => y (f a x)) l (𝓝 (y (A x))) := by
+    Tendsto f l (𝓝 A) ↔ ∀ x (y : F⋆), Tendsto (fun a ↦ y (f a x)) l (𝓝 (y (A x))) := by
   simp [isInducing_inducingFn.tendsto_nhds_iff, tendsto_pi_nhds]
 
 lemma le_nhds_iff_forall_dual_apply_le_nhds {l : Filter (E →WOT[𝕜] F)} {A : E →WOT[𝕜] F} :
-    l ≤ 𝓝 A ↔ ∀ x (y : F⋆), l.map (fun T => y (T x)) ≤ 𝓝 (y (A x)) :=
+    l ≤ 𝓝 A ↔ ∀ x (y : F⋆), l.map (fun T ↦ y (T x)) ≤ 𝓝 (y (A x)) :=
   tendsto_iff_forall_dual_apply_tendsto (f := id)
 
 instance instT3Space [SeparatingDual 𝕜 F] : T3Space (E →WOT[𝕜] F) := isEmbedding_inducingFn.t3Space
@@ -255,7 +255,7 @@ variable (𝕜) (E) (F) in
 /-- The family of seminorms that induce the weak operator topology, namely `‖y (A x)‖` for
 all `x` and `y`. -/
 def seminormFamily : SeminormFamily 𝕜 (E →WOT[𝕜] F) (E × F⋆) :=
-  fun ⟨x, y⟩ => seminorm x y
+  fun ⟨x, y⟩ ↦ seminorm x y
 
 lemma withSeminorms : WithSeminorms (seminormFamily 𝕜 E F) :=
   let e : E × F⋆ ≃ (Σ _ : E × F⋆, Fin 1) := .symm <| .sigmaUnique _ _

@@ -24,7 +24,7 @@ particularly
 
 ```
 theorem suffixLevenshtein_eq_tails_map :
-    (suffixLevenshtein C xs ys).1 = xs.tails.map fun xs' => levenshtein C xs' ys := ...
+    (suffixLevenshtein C xs ys).1 = xs.tails.map fun xs' ↦ levenshtein C xs' ys := ...
 ```
 
 and
@@ -80,7 +80,7 @@ def stringLengthCost : Cost String String ℕ := weightCost String.length
 Cost structure for strings, where cost is the log base 2 length of the token.
 -/
 @[simps!]
-def stringLogLengthCost : Cost String String ℕ := weightCost fun s => Nat.log2 (s.length + 1)
+def stringLogLengthCost : Cost String String ℕ := weightCost fun s ↦ Nat.log2 (s.length + 1)
 
 variable (C : Cost α β δ)
 
@@ -101,7 +101,7 @@ def impl
   let ⟨ds, w⟩ := d
   xs.zip (ds.zip ds.tail) |>.foldr
     (init := ⟨[C.insert y + ds.getLast (List.length_pos_iff.mp w)], by simp⟩)
-    (fun ⟨x, d₀, d₁⟩ ⟨r, w⟩ =>
+    (fun ⟨x, d₀, d₁⟩ ⟨r, w⟩ ↦
       ⟨min (C.delete x + r[0]) (min (C.insert y + d₀) (C.substitute x y + d₁)) :: r, by simp⟩)
 
 variable {C}
@@ -158,7 +158,7 @@ geodesic distance on the edit graph.
 def suffixLevenshtein (xs : List α) (ys : List β) : {r : List δ // 0 < r.length} :=
   ys.foldr
     (impl C xs)
-    (xs.foldr (init := ⟨[0], by simp⟩) (fun a ⟨r, w⟩ => ⟨(C.delete a + r[0]) :: r, by simp⟩))
+    (xs.foldr (init := ⟨[0], by simp⟩) (fun a ⟨r, w⟩ ↦ ⟨(C.delete a + r[0]) :: r, by simp⟩))
 
 variable {C}
 
@@ -264,7 +264,7 @@ theorem suffixLevenshtein_cons_cons_fst_get_zero
   rfl
 
 theorem suffixLevenshtein_eq_tails_map (xs ys) :
-    (suffixLevenshtein C xs ys).1 = xs.tails.map fun xs' => levenshtein C xs' ys := by
+    (suffixLevenshtein C xs ys).1 = xs.tails.map fun xs' ↦ levenshtein C xs' ys := by
   induction xs with
   | nil =>
     simp only [suffixLevenshtein_nil', List.tails, List.map_cons, List.map]

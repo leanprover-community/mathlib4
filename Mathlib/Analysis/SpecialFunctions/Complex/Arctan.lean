@@ -120,7 +120,7 @@ theorem hasSum_arctan {z : ℂ} (hz : ‖z‖ < 1) :
   replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
   dsimp [Function.comp_def] at this
   simp_rw [← mul_comm 2 _] at this
-  refine this.prod_fiberwise fun k => ?_
+  refine this.prod_fiberwise fun k ↦ ?_
   dsimp only
   convert hasSum_fintype (_ : Fin 2 → ℂ) using 1
   rw [Fin.sum_univ_two, Fin.val_zero, Fin.val_one, Odd.neg_one_pow (n := 2 * k + 0 + 1) (by simp),
@@ -135,5 +135,5 @@ end Complex
 
 /-- The power series expansion of `Real.arctan`, valid on `-1 < x < 1`. -/
 theorem Real.hasSum_arctan {x : ℝ} (hx : ‖x‖ < 1) :
-    HasSum (fun n : ℕ => (-1) ^ n * x ^ (2 * n + 1) / ↑(2 * n + 1)) (arctan x) :=
+    HasSum (fun n : ℕ ↦ (-1) ^ n * x ^ (2 * n + 1) / ↑(2 * n + 1)) (arctan x) :=
   mod_cast Complex.hasSum_arctan (z := x) (by simpa)

@@ -73,13 +73,13 @@ theorem conj_eqToHom_iff_heq' {C} [Category C] {W X Y Z : C}
 
 theorem comp_eqToHom_iff {X Y Y' : C} (p : Y = Y') (f : X ⟶ Y) (g : X ⟶ Y') :
     f ≫ eqToHom p = g ↔ f = g ≫ eqToHom p.symm :=
-  { mp := fun h => h ▸ by simp
-    mpr := fun h => by simp [eq_whisker h (eqToHom p)] }
+  { mp := fun h ↦ h ▸ by simp
+    mpr := fun h ↦ by simp [eq_whisker h (eqToHom p)] }
 
 theorem eqToHom_comp_iff {X X' Y : C} (p : X = X') (f : X ⟶ Y) (g : X' ⟶ Y) :
     eqToHom p ≫ g = f ↔ g = eqToHom p.symm ≫ f :=
-  { mp := fun h => h ▸ by simp
-    mpr := fun h => h ▸ by simp }
+  { mp := fun h ↦ h ▸ by simp
+    mpr := fun h ↦ h ▸ by simp }
 
 theorem eqToHom_comp_heq {C} [Category C] {W X Y : C}
     (f : Y ⟶ X) (h : W = Y) : eqToHom h ≫ f ≍ f := by
@@ -142,7 +142,7 @@ theorem eqToHom_iso_inv_naturality {f g : β → C} (z : ∀ b, f b ≅ g b) {j 
 /-- Reducible form of congrArg_mpr_hom_left -/
 @[simp]
 theorem congrArg_cast_hom_left {X Y Z : C} (p : X = Y) (q : Y ⟶ Z) :
-    cast (congrArg (fun W : C => W ⟶ Z) p.symm) q = eqToHom p ≫ q := by
+    cast (congrArg (fun W : C ↦ W ⟶ Z) p.symm) q = eqToHom p ≫ q := by
   cases p
   simp
 
@@ -154,14 +154,14 @@ It may be advisable to introduce any necessary `eqToHom` morphisms manually,
 rather than relying on this lemma firing.
 -/
 theorem congrArg_mpr_hom_left {X Y Z : C} (p : X = Y) (q : Y ⟶ Z) :
-    (congrArg (fun W : C => W ⟶ Z) p).mpr q = eqToHom p ≫ q := by
+    (congrArg (fun W : C ↦ W ⟶ Z) p).mpr q = eqToHom p ≫ q := by
   cases p
   simp
 
 /-- Reducible form of `congrArg_mpr_hom_right` -/
 @[simp]
 theorem congrArg_cast_hom_right {X Y Z : C} (p : X ⟶ Y) (q : Z = Y) :
-    cast (congrArg (fun W : C => X ⟶ W) q.symm) p = p ≫ eqToHom q.symm := by
+    cast (congrArg (fun W : C ↦ X ⟶ W) q.symm) p = p ≫ eqToHom q.symm := by
   cases q
   simp
 
@@ -173,7 +173,7 @@ It may be advisable to introduce any necessary `eqToHom` morphisms manually,
 rather than relying on this lemma firing.
 -/
 theorem congrArg_mpr_hom_right {X Y Z : C} (p : X ⟶ Y) (q : Z = Y) :
-    (congrArg (fun W : C => X ⟶ W) q).mpr p = p ≫ eqToHom q.symm := by
+    (congrArg (fun W : C ↦ X ⟶ W) q).mpr p = p ≫ eqToHom q.symm := by
   cases q
   simp
 
@@ -240,14 +240,14 @@ theorem ext {F G : C ⥤ D} (h_obj : ∀ X, F.obj X = G.obj X)
 
 lemma ext_of_iso {F G : C ⥤ D} (e : F ≅ G) (hobj : ∀ X, F.obj X = G.obj X)
     (happ : ∀ X, e.hom.app X = eqToHom (hobj X) := by cat_disch) : F = G :=
-  Functor.ext hobj (fun X Y f => by
+  Functor.ext hobj (fun X Y f ↦ by
     rw [← cancel_mono (e.hom.app Y), e.hom.naturality f, happ, happ, Category.assoc,
     Category.assoc, eqToHom_trans, eqToHom_refl, Category.comp_id])
 
 /-- Proving equality between functors using heterogeneous equality. -/
 theorem hext {F G : C ⥤ D} (h_obj : ∀ X, F.obj X = G.obj X)
     (h_map : ∀ (X Y) (f : X ⟶ Y), F.map f ≍ G.map f) : F = G :=
-  Functor.ext h_obj fun _ _ f => (conj_eqToHom_iff_heq _ _ (h_obj _) (h_obj _)).2 <| h_map _ _ f
+  Functor.ext h_obj fun _ _ f ↦ (conj_eqToHom_iff_heq _ _ (h_obj _) (h_obj _)).2 <| h_map _ _ f
 
 -- Using equalities between functors.
 theorem congr_obj {F G : C ⥤ D} (h : F = G) (X) : F.obj X = G.obj X := by rw [h]
@@ -278,7 +278,7 @@ theorem map_comp_heq (hx : F.obj X = G.obj X) (hy : F.obj Y = G.obj Y) (hz : F.o
 theorem map_comp_heq' (hobj : ∀ X : C, F.obj X = G.obj X)
     (hmap : ∀ {X Y} (f : X ⟶ Y), F.map f ≍ G.map f) :
     F.map (f ≫ g) ≍ G.map (f ≫ g) := by
-  rw [Functor.hext hobj fun _ _ => hmap]
+  rw [Functor.hext hobj fun _ _ ↦ hmap]
 
 theorem precomp_map_heq (H : E ⥤ C) (hmap : ∀ {X Y} (f : X ⟶ Y), F.map f ≍ G.map f) {X Y : E}
     (f : X ⟶ Y) : (H ⋙ F).map f ≍ (H ⋙ G).map f :=
@@ -291,7 +291,7 @@ theorem postcomp_map_heq (H : D ⥤ E) (hx : F.obj X = G.obj X) (hy : F.obj Y = 
 
 theorem postcomp_map_heq' (H : D ⥤ E) (hobj : ∀ X : C, F.obj X = G.obj X)
     (hmap : ∀ {X Y} (f : X ⟶ Y), F.map f ≍ G.map f) :
-    (F ⋙ H).map f ≍ (G ⋙ H).map f := by rw [Functor.hext hobj fun _ _ => hmap]
+    (F ⋙ H).map f ≍ (G ⋙ H).map f := by rw [Functor.hext hobj fun _ _ ↦ hmap]
 
 theorem hcongr_hom {F G : C ⥤ D} (h : F = G) {X Y} (f : X ⟶ Y) : F.map f ≍ G.map f := by
   rw [h]

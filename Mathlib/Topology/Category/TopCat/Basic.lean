@@ -63,7 +63,7 @@ instance : Category TopCat where
   id X := ⟨ContinuousMap.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-instance : ConcreteCategory.{u} TopCat (fun X Y => C(X, Y)) where
+instance : ConcreteCategory.{u} TopCat (fun X Y ↦ C(X, Y)) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
 
@@ -232,7 +232,7 @@ theorem isOpenEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶
   · intro h
     convert h.comp (TopCat.homeoOfIso (asIso f).symm).isOpenEmbedding
     exact congr_arg (DFunLike.coe ∘ ConcreteCategory.hom) (IsIso.inv_hom_id_assoc f g).symm
-  · exact fun h => h.comp (TopCat.homeoOfIso (asIso f)).isOpenEmbedding
+  · exact fun h ↦ h.comp (TopCat.homeoOfIso (asIso f)).isOpenEmbedding
 
 @[simp]
 theorem isOpenEmbedding_iff_isIso_comp' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :

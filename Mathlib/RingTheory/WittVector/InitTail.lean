@@ -53,7 +53,7 @@ open scoped Classical in
 whose `n`-th coefficient is `x.coeff n` if `P n` is true, and `0` otherwise.
 -/
 def select (P : ℕ → Prop) (x : 𝕎 R) : 𝕎 R :=
-  mk p fun n => if P n then x.coeff n else 0
+  mk p fun n ↦ if P n then x.coeff n else 0
 
 section Select
 
@@ -70,7 +70,7 @@ theorem coeff_select (x : 𝕎 R) (n : ℕ) :
   dsimp [select, selectPoly]
   split_ifs with hi <;> simp
 
-instance select_isPoly {P : ℕ → Prop} : IsPoly p fun _ _ x => select P x := by
+instance select_isPoly {P : ℕ → Prop} : IsPoly p fun _ _ x ↦ select P x := by
   use selectPoly P
   rintro R _Rcr x
   funext i
@@ -78,7 +78,7 @@ instance select_isPoly {P : ℕ → Prop} : IsPoly p fun _ _ x => select P x := 
 
 variable [hp : Fact p.Prime]
 
-theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬P i) x = x := by
+theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i ↦ ¬P i) x = x := by
   -- Porting note: TC search was insufficient to find this instance, even though all required
   -- instances exist. See zulip: [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/WittVector.20saga/near/370073526]
   have : IsPoly p fun {R} [CommRing R] x ↦ select P x + select (fun i ↦ ¬P i) x :=
@@ -88,14 +88,14 @@ theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬
   simp only [RingHom.map_add]
   suffices
     (bind₁ (selectPoly P)) (wittPolynomial p ℤ n) +
-        (bind₁ (selectPoly fun i => ¬P i)) (wittPolynomial p ℤ n) =
+        (bind₁ (selectPoly fun i ↦ ¬P i)) (wittPolynomial p ℤ n) =
       wittPolynomial p ℤ n by
     apply_fun aeval x.coeff at this
     simpa only [map_add, aeval_bind₁, ← coeff_select]
   simp only [wittPolynomial_eq_sum_C_mul_X_pow, selectPoly, map_sum, map_pow, map_mul,
     bind₁_X_right, bind₁_C_right, ← Finset.sum_add_distrib, ← mul_add]
   apply Finset.sum_congr rfl
-  refine fun m _ => mul_eq_mul_left_iff.mpr (Or.inl ?_)
+  refine fun m _ ↦ mul_eq_mul_left_iff.mpr (Or.inl ?_)
   rw [ite_pow, zero_pow (pow_ne_zero _ hp.out.ne_zero)]
   by_cases Pm : P m
   · rw [if_pos Pm, if_neg <| not_not_intro Pm, zero_pow Fin.pos'.ne', add_zero]
@@ -103,15 +103,15 @@ theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬
 
 theorem coeff_add_of_disjoint (x y : 𝕎 R) (h : ∀ n, x.coeff n = 0 ∨ y.coeff n = 0) :
     (x + y).coeff n = x.coeff n + y.coeff n := by
-  let P : ℕ → Prop := fun n => y.coeff n = 0
+  let P : ℕ → Prop := fun n ↦ y.coeff n = 0
   haveI : DecidablePred P := Classical.decPred P
-  set z := mk p fun n => if P n then x.coeff n else y.coeff n
+  set z := mk p fun n ↦ if P n then x.coeff n else y.coeff n
   have hx : select P z = x := by
     ext1 n; rw [select, coeff_mk, coeff_mk]
     split_ifs with hn
     · rfl
     · rw [(h n).resolve_right hn]
-  have hy : select (fun i => ¬P i) z = y := by
+  have hy : select (fun i ↦ ¬P i) z = y := by
     ext1 n; rw [select, coeff_mk, coeff_mk]
     split_ifs with hn
     · exact hn.symm
@@ -133,13 +133,13 @@ and all other coefficients are `0`.
 See `WittVector.tail` for the complementary part.
 -/
 def init (n : ℕ) : 𝕎 R → 𝕎 R :=
-  select fun i => i < n
+  select fun i ↦ i < n
 
 /-- `WittVector.tail n x` is the Witt vector of which the first `n` coefficients are `0`
 and all other coefficients are those from `x`.
 See `WittVector.init` for the complementary part. -/
 def tail (n : ℕ) : 𝕎 R → 𝕎 R :=
-  select fun i => n ≤ i
+  select fun i ↦ n ≤ i
 
 @[simp]
 theorem init_add_tail (x : 𝕎 R) (n : ℕ) : init n x + tail n x = x := by
@@ -198,13 +198,13 @@ theorem init_sub (x y : 𝕎 R) (n : ℕ) : init n (x - y) = init n (init n x - 
   init_ring using wittSub_vars
 
 theorem init_nsmul (m : ℕ) (x : 𝕎 R) (n : ℕ) : init n (m • x) = init n (m • init n x) := by
-  init_ring using fun p [Fact (Nat.Prime p)] n => wittNSMul_vars p m n
+  init_ring using fun p [Fact (Nat.Prime p)] n ↦ wittNSMul_vars p m n
 
 theorem init_zsmul (m : ℤ) (x : 𝕎 R) (n : ℕ) : init n (m • x) = init n (m • init n x) := by
-  init_ring using fun p [Fact (Nat.Prime p)] n => wittZSMul_vars p m n
+  init_ring using fun p [Fact (Nat.Prime p)] n ↦ wittZSMul_vars p m n
 
 theorem init_pow (m : ℕ) (x : 𝕎 R) (n : ℕ) : init n (x ^ m) = init n (init n x ^ m) := by
-  init_ring using fun p [Fact (Nat.Prime p)] n => wittPow_vars p m n
+  init_ring using fun p [Fact (Nat.Prime p)] n ↦ wittPow_vars p m n
 
 end
 section
@@ -212,8 +212,8 @@ section
 variable (p)
 
 /-- `WittVector.init n x` is polynomial in the coefficients of `x`. -/
-theorem init_isPoly (n : ℕ) : IsPoly p fun _ _ => init n :=
-  select_isPoly (P := fun i => i < n)
+theorem init_isPoly (n : ℕ) : IsPoly p fun _ _ ↦ init n :=
+  select_isPoly (P := fun i ↦ i < n)
 
 end
 

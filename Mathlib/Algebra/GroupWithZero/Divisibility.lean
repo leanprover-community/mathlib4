@@ -24,13 +24,13 @@ section SemigroupWithZero
 variable [SemigroupWithZero α] {a : α}
 
 theorem eq_zero_of_zero_dvd (h : 0 ∣ a) : a = 0 :=
-  Dvd.elim h fun c H' => H'.trans (zero_mul c)
+  Dvd.elim h fun c H' ↦ H'.trans (zero_mul c)
 
 /-- Given an element `a` of a commutative semigroup with zero, there exists another element whose
 product with zero equals `a` iff `a` equals zero. -/
 @[simp]
 theorem zero_dvd_iff : 0 ∣ a ↔ a = 0 :=
-  ⟨eq_zero_of_zero_dvd, fun h => by
+  ⟨eq_zero_of_zero_dvd, fun h ↦ by
     rw [h]
     exact ⟨0, by simp⟩⟩
 
@@ -44,13 +44,13 @@ end SemigroupWithZero
 `a*b` divides `a*c` iff `b` divides `c`. -/
 theorem mul_dvd_mul_iff_left [CancelMonoidWithZero α] {a b c : α} (ha : a ≠ 0) :
     a * b ∣ a * c ↔ b ∣ c :=
-  exists_congr fun d => by rw [mul_assoc, mul_right_inj' ha]
+  exists_congr fun d ↦ by rw [mul_assoc, mul_right_inj' ha]
 
 /-- Given two elements `a`, `b` of a commutative `CancelMonoidWithZero` and a nonzero
 element `c`, `a*c` divides `b*c` iff `a` divides `b`. -/
 theorem mul_dvd_mul_iff_right [CancelCommMonoidWithZero α] {a b c : α} (hc : c ≠ 0) :
     a * c ∣ b * c ↔ a ∣ b :=
-  exists_congr fun d => by rw [mul_right_comm, mul_left_inj' hc]
+  exists_congr fun d ↦ by rw [mul_right_comm, mul_left_inj' hc]
 
 section CommMonoidWithZero
 
@@ -93,12 +93,12 @@ theorem isRelPrime_of_no_nonunits_factors [MonoidWithZero α] {x y : α} (nonzer
 
 theorem dvd_and_not_dvd_iff [CancelCommMonoidWithZero α] {x y : α} :
     x ∣ y ∧ ¬y ∣ x ↔ DvdNotUnit x y :=
-  ⟨fun ⟨⟨d, hd⟩, hyx⟩ =>
-    ⟨fun hx0 => by simp [hx0] at hyx,
-      ⟨d, mt isUnit_iff_dvd_one.1 fun ⟨e, he⟩ => hyx ⟨e, by rw [hd, mul_assoc, ← he, mul_one]⟩,
+  ⟨fun ⟨⟨d, hd⟩, hyx⟩ ↦
+    ⟨fun hx0 ↦ by simp [hx0] at hyx,
+      ⟨d, mt isUnit_iff_dvd_one.1 fun ⟨e, he⟩ ↦ hyx ⟨e, by rw [hd, mul_assoc, ← he, mul_one]⟩,
         hd⟩⟩,
-    fun ⟨hx0, d, hdu, hdx⟩ =>
-    ⟨⟨d, hdx⟩, fun ⟨e, he⟩ =>
+    fun ⟨hx0, d, hdu, hdx⟩ ↦
+    ⟨⟨d, hdx⟩, fun ⟨e, he⟩ ↦
       hdu
         (isUnit_of_dvd_one
           ⟨e, mul_left_cancel₀ hx0 <| by conv =>
@@ -176,7 +176,7 @@ variable [GroupWithZero α]
 /-- `∣` is not a useful definition if an inverse is available. -/
 @[simp]
 lemma GroupWithZero.dvd_iff {m n : α} : m ∣ n ↔ (m = 0 → n = 0) := by
-  refine ⟨fun ⟨a, ha⟩ hm => ?_, fun h => ?_⟩
+  refine ⟨fun ⟨a, ha⟩ hm ↦ ?_, fun h ↦ ?_⟩
   · simp [hm, ha]
   · refine ⟨m⁻¹ * n, ?_⟩
     obtain rfl | hn := eq_or_ne n 0

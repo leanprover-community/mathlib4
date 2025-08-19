@@ -38,7 +38,7 @@ theorem convexJoin_comm (s t : Set E) : convexJoin 𝕜 s t = convexJoin 𝕜 t 
   (iUnion₂_comm _).trans <| by simp_rw [convexJoin, segment_symm]
 
 theorem convexJoin_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : convexJoin 𝕜 s₁ t₁ ⊆ convexJoin 𝕜 s₂ t₂ :=
-  biUnion_mono hs fun _ _ => biUnion_subset_biUnion_left ht
+  biUnion_mono hs fun _ _ ↦ biUnion_subset_biUnion_left ht
 
 theorem convexJoin_mono_left (hs : s₁ ⊆ s₂) : convexJoin 𝕜 s₁ t ⊆ convexJoin 𝕜 s₂ t :=
   convexJoin_mono hs Subset.rfl
@@ -89,7 +89,7 @@ theorem segment_subset_convexJoin (hx : x ∈ s) (hy : y ∈ t) : segment 𝕜 x
 section
 variable [IsOrderedRing 𝕜]
 
-theorem subset_convexJoin_left (h : t.Nonempty) : s ⊆ convexJoin 𝕜 s t := fun _x hx =>
+theorem subset_convexJoin_left (h : t.Nonempty) : s ⊆ convexJoin 𝕜 s t := fun _x hx ↦
   let ⟨_y, hy⟩ := h
   segment_subset_convexJoin hx hy <| left_mem_segment _ _ _
 
@@ -99,7 +99,7 @@ theorem subset_convexJoin_right (h : s.Nonempty) : t ⊆ convexJoin 𝕜 s t :=
 end
 
 theorem convexJoin_subset (hs : s ⊆ u) (ht : t ⊆ u) (hu : Convex 𝕜 u) : convexJoin 𝕜 s t ⊆ u :=
-  iUnion₂_subset fun _x hx => iUnion₂_subset fun _y hy => hu.segment_subset (hs hx) (ht hy)
+  iUnion₂_subset fun _x hx ↦ iUnion₂_subset fun _y hy ↦ hu.segment_subset (hs hx) (ht hy)
 
 theorem convexJoin_subset_convexHull (s t : Set E) : convexJoin 𝕜 s t ⊆ convexHull 𝕜 (s ∪ t) :=
   convexJoin_subset (subset_union_left.trans <| subset_convexHull _ _)

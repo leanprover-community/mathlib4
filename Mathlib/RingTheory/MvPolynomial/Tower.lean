@@ -73,7 +73,7 @@ variable {R A} [CommSemiring R] [CommSemiring A] [Algebra R A]
 
 @[simp]
 theorem mvPolynomial_aeval_coe (S : Subalgebra R A) (x : σ → S) (p : MvPolynomial σ R) :
-    aeval (fun i => (x i : A)) p = aeval x p := by convert aeval_algebraMap_apply A x p
+    aeval (fun i ↦ (x i : A)) p = aeval x p := by convert aeval_algebraMap_apply A x p
 
 end CommSemiring
 

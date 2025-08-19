@@ -53,7 +53,7 @@ theorem lintegral_rpow_eq_lintegral_meas_le_mul
     intro x
     rw [integral_rpow (Or.inl one_lt_p)]
     simp [Real.zero_rpow p_pos.ne.symm]
-  set g := fun t : ℝ => t ^ (p - 1)
+  set g := fun t : ℝ ↦ t ^ (p - 1)
   have g_nn : ∀ᵐ t ∂volume.restrict (Ioi (0 : ℝ)), 0 ≤ g t := by
     filter_upwards [self_mem_ae_restrict (measurableSet_Ioi : MeasurableSet (Ioi (0 : ℝ)))]
     intro t t_pos
@@ -83,7 +83,7 @@ theorem lintegral_rpow_eq_lintegral_meas_lt_mul
     ∫⁻ ω, ENNReal.ofReal (f ω ^ p) ∂μ =
       ENNReal.ofReal p * ∫⁻ t in Ioi 0, μ {a : α | t < f a} * ENNReal.ofReal (t ^ (p - 1)) := by
   rw [lintegral_rpow_eq_lintegral_meas_le_mul μ f_nn f_mble p_pos]
-  apply congr_arg fun z => ENNReal.ofReal p * z
+  apply congr_arg fun z ↦ ENNReal.ofReal p * z
   apply lintegral_congr_ae
   filter_upwards [meas_le_ae_eq_meas_lt μ (volume.restrict (Ioi 0)) f] with t ht
   rw [ht]

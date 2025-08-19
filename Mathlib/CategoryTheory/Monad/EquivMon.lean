@@ -59,11 +59,11 @@ def ofMon (M : Mon_ (C ⥤ C)) : Monad C where
   toFunctor := M.X
   «η» := η[M.X]
   «μ» := μ[M.X]
-  left_unit := fun X => by
+  left_unit := fun X ↦ by
     simpa [-Mon_Class.mul_one] using congrArg (fun t ↦ t.app X) (mul_one M.X)
-  right_unit := fun X => by
+  right_unit := fun X ↦ by
     simpa [-Mon_Class.one_mul] using congrArg (fun t ↦ t.app X) (one_mul M.X)
-  assoc := fun X => by
+  assoc := fun X ↦ by
     simpa [-Mon_Class.mul_assoc] using congrArg (fun t ↦ t.app X) (mul_assoc M.X)
 
 -- Porting note: `@[simps]` fails to generate `ofMon_obj`:
@@ -88,11 +88,11 @@ def monadMonEquiv : Monad C ≌ Mon_ (C ⥤ C) where
   functor := monadToMon _
   inverse := monToMonad _
   unitIso :=
-  { hom := { app := fun _ => { app := fun _ => 𝟙 _ } }
-    inv := { app := fun _ => { app := fun _ => 𝟙 _ } } }
+  { hom := { app := fun _ ↦ { app := fun _ ↦ 𝟙 _ } }
+    inv := { app := fun _ ↦ { app := fun _ ↦ 𝟙 _ } } }
   counitIso :=
-  { hom := { app := fun _ => { hom := 𝟙 _ } }
-    inv := { app := fun _ => { hom := 𝟙 _ } } }
+  { hom := { app := fun _ ↦ { hom := 𝟙 _ } }
+    inv := { app := fun _ ↦ { hom := 𝟙 _ } } }
 
 -- Sanity check
 example (A : Monad C) {X : C} : ((monadMonEquiv C).unitIso.app A).hom.app X = 𝟙 _ :=

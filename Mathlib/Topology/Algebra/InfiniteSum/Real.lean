@@ -55,16 +55,16 @@ theorem dist_le_tsum_dist_of_tendsto₀ (h : Summable fun n ↦ dist (f n) (f n.
 section summable
 
 theorem not_summable_iff_tendsto_nat_atTop_of_nonneg {f : ℕ → ℝ} (hf : ∀ n, 0 ≤ f n) :
-    ¬Summable f ↔ Tendsto (fun n : ℕ => ∑ i ∈ Finset.range n, f i) atTop atTop := by
+    ¬Summable f ↔ Tendsto (fun n : ℕ ↦ ∑ i ∈ Finset.range n, f i) atTop atTop := by
   lift f to ℕ → ℝ≥0 using hf
   simpa using mod_cast NNReal.not_summable_iff_tendsto_nat_atTop
 
 theorem summable_iff_not_tendsto_nat_atTop_of_nonneg {f : ℕ → ℝ} (hf : ∀ n, 0 ≤ f n) :
-    Summable f ↔ ¬Tendsto (fun n : ℕ => ∑ i ∈ Finset.range n, f i) atTop atTop := by
+    Summable f ↔ ¬Tendsto (fun n : ℕ ↦ ∑ i ∈ Finset.range n, f i) atTop atTop := by
   rw [← not_iff_not, Classical.not_not, not_summable_iff_tendsto_nat_atTop_of_nonneg hf]
 
 theorem summable_sigma_of_nonneg {α} {β : α → Type*} {f : (Σ x, β x) → ℝ} (hf : ∀ x, 0 ≤ f x) :
-    Summable f ↔ (∀ x, Summable fun y => f ⟨x, y⟩) ∧ Summable fun x => ∑' y, f ⟨x, y⟩ := by
+    Summable f ↔ (∀ x, Summable fun y ↦ f ⟨x, y⟩) ∧ Summable fun x ↦ ∑' y, f ⟨x, y⟩ := by
   lift f to (Σ x, β x) → ℝ≥0 using hf
   simpa using mod_cast NNReal.summable_sigma
 
@@ -80,11 +80,11 @@ theorem summable_prod_of_nonneg {α β} {f : (α × β) → ℝ} (hf : 0 ≤ f) 
 theorem summable_of_sum_le {ι : Type*} {f : ι → ℝ} {c : ℝ} (hf : 0 ≤ f)
     (h : ∀ u : Finset ι, ∑ x ∈ u, f x ≤ c) : Summable f :=
   ⟨⨆ u : Finset ι, ∑ x ∈ u, f x,
-    tendsto_atTop_ciSup (Finset.sum_mono_set_of_nonneg hf) ⟨c, fun _ ⟨u, hu⟩ => hu ▸ h u⟩⟩
+    tendsto_atTop_ciSup (Finset.sum_mono_set_of_nonneg hf) ⟨c, fun _ ⟨u, hu⟩ ↦ hu ▸ h u⟩⟩
 
 theorem summable_of_sum_range_le {f : ℕ → ℝ} {c : ℝ} (hf : ∀ n, 0 ≤ f n)
     (h : ∀ n, ∑ i ∈ Finset.range n, f i ≤ c) : Summable f := by
-  refine (summable_iff_not_tendsto_nat_atTop_of_nonneg hf).2 fun H => ?_
+  refine (summable_iff_not_tendsto_nat_atTop_of_nonneg hf).2 fun H ↦ ?_
   rcases exists_lt_of_tendsto_atTop H 0 c with ⟨n, -, hn⟩
   exact lt_irrefl _ (hn.trans_le (h n))
 

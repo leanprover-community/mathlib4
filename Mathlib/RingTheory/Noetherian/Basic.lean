@@ -66,7 +66,7 @@ open IsNoetherian
 variable (M) in
 theorem isNoetherian_of_surjective (f : M →ₗ[R] P) (hf : LinearMap.range f = ⊤) [IsNoetherian R M] :
     IsNoetherian R P :=
-  ⟨fun s =>
+  ⟨fun s ↦
     have : (s.comap f).map f = s := Submodule.map_comap_eq_self <| hf.symm ▸ le_top
     this ▸ (noetherian _).map _⟩
 
@@ -108,7 +108,7 @@ variable (R M)
 
 -- see Note [lower instance priority]
 instance (priority := 80) _root_.isNoetherian_of_finite [Finite M] : IsNoetherian R M :=
-  ⟨fun s => ⟨(s : Set M).toFinite.toFinset, by rw [Set.Finite.coe_toFinset, Submodule.span_eq]⟩⟩
+  ⟨fun s ↦ ⟨(s : Set M).toFinite.toFinset, by rw [Set.Finite.coe_toFinset, Submodule.span_eq]⟩⟩
 
 -- see Note [lower instance priority]
 instance (priority := 100) IsNoetherian.finite [IsNoetherian R M] : Module.Finite R M :=
@@ -145,10 +145,10 @@ theorem fg_of_ker_bot [IsNoetherian R P] {N : Submodule R M} (f : M →ₗ[R] P)
 
 -- False over a semiring: ℕ is a Noetherian ℕ-module but ℕ × ℕ is not.
 instance isNoetherian_prod [IsNoetherian R M] [IsNoetherian R P] : IsNoetherian R (M × P) :=
-  ⟨fun s =>
+  ⟨fun s ↦
     Submodule.fg_of_fg_map_of_fg_inf_ker (LinearMap.snd R M P) (noetherian _) <|
       have : s ⊓ LinearMap.ker (LinearMap.snd R M P) ≤ LinearMap.range (LinearMap.inl R M P) :=
-        fun x ⟨_, hx2⟩ => ⟨x.1, Prod.ext rfl <| Eq.symm <| LinearMap.mem_ker.1 hx2⟩
+        fun x ⟨_, hx2⟩ ↦ ⟨x.1, Prod.ext rfl <| Eq.symm <| LinearMap.mem_ker.1 hx2⟩
       Submodule.map_comap_eq_self this ▸ (noetherian _).map _⟩
 
 instance isNoetherian_sup (M₁ M₂ : Submodule R P) [IsNoetherian R M₁] [IsNoetherian R M₂] :
@@ -253,7 +253,7 @@ theorem LinearIndependent.finite_of_isNoetherian [Nontrivial R] {ι} {v : ι →
     (hv : LinearIndependent R v) : Finite ι := by
   refine WellFoundedGT.finite_of_iSupIndep
     hv.iSupIndep_span_singleton
-    fun i contra => ?_
+    fun i contra ↦ ?_
   apply hv.ne_zero i
   have : v i ∈ R ∙ v i := Submodule.mem_span_singleton_self (v i)
   rwa [contra, Submodule.mem_bot] at this

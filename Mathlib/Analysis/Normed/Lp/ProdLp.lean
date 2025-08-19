@@ -340,12 +340,12 @@ See note [reducible non-instances] -/
 abbrev prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
     PseudoMetricSpace (WithLp p (α × β)) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
-    (fun f g => by
+    (fun f g ↦ by
       rcases p.dichotomy with (rfl | h)
       · exact prod_sup_edist_ne_top_aux f g
       · rw [prod_edist_eq_add (zero_lt_one.trans_le h)]
         finiteness)
-    fun f g => by
+    fun f g ↦ by
     rcases p.dichotomy with (rfl | h)
     · rw [prod_edist_eq_sup, prod_dist_eq_sup]
       refine le_antisymm (sup_le ?_ ?_) ?_
@@ -420,7 +420,7 @@ private lemma isUniformInducing_ofLp_aux [PseudoEMetricSpace α] [PseudoEMetricS
 
 private lemma prod_uniformity_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     𝓤 (WithLp p (α × β)) = 𝓤[instUniformSpaceProd] := by
-  have : (fun x : WithLp p (α × β) × WithLp p (α × β) =>
+  have : (fun x : WithLp p (α × β) × WithLp p (α × β) ↦
     (ofLp x.fst, ofLp x.snd)) = id := rfl
   rw [← (isUniformInducing_ofLp_aux p α β).comap_uniformity, this, comap_id]
 
@@ -519,7 +519,7 @@ instance instProdPseudoMetricSpace [PseudoMetricSpace α] [PseudoMetricSpace β]
     PseudoMetricSpace (WithLp p (α × β)) :=
   ((prodPseudoMetricAux p α β).replaceUniformity
     (prod_uniformity_aux p α β).symm).replaceBornology
-    fun s => Filter.ext_iff.1 (prod_cobounded_aux p α β).symm sᶜ
+    fun s ↦ Filter.ext_iff.1 (prod_cobounded_aux p α β).symm sᶜ
 
 /-- `MetricSpace` instance on the product of two metric spaces, using the `L^p` distance,
 and having as uniformity the product uniformity. -/
@@ -577,7 +577,7 @@ lemma prod_antilipschitzWith_ofLp [PseudoEMetricSpace α] [PseudoEMetricSpace β
 
 lemma prod_isometry_ofLp_infty [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     Isometry (@ofLp ∞ (α × β)) :=
-  fun x y =>
+  fun x y ↦
   le_antisymm (by simpa only [ENNReal.coe_one, one_mul] using prod_lipschitzWith_ofLp ∞ α β x y)
     (by
       simpa only [ENNReal.div_top, ENNReal.toReal_zero, NNReal.rpow_zero, ENNReal.coe_one,
@@ -804,7 +804,7 @@ section IsBoundedSMul
 variable [SeminormedRing 𝕜] [Module 𝕜 α] [Module 𝕜 β] [IsBoundedSMul 𝕜 α] [IsBoundedSMul 𝕜 β]
 
 instance instProdIsBoundedSMul : IsBoundedSMul 𝕜 (WithLp p (α × β)) :=
-  .of_nnnorm_smul_le fun c f => by
+  .of_nnnorm_smul_le fun c f ↦ by
     rcases p.dichotomy with (rfl | hp)
     · simp only [← prod_nnnorm_ofLp, ofLp_smul]
       exact norm_smul_le _ _
@@ -831,7 +831,7 @@ end IsBoundedSMul
 
 instance instProdNormSMulClass [SeminormedRing 𝕜] [Module 𝕜 α] [Module 𝕜 β]
     [NormSMulClass 𝕜 α] [NormSMulClass 𝕜 β] : NormSMulClass 𝕜 (WithLp p (α × β)) :=
-  .of_nnnorm_smul fun c f => by
+  .of_nnnorm_smul fun c f ↦ by
     rcases p.dichotomy with (rfl | hp)
     · simp only [← prod_nnnorm_ofLp, WithLp.ofLp_smul, nnnorm_smul]
     · have hp0 : 0 < p.toReal := zero_lt_one.trans_le hp
@@ -859,7 +859,7 @@ lemma idemSnd_apply (x : WithLp p (α × β)) : idemSnd x = toLp p (0, x.2) := r
 @[simp]
 lemma idemFst_add_idemSnd :
     idemFst + idemSnd = (1 : AddMonoid.End (WithLp p (α × β))) := AddMonoidHom.ext
-  fun x => by
+  fun x ↦ by
     rw [AddMonoidHom.add_apply, idemFst_apply, idemSnd_apply, AddMonoid.End.coe_one, id_eq,
       ← toLp_add, Prod.mk_add_mk, zero_add, add_zero]
     rfl

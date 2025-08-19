@@ -86,7 +86,7 @@ lemma rpowIntegrand₀₁_eq_pow_div (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) (hx : 0
     simp [rpowIntegrand₀₁, ht', hp.1.ne', hp₂]
 
 lemma rpowIntegrand₀₁_eqOn_pow_div (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
-    Set.EqOn (rpowIntegrand₀₁ p · x) (fun t => t ^ (p - 1) * x / (t + x)) (Ioi 0) := by
+    Set.EqOn (rpowIntegrand₀₁ p · x) (fun t ↦ t ^ (p - 1) * x / (t + x)) (Ioi 0) := by
   intro t ht
   simp [rpowIntegrand₀₁_eq_pow_div hp (le_of_lt ht) hx]
 
@@ -113,15 +113,15 @@ lemma rpowIntegrand₀₁_apply_mul' (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) (hx : 0
   simpa using Eq.symm <| Real.rpow_add' hx (by aesop : (p - 1) + 1 ≠ 0)
 
 lemma rpowIntegrand₀₁_apply_mul_eqOn_Ici (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
-    EqOn (fun t => rpowIntegrand₀₁ p (x * t) x * x)
-      (fun t => (rpowIntegrand₀₁ p t 1) * x ^ p) (Ici 0) :=
-  fun _ ht => rpowIntegrand₀₁_apply_mul' hp ht hx
+    EqOn (fun t ↦ rpowIntegrand₀₁ p (x * t) x * x)
+      (fun t ↦ (rpowIntegrand₀₁ p t 1) * x ^ p) (Ici 0) :=
+  fun _ ht ↦ rpowIntegrand₀₁_apply_mul' hp ht hx
 
 lemma continuousOn_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     ContinuousOn (rpowIntegrand₀₁ p · x) (Ioi 0) := by
   refine ContinuousOn.congr ?_ <| rpowIntegrand₀₁_eqOn_pow_div hp hx
   have h₀ : ContinuousOn (· ^ (p - 1) : ℝ → ℝ) (Ioi 0) := .rpow_const (by fun_prop) <|
-    fun t ht => .inl ht.ne'
+    fun t ht ↦ .inl ht.ne'
   fun_prop (disch := intros; simp_all; positivity)
 
 lemma aestronglyMeasurable_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
@@ -176,7 +176,7 @@ private lemma integrableOn_rpowIntegrand₀₁_Ioc (hp : p ∈ Ioo 0 1) (hx : 0 
     refine ContinuousOn.aestronglyMeasurable ?_ measurableSet_Ioo
     exact ContinuousOn.mono (continuousOn_rpowIntegrand₀₁ hp hx) Ioo_subset_Ioi_self
   case finite =>
-    refine HasFiniteIntegral.mono' (g := fun t => t ^ (p - 1)) ?finitebound ?ae_le
+    refine HasFiniteIntegral.mono' (g := fun t ↦ t ^ (p - 1)) ?finitebound ?ae_le
     case finitebound =>
       apply Integrable.hasFiniteIntegral
       rw [Set.mem_Ioo] at hp
@@ -184,7 +184,7 @@ private lemma integrableOn_rpowIntegrand₀₁_Ioc (hp : p ∈ Ioo 0 1) (hx : 0 
       · linarith
       · exact zero_lt_one
     case ae_le =>
-      refine ae_restrict_of_forall_mem measurableSet_Ioo fun t ht => ?_
+      refine ae_restrict_of_forall_mem measurableSet_Ioo fun t ht ↦ ?_
       rw [Real.norm_of_nonneg (rpowIntegrand₀₁_nonneg hp.1 (le_of_lt ht.1) hx)]
       exact rpowIntegrand₀₁_le_rpow_sub_one hp (le_of_lt ht.1) hx
 
@@ -196,7 +196,7 @@ private lemma integrableOn_rpowIntegrand₀₁_Ioi_one (hp : p ∈ Ioo 0 1) (hx 
     refine ContinuousOn.aestronglyMeasurable ?_ measurableSet_Ioi
     exact continuousOn_rpowIntegrand₀₁ hp hx |>.mono (Set.Ioi_subset_Ioi zero_le_one)
   case finite =>
-    refine HasFiniteIntegral.mono' (g := fun t => t ^ (p - 2) * x) ?finitebound ?ae_le
+    refine HasFiniteIntegral.mono' (g := fun t ↦ t ^ (p - 2) * x) ?finitebound ?ae_le
     case finitebound =>
       refine HasFiniteIntegral.mul_const ?_ _
       apply Integrable.hasFiniteIntegral
@@ -204,7 +204,7 @@ private lemma integrableOn_rpowIntegrand₀₁_Ioi_one (hp : p ∈ Ioo 0 1) (hx 
       refine integrableOn_Ioi_rpow_of_lt ?_ zero_lt_one
       linarith
     case ae_le =>
-      refine ae_restrict_of_forall_mem measurableSet_Ioi fun t (ht : 1 < t) => ?_
+      refine ae_restrict_of_forall_mem measurableSet_Ioi fun t (ht : 1 < t) ↦ ?_
       rw [Real.norm_of_nonneg (rpowIntegrand₀₁_nonneg hp.1 (by positivity) hx)]
       exact rpowIntegrand₀₁_le_rpow_sub_two_mul_self hp (by positivity) hx
 
@@ -235,8 +235,8 @@ lemma integral_rpowIntegrand₀₁_eq_rpow_mul_const (hp : p ∈ Ioo 0 1) (hx : 
     · simp only [Function.comp]
       rw [integrableOn_congr_fun (rpowIntegrand₀₁_apply_mul_eqOn_Ici hp hx.le) measurableSet_Ici]
       exact Integrable.mul_const (integrableOn_rpowIntegrand₀₁_Ici hp zero_le_one) _
-  have heqOn : EqOn (fun t => rpowIntegrand₀₁ p (x * t) x * x)
-      (fun t => (rpowIntegrand₀₁ p t 1) * x ^ p) (Ioi 0) :=
+  have heqOn : EqOn (fun t ↦ rpowIntegrand₀₁ p (x * t) x * x)
+      (fun t ↦ (rpowIntegrand₀₁ p t 1) * x ^ p) (Ioi 0) :=
     EqOn.mono Ioi_subset_Ici_self (rpowIntegrand₀₁_apply_mul_eqOn_Ici hp hx.le)
   simp only [Function.comp, setIntegral_congr_fun measurableSet_Ioi heqOn,
     ← smul_eq_mul (b := x ^ p), integral_smul_const]
@@ -255,10 +255,10 @@ lemma le_integral_rpowIntegrand₀₁_one (hp : p ∈ Ioo 0 1) :
           simp only [mem_Ioo] at hp
           exact integrableOn_Ioi_rpow_of_lt (by linarith) zero_lt_one
         · exact integrableOn_rpowIntegrand₀₁_Ioi_one hp zero_le_one
-        · exact fun t ht =>  rpowIntegrand₀₁_one_ge_rpow_sub_two hp (le_of_lt ht)
+        · exact fun t ht ↦  rpowIntegrand₀₁_one_ge_rpow_sub_two hp (le_of_lt ht)
   _ ≤ ∫ t in Ioi 0, rpowIntegrand₀₁ p t 1 := by
         refine setIntegral_mono_set (integrableOn_rpowIntegrand₀₁_Ioi hp zero_le_one) ?_ ?_
-        · refine ae_restrict_of_forall_mem measurableSet_Ioi fun t ht => ?_
+        · refine ae_restrict_of_forall_mem measurableSet_Ioi fun t ht ↦ ?_
           exact rpowIntegrand₀₁_nonneg hp.1 (le_of_lt ht) zero_le_one
         · exact .of_forall <| Set.Ioi_subset_Ioi zero_le_one
 
@@ -292,7 +292,7 @@ lemma exists_measure_rpow_eq_integral (hp : p ∈ Ioo 0 1) :
         rw [inv_nonneg]
         exact le_of_lt <| integral_rpowIntegrand₀₁_one_pos hp }
   let μ : Measure ℝ := C • volume.restrict (Ioi 0)
-  refine ⟨μ, ?_, fun x hx => ?_⟩
+  refine ⟨μ, ?_, fun x hx ↦ ?_⟩
   · refine Measure.ae_smul_measure ?_ _
     filter_upwards [ae_restrict_mem measurableSet_Ioi] with t ht
     exact ht

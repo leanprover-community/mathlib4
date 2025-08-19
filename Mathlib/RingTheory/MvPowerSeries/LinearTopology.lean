@@ -158,7 +158,7 @@ iff its constant coefficient is topologically nilpotent.
 See also `MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_iff_constantCoeff_isNilpotent`. -/
 theorem isTopologicallyNilpotent_iff_constantCoeff
     {R : Type*} [CommRing R] [TopologicalSpace R] [IsLinearTopology R R] (f) :
-    Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) ↔
+    Tendsto (fun n : ℕ ↦ f ^ n) atTop (nhds 0) ↔
       IsTopologicallyNilpotent (constantCoeff σ R f) := by
   refine ⟨fun H ↦ ?_, isTopologicallyNilpotent_of_constantCoeff⟩
   replace H : Tendsto (fun n ↦ constantCoeff σ R (f ^ n)) atTop (nhds 0) :=

@@ -36,7 +36,7 @@ variable (J : Type) [HasProductsOfShape J C] [W.IsStableUnderProductsOfShape J]
 
 lemma inverts :
     (W.functorCategory (Discrete J)).IsInvertedBy (lim ⋙ L) :=
-  fun _ _ f hf => Localization.inverts L W _ (MorphismProperty.limMap f hf)
+  fun _ _ f hf ↦ Localization.inverts L W _ (MorphismProperty.limMap f hf)
 
 variable [W.ContainsIdentities] [Finite J]
 
@@ -106,7 +106,7 @@ variable [HasFiniteProducts C] [W.IsStableUnderFiniteProducts]
 
 include W in
 lemma hasFiniteProducts : HasFiniteProducts D :=
-  ⟨fun _ => hasProductsOfShape L W _⟩
+  ⟨fun _ ↦ hasProductsOfShape L W _⟩
 
 include W in
 /-- When `C` has finite products and `W : MorphismProperty C` contains
