@@ -291,11 +291,11 @@ open Mathlib.Tactic in
 elab_rules : tactic
 | `(tactic| reduce_mod_char $[$loc]?) => unsafe do
   let loc := expandOptLocation (Lean.mkOptionalNode loc)
-  (SimprocLike.noContext derive).atNondepPropLocation "reduce_mod_char" loc
+  transformAtNondepPropLocation (derive (expensive := false) ·) "reduce_mod_char" loc
     (failIfUnchanged := false)
 | `(tactic| reduce_mod_char! $[$loc]?) => unsafe do
   let loc := expandOptLocation (Lean.mkOptionalNode loc)
-  (SimprocLike.noContext (derive (expensive := true))).atNondepPropLocation "reduce_mod_char"
+  transformAtNondepPropLocation (derive (expensive := true) ·) "reduce_mod_char"
     loc (failIfUnchanged := false)
 
 end ReduceModChar

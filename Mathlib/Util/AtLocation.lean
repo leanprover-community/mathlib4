@@ -42,27 +42,11 @@ def Lean.Elab.Tactic.withNondepPropLocation (loc : Location) (atLocal : FVarId �
 namespace Mathlib.Tactic
 open Lean Meta Elab.Tactic
 
-/-- A metaprogram whose input is an expression `e` and whose output is a new expression `e'`,
-together with a proof that `e = e'`.
-
-The metaprogram may optionally depend on `ctx`, a `Simp.Context`; if it does, then when the
-metaprogram is run on a local hypothesis `h`, the context `ctx` will be modified to forget `h`. -/
-inductive SimprocLike
-  /-- Default case: a metaprogram which does not depend on a `Simp.Context`. -/
-  | noContext (m : Expr → MetaM Simp.Result)
-  /-- A metaprogram which depends on a `Simp.Context`. In this case we must also provide the
-  `Simp.Context` to use it with; this will be modified at each hypothesis `h` to forget `h`. -/
-  | withContext (ctx : Simp.Context) (m : Simp.Context → Expr → MetaM Simp.Result)
-
-namespace SimprocLike
-
 /-- Use the procedure `m` to rewrite the provided goal. -/
-def atTarget (m : SimprocLike) (proc : String) (failIfUnchanged : Bool) (goal : MVarId) :
-    MetaM (Option MVarId) := do
+def transformAtTarget (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (proc : String)
+    (failIfUnchanged : Bool) (goal : MVarId) :
+    ReaderT Simp.Context MetaM (Option MVarId) := do
   let tgt ← instantiateMVars (← goal.getType)
-  let m := match m with
-  | .noContext m => m
-  | .withContext ctx m => m ctx
   let r ← m tgt
   -- we use expression equality here (rather than defeq) to be consistent with, e.g.,
   -- `applySimpResultToTarget`
@@ -77,44 +61,52 @@ def atTarget (m : SimprocLike) (proc : String) (failIfUnchanged : Bool) (goal : 
     if unchanged then return goal
     applySimpResultToTarget goal tgt r
 
-/-- Use the procedure `m` to rewrite hypothesis `fvarId`. -/
-def atLocalDecl (m : SimprocLike) (proc : String) (failIfUnchanged : Bool) (mayCloseGoal : Bool)
-    (fvarId : FVarId) (goal : MVarId) :
-    MetaM (Option MVarId) := do
+/-- Use the procedure `m` to rewrite hypothesis `fvarId`.
+
+The `simpTheorems` of the simp-context carried with `m` will be modified to remove `fvarId`;
+this ensures that if the procedure `m` involves rewriting by this `SimpTheoremsArray`, then, e.g.,
+`h : x = y` is not transformed (by rewriting `h`) to `True`. -/
+def transformAtLocalDecl (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (proc : String)
+    (failIfUnchanged : Bool) (mayCloseGoal : Bool) (fvarId : FVarId) (goal : MVarId) :
+    ReaderT Simp.Context MetaM (Option MVarId) := do
   let ldecl ← fvarId.getDecl
   if ldecl.isImplementationDetail then
     throwError "cannot run {proc} at {ldecl.userName}, it is an implementation detail"
   let tgt ← instantiateMVars (← fvarId.getType)
-  let m := match m with
-  | .noContext m => m
-  | .withContext ctx m => m <| ctx.setSimpTheorems <| ctx.simpTheorems.eraseTheorem (.fvar fvarId)
-  let r ← m tgt
+  let eraseFVarId (ctx : Simp.Context) :=
+    ctx.setSimpTheorems <| ctx.simpTheorems.eraseTheorem (.fvar fvarId)
+  let r ← withReader eraseFVarId <| m tgt
   -- we use expression equality here (rather than defeq) to be consistent with, e.g.,
   -- `applySimpResultToLocalDeclCore`
   if failIfUnchanged && tgt.cleanupAnnotations == r.expr.cleanupAnnotations then
     throwError "{proc} made no progress at {ldecl.userName}"
   return (← applySimpResultToLocalDecl goal fvarId r mayCloseGoal).map Prod.snd
 
-/-- Use the procedure `m` to rewrite at specified locations. -/
-def atLocation (m : SimprocLike) (proc : String) (loc : Location) (failIfUnchanged : Bool := true)
-    (mayCloseGoalFromHyp : Bool := false) :
+/-- Use the procedure `m` to transform at specified locations (hypotheses and/or goal). -/
+def transformAtLocation (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (proc : String)
+    (loc : Location) (failIfUnchanged : Bool := true) (mayCloseGoalFromHyp : Bool := false)
+    -- streamline the most common use case, in which the procedure `m`'s implementation is not
+    -- simp-based and its `Simp.Context` is ignored
+    (ctx : Simp.Context := default) :
     TacticM Unit :=
   withLocation loc
-    (liftMetaTactic1 ∘ atLocalDecl m proc failIfUnchanged mayCloseGoalFromHyp)
-    (liftMetaTactic1 <| atTarget m proc failIfUnchanged)
+    (liftMetaTactic1 ∘ (transformAtLocalDecl m proc failIfUnchanged mayCloseGoalFromHyp · · ctx))
+    (liftMetaTactic1 (transformAtTarget m proc failIfUnchanged · ctx))
     fun _ ↦ throwError "{proc} made no progress anywhere"
 
-/-- Use the procedure `m` to rewrite at specified locations.
+/-- Use the procedure `m` to transform at specified locations (hypotheses and/or goal).
 
 In the wildcard case (`*`), filter out all dependent and/or non-Prop hypotheses. -/
-def atNondepPropLocation (m : SimprocLike) (proc : String) (loc : Location)
-    (failIfUnchanged : Bool := true) (mayCloseGoalFromHyp : Bool := false) :
+def transformAtNondepPropLocation (m : Expr → ReaderT Simp.Context MetaM Simp.Result)
+    (proc : String) (loc : Location) (failIfUnchanged : Bool := true)
+    (mayCloseGoalFromHyp : Bool := false)
+    -- streamline the most common use case, in which the procedure `m`'s implementation is not
+    -- simp-based and its `Simp.Context` is ignored
+    (ctx : Simp.Context := default) :
     TacticM Unit :=
   withNondepPropLocation loc
-    (liftMetaTactic1 ∘ atLocalDecl m proc failIfUnchanged mayCloseGoalFromHyp)
-    (liftMetaTactic1 <| atTarget m proc failIfUnchanged)
+    (liftMetaTactic1 ∘ (transformAtLocalDecl m proc failIfUnchanged mayCloseGoalFromHyp · · ctx))
+    (liftMetaTactic1 (transformAtTarget m proc failIfUnchanged · ctx))
     fun _ ↦ throwError "{proc} made no progress anywhere"
-
-end SimprocLike
 
 end Mathlib.Tactic
