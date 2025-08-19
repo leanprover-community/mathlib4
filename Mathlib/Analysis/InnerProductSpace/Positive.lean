@@ -193,8 +193,7 @@ theorem _root_.Matrix.isPositive_toEuclideanLin_iff {n : Type*} [Fintype n] [Dec
 theorem posSemidef_toMatrix_iff {ι : Type*} [Fintype ι] [DecidableEq ι]
     {A : E →ₗ[𝕜] E} (b : OrthonormalBasis ι 𝕜 E) :
     (A.toMatrix b.toBasis b.toBasis).PosSemidef ↔ A.IsPositive := by
-  have := FiniteDimensional.of_fintype_basis b.toBasis
-  rw [← Matrix.toEuclideanLin_isPositive_iff, (by exact Matrix.toLin'_toMatrix' _ :
+  rw [← Matrix.isPositive_toEuclideanLin_iff, (by exact Matrix.toLin'_toMatrix' _ :
     (A.toMatrix b.toBasis b.toBasis).toEuclideanLin =
       b.repr.toLinearMap ∘ₗ A ∘ₗ b.repr.symm.toLinearMap), isPositive_linearIsometryEquiv_conj_iff]
 
