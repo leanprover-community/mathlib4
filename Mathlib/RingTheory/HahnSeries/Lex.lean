@@ -66,6 +66,7 @@ instance : LinearOrder (Lex (HahnSeries Γ R)) where
       · exact Or.inr (le_of_lt ⟨i, fun j hj ↦ (hji j hj).symm, hi⟩)
   toDecidableLE := Classical.decRel _
 
+@[simp]
 theorem leadingCoeff_pos_iff {x : Lex (HahnSeries Γ R)} : 0 < (ofLex x).leadingCoeff ↔ 0 < x := by
   rw [lt_iff]
   constructor
@@ -108,7 +109,7 @@ theorem leadingCoeff_neg_iff {x : Lex (HahnSeries Γ R)} : (ofLex x).leadingCoef
 
 theorem leadingCoeff_nonpos_iff {x : Lex (HahnSeries Γ R)} :
     (ofLex x).leadingCoeff ≤ 0 ↔ x ≤ 0 := by
-  simpa using (leadingCoeff_pos_iff (x := x)).not
+  simp [← not_lt]
 
 end LinearOrder
 
@@ -132,12 +133,14 @@ end OrderedMonoid
 section OrderedGroup
 variable [LinearOrder R] [AddCommGroup R] [IsOrderedAddMonoid R]
 
+@[simp]
 theorem support_abs (x : Lex (HahnSeries Γ R)) : (ofLex |x|).support = (ofLex x).support := by
   obtain hle | hge := le_total x 0
   · rw [abs_eq_neg_self.mpr hle]
     simp
   · rw [abs_eq_self.mpr hge]
 
+@[simp]
 theorem orderTop_abs (x : Lex (HahnSeries Γ R)) : (ofLex |x|).orderTop = (ofLex x).orderTop := by
   obtain hle | hge := le_total x 0
   · rw [abs_eq_neg_self.mpr hle, ofLex_neg, orderTop_neg]
@@ -174,33 +177,24 @@ theorem abs_lt_abs_of_orderTop_ofLex {x y : Lex (HahnSeries Γ R)}
       rw [orderTop_abs]
       exact (WithTop.lt_untop_iff _).mp hj
     · refine (coeff_eq_zero_of_lt_orderTop ?_).symm
-      rw [orderTop_abs]
+      simp [orderTop_abs]
       exact (WithTop.lt_untop_iff _).mp hj
-  · rw [HahnSeries.coeff_eq_zero_of_lt_orderTop ?_]
-    · have hy0 : y ≠ 0 := HahnSeries.ne_zero_iff_orderTop.mpr h.ne_top
-      have hy0' : ofLex |y| ≠ 0 := abs_ne_zero.mpr hy0
-      conv in (ofLex y).orderTop => rw [← orderTop_abs]
-      rw [coeff_untop_eq_leadingCoeff hy0', leadingCoeff_pos_iff, abs_pos]
-      exact hy0
-    · rw [orderTop_abs]
-      simpa using h
+  · rw [HahnSeries.coeff_eq_zero_of_lt_orderTop (by simpa)]
+    simp_rw [← orderTop_abs y, coeff_untop_eq_leadingCoeff]
+    simpa using h.ne_top
 
 theorem archimedeanClassMk_le_archimedeanClassMk_iff_of_orderTop_ofLex {x y : Lex (HahnSeries Γ R)}
     (h : (ofLex x).orderTop = (ofLex y).orderTop) :
-    ArchimedeanClass.mk x ≤ ArchimedeanClass.mk y ↔
-    ArchimedeanClass.mk (ofLex x).leadingCoeff ≤ ArchimedeanClass.mk (ofLex y).leadingCoeff := by
+    ArchimedeanClass.mk x ≤ .mk y ↔
+      ArchimedeanClass.mk (ofLex x).leadingCoeff ≤ .mk (ofLex y).leadingCoeff := by
   simp_rw [ArchimedeanClass.mk_le_mk]
-  obtain rfl | hx := eq_or_ne x 0
+  obtain rfl | hy := eq_or_ne y 0
   · -- special case: both x and y are zero
-    have hy : y = 0 := by
-      change ofLex y = 0
-      apply orderTop_eq_top_iff.mp
-      simpa using h.symm
-    simp [hy]
+    simp_all
   -- general case: x and y are not zero
-  have hx' : ofLex x ≠ 0 := hx
-  have hy' : ofLex y ≠ 0 := ne_zero_iff_orderTop.mpr <| h.symm ▸ ne_zero_iff_orderTop.mp hx'
-  have hy : y ≠ 0 := hy'
+  have hy' : ofLex y ≠ 0 := hy
+  have hx' : ofLex x ≠ 0 := orderTop_ne_top.1 <| h ▸ orderTop_ne_top.2 hy'
+  have hx : x ≠ 0 := hx'
   have hxabs : ofLex |x| ≠ 0 := abs_ne_zero.mpr hx
   have hyabs : ofLex |y| ≠ 0 := abs_ne_zero.mpr hy
   have h' : (ofLex |x|).orderTop = (ofLex |y|).orderTop := by simpa [orderTop_abs] using h
@@ -213,7 +207,7 @@ theorem archimedeanClassMk_le_archimedeanClassMk_iff_of_orderTop_ofLex {x y : Le
     obtain ⟨j, hj, hi⟩ := (lt_iff _ _).mp hn'
     simp_rw [ofLex_smul, coeff_smul] at hj hi
     simp_rw [← leadingCoeff_abs]
-    rw [← coeff_untop_eq_leadingCoeff hyabs, ← coeff_untop_eq_leadingCoeff hxabs]
+    rw [leadingCoeff_of_ne_zero hyabs, leadingCoeff_of_ne_zero hxabs]
     simp_rw [← h']
     obtain hjlt | hjeq | hjgt := lt_trichotomy (WithTop.some j) (ofLex |x|).orderTop
     · -- impossible case: x and y differ before their leading coefficients
@@ -224,7 +218,7 @@ theorem archimedeanClassMk_le_archimedeanClassMk_iff_of_orderTop_ofLex {x y : Le
   · -- mk x.leadingCoeff ≤ mk y.leadingCoeff → mk x ≤ mk y
     intro ⟨n, hn⟩
     refine ⟨n + 1, ((lt_iff _ _).mpr ?_).le⟩
-    refine ⟨(ofLex x).orderTop.untop (ne_zero_iff_orderTop.mp hx'), ?_, ?_⟩
+    refine ⟨(ofLex x).orderTop.untop (orderTop_ne_top.2 hx'), ?_, ?_⟩
     · -- all coefficients before the leading coefficient are zero
       intro j hj
       trans 0
@@ -240,13 +234,12 @@ theorem archimedeanClassMk_le_archimedeanClassMk_iff_of_orderTop_ofLex {x y : Le
     rw [ofLex_smul, coeff_smul]
     suffices |(ofLex y).leadingCoeff| < (n + 1) • |(ofLex x).leadingCoeff| by
       simp_rw [← leadingCoeff_abs] at this
-      rw [← coeff_untop_eq_leadingCoeff hyabs, ← coeff_untop_eq_leadingCoeff hxabs] at this
+      rw [leadingCoeff_of_ne_zero hyabs, leadingCoeff_of_ne_zero hxabs] at this
       convert this using 3
       · rw [h, orderTop_abs]
       · simp_rw [orderTop_abs]
     refine lt_of_le_of_lt hn <| nsmul_lt_nsmul_left ?_ (by simp)
-    rw [abs_pos, leadingCoeff_ne_iff]
-    exact hx'
+    rwa [abs_pos, leadingCoeff_ne_zero]
 
 theorem archimedeanClassMk_le_archimedeanClassMk_iff {x y : Lex (HahnSeries Γ R)} :
     ArchimedeanClass.mk x ≤ ArchimedeanClass.mk y ↔
@@ -296,8 +289,8 @@ noncomputable def finiteArchimedeanClassOrderHomLex :
     FiniteArchimedeanClass (Lex (HahnSeries Γ R)) →o Γ ×ₗ FiniteArchimedeanClass R :=
   FiniteArchimedeanClass.liftOrderHom
     (fun ⟨x, hx⟩ ↦ toLex
-      ⟨(ofLex x).orderTop.untop (by simp [orderTop_of_ne (show ofLex x ≠ 0 by exact hx)]),
-      FiniteArchimedeanClass.mk (ofLex x).leadingCoeff (leadingCoeff_ne_iff.mpr hx)⟩)
+      ⟨(ofLex x).orderTop.untop (by simp [orderTop_of_ne_zero (show ofLex x ≠ 0 by exact hx)]),
+      FiniteArchimedeanClass.mk (ofLex x).leadingCoeff (leadingCoeff_ne_zero.mpr hx)⟩)
     fun ⟨a, ha⟩ ⟨b, hb⟩ h ↦ by
       rw [Prod.Lex.le_iff]
       simp only [ofLex_toLex]
@@ -346,7 +339,7 @@ noncomputable def finiteArchimedeanClassOrderIsoLex :
         ArchimedeanClass.mk a by
       simpa [finiteArchimedeanClassOrderHomLex, finiteArchimedeanClassOrderHomInvLex] using this
     rw [archimedeanClassMk_eq_archimedeanClassMk_iff]
-    have h : (ofLex a).leadingCoeff ≠ 0 := leadingCoeff_ne_iff.mpr ha
+    have h : (ofLex a).leadingCoeff ≠ 0 := leadingCoeff_ne_zero.mpr ha
     simp [h]
 
 @[simp]
