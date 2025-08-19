@@ -30,10 +30,10 @@ theorem inv_mul_le_iff : u⁻¹ * a ≤ b ↔ a ≤ u * b := by
 theorem le_inv_mul_iff : a ≤ u⁻¹ * b ↔ u * a ≤ b := by
   rw [← u.mul_le_mul_left, mul_inv_cancel_left]
 
-theorem one_le_inv : (1 : M) ≤ u⁻¹ ↔ (u : M) ≤ 1 := by
+@[simp] theorem one_le_inv : (1 : M) ≤ u⁻¹ ↔ (u : M) ≤ 1 := by
   rw [← u.mul_le_mul_left, mul_one, mul_inv]
 
-theorem inv_le_one : u⁻¹ ≤ (1 : M) ↔ (1 : M) ≤ u := by
+@[simp] theorem inv_le_one : u⁻¹ ≤ (1 : M) ↔ (1 : M) ≤ u := by
   rw [← u.mul_le_mul_left, mul_one, mul_inv]
 
 theorem one_le_inv_mul : 1 ≤ u⁻¹ * a ↔ u ≤ a := by
