@@ -21,7 +21,7 @@ namespace Units
 theorem mulLECancellable_val : MulLECancellable (↑u : M) := fun _ _ h ↦ by
   simpa using mul_le_mul_left' h ↑u⁻¹
 
-theorem mul_le_mul_left : u * b ≤ u * c ↔ b ≤ c :=
+private theorem mul_le_mul_left : u * b ≤ u * c ↔ b ≤ c :=
   u.mulLECancellable_val.mul_le_mul_iff_left
 
 theorem inv_mul_le_iff : u⁻¹ * a ≤ b ↔ a ≤ u * b := by
@@ -42,7 +42,6 @@ theorem one_le_inv_mul : 1 ≤ u⁻¹ * a ↔ u ≤ a := by
 theorem inv_mul_le_one : u⁻¹ * a ≤ 1 ↔ a ≤ u := by
   rw [u.inv_mul_le_iff, mul_one]
 
-alias ⟨le_of_mul_le_mul_left, _⟩ := mul_le_mul_left
 alias ⟨le_mul_of_inv_mul_le, inv_mul_le_of_le_mul⟩ := inv_mul_le_iff
 alias ⟨mul_le_of_le_inv_mul, le_inv_mul_of_mul_le⟩ := le_inv_mul_iff
 alias ⟨le_of_one_le_inv, one_le_inv_of_le⟩ := one_le_inv
@@ -73,11 +72,33 @@ variable [MulRightMono M] {a b c : M} (hc : IsUnit c) (u : Mˣ)
 
 namespace Units
 
-theorem mul_le_mul_right : a * u ≤ b * u ↔ a ≤ b :=
+private theorem mul_le_mul_right : a * u ≤ b * u ↔ a ≤ b :=
   ⟨(by simpa using mul_le_mul_right' · ↑u⁻¹), (mul_le_mul_right' · _)⟩
 
 theorem mul_inv_le_iff : a * u⁻¹ ≤ b ↔ a ≤ b * u := by
   rw [← u.mul_le_mul_right, u.inv_mul_cancel_right]
+
+theorem le_mul_inv_iff : a ≤ b * u⁻¹ ↔ a * u ≤ b := by
+  rw [← u.mul_le_mul_right, inv_mul_cancel_right]
+
+theorem one_le_inv' : (1 : M) ≤ u⁻¹ ↔ (u : M) ≤ 1 := by
+  rw [← u.mul_le_mul_right, one_mul, inv_mul]
+
+theorem inv_le_one' : u⁻¹ ≤ (1 : M) ↔ (1 : M) ≤ u := by
+  rw [← u.mul_le_mul_right, one_mul, inv_mul]
+
+theorem one_le_mul_inv : 1 ≤ a * u⁻¹ ↔ u ≤ a := by
+  rw [u.le_mul_inv_iff, one_mul]
+
+theorem mul_inv_le_one : a * u⁻¹ ≤ 1 ↔ a ≤ u := by
+  rw [u.mul_inv_le_iff, one_mul]
+
+alias ⟨le_mul_of_mul_inv_le, mul_inv_le_of_le_mul⟩ := mul_inv_le_iff
+alias ⟨mul_le_of_le_mul_inv, le_mul_inv_of_mul_le⟩ := le_mul_inv_iff
+alias ⟨le_of_one_le_inv', one_le_inv_of_le'⟩ := one_le_inv'
+alias ⟨le_of_inv_le_one', inv_le_one_of_le'⟩ := inv_le_one'
+alias ⟨le_of_one_le_mul_inv, one_le_mul_inv_of_le⟩ := one_le_mul_inv
+alias ⟨le_of_mul_inv_le_one, mul_inv_le_one_of_le⟩ := mul_inv_le_one
 
 end Units
 
@@ -87,6 +108,8 @@ include hc
 
 theorem mul_le_mul_right : a * c ≤ b * c ↔ a ≤ b :=
   hc.unit.mul_le_mul_right
+
+alias ⟨le_of_mul_le_mul_right, _⟩ := mul_le_mul_right
 
 end IsUnit
 
