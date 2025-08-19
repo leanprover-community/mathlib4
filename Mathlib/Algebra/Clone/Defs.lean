@@ -62,7 +62,7 @@ def Sigma.superpose [Superposable T A] (x : Sigma A) (y : T x.fst → A i) : Sig
 
 namespace Superposable
 
-/-- Notation for `Superposable.superpose`, for working with `A n` graded types. -/
+/-- Notation for `Superposable.superpose` for working with graded superposition. -/
 scoped infixr:70 " ∘⚟ " => Superposable.superpose
 
 variable [Superposable T A] {i : ι}
