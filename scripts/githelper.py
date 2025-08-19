@@ -529,7 +529,7 @@ def cmd_prune(args: argparse.Namespace) -> None:
     )
 
     print_step(4, "Prune branches.")
-    to_keep = set(branches_of_open_prs) | {default_branch}
+    to_keep: set[str] = set(args.keep) | set(branches_of_open_prs) | {default_branch}
     to_delete = list(sorted(set(branches) - to_keep))
     if not to_delete:
         print_info("No branches to delete.")
@@ -577,6 +577,14 @@ def main() -> None:
         "--all",
         action="store_true",
         help="prompt only once for all branches",
+    )
+    p_prune.add_argument(
+        "-k",
+        "--keep",
+        action="append",
+        default=[],
+        metavar="BRANCH",
+        help="never delete this branch (may be specified multiple times)",
     )
     p_prune.set_defaults(cmd=cmd_prune)
 
