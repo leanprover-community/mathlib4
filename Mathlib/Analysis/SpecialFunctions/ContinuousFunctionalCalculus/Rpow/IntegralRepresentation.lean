@@ -399,7 +399,7 @@ lemma exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₀₁ [CompleteSpac
   let bound (t : ℝ) := ‖f t maxr‖
   have hf : ContinuousOn (Function.uncurry f) (Ioi (0 : ℝ) ×ˢ quasispectrum ℝ a) := by
     refine continuousOn_rpowIntegrand₀₁_uncurry hp (quasispectrum ℝ a) ?_
-    grind [Set.subset_def]
+    grind
   have hbound : ∀ᵐ t ∂μ.restrict (Ioi 0), ∀ z ∈ quasispectrum ℝ a, ‖f t z‖ ≤ bound t := by
     filter_upwards [ae_restrict_mem measurableSet_Ioi] with t ht
     intro z hz
@@ -492,8 +492,10 @@ lemma monotone_nnrpow {p : ℝ≥0} (hp : p ∈ Icc 0 1) :
 
 /-- `CFC.sqrt` is operator monotone. -/
 lemma monotone_sqrt : Monotone (sqrt : A → A) := by
-  convert monotone_nnrpow (p := 1 / 2) (by norm_num) using 2
-  exact CFC.sqrt_eq_nnrpow
+  intro a b hab
+  rw [CFC.sqrt_eq_nnrpow a, CFC.sqrt_eq_nnrpow b]
+  refine (monotone_nnrpow (A := A) ?_) hab
+  constructor <;> norm_num
 
 @[gcongr]
 lemma nnrpow_le_nnrpow {p : ℝ≥0} (hp : p ∈ Icc 0 1) {a b : A} (hab : a ≤ b) :

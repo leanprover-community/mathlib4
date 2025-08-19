@@ -1170,13 +1170,13 @@ theorem ContinuousOn.uncurry_left {f : α → β → γ} {sα : Set α} {sβ : S
     (h : ContinuousOn f.uncurry (sα ×ˢ sβ)) : ContinuousOn (f a) sβ := by
   let g : β → γ := f.uncurry ∘ (fun b => (a, b))
   refine ContinuousOn.congr (f := g) ?_ (fun y => by simp [g])
-  exact ContinuousOn.comp h (by fun_prop) (by grind [Set.MapsTo, = Set.mem_prod])
+  exact ContinuousOn.comp h (by fun_prop) (by grind [Set.MapsTo])
 
 theorem ContinuousOn.uncurry_right {f : α → β → γ} {sα : Set α} {sβ : Set β} (b : β) (ha : b ∈ sβ)
     (h : ContinuousOn f.uncurry (sα ×ˢ sβ)) : ContinuousOn (fun a => f a b) sα := by
   let g : α → γ := f.uncurry ∘ (fun a => (a, b))
   refine ContinuousOn.congr (f := g) ?_ (fun y => by simp [g])
-  exact ContinuousOn.comp h (by fun_prop) (by grind [Set.MapsTo, = Set.mem_prod])
+  exact ContinuousOn.comp h (by fun_prop) (by grind [Set.MapsTo])
 
 /-!
 ### Pi
