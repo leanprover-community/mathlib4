@@ -9,6 +9,7 @@ import Mathlib.Algebra.Order.BigOperators.Expect
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Analysis.CStarAlgebra.Basic
 import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
+import Mathlib.Analysis.Normed.Ring.Finite
 import Mathlib.Data.Real.Sqrt
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 
@@ -535,9 +536,9 @@ theorem normSq_div (z w : K) : normSq (z / w) = normSq z / normSq w :=
 @[simp 1100, rclike_simps]
 theorem norm_conj (z : K) : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_normSq_eq_norm, normSq_conj]
 
-@[simp, rclike_simps] lemma nnnorm_conj (z : K) : ‖conj z‖₊ = ‖z‖₊ := by simp [nnnorm]
+@[simp 1100, rclike_simps] lemma nnnorm_conj (z : K) : ‖conj z‖₊ = ‖z‖₊ := by simp [nnnorm]
 
-@[simp, rclike_simps] lemma enorm_conj (z : K) : ‖conj z‖ₑ = ‖z‖ₑ := by simp [enorm]
+@[simp 1100, rclike_simps] lemma enorm_conj (z : K) : ‖conj z‖ₑ = ‖z‖ₑ := by simp [enorm]
 
 instance (priority := 100) : CStarRing K where
   norm_mul_self_le x := le_of_eq <| ((norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_conj _)).symm

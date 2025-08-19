@@ -138,10 +138,7 @@ theorem lintegral_mul_eq_zero_of_lintegral_rpow_eq_zero {p : ℝ} (hp0 : 0 ≤ p
 theorem lintegral_mul_le_Lp_mul_Lq_of_ne_zero_of_eq_top {p q : ℝ} (hp0_lt : 0 < p) (hq0 : 0 ≤ q)
     {f g : α → ℝ≥0∞} (hf_top : ∫⁻ a, f a ^ p ∂μ = ⊤) (hg_nonzero : (∫⁻ a, g a ^ q ∂μ) ≠ 0) :
     (∫⁻ a, (f * g) a ∂μ) ≤ (∫⁻ a, f a ^ p ∂μ) ^ (1 / p) * (∫⁻ a, g a ^ q ∂μ) ^ (1 / q) := by
-  refine le_trans le_top (le_of_eq ?_)
-  have hp0_inv_lt : 0 < 1 / p := by simp [hp0_lt]
-  rw [hf_top, ENNReal.top_rpow_of_pos hp0_inv_lt]
-  simp [hq0, hg_nonzero]
+  simp [*]
 
 /-- Hölder's inequality for functions `α → ℝ≥0∞`. The integral of the product of two functions
 is bounded by the product of their `ℒp` and `ℒq` seminorms when `p` and `q` are conjugate
@@ -224,7 +221,7 @@ theorem lintegral_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ : Me
         _ ≤ (∫⁻ a, f i₀ a ∂μ) ^ p i₀ * (∫⁻ a, ∏ i ∈ s, f i a ^ q i ∂μ) ^ (1 - p i₀) := by
             apply ENNReal.lintegral_mul_norm_pow_le
             · exact hf i₀ <| mem_insert_self ..
-            · exact s.aemeasurable_prod fun i hi ↦ (hf i <| mem_insert_of_mem hi).pow_const _
+            · exact s.aemeasurable_fun_prod fun i hi ↦ (hf i <| mem_insert_of_mem hi).pow_const _
             · exact h2p i₀ <| mem_insert_self ..
             · exact hpi₀
             · apply add_sub_cancel
