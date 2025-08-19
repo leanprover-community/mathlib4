@@ -13,7 +13,7 @@ import Mathlib.Probability.Kernel.WithDensity
 
 ## Main statements
 
-* `supBayesRisk_le_minimaxRisk`: the maximal Bayes risk is less than or equal to the minimax risk.
+* `iSup_bayesRisk_le_minimaxRisk`: the maximal Bayes risk is less than or equal to the minimax risk.
 
 Data-processing inequalities: if we compose the data generating kernel `P` with a Markov kernel
 `η : Kernel 𝓧 𝓧'`, then the Bayes risk increases.
@@ -48,17 +48,14 @@ lemma bayesRisk_le_avgRisk (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ �
     (π : Measure Θ) [hκ : IsMarkovKernel κ] :
     bayesRisk ℓ P π ≤ avgRisk ℓ P κ π := iInf₂_le κ hκ
 
-lemma bayesRisk_le_supBayesRisk (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧)
-    (π : Measure Θ) [hπ : IsProbabilityMeasure π] :
-    bayesRisk ℓ P π ≤ supBayesRisk ℓ P := le_iSup₂ (f := fun π _ ↦ bayesRisk ℓ P π) π hπ
-
 lemma bayesRisk_le_minimaxRisk (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧)
     (π : Measure Θ) [IsProbabilityMeasure π] :
     bayesRisk ℓ P π ≤ minimaxRisk ℓ P := iInf₂_mono fun _ _ ↦ avgRisk_le_iSup_risk _ _ _ _
 
 /-- The maximal Bayes risk is less than or equal to the minimax risk. -/
-lemma supBayesRisk_le_minimaxRisk (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) :
-    supBayesRisk ℓ P ≤ minimaxRisk ℓ P := iSup₂_le fun _ _ ↦ bayesRisk_le_minimaxRisk _ _ _
+lemma iSup_bayesRisk_le_minimaxRisk (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) :
+    ⨆ (π : Measure Θ) (_ : IsProbabilityMeasure π), bayesRisk ℓ P π
+     ≤ minimaxRisk ℓ P := iSup₂_le fun _ _ ↦ bayesRisk_le_minimaxRisk _ _ _
 
 end BayesRiskLeMinimaxRisk
 
@@ -167,23 +164,11 @@ lemma bayesRisk_le_mul [h𝓨 : Nonempty 𝓨] (P : Kernel Θ 𝓧)
   refine iInf₂_le_of_le (Kernel.const 𝓧 (Measure.dirac h𝓨.some)) inferInstance ?_
   exact avgRisk_le_mul P (Kernel.const 𝓧 (Measure.dirac h𝓨.some)) π hℓC
 
-lemma supBayesRisk_le_mul [h𝓨 : Nonempty 𝓨] (P : Kernel Θ 𝓧)
-    [IsFiniteKernel P] {C : ℝ≥0} (hℓC : ∀ θ y, ℓ θ y ≤ C) :
-    supBayesRisk ℓ P ≤ C * (IsFiniteKernel.bound P) :=
-  iSup₂_le fun π hπ ↦ (bayesRisk_le_mul P _ hℓC).trans_eq (by simp)
-
 /-- For a bounded loss, the Bayes risk with respect to a prior is finite. -/
 lemma bayesRisk_lt_top [h𝓨 : Nonempty 𝓨] (P : Kernel Θ 𝓧)
     [IsFiniteKernel P] (π : Measure Θ) [IsFiniteMeasure π] {C : ℝ≥0} (hℓC : ∀ θ y, ℓ θ y ≤ C) :
     bayesRisk ℓ P π < ∞ := by
   refine (bayesRisk_le_mul P π hℓC).trans_lt ?_
-  simp [ENNReal.mul_lt_top_iff, IsFiniteKernel.bound_lt_top P]
-
-/-- For a bounded loss, the supremum of the Bayes risk is finite. -/
-lemma supBayesRisk_lt_top [h𝓨 : Nonempty 𝓨] (P : Kernel Θ 𝓧)
-    [IsFiniteKernel P] {C : ℝ≥0} (hℓC : ∀ θ y, ℓ θ y ≤ C) :
-    supBayesRisk ℓ P < ∞ := by
-  refine (supBayesRisk_le_mul P hℓC).trans_lt ?_
   simp [ENNReal.mul_lt_top_iff, IsFiniteKernel.bound_lt_top P]
 
 section Subsingleton
@@ -269,18 +254,6 @@ lemma bayesRisk_compProd_le_bayesRisk (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Ke
     rw [Kernel.deterministic_comp_eq_map, ← Kernel.fst_eq, Kernel.fst_compProd]
   conv_rhs => rw [this]
   exact bayesRisk_le_bayesRisk_comp _ _ _ _
-
-/-- **Data processing inequality** for the maximal Bayes risk: composition of the
-data generating kernel by a Markov kernel increases the risk. -/
-lemma supBayesRisk_le_supBayesRisk_comp (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧)
-    (η : Kernel 𝓧 𝓧') [IsMarkovKernel η] :
-    supBayesRisk ℓ P ≤ supBayesRisk ℓ (η ∘ₖ P) :=
-  iSup₂_mono fun _ _ ↦ bayesRisk_le_bayesRisk_comp _ _ _ _
-
-lemma supBayesRisk_compProd_le_supBayesRisk (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧)
-    [IsSFiniteKernel P] (η : Kernel (Θ × 𝓧) 𝓧') [IsMarkovKernel η] :
-    supBayesRisk ℓ (P ⊗ₖ η) ≤ supBayesRisk ℓ P :=
-  iSup₂_mono fun _ _ ↦ bayesRisk_compProd_le_bayesRisk _ _ _ _
 
 lemma avgRisk_comap_measurableEquiv (hl : Measurable (uncurry ℓ)) (P : Kernel Θ 𝓧)
     [IsSFiniteKernel P] (κ : Kernel 𝓧 𝓨) [IsSFiniteKernel κ] (π : Measure Θ) (e : Θ' ≃ᵐ Θ) :
