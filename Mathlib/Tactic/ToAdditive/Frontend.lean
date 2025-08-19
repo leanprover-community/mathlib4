@@ -651,23 +651,27 @@ def expand (e : Expr) : MetaM Expr := do
     trace[to_additive_detail] "expand:\nBefore: {e}\nAfter: {e₂}"
   return e₂
 
-/-- Reorder pi-binders. See doc of `reorderAttr` for the interpretation of the argument -/
-def reorderForall (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr := do
+/-- Rename binder names in pi type. -/
+def renameBinderNames (src : Expr) : MetaM Expr := do
   let tgt := src.mapForallBinderNames
     fun
     | .str p s => .str p (guessName s)
     | n => n
   trace[to_additive_detail] m!"renamed binder names from {src.getForallBinderNames} to " ++
     m!"{tgt.getForallBinderNames}"
+  return tgt
+
+/-- Reorder pi-binders. See doc of `reorderAttr` for the interpretation of the argument -/
+def reorderForall (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr := do
   if let some maxReorder := reorder.flatten.max? then
-    forallBoundedTelescope tgt (some (maxReorder + 1)) fun xs e => do
+    forallBoundedTelescope src (some (maxReorder + 1)) fun xs e => do
       if xs.size = maxReorder + 1 then
         mkForallFVars (xs.permute! reorder) e
       else
         throwError "the permutation\n{reorder}\nprovided by the `(reorder := ...)` option is \
           out of bounds, the type{indentExpr src}\nhas only {xs.size} arguments"
   else
-    return tgt
+    return src
 
 /-- Reorder lambda-binders. See doc of `reorderAttr` for the interpretation of the argument -/
 def reorderLambda (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr := do
@@ -702,7 +706,8 @@ def updateDecl (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) 
   let mut decl := srcDecl.updateName tgt
   if 0 ∈ reorder.flatten then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
-  decl := decl.updateType <| ← applyReplacementFun <| ← reorderForall reorder <| ← expand decl.type
+  decl := decl.updateType <| ← applyReplacementFun <| ← reorderForall reorder <|
+    ← renameBinderNames <| ← expand decl.type
   if let some v := decl.value? then
     decl := decl.updateValue <| ← applyReplacementFun <| ← reorderLambda reorder <| ← expand v
   else if let .opaqueInfo info := decl then -- not covered by `value?`
@@ -1170,6 +1175,7 @@ partial def checkExistingType (src tgt : Name) (reorder : List (List Nat)) : Met
     srcDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
   let tgtType := tgtDecl.type.instantiateLevelParams
     tgtDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
+  -- no need to rename binder names for existing types
   let type ←
     applyReplacementFun <| ← reorderForall reorder <| ← expand <| ← unfoldAuxLemmas type
   -- `instantiateLevelParams` normalizes universes, so we have to normalize both expressions
