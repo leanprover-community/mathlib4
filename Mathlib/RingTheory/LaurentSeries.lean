@@ -948,7 +948,7 @@ lemma comparePkg_eq_extension (x : UniformSpace.Completion (RatFunc K)) :
 /-- The uniform space equivalence between two abstract completions of `ratfunc K` as a ring
 equivalence: this will be the *inverse* of the fundamental one. -/
 abbrev ratfuncAdicComplRingEquiv : RatFuncAdicCompl K ≃+* K⸨X⸩ :=
-  {comparePkg K with
+  { comparePkg K with
     map_mul' := by
       intro x y
       rw [comparePkg_eq_extension, (extensionAsRingHom K (continuous_coe)).map_mul']
