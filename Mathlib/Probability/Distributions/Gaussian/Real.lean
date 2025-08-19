@@ -40,7 +40,7 @@ namespace ProbabilityTheory
 
 section GaussianPDF
 
-/-- Probability density function of the gaussian distribution with mean `μ` and variance `v`. -/
+/-- Probability density function of the Gaussian distribution with mean `μ` and variance `v`. -/
 noncomputable
 def gaussianPDFReal (μ : ℝ) (v : ℝ≥0) (x : ℝ) : ℝ :=
   (√(2 * π * v))⁻¹ * rexp (- (x - μ)^2 / (2 * v))
@@ -54,22 +54,22 @@ lemma gaussianPDFReal_zero_var (m : ℝ) : gaussianPDFReal m 0 = 0 := by
   ext1 x
   simp [gaussianPDFReal]
 
-/-- The gaussian pdf is positive when the variance is not zero. -/
+/-- The Gaussian pdf is positive when the variance is not zero. -/
 lemma gaussianPDFReal_pos (μ : ℝ) (v : ℝ≥0) (x : ℝ) (hv : v ≠ 0) : 0 < gaussianPDFReal μ v x := by
   rw [gaussianPDFReal]
   positivity
 
-/-- The gaussian pdf is nonnegative. -/
+/-- The Gaussian pdf is nonnegative. -/
 lemma gaussianPDFReal_nonneg (μ : ℝ) (v : ℝ≥0) (x : ℝ) : 0 ≤ gaussianPDFReal μ v x := by
   rw [gaussianPDFReal]
   positivity
 
-/-- The gaussian pdf is measurable. -/
+/-- The Gaussian pdf is measurable. -/
 @[fun_prop]
 lemma measurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDFReal μ v) :=
   (((measurable_id.add_const _).pow_const _).neg.div_const _).exp.const_mul _
 
-/-- The gaussian pdf is strongly measurable. -/
+/-- The Gaussian pdf is strongly measurable. -/
 @[fun_prop]
 lemma stronglyMeasurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
     StronglyMeasurable (gaussianPDFReal μ v) :=
@@ -97,7 +97,7 @@ lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
     field_simp
   exact Integrable.comp_sub_right hg μ
 
-/-- The gaussian distribution pdf integrates to 1 when the variance is not zero. -/
+/-- The Gaussian distribution pdf integrates to 1 when the variance is not zero. -/
 lemma lintegral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
     ∫⁻ x, ENNReal.ofReal (gaussianPDFReal μ v x) = 1 := by
   rw [← ENNReal.toReal_eq_one_iff]
@@ -115,7 +115,7 @@ lemma lintegral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
     ring
   · positivity
 
-/-- The gaussian distribution pdf integrates to 1 when the variance is not zero. -/
+/-- The Gaussian distribution pdf integrates to 1 when the variance is not zero. -/
 lemma integral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
     ∫ x, gaussianPDFReal μ v x = 1 := by
   have h := lintegral_gaussianPDFReal_eq_one μ hv
@@ -395,7 +395,7 @@ open Real Complex
 
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {p : Measure Ω} {μ : ℝ} {v : ℝ≥0} {X : Ω → ℝ}
 
-/-- The complex moment generating function of a Gaussian distribution with mean `μ` and variance `v`
+/-- The complex moment-generating function of a Gaussian distribution with mean `μ` and variance `v`
 is given by `z ↦ exp (z * μ + v * z ^ 2 / 2)`. -/
 theorem complexMGF_id_gaussianReal (z : ℂ) :
     complexMGF id (gaussianReal μ v) z = cexp (z * μ + v * z ^ 2 / 2) := by
@@ -428,7 +428,7 @@ theorem complexMGF_id_gaussianReal (z : ℂ) :
       field_simp
       ring
 
-/-- The complex moment generating function of a random variable with Gaussian distribution
+/-- The complex moment-generating function of a random variable with Gaussian distribution
 with mean `μ` and variance `v` is given by `z ↦ exp (z * μ + v * z ^ 2 / 2)`. -/
 theorem complexMGF_gaussianReal (hX : p.map X = gaussianReal μ v) (z : ℂ) :
     complexMGF X p z = cexp (z * μ + v * z ^ 2 / 2) := by
@@ -444,7 +444,7 @@ theorem charFun_gaussianReal (t : ℝ) :
   simp only [mul_pow, I_sq, mul_neg, mul_one, sub_eq_add_neg]
   ring_nf
 
-/-- The moment generating function of a random variable with Gaussian distribution
+/-- The moment-generating function of a random variable with Gaussian distribution
 with mean `μ` and variance `v` is given by `t ↦ exp (μ * t + v * t ^ 2 / 2)`. -/
 theorem mgf_gaussianReal (hX : p.map X = gaussianReal μ v) (t : ℝ) :
     mgf X p t = rexp (μ * t + v * t ^ 2 / 2) := by
@@ -462,7 +462,7 @@ theorem mgf_fun_id_gaussianReal :
 theorem mgf_id_gaussianReal : mgf id (gaussianReal μ v) = fun t ↦ rexp (μ * t + v * t ^ 2 / 2) :=
   mgf_fun_id_gaussianReal
 
-/-- The cumulant generating function of a random variable with Gaussian distribution
+/-- The cumulant-generating function of a random variable with Gaussian distribution
 with mean `μ` and variance `v` is given by `t ↦ μ * t + v * t ^ 2 / 2`. -/
 theorem cgf_gaussianReal (hX : p.map X = gaussianReal μ v) (t : ℝ) :
     cgf X p t = μ * t + v * t ^ 2 / 2 := by
