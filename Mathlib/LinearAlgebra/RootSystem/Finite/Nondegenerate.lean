@@ -99,7 +99,7 @@ variable (S : Type*) [CommRing S] [IsDomain R] [IsDomain S] [Algebra S R] [Faith
 lemma finrank_range_polarization_eq_finrank_span_coroot [P.IsAnisotropic] :
     finrank S (LinearMap.range (P.PolarizationIn S)) = finrank S (P.corootSpan S) := by
   apply (Submodule.finrank_mono (P.range_polarizationIn_le_span_coroot S)).antisymm
-  have : IsReflexive R N := PerfectPairing.reflexive_right P.toPerfectPairing
+  have : IsReflexive R N := .of_isPerfPair P.flip.toLinearMap
   have : NoZeroSMulDivisors S N := NoZeroSMulDivisors.trans_faithfulSMul S R N
   have h_ne : ∏ i, (P.RootFormIn S (P.rootSpanMem S i) (P.rootSpanMem S i)) ≠ 0 := by
     refine Finset.prod_ne_zero_iff.mpr fun i _ h ↦ ?_
@@ -128,7 +128,7 @@ lemma finrank_corootSpan_eq [P.IsAnisotropic] :
 
 lemma polarizationIn_Injective [P.IsAnisotropic] :
     Function.Injective (P.PolarizationIn S) := by
-  have : IsReflexive R M := PerfectPairing.reflexive_left P.toPerfectPairing
+  have : IsReflexive R M := .of_isPerfPair P.toLinearMap
   have : NoZeroSMulDivisors S M := NoZeroSMulDivisors.trans_faithfulSMul S R M
   rw [← LinearMap.ker_eq_bot, ← top_disjoint]
   refine Submodule.disjoint_ker_of_finrank_le (L := ⊤) (P.PolarizationIn S) ?_
@@ -203,7 +203,7 @@ lemma finrank_corootSpan_eq' :
 
 lemma disjoint_rootSpan_ker_rootForm :
     Disjoint (P.rootSpan R) (LinearMap.ker P.RootForm) := by
-  have : IsReflexive R M := PerfectPairing.reflexive_left P.toPerfectPairing
+  have : IsReflexive R M := .of_isPerfPair P.toLinearMap
   rw [← P.ker_polarization_eq_ker_rootForm]
   refine Submodule.disjoint_ker_of_finrank_le (L := P.rootSpan R) P.Polarization ?_
   rw [P.finrank_rootSpan_map_polarization_eq_finrank_corootSpan, P.finrank_corootSpan_eq']
@@ -225,13 +225,13 @@ variable [Field R] [Module R M] [Module R N] (P : RootPairing ι R M N) [P.IsAni
 
 lemma isCompl_rootSpan_ker_rootForm :
     IsCompl (P.rootSpan R) (LinearMap.ker P.RootForm) := by
-  have _iM : IsReflexive R M := PerfectPairing.reflexive_left P.toPerfectPairing
-  have _iN : IsReflexive R N := PerfectPairing.reflexive_right P.toPerfectPairing
+  have : IsReflexive R M := .of_isPerfPair P.toLinearMap
+  have : IsReflexive R N := .of_isPerfPair P.flip.toLinearMap
   refine (Submodule.isCompl_iff_disjoint _ _ ?_).mpr P.disjoint_rootSpan_ker_rootForm
   have aux : finrank R M =
       finrank R (P.rootSpan R) + finrank R (P.corootSpan R).dualAnnihilator := by
-    rw [P.toPerfectPairing.finrank_eq, ← P.finrank_corootSpan_eq',
-      Subspace.finrank_add_finrank_dualAnnihilator_eq (P.corootSpan R)]
+    rw [P.toPerfPair.finrank_eq, ← P.finrank_corootSpan_eq',
+      Subspace.finrank_add_finrank_dualAnnihilator_eq (P.corootSpan R), Subspace.dual_finrank_eq]
   rw [aux, add_le_add_iff_left]
   convert Submodule.finrank_mono P.corootSpan_dualAnnihilator_le_ker_rootForm
   exact (LinearEquiv.finrank_map_eq _ _).symm
@@ -241,20 +241,20 @@ lemma isCompl_corootSpan_ker_corootForm :
   P.flip.isCompl_rootSpan_ker_rootForm
 
 lemma ker_rootForm_eq_dualAnnihilator :
-    LinearMap.ker P.RootForm = (P.corootSpan R).dualAnnihilator.map P.toDualLeft.symm := by
-  have _iM : IsReflexive R M := PerfectPairing.reflexive_left P.toPerfectPairing
-  have _iN : IsReflexive R N := PerfectPairing.reflexive_right P.toPerfectPairing
+    LinearMap.ker P.RootForm = (P.corootSpan R).dualAnnihilator.map P.toPerfPair.symm := by
+  have : IsReflexive R M := .of_isPerfPair P.toLinearMap
+  have : IsReflexive R N := .of_isPerfPair P.flip.toLinearMap
   suffices finrank R (LinearMap.ker P.RootForm) = finrank R (P.corootSpan R).dualAnnihilator by
     refine (Submodule.eq_of_le_of_finrank_eq P.corootSpan_dualAnnihilator_le_ker_rootForm ?_).symm
     rw [this]
     apply LinearEquiv.finrank_map_eq
   have aux0 := Subspace.finrank_add_finrank_dualAnnihilator_eq (P.corootSpan R)
   have aux1 := Submodule.finrank_add_eq_of_isCompl P.isCompl_rootSpan_ker_rootForm
-  rw [← P.finrank_corootSpan_eq', P.toPerfectPairing.finrank_eq] at aux1
+  rw [← P.finrank_corootSpan_eq', P.toPerfPair.finrank_eq, Subspace.dual_finrank_eq] at aux1
   omega
 
 lemma ker_corootForm_eq_dualAnnihilator :
-    LinearMap.ker P.CorootForm = (P.rootSpan R).dualAnnihilator.map P.toDualRight.symm :=
+    LinearMap.ker P.CorootForm = (P.rootSpan R).dualAnnihilator.map P.flip.toPerfPair.symm :=
   P.flip.ker_rootForm_eq_dualAnnihilator
 
 instance : P.IsBalanced where
@@ -291,11 +291,12 @@ lemma orthogonal_corootSpan_eq :
 
 lemma rootSpan_eq_top_iff :
     P.rootSpan R = ⊤ ↔ P.corootSpan R = ⊤ := by
-  have := P.toPerfectPairing.reflexive_left
-  have := P.toPerfectPairing.reflexive_right
+  have : IsReflexive R M := .of_isPerfPair P.toLinearMap
+  have : IsReflexive R N := .of_isPerfPair P.flip.toLinearMap
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩ <;> apply Submodule.eq_top_of_finrank_eq
-  · rw [P.finrank_corootSpan_eq', h, finrank_top, P.toPerfectPairing.finrank_eq]
-  · rw [← P.finrank_corootSpan_eq', h, finrank_top, P.toPerfectPairing.finrank_eq]
+  · rw [P.finrank_corootSpan_eq', h, finrank_top, P.toPerfPair.finrank_eq, Subspace.dual_finrank_eq]
+  · rw [← P.finrank_corootSpan_eq', h, finrank_top, P.toPerfPair.finrank_eq,
+      Subspace.dual_finrank_eq]
 
 end Field
 

@@ -64,7 +64,8 @@ structure Hom {ι₂ M₂ N₂ : Type*}
   coweightMap : N₂ →ₗ[R] N
   /-- A bijection on index sets. -/
   indexEquiv : ι ≃ ι₂
-  weight_coweight_transpose : weightMap.dualMap ∘ₗ Q.toDualRight = P.toDualRight ∘ₗ coweightMap
+  weight_coweight_transpose :
+    weightMap.dualMap ∘ₗ Q.flip.toPerfPair = P.flip.toPerfPair ∘ₗ coweightMap
   root_weightMap : weightMap ∘ P.root = Q.root ∘ indexEquiv
   coroot_coweightMap : coweightMap ∘ Q.coroot = P.coroot ∘ indexEquiv.symm
 
@@ -73,7 +74,7 @@ namespace Hom
 lemma weight_coweight_transpose_apply {ι₂ M₂ N₂ : Type*}
     [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
     (P : RootPairing ι R M N) (Q : RootPairing ι₂ R M₂ N₂) (x : N₂) (f : Hom P Q) :
-    f.weightMap.dualMap (Q.toDualRight x) = P.toDualRight (f.coweightMap x) :=
+    f.weightMap.dualMap (Q.flip.toPerfPair x) = P.flip.toPerfPair (f.coweightMap x) :=
   Eq.mp (propext LinearMap.ext_iff) f.weight_coweight_transpose x
 
 lemma root_weightMap_apply {ι₂ M₂ N₂ : Type*}
@@ -196,9 +197,9 @@ lemma weightHom_injective (P : RootPairing ι R M N) : Injective (weightHom P) :
   intro f g hfg
   ext x
   · exact LinearMap.congr_fun hfg x
-  · refine LinearEquiv.injective P.toDualRight ?_
+  · refine LinearEquiv.injective P.flip.toPerfPair ?_
     simp_rw [← weight_coweight_transpose_apply]
-    exact congrFun (congrArg DFunLike.coe (congrArg LinearMap.dualMap hfg)) (P.toDualRight x)
+    exact congrFun (congrArg DFunLike.coe (congrArg LinearMap.dualMap hfg)) (P.flip.toPerfPair x)
   · refine Embedding.injective P.root ?_
     simp_rw [← root_weightMap_apply]
     exact congrFun (congrArg DFunLike.coe hfg) (P.root x)
@@ -216,11 +217,10 @@ lemma coweightHom_injective (P : RootPairing ι R M N) : Injective (coweightHom 
   ext x
   · dsimp [coweightHom] at hfg
     rw [MulOpposite.op_inj] at hfg
-    have h := congrArg (LinearMap.comp (M₃ := Module.Dual R M)
-        (σ₂₃ := RingHom.id R) (P.toDualRight)) hfg
+    have h := congrArg (LinearMap.comp (M₃ := Module.Dual R M) (σ₂₃ := .id R) P.flip.toPerfPair) hfg
     rw [← f.weight_coweight_transpose, ← g.weight_coweight_transpose] at h
     have : f.weightMap = g.weightMap := by
-      haveI : Module.IsReflexive R M := PerfectPairing.reflexive_left P.toPerfectPairing
+      haveI : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
       refine (Module.dualMap_dualMap_eq_iff R M).mp (congrArg LinearMap.dualMap
         ((LinearEquiv.eq_comp_toLinearMap_iff f.weightMap.dualMap g.weightMap.dualMap).mp h))
     exact congrFun (congrArg DFunLike.coe this) x
@@ -604,14 +604,7 @@ def reflection (P : RootPairing ι R M N) (i : ι) : Aut P where
   coweightMap := P.coreflection i
   indexEquiv := P.reflectionPerm i
   weight_coweight_transpose := by
-    ext f x
-    simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, comp_apply,
-      PerfectPairing.toDualRight_apply, LinearMap.dualMap_apply, PerfectPairing.flip_apply_apply,
-      LinearEquiv.comp_coe, LinearEquiv.trans_apply]
-    rw [RootPairing.reflection_apply, RootPairing.coreflection_apply]
-    simp only [← PerfectPairing.toLinearMap_apply, map_sub, map_smul, LinearMap.sub_apply,
-      toLinearMap_eq_toPerfectPairing, LinearMap.smul_apply, smul_eq_mul, sub_right_inj]
-    simp [mul_comm]
+    ext f x; simpa [reflection_apply, coreflection_apply] using mul_comm ..
   root_weightMap := by ext; simp
   coroot_coweightMap := by ext; simp
   bijective_weightMap := by

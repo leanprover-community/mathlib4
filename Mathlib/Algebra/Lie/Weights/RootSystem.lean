@@ -381,7 +381,7 @@ field of characteristic zero, relative to a splitting Cartan subalgebra. -/
 def rootSystem :
     RootSystem H.root K (Dual K H) H :=
   RootSystem.mk'
-    IsReflexive.toPerfectPairingDual
+    .id
     { toFun := (↑)
       inj' := by
         intro α β h; ext x; simpa using LinearMap.congr_fun h x  }
@@ -402,8 +402,7 @@ lemma corootForm_rootSystem_eq_killing :
   rw [restrict_killingForm_eq_sum, RootPairing.CorootForm, ← Finset.sum_coe_sort (s := H.root)]
   rfl
 
-@[simp] lemma rootSystem_toPerfectPairing_apply (f x) : (rootSystem H).toPerfectPairing f x = f x :=
-  rfl
+@[simp] lemma rootSystem_toLinearMap_apply (f x) : (rootSystem H).toLinearMap f x = f x := rfl
 @[simp] lemma rootSystem_pairing_apply (α β) : (rootSystem H).pairing β α = β.1 (coroot α.1) := rfl
 @[simp] lemma rootSystem_root_apply (α) : (rootSystem H).root α = α := rfl
 @[simp] lemma rootSystem_coroot_apply (α) : (rootSystem H).coroot α = coroot α := rfl
