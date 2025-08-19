@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.NumberTheory.RamificationInertia.Basic
 import Mathlib.RingTheory.Unramified.LocalRing
-import Mathlib.RingTheory.LocalRing.ResidueField.Algebraic
+import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 
 /-!
 

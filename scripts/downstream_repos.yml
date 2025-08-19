@@ -60,3 +60,11 @@
   name: Combinatorial Games in Lean
   workflows:
     build: lean_action_ci.yml
+- github: https://github.com/RemyDegenne/brownian-motion
+  default_branch: master
+  name: Brownian motion project
+  workflows:
+    build: blueprint.yml
+    docs: blueprint.yml
+    release-tag: create-release.yml
+    update: update.yml
