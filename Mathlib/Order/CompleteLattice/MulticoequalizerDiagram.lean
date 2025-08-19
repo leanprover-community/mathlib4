@@ -23,7 +23,7 @@ in a categorical sense (both pushout and pullback).
 More generally, if `T` is a complete lattice, `x : T`, `u : ι → T`, `v : ι → ι → T`,
 we introduce a property `MulticoequalizerDiagram x u v` which says that `x` is
 the supremum of `u`, and that for all `i` and `j`, `v i j` is the minimum of `u i` and `u j`.
-Again, when `T := Set X`, we shall show (TOOD) that we obtain a multicoequalizer diagram
+Again, when `T := Set X`, we shall show (TODO) that we obtain a multicoequalizer diagram
 in the category of types.
 
 -/
