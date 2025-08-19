@@ -78,7 +78,7 @@ If `a : ℂ` has norm one, then the circle average `circleAverage (log ‖· - a
 theorem circleAverage_log_norm_sub_const₁ (h : ‖a‖ = 1) :
     circleAverage (log ‖· - a‖) 0 1 = 0 := by
   -- Observing that the problem is rotation invariant, we rotate by an angle of `ζ = - arg a` and
-  -- reduce the problem to the case where `a = 1`. The integral can then be evalutated by a direct
+  -- reduce the problem to the case where `a = 1`. The integral can then be evaluated by a direct
   -- computation.
   simp only [circleAverage, mul_inv_rev, smul_eq_mul, mul_eq_zero, inv_eq_zero, OfNat.ofNat_ne_zero,
     or_false]

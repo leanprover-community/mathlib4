@@ -33,14 +33,7 @@ variable (T)
 squares in `T`. -/
 def Arrow :=
   Comma.{v, v, v} (𝟭 T) (𝟭 T)
--- The `Category` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance : Category (Arrow T) := commaCategory
-
--- Satisfying the inhabited linter
-instance Arrow.inhabited [Inhabited T] : Inhabited (Arrow T) where
-  default := show Comma (𝟭 T) (𝟭 T) from default
+deriving Category, [Inhabited T] → Inhabited _
 
 end
 
@@ -293,11 +286,13 @@ variable {C : Type u} [Category.{v} C]
 
 /-- A helper construction: given a square between `i` and `f ≫ g`, produce a square between
 `i` and `g`, whose top leg uses `f`:
+```
 A  → X
      ↓f
 ↓i   Y             --> A → Y
      ↓g                ↓i  ↓g
 B  → Z                 B → Z
+```
 -/
 @[simps]
 def squareToSnd {X Y Z : C} {i : Arrow C} {f : X ⟶ Y} {g : Y ⟶ Z} (sq : i ⟶ Arrow.mk (f ≫ g)) :

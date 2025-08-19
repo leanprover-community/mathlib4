@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.FieldTheory.RatFunc.Defs
-import Mathlib.RingTheory.EuclideanDomain
-import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Polynomial.Content
+import Mathlib.RingTheory.Algebraic.Integral
 
 /-!
 # The field structure of rational functions
@@ -720,6 +719,59 @@ theorem toFractionRingRingEquiv_symm_eq :
     (toFractionRingRingEquiv K).symm = (IsLocalization.algEquiv K[X]⁰ _ _).toRingEquiv := by
   ext x
   simp [toFractionRingRingEquiv, ofFractionRing_eq]
+
+section lift
+
+/-
+As `RatFunc R` is a one-field-struct, we need to specialize the following instances of
+`FractionRing`.
+-/
+
+variable (R L : Type*) [CommRing R] [Field L] [IsDomain R] [Algebra R[X] L] [FaithfulSMul R[X] L]
+
+/-- `FractionRing.liftAlgebra` specialized to `RatFunc R`.
+
+This is a scoped instance because it creates a diamond when `L = RatFunc R`. -/
+scoped instance liftAlgebra : Algebra (RatFunc R) L :=
+  RingHom.toAlgebra (IsFractionRing.lift (FaithfulSMul.algebraMap_injective R[X] _))
+
+/-- `FractionRing.isScalarTower_liftAlgebra` specialized to `RatFunc R`. -/
+instance isScalarTower_liftAlgebra :
+    IsScalarTower R[X] (RatFunc R) L :=
+  IsScalarTower.of_algebraMap_eq fun x =>
+    (IsFractionRing.lift_algebraMap (FaithfulSMul.algebraMap_injective R[X] L) x).symm
+
+attribute [local instance] Polynomial.algebra
+
+/-- `FractionRing.instFaithfulSMul` specialized to `RatFunc R`. -/
+instance faithfulSMul (K E : Type*) [Field K] [Field E] [Algebra K E]
+    [FaithfulSMul K E] : FaithfulSMul K[X] (RatFunc E) :=
+  (faithfulSMul_iff_algebraMap_injective ..).mpr <|
+    (IsFractionRing.injective E[X] _).comp
+      (Polynomial.map_injective _ <| FaithfulSMul.algebraMap_injective K E)
+
+section rank
+
+attribute [local instance] Polynomial.algebra
+
+variable (k K : Type*) [Field k] [Field K] [Algebra k K] [Algebra.IsAlgebraic k K]
+
+theorem rank_ratFunc_ratFunc : Module.rank (RatFunc k) (RatFunc K) = Module.rank k K := by
+  rw [Algebra.IsAlgebraic.rank_of_isFractionRing k[X] (RatFunc k) K[X] (RatFunc K),
+    rank_polynomial_polynomial]
+
+theorem finrank_ratFunc_ratFunc : Module.finrank (RatFunc k) (RatFunc K) = Module.finrank k K := by
+  by_cases hf : Module.Finite (RatFunc k) (RatFunc K)
+  · have hrank := rank_ratFunc_ratFunc k K
+    rw [← Module.finrank_eq_rank] at hrank
+    exact (Module.finrank_eq_of_rank_eq hrank.symm).symm
+  · have hf' : ¬ Module.Finite k K := by
+      rwa [← Module.rank_lt_aleph0_iff, ← rank_ratFunc_ratFunc, Module.rank_lt_aleph0_iff]
+    rw [Module.finrank_of_not_finite hf, Module.finrank_of_not_finite hf']
+
+end rank
+
+end lift
 
 end IsDomain
 

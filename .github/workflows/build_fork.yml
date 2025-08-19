@@ -57,7 +57,7 @@ jobs:
       test-outcome: ${{ steps.test.outcome }}
     defaults: # On Hoskinson runners, landrun is already installed.
       run:
-        shell: landrun --rox /usr --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT -- bash -euxo pipefail {0}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT -- bash -euxo pipefail {0}
     steps:
       - name: cleanup
         shell: bash    # This *just* deletes old files, so is safe to run outside landrun.
@@ -162,57 +162,6 @@ jobs:
           ls .lake/build/bin/check-yaml
           ls .lake/packages/importGraph/.lake/build/bin/graph
 
-          # TEMPORARY: remove everything below this after #27691 is merged
-          cat << 'EOF' > scripts/lake-build-with-retry.sh
-          #!/bin/bash
-          # Script to run lake build on a target until --no-build succeeds
-          # Usage: ./lake-build-with-retry.sh <target_name> [max_tries, default: 5]
-
-          # Make this script robust against unintentional errors.
-          # See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
-          set -euo pipefail
-          IFS=$'\n\t'
-
-          TARGET_NAME="$1"
-          MAX_TRIES="${2:-5}"
-
-          if [ -z "$TARGET_NAME" ]; then
-            echo "Usage: $0 <target_name> [max_tries, default: 5]"
-            echo "Example: $0 Mathlib 5"
-            exit 1
-          fi
-
-          echo "Building $TARGET_NAME with up to $MAX_TRIES attempts..."
-
-          counter=0
-          while true; do
-            counter=$((counter + 1))
-
-            echo "::group::{lake build: attempt $counter}"
-            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI $TARGET_NAME"
-            echo "::endgroup::"
-
-            echo "::group::{lake build --no-build: attempt $counter}"
-            set +e
-            lake build --no-build -v "$TARGET_NAME"
-            result=$?
-            set -e
-            echo "::endgroup::"
-
-            if [ $result -eq 0 ]; then
-              echo "lake build --no-build succeeded!"
-              exit 0
-            fi
-
-            if [ $counter -ge $MAX_TRIES ]; then
-              echo "Failed to build good oleans for $TARGET_NAME after $MAX_TRIES attempts!"
-              exit 1
-            fi
-          done
-          EOF
-
-          chmod 755 scripts/lake-build-with-retry.sh
-
       - name: cleanup .cache/mathlib
         # This needs write access to .cache/mathlib, so can't be run inside landrun.
         # However it is only using the `master` version of `cache`, so is safe to run outside landrun.
@@ -282,6 +231,9 @@ jobs:
             echo "Fetching all remaining cache..."
 
             ../master-branch/.lake/build/bin/cache get
+
+            # Run again with --repo, to ensure we actually get the oleans.
+            ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get
           else
             echo "WARNING: 'lake build --no-build -v Mathlib.Init' failed."
             echo "No cache for 'Mathlib.Init' available or it could not be prepared."
@@ -327,6 +279,17 @@ jobs:
           cd pr-branch
           du .lake/build/lib/lean/Mathlib || echo "This code should be unreachable"
 
+      - name: upload artifact containing contents of pr-branch
+        # temporary measure for debugging no-build failures
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: mathlib4_artifact
+          include-hidden-files: true
+          # we exclude .git since there may be secrets in there
+          path: |
+            pr-branch/
+            !pr-branch/.git/
+
       # The cache secrets are available here, so we must not run any untrusted code.
       - name: upload cache
         # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
@@ -337,6 +300,10 @@ jobs:
         run: |
           cd pr-branch
 
+          # Trim trailing whitespace from secrets to prevent issues with accidentally added spaces
+          export MATHLIB_CACHE_SAS="${MATHLIB_CACHE_SAS_RAW%"${MATHLIB_CACHE_SAS_RAW##*[![:space:]]}"}"
+          export MATHLIB_CACHE_S3_TOKEN="${MATHLIB_CACHE_S3_TOKEN_RAW%"${MATHLIB_CACHE_S3_TOKEN_RAW##*[![:space:]]}"}"
+
           # Use the trusted cache tool from master-branch
           # TODO: this is not doing anything currently, and needs to be integrated with put-unpacked
           # ../master-branch/.lake/build/bin/cache commit || true
@@ -345,8 +312,8 @@ jobs:
           # do not try to upload files just downloaded
           ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked
         env:
-          MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
-          MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
+          MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
+          MATHLIB_CACHE_S3_TOKEN_RAW: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
       # Note: we should not be including `Archive` and `Counterexamples` in the cache.
       # We do this for now for the sake of not rebuilding them in every CI run
@@ -379,18 +346,30 @@ jobs:
 
       - name: Check if building Archive or Counterexamples failed
         if: steps.archive.outcome == 'failure' || steps.counterexamples.outcome == 'failure'
-        run: exit 1
+        run: |
+          if [ "${{ steps.archive.outcome }}" == "failure" ]; then
+            echo "❌ The \"build archive\" step above failed; please check its logs."
+          fi
+          if [ "${{ steps.counterexamples.outcome }}" == "failure" ]; then
+            echo "❌ The \"build counterexamples\" step above failed; please check its logs."
+          fi
+          exit 1
 
       # The cache secrets are available here, so we must not run any untrusted code.
       - name: put archive and counterexamples cache
         shell: bash
         run: |
           cd pr-branch
+
+          # Trim trailing whitespace from secrets to prevent issues with accidentally added spaces
+          export MATHLIB_CACHE_SAS="${MATHLIB_CACHE_SAS_RAW%"${MATHLIB_CACHE_SAS_RAW##*[![:space:]]}"}"
+          export MATHLIB_CACHE_S3_TOKEN="${MATHLIB_CACHE_S3_TOKEN_RAW%"${MATHLIB_CACHE_S3_TOKEN_RAW##*[![:space:]]}"}"
+
           ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put Archive.lean
           ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put Counterexamples.lean
         env:
-          MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
-          MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
+          MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
+          MATHLIB_CACHE_S3_TOKEN_RAW: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
       - name: Check {Mathlib, Tactic, Counterexamples, Archive}.lean
         if: always()
@@ -454,7 +433,7 @@ jobs:
             ##  we filter out the output lines that begin with `✔ [xx/yy]`, where xx, yy
             ##  are either numbers or ?, and the "Build completed successfully." message.
             ##  We keep the rest, which are actual outputs of the files
-            awk '!($0 ~ "^\\s*✔ \\[[?0-9]*/[?0-9]*\\]" || $0 == "Build completed successfully."){ print $0 }')"
+            awk '!($0 ~ "^\\s*✔ \\[[?0-9]*/[?0-9]*\\]" || $0 ~ "^Build completed successfully( \\([0-9]+ jobs\\))?\\.?$"){ print $0 }')"
           if [ -n "${buildMsgs}" ]
           then
             printf $'%s\n' "${buildMsgs}"

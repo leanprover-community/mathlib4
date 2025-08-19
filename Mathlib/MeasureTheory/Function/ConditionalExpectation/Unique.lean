@@ -190,10 +190,6 @@ theorem lintegral_enorm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g :
   · exact integral_norm_le_of_forall_fin_meas_integral_eq hm hf hfi hg hgi hgf hs hμs
   · positivity
 
-@[deprecated (since := "2025-01-21")]
-alias lintegral_nnnorm_le_of_forall_fin_meas_integral_eq :=
-  lintegral_enorm_le_of_forall_fin_meas_integral_eq
-
 end IntegralNormLE
 
 end MeasureTheory
