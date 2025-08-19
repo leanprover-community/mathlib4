@@ -37,14 +37,6 @@ Perhaps one could be favored but there is no real reason to.
 pre-lie algebras
 
 -/
-open MulOpposite
-
-namespace NonUnitalNonAssocRing
-@[simp]
-lemma associator_op {L : Type*} (x y z : Lᵐᵒᵖ) [NonUnitalNonAssocRing L] :
-    associator x y z = -op (associator (unop z) (unop y) (unop x)) := by
-  simp only [associator_apply, ← unop_mul, ← unop_sub, op_unop, neg_sub]
-end NonUnitalNonAssocRing
 
 /-- `LeftPreLieRing`s are `NonUnitalNonAssocRing`s such that the `associator` is symmetric in the
 first two variables. -/
