@@ -3,7 +3,6 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Data.Fintype.Basic
@@ -20,7 +19,7 @@ When adding new definitions that transfer type-classes across an equivalence, pl
 `abbrev`. See note [reducible non-instances].
 -/
 
-assert_not_exists MonoidWithZero
+assert_not_exists MonoidWithZero MulAction
 
 namespace Equiv
 variable {M α β : Type*} (e : α ≃ β)
@@ -120,6 +119,27 @@ protected abbrev commSemigroup [CommSemigroup β] : CommSemigroup α := by
   let mul := e.mul
   apply e.injective.commSemigroup _; intros; exact e.apply_symm_apply _
 
+/-- Transfer `IsLeftCancelMul` across an `Equiv` -/
+@[to_additive /-- Transfer `IsLeftCancelAdd` across an `Equiv` -/]
+protected lemma isLeftCancelMul [Mul β] [IsLeftCancelMul β] :
+    letI := e.mul
+    IsLeftCancelMul α := by
+  letI := e.mul; exact e.injective.isLeftCancelMul _ fun _ _ ↦ e.apply_symm_apply _
+
+/-- Transfer `IsRightCancelMul` across an `Equiv` -/
+@[to_additive /-- Transfer `IsRightCancelAdd` across an `Equiv` -/]
+protected lemma isRightCancelMul [Mul β] [IsRightCancelMul β] :
+    letI := e.mul
+    IsRightCancelMul α := by
+  letI := e.mul; exact e.injective.isRightCancelMul _ fun _ _ ↦ e.apply_symm_apply _
+
+/-- Transfer `IsCancelMul` across an `Equiv` -/
+@[to_additive /-- Transfer `IsCancelAdd` across an `Equiv` -/]
+protected lemma isCancelMul [Mul β] [IsCancelMul β] :
+    letI := e.mul
+    IsCancelMul α := by
+  letI := e.mul; exact e.injective.isCancelMul _ fun _ _ ↦ e.apply_symm_apply _
+
 /-- Transfer `MulOneClass` across an `Equiv` -/
 @[to_additive /-- Transfer `AddZeroClass` across an `Equiv` -/]
 protected abbrev mulOneClass [MulOneClass β] : MulOneClass α := by
@@ -164,14 +184,6 @@ protected abbrev commGroup [CommGroup β] : CommGroup α := by
   let npow := e.pow ℕ
   let zpow := e.pow ℤ
   apply e.injective.commGroup _ <;> intros <;> exact e.apply_symm_apply _
-
-variable (M) [Monoid M] in
-/-- Transfer `MulAction` across an `Equiv` -/
-@[to_additive /-- Transfer `AddAction` across an `Equiv` -/]
-protected abbrev mulAction (e : α ≃ β) [MulAction M β] : MulAction M α where
-  __ := e.smul M
-  one_smul := by simp [smul_def]
-  mul_smul := by simp [smul_def, mul_smul]
 
 end Equiv
 
