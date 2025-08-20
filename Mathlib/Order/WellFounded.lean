@@ -297,3 +297,12 @@ noncomputable def WellFoundedGT.toOrderTop {α} [LinearOrder α] [Nonempty α] [
     OrderTop α :=
   have := WellFoundedLT.toOrderBot (α := αᵒᵈ)
   inferInstanceAs (OrderTop αᵒᵈᵒᵈ)
+
+instance WellFoundedLT.ulift [LT α] [WellFoundedLT α] : WellFoundedLT (ULift α) where
+  wf := by
+    refine ⟨fun ⟨x⟩ ↦ ?_⟩
+    induction x using WellFoundedLT.induction with | ind x IH
+    exact Acc.intro _ fun y hy ↦ IH _ hy
+
+instance WellFoundedGT.ulift [LT α] [WellFoundedGT α] : WellFoundedGT (ULift α) :=
+  WellFoundedLT.ulift (α := αᵒᵈ)
