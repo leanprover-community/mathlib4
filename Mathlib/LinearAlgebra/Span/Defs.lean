@@ -170,8 +170,8 @@ theorem span_eq_closure {s : Set M} : (span R s).toAddSubmonoid = closure (@univ
       | mem _ h =>
         obtain ⟨r₂, -, x, hx, rfl⟩ := h
         exact subset_closure ⟨r₁ * r₂, trivial, x, hx, mul_smul ..⟩
-      | one => simp only [smul_zero, zero_mem]
-      | mul _ _ _ _ h₁ h₂ => simpa only [smul_add] using add_mem h₁ h₂
+      | zero => simp only [smul_zero, zero_mem]
+      | add _ _ _ _ h₁ h₂ => simpa only [smul_add] using add_mem h₁ h₂
   case of_mem_closure =>
     refine closure_le.2 ?_ hx
     rintro - ⟨r, -, x, hx, rfl⟩
@@ -487,6 +487,10 @@ theorem iSup_span {ι : Sort*} (p : ι → Set M) : ⨆ i, span R (p i) = span R
 
 theorem iSup_eq_span {ι : Sort*} (p : ι → Submodule R M) : ⨆ i, p i = span R (⋃ i, ↑(p i)) := by
   simp_rw [← iSup_span, span_eq]
+
+theorem iSup_eq_span' {ι : Sort*} (p : ι → Submodule R M) (h : ι → Prop) :
+    (⨆ (i : ι) (_ : h i), p i) = Submodule.span R (⋃ (i : ι) (_ : h i), ↑(p i)) := by
+  simp_rw [← Submodule.iSup_span, Submodule.span_eq]
 
 /-- A submodule is equal to the supremum of the spans of the submodule's nonzero elements. -/
 theorem submodule_eq_sSup_le_nonzero_spans (p : Submodule R M) :

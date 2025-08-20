@@ -31,6 +31,8 @@ import Mathlib.RingTheory.Trace.Quotient
 - Show properties of the different ideal
 -/
 
+open Module
+
 universe u
 
 attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_liftAlgebra
@@ -84,7 +86,7 @@ lemma le_traceDual_traceDual {I : Submodule B L} :
 
 @[simp]
 lemma restrictScalars_traceDual {I : Submodule B L} :
-  Iᵛ.restrictScalars A = (Algebra.traceForm K L).dualSubmodule (I.restrictScalars A) := rfl
+    Iᵛ.restrictScalars A = (Algebra.traceForm K L).dualSubmodule (I.restrictScalars A) := rfl
 
 @[simp]
 lemma traceDual_bot :
@@ -210,7 +212,7 @@ variable [IsDomain A] [IsFractionRing B L] [Nontrivial B] [NoZeroDivisors B]
 namespace FractionalIdeal
 
 open scoped Classical in
-/-- The dual of a non-zero fractional ideal is the dual of the submodule under the traceform. -/
+/-- The dual of a non-zero fractional ideal is the dual of the submodule under the trace form. -/
 noncomputable
 def dual (I : FractionalIdeal B⁰ L) :
     FractionalIdeal B⁰ L :=
