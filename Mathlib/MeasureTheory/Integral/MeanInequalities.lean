@@ -388,7 +388,7 @@ private theorem lintegral_Lp_add_le_aux {p q : ℝ} (hpq : p.HolderConjugate q) 
     1 ≤
       (∫⁻ a : α, (f + g) a ^ p ∂μ) ^ (-(1 / p)) *
         ((∫⁻ a : α, f a ^ p ∂μ) ^ (1 / p) + (∫⁻ a : α, g a ^ p ∂μ) ^ (1 / p)) by
-    rwa [← mul_le_mul_iff_right₀ h0_rpow (by finiteness),
+    rwa [← mul_le_mul_left h0_rpow (by finiteness),
       ← mul_assoc, ← rpow_add _ _ h_add_zero h_add_top, ←
       sub_eq_add_neg, _root_.sub_self, rpow_zero, one_mul, mul_one] at h
   have h :
