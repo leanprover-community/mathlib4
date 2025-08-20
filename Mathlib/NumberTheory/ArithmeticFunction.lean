@@ -1320,13 +1320,14 @@ theorem isMultiplicative_totient : IsMultiplicative ϕ := by
 
 end Totient
 
+/-- `ArithmeticFunction` version of `Nat.sum_totient`. -/
 @[simp]
 theorem totient_mul_zeta : ϕ * ζ = id := by
   ext
   rw [mul_zeta_apply]
   simp [sum_totient]
 
-@[simp]
+@[simp, inherit_doc totient_mul_zeta]
 theorem zeta_mul_totient : ζ * ϕ = id := by
   rw [mul_comm, totient_mul_zeta]
 
