@@ -12,6 +12,7 @@ import Mathlib.NumberTheory.LSeries.HurwitzZetaValues
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Topology.Separation.CompletelyRegular
+import Mathlib.NumberTheory.TsumDivsorsAntidiagonal
 
 /-!
 # Einstein series Q-expansions
@@ -201,115 +202,16 @@ theorem EisensteinSeries.qExpansion_identity_pnat {k : ℕ} (hk : 1 ≤ k) (z : 
   · apply (summable_pow_mul_cexp k 1 z).congr
     simp
 
-lemma natcast_norm {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormSMulClass ℤ 𝕜]
-    (a : ℕ) : ‖(a : 𝕜)‖ = a := by
-  have h0 := norm_natCast_eq_mul_norm_one 𝕜 a
-  simpa using h0
-
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [NormSMulClass ℤ 𝕜]
-
 @[simp]
 lemma cexp_pow_aux (a b : ℕ) (z : ℍ) :
     cexp (2 * ↑π * Complex.I * a * z) ^ b = Complex.exp (2 * ↑π * Complex.I * z) ^ (a * b) := by
   simp [← Complex.exp_nsmul]
   ring_nf
 
-theorem summable_divisorsAntidiagonal_aux (k : ℕ) (r : 𝕜) (hr : ‖r‖ < 1) :
-    Summable fun c : (n : ℕ+) × { x // x ∈ (n : ℕ).divisorsAntidiagonal } ↦
-    (c.2.1).1 ^ k * (r ^ (c.2.1.2 * c.2.1.1)) := by
-  apply Summable.of_norm
-  rw [summable_sigma_of_nonneg]
-  constructor
-  · apply fun n => (hasSum_fintype _).summable
-  · simp only [norm_mul, norm_pow, tsum_fintype, Finset.univ_eq_attach]
-    · apply Summable.of_nonneg_of_le (f := fun c : ℕ+ ↦ ‖(c : 𝕜) ^ (k + 1) * r ^ (c : ℕ)‖)
-        (fun b => Finset.sum_nonneg (fun _ _ => by apply mul_nonneg (by simp) (by simp))) ?_
-        (by apply (summable_norm_pow_mul_geometric_of_norm_lt_one (k + 1) hr).subtype)
-      intro b
-      apply le_trans (b := ∑ _ ∈ (b : ℕ).divisors, ‖(b : 𝕜)‖ ^ k * ‖r ^ (b : ℕ)‖)
-      · rw [Finset.sum_attach ((b : ℕ).divisorsAntidiagonal) (fun x ↦
-            ‖(x.1 : 𝕜)‖ ^ (k : ℕ) * ‖r‖^ (x.2 * x.1)), Nat.sum_divisorsAntidiagonal
-            ((fun x y ↦ ‖(x : 𝕜)‖ ^ k * ‖r‖ ^ (y * x))) (n := b)]
-        gcongr <;> rename_i i hi <;> simp [natcast_norm] at *
-        · exact Nat.le_of_dvd b.2 hi
-        · apply le_of_eq
-          nth_rw 2 [← Nat.mul_div_cancel' hi]
-          ring_nf
-      · simp only [norm_pow, Finset.sum_const, nsmul_eq_mul, ← mul_assoc, add_comm k 1, pow_add,
-          pow_one, norm_mul]
-        gcongr
-        simpa [natcast_norm] using (Nat.card_divisors_le_self b)
-  · intro a
-    simpa using mul_nonneg (by simp) (by simp)
-/-
-
-theorem summable_divisorsAntidiagonal_aux (k : ℕ) (z : ℍ) :
-    Summable fun c : (n : ℕ+) × { x // x ∈ (n : ℕ).divisorsAntidiagonal } ↦
-    (c.2.1).1 ^ k * cexp (2 * ↑π * Complex.I * c.2.1.2 * z) ^ c.2.1.1 := by
-  apply Summable.of_norm
-  rw [summable_sigma_of_nonneg]
-  constructor
-  · apply fun n => (hasSum_fintype _).summable
-  · simp only [Complex.norm_mul, norm_pow, Complex.norm_natCast, tsum_fintype,
-    Finset.univ_eq_attach]
-    · apply Summable.of_nonneg_of_le (fun b => Finset.sum_nonneg (by simp)) ?_ ((summable_norm_iff
-      (f := fun c : ℕ+ ↦ (c : ℂ) ^ (k + 1) * exp (2 * ↑π * Complex.I * (1: ℕ+) * ↑z) ^ (c : ℕ)).mpr
-      (by apply (summable_pow_mul_cexp (k+1) 1 z).subtype)))
-      intro b
-      apply le_trans (b := ∑ _ ∈ (b : ℕ).divisors, b ^ k * ‖exp (2 * ↑π * Complex.I * z) ^ (b : ℕ)‖)
-      · rw [Finset.sum_attach ((b : ℕ).divisorsAntidiagonal) (fun (x : ℕ × ℕ) ↦
-            (x.1 : ℝ) ^ (k : ℕ) * ‖cexp (2 * ↑π * Complex.I * x.2 * z)‖ ^ x.1),
-          Nat.sum_divisorsAntidiagonal ((fun x y ↦
-          (x : ℝ) ^ (k : ℕ) * ‖cexp (2 * ↑π * Complex.I * y * z)‖ ^ x))]
-        gcongr <;> rename_i i hi <;> simp at hi
-        · exact Nat.le_of_dvd b.2 hi
-        · apply le_of_eq
-          simp_rw [mul_assoc, ← norm_pow, ← Complex.exp_nsmul]
-          nth_rw 2 [← Nat.mul_div_cancel' hi]
-          simp
-          ring_nf
-      · simpa [← mul_assoc, add_comm k 1, pow_add] using Nat.card_divisors_le_self b
-  · simp -/
-
-theorem summable_prod_mul_pow (k : ℕ) (r : 𝕜) (hr : ‖r‖ < 1) :
-    Summable fun c : (ℕ+ × ℕ+) ↦ (c.1 : 𝕜) ^ k * (r ^ (c.2 * c.1 : ℕ)) :=by
-  rw [sigmaAntidiagonalEquivProd.summable_iff.symm]
-  simp only [sigmaAntidiagonalEquivProd, mapdiv, PNat.mk_coe, Equiv.coe_fn_mk]
-  apply summable_divisorsAntidiagonal_aux k r hr
-
 theorem summable_prod_aux (k : ℕ) (z : ℍ) : Summable fun c : ℕ+ × ℕ+ ↦
     (c.1 ^ k : ℂ) * Complex.exp (2 * ↑π * Complex.I * c.2 * z) ^ (c.1 : ℕ) := by
-  simpa using summable_prod_mul_pow  k (Complex.exp (2 * ↑π * Complex.I * z))
+  simpa using summable_prod_mul_pow  k
     (by apply UpperHalfPlane.norm_exp_two_pi_I_lt_one z)
-
-theorem tsum_prod_pow_eq_tsum_sigma (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
-    ∑' d : ℕ+, ∑' (c : ℕ+), (c ^ k : 𝕜) * (r ^ (d * c : ℕ)) =
-    ∑' e : ℕ+, sigma k e * r ^ (e : ℕ) := by
-  suffices  ∑' (c : ℕ+ × ℕ+), (c.1 ^ k : 𝕜) * (r ^ ((c.2 : ℕ) * (c.1 : ℕ))) =
-      ∑' e : ℕ+, sigma k e * r ^ (e : ℕ) by
-    rw [Summable.tsum_prod (by apply summable_prod_mul_pow  k r hr), Summable.tsum_comm] at this
-    · simpa using this
-    · apply (summable_prod_mul_pow  k r hr).prod_symm.congr
-      simp
-  simp only [← sigmaAntidiagonalEquivProd.tsum_eq, sigmaAntidiagonalEquivProd, mapdiv, PNat.mk_coe,
-    Equiv.coe_fn_mk, sigma_eq_sum_div', Nat.cast_sum, Nat.cast_pow]
-  rw [Summable.tsum_sigma (summable_divisorsAntidiagonal_aux k r hr)]
-  apply tsum_congr
-  intro n
-  simp only [tsum_fintype, Finset.univ_eq_attach, Finset.sum_attach ((n : ℕ).divisorsAntidiagonal)
-    (fun (x : ℕ × ℕ) ↦ (x.1 : 𝕜) ^ k * r ^ (x.2 * x.1)),
-    Nat.sum_divisorsAntidiagonal' (fun x y ↦ (x : 𝕜) ^ k * r ^ (y * x)),
-    Finset.sum_mul]
-  refine Finset.sum_congr (rfl) fun i hi ↦ ?_
-  have hni : (n / i : ℕ) * (i : ℕ) = n := by
-    simp only [Nat.mem_divisors, ne_eq, PNat.ne_zero, not_false_eq_true, and_true] at *
-    have :=  Nat.div_mul_cancel hi
-    nth_rw 2 [← this]
-  simp
-  left
-  norm_cast at *
-  nth_rw 2 [← hni]
-  ring
 
 theorem tsum_prod_pow_cexp_eq_tsum_sigma (k : ℕ) (z : ℍ) :
     ∑' d : ℕ+, ∑' (c : ℕ+), (c ^ k : ℂ) * cexp (2 * ↑π * Complex.I * d * z) ^ (c : ℕ) =
