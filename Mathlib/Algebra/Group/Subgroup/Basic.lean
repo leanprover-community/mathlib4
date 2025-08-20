@@ -206,12 +206,12 @@ theorem le_pi_iff {I : Set η} {H : ∀ i, Subgroup (f i)} {J : Subgroup (∀ i,
 @[to_additive (attr := simp)]
 theorem mulSingle_mem_pi [DecidableEq η] {I : Set η} {H : ∀ i, Subgroup (f i)} (i : η) (x : f i) :
     Pi.mulSingle i x ∈ pi I H ↔ i ∈ I → x ∈ H i :=
-  Set.update_mem_pi (one_mem (pi I H))
+  Set.update_mem_pi_iff (one_mem (pi I H))
 
 @[to_additive]
 theorem pi_eq_bot_iff (H : ∀ i, Subgroup (f i)) : pi Set.univ H = ⊥ ↔ ∀ i, H i = ⊥ := by
   simp_rw [SetLike.ext'_iff]
-  exact Set.pi_univ_eq_singleton_iff
+  exact Set.univ_pi_eq_singleton_iff
 
 end Pi
 
