@@ -213,8 +213,30 @@ theorem IsPath.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
   rw [reverse_append] at h
   apply h.of_append_left
 
+theorem isTrail_of_isSubwalk {v w v' w'} {p₁ : G.Walk v w} {p₂ : G.Walk v' w'}
+    (h : p₁.IsSubwalk p₂) (h₂ : p₂.IsTrail) : p₁.IsTrail := by
+  obtain ⟨_, _, h⟩ := h
+  rw [h] at h₂
+  exact h₂.of_append_left.of_append_right
+
+theorem isPath_of_isSubwalk {v w v' w' : V} {p₁ : G.Walk v w} {p₂ : G.Walk v' w'}
+    (h : p₁.IsSubwalk p₂) (h₂ : p₂.IsPath) : p₁.IsPath := by
+  obtain ⟨_, _, h⟩ := h
+  rw [h] at h₂
+  exact h₂.of_append_left.of_append_right
+
 lemma IsPath.of_adj {G : SimpleGraph V} {u v : V} (h : G.Adj u v) : h.toWalk.IsPath := by
   aesop
+
+theorem concat_isPath_iff {p : G.Walk u v} (h : G.Adj v w) :
+    (p.concat h).IsPath ↔ p.IsPath ∧ w ∉ p.support := by
+  rw [← (p.concat h).isPath_reverse_iff, ← p.isPath_reverse_iff, reverse_concat, ← List.mem_reverse,
+    ← support_reverse]
+  exact cons_isPath_iff h.symm p.reverse
+
+theorem IsPath.concat {p : G.Walk u v} (hp : p.IsPath) (hw : w ∉ p.support)
+    (h : G.Adj v w) : (p.concat h).IsPath :=
+  (concat_isPath_iff h).mpr ⟨hp, hw⟩
 
 @[simp]
 theorem IsCycle.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCycle := fun h => h.ne_nil rfl
