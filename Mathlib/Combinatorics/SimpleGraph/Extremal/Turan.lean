@@ -108,19 +108,7 @@ theorem not_cliqueFree_of_isTuranMaximal (hn : r ≤ card V) (hG : G.IsTuranMaxi
 
 lemma exists_isTuranMaximal (hr : 0 < r) :
     ∃ H : SimpleGraph V, ∃ _ : DecidableRel H.Adj, H.IsTuranMaximal r := by
-  classical
-  let c := {H : SimpleGraph V | H.CliqueFree (r + 1)}
-  have cn : c.toFinset.Nonempty := ⟨⊥, by
-    rw [Set.toFinset_setOf, mem_filter_univ]
-    exact cliqueFree_bot (by omega)⟩
-  obtain ⟨S, Sm, Sl⟩ := exists_max_image c.toFinset (#·.edgeFinset) cn
-  use S, inferInstance
-  rw [Set.mem_toFinset] at Sm
-  refine ⟨Sm, fun I _ cf ↦ ?_⟩
-  by_cases Im : I ∈ c.toFinset
-  · convert Sl I Im
-  · rw [Set.mem_toFinset] at Im
-    contradiction
+  simpa [IsTuranMaximal, exists_isExtremal_iff_exists] using ⟨⊥, cliqueFree_bot (by omega)⟩
 
 end Defs
 
