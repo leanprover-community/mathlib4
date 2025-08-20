@@ -7,7 +7,6 @@ import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 import Mathlib.Algebra.Module.LinearMap.Prod
 import Mathlib.Algebra.Order.Module.Synonym
 import Mathlib.Analysis.Convex.Segment
-import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Module
 
 /-!
