@@ -58,7 +58,7 @@ implementation.
 
 open Set
 
-variable {α : Type*} {x y : α} {e f g h : Set α} {l : Set (Set α)}
+variable {α : Type*} {x y : α} {e e' f g : Set α} {l : Set (Set α)}
 
 /--
 An undirected hypergraph with vertices of type `α` and hyperedges of type `Set α`,
@@ -74,7 +74,7 @@ structure Hypergraph (α : Type*) where
   /-- The hyperedge set -/
   hyperedgeSet : Set (Set α)
   /-- All hyperedges must be subsets of the vertex set -/
-  hyperedge_isSubset_vertexSet : ∀ ⦃e⦄, e ∈ hyperedgeSet → e ⊆ vertexSet
+  hyperedge_isSubset_vertexSet' : ∀ ⦃e⦄, e ∈ hyperedgeSet → e ⊆ vertexSet
 
 namespace Hypergraph
 
@@ -89,14 +89,41 @@ scoped notation "V(" H ")" => Hypergraph.vertexSet H
 scoped notation "E(" H ")" => Hypergraph.hyperedgeSet H
 
 
+instance : Membership (α) (Hypergraph α) where
+  mem H x := x ∈ V(H)
+
+instance : Membership (Set α) (Hypergraph α) where
+  mem H e := e ∈ E(H)
+
+
 section Incidence
 
 /-! ## Vertex-Hyperedge Incidence -/
+
+@[simp] lemma hyperedge_isSubset_vertexSet {H : Hypergraph α} {e : Set α} (he : e ∈ E(H)) :
+  e ⊆ V(H) := H.hyperedge_isSubset_vertexSet' he
+
+lemma _root_.Membership.mem.isSubset_vertexSet {H : Hypergraph α} {e : Set α} (he : e ∈ E(H)) :
+  e ⊆ V(H) := H.hyperedge_isSubset_vertexSet he
+
+lemma coe_isSubset_vertexSet_powerset {H : Hypergraph α} : E(H) ⊆ V(H).powerset := by
+  intro e (he : e ∈ E(H))
+  simpa using he.isSubset_vertexSet
 
 lemma vertex_mem_if_mem_hyperedge {H : Hypergraph α} {e : Set α} {x : α}
   (he : e ∈ H.hyperedgeSet) (hx : x ∈ e) : x ∈ H.vertexSet := by
   have h1 : e ⊆ V(H) := by apply H.hyperedge_isSubset_vertexSet he
   apply Set.mem_of_subset_of_mem h1 hx
+
+/--
+If edges `e` and `e'` have the same vertices from `G`, then they have all the same vertices.
+This could be phrased as `e = e'`, but this formulation is more useful in combination with the `ext`
+tactic.
+-/
+lemma forall_of_forall_verts {e e' : Set α} (he : e ∈ E(H)) (he' : e' ∈ E(H))
+    (h : ∀ x ∈ V(H), x ∈ e ↔ x ∈ e') : ∀ x, x ∈ e ↔ x ∈ e' :=
+  fun x ↦ ⟨fun y ↦ (h x (he.isSubset_vertexSet y)).1 y,
+  fun y ↦ (h x (he'.isSubset_vertexSet y)).2 y⟩
 
 end Incidence
 
@@ -150,7 +177,7 @@ lemma EAdj.symm {H : Hypergraph α} {e f : Set α} (h : H.EAdj e f) : H.EAdj f e
     · exact hv.2.1
 
 lemma EAdj.inter_nonempty {H : Hypergraph α} {e f : Set α} (hef : H.EAdj e f) :
-(e ∩ f).Nonempty := by
+  (e ∩ f).Nonempty := by
     unfold EAdj at *
     have h' : ∃ x ∈ e, x ∈ f := by grind
     apply Set.inter_nonempty.mpr h'
