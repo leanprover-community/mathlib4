@@ -166,7 +166,7 @@ theorem span_eq_closure {s : Set M} : (span R s).toAddSubmonoid = closure (@univ
     | add _ _ _ _ h₁ h₂ => exact add_mem h₁ h₂
     | smul r₁ y _h hy =>
       clear _h
-      induction hy using AddSubmonoid.closure_induction with
+      induction hy using closure_induction with
       | mem _ h =>
         obtain ⟨r₂, -, x, hx, rfl⟩ := h
         exact subset_closure ⟨r₁ * r₂, trivial, x, hx, mul_smul ..⟩
