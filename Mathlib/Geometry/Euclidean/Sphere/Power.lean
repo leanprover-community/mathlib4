@@ -13,11 +13,14 @@ import Mathlib.Geometry.Euclidean.Sphere.Tangent
 This file proves basic geometrical results about power of a point (intersecting chords and
 secants) in spheres in real inner product spaces and Euclidean affine spaces.
 
+## Main definitions
+
+* `Sphere.power`: The power of a point with respect to a sphere.
+
 ## Main theorems
 
 * `mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_pi`: Intersecting Chords Theorem (Freek No. 55).
 * `mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_zero`: Intersecting Secants Theorem.
-* `Sphere.power`: The power of a point with respect to a sphere.
 * `Sphere.mul_dist_eq_abs_power`: The product of distances equals the absolute value of power.
 * `Sphere.dist_sq_eq_mul_dist_of_tangent_and_secant`: Tangent-Secant Theorem.
 -/
