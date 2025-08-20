@@ -285,10 +285,9 @@ lemma eraseLead_mul_eq_mul_eraseLead_of_nextCoeff_zero {R : Type*} [Ring R] [NoZ
   obtain ⟨dP, hdP⟩ := Nat.exists_eq_add_of_le' (two_le_natDegree_of_nextCoeff_eraseLead he h)
   -- the subleading term of (X - C η) * P is nonzero
   have h₂ : ((X - C x) * P).nextCoeff ≠ 0 := by
-    simp only [nextCoeff, hdP, Nat.succ_ne_zero, one_ne_zero,
-      add_tsub_cancel_right, ite_false, Nat.succ_sub_succ_eq_sub, tsub_zero] at h
-    rw [nextCoeff, h₁, add_tsub_cancel_right, hdP]
-    simp [↓coeff_X_sub_C_mul, h, hx, ← hdP, hp]
+    simp only [nextCoeff, hdP, Nat.succ_ne_zero, ite_false, Nat.add_one_sub_one] at h
+    rw [nextCoeff, h₁, add_tsub_cancel_right, hdP, coeff_X_sub_C_mul]
+    simp [h, hx, ← hdP, hp]
   -- Prove equality by showing coefficients are equal
   ext n
   rcases n.lt_or_ge P.natDegree with hn | hn
