@@ -100,10 +100,10 @@ initialize registerBuiltinAttribute {
   add := fun declName stx kind => MetaM.run' do
     let inv := !stx[1].isNone
     let prio ← getAttrParamOptPrio stx[2]
-    for thm in ← mkSimpTheoremFromConst declName (inv := inv) do
+    for thm in ← mkSimpTheoremFromConst declName (inv := inv) (prio := prio) do
       pushExt.add thm
     if let some head ← isPullThm declName inv then
-      for thm in ← mkSimpTheoremFromConst declName (inv := !inv) do
+      for thm in ← mkSimpTheoremFromConst declName (inv := !inv) (prio := prio) do
         pullExt.add (thm, head)
 }
 

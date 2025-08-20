@@ -1,8 +1,11 @@
 import Mathlib.Tactic.Push
-import Mathlib.Algebra.Notation.Pi.Defs
 import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Insert
 
 private axiom test_sorry : ∀ {α}, α
+
+section logic
 
 variable {p q r : Prop}
 
@@ -18,7 +21,7 @@ example : (p ∨ True) ∧ (q ∨ r) := by
 
 example : ∀ n : ℕ, p ∨ q ∧ n = 1 := by
   push ∀ n, ·
-  guard_target =ₐ p ∨ q ∧ ∀ n : ℕ, n = 1
+  guard_target =ₛ p ∨ q ∧ ∀ n : ℕ, n = 1
   exact test_sorry
 
 example : ∃ n : ℕ, p ∨ q ∧ n = 1 := by
@@ -34,14 +37,17 @@ example : (p ∨ q) ∧ (p ∨ r) := by
 -- `exists_or` and `forall_and` cannot be used by `pull` when `∃`/`∀` is only on one side
 example : p ∧ (q ∨ ∀ n : ℕ, n = 1) := by
   pull ∀ n, ·
-  guard_target =ₐ p ∧ ∀ n, q ∨ n = 1
+  guard_target =ₛ p ∧ ∀ n, q ∨ n = 1
   exact test_sorry
 
 example : p ∨ q ∧ ∃ n : ℕ, n = 1 := by
   pull ∃ n, ·
-  guard_target =ₐ p ∨ ∃ n, q ∧ n = 1
+  guard_target =ₛ p ∨ ∃ n, q ∧ n = 1
   exact test_sorry
 
+end logic
+
+section lambda
 
 example : (fun x : ℕ ↦ x ^ 2 + 1 * 0 - 5 • 6) = id ^ 2 + 1 * 0 - 5 • 6 := by
   push fun x ↦ ·
@@ -49,6 +55,49 @@ example : (fun x : ℕ ↦ x ^ 2 + 1 * 0 - 5 • 6) = id ^ 2 + 1 * 0 - 5 • 6 :
 
 example : (fun x : ℕ ↦ x ^ 2 + 1 * 0 - 5 • 6) = id ^ 2 + 1 * 0 - 5 • 6 := by
   simp only [pushFun]
+
+end lambda
+
+section membership
+
+example (x : Nat) (A : Set Nat) : x ∈ ∅ ∪ Set.univ ∩ ({a | a = 4} \ Aᶜ) := by
+  push · ∈ ·
+  guard_target =ₛ (False ∨ True ∧ x = 4 ∧ ¬x ∉ A)
+  exact test_sorry
+
+example (A : Set Nat) : A ∈ 𝒫 A := by
+  push · ∈ ·
+  rfl
+
+example (x y : Nat) (A B : Set Nat) : (x, y) ∈ A ×ˢ B := by
+  push · ∈ ·
+  -- Note: we don't allow `push` to unfold projections, which is a bit unfortunate in this case
+  guard_target =ₛ (x, y).1 ∈ A ∧ (x, y).2 ∈ B
+  pull · ∈ ·
+  guard_target =ₛ (x, y) ∈ A ×ˢ B
+  exact test_sorry
+
+example (x y : Nat) (A : Set Nat) : (x, y) ∈ Set.diagonal Nat ∪ Set.offDiag A := by
+  push · ∈ ·
+  guard_target =ₛ (x, y).1 = (x, y).2 ∨ (x, y).1 ∈ A ∧ (x, y).2 ∈ A ∧ (x, y).1 ≠ (x, y).2
+  exact test_sorry
+
+example (x y z : Nat) : x ∈ ({x, y, z, y, x} : Set Nat) := by
+  push · ∈ ·
+  guard_target =ₛ x = x ∨ x = y ∨ x = z ∨ x = y ∨ x = x
+  exact test_sorry
+
+example (x : Nat) (A B C : Set Nat) : x ∈ A ∧ ¬ x ∈ B ∨ x ∈ C := by
+  pull · ∈ ·
+  guard_target =ₛ x ∈ A ∩ Bᶜ ∪ C
+  exact test_sorry
+
+example (a b c : α) (s : Set α) : a ∈ (∅ ∪ (Set.univ ∩ (({b, c} \ sᶜᶜ) ∪ {b | b = a}))) := by
+  push · ∈ ·
+  guard_target =ₛ False ∨ True ∧ ((a = b ∨ a = c) ∧ ¬¬a ∉ s ∨ a = a)
+  exact test_sorry
+
+end membership
 
 -- the following examples still need more tagging to work
 
@@ -60,19 +109,8 @@ example : (fun x : ℕ ↦ x ^ 2 + 1 * 0 - 5 • 6) = id ^ 2 + 1 * 0 - 5 • 6 :
 
 -- example (a b : ℚ) : ((a + b⁻¹ + 1) / 2) ^ 2 = 0 := by
 --   push · ^ ·
---   guard_target = (a ^ 2 + 2 * a * b⁻¹ + (b ^ 2)⁻¹ + 2 * (a + b⁻¹) * 1 + 1) / 2 ^ 2 = 0
+--   guard_target =ₛ (a ^ 2 + 2 * a * b⁻¹ + (b ^ 2)⁻¹ + 2 * (a + b⁻¹) * 1 + 1) / 2 ^ 2 = 0
 --   ring_nf
---   exact test_sorry
-
-
--- example (a b c : α) (s : Set α) : a ∈ (∅ ∪ (Set.univ ∩ (({b, c} \ sᶜᶜ) ∪ {b | b = a}))) := by
---   push · ∈ ·
---   guard_target =ₛ False ∨ True ∧ ((a = b ∨ a = c) ∧ ¬¬a ∉ s ∨ a = a)
---   exact test_sorry
-
--- example (s t : Set α) : s ∈ 𝒫 t := by
---   push · ∈ ·
---   guard_target =ₛ s ⊆ t
 --   exact test_sorry
 
 -- example (s t : Set α) (a : α) : (s ∪ t ∩ {a} ∩ {x | x ≠ a} ∩ {_x | True})ᶜ = s := by
