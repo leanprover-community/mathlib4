@@ -162,11 +162,20 @@ end id
 
 section Iterate
 
-/-- Iterated `ContMDiff` functions are `ContMDiff`. -/
-theorem ContMDiff.iterate {f : M → M} (fa : ContMDiff I I n f) (k : ℕ) :
+/-- The iterates of `C^n` functions are `C^n`. -/
+theorem ContMDiff.iterate {f : M → M} (hf : ContMDiff I I n f) (k : ℕ) :
     ContMDiff I I n (f^[k]) := by
-  induction' k with k h; · simp only [Function.iterate_zero]; exact contMDiff_id
-  simp only [Function.iterate_succ']; exact fa.comp h
+  induction' k with k h
+  · simpa using contMDiff_id
+  simpa using h.comp hf
+
+/-- The iterates of `C^n` functions on domains are `C^n`. -/
+theorem ContMDiffOn.iterate {f : M → M} (hf : ContMDiffOn I I n f s)
+    (hmaps : Set.MapsTo f s s) (k : ℕ) :
+    ContMDiffOn I I n (f^[k]) s := by
+  induction' k with k h
+  · simpa using contMDiffOn_id
+  simpa using h.comp hf hmaps
 
 end Iterate
 
