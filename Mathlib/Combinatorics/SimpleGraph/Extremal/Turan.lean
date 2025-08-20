@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
 import Mathlib.Combinatorics.SimpleGraph.Clique
+import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
 import Mathlib.Order.Partition.Equipartition
 
 /-!
@@ -47,9 +48,7 @@ variable {V : Type*} [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj] {n r :
 variable (G) in
 /-- An `r + 1`-cliquefree graph is `r`-Turán-maximal if any other `r + 1`-cliquefree graph on
 the same vertex set has the same or fewer number of edges. -/
-def IsTuranMaximal (r : ℕ) : Prop :=
-  G.CliqueFree (r + 1) ∧ ∀ (H : SimpleGraph V) [DecidableRel H.Adj],
-    H.CliqueFree (r + 1) → #H.edgeFinset ≤ #G.edgeFinset
+def IsTuranMaximal (r : ℕ) : Prop := G.IsExtremal (CliqueFree · (r + 1))
 
 section Defs
 
@@ -58,7 +57,7 @@ variable {H : SimpleGraph V}
 lemma IsTuranMaximal.le_iff_eq (hG : G.IsTuranMaximal r) (hH : H.CliqueFree (r + 1)) :
     G ≤ H ↔ G = H := by
   classical exact ⟨fun hGH ↦ edgeFinset_inj.1 <| eq_of_subset_of_card_le
-    (edgeFinset_subset_edgeFinset.2 hGH) (hG.2 _ hH), le_of_eq⟩
+    (edgeFinset_subset_edgeFinset.2 hGH) (hG.2 hH), le_of_eq⟩
 
 /-- The canonical `r + 1`-cliquefree Turán graph on `n` vertices. -/
 def turanGraph (n r : ℕ) : SimpleGraph (Fin n) where Adj v w := v % r ≠ w % r
@@ -132,7 +131,7 @@ variable {s t u : V}
 /-- In a Turán-maximal graph, non-adjacent vertices have the same degree. -/
 lemma degree_eq_of_not_adj (h : G.IsTuranMaximal r) (hn : ¬G.Adj s t) :
     G.degree s = G.degree t := by
-  rw [IsTuranMaximal] at h; contrapose! h; intro cf
+  rw [IsTuranMaximal, IsExtremal] at h; contrapose! h; intro cf
   wlog hd : G.degree t < G.degree s generalizing G t s
   · replace hd : G.degree s < G.degree t := lt_of_le_of_ne (le_of_not_gt hd) h
     exact this (by rwa [adj_comm] at hn) hd.ne' cf hd
@@ -147,7 +146,7 @@ lemma not_adj_trans (h : G.IsTuranMaximal r) (hts : ¬G.Adj t s) (hsu : ¬G.Adj 
   have hst : ¬G.Adj s t := fun a ↦ hts a.symm
   have dst := h.degree_eq_of_not_adj hst
   have dsu := h.degree_eq_of_not_adj hsu
-  rw [IsTuranMaximal] at h; contrapose! h; intro cf
+  rw [IsTuranMaximal, IsExtremal] at h; contrapose! h; intro cf
   classical
   use (G.replaceVertex s t).replaceVertex s u, inferInstance,
     (cf.replaceVertex s t).replaceVertex s u
@@ -218,7 +217,7 @@ theorem isEquipartition [DecidableEq V] : h.finpartition.IsEquipartition := by
   obtain ⟨w, hw⟩ := fp.nonempty_of_mem_parts hl
   obtain ⟨v, hv⟩ := fp.nonempty_of_mem_parts hs
   apply absurd h
-  rw [IsTuranMaximal]; push_neg; intro cf
+  rw [IsTuranMaximal, IsExtremal]; push_neg; intro cf
   use G.replaceVertex v w, inferInstance, cf.replaceVertex v w
   have large_eq := fp.part_eq_of_mem hl hw
   have small_eq := fp.part_eq_of_mem hs hv
@@ -251,7 +250,7 @@ theorem card_parts [DecidableEq V] : #h.finpartition.parts = min (Fintype.card V
   obtain ⟨x, -, y, -, hn, he⟩ :=
     exists_ne_map_eq_of_card_lt_of_maps_to l.1 fun a _ ↦ fp.part_mem.2 (mem_univ a)
   apply absurd h
-  rw [IsTuranMaximal]; push_neg; rintro -
+  rw [IsTuranMaximal, IsExtremal]; push_neg; rintro -
   have cf : G.CliqueFree r := by
     simp_rw [← cliqueFinset_eq_empty_iff, cliqueFinset, filter_eq_empty_iff, mem_univ,
       forall_true_left, isNClique_iff, and_comm, not_and, isClique_iff, Set.Pairwise]
@@ -293,7 +292,7 @@ theorem isTuranMaximal_of_iso (f : G ≃g turanGraph n r) (hr : 0 < r) : G.IsTur
   obtain ⟨g⟩ := j.nonempty_iso_turanGraph
   rw [f.card_eq, Fintype.card_fin] at g
   use (turanGraph_cliqueFree (n := n) hr).comap f,
-    fun H _ cf ↦ (f.symm.comp g).card_edgeFinset_eq ▸ j.2 H cf
+    fun H _ cf ↦ (f.symm.comp g).card_edgeFinset_eq ▸ j.2 cf
 
 /-- Turán-maximality with `0 < r` transfers across graph isomorphisms. -/
 theorem IsTuranMaximal.iso {W : Type*} [Fintype W] {H : SimpleGraph W}
