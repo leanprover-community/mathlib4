@@ -94,7 +94,7 @@ theorem Invariant.of_IsReversible
     simpa [Measure.restrict_univ] using h'
   have hConst : ∫⁻ x in s, κ x Set.univ ∂π = π s := by
     classical
-    simp [measure_univ, lintegral_const, hs]
+    simp [measure_univ]
   have hπ : ∫⁻ x, κ x s ∂π = π s := h''.trans hConst
   calc
     (π.bind κ) s = ∫⁻ x, κ x s ∂π := Measure.bind_apply hs (Kernel.aemeasurable _)
