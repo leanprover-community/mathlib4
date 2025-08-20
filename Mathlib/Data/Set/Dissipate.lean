@@ -75,7 +75,7 @@ open Nat
 
 @[simp]
 theorem dissipate_succ (s : ℕ → Set α) (n : ℕ) :
-    dissipate s (n + 1) = (dissipate s n) ∩ s (n + 1)
+    ⋂ i, ⋂ (_ : i ≤ n + 1), s i = (dissipate s n) ∩ s (n + 1)
     := by
   ext x
   simp_all only [dissipate_def, mem_iInter, mem_inter_iff]
@@ -100,7 +100,7 @@ lemma exists_subset_dissipate_of_directed {s : ℕ → Set α}
   | zero => use 0; simp
   | succ n hn =>
     obtain ⟨m, hm⟩ := hn
-    simp_rw [dissipate_succ]
+    simp_rw [dissipate_def, dissipate_succ]
     obtain ⟨k, hk⟩ := hd m (n+1)
     simp at hk
     use k
@@ -120,7 +120,7 @@ lemma exists_dissipate_eq_empty_iff {s : ℕ → Set α}
     · rw [hn']
       exact Eq.trans (dissipate_zero s) (hn' ▸ hn)
     · obtain ⟨k, hk⟩ := exists_eq_add_one_of_ne_zero hn'
-      rw [hk, dissipate_succ, ← hk, hn, Set.inter_empty]
+      rw [hk, dissipate_def, dissipate_succ, ← hk, hn, Set.inter_empty]
 
 lemma directed_dissipate {s : ℕ → Set α} :
     Directed (fun (x y : Set α) => y ⊆ x) (dissipate s) :=
@@ -134,7 +134,7 @@ lemma exists_dissipate_eq_empty_iff_of_directed (C : ℕ → Set α)
     · rw [hn', dissipate_zero]
       exact hn' ▸ hn
     · obtain ⟨k, hk⟩ := exists_eq_succ_of_ne_zero hn'
-      simp_rw [hk, succ_eq_add_one, dissipate_succ,
+      simp_rw [hk, succ_eq_add_one, dissipate_def, dissipate_succ,
         ← succ_eq_add_one, ← hk, hn, Set.inter_empty]
   · rw [← not_imp_not]
     push_neg
@@ -152,7 +152,7 @@ lemma IsPiSystem.dissipate_mem {s : ℕ → Set α} {p : Set (Set α)}
     simp only [dissipate_def, le_zero_eq, iInter_iInter_eq_left]
     exact h 0
   | succ n hn =>
-    rw [dissipate_succ] at *
+    rw [dissipate_def, dissipate_succ] at *
     apply hp (dissipate s n) (hn (Nonempty.left h')) (s (n+1)) (h (n+1)) h'
 
 end Set
