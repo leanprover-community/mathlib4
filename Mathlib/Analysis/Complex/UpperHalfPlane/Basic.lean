@@ -203,7 +203,7 @@ theorem vadd_im : (x +ᵥ z).im = z.im :=
   zero_add _
 
 end RealAddAction
-section complexUpperHalfPlane
+section upperHalfPlaneSet
 
 /-- The UpperHalfPlane as a subset of `ℂ`. This is convinient for taking derivatives of functions
 on the upper half plane. -/
@@ -213,6 +213,6 @@ local notation "ℍₒ" => upperHalfPlaneSet
 
 lemma upperHalfPlaneSet_isOpen : IsOpen ℍₒ := (isOpen_lt continuous_const Complex.continuous_im)
 
-end complexUpperHalfPlane
+end upperHalfPlaneSet
 
 end UpperHalfPlane
