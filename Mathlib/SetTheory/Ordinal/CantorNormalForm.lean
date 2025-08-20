@@ -180,6 +180,9 @@ protected theorem sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).Sorted (· >
         rcases H with ⟨⟨a, a'⟩, H, rfl⟩
         exact (fst_le_log H).trans_lt (log_mod_opow_log_lt_log_self hb hbo)
 
+@[deprecated (since := "2025-08-18")]
+alias _root_.Ordinal.CNF_sorted := CNF.sorted
+
 private theorem nodupKeys (b o : Ordinal) : (map Prod.toSigma (CNF b o)).NodupKeys := by
   rw [NodupKeys, List.keys, map_map, Prod.fst_comp_toSigma]
   exact (CNF.sorted ..).nodup
