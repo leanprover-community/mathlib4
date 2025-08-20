@@ -14,8 +14,8 @@ Q-expansions.
 
 -/
 
-open Set Metric TopologicalSpace Function Filter Complex UpperHalfPlane Set
- EisensteinSeries
+open Set Metric TopologicalSpace Function Filter Complex UpperHalfPlane
+
 
 open scoped Topology Real Nat Complex Pointwise
 
@@ -36,8 +36,7 @@ lemma iteratedDerivWithin_cexp_mul_const (k m : ℕ) (p : ℝ) {S : Set ℂ} (hs
 private lemma aux_IsBigO_mul (k l : ℕ) (p : ℝ) {f : ℕ → ℂ}
     (hf : f =O[atTop] (fun n ↦ ((n ^ l) : ℝ))) :
     (fun n ↦ f n * (2 * ↑π * Complex.I * ↑n / p) ^ k) =O[atTop] (fun n ↦ (↑(n ^ (l + k)) : ℝ)) := by
-  have h0 : (fun n : ℕ ↦ (2 * ↑π * Complex.I * ↑n / p) ^ k) =O[atTop]
-    (fun n ↦ (↑(n ^ (k)) : ℝ)) := by
+  have h0 : (fun n : ℕ ↦ (2 * ↑π * Complex.I * ↑n / p) ^ k) =O[atTop] (fun n ↦ (↑(n ^ k) : ℝ)) := by
     have h1 : (fun n : ℕ ↦ (2 * ↑π * Complex.I * ↑n / p) ^ k) =
       (fun n : ℕ ↦ ((2 * ↑π * Complex.I / p) ^ k) * ↑n ^ k) := by
       ext z
