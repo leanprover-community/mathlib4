@@ -34,6 +34,25 @@ This file proves the **Erdős-Stone-Simonovits theorem** for simple graphs.
 
   If the chromatic number of `H` equals `r + 1 > 0`, then `extremalNumber` of `H` is greater than
   `(1 - 1 / r - o(1)) * card V ^ 2 / 2` and at most `(1 - 1 / r + o(1)) * card V ^ 2 / 2`.
+
+* `SimpleGraph.isLittleO_extremalNumber_of_chromaticNumber` is the proof of the little-o version of
+  the **Erdős-Stone-Simonovits theorem** for simple graphs.
+
+* `SimpleGraph.tendsto_extremalNumber_div_choose_two_of_chromaticNumber` is the proof of the limit
+  version of the **Erdős-Stone-Simonovits theorem** for simple graphs.
+
+* `SimpleGraph.turanDensity_eq_of_chromaticNumber` is the proof of the Turán density version of the
+  **Erdős-Stone-Simonovits theorem** for simple graphs.
+
+  See `SimpleGraph.turanDensity`.
+
+* `SimpleGraph.isEquivalent_extremalNumber_of_chromaticNumber` is the proof of the equivalence
+  version of the **Erdős-Stone-Simonovits theorem** for simple graphs:
+
+  If the chromatic number of `H` equals `r + 1 > 1`, then `extremalNumber n H` is asymptotically
+  equivalent to `(1 - 1 / r) * n.choose 2` as `n → ∞`
+
+  See `SimpleGraph.isEquivalent_extremalNumber`.
 -/
 
 
@@ -579,6 +598,66 @@ theorem lt_extremalNumber_le_of_chromaticNumber {ε : ℝ} (hε : 0 < ε)
   have h_card₁ := h_card.trans_le' (Nat.le_max_left n₁ n₂)
   have h_card₂ := h_card.trans_le' (Nat.le_max_right n₁ n₂)
   exact ⟨h₁ h_card₁, h₂ h_card₂⟩
+
+/-- If the chromatic number of `H` equals `r + 1 > 0`, then the `extremalNumber` of `H` is equal
+to `(1 - 1 / r + o(1)) * n ^ 2 / 2`.
+
+This is a corollary of the **Erdős-Stone-Simonovits theorem**. -/
+theorem isLittleO_extremalNumber_of_chromaticNumber
+    {r : ℕ} (hr : 0 < r) (hχ : H.chromaticNumber = r + 1) :
+    (fun (n : ℕ) ↦ (extremalNumber n H - (1 - 1 / r) * n ^ 2 / 2 : ℝ))
+      =o[atTop] (fun (n : ℕ) ↦ (n ^ 2 : ℝ)) := by
+  rw [isLittleO_iff]
+  intro ε hε
+  rw [eventually_atTop]
+  have ⟨n₀, h⟩ := lt_extremalNumber_le_of_chromaticNumber hε hr hχ
+  use n₀ + 1
+  intro n (hn : n₀ < n)
+  rw [← Fintype.card_fin n] at hn
+  specialize h hn
+  rw [Fintype.card_fin] at h
+  rw [norm_eq_abs, ← abs_of_pos hε, norm_eq_abs, ← abs_mul]
+  apply abs_le_abs
+  all_goals linarith
+
+/-- If the chromatic number of `H` equals `r + 1 > 0`, then the limit
+`extremalNumber n H / n.choose 2` approaches `1 - 1 / r` as `n → ∞`.
+
+This is a corollary of the **Erdős-Stone-Simonovits theorem**. -/
+theorem tendsto_extremalNumber_div_choose_two_of_chromaticNumber
+    {r : ℕ} (hr : 0 < r) (hχ : H.chromaticNumber = r + 1) :
+    Tendsto (fun (n : ℕ) ↦ (extremalNumber n H / n.choose 2 : ℝ)) atTop (𝓝 (1 - 1 / r)) := by
+  have h_littleo := IsLittleO.trans_isTheta
+    (isLittleO_extremalNumber_of_chromaticNumber hr hχ) (isTheta_choose 2).symm
+  have h_tendsto : Tendsto (fun (n : ℕ) ↦ (n ^ 2 / 2 / n.choose 2 : ℝ)) atTop (𝓝 1) := by
+    have hz : ∀ᶠ (n : ℕ) in atTop, (n.choose 2 : ℝ) ≠ 0 :=
+      eventually_atTop.mpr ⟨2, fun _ h ↦ mod_cast (Nat.choose_pos h).ne'⟩
+    simpa only [isEquivalent_iff_tendsto_one hz] using (isEquivalent_choose 2).symm
+  simpa [sub_div, ← mul_div]
+    using h_littleo.tendsto_div_nhds_zero.add (h_tendsto.const_mul (1 - 1 / r : ℝ))
+
+/-- If the chromatic number of `H` equals `r + 1 > 0`, then the Turán density of `H`
+equals `1 - 1 / r`.
+
+This is a corollary of the **Erdős-Stone-Simonovits theorem**. -/
+theorem turanDensity_eq_of_chromaticNumber
+    {r : ℕ} (hr : 0 < r) (hχ : H.chromaticNumber = r + 1) : turanDensity H = 1 - 1 / r :=
+  (tendsto_extremalNumber_div_choose_two_of_chromaticNumber hr hχ).limUnder_eq
+
+/-- If the chromatic number of `H` equals `r + 1 > 1`, then `extremalNumber n H` is
+asymptotically equivalent to `(1 - 1 / r) * n.choose 2` as `n → ∞`
+
+This is a corollary of the **Erdős-Stone-Simonovits theorem**. -/
+theorem isEquivalent_extremalNumber_of_chromaticNumber
+    {r : ℕ} (hr : 1 < r) (hχ : H.chromaticNumber = r + 1) :
+    (fun (n : ℕ) ↦ (extremalNumber n H : ℝ))
+      ~[atTop] (fun (n : ℕ) ↦ ((1 - 1 / r) * n.choose 2 : ℝ)) := by
+  have hπ_eq : turanDensity H = 1 - 1 / r := turanDensity_eq_of_chromaticNumber (by positivity) hχ
+  have hπ_pos : 0 < turanDensity H := by
+    rw [hπ_eq, sub_pos, one_div]
+    exact inv_lt_one_of_one_lt₀ (mod_cast hr)
+  rw [← hπ_eq]
+  exact isEquivalent_extremalNumber hπ_pos.ne'
 
 end ErdosStoneSimonovits
 
