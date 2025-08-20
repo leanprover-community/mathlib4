@@ -108,7 +108,7 @@ lemma Ring.KrullDimLE.mk₀ (H : ∀ I : Ideal R, I.IsPrime → I.IsMaximal) : R
 lemma Ideal.isMaximal_of_isPrime [Ring.KrullDimLE 0 R] (I : Ideal R) [I.IsPrime] : I.IsMaximal :=
   Ring.krullDimLE_zero_iff.mp ‹_› I ‹_›
 
-/-- Also see `Ideal.IsPrime.isMaximal` for the analogous statement for dedekind domains. -/
+/-- Also see `Ideal.IsPrime.isMaximal` for the analogous statement for Dedekind domains. -/
 lemma Ideal.IsPrime.isMaximal' [Ring.KrullDimLE 0 R] {I : Ideal R} (hI : I.IsPrime) : I.IsMaximal :=
   I.isMaximal_of_isPrime
 
