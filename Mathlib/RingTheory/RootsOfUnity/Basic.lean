@@ -74,7 +74,7 @@ lemma rootsOfUnity_zero (M : Type*) [CommMonoid M] : rootsOfUnity 0 M = ⊤ := b
 
 theorem rootsOfUnity.coe_injective {n : ℕ} :
     Function.Injective (fun x : rootsOfUnity n M ↦ x.val.val) :=
-  Units.ext.comp fun _ _ ↦ Subtype.eq
+  Units.val_injective.comp Subtype.val_injective
 
 /-- Make an element of `rootsOfUnity` from a member of the base ring, and a proof that it has
 a positive power equal to one. -/
@@ -151,7 +151,23 @@ theorem MulEquiv.restrictRootsOfUnity_symm (σ : R ≃* S) :
     (σ.restrictRootsOfUnity k).symm = σ.symm.restrictRootsOfUnity k :=
   rfl
 
+theorem coe_rootsOfUnity_to_set [NeZero k] :
+    ((↑) : Rˣ → _) '' (rootsOfUnity k R) = {z : R | z^k = 1} := by
+  ext x
+  exact ⟨fun ⟨y,hy1,hy2⟩ => by rw [← hy2]; exact (mem_rootsOfUnity' k y).mp hy1,
+    fun h ↦ ⟨(rootsOfUnity.mkOfPowEq x h), ⟨Subtype.coe_prop (rootsOfUnity.mkOfPowEq x h), rfl⟩⟩⟩
+
+theorem rootsOfUnity_one_set : ((↑) : Rˣ → R) '' (rootsOfUnity 1 R) = {1} := by
+  ext x
+  simp
+
 end CommMonoid
+
+open Set in
+theorem rootsOfUnity_two_set [CommRing R] [NoZeroDivisors R] :
+    ((↑) : Rˣ → R) '' (rootsOfUnity 2 R) = {1, -1} := by
+  ext x
+  rw [mem_insert_iff, mem_singleton_iff, ← sq_eq_one_iff, coe_rootsOfUnity_to_set, mem_setOf_eq]
 
 section IsDomain
 
@@ -178,8 +194,6 @@ def rootsOfUnityEquivNthRoots : rootsOfUnity k R ≃ { x // x ∈ nthRoots k (1 
       rcases x with ⟨x, hx⟩; rw [mem_nthRoots <| NeZero.pos k] at hx
       simp only [← pow_succ, ← pow_succ', hx, tsub_add_cancel_of_le NeZero.one_le]
     simp only [mem_rootsOfUnity, Units.ext_iff, Units.val_pow_eq_pow_val, hx, Units.val_one]
-  left_inv := by rintro ⟨x, hx⟩; ext; rfl
-  right_inv := by rintro ⟨x, hx⟩; ext; rfl
 
 variable {k R}
 
@@ -221,6 +235,12 @@ theorem map_rootsOfUnity_eq_pow_self [FunLike F R R] [MonoidHomClass F R R] (σ 
       (m.emod_nonneg (Int.natCast_ne_zero.mpr (pos_iff_ne_zero.mp (orderOf_pos ζ)))),
     zpow_natCast, rootsOfUnity.coe_pow]
   exact ⟨(m % orderOf ζ).toNat, rfl⟩
+
+lemma coe_rootsOfUnity_to_nthRootsFinset :
+    ((↑) : Rˣ → R) '' (rootsOfUnity k R) = nthRootsFinset k (1 : R) := by
+  ext x
+  rw [mem_coe, Polynomial.mem_nthRootsFinset (Nat.pos_of_neZero k), coe_rootsOfUnity_to_set,
+    Set.mem_setOf_eq]
 
 end IsDomain
 

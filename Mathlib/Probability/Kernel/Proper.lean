@@ -74,9 +74,6 @@ lemma IsProper.setLIntegral_eq_comp (hπ : IsProper π) (h𝓑𝓧 : 𝓑 ≤ �
   rw [← lintegral_indicator (h𝓑𝓧 _ hB)]
   rfl
 
-@[deprecated (since := "2025-01-24")]
-alias IsProper.setLIntegral_eq_bind := IsProper.setLIntegral_eq_comp
-
 /-- Auxiliary lemma for `IsProper.lintegral_mul` and
 `IsProper.setLIntegral_eq_indicator_mul_lintegral`. -/
 private lemma IsProper.lintegral_indicator_mul_indicator (hπ : IsProper π) (h𝓑𝓧 : 𝓑 ≤ 𝓧)
@@ -130,7 +127,7 @@ lemma IsProper.lintegral_mul (hπ : IsProper π) (h𝓑𝓧 : 𝓑 ≤ 𝓧) (hf
     rw [lintegral_const_mul, hπ.lintegral_indicator_mul h𝓑𝓧 hf hA]
     · measurability
   · rintro g₁ g₂ - _ hg₂_meas hg₁ hg₂
-    simp only [Pi.add_apply, mul_add, add_mul]
+    simp only [Pi.add_apply, add_mul]
     rw [lintegral_add_right, hg₁, hg₂]
     · exact (hg₂_meas.mono h𝓑𝓧 le_rfl).mul hf
   · rintro g' hg'_meas hg'_mono hg'

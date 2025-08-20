@@ -5,9 +5,9 @@ Authors: Adam Topaz, Junyan Xu, Jack McKoen
 -/
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Localization.AsSubring
+import Mathlib.Algebra.Algebra.Subalgebra.Tower
 import Mathlib.Algebra.Ring.Subring.Pointwise
 import Mathlib.Algebra.Ring.Action.Field
-import Mathlib.RingTheory.Spectrum.Prime.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
@@ -78,11 +78,9 @@ instance : SubringClass (ValuationSubring K) K where
 theorem toSubring_injective : Function.Injective (toSubring : ValuationSubring K → Subring K) :=
   fun x y h => by cases x; cases y; congr
 
-instance : CommRing A :=
-  show CommRing A.toSubring by infer_instance
+instance : CommRing A := inferInstanceAs <| CommRing A.toSubring
 
-instance : IsDomain A :=
-  show IsDomain A.toSubring by infer_instance
+instance : IsDomain A := inferInstanceAs <| IsDomain A.toSubring
 
 instance : Top (ValuationSubring K) :=
   Top.mk <| { (⊤ : Subring K) with mem_or_inv_mem' := fun _ => Or.inl trivial }
@@ -115,14 +113,13 @@ instance : ValuationRing A where
       right
       ext
       field_simp
-    · rw [show (a / b : K)⁻¹ = b / a by field_simp] at hh
+    · rw [show (a / b : K)⁻¹ = b / a by simp] at hh
       use ⟨b / a, hh⟩
       left
       ext
       field_simp
 
-instance : Algebra A K :=
-  show Algebra A.toSubring K by infer_instance
+instance : Algebra A K := inferInstanceAs <| Algebra A.toSubring K
 
 -- Porting note: Somehow it cannot find this instance and I'm too lazy to debug. wrong prio?
 instance isLocalRing : IsLocalRing A := ValuationRing.isLocalRing A
@@ -144,12 +141,7 @@ instance : IsFractionRing A K where
 /-- The value group of the valuation associated to `A`. Note: it is actually a group with zero. -/
 def ValueGroup :=
   ValuationRing.ValueGroup A K
--- The `LinearOrderedCommGroupWithZero` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance : LinearOrderedCommGroupWithZero (ValueGroup A) := by
-  unfold ValueGroup
-  infer_instance
+deriving LinearOrderedCommGroupWithZero
 
 /-- Any valuation subring of `K` induces a natural valuation on `K`. -/
 def valuation : Valuation K A.ValueGroup :=
@@ -320,7 +312,7 @@ theorem ofPrime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) :
       change IsUnit (⟨x⁻¹, h hr⟩ : S)
       apply isUnit_of_mul_eq_one _ (⟨x, hx⟩ : S)
       ext; field_simp
-    · field_simp
+    · simp
 
 theorem ofPrime_le_of_le (P Q : Ideal A) [P.IsPrime] [Q.IsPrime] (h : P ≤ Q) :
     ofPrime A Q ≤ ofPrime A P := fun _x ⟨a, s, hs, he⟩ => ⟨a, s, fun c => hs (h c), he⟩
@@ -331,7 +323,7 @@ theorem idealOfLE_le_of_le (R S : ValuationSubring K) (hR : A ≤ R) (hS : A ≤
     (by
       by_contra c; push_neg at c; replace c := monotone_mapOfLE R S h c
       rw [(mapOfLE _ _ _).map_one, mapOfLE_valuation_apply] at c
-      apply not_le_of_lt ((valuation_lt_one_iff S _).1 hx) c)
+      apply not_le_of_gt ((valuation_lt_one_iff S _).1 hx) c)
 
 /-- The equivalence between coarsenings of a valuation ring and its prime ideals. -/
 @[simps apply]
@@ -402,6 +394,9 @@ theorem isEquiv_valuation_valuationSubring : v.IsEquiv v.valuationSubring.valuat
   rw [ValuationSubring.valuation_le_one_iff]
   rfl
 
+lemma valuationSubring.integers : v.Integers v.valuationSubring :=
+  Valuation.integer.integers _
+
 end Valuation
 
 namespace ValuationSubring
@@ -432,8 +427,6 @@ def unitGroupMulEquiv : A.unitGroup ≃* Aˣ where
       -- Porting note: was `Units.inv_mul x`
       inv_val := Subtype.ext (by simp) }
   invFun x := ⟨Units.map A.subtype.toMonoidHom x, A.valuation_unit x⟩
-  left_inv a := by ext; rfl
-  right_inv a := by ext; rfl
   map_mul' a b := by ext; rfl
 
 @[simp]
@@ -554,12 +547,10 @@ def principalUnitGroup : Subgroup Kˣ where
   carrier := {x | A.valuation (x - 1) < 1}
   mul_mem' := by
     intro a b ha hb
-    -- Porting note: added
-    rw [Set.mem_setOf] at ha hb
+    rw [Set.mem_setOf] at ha hb ⊢
     refine lt_of_le_of_lt ?_ (max_lt hb ha)
-    -- Porting note: `sub_add_sub_cancel` needed some help
     rw [← one_mul (A.valuation (b - 1)), ← A.valuation.map_one_add_of_lt ha, add_sub_cancel,
-      ← Valuation.map_mul, mul_sub_one, ← sub_add_sub_cancel (↑(a * b) : K) _ 1]
+      ← Valuation.map_mul, mul_sub_one, ← sub_add_sub_cancel]
     exact A.valuation.map_add _ _
   one_mem' := by simp
   inv_mem' := by
@@ -669,7 +660,7 @@ def unitsModPrincipalUnitsEquivResidueFieldUnits :
 
 /-- Porting note: Lean needs to be reminded of this instance -/
 local instance : MulOneClass ({ x // x ∈ unitGroup A } ⧸
-  Subgroup.comap (Subgroup.subtype (unitGroup A)) (principalUnitGroup A)) := inferInstance
+    Subgroup.comap (Subgroup.subtype (unitGroup A)) (principalUnitGroup A)) := inferInstance
 
 theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk :
     (A.unitsModPrincipalUnitsEquivResidueFieldUnits : _ ⧸ Subgroup.comap _ _ →* _).comp
@@ -690,8 +681,8 @@ the action is by a group. Notably this provides an instances when `G` is `K ≃+
 
 These instances are in the `Pointwise` locale.
 
-The lemmas in this section are copied from the file `Mathlib.Algebra.Ring.Subring.Pointwise`; try
-to keep these in sync.
+The lemmas in this section are copied from the file `Mathlib/Algebra/Ring/Subring/Pointwise.lean`;
+try to keep these in sync.
 -/
 
 
@@ -738,7 +729,7 @@ theorem smul_mem_pointwise_smul (g : G) (x : K) (S : ValuationSubring K) : x ∈
   (Set.smul_mem_smul_set : _ → _ ∈ g • (S : Set K))
 
 instance : CovariantClass G (ValuationSubring K) HSMul.hSMul LE.le :=
-  ⟨fun _ _ _ => Set.image_subset _⟩
+  ⟨fun _ _ _ => Set.image_mono⟩
 
 theorem mem_smul_pointwise_iff_exists (g : G) (x : K) (S : ValuationSubring K) :
     x ∈ g • S ↔ ∃ s : K, s ∈ S ∧ g • s = x :=

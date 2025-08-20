@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov
 -/
 import Mathlib.Analysis.Convex.Jensen
+import Mathlib.Analysis.Convex.PathConnected
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.Normed.Module.Basic
@@ -22,6 +23,8 @@ We prove the following facts:
 * `isBounded_convexHull` : convex hull of a set is bounded if and only if the original set
   is bounded.
 -/
+
+-- TODO assert_not_exists Cardinal
 
 variable {E : Type*}
 

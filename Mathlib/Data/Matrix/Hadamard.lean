@@ -36,7 +36,7 @@ variable {α m n R : Type*}
 namespace Matrix
 
 /-- `Matrix.hadamard` (denoted as `⊙` within the Matrix namespace) defines the Hadamard product,
-    which is the pointwise product of two matrices of the same size. -/
+which is the pointwise product of two matrices of the same size. -/
 def hadamard [Mul α] (A : Matrix m n α) (B : Matrix m n α) : Matrix m n α :=
   of fun i j => A i j * B i j
 
@@ -147,7 +147,7 @@ theorem sum_hadamard_eq : (∑ i : m, ∑ j : n, (A ⊙ B) i j) = trace (A * B�
   rfl
 
 theorem dotProduct_vecMul_hadamard [DecidableEq m] [DecidableEq n] (v : m → α) (w : n → α) :
-    dotProduct (v ᵥ* (A ⊙ B)) w = trace (diagonal v * A * (B * diagonal w)ᵀ) := by
+    v ᵥ* (A ⊙ B) ⬝ᵥ w = trace (diagonal v * A * (B * diagonal w)ᵀ) := by
   rw [← sum_hadamard_eq, Finset.sum_comm]
   simp [dotProduct, vecMul, Finset.sum_mul, mul_assoc]
 
