@@ -562,7 +562,7 @@ lemma extremalNumber_le_of_colorable {ε : ℝ} (hε : 0 < ε)
     rw [not_free]
     exact h₂ h_card h.le
 
-/-- If the chromatic number of `H` equals `r + 1 > 0`, then `extremalNumber` of `H` is greater
+/-- If the chromatic number of `H` equals `r + 1 > 0`, then the `extremalNumber` of `H` is greater
 than `(1 - 1 / r - o(1)) * card V ^ 2 / 2` and at most `(1 - 1 / r + o(1)) * card V ^ 2 / 2`.
 
 This is the **Erdős-Stone-Simonovits theorem**. -/
