@@ -5,7 +5,7 @@ Authors: Matteo Cipollina
 -/
 
 import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Combinatorics.Quiver.Path--.Decomposition
+import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Data.Set.Insert
 import Mathlib.Data.List.Basic
 
