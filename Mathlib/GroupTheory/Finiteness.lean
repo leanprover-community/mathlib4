@@ -86,26 +86,26 @@ theorem Submonoid.FG.prod (hP : P.FG) (hQ : Q.FG) : (P.prod Q).FG := by
 
 section Pi
 
-variable {ι : Type*} [Finite ι] {M : ι → Type*} [∀ i, Monoid (M i)] {S : ∀ i, Submonoid (M i)}
+variable {ι : Type*} [Finite ι] {M : ι → Type*} [∀ i, Monoid (M i)] {P : ∀ i, Submonoid (M i)}
 
 @[to_additive]
-theorem Submonoid.iSup_map_single [DecidableEq ι] :
-    ⨆ i, map (MonoidHom.mulSingle M i) (S i) = pi Set.univ S := by
+theorem Submonoid.iSup_map_mulSingle [DecidableEq ι] :
+    ⨆ i, map (MonoidHom.mulSingle M i) (P i) = pi Set.univ P := by
   haveI := Fintype.ofFinite ι
-  refine iSup_map_single_le.antisymm fun x hx => ?_
+  refine iSup_map_mulSingle_le.antisymm fun x hx => ?_
   rw [← Finset.noncommProd_mul_single x]
   exact noncommProd_mem _ _ _ _ fun i _ => mem_iSup_of_mem _ (mem_map_of_mem _ (hx i trivial))
 
 /-- Finite product of finitely generated submonoids is finitely generated. -/
 @[to_additive /-- Finite product of finitely generated additive submonoids is finitely generated.
 -/]
-theorem Submonoid.FG.pi (hS : ∀ i, (S i).FG) : (pi Set.univ S).FG := by
+theorem Submonoid.FG.pi (hS : ∀ i, (P i).FG) : (pi Set.univ P).FG := by
   classical
   have := Fintype.ofFinite ι
   choose! S hS using hS
   refine ⟨Finset.univ.biUnion fun i => (S i).image (MonoidHom.mulSingle M i), ?_⟩
   simp_rw [Finset.coe_biUnion, Finset.coe_univ, Set.biUnion_univ, closure_iUnion, Finset.coe_image,
-    ← MonoidHom.map_mclosure, hS, iSup_map_single]
+    ← MonoidHom.map_mclosure, hS, iSup_map_mulSingle]
 
 end Pi
 
