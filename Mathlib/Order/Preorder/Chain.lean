@@ -58,8 +58,6 @@ variable {r} {c c₁ c₂ s t : Set α} {a b x y : α}
 @[simp] lemma IsChain.empty : IsChain r ∅ := pairwise_empty _
 @[simp] lemma IsChain.singleton : IsChain r {a} := pairwise_singleton ..
 
-@[deprecated (since := "2024-11-25")] alias isChain_empty := IsChain.empty
-
 theorem Set.Subsingleton.isChain (hs : s.Subsingleton) : IsChain r s :=
   hs.pairwise _
 
@@ -200,7 +198,7 @@ theorem IsChain.succ (hs : IsChain r s) : IsChain r (SuccChain r s) :=
 
 theorem IsChain.superChain_succChain (hs₁ : IsChain r s) (hs₂ : ¬IsMaxChain r s) :
     SuperChain r s (SuccChain r s) := by
-  simp only [IsMaxChain, _root_.not_and, not_forall, exists_prop, exists_and_left] at hs₂
+  simp only [IsMaxChain, _root_.not_and, not_forall, exists_prop] at hs₂
   obtain ⟨t, ht, hst⟩ := hs₂ hs₁
   exact succChain_spec ⟨t, hs₁, ht, ssubset_iff_subset_ne.2 hst⟩
 
@@ -209,7 +207,7 @@ theorem subset_succChain : s ⊆ SuccChain r s :=
   if h : ∃ t, IsChain r s ∧ SuperChain r s t then (succChain_spec h).2.1
   else by
     rw [exists_and_left] at h
-    simp [SuccChain, dif_neg, h, Subset.rfl]
+    simp [SuccChain, h]
 
 end Chain
 

@@ -38,7 +38,7 @@ Assume `B / A` is a finite extension of Dedekind domains, `K` is the fraction ri
 
 -/
 
-open Algebra
+open Algebra Pointwise
 
 attribute [local instance] FractionRing.liftAlgebra
 
@@ -64,19 +64,20 @@ noncomputable def inertiaDegIn {A : Type*} [CommRing A] (p : Ideal A)
 section MulAction
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] {p : Ideal A}
+  {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 
-instance : MulAction (B ≃ₐ[A] B) (primesOver p B) where
-  smul σ Q := primesOver.mk p (map σ Q.1)
-  one_smul Q := Subtype.val_inj.mp (map_id Q.1)
-  mul_smul σ τ Q := Subtype.val_inj.mp (Q.1.map_map τ.toRingHom σ.toRingHom).symm
+instance : MulAction G (primesOver p B) where
+  smul σ Q := primesOver.mk p (σ • Q.1)
+  one_smul Q := Subtype.ext (one_smul G Q.1)
+  mul_smul σ τ Q := Subtype.ext (mul_smul σ τ Q.1)
 
 @[simp]
-theorem coe_smul_primesOver (σ : B ≃ₐ[A] B) (P : primesOver p B): (σ • P).1 = map σ P :=
+theorem coe_smul_primesOver (σ : G) (P : primesOver p B) : (σ • P).1 = σ • P.1 :=
   rfl
 
 @[simp]
-theorem coe_smul_primesOver_mk (σ : B ≃ₐ[A] B) (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
-    (σ • primesOver.mk p P).1 = map σ P :=
+theorem coe_smul_primesOver_mk (σ : G) (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
+    (σ • primesOver.mk p P).1 = σ • P :=
   rfl
 
 variable (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L]
@@ -87,15 +88,15 @@ noncomputable instance : MulAction (L ≃ₐ[K] L) (primesOver p B) where
   smul σ Q := primesOver.mk p (map (galRestrict A K L B σ) Q.1)
   one_smul Q := by
     apply Subtype.val_inj.mp
-    show map _ Q.1 = Q.1
+    change map _ Q.1 = Q.1
     simpa only [map_one] using map_id Q.1
   mul_smul σ τ Q := by
     apply Subtype.val_inj.mp
-    show map _ Q.1 = map _ (map _ Q.1)
+    change map _ Q.1 = map _ (map _ Q.1)
     rw [map_mul]
     exact (Q.1.map_map ((galRestrict A K L B) τ).toRingHom ((galRestrict A K L B) σ).toRingHom).symm
 
-theorem coe_smul_primesOver_eq_map_galRestrict (σ : L ≃ₐ[K] L) (P : primesOver p B):
+theorem coe_smul_primesOver_eq_map_galRestrict (σ : L ≃ₐ[K] L) (P : primesOver p B) :
     (σ • P).1 = map (galRestrict A K L B σ) P :=
   rfl
 
@@ -184,7 +185,7 @@ include hpb in
 theorem ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn [IsGalois K L] :
     (primesOver p B).ncard * (ramificationIdxIn p B * inertiaDegIn p B) = Module.finrank K L := by
   have : FaithfulSMul A B := FaithfulSMul.of_field_isFractionRing A B K L
-  rw [← smul_eq_mul, ← coe_primesOverFinset hpb B, Set.ncard_coe_Finset, ← Finset.sum_const]
+  rw [← smul_eq_mul, ← coe_primesOverFinset hpb B, Set.ncard_coe_finset, ← Finset.sum_const]
   rw [← sum_ramification_inertia B p K L hpb]
   apply Finset.sum_congr rfl
   intro P hp

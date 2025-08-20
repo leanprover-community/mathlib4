@@ -5,6 +5,11 @@ Authors: Violeta Hernández Palacios
 -/
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.SetTheory.Ordinal.Family
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Nimber.Basic` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Nimbers
@@ -263,8 +268,8 @@ instance : IsRightCancelAdd Nimber := by
   intro a b c h
   apply le_antisymm <;>
   apply le_of_not_gt
-  · exact fun hc => (add_ne_of_lt a b).1 c hc h.symm
-  · exact fun ha => (add_ne_of_lt c b).1 a ha h
+  · exact fun hc => (add_ne_of_lt b a).1 c hc h.symm
+  · exact fun ha => (add_ne_of_lt c a).1 b ha h
 
 protected theorem add_comm (a b : Nimber) : a + b = b + a := by
   rw [add_def, add_def]

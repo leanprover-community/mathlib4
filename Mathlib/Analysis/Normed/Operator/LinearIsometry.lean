@@ -197,13 +197,14 @@ theorem norm_map (x : E) : ‖f x‖ = ‖x‖ :=
 theorem nnnorm_map (x : E) : ‖f x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_map f x
 
+@[simp] -- Should be replaced with `SemilinearIsometryClass.enorm_map` when https://github.com/leanprover/lean4/issues/3107 is fixed.
+theorem enorm_map (x : E) : ‖f x‖ₑ = ‖x‖ₑ := by
+  simp [enorm]
+
 protected theorem isometry : Isometry f :=
   AddMonoidHomClass.isometry_of_norm f.toLinearMap (norm_map _)
 
 lemma isEmbedding (f : F →ₛₗᵢ[σ₁₂] E₂) : IsEmbedding f := f.isometry.isEmbedding
-
-@[deprecated (since := "2024-10-26")]
-alias embedding := isEmbedding
 
 -- Should be `@[simp]` but it doesn't fire due to https://github.com/leanprover/lean4/issues/3107.
 theorem isComplete_image_iff [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) {s : Set E} :
@@ -1018,12 +1019,12 @@ theorem ofEq_rfl : ofEq p p rfl = LinearIsometryEquiv.refl R' p := rfl
 end LinearIsometryEquiv
 
 /-- Two linear isometries are equal if they are equal on basis vectors. -/
-theorem Basis.ext_linearIsometry {ι : Type*} (b : Basis ι R E) {f₁ f₂ : E →ₛₗᵢ[σ₁₂] E₂}
+theorem Module.Basis.ext_linearIsometry {ι : Type*} (b : Basis ι R E) {f₁ f₂ : E →ₛₗᵢ[σ₁₂] E₂}
     (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ :=
   LinearIsometry.toLinearMap_injective <| b.ext h
 
 /-- Two linear isometric equivalences are equal if they are equal on basis vectors. -/
-theorem Basis.ext_linearIsometryEquiv {ι : Type*} (b : Basis ι R E) {f₁ f₂ : E ≃ₛₗᵢ[σ₁₂] E₂}
+theorem Module.Basis.ext_linearIsometryEquiv {ι : Type*} (b : Basis ι R E) {f₁ f₂ : E ≃ₛₗᵢ[σ₁₂] E₂}
     (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ :=
   LinearIsometryEquiv.toLinearEquiv_injective <| b.ext' h
 

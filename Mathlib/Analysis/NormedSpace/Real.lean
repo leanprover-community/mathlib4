@@ -39,9 +39,6 @@ theorem inv_norm_smul_mem_unitClosedBall (x : E) :
   simp only [mem_closedBall_zero_iff, norm_smul, norm_inv, norm_norm, ← div_eq_inv_mul,
     div_self_le_one]
 
-@[deprecated (since := "2024-12-01")]
-alias inv_norm_smul_mem_closed_unit_ball := inv_norm_smul_mem_unitClosedBall
-
 theorem norm_smul_of_nonneg {t : ℝ} (ht : 0 ≤ t) (x : E) : ‖t • x‖ = t * ‖x‖ := by
   rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg ht]
 
@@ -117,7 +114,7 @@ theorem exists_norm_eq {c : ℝ} (hc : 0 ≤ c) : ∃ x : E, ‖x‖ = c := by
   rcases exists_ne (0 : E) with ⟨x, hx⟩
   rw [← norm_ne_zero_iff] at hx
   use c • ‖x‖⁻¹ • x
-  simp [norm_smul, Real.norm_of_nonneg hc, abs_of_nonneg hc, inv_mul_cancel₀ hx]
+  simp [norm_smul, Real.norm_of_nonneg hc, inv_mul_cancel₀ hx]
 
 @[simp]
 theorem range_norm : range (norm : E → ℝ) = Ici 0 :=
@@ -129,6 +126,15 @@ theorem nnnorm_surjective : Surjective (nnnorm : E → ℝ≥0) := fun c =>
 @[simp]
 theorem range_nnnorm : range (nnnorm : E → ℝ≥0) = univ :=
   (nnnorm_surjective E).range_eq
+
+variable {E} in
+/-- In a nontrivial real normed space, a sphere is nonempty if and only if its radius is
+nonnegative. -/
+@[simp]
+theorem NormedSpace.sphere_nonempty {x : E} {r : ℝ} : (sphere x r).Nonempty ↔ 0 ≤ r := by
+  refine ⟨fun h => nonempty_closedBall.1 (h.mono sphere_subset_closedBall), fun hr => ?_⟩
+  obtain ⟨y, hy⟩ := exists_norm_eq E hr
+  exact ⟨x + y, by simpa using hy⟩
 
 end Surj
 

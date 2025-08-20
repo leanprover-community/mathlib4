@@ -102,7 +102,7 @@ theorem sublistsAux_eq_array_foldl :
       (r.toArray.foldl (init := #[])
         fun r l => (r.push l).push (a :: l)).toList := by
   funext a r
-  simp only [sublistsAux, Array.foldl_toList, Array.mkEmpty]
+  simp only [sublistsAux]
   have := foldl_hom Array.toList (g₁ := fun r l => (r.push l).push (a :: l))
     (g₂ := fun r l => r ++ [l, a :: l]) (l := r) (init := #[]) (by simp)
   simpa using this
@@ -120,7 +120,7 @@ theorem sublistsAux_eq_flatMap :
   ext α l : 2
   trans l.foldr sublistsAux [[]]
   · rw [sublistsAux_eq_flatMap, sublists]
-  · simp only [sublistsFast, sublistsAux_eq_array_foldl, Array.foldr_toList]
+  · simp only [sublistsFast, sublistsAux_eq_array_foldl]
     rw [← foldr_hom Array.toList]
     · intros _ _; congr
 
@@ -148,7 +148,7 @@ theorem sublists_concat (l : List α) (a : α) :
 theorem sublists_reverse (l : List α) : sublists (reverse l) = map reverse (sublists' l) := by
   induction' l with hd tl ih <;> [rfl;
     simp only [reverse_cons, sublists_append, sublists'_cons, map_append, ih, sublists_singleton,
-      map_eq_map, bind_eq_flatMap, map_map, flatMap_cons, append_nil, flatMap_nil,
+      bind_eq_flatMap, map_map, flatMap_cons, append_nil, flatMap_nil,
       Function.comp_def]]
 
 theorem sublists_eq_sublists' (l : List α) : sublists l = map reverse (sublists' (reverse l)) := by
@@ -199,7 +199,7 @@ theorem sublistsLenAux_append :
   | _ + 1, [], _, _, _, _ => rfl
   | n + 1, a :: l, f, g, r, s => by
     unfold sublistsLenAux
-    simp only [show (g ∘ f) ∘ List.cons a = g ∘ f ∘ List.cons a by rfl, sublistsLenAux_append,
+    simp only [show (g ∘ f) ∘ List.cons a = g ∘ f ∘ List.cons a by rfl,
       sublistsLenAux_append]
 
 theorem sublistsLenAux_eq (l : List α) (n) (f : List α → β) (r) :
@@ -233,7 +233,7 @@ theorem length_sublistsLen :
   | 0, l => by simp
   | _ + 1, [] => by simp
   | n + 1, a :: l => by
-    rw [sublistsLen_succ_cons, length_append, length_sublistsLen (n+1) l,
+    rw [sublistsLen_succ_cons, length_append, length_sublistsLen (n + 1) l,
       length_map, length_sublistsLen n l, length_cons, Nat.choose_succ_succ, Nat.add_comm]
 
 theorem sublistsLen_sublist_sublists' :
@@ -328,7 +328,7 @@ protected alias ⟨Nodup.of_sublists', _⟩ := nodup_sublists'
 
 theorem nodup_sublistsLen (n : ℕ) {l : List α} (h : Nodup l) : (sublistsLen n l).Nodup := by
   have : Pairwise (· ≠ ·) l.sublists' := Pairwise.imp
-    (fun h => Lex.to_ne (by convert h using 3; simp [swap, eq_comm])) h.sublists'
+    (fun h => Lex.to_ne (by convert h using 3; simp [eq_comm])) h.sublists'
   exact this.sublist (sublistsLen_sublist_sublists' _ _)
 
 theorem sublists_map (f : α → β) : ∀ (l : List α),

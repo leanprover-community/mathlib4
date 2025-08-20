@@ -51,7 +51,7 @@ lemma ringKrullDim_quotient_succ_le_of_nonZeroDivisor
   refine le_trans ?_ (le_iSup _ ((l.map Subtype.val (fun _ _ ↦ id)).cons p' hp'))
   simp
 
-/-- If `R →+* S` is surjective whose kernel contains a nonzerodivisor, then `dim S + 1 ≤ dim R`. -/
+/-- If `R →+* S` is surjective whose kernel contains a nonzero divisor, then `dim S + 1 ≤ dim R`. -/
 lemma ringKrullDim_succ_le_of_surjective (f : R →+* S) (hf : Function.Surjective f)
     {r : R} (hr : r ∈ R⁰) (hr' : f r = 0) : ringKrullDim S + 1 ≤ ringKrullDim R := by
   refine le_trans ?_ (ringKrullDim_quotient_succ_le_of_nonZeroDivisor hr)

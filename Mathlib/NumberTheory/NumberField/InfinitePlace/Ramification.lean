@@ -40,7 +40,7 @@ variable {k : Type*} [Field k] {K : Type*} [Field K] {F : Type*} [Field F]
 /-- The restriction of an infinite place along an embedding. -/
 def comap (w : InfinitePlace K) (f : k →+* K) : InfinitePlace k :=
   ⟨w.1.comp f.injective, w.embedding.comp f,
-    by { ext x; show _ = w.1 (f x); rw [← w.2.choose_spec]; rfl }⟩
+    by { ext x; change _ = w.1 (f x); rw [← w.2.choose_spec]; rfl }⟩
 
 @[simp]
 lemma comap_mk (φ : K →+* ℂ) (f : k →+* K) : (mk φ).comap f = mk (φ.comp f) := rfl
@@ -116,14 +116,8 @@ lemma isComplex_smul_iff : IsComplex (σ • w) ↔ IsComplex w := by
 
 lemma ComplexEmbedding.exists_comp_symm_eq_of_comp_eq [IsGalois k K] (φ ψ : K →+* ℂ)
     (h : φ.comp (algebraMap k K) = ψ.comp (algebraMap k K)) :
-    ∃ σ : K ≃ₐ[k] K, φ.comp σ.symm = ψ := by
-  letI := (φ.comp (algebraMap k K)).toAlgebra
-  letI := φ.toAlgebra
-  have : IsScalarTower k K ℂ := IsScalarTower.of_algebraMap_eq' rfl
-  let ψ' : K →ₐ[k] ℂ := { ψ with commutes' := fun r ↦ (RingHom.congr_fun h r).symm }
-  use (AlgHom.restrictNormal' ψ' K).symm
-  ext1 x
-  exact AlgHom.restrictNormal_commutes ψ' K x
+    ∃ σ : K ≃ₐ[k] K, φ.comp σ.symm = ψ :=
+  NumberField.ComplexEmbedding.exists_comp_symm_eq_of_comp_eq φ ψ h
 
 lemma exists_smul_eq_of_comap_eq [IsGalois k K] {w w' : InfinitePlace K}
     (h : w.comap (algebraMap k K) = w'.comap (algebraMap k K)) : ∃ σ : K ≃ₐ[k] K, σ • w = w' := by
@@ -281,12 +275,16 @@ lemma IsUnramified.stabilizer_eq_bot (h : IsUnramified k w) : Stab w = ⊥ := by
   simp only [mem_stabilizer_mk_iff, Subgroup.mem_bot, forall_eq_or_imp, true_and]
   exact fun σ hσ ↦ hσ.isUnramified_mk_iff.mp ((mk_embedding w).symm ▸ h)
 
-lemma _root_.NumberField.ComplexEmbedding.IsConj.coe_stabilzer_mk
+lemma _root_.NumberField.ComplexEmbedding.IsConj.coe_stabilizer_mk
     {φ : K →+* ℂ} (h : ComplexEmbedding.IsConj φ σ) :
     (Stab (mk φ) : Set (K ≃ₐ[k] K)) = {1, σ} := by
   ext
   rw [SetLike.mem_coe, mem_stabilizer_mk_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
     ← h.ext_iff, eq_comm (a := σ)]
+
+@[deprecated (since := "2025-07-08")]
+alias _root_.NumberField.ComplexEmbedding.IsConj.coe_stabilzer_mk :=
+NumberField.ComplexEmbedding.IsConj.coe_stabilizer_mk
 
 variable (k w)
 
@@ -296,7 +294,8 @@ lemma nat_card_stabilizer_eq_one_or_two :
   rw [← SetLike.coe_sort_coe, ← mk_embedding w]
   by_cases h : ∃ σ, ComplexEmbedding.IsConj (k := k) (embedding w) σ
   · obtain ⟨σ, hσ⟩ := h
-    simp only [hσ.coe_stabilzer_mk, Nat.card_eq_fintype_card, card_ofFinset, Set.toFinset_singleton]
+    simp only [hσ.coe_stabilizer_mk, Nat.card_eq_fintype_card, card_ofFinset,
+      Set.toFinset_singleton]
     by_cases 1 = σ
     · left; simp [*]
     · right; simp [*]
@@ -322,7 +321,7 @@ lemma isUnramified_iff_card_stabilizer_eq_one [IsGalois k K] :
 lemma not_isUnramified_iff_card_stabilizer_eq_two [IsGalois k K] :
     ¬ IsUnramified k w ↔ Nat.card (Stab w) = 2 := by
   rw [isUnramified_iff_card_stabilizer_eq_one]
-  obtain (e|e) := nat_card_stabilizer_eq_one_or_two k w <;> rw [e] <;> decide
+  obtain (e | e) := nat_card_stabilizer_eq_one_or_two k w <;> rw [e] <;> decide
 
 lemma isRamified_iff_card_stabilizer_eq_two [IsGalois k K] :
     IsRamified k w ↔ Nat.card (Stab w) = 2 :=
@@ -333,9 +332,7 @@ lemma exists_isConj_of_isRamified [IsGalois k K] {φ : K →+* ℂ} (h : IsRamif
   rw [isRamified_iff_card_stabilizer_eq_two, Nat.card_eq_two_iff] at h
   obtain ⟨⟨x, hx⟩, ⟨y, hy⟩, h₁, -⟩ := h
   rw [mem_stabilizer_mk_iff] at hx hy
-  by_cases h : x = 1
-  · exact ⟨y, hy.resolve_left (by rwa [ne_eq, Subtype.mk_eq_mk.not, h, eq_comm] at h₁)⟩
-  · exact ⟨x, hx.resolve_left h⟩
+  grind
 
 open scoped Classical in
 lemma card_stabilizer [IsGalois k K] :
@@ -354,10 +351,9 @@ lemma even_nat_card_aut_of_not_isUnramified [IsGalois k K] (hw : ¬ IsUnramified
     by_contra e
     exact H (Nat.finite_of_card_ne_zero e)
 
-lemma even_card_aut_of_not_isUnramified [IsGalois k K] [FiniteDimensional k K]
-    (hw : ¬ IsUnramified k w) :
-    Even (Fintype.card <| K ≃ₐ[k] K) :=
-  Nat.card_eq_fintype_card (α := K ≃ₐ[k] K) ▸ even_nat_card_aut_of_not_isUnramified hw
+lemma even_card_aut_of_not_isUnramified [IsGalois k K] (hw : ¬ IsUnramified k w) :
+    Even (Nat.card <| K ≃ₐ[k] K) :=
+  even_nat_card_aut_of_not_isUnramified hw
 
 lemma even_finrank_of_not_isUnramified [IsGalois k K]
     (hw : ¬ IsUnramified k w) : Even (finrank k K) := by
@@ -382,9 +378,9 @@ lemma isUnramifiedIn_comap [IsGalois k K] {w : InfinitePlace K} :
   obtain ⟨σ, rfl⟩ := exists_smul_eq_of_comap_eq hv
   rwa [isUnramified_smul_iff] at H
 
-lemma even_card_aut_of_not_isUnramifiedIn [IsGalois k K] [FiniteDimensional k K]
+lemma even_card_aut_of_not_isUnramifiedIn [IsGalois k K]
     {w : InfinitePlace k} (hw : ¬ w.IsUnramifiedIn K) :
-    Even (Fintype.card <| K ≃ₐ[k] K) := by
+    Even (Nat.card <| K ≃ₐ[k] K) := by
   obtain ⟨v, rfl⟩ := comap_surjective (K := K) w
   rw [isUnramifiedIn_comap] at hw
   exact even_card_aut_of_not_isUnramified hw
@@ -410,13 +406,14 @@ lemma card_isUnramified [NumberField k] [IsGalois k K] :
     (t := {w : InfinitePlace k | w.IsUnramifiedIn K}), ← smul_eq_mul, ← sum_const]
   · refine sum_congr rfl (fun w hw ↦ ?_)
     obtain ⟨w, rfl⟩ := comap_surjective (K := K) w
-    simp only [mem_univ, forall_true_left, mem_filter, true_and] at hw
+    rw [mem_filter_univ] at hw
     trans #(MulAction.orbit (K ≃ₐ[k] K) w).toFinset
     · congr; ext w'
-      simp only [mem_univ, forall_true_left, filter_congr_decidable, mem_filter, true_and,
-        Set.mem_toFinset, mem_orbit_iff, @eq_comm _ (comap w' _), and_iff_right_iff_imp]
+      rw [mem_filter, mem_filter_univ, Set.mem_toFinset, mem_orbit_iff, @eq_comm _ (comap w' _),
+        and_iff_right_iff_imp]
       intro e; rwa [← isUnramifiedIn_comap, ← e]
-    · rw [← MulAction.card_orbit_mul_card_stabilizer_eq_card_group _ w,
+    · rw [Nat.card_eq_fintype_card,
+        ← MulAction.card_orbit_mul_card_stabilizer_eq_card_group _ w,
         ← Nat.card_eq_fintype_card (α := Stab w), card_stabilizer, if_pos,
         mul_one, Set.toFinset_card]
       rwa [← isUnramifiedIn_comap]
@@ -430,16 +427,17 @@ lemma card_isUnramified_compl [NumberField k] [IsGalois k K] :
   letI := Module.Finite.of_restrictScalars_finite ℚ k K
   rw [← IsGalois.card_aut_eq_finrank,
     Finset.card_eq_sum_card_fiberwise (f := (comap · (algebraMap k K)))
-    (t := ({w : InfinitePlace k | w.IsUnramifiedIn K}: Finset _)ᶜ), ← smul_eq_mul, ← sum_const]
+    (t := ({w : InfinitePlace k | w.IsUnramifiedIn K} : Finset _)ᶜ), ← smul_eq_mul, ← sum_const]
   · refine sum_congr rfl (fun w hw ↦ ?_)
     obtain ⟨w, rfl⟩ := comap_surjective (K := K) w
-    simp only [mem_univ, forall_true_left, compl_filter, not_not, mem_filter, true_and] at hw
+    rw [compl_filter, mem_filter_univ] at hw
     trans Finset.card (MulAction.orbit (K ≃ₐ[k] K) w).toFinset
     · congr; ext w'
-      simp only [compl_filter, filter_congr_decidable, mem_filter, mem_univ, true_and,
-        @eq_comm _ (comap w' _), Set.mem_toFinset, mem_orbit_iff, and_iff_right_iff_imp]
+      rw [mem_filter, compl_filter, mem_filter_univ, @eq_comm _ (comap w' _), Set.mem_toFinset,
+        mem_orbit_iff, and_iff_right_iff_imp]
       intro e; rwa [← isUnramifiedIn_comap, ← e]
-    · rw [← MulAction.card_orbit_mul_card_stabilizer_eq_card_group _ w,
+    · rw [Nat.card_eq_fintype_card,
+        ← MulAction.card_orbit_mul_card_stabilizer_eq_card_group _ w,
         ← Nat.card_eq_fintype_card (α := Stab w), InfinitePlace.card_stabilizer, if_neg,
         Nat.mul_div_cancel _ zero_lt_two, Set.toFinset_card]
       rwa [← isUnramifiedIn_comap]
@@ -496,8 +494,8 @@ lemma NumberField.InfinitePlace.isUnramifiedIn [IsUnramifiedAtInfinitePlaces k K
 
 variable {K}
 
-lemma IsUnramifiedAtInfinitePlaces_of_odd_card_aut [IsGalois k K] [FiniteDimensional k K]
-    (h : Odd (Fintype.card <| K ≃ₐ[k] K)) : IsUnramifiedAtInfinitePlaces k K :=
+lemma IsUnramifiedAtInfinitePlaces_of_odd_card_aut [IsGalois k K]
+    (h : Odd (Nat.card <| K ≃ₐ[k] K)) : IsUnramifiedAtInfinitePlaces k K :=
   ⟨fun _ ↦ not_not.mp (Nat.not_even_iff_odd.2 h ∘ InfinitePlace.even_card_aut_of_not_isUnramified)⟩
 
 lemma IsUnramifiedAtInfinitePlaces_of_odd_finrank [IsGalois k K]
@@ -514,5 +512,5 @@ lemma IsUnramifiedAtInfinitePlaces.card_infinitePlace [NumberField k] [NumberFie
   rw [InfinitePlace.card_eq_card_isUnramifiedIn (k := k) (K := K), Finset.filter_true_of_mem,
     Finset.card_univ, Finset.card_eq_zero.mpr, zero_mul, add_zero]
   · exact Finset.compl_univ
-  simp only [Finset.mem_univ, forall_true_left, Finset.filter_eq_empty_iff]
+  simp only [Finset.mem_univ, forall_true_left]
   exact InfinitePlace.isUnramifiedIn K
