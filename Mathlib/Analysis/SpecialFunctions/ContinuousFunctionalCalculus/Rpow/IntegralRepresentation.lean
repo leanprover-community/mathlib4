@@ -150,12 +150,8 @@ lemma continuousOn_rpowIntegrand₀₁_uncurry (hp : p ∈ Ioo 0 1) (s : Set ℝ
   · simp only [g]
     refine ContinuousOn.mul ?_ ?_
     · refine ContinuousOn.mul ?_ (by fun_prop)
-      exact ContinuousOn.rpow_const (by fun_prop) fun _ _ => Or.inl (by aesop)
-    · refine ContinuousOn.inv₀ (by fun_prop) fun t ht => ?_
-      simp only [mem_Ioo] at *
-      have h₁ : (0 : ℝ) < t.1 := ht.1
-      have h₂ : (0 : ℝ) ≤ t.2 := hs ht.2
-      linarith
+      exact ContinuousOn.rpow_const (by fun_prop) (by grind)
+    · exact ContinuousOn.inv₀ (by fun_prop) (by grind)
   · intro hq
     simp [Function.uncurry, g, rpowIntegrand₀₁_eq_pow_div hp (le_of_lt hq.1) (hs hq.2)]
 
@@ -434,22 +430,6 @@ variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing
 /-- `rpowIntegrand₀₁ p t` is operator monotone for all `p ∈ Ioo 0 1` and all `t ∈ Ioi 0`. -/
 lemma monotoneOn_cfcₙ_rpowIntegrand₀₁ {p : ℝ} {t : ℝ} (hp : p ∈ Ioo 0 1) (ht : 0 < t) :
     MonotoneOn (cfcₙ (rpowIntegrand₀₁ p t)) (Ici (0 : A)) := by
-  have hmain : MonotoneOn (cfcₙ (fun x : ℝ => 1 - (1 + x)⁻¹)) (Ici (0 : A)) := by
-    intro a (ha : 0 ≤ a) b (hb : 0 ≤ b) hab
-    calc _ = cfcₙ (fun x : ℝ≥0 => 1 - (1 + x)⁻¹) a := by
-            rw [cfcₙ_nnreal_eq_real _ ha]
-            refine cfcₙ_congr ?_
-            intro x hx
-            have hx' : 0 ≤ x := by grind
-            simp [hx']
-      _ ≤ cfcₙ (fun x : ℝ≥0 => 1 - (1 + x)⁻¹) b :=
-            CFC.monotoneOn_one_sub_one_add_inv ha hb hab
-      _ = cfcₙ (fun x : ℝ => 1 - (1 + x)⁻¹) b := by
-            rw [cfcₙ_nnreal_eq_real _ hb]
-            refine cfcₙ_congr ?_
-            intro x hx
-            have hx' : 0 ≤ x := by grind
-            simp [hx']
   intro a (ha : 0 ≤ a) b (hb : 0 ≤ b) hab
   calc
     _ = t ^ ((p : ℝ) - 1) • cfcₙ (rpowIntegrand₀₁ p 1) (t⁻¹ • a) := by
@@ -458,7 +438,8 @@ lemma monotoneOn_cfcₙ_rpowIntegrand₀₁ {p : ℝ} {t : ℝ} (hp : p ∈ Ioo 
       gcongr
       unfold rpowIntegrand₀₁
       simp only [Real.one_rpow, one_mul, inv_one]
-      refine hmain (?_ : 0 ≤ t⁻¹ • a) (?_ : 0 ≤ t⁻¹ • b) (by gcongr)
+      refine CFC.monotoneOn_one_sub_one_add_inv_real
+        (?_ : 0 ≤ t⁻¹ • a) (?_ : 0 ≤ t⁻¹ • b) (by gcongr)
       all_goals positivity
     _ = cfcₙ (rpowIntegrand₀₁ p t) b := by
       rw [cfcₙ_rpowIntegrand₀₁_eq_cfcₙ_rpowIntegrand₀₁_one hp ht b hb]
