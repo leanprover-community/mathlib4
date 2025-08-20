@@ -42,7 +42,7 @@ braided, this causes a diamond.
 -/
 def transportedFunctorCompInverseLaxBraided (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     ((e' e).functor ⋙ (e' e).inverse).LaxBraided :=
-  Functor.LaxBraided.ofNatIso _ _ (e' e).unitIso
+  Functor.LaxBraided.ofNatIso (e' e).unitIso
 
 attribute [local instance] transportedFunctorCompInverseLaxBraided in
 /--
