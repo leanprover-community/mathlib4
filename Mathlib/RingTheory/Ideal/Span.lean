@@ -106,9 +106,8 @@ theorem span_singleton_le_iff_mem {x : α} : span {x} ≤ I ↔ x ∈ I :=
   Submodule.span_singleton_le_iff_mem _ _
 
 theorem span_singleton_mul_left_unit {a : α} (h2 : IsUnit a) (x : α) :
-    span ({a * x} : Set α) = span {x} := by
-  apply le_antisymm <;> rw [span_singleton_le_iff_mem, mem_span_singleton']
-  exacts [⟨a, rfl⟩, ⟨_, h2.unit.inv_mul_cancel_left x⟩]
+    span ({a * x} : Set α) = span {x} :=
+  Submodule.span_singleton_smul_eq h2 x
 
 theorem span_insert (x) (s : Set α) : span (insert x s) = span ({x} : Set α) ⊔ span s :=
   Submodule.span_insert x s
@@ -130,8 +129,15 @@ theorem span_singleton_ne_top {α : Type*} [CommSemiring α] {x : α} (hx : ¬Is
 theorem span_zero : span (0 : Set α) = ⊥ := by rw [← Set.singleton_zero, span_singleton_eq_bot]
 
 @[simp]
+lemma span_singleton_zero : span {(0 : α)} = ⊥ := Submodule.span_zero_singleton _
+
+@[simp]
 theorem span_insert_zero {s : Set α} : span (insert (0 : α) s) = span s :=
   Submodule.span_insert_zero
+
+@[simp]
+lemma span_sdiff_singleton_zero {s : Set α} : span (s \ {0}) = span s :=
+  Submodule.span_sdiff_singleton_zero
 
 @[simp]
 theorem span_one : span (1 : Set α) = ⊤ := by rw [← Set.singleton_one, span_singleton_one]
