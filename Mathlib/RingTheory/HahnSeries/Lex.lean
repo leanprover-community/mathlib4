@@ -147,9 +147,7 @@ theorem order_abs [Zero Γ] (x : Lex (HahnSeries Γ R)) : (ofLex |x|).order = (o
   obtain rfl | hne := eq_or_ne x 0
   · simp
   · have hne' : ofLex x ≠ 0 := hne
-    have habs : ofLex |x| ≠ 0 := by
-      change |x| ≠ 0
-      simpa using hne
+    have habs : ofLex |x| ≠ 0 := by simpa using hne
     apply WithTop.coe_injective
     rw [order_eq_orderTop_of_ne_zero habs, order_eq_orderTop_of_ne_zero hne']
     apply orderTop_abs
@@ -170,10 +168,8 @@ theorem abs_lt_abs_of_orderTop_ofLex {x y : Lex (HahnSeries Γ R)}
     trans 0
     · have h' : (ofLex |y|).orderTop < (ofLex |x|).orderTop := by
         simpa using h
-      refine coeff_eq_zero_of_lt_orderTop (lt_trans ?_ h')
-      simpa using hj
-    · refine (coeff_eq_zero_of_lt_orderTop ?_).symm
-      simpa using hj
+      exact coeff_eq_zero_of_lt_orderTop (lt_trans (by simpa using hj) h')
+    · exact (coeff_eq_zero_of_lt_orderTop (by simpa using hj)).symm
   · rw [HahnSeries.coeff_eq_zero_of_lt_orderTop (by simpa)]
     simp_rw [← orderTop_abs y, coeff_untop_eq_leadingCoeff]
     simpa using h.ne_top
@@ -245,7 +241,6 @@ theorem archimedeanClassMk_le_archimedeanClassMk_iff {x y : Lex (HahnSeries Γ R
     contrapose! hn
     rw [← abs_nsmul]
     have hgt' : (ofLex y).orderTop < (ofLex (n • x)).orderTop := by
-      rw [ofLex_smul]
       apply lt_of_lt_of_le hgt
       simpa using orderTop_smul_not_lt n (ofLex x)
     exact abs_lt_abs_of_orderTop_ofLex hgt'
@@ -300,7 +295,7 @@ noncomputable def finiteArchimedeanClassOrderHomInvLex :
     obtain h | ⟨rfl, hle⟩ := Prod.Lex.le_iff.mp h
     · induction ac using FiniteArchimedeanClass.ind with | mk a ha
       induction bc using FiniteArchimedeanClass.ind with | mk b hb
-      simp only [ofLex_toLex, FiniteArchimedeanClass.liftOrderHom_mk]
+      simp [ofLex_toLex, FiniteArchimedeanClass.liftOrderHom_mk]
       rw [FiniteArchimedeanClass.mk_le_mk, archimedeanClassMk_le_archimedeanClassMk_iff]
       exact .inl (by simpa [ha, hb] using h)
     · exact OrderHom.monotone _ hle
@@ -320,13 +315,8 @@ noncomputable def finiteArchimedeanClassOrderIsoLex :
     simp [finiteArchimedeanClassOrderHomLex, finiteArchimedeanClassOrderHomInvLex, ha]
   · ext x
     induction x using FiniteArchimedeanClass.ind with | mk a ha
-    suffices ArchimedeanClass.mk
-        (toLex (single ((ofLex a).orderTop.untop _) (ofLex a).leadingCoeff)) =
-        ArchimedeanClass.mk a by
-      simpa [finiteArchimedeanClassOrderHomLex, finiteArchimedeanClassOrderHomInvLex] using this
-    rw [archimedeanClassMk_eq_archimedeanClassMk_iff]
-    have h : (ofLex a).leadingCoeff ≠ 0 := by simpa using ha
-    simp [h]
+    simp [finiteArchimedeanClassOrderHomLex, finiteArchimedeanClassOrderHomInvLex,
+      archimedeanClassMk_eq_archimedeanClassMk_iff, ha]
 
 @[simp]
 theorem finiteArchimedeanClassOrderIsoLex_apply_fst {x : Lex (HahnSeries Γ R)} (h : x ≠ 0) :
