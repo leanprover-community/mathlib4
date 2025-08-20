@@ -1078,12 +1078,6 @@ abbrev LinearOrder.liftWithOrd' [LinearOrder β] [Ord α] (f : α → β)
 
 namespace Subtype
 
-instance le [LE α] {p : α → Prop} : LE (Subtype p) :=
-  ⟨fun x y ↦ (x : α) ≤ y⟩
-
-instance lt [LT α] {p : α → Prop} : LT (Subtype p) :=
-  ⟨fun x y ↦ (x : α) < y⟩
-
 @[simp]
 theorem mk_le_mk [LE α] {p : α → Prop} {x y : α} {hx : p x} {hy : p y} :
     (⟨x, hx⟩ : Subtype p) ≤ ⟨y, hy⟩ ↔ x ≤ y :=

@@ -30,7 +30,7 @@ homomorphisms `G →* (V →ₗ[k] V)`. We use the abbreviation `Representation`
 The theorem `asAlgebraHom_def` constructs a module over the group `k`-algebra of `G` (implemented
 as `MonoidAlgebra k G`) corresponding to a representation. If `ρ : Representation k G V`, this
 module can be accessed via `ρ.asModule`. Conversely, given a `MonoidAlgebra k G`-module `M`,
-`M.ofModule` is the associociated representation seen as a homomorphism.
+`M.ofModule` is the associated representation seen as a homomorphism.
 -/
 
 open MonoidAlgebra (lift of)
@@ -134,10 +134,7 @@ You should use `asModuleEquiv : ρ.asModule ≃+ V` to translate terms.
 @[nolint unusedArguments]
 def asModule (_ : Representation k G V) :=
   V
-
--- The `AddCommMonoid` and `Module` instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-instance : AddCommMonoid (ρ.asModule) := inferInstanceAs <| AddCommMonoid V
+deriving AddCommMonoid, Module k
 
 instance : Inhabited ρ.asModule where
   default := 0
@@ -145,10 +142,8 @@ instance : Inhabited ρ.asModule where
 /-- A `k`-linear representation of `G` on `V` can be thought of as
 a module over `MonoidAlgebra k G`.
 -/
-noncomputable instance instModuleAsModule : Module (MonoidAlgebra k G) ρ.asModule :=
+noncomputable instance : Module (MonoidAlgebra k G) ρ.asModule :=
   Module.compHom V (asAlgebraHom ρ).toRingHom
-
-instance : Module k ρ.asModule := inferInstanceAs <| Module k V
 
 /-- The additive equivalence from the `Module (MonoidAlgebra k G)` to the original vector space
 of the representative.
@@ -599,7 +594,7 @@ product `V × W`.
 noncomputable def prod : Representation k G (V × W) where
   toFun g := (ρV g).prodMap (ρW g)
   map_one' := by simp
-  map_mul' g h := by simp; rfl
+  map_mul' g h := by simp [prodMap_mul]
 
 end Prod
 
