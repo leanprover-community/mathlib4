@@ -297,6 +297,8 @@ lemma LinearOrderedCommGroup.discrete_iff_not_denselyOrdered :
 section
 variable {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀]
 
+-- Counterexample with monoid for the backward direction:
+-- Take `Mᵐ⁰` where `M := ℕ + ℚ*ω` where `ω` is larger than any `n : ℕ`.
 lemma denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units :
     DenselyOrdered G₀ ↔ Nontrivial G₀ˣ ∧ DenselyOrdered G₀ˣ := by
   refine ⟨fun H ↦ ⟨?_, ?_⟩, fun ⟨H₁, H₂⟩ ↦ ?_⟩
