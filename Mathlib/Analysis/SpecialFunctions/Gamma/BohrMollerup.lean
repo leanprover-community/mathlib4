@@ -232,7 +232,7 @@ theorem tendsto_logGammaSeq_of_le_one (hf_conv : ConvexOn ℝ (Ioi 0) f)
     rw [sub_le_iff_le_add', sub_le_iff_le_add']
     convert le_logGammaSeq hf_conv (@hf_feq) hx hx' n using 1
     ring
-  · show ∀ᶠ n : ℕ in atTop, logGammaSeq x n ≤ f x - f 1
+  · change ∀ᶠ n : ℕ in atTop, logGammaSeq x n ≤ f x - f 1
     filter_upwards [eventually_ne_atTop 0] with n hn using
       le_sub_iff_add_le'.mpr (ge_logGammaSeq hf_conv hf_feq hx hn)
 
@@ -324,7 +324,7 @@ theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by
   -- This can also be proved using the closed-form evaluation of `Gamma (1 / 2)` in
   -- `Mathlib/Analysis/SpecialFunctions/Gaussian.lean`, but we give a self-contained proof using
   -- log-convexity to avoid unnecessary imports.
-  have A : (0 : ℝ) < 3 / 2 := by norm_num
+  have A : (0 : ℝ) < 3 / 2 := by simp
   have :=
     BohrMollerup.f_add_nat_le convexOn_log_Gamma (fun {y} hy => ?_) two_ne_zero one_half_pos
       (by norm_num : 1 / 2 ≤ (1 : ℝ))

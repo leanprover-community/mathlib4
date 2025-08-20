@@ -139,7 +139,7 @@ def symm (γ : Path x y) : Path y x where
 @[simp]
 theorem symm_symm (γ : Path x y) : γ.symm.symm = γ := by
   ext t
-  show γ (σ (σ t)) = γ t
+  change γ (σ (σ t)) = γ t
   rw [unitInterval.symm_symm]
 
 theorem symm_bijective : Function.Bijective (Path.symm : Path x y → Path y x) :=
@@ -190,7 +190,7 @@ theorem continuous_extend : Continuous γ.extend :=
 
 theorem _root_.Filter.Tendsto.pathExtend
     {l r : Y → X} {y : Y} {l₁ : Filter ℝ} {l₂ : Filter X} {γ : ∀ y, Path (l y) (r y)}
-    (hγ : Tendsto (↿γ) (𝓝 y ×ˢ l₁.map (projIcc 0 1 zero_le_one)) l₂) :
+    (hγ : Tendsto ↿γ (𝓝 y ×ˢ l₁.map (projIcc 0 1 zero_le_one)) l₂) :
     Tendsto (↿fun x => ⇑(γ x).extend) (𝓝 y ×ˢ l₁) l₂ :=
   Filter.Tendsto.IccExtend _ hγ
 
@@ -198,7 +198,7 @@ theorem _root_.Filter.Tendsto.pathExtend
 alias _root_.Filter.Tendsto.path_extend := Filter.Tendsto.pathExtend
 
 theorem _root_.ContinuousAt.pathExtend {g : Y → ℝ} {l r : Y → X} (γ : ∀ y, Path (l y) (r y))
-    {y : Y} (hγ : ContinuousAt (↿γ) (y, projIcc 0 1 zero_le_one (g y))) (hg : ContinuousAt g y) :
+    {y : Y} (hγ : ContinuousAt ↿γ (y, projIcc 0 1 zero_le_one (g y))) (hg : ContinuousAt g y) :
     ContinuousAt (fun i => (γ i).extend (g i)) y :=
   hγ.IccExtend (fun x => γ x) hg
 
@@ -270,10 +270,10 @@ def trans (γ : Path x y) (γ' : Path y z) : Path x z where
   toFun := (fun t : ℝ => if t ≤ 1 / 2 then γ.extend (2 * t) else γ'.extend (2 * t - 1)) ∘ (↑)
   continuous_toFun := by
     refine
-      (Continuous.if_le ?_ ?_ continuous_id continuous_const (by norm_num)).comp
+      (Continuous.if_le ?_ ?_ continuous_id continuous_const (by simp)).comp
         continuous_subtype_val <;>
     fun_prop
-  source' := by norm_num
+  source' := by simp
   target' := by norm_num
 
 theorem trans_apply (γ : Path x y) (γ' : Path y z) (t : I) :
@@ -285,7 +285,7 @@ theorem trans_apply (γ : Path x y) (γ' : Path y z) (t : I) :
 @[simp]
 theorem trans_symm (γ : Path x y) (γ' : Path y z) : (γ.trans γ').symm = γ'.symm.trans γ.symm := by
   ext t
-  simp only [trans_apply, ← one_div, symm_apply, not_le, Function.comp_apply]
+  simp only [trans_apply, symm_apply, Function.comp_apply]
   split_ifs with h h₁ h₂ <;> rw [coe_symm_eq] at h
   · have ht : (t : ℝ) = 1 / 2 := by linarith
     norm_num [ht]
@@ -416,7 +416,7 @@ theorem trans_continuous_family {ι : Type*} [TopologicalSpace ι]
     Continuous ↿fun t => (γ₁ t).trans (γ₂ t) := by
   have h₁' := Path.continuous_uncurry_extend_of_continuous_family γ₁ h₁
   have h₂' := Path.continuous_uncurry_extend_of_continuous_family γ₂ h₂
-  simp only [HasUncurry.uncurry, CoeFun.coe, Path.trans, (· ∘ ·)]
+  simp only [HasUncurry.uncurry, Path.trans]
   refine Continuous.if_le ?_ ?_ (continuous_subtype_val.comp continuous_snd) continuous_const ?_
   · change
       Continuous ((fun p : ι × ℝ => (γ₁ p.1).extend p.2) ∘ Prod.map id (fun x => 2 * x : I → ℝ))
@@ -428,7 +428,7 @@ theorem trans_continuous_family {ι : Type*} [TopologicalSpace ι]
         (continuous_id.prodMap <|
           (continuous_const.mul continuous_subtype_val).sub continuous_const)
   · rintro st hst
-    simp [hst, mul_inv_cancel₀ (two_ne_zero' ℝ)]
+    simp [hst]
 
 @[continuity, fun_prop]
 theorem _root_.Continuous.path_trans {f : Y → Path x y} {g : Y → Path y z} :
@@ -499,13 +499,13 @@ end Pi
 
 
 /-- Pointwise multiplication of paths in a topological group. -/
-@[to_additive (attr := simps!) "Pointwise addition of paths in a topological additive group."]
+@[to_additive (attr := simps!) /-- Pointwise addition of paths in a topological additive group. -/]
 protected def mul [Mul X] [ContinuousMul X] {a₁ b₁ a₂ b₂ : X} (γ₁ : Path a₁ b₁) (γ₂ : Path a₂ b₂) :
     Path (a₁ * a₂) (b₁ * b₂) :=
   (γ₁.prod γ₂).map continuous_mul
 
 /-- Pointwise inversion of paths in a topological group. -/
-@[to_additive (attr := simps!) "Pointwise negation of paths in a topological group."]
+@[to_additive (attr := simps!) /-- Pointwise negation of paths in a topological group. -/]
 def inv {a b : X} [Inv X] [ContinuousInv X] (γ : Path a b) :
     Path a⁻¹ b⁻¹ :=
   γ.map continuous_inv
@@ -547,7 +547,7 @@ def truncateOfLE {X : Type*} [TopologicalSpace X] {a b : X} (γ : Path a b) {t�
 theorem truncate_range {a b : X} (γ : Path a b) {t₀ t₁ : ℝ} :
     range (γ.truncate t₀ t₁) ⊆ range γ := by
   rw [← γ.extend_range]
-  simp only [range_subset_iff, SetCoe.exists, SetCoe.forall]
+  simp only [range_subset_iff, SetCoe.forall]
   intro x _hx
   simp only [DFunLike.coe, Path.truncate, mem_range_self]
 
@@ -617,7 +617,7 @@ theorem range_reparam (γ : Path x y) {f : I → I} (hfcont : Continuous f) (hf�
   have : range f = univ := by
     rw [range_eq_univ]
     intro t
-    have h₁ : Continuous (Set.IccExtend (zero_le_one' ℝ) f) := by continuity
+    have h₁ : Continuous (Set.IccExtend (zero_le_one' ℝ) f) := by fun_prop
     have := intermediate_value_Icc (zero_le_one' ℝ) h₁.continuousOn
     · rw [IccExtend_left, IccExtend_right, Icc.mk_zero, Icc.mk_one, hf₀, hf₁] at this
       rcases this t.2 with ⟨w, hw₁, hw₂⟩

@@ -111,12 +111,6 @@ lemma le_div_two_iff_mul_two_le {n m : ℕ} : m ≤ n / 2 ↔ (m : ℤ) * 2 ≤ 
 lemma div_lt_self' (a b : ℕ) : (a + 1) / (b + 2) < a + 1 :=
   Nat.div_lt_self (Nat.succ_pos _) (Nat.succ_lt_succ (Nat.succ_pos _))
 
-@[deprecated le_div_iff_mul_le (since := "2024-11-06")]
-lemma le_div_iff_mul_le' (hb : 0 < b) : a ≤ c / b ↔ a * b ≤ c := le_div_iff_mul_le hb
-
-@[deprecated div_lt_iff_lt_mul (since := "2024-11-06")]
-lemma div_lt_iff_lt_mul' (hb : 0 < b) : a / b < c ↔ a < c * b := div_lt_iff_lt_mul hb
-
 @[deprecated (since := "2025-04-15")] alias sub_mul_div' := sub_mul_div
 
 @[deprecated (since := "2025-06-05")] alias eq_zero_of_le_half := eq_zero_of_le_div_two
@@ -126,7 +120,7 @@ lemma div_lt_iff_lt_mul' (hb : 0 < b) : a / b < c ↔ a < c * b := div_lt_iff_lt
 @[deprecated (since := "2025-06-05")] protected alias div_le_self' := Nat.div_le_self
 
 lemma two_mul_odd_div_two (hn : n % 2 = 1) : 2 * (n / 2) = n - 1 := by
-  conv => rhs; rw [← Nat.mod_add_div n 2, hn, Nat.add_sub_cancel_left]
+  omega
 
 /-! ### `pow` -/
 
@@ -328,7 +322,7 @@ lemma decreasingInduction_trans {motive : (m : ℕ) → m ≤ k → Sort*} (hmn 
   | step hnk ih =>
       rw [decreasingInduction_succ _ _ (Nat.le_trans hmn hnk), ih, decreasingInduction_succ]
 
-lemma decreasingInduction_succ_left  {motive : (m : ℕ) → m ≤ n → Sort*} (of_succ self)
+lemma decreasingInduction_succ_left {motive : (m : ℕ) → m ≤ n → Sort*} (of_succ self)
     (smn : m + 1 ≤ n) (mn : m ≤ n) :
     decreasingInduction (motive := motive) of_succ self mn =
       of_succ m smn (decreasingInduction of_succ self smn) := by

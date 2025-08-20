@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Notation.Prod
+import Mathlib.Algebra.Group.Basic
 
 /-!
 # Dependent functions with finite support
@@ -172,12 +173,11 @@ def piecewise : Π₀ i, β i :=
   zipWith (fun i x y => if i ∈ s then x else y) (fun _ => ite_self 0) x y
 
 theorem piecewise_apply (i : ι) : x.piecewise y s i = if i ∈ s then x i else y i :=
-  zipWith_apply _ _ x y i
+  rfl
 
 @[simp, norm_cast]
-theorem coe_piecewise : ⇑(x.piecewise y s) = s.piecewise x y := by
-  ext
-  apply piecewise_apply
+theorem coe_piecewise : ⇑(x.piecewise y s) = s.piecewise x y :=
+  rfl
 
 end Piecewise
 
@@ -440,7 +440,6 @@ def equivFunOnFintype [Fintype ι] : (Π₀ i, β i) ≃ ∀ i, β i where
   toFun := (⇑)
   invFun f := ⟨f, Trunc.mk ⟨Finset.univ.1, fun _ => Or.inl <| Finset.mem_univ_val _⟩⟩
   left_inv _ := DFunLike.coe_injective rfl
-  right_inv _ := rfl
 
 @[simp]
 theorem equivFunOnFintype_symm_coe [Fintype ι] (f : Π₀ i, β i) : equivFunOnFintype.symm f = f :=
@@ -478,7 +477,7 @@ theorem single_injective {i} : Function.Injective (single i : β i → Π₀ i, 
 
 /-- Like `Finsupp.single_eq_single_iff`, but with a `HEq` due to dependent types -/
 theorem single_eq_single_iff (i j : ι) (xi : β i) (xj : β j) :
-    DFinsupp.single i xi = DFinsupp.single j xj ↔ i = j ∧ HEq xi xj ∨ xi = 0 ∧ xj = 0 := by
+    DFinsupp.single i xi = DFinsupp.single j xj ↔ i = j ∧ xi ≍ xj ∨ xi = 0 ∧ xj = 0 := by
   constructor
   · intro h
     by_cases hij : i = j
@@ -538,7 +537,7 @@ theorem equivFunOnFintype_single [Fintype ι] (i : ι) (m : β i) :
     (@DFinsupp.equivFunOnFintype ι β _ _) (DFinsupp.single i m) = Pi.single i m := by
   ext x
   dsimp [Pi.single, Function.update]
-  simp [DFinsupp.single_eq_pi_single, @eq_comm _ i]
+  simp [@eq_comm _ i]
 
 @[simp]
 theorem equivFunOnFintype_symm_single [Fintype ι] (i : ι) (m : β i) :
@@ -585,7 +584,7 @@ theorem erase_eq_sub_single {β : ι → Type*} [∀ i, AddGroup (β i)] (f : Π
   ext j
   rcases eq_or_ne i j with (rfl | h)
   · simp
-  · simp [erase_ne h.symm, single_eq_of_ne h, @eq_comm _ j, h]
+  · simp [erase_ne h.symm, single_eq_of_ne h]
 
 @[simp]
 theorem erase_zero (i : ι) : erase i (0 : Π₀ i, β i) = 0 :=
@@ -654,14 +653,14 @@ theorem update_eq_single_add_erase {β : ι → Type*} [∀ i, AddZeroClass (β 
   ext j
   rcases eq_or_ne i j with (rfl | h)
   · simp
-  · simp [Function.update_of_ne h.symm, h, erase_ne, h.symm]
+  · simp [h, h.symm]
 
 theorem update_eq_erase_add_single {β : ι → Type*} [∀ i, AddZeroClass (β i)] (f : Π₀ i, β i)
     (i : ι) (b : β i) : f.update i b = f.erase i + single i b := by
   ext j
   rcases eq_or_ne i j with (rfl | h)
   · simp
-  · simp [Function.update_of_ne h.symm, h, erase_ne, h.symm]
+  · simp [h, h.symm]
 
 theorem update_eq_sub_add_single {β : ι → Type*} [∀ i, AddGroup (β i)] (f : Π₀ i, β i) (i : ι)
     (b : β i) : f.update i b = f - single i (f i) + single i b := by
@@ -865,7 +864,7 @@ def subtypeSupportEqEquiv (s : Finset ι) :
     simpa using Eq.symm
   right_inv f := by
     ext1
-    simp [Subtype.eta]; rfl
+    simp; rfl
 
 /-- Equivalence between all dependent finitely supported functions `f : Π₀ i, β i` and type
 of pairs `⟨s : Finset ι, f : ∀ i : s, {x : β i // x ≠ 0}⟩`. -/
@@ -984,11 +983,8 @@ theorem erase_def (i : ι) (f : Π₀ i, β i) : f.erase i = mk (f.support.erase
 
 @[simp]
 theorem support_erase (i : ι) (f : Π₀ i, β i) : (f.erase i).support = f.support.erase i := by
-  ext j
-  by_cases h1 : j = i
-  · simp only [h1, mem_support_toFun, erase_apply, ite_true, ne_eq, not_true, not_not,
-      Finset.mem_erase, false_and]
-  by_cases h2 : f j ≠ 0 <;> simp at h2 <;> simp [h1, h2]
+  ext
+  simp
 
 theorem support_update_ne_zero (f : Π₀ i, β i) (i : ι) {b : β i} (h : b ≠ 0) :
     support (f.update i b) = insert i f.support := by

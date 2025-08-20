@@ -69,10 +69,6 @@ lemma horn_obj_zero (n : ℕ) (i : Fin (n + 3)) :
   fin_cases a
   exact Ne.symm hk.2
 
-/-- The inclusion of the boundary of the `n`-th standard simplex into that standard simplex. -/
-@[deprecated horn (since := "2025-01-26")]
-abbrev hornInclusion (n : ℕ) (i : Fin (n + 1)) : (Λ[n, i] : SSet.{u}) ⟶ Δ[n] := Λ[n, i].ι
-
 namespace horn
 
 open SimplexCategory Finset Opposite
@@ -134,7 +130,7 @@ def primitiveEdge {n : ℕ} {i : Fin (n + 1)}
   refine edge n i j.castSucc j.succ ?_ ?_
   · simp only [← Fin.val_fin_le, Fin.coe_castSucc, Fin.val_succ, le_add_iff_nonneg_right, zero_le]
   simp only [← Fin.val_fin_lt, Fin.val_zero, Fin.val_last] at h₀ hₙ
-  obtain rfl|hn : n = 2 ∨ 2 < n := by
+  obtain rfl | hn : n = 2 ∨ 2 < n := by
     rw [eq_comm, or_comm, ← le_iff_lt_or_eq]; omega
   · revert i j; decide
   · exact Finset.card_le_three.trans hn
@@ -185,13 +181,13 @@ def primitiveTriangle {n : ℕ} (i : Fin (n + 4))
   · exact Ne.symm hl.2.2.2
 
 /-- The `j`th face of codimension `1` of the `i`-th horn. -/
-def face {n : ℕ} (i j : Fin (n + 2)) (h : j ≠ i) : (Λ[n+1, i] : SSet.{u}) _⦋n⦌ :=
+def face {n : ℕ} (i j : Fin (n + 2)) (h : j ≠ i) : (Λ[n + 1, i] : SSet.{u}) _⦋n⦌ :=
   yonedaEquiv (Subpresheaf.lift (stdSimplex.δ j) (by
     simpa using face_le_horn _ _ h))
 
 /-- Two morphisms from a horn are equal if they are equal on all suitable faces. -/
 protected
-lemma hom_ext {n : ℕ} {i : Fin (n+2)} {S : SSet} (σ₁ σ₂ : (Λ[n+1, i] : SSet.{u}) ⟶ S)
+lemma hom_ext {n : ℕ} {i : Fin (n + 2)} {S : SSet} (σ₁ σ₂ : (Λ[n + 1, i] : SSet.{u}) ⟶ S)
     (h : ∀ (j) (h : j ≠ i), σ₁.app _ (face i j h) = σ₂.app _ (face i j h)) :
     σ₁ = σ₂ := by
   rw [← Subpresheaf.equalizer_eq_iff]

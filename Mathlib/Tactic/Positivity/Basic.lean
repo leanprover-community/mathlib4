@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Group.PosPart
 import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.NNRat.Defs
@@ -273,8 +274,8 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
     let _a ← synthInstanceQ q(Ring $α)
     let _a ← synthInstanceQ q(LinearOrder $α)
     let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
-    haveI' : $e =Q $a ^ $b := ⟨⟩
     assumeInstancesCommute
+    haveI' : $e =Q $a ^ $b := ⟨⟩
     pure (.nonnegative q((even_two_mul $m).pow_nonneg $a))
   orElse result do
     let ra ← core zα pα a
@@ -294,8 +295,8 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
       try
         let _a ← synthInstanceQ q(Semiring $α)
         let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
-        haveI' : $e =Q $a ^ $b := ⟨⟩
         assumeInstancesCommute
+        haveI' : $e =Q $a ^ $b := ⟨⟩
         pure (.positive q(pow_pos $pa $b))
       catch e : Exception =>
         trace[Tactic.positivity.failure] "{e.toMessageData}"
@@ -511,7 +512,7 @@ def evalRatDen : PositivityExt where eval {u α} _ _ e := do
     pure <| .positive q(den_pos $a)
   | _, _ => throwError "not Rat.num"
 
-/-- Extension for `posPart`. `a⁺` is always nonegative, and positive if `a` is. -/
+/-- Extension for `posPart`. `a⁺` is always nonnegative, and positive if `a` is. -/
 @[positivity _⁺]
 def evalPosPart : PositivityExt where eval {u α} zα pα e := do
   match e with
@@ -526,7 +527,7 @@ def evalPosPart : PositivityExt where eval {u α} zα pα e := do
     | _ => return .nonnegative q(posPart_nonneg $a)
   | _ => throwError "not `posPart`"
 
-/-- Extension for `negPart`. `a⁻` is always nonegative. -/
+/-- Extension for `negPart`. `a⁻` is always nonnegative. -/
 @[positivity _⁻]
 def evalNegPart : PositivityExt where eval {u α} _ _ e := do
   match e with
@@ -536,6 +537,14 @@ def evalNegPart : PositivityExt where eval {u α} _ _ e := do
     assertInstancesCommute
     return .nonnegative q(negPart_nonneg $a)
   | _ => throwError "not `negPart`"
+
+/-- Extension for the `positivity` tactic: nonnegative maps take nonnegative values. -/
+@[positivity DFunLike.coe _ _]
+def evalMap : PositivityExt where eval {_ β} _ _ e := do
+  let .app (.app _ f) a ← whnfR e
+    | throwError "not ↑f · where f is of NonnegHomClass"
+  let pa ← mkAppOptM ``apply_nonneg #[none, none, β, none, none, none, none, f, a]
+  pure (.nonnegative pa)
 
 end Positivity
 
