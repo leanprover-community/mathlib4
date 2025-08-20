@@ -52,9 +52,11 @@ def opLinearIsometryEquiv : H ≃ₗᵢ[𝕜] Hᵐᵒᵖ where
   toLinearEquiv := opLinearEquiv 𝕜
   norm_map' _ := rfl
 
+@[simp]
 theorem toLinearEquiv_opLinearIsometryEquiv :
     (opLinearIsometryEquiv 𝕜 H).toLinearEquiv = opLinearEquiv 𝕜 := rfl
 
+@[simp]
 theorem toContinuousLinearEquiv_opLinearIsometryEquiv :
     (opLinearIsometryEquiv 𝕜 H).toContinuousLinearEquiv = opContinuousLinearEquiv 𝕜 := rfl
 
