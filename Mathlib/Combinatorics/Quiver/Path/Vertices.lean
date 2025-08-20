@@ -5,7 +5,7 @@ Authors: Matteo Cipollina
 -/
 
 import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Combinatorics.Quiver.Path
+import Mathlib.Combinatorics.Quiver.Path--.Decomposition
 import Mathlib.Data.Set.Insert
 import Mathlib.Data.List.Basic
 
@@ -163,4 +163,100 @@ lemma end_mem_vertices {a b : V} (p : Path a b) : b ∈ p.vertices := by
   have h₂ := List.getLast_mem (l := p.vertices) (vertices_ne_nil p)
   simpa [h₁] using h₂
 
+/-!  ### Path vertices decomposition -/
+
+/-- Given a path `p : Path a b` and an index `n ≤ p.length`,
+    we can split `p = p₁.comp p₂` with `p₁.length = n`. -/
+theorem exists_decomp_at_length {a b : V} (p : Path a b) {n : ℕ} (hn : n ≤ p.length) :
+    ∃ (c : V) (p₁ : Path a c) (p₂ : Path c b),
+      p = p₁.comp p₂ ∧ p₁.length = n := by
+  induction p generalizing n with
+  | nil =>
+      have h : n = 0 := by simp_all only [length_nil, nonpos_iff_eq_zero]
+      subst h
+      exact ⟨a, Path.nil, Path.nil, by simp only [comp_nil], rfl⟩
+  | cons p' e ih =>
+      rename_i c
+      rw [length_cons] at hn
+      rcases (Nat.le_succ_iff).1 hn with h | h
+      · rcases ih h with ⟨d, p₁, p₂, hp, hl⟩
+        refine ⟨d, p₁, p₂.cons e, ?_, hl⟩
+        simp; rw [hp]
+      · subst h
+        refine ⟨c, p'.cons e, Path.nil, ?_, ?_⟩
+        all_goals simp
+
+theorem exists_decomp_of_mem_vertices {a b v : V} (p : Path a b)
+  (h : v ∈ p.vertices) : ∃ (p₁ : Path a v) (p₂ : Path v b), p = p₁.comp p₂ := by
+  obtain ⟨l₁, l₂, hv⟩ := List.exists_mem_split h
+  have h_len : l₁.length ≤ p.length := by
+    have : p.vertices.length = p.length + 1 := vertices_length p
+    have : l₁.length < p.vertices.length := by
+      rw [hv, List.length_append, List.length_cons]
+      omega
+    omega
+  obtain ⟨c, p₁, p₂, hp, hl⟩ := exists_decomp_at_length p h_len
+  suffices hvc : v = c by
+    subst hvc
+    exact ⟨p₁, p₂, hp⟩
+  have h_verts : p.vertices = p₁.vertices.dropLast ++ p₂.vertices := by
+    rw [hp, vertices_comp]
+  have h_l1_len : l₁.length = p₁.vertices.dropLast.length := by aesop
+  have h_l1_eq : l₁ = p₁.vertices.dropLast := by
+    have : l₁ ++ v :: l₂ = p₁.vertices.dropLast ++ p₂.vertices := by
+      rw [← hv, h_verts]
+    exact List.append_inj_left this h_l1_len
+  have h_v_l2 : v :: l₂ = p₂.vertices := by
+    have : l₁ ++ v :: l₂ = p₁.vertices.dropLast ++ p₂.vertices := by
+      rw [← hv, h_verts]
+    rw [h_l1_eq] at this
+    exact List.append_cancel_left this
+  have : p₂.vertices.head? = some c := by
+    cases p₂ with
+    | nil => simp only [vertices_nil, List.head?_cons]
+    | cons _ _ => exact vertices_head? _
+  rw [← h_v_l2] at this
+  simp [List.head?_cons, Option.some.injEq] at this
+  exact this
+
+/-- The head of the vertices list is the start vertex. -/
+lemma vertices_head_eq_start {a b : V} (p : Path a b) :
+    p.vertices.head (vertices_ne_nil p) = a := by
+  induction p with
+  | nil => simp only [vertices_nil, List.head_cons]
+  | cons p' _ ih =>
+    simp [vertices_cons, List.concat_eq_append]
+    have : p'.vertices ≠ [] := vertices_ne_nil p'
+    simp [List.head_append_of_ne_nil this]
+
+/-- The last element of the vertices list is the end vertex. -/
+lemma vertices_getLast_eq_end {a b : V} (p : Path a b) :
+  p.vertices.getLast (vertices_ne_nil p) = b := by
+  simp
+
+variable {V : Type*} [Quiver V]
+
+lemma end_prefix_eq_get_vertices {a b c : V} (p₁ : Path a c) (p₂ : Path c b) :
+    c = (p₁.comp p₂).vertices.get
+        ⟨p₁.length, by simp⟩ := by simp
+
+/-- `split_at_vertex` decomposes a path `p` at the vertex sitting in
+    position `i` of its `vertices` list. -/
+theorem split_at_vertex {a b : V} (p : Path a b) (i : ℕ)
+    (hi : i < p.vertices.length) :
+    ∃ (v : V) (p₁ : Path a v) (p₂ : Path v b),
+      p = p₁.comp p₂ ∧
+      p₁.length = i ∧
+      v = p.vertices.get ⟨i, hi⟩ := by
+  have hi_le_len : i ≤ p.length := by
+    rw [vertices_length] at hi
+    exact Nat.le_of_lt_succ hi
+  obtain ⟨v, p₁, p₂, hp, hlen⟩ := exists_decomp_at_length p hi_le_len
+  subst hp
+  refine ⟨v, p₁, p₂, rfl, hlen, ?_⟩
+  have h_eq := end_prefix_eq_get_vertices p₁ p₂
+  simp [hlen]
+
 end Quiver.Path
+
+#lint
