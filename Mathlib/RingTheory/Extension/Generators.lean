@@ -572,7 +572,7 @@ lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
       | monomial v a =>
         rw [finsum_eq_sum_of_support_subset _ (this _), ← Finset.sum_filter]
         obtain ⟨v, rfl⟩ := e.symm.surjective v
-        -- Rewrite `e` in the right hand side only.
+        -- Rewrite `e` in the right-hand side only.
         conv_rhs => simp only [e, Finsupp.sumFinsuppAddEquivProdFinsupp,
           Finsupp.sumFinsuppEquivProdFinsupp, AddEquiv.symm_mk, AddEquiv.coe_mk,
           Equiv.coe_fn_symm_mk, ofComp_toAlgHom_monomial_sumElim]
