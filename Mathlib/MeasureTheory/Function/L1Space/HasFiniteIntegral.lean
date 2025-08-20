@@ -33,7 +33,7 @@ open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory
 
 variable {α β γ ε ε' ε'' : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
 variable [NormedAddCommGroup β] [NormedAddCommGroup γ] [ENorm ε] [ENorm ε']
-  [TopologicalSpace ε''] [ENormedAddMonoid ε'']
+  [TopologicalSpace ε''] [ESeminormedAddMonoid ε'']
 
 namespace MeasureTheory
 
@@ -41,9 +41,6 @@ namespace MeasureTheory
 
 lemma lintegral_enorm_eq_lintegral_edist (f : α → β) :
     ∫⁻ a, ‖f a‖ₑ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by simp only [edist_zero_eq_enorm]
-
-@[deprecated (since := "2025-01-20")]
-alias lintegral_nnnorm_eq_lintegral_edist := lintegral_enorm_eq_lintegral_edist
 
 theorem lintegral_norm_eq_lintegral_edist (f : α → β) :
     ∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by
@@ -69,11 +66,6 @@ theorem lintegral_enorm_add_right (f : α → ε') {g : α → ε''} (hg : AEStr
 
 theorem lintegral_enorm_neg {f : α → β} : ∫⁻ a, ‖(-f) a‖ₑ ∂μ = ∫⁻ a, ‖f a‖ₑ ∂μ := by simp
 
-@[deprecated (since := "2025-01-21")] alias lintegral_nnnorm_zero := lintegral_enorm_zero
-@[deprecated (since := "2025-01-21")] alias lintegral_nnnorm_add_left := lintegral_enorm_add_left
-@[deprecated (since := "2025-01-21")] alias lintegral_nnnorm_add_right := lintegral_enorm_add_right
-@[deprecated (since := "2025-01-21")] alias lintegral_nnnorm_neg := lintegral_enorm_neg
-
 /-! ### The predicate `HasFiniteIntegral` -/
 
 
@@ -90,9 +82,6 @@ theorem hasFiniteIntegral_def {_ : MeasurableSpace α} (f : α → ε) (μ : Mea
 
 theorem hasFiniteIntegral_iff_enorm {f : α → ε} : HasFiniteIntegral f μ ↔ ∫⁻ a, ‖f a‖ₑ ∂μ < ∞ := by
   simp only [HasFiniteIntegral]
-
-@[deprecated (since := "2025-01-20")]
-alias hasFiniteIntegral_iff_nnnorm := hasFiniteIntegral_iff_enorm
 
 theorem hasFiniteIntegral_iff_norm (f : α → β) :
     HasFiniteIntegral f μ ↔ (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) < ∞ := by
@@ -251,7 +240,7 @@ theorem hasFiniteIntegral_zero_measure {m : MeasurableSpace α} (f : α → ε) 
 
 variable (α μ) in
 @[fun_prop, simp]
-theorem hasFiniteIntegral_zero {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε] :
+theorem hasFiniteIntegral_zero {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε] :
     HasFiniteIntegral (fun _ : α => (0 : ε)) μ := by
   simp [hasFiniteIntegral_iff_enorm]
 
@@ -289,7 +278,7 @@ theorem HasFiniteIntegral.of_isEmpty [IsEmpty α] {f : α → β} :
 
 @[simp]
 theorem HasFiniteIntegral.of_subsingleton_codomain
-    {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε] [Subsingleton ε] {f : α → ε} :
+    {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε] [Subsingleton ε] {f : α → ε} :
     HasFiniteIntegral f μ :=
   hasFiniteIntegral_zero _ _ |>.congr <| .of_forall fun _ ↦ Subsingleton.elim _ _
 
@@ -318,7 +307,7 @@ theorem isFiniteMeasure_withDensity_ofReal {f : α → ℝ} (hfi : HasFiniteInte
 section DominatedConvergence
 
 variable {F : ℕ → α → β} {f : α → β} {bound : α → ℝ}
-  {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+  {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
   {F' : ℕ → α → ε} {f' : α → ε} {bound' : α → ℝ≥0∞}
 
 theorem all_ae_ofReal_F_le_bound (h : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a) :
