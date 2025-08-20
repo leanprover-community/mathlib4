@@ -435,16 +435,16 @@ theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.BoundedFormul
   induction φ with
   | falsum => rfl
   | equal =>
-    simp only [Realize, restrictFreeVar, freeVarFinset.eq_2]
+    simp only [Realize, restrictFreeVar, freeVarFinset]
     rw [realize_restrictVarLeft v' (by simp [hv']), realize_restrictVarLeft v' (by simp [hv'])]
     simp
   | rel =>
-    simp only [Realize, freeVarFinset.eq_3, Finset.biUnion_val, restrictFreeVar]
+    simp only [Realize, freeVarFinset, Finset.biUnion_val, restrictFreeVar]
     congr!
     rw [realize_restrictVarLeft v' (by simp [hv'])]
     simp
   | imp _ _ ih1 ih2 =>
-    simp only [Realize, restrictFreeVar, freeVarFinset.eq_4]
+    simp only [Realize, restrictFreeVar, freeVarFinset]
     rw [ih1, ih2] <;> simp [hv']
   | all _ ih3 =>
     simp only [restrictFreeVar, Realize]
@@ -1107,7 +1107,7 @@ theorem subst_definitions_eq
 
     --This gives us the left hand side of the goal
     simp only [setOf, Sum.elim_inr] at hOutput
-    simp only [subst_definitions, finSumFinEquiv_apply_right,  Sum.elim_inr, realize_func]
+    simp only [subst_definitions, finSumFinEquiv_apply_right, realize_func]
     rw [← hOutput]; clear hOutput
 
     --Congruence inward + reduce
@@ -1124,7 +1124,7 @@ theorem subst_definitions_eq
     rfl
 
 variable (Fs) in
-/-- The extra side-values produced by `Term.subst_definitions`-/
+/-- The extra side-values produced by `Term.subst_definitions`. -/
 def subst_definitions_extraVals (t : L.Term α) : Fin (t.subst_definitions Fs).1 → M :=
   match t with
   | var a => by
@@ -1194,19 +1194,18 @@ namespace BoundedFormula
 theorem subst_definitions_eq {k : ℕ} (f : L.BoundedFormula α k)
     (hFs : ∀ {n} g, ((@Fs n g).Realize : Set (_ → M)) = Function.tupleGraph (g.term.realize ·))
     (hRs : ∀ {n} g, (@Rs n g).Realize = RelMap (M := M) g) :
-    ∀ vL vR, (f.subst_definitions Fs Rs).Realize (M := M) vL vR = f.Realize vL vR := by
+    ∀ vL vR, (f.subst_definitions Fs Rs).Realize (M := M) vL vR ↔ f.Realize vL vR := by
   induction f
   next =>
-    simp [Realize.eq_1, subst_definitions.eq_1]
+    simp [Realize, subst_definitions]
   next n t₁ t₂ =>
     simp only [subst_definitions, finSumFinEquiv_apply_left, finSumFinEquiv_apply_right,
-      Nat.add_zero, realize_relabel, castAdd_zero, cast_refl, Function.comp_id, Realize,
-      eq_iff_iff]
+      Nat.add_zero, realize_relabel, castAdd_zero, cast_refl, Function.comp_id, Realize]
     intro vL vR
     rw [show (vR ∘ @Fin.natAdd 0 n) = default from Unique.eq_default _]
     rw [← Formula.Realize, realize_alls]
     simp_rw [realize_foldr_imp]
-    simp_rw [BoundedFormula.Realize.eq_2]
+    simp_rw [BoundedFormula.Realize]
     constructor
     · intro h
       have ⟨xs₁, hxs₁⟩ := t₁.subst_definitions_extraVals_X (Sum.elim vL vR) hFs
@@ -1259,7 +1258,7 @@ theorem subst_definitions_eq {k : ℕ} (f : L.BoundedFormula α k)
   next n m R ts =>
     intro vL vR
     simp only [subst_definitions, Nat.add_zero, realize_relabel, castAdd_zero, cast_refl,
-      Function.comp_id, Realize, eq_iff_iff]
+      Function.comp_id, Realize]
     rw [show (vR ∘ @Fin.natAdd 0 n) = default from Unique.eq_default _,
       ← Formula.Realize, realize_alls]
     simp_rw [realize_foldr_imp]
@@ -1272,7 +1271,7 @@ theorem subst_definitions_eq {k : ℕ} (f : L.BoundedFormula α k)
       let hxs := fun i ↦ ((ts i).subst_definitions_extraVals_X (Sum.elim vL vR) hFs).2
       replace h := h xs (by
         intro i hi
-        simp only [List.mem_flatten, exists_exists_eq_and, List.mem_map] at hi
+        simp only [List.mem_flatten] at hi
         rcases hi with ⟨w,hiw,hiw₂⟩
         rw [List.mem_ofFn] at hiw
         obtain ⟨j,rfl⟩ := hiw
@@ -1302,7 +1301,7 @@ theorem subst_definitions_eq {k : ℕ} (f : L.BoundedFormula α k)
     · intro h xs is
       simp only [realize_relabel, Nat.add_zero, Fin.castAdd_zero, Fin.cast_refl, Function.comp_id,
         realize_subst, Term.realize_relabel]
-      rw [← hRs R, Formula.Realize.eq_1] at h
+      rw [← hRs R, Formula.Realize] at h
       rw [show (xs ∘ @Fin.natAdd 0 (∑ i : Fin m, _)) = default from Unique.eq_default _]
       convert h with i
       have hti := (ts i).subst_definitions_eq (Sum.elim vL vR) hFs (by
@@ -1319,9 +1318,9 @@ theorem subst_definitions_eq {k : ℕ} (f : L.BoundedFormula α k)
       funext sum
       cases sum <;> rfl
   next ih₁ ih₂ =>
-    simp [Realize.eq_5, subst_definitions.eq_3, ih₁, ih₂]
+    simp [subst_definitions, ih₁, ih₂]
   next ih =>
-    simp [Realize.eq_4, subst_definitions.eq_4, ih]
+    simp [subst_definitions, ih]
 
 end BoundedFormula
 
@@ -1331,8 +1330,9 @@ namespace Formula
 theorem subst_definitions_eq (f : L.Formula α)
     (hFs : ∀ {n} g, ((@Fs n g).Realize : Set (_ → M)) = Function.tupleGraph (g.term.realize ·))
     (hRs : ∀ {n} g, (@Rs n g).Realize = RelMap (M := M) g) :
-    ∀ v, (f.subst_definitions Fs Rs).Realize (M := M) v = f.Realize v := by
-  simpa [Realize.eq_1] using BoundedFormula.subst_definitions_eq f hFs hRs
+    (f.subst_definitions Fs Rs).Realize (M := M) = f.Realize := by
+  apply funext
+  simpa [Realize] using BoundedFormula.subst_definitions_eq f hFs hRs
 
 end Formula
 

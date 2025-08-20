@@ -281,8 +281,8 @@ theorem Definable.trans {S : Set (α → M)} (h₁ : A.Definable L S)
     (h₃ : ∀ {n} (g : L[[A]].Relations n), A.Definable L' (RelMap g)) :
     A.Definable L' S :=
   h₁.elim fun φ₁ hφ₁ ↦
-    ⟨_, hφ₁.trans <| funext fun v ↦ (φ₁.subst_definitions_eq
-      (fun g ↦ (h₂ g).choose_spec.symm) (fun g ↦ (h₃ g).choose_spec.symm) v).symm⟩
+    ⟨_, hφ₁.trans <| (φ₁.subst_definitions_eq
+      (fun g ↦ (h₂ g).choose_spec.symm) (fun g ↦ (h₃ g).choose_spec.symm)).symm⟩
 
 end Set
 
@@ -432,9 +432,8 @@ variable {L} {A B} {f : (α → M) → M}
 theorem TermDefinable.map_expansion (h : A.TermDefinable L f)
     (φ : L →ᴸ L') [φ.IsExpansionOn M] : A.TermDefinable L' f := by
   obtain ⟨ψ, rfl⟩ := h
-  refine ⟨(φ.addConstants A).onTerm ψ, ?_⟩
-  ext x
-  simp only [mem_setOf_eq, LHom.realize_onTerm]
+  use (φ.addConstants A).onTerm ψ
+  simp
 
 theorem empty_termDefinable_iff :
     (∅ : Set M).TermDefinable L f ↔ ∃ φ : L.Term α, f = φ.realize := by
@@ -470,9 +469,9 @@ theorem TermDefinable.trans {f : (β → M) → M} (h₁ : A.TermDefinable L f)
 
 variable (L)
 
-/-- A function from a structure to itself is term-definable over a set `A` when the
-  value of the function is given by a term with constants `A`. Like `TermDefinable`
-  but specialized for unary functions in order to write `M → M` instead of `(Unit → M) → M`.-/
+/-- A function from a structure to itself is term-definable over a set `A` when the value of the
+  function is given by a term with constants `A`. Like `TermDefinable` but specialized for unary
+  functions in order to write `M → M` instead of `(Unit → M) → M`. -/
 @[fun_prop]
 def TermDefinable₁ (f : M → M) : Prop :=
   ∃ φ : L[[A]].Term Unit, f = φ.realize ∘ Function.const _
@@ -495,15 +494,14 @@ theorem TermDefinable.TermDefinable₁ {f : M → M} (h : A.TermDefinable L (fun
 
 /-- A `TermDefinable₁` function has a graph that's `Definable₂`. -/
 theorem TermDefinable₁.Definable₂ {f : M → M} (h : A.TermDefinable₁ L f) :
-    A.Definable₂ L (Function.uncurry f.graph) := by
+    A.Definable₂ L f.graph := by
   rw [TermDefinable₁_iff_TermDefinable] at h
   obtain ⟨t,h⟩ := TermDefinable.Definable A L h
   use t.relabel (Sum.elim (fun _ ↦ 0) (fun _ ↦ 1))
   funext v
   convert congrFun h (Sum.elim (fun _ ↦ v 0) (fun _ ↦ v 1))
-  rw [setOf, setOf, Formula.realize_relabel, Sum.comp_elim]
+  rw [setOf, Formula.realize_relabel, Sum.comp_elim]
   rfl
-
 
 /-- `id` is `TermDefinable₁` -/
 @[fun_prop]
