@@ -52,18 +52,16 @@ protected abbrev Localization.AtPrime :=
 
 namespace IsLocalization
 
-theorem AtPrime.nontrivial [IsLocalization.AtPrime S P] : Nontrivial S :=
+theorem AtPrime.Nontrivial [IsLocalization.AtPrime S P] : Nontrivial S :=
   nontrivial_of_ne (0 : S) 1 fun hze => by
     rw [← (algebraMap R S).map_one, ← (algebraMap R S).map_zero] at hze
     obtain ⟨t, ht⟩ := (eq_iff_exists P.primeCompl S).1 hze
     have htz : (t : R) = 0 := by simpa using ht.symm
     exact t.2 (htz.symm ▸ P.zero_mem : ↑t ∈ P)
 
-@[deprecated (since := "2025-07-31")] alias AtPrime.Nontrivial := IsLocalization.AtPrime.nontrivial
-
 theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
   -- Porting note: since I couldn't get local instance running, I just specify it manually
-  letI := AtPrime.nontrivial S P
+  letI := AtPrime.Nontrivial S P
   IsLocalRing.of_nonunits_add
     (by
       intro x y hx hy hu
@@ -86,6 +84,8 @@ theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
       exact
         P.mul_mem_left _ <| P.mul_mem_right _ <|
             P.add_mem (P.mul_mem_right _ <| this hx) <| P.mul_mem_right _ <| this hy)
+
+@[deprecated (since := "2024-11-09")] alias AtPrime.localRing := AtPrime.isLocalRing
 
 end IsLocalization
 
@@ -128,7 +128,8 @@ def orderIsoOfPrime : { p : Ideal S // p.IsPrime } ≃o { p : Ideal R // p.IsPri
 
 /-- The prime spectrum of the localization of a commutative ring R at a prime ideal I are in
 order-preserving bijection with the interval (-∞, I] in the prime spectrum of R. -/
-@[simps!] def primeSpectrumOrderIso : PrimeSpectrum S ≃o Set.Iic (⟨I, hI⟩ : PrimeSpectrum R) :=
+@[simps!, stacks 00E3]
+def primeSpectrumOrderIso : PrimeSpectrum S ≃o Set.Iic (⟨I, hI⟩ : PrimeSpectrum R) :=
   (PrimeSpectrum.equivSubtype S).trans <| (orderIsoOfPrime S I).trans
     ⟨⟨fun p ↦ ⟨⟨p, p.2.1⟩, p.2.2⟩, fun p ↦ ⟨p.1.1, p.1.2, p.2⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
 
