@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kexing Ying
+Authors: Kexing Ying, Matteo Cipollina
 -/
 import Mathlib.Probability.Kernel.Composition.MeasureComp
 
@@ -76,6 +76,31 @@ theorem Invariant.comp (hκ : Invariant κ μ) (hη : Invariant η μ) :
   · exact Subsingleton.elim _ _
   · rw [Invariant, ← Measure.comp_assoc, hη, hκ]
 
+/-! ### Reversibility of kernels -/
+
+/-- Reversibility (detailed balance) of a Markov kernel `κ` w.r.t. a (σ-finite) measure `π`:
+for all measurable sets `A B`, the mass flowing from `A` to `B` equals that from `B` to `A`. -/
+def IsReversible (κ : Kernel α α) (π : Measure α) : Prop :=
+  ∀ ⦃A B⦄, MeasurableSet A → MeasurableSet B →
+    ∫⁻ x in A, κ x B ∂π = ∫⁻ x in B, κ x A ∂π
+
+/-- A reversible Markov kernel leaves the measure `π` invariant. -/
+theorem Invariant.of_IsReversible
+    {κ : Kernel α α} [IsMarkovKernel κ] {π : Measure α}
+    (h_rev : IsReversible κ π) : Invariant κ π := by
+  ext s hs
+  have h' := (h_rev hs MeasurableSet.univ).symm
+  have h'' : ∫⁻ x, κ x s ∂π = ∫⁻ x in s, κ x Set.univ ∂π := by
+    simpa [Measure.restrict_univ] using h'
+  have hConst : ∫⁻ x in s, κ x Set.univ ∂π = π s := by
+    classical
+    simp [measure_univ, lintegral_const, hs]
+  have hπ : ∫⁻ x, κ x s ∂π = π s := h''.trans hConst
+  calc
+    (π.bind κ) s = ∫⁻ x, κ x s ∂π := Measure.bind_apply hs (Kernel.aemeasurable _)
+    _ = π s := hπ
+
+end ProbabilityTheory.Kernel
 end Kernel
 
 end ProbabilityTheory
