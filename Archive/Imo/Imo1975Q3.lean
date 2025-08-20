@@ -116,53 +116,36 @@ lemma sqrt_combo_rationalize :
 /-- `(Q z) − R = ((P z) − R) · e^{iπ/2}`.
 Interpretation: the vector `QR` is a 90° CCW rotation of `PR`. -/
 lemma PQR_rot90 (z : ℂ) :
-    Q z - R = (P z - R) * (Complex.exp (Real.pi / 2 * I)) := by
+    Q z - R = (P z - R) * (Complex.exp (π / 2 * I)) := by
   -- expand definitions and normalize
-  simp [Q, P, R, deg2rad, shrink, A, B]
+  simp [Q, P, R, A, B]
   simp [mul_comm]
   ring_nf
   -- push `I` into the exponential
-  rw[mul_I_into_exp_neg_quarter_pi,mul_comm]
+  rw [mul_I_into_exp_neg_quarter_pi, mul_comm]
   -- numeric/trig cleanup
-  norm_num
   field_simp
-  simp[complex_sin_five_pi_div_six,complex_sin_pi_div_six]
   simp_rw [
-    show -(↑π * I) / 12 = ↑(-π / 12) * I by (field_simp;),
-    show -(↑π * I) / 4 = ↑(-π / 4) * I by (field_simp;),
-    Complex.exp_mul_I
+    show -(π * I) / 12 = (-π / 12) * I by field_simp,
+    show -(π * I) / 4 = (-π / 4) * I by field_simp,
+    exp_mul_I
   ]
   norm_cast
-  have h2 : Real.sin (-π / 12) = Real.sin (-(π / 12)) := by ring_nf
-  rw [h2,Real.sin_neg,mul_comm π 7]
-  simp [sin_seven_pi_div_twelve, sin_pi_div_twelve,cos_neg_pi_div_twelve]
-  norm_cast
-  -- Algebraic cleanup: expand definitions and normalize trigonometric constants.
-  -- Final coefficient collection after rationalizing denominators.
+  simp [mul_comm π 7]
+  -- Cleanup
   ring_nf
-  norm_num [I_sq]
-  rw [← sub_eq_zero]
+  norm_num
   field_simp
   ring_nf
   field_simp
   norm_cast
-  norm_num[sin_pi_div_four,cos_pi_div_four]
   field_simp
+  rw[← sub_eq_zero]
   ring_nf
-  field_simp
   norm_cast
-  rw[sqrt_combo_rationalize]
-  field_simp
+  field_simp [sqrt_combo_rationalize]
   ring_nf
-  simp[pow_two]
-  -- final rationalization
-  have h1 : (√2 : ℂ) * (√2 : ℂ) = (2 : ℂ) := by
-    have h2 : (√2 : ℂ) ^ 2 = (2 : ℂ) := by
-      simp [pow_two, Complex.ext_iff]
-    calc
-      (√2 : ℂ) * (√2 : ℂ) = (√2 : ℂ) ^ 2 := by ring
-      _ = (2 : ℂ) := h2
-  rw [h1]
+  simp [pow_two, Complex.ext_iff]
   ring_nf
 
 /-- Distances from `R` to `Q` and `P` are equal: multiplying by a unit complex preserves norm. -/
@@ -171,58 +154,34 @@ lemma dist_eq_of_rot90 (z : ℂ) :
   have hnorm :
       ‖Q z - R‖ = ‖(P z - R) * cexp (π / 2 * I)‖ := by
     simpa using congrArg (fun w : ℂ => ‖w‖) (PQR_rot90 z)
-  have hunit : ‖cexp (π / 2 * I)‖ = 1 := by
-    have habs :
-        norm (cexp (π / 2 * I))
-          = Real.exp (Complex.re ((π / 2 : ℝ) * I)) := by
-      simp
-    have hre : Complex.re ((π / 2 : ℝ) * I) = 0 := by simp
-    simp
-  calc
-    ‖Q z - R‖
-        = ‖(P z - R) * Complex.exp (Real.pi / 2 * Complex.I)‖ := hnorm
-    _ = ‖P z - R‖ * ‖Complex.exp (Real.pi / 2 * Complex.I)‖ := by simp
-    _ = ‖P z - R‖ * 1 := by simp
-    _ = ‖P z - R‖ := by simp
-  simp [Complex.dist_eq, norm_sub_rev]
+  simp [Complex.dist_eq, hnorm, norm_sub_rev]
 
 /-- Angle `∠QRP = π/2` from the rotation relation. -/
 lemma angle_pi_div_two_of_rot90
   (z : ℂ) (hPR : (P z) ≠ R) :
-  ∠ (Q z) R (P z) = Real.pi / 2 := by
+  ∠ (Q z) R (P z) = π / 2 := by
   set u : ℂ := (Q z) - R
   set v : ℂ := (P z) - R
-  have exp_I_half_pi : Complex.exp (I * (Real.pi / 2)) = I := by
-    simpa [mul_comm] using exp_pi_div_two_I
+  have hv_ne : v ≠ 0 := sub_ne_zero.mpr hPR
+  have exp_I_half_pi : Complex.exp (I * (π / 2)) = I := by
+    simpa [mul_comm] using Complex.exp_pi_div_two_mul_I
   have hI : u = I * v := by
     simpa [u, v, exp_I_half_pi, mul_comm] using PQR_rot90 z
-  have hv_ne : v ≠ 0 := sub_ne_zero.mpr hPR
-  have hu_ne : u ≠ 0 := by
-    have : I * v ≠ 0 := mul_ne_zero (by simp) hv_ne
-    simpa [hI]
   -- show `Re(u * conj v) = 0`
-  have horth : Complex.re (u * star v) = 0 := by
-    calc
-      Complex.re (u * star v)
-          = Complex.re (I * v * star v) := by
-              simp [hI]
-      _ = Complex.re (I * (v * star v)) := by ring_nf
-      _ = 0 := by
-        have hmul : v * star v = (Complex.normSq v : ℝ) := by
-          simpa using Complex.mul_conj v
-        simp
-        ring_nf
+  have horth : re (u * star v) = 0 := by
+    simp [hI]
+    ring_nf
   -- Bridge: angle is π/2 iff the (real) inner product is zero.
   have hiff :
-      (∠ (Q z) R (P z) = Real.pi / 2) ↔
-      (Complex.re (u * star v) = 0) := by
+      (∠ (Q z) R (P z) = π / 2) ↔
+      (re (u * star v) = 0) := by
         have h₁ :
-        (∠ (Q z) R (P z) = Real.pi / 2)
+        (∠ (Q z) R (P z) = π / 2)
         ↔ inner ℝ u v = 0 := by
           simpa [u, v, sub_eq_add_neg] using
             (InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two
               ((Q z) - R) ((P z) - R)).symm
-        have h₂ : inner ℝ u v = Complex.re (u * star v) := by
+        have h₂ : inner ℝ u v = re (u * star v) := by
           simp[Complex.inner,u,v]
           ring_nf
         simpa [h₂] using h₁
