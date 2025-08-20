@@ -116,26 +116,6 @@ def pushCore (head : Head) (tgt : Expr) (disch? : Option Simp.Discharge) : MetaM
     | some disch => { pre := pushStep head, discharge? := disch, wellBehavedDischarge := false }
   (·.1) <$> Simp.main tgt ctx (methods := methods)
 
-/-- Execute main loop of `push` at the main goal. -/
-def pushTarget (head : Head) (disch? : Option Simp.Discharge) : TacticM Unit := withMainContext do
-  let goal ← getMainGoal
-  let tgt ← instantiateMVars (← goal.getType)
-  let goal ← applySimpResultToTarget goal tgt (← pushCore head tgt disch?)
-  replaceMainGoal [goal]
-
-/-- Execute main loop of `push` at a local hypothesis. -/
-def pushLocalDecl (head : Head) (disch? : Option Simp.Discharge) (fvarId : FVarId) :
-    TacticM Unit := withMainContext do
-  let ldecl ← fvarId.getDecl
-  if ldecl.isAuxDecl then return
-  let tgt ← instantiateMVars ldecl.type
-  let goal ← getMainGoal
-  let result ← pushCore head tgt disch?
-  if let some (_, goal) ← applySimpResultToLocalDecl goal fvarId result False then
-    replaceMainGoal [goal]
-  else
-    replaceMainGoal []
-
 end push
 
 section pull
@@ -165,27 +145,6 @@ def pullCore (head : Head) (tgt : Expr) (disch? : Option Simp.Discharge) : MetaM
     | none => { post := pullStep head }
     | some disch => { post := pullStep head, discharge? := disch, wellBehavedDischarge := false }
   (·.1) <$> Simp.main tgt ctx (methods := methods)
-
-/-- Execute main loop of `pull` at the main goal. -/
-def pullTarget (head : Head) (discharge? : Option Simp.Discharge) :
-    TacticM Unit := withMainContext do
-  let goal ← getMainGoal
-  let tgt ← instantiateMVars (← goal.getType)
-  let goal ← applySimpResultToTarget goal tgt (← pullCore head tgt discharge?)
-  replaceMainGoal [goal]
-
-/-- Execute main loop of `pull` at a local hypothesis. -/
-def pullLocalDecl (head : Head) (discharge? : Option Simp.Discharge) (fvarId : FVarId) :
-    TacticM Unit := withMainContext do
-  let ldecl ← fvarId.getDecl
-  if ldecl.isAuxDecl then return
-  let tgt ← instantiateMVars ldecl.type
-  let goal ← getMainGoal
-  let result ← pullCore head tgt discharge?
-  if let some (_, goal) ← applySimpResultToLocalDecl goal fvarId result False then
-    replaceMainGoal [goal]
-  else
-    replaceMainGoal []
 
 end pull
 
@@ -257,10 +216,6 @@ def elabOptDisch (optDischargeSyntax : Syntax) : TacticM (Option Simp.Discharge)
     let (_, d) ← tacticToDischarge optDischargeSyntax[0][3]
     return d
 
-/-- Throw an error saying that `push`/`pull` didn't make progress. -/
-def throwNoProgress (tactic : Name) (head : Head) : TacticM Unit :=
-  throwError "tactic `{tactic}` made no progress using `{head.toString}`"
-
 /--
 `push` pushes the given constant away from the root of the expression. For example
 - `push · ∈ ·` rewrites `x ∈ {y} ∪ zᶜ` into `x = y ∨ ¬ x ∈ z`.
@@ -276,19 +231,11 @@ The `push` tactic can be extended using the `@[push]` attribute.
 
 To push a constant at a hypothesis, use the `push ... at h` or `push ... at *` syntax.
 -/
-syntax (name := push) "push " (discharger)? (colGt term) (location)? : tactic
-
-@[tactic push, inherit_doc push]
-def elabPush : Tactic := fun stx => do
-  let disch? ← elabOptDisch stx[1]
-  let head ← elabHead ⟨stx[2]⟩
-  let goal ← getMainGoal
-  withLocation (expandOptLocation stx[3])
-    (pushLocalDecl head disch?)
-    (pushTarget head disch?)
-    (fun _ ↦ throwNoProgress `push head)
-  if (← getMainGoal) == goal then
-    throwNoProgress `push head
+elab (name := push) "push " disch?:(discharger)? head:(colGt term) loc:(location)? : tactic => do
+  let disch? ← disch?.mapM fun disch => return (← tacticToDischarge disch).2
+  let head ← elabHead head
+  let loc := (loc.map expandLocation).getD (.targets #[] true)
+  transformAtLocation (pushCore head · disch?) "push" loc (failIfUnchanged := true) false
 
 /--
 Push negations into the conclusion or a hypothesis.
@@ -327,19 +274,11 @@ in which the pushed constant is present in the result.
 For example, `not_or : ¬ (p ∨ q) ↔ ¬ p ∧ ¬ q` is a `pull` lemma for negation,
 but `not_not : ¬ ¬ p ↔ p` is not a `pull` lemma.
 -/
-syntax (name := pull) "pull " (discharger)? (colGt term) (location)? : tactic
-
-@[tactic pull, inherit_doc pull]
-def elabPull : Tactic := fun stx => do
-  let disch? ← elabOptDisch stx[1]
-  let head ← elabHead ⟨stx[2]⟩
-  let goal ← getMainGoal
-  withLocation (expandOptLocation stx[3])
-    (pullLocalDecl head disch?)
-    (pullTarget head disch?)
-    (fun _ ↦ throwNoProgress `pull head)
-  if (← getMainGoal) == goal then
-    throwNoProgress `pull head
+elab (name := pull) "pull " disch?:(discharger)? head:(colGt term) loc:(location)? : tactic => do
+  let disch? ← disch?.mapM fun disch => return (← tacticToDischarge disch).2
+  let head ← elabHead head
+  let loc := (loc.map expandLocation).getD (.targets #[] true)
+  transformAtLocation (pullCore head · disch?) "pull" loc (failIfUnchanged := true) false
 
 /-- A simproc variant of `push fun _ ↦ ·` that should be used as `simp [↓pushFun]`. -/
 simproc_decl _root_.pushFun (fun _ ↦ _) := pushStep .lambda
