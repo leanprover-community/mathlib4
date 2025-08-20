@@ -335,9 +335,11 @@ theorem StrictMonoOn.le_iff_le (hf : StrictMonoOn f s) {a b : α} (ha : a ∈ s)
   ⟨fun h ↦ le_of_not_gt fun h' ↦ (hf hb ha h').not_ge h, fun h ↦
     h.lt_or_eq_dec.elim (fun h' ↦ (hf ha hb h').le) fun h' ↦ h' ▸ le_rfl⟩
 
-theorem StrictAntiOn.le_iff_le (hf : StrictAntiOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
+theorem StrictAntiOn.le_iff_ge (hf : StrictAntiOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
     f a ≤ f b ↔ b ≤ a :=
   hf.dual_right.le_iff_le hb ha
+
+@[deprecated (since := "2025-08-12")] alias StrictAntiOn.le_iff_le := StrictAntiOn.le_iff_ge
 
 theorem StrictMonoOn.eq_iff_eq (hf : StrictMonoOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
     f a = f b ↔ a = b :=
@@ -353,21 +355,27 @@ theorem StrictMonoOn.lt_iff_lt (hf : StrictMonoOn f s) {a b : α} (ha : a ∈ s)
     f a < f b ↔ a < b := by
   rw [lt_iff_le_not_ge, lt_iff_le_not_ge, hf.le_iff_le ha hb, hf.le_iff_le hb ha]
 
-theorem StrictAntiOn.lt_iff_lt (hf : StrictAntiOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
+theorem StrictAntiOn.lt_iff_gt (hf : StrictAntiOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
     f a < f b ↔ b < a :=
   hf.dual_right.lt_iff_lt hb ha
+
+@[deprecated (since := "2025-08-12")] alias StrictAntiOn.lt_iff_lt := StrictAntiOn.lt_iff_gt
 
 theorem StrictMono.le_iff_le (hf : StrictMono f) {a b : α} : f a ≤ f b ↔ a ≤ b :=
   (hf.strictMonoOn Set.univ).le_iff_le trivial trivial
 
-theorem StrictAnti.le_iff_le (hf : StrictAnti f) {a b : α} : f a ≤ f b ↔ b ≤ a :=
-  (hf.strictAntiOn Set.univ).le_iff_le trivial trivial
+theorem StrictAnti.le_iff_ge (hf : StrictAnti f) {a b : α} : f a ≤ f b ↔ b ≤ a :=
+  (hf.strictAntiOn Set.univ).le_iff_ge trivial trivial
+
+@[deprecated (since := "2025-08-12")] alias StrictAnti.le_iff_le := StrictAnti.le_iff_ge
 
 theorem StrictMono.lt_iff_lt (hf : StrictMono f) {a b : α} : f a < f b ↔ a < b :=
   (hf.strictMonoOn Set.univ).lt_iff_lt trivial trivial
 
-theorem StrictAnti.lt_iff_lt (hf : StrictAnti f) {a b : α} : f a < f b ↔ b < a :=
-  (hf.strictAntiOn Set.univ).lt_iff_lt trivial trivial
+theorem StrictAnti.lt_iff_gt (hf : StrictAnti f) {a b : α} : f a < f b ↔ b < a :=
+  (hf.strictAntiOn Set.univ).lt_iff_gt trivial trivial
+
+@[deprecated (since := "2025-08-12")] alias StrictAnti.lt_iff_lt := StrictAnti.lt_iff_gt
 
 protected theorem StrictMonoOn.compares (hf : StrictMonoOn f s) {a b : α} (ha : a ∈ s)
     (hb : b ∈ s) : ∀ {o : Ordering}, o.Compares (f a) (f b) ↔ o.Compares a b
@@ -409,11 +417,11 @@ theorem StrictMono.minimal_of_minimal_image (hf : StrictMono f) {a} (hmin : ∀ 
 
 theorem StrictAnti.minimal_of_maximal_image (hf : StrictAnti f) {a} (hmax : ∀ p, p ≤ f a) (x : α) :
     a ≤ x :=
-  hf.le_iff_le.mp (hmax (f x))
+  hf.le_iff_ge.mp (hmax (f x))
 
 theorem StrictAnti.maximal_of_minimal_image (hf : StrictAnti f) {a} (hmin : ∀ p, f a ≤ p) (x : α) :
     x ≤ a :=
-  hf.le_iff_le.mp (hmin (f x))
+  hf.le_iff_ge.mp (hmin (f x))
 
 end Preorder
 

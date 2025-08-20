@@ -471,8 +471,6 @@ theorem isProj_iff_isIdempotentElem (f : M →ₗ[S] M) :
   ext x
   exact hp.map_id (f x) (hp.map_mem x)
 
-@[deprecated (since := "2025-01-12")] alias isProj_iff_idempotent := isProj_iff_isIdempotentElem
-
 namespace IsProj
 
 variable {p m}
