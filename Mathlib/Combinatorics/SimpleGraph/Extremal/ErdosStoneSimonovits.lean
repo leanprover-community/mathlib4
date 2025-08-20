@@ -21,7 +21,7 @@ This file proves the **Erdős-Stone-Simonovits theorem** for simple graphs.
 -/
 
 
-open Asymptotics Filter Finset Fintype Real Topology
+open Filter Finset Fintype Real Topology
 
 namespace SimpleGraph
 
