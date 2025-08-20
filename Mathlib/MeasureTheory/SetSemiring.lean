@@ -46,7 +46,6 @@ two intervals.
 `∀ i ∈ s, IsSetSemiring (C i)`, the cartesian  product `s.pi '' s.pi C` is a semiring.
 -/
 
-
 open Finset Set
 
 namespace MeasureTheory
