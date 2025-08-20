@@ -36,7 +36,7 @@ import Mathlib.Order.Closure
 
 ## Tags
 
-bipolar
+bipolar, locally convex space
 -/
 
 variable {𝕜 E F : Type*}
