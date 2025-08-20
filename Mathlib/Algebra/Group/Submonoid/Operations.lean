@@ -963,43 +963,22 @@ theorem pi_empty (H : ∀ i, Submonoid (M i)) : pi ∅ H = ⊤ :=
 
 @[to_additive]
 theorem pi_bot : (pi Set.univ fun i => (⊥ : Submonoid (M i))) = ⊥ :=
-  (eq_bot_iff_forall _).mpr fun p hp => by
-    simp only [mem_pi, mem_bot] at *
-    ext j
-    exact hp j trivial
+  ext fun x => by simp [mem_pi, funext_iff]
 
 @[to_additive]
 theorem le_pi_iff {I : Set ι} {S : ∀ i, Submonoid (M i)} {J : Submonoid (∀ i, M i)} :
-    J ≤ pi I S ↔ ∀ i ∈ I, map (Pi.evalMonoidHom M i) J ≤ S i := by
-  constructor
-  · intro h i hi
-    rintro _ ⟨x, hx, rfl⟩
-    exact (h hx) _ hi
-  · intro h x hx i hi
-    exact h i hi ⟨_, hx, rfl⟩
+    J ≤ pi I S ↔ ∀ i ∈ I, map (Pi.evalMonoidHom M i) J ≤ S i :=
+  Set.subset_pi_iff
 
 @[to_additive (attr := simp)]
 theorem mulSingle_mem_pi [DecidableEq ι] {I : Set ι} {S : ∀ i, Submonoid (M i)} (i : ι) (x : M i) :
-    Pi.mulSingle i x ∈ pi I S ↔ i ∈ I → x ∈ S i := by
-  constructor
-  · intro h hi
-    simpa using h i hi
-  · intro h j hj
-    by_cases heq : j = i
-    · subst heq
-      simpa using h hj
-    · simp [heq, one_mem]
+    Pi.mulSingle i x ∈ pi I S ↔ i ∈ I → x ∈ S i :=
+  Set.update_mem_pi (one_mem (pi I _))
 
 @[to_additive]
 theorem pi_eq_bot_iff (S : ∀ i, Submonoid (M i)) : pi Set.univ S = ⊥ ↔ ∀ i, S i = ⊥ := by
-  classical
-  simp only [eq_bot_iff_forall]
-  constructor
-  · intro h i x hx
-    have : MonoidHom.mulSingle M i x = 1 :=
-      h (MonoidHom.mulSingle M i x) ((mulSingle_mem_pi i x).mpr fun _ => hx)
-    simpa using congr_fun this i
-  · exact fun h x hx => funext fun i => h _ _ (hx i trivial)
+  simp_rw [SetLike.ext'_iff]
+  exact Set.pi_univ_eq_singleton_iff
 
 end Pi
 
