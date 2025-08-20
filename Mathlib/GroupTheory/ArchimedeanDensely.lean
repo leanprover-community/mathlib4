@@ -294,45 +294,6 @@ lemma LinearOrderedCommGroup.discrete_iff_not_denselyOrdered :
   · exact ⟨MulEquiv.toAdditive' f, by simp⟩
   · exact ⟨MulEquiv.toAdditive'.symm f, by simp⟩
 
-section
-variable {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀]
-
--- Counterexample with monoid for the backward direction:
--- Take `Mᵐ⁰` where `M := ℚ ×ₗ ℕ`.
-lemma denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units :
-    DenselyOrdered G₀ ↔ Nontrivial G₀ˣ ∧ DenselyOrdered G₀ˣ := by
-  refine ⟨fun H ↦ ⟨?_, ?_⟩, fun ⟨H₁, H₂⟩ ↦ ?_⟩
-  · obtain ⟨x, hx, hx'⟩ := exists_between (zero_lt_one' G₀)
-    exact ⟨Units.mk0 x hx.ne', 1, by simpa [Units.ext_iff] using hx'.ne⟩
-  · refine ⟨fun x y h ↦ ?_⟩
-    obtain ⟨z, hz⟩ := exists_between (Units.val_lt_val.mpr h)
-    refine ⟨Units.mk0 z (ne_zero_of_lt hz.1), by simp [← Units.val_lt_val, hz]⟩
-  · refine ⟨fun x y h ↦ ?_⟩
-    lift y to G₀ˣ using (ne_zero_of_lt h).isUnit
-    obtain rfl | hx := (zero_le' (a := x)).eq_or_lt
-    · obtain ⟨z, hz⟩ := exists_one_lt' (α := G₀ˣ)
-      exact ⟨(y * z⁻¹ : G₀ˣ), by simp, Units.val_lt_val.mpr <| by simp [hz]⟩
-    · lift x to G₀ˣ using hx.ne'.isUnit
-      obtain ⟨z, hz, hz'⟩ := H₂.dense x y (Units.val_lt_val.mpr h)
-      exact ⟨z, by simp [hz, hz']⟩
-
--- Counterexample with monoid: `{ x : ℝ | 0 ≤ x ≤ 1 }`
-instance [DenselyOrdered G₀] : Nontrivial G₀ˣ :=
-  have := denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units (G₀ := G₀)
-  by tauto
-
--- Counterexample with monoid:
--- `{ x : ℝ | x = 0 ∨ ∃ (a : ℤ) (b c : ℕ), x = Real.exp (a + b * √2 - c * √3) }`
-instance [DenselyOrdered G₀] : DenselyOrdered G₀ˣ :=
-  have := denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units (G₀ := G₀)
-  by tauto
-
-lemma denselyOrdered_units_iff [Nontrivial G₀ˣ] : DenselyOrdered G₀ˣ ↔ DenselyOrdered G₀ :=
-  have := denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units (G₀ := G₀)
-  by tauto
-
-end
-
 /-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
 either isomorphic (and order-isomorphic) to `ℤᵐ⁰`, or is densely ordered. -/
 lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
