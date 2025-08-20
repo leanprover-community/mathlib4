@@ -1283,7 +1283,7 @@ theorem set_cons_zero {hd' : α} : (cons hd tl).set 0 hd' = cons hd' tl := updat
 @[simp]
 theorem update_cons_succ : (cons hd tl).update (n + 1) f = cons hd (tl.update n f) := by
   ext1 n
-  cases n <;> simp [get?_update, Function.update]
+  cases n <;> simp [get?_update]
 
 @[simp]
 theorem set_cons_succ : (cons hd tl).set (n + 1) x = cons hd (tl.set n x) := update_cons_succ
@@ -1297,7 +1297,7 @@ theorem get?_set_of_terminatedAt (h_terminated : s.TerminatedAt n) :
   simpa [set, get?_update] using h_terminated
 
 theorem get?_set_of_ne (h : n ≠ m) : (s.set m x).get? n = s.get? n := by
-  simp [set, get?_update, Function.update, h]
+  simp [set, get?_update, h]
 
 theorem drop_set_of_lt (h : m < n) : (s.set m x).drop n = s.drop n := by
   ext1 i
