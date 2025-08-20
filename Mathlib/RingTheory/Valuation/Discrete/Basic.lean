@@ -5,7 +5,6 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.GroupWithZero.Range
 import Mathlib.Algebra.Order.Group.Cyclic
-import Mathlib.Analysis.Normed.Ring.Lemmas
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
