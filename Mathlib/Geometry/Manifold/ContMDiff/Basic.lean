@@ -158,6 +158,18 @@ theorem contMDiffWithinAt_id : ContMDiffWithinAt I I n (id : M → M) s x :=
 
 end id
 
+/-! ### Iterated functions -/
+
+section Iterate
+
+/-- Iterated `ContMDiff` functions are `ContMDiff`. -/
+theorem ContMDiff.iterate {f : M → M} (fa : ContMDiff I I n f) (k : ℕ) :
+    ContMDiff I I n (f^[k]) := by
+  induction' k with k h; · simp only [Function.iterate_zero]; exact contMDiff_id
+  simp only [Function.iterate_succ']; exact fa.comp h
+
+end Iterate
+
 /-! ### Constants are `C^n` -/
 
 section const
