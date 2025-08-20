@@ -55,8 +55,8 @@ theorem length_rotate' : ∀ (l : List α) (n : ℕ), (l.rotate' n).length = l.l
 
 theorem rotate'_eq_drop_append_take :
     ∀ {l : List α} {n : ℕ}, n ≤ l.length → l.rotate' n = l.drop n ++ l.take n
-  | [], n, h => by simp [drop_append_of_le_length h]
-  | l, 0, h => by simp [take_append_of_le_length h]
+  | [], n, h => by simp
+  | l, 0, h => by simp
   | a :: l, n + 1, h => by
     have hnl : n ≤ l.length := le_of_succ_le_succ h
     have hnl' : n ≤ (l ++ [a]).length := by
@@ -189,7 +189,7 @@ theorem zipWith_rotate_one {β : Type*} (f : α → α → β) (x y : α) (l : L
 theorem getElem?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
     (l.rotate n)[m]? = l[(m + n) % l.length]? := by
   rw [rotate_eq_drop_append_take_mod]
-  rcases lt_or_le m (l.drop (n % l.length)).length with hm | hm
+  rcases lt_or_ge m (l.drop (n % l.length)).length with hm | hm
   · rw [getElem?_append_left hm, getElem?_drop, ← add_mod_mod]
     rw [length_drop, Nat.lt_sub_iff_add_lt] at hm
     rw [mod_eq_of_lt hm, Nat.add_comm]
@@ -199,11 +199,11 @@ theorem getElem?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
       rw [length_drop] at hm
       have hm' := Nat.sub_le_iff_le_add'.1 hm
       have : n % length l + m - length l < length l := by
-        rw [Nat.sub_lt_iff_lt_add' hm']
+        rw [Nat.sub_lt_iff_lt_add hm']
         exact Nat.add_lt_add hlt hml
       conv_rhs => rw [Nat.add_comm m, ← mod_add_mod, mod_eq_sub_mod hm', mod_eq_of_lt this]
       omega
-    · rwa [Nat.sub_lt_iff_lt_add hm, length_drop, Nat.sub_add_cancel hlt.le]
+    · rwa [Nat.sub_lt_iff_lt_add' hm, length_drop, Nat.sub_add_cancel hlt.le]
 
 theorem getElem_rotate (l : List α) (n : ℕ) (k : Nat) (h : k < (l.rotate n).length) :
     (l.rotate n)[k] =
@@ -256,7 +256,7 @@ theorem get_eq_get_rotate (l : List α) (n : ℕ) (k : Fin l.length) :
 theorem rotate_eq_self_iff_eq_replicate [hα : Nonempty α] :
     ∀ {l : List α}, (∀ n, l.rotate n = l) ↔ ∃ a, l = replicate l.length a
   | [] => by simp
-  | a :: l => ⟨fun h => ⟨a, ext_getElem (length_replicate _ _).symm fun n h₁ h₂ => by
+  | a :: l => ⟨fun h => ⟨a, ext_getElem length_replicate.symm fun n h₁ h₂ => by
       rw [getElem_replicate, ← Option.some_inj, ← getElem?_eq_getElem, ← head?_rotate h₁, h,
         head?_cons]⟩,
     fun ⟨b, hb⟩ n => by rw [hb, rotate_replicate]⟩
@@ -299,7 +299,7 @@ theorem singleton_eq_rotate_iff {l : List α} {n : ℕ} {x : α} : [x] = l.rotat
 
 theorem reverse_rotate (l : List α) (n : ℕ) :
     (l.rotate n).reverse = l.reverse.rotate (l.length - n % l.length) := by
-  rw [← length_reverse l, ← rotate_eq_iff]
+  rw [← length_reverse, ← rotate_eq_iff]
   induction' n with n hn generalizing l
   · simp
   · rcases l with - | ⟨hd, tl⟩
@@ -312,7 +312,7 @@ theorem rotate_reverse (l : List α) (n : ℕ) :
   rw [← reverse_reverse l]
   simp_rw [reverse_rotate, reverse_reverse, rotate_eq_iff, rotate_rotate, length_rotate,
     length_reverse]
-  rw [← length_reverse l]
+  rw [← length_reverse]
   let k := n % l.reverse.length
   rcases hk' : k with - | k'
   · simp_all! [k, length_reverse, ← rotate_rotate]

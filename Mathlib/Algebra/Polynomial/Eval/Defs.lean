@@ -130,7 +130,7 @@ theorem eval₂_finset_sum (s : Finset ι) (g : ι → R[X]) (x : S) :
 
 theorem eval₂_ofFinsupp {f : R →+* S} {x : S} {p : R[ℕ]} :
     eval₂ f x (⟨p⟩ : R[X]) = liftNC (↑f) (powersHom S x) p := by
-  simp only [eval₂_eq_sum, sum, toFinsupp_sum, support, coeff]
+  simp only [eval₂_eq_sum, sum, support, coeff]
   rfl
 
 theorem eval₂_mul_noncomm (hf : ∀ k, Commute (f <| q.coeff k) x) :
@@ -154,7 +154,7 @@ theorem eval₂_mul_C' (h : Commute (f a) x) : eval₂ f x (p * C a) = eval₂ f
   rw [eval₂_mul_noncomm, eval₂_C]
   intro k
   by_cases hk : k = 0
-  · simp only [hk, h, coeff_C_zero, coeff_C_ne_zero]
+  · simp only [hk, h, coeff_C_zero]
   · simp only [coeff_C_ne_zero hk, RingHom.map_zero, Commute.zero_left]
 
 theorem eval₂_list_prod_noncomm (ps : List R[X])
@@ -215,7 +215,7 @@ theorem eval₂_pow (n : ℕ) : (p ^ n).eval₂ f x = p.eval₂ f x ^ n :=
   (eval₂RingHom _ _).map_pow _ _
 
 theorem eval₂_dvd : p ∣ q → eval₂ f x p ∣ eval₂ f x q :=
-  (eval₂RingHom f x).map_dvd
+  map_dvd (eval₂RingHom f x)
 
 theorem eval₂_eq_zero_of_dvd_of_eval₂_eq_zero (h : p ∣ q) (h0 : eval₂ f x p = 0) :
     eval₂ f x q = 0 :=
@@ -368,7 +368,7 @@ theorem X_comp : X.comp p = p :=
   eval₂_X _ _
 
 @[simp]
-theorem comp_C : p.comp (C a) = C (p.eval a) := by simp [comp, map_sum (C : R →+* _)]
+theorem comp_C : p.comp (C a) = C (p.eval a) := by simp [comp]
 
 @[simp]
 theorem C_comp : (C a).comp p = C a :=
@@ -524,7 +524,7 @@ protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] :
 
 --TODO rename to `map_dvd_map`
 theorem map_dvd (f : R →+* S) {x y : R[X]} : x ∣ y → x.map f ∣ y.map f :=
-  (mapRingHom f).map_dvd
+  _root_.map_dvd (mapRingHom f)
 
 lemma mapRingHom_comp_C {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S) :
     (mapRingHom f).comp C = C.comp f := by ext; simp
@@ -549,13 +549,13 @@ protected theorem map_sum {ι : Type*} (g : ι → R[X]) (s : Finset ι) :
   map_sum (mapRingHom f) _ _
 
 theorem map_comp (p q : R[X]) : map f (p.comp q) = (map f p).comp (map f q) :=
-  Polynomial.induction_on p (by simp only [map_C, forall_const, C_comp, eq_self_iff_true])
+  Polynomial.induction_on p (by simp only [map_C, forall_const, C_comp])
     (by
       simp +contextual only [Polynomial.map_add, add_comp, forall_const,
-        imp_true_iff, eq_self_iff_true])
+        imp_true_iff])
     (by
       simp +contextual only [pow_succ, ← mul_assoc, comp, forall_const,
-        eval₂_mul_X, imp_true_iff, eq_self_iff_true, map_X, Polynomial.map_mul])
+        eval₂_mul_X, imp_true_iff, map_X, Polynomial.map_mul])
 
 end Map
 
@@ -647,7 +647,7 @@ theorem prod_comp {ι : Type*} (s : Finset ι) (p : ι → R[X]) (q : R[X]) :
     (∏ j ∈ s, p j).comp q = ∏ j ∈ s, (p j).comp q :=
   map_prod (compRingHom q) _ _
 
-theorem isRoot_prod {R} [CommRing R] [IsDomain R] {ι : Type*} (s : Finset ι) (p : ι → R[X])
+theorem isRoot_prod {R} [CommSemiring R] [IsDomain R] {ι : Type*} (s : Finset ι) (p : ι → R[X])
     (x : R) : IsRoot (∏ j ∈ s, p j) x ↔ ∃ i ∈ s, IsRoot (p i) x := by
   simp only [IsRoot, eval_prod, Finset.prod_eq_zero_iff]
 

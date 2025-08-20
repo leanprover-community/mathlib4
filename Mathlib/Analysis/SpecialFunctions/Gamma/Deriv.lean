@@ -76,6 +76,7 @@ theorem differentiableAt_GammaAux (s : ℂ) (n : ℕ) (h1 : 1 - s.re < n) (h2 : 
     · exact differentiableAt_id
     · simpa using h2 0
 
+@[fun_prop]
 theorem differentiableAt_Gamma (s : ℂ) (hs : ∀ m : ℕ, s ≠ -m) : DifferentiableAt ℂ Gamma s := by
   let n := ⌊1 - s.re⌋₊ + 1
   have hn : 1 - s.re < n := mod_cast Nat.lt_floor_add_one (1 - s.re)
@@ -109,6 +110,7 @@ end Complex
 
 namespace Real
 
+@[fun_prop]
 theorem differentiableAt_Gamma {s : ℝ} (hs : ∀ m : ℕ, s ≠ -m) : DifferentiableAt ℝ Gamma s := by
   refine (Complex.differentiableAt_Gamma _ ?_).hasDerivAt.real_of_complex.differentiableAt
   simp_rw [← Complex.ofReal_natCast, ← Complex.ofReal_neg, Ne, Complex.ofReal_inj]

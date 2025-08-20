@@ -152,17 +152,7 @@ of slope `m : ℤ`.
 @[nolint unusedArguments]
 def StandardOneDimIsocrystal (_m : ℤ) : Type _ :=
   K(p, k)
--- The `AddCommGroup, Module K(p, k)` instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-section Deriving
-
-instance {m : ℤ} : AddCommGroup (StandardOneDimIsocrystal p k m) :=
-  inferInstanceAs (AddCommGroup K(p, k))
-instance {m : ℤ} : Module K(p, k) (StandardOneDimIsocrystal p k m) :=
-  inferInstanceAs (Module K(p, k) K(p, k))
-
-end Deriving
+deriving AddCommGroup, Module K(p, k)
 
 section PerfectRing
 
@@ -213,7 +203,7 @@ theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k
     StandardOneDimIsocrystal.frobenius_apply]
   unfold StandardOneDimIsocrystal
   rw [LinearMap.toSpanSingleton_apply K(p, k) V x c, LinearMap.toSpanSingleton_apply K(p, k) V x]
-  simp only [hax, LinearEquiv.ofBijective_apply, LinearMap.toSpanSingleton_apply,
+  simp only [hax,
     LinearEquiv.map_smulₛₗ, Algebra.id.smul_eq_mul]
   simp only [← mul_smul]
   congr 1

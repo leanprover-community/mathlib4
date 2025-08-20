@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Topology.Compactness.Paracompact
 import Mathlib.Topology.ShrinkingLemma
@@ -206,7 +205,7 @@ theorem sum_finsupport' (hx₀ : x₀ ∈ s) {I : Finset ι} (hI : ρ.finsupport
   simp only [Finset.mem_sdiff, ρ.mem_finsupport, mem_support, Classical.not_not] at hx
   exact hx.2
 
-theorem sum_finsupport_smul_eq_finsum {M : Type*} [AddCommGroup M] [Module ℝ M] (φ : ι → X → M) :
+theorem sum_finsupport_smul_eq_finsum {M : Type*} [AddCommMonoid M] [Module ℝ M] (φ : ι → X → M) :
     ∑ i ∈ ρ.finsupport x₀, ρ i x₀ • φ i x₀ = ∑ᶠ i, ρ i x₀ • φ i x₀ := by
   apply (finsum_eq_sum_of_support_subset _ _).symm
   have : (fun i ↦ (ρ i) x₀ • φ i x₀) = (fun i ↦ (ρ i) x₀) • (fun i ↦ φ i x₀) :=
@@ -278,7 +277,7 @@ def IsSubordinate (U : ι → Set X) : Prop :=
 
 variable {f}
 
-theorem exists_finset_nhd' {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X) :
+theorem exists_finset_nhds' {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X) :
     ∃ I : Finset ι, (∀ᶠ x in 𝓝[s] x₀, ∑ i ∈ I, ρ i x = 1) ∧
       ∀ᶠ x in 𝓝 x₀, support (ρ · x) ⊆ I := by
   rcases ρ.locallyFinite.exists_finset_support x₀ with ⟨I, hI⟩
@@ -286,16 +285,23 @@ theorem exists_finset_nhd' {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X)
   have : ∑ᶠ i : ι, ρ i x = ∑ i ∈ I, ρ i x := finsum_eq_sum_of_support_subset _ hx
   rwa [eq_comm, ρ.sum_eq_one x_in] at this
 
-theorem exists_finset_nhd (ρ : PartitionOfUnity ι X univ) (x₀ : X) :
+@[deprecated (since := "2025-05-22")] alias exists_finset_nhd' := exists_finset_nhds'
+
+theorem exists_finset_nhds (ρ : PartitionOfUnity ι X univ) (x₀ : X) :
     ∃ I : Finset ι, ∀ᶠ x in 𝓝 x₀, ∑ i ∈ I, ρ i x = 1 ∧ support (ρ · x) ⊆ I := by
-  rcases ρ.exists_finset_nhd' x₀ with ⟨I, H⟩
+  rcases ρ.exists_finset_nhds' x₀ with ⟨I, H⟩
   use I
   rwa [nhdsWithin_univ, ← eventually_and] at H
 
-theorem exists_finset_nhd_support_subset {U : ι → Set X} (hso : f.IsSubordinate U)
+@[deprecated (since := "2025-05-22")] alias exists_finset_nhd := exists_finset_nhds
+
+theorem exists_finset_nhds_support_subset {U : ι → Set X} (hso : f.IsSubordinate U)
     (ho : ∀ i, IsOpen (U i)) (x : X) :
     ∃ is : Finset ι, ∃ n ∈ 𝓝 x, n ⊆ ⋂ i ∈ is, U i ∧ ∀ z ∈ n, (support (f · z)) ⊆ is :=
-  f.locallyFinite.exists_finset_nhd_support_subset hso ho x
+  f.locallyFinite.exists_finset_nhds_support_subset hso ho x
+
+@[deprecated (since := "2025-05-22")]
+alias exists_finset_nhd_support_subset := exists_finset_nhds_support_subset
 
 /-- If `f` is a partition of unity that is subordinate to a family of open sets `U i` and
 `g : ι → X → E` is a family of functions such that each `g i` is continuous on `U i`, then the sum

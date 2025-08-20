@@ -32,7 +32,9 @@ theorem restrict_def (s : Set α) : s.restrict (π := π) = fun f x ↦ f x := r
 theorem restrict_eq (f : α → β) (s : Set α) : s.restrict f = f ∘ Subtype.val :=
   rfl
 
-@[simp]
+@[simp] lemma restrict_id (s : Set α) : restrict s id = Subtype.val := rfl
+
+@[simp, grind =]
 theorem restrict_apply (f : (a : α) → π a) (s : Set α) (x : s) : s.restrict f x = f x :=
   rfl
 

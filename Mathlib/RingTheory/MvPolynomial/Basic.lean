@@ -38,7 +38,7 @@ Generalise to noncommutative (semi)rings
 
 noncomputable section
 
-open Set LinearMap Submodule
+open Set LinearMap Module Submodule
 
 universe u v
 
@@ -54,7 +54,7 @@ instance {σ : Type*} {R : Type*} [CommSemiring R]
 section CharP
 
 instance [CharP R p] : CharP (MvPolynomial σ R) p where
-  cast_eq_zero_iff' n := by rw [← C_eq_coe_nat, ← C_0, C_inj, CharP.cast_eq_zero_iff R p]
+  cast_eq_zero_iff n := by rw [← C_eq_coe_nat, ← C_0, C_inj, CharP.cast_eq_zero_iff R p]
 
 end CharP
 

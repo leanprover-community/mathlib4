@@ -35,7 +35,7 @@ We also construct the canonical epimorphism `K.πTruncGE e : K ⟶ K.truncGE e`.
 
 ## TODO
 * show that `K.πTruncGE e : K ⟶ K.truncGE e` induces an isomorphism
-in homology in degrees in the image of `e.f`.
+  in homology in degrees in the image of `e.f`.
 
 -/
 
@@ -167,7 +167,6 @@ noncomputable def truncGE'Map : K.truncGE' e ⟶ L.truncGE' e where
     else
       (K.truncGE'XIso e rfl hi).hom ≫ φ.f (e.f i) ≫ (L.truncGE'XIso e rfl hi).inv
   comm' i j hij := by
-    dsimp
     rw [dif_neg (e.not_boundaryGE_next hij)]
     by_cases hi : e.BoundaryGE i
     · rw [dif_pos hi]

@@ -85,11 +85,15 @@ private def printIdCore (id : Name) : ConstantInfo → CoreM MessageData
 def diffExtension (old new : Environment)
     (ext : PersistentEnvExtension EnvExtensionEntry EnvExtensionEntry EnvExtensionState) :
     CoreM (Option MessageData) := unsafe do
-  let oldSt := ext.toEnvExtension.getState old
-  let newSt := ext.toEnvExtension.getState new
+  let mut asyncMode := ext.toEnvExtension.asyncMode
+  if asyncMode matches .async .. then
+    -- allow for diffing async extensions by bumping mode to sync
+    asyncMode := .sync
+  let oldSt := ext.toEnvExtension.getState (asyncMode := asyncMode) old
+  let newSt := ext.toEnvExtension.getState (asyncMode := asyncMode) new
   if ptrAddrUnsafe oldSt == ptrAddrUnsafe newSt then return none
-  let oldEntries := ext.exportEntriesFn oldSt.state
-  let newEntries := ext.exportEntriesFn newSt.state
+  let oldEntries := ext.exportEntriesFn (← getEnv) oldSt.state .private
+  let newEntries := ext.exportEntriesFn (← getEnv) newSt.state .private
   pure m!"-- {ext.name} extension: {(newEntries.size - oldEntries.size : Int)} new entries"
 
 def whatsNew (old new : Environment) : CoreM MessageData := do

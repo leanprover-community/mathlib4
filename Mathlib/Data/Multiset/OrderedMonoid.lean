@@ -9,7 +9,7 @@ import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 /-!
 # Multisets as ordered monoids
 
-The `OrderedCancelAddCommMonoid` and `CanonicallyOrderedAdd` instances on `Multiset α`
+The `IsOrderedCancelAddMonoid` and `CanonicallyOrderedAdd` instances on `Multiset α`
 
 -/
 
@@ -19,7 +19,7 @@ namespace Multiset
 
 open List
 
-instance : OrderedCancelAddCommMonoid (Multiset α) where
+instance : IsOrderedCancelAddMonoid (Multiset α) where
   add_le_add_left := fun _ _ => add_le_add_left
   le_of_add_le_add_left := fun _ _ _ => le_of_add_le_add_left
 

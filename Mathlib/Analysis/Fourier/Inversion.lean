@@ -110,7 +110,7 @@ lemma tendsto_integral_gaussian_smul' (hf : Integrable f) {v : V} (h'f : Continu
       atTop (𝓝 (f v)) := by
     apply tendsto_integral_comp_smul_smul_of_integrable'
     · exact fun x ↦ by positivity
-    · rw [integral_mul_left, GaussianFourier.integral_rexp_neg_mul_sq_norm (by positivity)]
+    · rw [integral_const_mul, GaussianFourier.integral_rexp_neg_mul_sq_norm (by positivity)]
       nth_rewrite 2 [← pow_one π]
       rw [← rpow_natCast, ← rpow_natCast, ← rpow_sub pi_pos, ← rpow_mul pi_nonneg,
         ← rpow_add pi_pos]
@@ -133,7 +133,7 @@ lemma tendsto_integral_gaussian_smul' (hf : Integrable f) {v : V} (h'f : Continu
   have B : Tendsto
       (fun (c : ℝ) ↦ ∫ w : V, ((c^(1/2 : ℝ)) ^ finrank ℝ V * φ ((c^(1/2 : ℝ)) • (v - w))) • f w)
       atTop (𝓝 (f v)) :=
-    A.comp (tendsto_rpow_atTop (by norm_num))
+    A.comp (tendsto_rpow_atTop (by simp))
   apply B.congr'
   filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)
   congr with w
