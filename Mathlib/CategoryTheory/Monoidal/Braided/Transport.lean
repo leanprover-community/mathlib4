@@ -26,15 +26,15 @@ open Functor.LaxMonoidal Functor.OplaxMonoidal
 
 instance Transported.instBraidedCategory (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     BraidedCategory (Transported e) :=
-  braidedCategoryOfFullyFaithful (equivalenceTransported e).inverse
+  BraidedCategory.ofFullyFaithful (equivalenceTransported e).inverse
 
 local notation "e'" e => equivalenceTransported e
 
 instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     (e' e).inverse.Braided where
   braided X Y := by
-    simp [Transported.instBraidedCategory, braidedCategoryOfFullyFaithful,
-      braidedCategoryOfFaithful]
+    simp [Transported.instBraidedCategory, BraidedCategory.ofFullyFaithful,
+      BraidedCategory.ofFaithful]
 
 /--
 This is a def because once we have that both `(e' e).inverse` and `(e' e).functor` are

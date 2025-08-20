@@ -532,9 +532,9 @@ def symmetricCategoryOfFaithful {C D : Type*} [Category C] [Category D] [Monoida
 noncomputable def symmetricCategoryOfFullyFaithful {C D : Type*} [Category C] [Category D]
     [MonoidalCategory C] [MonoidalCategory D] (F : C ⥤ D) [F.Monoidal] [F.Full]
     [F.Faithful] [SymmetricCategory D] : SymmetricCategory C :=
-  let h : BraidedCategory C := braidedCategoryOfFullyFaithful F
+  let h : BraidedCategory C := BraidedCategory.ofFullyFaithful F
   let _ : F.Braided := {
-    braided X Y := by simp [h, braidedCategoryOfFullyFaithful, braidedCategoryOfFaithful] }
+    braided X Y := by simp [h, BraidedCategory.ofFullyFaithful, BraidedCategory.ofFaithful] }
   symmetricCategoryOfFaithful F
 
 namespace Functor.Braided
