@@ -21,7 +21,7 @@ It has been separated out to not burden `Mathlib/Data/Set/Card.lean` with extra 
 - `exists_union_disjoint_cardinal_eq_iff` is the same, except using cardinal notation.
 -/
 
-variable {α β ι : Type*}
+variable {α ι : Type*}
 
 open scoped Finset
 
