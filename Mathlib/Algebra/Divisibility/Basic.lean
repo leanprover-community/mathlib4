@@ -83,9 +83,9 @@ theorem dvd_mul_right (a b : α) : a ∣ a * b :=
 
 /-- An element `a` in a semigroup is primal if whenever `a` is a divisor of `b * c`, it can be
 factored as the product of a divisor of `b` and a divisor of `c`. -/
-@[to_additive "An element `a` in an additive semigroup is primal if whenever `a` is an additive
+@[to_additive /-- An element `a` in an additive semigroup is primal if whenever `a` is an additive
 divisor of `b + c` (meaning `a + d = b + c` for some `d`), it can be written as the sum of an
-additive divisor of `b` and an additive divisor of `c`."]
+additive divisor of `b` and an additive divisor of `c`. -/]
 def IsPrimal (a : α) : Prop := ∀ ⦃b c⦄, a ∣ b * c → ∃ a₁ a₂, a₁ ∣ b ∧ a₂ ∣ c ∧ a = a₁ * a₂
 
 /-- An additive monoid is a decomposition monoid if every element is primal. -/
