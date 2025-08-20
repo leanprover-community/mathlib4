@@ -45,7 +45,6 @@ namespace LinearMap
 
 section NormedField
 
-variable {𝕜 E F : Type*}
 variable [NormedField 𝕜] [NormedSpace ℝ 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 variable [Module 𝕜 E] [Module 𝕜 F]
 
