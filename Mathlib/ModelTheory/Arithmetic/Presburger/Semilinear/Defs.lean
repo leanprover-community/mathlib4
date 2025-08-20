@@ -74,7 +74,7 @@ theorem Linear.add (hs₁ : s₁.Linear) (hs₂ : s₂.Linear) : (s₁ + s₂).L
   rw [vadd_add_vadd, ← coe_sup, ← closure_union, ← Finset.coe_union]
   exact ⟨a + b, t₁ ∪ t₂, rfl⟩
 
-theorem Linear.image (hs : s.Linear) (f : α →+ β) : (f '' s).Linear := by
+theorem Linear.image (hs : s.Linear) (f : F) : (f '' s).Linear := by
   classical
   rcases hs with ⟨a, t, rfl⟩
   refine ⟨f a, t.image f, ?_⟩
@@ -99,7 +99,7 @@ theorem Semilinear.closure_finset (s : Finset α) : (closure (s : Set α) : Set 
 theorem Semilinear.of_addSubmonoid_fg {P : AddSubmonoid α} (hP : P.FG) : (P : Set α).Semilinear :=
   (Linear.of_addSubmonoid_fg hP).semilinear
 
-theorem Semilinear.univ [AddMonoid.FG α] : (Set.univ : Set α).Semilinear :=
+theorem Semilinear.univ [AddMonoid.FG α] : (univ : Set α).Semilinear :=
   Linear.univ.semilinear
 
 /-- Semilinear sets are closed under union. -/
@@ -156,24 +156,22 @@ theorem Semilinear.add (hs₁ : s₁.Semilinear) (hs₂ : s₂.Semilinear) :
   simp_rw [sUnion_add, add_sUnion, Finset.mem_coe]
   exact biUnion fun s₁ hs₁ => biUnion fun s₂ hs₂ => ((hS₁ s₁ hs₁).add (hS₂ s₂ hs₂)).semilinear
 
-theorem Semilinear.image (hs : s.Semilinear) (f : α →+ β) : (f '' s).Semilinear := by
+theorem Semilinear.image (hs : s.Semilinear) (f : F) : (f '' s).Semilinear := by
   rcases hs with ⟨S, hS, rfl⟩
   simp_rw [sUnion_eq_biUnion, Finset.mem_coe, image_iUnion]
   exact biUnion fun s hs => ((hS s hs).image f).semilinear
 
-theorem Semilinear.image' (hs : s.Semilinear) (f : α →ₗ[ℕ] β) : (f '' s).Semilinear :=
-  hs.image f.toAddMonoidHom
-
-theorem Semilinear.image_iff' (f : α ≃ₗ[ℕ] β) : (f '' s).Semilinear ↔ s.Semilinear := by
+theorem Semilinear.image_iff {F : Type*} [EquivLike F α β] [AddEquivClass F α β] (f : F) :
+    (f '' s).Semilinear ↔ s.Semilinear := by
   constructor <;> intro h
-  · convert h.image' f.symm.toLinearMap
+  · convert h.image (f : α ≃+ β).symm
     simp [image_image]
-  · exact h.image' f.toLinearMap
+  · exact h.image f
 
 /-- Semilinear sets are closed under projection. -/
 theorem Semilinear.proj {s : Set (ι ⊕ κ → α)} (hs : s.Semilinear) :
-    {x | ∃ y, Sum.elim x y ∈ s}.Semilinear := by
-  convert hs.image' (LinearMap.funLeft ℕ α Sum.inl)
+    { x | ∃ y, Sum.elim x y ∈ s }.Semilinear := by
+  convert hs.image (LinearMap.funLeft ℕ α Sum.inl)
   ext x
   constructor
   · intro ⟨y, hy⟩
@@ -184,7 +182,7 @@ theorem Semilinear.proj {s : Set (ι ⊕ κ → α)} (hs : s.Semilinear) :
 
 /-- An variant of `Semilinear.proj` for backward reasoning. -/
 theorem Semilinear.proj' {p : (ι → α) → (κ → α) → Prop} :
-    {x | p (x ∘ Sum.inl) (x ∘ Sum.inr)}.Semilinear → {x | ∃ y, p x y}.Semilinear :=
+    { x | p (x ∘ Sum.inl) (x ∘ Sum.inr) }.Semilinear → { x | ∃ y, p x y }.Semilinear :=
   proj
 
 lemma Linear.closure (hs : s.Linear) : (closure s : Set α).Semilinear := by
@@ -196,7 +194,7 @@ lemma Linear.closure (hs : s.Linear) : (closure s : Set α).Semilinear := by
     mem_insert_iff, mem_vadd_set, vadd_eq_add]
   constructor
   · intro hx
-    induction hx using AddSubmonoid.closure_induction with
+    induction hx using closure_induction with
     | mem x hx =>
       rcases hx with ⟨x, hx, rfl⟩
       exact Or.inr ⟨x, closure_mono (subset_insert _ _) hx, rfl⟩
@@ -226,7 +224,7 @@ theorem Semilinear.closure (hs : s.Semilinear) : (closure s : Set α).Semilinear
   | empty => simpa using singleton 0
   | insert s S _ ih =>
     simp_rw [Finset.mem_insert, forall_eq_or_imp] at hS
-    simpa [AddSubmonoid.closure_union, AddSubmonoid.coe_sup] using hS.1.closure.add (ih hS.2)
+    simpa [closure_union, coe_sup] using hS.1.closure.add (ih hS.2)
 
 /-- A linear set is proper if its submonoid generators (periods) are linear independent. -/
 def ProperLinear (s : Set α) :=
