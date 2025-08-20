@@ -180,8 +180,7 @@ private theorem disjoint_filter_pairs_lt_filter_pairs_eq (k : ℕ) :
 private theorem disjUnion_filter_pairs_eq_pairs (k : ℕ) :
     disjUnion {t ∈ pairs σ k | #t.1 < k} {t ∈ pairs σ k | #t.1 = k}
       (disjoint_filter_pairs_lt_filter_pairs_eq σ k) = pairs σ k := by
-  simp only [Finset.ext_iff]
-  grind [Finset.disjUnion_eq_union, MvPolynomial.NewtonIdentities.pairs]
+  grind [MvPolynomial.NewtonIdentities.pairs]
 
 end DecidableEq
 

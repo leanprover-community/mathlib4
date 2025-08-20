@@ -706,7 +706,6 @@ theorem exists_eventually_eq_hasDerivAt
   refine ⟨closedBall x₀ r ×ˢ Ioo (t₀ - ε) (t₀ + ε), ?_, ?_⟩
   · rw [Filter.prod_mem_prod_iff]
     exact ⟨closedBall_mem_nhds x₀ hr, Ioo_mem_nhds (by linarith) (by linarith)⟩
-  · intro ⟨x, t⟩ ⟨hx, ht⟩
-    grind
+  · grind
 
 end ContDiffAt
