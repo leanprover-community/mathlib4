@@ -52,11 +52,11 @@ def IsTuranMaximal (r : ℕ) : Prop := G.IsExtremal (CliqueFree · (r + 1))
 
 section Defs
 
-variable {H : SimpleGraph V}
+variable {H : SimpleGraph V} [DecidableRel H.Adj]
 
 lemma IsTuranMaximal.le_iff_eq (hG : G.IsTuranMaximal r) (hH : H.CliqueFree (r + 1)) :
-    G ≤ H ↔ G = H := by
-  classical exact ⟨fun hGH ↦ edgeFinset_inj.1 <| eq_of_subset_of_card_le
+    G ≤ H ↔ G = H :=
+  ⟨fun hGH ↦ edgeFinset_inj.1 <| eq_of_subset_of_card_le
     (edgeFinset_subset_edgeFinset.2 hGH) (hG.2 hH), le_of_eq⟩
 
 /-- The canonical `r + 1`-cliquefree Turán graph on `n` vertices. -/
