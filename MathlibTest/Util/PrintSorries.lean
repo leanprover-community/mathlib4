@@ -1,18 +1,72 @@
 import Mathlib.Util.PrintSorries
 
-/--
-error: unsolved goals
-this : True
-⊢ True
--/
-#guard_msgs in
-theorem foo : True := by
-  have : True :=
-  sorry
+theorem thm1 : 1 = 2 := by sorry
 
 /--
-info: foo has sorry
-foo has sorry (from error)
+info: thm1 has sorry
 -/
 #guard_msgs in
-#print sorries foo
+#print sorries thm1
+
+theorem thm2 : 1 = 2 := thm1
+
+/--
+info: thm1 has sorry
+-/
+#guard_msgs in
+#print sorries thm2
+
+/--
+info: thm1 has sorry
+-/
+#guard_msgs in
+#print sorries
+
+def f (n : Nat) : Nat := sorry
+theorem thm3 : f 1 = f 2 := rfl -- (!) This is since it's a fixed `sorry : Nat`
+
+/--
+info: f has sorry
+-/
+#guard_msgs in
+#print sorries thm3
+
+
+def f' : Nat → Nat := sorry
+/--
+error: Not a definitional equality: the left-hand side
+  f' 1
+is not definitionally equal to the right-hand side
+  f' 2
+---
+error: Type mismatch
+  rfl
+has type
+  ?m.7 = ?m.7
+but is expected to have type
+  f' 1 = f' 2
+-/
+#guard_msgs in
+theorem thm3' : f' 1 = f' 2 := rfl -- fails as expected, it's an unknown `sorry : Nat → Nat`
+theorem thm : True := by
+  let f : Nat → Nat := sorry
+  have : f 1 = f 2 := sorry
+  unfold f at this
+  change id _ at this
+  trivial
+
+-- Would print 4 sorries if there weren't `seenSorriesRef`.
+/--
+info: thm has sorry
+thm has sorry
+-/
+#guard_msgs in
+#print sorries thm
+
+theorem thm' : True := sorryAx _ false
+
+/--
+info: thm' has sorryAx
+-/
+#guard_msgs in
+#print sorries thm'

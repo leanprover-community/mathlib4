@@ -37,20 +37,27 @@ This is a version of `Lean.CollectAxioms.collect` that keeps track of enough inf
 each use of `sorry`. -/
 partial def collect (c : Name) : StateT State MetaM Unit := do
   let collectExpr (e : Expr) : StateT State MetaM Unit := do
-    Lean.Expr.forEach' e fun e => do
+    let seenSorriesRef : IO.Ref (Std.HashSet Expr) ← IO.mkRef {}
+    e.forEach' fun e => do
       if let some _ := isLabeledSorry? e then
         let e' := e.getBoundedAppFn (e.getAppNumArgs - 3)
-        let mut msg := m!"{.ofConstName c} has {e'}"
-        if e'.isSyntheticSorry then
-          msg := msg ++ " (from error)"
-        modify fun s => { s with sorryMsgs := s.sorryMsgs.push msg }
+        let seenSorries ← seenSorriesRef.get
+        if !seenSorries.contains e' then
+          seenSorriesRef.set (seenSorries.insert e')
+          let mut msg := m!"{.ofConstName c} has {e'}"
+          if e'.isSyntheticSorry then
+            msg := msg ++ " (from error)"
+          modify fun s => { s with sorryMsgs := s.sorryMsgs.push msg }
         return false
       else if e.isSorry then
         let e' := e.getBoundedAppFn (e.getAppNumArgs - 2)
-        let mut msg := m!"{.ofConstName c} has sorryAx" -- no point in allowing hover
-        if e'.isSyntheticSorry then
-          msg := msg ++ " (from error)"
-        modify fun s => { s with sorryMsgs := s.sorryMsgs.push msg }
+        let seenSorries ← seenSorriesRef.get
+        if !seenSorries.contains e' then
+          seenSorriesRef.set (seenSorries.insert e')
+          let mut msg := m!"{.ofConstName c} has sorryAx" -- no point in allowing hover
+          if e'.isSyntheticSorry then
+            msg := msg ++ " (from error)"
+          modify fun s => { s with sorryMsgs := s.sorryMsgs.push msg }
         return false
       else if let some name := e.constName? then
         collect name
