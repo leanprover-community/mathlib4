@@ -16,7 +16,7 @@ respectively.
 We prove that every `Left(Right)PreLieRing L` is a `Right(Left)PreLieRing L` with
 the opposite `mul`. The equivalence is simple given by `op : L ≃* Lᵐᵒᵖ`.
 
-Everything holds for the algebra versions where `L` is also an `R-Module` over a commutative ring
+Everything holds for the algebra versions where `L` is also an `R`-Module over a commutative ring
 `R`.
 
 ## Main definitions
@@ -33,9 +33,6 @@ Everything holds for the algebra versions where `L` is also an `R-Module` over a
 There are left and right versions of the structures, equivalent via `ᵐᵒᵖ`.
 Perhaps one could be favored but there is no real reason to.
 
-## Tags
-pre-lie algebras
-
 ## References
 [F. Chapoton, M. Livernet, *Pre-Lie algebras and the rooted trees operad*][chapoton_livernet_2001]
 [D. Manchon, *A short survey on pre-Lie algebras*][manchon_2011]
@@ -46,13 +43,13 @@ pre-lie algebras
 /-- `LeftPreLieRing`s are `NonUnitalNonAssocRing`s such that the `associator` is symmetric in the
 first two variables. -/
 @[ext]
-class LeftPreLieRing (L : Type*) : Type _ extends NonUnitalNonAssocRing L where
+class LeftPreLieRing (L : Type*) extends NonUnitalNonAssocRing L where
   assoc_symm' (x y z : L) : associator x y z = associator y x z
 
 /-- `RightPreLieRing`s are `NonUnitalNonAssocRing`s such that the `associator` is symmetric in the
 last two variables. -/
 @[ext]
-class RightPreLieRing (L : Type*) : Type _ extends NonUnitalNonAssocRing L where
+class RightPreLieRing (L : Type*) extends NonUnitalNonAssocRing L where
   assoc_symm' (x y z : L) : associator x y z = associator x z y
 
 section algebras
