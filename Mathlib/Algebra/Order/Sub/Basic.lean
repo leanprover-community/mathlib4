@@ -182,10 +182,7 @@ theorem tsub_add_eq_max : a - b + b = max a b := by
 
 theorem add_tsub_eq_max : a + (b - a) = max a b := by rw [add_comm, max_comm, tsub_add_eq_max]
 
-theorem tsub_min : a - min a b = a - b := by
-  rcases le_total a b with h | h
-  · rw [min_eq_left h, tsub_self, tsub_eq_zero_of_le h]
-  · rw [min_eq_right h]
+theorem tsub_min : a - min a b = a - b := (tsub_eq_tsub_min a b).symm
 
 theorem tsub_add_min : a - b + min a b = a := by
   rw [← tsub_min, @tsub_add_cancel_of_le]
