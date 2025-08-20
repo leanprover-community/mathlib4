@@ -267,6 +267,22 @@ lemma mulArchimedean_mrange_of_isCompact_integer (hc : IsCompact (X := K) 𝒪[K
   obtain ⟨_⟩ := locallyFiniteOrder_units_mrange_of_isCompact_integer hc
   exact MulArchimedean.of_locallyFiniteOrder
 
+-- MOVE
+instance {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀] [DenselyOrdered G₀] :
+    DenselyOrdered G₀ˣ := by
+  refine ⟨fun x y h ↦ ?_⟩
+  obtain ⟨z, hz⟩ := exists_between (Units.val_lt_val.mpr h)
+  rcases (zero_le' (a := z)).eq_or_lt with rfl | hz'
+  · simp at hz
+  refine ⟨Units.mk0 z hz'.ne', ?_⟩
+  simp [← Units.val_lt_val, hz]
+
+-- MOVE
+instance {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀] [DenselyOrdered G₀] :
+    Nontrivial G₀ˣ := by
+  obtain ⟨x, hx, hx'⟩ := exists_between (zero_lt_one' G₀)
+  refine ⟨Units.mk0 x hx.ne', 1, by simpa [Units.ext_iff] using hx'.ne⟩
+
 lemma isPrincipalIdealRing_of_compactSpace [hc : CompactSpace 𝒪[K]] :
     IsPrincipalIdealRing 𝒪[K] := by
   -- The strategy to show that we have a PIR is by contradiction,
@@ -279,16 +295,10 @@ lemma isPrincipalIdealRing_of_compactSpace [hc : CompactSpace 𝒪[K]] :
   have hm := mulArchimedean_mrange_of_isCompact_integer hc
   -- The key result is that a valuation ring that maps into a `MulArchimedean` value group
   -- is a PIR iff the value group is not densely ordered.
-  rw [hi.isPrincipalIdealRing_iff_not_denselyOrdered]
-  intro H
+  refine hi.isPrincipalIdealRing_iff_not_denselyOrdered.mpr fun _ ↦ ?_
   -- since we are densely ordered, we necessarily are nontrivial
-  replace H : DenselyOrdered (MonoidHom.mrange (v : Valuation K Γ₀)) := H
-  obtain ⟨x, hx, hx'⟩ := exists_between (α := (MonoidHom.mrange (v : Valuation K Γ₀))) zero_lt_one
-  lift x to (MonoidHom.mrange (v : Valuation K Γ₀))ˣ using IsUnit.mk0 _ hx.ne'
-  rw [← Units.val_one, Units.val_lt_val] at hx'
-  have : Nontrivial (MonoidHom.mrange (Valued.v : Valuation K Γ₀))ˣ := ⟨_, _, hx'.ne'⟩
-  rw [← denselyOrdered_units_iff] at H
-  exact not_lt_of_denselyOrdered_of_locallyFinite _ _ hx'
+  exact not_subsingleton (MonoidHom.mrange (v : Valuation K Γ₀))ˣ
+    (LocallyFiniteOrder.denselyOrdered_iff_subsingleton.mp inferInstance)
 
 -- MOVE
 theorem _root_.Valuation.isNontrivial_iff_exists_lt_one {K Γ : Type*} [Field K]
@@ -307,11 +317,11 @@ theorem _root_.Valuation.isNontrivial_iff_not_a_field {K Γ : Type*} [Field K]
   fun ⟨x, hx1, hx0⟩ ↦ ⟨x, by simp [*]⟩⟩
 
 lemma isDiscreteValuationRing_of_compactSpace [hn : (Valued.v : Valuation K Γ₀).IsNontrivial]
-    [CompactSpace 𝒪[K]] : IsDiscreteValuationRing 𝒪[K] :=
+    [CompactSpace 𝒪[K]] : IsDiscreteValuationRing 𝒪[K] where
   -- To prove we have a DVR, we need to show it is
   -- a local ring (instance is directly inferred) and a PIR and not a field.
-  have : IsPrincipalIdealRing 𝒪[K] := isPrincipalIdealRing_of_compactSpace
-  { not_a_field' := v.isNontrivial_iff_not_a_field.mp hn }
+  __ := isPrincipalIdealRing_of_compactSpace
+  not_a_field' := v.isNontrivial_iff_not_a_field.mp hn
 
 end CompactDVR
 
