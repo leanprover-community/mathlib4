@@ -591,6 +591,9 @@ theorem singleton_repr (x i) : (OrthonormalBasis.singleton ι 𝕜).repr x i = x
 theorem coe_singleton : ⇑(OrthonormalBasis.singleton ι 𝕜) = 1 := by
   ext; simp
 
+theorem toBasis_singleton : (OrthonormalBasis.singleton ι 𝕜).toBasis = Basis.singleton ι 𝕜 := by
+  ext; simp
+
 end Singleton
 
 /-- `Pi.orthonormalBasis (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i))` is the
