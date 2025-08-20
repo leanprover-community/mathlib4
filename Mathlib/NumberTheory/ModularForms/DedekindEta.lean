@@ -35,7 +35,7 @@ open scoped Interval Real NNReal ENNReal Topology BigOperators Nat
 
 local notation "𝕢" => Periodic.qParam
 
-local notation "ℍₒ" => complexUpperHalfPlane
+local notation "ℍₒ" => upperHalfPlaneSet
 
 /-- The q term inside the product defining the eta function. It is defined as
 `eta_q n z = e ^ (2 π i (n + 1) z)`. -/
@@ -73,7 +73,7 @@ theorem Summable_eta_q (z : ℍ) : Summable fun n ↦ ‖-eta_q n z‖ := by
 
 lemma hasProdLocallyUniformlyOn_eta : HasProdLocallyUniformlyOn (fun n a ↦ 1 - eta_q n a) ηₚ ℍₒ:= by
   simp_rw [sub_eq_add_neg]
-  apply hasProdLocallyUniformlyOn_of_forall_compact complexUpperHalPlane_isOpen
+  apply hasProdLocallyUniformlyOn_of_forall_compact upperHalfPlaneSet_isOpen
   intro K hK hcK
   by_cases hN : K.Nonempty
   · have hc : ContinuousOn (fun x ↦ ‖cexp (2 * π * Complex.I * x)‖) K := by fun_prop
@@ -160,8 +160,8 @@ lemma multipliableLocallyUniformlyOn_one_sub_eta_q :
 
 theorem etaProdTerm_DifferentiableAt (z : ℍ) : DifferentiableAt ℂ ηₚ z := by
   have hD := hasProdLocallyUniformlyOn_eta.tendstoLocallyUniformlyOn_finsetRange.differentiableOn ?_
-    complexUpperHalPlane_isOpen
-  · exact (hD z z.2).differentiableAt (complexUpperHalPlane_isOpen.mem_nhds z.2)
+    upperHalfPlaneSet_isOpen
+  · exact (hD z z.2).differentiableAt (upperHalfPlaneSet_isOpen.mem_nhds z.2)
   · filter_upwards with b y
     apply (DifferentiableOn.finset_prod (u := Finset.range b) (f := fun i x ↦ 1 - eta_q i x)
       (by fun_prop)).congr
@@ -174,7 +174,7 @@ lemma eta_logDeriv (z : ℍ) : logDeriv ModularForm.eta z = (π * Complex.I / 12
   unfold ModularForm.eta etaProdTerm
   rw [logDeriv_mul (UpperHalfPlane.coe z) (by simp [ne_eq, exp_ne_zero, not_false_eq_true,
     Periodic.qParam]) (etaProdTerm_ne_zero z) (by fun_prop) (etaProdTerm_DifferentiableAt z)]
-  have HG := logDeriv_tprod_eq_tsum (complexUpperHalPlane_isOpen) (x := z)
+  have HG := logDeriv_tprod_eq_tsum (upperHalfPlaneSet_isOpen) (x := z)
     (f := fun n x => 1 - eta_q n x) (fun i ↦ one_add_eta_q_ne_zero i z)
     (by simp_rw [eta_q_eq_pow]; fun_prop) (summable_log_deriv_one_sub_eta_q z)
     (multipliableLocallyUniformlyOn_one_sub_eta_q) (etaProdTerm_ne_zero z)
