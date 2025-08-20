@@ -1,0 +1,147 @@
+name: Maintainer merge (workflow_run)
+
+# triggers the action when
+on:
+  workflow_run:
+    workflows: ["Maintainer merge"]
+    types:
+      - completed
+
+jobs:
+  ping_zulip:
+    name: Ping maintainers on Zulip
+    runs-on: ubuntu-latest
+    if: ${{ github.repository == 'leanprover-community/mathlib4' && github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Download artifact
+        id: download-artifact
+        uses: dawidd6/action-download-artifact@ac66b43f0e6a346234dd65d4d0c8fbb31cb316e5 # v11
+        with:
+          workflow: maintainer_merge.yml
+          name: workflow-data
+          path: ./artifacts
+          if_no_artifact_found: ignore
+          # Use the workflow run that triggered this workflow
+          run_id: ${{ github.event.workflow_run.id }}
+
+      - if: ${{ steps.download-artifact.outputs.found_artifact == 'true' }}
+        name: Extract data from JSON artifact
+        id: extract-data
+        run: |
+          # Read the JSON artifact file and extract data
+          if [ -f "./artifacts/artifact-data.json" ]; then
+            echo "JSON artifact found, extracting data..."
+            echo "Full JSON artifact content:"
+            cat ./artifacts/artifact-data.json
+
+            # Extract specific values using jq
+            author=$(jq -r '.author' ./artifacts/artifact-data.json)
+            pr_author=$(jq -r '.pr_author' ./artifacts/artifact-data.json)
+            pr_number=$(jq -r '.pr_number' ./artifacts/artifact-data.json)
+            comment=$(jq -r '.comment' ./artifacts/artifact-data.json)
+            pr_title=$(jq -r '.pr_title' ./artifacts/artifact-data.json)
+            pr_url=$(jq -r '.pr_url' ./artifacts/artifact-data.json)
+            event_name=$(jq -r '.event_name' ./artifacts/artifact-data.json)
+            m_or_d=$(jq -r '.m_or_d' ./artifacts/artifact-data.json)
+
+            # Set as step outputs for use in later steps
+            {
+              echo "author=$author"
+              echo "pr_author=$pr_author"
+              echo "pr_number=$pr_number"
+
+              echo "comment<<EOF"
+              echo "$comment"
+              echo "EOF"
+
+              echo "pr_title<<EOF"
+              echo "$pr_title"
+              echo "EOF"
+
+              echo "pr_url=$pr_url"
+              echo "event_name=$event_name"
+              echo "mOrD=$m_or_d"
+            } | tee -a "$GITHUB_OUTPUT"
+          else
+            echo "JSON artifact file not found!"
+            exit 1
+          fi
+
+      - if: ${{ ! steps.extract-data.outputs.mOrD == '' }}
+        name: Check whether user is part of mathlib-reviewers team
+        uses: tspascoal/get-user-teams-membership@57e9f42acd78f4d0f496b3be4368fc5f62696662 # v3.0.0
+        id: actorTeams
+        with:
+          organization: leanprover-community # optional. Default value ${{ github.repository_owner }}
+                  # Organization to get membership from.
+          team: 'mathlib-reviewers'
+          username: ${{ steps.extract-data.outputs.author }}
+          GITHUB_TOKEN: ${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }} # (Requires scope: `read:org`)
+
+      - name: Checkout
+        if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: master
+          sparse-checkout: |
+            scripts/get_tlabel.py
+            scripts/maintainer_merge_message.py
+
+      - name: Determine Zulip topic
+        if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
+        id: determine_topic
+        run: |
+          ./scripts/get_tlabel.sh "/repos/leanprover-community/mathlib4/issues/${PR_NUMBER}" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          PR_NUMBER: ${{ steps.extract-data.outputs.pr_number }}
+
+      - name: Form the message
+        if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
+        id: form_the_message
+        run: |
+          message="$(
+            ./scripts/maintainer_merge_message.sh "${AUTHOR}" "${{ steps.extract-data.outputs.mOrD }}" "${EVENT_NAME}" "${PR_NUMBER}" "${PR_URL}" "${PR_TITLE}" "${COMMENT}" "${PR_AUTHOR}"
+          )"
+          printf 'title<<EOF\n%s\nEOF' "${message}" | tee "$GITHUB_OUTPUT"
+        env:
+          AUTHOR: ${{ steps.extract-data.outputs.author }}
+          EVENT_NAME: ${{ steps.extract-data.outputs.event_name }}
+          PR_NUMBER: ${{ steps.extract-data.outputs.pr_number }}
+          PR_URL: ${{ steps.extract-data.outputs.pr_url }}
+          PR_TITLE: ${{ steps.extract-data.outputs.pr_title }}
+          COMMENT: ${{ steps.extract-data.outputs.comment }}
+          PR_AUTHOR: ${{ steps.extract-data.outputs.pr_author }}
+
+      - name: Send message on Zulip
+        if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
+        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'mathlib reviewers'
+          type: 'stream'
+          topic: ${{ steps.determine_topic.outputs.topic }}
+          content: ${{ steps.form_the_message.outputs.title }}
+
+      - name: Add comment to PR
+        if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
+        uses: GrantBirki/comment@608e41b19bc973020ec0e189ebfdae935d7fe0cc # v2.1.1
+        with:
+          # if a comment triggers the action, then `issue.number` is set
+          # if a review or review comment triggers the action, then `pull_request.number` is set
+          issue-number: ${{ steps.extract-data.outputs.pr_number }}
+          body: |
+            🚀 Pull request has been placed on the maintainer queue by ${{ steps.extract-data.outputs.author }}.
+
+      - name: Add label to PR
+        if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          # labels added by GITHUB_TOKEN won't trigger the Zulip emoji workflow
+          github-token: ${{secrets.TRIAGE_TOKEN}}
+          script: |
+            const { owner, repo } = context.repo;
+            const issue_number = ${{ steps.extract-data.outputs.pr_number }};
+            await github.rest.issues.addLabels({ owner, repo, issue_number, labels: ['maintainer-merge'] });

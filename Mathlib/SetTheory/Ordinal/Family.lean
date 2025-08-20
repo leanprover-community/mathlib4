@@ -3,7 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Cardinal.UnivLE
 import Mathlib.SetTheory.Ordinal.Arithmetic
 
 /-!
@@ -218,9 +217,6 @@ protected theorem lt_iSup_iff {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [S
     a < iSup f ↔ ∃ i, a < f i :=
   lt_ciSup_iff' (bddAbove_of_small _)
 
-@[deprecated "No deprecation message was provided." (since := "2024-11-12")]
-alias lt_iSup := lt_iSup_iff
-
 -- FIXME There is undeprecated material below still depending on this?!
 @[deprecated "No deprecation message was provided." (since := "2024-08-27")]
 theorem ne_iSup_iff_lt_iSup {ι : Type u} {f : ι → Ordinal.{max u v}} :
@@ -297,7 +293,7 @@ theorem iSup_succ (o : Ordinal) : ⨆ a : Iio o, succ a.1 = o := by
   · exact fun a ha ↦ (lt_succ a).trans_le <| Ordinal.le_iSup (fun x : Iio _ ↦ _) ⟨a, ha⟩
 
 -- TODO: generalize to conditionally complete lattices
-theorem iSup_sum {α β} (f : α ⊕ β → Ordinal.{u}) [Small.{u} α] [Small.{u} β]:
+theorem iSup_sum {α β} (f : α ⊕ β → Ordinal.{u}) [Small.{u} α] [Small.{u} β] :
     iSup f = max (⨆ a, f (Sum.inl a)) (⨆ b, f (Sum.inr b)) := by
   apply (Ordinal.iSup_le _).antisymm (max_le _ _)
   · rintro (i | i)
@@ -332,15 +328,8 @@ theorem unbounded_range_of_le_iSup {α β : Type u} (r : α → α → Prop) [Is
 
 theorem IsNormal.map_iSup_of_bddAbove {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
     {ι : Type*} (g : ι → Ordinal.{u}) (hg : BddAbove (range g))
-    [Nonempty ι] : f (⨆ i, g i) = ⨆ i, f (g i) := eq_of_forall_ge_iff fun a ↦ by
-  have := bddAbove_iff_small.mp hg
-  have := univLE_of_injective H.strictMono.injective
-  have := Small.trans_univLE.{u, v} (range g)
-  have hfg : BddAbove (range (f ∘ g)) := bddAbove_iff_small.mpr <| by
-    rw [range_comp]
-    exact small_image f (range g)
-  change _ ↔ ⨆ i, (f ∘ g) i ≤ a
-  rw [ciSup_le_iff hfg, H.le_set' _ Set.univ_nonempty g] <;> simp [ciSup_le_iff hg]
+    [Nonempty ι] : f (⨆ i, g i) = ⨆ i, f (g i) :=
+  Order.IsNormal.map_iSup H hg
 
 theorem IsNormal.map_iSup {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
     {ι : Type w} (g : ι → Ordinal.{u}) [Small.{u} ι] [Nonempty ι] :
@@ -364,10 +353,13 @@ theorem IsNormal.sup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNormal
     (g : ι → Ordinal.{max u v}) [Nonempty ι] : f (sup.{_, v} g) = sup.{_, w} (f ∘ g) :=
   H.map_iSup g
 
-theorem IsNormal.apply_of_isLimit {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f) {o : Ordinal}
-    (ho : IsLimit o) : f o = ⨆ a : Iio o, f a := by
-  have : Nonempty (Iio o) := ⟨0, ho.pos⟩
+theorem IsNormal.apply_of_isSuccLimit {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f) {o : Ordinal}
+    (ho : IsSuccLimit o) : f o = ⨆ a : Iio o, f a := by
+  have : Nonempty (Iio o) := ⟨0, ho.bot_lt⟩
   rw [← H.map_iSup, ho.iSup_Iio]
+
+@[deprecated (since := "2025-07-08")]
+alias IsNormal.apply_of_isLimit := IsNormal.apply_of_isSuccLimit
 
 theorem sSup_ord {s : Set Cardinal.{u}} (hs : BddAbove s) : (sSup s).ord = sSup (ord '' s) :=
   eq_of_forall_ge_iff fun a => by
@@ -627,7 +619,7 @@ theorem sup_succ_le_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
 set_option linter.deprecated false in
 theorem sup_succ_eq_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
     succ (sup.{_, v} f) = lsub.{_, v} f ↔ ∃ i, f i = sup.{_, v} f :=
-  (lsub_le_sup_succ f).le_iff_eq.symm.trans (sup_succ_le_lsub f)
+  (lsub_le_sup_succ f).ge_iff_eq'.symm.trans (sup_succ_le_lsub f)
 
 set_option linter.deprecated false in
 theorem sup_eq_lsub_iff_succ {ι : Type u} (f : ι → Ordinal.{max u v}) :
@@ -681,7 +673,7 @@ theorem lsub_unique {ι} [Unique ι] (f : ι → Ordinal) : lsub f = succ (f def
 set_option linter.deprecated false in
 theorem lsub_le_of_range_subset {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f ⊆ Set.range g) : lsub.{u, max v w} f ≤ lsub.{v, max u w} g :=
-  sup_le_of_range_subset.{u, v, w} (by convert Set.image_subset succ h <;> apply Set.range_comp)
+  sup_le_of_range_subset.{u, v, w} (by convert Set.image_mono h <;> apply Set.range_comp)
 
 theorem lsub_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f = Set.range g) : lsub.{u, max v w} f = lsub.{v, max u w} g :=
@@ -828,7 +820,7 @@ theorem bsup_succ_le_blsub {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) 
 
 theorem bsup_succ_eq_blsub {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
     succ (bsup.{_, v} o f) = blsub.{_, v} o f ↔ ∃ i hi, f i hi = bsup.{_, v} o f :=
-  (blsub_le_bsup_succ f).le_iff_eq.symm.trans (bsup_succ_le_blsub f)
+  (blsub_le_bsup_succ f).ge_iff_eq'.symm.trans (bsup_succ_le_blsub f)
 
 theorem bsup_eq_blsub_iff_succ {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
     bsup.{_, v} o f = blsub.{_, v} o f ↔ ∀ a < blsub.{_, v} o f, succ a < blsub.{_, v} o f := by
@@ -841,7 +833,7 @@ theorem bsup_eq_blsub_iff_lt_bsup {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max
     rw [h]
     apply lt_blsub, fun h => le_antisymm (bsup_le_blsub f) (blsub_le h)⟩
 
-theorem bsup_eq_blsub_of_lt_succ_limit {o : Ordinal.{u}} (ho : IsLimit o)
+theorem bsup_eq_blsub_of_lt_succ_limit {o : Ordinal.{u}} (ho : IsSuccLimit o)
     {f : ∀ a < o, Ordinal.{max u v}} (hf : ∀ a ha, f a ha < f (succ a) (ho.succ_lt ha)) :
     bsup.{_, v} o f = blsub.{_, v} o f := by
   rw [bsup_eq_blsub_iff_lt_bsup]
@@ -919,24 +911,25 @@ theorem blsub_comp {o o' : Ordinal.{max u v}} {f : ∀ a < o, Ordinal.{max u v w
     (fun {_ _} _ _ h => succ_le_succ_iff.2 (hf _ _ h)) g hg
 
 theorem IsNormal.bsup_eq {f : Ordinal.{u} → Ordinal.{max u v}} (H : IsNormal f) {o : Ordinal.{u}}
-    (h : IsLimit o) : (Ordinal.bsup.{_, v} o fun x _ => f x) = f o := by
+    (h : IsSuccLimit o) : (Ordinal.bsup.{_, v} o fun x _ => f x) = f o := by
   rw [← IsNormal.bsup.{u, u, v} H (fun x _ => x) h.ne_bot, bsup_id_limit fun _ ↦ h.succ_lt]
 
 theorem IsNormal.blsub_eq {f : Ordinal.{u} → Ordinal.{max u v}} (H : IsNormal f) {o : Ordinal.{u}}
-    (h : IsLimit o) : (blsub.{_, v} o fun x _ => f x) = f o := by
+    (h : IsSuccLimit o) : (blsub.{_, v} o fun x _ => f x) = f o := by
   rw [← IsNormal.bsup_eq.{u, v} H h, bsup_eq_blsub_of_lt_succ_limit h]
-  exact fun a _ => H.1 a
+  exact fun a _ => H.strictMono (lt_succ a)
 
 theorem isNormal_iff_lt_succ_and_bsup_eq {f : Ordinal.{u} → Ordinal.{max u v}} :
-    IsNormal f ↔ (∀ a, f a < f (succ a)) ∧ ∀ o, IsLimit o → (bsup.{_, v} o fun x _ => f x) = f o :=
-  ⟨fun h => ⟨h.1, @IsNormal.bsup_eq f h⟩, fun ⟨h₁, h₂⟩ =>
-    ⟨h₁, fun o ho a => by
-      rw [← h₂ o ho]
-      exact bsup_le_iff⟩⟩
+    IsNormal f ↔ (∀ a, f a < f (succ a)) ∧
+      ∀ o, IsSuccLimit o → (bsup.{_, v} o fun x _ => f x) = f o :=
+  ⟨fun h => ⟨fun a ↦ h.strictMono (lt_succ a), @IsNormal.bsup_eq f h⟩, fun ⟨h₁, h₂⟩ =>
+    .of_succ_lt h₁ fun ho ↦ by
+      rw [← h₂ _ ho]
+      simpa [IsLUB, upperBounds, lowerBounds, IsLeast, bsup_le_iff] using le_bsup _⟩
 
 theorem isNormal_iff_lt_succ_and_blsub_eq {f : Ordinal.{u} → Ordinal.{max u v}} :
     IsNormal f ↔ (∀ a, f a < f (succ a)) ∧
-      ∀ o, IsLimit o → (blsub.{_, v} o fun x _ => f x) = f o := by
+      ∀ o, IsSuccLimit o → (blsub.{_, v} o fun x _ => f x) = f o := by
   rw [isNormal_iff_lt_succ_and_bsup_eq.{u, v}, and_congr_right_iff]
   intro h
   constructor <;> intro H o ho <;> have := H o ho <;>
@@ -944,16 +937,7 @@ theorem isNormal_iff_lt_succ_and_blsub_eq {f : Ordinal.{u} → Ordinal.{max u v}
 
 theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : IsNormal f)
     (hg : IsNormal g) : f = g ↔ f 0 = g 0 ∧ ∀ a, f a = g a → f (succ a) = g (succ a) :=
-  ⟨fun h => by simp [h], fun ⟨h₁, h₂⟩ =>
-    funext fun a => by
-      induction a using limitRecOn with
-      | zero => solve_by_elim
-      | succ => solve_by_elim
-      | isLimit _ ho H =>
-        rw [← IsNormal.bsup_eq.{u, u} hf ho, ← IsNormal.bsup_eq.{u, u} hg ho]
-        congr
-        ext b hb
-        exact H b hb⟩
+  Order.IsNormal.ext hf hg
 
 end blsub
 
@@ -991,13 +975,6 @@ theorem Ordinal.not_bddAbove_compl_of_small (s : Set Ordinal.{u}) [hs : Small.{u
   exact not_small_ordinal this
 
 namespace Ordinal
-
-/-! ### Properties of ω -/
-
-theorem lt_add_of_limit {a b c : Ordinal.{u}} (h : IsLimit c) :
-    a < b + c ↔ ∃ c' < c, a < b + c' := by
-  -- Porting note: `bex_def` is required.
-  rw [← IsNormal.bsup_eq.{u, u} (isNormal_add_right b) h, lt_bsup, bex_def]
 
 /-! ### Casting naturals into ordinals, compatibility with operations -/
 

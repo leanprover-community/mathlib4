@@ -316,13 +316,11 @@ theorem SameCycle.exists_pow_eq [DecidableEq α] [Fintype α] (f : Perm α) (h :
   by_cases hx : x ∈ f.support
   · obtain ⟨k, hk, hk'⟩ := h.exists_pow_eq_of_mem_support hx
     rcases k with - | k
-    · refine ⟨#(f.cycleOf x).support, ?_, self_le_add_right _ _, ?_⟩
-      · refine zero_lt_one.trans (one_lt_card_support_of_ne_one ?_)
-        simpa using hx
-      · simp only [pow_zero, coe_one, id_eq] at hk'
-        subst hk'
-        rw [← (isCycle_cycleOf _ <| mem_support.1 hx).orderOf, ← cycleOf_pow_apply_self,
-          pow_orderOf_eq_one, one_apply]
+    · refine ⟨#(f.cycleOf x).support, hk, self_le_add_right _ _, ?_⟩
+      simp only [pow_zero, coe_one, id_eq] at hk'
+      subst hk'
+      rw [← (isCycle_cycleOf _ <| mem_support.1 hx).orderOf, ← cycleOf_pow_apply_self,
+        pow_orderOf_eq_one, one_apply]
     · exact ⟨k + 1, by simp, Nat.le_succ_of_le hk.le, hk'⟩
   · refine ⟨1, zero_lt_one, by simp, ?_⟩
     obtain ⟨k, rfl⟩ := h
@@ -339,7 +337,7 @@ theorem zpow_eq_zpow_on_iff [DecidableEq α] [Fintype α]
   rw [← cycleOf_zpow_apply_self g x, cycle_zpow_mem_support_iff]
   · rw [← Int.dvd_iff_emod_eq_zero]
   · exact isCycle_cycleOf g hx
-  · simp only [mem_support, cycleOf_apply_self]; exact hx
+  · simp only [cycleOf_apply_self]; exact hx
 
 end CycleOf
 

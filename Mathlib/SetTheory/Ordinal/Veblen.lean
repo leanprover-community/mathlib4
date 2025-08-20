@@ -166,13 +166,13 @@ theorem left_le_veblenWith (hp : 0 < f 0) (o a : Ordinal) : o ≤ veblenWith f o
 theorem IsNormal.veblenWith_zero (hp : 0 < f 0) : IsNormal (veblenWith f · 0) := by
   rw [isNormal_iff_strictMono_limit]
   refine ⟨veblenWith_zero_strictMono hf hp, fun o ho a IH ↦ ?_⟩
-  rw [veblenWith_of_ne_zero f ho.pos.ne', derivFamily_zero]
+  rw [veblenWith_of_ne_zero f ho.ne_bot, derivFamily_zero]
   apply nfpFamily_le fun l ↦ ?_
   suffices ∃ b < o, List.foldr _ 0 l ≤ veblenWith f b 0 by
     obtain ⟨b, hb, hb'⟩ := this
     exact hb'.trans (IH b hb)
   induction l with
-  | nil => use 0; simp [ho.pos]
+  | nil => use 0; simpa using ho.bot_lt
   | cons a l IH =>
     obtain ⟨b, hb, hb'⟩ := IH
     refine ⟨_, ho.succ_lt (max_lt a.2 hb), ((veblenWith_right_strictMono hf _).monotone <|
@@ -183,7 +183,7 @@ theorem IsNormal.veblenWith_zero (hp : 0 < f 0) : IsNormal (veblenWith f · 0) :
     exact le_max_left _ b
 
 theorem cmp_veblenWith :
-  cmp (veblenWith f o₁ a) (veblenWith f o₂ b) =
+    cmp (veblenWith f o₁ a) (veblenWith f o₂ b) =
     match cmp o₁ o₂ with
     | .eq => cmp a b
     | .lt => cmp a (veblenWith f o₂ b)
@@ -192,7 +192,7 @@ theorem cmp_veblenWith :
   on_goal 2 => simp [(veblenWith_right_strictMono hf _).cmp_map_eq]
   all_goals
     conv_lhs => rw [← veblenWith_veblenWith_of_lt hf h]
-    simp [h.cmp_eq_lt, h.cmp_eq_gt, h.ne, h.ne', (veblenWith_right_strictMono hf _).cmp_map_eq]
+    simp [h.cmp_eq_lt, h.cmp_eq_gt, (veblenWith_right_strictMono hf _).cmp_map_eq]
 
 /-- `veblenWith f o₁ a < veblenWith f o₂ b` iff one of the following holds:
 * `o₁ = o₂` and `a < b`
@@ -308,7 +308,7 @@ theorem isNormal_veblen_zero : IsNormal (veblen · 0) :=
   (isNormal_opow one_lt_omega0).veblenWith_zero (by simp)
 
 theorem cmp_veblen : cmp (veblen o₁ a) (veblen o₂ b) =
-  match cmp o₁ o₂ with
+    match cmp o₁ o₂ with
     | .eq => cmp a b
     | .lt => cmp a (veblen o₂ b)
     | .gt => cmp (veblen o₁ a) b :=

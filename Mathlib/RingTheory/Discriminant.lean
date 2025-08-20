@@ -232,9 +232,9 @@ theorem discr_powerBasis_eq_norm [Algebra.IsSeparable K L] :
     (fun σ hσ ↦ ⟨e.symm (PowerBasis.lift pb σ.2 ?_), e.symm σ.1⟩) ?_ ?_ ?_ ?_ (fun i _ ↦ by simp)
   -- Porting note: `@mem_compl` was not necessary.
     <;> simp only [mem_sigma, mem_univ, Finset.mem_mk, hnodup.mem_erase_iff, IsRoot.def,
-      mem_roots', minpoly.ne_zero (Algebra.IsSeparable.isIntegral K pb.gen), not_false_eq_true,
+      mem_roots',
       mem_singleton, true_and, @mem_compl _ _ _ (_), Sigma.forall, Equiv.apply_symm_apply,
-      PowerBasis.lift_gen, and_imp, implies_true, forall_const, Equiv.symm_apply_apply,
+      PowerBasis.lift_gen, implies_true, Equiv.symm_apply_apply,
       Sigma.ext_iff, Equiv.symm_apply_eq, heq_eq_eq, and_true] at *
   · simpa only [aeval_def, eval₂_eq_eval_map] using hσ.2.2
   · exact fun a b hba ↦ ⟨fun h ↦ hba <| e.injective <| pb.algHom_ext h.symm, hroots _⟩
@@ -288,7 +288,7 @@ theorem discr_mul_isIntegral_mem_adjoin [Algebra.IsSeparable K L] [IsIntegrallyC
   refine
     Subalgebra.sum_mem _ fun σ _ => Subalgebra.zsmul_mem _ (Subalgebra.prod_mem _ fun j _ => ?_) _
   by_cases hji : j = i
-  · simp only [updateCol_apply, hji, eq_self_iff_true, PowerBasis.coe_basis]
+  · simp only [updateCol_apply, hji, PowerBasis.coe_basis]
     exact mem_bot.2 (IsIntegrallyClosed.isIntegral_iff.1 <| isIntegral_trace (hz.mul <| hint.pow _))
   · simp only [updateCol_apply, hji, PowerBasis.coe_basis]
     exact mem_bot.2
