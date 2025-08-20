@@ -37,10 +37,10 @@ instance : InnerProductSpace 𝕜 Hᵐᵒᵖ where
 theorem _root_.Module.Basis.mulOpposite_is_orthonormal_iff {ι : Type*} (b : Module.Basis ι 𝕜 H) :
     Orthonormal 𝕜 b.mulOpposite ↔ Orthonormal 𝕜 b := Iff.rfl
 
-/-- The mulOpposite of an orthonormal basis. -/
+/-- The multiplicative opposite of an orthonormal basis `b`, i.e., `b i ↦ op (b i)`. -/
 noncomputable def _root_.OrthonormalBasis.mulOpposite {ι : Type*}
     [Fintype ι] (b : OrthonormalBasis ι 𝕜 H) :
-    OrthonormalBasis ι 𝕜 Hᵐᵒᵖ := Module.Basis.toOrthonormalBasis b.toBasis.mulOpposite b.orthonormal
+    OrthonormalBasis ι 𝕜 Hᵐᵒᵖ := b.toBasis.mulOpposite.toOrthonormalBasis b.orthonormal
 
 theorem isometry_opLinearEquiv {R M : Type*} [Semiring R] [SeminormedAddCommGroup M] [Module R M] :
     Isometry (opLinearEquiv R (M:=M)) := fun _ _ => rfl
