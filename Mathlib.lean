@@ -4815,6 +4815,7 @@ import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleNumber
 import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleWith
 import Mathlib.NumberTheory.Transcendental.Liouville.Measure
 import Mathlib.NumberTheory.Transcendental.Liouville.Residual
+import Mathlib.NumberTheory.TsumDivsorsAntidiagonal
 import Mathlib.NumberTheory.VonMangoldt
 import Mathlib.NumberTheory.WellApproximable
 import Mathlib.NumberTheory.Wilson
@@ -4823,7 +4824,6 @@ import Mathlib.NumberTheory.Zsqrtd.Basic
 import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
 import Mathlib.NumberTheory.Zsqrtd.ToReal
-import Mathlib.NumberTheory.tsumDivsorsAntidiagonal
 import Mathlib.Order.Antichain
 import Mathlib.Order.Antisymmetrization
 import Mathlib.Order.Atoms
