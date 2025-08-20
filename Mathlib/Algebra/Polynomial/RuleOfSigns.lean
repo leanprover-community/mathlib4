@@ -7,7 +7,7 @@ import Mathlib.Algebra.Polynomial.CoeffList
 import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Data.List.Destutter
-import Mathlib.Data.Sign
+import Mathlib.Data.Sign.Basic
 
 /-!
 
@@ -65,11 +65,11 @@ theorem signvar_eraseLead (h : SignType.sign P.leadingCoeff = SignType.sign P.ne
   SignVariations P = SignVariations P.eraseLead := by
   by_cases hpz : (P = 0)
   · simp_all
-  · have h₂ : nextCoeff P ≠ 0 := (by simp_all [·])
+  · have h₂ : nextCoeff P ≠ 0 := by intro; simp_all
     obtain ⟨_, hl⟩ := coeffList_eq_cons_leadingCoeff (mt nextCoeff_eq_zero_of_eraseLead_eq_zero h₂)
     dsimp [SignVariations]
     rw [coeffList_eraseLead hpz, hl, leadingCoeff_eraseLead_eq_nextCoeff h₂]
-    simp_all [h, List.destutter]
+    simp [h, h₂, List.destutter]
 
 /-- If we drop the leading coefficient, the sign changes drop by 0 or 1 depending on whether
 the first two nonzero coeffients match. -/
@@ -82,8 +82,8 @@ theorem signvar_eq_eraseLead_add_ite {P : Polynomial R} (h : P ≠ 0) :
   obtain hc := coeffList_eraseLead hpz
   dsimp [SignVariations]
   rw [hc, List.map_cons, List.map_append, List.map_replicate, List.filter, decide_eq_true hsl]
-  simp only [SignVariations, decide_not, lt_self_iff_false, sign_zero, List.filter_append,
-    List.filter_replicate, decide_true, Bool.not_true, ite_false, List.nil_append]
+  simp only [decide_not, sign_zero, List.filter_append, List.filter_replicate, decide_true,
+    Bool.not_true]
   cases hcep : P.eraseLead.coeffList
   case neg.nil =>
     simp [coeffList_eq_nil.mp hcep, h]
@@ -167,9 +167,9 @@ theorem signvar_neg : SignVariations (-P) = SignVariations P := by
     apply List.map_destutter
     simp only [neg_inj, implies_true]
   rw [← h_neg_destutter, List.length_map]
-  congr
-  funext x
-  simp [SignType.sign, apply_ite (@Neg.neg SignType _), apply_ite (· = (0 : SignType))]
+  congr 4
+  funext
+  simp [SignType.sign]
 
 end OrderedRing
 
@@ -281,7 +281,7 @@ private lemma exists_cons_of_leadingCoeff_pos (η) (h₁ : 0 < leadingCoeff P) (
     have h₇ : ((X - C η) * P.eraseLead).eraseLead =
         (X - C η) * P.eraseLead - monomial P.natDegree P.nextCoeff := by
       simp [← self_sub_monomial_natDegree_leadingCoeff (_ * _), natDegree_mul,
-        hM, h₅₁, h₅₂, h₂, h₄, add_comm 1]
+        h₅₁, h₅₂, h₂, h₄, add_comm 1]
     have _ := calc P.eraseLead.natDegree + 2
       _ = ((X - C η) * P.eraseLead).coeffList.length := by
         simp [h₅₁, h₅₂, natDegree_mul, add_comm 1]
@@ -387,7 +387,7 @@ theorem succ_sign_lin_mul (hη : 0 < η) (hq : P ≠ 0) :
   -- can assume it starts positive, otherwise negate P
   wlog hqpos : 0 < leadingCoeff P generalizing P with H
   · have h : leadingCoeff P < 0 :=
-      lt_of_le_of_ne (le_of_not_lt hqpos) (mt leadingCoeff_eq_zero.mp hq)
+      lt_of_le_of_ne (le_of_not_gt hqpos) (mt leadingCoeff_eq_zero.mp hq)
     simpa using H (P := -P) (by simpa) (by simpa) (by simpa)
   --the new polynomial isn't zero
   have hm : (X - C η) * P ≠ 0 :=
@@ -405,7 +405,7 @@ theorem succ_sign_lin_mul (hη : 0 < η) (hq : P ≠ 0) :
       rw [coeff_X_sub_C_mul, sub_eq_self, h, mul_zero]
     dsimp [SignVariations, coeffList]
     rw [withBotSucc_degree_eq_natDegree_add_one hq, withBotSucc_degree_eq_natDegree_add_one hm]
-    simp [hdQ, hcQ, hxcQ, hη, hcQ, hd, List.range_succ]
+    simp [hdQ, hxcQ, hη, hcQ, hd, List.range_succ]
 
   --positive degree
   set sq0 := SignType.sign P.leadingCoeff with hsq0
@@ -530,8 +530,7 @@ theorem roots_countP_pos_le_SignVariations : P.roots.countP (0 < ·) ≤ SignVar
         simp at hp
       -- Q has one less positive root than P
       have q_roots_m1 : num_roots_m1 = Q.roots.countP (0 < ·) := by
-        simp [← h, roots_mul (ne_zero_of_mem_roots η_root), η_pos,
-          ← Nat.succ.injEq, ← Multiset.cons_zero, Multiset.countP_cons, Nat.one_add]
+        simp [← h, roots_mul (ne_zero_of_mem_roots η_root), η_pos, ← Nat.succ.injEq]
       -- P has at least num_roots sign variations
       calc
       _ ≤ SignVariations Q + 1 :=
