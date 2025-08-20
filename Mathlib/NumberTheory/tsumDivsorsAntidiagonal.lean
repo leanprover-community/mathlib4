@@ -19,6 +19,10 @@ import Mathlib.Topology.Separation.CompletelyRegular
 This file contains lemmas about the antidiagonal of the divisors function. It defines the map from
 `Nat.divisorsAntidiagonal n` to `ℕ+ × ℕ+` given by sending `n = a * b` to `(a, b)`.
 
+We then prove some identities about the infinite sums over this antidiagonal, such as
+`∑' n : ℕ+, n * r ^ (n : ℕ) / (1 - r ^ (n : ℕ)) = ∑' n : ℕ+, σ 1 n * r ^ (n : ℕ)` which are used for
+Eisenstein series and their q-expansions.
+
 -/
 
 /-- The map from `Nat.divisorsAntidiagonal n` to `ℕ+ × ℕ+` given by sending `n = a * b`
@@ -63,10 +67,8 @@ open Filter Complex ArithmeticFunction Nat Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-lemma natCast_norm [NormSMulClass ℤ 𝕜]
-    (a : ℕ) : ‖(a : 𝕜)‖ = a := by
-  have h0 := norm_natCast_eq_mul_norm_one 𝕜 a
-  simpa using h0
+lemma natCast_norm [NormSMulClass ℤ 𝕜] (a : ℕ) : ‖(a : 𝕜)‖ = a := by
+  simpa using norm_natCast_eq_mul_norm_one 𝕜 a
 
 lemma summable_norm_pow_mul_geometric_div_one_sub [CompleteSpace 𝕜] (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     Summable fun n : ℕ ↦ n ^ k * r ^ n / (1 - r ^ n) := by
@@ -119,7 +121,7 @@ theorem summable_prod_mul_pow (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
 
 theorem tsum_prod_pow_eq_tsum_sigma (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     ∑' d : ℕ+, ∑' (c : ℕ+), c ^ k * (r ^ (d * c : ℕ)) = ∑' e : ℕ+, σ k e * r ^ (e : ℕ) := by
-  suffices ∑' (c : ℕ+ × ℕ+), (c.1 ^ k : 𝕜) * (r ^ ((c.2 : ℕ) * (c.1 : ℕ))) =
+  suffices ∑' (c : ℕ+ × ℕ+), (c.1 ^ k : 𝕜) * (r ^ (c.2 * c.1 : ℕ)) =
     ∑' e : ℕ+, σ k e * r ^ (e : ℕ) by
     rw [Summable.tsum_prod (by apply summable_prod_mul_pow k hr), Summable.tsum_comm] at this
     · simpa using this
