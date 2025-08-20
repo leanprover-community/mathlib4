@@ -42,7 +42,7 @@ lemma ringKrullDim_le_spanFinrank_maximalIdeal [IsLocalRing R] [IsNoetherianRing
 
 namespace IsRegularLocalRing
 
-lemma of_exist_span [IsLocalRing R] [IsNoetherianRing R] (S : Set R) (fin : S.Finite)
+lemma of_span_eq [IsLocalRing R] [IsNoetherianRing R] (S : Set R) (fin : S.Finite)
     (span : Ideal.span S = maximalIdeal R) (card : S.ncard ≤ ringKrullDim R) :
     IsRegularLocalRing R := by
   apply (isRegularLocalRing_def _).mpr (le_antisymm _ (ringKrullDim_le_spanFinrank_maximalIdeal R))
@@ -56,7 +56,7 @@ lemma of_ringEquiv [IsRegularLocalRing R] {R' : Type*} [CommRing R']
   let _ := e.isLocalRing
   let _ := isNoetherianRing_of_ringEquiv R e
   have fg : (maximalIdeal R).FG := (isNoetherianRing_iff_ideal_fg R).mp inferInstance _
-  apply of_exist_span R' (e '' (maximalIdeal R).generators)
+  apply of_span_eq R' (e '' (maximalIdeal R).generators)
     ((Submodule.FG.finite_generators fg).image _)
   · simp only [← Ideal.map_span]
     rw [← Ideal.submodule_span_eq, Submodule.span_generators (maximalIdeal R), ← Ideal.comap_symm]
