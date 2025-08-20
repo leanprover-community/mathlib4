@@ -94,7 +94,7 @@ partial def evalNatPowMod (a b m : Q(ℕ)) : (c : Q(ℕ)) × Q(Nat.mod (Nat.pow 
   else
     have c₀ : Q(ℕ) := mkRawNatLit (a.natLit! % m.natLit!)
     haveI : $c₀ =Q Nat.mod $a $m := ⟨⟩
-    let ⟨c, p⟩ := go b.natLit!.log2 a m (mkRawNatLit 1) c₀ b _ .rfl
+    let ⟨c, p⟩ := go b.natLit!.log2 a m q(nat_lit 1) c₀ b _ .rfl
     ⟨c, q(($p).run)⟩
 where
   /-- Invariants: `a ^ b₀ % m = c₀`, `depth > 0`, `b >>> depth = b₀` -/
