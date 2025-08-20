@@ -169,11 +169,11 @@ section PartialFDeriv
 
 /-- Differentiable implies also that the first partial derivative exists. -/
 theorem HasFDerivWithinAt.partial_fst
-  {f : E₁ × E₂ → F} {f' : E₁ × E₂ → E₁ × E₂ →L[𝕜] F}
-  {s₁ : Set E₁} {s₂ : Set E₂}
-  {x : E₁ × E₂} (hx : x ∈ s₁ ×ˢ s₂)
-  (hf : HasFDerivWithinAt f (f' x) (s₁ ×ˢ s₂) x) :
-    HasFDerivWithinAt (f ∘ (·, x.2)) (f' x ∘L .inl ..) s₁ x.1 := by
+    {f : E₁ × E₂ → F} {f' : E₁ × E₂ → E₁ × E₂ →L[𝕜] F}
+    {s₁ : Set E₁} {s₂ : Set E₂}
+    {x : E₁ × E₂} (hx : x ∈ s₁ ×ˢ s₂)
+    (hf : HasFDerivWithinAt f (f' x) (s₁ ×ˢ s₂) x) :
+      HasFDerivWithinAt (f ∘ (·, x.2)) (f' x ∘L .inl ..) s₁ x.1 := by
   have hleft (u:E₁) := HasFDerivWithinAt.prodMk
     (hasFDerivWithinAt_id (𝕜 := 𝕜) u s₁)
     (hasFDerivWithinAt_const x.2 u s₁)
@@ -182,11 +182,11 @@ theorem HasFDerivWithinAt.partial_fst
 
 /-- Differentiable implies also that the second partial derivative exists. -/
 theorem HasFDerivWithinAt.partial_snd
-  {f : E₁ × E₂ → F} {f' : E₁ × E₂ → E₁ × E₂ →L[𝕜] F}
-  {s₁ : Set E₁} {s₂ : Set E₂}
-  {x : E₁ × E₂} (hx : x ∈ s₁ ×ˢ s₂)
-  (hf : HasFDerivWithinAt f (f' x) (s₁ ×ˢ s₂) x) :
-    HasFDerivWithinAt (f ∘ (x.1, ·)) (f' x ∘L .inr ..) s₂ x.2 := by
+    {f : E₁ × E₂ → F} {f' : E₁ × E₂ → E₁ × E₂ →L[𝕜] F}
+    {s₁ : Set E₁} {s₂ : Set E₂}
+    {x : E₁ × E₂} (hx : x ∈ s₁ ×ˢ s₂)
+    (hf : HasFDerivWithinAt f (f' x) (s₁ ×ˢ s₂) x) :
+      HasFDerivWithinAt (f ∘ (x.1, ·)) (f' x ∘L .inr ..) s₂ x.2 := by
   have hright (v:E₂) := HasFDerivWithinAt.prodMk
     (hasFDerivWithinAt_const x.1 v s₂)
     (hasFDerivWithinAt_id (𝕜 := 𝕜) v s₂)
@@ -201,14 +201,14 @@ See `hasFDerivWithinAt_of_partial_fst_continuousWithinAt_prod_open` for the orde
 swapped.
 -/
 theorem hasFDerivWithinAt_of_partial_snd_continuousWithinAt_prod_open
-  [IsRCLikeNormedField 𝕜] [NormedSpace ℝ E₂]
-  {f : E₁ × E₂ → F} {s₁ : Set E₁} {s₂ : Set E₂} {x : E₁ × E₂}
-  (hx : x ∈ s₁ ×ˢ s₂) (hs₂ : IsOpen s₂)
-  {f₁x : E₁ →L[𝕜] F} {f₂ : E₁ × E₂ → E₂ →L[𝕜] F}
-  (hf₂_cont : ContinuousWithinAt f₂ (s₁ ×ˢ s₂) x)
-  (hf₁x : HasFDerivWithinAt (f ∘ (·, x.2)) f₁x s₁ x.1)
-  (hf₂ : ∀ y ∈ s₁ ×ˢ s₂, HasFDerivAt (f ∘ (y.1, ·)) (f₂ y) y.2) :
-    HasFDerivWithinAt f (f₁x.coprod (f₂ x)) (s₁ ×ˢ s₂) x := by
+    [IsRCLikeNormedField 𝕜] [NormedSpace ℝ E₂]
+    {f : E₁ × E₂ → F} {s₁ : Set E₁} {s₂ : Set E₂} {x : E₁ × E₂}
+    (hx : x ∈ s₁ ×ˢ s₂) (hs₂ : IsOpen s₂)
+    {f₁x : E₁ →L[𝕜] F} {f₂ : E₁ × E₂ → E₂ →L[𝕜] F}
+    (hf₂_cont : ContinuousWithinAt f₂ (s₁ ×ˢ s₂) x)
+    (hf₁x : HasFDerivWithinAt (f ∘ (·, x.2)) f₁x s₁ x.1)
+    (hf₂ : ∀ y ∈ s₁ ×ˢ s₂, HasFDerivAt (f ∘ (y.1, ·)) (f₂ y) y.2) :
+      HasFDerivWithinAt f (f₁x.coprod (f₂ x)) (s₁ ×ˢ s₂) x := by
   replace hx : _ ∧ _ := ⟨mem_prod.mp hx, hx⟩
   simp only at hx
   -- rewrite derivatives as limits using norms
@@ -352,14 +352,14 @@ See `hasFDerivWithinAt_of_partial_snd_continuousWithinAt_prod_open` for the orde
 swapped.
 -/
 theorem hasFDerivWithinAt_of_partial_fst_continuousWithinAt_prod_open
-  [IsRCLikeNormedField 𝕜] [NormedSpace ℝ E₁]
-  {f : E₁ × E₂ → F} {s₁ : Set E₁} {s₂ : Set E₂} {x : E₁ × E₂}
-  (hx : x ∈ s₁ ×ˢ s₂) (hs₁ : IsOpen s₁)
-  {f₁ : E₁ × E₂ → E₁ →L[𝕜] F} {f₂x : E₂ →L[𝕜] F}
-  (hf₁_cont : ContinuousWithinAt f₁ (s₁ ×ˢ s₂) x)
-  (hf₁ : ∀ y ∈ s₁ ×ˢ s₂, HasFDerivAt (f ∘ (·, y.2)) (f₁ y) y.1)
-  (hf₂x : HasFDerivWithinAt (f ∘ (x.1, ·)) f₂x s₂ x.2) :
-    HasFDerivWithinAt f ((f₁ x).coprod f₂x) (s₁ ×ˢ s₂) x := by
+    [IsRCLikeNormedField 𝕜] [NormedSpace ℝ E₁]
+    {f : E₁ × E₂ → F} {s₁ : Set E₁} {s₂ : Set E₂} {x : E₁ × E₂}
+    (hx : x ∈ s₁ ×ˢ s₂) (hs₁ : IsOpen s₁)
+    {f₁ : E₁ × E₂ → E₁ →L[𝕜] F} {f₂x : E₂ →L[𝕜] F}
+    (hf₁_cont : ContinuousWithinAt f₁ (s₁ ×ˢ s₂) x)
+    (hf₁ : ∀ y ∈ s₁ ×ˢ s₂, HasFDerivAt (f ∘ (·, y.2)) (f₁ y) y.1)
+    (hf₂x : HasFDerivWithinAt (f ∘ (x.1, ·)) f₂x s₂ x.2) :
+      HasFDerivWithinAt f ((f₁ x).coprod f₂x) (s₁ ×ˢ s₂) x := by
   have hmt_s₁s₂ := mapsTo_swap_prod s₁ s₂
   have hmt_s₂s₁ := mapsTo_swap_prod s₂ s₁
   have hf₁_swap_cont := (x.swap_swap ▸ hf₁_cont).comp
@@ -384,17 +384,17 @@ and they are continuous at `x ∈ s`, then `f` is continously differentiable at 
 the derivative given by `f' x = (f₁ x).coprod (f₂ x)`.
 -/
 theorem hasFDerivWithinAt_continuousWithinAt_of_partial_continuousWithinAt_open
-  --NB: [NormedSpace ℝ E₁] is not needed because the proof eventually applies
-  --    the Mean Value Theorem only in the E₂ direction. But it could have been
-  --    the other way around and it is odd to not have symmetry in the hypotheses
-  [IsRCLikeNormedField 𝕜] /-[NormedSpace ℝ E₁]-/ [NormedSpace ℝ E₂]
-  {f : E₁ × E₂ → F} {s : Set (E₁ × E₂)} (hs : IsOpen s) {x : E₁ × E₂} (hx : x ∈ s)
-  {f₁ : E₁ × E₂ → E₁ →L[𝕜] F} {f₂ : E₁ × E₂ → E₂ →L[𝕜] F}
-  (hf₁_cont : ContinuousWithinAt f₁ s x) (hf₂_cont : ContinuousWithinAt f₂ s x)
-  (hf₁ : ∀ y ∈ s, HasFDerivAt (f ∘ (·, y.2)) (f₁ y) y.1)
-  (hf₂ : ∀ y ∈ s, HasFDerivAt (f ∘ (y.1, ·)) (f₂ y) y.2) :
-    ContinuousWithinAt (fun y => (f₁ y).coprod (f₂ y)) s x
-    ∧ HasFDerivAt f ((f₁ x).coprod (f₂ x)) x := by
+    --NB: [NormedSpace ℝ E₁] is not needed because the proof eventually applies
+    --    the Mean Value Theorem only in the E₂ direction. But it could have been
+    --    the other way around and it is odd to not have symmetry in the hypotheses
+    [IsRCLikeNormedField 𝕜] /-[NormedSpace ℝ E₁]-/ [NormedSpace ℝ E₂]
+    {f : E₁ × E₂ → F} {s : Set (E₁ × E₂)} (hs : IsOpen s) {x : E₁ × E₂} (hx : x ∈ s)
+    {f₁ : E₁ × E₂ → E₁ →L[𝕜] F} {f₂ : E₁ × E₂ → E₂ →L[𝕜] F}
+    (hf₁_cont : ContinuousWithinAt f₁ s x) (hf₂_cont : ContinuousWithinAt f₂ s x)
+    (hf₁ : ∀ y ∈ s, HasFDerivAt (f ∘ (·, y.2)) (f₁ y) y.1)
+    (hf₂ : ∀ y ∈ s, HasFDerivAt (f ∘ (y.1, ·)) (f₂ y) y.2) :
+      ContinuousWithinAt (fun y => (f₁ y).coprod (f₂ y)) s x
+      ∧ HasFDerivAt f ((f₁ x).coprod (f₂ x)) x := by
   refine ⟨?cont, ?diff⟩
   case cont =>
     -- combine continuity of partial to get continuity of total derivative
@@ -424,17 +424,17 @@ on an open set `s`, then `f` is continously differentiable on this set, with
 the derivative given by `f' = f₁.coprod f₂`.
 -/
 theorem hasFDerivWithinAt_continuousOn_of_partial_continuousOn_open
-  --NB: [NormedSpace ℝ E₁] is not needed because the proof eventually applies
-  --    the Mean Value Theorem only in the E₂ direction. But it could have been
-  --    the other way around and it is odd to not have symmetry in the hypotheses
-  [IsRCLikeNormedField 𝕜] /-[NormedSpace ℝ E₁]-/ [NormedSpace ℝ E₂]
-  {f : E₁ × E₂ → F} {s : Set (E₁ × E₂)} (hs : IsOpen s)
-  {f₁ : E₁ × E₂ → E₁ →L[𝕜] F} {f₂ : E₁ × E₂ → E₂ →L[𝕜] F}
-  (hf₁_cont : ContinuousOn f₁ s) (hf₂_cont : ContinuousOn f₂ s)
-  (hf₁ : ∀ y ∈ s, HasFDerivAt (f ∘ (·, y.2)) (f₁ y) y.1)
-  (hf₂ : ∀ y ∈ s, HasFDerivAt (f ∘ (y.1, ·)) (f₂ y) y.2) :
-    ContinuousOn (fun y => (f₁ y).coprod (f₂ y)) s
-    ∧ ∀ y ∈ s, HasFDerivAt f ((f₁ y).coprod (f₂ y)) y := by
+    --NB: [NormedSpace ℝ E₁] is not needed because the proof eventually applies
+    --    the Mean Value Theorem only in the E₂ direction. But it could have been
+    --    the other way around and it is odd to not have symmetry in the hypotheses
+    [IsRCLikeNormedField 𝕜] /-[NormedSpace ℝ E₁]-/ [NormedSpace ℝ E₂]
+    {f : E₁ × E₂ → F} {s : Set (E₁ × E₂)} (hs : IsOpen s)
+    {f₁ : E₁ × E₂ → E₁ →L[𝕜] F} {f₂ : E₁ × E₂ → E₂ →L[𝕜] F}
+    (hf₁_cont : ContinuousOn f₁ s) (hf₂_cont : ContinuousOn f₂ s)
+    (hf₁ : ∀ y ∈ s, HasFDerivAt (f ∘ (·, y.2)) (f₁ y) y.1)
+    (hf₂ : ∀ y ∈ s, HasFDerivAt (f ∘ (y.1, ·)) (f₂ y) y.2) :
+      ContinuousOn (fun y => (f₁ y).coprod (f₂ y)) s
+      ∧ ∀ y ∈ s, HasFDerivAt f ((f₁ y).coprod (f₂ y)) y := by
   simp only [ContinuousOn, ← forall₂_and]
   intro y hy
   apply hasFDerivWithinAt_continuousWithinAt_of_partial_continuousWithinAt_open
