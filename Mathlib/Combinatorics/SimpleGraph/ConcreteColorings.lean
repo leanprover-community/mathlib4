@@ -5,6 +5,7 @@ Authors: Iván Renison
 -/
 import Mathlib.Combinatorics.SimpleGraph.Circulant
 import Mathlib.Combinatorics.SimpleGraph.Coloring
+import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 import Mathlib.Combinatorics.SimpleGraph.Hasse
 import Mathlib.Data.Fin.Parity
 
@@ -155,6 +156,20 @@ theorem chromaticNumber_cycleGraph_of_odd (n : ℕ) (h : 2 ≤ n) (hOdd : Odd n)
       exact hOdd
     rw [← hn3]
     exact Walk.three_le_chromaticNumber_of_odd_loop w hOdd'
+
+section CompleteEquipartiteGraph
+
+variable {r t : ℕ}
+
+/-- The injection `(x₁, x₂) ↦ x₁` is always a `r`-coloring of a `completeEquipartiteGraph r ·`. -/
+def Coloring.completeEquipartiteGraph :
+  (completeEquipartiteGraph r t).Coloring (Fin r) := ⟨Prod.fst, id⟩
+
+/-- The `completeEquipartiteGraph r t` is always `r`-colorable. -/
+theorem completeEquipartiteGraph_colorable :
+  (completeEquipartiteGraph r t).Colorable r := ⟨Coloring.completeEquipartiteGraph⟩
+
+end CompleteEquipartiteGraph
 
 open Walk
 lemma two_colorable_iff_forall_loop_even {α : Type*} {G : SimpleGraph α} :
