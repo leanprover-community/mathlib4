@@ -56,6 +56,8 @@ def isPullThm (declName : Name) (inv : Bool) : MetaM (Option Head) := do
     let some (lhs, rhs) := type.eqOrIff? | return none
     let (lhs, rhs) := if inv then (rhs, lhs) else (lhs, rhs)
     let some head := Head.ofExpr? lhs | return none
+    if Head.ofExpr? rhs == some head then
+      return none
     if (findHead rhs head).isSome then
       return head
     return none
