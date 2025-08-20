@@ -16,7 +16,7 @@ points `R, P, Q` via rotations and scalings. We prove:
 * `dist Q R = dist R P` (isosceles at `R`).
 
 
-The key step is `(Q z).z − R.z = e^{iπ/2} · ((P z).z − R.z)`.
+The key step is `Q z − R = e^{iπ/2} · (P z − R)`.
 -/
 
 noncomputable section
@@ -35,9 +35,6 @@ abbrev Point := ℂ
 
 /-- `shrink θ₀ θ₁ := sin θ₀ / sin θ₁`. -/
 @[simp] def shrink (θ₀ θ₁ : ℝ) : ℝ := Real.sin θ₀ / Real.sin θ₁
-
-example (p q : Point) : dist p q = ‖p - q‖ := by
-  simpa using Complex.dist_eq p q
 
 /-- Base points. -/
 @[simp] def A : Point := 0
@@ -140,7 +137,7 @@ lemma PQR_rot90 (z : ℂ) :
   field_simp
   norm_cast
   field_simp
-  rw[← sub_eq_zero]
+  rw [← sub_eq_zero]
   ring_nf
   norm_cast
   field_simp [sqrt_combo_rationalize]
@@ -153,16 +150,15 @@ lemma dist_eq_of_rot90 (z : ℂ) :
     dist (Q z) R = dist R (P z) := by
   have hnorm :
       ‖Q z - R‖ = ‖(P z - R) * cexp (π / 2 * I)‖ := by
-    simpa using congrArg (fun w : ℂ => ‖w‖) (PQR_rot90 z)
+    simpa using congrArg norm (PQR_rot90 z)
   simp [Complex.dist_eq, hnorm, norm_sub_rev]
 
 /-- Angle `∠QRP = π/2` from the rotation relation. -/
 lemma angle_pi_div_two_of_rot90
-  (z : ℂ) (hPR : (P z) ≠ R) :
+  (z : ℂ) :
   ∠ (Q z) R (P z) = π / 2 := by
   set u : ℂ := (Q z) - R
   set v : ℂ := (P z) - R
-  have hv_ne : v ≠ 0 := sub_ne_zero.mpr hPR
   have exp_I_half_pi : Complex.exp (I * (π / 2)) = I := by
     simpa [mul_comm] using Complex.exp_pi_div_two_mul_I
   have hI : u = I * v := by
@@ -180,9 +176,9 @@ lemma angle_pi_div_two_of_rot90
         ↔ inner ℝ u v = 0 := by
           simpa [u, v, sub_eq_add_neg] using
             (InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two
-              ((Q z) - R) ((P z) - R)).symm
+              (Q z - R) (P z - R)).symm
         have h₂ : inner ℝ u v = re (u * star v) := by
-          simp[Complex.inner,u,v]
+          simp [u,v]
           ring_nf
         simpa [h₂] using h₁
   exact hiff.mpr horth
@@ -190,12 +186,9 @@ lemma angle_pi_div_two_of_rot90
 /-- Main theorem: for any `z : ℂ` with `(P z) ≠ R`, we have `∠QRP = π/2` and
 `dist Q R = dist R P`. -/
 theorem geometry_main_theorem
-    (z : ℂ)
-    (hPR : (P z) ≠ R) :
-    (∠ (Q z) R (P z) = π / 2) ∧ (dist (Q z) R = dist R (P z)) := by
-  refine ⟨?h90, ?heq⟩
-  · exact angle_pi_div_two_of_rot90 z hPR
-  · exact dist_eq_of_rot90 z
+    (z : ℂ) :
+    (∠ (Q z) R (P z) = π / 2) ∧ (dist (Q z) R = dist R (P z)) :=
+    ⟨angle_pi_div_two_of_rot90 z, dist_eq_of_rot90 z⟩
 
 end TriangleConfig
 end IMO
