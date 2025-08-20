@@ -197,13 +197,13 @@ theorem coeff_subst_finite (ha : HasSubst a) (f : PowerSeries R) (e : τ →₀ 
   simp [coeff]
 
 theorem coeff_subst_finite' (hb : HasSubst b) (f : PowerSeries R) (e : ℕ) :
-    Set.Finite (fun (d : ℕ) ↦ (coeff d f) • (PowerSeries.coeff e (b ^ d))).support :=
+    Set.Finite (fun (d : ℕ) ↦ coeff d f • (PowerSeries.coeff e (b ^ d))).support :=
   coeff_subst_finite hb f _
 
 theorem coeff_subst (ha : HasSubst a) (f : PowerSeries R) (e : τ →₀ ℕ) :
     MvPowerSeries.coeff e (subst a f) =
       finsum (fun (d : ℕ) ↦
-        (coeff d f) • (MvPowerSeries.coeff e (a ^ d))) := by
+        coeff d f • (MvPowerSeries.coeff e (a ^ d))) := by
   rw [subst, MvPowerSeries.coeff_subst ha.const f e, ← finsum_comp_equiv
     (Finsupp.LinearEquiv.finsuppUnique ℕ ℕ Unit).toEquiv.symm]
   apply finsum_congr

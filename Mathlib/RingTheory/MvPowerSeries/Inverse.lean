@@ -286,7 +286,7 @@ theorem C_inv (r : k) : (C (σ := σ) r)⁻¹ = C r⁻¹ := by
 
 @[simp]
 theorem X_inv (s : σ) : (X s : MvPowerSeries σ k)⁻¹ = 0 := by
-  rw [inv_eq_zero, constantCoeff_X s]
+  rw [inv_eq_zero, constantCoeff_X]
 
 @[simp]
 theorem smul_inv (r : k) (φ : MvPowerSeries σ k) : (r • φ)⁻¹ = r⁻¹ • φ⁻¹ := by

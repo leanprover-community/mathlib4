@@ -130,7 +130,7 @@ namespace IsWeierstrassDivisionAt
 
 theorem coeff_f_sub_r_mem (H : f.IsWeierstrassDivisionAt g q r I)
     {i : ℕ} (hi : i < (g.map (Ideal.Quotient.mk I)).order.toNat) :
-    coeff (R := A) i (f - r) ∈ I := by
+    coeff i (f - r : A⟦X⟧) ∈ I := by
   replace H := H.2
   rw [← sub_eq_iff_eq_add] at H
   rw [H]

@@ -147,7 +147,7 @@ if and only if all their coefficients are equal. -/
 add_decl_doc MvPowerSeries.ext_iff
 
 theorem monomial_def [DecidableEq σ] (n : σ →₀ ℕ) :
-    (monomial n) = LinearMap.single R (fun _ ↦ R) n := by
+    monomial n = LinearMap.single R (fun _ ↦ R) n := by
   rw [monomial]
   -- unify the `Decidable` arguments
   convert rfl
@@ -442,11 +442,11 @@ theorem constantCoeff_comp_C : (constantCoeff (σ := σ)).comp C = RingHom.id R 
   rfl
 
 @[simp]
-theorem constantCoeff_zero : constantCoeff (σ := σ) (R := R) 0 = 0 :=
+theorem constantCoeff_zero : constantCoeff (0 : MvPowerSeries σ R) = 0 :=
   rfl
 
 @[simp]
-theorem constantCoeff_one : constantCoeff (σ := σ) (R := R) 1 = 1 :=
+theorem constantCoeff_one : constantCoeff (1 : MvPowerSeries σ R) = 1 :=
   rfl
 
 @[simp]
@@ -500,7 +500,7 @@ def map : MvPowerSeries σ R →+* MvPowerSeries σ S where
   map_zero' := ext fun _n => f.map_zero
   map_one' :=
     ext fun n =>
-      show f (coeff n 1) = (coeff n) 1 by
+      show f (coeff n 1) = coeff n 1 by
         classical
         rw [coeff_one, coeff_one]
         split_ifs with h

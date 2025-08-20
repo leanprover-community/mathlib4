@@ -44,13 +44,13 @@ theorem constantCoeff_invUnitsSub (u : Rˣ) : constantCoeff (invUnitsSub u) = 1 
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_invUnitsSub, zero_add, pow_one]
 
 @[simp]
-theorem invUnitsSub_mul_X (u : Rˣ) : invUnitsSub u * X = invUnitsSub u * C (R := R) u - 1 := by
+theorem invUnitsSub_mul_X (u : Rˣ) : invUnitsSub u * X = invUnitsSub u * C (u : R) - 1 := by
   ext (_ | n)
   · simp
   · simp [pow_succ']
 
 @[simp]
-theorem invUnitsSub_mul_sub (u : Rˣ) : invUnitsSub u * (C (R := R) u - X) = 1 := by
+theorem invUnitsSub_mul_sub (u : Rˣ) : invUnitsSub u * (C (u : R) - X) = 1 := by
   simp [mul_sub, sub_sub_cancel]
 
 theorem map_invUnitsSub (f : R →+* S) (u : Rˣ) :

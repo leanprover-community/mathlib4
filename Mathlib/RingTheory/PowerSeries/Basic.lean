@@ -589,7 +589,7 @@ noncomputable def rescale (a : R) : R⟦X⟧ →+* R⟦X⟧ where
 @[simp]
 theorem coeff_rescale (f : R⟦X⟧) (a : R) (n : ℕ) :
     coeff n (rescale a f) = a ^ n * coeff n f :=
-  coeff_mk n (fun n ↦ a ^ n * (coeff n) f)
+  coeff_mk n (fun n ↦ a ^ n * coeff n f)
 
 @[simp]
 theorem rescale_zero : rescale 0 = (C (R := R)).comp constantCoeff := by

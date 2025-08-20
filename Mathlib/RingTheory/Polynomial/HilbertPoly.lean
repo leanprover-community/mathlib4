@@ -160,7 +160,7 @@ coefficient of `Xⁿ` in the power series expansion of `p/(1 - X)ᵈ`.
 -/
 theorem coeff_mul_invOneSubPow_eq_hilbertPoly_eval
     {p : F[X]} (d : ℕ) {n : ℕ} (hn : p.natDegree < n) :
-    PowerSeries.coeff (R := F) n (p * invOneSubPow F d) = (hilbertPoly p d).eval (n : F) := by
+    (p * invOneSubPow F d : F⟦X⟧).coeff n = (hilbertPoly p d).eval (n : F) := by
   delta hilbertPoly; induction d with
   | zero => simp only [invOneSubPow_zero, Units.val_one, mul_one, coeff_coe, eval_zero]
             exact coeff_eq_zero_of_natDegree_lt hn
@@ -189,7 +189,7 @@ The polynomial satisfying the key property of `Polynomial.hilbertPoly p d` is un
 -/
 theorem existsUnique_hilbertPoly (p : F[X]) (d : ℕ) :
     ∃! h : F[X], ∃ N : ℕ, ∀ n > N,
-      PowerSeries.coeff (R := F) n (p * invOneSubPow F d) = h.eval (n : F) := by
+      (p * invOneSubPow F d : F⟦X⟧).coeff n = h.eval (n : F) := by
   use hilbertPoly p d; constructor
   · use p.natDegree
     exact fun n => coeff_mul_invOneSubPow_eq_hilbertPoly_eval d

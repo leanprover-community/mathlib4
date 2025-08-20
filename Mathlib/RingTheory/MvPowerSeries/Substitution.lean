@@ -255,7 +255,7 @@ theorem continuous_subst (ha : HasSubst a)
   exact continuous_eval₂ (continuous_algebraMap _ _) ha.hasEval
 
 theorem coeff_subst_finite (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ →₀ ℕ) :
-    Set.Finite (fun d ↦ (coeff d f) • (coeff e (d.prod fun s e => (a s) ^ e))).support :=
+    Set.Finite (fun d ↦ coeff d f • (coeff e (d.prod fun s e => (a s) ^ e))).support :=
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
   Summable.finite_support_of_discreteTopology _

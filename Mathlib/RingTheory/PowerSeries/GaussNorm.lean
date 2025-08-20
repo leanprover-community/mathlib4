@@ -62,7 +62,7 @@ theorem gaussNorm_eq_zero_iff [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] {v
   obtain ⟨n, hn⟩ := exists_coeff_ne_zero_iff_ne_zero.mpr hf
   calc
   0 < v (f.coeff n) * c ^ n := by
-    have := fun h ↦ hn (h_eq_zero ((coeff n) f) h)
+    have := fun h ↦ hn (h_eq_zero (coeff n f) h)
     positivity
   _ ≤ gaussNorm v c f := le_ciSup hbd n
 
