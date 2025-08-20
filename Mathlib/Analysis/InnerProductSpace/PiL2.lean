@@ -1176,10 +1176,11 @@ theorem inner_matrix_col_col [Fintype m] (A B : Matrix m n 𝕜) (i j : n) :
     ⟪Aᵀ i, Bᵀ j⟫ₑ = (Aᴴ * B) i j := by
   simp [PiLp.inner_apply, dotProduct, mul_apply', mul_comm]
 
-/-- The matrix representation of `innerSL 𝕜 x` given by an orthonormal basis `b` is equal to
-the row `star (b.repr x)`). -/
-theorem toMatrix_innerSL_apply [DecidableEq ι] (b : OrthonormalBasis ι 𝕜 E) (x : E) :
-    (innerSL 𝕜 x).toMatrix b.toBasis (.singleton Unit 𝕜) = replicateRow Unit (star (b.repr x)) := by
-  ext; simp [LinearMap.toMatrix_apply, b.repr_apply_apply]
+/-- The matrix representation of `innerSL 𝕜 x` given by an orthonormal basis `b` and `b₂`
+is equal to `vecMulVec (star b₂) (star (b.repr x))`. -/
+theorem toMatrix_innerSL_apply [DecidableEq ι] {ι₂ : Type*} [Fintype ι₂] [DecidableEq ι₂]
+    (b : OrthonormalBasis ι 𝕜 E) (b₂ : OrthonormalBasis ι₂ 𝕜 𝕜) (x : E) :
+    (innerSL 𝕜 x).toMatrix b.toBasis b₂.toBasis = vecMulVec (star b₂) (star (b.repr x)) := by
+  ext; simp [LinearMap.toMatrix_apply, vecMulVec_apply, OrthonormalBasis.repr_apply_apply, mul_comm]
 
 end Matrix
