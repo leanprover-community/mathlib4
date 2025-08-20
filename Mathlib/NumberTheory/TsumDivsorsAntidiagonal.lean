@@ -8,7 +8,6 @@ import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Topology.GDelta.MetrizableSpace
 import Mathlib.Topology.Separation.CompletelyRegular
 
@@ -169,3 +168,5 @@ lemma tsum_pow_div_one_sub_eq_tsum_sigma {r : 𝕜} (hr : ‖r‖ < 1) :
   ring
 
 end tsum
+
+#min_imports
