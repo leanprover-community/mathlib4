@@ -140,6 +140,18 @@ lemma tsum_log_deriv_one_sub_eta_q (z : ℂ) : ∑' (i : ℕ), logDeriv (fun x �
     ring
   exact tsum_congr (fun i ↦ one_sub_eta_logDeriv_eq z i)
 
+theorem etaProdTerm_DifferentiableAt (z : ℍ) : DifferentiableAt ℂ ηₚ z := by
+  have hD := hasProdLocallyUniformlyOn_eta.tendstoLocallyUniformlyOn_finsetRange.differentiableOn ?_
+    upperHalfPlaneSet_isOpen
+  · exact (hD z z.2).differentiableAt (upperHalfPlaneSet_isOpen.mem_nhds z.2)
+  · filter_upwards with b y
+    apply (DifferentiableOn.finset_prod (u := Finset.range b) (f := fun i x ↦ 1 - eta_q i x)
+      (by fun_prop)).congr
+    simp
+
+lemma eta_DifferentiableAt_UpperHalfPlane (z : ℍ) : DifferentiableAt ℂ eta z :=
+  DifferentiableAt.mul (by fun_prop) (etaProdTerm_DifferentiableAt z)
+
 lemma summable_log_deriv_one_sub_eta_q (z : ℍ) :
     Summable fun i ↦ logDeriv (fun x ↦ 1 - eta_q i x) z := by
   simp only [one_sub_eta_logDeriv_eq]
@@ -157,18 +169,6 @@ lemma multipliableLocallyUniformlyOn_one_sub_eta_q :
     MultipliableLocallyUniformlyOn (fun n x ↦ 1 - eta_q n x) ℍₒ :=
   ⟨ηₚ, (hasProdLocallyUniformlyOn_eta).congr fun n x _ ↦ Eq.refl ((fun b ↦ ∏ i ∈ n,
     (fun n a ↦ 1 - eta_q n a) i b) x)⟩
-
-theorem etaProdTerm_DifferentiableAt (z : ℍ) : DifferentiableAt ℂ ηₚ z := by
-  have hD := hasProdLocallyUniformlyOn_eta.tendstoLocallyUniformlyOn_finsetRange.differentiableOn ?_
-    upperHalfPlaneSet_isOpen
-  · exact (hD z z.2).differentiableAt (upperHalfPlaneSet_isOpen.mem_nhds z.2)
-  · filter_upwards with b y
-    apply (DifferentiableOn.finset_prod (u := Finset.range b) (f := fun i x ↦ 1 - eta_q i x)
-      (by fun_prop)).congr
-    simp
-
-lemma eta_DifferentiableAt_UpperHalfPlane (z : ℍ) : DifferentiableAt ℂ eta z :=
-  DifferentiableAt.mul (by fun_prop) (etaProdTerm_DifferentiableAt z)
 
 lemma eta_logDeriv (z : ℍ) : logDeriv ModularForm.eta z = (π * Complex.I / 12) * E2 z := by
   unfold ModularForm.eta etaProdTerm
