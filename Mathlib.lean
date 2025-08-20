@@ -3286,6 +3286,7 @@ import Mathlib.Data.Matrix.PEquiv
 import Mathlib.Data.Matrix.Rank
 import Mathlib.Data.Matrix.Reflection
 import Mathlib.Data.Matrix.RowCol
+import Mathlib.Data.Matrix.Stochastic
 import Mathlib.Data.Matrix.Vec
 import Mathlib.Data.Matroid.Basic
 import Mathlib.Data.Matroid.Circuit

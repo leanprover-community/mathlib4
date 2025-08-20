@@ -6,6 +6,7 @@ Authors: Bhavik Mehta
 
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.LinearAlgebra.Matrix.Permutation
+import Mathlib.Data.Matrix.Stochastic
 
 /-!
 # Doubly stochastic matrices
@@ -31,7 +32,7 @@ Show that the submonoid of doubly stochastic matrices is the meet of them, or re
 Doubly stochastic, Birkhoff's theorem, Birkhoff-von Neumann theorem
 -/
 
-open Finset Function Matrix
+open Finset Function Matrix Stochastic
 
 variable {R n : Type*} [Fintype n] [DecidableEq n]
 
@@ -101,6 +102,28 @@ lemma permMatrix_mem_doublyStochastic {σ : Equiv.Perm n} :
   case g1 => aesop
   case g2 => simp [Equiv.toPEquiv_apply]
   case g3 => simp [Equiv.toPEquiv_apply, ← Equiv.eq_symm_apply]
+
+
+/-- A matrix is doubly stochastic if and only if it is both row and
+column stochastic. -/
+lemma doublyStochastic_iff_rowStochastic_and_colStochastic :
+    M ∈ doublyStochastic R n ↔ (M ∈ rowStochastic R n) ∧ M ∈ colStochastic R n := by
+  constructor
+  · intro hM
+    constructor
+    · constructor
+      · exact fun i j ↦ nonneg_of_mem_doublyStochastic hM
+      · exact mulVec_one_of_mem_doublyStochastic hM
+    · constructor
+      · exact fun i j ↦ nonneg_of_mem_doublyStochastic hM
+      · exact one_vecMul_of_mem_doublyStochastic hM
+  · intro hM
+    constructor
+    · exact (hM.1).1
+    · constructor
+      · exact (hM.1).2
+      · exact (hM.2).2
+
 
 end OrderedSemiring
 
