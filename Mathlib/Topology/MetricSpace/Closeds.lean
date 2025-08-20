@@ -61,7 +61,7 @@ theorem continuous_infEdist_hausdorffEdist :
     _ = infEdist y t + 2 * edist (x, s) (y, t) := by rw [← mul_two, mul_comm]
 
 /-- Subsets of a given closed subset form a closed set -/
-theorem isClosed_subsets_of_isClosed (hs : IsClosed s) :
+theorem Closeds.isClosed_subsets_of_isClosed (hs : IsClosed s) :
     IsClosed { t : Closeds α | (t : Set α) ⊆ s } := by
   refine isClosed_of_closure_subset fun
     (t : Closeds α) (ht : t ∈ closure {t : Closeds α | (t : Set α) ⊆ s}) (x : α) (hx : x ∈ t) => ?_
@@ -72,6 +72,9 @@ theorem isClosed_subsets_of_isClosed (hs : IsClosed s) :
     obtain ⟨y : α, hy : y ∈ u, Dxy : edist x y < ε⟩ := exists_edist_lt_of_hausdorffEdist_lt hx Dtu
     exact ⟨y, hu hy, Dxy⟩
   rwa [hs.closure_eq] at this
+
+@[deprecated (since := "2025-08-20")]
+alias isClosed_subsets_of_isClosed := Closeds.isClosed_subsets_of_isClosed
 
 /-- By definition, the edistance on `Closeds α` is given by the Hausdorff edistance -/
 theorem Closeds.edist_eq {s t : Closeds α} : edist s t = hausdorffEdist (s : Set α) t :=
@@ -234,6 +237,16 @@ instance NonemptyCompacts.emetricSpace : EMetricSpace (NonemptyCompacts α) wher
 theorem NonemptyCompacts.ToCloseds.isUniformEmbedding :
     IsUniformEmbedding (@NonemptyCompacts.toCloseds α _ _) :=
   Isometry.isUniformEmbedding fun _ _ => rfl
+
+lemma NonemptyCompacts.isClosed_subsets_of_isClosed (hs : IsClosed s) :
+    IsClosed {A : NonemptyCompacts α | (A : Set α) ⊆ s} := by
+  refine isClosed_of_closure_subset fun E hE x hx ↦ ?_
+  suffices x ∈ closure s by rwa [hs.closure_eq] at this
+  rw [mem_closure_iff] at hE ⊢
+  intro ε hε
+  obtain ⟨C, hC, hEC⟩ := hE ε hε
+  obtain ⟨y, hy, hxy⟩ := exists_edist_lt_of_hausdorffEdist_lt hx hEC
+  exact ⟨y, hC hy, hxy⟩
 
 /-- The range of `NonemptyCompacts.toCloseds` is closed in a complete space -/
 theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
