@@ -36,19 +36,22 @@ abbrev Point := ℂ
 /-- `shrink θ₀ θ₁ := sin θ₀ / sin θ₁`. -/
 @[simp] def shrink (θ₀ θ₁ : ℝ) : ℝ := Real.sin θ₀ / Real.sin θ₁
 
+noncomputable section
+variable (z : ℂ)
+
 /-- Base points. -/
 @[simp] def A : Point := 0
 @[simp] def B : Point := 1
-@[simp] def C (z : ℂ) : Point := z
+@[simp] def C : Point := z
 
 /-- `P`: from `B` towards `C`,
 rotate by `−45°`, scale by `shrink(30°,105°)`, then translate to `B`. -/
-noncomputable def P (z : ℂ) : Point :=
+noncomputable def P : Point :=
   (z - B) * Complex.exp (deg2rad (-45) * Complex.I) * shrink (deg2rad 30) (deg2rad 105) + B
 
 /-- `Q`: from `A` towards `C`,
 rotate by `+45°`, scale by `shrink(30°,105°)`, then translate to `A`. -/
-noncomputable def Q (z : ℂ) : Point :=
+noncomputable def Q : Point :=
   (z - A) * Complex.exp (deg2rad 45 * Complex.I) * shrink (deg2rad 30) (deg2rad 105) + A
 
 /-- `R`: from `A` towards `B`,
@@ -168,12 +171,8 @@ lemma angle_pi_div_two_of_rot90
     simp [hI]
     ring_nf
   -- Bridge: angle is π/2 iff the (real) inner product is zero.
-  have hiff :
-      (∠ (Q z) R (P z) = π / 2) ↔
-      (re (u * star v) = 0) := by
-        have h₁ :
-        (∠ (Q z) R (P z) = π / 2)
-        ↔ inner ℝ u v = 0 := by
+  have hiff : (∠ (Q z) R (P z) = π / 2) ↔ (re (u * star v) = 0) := by
+        have h₁ : (∠ (Q z) R (P z) = π / 2) ↔ inner ℝ u v = 0 := by
           simpa [u, v, sub_eq_add_neg] using
             (InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two
               (Q z - R) (P z - R)).symm
@@ -189,6 +188,8 @@ theorem geometry_main_theorem
     (z : ℂ) :
     (∠ (Q z) R (P z) = π / 2) ∧ (dist (Q z) R = dist R (P z)) :=
     ⟨angle_pi_div_two_of_rot90 z, dist_eq_of_rot90 z⟩
+
+end -- section
 
 end TriangleConfig
 end IMO
