@@ -322,7 +322,7 @@ def downloadFiles
       let args := #["--request", "GET", "--parallel",
           -- commented as this creates a big slowdown on curl 8.13.0: "--fail",
           "--silent",
-          "--retry", "5", -- there seem to be some intermittent failures
+          "--retry", "5", "--retry-all-errors", -- there seem to be some intermittent failures
           "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
       let (_, success, failed, done) ←
           IO.runCurlStreaming args (← IO.monoMsNow, 0, 0, 0) fun a line => do
