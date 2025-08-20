@@ -101,7 +101,7 @@ theorem Submonoid.iSup_map_mulSingle [DecidableEq ι] :
 -/]
 theorem Submonoid.FG.pi (hS : ∀ i, (P i).FG) : (pi Set.univ P).FG := by
   classical
-  have := Fintype.ofFinite ι
+  haveI := Fintype.ofFinite ι
   choose! S hS using hS
   refine ⟨Finset.univ.biUnion fun i => (S i).image (MonoidHom.mulSingle M i), ?_⟩
   simp_rw [Finset.coe_biUnion, Finset.coe_univ, Set.biUnion_univ, closure_iUnion, Finset.coe_image,
