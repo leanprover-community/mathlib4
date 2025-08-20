@@ -225,7 +225,7 @@ def _root_.Mathlib.Meta.monadLiftOptionMetaM : MonadLift Option MetaM where
 attribute [local instance] monadLiftOptionMetaM in
 /-- The result of adding two norm_num results. -/
 def Result.add {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (rb : Result q($b))
-    (inst : Q(AddMonoidWithOne $α) := by exact q(delta% inferInstance)) :
+    (inst : Q(Add $α) := by exact q(delta% inferInstance)) :
     MetaM (Result q($a + $b)) := do
   let rec intArm (rα : Q(Ring $α)) := do
     assumeInstancesCommute

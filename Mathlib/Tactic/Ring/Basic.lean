@@ -593,13 +593,12 @@ theorem neg_mul {R} [Ring R] (a₁ : R) (a₂) {a₃ b : R}
 def evalNegProd {a : Q($α)} (rα : Q(Ring $α)) (va : ExProd sα a) :
     MetaM <| Result (ExProd sα) q(-$a) := do
   Lean.Core.checkSystem decl_name%.toString
-  have : ($sα).toMul =Q ($rα).toMul := ⟨⟩
   match va with
   | .const za ha =>
     let ⟨m1, _⟩ := ExProd.mkNegNat sα rα 1
-    have rm := Result.isNegNat rα _ q(IsInt.of_raw $α (.negOfNat (nat_lit 1)))
-    have ra := Result.ofRawRat za q($a) ha
-    let rb ← rm.mul (b := q($a)) ra
+    let rm := Result.isNegNat rα q(nat_lit 1) q(IsInt.of_raw $α (.negOfNat (nat_lit 1)))
+    let ra := Result.ofRawRat za a ha
+    let rb ← rm.mul ra
     let ⟨zb, hb⟩ := rb.toRatNZ.get!
     let ⟨b, pb⟩ := rb.toRawEq
     -- Qq is probably unhappy about `Ring` and `CommSemiring` at the same time.
