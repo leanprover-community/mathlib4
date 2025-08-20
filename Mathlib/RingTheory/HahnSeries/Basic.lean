@@ -253,7 +253,9 @@ theorem orderTop_of_ne_zero (hx : x ≠ 0) :
 lemma orderTop_ne_top : orderTop x ≠ ⊤ ↔ x ≠ 0 := orderTop_eq_top.not
 
 @[deprecated (since := "2025-08-19")] alias orderTop_eq_top_iff := orderTop_eq_top
-@[deprecated (since := "2025-08-19")] alias ne_zero_iff_orderTop := orderTop_ne_top
+
+@[deprecated orderTop_ne_top (since := "2025-08-19")]
+lemma ne_zero_iff_orderTop : x ≠ 0 ↔ orderTop x ≠ ⊤ := orderTop_ne_top.symm
 
 theorem orderTop_eq_of_le {x : HahnSeries Γ R} {g : Γ} (hg : g ∈ x.support)
     (hx : ∀ g' ∈ x.support, g ≤ g') : orderTop x = g := by
@@ -350,8 +352,10 @@ theorem order_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) :
     order x = x.isWF_support.min (support_nonempty_iff.2 hx) :=
   dif_neg hx
 
-theorem order_eq_orderTop_of_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) : order x = orderTop x := by
+theorem order_eq_orderTop_of_ne_zero (hx : x ≠ 0) : order x = orderTop x := by
   rw [order_of_ne hx, orderTop_of_ne_zero hx]
+
+@[deprecated (since := "2025-08-19")] alias order_eq_orderTop_of_ne := order_eq_orderTop_of_ne_zero
 
 theorem coeff_order_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) : x.coeff x.order ≠ 0 := by
   rw [order_of_ne hx]
