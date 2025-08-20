@@ -108,7 +108,6 @@ theorem comp (hg : IsNormal g) (hf : IsNormal f) : IsNormal (g ∘ f) := by
     fun c d hd hc ↦ (hg.strictMono hc).le.trans (hb hd)
 
 section WellFoundedLT
-
 variable [WellFoundedLT α] [SuccOrder α]
 
 theorem of_succ_lt
