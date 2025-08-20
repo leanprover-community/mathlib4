@@ -163,16 +163,11 @@ theorem leadingCoeff_abs (x : Lex (HahnSeries Γ R)) :
 
 theorem abs_lt_abs_of_orderTop_ofLex {x y : Lex (HahnSeries Γ R)}
     (h : (ofLex y).orderTop < (ofLex x).orderTop) : |x| < |y| := by
-  refine (lt_iff _ _).mpr ⟨(ofLex y).orderTop.untop h.ne_top, ?_, ?_⟩
-  · intro j hj
-    trans 0
-    · have h' : (ofLex |y|).orderTop < (ofLex |x|).orderTop := by
-        simpa using h
-      exact coeff_eq_zero_of_lt_orderTop (lt_trans (by simpa using hj) h')
-    · exact (coeff_eq_zero_of_lt_orderTop (by simpa using hj)).symm
-  · rw [HahnSeries.coeff_eq_zero_of_lt_orderTop (by simpa)]
-    simp_rw [← orderTop_abs y, coeff_untop_eq_leadingCoeff]
-    simpa using h.ne_top
+  rw [← orderTop_abs x, ← orderTop_abs y] at h
+  refine (lt_iff _ _).mpr ⟨(ofLex |y|).orderTop.untop h.ne_top, ?_, ?_⟩
+  · simp +contextual [-orderTop_abs, coeff_eq_zero_of_lt_orderTop, h.trans']
+  · simpa [-orderTop_abs, coeff_eq_zero_of_lt_orderTop, coeff_untop_eq_leadingCoeff, h]
+      using h.ne_top
 
 theorem archimedeanClassMk_le_archimedeanClassMk_iff_of_orderTop_ofLex {x y : Lex (HahnSeries Γ R)}
     (h : (ofLex x).orderTop = (ofLex y).orderTop) :
@@ -214,7 +209,7 @@ theorem archimedeanClassMk_le_archimedeanClassMk_iff_of_orderTop_ofLex {x y : Le
       · suffices (ofLex |x|).coeff j = 0 by simp [this]
         apply coeff_eq_zero_of_lt_orderTop
         simpa using hj
-    -- the leading coefficient determins the relation
+    -- the leading coefficient determines the relation
     rw [ofLex_smul, coeff_smul]
     suffices |(ofLex y).leadingCoeff| < (n + 1) • |(ofLex x).leadingCoeff| by
       simp_rw [← leadingCoeff_abs] at this
@@ -225,9 +220,10 @@ theorem archimedeanClassMk_le_archimedeanClassMk_iff_of_orderTop_ofLex {x y : Le
     rwa [abs_pos, leadingCoeff_ne_zero]
 
 theorem archimedeanClassMk_le_archimedeanClassMk_iff {x y : Lex (HahnSeries Γ R)} :
-    ArchimedeanClass.mk x ≤ ArchimedeanClass.mk y ↔
-    (ofLex x).orderTop < (ofLex y).orderTop ∨ ((ofLex x).orderTop = (ofLex y).orderTop ∧
-    ArchimedeanClass.mk (ofLex x).leadingCoeff ≤ ArchimedeanClass.mk (ofLex y).leadingCoeff) := by
+    ArchimedeanClass.mk x ≤ .mk y ↔
+      (ofLex x).orderTop < (ofLex y).orderTop ∨
+        (ofLex x).orderTop = (ofLex y).orderTop ∧
+          ArchimedeanClass.mk (ofLex x).leadingCoeff ≤ .mk (ofLex y).leadingCoeff := by
   obtain hlt | heq | hgt := lt_trichotomy (ofLex x).orderTop (ofLex y).orderTop
   · -- when x's order is less than y's, this reduces to abs_lt_abs_of_orderTop_ofLex
     simpa [ArchimedeanClass.mk_le_mk, hlt] using
@@ -236,18 +232,14 @@ theorem archimedeanClassMk_le_archimedeanClassMk_iff {x y : Lex (HahnSeries Γ R
     simpa [heq] using archimedeanClassMk_le_archimedeanClassMk_iff_of_orderTop_ofLex heq
   -- when x's order is greater than y's, neither side is true
   simp_rw [ArchimedeanClass.mk_le_mk]
-  constructor
-  · intro ⟨n, hn⟩
-    contrapose! hn
-    rw [← abs_nsmul]
-    have hgt' : (ofLex y).orderTop < (ofLex (n • x)).orderTop := by
-      apply lt_of_lt_of_le hgt
-      simpa using orderTop_smul_not_lt n (ofLex x)
-    exact abs_lt_abs_of_orderTop_ofLex hgt'
-  · intro h
-    obtain h | ⟨h, _⟩ := h <;> refine ((lt_self_iff_false (ofLex y).orderTop).mp ?_).elim
-    · exact hgt.trans h
-    · exact hgt.trans_eq h
+  refine ⟨?_, by simp [hgt.not_gt, hgt.ne']⟩
+  intro ⟨n, hn⟩
+  contrapose! hn
+  rw [← abs_nsmul]
+  have hgt' : (ofLex y).orderTop < (ofLex (n • x)).orderTop := by
+    apply lt_of_lt_of_le hgt
+    simpa using orderTop_smul_not_lt n (ofLex x)
+  exact abs_lt_abs_of_orderTop_ofLex hgt'
 
 theorem archimedeanClassMk_eq_archimedeanClassMk_iff {x y : Lex (HahnSeries Γ R)} :
     ArchimedeanClass.mk x = ArchimedeanClass.mk y ↔
@@ -256,11 +248,7 @@ theorem archimedeanClassMk_eq_archimedeanClassMk_iff {x y : Lex (HahnSeries Γ R
   rw [le_antisymm_iff, archimedeanClassMk_le_archimedeanClassMk_iff,
     archimedeanClassMk_le_archimedeanClassMk_iff]
   constructor
-  · rintro ⟨hx1 | ⟨hx1, hx2⟩, hy1 | ⟨hy1, hy2⟩⟩
-    · exact ((lt_self_iff_false _).mp <| hx1.trans hy1).elim
-    · exact ((lt_self_iff_false _).mp <| hx1.trans_eq hy1).elim
-    · exact ((lt_self_iff_false _).mp <| hx1.trans_lt hy1).elim
-    · exact ⟨hx1, hx2.antisymm hy2⟩
+  · simpa +contextual [or_imp, ne_of_gt, le_of_lt] using fun _ ↦ le_antisymm
   · intro ⟨horder, hcoeff⟩
     exact ⟨.inr ⟨horder, hcoeff.le⟩, .inr ⟨horder.symm, hcoeff.ge⟩⟩
 
