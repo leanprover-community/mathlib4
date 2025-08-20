@@ -10,7 +10,6 @@ import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.Notation
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
-import Mathlib.Tactic.GCongr
 import Mathlib.Util.AssertExists
 
 /-!
@@ -90,8 +89,6 @@ lemma two_le_iff : ∀ n, 2 ≤ n ↔ n ≠ 0 ∧ n ≠ 1
 /-! ### `add` -/
 
 /-! ### `sub` -/
-
-attribute [gcongr] Nat.sub_le_sub_left Nat.sub_le_sub_right Nat.sub_lt_sub_left Nat.sub_lt_sub_right
 
 /-! ### `mul` -/
 
