@@ -47,7 +47,7 @@ to work.
 
 It is possible to circumvent the introduction of the `compat` condition using Zorn's lemma;
 if there is a chain of natural families (i.e. for any two families in the chain, one is an
-extension of the other) over lowersets (which are all of the form `Iic`, `Iio`, or `univ`),
+extension of the other) over lower sets (which are all of the form `Iic`, `Iio`, or `univ`),
 we can clearly take the union to get a natural family that extends them all. If a maximal
 natural family has domain `Iic i` or `Iio i` (`i` a limit), we already know how to extend it
 one step further to `Iic i⁺` or `Iic i` respectively, so it must be the case that the domain
