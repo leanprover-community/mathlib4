@@ -28,6 +28,12 @@ This file proves the **Erdős-Stone-Simonovits theorem** for simple graphs.
 
   If `G` has at least `(1 - 1 / r + o(1)) * card V ^ 2 / 2` many edges, then `G` contains a copy of
   a `completeEquipartiteGraph (r + 1) t`.
+
+* `SimpleGraph.lt_extremalNumber_le_of_chromaticNumber` is the proof of the
+  **Erdős-Stone-Simonovits theorem** for simple graphs:
+
+  If the chromatic number of `H` equals `r + 1 > 0`, then `extremalNumber` of `H` is greater than
+  `(1 - 1 / r - o(1)) * card V ^ 2 / 2` and at most `(1 - 1 / r + o(1)) * card V ^ 2 / 2`.
 -/
 
 
@@ -466,5 +472,114 @@ theorem completeEquipartiteGraph_isContained_of_card_edgeFinset {ε : ℝ} (hε 
     _ ≥ n' ^ 2 := le_add_of_nonneg_right (by positivity)
 
 end ErdosStone
+
+section ErdosStoneSimonovits
+
+/-- If `ε > 2 * r / n` then a `completeEquipartiteGraph` in `r` parts each of size `⌊n / r⌋` has
+more than `(1 - 1 / r - ε) * n ^ 2 / 2` edges.
+
+This is an auxiliary definition for the **Erdős-Stone-Simonovits theorem**. -/
+lemma card_edgeFinset_completeEquipartiteGraph_gt {r n : ℕ} (hr : 0 < r) (hn : 0 < n) :
+    ∀ ε > (2 * r / n : ℝ), (1 - 1 / r - ε) * n ^ 2 / 2
+      < #(completeEquipartiteGraph r (n / r)).edgeFinset := by
+  intro ε hε
+  calc (1 - 1 / r - ε) * n ^ 2 / 2
+    _ < (1 - 1 / r) * n ^ 2 / 2 - r * n := by
+        rw [sub_mul, sub_div, sub_lt_sub_iff_left,
+          lt_div_iff₀ zero_lt_two, mul_comm, ← mul_assoc, pow_two, ← mul_assoc]
+        apply mul_lt_mul_of_pos_right _ (mod_cast hn)
+        rwa [gt_iff_lt, div_lt_iff₀ (by positivity)] at hε
+    _ = (1 - 1 / r) * r ^ 2 * (n / r : ℕ) ^ 2 / 2
+      - (r * n - (1 - 1 / r) * (n * ↑(n % r)) + (1 - 1 / r) * ↑(n % r) ^ 2 / 2) := by
+        conv =>
+          enter [1, 1]
+          rw [← n.div_add_mod r, Nat.cast_add, add_sq, add_assoc,
+            mul_add, add_div, Nat.cast_mul, mul_pow, ← mul_assoc]
+        rw [← Nat.cast_mul,
+          ← Nat.sub_eq_of_eq_add (Nat.div_add_mod n r).symm, Nat.cast_sub (n.mod_le r)]
+        ring_nf
+    _ ≤ (1 - 1 / r) * r ^ 2 * (n / r : ℕ) ^ 2 / 2 := by
+        apply sub_le_self
+        apply add_nonneg
+        · rw [sub_nonneg, ← mul_assoc, mul_comm (r : ℝ) (n : ℝ)]
+          apply mul_le_mul _ (mod_cast (n.mod_lt hr).le) (n % r).cast_nonneg (mod_cast hn.le)
+          exact mul_le_of_le_one_left (mod_cast hn.le) r.one_sub_one_div_cast_le_one
+        · apply div_nonneg _ zero_le_two
+          exact mul_nonneg (r.one_sub_one_div_cast_nonneg) (by positivity)
+    _ = #(completeEquipartiteGraph r (n / r)).edgeFinset := by
+        simp_rw [card_edgeFinset_completeEquipartiteGraph,
+          Nat.cast_mul, Nat.cast_pow,  Nat.cast_choose_two]
+        field_simp
+        ring_nf
+
+variable {W : Type*} [Fintype W] {H : SimpleGraph W}
+
+omit [Fintype W] in
+lemma lt_extremalNumber_of_not_colorable {ε : ℝ} (hε : 0 < ε)
+    {r : ℕ} (hr : 0 < r) (nhc : ¬H.Colorable r) :
+    ∃ n, ∀ {V : Type*} [Fintype V] [DecidableEq V], n < card V →
+      (1 - 1 / r - ε) * card V ^ 2 / 2 < extremalNumber (card V) H := by
+  use ⌊2 * r / ε⌋₊
+  intro V _ _ h_card
+  have : Nonempty V := card_pos_iff.mp (Nat.zero_lt_of_lt h_card)
+  let G := completeEquipartiteGraph r (card V / r)
+  -- `completeEquipartiteGraph` is `r`-colorable
+  have : Nonempty (Fin r × Fin (card V / r) ↪ V) := by
+    apply Function.Embedding.nonempty_of_card_le
+    rw [card_prod, Fintype.card_fin, Fintype.card_fin]
+    exact (card V).mul_div_le r
+  let f := Classical.arbitrary (Fin r × Fin (card V / r) ↪ V)
+  -- `completeEquipartiteGraph` has sufficently many edges
+  have h_card_edges : #G.edgeFinset > (1 - 1 / r - ε) * card V ^ 2 / 2 := by
+    apply card_edgeFinset_completeEquipartiteGraph_gt hr card_pos ε
+    rwa [Nat.floor_lt (by positivity), div_lt_iff₀' hε, ← div_lt_iff₀ (by positivity)] at h_card
+  rw [← G.card_edgeFinset_map f] at h_card_edges
+  apply lt_of_lt_of_le h_card_edges
+  rw [Nat.cast_le]
+  -- `H` is not contained in `completeEquipartiteGraph`
+  apply card_edgeFinset_le_extremalNumber
+  have : NeZero r := ⟨hr.ne'⟩
+  exact free_of_colorable nhc (completeEquipartiteGraph_colorable.map f)
+
+lemma extremalNumber_le_of_colorable {ε : ℝ} (hε : 0 < ε)
+    {r : ℕ} (hc : H.Colorable (r + 1)) :
+    ∃ n, ∀ {V : Type*} [Fintype V] [DecidableEq V], n < card V →
+      extremalNumber (card V) H ≤ (1 - 1 / r + ε) * card V ^ 2 / 2 := by
+  obtain ⟨C⟩ := hc
+  have h₁ := isContained_completeEquipartiteGraph_of_colorable C
+  let t := univ.sup fun c ↦ card (C.colorClass c)
+  have ⟨n, h₂⟩ := completeEquipartiteGraph_isContained_of_card_edgeFinset hε r t
+  use n
+  intro V _ _ h_card
+  trans (extremalNumber (card V) (completeEquipartiteGraph (r + 1) t) : ℝ)
+  -- `H` is ontained in `completeEquipartiteGraph`
+  · exact_mod_cast h₁.extremalNumber_le
+  -- `completeEquipartiteGraph` is contained in `G`
+  · have : 0 ≤ 1 - 1 / r + ε := add_nonneg r.one_sub_one_div_cast_nonneg hε.le
+    rw [extremalNumber_le_iff_of_nonneg _ (by positivity)]
+    intro _ _ h
+    contrapose! h
+    rw [not_free]
+    exact h₂ h_card h.le
+
+/-- If the chromatic number of `H` equals `r + 1 > 0`, then `extremalNumber` of `H` is greater
+than `(1 - 1 / r - o(1)) * card V ^ 2 / 2` and at most `(1 - 1 / r + o(1)) * card V ^ 2 / 2`.
+
+This is the **Erdős-Stone-Simonovits theorem**. -/
+theorem lt_extremalNumber_le_of_chromaticNumber {ε : ℝ} (hε : 0 < ε)
+    {r : ℕ} (hr : 0 < r) (hχ : H.chromaticNumber = r + 1) :
+    ∃ n, ∀ {V : Type*} [Fintype V] [DecidableEq V], n < card V →
+      (1 - 1 / r - ε) * card V ^ 2 / 2 < extremalNumber (card V) H ∧
+      extremalNumber (card V) H ≤ (1 - 1 / r + ε) * card V ^ 2 / 2 := by
+  have ⟨hc, nhc⟩ := chromaticNumber_eq_iff_colorable_not_colorable.mp hχ
+  have ⟨n₁, h₁⟩ := lt_extremalNumber_of_not_colorable hε hr nhc
+  have ⟨n₂, h₂⟩ := extremalNumber_le_of_colorable hε hc
+  use max n₁ n₂
+  intro _ _ _ h_card
+  have h_card₁ := h_card.trans_le' (Nat.le_max_left n₁ n₂)
+  have h_card₂ := h_card.trans_le' (Nat.le_max_right n₁ n₂)
+  exact ⟨h₁ h_card₁, h₂ h_card₂⟩
+
+end ErdosStoneSimonovits
 
 end SimpleGraph
