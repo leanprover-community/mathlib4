@@ -100,7 +100,7 @@ theorem isMaxRank_iff_closure_finiteIndex {u : Fin (rank K) → (𝓞 K)ˣ} :
     rw [QuotientGroup.ker_mk', QuotientGroup.range_mk', index_top, mul_one] at this
     rw [← this, ← index_toAddSubgroup, ← AddSubgroup.index_map_equiv
       _ (logEmbeddingEquiv K).toAddEquiv, Set.range_comp, ← map_span (logEmbeddingEquiv K),
-      ← map_coe_toLinearMap, map_toAddSubgroup, span_int_eq_addSubgroup_closure,
+      ← map_coe_toLinearMap, map_toAddSubgroup, span_int_eq_addSubgroupClosure,
       MonoidHom.map_closure, toAddSubgroup_closure, Set.range_comp, Set.range_comp,
       QuotientGroup.coe_mk', Set.preimage_equiv_eq_image_symm]
     exact Iff.rfl

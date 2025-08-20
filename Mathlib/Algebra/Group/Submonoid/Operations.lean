@@ -975,10 +975,13 @@ theorem coe_submonoidMap_apply (e : M ≃* N) (S : Submonoid M) (g : S) :
     ((submonoidMap e S g : S.map (e : M →* N)) : N) = e g :=
   rfl
 
-@[to_additive (attr := simp) AddEquiv.add_submonoid_map_symm_apply]
+@[to_additive (attr := simp)]
 theorem submonoidMap_symm_apply (e : M ≃* N) (S : Submonoid M) (g : S.map (e : M →* N)) :
     (e.submonoidMap S).symm g = ⟨e.symm g, SetLike.mem_coe.1 <| Set.mem_image_equiv.1 g.2⟩ :=
   rfl
+
+@[deprecated (since := "2025-08-20")]
+alias _root_.AddEquiv.add_submonoid_map_symm_apply := AddEquiv.addSubmonoidMap_symm_apply
 
 end MulEquiv
 
