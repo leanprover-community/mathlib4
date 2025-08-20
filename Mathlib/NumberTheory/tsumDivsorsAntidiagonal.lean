@@ -7,6 +7,7 @@ import Mathlib.NumberTheory.Divisors
 import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 import Mathlib.Analysis.NormedSpace.MultipliableUniformlyOn
 
+
 /-!
 # Lemmas on infinite sums over the antidiagonal of the divisors function
 
@@ -53,7 +54,7 @@ lemma sigmaAntidiagonalEquivProd_symm_apply_snd (x : ℕ+ × ℕ+) :
 
 section tsum
 
-open UpperHalfPlane Real Complex ArithmeticFunctions Nat
+open UpperHalfPlane Real Complex ArithmeticFunction Nat
 
 lemma natcast_norm {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormSMulClass ℤ 𝕜]
     (a : ℕ) : ‖(a : 𝕜)‖ = a := by
@@ -61,6 +62,12 @@ lemma natcast_norm {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormSMulClass 
   simpa using h0
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [NormSMulClass ℤ 𝕜]
+
+@[simp]
+lemma cexp_pow_aux (a b : ℕ) (z : ℍ) :
+    cexp (2 * ↑π * Complex.I * a * z) ^ b = Complex.exp (2 * ↑π * Complex.I * z) ^ (a * b) := by
+  simp [← Complex.exp_nsmul]
+  ring_nf
 
 theorem summable_divisorsAntidiagonal_aux (k : ℕ) (r : 𝕜) (hr : ‖r‖ < 1) :
     Summable fun c : (n : ℕ+) × { x // x ∈ (n : ℕ).divisorsAntidiagonal } ↦
