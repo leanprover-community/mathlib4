@@ -125,6 +125,10 @@ lemma forall_of_forall_verts {e e' : Set α} (he : e ∈ E(H)) (he' : e' ∈ E(H
   fun x ↦ ⟨fun y ↦ (h x (he.isSubset_vertexSet y)).1 y,
   fun y ↦ (h x (he'.isSubset_vertexSet y)).2 y⟩
 
+lemma sUnion_hyperedgeSet_subset_vertexSet : Set.sUnion E(H) ⊆ V(H) := by
+  refine subset_powerset_iff.mp ?_
+  exact coe_isSubset_vertexSet_powerset
+
 end Incidence
 
 section Adjacency
@@ -276,6 +280,9 @@ lemma isEmpty_empty_hypergraph {α : Type*} : IsEmpty (Hypergraph.emptyHypergrap
 
 lemma isEmpty_eq_empty_hypergraph {H : Hypergraph α} (h : H.IsEmpty) : H = emptyHypergraph α := by
   exact Hypergraph.ext_iff.mpr h
+
+@[simp]
+lemma not_mem_empty {α : Type*} {e : Set α} : e ∉ E(emptyHypergraph α) := by exact fun a ↦ a
 
 /--
 Predicate to determine if a hypergraph is trivial
