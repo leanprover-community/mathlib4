@@ -875,22 +875,22 @@ def mapSheaf (F : C ⥤ D)
 variable (F : C ⥤ D) [∀ X : SheafedSpace C, (Opens.grothendieckTopology X).HasSheafCompose F]
 
 @[simp]
-theorem mapSheaf_obj_X (X : SheafedSpace C) :
+lemma mapSheaf_obj_X (X : SheafedSpace C) :
     (F.mapSheaf.obj X : TopCat) = (X : TopCat) :=
   rfl
 
 @[simp]
-theorem mapSheaf_obj_presheaf (X : SheafedSpace C) :
+lemma mapSheaf_obj_presheaf (X : SheafedSpace C) :
     (F.mapSheaf.obj X).presheaf = X.presheaf ⋙ F :=
   rfl
 
 @[simp]
-theorem mapSheaf_map_f {X Y : SheafedSpace C} (f : X ⟶ Y) :
+lemma mapSheaf_map_f {X Y : SheafedSpace C} (f : X ⟶ Y) :
     (F.mapSheaf.map f).base = f.base :=
   rfl
 
 @[simp]
-theorem mapSheaf_map_c {X Y : SheafedSpace C} (f : X ⟶ Y) :
+lemma mapSheaf_map_c {X Y : SheafedSpace C} (f : X ⟶ Y) :
     (F.mapSheaf.map f).c = whiskerRight f.c F :=
   rfl
 
