@@ -9,7 +9,7 @@ import Mathlib.Analysis.NormedSpace.MultipliableUniformlyOn
 import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Cotangent
 import Mathlib.Data.Int.Star
-import Mathlib.NumberTheory.LSeries.Dirichlet
+import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.NumberTheory.LSeries.HurwitzZetaValues
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 import Mathlib.Topology.EMetricSpace.Paracompact
@@ -71,12 +71,6 @@ lemma natcast_norm {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormSMulClass 
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [NormSMulClass ℤ 𝕜]
 
-@[simp]
-lemma cexp_pow_aux (a b : ℕ) (z : ℍ) :
-    cexp (2 * ↑π * Complex.I * a * z) ^ b = Complex.exp (2 * ↑π * Complex.I * z) ^ (a * b) := by
-  simp [← Complex.exp_nsmul]
-  ring_nf
-
 theorem summable_divisorsAntidiagonal_aux (k : ℕ) (r : 𝕜) (hr : ‖r‖ < 1) :
     Summable fun c : (n : ℕ+) × { x // x ∈ (n : ℕ).divisorsAntidiagonal } ↦
     (c.2.1).1 ^ k * (r ^ (c.2.1.2 * c.2.1.1)) := by
@@ -105,28 +99,23 @@ theorem summable_divisorsAntidiagonal_aux (k : ℕ) (r : 𝕜) (hr : ‖r‖ < 1
   · intro a
     simpa using mul_nonneg (by simp) (by simp)
 
-theorem summable_prod_mul_pow (k : ℕ) (r : 𝕜) (hr : ‖r‖ < 1) :
+theorem summable_prod_mul_pow (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     Summable fun c : (ℕ+ × ℕ+) ↦ (c.1 : 𝕜) ^ k * (r ^ (c.2 * c.1 : ℕ)) :=by
   rw [sigmaAntidiagonalEquivProd.summable_iff.symm]
   simp only [sigmaAntidiagonalEquivProd, divisorsAntidiagonalFactors, PNat.mk_coe, Equiv.coe_fn_mk]
   apply summable_divisorsAntidiagonal_aux k r hr
 
-/- theorem summable_prod_aux (k : ℕ) (z : ℍ) : Summable fun c : ℕ+ × ℕ+ ↦
-    (c.1 ^ k : ℂ) * Complex.exp (2 * ↑π * Complex.I * c.2 * z) ^ (c.1 : ℕ) := by
-  simpa using summable_prod_mul_pow  k (Complex.exp (2 * ↑π * Complex.I * z))
-    (by apply UpperHalfPlane.norm_exp_two_pi_I_lt_one z) -/
-
 theorem tsum_prod_pow_eq_tsum_sigma (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
-    ∑' d : ℕ+, ∑' (c : ℕ+), (c ^ k : 𝕜) * (r ^ (d * c : ℕ)) =
-    ∑' e : ℕ+, sigma k e * r ^ (e : ℕ) := by
+    ∑' d : ℕ+, ∑' (c : ℕ+), (c ^ k : 𝕜) * (r ^ (d * c : ℕ)) = ∑' e : ℕ+, σ k e * r ^ (e : ℕ) := by
   suffices  ∑' (c : ℕ+ × ℕ+), (c.1 ^ k : 𝕜) * (r ^ ((c.2 : ℕ) * (c.1 : ℕ))) =
-      ∑' e : ℕ+, sigma k e * r ^ (e : ℕ) by
-    rw [Summable.tsum_prod (by apply summable_prod_mul_pow  k r hr), Summable.tsum_comm] at this
+    ∑' e : ℕ+, σ k e * r ^ (e : ℕ) by
+    rw [Summable.tsum_prod (by apply summable_prod_mul_pow  k hr), Summable.tsum_comm] at this
     · simpa using this
-    · apply (summable_prod_mul_pow  k r hr).prod_symm.congr
+    · apply (summable_prod_mul_pow  k hr).prod_symm.congr
       simp
   simp only [← sigmaAntidiagonalEquivProd.tsum_eq, sigmaAntidiagonalEquivProd,
-     divisorsAntidiagonalFactors, PNat.mk_coe, Equiv.coe_fn_mk, sigma_eq_sum_div', Nat.cast_sum, Nat.cast_pow]
+    divisorsAntidiagonalFactors, PNat.mk_coe, Equiv.coe_fn_mk, sigma_eq_sum_div', cast_sum,
+    cast_pow]
   rw [Summable.tsum_sigma (summable_divisorsAntidiagonal_aux k r hr)]
   apply tsum_congr
   intro n
@@ -145,12 +134,10 @@ theorem tsum_prod_pow_eq_tsum_sigma (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
   nth_rw 2 [← hni]
   ring
 
-lemma tsum_eq_tsum_sigma (z : ℍ) : ∑' n : ℕ+,
-    n * cexp (2 * π * Complex.I * z) ^ (n : ℕ) / (1 - cexp (2 * π *  Complex.I * z) ^ (n : ℕ)) =
-    ∑' n : ℕ+, σ 1 n * cexp (2 * π * Complex.I * z) ^ (n : ℕ) := by
+lemma tsum_eq_tsum_sigma {r : 𝕜} (hr : ‖r‖ < 1) :
+    ∑' n : ℕ+, n * r ^ (n : ℕ) / (1 - r ^ (n : ℕ)) = ∑' n : ℕ+, σ 1 n * r ^ (n : ℕ) := by
   have := fun m : ℕ+ => tsum_choose_mul_geometric_of_norm_lt_one
-    (r := (cexp (2 * ↑π * Complex.I * z)) ^ (m : ℕ)) 0 (by simpa using
-    (pow_lt_one₀ (by simp) (UpperHalfPlane.norm_exp_two_pi_I_lt_one z) (by apply PNat.ne_zero)))
+    (r := r ^ (m : ℕ)) 0 (by simpa using (pow_lt_one₀ (by simp) hr (by apply PNat.ne_zero)))
   simp only [add_zero, Nat.choose_zero_right, Nat.cast_one, one_mul, zero_add, pow_one,
     one_div] at this
   conv =>
@@ -161,18 +148,19 @@ lemma tsum_eq_tsum_sigma (z : ℍ) : ∑' n : ℕ+,
     conv =>
       enter [1]
       ext m
-      rw [mul_assoc, ← pow_succ' (cexp (2 * ↑π * Complex.I * ↑z) ^ (n : ℕ)) m ]
-  have h00 := (tsum_prod_pow_cexp_eq_tsum_sigma z (k := 1))
-  rw [Summable.tsum_comm (by apply summable_prod_aux (k := 1) z)] at h00
+      rw [mul_assoc, ← pow_succ' (r ^ (n : ℕ)) m ]
+  have h00 := (tsum_prod_pow_eq_tsum_sigma 1 hr)
+  rw [Summable.tsum_comm (by apply summable_prod_mul_pow 1 hr)] at h00
   rw [← h00]
   apply tsum_congr
   intro b
-  rw [← tsum_pnat_eq_tsum_succ (fun n =>  b * (cexp (2 * π * Complex.I  * z) ^ (b : ℕ)) ^ (n : ℕ))]
+  rw [← tsum_pnat_eq_tsum_succ (fun n =>  b * (r ^ (b : ℕ)) ^ (n : ℕ))]
   apply tsum_congr
   intro c
-  simp only [← exp_nsmul, nsmul_eq_mul, pow_one, mul_eq_mul_left_iff, Nat.cast_eq_zero,
-    PNat.ne_zero, or_false]
-  ring_nf
+  simp only [← pow_mul, pow_one, mul_eq_mul_left_iff]
+  left
+  ring
+
 
 lemma summable_norm_pow_mul_geometric_div_one_sub {F : Type*} [NontriviallyNormedField F]
     [CompleteSpace F] (k : ℕ) {r : F} (hr : ‖r‖ < 1) :
