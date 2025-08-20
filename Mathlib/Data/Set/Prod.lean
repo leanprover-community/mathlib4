@@ -684,7 +684,7 @@ theorem pi_eq_empty_iff' : s.pi t = ∅ ↔ ∃ i ∈ s, t i = ∅ := by simp [p
 theorem disjoint_pi : Disjoint (s.pi t₁) (s.pi t₂) ↔ ∃ i ∈ s, Disjoint (t₁ i) (t₂ i) := by
   simp only [disjoint_iff_inter_eq_empty, ← pi_inter_distrib, pi_eq_empty_iff']
 
-theorem pi_nonempty_iff' [∀ i, Decidable (i ∈ s)]  :
+theorem pi_nonempty_iff' [∀ i, Decidable (i ∈ s)] :
     (s.pi t).Nonempty ↔ ∀ i ∈ s, (t i).Nonempty := by
   classical
   rw [pi_nonempty_iff]

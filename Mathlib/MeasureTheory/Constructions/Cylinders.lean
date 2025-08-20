@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber, Yaël Dillies, Kin Yau James Wong
 -/
 import Mathlib.Data.Finset.Lattice.Basic
+import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 import Mathlib.MeasureTheory.SetSemiring
 import Mathlib.Topology.Constructions
 import Mathlib.MeasureTheory.SetAlgebra
@@ -65,7 +66,7 @@ def squareCylinders (C : ∀ i, Set (Set (α i))) : Set (Set (∀ i, α i)) :=
 theorem squareCylinders_eq_iUnion_image (C : ∀ i, Set (Set (α i))) :
     squareCylinders C = ⋃ s : Finset ι, (s : Set ι).pi  '' univ.pi C := by
   ext1 f
-  simp only [squareCylinder, squareCylinders, mem_iUnion, mem_image, mem_univ_pi, exists_prop,
+  simp only [squareCylinder, squareCylinders, mem_iUnion, mem_image, mem_univ_pi,
     mem_setOf_eq, eq_comm (a := f)]
 
 theorem squareCylinders_eq_iUnion_image' (C : ∀ i, Set (Set (α i))) (hC : ∀ i, Nonempty (C i)) :
@@ -102,7 +103,7 @@ theorem squareCylinders_subset_pi (C : ∀ i, Set (Set (α i))) (hC : ∀ i, uni
   classical
   use fun i ↦ (if i ∈ s.toSet then (t i) else univ)
   refine ⟨fun i ↦ ?_, ?_⟩
-  · simp only [mem_pi, mem_univ, forall_const]
+  · simp only [mem_univ, forall_const]
     by_cases hi : i ∈ s.toSet <;> simp only [hi, ↓reduceIte]
     · exact h₀ i
     · exact hC i
@@ -170,7 +171,7 @@ theorem comap_eval_le_generateFrom_squareCylinders_singleton
     · simp only [hji, not_false_iff, dif_neg, MeasurableSet.univ]
   · simp only [eq_mpr_eq_cast, ← h]
     ext1 x
-    simp only [singleton_pi, Function.eval, cast_eq, dite_eq_ite, ite_true, Set.mem_preimage]
+    simp only [Function.eval, cast_eq, dite_eq_ite, ite_true, Set.mem_preimage]
 
 /-- The square cylinders formed from measurable sets generate the product σ-algebra. -/
 theorem generateFrom_squareCylinders [∀ i, MeasurableSpace (α i)] :
