@@ -39,7 +39,7 @@ the property through `turanGraph n r` using the isomorphism provided by the forw
 * https://en.wikipedia.org/wiki/Turán%27s_theorem
 -/
 
-open Finset
+open Finset Fintype
 
 namespace SimpleGraph
 
@@ -89,14 +89,14 @@ theorem turanGraph_cliqueFree (hr : 0 < r) : (turanGraph n r).CliqueFree (r + 1)
   rw [not_isEmpty_iff] at h
   obtain ⟨f, ha⟩ := h
   simp only [turanGraph, top_adj] at ha
-  obtain ⟨x, y, d, c⟩ := Fintype.exists_ne_map_eq_of_card_lt (fun x ↦
+  obtain ⟨x, y, d, c⟩ := exists_ne_map_eq_of_card_lt (fun x ↦
     (⟨(f x).1 % r, Nat.mod_lt _ hr⟩ : Fin r)) (by simp)
   simp only [Fin.mk.injEq] at c
   exact absurd c ((@ha x y).mpr d)
 
 /-- An `r + 1`-cliquefree Turán-maximal graph is _not_ `r`-cliquefree
 if it can accommodate such a clique. -/
-theorem not_cliqueFree_of_isTuranMaximal (hn : r ≤ Fintype.card V) (hG : G.IsTuranMaximal r) :
+theorem not_cliqueFree_of_isTuranMaximal (hn : r ≤ card V) (hG : G.IsTuranMaximal r) :
     ¬G.CliqueFree r := by
   rintro h
   obtain ⟨K, _, rfl⟩ := exists_subset_card_eq hn
@@ -197,11 +197,11 @@ lemma not_adj_iff_part_eq [DecidableEq V] :
   rw [fp.mem_part_iff_part_eq_part (mem_univ t) (mem_univ s), eq_comm]
 
 lemma degree_eq_card_sub_part_card [DecidableEq V] :
-    G.degree s = Fintype.card V - #(h.finpartition.part s) :=
+    G.degree s = card V - #(h.finpartition.part s) :=
   calc
     _ = #{t | G.Adj s t} := by
       simp [← card_neighborFinset_eq_degree, neighborFinset]
-    _ = Fintype.card V - #{t | ¬G.Adj s t} :=
+    _ = card V - #{t | ¬G.Adj s t} :=
       eq_tsub_of_add_eq (filter_card_add_filter_neg_card_eq_card _)
     _ = _ := by
       congr; ext; rw [mem_filter]
@@ -226,7 +226,7 @@ theorem isEquipartition [DecidableEq V] : h.finpartition.IsEquipartition := by
     rw [hn] at ineq; omega
   rw [G.card_edgeFinset_replaceVertex_of_adj ha,
     degree_eq_card_sub_part_card h, small_eq, degree_eq_card_sub_part_card h, large_eq]
-  have : #large ≤ Fintype.card V := by simpa using card_le_card large.subset_univ
+  have : #large ≤ card V := by simpa using card_le_card large.subset_univ
   omega
 
 lemma card_parts_le [DecidableEq V] : #h.finpartition.parts ≤ r := by
@@ -242,7 +242,7 @@ lemma card_parts_le [DecidableEq V] : #h.finpartition.parts ≤ r := by
 /-- There are `min n r` parts in a graph on `n` vertices satisfying `G.IsTuranMaximal r`.
 `min` handles the `n < r` case, when `G` is complete but still `r + 1`-cliquefree
 for having insufficiently many vertices. -/
-theorem card_parts [DecidableEq V] : #h.finpartition.parts = min (Fintype.card V) r := by
+theorem card_parts [DecidableEq V] : #h.finpartition.parts = min (card V) r := by
   set fp := h.finpartition
   apply le_antisymm (le_min fp.card_parts_le_card h.card_parts_le)
   by_contra! l
@@ -267,7 +267,7 @@ theorem card_parts [DecidableEq V] : #h.finpartition.parts = min (Fintype.card V
 
 Any `r + 1`-cliquefree Turán-maximal graph on `n` vertices is isomorphic to `turanGraph n r`. -/
 theorem nonempty_iso_turanGraph :
-    Nonempty (G ≃g turanGraph (Fintype.card V) r) := by
+    Nonempty (G ≃g turanGraph (card V) r) := by
   classical
   obtain ⟨zm, zp⟩ := h.isEquipartition.exists_partPreservingEquiv
   use (Equiv.subtypeUnivEquiv mem_univ).symm.trans zm
@@ -276,9 +276,9 @@ theorem nonempty_iso_turanGraph :
   have := zp ⟨a, mem_univ a⟩ ⟨b, mem_univ b⟩
   rw [← h.not_adj_iff_part_eq] at this
   rw [← not_iff_not, not_ne_iff, this, card_parts]
-  rcases le_or_gt r (Fintype.card V) with c | c
+  rcases le_or_gt r (card V) with c | c
   · rw [min_eq_right c]; rfl
-  · have lc : ∀ x, zm ⟨x, _⟩ < Fintype.card V := fun x ↦ (zm ⟨x, mem_univ x⟩).2
+  · have lc : ∀ x, zm ⟨x, _⟩ < card V := fun x ↦ (zm ⟨x, mem_univ x⟩).2
     rw [min_eq_left c.le, Nat.mod_eq_of_lt (lc a), Nat.mod_eq_of_lt (lc b),
       ← Nat.mod_eq_of_lt ((lc a).trans c), ← Nat.mod_eq_of_lt ((lc b).trans c)]; rfl
 
@@ -306,7 +306,7 @@ theorem isTuranMaximal_turanGraph (hr : 0 < r) : (turanGraph n r).IsTuranMaximal
 /-- **Turán's theorem**. `turanGraph n r` is, up to isomorphism, the unique
 `r + 1`-cliquefree Turán-maximal graph on `n` vertices. -/
 theorem isTuranMaximal_iff_nonempty_iso_turanGraph (hr : 0 < r) :
-    G.IsTuranMaximal r ↔ Nonempty (G ≃g turanGraph (Fintype.card V) r) :=
+    G.IsTuranMaximal r ↔ Nonempty (G ≃g turanGraph (card V) r) :=
   ⟨fun h ↦ h.nonempty_iso_turanGraph, fun h ↦ isTuranMaximal_of_iso h.some hr⟩
 
 end SimpleGraph
