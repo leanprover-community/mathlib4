@@ -168,5 +168,3 @@ lemma tsum_pow_div_one_sub_eq_tsum_sigma {r : 𝕜} (hr : ‖r‖ < 1) :
   ring
 
 end tsum
-
-#min_imports
