@@ -156,4 +156,25 @@ theorem chromaticNumber_cycleGraph_of_odd (n : ℕ) (h : 2 ≤ n) (hOdd : Odd n)
     rw [← hn3]
     exact Walk.three_le_chromaticNumber_of_odd_loop w hOdd'
 
+open Walk
+lemma two_colorable_iff_forall_loop_even {α : Type*} {G : SimpleGraph α} :
+    G.Colorable 2 ↔ ∀ u, ∀ (w : G.Walk u u), Even w.length := by
+  simp_rw [← Nat.not_odd_iff_even]
+  constructor <;> intro h
+  · intro _ w ho
+    have := (w.three_le_chromaticNumber_of_odd_loop ho).trans h.chromaticNumber_le
+    norm_cast
+  · apply colorable_iff_forall_connectedComponents.2
+    intro c
+    obtain ⟨_, hv⟩ := c.nonempty_supp
+    use fun a ↦ Fin.ofNat 2 (c.connected_toSimpleGraph ⟨_, hv⟩ a).some.length
+    intro a b hab he
+    apply h _ <| (((c.connected_toSimpleGraph ⟨_, hv⟩ a).some.concat hab).append
+                 (c.connected_toSimpleGraph ⟨_, hv⟩ b).some.reverse).map c.toSimpleGraph_hom
+    rw [length_map, length_append, length_concat, length_reverse, add_right_comm]
+    have : ((Nonempty.some (c.connected_toSimpleGraph ⟨_, hv⟩ a)).length) % 2 =
+        (Nonempty.some (c.connected_toSimpleGraph ⟨_, hv⟩ b)).length % 2 := by
+      simp_rw [← Fin.val_natCast, ← Fin.ofNat_eq_cast, he]
+    exact (Nat.even_iff.mpr (by omega)).add_one
+
 end SimpleGraph

@@ -139,7 +139,7 @@ theorem lift_spec {C} [Category C] (φ : V ⥤q C) : of V ⋙q (lift φ).toPrefu
   · rintro X Y f
     rcases φ with ⟨φo, φm⟩
     dsimp [lift, Quiver.Hom.toPath]
-    simp only [Category.id_comp]
+    simp
 
 theorem lift_unique {C} [Category C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
     (hΦ : of V ⋙q Φ.toPrefunctor = φ) : Φ = lift φ := by

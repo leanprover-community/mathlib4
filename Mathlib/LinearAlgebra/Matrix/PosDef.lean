@@ -525,21 +525,30 @@ theorem det_pos [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : 0 < det 
   intro i _
   simpa using hM.eigenvalues_pos i
 
-theorem isUnit [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : IsUnit M :=
-  isUnit_iff_isUnit_det _ |>.2 <| hM.det_pos.ne'.isUnit
+section Field
+variable {K : Type*} [Field K] [PartialOrder K] [StarRing K]
 
-protected theorem inv [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : M⁻¹.PosDef := by
+theorem isUnit [DecidableEq n] {M : Matrix n n K} (hM : M.PosDef) : IsUnit M := by
+  by_contra h
+  obtain ⟨a, ha, ha2⟩ : ∃ a ≠ 0, M *ᵥ a = 0 := by
+    obtain ⟨a, b, ha⟩ := Function.not_injective_iff.mp <| mulVec_injective_iff_isUnit.not.mpr h
+    exact ⟨a - b, by simp [sub_eq_zero, ha, mulVec_sub]⟩
+  simpa [ha2] using hM.2 _ ha
+
+protected theorem inv [DecidableEq n] {M : Matrix n n K} (hM : M.PosDef) : M⁻¹.PosDef := by
   have := hM.mul_mul_conjTranspose_same (B := M⁻¹) ?_
   · let _ := hM.isUnit.invertible
     simpa using this.conjTranspose
   · simp only [Matrix.vecMul_injective_iff_isUnit, isUnit_nonsing_inv_iff, hM.isUnit]
 
 @[simp]
-theorem _root_.Matrix.posDef_inv_iff [DecidableEq n] {M : Matrix n n 𝕜} :
+theorem _root_.Matrix.posDef_inv_iff [DecidableEq n] {M : Matrix n n K} :
     M⁻¹.PosDef ↔ M.PosDef :=
   ⟨fun h =>
     letI := (Matrix.isUnit_nonsing_inv_iff.1 <| h.isUnit).invertible
     Matrix.inv_inv_of_invertible M ▸ h.inv, (·.inv)⟩
+
+end Field
 
 lemma posDef_sqrt [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) :
     PosDef hM.posSemidef.sqrt := by
@@ -560,6 +569,18 @@ lemma _root_.Matrix.posDef_iff_eq_conjTranspose_mul_self [DecidableEq n] {A : Ma
 
 @[deprecated (since := "07-08-2025")] alias posDef_iff_eq_conjTranspose_mul_self :=
   Matrix.posDef_iff_eq_conjTranspose_mul_self
+
+/-- A positive semi-definite matrix is positive definite if and only if it is invertible. -/
+@[grind =]
+theorem _root_.Matrix.PosSemidef.posDef_iff_isUnit [DecidableEq n] {x : Matrix n n 𝕜}
+    (hx : x.PosSemidef) : x.PosDef ↔ IsUnit x := by
+  refine ⟨fun h => h.isUnit, fun h => ⟨hx.1, fun v hv => ?_⟩⟩
+  obtain ⟨y, rfl⟩ := posSemidef_iff_eq_conjTranspose_mul_self.mp hx
+  simp_rw [dotProduct_mulVec, ← vecMul_vecMul, ← star_mulVec, ← dotProduct_mulVec,
+    dotProduct_star_self_pos_iff]
+  contrapose! hv
+  rw [← map_eq_zero_iff (f := (yᴴ * y).mulVecLin) (mulVec_injective_iff_isUnit.mpr h),
+    mulVecLin_apply, ← mulVec_mulVec, hv, mulVec_zero]
 
 end PosDef
 
