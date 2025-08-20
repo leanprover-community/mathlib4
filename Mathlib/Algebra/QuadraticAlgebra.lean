@@ -38,19 +38,20 @@ structure QuadraticAlgebra (R : Type u) (a b : R) : Type u where
   im : R
 deriving DecidableEq
 
+variable {R : Type*}
 namespace QuadraticAlgebra
 
 /-- The equivalence between quadratic algebra over `R` and `R × R`. -/
 @[simps symm_apply]
-def equivProd {R : Type*} (a b : R) : QuadraticAlgebra R a b ≃ R × R where
+def equivProd (a b : R) : QuadraticAlgebra R a b ≃ R × R where
   toFun z := (z.re, z.im)
   invFun p := ⟨p.1, p.2⟩
 
 @[simp]
-theorem mk_eta {R : Type*} {a b} (z : QuadraticAlgebra R a b) :
+theorem mk_eta {a b} (z : QuadraticAlgebra R a b) :
     mk z.re z.im = z := rfl
 
-variable {S T R : Type*} {a b} (r : R) (x y : QuadraticAlgebra R a b)
+variable {S T : Type*} {a b} (r : R) (x y : QuadraticAlgebra R a b)
 
 instance [Subsingleton R] : Subsingleton (QuadraticAlgebra R a b) := (equivProd a b).subsingleton
 
