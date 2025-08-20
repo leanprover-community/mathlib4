@@ -828,10 +828,7 @@ def sUnionPowersetGI :
 /-- If all sets in a collection are either `∅` or `Set.univ`, then so is their union. -/
 theorem sUnion_mem_empty_univ {S : Set (Set α)} (h : S ⊆ {∅, univ}) :
     ⋃₀ S ∈ ({∅, univ} : Set (Set α)) := by
-  simp only [mem_insert_iff, mem_singleton_iff, or_iff_not_imp_left, sUnion_eq_empty, not_forall]
-  rintro ⟨s, hs, hne⟩
-  obtain rfl : s = univ := (h hs).resolve_left hne
-  exact univ_subset_iff.1 <| subset_sUnion_of_mem hs
+  grind
 
 @[simp]
 theorem nonempty_sUnion {S : Set (Set α)} : (⋃₀ S).Nonempty ↔ ∃ s ∈ S, Set.Nonempty s := by
