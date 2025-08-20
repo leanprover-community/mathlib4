@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
 import Mathlib.NumberTheory.Divisors
+import Mathlib.Data.PNat.Defs
 
 /-!
 # Lemmas on infinite sums over the antidiagonal of the divisors function
