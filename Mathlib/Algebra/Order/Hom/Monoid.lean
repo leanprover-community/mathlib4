@@ -116,7 +116,11 @@ structure OrderMonoidHom (α β : Type*) [Preorder α] [Preorder β] [MulOneClas
 /-- Infix notation for `OrderMonoidHom`. -/
 infixr:25 " →*o " => OrderMonoidHom
 
-variable [Preorder α] [Preorder β] [MulOneClass α] [MulOneClass β] [FunLike F α β]
+variable [Preorder α] [Preorder β] [MulOneClass α] [MulOneClass β]
+
+section FunLike
+
+variable [FunLike F α β]
 
 /-- Turn an element of a type `F` satisfying `OrderHomClass F α β` and `MonoidHomClass F α β`
 into an actual `OrderMonoidHom`. This is declared as the default coercion from `F` to `α →*o β`. -/
@@ -135,6 +139,8 @@ def OrderMonoidHomClass.toOrderMonoidHom [OrderHomClass F α β] [MonoidHomClass
 instance [OrderHomClass F α β] [MonoidHomClass F α β] : CoeTC F (α →*o β) :=
   ⟨OrderMonoidHomClass.toOrderMonoidHom⟩
 
+end FunLike
+
 /-- `α ≃*o β` is the type of isomorphisms `α ≃ β` that preserve the `OrderedCommMonoid` structure.
 
 `OrderMonoidIso` is also used for ordered group isomorphisms.
@@ -150,8 +156,6 @@ structure OrderMonoidIso (α β : Type*) [Preorder α] [Preorder β] [Mul α] [M
 
 /-- Infix notation for `OrderMonoidIso`. -/
 infixr:25 " ≃*o " => OrderMonoidIso
-
-variable [Preorder α] [Preorder β] [MulOneClass α] [MulOneClass β] [FunLike F α β]
 
 /-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` and `MulEquivClass F α β`
 into an actual `OrderMonoidIso`. This is declared as the default coercion from `F` to `α ≃*o β`. -/
