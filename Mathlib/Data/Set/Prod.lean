@@ -810,6 +810,33 @@ theorem piMap_image_univ_pi (f : ∀ i, α i → β i) (t : ∀ i, Set (α i)) :
 theorem range_piMap (f : ∀ i, α i → β i) : range (Pi.map f) = pi univ fun i ↦ range (f i) := by
   simp only [← image_univ, ← piMap_image_univ_pi, pi_univ]
 
+theorem subset_pi_iff {s'} : s' ⊆ pi s t ↔ ∀ i ∈ s, (· i) '' s' ⊆ t i := by
+  constructor
+  · intro h i hi
+    rintro _ ⟨x, hx, rfl⟩
+    exact (h hx) _ hi
+  · intro h x hx i hi
+    exact h i hi ⟨_, hx, rfl⟩
+
+theorem update_mem_pi [DecidableEq ι] {a} (ha : a ∈ pi s t) {i b} :
+    update a i b ∈ pi s t ↔ i ∈ s → b ∈ t i := by
+  constructor
+  · intro h hi
+    simpa using h i hi
+  · intro h j hj
+    by_cases heq : j = i
+    · subst heq
+      simpa using h hj
+    · simpa [heq] using ha j hj
+
+theorem pi_univ_eq_singleton_iff {a} : pi univ t = {a} ↔ ∀ i, t i = {a i} := by
+  classical
+  simp only [eq_singleton_iff_unique_mem]
+  constructor
+  · refine fun ⟨h₁, h₂⟩ i => ⟨h₁ i trivial, fun x hx => ?_⟩
+    rw [← h₂ _ fun j _ => ((update_mem_pi h₁).mpr (fun _ => hx)) j trivial, update_self]
+  · exact fun h => ⟨fun i _ => (h i).1, fun x hx => funext fun i => (h i).2 _ (hx _ trivial)⟩
+
 theorem pi_subset_pi_iff : pi s t₁ ⊆ pi s t₂ ↔ (∀ i ∈ s, t₁ i ⊆ t₂ i) ∨ pi s t₁ = ∅ := by
   refine
     ⟨fun h => or_iff_not_imp_right.2 ?_, fun h => h.elim pi_mono fun h' => h'.symm ▸ empty_subset _⟩
