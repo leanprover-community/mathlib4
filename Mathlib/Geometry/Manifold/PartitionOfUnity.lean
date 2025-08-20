@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Geometry.Manifold.Algebra.Structures
 import Mathlib.Geometry.Manifold.BumpFunction
+import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 import Mathlib.Topology.MetricSpace.PartitionOfUnity
 import Mathlib.Topology.ShrinkingLemma
 
@@ -58,7 +59,7 @@ smooth bump function, partition of unity
 
 universe uι uE uH uM uF
 
-open Function Filter Module Set
+open Bundle Function Filter Module Set
 open scoped Topology Manifold ContDiff
 
 noncomputable section
@@ -569,33 +570,135 @@ theorem exists_isSubordinate_chartAt_source :
   apply exists_isSubordinate _ isClosed_univ _ (fun i ↦ (chartAt H _).open_source) (fun x _ ↦ ?_)
   exact mem_iUnion_of_mem x (mem_chart_source H x)
 
+/--
+Let `ρ` be a smooth partition of unity subordinate to an open cover `U`.
+Let `s_loc` be a family of local sections, where each `s_loc i` is $C^n$ smooth on `U i`
+(when viewed as a map to the total space of the bundle).
+Then the global section `x ↦ ∑ᶠ i, ρ i x • s_loc i x`, when viewed as a map to the total space,
+is $C^n$ smooth.
+-/
+theorem contMDiff_totalSpace_weighted_sum_of_local_sections
+    {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {H : Type uH} [TopologicalSpace H] (I : ModelWithCorners ℝ E H) {M : Type uM}
+      [TopologicalSpace M] [ChartedSpace H M]
+    {F_fiber : Type*} [NormedAddCommGroup F_fiber] [NormedSpace ℝ F_fiber]
+    (V : M → Type*) [∀ x, NormedAddCommGroup (V x)] [∀ x, Module ℝ (V x)]
+    [TopologicalSpace (TotalSpace F_fiber V)] [FiberBundle F_fiber V] [VectorBundle ℝ F_fiber V]
+    {n : ℕ∞} {ι : Type*} (ρ : SmoothPartitionOfUnity ι I M univ) (s_loc : ι → ((x : M) → V x))
+    (U : ι → Set M) (hU_isOpen : ∀ i, IsOpen (U i)) (hρ_subord : ρ.IsSubordinate U)
+    (h_smooth_s_loc : ∀ i, ContMDiffOn I (I.prod 𝓘(ℝ, F_fiber)) n
+      (fun x ↦ TotalSpace.mk' F_fiber x (s_loc i x)) (U i)) :
+    ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n
+      (fun x ↦ TotalSpace.mk' F_fiber x (∑ᶠ (j : ι), (ρ j x) • (s_loc j x))) := by
+  intro x₀
+  apply (Bundle.contMDiffAt_section x₀).mpr
+  let e₀ := trivializationAt F_fiber V x₀
+  apply ContMDiffAt.congr_of_eventuallyEq
+  · apply ρ.contMDiffAt_finsum
+    · intro j hx₀
+      have := h_smooth_s_loc j |>.contMDiffAt <| (hU_isOpen j).mem_nhds <| hρ_subord j hx₀
+      rwa [Bundle.contMDiffAt_section] at this
+  · have h_base : {x : M | x ∈ e₀.baseSet} ∈ 𝓝 x₀ :=
+      e₀.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x₀)
+    filter_upwards [ρ.eventually_fintsupport_subset x₀, h_base] with x _ hx_base
+    have hfin : {i : ι | (ρ i x • s_loc i x) ≠ 0}.Finite := by
+      refine (ρ.locallyFinite.point_finite x).subset fun i hi_smul_ne_zero => ?_
+      have : ρ i x ≠ 0 ∧ s_loc i x ≠ 0 := by simpa using hi_smul_ne_zero
+      exact this.1
+    simpa using e₀.linearEquivAt ℝ x hx_base |>.toAddMonoidHom.map_finsum hfin
+
 end SmoothPartitionOfUnity
 
 variable [SigmaCompactSpace M] [T2Space M] {t : M → Set F} {n : ℕ∞}
 
+/-- Let `V` be a vector bundle over a σ-compact Hausdorff finite dimensional topological manifold
+`M`. Let `t : M → Set (V x)` be a family of convex sets in the fibers of `V`.
+Suppose that for each point `x₀ : M` there exists a neighborhood `U_x₀` of `x₀` and a local
+section `s_loc : M → V x` such that `s_loc` is $C^n$ smooth on `U_x₀` (when viewed as a map to
+the total space of the bundle) and `s_loc y ∈ t y` for all `y ∈ U_x₀`.
+Then there exists a global $C^n$ smooth section `s : Cₛ^n⟮I_M; F_fiber, V⟯` such that
+`s x ∈ t x` for all `x : M`.
+-/
+theorem exists_contMDiffOn_section_forall_mem_convex_of_local
+    {F_fiber : Type*} [NormedAddCommGroup F_fiber] [NormedSpace ℝ F_fiber]
+    (V : M → Type*) [∀ x, NormedAddCommGroup (V x)] [∀ x, Module ℝ (V x)]
+    [TopologicalSpace (TotalSpace F_fiber V)] [FiberBundle F_fiber V] [VectorBundle ℝ F_fiber V]
+    (t : ∀ x, Set (V x)) (ht_conv : ∀ x, Convex ℝ (t x))
+    (Hloc :
+      ∀ x₀ : M, ∃ U_x₀ ∈ 𝓝 x₀, ∃ (s_loc : (x : M) → V x),
+        (ContMDiffOn I (I.prod 𝓘(ℝ, F_fiber)) n
+          (fun x ↦ TotalSpace.mk' F_fiber x (s_loc x)) U_x₀) ∧
+        (∀ y ∈ U_x₀, s_loc y ∈ t y)) :
+    ∃ s : Cₛ^n⟮I; F_fiber, V⟯, ∀ x : M, s x ∈ t x := by
+  choose W h_nhds s_loc s_smooth h_mem_t using Hloc
+  -- Construct an open cover from the interiors of the given neighborhoods.
+  let U (x : M) : Set M := interior (W x)
+  have hU_covers_univ : univ ⊆ ⋃ x, U x := by
+    intro x_pt _
+    simp only [mem_iUnion]
+    exact ⟨x_pt, mem_interior_iff_mem_nhds.mpr (h_nhds x_pt)⟩
+  -- Obtain a smooth partition of unity subordinate to this open cover.
+  obtain ⟨ρ, hρU⟩ : ∃ ρ : SmoothPartitionOfUnity M I M univ, ρ.IsSubordinate U :=
+    SmoothPartitionOfUnity.exists_isSubordinate
+      I isClosed_univ U (fun x ↦ isOpen_interior) hU_covers_univ
+  -- Define the global section `s` by taking a weighted sum of the local sections.
+  let s x : V x := ∑ᶠ j, (ρ j x) • s_loc j x
+  -- Prove that `s`, when viewed as a map to the total space, is smooth.
+  have s_smooth : ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n (fun x ↦ TotalSpace.mk' F_fiber x (s x)) :=
+    ρ.contMDiff_totalSpace_weighted_sum_of_local_sections
+      I V s_loc U (fun x ↦ isOpen_interior) hρU fun j ↦ (s_smooth j).mono interior_subset
+  -- Construct the smooth section and prove it lies in the convex sets `t x`.
+  refine ⟨⟨s, s_smooth⟩, fun x ↦ ?_⟩
+  apply (ht_conv x).finsum_mem (ρ.nonneg · x) (ρ.sum_eq_one (mem_univ x))
+  intro j h_ρjx_ne_zero
+  have h_x_in_tsupport_ρj : x ∈ tsupport (ρ j) := subset_closure (mem_support.mpr h_ρjx_ne_zero)
+  have h_x_in_Umap_j : x ∈ W j := interior_subset (hρU j h_x_in_tsupport_ρj)
+  exact h_mem_t j x h_x_in_Umap_j
+
+/-- Let `V` be a vector bundle over a σ-compact Hausdorff finite dimensional topological manifold
+`M`. Let `t : M → Set (V x)` be a family of convex sets in the fibers of `V`.
+Suppose that for each point `x₀ : M` there exists a neighborhood `U_x₀` of `x₀` and a local
+section `s_loc : M → V x` such that `s_loc` is $C^∞$ smooth on `U_x₀` (when viewed as a map to
+the total space of the bundle) and `s_loc y ∈ t y` for all `y ∈ U_x₀`.
+Then there exists a global smooth section `s : Cₛ^∞⟮I_M; F_fiber, V⟯` such that
+`s x ∈ t x` for all `x : M`.
+-/
+theorem exists_smooth_section_forall_mem_convex_of_local
+    {F_fiber : Type*} [NormedAddCommGroup F_fiber] [NormedSpace ℝ F_fiber]
+    (V : M → Type*) [∀ x, NormedAddCommGroup (V x)] [∀ x, Module ℝ (V x)]
+    [TopologicalSpace (TotalSpace F_fiber V)] [FiberBundle F_fiber V] [VectorBundle ℝ F_fiber V]
+    (t : ∀ x, Set (V x)) (ht_conv : ∀ x, Convex ℝ (t x))
+    (Hloc :
+      ∀ x₀ : M, ∃ U_x₀ ∈ 𝓝 x₀, ∃ (s_loc : (x : M) → V x),
+        (ContMDiffOn I (I.prod 𝓘(ℝ, F_fiber)) ∞ (fun x ↦ TotalSpace.mk' F_fiber x (s_loc x)) U_x₀) ∧
+        (∀ y ∈ U_x₀, s_loc y ∈ t y)) :
+    ∃ s : Cₛ^∞⟮I; F_fiber, V⟯, ∀ x : M, s x ∈ t x :=
+      exists_contMDiffOn_section_forall_mem_convex_of_local I V t ht_conv Hloc
+
 /-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → Set F`
 be a family of convex sets. Suppose that for each point `x : M` there exists a neighborhood
 `U ∈ 𝓝 x` and a function `g : M → F` such that `g` is $C^n$ smooth on `U` and `g y ∈ t y` for all
-`y ∈ U`. Then there exists a $C^n$ smooth function `g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x`
-for all `x`. See also `exists_smooth_forall_mem_convex_of_local` and
+`y ∈ U`. Then there exists a $C^n$ smooth function `g : C^n⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x`
+for all `x`.
+
+This is a special case of `exists_contMDiffOn_section_forall_mem_convex_of_local` where `V` is the
+trivial bundle. See also `exists_smooth_forall_mem_convex_of_local` and
 `exists_smooth_forall_mem_convex_of_local_const`. -/
 theorem exists_contMDiffOn_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t x))
     (Hloc : ∀ x : M, ∃ U ∈ 𝓝 x, ∃ g : M → F, ContMDiffOn I 𝓘(ℝ, F) n g U ∧ ∀ y ∈ U, g y ∈ t y) :
-    ∃ g : C^n⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x := by
-  choose U hU g hgs hgt using Hloc
-  obtain ⟨f, hf⟩ :=
-    SmoothPartitionOfUnity.exists_isSubordinate I isClosed_univ (fun x => interior (U x))
-      (fun x => isOpen_interior) fun x _ => mem_iUnion.2 ⟨x, mem_interior_iff_mem_nhds.2 (hU x)⟩
-  refine ⟨⟨fun x => ∑ᶠ i, f i x • g i x,
-      hf.contMDiff_finsum_smul (fun i => isOpen_interior) fun i => (hgs i).mono interior_subset⟩,
-    fun x => f.finsum_smul_mem_convex (mem_univ x) (fun i hi => hgt _ _ ?_) (ht _)⟩
-  exact interior_subset (hf _ <| subset_closure hi)
+    ∃ g : C^n⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x :=
+  let ⟨s, hs⟩ := exists_contMDiffOn_section_forall_mem_convex_of_local I (fun _ ↦ F) t ht
+    (fun x₀ ↦ let ⟨U, hU, g, hgs, hgt⟩ := Hloc x₀
+      ⟨U, hU, g, fun y hy ↦ Bundle.contMDiffWithinAt_section |>.mpr <| hgs y hy, hgt⟩)
+  ⟨⟨s, (Bundle.contMDiffAt_section _ |>.mp <| s.contMDiff ·)⟩, hs⟩
 
 /-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → Set F`
 be a family of convex sets. Suppose that for each point `x : M` there exists a neighborhood
 `U ∈ 𝓝 x` and a function `g : M → F` such that `g` is smooth on `U` and `g y ∈ t y` for all `y ∈ U`.
 Then there exists a smooth function `g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x` for all `x`.
-See also `exists_contMDiffOn_forall_mem_convex_of_local` and
+
+This is a special case of `exists_smooth_section_forall_mem_convex_of_local` where `V` is the
+trivial bundle. See also `exists_contMDiffOn_forall_mem_convex_of_local` and
 `exists_smooth_forall_mem_convex_of_local_const`. -/
 theorem exists_smooth_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t x))
     (Hloc : ∀ x : M, ∃ U ∈ 𝓝 x, ∃ g : M → F, ContMDiffOn I 𝓘(ℝ, F) ∞ g U ∧ ∀ y ∈ U, g y ∈ t y) :
@@ -605,7 +708,7 @@ theorem exists_smooth_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t x))
 /-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → Set F` be
 a family of convex sets. Suppose that for each point `x : M` there exists a vector `c : F` such that
 for all `y` in a neighborhood of `x` we have `c ∈ t y`. Then there exists a smooth function
-`g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x` for all `x`.  See also
+`g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x` for all `x`. See also
 `exists_contMDiffOn_forall_mem_convex_of_local` and `exists_smooth_forall_mem_convex_of_local`. -/
 theorem exists_smooth_forall_mem_convex_of_local_const (ht : ∀ x, Convex ℝ (t x))
     (Hloc : ∀ x : M, ∃ c : F, ∀ᶠ y in 𝓝 x, c ∈ t y) : ∃ g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x :=
