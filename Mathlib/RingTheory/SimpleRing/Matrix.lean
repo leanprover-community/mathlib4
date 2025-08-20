@@ -15,6 +15,6 @@ namespace IsSimpleRing
 variable (ι A : Type*) [Ring A] [Fintype ι] [Nonempty ι]
 
 instance matrix [IsSimpleRing A] : IsSimpleRing (Matrix ι ι A) where
-  simple := letI := Classical.decEq ι; TwoSidedIdeal.orderIsoMatricesOver |>.symm.isSimpleOrder
+  simple := letI := Classical.decEq ι; TwoSidedIdeal.orderIsoMatrix |>.symm.isSimpleOrder
 
 end IsSimpleRing

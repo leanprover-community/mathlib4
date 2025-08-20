@@ -113,8 +113,6 @@ theorem coe_inv : ↑A⁻¹ = (↑A : Matrix n n R)⁻¹ :=
   letI := A.invertible
   invOf_eq_nonsing_inv (↑A : Matrix n n R)
 
-@[deprecated (since := "2024-11-26")] alias toLinear := toLin
-
 @[simp]
 theorem coe_toLin : (toLin A : (n → R) →ₗ[R] n → R) = Matrix.mulVecLin A :=
   rfl
@@ -200,8 +198,6 @@ def toGL : Matrix.SpecialLinearGroup n R →* Matrix.GeneralLinearGroup n R wher
   map_one' := Units.ext rfl
   map_mul' _ _ := Units.ext rfl
 
-@[deprecated (since := "2024-11-26")] alias coeToGL := toGL
-
 instance hasCoeToGeneralLinearGroup : Coe (SpecialLinearGroup n R) (GL n R) :=
   ⟨toGL⟩
 
@@ -235,7 +231,7 @@ lemma mapGL_inj [FaithfulSMul R S] (g g' : SpecialLinearGroup n R) :
   apply SpecialLinearGroup.ext
   simpa [mapGL, toGL_inj, ext_iff, (FaithfulSMul.algebraMap_injective R S).eq_iff] using h
 
-lemma mapGL_injective [FaithfulSMul R S]  :
+lemma mapGL_injective [FaithfulSMul R S] :
     Function.Injective (mapGL (R := R) (n := n) S) :=
   fun a b ↦ by simp
 

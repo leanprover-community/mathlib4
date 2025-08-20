@@ -52,12 +52,11 @@ noncomputable def homMap (f : L₁.obj X ⟶ L₁.obj Y) :
 lemma homMap_map (f : X ⟶ Y) :
     Φ.homMap L₁ L₂ (L₁.map f) = L₂.map (Φ.functor.map f) := by
   dsimp [homMap]
-  erw [← NatTrans.naturality_assoc]
   simp
 
 variable (X) in
 @[simp]
-lemma homMap_id  :
+lemma homMap_id :
     Φ.homMap L₁ L₂ (𝟙 (L₁.obj X)) = 𝟙 (L₂.obj (Φ.functor.obj X)) := by
   simpa using Φ.homMap_map L₁ L₂ (𝟙 X)
 
