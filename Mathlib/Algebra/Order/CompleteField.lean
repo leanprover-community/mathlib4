@@ -102,7 +102,6 @@ theorem coe_mem_cutMap_iff [CharZero β] : (q : β) ∈ cutMap β a ↔ (q : α)
   Rat.cast_injective.mem_set_image
 
 theorem cutMap_self (a : α) : cutMap α a = Iio a ∩ range (Rat.cast : ℚ → α) := by
-  ext
   grind [mem_cutMap_iff]
 
 end DivisionRing

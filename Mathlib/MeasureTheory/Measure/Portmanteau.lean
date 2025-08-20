@@ -664,7 +664,7 @@ lemma ProbabilityMeasure.exists_lt_measure_biUnion_of_isOpen
     (ENNReal.tendsto_toNNReal_iff (by simp) (by simp)).2 tendsto_measure_iUnion_accumulate
   rw [← G_eq] at this
   rcases ((tendsto_order.1 this).1 r hr).exists with ⟨n, hn⟩
-  refine ⟨(Finset.range (n + 1)).image f, by simp; grind, ?_, ?_⟩
+  refine ⟨(Finset.range (n + 1)).image f, by grind, ?_, ?_⟩
   · convert hn
     simp [accumulate_def]
     grind
