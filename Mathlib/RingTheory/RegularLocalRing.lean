@@ -163,8 +163,7 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
         convert span
         ext
         simpa using fun a ↦ Tsub a
-      · rw [← spanFinrank_maximalIdeal R, ← Nat.cast_inj (R := WithBot ℕ∞),
-          (isRegularLocalRing_iff R).mp ‹_›, ← card]
+      · rw [← Nat.cast_inj (R := WithBot ℕ∞), (isRegularLocalRing_iff R).mp ‹_›, ← card]
         simp
     have li := LinearIndependent.comp this (Set.inclusion h) (Set.inclusion_injective h)
     have inc : Set.inclusion Tsub ∘ Set.inclusion h = Set.inclusion sub := rfl
@@ -173,7 +172,7 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
     intro li
     let _ : IsLocalRing (R ⧸ Ideal.span S.toSet) :=
       IsLocalRing.of_surjective _ Ideal.Quotient.mk_surjective
-    rw [isRegularLocalRing_iff]
+    rw [isRegularLocalRing_def]
     have le := ringKrullDim_le_ringKrullDim_add_card sub
     have ge : (Submodule.spanFinrank (maximalIdeal (R ⧸ Ideal.span S.toSet))) + S.card ≤
       ringKrullDim R := by
@@ -254,8 +253,8 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
   tfae_have 3 → 1 := by
     classical
     rintro ⟨reg, dim⟩
-    simp only [← (isRegularLocalRing_iff _).mp reg, ← Nat.cast_add, ←
-      (isRegularLocalRing_iff R).mp ‹_›, Nat.cast_inj] at dim
+    simp only [← (isRegularLocalRing_def _).mp reg, ← Nat.cast_add, ←
+      (isRegularLocalRing_def R).mp ‹_›, Nat.cast_inj] at dim
     let fg : (maximalIdeal (R ⧸ Ideal.span S.toSet)).FG :=
       (isNoetherianRing_iff_ideal_fg _).mp inferInstance _
     have fin : (maximalIdeal (R ⧸ Ideal.span S.toSet)).generators.Finite :=
@@ -271,7 +270,7 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
         simp [U, ← Set.image_comp]
       rw [this, Submodule.span_generators]
       exact ((local_hom_TFAE _).out 0 4).mp lochom
-    simp only [Finset.subset_union_left, true_and, ← (isRegularLocalRing_iff R).mp ‹_›,
+    simp only [Finset.subset_union_left, true_and, ← (isRegularLocalRing_def R).mp ‹_›,
       Finset.coe_union, Set.coe_toFinset]
     refine ⟨le_antisymm ?_ ?_, span⟩
     · apply Nat.cast_le.mpr (le_trans (Finset.card_union_le _ _) _)
@@ -303,7 +302,7 @@ open Pointwise in
 theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
   obtain ⟨n, hn⟩ := exist_nat_eq R
   induction' n with n ih generalizing R
-  · simp only [← (isRegularLocalRing_iff R).mp ‹_›, CharP.cast_eq_zero, Nat.cast_eq_zero] at hn
+  · simp only [← (isRegularLocalRing_def R).mp ‹_›, CharP.cast_eq_zero, Nat.cast_eq_zero] at hn
     have : maximalIdeal R = ⊥ := by
       rw [← Submodule.spanRank_eq_zero_iff_eq_bot, Submodule.fg_iff_spanRank_eq_spanFinrank.mpr
         ((isNoetherianRing_iff_ideal_fg R).mp inferInstance _), hn, Nat.cast_zero]
@@ -366,7 +365,7 @@ theorem isRegular_of_span_eq_maximalIdeal [IsRegularLocalRing R] (rs : List R)
     fun x ↦ by simpa using fun a ↦ List.mem_of_mem_take a
   have card : rs.toFinset.card = ringKrullDim R := by
     apply le_antisymm (le_of_le_of_eq (Nat.cast_le.mpr rs.toFinset_card_le) len)
-    simp only [← (isRegularLocalRing_iff R).mp ‹_›, Nat.cast_le, ← span, Ideal.ofList,
+    simp only [← (isRegularLocalRing_def R).mp ‹_›, Nat.cast_le, ← span, Ideal.ofList,
       ← List.coe_toFinset rs]
     exact le_of_le_of_eq (Submodule.spanFinrank_span_le_ncard_of_finite rs.toFinset.finite_toSet)
       (Set.ncard_coe_finset rs.toFinset)
@@ -383,7 +382,7 @@ theorem isRegular_of_span_eq_maximalIdeal [IsRegularLocalRing R] (rs : List R)
   have : (Ideal.Quotient.mk (Ideal.ofList (List.take i rs))) rs[i] ≠ 0 := by
     simp only [ne_eq, Ideal.Quotient.eq_zero_iff_mem]
     by_contra mem
-    simp only [← (isRegularLocalRing_iff R).mp ‹_›, Nat.cast_inj] at len
+    simp only [← (isRegularLocalRing_def R).mp ‹_›, Nat.cast_inj] at len
     let rs' := (List.take i rs) ++ (List.drop (i + 1) rs)
     have span' : Ideal.ofList rs' = maximalIdeal R := by
       simp only [← span, rs']
@@ -415,5 +414,3 @@ theorem isRegular_of_span_eq_maximalIdeal [IsRegularLocalRing R] (rs : List R)
     absurd this
     omega
   exact (mul_eq_zero_iff_left this).mp hx
-
-end
