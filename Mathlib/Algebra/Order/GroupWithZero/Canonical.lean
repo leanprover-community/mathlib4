@@ -6,12 +6,13 @@ Authors: Kenny Lau, Johan Commelin, Patrick Massot
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.Algebra.Order.AddGroupWithTop
+import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.Int
-import Mathlib.Algebra.Order.Monoid.Units
+import Mathlib.Algebra.Order.Group.Units
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Monoid.TypeTags
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 
 /-!
 # Linearly ordered commutative groups and monoids with a zero element adjoined
@@ -166,6 +167,40 @@ instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) where
 instance : LinearOrderedAddCommGroupWithTop (Additive α)ᵒᵈ where
   neg_top := inv_zero (G₀ := α)
   add_neg_cancel := fun a ha ↦ mul_inv_cancel₀ (G₀ := α) (id ha : a.toMul ≠ 0)
+
+-- Counterexample with monoid for the backward direction:
+-- Take `Mᵐ⁰` where `M := ℚ ×ₗ ℕ`.
+lemma denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units :
+    DenselyOrdered α ↔ Nontrivial αˣ ∧ DenselyOrdered αˣ := by
+  refine ⟨fun H ↦ ⟨?_, ?_⟩, fun ⟨H₁, H₂⟩ ↦ ?_⟩
+  · obtain ⟨x, hx, hx'⟩ := exists_between (zero_lt_one' α)
+    exact ⟨Units.mk0 x hx.ne', 1, by simpa [Units.ext_iff] using hx'.ne⟩
+  · refine ⟨fun x y h ↦ ?_⟩
+    obtain ⟨z, hz⟩ := exists_between (Units.val_lt_val.mpr h)
+    refine ⟨Units.mk0 z (ne_zero_of_lt hz.1), by simp [← Units.val_lt_val, hz]⟩
+  · refine ⟨fun x y h ↦ ?_⟩
+    lift y to αˣ using (ne_zero_of_lt h).isUnit
+    obtain rfl | hx := (zero_le' (a := x)).eq_or_lt
+    · obtain ⟨z, hz⟩ := exists_one_lt' (α := αˣ)
+      exact ⟨(y * z⁻¹ : αˣ), by simp, Units.val_lt_val.mpr <| by simp [hz]⟩
+    · lift x to αˣ using hx.ne'.isUnit
+      obtain ⟨z, hz, hz'⟩ := H₂.dense x y (Units.val_lt_val.mpr h)
+      exact ⟨z, by simp [hz, hz']⟩
+
+-- Counterexample with monoid: `{ x : ℝ | 0 ≤ x ≤ 1 }`
+instance [DenselyOrdered α] : Nontrivial αˣ :=
+  have := denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units (α := α)
+  by tauto
+
+-- Counterexample with monoid:
+-- `{ x : ℝ | x = 0 ∨ ∃ (a : ℤ) (b c : ℕ), x = Real.exp (a + b * √2 - c * √3) }`
+instance [DenselyOrdered α] : DenselyOrdered αˣ :=
+  have := denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units (α := α)
+  by tauto
+
+lemma denselyOrdered_units_iff [Nontrivial αˣ] : DenselyOrdered αˣ ↔ DenselyOrdered α :=
+  have := denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units (α := α)
+  by tauto
 
 end LinearOrderedCommGroupWithZero
 
