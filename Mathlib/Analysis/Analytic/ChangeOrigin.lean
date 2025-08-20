@@ -385,7 +385,7 @@ theorem AnalyticAt.exists_ball_analyticOnNhd (h : AnalyticAt 𝕜 f x) :
   Metric.isOpen_iff.mp (isOpen_analyticAt _ _) _ h
 
 /-- Sum of series is analytic on its ball of convergence. -/
-protected theorem FormalMultilinearSeries.AnalyticOnNhd :
+protected theorem FormalMultilinearSeries.analyticOnNhd :
     AnalyticOnNhd 𝕜 p.sum (EMetric.ball 0 p.radius) := by
   by_cases hr : p.radius = 0
   · simp [hr]
