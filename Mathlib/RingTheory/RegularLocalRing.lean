@@ -434,7 +434,7 @@ lemma isRegularRing_of_ringEquiv {R R' : Type*} [CommRing R] [CommRing R']
       fun h ↦ ⟨e.symm x, by simpa, RingEquiv.apply_symm_apply e x⟩⟩
     simpa only [Ideal.primeCompl, p]
   let _ := (isRegularRing_iff R).mp ‹_› p (Ideal.comap_isPrime e p')
-  exact isRegularLocalRing_of_ringEquiv
+  exact IsRegularLocalRing.of_ringEquiv
     (IsLocalization.ringEquivOfRingEquiv (Localization.AtPrime p) (Localization.AtPrime p') e this)
 
 open Polynomial Ideal
@@ -443,13 +443,13 @@ open Set in
 lemma Polynomial.localization_at_comap_maximal_isRegularRing_isRegularRing
     [IsRegularLocalRing R] (p : Ideal R[X]) [p.IsPrime] (max : p.comap C = maximalIdeal R) :
     IsRegularLocalRing (Localization.AtPrime p) := by
-  apply (isRegularLocalRing_iff _).mpr
+  apply (isRegularLocalRing_def _).mpr
   apply le_antisymm _ (ringKrullDim_le_spanFinrank_maximalIdeal _)
   let q := (maximalIdeal R).map C
   have qle : q ≤ p := by simpa [q, ← max] using map_comap_le
   have Ker : RingHom.ker (Polynomial.mapRingHom (IsLocalRing.residue R)) = q := by
     simpa only [residue, ker_mapRingHom, q] using congrArg (Ideal.map C) (Quotient.mkₐ_ker R _)
-  have reg := (isRegularLocalRing_iff R).mp ‹_›
+  have reg := (isRegularLocalRing_def R).mp ‹_›
   have fg : (maximalIdeal R).FG := (isNoetherianRing_iff_ideal_fg R).mp inferInstance _
   have fg' := (Submodule.FG.finite_generators fg)
   have ht : (maximalIdeal R).height ≤ q.height := by
@@ -575,7 +575,7 @@ theorem Polynomial.isRegularRing_of_isRegularRing [IsRegularRing R] :
       IsLocalization.AtPrime.comap_maximalIdeal (Localization.AtPrime q) q]
     rfl
   let _ := localization_at_comap_maximal_isRegularRing_isRegularRing (Localization.AtPrime q) pS eq
-  exact isRegularLocalRing_of_ringEquiv (IsLocalization.algEquiv p.primeCompl
+  exact IsRegularLocalRing.of_ringEquiv (IsLocalization.algEquiv p.primeCompl
     (Localization.AtPrime pS) (Localization.AtPrime p)).toRingEquiv
 
 lemma MvPolynomial.isRegularRing_of_isRegularRing [IsRegularRing R] (n : ℕ) :
