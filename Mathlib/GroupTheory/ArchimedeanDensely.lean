@@ -314,11 +314,13 @@ lemma denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units :
       obtain ⟨z, hz, hz'⟩ := H₂.dense x y (Units.val_lt_val.mpr h)
       exact ⟨z, by simp [hz, hz']⟩
 
--- Counterexample with monoid: { x : ℝ | 0 ≤ x ≤ 1 }
+-- Counterexample with monoid: `{ x : ℝ | 0 ≤ x ≤ 1 }`
 instance [DenselyOrdered G₀] : Nontrivial G₀ˣ :=
   have := denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units (G₀ := G₀)
   by tauto
 
+-- Counterexample with monoid:
+-- `{ x : ℝ | x = 0 ∨ ∃ (a : ℤ) (b c : ℕ), x = Real.exp (a + b * √2 - c * √3) }`
 instance [DenselyOrdered G₀] : DenselyOrdered G₀ˣ :=
   have := denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units (G₀ := G₀)
   by tauto
