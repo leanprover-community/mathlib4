@@ -1297,8 +1297,9 @@ section Totient
 
 /-- `ϕ` is the `ArithmeticFunction` version of the Euler's totient function,
 a wrapper of `Nat.totient`. -/
-def totient : ArithmeticFunction ℕ :=
-  ⟨fun n => n.totient, by simp⟩
+def totient : ArithmeticFunction ℕ where
+  toFun := Nat.totient
+  map_zero' := Nat.totient_zero
 
 @[inherit_doc]
 scoped[ArithmeticFunction] notation "ϕ" => ArithmeticFunction.totient
@@ -1312,11 +1313,7 @@ Added as a `simp` lemma so that `simp` can make use of the existing lemmas for `
 theorem totient_apply {n : ℕ} : ϕ n = n.totient := rfl
 
 @[arith_mult]
-theorem isMultiplicative_totient : IsMultiplicative ϕ := by
-  split_ands
-  · simp
-  · intro m n h
-    simp [totient_mul h]
+theorem isMultiplicative_totient : IsMultiplicative ϕ := ⟨rfl, totient_mul⟩
 
 end Totient
 
