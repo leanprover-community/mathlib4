@@ -65,8 +65,8 @@ def turanGraph (n r : ℕ) : SimpleGraph (Fin n) where Adj v w := v % r ≠ w % 
 lemma turanGraph_adj {v w} :
   (turanGraph n r).Adj v w ↔ v % r ≠ w % r := by rfl
 
-instance turanGraph.instDecidableRelAdj : DecidableRel (turanGraph n r).Adj := by
-  dsimp only [turanGraph]; infer_instance
+instance : DecidableRel (turanGraph n r).Adj :=
+  inferInstanceAs (DecidableRel fun v w : Fin n ↦ v % r ≠ w % r)
 
 @[simp]
 lemma turanGraph_zero : turanGraph n 0 = ⊤ := by
