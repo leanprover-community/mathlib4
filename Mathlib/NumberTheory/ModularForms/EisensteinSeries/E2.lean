@@ -143,22 +143,14 @@ lemma G2_cauchy (z : ℍ) : CauchySeq (fun N : ℕ => ∑ m ∈ Icc (-N : ℤ) N
     -8 * π ^ 2 * ∑' (n : ℕ+), (σ 1 n) * cexp (2 * π * Complex.I * z) ^ (n : ℕ))
   simpa using G2_tendsto z
 
-
-
-
-/- lemma Asymptotics.IsBigO.map {α β ι γ : Type*} [Norm α] [Norm β] {f : ι → α} {g : ι → β}
-  {p : Filter ι} (hf : f =O[p] g) (c : γ → ι) :
-    (fun (n : γ) => f (c n)) =O[p.comap c] fun n => g (c n) := by
-  rw [isBigO_iff] at *
-  obtain ⟨C, hC⟩ := hf
-  refine ⟨C, ?_⟩
-  simp only [eventually_comap] at *
-  filter_upwards [hC] with n hn
-  exact fun a ha ↦ Eq.mpr (id (congrArg (fun _a ↦ ‖f _a‖ ≤ C * ‖g _a‖) ha)) hn
-
-lemma Asymptotics.IsBigO.nat_of_int {α β : Type*} [Norm α] [SeminormedAddCommGroup β] {f : ℤ → α}
-    {g : ℤ → β} (hf : f =O[cofinite] g) : (fun (n : ℕ) => f n) =O[cofinite] fun n => g n := by
-  have := Asymptotics.IsBigO.map hf Nat.cast
-  simp only [Int.cofinite_eq, isBigO_sup, comap_sup, Asymptotics.isBigO_sup] at *
-  rw [Nat.cofinite_eq_atTop]
-  simpa using this.2 -/
+lemma G2_q_exp (z : ℍ) : G2 z = (2 * riemannZeta 2)  - 8 * π ^ 2 *
+  ∑' n : ℕ+, sigma 1 n * cexp (2 * π * Complex.I * z) ^ (n : ℕ) := by
+  rw [G2, Filter.Tendsto.limUnder_eq]
+  conv =>
+    enter [1]
+    ext N
+    rw [G2_partial_sum_eq z N]
+  rw [sub_eq_add_neg]
+  apply Filter.Tendsto.add
+  · simp
+  · simpa using G2_tendsto z
