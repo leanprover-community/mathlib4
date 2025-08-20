@@ -80,7 +80,7 @@ theorem posSemidef_gram (v : n → E) :
   rw [star_dotProduct_gram_mulVec, le_iff_re_im]
   simp [inner_self_nonneg]
 
-/-- In a normed space, positive definiteness of `gram 𝕜 v` implies inear independence of `v`. -/
+/-- In a normed space, positive definiteness of `gram 𝕜 v` implies linear independence of `v`. -/
 theorem linearIndependent_of_posDef_gram {v : n → E} (h_gram : PosDef (gram 𝕜 v)) :
     LinearIndependent 𝕜 v := by
   rw [Fintype.linearIndependent_iff]
