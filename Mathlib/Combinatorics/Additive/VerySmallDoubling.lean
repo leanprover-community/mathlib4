@@ -488,7 +488,7 @@ private noncomputable def connectivity (K : ℝ) (S : Finset G) : ℝ :=
 @[simp] private lemma connectivity_le_expansion (hK : K ≤ 1) (hS : S.Nonempty) (hA : A.Nonempty) :
     connectivity K S ≤ expansion K S A := (le_connectivity_iff hK hS).1 le_rfl hA
 
-@[simp] private lemma connectivity_nonneg (hK : K ≤ 1) (hS : S.Nonempty) :
+private lemma connectivity_nonneg (hK : K ≤ 1) (hS : S.Nonempty) :
     0 ≤ connectivity K S := by simp [*]
 
 private def IsFragment (K : ℝ) (S A : Finset G) : Prop := expansion K S A = connectivity K S
@@ -605,11 +605,14 @@ private lemma connectivity_pos (hK : K < 1) (hS : S.Nonempty) : 0 < connectivity
   obtain ⟨A, hA, hSA⟩ := exists_nonempty_isFragment hK hS
   exact (expansion_pos hK hS hA).trans_eq hSA
 
-@[simp] private lemma not_isFragment_empty (hK : K < 1) (hS : S.Nonempty) : ¬ IsFragment K S ∅ := by
+private lemma not_isFragment_empty (hK : K < 1) (hS : S.Nonempty) : ¬ IsFragment K S ∅ := by
   simp [IsFragment, (connectivity_pos hK hS).ne]
 
 private lemma IsFragment.nonempty (hK : K < 1) (hS : S.Nonempty) (hA : IsFragment K S A) :
-    A.Nonempty := by rw [nonempty_iff_ne_empty]; rintro rfl; simp [*] at hA
+    A.Nonempty := by
+  rw [nonempty_iff_ne_empty]
+  rintro rfl
+  simp [*, not_isFragment_empty hK hS] at hA
 
 private lemma IsAtom.nonempty (hK : K < 1) (hS : S.Nonempty) (hA : IsAtom K S A) : A.Nonempty :=
   hA.isFragment.nonempty hK hS
