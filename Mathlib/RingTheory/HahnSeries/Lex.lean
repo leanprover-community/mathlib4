@@ -175,9 +175,9 @@ theorem archimedeanClassMk_le_archimedeanClassMk_iff_of_orderTop_ofLex {x y : Le
       ArchimedeanClass.mk (ofLex x).leadingCoeff ≤ .mk (ofLex y).leadingCoeff := by
   simp_rw [ArchimedeanClass.mk_le_mk]
   obtain rfl | hy := eq_or_ne y 0
-  · -- special case: both x and y are zero
+  · -- special case: both `x` and `y` are zero
     simp_all
-  -- general case: x and y are not zero
+  -- general case: `x` and `y` are not zero
   have hx : x ≠ 0 := by simpa using orderTop_ne_top.1 <| h ▸ orderTop_ne_top.2 (by simpa using hy)
   have h' : (ofLex |x|).orderTop = (ofLex |y|).orderTop := by simpa using h
   constructor
@@ -192,7 +192,7 @@ theorem archimedeanClassMk_le_archimedeanClassMk_iff_of_orderTop_ofLex {x y : Le
     rw [leadingCoeff_of_ne_zero (by simpa using hy), leadingCoeff_of_ne_zero (by simpa using hx)]
     simp_rw [← h']
     obtain hjlt | hjeq | hjgt := lt_trichotomy (WithTop.some j) (ofLex |x|).orderTop
-    · -- impossible case: x and y differ before their leading coefficients
+    · -- impossible case: `x` and `y` differ before their leading coefficients
       have hjlt' : j < (ofLex |y|).orderTop := h'.symm ▸ hjlt
       simp [coeff_eq_zero_of_lt_orderTop hjlt, coeff_eq_zero_of_lt_orderTop hjlt'] at hi
     · convert hi.le <;> exact (WithTop.untop_eq_iff _).mpr hjeq.symm
@@ -225,12 +225,13 @@ theorem archimedeanClassMk_le_archimedeanClassMk_iff {x y : Lex (HahnSeries Γ R
         (ofLex x).orderTop = (ofLex y).orderTop ∧
           ArchimedeanClass.mk (ofLex x).leadingCoeff ≤ .mk (ofLex y).leadingCoeff := by
   obtain hlt | heq | hgt := lt_trichotomy (ofLex x).orderTop (ofLex y).orderTop
-  · -- when x's order is less than y's, this reduces to abs_lt_abs_of_orderTop_ofLex
+  · -- when `x`'s order is less than `y`'s, this reduces to abs_lt_abs_of_orderTop_ofLex
     simpa [ArchimedeanClass.mk_le_mk, hlt] using
       ⟨1, by simpa using (abs_lt_abs_of_orderTop_ofLex hlt).le⟩
-  · -- When x and y have the same order, this reduces to archimedeanClass_le_iff_of_orderTop_eq
+  · -- when `x` and `y` have the same order, this reduces to
+    -- `archimedeanClass_le_iff_of_orderTop_eq`
     simpa [heq] using archimedeanClassMk_le_archimedeanClassMk_iff_of_orderTop_ofLex heq
-  -- when x's order is greater than y's, neither side is true
+  -- when `x`'s order is greater than `y`'s, neither side is true
   simp_rw [ArchimedeanClass.mk_le_mk]
   refine ⟨?_, by simp [hgt.not_gt, hgt.ne']⟩
   intro ⟨n, hn⟩
