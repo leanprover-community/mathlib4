@@ -276,10 +276,7 @@ include hA in
 lemma sqrt_eq_iff_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) : hA.sqrt = B ↔ A = B ^ 2 := by
   simpa [eq_comm] using eq_sqrt_iff_sq_eq hB hA
 
-include hA in
-@[deprecated eq_sqrt_iff_sq_eq (since := "2025-05-07")]
-lemma eq_sqrt_of_sq_eq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B) : A = hB.sqrt :=
-  eq_sqrt_iff_sq_eq hA hB |>.2 hAB
+@[deprecated (since := "2025-05-07")] alias ⟨_, eq_sqrt_of_sq_eq⟩ := eq_sqrt_iff_sq_eq
 
 @[simp]
 lemma sqrt_eq_zero_iff : hA.sqrt = 0 ↔ A = 0 := by
@@ -337,11 +334,16 @@ lemma posSemidef_iff_eq_conjTranspose_mul_self {A : Matrix n n 𝕜} :
 @[deprecated (since := "2025-05-07")]
 alias posSemidef_iff_eq_transpose_mul_self := posSemidef_iff_eq_conjTranspose_mul_self
 
-lemma IsHermitian.posSemidef_of_eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
-    (hA : IsHermitian A) (h : ∀ i : n, 0 ≤ hA.eigenvalues i) : PosSemidef A := by
+/-- A Hermitian matrix is positive semi-definite if and only if its eigenvalues are non-negative. -/
+lemma IsHermitian.posSemidef_iff_eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
+    (hA : IsHermitian A) : PosSemidef A ↔ 0 ≤ hA.eigenvalues := by
+  refine ⟨fun h => h.eigenvalues_nonneg, fun h => ?_⟩
   rw [hA.spectral_theorem]
   refine (posSemidef_diagonal_iff.mpr ?_).mul_mul_conjTranspose_same _
   simpa using h
+
+@[deprecated (since := "2025-08-17")] alias ⟨_, IsHermitian.posSemidef_of_eigenvalues_nonneg⟩ :=
+  IsHermitian.posSemidef_iff_eigenvalues_nonneg
 
 /-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0`. -/
 theorem PosSemidef.dotProduct_mulVec_zero_iff
@@ -465,9 +467,7 @@ protected lemma add_posSemidef [AddLeftMono R]
 protected lemma posSemidef_add [AddLeftMono R]
     {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosSemidef) (hB : B.PosDef) : (A + B).PosDef :=
-  ⟨hA.isHermitian.add hB.isHermitian, fun x hx => by
-    rw [add_mulVec, dotProduct_add]
-    exact add_pos_of_nonneg_of_pos (hA.2 x) (hB.2 x hx)⟩
+  add_comm A B ▸ hB.add_posSemidef hA
 
 protected lemma add [AddLeftMono R] {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosDef) (hB : B.PosDef) : (A + B).PosDef :=
@@ -518,6 +518,15 @@ lemma eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : Matrix.PosDef A) (i : n) : 0 < hA.1.eigenvalues i := by
   simp only [hA.1.eigenvalues_eq]
   exact hA.re_dotProduct_pos <| hA.1.eigenvectorBasis.orthonormal.ne_zero i
+
+/-- A Hermitian matrix is positive-definite if and only if its eigenvalues are positive. -/
+lemma _root_.Matrix.IsHermitian.posDef_iff_eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
+    (hA : A.IsHermitian) : A.PosDef ↔ ∀ i, 0 < hA.eigenvalues i := by
+  refine ⟨fun h => h.eigenvalues_pos, fun h => ?_⟩
+  rw [hA.spectral_theorem]
+  refine (posDef_diagonal_iff.mpr <| by simpa using h).mul_mul_conjTranspose_same ?_
+  rw [vecMul_injective_iff_isUnit, ← unitary.val_toUnits_apply]
+  exact Units.isUnit _
 
 theorem det_pos [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : 0 < det M := by
   rw [hM.isHermitian.det_eq_prod_eigenvalues]
