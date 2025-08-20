@@ -85,16 +85,16 @@ theorem not_isRegular_zero [Nontrivial R] : ¬IsRegular (0 : R) := fun h => IsRe
   conv_lhs => rw [← mul_zero b]
   exact ⟨fun h ↦ hb h, fun ha ↦ by rw [ha]⟩
 
-@[simp] lemma IsLeftRegular.mul_left_eq_self_iff {M : Type*} [Monoid M] {a b : M}
-    (ha : IsLeftRegular a) : a * b = a ↔ b = 1 :=
+@[to_additive (attr := simp)] lemma IsLeftRegular.mul_left_eq_self_iff {M : Type*} [Monoid M]
+    {a b : M} (ha : IsLeftRegular a) : a * b = a ↔ b = 1 :=
   ⟨fun h ↦ by rwa [← ha.eq_iff, mul_one], fun h ↦ by rw [h, mul_one]⟩
 
 @[simp] lemma IsRightRegular.mul_right_eq_zero_iff (hb : IsRightRegular b) : a * b = 0 ↔ a = 0 := by
   conv_lhs => rw [← zero_mul b]
   exact ⟨fun h ↦ hb h, fun ha ↦ by rw [ha]⟩
 
-@[simp] lemma IsRightRegular.mul_right_eq_self_iff {M : Type*} [Monoid M] {a b : M}
-    (ha : IsRightRegular a) : b * a = a ↔ b = 1 :=
+@[to_additive (attr := simp)] lemma IsRightRegular.mul_right_eq_self_iff {M : Type*} [Monoid M]
+    {a b : M} (ha : IsRightRegular a) : b * a = a ↔ b = 1 :=
   ⟨fun h ↦ by rwa [← ha.eq_iff, one_mul], fun h ↦ by rw [h, one_mul]⟩
 
 end MulZeroClass
