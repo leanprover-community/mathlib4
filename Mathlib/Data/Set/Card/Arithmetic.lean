@@ -46,21 +46,6 @@ lemma finsum_one {s : Set α} : ∑ᶠ i ∈ s, 1 = s.ncard := by
     · exact finsum_mem_eq_zero_of_infinite (by simpa [Function.support_const h])
   · simp [finsum_mem_eq_finite_toFinset_sum _ hs, Set.ncard_eq_toFinset_card s hs]
 
-theorem Finset.apply_sup_le_sum [SemilatticeSup α] [OrderBot α]
-    [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
-    {f : α → β} (zero : f ⊥ = 0) (ih : ∀ {s t}, f (s ⊔ t) ≤ f s + f t)
-    {s : ι → α} (t : Finset ι) :
-    f (t.sup s) ≤ ∑ i ∈ t, f (s i) := by
-  classical
-  refine t.induction_on zero.le fun i t it h ↦ ?_
-  simpa only [sup_insert, Finset.sum_insert it] using ih.trans (by gcongr)
-
-theorem Finset.apply_union_le_sum [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
-    {f : Set α → β} (zero : f ∅ = 0) (ih : ∀ {s t}, f (s ∪ t) ≤ f s + f t)
-    {s : ι → Set α} (t : Finset ι) :
-    f (⋃ i ∈ t, s i) ≤ ∑ i ∈ t, f (s i) :=
-  Finset.sup_set_eq_biUnion t s ▸ t.apply_sup_le_sum zero (by simpa)
-
 namespace Finset
 
 lemma set_ncard_biUnion_le (t : Finset ι) (s : ι → Set α) :
