@@ -263,7 +263,7 @@ theorem coeff_subst_finite (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ �
 
 theorem coeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ →₀ ℕ) :
     coeff e (subst a f) =
-      finsum (fun d ↦ (coeff d f) • (coeff e (d.prod fun s e => (a s) ^ e))) := by
+      finsum (fun d ↦ coeff d f • (coeff e (d.prod fun s e => (a s) ^ e))) := by
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
   have := ((hasSum_aeval ha.hasEval f).map (coeff e) (continuous_coeff S e))
@@ -272,7 +272,7 @@ theorem coeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ →₀ �
 
 theorem constantCoeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
     constantCoeff (subst a f) =
-      finsum (fun d ↦ (coeff d f) • (constantCoeff (d.prod fun s e => (a s) ^ e))) := by
+      finsum (fun d ↦ coeff d f • (constantCoeff (d.prod fun s e => (a s) ^ e))) := by
   simp only [← coeff_zero_eq_constantCoeff_apply, coeff_subst ha f 0]
 
 theorem map_algebraMap_eq_subst_X (f : MvPowerSeries σ R) :
