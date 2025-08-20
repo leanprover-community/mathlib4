@@ -213,16 +213,6 @@ theorem pi_eq_bot_iff (H : ∀ i, Subgroup (f i)) : pi Set.univ H = ⊥ ↔ ∀ 
   simp_rw [SetLike.ext'_iff]
   exact Set.univ_pi_eq_singleton_iff
 
-@[to_additive]
-theorem le_comap_single_pi [DecidableEq η] (H : ∀ i, Subgroup (f i)) {I i} :
-    H i ≤ comap (MonoidHom.mulSingle f i) (pi I H) :=
-  fun x hx => by simp [hx]
-
-@[to_additive]
-theorem iSup_map_single_le [DecidableEq η] {I : Set η} {H : ∀ i, Subgroup (f i)} :
-    ⨆ i, map (MonoidHom.mulSingle f i) (H i) ≤ pi I H :=
-  iSup_le fun _ => map_le_iff_le_comap.mpr (le_comap_single_pi _)
-
 end Pi
 
 instance instIsMulTorsionFree [IsMulTorsionFree G] : IsMulTorsionFree H where
