@@ -72,7 +72,7 @@ lemma dualEmbedding_surjective : Function.Surjective (WeakBilin.eval B) := by
   intro f₁
   have mem_span :
     ↑f₁ ∈ Submodule.span 𝕜 (⇑(WeakBilin.eval B).toLinearMap₂ '' Set.univ) := by
-      rw [Set.image_univ, LinearMap.mem_span_iff_continuous _]
+      rw [Set.image_univ, mem_span_iff_continuous _]
       convert f₁.2
       simp_rw [WeakBilin.instTopologicalSpace, induced_to_pi]
       rfl
