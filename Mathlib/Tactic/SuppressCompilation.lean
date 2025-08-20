@@ -5,7 +5,6 @@ Authors: Alex J. Best, Mac Malone
 -/
 import Mathlib.Init
 import Lean.Elab.Declaration
-import Lean.Elab.Notation
 
 /-!
 # Suppressing compilation to executable code in a file or in a section
