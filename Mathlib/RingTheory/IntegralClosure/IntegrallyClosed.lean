@@ -48,7 +48,7 @@ could be defined as `IsReduced`, `IsNoetherian`, `Ring.DimensionLEOne`, and eith
 `IsIntegrallyClosed` or `NormalDomain`. If we use `NormalDomain` then `IsReduced` is automatic,
 but we could also consider a version of `NormalDomain` that only requires the localizations are
 `IsIntegrallyClosed` but may not be domains, and that may not equivalent to the ring itself being
-`IsIntegallyClosed` (even for noetherian rings?).
+`IsIntegrallyClosed` (even for noetherian rings?).
 -/
 
 

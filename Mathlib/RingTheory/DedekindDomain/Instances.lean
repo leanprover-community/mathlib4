@@ -84,6 +84,16 @@ local notation3 "Sₚ" => Localization P'
 
 variable [FaithfulSMul R S]
 
+instance : NoZeroSMulDivisors S Sₚ := by
+  rw [NoZeroSMulDivisors.iff_algebraMap_injective,
+    injective_iff_isRegular (algebraMapSubmonoid S P.primeCompl)]
+  exact fun ⟨x, hx⟩ ↦ isRegular_iff_ne_zero'.mpr <|
+    ne_of_mem_of_not_mem hx <| by simp [Algebra.algebraMapSubmonoid]
+
+instance : NoZeroSMulDivisors R Sₚ := by
+  have := IsLocalization.AtPrime.faithfulSMul Rₚ R P
+  exact NoZeroSMulDivisors.trans_faithfulSMul R Rₚ _
+
 /--
 This is not an instance because it creates a diamond with `OreLocalization.instAlgebra`.
 -/
