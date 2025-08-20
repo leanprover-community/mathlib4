@@ -8,7 +8,7 @@ import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-! # Gram Matrices
 
-This file defines Gram matrices and proves their positive semi-definiteness.
+This file defines Gram matrices and proves their positive semidefiniteness.
 Results require `RCLike 𝕜`.
 
 ## Main definition
@@ -18,7 +18,7 @@ Results require `RCLike 𝕜`.
 
 ## Main results
 
-* `Matrix.posSemidef_gram`: Gram matrices are positive semi-definite.
+* `Matrix.posSemidef_gram`: Gram matrices are positive semidefinite.
 * `Matrix.posDef_gram_iff_linearIndependent`: Linear independence of `v` is
   equivalent to positive definiteness of `gram 𝕜 v`.
 -/
@@ -68,8 +68,8 @@ lemma isHermitian_gram (v : n → E) : (gram 𝕜 v).IsHermitian :=
 
 variable [Fintype n]
 
-theorem star_dotProduct_gram_mulVec {v : n → E} (x : n → 𝕜) :
-    star x ⬝ᵥ (gram 𝕜 v) *ᵥ x = ⟪∑ i, x i • v i, ∑ i, x i • v i⟫_𝕜 := by
+theorem star_dotProduct_gram_mulVec (v : n → E) (x y : n → 𝕜) :
+    star x ⬝ᵥ (gram 𝕜 v) *ᵥ y = ⟪∑ i, x i • v i, ∑ i, y i • v i⟫_𝕜 := by
   trans ∑ i, ∑ j, conj (x i) * x j * ⟪v i, v j⟫_𝕜
   · simp_rw [dotProduct, mul_assoc, ← Finset.mul_sum, mulVec, dotProduct, mul_comm, ← star_def,
       gram_apply, Pi.star_apply]
@@ -83,7 +83,7 @@ theorem posSemidef_gram (v : n → E) :
   rw [star_dotProduct_gram_mulVec, le_iff_re_im]
   simp [inner_self_nonneg]
 
-/-- In a seminormed space, positive definiteness of `gram 𝕜 v` implies inear independence of `v` -/
+/-- In a normed space, positive definiteness of `gram 𝕜 v` implies inear independence of `v` -/
 theorem linearIndependent_of_posDef_gram {v : n → E} (h_gram : PosDef (gram 𝕜 v)) :
     LinearIndependent 𝕜 v := by
   rw [Fintype.linearIndependent_iff]
