@@ -1230,7 +1230,7 @@ partial def transformDecl (cfg : Config) (src tgt : Name) : CoreM (Array Name) :
   copyMetaData cfg src tgt
 
 /-- Verify that the type of given `srcDecl` translates to that of `tgtDecl`. -/
-partial def checkExistingType (src tgt : Name) (dont : List Ident) (reorder : List (List Nat)) :
+partial def checkExistingType (src tgt : Name) (reorder : List (List Nat)) (dont : List Ident) :
     MetaM Unit := do
   let mut srcDecl ← getConstInfo src
   let tgtDecl ← getConstInfo tgt
@@ -1272,7 +1272,7 @@ partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind
       else
         "The additive declaration doesn't exist. Please remove the option `existing`."
   if alreadyExists then
-    MetaM.run' <| checkExistingType src tgt cfg.dontTranslate cfg.reorder
+    MetaM.run' <| checkExistingType src tgt cfg.reorder cfg.dontTranslate
   if cfg.reorder != [] then
     trace[to_additive] "@[to_additive] will reorder the arguments of {tgt}."
     reorderAttr.add src cfg.reorder
