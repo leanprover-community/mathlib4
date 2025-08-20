@@ -814,7 +814,7 @@ theorem subset_pi_iff {s'} : s' ⊆ pi s t ↔ ∀ i ∈ s, (· i) '' s' ⊆ t i
   constructor
   · intro h i hi
     rintro _ ⟨x, hx, rfl⟩
-    exact (h hx) _ hi
+    exact h hx _ hi
   · intro h x hx i hi
     exact h i hi ⟨_, hx, rfl⟩
 
@@ -834,7 +834,7 @@ theorem univ_pi_eq_singleton_iff {a} : pi univ t = {a} ↔ ∀ i, t i = {a i} :=
   simp only [eq_singleton_iff_unique_mem]
   constructor
   · refine fun ⟨h₁, h₂⟩ i => ⟨h₁ i trivial, fun x hx => ?_⟩
-    rw [← h₂ _ fun j _ => ((update_mem_pi_iff h₁).mpr (fun _ => hx)) j trivial, update_self]
+    rw [← h₂ _ fun j _ => (update_mem_pi_iff h₁).mpr (fun _ => hx) j trivial, update_self]
   · exact fun h => ⟨fun i _ => (h i).1, fun x hx => funext fun i => (h i).2 _ (hx _ trivial)⟩
 
 theorem pi_subset_pi_iff : pi s t₁ ⊆ pi s t₂ ↔ (∀ i ∈ s, t₁ i ⊆ t₂ i) ∨ pi s t₁ = ∅ := by
