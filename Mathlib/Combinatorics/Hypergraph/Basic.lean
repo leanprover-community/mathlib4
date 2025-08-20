@@ -15,7 +15,7 @@ An *undirected hypergraph* (here abbreviated as *hypergraph*) `H` is a generaliz
 (see `Mathlib.Combinatorics.Graph` or `Mathlib.Combinatorics.SimpleGraph`) and consists of a set of
 *vertices*, usually denoted `V` or `V(H)`, and a set of *hyperedges*, denoted `E` or `E(H)`. In
 contrast with a graph, where edges are unordered pairs of vertices, in hypergraphs, hyperedges are
-(unordered) sets of vertices of length `0 ≤ |e| ≤ |V|`, where `e` is some hyperedge.
+(unordered) sets of vertices; i.e., they are subsets of the vertex set `V`.
 
 A hypergraph where `V = ∅` and `E = ∅` is *empty*. A hypergraph with a nonempty
 vertex set (`V ≠ ∅`) and empty hyperedge set is *trivial*. A *complete hypergraph* is
@@ -23,7 +23,7 @@ one where `E(H) = 𝒫 V(H)`, where `𝒫 V(H)` is the *power set* of the vertex
 
 If a hyperedge `e` contains only one vertex (i.e., `|e| = 1`), then it is a *loop*.
 
-This module defines `Hypergraph α` for a vertex type `α` (hyperedges are defined as `Set Set α`).
+This module defines `Hypergraph α` for a vertex type `α` (hyperedges are defined as `Set (Set α)`).
 
 ## Main definitions
 
@@ -187,7 +187,7 @@ section DefsPreds
 The *star* of a vertex is the set of all hyperedges `e ∈ E(H)` that a given vertex `x` is incident
 on
 -/
-def star (H : Hypergraph α) (x : α) : Set (Set α) := {e ∈ E(H) | x ∈ e }
+def star (H : Hypergraph α) (x : α) : Set (Set α) := {e ∈ E(H) | x ∈ e}
 
 /--
 We define the *star set* as the set of subsets of `E(H)` that each vertex in `V(H)` is
@@ -225,7 +225,7 @@ Set.sUnion E(H) = V(H) ↔ ∀ x ∈ V(H), ¬IsIsolated H x :=
 Predicate to determine if a hyperedge `e` is a loop, meaning that its associated vertex subset `s`
 contains only one vertex, i.e., `|s| = 1`
 -/
-def IsLoop (H : Hypergraph α) (e : Set α) : Prop := e ∈ E(H) ∧ Set.encard e = 1
+def IsLoop (H : Hypergraph α) (e : Set α) : Prop := ∃ x ∈ V(H), e = {x}
 
 /--
 Predicate to determine if a hypergraph is empty
@@ -293,22 +293,6 @@ such that `s ⊂ t`.
 -/
 def IsSimple (H : Hypergraph α) : Prop := ∀ e ∈ E(H), ∀ f ∈ E(H) \ {e}, ¬e ⊆ f
 
-/--
-Predicate to determine if a hypergraph is *`k`-uniform*.
-
-In a `k`-uniform hypergraph `H`, all hyperedges `e ∈ E(H)` have the same cardinality, i.e.,
-`|e| = k`.
--/
-def IsKUniform (H : Hypergraph α) (k : ℕ) : Prop := ∀ e ∈ E(H), Set.ncard e = k
-
-/--
-Predicate to determine if a hypergraph is *`d`-regular*.
-
-In a `d`-regular hypergraph `H`, all vertices `v ∈ V(H)` have the same degree, i.e., all vertices
-are incident on `d` hyperedges.
--/
-def IsDRegular (H : Hypergraph α) (d : ℕ) : Prop := ∀ l ∈ H.stars, Set.ncard l = d
-
 end DefsPreds
 
 section Card
@@ -326,21 +310,46 @@ The *size* of a hypergraph `H` is defined as the number of hyperedges contained 
 noncomputable def size (H : Hypergraph α) : ENat := Set.encard E(H)
 
 /--
-The set of vertex *degrees* of a hypergraph `H`.
+Predicate to determine if a hypergraph is *`k`-uniform*.
+
+In a `k`-uniform hypergraph `H`, all hyperedges `e ∈ E(H)` have the same cardinality, i.e.,
+`|e| = k`.
+-/
+def IsKUniform (H : Hypergraph α) (k : ℕ) : Prop := ∀ e ∈ E(H), Set.ncard e = k
+
+/--
+Predicate to determine if a hypergraph is *`d`-regular*.
+
+In a `d`-regular hypergraph `H`, all vertices `v ∈ V(H)` have the same degree, i.e., all vertices
+are incident on `d` hyperedges.
+-/
+def IsDRegular (H : Hypergraph α) (d : ℕ) : Prop := ∀ l ∈ H.stars, Set.ncard l = d
+
+/--
+The *degree* of a vertex in a hypergraph `H`.
 
 A vertex `x` has degree `n`, where `n` is the number of hyperedges in `E(H)` that `x` is incident
 on.
 -/
-noncomputable def vertexDegrees (H : Hypergraph α) : Set ENat :=
-  {Set.encard l | l ∈ H.stars}
+noncomputable def vertexDegree (H : Hypergraph α) (x : α) : ENat := Set.encard (H.star x)
 
 /--
-The set of hyperedge *degrees* of a hypergraph `H`.
+The set of vertex *degrees* of a hypergraph `H`.
+-/
+noncomputable def vertexDegrees (H : Hypergraph α) : Set ENat := {H.vertexDegree x | x ∈ V(H)}
+
+/--
+The *degree* of a hyperedge in hypergraph `H`.
 
 A hyperedge `e` has degree `n`, where `n` is the number of vertices in `V(H)` that are incident on
 `e`.
 -/
-noncomputable def hyperedgeDegrees (H : Hypergraph α) : Set ENat := {Set.encard e | e ∈ E(H)}
+noncomputable def hyperedgeDegree (_ : Hypergraph α) (e : Set α) : ENat := Set.encard e
+
+/--
+The set of hyperedge *degrees* of a hypergraph `H`.
+-/
+noncomputable def hyperedgeDegrees (H : Hypergraph α) : Set ENat := {H.hyperedgeDegree e | e ∈ E(H)}
 
 end Card
 
@@ -348,7 +357,7 @@ section Sub
 /-! ## Subhypergraphs, Partial Hypergraphs, and Section Hypergraphs -/
 
 /--
-Given a subset of the vertex set `V(H)` of a hypergraph `H` (`g : Set α`), the
+Given a subset of the vertex set `g ⊆ V(H)` of a hypergraph `H`, the
 *subhypergraph* `Hg` has `V(Hg) = g ∩ V(H)`, and `E(Hg)` is the subset of `E(H)` for which all
 incident vertices are included in `g`.
 -/
@@ -375,8 +384,8 @@ def subHypergraph (H : Hypergraph α) (g : Set α) :=
   )
 
 /--
-Given a subset of the vertex set `V(H)` of a hypergraph `H` (`g`),the *induced subhypergraph* `Hg`
-has `V(Hg) = g ∩ V(H)` and `E(Hg)` contains the subset of each hyperedge that intersects
+Given a subset of the vertex set `g ⊆ V(H)` of a hypergraph `H`,the *induced subhypergraph*
+`Hg'` has `V(Hg') = g ∩ V(H)` and `E(Hg')` contains the subset of each hyperedge that intersects
 with `g`.
 -/
 def inducedSubHypergraph (H : Hypergraph α) (g : Set α) :=
