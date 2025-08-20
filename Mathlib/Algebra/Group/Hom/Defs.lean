@@ -137,8 +137,8 @@ you should parametrize over `(F : Type*) [AddMonoidHomClass F M N] (f : F)`.
 
 When you extend this structure, make sure to extend `AddMonoidHomClass`.
 -/
-structure AddMonoidHom (M : Type*) (N : Type*) [AddZeroClass M] [AddZeroClass N] extends
-  ZeroHom M N, AddHom M N
+structure AddMonoidHom (M : Type*) (N : Type*) [Zero M] [Zero N] [Add M] [Add N]
+  extends ZeroHom M N, AddHom M N
 
 attribute [nolint docBlame] AddMonoidHom.toAddHom
 attribute [nolint docBlame] AddMonoidHom.toZeroHom
@@ -152,7 +152,7 @@ homomorphisms.
 You should also extend this typeclass when you extend `AddMonoidHom`.
 -/
 class AddMonoidHomClass (F : Type*) (M N : outParam Type*)
-    [AddZeroClass M] [AddZeroClass N] [FunLike F M N] : Prop
+    [Zero M] [Zero N] [Add M] [Add N] [FunLike F M N] : Prop
     extends AddHomClass F M N, ZeroHomClass F M N
 
 -- Instances and lemmas are defined below through `@[to_additive]`.
@@ -348,7 +348,7 @@ end Mul
 
 section mul_one
 
-variable [MulOneClass M] [MulOneClass N]
+variable [One M] [One N] [Mul M] [Mul N]
 
 /-- `M →* N` is the type of functions `M → N` that preserve the `Monoid` structure.
 `MonoidHom` is also used for group homomorphisms.
@@ -359,8 +359,8 @@ you should parametrize over `(F : Type*) [MonoidHomClass F M N] (f : F)`.
 When you extend this structure, make sure to extend `MonoidHomClass`.
 -/
 @[to_additive]
-structure MonoidHom (M : Type*) (N : Type*) [MulOneClass M] [MulOneClass N] extends
-  OneHom M N, M →ₙ* N
+structure MonoidHom (M : Type*) (N : Type*) [One M] [One N] [Mul M] [Mul N]
+  extends OneHom M N, M →ₙ* N
 
 attribute [nolint docBlame] MonoidHom.toMulHom
 attribute [nolint docBlame] MonoidHom.toOneHom
@@ -371,7 +371,7 @@ infixr:25 " →* " => MonoidHom
 /-- `MonoidHomClass F M N` states that `F` is a type of `Monoid`-preserving homomorphisms.
 You should also extend this typeclass when you extend `MonoidHom`. -/
 @[to_additive]
-class MonoidHomClass (F : Type*) (M N : outParam Type*) [MulOneClass M] [MulOneClass N]
+class MonoidHomClass (F : Type*) (M N : outParam Type*) [One M] [One N] [Mul M] [Mul N]
   [FunLike F M N] : Prop
   extends MulHomClass F M N, OneHomClass F M N
 
