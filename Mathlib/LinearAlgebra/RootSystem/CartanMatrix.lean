@@ -3,6 +3,8 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.CharZero.Infinite
+import Mathlib.Algebra.Module.Submodule.Union
 import Mathlib.LinearAlgebra.Matrix.BilinearForm
 import Mathlib.LinearAlgebra.RootSystem.Base
 import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
@@ -233,6 +235,30 @@ lemma injective_pairingIn {P : RootSystem ι R M N} [P.IsCrystallographic] (b : 
   apply Matrix.linearIndependent_rows_of_det_ne_zero
   rw [← Matrix.nondegenerate_iff_det_ne_zero]
   exact b.cartanMatrix_nondegenerate
+
+lemma exists_mem_span_pairingIn_ne_zero_and_pairwise_ne
+    {K : Type*} [Field K] [CharZero K] [Module K M] [Module K N]
+    {P : RootSystem ι K M N} [P.IsCrystallographic] (b : P.Base) :
+    ∃ d ∈ span K (range fun (i : b.support) j ↦ (P.pairingIn ℤ j i : K)),
+      (∀ i, d i ≠ 0) ∧ Pairwise ((· ≠ ·) on d) := by
+  set p := span K (range fun (i : b.support) j ↦ (P.pairingIn ℤ j i : K))
+  let f : ι ⊕ {(i, j) : ι × ι | i ≠ j} → Module.Dual K (ι → K) := Sum.elim
+    LinearMap.proj (fun x ↦ LinearMap.proj (R := K) (φ := fun _ ↦ K) x.1.1 - LinearMap.proj x.1.2)
+  suffices ∃ d ∈ p, ∀ i, f i d ≠ 0 by
+    obtain ⟨d, hp, hf⟩ := this
+    refine ⟨d, hp, fun i ↦ hf (Sum.inl i), fun i j h ↦ ?_⟩
+    simpa [f, sub_eq_zero] using hf (Sum.inr ⟨⟨i, j⟩, h⟩)
+  apply Module.Dual.exists_forall_mem_ne_zero_of_forall_exists p f
+  rintro (i | ⟨⟨i, j⟩, h : i ≠ j⟩)
+  · obtain ⟨j, hj, hj₀⟩ := b.exists_mem_support_pos_pairingIn_ne_zero i
+    refine ⟨fun i ↦ P.pairingIn ℤ i j, subset_span ⟨⟨j, hj⟩, rfl⟩, ?_⟩
+    rw [ne_eq, P.pairingIn_eq_zero_iff] at hj₀
+    simpa [f, ne_eq, Int.cast_eq_zero]
+  · obtain ⟨k, hk, hk'⟩ : ∃ k ∈ b.support, P.pairingIn ℤ i k ≠ P.pairingIn ℤ j k := by
+      contrapose! h
+      apply b.injective_pairingIn
+      aesop
+    simpa [f, sub_eq_zero] using ⟨fun i ↦ P.pairingIn ℤ i k, subset_span ⟨⟨k, hk⟩, rfl⟩, by simpa⟩
 
 end IsCrystallographic
 
