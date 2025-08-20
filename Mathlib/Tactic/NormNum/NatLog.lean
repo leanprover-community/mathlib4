@@ -39,7 +39,7 @@ Panics if `ex` or `en` aren't natural number literals.
 -/
 def proveNatLog (eb en : Q(ℕ)) : (ek : Q(ℕ)) × Q(Nat.log $eb $en = $ek) :=
   match eb.natLit!, en.natLit! with
-  | 0, _ => have : eb =Q nat_lit 0 := ⟨⟩; ⟨q(nat_lit 0), q(nat_log_zero $en)⟩
+  | 0, _ => have : $eb =Q nat_lit 0 := ⟨⟩; ⟨q(nat_lit 0), q(nat_log_zero $en)⟩
   | 1, _ => have : $eb =Q nat_lit 1 := ⟨⟩; ⟨q(nat_lit 0), q(nat_log_one $en)⟩
   | b, n =>
     if n < b then
