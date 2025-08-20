@@ -105,7 +105,7 @@ theorem birthday_eq_zero {x : PGame} :
 theorem birthday_zero : birthday 0 = 0 := by simp [inferInstanceAs (IsEmpty PEmpty)]
 
 @[simp]
-theorem birthday_one : birthday 1 = 1 := by rw [birthday_def]; simp [lsub_one]
+theorem birthday_one : birthday 1 = 1 := by rw [birthday_def]; simp [lsub_unique]
 
 @[simp]
 theorem birthday_star : birthday star = 1 := by rw [birthday_def]; simp

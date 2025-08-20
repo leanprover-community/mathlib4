@@ -72,6 +72,8 @@ theorem isOpen_iff : IsOpen s ↔ ∀ o ∈ s, IsSuccLimit o → ∃ a < o, Set.
 -- TODO: the following theorems are stated in a really unnatural form.
 
 open List Set in
+set_option linter.deprecated false in
+@[deprecated "this needs to be restated for a general well-order" (since := "2025-08-19")]
 theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
     TFAE [a ∈ closure s,
       a ∈ closure (s ∩ Iic a),
@@ -111,18 +113,23 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
       (bddAbove_range.{u, u} f)
   tfae_finish
 
+set_option linter.deprecated false in
+@[deprecated "this needs to be restated for a general well-order" (since := "2025-08-19")]
 theorem mem_closure_iff_iSup :
     a ∈ closure s ↔
       ∃ (ι : Type u) (_ : Nonempty ι) (f : ι → Ordinal), (∀ i, f i ∈ s) ∧ ⨆ i, f i = a := by
   apply ((mem_closure_tfae a s).out 0 5).trans
   simp_rw [exists_prop]
 
+set_option linter.deprecated false in
+@[deprecated "this needs to be restated for a general well-order" (since := "2025-08-19")]
 theorem mem_iff_iSup_of_isClosed (hs : IsClosed s) :
     a ∈ s ↔ ∃ (ι : Type u) (_hι : Nonempty ι) (f : ι → Ordinal),
       (∀ i, f i ∈ s) ∧ ⨆ i, f i = a := by
   rw [← mem_closure_iff_iSup, hs.closure_eq]
 
-@[deprecated mem_closure_iff_iSup (since := "2025-08-19")]
+set_option linter.deprecated false in
+@[deprecated "this needs to be restated for a general well-order" (since := "2025-08-19")]
 theorem mem_closure_iff_bsup :
     a ∈ closure s ↔
       ∃ (o : Ordinal) (_ho : o ≠ 0) (f : ∀ a < o, Ordinal),
@@ -130,13 +137,16 @@ theorem mem_closure_iff_bsup :
   apply ((mem_closure_tfae a s).out 0 4).trans
   simp_rw [exists_prop]
 
-@[deprecated mem_iff_iSup_of_isClosed (since := "2025-08-19")]
+set_option linter.deprecated false in
+@[deprecated "this needs to be restated for a general well-order" (since := "2025-08-19")]
 theorem mem_closed_iff_bsup (hs : IsClosed s) :
     a ∈ s ↔
       ∃ (o : Ordinal) (_ho : o ≠ 0) (f : ∀ a < o, Ordinal),
         (∀ i hi, f i hi ∈ s) ∧ bsup.{u, u} o f = a := by
   rw [← mem_closure_iff_bsup, hs.closure_eq]
 
+set_option linter.deprecated false in
+@[deprecated "this needs to be restated for a general well-order" (since := "2025-08-19")]
 theorem isClosed_iff_iSup :
     IsClosed s ↔
       ∀ {ι : Type u}, Nonempty ι → ∀ f : ι → Ordinal, (∀ i, f i ∈ s) → ⨆ i, f i ∈ s := by
@@ -146,7 +156,8 @@ theorem isClosed_iff_iSup :
   rcases mem_closure_iff_iSup.1 hx with ⟨ι, hι, f, hf, rfl⟩
   exact h hι f hf
 
-@[deprecated isClosed_iff_iSup (since := "2025-08-19")]
+set_option linter.deprecated false in
+@[deprecated "this needs to be restated for a general well-order" (since := "2025-08-19")]
 theorem isClosed_iff_bsup :
     IsClosed s ↔
       ∀ {o : Ordinal}, o ≠ 0 → ∀ f : ∀ a < o, Ordinal,
@@ -173,6 +184,8 @@ theorem isSuccLimit_of_mem_frontier (ha : a ∈ frontier s) : IsSuccLimit a := b
 alias isLimit_of_mem_frontier := isSuccLimit_of_mem_frontier
 
 -- TODO: prove for `Order.IsNormal` in a well-order with the order topology.
+set_option linter.deprecated false in
+@[deprecated "this needs to be restated for a general well-order" (since := "2025-08-19")]
 theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u}) :
     IsNormal f ↔ StrictMono f ∧ Continuous f := by
   refine ⟨fun h => ⟨h.strictMono, ?_⟩, ?_⟩
@@ -195,6 +208,8 @@ theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u})
       ⟨_, toType_nonempty_iff_ne_zero.2 ho.ne_bot, typein (· < ·), fun i => h _ (typein_lt_self i),
         sup_typein_limit fun _ ↦ ho.succ_lt⟩
 
+set_option linter.deprecated false in
+@[deprecated "this needs to be restated for a general well-order" (since := "2025-08-19")]
 theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
     IsNormal (enumOrd s) ↔ IsClosed s := by
   have Hs := enumOrd_strictMono hs
