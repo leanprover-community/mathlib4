@@ -10,7 +10,6 @@ import Mathlib.Algebra.Group.Idempotent
 import Mathlib.Algebra.Group.Nat.Hom
 import Mathlib.Algebra.Group.Submonoid.MulOpposite
 import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Data.Fintype.EquivFin
 import Mathlib.Data.Int.Basic
 
@@ -106,14 +105,6 @@ theorem mem_sSup_of_mem {S : Set (Submonoid M)} {s : Submonoid M} (hs : s ∈ S)
     ∀ {x : M}, x ∈ s → x ∈ sSup S := by
   rw [← SetLike.le_def]
   exact le_sSup hs
-
-@[to_additive]
-theorem iSup_map_single {ι : Type*} [DecidableEq ι] [Finite ι] {M : ι → Type*} [∀ i, Monoid (M i)]
-    {S : ∀ i, Submonoid (M i)} : ⨆ i, map (MonoidHom.mulSingle M i) (S i) = pi Set.univ S := by
-  haveI := Fintype.ofFinite ι
-  refine iSup_map_single_le.antisymm fun x hx => ?_
-  rw [← Finset.noncommProd_mul_single x]
-  exact noncommProd_mem _ _ _ _ fun i _ => mem_iSup_of_mem _ (mem_map_of_mem _ (hx i trivial))
 
 /-- An induction principle for elements of `⨆ i, S i`.
 If `C` holds for `1` and all elements of `S i` for all `i`, and is preserved under multiplication,
