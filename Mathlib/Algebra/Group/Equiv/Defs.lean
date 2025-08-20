@@ -53,13 +53,6 @@ end EmbeddingLike
 /-- `AddEquiv α β` is the type of an equiv `α ≃ β` which preserves addition. -/
 structure AddEquiv (A B : Type*) [Add A] [Add B] extends A ≃ B, AddHom A B
 
-/-- `AddEquivClass F A B` states that `F` is a type of addition-preserving morphisms.
-You should extend this class when you extend `AddEquiv`. -/
-class AddEquivClass (F : Type*) (A B : outParam Type*) [Add A] [Add B] [EquivLike F A B] :
-    Prop where
-  /-- Preserves addition. -/
-  map_add : ∀ (f : F) (a b), f (a + b) = f a + f b
-
 /-- The `Equiv` underlying an `AddEquiv`. -/
 add_decl_doc AddEquiv.toEquiv
 
@@ -89,12 +82,10 @@ lemma MulEquiv.toEquiv_injective {α β : Type*} [Mul α] [Mul β] :
 
 /-- `MulEquivClass F A B` states that `F` is a type of multiplication-preserving morphisms.
 You should extend this class when you extend `MulEquiv`. -/
--- TODO: make this a synonym for MulHomClass?
-@[to_additive]
-class MulEquivClass (F : Type*) (A B : outParam Type*) [Mul A] [Mul B] [EquivLike F A B] :
-    Prop where
-  /-- Preserves multiplication. -/
-  map_mul : ∀ (f : F) (a b), f (a * b) = f a * f b
+@[to_additive
+/-- `AddEquivClass F A B` states that `F` is a type of addition-preserving morphisms.
+You should extend this class when you extend `AddEquiv`. -/]
+abbrev MulEquivClass := MulHomClass
 
 @[to_additive]
 alias MulEquivClass.map_eq_one_iff := EmbeddingLike.map_eq_one_iff
