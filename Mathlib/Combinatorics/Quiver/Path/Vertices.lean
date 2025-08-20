@@ -258,5 +258,3 @@ theorem split_at_vertex {a b : V} (p : Path a b) (i : ℕ)
   simp [hlen]
 
 end Quiver.Path
-
-#lint
