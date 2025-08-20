@@ -205,7 +205,7 @@ theorem vadd_im : (x +ᵥ z).im = z.im :=
 end RealAddAction
 section upperHalfPlaneSet
 
-/-- The UpperHalfPlane as a subset of `ℂ`. This is convinient for takind derivatives of functions
+/-- The UpperHalfPlane as a subset of `ℂ`. This is convinient for taking derivatives of functions
 on the upper half plane. -/
 abbrev upperHalfPlaneSet := {z : ℂ | 0 < z.im}
 
