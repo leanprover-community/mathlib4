@@ -157,9 +157,8 @@ lemma dist_eq_of_rot90 (z : ℂ) :
   simp [Complex.dist_eq, hnorm, norm_sub_rev]
 
 /-- Angle `∠QRP = π/2` from the rotation relation. -/
-lemma angle_pi_div_two_of_rot90
-  (z : ℂ) :
-  ∠ (Q z) R (P z) = π / 2 := by
+lemma angle_pi_div_two_of_rot90 (z : ℂ) :
+    ∠ (Q z) R (P z) = π / 2 := by
   set u : ℂ := (Q z) - R
   set v : ℂ := (P z) - R
   have exp_I_half_pi : Complex.exp (I * (π / 2)) = I := by
