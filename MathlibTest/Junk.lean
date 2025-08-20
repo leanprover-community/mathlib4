@@ -68,7 +68,7 @@ example : (1 : ℕ) / 0 = 0 ∧ (2 : ℤ) / 0 = 0 := by
 error: failed to synthesize
   HDiv ℕ+ ℕ+ ℕ+
 
-Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 #synth HDiv ℕ+ ℕ+ ℕ+
@@ -118,7 +118,7 @@ example (x : Fin 31) : x + 6 = x + 37 := by
 
 /-! Here even the bare goal `6 = 37` turns out to be true. -/
 /--
-info: theorem extracted_1 : 6 = 37 := sorry
+info: theorem _example.extracted_1 : 6 = 37 := sorry
 -/
 #guard_msgs in
 example {x : Fin 31} : x + 6 = x + 37 := by
@@ -309,7 +309,7 @@ example :
 
 /-- The derivative of a function at a point where it's not differentiable is given the junk
 value of 0. In this example, the derivative of `7x + |x|` at `x = 0` is equal to 0 (even though
-the "sensible" values would be 6, 7, or 8).
+the "sensible" values would be 6, 8, or maybe 7).
 
 This holds for the many variants of derivatives, like `fderiv`, `fderivWithin`, etc.
 
@@ -326,7 +326,7 @@ example : deriv (fun (x : ℝ) ↦ 7 * x + |x|) 0 = 0 := by
   have h₂ : DifferentiableAt ℝ (fun (x : ℝ) ↦ (-7) * x) 0 := by
     fun_prop
   apply not_differentiableAt_abs_zero
-  simpa using h₂.add h
+  simpa [Pi.add_def] using h₂.add h
 
 /-- Another version is that `analyticOrderAt` and `analyticOrderNatAt` give the junk value
 0 when the function isn't analytic at the point. -/
