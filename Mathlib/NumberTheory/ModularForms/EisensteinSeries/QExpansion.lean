@@ -208,7 +208,13 @@ lemma natcast_norm {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormSMulClass 
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [NormSMulClass ℤ 𝕜]
 
-theorem summable_divisorsAntidiagonal_aux2 (k : ℕ) (r : 𝕜) (hr : ‖r‖ < 1) :
+@[simp]
+lemma cexp_pow_aux (a b : ℕ) (z : ℍ) :
+    cexp (2 * ↑π * Complex.I * a * z) ^ b = Complex.exp (2 * ↑π * Complex.I * z) ^ (a * b) := by
+  simp [← Complex.exp_nsmul]
+  ring_nf
+
+theorem summable_divisorsAntidiagonal_aux (k : ℕ) (r : 𝕜) (hr : ‖r‖ < 1) :
     Summable fun c : (n : ℕ+) × { x // x ∈ (n : ℕ).divisorsAntidiagonal } ↦
     (c.2.1).1 ^ k * (r ^ (c.2.1.2 * c.2.1.1)) := by
   apply Summable.of_norm
@@ -235,7 +241,7 @@ theorem summable_divisorsAntidiagonal_aux2 (k : ℕ) (r : 𝕜) (hr : ‖r‖ < 
         simpa [natcast_norm] using (Nat.card_divisors_le_self b)
   · intro a
     simpa using mul_nonneg (by simp) (by simp)
-
+/-
 
 theorem summable_divisorsAntidiagonal_aux (k : ℕ) (z : ℍ) :
     Summable fun c : (n : ℕ+) × { x // x ∈ (n : ℕ).divisorsAntidiagonal } ↦
@@ -252,9 +258,9 @@ theorem summable_divisorsAntidiagonal_aux (k : ℕ) (z : ℍ) :
       intro b
       apply le_trans (b := ∑ _ ∈ (b : ℕ).divisors, b ^ k * ‖exp (2 * ↑π * Complex.I * z) ^ (b : ℕ)‖)
       · rw [Finset.sum_attach ((b : ℕ).divisorsAntidiagonal) (fun (x : ℕ × ℕ) ↦
-            (x.1 : ℝ) ^ (k : ℕ) * ‖Complex.exp (2 * ↑π * Complex.I * x.2 * z)‖ ^ x.1),
+            (x.1 : ℝ) ^ (k : ℕ) * ‖cexp (2 * ↑π * Complex.I * x.2 * z)‖ ^ x.1),
           Nat.sum_divisorsAntidiagonal ((fun x y ↦
-          (x : ℝ) ^ (k : ℕ) * ‖Complex.exp (2 * ↑π * Complex.I * y * z)‖ ^ x))]
+          (x : ℝ) ^ (k : ℕ) * ‖cexp (2 * ↑π * Complex.I * y * z)‖ ^ x))]
         gcongr <;> rename_i i hi <;> simp at hi
         · exact Nat.le_of_dvd b.2 hi
         · apply le_of_eq
@@ -263,32 +269,31 @@ theorem summable_divisorsAntidiagonal_aux (k : ℕ) (z : ℍ) :
           simp
           ring_nf
       · simpa [← mul_assoc, add_comm k 1, pow_add] using Nat.card_divisors_le_self b
-  · simp
+  · simp -/
 
-theorem summable_prod_aux (k : ℕ) (z : ℍ) : Summable fun c : ℕ+ × ℕ+ ↦
-    (c.1 ^ k : ℂ) * Complex.exp (2 * ↑π * Complex.I * c.2 * z) ^ (c.1 : ℕ) := by
-  rw [sigmaAntidiagonalEquivProd.summable_iff.symm]
-  simp only [sigmaAntidiagonalEquivProd, mapdiv, PNat.mk_coe, Equiv.coe_fn_mk]
-  apply summable_divisorsAntidiagonal_aux k z
-
-theorem summable_auxerret (k : ℕ) (r : 𝕜) (hr : ‖r‖ < 1) :
+theorem summable_prod_mul_pow (k : ℕ) (r : 𝕜) (hr : ‖r‖ < 1) :
     Summable fun c : (ℕ+ × ℕ+) ↦ (c.1 : 𝕜) ^ k * (r ^ (c.2 * c.1 : ℕ)) :=by
   rw [sigmaAntidiagonalEquivProd.summable_iff.symm]
   simp only [sigmaAntidiagonalEquivProd, mapdiv, PNat.mk_coe, Equiv.coe_fn_mk]
-  apply summable_divisorsAntidiagonal_aux2 k r hr
+  apply summable_divisorsAntidiagonal_aux k r hr
 
-theorem tsum_prod_pow_cexp_eq_tsum_sigma2 (k : ℕ) (r : 𝕜) (hr : ‖r‖ < 1) :
+theorem summable_prod_aux (k : ℕ) (z : ℍ) : Summable fun c : ℕ+ × ℕ+ ↦
+    (c.1 ^ k : ℂ) * Complex.exp (2 * ↑π * Complex.I * c.2 * z) ^ (c.1 : ℕ) := by
+  simpa using summable_prod_mul_pow  k (Complex.exp (2 * ↑π * Complex.I * z))
+    (by apply UpperHalfPlane.norm_exp_two_pi_I_lt_one z)
+
+theorem tsum_prod_pow_eq_tsum_sigma (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     ∑' d : ℕ+, ∑' (c : ℕ+), (c ^ k : 𝕜) * (r ^ (d * c : ℕ)) =
     ∑' e : ℕ+, sigma k e * r ^ (e : ℕ) := by
   suffices  ∑' (c : ℕ+ × ℕ+), (c.1 ^ k : 𝕜) * (r ^ ((c.2 : ℕ) * (c.1 : ℕ))) =
       ∑' e : ℕ+, sigma k e * r ^ (e : ℕ) by
-    rw [Summable.tsum_prod (by apply summable_auxerret k r hr), Summable.tsum_comm] at this
+    rw [Summable.tsum_prod (by apply summable_prod_mul_pow  k r hr), Summable.tsum_comm] at this
     · simpa using this
-    · apply (summable_auxerret k r hr).prod_symm.congr
+    · apply (summable_prod_mul_pow  k r hr).prod_symm.congr
       simp
   simp only [← sigmaAntidiagonalEquivProd.tsum_eq, sigmaAntidiagonalEquivProd, mapdiv, PNat.mk_coe,
     Equiv.coe_fn_mk, sigma_eq_sum_div', Nat.cast_sum, Nat.cast_pow]
-  rw [Summable.tsum_sigma (summable_divisorsAntidiagonal_aux2 k r hr)]
+  rw [Summable.tsum_sigma (summable_divisorsAntidiagonal_aux k r hr)]
   apply tsum_congr
   intro n
   simp only [tsum_fintype, Finset.univ_eq_attach, Finset.sum_attach ((n : ℕ).divisorsAntidiagonal)
@@ -306,46 +311,10 @@ theorem tsum_prod_pow_cexp_eq_tsum_sigma2 (k : ℕ) (r : 𝕜) (hr : ‖r‖ < 1
   nth_rw 2 [← hni]
   ring
 
-theorem tsum_prod_pow_cexp_eq_tsum_sigma3 (k : ℕ) (z : ℍ) :
-    ∑' d : ℕ+, ∑' (c : ℕ+), (c ^ k : ℂ) * cexp (2 * ↑π * Complex.I * d * z) ^ (c : ℕ) =
-    ∑' e : ℕ+, sigma k e * cexp (2 * ↑π * Complex.I * z) ^ (e : ℕ) := by
-  have := tsum_prod_pow_cexp_eq_tsum_sigma2 k (cexp (2 * ↑π * Complex.I * z))
-    (by apply UpperHalfPlane.norm_exp_two_pi_I_lt_one z)
-  simp_rw [← this, ← exp_nsmul]
-  congr
-  ext n
-  congr
-  ext m
-  ring_nf
-
-
 theorem tsum_prod_pow_cexp_eq_tsum_sigma (k : ℕ) (z : ℍ) :
     ∑' d : ℕ+, ∑' (c : ℕ+), (c ^ k : ℂ) * cexp (2 * ↑π * Complex.I * d * z) ^ (c : ℕ) =
     ∑' e : ℕ+, sigma k e * cexp (2 * ↑π * Complex.I * z) ^ (e : ℕ) := by
-  suffices  ∑' (c : ℕ+ × ℕ+), (c.1 ^ k : ℂ) * cexp (2 * ↑π * Complex.I * c.2 * z) ^ (c.1 : ℕ) =
-      ∑' e : ℕ+, sigma k e * cexp (2 * ↑π * Complex.I * z) ^ (e : ℕ) by
-    rw [Summable.tsum_prod (summable_prod_aux k z), Summable.tsum_comm] at this
-    · simpa using this
-    · apply (summable_prod_aux k z).prod_symm.congr
-      simp
-  simp only [← sigmaAntidiagonalEquivProd.tsum_eq, sigmaAntidiagonalEquivProd, mapdiv, PNat.mk_coe,
-    Equiv.coe_fn_mk, sigma_eq_sum_div', Nat.cast_sum, Nat.cast_pow]
-  rw [Summable.tsum_sigma (summable_divisorsAntidiagonal_aux k z)]
-  apply tsum_congr
-  intro n
-  simp only [tsum_fintype, Finset.univ_eq_attach, Finset.sum_attach ((n : ℕ).divisorsAntidiagonal)
-    (fun (x : ℕ × ℕ) ↦ (x.1 : ℂ) ^ k * cexp (2 * ↑π * Complex.I * x.2 * z) ^ x.1),
-    Nat.sum_divisorsAntidiagonal' (fun x y ↦ (x : ℂ) ^ k * cexp (2 * ↑π * Complex.I * y * z) ^ x),
-    Finset.sum_mul]
-  refine Finset.sum_congr (rfl) fun i hi ↦ ?_
-  have hni : (n / i : ℕ) * (i : ℂ) = n := by
-    norm_cast
-    simp only [Nat.mem_divisors, ne_eq, PNat.ne_zero, not_false_eq_true, and_true] at *
-    exact Nat.div_mul_cancel hi
-  simp only [← Complex.exp_nsmul, nsmul_eq_mul, ← hni, mul_eq_mul_left_iff, pow_eq_zero_iff',
-    Nat.cast_eq_zero, Nat.div_eq_zero_iff, ne_eq]
-  left
-  ring_nf
+  simpa using tsum_prod_pow_eq_tsum_sigma k (by apply UpperHalfPlane.norm_exp_two_pi_I_lt_one z)
 
 theorem summable_prod_eisSummand {k : ℕ} (hk : 3 ≤ k) (z : ℍ) :
     Summable fun x : ℤ × ℤ ↦ eisSummand k ![x.1, x.2] z := by
