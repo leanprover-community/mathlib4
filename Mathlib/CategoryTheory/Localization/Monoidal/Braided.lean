@@ -20,7 +20,7 @@ braided, in such a way that the localization functor is braided. If `C` is symme
 the monoidal structure on `D` is also symmetric.
 -/
 
-open CategoryTheory Category MonoidalCategory BraidedCategory
+open CategoryTheory Category MonoidalCategory BraidedCategory Functor
 
 namespace CategoryTheory.Localization.Monoidal
 
@@ -80,8 +80,8 @@ lemma braidingNatIso_hom_μ_right (X Y Z : C) :
 
 @[reassoc]
 lemma braiding_naturality {X X' Y Y' : LocalizedMonoidal L W ε} (f : X ⟶ Y) (g : X' ⟶ Y') :
-    (f ⊗ g) ≫ ((braidingNatIso L W ε).hom.app Y).app Y' =
-      ((braidingNatIso L W ε).hom.app X).app X' ≫ (g ⊗ f) := by
+    (f ⊗ₘ g) ≫ ((braidingNatIso L W ε).hom.app Y).app Y' =
+      ((braidingNatIso L W ε).hom.app X).app X' ≫ (g ⊗ₘ f) := by
   rw [← id_comp f, ← comp_id g, tensor_comp, id_tensorHom, tensorHom_id,
     tensor_comp, id_tensorHom, tensorHom_id, ← assoc]
   erw [← ((braidingNatIso L W ε).app _).hom.naturality g]
@@ -156,8 +156,8 @@ noncomputable instance : BraidedCategory (LocalizedMonoidal L W ε) where
         (((braidingNatIso L W ε).app ((L').obj x)).app ((L').obj y)).hom ▷ ((L').obj z) ≫
           (α_ ((L').obj y) ((L').obj x) ((L').obj z)).hom ≫
           ((L').obj y) ◁ (((braidingNatIso L W ε).app ((L').obj x)).app ((L').obj z)).hom by
-      refine Eq.trans ?_ ((((eX.inv ⊗ eY.inv) ⊗ eZ.inv) ≫= this =≫
-        (eY.hom ⊗ eZ.hom ⊗ eX.hom)).trans ?_)
+      refine Eq.trans ?_ ((((eX.inv ⊗ₘ eY.inv) ⊗ₘ eZ.inv) ≫= this =≫
+        (eY.hom ⊗ₘ eZ.hom ⊗ₘ eX.hom)).trans ?_)
       · simp only [Iso.app_hom, associator_conjugation, Functor.flip_obj_obj, assoc,
           Iso.inv_hom_id_assoc, Iso.cancel_iso_hom_left]
         rw [← Iso.eq_comp_inv]
@@ -180,12 +180,12 @@ noncomputable instance : BraidedCategory (LocalizedMonoidal L W ε) where
         ((L').obj x) ◁ (((braidingNatIso L W ε).app ((L').obj y)).app ((L').obj z)).hom ≫
           (α_ ((L').obj x) ((L').obj z) ((L').obj y)).inv ≫
           (((braidingNatIso L W ε).app ((L').obj x)).app ((L').obj z)).hom ▷ ((L').obj y)  by
-      refine Eq.trans ?_ (((eX.inv ⊗ (eY.inv ⊗ eZ.inv)) ≫= this =≫
-        ((eZ.hom ⊗ eX.hom) ⊗ eY.hom)).trans ?_)
+      refine Eq.trans ?_ (((eX.inv ⊗ₘ (eY.inv ⊗ₘ eZ.inv)) ≫= this =≫
+        ((eZ.hom ⊗ₘ eX.hom) ⊗ₘ eY.hom)).trans ?_)
       · simp [← braiding_naturality_assoc, ← whiskerLeft_comp_assoc]
       · simp only [Functor.flip_obj_obj, Iso.app_hom, assoc, ← id_tensorHom]
         rw [← tensor_comp_assoc, braiding_naturality]
-        simp only [comp_id, Functor.flip_obj_obj, assoc, associator_conjugation,
+        simp only [comp_id, Functor.flip_obj_obj, associator_conjugation,
           MonoidalCategory.id_tensorHom]
         rw [← id_comp eX.inv, tensor_comp, id_tensorHom]
         simp only [← associator_conjugation]
@@ -223,8 +223,8 @@ noncomputable instance : SymmetricCategory (LocalizedMonoidal L W ε) where
     obtain ⟨x, ⟨eX⟩⟩ : ∃ x, Nonempty ((L').obj x ≅ X) := ⟨_, ⟨(L').objObjPreimageIso X⟩⟩
     obtain ⟨y, ⟨eY⟩⟩ : ∃ x, Nonempty ((L').obj x ≅ Y) := ⟨_, ⟨(L').objObjPreimageIso Y⟩⟩
     suffices (β_ ((L').obj x) ((L').obj y)).hom ≫ (β_ ((L').obj y) ((L').obj x)).hom = 𝟙 _ by
-      refine Eq.trans ?_ (((eX.inv ⊗ eY.inv) ≫= this =≫
-        (eX.hom ⊗ eY.hom)).trans ?_)
+      refine Eq.trans ?_ (((eX.inv ⊗ₘ eY.inv) ≫= this =≫
+        (eX.hom ⊗ₘ eY.hom)).trans ?_)
       all_goals simp
     simp [-Functor.map_braiding, β_hom_app, ← Functor.map_comp_assoc]
 
