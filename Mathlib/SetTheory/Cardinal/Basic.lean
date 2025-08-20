@@ -624,7 +624,7 @@ theorem mk_emptyCollection_iff {α : Type u} {s : Set α} : #s = 0 ↔ s = ∅ :
 theorem mk_set_eq_zero_iff {s : Set α} : #s = 0 ↔ s = ∅ := by
   rw [mk_eq_zero_iff, isEmpty_coe_sort]
 
-theorem mk_set_ne_zero_iff {α : Type u} (s : Set α) : #s ≠ 0 ↔ s.Nonempty := by
+theorem mk_set_ne_zero_iff {α : Type u} {s : Set α} : #s ≠ 0 ↔ s.Nonempty := by
   rw [mk_ne_zero_iff, nonempty_coe_sort]
 
 @[simp]
