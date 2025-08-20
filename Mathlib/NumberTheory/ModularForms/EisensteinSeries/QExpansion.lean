@@ -210,8 +210,7 @@ lemma cexp_pow_aux (a b : ℕ) (z : ℍ) :
 
 theorem summable_prod_aux (k : ℕ) (z : ℍ) : Summable fun c : ℕ+ × ℕ+ ↦
     (c.1 ^ k : ℂ) * Complex.exp (2 * ↑π * Complex.I * c.2 * z) ^ (c.1 : ℕ) := by
-  simpa using summable_prod_mul_pow  k
-    (by apply UpperHalfPlane.norm_exp_two_pi_I_lt_one z)
+  simpa using summable_prod_mul_pow k (by apply UpperHalfPlane.norm_exp_two_pi_I_lt_one z)
 
 theorem tsum_prod_pow_cexp_eq_tsum_sigma (k : ℕ) (z : ℍ) :
     ∑' d : ℕ+, ∑' (c : ℕ+), (c ^ k : ℂ) * cexp (2 * ↑π * Complex.I * d * z) ^ (c : ℕ) =
@@ -225,18 +224,16 @@ theorem summable_prod_eisSummand {k : ℕ} (hk : 3 ≤ k) (z : ℍ) :
   apply (EisensteinSeries.summable_norm_eisSummand (by linarith) z).congr
   simp [EisensteinSeries.eisSummand]
 
-lemma tsum_prod_eisSummand_eq_sigma_cexp {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
-    ∑' (x : Fin 2 → ℤ), eisSummand k x z = 2 * riemannZeta k +
-    2 * ((-2 * π * Complex.I) ^ k / (k - 1)!) *
+lemma tsum_eisSummand_eq_sigma_cexp {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
+    ∑' x, eisSummand k x z = 2 * riemannZeta k + 2 * ((-2 * π * Complex.I) ^ k / (k - 1)!) *
     ∑' (n : ℕ+), (σ (k - 1) n) * cexp (2 * π * Complex.I * z) ^ (n : ℕ) := by
   rw [← (piFinTwoEquiv fun _ ↦ ℤ).symm.tsum_eq, Summable.tsum_prod
     (by apply summable_prod_eisSummand hk), tsum_nat_eq_zero_two_pnat]
   · have (b : ℕ+) := EisensteinSeries.qExpansion_identity_pnat (k := k - 1) (by omega)
       ⟨b * z , by simpa using z.2⟩
-    have hk1 : k - 1 + 1 = k := by omega
-    simp only [coe_mk_subtype, hk1, one_div, neg_mul, mul_assoc, eisSummand, Fin.isValue,
-      piFinTwoEquiv_symm_apply, Fin.cons_zero, Int.cast_zero, zero_mul, Fin.cons_one, zero_add,
-      zpow_neg, zpow_natCast, Int.cast_natCast,
+    simp only [coe_mk_subtype, show k - 1 + 1 = k by omega, one_div, neg_mul, mul_assoc, eisSummand,
+      Fin.isValue, piFinTwoEquiv_symm_apply, Fin.cons_zero, Int.cast_zero, zero_mul, Fin.cons_one,
+      zero_add, zpow_neg, zpow_natCast, Int.cast_natCast,
       two_riemannZeta_eq_tsum_int_inv_even_pow (by omega) hk2, add_right_inj, mul_eq_mul_left_iff,
       OfNat.ofNat_ne_zero, or_false] at *
     conv =>
@@ -301,7 +298,7 @@ lemma EisensteinSeries.q_expansion_riemannZeta {k : ℕ} (hk : 3 ≤ k) (hk2 : E
     (eisensteinSeries_SIF standardcongruencecondition k) z := rfl
   rw [E, ModularForm.smul_apply, this, eisensteinSeries_SIF_apply standardcongruencecondition k z,
     eisensteinSeries, standardcongruencecondition]
-  have HE1 := tsum_prod_eisSummand_eq_sigma_cexp (by omega) hk2 z
+  have HE1 := tsum_eisSummand_eq_sigma_cexp (by omega) hk2 z
   have HE2 := tsum_prod_eisSummand_eq_riemannZeta_eisensteinSeries (by omega) z
   have z2 : (riemannZeta (k)) ≠ 0 := by
     refine riemannZeta_ne_zero_of_one_lt_re ?_
@@ -323,7 +320,7 @@ theorem even_div_two_ne_zero {k : ℕ} (hk2 : Even k) (hkn0 : k ≠ 0) : k / 2 �
 lemma eisensteinSeries_coeff_identity {k : ℕ} (hk2 : Even k) (hkn0 : k ≠ 0) :
   (1 / (riemannZeta (k))) * ((-2 * π * Complex.I) ^ k / (k - 1)!) = -((2 * k) / bernoulli k) := by
   have hk0 := even_div_two_ne_zero hk2 hkn0
-  have hk1 : 2 * (k / 2) = k := by apply Nat.two_mul_div_two_of_even hk2
+  have hk1 : 2 * (k / 2) = k := Nat.two_mul_div_two_of_even hk2
   have hk11 : 2 * (((k / 2) : ℕ) : ℂ) = k := by norm_cast
   have hpi : (π : ℂ) ≠ 0 := by
     simp [Real.pi_ne_zero]
@@ -333,8 +330,7 @@ lemma eisensteinSeries_coeff_identity {k : ℕ} (hk2 : Even k) (hkn0 : k ≠ 0) 
   have h3 : (-2 * ↑π * Complex.I) ^ k = (-1) ^ k * 2 ^ k * π ^ k * (-1) ^ (k / 2) := by
     simp_rw [mul_pow]
     nth_rw 3 [← hk1]
-    rw [neg_pow, pow_mul]
-    simp
+    rw [neg_pow, pow_mul, I_sq]
   have := riemannZeta_two_mul_nat hk0
   rw [hk1, hk11] at this
   rw [h3, this, (Nat.mul_factorial_pred hkn0).symm]
@@ -344,13 +340,9 @@ lemma eisensteinSeries_coeff_identity {k : ℕ} (hk2 : Even k) (hkn0 : k ≠ 0) 
     (↑k * ↑(k - 1)! * (2 ^ k * ↑π ^ k * (-1) ^ (k / 2)) /
     ((-1) ^ (k / 2 + 1) * 2 ^ (k - 1) * ↑π ^ k * ↑(k - 1)!)) * 1 / (bernoulli k) := by
     ring
-  rw [this]
+  rw [this, show k = 1 + (k - 1) by omega, pow_add, pow_one, add_tsub_cancel_left]
   congr
   field_simp
-  have h2k : (2 : ℂ) ^ k = 2 * 2 ^ (k - 1) := by
-    rw [show k = 1 + (k - 1) by omega, pow_add]
-    simp
-  rw [h2k]
   ring
 
 /-- The q-Expansion of normalised Eisenstein series of level one with `bernoulli` term. -/
