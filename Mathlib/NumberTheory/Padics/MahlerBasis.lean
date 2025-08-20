@@ -306,7 +306,7 @@ The coefficients of a Mahler series can be recovered from the sum by taking forw
 lemma fwdDiff_mahlerSeries (ha : Tendsto a atTop (𝓝 0)) (n) :
     Δ_[1]^[n] (mahlerSeries a) (0 : ℤ_[p]) = a n :=
   calc Δ_[1]^[n] (mahlerSeries a) 0
-  -- throw away terms after the n'th
+  -- throw away terms after the nth
   _ = Δ_[1]^[n] (fun k ↦ ∑ j ∈ range (n + 1), k.choose j • (a j)) 0 := by
     simp only [fwdDiff_iter_eq_sum_shift, zero_add]
     refine Finset.sum_congr rfl fun j hj ↦ ?_

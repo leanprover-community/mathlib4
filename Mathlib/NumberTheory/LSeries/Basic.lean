@@ -83,7 +83,7 @@ lemma term_def₀ {f : ℕ → ℂ} (hf : f 0 = 0) (s : ℂ) (n : ℕ) :
 @[simp]
 lemma term_zero (f : ℕ → ℂ) (s : ℂ) : term f s 0 = 0 := rfl
 
--- We put `hn` first for convnience, so that we can write `rw [LSeries.term_of_ne_zero hn]` etc.
+-- We put `hn` first for convenience, so that we can write `rw [LSeries.term_of_ne_zero hn]` etc.
 @[simp]
 lemma term_of_ne_zero {n : ℕ} (hn : n ≠ 0) (f : ℕ → ℂ) (s : ℂ) :
     term f s n = f n / n ^ s :=

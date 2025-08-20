@@ -395,7 +395,7 @@ namespace jacobiSym
 /-- The **Law of Quadratic Reciprocity for the Jacobi symbol**, version with `qrSign` -/
 theorem quadratic_reciprocity' {a b : ℕ} (ha : Odd a) (hb : Odd b) :
     J(a | b) = qrSign b a * J(b | a) := by
-  -- define the right hand side for fixed `a` as a `ℕ →* ℤ`
+  -- define the right-hand side for fixed `a` as a `ℕ →* ℤ`
   let rhs : ℕ → ℕ →* ℤ := fun a =>
     { toFun := fun x => qrSign x a * J(x | a)
       map_one' := by convert ← mul_one (M := ℤ) _; (on_goal 1 => symm); all_goals apply one_left
