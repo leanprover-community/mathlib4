@@ -193,6 +193,14 @@ theorem Prod.snd_toSigma {α β} (x : α × β) : (Prod.toSigma x).snd = x.snd :
 theorem Prod.toSigma_mk {α β} (x : α) (y : β) : (x, y).toSigma = ⟨x, y⟩ :=
   rfl
 
+theorem Prod.toSigma_injective {α β} : Function.Injective (α := α × β) Prod.toSigma := by
+  rintro ⟨a, b⟩ ⟨c, d⟩ h
+  simp_all
+
+@[simp]
+theorem Prod.toSigma_inj {α β} {x y : α × β} : x.toSigma = y.toSigma ↔ x = y :=
+  Prod.toSigma_injective.eq_iff
+
 end Sigma
 
 namespace PSigma
