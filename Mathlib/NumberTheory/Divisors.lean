@@ -11,7 +11,6 @@ import Mathlib.Algebra.Ring.CharZero
 import Mathlib.Data.Nat.Cast.Order.Ring
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.SuccPred
-import Mathlib.Data.PNat.Defs
 import Mathlib.Order.Interval.Finset.Nat
 
 /-!
