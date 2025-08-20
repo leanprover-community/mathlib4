@@ -130,15 +130,33 @@ private theorem one_sub_eta_logDeriv_eq (z : ℂ) (i : ℕ) : logDeriv (fun x �
   simp_rw [eta_q_eq_cexp, h2, logDeriv_one_sub_mul_cexp_comp 1
     (g := fun x ↦ (2 * π * Complex.I * (i + 1) * x)) (by fun_prop), h3, neg_mul, one_mul, mul_neg]
 
-lemma tsum_log_deriv_eta_q (z : ℂ) : ∑' (i : ℕ), logDeriv (fun x ↦ 1 - eta_q i x) z =
-  (2 * π * Complex.I) * ∑' n : ℕ, (n + 1) * (-eta_q n z) / (1 - eta_q n z) := by
+lemma tsum_log_deriv_one_sub_eta_q (z : ℂ) : ∑' (i : ℕ), logDeriv (fun x ↦ 1 - eta_q i x) z =
+  -(2 * π * Complex.I) * ∑' n : ℕ, (n + 1) * (eta_q n z) / (1 - eta_q n z) := by
   suffices ∑' (i : ℕ), logDeriv (fun x ↦ 1 - eta_q i x) z =
-  ∑' n : ℕ, (2 * ↑π * Complex.I * (n + 1)) * (-eta_q n z) / (1 - eta_q n z) by
+      ∑' n : ℕ, (2 * ↑π * Complex.I * (n + 1)) * (-eta_q n z) / (1 - eta_q n z) by
     rw [this, ← tsum_mul_left]
     congr 1
     ext i
     ring
   exact tsum_congr (fun i ↦ one_sub_eta_logDeriv_eq z i)
+
+lemma summable_log_deriv_one_sub_eta_q (z : ℍ) :
+    Summable fun i ↦ logDeriv (fun x ↦ 1 - eta_q i x) z := by
+  simp only [one_sub_eta_logDeriv_eq]
+  apply ((summable_nat_add_iff 1).mpr ((summable_norm_pow_mul_geometric_div_one_sub (r := 𝕢 1 z) 1
+    (by simpa [Periodic.qParam] using UpperHalfPlane.norm_exp_two_pi_I_lt_one z)).mul_left
+    (-2 * π * Complex.I))).congr
+  intro b
+  have := one_add_eta_q_ne_zero b z
+  simp only [UpperHalfPlane.coe, ne_eq, neg_mul, Nat.cast_add, Nat.cast_one, mul_neg] at *
+  field_simp
+  left
+  ring
+
+lemma multipliableLocallyUniformlyOn_one_sub_eta_q :
+    MultipliableLocallyUniformlyOn (fun n x ↦ 1 - eta_q n x) ℍₒ :=
+  ⟨ηₚ, (hasProdLocallyUniformlyOn_eta).congr fun n x _ ↦ Eq.refl ((fun b ↦ ∏ i ∈ n,
+    (fun n a ↦ 1 - eta_q n a) i b) x)⟩
 
 theorem etaProdTerm_DifferentiableAt (z : ℍ) : DifferentiableAt ℂ ηₚ z := by
   have hD := hasProdLocallyUniformlyOn_eta.tendstoLocallyUniformlyOn_finsetRange.differentiableOn ?_
@@ -157,41 +175,20 @@ lemma eta_logDeriv (z : ℍ) : logDeriv ModularForm.eta z = (π * Complex.I / 12
   rw [logDeriv_mul (UpperHalfPlane.coe z) (by simp [ne_eq, exp_ne_zero, not_false_eq_true,
     Periodic.qParam]) (etaProdTerm_ne_zero z) (by fun_prop) (etaProdTerm_DifferentiableAt z)]
   have HG := logDeriv_tprod_eq_tsum (complexUpperHalPlane_isOpen) (x := z)
-    (f := fun n x => 1 - eta_q n x) (fun i ↦ one_add_eta_q_ne_zero i z) ?_ ?_ ?_
-    (etaProdTerm_ne_zero z)
-  · rw [show z.1 = UpperHalfPlane.coe z by rfl] at HG
-    simp only [HG, logDeriv_q_term z, tsum_log_deriv_eta_q z, mul_neg, E2, one_div, mul_inv_rev,
-    Pi.smul_apply, smul_eq_mul]
-    rw [G2_q_exp, riemannZeta_two, ← tsum_pow_div_one_sub_eq_tsum_sigma
-      (by apply UpperHalfPlane.norm_exp_two_pi_I_lt_one z), mul_sub, sub_eq_add_neg, mul_add]
-    conv =>
-      enter [1,2,2,1]
-      ext n
-      rw [neg_div, neg_eq_neg_one_mul]
-    rw [tsum_mul_left]
-    congr 1
-    · field_simp
-      ring
-    · have := tsum_pnat_eq_tsum_succ (f := fun n ↦ n * cexp (2 * π * Complex.I * z) ^ n
-        / (1 - cexp (2 * π * Complex.I * z) ^ n ))
-      field_simp [this, Periodic.qParam, eta_q_eq_pow]
-      ring_nf
-      congr
-      ext n
-      ring_nf
-  · intro i x hx
-    simp_rw [eta_q_eq_pow]
-    fun_prop
-  · simp only [mem_setOf_eq, one_sub_eta_logDeriv_eq]
-    apply ((summable_nat_add_iff 1).mpr ((summable_norm_pow_mul_geometric_div_one_sub (r := 𝕢 1 z) 1
-      (by simpa [Periodic.qParam] using UpperHalfPlane.norm_exp_two_pi_I_lt_one z)).mul_left
-      (-2 * π * Complex.I))).congr
-    intro b
-    have := one_add_eta_q_ne_zero b z
-    simp only [UpperHalfPlane.coe, ne_eq, neg_mul, Nat.cast_add, Nat.cast_one, mul_neg] at *
-    field_simp
-    left
+    (f := fun n x => 1 - eta_q n x) (fun i ↦ one_add_eta_q_ne_zero i z)
+    (by simp_rw [eta_q_eq_pow]; fun_prop) (summable_log_deriv_one_sub_eta_q z)
+    (multipliableLocallyUniformlyOn_one_sub_eta_q) (etaProdTerm_ne_zero z)
+  rw [show z.1 = UpperHalfPlane.coe z by rfl] at HG
+  simp only [logDeriv_q_term z, HG, tsum_log_deriv_one_sub_eta_q z, E2, one_div,
+    mul_inv_rev, Pi.smul_apply, smul_eq_mul]
+  rw [G2_q_exp, riemannZeta_two, ← tsum_pow_div_one_sub_eq_tsum_sigma
+    (by apply UpperHalfPlane.norm_exp_two_pi_I_lt_one z), mul_sub, sub_eq_add_neg, mul_add]
+  congr 1
+  · field_simp
     ring
-  · use ηₚ
-    apply (hasProdLocallyUniformlyOn_eta).congr
-    exact fun n x hx ↦ Eq.refl ((fun b ↦ ∏ i ∈ n, (fun n a ↦ 1 - eta_q n a) i b) x)
+  · field_simp [tsum_pnat_eq_tsum_succ (f := fun n ↦ n * cexp (2 * π * Complex.I * z) ^ n
+      / (1 - cexp (2 * π * Complex.I * z) ^ n )), Periodic.qParam, eta_q_eq_pow]
+    ring_nf
+    congr
+    ext n
+    ring_nf
