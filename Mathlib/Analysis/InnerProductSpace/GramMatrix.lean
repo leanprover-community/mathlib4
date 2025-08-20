@@ -27,10 +27,7 @@ open RCLike Real Matrix
 
 open scoped InnerProductSpace ComplexOrder ComplexConjugate
 
-variable {E n : Type*}
-variable {α : Type*}
-variable {𝕜 : Type*}
-
+variable {E n α 𝕜 : Type*}
 namespace Matrix
 
 /-- The entries of a Gram matrix are inner products of vectors in an inner product space. -/
@@ -70,7 +67,7 @@ variable [Fintype n]
 
 theorem star_dotProduct_gram_mulVec (v : n → E) (x y : n → 𝕜) :
     star x ⬝ᵥ (gram 𝕜 v) *ᵥ y = ⟪∑ i, x i • v i, ∑ i, y i • v i⟫_𝕜 := by
-  trans ∑ i, ∑ j, conj (x i) * x j * ⟪v i, v j⟫_𝕜
+  trans ∑ i, ∑ j, conj (x i) * y j * ⟪v i, v j⟫_𝕜
   · simp_rw [dotProduct, mul_assoc, ← Finset.mul_sum, mulVec, dotProduct, mul_comm, ← star_def,
       gram_apply, Pi.star_apply]
   · simp_rw [sum_inner, inner_sum, inner_smul_left, inner_smul_right, mul_assoc]
@@ -83,7 +80,7 @@ theorem posSemidef_gram (v : n → E) :
   rw [star_dotProduct_gram_mulVec, le_iff_re_im]
   simp [inner_self_nonneg]
 
-/-- In a normed space, positive definiteness of `gram 𝕜 v` implies inear independence of `v` -/
+/-- In a normed space, positive definiteness of `gram 𝕜 v` implies inear independence of `v`. -/
 theorem linearIndependent_of_posDef_gram {v : n → E} (h_gram : PosDef (gram 𝕜 v)) :
     LinearIndependent 𝕜 v := by
   rw [Fintype.linearIndependent_iff]
@@ -101,7 +98,7 @@ variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [Fintype n]
 theorem posDef_gram_of_linearIndependent
     {v : n → E} (h_li : LinearIndependent 𝕜 v) : PosDef (gram 𝕜 v) := by
   rw [Fintype.linearIndependent_iff] at h_li
-  obtain ⟨h0, h1⟩ := posSemidef_gram (𝕜 := 𝕜) (v := v)
+  obtain ⟨h0, h1⟩ := posSemidef_gram 𝕜 v
   refine ⟨h0, fun x hx ↦ (h1 x).lt_of_ne' ?_⟩
   rw [star_dotProduct_gram_mulVec, inner_self_eq_zero.ne]
   exact mt (h_li x) (mt funext hx)
