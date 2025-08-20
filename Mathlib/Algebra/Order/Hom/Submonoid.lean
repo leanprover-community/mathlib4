@@ -12,6 +12,6 @@ import Mathlib.Algebra.Order.Hom.Monoid
 
 /-- The top submononid is isomorphic to the whole type as ordered monoids. -/
 @[simps!]
-def OrderMonoidIso.top {α : Type*} [Preorder α] [Monoid α] : (⊤ : Submonoid α) ≃*o α where
+def Submonoid.topOrderMonoidIso {α : Type*} [Preorder α] [Monoid α] : (⊤ : Submonoid α) ≃*o α where
   __ := Submonoid.topEquiv
   map_le_map_iff' := Iff.rfl
