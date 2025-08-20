@@ -150,7 +150,7 @@ theorem Colorable.map {β : Type*} (f : V ↪ β) [NeZero n] {G : SimpleGraph V}
   obtain ⟨C⟩ := hc
   use extend f C (const β default)
   intro a b ⟨_, _, hadj, ha, hb⟩
-  rw [← ha, Injective.extend_apply f.injective, ← hb, Injective.extend_apply f.injective]
+  rw [← ha, f.injective.extend_apply, ← hb, f.injective.extend_apply]
   exact C.valid hadj
 
 /-- The "tautological" coloring of a graph, using the vertices of the graph as colors. -/
