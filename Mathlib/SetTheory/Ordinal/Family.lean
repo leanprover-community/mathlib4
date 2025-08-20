@@ -9,14 +9,8 @@ import Mathlib.SetTheory.Ordinal.Arithmetic
 /-!
 # Arithmetic on families of ordinals
 
-## Main definitions and results
-
-* `sup`, `lsub`: the supremum / least strict upper bound of an indexed family of ordinals in
-  `Type u`, as an ordinal in `Type u`.
-* `bsup`, `blsub`: the supremum / least strict upper bound of a set of ordinals indexed by ordinals
-  less than a given ordinal `o`.
-
-Various other basic arithmetic results are given in `Principal.lean` instead.
+The vast majority of this file has been deprecated. The things that remain should probably be moved
+elsewhere.
 -/
 
 assert_not_exists Field Module
@@ -1077,8 +1071,6 @@ theorem isNormal_iff_lt_succ_and_blsub_eq {f : Ordinal.{u} → Ordinal.{max u v}
   constructor <;> intro H o ho <;> have := H o ho <;>
     rwa [← bsup_eq_blsub_of_lt_succ_limit ho fun a _ => h a] at *
 
-set_option linter.deprecated false in
-@[deprecated "`blsub` is deprecated`" (since := "2025-08-19")]
 theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : IsNormal f)
     (hg : IsNormal g) : f = g ↔ f 0 = g 0 ∧ ∀ a, f a = g a → f (succ a) = g (succ a) :=
   Order.IsNormal.ext hf hg
