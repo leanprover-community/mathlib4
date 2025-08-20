@@ -69,8 +69,7 @@ instance : DecidableRel (turanGraph n r).Adj :=
   inferInstanceAs (DecidableRel fun v w : Fin n ↦ v % r ≠ w % r)
 
 @[simp]
-lemma turanGraph_zero : turanGraph n 0 = ⊤ := by
-  ext a b; simp_rw [turanGraph, top_adj, Nat.mod_zero, not_iff_not, Fin.val_inj]
+lemma turanGraph_zero : turanGraph n 0 = ⊤ := by simp [turanGraph, Fin.val_inj, Top.top]
 
 @[simp]
 theorem turanGraph_eq_top : turanGraph n r = ⊤ ↔ r = 0 ∨ n ≤ r := by
