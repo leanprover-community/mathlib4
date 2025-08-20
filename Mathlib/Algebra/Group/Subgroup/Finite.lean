@@ -222,6 +222,14 @@ theorem pi_le_iff [DecidableEq η] [Finite η] {H : ∀ i, Subgroup (f i)} {J : 
     simpa using hx
   · exact fun h x hx => pi_mem_of_mulSingle_mem x fun i => h i (mem_map_of_mem _ (hx i trivial))
 
+@[to_additive]
+theorem iSup_map_single [DecidableEq η] [Finite η] {H : ∀ i, Subgroup (f i)} :
+    ⨆ i, map (MonoidHom.mulSingle f i) (H i) = pi Set.univ H := by
+  haveI := Fintype.ofFinite η
+  refine iSup_map_single_le.antisymm fun x hx => ?_
+  rw [← Finset.noncommProd_mul_single x]
+  exact noncommProd_mem _ _ fun i _ => mem_iSup_of_mem _ (mem_map_of_mem _ (hx i trivial))
+
 end Pi
 
 end Subgroup
