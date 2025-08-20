@@ -20,6 +20,10 @@ We prove some miscellaneous results involving the order topology of ordinals.
   functions.
 * `Ordinal.enumOrd_isNormal_iff_isClosed`: The function enumerating the ordinals of a set is
   normal iff the set is closed.
+
+## Todo
+
+Many of these results/definitions should generalize to other well-orders.
 -/
 
 
@@ -65,6 +69,8 @@ theorem isOpen_iff : IsOpen s ↔ ∀ o ∈ s, IsSuccLimit o → ∃ a < o, Set.
     simp only [← Set.Ioo_insert_right ha, Set.insert_subset_iff, ho, true_and]
   · simp [nhds_eq_pure.2 ho', ho, ho']
 
+-- TODO: the following theorems are stated in a really unnatural form. 
+
 open List Set in
 theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
     TFAE [a ∈ closure s,
@@ -105,17 +111,20 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
       (bddAbove_range.{u, u} f)
   tfae_finish
 
+-- TODO: in a general well-order, `a ∈ closure s` iff `a` is the supremum of a bounded subset of `s`
 theorem mem_closure_iff_iSup :
     a ∈ closure s ↔
       ∃ (ι : Type u) (_ : Nonempty ι) (f : ι → Ordinal), (∀ i, f i ∈ s) ∧ ⨆ i, f i = a := by
   apply ((mem_closure_tfae a s).out 0 5).trans
   simp_rw [exists_prop]
 
+-- TODO: in a general well-order, the supremum of a bounded subset of a closed set is in the set.
 theorem mem_iff_iSup_of_isClosed (hs : IsClosed s) :
     a ∈ s ↔ ∃ (ι : Type u) (_hι : Nonempty ι) (f : ι → Ordinal),
       (∀ i, f i ∈ s) ∧ ⨆ i, f i = a := by
   rw [← mem_closure_iff_iSup, hs.closure_eq]
 
+@[deprecated mem_closure_iff_iSup (since := "2025-08-19")]
 theorem mem_closure_iff_bsup :
     a ∈ closure s ↔
       ∃ (o : Ordinal) (_ho : o ≠ 0) (f : ∀ a < o, Ordinal),
@@ -123,6 +132,7 @@ theorem mem_closure_iff_bsup :
   apply ((mem_closure_tfae a s).out 0 4).trans
   simp_rw [exists_prop]
 
+@[deprecated mem_iff_iSup_of_isClosed (since := "2025-08-19")]
 theorem mem_closed_iff_bsup (hs : IsClosed s) :
     a ∈ s ↔
       ∃ (o : Ordinal) (_ho : o ≠ 0) (f : ∀ a < o, Ordinal),
@@ -138,6 +148,7 @@ theorem isClosed_iff_iSup :
   rcases mem_closure_iff_iSup.1 hx with ⟨ι, hι, f, hf, rfl⟩
   exact h hι f hf
 
+@[deprecated isClosed_iff_iSup (since := "2025-08-19")]
 theorem isClosed_iff_bsup :
     IsClosed s ↔
       ∀ {o : Ordinal}, o ≠ 0 → ∀ f : ∀ a < o, Ordinal,
@@ -163,6 +174,7 @@ theorem isSuccLimit_of_mem_frontier (ha : a ∈ frontier s) : IsSuccLimit a := b
 @[deprecated (since := "2025-07-08")]
 alias isLimit_of_mem_frontier := isSuccLimit_of_mem_frontier
 
+-- TODO: prove for `Order.IsNormal` in a well-order with the order topology.
 theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u}) :
     IsNormal f ↔ StrictMono f ∧ Continuous f := by
   refine ⟨fun h => ⟨h.strictMono, ?_⟩, ?_⟩
