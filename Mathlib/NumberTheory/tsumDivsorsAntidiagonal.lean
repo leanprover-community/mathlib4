@@ -6,6 +6,14 @@ Authors: Chris Birkbeck
 import Mathlib.NumberTheory.Divisors
 import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 import Mathlib.Analysis.NormedSpace.MultipliableUniformlyOn
+import Mathlib.Algebra.Order.Ring.Star
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Cotangent
+import Mathlib.Data.Int.Star
+import Mathlib.NumberTheory.LSeries.Dirichlet
+import Mathlib.NumberTheory.LSeries.HurwitzZetaValues
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
+import Mathlib.Topology.EMetricSpace.Paracompact
+import Mathlib.Topology.Separation.CompletelyRegular
 
 
 /-!
@@ -117,8 +125,8 @@ theorem tsum_prod_pow_eq_tsum_sigma (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     · simpa using this
     · apply (summable_prod_mul_pow  k r hr).prod_symm.congr
       simp
-  simp only [← sigmaAntidiagonalEquivProd.tsum_eq, sigmaAntidiagonalEquivProd, mapdiv, PNat.mk_coe,
-    Equiv.coe_fn_mk, sigma_eq_sum_div', Nat.cast_sum, Nat.cast_pow]
+  simp only [← sigmaAntidiagonalEquivProd.tsum_eq, sigmaAntidiagonalEquivProd,
+     divisorsAntidiagonalFactors, PNat.mk_coe, Equiv.coe_fn_mk, sigma_eq_sum_div', Nat.cast_sum, Nat.cast_pow]
   rw [Summable.tsum_sigma (summable_divisorsAntidiagonal_aux k r hr)]
   apply tsum_congr
   intro n
