@@ -26,8 +26,6 @@ import Mathlib.LinearAlgebra.Quotient.Basic
 * add the multiplicative case (`Function.Exact` will become `Function.AddExact`?)
 -/
 
-
-
 variable {R M M' N N' P P' : Type*}
 
 namespace Function
@@ -468,7 +466,7 @@ lemma Exact.exact_mapQ_iff
   dsimp only [mapQ]
   rw [← ker_comp, range_liftQ, liftQ_mkQ, ker_comp, range_comp, comap_map_eq,
     ker_mkQ, ker_mkQ, ← hfg.linearMap_ker_eq, sup_comm,
-    ← LE.le.le_iff_eq (sup_le hqr (ker_le_comap g)),
+    ← (sup_le hqr (ker_le_comap g)).ge_iff_eq',
     ← comap_map_eq, ← map_le_iff_le_comap, map_comap_eq]
 
 end Function

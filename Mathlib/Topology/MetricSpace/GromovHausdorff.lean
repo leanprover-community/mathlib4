@@ -58,7 +58,7 @@ namespace GromovHausdorff
 
 /-! In this section, we define the Gromov-Hausdorff space, denoted `GHSpace` as the quotient
 of nonempty compact subsets of `ℓ^∞(ℝ)` by identifying isometric sets.
-Using the Kuratwoski embedding, we get a canonical map `toGHSpace` mapping any nonempty
+Using the Kuratowski embedding, we get a canonical map `toGHSpace` mapping any nonempty
 compact type to `GHSpace`. -/
 section GHSpace
 
@@ -489,8 +489,8 @@ end GHSpace --section
 end GromovHausdorff
 
 /-- In particular, nonempty compacts of a metric space map to `GHSpace`.
-    We register this in the `TopologicalSpace` namespace to take advantage
-    of the notation `p.toGHSpace`. -/
+We register this in the `TopologicalSpace` namespace to take advantage
+of the notation `p.toGHSpace`. -/
 def TopologicalSpace.NonemptyCompacts.toGHSpace {X : Type u} [MetricSpace X]
     (p : NonemptyCompacts X) : GromovHausdorff.GHSpace :=
   GromovHausdorff.toGHSpace p
@@ -615,7 +615,7 @@ end
 instance : SecondCountableTopology GHSpace := by
   refine secondCountable_of_countable_discretization fun δ δpos => ?_
   let ε := 2 / 5 * δ
-  have εpos : 0 < ε := mul_pos (by norm_num) δpos
+  have εpos : 0 < ε := mul_pos (by simp) δpos
   have : ∀ p : GHSpace, ∃ s : Set p.Rep, s.Finite ∧ univ ⊆ ⋃ x ∈ s, ball x ε := fun p => by
     simpa only [subset_univ, true_and] using
       finite_cover_balls_of_compact (X := p.Rep) isCompact_univ εpos
@@ -710,7 +710,7 @@ instance : SecondCountableTopology GHSpace := by
       -- use the equality between `F p` and `F q` to deduce that the distances have equal
       -- integer parts
       have : (F p).2 ⟨i, hip⟩ ⟨j, hjp⟩ = (F q).2 ⟨i, hiq⟩ ⟨j, hjq⟩ := by
-        have hpq' : HEq (F p).snd (F q).snd := (Sigma.mk.inj_iff.1 hpq).2
+        have hpq' : (F p).snd ≍ (F q).snd := (Sigma.mk.inj_iff.1 hpq).2
         rw [Fin.heq_fun₂_iff Npq Npq] at hpq'
         rw [← hpq']
       rw [Ap, Aq] at this
@@ -749,7 +749,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
     it possible to reconstruct `p` up to `ε`. This is enough to prove total boundedness. -/
   refine Metric.totallyBounded_of_finite_discretization fun δ δpos => ?_
   let ε := 1 / 5 * δ
-  have εpos : 0 < ε := mul_pos (by norm_num) δpos
+  have εpos : 0 < ε := mul_pos (by simp) δpos
   -- choose `n` for which `u n < ε`
   rcases Metric.tendsto_atTop.1 ulim ε εpos with ⟨n, hn⟩
   have u_le_ε : u n ≤ ε := by
@@ -863,7 +863,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       -- use the equality between `F p` and `F q` to deduce that the distances have equal
       -- integer parts
       have : ((F p).2 ⟨i, hip⟩ ⟨j, hjp⟩).1 = ((F q).2 ⟨i, hiq⟩ ⟨j, hjq⟩).1 := by
-        have hpq' : HEq (F p).snd (F q).snd := (Sigma.mk.inj_iff.1 hpq).2
+        have hpq' : (F p).snd ≍ (F q).snd := (Sigma.mk.inj_iff.1 hpq).2
         rw [Fin.heq_fun₂_iff Npq Npq] at hpq'
         rw [← hpq']
       have : ⌊ε⁻¹ * dist x y⌋ = ⌊ε⁻¹ * dist (Ψ x) (Ψ y)⌋ := by
