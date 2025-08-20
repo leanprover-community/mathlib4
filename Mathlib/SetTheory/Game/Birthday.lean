@@ -12,6 +12,8 @@ deprecated_module
   "This module is now at `CombinatorialGames.Game.Birthday` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
   (since := "2025-08-06")
 
+set_option linter.deprecated false
+
 /-!
 # Birthdays of games
 
@@ -38,7 +40,6 @@ universe u
 
 open Ordinal
 
-set_option linter.deprecated false in
 namespace SetTheory
 
 open scoped NaturalOps PGame

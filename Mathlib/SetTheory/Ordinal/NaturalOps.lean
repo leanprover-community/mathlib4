@@ -11,6 +11,8 @@ deprecated_module
   "This module is now at `CombinatorialGames.NatOrdinal` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
   (since := "2025-08-06")
 
+set_option linter.deprecated false
+
 /-!
 # Natural operations on ordinals
 
@@ -48,7 +50,6 @@ universe u v
 
 open Function Order Set
 
-set_option linter.deprecated false in
 noncomputable section
 
 /-! ### Basic casts between `Ordinal` and `NatOrdinal` -/
