@@ -285,7 +285,9 @@ protected theorem case_strong_induction_on {p : ℕ → Prop} (a : ℕ) (hz : p 
 all `m ≤ n`.
 Also works for functions to `Sort*`.
 
-For a version also assuming `m ≤ k`, see `Nat.decreasingInduction'`. -/
+For a version also assuming `m ≤ k`, see `Nat.decreasingInduction'`.
+
+The version for int, see `Int.le_induction_down` -/
 @[elab_as_elim]
 def decreasingInduction {n} {motive : (m : ℕ) → m ≤ n → Sort*}
     (of_succ : ∀ k (h : k < n), motive (k + 1) h → motive k (le_of_succ_le h))
