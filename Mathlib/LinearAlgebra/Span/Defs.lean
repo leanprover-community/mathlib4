@@ -170,8 +170,8 @@ theorem span_eq_closure {s : Set M} : (span R s).toAddSubmonoid = closure (@univ
       | mem _ h =>
         obtain ⟨r₂, -, x, hx, rfl⟩ := h
         exact subset_closure ⟨r₁ * r₂, trivial, x, hx, mul_smul ..⟩
-      | one => simp only [smul_zero, zero_mem]
-      | mul _ _ _ _ h₁ h₂ => simpa only [smul_add] using add_mem h₁ h₂
+      | zero => simp only [smul_zero, zero_mem]
+      | add _ _ _ _ h₁ h₂ => simpa only [smul_add] using add_mem h₁ h₂
   case of_mem_closure =>
     refine closure_le.2 ?_ hx
     rintro - ⟨r, -, x, hx, rfl⟩
@@ -203,7 +203,7 @@ lemma span_setOf_mem_eq_top :
     span R {x : span R s | (x : M) ∈ s} = ⊤ :=
   span_span_coe_preimage
 
-theorem span_nat_eq_addSubmonoid_closure (s : Set M) :
+theorem span_nat_eq_addSubmonoidClosure (s : Set M) :
     (span ℕ s).toAddSubmonoid = AddSubmonoid.closure s := by
   refine Eq.symm (AddSubmonoid.closure_eq_of_le subset_span ?_)
   apply (OrderIso.to_galoisConnection (AddSubmonoid.toNatSubmodule (M := M)).symm).l_le
@@ -211,20 +211,26 @@ theorem span_nat_eq_addSubmonoid_closure (s : Set M) :
   rw [span_le]
   exact AddSubmonoid.subset_closure
 
+@[deprecated (since := "2025-08-20")]
+alias span_nat_eq_addSubmonoid_closure := span_nat_eq_addSubmonoidClosure
+
 @[simp]
 theorem span_nat_eq (s : AddSubmonoid M) : (span ℕ (s : Set M)).toAddSubmonoid = s := by
-  rw [span_nat_eq_addSubmonoid_closure, s.closure_eq]
+  rw [span_nat_eq_addSubmonoidClosure, s.closure_eq]
 
-theorem span_int_eq_addSubgroup_closure {M : Type*} [AddCommGroup M] (s : Set M) :
+theorem span_int_eq_addSubgroupClosure {M : Type*} [AddCommGroup M] (s : Set M) :
     (span ℤ s).toAddSubgroup = AddSubgroup.closure s :=
   Eq.symm <|
     AddSubgroup.closure_eq_of_le _ subset_span fun _ hx =>
       span_induction (fun _ hx => AddSubgroup.subset_closure hx) (AddSubgroup.zero_mem _)
         (fun _ _ _ _ => AddSubgroup.add_mem _) (fun _ _ _ _ => AddSubgroup.zsmul_mem _ ‹_› _) hx
 
+@[deprecated (since := "2025-08-20")]
+alias span_int_eq_addSubgroup_closure := span_int_eq_addSubgroupClosure
+
 @[simp]
 theorem span_int_eq {M : Type*} [AddCommGroup M] (s : AddSubgroup M) :
-    (span ℤ (s : Set M)).toAddSubgroup = s := by rw [span_int_eq_addSubgroup_closure, s.closure_eq]
+    (span ℤ (s : Set M)).toAddSubgroup = s := by rw [span_int_eq_addSubgroupClosure, s.closure_eq]
 
 theorem _root_.Disjoint.of_span (hst : Disjoint (span R s) (span R t)) :
     Disjoint (s \ {0}) t := by

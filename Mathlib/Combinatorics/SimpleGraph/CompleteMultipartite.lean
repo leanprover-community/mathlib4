@@ -297,14 +297,12 @@ variable [Fintype α]
 
 /-- Every `n`-colorable graph is contained in a `completeEquipartiteGraph` in `n` parts (as long
   as the parts are at least as large as the largest color class). -/
-theorem isContained_completeEquipartiteGraph_of_colorable {n : ℕ} (C : G.Coloring (Fin n)) :
-    G ⊑ completeEquipartiteGraph n (univ.sup fun c ↦ card (C.colorClass c)) := by
-  let f := fun c ↦ card (C.colorClass c)
-  have h (c : Fin n) : Nonempty (C.colorClass c ↪ Fin (univ.sup f)) := by
-    rw [Function.Embedding.nonempty_iff_card_le, Fintype.card_fin,
-      show card (C.colorClass c) = f c by dsimp]
-    exact le_sup (mem_univ c)
-  have F (c : Fin n) := Classical.arbitrary (C.colorClass c ↪ Fin (univ.sup f))
+theorem isContained_completeEquipartiteGraph_of_colorable {n : ℕ} (C : G.Coloring (Fin n))
+    (t : ℕ) (h : ∀ c, card (C.colorClass c) ≤ t) : G ⊑ completeEquipartiteGraph n t := by
+  have (c : Fin n) : Nonempty (C.colorClass c ↪ Fin t) := by
+    rw [Function.Embedding.nonempty_iff_card_le, Fintype.card_fin]
+    exact h c
+  have F (c : Fin n) := Classical.arbitrary (C.colorClass c ↪ Fin t)
   have hF {c₁ c₂ v₁ v₂} (hc : c₁ = c₂) (hv : F c₁ v₁ = F c₂ v₂) : v₁.val = v₂.val := by
     let v₁' : C.colorClass c₂ := ⟨v₁, by simp [← hc]⟩
     have hv' : F c₁ v₁ = F c₂ v₁' := by
