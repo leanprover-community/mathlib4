@@ -375,6 +375,9 @@ def gh_delete_branch(repo: str, branch: str) -> None:
     run_cmd(
         *("gh", "api", f"repos/{repo}/git/refs/heads/{branch}"),
         *("--method", "DELETE"),
+        # On macOS with zsh, this command apparently opens `less` every time it
+        # is run. Adding --silent suppresses that behavior.
+        "--silent",
     )
 
 
