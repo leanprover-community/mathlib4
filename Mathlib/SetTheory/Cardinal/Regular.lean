@@ -103,10 +103,14 @@ theorem isRegular_aleph_succ (o : Ordinal) : IsRegular (ℵ_ (succ o)) := by
   rw [aleph_succ]
   exact isRegular_succ (aleph0_le_aleph o)
 
+set_option linter.deprecated false in
+@[deprecated "`lsub` is deprecated" (since := "2025-08-19")]
 theorem lsub_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c)
     (hι : Cardinal.lift.{v, u} #ι < c) : (∀ i, f i < c.ord) → Ordinal.lsub.{u, v} f < c.ord :=
   lsub_lt_ord_lift (by rwa [hc.cof_eq])
 
+set_option linter.deprecated false in
+@[deprecated "`lsub` is deprecated" (since := "2025-08-19")]
 theorem lsub_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c) :
     (∀ i, f i < c.ord) → Ordinal.lsub f < c.ord :=
   lsub_lt_ord (by rwa [hc.cof_eq])
@@ -119,26 +123,34 @@ theorem iSup_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c
     (∀ i, f i < c.ord) → iSup f < c.ord :=
   iSup_lt_ord (by rwa [hc.cof_eq])
 
+set_option linter.deprecated false in
+@[deprecated "`blsub` is deprecated" (since := "2025-08-19")]
 theorem blsub_lt_ord_lift_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
     (ho : Cardinal.lift.{v, u} o.card < c) :
     (∀ i hi, f i hi < c.ord) → Ordinal.blsub.{u, v} o f < c.ord :=
   blsub_lt_ord_lift (by rwa [hc.cof_eq])
 
+set_option linter.deprecated false in
+@[deprecated "`blsub` is deprecated" (since := "2025-08-19")]
 theorem blsub_lt_ord_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
     (ho : o.card < c) : (∀ i hi, f i hi < c.ord) → Ordinal.blsub o f < c.ord :=
   blsub_lt_ord (by rwa [hc.cof_eq])
 
+set_option linter.deprecated false in
+@[deprecated iSup_lt_ord_lift_of_isRegular (since := "2025-08-19")]
 theorem bsup_lt_ord_lift_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
     (hι : Cardinal.lift.{v, u} o.card < c) :
     (∀ i hi, f i hi < c.ord) → Ordinal.bsup.{u, v} o f < c.ord :=
   bsup_lt_ord_lift (by rwa [hc.cof_eq])
 
+set_option linter.deprecated false in
+@[deprecated iSup_lt_ord_lift_of_isRegular (since := "2025-08-19")]
 theorem bsup_lt_ord_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
     (hι : o.card < c) : (∀ i hi, f i hi < c.ord) → Ordinal.bsup o f < c.ord :=
   bsup_lt_ord (by rwa [hc.cof_eq])
 
 theorem iSup_lt_lift_of_isRegular {ι} {f : ι → Cardinal} {c} (hc : IsRegular c)
-    (hι : Cardinal.lift.{v, u} #ι < c) : (∀ i, f i < c) → iSup.{max u v + 1, u + 1} f < c :=
+    (hι : Cardinal.lift.{v, u} #ι < c) : (∀ i, f i < c) → ⨆ i, f i < c :=
   iSup_lt_lift.{u, v} (by rwa [hc.cof_eq])
 
 theorem iSup_lt_of_isRegular {ι} {f : ι → Cardinal} {c} (hc : IsRegular c) (hι : #ι < c) :
@@ -195,6 +207,8 @@ theorem nfp_lt_ord_of_isRegular {f : Ordinal → Ordinal} {c} (hc : IsRegular c)
     (hf : ∀ i < c.ord, f i < c.ord) {a} : a < c.ord → nfp f a < c.ord :=
   nfp_lt_ord (by rw [hc.cof_eq]; exact lt_of_le_of_ne hc.1 hc'.symm) hf
 
+set_option linter.deprecated false in
+@[deprecated "we need to generalize the universes of this file" (since := "2025-08-19")]
 theorem derivFamily_lt_ord_lift {ι : Type u} {f : ι → Ordinal → Ordinal} {c} (hc : IsRegular c)
     (hι : lift.{v} #ι < c) (hc' : c ≠ ℵ₀) (hf : ∀ i, ∀ b < c.ord, f i b < c.ord) {a} :
     a < c.ord → derivFamily f a < c.ord := by
@@ -218,14 +232,18 @@ theorem derivFamily_lt_ord_lift {ι : Type u} {f : ι → Ordinal → Ordinal} {
       iSup_eq_bsup.{max u v, max u v} (f := fun x (_ : x < b) ↦ derivFamily f x)
     rw [derivFamily_limit f hb, this]
     exact
-      bsup_lt_ord_of_isRegular.{u, v} hc (ord_lt_ord.1 ((ord_card_le b).trans_lt hb')) fun o' ho' =>
+      bsup_lt_ord_of_isRegular hc (ord_lt_ord.1 ((ord_card_le b).trans_lt hb')) fun o' ho' =>
         H o' ho' (ho'.trans hb')
 
+set_option linter.deprecated false in
+@[deprecated "we need to generalize the universes of this file" (since := "2025-08-19")]
 theorem derivFamily_lt_ord {ι} {f : ι → Ordinal → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c)
     (hc' : c ≠ ℵ₀) (hf : ∀ (i), ∀ b < c.ord, f i b < c.ord) {a} :
     a < c.ord → derivFamily.{u, u} f a < c.ord :=
   derivFamily_lt_ord_lift hc (by rwa [lift_id]) hc' hf
 
+set_option linter.deprecated false in
+@[deprecated "we need to generalize the universes of this file" (since := "2025-08-19")]
 theorem deriv_lt_ord {f : Ordinal.{u} → Ordinal} {c} (hc : IsRegular c) (hc' : c ≠ ℵ₀)
     (hf : ∀ i < c.ord, f i < c.ord) {a} : a < c.ord → deriv f a < c.ord :=
   derivFamily_lt_ord_lift hc

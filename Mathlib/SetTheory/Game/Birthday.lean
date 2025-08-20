@@ -12,6 +12,8 @@ deprecated_module
   "This module is now at `CombinatorialGames.Game.Birthday` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
   (since := "2025-08-06")
 
+set_option linter.deprecated false
+
 /-!
 # Birthdays of games
 
@@ -103,7 +105,7 @@ theorem birthday_eq_zero {x : PGame} :
 theorem birthday_zero : birthday 0 = 0 := by simp [inferInstanceAs (IsEmpty PEmpty)]
 
 @[simp]
-theorem birthday_one : birthday 1 = 1 := by rw [birthday_def]; simp
+theorem birthday_one : birthday 1 = 1 := by rw [birthday_def]; simp [lsub_unique]
 
 @[simp]
 theorem birthday_star : birthday star = 1 := by rw [birthday_def]; simp
