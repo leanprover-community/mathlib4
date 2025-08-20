@@ -62,14 +62,29 @@ lemma sigmaAntidiagonalEquivProd_symm_apply_snd (x : ℕ+ × ℕ+) :
 
 section tsum
 
-open UpperHalfPlane Real Complex ArithmeticFunction Nat
+open Filter Complex ArithmeticFunction Nat Topology
 
-lemma natcast_norm {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormSMulClass ℤ 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+
+lemma natCast_norm [NormSMulClass ℤ 𝕜]
     (a : ℕ) : ‖(a : 𝕜)‖ = a := by
   have h0 := norm_natCast_eq_mul_norm_one 𝕜 a
   simpa using h0
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [NormSMulClass ℤ 𝕜]
+lemma summable_norm_pow_mul_geometric_div_one_sub [CompleteSpace 𝕜] (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
+    Summable fun n : ℕ ↦ n ^ k * r ^ n / (1 - r ^ n) := by
+  rw [show (fun n : ℕ ↦ n ^ k * r ^ n / (1 - r ^ n)) =
+    fun n : ℕ ↦ (n ^ k * r ^ n) * (1 / (1 - r ^ n)) by grind]
+  apply summable_mul_tendsto_const (c := 1 / (1 - 0))
+    (by simpa using (summable_norm_pow_mul_geometric_of_norm_lt_one k hr))
+  rw [Nat.cofinite_eq_atTop]
+  have : Tendsto (fun n : ℕ ↦ 1 - r ^ n) atTop (𝓝 (1 - 0)) :=
+    Filter.Tendsto.sub (by simp) (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hr)
+  have h1 : Tendsto (fun n : ℕ ↦ (1 : 𝕜)) atTop (𝓝 1) := by simp only [tendsto_const_nhds_iff]
+  apply (Filter.Tendsto.div h1 this (by simp)).congr
+  simp
+
+variable [CompleteSpace 𝕜] [NormSMulClass ℤ 𝕜]
 
 theorem summable_divisorsAntidiagonal_aux (k : ℕ) (r : 𝕜) (hr : ‖r‖ < 1) :
     Summable fun c : (n : ℕ+) × { x // x ∈ (n : ℕ).divisorsAntidiagonal } ↦
@@ -87,7 +102,7 @@ theorem summable_divisorsAntidiagonal_aux (k : ℕ) (r : 𝕜) (hr : ‖r‖ < 1
       · rw [Finset.sum_attach ((b : ℕ).divisorsAntidiagonal) (fun x ↦
             ‖(x.1 : 𝕜)‖ ^ (k : ℕ) * ‖r‖^ (x.2 * x.1)), Nat.sum_divisorsAntidiagonal
             ((fun x y ↦ ‖(x : 𝕜)‖ ^ k * ‖r‖ ^ (y * x))) (n := b)]
-        gcongr <;> rename_i i hi <;> simp [natcast_norm] at *
+        gcongr <;> rename_i i hi <;> simp [natCast_norm] at *
         · exact Nat.le_of_dvd b.2 hi
         · apply le_of_eq
           nth_rw 2 [← Nat.mul_div_cancel' hi]
@@ -95,7 +110,7 @@ theorem summable_divisorsAntidiagonal_aux (k : ℕ) (r : 𝕜) (hr : ‖r‖ < 1
       · simp only [norm_pow, Finset.sum_const, nsmul_eq_mul, ← mul_assoc, add_comm k 1, pow_add,
           pow_one, norm_mul]
         gcongr
-        simpa [natcast_norm] using (Nat.card_divisors_le_self b)
+        simpa [natCast_norm] using (Nat.card_divisors_le_self b)
   · intro a
     simpa using mul_nonneg (by simp) (by simp)
 
@@ -148,30 +163,17 @@ lemma tsum_eq_tsum_sigma {r : 𝕜} (hr : ‖r‖ < 1) :
     conv =>
       enter [1]
       ext m
-      rw [mul_assoc, ← pow_succ' (r ^ (n : ℕ)) m ]
+      rw [mul_assoc, ← pow_succ' (r ^ (n : ℕ)) m]
+    rw [← tsum_pnat_eq_tsum_succ (fun m =>  n * (r ^ (n : ℕ)) ^ (m : ℕ))]
   have h00 := (tsum_prod_pow_eq_tsum_sigma 1 hr)
   rw [Summable.tsum_comm (by apply summable_prod_mul_pow 1 hr)] at h00
   rw [← h00]
   apply tsum_congr
   intro b
-  rw [← tsum_pnat_eq_tsum_succ (fun n =>  b * (r ^ (b : ℕ)) ^ (n : ℕ))]
   apply tsum_congr
   intro c
   simp only [← pow_mul, pow_one, mul_eq_mul_left_iff]
   left
   ring
 
-
-lemma summable_norm_pow_mul_geometric_div_one_sub {F : Type*} [NontriviallyNormedField F]
-    [CompleteSpace F] (k : ℕ) {r : F} (hr : ‖r‖ < 1) :
-    Summable fun n : ℕ ↦ n ^ k * r ^ n / (1 - r ^ n) := by
-  rw [show (fun n : ℕ ↦ n ^ k * r ^ n / (1 - r ^ n)) =
-    fun n : ℕ ↦ (n ^ k * r ^ n) * (1 / (1 - r ^ n)) by grind]
-  apply summable_mul_tendsto_const (c := 1 / (1 - 0))
-    (by simpa using (summable_norm_pow_mul_geometric_of_norm_lt_one k hr))
-  rw [Nat.cofinite_eq_atTop]
-  have : Tendsto (fun n : ℕ ↦ 1 - r ^ n) atTop (𝓝 (1 - 0)) :=
-    Filter.Tendsto.sub (by simp) (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hr)
-  have h1 : Tendsto (fun n : ℕ ↦ (1 : F)) atTop (𝓝 1) := by simp only [tendsto_const_nhds_iff]
-  apply (Filter.Tendsto.div h1 this (by simp)).congr
-  simp
+end tsum
