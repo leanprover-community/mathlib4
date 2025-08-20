@@ -22,6 +22,12 @@ This file proves the **Erdős-Stone-Simonovits theorem** for simple graphs.
 
 * `SimpleGraph.completeEquipartiteGraph_isContained_of_minDegree` is the proof of the minimal
   degree version of the **Erdős-Stone theorem** for simple graphs.
+
+* `SimpleGraph.completeEquipartiteGraph_isContained_of_card_edgeFinset` is the proof of the
+  **Erdős-Stone theorem** for simple graphs:
+
+  If `G` has at least `(1 - 1 / r + o(1)) * card V ^ 2 / 2` many edges, then `G` contains a copy of
+  a `completeEquipartiteGraph (r + 1) t`.
 -/
 
 
@@ -291,6 +297,173 @@ theorem completeEquipartiteGraph_isContained_of_minDegree {ε : ℝ} (hε : 0 < 
     -- identify the `t` vertices not in `A` and the `completeEquipartiteSubgraph r t` in `A`
     -- as a `completeEquipartiteSubgraph (r + 1) t` in `G`
     exact completeEquipartiteGraph_succ_isContained_iff.mpr ⟨A', s, hs⟩
+
+/-- Repeatedly remove minimal degree vertices until `(G.induce s).minDegree` is at least `c * #s`
+and count the maximal possible edges removed in the process.
+
+This is an auxiliary definition for the **Erdős-Stone theorem**. -/
+lemma exists_induce_minDegree_ge_card_edgeFinset_ge {c : ℝ} (hc : 0 ≤ c)
+    (G : SimpleGraph V) [DecidableRel G.Adj] :
+    ∃ s : Finset V, (s : Set V) ⊆ G.support ∧ c * #s ≤ (G.induce s).minDegree ∧
+      #(G.induce s).edgeFinset
+        ≥ #G.edgeFinset - c * (card G.support ^ 2 - #s ^ 2) / 2
+          - c * (card G.support - #s) / 2 := by
+  by_cases hδ : c * #G.support.toFinset ≤ (G.induce G.support.toFinset).minDegree
+  -- if `minDegree` is already at least `c * card G.support`
+  · refine ⟨G.support.toFinset, G.support.coe_toFinset.subset, hδ, ?_⟩
+    suffices h_card_edges : #(G.induce G.support).edgeFinset ≥ #G.edgeFinset
+        - c * (card G.support ^ 2 - #G.support.toFinset ^ 2) / 2
+        - c * (card G.support - #G.support.toFinset) / 2 by
+      convert h_card_edges
+      all_goals exact G.support.coe_toFinset
+    rw [card_edgeFinset_induce_support, ← G.support.toFinset_card, sub_self,
+      mul_zero,  zero_div, sub_zero, sub_self, mul_zero, zero_div, sub_zero]
+  -- if `minDegree` is less than `c * card G.support`
+  · replace hδ : (G.induce G.support).minDegree < c * (card G.support) := by
+      rw [not_le, G.support.toFinset_card] at hδ
+      convert hδ
+      all_goals exact G.support.coe_toFinset.symm
+    have h_card_support_pos : 0 < card G.support := by
+      contrapose! hδ
+      rw [Nat.eq_zero_of_le_zero hδ, Nat.cast_zero, mul_zero]
+      exact Nat.cast_nonneg (G.induce G.support).minDegree
+    have : Nonempty G.support := card_pos_iff.mp h_card_support_pos
+    -- delete a minimal degree vertex
+    have ⟨x, hδ_eq_degx⟩ := exists_minimal_degree_vertex (G.induce G.support)
+    let G' := G.deleteIncidenceSet ↑x
+    -- repeat the process
+    have ⟨s, hs', ihδ', ih_card_edges'⟩ := exists_induce_minDegree_ge_card_edgeFinset_ge hc G'
+    have ⟨hs, hx_not_mem⟩ : (s : Set V) ⊆ G.support ∧ ↑x ∉ (s : Set V) := by
+      rw [← Set.disjoint_singleton_right, ← Set.subset_diff]
+      exact hs'.trans (G.support_deleteIncidenceSet_subset ↑x)
+    have ihδ : c * #s ≤ (G.induce s).minDegree := by
+      simpa [← induce_deleteIncidenceSet_of_notMem G hx_not_mem] using ihδ'
+    have ih_card_edges : #(G.induce s).edgeFinset ≥ #G'.edgeFinset
+        - c * (card G'.support ^ 2 - #s ^ 2) / 2 - c * (card G'.support - #s) / 2 := by
+      simpa [← G.induce_deleteIncidenceSet_of_notMem hx_not_mem] using ih_card_edges'
+    -- use the `s` found at the end of the process
+    refine ⟨s, hs, ihδ, ?_⟩
+    calc (#(G.induce s).edgeFinset : ℝ)
+      _ ≥ #G'.edgeFinset - (c * (card G'.support ^ 2 - #s ^ 2) / 2
+        + c * (card G'.support - #s) / 2) := by rwa [sub_sub] at ih_card_edges
+      _ ≥ (#G.edgeFinset - c * card G.support) - (c * ((card G.support - 1) ^ 2 - #s ^ 2) / 2
+        + c * (card G.support - 1 - #s) / 2) := by
+          apply sub_le_sub
+          -- exactly `G.minDegree` edges are deleted from the edge set
+          · rw [G.card_edgeFinset_deleteIncidenceSet ↑x,
+              Nat.cast_sub (G.degree_le_card_edgeFinset x), ← degree_induce_support, ← hδ_eq_degx]
+            exact sub_le_sub_left hδ.le #G.edgeFinset
+          -- at least one vertex is deleted from the support
+          · rw [← add_div, ← add_div, div_le_div_iff_of_pos_right zero_lt_two,
+              ← Nat.cast_pred card_pos, ← mul_add, sub_add_sub_comm, ← mul_add, sub_add_sub_comm,
+              ← Nat.cast_pow (card G'.support) 2, ← Nat.cast_pow (card G.support - 1) 2]
+            apply mul_le_mul_of_nonneg_left _ hc
+            apply sub_le_sub (add_le_add _ _) le_rfl
+            · exact_mod_cast Nat.pow_le_pow_left (G.card_support_deleteIncidenceSet x.prop) 2
+            · exact_mod_cast G.card_support_deleteIncidenceSet x.prop
+      _ ≥ #G.edgeFinset - c * (card G.support ^ 2 - #s ^ 2) / 2
+        - c * (card G.support - #s) / 2 := by linarith
+termination_by card G.support
+decreasing_by
+  exact (G.card_support_deleteIncidenceSet x.prop).trans_lt (Nat.pred_lt_of_lt h_card_support_pos)
+
+/-- Repeatedly remove minimal degree vertices until `(G.induce s).minDegree` is at least `c * #s`
+and `#s ^ 2 ≥ ε * card V ^ 2 - c * card V`, that is, `#s ≈ √ε * card V` when `c ≈ 0`.
+
+This is an auxiliary definition for the **Erdős-Stone theorem**. -/
+lemma exists_induce_minDegree_ge_card_sq_ge {c : ℝ} (hc : 0 ≤ c)
+    {ε : ℝ} (h : #G.edgeFinset ≥ (c + ε) * card V ^ 2 / 2) :
+    ∃ s : Finset V, c * #s ≤ (G.induce s).minDegree ∧ ε * card V ^ 2 - c * card V ≤ #s ^ 2 := by
+  rcases isEmpty_or_nonempty V
+  · exact ⟨∅, by simp⟩
+  · have ⟨s, _, hδ, hs⟩ := exists_induce_minDegree_ge_card_edgeFinset_ge hc G
+    rw [ge_iff_le, sub_sub, sub_le_iff_le_add] at hs
+    refine ⟨s, hδ, ?_⟩
+    rw [← div_le_div_iff_of_pos_right zero_lt_two, sub_div]
+    -- use `#G.edgeFinset ≥ (c + ε) * card V ^ 2 / 2` to bound `#s ^ 2`
+    calc ε * card V ^ 2 / 2 - c * card V / 2
+      _ = (c + ε) * card V ^ 2 / 2 - (c * card V ^ 2 / 2 + c * card V / 2) := by ring_nf
+      _ ≤ #s * (#s - 1) / 2 + (c * (card G.support ^ 2 - #s ^ 2) / 2
+        + c * (card G.support - #s) / 2) - (c * card V ^ 2 / 2 + c * card V / 2) := by
+          apply sub_le_sub_right
+          refine (h.trans hs).trans ?_
+          apply add_le_add_right
+          rw [← Nat.cast_choose_two, ← card_coe s]
+          exact_mod_cast card_edgeFinset_le_card_choose_two
+      _ = #s ^ 2 / 2 - (c * (card V ^ 2 - card G.support ^ 2) / 2
+        + c * (card V - card G.support) / 2 + c * #s ^ 2 / 2 + c * #s / 2 + #s / 2) := by ring_nf
+      _ ≤ #s ^ 2 / 2 := by
+          apply sub_le_self
+          repeat apply add_nonneg
+          all_goals
+            try apply div_nonneg _ zero_le_two
+            try apply mul_nonneg hc
+            try apply sub_nonneg_of_le
+            try apply pow_le_pow_left₀
+          any_goals positivity
+          any_goals exact_mod_cast set_fintype_card_le_univ G.support
+
+/-- If `G` has at least `(1 - 1 / r + o(1)) * card V ^ 2 / 2` many edges, then `G` contains a copy
+of a `completeEquipartiteGraph (r + 1) t`.
+
+This is the **Erdős-Stone theorem**. -/
+theorem completeEquipartiteGraph_isContained_of_card_edgeFinset {ε : ℝ} (hε : 0 < ε) (r t : ℕ) :
+    ∃ n, ∀ {V : Type*} [Fintype V] [DecidableEq V], n < card V →
+      ∀ {G : SimpleGraph V} [DecidableRel G.Adj],
+        #G.edgeFinset ≥ (1 - 1 / r + ε) * card V ^ 2 / 2
+        → completeEquipartiteGraph (r + 1) t ⊑ G := by -- TODO
+  -- choose `c + ε' = (1 - 1 / r + ε / 2) + ε / 2 = 1 - 1 / r + ε`
+  let ε' := ε / 2
+  have hε' : 0 < ε' := by positivity
+  let c := 1 - 1 / r + ε / 2
+  have hc : 0 < c := add_pos_of_nonneg_of_pos r.one_sub_one_div_cast_nonneg hε'
+  -- find `n' > card V` sufficent for the minimal-degree version of the Erdős-Stone theorem
+  have ⟨n', ih⟩ := completeEquipartiteGraph_isContained_of_minDegree hε' r t
+  use ⌊c / ε' + n' / √ε'⌋₊
+  intro V _ _ h_card G _ h
+  rw [Nat.floor_lt (by positivity)] at h_card
+  -- find `s` such that `G.induce s` has appropriate minimal-degree
+  rw [← add_halves ε, ← add_assoc] at h
+  obtain ⟨s, hδ, h_cards_sq⟩ := exists_induce_minDegree_ge_card_sq_ge hc.le h
+  -- assume `#s` is sufficently large
+  suffices h_cards_sq : (n' ^ 2 : ℝ) < (#s ^ 2 : ℝ) by
+    rw [← Nat.cast_pow, ← Nat.cast_pow, Nat.cast_lt,
+      Nat.pow_lt_pow_iff_left two_ne_zero] at h_cards_sq
+    -- find `completeEquipartiteGraph` from minimal-degree version of the Erdős-Stone theorem
+    simp_rw [← card_coe, ← Finset.coe_sort_coe] at h_cards_sq hδ
+    exact (ih h_cards_sq hδ).trans ⟨Copy.induce G s⟩
+  -- `x ↦ ε' * x ^ 2 - c * x` is strictly monotonic on `[c / (2 * ε'), ∞)`
+  have h_strictMonoOn : StrictMonoOn (fun x ↦ ε' * x ^ 2 - c * x) (Set.Ici (c / (2 * ε'))) := by
+    apply strictMonoOn_of_deriv_pos (convex_Ici _) (Continuous.continuousOn (by continuity))
+    intro x hx
+    rw [deriv_fun_sub, deriv_const_mul, deriv_fun_pow, Nat.cast_two, pow_one, deriv_id'', mul_one,
+      ← mul_assoc ε' 2 x, mul_comm ε' 2, deriv_const_mul, deriv_id'', mul_one, sub_pos,
+      ← div_lt_iff₀' (mul_pos two_pos hε')]
+    rwa [interior_Ici, Set.mem_Ioi] at hx
+    all_goals
+      try apply DifferentiableAt.const_mul
+      try apply DifferentiableAt.pow
+      exact differentiableAt_fun_id
+  -- prove `#s` is sufficently large
+  calc (#s ^ 2 : ℝ)
+    _ ≥ ε'* card V ^ 2 - c * card V := h_cards_sq
+    _ > ε' * (c / ε' + n' / √ε') ^ 2 - c * (c / ε' + n' / √ε') := by
+        have h_le : c / (2 * ε') ≤ c / ε' + n' / √ε' := by
+          trans c / ε'
+          · rw [mul_comm, ← div_div, half_le_self_iff]
+            exact div_nonneg hc.le hε'.le
+          · rw [le_add_iff_nonneg_right]
+            exact div_nonneg n'.cast_nonneg (sqrt_nonneg ε')
+        exact h_strictMonoOn h_le (h_le.trans h_card.le) h_card
+    _ = n' ^ 2 + n' * c / sqrt ε' := by
+        rw [add_pow_two, mul_add ε', div_pow _ √ε', sq_sqrt hε'.le,
+          mul_div_cancel₀ _ hε'.ne', add_comm _ (n' ^ 2 : ℝ), add_sub_assoc, add_right_inj,
+          mul_add ε' _ _, mul_add c _ _, add_sub_add_comm, div_pow c ε' 2, pow_two ε',
+          ← mul_div_assoc ε' _ _, mul_div_mul_left _ _ hε'.ne', ← mul_div_assoc c c ε',
+          ← pow_two c, sub_self, zero_add, mul_comm ε' _, mul_assoc _ _ ε', mul_mul_mul_comm,
+          div_mul_cancel₀ _ hε'.ne', mul_assoc 2 _ c, ← mul_div_right_comm _ c √ε',
+          ← mul_div_assoc c _ √ε', mul_comm c _, two_mul, add_sub_assoc, sub_self, add_zero]
+    _ ≥ n' ^ 2 := le_add_of_nonneg_right (by positivity)
 
 end ErdosStone
 
