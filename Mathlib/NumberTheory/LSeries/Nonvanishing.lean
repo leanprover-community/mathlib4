@@ -12,7 +12,7 @@ import Mathlib.NumberTheory.LSeries.Positivity
 /-!
 # The L-function of a Dirichlet character does not vanish on Re(s) ≥ 1
 
-The main result in this file is `DirichletCharacter.Lfunction_ne_zero_of_one_le_re`:
+The main result in this file is `DirichletCharacter.LFunction_ne_zero_of_one_le_re`:
 if `χ` is a Dirichlet character, `s ∈ ℂ` with `1 ≤ s.re`, and either `χ` is nontrivial or `s ≠ 1`,
 then the L-function of `χ` does not vanish at `s`.
 

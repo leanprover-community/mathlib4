@@ -7,7 +7,7 @@ import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 import Mathlib.NumberTheory.LegendreSymbol.Basic
 
 /-!
-# Facts about the gaussian integers relying on quadratic reciprocity.
+# Facts about the Gaussian integers relying on quadratic reciprocity.
 
 ## Main statements
 

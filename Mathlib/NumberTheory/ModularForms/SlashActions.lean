@@ -153,7 +153,7 @@ theorem is_invariant_const (A : SL(2, ℤ)) (x : ℂ) :
 theorem is_invariant_one (A : SL(2, ℤ)) : (1 : ℍ → ℂ) ∣[(0 : ℤ)] A = (1 : ℍ → ℂ) :=
   is_invariant_const _ _
 
-/-- Variant of `is_invariant_one` with the left hand side in simp normal form. -/
+/-- Variant of `is_invariant_one` with the left-hand side in simp normal form. -/
 @[simp]
 theorem is_invariant_one' (A : SL(2, ℤ)) : (1 : ℍ → ℂ) ∣[(0 : ℤ)] (A : GL (Fin 2) ℝ) = 1 := by
   simpa using is_invariant_one A
