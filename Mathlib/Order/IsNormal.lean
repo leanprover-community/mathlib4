@@ -131,15 +131,15 @@ protected theorem ext [OrderBot α] {g : α → β} (hf : IsNormal f) (hg : IsNo
     f = g ↔ f ⊥ = g ⊥ ∧ ∀ a, f a = g a → f (succ a) = g (succ a) := by
   constructor
   · simp_all
-  · rintro ⟨H₁, H₂⟩
-    ext a
-    induction a using SuccOrder.limitRecOn with
-    | isMin a ha => rw [ha.eq_bot, H₁]
-    | succ a ha IH => exact H₂ a IH
-    | isSuccLimit a ha IH =>
-      apply (hf.isLUB_image_Iio_of_isSuccLimit ha).unique
-      convert hg.isLUB_image_Iio_of_isSuccLimit ha using 1
-      aesop
+  rintro ⟨H₁, H₂⟩
+  ext a
+  induction a using SuccOrder.limitRecOn with
+  | isMin a ha => rw [ha.eq_bot, H₁]
+  | succ a ha IH => exact H₂ a IH
+  | isSuccLimit a ha IH =>
+    apply (hf.isLUB_image_Iio_of_isSuccLimit ha).unique
+    convert hg.isLUB_image_Iio_of_isSuccLimit ha using 1
+    aesop
 
 end WellFoundedLT
 end LinearOrder
