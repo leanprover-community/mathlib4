@@ -43,6 +43,19 @@ variable {𝕜 E F : Type*}
 
 namespace LinearMap
 
+section CommSemiring
+
+variable [TopologicalSpace 𝕜] [CommSemiring 𝕜] [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜]
+  [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F]
+
+variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
+
+lemma dualEmbedding_injective_of_separatingRight (hr : B.SeparatingRight) :
+    Function.Injective (WeakBilin.eval B) := (injective_iff_map_eq_zero _).mpr (fun f hf =>
+    (separatingRight_iff_linear_flip_nontrivial.mp hr) f (ContinuousLinearMap.coe_inj.mpr hf))
+
+end CommSemiring
+
 section NormedField
 
 variable [NormedField 𝕜] [NormedSpace ℝ 𝕜] [AddCommMonoid E] [AddCommMonoid F]
@@ -60,7 +73,9 @@ theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
 
 end NormedField
 
-variable [RCLike 𝕜] [AddCommGroup E] [AddCommGroup F]
+section NontriviallyNormedField
+
+variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [AddCommGroup F]
 variable [Module 𝕜 E] [Module 𝕜 F]
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
@@ -78,10 +93,6 @@ lemma dualEmbedding_surjective : Function.Surjective (WeakBilin.eval B) := by
   rw [←ContinuousLinearMap.coe_inj, ← hl2, WeakBilin.eval, coe_mk, AddHom.coe_mk]
   simp [toLinearMap₂, ContinuousLinearMap.coeLMₛₗ, Finsupp.linearCombination_apply, map_finsuppSum]
 
-lemma dualEmbedding_injective_of_separatingRight (hr : B.SeparatingRight) :
-    Function.Injective (WeakBilin.eval B) := (injective_iff_map_eq_zero _).mpr (fun f hf =>
-    (separatingRight_iff_linear_flip_nontrivial.mp hr) f (ContinuousLinearMap.coe_inj.mpr hf))
-
 /-- When `B` is right-separating, `F` is linearly equivalent to the strong dual of `E` with the
 weak topology. -/
 noncomputable def rightDualEquiv (hr : B.SeparatingRight) : F ≃ₗ[𝕜] StrongDual 𝕜 (WeakBilin B) :=
@@ -98,8 +109,16 @@ lemma closureOperator_polar_gc_empty_of_separatingLeft (h : SeparatingLeft B) :
   simp only [GaloisConnection.closureOperator_apply, Function.comp_apply, polar_empty,
     OrderDual.ofDual_toDual, (B.flip.polar_univ h)]
 
-variable [Module ℝ E]
-variable [IsScalarTower ℝ 𝕜 E]
+end NontriviallyNormedField
+
+section RCLike
+
+variable [RCLike 𝕜] [AddCommGroup E] [AddCommGroup F]
+variable [Module 𝕜 E] [Module 𝕜 F]
+
+variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
+
+variable [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
 
 /- The Bipolar Theorem: The bipolar of a set coincides with its closed absolutely convex hull. -/
 open scoped ComplexConjugate
@@ -162,5 +181,7 @@ but `B.polar_gc.closureOperator s` equals `{0}` when `B` is left separating.
 lemma closureOperator_polar_gc_nonempty {s : Set E} [Nonempty s] :
     B.polar_gc.closureOperator s = closedAbsConvexHull (E := WeakBilin B) 𝕜 s := by
   simp [flip_polar_polar_eq]
+
+end RCLike
 
 end LinearMap
