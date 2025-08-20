@@ -56,14 +56,12 @@ def isPullThm (declName : Name) (inv : Bool) : MetaM (Option Head) := do
     let some (lhs, rhs) := type.eqOrIff? | return none
     let (lhs, rhs) := if inv then (rhs, lhs) else (lhs, rhs)
     let some head := Head.ofExpr? lhs | return none
-    if Head.ofExpr? rhs == some head then
-      return none
-    if (findHead rhs head).isSome then
+    if Head.ofExpr? rhs != some head && (findHead? rhs head).isSome then
       return head
     return none
 where
   /-- Check if the expression has the head in any subexpression-/
-  findHead (e : Expr) : Head → Option Expr
+  findHead? (e : Expr) : Head → Option Expr
   | .name n => e.find? fun | .const n' _ => n' == n | _ => false
   | .lambda => e.find? (· matches .lam ..)
   | .forall => e.find? (· matches .forallE ..)
