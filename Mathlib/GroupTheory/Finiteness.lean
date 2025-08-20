@@ -72,15 +72,28 @@ theorem AddSubmonoid.fg_iff_mul_fg {M : Type*} [AddMonoid M] (P : AddSubmonoid M
     P.FG ↔ P.toSubmonoid.FG := by
   convert (Submonoid.fg_iff_add_fg (toSubmonoid P)).symm
 
-/-- The product of finitely generated submonoids is finitely generated. -/
-@[to_additive /-- The product of finitely generated submonoids is finitely generated. -/]
-lemma Submonoid.FG.prod (hP : P.FG) (hQ : Q.FG) : (P.prod Q).FG := by
+/-- The product of two finitely generated submonoids is finitely generated. -/
+@[to_additive /-- The product of two finitely generated additive submonoids is finitely generated.
+-/]
+theorem Submonoid.FG.prod (hP : P.FG) (hQ : Q.FG) : (P.prod Q).FG := by
   classical
   obtain ⟨bM, hbM⟩ := hP
   obtain ⟨bN, hbN⟩ := hQ
   refine ⟨bM ×ˢ singleton 1 ∪ singleton 1 ×ˢ bN, ?_⟩
   push_cast
-  simp [Submonoid.closure_union, hbM, hbN]
+  simp [closure_union, hbM, hbN]
+
+/-- Finite product of finitely generated submonoids is finitely generated. -/
+@[to_additive /-- Finite product of finitely generated additive submonoids is finitely generated.
+-/]
+theorem Submonoid.FG.pi {ι : Type*} [Finite ι] {M : ι → Type*} [∀ i, Monoid (M i)]
+    {P : ∀ i, Submonoid (M i)} (hP : ∀ i, (P i).FG) : (pi Set.univ P).FG := by
+  classical
+  have := Fintype.ofFinite ι
+  choose! S hS using hP
+  refine ⟨Finset.univ.biUnion fun i => (S i).image (MonoidHom.mulSingle M i), ?_⟩
+  simp_rw [Finset.coe_biUnion, Finset.coe_univ, Set.biUnion_univ, closure_iUnion, Finset.coe_image,
+    ← MonoidHom.map_mclosure, hS, iSup_map_single]
 
 end Submonoid
 
@@ -245,6 +258,21 @@ theorem AddSubgroup.fg_iff_mul_fg (P : AddSubgroup H) : P.FG ↔ P.toSubgroup.FG
   rw [AddSubgroup.fg_iff_addSubmonoid_fg, Subgroup.fg_iff_submonoid_fg]
   exact AddSubmonoid.fg_iff_mul_fg (AddSubgroup.toAddSubmonoid P)
 
+/-- The product of two finitely generated subgroups is finitely generated. -/
+@[to_additive /-- The product of two finitely generated additive subgroups is finitely generated.
+-/]
+theorem Subgroup.FG.prod {G' : Type*} [Group G'] {P : Subgroup G} {Q : Subgroup G'}
+    (hP : P.FG) (hQ : Q.FG) : (P.prod Q).FG := by
+  rw [fg_iff_submonoid_fg] at *
+  exact hP.prod hQ
+
+/-- Finite product of finitely generated subgroups is finitely generated. -/
+@[to_additive /-- Finite product of finitely generated additive subgroups is finitely generated. -/]
+theorem Subgroup.FG.pi {ι : Type*} [Finite ι] {G : ι → Type*} [∀ i, Group (G i)]
+    {P : ∀ i, Subgroup (G i)} (hP : ∀ i, (P i).FG) : (pi Set.univ P).FG := by
+  simp_rw [fg_iff_submonoid_fg] at *
+  exact .pi hP
+
 end Subgroup
 
 section Group
@@ -346,15 +374,48 @@ instance QuotientGroup.fg [Group.FG G] (N : Subgroup G) [Subgroup.Normal N] : Gr
 end QuotientGroup
 
 namespace Prod
-variable [Monoid N]
+
+variable [Monoid N] {G' : Type*} [Group G']
 
 open Monoid in
-/-- The product of finitely generated monoids is finitely generated. -/
-@[to_additive /-- The product of finitely generated monoids is finitely generated. -/]
+/-- The product of two finitely generated monoids is finitely generated. -/
+@[to_additive /-- The product of two finitely generated additive monoids is finitely generated. -/]
 instance instMonoidFG [FG M] [FG N] : FG (M × N) where
-  fg_top := by rw [← Submonoid.top_prod_top]; exact .prod ‹FG M›.fg_top ‹FG N›.fg_top
+  fg_top := by
+    rw [← Submonoid.top_prod_top]
+    exact ‹FG M›.fg_top.prod ‹FG N›.fg_top
+
+open Group in
+/-- The product of two finitely generated groups is finitely generated. -/
+@[to_additive /-- The product of two finitely generated additive groups is finitely generated. -/]
+instance instGroupFG [FG G] [FG G'] : FG (G × G') where
+  out := by
+    rw [← Subgroup.top_prod_top]
+    exact ‹FG G›.out.prod ‹FG G'›.out
 
 end Prod
+
+namespace Pi
+
+variable {ι : Type*} [Finite ι] {M : ι → Type*}
+
+/-- Finite product of finitely generated monoids is finitely generated. -/
+@[to_additive /-- Finite product of finitely generated additive monoids is finitely generated. -/]
+instance instMonoidFG [∀ i, Monoid (M i)] [∀ i, Monoid.FG (M i)] :
+    Monoid.FG (∀ i, M i) where
+  fg_top := by
+    rw [← Submonoid.pi_top Set.univ]
+    exact .pi fun i => Monoid.FG.fg_top
+
+/-- Finite product of finitely generated groups is finitely generated. -/
+@[to_additive /-- Finite product of finitely generated additive groups is finitely generated. -/]
+instance instGroupFG [∀ i, Group (M i)] [∀ i, Group.FG (M i)] :
+    Group.FG (∀ i, M i) where
+  out := by
+    rw [← Subgroup.pi_top Set.univ]
+    exact .pi fun i => Group.FG.out
+
+end Pi
 
 namespace AddMonoid
 
