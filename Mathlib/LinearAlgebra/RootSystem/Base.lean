@@ -111,7 +111,7 @@ lemma linearIndependent_pair_of_ne {i j : b.support} (hij : i ≠ j) :
 lemma root_mem_span_int (i : ι) :
     P.root i ∈ span ℤ (P.root '' b.support) := by
   have := b.root_mem_or_neg_mem i
-  simp only [← span_nat_eq_addSubmonoid_closure, mem_toAddSubmonoid] at this
+  simp only [← span_nat_eq_addSubmonoidClosure, mem_toAddSubmonoid] at this
   rw [← span_span_of_tower (R := ℕ)]
   rcases this with hi | hi
   · exact subset_span hi
@@ -208,7 +208,7 @@ lemma pos_or_neg_of_sum_smul_root_mem (f : ι → ℤ)
   replace hf : ∑ j, f' j • P.root j ∈ AddSubmonoid.closure (P.root '' b.support) := by
     suffices ∑ j, f' j • P.root j = ∑ j ∈ b.support, f j • P.root j by rwa [this]
     rw [← b.support.sum_finset_coe]; rfl
-  rw [← span_nat_eq_addSubmonoid_closure, mem_toAddSubmonoid,
+  rw [← span_nat_eq_addSubmonoidClosure, mem_toAddSubmonoid,
     Fintype.mem_span_image_iff_exists_fun] at hf
   obtain ⟨c, hc⟩ := hf
   replace hc (i : b.support) : c i = f' i := Fintype.linearIndependent_iffₛ.mp
