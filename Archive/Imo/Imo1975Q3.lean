@@ -116,7 +116,7 @@ lemma sqrt_combo_rationalize :
 /-- `(Q z) − R = ((P z) − R) · e^{iπ/2}`.
 Interpretation: the vector `QR` is a 90° CCW rotation of `PR`. -/
 lemma PQR_rot90 (z : ℂ) :
-    Q z - R = (P z - R) * (Complex.exp (π / 2 * I)) := by
+    Q z - R = (P z - R) * Complex.exp (π / 2 * I) := by
   -- expand definitions and normalize
   simp [Q, P, R, A, B]
   simp [mul_comm]
@@ -177,15 +177,14 @@ lemma angle_pi_div_two_of_rot90
             (InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two
               (Q z - R) (P z - R)).symm
         have h₂ : inner ℝ u v = re (u * star v) := by
-          simp [u,v]
+          simp [u, v]
           ring_nf
         simpa [h₂] using h₁
   exact hiff.mpr horth
 
 /-- Main theorem: for any `z : ℂ` with `(P z) ≠ R`, we have `∠QRP = π/2` and
 `dist Q R = dist R P`. -/
-theorem geometry_main_theorem
-    (z : ℂ) :
+theorem geometry_main_theorem (z : ℂ) :
     (∠ (Q z) R (P z) = π / 2) ∧ (dist (Q z) R = dist R (P z)) :=
     ⟨angle_pi_div_two_of_rot90 z, dist_eq_of_rot90 z⟩
 
