@@ -1081,16 +1081,7 @@ set_option linter.deprecated false in
 @[deprecated "`blsub` is deprecated`" (since := "2025-08-19")]
 theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : IsNormal f)
     (hg : IsNormal g) : f = g ↔ f 0 = g 0 ∧ ∀ a, f a = g a → f (succ a) = g (succ a) :=
-  ⟨fun h => by simp [h], fun ⟨h₁, h₂⟩ =>
-    funext fun a => by
-      induction a using limitRecOn with
-      | zero => solve_by_elim
-      | succ => solve_by_elim
-      | limit _ ho H =>
-        rw [← IsNormal.bsup_eq.{u, u} hf ho, ← IsNormal.bsup_eq.{u, u} hg ho]
-        congr
-        ext b hb
-        exact H b hb⟩
+  Order.IsNormal.ext hf hg
 
 end blsub
 
