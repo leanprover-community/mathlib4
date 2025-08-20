@@ -93,7 +93,6 @@ variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] [Ring β]
   {abv : β → α} [IsAbsoluteValue abv] {f g : ℕ → β}
 
 -- see Note [nolint_ge]
---@[nolint ge_or_gt] -- Porting note: restore attribute
 theorem cauchy₂ (hf : IsCauSeq abv f) {ε : α} (ε0 : 0 < ε) :
     ∃ i, ∀ j ≥ i, ∀ k ≥ i, abv (f j - f k) < ε := by
   refine (hf _ (half_pos ε0)).imp fun i hi j ij k ik => ?_
@@ -183,7 +182,6 @@ def ofEq (f : CauSeq β abv) (g : ℕ → β) (e : ∀ i, f i = g i) : CauSeq β
 variable [IsAbsoluteValue abv]
 
 -- see Note [nolint_ge]
--- @[nolint ge_or_gt] -- Porting note: restore attribute
 theorem cauchy₂ (f : CauSeq β abv) {ε} :
     0 < ε → ∃ i, ∀ j ≥ i, ∀ k ≥ i, abv (f j - f k) < ε :=
   f.2.cauchy₂

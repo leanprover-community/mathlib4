@@ -431,7 +431,7 @@ theorem biproduct.ι_π [DecidableEq J] (f : J → C) [HasBiproduct f] (j j' : J
     biproduct.ι f j ≫ biproduct.π f j' = if h : j = j' then eqToHom (congr_arg f h) else 0 := by
   convert (biproduct.bicone f).ι_π j j'
 
-@[reassoc] -- Porting note: both versions proven by simp
+@[reassoc] -- Not `simp` because `simp` can prove this
 theorem biproduct.ι_π_self (f : J → C) [HasBiproduct f] (j : J) :
     biproduct.ι f j ≫ biproduct.π f j = 𝟙 _ := by simp
 
@@ -726,7 +726,7 @@ theorem biproduct.fromSubtype_eq_lift [DecidablePred p] :
       biproduct.lift fun j => if h : p j then biproduct.π (Subtype.restrict p f) ⟨j, h⟩ else 0 :=
   biproduct.hom_ext _ _ (by simp)
 
-@[reassoc] -- Porting note: both version solved using simp
+@[reassoc] -- Not `@[simp]` because `simp` can prove this
 theorem biproduct.fromSubtype_π_subtype (j : Subtype p) :
     biproduct.fromSubtype f p ≫ biproduct.π f j = biproduct.π (Subtype.restrict p f) j := by
   classical
