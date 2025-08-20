@@ -100,7 +100,6 @@ theorem Invariant.of_IsReversible
     (π.bind κ) s = ∫⁻ x, κ x s ∂π := Measure.bind_apply hs (Kernel.aemeasurable _)
     _ = π s := hπ
 
-end ProbabilityTheory.Kernel
 end Kernel
 
 end ProbabilityTheory
