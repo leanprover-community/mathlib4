@@ -263,18 +263,18 @@ lemma cotTerm_iteratedDeriv_eqOn (d : ℕ) : EqOn (iteratedDeriv k (fun (z : ℂ
     rw [h2, h3]
     ring
   · simpa using (contDiffOn_inv_linear k (d + 1)).contDiffAt
-      ((Complex.isOpen_compl_range_intCast).mem_nhds hz)
+      ((isOpen_compl_range_intCast).mem_nhds hz)
   · simpa using (contDiffOn_inv_linear_sub k (d + 1)).contDiffAt
-      ((Complex.isOpen_compl_range_intCast).mem_nhds hz)
+      ((isOpen_compl_range_intCast).mem_nhds hz)
 
-lemma cotTerm_iteratedDerivWithin_eqOn (d : ℕ) :
+lemma cotTerm_iteratedDerivWithin_eqOn_intergerCompliment (d : ℕ) :
     EqOn (iteratedDerivWithin k (fun (z : ℂ) ↦ cotTerm z d) ℂ_ℤ)
     (fun z : ℂ ↦ (-1) ^ k * k ! * ((z + (d + 1)) ^ (-1 - k : ℤ) +
     (z - (d + 1)) ^ (-1 - k : ℤ))) ℂ_ℤ := by
   apply Set.EqOn.trans (iteratedDerivWithin_of_isOpen Complex.isOpen_compl_range_intCast)
   apply cotTerm_iteratedDeriv_eqOn
 
-lemma cotTerm_iteratedDerivWithin_eqOn' (d : ℕ) :
+lemma cotTerm_iteratedDerivWithin_eqOn_complexUpperHalfPlane (d : ℕ) :
     EqOn (iteratedDerivWithin k (fun (z : ℂ) ↦ cotTerm z d) ℍₒ)
     (fun z : ℂ ↦ (-1) ^ k * k ! * ((z + (d + 1)) ^ (-1 - k : ℤ) +
     (z - (d + 1)) ^ (-1 - k : ℤ))) ℍₒ := by
@@ -282,11 +282,12 @@ lemma cotTerm_iteratedDerivWithin_eqOn' (d : ℕ) :
     iteratedDerivWithin_congr_right_of_isOpen (fun (z : ℂ) ↦ cotTerm z d) k
     complexUpperHalPlane_isOpen (Complex.isOpen_compl_range_intCast))
   intro z hz
-  simpa using cotTerm_iteratedDerivWithin_eqOn k d (coe_mem_integerComplement ⟨z, hz⟩)
+  simpa using cotTerm_iteratedDerivWithin_eqOn_intergerCompliment k d
+    (coe_mem_integerComplement ⟨z, hz⟩)
 
 open EisensteinSeries in
 private noncomputable abbrev cotTermUpperBound (A B : ℝ) (hB : 0 < B) (a : ℕ) :=
-  k ! * (2 * (r (⟨⟨A, B⟩, by simp [hB]⟩) ^ (-1 - (k : ℤ))) * ‖ ((a + 1) ^ (-1 - (k : ℤ)) : ℝ)‖)
+  k ! * (2 * (r (⟨⟨A, B⟩, by simp [hB]⟩) ^ (-1 - k : ℤ)) * ‖((a + 1) ^ (-1 - k : ℤ) : ℝ)‖)
 
 private lemma Summable_cotTermUpperBound (A B : ℝ) (hB : 0 < B) {k : ℕ} (hk : 1 ≤ k) :
     Summable fun a : ℕ ↦ cotTermUpperBound k A B hB a := by
@@ -304,12 +305,11 @@ private lemma iteratedDerivWithin_cotTerm_bounded_uniformly
     {k : ℕ} (hk : 1 ≤ k) {K : Set ℂ} (hK : K ⊆ ℍₒ) (A B : ℝ) (hB : 0 < B)
     (HABK : inclusion hK '' univ ⊆ verticalStrip A B) (n : ℕ) {a : ℂ} (ha : a ∈ K) :
     ‖iteratedDerivWithin k (fun z ↦ cotTerm z n) ℍₒ a‖ ≤ cotTermUpperBound k A B hB n := by
-  simp only [cotTerm_iteratedDerivWithin_eqOn' k n (hK ha), Complex.norm_mul, norm_pow, norm_neg,
-    norm_one, one_pow, Complex.norm_natCast, one_mul, cotTermUpperBound, Int.reduceNeg, norm_zpow,
-    Real.norm_eq_abs, two_mul, add_mul]
+  simp only [cotTerm_iteratedDerivWithin_eqOn_complexUpperHalfPlane k n (hK ha), Complex.norm_mul,
+    norm_pow, norm_neg,norm_one, one_pow, Complex.norm_natCast, one_mul, cotTermUpperBound,
+    Int.reduceNeg, norm_zpow, Real.norm_eq_abs, two_mul, add_mul]
   gcongr
-  apply le_trans (norm_add_le _ _)
-  apply add_le_add
+  apply le_trans (norm_add_le _ _) (add_le_add ?_ ?_)
   · have := summand_bound_of_mem_verticalStrip (k := (k + 1)) (by norm_cast; omega) ![1, n + 1] hB
       (z := ⟨a, (hK ha)⟩) (A := A) (by aesop)
     simp only [coe_setOf, image_univ, Fin.isValue, Matrix.cons_val_zero, Int.cast_one,
@@ -343,7 +343,7 @@ theorem DifferentiableOn_iteratedDerivWithin_cotTerm (n l : ℕ) :
     (z - (n + 1)) ^ (-1 - l : ℤ))) ℍₒ by
     apply this.congr
     intro z hz
-    simpa using (cotTerm_iteratedDerivWithin_eqOn' l n hz)
+    simpa using (cotTerm_iteratedDerivWithin_eqOn_complexUpperHalfPlane l n hz)
   apply DifferentiableOn.const_mul
   apply DifferentiableOn.add <;> apply DifferentiableOn.zpow
   any_goals try {fun_prop} <;> left <;> intro x hx
@@ -375,7 +375,7 @@ private theorem aux_iteratedDeriv_tsum_cotTerm {k : ℕ} (hk : 1 ≤ k) (x : ℍ
   conv =>
     enter [1,2,1]
     ext n
-    rw [cotTerm_iteratedDerivWithin_eqOn' k n (by simp [UpperHalfPlane.coe])]
+    rw [cotTerm_iteratedDerivWithin_eqOn_complexUpperHalfPlane k n (by simp [UpperHalfPlane.coe])]
   rw [tsum_of_add_one_of_neg_add_one (by simpa using aux_summable_add hk x)
     (by simpa [sub_eq_add_neg] using aux_summable_neg hk x),
     tsum_mul_left, Summable.tsum_add (aux_summable_add hk x) (aux_summable_neg hk x )]
