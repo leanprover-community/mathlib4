@@ -151,7 +151,7 @@ theorem eigenvalues_eq_zero_iff :
     hA.eigenvalues = 0 ↔ A = 0 := by
   refine ⟨fun h => ?_, fun h => by ext; simp [h, eigenvalues_eq]⟩
   rw [hA.spectral_theorem, h, Pi.comp_zero, RCLike.ofReal_zero, Function.const_zero,
-    (by exact diagonal_zero : diagonal (0 : n → 𝕜) = 0), mul_zero, zero_mul]
+    Pi.zero_def, diagonal_zero, mul_zero, zero_mul]
 
 end DecidableEq
 
