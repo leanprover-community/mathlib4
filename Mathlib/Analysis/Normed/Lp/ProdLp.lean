@@ -450,10 +450,13 @@ lemma prod_continuous_toLp : Continuous (@toLp p (α × β)) := continuous_id
 lemma prod_continuous_ofLp : Continuous (@ofLp p (α × β)) := continuous_id
 
 /-- `WithLp.equiv` as a homeomorphism. -/
-def homeomorph_prod : α × β ≃ₜ WithLp p (α × β) where
-  toEquiv := (WithLp.equiv p (α × β)).symm
-  continuous_toFun := prod_continuous_toLp p α β
-  continuous_invFun := prod_continuous_ofLp p α β
+def homeomorphProd : WithLp p (α × β) ≃ₜ α × β where
+  toEquiv := WithLp.equiv p (α × β)
+  continuous_toFun := prod_continuous_ofLp p α β
+  continuous_invFun := prod_continuous_toLp p α β
+
+@[simp]
+lemma toEquiv_homeomorphProd : (homeomorphProd p α β).toEquiv = WithLp.equiv p (α × β) := rfl
 
 variable [T0Space α] [T0Space β]
 
@@ -481,10 +484,17 @@ lemma prod_uniformContinuous_ofLp : UniformContinuous (@ofLp p (α × β)) :=
   uniformContinuous_id
 
 /-- `WithLp.equiv` as a uniform isomorphism. -/
-def uniformEquiv_prod : α × β ≃ᵤ WithLp p (α × β) where
-  toEquiv := (WithLp.equiv p (α × β)).symm
-  uniformContinuous_toFun := prod_uniformContinuous_toLp p α β
-  uniformContinuous_invFun := prod_uniformContinuous_ofLp p α β
+def uniformEquivProd : WithLp p (α × β) ≃ᵤ α × β where
+  toEquiv := WithLp.equiv p (α × β)
+  uniformContinuous_toFun := prod_uniformContinuous_ofLp p α β
+  uniformContinuous_invFun := prod_uniformContinuous_toLp p α β
+
+@[simp]
+lemma toHomeomorph_uniformEquivProd :
+    (uniformEquivProd p α β).toHomeomorph = homeomorphProd p α β := rfl
+
+@[simp]
+lemma toEquiv_uniformEquivProd : (uniformEquivProd p α β).toEquiv = WithLp.equiv p (α × β) := rfl
 
 variable [CompleteSpace α] [CompleteSpace β]
 

@@ -444,17 +444,21 @@ theorem continuous_toLp [∀ i, TopologicalSpace (β i)] : Continuous (@toLp p (
   continuous_id
 
 /-- `WithLp.equiv` as a homeomorphism. -/
-def homeomorph [∀ i, TopologicalSpace (β i)] : (Π i, β i) ≃ₜ PiLp p β where
-  toEquiv := (WithLp.equiv p (Π i, β i)).symm
-  continuous_toFun := continuous_toLp p β
-  continuous_invFun := continuous_ofLp p β
+def homeomorph [∀ i, TopologicalSpace (β i)] : PiLp p β ≃ₜ (Π i, β i) where
+  toEquiv := WithLp.equiv p (Π i, β i)
+  continuous_toFun := continuous_ofLp p β
+  continuous_invFun := continuous_toLp p β
+
+@[simp]
+lemma toEquiv_homeomorph [∀ i, TopologicalSpace (β i)] :
+    (homeomorph p β).toEquiv = WithLp.equiv p (Π i, β i) := rfl
 
 lemma isOpenMap_apply [∀ i, TopologicalSpace (β i)] (i : ι) :
     IsOpenMap (fun f : PiLp p β ↦ f i) := (isOpenMap_eval i).comp (homeomorph p β).symm.isOpenMap
 
 instance instProdT0Space [∀ i, TopologicalSpace (β i)] [∀ i, T0Space (β i)] :
     T0Space (PiLp p β) :=
-  (homeomorph p β).t0Space
+  (homeomorph p β).symm.t0Space
 
 instance secondCountableTopology [Countable ι] [∀ i, TopologicalSpace (β i)]
     [∀ i, SecondCountableTopology (β i)] : SecondCountableTopology (PiLp p β) :=
@@ -472,10 +476,18 @@ lemma uniformContinuous_toLp [∀ i, UniformSpace (β i)] :
   uniformContinuous_id
 
 /-- `WithLp.equiv` as a uniform isomorphism. -/
-def uniformEquiv [∀ i, UniformSpace (β i)] : (Π i, β i) ≃ᵤ PiLp p β where
-  toEquiv := (WithLp.equiv p (Π i, β i)).symm
-  uniformContinuous_toFun := uniformContinuous_toLp p β
-  uniformContinuous_invFun := uniformContinuous_ofLp p β
+def uniformEquiv [∀ i, UniformSpace (β i)] : PiLp p β ≃ᵤ (Π i, β i) where
+  toEquiv := WithLp.equiv p (Π i, β i)
+  uniformContinuous_toFun := uniformContinuous_ofLp p β
+  uniformContinuous_invFun := uniformContinuous_toLp p β
+
+@[simp]
+lemma toHomeomorph_uniformEquiv [∀ i, UniformSpace (β i)] :
+    (uniformEquiv p β).toHomeomorph = homeomorph p β := rfl
+
+@[simp]
+lemma toEquiv_uniformEquiv [∀ i, UniformSpace (β i)] :
+    (uniformEquiv p β).toEquiv = WithLp.equiv p (Π i, β i) := rfl
 
 instance completeSpace [∀ i, UniformSpace (β i)] [∀ i, CompleteSpace (β i)] :
     CompleteSpace (PiLp p β) :=
