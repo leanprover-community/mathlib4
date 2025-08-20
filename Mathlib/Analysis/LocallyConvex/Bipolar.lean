@@ -66,8 +66,6 @@ variable [Module 𝕜 E] [Module 𝕜 F]
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
-open TopologicalSpace in
-open Topology in
 lemma dualEmbedding_surjective : Function.Surjective (WeakBilin.eval B) := by
   intro f₁
   have mem_span :
