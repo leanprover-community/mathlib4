@@ -765,6 +765,7 @@ import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 import Mathlib.Algebra.NoZeroSMulDivisors.Pi
 import Mathlib.Algebra.NoZeroSMulDivisors.Prod
+import Mathlib.Algebra.NonAssoc.PreLie.Basic
 import Mathlib.Algebra.Notation
 import Mathlib.Algebra.Notation.Defs
 import Mathlib.Algebra.Notation.FiniteSupport
@@ -1336,6 +1337,7 @@ import Mathlib.AlgebraicTopology.SingularSet
 import Mathlib.AlgebraicTopology.TopologicalSimplex
 import Mathlib.Analysis.AbsoluteValue.Equivalence
 import Mathlib.Analysis.Analytic.Basic
+import Mathlib.Analysis.Analytic.Binomial
 import Mathlib.Analysis.Analytic.CPolynomial
 import Mathlib.Analysis.Analytic.CPolynomialDef
 import Mathlib.Analysis.Analytic.ChangeOrigin
@@ -1646,6 +1648,7 @@ import Mathlib.Analysis.InnerProductSpace.LaxMilgram
 import Mathlib.Analysis.InnerProductSpace.LinearMap
 import Mathlib.Analysis.InnerProductSpace.LinearPMap
 import Mathlib.Analysis.InnerProductSpace.MeanErgodic
+import Mathlib.Analysis.InnerProductSpace.MulOpposite
 import Mathlib.Analysis.InnerProductSpace.NormPow
 import Mathlib.Analysis.InnerProductSpace.OfNorm
 import Mathlib.Analysis.InnerProductSpace.Orientation
@@ -2497,6 +2500,7 @@ import Mathlib.CategoryTheory.Monoidal.Internal.Module
 import Mathlib.CategoryTheory.Monoidal.Internal.Types.Basic
 import Mathlib.CategoryTheory.Monoidal.Internal.Types.CommGrp_
 import Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp_
+import Mathlib.CategoryTheory.Monoidal.Limits
 import Mathlib.CategoryTheory.Monoidal.Limits.Basic
 import Mathlib.CategoryTheory.Monoidal.Limits.Preserves
 import Mathlib.CategoryTheory.Monoidal.Linear
@@ -6123,6 +6127,7 @@ import Mathlib.Tactic.TautoSet
 import Mathlib.Tactic.TermCongr
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.ToAdditive.Frontend
+import Mathlib.Tactic.ToAdditive.GuessName
 import Mathlib.Tactic.ToExpr
 import Mathlib.Tactic.ToLevel
 import Mathlib.Tactic.Trace
@@ -6719,6 +6724,7 @@ import Mathlib.Util.AddRelatedDecl
 import Mathlib.Util.AssertExists
 import Mathlib.Util.AssertExistsExt
 import Mathlib.Util.AssertNoSorry
+import Mathlib.Util.AtLocation
 import Mathlib.Util.AtomM
 import Mathlib.Util.AtomM.Recurse
 import Mathlib.Util.CompileInductive
