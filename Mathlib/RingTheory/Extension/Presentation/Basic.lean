@@ -218,6 +218,10 @@ noncomputable def localizationAway : Presentation R S Unit Unit where
 lemma localizationAway_dimension_zero : (localizationAway S r).dimension = 0 := by
   simp [Presentation.dimension]
 
+lemma _root_.Algebra.Generators.C_mul_X_sub_one_mem_ker :
+    C r * X () - 1 ∈ (Generators.localizationAway S r).ker :=
+  (Presentation.localizationAway S r).relation_mem_ker ()
+
 end Localization
 
 section BaseChange

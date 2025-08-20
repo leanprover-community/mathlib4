@@ -238,6 +238,42 @@ theorem rank_kaehlerDifferential [Nontrivial S] [Finite ι]
 
 end SubmersivePresentation
 
+section LocalizationAway
+
+variable (r : R) [IsLocalization.Away r S]
+
+instance : Module.Free S (Generators.localizationAway S r).toExtension.Cotangent :=
+  inferInstanceAs <|
+    Module.Free S ((SubmersivePresentation.localizationAway S r).toExtension.Cotangent)
+
+lemma SubmersivePresentation.basisCotangent_localizationAway_apply (x : Unit) :
+    (SubmersivePresentation.localizationAway S r).basisCotangent x =
+      .mk ⟨C r * X () - 1, Generators.C_mul_X_sub_one_mem_ker _⟩ :=
+  basisCotangent_apply _ _
+
+variable (S) in
+/--
+The basis of `(g * X - 1) / (g * X - 1)²` given by the image of `g * X - 1`.
+
+This is def-eq to `(SubmersivePresentation.localizationAway T g).basisCotangent`, but
+```
+(SubmersivePresentation.localizationAway T g).toExtension =
+  (Generators.localizationAway T g).toExtension
+```
+is not reducibly def-eq. Hence using the general `SubmersivePresentation.basisCotangent` leads
+to `erw` hell.
+-/
+noncomputable
+def Generators.basisCotangentAway (r : R) [IsLocalization.Away r S] :
+    Module.Basis Unit S (localizationAway S r).toExtension.Cotangent :=
+  (SubmersivePresentation.localizationAway S r).basisCotangent
+
+lemma Generators.basisCotangentAway_apply (x : Unit) :
+    basisCotangentAway S r x = .mk ⟨C r * X () - 1, C_mul_X_sub_one_mem_ker _⟩ :=
+  SubmersivePresentation.basisCotangent_apply _ _
+
+end LocalizationAway
+
 /-- If `S` is `R`-standard smooth, `Ω[S⁄R]` is a free `S`-module. -/
 instance IsStandardSmooth.free_kaehlerDifferential [IsStandardSmooth R S] :
     Module.Free S Ω[S⁄R] := by
