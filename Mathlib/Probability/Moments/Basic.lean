@@ -276,7 +276,7 @@ theorem IndepFun.mgf_add {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ)
     (hY : AEStronglyMeasurable (fun ω => exp (t * Y ω)) μ) :
     mgf (X + Y) μ t = mgf X μ t * mgf Y μ t := by
   simp_rw [mgf, Pi.add_apply, mul_add, exp_add]
-  exact (h_indep.exp_mul t t).integral_mul hX hY
+  exact (h_indep.exp_mul t t).integral_mul_eq_mul_integral hX hY
 
 theorem IndepFun.mgf_add' {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ) (hX : AEStronglyMeasurable X μ)
     (hY : AEStronglyMeasurable Y μ) : mgf (X + Y) μ t = mgf X μ t * mgf Y μ t := by
@@ -400,7 +400,7 @@ theorem measure_ge_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
     exacts [measure_ne_top _ _, Set.subset_univ _]
   calc
     μ.real {ω | ε ≤ X ω} = μ.real {ω | exp (t * ε) ≤ exp (t * X ω)} := by
-      congr with ω
+      congr 1 with ω
       simp only [Set.mem_setOf_eq, exp_le_exp]
       exact ⟨fun h => mul_le_mul_of_nonneg_left h ht_pos.le,
         fun h => le_of_mul_le_mul_left h ht_pos⟩
@@ -461,5 +461,16 @@ lemma integrable_exp_mul_of_le [IsFiniteMeasure μ] {X : Ω → ℝ} (t b : ℝ)
   refine .of_mem_Icc 0 (rexp (t * b)) (measurable_exp.comp_aemeasurable (hX.const_mul t)) ?_
   filter_upwards [hb] with ω hb
   exact ⟨by positivity, by gcongr⟩
+
+lemma integrable_exp_mul_of_mem_Icc [IsFiniteMeasure μ] {X : Ω → ℝ} {a b t : ℝ}
+    (hm : AEMeasurable X μ) (hb : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
+    Integrable (fun ω ↦ exp (t * X ω)) μ := by
+  apply Integrable.of_mem_Icc (exp (min (a * t) (b * t))) (exp (max (a * t) (b * t)))
+  · exact (measurable_exp.comp_aemeasurable (hm.const_mul t))
+  filter_upwards [hb] with ω ⟨hl, hr⟩
+  simp only [Set.mem_Icc, exp_le_exp, inf_le_iff, le_sup_iff]
+  by_cases ht : 0 ≤ t
+  · exact ⟨Or.inl (by nlinarith), Or.inr (by nlinarith)⟩
+  · exact ⟨Or.inr (by nlinarith), Or.inl (by nlinarith)⟩
 
 end ProbabilityTheory
