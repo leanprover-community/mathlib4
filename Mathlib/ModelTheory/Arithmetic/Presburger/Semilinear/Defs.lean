@@ -3,7 +3,7 @@ Copyright (c) 2025 Dexin Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dexin Zhang
 -/
-import Mathlib.RingTheory.Finiteness.Defs
+import Mathlib.GroupTheory.Finiteness
 import Mathlib.LinearAlgebra.LinearIndependent.Defs
 
 /-!
