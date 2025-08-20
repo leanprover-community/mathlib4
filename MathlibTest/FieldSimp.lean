@@ -662,9 +662,10 @@ example : a /ₚ u₁ /ₚ u₂ = a /ₚ (u₂ * u₁) := by field_simp
 TODO (new implementation): handle `CommGroupWithZero`, not just `Semifield`
 -/
 
+set_option pp.mvars false in
 /--
 error: unsolved goals
-R : Type ?u.175962
+R : Type _
 inst✝¹ : CommRing R
 a b c d e f g : R
 u₁ u₂ : Rˣ
