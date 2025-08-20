@@ -6,7 +6,8 @@ Authors: Matteo Cipollina
 
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Combinatorics.Quiver.Path
-import Mathlib.Data.Finset.Dedup
+import Mathlib.Data.Set.Insert
+import Mathlib.Data.List.Basic
 
 /-!
 # Path Vertices
