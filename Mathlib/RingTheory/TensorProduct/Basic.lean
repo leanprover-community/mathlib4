@@ -1041,6 +1041,25 @@ theorem toLinearEquiv_tensorTensorTensorComm :
   apply LinearEquiv.toLinearMap_injective
   ext; simp
 
+lemma map_bijective {f : A →ₐ[R] B} {g : C →ₐ[R] D}
+    (hf : Function.Bijective f) (hg : Function.Bijective g) :
+    Function.Bijective (map f g) :=
+  _root_.TensorProduct.map_bijective hf hg
+
+lemma includeLeft_bijective (h : Function.Bijective (algebraMap R B)) :
+    Function.Bijective (includeLeft : A →ₐ[S] A ⊗[R] B) := by
+  have : (includeLeft : A →ₐ[S] A ⊗[R] B).comp (TensorProduct.rid R S A).toAlgHom =
+      map (.id S A) (Algebra.ofId R B) := by ext; simp
+  rw [← Function.Bijective.of_comp_iff _ (TensorProduct.rid R S A).bijective]
+  convert_to Function.Bijective (map (.id R A) (Algebra.ofId R B))
+  · exact DFunLike.coe_fn_eq.mpr this
+  · exact Algebra.TensorProduct.map_bijective Function.bijective_id h
+
+lemma includeRight_bijective (h : Function.Bijective (algebraMap R A)) :
+    Function.Bijective (includeRight : B →ₐ[R] A ⊗[R] B) := by
+  rw [← Function.Bijective.of_comp_iff' (TensorProduct.comm R A B).bijective]
+  exact Algebra.TensorProduct.includeLeft_bijective (S := R) h
+
 end
 
 end Monoidal
