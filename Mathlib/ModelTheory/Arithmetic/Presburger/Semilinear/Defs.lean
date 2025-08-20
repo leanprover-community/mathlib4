@@ -3,26 +3,24 @@ Copyright (c) 2025 Dexin Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dexin Zhang
 -/
-import Mathlib.RingTheory.Finiteness.Defs
+import Mathlib.GroupTheory.Finiteness
 import Mathlib.LinearAlgebra.LinearIndependent.Defs
 
 /-!
 # Linear and semilinear sets
 
 This file defines linear and semilinear sets. In an `AddCommMonoid`, a linear set is a finitely
-generated affine `ℕ`-submodule (additive submonoid), and a semilinear set is a finite union of
-linear sets.
+generated affine additive submonoid, and a semilinear set is a finite union of linear sets.
 
 We prove that semilinear sets are closed under union, projection, set addition and additive closure.
 We also prove that any semilinear set can be decomposed into a finite union of proper linear sets,
-which are linear sets with linear independent `ℕ`-submodule generators (periods).
+which are linear sets with linear independent submonoid generators (periods).
 
 ## Main Definitions
 
-- `Set.Linear`: a set is linear if is a finitely generated affine `ℕ`-submodule (additive
-  submonoid).
+- `Set.Linear`: a set is linear if is a finitely generated affine additive submonoid.
 - `Set.Semilinear`: a set is semilinear if it is a finite union of linear sets.
-- `Set.ProperLinear`: a linear set is proper if its `ℕ`-submodule generators (periods) are linear
+- `Set.ProperLinear`: a linear set is proper if its submonoid generators (periods) are linear
   independent.
 - `Set.ProperSemilinear`: a semilinear set is proper if it is a finite union of proper linear sets.
 
@@ -37,29 +35,32 @@ which are linear sets with linear independent `ℕ`-submodule generators (period
 * [Samuel Eilenberg and M. P. Schützenberger, *Rational Sets in Commutative Monoids*][eilenberg1969]
 -/
 
-universe u v w₁ w₂
+universe u v
 
 namespace Set
 
 variable {α : Type u} {β : Type v} [AddCommMonoid α] [AddCommMonoid β]
-  {ι : Type w₁} {κ : Type w₂} {a : α} {s s₁ s₂ : Set α}
+  {F : Type*} [FunLike F α β] [AddMonoidHomClass F α β]
+  {ι κ : Type*} {a : α} {s s₁ s₂ : Set α}
 
-open Pointwise Submodule
+open Pointwise AddSubmonoid
 
-/-- A set is linear if is a finitely generated affine `ℕ`-submodule (additive submonoid). -/
+/-- A set is linear if is a finitely generated affine additive submonoid. -/
 def Linear (s : Set α) :=
-  ∃ (a : α) (t : Finset α), s = a +ᵥ (span ℕ (t : Set α) : Set α)
+  ∃ (a : α) (t : Finset α), s = a +ᵥ (closure (t : Set α) : Set α)
 
 theorem Linear.singleton (a) : ({a} : Set α).Linear :=
   ⟨a, ∅, by simp⟩
 
-theorem Linear.span_finset (s : Finset α) : (span ℕ (s : Set α) : Set α).Linear :=
+theorem Linear.closure_finset (s : Finset α) : (closure (s : Set α) : Set α).Linear :=
   ⟨0, s, by rw [zero_vadd]⟩
 
-theorem Linear.univ [Module.Finite ℕ α] : (univ : Set α).Linear := by
-  rcases Module.Finite.fg_top (R := ℕ) (M := α) with ⟨s, hs⟩
-  refine ⟨0, s, ?_⟩
-  rw [zero_vadd, hs, top_coe]
+theorem Linear.of_addSubmonoid_fg {P : AddSubmonoid α} (hP : P.FG) : (P : Set α).Linear :=
+  let ⟨s, hP⟩ := hP
+  ⟨0, s, by rw [zero_vadd, hP]⟩
+
+theorem Linear.univ [AddMonoid.FG α] : (univ : Set α).Linear :=
+  of_addSubmonoid_fg AddMonoid.FG.fg_top
 
 theorem Linear.vadd (hs : s.Linear) : (a +ᵥ s).Linear := by
   rcases hs with ⟨b, t, rfl⟩
@@ -70,14 +71,14 @@ theorem Linear.add (hs₁ : s₁.Linear) (hs₂ : s₂.Linear) : (s₁ + s₂).L
   classical
   rcases hs₁ with ⟨a, t₁, rfl⟩
   rcases hs₂ with ⟨b, t₂, rfl⟩
-  rw [vadd_add_vadd, ← coe_sup, ← span_union, ← Finset.coe_union]
+  rw [vadd_add_vadd, ← coe_sup, ← closure_union, ← Finset.coe_union]
   exact ⟨a + b, t₁ ∪ t₂, rfl⟩
 
-theorem Linear.image (hs : s.Linear) (f : α →ₗ[ℕ] β) : (f '' s).Linear := by
+theorem Linear.image (hs : s.Linear) (f : α →+ β) : (f '' s).Linear := by
   classical
   rcases hs with ⟨a, t, rfl⟩
   refine ⟨f a, t.image f, ?_⟩
-  simp [image_vadd_distrib, span_image]
+  simp [image_vadd_distrib, ← AddMonoidHom.map_mclosure]
 
 /-- A set is semilinear if it is a finite union of linear sets. -/
 def Semilinear (s : Set α) :=
@@ -92,10 +93,13 @@ theorem Semilinear.empty : (∅ : Set α).Semilinear :=
 theorem Semilinear.singleton (a) : ({a} : Set α).Semilinear :=
   (Linear.singleton a).semilinear
 
-theorem Semilinear.span_finset (s : Finset α) : (span ℕ (s : Set α) : Set α).Semilinear :=
-  (Linear.span_finset s).semilinear
+theorem Semilinear.closure_finset (s : Finset α) : (closure (s : Set α) : Set α).Semilinear :=
+  (Linear.closure_finset s).semilinear
 
-theorem Semilinear.univ [Module.Finite ℕ α] : (Set.univ : Set α).Semilinear :=
+theorem Semilinear.of_addSubmonoid_fg {P : AddSubmonoid α} (hP : P.FG) : (P : Set α).Semilinear :=
+  (Linear.of_addSubmonoid_fg hP).semilinear
+
+theorem Semilinear.univ [AddMonoid.FG α] : (Set.univ : Set α).Semilinear :=
   Linear.univ.semilinear
 
 /-- Semilinear sets are closed under union. -/
@@ -152,21 +156,24 @@ theorem Semilinear.add (hs₁ : s₁.Semilinear) (hs₂ : s₂.Semilinear) :
   simp_rw [sUnion_add, add_sUnion, Finset.mem_coe]
   exact biUnion fun s₁ hs₁ => biUnion fun s₂ hs₂ => ((hS₁ s₁ hs₁).add (hS₂ s₂ hs₂)).semilinear
 
-theorem Semilinear.image (hs : s.Semilinear) (f : α →ₗ[ℕ] β) : (f '' s).Semilinear := by
+theorem Semilinear.image (hs : s.Semilinear) (f : α →+ β) : (f '' s).Semilinear := by
   rcases hs with ⟨S, hS, rfl⟩
   simp_rw [sUnion_eq_biUnion, Finset.mem_coe, image_iUnion]
   exact biUnion fun s hs => ((hS s hs).image f).semilinear
 
-theorem Semilinear.image_iff (f : α ≃ₗ[ℕ] β) : (f '' s).Semilinear ↔ s.Semilinear := by
+theorem Semilinear.image' (hs : s.Semilinear) (f : α →ₗ[ℕ] β) : (f '' s).Semilinear :=
+  hs.image f.toAddMonoidHom
+
+theorem Semilinear.image_iff' (f : α ≃ₗ[ℕ] β) : (f '' s).Semilinear ↔ s.Semilinear := by
   constructor <;> intro h
-  · convert h.image f.symm.toLinearMap
+  · convert h.image' f.symm.toLinearMap
     simp [image_image]
-  · exact h.image f.toLinearMap
+  · exact h.image' f.toLinearMap
 
 /-- Semilinear sets are closed under projection. -/
 theorem Semilinear.proj {s : Set (ι ⊕ κ → α)} (hs : s.Semilinear) :
     {x | ∃ y, Sum.elim x y ∈ s}.Semilinear := by
-  convert hs.image (LinearMap.funLeft ℕ α Sum.inl)
+  convert hs.image' (LinearMap.funLeft ℕ α Sum.inl)
   ext x
   constructor
   · intro ⟨y, hy⟩
@@ -180,7 +187,7 @@ theorem Semilinear.proj' {p : (ι → α) → (κ → α) → Prop} :
     {x | p (x ∘ Sum.inl) (x ∘ Sum.inr)}.Semilinear → {x | ∃ y, p x y}.Semilinear :=
   proj
 
-lemma Linear.closure (hs : s.Linear) : (AddSubmonoid.closure s : Set α).Semilinear := by
+lemma Linear.closure (hs : s.Linear) : (closure s : Set α).Semilinear := by
   classical
   rcases hs with ⟨a, t, rfl⟩
   convert (Semilinear.singleton 0).union (semilinear ⟨a, {a} ∪ t, rfl⟩)
@@ -192,27 +199,27 @@ lemma Linear.closure (hs : s.Linear) : (AddSubmonoid.closure s : Set α).Semilin
     induction hx using AddSubmonoid.closure_induction with
     | mem x hx =>
       rcases hx with ⟨x, hx, rfl⟩
-      exact Or.inr ⟨x, span_mono (subset_insert _ _) hx, rfl⟩
-    | one => exact Or.inl rfl
-    | mul x y _ _ ih₁ ih₂ =>
+      exact Or.inr ⟨x, closure_mono (subset_insert _ _) hx, rfl⟩
+    | zero => exact Or.inl rfl
+    | add x y _ _ ih₁ ih₂ =>
       rcases ih₁ with rfl | ⟨x, hx, rfl⟩
       · simpa only [zero_add]
       · rcases ih₂ with rfl | ⟨y, hy, rfl⟩
         · exact Or.inr ⟨x, hx, by simp⟩
-        · refine Or.inr ⟨_, add_mem (mem_span_of_mem (mem_insert _ _)) (add_mem hx hy), ?_⟩
+        · refine Or.inr ⟨_, add_mem (mem_closure_of_mem (mem_insert _ _)) (add_mem hx hy), ?_⟩
           simp_rw [← add_assoc, add_right_comm a a x]
   · rintro (rfl | ⟨x, hx, rfl⟩)
     · simp
-    · simp_rw [span_insert, Submodule.mem_sup, mem_span_singleton] at hx
+    · simp_rw [insert_eq, closure_union, mem_sup, mem_closure_singleton] at hx
       rcases hx with ⟨_, ⟨n, rfl⟩, ⟨x, hx, rfl⟩⟩
       rw [add_left_comm]
-      refine add_mem (nsmul_mem (AddSubmonoid.mem_closure_of_mem ?_) _)
-        (AddSubmonoid.mem_closure_of_mem (vadd_mem_vadd_set hx))
+      refine add_mem (nsmul_mem (mem_closure_of_mem ?_) _)
+        (mem_closure_of_mem (vadd_mem_vadd_set hx))
       nth_rw 2 [← add_zero a]
       exact vadd_mem_vadd_set (zero_mem _)
 
 /-- Semilinear sets are closed under additive closure. -/
-theorem Semilinear.closure (hs : s.Semilinear) : (AddSubmonoid.closure s : Set α).Semilinear := by
+theorem Semilinear.closure (hs : s.Semilinear) : (closure s : Set α).Semilinear := by
   classical
   rcases hs with ⟨S, hS, rfl⟩
   induction S using Finset.induction with
@@ -221,14 +228,9 @@ theorem Semilinear.closure (hs : s.Semilinear) : (AddSubmonoid.closure s : Set �
     simp_rw [Finset.mem_insert, forall_eq_or_imp] at hS
     simpa [AddSubmonoid.closure_union, AddSubmonoid.coe_sup] using hS.1.closure.add (ih hS.2)
 
-/-- Semilinear sets are closed under additive closure. -/
-theorem Semilinear.span (hs : s.Semilinear) : (span ℕ s : Set α).Semilinear := by
-  convert hs.closure
-  rw [← coe_toAddSubmonoid, span_nat_eq_addSubmonoid_closure]
-
-/-- A linear set is proper if its `ℕ`-submodule generators (periods) are linear independent. -/
+/-- A linear set is proper if its submonoid generators (periods) are linear independent. -/
 def ProperLinear (s : Set α) :=
-  ∃ (a : α) (t : Finset α), LinearIndepOn ℕ id (t : Set α) ∧ s = a +ᵥ (span ℕ (t : Set α) : Set α)
+  ∃ (a : α) (t : Finset α), LinearIndepOn ℕ id (t : Set α) ∧ s = a +ᵥ (closure (t : Set α) : Set α)
 
 theorem ProperLinear.linear (hs : s.ProperLinear) : s.Linear := by
   rcases hs with ⟨a, t, _, rfl⟩
@@ -287,18 +289,17 @@ lemma Linear.proper_semilinear [IsCancelAdd α] (hs : s.Linear) : s.ProperSemili
     simp only [Function.id_def] at heq
     convert_to
       (⋃ j ∈ t', ⋃ k ∈ Finset.range (f j),
-        (a + k • j) +ᵥ (Submodule.span ℕ (t.erase j : Set α) : Set α)).ProperSemilinear
+        (a + k • j) +ᵥ (AddSubmonoid.closure (t.erase j : Set α) : Set α)).ProperSemilinear
     · ext x
       simp only [mem_vadd_set, SetLike.mem_coe]
       constructor
       · rintro ⟨x, hx, rfl⟩
-        rw [mem_span_finset] at hx
-        rcases hx with ⟨h, hh, rfl⟩
-        clear hh
-        induction hn : h i using Nat.strong_induction_on generalizing h with | _ n ih
+        rw [mem_closure_finset] at hx
+        rcases hx with ⟨h, -, rfl⟩
+        induction hn : h i using Nat.strong_induction_on generalizing h with | _ n ih'
         subst hn
         by_cases hh : ∀ j ∈ t', f j ≤ h j
-        · convert ih (h i - f i) (tsub_lt_self (hfi.trans_le (hh i hi)) hfi)
+        · convert ih' (h i - f i) (tsub_lt_self (hfi.trans_le (hh i hi)) hfi)
             (fun j => if hj : j ∈ t' then h j - f j else h j + g j) (by simp [hi]) using 1
           nth_rw 1 [← Finset.union_sdiff_of_subset ht']
           simp_rw [vadd_eq_add, add_left_cancel_iff, Finset.sum_union Finset.sdiff_disjoint.symm,
@@ -308,20 +309,20 @@ lemma Linear.proper_semilinear [IsCancelAdd α] (hs : s.Linear) : s.ProperSemili
             ← add_smul]
           refine congr_arg (· + _) (Finset.sum_congr rfl fun j hj => ?_)
           rw [tsub_add_cancel_of_le (hh j hj)]
-        · simp only [not_forall, not_le] at hh
+        · simp_rw [not_forall, not_le] at hh
           rcases hh with ⟨j, hj, hhj⟩
           simp only [mem_iUnion, Finset.mem_range, mem_vadd_set, SetLike.mem_coe, vadd_eq_add]
           refine ⟨j, hj, h j, hhj, ∑ x ∈ t.erase j, h x • x,
-            sum_mem fun x hx => (smul_mem _ _ (mem_span_of_mem hx)), ?_⟩
+            sum_mem fun x hx => (nsmul_mem (mem_closure_of_mem hx) _), ?_⟩
           rw [← Finset.sum_erase_add _ _ (ht' hj), ← add_assoc, add_right_comm]
       · simp only [mem_iUnion, Finset.mem_range, mem_vadd_set, SetLike.mem_coe, vadd_eq_add]
         rintro ⟨j, hj, k, hk, y, hy, rfl⟩
         refine ⟨k • j + y,
-          add_mem (smul_mem _ _ (mem_span_of_mem (ht' hj))) ((span_mono (t.erase_subset j)) hy), ?_⟩
+          add_mem (nsmul_mem (mem_closure_of_mem (ht' hj)) _)
+            ((closure_mono (t.erase_subset j)) hy), ?_⟩
         rw [add_assoc]
-    · exact ProperSemilinear.biUnion fun j hj =>
-        ProperSemilinear.biUnion fun k hk =>
-          ih _ (Finset.card_lt_card (Finset.erase_ssubset (ht' hj))) _ _ rfl
+    · exact .biUnion fun j hj => .biUnion fun k hk =>
+        ih _ (Finset.card_lt_card (Finset.erase_ssubset (ht' hj))) _ _ rfl
 
 /-- The **proper decomposition** of semilinear sets: every semilinear set is a finite union of
 proper linear sets. -/
