@@ -43,7 +43,7 @@ theorem isNat_zero (α) [AddMonoidWithOne α] : IsNat (Zero.zero : α) (nat_lit 
 @[norm_num Zero.zero] def evalZero : NormNumExt where eval {u α} e := do
   let sα ← inferAddMonoidWithOne α
   match e with
-  | ~q(Zero.zero) => return .isNat sα (mkRawNatLit 0) q(isNat_zero $α)
+  | ~q(Zero.zero) => return .isNat sα q(nat_lit 0) q(isNat_zero $α)
 
 theorem isNat_one (α) [AddMonoidWithOne α] : IsNat (One.one : α) (nat_lit 1) := ⟨Nat.cast_one.symm⟩
 
@@ -51,7 +51,7 @@ theorem isNat_one (α) [AddMonoidWithOne α] : IsNat (One.one : α) (nat_lit 1) 
 @[norm_num One.one] def evalOne : NormNumExt where eval {u α} e := do
   let sα ← inferAddMonoidWithOne α
   match e with
-  | ~q(One.one) => return .isNat sα (mkRawNatLit 1) q(isNat_one $α)
+  | ~q(One.one) => return .isNat sα q(nat_lit 1) q(isNat_one $α)
 
 theorem isNat_ofNat (α : Type u) [AddMonoidWithOne α] {a : α} {n : ℕ}
     (h : n = a) : IsNat a n := ⟨h.symm⟩
