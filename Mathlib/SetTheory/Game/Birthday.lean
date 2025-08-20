@@ -38,6 +38,7 @@ universe u
 
 open Ordinal
 
+set_option linter.deprecated false in
 namespace SetTheory
 
 open scoped NaturalOps PGame
@@ -103,7 +104,7 @@ theorem birthday_eq_zero {x : PGame} :
 theorem birthday_zero : birthday 0 = 0 := by simp [inferInstanceAs (IsEmpty PEmpty)]
 
 @[simp]
-theorem birthday_one : birthday 1 = 1 := by rw [birthday_def]; simp
+theorem birthday_one : birthday 1 = 1 := by rw [birthday_def]; simp [lsub_one]
 
 @[simp]
 theorem birthday_star : birthday star = 1 := by rw [birthday_def]; simp

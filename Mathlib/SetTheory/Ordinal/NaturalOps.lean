@@ -48,6 +48,7 @@ universe u v
 
 open Function Order Set
 
+set_option linter.deprecated false in
 noncomputable section
 
 /-! ### Basic casts between `Ordinal` and `NatOrdinal` -/
