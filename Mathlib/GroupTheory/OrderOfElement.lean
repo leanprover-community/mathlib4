@@ -683,6 +683,18 @@ lemma IsOfFinOrder.mem_zpowers_iff_mem_range_orderOf [DecidableEq G] (hx : IsOfF
     y ∈ zpowers x ↔ y ∈ (Finset.range (orderOf x)).image (x ^ ·) :=
   hx.mem_powers_iff_mem_zpowers.symm.trans hx.mem_powers_iff_mem_range_orderOf
 
+/-- See `Subgroup.closure_toSubmonoid_of_finite` for a version for finite groups. -/
+@[to_additive
+/-- See `AddSubgroup.closure_toAddSubmonoid_of_finite` for a version for finite additive groups. -/]
+lemma Subgroup.closure_toSubmonoid_of_isOfFinOrder {s : Set G} (hs : ∀ x ∈ s, IsOfFinOrder x) :
+    (closure s).toSubmonoid = Submonoid.closure s := by
+  refine le_antisymm ?_ (le_closure_toSubmonoid s)
+  rw [closure_toSubmonoid]
+  refine Submonoid.closure_le.mpr <| Set.union_subset Submonoid.subset_closure
+    fun x (hx : x⁻¹ ∈ s) ↦ ?_
+  apply Submonoid.powers_le.mpr (Submonoid.subset_closure hx)
+  simp [(hs _ hx).mem_powers_iff_mem_zpowers]
+
 /-- The equivalence between `Fin (orderOf x)` and `Subgroup.zpowers x`, sending `i` to `x ^ i`. -/
 @[to_additive /-- The equivalence between `Fin (addOrderOf a)` and
 `Subgroup.zmultiples a`, sending `i` to `i • a`. -/]
@@ -894,6 +906,14 @@ theorem zpowersEquivZPowers_apply (h : orderOf x = orderOf y) (n : ℕ) :
   rw [zpowersEquivZPowers, Equiv.trans_apply, Equiv.trans_apply, finEquivZPowers_symm_apply, ←
     Equiv.eq_symm_apply, finEquivZPowers_symm_apply]
   simp [h]
+
+/-- See `Subgroup.closure_toSubmonoid_of_isOfFinOrder` for a version with weaker assumptions. -/
+@[to_additive
+/-- See `AddSubgroup.closure_toAddSubmonoid_of_isOfFinOrder` for a version with weaker
+assumptions. -/]
+lemma Subgroup.closure_toSubmonoid_of_finite {s : Set G} :
+    (closure s).toSubmonoid = Submonoid.closure s :=
+  closure_toSubmonoid_of_isOfFinOrder <| by simp [isOfFinOrder_of_finite]
 
 end Finite
 
