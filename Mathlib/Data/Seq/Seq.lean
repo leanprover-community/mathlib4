@@ -313,7 +313,7 @@ section Bisim
 
 variable (R : Seq α → Seq α → Prop)
 
-local infixl:50 " ~ " => R
+local infix :50 " ~ " => R
 
 /-- Bisimilarity relation over `Option` of `Seq1 α` -/
 def BisimO : Option (Seq1 α) → Option (Seq1 α) → Prop
