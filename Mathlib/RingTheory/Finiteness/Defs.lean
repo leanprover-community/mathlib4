@@ -47,13 +47,13 @@ theorem fg_def {N : Submodule R M} : N.FG ↔ ∃ S : Set M, S.Finite ∧ span R
     exact ⟨t, rfl⟩⟩
 
 theorem fg_iff_addSubmonoid_fg (P : Submodule ℕ M) : P.FG ↔ P.toAddSubmonoid.FG :=
-  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_nat_eq_addSubmonoid_closure] using hS⟩, fun ⟨S, hS⟩ =>
-    ⟨S, by simpa [← span_nat_eq_addSubmonoid_closure] using hS⟩⟩
+  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_nat_eq_addSubmonoidClosure] using hS⟩, fun ⟨S, hS⟩ =>
+    ⟨S, by simpa [← span_nat_eq_addSubmonoidClosure] using hS⟩⟩
 
 theorem fg_iff_addSubgroup_fg {G : Type*} [AddCommGroup G] (P : Submodule ℤ G) :
     P.FG ↔ P.toAddSubgroup.FG :=
-  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_int_eq_addSubgroup_closure] using hS⟩, fun ⟨S, hS⟩ =>
-    ⟨S, by simpa [← span_int_eq_addSubgroup_closure] using hS⟩⟩
+  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_int_eq_addSubgroupClosure] using hS⟩, fun ⟨S, hS⟩ =>
+    ⟨S, by simpa [← span_int_eq_addSubgroupClosure] using hS⟩⟩
 
 @[deprecated (since := "2025-08-20")] alias fg_iff_add_subgroup_fg := fg_iff_addSubgroup_fg
 
