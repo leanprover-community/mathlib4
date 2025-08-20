@@ -56,8 +56,8 @@ variable {H : SimpleGraph V} [DecidableRel H.Adj]
 
 lemma IsTuranMaximal.le_iff_eq (hG : G.IsTuranMaximal r) (hH : H.CliqueFree (r + 1)) :
     G ≤ H ↔ G = H :=
-  ⟨fun hGH ↦ edgeFinset_inj.1 <| eq_of_subset_of_card_le
-    (edgeFinset_subset_edgeFinset.2 hGH) (hG.2 hH), le_of_eq⟩
+  ⟨fun hGH ↦ edgeFinset_inj.1 <|
+    eq_of_subset_of_card_le (edgeFinset_subset_edgeFinset.2 hGH) (hG.2 hH), le_of_eq⟩
 
 /-- The canonical `r + 1`-cliquefree Turán graph on `n` vertices. -/
 def turanGraph (n r : ℕ) : SimpleGraph (Fin n) where Adj v w := v % r ≠ w % r
@@ -87,10 +87,10 @@ theorem turanGraph_cliqueFree (hr : 0 < r) : (turanGraph n r).CliqueFree (r + 1)
   by_contra h
   rw [not_isEmpty_iff] at h
   obtain ⟨f, ha⟩ := h
-  simp only [turanGraph, top_adj] at ha
+  simp_rw [turanGraph_adj] at ha
   obtain ⟨x, y, d, c⟩ := exists_ne_map_eq_of_card_lt (fun x ↦
     (⟨(f x).1 % r, Nat.mod_lt _ hr⟩ : Fin r)) (by simp)
-  simp only [Fin.mk.injEq] at c
+  rw [Fin.mk.injEq] at c
   exact absurd c ((@ha x y).mpr d)
 
 /-- An `r + 1`-cliquefree Turán-maximal graph is _not_ `r`-cliquefree
@@ -145,14 +145,14 @@ lemma not_adj_trans (h : G.IsTuranMaximal r) (hts : ¬G.Adj t s) (hsu : ¬G.Adj 
     card_edgeFinset_replaceVertex_of_not_adj _ hst, dst, Nat.add_sub_cancel]
   have l1 : (G.replaceVertex s t).degree s = G.degree s := by
     unfold degree; congr 1; ext v
-    simp only [mem_neighborFinset]
+    simp_rw [mem_neighborFinset]
     by_cases eq : v = t
     · simpa only [eq, not_adj_replaceVertex_same, false_iff]
     · rw [G.adj_replaceVertex_iff_of_ne s nst eq]
   have l2 : (G.replaceVertex s t).degree u = G.degree u - 1 := by
     rw [degree, degree, ← card_singleton t, ← card_sdiff (by simp [h.symm])]
     congr 1; ext v
-    simp only [mem_neighborFinset, mem_sdiff, mem_singleton, replaceVertex]
+    simp_rw [mem_neighborFinset, mem_sdiff, mem_singleton, replaceVertex]
     split_ifs <;> simp_all [adj_comm]
   have l3 : 0 < G.degree u := by rw [G.degree_pos_iff_exists_adj u]; use t, h.symm
   omega
@@ -260,7 +260,7 @@ theorem nonempty_iso_turanGraph :
   obtain ⟨zm, zp⟩ := h.isEquipartition.exists_partPreservingEquiv
   use (Equiv.subtypeUnivEquiv mem_univ).symm.trans zm
   intro a b
-  simp_rw [turanGraph, Equiv.trans_apply, Equiv.subtypeUnivEquiv_symm_apply]
+  simp_rw [turanGraph_adj, Equiv.trans_apply, Equiv.subtypeUnivEquiv_symm_apply]
   have := zp ⟨a, mem_univ a⟩ ⟨b, mem_univ b⟩
   rw [← h.not_adj_iff_part_eq] at this
   rw [← not_iff_not, not_ne_iff, this, card_parts]
