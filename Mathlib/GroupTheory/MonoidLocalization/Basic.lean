@@ -1023,6 +1023,30 @@ theorem map_map {A : Type*} [CommMonoid A] {U : Submonoid A} {R} [CommMonoid R]
   rw [← f.map_comp_map (k := k) hy j hl]
   simp only [MonoidHom.coe_comp, comp_apply]
 
+@[to_additive] theorem map_injective_of_surjOn_or_injective
+    (or : (S : Set M).SurjOn g T ∨ Injective k) (hg : Injective g) :
+    Injective (f.map hy k) := fun z w hizw ↦ by
+  set i := f.map hy k
+  have ifkg (a : M) : i (f a) = k (g a) := f.map_eq hy a
+  let ⟨z', w', x, hxz, hxw⟩ := surj₂ f z w
+  have : k (g z') = k (g w') := by rw [← ifkg, ← ifkg, ← hxz, ← hxw, map_mul, map_mul, hizw]
+  obtain surj | inj := or
+  · have ⟨⟨c, hc'⟩, eq⟩ := k.exists_of_eq this
+    obtain ⟨c, hc, rfl⟩ := surj hc'
+    simp_rw [← map_mul, hg.eq_iff] at eq
+    rw [← (f.map_units x).mul_left_inj, hxz, hxw, f.eq_iff_exists]
+    exact ⟨⟨c, hc⟩, eq⟩
+  · apply (f.map_units x).mul_right_cancel
+    rw [hxz, hxw, hg (inj this)]
+
+@[to_additive] theorem map_surjective_of_surjOn (surj : (S : Set M).SurjOn g T)
+    (hg : Surjective g) : Surjective (f.map hy k) := fun z ↦ by
+  obtain ⟨y, ⟨t, ht⟩, rfl⟩ := k.mk'_surjective z
+  obtain ⟨s, hs, rfl⟩ := surj ht
+  obtain ⟨x, rfl⟩ := hg y
+  use f.mk' x ⟨s, hs⟩
+  rw [map_mk']
+
 /-- Given an injective `CommMonoid` homomorphism `g : M →* P`, and a submonoid `S ⊆ M`,
 the induced monoid homomorphism from the localization of `M` at `S` to the
 localization of `P` at `g S`, is injective.
@@ -1031,16 +1055,8 @@ localization of `P` at `g S`, is injective.
 submonoid `S ⊆ M`, the induced monoid homomorphism from the localization of `M` at `S`
 to the localization of `P` at `g S`, is injective. -/]
 theorem map_injective_of_injective (hg : Injective g) (k : LocalizationMap (S.map g) Q) :
-    Injective (map f (apply_coe_mem_map g S) k) := fun z w hizw ↦ by
-  set i := map f (apply_coe_mem_map g S) k
-  have ifkg (a : M) : i (f a) = k (g a) := map_eq f (apply_coe_mem_map g S) a
-  let ⟨z', w', x, hxz, hxw⟩ := surj₂ f z w
-  have : k (g z') = k (g w') := by
-    rw [← ifkg, ← ifkg, ← hxz, ← hxw, map_mul, map_mul, hizw]
-  obtain ⟨⟨_, c, hc, rfl⟩, eq⟩ := k.exists_of_eq this
-  simp_rw [← map_mul, hg.eq_iff] at eq
-  rw [← (f.map_units x).mul_left_inj, hxz, hxw, f.eq_iff_exists]
-  exact ⟨⟨c, hc⟩, eq⟩
+    Injective (map f (apply_coe_mem_map g S) k) :=
+  f.map_injective_of_surjOn_or_injective _ (.inl <| Set.surjOn_image ..) hg
 
 /-- Given a surjective `CommMonoid` homomorphism `g : M →* P`, and a submonoid `S ⊆ M`,
 the induced monoid homomorphism from the localization of `M` at `S` to the
@@ -1050,11 +1066,8 @@ localization of `P` at `g S`, is surjective.
 submonoid `S ⊆ M`, the induced monoid homomorphism from the localization of `M` at `S`
 to the localization of `P` at `g S`, is surjective. -/]
 theorem map_surjective_of_surjective (hg : Surjective g) (k : LocalizationMap (S.map g) Q) :
-    Surjective (map f (apply_coe_mem_map g S) k) := fun z ↦ by
-  obtain ⟨y, ⟨y', s, hs, rfl⟩, rfl⟩ := k.mk'_surjective z
-  obtain ⟨x, rfl⟩ := hg y
-  use f.mk' x ⟨s, hs⟩
-  rw [map_mk']
+    Surjective (map f (apply_coe_mem_map g S) k) :=
+  f.map_surjective_of_surjOn _ (Set.surjOn_image ..) hg
 
 end LocalizationMap
 
@@ -1478,7 +1491,8 @@ variable {M N : Type*} [CommMonoid M] {S : Submonoid M} [CommMonoid N]
     Injective f ↔ IsCancelMul M := by
   simp [injective_iff, isCancelMul_iff_forall_isRegular]
 
-theorem map_isRegular (f : LocalizationMap S N) {m : M} (hm : IsRegular m) : IsRegular (f m) := by
+@[to_additive] theorem map_isRegular (f : LocalizationMap S N) {m : M}
+    (hm : IsRegular m) : IsRegular (f m) := by
   refine (Commute.isRegular_iff (Commute.all _)).mpr fun n₁ n₂ eq ↦ ?_
   have ⟨ms₁, eq₁⟩ := f.surj n₁
   have ⟨ms₂, eq₂⟩ := f.surj n₂
@@ -1490,12 +1504,28 @@ theorem map_isRegular (f : LocalizationMap S N) {m : M} (hm : IsRegular m) : IsR
   simp_rw [mul_left_comm _ m] at eq
   exact eq.imp fun _ ↦ (hm.1 ·)
 
-theorem isCancelMul [IsCancelMul M] (f : LocalizationMap S N) : IsCancelMul N := by
+@[to_additive] theorem isCancelMul [IsCancelMul M] (f : LocalizationMap S N) : IsCancelMul N := by
   simp_rw [isCancelMul_iff_forall_isRegular, Commute.isRegular_iff (Commute.all _),
     ← Commute.isRightRegular_iff (Commute.all _)]
   intro n
   have ⟨ms, eq⟩ := f.surj n
   exact (eq ▸ f.map_isRegular (isCancelMul_iff_forall_isRegular.mp ‹_› ms.1)).2.of_mul
+
+@[to_additive] instance [IsCancelMul M] : IsCancelMul (Localization S) :=
+  (Localization.monoidOf S).isCancelMul
+
+@[to_additive] instance [IsCancelMul M] [Nontrivial M] : Nontrivial (Localization S) :=
+  (injective_iff <| Localization.monoidOf S).mpr (fun _ _ ↦ .all _) |>.nontrivial
+
+@[to_additive] theorem subsingleton_of_subsingleton (f : LocalizationMap S N) [Subsingleton M] :
+    Subsingleton N where
+  allEq x y := by
+    obtain ⟨mx, sx, rfl⟩ := f.mk'_surjective x
+    obtain ⟨my, sy, rfl⟩ := f.mk'_surjective y
+    exact congr(f.mk' $(Subsingleton.elim ..) $(Subsingleton.elim ..))
+
+instance [Subsingleton M] : Subsingleton (Localization S) :=
+  (Localization.monoidOf S).subsingleton_of_subsingleton
 
 end Submonoid.LocalizationMap
 

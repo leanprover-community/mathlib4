@@ -17,7 +17,7 @@ that requires additional imports.
 namespace Submonoid.IsLocalizationMap
 
 open Finset in
-@[to_additive] theorem Submonoid.IsLocalizationMap.surj_of_finite {M N F ι : Type*} [Finite ι]
+@[to_additive] theorem surj_of_finite {M N F ι : Type*} [Finite ι]
     [CommMonoid M] [CommMonoid N] [FunLike F M N] [MulHomClass F M N] {f : F}
     {S : Submonoid M} (hf : IsLocalizationMap S f) (n : ι → N) :
     ∃ (s : S) (x : ι → M), ∀ i, n i * f s = f (x i) := by
@@ -27,7 +27,7 @@ open Finset in
   refine ⟨∏ i : ι, (x (n i)).2, fun i ↦ (x (n i)).1 * ∏ j ∈ univ.erase i, (x (n j)).2, fun i ↦ ?_⟩
   rw [← univ.mul_prod_erase _ (mem_univ i), S.coe_mul, map_mul, ← mul_assoc, hx, map_mul]
 
-@[to_additive] protected theorem Submonoid.IsLocalizationMap.pi {ι : Type*} {M N : ι → Type*}
+@[to_additive] protected theorem pi {ι : Type*} {M N : ι → Type*}
     [∀ i, CommMonoid (M i)] [∀ i, CommMonoid (N i)] (S : Π i, Submonoid (M i))
     {f : Π i, M i → N i} (hf : ∀ i, IsLocalizationMap (S i) (f i)) :
     IsLocalizationMap (Submonoid.pi .univ S) (Pi.map f) where

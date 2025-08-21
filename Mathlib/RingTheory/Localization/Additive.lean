@@ -5,7 +5,6 @@ Authors: Junyan Xu
 -/
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Nonneg.Ring
-import Mathlib.LinearAlgebra.InvariantBasisNumber
 import Mathlib.GroupTheory.MonoidLocalization.Lemmas
 import Mathlib.RingTheory.Ideal.Defs
 import Mathlib.RingTheory.IsTensorProduct
@@ -52,6 +51,7 @@ section DistribSMul
 
 variable [DistribSMul R M] (h : ∀ r : R, ∀ s ∈ S, r • s ∈ S)
 
+/-- Additive localizations inherit distributive scalar multiplications. -/
 abbrev instDistribSMul : DistribSMul R (AddLocalization S) where
   smul r x := x.liftOn (fun m s ↦ .mk (r • m) ⟨_, h r s s.2⟩) fun {m₁ m₂ s₁ s₂} rel ↦
     have ⟨c, eq⟩ := r_iff_exists.mp rel
@@ -69,6 +69,7 @@ theorem smul_def (r : R) (m : M) (s : S) : letI := instDistribSMul S h
 
 end DistribSMul
 
+/-- Additive localizations inherit distributive multiplication actions. -/
 abbrev instDstribMulAction [Monoid R] [DistribMulAction R M] (h : ∀ r : R, ∀ s ∈ S, r • s ∈ S) :
     DistribMulAction R (AddLocalization S) where
   __ := instDistribSMul S h
@@ -95,6 +96,7 @@ variable [AddCommMonoid R] (M : AddSubmonoid R) [Mul R] [LeftDistribClass R] [Ri
 variable (hl : ∀ r : R, ∀ s ∈ M, r * s ∈ M) (hr : ∀ r : R, ∀ s ∈ M, s * r ∈ M)
 include hl hr
 
+/-- Additive localizations inherit multiplication. -/
 abbrev instMul : Mul (AddLocalization M) where
   mul x y := x.liftOn₂ y (fun rx sx ry sy ↦ .mk (rx * ry + sx * sy)
     ⟨rx * sy + sx * ry, add_mem (hl _ _ sy.2) (hr _ _ sx.2)⟩)
@@ -151,6 +153,7 @@ section NonUnitalNonAssocSemiring
 variable [NonUnitalNonAssocSemiring R] (M : AddSubmonoid R)
 variable (hl : ∀ r : R, ∀ s ∈ M, r * s ∈ M) (hr : ∀ r : R, ∀ s ∈ M, s * r ∈ M)
 
+/-- Additive localizations inherit non-unital non-associative semiring structures. -/
 abbrev instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (AddLocalization M) where
   __ := instMul M hl hr
   __ := instLeftDistribClass M hl hr
@@ -185,6 +188,7 @@ section NonUnitalSemiring
 variable [NonUnitalSemiring R] (M : AddSubmonoid R)
   (hl : ∀ r : R, ∀ s ∈ M, r * s ∈ M) (hr : ∀ r : R, ∀ s ∈ M, s * r ∈ M)
 
+/-- Additive localizations inherit non-unital semiring structures. -/
 abbrev instNonUnitalSemiring : NonUnitalSemiring (AddLocalization M) where
   __ := instNonUnitalNonAssocSemiring M hl hr
   mul_assoc x := by
@@ -193,7 +197,7 @@ abbrev instNonUnitalSemiring : NonUnitalSemiring (AddLocalization M) where
     simp only [mk_mul, mul_add, add_mul]
     congr 1 <;> ac_rfl
 
-abbrev instIsScalarTower :
+instance instIsScalarTower :
     letI := instDistribSMul M hl
     letI := instNonUnitalSemiring M hl hr
     IsScalarTower R (AddLocalization M) (AddLocalization M) :=
@@ -210,11 +214,36 @@ section NonAssocSemiring
 variable [NonAssocSemiring R] (M : AddSubmonoid R)
 variable (hl : ∀ r : R, ∀ s ∈ M, r * s ∈ M) (hr : ∀ r : R, ∀ s ∈ M, s * r ∈ M)
 
+/-- Additive localizations inherit non-associative semiring structures. -/
 abbrev instNonAssocSemiring : NonAssocSemiring (AddLocalization M) where
   __ := instNonUnitalNonAssocSemiring M hl hr
   one := mk 1 0
   one_mul x := x.rec (fun r s ↦ (mk_mul ..).trans <| by simp) (by intros; rfl)
   mul_one x := x.rec (fun r s ↦ (mk_mul ..).trans <| by simp) (by intros; rfl)
+
+theorem smul_one_eq_mk_zero (x : R) :
+    letI := instDistribSMul M hl
+    letI := instNonAssocSemiring M hl hr
+    x • (1 : AddLocalization M) = mk x 0 :=
+  (smul_def ..).trans <| congr(mk $(mul_one x) $(Subtype.ext <| mul_zero x))
+
+theorem isLocalizationMap_smul_one :
+    letI := instDistribSMul M hl
+    letI := instNonAssocSemiring M hl hr
+    M.IsLocalizationMap fun r ↦ r • (1 : AddLocalization M) := by
+  simp_rw [smul_one_eq_mk_zero]; exact (addMonoidOf M).isLocalizationMap
+
+include hr in
+theorem instFaithfulSMul (hM : ∀ x ∈ M, IsAddRegular x) :
+    letI := instDistribSMul M hl
+    FaithfulSMul R (AddLocalization M) :=
+  letI := instDistribSMul M hl
+  { eq_of_smul_eq_smul {_ _} eq := (addMonoidOf M).injective_iff.mpr hM <| by
+      convert ← eq 1 <;> apply smul_one_eq_mk_zero _ _ hr }
+
+instance [IsCancelAdd R] : letI := instDistribSMul M hl
+    FaithfulSMul R (AddLocalization M) :=
+  instFaithfulSMul _ _ hr fun _ _ ↦ .all _
 
 /-- The ring homomorphism from a semiring to its additive localization. -/
 @[simps] def ringHom : letI := instNonAssocSemiring M hl hr
@@ -225,6 +254,7 @@ abbrev instNonAssocSemiring : NonAssocSemiring (AddLocalization M) where
 
 end NonAssocSemiring
 
+/-- Additive localizations inherit semiring structures. -/
 abbrev instSemiring [Semiring R] (M : AddSubmonoid R)
     (hl : ∀ r : R, ∀ s ∈ M, r * s ∈ M) (hr : ∀ r : R, ∀ s ∈ M, s * r ∈ M) :
     Semiring (AddLocalization M) where
@@ -235,11 +265,16 @@ instance [Semiring R] (I : Ideal R) [I.IsTwoSided] :
     Semiring (AddLocalization I.toAddSubmonoid) :=
   instSemiring _ I.mul_mem_left fun _ _ ↦ I.mul_mem_right _
 
+instance [Semiring R] (I : Ideal R) [I.IsTwoSided] :
+    IsScalarTower R (AddLocalization I.toAddSubmonoid) (AddLocalization I.toAddSubmonoid) :=
+  instIsScalarTower _ I.mul_mem_left fun _ _ ↦ I.mul_mem_right _
+
 /-- The ring homomorphism from a semiring to its additive localization at an ideal. -/
 @[simps!] abbrev ringHomᵢ [Semiring R] (I : Ideal R) [I.IsTwoSided] :
     R →+* AddLocalization I.toAddSubmonoid :=
   ringHom _ I.mul_mem_left fun _ _ ↦ I.mul_mem_right _
 
+/-- Additive localizations inherit non-unital non-associative commutative semiring structures. -/
 abbrev instNonUnitalNonAssocCommSemiring [NonUnitalNonAssocCommSemiring R] (M : AddSubmonoid R)
     (h : ∀ r : R, ∀ s ∈ M, r * s ∈ M) :
     NonUnitalNonAssocCommSemiring (AddLocalization M) where
@@ -247,12 +282,14 @@ abbrev instNonUnitalNonAssocCommSemiring [NonUnitalNonAssocCommSemiring R] (M : 
   mul_comm x := x.rec (fun rx sx y ↦ y.rec (fun ry sy ↦ by
     simp_rw [mk_mul, mul_comm, add_comm]) <| by intros; rfl) (by intros; rfl)
 
+/-- Additive localizations inherit non-unital commutative semiring structures. -/
 abbrev instNonUnitalCommSemiring [NonUnitalCommSemiring R] (M : AddSubmonoid R)
     (h : ∀ r : R, ∀ s ∈ M, r * s ∈ M) :
     NonUnitalCommSemiring (AddLocalization M) where
   __ := instNonUnitalSemiring M h (by simpa [mul_comm] using h)
   __ := let _ : NonUnitalNonAssocCommSemiring R := {}; instNonUnitalNonAssocCommSemiring M h
 
+/-- Additive localizations inherit commutative semiring structures. -/
 abbrev instCommSemiring [CommSemiring R] (M : AddSubmonoid R) (h : ∀ r : R, ∀ s ∈ M, r * s ∈ M) :
     CommSemiring (AddLocalization M) where
   __ := instNonUnitalCommSemiring M h
@@ -267,13 +304,19 @@ instance [CommSemiring R] (I : Ideal R) : Algebra R (AddLocalization I.toAddSubm
   commutes' _ := mul_comm _
   smul_def' r x := x.rec (fun _ _ ↦ by simp [← mk_zero_eq_addMonoidOf_mk, mk_mul]; rfl) fun _ ↦ rfl
 
+variable (R)
+
 instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocRing (AddLocalization.Top R) where
   __ := instNonUnitalNonAssocSemiring ⊤ (fun _ _ _ ↦ ⟨⟩) fun _ _ _ ↦ ⟨⟩
   __ : AddCommGroup _ := inferInstance
 
+/-- The non-unital ring homomorphism from a semiring to its Grothendieck ring. -/
 protected abbrev Top.nonUnitalRingHom [NonUnitalNonAssocSemiring R] :
     R →ₙ+* AddLocalization.Top R :=
   nonUnitalRingHom ⊤ (fun _ _ _ ↦ ⟨⟩) fun _ _ _ ↦ ⟨⟩
+
+instance [NonUnitalNonAssocSemiring R] : DistribSMul R (AddLocalization.Top R) :=
+  instDistribSMul ⊤ fun _ _ _ ↦ ⟨⟩
 
 instance [NonUnitalSemiring R] : NonUnitalRing (AddLocalization.Top R) where
   __ := instNonUnitalSemiring ⊤ (fun _ _ _ ↦ ⟨⟩) fun _ _ _ ↦ ⟨⟩
@@ -283,6 +326,11 @@ instance [NonAssocSemiring R] : NonAssocRing (AddLocalization.Top R) where
   __ := instNonAssocSemiring ⊤ (fun _ _ _ ↦ ⟨⟩) fun _ _ _ ↦ ⟨⟩
   __ : AddCommGroup _ := inferInstance
 
+theorem Top.isLocalizationMap_smul_one [NonAssocSemiring R] :
+    (⊤ : AddSubmonoid R).IsLocalizationMap fun r ↦ r • (1 : AddLocalization.Top R) :=
+  AddLocalization.isLocalizationMap_smul_one ⊤ _ _
+
+/-- The ring homomorphism from a semiring to its Grothendieck ring. -/
 protected abbrev Top.ringHom [NonAssocSemiring R] : R →+* AddLocalization.Top R :=
   ringHom ⊤ (fun _ _ _ ↦ ⟨⟩) fun _ _ _ ↦ ⟨⟩
 
@@ -319,7 +367,7 @@ protected theorem map_one [AddCommMonoid R] [MulOneClass R] [AddCommMonoid S] [M
 
 section CompatibleSMul
 
-variable {N₁ N₂ : Type*} [Semiring S] [SMul R S]
+variable (N₁ N₂ : Type*) [Semiring S] [SMul R S]
   [AddCommMonoid N₁] [AddCommMonoid N₂] [Module S N₁] [Module S N₂]
 
 theorem linearMapCompatibleSMul [Semiring R] [Module R N₁] [Module R N₂]
@@ -425,7 +473,7 @@ section Top
 variable {M G : Type*} [AddCommMonoid M] [AddCommGroup G]
 
 open TensorProduct in
-/-- The localization of an additive monoid at the top submonoid is additively isomorphic to
+/-- The Grothendieck group of an additive monoid is isomorphic to
 its tensor product with `ℤ` over `ℕ`. -/
 noncomputable def LocalizationMap.addMonoidHomTensor (f : LocalizationMap (⊤ : AddSubmonoid M) G) :
     G ≃+ ℤ ⊗[ℕ] M where
