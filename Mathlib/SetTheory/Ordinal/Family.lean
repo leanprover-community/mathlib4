@@ -326,22 +326,28 @@ theorem unbounded_range_of_le_iSup {α β : Type u} (r : α → α → Prop) [Is
       (Ordinal.iSup_le fun y => ((typein_lt_typein r).2 <| hx _ <| mem_range_self y).le)
       (typein_lt_type r x)
 
+set_option linter.deprecated false in
+@[deprecated Order.IsNormal.map_iSup (since := "2025-08-21")]
 theorem IsNormal.map_iSup_of_bddAbove {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
     {ι : Type*} (g : ι → Ordinal.{u}) (hg : BddAbove (range g))
     [Nonempty ι] : f (⨆ i, g i) = ⨆ i, f (g i) :=
   Order.IsNormal.map_iSup H hg
 
+set_option linter.deprecated false in
+@[deprecated Order.IsNormal.map_iSup (since := "2025-08-21")]
 theorem IsNormal.map_iSup {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
     {ι : Type w} (g : ι → Ordinal.{u}) [Small.{u} ι] [Nonempty ι] :
     f (⨆ i, g i) = ⨆ i, f (g i) :=
   H.map_iSup_of_bddAbove g (bddAbove_of_small _)
 
+set_option linter.deprecated false in
+@[deprecated Order.IsNormal.map_sSup (since := "2025-08-21")]
 theorem IsNormal.map_sSup_of_bddAbove {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
-    {s : Set Ordinal.{u}} (hs : BddAbove s) (hn : s.Nonempty) : f (sSup s) = sSup (f '' s) := by
-  have := hn.to_subtype
-  rw [sSup_eq_iSup', sSup_image', H.map_iSup_of_bddAbove]
-  rwa [Subtype.range_coe_subtype, setOf_mem_eq]
+    {s : Set Ordinal.{u}} (hs : BddAbove s) (hn : s.Nonempty) : f (sSup s) = sSup (f '' s) :=
+  Order.IsNormal.map_sSup H hn hs
 
+set_option linter.deprecated false in
+@[deprecated Order.IsNormal.map_sSup (since := "2025-08-21")]
 theorem IsNormal.map_sSup {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
     {s : Set Ordinal.{u}} (hn : s.Nonempty) [Small.{u} s] : f (sSup s) = sSup (f '' s) :=
   H.map_sSup_of_bddAbove (bddAbove_of_small s) hn
@@ -353,6 +359,8 @@ theorem IsNormal.sup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNormal
     (g : ι → Ordinal.{max u v}) [Nonempty ι] : f (sup.{_, v} g) = sup.{_, w} (f ∘ g) :=
   H.map_iSup g
 
+set_option linter.deprecated false in
+@[deprecated Order.IsNormal.map_sSup (since := "2025-08-21")]
 theorem IsNormal.apply_of_isSuccLimit {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f) {o : Ordinal}
     (ho : IsSuccLimit o) : f o = ⨆ a : Iio o, f a := by
   have : Nonempty (Iio o) := ⟨0, ho.bot_lt⟩
@@ -361,6 +369,7 @@ theorem IsNormal.apply_of_isSuccLimit {f : Ordinal.{u} → Ordinal.{v}} (H : IsN
 @[deprecated (since := "2025-07-08")]
 alias IsNormal.apply_of_isLimit := IsNormal.apply_of_isSuccLimit
 
+-- TODO: prove `Order.IsNormal ord`.
 theorem sSup_ord {s : Set Cardinal.{u}} (hs : BddAbove s) : (sSup s).ord = sSup (ord '' s) :=
   eq_of_forall_ge_iff fun a => by
     rw [csSup_le_iff'
@@ -368,6 +377,7 @@ theorem sSup_ord {s : Set Cardinal.{u}} (hs : BddAbove s) : (sSup s).ord = sSup 
       ord_le, csSup_le_iff' hs]
     simp [ord_le]
 
+-- TODO: prove `Order.IsNormal ord`.
 theorem iSup_ord {ι} {f : ι → Cardinal} (hf : BddAbove (range f)) :
     (iSup f).ord = ⨆ i, (f i).ord := by
   unfold iSup
@@ -910,15 +920,21 @@ theorem blsub_comp {o o' : Ordinal.{max u v}} {f : ∀ a < o, Ordinal.{max u v w
   @bsup_comp.{u, v, w} o _ (fun a ha => succ (f a ha))
     (fun {_ _} _ _ h => succ_le_succ_iff.2 (hf _ _ h)) g hg
 
+set_option linter.deprecated false in
+@[deprecated Order.IsNormal.apply_of_isSuccLimit (since := "2025-08-21")]
 theorem IsNormal.bsup_eq {f : Ordinal.{u} → Ordinal.{max u v}} (H : IsNormal f) {o : Ordinal.{u}}
     (h : IsSuccLimit o) : (Ordinal.bsup.{_, v} o fun x _ => f x) = f o := by
   rw [← IsNormal.bsup.{u, u, v} H (fun x _ => x) h.ne_bot, bsup_id_limit fun _ ↦ h.succ_lt]
 
+set_option linter.deprecated false in
+@[deprecated Order.IsNormal.apply_of_isSuccLimit (since := "2025-08-21")]
 theorem IsNormal.blsub_eq {f : Ordinal.{u} → Ordinal.{max u v}} (H : IsNormal f) {o : Ordinal.{u}}
     (h : IsSuccLimit o) : (blsub.{_, v} o fun x _ => f x) = f o := by
   rw [← IsNormal.bsup_eq.{u, v} H h, bsup_eq_blsub_of_lt_succ_limit h]
   exact fun a _ => H.strictMono (lt_succ a)
 
+set_option linter.deprecated false in
+@[deprecated Order.IsNormal.of_succ_lt (since := "2025-08-21")]
 theorem isNormal_iff_lt_succ_and_bsup_eq {f : Ordinal.{u} → Ordinal.{max u v}} :
     IsNormal f ↔ (∀ a, f a < f (succ a)) ∧
       ∀ o, IsSuccLimit o → (bsup.{_, v} o fun x _ => f x) = f o :=
@@ -927,6 +943,8 @@ theorem isNormal_iff_lt_succ_and_bsup_eq {f : Ordinal.{u} → Ordinal.{max u v}}
       rw [← h₂ _ ho]
       simpa [IsLUB, upperBounds, lowerBounds, IsLeast, bsup_le_iff] using le_bsup _⟩
 
+set_option linter.deprecated false in
+@[deprecated Order.IsNormal.of_succ_lt (since := "2025-08-21")]
 theorem isNormal_iff_lt_succ_and_blsub_eq {f : Ordinal.{u} → Ordinal.{max u v}} :
     IsNormal f ↔ (∀ a, f a < f (succ a)) ∧
       ∀ o, IsSuccLimit o → (blsub.{_, v} o fun x _ => f x) = f o := by
@@ -935,6 +953,8 @@ theorem isNormal_iff_lt_succ_and_blsub_eq {f : Ordinal.{u} → Ordinal.{max u v}
   constructor <;> intro H o ho <;> have := H o ho <;>
     rwa [← bsup_eq_blsub_of_lt_succ_limit ho fun a _ => h a] at *
 
+set_option linter.deprecated false in
+@[deprecated Order.IsNormal.ext (since := "2025-08-21")]
 theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : IsNormal f)
     (hg : IsNormal g) : f = g ↔ f 0 = g 0 ∧ ∀ a, f a = g a → f (succ a) = g (succ a) :=
   Order.IsNormal.ext hf hg
@@ -982,8 +1002,14 @@ namespace Ordinal
 theorem iSup_natCast : iSup Nat.cast = ω :=
   (Ordinal.iSup_le fun n => (nat_lt_omega0 n).le).antisymm <| omega0_le.2 <| Ordinal.le_iSup _
 
+theorem _root_.Order.IsNormal.apply_omega0 {f : Ordinal.{u} → Ordinal.{v}} (hf : Order.IsNormal f) :
+  ⨆ n : ℕ, f n = f ω := by rw [← iSup_natCast, hf.map_iSup (bddAbove_of_small _)]
+
+set_option linter.deprecated false in
+@[deprecated Order.IsNormal.apply_omega0 (since := "2025-08-21")]
 theorem IsNormal.apply_omega0 {f : Ordinal.{u} → Ordinal.{v}} (hf : IsNormal f) :
-    ⨆ n : ℕ, f n = f ω := by rw [← iSup_natCast, hf.map_iSup]
+    ⨆ n : ℕ, f n = f ω :=
+  Order.IsNormal.apply_omega0 hf
 
 @[simp]
 theorem iSup_add_nat (o : Ordinal) : ⨆ n : ℕ, o + n = o + ω :=
