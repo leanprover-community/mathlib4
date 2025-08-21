@@ -494,7 +494,6 @@ theorem closed_complemented_range_of_isCompl_of_ker_eq_bot {F : Type*} [NormedAd
     IsClosed (LinearMap.range f : Set F) := by
   haveI : CompleteSpace G := hG.completeSpace_coe
   let g := coprodSubtypeLEquivOfIsCompl f h hker
-  -- Porting note: was `rw [congr_arg coe ...]`
   rw [range_eq_map_coprodSubtypeLEquivOfIsCompl f h hker]
   apply g.toHomeomorph.isClosed_image.2
   exact isClosed_univ.prod isClosed_singleton
