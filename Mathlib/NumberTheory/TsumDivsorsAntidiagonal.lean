@@ -64,12 +64,10 @@ lemma sigmaAntidiagonalEquivProd_symm_apply_snd (x : ℕ+ × ℕ+) :
 
 section tsum
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [NormSMulClass ℤ 𝕜]
 
-lemma natCast_norm [NormSMulClass ℤ 𝕜] (a : ℕ) : ‖(a : 𝕜)‖ = a := by
-  simpa using norm_natCast_eq_mul_norm_one 𝕜 a
-
-lemma summable_norm_pow_mul_geometric_div_one_sub [CompleteSpace 𝕜] (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
+omit [NormSMulClass ℤ 𝕜] in
+lemma summable_norm_pow_mul_geometric_div_one_sub (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     Summable fun n : ℕ ↦ n ^ k * r ^ n / (1 - r ^ n) := by
   rw [show (fun n : ℕ ↦ n ^ k * r ^ n / (1 - r ^ n)) =
     fun n : ℕ ↦ (n ^ k * r ^ n) * (1 / (1 - r ^ n)) by grind]
@@ -81,8 +79,6 @@ lemma summable_norm_pow_mul_geometric_div_one_sub [CompleteSpace 𝕜] (k : ℕ)
   have h1 : Tendsto (fun n : ℕ ↦ (1 : 𝕜)) atTop (𝓝 1) := by simp only [tendsto_const_nhds_iff]
   apply (Filter.Tendsto.div h1 this (by simp)).congr
   simp
-
-variable [CompleteSpace 𝕜] [NormSMulClass ℤ 𝕜]
 
 theorem summable_divisorsAntidiagonal_aux (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     Summable fun c : (n : ℕ+) × { x // x ∈ (n : ℕ).divisorsAntidiagonal} ↦

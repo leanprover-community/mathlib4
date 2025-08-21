@@ -71,6 +71,10 @@ theorem norm_natCast_eq_mul_norm_one (α) [SeminormedRing α] [NormSMulClass ℤ
     ‖(n : α)‖ = n * ‖(1 : α)‖ := by
   simpa using norm_intCast_eq_abs_mul_norm_one α n
 
+lemma natCast_norm {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormSMulClass ℤ 𝕜]
+    (a : ℕ) : ‖(a : 𝕜)‖ = a := by
+  simpa using norm_natCast_eq_mul_norm_one 𝕜 a
+
 theorem eventually_nhds_norm_smul_sub_lt (c : 𝕜) (x : E) {ε : ℝ} (h : 0 < ε) :
     ∀ᶠ y in 𝓝 x, ‖c • (y - x)‖ < ε :=
   have : Tendsto (fun y ↦ ‖c • (y - x)‖) (𝓝 x) (𝓝 0) :=
