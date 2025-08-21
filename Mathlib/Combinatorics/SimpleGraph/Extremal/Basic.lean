@@ -23,6 +23,7 @@ This file introduces basic definitions for extremal graph theory, including extr
   If `H` is contained in all simple graphs on `n` vertices, then this is `0`.
 -/
 
+assert_not_exists Field
 
 open Finset Fintype
 
