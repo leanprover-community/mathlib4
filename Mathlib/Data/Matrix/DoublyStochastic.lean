@@ -124,6 +124,26 @@ lemma doublyStochastic_iff_rowStochastic_and_colStochastic :
       · exact (hM.1).2
       · exact (hM.2).2
 
+/-- A matrix is doubly stochastic iff its transpose is doubly stochastic -/
+lemma mem_doublyStochastic_iff_transpose :
+    M ∈ doublyStochastic R n ↔
+      M.transpose ∈ doublyStochastic R n := by
+  constructor
+  · intro hM
+    have : (∀ i j, 0 ≤ M i j) ∧ (∀ i, ∑ j, M i j = 1) ∧ ∀ j, ∑ i, M i j = 1 := by
+      exact mem_doublyStochastic_iff_sum.mp hM
+    have h₀ : ∀ (i j : n), 0 ≤ M.transpose i j := by aesop
+    have h₁ : ∀ (i : n), ∑ j, M.transpose i j = 1 := by aesop
+    have h₂ : ∀ (j : n), ∑ i, M.transpose i j = 1 := by aesop
+    exact mem_doublyStochastic_iff_sum.2 ⟨h₀, h₁, h₂ ⟩
+  · intro hM
+    have : (∀ i j, 0 ≤ M.transpose i j) ∧ (∀ i, ∑ j, M.transpose i j = 1)
+        ∧ ∀ j, ∑ i, M.transpose i j = 1 := by
+      exact mem_doublyStochastic_iff_sum.mp hM
+    have h₀ : ∀ (i j : n), 0 ≤ M i j := by aesop
+    have h₁ : ∀ (i : n), ∑ j, M i j = 1 := by aesop
+    have h₂ : ∀ (j : n), ∑ i, M i j = 1 := by aesop
+    exact mem_doublyStochastic_iff_sum.2 ⟨h₀, h₁, h₂⟩
 
 end OrderedSemiring
 
