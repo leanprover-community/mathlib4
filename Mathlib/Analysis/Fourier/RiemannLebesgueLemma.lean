@@ -74,15 +74,8 @@ theorem fourierIntegral_half_period_translate {w : V} (hw : w ≠ 0) :
     have : 2 * π * -(1 / 2) = -π := by field_simp; ring
     rw [this, ofReal_neg, neg_mul, exp_neg, exp_pi_mul_I, inv_neg, inv_one, mul_neg_one, neg_smul,
       neg_neg]
-  rw [this]
-  -- Porting note:
-  -- The next three lines had just been
-  -- rw [integral_add_right_eq_self (fun (x : V) ↦ -(𝐞[-⟪x, w⟫]) • f x)
-  --       ((fun w ↦ (1 / (2 * ‖w‖ ^ (2 : ℕ))) • w) w)]
-  -- Unfortunately now we need to specify `volume`.
-  have := integral_add_right_eq_self (μ := volume) (fun (x : V) ↦ -(𝐞 (-⟪x, w⟫) • f x))
-    ((fun w ↦ (1 / (2 * ‖w‖ ^ (2 : ℕ))) • w) w)
-  rw [this]
+  rw [this, integral_add_right_eq_self (fun (x : V) ↦ -(𝐞 (-⟪x, w⟫) • f x))
+        ((fun w ↦ (1 / (2 * ‖w‖ ^ (2 : ℕ))) • w) w)]
   simp only [integral_neg]
 
 /-- Rewrite the Fourier integral in a form that allows us to use uniform continuity. -/
@@ -261,13 +254,9 @@ theorem tendsto_integral_exp_smul_cocompact (μ : Measure V) [μ.IsAddHaarMeasur
   have : (μ.map Aₘ).IsAddHaarMeasure := A.isAddHaarMeasure_map _
   convert (tendsto_integral_exp_smul_cocompact_of_inner_product (f ∘ A.symm) (μ.map Aₘ)).comp
     Adual.toHomeomorph.toCocompactMap.cocompact_tendsto' with w
-  rw [Function.comp_apply, integral_map_equiv]
-  congr 1 with v : 1
-  congr
-  · -- Porting note: added `congr_arg`
-    apply congr_arg w
-    exact (ContinuousLinearEquiv.symm_apply_apply A v).symm
-  · exact (ContinuousLinearEquiv.symm_apply_apply A v).symm
+  suffices ∫ v, 𝐞 (-w v) • f v ∂μ = ∫ (x : V), 𝐞 (-w (A.symm (Aₘ x))) • f (A.symm (Aₘ x)) ∂μ by
+    simpa [Function.comp_apply, integral_map_equiv, Adual]
+  simp [Aₘ]
 
 /-- The Riemann-Lebesgue lemma, formulated in terms of `VectorFourier.fourierIntegral` (with the
 pairing in the definition of `fourier_integral` taken to be the canonical pairing between `V` and

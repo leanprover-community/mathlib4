@@ -285,9 +285,7 @@ theorem gauge_smul_left [Module α E] [SMulCommClass α ℝ ℝ] [IsScalarTower 
   obtain h | h := abs_choice a
   · rw [h]
   · rw [h, Set.neg_smul_set, ← Set.smul_set_neg]
-    -- Porting note: was congr
-    apply congr_arg
-    apply congr_arg
+    congr
     ext y
     refine ⟨symmetric _, fun hy => ?_⟩
     rw [← neg_neg y]

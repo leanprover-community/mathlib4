@@ -191,7 +191,6 @@ def extend : Fₗ →SL[σ₁₂] F :=
         exact ContinuousLinearMap.map_smulₛₗ _ _ _
     cont }
 
--- Porting note: previously `(h_e.isDenseInducing h_dense)` was inferred.
 @[simp]
 theorem extend_eq (x : E) : extend f e h_dense h_e (e x) = f x :=
   IsDenseInducing.extend_eq (h_e.isDenseInducing h_dense) f.cont _
