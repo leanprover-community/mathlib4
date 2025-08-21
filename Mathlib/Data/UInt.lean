@@ -81,8 +81,8 @@ run_cmd
       open $typeName (eq_of_toFin_eq) in
       lemma toFin_injective : Function.Injective toFin := @eq_of_toFin_eq
 
---       open $typeName (eq_of_toBitVec_eq) in
---       lemma toBitVec_injective : Function.Injective toBitVec := @eq_of_toBitVec_eq
+      open $typeName (eq_of_toBitVec_eq) in
+      lemma toBitVec_injective : Function.Injective toBitVec := @eq_of_toBitVec_eq
 
       open $typeName (toBitVec_one toBitVec_mul toBitVec_pow) in
       instance instCommMonoid : CommMonoid $typeName :=
