@@ -50,12 +50,7 @@ theorem trunc_zero (n) : trunc n (0 : R⟦X⟧) = 0 :=
 @[simp]
 theorem trunc_one (n) : trunc (n + 1) (1 : R⟦X⟧) = 1 :=
   Polynomial.ext fun m => by
-    rw [coeff_trunc, coeff_one, Polynomial.coeff_one]
-    split_ifs with h _ h'
-    · rfl
-    · rfl
-    · subst h'; simp at h
-    · rfl
+    grind [PowerSeries.coeff_trunc, PowerSeries.coeff_one, Polynomial.coeff_one]
 
 @[simp]
 theorem trunc_C (n) (a : R) : trunc (n + 1) (C R a) = Polynomial.C a :=
