@@ -75,8 +75,7 @@ lemma irreducible_no_zero_row
     (A : Matrix n n ℝ)
     (h_irr : Irreducible A) (h_dim : 1 < Fintype.card n) (i : n) :
     ∃ j, 0 < A i j := by
-  by_contra h_row ; push_neg at h_row   -- `h_row : ∀ j, A i j ≤ 0`
-  letI G := toQuiver A
+  by_contra h_row ; push_neg at h_row
   have no_out : ∀ j : n, IsEmpty (i ⟶ j) :=
     fun j ↦ ⟨fun h ↦ (h_row j).not_gt h⟩
   obtain ⟨j, hij⟩ := Fintype.exists_ne_of_one_lt_card h_dim i
@@ -86,14 +85,14 @@ lemma irreducible_no_zero_row
       intro v q
       induction q with
       | nil =>
-          intro hvi ; exact hvi rfl
+        intro hvi ; exact hvi rfl
       | cons r e ih =>
-          cases r with
-          | nil =>
-              intro _
-              exact (no_out _).false e
-          | cons r' e' =>
-              intro hvi ; simp_all only [isEmpty_Prop, ne_eq, imp_false, not_not, G]
+        cases r with
+        | nil =>
+            intro _
+            exact (no_out _).false e
+        | cons r' e' =>
+            intro hvi ; simp_all only [isEmpty_Prop, ne_eq, imp_false, not_not, G]
     exact aux p hij
   exact this.elim
 
