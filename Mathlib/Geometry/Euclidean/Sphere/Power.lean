@@ -147,12 +147,22 @@ theorem power_eq_zero_iff_mem_sphere {s : Sphere P} {p : P} (hr : 0 ≤ s.radius
 /-- The power of a point is positive if and only if the point lies outside the sphere. -/
 theorem power_pos_iff_radius_lt_dist_center {s : Sphere P} {p : P} (hr : 0 ≤ s.radius) :
     0 < s.power p ↔ s.radius < dist p s.center := by
-  rw [power, sub_pos, (pow_left_strictMonoOn₀ two_ne_zero).lt_iff_lt hr dist_nonneg]
+  rw [power, sub_pos, pow_lt_pow_iff_left₀ hr dist_nonneg two_ne_zero]
 
 /-- The power of a point is negative if and only if the point lies inside the sphere. -/
 theorem power_neg_iff_dist_center_lt_radius {s : Sphere P} {p : P} (hr : 0 ≤ s.radius) :
   s.power p < 0 ↔ dist p s.center < s.radius := by
-  rw [power, sub_neg, (pow_left_strictMonoOn₀ two_ne_zero).lt_iff_lt dist_nonneg hr]
+  rw [power, sub_neg, pow_lt_pow_iff_left₀ dist_nonneg hr two_ne_zero]
+
+/-- The power of a point is nonnegative if and only if the point lies outside or on the sphere. -/
+theorem power_nonneg_iff_radius_le_dist_center {s : Sphere P} {p : P} (hr : 0 ≤ s.radius) :
+    0 ≤ s.power p ↔ s.radius ≤ dist p s.center := by
+  rw [power, sub_nonneg, pow_le_pow_iff_left₀ hr dist_nonneg two_ne_zero]
+
+/-- The power of a point is nonpositive if and only if the point lies inside or on the sphere. -/
+theorem power_nonpos_iff_dist_center_le_radius {s : Sphere P} {p : P} (hr : 0 ≤ s.radius) :
+    s.power p ≤ 0 ↔ dist p s.center ≤ s.radius := by
+  rw [power, sub_nonpos, pow_le_pow_iff_left₀ dist_nonneg hr two_ne_zero]
 
 /-- For any point, the product of distances to two intersection
 points on a line through the point equals the absolute value of the power of the point. -/
@@ -164,28 +174,6 @@ theorem mul_dist_eq_abs_power {s : Sphere P} {p a b : P}
     rw [mem_sphere.mp ha, mem_sphere.mp hb]
   rw [dist_comm p a, dist_comm p b, mul_dist_eq_abs_sub_sq_dist hp hq,
     mem_sphere.mp hb, power, abs_sub_comm]
-
-/-- For a point outside the sphere, the product of distances to two intersection
-points on a line through the point equals the power of the point. -/
-theorem mul_dist_eq_power_of_radius_lt_dist_center {s : Sphere P} {p a b : P}
-    (hr : 0 ≤ s.radius)
-    (hp : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
-    (ha : a ∈ s) (hb : b ∈ s)
-    (hp_outside : s.radius < dist p s.center) :
-    dist p a * dist p b = s.power p := by
-  rw [mul_dist_eq_abs_power hp ha hb,
-    abs_of_pos <| (power_pos_iff_radius_lt_dist_center hr).mpr hp_outside]
-
-/-- For a point inside the sphere, the product of distances to two intersection
-points on a line through the point equals the negative of the power of the point. -/
-theorem mul_dist_eq_neg_power_of_dist_center_lt_radius {s : Sphere P} {p a b : P}
-    (hr : 0 ≤ s.radius)
-    (hp : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
-    (ha : a ∈ s) (hb : b ∈ s)
-    (hp_inside : dist p s.center < s.radius) :
-    dist p a * dist p b = -s.power p := by
-  rw [mul_dist_eq_abs_power hp ha hb,
-    abs_of_neg <| (power_neg_iff_dist_center_lt_radius hr).mpr hp_inside]
 
 /-- For a point on the sphere, the product of distances to two other intersection
 points on a line through the point is zero. -/
@@ -199,6 +187,27 @@ theorem mul_dist_eq_zero_of_mem_sphere {s : Sphere P} {p a b : P}
   rw [dist_comm p a, dist_comm p b, mul_dist_eq_abs_sub_sq_dist hp hq,
       mem_sphere.mp hb, mem_sphere.mp hp_on, sub_self, abs_zero]
 
+/-- For a point outside or on the sphere, the product of distances to two intersection
+points on a line through the point equals the power of the point. -/
+theorem mul_dist_eq_power_of_radius_le_dist_center {s : Sphere P} {p a b : P}
+    (hr : 0 ≤ s.radius)
+    (hp : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
+    (ha : a ∈ s) (hb : b ∈ s)
+    (hle : s.radius ≤ dist p s.center) :
+    dist p a * dist p b = s.power p := by
+  rw [mul_dist_eq_abs_power hp ha hb,
+    abs_of_nonneg <| (power_nonneg_iff_radius_le_dist_center hr).mpr hle]
+
+/-- For a point inside or on the sphere, the product of distances to two intersection
+points on a line through the point equals the negative of the power of the point. -/
+theorem mul_dist_eq_neg_power_of_dist_center_le_radius {s : Sphere P} {p a b : P}
+    (hr : 0 ≤ s.radius)
+    (hp : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
+    (ha : a ∈ s) (hb : b ∈ s)
+    (hle : dist p s.center ≤ s.radius) :
+    dist p a * dist p b = -s.power p := by
+  rw [mul_dist_eq_abs_power hp ha hb,
+    abs_of_nonpos <| (power_nonpos_iff_dist_center_le_radius hr).mpr hle]
 
 /-- **Tangent-Secant Theorem**. The square of the tangent length equals
     the product of secant segment lengths. -/
