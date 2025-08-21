@@ -25,14 +25,16 @@ section DivisionRing
 variable {G K V : Type*} [AddCommGroup V] [DivisionRing K] [Module K V]
   [Group G] [DistribMulAction G V] [SMulCommClass G K V]
 
-/-- Any group acting `K`-linearly on `V` (such as the general linear group) acts on `ℙ V`. -/
 @[simps -isSimp]
-instance : MulAction G (ℙ K V) where
+instance : SMul G (ℙ K V) where
   smul g x := x.map (DistribMulAction.toModuleEnd _ _ g)
     (DistribMulAction.toLinearEquiv _ _ g).injective
-  one_smul x := show map _ _ _ = _ by simp [map_one, Module.End.one_eq_id]
-  mul_smul g g' x := show map _ _ _ = map _ _ (map _ _ _) by
-    simp_rw [map_mul, Module.End.mul_eq_comp]
+
+/-- Any group acting `K`-linearly on `V` (such as the general linear group) acts on `ℙ V`. -/
+instance : MulAction G (ℙ K V) where
+  one_smul x := by simp [smul_def, map_one, Module.End.one_eq_id]
+  mul_smul g g' x := by
+    simp_rw [smul_def, map_mul, Module.End.mul_eq_comp]
     rw [map_comp, Function.comp_apply]
 
 lemma generalLinearGroup_smul_def (g : LinearMap.GeneralLinearGroup K V) (x : ℙ K V) :
