@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber, Yaël Dillies, Kin Yau James Wong
 -/
 import Mathlib.Data.Finset.Lattice.Basic
+import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 import Mathlib.MeasureTheory.SetSemiring
 import Mathlib.Topology.Constructions
 import Mathlib.MeasureTheory.SetAlgebra
@@ -59,22 +60,15 @@ def squareCylinder (s : Finset ι) (t : ∀ i, Set (α i)) : Set (∀ i, α i) :
   (s : Set ι).pi t
 
 /-- The set `S` is a product of sets `t i` such that
-/-- Given a finite set `s` of indices, a square cylinder is the product of sets `t i : Set (α i)`
-for `i ∈ s` and of `univ` on the other indices. -/
-def squareCylinder (s : Finset ι) (t : ∀ i, Set (α i)) : Set (∀ i, α i) :=
-  (s : Set ι).pi t
-
-/-- The set `S` is a product of sets `t i` such that
 for all `i : s`, `t i ∈ C i`.
 `squareCylinders` is the set of all such squareCylinders. -/
 def squareCylinders (C : ∀ i, Set (Set (α i))) : Set (Set (∀ i, α i)) :=
-  {S | ∃ s : Finset ι, ∃ t ∈ univ.pi C, S = squareCylinder s t}
   {S | ∃ s : Finset ι, ∃ t ∈ univ.pi C, S = squareCylinder s t}
 
 theorem squareCylinders_eq_iUnion_image (C : ∀ i, Set (Set (α i))) :
     squareCylinders C = ⋃ s : Finset ι, (s : Set ι).pi  '' univ.pi C := by
   ext1 f
-  simp only [squareCylinder, squareCylinders, mem_iUnion, mem_image, mem_univ_pi, exists_prop,
+  simp only [squareCylinder, squareCylinders, mem_iUnion, mem_image, mem_univ_pi,
     mem_setOf_eq, eq_comm (a := f)]
 
 theorem squareCylinders_eq_iUnion_image' (C : ∀ i, Set (Set (α i))) (hC : ∀ i, Nonempty (C i)) :
@@ -86,11 +80,26 @@ theorem squareCylinders_eq_iUnion_image' (C : ∀ i, Set (Set (α i))) (hC : ∀
     refine pi_image_eq_of_subset hC (subset_univ s)
   simp_rw [← mem_image, h]
 
+def squareCylinders_subset_of_or_univ (C : ∀ i, Set (Set (α i))) :
+    squareCylinders C ⊆ (univ.pi '' univ.pi (fun i ↦ C i ∪ {univ})) := by
+  classical
+  intro x hx
+  simp only [squareCylinders, squareCylinder, mem_pi, mem_univ, forall_const, mem_setOf_eq] at hx
+  obtain ⟨s, t, ⟨ht, hx⟩⟩ := hx
+  simp only [union_singleton, mem_image, mem_pi, mem_univ, mem_insert_iff, forall_const]
+  use fun i ↦ (if (i ∈ s) then (t i) else univ)
+  refine ⟨?_, ?_⟩
+  · intro i
+    by_cases h : i ∈ s
+    · right
+      simp [h, ht]
+    · left
+      simp [h]
+  · exact hx ▸ univ_pi_ite s t
+
 theorem isPiSystem_squareCylinders [∀ i, Inhabited (α i)] {C : ∀ i, Set (Set (α i))}
     (hC : ∀ i, IsPiSystem (C i)) (hC_univ : ∀ i, univ ∈ C i) : IsPiSystem (squareCylinders C) := by
   classical
-  haveI h_nempty : ∀ i, Nonempty (C i) := fun i ↦ Nonempty.intro ⟨Set.univ, hC_univ i⟩
-  rintro S₁ ⟨s₁, t₁, h₁, rfl⟩ S₂ ⟨s₂, t₂, h₂, rfl⟩  hst_nonempty
   haveI h_nempty : ∀ i, Nonempty (C i) := fun i ↦ Nonempty.intro ⟨Set.univ, hC_univ i⟩
   rintro S₁ ⟨s₁, t₁, h₁, rfl⟩ S₂ ⟨s₂, t₂, h₂, rfl⟩  hst_nonempty
   let t₁' := s₁.piecewise t₁ (fun i ↦ univ)
@@ -100,7 +109,7 @@ theorem isPiSystem_squareCylinders [∀ i, Inhabited (α i)] {C : ∀ i, Set (Se
     · simp only [h, Finset.piecewise_eq_of_mem, t₁']
       exact h₁ i
     · simp only [t₁']
-      rw [Finset.piecewise_eq_of_not_mem s₁ t₁ (fun i ↦ univ) h]
+      rw [Finset.piecewise_eq_of_notMem s₁ t₁ (fun i ↦ univ) h]
       exact hC_univ i
   let t₂' := s₂.piecewise t₂ (fun i ↦ univ)
   have ht₂ (i : ι) : t₂' i ∈ C i := by
@@ -108,7 +117,7 @@ theorem isPiSystem_squareCylinders [∀ i, Inhabited (α i)] {C : ∀ i, Set (Se
     · simp only [h, Finset.piecewise_eq_of_mem, t₂']
       exact h₂ i
     · simp only [t₂']
-      rw [Finset.piecewise_eq_of_not_mem s₂ t₂ (fun i ↦ univ) h]
+      rw [Finset.piecewise_eq_of_notMem s₂ t₂ (fun i ↦ univ) h]
       exact hC_univ i
   have h₁ : (s₁ : Set ι).pi t₁' = (s₁ : Set ι).pi t₁ := by
     refine Set.pi_congr rfl ?_
@@ -120,7 +129,7 @@ theorem isPiSystem_squareCylinders [∀ i, Inhabited (α i)] {C : ∀ i, Set (Se
       (fun i ↦ t₁' i ∩ t₂' i) := by
     rw [squareCylinder, squareCylinder, squareCylinder, Finset.coe_union, union_pi_inter, h₁, h₂]
       <;>
-    exact fun i a ↦ Finset.piecewise_eq_of_not_mem _ _ (fun i ↦ Set.univ) a
+    exact fun i a ↦ Finset.piecewise_eq_of_notMem _ _ (fun i ↦ Set.univ) a
   rw [h] at hst_nonempty ⊢
   rw [squareCylinder, squareCylinders_eq_iUnion_image' C, mem_iUnion]
   · use (s₁ ∪ s₂), (fun i ↦ t₁' i ∩ t₂' i)
@@ -150,7 +159,7 @@ theorem comap_eval_le_generateFrom_squareCylinders_singleton
     · simp only [hji, not_false_iff, dif_neg, MeasurableSet.univ]
   · simp only [eq_mpr_eq_cast, ← h]
     ext1 x
-    simp only [singleton_pi, Function.eval, cast_eq, dite_eq_ite, ite_true, Set.mem_preimage]
+    simp only [Function.eval, cast_eq, dite_eq_ite, ite_true, Set.mem_preimage]
 
 /-- The square cylinders formed from measurable sets generate the product σ-algebra. -/
 theorem generateFrom_squareCylinders [∀ i, MeasurableSpace (α i)] :

@@ -23,7 +23,7 @@ there is some `N : ℕ` with `⋂ n < N, C n = ∅`.
 
 ## Main results
 
-* `IsCompactSystemiff_isCompactSystem_of_or_univ`: A set system is a compact
+* `IsCompactSystem.iff_isCompactSystem_of_or_univ`: A set system is a compact
 system iff inserting `univ` gives a compact system.
 * `IsClosedCompact.isCompactSystem`: The set of closed and compact sets is a compact system.
 * `IsClosedCompact.isCompactSystem_of_T2Space`: In a `T2Space α`, the set of compact sets
@@ -58,7 +58,7 @@ def finite_of_empty (hp : IsCompactSystem p) (hC : ∀ i, p (C i))
 open Classical in
 lemma dissipate_eq_empty (hp : IsCompactSystem p) (hC : ∀ i, p (C i))
     (hC_empty : ⋂ i, C i = ∅) :
-    Dissipate C (hp.finite_of_empty hC hC_empty) = ∅ := by
+    dissipate C (hp.finite_of_empty hC hC_empty) = ∅ := by
   apply Nat.find_spec (hp C hC hC_empty)
 
 theorem iff_nonempty_iInter (p : Set α → Prop) :
@@ -123,7 +123,7 @@ lemma iff_isCompactSystem_of_or_empty : IsCompactSystem p ↔
     exact h s hj hd
 
 lemma of_IsEmpty (h : IsEmpty α) (p : Set α → Prop) : IsCompactSystem p :=
-  fun s _ _ ↦ ⟨0, Set.eq_empty_of_isEmpty (Dissipate s 0)⟩
+  fun s _ _ ↦ ⟨0, Set.eq_empty_of_isEmpty (dissipate s 0)⟩
 
 /-- A set system is a compact system iff adding `univ` gives a compact system. -/
 lemma iff_isCompactSystem_of_or_univ : IsCompactSystem p ↔
@@ -153,17 +153,17 @@ lemma iff_isCompactSystem_of_or_univ : IsCompactSystem p ↔
         ext x
         simp only [mem_iInter]
         refine ⟨fun h i ↦ ?_, fun h i ↦ ?_⟩
-        · by_cases h' : p (s i) <;> simp only [h', ↓reduceIte, h, s', n]
+        · by_cases h' : p (s i) <;> simp only [h', ↓reduceIte, h, n]
         · specialize h' i
           specialize h i
           rcases h' with a | b
-          · simp only [a, ↓reduceIte, s', n] at h
+          · simp only [a, ↓reduceIte] at h
             exact h
           · simp only [b, Set.mem_univ]
       apply h₂ ▸ h s' h₁
       by_contra! a
       obtain ⟨j, hj⟩ := a
-      have h₂ (v : ℕ) (hv : n ≤ v) : Dissipate s v = Dissipate s' v:= by
+      have h₂ (v : ℕ) (hv : n ≤ v) : dissipate s v = dissipate s' v:= by
         ext x
         refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩ <;> simp only [dissipate_def, mem_iInter] at h ⊢ <;>
           intro i hi
@@ -177,7 +177,7 @@ lemma iff_isCompactSystem_of_or_univ : IsCompactSystem p ↔
               simp only [h₅, false_or] at h'
               exact h'
             simp only [h₆, Set.mem_univ]
-      have h₇ : Dissipate s' (max j n) = ∅ := by
+      have h₇ : dissipate s' (max j n) = ∅ := by
         rw [← subset_empty_iff] at hj ⊢
         exact le_trans (antitone_dissipate (Nat.le_max_left j n)) hj
       specialize h₂ (max j n) (Nat.le_max_right j n)
@@ -206,21 +206,21 @@ theorem iff_directed (hpi : IsPiSystem p) :
         right
         rfl
     rw [← biInter_le_eq_iInter] at h2
-    obtain h' := h (Dissipate C) directed_dissipate
-    have h₀ : (∀ (n : ℕ), p (Dissipate C n) ∨ Dissipate C n = ∅) → ⋂ n, Dissipate C n = ∅ →
-      ∃ n, Dissipate C n = ∅ := by
+    obtain h' := h (dissipate C) directed_dissipate
+    have h₀ : (∀ (n : ℕ), p (dissipate C n) ∨ dissipate C n = ∅) → ⋂ n, dissipate C n = ∅ →
+      ∃ n, dissipate C n = ∅ := by
       intro h₀ h₁
-      by_cases f : ∀ n, p (Dissipate C n)
+      by_cases f : ∀ n, p (dissipate C n)
       · apply h' f h₁
       · push_neg at f
         obtain ⟨n, hn⟩ := f
         use n
         specialize h₀ n
         simp_all only [false_or]
-    obtain h'' := dissipate_of_piSystem hpi' h1
-    have h₁ :  ∀ (n : ℕ), p (Dissipate C n) ∨ Dissipate C n = ∅ := by
+    obtain h'' := IsPiSystem.dissipate_mem hpi' h1
+    have h₁ :  ∀ (n : ℕ), p (dissipate C n) ∨ dissipate C n = ∅ := by
       intro n
-      by_cases g : (Dissipate C n).Nonempty
+      by_cases g : (dissipate C n).Nonempty
       · exact h'' n g
       · right
         exact Set.not_nonempty_iff_eq_empty.mp g
@@ -275,8 +275,8 @@ theorem of_isCompact_isClosed :
         simp only [Set.mem_univ]
     apply g <| IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed s' hs'
       (fun j ↦ h2 j) htco htcl
-  · simp only [ne_eq, coe_setOf, nonempty_subtype, not_exists, not_not, s'] at h
-    simp [s', h]
+  · simp only [ne_eq, coe_setOf, nonempty_subtype, not_exists, not_not] at h
+    simp [h]
 
 /-- The set of sets which are either compact and closed, or `univ`, is a compact system. -/
 theorem of_isCompact_isClosed_or_univ :
@@ -447,9 +447,10 @@ lemma q_iff_iInter' (L : ℕ → Finset (Set α)) (n : ℕ) (K : (k : Fin n) →
     · intro i
       simp [Fin.snoc]
       refine Fin.lastCases ?_ (fun i ↦ ?_) i
-      · simp [Fin.snoc_last]
+      · simp only [Fin.val_last, lt_self_iff_false, ↓reduceDIte, cast_eq]
         exact hx1.2
-      · simp [Fin.snoc_castSucc]
+      · simp only [Fin.coe_castSucc, Fin.is_lt, ↓reduceDIte, Fin.castSucc_ne_last,
+        not_false_eq_true, Fin.castLT_eq_castPred, Fin.castPred_castSucc]
         exact hx1.1 i.val i.prop
     · intro i hi
       specialize hx2 (i + 1) (Nat.add_lt_add_right hi 1)
@@ -564,7 +565,7 @@ lemma union.mem_iff (s : Set α) : union p s ↔ ∃ L : Finset (Set α), s = �
     simp only [mem_setOf_eq, Finset.finite_toSet, Finset.mem_coe, true_and]
     refine ⟨hL.2, hL.1.symm⟩
 
-theorem union.isCompactSystem (p : Set α → Prop)(hp : IsCompactSystem p) :
+theorem union.isCompactSystem (p : Set α → Prop) (hp : IsCompactSystem p) :
     IsCompactSystem (union p) := by
   rw [iff_nonempty_iInter_of_lt]
   intro C hi
@@ -583,7 +584,7 @@ end Union
 
 section pi
 
-variable {ι : Type*}  {α : ι → Type*}
+variable {ι : Type*} {α : ι → Type*}
 
 /- In a product space, the intersection of square cylinders is empty iff there is a coordinate `i`
 such that the projections to `i` have empty intersection. -/
@@ -602,7 +603,7 @@ theorem iInter_univ_pi_empty_iff {β : Type*} (t : β → (i : ι) → Set (α i
   rw [iInter_pi_empty_iff]
   simp only [mem_univ, iInter_true]
 
-theorem biInter_univ_pi_empty_iff {β : Type*} (t : β → (i : ι) → Set (α i)) (p : β → Prop):
+theorem biInter_univ_pi_empty_iff {β : Type*} (t : β → (i : ι) → Set (α i)) (p : β → Prop) :
    ( ⋂ (b : β), ⋂ (_ : p b), (univ.pi (t b)) = ∅) ↔
       (∃ i : ι, ⋂ (b : β), ⋂ (_ : p b), (t b i) = ∅) := by
   have h :  ⋂ (b : β), ⋂ (_ : p b), (univ.pi (t b)) =
@@ -627,7 +628,7 @@ theorem pi (C : (i : ι) → Set (Set (α i))) (hC : ∀ i, IsCompactSystem (C i
     exact hx1 b i
   have ⟨n, hn⟩ := (hC i) y hy hi
   use n
-  simp_rw [Dissipate, ← hx2] at hn ⊢
+  simp_rw [dissipate, ← hx2] at hn ⊢
   rw [biInter_univ_pi_empty_iff x]
   use i
 
@@ -651,11 +652,17 @@ def MeasureTheory.compactClosedSquareCylinders : Set (Set (Π i, α i)) :=
 theorem IsCompactSystem.compactClosedPi :
     IsCompactSystem (univ.pi '' univ.pi (fun i ↦ { t : Set (α i) | IsCompact t ∧ IsClosed t })) :=
   IsCompactSystem.pi _ (fun _ ↦ IsCompactSystem.of_isCompact_isClosed)
+/-- Products of compact and closed sets form a compact system. -/
+
+theorem IsCompactSystem.compactClosedOrUnivPi :
+    IsCompactSystem (univ.pi '' univ.pi (fun i ↦ { t : Set (α i) | IsCompact t ∧ IsClosed t }
+    ∪ { univ })) :=
+  IsCompactSystem.pi _ (fun _ ↦ IsCompactSystem.of_isCompact_isClosed_or_univ)
 
 /-- Compact and closed square cylinders are a compact system. -/
 theorem isCompactSystem.compactClosedSquareCylinders :
     IsCompactSystem (compactClosedSquareCylinders α) :=
-  IsCompactSystem.mono CompactClosedOrUniv_pi
-    compactClosedSquareCylinders_supset
+  IsCompactSystem.mono (IsCompactSystem.compactClosedOrUnivPi _)
+    (squareCylinders_subset_of_or_univ _)
 
 end ClosedCompactSquareCylinders

@@ -684,7 +684,7 @@ theorem pi_eq_empty_iff' : s.pi t = ∅ ↔ ∃ i ∈ s, t i = ∅ := by simp [p
 theorem disjoint_pi : Disjoint (s.pi t₁) (s.pi t₂) ↔ ∃ i ∈ s, Disjoint (t₁ i) (t₂ i) := by
   simp only [disjoint_iff_inter_eq_empty, ← pi_inter_distrib, pi_eq_empty_iff']
 
-theorem pi_nonempty_iff' [∀ i, Decidable (i ∈ s)]  :
+theorem pi_nonempty_iff' [∀ i, Decidable (i ∈ s)] :
     (s.pi t).Nonempty ↔ ∀ i ∈ s, (t i).Nonempty := by
   classical
   rw [pi_nonempty_iff]
@@ -731,10 +731,6 @@ theorem pi_if {p : ι → Prop} [h : DecidablePred p] (s : Set ι) (t₁ t₂ : 
 
 theorem union_pi : (s₁ ∪ s₂).pi t = s₁.pi t ∩ s₂.pi t := by
   simp [pi, or_imp, forall_and, setOf_and]
-
-theorem pi_antitone (h : s₁ ⊆ s₂) : s₂.pi t ⊆ s₁.pi t := by
-  rw [← union_diff_cancel h, union_pi]
-  exact Set.inter_subset_left
 
 theorem pi_antitone (h : s₁ ⊆ s₂) : s₂.pi t ⊆ s₁.pi t := by
   rw [← union_diff_cancel h, union_pi]
