@@ -57,13 +57,9 @@ lemma one_sub_eta_q_ne_zero (n : ℕ) {z : ℂ} (hz : z ∈ ℍₒ) : 1 - eta_q 
     simpa [this] using hz⟩
   simp [← mul_assoc, ← h] at *
 
-/-- The product term in the eta function, defined as `∏' 1 - q ^ (n + 1)` for `q = e ^ 2 π i z`. -/
-noncomputable abbrev ModularForm.etaProdTerm (z : ℂ) := ∏' (n : ℕ), (1 - eta_q n z)
-
-local notation "ηₚ" => etaProdTerm
 
 /-- The eta function, whose value at z is `q^ 1 / 24 * ∏' 1 - q ^ (n + 1)` for `q = e ^ 2 π i z`. -/
-noncomputable def ModularForm.eta (z : ℂ) := 𝕢 24 z * ηₚ z
+noncomputable def ModularForm.eta (z : ℂ) := 𝕢 24 z * ∏' (n : ℕ), (1 - eta_q n z)
 
 local notation "η" => ModularForm.eta
 
@@ -72,9 +68,11 @@ open ModularForm
 theorem summable_eta_q (z : ℍ) : Summable fun n ↦ ‖-eta_q n z‖ := by
   simp [eta_q, eta_q_eq_pow, summable_nat_add_iff 1, norm_exp_two_pi_I_lt_one z]
 
-lemma hasProdLocallyUniformlyOn_eta : HasProdLocallyUniformlyOn (fun n a ↦ 1 - eta_q n a) ηₚ ℍₒ:= by
+lemma multipliableLocallyUniformlyOn_eta :
+    MultipliableLocallyUniformlyOn (fun n a ↦ 1 - eta_q n a) ℍₒ:= by
+  use fun z => ∏' (n : ℕ), (1 - eta_q n z)
   simp_rw [sub_eq_add_neg]
-  apply hasProdLocallyUniformlyOn_of_forall_compact upperHalfPlaneSet_isOpen
+  apply hasProdLocallyUniformlyOn_of_forall_compact isOpen_upperHalfPlaneSet
   intro K hK hcK
   by_cases hN : K.Nonempty
   · have hc : ContinuousOn (fun x ↦ ‖cexp (2 * π * I * x)‖) K := by fun_prop
@@ -88,16 +86,14 @@ lemma hasProdLocallyUniformlyOn_eta : HasProdLocallyUniformlyOn (fun n a ↦ 1 -
   · rw [hasProdUniformlyOn_iff_tendstoUniformlyOn]
     simpa [not_nonempty_iff_eq_empty.mp hN] using tendstoUniformlyOn_empty
 
-theorem etaProdTerm_ne_zero {z : ℂ} (hz : z ∈ ℍₒ) : ηₚ z ≠ 0 := by
-  simp only [etaProdTerm, eta_q, ne_eq]
-  refine tprod_one_add_ne_zero_of_summable ⟨z, hz⟩ (f := fun n x ↦ -eta_q n x) (α := ℍₒ) ?_ ?_
+-- Eta is non-vanishing on the upper half plane. -/
+lemma eta_ne_zero_on_UpperHalfPlane {z : ℂ} (hz : z ∈ ℍₒ) : η z ≠ 0 := by
+  apply mul_ne_zero (Periodic.qParam_ne_zero z)
+  simp only [eta_q, ne_eq]
+  refine tprod_one_add_ne_zero_of_summable ⟨z, hz⟩ (f := fun n x ↦ -eta_q n x) (α := ℍ) ?_ ?_
   · refine fun i x ↦ by simpa using one_sub_eta_q_ne_zero i x.2
   · intro x
     simpa [eta_q, ← summable_norm_iff] using summable_eta_q x
-
-/-- Eta is non-vanishing on the upper half plane. -/
-lemma eta_ne_zero_on_UpperHalfPlane {z : ℂ} (hz : z ∈ ℍₒ) : η z ≠ 0 := by
-  simpa [ModularForm.eta, Periodic.qParam] using etaProdTerm_ne_zero hz
 
 lemma logDeriv_one_sub_cexp (r : ℂ) : logDeriv (fun z ↦ 1 - r * cexp z) =
     fun z ↦ -r * cexp z / (1 - r * cexp z) := by
@@ -133,14 +129,14 @@ lemma tsum_log_deriv_eta_q (z : ℂ) : ∑' (i : ℕ), logDeriv (fun x ↦ 1 - e
     ring
   exact tsum_congr (fun i ↦ one_sub_eta_logDeriv_eq z i)
 
-theorem etaProdTerm_differentiableAt {z : ℂ} (hz : z ∈ ℍₒ) : DifferentiableAt ℂ ηₚ z := by
-  have hD := hasProdLocallyUniformlyOn_eta.tendstoLocallyUniformlyOn_finsetRange.differentiableOn ?_
-    upperHalfPlaneSet_isOpen
-  · exact (hD z hz).differentiableAt (upperHalfPlaneSet_isOpen.mem_nhds hz)
+theorem differentiableAt_eta_of_mem_upperHalfPlaneSet {z : ℂ} (hz : z ∈ ℍₒ) :
+    DifferentiableAt ℂ eta z := by
+  apply DifferentiableAt.mul (by fun_prop)
+  have hD := (MultipliableLocallyUniformlyOn.hasProdLocallyUniformlyOn
+    multipliableLocallyUniformlyOn_eta).tendstoLocallyUniformlyOn_finsetRange.differentiableOn ?_
+    isOpen_upperHalfPlaneSet
+  · exact (hD z hz).differentiableAt (isOpen_upperHalfPlaneSet.mem_nhds hz)
   · filter_upwards with b y
     apply (DifferentiableOn.finset_prod (u := Finset.range b) (f := fun i x ↦ 1 - eta_q i x)
       (by fun_prop)).congr
     simp
-
-lemma eta_DifferentiableAt_UpperHalfPlane {z : ℂ} (hz : z ∈ ℍₒ) : DifferentiableAt ℂ eta z :=
-  DifferentiableAt.mul (by fun_prop) (etaProdTerm_differentiableAt hz)
