@@ -209,7 +209,6 @@ def algebraFunctorOfMonadHom {T₁ T₂ : Monad C} (h : T₂ ⟶ T₁) : Algebra
 /--
 The identity monad morphism induces the identity functor from the category of algebras to itself.
 -/
--- Porting note: `semireducible -> default`
 @[simps (rhsMd := .default)]
 def algebraFunctorOfMonadHomId {T₁ : Monad C} : algebraFunctorOfMonadHom (𝟙 T₁) ≅ 𝟭 _ :=
   NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)

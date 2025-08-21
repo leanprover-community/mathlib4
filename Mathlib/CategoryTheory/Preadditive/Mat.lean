@@ -343,9 +343,6 @@ instance (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) :
     HasBiproduct (fun i => F.obj ((embedding C).obj (M.X i))) :=
   F.hasBiproduct_of_preserves _
 
--- Porting note: removed the @[simps] attribute as the automatically generated lemmas
--- are not very useful; two more useful lemmas have been added just after this
--- definition in order to ease the proof of `additiveObjIsoBiproduct_naturality`
 /-- Every `M` is a direct sum of objects from `C`, and `F` preserves biproducts. -/
 def additiveObjIsoBiproduct (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) :
     F.obj M ≅ ⨁ fun i => F.obj ((embedding C).obj (M.X i)) :=

@@ -268,9 +268,9 @@ instance Cone.category : Category (Cone F) where
   comp f g := { hom := f.hom ≫ g.hom }
   id B := { hom := 𝟙 B.pt }
 
--- Porting note: if we do not have `simps` automatically generate the lemma for simplifying
--- the hom field of a category, we need to write the `ext` lemma in terms of the categorical
--- morphism, rather than the underlying structure.
+/- We do not want `simps` automatically generate the lemma for simplifying the
+hom field of a category. So we need to write the `ext` lemma in terms of the
+categorical morphism, rather than the underlying structure. -/
 @[ext]
 theorem ConeMorphism.ext {c c' : Cone F} (f g : c ⟶ c') (w : f.hom = g.hom) : f = g := by
   cases f
@@ -485,9 +485,9 @@ instance Cocone.category : Category (Cocone F) where
   comp f g := { hom := f.hom ≫ g.hom }
   id B := { hom := 𝟙 B.pt }
 
--- Porting note: if we do not have `simps` automatically generate the lemma for simplifying
--- the hom field of a category, we need to write the `ext` lemma in terms of the categorical
--- morphism, rather than the underlying structure.
+/- We do not want `simps` automatically generate the lemma for simplifying the
+hom field of a category. So we need to write the `ext` lemma in terms of the
+categorical morphism, rather than the underlying structure. -/
 @[ext]
 theorem CoconeMorphism.ext {c c' : Cocone F} (f g : c ⟶ c') (w : f.hom = g.hom) : f = g := by
   cases f
