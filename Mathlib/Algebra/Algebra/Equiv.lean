@@ -540,6 +540,10 @@ lemma ofBijective_apply (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) (a
 lemma toLinearMap_ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) :
     (ofBijective f hf).toLinearMap = f := rfl
 
+@[simp]
+lemma toAlgHom_ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) :
+    AlgHomClass.toAlgHom (ofBijective f hf) = f := rfl
+
 section OfLinearEquiv
 
 variable (l : A₁ ≃ₗ[R] A₂) (map_one : l 1 = 1) (map_mul : ∀ x y : A₁, l (x * y) = l x * l y)
@@ -787,4 +791,3 @@ def ULift.algEquiv {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Alge
     ULift.{w} A ≃ₐ[R] A where
   __ := ULift.ringEquiv
   commutes' _ := rfl
-
