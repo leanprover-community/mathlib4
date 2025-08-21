@@ -98,6 +98,14 @@ theorem add_sq (x y : R) : (x + y) ^ 2 = x ^ 2 + y ^ 2 :=
 theorem add_mul_self (x y : R) : (x + y) * (x + y) = x * x + y * y := by
   rw [← pow_two, ← pow_two, ← pow_two, add_sq]
 
+theorem sq_injective [NoZeroDivisors R] : Function.Injective fun x : R ↦ x ^ 2 := by
+  intro x y h
+  rwa [← CharTwo.add_eq_zero, ← add_sq, pow_eq_zero_iff, CharTwo.add_eq_zero] at h
+
+@[scoped simp]
+theorem sq_inj {x y : R} [NoZeroDivisors R] : x ^ 2 = y ^ 2 ↔ x = y :=
+  sq_injective.eq_iff
+
 theorem list_sum_sq (l : List R) : l.sum ^ 2 = (l.map (· ^ 2)).sum :=
   list_sum_pow_char _ _
 
