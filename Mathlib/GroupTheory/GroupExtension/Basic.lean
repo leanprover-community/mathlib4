@@ -176,6 +176,9 @@ noncomputable def semidirectProductToGroupExtensionEquiv :
 noncomputable def semidirectProductMulEquiv : N ⋊[s.conjAct] G ≃* E :=
   s.semidirectProductToGroupExtensionEquiv.toMulEquiv
 
+initialize_simps_projections AddGroupExtension.Splitting (toFun → apply)
+initialize_simps_projections Splitting (toFun → apply)
+
 end Splitting
 
 namespace IsConj
