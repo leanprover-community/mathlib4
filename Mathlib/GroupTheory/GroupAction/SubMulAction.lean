@@ -473,7 +473,7 @@ end SubMulAction
 
 namespace SubMulAction
 
-/- The inclusion of a SubMulAction, as an equivariant map -/
+/- The inclusion of a `SubMulAction`, as an equivariant map -/
 variable {M α : Type*} [Monoid M] [MulAction M α]
 
 
