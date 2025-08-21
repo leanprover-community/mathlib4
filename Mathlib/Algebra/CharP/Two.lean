@@ -124,7 +124,7 @@ variable [CommRing R] [CharP R 2] [NoZeroDivisors R]
 
 theorem sq_injective : Function.Injective fun x : R ↦ x ^ 2 := by
   intro x y h
-  rwa [← CharTwo.add_eq_zero, ← add_sq, pow_eq_zero_iff, CharTwo.add_eq_zero] at h
+  rwa [← CharTwo.add_eq_zero, ← add_sq, pow_eq_zero_iff two_ne_zero, CharTwo.add_eq_zero] at h
 
 @[scoped simp]
 theorem sq_inj {x y : R} : x ^ 2 = y ^ 2 ↔ x = y :=
