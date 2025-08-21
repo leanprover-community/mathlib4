@@ -183,14 +183,10 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
     · rw [r0] at mr₂; cases not_le_of_gt Hm mr₂
     rw [hm.2.size_eq] at lr₁ lr₂ mr₁ mr₂
     by_cases mm : size ml + size mr ≤ 1
-    · have r1 :=
-        le_antisymm
-          ((mul_le_mul_iff_right₀ (by decide)).1 (le_trans mr₁ (Nat.succ_le_succ mm) : _ ≤ ratio * 1)) r0
+    · dsimp [delta, ratio] at lr₁ mr₁
+      have r1 : r.size = 1 := by omega
+      have l1 : l.size = 1 := by omega
       rw [r1, add_assoc] at lr₁
-      have l1 :=
-        le_antisymm
-          ((mul_le_mul_iff_right₀ (by decide)).1 (le_trans lr₁ (add_le_add_right mm 2) : _ ≤ delta * 1))
-          l0
       rw [l1, r1]
       revert mm; cases size ml <;> cases size mr <;> intro mm
       · decide

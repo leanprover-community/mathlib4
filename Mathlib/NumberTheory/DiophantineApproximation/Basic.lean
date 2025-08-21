@@ -457,18 +457,13 @@ private theorem aux₃ :
     exact mod_cast huv
   have help₁ {a b c : ℝ} : a ≠ 0 → b ≠ 0 → c ≠ 0 → |a⁻¹ - b / c| = |(a - c / b) * (b / c / a)| := by
     intros; rw [abs_sub_comm]; congr 1; field_simp; ring
-  have help₂ :
-    ∀ {a b c d : ℝ}, a ≠ 0 → b ≠ 0 → c ≠ 0 → d ≠ 0 → (b * c)⁻¹ * (b / d / a) = (d * c * a)⁻¹ := by
-    intros; field_simp; ring
   calc
     |(fract ξ)⁻¹ - v / u'| = |(fract ξ - u' / v) * (v / u' / fract ξ)| :=
       help₁ hξ₀.ne' Hv.ne' Hu.ne'
     _ = |fract ξ - u' / v| * (v / u' / fract ξ) := by rw [abs_mul, abs_of_pos H₁]
     _ < ((v : ℝ) * (2 * v - 1))⁻¹ * (v / u' / fract ξ) := (mul_lt_mul_right H₁).mpr h'
-    _ = (u' * (2 * v - 1) * fract ξ)⁻¹ := help₂ hξ₀.ne' Hv.ne' Hv'.ne' Hu.ne'
-    _ ≤ ((u' : ℝ) * (2 * u' - 1))⁻¹ := by
-      rwa [inv_le_inv₀ (mul_pos (mul_pos Hu Hv') hξ₀) <| mul_pos Hu Hu', mul_assoc,
-        mul_le_mul_left Hu]
+    _ = (u' * ((2 * v - 1) * fract ξ))⁻¹ := by field_simp; ring
+    _ ≤ (u' * (2 * u' - 1) : ℝ)⁻¹ := by gcongr
 
 -- The conditions `ass ξ u v` persist in the inductive step.
 private theorem invariant : ContfracLegendre.Ass (fract ξ)⁻¹ v (u - ⌊ξ⌋ * v) := by
