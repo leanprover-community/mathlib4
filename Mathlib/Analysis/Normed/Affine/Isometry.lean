@@ -767,7 +767,7 @@ theorem AffineMap.isOpenMap_linear_iff {f : P →ᵃ[𝕜] P₂} : IsOpenMap f.l
   rw [this]
   simp only [Homeomorph.comp_isOpenMap_iff, Homeomorph.comp_isOpenMap_iff']
 
-attribute [local instance] AffineSubspace.nonempty_map -- Porting note: removed `fails_quickly`
+attribute [local instance] AffineSubspace.nonempty_map
 
 namespace AffineSubspace
 

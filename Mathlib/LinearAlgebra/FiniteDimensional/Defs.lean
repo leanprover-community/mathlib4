@@ -138,8 +138,11 @@ theorem of_finrank_eq_succ {n : ℕ} (hn : finrank K V = n.succ) :
     FiniteDimensional K V :=
   Module.finite_of_finrank_eq_succ hn
 
-/-- We can infer `FiniteDimensional K V` in the presence of `[Fact (finrank K V = n + 1)]`. Declare
-this as a local instance where needed. -/
+/-- We can infer `FiniteDimensional K V` in the presence of `[Fact (finrank K V = n + 1)]`.
+Use `have : FiniteDimensional K V := .of_fact_finrank_eq_succ` when needed.
+
+This is not an instance because `n` cannot be inferred.
+-/
 theorem of_fact_finrank_eq_succ (n : ℕ) [hn : Fact (finrank K V = n + 1)] :
     FiniteDimensional K V :=
   of_finrank_eq_succ hn.out

@@ -395,7 +395,6 @@ theorem hasStrictFDerivAt_apply (i : ι) (f : ∀ i, F' i) :
   have h' : comp (proj i) id' = proj i := by ext; simp [id']
   rw [← h']; apply h; apply hasStrictFDerivAt_id
 
-@[simp 1100] -- Porting note: increased priority to make lint happy
 theorem hasStrictFDerivAt_pi :
     HasStrictFDerivAt (fun x i => φ i x) (ContinuousLinearMap.pi φ') x ↔
       ∀ i, HasStrictFDerivAt (φ i) (φ' i) x :=
