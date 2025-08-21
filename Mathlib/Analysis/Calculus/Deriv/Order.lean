@@ -6,7 +6,6 @@ Authors: Chris Hughes
 
 import Mathlib.Analysis.Calculus.Deriv.CompMul
 import Mathlib.Analysis.Calculus.Deriv.Slope
-import Mathlib.Algebra.Ring.Action.Pointwise.Set
 
 /-!
 
