@@ -195,8 +195,9 @@ def ForgetEnrichment.equivFunctor (D : Type u') [Category.{v'} D] [EnrichedOrdin
     (by simp [eHomEquiv_comp])
 
 /-- If `D` is already an enriched ordinary category, it is equivalent to `ForgetEnrichment V D`. -/
+@[simps]
 def ForgetEnrichment.equiv {D : Type u'} [Category.{v'} D] [EnrichedOrdinaryCategory V D] :
-    (ForgetEnrichment V D) ≌ D where
+    ForgetEnrichment V D ≌ D where
   functor := equivFunctor V D
   inverse := equivInverse V D
   unitIso := NatIso.ofComponents (fun X => Iso.refl _)
@@ -288,6 +289,7 @@ def TransportEnrichment.forgetEnrichmentEquivInverse :
 enriched ordinary category along a functor `F : V ⥤ W`, for which
 `f ↦ Functor.LaxMonoidal.ε F ≫ F.map f` has an inverse, results in a category equivalent to
 transporting along `F` and then forgetting about the resulting `W`-enrichment. -/
+@[simps]
 def TransportEnrichment.forgetEnrichmentEquiv : TransportEnrichment F (ForgetEnrichment V D) ≌
     ForgetEnrichment W (TransportEnrichment F D) where
   functor := forgetEnrichmentEquivFunctor _ _ e h
