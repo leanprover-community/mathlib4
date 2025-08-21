@@ -240,7 +240,7 @@ theorem isClosed_image_polar_of_mem_nhds {s : Set E} (s_nhds : s ∈ 𝓝 (0 : E
   isClosed_image_coe_of_bounded_of_closed (isBounded_polar_of_mem_nhds_zero 𝕜 s_nhds)
     (isClosed_polar _ _)
 
-/-- The image under `↑ : NormedSpace.Dual 𝕜 E → (E → 𝕜)` of a polar `polar 𝕜 s` of a
+/-- The image under `↑ : StrongDual 𝕜 E → (E → 𝕜)` of a polar `polar 𝕜 s` of a
 neighborhood `s` of the origin is a closed set. -/
 theorem _root_.NormedSpace.Dual.isClosed_image_polar_of_mem_nhds {s : Set E}
     (s_nhds : s ∈ 𝓝 (0 : E)) :
