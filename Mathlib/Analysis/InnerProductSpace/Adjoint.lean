@@ -421,9 +421,10 @@ open ContinuousLinearMap in
 theorem isStarProjection_iff_eq_starProjection_range [CompleteSpace E] {p : E →L[𝕜] E} :
     IsStarProjection p ↔ ∃ (_ : (LinearMap.range p).HasOrthogonalProjection),
     p = (LinearMap.range p).starProjection := by
+  -- TODO: LinearMap.range should not take a SemilinearMapClass
+  have : LinearMap.range (p : E →ₗ[𝕜] E) = LinearMap.range p := rfl
   simp_rw [← p.isStarProjection_iff_isSymmetricProjection.symm.eq,
-    LinearMap.isSymmetricProjection_iff_eq_coe_starProjection_range, coe_inj]
-  rfl
+    LinearMap.isSymmetricProjection_iff_eq_coe_starProjection_range, coe_inj, this]
 
 lemma isStarProjection_iff_eq_starProjection [CompleteSpace E] {p : E →L[𝕜] E} :
     IsStarProjection p
