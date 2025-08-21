@@ -22,6 +22,9 @@ morphisms `i`, `p` and `s` are weak equivalences.
 (We also obtain the dual results about morphisms
 between fibrant objects.)
 
+## References
+* [Brown, Kenneth S., *Abstract homotopy theory and generalized sheaf cohomology*, §I.1][brown-1973]
+
 -/
 
 open CategoryTheory Limits MorphismProperty
@@ -84,7 +87,7 @@ this structure contains the data of a factorization `i ≫ p = f`
 with `p` a fibration, `i` a trivial cofibration which
 has a retraction `r` that is a fibration.
 That this structure is nonempty when `X`
-and `Y` are fibrant is Ken Brown's lemma. -/
+and `Y` are fibrant is Ken Brown's factorization lemma. -/
 structure FibrantBrownFactorization extends
     MapFactorizationData (trivialCofibrations C) (fibrations C) f where
   /-- a fibration that is a retraction of `i` -/
