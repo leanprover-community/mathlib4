@@ -11,59 +11,77 @@ import Mathlib.Lean.Expr.Basic
 
 This file provides a `#print sorries` command to help find out why a given declaration is not
 sorry-free. `#print sorries foo` returns a non-sorry-free declaration `bar` which `foo` depends on,
-if such `bar` exists.
+if such a `bar` exists.
 
 ## TODO
 
-* Generalise to other axioms/constants. This is easy, except for the fact that we need to find a
-  nice syntax/name for the command.
+* Make versions for other axioms/constants.
+  The `#print sorries` command itself shouldn't be generalized, since `sorry` is a special concept,
+  representing unfinished proofs, and it has special support for "go to definition", etc.
 * Move to ImportGraph?
 -/
 
 open Lean Meta Elab Command
 
-namespace PrintSorries
+namespace Mathlib.PrintSorries
 
 /-- Type of intermediate computation of sorry-tracking. -/
 structure State where
   /-- The set of already visited declarations. -/
   visited : NameSet := {}
+  /-- The set of `sorry` expressions that have been found.
+  Note that unlabeled sorries will only be reported in the *first* declaration that uses them,
+  even if a later definition independently has a direct use of `sorryAx`. -/
+  sorries : Std.HashSet Expr := {}
   /-- The uses of `sorry` that were found. -/
   sorryMsgs : Array MessageData := #[]
 
-/-- Collect all uses of `sorry` inside `c`.
+/--
+Collects all uses of `sorry` by the declaration `c`.
+It finds all transitive uses as well.
 
 This is a version of `Lean.CollectAxioms.collect` that keeps track of enough information to print
-each use of `sorry`. -/
+each use of `sorry`.
+-/
 partial def collect (c : Name) : StateT State MetaM Unit := do
   let collectExpr (e : Expr) : StateT State MetaM Unit := do
-    let seenSorriesRef : IO.Ref (Std.HashSet Expr) ← IO.mkRef {}
-    Meta.forEachExpr' e fun e => do
-      if let some _ := isLabeledSorry? e then
-        let e' := e.getBoundedAppFn (e.getAppNumArgs - 3)
-        let seenSorries ← seenSorriesRef.get
-        if !seenSorries.contains e' then
-          seenSorriesRef.set (seenSorries.insert e')
-          let mut msg := m!"{.ofConstName c} has {e'}"
-          if e'.isSyntheticSorry then
+    /-
+    We assume most declarations do not contain sorry.
+    The `getUsedConstants` function is very efficient compared to `forEachExpr'`,
+    since `forEachExpr'` needs to instantiate fvars.
+    Visiting constants first also guarantees that we attribute sorries to the first
+    declaration that included it. Recall that `sorry` might appear in the type of a theorem,
+    which leads to the `sorry` appearing directly in any declarations that use it.
+    This is one reason we need the `State.sorries` set as well.
+    The other reason is that we match entire sorry applications,
+    so `forEachExpr'`'s cache won't prevent over-reporting if `sorry` is a function.
+    -/
+    let consts := e.getUsedConstants
+    consts.forM collect
+    if consts.contains ``sorryAx then
+      let visitSorry (e : Expr) : StateT State MetaM Unit := do
+        unless (← get).sorries.contains e do
+          let mut msg := m!"{.ofConstName c} has {e}"
+          if e.isSyntheticSorry then
             msg := msg ++ " (from error)"
-          modify fun s => { s with sorryMsgs := s.sorryMsgs.push msg }
-        return false
-      else if e.isSorry then
-        let e' := e.getBoundedAppFn (e.getAppNumArgs - 2)
-        let seenSorries ← seenSorriesRef.get
-        if !seenSorries.contains e' then
-          seenSorriesRef.set (seenSorries.insert e')
-          let mut msg := m!"{.ofConstName c} has sorryAx" -- no point in allowing hover
-          if e'.isSyntheticSorry then
-            msg := msg ++ " (from error)"
-          modify fun s => { s with sorryMsgs := s.sorryMsgs.push msg }
-        return false
-      else if let some name := e.constName? then
-        collect name
-        return false
-      else
-        return true -- visit subexpressions
+          try
+            msg := msg ++ " of type" ++ indentExpr (← inferType e)
+          catch _ => pure ()
+          msg ← addMessageContext msg
+          modify fun s =>
+            { s with
+              sorries := s.sorries.insert e
+              sorryMsgs := s.sorryMsgs.push msg }
+      Meta.forEachExpr' e fun e => do
+        if e.isSorry then
+          if let some _ := isLabeledSorry? e then
+            visitSorry <| e.getBoundedAppFn (e.getAppNumArgs - 3)
+          else
+            visitSorry <| e.getBoundedAppFn (e.getAppNumArgs - 2)
+          return false
+        else
+          -- Otherwise continue visiting subexpressions
+          return true
   let s ← get
   unless s.visited.contains c do
     modify fun s => { s with visited := s.visited.insert c }
@@ -79,8 +97,10 @@ partial def collect (c : Name) : StateT State MetaM Unit := do
     | some (.inductInfo v) => collectExpr v.type *> v.ctors.forM collect
     | none                 => pure ()
 
-/-- Print all uses of `sorry` inside a list of declarations.
-Each displayed sorry supports "go to definition". -/
+/--
+Prints all uses of `sorry` inside a list of declarations.
+Displayed sorries are hoverable and support "go to definition".
+-/
 def collectSorries (constNames : Array Name) : MetaM (Array MessageData) := do
   let (_, s) ← (constNames.forM collect).run {}
   pure s.sorryMsgs
@@ -89,7 +109,7 @@ def collectSorries (constNames : Array Name) : MetaM (Array MessageData) := do
 - `#print sorries` prints all sorries that the current module depends on
 - `#print sorries id1 id2 ... idn` prints all sorries that the provided declarations depend on.
 
-Each displayed sorry supports "go to definition".
+Displayed sorries are hoverable and support "go to definition".
 -/
 syntax "#print " &"sorries" (ppSpace ident)* : command
 
@@ -106,4 +126,4 @@ elab_rules : command
     else
       logInfo <| MessageData.joinSep msgs.toList "\n"
 
-end PrintSorries
+end Mathlib.PrintSorries
