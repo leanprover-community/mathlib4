@@ -91,8 +91,8 @@ theorem norm_eq' (hp : 0 < p) {x : ℝ} : ‖(x : AddCircle p)‖ = p * |p⁻¹ 
 theorem norm_le_half_period {x : AddCircle p} (hp : p ≠ 0) : ‖x‖ ≤ |p| / 2 := by
   obtain ⟨x⟩ := x
   change ‖(x : AddCircle p)‖ ≤ |p| / 2
-  rw [norm_eq, ← mul_le_mul_iff_right₀ (abs_pos.mpr (inv_ne_zero hp)), ← abs_mul, mul_sub, mul_left_comm,
-    ← mul_div_assoc, ← abs_mul, inv_mul_cancel₀ hp, mul_one, abs_one]
+  rw [norm_eq, ← mul_le_mul_iff_right₀ (abs_pos.mpr (inv_ne_zero hp)), ← abs_mul, mul_sub,
+    mul_left_comm, ← mul_div_assoc, ← abs_mul, inv_mul_cancel₀ hp, mul_one, abs_one]
   exact abs_sub_round (p⁻¹ * x)
 
 @[simp]
@@ -209,7 +209,7 @@ theorem le_add_order_smul_norm_of_isOfFinAddOrder {u : AddCircle p} (hu : IsOfFi
     exact (addOrderOf_pos_iff.mpr hu).ne'
   conv_lhs => rw [← mul_one p]
   rw [hn, nsmul_eq_mul, ← mul_assoc, mul_comm _ p, mul_assoc, mul_div_cancel₀ _ hu,
-    mul_le_mul_left hp.out, Nat.one_le_cast, Nat.one_le_iff_ne_zero]
+    mul_le_mul_iff_right₀ hp.out, Nat.one_le_cast, Nat.one_le_iff_ne_zero]
   contrapose! hu'
   simpa only [hu', Nat.cast_zero, zero_div, mul_zero, norm_eq_zero] using hn
 
