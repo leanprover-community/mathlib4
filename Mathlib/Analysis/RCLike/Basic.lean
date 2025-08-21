@@ -270,7 +270,8 @@ theorem I_im (z : K) : im z * im (I : K) = im z :=
 @[simp, rclike_simps]
 theorem I_im' (z : K) : im (I : K) * im z = im z := by rw [mul_comm, I_im]
 
-@[rclike_simps] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): was `simp`
+-- Not `@[simp]` since `simp` can prove this.
+@[rclike_simps]
 theorem I_mul_re (z : K) : re (I * z) = -im z := by
   simp only [I_re, zero_sub, I_im', zero_mul, mul_re]
 
@@ -413,7 +414,8 @@ theorem normSq_one : normSq (1 : K) = 1 :=
 theorem normSq_nonneg (z : K) : 0 ≤ normSq z :=
   add_nonneg (mul_self_nonneg _) (mul_self_nonneg _)
 
-@[rclike_simps] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): was `simp`
+-- Not `@[simp]` since `simp` can prove this.
+@[rclike_simps]
 theorem normSq_eq_zero {z : K} : normSq z = 0 ↔ z = 0 :=
   map_eq_zero _
 
@@ -428,7 +430,8 @@ theorem normSq_neg (z : K) : normSq (-z) = normSq z := by simp only [normSq_eq_d
 theorem normSq_conj (z : K) : normSq (conj z) = normSq z := by
   simp only [normSq_apply, neg_mul, mul_neg, neg_neg, rclike_simps]
 
-@[rclike_simps] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): was `simp`
+-- Not `@[simp]` since `simp` can prove this.
+@[rclike_simps]
 theorem normSq_mul (z w : K) : normSq (z * w) = normSq z * normSq w :=
   map_mul _ z w
 
@@ -485,7 +488,8 @@ theorem div_im (z w : K) : im (z / w) = im z * re w / normSq w - re z * im w / n
   simp only [div_eq_mul_inv, mul_assoc, sub_eq_add_neg, add_comm, neg_mul, mul_neg,
     rclike_simps]
 
-@[rclike_simps] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): was `simp`
+-- Not `@[simp]` since `simp` can prove this
+@[rclike_simps]
 theorem conj_inv (x : K) : conj x⁻¹ = (conj x)⁻¹ :=
   star_inv₀ _
 
@@ -525,11 +529,13 @@ theorem inv_I : (I : K)⁻¹ = -I := by
 @[simp, rclike_simps]
 theorem div_I (z : K) : z / I = -(z * I) := by rw [div_eq_mul_inv, inv_I, mul_neg]
 
-@[rclike_simps] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): was `simp`
+-- Not `@[simp]` since `simp` can prove this.
+@[rclike_simps]
 theorem normSq_inv (z : K) : normSq z⁻¹ = (normSq z)⁻¹ :=
   map_inv₀ normSq z
 
-@[rclike_simps] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): was `simp`
+-- Not `@[simp]` since `simp` can prove this.
+@[rclike_simps]
 theorem normSq_div (z w : K) : normSq (z / w) = normSq z / normSq w :=
   map_div₀ normSq z w
 
@@ -556,7 +562,7 @@ theorem ofReal_natCast (n : ℕ) : ((n : ℝ) : K) = n :=
 @[rclike_simps, norm_cast]
 lemma ofReal_nnratCast (q : ℚ≥0) : ((q : ℝ) : K) = q := map_nnratCast (algebraMap ℝ K) _
 
-@[simp, rclike_simps] -- Porting note: removed `norm_cast`
+@[simp, rclike_simps]
 theorem natCast_re (n : ℕ) : re (n : K) = n := by rw [← ofReal_natCast, ofReal_re]
 
 @[simp, rclike_simps, norm_cast]
@@ -584,7 +590,7 @@ theorem ofNat_mul_im (n : ℕ) [n.AtLeastTwo] (z : K) :
 theorem ofReal_intCast (n : ℤ) : ((n : ℝ) : K) = n :=
   map_intCast _ n
 
-@[simp, rclike_simps] -- Porting note: removed `norm_cast`
+@[simp, rclike_simps]
 theorem intCast_re (n : ℤ) : re (n : K) = n := by rw [← ofReal_intCast, ofReal_re]
 
 @[simp, rclike_simps, norm_cast]
@@ -594,7 +600,7 @@ theorem intCast_im (n : ℤ) : im (n : K) = 0 := by rw [← ofReal_intCast, ofRe
 theorem ofReal_ratCast (n : ℚ) : ((n : ℝ) : K) = n :=
   map_ratCast _ n
 
-@[simp, rclike_simps] -- Porting note: removed `norm_cast`
+@[simp, rclike_simps]
 theorem ratCast_re (q : ℚ) : re (q : K) = q := by rw [← ofReal_ratCast, ofReal_re]
 
 @[simp, rclike_simps, norm_cast]
