@@ -222,9 +222,11 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
       apply mem_iUnion₂.2
       exact ⟨t, ‹t ∈ F›, this⟩⟩
 
+namespace NonemptyCompacts
+
 /-- In an emetric space, the type of non-empty compact subsets is an emetric space,
 where the edistance is the Hausdorff edistance -/
-instance NonemptyCompacts.emetricSpace : EMetricSpace (NonemptyCompacts α) where
+instance emetricSpace : EMetricSpace (NonemptyCompacts α) where
   edist s t := hausdorffEdist (s : Set α) t
   edist_self _ := hausdorffEdist_self
   edist_comm _ _ := hausdorffEdist_comm
@@ -233,23 +235,29 @@ instance NonemptyCompacts.emetricSpace : EMetricSpace (NonemptyCompacts α) wher
     have : closure (s : Set α) = closure t := hausdorffEdist_zero_iff_closure_eq_closure.1 h
     rwa [s.isCompact.isClosed.closure_eq, t.isCompact.isClosed.closure_eq] at this
 
-/-- `NonemptyCompacts.toCloseds` is a uniform embedding (as it is an isometry) -/
-theorem NonemptyCompacts.ToCloseds.isUniformEmbedding :
-    IsUniformEmbedding (@NonemptyCompacts.toCloseds α _ _) :=
-  Isometry.isUniformEmbedding fun _ _ => rfl
+/-- `NonemptyCompacts.toCloseds` is an isometry -/
+theorem isometry_toCloseds : Isometry (@NonemptyCompacts.toCloseds α _ _) :=
+  fun _ _ => rfl
 
-lemma NonemptyCompacts.isClosed_subsets_of_isClosed (hs : IsClosed s) :
-    IsClosed {A : NonemptyCompacts α | (A : Set α) ⊆ s} := by
-  refine isClosed_of_closure_subset fun E hE x hx ↦ ?_
-  suffices x ∈ closure s by rwa [hs.closure_eq] at this
-  rw [mem_closure_iff] at hE ⊢
-  intro ε hε
-  obtain ⟨C, hC, hEC⟩ := hE ε hε
-  obtain ⟨y, hy, hxy⟩ := exists_edist_lt_of_hausdorffEdist_lt hx hEC
-  exact ⟨y, hC hy, hxy⟩
+/-- `NonemptyCompacts.toCloseds` is a uniform embedding (as it is an isometry) -/
+theorem isUniformEmbedding_toCloseds :
+    IsUniformEmbedding (@NonemptyCompacts.toCloseds α _ _) :=
+  isometry_toCloseds.isUniformEmbedding
+
+@[deprecated (since := "2025-08-20")]
+alias ToCloseds.isUniformEmbedding := isUniformEmbedding_toCloseds
+
+/-- `NonemptyCompacts.toCloseds` is a continuous (as it is an isometry) -/
+@[fun_prop]
+theorem continuous_toCloseds : Continuous (@NonemptyCompacts.toCloseds α _ _) :=
+  isometry_toCloseds.continuous
+
+lemma isClosed_subsets_of_isClosed (hs : IsClosed s) :
+    IsClosed {A : NonemptyCompacts α | (A : Set α) ⊆ s} :=
+  (Closeds.isClosed_subsets_of_isClosed hs).preimage continuous_toCloseds
 
 /-- The range of `NonemptyCompacts.toCloseds` is closed in a complete space -/
-theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
+theorem isClosed_in_closeds [CompleteSpace α] :
     IsClosed (range <| @NonemptyCompacts.toCloseds α _ _) := by
   have :
     range NonemptyCompacts.toCloseds =
@@ -288,20 +296,20 @@ theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
 
 /-- In a complete space, the type of nonempty compact subsets is complete. This follows
 from the same statement for closed subsets -/
-instance NonemptyCompacts.completeSpace [CompleteSpace α] : CompleteSpace (NonemptyCompacts α) :=
+instance completeSpace [CompleteSpace α] : CompleteSpace (NonemptyCompacts α) :=
   (completeSpace_iff_isComplete_range
-        NonemptyCompacts.ToCloseds.isUniformEmbedding.isUniformInducing).2 <|
-    NonemptyCompacts.isClosed_in_closeds.isComplete
+        isometry_toCloseds.isUniformInducing).2 <|
+    isClosed_in_closeds.isComplete
 
 /-- In a compact space, the type of nonempty compact subsets is compact. This follows from
 the same statement for closed subsets -/
-instance NonemptyCompacts.compactSpace [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
+instance compactSpace [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
   ⟨by
-    rw [NonemptyCompacts.ToCloseds.isUniformEmbedding.isEmbedding.isCompact_iff, image_univ]
-    exact NonemptyCompacts.isClosed_in_closeds.isCompact⟩
+    rw [isometry_toCloseds.isEmbedding.isCompact_iff, image_univ]
+    exact isClosed_in_closeds.isCompact⟩
 
 /-- In a second countable space, the type of nonempty compact subsets is second countable -/
-instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
+instance secondCountableTopology [SecondCountableTopology α] :
     SecondCountableTopology (NonemptyCompacts α) :=
   haveI : SeparableSpace (NonemptyCompacts α) := by
     /- To obtain a countable dense subset of `NonemptyCompacts α`, start from
@@ -375,6 +383,8 @@ instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
       -- we have proved that `d` is a good approximation of `t` as requested
       exact ⟨d, ‹d ∈ v›, Dtc⟩
   UniformSpace.secondCountable_of_separable (NonemptyCompacts α)
+
+end NonemptyCompacts
 
 end
 
