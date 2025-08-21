@@ -10,8 +10,7 @@ import Mathlib.Combinatorics.Pigeonhole
 import Mathlib.Combinatorics.SimpleGraph.Bipartite
 import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 import Mathlib.Combinatorics.SimpleGraph.ConcreteColorings
-import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
-import Mathlib.Data.Nat.Choose.Cast
+import Mathlib.Combinatorics.SimpleGraph.Extremal.TuranDensity
 import Mathlib.Data.Real.Sqrt
 
 /-!
