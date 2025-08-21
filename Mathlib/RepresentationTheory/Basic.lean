@@ -30,7 +30,7 @@ homomorphisms `G →* (V →ₗ[k] V)`. We use the abbreviation `Representation`
 The theorem `asAlgebraHom_def` constructs a module over the group `k`-algebra of `G` (implemented
 as `MonoidAlgebra k G`) corresponding to a representation. If `ρ : Representation k G V`, this
 module can be accessed via `ρ.asModule`. Conversely, given a `MonoidAlgebra k G`-module `M`,
-`M.ofModule` is the associociated representation seen as a homomorphism.
+`M.ofModule` is the associated representation seen as a homomorphism.
 -/
 
 open MonoidAlgebra (lift of)
