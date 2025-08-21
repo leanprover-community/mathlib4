@@ -39,6 +39,7 @@ That this structure is nonempty when `X`
 and `Y` are cofibrant is Ken Brown's factorization lemma. -/
 structure CofibrantBrownFactorization extends
     MapFactorizationData (cofibrations C) (trivialFibrations C) f where
+  /-- a cofibration that is a section of `p` -/
   s : Y ⟶ Z
   s_p : s ≫ p = 𝟙 Y := by cat_disch
   cofibration_s : Cofibration s := by infer_instance
@@ -86,6 +87,7 @@ That this structure is nonempty when `X`
 and `Y` are fibrant is Ken Brown's lemma. -/
 structure FibrantBrownFactorization extends
     MapFactorizationData (trivialCofibrations C) (fibrations C) f where
+  /-- a fibration that is a retraction of `i` -/
   r : Z ⟶ X
   i_r : i ≫ r = 𝟙 X := by cat_disch
   fibration_r : Fibration r := by infer_instance
