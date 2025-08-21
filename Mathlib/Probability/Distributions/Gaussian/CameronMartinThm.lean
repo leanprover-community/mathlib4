@@ -244,7 +244,13 @@ lemma todo_hasDerivAt (x : CameronMartin μ) (L : StrongDual ℝ E) (z : ℂ) :
     (F' := fun z ω ↦ - (cmIsometryEquiv μ x : E → ℝ) ω * I
         * exp ((L ω - z * (cmIsometryEquiv μ x : E → ℝ) ω) * I)) zero_lt_one ?_ ?_ ?_ ?_ ?_ ?_).2
   · exact .of_forall fun z ↦ by fun_prop
-  · sorry
+  · rw [← integrable_norm_iff (by fun_prop)]
+    simp only [norm_exp, mul_re, sub_re, ofReal_re, ofReal_im, mul_zero, sub_zero, I_re, sub_im,
+      mul_im, zero_add, zero_sub, I_im, mul_one, sub_neg_eq_add]
+    change Integrable ((fun a ↦ Real.exp (z.im * a)) ∘ (cmIsometryEquiv μ x : E → ℝ)) μ
+    rw [← integrable_map_measure (f := fun ω ↦ (cmIsometryEquiv μ x : E → ℝ) ω) (by fun_prop)
+      (by fun_prop), (hasLaw_cameronMartinRKHS (cmIsometryEquiv μ x)).map_eq]
+    exact integrable_exp_mul_gaussianReal (μ := 0) (v := ‖cmIsometryEquiv μ x‖₊ ^ 2) z.im
   · fun_prop
   · refine ae_of_all _ fun ω ε hε ↦ ?_
     simp only [neg_mul, norm_neg, norm_mul, norm_real, Real.norm_eq_abs, norm_I, mul_one]
@@ -262,7 +268,15 @@ lemma todo_hasDerivAt (x : CameronMartin μ) (L : StrongDual ℝ E) (z : ℂ) :
     refine (abs_im_le_norm _).trans ?_
     simp only [Metric.mem_ball, dist_eq_norm] at hε
     exact hε.le
-  · sorry
+  · change Integrable
+      ((fun ω ↦ |ω| * Real.exp (z.im * ω + |ω|)) ∘ (cmIsometryEquiv μ x : E → ℝ)) μ
+    rw [← integrable_map_measure (f := fun ω ↦ (cmIsometryEquiv μ x : E → ℝ) ω) (by fun_prop)
+      (by fun_prop), (hasLaw_cameronMartinRKHS (cmIsometryEquiv μ x)).map_eq]
+    have h := integrable_pow_abs_mul_exp_add_of_integrable_exp_mul (x := 1) (v := z.im) (X := id)
+      (t := 2) (μ := gaussianReal 0 (‖cmIsometryEquiv μ x‖₊ ^ 2)) ?_ ?_ zero_le_one (by simp) 1
+    · simpa only [id_eq, pow_one, one_mul] using h
+    · exact integrable_exp_mul_gaussianReal (z.im + 2)
+    · exact integrable_exp_mul_gaussianReal (z.im - 2)
   · refine ae_of_all _ fun ω ε hε ↦ ?_
     simp only
     simp_rw [sub_mul, sub_eq_add_neg, exp_add, ← neg_mul, mul_comm (_ * I), mul_assoc]
