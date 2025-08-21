@@ -101,9 +101,7 @@ theorem isPrimePow_iff_unique_prime_dvd {n : ℕ} : IsPrimePow n ↔ ∃! p : �
 theorem isPrimePow_pow_iff {n k : ℕ} (hk : k ≠ 0) : IsPrimePow (n ^ k) ↔ IsPrimePow n := by
   simp only [isPrimePow_iff_unique_prime_dvd]
   apply existsUnique_congr
-  simp only [and_congr_right_iff]
-  intro p hp
-  exact ⟨hp.dvd_of_dvd_pow, fun t => t.trans (dvd_pow_self _ hk)⟩
+  simp +contextual [Nat.prime_iff, Prime.dvd_pow_iff_dvd, hk]
 
 theorem Nat.Coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.Coprime a b) (hn : IsPrimePow n) :
     n ∣ a * b ↔ n ∣ a ∨ n ∣ b := by
