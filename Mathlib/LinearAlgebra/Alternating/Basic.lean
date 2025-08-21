@@ -844,7 +844,7 @@ end MultilinearMap
 
 namespace AlternatingMap
 
-/-- If a multilinear map is already alternating, then its alternation equals `n!` times the map,
+/-- Alternatizing a multilinear map that is already alternating results in a scale factor of `n!`,
 where `n` is the number of inputs. -/
 theorem coe_alternatization [DecidableEq ι] [Fintype ι] (a : M [⋀^ι]→ₗ[R] N') :
     MultilinearMap.alternatization (a : MultilinearMap R (fun _ => M) N')
