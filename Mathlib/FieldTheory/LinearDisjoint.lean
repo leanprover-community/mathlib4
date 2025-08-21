@@ -3,7 +3,7 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
+import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.RingTheory.AlgebraicIndependent.RankAndCardinality
 import Mathlib.RingTheory.LinearDisjoint
 
@@ -336,7 +336,11 @@ theorem of_le' {A' : IntermediateField F E} (H : A.LinearDisjoint L)
     [Algebra L' E] [IsScalarTower F L' E] [IsScalarTower L' L E] : A'.LinearDisjoint L' :=
   H.of_le_left hA |>.of_le_right' L'
 
-/-- If `A` and `B` are linearly disjoint over `F`, then their intersection is equal to `F`. -/
+/--
+If `A` and `B` are linearly disjoint over `F`, then their intersection is equal to `F`.
+This is actually an equivalence if `A/F` and `B/F` are finite dimensional, and `A/F` is Galois,
+see `IntermediateField.LinearDisjoint.iff_inf_eq_bot`.
+-/
 theorem inf_eq_bot (H : A.LinearDisjoint B) :
     A ⊓ B = ⊥ := toSubalgebra_injective (linearDisjoint_iff'.1 H).inf_eq_bot
 
@@ -364,6 +368,49 @@ then `A` and `B` are linearly disjoint. -/
 theorem of_finrank_sup [FiniteDimensional F A] [FiniteDimensional F B]
     (H : finrank F ↥(A ⊔ B) = finrank F A * finrank F B) : A.LinearDisjoint B :=
   linearDisjoint_iff'.2 <| .of_finrank_sup_of_free (by rwa [← sup_toSubalgebra_of_left])
+
+/--
+If `A` and `B` are finite extensions of `F`, with `A/F` Galois, such that `A ⊓ B = F`, then
+`A` and `B` are linearly disjoint over `F`.
+See `IntermediateField.LinearDisjoint.of_inf_eq_bot` for a version where we don't require the
+compositum `AB` to be equal to the top field `E`.
+-/
+theorem of_inf_eq_bot' [IsGalois F A] [FiniteDimensional F E] (h₁ : A ⊔ B = ⊤) (h₂ : A ⊓ B = ⊥) :
+    A.LinearDisjoint B := by
+  apply LinearDisjoint.of_finrank_sup
+  rw [h₁, finrank_top', ← Module.finrank_mul_finrank F B E, mul_comm, mul_left_inj'
+    Module.finrank_pos.ne']
+  have : IsGalois B E := IsGalois.sup A B h₁
+  rw [← IsGalois.card_aut_eq_finrank, ← IsGalois.card_aut_eq_finrank]
+  exact Fintype.card_congr <| Equiv.ofBijective (restrictRestrictAlgEquivMapHom A B)
+    ⟨restrictRestrictAlgEquivMapHom_injective _ _ h₁,
+      restrictRestrictAlgEquivMapHom_surjective _ _ h₂⟩
+
+/--
+If `A` and `B` are finite extensions of `F`, with `A/F` Galois, such that `A ⊓ B = F`, then
+`A` and `B` are linearly disjoint over `F`.
+-/
+theorem of_inf_eq_bot [IsGalois F A] [FiniteDimensional F A] [FiniteDimensional F B]
+    (h : A ⊓ B = ⊥) : A.LinearDisjoint B := by
+  let C : IntermediateField F E := A ⊔ B
+  let A' : IntermediateField F C := A.restrict le_sup_left
+  let B' : IntermediateField F C := B.restrict le_sup_right
+  have hA : IntermediateField.map C.val A' = A := lift_restrict le_sup_left
+  have hB : IntermediateField.map C.val B' = B := lift_restrict le_sup_right
+  suffices A'.LinearDisjoint B' from hA ▸ hB ▸ LinearDisjoint.map this C.val
+  have h₁ : A' ⊔ B' = ⊤ := by
+    apply lift_injective
+    simp_rw [lift_top, lift, IntermediateField.map_sup, hA, hB, C]
+  have h₂ : A' ⊓ B' = ⊥ := by
+    apply lift_injective
+    simp [lift, map_inf, hA, hB, h]
+  have : IsGalois F A' := IsGalois.of_algEquiv <| restrict_algEquiv ..
+  exact of_inf_eq_bot' h₁ h₂
+
+@[simp]
+theorem iff_inf_eq_bot [IsGalois F A] [FiniteDimensional F A] [FiniteDimensional F B] :
+    A.LinearDisjoint B ↔ A ⊓ B = ⊥ :=
+  ⟨fun h ↦ inf_eq_bot h, fun h ↦ of_inf_eq_bot h⟩
 
 /-- If `A` and `L` are linearly disjoint over `F`, one of them is algebraic,
 then `[L(A) : L] = [A : F]`. -/
