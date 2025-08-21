@@ -547,13 +547,18 @@ lemma extremalNumber_le_of_colorable {ε : ℝ} (hε : 0 < ε)
     ∃ n, ∀ {V : Type*} [Fintype V] [DecidableEq V], n < card V →
       extremalNumber (card V) H ≤ (1 - 1 / r + ε) * card V ^ 2 / 2 := by
   obtain ⟨C⟩ := hc
-  have h₁ := isContained_completeEquipartiteGraph_of_colorable C
-  let t := univ.sup fun c ↦ card (C.colorClass c)
+  let f := fun c ↦ card (C.colorClass c)
+  let t := univ.sup f
+  have h₁ : H ⊑ completeEquipartiteGraph (r + 1) t := by
+    apply isContained_completeEquipartiteGraph_of_colorable C t
+    intro c
+    rw [show card (C.colorClass c) = f c from rfl]
+    exact le_sup (mem_univ c)
   have ⟨n, h₂⟩ := completeEquipartiteGraph_isContained_of_card_edgeFinset hε r t
   use n
   intro V _ _ h_card
   trans (extremalNumber (card V) (completeEquipartiteGraph (r + 1) t) : ℝ)
-  -- `H` is ontained in `completeEquipartiteGraph`
+  -- `H` is contained in `completeEquipartiteGraph`
   · exact_mod_cast h₁.extremalNumber_le
   -- `completeEquipartiteGraph` is contained in `G`
   · have : 0 ≤ 1 - 1 / r + ε := add_nonneg r.one_sub_one_div_cast_nonneg hε.le
