@@ -55,6 +55,8 @@ def StronglyConnectedComponent (V : Type*) [Quiver V] : Type _ :=
 namespace StronglyConnectedComponent
 
 variable {V} [Quiver V]
+
+/-- The strongly connected component in which a vertex lives. -/
 protected def mk : V → StronglyConnectedComponent V :=
   @Quotient.mk' _ (stronglyConnectedSetoid V)
 
