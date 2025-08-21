@@ -104,9 +104,7 @@ theorem IsSRGWith.card_neighborFinset_union_of_adj {v w : V} (h : G.IsSRGWith n 
 theorem compl_neighborFinset_sdiff_inter_eq {v w : V} :
     (G.neighborFinset v)ᶜ \ {v} ∩ ((G.neighborFinset w)ᶜ \ {w}) =
       ((G.neighborFinset v)ᶜ ∩ (G.neighborFinset w)ᶜ) \ ({w} ∪ {v}) := by
-  ext
-  rw [← not_iff_not]
-  simp [imp_iff_not_or, or_assoc, or_comm, or_left_comm]
+  grind
 
 theorem sdiff_compl_neighborFinset_inter_eq {v w : V} (h : G.Adj v w) :
     ((G.neighborFinset v)ᶜ ∩ (G.neighborFinset w)ᶜ) \ ({w} ∪ {v}) =
