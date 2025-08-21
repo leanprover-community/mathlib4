@@ -946,22 +946,27 @@ end Ordinal
 /-! ### Results about injectivity and surjectivity -/
 
 
-theorem not_surjective_of_ordinal {α : Type u} (f : α → Ordinal.{u}) : ¬Surjective f := fun h =>
-  Ordinal.lsub_notMem_range.{u, u} f (h _)
+theorem not_surjective_of_ordinal {α : Type*} [Small.{u} α] (f : α → Ordinal.{u}) :
+    ¬ Surjective f := by
+  intro h
+  obtain ⟨a, ha⟩ := h (⨆ i, succ (f i))
+  apply ha.not_lt
+  rw [Ordinal.lt_iSup_iff]
+  exact ⟨a, Order.lt_succ _⟩
 
-theorem not_injective_of_ordinal {α : Type u} (f : Ordinal.{u} → α) : ¬Injective f := fun h =>
-  not_surjective_of_ordinal _ (invFun_surjective h)
+theorem not_injective_of_ordinal {α : Type*} [Small.{u} α] (f : Ordinal.{u} → α) :
+    ¬ Injective f := fun h ↦ not_surjective_of_ordinal _ (invFun_surjective h)
 
-theorem not_surjective_of_ordinal_of_small {α : Type v} [Small.{u} α] (f : α → Ordinal.{u}) :
-    ¬Surjective f := fun h => not_surjective_of_ordinal _ (h.comp (equivShrink _).symm.surjective)
+@[deprecated (since := "2025-08-21")]
+alias not_surjective_of_ordinal_of_small := not_surjective_of_ordinal
 
-theorem not_injective_of_ordinal_of_small {α : Type v} [Small.{u} α] (f : Ordinal.{u} → α) :
-    ¬Injective f := fun h => not_injective_of_ordinal _ ((equivShrink _).injective.comp h)
+@[deprecated (since := "2025-08-21")]
+alias not_injective_of_ordinal_of_small := not_injective_of_ordinal
 
 /-- The type of ordinals in universe `u` is not `Small.{u}`. This is the type-theoretic analog of
 the Burali-Forti paradox. -/
 theorem not_small_ordinal : ¬Small.{u} Ordinal.{max u v} := fun h =>
-  @not_injective_of_ordinal_of_small _ h _ fun _a _b => Ordinal.lift_inj.{v, u}.1
+  @not_injective_of_ordinal _ h _ fun _a _b => Ordinal.lift_inj.{v, u}.1
 
 instance Ordinal.uncountable : Uncountable Ordinal.{u} :=
   Uncountable.of_not_small not_small_ordinal.{u}
