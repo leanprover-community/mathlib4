@@ -225,7 +225,7 @@ theorem Dense.exists_seq_strictMono_tendsto_of_lt [DenselyOrdered α] [FirstCoun
     obtain ⟨z, hyz, hzx⟩ := hs.exists_between hy
     exact ⟨z, mem_inter hzx hyz⟩
   have hx : IsLUB (Ioo y x ∩ s) x := hs.isLUB_inter_iff isOpen_Ioo |>.mpr <| isLUB_Ioo hy
-  apply hx.exists_seq_strictMono_tendsto_of_notMem (by aesop) hnonempty |>.imp
+  apply hx.exists_seq_strictMono_tendsto_of_notMem (by simp) hnonempty |>.imp
   aesop
 
 theorem Dense.exists_seq_strictMono_tendsto [DenselyOrdered α] [NoMinOrder α]
