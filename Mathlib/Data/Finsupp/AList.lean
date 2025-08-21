@@ -90,7 +90,7 @@ theorem lookupFinsupp_eq_zero_iff [DecidableEq α] {l : AList fun _x : α => M} 
 
 @[simp]
 theorem empty_lookupFinsupp : lookupFinsupp (∅ : AList fun _x : α => M) = 0 := by
-  tauto
+  rfl
 
 @[simp]
 theorem insert_lookupFinsupp [DecidableEq α] (l : AList fun _x : α => M) (a : α) (m : M) :

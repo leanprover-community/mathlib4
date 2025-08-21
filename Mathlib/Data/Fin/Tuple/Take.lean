@@ -43,7 +43,7 @@ theorem take_one {α : Fin (n + 1) → Sort*} (v : (i : Fin (n + 1)) → α i) :
 @[simp]
 theorem take_eq_init {α : Fin (n + 1) → Sort*} (v : (i : Fin (n + 1)) → α i) :
     take n n.le_succ v = init v := by
-  tauto
+  rfl
 
 @[simp]
 theorem take_eq_self (v : (i : Fin n) → α i) : take n (le_refl n) v = v := by
@@ -53,12 +53,12 @@ theorem take_eq_self (v : (i : Fin n) → α i) : take n (le_refl n) v = v := by
 @[simp]
 theorem take_take {m n' : ℕ} (h : m ≤ n') (h' : n' ≤ n) (v : (i : Fin n) → α i) :
     take m h (take n' h' v) = take m (Nat.le_trans h h') v := by
-  tauto
+  rfl
 
 @[simp]
 theorem take_init {α : Fin (n + 1) → Sort*} (m : ℕ) (h : m ≤ n) (v : (i : Fin (n + 1)) → α i) :
     take m h (init v) = take m (Nat.le_succ_of_le h) v := by
-  tauto
+  rfl
 
 theorem take_repeat {α : Type*} {n' : ℕ} (m : ℕ) (h : m ≤ n) (a : Fin n' → α) :
     take (m * n') (Nat.mul_le_mul_right n' h) (Fin.repeat n a) = Fin.repeat m a := by
