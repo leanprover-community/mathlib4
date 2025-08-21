@@ -90,10 +90,9 @@ lemma multipliableLocallyUniformlyOn_eta :
 lemma eta_ne_zero_on_UpperHalfPlane {z : ℂ} (hz : z ∈ ℍₒ) : η z ≠ 0 := by
   apply mul_ne_zero (Periodic.qParam_ne_zero z)
   simp only [eta_q, ne_eq]
-  refine tprod_one_add_ne_zero_of_summable ⟨z, hz⟩ (f := fun n x ↦ -eta_q n x) (α := ℍ) ?_ ?_
-  · refine fun i x ↦ by simpa using one_sub_eta_q_ne_zero i x.2
-  · intro x
-    simpa [eta_q, ← summable_norm_iff] using summable_eta_q x
+  refine tprod_one_add_ne_zero_of_summable2 (f := fun n ↦ -eta_q n z)  ?_ ?_
+  · refine fun i ↦ by simpa using one_sub_eta_q_ne_zero i hz
+  · simpa [eta_q, ← summable_norm_iff] using summable_eta_q ⟨z, hz⟩
 
 lemma logDeriv_one_sub_cexp (r : ℂ) : logDeriv (fun z ↦ 1 - r * cexp z) =
     fun z ↦ -r * cexp z / (1 - r * cexp z) := by

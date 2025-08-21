@@ -181,4 +181,29 @@ lemma multipliable_one_add_of_summable [CompleteSpace R]
   · intro x hx y hy
     exact (dist_triangle_right _ _ (∏ i ∈ s, (1 + f i))).trans_lt (add_halves ε ▸ add_lt_add hx hy)
 
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+
+lemma Real.summable_log_norm_of_summable_norm {f : ι → 𝕜} (hu : Summable fun n => ‖f n‖) :
+    Summable fun i ↦ Real.log ‖1 + f i‖ := by
+  let g (i : ι) := ‖1 + f i‖ - 1
+  have aux1 : Summable (g ·) := by
+    apply Summable.of_norm
+    apply hu.of_nonneg_of_le (fun i => by positivity)
+    intro i
+    simp_rw [g, Real.norm_eq_abs, abs_le]
+    constructor
+    · simpa [le_sub_iff_add_le, neg_add_eq_sub] using norm_add_le (1 + f i) (-f i)
+    · rw [sub_le_iff_le_add, ← norm_one (α := 𝕜), add_comm]
+      exact norm_add_le (f i) 1
+  apply (Real.summable_log_one_add_of_summable aux1).congr
+  simp [g]
+
+lemma tprod_one_add_ne_zero_of_summable [CompleteSpace 𝕜] {f : ι → 𝕜} (hf : ∀ i, 1 + f i ≠ 0)
+    (hu : Summable fun n => ‖f n‖) : (∏' i : ι, (1 + f i)) ≠ 0 := by
+  rw [← norm_ne_zero_iff, Multipliable.norm_tprod]
+  · rw [ne_eq, ← Real.rexp_tsum_eq_tprod (f := fun n => (‖1 + f n‖)) (by intro i; simp [hf i])
+      (Real.summable_log_norm_of_summable_norm hu)]
+    simp [Real.exp_ne_zero]
+  · exact multipliable_one_add_of_summable hu
+
 end NormedRing
