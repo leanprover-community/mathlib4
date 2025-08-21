@@ -42,14 +42,6 @@ lemma summable_log_one_add_of_summable {f : ι → ℂ} (hf : Summable f) :
   filter_upwards [hf.norm.tendsto_cofinite_zero.eventually_le_const one_half_pos] with i hi
     using norm_log_one_add_half_le_self hi
 
-lemma tprod_one_add_ne_zero_of_summable {α : Type*} (x : α) {f : ι → α → ℂ}
-    (hf : ∀ i x, 1 + f i x ≠ 0) (hu : ∀ x : α, Summable fun n => f n x) :
-    (∏' i : ι, (1 + f i) x) ≠ 0 := by
-  simp only [Pi.add_apply, Pi.one_apply, ne_eq]
-  rw [← Complex.cexp_tsum_eq_tprod (f := fun n => 1 + f n x) (fun n => hf n x)]
-  · simp only [exp_ne_zero, not_false_eq_true]
-  · exact Complex.summable_log_one_add_of_summable (hu x)
-
 protected lemma multipliable_one_add_of_summable (hf : Summable f) :
     Multipliable (fun i ↦ 1 + f i) :=
   multipliable_of_summable_log (summable_log_one_add_of_summable hf)
