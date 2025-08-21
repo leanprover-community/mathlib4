@@ -62,20 +62,20 @@ instance preN2 : PartialOrder (ℕ × ZMod 2) where
 instance csrN2 : CommSemiring (ℕ × ZMod 2) := by infer_instance
 
 instance csrN21 : AddCancelCommMonoid (ℕ × ZMod 2) :=
-  { Nxzmod2.csrN2 with add_left_cancel := fun a _ _ h => (add_right_inj a).mp h }
+  { Nxzmod2.csrN2 with add_left_cancel := fun a _ _ h ↦ (add_right_inj a).mp h }
 
 /-- A strict inequality forces the first components to be different. -/
 @[simp]
 theorem lt_def : a < b ↔ a.1 < b.1 := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨rfl | a1, h1⟩
     · exact (not_or.mp h1).1.elim rfl
     · exact a1
-  refine ⟨Or.inr h, not_or.mpr ⟨fun k => ?_, not_lt.mpr h.le⟩⟩
+  refine ⟨Or.inr h, not_or.mpr ⟨fun k ↦ ?_, not_lt.mpr h.le⟩⟩
   rw [k] at h
   exact Nat.lt_asymm h h
 
-theorem add_left_cancel : ∀ a b c : ℕ × ZMod 2, a + b = a + c → b = c := fun a _ _ h =>
+theorem add_left_cancel : ∀ a b c : ℕ × ZMod 2, a + b = a + c → b = c := fun a _ _ h ↦
   (add_right_inj a).mp h
 
 theorem add_le_add_left : ∀ a b : ℕ × ZMod 2, a ≤ b → ∀ c : ℕ × ZMod 2, c + a ≤ c + b := by
@@ -92,10 +92,10 @@ instance : ZeroLEOneClass (ℕ × ZMod 2) :=
   ⟨by dsimp only [LE.le]; decide⟩
 
 theorem mul_lt_mul_of_pos_left : ∀ a b c : ℕ × ZMod 2, a < b → 0 < c → c * a < c * b :=
-  fun _ _ _ ab c0 => lt_def.mpr ((mul_lt_mul_left (lt_def.mp c0)).mpr (lt_def.mp ab))
+  fun _ _ _ ab c0 ↦ lt_def.mpr ((mul_lt_mul_left (lt_def.mp c0)).mpr (lt_def.mp ab))
 
 theorem mul_lt_mul_of_pos_right : ∀ a b c : ℕ × ZMod 2, a < b → 0 < c → a * c < b * c :=
-  fun _ _ _ ab c0 => lt_def.mpr ((mul_lt_mul_right (lt_def.mp c0)).mpr (lt_def.mp ab))
+  fun _ _ _ ab c0 ↦ lt_def.mpr ((mul_lt_mul_right (lt_def.mp c0)).mpr (lt_def.mp ab))
 
 instance isorN2 : IsStrictOrderedRing (ℕ × ZMod 2) :=
   { add_le_add_left := add_le_add_left
@@ -177,7 +177,7 @@ theorem exists_add_of_le : ∀ a b : L, a ≤ b → ∃ c, b = a + c := by
   rintro a ⟨b, _⟩ (⟨rfl, rfl⟩ | h)
   · exact ⟨0, (add_zero _).symm⟩
   · exact
-      ⟨⟨b - a.1, fun H => (tsub_pos_of_lt h).ne' (Prod.mk_inj.1 H).1⟩,
+      ⟨⟨b - a.1, fun H ↦ (tsub_pos_of_lt h).ne' (Prod.mk_inj.1 H).1⟩,
         Subtype.ext <| Prod.ext (add_tsub_cancel_of_le h.le).symm (add_sub_cancel _ _).symm⟩
 
 theorem le_self_add : ∀ a b : L, a ≤ a + b := by
@@ -219,8 +219,8 @@ instance : NoZeroDivisors L where
 /-- The elements `(1,0)` and `(1,1)` of `L` are different, but their doubles coincide.
 -/
 example : ∃ a b : L, a ≠ b ∧ 2 * a = 2 * b := by
-  refine ⟨⟨(1, 0), by simp⟩, 1, fun h : (⟨(1, 0), _⟩ : L) = ⟨⟨1, 1⟩, _⟩ => ?_, rfl⟩
-  obtain F : (0 : ZMod 2) = 1 := congr_arg (fun j : L => j.1.2) h
+  refine ⟨⟨(1, 0), by simp⟩, 1, fun h : (⟨(1, 0), _⟩ : L) = ⟨⟨1, 1⟩, _⟩ ↦ ?_, rfl⟩
+  obtain F : (0 : ZMod 2) = 1 := congr_arg (fun j : L ↦ j.1.2) h
   cases F
 
 end ExL

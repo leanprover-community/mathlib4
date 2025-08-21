@@ -30,7 +30,7 @@ def withSign (i : ℤˣ) : Submodule ℕ ℤ :=
     show AddSubmonoid ℤ from
       { carrier := {z | 0 ≤ i • z}
         zero_mem' := show 0 ≤ i • (0 : ℤ) from (smul_zero _).ge
-        add_mem' := fun {x y} (hx : 0 ≤ i • x) (hy : 0 ≤ i • y) =>
+        add_mem' := fun {x y} (hx : 0 ≤ i • x) (hy : 0 ≤ i • y) ↦
           show 0 ≤ i • (x + y) by
             rw [smul_add]
             exact add_nonneg hx hy }
@@ -69,12 +69,12 @@ theorem withSign.iSup : iSup withSign = ⊤ := by
 
 /-- But there is no embedding into `ℤ` from the direct sum. -/
 theorem withSign.not_injective :
-    ¬Function.Injective (DirectSum.toModule ℕ ℤˣ ℤ fun i => (withSign i).subtype) := by
+    ¬Function.Injective (DirectSum.toModule ℕ ℤˣ ℤ fun i ↦ (withSign i).subtype) := by
   intro hinj
   let p1 : ℤ≥0 := ⟨1, mem_withSign_one.2 zero_le_one⟩
   let n1 : ℤ≤0 := ⟨-1, mem_withSign_neg_one.2 <| neg_nonpos.2 zero_le_one⟩
   let z :=
-    DirectSum.lof ℕ _ (fun i => withSign i) 1 p1 + DirectSum.lof ℕ _ (fun i => withSign i) (-1) n1
+    DirectSum.lof ℕ _ (fun i ↦ withSign i) 1 p1 + DirectSum.lof ℕ _ (fun i ↦ withSign i) (-1) n1
   have : z ≠ 0 := by
     intro h
     replace h := DFunLike.congr_fun h 1

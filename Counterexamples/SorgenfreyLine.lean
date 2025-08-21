@@ -72,7 +72,7 @@ theorem nhds_basis_Ico (a : ℝₗ) : (𝓝 a).HasBasis (a < ·) (Ico a ·) := b
   haveI : Nonempty { x // x ≤ a } := Set.nonempty_Iic_subtype
   have : (⨅ x : { i // i ≤ a }, 𝓟 (Ici ↑x)) = 𝓟 (Ici a) := by
     refine (IsLeast.isGLB ?_).iInf_eq
-    exact ⟨⟨⟨a, le_rfl⟩, rfl⟩, forall_mem_range.2 fun b => principal_mono.2 <| Ici_subset_Ici.2 b.2⟩
+    exact ⟨⟨⟨a, le_rfl⟩, rfl⟩, forall_mem_range.2 fun b ↦ principal_mono.2 <| Ici_subset_Ici.2 b.2⟩
   simp only [mem_setOf_eq, iInf_and, iInf_exists, @iInf_comm _ (_ ∈ _), @iInf_comm _ (Set ℝₗ),
     iInf_iInf_eq_right, mem_Ico]
   simp_rw [@iInf_comm _ ℝₗ (_ ≤ _), iInf_subtype', ← Ici_inter_Iio, ← inf_principal,
@@ -82,15 +82,15 @@ theorem nhds_basis_Ico (a : ℝₗ) : (𝓝 a).HasBasis (a < ·) (Ico a ·) := b
   exact directedOn_iff_directed.2 <| Monotone.directed_ge fun x y hxy ↦ Iio_subset_Iio hxy
 
 theorem nhds_basis_Ico_rat (a : ℝₗ) :
-    (𝓝 a).HasCountableBasis (fun r : ℚ => a < r) fun r => Ico a r := by
-  refine ⟨(nhds_basis_Ico a).to_hasBasis (fun b hb => ?_) fun r hr => ⟨_, hr, Subset.rfl⟩,
+    (𝓝 a).HasCountableBasis (fun r : ℚ ↦ a < r) fun r ↦ Ico a r := by
+  refine ⟨(nhds_basis_Ico a).to_hasBasis (fun b hb ↦ ?_) fun r hr ↦ ⟨_, hr, Subset.rfl⟩,
     Set.to_countable _⟩
   rcases exists_rat_btwn hb with ⟨r, har, hrb⟩
   exact ⟨r, har, Ico_subset_Ico_right hrb.le⟩
 
 theorem nhds_basis_Ico_inv_pnat (a : ℝₗ) :
-    (𝓝 a).HasBasis (fun _ : ℕ+ => True) fun n => Ico a (a + (n : ℝₗ)⁻¹) := by
-  refine (nhds_basis_Ico a).to_hasBasis (fun b hb => ?_) fun n hn =>
+    (𝓝 a).HasBasis (fun _ : ℕ+ ↦ True) fun n ↦ Ico a (a + (n : ℝₗ)⁻¹) := by
+  refine (nhds_basis_Ico a).to_hasBasis (fun b hb ↦ ?_) fun n hn ↦
     ⟨_, lt_add_of_pos_right _ (inv_pos.2 <| Nat.cast_pos.2 n.pos), Subset.rfl⟩
   rcases exists_nat_one_div_lt (sub_pos.2 hb) with ⟨k, hk⟩
   rw [one_div] at hk
@@ -98,17 +98,17 @@ theorem nhds_basis_Ico_inv_pnat (a : ℝₗ) :
   exact ⟨k.succPNat, trivial, Ico_subset_Ico_right (le_sub_iff_add_le'.1 hk.le)⟩
 
 theorem nhds_countable_basis_Ico_inv_pnat (a : ℝₗ) :
-    (𝓝 a).HasCountableBasis (fun _ : ℕ+ => True) fun n => Ico a (a + (n : ℝₗ)⁻¹) :=
+    (𝓝 a).HasCountableBasis (fun _ : ℕ+ ↦ True) fun n ↦ Ico a (a + (n : ℝₗ)⁻¹) :=
   ⟨nhds_basis_Ico_inv_pnat a, Set.to_countable _⟩
 
 theorem nhds_antitone_basis_Ico_inv_pnat (a : ℝₗ) :
-    (𝓝 a).HasAntitoneBasis fun n : ℕ+ => Ico a (a + (n : ℝₗ)⁻¹) :=
+    (𝓝 a).HasAntitoneBasis fun n : ℕ+ ↦ Ico a (a + (n : ℝₗ)⁻¹) :=
   ⟨nhds_basis_Ico_inv_pnat a, monotone_const.Ico <| Antitone.const_add
-    (fun k _l hkl => inv_anti₀ (Nat.cast_pos.2 k.2)
+    (fun k _l hkl ↦ inv_anti₀ (Nat.cast_pos.2 k.2)
       (Nat.mono_cast <| Subtype.coe_le_coe.2 hkl)) _⟩
 
 theorem isOpen_iff {s : Set ℝₗ} : IsOpen s ↔ ∀ x ∈ s, ∃ y > x, Ico x y ⊆ s :=
-  isOpen_iff_mem_nhds.trans <| forall₂_congr fun x _ => (nhds_basis_Ico x).mem_iff
+  isOpen_iff_mem_nhds.trans <| forall₂_congr fun x _ ↦ (nhds_basis_Ico x).mem_iff
 
 theorem isClosed_iff {s : Set ℝₗ} : IsClosed s ↔ ∀ x, x ∉ s → ∃ y > x, Disjoint (Ico x y) s := by
   simp only [← isOpen_compl_iff, isOpen_iff, mem_compl_iff, subset_compl_iff_disjoint_right]
@@ -130,7 +130,7 @@ theorem nhds_eq_comap (a : ℝₗ) : 𝓝 a = comap toReal (𝓝[≥] (toReal a)
 
 @[continuity]
 theorem continuous_toReal : Continuous toReal :=
-  continuous_iff_continuousAt.2 fun x => by
+  continuous_iff_continuousAt.2 fun x ↦ by
     rw [ContinuousAt, Tendsto, map_toReal_nhds]
     exact inf_le_left
 
@@ -142,7 +142,7 @@ instance : ContinuousAdd ℝₗ := by
   rintro ⟨x, y⟩
   rw [ContinuousAt, nhds_prod_eq, nhds_eq_comap (x + y), tendsto_comap_iff,
     nhds_eq_map, nhds_eq_map, prod_map_map_eq, ← nhdsWithin_prod_eq, Ici_prod_Ici]
-  exact (continuous_add.tendsto _).inf (MapsTo.tendsto fun x hx => add_le_add hx.1 hx.2)
+  exact (continuous_add.tendsto _).inf (MapsTo.tendsto fun x hx ↦ add_le_add hx.1 hx.2)
 
 theorem isClopen_Ici (a : ℝₗ) : IsClopen (Ici a) :=
   ⟨isClosed_Ici, isOpen_Ici a⟩
@@ -154,12 +154,12 @@ theorem isClopen_Ico (a b : ℝₗ) : IsClopen (Ico a b) :=
   (isClopen_Ici a).inter (isClopen_Iio b)
 
 instance : TotallyDisconnectedSpace ℝₗ :=
-  ⟨fun _ _ hs x hx y hy =>
+  ⟨fun _ _ hs x hx y hy ↦
     le_antisymm (hs.subset_isClopen (isClopen_Ici x) ⟨x, hx, left_mem_Ici⟩ hy)
       (hs.subset_isClopen (isClopen_Ici y) ⟨y, hy, left_mem_Ici⟩ hx)⟩
 
 instance : FirstCountableTopology ℝₗ :=
-  ⟨fun x => (nhds_basis_Ico_rat x).isCountablyGenerated⟩
+  ⟨fun x ↦ (nhds_basis_Ico_rat x).isCountablyGenerated⟩
 
 /-- Sorgenfrey line is a completely normal topological space.
     (Hausdorff follows as TotallyDisconnectedSpace → T₁) -/
@@ -171,24 +171,24 @@ instance : CompletelyNormalSpace ℝₗ := by
   Then `⋃ x ∈ s, Ico x (X x)` and `⋃ y ∈ t, Ico y (Y y)` are
   disjoint open sets that include `s` and `t`.
   -/
-  refine ⟨fun s t hd₁ hd₂ => ?_⟩
-  choose! X hX hXd using fun x (hx : x ∈ s) =>
+  refine ⟨fun s t hd₁ hd₂ ↦ ?_⟩
+  choose! X hX hXd using fun x (hx : x ∈ s) ↦
     exists_Ico_disjoint_closed isClosed_closure (disjoint_left.1 hd₂ hx)
-  choose! Y hY hYd using fun y (hy : y ∈ t) =>
+  choose! Y hY hYd using fun y (hy : y ∈ t) ↦
     exists_Ico_disjoint_closed isClosed_closure (disjoint_right.1 hd₁ hy)
   refine disjoint_of_disjoint_of_mem ?_
-    (bUnion_mem_nhdsSet fun x hx => (isOpen_Ico x (X x)).mem_nhds <| left_mem_Ico.2 (hX x hx))
-    (bUnion_mem_nhdsSet fun y hy => (isOpen_Ico y (Y y)).mem_nhds <| left_mem_Ico.2 (hY y hy))
+    (bUnion_mem_nhdsSet fun x hx ↦ (isOpen_Ico x (X x)).mem_nhds <| left_mem_Ico.2 (hX x hx))
+    (bUnion_mem_nhdsSet fun y hy ↦ (isOpen_Ico y (Y y)).mem_nhds <| left_mem_Ico.2 (hY y hy))
   simp only [disjoint_iUnion_left, disjoint_iUnion_right, Ico_disjoint_Ico]
   intro y hy x hx
   rcases le_total x y with hle | hle
   · calc
       min (X x) (Y y) ≤ X x := min_le_left _ _
-      _ ≤ y := (not_lt.1 fun hyx => (hXd x hx).le_bot ⟨⟨hle, hyx⟩, subset_closure hy⟩)
+      _ ≤ y := (not_lt.1 fun hyx ↦ (hXd x hx).le_bot ⟨⟨hle, hyx⟩, subset_closure hy⟩)
       _ ≤ max x y := le_max_right _ _
   · calc
       min (X x) (Y y) ≤ Y y := min_le_right _ _
-      _ ≤ x := (not_lt.1 fun hxy => (hYd y hy).le_bot ⟨⟨hle, hxy⟩, subset_closure hx⟩)
+      _ ≤ x := (not_lt.1 fun hxy ↦ (hYd y hy).le_bot ⟨⟨hle, hxy⟩, subset_closure hx⟩)
       _ ≤ max x y := le_max_left _ _
 
 theorem denseRange_ratCast : DenseRange ((↑) : ℚ → ℝₗ) := by
@@ -250,7 +250,7 @@ theorem not_separableSpace_antidiagonal (c : ℝₗ) :
   exact Cardinal.aleph0_lt_continuum
 
 theorem nhds_prod_antitone_basis_inv_pnat (x y : ℝₗ) :
-    (𝓝 (x, y)).HasAntitoneBasis fun n : ℕ+ => Ico x (x + (n : ℝₗ)⁻¹) ×ˢ Ico y (y + (n : ℝₗ)⁻¹) := by
+    (𝓝 (x, y)).HasAntitoneBasis fun n : ℕ+ ↦ Ico x (x + (n : ℝₗ)⁻¹) ×ˢ Ico y (y + (n : ℝₗ)⁻¹) := by
   rw [nhds_prod_eq]
   exact (nhds_antitone_basis_Ico_inv_pnat x).prod (nhds_antitone_basis_Ico_inv_pnat y)
 
@@ -278,12 +278,12 @@ theorem not_separatedNhds_rat_irrational_antidiag :
   /- Since the set of irrational numbers is a dense Gδ set in the usual topology of `ℝ`, there
     exists `N > 0` such that the set `C N = {x : ℝ | Irrational x ∧ k x = N}` is dense in a nonempty
     interval. In other words, the closure of this set has a nonempty interior. -/
-  set C : ℕ+ → Set ℝ := fun n => closure {x | Irrational x ∧ k (toReal.symm x) = n}
-  have H : {x : ℝ | Irrational x} ⊆ ⋃ n, C n := fun x hx =>
+  set C : ℕ+ → Set ℝ := fun n ↦ closure {x | Irrational x ∧ k (toReal.symm x) = n}
+  have H : {x : ℝ | Irrational x} ⊆ ⋃ n, C n := fun x hx ↦
     mem_iUnion.2 ⟨_, subset_closure ⟨hx, rfl⟩⟩
   have Hd : Dense (⋃ n, interior (C n)) :=
     IsGδ.setOf_irrational.dense_iUnion_interior_of_closed dense_irrational
-      (fun _ => isClosed_closure) H
+      (fun _ ↦ isClosed_closure) H
   obtain ⟨N, hN⟩ : ∃ n : ℕ+, (interior <| C n).Nonempty := nonempty_iUnion.mp Hd.nonempty
   /- Choose a rational number `r` in the interior of the closure of `C N`, then choose `n ≥ N > 0`
     such that `Ico r (r + n⁻¹) × Ico (-r) (-r + n⁻¹) ⊆ U`. -/

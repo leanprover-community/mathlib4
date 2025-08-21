@@ -26,8 +26,8 @@ calculating is indeed measurable and our result is therefore meaningful.
 In the main proof, `area_disc`, we use `volume_regionBetween_eq_integral` followed by
 `intervalIntegral.integral_of_le` to reduce our goal to a single `intervalIntegral`:
   `∫ (x : ℝ) in -r..r, 2 * sqrt (r ^ 2 - x ^ 2) = π * r ^ 2`.
-After disposing of the trivial case `r = 0`, we show that `fun x => 2 * sqrt (r ^ 2 - x ^ 2)` is
-equal to the derivative of `fun x => r ^ 2 * arcsin (x / r) + x * sqrt (r ^ 2 - x ^ 2)` everywhere
+After disposing of the trivial case `r = 0`, we show that `fun x ↦ 2 * sqrt (r ^ 2 - x ^ 2)` is
+equal to the derivative of `fun x ↦ r ^ 2 * arcsin (x / r) + x * sqrt (r ^ 2 - x ^ 2)` everywhere
 on `Ioo (-r) r` and that those two functions are continuous, then apply the second fundamental
 theorem of calculus with those facts. Some simple algebra then completes the proof.
 
@@ -59,11 +59,11 @@ def disc (r : ℝ) :=
 variable (r : ℝ≥0)
 
 /-- A disc of radius `r` can be represented as the region between the two curves
-  `fun x => - sqrt (r ^ 2 - x ^ 2)` and `fun x => sqrt (r ^ 2 - x ^ 2)`. -/
+  `fun x ↦ - sqrt (r ^ 2 - x ^ 2)` and `fun x ↦ sqrt (r ^ 2 - x ^ 2)`. -/
 theorem disc_eq_regionBetween :
     disc r =
       regionBetween
-        (fun x => -sqrt (r ^ 2 - x ^ 2)) (fun x => sqrt (r ^ 2 - x ^ 2)) (Ioc (-r) r) := by
+        (fun x ↦ -sqrt (r ^ 2 - x ^ 2)) (fun x ↦ sqrt (r ^ 2 - x ^ 2)) (Ioc (-r) r) := by
   ext p
   simp only [disc, regionBetween, mem_setOf_eq, mem_Ioo, mem_Ioc]
   constructor <;> intro h
@@ -86,10 +86,10 @@ theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
   suffices ∫ x in -r..r, 2 * f x = NNReal.pi * r ^ 2 by
     have h : IntegrableOn f (Ioc (-r) r) := hf.integrableOn_Icc.mono_set Ioc_subset_Icc_self
     calc
-      volume (disc r) = volume (regionBetween (fun x => -f x) f (Ioc (-r) r)) := by
+      volume (disc r) = volume (regionBetween (fun x ↦ -f x) f (Ioc (-r) r)) := by
         rw [disc_eq_regionBetween]
       _ = ENNReal.ofReal (∫ x in Ioc (-r : ℝ) r, (f - Neg.neg ∘ f) x) :=
-        (volume_regionBetween_eq_integral h.neg h measurableSet_Ioc fun x _ =>
+        (volume_regionBetween_eq_integral h.neg h measurableSet_Ioc fun x _ ↦
           neg_le_self (sqrt_nonneg _))
       _ = ENNReal.ofReal (∫ x in (-r : ℝ)..r, 2 * f x) := by
         rw [integral_of_le] <;> simp [two_mul]

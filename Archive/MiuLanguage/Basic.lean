@@ -102,7 +102,7 @@ def MiuAtom.repr : MiuAtom → String
 /-- Using `MiuAtom.repr`, we prove that `MiuAtom` is an instance of `Repr`.
 -/
 instance : Repr MiuAtom :=
-  ⟨fun u _ => u.repr⟩
+  ⟨fun u _ ↦ u.repr⟩
 
 /-- For simplicity, an `Miustr` is just a list of elements of type `MiuAtom`.
 -/
@@ -117,7 +117,7 @@ def Miustr.mrepr : Miustr → String
   | c :: cs => c.repr ++ Miustr.mrepr cs
 
 instance miurepr : Repr Miustr :=
-  ⟨fun u _ => u.mrepr⟩
+  ⟨fun u _ ↦ u.mrepr⟩
 
 /-- In the other direction, we set up a coercion from `String` to `Miustr`.
 -/
@@ -132,7 +132,7 @@ def lcharToMiustr : List Char → Miustr
     | _ => []
 
 instance stringCoeMiustr : Coe String Miustr :=
-  ⟨fun st => lcharToMiustr st.data⟩
+  ⟨fun st ↦ lcharToMiustr st.data⟩
 
 /-!
 ### Derivability

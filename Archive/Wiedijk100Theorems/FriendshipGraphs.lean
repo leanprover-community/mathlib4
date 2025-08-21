@@ -109,7 +109,7 @@ include hG in
 theorem degree_eq_of_not_adj {v w : V} (hvw : ¬G.Adj v w) : degree G v = degree G w := by
   rw [← Nat.cast_id (G.degree v), ← Nat.cast_id (G.degree w),
     ← adjMatrix_pow_three_of_not_adj ℕ hG hvw,
-    ← adjMatrix_pow_three_of_not_adj ℕ hG fun h => hvw (G.symm h)]
+    ← adjMatrix_pow_three_of_not_adj ℕ hG fun h ↦ hvw (G.symm h)]
   conv_lhs => rw [← transpose_adjMatrix]
   simp only [pow_succ _ 2, sq, ← transpose_mul, transpose_apply]
   simp only [mul_assoc]
@@ -121,7 +121,7 @@ include hG in
   If `G` is `d`-regular, then all of the diagonal entries of `A^2` are `d`.
   Putting these together determines `A^2` exactly for a `d`-regular friendship graph. -/
 theorem adjMatrix_sq_of_regular (hd : G.IsRegularOfDegree d) :
-    G.adjMatrix R ^ 2 = of fun v w => if v = w then (d : R) else (1 : R) := by
+    G.adjMatrix R ^ 2 = of fun v w ↦ if v = w then (d : R) else (1 : R) := by
   ext (v w); by_cases h : v = w
   · rw [h, sq, adjMatrix_mul_self_apply_self, hd]; simp
   · rw [adjMatrix_sq_of_ne R hG h, of_apply, if_neg h]
@@ -129,7 +129,7 @@ theorem adjMatrix_sq_of_regular (hd : G.IsRegularOfDegree d) :
 open scoped Classical in
 include hG in
 theorem adjMatrix_sq_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1)
-    (hd : G.IsRegularOfDegree d) : G.adjMatrix (ZMod p) ^ 2 = of fun _ _ => 1 := by
+    (hd : G.IsRegularOfDegree d) : G.adjMatrix (ZMod p) ^ 2 = of fun _ _ ↦ 1 := by
   simp [adjMatrix_sq_of_regular hG hd, dmod]
 
 section Nonempty
@@ -179,7 +179,7 @@ include hG in
   This essentially means that the graph has `d ^ 2 - d + 1` vertices. -/
 theorem card_of_regular (hd : G.IsRegularOfDegree d) : d + (Fintype.card V - 1) = d * d := by
   have v := Classical.arbitrary V
-  trans ((G.adjMatrix ℕ ^ 2) *ᵥ (fun _ => 1)) v
+  trans ((G.adjMatrix ℕ ^ 2) *ᵥ (fun _ ↦ 1)) v
   · rw [adjMatrix_sq_of_regular hG hd, mulVec, dotProduct, ← insert_erase (mem_univ v)]
     simp only [sum_insert, mul_one, if_true, Nat.cast_id, mem_erase, not_true,
       Ne, not_false_iff, add_right_inj, false_and, of_apply]
@@ -199,14 +199,14 @@ theorem card_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1) (hd : G.IsRegu
   have hpos : 0 < Fintype.card V := Fintype.card_pos_iff.mpr inferInstance
   rw [← Nat.succ_pred_eq_of_pos hpos, Nat.succ_eq_add_one, Nat.pred_eq_sub_one]
   simp only [add_eq_right, Nat.cast_add, Nat.cast_one]
-  have h := congr_arg (fun n : ℕ => (n : ZMod p)) (card_of_regular hG hd)
+  have h := congr_arg (fun n : ℕ ↦ (n : ZMod p)) (card_of_regular hG hd)
   revert h; simp [dmod]
 
 end Nonempty
 
 open scoped Classical in
 theorem adjMatrix_sq_mul_const_one_of_regular (hd : G.IsRegularOfDegree d) :
-    G.adjMatrix R * of (fun _ _ => 1) = of (fun _ _ => (d : R)) := by
+    G.adjMatrix R * of (fun _ _ ↦ 1) = of (fun _ _ ↦ (d : R)) := by
   ext x
   simp only [← hd x, degree, adjMatrix_mul_apply, sum_const, Nat.smul_one_eq_cast,
     of_apply]
@@ -214,7 +214,7 @@ theorem adjMatrix_sq_mul_const_one_of_regular (hd : G.IsRegularOfDegree d) :
 open scoped Classical in
 theorem adjMatrix_mul_const_one_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1)
     (hd : G.IsRegularOfDegree d) :
-    G.adjMatrix (ZMod p) * of (fun _ _ => 1) = of (fun _ _ => 1) := by
+    G.adjMatrix (ZMod p) * of (fun _ _ ↦ 1) = of (fun _ _ ↦ 1) := by
   rw [adjMatrix_sq_mul_const_one_of_regular hd, dmod]
 
 open scoped Classical in
@@ -223,7 +223,7 @@ include hG in
   of a `d`-regular friendship graph reduce to the matrix whose entries are all 1. -/
 theorem adjMatrix_pow_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1)
     (hd : G.IsRegularOfDegree d) {k : ℕ} (hk : 2 ≤ k) :
-    G.adjMatrix (ZMod p) ^ k = of (fun _ _ => 1) := by
+    G.adjMatrix (ZMod p) ^ k = of (fun _ _ ↦ 1) := by
   match k with
   | 0 | 1 => exfalso; linarith
   | k + 2 =>
@@ -297,7 +297,7 @@ theorem neighborFinset_eq_of_degree_eq_two (hd : G.IsRegularOfDegree 2) (v : V) 
   · rw [Finset.subset_iff]
     intro x
     rw [mem_neighborFinset, Finset.mem_erase]
-    exact fun h => ⟨(G.ne_of_adj h).symm, Finset.mem_univ _⟩
+    exact fun h ↦ ⟨(G.ne_of_adj h).symm, Finset.mem_univ _⟩
   convert_to 2 ≤ _
   · convert_to _ = Fintype.card V - 1
     · have hfr := card_of_regular hG hd

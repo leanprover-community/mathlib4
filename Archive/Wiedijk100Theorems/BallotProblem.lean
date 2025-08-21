@@ -41,7 +41,7 @@ def staysPositive : Set (List ℤ) :=
 
 @[simp]
 theorem staysPositive_nil : [] ∈ staysPositive :=
-  fun _ hl hl₁ => (hl (List.eq_nil_of_suffix_nil hl₁)).elim
+  fun _ hl hl₁ ↦ (hl (List.eq_nil_of_suffix_nil hl₁)).elim
 
 theorem staysPositive_suffix {l₁ l₂ : List ℤ} (hl₂ : l₂ ∈ staysPositive) (h : l₁ <:+ l₂) :
     l₁ ∈ staysPositive := fun l hne hl ↦ hl₂ l hne <| hl.trans h
@@ -118,13 +118,13 @@ theorem counted_succ_succ (p q : ℕ) :
       · rw [List.count_tail, hl₀, List.head?_eq_head, hlast, beq_self_eq_true, if_pos rfl,
           Nat.add_sub_cancel]
       · rw [List.count_tail, hl₁, List.head?_eq_head, hlast, if_neg (by decide), Nat.sub_zero]
-      · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
+      · exact fun x hx ↦ hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.cons_head_tail]
     · refine Or.inr ⟨l.tail, ⟨?_, ?_, ?_⟩, ?_⟩
       · rw [List.count_tail, hl₀, List.head?_eq_head, hlast, if_neg (by decide), Nat.sub_zero]
       · rw [List.count_tail, hl₁, List.head?_eq_head, hlast, beq_self_eq_true, if_pos rfl,
           Nat.add_sub_cancel]
-      · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
+      · exact fun x hx ↦ hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.cons_head_tail]
   · rintro (⟨t, ⟨ht₀, ht₁, ht₂⟩, rfl⟩ | ⟨t, ⟨ht₀, ht₁, ht₂⟩, rfl⟩)
     · refine ⟨?_, ?_, ?_⟩
@@ -169,7 +169,7 @@ private def measurableSpace_list_int : MeasurableSpace (List ℤ) := ⊤
 attribute [local instance] measurableSpace_list_int
 
 private theorem measurableSingletonClass_list_int : MeasurableSingletonClass (List ℤ) :=
-  { measurableSet_singleton := fun _ => trivial }
+  { measurableSet_singleton := fun _ ↦ trivial }
 
 attribute [local instance] measurableSingletonClass_list_int
 
@@ -248,7 +248,7 @@ theorem ballot_same (p : ℕ) : uniformOn (countedSequence (p + 1) (p + 1)) stay
 theorem ballot_edge (p : ℕ) : uniformOn (countedSequence (p + 1) 0) staysPositive = 1 := by
   rw [counted_right_zero]
   refine uniformOn_eq_one_of (finite_singleton _) (singleton_nonempty _) ?_
-  refine singleton_subset_iff.2 fun l hl₁ hl₂ => List.sum_pos _ (fun x hx => ?_) hl₁
+  refine singleton_subset_iff.2 fun l hl₁ hl₂ ↦ List.sum_pos _ (fun x hx ↦ ?_) hl₁
   rw [List.eq_of_mem_replicate (hl₂.mem hx)]
   norm_num
 
@@ -362,6 +362,6 @@ theorem ballot_problem :
     add_eq_zero, Nat.cast_eq_zero, ENNReal.add_eq_top, ENNReal.natCast_ne_top, or_self_iff,
     not_false_iff, and_true]
   push_neg
-  exact ⟨fun _ _ => by linarith, (tsub_le_self.trans_lt (ENNReal.natCast_ne_top p).lt_top).ne⟩
+  exact ⟨fun _ _ ↦ by linarith, (tsub_le_self.trans_lt (ENNReal.natCast_ne_top p).lt_top).ne⟩
 
 end Ballot

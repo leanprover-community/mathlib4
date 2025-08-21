@@ -37,14 +37,14 @@ theorem girard.{u} (pi : (Type u → Type u) → Type u)
     (beta : ∀ {A : Type u → Type u} (f : ∀ x, A x) (x), app (lam f) x = f x) : False :=
   let F (X) := (Set (Set X) → X) → Set (Set X)
   let U := pi F
-  let G (T : Set (Set U)) (X) : F X := fun f => {p | {x : U | f (app x X f) ∈ p} ∈ T}
+  let G (T : Set (Set U)) (X) : F X := fun f ↦ {p | {x : U | f (app x X f) ∈ p} ∈ T}
   let τ (T : Set (Set U)) : U := lam (G T)
   let σ (S : U) : Set (Set U) := app S U τ
-  have στ : ∀ {s S}, s ∈ σ (τ S) ↔ {x | τ (σ x) ∈ s} ∈ S := fun {s S} =>
-    iff_of_eq (congr_arg (fun f : F U => s ∈ f τ) (beta (G S) U) :)
+  have στ : ∀ {s S}, s ∈ σ (τ S) ↔ {x | τ (σ x) ∈ s} ∈ S := fun {s S} ↦
+    iff_of_eq (congr_arg (fun f : F U ↦ s ∈ f τ) (beta (G S) U) :)
   let ω : Set (Set U) := {p | ∀ x, p ∈ σ x → x ∈ p}
   let δ (S : Set (Set U)) := ∀ p, p ∈ S → τ S ∈ p
-  have : δ ω := fun _p d => d (τ ω) <| στ.2 fun x h => d (τ (σ x)) (στ.2 h)
-  this {y | ¬δ (σ y)} (fun _x e f => f _ e fun _p h => f _ (στ.1 h)) fun _p h => this _ (στ.1 h)
+  have : δ ω := fun _p d ↦ d (τ ω) <| στ.2 fun x h ↦ d (τ (σ x)) (στ.2 h)
+  this {y | ¬δ (σ y)} (fun _x e f ↦ f _ e fun _p h ↦ f _ (στ.1 h)) fun _p h ↦ this _ (στ.1 h)
 
 end Counterexample

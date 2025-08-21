@@ -120,4 +120,4 @@ theorem imo2006_q3 (M : ℝ) :
         |a * b * (a ^ 2 - b ^ 2) + b * c * (b ^ 2 - c ^ 2) + c * a * (c ^ 2 - a ^ 2)| ≤
           M * (a ^ 2 + b ^ 2 + c ^ 2) ^ 2) ↔
       9 * sqrt 2 / 32 ≤ M :=
-  ⟨proof₂ M, fun h _ _ _ => proof₁.trans (by gcongr)⟩
+  ⟨proof₂ M, fun h _ _ _ ↦ proof₁.trans (by gcongr)⟩

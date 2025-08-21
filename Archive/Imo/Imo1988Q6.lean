@@ -128,7 +128,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   -- Let m be the smallest element of the nonempty set S.
   let m : ℕ := WellFounded.min Nat.lt_wfRel.wf S S_nonempty
   have m_mem : m ∈ S := WellFounded.min_mem Nat.lt_wfRel.wf S S_nonempty
-  have m_min : ∀ k ∈ S, ¬k < m := fun k hk => WellFounded.not_lt_min Nat.lt_wfRel.wf S S_nonempty hk
+  have m_min : ∀ k ∈ S, ¬k < m := fun k hk ↦ WellFounded.not_lt_min Nat.lt_wfRel.wf S S_nonempty hk
   -- It suffices to show that there is point (a,b) with b ∈ S and b < m.
   rsuffices ⟨p', p'_mem, p'_small⟩ : ∃ p' : ℕ × ℕ, p'.2 ∈ S ∧ p'.2 < m
   · solve_by_elim
@@ -195,8 +195,8 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
   rcases h with ⟨k, hk⟩
   rw [hk, Nat.mul_div_cancel_left _ (Nat.succ_pos (a * b))]
   simp only [sq] at hk
-  apply constant_descent_vieta_jumping a b (H := fun a b => a * a + b * b = (a * b + 1) * k)
-      hk (fun x => k * x) (fun x => x * x - k) fun _ _ => False <;>
+  apply constant_descent_vieta_jumping a b (H := fun a b ↦ a * a + b * b = (a * b + 1) * k)
+      hk (fun x ↦ k * x) (fun x ↦ x * x - k) fun _ _ ↦ False <;>
     clear hk a b
   · -- We will now show that the fibers of the solution set are described by a quadratic equation.
     intro x y
@@ -252,8 +252,8 @@ example {a b : ℕ} (h : a * b ∣ a ^ 2 + b ^ 2 + 1) : 3 * a * b = a ^ 2 + b ^ 
   rcases h with ⟨k, hk⟩
   suffices k = 3 by simp_all; ring
   simp only [sq] at hk
-  apply constant_descent_vieta_jumping a b (H := fun a b => a * a + b * b + 1 = a * b * k)
-      hk (fun x => k * x) (fun x => x * x + 1) fun x _ => x ≤ 1 <;>
+  apply constant_descent_vieta_jumping a b (H := fun a b ↦ a * a + b * b + 1 = a * b * k)
+      hk (fun x ↦ k * x) (fun x ↦ x * x + 1) fun x _ ↦ x ≤ 1 <;>
     clear hk a b
   · -- We will now show that the fibers of the solution set are described by a quadratic equation.
     intro x y

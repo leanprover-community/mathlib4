@@ -63,7 +63,7 @@ instance (n) : Fintype (Q n) := inferInstanceAs (Fintype (Fin n → Bool))
 
 /-- The projection from `Q n.succ` to `Q n` forgetting the first value
 (ie. the image of zero). -/
-def π {n : ℕ} : Q n.succ → Q n := fun p => p ∘ Fin.succ
+def π {n : ℕ} : Q n.succ → Q n := fun p ↦ p ∘ Fin.succ
 
 namespace Q
 
@@ -76,7 +76,7 @@ variable (n : ℕ)
 
 /-- `Q 0` has a unique element. -/
 instance : Unique (Q 0) :=
-  ⟨⟨fun _ => true⟩, by intro; ext x; fin_cases x⟩
+  ⟨⟨fun _ ↦ true⟩, by intro; ext x; fin_cases x⟩
 
 /-- `Q n` has 2^n elements. -/
 theorem card : card (Q n) = 2 ^ n := by simp [Q]
@@ -124,7 +124,7 @@ theorem adj_iff_proj_adj {p q : Q n.succ} (h₀ : p 0 = q 0) :
     q ∈ p.adjacent ↔ π q ∈ (π p).adjacent := by
   constructor
   · rintro ⟨i, h_eq, h_uni⟩
-    have h_i : i ≠ 0 := fun h_i => absurd h₀ (by rwa [h_i] at h_eq)
+    have h_i : i ≠ 0 := fun h_i ↦ absurd h₀ (by rwa [h_i] at h_eq)
     use i.pred h_i,
       show p (Fin.succ (Fin.pred i _)) ≠ q (Fin.succ (Fin.pred i _)) by rwa [Fin.succ_pred]
     intro y hy
@@ -182,8 +182,8 @@ end V
 
 /-- The basis of `V` indexed by the hypercube, defined inductively. -/
 noncomputable def e : ∀ {n}, Q n → V n
-  | 0 => fun _ => (1 : ℝ)
-  | Nat.succ _ => fun x => cond (x 0) (e (π x), 0) (0, e (π x))
+  | 0 => fun _ ↦ (1 : ℝ)
+  | Nat.succ _ => fun x ↦ cond (x 0) (e (π x), 0) (0, e (π x))
 
 @[simp]
 theorem e_zero_apply (x : Q 0) : e x = (1 : ℝ) :=
@@ -212,12 +212,12 @@ theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
 /-- Any vector in `V n` annihilated by all `ε p`'s is zero. -/
 theorem epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 := by
   induction n with
-  | zero => dsimp [ε] at h; exact h fun _ => true
+  | zero => dsimp [ε] at h; exact h fun _ ↦ true
   | succ n ih =>
     obtain ⟨v₁, v₂⟩ := v
     ext <;> change _ = (0 : V n) <;> simp only <;> apply ih <;> intro p <;>
-      [let q : Q n.succ := fun i => if h : i = 0 then true else p (i.pred h);
-      let q : Q n.succ := fun i => if h : i = 0 then false else p (i.pred h)]
+      [let q : Q n.succ := fun i ↦ if h : i = 0 then true else p (i.pred h);
+      let q : Q n.succ := fun i ↦ if h : i = 0 then false else p (i.pred h)]
     all_goals
       specialize h q
       first
@@ -418,7 +418,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     Finite.exists_max _
   have H_q_pos : 0 < |ε q y| := by
     contrapose! y_ne
-    exact epsilon_total fun p => abs_nonpos_iff.mp (le_trans (H_max p) y_ne)
+    exact epsilon_total fun p ↦ abs_nonpos_iff.mp (le_trans (H_max p) y_ne)
   refine ⟨q, (dualBases_e_ε _).mem_of_mem_span y_mem_H q (abs_pos.mp H_q_pos), ?_⟩
   let s := √ (m + 1)
   suffices s * |ε q y| ≤ _ * |ε q y| from (mul_le_mul_right H_q_pos).mp ‹_›
@@ -429,12 +429,12 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     _ = |ε q (f m.succ y)| := by rw [← f_image_g y (by simpa using y_mem_g)]
     _ = |ε q (f m.succ (lc _ (coeffs y)))| := by rw [(dualBases_e_ε _).lc_coeffs y]
     _ =
-        |(coeffs y).sum fun (i : Q m.succ) (a : ℝ) =>
-            a • (ε q ∘ f m.succ ∘ fun i : Q m.succ => e i) i| := by
+        |(coeffs y).sum fun (i : Q m.succ) (a : ℝ) ↦
+            a • (ε q ∘ f m.succ ∘ fun i : Q m.succ ↦ e i) i| := by
       rw [lc_def, (f m.succ).map_finsupp_linearCombination, (ε q).map_finsupp_linearCombination,
            Finsupp.linearCombination_apply]
     _ ≤ ∑ p ∈ (coeffs y).support, |coeffs y p * (ε q <| f m.succ <| e p)| :=
-      (norm_sum_le _ fun p => coeffs y p * _)
+      (norm_sum_le _ fun p ↦ coeffs y p * _)
     _ = ∑ p ∈ (coeffs y).support, |coeffs y p| * ite (p ∈ q.adjacent) 1 0 := by
       simp only [abs_mul, f_matrix]
     _ = ∑ p ∈ (coeffs y).support with q.adjacent p, |coeffs y p| := by

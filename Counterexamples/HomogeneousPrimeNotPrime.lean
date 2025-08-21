@@ -55,7 +55,7 @@ variable (R : Type*) [CommRing R]
 def submoduleZ : Submodule R (R × R) where
   carrier := {zz | zz.1 = zz.2}
   zero_mem' := rfl
-  add_mem' := @fun _ _ ha hb => congr_arg₂ (· + ·) ha hb
+  add_mem' := @fun _ _ ha hb ↦ congr_arg₂ (· + ·) ha hb
   smul_mem' a _ hb := congr_arg (a * ·) hb
 
 instance [Fintype R] [DecidableEq R] : Fintype (submoduleZ R) :=
@@ -95,7 +95,7 @@ end
 local notation "R" => ZMod 4
 
 /-- `R² ≅ {(a, a) | a ∈ R} ⨁ {(0, b) | b ∈ R}` by `(x, y) ↦ (x, x) + (0, y - x)`. -/
-def grading.decompose : R × R →+ DirectSum Two fun i => grading R i where
+def grading.decompose : R × R →+ DirectSum Two fun i ↦ grading R i where
   toFun zz :=
     of (grading R ·) 0 ⟨(zz.1, zz.1), rfl⟩ +
     of (grading R ·) 1 ⟨(0, zz.2 - zz.1), rfl⟩

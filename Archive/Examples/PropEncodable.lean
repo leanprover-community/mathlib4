@@ -61,13 +61,13 @@ instance : ∀ c : Unit ⊕ (Unit ⊕ Unit), NeZero (arity α (.inr c))
   | .inr (.inl ()) => ⟨two_ne_zero⟩
   | .inr (.inr ()) => ⟨two_ne_zero⟩
 
-private def f : PropForm α → WType fun i => Fin (arity α i)
+private def f : PropForm α → WType fun i ↦ Fin (arity α i)
   | var a => ⟨cvar a, ![]⟩
   | not p => ⟨cnot, ![f p]⟩
   | and p q => ⟨cand, ![f p, f q]⟩
   | or p q => ⟨cor, ![f p, f q]⟩
 
-private def finv : (WType fun i => Fin (arity α i)) → PropForm α
+private def finv : (WType fun i ↦ Fin (arity α i)) → PropForm α
   | ⟨cvar a, _⟩ => var a
   | ⟨cnot, fn⟩ => not (finv (fn 0))
   | ⟨cand, fn⟩ => and (finv (fn 0)) (finv (fn 1))

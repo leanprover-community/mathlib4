@@ -93,7 +93,7 @@ variable {ι : Type u}
 open scoped Classical in
 /-- A convenience constructor for the power series whose coefficients indicate a subset. -/
 def indicatorSeries (α : Type*) [Semiring α] (s : Set ℕ) : PowerSeries α :=
-  PowerSeries.mk fun n => if n ∈ s then 1 else 0
+  PowerSeries.mk fun n ↦ if n ∈ s then 1 else 0
 
 theorem coeff_indicator (s : Set ℕ) [Semiring α] (n : ℕ) [Decidable (n ∈ s)] :
     coeff α n (indicatorSeries _ s) = if n ∈ s then 1 else 0 := by
@@ -159,7 +159,7 @@ theorem num_series' [Field α] (i : ℕ) :
   · simp [zero_pow]
 
 def mkOdd : ℕ ↪ ℕ :=
-  ⟨fun i => 2 * i + 1, fun x y h => by linarith⟩
+  ⟨fun i ↦ 2 * i + 1, fun x y h ↦ by linarith⟩
 
 open scoped Classical in
 -- The main workhorse of the partition theorem proof.
@@ -172,10 +172,10 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
   simp only [Set.mem_image]
   set φ : (a : Nat.Partition n) →
     a ∈ filter (fun p ↦ (∀ (j : ℕ), Multiset.count j p.parts ∈ c j) ∧ ∀ j ∈ p.parts, j ∈ s) univ →
-    ℕ →₀ ℕ := fun p _ => {
-      toFun := fun i => Multiset.count i p.parts • i
-      support := Finset.filter (fun i => i ≠ 0) p.parts.toFinset
-      mem_support_toFun := fun a => by
+    ℕ →₀ ℕ := fun p _ ↦ {
+      toFun := fun i ↦ Multiset.count i p.parts • i
+      support := Finset.filter (fun i ↦ i ≠ 0) p.parts.toFinset
+      mem_support_toFun := fun a ↦ by
         simp only [smul_eq_mul, ne_eq, mul_eq_zero, Multiset.count_eq_zero]
         rw [not_or, not_not]
         simp only [Multiset.mem_toFinset, mem_filter] }
@@ -221,7 +221,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
       rwa [Multiset.eq_of_mem_replicate z]
     · simp_rw [Multiset.sum_sum, Multiset.sum_replicate, Nat.nsmul_eq_mul]
       rw [← hf'.1]
-      refine sum_congr rfl fun i hi => Nat.div_mul_cancel ?_
+      refine sum_congr rfl fun i hi ↦ Nat.div_mul_cancel ?_
       rcases hf₄ i hi with ⟨w, _, hw₂⟩
       rw [← hw₂]
       exact dvd_mul_left _ _
@@ -250,7 +250,7 @@ theorem partialOddGF_prop [Field α] (n m : ℕ) :
     #{p : n.Partition | ∀ j ∈ p.parts, j ∈ (range m).map mkOdd} = coeff α n (partialOddGF m) := by
   rw [partialOddGF]
   convert partialGF_prop α n
-    ((range m).map mkOdd) _ (fun _ => Set.univ) (fun _ _ => trivial) using 2
+    ((range m).map mkOdd) _ (fun _ ↦ Set.univ) (fun _ _ ↦ trivial) using 2
   · congr
     simp only [true_and, forall_const, Set.mem_univ]
   · rw [Finset.prod_map]
@@ -276,7 +276,7 @@ theorem oddGF_prop [Field α] (n m : ℕ) (h : n < m * 2) :
   apply forall₂_congr
   intro i hi
   have hin : i ≤ n := by
-    simpa [p.parts_sum] using Multiset.single_le_sum (fun _ _ => Nat.zero_le _) _ hi
+    simpa [p.parts_sum] using Multiset.single_le_sum (fun _ _ ↦ Nat.zero_le _) _ hi
   simp only [mkOdd, mem_range, Function.Embedding.coeFn_mk, mem_map]
   constructor
   · intro hi₂
@@ -296,7 +296,7 @@ theorem partialDistinctGF_prop [CommSemiring α] (n m : ℕ) :
       coeff α n (partialDistinctGF m) := by
   rw [partialDistinctGF]
   convert partialGF_prop α n
-    ((range m).map ⟨Nat.succ, Nat.succ_injective⟩) _ (fun _ => {0, 1}) (fun _ _ => Or.inl rfl)
+    ((range m).map ⟨Nat.succ, Nat.succ_injective⟩) _ (fun _ ↦ {0, 1}) (fun _ _ ↦ Or.inl rfl)
     using 2
   · congr! with p
     rw [Multiset.nodup_iff_count_le_one]
@@ -318,7 +318,7 @@ theorem distinctGF_prop [CommSemiring α] (n m : ℕ) (h : n < m + 1) :
   apply (and_iff_left _).symm
   intro i hi
   have : i ≤ n := by
-    simpa [p.parts_sum] using Multiset.single_le_sum (fun _ _ => Nat.zero_le _) _ hi
+    simpa [p.parts_sum] using Multiset.single_le_sum (fun _ _ ↦ Nat.zero_le _) _ hi
   simp only [mem_range, Function.Embedding.coeFn_mk, mem_map]
   refine ⟨i - 1, ?_, Nat.succ_pred_eq_of_pos (p.parts_pos hi)⟩
   rw [tsub_lt_iff_right (Nat.one_le_iff_ne_zero.mpr (p.parts_pos hi).ne')]
@@ -329,7 +329,7 @@ sequences are ultimately the same (since the factor converges to 0 as m tends to
 It's enough to not take the limit though, and just consider large enough `m`.
 -/
 theorem same_gf [Field α] (m : ℕ) :
-    (partialOddGF m * (range m).prod fun i => 1 - (X : PowerSeries α) ^ (m + i + 1)) =
+    (partialOddGF m * (range m).prod fun i ↦ 1 - (X : PowerSeries α) ^ (m + i + 1)) =
       partialDistinctGF m := by
   rw [partialOddGF, partialDistinctGF]
   induction m with

@@ -27,8 +27,8 @@ theorem imo1977_q6_nat (f : ℕ → ℕ) (h : ∀ n, f (f n) < f (n + 1)) : ∀ 
       calc
         k ≤ f (f (n - 1)) := h_ind _ (h_ind (n - 1) (le_tsub_of_add_le_right hk))
         _ < f n := tsub_add_cancel_of_le (le_trans (Nat.succ_le_succ (Nat.zero_le _)) hk) ▸ h _
-  have hf : ∀ n, n ≤ f n := fun n => h' n n rfl.le
-  have hf_mono : StrictMono f := strictMono_nat_of_lt_succ fun _ => lt_of_le_of_lt (hf _) (h _)
+  have hf : ∀ n, n ≤ f n := fun n ↦ h' n n rfl.le
+  have hf_mono : StrictMono f := strictMono_nat_of_lt_succ fun _ ↦ lt_of_le_of_lt (hf _) (h _)
   intro
   exact Nat.eq_of_le_of_lt_succ (hf _) (hf_mono.lt_iff_lt.mp (h _))
 
@@ -39,7 +39,7 @@ open Imo1977Q6
 theorem imo1977_q6 (f : ℕ+ → ℕ+) (h : ∀ n, f (f n) < f (n + 1)) : ∀ n, f n = n := by
   intro n
   have := by
-    refine imo1977_q6_nat (fun m => if 0 < m then f m.toPNat' else 0) ?_ n
+    refine imo1977_q6_nat (fun m ↦ if 0 < m then f m.toPNat' else 0) ?_ n
     intro x; cases x
     · simp
     · simpa using h _

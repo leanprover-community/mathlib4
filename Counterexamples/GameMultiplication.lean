@@ -44,7 +44,7 @@ theorem star'_equiv_star : star' ≈ star := by
       fin_cases i
       · exact zero_lf_star
       · exact (neg_lt_zero_iff.2 PGame.zero_lt_one).trans_lf zero_lf_star
-    · exact fun _ => lf_zero_le.2 ⟨⟨0, Nat.zero_lt_two⟩, le_rfl⟩
+    · exact fun _ ↦ lf_zero_le.2 ⟨⟨0, Nat.zero_lt_two⟩, le_rfl⟩
   constructor
   case' right => rw [← neg_le_neg_iff, neg_star, neg_star']
   assumption'

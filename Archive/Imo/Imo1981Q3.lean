@@ -173,7 +173,7 @@ theorem solution_bound : ∀ {k : ℤ}, k ∈ specifiedSet N → k ≤ M
 
 theorem solution_greatest (H : ProblemPredicate N (fib K) (fib (K + 1))) :
     IsGreatest (specifiedSet N) M :=
-  ⟨⟨fib K, fib (K + 1), by simp [HM], H⟩, fun k h => solution_bound HK HM h⟩
+  ⟨⟨fib K, fib (K + 1), by simp [HM], H⟩, fun k h ↦ solution_bound HK HM h⟩
 
 end Imo1981Q3
 

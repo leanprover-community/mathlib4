@@ -25,7 +25,7 @@ open Nat
 namespace Imo1960Q1
 
 def sumOfSquares (L : List ℕ) : ℕ :=
-  (L.map fun x => x * x).sum
+  (L.map fun x ↦ x * x).sum
 
 def ProblemPredicate (n : ℕ) : Prop :=
   (Nat.digits 10 n).length = 3 ∧ 11 ∣ n ∧ n / 11 = sumOfSquares (Nat.digits 10 n)
@@ -61,13 +61,13 @@ def SearchUpTo (c n : ℕ) : Prop :=
   n = c * 11 ∧ ∀ m : ℕ, m < n → ProblemPredicate m → SolutionPredicate m
 
 theorem searchUpTo_start : SearchUpTo 9 99 :=
-  ⟨rfl, fun n h p => by linarith [ge_100 p]⟩
+  ⟨rfl, fun n h p ↦ by linarith [ge_100 p]⟩
 
 theorem searchUpTo_step {c n} (H : SearchUpTo c n) {c' n'} (ec : c + 1 = c') (en : n + 11 = n') {l}
     (el : Nat.digits 10 n = l) (H' : c = sumOfSquares l → c = 50 ∨ c = 73) : SearchUpTo c' n' := by
   subst ec; subst en; subst el
   obtain ⟨rfl, H⟩ := H
-  refine ⟨by ring, fun m l p => ?_⟩
+  refine ⟨by ring, fun m l p ↦ ?_⟩
   obtain ⟨h₁, ⟨m, rfl⟩, h₂⟩ := id p
   by_cases h : 11 * m < c * 11; · exact H _ h p
   obtain rfl : m = c := by omega

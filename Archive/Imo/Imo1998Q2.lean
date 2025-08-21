@@ -86,7 +86,7 @@ theorem JudgePair.agree_iff_same_rating (p : JudgePair J) (c : C) :
 open scoped Classical in
 /-- The set of contestants on which two judges agree. -/
 def agreedContestants [Fintype C] (p : JudgePair J) : Finset C :=
-  Finset.univ.filter fun c => p.Agree r c
+  Finset.univ.filter fun c ↦ p.Agree r c
 section
 
 variable [Fintype J] [Fintype C]
@@ -94,7 +94,7 @@ variable [Fintype J] [Fintype C]
 open scoped Classical in
 /-- All incidences of agreement. -/
 def A : Finset (AgreedTriple C J) :=
-  Finset.univ.filter @fun (a : AgreedTriple C J) =>
+  Finset.univ.filter @fun (a : AgreedTriple C J) ↦
     (a.judgePair.Agree r a.contestant ∧ a.judgePair.Distinct)
 
 open scoped Classical in
@@ -103,15 +103,15 @@ theorem A_maps_to_offDiag_judgePair (a : AgreedTriple C J) :
 
 open scoped Classical in
 theorem A_fibre_over_contestant (c : C) :
-    (Finset.univ.filter fun p : JudgePair J => p.Agree r c ∧ p.Distinct) =
-      ((A r).filter fun a : AgreedTriple C J => a.contestant = c).image Prod.snd := by
+    (Finset.univ.filter fun p : JudgePair J ↦ p.Agree r c ∧ p.Distinct) =
+      ((A r).filter fun a : AgreedTriple C J ↦ a.contestant = c).image Prod.snd := by
   ext p
   simp [A]
 
 open scoped Classical in
 theorem A_fibre_over_contestant_card (c : C) :
-    (Finset.univ.filter fun p : JudgePair J => p.Agree r c ∧ p.Distinct).card =
-      ((A r).filter fun a : AgreedTriple C J => a.contestant = c).card := by
+    (Finset.univ.filter fun p : JudgePair J ↦ p.Agree r c ∧ p.Distinct).card =
+      ((A r).filter fun a : AgreedTriple C J ↦ a.contestant = c).card := by
   rw [A_fibre_over_contestant r]
   apply Finset.card_image_of_injOn
   unfold Set.InjOn
@@ -120,7 +120,7 @@ theorem A_fibre_over_contestant_card (c : C) :
 
 open scoped Classical in
 theorem A_fibre_over_judgePair {p : JudgePair J} (h : p.Distinct) :
-    agreedContestants r p = ((A r).filter fun a : AgreedTriple C J => a.judgePair = p).image
+    agreedContestants r p = ((A r).filter fun a : AgreedTriple C J ↦ a.judgePair = p).image
     AgreedTriple.contestant := by
   dsimp only [A, agreedContestants]; ext c; constructor <;> intro h
   · rw [Finset.mem_image]; refine ⟨⟨c, p⟩, ?_⟩; aesop
@@ -129,7 +129,7 @@ theorem A_fibre_over_judgePair {p : JudgePair J} (h : p.Distinct) :
 open scoped Classical in
 theorem A_fibre_over_judgePair_card {p : JudgePair J} (h : p.Distinct) :
     (agreedContestants r p).card =
-      ((A r).filter fun a : AgreedTriple C J => a.judgePair = p).card := by
+      ((A r).filter fun a : AgreedTriple C J ↦ a.judgePair = p).card := by
   rw [A_fibre_over_judgePair r h]
   apply Finset.card_image_of_injOn
   -- `aesop` sees through the abbrev `AgreedTriple C J = C × (J × J)`, but `simp` does not.
@@ -168,10 +168,10 @@ variable [Fintype J]
 
 open scoped Classical in
 theorem judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2 * z + 1) (c : C) :
-    2 * z * z + 2 * z + 1 ≤ (Finset.univ.filter fun p : JudgePair J => p.Agree r c).card := by
-  let x := (Finset.univ.filter fun j => r c j).card
-  let y := (Finset.univ.filter fun j => ¬r c j).card
-  have h : (Finset.univ.filter fun p : JudgePair J => p.Agree r c).card = x * x + y * y := by
+    2 * z * z + 2 * z + 1 ≤ (Finset.univ.filter fun p : JudgePair J ↦ p.Agree r c).card := by
+  let x := (Finset.univ.filter fun j ↦ r c j).card
+  let y := (Finset.univ.filter fun j ↦ ¬r c j).card
+  have h : (Finset.univ.filter fun p : JudgePair J ↦ p.Agree r c).card = x * x + y * y := by
     simp [x, y, ← Finset.filter_product_card]
   rw [h]; apply Int.le_of_ofNat_le_ofNat; simp only [Int.natCast_add, Int.natCast_mul]
   apply norm_bound_of_odd_sum
@@ -180,9 +180,9 @@ theorem judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2 * z + 1)
 
 open scoped Classical in
 theorem distinct_judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2 * z + 1) (c : C) :
-    2 * z * z ≤ (Finset.univ.filter fun p : JudgePair J => p.Agree r c ∧ p.Distinct).card := by
-  let s := Finset.univ.filter fun p : JudgePair J => p.Agree r c
-  let t := Finset.univ.filter fun p : JudgePair J => p.Distinct
+    2 * z * z ≤ (Finset.univ.filter fun p : JudgePair J ↦ p.Agree r c ∧ p.Distinct).card := by
+  let s := Finset.univ.filter fun p : JudgePair J ↦ p.Agree r c
+  let t := Finset.univ.filter fun p : JudgePair J ↦ p.Distinct
   have hs : 2 * z * z + 2 * z + 1 ≤ s.card := judge_pairs_card_lower_bound r hJ c
   have hst : s \ t = Finset.univ.diag := by
     ext p; constructor <;> intros hp
