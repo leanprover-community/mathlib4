@@ -19,7 +19,7 @@ over non-symmetric intervals.
 -/
 
 open ModularForm EisensteinSeries UpperHalfPlane TopologicalSpace  intervalIntegral
-  Metric Filter Function Complex MatrixGroups Finset ArithmeticFunction
+  Metric Filter Function Complex MatrixGroups Finset ArithmeticFunction Set
 
 open scoped Interval Real Topology BigOperators Nat
 
@@ -154,3 +154,96 @@ lemma G2_q_exp (z : ℍ) : G2 z = (2 * riemannZeta 2)  - 8 * π ^ 2 *
   apply Filter.Tendsto.add
   · simp
   · simpa using G2_tendsto z
+
+section transform
+
+lemma rest (f g : ℕ → ℂ) (x : ℂ) (hf : Tendsto f atTop (𝓝 x)) (hfg : Tendsto (g - f) atTop (𝓝 0)) :
+  Tendsto g atTop (𝓝 x) := by
+  have := Tendsto.add hf hfg
+  simp at this
+  exact this
+
+lemma sum_Icc_eq_sum_Ico_succ {α : Type*} [AddCommMonoid α] (f : ℤ → α)
+    {l u : ℤ} (h : l ≤ u) :
+    ∑ m ∈ Finset.Icc l u, f m = (∑ m ∈ Finset.Ico l u, f m) + f u := by
+  rw [Finset.Icc_eq_cons_Ico h]
+  simp only [Finset.cons_eq_insert, Finset.mem_Ico, lt_self_iff_false, and_false, not_false_eq_true,
+    Finset.sum_insert]
+  rw [add_comm]
+
+lemma sum_Icc_succ {R : Type*} [AddCommGroup R] (f : ℤ → R) {N : ℕ}
+  (hn : 1 ≤ N) : ∑ m ∈ Finset.Icc (-N : ℤ) N, f m =
+  f N + f (-N : ℤ)  + ∑ m ∈ Finset.Icc (-(N - 1) : ℤ) (N - 1), f m := by
+  induction' N with N ih
+  · grind
+  · zify
+    rw [Icc_succ_succ, Finset.sum_union (by simp)]
+    grind
+
+lemma cauchSeq_sum_Icc_tendsto_zero {F : Type*} [NormedRing F] [NormSMulClass ℤ F] (f : ℤ → F)
+    (hc : CauchySeq fun N : ℕ => ∑ m ∈ Finset.Icc (-N : ℤ) N, f m) (hs : ∀ n , f n = f (-n)) :
+    Tendsto f atTop (𝓝 0) := by
+  have h := cauchySeq_iff_tendsto_dist_atTop_0.mp hc
+  simp_rw [cauchySeq_iff_le_tendsto_0] at *
+  obtain ⟨g, hg, H, Hg⟩ := hc
+  simp [Metric.tendsto_atTop] at *
+  intro ε hε
+  obtain ⟨N, hN⟩ := (Hg (2 * ε) (by linarith))
+  use N + 1
+  intro n hn
+  have H3 := H (n).natAbs (n -1).natAbs N (by omega) (by omega)
+  rw [sum_Icc_succ f (by omega)] at H3
+  have h1 : |n| = n := by
+    simp only [abs_eq_self]
+    omega
+  have h2 : |n - 1| = n - 1 := by
+    simp only [abs_eq_self, Int.sub_nonneg]
+    omega
+  simp [Nat.cast_natAbs, h1, Int.cast_eq, ← hs n, (two_mul (f n)).symm, neg_sub,
+    h2, Int.cast_sub, Int.cast_one, dist_add_self_left] at H3
+  have hgnn :  ‖2 * f n‖ < 2 * ε := lt_of_le_of_lt (le_trans H3 (le_abs_self (g N))) (hN N (by rfl))
+  have := norm_smul (2 : ℤ) (f n)
+  simp only [zsmul_eq_mul, Int.cast_ofNat] at this
+  simpa [this, Int.norm_eq_abs] using hgnn
+
+
+lemma int_tendsto_nat {f : ℤ → ℂ} {x : ℂ} (hf : Tendsto f atTop (𝓝 x)) :
+  Tendsto (fun n : ℕ => f n) atTop (𝓝 x) := by
+  rw [Metric.tendsto_atTop] at *
+  intro ε hε
+  obtain ⟨N, hN⟩ := hf ε hε
+  use N.natAbs
+  intro n hn
+  apply hN n ?_
+  omega
+
+lemma G2_Ico (z : ℍ) : G2 z =
+    limUnder (atTop) (fun N : ℕ => ∑ m ∈ Finset.Ico (-N : ℤ) N, e2Summand m z) := by
+  apply symm
+  simp [G2]
+  rw [Filter.Tendsto.limUnder_eq]
+  have := CauchySeq.tendsto_limUnder (G2_cauchy z)
+  apply rest _ _ _ this
+  have h0 := cauchSeq_sum_Icc_tendsto_zero _  (G2_cauchy z) ?_
+  conv =>
+    enter [1]
+    ext N
+    simp
+    rw [sum_Icc_eq_sum_Ico_succ _ (by omega)]
+    simp
+  have := Filter.Tendsto.neg h0
+  simp only [one_div, neg_zero] at this
+  have := int_tendsto_nat this
+  apply this
+  · intro m
+    simp [e2Summand]
+    rw [← tsum_int_eq_tsum_neg (fun a => eisSummand 2 ![-m, a] z)]
+    congr
+    ext b
+    simp [eisSummand]
+    norm_cast
+    simp only [Int.cast_neg]
+    ring
+
+
+end transform
