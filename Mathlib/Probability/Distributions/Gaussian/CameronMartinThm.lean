@@ -232,6 +232,62 @@ lemma some_equality_in_Real (x : CameronMartin μ) (L : StrongDual ℝ E) (t : �
       Complex.ofReal_add, Complex.ofReal_mul, Complex.ofReal_pow, Complex.ofReal_ofNat]
     ring_nf
 
+lemma todo_hasDerivAt (x : CameronMartin μ) (L : StrongDual ℝ E) (z : ℂ) :
+    HasDerivAt
+      (fun z ↦ ∫ u, exp ((L u - z * (cmIsometryEquiv μ x : E → ℝ) u) * I) ∂μ)
+      (∫ u, - (cmIsometryEquiv μ x : E → ℝ) u * I
+        * exp ((L u - z * (cmIsometryEquiv μ x : E → ℝ) u) * I) ∂μ) z := by
+  refine (hasDerivAt_integral_of_dominated_loc_of_deriv_le
+    (bound := fun ω ↦ |(cmIsometryEquiv μ x : E → ℝ) ω|
+      * Real.exp (z.im * (cmIsometryEquiv μ x : E → ℝ) ω + |(cmIsometryEquiv μ x : E → ℝ) ω|))
+    (F := fun z ω ↦ cexp ((L ω - z * (cmIsometryEquiv μ x : E → ℝ) ω) * I))
+    (F' := fun z ω ↦ - (cmIsometryEquiv μ x : E → ℝ) ω * I
+        * exp ((L ω - z * (cmIsometryEquiv μ x : E → ℝ) ω) * I)) zero_lt_one ?_ ?_ ?_ ?_ ?_ ?_).2
+  · exact .of_forall fun z ↦ by fun_prop
+  · sorry
+  · fun_prop
+  · refine ae_of_all _ fun ω ε hε ↦ ?_
+    simp only [neg_mul, norm_neg, norm_mul, norm_real, Real.norm_eq_abs, norm_I, mul_one]
+    rw [Complex.norm_exp]
+    simp only [mul_re, sub_re, ofReal_re, ofReal_im, mul_zero, sub_zero, I_re, sub_im, mul_im,
+      zero_add, zero_sub, I_im, mul_one, sub_neg_eq_add]
+    gcongr
+    have : ε = z + (ε - z) := by simp
+    rw [this, add_im, add_mul]
+    gcongr _ + ?_
+    refine (le_abs_self _).trans ?_
+    rw [abs_mul]
+    conv_rhs => rw [← one_mul (|(cmIsometryEquiv μ x : E → ℝ) ω|)]
+    gcongr
+    refine (abs_im_le_norm _).trans ?_
+    simp only [Metric.mem_ball, dist_eq_norm] at hε
+    exact hε.le
+  · sorry
+  · refine ae_of_all _ fun ω ε hε ↦ ?_
+    simp only
+    simp_rw [sub_mul, sub_eq_add_neg, exp_add, ← neg_mul, mul_comm (_ * I), mul_assoc]
+    refine HasDerivAt.const_mul _ ?_
+    simp_rw [neg_mul, mul_comm _ (_ * I), ← neg_mul]
+    simp_rw [← smul_eq_mul, Complex.exp_eq_exp_ℂ]
+    convert hasDerivAt_exp_smul_const (-(cmIsometryEquiv μ x : E → ℝ) ω * I : ℂ) ε using 1
+    · ext ω
+      congr 1
+      simp only [smul_eq_mul, neg_mul, mul_neg, neg_inj]
+      ring
+    · simp only [smul_eq_mul, neg_mul, mul_neg, neg_inj, mul_eq_mul_right_iff, mul_eq_zero,
+        ofReal_eq_zero, I_ne_zero, or_false]
+      left
+      congr 2
+      ring
+
+lemma todo_analytic (x : CameronMartin μ) (L : StrongDual ℝ E) :
+    AnalyticOnNhd ℂ
+      (fun z ↦ ∫ u, exp ((L u - z * (cmIsometryEquiv μ x : E → ℝ) u) * I) ∂μ) Set.univ := by
+  refine DifferentiableOn.analyticOnNhd (fun z hz ↦ ?_) isOpen_univ
+  have h := todo_hasDerivAt x L z
+  rw [hasDerivAt_iff_hasFDerivAt] at h
+  exact h.hasFDerivWithinAt.differentiableWithinAt
+
 lemma some_equality_in_Complex (x : CameronMartin μ) (L : StrongDual ℝ E) (z : ℂ) :
     ∫ u, exp ((L u - z * (cmIsometryEquiv μ x : E → ℝ) u) * I - ‖x‖ ^ 2 / 2) ∂μ
       = exp (z * L x.toInitialSpace - (1 + z ^ 2) / 2 * ‖x‖ ^ 2 + μ[L] * I - Var[L; μ] / 2) := by
@@ -243,7 +299,7 @@ lemma some_equality_in_Complex (x : CameronMartin μ) (L : StrongDual ℝ E) (z 
   · simp_rw [sub_eq_add_neg, exp_add, integral_mul_const]
     refine AnalyticOnNhd.mul ?_ analyticOnNhd_const
     simp_rw [← sub_eq_add_neg]
-    sorry
+    exact todo_analytic _ _
   · simp_rw [sub_eq_add_neg, exp_add]
     refine AnalyticOnNhd.mul ?_ analyticOnNhd_const
     refine AnalyticOnNhd.mul ?_ analyticOnNhd_const
