@@ -130,12 +130,12 @@ variable {c} (r : R)
 
 @[simp]
 theorem gaussNorm_C [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] (hc : 0 ≤ c) :
-    (C R r).gaussNorm v c = v r := by
+    (C r).gaussNorm v c = v r := by
   simp [← Polynomial.coe_C, hc]
 
 @[simp]
 theorem gaussNorm_monomial [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] (hc : 0 ≤ c) (n : ℕ) :
-    (monomial R n r).gaussNorm v c = v r * c ^ n := by
+    (monomial n r).gaussNorm v c = v r * c ^ n := by
   simp [← Polynomial.coe_monomial, hc]
 
 end PowerSeries

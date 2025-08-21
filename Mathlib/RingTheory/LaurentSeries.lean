@@ -198,7 +198,7 @@ instance : Coe R⟦X⟧ R⸨X⸩ :=
 
 @[simp]
 theorem coeff_coe_powerSeries (x : R⟦X⟧) (n : ℕ) :
-    HahnSeries.coeff (x : R⸨X⸩) n = PowerSeries.coeff R n x := by
+    HahnSeries.coeff (x : R⸨X⸩) n = PowerSeries.coeff n x := by
   rw [ofPowerSeries_apply_coeff]
 
 /-- This is a power series that can be multiplied by an integer power of `X` to give our
@@ -209,13 +209,13 @@ def powerSeriesPart (x : R⸨X⸩) : R⟦X⟧ :=
 
 @[simp]
 theorem powerSeriesPart_coeff (x : R⸨X⸩) (n : ℕ) :
-    PowerSeries.coeff R n x.powerSeriesPart = x.coeff (x.order + n) :=
+    PowerSeries.coeff n x.powerSeriesPart = x.coeff (x.order + n) :=
   PowerSeries.coeff_mk _ _
 
 @[simp]
 theorem powerSeriesPart_zero : powerSeriesPart (0 : R⸨X⸩) = 0 := by
   ext
-  simp [(PowerSeries.coeff _ _).map_zero] -- Note: this doesn't get picked up any more
+  simp [(PowerSeries.coeff _).map_zero] -- Note: this doesn't get picked up any more
 
 @[simp]
 theorem powerSeriesPart_eq_zero (x : R⸨X⸩) : x.powerSeriesPart = 0 ↔ x = 0 := by
@@ -330,7 +330,7 @@ theorem coe_mul : ((f * g : R⟦X⟧) : R⸨X⸩) = f * g :=
 
 theorem coeff_coe (i : ℤ) :
     ((f : R⟦X⟧) : R⸨X⸩).coeff i =
-      if i < 0 then 0 else PowerSeries.coeff R i.natAbs f := by
+      if i < 0 then 0 else PowerSeries.coeff i.natAbs f := by
   cases i
   · rw [Int.ofNat_eq_coe, coeff_coe_powerSeries, if_neg (Int.natCast_nonneg _).not_gt,
       Int.natAbs_natCast]
@@ -339,7 +339,7 @@ theorem coeff_coe (i : ℤ) :
       Ne, toPowerSeries_symm_apply_coeff, mem_support, imp_true_iff,
       not_false_iff, reduceCtorEq]
 
-theorem coe_C (r : R) : ((C R r : R⟦X⟧) : R⸨X⸩) = HahnSeries.C r :=
+theorem coe_C (r : R) : ((C r : R⟦X⟧) : R⸨X⸩) = HahnSeries.C r :=
   ofPowerSeries_C _
 
 theorem coe_X : ((X : R⟦X⟧) : R⸨X⸩) = single 1 1 :=
@@ -506,7 +506,7 @@ theorem valuation_single_zpow (s : ℤ) :
 /- The coefficients of a power series vanish in degree strictly less than its valuation. -/
 theorem coeff_zero_of_lt_intValuation {n d : ℕ} {f : K⟦X⟧}
     (H : Valued.v (f : K⸨X⸩) ≤ Multiplicative.ofAdd (-d : ℤ)) :
-    n < d → coeff K n f = 0 := by
+    n < d → coeff n f = 0 := by
   intro hnd
   apply (PowerSeries.X_pow_dvd_iff).mp _ n hnd
   rwa [← LaurentSeries.coe_algebraMap, valuation_def, valuation_of_algebraMap,
@@ -516,8 +516,8 @@ theorem coeff_zero_of_lt_intValuation {n d : ℕ} {f : K⟦X⟧}
 /- The valuation of a power series is the order of the first non-zero coefficient. -/
 theorem intValuation_le_iff_coeff_lt_eq_zero {d : ℕ} (f : K⟦X⟧) :
     Valued.v (f : K⸨X⸩) ≤ Multiplicative.ofAdd (-d : ℤ) ↔
-      ∀ n : ℕ, n < d → coeff K n f = 0 := by
-  have : PowerSeries.X ^ d ∣ f ↔ ∀ n : ℕ, n < d → (PowerSeries.coeff K n) f = 0 :=
+      ∀ n : ℕ, n < d → coeff n f = 0 := by
+  have : PowerSeries.X ^ d ∣ f ↔ ∀ n : ℕ, n < d → (PowerSeries.coeff n) f = 0 :=
     ⟨PowerSeries.X_pow_dvd_iff.mp, PowerSeries.X_pow_dvd_iff.mpr⟩
   rw [← this, ← LaurentSeries.coe_algebraMap, valuation_def, valuation_of_algebraMap,
     ← span_singleton_dvd_span_singleton_iff_dvd, ← Ideal.span_singleton_pow]
@@ -1116,7 +1116,7 @@ lemma LaurentSeriesRingEquiv_mem_valuationSubring (f : K⟦X⟧) :
 lemma algebraMap_C_mem_adicCompletionIntegers (x : K) :
     ((LaurentSeriesRingEquiv K).toRingHom.comp HahnSeries.C) x ∈
       adicCompletionIntegers (RatFunc K) (idealX K) := by
-  have : HahnSeries.C x = ofPowerSeries ℤ K (PowerSeries.C K x) := by
+  have : HahnSeries.C x = ofPowerSeries ℤ K (PowerSeries.C x) := by
     simp [C_apply, ofPowerSeries_C]
   simp only [RingHom.comp_apply, RingEquiv.toRingHom_eq_coe, RingHom.coe_coe, this]
   apply LaurentSeriesRingEquiv_mem_valuationSubring

@@ -113,5 +113,5 @@ lemma ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (σ : Type*) :
 open PowerSeries in
 lemma ringKrullDim_succ_le_ringKrullDim_powerseries :
     ringKrullDim R + 1 ≤ ringKrullDim (PowerSeries R) :=
-  ringKrullDim_succ_le_of_surjective (constantCoeff R) (⟨C R ·, rfl⟩)
+  ringKrullDim_succ_le_of_surjective constantCoeff (⟨C ·, rfl⟩)
     MvPowerSeries.X_mem_nonzeroDivisors constantCoeff_X

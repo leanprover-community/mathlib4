@@ -32,7 +32,7 @@ open MvPowerSeries.WithPiTopology
 
 /-- (Possibly multivariate) power series which can be substituted in a `PowerSeries`. -/
 abbrev HasSubst (a : MvPowerSeries τ S) : Prop :=
-  IsNilpotent (MvPowerSeries.constantCoeff τ S a)
+  IsNilpotent (MvPowerSeries.constantCoeff a)
 
 theorem hasSubst_iff {a : MvPowerSeries τ S} :
     HasSubst a ↔ MvPowerSeries.HasSubst (Function.const Unit a) :=
@@ -56,13 +56,13 @@ theorem HasSubst.hasEval [TopologicalSpace S] {a : MvPowerSeries τ S} (ha : Has
   simpa [hasSubst_iff] using ha
 
 theorem HasSubst.of_constantCoeff_zero {a : MvPowerSeries τ S}
-    (ha : MvPowerSeries.constantCoeff τ S a = 0) : HasSubst a := by
+    (ha : MvPowerSeries.constantCoeff a = 0) : HasSubst a := by
   simp [HasSubst, ha]
 
 /-- A variant of `HasSubst.of_constantCoeff_zero` for `PowerSeries`
 to avoid the expansion of `Unit`. -/
 theorem HasSubst.of_constantCoeff_zero' {a : PowerSeries S}
-    (ha : PowerSeries.constantCoeff S a = 0) : HasSubst a :=
+    (ha : PowerSeries.constantCoeff a = 0) : HasSubst a :=
   HasSubst.of_constantCoeff_zero ha
 
 protected theorem HasSubst.X (t : τ) :
@@ -79,7 +79,7 @@ protected theorem HasSubst.X_pow {n : ℕ} (hn : n ≠ 0) : HasSubst (X ^ n : R�
   HasSubst.of_constantCoeff_zero' (by simp [hn])
 
 protected theorem HasSubst.monomial {n : τ →₀ ℕ} (hn : n ≠ 0) (s : S) :
-    HasSubst (MvPowerSeries.monomial S n s) := by
+    HasSubst (MvPowerSeries.monomial n s) := by
   classical
   apply HasSubst.of_constantCoeff_zero
   rw [← MvPowerSeries.coeff_zero_eq_constantCoeff, MvPowerSeries.coeff_monomial,
@@ -87,7 +87,7 @@ protected theorem HasSubst.monomial {n : τ →₀ ℕ} (hn : n ≠ 0) (s : S) :
 
 /-- A variant of `HasSubst.monomial` to avoid the expansion of `Unit`. -/
 protected theorem HasSubst.monomial' {n : ℕ} (hn : n ≠ 0) (s : S) :
-    HasSubst (monomial S n s) :=
+    HasSubst (monomial n s) :=
   HasSubst.monomial (Finsupp.single_ne_zero.mpr hn) s
 
 theorem HasSubst.zero : HasSubst (0 : MvPowerSeries τ R) := by
@@ -187,7 +187,7 @@ theorem subst_smul [Algebra A S] [IsScalarTower A R S]
   rw [← coe_substAlgHom ha, AlgHom.map_smul_of_tower]
 
 theorem coeff_subst_finite (ha : HasSubst a) (f : PowerSeries R) (e : τ →₀ ℕ) :
-    Set.Finite (fun (d : ℕ) ↦ (coeff R d f) • (MvPowerSeries.coeff S e (a ^ d))).support := by
+    Set.Finite (fun (d : ℕ) ↦ coeff d f • MvPowerSeries.coeff e (a ^ d)).support := by
   convert (MvPowerSeries.coeff_subst_finite ha.const f e).image
     (Finsupp.LinearEquiv.finsuppUnique ℕ ℕ Unit).toEquiv
   rw [← Equiv.preimage_eq_iff_eq_image, ← Function.support_comp_eq_preimage]
@@ -197,13 +197,13 @@ theorem coeff_subst_finite (ha : HasSubst a) (f : PowerSeries R) (e : τ →₀ 
   simp [coeff]
 
 theorem coeff_subst_finite' (hb : HasSubst b) (f : PowerSeries R) (e : ℕ) :
-    Set.Finite (fun (d : ℕ) ↦ (coeff R d f) • (PowerSeries.coeff S e (b ^ d))).support :=
+    Set.Finite (fun (d : ℕ) ↦ coeff d f • (PowerSeries.coeff e (b ^ d))).support :=
   coeff_subst_finite hb f _
 
 theorem coeff_subst (ha : HasSubst a) (f : PowerSeries R) (e : τ →₀ ℕ) :
-    MvPowerSeries.coeff S e (subst a f) =
+    MvPowerSeries.coeff e (subst a f) =
       finsum (fun (d : ℕ) ↦
-        (coeff R d f) • (MvPowerSeries.coeff S e (a ^ d))) := by
+        coeff d f • (MvPowerSeries.coeff e (a ^ d))) := by
   rw [subst, MvPowerSeries.coeff_subst ha.const f e, ← finsum_comp_equiv
     (Finsupp.LinearEquiv.finsuppUnique ℕ ℕ Unit).toEquiv.symm]
   apply finsum_congr
@@ -211,14 +211,14 @@ theorem coeff_subst (ha : HasSubst a) (f : PowerSeries R) (e : τ →₀ ℕ) :
   congr <;> simp
 
 theorem coeff_subst' {b : S⟦X⟧} (hb : HasSubst b) (f : R⟦X⟧) (e : ℕ) :
-    coeff S e (f.subst b) =
+    coeff e (f.subst b) =
       finsum (fun (d : ℕ) ↦
-        (coeff R d f) • (PowerSeries.coeff S e (b ^ d))) := by
+        coeff d f • PowerSeries.coeff e (b ^ d)) := by
   simp [PowerSeries.coeff, coeff_subst hb]
 
 theorem constantCoeff_subst (ha : HasSubst a) (f : PowerSeries R) :
-    MvPowerSeries.constantCoeff τ S (subst a f) =
-      finsum (fun d ↦ (coeff R d f) • (MvPowerSeries.constantCoeff τ S (a ^ d))) := by
+    MvPowerSeries.constantCoeff (subst a f) =
+      finsum (fun d ↦ coeff d f • MvPowerSeries.constantCoeff (a ^ d)) := by
   simp only [← MvPowerSeries.coeff_zero_eq_constantCoeff_apply, coeff_subst ha f 0]
 
 theorem map_algebraMap_eq_subst_X (f : R⟦X⟧) :
