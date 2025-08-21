@@ -68,7 +68,7 @@ instance : MonoidalCategoryStruct (QuadraticModuleCat.{u} R) where
 
 
 theorem toIsometry_tensorHom {K L M N : QuadraticModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) :
-    (f ⊗ g).toIsometry = f.toIsometry.tmul g.toIsometry :=
+    (f ⊗ₘ g).toIsometry = f.toIsometry.tmul g.toIsometry :=
   rfl
 
 theorem toIsometry_whiskerLeft

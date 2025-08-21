@@ -172,7 +172,7 @@ instance : CommRing ((𝟙_ (ModuleCat.{u} R) : ModuleCat.{u} R) : Type u) :=
   inferInstanceAs <| CommRing R
 
 theorem hom_tensorHom {K L M N : ModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) :
-    (f ⊗ g).hom = TensorProduct.map f.hom g.hom :=
+    (f ⊗ₘ g).hom = TensorProduct.map f.hom g.hom :=
   rfl
 
 theorem hom_whiskerLeft (L : ModuleCat.{u} R) {M N : ModuleCat.{u} R} (f : M ⟶ N) :
