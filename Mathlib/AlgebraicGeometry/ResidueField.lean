@@ -44,8 +44,7 @@ def residueField (x : X) : CommRingCat :=
 instance (x : X) : Field (X.residueField x) :=
   inferInstanceAs <| Field (IsLocalRing.ResidueField (X.presheaf.stalk x))
 
-instance (x : X) : Unique (Spec (X.residueField x)) :=
-  inferInstanceAs (Unique (Spec (CommRingCat.of _)))
+instance (x : X) : Unique (Spec (X.residueField x)) := inferInstanceAs (Unique Spec(_))
 
 /-- The residue map from the stalk to the residue field. -/
 def residue (X : Scheme.{u}) (x) : X.presheaf.stalk x ⟶ X.residueField x :=
@@ -256,13 +255,7 @@ lemma fromSpecResidueField_apply (x : X.carrier) (s : Spec (X.residueField x)) :
 
 lemma range_fromSpecResidueField (x : X.carrier) :
     Set.range (X.fromSpecResidueField x).base = {x} := by
-  ext s
-  simp only [Set.mem_range, fromSpecResidueField_apply, Set.mem_singleton_iff, eq_comm (a := s)]
-  constructor
-  · rintro ⟨-, h⟩
-    exact h
-  · rintro rfl
-    exact ⟨closedPoint (X.residueField x), rfl⟩
+  simp
 
 lemma descResidueField_fromSpecResidueField {K : Type*} [Field K] (X : Scheme) {x}
     (f : X.presheaf.stalk x ⟶ .of K) [IsLocalHom f.hom] :
@@ -271,7 +264,7 @@ lemma descResidueField_fromSpecResidueField {K : Type*} [Field K] (X : Scheme) {
   simp [fromSpecResidueField, ← Spec.map_comp_assoc]
 
 lemma descResidueField_stalkClosedPointTo_fromSpecResidueField
-    (K : Type u) [Field K] (X : Scheme.{u}) (f : Spec (.of K) ⟶ X) :
+    (K : Type u) [Field K] (X : Scheme.{u}) (f : Spec(K) ⟶ X) :
     Spec.map (@descResidueField (CommRingCat.of K) _ X _ (Scheme.stalkClosedPointTo f)
         _) ≫
       X.fromSpecResidueField (f.base (closedPoint K)) = f := by
@@ -295,7 +288,7 @@ lemma SpecToEquivOfField_eq_iff {K : Type*} [Field K] {X : Scheme}
 /-- For a field `K` and a scheme `X`, the morphisms `Spec K ⟶ X` bijectively correspond
 to pairs of points `x` of `X` and embeddings `κ(x) ⟶ K`. -/
 def SpecToEquivOfField (K : Type u) [Field K] (X : Scheme.{u}) :
-    (Spec (.of K) ⟶ X) ≃ Σ x, X.residueField x ⟶ .of K where
+    (Spec(K) ⟶ X) ≃ Σ x, X.residueField x ⟶ .of K where
   toFun f :=
     ⟨_, X.descResidueField (Scheme.stalkClosedPointTo f)⟩
   invFun xf := Spec.map xf.2 ≫ X.fromSpecResidueField xf.1

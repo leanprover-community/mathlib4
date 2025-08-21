@@ -84,7 +84,8 @@ variable {K : Type u} [Monoid K]
 /-- The monoidal natural isomorphism corresponding to composing two multiplicative morphisms.
 -/
 @[to_additive Discrete.addMonoidalFunctorComp
-      "The monoidal natural isomorphism corresponding to\ncomposing two additive morphisms."]
+      /-- The monoidal natural isomorphism corresponding to
+composing two additive morphisms. -/]
 def Discrete.monoidalFunctorComp (F : M →* N) (G : N →* K) :
     Discrete.monoidalFunctor F ⋙ Discrete.monoidalFunctor G ≅
       Discrete.monoidalFunctor (G.comp F) := Iso.refl _
