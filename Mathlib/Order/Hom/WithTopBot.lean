@@ -57,7 +57,7 @@ def _root_.Function.Embedding.coeWithTop : α ↪ WithTop α where
   inj' := WithTop.coe_injective
 
 /-- The coercion `α → WithTop α` bundled as monotone map. -/
-@[simps]
+@[simps -fullyApplied]
 def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithTop α where
   toFun := (↑)
   inj' := WithTop.coe_injective
@@ -130,7 +130,7 @@ def _root_.Function.Embedding.coeWithBot : α ↪ WithBot α where
   inj' := WithBot.coe_injective
 
 /-- The coercion `α → WithBot α` bundled as monotone map. -/
-@[simps]
+@[simps -fullyApplied]
 def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithBot α where
   toFun := (↑)
   inj' := WithBot.coe_injective
