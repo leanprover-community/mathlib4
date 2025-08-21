@@ -50,15 +50,6 @@ attribute [instance] cofibration_s
 
 variable (h : CofibrantBrownFactorization f)
 
-instance cofibration_i : Cofibration h.i := by
-  simpa only [cofibration_iff] using h.hi
-
-instance fibration_p : Fibration h.p := by
-  simpa only [fibration_iff] using h.hp.1
-
-instance weakEquivalence_p : WeakEquivalence h.p := by
-  simpa only [weakEquivalence_iff] using h.hp.2
-
 instance [WeakEquivalence f] : WeakEquivalence h.i :=
   weakEquivalence_of_postcomp_of_fac h.fac
 
@@ -105,15 +96,6 @@ attribute [reassoc (attr := simp)] i_r
 attribute [instance] fibration_r
 
 variable (h : FibrantBrownFactorization f)
-
-instance fibration_p : Fibration h.p := by
-  simpa only [fibration_iff] using h.hp
-
-instance cofibration_i : Cofibration h.i := by
-  simpa only [cofibration_iff] using h.hi.1
-
-instance weakEquivalence_i : WeakEquivalence h.i := by
-  simpa only [weakEquivalence_iff] using h.hi.2
 
 instance [WeakEquivalence f] : WeakEquivalence h.p :=
   weakEquivalence_of_precomp_of_fac h.fac
