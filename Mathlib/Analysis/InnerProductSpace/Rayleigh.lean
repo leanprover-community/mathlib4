@@ -114,7 +114,7 @@ theorem linearly_dependent_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : F}
   have H : IsLocalExtrOn T.reApplyInnerSelf {x : F | ‖x‖ ^ 2 = ‖x₀‖ ^ 2} x₀ := by
     convert hextr
     ext x
-    simp [dist_eq_norm]
+    simp
   -- find Lagrange multipliers for the function `T.re_apply_inner_self` and the
   -- hypersurface-defining function `fun x ↦ ‖x‖ ^ 2`
   obtain ⟨a, b, h₁, h₂⟩ :=
@@ -122,7 +122,7 @@ theorem linearly_dependent_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : F}
       (hT.isSymmetric.hasStrictFDerivAt_reApplyInnerSelf x₀)
   refine ⟨a, b, h₁, ?_⟩
   apply (InnerProductSpace.toDualMap ℝ F).injective
-  simp only [LinearIsometry.map_add, LinearIsometry.map_smul, LinearIsometry.map_zero]
+  simp only [LinearIsometry.map_add, LinearIsometry.map_zero]
   -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 changed `map_smulₛₗ` into `map_smulₛₗ _`
   simp only [map_smulₛₗ _, RCLike.conj_to_real]
   change a • innerSL ℝ x₀ + b • innerSL ℝ (T x₀) = 0

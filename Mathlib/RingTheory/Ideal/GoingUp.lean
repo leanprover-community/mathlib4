@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Yongle Hu
 -/
 import Mathlib.RingTheory.Ideal.Over
-import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Localization.AtPrime.Basic
 import Mathlib.RingTheory.Localization.Integral
 
 /-!
@@ -55,7 +55,7 @@ theorem exists_coeff_ne_zero_mem_comap_of_non_zero_divisor_root_mem {r : S}
     rw [eval₂_mul, eval₂_X] at hp
     obtain ⟨i, hi, mem⟩ := ih p_nonzero (r_non_zero_divisor hp)
     refine ⟨i + 1, ?_, ?_⟩
-    · simp [hi, mem]
+    · simp [hi]
     · simpa [hi] using mem
 
 /-- Let `P` be an ideal in `R[x]`.  The map
@@ -83,7 +83,7 @@ theorem injective_quotient_le_comap_map (P : Ideal R[X]) :
 R[x] / P → (R / (P ∩ R))[x] / (P / (P ∩ R))
 ```
 commutes.  It is used, for instance, in the proof of `quotient_mk_comp_C_is_integral_of_jacobson`,
-in the file `Mathlib.RingTheory.Jacobson.Polynomial`.
+in the file `Mathlib/RingTheory/Jacobson/Polynomial.lean`.
 -/
 theorem quotient_mk_maps_eq (P : Ideal R[X]) :
     ((Quotient.mk (map (mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) P)).comp C).comp
@@ -366,6 +366,10 @@ theorem IsMaximal.of_liesOver_isMaximal [hpm : p.IsMaximal] [P.IsPrime] : P.IsMa
 theorem IsMaximal.of_isMaximal_liesOver [P.IsMaximal] : p.IsMaximal := by
   rw [P.over_def p]
   exact isMaximal_comap_of_isIntegral_of_isMaximal P
+
+theorem eq_bot_of_liesOver_bot [Nontrivial A] [IsDomain B] [h : P.LiesOver (⊥ : Ideal A)] :
+    P = ⊥ :=
+  eq_bot_of_comap_eq_bot <| ((liesOver_iff _ _).mp h).symm
 
 /-- `B ⧸ P` is an integral `A ⧸ p`-algebra if `B` is a integral `A`-algebra. -/
 instance Quotient.algebra_isIntegral_of_liesOver : Algebra.IsIntegral (A ⧸ p) (B ⧸ P) :=

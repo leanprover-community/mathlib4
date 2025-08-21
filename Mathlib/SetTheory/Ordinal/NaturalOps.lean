@@ -5,6 +5,11 @@ Authors: Violeta Hernández Palacios
 -/
 import Mathlib.SetTheory.Ordinal.Family
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.NatOrdinal` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Natural operations on ordinals
@@ -49,19 +54,11 @@ noncomputable section
 
 /-- A type synonym for ordinals with natural addition and multiplication. -/
 def NatOrdinal : Type _ :=
-  Ordinal deriving Zero, Inhabited, One, WellFoundedRelation
--- The `LinearOrder, `SuccOrder` instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
+  Ordinal
+deriving Zero, Inhabited, One, WellFoundedRelation, Uncountable,
+  LinearOrder, SuccOrder, OrderBot, NoMaxOrder, ZeroLEOneClass
 
-instance NatOrdinal.instLinearOrder : LinearOrder NatOrdinal := Ordinal.instLinearOrder
-instance NatOrdinal.instSuccOrder : SuccOrder NatOrdinal := Ordinal.instSuccOrder
-instance NatOrdinal.instOrderBot : OrderBot NatOrdinal := Ordinal.instOrderBot
-instance NatOrdinal.instNoMaxOrder : NoMaxOrder NatOrdinal := Ordinal.instNoMaxOrder
-instance NatOrdinal.instZeroLEOneClass : ZeroLEOneClass NatOrdinal := Ordinal.instZeroLEOneClass
 instance NatOrdinal.instNeZeroOne : NeZero (1 : NatOrdinal) := Ordinal.instNeZeroOne
-
-instance NatOrdinal.uncountable : Uncountable NatOrdinal :=
-  Ordinal.uncountable
 
 /-- The identity function between `Ordinal` and `NatOrdinal`. -/
 @[match_pattern]
@@ -236,7 +233,7 @@ termination_by (a, b)
 @[deprecated "blsub will soon be deprecated" (since := "2024-11-18")]
 theorem blsub_nadd_of_mono {f : ∀ c < a ♯ b, Ordinal.{max u v}}
     (hf : ∀ {i j} (hi hj), i ≤ j → f i hi ≤ f j hj) :
-    blsub.{u,v} _ f =
+    blsub.{u, v} _ f =
       max (blsub.{u, v} a fun a' ha' => f (a' ♯ b) <| nadd_lt_nadd_right ha' b)
         (blsub.{u, v} b fun b' hb' => f (a ♯ b') <| nadd_lt_nadd_left hb' a) := by
   apply (blsub_le_iff.2 fun i h => _).antisymm (max_le _ _)
@@ -301,9 +298,9 @@ theorem succ_nadd : succ a ♯ b = succ (a ♯ b) := by rw [← one_nadd (a ♯ 
 
 @[simp]
 theorem nadd_nat (n : ℕ) : a ♯ n = a + n := by
-  induction' n with n hn
-  · simp
-  · rw [Nat.cast_succ, add_one_eq_succ, nadd_succ, add_succ, hn]
+  induction n with
+  | zero => simp
+  | succ n hn => rw [Nat.cast_succ, add_one_eq_succ, nadd_succ, add_succ, hn]
 
 @[simp]
 theorem nat_nadd (n : ℕ) : ↑n ♯ a = a + n := by rw [nadd_comm, nadd_nat]
@@ -313,8 +310,8 @@ theorem add_le_nadd : a + b ≤ a ♯ b := by
   | zero => simp
   | succ c h =>
     rwa [add_succ, nadd_succ, succ_le_succ_iff]
-  | isLimit c hc H =>
-    rw [(isNormal_add_right a).apply_of_isLimit hc, Ordinal.iSup_le_iff]
+  | limit c hc H =>
+    rw [(isNormal_add_right a).apply_of_isSuccLimit hc, Ordinal.iSup_le_iff]
     rintro ⟨i, hi⟩
     exact (H i hi).trans (nadd_le_nadd_left hi.le a)
 
@@ -344,7 +341,7 @@ instance : AddLeftMono NatOrdinal.{u} :=
 instance : AddLeftReflectLE NatOrdinal.{u} :=
   ⟨fun a b c h => by
     by_contra! h'
-    exact h.not_lt (add_lt_add_left h' a)⟩
+    exact h.not_gt (add_lt_add_left h' a)⟩
 
 instance : AddCommMonoid NatOrdinal :=
   { add := (· + ·)
@@ -364,9 +361,10 @@ instance : AddMonoidWithOne NatOrdinal :=
 
 @[simp]
 theorem toOrdinal_natCast (n : ℕ) : toOrdinal n = n := by
-  induction' n with n hn
-  · rfl
-  · change (toOrdinal n) ♯ 1 = n + 1
+  induction n with
+  | zero => rfl
+  | succ n hn =>
+    change (toOrdinal n) ♯ 1 = n + 1
     rw [hn]; exact nadd_one n
 
 instance : CharZero NatOrdinal where
@@ -493,7 +491,7 @@ theorem nmul_nadd_le {a' b' : Ordinal} (ha : a' ≤ a) (hb : b' ≤ b) :
 theorem lt_nmul_iff : c < a ⨳ b ↔ ∃ a' < a, ∃ b' < b, c ♯ a' ⨳ b' ≤ a' ⨳ b ♯ a ⨳ b' := by
   refine ⟨fun h => ?_, ?_⟩
   · rw [nmul] at h
-    simpa using not_mem_of_lt_csInf h ⟨0, fun _ _ => bot_le⟩
+    simpa using notMem_of_lt_csInf h ⟨0, fun _ _ => bot_le⟩
   · rintro ⟨a', ha, b', hb, h⟩
     have := h.trans_lt (nmul_nadd_lt ha hb)
     rwa [nadd_lt_nadd_iff_right] at this
@@ -734,7 +732,7 @@ theorem mul_le_nmul (a b : Ordinal.{u}) : a * b ≤ a ⨳ b := by
   · intro c hc H
     rcases eq_zero_or_pos a with (rfl | ha)
     · simp
-    · rw [(isNormal_mul_right ha).apply_of_isLimit hc, Ordinal.iSup_le_iff]
+    · rw [(isNormal_mul_right ha).apply_of_isSuccLimit hc, Ordinal.iSup_le_iff]
       rintro ⟨i, hi⟩
       exact (H i hi).trans (nmul_le_nmul_left hi.le a)
 

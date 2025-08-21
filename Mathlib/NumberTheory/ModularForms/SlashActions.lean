@@ -96,7 +96,7 @@ private theorem add_slash (k : ℤ) (A : GL (Fin 2) ℝ) (f g : ℍ → ℂ) :
 private theorem slash_one (k : ℤ) (f : ℍ → ℂ) : f ∣[k] 1 = f :=
   funext <| by simp [slash, σ, denom]
 
-private theorem zero_slash (k : ℤ) (A : GL (Fin 2) ℝ) : (0 : ℍ → ℂ) ∣[k]A = 0 :=
+private theorem zero_slash (k : ℤ) (A : GL (Fin 2) ℝ) : (0 : ℍ → ℂ) ∣[k] A = 0 :=
   funext fun _ => by simp [slash]
 
 instance : SlashAction ℤ (GL (Fin 2) ℝ) (ℍ → ℂ) ℂ where
@@ -153,7 +153,7 @@ theorem is_invariant_const (A : SL(2, ℤ)) (x : ℂ) :
 theorem is_invariant_one (A : SL(2, ℤ)) : (1 : ℍ → ℂ) ∣[(0 : ℤ)] A = (1 : ℍ → ℂ) :=
   is_invariant_const _ _
 
-/-- Variant of `is_invariant_one` with the left hand side in simp normal form. -/
+/-- Variant of `is_invariant_one` with the left-hand side in simp normal form. -/
 @[simp]
 theorem is_invariant_one' (A : SL(2, ℤ)) : (1 : ℍ → ℂ) ∣[(0 : ℤ)] (A : GL (Fin 2) ℝ) = 1 := by
   simpa using is_invariant_one A
@@ -165,7 +165,7 @@ theorem slash_action_eq'_iff (k : ℤ) (f : ℍ → ℂ) (γ : SL(2, ℤ)) (z : 
     (f ∣[k] γ) z = f z ↔ f (γ • z) = ((γ 1 0 : ℂ) * z + (γ 1 1 : ℂ)) ^ k * f z := by
   simp only [SL_slash_apply]
   convert inv_mul_eq_iff_eq_mul₀ (G₀ := ℂ) _ using 2
-  · simp only [mul_comm (f _), denom, zpow_neg, ofReal_one, one_zpow, mul_one]
+  · simp only [mul_comm (f _), denom, zpow_neg]
     rfl
   · exact zpow_ne_zero k (denom_ne_zero γ z)
 

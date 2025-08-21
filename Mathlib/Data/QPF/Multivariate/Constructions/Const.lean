@@ -33,7 +33,7 @@ instance Const.inhabited {A α} [Inhabited A] : Inhabited (Const n A α) := ⟨(
 
 namespace Const
 
-open MvFunctor MvPFunctor
+open MvPFunctor
 
 variable {n} {A : Type u} {α β : TypeVec.{u} n} (f : α ⟹ β)
 

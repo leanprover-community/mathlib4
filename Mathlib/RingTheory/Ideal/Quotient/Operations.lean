@@ -463,6 +463,11 @@ theorem Quotient.span_singleton_one (I : Ideal A) [I.IsTwoSided] :
   rw [← map_one (mk _), ← Submodule.range_mkQ I, ← Submodule.map_top, ← Ideal.span_singleton_one,
     Ideal.span, Submodule.map_span, Set.image_singleton, Submodule.mkQ_apply, Quotient.mk_eq_mk]
 
+open Pointwise in
+lemma Quotient.smul_top {R : Type*} [CommRing R] (a : R) (I : Ideal R) :
+    (a • ⊤ : Submodule R (R ⧸ I)) = Submodule.span R {Submodule.Quotient.mk a} := by
+  simp [← Ideal.Quotient.span_singleton_one, Algebra.smul_def, Submodule.smul_span]
+
 theorem KerLift.map_smul (f : A →ₐ[R₁] B) (r : R₁) (x : A ⧸ (RingHom.ker f)) :
     f.kerLift (r • x) = r • f.kerLift x := by
   obtain ⟨a, rfl⟩ := Quotient.mkₐ_surjective R₁ _ x
@@ -563,7 +568,7 @@ theorem quotientEquiv_mk (x : R) :
     quotientEquiv I J f hIJ (Ideal.Quotient.mk I x) = Ideal.Quotient.mk J (f x) :=
   rfl
 
-@[simp]
+-- @[simp] /- adaption note for https://github.com/leanprover/lean4/pull/8419 : the simpNF linter complained -/
 theorem quotientEquiv_symm_mk (x : S) :
     (quotientEquiv I J f hIJ).symm (Ideal.Quotient.mk J x) = Ideal.Quotient.mk I (f.symm x) :=
   rfl
@@ -957,7 +962,7 @@ theorem quotQuotEquivQuotSupₐ_toRingEquiv :
   rfl
 
 @[simp]
--- Porting note: had to add an extra coercion arrow on the right hand side.
+-- Porting note: had to add an extra coercion arrow on the right-hand side.
 theorem coe_quotQuotEquivQuotSupₐ : ⇑(quotQuotEquivQuotSupₐ R I J) = ⇑(quotQuotEquivQuotSup I J) :=
   rfl
 
@@ -968,7 +973,7 @@ theorem quotQuotEquivQuotSupₐ_symm_toRingEquiv :
   rfl
 
 @[simp]
--- Porting note: had to add an extra coercion arrow on the right hand side.
+-- Porting note: had to add an extra coercion arrow on the right-hand side.
 theorem coe_quotQuotEquivQuotSupₐ_symm :
     ⇑(quotQuotEquivQuotSupₐ R I J).symm = ⇑(quotQuotEquivQuotSup I J).symm :=
   rfl
@@ -1019,7 +1024,7 @@ theorem quotQuotEquivQuotOfLEₐ_toRingEquiv (h : I ≤ J) :
   rfl
 
 @[simp]
--- Porting note: had to add an extra coercion arrow on the right hand side.
+-- Porting note: had to add an extra coercion arrow on the right-hand side.
 theorem coe_quotQuotEquivQuotOfLEₐ (h : I ≤ J) :
     ⇑(quotQuotEquivQuotOfLEₐ R h) = ⇑(quotQuotEquivQuotOfLE h) :=
   rfl
@@ -1031,7 +1036,7 @@ theorem quotQuotEquivQuotOfLEₐ_symm_toRingEquiv (h : I ≤ J) :
   rfl
 
 @[simp]
--- Porting note: had to add an extra coercion arrow on the right hand side.
+-- Porting note: had to add an extra coercion arrow on the right-hand side.
 theorem coe_quotQuotEquivQuotOfLEₐ_symm (h : I ≤ J) :
     ⇑(quotQuotEquivQuotOfLEₐ R h).symm = ⇑(quotQuotEquivQuotOfLE h).symm :=
   rfl

@@ -105,14 +105,14 @@ theorem mul_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ 
     letI := Classical.decEq (σ →₀ ℕ)
     if H : n = 0 then by
       rw [H]
-      simp [coeff_mul, support_single_ne_zero, h]
+      simp [h]
     else by
       classical
       have : ((0 : σ →₀ ℕ), n) ∈ antidiagonal n := by rw [mem_antidiagonal, zero_add]
       rw [coeff_one, if_neg H, coeff_mul, ← Finset.insert_erase this,
-        Finset.sum_insert (Finset.not_mem_erase _ _), coeff_zero_eq_constantCoeff_apply, h,
+        Finset.sum_insert (Finset.notMem_erase _ _), coeff_zero_eq_constantCoeff_apply, h,
         coeff_invOfUnit, if_neg H, neg_mul, mul_neg, Units.mul_inv_cancel_left, ←
-        Finset.insert_erase this, Finset.sum_insert (Finset.not_mem_erase _ _),
+        Finset.insert_erase this, Finset.sum_insert (Finset.notMem_erase _ _),
         Finset.insert_erase this, if_neg (not_lt_of_ge <| le_rfl), zero_add, add_comm, ←
         sub_eq_add_neg, sub_eq_zero, Finset.sum_congr rfl]
       rintro ⟨i, j⟩ hij

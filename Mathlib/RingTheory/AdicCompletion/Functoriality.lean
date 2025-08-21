@@ -179,7 +179,7 @@ theorem map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] P) :
 
 theorem map_comp_apply (f : M →ₗ[R] N) (g : N →ₗ[R] P) (x : AdicCompletion I M) :
     map I g (map I f x) = map I (g ∘ₗ f) x := by
-  show (map I g ∘ₗ map I f) x = map I (g ∘ₗ f) x
+  change (map I g ∘ₗ map I f) x = map I (g ∘ₗ f) x
   rw [map_comp]
 
 @[simp]
@@ -216,7 +216,7 @@ section Families
 In this section we consider a family `M : ι → Type*` of `R`-modules. Purely from
 the formal properties of adic completions we obtain two canonical maps
 
-- `AdicCompleiton I (∀ j, M j) →ₗ[R] ∀ j, AdicCompletion I (M j)`
+- `AdicCompletion I (∀ j, M j) →ₗ[R] ∀ j, AdicCompletion I (M j)`
 - `(⨁ j, (AdicCompletion I (M j))) →ₗ[R] AdicCompletion I (⨁ j, M j)`
 
 If `ι` is finite, both are isomorphisms and, modulo

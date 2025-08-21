@@ -26,8 +26,6 @@ Basic definitions and properties of the above ideas are provided in this file.
 
 -/
 
-suppress_compilation
-
 open Set
 
 variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
@@ -72,8 +70,7 @@ lemma toEnd_pow_apply_mem {χ₁ χ₂ : H → R} {x : L} {m : M}
   induction n with
   | zero => simpa using hm
   | succ n IH =>
-    simp only [pow_succ', Module.End.mul_apply, toEnd_apply_apply,
-      Nat.cast_add, Nat.cast_one, rootSpace]
+    simp only [pow_succ', Module.End.mul_apply, toEnd_apply_apply]
     convert lie_mem_genWeightSpace_of_mem_genWeightSpace hx IH using 2
     rw [succ_nsmul, ← add_assoc, add_comm (n • _)]
 
@@ -89,11 +86,7 @@ def rootSpaceWeightSpaceProductAux {χ₁ χ₂ χ₃ : H → R} (hχ : χ₁ + 
         ⟨⁅(x : L), (m : M)⁆,
           hχ ▸ lie_mem_genWeightSpace_of_mem_genWeightSpace x.property m.property⟩
       map_add' := fun m n => by simp only [LieSubmodule.coe_add, lie_add, AddMemClass.mk_add_mk]
-      map_smul' := fun t m => by
-        conv_lhs =>
-          congr
-          rw [LieSubmodule.coe_smul, lie_smul]
-        rfl }
+      map_smul' := fun t m => by simp }
   map_add' x y := by
     ext m
     simp only [LieSubmodule.coe_add, add_lie, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.add_apply,
@@ -114,15 +107,14 @@ def rootSpaceWeightSpaceProduct (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ�
         ext m
         simp only [rootSpaceWeightSpaceProductAux]
         dsimp
-        simp only [LieSubalgebra.coe_bracket_of_module, lie_lie] }
+        simp only [lie_lie] }
 
 @[simp]
 theorem coe_rootSpaceWeightSpaceProduct_tmul (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃)
     (x : rootSpace H χ₁) (m : genWeightSpace M χ₂) :
     (rootSpaceWeightSpaceProduct R L H M χ₁ χ₂ χ₃ hχ (x ⊗ₜ m) : M) = ⁅(x : L), (m : M)⁆ := by
   simp only [rootSpaceWeightSpaceProduct, rootSpaceWeightSpaceProductAux, coe_liftLie_eq_lift_coe,
-    AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, lift_apply, LinearMap.coe_mk, AddHom.coe_mk,
-    Submodule.coe_mk]
+    lift_apply, LinearMap.coe_mk, AddHom.coe_mk, Submodule.coe_mk]
 
 theorem mapsTo_toEnd_genWeightSpace_add_of_mem_rootSpace (α χ : H → R)
     {x : L} (hx : x ∈ rootSpace H α) :
@@ -175,9 +167,7 @@ theorem toLieSubmodule_le_rootSpace_zero : H.toLieSubmodule ≤ rootSpace H 0 :=
   let g : Module.End R L := toEnd R H L y
   have hfg : g.comp (H : Submodule R L).subtype = (H : Submodule R L).subtype.comp f := by
     ext z
-    simp only [toEnd_apply_apply, Submodule.subtype_apply,
-      LieSubalgebra.coe_bracket_of_module, LieSubalgebra.coe_bracket, Function.comp_apply,
-      LinearMap.coe_comp]
+    simp only [Submodule.subtype_apply, Function.comp_apply, LinearMap.coe_comp]
     rfl
   change (g ^ k).comp (H : Submodule R L).subtype ⟨x, hx⟩ = 0
   rw [Module.End.commute_pow_left_of_commute hfg k]

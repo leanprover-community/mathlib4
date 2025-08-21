@@ -48,7 +48,7 @@ theorem squarefree_one [CommMonoid R] : Squarefree (1 : R) :=
 
 @[simp]
 theorem not_squarefree_zero [MonoidWithZero R] [Nontrivial R] : ¬Squarefree (0 : R) := by
-  erw [not_forall]
+  rw [Squarefree, not_forall]
   exact ⟨0, by simp⟩
 
 theorem Squarefree.ne_zero [MonoidWithZero R] [Nontrivial R] {m : R} (hm : Squarefree (m : R)) :
@@ -110,9 +110,6 @@ theorem squarefree_iff_emultiplicity_le_one [CommMonoid R] (r : R) :
   norm_cast
   rw [← one_add_one_eq_two]
   exact Order.add_one_le_iff_of_not_isMax (by simp)
-
-@[deprecated (since := "2024-11-30")]
-alias multiplicity.squarefree_iff_emultiplicity_le_one := squarefree_iff_emultiplicity_le_one
 
 section Irreducible
 
@@ -259,7 +256,7 @@ theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] {x : R}
         assumption_mod_cast
       · have := ha.1
         contradiction
-    · simp [Multiset.count_eq_zero_of_not_mem hmem]
+    · simp [Multiset.count_eq_zero_of_notMem hmem]
   · rw [or_iff_not_imp_right]
     intro hu
     rcases eq_or_ne a 0 with rfl | h0

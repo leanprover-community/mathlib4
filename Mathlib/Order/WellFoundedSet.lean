@@ -163,7 +163,7 @@ instance IsStrictOrder.subset : IsStrictOrder α fun a b : α => r a b ∧ a ∈
 
 theorem wellFoundedOn_iff_no_descending_seq :
     s.WellFoundedOn r ↔ ∀ f : ((· > ·) : ℕ → ℕ → Prop) ↪r r, ¬∀ n, f n ∈ s := by
-  simp only [wellFoundedOn_iff, RelEmbedding.wellFounded_iff_no_descending_seq, ← not_exists, ←
+  simp only [wellFoundedOn_iff, RelEmbedding.wellFounded_iff_isEmpty, ← not_exists, ←
     not_nonempty_iff, not_iff_not]
   constructor
   · rintro ⟨⟨f, hf⟩⟩
@@ -212,11 +212,6 @@ theorem isWF_univ_iff : IsWF (univ : Set α) ↔ WellFoundedLT α := by
 theorem IsWF.of_wellFoundedLT [h : WellFoundedLT α] (s : Set α) : s.IsWF :=
   (Set.isWF_univ_iff.2 h).mono s.subset_univ
 
-@[deprecated IsWF.of_wellFoundedLT (since := "2025-01-16")]
-theorem _root_.WellFounded.isWF (h : WellFounded ((· < ·) : α → α → Prop)) (s : Set α) : s.IsWF :=
-  have : WellFoundedLT α := ⟨h⟩
-  .of_wellFoundedLT s
-
 end LT
 
 section Preorder
@@ -236,7 +231,7 @@ variable [Preorder α] {s t : Set α} {a : α}
 theorem isWF_iff_no_descending_seq :
     IsWF s ↔ ∀ f : ℕ → α, StrictAnti f → ¬∀ n, f n ∈ s :=
   wellFoundedOn_iff_no_descending_seq.trans
-    ⟨fun H f hf => H ⟨⟨f, hf.injective⟩, hf.lt_iff_lt⟩, fun H f => H f fun _ _ => f.map_rel_iff.2⟩
+    ⟨fun H f hf => H ⟨⟨f, hf.injective⟩, hf.lt_iff_gt⟩, fun H f => H f fun _ _ => f.map_rel_iff.2⟩
 
 end Preorder
 
@@ -348,7 +343,7 @@ theorem partiallyWellOrderedOn_iff_finite_antichains [IsSymm α r] :
       rw [hmn]
       exact refl _
   rintro _ ⟨m, hm, rfl⟩ _ ⟨n, hn, rfl⟩ hmn
-  obtain h | h := (ne_of_apply_ne _ hmn).lt_or_lt
+  obtain h | h := (ne_of_apply_ne _ hmn).lt_or_gt
   · exact H _ _ h
   · exact mt symm (H _ _ h)
 
@@ -405,7 +400,7 @@ theorem isPWO_iff_exists_monotone_subseq :
   partiallyWellOrderedOn_iff_exists_monotone_subseq
 
 protected theorem IsPWO.isWF (h : s.IsPWO) : s.IsWF := by
-  simpa only [← lt_iff_le_not_le] using h.wellFoundedOn
+  simpa only [← lt_iff_le_not_ge] using h.wellFoundedOn
 
 nonrec theorem IsPWO.prod {t : Set β} (hs : s.IsPWO) (ht : t.IsPWO) : IsPWO (s ×ˢ t) :=
   hs.prod ht
@@ -453,6 +448,28 @@ theorem isWF_insert {a} : IsWF (insert a s) ↔ IsWF s := by
 
 protected theorem IsWF.insert (h : IsWF s) (a : α) : IsWF (insert a s) :=
   isWF_insert.2 h
+
+theorem IsPWO.exists_le_minimal {a} (hs : s.IsPWO) (ha : a ∈ s) :
+    ∃ b ≤ a, Minimal (· ∈ s) b := by
+  let t : Set s := {x | x ≤ a}
+  let h : t.Nonempty := ⟨⟨a, ha⟩, le_rfl⟩
+  refine ⟨hs.wellFounded.min t h, hs.wellFounded.min_mem t h,
+    (hs.wellFounded.min t h).2, fun y hy hle => ?_⟩
+  by_contra hnle
+  exact hs.wellFounded.not_lt_min t h (x := ⟨y, hy⟩) (hle.trans (hs.wellFounded.min_mem t h))
+    ⟨hle, hnle⟩
+
+theorem IsPWO.exists_minimal (h : s.IsPWO) (hs : s.Nonempty) :
+    ∃ a, Minimal (· ∈ s) a := by
+  rcases hs with ⟨a, ha⟩
+  obtain ⟨b, _, hb⟩ := h.exists_le_minimal ha
+  exact ⟨b, hb⟩
+
+theorem IsPWO.exists_minimalFor (f : ι → α) (s : Set ι) (h : (f '' s).IsPWO) (hs : s.Nonempty) :
+    ∃ i, MinimalFor (· ∈ s) f i := by
+  obtain ⟨_, h⟩ := h.exists_minimal (hs.image _)
+  obtain ⟨a, ha, rfl⟩ := h.1
+  exact ⟨a, ha, fun b hb => h.2 (mem_image_of_mem _ hb)⟩
 
 end IsPWO
 
@@ -505,10 +522,6 @@ theorem isPWO_iff_isWF : s.IsPWO ↔ s.IsWF := by
   rw [← wellQuasiOrderedLE_def, ← isWellFounded_iff, wellQuasiOrderedLE_iff_wellFoundedLT]
 
 alias ⟨_, IsWF.isPWO⟩ := isPWO_iff_isWF
-
-@[deprecated isPWO_iff_isWF (since := "2025-01-21")]
-theorem isWF_iff_isPWO : s.IsWF ↔ s.IsPWO :=
-  isPWO_iff_isWF.symm
 
 /--
 If `α` is a linear order with well-founded `<`, then any set in it is a partially well-ordered set.
@@ -631,7 +644,7 @@ section LinearOrder
 variable [LinearOrder α] {s t : Set α} {a : α}
 
 theorem IsWF.min_le (hs : s.IsWF) (hn : s.Nonempty) (ha : a ∈ s) : hs.min hn ≤ a :=
-  le_of_not_lt (hs.not_lt_min hn ha)
+  le_of_not_gt (hs.not_lt_min hn ha)
 
 theorem IsWF.le_min_iff (hs : s.IsWF) (hn : s.Nonempty) : a ≤ hs.min hn ↔ ∀ b, b ∈ s → a ≤ b :=
   ⟨fun ha _b hb => le_trans ha (hs.min_le hn hb), fun h => h _ (hs.min_mem _)⟩
@@ -691,12 +704,14 @@ theorem bddAbove_preimage {s : Set α} (hs : s.PartiallyWellOrderedOn r) {f : �
   use (φ m), (φ n)
   exact ⟨hφm hmn, hr⟩
 
-theorem exists_not_mem_of_gt {s : Set α} (hs : s.PartiallyWellOrderedOn r) {f : ℕ → α}
+theorem exists_notMem_of_gt {s : Set α} (hs : s.PartiallyWellOrderedOn r) {f : ℕ → α}
     (hf : ∀ m n : ℕ, m < n → ¬ r (f m) (f n)) :
-    ∃ k : ℕ, ∀ m, k < m → ¬ (f m) ∈ s := by
+    ∃ k : ℕ, ∀ m, k < m → f m ∉ s := by
   have := hs.bddAbove_preimage hf
   contrapose! this
   simpa [not_bddAbove_iff, and_comm]
+
+@[deprecated (since := "2025-05-23")] alias exists_not_mem_of_gt := exists_notMem_of_gt
 
 -- TODO: move this material to the main file on WQOs.
 
@@ -740,9 +755,10 @@ theorem exists_min_bad_of_exists_bad (r : α → α → Prop) (rk : α → ℕ) 
         (minBadSeqOfBadSeq r rk s (n + 1) fn.1 fn.2.1).2.2⟩
   have h : ∀ m n, m ≤ n → (fs m).1 m = (fs n).1 m := fun m n mn => by
     obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le mn; clear mn
-    induction' k with k ih
-    · rfl
-    · rw [ih, (minBadSeqOfBadSeq r rk s (m + k + 1) (fs (m + k)).1 (fs (m + k)).2.1).2.1 m
+    induction k with
+    | zero => rfl
+    | succ k ih =>
+      rw [ih, (minBadSeqOfBadSeq r rk s (m + k + 1) (fs (m + k)).1 (fs (m + k)).2.1).2.1 m
         (Nat.lt_succ_iff.2 (Nat.add_le_add_left k.zero_le m))]
       rfl
   refine ⟨fun n => (fs n).1 n, ⟨fun n => (fs n).2.1.1 n, fun m n mn => ?_⟩, fun n g hg1 hg2 => ?_⟩
@@ -795,7 +811,7 @@ theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsPreo
     split_ifs at hmn with hm
     · apply hf1.2 m (g n') (lt_of_lt_of_le hm (g.monotone n'.zero_le))
       exact _root_.trans hmn (List.tail_sublistForall₂_self _)
-    · rw [← Nat.sub_lt_iff_lt_add' (le_of_not_lt hm)] at mn
+    · rw [← Nat.sub_lt_iff_lt_add' (le_of_not_gt hm)] at mn
       apply hf1.2 _ _ (g.lt_iff_lt.2 mn)
       rw [← List.cons_head!_tail (hnil (g (m - g 0))), ← List.cons_head!_tail (hnil (g n'))]
       exact List.SublistForall₂.cons (hg _ _ (le_of_lt mn)) hmn
@@ -873,7 +889,7 @@ theorem Pi.isPWO {α : ι → Type*} [∀ i, LinearOrder (α i)] [∀ i, IsWellO
   refine Finset.cons_induction ?_ ?_
   · intro f
     exists RelEmbedding.refl (· ≤ ·)
-    simp only [IsEmpty.forall_iff, imp_true_iff, forall_const, Finset.not_mem_empty]
+    simp only [IsEmpty.forall_iff, imp_true_iff, Finset.notMem_empty]
   · intro x s hx ih f
     obtain ⟨g, hg⟩ := (IsPWO.of_linearOrder univ).exists_monotone_subseq (f := (f · x)) mem_univ
     obtain ⟨g', hg'⟩ := ih (f ∘ g)
@@ -930,7 +946,7 @@ theorem WellFounded.sigma_lex_of_wellFoundedOn_fiber (hι : WellFounded (rι on 
 theorem Set.WellFoundedOn.sigma_lex_of_wellFoundedOn_fiber (hι : s.WellFoundedOn (rι on f))
     (hπ : ∀ i, (s ∩ f ⁻¹' {i}).WellFoundedOn (rπ i on g i)) :
     s.WellFoundedOn (Sigma.Lex rι rπ on fun c => ⟨f c, g (f c) c⟩) := by
-  show WellFounded (Sigma.Lex rι rπ on fun c : s => ⟨f c, g (f c) c⟩)
+  change WellFounded (Sigma.Lex rι rπ on fun c : s => ⟨f c, g (f c) c⟩)
   exact
     @WellFounded.sigma_lex_of_wellFoundedOn_fiber _ s _ _ rπ (fun c => f c) (fun i c => g _ c) hι
       fun i => ((hπ i).onFun (f := fun x => ⟨x, x.1.2, x.2⟩)).mono (fun b c h => ‹_›)
