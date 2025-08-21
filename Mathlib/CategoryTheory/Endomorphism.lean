@@ -50,11 +50,11 @@ def of (f : X ⟶ X) : End X := f
 `X ⟶ X`. -/
 def asHom (f : End X) : X ⟶ X := f
 
-@[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `of`/`asHom`?
-theorem one_def : (1 : End X) = 𝟙 X := rfl
+@[simp]
+theorem one_def : (1 : End X) = of (𝟙 X) := rfl
 
-@[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `of`/`asHom`?
-theorem mul_def (xs ys : End X) : xs * ys = ys ≫ xs := rfl
+@[simp]
+theorem mul_def (xs ys : End X) : xs * ys = of (ys ≫ xs) := rfl
 
 end Struct
 
