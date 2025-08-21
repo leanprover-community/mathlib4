@@ -25,8 +25,10 @@ differentiable on the upper half-plane.
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005]
 -/
 
-open UpperHalfPlane TopologicalSpace Set MeasureTheory intervalIntegral
+open TopologicalSpace Set MeasureTheory intervalIntegral
  Metric Filter Function Complex
+
+open UpperHalfPlane hiding I
 
 open scoped Interval Real NNReal ENNReal Topology BigOperators Nat
 
@@ -40,11 +42,11 @@ noncomputable abbrev ModularForm.eta_q (n : ℕ) (z : ℂ) := (𝕢 1 z) ^ (n + 
 
 open ModularForm
 
-lemma eta_q_eq_cexp (n : ℕ) (z : ℂ) : eta_q n z = cexp (2 * π * Complex.I * (n + 1) * z) := by
+lemma eta_q_eq_cexp (n : ℕ) (z : ℂ) : eta_q n z = cexp (2 * π * I * (n + 1) * z) := by
   simp [eta_q, Periodic.qParam, ← Complex.exp_nsmul]
   ring_nf
 
-lemma eta_q_eq_pow (n : ℕ) (z : ℂ) : eta_q n z = cexp (2 * π * Complex.I * z) ^ (n + 1) := by
+lemma eta_q_eq_pow (n : ℕ) (z : ℂ) : eta_q n z = cexp (2 * π * I * z) ^ (n + 1) := by
   simp [eta_q, Periodic.qParam]
 
 lemma one_sub_eta_q_ne_zero (n : ℕ) {z : ℂ} (hz : z ∈ ℍₒ) : 1 - eta_q n z ≠ 0 := by
@@ -75,7 +77,7 @@ lemma hasProdLocallyUniformlyOn_eta : HasProdLocallyUniformlyOn (fun n a ↦ 1 -
   apply hasProdLocallyUniformlyOn_of_forall_compact upperHalfPlaneSet_isOpen
   intro K hK hcK
   by_cases hN : K.Nonempty
-  · have hc : ContinuousOn (fun x ↦ ‖cexp (2 * π * Complex.I * x)‖) K := by fun_prop
+  · have hc : ContinuousOn (fun x ↦ ‖cexp (2 * π * I * x)‖) K := by fun_prop
     obtain ⟨z, hz, hB, HB⟩ := hcK.exists_sSup_image_eq_and_ge hN hc
     apply (summable_eta_q ⟨z, hK hz⟩).hasProdUniformlyOn_nat_one_add hcK
     · filter_upwards with n x hx
@@ -110,21 +112,21 @@ lemma logDeriv_one_sub_mul_cexp_comp (r : ℂ) {g : ℂ → ℂ} (hg : Different
   ring
 
 private theorem one_sub_eta_logDeriv_eq (z : ℂ) (i : ℕ) : logDeriv (fun x ↦ 1 - eta_q i x) z =
-    2 * π * Complex.I * (i + 1) * -eta_q i z / (1 - eta_q i z) := by
-  have h2 : (fun x ↦ 1 - cexp (2 * ↑π * Complex.I * (↑i + 1) * x)) =
-      ((fun z ↦ 1 - 1 * cexp z) ∘ fun x ↦ 2 * ↑π * Complex.I * (↑i + 1) * x) := by aesop
-  have h3 : deriv (fun x : ℂ ↦ (2 * π * Complex.I * (i + 1) * x)) =
-      fun _ ↦ 2 * π * Complex.I * (i + 1) := by
+    2 * π * I * (i + 1) * -eta_q i z / (1 - eta_q i z) := by
+  have h2 : (fun x ↦ 1 - cexp (2 * ↑π * I * (↑i + 1) * x)) =
+      ((fun z ↦ 1 - 1 * cexp z) ∘ fun x ↦ 2 * ↑π * I * (↑i + 1) * x) := by aesop
+  have h3 : deriv (fun x : ℂ ↦ (2 * π * I * (i + 1) * x)) =
+      fun _ ↦ 2 * π * I * (i + 1) := by
     ext y
-    simpa using deriv_const_mul (2 * π * Complex.I * (i + 1)) (d := fun (x : ℂ) ↦ x) (x := y)
+    simpa using deriv_const_mul (2 * π * I * (i + 1)) (d := fun (x : ℂ) ↦ x) (x := y)
   simp_rw [eta_q_eq_cexp, h2, logDeriv_one_sub_mul_cexp_comp 1
-    (g := fun x ↦ (2 * π * Complex.I * (i + 1) * x)) (by fun_prop), h3]
+    (g := fun x ↦ (2 * π * I * (i + 1) * x)) (by fun_prop), h3]
   simp
 
 lemma tsum_log_deriv_eta_q (z : ℂ) : ∑' (i : ℕ), logDeriv (fun x ↦ 1 - eta_q i x) z =
-    (2 * π * Complex.I) * ∑' n : ℕ, (n + 1) * (-eta_q n z) / (1 - eta_q n z) := by
+    (2 * π * I) * ∑' n : ℕ, (n + 1) * (-eta_q n z) / (1 - eta_q n z) := by
   suffices ∑' (i : ℕ), logDeriv (fun x ↦ 1 - eta_q i x) z =
-    ∑' n : ℕ, (2 * ↑π * Complex.I * (n + 1)) * (-eta_q n z) / (1 - eta_q n z) by
+    ∑' n : ℕ, (2 * ↑π * I * (n + 1)) * (-eta_q n z) / (1 - eta_q n z) by
     rw [this, ← tsum_mul_left]
     congr 1
     ext i
