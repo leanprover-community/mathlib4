@@ -14,7 +14,7 @@ In this file we consider the general notion of measurability modulo a σ-filter.
 Two important instances of this construction are null-measurability with respect to a measure,
 where the filter is the collection of co-null sets, and
 Baire-measurability with respect to a topology,
-where the filter is the collection of comeagre (residual) sets.
+where the filter is the collection of comeager (residual) sets.
 (not to be confused with measurability with respect to the sigma algebra
 of Baire sets, which is sometimes also called this.)
 TODO: Implement the latter.
