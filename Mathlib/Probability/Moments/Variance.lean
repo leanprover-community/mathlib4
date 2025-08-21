@@ -449,7 +449,7 @@ lemma variance_le_sub_mul_sub [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → 
       linarith
     _ = (b - μ[X]) * (μ[X] - a) := by ring
 
-/-- **Popoviciu's inequality on variance**
+/-- **Popoviciu's inequality on variances**
 
 The variance of a random variable `X` satisfying `a ≤ X ≤ b` almost everywhere is at most
 `((b - a) / 2) ^ 2`. -/

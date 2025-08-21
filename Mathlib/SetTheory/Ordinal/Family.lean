@@ -3,7 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Cardinal.UnivLE
 import Mathlib.SetTheory.Ordinal.Arithmetic
 
 /-!
@@ -329,15 +328,8 @@ theorem unbounded_range_of_le_iSup {α β : Type u} (r : α → α → Prop) [Is
 
 theorem IsNormal.map_iSup_of_bddAbove {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
     {ι : Type*} (g : ι → Ordinal.{u}) (hg : BddAbove (range g))
-    [Nonempty ι] : f (⨆ i, g i) = ⨆ i, f (g i) := eq_of_forall_ge_iff fun a ↦ by
-  have := bddAbove_iff_small.mp hg
-  have := univLE_of_injective H.strictMono.injective
-  have := Small.trans_univLE.{u, v} (range g)
-  have hfg : BddAbove (range (f ∘ g)) := bddAbove_iff_small.mpr <| by
-    rw [range_comp]
-    exact small_image f (range g)
-  change _ ↔ ⨆ i, (f ∘ g) i ≤ a
-  rw [ciSup_le_iff hfg, H.le_set' _ Set.univ_nonempty g] <;> simp [ciSup_le_iff hg]
+    [Nonempty ι] : f (⨆ i, g i) = ⨆ i, f (g i) :=
+  Order.IsNormal.map_iSup H hg
 
 theorem IsNormal.map_iSup {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
     {ι : Type w} (g : ι → Ordinal.{u}) [Small.{u} ι] [Nonempty ι] :
@@ -945,16 +937,7 @@ theorem isNormal_iff_lt_succ_and_blsub_eq {f : Ordinal.{u} → Ordinal.{max u v}
 
 theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : IsNormal f)
     (hg : IsNormal g) : f = g ↔ f 0 = g 0 ∧ ∀ a, f a = g a → f (succ a) = g (succ a) :=
-  ⟨fun h => by simp [h], fun ⟨h₁, h₂⟩ =>
-    funext fun a => by
-      induction a using limitRecOn with
-      | zero => solve_by_elim
-      | succ => solve_by_elim
-      | limit _ ho H =>
-        rw [← IsNormal.bsup_eq.{u, u} hf ho, ← IsNormal.bsup_eq.{u, u} hg ho]
-        congr
-        ext b hb
-        exact H b hb⟩
+  Order.IsNormal.ext hf hg
 
 end blsub
 

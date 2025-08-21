@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Clique
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 import Mathlib.Combinatorics.SimpleGraph.Copy
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Nat.Lattice
@@ -153,7 +154,7 @@ theorem Colorable.map {β : Type*} (f : V ↪ β) [NeZero n] {G : SimpleGraph V}
   obtain ⟨C⟩ := hc
   use extend f C (const β default)
   intro a b ⟨_, _, hadj, ha, hb⟩
-  rw [← ha, Injective.extend_apply f.injective, ← hb, Injective.extend_apply f.injective]
+  rw [← ha, f.injective.extend_apply, ← hb, f.injective.extend_apply]
   exact C.valid hadj
 
 /-- The "tautological" coloring of a graph, using the vertices of the graph as colors. -/
@@ -252,6 +253,11 @@ theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     · rintro v w hvw
       simp only [Fin.mk_eq_mk, Ne]
       exact C.valid hvw
+
+theorem colorable_iff_forall_connectedComponents {n : ℕ} :
+    G.Colorable n ↔ ∀ c : G.ConnectedComponent, (c.toSimpleGraph).Colorable n :=
+  ⟨fun ⟨C⟩ _ ↦ ⟨fun v ↦ C v, fun h h1 ↦ C.valid h h1⟩,
+   fun h ↦ ⟨G.homOfConnectedComponents (fun c ↦ (h c).some)⟩⟩
 
 theorem colorable_set_nonempty_of_colorable {n : ℕ} (hc : G.Colorable n) :
     { n : ℕ | G.Colorable n }.Nonempty :=

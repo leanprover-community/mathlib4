@@ -548,7 +548,7 @@ instance (priority := 100) isAtomistic_of_complementedLattice [ComplementedLatti
 
 /-!
 Now we will prove that a compactly generated modular atomistic lattice is a complemented lattice.
-Most explicitly, every element is the complement of a supremum of indepedendent atoms.
+Most explicitly, every element is the complement of a supremum of independent atoms.
 -/
 
 /-- In an atomic lattice, every element `b` has a complement of the form `sSup s` relative to a
