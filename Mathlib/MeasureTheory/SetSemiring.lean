@@ -72,15 +72,6 @@ lemma iff (C : Set (Set α)) : IsSetSemiring C ↔
       inter_mem := (isPiSystem_iff_of_nmem_empty h1).mpr h2,
       diff_eq_sUnion' := h3} ⟩
 
-lemma iff (C : Set (Set α)) : IsSetSemiring C ↔
-    (∅ ∈ C ∧ IsPiSystem C ∧ ∀ s ∈ C, ∀ t ∈ C,
-    ∃ I : Finset (Set α), ↑I ⊆ C ∧ PairwiseDisjoint (I : Set (Set α)) id ∧ s \ t = ⋃₀ I) :=
-  ⟨fun hC ↦ ⟨hC.empty_mem, isPiSystem hC, hC.diff_eq_sUnion'⟩,
-    fun ⟨h1, h2, h3⟩ ↦ {
-      empty_mem := h1,
-      inter_mem := (isPiSystem_iff_of_nmem_empty h1).mpr h2,
-      diff_eq_sUnion' := h3} ⟩
-
 section disjointOfDiff
 
 open scoped Classical in
@@ -483,7 +474,7 @@ lemma sUnion_disjointOfUnion_setdiff (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (h
         (subset_of_mem_disjointOfDiffUnion hC (hH'1 hh2') hJ j hh2'') (hH'2 hh1' hh2' h')
   · rw [← hH'3, ← biUnion_diff_eq_sUnion, iUnion₂_congr fun i j ↦ hI'3 i (hH'1 j)]
     ext y
-    simp only [mem_iUnion, mem_sUnion, exists_prop]
+    simp only [mem_iUnion, mem_sUnion]
     refine ⟨fun ⟨i, hi, t, ⟨ht1, ht2⟩⟩ ↦ ⟨t, ⟨⟨i, hi, ht1⟩ , ht2⟩⟩,
       fun ⟨t, ⟨⟨i, hi1, hi2⟩ , ht⟩⟩ ↦ ⟨i, ⟨hi1, ⟨t, hi2, ht⟩⟩⟩⟩
 
@@ -681,18 +672,17 @@ def fintype_pi_ofFinset (a : ι) (K' : (i : ι) → (Set (Set (α i)))) (K : Fin
     simp only [singleton_pi, Set.mem_preimage, Function.eval] at hx1
     rw [← hK'] at hx1
     refine ⟨x a, hx1, hx2.symm ▸ Eq.symm (singleton_pi' a x)⟩
-  simp only [mem_coe] at h
+  simp only at h
   exact Finite.fintype <| Finite.Set.subset (E '' ↑K) h
 
 lemma pairwiseDisjoint_set_pi {a : ι} {K : (i : ι) → Set (Set (α i))}
     (h : PairwiseDisjoint (K a) id) :
       PairwiseDisjoint (({a} : Set ι).pi  '' ({a} : Set ι).pi K) id := by
   intro m hm n hn hmn
-  simp only [↓reduceDIte, Set.mem_image, Set.mem_preimage,
-    mem_coe] at hm hn
+  simp only [Set.mem_image] at hm hn
   obtain ⟨o, ho1, ho2⟩ := hm
   obtain ⟨p, hp1, hp2⟩ := hn
-  simp only [singleton_pi, ↓reduceDIte, Function.eval, mem_coe] at ho1 hp1
+  simp only [singleton_pi] at ho1 hp1
   rw [← ho2, ← hp2] at hmn ⊢
   apply Set.Disjoint.set_pi (mem_singleton_iff.mpr rfl)
   exact h ho1 hp1 <| fun h7 ↦  hmn <| Set.pi_congr rfl <| fun i hi ↦ (mem_singleton_iff.mpr hi) ▸ h7
@@ -714,7 +704,7 @@ lemma pi_singleton_diff_eq_sUnion {a : ι} {K' : (i : ι) → Set (Set (α i))}
   · rw [← mem_diff, hK, mem_sUnion]
     use w a
 
-lemma pi_inter_image {s t : Set ι} {x : (i : ι) → Set (α i)}  (hst : Disjoint s t)
+lemma pi_inter_image {s t : Set ι} {x : (i : ι) → Set (α i)} (hst : Disjoint s t)
   (hx : ∀ i ∈ t, x i ∈ C i) {K' : Set (Set ((i : ι) → α i))} (hK'1 : K' ⊆ s.pi '' s.pi C) :
   Set.inter (t.pi x) '' K' ⊆ (s ∪ t).pi '' (s ∪ t).pi C := by
   intro a ha
@@ -736,7 +726,7 @@ lemma pi_inter_image {s t : Set ι} {x : (i : ι) → Set (α i)}  (hst : Disjoi
   · rw [← hb2, ← hc2, union_pi_ite_of_disjoint hst, inter_comm]
     rfl
 
-lemma pi_inter_image' {s t : Set ι} {x : (i : ι) → Set (α i)}  (hst : Disjoint s t)
+lemma pi_inter_image' {s t : Set ι} {x : (i : ι) → Set (α i)} (hst : Disjoint s t)
 (hx : ∀ i ∈ t, x i ∈ C i) {K' : (i : ι) → Set (Set (α i))} (hK'1 : ∀ i ∈ s, K' i ⊆ C i) :
   Set.inter (t.pi x) '' (s.pi  '' s.pi K') ⊆ (s ∪ t).pi '' (s ∪ t).pi C := by
   exact pi_inter_image hst hx <| subset_pi_image_of_subset hK'1
@@ -796,14 +786,14 @@ theorem pi {s : Set ι} (hs : Finite s)
       fun a b hb ↦ Set.mem_of_mem_inter_right hb
     have hF3 : ⋃₀ F = (t.pi x) ∩ (({a} : Set ι).pi x \ ({a} : Set ι).pi y) := by
       simp_rw [hE3, sUnion_eq_iUnion, iUnion_coe_set, inter_iUnion₂]
-      simp only [singleton_pi, sUnion_image, Set.mem_image, Set.mem_preimage, Function.eval,
+      simp only [singleton_pi, Set.mem_image, Set.mem_preimage, Function.eval,
         iUnion_exists, biUnion_and', iUnion_iUnion_eq_right, F]
       rfl
     by_cases h : t.Nonempty
     rotate_left
     · have h : t = ∅ := Set.not_nonempty_iff_eq_empty.mp h;
       use F.toFinset
-      simp only [coe_union, coe_toFinset]
+      simp only [coe_toFinset]
       refine ⟨hF1, hF2, ?_⟩
       simp only [h, empty_pi, Set.univ_inter, sdiff_self, Set.bot_eq_empty,
         Set.empty_inter, Set.union_empty] at hF3 h1
@@ -839,7 +829,5 @@ theorem pi {s : Set ι} (hs : Finite s)
         rfl
 
 end piSemiring
-
-end IsSetSemiring
 
 end MeasureTheory

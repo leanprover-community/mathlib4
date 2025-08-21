@@ -950,19 +950,6 @@ lemma subset_pi_image_of_subset {s : Set ι} {B C : (i : ι) → Set (Set (α i)
 
 end image
 
-section image
-
-open Set
-variable {ι ι' : Type*} {α : ι → Type*}
-
-lemma subset_pi_image_of_subset {s : Set ι} {B C : (i : ι) → Set (Set (α i))}
-    (hBC : ∀ i ∈ s, B i ⊆ C i) : s.pi '' s.pi B ⊆ s.pi '' s.pi C := by
-  simp only [Set.image_subset_iff]
-  intro b hb
-  simp only [Set.mem_preimage, Set.mem_image, Set.mem_pi] at hb ⊢
-  exact ⟨b, ⟨fun i a ↦ hBC i a (hb i a), rfl⟩⟩
-
-end image
 namespace Set
 
 variable {α β γ δ : Type*} {s : Set α} {f : α → β}

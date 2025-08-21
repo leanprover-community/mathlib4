@@ -136,7 +136,7 @@ theorem of_setSemiring' (hC : IsSetSemiring C) :
     simp
   · use Ds ∪ Dt
     simp only [mem_setOf_eq, finite_union, Ds1, Dt1, and_self, Set.union_subset_iff, Ds2, Dt2,
-      true_and, sUnion_union, Ds3, Dt3]
+      sUnion_union, Ds3, Dt3]
   · obtain ⟨Ds', hDs'⟩ := (mem_sUnion _).mp Ds1
     obtain ⟨Dt', hDt'⟩ := (mem_sUnion _).mp Dt1
     rw [← Ds3, ← Dt3]
