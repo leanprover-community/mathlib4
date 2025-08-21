@@ -9,6 +9,8 @@ import Mathlib.Analysis.SpecialFunctions.Choose
 import Mathlib.Combinatorics.Pigeonhole
 import Mathlib.Combinatorics.SimpleGraph.Bipartite
 import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
+import Mathlib.Combinatorics.SimpleGraph.ConcreteColorings
+import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
 import Mathlib.Data.Nat.Choose.Cast
 import Mathlib.Data.Real.Sqrt
 
