@@ -1446,7 +1446,7 @@ lemma map_pair_eq_prod_of_indep₀
       (μ := (ℙ : Measure Ω)) (hf := hY) (hg := hX)).1 hIndep
 
 /-- Integration against the joint distribution of independent random variables
-can be rewritten against the product of marginals (no integrability assumption needed). -/
+can be rewritten against the product of marginals. -/
 lemma integral_joint_eq_integral_prod_of_indep_min
   {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
   (Y : Ω → α) (X : Ω → β)
@@ -1527,8 +1527,6 @@ lemma integrable_on_prod_of_indep_of_integrable_comp
     integrable_prod_of_integrable_map_pair_of_indep
       Y X hY hX hIndep hInt_map
 
-/-- Wrapper with the original name/signature kept for compatibility:
-the integrability assumption is not needed for the equality, so it is ignored. -/
 lemma integral_joint_eq_integral_prod_of_indep
   {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
   (Y : Ω → α) (X : Ω → β)
@@ -1572,7 +1570,6 @@ lemma integral_pair_via_prod
 /-- If `X` is a real-valued random variable with Gaussian law `gaussianReal 0 v`,
 independent of `Y`, and if `ω ↦ φ (Y ω, X ω)` is integrable, then `φ` is integrable
 with respect to the product measure `(map Y ℙ) × (gaussianReal 0 v)`.
-
 This is a Gaussian specialization of `integrable_on_prod_of_indep_of_integrable_comp`. -/
 lemma integrable_phi_on_mapY_prod_gauss
   {α : Type*} [MeasurableSpace α]
@@ -1817,7 +1814,7 @@ lemma growth_bound_comp_affine_real_deriv
     simpa [mul_comm, mul_left_comm, mul_assoc, mul_pow] using t2
   exact (h1.trans (h2.trans h3))
 
-/-- Thin wrapper: moderate growth for x ↦ F (z + L x). -/
+/-- Moderate growth for x ↦ F (z + L x). -/
 lemma moderateGrowth_comp_affine_real
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {F : E → ℝ} (hF_diff : ContDiff ℝ 1 F)
@@ -2052,7 +2049,6 @@ lemma stein_coord_on_product_core
   exact ProductIBP.integral_prod_of_section_eq (μα := μY) (μβ := γ) (hα := hμY_sfinite)
     (hβ := (instSFiniteOfSigmaFinite)) (hφ_int := hInt_left) (hψ_int := hInt_right) (hSec := hSec)
 
-/-- Backwards-compatible wrapper: original signature (keeps `(vτ : ℝ)` outside). -/
 lemma stein_coord_on_product
   (w : OrthonormalBasis ι ℝ H) (i : ι)
   (F : H → ℝ) (hF_diff : ContDiff ℝ 1 F)
@@ -2099,17 +2095,7 @@ variable {Ω ι : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
 variable {α : ι → Type*} [∀ i, MeasurableSpace (α i)]
 
 /-- If, for a measurable map `f : Ω → Π i, α i`, each coordinate has Dirac law at `c i`,
-then the law of `f` is the Dirac mass at the whole point `c`.
-
-Hypotheses:
-- `μ` is a probability measure;
-- the index type `ι` is countable (in particular, this includes finite index sets);
-- each `α i` has measurable singletons;
-- `f` is (globally) measurable;
-- for each `i`, the pushforward of the coordinate `ω ↦ f ω i` is `dirac (c i)`.
-
-Conclusion:
-`map f μ = dirac c`. -/
+then the law of `f` is the Dirac mass at the whole point `c`. -/
 lemma map_fun_dirac_of_coord_dirac
     [IsProbabilityMeasure μ] [Countable ι]
     [∀ i, MeasurableSingletonClass (α i)]
@@ -2551,7 +2537,7 @@ variable {Ω : Type*} [MeasureSpace Ω] [IsProbabilityMeasure (ℙ : Measure Ω)
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 
 omit [CompleteSpace H] [MeasurableSpace H] [BorelSpace H] [IsProbabilityMeasure (ℙ : Measure Ω)] in
-/-- Wrapper (old name): integrability of `X · F(buildAlong (Y,X))` under independence,
+/-- Integrability of `X · F(buildAlong (Y,X))` under independence,
 using the a.e.-const helper for zero-variance coordinates. -/
 lemma integrable_coord_mul_F_of_indep
     (w : OrthonormalBasis ι ℝ H) (i : ι)
@@ -2583,7 +2569,7 @@ lemma integrable_coord_mul_F_of_indep
       (Y := Y) (y0 := fun _ => 0) (hY_ae := hYae)
 
 omit [CompleteSpace H] [MeasurableSpace H] [BorelSpace H] [IsProbabilityMeasure (ℙ : Measure Ω)] in
-/-- Wrapper (old name): integrability of the derivative along the coordinate line under independence. -/
+/-- Integrability of the derivative along the coordinate line under independence. -/
 lemma integrable_deriv_F_along_coord_of_indep
     (w : OrthonormalBasis ι ℝ H) (i : ι)
     (F : H → ℝ) (hF_diff : ContDiff ℝ 1 F)
@@ -2669,8 +2655,7 @@ lemma map_eq_gaussianReal0_of_ae_eq_const_zero
 
 namespace ProbabilityTheory
 
-/-- Wrapper with the ambient probability measure `ℙ`:
-if `X =ᵐ[ℙ] 0` and `X` is measurable, then `X` is a centered Gaussian with
+/-- If `X =ᵐ[ℙ] 0` and `X` is measurable, then `X` is a centered Gaussian with
 variance `0`. -/
 lemma IsCenteredGaussianRV.of_ae_eq_const
     {Ω : Type*} [MeasureSpace Ω] [IsProbabilityMeasure (ℙ : Measure Ω)]
@@ -2887,7 +2872,6 @@ lemma stein_coord_with_param_of_indep
         (hX_meas := hX_meas) (hY_meas := hY_meas)
         (_hIndep := hIndep) (hX_gauss := hX_gauss)
         (hY_gauss0 := hY_gauss0))
-
   have hprod' :
       ∫ p, φ p ∂((Measure.map Y ℙ).prod (Measure.map X ℙ))
         =
@@ -2924,7 +2908,6 @@ lemma stein_coord_with_param_of_indep
     _ = (vτ : ℝ) * ∫ ω, deriv (fun t => F (CoordLine.buildAlong (w := w) (i := i) (Y ω) t)) (X ω) ∂ℙ := by
           simp [ψ]
 
-/-- Final split that replaces the old `stein_coord_with_param_split`. -/
 lemma stein_coord_with_param'
   {g : Ω → H} (hg : PhysLean.Probability.GaussianIBP.IsGaussianHilbert g)
   {F : H → ℝ} (hF_diff : ContDiff ℝ 1 F)
@@ -3174,7 +3157,6 @@ lemma stein_coord_with_param'
           refine integral_congr_ae (ae_of_all _ (fun ω => ?_))
           exact h_deriv_pointwise ω
 
-/-- Wrapper that reuses the split proof. -/
 lemma stein_coord_with_param
   {Ω : Type*} [MeasureSpace Ω] [IsProbabilityMeasure (ℙ : Measure Ω)]
   {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℝ H] [CompleteSpace H]
@@ -3395,7 +3377,7 @@ lemma gaussian_covariance_pairing
 
 end LinearTestFunctions
 
-/-- **Standard-covariance corollary.** If all coordinate variances are `1`, the
+/-- **Covariance corollary.** If all coordinate variances are `1`, the
 covariant formula reduces to the usual identity with `h` on the RHS. -/
 @[simp]
  theorem gaussian_integration_by_parts_hilbert_std
@@ -3422,7 +3404,7 @@ section MoreCorollaries
 
 variable {g : Ω → H}
 
-/-- **CLM test functions.** A clean operator‑form covariance identity for any
+/-- **CLM test functions.** An operator‑form covariance identity for any
 continuous linear functional `L : H →L[ℝ] ℝ`.
 
 This is just `gaussian_integration_by_parts_hilbert_cov_op` with `F = L`, whose
