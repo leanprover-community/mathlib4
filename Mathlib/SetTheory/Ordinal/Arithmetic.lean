@@ -415,73 +415,95 @@ theorem lift_pred (o : Ordinal.{v}) : lift.{u} (pred o) = pred (lift.{u} o) := b
   order-continuous, i.e., the image `f o` of a limit ordinal `o` is the sup of `f a` for
   `a < o`.
 
-  Todo: deprecate this in favor of `Order.IsNormal`. -/
+  Deprecated: use `Order.IsNormal` instead. -/
+@[deprecated Order.IsNormal (since := "2025-08-21")]
 def IsNormal (f : Ordinal → Ordinal) : Prop :=
   Order.IsNormal f
 
+set_option linter.deprecated false in
+@[deprecated Order.IsNormal.le_iff_forall_le (since := "2025-08-21")]
 theorem IsNormal.limit_le {f} (H : IsNormal f) :
     ∀ {o}, IsSuccLimit o → ∀ {a}, f o ≤ a ↔ ∀ b < o, f b ≤ a :=
   H.le_iff_forall_le
 
+set_option linter.deprecated false in
+@[deprecated Order.IsNormal.lt_iff_exists_lt (since := "2025-08-21")]
 theorem IsNormal.limit_lt {f} (H : IsNormal f) {o} (h : IsSuccLimit o) {a} :
     a < f o ↔ ∃ b < o, a < f b :=
   H.lt_iff_exists_lt h
 
+set_option linter.deprecated false in
+@[deprecated Order.IsNormal.strictMono (since := "2025-08-21")]
 theorem IsNormal.strictMono {f} (H : IsNormal f) : StrictMono f :=
   Order.IsNormal.strictMono H
 
+set_option linter.deprecated false in
+@[deprecated Order.IsNormal.strictMono (since := "2025-08-21")]
 theorem IsNormal.monotone {f} (H : IsNormal f) : Monotone f :=
   H.strictMono.monotone
 
+set_option linter.deprecated false in
+@[deprecated Order.isNormal_iff (since := "2025-08-21")]
 theorem isNormal_iff_strictMono_limit (f : Ordinal → Ordinal) :
     IsNormal f ↔ StrictMono f ∧ ∀ o, IsSuccLimit o → ∀ a, (∀ b < o, f b ≤ a) → f o ≤ a :=
   isNormal_iff
 
+set_option linter.deprecated false in
+@[deprecated StrictMono.lt_iff_lt (since := "2025-08-21")]
 theorem IsNormal.lt_iff {f} (H : IsNormal f) {a b} : f a < f b ↔ a < b :=
   StrictMono.lt_iff_lt <| H.strictMono
 
+set_option linter.deprecated false in
+@[deprecated StrictMono.le_iff_le (since := "2025-08-21")]
 theorem IsNormal.le_iff {f} (H : IsNormal f) {a b} : f a ≤ f b ↔ a ≤ b :=
   le_iff_le_iff_lt_iff_lt.2 H.lt_iff
 
-theorem IsNormal.inj {f} (H : IsNormal f) {a b} : f a = f b ↔ a = b := by
-  simp only [le_antisymm_iff, H.le_iff]
+set_option linter.deprecated false in
+@[deprecated Injective.eq_iff (since := "2025-08-21")]
+theorem IsNormal.inj {f} (H : IsNormal f) {a b} : f a = f b ↔ a = b :=
+  H.strictMono.injective.eq_iff
 
+set_option linter.deprecated false in
+@[deprecated StrictMono.id_le (since := "2025-08-21")]
 theorem IsNormal.id_le {f} (H : IsNormal f) : id ≤ f :=
   H.strictMono.id_le
 
+set_option linter.deprecated false in
+@[deprecated StrictMono.le_apply (since := "2025-08-21")]
 theorem IsNormal.le_apply {f} (H : IsNormal f) {a} : a ≤ f a :=
   H.strictMono.le_apply
 
+set_option linter.deprecated false in
+@[deprecated LE.le.ge_iff_eq' (since := "2025-08-21")]
 theorem IsNormal.le_iff_eq {f} (H : IsNormal f) {a} : f a ≤ a ↔ f a = a :=
   H.le_apply.ge_iff_eq'
 
+set_option linter.deprecated false in
+@[deprecated Order.IsNormal.map_isLUB (since := "2025-08-21")]
 theorem IsNormal.le_set {f o} (H : IsNormal f) (p : Set Ordinal) (p0 : p.Nonempty) (b)
-    (H₂ : ∀ o, b ≤ o ↔ ∀ a ∈ p, a ≤ o) : f b ≤ o ↔ ∀ a ∈ p, f a ≤ o :=
-  ⟨fun h _ pa => (H.le_iff.2 ((H₂ _).1 le_rfl _ pa)).trans h, fun h => by
-    induction b using limitRecOn with
-    | zero =>
-      obtain ⟨x, px⟩ := p0
-      have := Ordinal.le_zero.1 ((H₂ _).1 (Ordinal.zero_le _) _ px)
-      rw [this] at px
-      exact h _ px
-    | succ S _ =>
-      rcases not_forall₂.1 (mt (H₂ S).2 <| (lt_succ S).not_ge) with ⟨a, h₁, h₂⟩
-      exact (H.le_iff.2 <| succ_le_of_lt <| not_le.1 h₂).trans (h _ h₁)
-    | limit S L _ =>
-      refine (H.le_iff_forall_le L).2 fun a h' => ?_
-      rcases not_forall₂.1 (mt (H₂ a).2 h'.not_ge) with ⟨b, h₁, h₂⟩
-      exact (H.le_iff.2 <| (not_le.1 h₂).le).trans (h _ h₁)⟩
+    (H₂ : ∀ o, b ≤ o ↔ ∀ a ∈ p, a ≤ o) : f b ≤ o ↔ ∀ a ∈ p, f a ≤ o := by
+  have hp := H.map_isLUB ⟨(H₂ b).1 le_rfl, fun a ↦ (H₂ _).2⟩ p0
+  refine ⟨fun hb a ha ↦ (hp.1 (mem_image_of_mem _ ha)).trans hb, fun H ↦ hp.2 ?_⟩
+  simpa [mem_upperBounds]
 
+set_option linter.deprecated false in
+@[deprecated Order.IsNormal.map_isLUB (since := "2025-08-21")]
 theorem IsNormal.le_set' {f o} (H : IsNormal f) (p : Set α) (p0 : p.Nonempty) (g : α → Ordinal) (b)
     (H₂ : ∀ o, b ≤ o ↔ ∀ a ∈ p, g a ≤ o) : f b ≤ o ↔ ∀ a ∈ p, f (g a) ≤ o := by
   simpa [H₂] using H.le_set (g '' p) (p0.image g) b
 
+set_option linter.deprecated false in
+@[deprecated Order.IsNormal.id (since := "2025-08-21")]
 theorem IsNormal.refl : IsNormal id :=
   .id
 
+set_option linter.deprecated false in
+@[deprecated Order.IsNormal.comp (since := "2025-08-21")]
 theorem IsNormal.trans {f g} (H₁ : IsNormal f) (H₂ : IsNormal g) : IsNormal (f ∘ g) :=
   H₁.comp H₂
 
+set_option linter.deprecated false in
+@[deprecated Order.IsNormal.map_isSuccLimit (since := "2025-08-21")]
 theorem IsNormal.isSuccLimit {f} (H : IsNormal f) {o} (ho : IsSuccLimit o) : IsSuccLimit (f o) :=
   H.map_isSuccLimit ho
 
@@ -598,12 +620,12 @@ theorem add_le_iff_of_isSuccLimit {a b c : Ordinal} (hb : IsSuccLimit b) :
 @[deprecated (since := "2025-07-08")]
 alias add_le_of_limit := add_le_iff_of_isSuccLimit
 
-theorem isNormal_add_right (a : Ordinal) : IsNormal (a + ·) := by
-  rw [isNormal_iff_strictMono_limit]
+theorem isNormal_add_right (a : Ordinal) : Order.IsNormal (a + ·) := by
+  rw [Order.isNormal_iff]
   exact ⟨add_left_strictMono, fun _ l _ ↦ (add_le_iff_of_isSuccLimit l).2⟩
 
 theorem isSuccLimit_add (a : Ordinal) {b : Ordinal} : IsSuccLimit b → IsSuccLimit (a + b) :=
-  (isNormal_add_right a).isSuccLimit
+  (isNormal_add_right a).map_isSuccLimit
 
 @[deprecated (since := "2025-07-09")]
 alias isLimit_add := isSuccLimit_add
@@ -781,8 +803,8 @@ theorem mul_le_iff_of_isSuccLimit {a b c : Ordinal} (h : IsSuccLimit b) :
 @[deprecated (since := "2025-07-09")]
 alias mul_le_of_limit := mul_le_iff_of_isSuccLimit
 
-theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) := by
-  refine IsNormal.of_succ_lt (fun b ↦ ?_) fun hb ↦ ?_
+theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : Order.IsNormal (a * ·) := by
+  refine .of_succ_lt (fun b ↦ ?_) fun hb ↦ ?_
   · simpa [mul_succ] using (add_lt_add_iff_left (a * b)).2 h
   · simpa [IsLUB, IsLeast, upperBounds, lowerBounds, mul_le_iff_of_isSuccLimit hb] using
       fun c hc ↦ mul_le_mul_left' hc.le a
@@ -795,10 +817,10 @@ theorem lt_mul_iff_of_isSuccLimit {a b c : Ordinal} (h : IsSuccLimit c) :
 alias lt_mul_of_limit := lt_mul_iff_of_isSuccLimit
 
 theorem mul_lt_mul_iff_left {a b c : Ordinal} (a0 : 0 < a) : a * b < a * c ↔ b < c :=
-  (isNormal_mul_right a0).lt_iff
+  (isNormal_mul_right a0).strictMono.lt_iff_lt
 
 theorem mul_le_mul_iff_left {a b c : Ordinal} (a0 : 0 < a) : a * b ≤ a * c ↔ b ≤ c :=
-  (isNormal_mul_right a0).le_iff
+  (isNormal_mul_right a0).strictMono.le_iff_le
 
 theorem mul_lt_mul_of_pos_left {a b c : Ordinal} (h : a < b) (c0 : 0 < c) : c * a < c * b :=
   (mul_lt_mul_iff_left c0).2 h
@@ -813,10 +835,10 @@ theorem le_of_mul_le_mul_left {a b c : Ordinal} (h : c * a ≤ c * b) (h0 : 0 < 
   le_imp_le_of_lt_imp_lt (fun h' => mul_lt_mul_of_pos_left h' h0) h
 
 theorem mul_right_inj {a b c : Ordinal} (a0 : 0 < a) : a * b = a * c ↔ b = c :=
-  (isNormal_mul_right a0).inj
+  (isNormal_mul_right a0).strictMono.injective.eq_iff
 
 theorem isSuccLimit_mul {a b : Ordinal} (a0 : 0 < a) : IsSuccLimit b → IsSuccLimit (a * b) :=
-  (isNormal_mul_right a0).isSuccLimit
+  (isNormal_mul_right a0).map_isSuccLimit
 
 @[deprecated (since := "2025-07-09")]
 alias isLimit_mul := isSuccLimit_mul
