@@ -129,6 +129,29 @@ theorem transitive (hS : S ∈ J X) (R : Sieve X) (h : ∀ ⦃Y⦄ ⦃f : Y ⟶ 
 
 theorem covering_of_eq_top : S = ⊤ → S ∈ J X := fun h => h.symm ▸ J.top_mem X
 
+/-- Given a `GrothendieckTopology` and a set of sieves `s` that is equal, form a new
+`GrothendieckTopology` whose set of sieves is definitionally equal to `s`. -/
+def copy (J : GrothendieckTopology C) (s : ∀ X : C, Set (Sieve X)) (h : J.sieves = s) :
+    GrothendieckTopology C where
+  sieves := s
+  top_mem' := h ▸ J.top_mem'
+  pullback_stable' := h ▸ J.pullback_stable'
+  transitive' := h ▸ J.transitive'
+
+@[simp]
+theorem sieves_copy {J : GrothendieckTopology C} {s : ∀ X : C, Set (Sieve X)} {h : J.sieves = s} :
+    (J.copy s h).sieves = s :=
+  rfl
+
+@[simp]
+theorem coe_copy {J : GrothendieckTopology C} {s : ∀ X : C, Set (Sieve X)} {h : J.sieves = s} :
+    ⇑(J.copy s h) = s :=
+  rfl
+
+theorem copy_eq {J : GrothendieckTopology C} {s : ∀ X : C, Set (Sieve X)} {h : J.sieves = s} :
+    J.copy s h = J :=
+  GrothendieckTopology.ext h.symm
+
 /-- If `S` is a subset of `R`, and `S` is covering, then `R` is covering as well.
 
 See also discussion after [MM92] Chapter III, Section 2, Definition 1. -/
