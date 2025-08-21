@@ -3,9 +3,6 @@ Copyright (c) 2025 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.DedekindDomain.PID
 import Mathlib.FieldTheory.Separable
 import Mathlib.RingTheory.RingHom.Finite
@@ -207,3 +204,5 @@ instance [NoZeroSMulDivisors S T] [Algebra.IsSeparable L F] :
   refine FractionRing.isSeparable_of_isLocalization T Sₚ Tₚ (M := P') ?_
   apply algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul
   exact fun _ h ↦  mem_nonZeroDivisors_of_ne_zero <| ne_of_mem_of_not_mem h <| by simp
+
+#min_imports
