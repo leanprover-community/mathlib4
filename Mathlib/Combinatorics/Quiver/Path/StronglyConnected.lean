@@ -6,7 +6,10 @@ Authors: Matteo Cipollina
 
 import Mathlib.Combinatorics.Quiver.Path
 
+/-! # Strongly-connected Quivers-/
+
 namespace Quiver
+
 section Connected
 
 /-- A quiver is strongly connected if for any two vertices there exists a path of positive
@@ -63,22 +66,6 @@ protected theorem eq (a b : V) :
   Quotient.eq''
 
 end StronglyConnectedComponent
-/-
-
-noncomputable section
-
-/-- Choose a path of positive length from `i` to `j` under strong connectivity. -/
-noncomputable def somePosLengthPath
-    {V : Type*} [Quiver V] (h : IsStronglyConnected V) (i j : V) : Path i j :=
-  (Classical.choice (h i j)).1
-
-/-- The chosen path has positive length. -/
-theorem somePosLengthPath_pos
-    {V : Type*} [Quiver V] (h : IsStronglyConnected V) (i j : V) :
-    0 < (somePosLengthPath h i j).length :=
-  (Classical.choice (h i j)).2
-end
-  -/
 
 end Connected
 
