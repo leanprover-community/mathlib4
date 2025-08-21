@@ -385,7 +385,7 @@ theorem finprod_eq_prod_of_fintype [Fintype α] (f : α → M) : ∏ᶠ i : α, 
 @[to_additive]
 theorem map_finset_prod {α F : Type*} [Fintype α] [EquivLike F M N] [MulHomClass F M N] (f : F)
     (g : α → M) : f (∏ i : α, g i) = ∏ i : α, f (g i) := by
-  simp [← finprod_eq_prod_of_fintype, MulHomClass.map_finprod]
+  simp [← finprod_eq_prod_of_fintype, MulEquivClass.map_finprod]
 
 @[to_additive]
 theorem finprod_cond_eq_prod_of_cond_iff (f : α → M) {p : α → Prop} {t : Finset α}

@@ -10,7 +10,7 @@ import Mathlib.Algebra.GroupWithZero.Hom
 
 assert_not_exists Ring
 
-namespace MulHomClass
+namespace MulEquivClass
 variable {F α β : Type*} [EquivLike F α β]
 
 -- See note [lower instance priority]
@@ -27,7 +27,7 @@ instance (priority := 100) toMonoidWithZeroHomClass
     MonoidWithZeroHomClass F α β :=
   { MulHomClass.instMonoidHomClass F, MulHomClass.toZeroHomClass with }
 
-end MulHomClass
+end MulEquivClass
 
 namespace MulEquiv
 

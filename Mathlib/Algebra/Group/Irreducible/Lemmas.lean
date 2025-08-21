@@ -71,7 +71,7 @@ lemma irreducible_mul_iff :
     · rwa [irreducible_mul_isUnit hb]
     · rwa [irreducible_isUnit_mul ha]
 
-section MulHomClass
+section MulEquivClass
 variable [EquivLike F M N] [MulHomClass F M N] (f : F)
 
 @[to_additive]
@@ -87,7 +87,7 @@ Then `x = (1, 0)` is irreducible in `M`, but `f x = 2 = 1 + 1` is not irreducibl
 @[to_additive /-- Irreducibility is preserved by additive equivalences. -/]
 alias ⟨_, Irreducible.map⟩ := MulEquiv.irreducible_iff
 
-end MulHomClass
+end MulEquivClass
 
 lemma Irreducible.of_map [FunLike F M N] [MonoidHomClass F M N] [IsLocalHom f]
     (hfx : Irreducible (f x)) : Irreducible x where

@@ -324,7 +324,7 @@ variable {A K B L : Type*} [CommRing A] [CommRing B] [CommRing K] [CommRing L]
 `f : A →+* K, g : B →+* L`, an isomorphism `h : A ≃+* B` induces an isomorphism of
 fraction rings `K ≃+* L`. -/
 noncomputable def ringEquivOfRingEquiv : K ≃+* L :=
-  IsLocalization.ringEquivOfRingEquiv K L h (MulHomClass.map_nonZeroDivisors h)
+  IsLocalization.ringEquivOfRingEquiv K L h (MulEquivClass.map_nonZeroDivisors h)
 
 @[simp]
 lemma ringEquivOfRingEquiv_algebraMap
@@ -348,7 +348,7 @@ variable {R A K B L : Type*} [CommSemiring R] [CommRing A] [CommRing B] [CommRin
 `f : A →ₐ[R] K, g : B →ₐ[R] L`, an isomorphism `h : A ≃ₐ[R] B` induces an isomorphism of
 fraction rings `K ≃ₐ[R] L`. -/
 noncomputable def algEquivOfAlgEquiv : K ≃ₐ[R] L :=
-  IsLocalization.algEquivOfAlgEquiv K L h (MulHomClass.map_nonZeroDivisors h)
+  IsLocalization.algEquivOfAlgEquiv K L h (MulEquivClass.map_nonZeroDivisors h)
 
 @[simp]
 lemma algEquivOfAlgEquiv_algebraMap
@@ -447,7 +447,7 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
       @IsFractionRing P _ S _ ((algebraMap R S).comp h.symm.toRingHom).toAlgebra := by
   delta IsFractionRing
   convert isLocalization_iff_of_base_ringEquiv (nonZeroDivisors R) S h
-  exact (MulHomClass.map_nonZeroDivisors h).symm
+  exact (MulEquivClass.map_nonZeroDivisors h).symm
 
 protected theorem nontrivial (R S : Type*) [CommRing R] [Nontrivial R] [CommRing S] [Algebra R S]
     [IsFractionRing R S] : Nontrivial S := by
