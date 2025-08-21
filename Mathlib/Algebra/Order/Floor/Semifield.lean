@@ -102,41 +102,4 @@ lemma ceil_le_two_mul (ha : 2⁻¹ ≤ a) : ⌈a⌉₊ ≤ 2 * a :=
 
 end LinearOrderedField
 
-variable [Semiring R] [LinearOrder R] [FloorSemiring R] {a : R}
-variable {S : Type*} [Semiring S] [LinearOrder S] [FloorSemiring S] {b : S}
-
-theorem floor_congr [IsStrictOrderedRing R] [IsStrictOrderedRing S]
-    (h : ∀ n : ℕ, (n : R) ≤ a ↔ (n : S) ≤ b) : ⌊a⌋₊ = ⌊b⌋₊ := by
-  have h₀ : 0 ≤ a ↔ 0 ≤ b := by simpa only [cast_zero] using h 0
-  obtain ha | ha := lt_or_ge a 0
-  · rw [floor_of_nonpos ha.le, floor_of_nonpos (le_of_not_ge <| h₀.not.mp ha.not_ge)]
-  exact (le_floor <| (h _).1 <| floor_le ha).antisymm (le_floor <| (h _).2 <| floor_le <| h₀.1 ha)
-
-theorem ceil_congr (h : ∀ n : ℕ, a ≤ n ↔ b ≤ n) : ⌈a⌉₊ = ⌈b⌉₊ :=
-  (ceil_le.2 <| (h _).2 <| le_ceil _).antisymm <| ceil_le.2 <| (h _).1 <| le_ceil _
-
-variable {F : Type*} [FunLike F R S] [RingHomClass F R S]
-
-theorem map_floor [IsStrictOrderedRing R] [IsStrictOrderedRing S]
-    (f : F) (hf : StrictMono f) (a : R) : ⌊f a⌋₊ = ⌊a⌋₊ :=
-  floor_congr fun n => by rw [← map_natCast f, hf.le_iff_le]
-
-theorem map_ceil (f : F) (hf : StrictMono f) (a : R) : ⌈f a⌉₊ = ⌈a⌉₊ :=
-  ceil_congr fun n => by rw [← map_natCast f, hf.le_iff_le]
-
 end Nat
-
-/-- There exists at most one `FloorSemiring` structure on a linear ordered semiring. -/
-theorem subsingleton_floorSemiring {R} [Semiring R] [LinearOrder R] :
-    Subsingleton (FloorSemiring R) := by
-  refine ⟨fun H₁ H₂ => ?_⟩
-  have : H₁.ceil = H₂.ceil := funext fun a => (H₁.gc_ceil.l_unique H₂.gc_ceil) fun n => rfl
-  have : H₁.floor = H₂.floor := by
-    ext a
-    rcases lt_or_ge a 0 with h | h
-    · rw [H₁.floor_of_neg, H₂.floor_of_neg] <;> exact h
-    · refine eq_of_forall_le_iff fun n => ?_
-      rw [H₁.gc_floor, H₂.gc_floor] <;> exact h
-  cases H₁
-  cases H₂
-  congr
