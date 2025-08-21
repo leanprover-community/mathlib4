@@ -47,7 +47,7 @@ def subpath (γ : Path a b) (t₀ t₁ : I) : Path (γ t₀) (γ t₁) where
   source' := by rw [comp_apply, subpathAux_zero]
   target' := by rw [comp_apply, subpathAux_one]
 
-/-- Reversing `γ.subpath t₀ t₁` yields `γ.subpath t₁ t₀`. -/
+/-- Reversing `γ.subpath t₀ t₁` results in `γ.subpath t₁ t₀`. -/
 @[simp]
 theorem symm_subpath (γ : Path a b) (t₀ t₁ : I) : symm (γ.subpath t₀ t₁) = γ.subpath t₁ t₀ := by
   ext s
