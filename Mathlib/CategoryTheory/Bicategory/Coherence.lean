@@ -85,7 +85,7 @@ theorem preinclusion_obj (a : B) : (preinclusion B).obj ⟨a⟩ = a :=
 @[simp]
 theorem preinclusion_map₂ {a b : B} (f g : Discrete (Path.{v + 1} a b)) (η : f ⟶ g) :
     (preinclusion B).map₂ η = eqToHom (congr_arg _ (Discrete.ext (Discrete.eq_of_hom η))) := by
-  tauto
+  rfl
 
 /-- The normalization of the composition of `p : Path a b` and `f : Hom b c`.
 `p` will eventually be taken to be `nil` and we then get the normalization

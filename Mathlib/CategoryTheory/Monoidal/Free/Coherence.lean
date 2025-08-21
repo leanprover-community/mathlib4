@@ -82,7 +82,7 @@ theorem inclusion_obj (X : N C) :
 @[simp]
 theorem inclusion_map {X Y : N C} (f : X ⟶ Y) :
     inclusion.map f = eqToHom (congr_arg _ (Discrete.ext (Discrete.eq_of_hom f))) := by
-  tauto
+  rfl
 
 /-- Auxiliary definition for `normalize`. -/
 def normalizeObj : F C → NormalMonoidalObject C → NormalMonoidalObject C
