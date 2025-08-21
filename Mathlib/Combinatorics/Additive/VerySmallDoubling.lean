@@ -659,7 +659,7 @@ private lemma exists_atomicSubgroup (hK : K < 1) (hS : S.Nonempty) : ∃ (H : Su
   }
   refine ⟨H, Fintype.ofFinset (n⁻¹ •> N) (fun a => by
       simpa only [← mem_coe, coe_smul_finset] using H.mem_carrier),
-    by simpa only [Subgroup.coe_set_mk, Set.toFinset_smul_set, toFinset_coe, H]
+    by simpa [Set.toFinset_smul_set, toFinset_coe, H]
       using IsAtom.smul_finset n⁻¹ hN
   ⟩
 
