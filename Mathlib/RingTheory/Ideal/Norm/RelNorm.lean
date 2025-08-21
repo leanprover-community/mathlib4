@@ -255,6 +255,15 @@ theorem map_relNorm (I : Ideal S) {T : Type*} [Semiring T] (f : R →+* T) :
 theorem relNorm_mono {I J : Ideal S} (h : I ≤ J) : relNorm R I ≤ relNorm R J :=
   spanNorm_mono R h
 
+open Pointwise in
+theorem relNorm_smul (σ : S ≃ₐ[R] S) (I : Ideal S) : relNorm R (σ • I) = relNorm R I := by
+  have h (J : Ideal S) (τ : S ≃ₐ[R] S) : relNorm R (τ • J) ≤ relNorm R J  :=
+    span_mono fun _ ⟨x, hx₁, hx₂⟩ ↦ ⟨τ⁻¹ x, mem_pointwise_smul_iff_inv_smul_mem.mp hx₁,
+      hx₂ ▸ Algebra.intNorm_eq_of_algEquiv x τ⁻¹⟩
+  refine le_antisymm (h I σ) ?_
+  convert h (σ • I) σ⁻¹
+  simp
+
 end Ideal
 
 end SpanNorm
