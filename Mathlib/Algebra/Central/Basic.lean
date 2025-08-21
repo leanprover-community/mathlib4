@@ -56,7 +56,7 @@ lemma baseField_essentially_unique
 
 lemma of_algEquiv (e : D ≃ₐ[K] D') : IsCentral K D' where
   out x hx :=
-    have ⟨k, hk⟩ := h.1 ((MulEquivClass.apply_mem_center_iff e.symm).mpr hx)
+    have ⟨k, hk⟩ := h.1 ((MulHomClass.apply_mem_center_iff e.symm).mpr hx)
     ⟨k, by simpa [ofId] using congr(e $hk)⟩
 
 open MulOpposite in

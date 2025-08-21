@@ -131,25 +131,37 @@ section congr
 
 variable {M} {N : Type*}
 
-@[to_additive] theorem _root_.MulEquivClass.apply_mem_center {F} [EquivLike F M N] [Mul M] [Mul N]
-    [MulEquivClass F M N] (e : F) {x : M} (hx : x ∈ Set.center M) : e x ∈ Set.center N := by
-  let e := MulEquivClass.toMulEquiv e
+@[to_additive] theorem _root_.MulHomClass.apply_mem_center {F} [EquivLike F M N] [Mul M] [Mul N]
+    [MulHomClass F M N] (e : F) {x : M} (hx : x ∈ Set.center M) : e x ∈ Set.center N := by
+  let e := MulHomClass.toMulEquiv e
   change e x ∈ Set.center N
   constructor <;>
   (intros; apply e.symm.injective; simp only
     [map_mul, e.symm_apply_apply, (hx.comm _).eq, (isMulCentral_iff _).mp hx, ← hx.right_comm])
 
-@[to_additive] theorem _root_.MulEquivClass.apply_mem_center_iff {F} [EquivLike F M N]
-    [Mul M] [Mul N] [MulEquivClass F M N] (e : F) {x : M} :
+@[deprecated (since := "2025-08-21")]
+alias MulEquivClass.apply_mem_center := MulHomClass.apply_mem_center
+
+@[deprecated (since := "2025-08-21")]
+alias AddEquivClass.apply_mem_center := AddHomClass.apply_mem_center
+
+@[to_additive] theorem _root_.MulHomClass.apply_mem_center_iff {F} [EquivLike F M N]
+    [Mul M] [Mul N] [MulHomClass F M N] (e : F) {x : M} :
     e x ∈ Set.center N ↔ x ∈ Set.center M :=
-  ⟨(by simpa using MulEquivClass.apply_mem_center (MulEquivClass.toMulEquiv e).symm ·),
-    MulEquivClass.apply_mem_center e⟩
+  ⟨(by simpa using MulHomClass.apply_mem_center (MulHomClass.toMulEquiv e).symm ·),
+    MulHomClass.apply_mem_center e⟩
+
+@[deprecated (since := "2025-08-21")]
+alias MulEquivClass.apply_mem_center_iff := MulHomClass.apply_mem_center_iff
+
+@[deprecated (since := "2025-08-21")]
+alias AddEquivClass.apply_mem_center_iff := AddHomClass.apply_mem_center_iff
 
 /-- The center of isomorphic magmas are isomorphic. -/
 @[to_additive (attr := simps) /-- The center of isomorphic additive magmas are isomorphic. -/]
 def Subsemigroup.centerCongr [Mul M] [Mul N] (e : M ≃* N) : center M ≃* center N where
-  toFun r := ⟨e r, MulEquivClass.apply_mem_center e r.2⟩
-  invFun s := ⟨e.symm s, MulEquivClass.apply_mem_center e.symm s.2⟩
+  toFun r := ⟨e r, MulHomClass.apply_mem_center e r.2⟩
+  invFun s := ⟨e.symm s, MulHomClass.apply_mem_center e.symm s.2⟩
   left_inv _ := Subtype.ext (e.left_inv _)
   right_inv _ := Subtype.ext (e.right_inv _)
   map_mul' _ _ := Subtype.ext (map_mul ..)

@@ -246,11 +246,17 @@ lemma isMulFreimanIso_empty : IsMulFreimanIso n (∅ : Set α) (∅ : Set β) f 
   mapsTo := hfAB
   map_prod_eq_map_prod s t _ _ _ _ h := by rw [← map_multiset_prod, h, map_multiset_prod]
 
-@[to_additive] lemma MulEquivClass.isMulFreimanIso [EquivLike F α β] [MulHomClass F α β] (f : F)
+@[to_additive] lemma MulHomClass.isMulFreimanIso [EquivLike F α β] [MulHomClass F α β] (f : F)
     (hfAB : BijOn f A B) : IsMulFreimanIso n A B f where
   bijOn := hfAB
   map_prod_eq_map_prod s t _ _ _ _ := by
     rw [← map_multiset_prod, ← map_multiset_prod, EquivLike.apply_eq_iff_eq]
+
+@[deprecated (since := "2025-08-21")]
+alias MulEquivClass.isMulFreimanIso := MulHomClass.isMulFreimanIso
+
+@[deprecated (since := "2025-08-21")]
+alias AddEquivClass.isAddFreimanIso := AddHomClass.isAddFreimanIso
 
 @[to_additive]
 lemma IsMulFreimanHom.subtypeVal {S : Type*} [SetLike S α] [SubmonoidClass S α] {s : S} :

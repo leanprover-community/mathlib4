@@ -447,7 +447,7 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
       @IsFractionRing P _ S _ ((algebraMap R S).comp h.symm.toRingHom).toAlgebra := by
   delta IsFractionRing
   convert isLocalization_iff_of_base_ringEquiv (nonZeroDivisors R) S h
-  exact (MulEquivClass.map_nonZeroDivisors h).symm
+  exact (MulHomClass.map_nonZeroDivisors h).symm
 
 protected theorem nontrivial (R S : Type*) [CommRing R] [Nontrivial R] [CommRing S] [Algebra R S]
     [IsFractionRing R S] : Nontrivial S := by

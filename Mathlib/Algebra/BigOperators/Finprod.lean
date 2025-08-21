@@ -289,9 +289,12 @@ theorem MulEquiv.map_finprod (g : M ≃* N) (f : α → M) : g (∏ᶠ i, f i) =
   g.toMonoidHom.map_finprod_of_injective (EquivLike.injective g) f
 
 @[to_additive]
-theorem MulEquivClass.map_finprod {F : Type*} [EquivLike F M N] [MulEquivClass F M N] (g : F)
+theorem MulHomClass.map_finprod {F : Type*} [EquivLike F M N] [MulHomClass F M N] (g : F)
     (f : α → M) : g (∏ᶠ i, f i) = ∏ᶠ i, g (f i) :=
-  MulEquiv.map_finprod (MulEquivClass.toMulEquiv g) f
+  MulEquiv.map_finprod (MulHomClass.toMulEquiv g) f
+
+@[deprecated (since := "2025-08-21")] alias MulEquivClass.map_finprod := MulHomClass.map_finprod
+@[deprecated (since := "2025-08-21")] alias AddEquivClass.map_finsum := AddHomClass.map_finsum
 
 /-- The `NoZeroSMulDivisors` makes sure that the result holds even when the support of `f` is
 infinite. For a more usual version assuming `(support f).Finite` instead, see `finsum_smul'`. -/
@@ -383,9 +386,9 @@ theorem finprod_eq_prod_of_fintype [Fintype α] (f : α → M) : ∏ᶠ i : α, 
   finprod_eq_prod_of_mulSupport_toFinset_subset _ (Set.toFinite _) <| Finset.subset_univ _
 
 @[to_additive]
-theorem map_finset_prod {α F : Type*} [Fintype α] [EquivLike F M N] [MulEquivClass F M N] (f : F)
+theorem map_finset_prod {α F : Type*} [Fintype α] [EquivLike F M N] [MulHomClass F M N] (f : F)
     (g : α → M) : f (∏ i : α, g i) = ∏ i : α, f (g i) := by
-  simp [← finprod_eq_prod_of_fintype, MulEquivClass.map_finprod]
+  simp [← finprod_eq_prod_of_fintype, MulHomClass.map_finprod]
 
 @[to_additive]
 theorem finprod_cond_eq_prod_of_cond_iff (f : α → M) {p : α → Prop} {t : Finset α}

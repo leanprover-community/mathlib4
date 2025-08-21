@@ -338,7 +338,7 @@ theorem normalizedFactors_multiset_prod (s : Multiset α) (hs : 0 ∉ s) :
       exact fun h ↦ hs (Multiset.mem_cons_of_mem h)
 
 variable {β : Type*} [CancelCommMonoidWithZero β] [NormalizationMonoid β]
-  [UniqueFactorizationMonoid β] {F : Type*} [EquivLike F α β] [MulEquivClass F α β] {f : F}
+  [UniqueFactorizationMonoid β] {F : Type*} [EquivLike F α β] [MulHomClass F α β] {f : F}
 
 /--
 If the monoid equiv `f : α ≃* β` commutes with `normalize` then, for `a : α`, it yields a
@@ -361,7 +361,7 @@ theorem normalizedFactorsEquiv_apply [DecidableEq α] (he : ∀ x, normalize (f 
 theorem normalizedFactorsEquiv_symm_apply [DecidableEq α]
     (he : ∀ x, normalize (f x) = f (normalize x))
     {a : α} {q : β} (hq : q ∈ normalizedFactors (f a)) :
-    (normalizedFactorsEquiv he a).symm ⟨q, hq⟩ = (MulEquivClass.toMulEquiv f).symm q := rfl
+    (normalizedFactorsEquiv he a).symm ⟨q, hq⟩ = (MulHomClass.toMulEquiv f).symm q := rfl
 
 end UniqueFactorizationMonoid
 

@@ -10,11 +10,11 @@ import Mathlib.Algebra.GroupWithZero.Hom
 
 assert_not_exists Ring
 
-namespace MulEquivClass
+namespace MulHomClass
 variable {F α β : Type*} [EquivLike F α β]
 
 -- See note [lower instance priority]
-instance (priority := 100) toZeroHomClass [MulZeroClass α] [MulZeroClass β] [MulEquivClass F α β] :
+instance (priority := 100) toZeroHomClass [MulZeroClass α] [MulZeroClass β] [MulHomClass F α β] :
     ZeroHomClass F α β where
   map_zero f :=
     calc
@@ -23,11 +23,11 @@ instance (priority := 100) toZeroHomClass [MulZeroClass α] [MulZeroClass β] [M
 
 -- See note [lower instance priority]
 instance (priority := 100) toMonoidWithZeroHomClass
-    [MulZeroOneClass α] [MulZeroOneClass β] [MulEquivClass F α β] :
+    [MulZeroOneClass α] [MulZeroOneClass β] [MulHomClass F α β] :
     MonoidWithZeroHomClass F α β :=
-  { MulEquivClass.instMonoidHomClass F, MulEquivClass.toZeroHomClass with }
+  { MulHomClass.instMonoidHomClass F, MulHomClass.toZeroHomClass with }
 
-end MulEquivClass
+end MulHomClass
 
 namespace MulEquiv
 
