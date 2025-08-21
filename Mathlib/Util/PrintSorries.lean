@@ -128,19 +128,19 @@ def evalCollectSorries (names : Array Name) : CommandElabM Unit := do
     logInfo <| MessageData.joinSep msgs.toList "\n"
 
 elab_rules : command
-  | `(#print%$tk sorries $idents*) => withRef tk do
+  | `(#print%$tk1 sorries%$tk2 $idents*) => do
     let mut names ← liftCoreM <| idents.flatMapM fun id =>
       return (← realizeGlobalConstWithInfos id).toArray
     if names.isEmpty then
       names ← (← getEnv).checked.get.constants.map₂.foldlM (init := #[]) fun acc name _ =>
         return if ← name.isBlackListed then acc else acc.push name
-    evalCollectSorries names
+    withRef (mkNullNode #[tk1, tk2]) <| evalCollectSorries names
 
 @[inherit_doc printSorriesStx]
 syntax "#print " &"sorries" " in " command : command
 
 elab_rules : command
-  | `(#print%$tk sorries in $cmd:command) => do
+  | `(#print%$tk1 sorries%$tk2 in $cmd:command) => do
     let oldEnv ← getEnv
     try
       elabCommand cmd
@@ -153,6 +153,6 @@ elab_rules : command
           return acc
         else
           return acc.push name
-      withRef tk <| evalCollectSorries names
+      withRef (mkNullNode #[tk1, tk2]) <| evalCollectSorries names
 
 end Mathlib.PrintSorries
