@@ -3,9 +3,8 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Alex J. Best
 -/
-import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
-import Mathlib.RingTheory.Localization.AtPrime.Basic
 import Mathlib.RingTheory.DedekindDomain.Instances
+import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 
 /-!
 
