@@ -254,15 +254,9 @@ theorem tendsto_integral_exp_smul_cocompact (μ : Measure V) [μ.IsAddHaarMeasur
   have : (μ.map Aₘ).IsAddHaarMeasure := A.isAddHaarMeasure_map _
   convert (tendsto_integral_exp_smul_cocompact_of_inner_product (f ∘ A.symm) (μ.map Aₘ)).comp
     Adual.toHomeomorph.toCocompactMap.cocompact_tendsto' with w
-  -- Unfold `Adual` so `congr` can see through it.
-  simp only [Function.comp_apply, integral_map_equiv, Adual, ContinuousMap.toFun_eq_coe,
-    CocompactMap.coe_toContinuousMap, Homeomorph.toCocompactMap_toFun,
-    ContinuousLinearEquiv.coe_toHomeomorph, ContinuousLinearEquiv.arrowCongrSL_apply,
-    ContinuousLinearEquiv.coe_refl, ContinuousLinearMap.coe_comp', ContinuousLinearMap.coe_id']
-  congr 1 with v : 1
-  congr
-  · exact (ContinuousLinearEquiv.symm_apply_apply A v).symm
-  · exact (ContinuousLinearEquiv.symm_apply_apply A v).symm
+  suffices ∫ v, 𝐞 (-w v) • f v ∂μ = ∫ (x : V), 𝐞 (-w (A.symm (Aₘ x))) • f (A.symm (Aₘ x)) ∂μ by
+    simpa [Function.comp_apply, integral_map_equiv, Adual]
+  simp [Aₘ]
 
 /-- The Riemann-Lebesgue lemma, formulated in terms of `VectorFourier.fourierIntegral` (with the
 pairing in the definition of `fourier_integral` taken to be the canonical pairing between `V` and
