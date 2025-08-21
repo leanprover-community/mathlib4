@@ -172,6 +172,13 @@ theorem spectrum_real_eq_range_eigenvalues :
 @[deprecated (since := "14-08-2025")] alias eigenvalues_eq_spectrum_real :=
   spectrum_real_eq_range_eigenvalues
 
+/-- The eigenvalues of a Hermitian matrix `A` are all zero iff `A = 0`. -/
+theorem eigenvalues_eq_zero_iff :
+    hA.eigenvalues = 0 ↔ A = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by ext; simp [h, eigenvalues_eq]⟩
+  rw [hA.spectral_theorem, h, Pi.comp_zero, RCLike.ofReal_zero, Function.const_zero,
+    Pi.zero_def, diagonal_zero, mul_zero, zero_mul]
+
 end DecidableEq
 
 /-- A nonzero Hermitian matrix has an eigenvector with nonzero eigenvalue. -/

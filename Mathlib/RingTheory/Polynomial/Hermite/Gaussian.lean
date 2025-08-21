@@ -13,7 +13,7 @@ import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 # Hermite polynomials and Gaussians
 
 This file shows that the Hermite polynomial `hermite n` is (up to sign) the
-polynomial factor occurring in the `n`th derivative of a gaussian.
+polynomial factor occurring in the `n`th derivative of a Gaussian.
 
 ## Results
 
