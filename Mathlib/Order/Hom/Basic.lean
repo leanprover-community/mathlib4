@@ -520,7 +520,6 @@ def RelEmbedding.orderEmbeddingOfLTEmbedding [PartialOrder α] [PartialOrder β]
     (f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)) : α ↪o β :=
   { f with
     map_rel_iff' := by
-      intros
       simp [le_iff_lt_or_eq, f.map_rel_iff, f.injective.eq_iff] }
 
 @[simp]
@@ -535,7 +534,7 @@ variable [Preorder α] [Preorder β] (f : α ↪o β)
 
 /-- `<` is preserved by order embeddings of preorders. -/
 def ltEmbedding : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop) :=
-  { f with map_rel_iff' := by intros; simp [lt_iff_le_not_ge, f.map_rel_iff] }
+  { f with map_rel_iff' := by simp [lt_iff_le_not_ge, f.map_rel_iff] }
 
 @[simp]
 theorem ltEmbedding_apply (x : α) : f.ltEmbedding x = f x :=
