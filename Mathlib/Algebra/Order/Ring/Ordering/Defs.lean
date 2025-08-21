@@ -44,8 +44,6 @@ structure RingPreordering extends Subsemiring R where
   mem_of_isSquare' {x : R} (hx : IsSquare x) : x ∈ carrier := by aesop
   neg_one_notMem' : -1 ∉ carrier := by aesop
 
-initialize_simps_projections RingPreordering (carrier → coe, as_prefix coe)
-
 namespace RingPreordering
 
 attribute [coe] toSubsemiring
@@ -53,6 +51,8 @@ attribute [coe] toSubsemiring
 instance : SetLike (RingPreordering R) R where
   coe P := P.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
+
+initialize_simps_projections RingPreordering (carrier → coe, as_prefix coe)
 
 instance : SubsemiringClass (RingPreordering R) R where
   zero_mem _ := Subsemiring.zero_mem _
@@ -103,6 +103,7 @@ variable (P : RingPreordering R) (S : Set R) (hS : S = P)
 
 /-- Copy of a preordering with a new `carrier` equal to the old one. Useful to fix definitional
 equalities. -/
+@[simps]
 protected def copy : RingPreordering R where
   carrier := S
   zero_mem' := by aesop
@@ -110,7 +111,7 @@ protected def copy : RingPreordering R where
   one_mem' := by aesop
   mul_mem' ha hb := by aesop
 
-@[simp, norm_cast] theorem coe_copy : (P.copy S hS : Set R) = S := rfl
+attribute [norm_cast] coe_copy
 @[simp] theorem mem_copy {x} : x ∈ P.copy S hS ↔ x ∈ S := .rfl
 theorem copy_eq : P.copy S hS = S := rfl
 
