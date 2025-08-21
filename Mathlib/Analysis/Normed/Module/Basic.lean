@@ -309,7 +309,6 @@ theorem algebraMap_isometry [NormOneClass 𝕜'] : Isometry (algebraMap 𝕜 �
 instance NormedAlgebra.id : NormedAlgebra 𝕜 𝕜 :=
   { NormedField.toNormedSpace, Algebra.id 𝕜 with }
 
--- Porting note: cannot synth scalar tower ℚ ℝ k
 /-- Any normed characteristic-zero division ring that is a normed algebra over the reals is also a
 normed algebra over the rationals.
 
