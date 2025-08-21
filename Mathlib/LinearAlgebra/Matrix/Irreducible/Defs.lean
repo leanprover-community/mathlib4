@@ -7,6 +7,7 @@ Authors: Matteo Cipollina
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Combinatorics.Quiver.Path.StronglyConnected
 import Mathlib.Data.Matrix.Basic
+import Mathlib.Combinatorics.Quiver.Path.Decomposition
 
 /-!
 # Irreducibility and primitivity of nonnegative real matrices via quivers
@@ -75,26 +76,21 @@ lemma irreducible_no_zero_row
     (A : Matrix n n ℝ)
     (h_irr : Irreducible A) (h_dim : 1 < Fintype.card n) (i : n) :
     ∃ j, 0 < A i j := by
-  by_contra h_row; push_neg at h_row
+  letI : Quiver n := toQuiver A
+  by_contra h_row
   have no_out : ∀ j : n, IsEmpty (i ⟶ j) :=
-    fun j ↦ ⟨fun h ↦ (h_row j).not_gt h⟩
+    fun j => ⟨fun e => h_row ⟨j, e⟩⟩
   obtain ⟨j, hij⟩ := Fintype.exists_ne_of_one_lt_card h_dim i
-  obtain ⟨⟨p, _⟩⟩ := h_irr.2 i j
-  have : False := by
-    have aux : (∀ {v} (q : G.Path i v), v ≠ i → False) := by
-      intro v q
-      induction q with
-      | nil =>
-        intro hvi; exact hvi rfl
-      | cons r e ih =>
-        cases r with
-        | nil =>
-            intro _
-            exact (no_out _).false e
-        | cons r' e' =>
-            intro hvi; simp_all only [isEmpty_Prop, ne_eq, imp_false, not_not, G]
-    exact aux p hij
-  exact this.elim
+  obtain ⟨⟨p, _hp_pos⟩⟩ := h_irr.2 i j
+  classical
+  let S : Set n := {x | x ≠ i}
+  have hi_not_in_S : i ∉ S := by simp [S]
+  have hj_in_S : j ∈ S := by simp [S, hij]
+  obtain ⟨u, hu_not_S, v, hv_S, e, _p₁, _p₂, _hp⟩ :=
+    Path.exists_notMem_mem_hom_path_path_of_notMem_mem p S hi_not_in_S hj_in_S
+  have hu_eq_i : u = i := by simpa [S] using hu_not_S
+  subst hu_eq_i
+  exact (no_out v).false e
 
 variable {A : Matrix n n ℝ}
 
@@ -193,16 +189,10 @@ theorem irreducible_iff_exists_pow_pos [DecidableEq n] (hA : ∀ i j, 0 ≤ A i 
 
 /-- If a nonnegative square matrix `A` is primitive, then `A` is irreducible. -/
 theorem IsPrimitive.to_Irreducible [DecidableEq n]
-    (h_prim : IsPrimitive A) (hA : ∀ i j, 0 ≤ A i j) : Irreducible A := by
-  rw [irreducible_iff_exists_pow_pos hA]
-  intro i j
-  obtain ⟨k, _hk_gt_zero, hk_pos⟩ := h_prim
-  simp_all only [implies_true]
-  obtain ⟨left, right⟩ := hk_pos
-  apply Exists.intro
-  · apply And.intro
-    · exact left
-    · simp_all only
+    (h_prim : IsPrimitive A) : Irreducible A := by
+  rcases h_prim with ⟨h_nonneg, ⟨k, hk_pos, hk_all⟩⟩
+  have h_iff := irreducible_iff_exists_pow_pos (A := A) h_nonneg
+  exact h_iff.mpr (by intro i j; exact ⟨k, hk_pos, hk_all i j⟩)
 
 /-- Irreducibility is invariant under transpose. -/
 theorem Irreducible.transpose [DecidableEq n]
