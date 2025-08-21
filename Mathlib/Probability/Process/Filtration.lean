@@ -384,7 +384,7 @@ def piFinset : @Filtration (Π i, X i) (Finset ι) _ pi where
 
 lemma piFinset_eq_comap_restrict (s : Finset ι) :
     piFinset (X := X) s = pi.comap s.toSet.restrict := by
-  tauto
+  rfl
 
 end piFinset
 
