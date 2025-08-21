@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2023 Chris Birkbeck. All rights reserved.
+Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Birkbeck, Ruben Van de Velde
+Authors: Vasilii Nesterov
 -/
 import Mathlib.Analysis.Analytic.Uniqueness
 import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
