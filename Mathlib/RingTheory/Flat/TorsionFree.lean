@@ -25,6 +25,8 @@ domains and valuation rings.
   the complement of any maximal ideal is a valuation ring then `Torsion R M = ⊥` iff `M` is a
   flat `R`-module.
 -/
+-- TODO: Add definition and properties of Prüfer domains.
+-- TODO: Use `IsTorsionFree`.
 
 universe u v
 
@@ -75,7 +77,7 @@ lemma isSMulRegular_of_nonZeroDivisors {r : R} (hr : r ∈ R⁰) [Flat R M] : Is
   apply isSMulRegular_of_isRegular hr
 
 /-- Flat modules have no torsion. -/
-theorem torsion_eq_bot [hflat : Flat R M] : torsion R M = ⊥ := by
+theorem torsion_eq_bot [Flat R M] : torsion R M = ⊥ := by
   rw [eq_bot_iff]
   -- indeed the definition of torsion means "annihiliated by a nonzerodivisor"
   rintro m ⟨⟨r, hr⟩, (h : r • m = 0)⟩
@@ -114,7 +116,6 @@ theorem flat_iff_torsion_eq_bot_of_isBezout [IsBezout R] [IsDomain R] :
     ext
     simp
 
--- TODO: Add definition and properties of Prüfer domains
 /-- If every localization of `R` at a maximal ideal is a valuation ring then an `R`-module
 is flat iff it has no torsion. -/
 theorem flat_iff_torsion_eq_bot_of_valuationRing_localization_isMaximal [IsDomain R]
