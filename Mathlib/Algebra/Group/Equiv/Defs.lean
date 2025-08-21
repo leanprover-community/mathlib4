@@ -97,28 +97,27 @@ Use `[MulHomClass F A B]` instead. -/
 structure MulEquivClass (F : Type*) (A B : outParam Type*) [Mul A] [Mul B] [EquivLike F A B] :
     Prop where
   /-- Preserves multiplication. -/
-  map_mul : ∀ (f : F) (a b), f (a * b) = f a * f b
+  protected map_mul : ∀ (f : F) (a b), f (a * b) = f a * f b
 
 attribute [deprecated MulHomClass (since := "2025-08-21")] MulEquivClass
 attribute [deprecated AddHomClass (since := "2025-08-21")] AddEquivClass
 
-@[deprecated (since := "2025-08-21")]
+@[to_additive]
 alias MulEquivClass.map_eq_one_iff := EmbeddingLike.map_eq_one_iff
 
-@[deprecated (since := "2025-08-21")]
-alias AddEquivClass.map_eq_zero_iff := EmbeddingLike.map_eq_zero_iff
+@[to_additive]
+alias MulEquivClass.map_ne_one_iff := EmbeddingLike.map_ne_one_iff
 
-namespace MulHomClass
+namespace MulEquivClass
 
 variable (F)
 variable [EquivLike F M N]
 
--- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) instMonoidHomClass
     [MulOneClass M] [MulOneClass N] [MulHomClass F M N] :
     MonoidHomClass F M N where
-  map_one e :=
+  map_one := fun e =>
     calc
       e 1 = e 1 * 1 := (mul_one _).symm
       _ = e 1 * e (EquivLike.inv e (1 : N) : M) :=
@@ -126,7 +125,7 @@ instance (priority := 100) instMonoidHomClass
       _ = e (EquivLike.inv e (1 : N)) := by rw [← map_mul, one_mul]
       _ = 1 := EquivLike.right_inv e 1
 
-end MulHomClass
+end MulEquivClass
 
 variable [EquivLike F α β]
 
@@ -135,21 +134,15 @@ variable [EquivLike F α β]
 @[to_additive (attr := coe)
 /-- Turn an element of a type `F` satisfying `AddEquivClass F α β` into an actual
 `AddEquiv`. This is declared as the default coercion from `F` to `α ≃+ β`. -/]
-def MulHomClass.toMulEquiv [Mul α] [Mul β] [MulHomClass F α β] (f : F) : α ≃* β :=
+def MulEquivClass.toMulEquiv [Mul α] [Mul β] [MulHomClass F α β] (f : F) : α ≃* β :=
   { (f : α ≃ β), (f : α →ₙ* β) with }
-
-@[deprecated (since := "2025-08-21")]
-alias MulEquivClass.toMulEquiv := MulHomClass.toMulEquiv
-
-@[deprecated (since := "2025-08-21")]
-alias AddEquivClass.toAddEquiv := AddHomClass.toAddEquiv
 
 /-- Any type satisfying `MulEquivClass` can be cast into `MulEquiv` via
 `MulEquivClass.toMulEquiv`. -/
 @[to_additive /-- Any type satisfying `AddEquivClass` can be cast into `AddEquiv` via
 `AddEquivClass.toAddEquiv`. -/]
 instance [Mul α] [Mul β] [MulHomClass F α β] : CoeTC F (α ≃* β) :=
-  ⟨MulHomClass.toMulEquiv⟩
+  ⟨MulEquivClass.toMulEquiv⟩
 
 namespace MulEquiv
 section Mul
@@ -370,22 +363,16 @@ theorem symm_comp_eq {α : Type*} (e : M ≃* N) (f : α → M) (g : α → N) :
   e.toEquiv.symm_comp_eq f g
 
 @[to_additive (attr := simp)]
-theorem _root_.MulHomClass.apply_coe_symm_apply {α β} [Mul α] [Mul β] {F} [EquivLike F α β]
+theorem _root_.MulEquivClass.apply_coe_symm_apply {α β} [Mul α] [Mul β] {F} [EquivLike F α β]
     [MulHomClass F α β] (e : F) (x : β) :
     e ((e : α ≃* β).symm x) = x :=
   (e : α ≃* β).right_inv x
 
 @[to_additive (attr := simp)]
-theorem _root_.MulHomClass.coe_symm_apply_apply {α β} [Mul α] [Mul β] {F} [EquivLike F α β]
+theorem _root_.MulEquivClass.coe_symm_apply_apply {α β} [Mul α] [Mul β] {F} [EquivLike F α β]
     [MulHomClass F α β] (e : F) (x : α) :
     (e : α ≃* β).symm (e x) = x :=
   (e : α ≃* β).left_inv x
-
-@[deprecated (since := "2025-08-21")]
-alias _root_.MulEquivClass.apply_coe_symm_apply := MulHomClass.apply_coe_symm_apply
-
-@[deprecated (since := "2025-08-21")]
-alias _root_.MulEquivClass.coe_symm_apply_apply := MulHomClass.coe_symm_apply_apply
 
 end symm
 

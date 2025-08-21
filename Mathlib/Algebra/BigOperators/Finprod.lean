@@ -289,12 +289,9 @@ theorem MulEquiv.map_finprod (g : M ≃* N) (f : α → M) : g (∏ᶠ i, f i) =
   g.toMonoidHom.map_finprod_of_injective (EquivLike.injective g) f
 
 @[to_additive]
-theorem MulHomClass.map_finprod {F : Type*} [EquivLike F M N] [MulHomClass F M N] (g : F)
+theorem MulEquivClass.map_finprod {F : Type*} [EquivLike F M N] [MulHomClass F M N] (g : F)
     (f : α → M) : g (∏ᶠ i, f i) = ∏ᶠ i, g (f i) :=
-  MulEquiv.map_finprod (MulHomClass.toMulEquiv g) f
-
-@[deprecated (since := "2025-08-21")] alias MulEquivClass.map_finprod := MulHomClass.map_finprod
-@[deprecated (since := "2025-08-21")] alias AddEquivClass.map_finsum := AddHomClass.map_finsum
+  MulEquiv.map_finprod (MulEquivClass.toMulEquiv g) f
 
 /-- The `NoZeroSMulDivisors` makes sure that the result holds even when the support of `f` is
 infinite. For a more usual version assuming `(support f).Finite` instead, see `finsum_smul'`. -/
