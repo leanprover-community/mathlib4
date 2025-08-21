@@ -162,7 +162,7 @@ local notation3 "Tₚ" => Localization P''
 
 variable [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 
-local instance : IsLocalization (algebraMapSubmonoid T P') Tₚ := by
+instance : IsLocalization (algebraMapSubmonoid T P') Tₚ := by
   rw [show algebraMapSubmonoid T P' = P'' by simp]
   exact Localization.isLocalization
 
