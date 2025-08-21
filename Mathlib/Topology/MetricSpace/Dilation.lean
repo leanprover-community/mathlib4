@@ -59,6 +59,9 @@ variable (α : Type*) (β : Type*) [PseudoEMetricSpace α] [PseudoEMetricSpace �
 
 /-- A dilation is a map that uniformly scales the edistance between any two points. -/
 structure Dilation where
+  /-- The underlying function.
+
+  Do NOT use directly. Use the coercion instead. -/
   toFun : α → β
   edist_eq' : ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, edist (toFun x) (toFun y) = r * edist x y
 
@@ -423,9 +426,6 @@ lemma isUniformEmbedding [PseudoEMetricSpace β] [DilationClass F α β] (f : F)
 theorem isEmbedding [PseudoEMetricSpace β] [DilationClass F α β] (f : F) :
     IsEmbedding (f : α → β) :=
   (Dilation.isUniformEmbedding f).isEmbedding
-
-@[deprecated (since := "2024-10-26")]
-alias embedding := isEmbedding
 
 /-- A dilation from a complete emetric space is a closed embedding -/
 lemma isClosedEmbedding [CompleteSpace α] [EMetricSpace β] [DilationClass F α β] (f : F) :

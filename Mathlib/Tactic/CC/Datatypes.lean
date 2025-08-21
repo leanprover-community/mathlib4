@@ -84,7 +84,7 @@ abbrev ExprSet := Std.TreeSet Expr compare
 /-- `CongrTheorem`s equipped with additional infos used by congruence closure modules. -/
 structure CCCongrTheorem extends CongrTheorem where
   /-- If `heqResult` is true, then lemma is based on heterogeneous equality
-      and the conclusion is a heterogeneous equality. -/
+  and the conclusion is a heterogeneous equality. -/
   heqResult : Bool := false
   /-- If `hcongrTheorem` is true, then lemma was created using `mkHCongrWithArity`. -/
   hcongrTheorem : Bool := false
@@ -119,9 +119,9 @@ structure CCConfig where
   /-- If `true`, congruence closure modulo Associativity and Commutativity. -/
   ac : Bool := true
   /-- If `hoFns` is `some fns`, then full (and more expensive) support for higher-order functions is
-     *only* considered for the functions in fns and local functions. The performance overhead is
-     described in the paper "Congruence Closure in Intensional Type Theory". If `hoFns` is `none`,
-     then full support is provided for *all* constants. -/
+  *only* considered for the functions in fns and local functions. The performance overhead is
+  described in the paper "Congruence Closure in Intensional Type Theory". If `hoFns` is `none`,
+  then full support is provided for *all* constants. -/
   hoFns : Option (List Name) := none
   /-- If `true`, then use excluded middle -/
   em : Bool := true
@@ -152,9 +152,10 @@ scoped instance : Ord ACApps where
     | .apps _ _, .ofExpr _ => .gt
     | .apps op₁ args₁, .apps op₂ args₂ =>
       compare op₁ op₂ |>.then <| compare args₁.size args₂.size |>.dthen fun hs => Id.run do
-        have hs := Batteries.BEqCmp.cmp_iff_eq.mp hs
+        have hs := eq_of_beq <| Std.LawfulBEqCmp.compare_eq_iff_beq.mp hs
         for hi : i in [:args₁.size] do
-          have hi := hi.right; let o := compare args₁[i] (args₂[i]'(hs ▸ hi.1))
+          have hi := hi.right
+          let o := compare args₁[i] (args₂[i]'(hs ▸ hi.1))
           if o != .eq then return o
         return .eq
 
@@ -335,10 +336,10 @@ structure Entry where
   /-- root of the congruence class, it is meaningless if `e` is not an application. -/
   cgRoot : Expr
   /-- When `e` was added to this equivalence class because of an equality `(H : e = tgt)`, then
-      we store `tgt` at `target`, and `H` at `proof`. Both fields are none if `e == root` -/
+  we store `tgt` at `target`, and `H` at `proof`. Both fields are none if `e == root` -/
   target : Option Expr := none
   /-- When `e` was added to this equivalence class because of an equality `(H : e = tgt)`, then
-      we store `tgt` at `target`, and `H` at `proof`. Both fields are none if `e == root` -/
+  we store `tgt` at `target`, and `H` at `proof`. Both fields are none if `e == root` -/
   proof : Option EntryExpr := none
   /-- Variable in the AC theory. -/
   acVar : Option Expr := none
@@ -351,18 +352,18 @@ structure Entry where
   /-- `true` if equivalence class contains lambda expressions -/
   hasLambdas : Bool
   /-- `heqProofs == true` iff some proofs in the equivalence class are based on heterogeneous
-      equality. We represent equality and heterogeneous equality in a single equivalence class. -/
+  equality. We represent equality and heterogeneous equality in a single equivalence class. -/
   heqProofs : Bool
   /-- If `fo == true`, then the expression associated with this entry is an application, and we are
-      using first-order approximation to encode it. That is, we ignore its partial applications. -/
+  using first-order approximation to encode it. That is, we ignore its partial applications. -/
   fo : Bool
   /-- number of elements in the equivalence class, it is meaningless if `e != root` -/
   size : Nat
   /-- The field `mt` is used to implement the mod-time optimization introduce by the Simplify
-      theorem prover. The basic idea is to introduce a counter gmt that records the number of
-      heuristic instantiation that have occurred in the current branch. It is incremented after each
-      round of heuristic instantiation. The field `mt` records the last time any proper descendant
-      of this entry was involved in a merge. -/
+  theorem prover. The basic idea is to introduce a counter gmt that records the number of
+  heuristic instantiation that have occurred in the current branch. It is incremented after each
+  round of heuristic instantiation. The field `mt` records the last time any proper descendant
+  of this entry was involved in a merge. -/
   mt : Nat
   deriving Inhabited
 
@@ -374,11 +375,11 @@ modules. -/
 structure ACEntry where
   /-- Natural number associated to an expression. -/
   idx : Nat
-  /-- AC variables that occur on the left hand side of an equality which `e` occurs as the left hand
+  /-- AC variables that occur on the left-hand side of an equality which `e` occurs as the left-hand
   side of in `CCState.acR`. -/
   RLHSOccs : ACAppsSet := ∅
-  /-- AC variables that occur on the **left** hand side of an equality which `e` occurs as the right
-  hand side of in `CCState.acR`. Don't confuse. -/
+  /-- AC variables that occur on the **left**-hand side of an equality which `e` occurs as the
+  right-hand side of in `CCState.acR`. Don't confuse. -/
   RRHSOccs : ACAppsSet := ∅
   deriving Inhabited
 
@@ -391,8 +392,8 @@ def ACEntry.ROccs (ent : ACEntry) : (inLHS : Bool) → ACAppsSet
 structure ParentOcc where
   expr : Expr
   /-- If `symmTable` is true, then we should use the `symmCongruences`, otherwise `congruences`.
-      Remark: this information is redundant, it can be inferred from `expr`. We use store it for
-      performance reasons. -/
+  Remark: this information is redundant, it can be inferred from `expr`. We use store it for
+  performance reasons. -/
   symmTable : Bool
 
 /-- Red-black sets of `ParentOcc`s. -/
@@ -453,11 +454,11 @@ structure CCState extends CCConfig where
   /-- Records which instances of the same class are defeq. -/
   instImplicitReprs : InstImplicitReprs := ∅
   /-- The congruence closure module has a mode where the root of each equivalence class is marked as
-      an interpreted/abstract value. Moreover, in this mode proof production is disabled.
-      This capability is useful for heuristic instantiation. -/
+  an interpreted/abstract value. Moreover, in this mode proof production is disabled.
+  This capability is useful for heuristic instantiation. -/
   frozePartitions : Bool := false
   /-- Mapping from operators occurring in terms and their canonical
-      representation in this module -/
+  representation in this module -/
   canOps : ExprMap Expr := ∅
   /-- Whether the canonical operator is supported by AC. -/
   opInfo : ExprMap Bool := ∅
@@ -466,10 +467,10 @@ structure CCState extends CCConfig where
   /-- Records equality between `ACApps`. -/
   acR : ACAppsMap (ACApps × DelayedExpr) := ∅
   /-- Returns true if the `CCState` is inconsistent. For example if it had both `a = b` and `a ≠ b`
-      in it. -/
+  in it. -/
   inconsistent : Bool := false
   /-- "Global Modification Time". gmt is a number stored on the `CCState`,
-      it is compared with the modification time of a cc_entry in e-matching. See `CCState.mt`. -/
+  it is compared with the modification time of a cc_entry in e-matching. See `CCState.mt`. -/
   gmt : Nat := 0
   deriving Inhabited
 
@@ -665,8 +666,8 @@ def ppAC (ccs : CCState) : MessageData :=
 end CCState
 
 /-- The congruence closure module (optionally) uses a normalizer.
-    The idea is to use it (if available) to normalize auxiliary expressions
-    produced by internal propagation rules (e.g., subsingleton propagator). -/
+The idea is to use it (if available) to normalize auxiliary expressions
+produced by internal propagation rules (e.g., subsingleton propagator). -/
 structure CCNormalizer where
   normalize : Expr → MetaM Expr
 
@@ -675,7 +676,7 @@ attribute [inherit_doc CCNormalizer] CCNormalizer.normalize
 structure CCPropagationHandler where
   propagated : Array Expr → MetaM Unit
   /-- Congruence closure module invokes the following method when
-      a new auxiliary term is created during propagation. -/
+  a new auxiliary term is created during propagation. -/
   newAuxCCTerm : Expr → MetaM Unit
 
 /-- `CCStructure` extends `CCState` (which records a set of facts derived by congruence closure)

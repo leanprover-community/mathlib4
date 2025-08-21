@@ -42,6 +42,7 @@ We define it using an `Equiv` for the map and a `LinearEquiv` for the linear par
 to allow affine equivalences with good definitional equalities. -/
 structure AffineEquiv (k P₁ P₂ : Type*) {V₁ V₂ : Type*} [Ring k] [AddCommGroup V₁] [AddCommGroup V₂]
   [Module k V₁] [Module k V₂] [AddTorsor V₁ P₁] [AddTorsor V₂ P₂] extends P₁ ≃ P₂ where
+  /-- The underlying linear equiv of modules. -/
   linear : V₁ ≃ₗ[k] V₂
   map_vadd' : ∀ (p : P₁) (v : V₁), toEquiv (v +ᵥ p) = linear v +ᵥ toEquiv p
 
@@ -367,8 +368,6 @@ def equivUnitsAffineMap : (P₁ ≃ᵃ[k] P₁) ≃* (P₁ →ᵃ[k] P₁)ˣ whe
       linear :=
         LinearMap.GeneralLinearGroup.generalLinearEquiv _ _ <| Units.map AffineMap.linearHom u
       map_vadd' := fun _ _ => (u : P₁ →ᵃ[k] P₁).map_vadd _ _ }
-  left_inv _ := AffineEquiv.ext fun _ => rfl
-  right_inv _ := Units.ext <| AffineMap.ext fun _ => rfl
   map_mul' _ _ := rfl
 
 variable (k)
@@ -496,16 +495,10 @@ theorem pointReflection_fixed_iff_of_injective_two_nsmul {x y : P₁}
     (h : Injective (2 • · : V₁ → V₁)) : pointReflection k x y = y ↔ y = x :=
   Equiv.pointReflection_fixed_iff_of_injective_two_nsmul h
 
-@[deprecated (since := "2024-11-18")] alias pointReflection_fixed_iff_of_injective_bit0 :=
-pointReflection_fixed_iff_of_injective_two_nsmul
-
 theorem injective_pointReflection_left_of_injective_two_nsmul
     (h : Injective (2 • · : V₁ → V₁)) (y : P₁) :
     Injective fun x : P₁ => pointReflection k x y :=
   Equiv.injective_pointReflection_left_of_injective_two_nsmul h y
-
-@[deprecated (since := "2024-11-18")] alias injective_pointReflection_left_of_injective_bit0 :=
-injective_pointReflection_left_of_injective_two_nsmul
 
 theorem injective_pointReflection_left_of_module [Invertible (2 : k)] :
     ∀ y, Injective fun x : P₁ => pointReflection k x y :=

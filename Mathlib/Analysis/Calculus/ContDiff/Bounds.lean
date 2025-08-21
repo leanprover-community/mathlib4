@@ -145,8 +145,8 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear (B : E →L
   -- lift the bilinear map `B` to a bilinear map `Bu` on the lifted spaces.
   let Bu₀ : Eu →L[𝕜] Fu →L[𝕜] G := ((B.comp (isoE : Eu →L[𝕜] E)).flip.comp (isoF : Fu →L[𝕜] F)).flip
   let Bu : Eu →L[𝕜] Fu →L[𝕜] Gu :=
-   ContinuousLinearMap.compL 𝕜 Eu (Fu →L[𝕜] G) (Fu →L[𝕜] Gu)
-    (ContinuousLinearMap.compL 𝕜 Fu G Gu (isoG.symm : G →L[𝕜] Gu)) Bu₀
+    ContinuousLinearMap.compL 𝕜 Eu (Fu →L[𝕜] G) (Fu →L[𝕜] Gu)
+      (ContinuousLinearMap.compL 𝕜 Fu G Gu (isoG.symm : G →L[𝕜] Gu)) Bu₀
   have hBu : Bu = ContinuousLinearMap.compL 𝕜 Eu (Fu →L[𝕜] G) (Fu →L[𝕜] Gu)
       (ContinuousLinearMap.compL 𝕜 Fu G Gu (isoG.symm : G →L[𝕜] Gu)) Bu₀ := rfl
   have Bu_eq : (fun y => Bu (fu y) (gu y)) = isoG.symm ∘ (fun y => B (f y) (g y)) ∘ isoD := by
@@ -156,7 +156,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear (B : E →L
   have Bu_le : ‖Bu‖ ≤ ‖B‖ := by
     refine ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg B) fun y => ?_
     refine ContinuousLinearMap.opNorm_le_bound _ (by positivity) fun x => ?_
-    simp only [Du, Eu, Fu, Gu, hBu, Bu₀, compL_apply, coe_comp', Function.comp_apply,
+    simp only [Eu, Fu, Gu, hBu, Bu₀, compL_apply, coe_comp', Function.comp_apply,
       ContinuousLinearEquiv.coe_coe, LinearIsometryEquiv.coe_coe, flip_apply,
       LinearIsometryEquiv.norm_map]
     calc
@@ -499,7 +499,7 @@ theorem norm_iteratedFDerivWithin_comp_le {g : F → G} {f : E → F} {n : ℕ} 
       ‖iteratedFDerivWithin 𝕜 n (g ∘ f) s x‖ = ‖iteratedFDerivWithin 𝕜 n (gu ∘ fu) s x‖ := by
     have : gu ∘ fu = isoG.symm ∘ g ∘ f := by
       ext x
-      simp only [fu, gu, comp_apply, LinearIsometryEquiv.map_eq_iff,
+      simp only [fu, gu, comp_apply,
         LinearIsometryEquiv.apply_symm_apply]
     rw [this, LinearIsometryEquiv.norm_iteratedFDerivWithin_comp_left _ _ hs hx]
   -- deduce the required bound from the one for `gu ∘ fu`.

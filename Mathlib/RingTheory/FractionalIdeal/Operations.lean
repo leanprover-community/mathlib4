@@ -86,12 +86,7 @@ theorem map_comp (g' : P' →ₐ[R] P'') : I.map (g'.comp g) = (I.map g).map g' 
 @[simp, norm_cast]
 theorem map_coeIdeal (I : Ideal R) : (I : FractionalIdeal S P).map g = I := by
   ext x
-  simp only [mem_coeIdeal]
-  constructor
-  · rintro ⟨_, ⟨y, hy, rfl⟩, rfl⟩
-    exact ⟨y, hy, (g.commutes y).symm⟩
-  · rintro ⟨y, hy, rfl⟩
-    exact ⟨_, ⟨y, hy, rfl⟩, g.commutes y⟩
+  simp
 
 @[simp]
 protected theorem map_one : (1 : FractionalIdeal S P).map g = 1 :=
@@ -235,7 +230,7 @@ theorem canonicalEquiv_canonicalEquiv (P'' : Type*) [CommRing P''] [Algebra R P'
     canonicalEquiv S P' P'' (canonicalEquiv S P P' I) = canonicalEquiv S P P'' I := by
   ext
   simp only [IsLocalization.map_map, RingHomInvPair.comp_eq₂, mem_canonicalEquiv_apply,
-    exists_prop, exists_exists_and_eq_and]
+    exists_exists_and_eq_and]
 
 theorem canonicalEquiv_trans_canonicalEquiv (P'' : Type*) [CommRing P''] [Algebra R P'']
     [IsLocalization S P''] :
@@ -313,9 +308,9 @@ theorem coeIdeal_eq_one {I : Ideal R} : (I : FractionalIdeal R⁰ K) = 1 ↔ I =
 theorem coeIdeal_ne_one {I : Ideal R} : (I : FractionalIdeal R⁰ K) ≠ 1 ↔ I ≠ 1 :=
   not_iff_not.mpr coeIdeal_eq_one
 
-theorem num_eq_zero_iff [Nontrivial R] {I : FractionalIdeal R⁰ K} : I.num = 0 ↔ I = 0 :=
-   ⟨fun h ↦ zero_of_num_eq_bot zero_notMem_nonZeroDivisors h,
-     fun h ↦ h ▸ num_zero_eq (IsFractionRing.injective R K)⟩
+theorem num_eq_zero_iff [Nontrivial R] {I : FractionalIdeal R⁰ K} : I.num = 0 ↔ I = 0 where
+  mp h := zero_of_num_eq_bot zero_notMem_nonZeroDivisors h
+  mpr h := h ▸ num_zero_eq (IsFractionRing.injective R K)
 
 end IsFractionRing
 
@@ -610,7 +605,7 @@ theorem isPrincipal_iff (I : FractionalIdeal S P) :
 @[simp]
 theorem spanSingleton_zero : spanSingleton S (0 : P) = 0 := by
   ext
-  simp [Submodule.mem_span_singleton, eq_comm]
+  simp [eq_comm]
 
 theorem spanSingleton_eq_zero_iff {y : P} : spanSingleton S y = 0 ↔ y = 0 :=
   ⟨fun h =>
@@ -796,7 +791,7 @@ theorem le_spanSingleton_mul_iff {x : P} {I J : FractionalIdeal S P} :
 
 theorem spanSingleton_mul_le_iff {x : P} {I J : FractionalIdeal S P} :
     spanSingleton _ x * I ≤ J ↔ ∀ z ∈ I, x * z ∈ J := by
-  simp only [mul_le, mem_singleton_mul, mem_spanSingleton]
+  simp only [mul_le, mem_spanSingleton]
   constructor
   · intro h zI hzI
     exact h x ⟨1, one_smul _ _⟩ zI hzI

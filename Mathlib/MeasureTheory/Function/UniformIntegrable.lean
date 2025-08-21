@@ -217,8 +217,7 @@ theorem MemLp.integral_indicator_norm_ge_le (hf : MemLp f 1 μ) (hmeas : Strongl
       · assumption
   rw [ENNReal.tendsto_atTop_zero] at this
   obtain ⟨M, hM⟩ := this (ENNReal.ofReal ε) (ENNReal.ofReal_pos.2 hε)
-  simp only [zero_tsub, zero_le, sub_zero, zero_add, coe_nnnorm,
-    Set.mem_Icc] at hM
+  simp only [sub_zero] at hM
   refine ⟨M, ?_⟩
   convert hM M le_rfl
   simp only [coe_nnnorm, ENNReal.ofReal_eq_coe_nnreal (norm_nonneg _)]
@@ -240,7 +239,7 @@ theorem MemLp.integral_indicator_norm_ge_nonneg_le (hf : MemLp f 1 μ) {ε : ℝ
   refine ⟨M, hM_pos, (le_of_eq ?_).trans hfM⟩
   refine lintegral_congr_ae ?_
   filter_upwards [hf.1.ae_eq_mk] with x hx
-  simp only [Set.indicator_apply, coe_nnnorm, Set.mem_setOf_eq, ENNReal.coe_inj, hx.symm]
+  simp only [Set.indicator_apply, coe_nnnorm, Set.mem_setOf_eq, hx.symm]
 
 theorem MemLp.eLpNormEssSup_indicator_norm_ge_eq_zero (hf : MemLp f ∞ μ)
     (hmeas : StronglyMeasurable f) :
@@ -325,7 +324,7 @@ theorem eLpNorm_indicator_le_of_bound {f : α → β} (hp_top : p ≠ ∞) {ε :
   by_cases hM : M ≤ 0
   · refine ⟨1, zero_lt_one, fun s _ _ => ?_⟩
     rw [(_ : f = 0)]
-    · simp [hε.le]
+    · simp
     · ext x
       rw [Pi.zero_apply, ← norm_le_zero_iff]
       exact (lt_of_lt_of_le (hf x) hM).le
@@ -388,7 +387,7 @@ theorem MemLp.eLpNorm_indicator_le_of_meas (hp_one : 1 ≤ p) (hp_top : p ≠ �
       eLpNorm (s.indicator f) p μ ≤ ENNReal.ofReal ε := by
   obtain ⟨δ, hδpos, hδ⟩ := hf.eLpNorm_indicator_le' hp_one hp_top hmeas (half_pos hε)
   refine ⟨δ, hδpos, fun s hs hμs => le_trans (hδ s hs hμs) ?_⟩
-  rw [ENNReal.ofReal_div_of_pos zero_lt_two, (by norm_num : ENNReal.ofReal 2 = 2),
+  rw [ENNReal.ofReal_div_of_pos zero_lt_two, (by simp : ENNReal.ofReal 2 = 2),
       ENNReal.mul_div_cancel] <;>
     norm_num
 
@@ -492,7 +491,7 @@ theorem tendsto_Lp_finite_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤
     exact ⟨0, fun n _ => by simp [h]⟩
   by_cases hμ : μ = 0
   · exact ⟨0, fun n _ => by simp [hμ]⟩
-  have hε' : 0 < ε.toReal / 3 := div_pos (ENNReal.toReal_pos hε.ne' h.ne) (by norm_num)
+  have hε' : 0 < ε.toReal / 3 := div_pos (ENNReal.toReal_pos hε.ne' h.ne) (by simp)
   have hdivp : 0 ≤ 1 / p.toReal := by positivity
   have hpow : 0 < measureUnivNNReal μ ^ (1 / p.toReal) :=
     Real.rpow_pos_of_pos (measureUnivNNReal_pos hμ) _
@@ -501,7 +500,7 @@ theorem tendsto_Lp_finite_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤
   obtain ⟨t, htm, ht₁, ht₂⟩ := tendstoUniformlyOn_of_ae_tendsto' hf hg hfg (lt_min hδ₁ hδ₂)
   rw [Metric.tendstoUniformlyOn_iff] at ht₂
   specialize ht₂ (ε.toReal / (3 * measureUnivNNReal μ ^ (1 / p.toReal)))
-    (div_pos (ENNReal.toReal_pos (gt_iff_lt.1 hε).ne.symm h.ne) (mul_pos (by norm_num) hpow))
+    (div_pos (ENNReal.toReal_pos (gt_iff_lt.1 hε).ne.symm h.ne) (mul_pos (by simp) hpow))
   obtain ⟨N, hN⟩ := eventually_atTop.1 ht₂; clear ht₂
   refine ⟨N, fun n hn => ?_⟩
   rw [← t.indicator_self_add_compl (f n - g)]
@@ -536,11 +535,11 @@ theorem tendsto_Lp_finite_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤
       · exact Real.rpow_pos_of_pos (measureUnivNNReal_pos hμ) _
     · positivity
   have : ENNReal.ofReal (ε.toReal / 3) = ε / 3 := by
-    rw [ENNReal.ofReal_div_of_pos (show (0 : ℝ) < 3 by norm_num), ENNReal.ofReal_toReal h.ne]
+    rw [ENNReal.ofReal_div_of_pos (show (0 : ℝ) < 3 by simp), ENNReal.ofReal_toReal h.ne]
     simp
   rw [this] at hnf hng hlt
   rw [eLpNorm_neg, ← ENNReal.add_thirds ε, ← sub_eq_add_neg]
-  exact add_le_add_three hnf hng hlt
+  gcongr
 
 /-- A sequence of uniformly integrable functions which converges μ-a.e. converges in Lp. -/
 theorem tendsto_Lp_finite_of_tendsto_ae [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞)
@@ -886,7 +885,7 @@ theorem uniformIntegrable_average
     UniformIntegrable (fun (n : ℕ) => (n : ℝ)⁻¹ • (∑ i ∈ Finset.range n, f i)) p μ := by
   obtain ⟨hf₁, hf₂, hf₃⟩ := hf
   refine ⟨fun n => ?_, fun ε hε => ?_, ?_⟩
-  · exact (Finset.aestronglyMeasurable_sum' _ fun i _ => hf₁ i).const_smul _
+  · exact (Finset.aestronglyMeasurable_sum _ fun i _ => hf₁ i).const_smul _
   · obtain ⟨δ, hδ₁, hδ₂⟩ := hf₂ hε
     refine ⟨δ, hδ₁, fun n s hs hle => ?_⟩
     simp_rw [Finset.smul_sum, Finset.indicator_sum]

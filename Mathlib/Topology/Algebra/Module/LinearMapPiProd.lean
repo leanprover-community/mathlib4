@@ -10,7 +10,7 @@ import Mathlib.Topology.Algebra.Module.LinearMap
 # Continuous linear maps on products and Pi types
 -/
 
-assert_not_exists Star.star
+assert_not_exists TrivialStar
 
 open LinearMap (ker range)
 open Topology Filter Pointwise
@@ -254,8 +254,6 @@ variable
 def prodEquiv : (M →L[R] M₂) × (M →L[R] M₃) ≃ (M →L[R] M₂ × M₃) where
   toFun f := f.1.prod f.2
   invFun f := ⟨(fst _ _ _).comp f, (snd _ _ _).comp f⟩
-  left_inv f := by ext <;> rfl
-  right_inv f := by ext <;> rfl
 
 theorem prod_ext_iff {f g : M × M₂ →L[R] M₃} :
     f = g ↔ f.comp (inl _ _ _) = g.comp (inl _ _ _) ∧ f.comp (inr _ _ _) = g.comp (inr _ _ _) := by
@@ -336,7 +334,7 @@ def coprodEquiv [ContinuousAdd M₁] [ContinuousAdd M₂] [Semiring S] [Module S
   map_add' a b := coprod_add ..
   map_smul' r a := by
     dsimp
-    ext <;> simp [smul_add, smul_apply, Prod.smul_snd, Prod.smul_fst, coprod_apply]
+    ext <;> simp [smul_apply]
 
 end AddCommMonoid
 

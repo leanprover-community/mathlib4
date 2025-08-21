@@ -153,7 +153,7 @@ lemma Ioc_pred_pred_eq_Ico_of_not_isMin (ha : ¬ IsMin a) (b : α) :
 /-! ##### Inserting into intervals -/
 
 lemma insert_Icc_pred_right_eq_Icc (h : a ≤ b) : insert b (Icc a (pred b)) = Icc a b := by
-  ext x; simp [or_and_left, eq_comm (a := b), ← le_iff_eq_or_le_pred]; aesop
+  ext x; simp [or_and_left, ← le_iff_eq_or_le_pred]; aesop
 
 lemma insert_Icc_left_eq_Icc_pred (h : pred a ≤ b) :
     insert (pred a) (Icc a b) = Icc (pred a) b := by
