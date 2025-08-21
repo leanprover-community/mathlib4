@@ -29,7 +29,7 @@ Then an alternative way to compute the cardinality of the quotient `M ⧸ N` is 
 the determinant of `e`.
 See `natAbs_det_basis_change` for a more familiar formulation of this result. -/
 theorem Submodule.natAbs_det_equiv (N : Submodule ℤ M) {E : Type*} [EquivLike E M N]
-    [AddEquivClass E M N] (e : E) :
+    [AddHomClass E M N] (e : E) :
     Int.natAbs
       (LinearMap.det
         (N.subtype ∘ₗ AddMonoidHom.toIntLinearMap (e : M →+ N))) =
