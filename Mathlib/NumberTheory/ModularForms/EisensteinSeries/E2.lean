@@ -18,8 +18,10 @@ over non-symmetric intervals.
 
 -/
 
-open ModularForm EisensteinSeries UpperHalfPlane TopologicalSpace  intervalIntegral
+open ModularForm EisensteinSeries TopologicalSpace  intervalIntegral
   Metric Filter Function Complex MatrixGroups Finset ArithmeticFunction
+
+open _root_.UpperHalfPlane hiding I
 
 open scoped Interval Real Topology BigOperators Nat
 
@@ -47,8 +49,9 @@ def G2 : ℍ → ℂ := fun z => limUnder atTop (fun N : ℕ => ∑ m ∈ Icc (-
 def E2 : ℍ → ℂ := (1 / (2 * riemannZeta 2)) •  G2
 
 /-- This function measures the defect in `E2` being a modular form. -/
-def D2 (γ : SL(2, ℤ)) : ℍ → ℂ := fun z => (2 * π * Complex.I * γ 1 0) / (denom γ z)
+def D2 (γ : SL(2, ℤ)) : ℍ → ℂ := fun z => (2 * π * I * γ 1 0) / (denom γ z)
 
+--moves these two elsewhere
 lemma Icc_succ_succ (n : ℕ) : Finset.Icc (-(n + 1) : ℤ) (n + 1) = Finset.Icc (-n : ℤ) n ∪
   {(-(n + 1) : ℤ), (n + 1 : ℤ)} := by
   refine Finset.ext_iff.mpr ?_
@@ -72,8 +75,8 @@ lemma sum_Icc_of_even_eq_range {α : Type*} [CommRing α] (f : ℤ → α) (hf :
     norm_cast
 
 lemma G2_partial_sum_eq (z : ℍ) (N : ℕ) : (∑ m ∈ Icc (-N : ℤ) N, e2Summand m z) =
-    (2 * riemannZeta 2) + (∑ m ∈ Finset.range N, 2 * (-2 * ↑π * Complex.I) ^ 2  *
-    ∑' n : ℕ+, n  * cexp (2 * ↑π * Complex.I * (m + 1) * z) ^ (n : ℕ)) := by
+    (2 * riemannZeta 2) + (∑ m ∈ Finset.range N, 2 * (-2 * ↑π * I) ^ 2  *
+    ∑' n : ℕ+, n  * cexp (2 * ↑π * I * (m + 1) * z) ^ (n : ℕ)) := by
   rw [sum_Icc_of_even_eq_range, Finset.sum_range_succ', mul_add]
   · nth_rw 2 [two_mul]
     ring_nf
@@ -104,30 +107,28 @@ lemma G2_partial_sum_eq (z : ℍ) (N : ℕ) : (∑ m ∈ Icc (-N : ℤ) N, e2Sum
     ring_nf
     aesop
 
-private lemma aux_tsum_identity (z : ℍ) : ∑' m : ℕ, (2 * (-2 * ↑π * Complex.I) ^ 2  *
-    ∑' n : ℕ+, n * cexp (2 * ↑π * Complex.I * (m + 1) * z) ^ (n : ℕ))  =
-    -8 * π ^ 2 * ∑' (n : ℕ+), (sigma 1 n) * cexp (2 * π * Complex.I * z) ^ (n : ℕ) := by
+private lemma aux_tsum_identity (z : ℍ) : ∑' m : ℕ, (2 * (-2 * ↑π * I) ^ 2  *
+    ∑' n : ℕ+, n * cexp (2 * ↑π * I * (m + 1) * z) ^ (n : ℕ))  =
+    -8 * π ^ 2 * ∑' (n : ℕ+), (sigma 1 n) * cexp (2 * π * I * z) ^ (n : ℕ) := by
   have := tsum_prod_pow_cexp_eq_tsum_sigma 1 z
   rw [tsum_pnat_eq_tsum_succ (fun d =>
-    ∑' (c : ℕ+), (c ^ 1 : ℂ) * cexp (2 * ↑π * Complex.I * d * z) ^ (c : ℕ))] at this
+    ∑' (c : ℕ+), (c ^ 1 : ℂ) * cexp (2 * ↑π * I * d * z) ^ (c : ℕ))] at this
   simp only [neg_mul, even_two, Even.neg_pow, ← tsum_mul_left, ← this, Nat.cast_add, Nat.cast_one]
-  apply tsum_congr
-  intro b
-  apply tsum_congr
-  intro c
-  simp only [mul_pow, I_sq, mul_neg, mul_one, neg_mul, neg_inj]
+  apply tsum_congr2
+  intro b c
+  rw [mul_pow, I_sq, mul_neg, mul_one]
   ring
 
-theorem G2_tendsto (z : ℍ) : Tendsto (fun N ↦ ∑ x ∈ range N, 2 * (2 * ↑π * Complex.I) ^ 2 *
-    ∑' (n : ℕ+), n * cexp (2 * ↑π * Complex.I * (↑x + 1) * ↑z) ^ (n : ℕ)) atTop
-    (𝓝 (-8 * ↑π ^ 2 * ∑' (n : ℕ+), ↑((σ 1) ↑n) * cexp (2 * ↑π * Complex.I * ↑z) ^ (n : ℕ))) := by
+theorem G2_tendsto (z : ℍ) : Tendsto (fun N ↦ ∑ x ∈ range N, 2 * (2 * ↑π * I) ^ 2 *
+    ∑' (n : ℕ+), n * cexp (2 * ↑π * I * (↑x + 1) * ↑z) ^ (n : ℕ)) atTop
+    (𝓝 (-8 * ↑π ^ 2 * ∑' (n : ℕ+), ↑((σ 1) ↑n) * cexp (2 * ↑π * I * ↑z) ^ (n : ℕ))) := by
   rw [← aux_tsum_identity]
-  have hf : Summable fun m : ℕ => ( 2 * (-2 * ↑π * Complex.I) ^ 2 *
-      ∑' n : ℕ+, n ^ ((2 - 1)) * Complex.exp (2 * ↑π * Complex.I * (m + 1) * z) ^ (n : ℕ)) := by
+  have hf : Summable fun m : ℕ => ( 2 * (-2 * ↑π * I) ^ 2 *
+      ∑' n : ℕ+, n ^ ((2 - 1)) * Complex.exp (2 * ↑π * I * (m + 1) * z) ^ (n : ℕ)) := by
     apply Summable.mul_left
     have := (summable_prod_aux 1 z).prod_symm.prod
     have h0 := pnat_summable_iff_summable_succ
-      (f := fun b ↦ ∑' (c : ℕ+), c * cexp (2 * ↑π * Complex.I * ↑↑b * ↑z) ^ (c : ℕ))
+      (f := fun b ↦ ∑' (c : ℕ+), c * cexp (2 * ↑π * I * ↑↑b * ↑z) ^ (c : ℕ))
     simp at *
     rw [← h0]
     apply this
@@ -139,21 +140,18 @@ lemma G2_cauchy (z : ℍ) : CauchySeq (fun N : ℕ => ∑ m ∈ Icc (-N : ℤ) N
     ext n
     rw [G2_partial_sum_eq]
   apply CauchySeq.const_add
-  apply Filter.Tendsto.cauchySeq (x :=
-    -8 * π ^ 2 * ∑' (n : ℕ+), (σ 1 n) * cexp (2 * π * Complex.I * z) ^ (n : ℕ))
+  apply Filter.Tendsto.cauchySeq (x := -8 * π ^ 2 *
+    ∑' (n : ℕ+), (σ 1 n) * cexp (2 * π * I * z) ^ (n : ℕ))
   simpa using G2_tendsto z
 
-lemma G2_q_exp (z : ℍ) : G2 z = (2 * riemannZeta 2)  - 8 * π ^ 2 *
-  ∑' n : ℕ+, sigma 1 n * cexp (2 * π * Complex.I * z) ^ (n : ℕ) := by
-  rw [G2, Filter.Tendsto.limUnder_eq]
+lemma G2_q_exp (z : ℍ) : G2 z = (2 * riemannZeta 2) - 8 * π ^ 2 *
+  ∑' n : ℕ+, sigma 1 n * cexp (2 * π * I * z) ^ (n : ℕ) := by
+  rw [G2, Filter.Tendsto.limUnder_eq, sub_eq_add_neg]
   conv =>
     enter [1]
     ext N
     rw [G2_partial_sum_eq z N]
-  rw [sub_eq_add_neg]
-  apply Filter.Tendsto.add
-  · simp
-  · simpa using G2_tendsto z
+  exact Filter.Tendsto.add (by simp) (by simpa using G2_tendsto z)
 
 
 
