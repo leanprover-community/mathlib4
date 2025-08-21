@@ -104,9 +104,9 @@ theorem ofScalars_comp_neg_id :
     (ofScalars E c).compContinuousLinearMap (-ContinuousLinearMap.id _ _) =
     (ofScalars E (fun k ↦ (-1) ^ k * c k)) := by
   ext n
+  have : ((-ContinuousLinearMap.id 𝕜 E : _) : E → E) = Neg.neg := by ext; simp
   rcases n.even_or_odd with (h | h) <;>
-  simp [ofScalars, show ((-ContinuousLinearMap.id 𝕜 E : _) : E → E) = Neg.neg by rfl,
-    ← List.map_ofFn, h.neg_one_pow]
+  simp [ofScalars, this, ← List.map_ofFn, h.neg_one_pow]
 
 theorem ofScalars_comp_neg (f : E →L[𝕜] E) :
     (ofScalars E c).compContinuousLinearMap (-f) =
