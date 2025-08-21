@@ -2798,6 +2798,7 @@ import Mathlib.Combinatorics.Quiver.ConnectedComponent
 import Mathlib.Combinatorics.Quiver.Covering
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Combinatorics.Quiver.Path.Decomposition
+import Mathlib.Combinatorics.Quiver.Path.StronglyConnectedQuiver
 import Mathlib.Combinatorics.Quiver.Path.Vertices
 import Mathlib.Combinatorics.Quiver.Path.Weight
 import Mathlib.Combinatorics.Quiver.Prefunctor
@@ -4173,6 +4174,7 @@ import Mathlib.LinearAlgebra.Matrix.HermitianFunctionalCalculus
 import Mathlib.LinearAlgebra.Matrix.Ideal
 import Mathlib.LinearAlgebra.Matrix.Integer
 import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
+import Mathlib.LinearAlgebra.Matrix.Irreducible.Defs
 import Mathlib.LinearAlgebra.Matrix.IsDiag
 import Mathlib.LinearAlgebra.Matrix.LDL
 import Mathlib.LinearAlgebra.Matrix.MvPolynomial
