@@ -19,7 +19,7 @@ This file contains lemmas relating the derivative of functions in one variable a
   of this theorem in terms of `HasDerivWithinAt`, and for negative derivatives, and for finding
   points such that `f y < f x`.
 
-## Keywords
+## Tags
 
 derivative
 -/
@@ -46,7 +46,7 @@ lemma exists_gt_of_hasDerivWithinAt_pos (f'_pos : 0 < f')
 lemma exists_lt_of_hasDerivWithinAt_neg (f'_neg : f' < 0)
     (hx : HasDerivWithinAt f f' S x) : ∃ z > x, ∀ y ∈ Set.Ioc x z ∩ S, f y < f x := by
   simpa using exists_gt_of_hasDerivWithinAt_pos (f := -f) (f' := -f')
-    (by simp [f'_neg]) (by simpa using hx.const_smul (-1 : 𝕜))
+    (by simpa) (by simpa using hx.const_smul (-1 : 𝕜))
 
 open scoped Pointwise in
 lemma exists_gt_of_hasDerivWithinAt_neg (f'_neg : f' < 0)
@@ -64,22 +64,22 @@ lemma exists_gt_of_hasDerivWithinAt_neg (f'_neg : f' < 0)
 lemma exists_lt_of_hasDerivWithinAt_pos (f'_pos : 0 < f')
     (hx : HasDerivWithinAt f f' S x) : ∃ z < x, ∀ y ∈ Set.Ico z x ∩ S, f y < f x := by
   simpa using exists_gt_of_hasDerivWithinAt_neg (f := -f) (f' := -f')
-    (by simp [f'_pos]) (by simpa using hx.const_smul (-1 : 𝕜))
+    (by simpa) (by simpa using hx.const_smul (-1 : 𝕜))
 
 lemma exists_gt_of_deriv_pos (hx : 0 < deriv f x) :
     ∃ z > x, ∀ y ∈ Set.Ioc x z, f x < f y := by
-  simpa only [Set.inter_univ] using exists_gt_of_hasDerivWithinAt_pos (S := Set.univ) hx
-    (hasDerivAt_deriv_iff.2 (differentiableAt_of_deriv_ne_zero (ne_of_gt hx))).hasDerivWithinAt
+  simpa using exists_gt_of_hasDerivWithinAt_pos (S := Set.univ) hx
+    (hasDerivAt_deriv_iff.2 (differentiableAt_of_deriv_ne_zero hx.ne')).hasDerivWithinAt
 
 lemma exists_lt_of_deriv_neg (hx : deriv f x < 0) :
     ∃ z > x, ∀ y ∈ Set.Ioc x z, f y < f x := by
-  simpa using exists_gt_of_deriv_pos (f := -f) (by simp [hx])
+  simpa using exists_gt_of_deriv_pos (f := -f) (by simpa)
 
 lemma exists_lt_of_deriv_pos (hx : 0 < deriv f x) :
     ∃ z < x, ∀ y ∈ Set.Ico z x, f y < f x := by
-  simpa only [Set.inter_univ] using exists_lt_of_hasDerivWithinAt_pos (S := Set.univ) hx
-    (hasDerivAt_deriv_iff.2 (differentiableAt_of_deriv_ne_zero (ne_of_gt hx))).hasDerivWithinAt
+  simpa using exists_lt_of_hasDerivWithinAt_pos (S := Set.univ) hx
+    (hasDerivAt_deriv_iff.2 (differentiableAt_of_deriv_ne_zero hx.ne')).hasDerivWithinAt
 
 lemma exists_gt_of_deriv_neg (hx : deriv f x < 0) :
     ∃ z < x, ∀ y ∈ Set.Ico z x, f x < f y := by
-  simpa using exists_lt_of_deriv_pos (f := -f) (by simp [hx])
+  simpa using exists_lt_of_deriv_pos (f := -f) (by simpa)
