@@ -3,11 +3,12 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Jakob von Raumer
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Group.Action.Units
 import Mathlib.Algebra.Module.End
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Preadditive categories
@@ -52,24 +53,24 @@ namespace CategoryTheory
 variable (C : Type u) [Category.{v} C]
 
 /-- A category is called preadditive if `P ⟶ Q` is an abelian group such that composition is
-    linear in both variables. -/
+linear in both variables. -/
+@[stacks 00ZY]
 class Preadditive where
   homGroup : ∀ P Q : C, AddCommGroup (P ⟶ Q) := by infer_instance
   add_comp : ∀ (P Q R : C) (f f' : P ⟶ Q) (g : Q ⟶ R), (f + f') ≫ g = f ≫ g + f' ≫ g := by
-    aesop_cat
+    cat_disch
   comp_add : ∀ (P Q R : C) (f : P ⟶ Q) (g g' : Q ⟶ R), f ≫ (g + g') = f ≫ g + f ≫ g' := by
-    aesop_cat
+    cat_disch
 
 attribute [inherit_doc Preadditive] Preadditive.homGroup Preadditive.add_comp Preadditive.comp_add
 
 attribute [instance] Preadditive.homGroup
 
--- Porting note: simp can prove reassoc version
+-- simp can already prove reassoc version
 attribute [reassoc, simp] Preadditive.add_comp
 
 attribute [reassoc] Preadditive.comp_add
 
--- (the linter doesn't like `simp` on this lemma)
 attribute [simp] Preadditive.comp_add
 
 end CategoryTheory
@@ -99,7 +100,7 @@ instance inducedCategory : Preadditive.{v} (InducedCategory C F) where
 
 end InducedCategory
 
-instance fullSubcategory (Z : C → Prop) : Preadditive.{v} (FullSubcategory Z) where
+instance fullSubcategory (Z : ObjectProperty C) : Preadditive Z.FullSubcategory where
   homGroup P Q := @Preadditive.homGroup C _ _ P.obj Q.obj
   add_comp _ _ _ _ _ _ := add_comp _ _ _ _ _ _
   comp_add _ _ _ _ _ _ := comp_add _ _ _ _ _ _
@@ -123,22 +124,22 @@ def compHom : (P ⟶ Q) →+ (Q ⟶ R) →+ (P ⟶ R) :=
   AddMonoidHom.mk' (fun f => leftComp _ f) fun f₁ f₂ =>
     AddMonoidHom.ext fun g => (rightComp _ g).map_add f₁ f₂
 
--- Porting note: simp can prove the reassoc version
+-- simp can prove the reassoc version
 @[reassoc, simp]
 theorem sub_comp : (f - f') ≫ g = f ≫ g - f' ≫ g :=
   map_sub (rightComp P g) f f'
 
--- The redundant simp lemma linter says that simp can prove the reassoc version of this lemma.
+-- simp can prove the reassoc version
 @[reassoc, simp]
 theorem comp_sub : f ≫ (g - g') = f ≫ g - f ≫ g' :=
   map_sub (leftComp R f) g g'
 
--- Porting note: simp can prove the reassoc version
+-- simp can prove the reassoc version
 @[reassoc, simp]
 theorem neg_comp : (-f) ≫ g = -f ≫ g :=
   map_neg (rightComp P g) f
 
--- The redundant simp lemma linter says that simp can prove the reassoc version of this lemma.
+-- simp can prove the reassoc version
 @[reassoc, simp]
 theorem comp_neg : f ≫ (-g) = -f ≫ g :=
   map_neg (leftComp R f) g
@@ -167,6 +168,12 @@ theorem comp_sum {P Q R : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J →
 theorem sum_comp {P Q R : C} {J : Type*} (s : Finset J) (f : J → (P ⟶ Q)) (g : Q ⟶ R) :
     (∑ j ∈ s, f j) ≫ g = ∑ j ∈ s, f j ≫ g :=
   map_sum (rightComp P g) _ _
+
+@[reassoc]
+theorem sum_comp' {P Q R S : C} {J : Type*} (s : Finset J) (f : J → (P ⟶ Q)) (g : J → (Q ⟶ R))
+    (h : R ⟶ S) : (∑ j ∈ s, f j ≫ g j) ≫ h = ∑ j ∈ s, f j ≫ g j ≫ h := by
+  simp only [← Category.assoc]
+  apply sum_comp
 
 instance {P Q : C} {f : P ⟶ Q} [Epi f] : Epi (-f) :=
   ⟨fun g g' H => by rwa [neg_comp, neg_comp, ← comp_neg, ← comp_neg, cancel_epi, neg_inj] at H⟩
@@ -220,9 +227,17 @@ lemma mono_of_isZero_kernel' {X Y : C} {f : X ⟶ Y} (c : KernelFork f) (hc : Is
   obtain ⟨a, ha⟩ := KernelFork.IsLimit.lift' hc _ hg
   rw [← ha, h.eq_of_tgt a 0, Limits.zero_comp])
 
+lemma mono_iff_isZero_kernel' {X Y : C} {f : X ⟶ Y} (c : KernelFork f) (hc : IsLimit c) :
+    Mono f ↔ IsZero c.pt :=
+  ⟨fun _ ↦ KernelFork.IsLimit.isZero_of_mono hc, mono_of_isZero_kernel' c hc⟩
+
 lemma mono_of_isZero_kernel {X Y : C} (f : X ⟶ Y) [HasKernel f] (h : IsZero (kernel f)) :
     Mono f :=
   mono_of_isZero_kernel' _ (kernelIsKernel _) h
+
+lemma mono_iff_isZero_kernel {X Y : C} (f : X ⟶ Y) [HasKernel f] :
+    Mono f ↔ IsZero (kernel f) :=
+  mono_iff_isZero_kernel' _ (limit.isLimit _)
 
 theorem epi_of_cancel_zero {P Q : C} (f : P ⟶ Q) (h : ∀ {R : C} (g : Q ⟶ R), f ≫ g = 0 → g = 0) :
     Epi f :=
@@ -242,9 +257,17 @@ lemma epi_of_isZero_cokernel' {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f) (hc
   obtain ⟨a, ha⟩ := CokernelCofork.IsColimit.desc' hc _ hg
   rw [← ha, h.eq_of_src a 0, Limits.comp_zero])
 
+lemma epi_iff_isZero_cokernel' {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f) (hc : IsColimit c) :
+    Epi f ↔ IsZero c.pt :=
+  ⟨fun _ ↦ CokernelCofork.IsColimit.isZero_of_epi hc, epi_of_isZero_cokernel' c hc⟩
+
 lemma epi_of_isZero_cokernel {X Y : C} (f : X ⟶ Y) [HasCokernel f] (h : IsZero (cokernel f)) :
     Epi f :=
   epi_of_isZero_cokernel' _ (cokernelIsCokernel _) h
+
+lemma epi_iff_isZero_cokernel {X Y : C} (f : X ⟶ Y) [HasCokernel f] :
+    Epi f ↔ IsZero (cokernel f) :=
+  epi_iff_isZero_cokernel' _ (colimit.isColimit _)
 
 namespace IsIso
 
@@ -306,7 +329,7 @@ theorem kernelForkOfFork_ofι {P : C} (ι : P ⟶ X) (w : ι ≫ f = ι ≫ g) :
 def isLimitForkOfKernelFork {c : KernelFork (f - g)} (i : IsLimit c) :
     IsLimit (forkOfKernelFork c) :=
   Fork.IsLimit.mk' _ fun s =>
-    ⟨i.lift (kernelForkOfFork s), i.fac _ _, fun h => by apply Fork.IsLimit.hom_ext i; aesop_cat⟩
+    ⟨i.lift (kernelForkOfFork s), i.fac _ _, fun h => by apply Fork.IsLimit.hom_ext i; cat_disch⟩
 
 @[simp]
 theorem isLimitForkOfKernelFork_lift {c : KernelFork (f - g)} (i : IsLimit c) (s : Fork f g) :
@@ -316,7 +339,7 @@ theorem isLimitForkOfKernelFork_lift {c : KernelFork (f - g)} (i : IsLimit c) (s
 /-- An equalizer of `f` and `g` is a kernel of `f - g`. -/
 def isLimitKernelForkOfFork {c : Fork f g} (i : IsLimit c) : IsLimit (kernelForkOfFork c) :=
   Fork.IsLimit.mk' _ fun s =>
-    ⟨i.lift (forkOfKernelFork s), i.fac _ _, fun h => by apply Fork.IsLimit.hom_ext i; aesop_cat⟩
+    ⟨i.lift (forkOfKernelFork s), i.fac _ _, fun h => by apply Fork.IsLimit.hom_ext i; cat_disch⟩
 
 variable (f g)
 
@@ -362,7 +385,7 @@ def isColimitCoforkOfCokernelCofork {c : CokernelCofork (f - g)} (i : IsColimit 
     IsColimit (coforkOfCokernelCofork c) :=
   Cofork.IsColimit.mk' _ fun s =>
     ⟨i.desc (cokernelCoforkOfCofork s), i.fac _ _, fun h => by
-      apply Cofork.IsColimit.hom_ext i; aesop_cat⟩
+      apply Cofork.IsColimit.hom_ext i; cat_disch⟩
 
 @[simp]
 theorem isColimitCoforkOfCokernelCofork_desc {c : CokernelCofork (f - g)} (i : IsColimit c)
@@ -375,7 +398,7 @@ def isColimitCokernelCoforkOfCofork {c : Cofork f g} (i : IsColimit c) :
     IsColimit (cokernelCoforkOfCofork c) :=
   Cofork.IsColimit.mk' _ fun s =>
     ⟨i.desc (coforkOfCokernelCofork s), i.fac _ _, fun h => by
-      apply Cofork.IsColimit.hom_ext i; aesop_cat⟩
+      apply Cofork.IsColimit.hom_ext i; cat_disch⟩
 
 variable (f g)
 

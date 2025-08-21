@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Comma.Over
+import Mathlib.CategoryTheory.Comma.Over.Basic
 import Mathlib.CategoryTheory.IsConnected
 
 /-!
@@ -55,7 +55,7 @@ def raiseCone [IsConnected J] {B : C} {F : J ⥤ Over B} (c : Cone (F ⋙ forget
 
 theorem raised_cone_lowers_to_original [IsConnected J] {B : C} {F : J ⥤ Over B}
     (c : Cone (F ⋙ forget B)) :
-    (forget B).mapCone (raiseCone c) = c := by aesop_cat
+    (forget B).mapCone (raiseCone c) = c := by cat_disch
 
 /-- (Impl) Show that the raised cone is a limit. -/
 def raisedConeIsLimit [IsConnected J] {B : C} {F : J ⥤ Over B} {c : Cone (F ⋙ forget B)}

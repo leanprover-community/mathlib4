@@ -13,6 +13,7 @@ This file defines some additional constructive equivalences using `Encodable` an
 function on `ℕ`.
 -/
 
+assert_not_exists Monoid
 
 open Nat Function
 
@@ -36,7 +37,6 @@ def boolProdNatEquivNat : Bool × ℕ ≃ ℕ where
 def natSumNatEquivNat : ℕ ⊕ ℕ ≃ ℕ :=
   (boolProdEquivSum ℕ).symm.trans boolProdNatEquivNat
 
-set_option linter.deprecated false in
 @[simp]
 theorem natSumNatEquivNat_apply : ⇑natSumNatEquivNat = Sum.elim (2 * ·) (2 * · + 1) := by
   ext (x | x) <;> rfl

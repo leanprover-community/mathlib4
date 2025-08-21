@@ -3,7 +3,7 @@ Copyright (c) 2024 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Jiedong Jiang
 -/
-import Mathlib.FieldTheory.NormalClosure
+import Mathlib.FieldTheory.Normal.Closure
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.FieldTheory.IntermediateField.Algebraic
 
@@ -37,6 +37,9 @@ def algebraicClosure : IntermediateField F E :=
   Algebra.IsAlgebraic.toIntermediateField (integralClosure F E)
 
 variable {F E}
+
+theorem algebraicClosure_toSubalgebra : (algebraicClosure F E).toSubalgebra = integralClosure F E :=
+  rfl
 
 /-- An element is contained in the algebraic closure of `F` in `E` if and only if
 it is an integral element. -/
@@ -94,20 +97,23 @@ def algEquivOfAlgEquiv (i : E ≃ₐ[F] K) :
     algebraicClosure F E ≃ₐ[F] algebraicClosure F K :=
   (intermediateFieldMap i _).trans (equivOfEq (map_eq_of_algEquiv i))
 
-alias AlgEquiv.algebraicClosure := algebraicClosure.algEquivOfAlgEquiv
+alias _root_.AlgEquiv.algebraicClosure := algEquivOfAlgEquiv
 
 variable (F E K)
 
 /-- The algebraic closure of `F` in `E` is algebraic over `F`. -/
 instance isAlgebraic : Algebra.IsAlgebraic F (algebraicClosure F E) :=
-  ⟨fun x ↦
-    isAlgebraic_iff.mpr (IsAlgebraic.isIntegral (mem_algebraicClosure_iff.mp x.2)).isAlgebraic⟩
+  ⟨fun x ↦ isAlgebraic_iff.mpr x.2.isAlgebraic⟩
 
 /-- The algebraic closure of `F` in `E` is the integral closure of `F` in `E`. -/
 instance isIntegralClosure : IsIntegralClosure (algebraicClosure F E) F E :=
   inferInstanceAs (IsIntegralClosure (integralClosure F E) F E)
 
 end algebraicClosure
+
+protected theorem Transcendental.algebraicClosure {a : E} (ha : Transcendental F a) :
+    Transcendental (algebraicClosure F E) a :=
+  ha.extendScalars _
 
 variable (F E K)
 
@@ -116,7 +122,7 @@ if all of its elements are algebraic over `F`. -/
 theorem le_algebraicClosure' {L : IntermediateField F E} (hs : ∀ x : L, IsAlgebraic F x) :
     L ≤ algebraicClosure F E := fun x h ↦ by
   simpa only [mem_algebraicClosure_iff, IsAlgebraic, ne_eq, ← aeval_algebraMap_eq_zero_iff E,
-    Algebra.id.map_eq_id, RingHom.id_apply, IntermediateField.algebraMap_apply] using hs ⟨x, h⟩
+    Algebra.algebraMap_self, RingHom.id_apply, IntermediateField.algebraMap_apply] using hs ⟨x, h⟩
 
 /-- An intermediate field of `E / F` is contained in the algebraic closure of `F` in `E`
 if it is algebraic over `F`. -/
@@ -129,7 +135,7 @@ theorem le_algebraicClosure_iff (L : IntermediateField F E) :
     L ≤ algebraicClosure F E ↔ Algebra.IsAlgebraic F L :=
   ⟨fun h ↦ ⟨fun x ↦ by simpa only [IsAlgebraic, ne_eq, ← aeval_algebraMap_eq_zero_iff E,
     IntermediateField.algebraMap_apply,
-    Algebra.id.map_eq_id, RingHomCompTriple.comp_apply, mem_algebraicClosure_iff] using h x.2⟩,
+    Algebra.algebraMap_self, RingHomCompTriple.comp_apply, mem_algebraicClosure_iff] using h x.2⟩,
     fun _ ↦ le_algebraicClosure _ _ _⟩
 
 namespace algebraicClosure

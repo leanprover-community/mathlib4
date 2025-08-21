@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Eric Wieser
 -/
 import Mathlib.Algebra.Group.Fin.Tuple
-import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.RowCol
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Tactic.FinCases
+import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # Matrix and vector notation
@@ -34,7 +34,7 @@ This file provide notation `!![a, b; c, d]` for matrices, which corresponds to
 
 ## Examples
 
-Examples of usage can be found in the `test/matrix.lean` file.
+Examples of usage can be found in the `MathlibTest/matrix.lean` file.
 -/
 
 namespace Matrix
@@ -48,6 +48,13 @@ open Matrix
 section toExpr
 
 open Lean Qq
+
+open Qq in
+/-- `Matrix.mkLiteralQ !![a, b; c, d]` produces the term `q(!![$a, $b; $c, $d])`. -/
+def mkLiteralQ {u : Level} {α : Q(Type u)} {m n : Nat} (elems : Matrix (Fin m) (Fin n) Q($α)) :
+    Q(Matrix (Fin $m) (Fin $n) $α) :=
+  let elems := PiFin.mkLiteralQ (α := q(Fin $n → $α)) fun i => PiFin.mkLiteralQ fun j => elems i j
+  q(Matrix.of $elems)
 
 /-- Matrices can be reflected whenever their entries can. We insert a `Matrix.of` to
 prevent immediate decay to a function. -/
@@ -111,7 +118,7 @@ macro_rules
   | `(!![$[,%$commas]*]) => `(@Matrix.of (Fin 0) (Fin $(quote commas.size)) _ ![])
 
 /-- Delaborator for the `!![]` notation. -/
-@[delab app.DFunLike.coe]
+@[app_delab DFunLike.coe]
 def delabMatrixNotation : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <|
   withOverApp 6 do
     let mkApp3 (.const ``Matrix.of _) (.app (.const ``Fin _) em) (.app (.const ``Fin _) en) _ :=
@@ -121,7 +128,7 @@ def delabMatrixNotation : Delab := whenNotPPOption getPPExplicit <| whenPPOption
     withAppArg do
       if m = 0 then
         guard <| (← getExpr).isAppOfArity ``vecEmpty 1
-        let commas := mkArray n (mkAtom ",")
+        let commas := .replicate n (mkAtom ",")
         `(!![$[,%$commas]*])
       else
         if n = 0 then
@@ -167,21 +174,21 @@ section DotProduct
 variable [AddCommMonoid α] [Mul α]
 
 @[simp]
-theorem dotProduct_empty (v w : Fin 0 → α) : dotProduct v w = 0 :=
+theorem dotProduct_empty (v w : Fin 0 → α) : v ⬝ᵥ w = 0 :=
   Finset.sum_empty
 
 @[simp]
 theorem cons_dotProduct (x : α) (v : Fin n → α) (w : Fin n.succ → α) :
-    dotProduct (vecCons x v) w = x * vecHead w + dotProduct v (vecTail w) := by
+    vecCons x v ⬝ᵥ w = x * vecHead w + v ⬝ᵥ vecTail w := by
   simp [dotProduct, Fin.sum_univ_succ, vecHead, vecTail]
 
 @[simp]
 theorem dotProduct_cons (v : Fin n.succ → α) (x : α) (w : Fin n → α) :
-    dotProduct v (vecCons x w) = vecHead v * x + dotProduct (vecTail v) w := by
+    v ⬝ᵥ vecCons x w = vecHead v * x + vecTail v ⬝ᵥ w := by
   simp [dotProduct, Fin.sum_univ_succ, vecHead, vecTail]
 
 theorem cons_dotProduct_cons (x : α) (v : Fin n → α) (y : α) (w : Fin n → α) :
-    dotProduct (vecCons x v) (vecCons y w) = x * y + dotProduct v w := by simp
+    vecCons x v ⬝ᵥ vecCons y w = x * y + v ⬝ᵥ w := by simp
 
 end DotProduct
 
@@ -190,21 +197,30 @@ section ColRow
 variable {ι : Type*}
 
 @[simp]
-theorem col_empty (v : Fin 0 → α) : col ι v = vecEmpty :=
+theorem replicateCol_empty (v : Fin 0 → α) : replicateCol ι v = vecEmpty :=
   empty_eq _
 
+@[deprecated (since := "2025-03-20")] alias col_empty := replicateCol_empty
+
 @[simp]
-theorem col_cons (x : α) (u : Fin m → α) :
-    col ι (vecCons x u) = of (vecCons (fun _ => x) (col ι u)) := by
+theorem replicateCol_cons (x : α) (u : Fin m → α) :
+    replicateCol ι (vecCons x u) = of (vecCons (fun _ => x) (replicateCol ι u)) := by
   ext i j
-  refine Fin.cases ?_ ?_ i <;> simp [vecHead, vecTail]
+  refine Fin.cases ?_ ?_ i <;> simp
+
+@[deprecated (since := "2025-03-20")] alias col_cons := replicateCol_cons
 
 @[simp]
-theorem row_empty : row ι (vecEmpty : Fin 0 → α) = of fun _ => vecEmpty := rfl
+theorem replicateRow_empty : replicateRow ι (vecEmpty : Fin 0 → α) = of fun _ => vecEmpty := rfl
+
+@[deprecated (since := "2025-03-20")] alias row_empty := replicateRow_empty
 
 @[simp]
-theorem row_cons (x : α) (u : Fin m → α) : row ι (vecCons x u) = of fun _ => vecCons x u :=
+theorem replicateRow_cons (x : α) (u : Fin m → α) :
+    replicateRow ι (vecCons x u) = of fun _ => vecCons x u :=
   rfl
+
+@[deprecated (since := "2025-03-20")] alias row_cons := replicateRow_cons
 
 end ColRow
 
@@ -310,13 +326,13 @@ theorem mulVec_empty (A : Matrix m' (Fin 0) α) (v : Fin 0 → α) : A *ᵥ v = 
 
 @[simp]
 theorem cons_mulVec [Fintype n'] (v : n' → α) (A : Fin m → n' → α) (w : n' → α) :
-    (of <| vecCons v A) *ᵥ w = vecCons (dotProduct v w) (of A *ᵥ w) := by
+    (of <| vecCons v A) *ᵥ w = vecCons (v ⬝ᵥ w) (of A *ᵥ w) := by
   ext i
   refine Fin.cases ?_ ?_ i <;> simp [mulVec]
 
 @[simp]
-theorem mulVec_cons {α} [CommSemiring α] (A : m' → Fin n.succ → α) (x : α) (v : Fin n → α) :
-    (of A) *ᵥ (vecCons x v) = x • vecHead ∘ A + (of (vecTail ∘ A)) *ᵥ v := by
+theorem mulVec_cons {α} [NonUnitalCommSemiring α] (A : m' → Fin n.succ → α) (x : α)
+    (v : Fin n → α) : (of A) *ᵥ (vecCons x v) = x • vecHead ∘ A + (of (vecTail ∘ A)) *ᵥ v := by
   ext i
   simp [mulVec, mul_comm]
 
@@ -377,13 +393,13 @@ theorem submatrix_cons_row (A : Matrix m' n' α) (i : m') (row : Fin m → m') (
 @[simp]
 theorem submatrix_updateRow_succAbove (A : Matrix (Fin m.succ) n' α) (v : n' → α) (f : o' → n')
     (i : Fin m.succ) : (A.updateRow i v).submatrix i.succAbove f = A.submatrix i.succAbove f :=
-  ext fun r s => (congr_fun (updateRow_ne (Fin.succAbove_ne i r) : _ = A _) (f s) : _)
+  ext fun r s => (congr_fun (updateRow_ne (Fin.succAbove_ne i r) : _ = A _) (f s) :)
 
 /-- Updating a column then removing it is the same as removing it. -/
 @[simp]
-theorem submatrix_updateColumn_succAbove (A : Matrix m' (Fin n.succ) α) (v : m' → α) (f : o' → m')
-    (i : Fin n.succ) : (A.updateColumn i v).submatrix f i.succAbove = A.submatrix f i.succAbove :=
-  ext fun _r s => updateColumn_ne (Fin.succAbove_ne i s)
+theorem submatrix_updateCol_succAbove (A : Matrix m' (Fin n.succ) α) (v : m' → α) (f : o' → m')
+    (i : Fin n.succ) : (A.updateCol i v).submatrix f i.succAbove = A.submatrix f i.succAbove :=
+  ext fun _r s => updateCol_ne (Fin.succAbove_ne i s)
 
 end Submatrix
 
@@ -415,16 +431,14 @@ theorem natCast_fin_three (n : ℕ) :
   ext i j
   fin_cases i <;> fin_cases j <;> rfl
 
--- See note [no_index around OfNat.ofNat]
 theorem ofNat_fin_two (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n) : Matrix (Fin 2) (Fin 2) α) =
-      !![OfNat.ofNat n, 0; 0, OfNat.ofNat n] :=
+    (ofNat(n) : Matrix (Fin 2) (Fin 2) α) =
+      !![ofNat(n), 0; 0, ofNat(n)] :=
   natCast_fin_two _
 
--- See note [no_index around OfNat.ofNat]
 theorem ofNat_fin_three (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n) : Matrix (Fin 3) (Fin 3) α) =
-      !![OfNat.ofNat n, 0, 0; 0, OfNat.ofNat n, 0; 0, 0, OfNat.ofNat n] :=
+    (ofNat(n) : Matrix (Fin 3) (Fin 3) α) =
+      !![ofNat(n), 0, 0; 0, ofNat(n), 0; 0, 0, ofNat(n)] :=
   natCast_fin_three _
 
 end AddMonoidWithOne
@@ -446,7 +460,7 @@ theorem mul_fin_two [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂
                       b₂₁, b₂₂] = !![a₁₁ * b₁₁ + a₁₂ * b₂₁, a₁₁ * b₁₂ + a₁₂ * b₂₂;
                                      a₂₁ * b₁₁ + a₂₂ * b₂₁, a₂₁ * b₁₂ + a₂₂ * b₂₂] := by
   ext i j
-  fin_cases i <;> fin_cases j <;> simp [Matrix.mul_apply, dotProduct, Fin.sum_univ_succ]
+  fin_cases i <;> fin_cases j <;> simp [Matrix.mul_apply, Fin.sum_univ_succ]
 
 theorem mul_fin_three [AddCommMonoid α] [Mul α]
     (a₁₁ a₁₂ a₁₃ a₂₁ a₂₂ a₂₃ a₃₁ a₃₂ a₃₃ b₁₁ b₁₂ b₁₃ b₂₁ b₂₂ b₂₃ b₃₁ b₃₂ b₃₃ : α) :
@@ -460,35 +474,34 @@ theorem mul_fin_three [AddCommMonoid α] [Mul α]
        a₃₁*b₁₁ + a₃₂*b₂₁ + a₃₃*b₃₁, a₃₁*b₁₂ + a₃₂*b₂₂ + a₃₃*b₃₂, a₃₁*b₁₃ + a₃₂*b₂₃ + a₃₃*b₃₃] := by
   ext i j
   fin_cases i <;> fin_cases j
-    <;> simp [Matrix.mul_apply, dotProduct, Fin.sum_univ_succ, ← add_assoc]
+    <;> simp [Matrix.mul_apply, Fin.sum_univ_succ, ← add_assoc]
 
 theorem vec2_eq {a₀ a₁ b₀ b₁ : α} (h₀ : a₀ = b₀) (h₁ : a₁ = b₁) : ![a₀, a₁] = ![b₀, b₁] := by
-  subst_vars
-  rfl
+  simp [h₀, h₁]
 
 theorem vec3_eq {a₀ a₁ a₂ b₀ b₁ b₂ : α} (h₀ : a₀ = b₀) (h₁ : a₁ = b₁) (h₂ : a₂ = b₂) :
     ![a₀, a₁, a₂] = ![b₀, b₁, b₂] := by
-  subst_vars
-  rfl
+  simp [h₀, h₁, h₂]
 
 theorem vec2_add [Add α] (a₀ a₁ b₀ b₁ : α) : ![a₀, a₁] + ![b₀, b₁] = ![a₀ + b₀, a₁ + b₁] := by
-  rw [cons_add_cons, cons_add_cons, empty_add_empty]
+  simp
 
 theorem vec3_add [Add α] (a₀ a₁ a₂ b₀ b₁ b₂ : α) :
     ![a₀, a₁, a₂] + ![b₀, b₁, b₂] = ![a₀ + b₀, a₁ + b₁, a₂ + b₂] := by
-  rw [cons_add_cons, cons_add_cons, cons_add_cons, empty_add_empty]
+  simp
 
 theorem smul_vec2 {R : Type*} [SMul R α] (x : R) (a₀ a₁ : α) :
-    x • ![a₀, a₁] = ![x • a₀, x • a₁] := by rw [smul_cons, smul_cons, smul_empty]
+    x • ![a₀, a₁] = ![x • a₀, x • a₁] := by
+  simp
 
 theorem smul_vec3 {R : Type*} [SMul R α] (x : R) (a₀ a₁ a₂ : α) :
     x • ![a₀, a₁, a₂] = ![x • a₀, x • a₁, x • a₂] := by
-  rw [smul_cons, smul_cons, smul_cons, smul_empty]
+  simp
 
 variable [AddCommMonoid α] [Mul α]
 
 theorem vec2_dotProduct' {a₀ a₁ b₀ b₁ : α} : ![a₀, a₁] ⬝ᵥ ![b₀, b₁] = a₀ * b₀ + a₁ * b₁ := by
-  rw [cons_dotProduct_cons, cons_dotProduct_cons, dotProduct_empty, add_zero]
+  simp
 
 @[simp]
 theorem vec2_dotProduct (v w : Fin 2 → α) : v ⬝ᵥ w = v 0 * w 0 + v 1 * w 1 :=
@@ -496,13 +509,20 @@ theorem vec2_dotProduct (v w : Fin 2 → α) : v ⬝ᵥ w = v 0 * w 0 + v 1 * w 
 
 theorem vec3_dotProduct' {a₀ a₁ a₂ b₀ b₁ b₂ : α} :
     ![a₀, a₁, a₂] ⬝ᵥ ![b₀, b₁, b₂] = a₀ * b₀ + a₁ * b₁ + a₂ * b₂ := by
-  rw [cons_dotProduct_cons, cons_dotProduct_cons, cons_dotProduct_cons, dotProduct_empty,
-    add_zero, add_assoc]
+  simp [add_assoc]
 
-@[simp]
+-- This is not tagged `@[simp]` because it does not mesh well with simp lemmas for
+-- dot and cross products in dimension 3.
 theorem vec3_dotProduct (v w : Fin 3 → α) : v ⬝ᵥ w = v 0 * w 0 + v 1 * w 1 + v 2 * w 2 :=
   vec3_dotProduct'
 
 end Vec2AndVec3
 
 end Matrix
+
+@[simp]
+lemma injective_pair_iff_ne {α : Type*} {x y : α} :
+    Function.Injective ![x, y] ↔ x ≠ y := by
+  refine ⟨fun h ↦ ?_, fun h a b h' ↦ ?_⟩
+  · simpa using h.ne Fin.zero_ne_one
+  · fin_cases a <;> fin_cases b <;> aesop

@@ -4,7 +4,7 @@ import Mathlib.Tactic.Convert
 
 set_option linter.unreachableTactic false
 
--- Prior to #7945 this failed with `(kernel) declaration has metavariables '_example'`.
+-- Prior to https://github.com/leanprover-community/mathlib4/pull/7945 this failed with `(kernel) declaration has metavariables '_example'`.
 /--
 error: maximum recursion depth has been reached
 use `set_option maxRecDepth <num>` to increase limit

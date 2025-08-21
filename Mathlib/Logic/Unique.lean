@@ -41,6 +41,8 @@ for good definitional properties of the default term.
 
 universe u v w
 
+-- Don't generate injectivity lemmas, which the `simpNF` linter will complain about.
+set_option genInjectivity false in
 /-- `Unique α` expresses that `α` is a type with a unique term `default`.
 
 This is implemented as a type, rather than a `Prop`-valued predicate,
@@ -51,14 +53,12 @@ structure Unique (α : Sort u) extends Inhabited α where
   uniq : ∀ a : α, a = default
 
 attribute [class] Unique
--- The simplifier can already prove this using `eq_iff_true_of_subsingleton`
-attribute [nolint simpNF] Unique.mk.injEq
 
-theorem unique_iff_exists_unique (α : Sort u) : Nonempty (Unique α) ↔ ∃! _ : α, True :=
+theorem unique_iff_existsUnique (α : Sort u) : Nonempty (Unique α) ↔ ∃! _ : α, True :=
   ⟨fun ⟨u⟩ ↦ ⟨u.default, trivial, fun a _ ↦ u.uniq a⟩,
    fun ⟨a, _, h⟩ ↦ ⟨⟨⟨a⟩, fun _ ↦ h _ trivial⟩⟩⟩
 
-theorem unique_subtype_iff_exists_unique {α} (p : α → Prop) :
+theorem unique_subtype_iff_existsUnique {α} (p : α → Prop) :
     Nonempty (Unique (Subtype p)) ↔ ∃! a, p a :=
   ⟨fun ⟨u⟩ ↦ ⟨u.default.1, u.default.2, fun a h ↦ congr_arg Subtype.val (u.uniq ⟨a, h⟩)⟩,
    fun ⟨a, ha, he⟩ ↦ ⟨⟨⟨⟨a, ha⟩⟩, fun ⟨b, hb⟩ ↦ by
@@ -75,15 +75,11 @@ abbrev uniqueOfSubsingleton {α : Sort*} [Subsingleton α] (a : α) : Unique α 
   default := a
   uniq _ := Subsingleton.elim _ _
 
-instance PUnit.unique : Unique PUnit.{u} where
+instance PUnit.instUnique : Unique PUnit.{u} where
   default := PUnit.unit
   uniq x := subsingleton x _
 
--- Porting note:
--- This should not require a nolint,
--- but it is currently failing due to a problem in the linter discussed at
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.60simpNF.60.20error.20.22unknown.20metavariable.22
-@[simp, nolint simpNF]
+@[simp]
 theorem PUnit.default_eq_unit : (default : PUnit) = PUnit.unit :=
   rfl
 
@@ -177,7 +173,7 @@ theorem eq_const_of_unique {β : Sort*} [Unique α] (f : α → β) : f = Functi
   eq_const_of_subsingleton ..
 
 theorem heq_const_of_unique [Unique α] {β : α → Sort v} (f : ∀ a, β a) :
-    HEq f (Function.const α (f default)) :=
+    f ≍ Function.const α (f default) :=
   (Function.hfunext rfl) fun i _ _ ↦ by rw [Subsingleton.elim i default]; rfl
 
 namespace Function
@@ -261,3 +257,5 @@ instance Unique.subtypeEq' (y : α) : Unique { x // y = x } where
   uniq := fun ⟨x, hx⟩ ↦ by subst hx; congr
 
 end Subtype
+
+instance Fin.instUnique : Unique (Fin 1) where uniq _ := Subsingleton.elim _ _

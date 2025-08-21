@@ -29,9 +29,9 @@ variable [MonoidalCategory C]
 -/
 class MonoidalLinear [MonoidalPreadditive C] : Prop where
   whiskerLeft_smul : ∀ (X : C) {Y Z : C} (r : R) (f : Y ⟶ Z) , X ◁ (r • f) = r • (X ◁ f) := by
-    aesop_cat
+    cat_disch
   smul_whiskerRight : ∀ (r : R) {Y Z : C} (f : Y ⟶ Z) (X : C), (r • f) ▷ X = r • (f ▷ X) := by
-    aesop_cat
+    cat_disch
 
 attribute [simp] MonoidalLinear.whiskerLeft_smul MonoidalLinear.smul_whiskerRight
 
@@ -50,7 +50,7 @@ instance tensoringRight_linear (X : C) : ((tensoringRight C).obj X).Linear R whe
 ensures that the domain is linear monoidal. -/
 theorem monoidalLinearOfFaithful {D : Type*} [Category D] [Preadditive D] [Linear R D]
     [MonoidalCategory D] [MonoidalPreadditive D] (F : D ⥤ C) [F.Monoidal] [F.Faithful]
-    [F.Additive] [F.Linear R] : MonoidalLinear R D :=
+    [F.Linear R] : MonoidalLinear R D :=
   { whiskerLeft_smul := by
       intros X Y Z r f
       apply F.map_injective

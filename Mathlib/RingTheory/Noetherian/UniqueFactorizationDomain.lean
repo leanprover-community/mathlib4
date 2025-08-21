@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.RingTheory.Noetherian.Defs
-import Mathlib.RingTheory.UniqueFactorizationDomain
+import Mathlib.RingTheory.UniqueFactorizationDomain.Ideal
 /-!
 # Noetherian domains have unique factorization
 

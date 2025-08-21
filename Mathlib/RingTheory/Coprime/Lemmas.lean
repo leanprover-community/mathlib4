@@ -3,7 +3,7 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Ken Lee, Chris Hughes
 -/
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Int.GCD
 import Mathlib.RingTheory.Coprime.Basic
@@ -22,6 +22,8 @@ lemmas about `Pow` since these are easiest to prove via `Finset.prod`.
 
 universe u v
 
+open scoped Function -- required for scoped `on` notation
+
 section IsCoprime
 
 variable {R : Type u} {I : Type v} [CommSemiring R] {x y z : R} {s : I → R} {t : Finset I}
@@ -31,12 +33,16 @@ section
 theorem Int.isCoprime_iff_gcd_eq_one {m n : ℤ} : IsCoprime m n ↔ Int.gcd m n = 1 := by
   constructor
   · rintro ⟨a, b, h⟩
-    have : 1 = m * a + n * b := by rwa [mul_comm m, mul_comm n, eq_comm]
-    exact Nat.dvd_one.mp (Int.gcd_dvd_iff.mpr ⟨a, b, this⟩)
+    refine Nat.dvd_one.mp (Int.gcd_dvd_iff.mpr ⟨a, b, ?_⟩)
+    rwa [mul_comm m, mul_comm n, eq_comm]
   · rw [← Int.ofNat_inj, IsCoprime, Int.gcd_eq_gcd_ab, mul_comm m, mul_comm n, Nat.cast_one]
     intro h
     exact ⟨_, _, h⟩
 
+instance : DecidableRel (IsCoprime : ℤ → ℤ → Prop) :=
+  fun m n => decidable_of_iff (Int.gcd m n = 1) Int.isCoprime_iff_gcd_eq_one.symm
+
+@[simp]
 theorem Nat.isCoprime_iff_coprime {m n : ℕ} : IsCoprime (m : ℤ) n ↔ Nat.Coprime m n := by
   rw [Int.isCoprime_iff_gcd_eq_one, Int.gcd_natCast_natCast]
 
@@ -165,9 +171,8 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
 theorem exists_sum_eq_one_iff_pairwise_coprime' [Fintype I] [Nonempty I] [DecidableEq I] :
     (∃ μ : I → R, (∑ i : I, μ i * ∏ j ∈ {i}ᶜ, s j) = 1) ↔ Pairwise (IsCoprime on s) := by
   convert exists_sum_eq_one_iff_pairwise_coprime Finset.univ_nonempty (s := s) using 1
-  simp only [Function.onFun, pairwise_subtype_iff_pairwise_finset', coe_univ, Set.pairwise_univ]
+  simp only [pairwise_subtype_iff_pairwise_finset', coe_univ, Set.pairwise_univ]
 
--- Porting note: a lot of the capitalization wasn't working
 theorem pairwise_coprime_iff_coprime_prod [DecidableEq I] :
     Pairwise (IsCoprime on fun i : t ↦ s i) ↔ ∀ i ∈ t, IsCoprime (s i) (∏ j ∈ t \ {i}, s j) := by
   refine ⟨fun hp i hi ↦ IsCoprime.prod_right_iff.mpr fun j hj ↦ ?_, fun hp ↦ ?_⟩
@@ -263,7 +268,7 @@ theorem pairwise_isRelPrime_iff_isRelPrime_prod [DecidableEq I] :
     exact @hp ⟨i, hi⟩ ⟨j, hj⟩ fun h ↦ ji (congrArg Subtype.val h).symm
   · rintro ⟨i, hi⟩ ⟨j, hj⟩ h
     apply IsRelPrime.prod_right_iff.mp (hp i hi)
-    exact Finset.mem_sdiff.mpr ⟨hj, fun f ↦ h <| Subtype.ext (Finset.mem_singleton.mp f).symm⟩
+    grind
 
 namespace IsRelPrime
 

@@ -41,7 +41,7 @@ instance instDivisionRing : DivisionRing ℚ := inferInstance
 
 protected lemma inv_nonneg {a : ℚ} (ha : 0 ≤ a) : 0 ≤ a⁻¹ := by
   rw [inv_def']
-  exact divInt_nonneg (Int.ofNat_nonneg a.den) (num_nonneg.mpr ha)
+  exact divInt_nonneg (Int.natCast_nonneg a.den) (num_nonneg.mpr ha)
 
 protected lemma div_nonneg {a b : ℚ} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a / b :=
   mul_nonneg ha (Rat.inv_nonneg hb)
@@ -73,7 +73,7 @@ lemma div_def (p q : ℚ≥0) : p / q = divNat (p.num * q.den) (p.den * q.num) :
 
 lemma num_inv_of_ne_zero {q : ℚ≥0} (hq : q ≠ 0) : q⁻¹.num = q.den := by
   rw [inv_def, divNat, num, coe_mk, Rat.divInt_ofNat, ← Rat.mk_eq_mkRat _ _ (num_ne_zero.mpr hq),
-    Int.natAbs_ofNat]
+    Int.natAbs_natCast]
   simpa using q.coprime_num_den.symm
 
 lemma den_inv_of_ne_zero {q : ℚ≥0} (hq : q ≠ 0) : q⁻¹.den = q.num := by
@@ -87,7 +87,6 @@ lemma num_div_den (q : ℚ≥0) : (q.num : ℚ≥0) / q.den = q := by
   exact (cast_def _).symm
 
 instance instSemifield : Semifield ℚ≥0 where
-  __ := instNNRatCommSemiring
   inv_zero := by ext; simp
   mul_inv_cancel q h := by ext; simp [h]
   nnratCast_def q := q.num_div_den.symm

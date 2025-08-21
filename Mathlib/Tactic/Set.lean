@@ -48,7 +48,6 @@ h2 : x = y
 ⊢ y + y - y = 3
 -/
 ```
-
 -/
 elab_rules : tactic
 | `(tactic| set%$tk $[!%$rw]? $a:ident $[: $ty:term]? := $val:term $[with $[←%$rev]? $h:ident]?) =>

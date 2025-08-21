@@ -38,7 +38,8 @@ error: failed to synthesize
 numerals are polymorphic in Lean, but the numeral `42` cannot be used in a context where the expected type is
   Nat × Nat
 due to the absence of the instance above
-Additional diagnostic information may be available using the `set_option diagnostics true` command.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 example : ∃ p : Nat × Nat, p.1 = p.2 := by use 42; sorry
@@ -94,7 +95,8 @@ error: failed to synthesize
 numerals are polymorphic in Lean, but the numeral `1` cannot be used in a context where the expected type is
   Option Nat
 due to the absence of the instance above
-Additional diagnostic information may be available using the `set_option diagnostics true` command.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 example : Option Nat := by use 1
@@ -105,7 +107,8 @@ error: failed to synthesize
 numerals are polymorphic in Lean, but the numeral `1` cannot be used in a context where the expected type is
   Nat → Nat
 due to the absence of the instance above
-Additional diagnostic information may be available using the `set_option diagnostics true` command.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 example : Nat → Nat := by use 1
@@ -157,12 +160,13 @@ example : Baz 0 3 := by use 4
 
 -- Could not apply constructor due to defeq check
 /--
-error: type mismatch
+error: Type mismatch
   3
 has type
-  Nat : Type
-but is expected to have type
-  Baz 1 3 : Prop
+  Nat
+of sort `Type` but is expected to have type
+  Baz 1 3
+of sort `Prop`
 -/
 #guard_msgs in
 example : Baz 1 3 := by use (3 : Nat)
@@ -227,5 +231,19 @@ example (h1 : 1 > 0) : ∃ (n : Nat) (_h : n > 0), n = n := by
 example : let P : Nat → Prop := fun _x => ∃ _n : Nat, True; P 1 := by
   intro P
   use 1
+
+/--
+error: invalid occurrence of `·` notation, it must be surrounded by parentheses (e.g. `(· + 1)`)
+---
+error: unsolved goals
+case h
+⊢ sorry 1 = 1
+-/
+#guard_msgs in
+example : ∃ f : Nat → Nat, f 1 = 1 := by
+  use ·
+
+example : ∃ f : Nat → Nat, f 1 = 1 := by
+  use (·)
 
 end UseTests

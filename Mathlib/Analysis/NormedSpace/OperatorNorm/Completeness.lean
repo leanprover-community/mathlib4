@@ -36,7 +36,7 @@ variable {E' : Type*} [SeminormedAddCommGroup E'] [NormedSpace 𝕜 E'] [RingHom
 /-- Construct a bundled continuous (semi)linear map from a map `f : E → F` and a proof of the fact
 that it belongs to the closure of the image of a bounded set `s : Set (E →SL[σ₁₂] F)` under coercion
 to function. Coercion to function of the result is definitionally equal to `f`. -/
-@[simps! (config := .asFn) apply]
+@[simps! -fullyApplied apply]
 def ofMemClosureImageCoeBounded (f : E' → F) {s : Set (E' →SL[σ₁₂] F)} (hs : IsBounded s)
     (hf : f ∈ closure (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s)) : E' →SL[σ₁₂] F := by
   -- `f` is a linear map due to `linearMapOfMemClosureRangeCoe`
@@ -54,7 +54,7 @@ def ofMemClosureImageCoeBounded (f : E' → F) {s : Set (E' →SL[σ₁₂] F)} 
 /-- Let `f : E → F` be a map, let `g : α → E →SL[σ₁₂] F` be a family of continuous (semi)linear maps
 that takes values in a bounded set and converges to `f` pointwise along a nontrivial filter. Then
 `f` is a continuous (semi)linear map. -/
-@[simps! (config := .asFn) apply]
+@[simps! -fullyApplied apply]
 def ofTendstoOfBoundedRange {α : Type*} {l : Filter α} [l.NeBot] (f : E' → F)
     (g : α → E' →SL[σ₁₂] F) (hf : Tendsto (fun a x => g a x) l (𝓝 f))
     (hg : IsBounded (Set.range g)) : E' →SL[σ₁₂] F :=
@@ -81,25 +81,6 @@ theorem tendsto_of_tendsto_pointwise_of_cauchySeq {f : ℕ → E' →SL[σ₁₂
   refine le_of_tendsto this (eventually_atTop.2 ⟨n, fun m hm => ?_⟩)
   -- This inequality follows from `‖f n - f m‖ ≤ b n`.
   exact (f n - f m).le_of_opNorm_le (hfb _ _ _ le_rfl hm) _
-
-/-- If the target space is complete, the space of continuous linear maps with its norm is also
-complete. This works also if the source space is seminormed. -/
-instance [CompleteSpace F] : CompleteSpace (E' →SL[σ₁₂] F) := by
-  -- We show that every Cauchy sequence converges.
-  refine Metric.complete_of_cauchySeq_tendsto fun f hf => ?_
-  -- The evaluation at any point `v : E` is Cauchy.
-  have cau : ∀ v, CauchySeq fun n => f n v := fun v => hf.map (lipschitz_apply v).uniformContinuous
-  -- We assemble the limits points of those Cauchy sequences
-  -- (which exist as `F` is complete)
-  -- into a function which we call `G`.
-  choose G hG using fun v => cauchySeq_tendsto_of_complete (cau v)
-  -- Next, we show that this `G` is a continuous linear map.
-  -- This is done in `ContinuousLinearMap.ofTendstoOfBoundedRange`.
-  set Glin : E' →SL[σ₁₂] F :=
-    ofTendstoOfBoundedRange _ _ (tendsto_pi_nhds.mpr hG) hf.isBounded_range
-  -- Finally, `f n` converges to `Glin` in norm because of
-  -- `ContinuousLinearMap.tendsto_of_tendsto_pointwise_of_cauchySeq`
-  exact ⟨Glin, tendsto_of_tendsto_pointwise_of_cauchySeq (tendsto_pi_nhds.2 hG) hf⟩
 
 /-- Let `s` be a bounded set in the space of continuous (semi)linear maps `E →SL[σ] F` taking values
 in a proper space. Then `s` interpreted as a set in the space of maps `E → F` with topology of
@@ -176,9 +157,12 @@ end Completeness
 
 section UniformlyExtend
 
-variable [CompleteSpace F] (e : E →L[𝕜] Fₗ) (h_dense : DenseRange e)
+section NonField
 
-section
+variable {R R₂ E F Fₗ : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup Fₗ]
+  [NormedRing R] [NormedRing R₂] [Module R E] [Module R₂ F] [Module R Fₗ]
+  [IsBoundedSMul R₂ F] [IsBoundedSMul R Fₗ]
+  {σ₁₂ : R →+* R₂} (f g : E →SL[σ₁₂] F) [CompleteSpace F] (e : E →L[R] Fₗ) (h_dense : DenseRange e)
 
 variable (h_e : IsUniformInducing e)
 
@@ -220,9 +204,11 @@ theorem extend_unique (g : Fₗ →SL[σ₁₂] F) (H : g.comp e = f) : extend f
 theorem extend_zero : extend (0 : E →SL[σ₁₂] F) e h_dense h_e = 0 :=
   extend_unique _ _ _ _ _ (zero_comp _)
 
-end
+end NonField
 
 section
+
+variable [CompleteSpace F] (e : E →L[𝕜] Fₗ) (h_dense : DenseRange e)
 
 variable {N : ℝ≥0} (h_e : ∀ x, ‖x‖ ≤ N * ‖e x‖) [RingHomIsometric σ₁₂]
 
@@ -247,7 +233,6 @@ theorem opNorm_extend_le :
       _ ≤ ‖f‖ * (N * ‖e x‖) := mul_le_mul_of_nonneg_left (h_e x) (norm_nonneg _)
       _ ≤ N * ‖f‖ * ‖e x‖ := by rw [mul_comm ↑N ‖f‖, mul_assoc]
 
-@[deprecated (since := "2024-02-02")] alias op_norm_extend_le := opNorm_extend_le
 
 end
 

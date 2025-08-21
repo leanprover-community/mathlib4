@@ -33,7 +33,7 @@ abbrev IsPrimary (I : Ideal R) : Prop :=
 lemma isPrimary_iff {I : Ideal R} :
     I.IsPrimary ↔ I ≠ ⊤ ∧ ∀ {x y : R}, x * y ∈ I → x ∈ I ∨ y ∈ radical I := by
   rw [IsPrimary, Submodule.IsPrimary, forall_comm]
-  simp only [mul_comm, mem_radical_iff, and_congr_right_iff,
+  simp only [mul_comm, mem_radical_iff,
     ← Submodule.ideal_span_singleton_smul, smul_eq_mul, mul_top, span_singleton_le_iff_mem]
 
 theorem IsPrime.isPrimary {I : Ideal R} (hi : IsPrime I) : I.IsPrimary :=
@@ -43,7 +43,7 @@ theorem IsPrime.isPrimary {I : Ideal R} (hi : IsPrime I) : I.IsPrimary :=
 theorem isPrime_radical {I : Ideal R} (hi : I.IsPrimary) : IsPrime (radical I) :=
   ⟨mt radical_eq_top.1 hi.1,
    fun {x y} ⟨m, hxy⟩ => by
-    rw [mul_pow] at hxy; cases' (isPrimary_iff.mp hi).2 hxy with h h
+    rw [mul_pow] at hxy; rcases (isPrimary_iff.mp hi).2 hxy with h | h
     · exact Or.inl ⟨m, h⟩
     · exact Or.inr (mem_radical_of_pow_mem h)⟩
 
@@ -53,8 +53,8 @@ theorem isPrimary_inf {I J : Ideal R} (hi : I.IsPrimary) (hj : J.IsPrimary)
   ⟨ne_of_lt <| lt_of_le_of_lt inf_le_left (lt_top_iff_ne_top.2 hi.1),
    fun {x y} ⟨hxyi, hxyj⟩ => by
     rw [radical_inf, hij, inf_idem]
-    cases' (isPrimary_iff.mp hi).2 hxyi with hxi hyi
-    · cases' (isPrimary_iff.mp hj).2 hxyj with hxj hyj
+    rcases (isPrimary_iff.mp hi).2 hxyi with hxi | hyi
+    · rcases (isPrimary_iff.mp hj).2 hxyj with hxj | hyj
       · exact Or.inl ⟨hxi, hxj⟩
       · exact Or.inr hyj
     · rw [hij] at hyi
@@ -68,9 +68,9 @@ lemma isPrimary_finset_inf {ι} {s : Finset ι} {f : ι → Ideal R} {i : ι} (h
   classical
   induction s using Finset.induction_on generalizing i with
   | empty => simp at hi
-  | @insert a s ha IH =>
-    rcases s.eq_empty_or_nonempty with rfl|⟨y, hy⟩
-    · simp only [insert_emptyc_eq, mem_singleton] at hi
+  | insert a s ha IH =>
+    rcases s.eq_empty_or_nonempty with rfl | ⟨y, hy⟩
+    · simp only [insert_empty_eq, mem_singleton] at hi
       simpa [hi] using hs
     simp only [inf_insert]
     have H : ∀ ⦃x : ι⦄, x ∈ s → (f x).radical = (f y).radical := by

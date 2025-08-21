@@ -5,6 +5,9 @@ Authors: Kenny Lau
 -/
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.Polynomial.Content
+import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
+import Mathlib.RingTheory.UniqueFactorizationDomain.Finite
+import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 
 /-!
 # Unique factorization for univariate and multivariate polynomials
@@ -44,7 +47,7 @@ instance (priority := 100) wfDvdMonoid : WfDvdMonoid R[X] where
         apply Prod.Lex.left
         exact WithTop.coe_lt_top _
       have cne0 : c ≠ 0 := right_ne_zero_of_mul hac
-      simp only [cne0, ane0, Polynomial.leadingCoeff_mul]
+      simp only [Polynomial.leadingCoeff_mul]
       by_cases hdeg : c.degree = (0 : ℕ)
       · simp only [hdeg, Nat.cast_zero, add_zero]
         refine Prod.Lex.right _ ⟨?_, ⟨c.leadingCoeff, fun unit_c => not_unit_c ?_, rfl⟩⟩
@@ -60,7 +63,7 @@ instance (priority := 100) wfDvdMonoid : WfDvdMonoid R[X] where
 
 theorem exists_irreducible_of_degree_pos (hf : 0 < f.degree) : ∃ g, Irreducible g ∧ g ∣ f :=
   WfDvdMonoid.exists_irreducible_factor (fun huf => ne_of_gt hf <| degree_eq_zero_of_isUnit huf)
-    fun hf0 => not_lt_of_lt hf <| hf0.symm ▸ (@degree_zero R _).symm ▸ WithBot.bot_lt_coe _
+    fun hf0 => not_lt_of_gt hf <| hf0.symm ▸ (@degree_zero R _).symm ▸ WithBot.bot_lt_coe _
 
 theorem exists_irreducible_of_natDegree_pos (hf : 0 < f.natDegree) : ∃ g, Irreducible g ∧ g ∣ f :=
   exists_irreducible_of_degree_pos <| by
@@ -125,9 +128,10 @@ instance (priority := 100) uniqueFactorizationMonoid :
   exact
     ⟨w.map (rename (↑)), fun b hb =>
       let ⟨b', hb', he⟩ := Multiset.mem_map.1 hb
-      he ▸ (prime_rename_iff ↑s).2 (h b' hb'),
+      he ▸ (prime_rename_iff (σ := σ) ↑s).2 (h b' hb'),
       Units.map (@rename s σ D _ (↑)).toRingHom.toMonoidHom u, by
-      erw [Multiset.prod_hom, ← map_mul, hw]⟩
+      rw [Multiset.prod_hom, Units.coe_map, AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe,
+        AlgHom.toRingHom_toMonoidHom, MonoidHom.coe_coe, ← map_mul, hw]⟩
 
 end MvPolynomial
 

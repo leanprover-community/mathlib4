@@ -3,7 +3,7 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.Adjoin
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 
 /-!
 
@@ -55,13 +55,13 @@ theorem relrank_eq_of_inf_eq (h : A ⊓ C = B ⊓ C) : relrank A C = relrank B C
 theorem relfinrank_eq_of_inf_eq (h : A ⊓ C = B ⊓ C) : relfinrank A C = relfinrank B C :=
   congr(toNat $(relrank_eq_of_inf_eq h))
 
-/-- If `A ≤ B`, then `Subfield.relrank A B` is `[B : A]` -/
+/-- If `A ≤ B`, then `Subfield.relrank A B` is `[B : A]`. -/
 theorem relrank_eq_rank_of_le (h : A ≤ B) : relrank A B = Module.rank A (extendScalars h) := by
   rw [relrank]
   have := inf_of_le_left h
   congr!
 
-/-- If `A ≤ B`, then `Subfield.relfinrank A B` is `[B : A]` -/
+/-- If `A ≤ B`, then `Subfield.relfinrank A B` is `[B : A]`. -/
 theorem relfinrank_eq_finrank_of_le (h : A ≤ B) : relfinrank A B = finrank A (extendScalars h) :=
   congr(toNat $(relrank_eq_rank_of_le h))
 
@@ -114,6 +114,7 @@ theorem relfinrank_top_left : relfinrank ⊤ A = 1 := relfinrank_eq_one_of_le le
 
 @[simp]
 theorem relrank_top_right : relrank A ⊤ = Module.rank A E := by
+  let _ : AddCommMonoid (⊤ : IntermediateField A E) := inferInstance
   rw [relrank_eq_rank_of_le (show A ≤ ⊤ from le_top), extendScalars_top,
     IntermediateField.topEquiv.toLinearEquiv.rank_eq]
 

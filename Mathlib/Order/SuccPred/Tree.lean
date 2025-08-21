@@ -16,8 +16,7 @@ This file proves basic results about rooted trees, represented using the ancesto
 This is a `PartialOrder`, with `PredOrder` with the immediate parent as a predecessor, and an
 `OrderBot` which is the root. We also have an `IsPredArchimedean` assumption to prevent infinite
 dangling chains.
-
---/
+-/
 
 variable {α : Type*} [PartialOrder α] [PredOrder α] [IsPredArchimedean α]
 
@@ -102,7 +101,7 @@ structure RootedTree where
   /-- The type representing the elements in the tree. -/
   α : Type*
   /-- The type should be a `SemilatticeInf`,
-    where `inf` is the least common ancestor in the tree. -/
+  where `inf` is the least common ancestor in the tree. -/
   [semilatticeInf : SemilatticeInf α]
   /-- The type should have a bottom, the root. -/
   [orderBot : OrderBot α]

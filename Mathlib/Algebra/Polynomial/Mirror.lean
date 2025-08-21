@@ -27,8 +27,6 @@ divisible by `X`.
 
 namespace Polynomial
 
-open Polynomial
-
 section Semiring
 
 variable {R : Type*} [Semiring R] (p q : R[X])

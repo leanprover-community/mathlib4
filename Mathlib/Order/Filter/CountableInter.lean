@@ -12,7 +12,7 @@ import Mathlib.Data.Set.Countable
 In this file we define `CountableInterFilter` to be the class of filters with the following
 property: for any countable collection of sets `s ∈ l` their intersection belongs to `l` as well.
 
-Two main examples are the `residual` filter defined in `Mathlib.Topology.GDelta` and
+Two main examples are the `residual` filter defined in `Mathlib/Topology/GDelta.lean` and
 the `MeasureTheory.ae` filter defined in `Mathlib/MeasureTheory.OuterMeasure/AE`.
 
 We reformulate the definition in terms of indexed intersection and in terms of `Filter.Eventually`
@@ -30,8 +30,6 @@ filter, countable
 
 
 open Set Filter
-
-open Filter
 
 variable {ι : Sort*} {α β : Type*}
 
@@ -229,11 +227,7 @@ inductive CountableGenerateSets : Set α → Prop
 def countableGenerate : Filter α :=
   ofCountableInter (CountableGenerateSets g) (fun _ => CountableGenerateSets.sInter) fun _ _ =>
     CountableGenerateSets.superset
-  --deriving CountableInterFilter
-
--- Porting note: could not de derived
-instance : CountableInterFilter (countableGenerate g) := by
-  delta countableGenerate; infer_instance
+deriving CountableInterFilter
 
 variable {g}
 

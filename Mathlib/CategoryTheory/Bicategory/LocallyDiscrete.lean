@@ -3,7 +3,7 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Calle Sönne
 -/
-import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Discrete.Basic
 import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
 import Mathlib.CategoryTheory.Bicategory.Strict
 
@@ -47,8 +47,8 @@ theorem mk_as (a : LocallyDiscrete C) : mk a.as = a := rfl
 def locallyDiscreteEquiv : LocallyDiscrete C ≃ C where
   toFun := LocallyDiscrete.as
   invFun := LocallyDiscrete.mk
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 instance [DecidableEq C] : DecidableEq (LocallyDiscrete C) :=
   locallyDiscreteEquiv.decidableEq

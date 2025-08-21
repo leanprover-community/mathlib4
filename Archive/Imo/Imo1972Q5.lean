@@ -37,7 +37,7 @@ theorem imo1972_q5 (f g : ℝ → ℝ) (hf1 : ∀ x, ∀ y, f (x + y) + f (x - y
   -- Show that `2 * (‖f x‖ * ‖g y‖) ≤ 2 * k`.
   have hk₂ : ∀ x, 2 * (‖f x‖ * ‖g y‖) ≤ 2 * k := fun x ↦
     calc
-      2 * (‖f x‖ * ‖g y‖) = ‖2 * f x * g y‖ := by simp [abs_mul, mul_assoc]
+      2 * (‖f x‖ * ‖g y‖) = ‖2 * f x * g y‖ := by simp [mul_assoc]
       _ = ‖f (x + y) + f (x - y)‖ := by rw [hf1]
       _ ≤ ‖f (x + y)‖ + ‖f (x - y)‖ := norm_add_le _ _
       _ ≤ k + k := add_le_add (hk₁ _) (hk₁ _)
@@ -80,11 +80,10 @@ This is a more concise version of the proof proposed by Ruben Van de Velde.
 -/
 theorem imo1972_q5' (f g : ℝ → ℝ) (hf1 : ∀ x, ∀ y, f (x + y) + f (x - y) = 2 * f x * g y)
     (hf2 : BddAbove (Set.range fun x => ‖f x‖)) (hf3 : ∃ x, f x ≠ 0) (y : ℝ) : ‖g y‖ ≤ 1 := by
-  -- Porting note: moved `by_contra!` up to avoid a bug
-  by_contra! H
   obtain ⟨x, hx⟩ := hf3
   set k := ⨆ x, ‖f x‖
   have h : ∀ x, ‖f x‖ ≤ k := le_ciSup hf2
+  by_contra! H
   have hgy : 0 < ‖g y‖ := by linarith
   have k_pos : 0 < k := lt_of_lt_of_le (norm_pos_iff.mpr hx) (h x)
   have : k / ‖g y‖ < k := (div_lt_iff₀ hgy).mpr (lt_mul_of_one_lt_right k_pos H)
@@ -94,7 +93,7 @@ theorem imo1972_q5' (f g : ℝ → ℝ) (hf1 : ∀ x, ∀ y, f (x + y) + f (x - 
     suffices 2 * (‖f x‖ * ‖g y‖) ≤ 2 * k by
       rwa [le_div_iff₀ hgy, ← mul_le_mul_left (zero_lt_two : (0 : ℝ) < 2)]
     calc
-      2 * (‖f x‖ * ‖g y‖) = ‖2 * f x * g y‖ := by simp [abs_mul, mul_assoc]
+      2 * (‖f x‖ * ‖g y‖) = ‖2 * f x * g y‖ := by simp [mul_assoc]
       _ = ‖f (x + y) + f (x - y)‖ := by rw [hf1]
       _ ≤ ‖f (x + y)‖ + ‖f (x - y)‖ := abs_add _ _
       _ ≤ 2 * k := by linarith [h (x + y), h (x - y)]

@@ -21,12 +21,15 @@ As corollaries, we also prove that `x ↦ x ^ n` is convex
 
 open Set
 
-variable {𝕜 E F : Type*}
+variable {𝕜 E F G : Type*}
 
 section LinearOrderedCommRing
-variable [LinearOrderedCommRing 𝕜] [LinearOrderedCommRing E] [LinearOrderedAddCommGroup F]
+variable [CommRing 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [CommRing E] [LinearOrder E] [IsStrictOrderedRing E]
+  [AddCommGroup F] [LinearOrder F] [IsOrderedAddMonoid F]
+  [AddCommGroup G] [Module 𝕜 G]
   [Module 𝕜 E] [Module 𝕜 F] [Module E F] [IsScalarTower 𝕜 E F] [SMulCommClass 𝕜 E F]
-  [OrderedSMul 𝕜 F] [OrderedSMul E F] {s : Set 𝕜} {f : 𝕜 → E} {g : 𝕜 → F}
+  [OrderedSMul 𝕜 F] [OrderedSMul E F] {s : Set G} {f : G → E} {g : G → F}
 
 lemma ConvexOn.smul' (hf : ConvexOn 𝕜 s f) (hg : ConvexOn 𝕜 s g) (hf₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ f x)
     (hg₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ g x) (hfg : MonovaryOn f g s) : ConvexOn 𝕜 s (f • g) := by
@@ -42,7 +45,7 @@ lemma ConvexOn.smul' (hf : ConvexOn 𝕜 s f) (hg : ConvexOn 𝕜 s g) (hf₀ : 
     _ = (a * (a + b)) • (f x • g x) + (b * (a + b)) • (f y • g y) := by
         simp only [mul_add, add_smul, smul_add, mul_comm _ a]; abel
     _ = _ := by simp_rw [hab, mul_one]
-  simp only [mul_add, add_smul, smul_add]
+  simp only [add_smul, smul_add]
   rw [← smul_smul_smul_comm a, ← smul_smul_smul_comm b, ← smul_smul_smul_comm a b,
     ← smul_smul_smul_comm b b, smul_eq_mul, smul_eq_mul, smul_eq_mul, smul_eq_mul, mul_comm b,
     add_comm _ ((b * b) • f y • g y), add_add_add_comm, add_comm ((a * b) • f y • g x)]
@@ -62,7 +65,7 @@ lemma ConcaveOn.smul' [OrderedSMul 𝕜 E] (hf : ConcaveOn 𝕜 s f) (hg : Conca
     _ ≤ (a * a) • (f x • g x) + (b * b) • (f y • g y) + (a * b) • (f x • g y + f y • g x) := by
         gcongr _ + (a * b) • ?_; exact hfg.smul_add_smul_le_smul_add_smul hx hy
     _ = _ := ?_
-  simp only [mul_add, add_smul, smul_add]
+  simp only [add_smul, smul_add]
   rw [← smul_smul_smul_comm a, ← smul_smul_smul_comm b, ← smul_smul_smul_comm a b,
     ← smul_smul_smul_comm b b, smul_eq_mul, smul_eq_mul, smul_eq_mul, smul_eq_mul, mul_comm b a,
     add_comm ((a * b) • f x • g y), add_comm ((a * b) • f x • g y), add_add_add_comm]
@@ -104,7 +107,7 @@ lemma ConcaveOn.smul_convexOn' (hf : ConcaveOn 𝕜 s f) (hg : ConvexOn 𝕜 s g
   rw [← neg_convexOn_iff, ← smul_neg]
   exact hf.smul'' hg.neg hf₀ (fun x hx ↦ neg_nonpos.2 <| hg₀ hx) hfg.neg_right
 
-variable [OrderedSMul 𝕜 E] [IsScalarTower 𝕜 E E] [SMulCommClass 𝕜 E E] {f g : 𝕜 → E}
+variable [OrderedSMul 𝕜 E] [IsScalarTower 𝕜 E E] [SMulCommClass 𝕜 E E] {f g : G → E}
 
 lemma ConvexOn.mul (hf : ConvexOn 𝕜 s f) (hg : ConvexOn 𝕜 s g) (hf₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ f x)
     (hg₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ g x) (hfg : MonovaryOn f g s) :
@@ -163,7 +166,7 @@ protected lemma Even.convexOn_pow {n : ℕ} (hn : Even n) : ConvexOn 𝕜 univ f
 end LinearOrderedCommRing
 
 section LinearOrderedField
-variable [LinearOrderedField 𝕜]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
 
 open Int in
 /-- `x^m`, `m : ℤ` is convex on `(0, +∞)` for all `m`. -/
@@ -176,7 +179,7 @@ lemma convexOn_zpow : ∀ n : ℤ, ConvexOn 𝕜 (Ioi 0) fun x : 𝕜 ↦ x ^ n
     refine (convexOn_iff_forall_pos.2 ⟨convex_Ioi _, ?_⟩).pow (fun x (hx : 0 < x) ↦ by positivity) _
     rintro x (hx : 0 < x) y (hy : 0 < y) a b ha hb hab
     field_simp
-    rw [div_le_div_iff, ← sub_nonneg]
+    rw [div_le_div_iff₀, ← sub_nonneg]
     · calc
         0 ≤ a * b * (x - y) ^ 2 := by positivity
         _ = _ := by obtain rfl := eq_sub_of_add_eq hab; ring

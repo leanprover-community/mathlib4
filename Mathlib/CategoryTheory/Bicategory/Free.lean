@@ -60,8 +60,6 @@ instance categoryStruct : CategoryStruct.{max u v} (FreeBicategory B) where
   comp := @fun _ _ _ => Hom.comp
 
 /-- Representatives of 2-morphisms in the free bicategory. -/
--- Porting note(#5171): linter not ported yet
--- @[nolint has_nonempty_instance]
 inductive Hom₂ : ∀ {a b : FreeBicategory B}, (a ⟶ b) → (a ⟶ b) → Type max u v
   | id {a b} (f : a ⟶ b) : Hom₂ f f
   | vcomp {a b} {f g h : a ⟶ b} (η : Hom₂ f g) (θ : Hom₂ g h) : Hom₂ f h
@@ -210,6 +208,7 @@ instance bicategory : Bicategory (FreeBicategory B) where
 
 variable {a b c d : FreeBicategory B}
 
+/-- `Hom₂.mk η` is an abbreviation for `Quot.mk Rel η`. -/
 abbrev Hom₂.mk {f g : a ⟶ b} (η : Hom₂ f g) : f ⟶ g :=
   Quot.mk Rel η
 
@@ -302,7 +301,6 @@ variable {B : Type u₁} [Quiver.{v₁ + 1} B] {C : Type u₂} [Bicategory.{w₂
 variable (F : Prefunctor B C)
 
 /-- Auxiliary definition for `lift`. -/
--- @[simp] -- Porting note: adding `@[simp]` causes a PANIC.
 def liftHom₂ : ∀ {a b : FreeBicategory B} {f g : a ⟶ b}, Hom₂ f g → (liftHom F f ⟶ liftHom F g)
   | _, _, _, _, Hom₂.id _ => 𝟙 _
   | _, _, _, _, Hom₂.associator _ _ _ => (α_ _ _ _).hom
@@ -315,10 +313,9 @@ def liftHom₂ : ∀ {a b : FreeBicategory B} {f g : a ⟶ b}, Hom₂ f g → (l
   | _, _, _, _, Hom₂.whisker_left f η => liftHom F f ◁ liftHom₂ η
   | _, _, _, _, Hom₂.whisker_right h η => liftHom₂ η ▷ liftHom F h
 
-attribute [local simp] whisker_exchange
-
+attribute [local simp] whisker_exchange in
 theorem liftHom₂_congr {a b : FreeBicategory B} {f g : a ⟶ b} {η θ : Hom₂ f g} (H : Rel η θ) :
-    liftHom₂ F η = liftHom₂ F θ := by induction H <;> (dsimp [liftHom₂]; aesop_cat)
+    liftHom₂ F η = liftHom₂ F θ := by induction H <;> (dsimp [liftHom₂]; cat_disch)
 
 /-- A prefunctor from a quiver `B` to a bicategory `C` can be lifted to a pseudofunctor from
 `free_bicategory B` to `C`.
@@ -341,9 +338,9 @@ def lift : Pseudofunctor (FreeBicategory B) C where
   map₂_whisker_left := by
     intro a b c f g h η
     induction η using Quot.rec
-    · aesop_cat
+    · cat_disch
     · rfl
-  map₂_whisker_right := by intro _ _ _ _ _ η h; dsimp; induction η using Quot.rec <;> aesop_cat
+  map₂_whisker_right := by intro _ _ _ _ _ η h; dsimp; induction η using Quot.rec <;> cat_disch
 
 end
 

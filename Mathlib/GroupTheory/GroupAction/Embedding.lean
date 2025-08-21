@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Action.Pi
+import Mathlib.Algebra.Group.Opposite
 
 /-!
 # Group actions on embeddings
@@ -15,6 +16,7 @@ instances defined by `Pi.mulAction`.
 Note that unlike the `Pi` instance, this requires `G` to be a group.
 -/
 
+assert_not_exists MonoidWithZero
 
 universe u v w
 

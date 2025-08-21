@@ -30,7 +30,7 @@ theorem of_pi [FormallySmooth R (Π i, A i)] (i) :
   fapply FormallySmooth.of_split (Pi.evalAlgHom R A i)
   · apply AlgHom.ofLinearMap
       ((Ideal.Quotient.mkₐ R _).toLinearMap.comp (LinearMap.single _ _ i))
-    · show Ideal.Quotient.mk _ (Pi.single i 1) = 1
+    · change Ideal.Quotient.mk _ (Pi.single i 1) = 1
       rw [← (Ideal.Quotient.mk _).map_one, ← sub_eq_zero, ← map_sub,
         Ideal.Quotient.eq_zero_iff_mem]
       have : Pi.single i 1 - 1 ∈ RingHom.ker (Pi.evalAlgHom R A i).toRingHom := by
@@ -38,10 +38,10 @@ theorem of_pi [FormallySmooth R (Π i, A i)] (i) :
       convert neg_mem (Ideal.pow_mem_pow this 2) using 1
       simp [pow_two, sub_mul, mul_sub, ← Pi.single_mul]
     · intro x y
-      show Ideal.Quotient.mk _ _ = Ideal.Quotient.mk _ _ * Ideal.Quotient.mk _ _
+      change Ideal.Quotient.mk _ _ = Ideal.Quotient.mk _ _ * Ideal.Quotient.mk _ _
       simp only [AlgHom.toRingHom_eq_coe, LinearMap.coe_single, Pi.single_mul, map_mul]
   · ext x
-    show (Pi.single i x) i = x
+    change (Pi.single i x) i = x
     simp
 
 theorem pi_iff [Finite I] :
@@ -117,5 +117,8 @@ theorem pi_iff [Finite I] :
       replace this := hι _ _ this
       rwa [mul_sub, ← map_mul, mul_comm, mul_assoc, (he.idem i).eq, he', ← map_mul, ← Pi.single_mul,
         one_mul, sub_eq_zero] at this
+
+instance [Finite I] [∀ i, FormallySmooth R (A i)] : FormallySmooth R (Π i, A i) :=
+  (pi_iff _).mpr ‹_›
 
 end Algebra.FormallySmooth

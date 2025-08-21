@@ -3,16 +3,16 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
+import Mathlib.LinearAlgebra.DirectSum.Finsupp
+import Mathlib.LinearAlgebra.Finsupp.Pi
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.LinearAlgebra.Finsupp.Pi
 
 /-!
 # Results on bases of tensor products
 
 In the file we construct a basis for the base change of a module to an algebra,
-and deducde that `Module.Free` is stable under base change.
+and deduce that `Module.Free` is stable under base change.
 
 ## Main declarations
 
@@ -22,15 +22,16 @@ and deducde that `Module.Free` is stable under base change.
 
 -/
 
-suppress_compilation
+assert_not_exists Cardinal
 
+open Module
 open scoped TensorProduct
 
 namespace Algebra
 
 namespace TensorProduct
 
-variable {R S A : Type*}
+variable {R A : Type*}
 
 section Basis
 
@@ -86,7 +87,7 @@ variable [Fintype ι]
 variable {ι' N : Type*} [Fintype ι'] [DecidableEq ι'] [AddCommMonoid N] [Module R N]
 variable (A : Type*) [CommSemiring A] [Algebra R A]
 
-lemma _root_.Basis.baseChange_linearMap (b : Basis ι R M) (b' : Basis ι' R N) (ij : ι × ι') :
+lemma _root_.Module.Basis.baseChange_linearMap (b : Basis ι R M) (b' : Basis ι' R N) (ij : ι × ι') :
     baseChange A (b'.linearMap b ij) = (basis A b').linearMap (basis A b) ij := by
   apply (basis A b').ext
   intro k
@@ -96,7 +97,7 @@ lemma _root_.Basis.baseChange_linearMap (b : Basis ι R M) (b' : Basis ι' R N) 
 
 variable [DecidableEq ι]
 
-lemma _root_.Basis.baseChange_end (b : Basis ι R M) (ij : ι × ι) :
+lemma _root_.Module.Basis.baseChange_end (b : Basis ι R M) (ij : ι × ι) :
     baseChange A (b.end ij) = (basis A b).end ij :=
   b.baseChange_linearMap A b ij
 

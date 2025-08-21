@@ -15,7 +15,7 @@ in a bicategory which are built out of associators and unitors
 are equal.
 
 This file mainly deals with the type class setup for the coherence tactic. The actual front end
-tactic is given in `Mathlib.Tactic.CategoryTheory.Coherence` at the same time as the coherence
+tactic is given in `Mathlib/Tactic/CategoryTheory/Coherence.lean` at the same time as the coherence
 tactic for monoidal categories.
 -/
 
@@ -115,7 +115,7 @@ def bicategory_coherence (g : MVarId) : TermElabM Unit := g.withContext do
   let thms := [``BicategoricalCoherence.iso, ``Iso.trans, ``Iso.symm, ``Iso.refl,
     ``Bicategory.whiskerRightIso, ``Bicategory.whiskerLeftIso].foldl
     (·.addDeclToUnfoldCore ·) {}
-  let (ty, _) ← dsimp (← g.getType) { simpTheorems := #[thms] }
+  let (ty, _) ← dsimp (← g.getType) (← Simp.mkContext (simpTheorems := #[thms]))
   let some (_, lhs, rhs) := (← whnfR ty).eq? | exception g "Not an equation of morphisms."
   let lift_lhs ← mkLiftMap₂LiftExpr lhs
   let lift_rhs ← mkLiftMap₂LiftExpr rhs

@@ -15,6 +15,8 @@ in an abelian category, we construct the associated class in
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 universe w' w v u
 
 namespace CategoryTheory

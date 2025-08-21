@@ -3,9 +3,9 @@ Copyright (c) 2019 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
+import Mathlib.Analysis.Normed.Module.Span
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Bilinear
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NNNorm
-import Mathlib.Analysis.Normed.Module.Span
 
 /-!
 # Operator norm for maps on normed spaces
@@ -49,7 +49,7 @@ that produces a concrete bound.
 -/
 theorem bound_of_ball_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[𝕜] Fₗ)
     (h : ∀ z ∈ Metric.ball (0 : E) r, ‖f z‖ ≤ c) : ∃ C, ∀ z : E, ‖f z‖ ≤ C * ‖z‖ := by
-  cases' @NontriviallyNormedField.non_trivial 𝕜 _ with k hk
+  obtain ⟨k, hk⟩ := @NontriviallyNormedField.non_trivial 𝕜 _
   use c * (‖k‖ / r)
   intro z
   refine bound_of_shell _ r_pos hk (fun x hko hxo => ?_) _
@@ -80,7 +80,7 @@ theorem antilipschitz_of_comap_nhds_le [h : RingHomIsometric σ₁₂] (f : E �
   calc
     ‖x‖ = ‖c ^ n‖⁻¹ * ‖c ^ n • x‖ := by
       rwa [← norm_inv, ← norm_smul, inv_smul_smul₀ (zpow_ne_zero _ _)]
-    _ ≤ ‖c ^ n‖⁻¹ * 1 := (mul_le_mul_of_nonneg_left (hε _ hlt).le (inv_nonneg.2 (norm_nonneg _)))
+    _ ≤ ‖c ^ n‖⁻¹ * 1 := by gcongr; exact (hε _ hlt).le
     _ ≤ ε⁻¹ * ‖c‖ * ‖f x‖ := by rwa [mul_one]
 
 end LinearMap
@@ -102,7 +102,6 @@ theorem opNorm_zero_iff [RingHomIsometric σ₁₂] : ‖f‖ = 0 ↔ f = 0 :=
       rintro rfl
       exact opNorm_zero)
 
-@[deprecated (since := "2024-02-02")] alias op_norm_zero_iff := opNorm_zero_iff
 
 /-- If a normed space is non-trivial, then the norm of the identity equals `1`. -/
 @[simp]
@@ -117,17 +116,16 @@ lemma nnnorm_id [Nontrivial E] : ‖id 𝕜 E‖₊ = 1 := NNReal.eq norm_id
 instance normOneClass [Nontrivial E] : NormOneClass (E →L[𝕜] E) :=
   ⟨norm_id⟩
 
-/-- Continuous linear maps themselves form a normed space with respect to
-    the operator norm. -/
+/-- Continuous linear maps themselves form a normed space with respect to the operator norm. -/
 instance toNormedAddCommGroup [RingHomIsometric σ₁₂] : NormedAddCommGroup (E →SL[σ₁₂] F) :=
   NormedAddCommGroup.ofSeparation fun f => (opNorm_zero_iff f).mp
 
 /-- Continuous linear maps form a normed ring with respect to the operator norm. -/
-instance toNormedRing : NormedRing (E →L[𝕜] E) :=
-  { ContinuousLinearMap.toNormedAddCommGroup, ContinuousLinearMap.toSemiNormedRing with }
+instance toNormedRing : NormedRing (E →L[𝕜] E) where
+  __ := toNormedAddCommGroup
+  __ := toSeminormedRing
 
-variable {f}
-
+variable {f} in
 theorem homothety_norm [RingHomIsometric σ₁₂] [Nontrivial E] (f : E →SL[σ₁₂] F) {a : ℝ}
     (hf : ∀ x, ‖f x‖ = a * ‖x‖) : ‖f‖ = a := by
   obtain ⟨x, hx⟩ : ∃ x : E, x ≠ 0 := exists_ne 0
@@ -136,16 +134,11 @@ theorem homothety_norm [RingHomIsometric σ₁₂] [Nontrivial E] (f : E →SL[�
   apply le_antisymm (f.opNorm_le_bound ha fun y => le_of_eq (hf y))
   simpa only [hf, hx, mul_le_mul_right] using f.le_opNorm x
 
-variable (f)
-
 /-- If a continuous linear map is a topology embedding, then it is expands the distances
 by a positive factor. -/
 theorem antilipschitz_of_isEmbedding (f : E →L[𝕜] Fₗ) (hf : IsEmbedding f) :
     ∃ K, AntilipschitzWith K f :=
   f.toLinearMap.antilipschitz_of_comap_nhds_le <| map_zero f ▸ (hf.nhds_eq_comap 0).ge
-
-@[deprecated (since := "2024-10-26")]
-alias antilipschitz_of_embedding := antilipschitz_of_isEmbedding
 
 end OpNorm
 
@@ -157,6 +150,16 @@ namespace LinearIsometry
 theorem norm_toContinuousLinearMap [Nontrivial E] [RingHomIsometric σ₁₂] (f : E →ₛₗᵢ[σ₁₂] F) :
     ‖f.toContinuousLinearMap‖ = 1 :=
   f.toContinuousLinearMap.homothety_norm <| by simp
+
+@[simp]
+theorem nnnorm_toContinuousLinearMap [Nontrivial E] [RingHomIsometric σ₁₂] (f : E →ₛₗᵢ[σ₁₂] F) :
+    ‖f.toContinuousLinearMap‖₊ = 1 :=
+  Subtype.ext f.norm_toContinuousLinearMap
+
+@[simp]
+theorem enorm_toContinuousLinearMap [Nontrivial E] [RingHomIsometric σ₁₂] (f : E →ₛₗᵢ[σ₁₂] F) :
+    ‖f.toContinuousLinearMap‖ₑ = 1 :=
+  congrArg _ f.nnnorm_toContinuousLinearMap
 
 variable {σ₁₃ : 𝕜 →+* 𝕜₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
@@ -208,22 +211,10 @@ theorem opNorm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃ₛ
     haveI := g.symm.surjective.nontrivial
     simp [g.symm.toLinearIsometry.norm_toContinuousLinearMap]
 
-@[deprecated (since := "2024-02-02")]
-alias op_norm_comp_linearIsometryEquiv := opNorm_comp_linearIsometryEquiv
-
 @[simp]
 theorem norm_smulRightL (c : E →L[𝕜] 𝕜) [Nontrivial Fₗ] : ‖smulRightL 𝕜 E Fₗ c‖ = ‖c‖ :=
   ContinuousLinearMap.homothety_norm _ c.norm_smulRight_apply
 
-#adaptation_note
-/--
-Before https://github.com/leanprover/lean4/pull/4119 we had to create a local instance:
-```
-letI : SeminormedAddCommGroup ((E →L[𝕜] 𝕜) →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] Fₗ) :=
-      toSeminormedAddCommGroup (F := Fₗ →L[𝕜] E →L[𝕜] Fₗ) (𝕜 := 𝕜) (σ₁₂ := RingHom.id 𝕜)
-```
--/
-set_option maxSynthPendingDepth 2 in
 lemma norm_smulRightL_le : ‖smulRightL 𝕜 E Fₗ‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
 
@@ -360,3 +351,25 @@ protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
   tfae_finish
 
 end Equicontinuous
+
+section single
+
+variable {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : ι → Type*)
+
+/-- The injection `x ↦ Pi.single i x` as a linear isometry. -/
+protected def LinearIsometry.single [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+    (i : ι) : E i →ₗᵢ[𝕜] Π j, E j :=
+  (LinearMap.single 𝕜 E i).toLinearIsometry (.single i)
+
+lemma ContinuousLinearMap.norm_single_le_one [∀ i, SeminormedAddCommGroup (E i)]
+    [∀ i, NormedSpace 𝕜 (E i)] (i : ι) :
+    ‖ContinuousLinearMap.single 𝕜 E i‖ ≤ 1 :=
+  (LinearIsometry.single 𝕜 E i).norm_toContinuousLinearMap_le
+
+lemma ContinuousLinearMap.norm_single [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+    (i : ι) [Nontrivial (E i)] :
+    ‖ContinuousLinearMap.single 𝕜 E i‖ = 1 :=
+  (LinearIsometry.single 𝕜 E i).norm_toContinuousLinearMap
+
+end single

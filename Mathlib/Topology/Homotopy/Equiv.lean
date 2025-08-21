@@ -37,19 +37,25 @@ are both homotopic to corresponding identity maps.
 -/
 @[ext]
 structure HomotopyEquiv (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] where
+  /-- The forward map of an homotopy.
+
+  Do NOT use directly. Use the coercion instead. -/
   toFun : C(X, Y)
+  /-- The backward map of an homotopy.
+
+  Do NOT use `e.invFun` directly. Use the coercion of `e.symm` instead. -/
   invFun : C(Y, X)
   left_inv : (invFun.comp toFun).Homotopic (ContinuousMap.id X)
   right_inv : (toFun.comp invFun).Homotopic (ContinuousMap.id Y)
 
-scoped infixl:25 " ≃ₕ " => ContinuousMap.HomotopyEquiv
+@[inherit_doc] scoped infixl:25 " ≃ₕ " => ContinuousMap.HomotopyEquiv
 
 namespace HomotopyEquiv
 
 /-- Coercion of a `HomotopyEquiv` to function. While the Lean 4 way is to unfold coercions, this
 auxiliary definition will make porting of Lean 3 code easier.
 
-Porting note (#11215): TODO: drop this definition. -/
+Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: drop this definition. -/
 @[coe] def toFun' (e : X ≃ₕ Y) : X → Y := e.toFun
 
 instance : CoeFun (X ≃ₕ Y) fun _ => X → Y := ⟨toFun'⟩

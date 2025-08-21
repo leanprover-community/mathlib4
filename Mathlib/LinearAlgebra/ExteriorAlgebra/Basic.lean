@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhangir Azerbayev, Adam Topaz, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
-import Mathlib.LinearAlgebra.Alternating.Basic
+import Mathlib.LinearAlgebra.Alternating.Curry
 
 /-!
 # Exterior Algebras
@@ -111,7 +111,7 @@ theorem lift_ι_apply (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = 0) (x) :
     lift R ⟨f, cond⟩ (ι R x) = f x :=
   CliffordAlgebra.lift_ι_apply f _ x
 
-@[simp]
+-- removing `@[simp]` because the LHS is not in simp normal form
 theorem lift_unique (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = 0) (g : ExteriorAlgebra R M →ₐ[R] A) :
     g.toLinearMap.comp (ι R) = f ↔ g = lift R ⟨f, cond⟩ :=
   CliffordAlgebra.lift_unique f _ _
@@ -166,9 +166,6 @@ theorem algebraMap_eq_one_iff (x : R) : algebraMap R (ExteriorAlgebra R M) x = 1
 theorem isLocalHom_algebraMap : IsLocalHom (algebraMap R (ExteriorAlgebra R M)) :=
   isLocalHom_of_leftInverse _ (algebraMap_leftInverse M)
 
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_algebraMap := isLocalHom_algebraMap
-
 theorem isUnit_algebraMap (r : R) : IsUnit (algebraMap R (ExteriorAlgebra R M) r) ↔ IsUnit r :=
   isUnit_map_of_leftInverse _ (algebraMap_leftInverse M)
 
@@ -201,18 +198,12 @@ def ιInv : ExteriorAlgebra R M →ₗ[R] M := by
   exact (TrivSqZeroExt.sndHom R M).comp toTrivSqZeroExt.toLinearMap
 
 theorem ι_leftInverse : Function.LeftInverse ιInv (ι R : M → ExteriorAlgebra R M) := fun x => by
-  -- Porting note: Original proof didn't have `letI` and `haveI`
-  letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
-  haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
   simp [ιInv]
 
-variable (R)
-
+variable (R) in
 @[simp]
 theorem ι_inj (x y : M) : ι R x = ι R y ↔ x = y :=
   ι_leftInverse.injective.eq_iff
-
-variable {R}
 
 @[simp]
 theorem ι_eq_zero_iff (x : M) : ι R x = 0 ↔ x = 0 := by rw [← ι_inj R x 0, LinearMap.map_zero]
@@ -265,8 +256,7 @@ theorem ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
 
 end
 
-variable (R)
-
+variable (R) in
 /-- The product of `n` terms of the form `ι R m` is an alternating map.
 
 This is a special case of `MultilinearMap.mkPiAlgebraFin`, and the exterior algebra version of
@@ -278,11 +268,12 @@ def ιMulti (n : ℕ) : M [⋀^Fin n]→ₗ[R] ExteriorAlgebra R M :=
       dsimp [F]
       clear F
       wlog h : x < y
-      · exact this R n f y x hfxy.symm hxy.symm (hxy.lt_or_lt.resolve_left h)
+      · exact this R n f y x hfxy.symm hxy.symm (hxy.lt_or_gt.resolve_left h)
       clear hxy
-      induction' n with n hn
-      · exact x.elim0
-      · rw [List.ofFn_succ, List.prod_cons]
+      induction n with
+      | zero => exact x.elim0
+      | succ n hn =>
+        rw [List.ofFn_succ, List.prod_cons]
         by_cases hx : x = 0
         -- one of the repeated terms is on the left
         · rw [hx] at hfxy h
@@ -299,8 +290,6 @@ def ιMulti (n : ℕ) : M [⋀^Fin n]→ₗ[R] ExteriorAlgebra R M :=
           exact hfxy
     toFun := F }
 
-variable {R}
-
 theorem ιMulti_apply {n : ℕ} (v : Fin n → M) : ιMulti R n v = (List.ofFn fun i => ι R (v i)).prod :=
   rfl
 
@@ -314,11 +303,9 @@ theorem ιMulti_succ_apply {n : ℕ} (v : Fin n.succ → M) :
   simp [ιMulti, Matrix.vecTail]
 
 theorem ιMulti_succ_curryLeft {n : ℕ} (m : M) :
-    (ιMulti R n.succ).curryLeft m = (LinearMap.mulLeft R (ι R m)).compAlternatingMap (ιMulti R n) :=
-  AlternatingMap.ext fun v =>
-    (ιMulti_succ_apply _).trans <| by
-      simp_rw [Matrix.tail_cons]
-      rfl
+    (ιMulti R n.succ).curryLeft m =
+      (LinearMap.mulLeft R (ι R m)).compAlternatingMap (ιMulti R n) := by
+  ext; simp
 
 variable (R)
 

@@ -19,16 +19,15 @@ open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
 -- TODO someone might like to generalise this tactic to work with other associative structures.
 
-/- Porting note: moved `repeat_with_results` to `repeat_count` to `Mathlib.Tactic.Core` -/
+/- Porting note: moved `repeat_with_results` to `repeat_count` to `Mathlib/Tactic/Core.lean` -/
 
-open Tactic
 open Parser.Tactic.Conv
 
 /--
 `slice` is a conv tactic; if the current focus is a composition of several morphisms,
 `slice a b` reassociates as needed, and zooms in on the `a`-th through `b`-th morphisms.
 Thus if the current focus is `(a ≫ b) ≫ ((c ≫ d) ≫ e)`, then `slice 2 3` zooms to `b ≫ c`.
- -/
+-/
 syntax (name := slice) "slice " num ppSpace num : conv
 
 /--

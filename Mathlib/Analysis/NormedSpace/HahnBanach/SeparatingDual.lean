@@ -3,10 +3,11 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Algebra.Central.Defs
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
-import Mathlib.LinearAlgebra.Dual
-import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+import Mathlib.Analysis.NormedSpace.Multilinear.Basic
+import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # Spaces with separating dual
@@ -30,7 +31,7 @@ class SeparatingDual (R V : Type*) [Ring R] [AddCommGroup V] [TopologicalSpace V
   /-- Any nonzero vector can be mapped by a continuous linear map to a nonzero scalar. -/
   exists_ne_zero' : ∀ (x : V), x ≠ 0 → ∃ f : V →L[R] R, f x ≠ 0
 
-instance {E : Type*} [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup E]
+instance {E : Type*} [TopologicalSpace E] [AddCommGroup E] [IsTopologicalAddGroup E]
     [Module ℝ E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E] [T1Space E] : SeparatingDual ℝ E :=
   ⟨fun x hx ↦ by
     rcases geometric_hahn_banach_point_point hx.symm with ⟨f, hf⟩
@@ -74,7 +75,7 @@ end Ring
 section Field
 
 variable {R V : Type*} [Field R] [AddCommGroup V] [TopologicalSpace R] [TopologicalSpace V]
-  [TopologicalRing R] [Module R V]
+  [IsTopologicalRing R] [Module R V]
 
 -- TODO (@alreadydone): this could generalize to CommRing R if we were to add a section
 theorem _root_.separatingDual_iff_injective : SeparatingDual R V ↔
@@ -113,7 +114,19 @@ theorem exists_eq_one_ne_zero_of_ne_zero_pair {x y : V} (hx : x ≠ 0) (hy : y �
   · exact ⟨(v x)⁻¹ • v, inv_mul_cancel₀ vx, show (v x)⁻¹ * v y ≠ 0 by simp [vx, vy]⟩
   · exact ⟨u + v, by simp [ux, vx], by simp [uy, vy]⟩
 
-variable [TopologicalAddGroup V]
+variable [IsTopologicalAddGroup V]
+
+/-- The center of continuous linear maps on a topological vector space
+with separating dual is trivial, in other words, it is a central algebra. -/
+instance _root_.Algebra.IsCentral.continuousLinearMap [ContinuousSMul R V] :
+    Algebra.IsCentral R (V →L[R] V) where
+  out T hT := by
+    have h' (f : V →L[R] R) (y v : V) : f (T v) • y = f v • T y := by
+      simpa using congr($(Subalgebra.mem_center_iff.mp hT <| f.smulRight y) v)
+    nontriviality V
+    obtain ⟨x, hx⟩ := exists_ne (0 : V)
+    obtain ⟨f, hf⟩ := exists_eq_one (R := R) hx
+    exact ⟨f (T x), ContinuousLinearMap.ext fun _ => by simp [h', hf]⟩
 
 /-- In a topological vector space with separating dual, the group of continuous linear equivalences
 acts transitively on the set of nonzero vectors: given two nonzero vectors `x` and `y`, there
@@ -129,14 +142,14 @@ theorem exists_continuousLinearEquiv_apply_eq [ContinuousSMul R V]
     map_add' := fun a b ↦ by simp [add_smul]; abel
     map_smul' := by simp [smul_smul]
     left_inv := fun z ↦ by
-      simp only [id_eq, eq_mpr_eq_cast, RingHom.id_apply, smul_eq_mul, AddHom.toFun_eq_coe,
-        -- Note: #8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
-        AddHom.coe_mk, map_add, map_smulₛₗ _, map_sub, Gx, mul_sub, mul_one, add_sub_cancel]
+      simp only [RingHom.id_apply, smul_eq_mul,
+        -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
+        map_add, map_smulₛₗ _, map_sub, Gx, mul_sub, mul_one, add_sub_cancel]
       rw [mul_comm (G z), ← mul_assoc, inv_mul_cancel₀ Gy]
       simp only [smul_sub, one_mul]
       abel
     right_inv := fun z ↦ by
-        -- Note: #8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
+        -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
       simp only [map_add, map_smulₛₗ _, map_mul, map_inv₀, RingHom.id_apply, map_sub, Gx,
         smul_eq_mul, mul_sub, mul_one]
       rw [mul_comm _ (G y), ← mul_assoc, mul_inv_cancel₀ Gy]

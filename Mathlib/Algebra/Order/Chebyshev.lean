@@ -7,8 +7,7 @@ import Mathlib.Algebra.Order.Monovary
 import Mathlib.Algebra.Order.Rearrangement
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.Positivity
 
 /-!
 # Chebyshev's sum inequality
@@ -46,7 +45,8 @@ variable {ι α β : Type*}
 
 
 section SMul
-variable [LinearOrderedSemiring α] [ExistsAddOfLE α] [LinearOrderedCancelAddCommMonoid β]
+variable [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]
+  [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
   [Module α β] [OrderedSMul α β] {s : Finset ι} {σ : Perm ι} {f : ι → α} {g : ι → β}
 
 /-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (eg they are both
@@ -93,7 +93,8 @@ Special cases of the above when scalar multiplication is actually multiplication
 
 
 section Mul
-variable [LinearOrderedSemiring α] [ExistsAddOfLE α] {s : Finset ι} {σ : Perm ι} {f g : ι → α}
+variable [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]
+  {s : Finset ι} {σ : Perm ι} {f g : ι → α}
 
 /-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (eg they are both
 monotone/antitone), the product of their sum is less than the size of the set times their scalar
@@ -151,7 +152,8 @@ theorem Antivary.card_mul_sum_le_sum_mul_sum (hfg : Antivary f g) :
 
 end Mul
 
-variable [LinearOrderedSemifield α] [ExistsAddOfLE α] {s : Finset ι} {f : ι → α}
+variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]
+  {s : Finset ι} {f : ι → α}
 
 /-- Special case of **Jensen's inequality** for sums of powers. -/
 lemma pow_sum_div_card_le_sum_pow (hf : ∀ i ∈ s, 0 ≤ f i) (n : ℕ) :
@@ -165,6 +167,6 @@ theorem sum_div_card_sq_le_sum_sq_div_card :
     ((∑ i ∈ s, f i) / #s) ^ 2 ≤ (∑ i ∈ s, f i ^ 2) / #s := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp
-  rw [div_pow, div_le_div_iff (by positivity) (by positivity), sq (#s : α), mul_left_comm,
+  rw [div_pow, div_le_div_iff₀ (by positivity) (by positivity), sq (#s : α), mul_left_comm,
     ← mul_assoc]
   exact mul_le_mul_of_nonneg_right sq_sum_le_card_mul_sum_sq (by positivity)

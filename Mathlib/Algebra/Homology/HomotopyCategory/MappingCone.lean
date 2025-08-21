@@ -18,9 +18,15 @@ we redefine it as `CochainComplex.mappingCone φ`. The API involves definitions
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Limits
 
-variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
+-- Explicit universe annotations were used in this file to improve perfomance #12737
+
+universe v v'
+
+variable {C D : Type*} [Category.{v} C] [Category.{v'} D] [Preadditive C] [Preadditive D]
 
 namespace CochainComplex
 
@@ -98,18 +104,18 @@ lemma inl_fst :
 @[simp]
 lemma inl_snd :
     (inl φ).comp (snd φ) (add_zero (-1)) = 0 := by
-  ext p q hpq
-  simp [Cochain.comp_v _ _ (add_zero (-1)) p q q (by omega) (by omega)]
+  ext
+  simp
 
 @[simp]
 lemma inr_fst :
     (Cochain.ofHom (inr φ)).comp (fst φ).1 (zero_add 1) = 0 := by
-  ext p q hpq
-  simp [Cochain.comp_v _ _ (zero_add 1) p p q (by omega) (by omega)]
+  ext
+  simp
 
 @[simp]
 lemma inr_snd :
-    (Cochain.ofHom (inr φ)).comp (snd φ) (zero_add 0) = Cochain.ofHom (𝟙 G) := by aesop_cat
+    (Cochain.ofHom (inr φ)).comp (snd φ) (zero_add 0) = Cochain.ofHom (𝟙 G) := by cat_disch
 
 /-! In order to obtain identities of cochains involving `inl`, `inr`, `fst` and `snd`,
 it is often convenient to use an `ext` lemma, and use simp lemmas like `inl_v_f_fst_v`,
@@ -239,10 +245,10 @@ lemma inl_v_d (i j k : ℤ) (hij : i + (-1) = j) (hik : k + (-1) = i) :
   rw [homotopyCofiber.inlX_d φ j i k (by dsimp; omega) (by dsimp; omega)]
   abel
 
-@[reassoc (attr := simp 1100)]
+@[reassoc]
 lemma inr_f_d (n₁ n₂ : ℤ) :
     (inr φ).f n₁ ≫ (mappingCone φ).d n₁ n₂ = G.d n₁ n₂ ≫ (inr φ).f n₂ := by
-  apply Hom.comm
+  simp
 
 @[reassoc]
 lemma d_fst_v (i j k : ℤ) (hij : i + 1 = j) (hjk : j + 1 = k) :
@@ -379,7 +385,7 @@ lemma inr_f_desc_f (p : ℤ) :
   simp [desc]
 
 @[reassoc (attr := simp)]
-lemma inr_desc : inr φ ≫ desc φ α β eq = β := by aesop_cat
+lemma inr_desc : inr φ ≫ desc φ α β eq = β := by cat_disch
 
 lemma desc_f (p q : ℤ) (hpq : p + 1 = q) :
     (desc φ α β eq).f p = (fst φ).1.v p q hpq ≫ α.v q p (by omega) +
@@ -391,12 +397,12 @@ end
 /-- Constructor for homotopies between morphisms from a mapping cone. -/
 noncomputable def descHomotopy {K : CochainComplex C ℤ} (f₁ f₂ : mappingCone φ ⟶ K)
     (γ₁ : Cochain F K (-2)) (γ₂ : Cochain G K (-1))
-    (h₁ : (inl φ).comp (Cochain.ofHom f₁) (add_zero (-1))  =
+    (h₁ : (inl φ).comp (Cochain.ofHom f₁) (add_zero (-1)) =
       δ (-2) (-1) γ₁ + (Cochain.ofHom φ).comp γ₂ (zero_add (-1)) +
       (inl φ).comp (Cochain.ofHom f₂) (add_zero (-1)))
     (h₂ : Cochain.ofHom (inr φ ≫ f₁) = δ (-1) 0 γ₂ + Cochain.ofHom (inr φ ≫ f₂)) :
     Homotopy f₁ f₂ :=
-  (Cochain.equivHomotopy f₁ f₂).symm ⟨descCochain φ γ₁ γ₂ (by norm_num), by
+  (Cochain.equivHomotopy f₁ f₂).symm ⟨descCochain φ γ₁ γ₂ (by simp), by
     simp only [Cochain.ofHom_comp] at h₂
     simp [ext_cochain_from_iff _ _ _ (neg_add_cancel 1),
       δ_descCochain _ _ _ _ _ (neg_add_cancel 1), h₁, h₂]⟩
@@ -615,10 +621,9 @@ noncomputable def mapHomologicalComplexIso :
       mapHomologicalComplexXIso'_hom, mapHomologicalComplexXIso'_hom]
     constructor
     · dsimp
-      simp only [Functor.mapHomologicalComplex_obj_X, Functor.mapHomologicalComplex_obj_d,
-        comp_neg, add_comp, assoc, inl_v_fst_v_assoc, inr_f_fst_v_assoc, zero_comp,
-        comp_zero, add_zero, comp_add, inl_v_fst_v, comp_id, inr_f_fst_v, ← H.map_comp,
-        d_fst_v φ n (n + 1) (n + 2) rfl (by omega), Functor.map_neg]
+      simp only [Functor.mapHomologicalComplex_obj_X, comp_neg, add_comp, assoc, inl_v_fst_v_assoc,
+        inr_f_fst_v_assoc, zero_comp, comp_zero, add_zero, inl_v_fst_v, comp_id, inr_f_fst_v,
+        ← H.map_comp, d_fst_v φ n (n + 1) (n + 2) rfl (by omega), Functor.map_neg]
     · dsimp
       simp only [comp_add, add_comp, assoc, inl_v_fst_v_assoc, inr_f_fst_v_assoc,
         Functor.mapHomologicalComplex_obj_X, zero_comp, comp_zero, add_zero, inl_v_snd_v_assoc,
