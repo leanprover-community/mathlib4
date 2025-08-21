@@ -286,6 +286,7 @@ theorem of_isCompact [T2Space α] :
 
 end IsCompactIsClosed
 
+
 section pi
 
 variable {ι : Type*} {α : ι → Type*}
