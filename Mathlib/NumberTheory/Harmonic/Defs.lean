@@ -10,7 +10,7 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 This file defines the harmonic numbers.
 
-* `Mathilb/NumberTheory/Harmonic/Int.lean` proves that the `n`th harmonic number is not an integer.
+* `Mathlib/NumberTheory/Harmonic/Int.lean` proves that the `n`th harmonic number is not an integer.
 * `Mathlib/NumberTheory/Harmonic/Bounds.lean` provides basic log bounds.
 
 -/
