@@ -7,7 +7,7 @@ Authors: Steven Herbert
 import Mathlib.Data.Matrix.Basic
 
 /-!
-# StochasticMatrix
+# Stochastic matrices
 
 This file gives the key definitions and results about matrices that are
 (possibly) only singly stochastic (both row and column).
