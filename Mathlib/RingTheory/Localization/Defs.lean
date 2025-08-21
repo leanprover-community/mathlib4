@@ -86,10 +86,6 @@ assert_not_exists AlgHom Ideal
 
 open Function
 
-instance : (⊤ : AddSubmonoid NNRat).IsLocalizationMap ((↑) : NNRat → ℚ) :=
-  AddSubmonoid.isLocalizationMap_top_of_addGroup Subtype.val_injective
-    sorry
-
 section CommSemiring
 
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]

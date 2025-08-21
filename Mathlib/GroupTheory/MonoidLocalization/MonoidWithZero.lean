@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.GroupWithZero.Hom
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.RingTheory.OreLocalization.Basic
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 
 /-!
 # Localizations of commutative monoids with zeroes
@@ -26,14 +25,13 @@ namespace Submonoid
 variable {S N}
 
 /-- If `S` contains `0` then the localization at `S` is trivial. -/
-theorem LocalizationMap.subsingleton (f : LocalizationMap S N) (h : 0 ∈ S) :
-    Subsingleton N := by
-  refine ⟨fun a b ↦ ?_⟩
-  rw [← LocalizationMap.mk'_sec f a, ← LocalizationMap.mk'_sec f b, LocalizationMap.eq]
-  exact ⟨⟨0, h⟩, by simp only [zero_mul]⟩
+theorem LocalizationMap.subsingleton (f : LocalizationMap S N) (h : 0 ∈ S) : Subsingleton N where
+  allEq a b := by
+    rw [← f.mk'_sec a, ← f.mk'_sec b, f.eq]
+    exact ⟨⟨0, h⟩, by simp only [zero_mul]⟩
 
 theorem LocalizationMap.subsingleton_iff (f : LocalizationMap S N) : Subsingleton N ↔ 0 ∈ S :=
-  ⟨fun _ ↦ have ⟨c, eq⟩ := f.exists_of_eq 0 1 (Subsingleton.elim ..)
+  ⟨fun _ ↦ have ⟨c, eq⟩ := f.exists_of_eq (Subsingleton.elim (f 0) (f 1))
     by rw [mul_zero, mul_one] at eq; exact eq ▸ c.2, f.subsingleton⟩
 
 theorem LocalizationMap.nontrivial (f : LocalizationMap S N) (h : 0 ∉ S) : Nontrivial N := by
@@ -47,8 +45,6 @@ instance : MonoidWithZeroHomClass (LocalizationMap S N) M N where
   map_zero f := by
     have ⟨ms, eq⟩ := f.surj 0
     rw [← zero_mul, map_mul, ← eq, zero_mul, mul_zero]
-
-variable {S N}
 
 @[deprecated (since := "2025-08-15")]
 alias LocalizationMap.toMonoidWithZeroHom := MonoidWithZeroHomClass.toMonoidWithZeroHom
@@ -119,25 +115,6 @@ theorem isCancelMulZero (f : LocalizationMap S N) [IsCancelMulZero M] : IsCancel
 
 theorem map_eq_zero_iff (f : LocalizationMap S N) {m : M} : f m = 0 ↔ ∃ s : S, s * m = 0 := by
   simp_rw [← f.map_zero, eq_iff_exists, mul_zero]
-
-theorem nonZeroDivisors_le_comap (f : LocalizationMap S N) :
-    nonZeroDivisors M ≤ (nonZeroDivisors N).comap f := by
-  refine fun m hm ↦ nonZeroDivisorsRight_eq_nonZeroDivisors (M₀ := N) ▸ fun n h0 ↦ ?_
-  have ⟨ms, eq⟩ := f.surj n
-  rw [← (f.map_units ms.2).mul_left_eq_zero, mul_right_comm, eq, ← map_mul, map_eq_zero_iff] at h0
-  simp_rw [← mul_assoc, mul_right_mem_nonZeroDivisorsRight_eq_zero_iff hm.2] at h0
-  rwa [← (f.map_units ms.2).mul_left_eq_zero, eq, map_eq_zero_iff]
-
-theorem map_nonZeroDivisors_le (f : LocalizationMap S N) :
-    (nonZeroDivisors M).map f ≤ nonZeroDivisors N :=
-  map_le_iff_le_comap.mpr f.nonZeroDivisors_le_comap
-
-theorem noZeroDivisors (f : LocalizationMap S N) [NoZeroDivisors M] : NoZeroDivisors N := by
-  refine noZeroDivisors_iff_forall_mem_nonZeroDivisors.mpr fun n hn ↦ ?_
-  have ⟨ms, eq⟩ := f.surj n
-  have hs : ms.1 ≠ 0 := fun h ↦ hn (by rwa [h, f.map_zero, (f.map_units _).mul_left_eq_zero] at eq)
-  exact And.left <| mul_mem_nonZeroDivisors.mp
-    (eq ▸ f.map_nonZeroDivisors_le ⟨_, mem_nonZeroDivisors_of_ne_zero hs, rfl⟩)
 
 end LocalizationMap
 
