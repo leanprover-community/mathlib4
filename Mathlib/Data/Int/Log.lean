@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Order.Floor.Semifield
+import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Order.Floor.Semiring
 import Mathlib.Data.Nat.Log
+import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Integer logarithms in a field with respect to a natural base
