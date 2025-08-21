@@ -568,7 +568,7 @@ theorem preBeth_pos {o : Ordinal} : 0 < preBeth o ↔ 0 < o := by
 theorem preBeth_eq_zero {o : Ordinal} : preBeth o = 0 ↔ o = 0 := by
   simpa using preBeth_inj (o₂ := 0)
 
-theorem isStrongLimit_preBeth {o : Ordinal} (H : IsLimit o) : IsStrongLimit (preBeth o) := by
+theorem isStrongLimit_preBeth {o : Ordinal} (H : IsSuccLimit o) : IsStrongLimit (preBeth o) := by
   refine ⟨by simpa using H.ne_bot, fun a ha ↦ ?_⟩
   rw [preBeth_limit H.isSuccPrelimit] at ha
   rcases exists_lt_of_lt_ciSup' ha with ⟨⟨i, hi⟩, ha⟩
