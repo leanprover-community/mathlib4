@@ -428,7 +428,7 @@ private lemma card_mul_rightCosetRepresentingFinset_eq_mul_card (H : Subgroup G)
   by_contra h
   simp only [Disjoint, le_eq_subset, bot_eq_empty,
               subset_empty, not_forall, ← nonempty_iff_ne_empty] at h
-  obtain ⟨B, hBx, ⟨hBy, ⟨b, hb⟩⟩⟩ := h
+  obtain ⟨B, hBx, hBy, b, hb⟩ := h
   have hx₁ := hBx hb
   have hy₁ := hBy hb
   rw [← mem_coe, coe_smul_finset, Set.coe_toFinset, op_smul_eq_op_smul_iff_mem] at hx₁ hy₁
@@ -436,6 +436,10 @@ private lemma card_mul_rightCosetRepresentingFinset_eq_mul_card (H : Subgroup G)
   apply hZ.2.2 hx hy at hy₁
   contradiction
 
+/-- Given a constant `K ∈ ℝ` (usually `0 < K ≤ 1`) and a finite subset `S ⊆ G`,
+`expansion K S : Finset G → ℝ` measures the extent to which `S` extends the argument, compared
+against the reference constant `K`. That is, given a finite `A ⊆ G` (possibly empty),
+`expansion K S A` is defined as the value of `#(SA) - K#S`. -/
 private def expansion (K : ℝ) (S A : Finset G) : ℝ := #(A * S) - K * #A
 
 @[simp] private lemma expansion_empty (K : ℝ) (S : Finset G) : expansion K S ∅ = 0 := by
@@ -474,6 +478,9 @@ private lemma bddBelow_expansion (hK : K ≤ 1) (hS : S.Nonempty) :
     BddBelow (Set.range fun A : {A : Finset G // A.Nonempty} ↦ expansion K S A) :=
   ⟨0, by simp [lowerBounds, *]⟩
 
+/-- Given `K ∈ ℝ` and a finite `S ⊆ G`, the connectivity `κ` of `G` with respect to `K` and `S` is
+the infimum of `expansion K S A` over all finite nonempty `A ⊆ G`. Note that when `K ≤ 1`,
+`expansion K S A` is nonnegative for all `A`, so the infimum exists. -/
 private noncomputable def connectivity (K : ℝ) (S : Finset G) : ℝ :=
   ⨅ A : {A : Finset G // A.Nonempty}, expansion K S A
 
@@ -493,8 +500,13 @@ private noncomputable def connectivity (K : ℝ) (S : Finset G) : ℝ :=
 private lemma connectivity_nonneg (hK : K ≤ 1) (hS : S.Nonempty) :
     0 ≤ connectivity K S := by simp [*]
 
+/-- Given `K ∈ ℝ` and a finite `S ⊆ G`, a fragment of `G` with respect to `K` and `S` is a finite
+nonempty `A ⊆ G` whose expansion attains the value of the connectivity, that is,
+`expansion K S A = κ`. -/
 private def IsFragment (K : ℝ) (S A : Finset G) : Prop := expansion K S A = connectivity K S
 
+/-- Given `K ∈ ℝ` and a finite `S ⊆ G`, an atom of `G` with respect to `K` and `S` is a (finite
+and nonempty) fragment `A` of minimal cardinality. -/
 private def IsAtom (K : ℝ) (S A : Finset G) : Prop := MinimalFor (IsFragment K S) card A
 
 private lemma IsAtom.isFragment (hA : IsAtom K S A) : IsFragment K S A := hA.1
@@ -657,20 +669,18 @@ private lemma exists_atomicSubgroup (hK : K < 1) (hS : S.Nonempty) : ∃ (H : Su
       simpa only [← IsAtom.eq_of_inter_nonempty hK.le hS (IsAtom.smul_finset n⁻¹ hN)
         (IsAtom.smul_finset a⁻¹ (IsAtom.smul_finset n⁻¹ hN)) this] using self_mem_smul_carrier a⁻¹
   }
-  refine ⟨H, Fintype.ofFinset (n⁻¹ •> N) (fun a => by
-      simpa only [← mem_coe, coe_smul_finset] using H.mem_carrier),
-    by simpa [Set.toFinset_smul_set, toFinset_coe, H]
-      using IsAtom.smul_finset n⁻¹ hN
-  ⟩
+  refine ⟨H, Fintype.ofFinset (n⁻¹ •> N) fun a => ?_, ?_⟩
+  · simpa only [← mem_coe, coe_smul_finset] using H.mem_carrier
+  · simpa [Set.toFinset_smul_set, toFinset_coe, H] using IsAtom.smul_finset n⁻¹ hN
 
 /-- If `S` is such that there is `A` with `|S| ≤ |A|` such that `|A * S| ≤ (2 - ε) * |S|` for some
 `0 < ε ≤ 1`, then there is a finite subgroup `H` of `G` of size `|H| ≤ (2 / ε - 1) * |S|` such that
 `S` is covered by at most `2 / ε - 1` right cosets of `H`.
 In particular, for `A = S`, we get a characterisation of sets of doubling less than `2 - ε`. -/
 theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) (hS : S.Nonempty)
-    (hA : ∃ (A : Finset G) (_ : #A ≥ #S), #(A * S) ≤ (2 - ε) * #S) :
-    ∃ (H : Subgroup G) (_ : Fintype H) (_ : Fintype.card H ≤ (2 / ε - 1) * #S) (Z : Finset G)
-      (_ : #Z ≤ 2 / ε - 1), (S : Set G) ⊆ (H : Set G) * Z := by
+    (hA : ∃ A : Finset G, #S ≤ #A ∧ #(A * S) ≤ (2 - ε) * #S) :
+    ∃ (H : Subgroup G) (_ : Fintype H) (Z : Finset G),
+      Fintype.card H ≤ (2 / ε - 1) * #S ∧ #Z ≤ 2 / ε - 1 ∧ (S : Set G) ⊆ H * Z := by
   let K := 1 - ε / 2
   have hK : K < 1 := by unfold K; linarith [hε₀]
   let ex := expansion K S
@@ -685,13 +695,13 @@ theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) (hS : S
   have calc₁ : ex (Set.toFinset H) ≤ (1 - ε / 2) * #S := by
     calc
           ex (Set.toFinset H)
-      _ = κ                               := IsAtom.isFragment hH
+      _ = κ                               := hH.isFragment
       _ ≤ ex A :=
         connectivity_le_expansion hK.le hS (card_pos.mp (lt_of_lt_of_le (card_pos.mpr hS) hA₁))
       _ = #(A * S) - K * #A               := by rfl
       _ ≤ (2 - ε) * #S - (1 - ε / 2) * #S := by gcongr; linarith
       _ = (1 - ε / 2) * #S                := by linarith
-  refine ⟨H, inferInstance, ?cardH, Z, ?cardZ, by
+  refine ⟨H, inferInstance, Z, ?cardH, ?cardZ, by
     simpa only [hZ.2.1] using Set.subset_mul_right _ H.one_mem⟩
   -- Bound on `#H` follows easily from the previous calculation.
   case cardH =>
@@ -718,7 +728,7 @@ theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) (hS : S
       _ ≤ (2 / ε - 1) * #(H : Set G).toFinset / #(H : Set G).toFinset := ?_
       _ = 2 / ε - 1                                                   := by field_simp; ring
     gcongr
-    -- Finally, to show `#(HS) ≤ (2 / ε - 1) * #H`, we multiply bothe sides by `1 - K = ε / 2` and
+    -- Finally, to show `#(HS) ≤ (2 / ε - 1) * #H`, we multiply both sides by `1 - K = ε / 2` and
     -- show `#(HS) = K * #H + ex H ≤ K * #H + (1 - ε / 2) * #S ≤ K * #H + (1 - ε / 2) * #(HS)`,
     -- where we used `calc₁` again.
     rw [← mul_le_mul_left (show 0 < 1 - K by linarith [hK])]
