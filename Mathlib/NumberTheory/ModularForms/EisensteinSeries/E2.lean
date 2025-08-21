@@ -171,7 +171,7 @@ lemma sum_Icc_eq_sum_Ico_succ {α : Type*} [AddCommMonoid α] (f : ℤ → α)
     Finset.sum_insert]
   rw [add_comm]
 
-lemma sum_Icc_succ {R : Type*} [AddCommGroup R] (f : ℤ → R) {N : ℕ}
+lemma sum_Icc_pred {R : Type*} [AddCommGroup R] (f : ℤ → R) {N : ℕ}
   (hn : 1 ≤ N) : ∑ m ∈ Finset.Icc (-N : ℤ) N, f m =
   f N + f (-N : ℤ)  + ∑ m ∈ Finset.Icc (-(N - 1) : ℤ) (N - 1), f m := by
   induction' N with N ih
@@ -192,7 +192,7 @@ lemma cauchSeq_sum_Icc_tendsto_zero {F : Type*} [NormedRing F] [NormSMulClass �
   use N + 1
   intro n hn
   have H3 := H (n).natAbs (n -1).natAbs N (by omega) (by omega)
-  rw [sum_Icc_succ f (by omega)] at H3
+  rw [sum_Icc_pred f (by omega)] at H3
   have h1 : |n| = n := by
     simp only [abs_eq_self]
     omega
