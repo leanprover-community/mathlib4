@@ -22,9 +22,9 @@ finitely many neighbors.
 
 * `SimpleGraph.edgeFinset` is the `Finset` of edges in a graph, if `edgeSet` is finite
 * `SimpleGraph.neighborFinset` is the `Finset` of vertices adjacent to a given vertex,
-   if `neighborSet` is finite
+  if `neighborSet` is finite
 * `SimpleGraph.incidenceFinset` is the `Finset` of edges containing a given vertex,
-   if `incidenceSet` is finite
+  if `incidenceSet` is finite
 
 ## Naming conventions
 
@@ -65,17 +65,21 @@ theorem mem_edgeFinset : e ∈ G.edgeFinset ↔ e ∈ G.edgeSet :=
 theorem not_isDiag_of_mem_edgeFinset : e ∈ G.edgeFinset → ¬e.IsDiag :=
   not_isDiag_of_mem_edgeSet _ ∘ mem_edgeFinset.1
 
+/-- Mapping an edge to a finite set produces a finset of size `2`. -/
+theorem card_toFinset_mem_edgeFinset [DecidableEq V] (e : G.edgeFinset) :
+    (e : Sym2 V).toFinset.card = 2 :=
+  Sym2.card_toFinset_of_not_isDiag e.val (G.not_isDiag_of_mem_edgeFinset e.prop)
+
 theorem edgeFinset_inj : G₁.edgeFinset = G₂.edgeFinset ↔ G₁ = G₂ := by simp
 
 theorem edgeFinset_subset_edgeFinset : G₁.edgeFinset ⊆ G₂.edgeFinset ↔ G₁ ≤ G₂ := by simp
 
 theorem edgeFinset_ssubset_edgeFinset : G₁.edgeFinset ⊂ G₂.edgeFinset ↔ G₁ < G₂ := by simp
 
-@[gcongr] alias ⟨_, edgeFinset_mono⟩ := edgeFinset_subset_edgeFinset
+@[mono, gcongr] alias ⟨_, edgeFinset_mono⟩ := edgeFinset_subset_edgeFinset
 
+@[mono, gcongr]
 alias ⟨_, edgeFinset_strict_mono⟩ := edgeFinset_ssubset_edgeFinset
-
-attribute [mono] edgeFinset_mono edgeFinset_strict_mono
 
 @[simp]
 theorem edgeFinset_bot : (⊥ : SimpleGraph V).edgeFinset = ∅ := by simp [edgeFinset]
@@ -142,7 +146,7 @@ Use `neighborFinset_eq_filter` to rewrite this definition as a `Finset.filter` e
 
 variable (v) [Fintype (G.neighborSet v)]
 
-/-- `G.neighbors v` is the `Finset` version of `G.Adj v` in case `G` is
+/-- `G.neighborFinset v` is the `Finset` version of `G.neighborSet v` in case `G` is
 locally finite at `v`. -/
 def neighborFinset : Finset V :=
   (G.neighborSet v).toFinset
@@ -225,6 +229,12 @@ theorem incidenceFinset_eq_filter [DecidableEq V] [Fintype G.edgeSet] :
 theorem incidenceFinset_subset [DecidableEq V] [Fintype G.edgeSet] :
     G.incidenceFinset v ⊆ G.edgeFinset :=
   Set.toFinset_subset_toFinset.mpr (G.incidenceSet_subset v)
+
+/-- The degree of a vertex is at most the number of edges. -/
+theorem degree_le_card_edgeFinset [DecidableEq V] [Fintype G.edgeSet] :
+    G.degree v ≤ #G.edgeFinset := by
+  rw [← card_incidenceFinset_eq_degree]
+  exact card_le_card (G.incidenceFinset_subset v)
 
 variable {G v}
 
@@ -339,6 +349,17 @@ lemma minDegree_le_minDegree {H : SimpleGraph V} [DecidableRel G.Adj] [Decidable
     exact fun v ↦ (G.minDegree_le_degree v).trans (G.degree_le_of_le hle)
   · rw [not_nonempty_iff] at hne
     simp
+
+/-- In a nonempty graph, the minimal degree is less than the number of vertices. -/
+theorem minDegree_lt_card [DecidableRel G.Adj] [Nonempty V] :
+    G.minDegree < Fintype.card V := by
+  obtain ⟨v, hδ⟩ := G.exists_minimal_degree_vertex
+  rw [hδ, ← card_neighborFinset_eq_degree, ← card_univ]
+  have h : v ∉ G.neighborFinset v :=
+    (G.mem_neighborFinset v v).not.mpr (G.loopless v)
+  contrapose! h
+  rw [eq_of_subset_of_card_le (subset_univ _) h]
+  exact mem_univ v
 
 /-- The maximum degree of all vertices (and `0` if there are no vertices).
 The key properties of this are given in `exists_maximal_degree_vertex`, `degree_le_maxDegree`
