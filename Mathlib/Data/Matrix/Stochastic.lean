@@ -20,7 +20,7 @@ This file gives the key definitions and results about matrices that are
 ## Main statements
 
 * `pdist_vecMul_of_mem_rowStochastic` if a row stochastic matrix is applied to
-  a positive vector with unit `ℓ₁`-norm (informally, a probility distributio)
+  a positive vector with unit `ℓ₁`-norm (informally, a probility distribution)
   then the result is also a positive vector with unit `ℓ₁`-norm
 
 * `doublyStochastic_iff_rowStochastic_and_colStochastic` A matrix is doubly stochastic
