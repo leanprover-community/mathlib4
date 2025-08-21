@@ -3,14 +3,10 @@ Copyright (c) 2025 Mitchell Horner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Horner
 -/
-import Mathlib.Analysis.Calculus.Deriv.MeanValue
-import Mathlib.Analysis.Calculus.Deriv.Pow
-import Mathlib.Analysis.SpecialFunctions.Choose
+import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Combinatorics.Pigeonhole
 import Mathlib.Combinatorics.SimpleGraph.Bipartite
 import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
-import Mathlib.Combinatorics.SimpleGraph.ConcreteColorings
-import Mathlib.Combinatorics.SimpleGraph.Extremal.TuranDensity
 import Mathlib.Data.Real.Sqrt
 
 /-!
@@ -31,7 +27,7 @@ This file proves the **Erdős-Stone-Simonovits theorem** for simple graphs.
 -/
 
 
-open Asymptotics Filter Finset Fintype Real Topology
+open Filter Finset Fintype Real Topology
 
 namespace SimpleGraph
 
@@ -122,7 +118,7 @@ lemma card_edgeFinset_between_verts_le (hr : 0 < r) :
           intro v hv
           exact_mod_cast isBipartiteWith_degree_le'
             (between_verts_isBipartiteWith A) (filterAdjComplVerts_subset_compl_verts A hv)
-    _ = (card V - #A.verts)*(#A.verts - (t' - t)) + #(filterAdjComplVerts A t) * (t' - t) := by
+    _ = (card V - #A.verts) * (#A.verts - (t' - t)) + #(filterAdjComplVerts A t) * (t' - t) := by
         simp_rw [sum_const, card_sdiff (filterAdjComplVerts_subset_compl_verts A), nsmul_eq_mul,
           Nat.cast_sub (card_le_card (filterAdjComplVerts_subset_compl_verts A)), card_compl,
           Nat.cast_sub (card_le_univ A.verts)]
@@ -268,7 +264,7 @@ theorem completeEquipartiteGraph_isContained_of_minDegree {ε : ℝ} (hε : 0 < 
       -- if `r > 1` then `G` satisfies the inductive hypothesis
       · have hδ' := calc (G.minDegree : ℝ)
           _ ≥ (1 - 1 / (r - 1) + (1 / (r - 1) - 1 / r) + ε) * card V := by
-              rwa [← sub_add_sub_cancel _ (1 / (r-1) : ℝ) _] at hδ
+              rwa [← sub_add_sub_cancel _ (1 / (r - 1) : ℝ) _] at hδ
           _ = (1 - 1 / ↑(r - 1) + ε') * card V := by
               rw [← one_div_mul_sub_mul_one_div_eq_one_div_add_one_div
                   (sub_ne_zero_of_ne <| mod_cast hr_ne_1) (mod_cast hr.ne'),
