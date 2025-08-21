@@ -27,7 +27,7 @@ theorem det_pi {ι R M : Type*} [Fintype ι] [CommRing R] [AddCommGroup M]
   LinearMap.det_pi _
 
 theorem det_one_smulRight {𝕜 : Type*} [CommRing 𝕜] [TopologicalSpace 𝕜] [ContinuousMul 𝕜] (v : 𝕜) :
-    ((1 : 𝕜 →L[𝕜] 𝕜).smulRight v).det = v := by
+    ((1 : StrongDual 𝕜 𝕜).smulRight v).det = v := by
   simp
 
 end ContinuousLinearMap
