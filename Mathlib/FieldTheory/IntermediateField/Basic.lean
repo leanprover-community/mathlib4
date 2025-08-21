@@ -309,18 +309,12 @@ instance toField : Field S :=
   S.toSubfield.toField
 
 @[norm_cast]
-theorem coe_sum {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∑ i, f i) : L) = ∑ i, (f i : L) := by
-  classical
-    induction (Finset.univ : Finset ι) using Finset.induction_on with
-    | empty => simp
-    | insert i s hi H => rw [Finset.sum_insert hi, AddMemClass.coe_add, H, Finset.sum_insert hi]
+theorem coe_sum {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∑ i, f i) : L) = ∑ i, (f i : L) :=
+  AddSubmonoidClass.coe_finset_sum f Finset.univ
 
 @[norm_cast]
-theorem coe_prod {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∏ i, f i) : L) = ∏ i, (f i : L) := by
-  classical
-    induction (Finset.univ : Finset ι) using Finset.induction_on with
-    | empty => simp
-    | insert i s hi H => rw [Finset.prod_insert hi, MulMemClass.coe_mul, H, Finset.prod_insert hi]
+theorem coe_prod {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∏ i, f i) : L) = ∏ i, (f i : L) :=
+  SubmonoidClass.coe_finset_prod f Finset.univ
 
 /-!
 `IntermediateField`s inherit structure from their `Subfield` coercions.
@@ -587,8 +581,6 @@ variable {F E : IntermediateField K L}
 
 @[simp]
 theorem toSubalgebra_inj : F.toSubalgebra = E.toSubalgebra ↔ F = E := toSubalgebra_injective.eq_iff
-
-@[deprecated (since := "2024-12-29")] alias toSubalgebra_eq_iff := toSubalgebra_inj
 
 @[simp]
 theorem toSubfield_inj : F.toSubfield = E.toSubfield ↔ F = E := toSubfield_injective.eq_iff

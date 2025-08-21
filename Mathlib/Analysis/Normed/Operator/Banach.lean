@@ -31,7 +31,11 @@ linear itself but which satisfies a bound `‖inverse x‖ ≤ C * ‖x‖`. A s
 map doesn't always have a continuous linear right inverse, but it always has a nonlinear inverse
 in this sense, by Banach's open mapping theorem. -/
 structure NonlinearRightInverse where
+  /-- The underlying function.
+
+  Do NOT use directly. Use the coercion instead. -/
   toFun : F → E
+  /-- The bound `C` so that `‖inverse x‖ ≤ C * ‖x‖` for all `x`. -/
   nnnorm : ℝ≥0
   bound' : ∀ y, ‖toFun y‖ ≤ nnnorm * ‖y‖
   right_inv' : ∀ y, f (toFun y) = y
@@ -98,7 +102,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
   rcases eq_or_ne y 0 with rfl | hy
   · use 0
     simp
-  · have hc' : 1 < ‖σ c‖ := by simp only [RingHomIsometric.is_iso, hc]
+  · have hc' : 1 < ‖σ c‖ := by simp only [RingHomIsometric.norm_map, hc]
     rcases rescale_to_shell hc' (half_pos εpos) hy with ⟨d, hd, ydlt, -, dinv⟩
     let δ := ‖d‖ * ‖y‖ / 4
     have δpos : 0 < δ := by positivity
@@ -143,7 +147,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
     rw [← dist_eq_norm] at J
     have K : ‖σ' d⁻¹ • x‖ ≤ (ε / 2)⁻¹ * ‖c‖ * 2 * ↑n * ‖y‖ :=
       calc
-        ‖σ' d⁻¹ • x‖ = ‖d‖⁻¹ * ‖x₁ - x₂‖ := by rw [norm_smul, RingHomIsometric.is_iso, norm_inv]
+        ‖σ' d⁻¹ • x‖ = ‖d‖⁻¹ * ‖x₁ - x₂‖ := by rw [norm_smul, RingHomIsometric.norm_map, norm_inv]
         _ ≤ (ε / 2)⁻¹ * ‖c‖ * ‖y‖ * (n + n) := by
           gcongr
           · simpa using dinv

@@ -418,7 +418,7 @@ theorem Gamma_mul_Gamma_one_sub (z : ℂ) : Gamma z * Gamma (1 - z) = π / sin (
   convert Tendsto.congr' ((eventually_ne_atTop 0).mp (Eventually.of_forall fun n hn =>
     (GammaSeq_mul z hn).symm)) (Tendsto.mul _ _)
   · convert tendsto_natCast_div_add_atTop (1 - z) using 1; ext1 n; rw [add_sub_assoc]
-  · have : ↑π / sin (↑π * z) = 1 / (sin (π * z) / π) := by field_simp
+  · have : ↑π / sin (↑π * z) = 1 / (sin (π * z) / π) := by simp
     convert tendsto_const_nhds.div _ (div_ne_zero hs pi_ne)
     rw [← tendsto_mul_iff_of_ne_zero tendsto_const_nhds pi_ne, div_mul_cancel₀ _ pi_ne]
     convert tendsto_euler_sin_prod z using 1
