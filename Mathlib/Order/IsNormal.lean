@@ -14,11 +14,6 @@ arise chiefly in the context of cardinal and ordinal-valued functions.
 We opt for an equivalent definition that's both simpler and often more convenient: a normal function
 is a strictly monotonic function `f` such that at successor limits `a`, `f a` is the least upper
 bound of `f b` with `b < a`.
-
-## TODO
-
-* Prove the equivalence with the standard definition (in some other file).
-* Replace `Ordinal.IsNormal` by this more general notion.
 -/
 
 open Order Set
