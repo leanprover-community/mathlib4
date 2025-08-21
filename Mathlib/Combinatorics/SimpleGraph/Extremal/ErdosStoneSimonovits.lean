@@ -10,7 +10,8 @@ import Mathlib.Combinatorics.Pigeonhole
 import Mathlib.Combinatorics.SimpleGraph.Bipartite
 import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 import Mathlib.Combinatorics.SimpleGraph.ConcreteColorings
-import Mathlib.Combinatorics.SimpleGraph.Extremal.TuranDensity
+import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
+import Mathlib.Data.Nat.Choose.Cast
 import Mathlib.Data.Real.Sqrt
 
 /-!
@@ -56,7 +57,7 @@ This file proves the **Erdős-Stone-Simonovits theorem** for simple graphs.
 -/
 
 
-open Asymptotics Filter Finset Fintype Real Topology
+open Filter Finset Fintype Real Topology
 
 namespace SimpleGraph
 
@@ -147,7 +148,7 @@ lemma card_edgeFinset_between_verts_le (hr : 0 < r) :
           intro v hv
           exact_mod_cast isBipartiteWith_degree_le'
             (between_verts_isBipartiteWith A) (filterAdjComplVerts_subset_compl_verts A hv)
-    _ = (card V - #A.verts)*(#A.verts - (t' - t)) + #(filterAdjComplVerts A t) * (t' - t) := by
+    _ = (card V - #A.verts) * (#A.verts - (t' - t)) + #(filterAdjComplVerts A t) * (t' - t) := by
         simp_rw [sum_const, card_sdiff (filterAdjComplVerts_subset_compl_verts A), nsmul_eq_mul,
           Nat.cast_sub (card_le_card (filterAdjComplVerts_subset_compl_verts A)), card_compl,
           Nat.cast_sub (card_le_univ A.verts)]
@@ -293,7 +294,7 @@ theorem completeEquipartiteGraph_isContained_of_minDegree {ε : ℝ} (hε : 0 < 
       -- if `r > 1` then `G` satisfies the inductive hypothesis
       · have hδ' := calc (G.minDegree : ℝ)
           _ ≥ (1 - 1 / (r - 1) + (1 / (r - 1) - 1 / r) + ε) * card V := by
-              rwa [← sub_add_sub_cancel _ (1 / (r-1) : ℝ) _] at hδ
+              rwa [← sub_add_sub_cancel _ (1 / (r - 1) : ℝ) _] at hδ
           _ = (1 - 1 / ↑(r - 1) + ε') * card V := by
               rw [← one_div_mul_sub_mul_one_div_eq_one_div_add_one_div
                   (sub_ne_zero_of_ne <| mod_cast hr_ne_1) (mod_cast hr.ne'),
@@ -565,13 +566,18 @@ lemma extremalNumber_le_of_colorable {ε : ℝ} (hε : 0 < ε)
     ∃ n, ∀ {V : Type*} [Fintype V] [DecidableEq V], n < card V →
       extremalNumber (card V) H ≤ (1 - 1 / r + ε) * card V ^ 2 / 2 := by
   obtain ⟨C⟩ := hc
-  have h₁ := isContained_completeEquipartiteGraph_of_colorable C
-  let t := univ.sup fun c ↦ card (C.colorClass c)
+  let f := fun c ↦ card (C.colorClass c)
+  let t := univ.sup f
+  have h₁ : H ⊑ completeEquipartiteGraph (r + 1) t := by
+    apply isContained_completeEquipartiteGraph_of_colorable C t
+    intro c
+    rw [show card (C.colorClass c) = f c from rfl]
+    exact le_sup (mem_univ c)
   have ⟨n, h₂⟩ := completeEquipartiteGraph_isContained_of_card_edgeFinset hε r t
   use n
   intro V _ _ h_card
   trans (extremalNumber (card V) (completeEquipartiteGraph (r + 1) t) : ℝ)
-  -- `H` is ontained in `completeEquipartiteGraph`
+  -- `H` is contained in `completeEquipartiteGraph`
   · exact_mod_cast h₁.extremalNumber_le
   -- `completeEquipartiteGraph` is contained in `G`
   · have : 0 ≤ 1 - 1 / r + ε := add_nonneg r.one_sub_one_div_cast_nonneg hε.le
@@ -581,7 +587,7 @@ lemma extremalNumber_le_of_colorable {ε : ℝ} (hε : 0 < ε)
     rw [not_free]
     exact h₂ h_card h.le
 
-/-- If the chromatic number of `H` equals `r + 1 > 0`, then `extremalNumber` of `H` is greater
+/-- If the chromatic number of `H` equals `r + 1 > 0`, then the `extremalNumber` of `H` is greater
 than `(1 - 1 / r - o(1)) * card V ^ 2 / 2` and at most `(1 - 1 / r + o(1)) * card V ^ 2 / 2`.
 
 This is the **Erdős-Stone-Simonovits theorem**. -/
