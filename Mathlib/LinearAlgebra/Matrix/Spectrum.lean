@@ -23,6 +23,13 @@ namespace Matrix
 variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
 variable {A : Matrix n n 𝕜}
 
+/-- The spectrum of a matrix `A` coincides with the spectrum of `toEuclideanLin A`. -/
+theorem spectrum_toEuclideanLin [DecidableEq n] : spectrum 𝕜 (toEuclideanLin A) = spectrum 𝕜 A :=
+  AlgEquiv.spectrum_eq (Matrix.toLinAlgEquiv (PiLp.basisFun 2 𝕜 n)) _
+
+@[deprecated (since := "13-08-2025")] alias IsHermitian.spectrum_toEuclideanLin :=
+  spectrum_toEuclideanLin
+
 namespace IsHermitian
 
 section DecidableEq
@@ -51,14 +58,10 @@ lemma mulVec_eigenvectorBasis (j : n) :
       congr(⇑$((isHermitian_iff_isSymmetric.1 hA).apply_eigenvectorBasis
         finrank_euclideanSpace ((Fintype.equivOfCardEq (Fintype.card_fin _)).symm j)))
 
-/-- The spectrum of a Hermitian matrix `A` coincides with the spectrum of `toEuclideanLin A`. -/
-theorem spectrum_toEuclideanLin : spectrum 𝕜 (toEuclideanLin A) = spectrum 𝕜 A :=
-  AlgEquiv.spectrum_eq (Matrix.toLinAlgEquiv (PiLp.basisFun 2 𝕜 n)) _
-
 /-- Eigenvalues of a hermitian matrix A are in the ℝ spectrum of A. -/
 theorem eigenvalues_mem_spectrum_real (i : n) : hA.eigenvalues i ∈ spectrum ℝ A := by
   apply spectrum.of_algebraMap_mem 𝕜
-  rw [← spectrum_toEuclideanLin]
+  rw [← Matrix.spectrum_toEuclideanLin]
   exact LinearMap.IsSymmetric.hasEigenvalue_eigenvalues _ _ _ |>.mem_spectrum
 
 /-- Unitary matrix whose columns are `Matrix.IsHermitian.eigenvectorBasis`. -/
@@ -145,6 +148,13 @@ lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := 
 /-- rank of a hermitian matrix is the number of nonzero eigenvalues of the hermitian matrix -/
 lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i ≠ 0} := by
   rw [rank_eq_rank_diagonal hA, Matrix.rank_diagonal]
+
+/-- The eigenvalues of a Hermitian matrix `A` are all zero iff `A = 0`. -/
+theorem eigenvalues_eq_zero_iff :
+    hA.eigenvalues = 0 ↔ A = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by ext; simp [h, eigenvalues_eq]⟩
+  rw [hA.spectral_theorem, h, Pi.comp_zero, RCLike.ofReal_zero, Function.const_zero,
+    Pi.zero_def, diagonal_zero, mul_zero, zero_mul]
 
 end DecidableEq
 

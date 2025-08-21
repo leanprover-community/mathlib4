@@ -290,8 +290,10 @@ section ModuleCat.Unbundled
 
 variable (M : Type v) [AddCommMonoid M] [Module R M]
 
--- This notation is necessary because we need to reason about `s ⊗ₜ m` where `s : S` and `m : M`;
--- without this notation, one needs to work with `s : (restrictScalars f).obj ⟨S⟩`.
+/-- Tensor product of elements along a base change.
+
+This notation is necessary because we need to reason about `s ⊗ₜ m` where `s : S` and `m : M`;
+without this notation, one needs to work with `s : (restrictScalars f).obj ⟨S⟩`. -/
 scoped[ChangeOfRings] notation:100 s:100 " ⊗ₜ[" R "," f "] " m:101 =>
   @TensorProduct.tmul R _ _ _ _ _ (Module.compHom _ f) _ s m
 
@@ -554,7 +556,7 @@ The natural transformation from identity functor to the composition of restricti
 of scalars.
 -/
 @[simps]
-protected def unit' : 𝟭 (ModuleCat S) ⟶ restrictScalars f ⋙ coextendScalars f where
+protected noncomputable def unit' : 𝟭 (ModuleCat S) ⟶ restrictScalars f ⋙ coextendScalars f where
   app Y := ofHom (app' f Y)
   naturality Y Y' g :=
     hom_ext <| LinearMap.ext fun y : Y => LinearMap.ext fun s : S => by

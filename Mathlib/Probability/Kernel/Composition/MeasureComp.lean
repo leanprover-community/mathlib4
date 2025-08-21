@@ -171,3 +171,37 @@ lemma absolutelyContinuous_comp_of_countable [Countable α] [MeasurableSingleton
 end AbsolutelyContinuous
 
 end MeasureTheory.Measure
+
+namespace ProbabilityTheory
+
+variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+
+section BoolKernel
+
+variable {π : Measure Bool}
+
+@[simp]
+lemma Kernel.comp_boolKernel (κ : Kernel α β) (μ ν : Measure α) :
+    κ ∘ₖ (boolKernel μ ν) = boolKernel (κ ∘ₘ μ) (κ ∘ₘ ν) := by
+  ext b : 1
+  rw [comp_apply]
+  cases b <;> simp
+
+lemma boolKernel_comp_measure (μ ν : Measure α) (π : Measure Bool) :
+    Kernel.boolKernel μ ν ∘ₘ π = π {true} • ν + π {false} • μ := by
+  ext s hs
+  rw [Measure.bind_apply hs (Kernel.aemeasurable _)]
+  simp [lintegral_fintype, mul_comm]
+
+lemma absolutelyContinuous_boolKernel_comp_left (μ ν : Measure α) (hπ : π {false} ≠ 0) :
+    μ ≪ Kernel.boolKernel μ ν ∘ₘ π :=
+  boolKernel_comp_measure _ _ _ ▸ add_comm _ (π {true} • ν) ▸
+    (Measure.absolutelyContinuous_smul hπ).add_right _
+
+lemma absolutelyContinuous_boolKernel_comp_right (μ ν : Measure α) (hπ : π {true} ≠ 0) :
+    ν ≪ Kernel.boolKernel μ ν ∘ₘ π :=
+  boolKernel_comp_measure _ _ _ ▸ (Measure.absolutelyContinuous_smul hπ).add_right _
+
+end BoolKernel
+
+end ProbabilityTheory

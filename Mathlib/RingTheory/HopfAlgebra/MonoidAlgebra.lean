@@ -44,12 +44,12 @@ open Coalgebra in
 instance instHopfAlgebra : HopfAlgebra R (MonoidAlgebra A G) where
   mul_antipode_rTensor_comul := by
     ext a b : 2
-    simpa [← (ℛ R b).eq, -sum_antipode_mul_eq] using congr(lsingle (R := R) (1 : G)
-      $(sum_antipode_mul_eq (Coalgebra.Repr.arbitrary R b)))
+    simpa [← (ℛ R b).eq] using congr(lsingle (R := R) (1 : G)
+      $(sum_antipode_mul_eq_algebraMap_counit (ℛ R b)))
   mul_antipode_lTensor_comul := by
     ext a b : 2
-    simpa [← (ℛ R b).eq, -sum_mul_antipode_eq] using congr(lsingle (R := R) (1 : G)
-      $(sum_mul_antipode_eq (Coalgebra.Repr.arbitrary R b)))
+    simpa [← (ℛ R b).eq] using congr(lsingle (R := R) (1 : G)
+      $(sum_mul_antipode_eq_algebraMap_counit (ℛ R b)))
 
 end MonoidAlgebra
 
@@ -71,12 +71,12 @@ open Coalgebra in
 instance instHopfAlgebra : HopfAlgebra R A[G] where
   mul_antipode_rTensor_comul := by
     ext a b : 2
-    simpa [← (ℛ R b).eq, single_mul_single, -sum_antipode_mul_eq] using
-      congr(lsingle (R := R) (0 : G) $(sum_antipode_mul_eq (Coalgebra.Repr.arbitrary R b)))
+    simpa [← (ℛ R b).eq, single_mul_single] using congr(lsingle (R := R) (0 : G)
+      $(sum_antipode_mul_eq_algebraMap_counit (ℛ R b)))
   mul_antipode_lTensor_comul := by
     ext a b : 2
-    simpa [← (ℛ R b).eq, single_mul_single, -sum_mul_antipode_eq] using
-      congr(lsingle (R := R) (0 : G) $(sum_mul_antipode_eq (Coalgebra.Repr.arbitrary R b)))
+    simpa [← (ℛ R b).eq, single_mul_single] using congr(lsingle (R := R) (0 : G)
+      $(sum_mul_antipode_eq_algebraMap_counit (ℛ R b)))
 
 end AddMonoidAlgebra
 
