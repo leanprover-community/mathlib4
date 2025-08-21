@@ -637,7 +637,7 @@ theorem beth_ne_zero (o : Ordinal) : ℶ_ o ≠ 0 :=
 
 theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccPrelimit o) : IsStrongLimit (ℶ_ o) := by
   apply isStrongLimit_preBeth
-  simp_rw [isLimit_add_iff, isLimit_omega0, isLimit_iff]
+  simp_rw [isSuccLimit_add_iff, isSuccLimit_omega0, isSuccLimit_iff]
   tauto
 
 end Cardinal
