@@ -200,13 +200,13 @@ theorem conjTranspose_nonsing_inv [StarRing α] : A⁻¹ᴴ = Aᴴ⁻¹ := by
   rw [inv_def, inv_def, conjTranspose_smul, det_conjTranspose, adjugate_conjTranspose,
     Ring.inverse_star]
 
-/-- The `nonsing_inv` of `A` is a right inverse. -/
+/-- The nonsingular inverse of `A` is a right inverse. -/
 @[simp]
 theorem mul_nonsing_inv (h : IsUnit A.det) : A * A⁻¹ = 1 := by
   cases (A.isUnit_iff_isUnit_det.mpr h).nonempty_invertible
   rw [← invOf_eq_nonsing_inv, mul_invOf_self]
 
-/-- The `nonsing_inv` of `A` is a left inverse. -/
+/-- The nonsingular inverse of `A` is a left inverse. -/
 @[simp]
 theorem nonsing_inv_mul (h : IsUnit A.det) : A⁻¹ * A = 1 := by
   cases (A.isUnit_iff_isUnit_det.mpr h).nonempty_invertible

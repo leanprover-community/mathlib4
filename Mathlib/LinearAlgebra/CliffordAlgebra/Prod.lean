@@ -19,7 +19,7 @@ algebras, as `CliffordAlgebra.equivProd`.
 
 ## TODO
 
-Introduce morphisms and equivalences of graded algebas, and upgrade `CliffordAlgebra.equivProd` to a
+Introduce morphisms and equivalences of graded algebras, and upgrade `CliffordAlgebra.equivProd` to a
 graded algebra equivalence.
 
 -/
