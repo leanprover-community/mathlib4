@@ -189,4 +189,26 @@ instance functorCategorySymmetric : SymmetricCategory (C ⥤ D) where
 
 end SymmetricCategory
 
+instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
+    [MonoidalCategory E] (L : D ⥤ E) [L.LaxMonoidal] :
+    ((Functor.whiskeringRight C D E).obj L).LaxMonoidal where
+  ε := { app X := Functor.LaxMonoidal.ε L }
+  μ F G := { app X := Functor.LaxMonoidal.μ L (F.obj X) (G.obj X) }
+
+instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
+    [MonoidalCategory E] (L : D ⥤ E) [L.OplaxMonoidal] :
+    ((Functor.whiskeringRight C D E).obj L).OplaxMonoidal where
+  η := { app X := Functor.OplaxMonoidal.η L }
+  δ F G := { app X := Functor.OplaxMonoidal.δ L (F.obj X) (G.obj X) }
+  oplax_left_unitality := by aesop
+  oplax_right_unitality := by aesop
+
+instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
+    [MonoidalCategory E] (L : D ⥤ E) [L.Monoidal] :
+    ((Functor.whiskeringRight C D E).obj L).Monoidal where
+  ε_η := by ext; exact Functor.Monoidal.ε_η _
+  η_ε := by ext; exact Functor.Monoidal.η_ε _
+  μ_δ _ _ := by ext; exact Functor.Monoidal.μ_δ _ _ _
+  δ_μ _ _ := by ext; exact Functor.Monoidal.δ_μ _ _ _
+
 end CategoryTheory.Monoidal
