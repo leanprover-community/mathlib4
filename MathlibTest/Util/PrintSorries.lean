@@ -56,11 +56,11 @@ theorem thm : True := by
   trivial
 
 -- Would print 4 sorries if there weren't `seenSorriesRef`.
-/--
-info: thm has sorry
-thm has sorry
--/
-#guard_msgs in
+-- /--
+-- info: thm has sorry
+-- thm has sorry
+-- -/
+-- #guard_msgs in
 #print sorries thm
 
 /-- warning: declaration uses 'sorry' -/

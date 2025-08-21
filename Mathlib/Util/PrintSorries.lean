@@ -38,7 +38,7 @@ each use of `sorry`. -/
 partial def collect (c : Name) : StateT State MetaM Unit := do
   let collectExpr (e : Expr) : StateT State MetaM Unit := do
     let seenSorriesRef : IO.Ref (Std.HashSet Expr) ← IO.mkRef {}
-    e.forEach' fun e => do
+    Meta.forEachExpr' e fun e => do
       if let some _ := isLabeledSorry? e then
         let e' := e.getBoundedAppFn (e.getAppNumArgs - 3)
         let seenSorries ← seenSorriesRef.get
