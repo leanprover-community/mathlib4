@@ -297,7 +297,7 @@ theorem tprodL_coe : (tprodL 𝕜).toMultilinearMap = tprod 𝕜 (s := E) := by
 @[simp]
 theorem liftIsometry_symm_apply (l : (⨂[𝕜] i, E i) →L[𝕜] F) :
     (liftIsometry 𝕜 E F).symm l = l.compContinuousMultilinearMap (tprodL 𝕜) := by
-  tauto
+  rfl
 
 @[simp]
 theorem liftIsometry_tprodL :
@@ -333,7 +333,7 @@ theorem mapL_coe : (mapL f).toLinearMap = map (fun i ↦ (f i).toLinearMap) := b
 
 @[simp]
 theorem mapL_apply (x : ⨂[𝕜] i, E i) : mapL f x = map (fun i ↦ (f i).toLinearMap) x := by
-  tauto
+  rfl
 
 /-- Given submodules `pᵢ ⊆ Eᵢ`, this is the natural map: `⨂[𝕜] i, pᵢ → ⨂[𝕜] i, Eᵢ`.
 This is the continuous version of `PiTensorProduct.mapIncl`.
