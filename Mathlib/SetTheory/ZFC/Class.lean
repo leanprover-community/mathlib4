@@ -131,7 +131,7 @@ def congToClass (x : Set Class.{u}) : Class.{u} :=
 
 @[simp]
 theorem congToClass_empty : congToClass ∅ = ∅ := by
-  tauto
+  rfl
 
 /-- Convert a class into a conglomerate (a collection of classes) -/
 def classToCong (x : Class.{u}) : Set Class.{u} :=
