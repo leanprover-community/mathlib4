@@ -13,6 +13,9 @@ This file provides a `#print sorries` command to help find out why a given decla
 sorry-free. `#print sorries foo` returns a non-sorry-free declaration `bar` which `foo` depends on,
 if such a `bar` exists.
 
+The `#print sorries in CMD` combinator prints all sorries appearing in the declarations defined
+by the given command.
+
 ## TODO
 
 * Make versions for other axioms/constants.
@@ -108,22 +111,48 @@ def collectSorries (constNames : Array Name) : MetaM (Array MessageData) := do
 /--
 - `#print sorries` prints all sorries that the current module depends on
 - `#print sorries id1 id2 ... idn` prints all sorries that the provided declarations depend on.
+- `#print sorries in CMD` prints all the sorries in declarations added by the command
 
 Displayed sorries are hoverable and support "go to definition".
 -/
-syntax "#print " &"sorries" (ppSpace ident)* : command
+syntax (name := printSorriesStx) "#print " &"sorries" (ppSpace ident)* : command
+
+/--
+Collects sorries in the given constants and logs a message.
+-/
+def evalCollectSorries (names : Array Name) : CommandElabM Unit := do
+  let msgs ← liftTermElabM <| collectSorries names
+  if msgs.isEmpty then
+    logInfo m!"Declarations are sorry-free!"
+  else
+    logInfo <| MessageData.joinSep msgs.toList "\n"
 
 elab_rules : command
   | `(#print%$tk sorries $idents*) => withRef tk do
     let mut names ← liftCoreM <| idents.flatMapM fun id =>
       return (← realizeGlobalConstWithInfos id).toArray
     if names.isEmpty then
-      names ← (← getEnv).checked.get.constants.map₂.foldlM (init := {}) fun acc name _ =>
+      names ← (← getEnv).checked.get.constants.map₂.foldlM (init := #[]) fun acc name _ =>
         return if ← name.isBlackListed then acc else acc.push name
-    let msgs ← liftTermElabM <| collectSorries names
-    if msgs.isEmpty then
-      logInfo m!"Declarations are sorry-free!"
-    else
-      logInfo <| MessageData.joinSep msgs.toList "\n"
+    evalCollectSorries names
+
+@[inherit_doc printSorriesStx]
+syntax "#print " &"sorries" " in " command : command
+
+elab_rules : command
+  | `(#print%$tk sorries in $cmd:command) => do
+    let oldEnv ← getEnv
+    try
+      elabCommand cmd
+    finally
+      let newEnv ← getEnv
+      let names ← newEnv.checked.get.constants.map₂.foldlM (init := #[]) fun acc name _ => do
+        if oldEnv.constants.map₂.contains name then
+          return acc
+        else if ← name.isBlackListed then
+          return acc
+        else
+          return acc.push name
+      withRef tk <| evalCollectSorries names
 
 end Mathlib.PrintSorries

@@ -169,3 +169,20 @@ info: g has sorry of type
   α
 -/
 #guard_msgs in #print sorries g
+
+/-!
+`#print sorries in`
+-/
+
+/--
+info: in_test_1 has sorry of type
+  True
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
+#print sorries in theorem in_test_1 : True := sorry
+
+/-- info: Declarations are sorry-free! -/
+#guard_msgs in
+#print sorries in theorem in_test_2 : True := trivial
