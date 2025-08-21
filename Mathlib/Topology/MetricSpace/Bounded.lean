@@ -148,6 +148,7 @@ theorem _root_.TotallyBounded.isBounded {s : Set α} (h : TotallyBounded s) : Is
   ((isBounded_biUnion fint).2 fun _ _ => isBounded_ball).subset subs
 
 /-- A compact set is bounded -/
+@[aesop 50% apply, grind ←]
 theorem _root_.IsCompact.isBounded {s : Set α} (h : IsCompact s) : IsBounded s :=
   -- A compact set is totally bounded, thus bounded
   h.totallyBounded.isBounded
