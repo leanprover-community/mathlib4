@@ -97,9 +97,9 @@ Design notes and future extensions:
   the canonical tool to implement the change of variables needed in Step 1.
 
 References:
-- C. Stein (1972). A bound for the error in the normal approximation to the
-  distribution of a sum of dependent random variables.
-- M. Talagrand (2011). Upper and Lower Bounds for Stochastic Processes.
+- Chen, Goldstein, Man Shao (2011). Normal Approximation by Stein’s Method.
+- M. Talagrand (2011). Mean Field Models for Spin Glasses
+  Volume I: Basic Examples - Appendix A Elements of Probability.
 
 -/
 namespace MeasureTheory
