@@ -56,7 +56,7 @@ This file proves the **Erdős-Stone-Simonovits theorem** for simple graphs.
 -/
 
 
-open Filter Finset Fintype Real Topology
+open Asymptotics Filter Finset Fintype Real Topology
 
 namespace SimpleGraph
 
