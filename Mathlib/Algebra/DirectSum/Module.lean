@@ -151,7 +151,7 @@ variable {ι M}
 @[simp]
 theorem linearEquivFunOnFintype_lof [Fintype ι] (i : ι) (m : M i) :
     (linearEquivFunOnFintype R ι M) (lof R ι M i m) = Pi.single i m := by
-  tauto
+  rfl
 
 @[simp]
 theorem linearEquivFunOnFintype_symm_single [Fintype ι] (i : ι) (m : M i) :
