@@ -813,8 +813,8 @@ variable (R : Type*) [Semiring R] [TopologicalSpace R] [ContinuousMul R]
 /-- Continuous linear equivalences `R ≃L[R] R` are enumerated by `Rˣ`. -/
 def unitsEquivAut : Rˣ ≃ R ≃L[R] R where
   toFun u :=
-    equivOfInverse (ContinuousLinearMap.smulRight (1 : R →L[R] R) ↑u)
-      (ContinuousLinearMap.smulRight (1 : R →L[R] R) ↑u⁻¹) (fun x => by simp) fun x => by simp
+    equivOfInverse (ContinuousLinearMap.smulRight (1 : StrongDual R R) ↑u)
+      (ContinuousLinearMap.smulRight (1 : StrongDual R R) ↑u⁻¹) (fun x => by simp) fun x => by simp
   invFun e :=
     ⟨e 1, e.symm 1, by rw [← smul_eq_mul, ← map_smul, smul_eq_mul, mul_one, symm_apply_apply], by
       rw [← smul_eq_mul, ← map_smul, smul_eq_mul, mul_one, apply_symm_apply]⟩
