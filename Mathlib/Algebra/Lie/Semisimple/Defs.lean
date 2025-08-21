@@ -75,6 +75,9 @@ lemma hasCentralRadical_of_radical_le (h : radical R L ≤ center R L) :
     LieAlgebra.HasCentralRadical R L where
   radical_eq_center := le_antisymm h (center_le_radical R L)
 
+instance [Subsingleton L] : HasTrivialRadical R L :=
+  ⟨by simpa only [radical_eq_top_of_isSolvable] using Subsingleton.elim ⊤ ⊥⟩
+
 export HasCentralRadical (radical_eq_center)
 attribute [simp] radical_eq_center
 
