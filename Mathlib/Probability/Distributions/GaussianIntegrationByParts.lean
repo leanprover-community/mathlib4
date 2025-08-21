@@ -14,9 +14,8 @@ open scoped ProbabilityTheory NNReal ENNReal Filter Topology
 
 We prove Stein’s lemma and the integration by parts formula for real Gaussian
 measures by an explicit control of the exponential tilt and a dominated
-differentiation argument. The presentation is self–contained and works in full
-generality for one–dimensional (possibly degenerate) Gaussians, under minimal,
-standard hypotheses on the test function.
+differentiation argument. This should works in full generality for one–dimensional 
+(possibly degenerate) Gaussians, under minimal hypotheses on the test function.
 
 Let `γ_{μ,v}` denote the law of the real normal `N(μ,v)` (variance `v : ℝ≥0`).
 For `v ≠ 0` (non-degenerate, centered case) and a test function `F : ℝ → ℝ`
