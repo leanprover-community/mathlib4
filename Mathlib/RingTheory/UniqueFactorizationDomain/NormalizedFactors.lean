@@ -361,7 +361,7 @@ theorem normalizedFactorsEquiv_apply [DecidableEq α] (he : ∀ x, normalize (f 
 theorem normalizedFactorsEquiv_symm_apply [DecidableEq α]
     (he : ∀ x, normalize (f x) = f (normalize x))
     {a : α} {q : β} (hq : q ∈ normalizedFactors (f a)) :
-    (normalizedFactorsEquiv he a).symm ⟨q, hq⟩ = (MulHomClass.toMulEquiv f).symm q := rfl
+    (normalizedFactorsEquiv he a).symm ⟨q, hq⟩ = (MulEquivClass.toMulEquiv f).symm q := rfl
 
 end UniqueFactorizationMonoid
 

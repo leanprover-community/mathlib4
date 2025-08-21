@@ -32,12 +32,9 @@ end EmbeddingLike
 variable [EquivLike F α β]
 
 @[to_additive]
-theorem MulHomClass.toMulEquiv_injective [Mul α] [Mul β] [MulHomClass F α β] :
+theorem MulEquivClass.toMulEquiv_injective [Mul α] [Mul β] [MulHomClass F α β] :
     Function.Injective ((↑) : F → α ≃* β) :=
   fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃* β ↦ e.toFun a) e
-
-@[deprecated (since := "2024-11-10")]
-alias MulEquivClass.toMulEquiv_injective := MulHomClass.toMulEquiv_injective
 
 namespace MulEquiv
 section Mul

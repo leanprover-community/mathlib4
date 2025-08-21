@@ -52,7 +52,7 @@ theorem comap_prime (hinv : ∀ a, g (f a : N) = a) (hp : Prime (f p)) : Prime p
 
 theorem MulEquiv.prime_iff {E : Type*} [EquivLike E M N] [MulHomClass E M N] (e : E) :
     Prime (e p) ↔ Prime p := by
-  let e := MulHomClass.toMulEquiv e
+  let e := MulEquivClass.toMulEquiv e
   exact ⟨comap_prime e e.symm fun a => by simp,
     fun h => (comap_prime e.symm e fun a => by simp) <| (e.symm_apply_apply p).substr h⟩
 

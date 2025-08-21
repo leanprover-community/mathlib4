@@ -133,7 +133,7 @@ variable {M} {N : Type*}
 
 @[to_additive] theorem _root_.MulEquivClass.apply_mem_center {F} [EquivLike F M N] [Mul M] [Mul N]
     [MulHomClass F M N] (e : F) {x : M} (hx : x ∈ Set.center M) : e x ∈ Set.center N := by
-  let e := MulHomClass.toMulEquiv e
+  let e := MulEquivClass.toMulEquiv e
   change e x ∈ Set.center N
   constructor <;>
   (intros; apply e.symm.injective; simp only
@@ -142,7 +142,7 @@ variable {M} {N : Type*}
 @[to_additive] theorem _root_.MulEquivClass.apply_mem_center_iff {F} [EquivLike F M N]
     [Mul M] [Mul N] [MulHomClass F M N] (e : F) {x : M} :
     e x ∈ Set.center N ↔ x ∈ Set.center M :=
-  ⟨(by simpa using MulEquivClass.apply_mem_center (MulHomClass.toMulEquiv e).symm ·),
+  ⟨(by simpa using MulEquivClass.apply_mem_center (MulEquivClass.toMulEquiv e).symm ·),
     MulEquivClass.apply_mem_center e⟩
 
 /-- The center of isomorphic magmas are isomorphic. -/
