@@ -17,56 +17,7 @@ namespace CategoryTheory
 
 open CategoryTheory Limits Opposite Monoidal MonoidalCategory Functor
 
-namespace Functor.Monoidal
-
-open Functor.LaxMonoidal Functor.OplaxMonoidal
-
-variable {C D : Type*} [Category C] [Category D] [MonoidalCategory C] [MonoidalCategory D]
-    (F : C ⥤ D) [F.Monoidal]
-
-@[reassoc]
-theorem map_associator' (X Y Z : C) :
-    (α_ (F.obj X) (F.obj Y) (F.obj Z)).hom =
-      μ F X Y ▷ F.obj Z ≫ μ F (X ⊗ Y) Z ≫ F.map (α_ X Y Z).hom ≫
-        δ F X (Y ⊗ Z) ≫ F.obj X ◁ δ F Y Z := by
-  simp
-
-@[reassoc]
-theorem map_associator_inv' (X Y Z : C) :
-    (α_ (F.obj X) (F.obj Y) (F.obj Z)).inv =
-      F.obj X ◁ μ F Y Z ≫ μ F X (Y ⊗ Z) ≫ F.map (α_ X Y Z).inv ≫
-        δ F (X ⊗ Y) Z ≫ δ F X Y ▷ F.obj Z := by
-  rw [← cancel_epi (α_ (F.obj X) (F.obj Y) (F.obj Z)).hom, map_associator']
-  simp
-
-end Functor.Monoidal
-
 open Functor.Monoidal
-
-section FunctorCategory
-
-instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
-    [MonoidalCategory E] (L : D ⥤ E) [L.LaxMonoidal] :
-    ((whiskeringRight C D E).obj L).LaxMonoidal where
-  ε := { app X := Functor.LaxMonoidal.ε L }
-  μ F G := { app X := Functor.LaxMonoidal.μ L (F.obj X) (G.obj X) }
-
-instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
-    [MonoidalCategory E] (L : D ⥤ E) [L.OplaxMonoidal] :
-    ((whiskeringRight C D E).obj L).OplaxMonoidal where
-  η := { app X := Functor.OplaxMonoidal.η L }
-  δ F G := { app X := Functor.OplaxMonoidal.δ L (F.obj X) (G.obj X) }
-  oplax_left_unitality := by aesop -- `aesop_cat` fails for some reason
-  oplax_right_unitality := by aesop -- `aesop_cat` fails for some reason
-
-instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
-    [MonoidalCategory E] (L : D ⥤ E) [L.Monoidal] : ((whiskeringRight C D E).obj L).Monoidal where
-  ε_η := by ext; exact Functor.Monoidal.ε_η _
-  η_ε := by ext; exact Functor.Monoidal.η_ε _
-  μ_δ _ _ := by ext; exact Functor.Monoidal.μ_δ _ _ _
-  δ_μ _ _ := by ext; exact Functor.Monoidal.δ_μ _ _ _
-
-end FunctorCategory
 
 section MonoidalFunctorTransport
 

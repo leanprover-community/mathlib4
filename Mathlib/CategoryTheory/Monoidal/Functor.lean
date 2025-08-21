@@ -466,6 +466,21 @@ theorem map_associator_inv (X Y Z : C) :
     Iso.hom_inv_id_assoc, whiskerRight_δ_μ_assoc, δ_μ]
 
 @[reassoc]
+theorem map_associator' (X Y Z : C) :
+    (α_ (F.obj X) (F.obj Y) (F.obj Z)).hom =
+      μ F X Y ▷ F.obj Z ≫ μ F (X ⊗ Y) Z ≫ F.map (α_ X Y Z).hom ≫
+        δ F X (Y ⊗ Z) ≫ F.obj X ◁ δ F Y Z := by
+  simp
+
+@[reassoc]
+theorem map_associator_inv' (X Y Z : C) :
+    (α_ (F.obj X) (F.obj Y) (F.obj Z)).inv =
+      F.obj X ◁ μ F Y Z ≫ μ F X (Y ⊗ Z) ≫ F.map (α_ X Y Z).inv ≫
+        δ F (X ⊗ Y) Z ≫ δ F X Y ▷ F.obj Z := by
+  rw [← cancel_epi (α_ (F.obj X) (F.obj Y) (F.obj Z)).hom, map_associator']
+  simp
+
+@[reassoc]
 theorem map_leftUnitor (X : C) :
     F.map (λ_ X).hom = δ F (𝟙_ C) X ≫ η F ▷ F.obj X ≫ (λ_ (F.obj X)).hom := by simp
 
