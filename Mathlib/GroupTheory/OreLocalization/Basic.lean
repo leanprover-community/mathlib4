@@ -149,8 +149,8 @@ protected theorem eq_of_num_factor_eq {r r' r₁ r₂ : R} {s t : S} (h : t * r 
 
 /-- A function or predicate over `X` and `S` can be lifted to `X[S⁻¹]` if it is invariant
 under expansion on the left. -/
-@[to_additive /-- A function or predicate over `X` and `S` can be lifted to the localization if it is
-invariant under expansion on the left. -/]
+@[to_additive /-- A function or predicate over `X` and `S` can be lifted to the localization if it
+is invariant under expansion on the left. -/]
 def liftExpand {C : Sort*} (P : X → S → C)
     (hP : ∀ (r : X) (t : R) (s : S) (ht : t * s ∈ S), P r s = P (t • r) ⟨t * s, ht⟩) :
     X[S⁻¹] → C :=
