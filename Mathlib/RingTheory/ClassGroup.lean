@@ -360,7 +360,7 @@ noncomputable instance [IsPrincipalIdealRing R] : Fintype (ClassGroup R) where
 
 /-- The class number of a principal ideal domain is `1`. -/
 theorem card_classGroup_eq_one [IsPrincipalIdealRing R] : Fintype.card (ClassGroup R) = 1 := by
-  tauto
+  rfl
 
 /-- The class number is `1` iff the ring of integers is a principal ideal domain. -/
 theorem card_classGroup_eq_one_iff [IsDedekindDomain R] [Fintype (ClassGroup R)] :
