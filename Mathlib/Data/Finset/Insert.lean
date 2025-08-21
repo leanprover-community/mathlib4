@@ -332,7 +332,7 @@ def consPiProdEquiv [DecidableEq α] {s : Finset α} (f : α → Type*) {a : α}
   invFun := prodPiCons f has
   left_inv _ := by grind [prodPiCons, consPiProd]
   right_inv _ := by
-    -- I'm surprised `grind` next this `ext` step: it is just `Prod.ext` and `funext`.
+    -- I'm surprised `grind` needs this `ext` step: it is just `Prod.ext` and `funext`.
     ext _ hi <;> grind [prodPiCons, consPiProd]
 
 end Cons
@@ -450,7 +450,7 @@ theorem insert_subset (ha : a ∈ t) (hs : s ⊆ t) : insert a s ⊆ t :=
 
 @[simp] theorem subset_insert (a : α) (s : Finset α) : s ⊆ insert a s := fun _b => mem_insert_of_mem
 
-@[gcongr]
+@[gcongr, simp]
 theorem insert_subset_insert (a : α) {s t : Finset α} (h : s ⊆ t) : insert a s ⊆ insert a t := by
   grind
 
