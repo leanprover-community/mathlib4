@@ -43,12 +43,12 @@ def binomialSeries (A) [One A] [SMul R A] (r : R) : PowerSeries A :=
 
 @[simp]
 lemma binomialSeries_coeff [Semiring A] [SMul R A] (r : R) (n : ℕ) :
-    (coeff A n) (binomialSeries A r) = Ring.choose r n • 1 :=
+    coeff n (binomialSeries A r) = Ring.choose r n • 1 :=
   coeff_mk n fun n ↦ Ring.choose r n • 1
 
 @[simp]
 lemma binomialSeries_constantCoeff [Ring A] [Algebra R A] (r : R) :
-    (constantCoeff A) (binomialSeries A r) = 1 := by
+    constantCoeff (binomialSeries A r) = 1 := by
   simp [← coeff_zero_eq_constantCoeff_apply]
 
 @[simp]
