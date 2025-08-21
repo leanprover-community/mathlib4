@@ -166,6 +166,7 @@ section Localization
 
 variable (r : R) [IsLocalization.Away r S]
 
+variable (S) in
 /-- If `S` is the localization of `R` away from `r`, we obtain a canonical generator mapping
 to the inverse of `r`. -/
 @[simps val, simps -isSimp σ]
@@ -217,7 +218,7 @@ def extendScalars (P : Generators R T ι) : Generators S T ι where
 obtain a natural family of generators of `T ⊗[R] S` over `T`. -/
 @[simps! val]
 noncomputable
-def baseChange {T} [CommRing T] [Algebra R T] (P : Generators R S ι) :
+def baseChange (T) [CommRing T] [Algebra R T] (P : Generators R S ι) :
     Generators T (T ⊗[R] S) ι := by
   apply Generators.ofSurjective (fun x ↦ 1 ⊗ₜ[R] P.val x)
   intro x
