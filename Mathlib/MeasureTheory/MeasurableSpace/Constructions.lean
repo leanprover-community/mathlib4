@@ -493,7 +493,7 @@ see `measurable_from_prod_countable_right`. -/
 theorem measurable_from_prod_countable_left [Countable β] [MeasurableSingletonClass β]
     {_ : MeasurableSpace γ} {f : α × β → γ} (hf : ∀ y, Measurable fun x => f (x, y)) :
     Measurable f :=
-  measurable_from_prod_countable hf (by simp (config := {contextual := true}))
+  measurable_from_prod_countable hf (by simp +contextual)
 
 /-- For the version where the second space in the product is countable,
 see `measurable_from_prod_countable_left`. -/
