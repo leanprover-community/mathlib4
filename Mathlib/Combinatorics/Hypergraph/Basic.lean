@@ -58,7 +58,7 @@ implementation.
 
 open Set
 
-variable {α β : Type*} {x y : α} {e e' f g : Set α} {l : Set (Set α)}
+variable {α β γ : Type*} {x y : α} {e e' f g : Set α} {l : Set (Set α)}
 
 /--
 An undirected hypergraph with vertices of type `α` and hyperedges of type `Set α`,
@@ -225,15 +225,30 @@ incident upon
 def stars (H : Hypergraph α) : Set (Set (Set α)) :=
   {H.star x | x ∈ V(H)}
 
--- @[simps]
--- def image (H : Hypergraph α) (f : α → β) : Hypergraph β where
---   vertexSet := V(H).image f
---   hyperedgeSet := E(H).image (Set.image f)
---   hyperedge_isSubset_vertexSet' := by
---     simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
---     intro e he
-    -- TODO: you are here
-    -- exact image_subset_image (edge_subset_verts he)
+@[simps]
+def image (H : Hypergraph α) (f : α → β) : Hypergraph β where
+  vertexSet := V(H).image f
+  hyperedgeSet := E(H).image (Set.image f)
+  hyperedge_isSubset_vertexSet' := by
+    simp
+    intro e he
+    have hev : e ⊆ V(H) := by exact Membership.mem.isSubset_vertexSet he
+    refine image_subset_iff.mp ?_
+    exact image_mono hev
+
+@[simp] lemma mem_image {f : α → β} {e : Set β} {H : Hypergraph α} :
+    e ∈ H.image f ↔ ∃ e' ∈ E(H), e'.image f = e := by exact Eq.to_iff rfl
+
+lemma image_mem_image {f : α → β} {e : Set α} {H : Hypergraph α} (he : e ∈ E(H)) :
+    e.image f ∈ E(H.image f) :=
+  mem_image_of_mem _ he
+
+lemma image_image
+    {f : α → β} {g : β → γ} (H : Hypergraph α) :
+    (H.image f).image g = H.image (g ∘ f) := by
+  ext : 1
+  case vertexSet => simp [Set.image_image]
+  case hyperedgeSet => simp [Set.image_image]
 
 /--
 Predicate to determine if a vertex is isolated, meaning that it is not incident on any hyperedges.
