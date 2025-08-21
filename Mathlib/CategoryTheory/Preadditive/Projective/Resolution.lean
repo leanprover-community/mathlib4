@@ -5,6 +5,7 @@ Authors: Kim Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.Algebra.Homology.SingleHomology
+import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 
 /-!
 # Projective resolutions
@@ -17,7 +18,7 @@ of `Z` in degree zero.
 -/
 
 
-universe v u
+universe v u v' u'
 
 namespace CategoryTheory
 
@@ -131,4 +132,23 @@ noncomputable def self [Projective Z] : ProjectiveResolution Z where
 
 end ProjectiveResolution
 
-end CategoryTheory
+namespace Functor
+
+open Limits
+
+variable {C : Type u} [Category C] [HasZeroObject C] [Preadditive C]
+  {D : Type u'} [Category.{v'} D] [HasZeroObject D] [Preadditive D] [CategoryWithHomology D]
+
+/-- An additive functor `F` which preserves homology and sends projective objects to projective
+objects sends a projective resolution of `Z` to a projective resolution of `F.obj Z`. -/
+@[simps complex π]
+noncomputable def mapProjectiveResolution (F : C ⥤ D) [F.Additive]
+    [F.PreservesProjectiveObjects] [F.PreservesHomology] {Z : C} (P : ProjectiveResolution Z) :
+    ProjectiveResolution (F.obj Z) where
+  complex := (F.mapHomologicalComplex _).obj P.complex
+  projective n := PreservesProjectiveObjects.projective_obj (P.projective n)
+  π := (F.mapHomologicalComplex _).map P.π ≫
+    (HomologicalComplex.singleMapHomologicalComplex _ _ _).hom.app _
+  quasiIso := inferInstance
+
+end CategoryTheory.Functor

@@ -72,10 +72,8 @@ def AllAgree (x : ∀ n, CofixA F n) :=
 @[simp]
 theorem agree_trivial {x : CofixA F 0} {y : CofixA F 1} : Agree x y := by constructor
 
-@[deprecated (since := "2024-12-25")] alias agree_trival := agree_trivial
-
 theorem agree_children {n : ℕ} (x : CofixA F (succ n)) (y : CofixA F (succ n + 1)) {i j}
-    (h₀ : HEq i j) (h₁ : Agree x y) : Agree (children' x i) (children' y j) := by
+    (h₀ : i ≍ j) (h₁ : Agree x y) : Agree (children' x i) (children' y j) := by
   obtain - | ⟨_, _, hagree⟩ := h₁; cases h₀
   apply hagree
 
@@ -503,9 +501,7 @@ theorem ext [Inhabited (M F)] [DecidableEq F.A] (x y : M F)
     x = y := by
   apply ext'; intro i
   induction' i with i i_ih
-  · cases x.approx 0
-    cases y.approx 0
-    constructor
+  · subsingleton
   · apply ext_aux x y x
     · rw [← agree_iff_agree']
       apply x.consistent
