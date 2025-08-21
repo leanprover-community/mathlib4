@@ -108,7 +108,7 @@ where
   else
     guard (t == s); some swaps
 
-/-- Extract the left and right hand sides of an equality or iff statement. -/
+/-- Extract the left and right-hand sides of an equality or iff statement. -/
 @[inline] def eqOrIff? (e : Expr) : Option (Expr × Expr) :=
   match e.eq? with
   | some (_, lhs, rhs) => some (lhs, rhs)
