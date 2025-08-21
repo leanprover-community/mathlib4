@@ -8,7 +8,7 @@ import Mathlib.RingTheory.LocalProperties.Basic
 
 /-! # Standard Open Immersion
 
-We define the ring hom property `RingHom.IsStandardOpenImmersion` which is one that is a
+We define the property `RingHom.IsStandardOpenImmersion` on ring homomorphisms: it means that the morphism is a
 localization map away from some element. We also define the equivalent
 `Algebra.IsStandardOpenImmersion`.
 -/
