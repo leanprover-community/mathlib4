@@ -109,9 +109,9 @@ def collectSorries (constNames : Array Name) : MetaM (Array MessageData) := do
   pure s.sorryMsgs
 
 /--
-- `#print sorries` prints all sorries that the current module depends on
+- `#print sorries` prints all sorries that the current module depends on.
 - `#print sorries id1 id2 ... idn` prints all sorries that the provided declarations depend on.
-- `#print sorries in CMD` prints all the sorries in declarations added by the command
+- `#print sorries in CMD` prints all the sorries in declarations added by the command.
 
 Displayed sorries are hoverable and support "go to definition".
 -/
