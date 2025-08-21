@@ -211,7 +211,7 @@ abbrev upperHalfPlaneSet := {z : ℂ | 0 < z.im}
 
 local notation "ℍₒ" => upperHalfPlaneSet
 
-lemma isOpen_upperHalfPlaneSet : IsOpen ℍₒ := (isOpen_lt continuous_const Complex.continuous_im)
+lemma isOpen_upperHalfPlaneSet : IsOpen ℍₒ := isOpen_lt continuous_const Complex.continuous_im
 
 end upperHalfPlaneSet
 

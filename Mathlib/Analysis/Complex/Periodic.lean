@@ -76,12 +76,12 @@ lemma qParam_ne_zero (z : ℂ) : 𝕢 h z ≠ 0 := by
   simp [qParam, exp_ne_zero]
 
 @[fun_prop]
-lemma differentiable_qParam (n : ℝ) : Differentiable ℂ (𝕢 n) := by
+lemma differentiable_qParam : Differentiable ℂ (𝕢 h) := by
     unfold qParam
     fun_prop
 
 @[fun_prop]
-lemma contDiff_qParam (n : ℝ) (m : WithTop ℕ∞) : ContDiff ℂ m (𝕢 n) := by
+lemma contDiff_qParam (m : WithTop ℕ∞) : ContDiff ℂ m (𝕢 h) := by
     unfold qParam
     fun_prop
 
