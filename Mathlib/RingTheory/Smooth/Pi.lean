@@ -82,7 +82,7 @@ theorem pi_iff [Finite I] :
         · suffices Ideal.Quotient.mk (Ideal.span {1 - e i}) (e i) = 1 by simp [ι, ← he', this]
           rw [← (Ideal.Quotient.mk _).map_one, eq_comm, Ideal.Quotient.mk_eq_mk_iff_sub_mem,
             Ideal.mem_span_singleton]
-        · intro x y; simp [Pi.single_mul]
+        · simp [Pi.single_mul]
       obtain ⟨a, ha⟩ := FormallySmooth.comp_surjective (I := J' i)
         (by rw [← Ideal.map_pow, hJ, Ideal.map_bot]) g'
       exact ⟨a, AlgHom.congr_fun ha⟩

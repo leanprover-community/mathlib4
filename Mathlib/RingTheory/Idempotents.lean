@@ -383,7 +383,7 @@ lemma OrthogonalIdempotents.surjective_pi {I : Type*} [Finite I] {e : I → R}
     intro x
     obtain ⟨x, rfl⟩ := Ideal.quotientInfToPiQuotient_surj this x
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-    exact ⟨x, by ext i; simp [Ideal.quotientInfToPiQuotient]⟩
+    exact ⟨x, by simp [Ideal.quotientInfToPiQuotient]⟩
   intro i j hij
   rw [Ideal.isCoprime_span_singleton_iff]
   exact ⟨1, e i, by simp [mul_sub, he.ortho hij]⟩

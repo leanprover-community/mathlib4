@@ -107,7 +107,6 @@ lemma ext {I J : TwoSidedIdeal R} (h : ∀ x, x ∈ I ↔ x ∈ J) : I = J :=
   coeOrderEmbedding.injective (Set.ext h)
 
 lemma lt_iff (I J : TwoSidedIdeal R) : I < J ↔ (I : Set R) ⊂ (J : Set R) := by
-  rw [lt_iff_le_and_ne, Set.ssubset_iff_subset_ne, le_iff]
   simp
 
 lemma zero_mem : 0 ∈ I := I.ringCon.refl 0
@@ -165,7 +164,6 @@ def mk' (carrier : Set R)
 @[simp]
 lemma mem_mk' (carrier : Set R) (zero_mem add_mem neg_mem mul_mem_left mul_mem_right) (x : R) :
     x ∈ mk' carrier zero_mem add_mem neg_mem mul_mem_left mul_mem_right ↔ x ∈ carrier := by
-  rw [mem_iff]
   simp [mk']
 
 set_option linter.docPrime false in

@@ -127,8 +127,7 @@ theorem finitePresentation_ofLocalizationSpanTarget :
     rw [Finsupp.linearCombination_apply_of_mem_supported (α := (s : Set S)) S (s := s.attach)] at hl
     · rw [← hl]
       simp only [Finset.coe_sort_coe, smul_eq_mul, mul_comm, sub_self, zero_mul]
-    · rintro a -
-      simp
+    · simp
   let f' : A →ₐ[R] S := Ideal.Quotient.liftₐ I f hfI
   have hf' : Function.Surjective f' :=
     Ideal.Quotient.lift_surjective_of_surjective I hfI hf

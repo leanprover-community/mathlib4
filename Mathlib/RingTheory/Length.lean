@@ -199,8 +199,7 @@ lemma Module.length_pi_of_fintype : ∀ {ι : Type*} [Fintype ι]
   · intro α β _ e IH M _ _
     let _ : Fintype α := .ofEquiv β e.symm
     rw [← (LinearEquiv.piCongrLeft R M e).length_eq, IH, e.sum_comp (length R <| M ·)]
-  · intro M _ _
-    simp [Module.length_eq_zero]
+  · simp [Module.length_eq_zero]
   · intro ι _ IH M _ _
     rw [(LinearEquiv.piOptionEquivProd _).length_eq, Module.length_prod, IH, add_comm,
       Fintype.sum_option, add_comm]

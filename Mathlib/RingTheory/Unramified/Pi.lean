@@ -65,7 +65,7 @@ theorem pi_iff :
           Function.comp_apply, AlgHom.toLinearMap_apply, Ideal.Quotient.mkₐ_eq_mk]
         rw [eq_comm, ← sub_eq_zero, ← (Ideal.Quotient.mk J').map_one, ← map_sub,
           Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton]
-      · intro r s; simp [Pi.single_mul]
+      · simp [Pi.single_mul]
     let f₂' : f x →ₐ[R] B ⧸ J' := by
       apply AlgHom.ofLinearMap
         (((Ideal.Quotient.mkₐ R J').comp f₂).toLinearMap.comp (LinearMap.single _ _ x))
@@ -73,7 +73,7 @@ theorem pi_iff :
           Function.comp_apply, AlgHom.toLinearMap_apply, Ideal.Quotient.mkₐ_eq_mk]
         rw [eq_comm, ← sub_eq_zero, ← (Ideal.Quotient.mk J').map_one, ← map_sub,
           Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton, H]
-      · intro r s; simp [Pi.single_mul]
+      · simp [Pi.single_mul]
     suffices f₁' = f₂' by
       have := AlgHom.congr_fun this (g x)
       simp only [AlgHom.comp_toLinearMap, AlgHom.ofLinearMap_apply, LinearMap.coe_comp,

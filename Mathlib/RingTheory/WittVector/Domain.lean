@@ -72,7 +72,7 @@ theorem verschiebung_shift (x : 𝕎 R) (k : ℕ) (h : ∀ i < k + 1, x.coeff i 
 theorem eq_iterate_verschiebung {x : 𝕎 R} {n : ℕ} (h : ∀ i < n, x.coeff i = 0) :
     x = verschiebung^[n] (x.shift n) := by
   induction' n with k ih
-  · cases x; simp [shift]
+  · simp [shift]
   · dsimp; rw [verschiebung_shift]
     · exact ih fun i hi => h _ (hi.trans (Nat.lt_succ_self _))
     · exact h
