@@ -458,6 +458,12 @@ protected theorem smul_const {𝕜} [TopologicalSpace 𝕜] [SMul 𝕜 β] [Cont
     (hf : StronglyMeasurable f) (c : β) : StronglyMeasurable fun x => f x • c :=
   continuous_smul.comp_stronglyMeasurable (hf.prodMk stronglyMeasurable_const)
 
+/-- Pointwise star on functions induced from continuous star preserves strong measurability. -/
+@[measurability]
+protected theorem star {R : Type*} [MeasurableSpace α] [Star R] [TopologicalSpace R]
+    [ContinuousStar R] (f : α → R) (hf : StronglyMeasurable f) : StronglyMeasurable (star f) :=
+  ⟨fun n => star (hf.approx n), fun x => (hf.tendsto_approx x).star⟩
+
 /-- In a normed vector space, the addition of a measurable function and a strongly measurable
 function is measurable. Note that this is not true without further second-countability assumptions
 for the addition of two measurable functions. -/
@@ -915,8 +921,6 @@ Unlike `StrongMeasurable.norm` and `StronglyMeasurable.nnnorm`, this lemma prove
 protected theorem enorm {_ : MeasurableSpace α} {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
     {f : α → ε} (hf : StronglyMeasurable f) : Measurable (‖f ·‖ₑ) :=
   (continuous_enorm.comp_stronglyMeasurable hf).measurable
-
-@[deprecated (since := "2025-01-21")] alias ennnorm := StronglyMeasurable.enorm
 
 @[fun_prop, measurability]
 protected theorem real_toNNReal {_ : MeasurableSpace α} {f : α → ℝ} (hf : StronglyMeasurable f) :
