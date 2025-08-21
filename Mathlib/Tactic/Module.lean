@@ -61,9 +61,7 @@ def eval [Add M] [Zero M] [SMul R M] (l : NF R M) : M := (l.map (fun (⟨r, x⟩
 
 @[simp] theorem eval_cons [AddMonoid M] [SMul R M] (p : R × M) (l : NF R M) :
     (p ::ᵣ l).eval = p.1 • p.2 + l.eval := by
-  unfold eval cons
-  rw [List.map_cons]
-  rw [List.sum_cons]
+  rfl
 
 theorem atom_eq_eval [AddMonoid M] (x : M) : x = NF.eval [(1, x)] := by simp [eval]
 
