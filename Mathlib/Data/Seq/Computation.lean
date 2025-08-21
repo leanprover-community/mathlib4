@@ -148,7 +148,7 @@ theorem tail_pure (a : α) : tail (pure a) = pure a :=
 
 @[simp]
 theorem tail_think (s : Computation α) : tail (think s) = s := by
-  tauto
+  rfl
 
 @[simp]
 theorem tail_empty : tail (empty α) = empty α :=

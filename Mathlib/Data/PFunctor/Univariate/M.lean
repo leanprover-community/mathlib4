@@ -355,7 +355,7 @@ theorem agree_iff_agree' {n : ℕ} (x y : M F) :
 @[simp]
 theorem cases_mk {r : M F → Sort*} (x : F (M F)) (f : ∀ x : F (M F), r (M.mk x)) :
     PFunctor.M.cases f (M.mk x) = f x := by
-  tauto
+  rfl
 
 @[simp]
 theorem casesOn_mk {r : M F → Sort*} (x : F (M F)) (f : ∀ x : F (M F), r (M.mk x)) :

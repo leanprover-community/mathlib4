@@ -233,7 +233,7 @@ theorem toList_cons (a : α) (v : Vector α n) : toList (cons a v) = a :: toList
 @[simp]
 theorem toList_append {n m : ℕ} (v : Vector α n) (w : Vector α m) :
     toList (v ++ w) = toList v ++ toList w := by
-  tauto
+  rfl
 
 /-- `drop` of vectors corresponds under `toList` to `drop` of lists. -/
 @[simp]
