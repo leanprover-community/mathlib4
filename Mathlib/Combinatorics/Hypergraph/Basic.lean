@@ -58,7 +58,7 @@ implementation.
 
 open Set
 
-variable {α : Type*} {x y : α} {e e' f g : Set α} {l : Set (Set α)}
+variable {α β : Type*} {x y : α} {e e' f g : Set α} {l : Set (Set α)}
 
 /--
 An undirected hypergraph with vertices of type `α` and hyperedges of type `Set α`,
@@ -225,6 +225,16 @@ incident upon
 def stars (H : Hypergraph α) : Set (Set (Set α)) :=
   {H.star x | x ∈ V(H)}
 
+-- @[simps]
+-- def image (H : Hypergraph α) (f : α → β) : Hypergraph β where
+--   vertexSet := V(H).image f
+--   hyperedgeSet := E(H).image (Set.image f)
+--   hyperedge_isSubset_vertexSet' := by
+--     simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+--     intro e he
+    -- TODO: you are here
+    -- exact image_subset_image (edge_subset_verts he)
+
 /--
 Predicate to determine if a vertex is isolated, meaning that it is not incident on any hyperedges.
 Note that this includes loops, i.e., if vertex `x` is isolated, there is no hyperedge with
@@ -249,12 +259,18 @@ Set.sUnion E(H) = V(H) ↔ ∀ x ∈ V(H), ¬IsIsolated H x :=
     exact fun t' a ↦ H.hyperedge_isSubset_vertexSet a
   )
 
-
 /--
 Predicate to determine if a hyperedge `e` is a loop, meaning that its associated vertex subset `s`
 contains only one vertex, i.e., `|s| = 1`
 -/
 def IsLoop (H : Hypergraph α) (e : Set α) : Prop := ∃ x ∈ V(H), e = {x}
+
+lemma isLoop_encard_one {H : Hypergraph α} {e : Set α} (h : H.IsLoop e) : Set.encard e = 1 := by
+  unfold IsLoop at h
+  refine encard_eq_one.mpr ?_
+  obtain ⟨x, hx⟩ := h
+  use x
+  exact hx.2
 
 /--
 Predicate to determine if a hypergraph is empty
@@ -278,11 +294,13 @@ lemma isEmpty_empty_hypergraph {α : Type*} : IsEmpty (Hypergraph.emptyHypergrap
   unfold IsEmpty
   exact Prod.mk_inj.mp rfl
 
+@[simp]
 lemma isEmpty_eq_empty_hypergraph {H : Hypergraph α} (h : H.IsEmpty) : H = emptyHypergraph α := by
   exact Hypergraph.ext_iff.mpr h
 
 @[simp]
-lemma not_mem_empty {α : Type*} {e : Set α} : e ∉ E(emptyHypergraph α) := by exact fun a ↦ a
+lemma hyperedge_not_mem_empty {α : Type*} {e : Set α} : e ∉ E(emptyHypergraph α) :=
+  by exact fun a ↦ a
 
 /--
 Predicate to determine if a hypergraph is trivial
@@ -309,6 +327,12 @@ lemma not_isEmpty_trivial_hypergraph {H : Hypergraph α} (hh : IsTrivial H) : ¬
   refine not_and_of_not_or_not ?_
   left
   apply Set.nonempty_iff_ne_empty.mp hh.1
+
+@[simp]
+lemma hyperedge_not_mem_trivial {α : Type*} {e : Set α} {H : Hypergraph α} (h : H.IsTrivial) :
+  e ∉ E(H) := by
+    unfold IsTrivial at *
+    grind
 
 /--
 Predicate to determine is a hypergraph `H` is complete, meaning that each member of the power set of
