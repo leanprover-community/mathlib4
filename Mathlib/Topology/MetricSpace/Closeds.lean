@@ -247,7 +247,7 @@ theorem isUniformEmbedding_toCloseds :
 @[deprecated (since := "2025-08-20")]
 alias ToCloseds.isUniformEmbedding := isUniformEmbedding_toCloseds
 
-/-- `NonemptyCompacts.toCloseds` is a continuous (as it is an isometry) -/
+/-- `NonemptyCompacts.toCloseds` is continuous (as it is an isometry) -/
 @[fun_prop]
 theorem continuous_toCloseds : Continuous (@NonemptyCompacts.toCloseds α _ _) :=
   isometry_toCloseds.continuous
