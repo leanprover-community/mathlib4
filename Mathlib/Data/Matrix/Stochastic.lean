@@ -66,8 +66,7 @@ lemma mem_rowStochastic :
 
 /-- A square matrix is row stochastic if each element is non-negative and row sums to one. -/
 lemma mem_rowStochastic_iff_sum :
-    M ∈ rowStochastic R n ↔
-      (∀ i j, 0 ≤ M i j) ∧ (∀ i, ∑ j, M i j = 1) := by
+    M ∈ rowStochastic R n ↔ (∀ i j, 0 ≤ M i j) ∧ (∀ i, ∑ j, M i j = 1) := by
   simp [funext_iff, rowStochastic, mulVec, dotProduct]
 
 /-- Every entry of a row stochastic matrix is nonnegative. -/
