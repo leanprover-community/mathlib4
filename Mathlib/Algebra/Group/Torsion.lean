@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Patrick Luo
 -/
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Opposite
 import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
@@ -60,11 +59,6 @@ lemma IsMulTorsionFree.pow_eq_one_iff' (ha : a ≠ 1) : a ^ n = 1 ↔ n = 0 := b
   refine ⟨fun h ↦ ?_, fun h ↦ by rw [h, pow_zero]⟩
   by_contra h'
   simpa [h] using (pow_left_injective h').ne ha
-
-open MulOpposite in
-@[to_additive]
-instance (M : Type*) [Monoid M] [IsMulTorsionFree M] : IsMulTorsionFree (Mᵐᵒᵖ) :=
-  ⟨fun _ h ↦ op_injective.comp <| (pow_left_injective h).comp <| unop_injective⟩
 
 end Monoid
 
