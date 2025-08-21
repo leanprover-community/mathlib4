@@ -344,7 +344,7 @@ lemma map_isoClosure (P : MorphismProperty C) (F : C ⥤ D) :
 
 lemma map_id_eq_isoClosure (P : MorphismProperty C) :
     P.map (𝟭 _) = P.isoClosure := by
-  tauto
+  rfl
 
 lemma map_id (P : MorphismProperty C) [RespectsIso P] :
     P.map (𝟭 _) = P := by
