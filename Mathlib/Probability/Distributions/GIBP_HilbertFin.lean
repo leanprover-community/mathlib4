@@ -35,7 +35,7 @@ The proof strategy:
 
 We package the modeling assumptions into a predicate `IsGaussianHilbert`.
 
-NOTE: We restrict to a *finite* orthonormal basis index `ι`
+NOTE: We restrict to a finite orthonormal basis index `ι`
 with `[Fintype ι]`. TODO: Extending to separable infinite-dimensional spaces.
 -/
 
