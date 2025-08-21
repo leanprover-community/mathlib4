@@ -45,6 +45,42 @@ variable {α ι E : Type*} {m : MeasurableSpace α}
     {μ : Measure α} [IsProbabilityMeasure μ]
     {f f' : ι → α → E} {g : α → E} {l : Filter ι}
 
+lemma setIntegral_mono_on' {X : Type*} {mX : MeasurableSpace X}
+    {μ : Measure X} {f g : X → ℝ} {s : Set X}
+    (hf : IntegrableOn f s μ) (hg : IntegrableOn g s μ)
+    (hs : NullMeasurableSet s μ) (h : ∀ x ∈ s, f x ≤ g x) :
+    ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ := by
+  rw [setIntegral_congr_set hs.toMeasurable_ae_eq.symm,
+    setIntegral_congr_set hs.toMeasurable_ae_eq.symm]
+  refine setIntegral_mono_on_ae ?_ ?_ ?_ ?_
+  · rw [integrableOn_congr_set_ae hs.toMeasurable_ae_eq]
+    exact hf
+  · rw [integrableOn_congr_set_ae hs.toMeasurable_ae_eq]
+    exact hg
+  · exact measurableSet_toMeasurable μ s
+  · filter_upwards [hs.toMeasurable_ae_eq.mem_iff] with x hx
+    rw [hx]
+    exact h x
+
+theorem tendsto_iff_forall_lipschitz_integral_tendsto {γ Ω : Type*} {mΩ : MeasurableSpace Ω}
+    [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] {F : Filter γ}
+    {μs : γ → ProbabilityMeasure Ω} {μ : ProbabilityMeasure Ω} :
+    Tendsto μs F (𝓝 μ) ↔
+      ∀ (f : Ω → ℝ) (hf_bounded : ∃ (C : ℝ), ∀ x y, dist (f x) (f y) ≤ C)
+      (hf_lip : ∃ L, LipschitzWith L f),
+        Tendsto (fun i ↦ ∫ ω, f ω ∂(μs i : Measure Ω)) F (𝓝 (∫ ω, f ω ∂(μ : Measure Ω))) := by
+  constructor
+  · intro h f hf_bounded hf_lip
+    simp_rw [ProbabilityMeasure.tendsto_iff_forall_integral_tendsto] at h
+    let f' : BoundedContinuousFunction Ω ℝ :=
+    { toFun := f
+      continuous_toFun := hf_lip.choose_spec.continuous
+      map_bounded' := hf_bounded }
+    specialize h f'
+    simpa using h
+  intro h
+  sorry
+
 lemma ProbabilityMeasure.todo
     (hf' : ∀ i, AEMeasurable (f' i) μ) (hf : ∀ i, AEMeasurable (f i) μ)
     (hg : AEMeasurable g μ) (hff' : TendstoInMeasure μ (fun n ↦ f' n - f n) l 0)
@@ -60,7 +96,7 @@ lemma ProbabilityMeasure.todo
   suffices ∀ (F : E → ℝ) (hF_bounded : ∃ (C : ℝ), ∀ x y, dist (F x) (F y) ≤ C)
       (hF_lip : ∃ L, LipschitzWith L F),
       Tendsto (fun n ↦ ∫ ω, F ω ∂(μ.map (f' n))) l (𝓝 (∫ ω, F ω ∂(μ.map g))) by
-    sorry -- missing Portmanteau lemma
+    rwa [tendsto_iff_forall_lipschitz_integral_tendsto]
   rintro F ⟨M, hF_bounded⟩ ⟨L, hF_lip⟩
   have hF_cont : Continuous F := hF_lip.continuous
   by_cases hL : L = 0
@@ -85,7 +121,7 @@ lemma ProbabilityMeasure.todo
     field_simp
   intro ε hε
   have h_le n : |∫ ω, F ω ∂(μ.map (f' n)) - ∫ ω, F ω ∂(μ.map g)|
-      ≤ L * (ε / 2) + 2 * M * μ.real {ω | ε / 2 ≤ ‖f' n ω - f n ω‖}
+      ≤ L * (ε / 2) + M * μ.real {ω | ε / 2 ≤ ‖f' n ω - f n ω‖}
         + |∫ ω, F ω ∂(μ.map (f n)) - ∫ ω, F ω ∂(μ.map g)| := by
     refine (dist_triangle (∫ ω, F ω ∂(μ.map (f' n))) (∫ ω, F ω ∂(μ.map (f n)))
       (∫ ω, F ω ∂(μ.map g))).trans ?_
@@ -93,7 +129,7 @@ lemma ProbabilityMeasure.todo
     swap; · rw [Real.dist_eq]
     rw [Real.dist_eq]
     -- `⊢ |∫ ω, F ω ∂(μ.map (f' n)) - ∫ ω, F ω ∂(μ.map (f n))|`
-    -- `    ≤ L * (ε / 2) + 2 * M * μ.real {ω | ε / 2 ≤ ‖f' n ω - f n ω‖}`
+    -- `    ≤ L * (ε / 2) + M * μ.real {ω | ε / 2 ≤ ‖f' n ω - f n ω‖}`
     have h_int_f' : Integrable (fun x ↦ F (f' n x)) μ := by
       refine Integrable.of_bound ?_ (‖F x₀‖ + M) (ae_of_all _ fun a ↦ ?_)
       · exact AEStronglyMeasurable.comp_aemeasurable (by fun_prop) (hf' n)
@@ -106,6 +142,12 @@ lemma ProbabilityMeasure.todo
       · specialize hF_bounded (f n a) x₀
         rw [← sub_le_iff_le_add']
         exact (abs_sub_abs_le_abs_sub (F (f n a)) (F x₀)).trans hF_bounded
+    have h_int_sub : Integrable (fun a ↦ ‖F (f' n a) - F (f n a)‖) μ := by
+      rw [integrable_norm_iff]
+      · exact h_int_f'.sub h_int_f
+      · refine AEStronglyMeasurable.sub ?_ ?_
+        · exact AEStronglyMeasurable.comp_aemeasurable (by fun_prop) (hf' n)
+        · exact AEStronglyMeasurable.comp_aemeasurable (by fun_prop) (hf n)
     rw [integral_map (by fun_prop) (by fun_prop), integral_map (by fun_prop) (by fun_prop),
       ← integral_sub h_int_f' h_int_f]
     rw [← Real.norm_eq_abs]
@@ -120,29 +162,39 @@ lemma ProbabilityMeasure.todo
         simp_rw [← dist_eq_norm]
         -- missing AEMeasurable.dist
         exact (@continuous_dist E _).aemeasurable2 (by fun_prop) (by fun_prop)
-      · rw [integrable_norm_iff]
-        · exact h_int_f'.sub h_int_f
-        · refine AEStronglyMeasurable.sub ?_ ?_
-          · exact AEStronglyMeasurable.comp_aemeasurable (by fun_prop) (hf' n)
-          · exact AEStronglyMeasurable.comp_aemeasurable (by fun_prop) (hf n)
+      · exact h_int_sub
     _ ≤ ∫ a in {x | ‖f' n x - f n x‖ < ε / 2}, L * (ε / 2) ∂μ
-        + ∫ a in {x | ε / 2 ≤ ‖f' n x - f n x‖}, 2 * M ∂μ := sorry
+        + ∫ a in {x | ε / 2 ≤ ‖f' n x - f n x‖}, M ∂μ := by
+      gcongr ?_ + ?_
+      · refine setIntegral_mono_on' ?_ ?_ ?_ ?_
+        · exact h_int_sub.integrableOn
+        · exact integrableOn_const
+        · exact nullMeasurableSet_lt (by fun_prop) (by fun_prop)
+        · intro x hx
+          simp only [Set.mem_setOf_eq] at hx
+          rw [← dist_eq_norm] at hx ⊢
+          exact hF_lip.dist_le_mul_of_le hx.le
+      · refine setIntegral_mono ?_ ?_ fun a ↦ ?_
+        · exact h_int_sub.integrableOn
+        · exact integrableOn_const
+        · rw [← dist_eq_norm]
+          convert hF_bounded _ _
     _ = L * (ε / 2) * μ.real {x | ‖f' n x - f n x‖ < ε / 2}
-        + 2 * M * μ.real {ω | ε / 2 ≤ ‖f' n ω - f n ω‖} := by
+        + M * μ.real {ω | ε / 2 ≤ ‖f' n ω - f n ω‖} := by
       simp only [integral_const, MeasurableSet.univ, measureReal_restrict_apply, Set.univ_inter,
         smul_eq_mul]
       ring
-    _ ≤ L * (ε / 2) + 2 * M * μ.real {ω | ε / 2 ≤ ‖f' n ω - f n ω‖} := by
+    _ ≤ L * (ε / 2) + M * μ.real {ω | ε / 2 ≤ ‖f' n ω - f n ω‖} := by
       rw [mul_assoc]
       gcongr
       conv_rhs => rw [← mul_one (ε / 2)]
       gcongr
       exact measureReal_le_one
   have h_tendsto :
-      Tendsto (fun n ↦ L * (ε / 2) + 2 * M * μ.real {ω | ε / 2 ≤ ‖f' n ω - f n ω‖}
+      Tendsto (fun n ↦ L * (ε / 2) + M * μ.real {ω | ε / 2 ≤ ‖f' n ω - f n ω‖}
           + |∫ ω, F ω ∂(μ.map (f n)) - ∫ ω, F ω ∂(μ.map g)|) l (𝓝 (L * ε / 2)) := by
-    suffices Tendsto (fun n ↦ L * (ε / 2) + 2 * M * μ.real {ω | ε / 2 ≤ ‖f' n ω - f n ω‖}
-          + |∫ ω, F ω ∂(μ.map (f n)) - ∫ ω, F ω ∂(μ.map g)|) l (𝓝 (L * ε / 2 + 2 * M * 0 + 0)) by
+    suffices Tendsto (fun n ↦ L * (ε / 2) + M * μ.real {ω | ε / 2 ≤ ‖f' n ω - f n ω‖}
+          + |∫ ω, F ω ∂(μ.map (f n)) - ∫ ω, F ω ∂(μ.map g)|) l (𝓝 (L * ε / 2 + M * 0 + 0)) by
       simpa
     refine Tendsto.add ?_ ?_
     · refine Tendsto.add ?_ (Tendsto.const_mul _ ?_)
@@ -152,15 +204,10 @@ lemma ProbabilityMeasure.todo
         have h_tendsto := hff' (ε / 2) (by positivity) -- the result, up to `μ.real` vs `μ`
         refine Tendsto.comp ?_ h_tendsto
         exact ENNReal.tendsto_toReal (ENNReal.zero_ne_top)
-    · -- todo: replace once we have the Lipschitz Portmanteau lemma
-      simp_rw [ProbabilityMeasure.tendsto_iff_forall_integral_tendsto] at hfg
-      let F' : BoundedContinuousFunction E ℝ :=
-      { toFun := F
-        continuous_toFun := hF_lip.continuous
-        map_bounded' := ⟨M, hF_bounded⟩ }
-      specialize hfg F'
-      rw [tendsto_iff_dist_tendsto_zero] at hfg
-      simpa only [coe_mk, Real.dist_eq, F'] using hfg
+    · simp_rw [tendsto_iff_forall_lipschitz_integral_tendsto] at hfg
+      have h := hfg F ⟨M, hF_bounded⟩ ⟨L, hF_lip⟩
+      rw [tendsto_iff_dist_tendsto_zero] at h
+      simpa using h
   have h_lt : L * ε / 2 < L * ε := by
     rw [mul_div_assoc]
     gcongr
