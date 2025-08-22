@@ -47,8 +47,7 @@ namespace Sigmoid
 lemma range_sigmoid : range Sigmoid = Ioo 0 1 := by
   ext x
   constructor
-  · intro hx
-    obtain ⟨y, rfl⟩ := hx
+  · rintro ⟨y, rfl⟩
     constructor
     · simp only [Sigmoid, RelEmbedding.coe_mk, Embedding.coeFn_mk]
       change 0 < (1 + exp (-y))⁻¹
