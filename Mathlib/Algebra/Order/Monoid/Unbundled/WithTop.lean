@@ -219,16 +219,16 @@ end Add
 
 instance addSemigroup [AddSemigroup α] : AddSemigroup (WithTop α) :=
   { WithTop.add with
-    add_assoc := fun _ _ _ => Option.map₂_assoc add_assoc }
+    add_assoc := fun _ _ _ => WithTop.map₂_assoc add_assoc }
 
 instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (WithTop α) :=
   { WithTop.addSemigroup with
-    add_comm := fun _ _ => Option.map₂_comm add_comm }
+    add_comm := fun _ _ => WithTop.map₂_comm add_comm }
 
 instance addZeroClass [AddZeroClass α] : AddZeroClass (WithTop α) :=
   { WithTop.zero, WithTop.add with
-    zero_add := Option.map₂_left_identity zero_add
-    add_zero := Option.map₂_right_identity add_zero }
+    zero_add := WithTop.map₂_left_identity zero_add
+    add_zero := WithTop.map₂_right_identity add_zero }
 
 section AddMonoid
 variable [AddMonoid α]

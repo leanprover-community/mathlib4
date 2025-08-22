@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Order.Heyting.Basic
 import Mathlib.Order.Hom.Basic
-import Mathlib.Order.WithBot
+import Mathlib.Order.WithBot.Basic
 
 /-!
 # Orders on a sum type
