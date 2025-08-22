@@ -43,8 +43,8 @@ variable [IsTopologicalRing R] [CompactSpace R] [T2Space R]
 
 namespace IsArtinianRing
 
-/-- Compact Hausdorff artinian (commutative) rings are finite. This is not an instance to avoid
-slowdowns. -/
+/-- Compact Hausdorff artinian (commutative) rings are finite. This is not an instance, as it would
+apply to every `Finite` goal, causing slowly failing typeclass search in some cases. -/
 theorem finite_of_compactSpace_of_t2Space [IsArtinianRing R] :
     Finite R := by
   obtain ⟨n, hn⟩ := IsArtinianRing.isNilpotent_jacobson_bot (R := R)

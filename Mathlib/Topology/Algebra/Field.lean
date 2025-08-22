@@ -32,7 +32,8 @@ theorem Filter.tendsto_cocompact_mul_right₀ [ContinuousMul K] {a : K} (ha : a 
     Filter.Tendsto (fun x : K => x * a) (Filter.cocompact K) (Filter.cocompact K) :=
   Filter.tendsto_cocompact_mul_right (mul_inv_cancel₀ ha)
 
-/-- Compact Hausdorff topological fields are finite. This is not an instance to avoid slowdowns. -/
+/-- Compact Hausdorff topological fields are finite. This is not an instance, as it would apply to
+every `Finite` goal, causing slowly failing typeclass search in some cases. -/
 theorem DivisionRing.finite_of_compactSpace_of_t2Space {K} [DivisionRing K] [TopologicalSpace K]
     [IsTopologicalRing K] [CompactSpace K] [T2Space K] : Finite K := by
   suffices DiscreteTopology K by
