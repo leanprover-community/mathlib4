@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Order.Hom.BoundedLattice
-import Mathlib.Order.WithBot
+import Mathlib.Order.WithBot.Basic
 
 /-!
 # Adjoining `⊤` and `⊥` to order maps and lattice homomorphisms
@@ -191,7 +191,7 @@ protected def withTopMap (f : α ↪o β) : WithTop α ↪o WithTop β :=
 @[simps -fullyApplied]
 protected def withBotCoe : α ↪o WithBot α where
   toFun := .some
-  inj' := Option.some_injective _
+  inj' := WithBot.coe_injective
   map_rel_iff' := WithBot.coe_le_coe
 
 /-- Coercion `α → WithTop α` as an `OrderEmbedding`. -/
@@ -210,40 +210,40 @@ variable [PartialOrder α] [PartialOrder β] [PartialOrder γ]
 def withTopCongr (e : α ≃o β) : WithTop α ≃o WithTop β where
   toFun := WithTop.map e
   __ := e.toOrderEmbedding.withTopMap
-  __ := e.toEquiv.optionCongr
+  __ := e.toEquiv.withTopCongr
 
 @[simp]
 theorem withTopCongr_refl : (OrderIso.refl α).withTopCongr = OrderIso.refl _ :=
-  RelIso.toEquiv_injective Equiv.optionCongr_refl
+  RelIso.toEquiv_injective Equiv.withTopCongr_refl
 
 @[simp]
 theorem withTopCongr_symm (e : α ≃o β) : e.symm.withTopCongr = e.withTopCongr.symm :=
-  RelIso.toEquiv_injective e.toEquiv.optionCongr_symm
+  RelIso.toEquiv_injective e.toEquiv.withTopCongr_symm
 
 @[simp]
 theorem withTopCongr_trans (e₁ : α ≃o β) (e₂ : β ≃o γ) :
     (e₁.trans e₂).withTopCongr = e₁.withTopCongr.trans e₂.withTopCongr :=
-  RelIso.toEquiv_injective <| e₁.toEquiv.optionCongr_trans e₂.toEquiv
+  RelIso.toEquiv_injective <| e₁.toEquiv.withTopCongr_trans e₂.toEquiv
 
 /-- A version of `Equiv.optionCongr` for `WithBot`. -/
 @[simps -fullyApplied]
 def withBotCongr (e : α ≃o β) : WithBot α ≃o WithBot β where
   toFun := WithBot.map e
   __ := e.toOrderEmbedding.withBotMap
-  __ := e.toEquiv.optionCongr
+  __ := e.toEquiv.withBotCongr
 
 @[simp]
 theorem withBotCongr_refl : (OrderIso.refl α).withBotCongr = OrderIso.refl _ :=
-  RelIso.toEquiv_injective Equiv.optionCongr_refl
+  RelIso.toEquiv_injective Equiv.withTopCongr_refl
 
 @[simp]
 theorem withBotCongr_symm (e : α ≃o β) : e.symm.withBotCongr = e.withBotCongr.symm :=
-  RelIso.toEquiv_injective e.toEquiv.optionCongr_symm
+  RelIso.toEquiv_injective e.toEquiv.withBotCongr_symm
 
 @[simp]
 theorem withBotCongr_trans (e₁ : α ≃o β) (e₂ : β ≃o γ) :
     (e₁.trans e₂).withBotCongr = e₁.withBotCongr.trans e₂.withBotCongr :=
-  RelIso.toEquiv_injective <| e₁.toEquiv.optionCongr_trans e₂.toEquiv
+  RelIso.toEquiv_injective <| e₁.toEquiv.withTopCongr_trans e₂.toEquiv
 
 end OrderIso
 
@@ -273,7 +273,7 @@ theorem withTop_comp (f : SupHom β γ) (g : SupHom α β) :
 /-- Adjoins a `⊥` to the domain and codomain of a `SupHom`. -/
 @[simps]
 protected def withBot (f : SupHom α β) : SupBotHom (WithBot α) (WithBot β) where
-  toFun := Option.map f
+  toFun := WithBot.map f
   map_sup' a b :=
     match a, b with
     | ⊥, ⊥ => rfl
@@ -322,7 +322,7 @@ variable [SemilatticeInf α] [SemilatticeInf β] [SemilatticeInf γ]
 /-- Adjoins a `⊤` to the domain and codomain of an `InfHom`. -/
 @[simps]
 protected def withTop (f : InfHom α β) : InfTopHom (WithTop α) (WithTop β) where
-  toFun := Option.map f
+  toFun := WithTop.map f
   map_inf' a b :=
     match a, b with
     | ⊤, ⊤ => rfl
@@ -342,7 +342,7 @@ theorem withTop_comp (f : InfHom β γ) (g : InfHom α β) :
 /-- Adjoins a `⊥` to the domain and codomain of an `InfHom`. -/
 @[simps]
 protected def withBot (f : InfHom α β) : InfHom (WithBot α) (WithBot β) where
-  toFun := Option.map f
+  toFun := WithBot.map f
   map_inf' a b :=
     match a, b with
     | ⊥, ⊥ => rfl
@@ -414,7 +414,7 @@ protected def withBot (f : LatticeHom α β) : LatticeHom (WithBot α) (WithBot 
 
 -- Porting note: `simps` doesn't generate those
 @[simp, norm_cast]
-lemma coe_withBot (f : LatticeHom α β) : ⇑f.withBot = Option.map f := rfl
+lemma coe_withBot (f : LatticeHom α β) : ⇑f.withBot = WithBot.map f := rfl
 
 lemma withBot_apply (f : LatticeHom α β) (a : WithBot α) : f.withBot a = a.map f := rfl
 
@@ -438,7 +438,7 @@ def withTopWithBot (f : LatticeHom α β) :
 lemma coe_withTopWithBot (f : LatticeHom α β) : ⇑f.withTopWithBot = Option.map (Option.map f) := rfl
 
 lemma withTopWithBot_apply (f : LatticeHom α β) (a : WithTop <| WithBot α) :
-    f.withTopWithBot a = a.map (Option.map f) := rfl
+    f.withTopWithBot a = a.map (WithTop.map f) := rfl
 
 @[simp]
 theorem withTopWithBot_id : (LatticeHom.id α).withTopWithBot = BoundedLatticeHom.id _ :=

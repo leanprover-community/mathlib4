@@ -7,7 +7,7 @@ import Mathlib.Data.List.Basic
 import Mathlib.Order.BoundedOrder.Lattice
 import Mathlib.Data.List.Induction
 import Mathlib.Order.MinMax
-import Mathlib.Order.WithBot
+import Mathlib.Order.WithBot.Basic
 
 /-!
 # Minimum and maximum of lists
@@ -248,12 +248,12 @@ variable [Preorder α] [DecidableLT α] {l : List α} {a m : α}
 /-- `maximum l` returns a `WithBot α`, the largest element of `l` for nonempty lists, and `⊥` for
 `[]` -/
 def maximum (l : List α) : WithBot α :=
-  argmax id l
+  WithBot.equivOption.symm (argmax id l)
 
 /-- `minimum l` returns a `WithTop α`, the smallest element of `l` for nonempty lists, and `⊤` for
 `[]` -/
 def minimum (l : List α) : WithTop α :=
-  argmin id l
+  WithTop.equivOption.symm (argmin id l)
 
 @[simp]
 theorem maximum_nil : maximum ([] : List α) = ⊥ :=
@@ -306,8 +306,9 @@ variable [LinearOrder α] {l : List α} {a m : α}
 theorem maximum_concat (a : α) (l : List α) : maximum (l ++ [a]) = max (maximum l) a := by
   simp only [maximum, argmax_concat, id]
   cases argmax id l
-  · exact (max_eq_right bot_le).symm
-  · simp [WithBot.some_eq_coe, max_def_lt, WithBot.coe_lt_coe]
+  case none => exact (max_eq_right bot_le).symm
+  case some val =>
+    by_cases h : val < a <;> simp [*, max_def_lt]
 
 theorem le_maximum_of_mem : a ∈ l → (maximum l : WithBot α) = m → a ≤ m :=
   le_of_mem_argmax

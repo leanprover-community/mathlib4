@@ -5115,7 +5115,8 @@ import Mathlib.Order.UpperLower.Relative
 import Mathlib.Order.WellFounded
 import Mathlib.Order.WellFoundedSet
 import Mathlib.Order.WellQuasiOrder
-import Mathlib.Order.WithBot
+import Mathlib.Order.WithBot.Basic
+import Mathlib.Order.WithBot.NAry
 import Mathlib.Order.Zorn
 import Mathlib.Order.ZornAtoms
 import Mathlib.Probability.BorelCantelli
