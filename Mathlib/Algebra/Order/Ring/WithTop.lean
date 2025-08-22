@@ -93,8 +93,17 @@ theorem mul_lt_top [LT α] {a b : WithTop α} (ha : a < ⊤) (hb : b < ⊤) : a 
 instance instNoZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithTop α) := by
   refine ⟨fun {a b} h₁ => Decidable.byContradiction fun h₂ => ?_⟩
   rw [mul_def, if_neg h₂] at h₁
-  rcases Option.mem_map₂_iff.1 h₁ with ⟨a, b, (rfl : _ = _), (rfl : _ = _), hab⟩
-  exact h₂ ((eq_zero_or_eq_zero_of_mul_eq_zero hab).imp (congr_arg some) (congr_arg some))
+  cases a
+  case top => simp at h₁
+  case coe a =>
+    cases b
+    case top => simp at h₁
+    case coe b =>
+      simp at h₁
+      apply h₂
+      rw [← coe_mul, coe_eq_zero] at h₁
+      have := eq_zero_or_eq_zero_of_mul_eq_zero h₁
+      obtain rfl | rfl := this <;> simp
 
 end MulZeroClass
 
