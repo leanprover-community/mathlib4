@@ -326,12 +326,12 @@ protected theorem eq {a₁ b₁} {a₂ b₂ : M} :
     mk' S a₁ a₂ = mk' S b₁ b₂ ↔ ∃ c : M, ↑c * (↑b₂ * a₁) = c * (a₂ * b₁) :=
   (toLocalizationMap M S).eq
 
-theorem mk'_eq_zero_iff (x : R) (s : M) : mk' S x s = 0 ↔ ∃ m : M, ↑m * x = 0 := by
-  rw [← (map_units S s).mul_left_inj, mk'_spec, zero_mul, map_eq_zero_iff M]
+theorem mk'_eq_zero_iff (x : R) (s : M) : mk' S x s = 0 ↔ ∃ m : M, ↑m * x = 0 :=
+  (toLocalizationMap M S).mk'_eq_zero_iff x s
 
 @[simp]
-theorem mk'_zero (s : M) : IsLocalization.mk' S 0 s = 0 := by
-  rw [eq_comm, IsLocalization.eq_mk'_iff_mul_eq, zero_mul, map_zero]
+theorem mk'_zero (s : M) : IsLocalization.mk' S 0 s = 0 :=
+  (toLocalizationMap M S).mk'_zero s
 
 theorem ne_zero_of_mk'_ne_zero {x : R} {y : M} (hxy : IsLocalization.mk' S x y ≠ 0) : x ≠ 0 := by
   rintro rfl

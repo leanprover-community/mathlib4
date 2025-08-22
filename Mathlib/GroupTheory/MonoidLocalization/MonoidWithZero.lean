@@ -115,6 +115,13 @@ theorem isCancelMulZero (f : LocalizationMap S N) [IsCancelMulZero M] : IsCancel
 theorem map_eq_zero_iff (f : LocalizationMap S N) {m : M} : f m = 0 ↔ ∃ s : S, s * m = 0 := by
   simp_rw [← f.map_zero, eq_iff_exists, mul_zero]
 
+theorem mk'_eq_zero_iff (f : LocalizationMap S N) (m : M) (s : S) :
+    f.mk' m s = 0 ↔ ∃ s : S, s * m = 0 := by
+  rw [← (f.map_units s).mul_left_inj, mk'_spec, zero_mul, map_eq_zero_iff]
+
+@[simp] theorem mk'_zero (f : LocalizationMap S N) (s : S) : f.mk' 0 s = 0 := by
+  rw [eq_comm, eq_mk'_iff_mul_eq, zero_mul, f.map_zero]
+
 theorem nonZeroDivisors_le_comap (f : LocalizationMap S N) :
     nonZeroDivisors M ≤ (nonZeroDivisors N).comap f := by
   refine fun m hm ↦ nonZeroDivisorsRight_eq_nonZeroDivisors (M₀ := N) ▸ fun n h0 ↦ ?_
