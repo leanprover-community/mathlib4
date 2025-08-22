@@ -50,11 +50,15 @@ def of (f : X ⟶ X) : End X := f
 `X ⟶ X`. -/
 def asHom (f : End X) : X ⟶ X := f
 
+-- TODO: to fix defeq abuse, this should be `(1 : End x) = of (𝟙 X)`.
+-- But that would require many more extra simp lemmas to get rid of the `of`.
 @[simp]
-theorem one_def : (1 : End X) = of (𝟙 X) := rfl
+theorem one_def : (1 : End X) = 𝟙 X := rfl
 
+-- TODO: to fix defeq abuse, this should be `xs * ys = of (ys ≫ xs)`.
+-- But that would require many more extra simp lemmas to get rid of the `of`.
 @[simp]
-theorem mul_def (xs ys : End X) : xs * ys = of (ys ≫ xs) := rfl
+theorem mul_def (xs ys : End X) : xs * ys = ys ≫ xs := rfl
 
 end Struct
 
