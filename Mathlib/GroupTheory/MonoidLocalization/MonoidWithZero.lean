@@ -31,6 +31,10 @@ theorem LocalizationMap.subsingleton (f : LocalizationMap S N) (h : 0 ∈ S) : S
     rw [← f.mk'_sec a, ← f.mk'_sec b, f.eq]
     exact ⟨⟨0, h⟩, by simp only [zero_mul]⟩
 
+protected theorem LocalizationMap.map_zero (f : LocalizationMap S N) : f 0 = 0 := by
+  have ⟨ms, eq⟩ := f.surj 0
+  rw [← zero_mul, map_mul, ← eq, zero_mul, mul_zero]
+
 theorem LocalizationMap.subsingleton_iff (f : LocalizationMap S N) : Subsingleton N ↔ 0 ∈ S :=
   ⟨fun _ ↦ have ⟨c, eq⟩ := f.exists_of_eq (Subsingleton.elim (f 0) (f 1))
     by rw [mul_zero, mul_one] at eq; exact eq ▸ c.2, f.subsingleton⟩

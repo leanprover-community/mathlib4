@@ -181,6 +181,34 @@ theorem algebraMap_isUnit_iff {x : R} : IsUnit (algebraMap R S x) ↔ ∃ m ∈ 
   have ⟨m', eq⟩ := (eq_iff_exists M S).mp hrm
   exact ⟨m' * m, mul_mem m'.2 m.2, _, mul_left_comm _ x _ ▸ eq⟩
 
+variable (S)
+
+/-- `IsLocalization.toLocalizationMap M S` shows `S` is the monoid localization of `R` at `M`. -/
+abbrev toLocalizationMap : M.LocalizationMap S where
+  __ := algebraMap R S
+  toFun := algebraMap R S
+  map_units' := IsLocalization.map_units _
+  surj' := IsLocalization.surj _
+  exists_of_eq _ _ := IsLocalization.exists_of_eq
+
+@[deprecated (since := "2025-08-01")] alias toLocalizationWithZeroMap := toLocalizationMap
+
+@[simp]
+lemma toLocalizationMap_toMonoidHom :
+    (toLocalizationMap M S).toMonoidHom = (algebraMap R S : R →*₀ S) := rfl
+
+@[deprecated (since := "2025-08-13")] alias toLocalizationMap_toMap := toLocalizationMap_toMonoidHom
+
+@[simp] lemma coe_toLocalizationMap : ⇑(toLocalizationMap M S) = algebraMap R S := rfl
+
+@[deprecated (since := "2025-08-13")] alias toLocalizationMap_toMap_apply := coe_toLocalizationMap
+
+lemma toLocalizationMap_apply (x) : toLocalizationMap M S x = algebraMap R S x := rfl
+
+theorem surj₂ : ∀ z w : S, ∃ z' w' : R, ∃ d : M,
+    (z * algebraMap R S d = algebraMap R S z') ∧ (w * algebraMap R S d = algebraMap R S w') :=
+  (toLocalizationMap M S).surj₂
+
 end
 
 variable (M) {S}
