@@ -166,7 +166,6 @@ theorem coe_mk {f : α →ₘ[μ] E} (hf : eLpNorm f p μ < ∞) : ((⟨f, hf⟩
 
 @[simp]
 theorem toLp_coeFn (f : Lp E p μ) (hf : MemLp f p μ) : hf.toLp f = f := by
-  cases f
   simp [MemLp.toLp]
 
 theorem eLpNorm_lt_top (f : Lp E p μ) : eLpNorm f p μ < ∞ :=
