@@ -571,6 +571,32 @@ theorem _root_.Module.Basis.coe_toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : O
       classical rw [OrthonormalBasis.coe_toBasis]
     _ = (v : ι → E) := by simp
 
+section Singleton
+variable {ι 𝕜 : Type*} [Unique ι] [RCLike 𝕜]
+
+variable (ι 𝕜) in
+/-- `OrthonormalBasis.singleton ι 𝕜` is the orthonormal basis sending the unique element of `ι` to
+`1 : 𝕜`. -/
+protected noncomputable def singleton : OrthonormalBasis ι 𝕜 𝕜 :=
+  (Basis.singleton ι 𝕜).toOrthonormalBasis (by simp [orthonormal_iff_ite, Unique.eq_default])
+
+@[simp]
+theorem singleton_apply (i) : OrthonormalBasis.singleton ι 𝕜 i = 1 := Basis.singleton_apply _ _ _
+
+@[simp]
+theorem singleton_repr (x i) : (OrthonormalBasis.singleton ι 𝕜).repr x i = x :=
+  Basis.singleton_repr _ _ _ _
+
+@[simp]
+theorem coe_singleton : ⇑(OrthonormalBasis.singleton ι 𝕜) = 1 := by
+  ext; simp
+
+@[simp]
+theorem toBasis_singleton : (OrthonormalBasis.singleton ι 𝕜).toBasis = Basis.singleton ι 𝕜 :=
+  Basis.toBasis_toOrthonormalBasis _ _
+
+end Singleton
+
 /-- `Pi.orthonormalBasis (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i))` is the
 `Σ i, ι i`-indexed orthonormal basis on `Π i, E i` given by `B i` on each component. -/
 protected def _root_.Pi.orthonormalBasis {η : Type*} [Fintype η] {ι : η → Type*}
@@ -1036,8 +1062,7 @@ space, there exists an isometry from the orthogonal complement of a nonzero sing
 `EuclideanSpace 𝕜 (Fin n)`. -/
 def OrthonormalBasis.fromOrthogonalSpanSingleton (n : ℕ) [Fact (finrank 𝕜 E = n + 1)] {v : E}
     (hv : v ≠ 0) : OrthonormalBasis (Fin n) 𝕜 (𝕜 ∙ v)ᗮ :=
-  -- Porting note: was `attribute [local instance] FiniteDimensional.of_fact_finrank_eq_succ`
-  haveI : FiniteDimensional 𝕜 E := .of_fact_finrank_eq_succ (K := 𝕜) (V := E) n
+  have : FiniteDimensional 𝕜 E := .of_fact_finrank_eq_succ (K := 𝕜) (V := E) n
   (stdOrthonormalBasis _ _).reindex <| finCongr <| finrank_orthogonal_span_singleton hv
 
 section LinearIsometry

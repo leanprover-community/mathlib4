@@ -114,6 +114,7 @@ variable [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 theorem isOpen_resolventSet (a : A) : IsOpen (ρ a) :=
   Units.isOpen.preimage ((continuous_algebraMap 𝕜 A).sub continuous_const)
 
+@[simp]
 protected theorem isClosed (a : A) : IsClosed (σ a) :=
   (isOpen_resolventSet a).isClosed_compl
 
@@ -143,9 +144,11 @@ theorem subset_closedBall_norm_mul (a : A) : σ a ⊆ Metric.closedBall (0 : �
 theorem subset_closedBall_norm [NormOneClass A] (a : A) : σ a ⊆ Metric.closedBall (0 : 𝕜) ‖a‖ :=
   fun k hk => by simp [norm_le_norm_of_mem hk]
 
+@[simp]
 theorem isBounded (a : A) : Bornology.IsBounded (σ a) :=
   Metric.isBounded_closedBall.subset (subset_closedBall_norm_mul a)
 
+@[simp, grind]
 protected theorem isCompact [ProperSpace 𝕜] (a : A) : IsCompact (σ a) :=
   Metric.isCompact_of_isClosed_isBounded (spectrum.isClosed a) (isBounded a)
 
@@ -158,11 +161,20 @@ instance instCompactSpaceNNReal {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
   rw [← preimage_algebraMap ℝ]
   exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage <| by assumption
 
+@[simp]
+theorem isCompact_nnreal {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
+    (a : A) [CompactSpace (spectrum ℝ a)] : IsCompact (spectrum ℝ≥0 a) := by
+  rw [isCompact_iff_compactSpace]
+  infer_instance
+
+grind_pattern isCompact_nnreal => IsCompact (spectrum ℝ≥0 a)
+
 section QuasispectrumCompact
 
 variable {B : Type*} [NonUnitalNormedRing B] [NormedSpace 𝕜 B] [CompleteSpace B]
 variable [IsScalarTower 𝕜 B B] [SMulCommClass 𝕜 B B] [ProperSpace 𝕜]
 
+@[simp, grind]
 theorem _root_.quasispectrum.isCompact (a : B) : IsCompact (quasispectrum 𝕜 a) := by
   rw [Unitization.quasispectrum_eq_spectrum_inr' 𝕜 𝕜,
     ← AlgEquiv.spectrum_eq (WithLp.unitizationAlgEquiv 𝕜).symm (a : Unitization 𝕜 B)]
@@ -178,6 +190,16 @@ instance _root_.quasispectrum.instCompactSpaceNNReal [NormedSpace ℝ B] [IsScal
   rw [← isCompact_iff_compactSpace] at *
   rw [← quasispectrum.preimage_algebraMap ℝ]
   exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage <| by assumption
+
+omit [CompleteSpace B] in
+@[simp]
+theorem _root_.quasispectrum.isCompact_nnreal [NormedSpace ℝ B] [IsScalarTower ℝ B B]
+    [SMulCommClass ℝ B B] (a : B) [CompactSpace (quasispectrum ℝ a)] :
+    IsCompact (quasispectrum ℝ≥0 a) := by
+  rw [isCompact_iff_compactSpace]
+  infer_instance
+
+grind_pattern quasispectrum.isCompact_nnreal => IsCompact (quasispectrum ℝ≥0 a)
 
 end QuasispectrumCompact
 
