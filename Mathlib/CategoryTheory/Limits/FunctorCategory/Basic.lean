@@ -182,15 +182,13 @@ instance functorCategoryHasColimitsOfShape [HasColimitsOfShape J C] :
     HasColimitsOfShape J (K ⥤ C) where
   has_colimit _ := inferInstance
 
--- Porting note: previously Lean could see through the binders and infer_instance sufficed
 instance functorCategoryHasLimitsOfSize [HasLimitsOfSize.{v₁, u₁} C] :
     HasLimitsOfSize.{v₁, u₁} (K ⥤ C) where
-  has_limits_of_shape := fun _ _ => inferInstance
+  has_limits_of_shape := inferInstance
 
--- Porting note: previously Lean could see through the binders and infer_instance sufficed
 instance functorCategoryHasColimitsOfSize [HasColimitsOfSize.{v₁, u₁} C] :
     HasColimitsOfSize.{v₁, u₁} (K ⥤ C) where
-  has_colimits_of_shape := fun _ _ => inferInstance
+  has_colimits_of_shape := inferInstance
 
 instance hasLimitCompEvaluation (F : J ⥤ K ⥤ C) (k : K) [HasLimit (F.flip.obj k)] :
     HasLimit (F ⋙ (evaluation _ _).obj k) :=
@@ -198,7 +196,7 @@ instance hasLimitCompEvaluation (F : J ⥤ K ⥤ C) (k : K) [HasLimit (F.flip.ob
 
 instance evaluation_preservesLimit (F : J ⥤ K ⥤ C) [∀ k, HasLimit (F.flip.obj k)] (k : K) :
     PreservesLimit F ((evaluation K C).obj k) :=
-    -- Porting note: added a let because X was not inferred
+  -- Porting note: added a let because X was not inferred
   let X : (k : K) → LimitCone (F.flip.obj k) := fun k => getLimitCone (F.flip.obj k)
   preservesLimit_of_preserves_limit_cone (combinedIsLimit _ X) <|
     IsLimit.ofIsoLimit (limit.isLimit _) (evaluateCombinedCones F X k).symm

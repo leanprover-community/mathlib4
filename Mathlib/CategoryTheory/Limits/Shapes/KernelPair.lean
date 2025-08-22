@@ -66,7 +66,6 @@ instance [Mono f] : Inhabited (IsKernelPair f (𝟙 _) (𝟙 _)) :=
 
 variable {f a b}
 
--- Porting note: `lift` and the two following simp lemmas were introduced to ease the port
 /--
 Given a pair of morphisms `p`, `q` to `X` which factor through `f`, they factor through any kernel
 pair of `f`.

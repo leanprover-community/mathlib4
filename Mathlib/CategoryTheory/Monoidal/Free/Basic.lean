@@ -290,8 +290,7 @@ section
 open Hom
 
 /-- Auxiliary definition for `FreeMonoidalCategory.project`. -/
--- Porting note: here `@[simp]` generates a panic in
--- _private.Lean.Meta.Match.MatchEqs.0.Lean.Meta.Match.SimpH.substRHS
+@[simp]
 def projectMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (projectObj f X ⟶ projectObj f Y)
   | _, _, Hom.id _ => 𝟙 _
   | _, _, α_hom _ _ _ => (α_ _ _ _).hom
@@ -305,8 +304,8 @@ def projectMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (projectObj f X ⟶ projec
   | _, _, Hom.whiskerRight p X => projectMapAux p ▷ projectObj f X
   | _, _, Hom.tensor f g => projectMapAux f ⊗ₘ projectMapAux g
 
--- Porting note: this declaration generates the same panic.
 /-- Auxiliary definition for `FreeMonoidalCategory.project`. -/
+@[simp]
 def projectMap (X Y : F C) : (X ⟶ Y) → (projectObj f X ⟶ projectObj f Y) :=
   Quotient.lift (projectMapAux f) <| by
     intro f g h

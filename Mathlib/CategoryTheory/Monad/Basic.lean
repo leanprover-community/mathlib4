@@ -90,20 +90,11 @@ instance coeMonad : Coe (Monad C) (C ⥤ C) :=
 instance coeComonad : Coe (Comonad C) (C ⥤ C) :=
   ⟨fun G => G.toFunctor⟩
 
--- Porting note: these lemmas are syntactic tautologies
---@[simp]
---theorem monad_toFunctor_eq_coe : T.toFunctor = T :=
---  rfl
---
---@[simp]
---theorem comonad_toFunctor_eq_coe : G.toFunctor = G :=
---  rfl
-
 initialize_simps_projections CategoryTheory.Monad (toFunctor → coe)
 
 initialize_simps_projections CategoryTheory.Comonad (toFunctor → coe)
 
--- Porting note: investigate whether `Monad.assoc` can be a `simp` lemma?
+-- TODO: investigate whether `Monad.assoc` can be a `simp` lemma?
 attribute [reassoc (attr := simp)] Monad.left_unit Monad.right_unit
 attribute [reassoc (attr := simp)] Comonad.coassoc Comonad.left_counit Comonad.right_counit
 
@@ -133,12 +124,10 @@ instance : Quiver (Monad C) where
 instance : Quiver (Comonad C) where
   Hom := ComonadHom
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma MonadHom.ext' {T₁ T₂ : Monad C} (f g : T₁ ⟶ T₂) (h : f.app = g.app) : f = g :=
   MonadHom.ext h
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma ComonadHom.ext' {T₁ T₂ : Comonad C} (f g : T₁ ⟶ T₂) (h : f.app = g.app) : f = g :=
   ComonadHom.ext h
