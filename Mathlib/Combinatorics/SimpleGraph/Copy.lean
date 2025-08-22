@@ -196,6 +196,11 @@ instance [Fintype {f : G →g H // Injective f}] : Fintype (G.Copy H) :=
     invFun f := ⟨f.1, f.2⟩
   }
 
+/-- A copy of `⊤` gives rise to an embedding of `⊤`. -/
+def topEmbedding (f : Copy (⊤ : SimpleGraph α) G) : (⊤ : SimpleGraph α) ↪g G :=
+  { f.toEmbedding with
+    map_rel_iff' := fun {v w} ↦ ⟨fun h ↦ by simpa using h.ne, f.toHom.map_adj⟩}
+
 end Copy
 
 /-- A `Subgraph G` gives rise to a copy from the coercion to `G`. -/
@@ -374,9 +379,8 @@ alias ⟨IsIndContained.exists_iso_subgraph, IsIndContained.of_exists_iso_subgra
   isIndContained_iff_exists_iso_subgraph
 
 @[simp] lemma top_isIndContained_iff_top_isContained :
-    (⊤ : SimpleGraph V) ⊴ H ↔ (⊤ : SimpleGraph V) ⊑ H where
-  mp h := h.isContained
-  mpr := fun ⟨f⟩ ↦ ⟨f.toEmbedding, fun {v w} ↦ ⟨fun h ↦ by simpa using h.ne, f.toHom.map_adj⟩⟩
+    (⊤ : SimpleGraph V) ⊴ H ↔ (⊤ : SimpleGraph V) ⊑ H :=
+  ⟨IsIndContained.isContained, fun ⟨f⟩ ↦ ⟨f.topEmbedding⟩⟩
 
 @[simp] lemma compl_isIndContained_compl : Gᶜ ⊴ Hᶜ ↔ G ⊴ H :=
   Embedding.complEquiv.symm.nonempty_congr
