@@ -5,14 +5,18 @@ Authors: Junyan Xu
 -/
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Nonneg.Ring
+import Mathlib.GroupTheory.MonoidLocalization.GrothendieckGroup
 import Mathlib.GroupTheory.MonoidLocalization.Lemmas
 import Mathlib.RingTheory.Ideal.Defs
 import Mathlib.RingTheory.IsTensorProduct
 
 /-!
-# Additive localizations of rings
+# Additive localizations of semirings
 
-Given a semiring `R`, `AddLocalization.Top R` is the initial ring with a ring homomorphism from `R`.
+Given a semiring `R` and a two-sided ideal `I`, `AddLocalization I.toAddSubmonoid` is naturally
+equipped with the structure of a semiring.
+In the case `I = R`, `GrothendieckAddGroup R` is the initial ring with a ring homomorphism from `R`
+and may be called the Grothendieck ring of `R`.
 -/
 
 namespace Archimedean
@@ -85,9 +89,6 @@ instance [Semiring R] [Module R M] (S : Submodule R M) :
   zero_smul x := x.rec (fun _ _ ↦
     congr(mk $(zero_smul ..) $(Subtype.ext <| zero_smul ..)).trans mk_zero) fun _ ↦ rfl
 
-instance [Semiring R] [Module R M] : Module R (AddLocalization.Top M) :=
-  inferInstanceAs <| Module R <| AddLocalization (⊤ : Submodule R M).toAddSubmonoid
-
 end SMul
 
 section Mul
@@ -137,14 +138,6 @@ instance : letI := instMul M hl hr; RightDistribClass (AddLocalization M) :=
       congr 1
       on_goal 2 => apply Subtype.val_injective; simp_rw [M.mk_add_mk]
       all_goals ac_rfl }
-
-instance : Mul (AddLocalization.Top R) := instMul _ (fun _ _ _ ↦ ⟨⟩) fun _ _ _ ↦ ⟨⟩
-
-instance : LeftDistribClass (AddLocalization.Top R) :=
-  instLeftDistribClass ⊤ (fun _ _ _ ↦ ⟨⟩) fun _ _ _ ↦ ⟨⟩
-
-instance : RightDistribClass (AddLocalization.Top R) :=
-  instRightDistribClass ⊤ (fun _ _ _ ↦ ⟨⟩) fun _ _ _ ↦ ⟨⟩
 
 end Mul
 
@@ -303,51 +296,6 @@ instance [CommSemiring R] (I : Ideal R) : Algebra R (AddLocalization I.toAddSubm
   algebraMap := ringHomᵢ I
   commutes' _ := mul_comm _
   smul_def' r x := x.rec (fun _ _ ↦ by simp [← mk_zero_eq_addMonoidOf_mk, mk_mul]; rfl) fun _ ↦ rfl
-
-variable (R)
-
-instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocRing (AddLocalization.Top R) where
-  __ := instNonUnitalNonAssocSemiring ⊤ (fun _ _ _ ↦ ⟨⟩) fun _ _ _ ↦ ⟨⟩
-  __ : AddCommGroup _ := inferInstance
-
-/-- The non-unital ring homomorphism from a semiring to its Grothendieck ring. -/
-protected abbrev Top.nonUnitalRingHom [NonUnitalNonAssocSemiring R] :
-    R →ₙ+* AddLocalization.Top R :=
-  nonUnitalRingHom ⊤ (fun _ _ _ ↦ ⟨⟩) fun _ _ _ ↦ ⟨⟩
-
-instance [NonUnitalNonAssocSemiring R] : DistribSMul R (AddLocalization.Top R) :=
-  instDistribSMul ⊤ fun _ _ _ ↦ ⟨⟩
-
-instance [NonUnitalSemiring R] : NonUnitalRing (AddLocalization.Top R) where
-  __ := instNonUnitalSemiring ⊤ (fun _ _ _ ↦ ⟨⟩) fun _ _ _ ↦ ⟨⟩
-  __ : AddCommGroup _ := inferInstance
-
-instance [NonAssocSemiring R] : NonAssocRing (AddLocalization.Top R) where
-  __ := instNonAssocSemiring ⊤ (fun _ _ _ ↦ ⟨⟩) fun _ _ _ ↦ ⟨⟩
-  __ : AddCommGroup _ := inferInstance
-
-theorem Top.isLocalizationMap_smul_one [NonAssocSemiring R] :
-    (⊤ : AddSubmonoid R).IsLocalizationMap fun r ↦ r • (1 : AddLocalization.Top R) :=
-  AddLocalization.isLocalizationMap_smul_one ⊤ _ _
-
-/-- The ring homomorphism from a semiring to its Grothendieck ring. -/
-protected abbrev Top.ringHom [NonAssocSemiring R] : R →+* AddLocalization.Top R :=
-  ringHom ⊤ (fun _ _ _ ↦ ⟨⟩) fun _ _ _ ↦ ⟨⟩
-
-instance [Semiring R] : Ring (AddLocalization.Top R) where
-
-instance [NonUnitalNonAssocCommSemiring R] : NonUnitalNonAssocCommRing (AddLocalization.Top R) where
-  __ := instNonUnitalNonAssocCommSemiring ⊤ fun _ _ _ ↦ ⟨⟩
-  __ : AddCommGroup _ := inferInstance
-
-instance [NonUnitalCommSemiring R] : NonUnitalCommRing (AddLocalization.Top R) where
-  __ := instNonUnitalCommSemiring ⊤ fun _ _ _ ↦ ⟨⟩
-  __ : AddCommGroup _ := inferInstance
-
-instance [CommSemiring R] : CommRing (AddLocalization.Top R) where
-
-instance [CommSemiring R] : Algebra R (AddLocalization.Top R) :=
-  inferInstanceAs <| Algebra R <| AddLocalization (⊤ : Ideal R).toAddSubmonoid
 
 -- TODO: NonAssocCommSemiring after #28532
 
@@ -511,10 +459,78 @@ theorem isLocalizationMap_iff_isPushout {R S : Type*} [CommSemiring R] [CommRing
   (isLocalizationMap_iff_isBaseChange (algebraMap R S).toNatLinearMap).trans
     (Algebra.isPushout_iff ..).symm
 
-instance (R) [CommSemiring R] : Algebra.IsPushout ℕ ℤ R (AddLocalization.Top R) :=
-  isLocalizationMap_iff_isPushout.mp (AddLocalization.addMonoidOf _).isLocalizationMap
+end AddSubmonoid
 
-instance (R) [CommSemiring R] : Algebra.IsPushout ℕ R ℤ (AddLocalization.Top R) :=
+namespace Algebra.GrothendieckAddGroup
+
+variable (R M : Type*) [AddCommMonoid M]
+
+instance [Semiring R] [Module R M] : Module R (GrothendieckAddGroup M) :=
+  inferInstanceAs <| Module R <| AddLocalization (⊤ : Submodule R M).toAddSubmonoid
+
+section Mul
+
+variable [AddCommMonoid R] [Mul R] [LeftDistribClass R] [RightDistribClass R]
+
+instance : Mul (GrothendieckAddGroup R) :=
+  AddLocalization.instMul _ (fun _ _ _ ↦ ⟨⟩) fun _ _ _ ↦ ⟨⟩
+
+instance : LeftDistribClass (GrothendieckAddGroup R) :=
+  AddLocalization.instLeftDistribClass ⊤ (fun _ _ _ ↦ ⟨⟩) fun _ _ _ ↦ ⟨⟩
+
+instance : RightDistribClass (GrothendieckAddGroup R) :=
+  AddLocalization.instRightDistribClass ⊤ (fun _ _ _ ↦ ⟨⟩) fun _ _ _ ↦ ⟨⟩
+
+end Mul
+
+instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocRing (GrothendieckAddGroup R) where
+  __ := AddLocalization.instNonUnitalNonAssocSemiring ⊤ (fun _ _ _ ↦ ⟨⟩) fun _ _ _ ↦ ⟨⟩
+  __ : AddCommGroup _ := inferInstance
+
+/-- The non-unital ring homomorphism from a semiring to its Grothendieck ring. -/
+protected abbrev nonUnitalRingHom [NonUnitalNonAssocSemiring R] :
+    R →ₙ+* GrothendieckAddGroup R :=
+  AddLocalization.nonUnitalRingHom ⊤ (fun _ _ _ ↦ ⟨⟩) fun _ _ _ ↦ ⟨⟩
+
+instance [NonUnitalNonAssocSemiring R] : DistribSMul R (GrothendieckAddGroup R) :=
+  AddLocalization.instDistribSMul ⊤ fun _ _ _ ↦ ⟨⟩
+
+instance [NonUnitalSemiring R] : NonUnitalRing (GrothendieckAddGroup R) where
+  __ := AddLocalization.instNonUnitalSemiring ⊤ (fun _ _ _ ↦ ⟨⟩) fun _ _ _ ↦ ⟨⟩
+  __ : AddCommGroup _ := inferInstance
+
+instance [NonAssocSemiring R] : NonAssocRing (GrothendieckAddGroup R) where
+  __ := AddLocalization.instNonAssocSemiring ⊤ (fun _ _ _ ↦ ⟨⟩) fun _ _ _ ↦ ⟨⟩
+  __ : AddCommGroup _ := inferInstance
+
+theorem isLocalizationMap_smul_one [NonAssocSemiring R] :
+    (⊤ : AddSubmonoid R).IsLocalizationMap fun r ↦ r • (1 : GrothendieckAddGroup R) :=
+  AddLocalization.isLocalizationMap_smul_one ⊤ _ _
+
+/-- The ring homomorphism from a semiring to its Grothendieck ring. -/
+protected abbrev ringHom [NonAssocSemiring R] : R →+* GrothendieckAddGroup R :=
+  AddLocalization.ringHom ⊤ (fun _ _ _ ↦ ⟨⟩) fun _ _ _ ↦ ⟨⟩
+
+instance [Semiring R] : Ring (GrothendieckAddGroup R) where
+
+instance [NonUnitalNonAssocCommSemiring R] :
+    NonUnitalNonAssocCommRing (GrothendieckAddGroup R) where
+  __ := AddLocalization.instNonUnitalNonAssocCommSemiring ⊤ fun _ _ _ ↦ ⟨⟩
+  __ : AddCommGroup _ := inferInstance
+
+instance [NonUnitalCommSemiring R] : NonUnitalCommRing (GrothendieckAddGroup R) where
+  __ := AddLocalization.instNonUnitalCommSemiring ⊤ fun _ _ _ ↦ ⟨⟩
+  __ : AddCommGroup _ := inferInstance
+
+instance [CommSemiring R] : CommRing (GrothendieckAddGroup R) where
+
+instance [CommSemiring R] : Algebra R (GrothendieckAddGroup R) :=
+  inferInstanceAs <| Algebra R <| AddLocalization (⊤ : Ideal R).toAddSubmonoid
+
+instance (R) [CommSemiring R] : Algebra.IsPushout ℕ ℤ R (GrothendieckAddGroup R) :=
+  AddSubmonoid.isLocalizationMap_iff_isPushout.mp (AddLocalization.addMonoidOf _).isLocalizationMap
+
+instance (R) [CommSemiring R] : Algebra.IsPushout ℕ R ℤ (GrothendieckAddGroup R) :=
   .symm inferInstance
 
-end AddSubmonoid
+end Algebra.GrothendieckAddGroup

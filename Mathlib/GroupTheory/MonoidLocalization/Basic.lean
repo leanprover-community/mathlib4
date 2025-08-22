@@ -1450,31 +1450,6 @@ instance : (⊤ : AddSubmonoid ℕ).IsLocalizationMap ((↑) : ℕ → ℤ) :=
   AddSubmonoid.isLocalizationMap_of_addGroup
     (fun _ _ ↦ Int.natCast_inj.mp) (⟨_, _, ⟨⟩, ·.toNat_sub_toNat_neg.symm⟩)
 
-namespace Localization
-
-variable (M)
-
-/-- `Localization.Top M` is the localization of a commutative monoid `M` that inverts
-all its elements. Also known as the Grothendieck group of `M`, but we opt for the more
-descriptive name to avoid ambiguity. -/
-@[to_additive /-- `AddLocalization.Top M` is the localization of
-a commutative additive monoid `M` that inverts all its elements. Also known as the
-Grothendieck group of `M`, but we opt for the more descriptive name to avoid ambiguity. -/]
-protected abbrev Top : Type _ := Localization (⊤ : Submonoid M)
-
-/-- `Localization.monoidOf` specialized to the top submonoid. -/
-@[to_additive
-/-- `AddLocalization.addMonoidOf` specialized to the top submonoid. -/]
-abbrev Top.of : (⊤ : Submonoid M).LocalizationMap (Localization.Top M) :=
-  Localization.monoidOf ⊤
-
-@[to_additive] instance : CommGroup (Localization.Top M) where
-  inv x := x.liftOn (fun m m' ↦ .mk m' ⟨m, ⟨⟩⟩) fun h ↦ mk_eq_mk_iff.mpr <| by
-    simpa [Localization.r_iff_exists, mul_comm, eq_comm] using h
-  inv_mul_cancel x := x.induction_on fun x ↦ by rw [liftOn_mk, mk_mul, mul_comm]; apply mk_self_mk
-
-end Localization
-
 end Group
 
 namespace Submonoid.LocalizationMap

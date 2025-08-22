@@ -77,4 +77,8 @@ end AddSubmonoid
 
 instance (priority := 100) (R) [CommSemiring R] [IsCancelAdd R] [Nontrivial R] :
     StrongRankCondition R :=
-  (AddLocalization.Top.isLocalizationMap_smul_one R).strongRankCondition_of_isCancelAdd
+  (Algebra.GrothendieckAddGroup.isLocalizationMap_smul_one R).strongRankCondition_of_isCancelAdd
+
+example : StrongRankCondition ℕ := inferInstance
+example : StrongRankCondition ℚ≥0 := inferInstance
+-- ℝ≥0 isn't imported
