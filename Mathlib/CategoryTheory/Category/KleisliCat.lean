@@ -42,7 +42,7 @@ instance KleisliCat.categoryStruct {m} [Monad.{u, v} m] :
   comp f g := f >=> g
 
 @[ext]
-theorem KleisliCat.ext {m} [Monad.{u, v} m] [LawfulMonad m] (α β : KleisliCat m)
+theorem KleisliCat.ext {m} [Monad.{u, v} m] (α β : KleisliCat m)
     (f g : α ⟶ β) (h : ∀ x, f x = g x) : f = g := funext h
 
 instance KleisliCat.category {m} [Monad.{u, v} m] [LawfulMonad m] : Category (KleisliCat m) := by
