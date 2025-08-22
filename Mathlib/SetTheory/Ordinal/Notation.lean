@@ -33,7 +33,7 @@ open Ordinal Order
 set_option genSizeOfSpec false in
 /-- Recursive definition of an ordinal notation. `zero` denotes the ordinal 0, and `oadd e n a` is
 intended to refer to `ω ^ e * n + a`. For this to be a valid Cantor normal form, we must have the
-exponents decrease to the right, but we can't state this condition until we've defined `repr`, so we
+exponents decrease to the right, but we cannot state this condition until we've defined `repr`, so we
 make it a separate definition `NF`. -/
 inductive ONote : Type
   | zero : ONote
@@ -1208,7 +1208,7 @@ def below (a b : NONote) : Prop :=
 def oadd (e : NONote) (n : ℕ+) (a : NONote) (h : below a e) : NONote :=
   ⟨_, NF.oadd e.2 n h⟩
 
-/-- This is a recursor-like theorem for `NONote` suggesting an inductive definition, which can't
+/-- This is a recursor-like theorem for `NONote` suggesting an inductive definition, which cannot
 actually be defined this way due to conflicting dependencies. -/
 @[elab_as_elim]
 def recOn {C : NONote → Sort*} (o : NONote) (H0 : C 0)

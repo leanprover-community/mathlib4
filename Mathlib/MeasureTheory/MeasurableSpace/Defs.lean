@@ -423,7 +423,7 @@ theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ �
 
 @[simp]
 -- The `m₁` parameter gets filled in by typeclass instance synthesis (for some reason...)
--- so we have to order it *after* `m₂`. Otherwise `simp` can't apply this lemma.
+-- so we have to order it *after* `m₂`. Otherwise `simp` cannot apply this lemma.
 theorem measurableSet_inf {m₂ m₁ : MeasurableSpace α} {s : Set α} :
     MeasurableSet[m₁ ⊓ m₂] s ↔ MeasurableSet[m₁] s ∧ MeasurableSet[m₂] s :=
   Iff.rfl

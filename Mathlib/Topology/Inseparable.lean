@@ -17,7 +17,7 @@ In this file we prove basic properties of the following notions defined elsewher
 * `Specializes` (notation: `x ⤳ y`) : a relation saying that `𝓝 x ≤ 𝓝 y`;
 
 * `Inseparable`: a relation saying that two points in a topological space have the same
-  neighbourhoods; equivalently, they can't be separated by an open set;
+  neighbourhoods; equivalently, they cannot be separated by an open set;
 
 * `InseparableSetoid X`: same relation, as a `Setoid`;
 

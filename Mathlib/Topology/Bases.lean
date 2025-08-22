@@ -296,7 +296,7 @@ variable (α)
 If `α` is a uniform space with countably generated uniformity filter (e.g., an `EMetricSpace`), then
 this condition is equivalent to `SecondCountableTopology α`. In this case the
 latter should be used as a typeclass argument in theorems because Lean can automatically deduce
-`TopologicalSpace.SeparableSpace` from `SecondCountableTopology` but it can't
+`TopologicalSpace.SeparableSpace` from `SecondCountableTopology` but it cannot
 deduce `SecondCountableTopology` from `TopologicalSpace.SeparableSpace`.
 
 Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: the previous paragraph describes the state of the art in Lean 3.

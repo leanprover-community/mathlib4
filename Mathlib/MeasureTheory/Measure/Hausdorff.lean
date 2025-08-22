@@ -176,7 +176,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
     rcases ENNReal.exists_inv_nat_lt hxt with ⟨n, hn⟩
     exact mem_iUnion.2 ⟨n, hxs, hn.le⟩
   /- Now we have `∀ n, μ (s ∩ t) + μ (S n) ≤ μ s` and we need to prove
-    `μ (s ∩ t) + μ (⋃ n, S n) ≤ μ s`. We can't pass to the limit because
+    `μ (s ∩ t) + μ (⋃ n, S n) ≤ μ s`. We cannot pass to the limit because
     `μ` is only an outer measure. -/
   by_cases htop : μ (s \ t) = ∞
   · rw [htop, add_top, ← htop]

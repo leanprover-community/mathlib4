@@ -25,7 +25,7 @@ definition, we show that this isn't a primitive recursive function.
 We very broadly adapt the proof idea from
 https://www.planetmath.org/ackermannfunctionisnotprimitiverecursive. Namely, we prove that for any
 primitive recursive `f : ℕ → ℕ`, there exists `m` such that `f n < ack m n` for all `n`. This then
-implies that `fun n => ack n n` can't be primitive recursive, and so neither can `ack`. We aren't
+implies that `fun n => ack n n` cannot be primitive recursive, and so neither can `ack`. We aren't
 able to use the same bounds as in that proof though, since our approach of using pairing functions
 differs from their approach of using multivariate functions.
 

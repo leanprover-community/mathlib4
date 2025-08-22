@@ -427,6 +427,6 @@ def mapComon (F : C ⥤ D) [F.OplaxMonoidal] : Comon_ C ⥤ Comon_ D where
   map_comp f g := by ext; simp
 
 -- TODO We haven't yet set up the category structure on `OplaxMonoidalFunctor C D`
--- and so can't state `mapComonFunctor : OplaxMonoidalFunctor C D ⥤ Comon_ C ⥤ Comon_ D`.
+-- and so cannot state `mapComonFunctor : OplaxMonoidalFunctor C D ⥤ Comon_ C ⥤ Comon_ D`.
 
 end CategoryTheory.Functor

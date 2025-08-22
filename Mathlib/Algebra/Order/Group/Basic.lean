@@ -94,9 +94,9 @@ lemma zpow_lt_zpow_iff_left (hn : 0 < n) : a ^ n < b ^ n ↔ a < b :=
 instance : IsMulTorsionFree α where pow_left_injective _ hn := (pow_left_strictMono hn).injective
 
 variable (α) in
-/-- A nontrivial densely linear ordered commutative group can't be a cyclic group. -/
+/-- A nontrivial densely linear ordered commutative group cannot be a cyclic group. -/
 @[to_additive
-  /-- A nontrivial densely linear ordered additive commutative group can't be a cyclic group. -/]
+  /-- A nontrivial densely linear ordered additive commutative group cannot be a cyclic group. -/]
 theorem not_isCyclic_of_denselyOrdered [DenselyOrdered α] [Nontrivial α] : ¬IsCyclic α := by
   intro h
   rcases exists_zpow_surjective α with ⟨a, ha⟩

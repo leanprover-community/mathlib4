@@ -23,7 +23,7 @@ This corresponds to the following two pairs of declarations:
 
 You can use these to produce instances for specific `DFunLike` types.
 (Although there might be options for `Fintype` instances with better definitional behaviour.)
-They can't be instances themselves since they can cause loops.
+They cannot be instances themselves since they can cause loops.
 -/
 
 -- `Type` is a reserved word, switched to `Type'`

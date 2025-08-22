@@ -87,11 +87,11 @@ The output of this function must be valid Python syntax, and it assumes the vari
 def Poly.format : Poly → Lean.Format
   | .const z => toString z
   | .var n => s!"vars[{n}]" -- this references variable `vars`, which need to be bounded (below)
-  | .hyp e => s!"hyp{e}" -- this one can't be used by python
+  | .hyp e => s!"hyp{e}" -- this one cannot be used by python
   | .add p q => s!"({p.format} + {q.format})"
   | .sub p q => s!"({p.format} - {q.format})"
   | .mul p q => s!"({p.format} * {q.format})"
-  | .div p q => s!"({p.format} / {q.format})" -- this one can't be used by python
+  | .div p q => s!"({p.format} / {q.format})" -- this one cannot be used by python
   | .pow p q => s!"({p.format} ^ {q.format})"
   | .neg p => s!"-{p.format}"
 

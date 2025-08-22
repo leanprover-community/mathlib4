@@ -241,7 +241,7 @@ end Empty
 
 section NoZeroSMulDivisors
 
--- Cannot be an instance because the basis can't be inferred.
+-- Cannot be an instance because the basis cannot be inferred.
 protected theorem noZeroSMulDivisors [NoZeroDivisors R] (b : Basis ι R M) :
     NoZeroSMulDivisors R M :=
   ⟨fun {c x} hcx => by

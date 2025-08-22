@@ -37,7 +37,7 @@ notation "ℝ" => Real
 
 namespace CauSeq.Completion
 
--- this can't go in `Data.Real.CauSeqCompletion` as the structure on `ℚ` isn't available
+-- this cannot go in `Data.Real.CauSeqCompletion` as the structure on `ℚ` isn't available
 @[simp]
 theorem ofRat_rat {abv : ℚ → ℚ} [IsAbsoluteValue abv] (q : ℚ) :
     ofRat (q : ℚ) = (q : Cauchy abv) :=

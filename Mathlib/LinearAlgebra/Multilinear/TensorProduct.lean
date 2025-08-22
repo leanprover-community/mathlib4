@@ -68,7 +68,7 @@ variable {N : Type*} [AddCommMonoid N] [Module R N]
 of the codomain.
 
 This can be thought of as combining `Equiv.sumArrowEquivProdArrow.symm` with
-`TensorProduct.map`, noting that the two operations can't be separated as the intermediate result
+`TensorProduct.map`, noting that the two operations cannot be separated as the intermediate result
 is not a `MultilinearMap`.
 
 While this can be generalized to work for dependent `Π i : ι₁, N'₁ i` instead of `ι₁ → N`, doing so

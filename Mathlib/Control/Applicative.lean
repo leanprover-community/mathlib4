@@ -61,7 +61,7 @@ theorem Applicative.ext {F} :
 
 end Lemmas
 
--- Porting note: we have a monad instance for `Id` but not `id`, mathport can't tell
+-- Porting note: we have a monad instance for `Id` but not `id`, mathport cannot tell
 -- which one is intended
 
 instance : CommApplicative Id where commutative_prod _ _ := rfl

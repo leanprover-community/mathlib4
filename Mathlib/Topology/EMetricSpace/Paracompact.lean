@@ -80,7 +80,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
   -- `ball x (3 / 2 ^ n) ⊆ s (ind x)`, then either `x ∈ D n i`, or `x ∈ D m i` for some `m < n`.
   have Dcov (x) : ∃ n i, x ∈ D n i := by
     obtain ⟨n, hn⟩ : ∃ n : ℕ, ball x (3 * 2⁻¹ ^ n) ⊆ s (ind x) := by
-      -- This proof takes 5 lines because we can't import `specific_limits` here
+      -- This proof takes 5 lines because we cannot import `specific_limits` here
       rcases isOpen_iff.1 (ho <| ind x) x (mem_ind x) with ⟨ε, ε0, hε⟩
       have : 0 < ε / 3 := ENNReal.div_pos_iff.2 ⟨ε0.lt.ne', ENNReal.coe_ne_top⟩
       rcases ENNReal.exists_inv_two_pow_lt this.ne' with ⟨n, hn⟩

@@ -54,7 +54,7 @@ variable {R R' E F G : Type*}
 /-- A seminorm on an additive group `G` is a function `f : G → ℝ` that preserves zero, is
 subadditive and such that `f (-x) = f x` for all `x`. -/
 structure AddGroupSeminorm (G : Type*) [AddGroup G] where
-  -- Porting note: can't extend `ZeroHom G ℝ` because otherwise `to_additive` won't work since
+  -- Porting note: cannot extend `ZeroHom G ℝ` because otherwise `to_additive` won't work since
   -- we aren't using old structures
   /-- The bare function of an `AddGroupSeminorm`. -/
   protected toFun : G → ℝ

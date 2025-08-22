@@ -84,7 +84,7 @@ theorem restrictStalkIso_inv_eq_germ {U : TopCat} (X : PresheafedSpace.{_, _, v}
 theorem restrictStalkIso_inv_eq_ofRestrict {U : TopCat} (X : PresheafedSpace.{_, _, v} C)
     {f : U ⟶ (X : TopCat.{v})} (h : IsOpenEmbedding f) (x : U) :
     (X.restrictStalkIso h x).inv = (X.ofRestrict h).stalkMap x := by
-  -- We can't use `ext` here because it would call `stalk_hom_ext` instead.
+  -- We cannot use `ext` here because it would call `stalk_hom_ext` instead.
   refine colimit.hom_ext fun V => ?_
   induction V with | op V => ?_
   let i : (h.isOpenMap.functorNhds x).obj ((OpenNhds.map f x).obj V) ⟶ V :=
@@ -122,7 +122,7 @@ theorem comp {X Y Z : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (β : Y ⟶ Z)
       (β.stalkMap (α.base x) : Z.presheaf.stalk (β.base (α.base x)) ⟶ Y.presheaf.stalk (α.base x)) ≫
         (α.stalkMap x : Y.presheaf.stalk (α.base x) ⟶ X.presheaf.stalk x) := by
   dsimp [Hom.stalkMap, stalkFunctor, stalkPushforward]
-  -- We can't use `ext` here due to https://github.com/leanprover/std4/pull/159
+  -- We cannot use `ext` here due to https://github.com/leanprover/std4/pull/159
   apply colimit.hom_ext
   rintro ⟨U, hU⟩
   simp
@@ -190,7 +190,7 @@ theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
   -- Porting note: the original one liner `dsimp [stalkMap]; simp [stalkMap]` doesn't work,
   -- I had to uglify this
   dsimp [stalkSpecializes, Hom.stalkMap, stalkFunctor, stalkPushforward]
-  -- We can't use `ext` here due to https://github.com/leanprover/std4/pull/159
+  -- We cannot use `ext` here due to https://github.com/leanprover/std4/pull/159
   refine colimit.hom_ext fun j => ?_
   induction j with | op j => ?_
   dsimp

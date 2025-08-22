@@ -212,7 +212,7 @@ variable (A K) [IsDomain C]
 /-- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is a Dedekind domain,
 the integral closure `C` of `A` in `L` is a Dedekind domain.
 
-This cannot be an instance since `A`, `K` or `L` can't be inferred. See also the instance
+This cannot be an instance since `A`, `K` or `L` cannot be inferred. See also the instance
 `integralClosure.isDedekindDomain_fractionRing` where `K := FractionRing A`
 and `C := integralClosure A L`. -/
 theorem IsIntegralClosure.isDedekindDomain [IsDedekindDomain A] : IsDedekindDomain C :=
@@ -227,7 +227,7 @@ theorem IsIntegralClosure.isDedekindDomain [IsDedekindDomain A] : IsDedekindDoma
 /-- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is a Dedekind domain,
 the integral closure of `A` in `L` is a Dedekind domain.
 
-This cannot be an instance since `K` can't be inferred. See also the instance
+This cannot be an instance since `K` cannot be inferred. See also the instance
 `integralClosure.isDedekindDomain_fractionRing` where `K := FractionRing A`. -/
 theorem integralClosure.isDedekindDomain [IsDedekindDomain A] :
     IsDedekindDomain (integralClosure A L) :=

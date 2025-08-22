@@ -21,7 +21,7 @@ defined in `Mathlib/Analysis/Convex/Gauge.lean`.
 This definition can be used to generalize the notion of Fréchet derivative
 to maps between topological vector spaces without norms.
 
-Currently, we can't reuse results about `egauge` for `gauge`,
+Currently, we cannot reuse results about `egauge` for `gauge`,
 because we lack a theory of normed semifields.
 -/
 

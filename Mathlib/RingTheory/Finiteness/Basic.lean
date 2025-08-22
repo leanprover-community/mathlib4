@@ -166,7 +166,7 @@ theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactE
   classical
     -- Introduce shorthand for span of an element
     let sp : M → Submodule R M := fun a => span R {a}
-    -- Trivial rewrite lemma; a small hack since simp (only) & rw can't accomplish this smoothly.
+    -- Trivial rewrite lemma; a small hack since simp (only) & rw cannot accomplish this smoothly.
     have supr_rw : ∀ t : Finset M, ⨆ x ∈ t, sp x = ⨆ x ∈ (↑t : Set M), sp x := fun t => by rfl
     constructor
     · rintro ⟨t, rfl⟩

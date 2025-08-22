@@ -159,7 +159,7 @@ jobs:
           ls .lake/packages/importGraph/.lake/build/bin/graph
 
       - name: cleanup .cache/mathlib
-        # This needs write access to .cache/mathlib, so can't be run inside landrun.
+        # This needs write access to .cache/mathlib, so cannot be run inside landrun.
         # However it is only using the `master` version of `cache`, so is safe to run outside landrun.
         shell: bash
         run: |

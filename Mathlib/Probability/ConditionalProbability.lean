@@ -78,7 +78,7 @@ scoped macro:max μ:term noWs "[" t:term " | " s:term "]" : term =>
   `(ProbabilityTheory.cond $μ $s $t)
 
 /-!
-We can't use `notation` or `notation3` as it does not support `noWs`, and so we have to write
+We cannot use `notation` or `notation3` as it does not support `noWs`, and so we have to write
 our own delaborators.
 -/
 

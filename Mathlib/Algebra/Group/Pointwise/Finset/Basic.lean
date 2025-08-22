@@ -83,7 +83,7 @@ lemma coe_eq_one : (s : Set α) = 1 ↔ s = 1 := coe_eq_singleton
 theorem one_subset : (1 : Finset α) ⊆ s ↔ (1 : α) ∈ s :=
   singleton_subset_iff
 
--- TODO: This would be a good simp lemma scoped to `Pointwise`, but it seems `@[simp]` can't be
+-- TODO: This would be a good simp lemma scoped to `Pointwise`, but it seems `@[simp]` cannot be
 -- scoped
 @[to_additive]
 theorem singleton_one : ({1} : Finset α) = 1 :=

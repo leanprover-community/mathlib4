@@ -440,7 +440,7 @@ lemma pow_le_pow_right₀ [ZeroLEOneClass M₀] [PosMulMono M₀] (ha : 1 ≤ a)
 lemma le_self_pow₀ [ZeroLEOneClass M₀] [PosMulMono M₀] (ha : 1 ≤ a) (hn : n ≠ 0) : a ≤ a ^ n := by
   simpa only [pow_one] using pow_le_pow_right₀ ha <| Nat.pos_iff_ne_zero.2 hn
 
-/-- The `bound` tactic can't handle `m ≠ 0` goals yet, so we express as `0 < m` -/
+/-- The `bound` tactic cannot handle `m ≠ 0` goals yet, so we express as `0 < m` -/
 @[bound]
 lemma Bound.le_self_pow_of_pos [ZeroLEOneClass M₀] [PosMulMono M₀] (ha : 1 ≤ a) (hn : 0 < n) :
     a ≤ a ^ n := le_self_pow₀ ha hn.ne'

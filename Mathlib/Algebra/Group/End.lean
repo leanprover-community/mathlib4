@@ -548,7 +548,7 @@ end Swap
 section AddGroup
 variable [AddGroup α] (a b : α)
 
--- we can't use `to_additive`, because it tries to translate `1` into `0`
+-- we cannot use `to_additive`, because it tries to translate `1` into `0`
 
 @[simp] lemma addLeft_zero : Equiv.addLeft (0 : α) = 1 := ext zero_add
 

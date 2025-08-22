@@ -273,7 +273,7 @@ def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
           naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨f⟩⟩ => by dsimp at f ⊢; cat_disch } }
   map f := { hom := Over.homMk f.hom }
 
--- Porting note: unfortunately `aesop` can't cope with a `cases` rule here for the type synonym
+-- Porting note: unfortunately `aesop` cannot cope with a `cases` rule here for the type synonym
 -- `WidePullbackShape`.
 -- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] WidePullbackShape
 -- If this worked we could avoid the `rintro` in `conesEquivUnitIso`.

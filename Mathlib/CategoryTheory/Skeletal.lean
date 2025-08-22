@@ -84,8 +84,8 @@ noncomputable def fromSkeleton : Skeleton C ⥤ C :=
 -- The `Full, Faithful` instances should be constructed by a deriving handler.
 -- https://github.com/leanprover-community/mathlib4/issues/380
 -- Note(kmill): `derive Functor.Full, Functor.Faithful` does not create instances
--- that are in terms of `Skeleton`, but rather `InducedCategory`, which can't be applied.
--- With `deriving @Functor.Full (Skeleton C)`, the instance can't be derived, for a similar reason.
+-- that are in terms of `Skeleton`, but rather `InducedCategory`, which cannot be applied.
+-- With `deriving @Functor.Full (Skeleton C)`, the instance cannot be derived, for a similar reason.
 
 noncomputable instance : (fromSkeleton C).Full := by
   apply InducedCategory.full

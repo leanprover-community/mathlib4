@@ -157,7 +157,7 @@ theorem notMem_bot : J ∉ (⊥ : Prepartition I) :=
 @[simp]
 theorem bot_boxes : (⊥ : Prepartition I).boxes = ∅ := rfl
 
-/-- An auxiliary lemma used to prove that the same point can't belong to more than
+/-- An auxiliary lemma used to prove that the same point cannot belong to more than
 `2 ^ Fintype.card ι` closed boxes of a prepartition. -/
 theorem injOn_setOf_mem_Icc_setOf_lower_eq (x : ι → ℝ) :
     InjOn (fun J : Box ι => { i | J.lower i = x i }) { J | J ∈ π ∧ x ∈ Box.Icc J } := by

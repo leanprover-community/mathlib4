@@ -444,7 +444,7 @@ protected def ofFinset [DecidableEq α] (E : Set α) (Indep : Finset α → Prop
   simp only [IndepMatroid.ofFinset, ofFinitaryCardAugment_indep, Finset.coe_subset]
   exact ⟨fun h ↦ h _ Subset.rfl, fun h J hJI ↦ indep_subset h hJI⟩
 
-/-- This can't be `@[simp]`, because it would cause the more useful
+/-- This cannot be `@[simp]`, because it would cause the more useful
   `Matroid.ofIndepFinset_apply` not to be in simp normal form. -/
 theorem ofFinset_indep' [DecidableEq α] (E : Set α) Indep indep_empty indep_subset indep_aug
     subset_ground {I : Set α} : (IndepMatroid.ofFinset

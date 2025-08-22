@@ -11,7 +11,7 @@ import Mathlib.Data.Finset.Lattice.Fold
 This file defines irreducible and prime elements in an order and shows that in a well-founded
 lattice every element decomposes as a supremum of irreducible elements.
 
-An element is sup-irreducible (resp. inf-irreducible) if it isn't `⊥` and can't be written as the
+An element is sup-irreducible (resp. inf-irreducible) if it isn't `⊥` and cannot be written as the
 supremum of any strictly smaller elements. An element is sup-prime (resp. inf-prime) if it isn't `⊥`
 and is greater than the supremum of any two elements less than it.
 

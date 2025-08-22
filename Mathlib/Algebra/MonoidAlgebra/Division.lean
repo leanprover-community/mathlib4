@@ -30,7 +30,7 @@ In order to apply in maximal generality (such as for `LaurentPolynomial`s), this
 
 `∃ d, g' = g + d` is used as opposed to some other permutation up to commutativity in order to match
 the definition of `semigroupDvd`. The results in this file could be duplicated for
-`MonoidAlgebra` by using `g ∣ g'`, but this can't be done automatically, and in any case is not
+`MonoidAlgebra` by using `g ∣ g'`, but this cannot be done automatically, and in any case is not
 likely to be very useful.
 
 -/
@@ -47,7 +47,7 @@ variable [AddCommMonoid G]
 /-- Divide by `of' k G g`, discarding terms not divisible by this. -/
 noncomputable def divOf [IsCancelAdd G] (x : k[G]) (g : G) : k[G] :=
   -- note: comapping by `+ g` has the effect of subtracting `g` from every element in
-  -- the support, and discarding the elements of the support from which `g` can't be subtracted.
+  -- the support, and discarding the elements of the support from which `g` cannot be subtracted.
   -- If `G` is an additive group, such as `ℤ` when used for `LaurentPolynomial`,
   -- then no discarding occurs.
   @Finsupp.comapDomain.addMonoidHom _ _ _ _ (g + ·) (add_right_injective g) x

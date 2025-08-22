@@ -27,7 +27,7 @@ namespace CategoryTheory.Limits
 
 variable (C : Type u) [Category.{v} C]
 
--- We can't just made this an `abbreviation`
+-- We cannot just made this an `abbreviation`
 -- because of https://github.com/leanprover-community/lean/issues/429
 /-- A category has all finite limits if every functor `J ⥤ C` with a `FinCategory J`
 instance and `J : Type` has a limit.
@@ -159,7 +159,7 @@ variable {J : Type v}
 
 -- Porting note: we would like to write something like:
 -- attribute [local aesop safe cases] WidePullbackShape WidePushoutShape
--- But aesop can't add a `cases` attribute to type synonyms.
+-- But aesop cannot add a `cases` attribute to type synonyms.
 
 namespace WidePullbackShape
 
@@ -211,7 +211,7 @@ instance finCategoryWidePullback [Fintype J] : FinCategory (WidePullbackShape J)
 instance finCategoryWidePushout [Fintype J] : FinCategory (WidePushoutShape J) where
   fintypeHom := WidePushoutShape.fintypeHom
 
--- We can't just made this an `abbreviation`
+-- We cannot just made this an `abbreviation`
 -- because of https://github.com/leanprover-community/lean/issues/429
 /-- `HasFiniteWidePullbacks` represents a choice of wide pullback
 for every finite collection of morphisms

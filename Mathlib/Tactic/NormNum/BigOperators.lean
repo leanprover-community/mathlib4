@@ -25,7 +25,7 @@ on that subset until the set is completely exhausted.
 
 This plugin is noticeably less powerful than the equivalent version in Mathlib 3: the design of
 `norm_num` means plugins have to return numerals, rather than a generic expression.
-In particular, we can't use the plugin on sums containing variables.
+In particular, we cannot use the plugin on sums containing variables.
 (See also the TODO note "To support variables".)
 
 ## TODO

@@ -133,7 +133,7 @@ theorem refl_symm : (Homeomorph.refl X).symm = Homeomorph.refl X :=
 protected theorem continuous (h : X ≃ₜ Y) : Continuous h :=
   h.continuous_toFun
 
--- otherwise `by continuity` can't prove continuity of `h.to_equiv.symm`
+-- otherwise `by continuity` cannot prove continuity of `h.to_equiv.symm`
 @[continuity]
 protected theorem continuous_symm (h : X ≃ₜ Y) : Continuous h.symm :=
   h.continuous_invFun

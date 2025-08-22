@@ -202,7 +202,7 @@ lemma addContent_sUnion_le_sum {m : AddContent C} (hC : IsSetSemiring C)
 lemma addContent_le_sum_of_subset_sUnion {m : AddContent C} (hC : IsSetSemiring C)
     {J : Finset (Set α)} (h_ss : ↑J ⊆ C) (ht : t ∈ C) (htJ : t ⊆ ⋃₀ ↑J) :
     m t ≤ ∑ u ∈ J, m u := by
-  -- we can't apply `addContent_mono` and `addContent_sUnion_le_sum` because `⋃₀ ↑J` might not
+  -- we cannot apply `addContent_mono` and `addContent_sUnion_le_sum` because `⋃₀ ↑J` might not
   -- be in `C`
   classical
   let Jt := J.image (fun u ↦ t ∩ u)

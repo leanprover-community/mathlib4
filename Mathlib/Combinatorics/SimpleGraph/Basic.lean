@@ -46,7 +46,7 @@ to standard `aesop`:
 
 - We use the `SimpleGraph` rule set in addition to the default rule sets.
 - We instruct Aesop's `intro` rule to unfold with `default` transparency.
-- We instruct Aesop to fail if it can't fully solve the goal. This allows us to
+- We instruct Aesop to fail if it cannot fully solve the goal. This allows us to
   use `aesop_graph` for auto-params.
 -/
 macro (name := aesop_graph) "aesop_graph" c:Aesop.tactic_clause* : tactic =>

@@ -72,7 +72,7 @@ the kernel fork consisting of the mapped morphisms is a limit.
 This essentially lets us commute `KernelFork.ofι` with `Functor.mapCone`.
 
 This is a variant of `isLimitMapConeForkEquiv` for equalizers,
-which we can't use directly between `G.map 0 = 0` does not hold definitionally.
+which we cannot use directly between `G.map 0 = 0` does not hold definitionally.
 -/
 def isLimitMapConeForkEquiv' :
     IsLimit (G.mapCone (KernelFork.ofι h w)) ≃
@@ -84,7 +84,7 @@ def isLimitMapConeForkEquiv' :
 /-- The property of preserving kernels expressed in terms of kernel forks.
 
 This is a variant of `isLimitForkMapOfIsLimit` for equalizers,
-which we can't use directly between `G.map 0 = 0` does not hold definitionally.
+which we cannot use directly between `G.map 0 = 0` does not hold definitionally.
 -/
 def isLimitForkMapOfIsLimit' [PreservesLimit (parallelPair f 0) G]
     (l : IsLimit (KernelFork.ofι h w)) :
@@ -199,7 +199,7 @@ the cokernel cofork consisting of the mapped morphisms is a colimit.
 This essentially lets us commute `CokernelCofork.ofπ` with `Functor.mapCocone`.
 
 This is a variant of `isColimitMapCoconeCoforkEquiv` for equalizers,
-which we can't use directly between `G.map 0 = 0` does not hold definitionally.
+which we cannot use directly between `G.map 0 = 0` does not hold definitionally.
 -/
 def isColimitMapCoconeCoforkEquiv' :
     IsColimit (G.mapCocone (CokernelCofork.ofπ h w)) ≃
@@ -211,7 +211,7 @@ def isColimitMapCoconeCoforkEquiv' :
 /-- The property of preserving cokernels expressed in terms of cokernel coforks.
 
 This is a variant of `isColimitCoforkMapOfIsColimit` for equalizers,
-which we can't use directly between `G.map 0 = 0` does not hold definitionally.
+which we cannot use directly between `G.map 0 = 0` does not hold definitionally.
 -/
 def isColimitCoforkMapOfIsColimit' [PreservesColimit (parallelPair f 0) G]
     (l : IsColimit (CokernelCofork.ofπ h w)) :

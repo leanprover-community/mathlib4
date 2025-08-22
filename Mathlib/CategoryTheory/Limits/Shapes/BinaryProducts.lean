@@ -1313,7 +1313,7 @@ def IsLimit.binaryFanSwap (I : IsLimit s) : IsLimit s.swap where
 @[deprecated (since := "2025-05-04")] alias IsLimit.swapBinaryFan := IsLimit.binaryFanSwap
 
 /-- Construct `HasBinaryProduct Y X` from `HasBinaryProduct X Y`.
-This can't be an instance, as it would cause a loop in typeclass search. -/
+This cannot be an instance, as it would cause a loop in typeclass search. -/
 lemma HasBinaryProduct.swap (X Y : C) [HasBinaryProduct X Y] : HasBinaryProduct Y X :=
   .mk ⟨BinaryFan.swap (limit.cone (pair X Y)), (limit.isLimit (pair X Y)).binaryFanSwap⟩
 

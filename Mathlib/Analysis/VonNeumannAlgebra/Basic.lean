@@ -55,7 +55,7 @@ See `WStarAlgebra` for the abstract notion (a C^*-algebra with Banach space pred
 
 Note this is a bundled structure, parameterised by the Hilbert space `H`,
 rather than a typeclass on the type of elements.
-Thus we can't say that the bounded operators `H →L[ℂ] H` form a `VonNeumannAlgebra`
+Thus we cannot say that the bounded operators `H →L[ℂ] H` form a `VonNeumannAlgebra`
 (although we will later construct the instance `WStarAlgebra (H →L[ℂ] H)`),
 and instead will use `⊤ : VonNeumannAlgebra H`.
 -/

@@ -99,7 +99,7 @@ lemma ClassGroup.mk_def (I : (FractionalIdeal R⁰ K)ˣ) :
       (QuotientGroup.mk' (toPrincipalIdeal R (FractionRing R)).range)
         (Units.map (FractionalIdeal.canonicalEquiv R⁰ K (FractionRing R)) I) := rfl
 
--- Cannot be `@[simp]` because it can't figure out the quotient relation.
+-- Cannot be `@[simp]` because it cannot figure out the quotient relation.
 theorem ClassGroup.Quot_mk_eq_mk (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
     Quot.mk _ I = ClassGroup.mk I := by
   rw [ClassGroup.mk_def, canonicalEquiv_self, RingEquiv.coe_monoidHom_refl, Units.map_id,
@@ -195,7 +195,7 @@ theorem ClassGroup.equiv_mk (K' : Type*) [Field K'] [Algebra R K'] [IsFractionRi
     (I : (FractionalIdeal R⁰ K)ˣ) :
     ClassGroup.equiv K' (ClassGroup.mk I) =
       QuotientGroup.mk' _ (Units.mapEquiv (↑(FractionalIdeal.canonicalEquiv R⁰ K K')) I) := by
-  -- `simp` can't apply `ClassGroup.mk_def` and `rw` can't unfold `ClassGroup`.
+  -- `simp` cannot apply `ClassGroup.mk_def` and `rw` cannot unfold `ClassGroup`.
   rw [ClassGroup.equiv, ClassGroup.mk_def]
   simp only [ClassGroup, QuotientGroup.congr_mk']
   congr

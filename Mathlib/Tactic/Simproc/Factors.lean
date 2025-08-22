@@ -10,7 +10,7 @@ import Mathlib.Tactic.NormNum.Prime
 # `simproc` for `Nat.primeFactorsList`
 
 Note that since `norm_num` can only produce numerals,
-we can't register this as a `norm_num` extension.
+we cannot register this as a `norm_num` extension.
 -/
 
 open Nat

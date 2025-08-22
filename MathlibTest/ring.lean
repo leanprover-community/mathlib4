@@ -171,7 +171,7 @@ example {n : ℝ} :
   -- `conv_lhs` prevents `ring_nf` picking a bad normalization for both sides.
   conv_lhs => ring_nf
 
--- We can't use `guard_target =ₛ` here, as while it does detect stray `OfNat`s, it also complains
+-- We cannot use `guard_target =ₛ` here, as while it does detect stray `OfNat`s, it also complains
 -- about differing instance paths.
 /--
 trace: n : ℝ
@@ -191,7 +191,7 @@ abbrev myId (a : ℤ) : ℤ := a
 Test that when `ring_nf` normalizes multiple expressions which contain a particular atom, it uses a
 form for that atom which is consistent between expressions.
 
-We can't use `guard_hyp h :ₛ` here, as while it does tell apart `x` and `myId x`, it also complains
+We cannot use `guard_hyp h :ₛ` here, as while it does tell apart `x` and `myId x`, it also complains
 about differing instance paths.
 -/
 /--

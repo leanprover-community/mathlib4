@@ -325,7 +325,7 @@ open ZeroObject
 @[simp]
 theorem id_zero : 𝟙 (0 : C) = (0 : (0 : C) ⟶ 0) := by apply HasZeroObject.from_zero_ext
 
--- This can't be a `simp` lemma because the left hand side would be a metavariable.
+-- This cannot be a `simp` lemma because the left hand side would be a metavariable.
 /-- An arrow ending in the zero object is zero -/
 theorem zero_of_to_zero {X : C} (f : X ⟶ 0) : f = 0 := by ext
 
@@ -441,7 +441,7 @@ open ZeroObject
 `X` and `Y` are isomorphic to the zero object.
 -/
 def isIsoZeroEquivIsoZero (X Y : C) : IsIso (0 : X ⟶ Y) ≃ (X ≅ 0) × (Y ≅ 0) := by
-  -- This is lame, because `Prod` can't cope with `Prop`, so we can't use `Equiv.prodCongr`.
+  -- This is lame, because `Prod` cannot cope with `Prop`, so we cannot use `Equiv.prodCongr`.
   refine (isIsoZeroEquiv X Y).trans ?_
   symm
   fconstructor

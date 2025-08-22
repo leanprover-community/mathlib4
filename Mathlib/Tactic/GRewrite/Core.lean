@@ -15,7 +15,7 @@ TODO:
 
 The algorithm used to implement `grw` uses the same method as `rw` to determine where to rewrite.
 This means that we can get ill-typed results. Moreover, it doesn't detect which occurrences
-can be rewritten by `gcongr` and which can't. It also means we cannot rewrite bound variables.
+can be rewritten by `gcongr` and which cannot. It also means we cannot rewrite bound variables.
 
 A better algorithm would be similar to `simp only`, where we recursively enter the subexpression
 using `gcongr` lemmas. This is tricky due to the many different `gcongr` for each pattern.

@@ -72,7 +72,7 @@ structure Colex (α) where
   /-- `ofColex` is the "identity" function between `Finset.Colex α` and `Finset α`. -/
   (ofColex : Finset α)
 
--- TODO: Why can't we export?
+-- TODO: Why can we not export?
 --export Colex (toColex)
 
 open Colex

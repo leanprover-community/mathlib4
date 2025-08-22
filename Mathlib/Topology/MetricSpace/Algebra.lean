@@ -95,7 +95,7 @@ instance Real.hasLipschitzAdd : LipschitzAdd ℝ where
     refine le_trans (abs_add (p.1 - q.1) (p.2 - q.2)) ?_
     exact add_le_add (le_max_left _ _) (le_max_right _ _)⟩
 
--- this instance has the same proof as `AddSubmonoid.lipschitzAdd`, but the former can't
+-- this instance has the same proof as `AddSubmonoid.lipschitzAdd`, but the former cannot
 -- directly be applied here since `ℝ≥0` is a subtype of `ℝ`, not an additive submonoid.
 instance NNReal.hasLipschitzAdd : LipschitzAdd ℝ≥0 where
   lipschitz_add := ⟨LipschitzAdd.C ℝ, by

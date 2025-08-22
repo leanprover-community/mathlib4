@@ -685,7 +685,7 @@ lemma not_isCyclic_iff_exponent_eq_prime [Group α] {p : ℕ} (hp : p.Prime)
     · exact Nat.not_prime_zero hp
     · exact Nat.not_prime_one hp⟩
   /- we must show every non-identity element has order `p`. By Lagrange's theorem, the only possible
-  orders of `g` are `1`, `p`, or `p ^ 2`. It can't be the former because `g ≠ 1`, and it can't
+  orders of `g` are `1`, `p`, or `p ^ 2`. It cannot be the former because `g ≠ 1`, and it cannot
   the latter because the group isn't cyclic. -/
   have := (Nat.mem_divisors (m := p ^ 2)).mpr ⟨hα ▸ orderOf_dvd_natCard (x := g), by aesop⟩
   simp? [Nat.divisors_prime_pow hp 2] at this says

@@ -10,7 +10,7 @@ import Mathlib.Order.BoundedOrder.Lattice
 # Successor and predecessor limits
 
 We define the predicate `Order.IsSuccPrelimit` for "successor pre-limits", values that don't cover
-any others. They are so named since they can't be the successors of anything smaller. We define
+any others. They are so named since they cannot be the successors of anything smaller. We define
 `Order.IsPredPrelimit` analogously, and prove basic results.
 
 For some applications, it is desirable to exclude minimal elements from being successor limits, or
@@ -34,7 +34,7 @@ variable [LT α]
 
 /-- A successor pre-limit is a value that doesn't cover any other.
 
-It's so named because in a successor order, a successor pre-limit can't be the successor of anything
+It's so named because in a successor order, a successor pre-limit cannot be the successor of anything
 smaller.
 
 Use `IsSuccLimit` if you want to exclude the case of a minimal element. -/
@@ -55,7 +55,7 @@ variable [Preorder α]
 
 /-- A successor limit is a value that isn't minimal and doesn't cover any other.
 
-It's so named because in a successor order, a successor limit can't be the successor of anything
+It's so named because in a successor order, a successor limit cannot be the successor of anything
 smaller.
 
 This previously allowed the element to be minimal. This usage is now covered by `IsSuccPrelimit`. -/
@@ -342,7 +342,7 @@ variable [LT α]
 
 /-- A predecessor pre-limit is a value that isn't covered by any other.
 
-It's so named because in a predecessor order, a predecessor pre-limit can't be the predecessor of
+It's so named because in a predecessor order, a predecessor pre-limit cannot be the predecessor of
 anything smaller.
 
 Use `IsPredLimit` to exclude the case of a maximal element. -/
@@ -374,7 +374,7 @@ variable [Preorder α]
 
 /-- A predecessor limit is a value that isn't maximal and doesn't cover any other.
 
-It's so named because in a predecessor order, a predecessor limit can't be the predecessor of
+It's so named because in a predecessor order, a predecessor limit cannot be the predecessor of
 anything larger.
 
 This previously allowed the element to be maximal. This usage is now covered by `IsPredPreLimit`. -/

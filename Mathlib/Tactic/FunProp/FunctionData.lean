@@ -68,7 +68,7 @@ def FunctionData.getFnConstName? (f : FunctionData) : MetaM (Option Name) := do
   | _ => return none
 
 
-/-- Get `FunctionData` for `f`. Throws if `f` can't be put into funProp-normal form. -/
+/-- Get `FunctionData` for `f`. Throws if `f` cannot be put into funProp-normal form. -/
 def getFunctionData (f : Expr) : MetaM FunctionData := do
   lambdaTelescope f fun xs b => do
 

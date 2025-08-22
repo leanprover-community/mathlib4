@@ -840,7 +840,7 @@ section Algebra
 variable {I : Type*} {B : I → Type*}
 variable [NormedField 𝕜] [∀ i, NormedRing (B i)] [∀ i, NormedAlgebra 𝕜 (B i)]
 
-/-- A variant of `Pi.algebra` that lean can't find otherwise. -/
+/-- A variant of `Pi.algebra` that lean cannot find otherwise. -/
 instance _root_.Pi.algebraOfNormedAlgebra : Algebra 𝕜 (∀ i, B i) :=
   @Pi.algebra I 𝕜 B _ _ fun _ => NormedAlgebra.toAlgebra
 

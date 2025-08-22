@@ -52,7 +52,7 @@ variable [CommSemiring R] [Semiring S] [Algebra R S]
 
 variable (M N : Submodule R S)
 
--- can't use `LinearMap.mul' R S ∘ₗ TensorProduct.mapIncl M N` since it is not defeq to
+-- cannot use `LinearMap.mul' R S ∘ₗ TensorProduct.mapIncl M N` since it is not defeq to
 -- `Subalgebra.mulMap` which is `(Algebra.TensorProduct.productMap A.val B.val).toLinearMap`
 
 /-- If `M` and `N` are submodules in an algebra `S` over `R`, there is the natural `R`-linear map

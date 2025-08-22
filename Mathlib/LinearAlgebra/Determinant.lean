@@ -117,7 +117,7 @@ theorem det_toMatrix_eq_det_toMatrix [DecidableEq κ] (b : Basis ι A M) (c : Ba
 See `LinearMap.det` for a version that populates the basis non-computably.
 
 Although the `Trunc (Basis ι A M)` parameter makes it slightly more convenient to switch bases,
-there is no good way to generalize over universe parameters, so we can't fully state in `detAux`'s
+there is no good way to generalize over universe parameters, so we cannot fully state in `detAux`'s
 type that it does not depend on the choice of basis. Instead you can use the `detAux_def''` lemma,
 or avoid mentioning a basis at all using `LinearMap.det`.
 -/

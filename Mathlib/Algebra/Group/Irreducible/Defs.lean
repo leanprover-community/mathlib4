@@ -9,7 +9,7 @@ import Mathlib.Logic.Basic
 /-!
 # Irreducible elements in a monoid
 
-This file defines irreducible elements of a monoid (`Irreducible`), as non-units that can't be
+This file defines irreducible elements of a monoid (`Irreducible`), as non-units that cannot be
 written as the product of two non-units. This generalises irreducible elements of a ring.
 We also define the additive variant (`AddIrreducible`).
 

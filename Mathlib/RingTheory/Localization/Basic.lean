@@ -519,7 +519,7 @@ theorem IsLocalization.map_units_map_submonoid (y : M) : IsUnit (algebraMap R S�
   rw [IsScalarTower.algebraMap_apply _ S]
   exact IsLocalization.map_units Sₘ ⟨algebraMap R S y, Algebra.mem_algebraMapSubmonoid_of_mem y⟩
 
--- can't be simp, as `S` only appears on the RHS
+-- cannot be simp, as `S` only appears on the RHS
 theorem IsLocalization.algebraMap_mk' (x : R) (y : M) :
     algebraMap Rₘ Sₘ (IsLocalization.mk' Rₘ x y) =
       IsLocalization.mk' Sₘ (algebraMap R S x)

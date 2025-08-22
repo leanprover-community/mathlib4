@@ -26,7 +26,7 @@ we provide support for turning a function `f : G → A` satisfying the 1-cocycle
 element of the `cocycles₁` of the representation on `A` (or `Additive A`) corresponding to the
 scalar action. We also do this for 1-coboundaries, 2-cocycles and 2-coboundaries. The
 multiplicative case, starting with the section `IsMulCocycle`, just mirrors the additive case;
-unfortunately `@[to_additive]` can't deal with scalar actions.
+unfortunately `@[to_additive]` cannot deal with scalar actions.
 
 The file also contains an identification between the definitions in
 `RepresentationTheory/Homological/GroupCohomology/Basic.lean`, `groupCohomology.cocycles A n`, and

@@ -47,7 +47,7 @@ However, to be actually usable, these definitions need lemmas to be given in com
 ## Case of `Polynomial`
 
 `Polynomial` is a structure containing a `Finsupp`, so these functions
-can't be applied directly to `Polynomial`.
+cannot be applied directly to `Polynomial`.
 
 Some linear equivs need to be added to mathlib for that.
 This belongs to a companion PR.

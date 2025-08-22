@@ -23,7 +23,7 @@ initialize registerTraceClass `Tactic.field_simp
 `one_div`, `mul_eq_zero` and `one_divp` are excluded because we don't want those rewrites.
 
 The remaining constants are excluded for efficiency. These are lemmas consisting of just
-`*`, `/` and `=` that are applicable in a typeclass that can't be a field. -/
+`*`, `/` and `=` that are applicable in a typeclass that cannot be a field. -/
 def fieldSimpExcluded : List Name := [
   ``one_div, ``mul_eq_zero, ``one_divp,
 

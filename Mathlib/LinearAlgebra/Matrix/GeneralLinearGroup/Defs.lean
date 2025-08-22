@@ -318,7 +318,7 @@ instance : Coe (SpecialLinearGroup n R) (GLPos n R) :=
 
 theorem toGLPos_injective : Function.Injective (toGLPos : SpecialLinearGroup n R → GLPos n R) :=
   -- Porting note: had to rewrite this to hint the correct types to Lean
-  -- (It can't find the coercion GLPos n R → Matrix n n R)
+  -- (It cannot find the coercion GLPos n R → Matrix n n R)
   Function.Injective.of_comp
     (f := fun (A : GLPos n R) ↦ ((A : GL n R) : Matrix n n R))
     Subtype.coe_injective

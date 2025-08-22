@@ -63,7 +63,7 @@ section Finset
 variable [DecidableEq α] [CommSemiring β] [LinearOrder β] [IsStrictOrderedRing β]
   {𝒜 : Finset (Finset α)} {a : α} {f f₁ f₂ f₃ f₄ : Finset α → β} {s t u : Finset α}
 
-/-- The `n = 1` case of the Ahlswede-Daykin inequality. Note that we can't just expand everything
+/-- The `n = 1` case of the Ahlswede-Daykin inequality. Note that we cannot just expand everything
 out and bound termwise since `c₀ * d₁` appears twice on the RHS of the assumptions while `c₁ * d₀`
 does not appear. -/
 private lemma ineq [ExistsAddOfLE β] {a₀ a₁ b₀ b₁ c₀ c₁ d₀ d₁ : β}

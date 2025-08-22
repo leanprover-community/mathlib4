@@ -150,7 +150,7 @@ structure LinarithConfig : Type where
   /-- Discharger to prove that a candidate linear combination of hypothesis is zero. -/
   -- TODO There should be a def for this, rather than calling `evalTactic`?
   discharger : TacticM Unit := do evalTactic (← `(tactic| ring1))
-  -- We can't actually store a `Type` here,
+  -- We cannot actually store a `Type` here,
   -- as we want `LinarithConfig : Type` rather than ` : Type 1`,
   -- so that we can define `elabLinarithConfig : Lean.Syntax → Lean.Elab.TermElabM LinarithConfig`.
   -- For now, we simply don't support restricting the type.

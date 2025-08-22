@@ -151,7 +151,7 @@ end Fintype
 
 variable {𝕜 : Type*} [Semifield 𝕜] [CharZero 𝕜]
 
--- we can't use `to_additive`, because it tries to translate `/` to `-`
+-- we cannot use `to_additive`, because it tries to translate `/` to `-`
 lemma cast_addConst (A B : Finset G') : (σ[A, B] : 𝕜) = #(A + B) / #A := by
   simp [addConst]
 

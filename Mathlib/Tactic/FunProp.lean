@@ -194,7 +194,7 @@ There are four types of theorems that are used a bit differently.
     theorems should be.
 
     You should also add theorems for `Prod.mk`, `Prod.fst`, and `Prod.snd`. Technically speaking,
-    they fall under the *function theorems* category, but without them, `fun_prop` can't function
+    they fall under the *function theorems* category, but without them, `fun_prop` cannot function
     properly. We are mentioning them as they are used together with *lambda theorems* to break
     complicated expressions into a composition of simpler functions.
     ```lean
@@ -303,7 +303,7 @@ There are four types of theorems that are used a bit differently.
 
     Transition theorems are the most dangerous theorems as they considerably increase the search
     space since they do not simplify the function in question. For this reason, `fun_prop` only
-    applies transition theorems to functions that can't be written as a non-trivial composition of
+    applies transition theorems to functions that cannot be written as a non-trivial composition of
     two functions (`f = f ∘ id`, `f = id ∘ f` is considered to be a trivial composition).
 
     For this reason, it is recommended to state *function theorems* for every property. For example,

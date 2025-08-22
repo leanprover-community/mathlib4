@@ -38,7 +38,7 @@ The first step (building the measurable function on `ℚ`) is done differently d
   above to obtain a `Kernel β ℝ`. Since `α` is countable, measurability is not an issue and we can
   put those together into a `Kernel (α × β) ℝ`. The construction of that `f` is done in
   the `CondCDF.lean` file.
-* If `α` is not countable, we can't proceed separately for each `a : α` and have to build a function
+* If `α` is not countable, we cannot proceed separately for each `a : α` and have to build a function
   `f : α × β → ℚ → ℝ` which is measurable on the product. We are able to do so if `β` has a
   countably generated σ-algebra (this is the case in particular for standard Borel spaces).
   See the file `Density.lean`.

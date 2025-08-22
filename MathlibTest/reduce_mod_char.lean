@@ -108,7 +108,7 @@ end Assumption
 
 section InferInstance
 
-/-! `reduce_mod_char!` can't do instance synthesis for `CharP R n` if `n` is not known,
+/-! `reduce_mod_char!` cannot do instance synthesis for `CharP R n` if `n` is not known,
 so we demonstrate a workaround using `inferInstance`. -/
 
 def ZMod' (n : ℕ) := ZMod n

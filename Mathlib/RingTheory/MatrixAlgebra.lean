@@ -70,7 +70,7 @@ alias kroneckerTMulAlgEquiv_symm_stdBasisMatrix_tmul := kroneckerTMulAlgEquiv_sy
 theorem kroneckerTMulLinearEquiv_one [Module S A] [IsScalarTower R S A] :
     kroneckerTMulLinearEquiv m m n n R S A B 1 = 1 := by simp [Algebra.TensorProduct.one_def]
 
-/-- Note this can't be stated for rectangular matrices because there is no
+/-- Note this cannot be stated for rectangular matrices because there is no
 `HMul (TensorProduct R _ _) (TensorProduct R _ _) (TensorProduct R _ _)` instance. -/
 @[simp]
 theorem kroneckerTMulLinearEquiv_mul [Module S A] [IsScalarTower R S A] :

@@ -850,7 +850,7 @@ section NormedSpace
 
 variable (𝕜) [NormedField 𝕜] [NormedSpace ℝ 𝕜] [SeminormedAddCommGroup E]
 
-/-- Not an instance since `𝕜` can't be inferred. See `NormedSpace.toLocallyConvexSpace` for a
+/-- Not an instance since `𝕜` cannot be inferred. See `NormedSpace.toLocallyConvexSpace` for a
 slightly weaker instance version. -/
 theorem NormedSpace.toLocallyConvexSpace' [NormedSpace 𝕜 E] [Module ℝ E] [IsScalarTower ℝ 𝕜 E] :
     LocallyConvexSpace ℝ E :=

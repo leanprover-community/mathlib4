@@ -37,7 +37,7 @@ charted spaces. For instance, `hG.liftPropWithinAt_inter` says that `P g s x` is
 
 We do not use dot notation for properties of the lifted property. For instance, we have
 `hG.liftPropWithinAt_congr` saying that if `LiftPropWithinAt P g s x` holds, and `g` and `g'`
-coincide on `s`, then `LiftPropWithinAt P g' s x` holds. We can't call it
+coincide on `s`, then `LiftPropWithinAt P g' s x` holds. We cannot call it
 `LiftPropWithinAt.congr` as it is in the namespace associated to `LocalInvariantProp`, not
 in the one for `LiftPropWithinAt`.
 -/

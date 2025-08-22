@@ -154,7 +154,7 @@ protected theorem isLawfulTraversable' [Traversable t']
     (h₂ : ∀ {F : Type u → Type u} [Applicative F],
       ∀ [LawfulApplicative F] {α β} (f : α → F β), traverse f = Equiv.traverse eqv f) :
     LawfulTraversable t' where
-  -- we can't use the same approach as for `lawful_functor'` because
+  -- we cannot use the same approach as for `lawful_functor'` because
   -- h₂ needs a `LawfulApplicative` assumption
   toLawfulFunctor := Equiv.lawfulFunctor' eqv @h₀ @h₁
   id_traverse _ := by rw [h₂, Equiv.id_traverse]

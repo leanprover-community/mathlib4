@@ -795,7 +795,7 @@ theorem setPreimage_apply (f : α → β) (s : Set β) : setPreimage f s = s.pre
 theorem setPreimage_id : setPreimage (id : α → α) = CompleteLatticeHom.id _ :=
   rfl
 
--- This lemma can't be `simp` because `g ∘ f` matches anything (`id ∘ f = f` syntactically)
+-- This lemma cannot be `simp` because `g ∘ f` matches anything (`id ∘ f = f` syntactically)
 theorem setPreimage_comp (g : β → γ) (f : α → β) :
     setPreimage (g ∘ f) = (setPreimage f).comp (setPreimage g) :=
   rfl

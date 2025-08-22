@@ -36,7 +36,7 @@ theorem exists_hasDerivWithinAt_eq_of_gt_of_lt (hab : a ≤ b)
     isCompact_Icc.exists_isMinOn (nonempty_Icc.2 <| hab) fun x hx => (hg x hx).continuousWithinAt
   have cmem' : c ∈ Ioo a b := by
     rcases cmem.1.eq_or_lt with (rfl | hac)
-    -- Show that `c` can't be equal to `a`
+    -- Show that `c` cannot be equal to `a`
     · refine absurd (sub_nonneg.1 <| nonneg_of_mul_nonneg_right ?_ (sub_pos.2 hab'))
         (not_le_of_gt hma)
       have : b - a ∈ posTangentConeAt (Icc a b) a :=
@@ -44,7 +44,7 @@ theorem exists_hasDerivWithinAt_eq_of_gt_of_lt (hab : a ≤ b)
       simpa only [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply]
         using hc.localize.hasFDerivWithinAt_nonneg (hg a (left_mem_Icc.2 hab)) this
     rcases cmem.2.eq_or_lt' with (rfl | hcb)
-    -- Show that `c` can't be equal to `b`
+    -- Show that `c` cannot be equal to `b`
     · refine absurd (sub_nonpos.1 <| nonpos_of_mul_nonneg_right ?_ (sub_lt_zero.2 hab'))
         (not_le_of_gt hmb)
       have : a - b ∈ posTangentConeAt (Icc a b) b :=

@@ -281,7 +281,7 @@ instance instAddCommGroupWithOne [AddCommGroupWithOne A] :
   __ := instAddCommGroup
   __ := instAddGroupWithOne
 
--- We want to be lower priority than `instHMul`, but without this we can't have operands with
+-- We want to be lower priority than `instHMul`, but without this we cannot have operands with
 -- implicit dimensions.
 @[default_instance 100]
 instance {l : Type*} [Fintype m] [Mul A] [AddCommMonoid A] :

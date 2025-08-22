@@ -312,7 +312,7 @@ open scoped RightActions in
 normaliser of `A` of size strictly less than `3 / 2 * #A` such that `A` is a subset of a coset of
 `H` (in fact a subset of `a • H` for every `a ∈ A`).
 
-Note that this is sharp: `A = {0, 1}` in `ℤ` has doubling `3 / 2` and can't be covered by a subgroup
+Note that this is sharp: `A = {0, 1}` in `ℤ` has doubling `3 / 2` and cannot be covered by a subgroup
 of size at most `2`.
 
 This is Theorem 2.2.1 in [tointon2020]. -/

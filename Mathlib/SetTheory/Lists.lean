@@ -44,7 +44,7 @@ variable {α : Type*}
 
 /-- Prelists, helper type to define `Lists`. `Lists' α false` are the "atoms", a copy of `α`.
 `Lists' α true` are the "proper" ZFA prelists, inductively defined from the empty ZFA prelist and
-from appending a ZFA prelist to a proper ZFA prelist. It is made so that you can't append anything
+from appending a ZFA prelist to a proper ZFA prelist. It is made so that you cannot append anything
 to an atom while having only one appending function for appending both atoms and proper ZFC prelists
 to a proper ZFA prelist. -/
 inductive Lists'.{u} (α : Type u) : Bool → Type u

@@ -241,7 +241,7 @@ search for `Nonempty α` when there is no instance for `∀ x, IsEmpty (p x)`.
 
 This helps to speed up failing type class searches, for example those triggered by `simp` lemmas.
 
-In some situations, we can't reorder type class assumptions because one depends on the other,
+In some situations, we cannot reorder type class assumptions because one depends on the other,
 for example in
 ```
 instance {G : Type*} [Group G] [IsKleinFour G] : IsAddKleinFour (Additive G)

@@ -205,7 +205,7 @@ local notation "ext_iff" => @RCLike.ext_iff 𝕜 _
 /-- Local notation for `starRingEnd _` -/
 local postfix:90 "†" => starRingEnd _
 
-/-- Inner product defined by the `PreInnerProductSpace.Core` structure. We can't reuse
+/-- Inner product defined by the `PreInnerProductSpace.Core` structure. We cannot reuse
 `PreInnerProductSpace.Core.toInner` because it takes `PreInnerProductSpace.Core` as an explicit
 argument. -/
 def toPreInner' : Inner 𝕜 F :=
@@ -441,7 +441,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 local notation "ext_iff" => @RCLike.ext_iff 𝕜 _
 
-/-- Inner product defined by the `InnerProductSpace.Core` structure. We can't reuse
+/-- Inner product defined by the `InnerProductSpace.Core` structure. We cannot reuse
 `InnerProductSpace.Core.toInner` because it takes `InnerProductSpace.Core` as an explicit
 argument. -/
 def toInner' : Inner 𝕜 F :=

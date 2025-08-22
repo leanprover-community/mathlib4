@@ -163,7 +163,7 @@ theorem ModuleTopology.continuousAdd : @ContinuousAdd A (moduleTopology R A) _ :
 instance IsModuleTopology.toContinuousSMul [TopologicalSpace A] [IsModuleTopology R A] :
     ContinuousSMul R A := eq_moduleTopology R A ▸ ModuleTopology.continuousSMul R A
 
--- this can't be an instance because typeclass inference can't be expected to find `R`.
+-- this cannot be an instance because typeclass inference cannot be expected to find `R`.
 theorem IsModuleTopology.toContinuousAdd [TopologicalSpace A] [IsModuleTopology R A] :
     ContinuousAdd A := eq_moduleTopology R A ▸ ModuleTopology.continuousAdd R A
 

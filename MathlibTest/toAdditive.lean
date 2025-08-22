@@ -535,7 +535,7 @@ fun {α} [Add α] a => Add.add a
 @[simp, to_additive self]
 theorem test1 : 5 = 5 := rfl
 
-/-! Test that we can't write `to_additive self (attr := ..)`. -/
+/-! Test that we cannot write `to_additive self (attr := ..)`. -/
 
 /--
 error: invalid `(attr := ...)` after `self`, as there is only one declaration for the attributes.

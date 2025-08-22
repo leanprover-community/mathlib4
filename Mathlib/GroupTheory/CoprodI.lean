@@ -289,7 +289,7 @@ theorem fstIdx_ne_iff {w : Word M} {i} :
 variable (M)
 
 /-- Given an index `i : ι`, `Pair M i` is the type of pairs `(head, tail)` where `head : M i` and
-`tail : Word M`, subject to the constraint that first letter of `tail` can't be `⟨i, m⟩`.
+`tail : Word M`, subject to the constraint that first letter of `tail` cannot be `⟨i, m⟩`.
 By prepending `head` to `tail`, one obtains a new word. We'll show that any word can be uniquely
 obtained in this way. -/
 @[ext]

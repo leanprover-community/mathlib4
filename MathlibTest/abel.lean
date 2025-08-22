@@ -160,7 +160,7 @@ abbrev myId (a : ℤ) : ℤ := a
 Test that when `abel_nf` normalizes multiple expressions which contain a particular atom, it uses a
 form for that atom which is consistent between expressions.
 
-We can't use `guard_hyp h :ₛ` here, as while it does tell apart `x` and `myId x`, it also complains
+We cannot use `guard_hyp h :ₛ` here, as while it does tell apart `x` and `myId x`, it also complains
 about differing instance paths.
 -/
 /--

@@ -280,7 +280,7 @@ and similarly subtraction.
 This tactic uses the type of the subexpression to figure out if it is indeed of positive
 characteristic, for improved performance compared to trying to synthesise a `CharP` instance.
 The variant `reduce_mod_char!` also tries to use `CharP R n` hypotheses in the context.
-(Limitations of the typeclass system mean the tactic can't search for a `CharP R n` instance if
+(Limitations of the typeclass system mean the tactic cannot search for a `CharP R n` instance if
 `n` is not yet known; use `have : CharP R n := inferInstance; reduce_mod_char!` as a workaround.)
 -/
 syntax (name := reduce_mod_char) "reduce_mod_char" (location)? : tactic

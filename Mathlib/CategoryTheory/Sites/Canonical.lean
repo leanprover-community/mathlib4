@@ -176,7 +176,7 @@ theorem le_finestTopology (Ps : Set (Cᵒᵖ ⥤ Type v)) (J : GrothendieckTopol
     (hJ : ∀ P ∈ Ps, Presieve.IsSheaf J P) : J ≤ finestTopology Ps := by
   rintro X S hS _ ⟨⟨_, _, ⟨P, hP, rfl⟩, rfl⟩, rfl⟩
   intro Y f
-  -- this can't be combined with the previous because the `subst` is applied at the end
+  -- this cannot be combined with the previous because the `subst` is applied at the end
   exact hJ P hP (S.pullback f) (J.pullback_stable f hS)
 
 /-- The `canonicalTopology` on a category is the finest (largest) topology for which every

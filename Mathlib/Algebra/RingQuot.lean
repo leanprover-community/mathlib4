@@ -141,7 +141,7 @@ namespace RingQuot
 
 variable (r : R → R → Prop)
 
--- can't be irreducible, causes diamonds in ℕ-algebras
+-- Cannot be irreducible, causes diamonds in ℕ-algebras
 private def natCast (n : ℕ) : RingQuot r :=
   ⟨Quot.mk _ n⟩
 
@@ -168,7 +168,7 @@ private irreducible_def npow (n : ℕ) : RingQuot r → RingQuot r
   | ⟨a⟩ =>
     ⟨Quot.lift (fun a ↦ Quot.mk (RingQuot.Rel r) (a ^ n))
         (fun a b (h : Rel r a b) ↦ by
-          -- note we can't define a `Rel.pow` as `Rel` isn't reflexive so `Rel r 1 1` isn't true
+          -- Note we cannot define a `Rel.pow` as `Rel` isn't reflexive so `Rel r 1 1` isn't true
           dsimp only
           induction n with
           | zero => rw [pow_zero, pow_zero]
@@ -177,7 +177,7 @@ private irreducible_def npow (n : ℕ) : RingQuot r → RingQuot r
               congr_arg₂ (fun x y ↦ mul r ⟨x⟩ ⟨y⟩) ih (Quot.sound h))
         a⟩
 
--- note: this cannot be irreducible, as otherwise diamonds don't commute.
+-- Note: this cannot be irreducible, as otherwise diamonds don't commute.
 private def smul [Algebra S R] (n : S) : RingQuot r → RingQuot r
   | ⟨a⟩ => ⟨Quot.map (fun a ↦ n • a) (Rel.smul n) a⟩
 
@@ -323,7 +323,7 @@ instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
   __ := instAddCommMonoid r
   __ := instMonoidWithZero r
 
--- can't be irreducible, causes diamonds in ℤ-algebras
+-- Cannot be irreducible, causes diamonds in ℤ-algebras
 private def intCast {R : Type uR} [Ring R] (r : R → R → Prop) (z : ℤ) : RingQuot r :=
   ⟨Quot.mk _ z⟩
 

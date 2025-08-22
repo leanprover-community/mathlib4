@@ -269,7 +269,7 @@ TODO: The following example does not work
 ```
 example (s : Finset ℕ) (f : ℕ → ℤ) (hf : ∀ n, 0 ≤ f n) : 0 ≤ s.prod f := by positivity
 ```
-because `compareHyp` can't look for assumptions behind binders.
+because `compareHyp` cannot look for assumptions behind binders.
 -/
 @[positivity Finset.prod _ _]
 def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do

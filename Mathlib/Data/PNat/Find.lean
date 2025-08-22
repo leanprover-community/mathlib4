@@ -39,7 +39,7 @@ protected def findX : { n // p n ∧ ∀ m : ℕ+, m < n → ¬p m } := by
 /-- If `p` is a (decidable) predicate on `ℕ+` and `hp : ∃ (n : ℕ+), p n` is a proof that
 there exists some positive natural number satisfying `p`, then `PNat.find hp` is the
 smallest positive natural number satisfying `p`. Note that `PNat.find` is protected,
-meaning that you can't just write `find`, even if the `PNat` namespace is open.
+meaning that you cannot just write `find`, even if the `PNat` namespace is open.
 
 The API for `PNat.find` is:
 

@@ -74,7 +74,7 @@ theorem hom_inv_id_apply {X Y : Type u} (f : X ≅ Y) (x : X) : f.inv (f.hom x) 
 theorem inv_hom_id_apply {X Y : Type u} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y :=
   congr_fun f.inv_hom_id y
 
--- Unfortunately without this wrapper we can't use `CategoryTheory` idioms, such as `IsIso f`.
+-- Unfortunately without this wrapper we cannot use `CategoryTheory` idioms, such as `IsIso f`.
 /-- `asHom f` helps Lean type check a function as a morphism in the category `Type`. -/
 abbrev asHom {α β : Type u} (f : α → β) : α ⟶ β :=
   f

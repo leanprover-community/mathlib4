@@ -274,7 +274,7 @@ where
       if let some expectedBinders := expectedBinders? then
         trace[«variable?»] "checking expected binders"
         /- We re-elaborate the binders to create an expression that represents the entire resulting
-        local context (auto-bound implicits mean we can't just the `binders` array). -/
+        local context (auto-bound implicits mean we cannot just the `binders` array). -/
         let elabAndPackageBinders (binders : TSyntaxArray ``bracketedBinder) :
             TermElabM AbstractMVarsResult :=
           withoutModifyingStateWithInfoAndMessages <| Term.withAutoBoundImplicit <|

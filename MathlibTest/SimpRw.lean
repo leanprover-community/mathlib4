@@ -27,7 +27,7 @@ example (p : Nat → Prop) (a b : Nat) (h₁ : p (b + a) → p (a + b)) (h₂ : 
 example (p : Nat → Prop) (a b : Nat) (h₁ : p (b + a) → p (a + b)) (h₂ : p (a + b)) : p (a + b) := by
   simp_rw [Nat.add_comm a b] at *; exact h₁ h₂
 
--- `simp` and `rw`, alone, can't close this goal. But `simp_rw` can
+-- `simp` and `rw`, alone, cannot close this goal. But `simp_rw` can
 example {a : Nat}
   (h1 : ∀ a b : Nat, a - 1 ≤ b ↔ a ≤ b + 1)
   (h2 : ∀ a b : Nat, a ≤ b ↔ ∀ c, c < a → c < b) :

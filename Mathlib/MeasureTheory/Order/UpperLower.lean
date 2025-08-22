@@ -23,7 +23,7 @@ Recall that `x ≤ y` iff `∀ i, x i ≤ y i`, and `s` is order-connected iff
 We prove null-measurability in `ℝⁿ` with the `∞`-metric, but this transfers directly to `ℝⁿ` with
 the Euclidean metric because they have the same measurable sets.
 
-Null-measurability can't be strengthened to measurability because any antichain (and in particular
+Null-measurability cannot be strengthened to measurability because any antichain (and in particular
 any subset of the antidiagonal `{(x, y) | x + y = 0}`) is order-connected.
 
 ## Sketch proof
