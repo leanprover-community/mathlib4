@@ -69,8 +69,7 @@ lemma range_eq : range Sigmoid = Ioo 0 1 := by
     apply Subtype.eq
     simp only
     suffices exp (log (-1 + x.1⁻¹)) = -1 + x.1⁻¹ by
-      rw [this]
-      simp only [add_neg_cancel_left, inv_inv]
+      simp only [this, add_neg_cancel_left, inv_inv]
     exact exp_log (lt_neg_add_iff_lt.mpr <| one_lt_inv_iff₀.mpr hx)
 
 lemma is_embedding : Topology.IsEmbedding Sigmoid :=
