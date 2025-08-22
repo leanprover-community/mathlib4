@@ -113,9 +113,9 @@ theorem alternatingGroup.index_eq_one [Subsingleton α] : (alternatingGroup α).
 
 /-- The group isomorphism between `alternatingGroup`s induced by the given `Equiv`. -/
 @[simps ! apply_coe]
-def Equiv.altCongrMulEquiv {β : Type*} [Fintype β] [DecidableEq β] (e : α ≃ β) :
+def Equiv.altCongrHom {β : Type*} [Fintype β] [DecidableEq β] (e : α ≃ β) :
     ↥(alternatingGroup α) ≃* ↥(alternatingGroup β) :=
-  e.permCongrMulEquiv.subgroupMap (alternatingGroup α) |>.trans <|
+  e.permCongrHom.subgroupMap (alternatingGroup α) |>.trans <|
     MulEquiv.subgroupCongr <| by
       ext1 p
       simp [e.permCongr.symm.surjective.exists,
