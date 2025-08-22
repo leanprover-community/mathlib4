@@ -157,23 +157,13 @@ lemma G2_q_exp (z : ℍ) : G2 z = (2 * riemannZeta 2)  - 8 * π ^ 2 *
 
 section transform
 
-lemma rest (f g : ℕ → ℂ) (x : ℂ) (hf : Tendsto f atTop (𝓝 x)) (hfg : Tendsto (g - f) atTop (𝓝 0)) :
-  Tendsto g atTop (𝓝 x) := by
-  have := Tendsto.add hf hfg
-  simp at this
-  exact this
-
 lemma sum_Icc_eq_sum_Ico_succ {α : Type*} [AddCommMonoid α] (f : ℤ → α)
-    {l u : ℤ} (h : l ≤ u) :
-    ∑ m ∈ Finset.Icc l u, f m = (∑ m ∈ Finset.Ico l u, f m) + f u := by
-  rw [Finset.Icc_eq_cons_Ico h]
-  simp only [Finset.cons_eq_insert, Finset.mem_Ico, lt_self_iff_false, and_false, not_false_eq_true,
-    Finset.sum_insert]
-  rw [add_comm]
+    {l u : ℤ} (h : l ≤ u) : ∑ m ∈ Finset.Icc l u, f m = (∑ m ∈ Finset.Ico l u, f m) + f u := by
+  simp [Finset.Icc_eq_cons_Ico h,Finset.cons_eq_insert, Finset.mem_Ico, lt_self_iff_false, add_comm]
 
 lemma sum_Icc_pred {R : Type*} [AddCommGroup R] (f : ℤ → R) {N : ℕ}
-  (hn : 1 ≤ N) : ∑ m ∈ Finset.Icc (-N : ℤ) N, f m =
-  f N + f (-N : ℤ)  + ∑ m ∈ Finset.Icc (-(N - 1) : ℤ) (N - 1), f m := by
+    (hn : 1 ≤ N) : ∑ m ∈ Finset.Icc (-N : ℤ) N, f m =
+    f N + f (-N : ℤ)  + ∑ m ∈ Finset.Icc (-(N - 1) : ℤ) (N - 1), f m := by
   induction' N with N ih
   · grind
   · zify
@@ -208,7 +198,8 @@ lemma cauchSeq_sum_Icc_tendsto_zero {F : Type*} [NormedRing F] [NormSMulClass �
 
 
 lemma int_tendsto_nat {f : ℤ → ℂ} {x : ℂ} (hf : Tendsto f atTop (𝓝 x)) :
-  Tendsto (fun n : ℕ => f n) atTop (𝓝 x) := by
+    Tendsto (fun n : ℕ => f n) atTop (𝓝 x) := by
+  have := Nat.map_cast_int_atTop
   rw [Metric.tendsto_atTop] at *
   intro ε hε
   obtain ⟨N, hN⟩ := hf ε hε
@@ -223,7 +214,7 @@ lemma G2_Ico (z : ℍ) : G2 z =
   simp [G2]
   rw [Filter.Tendsto.limUnder_eq]
   have := CauchySeq.tendsto_limUnder (G2_cauchy z)
-  apply rest _ _ _ this
+  apply Tendsto_of_sub_tendsto_zero _ this
   have h0 := cauchSeq_sum_Icc_tendsto_zero _  (G2_cauchy z) ?_
   conv =>
     enter [1]
@@ -231,10 +222,10 @@ lemma G2_Ico (z : ℍ) : G2 z =
     simp
     rw [sum_Icc_eq_sum_Ico_succ _ (by omega)]
     simp
-  have := Filter.Tendsto.neg h0
-  simp only [one_div, neg_zero] at this
-  have := int_tendsto_nat this
-  apply this
+  · have := Filter.Tendsto.neg h0
+    simp only [neg_zero] at this
+    have := int_tendsto_nat this
+    apply this
   · intro m
     simp [e2Summand]
     rw [← tsum_int_eq_tsum_neg (fun a => eisSummand 2 ![-m, a] z)]
