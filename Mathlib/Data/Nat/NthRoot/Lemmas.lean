@@ -24,7 +24,7 @@ namespace Nat
 
 @[simp] theorem nthRoot_one_left : nthRoot 1 = id := rfl
 
-theorem nthRoot.pow_go_le (n a b : ℕ) : (go n a b)^(n + 2) ≤ a := by
+theorem nthRoot.pow_go_le (n a b : ℕ) : (go n a b) ^ (n + 2) ≤ a := by
   induction b using Nat.strongRecOn with
   | ind b ihb =>
     rw [go]
@@ -45,14 +45,14 @@ theorem nthRoot.lt_pow_go_succ_aux (h : a < b ^ (n + 1)) :
   rw [← Nat.add_mul_div_left a, Nat.div_div_eq_div_mul] <;> try positivity
   rify
   calc
-    (a : ℝ) = ((a / b^n) ^ (1 / (n + 1) : ℝ) * b^(n / (n + 1) : ℝ)) ^ (n + 1) := by
+    (a : ℝ) = ((a / b ^ n) ^ (1 / (n + 1) : ℝ) * b ^ (n / (n + 1) : ℝ)) ^ (n + 1) := by
       rw [mul_pow, ← Real.rpow_mul_natCast, ← Real.rpow_mul_natCast] <;> try positivity
       field_simp
-    _ ≤ ((1 / (n + 1)) * (a / b^n) + (n / (n + 1)) * b) ^ (n + 1) := by
+    _ ≤ ((1 / (n + 1)) * (a / b ^ n) + (n / (n + 1)) * b) ^ (n + 1) := by
       gcongr
       apply Real.geom_mean_le_arith_mean2_weighted <;> try positivity
       field_simp [add_comm]
-    _ = ((a + b^n * (n * b)) / (b^n * (n + 1))) ^ (n + 1) := by
+    _ = ((a + b ^ n * (n * b)) / (b ^ n * (n + 1))) ^ (n + 1) := by
       congr 1
       field_simp
       ring
@@ -71,7 +71,7 @@ theorem nthRoot.lt_pow_go_succ (hb : a < (b + 1) ^ (n + 2)) : a < (go n a b + 1)
       rcases eq_or_ne b 0 with rfl | hb
       · simp at *
       apply ihb _ h
-      replace h : a < b^(n + 2) := by
+      replace h : a < b ^ (n + 2) := by
         rw [Nat.div_lt_iff_lt_mul (by positivity)] at h
         replace h : a / b ^ (n + 1) < b := by linarith only [h]
         rwa [Nat.div_lt_iff_lt_mul (by positivity), ← Nat.pow_succ'] at h
@@ -79,7 +79,7 @@ theorem nthRoot.lt_pow_go_succ (hb : a < (b + 1) ^ (n + 2)) : a < (go n a b + 1)
     case neg =>
       assumption
 
-theorem pow_nthRoot_le (hn : n ≠ 0) (a : ℕ) : (nthRoot n a)^n ≤ a := by
+theorem pow_nthRoot_le (hn : n ≠ 0) (a : ℕ) : (nthRoot n a) ^ n ≤ a := by
   match n, hn with
   | 1, _ => simp
   | n + 2, _ =>
@@ -88,7 +88,7 @@ theorem pow_nthRoot_le (hn : n ≠ 0) (a : ℕ) : (nthRoot n a)^n ≤ a := by
     case pos => interval_cases a <;> simp
     case neg => apply nthRoot.pow_go_le
 
-theorem lt_pow_nthRoot_add_one (hn : n ≠ 0) (a : ℕ) : a < (nthRoot n a + 1)^n := by
+theorem lt_pow_nthRoot_add_one (hn : n ≠ 0) (a : ℕ) : a < (nthRoot n a + 1) ^ n := by
   match n, hn with
   | 1, _ => simp
   | n + 2, hn =>
@@ -100,7 +100,7 @@ theorem lt_pow_nthRoot_add_one (hn : n ≠ 0) (a : ℕ) : a < (nthRoot n a + 1)^
       exact a.lt_succ_self.trans_le (Nat.le_self_pow hn _)
 
 @[simp]
-theorem le_nthRoot_iff (hn : n ≠ 0) : a ≤ nthRoot n b ↔ a^n ≤ b := by
+theorem le_nthRoot_iff (hn : n ≠ 0) : a ≤ nthRoot n b ↔ a ^ n ≤ b := by
   cases le_or_gt a (nthRoot n b) with
   | inl hle =>
     simp only [hle, true_iff]
@@ -113,7 +113,7 @@ theorem le_nthRoot_iff (hn : n ≠ 0) : a ≤ nthRoot n b ↔ a^n ≤ b := by
     assumption
 
 @[simp]
-theorem nthRoot_lt_iff (hn : n ≠ 0) : nthRoot n a < b ↔ a < b^n := by
+theorem nthRoot_lt_iff (hn : n ≠ 0) : nthRoot n a < b ↔ a < b ^ n := by
   simp only [← not_le, le_nthRoot_iff hn]
 
 @[simp]
