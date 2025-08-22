@@ -7,7 +7,7 @@ import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Order.WithBot
+import Mathlib.Order.WithBot.NAry
 
 /-! # Adjoining top/bottom elements to ordered monoids.
 -/
