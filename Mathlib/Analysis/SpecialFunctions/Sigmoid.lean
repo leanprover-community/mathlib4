@@ -38,10 +38,9 @@ noncomputable def sigmoid : ℝ ↪o I where
     simp_all only [Subtype.mk.injEq, inv_inj, add_right_inj, exp_eq_exp, neg_inj]
   map_rel_iff' {a b} := by
     simp_all only [Embedding.coeFn_mk, Subtype.mk_le_mk]
-    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · suffices -b ≤ -a from neg_le_neg_iff.mp this
-      rwa [←exp_le_exp, ←add_le_add_iff_left 1, ←inv_le_inv₀ (by positivity) (by positivity)]
-    · gcongr
+    refine ⟨fun h ↦ ?_, fun h ↦ by gcongr⟩
+    suffices -b ≤ -a from neg_le_neg_iff.mp this
+    rwa [←exp_le_exp, ←add_le_add_iff_left 1, ←inv_le_inv₀ (by positivity) (by positivity)]
 
 namespace Sigmoid
 
