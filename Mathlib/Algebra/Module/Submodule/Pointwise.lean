@@ -498,10 +498,10 @@ lemma smul_inductionOn_pointwise [SMulCommClass S R M] {a : S} {p : (x : M) → 
     subst hr
     exact smul₀ n hn
 
--- Note that this cannot be generalized to `Set S`, because even though `SMulCommClass R R M` implies
--- `SMulComm R R N` for all `R`-submodules `N`, `SMulCommClass R S N` for all `R`-submodules `N`
--- does not make sense. If we just focus on `R`-submodules that are also `S`-submodule, then this
--- should be true.
+-- Note that this cannot be generalized to `Set S`, because even though `SMulCommClass R R M`
+-- implies `SMulComm R R N` for all `R`-submodules `N`, `SMulCommClass R S N` for all
+-- `R`-submodules `N` does not make sense. If we just focus on `R`-submodules that are also
+-- `S`-submodule, then this should be true.
 /-- A subset of a ring `R` has a multiplicative action on submodules of a module over `R`. -/
 protected noncomputable def pointwiseSetMulAction [SMulCommClass R R M] :
     MulAction (Set R) (Submodule R M) where

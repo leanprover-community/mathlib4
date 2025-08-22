@@ -51,8 +51,8 @@ Warning: use this type synonym judiciously! Consider an example where we want to
 variable (R S M : Type*)
 variable [CommSemiring R] [Semiring S] [Algebra R S] [AddCommMonoid M] [Module S M]
 ```
-With the assumptions above we cannot directly state our map as we have no `Module R M` structure, but
-`RestrictScalars` permits it to be written as:
+With the assumptions above we cannot directly state our map as we have no `Module R M` structure,
+but `RestrictScalars` permits it to be written as:
 ```lean
 -- an `R`-module structure on `M` is provided by `RestrictScalars` which is compatible
 example : RestrictScalars R S M →ₗ[R] S := sorry

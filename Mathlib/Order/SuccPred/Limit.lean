@@ -34,8 +34,8 @@ variable [LT α]
 
 /-- A successor pre-limit is a value that doesn't cover any other.
 
-It's so named because in a successor order, a successor pre-limit cannot be the successor of anything
-smaller.
+It's so named because in a successor order, a successor pre-limit cannot be the successor of
+anything smaller.
 
 Use `IsSuccLimit` if you want to exclude the case of a minimal element. -/
 def IsSuccPrelimit (a : α) : Prop :=
