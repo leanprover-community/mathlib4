@@ -51,10 +51,7 @@ lemma range_sigmoid : range Sigmoid = Ioo 0 1 := by
     constructor
     · change 0 < (1 + exp (-y))⁻¹
       positivity
-    · simp only [Sigmoid]
-      change (1 + exp (-y))⁻¹ < 1
-      refine inv_lt_one_of_one_lt₀ ?_
-      exact lt_add_of_pos_right 1 (exp_pos (-y))
+    · exact inv_lt_one_of_one_lt₀ <| lt_add_of_pos_right 1 (exp_pos (-y))
   · intro hx
     rw [mem_range]
     use -(log (-1 + x.1⁻¹))
