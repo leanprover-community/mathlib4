@@ -66,7 +66,6 @@ lemma range_eq : range Sigmoid = Ioo 0 1 := by
     rw [mem_range]
     use -(log (-1 + x.1⁻¹))
     simp only [Sigmoid, RelEmbedding.coe_mk, Embedding.coeFn_mk, neg_neg]
-    apply Subtype.eq
     suffices exp (log (-1 + x.1⁻¹)) = -1 + x.1⁻¹ by
       simp only [this, add_neg_cancel_left, inv_inv]
     exact exp_log (lt_neg_add_iff_lt.mpr <| one_lt_inv_iff₀.mpr hx)
