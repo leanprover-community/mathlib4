@@ -333,7 +333,7 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
   let aux := lieBracketWithin_smul_right (V := V') hf'
     hW.differentiableWithinAt_mpullbackWithin_vectorField hs
 
-  trans mpullback I 𝓘(𝕜, E) ((extChartAt I x)) (fun x₀ ↦ (lieBracketWithin 𝕜 V' (f' • W') s') x₀) x
+  trans mpullback I 𝓘(𝕜, E) (extChartAt I x) ((lieBracketWithin 𝕜 V' (f' • W') s') ·) x
   · rfl
   -- issue: silent defeq abuse, a map E → E vs a map tangent space -> tangent space
   let A (x₀) := (fderivWithin 𝕜 f' s' x₀) (V' x₀) • W' x₀
@@ -361,6 +361,8 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
     simp [f']
   -- adding these identities should prove the claim
   sorry
+
+#exit
 
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
