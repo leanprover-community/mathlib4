@@ -32,11 +32,8 @@ open unitInterval Real Set Function
 
 /-- The Sigmoid function as an `OrderEmbedding` from `ℝ` to `I`. -/
 noncomputable def sigmoid : ℝ ↪o I where
-  toFun a := by
-    refine ⟨(1 + exp (-a))⁻¹, ?_⟩
-    constructor
-    · positivity
-    · exact inv_le_one_of_one_le₀ <| (le_add_iff_nonneg_right 1).mpr (exp_nonneg (-a))
+  toFun a := ⟨(1 + exp (-a))⁻¹, by positivity,
+    inv_le_one_of_one_le₀ <| (le_add_iff_nonneg_right 1).mpr (exp_nonneg (-a))⟩
   inj' {a b} hab := by
     simp_all only [Subtype.mk.injEq, inv_inj, add_right_inj, exp_eq_exp, neg_inj]
   map_rel_iff' {a b} := by
