@@ -31,4 +31,4 @@ protected theorem Multipliable.norm_tprod (hf : Multipliable f) : ‖∏' i, f i
 
 @[deprecated (since := "2025-04-12")] alias norm_tprod := Multipliable.norm_tprod
 
-section NormMulClass
+end NormMulClass
