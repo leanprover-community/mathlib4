@@ -1123,19 +1123,21 @@ namespace PrimrecPred
 
 open List Primrec
 
-variable {α β : Type*} {p : α → Prop} [DecidablePred p] {L : List α} {b : β}
+variable {α β : Type*} {p : α → Prop} {L : List α} {b : β}
 
 variable [Primcodable α] [Primcodable β]
 
 /-- Checking if any element of a list satisfies a decidable predicate is primitive recursive. -/
-theorem exists_mem_list (hf : PrimrecPred p) : PrimrecPred fun L : List α ↦ ∃ a ∈ L, p a :=
-  .of_eq (.not <| PrimrecRel.comp .eq (list_length.comp <| listFilter hf) (const 0)) <| by simp
+theorem exists_mem_list : (hf : PrimrecPred p) → PrimrecPred fun L : List α ↦ ∃ a ∈ L, p a
+  | ⟨_, hf⟩ => .of_eq
+      (.not <| Primrec.eq.comp (list_length.comp <| listFilter hf.primrecPred) (const 0)) <| by simp
 
 /-- Checking if every element of a list satisfies a decidable predicate is primitive recursive. -/
-theorem forall_mem_list (hf : PrimrecPred p) : PrimrecPred fun L : List α ↦ ∀ a ∈ L, p a :=
-  .of_eq (PrimrecRel.comp .eq (list_length.comp <| listFilter hf) (list_length)) <| by simp
+theorem forall_mem_list : (hf : PrimrecPred p) → PrimrecPred fun L : List α ↦ ∀ a ∈ L, p a
+  | ⟨_, hf⟩ => .of_eq
+      (Primrec.eq.comp (list_length.comp <| listFilter hf.primrecPred) (list_length)) <| by simp
 
-variable {p : ℕ → Prop} [DecidablePred p]
+variable {p : ℕ → Prop}
 
 /-- Bounded existential quantifiers are primitive recursive. -/
 theorem exists_lt (hf : PrimrecPred p) : PrimrecPred fun n ↦ ∃ x < n, p x :=
@@ -1150,8 +1152,8 @@ theorem listFilter_listRange {R : ℕ → ℕ → Prop} (s : ℕ) [DecidableRel 
     Primrec fun n ↦ (range s).filter (fun y ↦ R y n) := by
   simp only [← filterMap_eq_filter]
   refine listFilterMap (.const (range s)) ?_
-  refine ite (PrimrecRel.comp .eq ?_ (const true)) (option_some_iff.mpr snd) (.const Option.none)
-  exact hf.comp snd fst
+  refine ite (Primrec.eq.comp ?_ (const true)) (option_some_iff.mpr snd) (.const Option.none)
+  exact hf.decide.comp snd fst
 
 end PrimrecPred
 
@@ -1159,7 +1161,7 @@ namespace PrimrecRel
 
 open Primrec List PrimrecPred
 
-variable {α β : Type*} {R : α → β → Prop} [DecidableRel R] {L : List α} {b : β}
+variable {α β : Type*} {R : α → β → Prop} {L : List α} {b : β}
 
 variable [Primcodable α] [Primcodable β]
 
@@ -1167,28 +1169,30 @@ protected theorem not (hf : PrimrecRel R) : PrimrecRel fun a b ↦ ¬ R a b := P
 
 /-- If `R a b` is decidable, then given `L : List α` and `b : β`, it is primitive recurisve
 to filter `L` for elements `a` with `R a b` -/
-theorem listFilter (hf : PrimrecRel R) :
+theorem listFilter (hf : PrimrecRel R) [DecidableRel R] :
     Primrec₂ fun (L : List α) b ↦ L.filter (fun a ↦ R a b) := by
   simp only [← List.filterMap_eq_filter]
   refine listFilterMap fst (Primrec.ite ?_ ?_ (Primrec.const Option.none))
-  · exact PrimrecRel.comp .eq (hf.comp snd (snd.comp fst)) (.const true)
+  · exact Primrec.eq.comp (hf.decide.comp snd (snd.comp fst)) (.const true)
   · exact (option_some).comp snd
 
 /-- If `R a b` is decidable, then given `L : List α` and `b : β`, `g L b ↔ ∃ a L, R a b`
 is a primitive recursive relation. -/
 theorem exists_mem_list (hf : PrimrecRel R) : PrimrecRel fun (L : List α) b ↦ ∃ a ∈ L, R a b := by
+  classical
   have h (L) (b) : (List.filter (R · b) L).length ≠ 0 ↔ ∃ a ∈ L, R a b := by simp
   refine .of_eq (.not ?_) h
-  exact .comp .eq (list_length.comp hf.listFilter) (const 0)
+  exact Primrec.eq.comp (list_length.comp hf.listFilter) (const 0)
 
 /-- If `R a b` is decidable, then given `L : List α` and `b : β`, `g L b ↔ ∀ a L, R a b`
 is a primitive recursive relation. -/
 theorem forall_mem_list (hf : PrimrecRel R) : PrimrecRel fun (L : List α) b ↦ ∀ a ∈ L, R a b := by
+  classical
   have h (L) (b) : (List.filter (R · b) L).length = L.length ↔ ∀ a ∈ L, R a b := by simp
   apply PrimrecRel.of_eq ?_ h
-  exact (.comp .eq (list_length.comp <| PrimrecRel.listFilter hf) (.comp list_length fst))
+  exact (Primrec.eq.comp (list_length.comp <| PrimrecRel.listFilter hf) (.comp list_length fst))
 
-variable {R : ℕ → ℕ → Prop} [DecidableRel R]
+variable {R : ℕ → ℕ → Prop}
 
 /-- If `R a b` is decidable, then for any fixed `n` and `y`, `g n y ↔ ∃ x < n, R x y` is a
 primitive recursive relation. -/
