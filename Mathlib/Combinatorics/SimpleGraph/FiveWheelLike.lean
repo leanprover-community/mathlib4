@@ -79,6 +79,7 @@ We will need to refer to this consistently and choose the following formulation:
 * [S. Brandt **On the structure of graphs with bounded clique number**
   https://doi.org/10.1007/s00493-003-0042-z][brandt2003]
 -/
+
 local notation "‖" x "‖" => Fintype.card x
 
 open Finset SimpleGraph
@@ -254,19 +255,6 @@ variable {i j n : ℕ} {d x v w₁ w₂ : α} {s t : Finset α}
 
 section Counting
 
-private lemma kr_bound (hk : k < r + 1) :
-    (2 * (r + 1) + k) * n / (2 * (r + 1) + k + 3) ≤ (3 * r + 2) * n / (3 * r + 5) := by
-  apply (Nat.le_div_iff_mul_le <| Nat.succ_pos _).2 <| (mul_le_mul_left (_ + 2).succ_pos).1 _
-  rw [← mul_assoc, mul_comm (2 * r + 2 + k + 3), mul_comm _ (_ * n)]
-  apply (Nat.mul_le_mul_right _ (Nat.div_mul_le_self ..)).trans
-  nlinarith
-
-private lemma eq_of_card_le_two_of_ne [DecidableEq α] (hab : a ≠ b) (had : a ≠ d) (hbc : b ≠ c)
-    (hc2 : #{a, b, c, d} ≤ 2) : c = a ∧ d = b := by
-  by_contra! hf
-  apply hc2.not_gt <| two_lt_card_iff.2 _
-  by_cases h : a = c <;> aesop
-
 /--
 Given lower bounds on non-adjacencies from `W` into `X`,`Xᶜ` we can bound the degree sum over `W`.
 -/
@@ -317,8 +305,12 @@ lemma exists_isFiveWheelLike_succ_of_not_adj_le_two (hW : ∀ ⦃y⦄, y ∈ s �
     hw.exist_not_adj_of_adj_inter hcf hW
   -- Let `W` denote the vertices of the copy of `Wᵣ,ₖ` in `G`
   let W := {v} ∪ ({w₁} ∪ ({w₂} ∪ (s ∪ t)))
-  have ⟨hca, hdb⟩ : c = a ∧ d = b :=
-    eq_of_card_le_two_of_ne hab had hbc <| h2.trans' <| card_le_card (fun _ ↦ (by aesop))
+  have ⟨hca, hdb⟩ : c = a ∧ d = b := by
+    by_contra! hf
+    apply h2.not_gt <| two_lt_card_iff.2 _
+    by_cases h : a = c
+    · exact ⟨a, b, d, by grind⟩
+    · exact ⟨a, b, c, by grind⟩
   simp_rw [hca, hdb, mem_insert] at *
   have ⟨has, hbt, hav, hbv, haw, hbw⟩ : a ∈ s ∧ b ∈ t ∧ a ≠ v ∧ b ≠ v ∧ a ≠ w₂ ∧ b ≠ w₁ := by grind
   have ⟨hxv, hxw₁, hxw₂⟩ : v ≠ x ∧ w₁ ≠ x ∧ w₂ ≠ x := by
@@ -338,7 +330,7 @@ lemma exists_isFiveWheelLike_succ_of_not_adj_le_two (hW : ∀ ⦃y⦄, y ∈ s �
     exact two_lt_card.2 ⟨_, by simp [has, hcj], _, by simp [hbt, hdj], _,
                          mem_filter.2 ⟨hz, by rwa [adj_comm] at hf⟩, hab, haz.symm, hbz.symm⟩
   have ⟨h1s, h2t⟩ : insert w₁ s ⊆ W ∧ insert w₂ t ⊆ W := by grind
-  -- We now check that we can build a `Wᵣ,ₖ₊₁` be inserting `x` and erasing `a` and `b`
+  -- We now check that we can build a `Wᵣ,ₖ₊₁` by inserting `x` and erasing `a` and `b`
   refine ⟨a, b, ⟨hw.isPathGraph3Compl, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩⟩
     <;> try rw [mem_insert, not_or] <;> try grind
   -- Check that the new cliques are indeed cliques
@@ -359,15 +351,6 @@ lemma exists_isFiveWheelLike_succ_of_not_adj_le_two (hW : ∀ ⦃y⦄, y ∈ s �
         card_insert_of_notMem (fun h ↦ G.loopless _ (hW h)), hw.card_inter]
 
 /--
-If `G` is `Kᵣ₊₂`- free and contains a `Wᵣ,ₖ` then every vertex is not adjacent to at least one wheel
-vertex.
--/
-lemma one_le_not_adj_of_cliqueFree (x : α) :
-    1 ≤ #{z ∈ {v} ∪ ({w₁} ∪ ({w₂} ∪ (s ∪ t))) | ¬ G.Adj x z} :=
-  let ⟨_, hz⟩ := hw.isNClique_fst_left.exists_not_adj_of_cliqueFree_succ hcf x
-  card_pos.2 ⟨_, mem_filter.2 ⟨by aesop, hz.2⟩⟩
-
-/--
 If `G` is a `Kᵣ₊₂`-free graph with `n` vertices containing a `Wᵣ,ₖ` but no `Wᵣ,ₖ₊₁`
 then `G.minDegree ≤ (2 * r + k) * n / (2 * r + k + 3)`
 -/
@@ -382,9 +365,14 @@ lemma minDegree_le_of_cliqueFree_FiveWheelLikeFree_succ [Fintype α]
     obtain ⟨_, _, hW⟩ := hw.exists_isFiveWheelLike_succ_of_not_adj_le_two hcf
       (by simpa [X] using hx) <| Nat.le_of_succ_le_succ h
     exact hm hW
+  -- Since `G` is `Kᵣ₊₂`- free and contains a `Wᵣ,ₖ` every vertex is not adjacent to at least one
+  -- wheel vertex.
+  have one_le (x : α) : 1 ≤ #{z ∈ {v} ∪ ({w₁} ∪ ({w₂} ∪ (s ∪ t))) | ¬ G.Adj x z} :=
+    let ⟨_, hz⟩ := hw.isNClique_fst_left.exists_not_adj_of_cliqueFree_succ hcf x
+    card_pos.2 ⟨_, mem_filter.2 ⟨by grind, hz.2⟩⟩
   -- Since every vertex has at least one non-neighbor in `W` we now have the following upper bound
   -- `∑ w ∈ W, H.degree w ≤ #X * (#W - 3) + #Xᶜ * (#W - 1)`
-  have bdW := sum_degree_le_of_le_not_adj dXle (fun y _ ↦ (hw.one_le_not_adj_of_cliqueFree hcf) y)
+  have bdW := sum_degree_le_of_le_not_adj dXle (fun y _ ↦ one_le y)
   -- By the definition of `X`, any `x ∈ Xᶜ` has at least one non-neighbour in `X`.
   have xcle : ∀ x ∈ Xᶜ, 1 ≤ #{z ∈ s ∩ t | ¬ G.Adj x z} := by
     intro x hx
@@ -446,13 +434,18 @@ theorem colorable_of_cliqueFree_lt_minDegree [Fintype α] [DecidableRel G.Adj]
     -- so `H` is not complete-multipartite
     have hn : ¬ H.IsCompleteMultipartite := fun hc ↦ hnotcol <| hc.colorable_of_cliqueFree hmcf.1
     -- Hence `H` contains `Wᵣ₊₁,ₖ` but not `Wᵣ₊₁,ₖ₊₁`, for some `k < r + 1`
-    obtain ⟨_, _, _, _, _, _, hw, hlt, hm⟩ :=
+    obtain ⟨k, _, _, _, _, _, hw, hlt, hm⟩ :=
       exists_max_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartite hmcf hn
     classical
     -- But the minimum degree of `G`, and hence of `H`, is too large for it to be `Wᵣ₊₁,ₖ₊₁`-free,
     -- a contradiction.
     have hD := hw.minDegree_le_of_cliqueFree_FiveWheelLikeFree_succ hmcf.1 <| hm _ <| lt_add_one _
-    exact (hd.trans_le <| minDegree_le_minDegree hle).not_ge <| hD.trans <| kr_bound hlt
+    have : (2 * (r + 1) + k) * ‖α‖ / (2 * (r + 1) + k + 3) ≤ (3 * r + 2) * ‖α‖ / (3 * r + 5) := by
+      apply (Nat.le_div_iff_mul_le <| Nat.succ_pos _).2 <| (mul_le_mul_left (_ + 2).succ_pos).1 _
+      rw [← mul_assoc, mul_comm (2 * r + 2 + k + 3), mul_comm _ (_ * ‖α‖)]
+      apply (Nat.mul_le_mul_right _ (Nat.div_mul_le_self ..)).trans
+      nlinarith
+    exact (hd.trans_le <| minDegree_le_minDegree hle).not_ge <| hD.trans <| this
 
 end AES
 end SimpleGraph
