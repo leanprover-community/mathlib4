@@ -42,10 +42,6 @@ theorem LocalizationMap.subsingleton_iff (f : LocalizationMap S N) : Subsingleto
 theorem LocalizationMap.nontrivial (f : LocalizationMap S N) (h : 0 ∉ S) : Nontrivial N := by
   rwa [← not_subsingleton_iff_nontrivial, f.subsingleton_iff]
 
-protected theorem LocalizationMap.map_zero (f : LocalizationMap S N) : f 0 = 0 := by
-  have ⟨ms, eq⟩ := f.surj 0
-  rw [← zero_mul, map_mul, ← eq, zero_mul, mul_zero]
-
 instance : MonoidWithZeroHomClass (LocalizationMap S N) M N where
   map_zero f := by
     have ⟨ms, eq⟩ := f.surj 0

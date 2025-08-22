@@ -38,4 +38,4 @@ open Finset in
     choose c hc using fun i ↦ (hf i).exists_of_eq congr($eq i)
     exact ⟨⟨_, fun i _ ↦ (c i).2⟩, funext hc⟩
 
-end IsLocalizationMap
+end Submonoid.IsLocalizationMap
