@@ -416,10 +416,10 @@ open MulOpposite in
         simpa only [mul_one, one_mul, ← mul_inv_rev, he, true_imp_iff, inv_inj, and_comm] using hu
       push_neg at h21; obtain ⟨rfl, rfl⟩ := h21
       rcases hcard with hC | hD
-      · obtain ⟨c, hc, hc1⟩ := exists_ne_of_one_lt_card hC 1
+      · obtain ⟨c, hc, hc1⟩ := exists_mem_ne hC 1
         refine (hc1 ?_).elim
         simpa using hu ⟨_, ⟨_, hD, rfl⟩, _, hc, rfl⟩ ⟨_, hD, _, ⟨_, hc, rfl⟩, rfl⟩
-      · obtain ⟨d, hd, hd1⟩ := exists_ne_of_one_lt_card hD 1
+      · obtain ⟨d, hd, hd1⟩ := exists_mem_ne hD 1
         refine (hd1 ?_).elim
         simpa using hu ⟨_, ⟨_, hd, rfl⟩, _, hC, rfl⟩ ⟨_, hd, _, ⟨_, hC, rfl⟩, rfl⟩
     all_goals apply_rules [Nonempty.mul, Nonempty.image, Finset.Nonempty.map, hc.1, hc.2.1]
@@ -589,7 +589,7 @@ instance (priority := 100) of_covariant_right [IsRightCancelMul G]
       · exact ((he0 ▸ mul_lt_mul_left' hl a0).not_ge <| le_max' _ _ <| mul_mem_mul ha0 hb).elim
     refine ⟨_, mk_mem_product ha0 hb0, _, mk_mem_product ha1 hb1, fun he ↦ ?_, this, ?_⟩
     · rw [Prod.mk_inj] at he; rw [he.1, he.2, he1] at he0
-      obtain ⟨⟨a2, b2⟩, h2, hne⟩ := exists_ne_of_one_lt_card hc (a0, b0)
+      obtain ⟨⟨a2, b2⟩, h2, hne⟩ := exists_mem_ne hc (a0, b0)
       rw [mem_product] at h2
       refine (min'_lt_max' _ (mul_mem_mul ha0 hb0) (mul_mem_mul h2.1 h2.2) fun he ↦ hne ?_).ne he0
       exact Prod.ext_iff.mpr (this h2.1 h2.2 he.symm)
