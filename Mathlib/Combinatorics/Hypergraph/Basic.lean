@@ -293,6 +293,11 @@ Predicate to determine if a hypergraph is empty
 def IsEmpty (H : Hypergraph α) : Prop := V(H) = ∅ ∧ E(H) = ∅
 
 /--
+Predicate to determine if a hypergraph is nonempty
+-/
+def IsNonempty (H : Hypergraph α) : Prop := ∃ x, x ∈ V(H)
+
+/--
 The empty hypergraph of type α
 -/
 def emptyHypergraph (α : Type*) : Hypergraph α :=
@@ -305,6 +310,8 @@ def emptyHypergraph (α : Type*) : Hypergraph α :=
     exact Set.subset_empty_iff.mpr h1
   )
 
+@[simp] lemma coe_nonempty_iff : V(H).Nonempty ↔ H.IsNonempty := Iff.rfl
+
 lemma isEmpty_empty_hypergraph {α : Type*} : IsEmpty (Hypergraph.emptyHypergraph α) := by
   unfold IsEmpty
   exact Prod.mk_inj.mp rfl
@@ -316,6 +323,60 @@ lemma isEmpty_eq_empty_hypergraph {H : Hypergraph α} (h : H.IsEmpty) : H = empt
 @[simp]
 lemma hyperedge_not_mem_empty {α : Type*} {e : Set α} : e ∉ E(emptyHypergraph α) :=
   by exact fun a ↦ a
+
+lemma IsEmpty.eq (hH : H.IsEmpty) : V(H) = ∅ ∧ E(H) = ∅ := by exact hH
+
+lemma isEmpty_iff_forall_not_mem : H.IsEmpty ↔ (∀ x, x ∉ V(H)) ∧ (∀ e, e ∉ E(H)) := by
+  unfold IsEmpty
+  constructor
+  · intro h
+    constructor
+    · rw [h.1]
+      apply Set.notMem_empty
+    · rw [h.2]
+      apply Set.notMem_empty
+  · intro ho
+    constructor
+    · apply Set.eq_empty_iff_forall_notMem.mpr
+      apply ho.left
+    · apply Set.eq_empty_iff_forall_notMem.mpr
+      apply ho.right
+
+lemma IsEmpty.not_mem (hH : H.IsEmpty) {e : Set α} : e ∉ E(H) := by
+  unfold IsEmpty at hH
+  rw [hH.2]
+  exact fun a ↦ a
+
+@[simp] lemma not_isEmpty : ¬ H.IsEmpty ↔ H.IsNonempty := by
+  rw [IsEmpty, ← coe_nonempty_iff]
+  constructor
+  rw [not_and_or]
+  intro h
+  cases h with
+  | inl v_nonempty => exact nonempty_iff_ne_empty.mpr v_nonempty
+  | inr e_nonempty => by sorry
+
+@[simp] lemma not_isNonempty : ¬ H.IsNonempty ↔ H.IsEmpty :=
+  not_iff_comm.mp not_isEmpty
+
+alias ⟨_, IsEmpty.not_isNonempty⟩ := not_isNonempty
+alias ⟨_, IsNonempty.not_isEmpty⟩ := not_isEmpty
+
+variable (G) in
+lemma isEmpty_or_isNonempty : G.IsEmpty ∨ G.IsNonempty := G.edges.eq_empty_or_nonempty
+
+@[simp] lemma empty_isEmpty (S : Finset α) : (empty S).IsEmpty := rfl
+
+/-- A hypergraph is empty if and only if it is the empty hypergraph on some vertex set. -/
+lemma isEmpty_iff_eq_empty : G.IsEmpty ↔ ∃ S, G = empty S := by
+  refine ⟨fun h ↦ ⟨G.verts, ?_⟩, fun ⟨S, h⟩ ↦ h.symm ▸ empty_isEmpty S⟩
+  ext : 1
+  case verts => simp
+  case edges => simp [h.eq]
+
+@[simp] lemma completeOn_isNonempty {S : Finset α} : (completeOn S).IsNonempty :=
+  powerset_nonempty _
+
 
 /--
 Predicate to determine if a hypergraph is trivial
@@ -355,14 +416,20 @@ the vertices (`𝒫 V(H)`) is represented in `E(H)`
 -/
 def IsComplete (H : Hypergraph α) : Prop := ∀ e ∈ 𝒫 V(H), e ∈ E(H)
 
-/--
-Predicate to determine if a hypergraph is simple
+@[simps]
+def completeOn (f : Set α) : Hypergraph α where
+  vertexSet := f
+  hyperedgeSet := 𝒫 f
+  hyperedge_isSubset_vertexSet' := by simp
 
-A simple hypergraph is one in which, for each hyperedge `e ∈ E(H)` (with associated vertex subset
-`s : Set α`), there is no other hyperedge `f ∈ E(H)` (with associated vertex subset `t : Set α`)
-such that `s ⊂ t`.
--/
-def IsSimple (H : Hypergraph α) : Prop := ∀ e ∈ E(H), ∀ f ∈ E(H) \ {e}, ¬e ⊆ f
+@[simp]
+lemma mem_completeOn {e f : Set α} : e ∈ E(completeOn f) ↔ e ⊆ f := by
+  constructor
+  · exact fun a ↦ a
+  · exact fun a ↦ a
+
+@[simp]
+lemma isComplete_completeOn (f : Set α) : (completeOn f).IsComplete := by exact fun e a ↦ a
 
 end DefsPreds
 
