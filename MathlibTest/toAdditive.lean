@@ -251,21 +251,6 @@ def pi_nat_has_one {I : Type} : One ((x : I) → Nat)  := pi.has_one
 
 example : @pi_nat_has_one = @pi_nat_has_zero := rfl
 
-section test_noncomputable
-
-@[to_additive Bar.bar]
-noncomputable def Foo.foo (h : ∃ _ : α, True) : α := Classical.choose h
-
-@[to_additive Bar.bar']
-def Foo.foo' : ℕ := 2
-
-theorem Bar.bar'_works : Bar.bar' = 2 := by decide
-
-run_cmd (do
-  if !isNoncomputable (← getEnv) `Test.Bar.bar then throwError "bar shouldn't be computable"
-  if isNoncomputable (← getEnv) `Test.Bar.bar' then throwError "bar' should be computable")
-end test_noncomputable
-
 section instances
 
 class FooClass (α) : Prop where
@@ -318,13 +303,37 @@ def reorderMulThree {α : Type _} [Mul α] (x y z : α) : α := x * y * z
 /--
 error: the permutation
 [[2, 3, 50]]
-provided by the reorder config option is too large, the type
+provided by the `(reorder := ...)` option is out of bounds, the type
   {α : Type u_1} → [Mul α] → α → α → α → α
 has only 5 arguments
 -/
 #guard_msgs in
 @[to_additive (reorder := 3 4 51)]
 def reorderMulThree' {α : Type _} [Mul α] (x y z : α) : α := x * y * z
+
+/-! Test `(reorder := ...)` when the proof needs to be eta-expanded. -/
+@[to_additive (reorder := 3 4 5)]
+alias reorderMulThree_alias := reorderMulThree
+
+@[to_additive (reorder := 3 4 2)]
+alias reorderMulThree_alias' := reorderMulThree
+
+@[to_additive (reorder := 3 4 5)]
+def reorderMulThree_alias'' {α : Type _} [Mul α] (x y : α) : α → α := reorderMulThree x y
+
+/--
+error: invalid cycle `04`, a cycle must have at least 2 elements.
+`(reorder := ...)` uses cycle notation to specify a permutation.
+For example `(reorder := 1 2, 5 6)` swaps the first two arguments with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move the fifth argument before the third argument.
+-/
+#guard_msgs in
+@[to_additive (reorder := 04)]
+example : True := trivial
+
+/-- error: invalid position `00`, positions are counted starting from 1. -/
+#guard_msgs in
+@[to_additive (reorder := 100 200, 2 00)]
+example : True := trivial
 
 example {α : Type _} [Add α] (x y z : α) : reorderAddThree z x y = x + y + z := rfl
 
@@ -517,7 +526,7 @@ fun {α} [i : Mul α] a => i.1 a
 #print myMul
 /--
 info: def myAdd : {α : Type} → [i : Add α] → α → α → α :=
-fun {α} [i : Add α] a => i.1 a
+fun {α} [Add α] a => Add.add a
 -/
 #guard_msgs in
 #print myAdd
@@ -535,3 +544,130 @@ Instead, you can write the attributes in the usual way.
 #guard_msgs in
 @[to_additive self (attr := simp)]
 theorem test2 : 5 = 5 := rfl
+
+/-! Previously, An application that isn't a constant, such as `(no_index Add) α`, would be seen as
+multiplicative, hence `α` would be set as the `to_additive_relevant_arg`. -/
+
+@[to_additive]
+def fooMul {α β : Type} (_ : (no_index Add) α) [Mul β] (x y : β) : β := x * y
+
+@[to_additive] -- this would not translate `fooMul`
+def barMul {β : Type} [Mul β] (x y : β) : β := fooMul instAddNat x y
+
+/-! Test that additive docstrings work -/
+
+@[to_additive /-- (via `docComment` syntax) I am an additive docstring! -/]
+theorem mulTrivial : True := trivial
+
+/-- info: (via `docComment` syntax) I am an additive docstring! -/
+#guard_msgs in
+run_cmd
+  let some doc  ← findDocString? (← getEnv) ``addTrivial
+    | throwError "no `docComment` docstring found"
+  logInfo doc
+
+/--
+warning: String syntax for `to_additive` docstrings is deprecated:
+Use docstring syntax instead (e.g. `@[to_additive /-- example -/]`)
+-/
+#guard_msgs in
+@[to_additive "(via `str` syntax) I am an additive docstring!"]
+theorem mulTrivial' : True := trivial
+
+/-- info: (via `str` syntax) I am an additive docstring! -/
+#guard_msgs in
+run_cmd
+  let some doc ← findDocString? (← getEnv) ``addTrivial'
+    | throwError "no `str` docstring found"
+  logInfo doc
+
+/-! Test handling of noncomputability -/
+
+elab "#computability " decl:ident : command => do
+  let name ← liftCoreM (realizeGlobalConstNoOverloadWithInfo decl)
+  let markedNonComp := isNoncomputable (← getEnv) name
+  let hasNoExec := (IR.findEnvDecl (← getEnv) name).isNone
+  let desc :=
+    if markedNonComp then "is marked noncomputable"
+    else if hasNoExec then "has no executable code"
+    else "is computable"
+  logInfo m!"`{name}` {desc}"
+
+/- Both should be computable -/
+
+@[to_additive]
+def mulComputableTest : Nat := 0
+
+/-- info: `mulComputableTest` is computable -/
+#guard_msgs in #computability mulComputableTest
+/-- info: `addComputableTest` is computable -/
+#guard_msgs in #computability addComputableTest
+
+/- Both should be marked noncomputable -/
+
+@[to_additive]
+noncomputable def mulMarkedNoncomputable : Nat := 0
+
+/-- info: `mulMarkedNoncomputable` is marked noncomputable -/
+#guard_msgs in #computability mulMarkedNoncomputable
+/-- info: `addMarkedNoncomputable` is marked noncomputable -/
+#guard_msgs in #computability addMarkedNoncomputable
+
+noncomputable section
+
+/- Compilation should succeed despite `noncomputable` -/
+
+@[to_additive]
+def mulComputableTest' : Nat := 0
+
+/-- info: `mulComputableTest'` is computable -/
+#guard_msgs in #computability mulComputableTest'
+/-- info: `addComputableTest'` is computable -/
+#guard_msgs in #computability addComputableTest'
+
+/- Both should be marked noncomputable -/
+
+@[to_additive]
+noncomputable def mulMarkedNoncomputable' : Nat := 0
+
+/-- info: `mulMarkedNoncomputable'` is marked noncomputable -/
+#guard_msgs in #computability mulMarkedNoncomputable'
+/-- info: `addMarkedNoncomputable'` is marked noncomputable -/
+#guard_msgs in #computability addMarkedNoncomputable'
+
+/-
+Compilation should fail silently.
+
+If `mulNoExec` ever becomes marked noncomputable (meaning Lean's handling of
+`noncomputable section` has changed), then the check for executable code in
+`Mathlib.Tactic.ToAdditive.Frontend` should be replaced with a simple `isNoncomputable` check and
+mark `addNoExec` `noncomputable` as well (plus a check for whether the original declaration is an
+axiom, if `to_additive` ever handles axioms).
+-/
+
+@[to_additive]
+def mulNoExec {G} (n : Nonempty G) : G := Classical.choice n
+
+/-- info: `mulNoExec` has no executable code -/
+#guard_msgs in #computability mulNoExec
+/-- info: `addNoExec` has no executable code -/
+#guard_msgs in #computability addNoExec
+
+end
+
+/-! Test structures with a private constructor and private fields -/
+
+structure MyPrivateAdd where
+  private mk ::
+  private add : Nat
+
+@[to_additive]
+structure MyPrivateMul where
+  private mk ::
+  private mul : Nat
+
+@[to_additive]
+def MyPrivateMul.mk' (a : Nat) := MyPrivateMul.mk a
+
+@[to_additive]
+def MyPrivateMul.mul' (x : MyPrivateMul) := x.mul

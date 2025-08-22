@@ -40,7 +40,6 @@ namespace Adjunction
 /-- For a pair of functors `L : C ⥤ D`, `R : D ⥤ C`, an adjunction `h : L ⊣ R` induces a monad on
 the category `C`.
 -/
--- Porting note: Specifying simps projections manually to match mathlib3 behavior.
 @[simps! coe η μ]
 def toMonad (h : L ⊣ R) : Monad C where
   toFunctor := L ⋙ R
@@ -58,7 +57,6 @@ def toMonad (h : L ⊣ R) : Monad C where
 /-- For a pair of functors `L : C ⥤ D`, `R : D ⥤ C`, an adjunction `h : L ⊣ R` induces a comonad on
 the category `D`.
 -/
--- Porting note: Specifying simps projections manually to match mathlib3 behavior.
 @[simps coe ε δ]
 def toComonad (h : L ⊣ R) : Comonad D where
   toFunctor := R ⋙ L
@@ -335,7 +333,7 @@ instance comparison_essSurj [Reflective R] :
 
 lemma comparison_full [R.Full] {L : C ⥤ D} (adj : L ⊣ R) :
     (Monad.comparison adj).Full where
-  map_surjective f := ⟨R.preimage f.f, by aesop_cat⟩
+  map_surjective f := ⟨R.preimage f.f, by cat_disch⟩
 
 end Reflective
 
@@ -363,7 +361,7 @@ instance comparison_essSurj [Coreflective R] :
 
 lemma comparison_full [R.Full] {L : C ⥤ D} (adj : R ⊣ L) :
     (Comonad.comparison adj).Full where
-  map_surjective f := ⟨R.preimage f.f, by aesop_cat⟩
+  map_surjective f := ⟨R.preimage f.f, by cat_disch⟩
 
 end Coreflective
 
@@ -371,7 +369,7 @@ end Coreflective
 -- just the existence of an inverse on each object.
 -- see Note [lower instance priority]
 /-- Any reflective inclusion has a monadic right adjoint.
-    cf Prop 5.3.3 of [Riehl][riehl2017] -/
+cf Prop 5.3.3 of [Riehl][riehl2017] -/
 instance (priority := 100) monadicOfReflective [Reflective R] :
     MonadicRightAdjoint R where
   L := reflector R
@@ -379,7 +377,7 @@ instance (priority := 100) monadicOfReflective [Reflective R] :
   eqv := { full := Reflective.comparison_full _ }
 
 /-- Any coreflective inclusion has a comonadic left adjoint.
-    cf Dual statement of Prop 5.3.3 of [Riehl][riehl2017] -/
+cf Dual statement of Prop 5.3.3 of [Riehl][riehl2017] -/
 instance (priority := 100) comonadicOfCoreflective [Coreflective R] :
     ComonadicLeftAdjoint R where
   R := coreflector R

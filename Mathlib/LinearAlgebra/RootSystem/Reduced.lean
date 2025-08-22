@@ -110,14 +110,14 @@ lemma linearIndependent_of_sub_mem_range_root
 lemma linearIndependent_of_add_mem_range_root' [CharZero R] [IsDomain R] [P.IsReduced] {i j : ι}
     (h : P.root i + P.root j ∈ range P.root) :
     LinearIndependent R ![P.root i, P.root j] :=
-  have _i := P.reflexive_left
+  have : IsReflexive R M := .of_isPerfPair P.toLinearMap
   have _i : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
   P.linearIndependent_of_add_mem_range_root h
 
 lemma linearIndependent_of_sub_mem_range_root' [CharZero R] [IsDomain R] [P.IsReduced] {i j : ι}
     (h : P.root i - P.root j ∈ range P.root) :
     LinearIndependent R ![P.root i, P.root j] :=
-  have _i := P.reflexive_left
+  have : IsReflexive R M := .of_isPerfPair P.toLinearMap
   have _i : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
   P.linearIndependent_of_sub_mem_range_root h
 

@@ -91,13 +91,27 @@ theorem mul_den (q₁ q₂ : ℚ) :
       q₁.den * q₂.den / Nat.gcd (q₁.num * q₂.num).natAbs (q₁.den * q₂.den) := by
   rw [mul_def, normalize_eq]
 
+/-- A version of `Rat.mul_den` without division. -/
+theorem den_mul_den_eq_den_mul_gcd (q₁ q₂ : ℚ) :
+    q₁.den * q₂.den = (q₁ * q₂).den * ((q₁.num * q₂.num).natAbs.gcd (q₁.den * q₂.den)) := by
+  rw [mul_den]
+  exact ((Nat.dvd_iff_div_mul_eq _ _).mp (Nat.gcd_dvd_right _ _)).symm
+
+/-- A version of `Rat.mul_num` without division. -/
+theorem num_mul_num_eq_num_mul_gcd (q₁ q₂ : ℚ) :
+    q₁.num * q₂.num = (q₁ * q₂).num * ((q₁.num * q₂.num).natAbs.gcd (q₁.den * q₂.den)) := by
+  rw [mul_num]
+  refine (Int.ediv_mul_cancel ?_).symm
+  rw [← Int.dvd_natAbs]
+  exact Int.ofNat_dvd.mpr (Nat.gcd_dvd_left _ _)
+
 theorem mul_self_num (q : ℚ) : (q * q).num = q.num * q.num := by
   rw [mul_num, Int.natAbs_mul, Nat.Coprime.gcd_eq_one, Int.ofNat_one, Int.ediv_one]
-  exact (q.reduced.mul_right q.reduced).mul (q.reduced.mul_right q.reduced)
+  exact (q.reduced.mul_right q.reduced).mul_left (q.reduced.mul_right q.reduced)
 
 theorem mul_self_den (q : ℚ) : (q * q).den = q.den * q.den := by
   rw [Rat.mul_den, Int.natAbs_mul, Nat.Coprime.gcd_eq_one, Nat.div_one]
-  exact (q.reduced.mul_right q.reduced).mul (q.reduced.mul_right q.reduced)
+  exact (q.reduced.mul_right q.reduced).mul_left (q.reduced.mul_right q.reduced)
 
 theorem add_num_den (q r : ℚ) :
     q + r = (q.num * r.den + q.den * r.num : ℤ) /. (↑q.den * ↑r.den : ℤ) := by
@@ -304,14 +318,12 @@ theorem num_inv (q : ℚ) : (q⁻¹).num = q.num.sign * q.den := by
   rw [one_mul, inv_intCast_den, Int.natAbs_mul, Int.natAbs_cast]
   split <;> simp_all [Int.natAbs_sign_of_ne_zero, q.reduced.symm, mul_comm]
 
-protected theorem «forall» {p : ℚ → Prop} : (∀ r, p r) ↔ ∀ a b : ℤ, p (a / b) :=
-  ⟨fun h _ _ => h _,
-   fun h q => by
-    have := h q.num q.den
-    rwa [Int.cast_natCast, num_div_den q] at this⟩
+protected theorem «forall» {p : ℚ → Prop} : (∀ r, p r) ↔ ∀ a b : ℤ, b ≠ 0 → p (a / b) where
+  mp h _ _ _ := h _
+  mpr h q := by simpa [num_div_den] using h q.num q.den (mod_cast q.den_ne_zero)
 
-protected theorem «exists» {p : ℚ → Prop} : (∃ r, p r) ↔ ∃ a b : ℤ, p (a / b) :=
-  ⟨fun ⟨r, hr⟩ => ⟨r.num, r.den, by convert hr; convert num_div_den r⟩, fun ⟨_, _, h⟩ => ⟨_, h⟩⟩
+protected theorem «exists» {p : ℚ → Prop} : (∃ r, p r) ↔ ∃ a b : ℤ, b ≠ 0 ∧ p (a / b) := by
+  simpa using Rat.forall (p := (¬ p ·)).not
 
 /-!
 ### Denominator as `ℕ+`
