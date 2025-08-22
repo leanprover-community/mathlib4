@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Order.Atoms
-import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.LinearAlgebra.Span.Defs
 import Mathlib.LinearAlgebra.AffineSpace.Defs
 
@@ -1003,7 +1002,7 @@ lemma affineSpan_subset_span {s : Set V} :
     (affineSpan k s : Set V) ⊆  Submodule.span k s :=
   affineSpan_le_toAffineSubspace_span
 
--- TODO: We want this to be simp, but `affineSpan` gets simped away to `spanPoints`!
+-- TODO: We want this to be simp, but `affineSpan` gets simp-ed away to `spanPoints`!
 -- Let's delete `spanPoints`
 lemma affineSpan_insert_zero (s : Set V) :
     (affineSpan k (insert 0 s) : Set V) = Submodule.span k s := by

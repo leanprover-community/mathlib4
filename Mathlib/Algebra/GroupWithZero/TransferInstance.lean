@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.TransferInstance
-import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.InjSurj
 
 /-!
@@ -13,7 +12,7 @@ import Mathlib.Algebra.GroupWithZero.InjSurj
 This continues the pattern set in `Mathlib/Algebra/Group/TransferInstance.lean`.
 -/
 
-assert_not_exists Ring
+assert_not_exists MulAction Ring
 
 universe u v
 

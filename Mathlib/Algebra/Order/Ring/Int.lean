@@ -43,6 +43,7 @@ instance instIsStrictOrderedRing : IsStrictOrderedRing ℤ := .of_mul_pos @Int.m
 lemma isCompl_even_odd : IsCompl { n : ℤ | Even n } { n | Odd n } := by
   simp [← not_even_iff_odd, ← Set.compl_setOf, isCompl_compl]
 
+@[simp]
 lemma _root_.Nat.cast_natAbs {α : Type*} [AddGroupWithOne α] (n : ℤ) : (n.natAbs : α) = |n| := by
   rw [← natCast_natAbs, Int.cast_natCast]
 
@@ -50,7 +51,7 @@ lemma two_le_iff_pos_of_even {m : ℤ} (even : Even m) : 2 ≤ m ↔ 0 < m :=
   le_iff_pos_of_dvd (by decide) even.two_dvd
 
 lemma add_two_le_iff_lt_of_even_sub {m n : ℤ} (even : Even (n - m)) : m + 2 ≤ n ↔ m < n := by
-  rw [add_comm]; exact le_add_iff_lt_of_dvd_sub (by decide) even.two_dvd
+  grind
 
 end Int
 
