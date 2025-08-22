@@ -28,7 +28,6 @@ braiding and associating isomorphisms, and the product comparison morphism.
 * [Stacks: coproducts of pairs](https://stacks.math.columbia.edu/tag/04AN)
 -/
 
-
 universe v v₁ u u₁ u₂
 
 open CategoryTheory
@@ -1395,13 +1394,12 @@ protected def IsLimit.assoc (P : IsLimit sXY) (Q : IsLimit sYZ) {s : BinaryFan s
       · exact w ⟨.left⟩
       · specialize w ⟨.right⟩
         simp? at w says
-          simp only [pair_obj_right, BinaryFan.π_app_right, BinaryFan.assoc_snd,
+          simp only [pair_obj_right, BinaryFan.assoc_snd,
             Functor.const_obj_obj, pair_obj_left] at w
-        rw [← w]
-        simp
+        simp [← w]
     · specialize w ⟨.right⟩
       simp? at w says
-        simp only [pair_obj_right, BinaryFan.π_app_right, BinaryFan.assoc_snd,
+        simp only [pair_obj_right, BinaryFan.assoc_snd,
           Functor.const_obj_obj, pair_obj_left] at w
       simp [← w]
 
