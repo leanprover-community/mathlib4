@@ -42,8 +42,7 @@ instance Prod.instCanLift {α β γ δ coeβα condβα coeδγ condδγ} [CanLi
     rintro ⟨x, y⟩ ⟨hx, hy⟩
     rcases CanLift.prf (β := β) x hx with ⟨x, rfl⟩
     rcases CanLift.prf (β := δ) y hy with ⟨y, rfl⟩
-    refine ⟨(x, y), ?_⟩
-    simp
+    exact ⟨(x, y), by simp⟩
 
 theorem Subtype.exists_pi_extension {ι : Sort*} {α : ι → Sort*} [ne : ∀ i, Nonempty (α i)]
     {p : ι → Prop} (f : ∀ i : Subtype p, α i) :
