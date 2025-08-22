@@ -206,7 +206,7 @@ open ProdPreservesConnectedLimits
 
 /-- The functor `(X × -)` preserves any connected limit.
 Note that this functor does not preserve the two most obvious disconnected limits - that is,
-`(X × -)` does not preserve products or terminal object, eg `(X ⨯ A) ⨯ (X ⨯ B)` is not isomorphic to
+`(X × -)` does not preserve products or terminal object, e.g. `(X ⨯ A) ⨯ (X ⨯ B)` is not isomorphic to
 `X ⨯ (A ⨯ B)` and `X ⨯ 1` is not isomorphic to `1`.
 -/
 lemma prod_preservesConnectedLimits [IsConnected J] (X : C) :
