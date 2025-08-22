@@ -133,6 +133,9 @@ theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ 
     map g₁ (map f₁ a) = map g₂ (map f₂ a) :=
   Option.map_comm h _
 
+theorem map_injective {f : α → β} (Hf : Injective f) : Injective (WithBot.map f) :=
+  Option.map_injective Hf
+
 /-- The image of a binary function `f : α → β → γ` as a function
 `WithBot α → WithBot β → WithBot γ`.
 
@@ -627,6 +630,9 @@ theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ 
     (h : g₁ ∘ f₁ = g₂ ∘ f₂) (a : α) : map g₁ (map f₁ a) = map g₂ (map f₂ a) :=
   Option.map_comm h _
 
+theorem map_injective {f : α → β} (Hf : Injective f) : Injective (WithTop.map f) :=
+  Option.map_injective Hf
+
 /-- The image of a binary function `f : α → β → γ` as a function
 `WithTop α → WithTop β → WithTop γ`.
 
@@ -764,8 +770,8 @@ lemma coe_lt_iff : a < y ↔ ∀ b : α, y = b → a < b := by simp [lt_def]
 `PartialOrder α`. -/
 protected lemma lt_top_iff_ne_top : x < ⊤ ↔ x ≠ ⊤ := by cases x <;> simp
 
-lemma lt_untop_iff (hy : y ≠ ⊤) : a < y.untop hy ↔ a < y := by lift y to α using id hy; simp
-lemma untop_lt_iff (hx : x ≠ ⊤) : x.untop hx < b ↔ x < b := by lift x to α using id hx; simp
+@[simp] lemma lt_untop_iff (hy : y ≠ ⊤) : a < y.untop hy ↔ a < y := by lift y to α using id hy; simp
+@[simp] lemma untop_lt_iff (hx : x ≠ ⊤) : x.untop hx < b ↔ x < b := by lift x to α using id hx; simp
 lemma lt_untopD_iff (hy : y = ⊤ → a < b) : a < y.untopD b ↔ a < y := by cases y <;> simp [hy]
 
 @[deprecated (since := "2025-02-11")]
@@ -919,8 +925,6 @@ end LinearOrder
 
 instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithTop α) :=
   inferInstanceAs <| WellFoundedLT (WithBot αᵒᵈ)ᵒᵈ
-
-open OrderDual
 
 instance instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithTop α) :=
   inferInstanceAs <| WellFoundedGT (WithBot αᵒᵈ)ᵒᵈ
