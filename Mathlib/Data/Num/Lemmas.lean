@@ -160,8 +160,8 @@ theorem cmp_to_nat : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℕ) < n) (m = n
 theorem lt_to_nat {m n : PosNum} : (m : ℕ) < n ↔ m < n :=
   show (m : ℕ) < n ↔ cmp m n = Ordering.lt from
     match cmp m n, cmp_to_nat m n with
-    | Ordering.lt, h => by simp only at h; simp [h]
-    | Ordering.eq, h => by simp only at h; simp [h]
+    | Ordering.lt, h => by simp [h]
+    | Ordering.eq, h => by simp [h]
     | Ordering.gt, h => by simp [not_lt_of_gt h]
 
 @[norm_cast]
@@ -279,8 +279,8 @@ theorem cmp_to_nat : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℕ) < n) (m = n
 theorem lt_to_nat {m n : Num} : (m : ℕ) < n ↔ m < n :=
   show (m : ℕ) < n ↔ cmp m n = Ordering.lt from
     match cmp m n, cmp_to_nat m n with
-    | Ordering.lt, h => by simp only at h; simp [h]
-    | Ordering.eq, h => by simp only at h; simp [h]
+    | Ordering.lt, h => by simp [h]
+    | Ordering.eq, h => by simp [h]
     | Ordering.gt, h => by simp [not_lt_of_gt h]
 
 @[norm_cast]

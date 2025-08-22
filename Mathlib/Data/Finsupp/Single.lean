@@ -238,7 +238,6 @@ theorem card_support_le_one' [Nonempty α] {f : α →₀ M} :
 @[simp]
 theorem equivFunOnFinite_single [DecidableEq α] [Finite α] (x : α) (m : M) :
     Finsupp.equivFunOnFinite (Finsupp.single x m) = Pi.single x m := by
-  ext
   simp [Finsupp.single_eq_pi_single, equivFunOnFinite]
 
 @[simp]

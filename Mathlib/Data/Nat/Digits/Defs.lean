@@ -217,8 +217,7 @@ theorem digits_zero_of_eq_zero {b : ℕ} (h : b ≠ 0) :
 theorem digits_ofDigits (b : ℕ) (h : 1 < b) (L : List ℕ) (w₁ : ∀ l ∈ L, l < b)
     (w₂ : ∀ h : L ≠ [], L.getLast h ≠ 0) : digits b (ofDigits b L) = L := by
   induction' L with d L ih
-  · dsimp [ofDigits]
-    simp
+  · simp
   · dsimp [ofDigits]
     replace w₂ := w₂ (by simp)
     rw [digits_add b h]
