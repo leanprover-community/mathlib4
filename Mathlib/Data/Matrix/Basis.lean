@@ -118,7 +118,6 @@ theorem matrix_eq_sum_single [AddCommMonoid α] [Fintype m] [Fintype n] (x : Mat
 
 theorem single_eq_single_vecMulVec_single [MulZeroOneClass α] (i : m) (j : n) :
     single i j (1 : α) = vecMulVec (Pi.single i 1) (Pi.single j 1) := by
-  ext i' j'
   simp [-mul_ite, single, vecMulVec, ite_and, Pi.single_apply, eq_comm]
 
 @[deprecated (since := "2025-05-05")]
