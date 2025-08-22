@@ -305,6 +305,27 @@ lemma _root_.MDifferentiableWithinAt.differentiableWithinAt_mpullbackWithin_vect
   exact ((contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.mdifferentiableAt
     le_rfl).comp_mdifferentiableWithinAt _ this
 
+variable (W x) in
+omit [CompleteSpace E] in
+lemma aux_computation :
+    (mfderiv I 𝓘(𝕜, E) (extChartAt I x) x).inverse
+      ((mfderivWithin 𝓘(𝕜, E) I ((extChartAt I x).symm) (range I) ((extChartAt I x) x)).inverse
+        (W ((extChartAt I x).symm ((extChartAt I x) x))))
+      = W x := by
+  set φ := extChartAt I x
+  set x' := (extChartAt I x) x
+  rw [extChartAt_to_inv x]
+  calc
+    _ = ((mfderiv I 𝓘(𝕜, E) φ x).inverse.comp
+      (mfderivWithin 𝓘(𝕜, E) I φ.symm (range I) x').inverse) (W x) := rfl
+    _ = (ContinuousLinearMap.id 𝕜 _) (W x) := by
+      congr
+      rw [← ContinuousLinearMap.IsInvertible.inverse_comp_of_left,
+        ← ContinuousLinearMap.inverse_id,
+        mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt' (mem_extChartAt_source x)]
+      exact isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target x)
+    _ = W x := by simp
+
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
 `f : M → 𝕜`, we have `[V, f • W] = (df V) • W + f • [V, W]`. Version within a set.
@@ -335,24 +356,56 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
 
   trans mpullback I 𝓘(𝕜, E) (extChartAt I x) ((lieBracketWithin 𝕜 V' (f' • W') s') ·) x
   · rfl
-  -- issue: silent defeq abuse, a map E → E vs a map tangent space -> tangent space
+  -- We need the cast, since on the nose `B` is a map `E → E`,
+  -- while we need a map between tangent spaces.
   let A (x₀) := (fderivWithin 𝕜 f' s' x₀) (V' x₀) • W' x₀
-  let B (x₀) := f' x₀ • lieBracketWithin 𝕜 V' W' s' x₀
-  -- thus, this does not typecheck...
-  -- trans mpullback I 𝓘(𝕜, E) ((extChartAt I x)) (fun y ↦ A y + B y) x
-  -- · sorry
-
-  -- first part to get the claim
-  have : mpullback I 𝓘(𝕜, E) (extChartAt I x) A x
+  let B (x₀) : TangentSpace 𝓘(𝕜, E) x₀ := f' x₀ • lieBracketWithin 𝕜 V' W' s' x₀
+  trans mpullback I 𝓘(𝕜, E) ((extChartAt I x)) (fun y ↦ A y + B y) x
+  · simp only [mpullback_apply]
+    congr
+  -- missing lemma; first part of the claim
+  have h1 : mpullback I 𝓘(𝕜, E) (extChartAt I x) A x
       = (mfderivWithin I 𝓘(𝕜, 𝕜) f s x) (V x) • W x := by
     unfold A
     simp [mfderivWithin, hf]
     simp [mpullback]
+    have cleanup1 : I ((chartAt H x) x) = x' := rfl
+    have cleanup2 : f ∘ (chartAt H x).symm ∘ ↑I.symm = f' := rfl
+    rw [cleanup1, cleanup2]
     congr
-    · simp [V']
-      sorry
     · sorry
-  have : mpullback I 𝓘(𝕜, E) (extChartAt I x) B x
+    have : V' x' = V x := by
+      simp only [V', x']
+      set φ := (extChartAt I x)
+      simp only [mpullbackWithin]
+      -- is this actually true? not sure!
+      --have := VectorField.eventuallyEq_mpullback_mpullbackWithin_extChartAt_symm
+      --  V (x := x) (s := Set.univ)
+      --have := VectorField.eventuallyEq_mpullback_mpullbackWithin_extChartAt
+      --  V (x := x) (s := Set.univ)
+      symm
+      sorry
+      --convert this
+    exact aux_computation x W
+
+    -- · simp only [V']
+    --   #check VectorField.eventuallyEq_mpullback_mpullbackWithin_extChartAt
+    --   show mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm V (range I) x' = V x
+    --   have := VectorField.eventuallyEq_mpullback_mpullbackWithin_extChartAt
+    --   -- missing lemma!
+    --   simp only [mpullbackWithin]
+    --   simp only [mfderivWithin]
+    --   have : MDifferentiableWithinAt 𝓘(𝕜, E) I (↑(extChartAt I x).symm) (range ↑I) x' := sorry
+    --   simp only [this, if_true]
+    --   simp only [pullbackWithin]
+    --   --simp
+
+    --   simp [mpullbackWithin]
+    --   ext
+    --   simp
+    --   rw?
+    --   sorry
+  have h2 : mpullback I 𝓘(𝕜, E) (extChartAt I x) B x
       = f x • mpullback I 𝓘(𝕜, E) (↑(extChartAt I x)) (lieBracketWithin 𝕜 V' W' s') x := by
     simp only [B]
     trans mpullback I 𝓘(𝕜, E) (↑(extChartAt I x)) (f' • lieBracketWithin 𝕜 V' W' s') x
