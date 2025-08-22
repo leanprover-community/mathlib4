@@ -1007,17 +1007,17 @@ theorem reLm_coe : (reLm : K → ℝ) = re :=
   rfl
 
 /-- The real part in an `RCLike` field, as a continuous linear map. -/
-noncomputable def reCLM : K →L[ℝ] ℝ :=
+noncomputable def reCLM : StrongDual ℝ K :=
   reLm.mkContinuous 1 fun x => by
     rw [one_mul]
     exact abs_re_le_norm x
 
 @[simp, rclike_simps, norm_cast]
-theorem reCLM_coe : ((reCLM : K →L[ℝ] ℝ) : K →ₗ[ℝ] ℝ) = reLm :=
+theorem reCLM_coe : ((reCLM : StrongDual ℝ K) : K →ₗ[ℝ] ℝ) = reLm :=
   rfl
 
 @[simp, rclike_simps]
-theorem reCLM_apply : ((reCLM : K →L[ℝ] ℝ) : K → ℝ) = re :=
+theorem reCLM_apply : ((reCLM : StrongDual ℝ K) : K → ℝ) = re :=
   rfl
 
 @[continuity, fun_prop]
@@ -1033,17 +1033,17 @@ theorem imLm_coe : (imLm : K → ℝ) = im :=
   rfl
 
 /-- The imaginary part in an `RCLike` field, as a continuous linear map. -/
-noncomputable def imCLM : K →L[ℝ] ℝ :=
+noncomputable def imCLM : StrongDual ℝ K :=
   imLm.mkContinuous 1 fun x => by
     rw [one_mul]
     exact abs_im_le_norm x
 
 @[simp, rclike_simps, norm_cast]
-theorem imCLM_coe : ((imCLM : K →L[ℝ] ℝ) : K →ₗ[ℝ] ℝ) = imLm :=
+theorem imCLM_coe : ((imCLM : StrongDual ℝ K) : K →ₗ[ℝ] ℝ) = imLm :=
   rfl
 
 @[simp, rclike_simps]
-theorem imCLM_apply : ((imCLM : K →L[ℝ] ℝ) : K → ℝ) = im :=
+theorem imCLM_apply : ((imCLM : StrongDual ℝ K) : K → ℝ) = im :=
   rfl
 
 @[continuity, fun_prop]

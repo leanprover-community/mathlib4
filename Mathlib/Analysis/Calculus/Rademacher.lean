@@ -233,7 +233,7 @@ theorem ae_lineDeriv_sum_eq
   suffices B : ∀ i ∈ s, Integrable (fun x ↦ a i * (fderiv ℝ g x (v i) * f x)) μ by
     simp_rw [Finset.sum_mul, mul_assoc, integral_finset_sum s B, integral_const_mul]
   intro i _hi
-  let L : (E →L[ℝ] ℝ) → ℝ := fun f ↦ f (v i)
+  let L : StrongDual ℝ E → ℝ := fun f ↦ f (v i)
   change Integrable (fun x ↦ a i * ((L ∘ (fderiv ℝ g)) x * f x)) μ
   refine (Continuous.integrable_of_hasCompactSupport ?_ ?_).const_mul _
   · exact ((g_smooth.continuous_fderiv (mod_cast le_top)).clm_apply continuous_const).mul
@@ -246,7 +246,7 @@ theorem ae_lineDeriv_sum_eq
 
 theorem ae_exists_fderiv_of_countable
     (hf : LipschitzWith C f) {s : Set E} (hs : s.Countable) :
-    ∀ᵐ x ∂μ, ∃ (L : E →L[ℝ] ℝ), ∀ v ∈ s, HasLineDerivAt ℝ f (L v) x v := by
+    ∀ᵐ x ∂μ, ∃ (L : StrongDual ℝ E), ∀ v ∈ s, HasLineDerivAt ℝ f (L v) x v := by
   have B := Basis.ofVectorSpace ℝ E
   have I1 : ∀ᵐ (x : E) ∂μ, ∀ v ∈ s, lineDeriv ℝ f x (∑ i, (B.repr v i) • B i) =
                                   ∑ i, B.repr v i • lineDeriv ℝ f x (B i) :=
@@ -254,7 +254,7 @@ theorem ae_exists_fderiv_of_countable
   have I2 : ∀ᵐ (x : E) ∂μ, ∀ v ∈ s, LineDifferentiableAt ℝ f x v :=
     (ae_ball_iff hs).2 (fun v _ ↦ hf.ae_lineDifferentiableAt v)
   filter_upwards [I1, I2] with x hx h'x
-  let L : E →L[ℝ] ℝ :=
+  let L : StrongDual ℝ E :=
     LinearMap.toContinuousLinearMap (B.constr ℝ (fun i ↦ lineDeriv ℝ f x (B i)))
   refine ⟨L, fun v hv ↦ ?_⟩
   have J : L v = lineDeriv ℝ f x v := by convert (hx v hv).symm <;> simp [L, B.sum_repr v]

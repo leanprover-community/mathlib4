@@ -21,7 +21,7 @@ spaces `V`: if `f` is a function on `V` (valued in a complete normed space `E`),
 Fourier transform of `f`, viewed as a function on the dual space of `V`, tends to 0 along the
 cocompact filter. Here the Fourier transform is defined by
 
-`fun w : V →L[ℝ] ℝ ↦ ∫ (v : V), exp (↑(2 * π * w v) * I) • f v`.
+`fun w : StrongDual ℝ V ↦ ∫ (v : V), exp (↑(2 * π * w v) * I) • f v`.
 
 This is true for arbitrary functions, but is only interesting for `L¹` functions (if `f` is not
 integrable then the integral is zero for all `w`). This is proved first for continuous
@@ -216,13 +216,15 @@ theorem Real.zero_at_infty_fourierIntegral (f : ℝ → E) : Tendsto (𝓕 f) (c
 via dual space. **Do not use** -- it is only a stepping stone to
 `tendsto_integral_exp_smul_cocompact` where the inner-product-space structure isn't required. -/
 theorem tendsto_integral_exp_smul_cocompact_of_inner_product (μ : Measure V) [μ.IsAddHaarMeasure] :
-    Tendsto (fun w : V →L[ℝ] ℝ => ∫ v, 𝐞 (-w v) • f v ∂μ) (cocompact (V →L[ℝ] ℝ)) (𝓝 0) := by
+    Tendsto (fun w : StrongDual ℝ V => ∫ v, 𝐞 (-w v) • f v ∂μ) (cocompact (StrongDual ℝ V))
+    (𝓝 0) := by
   rw [μ.isAddLeftInvariant_eq_smul volume]
   simp_rw [integral_smul_nnreal_measure]
   rw [← (smul_zero _ : Measure.addHaarScalarFactor μ volume • (0 : E) = 0)]
   apply Tendsto.const_smul
   let A := (InnerProductSpace.toDual ℝ V).symm
-  have : (fun w : V →L[ℝ] ℝ ↦ ∫ v, 𝐞 (-w v) • f v) = (fun w : V ↦ ∫ v, 𝐞 (-⟪v, w⟫) • f v) ∘ A := by
+  have : (fun w : StrongDual ℝ V ↦ ∫ v, 𝐞 (-w v) • f v) =
+      (fun w : V ↦ ∫ v, 𝐞 (-⟪v, w⟫) • f v) ∘ A := by
     ext1 w
     congr 1 with v : 1
     rw [← inner_conj_symm, RCLike.conj_to_real, InnerProductSpace.toDual_symm_apply]
@@ -240,7 +242,8 @@ variable (f) [AddCommGroup V] [TopologicalSpace V] [IsTopologicalAddGroup V] [T2
 /-- Riemann-Lebesgue lemma for functions on a finite-dimensional real vector space, formulated via
 dual space. -/
 theorem tendsto_integral_exp_smul_cocompact (μ : Measure V) [μ.IsAddHaarMeasure] :
-    Tendsto (fun w : V →L[ℝ] ℝ => ∫ v, 𝐞 (-w v) • f v ∂μ) (cocompact (V →L[ℝ] ℝ)) (𝓝 0) := by
+    Tendsto (fun w : StrongDual ℝ V => ∫ v, 𝐞 (-w v) • f v ∂μ) (cocompact (StrongDual ℝ V))
+      (𝓝 0) := by
   -- We have already proved the result for inner-product spaces, formulated in a way which doesn't
   -- refer to the inner product. So we choose an arbitrary inner-product space isomorphic to V
   -- and port the result over from there.
@@ -250,7 +253,7 @@ theorem tendsto_integral_exp_smul_cocompact (μ : Measure V) [μ.IsAddHaarMeasur
   -- various equivs derived from A
   let Aₘ : MeasurableEquiv V V' := A.toHomeomorph.toMeasurableEquiv
   -- isomorphism between duals derived from A
-  let Adual : (V →L[ℝ] ℝ) ≃L[ℝ] V' →L[ℝ] ℝ := A.arrowCongrSL (.refl _ _)
+  let Adual : StrongDual ℝ V ≃L[ℝ] StrongDual ℝ V' := A.arrowCongrSL (.refl _ _)
   have : (μ.map Aₘ).IsAddHaarMeasure := A.isAddHaarMeasure_map _
   convert (tendsto_integral_exp_smul_cocompact_of_inner_product (f ∘ A.symm) (μ.map Aₘ)).comp
     Adual.toHomeomorph.toCocompactMap.cocompact_tendsto' with w
@@ -262,8 +265,8 @@ theorem tendsto_integral_exp_smul_cocompact (μ : Measure V) [μ.IsAddHaarMeasur
 pairing in the definition of `fourier_integral` taken to be the canonical pairing between `V` and
 its dual space). -/
 theorem Real.zero_at_infty_vector_fourierIntegral (μ : Measure V) [μ.IsAddHaarMeasure] :
-    Tendsto (VectorFourier.fourierIntegral 𝐞 μ (topDualPairing ℝ V).flip f) (cocompact (V →L[ℝ] ℝ))
-      (𝓝 0) :=
+    Tendsto (VectorFourier.fourierIntegral 𝐞 μ (topDualPairing ℝ V).flip f)
+      (cocompact (StrongDual ℝ V)) (𝓝 0) :=
   _root_.tendsto_integral_exp_smul_cocompact f μ
 
 end NoInnerProduct
