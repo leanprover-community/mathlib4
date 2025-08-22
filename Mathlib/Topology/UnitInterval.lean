@@ -244,8 +244,8 @@ lemma subtype_Ioi_eq_Ioc (x : I) : Subtype.val⁻¹' (Ioi ↑x) = Ioc x 1 := by
 such that `a < sSup {x | f e.1 x < e.2}` equals the union over all rationals `q ∈ I`
 with `q > a` of the sets `{e | f e.1 q < e.2}`. -/
 lemma sSup_eq_iUnion_rat {α : Type*} {f : α → I → ℝ} (hf : ∀ a, Monotone (f a)) (a : I) :
-    {e : α × I | a < sSup {x | f e.1 x < e.2}} =
-    ⋃ (q : {q : ℚ // (q : ℝ) ∈ I ∧ (q : ℝ) > a}), {e | f e.1 ⟨q.1, q.2.1⟩ < e.2} := by
+    {⟨u, v⟩ : α × I | a < sSup {x | f u x < v}} =
+      ⋃ (q : {q : ℚ // (q : ℝ) ∈ I ∧ (q : ℝ) > a}), {⟨u, v⟩ | f u ⟨q.1, q.2.1⟩ < v} := by
   ext e
   constructor
   · intro (he : a < sSup {x | f e.1 x < e.2})
