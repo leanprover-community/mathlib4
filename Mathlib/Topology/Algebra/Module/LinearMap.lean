@@ -856,7 +856,7 @@ theorem intCast_apply [IsTopologicalAddGroup M] (z : ℤ) (m : M) : (↑z : M �
   rfl
 
 theorem smulRight_one_pow [TopologicalSpace R] [IsTopologicalRing R] (c : R) (n : ℕ) :
-    smulRight (1 : StrongDual R R) c ^ n = smulRight (1 : StrongDual R R) (c ^ n) := by
+    smulRight (1 : R →L[R] R) c ^ n = smulRight (1 : R →L[R] R) (c ^ n) := by
   induction n with
   | zero => ext; simp
   | succ n ihn => rw [pow_succ, ihn, mul_def, smulRight_comp, smul_eq_mul, pow_succ']
