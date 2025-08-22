@@ -141,15 +141,20 @@ lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
   rw [Finsupp.unique_single (AddEquiv.finsuppUnique.symm d), Finsupp.unique_single_eq_iff]
   simp [AddEquiv.finsuppUnique]
 
-theorem add_comm_of_disjoint {M} {f g : M →₀ N} (h : Disjoint f.support g.support) :
-    f + g = g + f := by
-  classical
-  rw [Finset.disjoint_iff_inter_eq_empty, ← Finset.coe_inj,
-    Finset.coe_inter, Finset.coe_empty, ← compl_inj_iff,
-    Set.compl_empty, Set.compl_inter, Set.eq_univ_iff_forall] at h
+theorem addCommute_of_inter {M} [DecidableEq M] {f g : M →₀ N}
+    (h : ∀ x ∈ f.support ∩ g.support, AddCommute (f x) (g x)) : AddCommute f g := by
   ext x
-  specialize h x
-  aesop
+  by_cases hf : x ∈ f.support
+  · by_cases hg : x ∈ g.support
+    · exact h _ (mem_inter_of_mem hf hg)
+    · simp_all
+  · simp_all
+
+theorem addCommute_of_disjoint {M} {f g : M →₀ N} (h : Disjoint f.support g.support) :
+    AddCommute f g := by
+  classical
+  apply addCommute_of_inter
+  simp_all [Finset.disjoint_iff_inter_eq_empty]
 
 /-- `Finsupp.single` as an `AddMonoidHom`.
 
@@ -219,8 +224,9 @@ lemma induction₂ {motive : (ι →₀ M) → Prop} (f : ι →₀ M) (zero : m
       a ∉ f.support → b ≠ 0 → motive f → motive (f + single a b)) : motive f := by
   classical
   refine f.induction zero ?_
-  simp_all [add_comm_of_disjoint, disjoint_iff_inter_eq_empty, eq_empty_iff_forall_notMem,
-    single_apply]
+  convert add_single using 7
+  apply (addCommute_of_disjoint _).eq
+  simp_all [disjoint_iff_inter_eq_empty, eq_empty_iff_forall_notMem, single_apply]
 
 @[elab_as_elim]
 lemma induction_linear {motive : (ι →₀ M) → Prop} (f : ι →₀ M) (zero : motive 0)
@@ -266,8 +272,8 @@ lemma induction_on_max₂ (f : ι →₀ M) (zero : p 0)
   refine f.induction_on_max zero ?_
   convert add_single using 7 with _ _ _ H
   have := fun c hc ↦ (H c hc).ne
-  simp_all [add_comm_of_disjoint, disjoint_iff_inter_eq_empty, eq_empty_iff_forall_notMem,
-    single_apply, not_imp_not]
+  apply (addCommute_of_disjoint _).eq
+  simp_all [disjoint_iff_inter_eq_empty, eq_empty_iff_forall_notMem, single_apply, not_imp_not]
 
 /-- A finitely supported function can be built by adding up `single a b` for decreasing `a`.
 
