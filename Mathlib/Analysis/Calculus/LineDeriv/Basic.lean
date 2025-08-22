@@ -351,7 +351,7 @@ lemma HasLineDerivWithinAt.congr_of_eventuallyEq (hf : HasLineDerivWithinAt 𝕜
 
 theorem HasLineDerivAt.congr_of_eventuallyEq (h : HasLineDerivAt 𝕜 f f' x v) (h₁ : f₁ =ᶠ[𝓝 x] f) :
     HasLineDerivAt 𝕜 f₁ f' x v :=
-  (EventuallyEq.hasLineDerivAt_iff (EventuallyEq.symm h₁)).mp h
+  (EventuallyEq.hasLineDerivAt_iff h₁.symm).mp h
 
 theorem LineDifferentiableWithinAt.congr_of_eventuallyEq (h : LineDifferentiableWithinAt 𝕜 f s x v)
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) : LineDifferentiableWithinAt 𝕜 f₁ s x v :=
