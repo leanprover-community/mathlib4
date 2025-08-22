@@ -326,6 +326,37 @@ lemma aux_computation :
       exact isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target x)
     _ = W x := by simp
 
+-- does this version suffice for my purposes below?
+lemma aux_computation2' :
+    (mfderivWithin 𝓘(𝕜, E) I (extChartAt I x).symm (extChartAt I x).target ((extChartAt I x) x)).inverse (V x)
+      = V x := by
+  set φ := extChartAt I x
+  set x' := (extChartAt I x) x
+  -- this is almost true: it is true within a smaller set (namely extChartAt I x).target...
+  have : mfderivWithin 𝓘(𝕜, E) I φ.symm φ.target (φ x) = ContinuousLinearMap.id 𝕜 _ := by
+    rw [mfderivWithin]
+    have : MDifferentiableWithinAt 𝓘(𝕜, E) I φ.symm φ.target (φ x) := by
+      have := mdifferentiableWithinAt_extChartAt_symm (I := I) (mem_extChartAt_target x)
+      exact this.mono (extChartAt_target_subset_range x)
+    simp only [this, if_true]
+    simp only [writtenInExtChartAt, extChartAt, PartialHomeomorph.extend,
+        PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe,
+        PartialHomeomorph.refl_partialEquiv, PartialEquiv.refl_source,
+        PartialHomeomorph.singletonChartedSpace_chartAt_eq, modelWithCornersSelf_partialEquiv,
+        PartialEquiv.trans_refl, PartialEquiv.refl_symm, PartialEquiv.refl_coe, CompTriple.comp_eq,
+        preimage_id_eq, id_eq, modelWithCornersSelf_coe, range_id, inter_univ]
+    rw [extChartAt_to_inv x, ← extChartAt_coe]
+    -- debug why this is needed!
+    change fderivWithin 𝕜 (↑(extChartAt I x) ∘ ↑φ.symm) (extChartAt I x).target (φ x) = _
+    have : fderivWithin 𝕜 (φ ∘ φ.symm) (extChartAt I x).target (φ x) =
+        fderivWithin 𝕜 id (extChartAt I x).target (φ x) :=
+      fderivWithin_congr' (fun x' hx' ↦ PartialEquiv.right_inv φ hx') (mem_extChartAt_target x)
+    rw [this]
+    exact fderivWithin_id (uniqueDiffWithinAt_extChartAt_target x)
+  rw [this]
+  rw [ContinuousLinearMap.inverse_id]
+  exact rfl
+
 lemma aux_computation2 :
     (mfderivWithin 𝓘(𝕜, E) I (extChartAt I x).symm (range I) ((extChartAt I x) x)).inverse (V x)
       = V x := by
@@ -349,7 +380,7 @@ lemma aux_computation2 :
       · intro x' hx'
         simp
         refine PartialEquiv.right_inv φ ?_
-        rw [@extChartAt_target]
+        rw [extChartAt_target]
         refine ⟨?_, hx'⟩
         rw [mem_preimage] -- not necessarily true, though...
         sorry
@@ -360,7 +391,6 @@ lemma aux_computation2 :
   rw [ContinuousLinearMap.inverse_id]
   exact rfl
 
-#exit
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
 `f : M → 𝕜`, we have `[V, f • W] = (df V) • W + f • [V, W]`. Version within a set.
