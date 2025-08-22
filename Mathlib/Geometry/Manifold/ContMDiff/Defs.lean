@@ -821,6 +821,13 @@ theorem ContMDiffWithinAt.congr (h : ContMDiffWithinAt I I' n f s x) (h₁ : ∀
     (hx : f₁ x = f x) : ContMDiffWithinAt I I' n f₁ s x :=
   (contDiffWithinAt_localInvariantProp n).liftPropWithinAt_congr h h₁ hx
 
+/-- Version of `ContMDiffWithinAt.congr` where `x` need not be contained in `s`,
+but `f` and `f₁` are equal on a set containing both. -/
+theorem ContMDiffWithinAt.congr' (h : ContMDiffWithinAt I I' n f s x) (h₁ : ∀ y ∈ t, f₁ y = f y)
+    (hst : s ⊆ t) (hxt : x ∈ t) :
+    ContMDiffWithinAt I I' n f₁ s x :=
+  h.congr (fun _y hy ↦ h₁ _ (hst hy)) (h₁ x hxt)
+
 theorem contMDiffWithinAt_congr (h₁ : ∀ y ∈ s, f₁ y = f y) (hx : f₁ x = f x) :
     ContMDiffWithinAt I I' n f₁ s x ↔ ContMDiffWithinAt I I' n f s x :=
   (contDiffWithinAt_localInvariantProp n).liftPropWithinAt_congr_iff h₁ hx
