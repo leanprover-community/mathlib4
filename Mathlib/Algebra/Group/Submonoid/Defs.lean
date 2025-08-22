@@ -136,10 +136,6 @@ initialize_simps_projections AddSubmonoid (carrier → coe, as_prefix coe)
 def ofClass {S M : Type*} [Monoid M] [SetLike S M] [SubmonoidClass S M] (s : S) : Submonoid M :=
   ⟨⟨s, MulMemClass.mul_mem⟩, OneMemClass.one_mem s⟩
 
-@[to_additive] instance (S M : Type*) [Monoid M] [SetLike S M] [SubmonoidClass S M] :
-    CoeTC S (Submonoid M) where
-  coe := ofClass
-
 @[to_additive]
 instance (priority := 100) : CanLift (Set M) (Submonoid M) (↑)
     (fun s ↦ 1 ∈ s ∧ ∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) where
