@@ -120,7 +120,7 @@ lemma div_lt_self' (a b : ℕ) : (a + 1) / (b + 2) < a + 1 :=
 @[deprecated (since := "2025-06-05")] protected alias div_le_self' := Nat.div_le_self
 
 lemma two_mul_odd_div_two (hn : n % 2 = 1) : 2 * (n / 2) = n - 1 := by
-  conv => rhs; rw [← Nat.mod_add_div n 2, hn, Nat.add_sub_cancel_left]
+  omega
 
 /-! ### `pow` -/
 
@@ -430,5 +430,25 @@ instance decidableLoHiLe (lo hi : ℕ) (P : ℕ → Prop) [DecidablePred P] :
     Decidable (∀ x, lo ≤ x → x ≤ hi → P x) :=
   decidable_of_iff (∀ x, lo ≤ x → x < hi + 1 → P x) <|
     forall₂_congr fun _ _ ↦ imp_congr Nat.lt_succ_iff Iff.rfl
+
+/-! ### `Nat.AtLeastTwo` -/
+
+/-- A type class for natural numbers which are greater than or equal to `2`. -/
+class AtLeastTwo (n : ℕ) : Prop where
+  prop : 2 ≤ n
+
+instance instAtLeastTwo {n : ℕ} : Nat.AtLeastTwo (n + 2) where
+  prop := Nat.succ_le_succ <| Nat.succ_le_succ <| Nat.zero_le _
+
+instance {n : ℕ} [NeZero n] : (n + 1).AtLeastTwo := ⟨by have := NeZero.ne n; omega⟩
+
+namespace AtLeastTwo
+
+variable {n : ℕ} [n.AtLeastTwo]
+
+lemma one_lt : 1 < n := prop
+lemma ne_one : n ≠ 1 := Nat.ne_of_gt one_lt
+
+end AtLeastTwo
 
 end Nat
