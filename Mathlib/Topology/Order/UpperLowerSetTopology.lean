@@ -270,7 +270,7 @@ end Preorder
 protected lemma _root_.Topology.isUpperSet_iff_nhds {α : Type*} [TopologicalSpace α] [Preorder α] :
     Topology.IsUpperSet α ↔ (∀ a : α, 𝓝 a = 𝓟 (Ici a)) where
   mp _ a := nhds_eq_principal_Ici a
-  mpr hα := by constructor; simp [TopologicalSpace.ext_iff_nhds, hα, nhds_eq_principal_Ici]
+  mpr hα := ⟨by simp [TopologicalSpace.ext_iff_nhds, hα, nhds_eq_principal_Ici]⟩
 
 instance : Topology.IsUpperSet Prop := by
   simp [Topology.isUpperSet_iff_nhds, Prop.forall]
@@ -366,7 +366,7 @@ end Preorder
 protected lemma _root_.Topology.isLowerSet_iff_nhds {α : Type*} [TopologicalSpace α] [Preorder α] :
     Topology.IsLowerSet α ↔ (∀ a : α, 𝓝 a = 𝓟 (Iic a)) where
   mp _ a := nhds_eq_principal_Iic a
-  mpr hα := by constructor; simp [TopologicalSpace.ext_iff_nhds, hα, nhds_eq_principal_Iic]
+  mpr hα := ⟨by simp [TopologicalSpace.ext_iff_nhds, hα, nhds_eq_principal_Iic]⟩
 
 section maps
 

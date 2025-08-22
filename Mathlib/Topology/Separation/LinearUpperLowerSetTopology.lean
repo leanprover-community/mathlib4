@@ -25,7 +25,7 @@ instance (priority := low) {α : Type*}
     -- issue #27058
     fail_if_success grw [← singleton_subset_iff.mpr ha, ← singleton_subset_iff.mpr hb] at hcst hsct
     grw [Set.disjoint_iff, ← singleton_subset_iff.mpr ha, ← singleton_subset_iff.mpr hb,
-      ← Set.disjoint_iff,] at hcst hsct
+      ← Set.disjoint_iff] at hcst hsct
     conv at hcst => equals a < b => simp
     conv at hsct => equals b < a => simp
     exact lt_asymm hcst hsct
