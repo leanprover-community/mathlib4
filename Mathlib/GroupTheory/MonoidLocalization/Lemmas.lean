@@ -5,7 +5,8 @@ Authors: Junyan Xu
 -/
 import Mathlib.Algebra.Group.Pi.Units
 import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
+import Mathlib.Data.Fintype.Basic
+import Mathlib.GroupTheory.MonoidLocalization.Basic
 
 /-!
 # Lemmas about localizations of commutative monoids
@@ -21,7 +22,7 @@ open Finset in
     {S : Submonoid M} (hf : IsLocalizationMap S f) (n : ι → N) :
     ∃ (s : S) (x : ι → M), ∀ i, n i * f s = f (x i) := by
   choose x hx using hf.surj'
-  have := Fintype.ofFinite ι
+  have ⟨_⟩ := nonempty_fintype ι
   classical
   refine ⟨∏ i : ι, (x (n i)).2, fun i ↦ (x (n i)).1 * ∏ j ∈ univ.erase i, (x (n j)).2, fun i ↦ ?_⟩
   rw [← univ.mul_prod_erase _ (mem_univ i), S.coe_mul, map_mul, ← mul_assoc, hx, map_mul]

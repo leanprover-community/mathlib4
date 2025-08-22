@@ -5,6 +5,7 @@ Authors: Junyan Xu
 -/
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.InvariantBasisNumber
+import Mathlib.GroupTheory.MonoidLocalization.Lemmas
 import Mathlib.RingTheory.Localization.Additive
 
 /-!

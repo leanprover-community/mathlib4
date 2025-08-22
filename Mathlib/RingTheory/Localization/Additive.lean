@@ -6,7 +6,6 @@ Authors: Junyan Xu
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Nonneg.Ring
 import Mathlib.GroupTheory.MonoidLocalization.GrothendieckGroup
-import Mathlib.GroupTheory.MonoidLocalization.Lemmas
 import Mathlib.RingTheory.Ideal.Defs
 import Mathlib.RingTheory.IsTensorProduct
 
