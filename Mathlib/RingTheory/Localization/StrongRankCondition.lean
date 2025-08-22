@@ -16,13 +16,14 @@ by embedding it into its additive localization ("Grothendieck ring").
 
 namespace AddSubmonoid
 
-variable {R S : Type*} [Semiring R] [Semiring S] {I : Ideal R}
+variable {R S : Type*} [Semiring R] [Semiring S] [Module R S] [IsScalarTower R S S]
 
-variable [Module R S] [IsScalarTower R S S]
-variable (h : IsLocalizationMap I.toAddSubmonoid fun r ↦ r • (1 : S))
+section AddSubmonoid
+
+variable {M : AddSubmonoid R} (h : IsLocalizationMap M fun r ↦ r • (1 : S))
 
 private def localizationMap (ι : Type*) :
-    LocalizationMap (pi Set.univ fun _ : ι ↦ I.toAddSubmonoid) (ι → S) where
+    LocalizationMap (pi Set.univ fun _ : ι ↦ M) (ι → S) where
   toFun := Pi.map fun i ↦ ringHomEquivModuleIsScalarTower.symm ⟨‹_›, ‹_›⟩
   map_add' _ _ := funext fun i ↦ by simp
   toIsLocalizationMap := .pi _ fun i ↦ by exact h
@@ -31,7 +32,9 @@ lemma localizationMap_smul {ι : Type*} {r : R} {x : ι → R} :
     localizationMap h ι (r • x) = r • localizationMap h ι x :=
   funext fun i ↦ smul_assoc r (x i) 1
 
-variable [I.IsTwoSided]
+end AddSubmonoid
+
+variable {M : Submodule Rᵐᵒᵖ R} (h : IsLocalizationMap M.toAddSubmonoid fun r ↦ r • (1 : S))
 
 private noncomputable def mapFun {α β} [Finite α] (f : (α → R) →ₗ[R] β → R) :
     (α → S) →+ β → S := by
@@ -42,7 +45,7 @@ private noncomputable def mapFun {α β} [Finite α] (f : (α → R) →ₗ[R] �
   rw [← e.apply_symm_apply x.1, ← (e.symm x).univ_sum_single, map_sum, map_sum, Finset.sum_apply]
   refine sum_mem _ fun i _ ↦ ?_
   rw [← Finsupp.smul_single_one, map_smul, AddMonoidHom.coe_coe, map_smul]
-  exact I.mul_mem_right _ (x.2 _ ⟨⟩)
+  exact M.smul_mem _ (x.2 _ ⟨⟩)
 
 private noncomputable def lmapFun' {α β : Type} [Finite α] (f : (α → R) →ₗ[R] β → R) :
     (α → S) →ₗ[R] β → S where
@@ -71,7 +74,7 @@ theorem IsLocalizationMap.strongRankCondition_of_isCancelAdd [IsCancelAdd R]
     [StrongRankCondition S] : StrongRankCondition R :=
   have : FaithfulSMul R S := (faithfulSMul_iff_injective_smul_one ..).mpr <|
     (LocalizationMap.top_injective_iff ⟨⟨_, fun _ _ ↦ add_smul ..⟩, h⟩).mpr ‹_›
-  h.strongRankCondition_of_faithfulSMul (I := ⊤)
+  h.strongRankCondition_of_faithfulSMul (M := ⊤)
 
 end AddSubmonoid
 

@@ -227,16 +227,17 @@ theorem isLocalizationMap_smul_one :
   simp_rw [smul_one_eq_mk_zero]; exact (addMonoidOf M).isLocalizationMap
 
 include hr in
-theorem instFaithfulSMul (hM : ∀ x ∈ M, IsAddRegular x) :
+theorem faithfulSMul_of_isAddRegular (hM : ∀ x ∈ M, IsAddRegular x) :
     letI := instDistribSMul M hl
     FaithfulSMul R (AddLocalization M) :=
   letI := instDistribSMul M hl
   { eq_of_smul_eq_smul {_ _} eq := (addMonoidOf M).injective_iff.mpr hM <| by
       convert ← eq 1 <;> apply smul_one_eq_mk_zero _ _ hr }
 
-instance [IsCancelAdd R] : letI := instDistribSMul M hl
+include hr in
+theorem faithfulSMul_of_isCancelAdd [IsCancelAdd R] : letI := instDistribSMul M hl
     FaithfulSMul R (AddLocalization M) :=
-  instFaithfulSMul _ _ hr fun _ _ ↦ .all _
+  faithfulSMul_of_isAddRegular _ _ hr fun _ _ ↦ .all _
 
 /-- The ring homomorphism from a semiring to its additive localization. -/
 @[simps] def ringHom : letI := instNonAssocSemiring M hl hr
@@ -506,6 +507,9 @@ instance [NonAssocSemiring R] : NonAssocRing (GrothendieckAddGroup R) where
 theorem isLocalizationMap_smul_one [NonAssocSemiring R] :
     (⊤ : AddSubmonoid R).IsLocalizationMap fun r ↦ r • (1 : GrothendieckAddGroup R) :=
   AddLocalization.isLocalizationMap_smul_one ⊤ _ _
+
+instance [NonAssocSemiring R] [IsCancelAdd R] : FaithfulSMul R (GrothendieckAddGroup R) :=
+  AddLocalization.faithfulSMul_of_isCancelAdd ⊤ (fun _ _ _ ↦ ⟨⟩) fun _ _ _ ↦ ⟨⟩
 
 /-- The ring homomorphism from a semiring to its Grothendieck ring. -/
 protected abbrev ringHom [NonAssocSemiring R] : R →+* GrothendieckAddGroup R :=
