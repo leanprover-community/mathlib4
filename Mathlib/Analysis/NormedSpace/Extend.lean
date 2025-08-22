@@ -100,7 +100,7 @@ namespace ContinuousLinearMap
 variable [NormedSpace ℝ F] [IsScalarTower ℝ 𝕜 F]
 
 /-- The norm of the extension is bounded by `‖fr‖`. -/
-theorem norm_extendTo𝕜'_bound (fr : F →L[ℝ] ℝ) (x : F) :
+theorem norm_extendTo𝕜'_bound (fr : StrongDual ℝ F) (x : F) :
     ‖(fr.toLinearMap.extendTo𝕜' x : 𝕜)‖ ≤ ‖fr‖ * ‖x‖ := by
   set lm : F →ₗ[𝕜] 𝕜 := fr.toLinearMap.extendTo𝕜'
   by_cases h : lm x = 0
@@ -113,15 +113,15 @@ theorem norm_extendTo𝕜'_bound (fr : F →L[ℝ] ℝ) (x : F) :
     _ ≤ ‖fr‖ * ‖conj (lm x : 𝕜) • x‖ := le_opNorm _ _
     _ = ‖(lm x : 𝕜)‖ * (‖fr‖ * ‖x‖) := by rw [norm_smul, norm_conj, mul_left_comm]
 
-/-- Extend `fr : F →L[ℝ] ℝ` to `StrongDual 𝕜 F`. -/
-noncomputable def extendTo𝕜' (fr : F →L[ℝ] ℝ) : StrongDual 𝕜 F :=
+/-- Extend `fr : StrongDual ℝ F` to `StrongDual 𝕜 F`. -/
+noncomputable def extendTo𝕜' (fr : StrongDual ℝ F) : StrongDual 𝕜 F :=
   LinearMap.mkContinuous _ ‖fr‖ fr.norm_extendTo𝕜'_bound
 
-theorem extendTo𝕜'_apply (fr : F →L[ℝ] ℝ) (x : F) :
+theorem extendTo𝕜'_apply (fr : StrongDual ℝ F) (x : F) :
     fr.extendTo𝕜' x = (fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜) := rfl
 
 @[simp]
-theorem norm_extendTo𝕜' (fr : F →L[ℝ] ℝ) : ‖(fr.extendTo𝕜' : StrongDual 𝕜 F)‖ = ‖fr‖ :=
+theorem norm_extendTo𝕜' (fr : StrongDual ℝ F) : ‖(fr.extendTo𝕜' : StrongDual 𝕜 F)‖ = ‖fr‖ :=
   le_antisymm (LinearMap.mkContinuous_norm_le _ (norm_nonneg _) _) <|
     opNorm_le_bound _ (norm_nonneg _) fun x =>
       calc
@@ -141,14 +141,14 @@ noncomputable def LinearMap.extendTo𝕜 (fr : RestrictScalars ℝ 𝕜 F →ₗ
 theorem LinearMap.extendTo𝕜_apply (fr : RestrictScalars ℝ 𝕜 F →ₗ[ℝ] ℝ) (x : F) :
     fr.extendTo𝕜 x = (fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜) := rfl
 
-/-- Extend `fr : RestrictScalars ℝ 𝕜 F →L[ℝ] ℝ` to `StrongDual 𝕜 F`. -/
-noncomputable def ContinuousLinearMap.extendTo𝕜 (fr : RestrictScalars ℝ 𝕜 F →L[ℝ] ℝ) :
+/-- Extend `fr : RestrictScalars ℝ 𝕜 StrongDual ℝ F` to `StrongDual 𝕜 F`. -/
+noncomputable def ContinuousLinearMap.extendTo𝕜 (fr : RestrictScalars ℝ 𝕜 StrongDual ℝ F) :
     StrongDual 𝕜 F := fr.extendTo𝕜'
 
-theorem ContinuousLinearMap.extendTo𝕜_apply (fr : RestrictScalars ℝ 𝕜 F →L[ℝ] ℝ) (x : F) :
+theorem ContinuousLinearMap.extendTo𝕜_apply (fr : RestrictScalars ℝ 𝕜 StrongDual ℝ F) (x : F) :
     fr.extendTo𝕜 x = (fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜) := rfl
 
 @[simp]
-theorem ContinuousLinearMap.norm_extendTo𝕜 (fr : RestrictScalars ℝ 𝕜 F →L[ℝ] ℝ) :
+theorem ContinuousLinearMap.norm_extendTo𝕜 (fr : RestrictScalars ℝ 𝕜 StrongDual ℝ F) :
     ‖fr.extendTo𝕜‖ = ‖fr‖ :=
   fr.norm_extendTo𝕜'
