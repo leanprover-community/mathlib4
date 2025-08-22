@@ -316,12 +316,15 @@ protected
 theorem «exists» {p : Interval α → Prop} : (∃ s, p s) ↔ p ⊥ ∨ ∃ s : NonemptyInterval α, p s :=
   WithBot.exists
 
-instance [IsEmpty α] : Unique (Interval α) :=
-  inferInstanceAs <| Unique (Option _)
+instance [IsEmpty α] : Unique (Interval α) where
+  default := ⊥
+  uniq := fun
+  | ⊥ => rfl
+  | .some ⟨⟨a, b⟩, _⟩ => False.elim (IsEmpty.elim ‹IsEmpty α› a)
 
 /-- Turn an interval into an interval in the dual order. -/
 def dual : Interval α ≃ Interval αᵒᵈ :=
-  NonemptyInterval.dual.optionCongr
+  NonemptyInterval.dual.withBotCongr
 
 end LE
 
@@ -368,7 +371,7 @@ theorem map_pure (f : α →o β) (a : α) : (pure a).map f = pure (f a) :=
 
 @[simp]
 theorem map_map (g : β →o γ) (f : α →o β) (s : Interval α) : (s.map f).map g = s.map (g.comp f) :=
-  Option.map_map _ _ _
+  WithBot.map_map
 
 @[simp]
 theorem dual_map (f : α →o β) (s : Interval α) : dual (s.map f) = s.dual.map f.dual := by
@@ -400,13 +403,13 @@ def coeHom : Interval α ↪o Set α :=
     (fun s =>
       match s with
       | ⊥ => ∅
-      | some s => s)
+      | .some s => s)
     fun s t =>
     match s, t with
     | ⊥, _ => iff_of_true bot_le bot_le
-    | some s, ⊥ =>
+    | .some s, ⊥ =>
       iff_of_false (fun h => s.coe_nonempty.ne_empty <| le_bot_iff.1 h) (WithBot.not_coe_le_bot _)
-    | some _, some _ => (@NonemptyInterval.coeHom α _).le_iff_le.trans WithBot.coe_le_coe.symm
+    | .some _, .some _ => (@NonemptyInterval.coeHom α _).le_iff_le.trans WithBot.coe_le_coe.symm
 
 instance setLike : SetLike (Interval α) α where
   coe := coeHom
@@ -471,7 +474,7 @@ instance lattice : Lattice (Interval α) :=
       match s, t with
       | ⊥, _ => ⊥
       | _, ⊥ => ⊥
-      | some s, some t =>
+      | .some s, .some t =>
         if h : s.fst ≤ t.snd ∧ t.fst ≤ s.snd then
           WithBot.some
             ⟨⟨s.fst ⊔ t.fst, s.snd ⊓ t.snd⟩,
@@ -480,9 +483,9 @@ instance lattice : Lattice (Interval α) :=
     inf_le_left := fun s t =>
       match s, t with
       | ⊥, ⊥ => bot_le
-      | ⊥, some _ => bot_le
-      | some _, ⊥ => bot_le
-      | some s, some t => by
+      | ⊥, .some _ => bot_le
+      | .some _, ⊥ => bot_le
+      | .some s, .some t => by
         change dite _ _ _ ≤ _
         split_ifs
         · exact WithBot.coe_le_coe.2 ⟨le_sup_left, inf_le_left⟩
@@ -490,9 +493,9 @@ instance lattice : Lattice (Interval α) :=
     inf_le_right := fun s t =>
       match s, t with
       | ⊥, ⊥ => bot_le
-      | ⊥, some _ => bot_le
-      | some _, ⊥ => bot_le
-      | some s, some t => by
+      | ⊥, .some _ => bot_le
+      | .some _, ⊥ => bot_le
+      | .some s, .some t => by
         change dite _ _ _ ≤ _
         split_ifs
         · exact WithBot.coe_le_coe.2 ⟨le_sup_right, inf_le_right⟩
