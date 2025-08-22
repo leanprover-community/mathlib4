@@ -37,7 +37,7 @@ Foobars, barfoos
 -/
 
 open MeasureTheory Filter Complex
-open scoped ENNReal Topology InnerProductSpace
+open scoped ENNReal NNReal Topology InnerProductSpace
 
 namespace MeasureTheory
 
@@ -642,5 +642,54 @@ theorem absolutelyContinuous_map_add_cameronMartin (x : CameronMartin μ) :
     μ.map (fun y ↦ y + x.toInitialSpace) ≪ μ := by
   rw [map_add_cameronMartin_eq_withDensity x]
   exact withDensity_absolutelyContinuous _ _
+
+-- defined in another PR. We state its properties here with `sorry` proofs.
+def tvDist (μ ν : Measure E) : ℝ := sorry
+
+lemma tvDist_le_one {μ ν : Measure E} : tvDist μ ν ≤ 1 := by
+  sorry
+
+lemma mutuallySingular_iff_tvDist_eq_one {μ ν : Measure E} :
+    μ ⟂ₘ ν ↔ tvDist μ ν = 1 := by
+  sorry
+
+lemma one_sub_exp_le_tvDist_gaussianReal (μ₁ μ₂ : ℝ) :
+    1 - Real.exp (- (μ₁ - μ₂) ^ 2 / 2) ≤ tvDist (gaussianReal μ₁ 1) (gaussianReal μ₂ 1) := by
+  sorry
+
+lemma tvDist_map_le {F : Type*} {mF : MeasurableSpace F} {μ ν : Measure E}
+    {f : E → F} (hf : Measurable f) :
+    tvDist (μ.map f) (ν.map f) ≤ tvDist μ ν := by
+  sorry
+
+lemma mutuallySingular_map_add_of_notMem_range_toInitialSpace (y : E)
+    (hy : y ∉ Set.range (CameronMartin.toInitialSpace (μ := μ))) :
+    μ.map (fun z ↦ z + y) ⟂ₘ μ := by
+  rw [mutuallySingular_iff_tvDist_eq_one]
+  refine le_antisymm tvDist_le_one ?_
+  refine le_of_forall_lt fun c hc ↦ ?_
+  obtain ⟨n, hcn⟩ : ∃ n : ℕ, c < 1 - Real.exp (- n ^ 2 / 2) := by
+    sorry
+  refine hcn.trans_le ?_
+  obtain ⟨L, hL_var, hL_le⟩ : ∃ L : StrongDual ℝ E, Var[L; μ] = 1 ∧ n ≤ L y := by
+    simp only [CameronMartin.range_toInitialSpace, Set.mem_setOf_eq, not_exists, not_forall,
+      not_le] at hy
+    obtain ⟨L, hL_var, hL_lt⟩ := hy n
+    sorry
+  have h_le : tvDist ((μ.map (fun z ↦ z + y)).map L) (μ.map L)
+      ≤ tvDist (μ.map (fun z ↦ z + y)) μ := tvDist_map_le (by fun_prop)
+  refine le_trans ?_ h_le
+  simp only [IsGaussian.map_eq_gaussianReal]
+  rw [integral_map (by fun_prop) (by fun_prop)]
+  simp only [map_add]
+  rw [integral_add (by fun_prop) (by fun_prop), variance_map (by fun_prop) (by fun_prop)]
+  simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul]
+  have : L ∘ (fun z ↦ z + y) = fun z ↦ L z + L y := by ext; simp
+  rw [this, variance_add_const (by fun_prop)]
+  simp only [hL_var, Real.toNNReal_one]
+  refine le_trans ?_ (one_sub_exp_le_tvDist_gaussianReal (μ[L] + L y) μ[L])
+  gcongr
+  ring_nf
+  exact hL_le
 
 end ProbabilityTheory
