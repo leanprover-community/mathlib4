@@ -327,12 +327,13 @@ lemma aux_computation :
     _ = W x := by simp
 
 -- does this version suffice for my purposes below?
+variable (x V) in
+omit [CompleteSpace E] in
 lemma aux_computation2' :
     (mfderivWithin 𝓘(𝕜, E) I (extChartAt I x).symm (extChartAt I x).target ((extChartAt I x) x)).inverse (V x)
       = V x := by
   set φ := extChartAt I x
   set x' := (extChartAt I x) x
-  -- this is almost true: it is true within a smaller set (namely extChartAt I x).target...
   have : mfderivWithin 𝓘(𝕜, E) I φ.symm φ.target (φ x) = ContinuousLinearMap.id 𝕜 _ := by
     rw [mfderivWithin]
     have : MDifferentiableWithinAt 𝓘(𝕜, E) I φ.symm φ.target (φ x) := by
@@ -346,17 +347,18 @@ lemma aux_computation2' :
         PartialEquiv.trans_refl, PartialEquiv.refl_symm, PartialEquiv.refl_coe, CompTriple.comp_eq,
         preimage_id_eq, id_eq, modelWithCornersSelf_coe, range_id, inter_univ]
     rw [extChartAt_to_inv x, ← extChartAt_coe]
-    -- debug why this is needed!
+    -- debug why this line is needed!
     change fderivWithin 𝕜 (↑(extChartAt I x) ∘ ↑φ.symm) (extChartAt I x).target (φ x) = _
     have : fderivWithin 𝕜 (φ ∘ φ.symm) (extChartAt I x).target (φ x) =
         fderivWithin 𝕜 id (extChartAt I x).target (φ x) :=
       fderivWithin_congr' (fun x' hx' ↦ PartialEquiv.right_inv φ hx') (mem_extChartAt_target x)
     rw [this]
     exact fderivWithin_id (uniqueDiffWithinAt_extChartAt_target x)
-  rw [this]
-  rw [ContinuousLinearMap.inverse_id]
+  rw [this, ContinuousLinearMap.inverse_id]
   exact rfl
 
+variable (x V) in
+omit [CompleteSpace E] in
 lemma aux_computation2 :
     (mfderivWithin 𝓘(𝕜, E) I (extChartAt I x).symm (range I) ((extChartAt I x) x)).inverse (V x)
       = V x := by
@@ -387,8 +389,7 @@ lemma aux_computation2 :
       · sorry
     rw [this]
     exact fderivWithin_id <| I.uniqueDiffOn.uniqueDiffWithinAt (mem_range_self _)
-  rw [this]
-  rw [ContinuousLinearMap.inverse_id]
+  rw [this, ContinuousLinearMap.inverse_id]
   exact rfl
 
 /--
@@ -438,47 +439,19 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
     rw [cleanup1, cleanup2]
     congr 1
     · sorry -- is the sorry below
+    -- This statement is not fully true, but I only need a weaker version...
+    -- if V' x' is a tangent vector within s, i.e. my aux_computation' should suffice!
+    -- Make this intuitive hunch rigorous!
     have : V' x' = V x := by
-      simp only [V', x']
-      --set φ := (extChartAt I x)
-      simp only [mpullbackWithin]
+      simp only [V', x', mpullbackWithin]
       rw [extChartAt_to_inv x]
-
-
-      -- is this actually true? not sure!
-      --have := VectorField.eventuallyEq_mpullback_mpullbackWithin_extChartAt_symm
-      --  V (x := x) (s := Set.univ)
-      --have := VectorField.eventuallyEq_mpullback_mpullbackWithin_extChartAt
-      --  V (x := x) (s := Set.univ)
-      symm
-      sorry
-      --convert this
+      exact aux_computation2 x V
     exact aux_computation x W
-
-    -- · simp only [V']
-    --   #check VectorField.eventuallyEq_mpullback_mpullbackWithin_extChartAt
-    --   show mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm V (range I) x' = V x
-    --   have := VectorField.eventuallyEq_mpullback_mpullbackWithin_extChartAt
-    --   -- missing lemma!
-    --   simp only [mpullbackWithin]
-    --   simp only [mfderivWithin]
-    --   have : MDifferentiableWithinAt 𝓘(𝕜, E) I (↑(extChartAt I x).symm) (range ↑I) x' := sorry
-    --   simp only [this, if_true]
-    --   simp only [pullbackWithin]
-    --   --simp
-
-    --   simp [mpullbackWithin]
-    --   ext
-    --   simp
-    --   rw?
-    --   sorry
   have h2 : mpullback I 𝓘(𝕜, E) (extChartAt I x) B x
       = f x • mpullback I 𝓘(𝕜, E) (extChartAt I x) (lieBracketWithin 𝕜 V' W' s') x := by
     simp [B, ← Pi.smul_def', mpullback_smul (V := lieBracketWithin 𝕜 V' W' s'), f']
   -- Adding these identities proves the claim.
   rw [← Pi.add_def, mpullback_add_apply]; congr
-
-#exit
 
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
