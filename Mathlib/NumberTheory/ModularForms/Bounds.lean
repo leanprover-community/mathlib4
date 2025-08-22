@@ -286,7 +286,7 @@ local notation "𝕢" => Function.Periodic.qParam
 open Complex in
 lemma ModularFormClass.qExpansion_isBigO {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup SL(2, ℤ)}
     [Γ.FiniteIndex] {F : Type*} [FunLike F ℍ ℂ] [ModularFormClass F Γ k] (f : F) :
-    (fun n ↦ (ModularFormClass.qExpansion Γ.width f).coeff ℂ n) =O[atTop] fun n ↦ (n : ℝ) ^ k := by
+    (fun n ↦ (ModularFormClass.qExpansion Γ.width f).coeff n) =O[atTop] fun n ↦ (n : ℝ) ^ k := by
   let h := Γ.width
   haveI : NeZero h := ⟨Γ.width_ne_zero⟩
   have hΓ : Γ.width ∣ h := dvd_refl _
