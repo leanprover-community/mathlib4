@@ -528,9 +528,6 @@ lemma ofNat_lt_top {n : ℕ} [Nat.AtLeastTwo n] : ofNat(n) < ∞ := natCast_lt_t
 @[simp, norm_cast] lemma ofNNReal_sub_natCast (r : ℝ≥0) (n : ℕ) : ofNNReal (r - n) = r - n := rfl
 @[simp, norm_cast] lemma ofNNReal_natCast_sub (n : ℕ) (r : ℝ≥0) : ofNNReal (n - r) = n - r := rfl
 
-@[deprecated ofNat_ne_top (since := "2025-01-21")] lemma two_ne_top : (2 : ℝ≥0∞) ≠ ∞ := coe_ne_top
-@[deprecated ofNat_lt_top (since := "2025-01-21")] lemma two_lt_top : (2 : ℝ≥0∞) < ∞ := coe_lt_top
-
 @[simp] theorem one_lt_top : 1 < ∞ := coe_lt_top
 
 @[simp, norm_cast]
