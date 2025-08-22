@@ -540,8 +540,7 @@ theorem powerset_insert (s : Set α) (a : α) : 𝒫 insert a s = 𝒫 s ∪ ins
     by_cases hs : a ∈ t
     · right
       refine ⟨t \ {a}, by grind⟩
-    · left
-      grind
+    · grind
   · grind
 
 theorem disjoint_powerset_insert {s : Set α} {a : α} (h : a ∉ s) :
@@ -578,8 +577,6 @@ theorem exists_subtype_range_iff {p : range f → Prop} :
 
 theorem range_eq_univ : range f = univ ↔ Surjective f :=
   eq_univ_iff_forall
-
-@[deprecated (since := "2024-11-11")] alias range_iff_surjective := range_eq_univ
 
 alias ⟨_, _root_.Function.Surjective.range_eq⟩ := range_eq_univ
 

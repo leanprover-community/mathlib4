@@ -77,6 +77,12 @@ section RootPairing
 
 variable {P : RootPairing ι R M N} (b : P.Base)
 
+lemma support_nonempty [Nonempty ι] [NeZero (2 : R)] : b.support.Nonempty := by
+  by_contra! contra
+  rw [Finset.not_nonempty_iff_eq_empty] at contra
+  inhabit ι
+  simpa [P.ne_zero default, contra] using b.root_mem_or_neg_mem default
+
 /-- Interchanging roots and coroots, one still has a base of a root pairing. -/
 @[simps] protected def flip :
     P.flip.Base where
@@ -105,7 +111,7 @@ lemma linearIndependent_pair_of_ne {i j : b.support} (hij : i ≠ j) :
 lemma root_mem_span_int (i : ι) :
     P.root i ∈ span ℤ (P.root '' b.support) := by
   have := b.root_mem_or_neg_mem i
-  simp only [← span_nat_eq_addSubmonoid_closure, mem_toAddSubmonoid] at this
+  simp only [← span_nat_eq_addSubmonoidClosure, mem_toAddSubmonoid] at this
   rw [← span_span_of_tower (R := ℕ)]
   rcases this with hi | hi
   · exact subset_span hi
@@ -196,13 +202,13 @@ lemma pos_or_neg_of_sum_smul_root_mem (f : ι → ℤ)
     have hf' : f ≠ 0 := by rintro rfl; exact P.ne_zero k <| by simp [hk]
     rcases b.root_mem_or_neg_mem k with hk' | hk' <;> rw [hk] at hk'
     · left; exact this f hk' hf₀ hf'
-    · right; simpa using this (-f) (by convert hk'; simp) (by simpa only [support_neg']) (by simpa)
+    · right; simpa using this (-f) (by convert hk'; simp) (by simpa only [support_neg]) (by simpa)
   intro f hf hf₀ hf'
   let f' : b.support → ℤ := fun i ↦ f i
   replace hf : ∑ j, f' j • P.root j ∈ AddSubmonoid.closure (P.root '' b.support) := by
     suffices ∑ j, f' j • P.root j = ∑ j ∈ b.support, f j • P.root j by rwa [this]
     rw [← b.support.sum_finset_coe]; rfl
-  rw [← span_nat_eq_addSubmonoid_closure, mem_toAddSubmonoid,
+  rw [← span_nat_eq_addSubmonoidClosure, mem_toAddSubmonoid,
     Fintype.mem_span_image_iff_exists_fun] at hf
   obtain ⟨c, hc⟩ := hf
   replace hc (i : b.support) : c i = f' i := Fintype.linearIndependent_iffₛ.mp
@@ -508,6 +514,14 @@ lemma IsPos.exists_mem_support_pos_pairingIn [P.IsCrystallographic] {i : ι} (h�
   by_cases hj : j ∈ Function.support f
   · exact smul_nonpos_of_nonneg_of_nonpos (hf₁.le j) (contra j (hf₀ hj))
   · aesop
+
+lemma exists_mem_support_pos_pairingIn_ne_zero [P.IsCrystallographic] (i : ι) :
+    ∃ j ∈ b.support, P.pairingIn ℤ j i ≠ 0 := by
+  rcases IsPos.or_neg b i with hi | hi
+  · obtain ⟨j, hj, hj₀⟩ := hi.exists_mem_support_pos_pairingIn
+    exact ⟨j, hj, hj₀.ne'⟩
+  · obtain ⟨j, hj, hj₀⟩ := hi.exists_mem_support_pos_pairingIn
+    exact ⟨j, hj, by aesop⟩
 
 variable [Finite ι] [IsDomain R] [P.IsCrystallographic] [P.IsReduced]
 

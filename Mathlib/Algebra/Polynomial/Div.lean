@@ -77,9 +77,6 @@ theorem finiteMultiplicity_of_degree_pos_of_monic (hp : (0 : WithBot ℕ) < degr
           (add_pos_of_pos_of_nonneg (by rwa [one_mul]) (Nat.zero_le _)))
         this⟩
 
-@[deprecated (since := "2024-11-30")]
-alias multiplicity_finite_of_degree_pos_of_monic := finiteMultiplicity_of_degree_pos_of_monic
-
 end Semiring
 
 section Ring
@@ -473,10 +470,7 @@ theorem finiteMultiplicity_X_sub_C (a : R) (h0 : p ≠ 0) : FiniteMultiplicity (
   rw [degree_X_sub_C]
   decide
 
-@[deprecated (since := "2024-11-30")]
-alias multiplicity_X_sub_C_finite := finiteMultiplicity_X_sub_C
-
-/- Porting note: stripping out classical for decidability instance parameter might
+/- TODO: stripping out classical for decidability instance parameter might
 make for better ergonomics -/
 /-- The largest power of `X - C a` which divides `p`.
 This *could be* computable via the divisibility algorithm `Polynomial.decidableDvdMonic`,
@@ -490,10 +484,8 @@ def rootMultiplicity (a : R) (p : R[X]) : ℕ :=
       inferInstanceAs (Decidable ¬_)
     Nat.find (finiteMultiplicity_X_sub_C a h0)
 
-/- Porting note: added the following due to diamond with decidableProp and
-decidableDvdMonic see also [Zulip]
-(https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/non-defeq.20aliased.20instance) -/
 theorem rootMultiplicity_eq_nat_find_of_nonzero [DecidableEq R] {p : R[X]} (p0 : p ≠ 0) {a : R} :
+    -- `decidableDvdMonic` can't be an instance, so we inline it here.
     letI : DecidablePred fun n : ℕ => ¬(X - C a) ^ (n + 1) ∣ p := fun n =>
       have := decidableDvdMonic p ((monic_X_sub_C a).pow (n + 1))
       inferInstanceAs (Decidable ¬_)
@@ -685,19 +677,12 @@ lemma eval_divByMonic_eq_trailingCoeff_comp {p : R[X]} {t : R} :
     trailingCoeff, Nat.le_zero.1 (natTrailingDegree_le_of_ne_zero <|
       this ▸ eval_divByMonic_pow_rootMultiplicity_ne_zero t hp), this]
 
-/- Porting note: the ML3 proof no longer worked because of a conflict in the
-inferred type and synthesized type for `DecidableRel` when using `Nat.le_find_iff` from
-`Mathlib/Algebra/Polynomial/Div.lean` After some discussion on [Zulip]
-(https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/decidability.20leakage)
-introduced `Polynomial.rootMultiplicity_eq_nat_find_of_nonzero` to contain the issue
--/
 /-- The multiplicity of `a` as root of a nonzero polynomial `p` is at least `n` iff
 `(X - a) ^ n` divides `p`. -/
 lemma le_rootMultiplicity_iff (p0 : p ≠ 0) {a : R} {n : ℕ} :
     n ≤ rootMultiplicity a p ↔ (X - C a) ^ n ∣ p := by
   classical
-  rw [rootMultiplicity_eq_nat_find_of_nonzero p0, @Nat.le_find_iff _ (_)]
-  simp_rw [Classical.not_not]
+  simp_rw [rootMultiplicity_eq_nat_find_of_nonzero p0, @Nat.le_find_iff _ (_), Classical.not_not]
   refine ⟨fun h => ?_, fun h m hm => (pow_dvd_pow _ hm).trans h⟩
   rcases n with - | n
   · rw [pow_zero]
@@ -717,7 +702,7 @@ lemma rootMultiplicity_add {p q : R[X]} (a : R) (hzero : p + q ≠ 0) :
 lemma le_rootMultiplicity_mul {p q : R[X]} (x : R) (hpq : p * q ≠ 0) :
     rootMultiplicity x p + rootMultiplicity x q ≤ rootMultiplicity x (p * q) := by
   rw [le_rootMultiplicity_iff hpq, pow_add]
-  exact mul_dvd_mul (pow_rootMultiplicity_dvd p x) (pow_rootMultiplicity_dvd q x)
+  gcongr <;> apply pow_rootMultiplicity_dvd
 
 lemma pow_rootMultiplicity_not_dvd (p0 : p ≠ 0) (a : R) :
     ¬(X - C a) ^ (rootMultiplicity a p + 1) ∣ p := by rw [← rootMultiplicity_le_iff p0]
@@ -769,11 +754,11 @@ lemma leadingCoeff_divByMonic_X_sub_C (p : R[X]) (hp : degree p ≠ 0) (a : R) :
 lemma eq_of_dvd_of_natDegree_le_of_leadingCoeff {p q : R[X]} (hpq : p ∣ q)
     (h₁ : q.natDegree ≤ p.natDegree) (h₂ : p.leadingCoeff = q.leadingCoeff) :
     p = q := by
-  by_cases hq : q = 0
-  · rwa [hq, leadingCoeff_zero, leadingCoeff_eq_zero, ← hq] at h₂
+  rcases eq_or_ne q 0 with rfl | hq
+  · simpa using h₂
   replace h₁ := (natDegree_le_of_dvd hpq hq).antisymm h₁
   obtain ⟨u, rfl⟩ := hpq
-  replace hq := mul_ne_zero_iff.mp hq
+  rw [mul_ne_zero_iff] at hq
   rw [natDegree_mul hq.1 hq.2, left_eq_add] at h₁
   rw [eq_C_of_natDegree_eq_zero h₁, leadingCoeff_mul, leadingCoeff_C,
     eq_comm, mul_eq_left₀ (leadingCoeff_ne_zero.mpr hq.1)] at h₂
