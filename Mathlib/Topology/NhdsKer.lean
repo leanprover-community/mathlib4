@@ -71,6 +71,10 @@ theorem nhdsKer_iUnion (s : ι → Set X) : nhdsKer (⋃ i, s i) = ⋃ i, nhdsKe
 
 @[deprecated (since := "2025-07-09")] alias exterior_iUnion := nhdsKer_iUnion
 
+theorem nhdsKer_biUnion {ι : Type*} (s : Set ι) (t : ι → Set X) :
+    nhdsKer (⋃ i ∈ s, t i) = ⋃ i ∈ s, nhdsKer (t i) := by
+  simp only [nhdsKer_iUnion]
+
 @[simp]
 theorem nhdsKer_union (s t : Set X) : nhdsKer (s ∪ t) = nhdsKer s ∪ nhdsKer t := by
   simp only [nhdsKer, nhdsSet_union, ker_sup]
@@ -160,3 +164,33 @@ theorem nhdsKer_sInter_subset {s : Set (Set X)} : nhdsKer (⋂₀ s) ⊆ ⋂ x �
   simp only [nhdsKer_eq_nhdsKer_iff_nhdsSet, nhdsSet_nhdsKer]
 
 @[deprecated (since := "2025-07-09")] alias exterior_exterior := nhdsKer_nhdsKer
+
+lemma nhdsKer_pair {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    (x : X) (y : Y) : nhdsKer {(x, y)} = nhdsKer {x} ×ˢ nhdsKer {y} := by
+  simp_rw [nhdsKer_singleton_eq_ker_nhds, nhds_prod_eq, ker_prod]
+
+lemma nhdsKer_prod {Y : Type*} [TopologicalSpace Y] (s : Set X) (t : Set Y) :
+    nhdsKer (s ×ˢ t) = nhdsKer s ×ˢ nhdsKer t := calc
+  _ = ⋃ (p ∈ s ×ˢ t), nhdsKer {p} := by
+    conv_lhs => rw [← biUnion_of_singleton (s ×ˢ t), nhdsKer_biUnion]
+  _ = ⋃ (p ∈ s ×ˢ t), nhdsKer {p.1} ×ˢ nhdsKer {p.2} := by
+    congr! with ⟨x, y⟩ _; rw [nhdsKer_pair]
+  _ = (⋃ x ∈ s, nhdsKer {x}) ×ˢ (⋃ y ∈ t, nhdsKer {y}) :=
+    biUnion_prod s t (fun x => nhdsKer {x}) (fun y => nhdsKer {y})
+  _ = nhdsKer s ×ˢ nhdsKer t := by
+    simp_rw [← nhdsKer_biUnion, biUnion_of_singleton]
+
+lemma nhdsKer_singleton_pi {ι : Type*} {X : ι → Type*} [Π (i : ι), TopologicalSpace (X i)]
+    (p : Π (i : ι), X i) : nhdsKer {p} = univ.pi (fun i => nhdsKer {p i}) := by
+  simp_rw [nhdsKer_singleton_eq_ker_nhds, nhds_pi, ker_pi]
+
+lemma nhdsKer_pi {ι : Type*} {X : ι → Type*} [Π (i : ι), TopologicalSpace (X i)]
+    (s : Π (i : ι), Set (X i)) : nhdsKer (univ.pi s) = univ.pi (fun i => nhdsKer (s i)) := calc
+  _ = ⋃ (p ∈ univ.pi s), nhdsKer {p} := by
+    conv_lhs => rw [← biUnion_of_singleton (univ.pi s), nhdsKer_biUnion]
+  _ = ⋃ (p ∈ univ.pi s), univ.pi fun i => nhdsKer {p i} := by
+    congr! with p _; rw [nhdsKer_singleton_pi]
+  _ = univ.pi fun i => ⋃ x ∈ s i, nhdsKer {x} :=
+    biUnion_univ_pi s fun i x => nhdsKer {x}
+  _ = univ.pi (fun i => nhdsKer (s i)) := by
+    simp_rw [← nhdsKer_biUnion, biUnion_of_singleton]
