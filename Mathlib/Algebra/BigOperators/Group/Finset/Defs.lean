@@ -737,7 +737,6 @@ theorem disjoint_list_sum_left {a : Multiset α} {l : List (Multiset α)} :
   | nil =>
     simp only [zero_disjoint, List.not_mem_nil, IsEmpty.forall_iff, forall_const, List.sum_nil]
   | cons b bs ih =>
-    simp_rw [List.sum_cons, disjoint_add_left, List.mem_cons, forall_eq_or_imp]
     simp [ih]
 
 theorem disjoint_list_sum_right {a : Multiset α} {l : List (Multiset α)} :
