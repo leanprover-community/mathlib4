@@ -355,16 +355,11 @@ lemma Ideal.sup_primeHeight_eq_ringKrullDim [Nontrivial R] :
 equal to the Krull dimension of `R`. -/
 lemma Ideal.sup_primeHeight_of_maximal_eq_ringKrullDim [Nontrivial R] :
     ↑(⨆ (I : Ideal R) (_ : I.IsMaximal), I.primeHeight) = ringKrullDim R := by
-  simp [← sup_height_eq_ringKrullDim]
+  rw [← Ideal.sup_primeHeight_eq_ringKrullDim, WithBot.coe_inj]
   refine le_antisymm ?_ ?_
-  · exact iSup_mono fun I => iSup_mono' fun hI => ⟨hI.ne_top, by rw [← height_eq_primeHeight]⟩
+  · exact iSup_mono fun I => iSup_mono' fun hI => ⟨IsMaximal.isPrime hI, le_rfl⟩
   · refine iSup_mono' fun I => ?_
-    by_cases I_top : I = ⊤
-    · exact ⟨⊥, by simp; exact fun h => False.elim (h I_top)⟩
-    · obtain ⟨P, hP⟩ : I.minimalPrimes.Nonempty :=
-        Set.nonempty_coe_sort.mp (nonempty_minimalPrimes I_top)
-      obtain ⟨M, hM⟩ := exists_le_maximal P hP.left.left.ne_top'
-      refine ⟨M, iSup_pos (α := ℕ∞) I_top ▸ le_iSup_of_le (hM.left) ?_⟩
-      apply le_trans (b := P.primeHeight (hI := hP.left.left))
-      · exact iInf_le_of_le P (iInf_le_of_le hP le_rfl)
-      · exact @primeHeight_mono _ _ _ _ hP.left.left hM.left.isPrime hM.right
+    obtain rfl | I_top := eq_or_ne I ⊤
+    · exact ⟨⊥, by grind [iSup_le_iff, Ideal.IsPrime.ne_top]⟩
+    · obtain ⟨M, hM, hIM⟩ := exists_le_maximal I I_top
+      exact ⟨M, iSup_mono' (fun hI ↦ ⟨hM, primeHeight_mono hIM⟩)⟩
