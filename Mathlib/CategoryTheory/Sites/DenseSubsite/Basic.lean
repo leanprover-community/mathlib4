@@ -52,7 +52,7 @@ structure Presieve.CoverByImageStructure (G : C ⥤ D) {V U : D} (f : V ⟶ U) w
   obj : C
   lift : V ⟶ G.obj obj
   map : G.obj obj ⟶ U
-  fac : lift ≫ map = f := by aesop_cat
+  fac : lift ≫ map = f := by cat_disch
 attribute [nolint docBlame] Presieve.CoverByImageStructure.obj Presieve.CoverByImageStructure.lift
   Presieve.CoverByImageStructure.map Presieve.CoverByImageStructure.fac
 

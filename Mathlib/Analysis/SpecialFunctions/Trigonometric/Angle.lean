@@ -25,16 +25,9 @@ namespace Real
 /-- The type of angles -/
 def Angle : Type :=
   AddCircle (2 * π)
--- The `NormedAddCommGroup, Inhabited` instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
+deriving NormedAddCommGroup, Inhabited
 
 namespace Angle
-
-instance : NormedAddCommGroup Angle :=
-  inferInstanceAs (NormedAddCommGroup (AddCircle (2 * π)))
-
-instance : Inhabited Angle :=
-  inferInstanceAs (Inhabited (AddCircle (2 * π)))
 
 /-- The canonical map from `ℝ` to the quotient `Angle`. -/
 @[coe]
@@ -43,7 +36,7 @@ protected def coe (r : ℝ) : Angle := QuotientAddGroup.mk r
 instance : Coe ℝ Angle := ⟨Angle.coe⟩
 
 instance : CircularOrder Real.Angle :=
-  QuotientAddGroup.circularOrder (hp' := ⟨by norm_num [pi_pos]⟩)
+  QuotientAddGroup.circularOrder (hp' := ⟨by simp [pi_pos]⟩)
 
 
 @[continuity]
@@ -183,10 +176,10 @@ theorem two_nsmul_eq_pi_iff {θ : Angle} : (2 : ℕ) • θ = π ↔ θ = (π / 
   have h : (π : Angle) = ((2 : ℕ) • (π / 2 : ℝ):) := by rw [two_nsmul, add_halves]
   nth_rw 1 [h]
   rw [coe_nsmul, two_nsmul_eq_iff]
-  -- Porting note: `congr` didn't simplify the goal of iff of `Or`s
-  convert Iff.rfl
-  rw [add_comm, ← coe_add, ← sub_eq_zero, ← coe_sub, neg_div, ← neg_sub, sub_neg_eq_add, add_assoc,
-    add_halves, ← two_mul, coe_neg, coe_two_pi, neg_zero]
+  apply iff_of_eq -- `congr` only works on `Eq`, so rewrite from `Iff` to `Eq`.
+  congr
+  rw [add_comm, ← coe_add, ← sub_eq_zero, ← coe_sub, neg_div, sub_neg_eq_add, add_assoc,
+    add_halves, ← two_mul, coe_two_pi]
 
 theorem two_zsmul_eq_pi_iff {θ : Angle} : (2 : ℤ) • θ = π ↔ θ = (π / 2 : ℝ) ∨ θ = (-π / 2 : ℝ) := by
   rw [two_zsmul, ← two_nsmul, two_nsmul_eq_pi_iff]
