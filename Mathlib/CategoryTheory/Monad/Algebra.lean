@@ -170,7 +170,6 @@ def adj : T.free ⊣ T.forget :=
 theorem algebra_iso_of_iso {A B : Algebra T} (f : A ⟶ B) [IsIso f.f] : IsIso f :=
   ⟨⟨{   f := inv f.f
         h := by
-          rw [IsIso.eq_comp_inv f.f, Category.assoc, ← f.h]
           simp },
       by cat_disch⟩⟩
 
