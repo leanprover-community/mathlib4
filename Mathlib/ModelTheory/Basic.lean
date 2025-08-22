@@ -67,6 +67,7 @@ abbrev IsRelational : Prop := ∀ n, IsEmpty (L.Functions n)
 /-- A language is algebraic when it has no relation symbols. -/
 abbrev IsAlgebraic : Prop := ∀ n, IsEmpty (L.Relations n)
 
+set_option linter.style.indentation false in -- TODO: disable on deriving indentation
 /-- The empty language has no symbols. -/
 protected def empty : Language := ⟨fun _ => Empty, fun _ => Empty⟩
   deriving IsAlgebraic, IsRelational
