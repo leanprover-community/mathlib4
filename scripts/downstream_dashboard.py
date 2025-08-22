@@ -190,10 +190,8 @@ def check_workflow_uses_action(repo: Dict[str, str], workflow_name: str, expecte
     except KeyError:
         if not silent:
             # Splat out the repo data and workflow data in order to not mutate the original.
-            if 'workflows' in repo:
-                example_entry = {**repo, 'workflows': {**repo['workflows'], workflow_name: f'{workflow_name}.yml'}}
-            else:
-                example_entry = {**repo, 'workflows': {workflow_name: f'{workflow_name}.yml'}}
+            existing_workflows = repo.get('workflows', {})
+            example_entry = {**repo, 'workflows': {**existing_workflows, workflow_name: f'{workflow_name}.yml'}}
             yaml_example_entry = yaml.dump(example_entry)
             print(
 f"""  {FAIL} Consider adding a {workflow_name} workflow.
