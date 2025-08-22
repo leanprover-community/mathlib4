@@ -48,7 +48,7 @@ noncomputable def sigmoid : ℝ ↪o I where
 
 namespace Sigmoid
 
-lemma range_eq : range Sigmoid = Ioo 0 1 := by
+lemma range_sigmoid : range Sigmoid = Ioo 0 1 := by
   ext x
   constructor
   · intro hx
