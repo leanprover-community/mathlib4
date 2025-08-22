@@ -147,7 +147,7 @@ def isoMk {X Y : Type v} {_ : CommRing X} {_ : CommRing Y} {_ : Bialgebra R X}
 
 /-- Build a `BialgEquiv` from an isomorphism in the category `CommBialgCat R`. -/
 @[simps apply, simps -isSimp symm_apply]
-def ofIso (i : A ≅ B) : A ≃ₐc[R] B where
+def bialgEquivOfIso (i : A ≅ B) : A ≃ₐc[R] B where
   __ := i.hom.hom
   toFun := i.hom
   invFun := i.inv
@@ -157,7 +157,7 @@ def ofIso (i : A ≅ B) : A ≃ₐc[R] B where
 /-- Bialgebra equivalences between `Bialgebra`s are the same as isomorphisms in `CommBialgCat`. -/
 @[simps]
 def isoEquivBialgEquiv : (of R X ≅ of R Y) ≃ (X ≃ₐc[R] Y) where
-  toFun := ofIso
+  toFun := bialgEquivOfIso
   invFun := isoMk
   left_inv _ := rfl
   right_inv _ := rfl
