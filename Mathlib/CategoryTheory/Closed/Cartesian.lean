@@ -246,7 +246,7 @@ theorem coev_app_comp_pre_app (f : B ⟶ A) [Exponentiable B] :
 @[simp]
 theorem pre_id (A : C) [Exponentiable A] : pre (𝟙 A) = 𝟙 _ := by
   simp only [pre, Functor.map_id]
-  cat_disch
+  simp
 
 @[simp]
 theorem pre_map {A₁ A₂ A₃ : C} [Exponentiable A₁] [Exponentiable A₂] [Exponentiable A₃]
