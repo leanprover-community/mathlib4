@@ -115,16 +115,11 @@ def subpathTransSubpathRefl (γ : Path a b) (t₀ t₁ t₂ : I) : Homotopy
   a theorem like `Continuous.pathExtend`, but that does not work in this case because the
   endpoints of our subpaths depend on our input `x` (i.e., the types don't quite match). -/
   continuous_toFun := by
-    simp only [Path.trans, coe_mk', ContinuousMap.coe_mk, comp_apply]
-    apply continuous_if_le
-    · exact Continuous.comp' continuous_induced_dom continuous_snd
-    · exact continuous_const
-    · simp [extend, IccExtend, projIcc, subpath]
-      fun_prop
-    · simp [extend, IccExtend, projIcc, subpath]
-      fun_prop
-    · intro _ hx
-      simp [hx]
+    let γ₁ (t : I) := γ.subpath t₀ (subpathAux t₁ t₂ t)
+    let γ₂ (t : I) := γ.subpath (subpathAux t₁ t₂ t) t₂
+    refine Path.trans_continuous_family γ₁ ?_ γ₂ ?_ <;>
+    refine γ.subpath_continuous_family.comp (.prodMk ?_ <| .prodMk ?_ ?_) <;>
+    fun_prop
   map_zero_left := by
     intro _
     congr
