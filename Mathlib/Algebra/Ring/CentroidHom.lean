@@ -220,10 +220,8 @@ instance : Add (CentroidHom α) :=
   ⟨fun f g ↦
     { (f + g : α →+ α) with
       map_mul_left' := fun a b ↦ by
-        change f (a * b) + g (a * b) = a * (f b + g b)
         simp [map_mul_left, mul_add]
       map_mul_right' := fun a b ↦ by
-        change f (a * b) + g (a * b) = (f a + g a) * b
         simp [map_mul_right, add_mul] }⟩
 
 instance : Mul (CentroidHom α) :=
@@ -538,20 +536,16 @@ instance : Neg (CentroidHom α) :=
   ⟨fun f ↦
     { (-f : α →+ α) with
       map_mul_left' := fun a b ↦ by
-        change -f (a * b) = a * (-f b)
         simp [map_mul_left]
       map_mul_right' := fun a b ↦ by
-        change -f (a * b) = (-f a) * b
         simp [map_mul_right] }⟩
 
 instance : Sub (CentroidHom α) :=
   ⟨fun f g ↦
     { (f - g : α →+ α) with
       map_mul_left' := fun a b ↦ by
-        change (⇑f - ⇑g) (a * b) = a * (⇑f - ⇑g) b
         simp [map_mul_left, mul_sub]
       map_mul_right' := fun a b ↦ by
-        change (⇑f - ⇑g) (a * b) = ((⇑f - ⇑g) a) * b
         simp [map_mul_right, sub_mul] }⟩
 
 instance : IntCast (CentroidHom α) where intCast z := z • (1 : CentroidHom α)
