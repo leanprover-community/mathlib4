@@ -421,7 +421,7 @@ section SecondCountableLp
 then the associated `Lᵖ` space is second-countable. -/
 instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.SeparableSpace E] :
     SecondCountableTopology (Lp E p μ) := by
-  -- It is enough to show that the space is separable, i.e. admits a countable and dense susbet.
+  -- It is enough to show that the space is separable, i.e. admits a countable and dense subset.
   refine @UniformSpace.secondCountable_of_separable _ _ _ ?_
   -- There exists a countable and measure-dense family, and we can keep only the sets with finite
   -- measure while preserving the two properties. This family is denoted `𝒜₀`.
@@ -442,7 +442,7 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
   let D := {s : Lp E p μ | ∃ n d t, s = key n d t}
   refine ⟨D, ?_, ?_⟩
   · -- Countability directly follows from countability of `u` and `𝒜₀`. The function `f` below
-    -- is the uncurryfied version of `key`, which is easier to manipulate as countability of the
+    -- is the uncurried version of `key`, which is easier to manipulate as countability of the
     -- domain is automatically inferred.
     let f (nds : Σ n : ℕ, (Fin n → u) × (Fin n → 𝒜₀)) : Lp E p μ := key nds.1 nds.2.1 nds.2.2
     have := count_𝒜₀.to_subtype
