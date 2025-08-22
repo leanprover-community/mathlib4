@@ -345,7 +345,7 @@ lemma Ideal.sup_primeHeight_eq_ringKrullDim [Nontrivial R] :
   · exact iSup_mono fun I => iSup_mono' fun hI => ⟨hI.ne_top, by rw [← height_eq_primeHeight]⟩
   · refine iSup_mono' fun I => ?_
     by_cases I_top : I = ⊤
-    · exact ⟨⊥, by simp; exact fun h => False.elim (h I_top)⟩
+    · exact ⟨⊥, by simp [I_top]⟩
     · obtain ⟨P, hP⟩ : I.minimalPrimes.Nonempty :=
         Set.nonempty_coe_sort.mp (nonempty_minimalPrimes I_top)
       refine ⟨P, iSup_pos (α := ℕ∞) I_top ▸ le_iSup_of_le (hP.left.left) ?_⟩
