@@ -181,7 +181,7 @@ theorem archimedeanClassMk_le_archimedeanClassMk_iff_of_orderTop_ofLex {x y : Le
   have hx : x ≠ 0 := by simpa using orderTop_ne_top.1 <| h ▸ orderTop_ne_top.2 (by simpa using hy)
   have h' : (ofLex |x|).orderTop = (ofLex |y|).orderTop := by simpa using h
   constructor
-  · -- mk x ≤ mk y → mk x.leadingCoeff ≤ mk y.leadingCoeff
+  · -- `mk x ≤ mk y → mk x.leadingCoeff ≤ mk y.leadingCoeff`
     intro ⟨n, hn⟩
     refine ⟨n + 1, ?_⟩
     have hn' : |y| < (n + 1) • |x| :=
@@ -197,7 +197,7 @@ theorem archimedeanClassMk_le_archimedeanClassMk_iff_of_orderTop_ofLex {x y : Le
       simp [coeff_eq_zero_of_lt_orderTop hjlt, coeff_eq_zero_of_lt_orderTop hjlt'] at hi
     · convert hi.le <;> exact (WithTop.untop_eq_iff _).mpr hjeq.symm
     · exact (hj _ ((WithTop.untop_lt_iff _).mpr hjgt)).le
-  · -- mk x.leadingCoeff ≤ mk y.leadingCoeff → mk x ≤ mk y
+  · -- `mk x.leadingCoeff ≤ mk y.leadingCoeff → mk x ≤ mk y`
     intro ⟨n, hn⟩
     refine ⟨n + 1, ((lt_iff _ _).mpr ?_).le⟩
     refine ⟨(ofLex x).orderTop.untop (by simpa using hx), ?_, ?_⟩
@@ -279,8 +279,7 @@ noncomputable def finiteArchimedeanClassOrderHomInvLex :
     fun ⟨a, ha⟩ ⟨b, hb⟩ h ↦ by
       rw [FiniteArchimedeanClass.mk_le_mk, archimedeanClassMk_le_archimedeanClassMk_iff]
       simpa [ha, hb] using h
-  monotone' a b := a.rec fun (ao, ac) ↦ b.rec fun (bo, bc) ↦ by
-    intro h
+  monotone' a b := a.rec fun (ao, ac) ↦ b.rec fun (bo, bc) h ↦ by
     obtain h | ⟨rfl, hle⟩ := Prod.Lex.le_iff.mp h
     · induction ac using FiniteArchimedeanClass.ind with | mk a ha
       induction bc using FiniteArchimedeanClass.ind with | mk b hb
