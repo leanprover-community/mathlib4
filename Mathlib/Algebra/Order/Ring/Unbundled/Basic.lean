@@ -682,23 +682,22 @@ theorem pos_iff_neg_of_mul_neg [ExistsAddOfLE R] [PosMulMono R] [MulPosMono R]
     (hab : a * b < 0) : 0 < a ↔ b < 0 :=
   ⟨neg_of_mul_neg_right hab ∘ le_of_lt, pos_of_mul_neg_left hab ∘ le_of_lt⟩
 
-lemma sq_nonneg [IsRightCancelAdd R]
-    [ZeroLEOneClass R] [ExistsAddOfLE R] [PosMulMono R] [AddLeftStrictMono R]
+lemma sq_nonneg [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
     (a : R) : 0 ≤ a ^ 2 := by
-  obtain ha | ha := le_total 0 a
-  · exact pow_nonneg ha _
-  obtain ⟨b, hab⟩ := exists_add_of_le ha
+  obtain ha | ha := le_or_gt 0 a
+  · exact pow_succ_nonneg ha _
+  obtain ⟨b, hab⟩ := exists_add_of_le ha.le
+  have hb : 0 < b := not_le.1 fun hb ↦
+    ((add_le_add_left hb a).trans_lt ((add_zero a).trans_lt ha)).ne' hab
   calc
-    0 ≤ b ^ 2 := pow_nonneg (not_lt.1 fun hb ↦ hab.not_gt <| add_neg_of_nonpos_of_neg ha hb) _
-    _ = a ^ 2 := add_left_injective (a * b) ?_
-  calc
-    b ^ 2 + a * b = (a + b) * b := by rw [add_comm, sq, add_mul]
-    _ = a * (a + b) := by simp [← hab]
-    _ = a ^ 2 + a * b := by rw [sq, mul_add]
+    0 ≤ b ^ 2 := pow_succ_nonneg hb.le _
+    _ = b ^ 2 + a * (a + b) := by rw [← hab, mul_zero, add_zero]
+    _ = a ^ 2 + (a + b) * b := by rw [add_mul, mul_add, sq, sq, add_comm, add_assoc]
+    _ = a ^ 2 := by rw [← hab, zero_mul, add_zero]
 
 @[simp]
-lemma sq_nonpos_iff [IsRightCancelAdd R] [ZeroLEOneClass R] [ExistsAddOfLE R]
-    [PosMulMono R] [AddLeftStrictMono R] [NoZeroDivisors R] (r : R) :
+lemma sq_nonpos_iff [ExistsAddOfLE R]
+    [PosMulMono R] [AddLeftMono R] [NoZeroDivisors R] (r : R) :
     r ^ 2 ≤ 0 ↔ r = 0 := by
   trans r ^ 2 = 0
   · rw [le_antisymm_iff, and_iff_left (sq_nonneg r)]
@@ -706,21 +705,18 @@ lemma sq_nonpos_iff [IsRightCancelAdd R] [ZeroLEOneClass R] [ExistsAddOfLE R]
 
 alias pow_two_nonneg := sq_nonneg
 
-lemma mul_self_nonneg [IsRightCancelAdd R]
-    [ZeroLEOneClass R] [ExistsAddOfLE R] [PosMulMono R] [AddLeftStrictMono R]
+lemma mul_self_nonneg [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
     (a : R) : 0 ≤ a * a := by simpa only [sq] using sq_nonneg a
 
 /-- The sum of two squares is zero iff both elements are zero. -/
-lemma mul_self_add_mul_self_eq_zero [IsRightCancelAdd R] [NoZeroDivisors R]
-    [ZeroLEOneClass R] [ExistsAddOfLE R] [PosMulMono R]
-    [AddLeftMono R] [AddLeftStrictMono R] :
+lemma mul_self_add_mul_self_eq_zero [NoZeroDivisors R]
+    [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R] :
     a * a + b * b = 0 ↔ a = 0 ∧ b = 0 := by
   rw [add_eq_zero_iff_of_nonneg, mul_self_eq_zero (M₀ := R), mul_self_eq_zero (M₀ := R)] <;>
     apply mul_self_nonneg
 
-lemma eq_zero_of_mul_self_add_mul_self_eq_zero [IsRightCancelAdd R] [NoZeroDivisors R]
-    [ZeroLEOneClass R] [ExistsAddOfLE R] [PosMulMono R]
-    [AddLeftMono R] [AddLeftStrictMono R]
+lemma eq_zero_of_mul_self_add_mul_self_eq_zero [NoZeroDivisors R]
+    [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
     (h : a * a + b * b = 0) : a = 0 :=
   (mul_self_add_mul_self_eq_zero.mp h).left
 

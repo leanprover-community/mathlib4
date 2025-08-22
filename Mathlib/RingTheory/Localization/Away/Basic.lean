@@ -78,6 +78,11 @@ lemma algebraMap_pow_isUnit (n : ℕ) : IsUnit (algebraMap R S x ^ n) :=
 lemma algebraMap_isUnit : IsUnit (algebraMap R S x) :=
   IsLocalization.map_units _ (⟨x, 1, by simp⟩ : Submonoid.powers x)
 
+theorem associated_sec_fst (s : S) :
+    Associated (algebraMap R S (IsLocalization.Away.sec x s).1) s := by
+  rw [← IsLocalization.Away.sec_spec, map_pow]
+  exact associated_mul_unit_left _ _ <| .pow _ <| IsLocalization.Away.algebraMap_isUnit _
+
 lemma algebraMap_isUnit_iff {y : R} : IsUnit (algebraMap R S y) ↔ ∃ n, y ∣ x ^ n :=
   (IsLocalization.algebraMap_isUnit_iff <| .powers x).trans <| by simp [Submonoid.mem_powers_iff]
 
