@@ -361,20 +361,16 @@ theorem IsNormal.apply_of_isSuccLimit {f : Ordinal.{u} → Ordinal.{v}} (H : IsN
 @[deprecated (since := "2025-07-08")]
 alias IsNormal.apply_of_isLimit := IsNormal.apply_of_isSuccLimit
 
-theorem sSup_ord {s : Set Cardinal.{u}} (hs : BddAbove s) : (sSup s).ord = sSup (ord '' s) :=
-  eq_of_forall_ge_iff fun a => by
-    rw [csSup_le_iff'
-        (bddAbove_iff_small.2 (@small_image _ _ _ s (Cardinal.bddAbove_iff_small.1 hs))),
-      ord_le, csSup_le_iff' hs]
-    simp [ord_le]
+theorem sSup_ord (s : Set Cardinal) : (sSup s).ord = sSup (ord '' s) := by
+  obtain rfl | hn := s.eq_empty_or_nonempty
+  · simp
+  · by_cases hs : BddAbove s
+    · exact isNormal_ord.map_sSup hn hs
+    · rw [csSup_of_not_bddAbove hs, csSup_of_not_bddAbove (bddAbove_ord_image_iff.not.2 hs)]
+      simp
 
-theorem iSup_ord {ι} {f : ι → Cardinal} (hf : BddAbove (range f)) :
-    (iSup f).ord = ⨆ i, (f i).ord := by
-  unfold iSup
-  convert sSup_ord hf
-  -- Porting note: `change` is required.
-  conv_lhs => change range (ord ∘ f)
-  rw [range_comp]
+theorem iSup_ord {ι} (f : ι → Cardinal) : (⨆ i, f i).ord = ⨆ i, (f i).ord := by
+  rw [iSup, iSup, sSup_ord, range_comp']
 
 theorem lift_card_sInf_compl_le (s : Set Ordinal.{u}) :
     Cardinal.lift.{u + 1} (sInf sᶜ).card ≤ #s := by
