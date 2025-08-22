@@ -280,7 +280,7 @@ instance : LT (SubDPIdeal hI) := ⟨fun J J' ↦ J.carrier < J'.carrier⟩
 
 theorem lt_iff {J J' : SubDPIdeal hI} : J < J' ↔ J.carrier < J'.carrier := Iff.rfl
 
-/-- I is a sub-dp-ideal ot itself. -/
+/-- `I` is a sub-dp-ideal of itself. -/
 instance : Top (SubDPIdeal hI) :=
   ⟨{carrier    := I
     isSubideal := le_refl _
@@ -288,7 +288,7 @@ instance : Top (SubDPIdeal hI) :=
 
 instance inhabited : Inhabited hI.SubDPIdeal := ⟨⊤⟩
 
-/-- `(0)` is a sub-dp-ideal ot the dp-ideal `I`. -/
+/-- `(0)` is a sub-dp-ideal of the dp-ideal `I`. -/
 instance : Bot (SubDPIdeal hI) :=
   ⟨{carrier    := ⊥
     isSubideal := bot_le

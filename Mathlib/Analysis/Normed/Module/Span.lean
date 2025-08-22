@@ -67,7 +67,7 @@ noncomputable def toSpanNonzeroSingleton (x : E) (h : x ≠ 0) : 𝕜 ≃L[𝕜]
 
 /-- Given a nonzero element `x` of a normed space `E₁` over a field `𝕜`, the natural continuous
 linear map from the span of `x` to `𝕜`. -/
-noncomputable def coord (x : E) (h : x ≠ 0) : (𝕜 ∙ x) →L[𝕜] 𝕜 :=
+noncomputable def coord (x : E) (h : x ≠ 0) : StrongDual 𝕜 (𝕜 ∙ x) :=
   (toSpanNonzeroSingleton 𝕜 x h).symm
 
 @[simp]

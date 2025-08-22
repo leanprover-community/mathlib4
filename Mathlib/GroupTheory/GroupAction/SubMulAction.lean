@@ -24,7 +24,7 @@ For most uses, typically `Submodule R M` is more powerful.
 * `SubMulAction.mulAction'` - the `MulAction S M` transferred to the subtype when
   `IsScalarTower S R M`.
 * `SubMulAction.isScalarTower` - the `IsScalarTower S R M` transferred to the subtype.
-* `SubMulAction.inclusion` — the inclusion of a submulaction, as an equivariant map
+* `SubMulAction.inclusion` — the inclusion of a `SubMulAction`, as an equivariant map
 
 ## Tags
 
@@ -473,7 +473,7 @@ end SubMulAction
 
 namespace SubMulAction
 
-/- The inclusion of a SubMulaction, as an equivariant map -/
+/- The inclusion of a `SubMulAction`, as an equivariant map -/
 variable {M α : Type*} [Monoid M] [MulAction M α]
 
 

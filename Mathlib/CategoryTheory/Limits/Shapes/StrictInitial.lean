@@ -224,8 +224,7 @@ theorem limit_π_isIso_of_is_strict_terminal (F : J ⥤ C) [HasLimit F] (i : J)
         rw [id_comp, eqToHom_refl]
         exact comp_id _
       · apply (H _ h).hom_ext
-    · rw [limit.lift_π]
-      simp
+    · simp
 
 variable [HasTerminal C]
 

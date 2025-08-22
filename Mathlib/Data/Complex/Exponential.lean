@@ -96,7 +96,7 @@ theorem exp_zero : exp 0 = 1 := by
   · exact absurd hj (not_le_of_gt zero_lt_one)
   · dsimp [exp']
     induction' j with j ih
-    · dsimp [exp']; simp
+    · simp
     · rw [← ih (by simp)]
       simp only [sum_range_succ, pow_succ]
       simp
@@ -417,8 +417,7 @@ theorem exp_bound' {x : ℂ} {n : ℕ} (hx : ‖x‖ / n.succ ≤ 1 / 2) :
     _ ≤ ‖x‖ ^ n / ↑n.factorial * 2 := ?_
   · gcongr
     exact mod_cast Nat.factorial_mul_pow_le_factorial
-  · refine Finset.sum_congr rfl fun _ _ => ?_
-    simp only [pow_add, div_eq_inv_mul, mul_inv, mul_left_comm, mul_assoc]
+  · simp only [pow_add, div_eq_inv_mul, mul_inv, mul_left_comm, mul_assoc]
   · rw [← mul_sum]
     gcongr
     simp_rw [← div_pow]

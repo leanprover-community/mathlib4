@@ -351,9 +351,7 @@ theorem isometry_comap_mkMetric (m : ℝ≥0∞ → ℝ≥0∞) {f : X → Y} (h
   refine surjective_id.iSup_congr id fun ε => surjective_id.iSup_congr id fun hε => ?_
   rw [comap_boundedBy _ (H.imp _ id)]
   · congr with s : 1
-    apply extend_congr
-    · simp [hf.ediam_image]
-    · intros; simp [hf.ediam_image]
+    apply extend_congr <;> simp [hf.ediam_image]
   · intro h_mono s t hst
     simp only [extend, le_iInf_iff]
     intro ht

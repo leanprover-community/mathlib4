@@ -15,26 +15,6 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 open Function
 
-namespace Submonoid.LocalizationMap
-
-@[to_additive]
-theorem injective_iff
-    {M N : Type*} [CommMonoid M] {S : Submonoid M} [CommMonoid N] (f : LocalizationMap S N) :
-    Injective f ↔ ∀ ⦃x⦄, x ∈ S → IsLeftRegular x := by
-  rw [Injective]
-  constructor <;> intro h
-  · intro x hx y z hyz
-    simp_rw [LocalizationMap.eq_iff_exists] at h
-    apply (fun y z _ => h) y z x
-    lift x to S using hx
-    use x
-  · intro a b hab
-    rw [LocalizationMap.eq_iff_exists] at hab
-    obtain ⟨c,hc⟩ := hab
-    apply (fun x a => h a) c (SetLike.coe_mem c) hc
-
-end Submonoid.LocalizationMap
-
 section CommMonoidWithZero
 
 variable {M : Type*} [CommMonoidWithZero M] (S : Submonoid M) (N : Type*) [CommMonoidWithZero N]
@@ -44,23 +24,25 @@ namespace Submonoid
 
 variable {S N} in
 /-- If `S` contains `0` then the localization at `S` is trivial. -/
-theorem LocalizationMap.subsingleton (f : Submonoid.LocalizationMap S N) (h : 0 ∈ S) :
+theorem LocalizationMap.subsingleton (f : LocalizationMap S N) (h : 0 ∈ S) :
     Subsingleton N := by
   refine ⟨fun a b ↦ ?_⟩
   rw [← LocalizationMap.mk'_sec f a, ← LocalizationMap.mk'_sec f b, LocalizationMap.eq]
   exact ⟨⟨0, h⟩, by simp only [zero_mul]⟩
 
-/-- The type of homomorphisms between monoids with zero satisfying the characteristic predicate:
-if `f : M →*₀ N` satisfies this predicate, then `N` is isomorphic to the localization of `M` at
-`S`. -/
-structure LocalizationWithZeroMap extends LocalizationMap S N where
-  map_zero' : toFun 0 = 0
+protected theorem LocalizationMap.map_zero (f : LocalizationMap S N) : f 0 = 0 := by
+  have ⟨ms, eq⟩ := f.surj 0
+  rw [← zero_mul, map_mul, ← eq, zero_mul, mul_zero]
 
 variable {S N}
 
 /-- The monoid with zero hom underlying a `LocalizationMap`. -/
-def LocalizationWithZeroMap.toMonoidWithZeroHom (f : LocalizationWithZeroMap S N) : M →*₀ N :=
-  { f with }
+def LocalizationMap.toMonoidWithZeroHom (f : LocalizationMap S N) : M →*₀ N :=
+  { f with map_zero' := f.map_zero }
+
+@[deprecated (since := "2025-08-01")] alias LocalizationWithZeroMap := LocalizationMap
+@[deprecated (since := "2025-08-01")]
+alias LocalizationWithZeroMap.toMonoidWithZeroHom := LocalizationMap.toMonoidWithZeroHom
 
 end Submonoid
 
@@ -89,77 +71,51 @@ namespace Submonoid
 theorem LocalizationMap.sec_zero_fst {f : LocalizationMap S N} : f (f.sec 0).fst = 0 := by
   rw [LocalizationMap.sec_spec', mul_zero]
 
-namespace LocalizationWithZeroMap
+namespace LocalizationMap
 
 /-- Given a Localization map `f : M →*₀ N` for a Submonoid `S ⊆ M` and a map of
 `CommMonoidWithZero`s `g : M →*₀ P` such that `g y` is invertible for all `y : S`, the
 homomorphism induced from `N` to `P` sending `z : N` to `g x * (g y)⁻¹`, where `(x, y) : M × S`
 are such that `z = f x * (f y)⁻¹`. -/
-noncomputable def lift (f : LocalizationWithZeroMap S N) (g : M →*₀ P)
+noncomputable def lift₀ (f : LocalizationMap S N) (g : M →*₀ P)
     (hg : ∀ y : S, IsUnit (g y)) : N →*₀ P :=
-  { @LocalizationMap.lift _ _ _ _ _ _ _ f.toLocalizationMap g.toMonoidHom hg with
+  { @LocalizationMap.lift _ _ _ _ _ _ _ f g.toMonoidHom hg with
     map_zero' := by
       dsimp only [OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe]
-      rw [LocalizationMap.lift_spec f.toLocalizationMap hg 0 0, mul_zero, ← map_zero g,
-        ← g.toMonoidHom_coe]
-      refine f.toLocalizationMap.eq_of_eq hg ?_
+      rw [LocalizationMap.lift_spec f hg 0 0, mul_zero, ← map_zero g, ← g.toMonoidHom_coe]
+      refine f.eq_of_eq hg ?_
       rw [LocalizationMap.sec_zero_fst]
       exact f.toMonoidWithZeroHom.map_zero.symm }
 
-lemma lift_def (f : LocalizationWithZeroMap S N) (g : M →*₀ P) (hg : ∀ y : S, IsUnit (g y)) :
-    ⇑(f.lift g hg) = f.toLocalizationMap.lift (g := ↑g) hg := rfl
+lemma lift₀_def (f : LocalizationMap S N) (g : M →*₀ P) (hg : ∀ y : S, IsUnit (g y)) :
+    ⇑(f.lift₀ g hg) = f.lift (g := g) hg := rfl
 
-lemma lift_apply (f : LocalizationWithZeroMap S N) (g : M →*₀ P) (hg : ∀ y : S, IsUnit (g y)) (x) :
-    (f.lift g hg) x = g (f.sec x).1 * (IsUnit.liftRight (g.restrict S) hg (f.sec x).2)⁻¹ := rfl
-
-/-- Given a Localization map `f : M →*₀ N` for a Submonoid `S ⊆ M`,
-if `M` is left cancellative monoid with zero, and all elements of `S` are
-left regular, then N is a left cancellative monoid with zero. -/
-theorem leftCancelMulZero_of_le_isLeftRegular
-    (f : LocalizationWithZeroMap S N) [IsLeftCancelMulZero M]
-    (h : ∀ ⦃x⦄, x ∈ S → IsLeftRegular x) : IsLeftCancelMulZero N := by
-  let fl := f.toLocalizationMap
-  constructor
-  intro a ha z w hazw
-  obtain ⟨b, hb⟩ := LocalizationMap.surj fl a
-  obtain ⟨x, hx⟩ := LocalizationMap.surj fl z
-  obtain ⟨y, hy⟩ := LocalizationMap.surj fl w
-  rw [(LocalizationMap.eq_mk'_iff_mul_eq fl).mpr hx,
-    (LocalizationMap.eq_mk'_iff_mul_eq fl).mpr hy, LocalizationMap.eq]
-  use 1
-  rw [OneMemClass.coe_one, one_mul, one_mul]
-  -- The hypothesis `a ≠ 0` in `P` is equivalent to this
-  have b1ne0 : b.1 ≠ 0 := by
-    intro hb1
-    have m0 : fl 0 = 0 := f.map_zero'
-    have a0 : a * fl b.2 = 0 ↔ a = 0 :=
-      (f.toLocalizationMap.map_units' b.2).mul_left_eq_zero
-    rw [hb1, m0, a0] at hb
-    exact ha hb
-  have main : fl (b.1 * (x.2 * y.1)) = fl (b.1 * (y.2 * x.1)) :=
-    calc
-      fl (b.1 * (x.2 * y.1)) = fl b.1 * (fl x.2 * fl y.1) := by rw [map_mul fl,map_mul fl]
-      _ = a * fl b.2 * (fl x.2 * (w * fl y.2)) := by rw [hb, hy]
-      _ = a * w * fl b.2 * (fl x.2 * fl y.2) := by
-        rw [← mul_assoc, ← mul_assoc _ w, mul_comm _ w, mul_assoc w, mul_assoc,
-          ← mul_assoc w, ← mul_assoc w, mul_comm w]
-      _ = a * z * fl b.2 * (fl x.2 * fl y.2) := by dsimp only at hazw; rw [hazw]
-      _ = a * fl b.2 * (z * fl x.2 * fl y.2) := by
-        rw [mul_assoc a, mul_comm z, ← mul_assoc a, mul_assoc, mul_assoc z]
-      _ = fl b.1 * fl (y.2 * x.1) := by rw [hx, hb, mul_comm (fl x.1), ← map_mul fl]
-      _ = fl (b.1 * (y.2 * x.1)) := by rw [← map_mul fl]
-  -- The hypothesis `h` gives that `f` is injective, and we can cancel out `b.1`.
-  exact (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero b1ne0
-      ((LocalizationMap.injective_iff fl).mpr h main)).symm
+lemma lift₀_apply (f : LocalizationMap S N) (g : M →*₀ P) (hg : ∀ y : S, IsUnit (g y)) (x) :
+    f.lift₀ g hg x = g (f.sec x).1 * (IsUnit.liftRight (g.restrict S) hg (f.sec x).2)⁻¹ := rfl
 
 /-- Given a Localization map `f : M →*₀ N` for a Submonoid `S ⊆ M`,
 if `M` is a cancellative monoid with zero, and all elements of `S` are
 regular, then N is a cancellative monoid with zero. -/
-theorem isLeftRegular_of_le_isCancelMulZero (f : LocalizationWithZeroMap S N)
-    [IsCancelMulZero M] (h : ∀ ⦃x⦄, x ∈ S → IsRegular x) : IsCancelMulZero N := by
-  have : IsLeftCancelMulZero N :=
-    leftCancelMulZero_of_le_isLeftRegular f (fun x h' => (h h').left)
-  exact IsLeftCancelMulZero.to_isCancelMulZero
+theorem isCancelMulZero (f : LocalizationMap S N) [IsCancelMulZero M] : IsCancelMulZero N := by
+  simp_rw [isCancelMulZero_iff_forall_isRegular, Commute.isRegular_iff (Commute.all _),
+    ← Commute.isRightRegular_iff (Commute.all _)]
+  intro n hn
+  have ⟨ms, eq⟩ := f.surj n
+  refine (eq ▸ f.map_isRegular (isCancelMulZero_iff_forall_isRegular.mp ‹_› ?_)).2.of_mul
+  refine fun h ↦ hn ?_
+  rwa [h, f.map_zero, (f.map_units _).mul_left_eq_zero] at eq
+
+end LocalizationMap
+
+namespace LocalizationWithZeroMap
+
+@[deprecated (since := "2025-08-01")]
+alias isLeftRegular_of_le_isCancelMulZero := LocalizationMap.isCancelMulZero
+@[deprecated (since := "2025-08-01")]
+alias leftCancelMulZero_of_le_isLeftRegular := LocalizationMap.isCancelMulZero
+@[deprecated (since := "2025-08-01")] alias lift := LocalizationMap.lift₀
+@[deprecated (since := "2025-08-01")] alias lift_def := LocalizationMap.lift₀_def
+@[deprecated (since := "2025-08-01")] alias lift_apply := LocalizationMap.lift₀_apply
 
 end LocalizationWithZeroMap
 

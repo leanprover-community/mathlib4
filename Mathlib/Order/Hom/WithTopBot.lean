@@ -57,7 +57,7 @@ def _root_.Function.Embedding.coeWithTop : α ↪ WithTop α where
   inj' := WithTop.coe_injective
 
 /-- The coercion `α → WithTop α` bundled as monotone map. -/
-@[simps]
+@[simps -fullyApplied]
 def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithTop α where
   toFun := (↑)
   inj' := WithTop.coe_injective
@@ -130,7 +130,7 @@ def _root_.Function.Embedding.coeWithBot : α ↪ WithBot α where
   inj' := WithBot.coe_injective
 
 /-- The coercion `α → WithBot α` bundled as monotone map. -/
-@[simps]
+@[simps -fullyApplied]
 def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithBot α where
   toFun := (↑)
   inj' := WithBot.coe_injective
@@ -187,17 +187,10 @@ protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β where
 protected def withTopMap (f : α ↪o β) : WithTop α ↪o WithTop β :=
   { f.dual.withBotMap.dual with toFun := WithTop.map f }
 
-/-- Coercion `α → WithBot α` as an `OrderEmbedding`. -/
-@[simps -fullyApplied]
-protected def withBotCoe : α ↪o WithBot α where
-  toFun := .some
-  inj' := Option.some_injective _
-  map_rel_iff' := WithBot.coe_le_coe
-
-/-- Coercion `α → WithTop α` as an `OrderEmbedding`. -/
-@[simps -fullyApplied]
-protected def withTopCoe : α ↪o WithTop α :=
-  { (OrderEmbedding.withBotCoe (α := αᵒᵈ)).dual with toFun := .some }
+@[deprecated (since := "2025-08-21")] protected alias withBotCoe := WithBot.coeOrderHom
+@[deprecated (since := "2025-08-21")] alias withBotCoe_apply := WithBot.coeOrderHom_apply
+@[deprecated (since := "2025-08-21")] protected alias withTopCoe := WithTop.coeOrderHom
+@[deprecated (since := "2025-08-21")] alias withTopCoe_apply := WithTop.coeOrderHom_apply
 
 end OrderEmbedding
 

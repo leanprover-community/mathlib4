@@ -251,7 +251,6 @@ theorem inclusion_inclusion {L : S} (hHK : H ≤ K) (hKL : K ≤ L) (x : H) :
 
 @[to_additive (attr := simp)]
 theorem coe_inclusion {H K : S} {h : H ≤ K} (a : H) : (inclusion h a : G) = a := by
-  cases a
   simp only [inclusion, MonoidHom.mk'_apply]
 
 @[to_additive (attr := simp)]
@@ -567,7 +566,6 @@ def inclusion {H K : Subgroup G} (h : H ≤ K) : H →* K :=
 
 @[to_additive (attr := simp)]
 theorem coe_inclusion {H K : Subgroup G} {h : H ≤ K} (a : H) : (inclusion h a : G) = a := by
-  cases a
   simp only [inclusion, coe_mk, MonoidHom.mk'_apply]
 
 @[to_additive]

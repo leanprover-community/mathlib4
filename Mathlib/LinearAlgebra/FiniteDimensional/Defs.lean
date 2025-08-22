@@ -36,7 +36,7 @@ that all these points of view are equivalent, with the following lemmas
   finite type implies finite-dimensionality
 - `of_finite_basis` states that the existence of a basis indexed by a
   finite set implies finite-dimensionality
-- `of_finrank_pos` states that a nonzero finrank (implying non-infinite dimension)
+- `of_finrank_pos` states that a nonzero `finrank` (implying non-infinite dimension)
   implies finite-dimensionality
 - `IsNoetherian.iff_fg` states that the space is finite-dimensional if and only if
   it is noetherian (in `Mathlib/FieldTheory/Finiteness.lean`)
@@ -55,7 +55,7 @@ Preservation of finite-dimensionality and formulas for the dimension are given f
 
 You should not assume that there has been any effort to state lemmas as generally as possible.
 
-Plenty of the results hold for general fg modules or notherian modules, and they can be found in
+Plenty of the results hold for general fg modules or noetherian modules, and they can be found in
 `Mathlib/LinearAlgebra/FreeModule/Finite/Rank.lean` and `Mathlib/RingTheory/Noetherian.lean`.
 -/
 
@@ -138,8 +138,11 @@ theorem of_finrank_eq_succ {n : ℕ} (hn : finrank K V = n.succ) :
     FiniteDimensional K V :=
   Module.finite_of_finrank_eq_succ hn
 
-/-- We can infer `FiniteDimensional K V` in the presence of `[Fact (finrank K V = n + 1)]`. Declare
-this as a local instance where needed. -/
+/-- We can infer `FiniteDimensional K V` in the presence of `[Fact (finrank K V = n + 1)]`.
+Use `have : FiniteDimensional K V := .of_fact_finrank_eq_succ` when needed.
+
+This is not an instance because `n` cannot be inferred.
+-/
 theorem of_fact_finrank_eq_succ (n : ℕ) [hn : Fact (finrank K V = n + 1)] :
     FiniteDimensional K V :=
   of_finrank_eq_succ hn.out

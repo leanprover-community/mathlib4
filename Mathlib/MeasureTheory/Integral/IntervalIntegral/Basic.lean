@@ -299,7 +299,7 @@ theorem sum [ContinuousAdd ε]
     IntervalIntegrable (∑ i ∈ s, f i) μ a b :=
   ⟨integrable_finset_sum' s fun i hi => (h i hi).1, integrable_finset_sum' s fun i hi => (h i hi).2⟩
 
-/-- Finsums of interval integrable functions are interval integrable. -/
+/-- Finite sums of interval integrable functions are interval integrable. -/
 @[simp]
 protected theorem finsum [ContinuousAdd ε] [PseudoMetrizableSpace ε] {f : ι → ℝ → ε}
     (h : ∀ i, IntervalIntegrable (f i) μ a b) :

@@ -9,7 +9,7 @@ import Mathlib.LinearAlgebra.Dimension.Finrank
 import Mathlib.LinearAlgebra.InvariantBasisNumber
 
 /-!
-# Lemmas about rank and finrank in rings satisfying strong rank condition.
+# Lemmas about rank and `finrank` in rings satisfying strong rank condition.
 
 ## Main statements
 

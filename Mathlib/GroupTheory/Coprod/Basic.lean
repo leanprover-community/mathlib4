@@ -210,7 +210,7 @@ theorem induction_on {C : M ∗ N → Prop} (m : M ∗ N)
 
 Compared to `Coprod.lift`,
 this definition allows a user to provide a custom computational behavior.
-Also, it only needs `MulOneclass` assumptions while `Coprod.lift` needs a `Monoid` structure.
+Also, it only needs `MulOneClass` assumptions while `Coprod.lift` needs a `Monoid` structure.
 -/
 @[to_additive /-- Lift an additive monoid homomorphism `FreeAddMonoid (M ⊕ N) →+ P` satisfying
 additional properties to `AddMonoid.Coprod M N →+ P`.

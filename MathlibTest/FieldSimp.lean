@@ -622,7 +622,8 @@ example (m n : ℕ) (h : m ≤ n) (hm : (2:ℚ) < n - m) : (n:ℚ) / (n - m) = 1
 Check that `field_simp` works for units of a ring.
 -/
 
-variable {R : Type _} [CommRing R] (a b c d e f g : R) (u₁ u₂ : Rˣ)
+section CommRing
+variable {R : Type*} [CommRing R] (a b c d e f g : R) (u₁ u₂ : Rˣ)
 
 /--
 Check that `divp_add_divp_same` takes priority over `divp_add_divp`.
@@ -657,6 +658,8 @@ example : a /ₚ (u₁ / u₂) = a * u₂ /ₚ u₁ := by field_simp
 
 example : a /ₚ u₁ /ₚ u₂ = a /ₚ (u₂ * u₁) := by field_simp
 
+end CommRing
+
 /-! ## Algebraic structures weaker than `Field`
 
 TODO (new implementation): handle `CommGroupWithZero`, not just `Semifield`
@@ -664,10 +667,6 @@ TODO (new implementation): handle `CommGroupWithZero`, not just `Semifield`
 
 /--
 error: unsolved goals
-R : Type ?u.201754
-inst✝¹ : CommRing R
-a b c d e f g : R
-u₁ u₂ : Rˣ
 K : Type
 inst✝ : CommGroupWithZero K
 x y : K

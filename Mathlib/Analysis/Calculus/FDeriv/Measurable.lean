@@ -358,12 +358,10 @@ variable (𝕜 f)
 is Borel-measurable. -/
 theorem measurableSet_of_differentiableAt_of_isComplete {K : Set (E →L[𝕜] F)} (hK : IsComplete K) :
     MeasurableSet { x | DifferentiableAt 𝕜 f x ∧ fderiv 𝕜 f x ∈ K } := by
-  -- Porting note: was
-  -- simp [differentiable_set_eq_D K hK, D, isOpen_B.measurableSet, MeasurableSet.iInter,
-  --   MeasurableSet.iUnion]
   simp only [D, differentiable_set_eq_D K hK]
-  repeat apply_rules [MeasurableSet.iUnion, MeasurableSet.iInter] <;> intro
-  exact isOpen_B.measurableSet
+  aesop
+    (add safe apply [MeasurableSet.iUnion, MeasurableSet.iInter, isOpen_B])
+    (add unsafe IsOpen.measurableSet)
 
 variable [CompleteSpace F]
 

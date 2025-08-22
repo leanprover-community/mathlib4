@@ -188,7 +188,8 @@ namespace DirectSum
 
 /-- If `A` is graded by `ι` with degree `i` component `𝒜 i`, then it is isomorphic as
 an algebra to a direct sum of components. -/
--- Porting note: deleted [simps] and added the corresponding lemmas by hand
+-- We have to write the `@[simps]` lemmas by hand to see through the
+-- `AlgEquiv.symm (decomposeAddEquiv 𝒜).symm`.
 def decomposeAlgEquiv : A ≃ₐ[R] ⨁ i, 𝒜 i :=
   AlgEquiv.symm
     { (decomposeAddEquiv 𝒜).symm with

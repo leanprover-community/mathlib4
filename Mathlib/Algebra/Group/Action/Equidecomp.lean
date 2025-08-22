@@ -41,7 +41,7 @@ We take this as our definition as it is easier to work with. It is implemented a
 
 ## TODO
 
-* Prove that if two sets equidecompose into subsets of eachother, they are equidecomposable
+* Prove that if two sets equidecompose into subsets of each other, they are equidecomposable
   (Schroeder-Bernstein type theorem)
 * Define equidecomposability into subsets as a preorder on sets and
   prove that its induced equivalence relation is equidecomposability.

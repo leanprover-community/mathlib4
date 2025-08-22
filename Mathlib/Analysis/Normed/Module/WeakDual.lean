@@ -102,7 +102,7 @@ variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [Module R M]
 /-- For vector spaces `M`, there is a canonical map `StrongDual R M → WeakDual R M` (the "identity"
 mapping). It is a linear equivalence. -/
 def toWeakDual : StrongDual R M ≃ₗ[R] WeakDual R M :=
-  LinearEquiv.refl R (M →L[R] R)
+  LinearEquiv.refl R (StrongDual R M)
 
 @[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.Dual.toWeakDual := toWeakDual
 
