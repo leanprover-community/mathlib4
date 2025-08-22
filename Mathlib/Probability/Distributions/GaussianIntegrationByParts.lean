@@ -328,10 +328,10 @@ lemma hasDerivAt_gaussianTiltIntegrand_at0
   simpa [gaussianTiltIntegrand] using
     hasDerivAt_F_mul_tiltKernel_at0 v F x
 
-/-! ### Refined uniform bounds for the tilt kernel (replacing the coarse placeholder)
+/-! ### Uniform bounds for the tilt kernel
 
 We give standard (sharp enough) analytic inequalities used to justify dominated
-convergence.  No ad–hoc `nlinarith` placeholders remain.
+convergence.
 -/
 
 /-- Basic upper bound: the exponential tilt never exceeds `exp (|t| |x|)`. -/
