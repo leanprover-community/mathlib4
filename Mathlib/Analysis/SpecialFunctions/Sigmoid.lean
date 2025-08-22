@@ -78,7 +78,7 @@ lemma measurableEmbedding_sigmoid : MeasurableEmbedding Sigmoid :=
 
 variable (α : Type*) [MeasurableSpace α] [StandardBorelSpace α]
 
-lemma measurable_embedding : MeasurableEmbedding (Sigmoid ∘ MeasureTheory.embeddingReal α) :=
+lemma measurableEmbedding_sigmoid_comp_embeddingReal : MeasurableEmbedding (Sigmoid ∘ MeasureTheory.embeddingReal α) :=
   measurable_real_embedding.comp (MeasureTheory.measurableEmbedding_embeddingReal α)
 
 end Sigmoid
