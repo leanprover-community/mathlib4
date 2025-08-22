@@ -76,7 +76,6 @@ theorem imageToKernel_zero_left [HasKernels V] [HasZeroObject V] {w} :
 theorem imageToKernel_zero_right [HasImages V] {w} :
     imageToKernel f (0 : B ⟶ C) w =
       (imageSubobject f).arrow ≫ inv (kernelSubobject (0 : B ⟶ C)).arrow := by
-  ext
   simp
 
 section

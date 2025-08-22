@@ -139,7 +139,7 @@ theorem hom_ext {g₁ g₂ : UniversalEnvelopingAlgebra R L →ₐ[R] A}
       (g₁ : UniversalEnvelopingAlgebra R L →ₗ⁅R⁆ A).comp (ι R) =
         (g₂ : UniversalEnvelopingAlgebra R L →ₗ⁅R⁆ A).comp (ι R)) :
     g₁ = g₂ :=
-  have h' : (lift R).symm g₁ = (lift R).symm g₂ := by ext; simp [h]
+  have h' : (lift R).symm g₁ = (lift R).symm g₂ := by simp [h]
   (lift R).symm.injective h'
 
 end UniversalEnvelopingAlgebra

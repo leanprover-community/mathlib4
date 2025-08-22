@@ -31,10 +31,8 @@ def ringEquiv (e : α ≃ β) [Add β] [Mul β] : by
   exact
     { e with
       map_add' := fun x y => by
-        apply e.symm.injective
         simp [add_def]
       map_mul' := fun x y => by
-        apply e.symm.injective
         simp [mul_def] }
 
 @[simp]

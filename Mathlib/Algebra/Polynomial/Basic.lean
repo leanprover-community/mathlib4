@@ -940,18 +940,15 @@ irreducible_def erase (n : ℕ) : R[X] → R[X]
 
 @[simp]
 theorem toFinsupp_erase (p : R[X]) (n : ℕ) : toFinsupp (p.erase n) = p.toFinsupp.erase n := by
-  rcases p with ⟨⟩
   simp only [erase_def]
 
 @[simp]
 theorem ofFinsupp_erase (p : R[ℕ]) (n : ℕ) :
     (⟨p.erase n⟩ : R[X]) = (⟨p⟩ : R[X]).erase n := by
-  rcases p with ⟨⟩
   simp only [erase_def]
 
 @[simp]
 theorem support_erase (p : R[X]) (n : ℕ) : support (p.erase n) = (support p).erase n := by
-  rcases p with ⟨⟩
   simp only [support, erase_def, Finsupp.support_erase]
 
 theorem monomial_add_erase (p : R[X]) (n : ℕ) : monomial n (coeff p n) + p.erase n = p :=
