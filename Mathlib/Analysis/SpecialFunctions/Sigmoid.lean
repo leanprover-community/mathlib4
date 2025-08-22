@@ -73,7 +73,7 @@ lemma isEmbedding_sigmoid : Topology.IsEmbedding Sigmoid :=
   Sigmoid.isEmbedding_of_ordConnected (ordConnected_of_Ioo <|
     fun a _ b _ _ => range_eq ▸ Ioo_subset_Ioo a.2.1 b.2.2)
 
-lemma measurable_real_embedding : MeasurableEmbedding Sigmoid :=
+lemma measurableEmbedding_sigmoid : MeasurableEmbedding Sigmoid :=
   is_embedding.measurableEmbedding <| range_eq ▸ measurableSet_Ioo
 
 variable (α : Type*) [MeasurableSpace α] [StandardBorelSpace α]
