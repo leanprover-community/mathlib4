@@ -86,16 +86,27 @@ theorem Monotone.smul {G : Type*} [Preorder G] [Preorder P] [SMul G P]
   fun _ _ hab => (IsOrderedSMul.smul_le_smul_left _ _ (hg hab) _).trans
     (IsOrderedSMul.smul_le_smul_right _ _ (hf hab) _)
 
-/-- A vector addition is cancellative if it is pointwise injective on the left and right. -/
-class IsCancelVAdd (G P : Type*) [VAdd G P] : Prop where
+/-- A vector addition is left-cancellative if it is pointwise injective on the left. -/
+class IsLeftCancelVAdd (G P : Type*) [VAdd G P] : Prop where
   protected left_cancel : ∀ (a : G) (b c : P), a +ᵥ b = a +ᵥ c → b = c
+
+/-- A scalar multiplication is left-cancellative if it is pointwise injective on the left. -/
+@[to_additive]
+class IsLeftCancelSMul (G P : Type*) [SMul G P] : Prop where
+  protected left_cancel : ∀ (a : G) (b c : P), a • b = a • c → b = c
+
+/-- A vector addition is cancellative if it is pointwise injective on the left and right. -/
+class IsCancelVAdd (G P : Type*) [VAdd G P] : Prop extends IsLeftCancelVAdd G P where
   protected right_cancel : ∀ (a b : G) (c : P), a +ᵥ c = b +ᵥ c → a = b
 
 /-- A scalar multiplication is cancellative if it is pointwise injective on the left and right. -/
 @[to_additive]
-class IsCancelSMul (G P : Type*) [SMul G P] : Prop where
-  protected left_cancel : ∀ (a : G) (b c : P), a • b = a • c → b = c
+class IsCancelSMul (G P : Type*) [SMul G P] : Prop extends IsLeftCancelSMul G P where
   protected right_cancel : ∀ (a b : G) (c : P), a • c = b • c → a = b
+
+@[to_additive]
+instance (G P : Type*) [Group G] [MulAction G P] : IsLeftCancelSMul G P where
+  left_cancel a _ _ := (smul_left_cancel_iff a).mp
 
 /-- An ordered cancellative vector addition is an ordered vector addition that is cancellative. -/
 class IsOrderedCancelVAdd (G P : Type*) [LE G] [LE P] [VAdd G P] : Prop
@@ -259,9 +270,9 @@ instance (F : Type*) [SMul M X] [SMul N Y] [EquivLike F X Y] [OrderIsoClass F X 
 /-- `OrderedMulActionEquivClass F M X Y` states that `F` is a type of order
 isomorphisms which are equivariant with respect to actions of `M`
 This is an abbreviation of `OrderedMulActionSemiEquivClass`. -/
-@[to_additive "`OrderedMulActionEquivClass F M X Y` states that `F` is a type of
+@[to_additive /-- `OrderedMulActionEquivClass F M X Y` states that `F` is a type of
 isomorphisms which are equivariant with respect to actions of `M`
-This is an abbreviation of `OrderedMulActionSemiEquivClass`."]
+This is an abbreviation of `OrderedMulActionSemiEquivClass`. -/]
 abbrev OrderedMulActionEquivClass (F : Type*) (M : outParam Type*)
     (X Y : outParam Type*) [LE X] [SMul M X] [LE Y] [SMul M Y] [EquivLike F X Y]
     [OrderIsoClass F X Y] :=
@@ -331,7 +342,7 @@ instance [PartialOrder G] [PartialOrder G₁] [PartialOrder P₁] [SMul G P₁]
   le_of_smul_le_smul_left a b c h := by
     obtain h₁ | ⟨h₂, h₃⟩ := Prod.Lex.le_iff.mp h
     · exact Prod.Lex.le_iff.mpr <| Or.inl <| SMul.lt_of_smul_lt_smul_left h₁
-    · refine Prod.Lex.le_iff.mpr <| Or.inr <| ⟨IsCancelSMul.left_cancel _ _ _ h₂, ?_⟩
+    · refine Prod.Lex.le_iff.mpr <| Or.inr <| ⟨IsLeftCancelSMul.left_cancel _ _ _ h₂, ?_⟩
       exact IsOrderedCancelSMul.le_of_smul_le_smul_left (ofLex a).2 (ofLex b).2 (ofLex c).2 h₃
   le_of_smul_le_smul_right a b c h := by
     obtain h₁ | ⟨h₂, h₃⟩ := Prod.Lex.le_iff.mp h
@@ -382,7 +393,7 @@ instance [PartialOrder G] [PartialOrder G₁] [PartialOrder P₁] [SMul G P₁]
   le_of_smul_le_smul_left a b c h := by
     obtain h₁ | ⟨h₂, h₃⟩ := Prod.RevLex.le_iff.mp h
     · exact Prod.RevLex.le_iff.mpr <| Or.inl <| SMul.lt_of_smul_lt_smul_left h₁
-    · refine Prod.RevLex.le_iff.mpr <| Or.inr <| ⟨IsCancelSMul.left_cancel _ _ _ h₂, ?_⟩
+    · refine Prod.RevLex.le_iff.mpr <| Or.inr <| ⟨IsLeftCancelSMul.left_cancel _ _ _ h₂, ?_⟩
       exact IsOrderedCancelSMul.le_of_smul_le_smul_left
           (ofRevLex a).1 (ofRevLex b).1 (ofRevLex c).1 h₃
   le_of_smul_le_smul_right a b c h := by
@@ -393,7 +404,7 @@ instance [PartialOrder G] [PartialOrder G₁] [PartialOrder P₁] [SMul G P₁]
         (ofRevLex a).1 (ofRevLex b).1 (ofRevLex c).1 h₃
 
 /-- An ordered equivariant isomorphism given by `lexEquiv`. -/
-@[to_additive "An ordered additive-equivariant isomorphism given by `lexEquiv`."]
+@[to_additive /-- An ordered additive-equivariant isomorphism given by `lexEquiv`. -/]
 def lexEquivSMul (G G₁ P₁ P₂) [PartialOrder G] [PartialOrder G₁] [PartialOrder P₁] [SMul G P₁]
     [PartialOrder P₂] [SMul G₁ P₂] :
     (P₁ ×ₗ P₂) ≃oₑ[(Prod.RevLex.lexEquiv G G₁).toEquiv] (P₂ ×ᵣ P₁) where

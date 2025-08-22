@@ -6,6 +6,7 @@ Authors: Aaron Anderson, Scott Carnahan
 import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Algebra.GroupWithZero.Regular
 import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Finset.MulAntidiagonal
 import Mathlib.Data.Finset.SMulAntidiagonal
 import Mathlib.GroupTheory.GroupAction.Ring
@@ -345,7 +346,7 @@ theorem coeff_single_smul_vadd [MulZeroClass R] [SMulWithZero R V] {r : R} {x : 
     simp only [notMem_empty, not_and, Set.mem_singleton_iff,
       mem_vaddAntidiagonal, iff_false]
     rintro rfl h2 h1
-    rw [IsCancelVAdd.left_cancel a1 a2 a h1] at h2
+    rw [IsLeftCancelVAdd.left_cancel a1 a2 a h1] at h2
     exact h2 hx
   trans ∑ ij ∈ {(b, a)},
     (HahnSeries.single b r).coeff ij.fst • ((of R).symm x).coeff ij.snd
@@ -354,7 +355,7 @@ theorem coeff_single_smul_vadd [MulZeroClass R] [SMulWithZero R V] {r : R} {x : 
     simp only [Set.mem_singleton_iff, Prod.mk_inj, mem_vaddAntidiagonal, mem_singleton]
     constructor
     · rintro ⟨rfl, _, h1⟩
-      exact ⟨rfl, IsCancelVAdd.left_cancel a1 a2 a h1⟩
+      exact ⟨rfl, IsLeftCancelVAdd.left_cancel a1 a2 a h1⟩
     · rintro ⟨rfl, rfl⟩
       exact ⟨rfl, by exact hx, rfl⟩
   · simp
@@ -1404,6 +1405,49 @@ instance [Nontrivial Γ] [Nontrivial R] : Nontrivial (Subalgebra R (HahnSeries �
       refine ⟨a, ?_⟩
       rw [coeff_single_same, algebraMap_apply, C_apply, coeff_single_of_ne ha]
       exact zero_ne_one⟩⟩
+
+/-- An algebra homomorphism from `AddMonoidAlgebra` -/
+@[simps]
+def ofAddMonoidAlgebra [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] :
+    AddMonoidAlgebra R Γ →ₐ[R] HahnSeries Γ R where
+  toFun := ofFinsupp
+  map_one' := by
+    ext g
+    by_cases h : g = 0
+    · simp [h, AddMonoidAlgebra.one_def]
+    · simpa [h] using Finsupp.single_eq_of_ne fun a ↦ h a.symm
+  map_mul' x y := by
+      ext g
+      rw [coeff_mul, AddMonoidAlgebra.mul_def]
+      simp only [Finsupp.sum, coeff_ofFinsupp]
+      rw [sum_sigma', sum_apply']
+      refine (Finset.sum_of_injOn (fun i ↦ ⟨i.1, i.2⟩)
+        (fun _ _ _ _ _ ↦ Prod.ext_iff.mpr (by simp_all)) ?_ ?_ ?_).symm
+      · intro i hi
+        simp only [coe_sigma, Set.mem_sigma_iff, mem_coe, Finsupp.mem_support_iff]
+        simp only [mem_coe, mem_addAntidiagonal, mem_support, coeff_ofFinsupp] at hi
+        exact ⟨hi.1, hi.2.1⟩
+      · intro i hi hin
+        rw [Finsupp.single_apply_eq_zero]
+        intro hg
+        simp only [Set.mem_image, mem_coe, mem_addAntidiagonal, mem_support, coeff_ofFinsupp, ne_eq,
+          Prod.exists, not_exists, not_and, and_imp] at hin
+        have := hin i.1 i.2
+        simp only [Sigma.eta, not_true_eq_false, imp_false] at this
+        simp only [mem_sigma, Finsupp.mem_support_iff, ne_eq] at hi
+        exact (this hi.1 hi.2 hg.symm).elim
+      · intro i hi
+        rw [← AddMonoidAlgebra.single_mul_single, AddMonoidAlgebra.mul_def]
+        simp only [mul_zero, Finsupp.single_zero, Finsupp.sum_single_index, zero_mul]
+        rw [mem_addAntidiagonal] at hi
+        rw [hi.2.2, Finsupp.single_eq_same]
+  map_zero' := rfl
+  map_add' x y := by simp [← ofFinsuppLinearMap_apply R (x + y), LinearMap.map_add]
+  commutes' r := by
+    ext g
+    by_cases h : g = 0
+    · simp [h, algebraMap_apply]
+    · simp [Finsupp.single_eq_of_ne fun a ↦ h a.symm, algebraMap_apply, coeff_single_of_ne h]
 
 section Domain
 

@@ -556,6 +556,7 @@ section Finsupp
 
 variable (R) in
 /-- `ofFinsupp` as a linear map. -/
+@[simps]
 def ofFinsuppLinearMap : (Γ →₀ V) →ₗ[R] HahnSeries Γ V where
   toFun := ofFinsupp
   map_add' _ _ := by
