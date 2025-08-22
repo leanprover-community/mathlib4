@@ -73,11 +73,9 @@ lemma range_eq : range Sigmoid = Ioo 0 1 := by
       simp only [add_neg_cancel_left, inv_inv]
     exact exp_log (lt_neg_add_iff_lt.mpr <| one_lt_inv_iff₀.mpr hx)
 
-lemma is_embedding : Topology.IsEmbedding Sigmoid := by
-  refine Sigmoid.isEmbedding_of_ordConnected (ordConnected_of_Ioo ?_)
-  intro a ha b hb hab
-  rw [range_eq]
-  exact Ioo_subset_Ioo a.2.1 b.2.2
+lemma is_embedding : Topology.IsEmbedding Sigmoid :=
+  Sigmoid.isEmbedding_of_ordConnected (ordConnected_of_Ioo <|
+    fun a _ b _ _ => range_eq ▸ Ioo_subset_Ioo a.2.1 b.2.2)
 
 lemma measurable_real_embedding : MeasurableEmbedding Sigmoid :=
   is_embedding.measurableEmbedding <| range_eq ▸ measurableSet_Ioo
