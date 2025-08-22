@@ -261,15 +261,7 @@ private lemma kr_bound (hk : k < r + 1) :
   apply (Nat.mul_le_mul_right _ (Nat.div_mul_le_self ..)).trans
   nlinarith
 
-variable [DecidableRel G.Adj]
-
-/-- Transform a lower bound on non-adjacencies into an upper bound on adjacencies. -/
-private lemma card_adj_le_of_le_card_not_adj (hx : i ≤ #{z ∈ s | ¬ G.Adj x z}) :
-    #{z ∈ s | G.Adj x z} ≤ #s - i := by grind [filter_card_add_filter_neg_card_eq_card]
-
-variable [DecidableEq α]
-
-private lemma eq_of_card_le_two_of_ne (hab : a ≠ b) (had : a ≠ d) (hbc : b ≠ c)
+private lemma eq_of_card_le_two_of_ne [DecidableEq α] (hab : a ≠ b) (had : a ≠ d) (hbc : b ≠ c)
     (hc2 : #{a, b, c, d} ≤ 2) : c = a ∧ d = b := by
   by_contra! hf
   apply hc2.not_gt <| two_lt_card_iff.2 _
@@ -278,8 +270,9 @@ private lemma eq_of_card_le_two_of_ne (hab : a ≠ b) (had : a ≠ d) (hbc : b �
 /--
 Given lower bounds on non-adjacencies from `W` into `X`,`Xᶜ` we can bound the degree sum over `W`.
 -/
-private lemma sum_degree_le_of_le_not_adj [Fintype α] {W X : Finset α}
-    (hx : ∀ x ∈ X, i ≤ #{z ∈ W | ¬ G.Adj x z}) (hxc : ∀ y ∈ Xᶜ, j ≤ #{z ∈ W | ¬ G.Adj y z}) :
+private lemma sum_degree_le_of_le_not_adj [Fintype α] [DecidableEq α] [DecidableRel G.Adj]
+    {W X : Finset α} (hx : ∀ x ∈ X, i ≤ #{z ∈ W | ¬ G.Adj x z})
+    (hxc : ∀ y ∈ Xᶜ, j ≤ #{z ∈ W | ¬ G.Adj y z}) :
     ∑ w ∈ W, G.degree w ≤ #X * (#W - i) + #Xᶜ * (#W - j) := calc
   _ = ∑ v, #(G.neighborFinset v ∩ W) := by
     simp_rw [degree, card_eq_sum_ones]
@@ -287,7 +280,7 @@ private lemma sum_degree_le_of_le_not_adj [Fintype α] {W X : Finset α}
   _ ≤ _ := by
     simp_rw [← union_compl X, sum_union disjoint_compl_right (s₁ := X), neighborFinset_eq_filter,
              filter_inter, univ_inter, card_eq_sum_ones X, card_eq_sum_ones Xᶜ, sum_mul, one_mul]
-    gcongr <;> exact card_adj_le_of_le_card_not_adj (by simp [*])
+    gcongr <;> grind [filter_card_add_filter_neg_card_eq_card]
 
 end Counting
 
