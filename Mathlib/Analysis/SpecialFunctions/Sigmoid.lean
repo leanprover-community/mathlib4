@@ -30,6 +30,7 @@ sigmoid, embedding, measurable embedding, topological embedding
 
 open unitInterval Real Set Function
 
+/-- The Sigmoid function as an `OrderEmbedding` from `ℝ` to `I`. -/
 noncomputable def Sigmoid : ℝ ↪o I where
   toFun a := by
     refine ⟨(1 + exp (-a))⁻¹, ?_⟩
