@@ -269,11 +269,11 @@ theorem sum_range_pow (n p : ℕ) :
   have hne : ∀ m : ℕ, (m ! : ℚ) ≠ 0 := fun m => mod_cast factorial_ne_zero m
   -- compute the Cauchy product of two power series
   have h_cauchy :
-    ((mk fun p => bernoulli p / p !) * mk fun q => coeff ℚ (q + 1) (exp ℚ ^ n)) =
+    ((mk fun p => bernoulli p / p !) * mk fun q => coeff (q + 1) (exp ℚ ^ n)) =
       mk fun p => ∑ i ∈ range (p + 1),
           bernoulli i * (p + 1).choose i * (n : ℚ) ^ (p + 1 - i) / (p + 1)! := by
     ext q : 1
-    let f a b := bernoulli a / a ! * coeff ℚ (b + 1) (exp ℚ ^ n)
+    let f a b := bernoulli a / a ! * coeff (b + 1) (exp ℚ ^ n)
     -- key step: use `PowerSeries.coeff_mul` and then rewrite sums
     simp only [f, coeff_mul, coeff_mk, sum_antidiagonal_eq_sum_range_succ f]
     apply sum_congr rfl
@@ -307,8 +307,8 @@ theorem sum_range_pow (n p : ℕ) :
       simp only [exp, PowerSeries.ext_iff, Ne, not_forall]
       use 1
       simp
-    have h_r : exp ℚ ^ n - 1 = X * mk fun p => coeff ℚ (p + 1) (exp ℚ ^ n) := by
-      have h_const : C ℚ (constantCoeff ℚ (exp ℚ ^ n)) = 1 := by simp
+    have h_r : exp ℚ ^ n - 1 = X * mk fun p => coeff (p + 1) (exp ℚ ^ n) := by
+      have h_const : C (constantCoeff (exp ℚ ^ n)) = 1 := by simp
       rw [← h_const, sub_const_eq_X_mul_shift]
     -- key step: a chain of equalities of power series
     rw [← mul_right_inj' hexp, mul_comm]

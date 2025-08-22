@@ -602,7 +602,7 @@ instance MulOpposite.instNormedCommRing : NormedCommRing αᵐᵒᵖ where
 theorem IsPowMul.restriction {R S : Type*} [CommRing R] [Ring S] [Algebra R S]
     (A : Subalgebra R S) {f : S → ℝ} (hf_pm : IsPowMul f) :
     IsPowMul fun x : A => f x.val := fun x n hn => by
-  simpa [SubsemiringClass.coe_pow] using hf_pm (↑x) hn
+  simpa using hf_pm (↑x) hn
 
 end NormedCommRing
 
