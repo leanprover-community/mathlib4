@@ -209,6 +209,10 @@ theorem ker_eq_bot {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊥ ↔ Injective 
   rw [← ker_eq_bot, ker_restrict hf, ← ker_domRestrict, ker_eq_bot, injective_domRestrict_iff,
     disjoint_iff]
 
+lemma injOn_iff_ker_inf_bot {f : M →ₛₗ[τ₁₂] M₂} {p : Submodule R M} :
+    Set.InjOn f p ↔ p ⊓ LinearMap.ker f = ⊥ := by
+  simp [Set.injOn_iff_injective, ← LinearMap.injective_domRestrict_iff, coe_domRestrict]
+
 end Ring
 
 section Semifield
