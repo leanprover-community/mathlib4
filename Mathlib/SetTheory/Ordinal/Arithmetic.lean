@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Nat.SuccPred
-import Mathlib.Order.IsNormal
 import Mathlib.Order.SuccPred.InitialSeg
 import Mathlib.SetTheory.Ordinal.Basic
 

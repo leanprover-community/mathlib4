@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Algebra.Order.SuccPred
 import Mathlib.Data.Sum.Order
+import Mathlib.Order.IsNormal
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Tactic.PPWithUniv
 
@@ -1042,6 +1043,9 @@ theorem card_ord (c) : (ord c).card = c :=
 theorem card_surjective : Function.Surjective card :=
   fun c ↦ ⟨_, card_ord c⟩
 
+theorem bddAbove_ord_image_iff {s : Set Cardinal} : BddAbove (ord '' s) ↔ BddAbove s :=
+  gc_ord_card.bddAbove_l_image
+
 /-- Galois coinsertion between `Cardinal.ord` and `Ordinal.card`. -/
 def gciOrdCard : GaloisCoinsertion ord card :=
   gc_ord_card.toGaloisCoinsertion fun c => c.card_ord.le
@@ -1097,6 +1101,14 @@ theorem ord_ofNat (n : ℕ) [n.AtLeastTwo] : ord ofNat(n) = OfNat.ofNat n :=
 
 @[simp]
 theorem ord_one : ord 1 = 1 := by simpa using ord_nat 1
+
+theorem isNormal_ord : Order.IsNormal ord where
+  strictMono := ord_strictMono
+  mem_lowerBounds_upperBounds_of_isSuccLimit := by
+    intro a ha
+    simp_rw [lowerBounds, upperBounds, mem_setOf, forall_mem_image, ord_le]
+    refine fun b H ↦ le_of_forall_lt fun c hc ↦ ?_
+    simpa using H (ha.succ_lt hc)
 
 @[simp]
 theorem ord_aleph0 : ord.{u} ℵ₀ = ω := by
