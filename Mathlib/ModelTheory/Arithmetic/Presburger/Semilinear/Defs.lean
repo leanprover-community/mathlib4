@@ -9,8 +9,8 @@ import Mathlib.LinearAlgebra.LinearIndependent.Defs
 /-!
 # Linear and semilinear sets
 
-This file defines linear and semilinear sets. In an `AddCommMonoid`, a linear set is a finitely
-generated affine additive submonoid, and a semilinear set is a finite union of linear sets.
+This file defines linear and semilinear sets. In an `AddCommMonoid`, a linear set is a coset of a
+finitely generated additive submonoid, and a semilinear set is a finite union of linear sets.
 
 We prove that semilinear sets are closed under union, projection, set addition and additive closure.
 We also prove that any semilinear set can be decomposed into a finite union of proper linear sets,
@@ -18,7 +18,7 @@ which are linear sets with linear independent submonoid generators (periods).
 
 ## Main Definitions
 
-- `Set.Linear`: a set is linear if is a finitely generated affine additive submonoid.
+- `Set.Linear`: a set is linear if is a coset of a finitely generated additive submonoid.
 - `Set.Semilinear`: a set is semilinear if it is a finite union of linear sets.
 - `Set.ProperLinear`: a linear set is proper if its submonoid generators (periods) are linear
   independent.
@@ -45,7 +45,7 @@ variable {α : Type u} {β : Type v} [AddCommMonoid α] [AddCommMonoid β]
 
 open Pointwise AddSubmonoid
 
-/-- A set is linear if is a finitely generated affine additive submonoid. -/
+/-- A set is linear if is a coset of a finitely generated additive submonoid. -/
 def Linear (s : Set α) :=
   ∃ (a : α) (t : Finset α), s = a +ᵥ (closure (t : Set α) : Set α)
 
@@ -266,7 +266,7 @@ theorem ProperSemilinear.sUnion {S : Finset (Set α)}
   | empty => simpa using empty
   | insert s S _ ih =>
     simp_rw [Finset.mem_insert, forall_eq_or_imp] at hS
-    simpa using union hS.1 (ih hS.2)
+    simpa using hS.1.union (ih hS.2)
 
 theorem ProperSemilinear.biUnion {s : Finset ι} {t : ι → Set α}
     (ht : ∀ i ∈ s, (t i).ProperSemilinear) : (⋃ i ∈ s, t i).ProperSemilinear := by
