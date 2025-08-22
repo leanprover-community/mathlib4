@@ -471,6 +471,14 @@ lemma linearIndependent_algHom_toLinearMap' (K M L) [CommRing K]
     LinearIndependent K (AlgHom.toLinearMap : (M →ₐ[K] L) → M →ₗ[K] L) :=
   (linearIndependent_algHom_toLinearMap K M L).restrict_scalars' K
 
+lemma LinearMap.bijective_of_linearIndependent_of_span_eq_top {N : Type*} [AddCommGroup N]
+    [Module R N] {f : M →ₗ[R] N} {ι : Type*} {v : ι → M} (hv : Submodule.span R (Set.range v) = ⊤)
+    (hli : LinearIndependent R (f ∘ v)) (hsp : Submodule.span R (Set.range <| f ∘ v) = ⊤) :
+    Function.Bijective f := by
+  refine ⟨LinearMap.injective_of_linearIndependent hv hli, ?_⟩
+  rw [Set.range_comp, ← Submodule.map_span, hv, Submodule.map_top] at hsp
+  rwa [← range_eq_top]
+
 end Module
 
 /-!
