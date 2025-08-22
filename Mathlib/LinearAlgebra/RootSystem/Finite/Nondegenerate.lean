@@ -196,7 +196,7 @@ private lemma finrank_corootSpan_le' :
   rw [← finrank_rootSpan_map_polarization_eq_finrank_corootSpan]
   exact Submodule.finrank_map_le P.Polarization (P.rootSpan R)
 
-/-- Equality of finranks when the base is a domain. -/
+/-- Equality of `finrank`s when the base is a domain. -/
 lemma finrank_corootSpan_eq' :
     finrank R (P.corootSpan R) = finrank R (P.rootSpan R) :=
   le_antisymm P.finrank_corootSpan_le' P.flip.finrank_corootSpan_le'
