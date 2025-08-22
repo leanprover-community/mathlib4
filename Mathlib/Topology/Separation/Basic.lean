@@ -705,17 +705,20 @@ theorem continuousWithinAt_congr_set' [TopologicalSpace Y] [T1Space X]
   rw [← continuousWithinAt_insert_self (s := s), ← continuousWithinAt_insert_self (s := t)]
   exact continuousWithinAt_congr_set (eventuallyEq_insert h)
 
-theorem ContinousWithinAt.eq_const_of_mem_closure [TopologicalSpace Y] [T1Space Y]
+theorem ContinuousWithinAt.eq_const_of_mem_closure [TopologicalSpace Y] [T1Space Y]
     {f : X → Y} {s : Set X} {x : X} {c : Y} (h : ContinuousWithinAt f s x) (hx : x ∈ closure s)
     (ht : ∀ y ∈ s, f y = c) : f x = c := by
   rw [← Set.mem_singleton_iff, ← closure_singleton]
   exact h.mem_closure hx ht
 
+@[deprecated (since := "2025-08-22")] alias ContinousWithinAt.eq_const_of_mem_closure :=
+  ContinuousWithinAt.eq_const_of_mem_closure
+
 theorem ContinuousWithinAt.eqOn_const_closure [TopologicalSpace Y] [T1Space Y]
     {f : X → Y} {s : Set X} {c : Y} (h : ∀ x ∈ closure s, ContinuousWithinAt f s x)
     (ht : s.EqOn f (fun _ ↦ c)) : (closure s).EqOn f (fun _ ↦ c) := by
   intro x hx
-  apply ContinousWithinAt.eq_const_of_mem_closure (h x hx) hx ht
+  apply ContinuousWithinAt.eq_const_of_mem_closure (h x hx) hx ht
 
 /-- To prove a function to a `T1Space` is continuous at some point `x`, it suffices to prove that
 `f` admits *some* limit at `x`. -/
