@@ -81,7 +81,7 @@ theorem colimitLimitToLimitColimit_injective :
     -- and they are equations in a filtered colimit,
     -- so for each `j` we have some place `k j` to the right of both `kx` and `ky`
     simp? [colimit_eq_iff] at h says
-      simp only [Functor.comp_obj, colim_obj, ι_colimitLimitToLimitColimit_π_apply,
+      simp only [comp_obj, colim_obj, ι_colimitLimitToLimitColimit_π_apply,
         colimit_eq_iff, curry_obj_obj_obj, curry_obj_obj_map] at h
     let k j := (h j).choose
     let f : ∀ j, kx ⟶ k j := fun j => (h j).choose_spec.choose
