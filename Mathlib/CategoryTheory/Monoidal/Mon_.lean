@@ -362,7 +362,7 @@ end Monoidal
 
 variable (C D) in
 /-- `mapMon` is functorial in the lax monoidal functor. -/
-@[simps] -- Porting note: added this, not sure how it worked previously without.
+@[simps]
 def mapMonFunctor : LaxMonoidalFunctor C D ⥤ Mon_ C ⥤ Mon_ D where
   obj F := F.mapMon
   map α := { app A := .mk' (α.hom.app A.X) }

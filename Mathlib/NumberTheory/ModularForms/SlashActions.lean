@@ -184,7 +184,7 @@ theorem is_SL_invariant_const (x : ℂ) :
 theorem is_invariant_one : (1 : ℍ → ℂ) ∣[(0 : ℤ)] γ = 1 :=
   is_SL_invariant_const _
 
-/-- Variant of `is_invariant_one` with the left hand side in simp normal form. -/
+/-- Variant of `is_invariant_one` with the left-hand side in simp normal form. -/
 @[simp]
 theorem is_invariant_one' : (1 : ℍ → ℂ) ∣[(0 : ℤ)] (γ : GL (Fin 2) ℝ) = 1 := by
   simpa using is_invariant_one
