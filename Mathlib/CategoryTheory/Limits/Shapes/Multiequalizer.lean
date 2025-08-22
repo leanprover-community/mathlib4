@@ -232,7 +232,7 @@ def multicospan : WalkingMulticospan J ⥤ C where
   map_id := by
     rintro (_ | _) <;> rfl
   map_comp := by
-    rintro (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) <;> aesop_cat
+    rintro (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) <;> cat_disch
 
 variable [HasProduct I.left] [HasProduct I.right]
 
@@ -280,7 +280,7 @@ def multispan : WalkingMultispan J ⥤ C where
   map_id := by
     rintro (_ | _) <;> rfl
   map_comp := by
-    rintro (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) <;> aesop_cat
+    rintro (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) <;> cat_disch
 
 @[simp]
 theorem multispan_obj_left (a) : I.multispan.obj (WalkingMultispan.left a) = I.left a :=
@@ -318,7 +318,7 @@ theorem ι_sndSigmaMap (b) : Sigma.ι I.left b ≫ I.sndSigmaMap = I.snd b ≫ S
 
 /--
 Taking the multicoequalizer over the multispan index is equivalent to taking the coequalizer over
-the two morphsims `∐ I.left ⇉ ∐ I.right`. This is the diagram of the latter.
+the two morphisms `∐ I.left ⇉ ∐ I.right`. This is the diagram of the latter.
 -/
 protected noncomputable abbrev parallelPairDiagram :=
   parallelPair I.fstSigmaMap I.sndSigmaMap
@@ -683,7 +683,7 @@ variable {I} in
 /-- Constructor for isomorphisms between multicoforks. -/
 @[simps!]
 def ext {K K' : Multicofork I}
-    (e : K.pt ≅ K'.pt) (h : ∀ (i : J.R), K.π i ≫ e.hom = K'.π i := by aesop_cat) :
+    (e : K.pt ≅ K'.pt) (h : ∀ (i : J.R), K.π i ≫ e.hom = K'.π i := by cat_disch) :
     K ≅ K' :=
   Cocones.ext e (by rintro (i | j) <;> simp [h])
 

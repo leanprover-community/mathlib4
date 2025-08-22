@@ -3,10 +3,7 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.GeomSum
-import Mathlib.Data.Nat.Digits.Lemmas
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.RingTheory.Multiplicity
+import Mathlib.Data.Nat.Choose.Factorization
 
 /-!
 # Natural number multiplicity
@@ -37,15 +34,16 @@ coefficients.
   naturals. Avoids having to provide `p ≠ 1` and other trivialities, along with translating between
   `Prime` and `Nat.Prime`.
 
+## TODO
+
+Derive results from the corresponding ones `Mathlib.Data.Nat.Factorization.Multiplicity`
+
 ## Tags
 
 Legendre, p-adic
 -/
 
-
-open Finset Nat
-
-open Nat
+open Finset
 
 namespace Nat
 
@@ -180,18 +178,6 @@ theorem emultiplicity_factorial_le_div_pred {p : ℕ} (hp : p.Prime) (n : ℕ) :
   rw [hp.emultiplicity_factorial (lt_succ_self _)]
   apply WithTop.coe_mono
   exact Nat.geom_sum_Ico_le hp.two_le _ _
-
-theorem multiplicity_choose_aux {p n b k : ℕ} (hp : p.Prime) (hkn : k ≤ n) :
-    ∑ i ∈ Finset.Ico 1 b, n / p ^ i =
-      ((∑ i ∈ Finset.Ico 1 b, k / p ^ i) + ∑ i ∈ Finset.Ico 1 b, (n - k) / p ^ i) +
-        #{i ∈ Ico 1 b | p ^ i ≤ k % p ^ i + (n - k) % p ^ i} :=
-  calc
-    ∑ i ∈ Finset.Ico 1 b, n / p ^ i = ∑ i ∈ Finset.Ico 1 b, (k + (n - k)) / p ^ i := by
-      simp only [add_tsub_cancel_of_le hkn]
-    _ = ∑ i ∈ Finset.Ico 1 b,
-          (k / p ^ i + (n - k) / p ^ i + if p ^ i ≤ k % p ^ i + (n - k) % p ^ i then 1 else 0) := by
-      simp only [Nat.add_div (pow_pos hp.pos _)]
-    _ = _ := by simp [sum_add_distrib, sum_boole]
 
 /-- The multiplicity of `p` in `choose (n + k) k` is the number of carries when `k` and `n`
   are added in base `p`. The set is expressed by filtering `Ico 1 b` where `b`

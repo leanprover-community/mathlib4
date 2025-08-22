@@ -58,7 +58,7 @@ variable {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
 variable (M : ModuleCat.{v} S)
 
 /-- Any `S`-module M is also an `R`-module via a ring homomorphism `f : R ⟶ S` by defining
-    `r • m := f r • m` (`Module.compHom`). This is called restriction of scalars. -/
+`r • m := f r • m` (`Module.compHom`). This is called restriction of scalars. -/
 def obj' : ModuleCat R :=
   let _ := Module.compHom M f
   of R M
@@ -122,7 +122,7 @@ instance (priority := 100) sMulCommClass_mk {R : Type u₁} {S : Type u₂} [Rin
     haveI : SMul R M := (RestrictScalars.obj' f (ModuleCat.of S M)).isModule.toSMul
     SMulCommClass R S M :=
   @SMulCommClass.mk R S M (_) _
-   fun r s m => (by simp [← mul_smul, mul_comm] : f r • s • m = s • f r • m)
+    fun r s m => (by simp [← mul_smul, mul_comm] : f r • s • m = s • f r • m)
 
 /-- Semilinear maps `M →ₛₗ[f] N` identify to
 morphisms `M ⟶ (ModuleCat.restrictScalars f).obj N`. -/
@@ -290,10 +290,12 @@ section ModuleCat.Unbundled
 
 variable (M : Type v) [AddCommMonoid M] [Module R M]
 
--- This notation is necessary because we need to reason about `s ⊗ₜ m` where `s : S` and `m : M`;
--- without this notation, one needs to work with `s : (restrictScalars f).obj ⟨S⟩`.
-scoped[ChangeOfRings]
-  notation s "⊗ₜ[" R "," f "]" m => @TensorProduct.tmul R _ _ _ _ _ (Module.compHom _ f) _ s m
+/-- Tensor product of elements along a base change.
+
+This notation is necessary because we need to reason about `s ⊗ₜ m` where `s : S` and `m : M`;
+without this notation, one needs to work with `s : (restrictScalars f).obj ⟨S⟩`. -/
+scoped[ChangeOfRings] notation:100 s:100 " ⊗ₜ[" R "," f "] " m:101 =>
+  @TensorProduct.tmul R _ _ _ _ _ (Module.compHom _ f) _ s m
 
 end Unbundled
 
@@ -345,12 +347,12 @@ variable {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* 
 
 @[simp]
 protected theorem smul_tmul {M : ModuleCat.{v} R} (s s' : S) (m : M) :
-    s • (s'⊗ₜ[R,f]m : (extendScalars f).obj M) = (s * s')⊗ₜ[R,f]m :=
+    s • (s' ⊗ₜ[R,f] m : (extendScalars f).obj M) = (s * s') ⊗ₜ[R,f] m :=
   rfl
 
 @[simp]
 theorem map_tmul {M M' : ModuleCat.{v} R} (g : M ⟶ M') (s : S) (m : M) :
-    (extendScalars f).map g (s⊗ₜ[R,f]m) = s⊗ₜ[R,f]g m :=
+    (extendScalars f).map g (s ⊗ₜ[R,f] m) = s ⊗ₜ[R,f] g m :=
   rfl
 
 variable {f}
@@ -554,7 +556,7 @@ The natural transformation from identity functor to the composition of restricti
 of scalars.
 -/
 @[simps]
-protected def unit' : 𝟭 (ModuleCat S) ⟶ restrictScalars f ⋙ coextendScalars f where
+protected noncomputable def unit' : 𝟭 (ModuleCat S) ⟶ restrictScalars f ⋙ coextendScalars f where
   app Y := ofHom (app' f Y)
   naturality Y Y' g :=
     hom_ext <| LinearMap.ext fun y : Y => LinearMap.ext fun s : S => by
@@ -633,7 +635,7 @@ def HomEquiv.toRestrictScalars {X Y} (g : (extendScalars f).obj X ⟶ Y) :
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
   -- This suggests `restrictScalars` needs to be redesigned.
   ofHom (Y := (restrictScalars f).obj Y)
-  { toFun := fun x => g <| (1 : S)⊗ₜ[R,f]x
+  { toFun := fun x => g <| (1 : S) ⊗ₜ[R,f] x
     map_add' := fun _ _ => by dsimp; rw [tmul_add, map_add]
     map_smul' := fun r s => by
       letI : Module R S := Module.compHom S f
@@ -734,7 +736,7 @@ def Unit.map {X} : X ⟶ (extendScalars f ⋙ restrictScalars f).obj X :=
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
   -- This suggests `restrictScalars` needs to be redesigned.
   ofHom (Y := (extendScalars f ⋙ restrictScalars f).obj X)
-  { toFun := fun x => (1 : S)⊗ₜ[R,f]x
+  { toFun := fun x => (1 : S) ⊗ₜ[R,f] x
     map_add' := fun x x' => by dsimp; rw [TensorProduct.tmul_add]
     map_smul' := fun r x => by
       letI m1 : Module R S := Module.compHom S f

@@ -574,6 +574,12 @@ theorem map_prod_of_subset_primeFactors [CommMonoidWithZero R] {f : ArithmeticFu
     f (∏ a ∈ t, a) = ∏ a ∈ t, f a :=
   map_prod_of_prime h_mult t fun _ a => prime_of_mem_primeFactors (ht a)
 
+theorem prod_primeFactors [CommMonoidWithZero R] {f : ArithmeticFunction R}
+    (h_mult : f.IsMultiplicative) {l : ℕ} (hl : Squarefree l) :
+    ∏ a ∈ l.primeFactors, f a = f l := by
+  rw [← h_mult.map_prod_of_subset_primeFactors l _ Finset.Subset.rfl,
+    prod_primeFactors_of_squarefree hl]
+
 theorem map_div_of_coprime [GroupWithZero R] {f : ArithmeticFunction R}
     (hf : IsMultiplicative f) {l d : ℕ} (hdl : d ∣ l) (hl : (l / d).Coprime d) (hd : f d ≠ 0) :
     f (l / d) = f l / f d := by
@@ -995,7 +1001,7 @@ theorem moebius_eq_or (n : ℕ) : μ n = 0 ∨ μ n = 1 ∨ μ n = -1 := by
 
 theorem moebius_ne_zero_iff_eq_or {n : ℕ} : μ n ≠ 0 ↔ μ n = 1 ∨ μ n = -1 := by
   have := moebius_eq_or n
-  aesop
+  omega
 
 theorem moebius_sq_eq_one_of_squarefree {l : ℕ} (hl : Squarefree l) : μ l ^ 2 = 1 := by
   rw [moebius_apply_of_squarefree hl, ← pow_mul, mul_comm, pow_mul, neg_one_sq, one_pow]
@@ -1008,7 +1014,7 @@ theorem moebius_sq {n : ℕ} :
   split_ifs with h
   · exact moebius_sq_eq_one_of_squarefree h
   · simp only [moebius_eq_zero_of_not_squarefree h,
-      zero_pow (show 2 ≠ 0 by norm_num)]
+      zero_pow (show 2 ≠ 0 by simp)]
 
 theorem abs_moebius {n : ℕ} :
     |μ n| = if Squarefree n then 1 else 0 := by
