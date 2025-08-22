@@ -251,6 +251,19 @@ theorem trace_single_eq_same : trace (single i i c) = c := by
 @[deprecated (since := "2025-05-05")]
 alias StdBasisMatrix.trace_eq := trace_single_eq_same
 
+theorem trace_single_mul [NonUnitalNonAssocSemiring R] [Fintype m]
+    (a : R) (i : n) (j : m) (x : Matrix m n R) :
+    (single i j a * x).trace = a • x j i := by
+  simp [trace, mul_apply, single, ite_and]
+
 end single
+
+/-- Matrices `A` and `B` are equal iff `(x * A).trace = (x * B).trace` for all `x`. -/
+theorem ext_iff_trace_mul_eq [NonAssocSemiring R] (A B : Matrix m n R) :
+    A = B ↔ ∀ x, (x * A).trace = (x * B).trace := by
+  refine ⟨fun h x => h ▸ rfl, fun h => ?_⟩
+  ext i j
+  classical
+  simpa [trace_single_mul] using h (single j i (1 : R))
 
 end Matrix
