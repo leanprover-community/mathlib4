@@ -227,8 +227,7 @@ theorem div_lt_div_iff_mul_lt_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d
   simp only [lt_iff_le_not_ge]
   apply and_congr
   · simp [div_def', Rat.divInt_le_divInt b_pos d_pos]
-  · apply not_congr
-    simp [div_def', Rat.divInt_le_divInt d_pos b_pos]
+  · simp [div_def', Rat.divInt_le_divInt d_pos b_pos]
 
 theorem lt_one_iff_num_lt_denom {q : ℚ} : q < 1 ↔ q.num < q.den := by simp [Rat.lt_def]
 

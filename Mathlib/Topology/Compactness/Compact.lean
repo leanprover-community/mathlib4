@@ -998,7 +998,7 @@ lemma IsCompact.sigma_exists_finite_sigma_eq {X : ι → Type*} [∀ i, Topologi
     simp only [Set.mem_sigma_iff, Finset.mem_coe, Set.mem_preimage, and_iff_right_iff_imp]
     intro hx
     obtain ⟨i, hi⟩ := Set.mem_iUnion.mp (hs hx)
-    aesop
+    simp_all
 
 /-- The coproduct of the cocompact filters on two topological spaces is the cocompact filter on
 their product. -/
