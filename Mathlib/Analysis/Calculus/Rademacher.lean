@@ -233,7 +233,7 @@ theorem ae_lineDeriv_sum_eq
   suffices B : ∀ i ∈ s, Integrable (fun x ↦ a i * (fderiv ℝ g x (v i) * f x)) μ by
     simp_rw [Finset.sum_mul, mul_assoc, integral_finset_sum s B, integral_const_mul]
   intro i _hi
-  let L : (StrongDual ℝ E) → ℝ := fun f ↦ f (v i)
+  let L : StrongDual ℝ E → ℝ := fun f ↦ f (v i)
   change Integrable (fun x ↦ a i * ((L ∘ (fderiv ℝ g)) x * f x)) μ
   refine (Continuous.integrable_of_hasCompactSupport ?_ ?_).const_mul _
   · exact ((g_smooth.continuous_fderiv (mod_cast le_top)).clm_apply continuous_const).mul
