@@ -367,7 +367,7 @@ lemma mlieBracketWithin_const_smul_left
     mlieBracketWithin I (c • V) W s x = c • mlieBracketWithin I V W s x := by
   have aux := mlieBracketWithin_smul_left (mdifferentiableWithinAt_const (c := c)) (W := W) hV hs
   simp [mfderivWithin_const] at aux
-  convert aux
+  exact aux
 
 lemma mlieBracket_const_smul_left
     (hV : MDifferentiableAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) x) :
@@ -381,7 +381,7 @@ lemma mlieBracketWithin_const_smul_right
     mlieBracketWithin I V (c • W) s x = c • mlieBracketWithin I V W s x := by
   have aux := mlieBracketWithin_smul_right (mdifferentiableWithinAt_const (c := c)) (V := V) hW hs
   simp [mfderivWithin_const] at aux
-  convert aux
+  exact aux
 
 lemma mlieBracket_const_smul_right
     (hW : MDifferentiableAt I I.tangent (fun x ↦ (W x : TangentBundle I M)) x) :
