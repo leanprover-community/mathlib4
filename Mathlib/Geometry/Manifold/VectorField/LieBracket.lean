@@ -326,11 +326,12 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
     (mfderivWithin I 𝓘(𝕜, 𝕜) f s x) (V x) • W x +
     f x • mpullback I 𝓘(𝕜, E) ((extChartAt I x)) (lieBracketWithin 𝕜 V' W' s') x
   -- Step 1: rewrite using lieBracketWithin_smul_right
-  let aux := lieBracketWithin_smul_right (V := V') (W := W') (s := s') (f := f') (x := x')
-  have hf' : DifferentiableWithinAt 𝕜 f' s' x' := sorry
-  have hW' : DifferentiableWithinAt 𝕜 W' s' x' := sorry
-  have hs' : UniqueDiffWithinAt 𝕜 s' x' := sorry
-  let aux' := aux hf' hW' hs'
+  have hf' : DifferentiableWithinAt 𝕜 f' s' x' := by
+    -- Is this worth a separate lemma?
+    obtain ⟨_, hf⟩ := mdifferentiableWithinAt_iff.mp hf
+    rwa [extChartAt_self_eq] at hf
+  let aux := lieBracketWithin_smul_right (V := V') hf'
+    hW.differentiableWithinAt_mpullbackWithin_vectorField hs
 
   trans mpullback I 𝓘(𝕜, E) ((extChartAt I x)) (fun x₀ ↦ (lieBracketWithin 𝕜 V' (f' • W') s') x₀) x
   · rfl
