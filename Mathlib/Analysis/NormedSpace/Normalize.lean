@@ -56,6 +56,11 @@ variable {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
 
 namespace NormedSpace
 
+@[simp]
+theorem norm_smul_normalize_real (x : V) : ‖x‖ • normalize ℝ x = x := by
+  by_cases hx : x = 0
+  all_goals simp [normalize, hx]
+
 theorem normalize_smul_of_pos {r : ℝ} (hr : 0 < r) (x : V) :
     normalize ℝ (r • x) = normalize ℝ x := by
   simp [normalize, norm_smul, smul_smul, abs_of_pos hr, mul_assoc, inv_mul_cancel₀ hr.ne']
