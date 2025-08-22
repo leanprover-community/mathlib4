@@ -157,8 +157,8 @@ end StrictInitial
 
 section StrictTerminal
 
-/-- We say `C` has strict terminal objects if every terminal object is strict, i.e. given any morphism
-`f : I ⟶ A` where `I` is terminal, then `f` is an isomorphism.
+/-- We say `C` has strict terminal objects if every terminal object is strict, i.e. given any
+morphism `f : I ⟶ A` where `I` is terminal, then `f` is an isomorphism.
 
 Strictly speaking, this says that *any* terminal object must be strict, rather than that strict
 terminal objects exist.
