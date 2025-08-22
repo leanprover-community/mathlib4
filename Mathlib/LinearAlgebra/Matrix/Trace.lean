@@ -271,4 +271,12 @@ theorem ext_iff_trace_mul_eq [NonAssocSemiring R] {A B : Matrix m n R} :
   classical
   simpa [trace_single_mul] using h (single j i (1 : R))
 
+/-- Matrices `A` and `B` are equal iff `(A * x).trace = (B * x).trace` for all `x`. -/
+theorem ext_iff_trace_self_mul_eq [NonAssocSemiring R] {A B : Matrix m n R} :
+    A = B ↔ ∀ x, (A * x).trace = (B * x).trace := by
+  refine ⟨fun h x => h ▸ rfl, fun h => ?_⟩
+  ext i j
+  classical
+  simpa [trace_mul_single] using h (single j i (1 : R))
+
 end Matrix
