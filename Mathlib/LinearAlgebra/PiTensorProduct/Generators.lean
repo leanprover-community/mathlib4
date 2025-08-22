@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.Data.SubtypeNeLift
 import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Generators of multiple tensor products
