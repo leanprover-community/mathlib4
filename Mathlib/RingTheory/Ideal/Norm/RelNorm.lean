@@ -256,6 +256,7 @@ theorem relNorm_mono {I J : Ideal S} (h : I ≤ J) : relNorm R I ≤ relNorm R J
   spanNorm_mono R h
 
 open MulSemiringAction Pointwise in
+@[simp]
 theorem relNorm_smul {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S] (g : G)
     (I : Ideal S) : relNorm R (g • I) = relNorm R I := by
   have h (J : Ideal S) (h : G) : relNorm R (h • J) ≤ relNorm R J :=
@@ -264,6 +265,10 @@ theorem relNorm_smul {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClas
   refine le_antisymm (h I g) ?_
   convert h (g • I) g⁻¹
   rw [inv_smul_smul]
+
+@[simp]
+theorem relNorm_map_algEquiv (σ : S ≃ₐ[R] S) (I : Ideal S) :
+    relNorm R (I.map σ) = relNorm R I := relNorm_smul R σ I
 
 end Ideal
 
