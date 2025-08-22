@@ -83,7 +83,6 @@ def enumerateCountable {s : Set α} (h : s.Countable) (default : α) : ℕ → �
 theorem subset_range_enumerate {s : Set α} (h : s.Countable) (default : α) :
     s ⊆ range (enumerateCountable h default) := fun x hx =>
   ⟨@Encodable.encode s h.toEncodable ⟨x, hx⟩, by
-    letI := h.toEncodable
     simp [enumerateCountable, Encodable.encodek]⟩
 
 lemma range_enumerateCountable_subset {s : Set α} (h : s.Countable) (default : α) :
