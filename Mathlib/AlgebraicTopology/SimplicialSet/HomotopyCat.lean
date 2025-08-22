@@ -7,6 +7,7 @@ Authors: Mario Carneiro, Emily Riehl, Joël Riou
 import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
 import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
+import Mathlib.AlgebraicTopology.SimplicialSet.Path
 import Mathlib.CategoryTheory.Category.Cat.Terminal
 import Mathlib.CategoryTheory.Category.ReflQuiv
 import Mathlib.Combinatorics.Quiver.ReflQuiver
@@ -75,6 +76,14 @@ lemma δ₂_two_comp_σ₂_one : δ₂ (2 : Fin 3) ≫ σ₂ 1 = 𝟙 _ := Simpl
 lemma δ₂_two_comp_σ₂_zero : δ₂ (2 : Fin 3) ≫ σ₂ 0 = σ₂ 0 ≫ δ₂ 1 :=
   SimplexCategory.δ_comp_σ_of_gt' (by decide)
 
+lemma δ₂_zero_eq_mkOfSucc : (δ₂ (0 : Fin 3) _ _ : ⦋1⦌₂ ⟶ ⦋2⦌₂) =
+    Hom.tr (SimplexCategory.mkOfSucc (1 : Fin 2)) _ _ :=
+  SimplexCategory.δ_zero_eq_mkOfSucc
+
+lemma δ₂_two_eq_mkOfSucc : (δ₂ (2 : Fin 3) _ _ : ⦋1⦌₂ ⟶ ⦋2⦌₂) =
+    Hom.tr (SimplexCategory.mkOfSucc (0 : Fin 2)) _ _ :=
+  SimplexCategory.δ_two_eq_mkOfSucc
+
 /-- The hom-types of the refl quiver underlying a simplicial set `S` are types of edges in `S _⦋1⦌₂`
 together with source and target equalities. -/
 @[ext]
@@ -97,6 +106,16 @@ instance (S : SSet.Truncated 2) : ReflQuiver (OneTruncation₂ S) where
       tgt_eq := by
         simp only [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_zero,
           op_id, FunctorToTypes.map_id_apply] }
+
+@[simp]
+theorem OneTruncation₂.Quiver_homOfEq {S : SSet.Truncated 2} {X Y : OneTruncation₂ S}
+    (edge : S _⦋1⦌₂)
+    (src_eq : S.map (δ₂ 1).op edge = X) (tgt_eq : S.map (δ₂ 0).op edge = Y)
+    {X' Y' : OneTruncation₂ S} (hX : X = X') (hY : Y = Y') :
+    Quiver.homOfEq (V := OneTruncation₂ S)
+      (⟨edge, src_eq, tgt_eq⟩ : OneTruncation₂.Hom (S := S) X Y)
+        hX hY = ⟨edge, Eq.trans src_eq hX, Eq.trans tgt_eq hY⟩ := by
+  subst src_eq tgt_eq hX hY; rfl
 
 @[simp]
 lemma OneTruncation₂.id_edge {S : SSet.Truncated 2} (X : OneTruncation₂ S) :
@@ -127,6 +146,16 @@ lemma OneTruncation₂.homOfEq_edge
     (Quiver.homOfEq f hx hy).edge = f.edge := by
   subst hx hy
   rfl
+
+/-- A refl prefunctor between the underlying refl quivers of a 2-truncated simplicial sets induces a
+map on paths. -/
+@[simps]
+def OneTruncation₂.pathMap {X Y : SSet.Truncated.{u} 2} (F : OneTruncation₂ X ⥤rq OneTruncation₂ Y)
+    {n : ℕ} (σ : Truncated.Path X n) : Truncated.Path Y n where
+  vertex i := F.obj (σ.vertex i)
+  arrow i := (F.map ⟨σ.arrow i, σ.arrow_src i, σ.arrow_tgt i⟩).edge
+  arrow_src i := (F.map ⟨σ.arrow i, σ.arrow_src i, σ.arrow_tgt i⟩).src_eq
+  arrow_tgt i := (F.map ⟨σ.arrow i, σ.arrow_src i, σ.arrow_tgt i⟩).tgt_eq
 
 section
 variable {C : Type u} [Category.{v} C]
@@ -164,7 +193,6 @@ def OneTruncation₂.ofNerve₂ (C : Type u) [Category.{u} C] :
   simp only [Cat.of_α, op_obj, ComposableArrows.obj', Fin.zero_eta, Fin.isValue, Equiv.coe_fn_mk,
     nerveEquiv_apply, Nat.reduceAdd, id_edge, eqToHom_refl, comp_id, id_comp, ReflQuiver.id_eq_id]
   unfold nerve truncation SimplicialObject.truncation SimplexCategory.Truncated.inclusion
-  -- the following was obtained by `simp?`
   simp only [ObjectProperty.ι_obj, SimplexCategory.len_mk, Nat.reduceAdd, Fin.isValue,
     SimplexCategory.toCat_map, whiskeringLeft_obj_obj, Functor.comp_map, op_obj, op_map,
     Quiver.Hom.unop_op, ObjectProperty.ι_map, ComposableArrows.whiskerLeft_map, Fin.zero_eta,
@@ -253,7 +281,6 @@ def ev02₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev0₂ φ ⟶ ev2₂ �
 2nd face of a 2-simplex. -/
 def ev01₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev0₂ φ ⟶ ev1₂ φ :=
   ⟨V.map δ2₂.op φ, map_map_of_eq V (SimplexCategory.δ_comp_δ (j := 1) le_rfl), map_map_of_eq V rfl⟩
-
 
 /-- The 2-simplices in a 2-truncated simplicial set `V` generate a hom relation on the free
 category on the underlying refl quiver of `V`. -/
