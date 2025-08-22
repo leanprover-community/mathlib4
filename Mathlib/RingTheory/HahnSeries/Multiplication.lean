@@ -412,11 +412,12 @@ theorem orderTop_vAdd_le_orderTop_smul {Γ Γ'} [LinearOrder Γ] [LinearOrder Γ
   by_cases hx : x = 0; · simp_all
   by_cases hy : y = 0; · simp_all
   have hhy : ((of R).symm y) ≠ 0 := hy
-  rw [HahnSeries.orderTop_of_ne hx, HahnSeries.orderTop_of_ne hhy, ← h, ← Set.IsWF.min_vadd]
+  rw [HahnSeries.orderTop_of_ne_zero hx, HahnSeries.orderTop_of_ne_zero hhy, ← h,
+      ← Set.IsWF.min_vadd]
   by_cases hxy : (of R).symm (x • y) = 0
   · rw [hxy, HahnSeries.orderTop_zero]
     exact OrderTop.le_top (α := WithTop Γ') _
-  · rw [HahnSeries.orderTop_of_ne hxy, WithTop.coe_le_coe]
+  · rw [HahnSeries.orderTop_of_ne_zero hxy, WithTop.coe_le_coe]
     exact Set.IsWF.min_le_min_of_subset support_smul_subset_vadd_support
 
 theorem coeff_smul_order_add_order {Γ}
@@ -427,8 +428,9 @@ theorem coeff_smul_order_add_order {Γ}
   by_cases hx : x = (0 : HahnSeries Γ R); · simp [HahnSeries.coeff_zero, hx]
   by_cases hy : (of R).symm y = 0; · simp [hy, coeff_smul]
   rw [HahnSeries.order_of_ne hx, HahnSeries.order_of_ne hy, coeff_smul,
-    HahnSeries.leadingCoeff_of_ne hx, HahnSeries.leadingCoeff_of_ne hy, ← vadd_eq_add,
+    HahnSeries.leadingCoeff_of_ne_zero hx, HahnSeries.leadingCoeff_of_ne_zero hy, ← vadd_eq_add,
     Finset.vaddAntidiagonal_min_vadd_min, Finset.sum_singleton]
+  simp [HahnSeries.orderTop, hx, hy]
 
 end DistribSMul
 
@@ -604,7 +606,7 @@ theorem order_mul_of_nonzero {x y : HahnSeries Γ R} (h : x.leadingCoeff * y.lea
     ne_of_eq_of_ne (coeff_mul_order_add_order x y) h
   refine le_antisymm (order_le_of_coeff_ne_zero
     (Eq.mpr (congrArg (fun _a ↦ _a ≠ 0) (coeff_mul_order_add_order x y)) h)) ?_
-  rw [order_of_ne <| leadingCoeff_ne_iff.mp hx, order_of_ne <| leadingCoeff_ne_iff.mp hy,
+  rw [order_of_ne <| leadingCoeff_ne_zero.mp hx, order_of_ne <| leadingCoeff_ne_zero.mp hy,
     order_of_ne <| ne_zero_of_coeff_ne_zero hxy, ← Set.IsWF.min_add]
   exact Set.IsWF.min_le_min_of_subset support_mul_subset_add_support
 
@@ -631,7 +633,7 @@ theorem order_single_mul_of_isRegular {g : Γ} {r : R} (hr : IsRegular r)
   obtain _ | _ := subsingleton_or_nontrivial R
   · exact (hx <| Subsingleton.eq_zero x).elim
   have hrx : ((single g) r).leadingCoeff * x.leadingCoeff ≠ 0 := by
-    rwa [leadingCoeff_of_single, ne_eq, hr.left.mul_left_eq_zero_iff, leadingCoeff_eq_iff]
+    rwa [leadingCoeff_of_single, ne_eq, hr.left.mul_left_eq_zero_iff, leadingCoeff_eq_zero]
   rw [order_mul_of_nonzero hrx, order_single <| IsRegular.ne_zero hr]
 
 end orderLemmas
@@ -889,6 +891,19 @@ def leftTensorMap [CommSemiring R] [AddCommMonoid U] [Module R V] [Module R U] :
       intro r y
       ext; simp [smul_tmul'] }
 
+instance instNoZeroSMulDivisors {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
+    [Zero R] [SMulWithZero R V] [NoZeroSMulDivisors R V] :
+    NoZeroSMulDivisors (HahnSeries Γ R) (HahnModule Γ R V) where
+  eq_zero_or_eq_zero_of_smul_eq_zero {x y} hxy := by
+    contrapose! hxy
+    simp only [ne_eq]
+    rw [HahnModule.ext_iff, funext_iff, not_forall]
+    refine ⟨x.order + ((of R).symm y).order, ?_⟩
+    rw [coeff_smul_order_add_order x y, of_symm_zero, HahnSeries.coeff_zero, smul_eq_zero, not_or]
+    constructor
+    · exact HahnSeries.leadingCoeff_ne_zero.mpr hxy.1
+    · exact HahnSeries.leadingCoeff_ne_zero.mpr hxy.2
+
 end HahnModule
 
 namespace HahnSeries
@@ -905,17 +920,8 @@ instance {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] 
     IsDomain (HahnSeries Γ R) :=
   NoZeroDivisors.to_isDomain _
 
-theorem orderTop_add_orderTop_le_orderTop_mul {Γ}
-    [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
-    [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} :
-    x.orderTop + y.orderTop ≤ (x * y).orderTop := by
-  by_cases hx : x = 0; · simp [hx]
-  by_cases hy : y = 0; · simp [hy]
-  by_cases hxy : x * y = 0
-  · simp [hxy]
-  rw [orderTop_of_ne hx, orderTop_of_ne hy, orderTop_of_ne hxy, ← WithTop.coe_add,
-    WithTop.coe_le_coe, ← Set.IsWF.min_add]
-  exact Set.IsWF.min_le_min_of_subset support_mul_subset_add_support
+@[deprecated (since := "2025-08-11")] alias orderTop_add_orderTop_le_orderTop_mul :=
+  orderTop_add_le_mul
 
 @[simp]
 theorem order_mul {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
