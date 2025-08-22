@@ -75,7 +75,7 @@ theorem martingale_const_fun [OrderBot ι] (ℱ : Filtration ι m0) (μ : Measur
 
 variable (E) in
 theorem martingale_zero (ℱ : Filtration ι m0) (μ : Measure Ω) : Martingale (0 : ι → Ω → E) ℱ μ :=
-  ⟨adapted_zero E ℱ, fun i j _ => by rw [Pi.zero_apply, condExp_zero]; simp⟩
+  ⟨adapted_zero E ℱ, fun i j _ => by simp⟩
 
 namespace Martingale
 
@@ -310,7 +310,7 @@ theorem smul_nonneg {f : ι → Ω → F} {c : ℝ} (hc : 0 ≤ c) (hf : Superma
 theorem smul_nonpos [IsOrderedAddMonoid F] {f : ι → Ω → F} {c : ℝ}
     (hc : c ≤ 0) (hf : Supermartingale f ℱ μ) :
     Submartingale (c • f) ℱ μ := by
-  rw [← neg_neg c, (by ext (i x); simp : - -c • f = -(-c • f))]
+  rw [← neg_neg c, (by simp : - -c • f = -(-c • f))]
   exact (hf.smul_nonneg <| neg_nonneg.2 hc).neg
 
 end
@@ -326,12 +326,12 @@ variable {F : Type*} [NormedAddCommGroup F] [Lattice F] [IsOrderedAddMonoid F]
 
 theorem smul_nonneg {f : ι → Ω → F} {c : ℝ} (hc : 0 ≤ c) (hf : Submartingale f ℱ μ) :
     Submartingale (c • f) ℱ μ := by
-  rw [← neg_neg c, (by ext (i x); simp : - -c • f = -(c • -f))]
+  rw [← neg_neg c, (by simp : - -c • f = -(c • -f))]
   exact Supermartingale.neg (hf.neg.smul_nonneg hc)
 
 theorem smul_nonpos {f : ι → Ω → F} {c : ℝ} (hc : c ≤ 0) (hf : Submartingale f ℱ μ) :
     Supermartingale (c • f) ℱ μ := by
-  rw [← neg_neg c, (by ext (i x); simp : - -c • f = -(-c • f))]
+  rw [← neg_neg c, (by simp : - -c • f = -(-c • f))]
   exact (hf.smul_nonneg <| neg_nonneg.2 hc).neg
 
 end
