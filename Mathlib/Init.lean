@@ -61,7 +61,6 @@ all these linters, or add the `weak.linter.mathlibStandardSet` option to their l
 register_linter_set linter.mathlibStandardSet :=
   linter.allScriptsDocumented
   linter.checkInitImports
-
   linter.hashCommand
   linter.oldObtain
   linter.style.cases
