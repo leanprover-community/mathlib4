@@ -1167,7 +1167,7 @@ variable [Primcodable α] [Primcodable β]
 
 protected theorem not (hf : PrimrecRel R) : PrimrecRel fun a b ↦ ¬ R a b := PrimrecPred.not hf
 
-/-- If `R a b` is decidable, then given `L : List α` and `b : β`, it is primitive recurisve
+/-- If `R a b` is decidable, then given `L : List α` and `b : β`, it is primitive recursive
 to filter `L` for elements `a` with `R a b` -/
 theorem listFilter (hf : PrimrecRel R) [DecidableRel R] :
     Primrec₂ fun (L : List α) b ↦ L.filter (fun a ↦ R a b) := by

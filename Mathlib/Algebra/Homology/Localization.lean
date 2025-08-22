@@ -193,7 +193,7 @@ variable [(HomotopyCategory.quotient C c).IsLocalization
 
 /-- The category `HomologicalComplexUpToQuasiIso C c` which was defined as a localization of
 `HomologicalComplex C c` with respect to quasi-isomorphisms also identify to a localization
-of the homotopy category with respect ot quasi-isomorphisms. -/
+of the homotopy category with respect to quasi-isomorphisms. -/
 instance : HomologicalComplexUpToQuasiIso.Qh.IsLocalization (HomotopyCategory.quasiIso C c) :=
   Functor.IsLocalization.of_comp (HomotopyCategory.quotient C c)
     Qh (HomologicalComplex.homotopyEquivalences C c)

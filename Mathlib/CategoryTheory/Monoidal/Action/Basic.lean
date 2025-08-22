@@ -187,7 +187,7 @@ open Category
 
 variable {C D} [MonoidalCategory C] [MonoidalLeftAction C D]
 
--- Simp normal forms are aligned with the ones in `MonoidalCateogry`.
+-- Simp normal forms are aligned with the ones in `MonoidalCategory`.
 
 @[simp]
 lemma id_actionHom (c : C) {d d' : D} (f : d ⟶ d') :
@@ -496,7 +496,7 @@ open Category
 
 variable {C D} [MonoidalCategory C] [MonoidalRightAction C D]
 
--- Simp normal forms are aligned with the ones in `MonoidalCateogry`.
+-- Simp normal forms are aligned with the ones in `MonoidalCategory`.
 
 @[simp]
 lemma actionHom_id {d d' : D} (f : d ⟶ d') (c : C) :
