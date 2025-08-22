@@ -57,6 +57,18 @@ fields, etc.
   vector bundle.
 -/
 
+-- Kyle’s #check' command. This has nothing to do here but will be convenient for us
+open Lean Elab Command PrettyPrinter Delaborator in
+elab tk:"#check' " name:ident : command => runTermElabM fun _ => do
+  for c in (← realizeGlobalConstWithInfos name) do
+    addCompletionInfo <| .id name name.getId (danglingDot := false) {} none
+    let info ← getConstInfo c
+    let delab : Delab := do
+      delabForallParamsWithSignature fun binders type => do
+        let binders := binders.filter fun binder => binder.raw.isOfKind ``Parser.Term.explicitBinder
+        return ⟨← `(declSigWithId| $(mkIdent c) $binders* : $type)⟩
+    logInfoAt tk <| .ofFormatWithInfosM (PrettyPrinter.ppExprWithInfos (delab := delab) info.type)
+
 assert_not_exists mfderiv
 
 open Bundle Set PartialHomeomorph
