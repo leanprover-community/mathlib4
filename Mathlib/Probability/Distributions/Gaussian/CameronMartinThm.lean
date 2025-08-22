@@ -3,6 +3,7 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
+import Mathlib.MeasureTheory.Measure.Portmanteau
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.Probability.Distributions.Gaussian.CameronMartin
 import Mathlib.Probability.HasLaw
@@ -62,12 +63,28 @@ lemma setIntegral_mono_on' {X : Type*} {mX : MeasurableSpace X}
     rw [hx]
     exact h x
 
+lemma tendsto_of_limsup_measure_closed_le' {Ω ι : Type*} [MeasurableSpace Ω]
+    [TopologicalSpace Ω] [HasOuterApproxClosed Ω] [OpensMeasurableSpace Ω]
+    {μ : ProbabilityMeasure Ω} {μs : ι → ProbabilityMeasure Ω}
+    {L : Filter ι} [L.IsCountablyGenerated]
+    (h : ∀ F : Set Ω, IsClosed F → limsup (fun i ↦ (μs i : Measure Ω) F) L ≤ (μ : Measure Ω) F) :
+    Tendsto μs L (𝓝 μ) := by
+  refine tendsto_of_forall_isOpen_le_liminf' ?_
+  rwa [← limsup_measure_closed_le_iff_liminf_measure_open_ge]
+
+-- lemma tendsto_of_limsup_measure_closed_le {Ω ι : Type*} [MeasurableSpace Ω]
+--     [TopologicalSpace Ω] [HasOuterApproxClosed Ω] [OpensMeasurableSpace Ω]
+--     {μ : ProbabilityMeasure Ω} {μs : ι → ProbabilityMeasure Ω}
+--     {L : Filter ι} [L.IsCountablyGenerated]
+--     (h : ∀ F : Set Ω, IsClosed F → limsup (fun i ↦ μs i F) L ≤ μ F) :
+--     Tendsto μs L (𝓝 μ) := by
+--   sorry
+
 theorem tendsto_iff_forall_lipschitz_integral_tendsto {γ Ω : Type*} {mΩ : MeasurableSpace Ω}
-    [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] {F : Filter γ}
+    [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] {F : Filter γ} [F.IsCountablyGenerated]
     {μs : γ → ProbabilityMeasure Ω} {μ : ProbabilityMeasure Ω} :
     Tendsto μs F (𝓝 μ) ↔
-      ∀ (f : Ω → ℝ) (hf_bounded : ∃ (C : ℝ), ∀ x y, dist (f x) (f y) ≤ C)
-      (hf_lip : ∃ L, LipschitzWith L f),
+      ∀ (f : Ω → ℝ) (_ : ∃ (C : ℝ), ∀ x y, dist (f x) (f y) ≤ C) (_ : ∃ L, LipschitzWith L f),
         Tendsto (fun i ↦ ∫ ω, f ω ∂(μs i : Measure Ω)) F (𝓝 (∫ ω, f ω ∂(μ : Measure Ω))) := by
   constructor
   · intro h f hf_bounded hf_lip
@@ -76,12 +93,71 @@ theorem tendsto_iff_forall_lipschitz_integral_tendsto {γ Ω : Type*} {mΩ : Mea
     { toFun := f
       continuous_toFun := hf_lip.choose_spec.continuous
       map_bounded' := hf_bounded }
-    specialize h f'
+    simpa using h f'
+  refine fun h ↦ tendsto_of_limsup_measure_closed_le' fun s hs ↦ ?_
+  rcases F.eq_or_neBot with rfl | hne
+  · simp only [limsup_bot, bot_le]
+  suffices limsup (fun i ↦ (μs i : Measure Ω).real s) F ≤ (μ : Measure Ω).real s by
+    simp only [Measure.real_def] at this
+    rwa [ENNReal.limsup_toReal_eq (b := 1) (by simp) (.of_forall fun i ↦ prob_le_one),
+      ENNReal.toReal_le_toReal _ (by finiteness)] at this
+    refine ne_top_of_le_ne_top (b := 1) (by simp) ?_
+    refine limsup_le_of_le ?_ (.of_forall fun i ↦ prob_le_one)
+    exact isCoboundedUnder_le_of_le F (x := 0) (by simp)
+  refine le_of_forall_pos_le_add fun ε ε_pos ↦ ?_
+  let fs : ℕ → Ω → ℝ := fun n ω ↦ thickenedIndicator (δ := (1 : ℝ) / (n + 1)) (by positivity) s ω
+  have h_int n (ν : Measure Ω) [IsProbabilityMeasure ν] : Integrable (fs n) ν := by
+    refine .of_bound (by fun_prop) 1 (ae_of_all _ fun x ↦ ?_)
+    simp only [one_div, Real.norm_eq_abs, NNReal.abs_eq, NNReal.coe_le_one, fs]
+    exact thickenedIndicator_le_one _ s x
+  have key₁ : Tendsto (fun n ↦ ∫ ω, fs n ω ∂μ) atTop (𝓝 ((μ : Measure Ω).real s)) := by
+    -- todo: extract lemma
+    have h := tendsto_lintegral_thickenedIndicator_of_isClosed μ hs (fun _ ↦ by positivity)
+      (δs := fun n ↦ (1 : ℝ) / (n + 1)) tendsto_one_div_add_atTop_nhds_zero_nat
+    have h_eq (n : ℕ) : ∫⁻ ω, thickenedIndicator (δ := (1 : ℝ) / (n + 1)) (by positivity) s ω ∂μ
+        = ENNReal.ofReal (∫ ω, fs n ω ∂μ) := by
+      rw [lintegral_coe_eq_integral]
+      exact h_int _ _
+    simp_rw [h_eq] at h
+    rw [Measure.real_def]
+    have h_eq' : (fun n ↦ ∫ ω, fs n ω ∂μ) = fun n ↦ (ENNReal.ofReal (∫ ω, fs n ω ∂μ)).toReal := by
+      ext n
+      rw [ENNReal.toReal_ofReal]
+      refine integral_nonneg fun x ↦ ?_
+      simp [fs]
+    rwa [h_eq', ENNReal.tendsto_toReal_iff (by simp) (by finiteness)]
+  have room₁ : (μ : Measure Ω).real s < (μ : Measure Ω).real s + ε / 2 := by simp [ε_pos]
+  obtain ⟨M, hM⟩ := eventually_atTop.mp <| key₁.eventually_lt_const room₁
+  have key₂ := h (fs M) ?_ ?_
+  rotate_left
+  · refine ⟨1, fun x y ↦ ?_⟩
+    simp only [Real.dist_eq]
+    rw [abs_le]
+    have h1 x : fs M x ≤ 1 := thickenedIndicator_le_one _ _ _
+    have h2 x : 0 ≤ fs M x := by simp [fs]
+    grind
+  · exact ⟨_, lipschitzWith_thickenedIndicator (δ := (1 : ℝ) / (M + 1)) (by positivity) s⟩
+  have room₂ : ∫ a, fs M a ∂μ < ∫ a, fs M a ∂μ + ε / 2 := by simp [ε_pos]
+  have ev_near := key₂.eventually_le_const room₂
+  have ev_near' : ∀ᶠ x in F, (μs x : Measure Ω).real s ≤ ∫ a, fs M a ∂μ + ε / 2 := by
+    refine ev_near.mono fun x hx ↦ le_trans ?_ hx
+    rw [← integral_indicator_one hs.measurableSet]
+    refine integral_mono ?_ ?_ ?_
+    · rw [integrable_indicator_iff hs.measurableSet]
+      exact (integrable_const _).integrableOn
+    · exact h_int _ _
+    have h : _ ≤ fs M :=
+      (indicator_le_thickenedIndicator (δ := (1 : ℝ) / (M + 1)) (by positivity) s)
     simpa using h
-  intro h
-  sorry
+  apply (Filter.limsup_le_limsup ev_near' ?_ ?_).trans
+  rotate_left
+  · exact isCoboundedUnder_le_of_le F (x := 0) (by simp)
+  · exact isBoundedUnder_const
+  rw [limsup_const]
+  apply (add_le_add (hM M rfl.le).le (le_refl (ε / 2))).trans_eq
+  ring
 
-lemma ProbabilityMeasure.todo
+lemma ProbabilityMeasure.todo [l.IsCountablyGenerated]
     (hf' : ∀ i, AEMeasurable (f' i) μ) (hf : ∀ i, AEMeasurable (f i) μ)
     (hg : AEMeasurable g μ) (hff' : TendstoInMeasure μ (fun n ↦ f' n - f n) l 0)
     (hfg : Tendsto (β := ProbabilityMeasure E)
@@ -216,8 +292,8 @@ lemma ProbabilityMeasure.todo
 
 /-- Convergence in probability (`TendstoInMeasure`) implies convergence in distribution
 (`Tendsto` in the `ProbabilityMeasure` type). -/
-lemma ProbabilityMeasure.tendsto_map_of_tendstoInMeasure (hf : ∀ i, AEMeasurable (f i) μ)
-    (hg : AEMeasurable g μ) (h : TendstoInMeasure μ f l g) :
+lemma ProbabilityMeasure.tendsto_map_of_tendstoInMeasure [l.IsCountablyGenerated]
+    (hf : ∀ i, AEMeasurable (f i) μ) (hg : AEMeasurable g μ) (h : TendstoInMeasure μ f l g) :
     Tendsto (β := ProbabilityMeasure E) (fun n ↦ ⟨μ.map (f n), isProbabilityMeasure_map (hf n)⟩) l
       (𝓝 ⟨μ.map g, isProbabilityMeasure_map hg⟩) := by
   refine ProbabilityMeasure.todo hf (fun _ ↦ hg) hg ?_ tendsto_const_nhds

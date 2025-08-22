@@ -229,6 +229,55 @@ theorem thickenedIndicator_tendsto_indicator_closure {δseq : ℕ → ℝ} (δse
   refine Tendsto.comp (tendsto_toNNReal ?_) (key x)
   by_cases x_mem : x ∈ closure E <;> simp [x_mem]
 
+lemma ENNReal.sub_sub_sub_cancel_left {a b c : ℝ≥0∞} (ha : a ≠ ∞) (h : b ≤ a) :
+    a - c - (a - b) = b - c := by
+  have hb : b ≠ ∞ := ne_top_of_le_ne_top ha h
+  lift a to ℝ≥0 using ha
+  lift b to ℝ≥0 using hb
+  cases c
+  · simp
+  · norm_cast
+    rw [tsub_tsub_tsub_cancel_left]
+    exact mod_cast h
+
+lemma lipschitzWith_thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) :
+    LipschitzWith δ.toNNReal⁻¹ (thickenedIndicator δ_pos E) := by
+  intro x y
+  wlog h : infEdist x E ≤ infEdist y E generalizing x y
+  · specialize this y x (le_of_not_ge h)
+    rwa [edist_comm, edist_comm x]
+  simp_rw [edist_dist, NNReal.dist_eq, thickenedIndicator_apply, coe_toNNReal_eq_toReal]
+  rw [← ENNReal.toReal_sub_of_le]
+  rotate_left
+  · -- todo: extract lemma
+    simp only [thickenedIndicatorAux]
+    rcases le_total (infEdist x E / ENNReal.ofReal δ) 1 with hle | hle
+    · rw [ENNReal.sub_le_sub_iff_left hle (by simp)]
+      gcongr
+    · rw [tsub_eq_zero_of_le hle, tsub_eq_zero_of_le]
+      exact hle.trans (by gcongr)
+  · exact thickenedIndicatorAux_lt_top.ne
+  simp only [thickenedIndicatorAux, abs_toReal, ne_eq, sub_eq_top_iff, one_ne_top, false_and,
+    not_false_eq_true, and_true, ofReal_toReal]
+  rw [ENNReal.coe_inv (by simp [δ_pos]), ENNReal.ofReal, div_eq_mul_inv, div_eq_mul_inv]
+  by_cases h_le : infEdist y E * (↑δ.toNNReal)⁻¹ ≤ 1
+  · calc 1 - infEdist x E * (↑δ.toNNReal)⁻¹ - (1 - infEdist y E * (↑δ.toNNReal)⁻¹)
+    _ ≤ infEdist y E * (↑δ.toNNReal)⁻¹ - infEdist x E * (↑δ.toNNReal)⁻¹ := by
+      rw [ENNReal.sub_sub_sub_cancel_left (by finiteness) h_le]
+    _ ≤ (↑δ.toNNReal)⁻¹ * edist x y := by
+      rw [← ENNReal.sub_mul (by simp [δ_pos]), mul_comm, edist_comm]
+      gcongr
+      simp only [tsub_le_iff_right]
+      exact infEdist_le_edist_add_infEdist
+  · simp only [tsub_le_iff_right]
+    rw [tsub_eq_zero_of_le (not_le.mp h_le).le, add_zero, mul_comm]
+    calc 1
+    _ ≤ infEdist y E * (↑δ.toNNReal)⁻¹ := (not_le.mp h_le).le
+    _ ≤ edist x y * (↑δ.toNNReal)⁻¹ + infEdist x E * (↑δ.toNNReal)⁻¹ := by
+      rw [← add_mul, edist_comm]
+      gcongr
+      exact infEdist_le_edist_add_infEdist
+
 end thickenedIndicator
 
 section indicator
