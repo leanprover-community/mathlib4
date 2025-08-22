@@ -39,7 +39,7 @@ variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
 See also `exists_extension_norm_eq` in the root namespace for a more general version
 that works both for `ℝ` and `ℂ`. -/
 theorem exists_extension_norm_eq (p : Subspace ℝ E) (f : StrongDual ℝ p) :
-    ∃ g : E →L[ℝ] ℝ, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
+    ∃ g : StrongDual ℝ E, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
   rcases exists_extension_of_le_sublinear ⟨p, f⟩ (fun x => ‖f‖ * ‖x‖)
       (fun c hc x => by simp only [norm_smul c x, Real.norm_eq_abs, abs_of_pos hc, mul_left_comm])
       (fun x y => by
@@ -73,10 +73,10 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : StrongDual 𝕜 p) :
   letI : Module ℝ E := RestrictScalars.module ℝ 𝕜 E
   letI : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower _ _ _
   letI : NormedSpace ℝ E := NormedSpace.restrictScalars _ 𝕜 _
-  -- Let `fr: p →L[ℝ] ℝ` be the real part of `f`.
+  -- Let `fr: StrongDual ℝ p` be the real part of `f`.
   let fr := reCLM.comp (f.restrictScalars ℝ)
   -- Use the real version to get a norm-preserving extension of `fr`, which
-  -- we'll call `g : E →L[ℝ] ℝ`.
+  -- we'll call `g : StrongDual ℝ E`.
   rcases Real.exists_extension_norm_eq (p.restrictScalars ℝ) fr with ⟨g, ⟨hextends, hnormeq⟩⟩
   -- Now `g` can be extended to the `StrongDual 𝕜 E` we need.
   refine ⟨g.extendTo𝕜, ?_⟩
@@ -85,8 +85,8 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : StrongDual 𝕜 p) :
     intro x
     rw [ContinuousLinearMap.extendTo𝕜_apply, ← Submodule.coe_smul]
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    -- The goal has a coercion from `RestrictScalars ℝ 𝕜 E →L[ℝ] ℝ`, but
-    -- `hextends` involves a coercion from `E →L[ℝ] ℝ`.
+    -- The goal has a coercion from `RestrictScalars ℝ 𝕜 StrongDual ℝ E`, but
+    -- `hextends` involves a coercion from `StrongDual ℝ E`.
     erw [hextends]
     erw [hextends]
     have :
