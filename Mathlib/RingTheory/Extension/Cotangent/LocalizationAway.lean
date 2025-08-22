@@ -163,7 +163,6 @@ noncomputable def cotangentCompAwaySec (x : ((localizationAway T g).comp P).toEx
 variable (x : ((localizationAway T g).comp P).toExtension.Cotangent)
 
 /-- By construction, the section `cotangentCompAwaySec` sends `g * X - 1` to `x`. -/
-@[simp]
 lemma cotangentCompAwaySec_apply :
     cotangentCompAwaySec g P x
       (Extension.Cotangent.mk ⟨C g * X () - 1, C_mul_X_sub_one_mem_ker _⟩) = x := by
