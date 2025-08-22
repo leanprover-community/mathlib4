@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler
 -/
 
-import Mathlib.Algebra.Order.Ring.Star
-import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.Complex.LocallyUniformLimit
 import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 import Mathlib.Analysis.NormedSpace.MultipliableUniformlyOn
@@ -35,11 +33,11 @@ local notation "𝕢" => Periodic.qParam
 
 local notation "ℍₒ" => upperHalfPlaneSet
 
+namespace ModularForm
+
 /-- The q term inside the product defining the eta function. It is defined as
 `eta_q n z = e ^ (2 π i (n + 1) z)`. -/
-noncomputable abbrev ModularForm.eta_q (n : ℕ) (z : ℂ) := (𝕢 1 z) ^ (n + 1)
-
-open ModularForm
+noncomputable abbrev eta_q (n : ℕ) (z : ℂ) := (𝕢 1 z) ^ (n + 1)
 
 lemma eta_q_eq_cexp (n : ℕ) (z : ℂ) : eta_q n z = cexp (2 * π * I * (n + 1) * z) := by
   simp [eta_q, Periodic.qParam, ← Complex.exp_nsmul]
@@ -51,14 +49,11 @@ lemma eta_q_eq_pow (n : ℕ) (z : ℂ) : eta_q n z = cexp (2 * π * I * z) ^ (n 
 lemma one_sub_eta_q_ne_zero (n : ℕ) {z : ℂ} (hz : z ∈ ℍₒ) : 1 - eta_q n z ≠ 0 := by
   rw [eta_q_eq_cexp, sub_ne_zero]
   intro h
-  have := norm_exp_two_pi_I_lt_one ⟨(n + 1) • z, by
-    have : 0 < (n + 1 : ℝ) := by positivity
-    simpa [this] using hz⟩
-  simp [← mul_assoc, ← h] at *
-
+  simpa [← mul_assoc, ← h] using norm_exp_two_pi_I_lt_one ⟨(n + 1) • z, by
+    simpa [(show 0 < (n + 1 : ℝ) by positivity)] using hz⟩
 
 /-- The eta function, whose value at z is `q^ 1 / 24 * ∏' 1 - q ^ (n + 1)` for `q = e ^ 2 π i z`. -/
-noncomputable def ModularForm.eta (z : ℂ) := 𝕢 24 z * ∏' (n : ℕ), (1 - eta_q n z)
+noncomputable def eta (z : ℂ) := 𝕢 24 z * ∏' (n : ℕ), (1 - eta_q n z)
 
 local notation "η" => ModularForm.eta
 
@@ -86,7 +81,7 @@ lemma multipliableLocallyUniformlyOn_eta :
     simpa [not_nonempty_iff_eq_empty.mp hN] using tendstoUniformlyOn_empty
 
 -- Eta is non-vanishing on the upper half plane. -/
-lemma eta_ne_zero_on_UpperHalfPlane {z : ℂ} (hz : z ∈ ℍₒ) : η z ≠ 0 := by
+lemma eta_ne_zero {z : ℂ} (hz : z ∈ ℍₒ) : η z ≠ 0 := by
   apply mul_ne_zero (Periodic.qParam_ne_zero z)
   simp only [eta_q, ne_eq]
   refine tprod_one_add_ne_zero_of_summable (f := fun n ↦ -eta_q n z)  ?_ ?_
@@ -105,27 +100,25 @@ lemma logDeriv_one_sub_mul_cexp_comp (r : ℂ) {g : ℂ → ℂ} (hg : Different
   rw [logDeriv_comp (by fun_prop) (hg y), logDeriv_one_sub_cexp]
   ring
 
-private theorem one_sub_eta_logDeriv_eq (z : ℂ) (i : ℕ) : logDeriv (fun x ↦ 1 - eta_q i x) z =
-    2 * π * I * (i + 1) * -eta_q i z / (1 - eta_q i z) := by
-  have h2 : (fun x ↦ 1 - cexp (2 * ↑π * I * (↑i + 1) * x)) =
-      ((fun z ↦ 1 - 1 * cexp z) ∘ fun x ↦ 2 * ↑π * I * (↑i + 1) * x) := by aesop
-  have h3 : deriv (fun x : ℂ ↦ (2 * π * I * (i + 1) * x)) =
-      fun _ ↦ 2 * π * I * (i + 1) := by
+private theorem one_sub_eta_logDeriv_eq (z : ℂ) (n : ℕ) : logDeriv (fun x ↦ 1 - eta_q n x) z =
+    2 * π * I * (n + 1) * -eta_q n z / (1 - eta_q n z) := by
+  have h2 : (fun x ↦ 1 - cexp (2 * ↑π * I * (n + 1) * x)) =
+      ((fun z ↦ 1 - 1 * cexp z) ∘ fun x ↦ 2 * ↑π * I * (n + 1) * x) := by aesop
+  have h3 : deriv (fun x : ℂ ↦ (2 * π * I * (n + 1) * x)) =
+      fun _ ↦ 2 * π * I * (n + 1) := by
     ext y
-    simpa using deriv_const_mul (2 * π * I * (i + 1)) (d := fun (x : ℂ) ↦ x) (x := y)
+    simpa using deriv_const_mul (2 * π * I * (n + 1)) (d := fun (x : ℂ) ↦ x) (x := y)
   simp_rw [eta_q_eq_cexp, h2, logDeriv_one_sub_mul_cexp_comp 1
-    (g := fun x ↦ (2 * π * I * (i + 1) * x)) (by fun_prop), h3]
+    (g := fun x ↦ (2 * π * I * (n + 1) * x)) (by fun_prop), h3]
   simp
 
-lemma tsum_log_deriv_eta_q (z : ℂ) : ∑' (i : ℕ), logDeriv (fun x ↦ 1 - eta_q i x) z =
-    (2 * π * I) * ∑' n : ℕ, (n + 1) * (-eta_q n z) / (1 - eta_q n z) := by
-  suffices ∑' (i : ℕ), logDeriv (fun x ↦ 1 - eta_q i x) z =
-    ∑' n : ℕ, (2 * ↑π * I * (n + 1)) * (-eta_q n z) / (1 - eta_q n z) by
-    rw [this, ← tsum_mul_left]
-    congr 1
-    ext i
-    ring
-  exact tsum_congr (fun i ↦ one_sub_eta_logDeriv_eq z i)
+lemma tsum_log_deriv_eta_q (z : ℂ) : ∑' n, logDeriv (fun x ↦ 1 - eta_q n x) z =
+    (2 * π * I) * ∑' n, (n + 1) * (-eta_q n z) / (1 - eta_q n z) := by
+  have : ∑' i, logDeriv (fun x ↦ 1 - eta_q i x) z =
+      ∑' n, (2 * ↑π * I * (n + 1)) * (-eta_q n z) / (1 - eta_q n z) :=
+    tsum_congr (fun i ↦ one_sub_eta_logDeriv_eq z i)
+  rw [this, ← tsum_mul_left]
+  grind
 
 theorem differentiableAt_eta_of_mem_upperHalfPlaneSet {z : ℂ} (hz : z ∈ ℍₒ) :
     DifferentiableAt ℂ eta z := by
@@ -138,3 +131,5 @@ theorem differentiableAt_eta_of_mem_upperHalfPlaneSet {z : ℂ} (hz : z ∈ ℍ�
     apply (DifferentiableOn.finset_prod (u := Finset.range b) (f := fun i x ↦ 1 - eta_q i x)
       (by fun_prop)).congr
     simp
+
+end ModularForm
