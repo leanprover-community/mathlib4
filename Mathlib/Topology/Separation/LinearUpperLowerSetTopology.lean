@@ -30,5 +30,10 @@ instance (priority := low) {α : Type*}
     conv at hsct => equals b < a => simp
     exact lt_asymm hcst hsct
 
+instance (priority := low) {α : Type*}
+    [TopologicalSpace α] [LinearOrder α] [Topology.IsLowerSet α] :
+    CompletelyNormalSpace α :=
+  inferInstanceAs (CompletelyNormalSpace αᵒᵈ)
+
 instance : CompletelyNormalSpace Prop :=
   inferInstance
