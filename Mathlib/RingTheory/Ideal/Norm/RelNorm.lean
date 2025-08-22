@@ -23,7 +23,7 @@ spanned by the norms of elements in `I`.
 ## Main results
 
 * `map_mul Ideal.relNorm`: multiplicativity of the relative ideal norm
-* `relNorm_relNorm`: transitivity of the relative norm
+* `relNorm_relNorm`: transitivity of the relative ideal norm
 
 -/
 
