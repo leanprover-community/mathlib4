@@ -978,7 +978,7 @@ theorem isLeast_hnot [CoheytingAlgebra α] (a : α) :
     IsLeast {w | Codisjoint a w} (￢a) := by
   simpa only [CoheytingAlgebra.top_sdiff, codisjoint_iff_le_sup] using isLeast_sdiff ⊤ a
 
-instance Nat.instDecidableIsLeast (p : ℕ → Prop) (n : ℕ) [∀ k, Decidable (p k)] :
+instance Nat.instDecidableIsLeast (p : ℕ → Prop) (n : ℕ) [DecidablePred p] :
     Decidable (IsLeast { n : ℕ | p n } n) :=
   decidable_of_iff (p n ∧ ∀ k < n, ¬p k) <| .and .rfl <| by
     simp [mem_lowerBounds, @imp_not_comm _ (p _)]
