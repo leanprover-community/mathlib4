@@ -83,7 +83,7 @@ theorem IsRegular.of_faithfullyFlat_of_isBaseChange {f : M →ₗ[R] N} (hf : Is
     {rs : List R} (reg : IsRegular M rs) : IsRegular N (rs.map (algebraMap R S)) := by
   refine ⟨reg.1.of_flat_of_isBaseChange hf, ?_⟩
   rw [← Ideal.map_ofList]
-  exact (FaithfullyFlat.smul_top_ne_top_of_isBaseChange R M hf reg.2.symm).symm
+  exact ((hf.map_smul_top_ne_top_iff_of_faithfullyFlat R M _).mpr reg.2.symm).symm
 
 theorem IsRegular.of_faithfullyFlat {rs : List R} (reg : IsRegular R rs) :
     IsRegular S (rs.map (algebraMap R S)) :=
