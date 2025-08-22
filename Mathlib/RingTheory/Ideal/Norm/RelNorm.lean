@@ -255,14 +255,15 @@ theorem map_relNorm (I : Ideal S) {T : Type*} [Semiring T] (f : R →+* T) :
 theorem relNorm_mono {I J : Ideal S} (h : I ≤ J) : relNorm R I ≤ relNorm R J :=
   spanNorm_mono R h
 
-open Pointwise in
-theorem relNorm_smul (σ : S ≃ₐ[R] S) (I : Ideal S) : relNorm R (σ • I) = relNorm R I := by
-  have h (J : Ideal S) (τ : S ≃ₐ[R] S) : relNorm R (τ • J) ≤ relNorm R J  :=
-    span_mono fun _ ⟨x, hx₁, hx₂⟩ ↦ ⟨τ⁻¹ x, mem_pointwise_smul_iff_inv_smul_mem.mp hx₁,
-      hx₂ ▸ Algebra.intNorm_eq_of_algEquiv x τ⁻¹⟩
-  refine le_antisymm (h I σ) ?_
-  convert h (σ • I) σ⁻¹
-  simp
+open MulSemiringAction Pointwise in
+theorem relNorm_smul {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S] (g : G)
+    (I : Ideal S) : relNorm R (g • I) = relNorm R I := by
+  have h (J : Ideal S) (h : G) : relNorm R (h • J) ≤ relNorm R J :=
+    span_mono fun _ ⟨x, hx₁, hx₂⟩ ↦ ⟨h⁻¹ • x, mem_pointwise_smul_iff_inv_smul_mem.mp hx₁,
+      by simpa [hx₂] using Algebra.intNorm_eq_of_algEquiv x (toAlgEquiv R S h⁻¹)⟩
+  refine le_antisymm (h I g) ?_
+  convert h (g • I) g⁻¹
+  rw [inv_smul_smul]
 
 end Ideal
 
