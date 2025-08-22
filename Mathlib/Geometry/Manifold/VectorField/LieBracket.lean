@@ -337,11 +337,11 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
       (mfderivWithin I 𝓘(𝕜) f s x) (V x) • (W x) + (f x) • mlieBracketWithin I V W s x := by
   simp only [mlieBracketWithin]
   rw [mpullbackWithin_smul]
-  set V' := (mpullbackWithin 𝓘(𝕜, E) I (↑(extChartAt I x).symm) V (range I))
-  set W' := (mpullbackWithin 𝓘(𝕜, E) I (↑(extChartAt I x).symm) W (range I))
-  -- cherry-picked from here, to finish!
-  set f' := (f ∘ (extChartAt I x).symm)
-  set s' := ((extChartAt I x).symm ⁻¹' s ∩ range I)
+  -- Simplify local notation a bit.
+  set V' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm V (range I)
+  set W' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm W (range I)
+  set f' := f ∘ (extChartAt I x).symm
+  set s' := (extChartAt I x).symm ⁻¹' s ∩ range I
   set x' := (extChartAt I x) x
   change mpullback I 𝓘(𝕜, E) ((extChartAt I x)) (lieBracketWithin 𝕜 V' (fun y ↦ f' y • W' y) s') x =
     (mfderivWithin I 𝓘(𝕜, 𝕜) f s x) (V x) • W x +
@@ -406,14 +406,10 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
     --   rw?
     --   sorry
   have h2 : mpullback I 𝓘(𝕜, E) (extChartAt I x) B x
-      = f x • mpullback I 𝓘(𝕜, E) (↑(extChartAt I x)) (lieBracketWithin 𝕜 V' W' s') x := by
-    simp only [B]
-    trans mpullback I 𝓘(𝕜, E) (↑(extChartAt I x)) (f' • lieBracketWithin 𝕜 V' W' s') x
-    · rfl
-    rw [mpullback_smul (V := lieBracketWithin 𝕜 V' W' s')]
-    simp [f']
-  -- adding these identities should prove the claim
-  sorry
+      = f x • mpullback I 𝓘(𝕜, E) (extChartAt I x) (lieBracketWithin 𝕜 V' W' s') x := by
+    simp [B, ← Pi.smul_def', mpullback_smul (V := lieBracketWithin 𝕜 V' W' s'), f']
+  -- Adding these identities proves the claim.
+  rw [← Pi.add_def, mpullback_add_apply]; congr
 
 #exit
 
