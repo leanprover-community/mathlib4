@@ -17,8 +17,8 @@ a continuous bilinear map `M × N → R` that is bijective in both arguments.
 We require continuity in the forward direction only so that we can put several different topologies
 on the continuous dual (e.g., strong, weak, weak-*). For example, if `M` is weakly reflexive then
 there is a continuous perfect pairing between `M` and `WeakDual R M`, even though the map
-`WeakDual R M ≃ₗ[R] (M →L[R] R)` (where `M →L[R] R` is equipped with its strong topology) is not in
-general a homeomorphism.
+`WeakDual R M ≃ₗ[R] StrongDual R M` (where `StrongDual R M` is equipped with its strong topology) is
+not in general a homeomorphism.
 
 ## TODO
 
@@ -63,7 +63,7 @@ variable [IsTopologicalRing R]
 
 /-- Turn a continuous perfect pairing between `M` and `N` into a map from `M` to continuous linear
 maps `N → R`. -/
-noncomputable def toContPerfPair : M ≃ₗ[R] (N →L[R] R) :=
+noncomputable def toContPerfPair : M ≃ₗ[R] StrongDual R N :=
   .ofBijective { toFun := _, map_add' x y := by ext; simp, map_smul' r x := by ext; simp } <|
     IsContPerfPair.bijective_left p
 
