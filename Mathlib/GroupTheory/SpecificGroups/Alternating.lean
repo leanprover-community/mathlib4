@@ -145,6 +145,16 @@ def Equiv.altCongrMulEquiv {β : Type*} [Fintype β] [DecidableEq β] (e : α �
       simp [e.permCongr.symm.surjective.exists,
         show sign (e.permCongr.symm p) = sign p by simp, - permCongr_symm]
 
+/-- The group isomorphism between `alternatingGroup`s induced by the given `Equiv`. -/
+@[simps ! apply_coe]
+def Equiv.altCongrHom {β : Type*} [Fintype β] [DecidableEq β] (e : α ≃ β) :
+    ↥(alternatingGroup α) ≃* ↥(alternatingGroup β) :=
+  e.permCongrHom.subgroupMap (alternatingGroup α) |>.trans <|
+    MulEquiv.subgroupCongr <| by
+      ext1 p
+      simp [e.permCongr.symm.surjective.exists,
+        show sign (e.permCongr.symm p) = sign p by simp, - permCongr_symm]
+
 theorem two_mul_nat_card_alternatingGroup [Nontrivial α] :
     2 * Nat.card (alternatingGroup α) = Nat.card (Perm α) := by
   simp only [← alternatingGroup.index_eq_two (α := α), index_mul_card]
