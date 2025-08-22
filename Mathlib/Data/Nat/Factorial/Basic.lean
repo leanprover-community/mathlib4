@@ -213,7 +213,7 @@ def ascFactorial (n : ℕ) : ℕ → ℕ
   | 0 => 1
   | k + 1 => (n + k) * ascFactorial n k
 
-/-- Tail-recursive version of `Nat.ascFactorial`.  -/
+/-- Tail-recursive version of `Nat.ascFactorial`. -/
 def ascFactorialTR (n k : ℕ) : ℕ :=
   go 1 k where
   /-- Auxiliary function for `Nat.ascFactorialTR`.
