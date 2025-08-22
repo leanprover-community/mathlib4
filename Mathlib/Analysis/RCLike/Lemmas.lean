@@ -76,9 +76,9 @@ end FiniteDimensional
 namespace RCLike
 
 @[simp, rclike_simps]
-theorem reCLM_norm : ‖(reCLM : K →L[ℝ] ℝ)‖ = 1 := by
+theorem reCLM_norm : ‖(reCLM : StrongDual ℝ K)‖ = 1 := by
   apply le_antisymm (LinearMap.mkContinuous_norm_le _ zero_le_one _)
-  convert ContinuousLinearMap.ratio_le_opNorm (reCLM : K →L[ℝ] ℝ) (1 : K)
+  convert ContinuousLinearMap.ratio_le_opNorm (reCLM : StrongDual ℝ K) (1 : K)
   simp
 
 @[simp, rclike_simps]

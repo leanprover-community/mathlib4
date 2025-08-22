@@ -39,15 +39,15 @@ namespace ProbabilityTheory
 /-- A measure is Gaussian if its map by every continuous linear form is a real Gaussian measure. -/
 class IsGaussian {E : Type*} [TopologicalSpace E] [AddCommMonoid E] [Module ℝ E]
     {mE : MeasurableSpace E} (μ : Measure E) : Prop where
-  map_eq_gaussianReal (L : E →L[ℝ] ℝ) : μ.map L = gaussianReal (μ[L]) (Var[L; μ]).toNNReal
+  map_eq_gaussianReal (L : StrongDual ℝ E) : μ.map L = gaussianReal (μ[L]) (Var[L; μ]).toNNReal
 
 /-- A Gaussian measure is a probability measure. -/
 instance IsGaussian.toIsProbabilityMeasure {E : Type*} [TopologicalSpace E] [AddCommMonoid E]
     [Module ℝ E] {mE : MeasurableSpace E} (μ : Measure E) [IsGaussian μ] :
     IsProbabilityMeasure μ where
   measure_univ := by
-    have : μ.map (0 : E →L[ℝ] ℝ) Set.univ = 1 := by simp [IsGaussian.map_eq_gaussianReal]
-    simpa [Measure.map_apply (by fun_prop : Measurable (0 : E →L[ℝ] ℝ)) .univ] using this
+    have : μ.map (0 : StrongDual ℝ E) Set.univ = 1 := by simp [IsGaussian.map_eq_gaussianReal]
+    simpa [Measure.map_apply (by fun_prop : Measurable (0 : StrongDual ℝ E)) .univ] using this
 
 /-- A real Gaussian measure is Gaussian. -/
 instance isGaussian_gaussianReal (m : ℝ) (v : ℝ≥0) : IsGaussian (gaussianReal m v) where

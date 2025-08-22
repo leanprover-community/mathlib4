@@ -376,7 +376,7 @@ theorem map_add_add (f : E →L[𝕜] Fₗ →L[𝕜] Gₗ) (x x' : E) (y y' : F
 /-- The norm of the tensor product of a scalar linear map and of an element of a normed space
 is the product of the norms. -/
 @[simp]
-theorem norm_smulRight_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRight c f‖ = ‖c‖ * ‖f‖ := by
+theorem norm_smulRight_apply (c : StrongDual 𝕜 E) (f : Fₗ) : ‖smulRight c f‖ = ‖c‖ * ‖f‖ := by
   refine le_antisymm ?_ ?_
   · refine opNorm_le_bound _ (by positivity) fun x => ?_
     calc
@@ -396,13 +396,13 @@ theorem norm_smulRight_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRight c
 /-- The non-negative norm of the tensor product of a scalar linear map and of an element of a normed
 space is the product of the non-negative norms. -/
 @[simp]
-theorem nnnorm_smulRight_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRight c f‖₊ = ‖c‖₊ * ‖f‖₊ :=
+theorem nnnorm_smulRight_apply (c : StrongDual 𝕜 E) (f : Fₗ) : ‖smulRight c f‖₊ = ‖c‖₊ * ‖f‖₊ :=
   NNReal.eq <| c.norm_smulRight_apply f
 
 variable (𝕜 E Fₗ) in
 /-- `ContinuousLinearMap.smulRight` as a continuous trilinear map:
-`smulRightL (c : E →L[𝕜] 𝕜) (f : F) (x : E) = c x • f`. -/
-def smulRightL : (E →L[𝕜] 𝕜) →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] Fₗ :=
+`smulRightL (c : StrongDual 𝕜 E) (f : F) (x : E) = c x • f`. -/
+def smulRightL : StrongDual 𝕜 E →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] Fₗ :=
   LinearMap.mkContinuous₂
     { toFun := smulRightₗ
       map_add' := fun c₁ c₂ => by
@@ -418,7 +418,7 @@ def smulRightL : (E →L[𝕜] 𝕜) →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] F�
 
 
 @[simp]
-theorem norm_smulRightL_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRightL 𝕜 E Fₗ c f‖ = ‖c‖ * ‖f‖ :=
+theorem norm_smulRightL_apply (c : StrongDual 𝕜 E) (f : Fₗ) : ‖smulRightL 𝕜 E Fₗ c f‖ = ‖c‖ * ‖f‖ :=
   norm_smulRight_apply c f
 
 end ContinuousLinearMap
