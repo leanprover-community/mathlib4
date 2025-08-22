@@ -9,7 +9,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 /-!
 # Counting measure
 
-In this file we define the counting measure `MeasurTheory.Measure.count`
+In this file we define the counting measure `MeasureTheory.Measure.count`
 as `MeasureTheory.Measure.sum MeasureTheory.Measure.dirac`
 and prove basic properties of this measure.
 -/
