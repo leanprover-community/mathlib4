@@ -79,7 +79,7 @@ variable (R M)
 theorem rank_eq_card_chooseBasisIndex : Module.rank R M = #(ChooseBasisIndex R M) :=
   (chooseBasis R M).mk_eq_rank''.symm
 
-/-- The finrank of a free module `M` over `R` is the cardinality of `ChooseBasisIndex R M`. -/
+/-- The `finrank` of a free module `M` over `R` is the cardinality of `ChooseBasisIndex R M`. -/
 theorem _root_.Module.finrank_eq_card_chooseBasisIndex [Module.Finite R M] :
     finrank R M = Fintype.card (ChooseBasisIndex R M) := by
   simp [finrank, rank_eq_card_chooseBasisIndex]
