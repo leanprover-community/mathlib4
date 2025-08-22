@@ -92,14 +92,7 @@ inductive Monoid.CoprodI.Rel : FreeMonoid (Σ i, M i) → FreeMonoid (Σ i, M i)
 
 /-- The free product (categorical coproduct) of an indexed family of monoids. -/
 def Monoid.CoprodI : Type _ := (conGen (Monoid.CoprodI.Rel M)).Quotient
--- The `Monoid` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance : Monoid (Monoid.CoprodI M) := by
-  delta Monoid.CoprodI; infer_instance
-
-instance : Inhabited (Monoid.CoprodI M) :=
-  ⟨1⟩
+deriving Monoid, Inhabited
 
 namespace Monoid.CoprodI
 
@@ -205,7 +198,7 @@ theorem induction_left {motive : CoprodI M → Prop} (m : CoprodI M) (one : moti
     (mul : ∀ {i} (m : M i) x, motive x → motive (of m * x)) : motive m := by
   induction m using Submonoid.induction_of_closure_eq_top_left mclosure_iUnion_range_of with
   | one => exact one
-  | mul x hx y ihy =>
+  | mul_left x hx y ihy =>
     obtain ⟨i, m, rfl⟩ : ∃ (i : ι) (m : M i), of m = x := by simpa using hx
     exact mul m y ihy
 
@@ -372,13 +365,7 @@ theorem mem_rcons_iff {i j : ι} (p : Pair M i) (m : M j) :
     ⟨_, m⟩ ∈ (rcons p).toList ↔ ⟨_, m⟩ ∈ p.tail.toList ∨
       m ≠ 1 ∧ (∃ h : i = j, m = h ▸ p.head) := by
   simp only [rcons, cons, ne_eq]
-  by_cases hij : i = j
-  · subst i
-    by_cases hm : m = p.head
-    · subst m
-      split_ifs <;> simp_all
-    · split_ifs <;> simp_all
-  · split_ifs <;> simp_all [Ne.symm hij]
+  grind
 
 end
 
@@ -702,7 +689,7 @@ theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i 
     rcases l with - | ⟨y, l⟩
     · refine ⟨x.1, x.1, singleton x.2 hnot1.1, ?_⟩
       simp [toWord]
-    · rw [List.chain'_cons] at hchain
+    · rw [List.chain'_cons_cons] at hchain
       specialize hi hnot1.2 hchain.2 (by rintro ⟨rfl⟩)
       obtain ⟨i, j, w', hw' : w'.toList = y::l⟩ := hi
       obtain rfl : y = ⟨i, w'.head⟩ := by simpa [hw'] using w'.toList_head?
@@ -1016,7 +1003,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
     refine FreeGroup.freeGroupUnitEquivInt.forall_congr_left.mpr ?_
     intro n hne1
     change FreeGroup.lift (fun _ => a i) (FreeGroup.of () ^ n) • X' j ⊆ X' i
-    simp only [map_zpow, FreeGroup.lift.of]
+    simp only [map_zpow, FreeGroup.lift_apply_of]
     change a i ^ n • X' j ⊆ X' i
     have hnne0 : n ≠ 0 := by
       rintro rfl

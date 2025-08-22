@@ -19,7 +19,7 @@ divisible by the cusp width of `Γ`. As an application, we show that cusp forms 
 to 0 as `im τ → ∞`.
 
 We also define the `q`-expansion of a modular form, either as a power series or as a
-`FormalMultlinearSeries`, and show that it converges to `f` on the upper half plane.
+`FormalMultilinearSeries`, and show that it converges to `f` on the upper half plane.
 
 ## Main definitions and results
 
@@ -133,8 +133,8 @@ variable (h) in
 def qExpansion : PowerSeries ℂ :=
   .mk fun n ↦ (↑n.factorial)⁻¹ * iteratedDeriv n (cuspFunction h f) 0
 
-lemma qExpansion_coeff (n : ℕ) :
-    (qExpansion h f).coeff ℂ n = (↑n.factorial)⁻¹ * iteratedDeriv n (cuspFunction h f) 0 := by
+lemma qExpansion_coeff (m : ℕ) :
+    (qExpansion h f).coeff m = (↑m.factorial)⁻¹ * iteratedDeriv m (cuspFunction h f) 0 := by
   simp [qExpansion]
 
 variable (h) in
@@ -142,13 +142,13 @@ variable (h) in
 The `q`-expansion of a level `n` modular form, bundled as a `FormalMultilinearSeries`.
 
 TODO: Maybe get rid of this and instead define a general API for converting `PowerSeries` to
-`FormalMultlinearSeries`.
+`FormalMultilinearSeries`.
 -/
 def qExpansionFormalMultilinearSeries : FormalMultilinearSeries ℂ ℂ ℂ :=
-  fun n ↦ (qExpansion h f).coeff ℂ n • ContinuousMultilinearMap.mkPiAlgebraFin ℂ n _
+  fun n ↦ (qExpansion h f).coeff n • ContinuousMultilinearMap.mkPiAlgebraFin ℂ n _
 
 lemma qExpansionFormalMultilinearSeries_apply_norm (n : ℕ) :
-    ‖qExpansionFormalMultilinearSeries h f n‖ = ‖(qExpansion h f).coeff ℂ n‖ := by
+    ‖qExpansionFormalMultilinearSeries h f n‖ = ‖(qExpansion h f).coeff n‖ := by
   rw [qExpansionFormalMultilinearSeries,
     ← (ContinuousMultilinearMap.piFieldEquiv ℂ (Fin n) ℂ).symm.norm_map]
   simp
@@ -187,7 +187,7 @@ lemma analyticAt_cuspFunction_zero :
     (by simpa only [ball_zero_eq] using Metric.ball_mem_nhds (0 : ℂ) zero_lt_one)
 
 lemma hasSum_qExpansion_of_abs_lt (hq : ‖q‖ < 1) :
-    HasSum (fun m ↦ (qExpansion h f).coeff ℂ m • q ^ m) (cuspFunction h f q) := by
+    HasSum (fun m ↦ (qExpansion h f).coeff m • q ^ m) (cuspFunction h f q) := by
   simp only [qExpansion_coeff]
   have hdiff : DifferentiableOn ℂ (cuspFunction h f) (Metric.ball 0 1) := by
     refine fun z hz ↦ (differentiableAt_cuspFunction f hΓ ?_).differentiableWithinAt
@@ -197,7 +197,7 @@ lemma hasSum_qExpansion_of_abs_lt (hq : ‖q‖ < 1) :
   rw [sub_zero, smul_eq_mul, smul_eq_mul, mul_right_comm, smul_eq_mul, mul_assoc]
 
 lemma hasSum_qExpansion :
-    HasSum (fun m : ℕ ↦ (qExpansion h f).coeff ℂ m • 𝕢 h τ ^ m) (f τ) := by
+    HasSum (fun m : ℕ ↦ (qExpansion h f).coeff m • 𝕢 h τ ^ m) (f τ) := by
   simpa only [eq_cuspFunction f hΓ] using
     hasSum_qExpansion_of_abs_lt f hΓ (τ.norm_qParam_lt_one h)
 
@@ -221,7 +221,7 @@ lemma hasFPowerSeries_cuspFunction :
 /-- The `q`-expansion coefficient can be expressed as a `circleIntegral` for any radius `0 < R < 1`.
 -/
 lemma qExpansion_coeff_eq_circleIntegral (n : ℕ) {R : ℝ} (hR : 0 < R) (hR' : R < 1) :
-    (qExpansion h f).coeff ℂ n =
+    (qExpansion h f).coeff n =
       ((2 * π * I)⁻¹ * ∮ (z : ℂ) in C(0, R), cuspFunction h f z / z ^ (n + 1)) := by
   have : DifferentiableOn ℂ (cuspFunction h f) (Metric.closedBall 0 R) := fun z hz ↦
       (differentiableAt_cuspFunction f hΓ <| (mem_closedBall_zero_iff.mp hz).trans_lt hR')
@@ -235,7 +235,7 @@ lemma qExpansion_coeff_eq_circleIntegral (n : ℕ) {R : ℝ} (hR : 0 < R) (hR' :
 in the upper half-plane from `t * I` to `N + t * I`, for any `0 < t`.
 -/
 lemma qExpansion_coeff_eq_intervalIntegral (n : ℕ)
-    {t : ℝ} (ht : 0 < t) : (qExpansion h f).coeff ℂ n =
+    {t : ℝ} (ht : 0 < t) : (qExpansion h f).coeff n =
     1 / h * ∫ u in (0)..h, 1 / 𝕢 h (u + t * I) ^ n * f (⟨u + t * I, by simpa using ht⟩) := by
   -- We use a circle integral in the `q`-domain of radius `R = exp (-2 * π * t / N)`.
   let R := Real.exp (-2 * π * t / h)

@@ -13,8 +13,6 @@ import Mathlib.Tactic.TypeStar
 
 universe u
 
-deriving instance Repr for Ordering
-
 namespace Ordering
 
 variable {α : Type*}

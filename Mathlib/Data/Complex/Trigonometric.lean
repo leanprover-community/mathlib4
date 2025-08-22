@@ -559,14 +559,17 @@ theorem sin_sub : sin (x - y) = sin x * cos y - cos x * sin y := by
 theorem cos_sub : cos (x - y) = cos x * cos y + sin x * sin y := by
   simp [sub_eq_add_neg, cos_add, sin_neg, cos_neg]
 
+nonrec theorem sin_add_sin : sin x + sin y = 2 * sin ((x + y) / 2) * cos ((x - y) / 2) :=
+  ofReal_injective <| by simp [sin_add_sin]
+
 nonrec theorem sin_sub_sin : sin x - sin y = 2 * sin ((x - y) / 2) * cos ((x + y) / 2) :=
   ofReal_injective <| by simp [sin_sub_sin]
 
-nonrec theorem cos_sub_cos : cos x - cos y = -2 * sin ((x + y) / 2) * sin ((x - y) / 2) :=
-  ofReal_injective <| by simp [cos_sub_cos]
-
 nonrec theorem cos_add_cos : cos x + cos y = 2 * cos ((x + y) / 2) * cos ((x - y) / 2) :=
   ofReal_injective <| by simp [cos_add_cos]
+
+nonrec theorem cos_sub_cos : cos x - cos y = -2 * sin ((x + y) / 2) * sin ((x - y) / 2) :=
+  ofReal_injective <| by simp [cos_sub_cos]
 
 theorem two_mul_sin_mul_sin (x y : ℝ) : 2 * sin x * sin y = cos (x - y) - cos (x + y) := by
   simp [cos_add, cos_sub]
@@ -877,7 +880,7 @@ theorem sin_pos_of_pos_of_le_one {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 1) : 0 < si
       sub_le_comm.1 (abs_sub_le_iff.1 (sin_bound (by rwa [abs_of_nonneg (le_of_lt hx0)]))).2
 
 theorem sin_pos_of_pos_of_le_two {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 2) : 0 < sin x :=
-  have : x / 2 ≤ 1 := (div_le_iff₀ (by norm_num)).mpr (by simpa)
+  have : x / 2 ≤ 1 := (div_le_iff₀ (by simp)).mpr (by simpa)
   calc
     0 < 2 * sin (x / 2) * cos (x / 2) :=
       mul_pos (mul_pos (by norm_num) (sin_pos_of_pos_of_le_one (half_pos hx0) this))

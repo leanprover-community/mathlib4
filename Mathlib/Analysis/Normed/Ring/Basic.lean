@@ -602,7 +602,7 @@ instance MulOpposite.instNormedCommRing : NormedCommRing αᵐᵒᵖ where
 theorem IsPowMul.restriction {R S : Type*} [CommRing R] [Ring S] [Algebra R S]
     (A : Subalgebra R S) {f : S → ℝ} (hf_pm : IsPowMul f) :
     IsPowMul fun x : A => f x.val := fun x n hn => by
-  simpa [SubsemiringClass.coe_pow] using hf_pm (↑x) hn
+  simpa using hf_pm (↑x) hn
 
 end NormedCommRing
 
@@ -642,9 +642,21 @@ variable {R₁ R₂ : Type*}
 for a continuous semilinear map to be bounded and this is the main use for this typeclass. -/
 class RingHomIsometric [Semiring R₁] [Semiring R₂] [Norm R₁] [Norm R₂] (σ : R₁ →+* R₂) : Prop where
   /-- The ring homomorphism is an isometry. -/
-  is_iso : ∀ {x : R₁}, ‖σ x‖ = ‖x‖
+  norm_map : ∀ {x : R₁}, ‖σ x‖ = ‖x‖
 
-attribute [simp] RingHomIsometric.is_iso
+@[deprecated (since := "2025-08-03")] alias RingHomIsometric.is_iso := RingHomIsometric.norm_map
+
+attribute [simp] RingHomIsometric.norm_map
+
+@[simp]
+theorem RingHomIsometric.nnnorm_map [SeminormedRing R₁] [SeminormedRing R₂] (σ : R₁ →+* R₂)
+    [RingHomIsometric σ] (x : R₁) : ‖σ x‖₊ = ‖x‖₊ :=
+  NNReal.eq norm_map
+
+@[simp]
+theorem RingHomIsometric.enorm_map [SeminormedRing R₁] [SeminormedRing R₂] (σ : R₁ →+* R₂)
+    [RingHomIsometric σ] (x : R₁) : ‖σ x‖ₑ = ‖x‖ₑ :=
+  congrArg ENNReal.ofNNReal <| nnnorm_map σ x
 
 variable [SeminormedRing R₁]
 
