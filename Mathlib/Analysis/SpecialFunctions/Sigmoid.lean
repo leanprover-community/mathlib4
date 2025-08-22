@@ -49,8 +49,7 @@ lemma range_sigmoid : range Sigmoid = Ioo 0 1 := by
   constructor
   · rintro ⟨y, rfl⟩
     constructor
-    · simp only [Sigmoid, RelEmbedding.coe_mk, Embedding.coeFn_mk]
-      change 0 < (1 + exp (-y))⁻¹
+    · change 0 < (1 + exp (-y))⁻¹
       positivity
     · simp only [Sigmoid]
       change (1 + exp (-y))⁻¹ < 1
