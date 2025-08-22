@@ -39,7 +39,7 @@ instance isLocalizationMap_top [LinearOrder G] [AddLeftMono G] [Archimedean G] :
       fun g ↦ ⟨0, 0, ⟨⟩, Subsingleton.elim ..⟩
   · exact isLocalizationMap ⊤ top_ne_bot
 
-example : (⊤ : AddSubmonoid NNRat).IsLocalizationMap ((↑) : NNRat → ℚ) := isLocalizationMap_top
+example : (⊤ : AddSubmonoid ℚ≥0).IsLocalizationMap ((↑) : ℚ≥0 → ℚ) := isLocalizationMap_top
 
 end Archimedean
 

@@ -80,5 +80,7 @@ instance (priority := 100) (R) [CommSemiring R] [IsCancelAdd R] [Nontrivial R] :
   (Algebra.GrothendieckAddGroup.isLocalizationMap_smul_one R).strongRankCondition_of_isCancelAdd
 
 example : StrongRankCondition ℕ := inferInstance
-example : StrongRankCondition ℚ≥0 := inferInstance
--- ℝ≥0 isn't imported
+
+example : StrongRankCondition ℚ≥0 :=
+  have : IsCancelAdd ℚ≥0 := inferInstanceAs (IsCancelAdd {q : ℚ // 0 ≤ q})
+  inferInstance
