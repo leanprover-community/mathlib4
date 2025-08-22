@@ -69,7 +69,7 @@ def IsCompleteMultipartite.setoid (h : G.IsCompleteMultipartite) : Setoid α :=
 lemma completeMultipartiteGraph.isCompleteMultipartite {ι : Type*} (V : ι → Type*) :
     (completeMultipartiteGraph V).IsCompleteMultipartite := by
   intro
-  aesop
+  simp_all
 
 /-- The graph isomorphism from a graph `G` that `IsCompleteMultipartite` to the corresponding
 `completeMultipartiteGraph` (see also `isCompleteMultipartite_iff`) -/

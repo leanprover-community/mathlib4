@@ -627,7 +627,7 @@ theorem le_iff_atom_le_imp {a b : α} : a ≤ b ↔ ∀ c : α, IsAtom c → c �
 theorem eq_iff_atom_le_iff {a b : α} : a = b ↔ ∀ c, IsAtom c → (c ≤ a ↔ c ≤ b) := by
   refine ⟨fun h => by simp [h], fun h => ?_⟩
   rw [le_antisymm_iff, le_iff_atom_le_imp, le_iff_atom_le_imp]
-  aesop
+  simp_all
 
 end IsAtomistic
 

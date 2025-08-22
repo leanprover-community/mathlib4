@@ -162,7 +162,7 @@ instance : DecidableRel (edge s t).Adj := fun _ _ ↦ by
 
 @[simp]
 lemma edge_self_eq_bot : edge s s = ⊥ := by
-  ext; rw [edge_adj]; aesop
+  ext; rw [edge_adj]; simp_all
 
 lemma sup_edge_self : G ⊔ edge s s = G := by simp
 

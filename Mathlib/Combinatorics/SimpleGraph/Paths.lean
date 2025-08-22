@@ -307,7 +307,7 @@ lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
     Set.InjOn p.getVert {i | i ≤ p.length} := by
   intro n hn m hm hnm
   induction p generalizing n m with
-  | nil => aesop
+  | nil => simp_all
   | @cons v w u h p ihp =>
     simp only [length_cons, Set.mem_setOf_eq] at hn hm hnm
     by_cases hn0 : n = 0 <;> by_cases hm0 : m = 0
@@ -316,7 +316,7 @@ lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
       have hvp : v ∉ p.support := by aesop
       exact (hvp (Walk.mem_support_iff_exists_getVert.mpr ⟨(m - 1), ⟨hnm.symm, by omega⟩⟩)).elim
     · simp only [hm0, Walk.getVert_cons p h hn0] at hnm
-      have hvp : v ∉ p.support := by aesop
+      have hvp : v ∉ p.support := by simp_all
       exact (hvp (Walk.mem_support_iff_exists_getVert.mpr ⟨(n - 1), ⟨hnm, by omega⟩⟩)).elim
     · simp only [Walk.getVert_cons _ _ hn0, Walk.getVert_cons _ _ hm0] at hnm
       have := ihp hp.of_cons (by omega : (n - 1) ≤ p.length)
@@ -325,7 +325,7 @@ lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
 
 lemma IsPath.getVert_eq_start_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
     p.getVert i = u ↔ i = 0 := by
-  refine ⟨?_, by aesop⟩
+  refine ⟨?_, by simp_all⟩
   intro h
   by_cases hi : i = 0
   · exact hi

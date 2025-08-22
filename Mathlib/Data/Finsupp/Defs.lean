@@ -335,7 +335,7 @@ lemma range_mapRange (e : M → N) (he₀ : e 0 = 0) :
   · intro h
     classical
     choose f h using h
-    use onFinset g.support (fun x ↦ if x ∈ g.support then f x else 0) (by aesop)
+    use onFinset g.support (fun x ↦ if x ∈ g.support then f x else 0) (by simp_all)
     ext i
     simp only [mapRange_apply, onFinset_apply]
     split_ifs <;> simp_all

@@ -112,7 +112,7 @@ lemma fromRows_inj : Function.Injective2 (@fromRows R m₁ m₂ n) := by
 lemma fromCols_inj : Function.Injective2 (@fromCols R m n₁ n₂) := by
   intros x1 x2 y1 y2
   simp only [← Matrix.ext_iff]
-  aesop
+  simp_all
 
 lemma fromCols_ext_iff (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R) (B₁ : Matrix m n₁ R)
     (B₂ : Matrix m n₂ R) :

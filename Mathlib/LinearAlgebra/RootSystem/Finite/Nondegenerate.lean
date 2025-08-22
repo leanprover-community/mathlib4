@@ -276,7 +276,7 @@ lemma rootForm_restrict_nondegenerate_of_isAnisotropic :
 lemma orthogonal_rootSpan_eq :
     P.RootForm.orthogonal (P.rootSpan R) = LinearMap.ker P.RootForm := by
   rw [← LinearMap.BilinForm.orthogonal_top_eq_ker P.rootForm_symmetric.isRefl]
-  refine le_antisymm ?_ (by intro; aesop)
+  refine le_antisymm ?_ (by intro; simp_all)
   rintro x hx y -
   simp only [LinearMap.BilinForm.mem_orthogonal_iff, LinearMap.BilinForm.IsOrtho] at hx ⊢
   obtain ⟨u, hu, v, hv, rfl⟩ : ∃ᵉ (u ∈ P.rootSpan R) (v ∈ LinearMap.ker P.RootForm), u + v = y := by
