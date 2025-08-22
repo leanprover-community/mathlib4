@@ -173,6 +173,11 @@ theorem evariance_mul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
 theorem variance_zero (μ : Measure Ω) : variance 0 μ = 0 := by
   simp only [variance, evariance_zero, ENNReal.toReal_zero]
 
+theorem variance_eq_zero_iff [IsFiniteMeasure μ] (hX : MemLp X 2 μ) :
+    variance X μ = 0 ↔ X =ᵐ[μ] fun _ => μ[X] := by
+  simp [variance, ENNReal.toReal_eq_zero_iff, evariance_eq_zero_iff, evariance_eq_top_iff,
+    hX, hX.1.aemeasurable, hX.1]
+
 lemma covariance_self {X : Ω → ℝ} (hX : AEMeasurable X μ) :
     cov[X, X; μ] = Var[X; μ] := by
   rw [covariance, variance_eq_integral hX]

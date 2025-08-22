@@ -653,13 +653,14 @@ lemma mutuallySingular_iff_tvDist_eq_one {μ ν : Measure E} :
     μ ⟂ₘ ν ↔ tvDist μ ν = 1 := by
   sorry
 
-lemma one_sub_exp_le_tvDist_gaussianReal (μ₁ μ₂ : ℝ) :
-    1 - Real.exp (- (μ₁ - μ₂) ^ 2 / 2) ≤ tvDist (gaussianReal μ₁ 1) (gaussianReal μ₂ 1) := by
-  sorry
-
 lemma tvDist_map_le {F : Type*} {mF : MeasurableSpace F} {μ ν : Measure E}
     {f : E → F} (hf : Measurable f) :
     tvDist (μ.map f) (ν.map f) ≤ tvDist μ ν := by
+  sorry
+
+-- not proved yet. Comparison with a Hellinger divergence.
+lemma one_sub_exp_le_tvDist_gaussianReal (μ₁ μ₂ : ℝ) :
+    1 - Real.exp (- (μ₁ - μ₂) ^ 2 / 2) ≤ tvDist (gaussianReal μ₁ 1) (gaussianReal μ₂ 1) := by
   sorry
 
 lemma mutuallySingular_map_add_of_notMem_range_toInitialSpace (y : E)
@@ -669,13 +670,35 @@ lemma mutuallySingular_map_add_of_notMem_range_toInitialSpace (y : E)
   refine le_antisymm tvDist_le_one ?_
   refine le_of_forall_lt fun c hc ↦ ?_
   obtain ⟨n, hcn⟩ : ∃ n : ℕ, c < 1 - Real.exp (- n ^ 2 / 2) := by
-    sorry
+    simp_rw [lt_sub_iff_add_lt, ← lt_sub_iff_add_lt']
+    suffices Tendsto (fun n : ℕ ↦ Real.exp (- n ^ 2 / 2)) atTop (𝓝 0) by
+      refine Eventually.exists (f := atTop) ?_
+      refine this.eventually_lt_const ?_
+      grind
+    change Tendsto ((fun x : ℝ ↦ Real.exp (- x ^ 2 / 2)) ∘ (Nat.cast : ℕ → ℝ)) atTop (𝓝 0)
+    refine Tendsto.comp ?_ <| tendsto_natCast_atTop_atTop (R := ℝ)
+    simp [tendsto_div_const_atBot_iff]
   refine hcn.trans_le ?_
   obtain ⟨L, hL_var, hL_le⟩ : ∃ L : StrongDual ℝ E, Var[L; μ] = 1 ∧ n ≤ L y := by
     simp only [CameronMartin.range_toInitialSpace, Set.mem_setOf_eq, not_exists, not_forall,
       not_le] at hy
     obtain ⟨L, hL_var, hL_lt⟩ := hy n
-    sorry
+    have h_var_pos : 0 < Var[L; μ] := by
+      refine (variance_nonneg _ _).lt_of_ne' ?_
+      simp [variance_eq_zero_iff (IsGaussian.memLp_dual μ L 2 (by simp))]
+      sorry
+    refine ⟨√Var[L; μ]⁻¹ • L, ?_, ?_⟩
+    · simp only [ContinuousLinearMap.coe_smul']
+      rw [variance_smul, Real.sq_sqrt, inv_mul_cancel₀]
+      · exact h_var_pos.ne'
+      · simp [variance_nonneg]
+    · refine hL_lt.le.trans ?_
+      simp only [Real.sqrt_inv, ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul]
+      conv_lhs => rw [← one_mul (L y)]
+      gcongr
+      · exact le_trans (by positivity) hL_lt.le
+      · rw [one_le_inv_iff₀, Real.sqrt_pos, Real.sqrt_le_one]
+        simp [hL_var, h_var_pos]
   have h_le : tvDist ((μ.map (fun z ↦ z + y)).map L) (μ.map L)
       ≤ tvDist (μ.map (fun z ↦ z + y)) μ := tvDist_map_le (by fun_prop)
   refine le_trans ?_ h_le
