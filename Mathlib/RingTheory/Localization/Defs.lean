@@ -160,19 +160,15 @@ theorem algebraMap_isUnit_iff {x : R} : IsUnit (algebraMap R S x) ↔ ∃ m ∈ 
 
 variable (S)
 
-/-- `IsLocalization.toLocalizationWithZeroMap M S` shows `S` is the monoid localization of
-`R` at `M`. -/
-@[simps]
-def toLocalizationWithZeroMap : Submonoid.LocalizationWithZeroMap M S where
+/-- `IsLocalization.toLocalizationMap M S` shows `S` is the monoid localization of `R` at `M`. -/
+abbrev toLocalizationMap : M.LocalizationMap S where
   __ := algebraMap R S
   toFun := algebraMap R S
   map_units' := IsLocalization.map_units _
   surj' := IsLocalization.surj _
   exists_of_eq _ _ := IsLocalization.exists_of_eq
 
-/-- `IsLocalization.toLocalizationMap M S` shows `S` is the monoid localization of `R` at `M`. -/
-abbrev toLocalizationMap : Submonoid.LocalizationMap M S :=
-  (toLocalizationWithZeroMap M S).toLocalizationMap
+@[deprecated (since := "2025-08-01")] alias toLocalizationWithZeroMap := toLocalizationMap
 
 @[simp]
 lemma toLocalizationMap_toMonoidHom :
@@ -486,12 +482,11 @@ theorem lift_spec_mul_add {g : R →+* P} (hg : ∀ y : M, IsUnit (g y)) (z w w'
 `S` to `P` sending `z : S` to `g x * (g y)⁻¹`, where `(x, y) : R × M` are such that
 `z = f x * (f y)⁻¹`. -/
 noncomputable def lift {g : R →+* P} (hg : ∀ y : M, IsUnit (g y)) : S →+* P :=
-  { Submonoid.LocalizationWithZeroMap.lift (toLocalizationWithZeroMap M S)
-      g.toMonoidWithZeroHom hg with
+  { (toLocalizationMap M S).lift₀ g.toMonoidWithZeroHom hg with
     map_add' := by
       intro x y
       dsimp
-      rw [(toLocalizationWithZeroMap M S).lift_def, (toLocalizationWithZeroMap M S).lift_spec,
+      rw [(toLocalizationMap M S).lift₀_def, (toLocalizationMap M S).lift_spec,
         mul_add, mul_comm, eq_comm, lift_spec_mul_add, add_comm, mul_comm, mul_assoc, mul_comm,
         mul_assoc, lift_spec_mul_add]
       simp_rw [← mul_assoc]
