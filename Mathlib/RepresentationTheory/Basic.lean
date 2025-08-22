@@ -30,7 +30,7 @@ homomorphisms `G →* (V →ₗ[k] V)`. We use the abbreviation `Representation`
 The theorem `asAlgebraHom_def` constructs a module over the group `k`-algebra of `G` (implemented
 as `MonoidAlgebra k G`) corresponding to a representation. If `ρ : Representation k G V`, this
 module can be accessed via `ρ.asModule`. Conversely, given a `MonoidAlgebra k G`-module `M`,
-`M.ofModule` is the associociated representation seen as a homomorphism.
+`M.ofModule` is the associated representation seen as a homomorphism.
 -/
 
 open MonoidAlgebra (lift of)
@@ -594,7 +594,7 @@ product `V × W`.
 noncomputable def prod : Representation k G (V × W) where
   toFun g := (ρV g).prodMap (ρW g)
   map_one' := by simp
-  map_mul' g h := by simp; rfl
+  map_mul' g h := by simp [prodMap_mul]
 
 end Prod
 

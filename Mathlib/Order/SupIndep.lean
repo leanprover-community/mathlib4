@@ -323,7 +323,7 @@ theorem iSupIndep.mono {s t : ι → α} (hs : iSupIndep s) (hst : t ≤ s) : iS
   fun i => (hs i).mono (hst i) <| iSup₂_mono fun j _ => hst j
 
 /-- Composing an independent indexed family with an injective function on the index results in
-another indepedendent indexed family. -/
+another independent indexed family. -/
 theorem iSupIndep.comp {ι ι' : Sort*} {t : ι → α} {f : ι' → ι} (ht : iSupIndep t)
     (hf : Injective f) : iSupIndep (t ∘ f) := fun i =>
   (ht (f i)).mono_right <| by

@@ -540,8 +540,7 @@ theorem powerset_insert (s : Set α) (a : α) : 𝒫 insert a s = 𝒫 s ∪ ins
     by_cases hs : a ∈ t
     · right
       refine ⟨t \ {a}, by grind⟩
-    · left
-      grind
+    · grind
   · grind
 
 theorem disjoint_powerset_insert {s : Set α} {a : α} (h : a ∉ s) :
