@@ -201,17 +201,6 @@ lemma card_inter_lt_of_cliqueFree (h : G.CliqueFree (r + 2)) : k < r := by
   exact (hw.isNClique_fst_left.insert_insert (hs ▸ this.symm ▸ hw.isNClique_snd_right)
     hw.snd_notMem_left hw.isPathGraph3Compl.adj).not_cliqueFree
 
-/-- Any `Wᵣ,ₖ` contains `2 * r + 3 - k` vertices, which we express here without subtraction. -/
-lemma card_add_card_inter : #({v} ∪ ({w₁} ∪ ({w₂} ∪ (s ∪ t)))) + k = 2 * r + 3 := by
-  change #(insert _ <| insert _ <| insert _ _) + _ = _
-  rw [add_comm, card_insert_of_notMem, card_insert_of_notMem, card_insert_of_notMem] <;> try grind
-  simp_rw [← add_assoc, ← hw.card_inter, card_inter_add_card_union]
-  grind
-
-lemma three_le_card : 3 ≤ #({v} ∪ ({w₁} ∪ ({w₂} ∪ (s ∪ t)))) :=
-  two_lt_card.2 ⟨_, mem_insert_self .., _, by simp, _, by simp, hw.isPathGraph3Compl.ne_fst,
-                 hw.isPathGraph3Compl.ne_snd, hw.isPathGraph3Compl.fst_ne_snd⟩
-
 end IsFiveWheelLike
 
 /--
@@ -386,7 +375,9 @@ lemma minDegree_le_of_cliqueFree_FiveWheelLikeFree_succ [Fintype α]
   have bdX := sum_degree_le_of_le_not_adj xcle (fun _ _ ↦ Nat.zero_le _)
   rw [compl_compl, tsub_zero, add_comm] at bdX
   rw [Nat.le_div_iff_mul_le <| Nat.add_pos_right _ zero_lt_three]
-  have Wc : #W + k = 2 * r + 3 := hw.card_add_card_inter
+  have Wc : #W + k = 2 * r + 3 := by
+    change #(insert _ <| insert _ <| insert _ _) + _ = _
+    grind [card_insert_of_notMem, card_inter_add_card_union]
   -- The sum of the degree sum over `W` and twice the degree sum over `s ∩ t`
   -- is at least `G.minDegree * (#W + 2 * #(s ∩ t))` which implies the result
   calc
@@ -403,7 +394,8 @@ lemma minDegree_le_of_cliqueFree_FiveWheelLikeFree_succ [Fintype α]
           subst k
           rw [add_zero] at Wc
           simp [Xu, Wc, mul_comm]
-        have w3 : 3 ≤ #W := hw.three_le_card
+        have w3 : 3 ≤ #W := two_lt_card.2 ⟨_, mem_insert_self .., _, by simp [W], _, by simp [W],
+          hw.isPathGraph3Compl.ne_fst, hw.isPathGraph3Compl.ne_snd, hw.isPathGraph3Compl.fst_ne_snd⟩
         have hap : #W - 1 + 2 * (k - 1) = #W - 3 + 2 * k := by omega
         rw [hap, ← add_mul, card_add_card_compl, mul_comm, two_mul, ← add_assoc]
         gcongr
