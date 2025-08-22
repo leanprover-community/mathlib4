@@ -74,7 +74,7 @@ theorem norm_eq_one_of_not_module_finite (h : ¬Module.Finite R S) (x : S) : nor
   rintro ⟨s, ⟨b⟩⟩
   exact Module.Finite.of_basis b
 
--- Can't be a `simp` lemma because it depends on a choice of basis
+-- Cannot be a `simp` lemma because it depends on a choice of basis
 theorem norm_eq_matrix_det [Fintype ι] [DecidableEq ι] (b : Basis ι R S) (s : S) :
     norm R s = Matrix.det (Algebra.leftMulMatrix b s) := by
   rw [norm_apply, ← LinearMap.det_toMatrix b, ← toMatrix_lmul_eq]; rfl

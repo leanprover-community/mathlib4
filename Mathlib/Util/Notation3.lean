@@ -559,7 +559,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
   for item in items do
     match item with
     | `(notation3Item| $lit:str) =>
-      -- Can't use `pushMacro` since it inserts an extra variable into the pattern for `str`, which
+      -- Cannot use `pushMacro` since it inserts an extra variable into the pattern for `str`, which
       -- breaks our delaborator
       syntaxArgs := syntaxArgs.push (← `(stx| $lit:str))
       pattArgs := pattArgs.push <| mkAtomFrom lit lit.1.isStrLit?.get!

@@ -638,7 +638,7 @@ theorem star_eq_neg {c₁ : R} {a : ℍ[R,c₁,0,c₃]} : star a = -a ↔ a.re =
 
 end CharZero
 
--- Can't use `rw ← star_eq_self` in the proof without additional assumptions
+-- Cannot use `rw ← star_eq_self` in the proof without additional assumptions
 theorem star_mul_eq_coe : star a * a = (star a * a).re := by ext <;> simp <;> ring
 
 theorem mul_star_eq_coe : a * star a = (a * star a).re := by

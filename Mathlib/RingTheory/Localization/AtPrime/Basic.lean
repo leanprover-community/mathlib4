@@ -147,7 +147,7 @@ theorem isUnit_to_map_iff (x : R) : IsUnit ((algebraMap R S) x) ↔ x ∈ I.prim
       (Ideal.map (algebraMap R S) I).eq_top_of_isUnit_mem (Ideal.mem_map_of_mem _ hx) h,
     fun h => map_units S ⟨x, h⟩⟩
 
--- Can't use typeclasses to infer the `IsLocalRing` instance, so use an `optParam` instead
+-- Cannot use typeclasses to infer the `IsLocalRing` instance, so use an `optParam` instead
 -- (since `IsLocalRing` is a `Prop`, there should be no unification issues.)
 theorem to_map_mem_maximal_iff (x : R) (h : IsLocalRing S := isLocalRing S I) :
     algebraMap R S x ∈ IsLocalRing.maximalIdeal S ↔ x ∈ I :=

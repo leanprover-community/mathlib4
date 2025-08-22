@@ -223,7 +223,7 @@ instance (priority := 10) GroupWithZero.noZeroDivisors : NoZeroDivisors G₀ :=
       contrapose! h
       exact (Units.mk0 a h.1 * Units.mk0 b h.2).ne_zero }
 
--- Can't be put next to the other `mk0` lemmas because it depends on the
+-- Cannot be put next to the other `mk0` lemmas because it depends on the
 -- `NoZeroDivisors` instance, which depends on `mk0`.
 @[simp]
 theorem Units.mk0_mul (x y : G₀) (hxy) :

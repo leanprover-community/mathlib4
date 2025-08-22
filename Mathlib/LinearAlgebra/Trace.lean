@@ -41,7 +41,7 @@ variable (b : Basis ι R M) (c : Basis κ R M)
 def traceAux : (M →ₗ[R] M) →ₗ[R] R :=
   Matrix.traceLinearMap ι R R ∘ₗ ↑(LinearMap.toMatrix b b)
 
--- Can't be `simp` because it would cause a loop.
+-- Cannot be `simp` because it would cause a loop.
 theorem traceAux_def (b : Basis ι R M) (f : M →ₗ[R] M) :
     traceAux R b f = Matrix.trace (LinearMap.toMatrix b b f) :=
   rfl

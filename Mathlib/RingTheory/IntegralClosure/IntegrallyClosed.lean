@@ -277,7 +277,7 @@ variable (K : Type*) [Field K] [Algebra R K]
 variable [IsFractionRing R K]
 variable {L : Type*} [Field L] [Algebra K L] [Algebra R L] [IsScalarTower R K L]
 
--- Can't be an instance because you need to supply `K`.
+-- Cannot be an instance because you need to supply `K`.
 theorem isIntegrallyClosedOfFiniteExtension [IsDomain R] [FiniteDimensional K L] :
     IsIntegrallyClosed (integralClosure R L) :=
   letI : IsFractionRing (integralClosure R L) L := isFractionRing_of_finite_extension K L

@@ -103,9 +103,9 @@ def getFunctionData (f : Expr) : MetaM FunctionData := do
 /-- Result of `getFunctionData?`. It returns function data if the function is in the form
 `fun x => f y₁ ... yₙ`. Two other cases are `fun x => let y := ...` or `fun x y => ...` -/
 inductive MaybeFunctionData where
-  /-- Can't generate function data as function body has let binder. -/
+  /-- Cannot generate function data as function body has let binder. -/
   | letE (f : Expr)
-  /-- Can't generate function data as function body has lambda binder. -/
+  /-- Cannot generate function data as function body has lambda binder. -/
   | lam (f : Expr)
   /-- Function data has been successfully generated. -/
   | data (fData : FunctionData)

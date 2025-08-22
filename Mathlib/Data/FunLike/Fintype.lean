@@ -57,7 +57,7 @@ variable (F G : Sort*) {α γ : Sort*} {β : α → Sort*} [DFunLike F α β] [F
 
 /-- All `DFunLike`s are finite if their domain and codomain are.
 
-Can't be an instance because it can cause infinite loops.
+Cannot be an instance because it can cause infinite loops.
 -/
 theorem DFunLike.finite [Finite α] [∀ i, Finite (β i)] : Finite F :=
   Finite.of_injective _ DFunLike.coe_injective
@@ -65,7 +65,7 @@ theorem DFunLike.finite [Finite α] [∀ i, Finite (β i)] : Finite F :=
 /-- All `FunLike`s are finite if their domain and codomain are.
 
 Non-dependent version of `DFunLike.finite` that might be easier to infer.
-Can't be an instance because it can cause infinite loops.
+Cannot be an instance because it can cause infinite loops.
 -/
 theorem FunLike.finite [Finite α] [Finite γ] : Finite G :=
   DFunLike.finite G
