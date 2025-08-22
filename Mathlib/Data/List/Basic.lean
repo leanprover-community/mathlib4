@@ -952,7 +952,7 @@ theorem foldlM_eq_foldl (f : β → α → m β) (b l) :
     ∀ mb : m β, (mb >>= fun b => List.foldlM f b l) = foldl (fun mb a => mb >>= fun b => f b a) mb l
     by simp [← h (pure b)]
   induction l with
-  | nil => intro; simp
+  | nil => simp
   | cons _ _ l_ih => intro; simp only [List.foldlM, foldl, ← l_ih, functor_norm]
 
 end FoldlMFoldrM
