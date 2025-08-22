@@ -60,9 +60,7 @@ theorem getElem?_getD_singleton_default_eq (n : ℕ) : [d][n]?.getD d = d := by 
 
 @[simp]
 theorem getElem?_getD_replicate_default_eq (r n : ℕ) : (replicate r d)[n]?.getD d = d := by
-  induction r generalizing n with
-  | zero => simp
-  | succ n ih => simp at ih; cases n <;> simp [ih, replicate_succ]
+  grind
 
 theorem getD_replicate {y i n} (h : i < n) :
     getD (replicate n x) i y = x := by
@@ -76,12 +74,7 @@ theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length) :
 
 theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ n) :
     (l ++ l').getD n d = l'.getD (n - l.length) d := by
-  cases Nat.lt_or_ge n (l ++ l').length with
-  | inl h' =>
-    rw [getD_eq_getElem (l ++ l') d h', getElem_append_right h, getD_eq_getElem]
-  | inr h' =>
-    rw [getD_eq_default _ _ h', getD_eq_default]
-    rwa [Nat.le_sub_iff_add_le' h, ← length_append]
+  grind
 
 theorem getD_eq_getD_getElem? (n : ℕ) : l.getD n d = l[n]?.getD d := by
   cases Nat.lt_or_ge n l.length with
