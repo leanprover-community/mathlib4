@@ -198,7 +198,7 @@ lemma completeSpace_of_completeSpace_continuousMultilinearMap
     [CompleteSpace (ContinuousMultilinearMap 𝕜 M F)]
     {m : ∀ i, M i} (hm : ∀ i, m i ≠ 0) : CompleteSpace F := by
   refine Metric.complete_of_cauchySeq_tendsto fun f hf => ?_
-  have : ∀ i, ∃ φ : M i →L[𝕜] 𝕜, φ (m i) = 1 := fun i ↦ exists_eq_one (hm i)
+  have : ∀ i, ∃ φ : StrongDual 𝕜 (M i), φ (m i) = 1 := fun i ↦ exists_eq_one (hm i)
   choose φ hφ using this
   cases nonempty_fintype ι
   let g : ℕ → (ContinuousMultilinearMap 𝕜 M F) := fun n ↦
