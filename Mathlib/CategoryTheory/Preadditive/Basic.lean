@@ -186,21 +186,13 @@ instance (priority := 100) preadditiveHasZeroMorphisms : HasZeroMorphisms C wher
   comp_zero f R := show leftComp R f 0 = 0 from map_zero _
   zero_comp P _ _ f := show rightComp P f 0 = 0 from map_zero _
 
-/-- Porting note: adding this before the ring instance allowed moduleEndRight to find
-the correct Monoid structure on End. Moved both down after preadditiveHasZeroMorphisms
-to make use of them -/
-instance {X : C} : Semiring (End X) :=
-  { End.monoid with
+instance {X : C} : Ring (End X) :=
+  { End.monoid,
+    inferInstanceAs <| AddCommGroup (End X) with
     zero_mul := fun f => by dsimp [mul]; exact HasZeroMorphisms.comp_zero f _
     mul_zero := fun f => by dsimp [mul]; exact HasZeroMorphisms.zero_comp _ f
     left_distrib := fun f g h => Preadditive.add_comp X X X g h f
-    right_distrib := fun f g h => Preadditive.comp_add X X X h f g }
-
-/-- Porting note: It looks like Ring's parent classes changed in
-Lean 4 so the previous instance needed modification. Was following my nose here. -/
-instance {X : C} : Ring (End X) :=
-  { (inferInstance : Semiring (End X)),
-    (inferInstance : AddCommGroup (End X)) with
+    right_distrib := fun f g h => Preadditive.comp_add X X X h f g
     neg_add_cancel := neg_add_cancel }
 
 instance moduleEndRight {X Y : C} : Module (End Y) (X ⟶ Y) where
