@@ -26,7 +26,7 @@ namespace Ideal
 
 open Set Finset
 
-/-- If a commutative (semi)ring has a infinitely generated ideal, then it has an ideal which is
+/-- If a commutative (semi)ring has an infinitely generated ideal, then it has an ideal which is
 maximal for being infinitely generated. -/
 lemma exists_maximal_not_fg [CommSemiring R] (h : ∃ I : Ideal R, ¬I.FG) :
     ∃ I : Ideal R, Maximal (¬·.FG) I := by
