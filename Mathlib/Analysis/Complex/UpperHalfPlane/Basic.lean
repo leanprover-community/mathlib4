@@ -206,13 +206,13 @@ end RealAddAction
 
 section upperHalfPlaneSet
 
-/-- The UpperHalfPlane as a subset of `ℂ`. This is convinient for taking derivatives of functions
+/-- The upper half plane as a subset of `ℂ`. This is convenient for taking derivatives of functions
 on the upper half plane. -/
 abbrev upperHalfPlaneSet := {z : ℂ | 0 < z.im}
 
 local notation "ℍₒ" => upperHalfPlaneSet
 
-lemma upperHalfPlaneSet_isOpen : IsOpen ℍₒ := (isOpen_lt continuous_const Complex.continuous_im)
+lemma isOpen_upperHalfPlaneSet : IsOpen ℍₒ := isOpen_lt continuous_const Complex.continuous_im
 
 end upperHalfPlaneSet
 

@@ -280,7 +280,7 @@ lemma cotTerm_iteratedDerivWithin_eqOn_complexUpperHalfPlane (d : ℕ) :
     (z - (d + 1)) ^ (-1 - k : ℤ))) ℍₒ := by
   apply Set.EqOn.trans (upperHalfPlane_inter_integerComplement ▸
     iteratedDerivWithin_congr_right_of_isOpen (fun (z : ℂ) ↦ cotTerm z d) k
-    upperHalfPlaneSet_isOpen (Complex.isOpen_compl_range_intCast))
+    isOpen_upperHalfPlaneSet (Complex.isOpen_compl_range_intCast))
   intro z hz
   simpa using cotTerm_iteratedDerivWithin_eqOn_intergerCompliment k d
     (coe_mem_integerComplement ⟨z, hz⟩)
@@ -324,7 +324,7 @@ private lemma iteratedDerivWithin_cotTerm_bounded_uniformly
 
 lemma summableLocallyUniformlyOn_iteratedDerivWithin_cotTerm {k : ℕ} (hk : 1 ≤ k) :
     SummableLocallyUniformlyOn (fun n : ℕ ↦ iteratedDerivWithin k (fun z ↦ cotTerm z n) ℍₒ) ℍₒ := by
-  apply SummableLocallyUniformlyOn_of_locally_bounded (upperHalfPlaneSet_isOpen)
+  apply SummableLocallyUniformlyOn_of_locally_bounded (isOpen_upperHalfPlaneSet)
   intro K hK hKc
   obtain ⟨A, B, hB, HABK⟩ := subset_verticalStrip_of_isCompact
     ((isCompact_iff_isCompact_univ.mp hKc).image_of_continuousOn
@@ -362,11 +362,11 @@ private theorem aux_iteratedDeriv_tsum_cotTerm {k : ℕ} (hk : 1 ≤ k) {z : ℂ
     (-1) ^ k * (k !) * z ^ (-1 - k : ℤ) + iteratedDerivWithin k
     (fun z ↦ ∑' n : ℕ, cotTerm z n) ℍₒ z =
     (-1) ^ (k : ℕ) * k ! * ∑' n : ℤ, (z + n) ^ (-1 - k : ℤ) := by
-  rw [iteratedDerivWithin_tsum k upperHalfPlaneSet_isOpen hz
+  rw [iteratedDerivWithin_tsum k isOpen_upperHalfPlaneSet hz
     (fun t ht ↦ Summable_cotTerm (coe_mem_integerComplement ⟨t, ht⟩))
     (fun l hl hl2 ↦ summableLocallyUniformlyOn_iteratedDerivWithin_cotTerm  hl)
     (fun n l z hl hz ↦ ((DifferentiableOn_iteratedDerivWithin_cotTerm n l)).differentiableAt
-    (((upperHalfPlaneSet_isOpen).mem_nhds hz)))]
+    (((isOpen_upperHalfPlaneSet).mem_nhds hz)))]
   conv =>
     enter [1,2,1]
     ext n
@@ -393,9 +393,9 @@ theorem iteratedDerivWithin_cot_pi_z_sub_inv {z : ℂ} (hz : z ∈ ℍₒ) :
     (iteratedDerivWithin k (fun x ↦ π * Complex.cot (π * x)) ℍₒ z) -
     (-1) ^ k * k ! * ((z : ℂ) ^ (-1 - k : ℤ)) := by
   simp_rw [sub_eq_add_neg]
-  rw [iteratedDerivWithin_fun_add hz upperHalfPlaneSet_isOpen.uniqueDiffOn]
+  rw [iteratedDerivWithin_fun_add hz isOpen_upperHalfPlaneSet.uniqueDiffOn]
   · simpa [iteratedDerivWithin_fun_neg] using iteratedDerivWithin_one_div k
-      upperHalfPlaneSet_isOpen hz
+      isOpen_upperHalfPlaneSet hz
   · exact ContDiffWithinAt.smul (by fun_prop) (cot_pi_z_contDiffWithinAt k
       (UpperHalfPlane.coe_mem_integerComplement ⟨z, hz⟩))
   · simp only [one_div]
