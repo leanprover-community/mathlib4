@@ -129,7 +129,6 @@ theorem surjective_of_uniformConvexSpace [UniformConvexSpace E] :
   · rw [not_nontrivial_iff_subsingleton] at hE
     apply surjective_to_subsingleton
   simp at hE
-  -- let ℬ := (closedBall (0 : E**) 1) -- image in `E**` of the unit ball in `E`
   let 𝒰₁ := ((inclusionInDoubleDual ℝ E) '' (closedBall 0 1)) -- image in `E**` of the unit ball in `E`
   let X := WeakBilin <| strongDualPairing ℝ (StrongDual ℝ E) -- `E**` with the weak topology
   let 𝒯 : TopologicalSpace X := inferInstance -- the weak topology on `E**`: can use IsOpen[T] **FAE: Choose!**
@@ -138,13 +137,14 @@ theorem surjective_of_uniformConvexSpace [UniformConvexSpace E] :
   intro ξ hξ
   have hξ_norm : ‖ξ‖ = 1 := by rwa [← mem_sphere_zero_iff_norm]
   have hξ_mem {V : Set _} (hV_mem : ξ ∈ V) (hV : IsOpen[𝒯] V) : ξ ∈ closure[𝒯] (V ∩ 𝒰₁) := by
-    -- have := mem_closure_iff_infDist_zero **FAE: Use later!**
     apply hV.inter_closure <| Set.mem_inter hV_mem _
     rw [goldstine]
     apply sphere_subset_closedBall hξ
   set ε := infDist ξ 𝒰₁ with ε_def
-  have hε_remove : 0 < ε := sorry
-  obtain ⟨δ, hδ_pos, hδ_dist⟩ := exists_forall_closed_ball_dist_add_le_two_sub E hε_remove
+  by_cases ε_pos : 0 = ε
+  · sorry
+  replace ε_pos : 0 < ε := lt_of_le_of_ne infDist_nonneg ε_pos
+  obtain ⟨δ, hδ_pos, hδ_dist⟩ := exists_forall_closed_ball_dist_add_le_two_sub E ε_pos
   obtain ⟨φ, hφ_norm, hφ_lt⟩ := exists_sub_one_lt (half_pos hδ_pos) hξ_norm
   set V := {x : E** | |x φ - 1| < δ/2} with hV_def
   have hV_dist {x x' : E**} (hx : x ∈ V ∩ 𝒰₁) (hx' : x' ∈ V ∩ 𝒰₁) : ‖x - x'‖ < ε/2 := sorry
@@ -175,4 +175,4 @@ theorem surjective_of_uniformConvexSpace [UniformConvexSpace E] :
       simp
       rfl
   have := (ε_def.symm ▸ infDist_le_infDist_of_subset Set.inter_subset_right ⟨y, hy⟩).trans trueEnd
-  exact not_lt_of_ge this (half_lt_self hε_remove)|>.elim
+  exact not_lt_of_ge this (half_lt_self ε_pos)|>.elim
