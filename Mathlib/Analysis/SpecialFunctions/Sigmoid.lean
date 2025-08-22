@@ -80,10 +80,8 @@ lemma is_embedding : Topology.IsEmbedding Sigmoid := by
   rw [range_eq]
   exact Ioo_subset_Ioo a.2.1 b.2.2
 
-lemma measurable_real_embedding : MeasurableEmbedding Sigmoid := by
-  refine is_embedding.measurableEmbedding ?_
-  rw [range_eq]
-  exact measurableSet_Ioo
+lemma measurable_real_embedding : MeasurableEmbedding Sigmoid :=
+  is_embedding.measurableEmbedding <| range_eq ▸ measurableSet_Ioo
 
 variable (α : Type*) [MeasurableSpace α] [StandardBorelSpace α]
 
