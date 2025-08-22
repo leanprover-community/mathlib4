@@ -297,7 +297,6 @@ end Weight
 @[simp]
 theorem zero_genWeightSpace_eq_top_of_nilpotent' [IsNilpotent L M] :
     genWeightSpace M (0 : L → R) = ⊤ := by
-  ext
   simp [genWeightSpace, genWeightSpaceOf]
 
 theorem coe_genWeightSpace_of_top (χ : L → R) :

@@ -44,7 +44,7 @@ is characterised by properties 1 and 2 above, and is a linear isometry.
 Related definitions of reflection exists elsewhere in the library. These more specialised
 definitions, which require an ambient `InnerProductSpace` structure, are `reflection` (of type
 `LinearIsometryEquiv`) and `EuclideanGeometry.reflection` (of type `AffineIsometryEquiv`). We
-should connect (or unify) these definitions with `Module.reflecton` defined here.
+should connect (or unify) these definitions with `Module.reflection` defined here.
 
 -/
 

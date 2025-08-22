@@ -170,7 +170,6 @@ def adj : T.free ⊣ T.forget :=
 theorem algebra_iso_of_iso {A B : Algebra T} (f : A ⟶ B) [IsIso f.f] : IsIso f :=
   ⟨⟨{   f := inv f.f
         h := by
-          rw [IsIso.eq_comp_inv f.f, Category.assoc, ← f.h]
           simp },
       by cat_disch⟩⟩
 
@@ -209,7 +208,6 @@ def algebraFunctorOfMonadHom {T₁ T₂ : Monad C} (h : T₂ ⟶ T₁) : Algebra
 /--
 The identity monad morphism induces the identity functor from the category of algebras to itself.
 -/
--- Porting note: `semireducible -> default`
 @[simps (rhsMd := .default)]
 def algebraFunctorOfMonadHomId {T₁ : Monad C} : algebraFunctorOfMonadHom (𝟙 T₁) ≅ 𝟭 _ :=
   NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)
