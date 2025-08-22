@@ -153,7 +153,7 @@ lemma computablePred_iff_computable_decide {p : α → Prop} [DecidablePred p] :
   mp := ComputablePred.decide
   mpr := Computable.computablePred
 
-lemma PrimrecPred.to_comp {α} [Primcodable α] {p : α → Prop} :
+lemma PrimrecPred.computablePred {α} [Primcodable α] {p : α → Prop} :
     (hp : PrimrecPred p) → ComputablePred p
   | ⟨_, hp⟩ => hp.to_comp.computablePred
 
