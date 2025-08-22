@@ -208,7 +208,7 @@ variable [IsFiltered C]
 theorem sup_objs_exists (O : Finset C) : ∃ S : C, ∀ {X}, X ∈ O → Nonempty (X ⟶ S) := by
   classical
   induction' O using Finset.induction with X O' nm h
-  · exact ⟨Classical.choice IsFiltered.nonempty, by intro; simp⟩
+  · exact ⟨Classical.choice IsFiltered.nonempty, by simp⟩
   · obtain ⟨S', w'⟩ := h
     use max X S'
     rintro Y mY
@@ -663,7 +663,7 @@ variable [IsCofiltered C]
 theorem inf_objs_exists (O : Finset C) : ∃ S : C, ∀ {X}, X ∈ O → Nonempty (S ⟶ X) := by
   classical
   induction' O using Finset.induction with X O' nm h
-  · exact ⟨Classical.choice IsCofiltered.nonempty, by intro; simp⟩
+  · exact ⟨Classical.choice IsCofiltered.nonempty, by simp⟩
   · obtain ⟨S', w'⟩ := h
     use min X S'
     rintro Y mY

@@ -861,6 +861,6 @@ reversed braiding, upgraded to a braided functor. -/
 def SymmetricCategory.equivReverseBraiding (C : Type u₁) [Category.{v₁} C]
     [MonoidalCategory C] [SymmetricCategory C] :=
   @Functor.Braided.mk C _ _ _ C _ _ (reverseBraiding C) (𝟭 C) _ <| by
-    intros; simp [reverseBraiding, braiding_swap_eq_inv_braiding]
+    simp [reverseBraiding, braiding_swap_eq_inv_braiding]
 
 end CategoryTheory

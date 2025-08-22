@@ -218,7 +218,7 @@ theorem mapForget_eq {X Y : T} (f : X ⟶ Y) :
     (map f) ⋙ (forget Y) = (forget X) := by
   fapply Functor.ext
   · dsimp [Over, Over.map]; intro x; exact rfl
-  · intros x y u; simp
+  · simp
 
 /-- The natural isomorphism arising from `mapForget_eq`. -/
 def mapForget {X Y : T} (f : X ⟶ Y) :
@@ -628,7 +628,7 @@ theorem mapForget_eq {X Y : T} (f : X ⟶ Y) :
     (map f) ⋙ (forget X) = (forget Y) := by
   fapply Functor.ext
   · dsimp [Under, Under.map]; intro x; exact rfl
-  · intros x y u; simp
+  · simp
 
 /-- The natural isomorphism arising from `mapForget_eq`. -/
 def mapForget {X Y : T} (f : X ⟶ Y) :
