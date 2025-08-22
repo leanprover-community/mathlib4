@@ -71,8 +71,7 @@ theorem nhdsKer_iUnion (s : ι → Set X) : nhdsKer (⋃ i, s i) = ⋃ i, nhdsKe
 
 @[deprecated (since := "2025-07-09")] alias exterior_iUnion := nhdsKer_iUnion
 
-variable {ι : Type*} in
-theorem nhdsKer_biUnion (s : Set ι) (t : ι → Set X) :
+theorem nhdsKer_biUnion {ι : Type*} (s : Set ι) (t : ι → Set X) :
     nhdsKer (⋃ i ∈ s, t i) = ⋃ i ∈ s, nhdsKer (t i) := by
   simp only [nhdsKer_iUnion]
 
@@ -166,16 +165,16 @@ theorem nhdsKer_sInter_subset {s : Set (Set X)} : nhdsKer (⋂₀ s) ⊆ ⋂ x �
 
 @[deprecated (since := "2025-07-09")] alias exterior_exterior := nhdsKer_nhdsKer
 
-lemma nhdsKer_singleton_prod {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+lemma nhdsKer_pair {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     (x : X) (y : Y) : nhdsKer {(x, y)} = nhdsKer {x} ×ˢ nhdsKer {y} := by
   simp_rw [nhdsKer_singleton_eq_ker_nhds, nhds_prod_eq, ker_prod]
 
-lemma nhdsKer_prod {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    (s : Set X) (t : Set Y) : nhdsKer (s ×ˢ t) = nhdsKer s ×ˢ nhdsKer t := calc
+lemma nhdsKer_prod {Y : Type*} [TopologicalSpace Y] (s : Set X) (t : Set Y) :
+    nhdsKer (s ×ˢ t) = nhdsKer s ×ˢ nhdsKer t := calc
   _ = ⋃ (p ∈ s ×ˢ t), nhdsKer {p} := by
     conv_lhs => rw [← biUnion_of_singleton (s ×ˢ t), nhdsKer_biUnion]
   _ = ⋃ (p ∈ s ×ˢ t), nhdsKer {p.1} ×ˢ nhdsKer {p.2} := by
-    congr! with ⟨x, y⟩ _; rw [nhdsKer_singleton_prod]
+    congr! with ⟨x, y⟩ _; rw [nhdsKer_pair]
   _ = (⋃ x ∈ s, nhdsKer {x}) ×ˢ (⋃ y ∈ t, nhdsKer {y}) :=
     biUnion_prod s t (fun x => nhdsKer {x}) (fun y => nhdsKer {y})
   _ = nhdsKer s ×ˢ nhdsKer t := by

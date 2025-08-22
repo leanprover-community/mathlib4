@@ -64,8 +64,8 @@ lemma isOpen_iInter₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsOpen (f i j
     IsOpen (⋂ i, ⋂ j, f i j) :=
   isOpen_iInter fun _ ↦ isOpen_iInter <| hf _
 
-lemma isClosed_sUnion (hS : ∀ s ∈ S, IsClosed s) : IsClosed (⋃₀ S) := by
-  revert S hS; rw [← alexandrovDiscrete_iff_isClosed]; infer_instance
+lemma isClosed_sUnion (hS : ∀ s ∈ S, IsClosed s) : IsClosed (⋃₀ S) :=
+  alexandrovDiscrete_iff_isClosed.mp inferInstance S hS
 
 lemma isClosed_iUnion (hf : ∀ i, IsClosed (f i)) : IsClosed (⋃ i, f i) :=
   isClosed_sUnion <| forall_mem_range.2 hf
@@ -200,7 +200,7 @@ lemma isOpen_iff_forall_specializes : IsOpen s ↔ ∀ x y, x ⤳ y → y ∈ s 
     and_imp, @forall_swap (_ ⤳ _)]
 
 omit [AlexandrovDiscrete α] in
-lemma alexandrovDiscrete_iff_nhds : AlexandrovDiscrete α ↔ (∀ a : α, nhds a = 𝓟 (nhdsKer {a})) where
+lemma alexandrovDiscrete_iff_nhds : AlexandrovDiscrete α ↔ (∀ a : α, 𝓝 a = 𝓟 (nhdsKer {a})) where
   mp _ a := principal_nhdsKer_singleton a |>.symm
   mpr hα := by
     simp only [alexandrovDiscrete_iff_isClosed, isClosed_iff_clusterPt, ClusterPt, funext hα,
@@ -239,7 +239,7 @@ instance Sigma.instAlexandrovDiscrete {ι : Type*} {X : ι → Type*} [∀ i, To
 
 instance Prod.instAlexandrovDiscrete : AlexandrovDiscrete (α × β) := by
   simp_rw [alexandrovDiscrete_iff_nhds, Prod.forall, nhds_prod_eq, ← principal_nhdsKer_singleton,
-    prod_principal_principal, nhdsKer_singleton_prod, forall_true_iff]
+    prod_principal_principal, nhdsKer_pair, forall_true_iff]
 
 instance Pi.instAlexandrovDiscreteOfFinite {ι : Type*} [Finite ι] {X : ι → Type*}
     [Π i, TopologicalSpace (X i)] [∀ i, AlexandrovDiscrete (X i)] :
