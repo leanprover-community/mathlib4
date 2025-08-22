@@ -256,6 +256,11 @@ theorem trace_single_mul [NonUnitalNonAssocSemiring R] [Fintype m]
     (single i j a * x).trace = a • x j i := by
   simp [trace, mul_apply, single, ite_and]
 
+theorem trace_mul_single [NonUnitalNonAssocSemiring R] [Fintype m]
+    (a : R) (i : n) (j : m) (x : Matrix m n R) :
+    (x * single i j a).trace = MulOpposite.op a • x j i := by
+  simp [trace, mul_apply, single, ite_and]
+
 end single
 
 /-- Matrices `A` and `B` are equal iff `(x * A).trace = (x * B).trace` for all `x`. -/
