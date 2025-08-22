@@ -116,8 +116,7 @@ def ofMapSplitAdd [Finite ι] (f : Box ι → M) (I₀ : WithTop (Box ι))
     ι →ᵇᵃ[I₀] M := by
   classical
   refine ⟨f, ?_⟩
-  replace hf :
-      ∀ I : Box ι, ↑I ≤ I₀ → ∀ s, (∑ J ∈ (splitMany I s).boxes, f J) = f I := fun I hI s ↦ by
+  replace hf (I : Box ι) (hI : ↑I ≤ I₀) (s) : ∑ J ∈ (splitMany I s).boxes, f J = f I := by
     induction s using Finset.induction_on with
     | empty => simp
     | insert a s _ ihs =>
