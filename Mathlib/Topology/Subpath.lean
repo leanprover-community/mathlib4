@@ -36,7 +36,7 @@ lemma subpathAux_zero (t₀ t₁ : I) : subpathAux t₀ t₁ 0 = t₀ := by simp
 lemma subpathAux_one (t₀ t₁ : I) : subpathAux t₀ t₁ 1 = t₁ := by simp
 
 /-- `subpathAux` is continuous as an uncurried function `I × I × I → I`. -/
-@[continuity]
+@[continuity, fun_prop]
 lemma subpathAux_continuous : Continuous (fun x ↦ subpathAux x.1 x.2.1 x.2.2 : I × I × I → I) := by
   unfold subpathAux
   fun_prop
@@ -46,6 +46,7 @@ def subpath (γ : Path a b) (t₀ t₁ : I) : Path (γ t₀) (γ t₁) where
   toFun := γ ∘ (subpathAux t₀ t₁)
   source' := by rw [comp_apply, subpathAux_zero]
   target' := by rw [comp_apply, subpathAux_one]
+  continuous_toFun := by fun_prop
 
 /-- Reversing `γ.subpath t₀ t₁` results in `γ.subpath t₁ t₀`. -/
 @[simp]
