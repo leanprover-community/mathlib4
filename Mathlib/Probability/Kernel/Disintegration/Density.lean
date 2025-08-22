@@ -639,8 +639,7 @@ lemma densityProcess_fst_univ [IsFiniteKernel κ] (n : ℕ) (a : α) (x : γ) :
   · simp only [h]
     by_cases h' : κ a (countablePartitionSet n x ×ˢ univ) = 0
     · simp [h']
-    · rw [ENNReal.div_zero h']
-      simp
+    · simp
   · rw [fst_apply' _ _ (measurableSet_countablePartitionSet _ _)]
     have : countablePartitionSet n x ×ˢ univ = {p : γ × β | p.1 ∈ countablePartitionSet n x} := by
       ext x
