@@ -252,7 +252,7 @@ theorem trace_single_eq_same : trace (single i i c) = c := by
 alias StdBasisMatrix.trace_eq := trace_single_eq_same
 
 theorem trace_single_mul [NonUnitalNonAssocSemiring R] [Fintype m]
-    (a : R) (i : n) (j : m) (x : Matrix m n R) :
+    (i : n) (j : m) (a : R) (x : Matrix m n R) :
     (single i j a * x).trace = a • x j i := by
   simp [trace, mul_apply, single, ite_and]
 
