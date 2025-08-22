@@ -1273,19 +1273,16 @@ theorem update_nil (n : ℕ) : update nil n f = nil := by
 theorem set_nil (n : ℕ) (x : α) : set nil n x = nil := update_nil _ _
 
 @[simp]
-theorem update_cons_zero :
-    (cons hd tl).update 0 f = cons (f hd) tl := by
+theorem update_cons_zero : (cons hd tl).update 0 f = cons (f hd) tl := by
   ext1 n
   cases n <;> simp [get?_update]
 
 @[simp]
-theorem set_cons_zero (hd' : α) :
-    (cons hd tl).set 0 hd' = cons hd' tl :=
+theorem set_cons_zero (hd' : α) : (cons hd tl).set 0 hd' = cons hd' tl :=
   update_cons_zero _ _ _
 
 @[simp]
-theorem update_cons_succ (n : ℕ) :
-    (cons hd tl).update (n + 1) f = cons hd (tl.update n f) := by
+theorem update_cons_succ (n : ℕ) : (cons hd tl).update (n + 1) f = cons hd (tl.update n f) := by
   ext1 n
   cases n <;> simp [get?_update]
 
@@ -1301,12 +1298,10 @@ theorem get?_set_of_terminatedAt {s : Seq α} {n : ℕ} (h_terminated : s.Termin
     (s.set n x).get? n = .none := by
   simpa [set, get?_update] using h_terminated
 
-theorem get?_set_of_ne (s : Seq α) {m n : ℕ} (h : n ≠ m) :
-    (s.set m x).get? n = s.get? n := by
+theorem get?_set_of_ne (s : Seq α) {m n : ℕ} (h : n ≠ m) : (s.set m x).get? n = s.get? n := by
   simp [set, get?_update, h]
 
-theorem drop_set_of_lt (s : Seq α) {m n : ℕ} (h : m < n) :
-    (s.set m x).drop n = s.drop n := by
+theorem drop_set_of_lt (s : Seq α) {m n : ℕ} (h : m < n) : (s.set m x).drop n = s.drop n := by
   ext1 i
   simp [get?_set_of_ne _ _ (show n + i ≠ m by omega)]
 
