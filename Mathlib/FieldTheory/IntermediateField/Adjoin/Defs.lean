@@ -303,11 +303,8 @@ theorem adjoin_eq_range_algebraMap_adjoin :
 theorem adjoin.algebraMap_mem (x : F) : algebraMap F E x ∈ adjoin F S :=
   IntermediateField.algebraMap_mem (adjoin F S) x
 
-theorem adjoin.range_algebraMap_subset : Set.range (algebraMap F E) ⊆ adjoin F S := by
-  intro x hx
-  obtain ⟨f, hf⟩ := hx
-  rw [← hf]
-  exact adjoin.algebraMap_mem F S f
+theorem adjoin.range_algebraMap_subset : Set.range (algebraMap F E) ⊆ adjoin F S :=
+  set_range_subset (adjoin F S)
 
 instance adjoin.fieldCoe : CoeTC F (adjoin F S) where
   coe x := ⟨algebraMap F E x, adjoin.algebraMap_mem F S x⟩
