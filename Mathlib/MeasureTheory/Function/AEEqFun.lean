@@ -275,6 +275,15 @@ theorem comp_mk (g : β → γ) (hg : Continuous g) (f : α → β) (hf) :
     comp g hg (mk f hf : α →ₘ[μ] β) = mk (g ∘ f) (hg.comp_aestronglyMeasurable hf) :=
   rfl
 
+@[simp]
+theorem comp_id (f : α →ₘ[μ] β) : comp id (continuous_id) f = f := by
+  rcases f; rfl
+
+@[simp]
+theorem comp_comp (g : γ → δ) (g' : β → γ) (hg : Continuous g) (hg' : Continuous g')
+    (f : α →ₘ[μ] β) : comp g hg (comp g' hg' f) = comp (g ∘ g') (hg.comp hg') f := by
+  rcases f; rfl
+
 theorem comp_eq_mk (g : β → γ) (hg : Continuous g) (f : α →ₘ[μ] β) :
     comp g hg f = mk (g ∘ f) (hg.comp_aestronglyMeasurable f.aestronglyMeasurable) := by
   rw [← comp_mk g hg f f.aestronglyMeasurable, mk_coeFn]
@@ -700,7 +709,7 @@ instance instMonoid : Monoid (α →ₘ[μ] γ) :=
   toGerm_injective.monoid toGerm one_toGerm mul_toGerm pow_toGerm
 
 /-- `AEEqFun.toGerm` as a `MonoidHom`. -/
-@[to_additive (attr := simps) "`AEEqFun.toGerm` as an `AddMonoidHom`."]
+@[to_additive (attr := simps) /-- `AEEqFun.toGerm` as an `AddMonoidHom`. -/]
 def toGermMonoidHom : (α →ₘ[μ] γ) →* (ae μ).Germ γ where
   toFun := toGerm
   map_one' := one_toGerm
@@ -849,6 +858,24 @@ theorem coeFn_abs {β} [TopologicalSpace β] [Lattice β] [TopologicalLattice β
 
 end Abs
 
+section Star
+
+variable {R : Type*} [TopologicalSpace R]
+
+instance [Star R] [ContinuousStar R] : Star (α →ₘ[μ] R) where
+  star f := (AEEqFun.comp _ continuous_star f)
+
+lemma coeFn_star [Star R] [ContinuousStar R] (f : α →ₘ[μ] R) : ↑(star f) =ᵐ[μ] (star f : α → R) :=
+  coeFn_comp _ (continuous_star) f
+
+instance [InvolutiveStar R] [ContinuousStar R] : InvolutiveStar (α →ₘ[μ] R) where
+  star_involutive f := comp_comp _ _ _ _ f |>.trans <| by simp [star_involutive.comp_self]
+
+instance [Star R] [TrivialStar R] [ContinuousStar R] : TrivialStar (α →ₘ[μ] R) where
+  star_trivial f := show comp _ _ f = f by simp [funext star_trivial, ← Function.id_def]
+
+end Star
+
 section PosPart
 
 variable [LinearOrder γ] [OrderClosedTopology γ] [Zero γ]
@@ -903,8 +930,8 @@ variable [Group β] [IsTopologicalGroup β]
 
 /-- The `MulHom` from the group of continuous maps from `α` to `β` to the group of equivalence
 classes of `μ`-almost-everywhere measurable functions. -/
-@[to_additive "The `AddHom` from the group of continuous maps from `α` to `β` to the group of
-equivalence classes of `μ`-almost-everywhere measurable functions."]
+@[to_additive /-- The `AddHom` from the group of continuous maps from `α` to `β` to the group of
+equivalence classes of `μ`-almost-everywhere measurable functions. -/]
 def toAEEqFunMulHom : C(α, β) →* α →ₘ[μ] β where
   toFun := ContinuousMap.toAEEqFun μ
   map_one' := rfl

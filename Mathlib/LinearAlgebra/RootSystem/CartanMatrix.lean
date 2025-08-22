@@ -3,6 +3,8 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.CharZero.Infinite
+import Mathlib.Algebra.Module.Submodule.Union
 import Mathlib.LinearAlgebra.Matrix.BilinearForm
 import Mathlib.LinearAlgebra.RootSystem.Base
 import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
@@ -108,7 +110,8 @@ variable [IsDomain R]
 
 lemma cartanMatrix_apply_eq_zero_iff_symm {i j : b.support} :
     b.cartanMatrix i j = 0 ↔ b.cartanMatrix j i = 0 := by
-  have _i := P.reflexive_left
+  have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
+  have : Module.IsReflexive R N := .of_isPerfPair P.flip.toLinearMap
   simp only [cartanMatrix_apply_eq_zero_iff_pairing, P.pairing_eq_zero_iff]
 
 variable [Finite ι]
@@ -120,8 +123,8 @@ lemma cartanMatrix_le_zero_of_ne
 
 lemma cartanMatrix_mem_of_ne {i j : b.support} (hij : i ≠ j) :
     b.cartanMatrix i j ∈ ({-3, -2, -1, 0} : Set ℤ) := by
-  have := P.reflexive_left
-  have := P.reflexive_right
+  have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
+  have : Module.IsReflexive R N := .of_isPerfPair P.flip.toLinearMap
   simp only [cartanMatrix, cartanMatrixIn_def]
   have h₁ := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
   have h₂ : P.pairingIn ℤ i j ≤ 0 := b.cartanMatrix_le_zero_of_ne i j hij
@@ -152,7 +155,7 @@ lemma abs_cartanMatrix_apply [DecidableEq ι] {i j : b.support} :
 
 @[simp]
 lemma cartanMatrix_map_abs [DecidableEq ι] :
-    b.cartanMatrix.map abs = 4 • 1 - b.cartanMatrix := by
+    b.cartanMatrix.map abs = 4 - b.cartanMatrix := by
   ext; simp [abs_cartanMatrix_apply, Matrix.ofNat_apply]
 
 lemma cartanMatrix_nondegenerate
@@ -198,6 +201,64 @@ lemma induction_on_cartanMatrix [P.IsReduced] [P.IsIrreducible]
     · replace hk : P.coroot' k x = 0 := hq_notMem ⟨k, hkb⟩ hk hx
       simp [hk]
   simp [← hq_mem, IsIrreducible.eq_top_of_invtSubmodule_reflection q hq hq₀]
+
+open scoped Matrix in
+lemma injective_pairingIn {P : RootSystem ι R M N} [P.IsCrystallographic] (b : P.Base) :
+    Injective (fun i (k : b.support) ↦ P.pairingIn ℤ i k) := by
+  classical
+  intro i j hij
+  obtain ⟨f, -, -, hf⟩ := b.exists_root_eq_sum_int i
+  obtain ⟨g, -, -, hg⟩ := b.exists_root_eq_sum_int j
+  let f' : b.support → ℤ := f ∘ (↑)
+  let g' : b.support → ℤ := g ∘ (↑)
+  suffices f' = g' by
+    rw [← P.root.apply_eq_iff_eq, hf, hg]
+    refine Finset.sum_congr rfl fun k hk ↦ ?_
+    replace this : f k = g k := congr_fun this ⟨k, hk⟩
+    rw [this]
+  replace hf : (fun k : b.support ↦ P.pairingIn ℤ i k) = f' ᵥ* b.cartanMatrix := by
+    suffices ∀ k, P.pairingIn ℤ i k = ∑ l ∈ b.support, f l * P.pairingIn ℤ l k by
+      ext; simp [f', this, cartanMatrixIn, Matrix.vecMul_eq_sum, b.support.sum_subtype (by tauto)]
+    refine fun k ↦ algebraMap_injective ℤ R ?_
+    simp_rw [algebraMap_pairingIn, map_sum, map_mul, algebraMap_pairingIn,
+      ← P.root_coroot'_eq_pairing]
+    simp [hf]
+  replace hg : (fun k : b.support ↦ P.pairingIn ℤ j k) = g' ᵥ* b.cartanMatrix := by
+    suffices ∀ k, P.pairingIn ℤ j k = ∑ l ∈ b.support, g l * P.pairingIn ℤ l k by
+      ext; simp [g', this, cartanMatrixIn, Matrix.vecMul_eq_sum, b.support.sum_subtype (by tauto)]
+    refine fun k ↦ algebraMap_injective ℤ R ?_
+    simp_rw [algebraMap_pairingIn, map_sum, map_mul, algebraMap_pairingIn,
+      ← P.root_coroot'_eq_pairing]
+    simp [hg]
+  suffices Injective fun v ↦ v ᵥ* b.cartanMatrix from this <| by simpa [← hf, ← hg]
+  rw [Matrix.vecMul_injective_iff]
+  apply Matrix.linearIndependent_rows_of_det_ne_zero
+  rw [← Matrix.nondegenerate_iff_det_ne_zero]
+  exact b.cartanMatrix_nondegenerate
+
+lemma exists_mem_span_pairingIn_ne_zero_and_pairwise_ne
+    {K : Type*} [Field K] [CharZero K] [Module K M] [Module K N]
+    {P : RootSystem ι K M N} [P.IsCrystallographic] (b : P.Base) :
+    ∃ d ∈ span K (range fun (i : b.support) j ↦ (P.pairingIn ℤ j i : K)),
+      (∀ i, d i ≠ 0) ∧ Pairwise ((· ≠ ·) on d) := by
+  set p := span K (range fun (i : b.support) j ↦ (P.pairingIn ℤ j i : K))
+  let f : ι ⊕ {(i, j) : ι × ι | i ≠ j} → Module.Dual K (ι → K) := Sum.elim
+    LinearMap.proj (fun x ↦ LinearMap.proj (R := K) (φ := fun _ ↦ K) x.1.1 - LinearMap.proj x.1.2)
+  suffices ∃ d ∈ p, ∀ i, f i d ≠ 0 by
+    obtain ⟨d, hp, hf⟩ := this
+    refine ⟨d, hp, fun i ↦ hf (Sum.inl i), fun i j h ↦ ?_⟩
+    simpa [f, sub_eq_zero] using hf (Sum.inr ⟨⟨i, j⟩, h⟩)
+  apply Module.Dual.exists_forall_mem_ne_zero_of_forall_exists p f
+  rintro (i | ⟨⟨i, j⟩, h : i ≠ j⟩)
+  · obtain ⟨j, hj, hj₀⟩ := b.exists_mem_support_pos_pairingIn_ne_zero i
+    refine ⟨fun i ↦ P.pairingIn ℤ i j, subset_span ⟨⟨j, hj⟩, rfl⟩, ?_⟩
+    rw [ne_eq, P.pairingIn_eq_zero_iff] at hj₀
+    simpa [f, ne_eq, Int.cast_eq_zero]
+  · obtain ⟨k, hk, hk'⟩ : ∃ k ∈ b.support, P.pairingIn ℤ i k ≠ P.pairingIn ℤ j k := by
+      contrapose! h
+      apply b.injective_pairingIn
+      aesop
+    simpa [f, sub_eq_zero] using ⟨fun i ↦ P.pairingIn ℤ i k, subset_span ⟨⟨k, hk⟩, rfl⟩, by simpa⟩
 
 end IsCrystallographic
 
