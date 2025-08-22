@@ -261,7 +261,7 @@ theorem relNorm_smul {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClas
     (I : Ideal S) : relNorm R (g • I) = relNorm R I := by
   have h (J : Ideal S) (h : G) : relNorm R (h • J) ≤ relNorm R J :=
     span_mono fun _ ⟨x, hx₁, hx₂⟩ ↦ ⟨h⁻¹ • x, mem_pointwise_smul_iff_inv_smul_mem.mp hx₁,
-      by simpa [hx₂] using Algebra.intNorm_eq_of_algEquiv x (toAlgEquiv R S h⁻¹)⟩
+      by simpa [hx₂] using Algebra.intNorm_map_algEquiv x (toAlgEquiv R S h⁻¹)⟩
   refine le_antisymm (h I g) ?_
   convert h (g • I) g⁻¹
   rw [inv_smul_smul]
