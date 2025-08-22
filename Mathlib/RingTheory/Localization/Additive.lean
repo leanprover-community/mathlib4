@@ -3,11 +3,11 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Order.Nonneg.Ring
+import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.Ring.Invertible
 import Mathlib.GroupTheory.MonoidLocalization.GrothendieckGroup
 import Mathlib.RingTheory.Ideal.Defs
-import Mathlib.RingTheory.IsTensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
 # Additive localizations of semirings
@@ -17,30 +17,6 @@ equipped with the structure of a semiring.
 In the case `I = R`, `GrothendieckAddGroup R` is the initial ring with a ring homomorphism from `R`
 and may be called the Grothendieck ring of `R`.
 -/
-
-namespace Archimedean
-
-variable {G : Type*} [AddCommGroup G]
-
-/- TODO: multiplicativize Nonneg.inhabited, .zero, .add, .nsmul, .addMonoid, .coeAddMonoidHom,
-.isOrderedAddMonoid, .isOrderedCancelAddMonoid, etc. -/
-theorem isLocalizationMap [PartialOrder G] [AddLeftMono G] [Archimedean G]
-    (S : AddSubmonoid {g : G // 0 ≤ g}) (hS : S ≠ ⊥) : S.IsLocalizationMap Subtype.val :=
-  S.isLocalizationMap_of_addGroup Subtype.val_injective fun g ↦
-    have ⟨p, hpS, hp0⟩ := (S.bot_or_exists_ne_zero).resolve_left hS
-    have ⟨n, le⟩ := arch (-g) (p.2.lt_of_ne <| Subtype.coe_ne_coe.mpr hp0.symm)
-    ⟨⟨g + n • p, by simpa using add_le_add_left le g⟩, _, nsmul_mem hpS n, by simp⟩
-
-instance isLocalizationMap_top [LinearOrder G] [AddLeftMono G] [Archimedean G] :
-    (⊤ : AddSubmonoid {g : G // 0 ≤ g}).IsLocalizationMap Subtype.val := by
-  cases subsingleton_or_nontrivial G
-  · exact AddSubmonoid.isLocalizationMap_of_addGroup Subtype.val_injective
-      fun g ↦ ⟨0, 0, ⟨⟩, Subsingleton.elim ..⟩
-  · exact isLocalizationMap ⊤ top_ne_bot
-
-example : (⊤ : AddSubmonoid ℚ≥0).IsLocalizationMap ((↑) : ℚ≥0 → ℚ) := isLocalizationMap_top
-
-end Archimedean
 
 namespace AddLocalization
 
@@ -297,7 +273,7 @@ instance [CommSemiring R] (I : Ideal R) : Algebra R (AddLocalization I.toAddSubm
   commutes' _ := mul_comm _
   smul_def' r x := x.rec (fun _ _ ↦ by simp [← mk_zero_eq_addMonoidOf_mk, mk_mul]; rfl) fun _ ↦ rfl
 
--- TODO: NonAssocCommSemiring after #28532
+-- TODO: NonAssocCommSemiring after #28532 or #28604
 
 end AddLocalization
 
@@ -386,7 +362,8 @@ theorem liftNonUnitalRingHom_unique {j : S →ₙ+* T} (hj : ∀ x, j (f x) = g 
 
 /-- If `f : R →ₙ+* S` and `g : R →ₙ+* T` are localization maps for the same additive submonoid `S`,
 we get a ring isomorphism between `S` and `T`. -/
-noncomputable def ringEquiv (hf : IsLocalizationMap M f) (hg : IsLocalizationMap M g) : S ≃* T where
+noncomputable def ringEquiv (hf : IsLocalizationMap M f) (hg : IsLocalizationMap M g) :
+    S ≃+* T where
   __ := LocalizationMap.addEquivOfLocalizations (S := M) (N := S) (P := T) ⟨f, hf⟩ ⟨g, hg⟩
   map_mul' := (liftNonUnitalRingHom ..).map_mul
 
@@ -416,8 +393,6 @@ end Unital
 
 end IsLocalizationMap
 
-section Top
-
 variable {M G : Type*} [AddCommMonoid M] [AddCommGroup G]
 
 open TensorProduct in
@@ -441,23 +416,6 @@ theorem isLocalizationMap_tensorProductMk :
   let l := AddLocalization.addMonoidOf (⊤ : AddSubmonoid M)
   convert (ofAddEquivOfLocalizations l l.addMonoidHomTensor).isLocalizationMap
   exact funext fun _ ↦ .symm <| (ofAddEquivOfLocalizations_apply ..).trans (l.lift_eq ..)
-
-theorem isLocalizationMap_iff_isTensorProduct (f : M →ₗ[ℕ] G) :
-    IsLocalizationMap ⊤ f ↔ IsTensorProduct (zmultiplesHom _ f).toNatLinearMap where
-  mp h := (⟨f.toAddHom, h⟩ : LocalizationMap ⊤ G).addMonoidHomTensor.symm.bijective
-  mpr h := by
-    convert (isLocalizationMap_tensorProductMk M).comp_addEquiv h.equiv.toAddEquiv
-    ext; simp
-
-theorem isLocalizationMap_iff_isBaseChange (f : M →ₗ[ℕ] G) :
-    IsLocalizationMap ⊤ f ↔ IsBaseChange ℤ f := isLocalizationMap_iff_isTensorProduct f
-
-end Top
-
-theorem isLocalizationMap_iff_isPushout {R S : Type*} [CommSemiring R] [CommRing S] [Algebra R S] :
-    IsLocalizationMap ⊤ (algebraMap R S) ↔ Algebra.IsPushout ℕ ℤ R S :=
-  (isLocalizationMap_iff_isBaseChange (algebraMap R S).toNatLinearMap).trans
-    (Algebra.isPushout_iff ..).symm
 
 end AddSubmonoid
 
@@ -529,11 +487,5 @@ instance [CommSemiring R] : CommRing (GrothendieckAddGroup R) where
 
 instance [CommSemiring R] : Algebra R (GrothendieckAddGroup R) :=
   inferInstanceAs <| Algebra R <| AddLocalization (⊤ : Ideal R).toAddSubmonoid
-
-instance (R) [CommSemiring R] : Algebra.IsPushout ℕ ℤ R (GrothendieckAddGroup R) :=
-  AddSubmonoid.isLocalizationMap_iff_isPushout.mp (AddLocalization.addMonoidOf _).isLocalizationMap
-
-instance (R) [CommSemiring R] : Algebra.IsPushout ℕ R ℤ (GrothendieckAddGroup R) :=
-  .symm inferInstance
 
 end Algebra.GrothendieckAddGroup
