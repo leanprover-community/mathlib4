@@ -49,7 +49,7 @@ namespace Splitting
 
 /-- The index set which appears in the definition of split simplicial objects. -/
 def IndexSet (Δ : SimplexCategoryᵒᵖ) :=
-  ΣΔ' : SimplexCategoryᵒᵖ, { α : Δ.unop ⟶ Δ'.unop // Epi α }
+  Σ Δ' : SimplexCategoryᵒᵖ, { α : Δ.unop ⟶ Δ'.unop // Epi α }
 
 namespace IndexSet
 
@@ -81,7 +81,7 @@ theorem ext (A₁ A₂ : IndexSet Δ) (h₁ : A₁.1 = A₂.1) (h₂ : A₁.e �
 instance : Fintype (IndexSet Δ) :=
   Fintype.ofInjective
     (fun A =>
-      ⟨⟨A.1.unop.len, Nat.lt_succ_iff.mpr (len_le_of_epi (inferInstance : Epi A.e))⟩,
+      ⟨⟨A.1.unop.len, Nat.lt_succ_iff.mpr (len_le_of_epi A.e)⟩,
         A.e.toOrderHom⟩ :
       IndexSet Δ → Sigma fun k : Fin (Δ.unop.len + 1) => Fin (Δ.unop.len + 1) → Fin (k + 1))
     (by
@@ -145,7 +145,7 @@ theorem eqId_iff_len_le : A.EqId ↔ Δ.unop.len ≤ A.1.unop.len := by
   constructor
   · intro h
     rw [h]
-  · exact le_antisymm (len_le_of_epi (inferInstance : Epi A.e))
+  · exact le_antisymm (len_le_of_epi A.e)
 
 theorem eqId_iff_mono : A.EqId ↔ Mono A.e := by
   constructor
@@ -154,9 +154,9 @@ theorem eqId_iff_mono : A.EqId ↔ Mono A.e := by
     subst h
     dsimp only [id, e]
     infer_instance
-  · intro h
+  · intro
     rw [eqId_iff_len_le]
-    exact len_le_of_mono h
+    exact len_le_of_mono A.e
 
 /-- Given `A : IndexSet Δ₁`, if `p.unop : unop Δ₂ ⟶ unop Δ₁` is an epi, this
 is the obvious element in `A : IndexSet Δ₂` associated to the composition
@@ -311,7 +311,7 @@ structure Hom (S₁ S₂ : Split C) where
   F : S₁.X ⟶ S₂.X
   /-- the morphism between the "nondegenerate" `n`-simplices for all `n : ℕ` -/
   f : ∀ n : ℕ, S₁.s.N n ⟶ S₂.s.N n
-  comm : ∀ n : ℕ, S₁.s.ι n ≫ F.app (op ⦋n⦌) = f n ≫ S₂.s.ι n := by aesop_cat
+  comm : ∀ n : ℕ, S₁.s.ι n ≫ F.app (op ⦋n⦌) = f n ≫ S₂.s.ι n := by cat_disch
 
 @[ext]
 theorem Hom.ext {S₁ S₂ : Split C} (Φ₁ Φ₂ : Hom S₁ S₂) (h : ∀ n : ℕ, Φ₁.f n = Φ₂.f n) : Φ₁ = Φ₂ := by

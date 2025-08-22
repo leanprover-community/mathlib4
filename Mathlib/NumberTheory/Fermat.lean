@@ -39,8 +39,6 @@ theorem fermatNumber_strictMono : StrictMono fermatNumber := by
   simp only [fermatNumber, add_lt_add_iff_right, Nat.pow_lt_pow_iff_right (one_lt_two : 1 < 2),
     imp_self]
 
-@[deprecated (since := "2024-11-25")] alias strictMono_fermatNumber := fermatNumber_strictMono
-
 lemma fermatNumber_mono : Monotone fermatNumber := fermatNumber_strictMono.monotone
 lemma fermatNumber_injective : Injective fermatNumber := fermatNumber_strictMono.injective
 
@@ -58,8 +56,6 @@ theorem prod_fermatNumber (n : ℕ) : ∏ k ∈ range n, fermatNumber k = fermat
     (show 2 ^ 2 ^ n + 1 - 2 = 2 ^ 2 ^ n - 1 by omega), ← sq_sub_sq]
   ring_nf
   omega
-
-@[deprecated (since := "2024-11-25")] alias fermatNumber_product := prod_fermatNumber
 
 theorem fermatNumber_eq_prod_add_two (n : ℕ) :
     fermatNumber n = ∏ k ∈ range n, fermatNumber k + 2 := by
@@ -87,7 +83,7 @@ end Nat
 open Nat
 
 theorem Int.fermatNumber_eq_fermatNumber_sq_sub_two_mul_fermatNumber_sub_one_sq (n : ℕ) :
-    (fermatNumber (n + 2) : ℤ)  = (fermatNumber (n + 1)) ^ 2 - 2 * (fermatNumber n - 1) ^ 2 := by
+    (fermatNumber (n + 2) : ℤ) = (fermatNumber (n + 1)) ^ 2 - 2 * (fermatNumber n - 1) ^ 2 := by
   rw [Nat.fermatNumber_eq_fermatNumber_sq_sub_two_mul_fermatNumber_sub_one_sq,
     Nat.cast_sub <| two_mul_fermatNumber_sub_one_sq_le_fermatNumber_sq n]
   simp only [fermatNumber, push_cast, add_tsub_cancel_right]

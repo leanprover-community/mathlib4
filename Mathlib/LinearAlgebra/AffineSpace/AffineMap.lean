@@ -50,9 +50,10 @@ induces a corresponding linear map from `V1` to `V2`. -/
 structure AffineMap (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*) [Ring k]
   [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
   [AffineSpace V2 P2] where
-  /-- the underlying function of an affine map -/
+  /-- The underlying function between the affine spaces `P1` and `P2`. -/
   toFun : P1 → P2
-  /-- the linear part of an affine map -/
+  /-- The linear map between the corresponding vector spaces `V1` and `V2`.
+  This represents how the affine map acts on differences of points. -/
   linear : V1 →ₗ[k] V2
   map_vadd' : ∀ (p : P1) (v : V1), toFun (v +ᵥ p) = linear v +ᵥ toFun p
 
@@ -222,8 +223,8 @@ theorem smul_linear (t : R) (f : P1 →ᵃ[k] V2) : (t • f).linear = t • f.l
   rfl
 
 instance isCentralScalar [DistribMulAction Rᵐᵒᵖ V2] [IsCentralScalar R V2] :
-  IsCentralScalar R (P1 →ᵃ[k] V2) where
-    op_smul_eq_smul _r _x := ext fun _ => op_smul_eq_smul _ _
+    IsCentralScalar R (P1 →ᵃ[k] V2) where
+  op_smul_eq_smul _r _x := ext fun _ => op_smul_eq_smul _ _
 
 end SMul
 
@@ -432,11 +433,7 @@ theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
   ext v
   simp only [Set.mem_vsub, Set.mem_image,
     exists_exists_and_eq_and, ← f.linearMap_vsub]
-  constructor
-  · rintro ⟨x, hx, y, hy, hv⟩
-    exact ⟨x -ᵥ y, ⟨x, hx, y, hy, rfl⟩, hv⟩
-  · rintro ⟨-, ⟨x, hx, y, hy, rfl⟩, rfl⟩
-    exact ⟨x, hx, y, hy, rfl⟩
+  grind
 
 /-! ### Definition of `AffineMap.lineMap` and lemmas about it -/
 
