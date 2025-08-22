@@ -493,13 +493,17 @@ variable (R) [CommRing R]
 def nonPrincipals :=
   { I : Ideal R | ¬I.IsPrincipal }
 
-@[deprecated "See Ideal.nonPrincipals." (since := "2025-08-16")]
+@[deprecated
+  "Write { I : Ideal R | ¬I.IsPrincipal } explicitely instead of Ideal.nonPrincipals."
+  (since := "2025-08-16")]
 theorem nonPrincipals_def {I : Ideal R} : I ∈ { I : Ideal R | ¬I.IsPrincipal } ↔ ¬I.IsPrincipal :=
   Iff.rfl
 
 variable {R}
 
-@[deprecated "See Ideal.nonPrincipals." (since := "2025-08-16")]
+@[deprecated
+  "Write { I : Ideal R | ¬I.IsPrincipal } explicitely instead of Ideal.nonPrincipals."
+  (since := "2025-08-16")]
 theorem nonPrincipals_eq_empty_iff :
     { I : Ideal R | ¬I.IsPrincipal } = ∅ ↔ IsPrincipalIdealRing R := by
   simp [Set.eq_empty_iff_forall_notMem, isPrincipalIdealRing_iff]
