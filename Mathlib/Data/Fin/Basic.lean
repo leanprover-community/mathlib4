@@ -283,12 +283,11 @@ theorem val_one' (n : ℕ) [NeZero n] : ((1 : Fin n) : ℕ) = 1 % n :=
 theorem val_one'' {n : ℕ} : ((1 : Fin (n + 1)) : ℕ) = 1 % (n + 1) :=
   rfl
 
-instance nontrivial {n : ℕ} [NeZero n] : Nontrivial (Fin (n + 1)) where
-  exists_pair_ne := ⟨0, 1, (ne_iff_vne 0 1).mpr (by simp [val_one', val_zero, NeZero.ne])⟩
-
 theorem nontrivial_iff_two_le : Nontrivial (Fin n) ↔ 2 ≤ n := by
-  rcases n with (_ | _ | n) <;>
-  simp [Fin.nontrivial, not_nontrivial, Nat.succ_le_iff]
+  simp [← not_subsingleton_iff_nontrivial, subsingleton_iff_le_one]; omega
+
+instance instNontrivial [n.AtLeastTwo] : Nontrivial (Fin n) :=
+  nontrivial_iff_two_le.2 Nat.AtLeastTwo.one_lt
 
 /-- If working with more than two elements, we can always pick a third distinct from two existing
 elements. -/
