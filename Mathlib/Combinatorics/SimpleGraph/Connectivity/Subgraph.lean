@@ -272,15 +272,15 @@ lemma neighborSet_toSubgraph_startpoint {u v} {p : G.Walk u v}
   ext v
   simp_all only [Subgraph.mem_neighborSet, Set.mem_singleton_iff,
     SimpleGraph.Walk.toSubgraph_adj_iff, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
-  refine ⟨?_, by aesop⟩
+  refine ⟨?_, by simp_all⟩
   rintro ⟨i, hl | hr⟩
   · have : i = 0 := by
       apply hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by rw [Set.mem_setOf]; omega)
-      aesop
-    aesop
+      simp_all
+    simp_all
   · have : i + 1 = 0 := by
       apply hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by rw [Set.mem_setOf]; omega)
-      aesop
+      simp_all
     contradiction
 
 lemma neighborSet_toSubgraph_endpoint {u v} {p : G.Walk u v}
@@ -345,7 +345,7 @@ lemma neighborSet_toSubgraph_endpoint {u} {p : G.Walk u u} (hpc : p.IsCycle) :
   · rcases (hpc.getVert_endpoint_iff (by omega)).mp hr.2 with h1 | h2
     · contradiction
     · simp only [penultimate, ← h2, add_tsub_cancel_right]
-      aesop
+      simp_all
 
 lemma neighborSet_toSubgraph_internal {u} {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
     (h : i ≠ 0) (h' : i < p.length) :
@@ -361,7 +361,7 @@ lemma neighborSet_toSubgraph_internal {u} {i : ℕ} {p : G.Walk u u} (hpc : p.Is
   rintro ⟨i', ⟨hl1, hl2⟩ | ⟨hr1, hr2⟩⟩
   · apply hpc.getVert_injOn' (by rw [Set.mem_setOf_eq]; omega)
       (by rw [Set.mem_setOf_eq]; omega) at hl1
-    aesop
+    simp_all
   · apply hpc.getVert_injOn (by rw [Set.mem_setOf_eq]; omega)
       (by rw [Set.mem_setOf_eq]; omega) at hr2
     aesop

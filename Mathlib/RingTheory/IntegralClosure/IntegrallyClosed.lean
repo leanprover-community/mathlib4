@@ -84,7 +84,7 @@ theorem AlgHom.isIntegrallyClosedIn (f : A →ₐ[R] B) (hf : Function.Injective
     aesop
   · rintro ⟨y, rfl⟩
     apply (isIntegral_algHom_iff f hf).mp
-    aesop
+    simp_all
 
 /-- Being integrally closed is preserved under algebra isomorphisms. -/
 theorem AlgEquiv.isIntegrallyClosedIn (e : A ≃ₐ[R] B) :
@@ -109,9 +109,9 @@ theorem isIntegrallyClosedIn_iff {R A : Type*} [CommRing R] [CommRing A] [Algebr
         ∀ {x : A}, IsIntegral R x → ∃ y, algebraMap R A y = x := by
   constructor
   · rintro ⟨_, cl⟩
-    aesop
+    simp_all
   · rintro ⟨inj, cl⟩
-    refine ⟨inj, by aesop, ?_⟩
+    refine ⟨inj, by simp_all, ?_⟩
     rintro ⟨y, rfl⟩
     apply isIntegral_algebraMap
 

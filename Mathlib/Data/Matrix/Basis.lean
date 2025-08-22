@@ -359,7 +359,7 @@ variable [Fintype n] [Semiring α]
 theorem row_eq_zero_of_commute_single {i j k : n} {M : Matrix n n α}
     (hM : Commute (single i j 1) M) (hkj : k ≠ j) : M j k = 0 := by
   have := ext_iff.mpr hM i k
-  aesop
+  simp_all
 
 @[deprecated (since := "2025-05-05")]
 alias row_eq_zero_of_commute_stdBasisMatrix := row_eq_zero_of_commute_single
@@ -367,7 +367,7 @@ alias row_eq_zero_of_commute_stdBasisMatrix := row_eq_zero_of_commute_single
 theorem col_eq_zero_of_commute_single {i j k : n} {M : Matrix n n α}
     (hM : Commute (single i j 1) M) (hki : k ≠ i) : M k i = 0 := by
   have := ext_iff.mpr hM k j
-  aesop
+  simp_all
 
 @[deprecated (since := "2025-05-05")]
 alias col_eq_zero_of_commute_stdBasisMatrix := col_eq_zero_of_commute_single
@@ -375,7 +375,7 @@ alias col_eq_zero_of_commute_stdBasisMatrix := col_eq_zero_of_commute_single
 theorem diag_eq_of_commute_single {i j : n} {M : Matrix n n α}
     (hM : Commute (single i j 1) M) : M i i = M j j := by
   have := ext_iff.mpr hM i j
-  aesop
+  simp_all
 
 @[deprecated (since := "2025-05-05")]
 alias diag_eq_of_commute_stdBasisMatrix := diag_eq_of_commute_single

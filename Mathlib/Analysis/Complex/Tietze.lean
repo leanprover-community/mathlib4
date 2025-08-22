@@ -106,7 +106,7 @@ a bounded continuous function `g : Y →ᵇ ℝ` of the same norm such that `g �
 theorem exists_norm_eq_restrict_eq (f : s →ᵇ E) :
     ∃ g : X →ᵇ E, ‖g‖ = ‖f‖ ∧ g.restrict s = f := by
   by_cases hf : ‖f‖ = 0; · exact ⟨0, by aesop⟩
-  have := Metric.instTietzeExtensionClosedBall.{u, v} 𝕜 (0 : E) (by aesop : 0 < ‖f‖)
+  have := Metric.instTietzeExtensionClosedBall.{u, v} 𝕜 (0 : E) (by simp_all : 0 < ‖f‖)
   have hf' x : f x ∈ Metric.closedBall 0 ‖f‖ := by simpa using f.norm_coe_le_norm x
   obtain ⟨g, hg_mem, hg⟩ := (f : C(s, E)).exists_forall_mem_restrict_eq hs hf'
   simp only [Metric.mem_closedBall, dist_zero_right] at hg_mem

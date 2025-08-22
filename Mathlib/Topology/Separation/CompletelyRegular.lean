@@ -213,7 +213,7 @@ lemma separatesPoints_continuous_of_t35Space [T35Space X] :
   intro x y x_ne_y
   obtain ⟨f, f_cont, f_zero, f_one⟩ :=
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
-  exact ⟨fun x ↦ f x, continuous_subtype_val.comp f_cont, by aesop⟩
+  exact ⟨fun x ↦ f x, continuous_subtype_val.comp f_cont, by simp_all⟩
 
 @[deprecated (since := "2025-04-13")]
 alias separatesPoints_continuous_of_completelyRegularSpace := separatesPoints_continuous_of_t35Space
@@ -223,7 +223,7 @@ lemma separatesPoints_continuous_of_t35Space_Icc [T35Space X] :
   intro x y x_ne_y
   obtain ⟨f, f_cont, f_zero, f_one⟩ :=
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
-  exact ⟨f, f_cont, by aesop⟩
+  exact ⟨f, f_cont, by simp_all⟩
 
 @[deprecated (since := "2025-04-13")]
 alias separatesPoints_continuous_of_completelyRegularSpace_Icc :=

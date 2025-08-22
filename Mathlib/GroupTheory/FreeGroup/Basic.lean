@@ -652,7 +652,7 @@ theorem Red.exact : mk L₁ = mk L₂ ↔ Join Red L₁ L₂ :=
 @[to_additive /-- The canonical map from the type to the additive free group is an injection. -/]
 theorem of_injective : Function.Injective (@of α) := fun _ _ H => by
   let ⟨L₁, hx, hy⟩ := Red.exact.1 H
-  simp [Red.singleton_iff] at hx hy; aesop
+  simp [Red.singleton_iff] at hx hy; simp_all
 
 section lift
 

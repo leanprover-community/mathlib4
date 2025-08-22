@@ -408,7 +408,7 @@ lemma Walk.IsCycle.adj_toSubgraph_iff_of_isCycles [LocallyFinite G] {u} {p : G.W
         (Set.Nonempty.mono (p.toSubgraph.neighborSet_subset v) <|
           Set.nonempty_of_ncard_ne_zero <| by simp [
           hp.ncard_neighborSet_toSubgraph_eq_two (by aesop)]),
-      hp.ncard_neighborSet_toSubgraph_eq_two (by aesop)]
+      hp.ncard_neighborSet_toSubgraph_eq_two (by simp_all)]
 
 open scoped symmDiff
 
@@ -566,7 +566,7 @@ lemma IsAlternating.sup_edge {u x : V} (halt : G.IsAlternating G') (hnadj : ¬G'
     rcases h2.1 with ⟨h2l1, h2l2⟩ | ⟨h2r1,h2r2⟩
     · subst h2l1 h2l2
       exact (hx' _ hww' hl.symm).symm
-    · aesop
+    · simp_all
   · rw [G'.adj_congr_of_sym2 (by aesop : s(v, w) = s(u, x))]
     simp only [hnadj, false_iff, not_not]
     rcases hr.1 with ⟨hrl1, hrl2⟩ | ⟨hrr1, hrr2⟩

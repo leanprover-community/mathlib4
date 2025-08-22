@@ -130,7 +130,7 @@ lemma cartanMatrix_mem_of_ne {i j : b.support} (hij : i ≠ j) :
   have h₂ : P.pairingIn ℤ i j ≤ 0 := b.cartanMatrix_le_zero_of_ne i j hij
   suffices P.pairingIn ℤ i j ≠ -4 by aesop
   by_contra contra
-  replace contra : P.pairingIn ℤ j i = -1 ∧ P.pairingIn ℤ i j = -4 := ⟨by aesop, contra⟩
+  replace contra : P.pairingIn ℤ j i = -1 ∧ P.pairingIn ℤ i j = -4 := ⟨by simp_all, contra⟩
   rw [pairingIn_neg_one_neg_four_iff] at contra
   refine (not_linearIndependent_iff.mpr ?_) b.linearIndepOn_root
   refine ⟨⟨{i, j}, by simpa⟩, Finsupp.single i (1 : R) + Finsupp.single j (2 : R), ?_⟩
@@ -182,15 +182,15 @@ lemma induction_on_cartanMatrix [P.IsReduced] [P.IsIrreducible]
     rw [hq_mem]
     induction hx using Submodule.span_induction with
     | mem x hx =>
-      obtain ⟨l, hl, rfl⟩ : ∃ l : b.support, p l ∧ P.root l = x := by aesop
+      obtain ⟨l, hl, rfl⟩ : ∃ l : b.support, p l ∧ P.root l = x := by simp_all
       replace hk : b.cartanMatrix k l ≠ 0 := by
         rwa [ne_eq, cartanMatrix_apply_eq_zero_iff_symm, cartanMatrix_apply_eq_zero_iff_pairing]
       tauto
-    | zero => aesop
+    | zero => simp_all
     | add x y hx hy hx' hy' =>
-      replace hk : P.coroot' k x ≠ 0 ∨ P.coroot' k y ≠ 0 := by by_contra! contra; aesop
+      replace hk : P.coroot' k x ≠ 0 ∨ P.coroot' k y ≠ 0 := by by_contra! contra; simp_all
       tauto
-    | smul a x hx hx' => aesop
+    | smul a x hx hx' => simp_all
   have hq : ∀ k, q ∈ invtSubmodule (P.reflection k) := by
     rw [← b.forall_mem_support_invtSubmodule_iff]
     refine fun k hkb ↦ (mem_invtSubmodule _).mpr fun x hx ↦ ?_

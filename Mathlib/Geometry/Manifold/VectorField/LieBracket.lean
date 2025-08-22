@@ -178,7 +178,7 @@ theorem mlieBracketWithin_inter (ht : t ∈ 𝓝 x) :
   apply mlieBracketWithin_congr_set
   filter_upwards [ht] with y hy
   change (y ∈ s ∩ t) = (y ∈ s)
-  aesop
+  simp_all
 
 theorem mlieBracketWithin_of_mem_nhds (h : s ∈ 𝓝 x) :
     mlieBracketWithin I V W s x = mlieBracket I V W x := by

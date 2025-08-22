@@ -203,7 +203,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
       Disjoint.left_le_of_le_sup_right induce_le ?_⟩
     rw [disjoint_edge]
     rw [ConnectedComponent.adj_spanningCoe_toSimpleGraph]
-    aesop
+    simp_all
   push_neg at hxc
   have hacc := ((cycles.connectedComponentMk c).mem_supp_congr_adj hcac.symm).mp rfl
   have (G : SimpleGraph V) : LocallyFinite G := fun _ ↦ Fintype.ofFinite _
