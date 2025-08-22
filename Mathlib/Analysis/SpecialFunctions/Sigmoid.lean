@@ -36,8 +36,7 @@ noncomputable def Sigmoid : ℝ ↪o I where
     refine ⟨(1 + exp (-a))⁻¹, ?_⟩
     constructor
     · positivity
-    · refine inv_le_one_of_one_le₀ ?_
-      exact (le_add_iff_nonneg_right 1).mpr (exp_nonneg (-a))
+    · exact inv_le_one_of_one_le₀ <| (le_add_iff_nonneg_right 1).mpr (exp_nonneg (-a))
   inj' {a b} hab := by
     simp_all only [Subtype.mk.injEq, inv_inj, add_right_inj, exp_eq_exp, neg_inj]
   map_rel_iff' {a b} := by
