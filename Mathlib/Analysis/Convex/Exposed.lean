@@ -173,8 +173,8 @@ def Set.exposedPoints (A : Set E) : Set E :=
   { x ∈ A | ∃ l : StrongDual 𝕜 E, ∀ y ∈ A, l y ≤ l x ∧ (l x ≤ l y → y = x) }
 
 theorem exposed_point_def :
-    x ∈ A.exposedPoints 𝕜 ↔ x ∈ A ∧ ∃ l : StrongDual 𝕜 E, ∀ y ∈ A, l y ≤ l x ∧ (l x ≤ l y → y = x) :=
-  Iff.rfl
+    x ∈ A.exposedPoints 𝕜 ↔ x ∈ A ∧ ∃ l :
+    StrongDual 𝕜 E, ∀ y ∈ A, l y ≤ l x ∧ (l x ≤ l y → y = x) := Iff.rfl
 
 theorem exposedPoints_subset : A.exposedPoints 𝕜 ⊆ A := fun _ hx => hx.1
 
