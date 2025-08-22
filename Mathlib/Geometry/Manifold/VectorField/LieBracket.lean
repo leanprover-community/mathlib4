@@ -326,6 +326,41 @@ lemma aux_computation :
       exact isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target x)
     _ = W x := by simp
 
+lemma aux_computation2 :
+    (mfderivWithin 𝓘(𝕜, E) I (extChartAt I x).symm (range I) ((extChartAt I x) x)).inverse (V x)
+      = V x := by
+  set φ := extChartAt I x
+  set x' := (extChartAt I x) x
+  -- this is almost true: it is true within a smaller set (namely extChartAt I x).target...
+  have : mfderivWithin 𝓘(𝕜, E) I φ.symm (range I) (φ x) = ContinuousLinearMap.id 𝕜 _ := by
+    rw [mfderivWithin]
+    have : MDifferentiableWithinAt 𝓘(𝕜, E) I (↑φ.symm) (range ↑I) (φ x) :=
+      mdifferentiableWithinAt_extChartAt_symm (mem_extChartAt_target x)
+    simp? [this] says
+      simp only [this, ↓reduceIte, writtenInExtChartAt, extChartAt, PartialHomeomorph.extend,
+        PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe,
+        PartialHomeomorph.refl_partialEquiv, PartialEquiv.refl_source,
+        PartialHomeomorph.singletonChartedSpace_chartAt_eq, modelWithCornersSelf_partialEquiv,
+        PartialEquiv.trans_refl, PartialEquiv.refl_symm, PartialEquiv.refl_coe, CompTriple.comp_eq,
+        preimage_id_eq, id_eq, modelWithCornersSelf_coe, range_id, inter_univ]
+    rw [extChartAt_to_inv x, ← extChartAt_coe]
+    have : fderivWithin 𝕜 (φ ∘ φ.symm) (range I) (φ x) = fderivWithin 𝕜 id (range I) (φ x) := by
+      refine fderivWithin_congr' ?_ ?_
+      · intro x' hx'
+        simp
+        refine PartialEquiv.right_inv φ ?_
+        rw [@extChartAt_target]
+        refine ⟨?_, hx'⟩
+        rw [mem_preimage] -- not necessarily true, though...
+        sorry
+      · sorry
+    rw [this]
+    exact fderivWithin_id <| I.uniqueDiffOn.uniqueDiffWithinAt (mem_range_self _)
+  rw [this]
+  rw [ContinuousLinearMap.inverse_id]
+  exact rfl
+
+#exit
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
 `f : M → 𝕜`, we have `[V, f • W] = (df V) • W + f • [V, W]`. Version within a set.
@@ -354,8 +389,7 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
   let aux := lieBracketWithin_smul_right (V := V') hf'
     hW.differentiableWithinAt_mpullbackWithin_vectorField hs
 
-  trans mpullback I 𝓘(𝕜, E) (extChartAt I x) ((lieBracketWithin 𝕜 V' (f' • W') s') ·) x
-  · rfl
+  rw [← Pi.smul_def']
   -- We need the cast, since on the nose `B` is a map `E → E`,
   -- while we need a map between tangent spaces.
   let A (x₀) := (fderivWithin 𝕜 f' s' x₀) (V' x₀) • W' x₀
@@ -372,12 +406,15 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
     have cleanup1 : I ((chartAt H x) x) = x' := rfl
     have cleanup2 : f ∘ (chartAt H x).symm ∘ ↑I.symm = f' := rfl
     rw [cleanup1, cleanup2]
-    congr
-    · sorry
+    congr 1
+    · sorry -- is the sorry below
     have : V' x' = V x := by
       simp only [V', x']
-      set φ := (extChartAt I x)
+      --set φ := (extChartAt I x)
       simp only [mpullbackWithin]
+      rw [extChartAt_to_inv x]
+
+
       -- is this actually true? not sure!
       --have := VectorField.eventuallyEq_mpullback_mpullbackWithin_extChartAt_symm
       --  V (x := x) (s := Set.univ)
