@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.Torsion
 import Mathlib.Algebra.Opposites
-import Mathlib.Tactic.Spread
 
 /-!
 # Group structures on the multiplicative and additive opposites
@@ -277,13 +276,8 @@ instance instCommGroup [CommGroup α] : CommGroup αᵃᵒᵖ :=
   unop_injective.commGroup _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
-end AddOpposite
-
-section Torsion
-
-open MulOpposite in
 @[to_additive]
-instance (M : Type*) [Monoid M] [IsMulTorsionFree M] : IsMulTorsionFree (Mᵐᵒᵖ) :=
+instance instMulTorsionFree [Monoid α] [IsMulTorsionFree α] : IsMulTorsionFree αᵐᵒᵖ :=
   ⟨fun _ h ↦ op_injective.comp <| (pow_left_injective h).comp <| unop_injective⟩
 
-end Torsion
+end AddOpposite
