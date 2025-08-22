@@ -137,16 +137,6 @@ def Fin.altExtendSuccAboveMulEquiv {n} (i : Fin (n + 1)) :
 
 /-- The group isomorphism between `alternatingGroup`s induced by the given `Equiv`. -/
 @[simps ! apply_coe]
-def Equiv.altCongrMulEquiv {β : Type*} [Fintype β] [DecidableEq β] (e : α ≃ β) :
-    ↥(alternatingGroup α) ≃* ↥(alternatingGroup β) :=
-  e.permCongrMulEquiv.subgroupMap (alternatingGroup α) |>.trans <|
-    MulEquiv.subgroupCongr <| by
-      ext1 p
-      simp [e.permCongr.symm.surjective.exists,
-        show sign (e.permCongr.symm p) = sign p by simp, - permCongr_symm]
-
-/-- The group isomorphism between `alternatingGroup`s induced by the given `Equiv`. -/
-@[simps ! apply_coe]
 def Equiv.altCongrHom {β : Type*} [Fintype β] [DecidableEq β] (e : α ≃ β) :
     ↥(alternatingGroup α) ≃* ↥(alternatingGroup β) :=
   e.permCongrHom.subgroupMap (alternatingGroup α) |>.trans <|
@@ -531,7 +521,7 @@ theorem not_isSimpleGroup_four : ¬IsSimpleGroup ↥(alternatingGroup (Fin 4)) :
 
 theorem not_isSimpleGroup_of_card_eq_four (h4 : card α = 4) :
     ¬IsSimpleGroup ↥(alternatingGroup α) := by
-  obtain ⟨e⟩ := Fintype.truncEquivFin α |>.nonempty.map Equiv.altCongrMulEquiv
+  obtain ⟨e⟩ := Fintype.truncEquivFin α |>.nonempty.map Equiv.altCongrHom
   rw [h4] at e; rw [e.isSimpleGroup_congr]; exact not_isSimpleGroup_four
 
 /-- Shows that $A_5$ is simple by taking an arbitrary non-identity element and showing by casework
@@ -640,7 +630,7 @@ theorem isSimpleGroup_of_five_le {n} (h5 : 5 ≤ n) :
         simp_rw [Fin.lt_iff_val_lt_val, Fin.val_last]; omega)]
 
 theorem isSimpleGroup_of_five_le_card (h5 : 5 ≤ card α) : IsSimpleGroup ↥(alternatingGroup α) := by
-  obtain ⟨e⟩ := Fintype.truncEquivFin α |>.nonempty.map Equiv.altCongrMulEquiv
+  obtain ⟨e⟩ := Fintype.truncEquivFin α |>.nonempty.map Equiv.altCongrHom
   rw [e.isSimpleGroup_congr]; exact isSimpleGroup_of_five_le h5
 
 instance isSimpleGroup_add_five (n : ℕ) : IsSimpleGroup ↥(alternatingGroup (Fin (n + 5))) :=
