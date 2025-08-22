@@ -25,7 +25,7 @@ instance (priority := 100) toZeroHomClass [MulZeroClass α] [MulZeroClass β] [M
 instance (priority := 100) toMonoidWithZeroHomClass
     [MulZeroOneClass α] [MulZeroOneClass β] [MulHomClass F α β] :
     MonoidWithZeroHomClass F α β :=
-  { MulHomClass.instMonoidHomClass F, MulHomClass.toZeroHomClass with }
+  { MulEquivClass.instMonoidHomClass F, MulEquivClass.toZeroHomClass with }
 
 end MulEquivClass
 
