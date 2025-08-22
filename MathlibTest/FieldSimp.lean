@@ -664,7 +664,7 @@ TODO (new implementation): handle `CommGroupWithZero`, not just `Semifield`
 
 /--
 error: unsolved goals
-R : Type ?u.201754
+R : Type ?u.202158
 inst✝¹ : CommRing R
 a b c d e f g : R
 u₁ u₂ : Rˣ
