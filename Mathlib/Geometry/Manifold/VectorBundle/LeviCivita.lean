@@ -14,7 +14,7 @@ import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 This file will define the Levi-Civita connection on any Riemannian manifold.
 Details to be written!
 
-
+TODO: refactor this file, to make Levi-Civita take a Riemannian metric instead!
 
 
 TODO: more generally, define a notion of metric connections (e.g., those whose parallel transport
