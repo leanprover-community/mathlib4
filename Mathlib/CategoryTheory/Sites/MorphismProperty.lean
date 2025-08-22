@@ -106,6 +106,43 @@ lemma grothendieckTopology_eq_toGrothendieck_pretopology [P.IsMultiplicative] :
 section
 
 variable {P Q : MorphismProperty C}
+
+section
+
+/-- If `P` is stable under base change, this is the coverage on `C` where covering presieves
+are those where every morphism satisfies `P`. -/
+def coverage (P : MorphismProperty C) [P.IsStableUnderBaseChange] : Coverage C where
+  covering X S := ∀ {Y : C} {f : Y ⟶ X}, S f → P f
+  pullback X Y f S hS := by
+    refine ⟨S.pullbackArrows f, ?_, .pullbackArrows f S⟩
+    intro Z g ⟨W, a, h⟩
+    exact P.pullback_snd _ _ (hS h)
+
+variable [P.IsStableUnderBaseChange]
+
+/-- If `P` is also multiplicative, the coverage induced by `P` is the pretopology induced by `P`. -/
+lemma coverage_eq_toCoverage_pretopology [P.IsMultiplicative] :
+    P.coverage = P.pretopology.toCoverage := rfl
+
+instance : P.coverage.IsStableUnderBaseChange where
+  mem_covering_of_isPullback {ι} S X f hf T g W p₁ p₂ h Z g hg := by
+    obtain ⟨i⟩ := hg
+    exact P.of_isPullback (h i).flip (hf ⟨i⟩)
+
+instance [P.IsStableUnderComposition] : P.coverage.IsStableUnderComposition where
+  mem_covering_comp {ι} S X f hf σ Y g hg Z p := by
+    intro ⟨i⟩
+    exact P.comp_mem _ _ (hg _ ⟨i.2⟩) (hf ⟨i.1⟩)
+
+lemma toGrothendieck_coverage_eq_toGrothendieck_pretopology [P.IsMultiplicative] :
+    P.coverage.toGrothendieck = P.grothendieckTopology := by
+  rw [coverage_eq_toCoverage_pretopology, Pretopology.toGrothendieck_toCoverage]
+
+end
+
+section
+
+variable {P Q : MorphismProperty C}
   [P.IsMultiplicative] [P.IsStableUnderBaseChange]
   [Q.IsMultiplicative] [Q.IsStableUnderBaseChange]
 
@@ -124,5 +161,7 @@ lemma pretopology_inf : (P ⊓ Q).pretopology = P.pretopology ⊓ Q.pretopology 
 end
 
 end HasPullbacks
+
+end
 
 end CategoryTheory.MorphismProperty
