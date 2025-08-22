@@ -52,7 +52,7 @@ The following notation is declared in locale `SimpleGraph`:
 
 ## TODO
 
-* Relate `⊤ ⊑ H`/`⊥ ⊑ H` to there being a clique/independent set in `H`.
+* Relate `⊥ ⊴ H` to there being an independent set in `H`.
 * Count induced copies of a graph inside another.
 * Make `copyCount`/`labelledCopyCount` computable (not necessarily efficiently).
 -/
