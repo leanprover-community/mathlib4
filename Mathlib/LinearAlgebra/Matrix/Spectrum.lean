@@ -170,6 +170,11 @@ lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
   obtain ⟨i, hi⟩ := Function.ne_iff.mp this
   exact ⟨_, _, hi, hA.eigenvectorBasis.orthonormal.ne_zero i, hA.mulVec_eigenvectorBasis i⟩
 
+theorem trace_eq_sum_eigenvalues [DecidableEq n] (hA : A.IsHermitian) :
+    A.trace = ∑ i, (hA.eigenvalues i : 𝕜) := by
+  conv_lhs => rw [hA.spectral_theorem, trace_mul_cycle]
+  simp
+
 end IsHermitian
 
 end Matrix
