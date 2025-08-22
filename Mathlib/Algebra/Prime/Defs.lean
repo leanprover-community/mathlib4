@@ -154,8 +154,4 @@ protected theorem Prime.irreducible (hp : Prime p) : Irreducible p :=
 theorem irreducible_iff_prime [DecompositionMonoid M] {a : M} : Irreducible a ↔ Prime a :=
   ⟨Irreducible.prime, Prime.irreducible⟩
 
-instance (priority := 100) [DecompositionMonoid M] [DecidablePred (Prime : M → Prop)] :
-    DecidablePred (Irreducible : M → Prop) := fun m ↦
-  decidable_of_iff (Prime m) irreducible_iff_prime.symm
-
 end CancelCommMonoidWithZero

@@ -104,6 +104,9 @@ theorem prime_iff_natAbs_prime {k : ℤ} : Prime k ↔ Nat.Prime k.natAbs :=
 instance instDecidablePredPrime : DecidablePred (Prime : ℤ → Prop) := fun m ↦
   decidable_of_iff (Nat.Prime m.natAbs) prime_iff_natAbs_prime.symm
 
+instance (priority := 100) : DecidablePred (Irreducible : ℤ → Prop) := fun m ↦
+  decidable_of_iff (Prime m) irreducible_iff_prime.symm
+
 theorem span_natAbs (a : ℤ) : Ideal.span ({(a.natAbs : ℤ)} : Set ℤ) = Ideal.span {a} := by
   rw [Ideal.span_singleton_eq_span_singleton]
   exact (associated_natAbs _).symm
