@@ -852,7 +852,7 @@ theorem surj_on_of_inj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
   convert @Finset.surj_on_of_inj_on_of_card_le _ _ _ t.toFinset f'' _ _ _ _ (by simpa) using 1
   · simp [f'']
   · simp [f'', hf]
-  · intros a₁ a₂ ha₁ ha₂ h
+  · intro a₁ a₂ ha₁ ha₂ h
     rw [mem_toFinset] at ha₁ ha₂
     exact hinj _ _ ha₁ ha₂ h
   rwa [← ncard_eq_toFinset_card', ← ncard_eq_toFinset_card']
