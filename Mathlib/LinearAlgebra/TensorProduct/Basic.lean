@@ -1135,9 +1135,19 @@ theorem map_comp_rTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (f' : S →ₗ[
   simp only [rTensor, ← map_comp, comp_id]
 
 @[simp]
+theorem map_rTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (f' : S →ₗ[R] M) (x : S ⊗[R] N) :
+    map f g (f'.rTensor _ x) = map (f.comp f') g x :=
+  LinearMap.congr_fun (map_comp_rTensor _ _ _ _) x
+
+@[simp]
 theorem map_comp_lTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (g' : S →ₗ[R] N) :
     (map f g).comp (g'.lTensor _) = map f (g.comp g') := by
   simp only [lTensor, ← map_comp, comp_id]
+
+@[simp]
+lemma map_lTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (g' : S →ₗ[R] N) (x : M ⊗[R] S) :
+    map f g (g'.lTensor M x) = map f (g ∘ₗ g') x :=
+  LinearMap.congr_fun (map_comp_lTensor _ _ _ _) x
 
 @[simp]
 theorem rTensor_comp_map (f' : P →ₗ[R] S) (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
@@ -1145,9 +1155,19 @@ theorem rTensor_comp_map (f' : P →ₗ[R] S) (f : M →ₗ[R] P) (g : N →ₗ[
   simp only [rTensor, ← map_comp, id_comp]
 
 @[simp]
+lemma rTensor_map (f' : P →ₗ[R] S) (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (x : M ⊗[R] N) :
+    f'.rTensor Q (map f g x) = map (f' ∘ₗ f) g x :=
+  LinearMap.congr_fun (rTensor_comp_map _ _ f g) x
+
+@[simp]
 theorem lTensor_comp_map (g' : Q →ₗ[R] S) (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     (g'.lTensor _).comp (map f g) = map f (g'.comp g) := by
   simp only [lTensor, ← map_comp, id_comp]
+
+@[simp]
+lemma lTensor_map (g' : Q →ₗ[R] S) (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (x : M ⊗[R] N) :
+    g'.lTensor P (map f g x) = map f (g' ∘ₗ g) x :=
+  LinearMap.congr_fun (lTensor_comp_map _ _ f g) x
 
 variable {M}
 
