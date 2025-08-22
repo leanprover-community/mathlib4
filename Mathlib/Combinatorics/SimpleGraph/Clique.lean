@@ -315,7 +315,7 @@ lemma IsNClique.erase_of_sup_edge_of_mem [DecidableEq α] {v w : α} {s : Finset
   card_eq  := by rw [card_erase_of_mem hx, hc.2]
 
 /-- The vertices in a copy of `⊤ : SimpleGraph β` are a `card β`-clique. -/
-theorem isNClique_map_copy_top [DecidableEq α] [Fintype β] (f : Copy (⊤ : SimpleGraph β) G) :
+theorem isNClique_map_copy_top [Fintype β] (f : Copy (⊤ : SimpleGraph β) G) :
     G.IsNClique (card β) (univ.map f.toEmbedding) := by
   rw [isNClique_iff, card_map, card_univ, coe_map, coe_univ]
   exact ⟨isClique_image_copy_top f, rfl⟩
