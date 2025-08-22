@@ -264,7 +264,7 @@ theorem trace_mul_single [NonUnitalNonAssocSemiring R] [Fintype m]
 end single
 
 /-- Matrices `A` and `B` are equal iff `(x * A).trace = (x * B).trace` for all `x`. -/
-theorem ext_iff_trace_mul_eq [NonAssocSemiring R] (A B : Matrix m n R) :
+theorem ext_iff_trace_mul_eq [NonAssocSemiring R] {A B : Matrix m n R} :
     A = B ↔ ∀ x, (x * A).trace = (x * B).trace := by
   refine ⟨fun h x => h ▸ rfl, fun h => ?_⟩
   ext i j
