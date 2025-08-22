@@ -290,10 +290,10 @@ private lemma Summable_cotTermUpperBound (A B : ℝ) (hB : 0 < B) {k : ℕ} (hk 
   apply Summable.mul_left
   apply ((summable_nat_add_iff 1).mpr (summable_int_iff_summable_nat_and_neg.mp
       (EisensteinSeries.linear_right_summable 0 1 (k := k + 1) (by omega))).1).norm.congr
+  intro n
   simp only [Int.cast_one, mul_zero, Nat.cast_add, Nat.cast_one, Int.cast_add, Int.cast_natCast,
     zero_add, ← zpow_neg, neg_add_rev, Int.reduceNeg, norm_zpow, sub_eq_add_neg, Real.norm_eq_abs]
   norm_cast
-  exact fun n ↦ rfl
 
 open EisensteinSeries in
 private lemma iteratedDerivWithin_cotTerm_bounded_uniformly
