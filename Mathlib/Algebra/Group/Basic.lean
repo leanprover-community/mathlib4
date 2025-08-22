@@ -174,12 +174,12 @@ lemma pow_eq_pow_mod (m : ℕ) (ha : a ^ n = 1) : a ^ m = a ^ (m % n) := by
 @[to_additive (attr := simp)]
 lemma mul_left_iterate (a : M) : ∀ n : ℕ, (a * ·)^[n] = (a ^ n * ·)
   | 0 => by ext; simp
-  | n + 1 => by ext; simp [pow_succ, mul_left_iterate]
+  | n + 1 => by simp [pow_succ, mul_left_iterate]
 
 @[to_additive (attr := simp)]
 lemma mul_right_iterate (a : M) : ∀ n : ℕ, (· * a)^[n] = (· * a ^ n)
   | 0 => by ext; simp
-  | n + 1 => by ext; simp [pow_succ', mul_right_iterate]
+  | n + 1 => by simp [pow_succ', mul_right_iterate]
 
 @[to_additive]
 lemma mul_left_iterate_apply_one (a : M) : (a * ·)^[n] 1 = a ^ n := by simp
