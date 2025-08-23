@@ -53,7 +53,7 @@ open MeasureTheory Set Filter Function TopologicalSpace
 open scoped Topology Filter ENNReal Interval NNReal
 
 variable {ι 𝕜 ε ε' E F A : Type*} [NormedAddCommGroup E]
-  [TopologicalSpace ε] [ENormedAddCommMonoid ε] [TopologicalSpace ε'] [ENormedAddCommMonoid ε']
+  [TopologicalSpace ε] [ENormedAddMonoid ε] [TopologicalSpace ε'] [ENormedAddMonoid ε']
 
 /-!
 ### Integrability on an interval
@@ -294,15 +294,16 @@ theorem sub {f g : ℝ → E} (hf : IntervalIntegrable f μ a b) (hg : IntervalI
     IntervalIntegrable (fun x => f x - g x) μ a b :=
   ⟨hf.1.sub hg.1, hf.2.sub hg.2⟩
 
-theorem sum [ContinuousAdd ε]
+theorem sum {ε} [TopologicalSpace ε] [ENormedAddCommMonoid ε] [ContinuousAdd ε]
     (s : Finset ι) {f : ι → ℝ → ε} (h : ∀ i ∈ s, IntervalIntegrable (f i) μ a b) :
     IntervalIntegrable (∑ i ∈ s, f i) μ a b :=
   ⟨integrable_finset_sum' s fun i hi => (h i hi).1, integrable_finset_sum' s fun i hi => (h i hi).2⟩
 
 /-- Finite sums of interval integrable functions are interval integrable. -/
 @[simp]
-protected theorem finsum [ContinuousAdd ε] [PseudoMetrizableSpace ε] {f : ι → ℝ → ε}
-    (h : ∀ i, IntervalIntegrable (f i) μ a b) :
+protected theorem finsum
+    {ε} [TopologicalSpace ε] [ENormedAddCommMonoid ε] [ContinuousAdd ε] [PseudoMetrizableSpace ε]
+    {f : ι → ℝ → ε} (h : ∀ i, IntervalIntegrable (f i) μ a b) :
     IntervalIntegrable (∑ᶠ i, f i) μ a b := by
   by_cases h₁ : f.support.Finite
   · simp [finsum_eq_sum _ h₁, IntervalIntegrable.sum h₁.toFinset (fun i _ ↦ h i)]
