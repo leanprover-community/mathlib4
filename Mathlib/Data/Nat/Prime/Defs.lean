@@ -428,8 +428,14 @@ theorem prime_iff {p : ℕ} : p.Prime ↔ _root_.Prime p :=
 
 alias ⟨Prime.prime, _root_.Prime.nat_prime⟩ := prime_iff
 
+instance instDecidablePredPrime : DecidablePred (_root_.Prime : ℕ → Prop) := fun n ↦
+  decidable_of_iff (Nat.Prime n) Nat.prime_iff
+
 theorem irreducible_iff_prime {p : ℕ} : Irreducible p ↔ _root_.Prime p :=
   prime_iff
+
+instance instDecidablePredIrreducible : DecidablePred (Irreducible : ℕ → Prop) :=
+  decidablePrime
 
 /-- The type of prime numbers -/
 def Primes :=
