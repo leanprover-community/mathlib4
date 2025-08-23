@@ -239,7 +239,7 @@ theorem colimitLimitToLimitColimit_surjective :
     -- satisfying `gf f ≫ i f = hf f' ≫ i f'`.
     let i : ∀ {j j'} (f : j ⟶ j'), kf f ⟶ k'' := fun {j} {j'} f => i' (kfO f)
     have s : ∀ {j₁ j₂ j₃ j₄} (f : j₁ ⟶ j₂) (f' : j₃ ⟶ j₄), gf f ≫ i f = hf f' ≫ i f' := by
-      intros j₁ j₂ j₃ j₄ f f'
+      intro j₁ j₂ j₃ j₄ f f'
       rw [s', s']
       · exact k'O
       · exact Finset.mem_biUnion.mpr ⟨j₃, Finset.mem_univ _,

@@ -44,7 +44,7 @@ implicit arguments, requires us to unfold the defs and split the `if`s in the de
 3. seeing if we can split by cases on the arguments, then see if the defs work themselves out
   (useful when `compare` is defined via a `match` statement, as it is for `Bool`) -/
 macro "compareOfLessAndEq_rfl" : tactic =>
-  `(tactic| (intros a b; first | rfl |
+  `(tactic| (intro a b; first | rfl |
     (simp only [compare, compareOfLessAndEq]; split_ifs <;> rfl) |
     (induction a <;> induction b <;> simp +decide only)))
 

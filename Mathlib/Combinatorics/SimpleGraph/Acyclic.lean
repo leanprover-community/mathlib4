@@ -163,7 +163,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
   case notNil => exact not_nil_of_ne (by simpa using hw)
   case memEdges => simp
   case inj =>
-    intros a ha b hb h
+    intro a ha b hb h
     wlog h' : (f a).length ≤ (f b).length generalizing a b
     · exact Eq.symm (this _ hb _ ha h.symm (le_of_not_ge h'))
     rw [dart_edge_eq_iff] at h
@@ -179,7 +179,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
         exact (hf _).tail
   case surj =>
     simp only [mem_edgeFinset, Finset.mem_compl, Finset.mem_singleton, Sym2.forall, mem_edgeSet]
-    intros x y h
+    intro x y h
     wlog h' : (f x).length ≤ (f y).length generalizing x y
     · rw [Sym2.eq_swap]
       exact this y x h.symm (le_of_not_ge h')

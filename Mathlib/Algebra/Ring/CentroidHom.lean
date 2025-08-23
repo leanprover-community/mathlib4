@@ -447,7 +447,7 @@ def centerToCentroidCenter :
       val := ⟨L z, z.prop.left_comm, z.prop.left_assoc ⟩
       property := by
         rw [Subsemiring.mem_center_iff]
-        intros g
+        intro g
         ext a
         exact map_mul_left g (↑z) a }
   map_zero' := by

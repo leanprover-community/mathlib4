@@ -312,7 +312,7 @@ theorem chromaticNumber_le_one_of_subsingleton (G : SimpleGraph V) [Subsingleton
     G.chromaticNumber ≤ 1 := by
   rw [← Nat.cast_one, chromaticNumber_le_iff_colorable]
   refine ⟨Coloring.mk (fun _ => 0) ?_⟩
-  intros v w
+  intro v w
   cases Subsingleton.elim v w
   simp
 

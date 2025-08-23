@@ -216,7 +216,7 @@ theorem comap_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f
     · exact ⟨map f J, Set.mem_insert_of_mem _ ⟨le_map_of_comap_le_of_surjective f hf hJ.1, hmax⟩,
         this⟩
   · simp_rw [comap_sInf, le_iInf_iff]
-    intros J hJ
+    intro J hJ
     haveI : J.IsMaximal := hJ.right
     exact sInf_le ⟨comap_mono hJ.left, comap_isMaximal_of_surjective _ hf⟩
 

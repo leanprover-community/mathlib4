@@ -277,7 +277,7 @@ theorem sum_range_pow (n p : ℕ) :
     -- key step: use `PowerSeries.coeff_mul` and then rewrite sums
     simp only [f, coeff_mul, coeff_mk, sum_antidiagonal_eq_sum_range_succ f]
     apply sum_congr rfl
-    intros m h
+    intro m h
     simp only [exp_pow_eq_rescale_exp, rescale, RingHom.coe_mk]
     -- manipulate factorials and binomial coefficients
     simp? at h says simp only [succ_eq_add_one, mem_range] at h

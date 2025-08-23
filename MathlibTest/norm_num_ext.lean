@@ -292,7 +292,7 @@ example : @Squarefree ℕ Multiplicative.monoid 1 := by
   rintro x ⟨dx, hd⟩
   revert x dx
   rw [Multiplicative.ofAdd.surjective.forall₂]
-  intros x dx h
+  intro x dx h
   simp_rw [← ofAdd_add, Multiplicative.ofAdd.injective.eq_iff] at h
   cases x
   · simp [isUnit_one]

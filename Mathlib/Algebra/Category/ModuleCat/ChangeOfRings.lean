@@ -659,7 +659,7 @@ def HomEquiv.evalAt {X : ModuleCat R} {Y : ModuleCat S} (s : S)
         dsimp only
         rw [map_add, smul_add] }
     (by
-      intros r x
+      intro r x
       rw [AddHom.toFun_eq_coe, AddHom.coe_mk, RingHom.id_apply,
         LinearMap.map_smul, smul_comm r s (g x : Y)] )
 

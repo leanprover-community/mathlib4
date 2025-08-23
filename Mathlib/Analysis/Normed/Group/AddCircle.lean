@@ -69,7 +69,7 @@ theorem norm_eq {x : ℝ} : ‖(x : AddCircle p)‖ = |x - round (p⁻¹ * x) * 
     rw [abs_inv, eq_inv_mul_iff_mul_eq₀ ((not_congr abs_eq_zero).mpr hp)] at hx
     rw [← hx, inv_mul_cancel₀ hp, this, ← abs_mul, mul_sub, mul_inv_cancel_left₀ hp, mul_comm p]
   clear! x p
-  intros x
+  intro x
   simp only [le_antisymm_iff, le_norm_iff, Real.norm_eq_abs]
   refine ⟨le_of_forall_le fun r hr ↦ ?_, ?_⟩
   · rw [abs_sub_round_eq_min, le_inf_iff]

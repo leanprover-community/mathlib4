@@ -776,7 +776,7 @@ instance addMonoidWithOne : AddMonoidWithOne Ordinal.{u} where
     Quotient.inductionOn₃ o₁ o₂ o₃ fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ =>
       Quot.sound
         ⟨⟨sumAssoc _ _ _, by
-          intros a b
+          intro a b
           rcases a with (⟨a | a⟩ | a) <;> rcases b with (⟨b | b⟩ | b) <;>
             simp only [sumAssoc_apply_inl_inl, sumAssoc_apply_inl_inr, sumAssoc_apply_inr,
               Sum.lex_inl_inl, Sum.lex_inr_inr, Sum.Lex.sep, Sum.lex_inr_inl]⟩⟩

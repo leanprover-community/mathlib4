@@ -116,7 +116,7 @@ theorem bodd_coe (n : ℕ) : Int.bodd n = Nat.bodd n :=
 @[simp]
 theorem bodd_subNatNat (m n : ℕ) : bodd (subNatNat m n) = xor m.bodd n.bodd := by
   apply subNatNat_elim m n fun m n i => bodd i = xor m.bodd n.bodd <;>
-  intros i j <;>
+  intro i j <;>
   simp only [Int.bodd, Nat.bodd_add] <;>
   cases Nat.bodd i <;> simp
 

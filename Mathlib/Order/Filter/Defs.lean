@@ -401,7 +401,7 @@ open Lean Meta Elab Tactic
 The list is an optional parameter, `[]` being its default value.
 
 `filter_upwards [h₁, ⋯, hₙ] with a₁ a₂ ⋯ aₖ` is a short form for
-`{ filter_upwards [h₁, ⋯, hₙ], intros a₁ a₂ ⋯ aₖ }`.
+`{ filter_upwards [h₁, ⋯, hₙ], intro a₁ a₂ ⋯ aₖ }`.
 
 `filter_upwards [h₁, ⋯, hₙ] using e` is a short form for
 `{ filter_upwards [h1, ⋯, hn], exact e }`.

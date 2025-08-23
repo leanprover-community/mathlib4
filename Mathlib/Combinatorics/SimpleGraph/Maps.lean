@@ -137,7 +137,7 @@ theorem map_comap_le (f : V ↪ W) (G : SimpleGraph W) : (G.comap f).map f ≤ G
   rw [map_le_iff_le_comap]
 
 lemma le_comap_of_subsingleton (f : V → W) [Subsingleton V] : G ≤ G'.comap f := by
-  intros v w; simp [Subsingleton.elim v w]
+  intro v w; simp [Subsingleton.elim v w]
 
 lemma map_le_of_subsingleton (f : V ↪ W) [Subsingleton V] : G.map f ≤ G' := by
   rw [map_le_iff_le_comap]; apply le_comap_of_subsingleton

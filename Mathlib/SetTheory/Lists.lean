@@ -241,7 +241,7 @@ def inductionMut (C : Lists α → Sort*) (D : Lists' α true → Sort*)
         | true, l => D l
         | false, _ => PUnit)
     by exact ⟨fun ⟨b, l⟩ => (this _).1, fun l => (this l).2⟩
-  intros b l
+  intro b l
   induction l with
   | atom => exact ⟨C0 _, ⟨⟩⟩
   | nil => exact ⟨C1 _ D0, D0⟩

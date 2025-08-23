@@ -452,7 +452,7 @@ theorem adjugate_mul_distrib (A B : Matrix n n α) : adjugate (A * B) = adjugate
     intro
     rw [RingHom.map_adjugate, f'_inv]
   have f'_g_mul : ∀ M N : Matrix n n α, f' (g M * g N) = M * N := by
-    intros M N
+    intro M N
     rw [RingHom.map_mul, f'_inv, f'_inv]
   have hu : ∀ M : Matrix n n α, IsRegular (g M).det := by
     intro M

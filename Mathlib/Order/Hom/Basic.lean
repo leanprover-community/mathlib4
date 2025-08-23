@@ -990,7 +990,7 @@ def ofCmpEqCmp {α β} [LinearOrder α] [LinearOrder β] (f : α → β) (g : β
       intro
       rw [← cmp_eq_eq_iff, ← h, cmp_self_eq_eq],
     map_rel_iff' := by
-      intros a b
+      intro a b
       apply le_iff_le_of_cmp_eq_cmp
       convert (h a (f b)).symm
       apply gf }

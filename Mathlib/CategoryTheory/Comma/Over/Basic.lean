@@ -204,7 +204,7 @@ theorem mapId_eq (Y : T) : map (𝟙 Y) = 𝟭 _ := by
     dsimp [Over, Over.map, Comma.mapRight]
     simp only [Category.comp_id]
     exact rfl
-  · intros x y u
+  · intro x y u
     dsimp [Over, Over.map, Comma.mapRight]
     simp
 
@@ -615,7 +615,7 @@ theorem mapId_eq (Y : T) : map (𝟙 Y) = 𝟭 _ := by
     dsimp [Under, Under.map, Comma.mapLeft]
     simp only [Category.id_comp]
     exact rfl
-  · intros x y u
+  · intro x y u
     dsimp [Under, Under.map, Comma.mapLeft]
     simp
 

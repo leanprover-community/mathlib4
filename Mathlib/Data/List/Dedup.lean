@@ -43,7 +43,7 @@ theorem dedup_cons_of_notMem' {a : α} {l : List α} (h : a ∉ dedup l) :
 theorem mem_dedup {a : α} {l : List α} : a ∈ dedup l ↔ a ∈ l := by
   have := not_congr (@forall_mem_pwFilter α (· ≠ ·) _ ?_ a l)
   · simpa only [dedup, forall_mem_ne, not_not] using this
-  · intros x y z xz
+  · intro x y z xz
     exact not_and_or.1 <| mt (fun h ↦ h.1.trans h.2) xz
 
 @[simp]

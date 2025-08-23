@@ -325,7 +325,7 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
       (map (cons c) (permutations'Aux a l)).flatMap (permutations'Aux b) ~
         map (cons b ∘ cons c) (permutations'Aux a l) ++
           map (cons c) ((permutations'Aux a l).flatMap (permutations'Aux b)) := by
-    intros a' b'
+    intro a' b'
     simp only [flatMap_map, permutations'Aux]
     change (permutations'Aux _ l).flatMap (fun a => ([b' :: c :: a] ++
       map (cons c) (permutations'Aux _ a))) ~ _

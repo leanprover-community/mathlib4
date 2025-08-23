@@ -500,7 +500,7 @@ lemma maximalIdeal_eq_setOf_le_v_algebraMap :
     (IsLocalRing.maximalIdeal O : Set O) =
       {y : O | v (algebraMap O K y) ≤ v (algebraMap O K ϖ)} := by
   letI : IsDomain O := hv.hom_inj.isDomain
-  intros _ _ h
+  intro _ _ h
   rw [← hv.coe_span_singleton_eq_setOf_le_v_algebraMap, ← h.maximalIdeal_eq]
 
 lemma maximalIdeal_pow_eq_setOf_le_v_algebraMap_pow :
@@ -509,7 +509,7 @@ lemma maximalIdeal_pow_eq_setOf_le_v_algebraMap_pow :
     ((IsLocalRing.maximalIdeal O ^ n : Ideal O) : Set O) =
       {y : O | v (algebraMap O K y) ≤ v (algebraMap O K ϖ) ^ n} := by
   letI : IsDomain O := hv.hom_inj.isDomain
-  intros _ ϖ h n
+  intro _ ϖ h n
   have : (v (algebraMap O K ϖ)) ^ n = v (algebraMap O K (ϖ ^ n)) := by simp
   rw [this, ← hv.coe_span_singleton_eq_setOf_le_v_algebraMap,
       ← Ideal.span_singleton_pow, ← h.maximalIdeal_eq]

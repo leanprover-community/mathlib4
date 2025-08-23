@@ -157,7 +157,7 @@ lemma F_BddAbove (f : ℂ → E) (ε : ℝ) (hε : ε > 0)
   -- Using bound
   use ((max 1 ((ε + sSupNormIm f 0) ^ (-(1 : ℝ)))) * max 1 ((ε + sSupNormIm f 1) ^ (-(1 : ℝ)))) * B
   simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-  intros z hset
+  intro z hset
   specialize hB (‖f z‖) (by simpa [image_congr, mem_image, comp_apply] using ⟨z, hset, rfl⟩)
   -- Proof that the bound is correct
   simp only [norm_smul, norm_mul, ← ofReal_add]

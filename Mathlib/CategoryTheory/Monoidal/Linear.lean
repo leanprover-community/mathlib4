@@ -52,12 +52,12 @@ theorem monoidalLinearOfFaithful {D : Type*} [Category D] [Preadditive D] [Linea
     [MonoidalCategory D] [MonoidalPreadditive D] (F : D ⥤ C) [F.Monoidal] [F.Faithful]
     [F.Linear R] : MonoidalLinear R D :=
   { whiskerLeft_smul := by
-      intros X Y Z r f
+      intro X Y Z r f
       apply F.map_injective
       rw [Functor.Monoidal.map_whiskerLeft]
       simp
     smul_whiskerRight := by
-      intros r X Y f Z
+      intro r X Y f Z
       apply F.map_injective
       rw [Functor.Monoidal.map_whiskerRight]
       simp }
