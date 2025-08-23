@@ -305,6 +305,9 @@ lemma nat_sub_dvd_pow_sub_pow (x y n : ℕ) : x - y ∣ x ^ n - y ^ n := by
   · have : x ^ n ≤ y ^ n := Nat.pow_le_pow_left h.le _
     exact (Nat.sub_eq_zero_of_le this).symm ▸ dvd_zero (x - y)
 
+lemma nat_sub_one_dvd_pow_sub_one (x n : ℕ) : x - 1 ∣ x ^ n - 1 := by
+  simpa using nat_sub_dvd_pow_sub_pow x 1 n
+
 lemma nat_pow_sub_pow_dvd_pow_mul_sub_pow (x y m n : ℕ) :
     x ^ m - y ^ m ∣ x ^ (m * n) - y ^ (m * n) := by
   have := nat_sub_dvd_pow_sub_pow (x ^ m) (y ^ m) n
