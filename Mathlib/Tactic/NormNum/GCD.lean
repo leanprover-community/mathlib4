@@ -22,11 +22,11 @@ namespace NormNum
 
 theorem int_gcd_helper' {d : ℕ} {x y : ℤ} (a b : ℤ) (h₁ : (d : ℤ) ∣ x) (h₂ : (d : ℤ) ∣ y)
     (h₃ : x * a + y * b = d) : Int.gcd x y = d := by
-  refine Nat.dvd_antisymm ?_ (Int.natCast_dvd_natCast.1 (Int.dvd_gcd h₁ h₂))
+  refine Nat.dvd_antisymm ?_ (Int.natCast_dvd_natCast.1 (Int.dvd_coe_gcd h₁ h₂))
   rw [← Int.natCast_dvd_natCast, ← h₃]
   apply dvd_add
-  · exact Int.gcd_dvd_left.mul_right _
-  · exact Int.gcd_dvd_right.mul_right _
+  · exact (Int.gcd_dvd_left ..).mul_right _
+  · exact (Int.gcd_dvd_right ..).mul_right _
 
 theorem nat_gcd_helper_dvd_left (x y : ℕ) (h : y % x = 0) : Nat.gcd x y = x :=
   Nat.gcd_eq_left (Nat.dvd_of_mod_eq_zero h)
@@ -92,10 +92,10 @@ theorem isInt_lcm : {x y nx ny : ℤ} → {z : ℕ} →
 and an equality proof. Panics if `ex` or `ey` aren't natural number literals. -/
 def proveNatGCD (ex ey : Q(ℕ)) : (ed : Q(ℕ)) × Q(Nat.gcd $ex $ey = $ed) :=
   match ex.natLit!, ey.natLit! with
-  | 0, _ => show (ed : Q(ℕ)) × Q(Nat.gcd 0 $ey = $ed) from ⟨ey, q(Nat.gcd_zero_left $ey)⟩
-  | _, 0 => show (ed : Q(ℕ)) × Q(Nat.gcd $ex 0 = $ed) from ⟨ex, q(Nat.gcd_zero_right $ex)⟩
-  | 1, _ => show (ed : Q(ℕ)) × Q(Nat.gcd 1 $ey = $ed) from ⟨mkRawNatLit 1, q(Nat.gcd_one_left $ey)⟩
-  | _, 1 => show (ed : Q(ℕ)) × Q(Nat.gcd $ex 1 = $ed) from ⟨mkRawNatLit 1, q(Nat.gcd_one_right $ex)⟩
+  | 0, _ => have : $ex =Q nat_lit 0 := ⟨⟩; ⟨ey, q(Nat.gcd_zero_left $ey)⟩
+  | _, 0 => have : $ey =Q nat_lit 0 := ⟨⟩; ⟨ex, q(Nat.gcd_zero_right $ex)⟩
+  | 1, _ => have : $ex =Q nat_lit 1 := ⟨⟩; ⟨q(nat_lit 1), q(Nat.gcd_one_left $ey)⟩
+  | _, 1 => have : $ey =Q nat_lit 1 := ⟨⟩; ⟨q(nat_lit 1), q(Nat.gcd_one_right $ex)⟩
   | x, y =>
     let (d, a, b) := Nat.xgcdAux x 1 0 y 0 1
     if d = x then
@@ -110,10 +110,10 @@ def proveNatGCD (ex ey : Q(ℕ)) : (ed : Q(ℕ)) × Q(Nat.gcd $ex $ey = $ed) :=
       if d = 1 then
         if a ≥ 0 then
           have pt : Q($ex * $ea' = $ey * $eb' + 1) := (q(Eq.refl ($ex * $ea')) : Expr)
-          ⟨mkRawNatLit 1, q(nat_gcd_helper_2' $ex $ey $ea' $eb' $pt)⟩
+          ⟨q(nat_lit 1), q(nat_gcd_helper_2' $ex $ey $ea' $eb' $pt)⟩
         else
           have pt : Q($ey * $eb' = $ex * $ea' + 1) := (q(Eq.refl ($ey * $eb')) : Expr)
-          ⟨mkRawNatLit 1, q(nat_gcd_helper_1' $ex $ey $ea' $eb' $pt)⟩
+          ⟨q(nat_lit 1), q(nat_gcd_helper_1' $ex $ey $ea' $eb' $pt)⟩
       else
         have ed : Q(ℕ) := mkRawNatLit d
         have pu : Q(Nat.mod $ex $ed = 0) := (q(Eq.refl (nat_lit 0)) : Expr)
@@ -142,9 +142,9 @@ and an equality proof. Panics if `ex` or `ey` aren't natural number literals. -/
 def proveNatLCM (ex ey : Q(ℕ)) : (ed : Q(ℕ)) × Q(Nat.lcm $ex $ey = $ed) :=
   match ex.natLit!, ey.natLit! with
   | 0, _ =>
-    show (ed : Q(ℕ)) × Q(Nat.lcm 0 $ey = $ed) from ⟨mkRawNatLit 0, q(Nat.lcm_zero_left $ey)⟩
+    show (ed : Q(ℕ)) × Q(Nat.lcm 0 $ey = $ed) from ⟨q(nat_lit 0), q(Nat.lcm_zero_left $ey)⟩
   | _, 0 =>
-    show (ed : Q(ℕ)) × Q(Nat.lcm $ex 0 = $ed) from ⟨mkRawNatLit 0, q(Nat.lcm_zero_right $ex)⟩
+    show (ed : Q(ℕ)) × Q(Nat.lcm $ex 0 = $ed) from ⟨q(nat_lit 0), q(Nat.lcm_zero_right $ex)⟩
   | 1, _ => show (ed : Q(ℕ)) × Q(Nat.lcm 1 $ey = $ed) from ⟨ey, q(Nat.lcm_one_left $ey)⟩
   | _, 1 => show (ed : Q(ℕ)) × Q(Nat.lcm $ex 1 = $ed) from ⟨ex, q(Nat.lcm_one_right $ex)⟩
   | x, y =>

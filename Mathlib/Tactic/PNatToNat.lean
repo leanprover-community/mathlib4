@@ -21,7 +21,7 @@ namespace Mathlib.Tactic.PNatToNat
 
 open private getElimNameInfo generalizeTargets generalizeVars from Lean.Elab.Tactic.Induction
 
-open Lean Meta Elab Tactic Qq Mathlib.Tactic
+open Lean Meta Elab Tactic Qq
 
 /-- For each `x : PNat` in the context, add the hypothesis `0 < (↑x : ℕ)`. -/
 elab "pnat_positivity" : tactic => withMainContext do

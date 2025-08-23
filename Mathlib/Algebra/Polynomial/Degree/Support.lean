@@ -32,7 +32,7 @@ section Semiring
 variable [Semiring R] {p q r : R[X]}
 
 theorem supDegree_eq_natDegree (p : R[X]) : p.toFinsupp.supDegree id = p.natDegree := by
-  obtain rfl|h := eq_or_ne p 0
+  obtain rfl | h := eq_or_ne p 0
   · simp
   apply WithBot.coe_injective
   rw [← AddMonoidAlgebra.supDegree_withBot_some_comp, Function.comp_id, supDegree_eq_degree,
@@ -61,7 +61,7 @@ theorem sum_over_range' [AddCommMonoid S] (p : R[X]) {f : ℕ → R → S} (h : 
     (w : p.natDegree < n) : p.sum f = ∑ a ∈ range n, f a (coeff p a) := by
   rcases p with ⟨⟩
   have := supp_subset_range w
-  simp only [Polynomial.sum, support, coeff, natDegree, degree] at this ⊢
+  simp only [Polynomial.sum, support, coeff] at this ⊢
   exact Finsupp.sum_of_support_subset _ this _ fun n _hn => h n
 
 /-- We can reexpress a sum over `p.support` as a sum over `range (p.natDegree + 1)`.

@@ -45,7 +45,7 @@ theorem coe_floor (q : ℚ≥0) : ↑⌊q⌋₊ = ⌊(q : ℚ)⌋ := Int.natCast
 theorem coe_ceil (q : ℚ≥0) : ↑⌈q⌉₊ = ⌈(q : ℚ)⌉ := Int.natCast_ceil_eq_ceil q.coe_nonneg
 
 protected theorem floor_def (q : ℚ≥0) : ⌊q⌋₊ = q.num / q.den := by
-  rw [← Int.natCast_inj, NNRat.coe_floor, Rat.floor_def, Int.ofNat_ediv, den_coe, num_coe]
+  rw [← Int.natCast_inj, NNRat.coe_floor, Rat.floor_def, Int.natCast_ediv, den_coe, num_coe]
 
 section Semifield
 
@@ -69,7 +69,7 @@ variable {K} [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorRing K]
 
 @[simp, norm_cast]
 theorem intFloor_cast (x : ℚ≥0) : ⌊(x : K)⌋ = ⌊(x : ℚ)⌋ := by
-  rw [Int.floor_eq_iff (α := K), ← coe_floor]
+  rw [Int.floor_eq_iff, ← coe_floor]
   norm_cast
   norm_cast
   rw [Nat.cast_add_one, ← Nat.floor_eq_iff (zero_le _)]

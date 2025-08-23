@@ -36,7 +36,7 @@ example {G : Type*} [Monoid G] (a b c : G) (h : a * c = b * c)
   · exact h
   · guard_target = IsRightCancelMul G
     constructor
-    intros a b c
+    intro a b c
     apply hh
 
 example {α β γ δ : Type*} (f : α → β → γ → δ) (a : α) (b : β) (g : γ) : δ := by
@@ -96,7 +96,7 @@ example {A B : Prop} (h : A ↔ B) : A → B := by
   apply h.mp at hA
   assumption
 
-example (a : ℝ) (h3: a + 1 = 0) : a = -1 := by
+example (a : ℝ) (h3 : a + 1 = 0) : a = -1 := by
   apply (congrArg (fun x => x - 1)) at h3
   simp at h3
   assumption

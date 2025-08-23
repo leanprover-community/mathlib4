@@ -16,7 +16,7 @@ set_option autoImplicit true
 
 /--
 info: Try this: rw [List.map_append]
--- "no goals"
+-- no goals
 -/
 #guard_msgs in
 example (f : α → β) (L M : List α) : (L ++ M).map f = L.map f ++ M.map f := by
@@ -26,7 +26,7 @@ open CategoryTheory
 
 /--
 info: Try this: rw [Category.id_comp]
--- "no goals"
+-- no goals
 -/
 #guard_msgs in
 example [Category C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : f ≫ 𝟙 _ ≫ g = f ≫ g := by
@@ -34,7 +34,7 @@ example [Category C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : f ≫ 𝟙 _ ≫ 
 
 /--
 info: Try this: rw [mul_eq_right]
--- "no goals"
+-- no goals
 -/
 #guard_msgs in
 example [Group G] (h : G) : 1 * h = h := by
@@ -59,7 +59,7 @@ example [Group G] (h : G) (hyp : g * 1 = h) : g = h := by
 
 #guard_msgs(drop info) in
 example : ∀ (x y : ℕ), x ≤ y := by
-  intros x y
+  intro x y
   rw? -- Used to be an error here https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/panic.20and.20error.20with.20rw.3F/near/370495531
   exact test_sorry
 
@@ -130,7 +130,7 @@ example : testConst = 4 := by
 -- Discharge side conditions from local hypotheses.
 /--
 info: Try this: rw [h p]
--- "no goals"
+-- no goals
 -/
 #guard_msgs in
 example {P : Prop} (p : P) (h : P → 1 = 2) : 2 = 1 := by
@@ -139,7 +139,7 @@ example {P : Prop} (p : P) (h : P → 1 = 2) : 2 = 1 := by
 -- Use `solve_by_elim` to discharge side conditions.
 /--
 info: Try this: rw [h (f p)]
--- "no goals"
+-- no goals
 -/
 #guard_msgs in
 example {P Q : Prop} (p : P) (f : P → Q) (h : Q → 1 = 2) : 2 = 1 := by

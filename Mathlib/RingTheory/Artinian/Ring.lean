@@ -28,8 +28,8 @@ itself, or simply Artinian if it is both left and right Artinian.
 
 ## Implementation Details
 
-The predicate `IsArtinianRing` is defined in `Mathlib.RingTheory.Artinian.Ring` instead, so that we
-can apply basic API on artinian modules to division rings without a heavy import.
+The predicate `IsArtinianRing` is defined in `Mathlib/RingTheory/Artinian/Ring.lean` instead,
+so that we can apply basic API on artinian modules to division rings without a heavy import.
 
 ## References
 
@@ -64,7 +64,7 @@ variable (R) in
 /-- Commutative artinian reduced local ring is a field. -/
 theorem isField_of_isReduced_of_isLocalRing [IsReduced R] [IsLocalRing R] : IsField R :=
   (IsArtinianRing.equivPi R).trans (RingEquiv.piUnique _) |>.toMulEquiv.isField
-    _ (Ideal.Quotient.field _).toIsField
+    (Ideal.Quotient.field _).toIsField
 
 section IsUnit
 

@@ -23,7 +23,8 @@ This is often quite convenient.
 
 # Main Declarations
 
-* `Matroid.delete M D`, written `M ＼ D`, is the restriction of `M` to the set `M.E \ D`.
+* `Matroid.delete M D`, written `M ＼ D`, is the restriction of `M` to the set `M.E \ D`,
+  or equivalently the matroid on `M.E \ D` whose independent sets are the `M`-independent sets.
 
 # Naming conventions
 
@@ -201,8 +202,11 @@ lemma delete_isNonloop_iff : (M ＼ D).IsNonloop e ↔ M.IsNonloop e ∧ e ∉ D
 lemma IsNonloop.of_delete (h : (M ＼ D).IsNonloop e) : M.IsNonloop e :=
   (delete_isNonloop_iff.1 h).1
 
-lemma isNonloop_iff_delete_of_not_mem (he : e ∉ D) : M.IsNonloop e ↔ (M ＼ D).IsNonloop e :=
+lemma isNonloop_iff_delete_of_notMem (he : e ∉ D) : M.IsNonloop e ↔ (M ＼ D).IsNonloop e :=
   ⟨fun h ↦ delete_isNonloop_iff.2 ⟨h, he⟩, fun h ↦ h.of_delete⟩
+
+@[deprecated (since := "2025-05-23")]
+alias isNonloop_iff_delete_of_not_mem := isNonloop_iff_delete_of_notMem
 
 lemma delete_loops_eq_removeLoops (M : Matroid α) : M ＼ M.loops = M.removeLoops := by
   rw [removeLoops, delete_eq_restrict, compl_loops_eq]

@@ -188,7 +188,8 @@ namespace DirectSum
 
 /-- If `A` is graded by `ι` with degree `i` component `𝒜 i`, then it is isomorphic as
 an algebra to a direct sum of components. -/
--- Porting note: deleted [simps] and added the corresponding lemmas by hand
+-- We have to write the `@[simps]` lemmas by hand to see through the
+-- `AlgEquiv.symm (decomposeAddEquiv 𝒜).symm`.
 def decomposeAlgEquiv : A ≃ₐ[R] ⨁ i, 𝒜 i :=
   AlgEquiv.symm
     { (decomposeAddEquiv 𝒜).symm with
@@ -268,7 +269,7 @@ def GradedRing.projZeroRingHom : A →+* A where
       refine DirectSum.Decomposition.inductionOn 𝒜 ?_ ?_ ?_
       · simp only [mul_zero, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
       · rintro j ⟨c', hc'⟩
-        simp only [Subtype.coe_mk]
+        simp only
         by_cases h : i + j = 0
         · rw [decompose_of_mem_same 𝒜
               (show c * c' ∈ 𝒜 0 from h ▸ SetLike.GradedMul.mul_mem hc hc'),

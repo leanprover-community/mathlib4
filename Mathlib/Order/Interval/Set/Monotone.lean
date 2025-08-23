@@ -3,13 +3,14 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Data.Set.Monotone
 import Mathlib.Order.Interval.Set.Disjoint
 import Mathlib.Order.SuccPred.Archimedean
 
 /-!
 # Monotonicity on intervals
 
-In this file we prove that `Set.Ici` etc are monotone/antitone functions. We also prove some lemmas
+In this file we prove that `Set.Ici` etc. are monotone/antitone functions. We also prove some lemmas
 about functions monotone on intervals in `SuccOrder`s.
 -/
 

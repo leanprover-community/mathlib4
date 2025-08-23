@@ -20,11 +20,11 @@ open RCLike in
 noncomputable
 instance (priority := 100) instContinuousSqrtRCLike {𝕜 : Type*} [RCLike 𝕜] :
     ContinuousSqrt 𝕜 where
-  sqrt := ((↑) ∘ Real.sqrt ∘ re ∘ (fun z ↦ z.2 - z.1))
+  sqrt := ((↑) ∘ (√·) ∘ re ∘ (fun z ↦ z.2 - z.1))
   continuousOn_sqrt := by fun_prop
   sqrt_nonneg _ _ := by simp
   sqrt_mul_sqrt x hx := by
-    simp only [Function.comp_apply,star_def]
+    simp only [Function.comp_apply,]
     rw [← sub_nonneg] at hx
     obtain hx' := nonneg_iff.mp hx |>.right
     rw [← conj_eq_iff_im, conj_eq_iff_re] at hx'

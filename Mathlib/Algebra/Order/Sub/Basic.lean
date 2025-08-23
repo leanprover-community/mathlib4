@@ -51,7 +51,7 @@ theorem tsub_pos_iff_not_le : 0 < a - b ↔ ¬a ≤ b := by
   rw [pos_iff_ne_zero, Ne, tsub_eq_zero_iff_le]
 
 theorem tsub_pos_of_lt (h : a < b) : 0 < b - a :=
-  tsub_pos_iff_not_le.mpr h.not_le
+  tsub_pos_iff_not_le.mpr h.not_ge
 
 theorem tsub_lt_of_lt (h : a < b) : a - c < b :=
   lt_of_le_of_lt tsub_le_self h
@@ -133,7 +133,7 @@ protected theorem tsub_lt_tsub_iff_right (hc : AddLECancellable c) (h : c ≤ a)
 protected theorem tsub_lt_self (ha : AddLECancellable a) (h₁ : 0 < a) (h₂ : 0 < b) : a - b < a := by
   refine tsub_le_self.lt_of_ne fun h => ?_
   rw [← h, tsub_pos_iff_lt] at h₁
-  exact h₂.not_le (ha.add_le_iff_nonpos_left.1 <| add_le_of_le_tsub_left_of_le h₁.le h.ge)
+  exact h₂.not_ge (ha.add_le_iff_nonpos_left.1 <| add_le_of_le_tsub_left_of_le h₁.le h.ge)
 
 protected theorem tsub_lt_self_iff (ha : AddLECancellable a) : a - b < a ↔ 0 < a ∧ 0 < b := by
   refine
@@ -182,10 +182,7 @@ theorem tsub_add_eq_max : a - b + b = max a b := by
 
 theorem add_tsub_eq_max : a + (b - a) = max a b := by rw [add_comm, max_comm, tsub_add_eq_max]
 
-theorem tsub_min : a - min a b = a - b := by
-  rcases le_total a b with h | h
-  · rw [min_eq_left h, tsub_self, tsub_eq_zero_of_le h]
-  · rw [min_eq_right h]
+theorem tsub_min : a - min a b = a - b := (tsub_eq_tsub_min a b).symm
 
 theorem tsub_add_min : a - b + min a b = a := by
   rw [← tsub_min, @tsub_add_cancel_of_le]

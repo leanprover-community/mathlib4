@@ -100,7 +100,6 @@ lemma dens_map_le [Fintype β] (f : α ↪ β) : dens (s.map f) ≤ dens s := by
   · simp [Subsingleton.elim s ∅]
   simp_rw [dens, card_map]
   gcongr
-  · positivity
   · exact mod_cast Fintype.card_pos
   · exact Fintype.card_le_of_injective _ f.2
 
