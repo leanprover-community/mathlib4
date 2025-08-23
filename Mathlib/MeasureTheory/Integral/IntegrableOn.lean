@@ -98,7 +98,7 @@ def IntegrableOn (f : α → ε) (s : Set α) (μ : Measure α := by volume_tac)
 theorem IntegrableOn.integrable (h : IntegrableOn f s μ) : Integrable f (μ.restrict s) :=
   h
 
-variable [TopologicalSpace ε'] [ESeminormedAddMonoid ε']
+variable [TopologicalSpace ε'] [AddMonoid ε'] [ESeminormedAddMonoid ε']
 
 @[simp]
 theorem integrableOn_empty : IntegrableOn f ∅ μ := by
@@ -354,7 +354,8 @@ theorem IntegrableOn.restrict_toMeasurable {f : α → ε'}
 -- TODO: investigate generalising this section to e-seminormed monoids
 section ENormedAddMonoid
 
-variable {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε'] [PseudoMetrizableSpace ε']
+variable {ε' : Type*} [TopologicalSpace ε'] [AddMonoid ε'] [ENormedAddMonoid ε']
+  [PseudoMetrizableSpace ε']
 
 -- TODO: generalise this to e-seminormed commutative monoids,
 -- by merely assuming ‖f x‖ₑ vanishes on t \ s
@@ -536,7 +537,7 @@ theorem IntegrableAtFilter.inf_ae_iff {l : Filter α} :
 
 alias ⟨IntegrableAtFilter.of_inf_ae, _⟩ := IntegrableAtFilter.inf_ae_iff
 
-variable {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε'] in
+variable {ε' : Type*} [TopologicalSpace ε'] [AddMonoid ε'] [ENormedAddMonoid ε'] in
 @[simp]
 theorem integrableAtFilter_top [PseudoMetrizableSpace ε'] {f : α → ε'} :
     IntegrableAtFilter f ⊤ μ ↔ Integrable f μ := by
@@ -741,7 +742,7 @@ the unprimed ones use `[NoAtoms μ]`.
 section PartialOrder
 
 variable [PartialOrder α] [MeasurableSingletonClass α]
-  [TopologicalSpace ε'] [ESeminormedAddMonoid ε'] [PseudoMetrizableSpace ε']
+  [TopologicalSpace ε'] [AddMonoid ε'] [ESeminormedAddMonoid ε'] [PseudoMetrizableSpace ε']
   {f : α → ε'} {μ : Measure α} {a b : α}
 
 theorem integrableOn_Icc_iff_integrableOn_Ioc'
