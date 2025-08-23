@@ -393,9 +393,9 @@ theorem zeta_apply {x : ℕ} : ζ x = if x = 0 then 0 else 1 :=
 theorem zeta_apply_ne {x : ℕ} (h : x ≠ 0) : ζ x = 1 :=
   if_neg h
 
-@[simp] theorem zeta_eq_zero {x : ℕ} : ζ x = 0 ↔ x = 0 := by simp [zeta]
+theorem zeta_eq_zero {x : ℕ} : ζ x = 0 ↔ x = 0 := by simp [zeta]
 
-@[simp] theorem zeta_pos {x : ℕ} : 0 < ζ x ↔ 0 < x := by simp [Nat.pos_iff_ne_zero]
+theorem zeta_pos {x : ℕ} : 0 < ζ x ↔ 0 < x := by simp [Nat.pos_iff_ne_zero]
 
 -- Porting note: removed `@[simp]`, LHS not in normal form
 theorem coe_zeta_smul_apply {M} [Semiring R] [AddCommMonoid M] [MulAction R M]
