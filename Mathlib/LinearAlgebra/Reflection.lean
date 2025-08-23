@@ -352,7 +352,7 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
     abel
   replace hu : ∀ (n : ℕ),
       ↑(u ^ n) = LinearMap.id (R := R) (M := M) + (n : R) • (f - g).smulRight x := by
-    intros n
+    intro n
     induction n with
     | zero => simp
     | succ n ih =>
