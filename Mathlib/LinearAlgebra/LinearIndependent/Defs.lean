@@ -635,7 +635,7 @@ theorem linearIndependent_iffₒ :
         ∑ i ∈ s, f i • v i = ∑ i ∈ t, f i • v i → (∀ i ∈ s, f i = 0) ∧ ∀ i ∈ t, f i = 0 := by
   classical
   letI : Sub R := CanonicallyOrderedAdd.toSub
-  haveI : OrderedSub R := CanonicallyOrderedAdd.toSub.orderedSub
+  haveI : OrderedSub R := CanonicallyOrderedAdd.toOrderedSub
   rw [linearIndependent_iff'ₛ]
   refine ⟨fun h s t f hst heq => ?_, fun h s f g heq => ?_⟩
   · specialize h (s ∪ t) (fun i => if i ∈ s then f i else 0) (fun i => if i ∈ t then f i else 0) ?_
