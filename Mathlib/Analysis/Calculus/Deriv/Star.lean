@@ -77,8 +77,9 @@ lemma HasDerivAt.star_conj {f : 𝕜 → F} {f' : F} (hf : HasDerivAt f f' x) :
 
 /-- A function `f` has derivative `f'` at `z` iff `star ∘ f ∘ conj` has derivative `star f'` at
 `conj z`. -/
+@[simp]
 lemma hasDerivAt_star_conj_iff {f : 𝕜 → F} {x : 𝕜} {f' : F} :
-    HasDerivAt (star ∘ f ∘ conj) (star f') (conj x) ↔ HasDerivAt f f' x :=
+    HasDerivAt (star ∘ f ∘ conj) f' x ↔ HasDerivAt f (star f') (conj x) :=
   ⟨fun hf ↦ by convert hf.star_conj <;> simp [Function.comp_def], fun hf ↦ hf.star_conj⟩
 
 /-- If `f` has derivative `f'` at `z`, then `conj ∘ f ∘ conj` has derivative `conj f'` at
@@ -100,8 +101,9 @@ lemma DifferentiableAt.star_conj {f : 𝕜 → F} (hf : DifferentiableAt 𝕜 f 
   hf.star_star
 
 /-- A function `f` is differentiable at `conj z` iff `star ∘ f ∘ conj` is differentiable at `z`. -/
+@[simp]
 lemma differentiableAt_star_conj_iff {f : 𝕜 → F} :
-    DifferentiableAt 𝕜 (star ∘ f ∘ conj) (conj x) ↔ DifferentiableAt 𝕜 f x :=
+    DifferentiableAt 𝕜 (star ∘ f ∘ conj) x ↔ DifferentiableAt 𝕜 f (conj x) :=
   ⟨fun hf ↦ by convert hf.star_conj <;> simp [Function.comp_def], fun hf ↦ hf.star_star⟩
 
 /-- If `f` is differentiable at `conj z`, then `conj ∘ f ∘ conj` is differentiable at `z`. -/
@@ -110,14 +112,12 @@ lemma DifferentiableAt.conj_conj {f : 𝕜 → 𝕜} (hf : DifferentiableAt 𝕜
   hf.star_star
 
 /-- A function `f` is differentiable at `conj z` iff `conj ∘ f ∘ conj` is differentiable at `z`. -/
+@[simp]
 lemma differentiableAt_conj_conj_iff {f : 𝕜 → 𝕜} :
-    DifferentiableAt 𝕜 (conj ∘ f ∘ conj) (conj x) ↔ DifferentiableAt 𝕜 f x :=
+    DifferentiableAt 𝕜 (conj ∘ f ∘ conj) x ↔ DifferentiableAt 𝕜 f (conj x) :=
   differentiableAt_star_conj_iff
 
-/--
-The derivative of `star ∘ f ∘ conj` is `star ∘ deriv f ∘ conj`, allowing for the possibility that
-both sides have the junk value `0`.
--/
+/-- The derivative of `star ∘ f ∘ conj` is `star ∘ deriv f ∘ conj`. -/
 @[simp]
 lemma deriv_star_conj {f : 𝕜 → F} :
     deriv (star ∘ f ∘ conj) = star ∘ deriv f ∘ conj := by
@@ -127,10 +127,7 @@ lemma deriv_star_conj {f : 𝕜 → F} :
   · have := differentiableAt_star_conj_iff.not.2 hf
     simp_all [deriv_zero_of_not_differentiableAt]
 
-/--
-The derivative of `conj ∘ f ∘ conj` is `conj ∘ deriv f ∘ conj`, allowing for the possibility that
-both sides have the junk value `0`.
--/
+/-- The derivative of `conj ∘ f ∘ conj` is `conj ∘ deriv f ∘ conj`. -/
 @[simp]
 lemma deriv_conj_conj {f : 𝕜 → 𝕜} :
     deriv (conj ∘ f ∘ conj) = conj ∘ deriv f ∘ conj := deriv_star_conj
