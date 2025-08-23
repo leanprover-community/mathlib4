@@ -98,7 +98,7 @@ theorem exists_of_length_succ {n} : ∀ l : List α, l.length = n + 1 → ∃ h 
 @[simp] lemma length_injective_iff : Injective (List.length : List α → ℕ) ↔ Subsingleton α := by
   constructor
   · intro h; refine ⟨fun x y => ?_⟩; (suffices [x] = [y] by simpa using this); apply h; rfl
-  · intros hα l1 l2 hl
+  · intro hα l1 l2 hl
     induction l1 generalizing l2 <;> cases l2
     · rfl
     · cases hl

@@ -90,7 +90,7 @@ def toBaseChange (Q : QuadraticForm R V) :
       ext v w
       dsimp
       exact hpure_tensor v w
-    intros v w
+    intro v w
     rw [← TensorProduct.tmul_add, CliffordAlgebra.ι_mul_ι_add_swap,
       QuadraticForm.polarBilin_baseChange, LinearMap.BilinForm.baseChange_tmul, one_mul,
       TensorProduct.smul_tmul, Algebra.algebraMap_eq_smul_one, QuadraticMap.polarBilin_apply_apply]

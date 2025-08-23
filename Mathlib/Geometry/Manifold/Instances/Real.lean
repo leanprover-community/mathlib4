@@ -121,7 +121,7 @@ theorem range_euclideanHalfSpace (n : ℕ) [NeZero n] :
 @[simp]
 theorem interior_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     interior { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a < y i } := by
-  let f : (Π _ : Fin n, ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  let f : StrongDual ℝ (Π _ : Fin n, ℝ) := ContinuousLinearMap.proj i
   change interior (f ⁻¹' Ici a) = f ⁻¹' Ioi a
   rw [f.interior_preimage, interior_Ici]
   apply Function.surjective_eval
@@ -129,7 +129,7 @@ theorem interior_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
 @[simp]
 theorem closure_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a ≤ y i } := by
-  let f : (Π _ : Fin n, ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  let f : StrongDual ℝ (Π _ : Fin n, ℝ) := ContinuousLinearMap.proj i
   change closure (f ⁻¹' Ici a) = f ⁻¹' Ici a
   rw [f.closure_preimage, closure_Ici]
   apply Function.surjective_eval
@@ -137,7 +137,7 @@ theorem closure_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
 @[simp]
 theorem closure_open_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | a < y i } = { y | a ≤ y i } := by
-  let f : (Π _ : Fin n, ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  let f : StrongDual ℝ (Π _ : Fin n, ℝ) := ContinuousLinearMap.proj i
   change closure (f ⁻¹' Ioi a) = f ⁻¹' Ici a
   rw [f.closure_preimage, closure_Ioi]
   apply Function.surjective_eval
@@ -155,7 +155,7 @@ theorem range_euclideanQuadrant (n : ℕ) :
 theorem interior_euclideanQuadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
     interior { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } =
       { y | ∀ i : Fin n, a < y i } := by
-  let f : Fin n → (Π _ : Fin n, ℝ) →L[ℝ] ℝ := fun i ↦ ContinuousLinearMap.proj i
+  let f : Fin n → StrongDual ℝ (Π _ : Fin n, ℝ) := fun i ↦ ContinuousLinearMap.proj i
   have h : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } = ⋂ i, (f i )⁻¹' Ici a := by
     ext; simp; rfl
   have h' : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a < y i } = ⋂ i, (f i )⁻¹' Ioi a := by
