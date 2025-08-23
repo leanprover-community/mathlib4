@@ -79,8 +79,9 @@ open scoped Topology
 
 variable {α : Type*} [TopologicalSpace α] {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
-theorem HasStrictFDerivAt.clog {f : E → ℂ} {f' : E →L[ℂ] ℂ} {x : E} (h₁ : HasStrictFDerivAt f f' x)
-    (h₂ : f x ∈ slitPlane) : HasStrictFDerivAt (fun t => log (f t)) ((f x)⁻¹ • f') x :=
+theorem HasStrictFDerivAt.clog {f : E → ℂ} {f' : StrongDual ℂ E} {x : E}
+    (h₁ : HasStrictFDerivAt f f' x) (h₂ : f x ∈ slitPlane) :
+    HasStrictFDerivAt (fun t => log (f t)) ((f x)⁻¹ • f') x :=
   (hasStrictDerivAt_log h₂).comp_hasStrictFDerivAt x h₁
 
 theorem HasStrictDerivAt.clog {f : ℂ → ℂ} {f' x : ℂ} (h₁ : HasStrictDerivAt f f' x)
@@ -91,7 +92,7 @@ theorem HasStrictDerivAt.clog_real {f : ℝ → ℂ} {x : ℝ} {f' : ℂ} (h₁ 
     (h₂ : f x ∈ slitPlane) : HasStrictDerivAt (fun t => log (f t)) (f' / f x) x := by
   simpa only [div_eq_inv_mul] using (hasStrictFDerivAt_log_real h₂).comp_hasStrictDerivAt x h₁
 
-theorem HasFDerivAt.clog {f : E → ℂ} {f' : E →L[ℂ] ℂ} {x : E} (h₁ : HasFDerivAt f f' x)
+theorem HasFDerivAt.clog {f : E → ℂ} {f' : StrongDual ℂ E} {x : E} (h₁ : HasFDerivAt f f' x)
     (h₂ : f x ∈ slitPlane) : HasFDerivAt (fun t => log (f t)) ((f x)⁻¹ • f') x :=
   (hasStrictDerivAt_log h₂).hasDerivAt.comp_hasFDerivAt x h₁
 
@@ -108,7 +109,7 @@ theorem DifferentiableAt.clog {f : E → ℂ} {x : E} (h₁ : DifferentiableAt �
     (h₂ : f x ∈ slitPlane) : DifferentiableAt ℂ (fun t => log (f t)) x :=
   (h₁.hasFDerivAt.clog h₂).differentiableAt
 
-theorem HasFDerivWithinAt.clog {f : E → ℂ} {f' : E →L[ℂ] ℂ} {s : Set E} {x : E}
+theorem HasFDerivWithinAt.clog {f : E → ℂ} {f' : StrongDual ℂ E} {s : Set E} {x : E}
     (h₁ : HasFDerivWithinAt f f' s x) (h₂ : f x ∈ slitPlane) :
     HasFDerivWithinAt (fun t => log (f t)) ((f x)⁻¹ • f') s x :=
   (hasStrictDerivAt_log h₂).hasDerivAt.comp_hasFDerivWithinAt x h₁

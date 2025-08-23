@@ -269,7 +269,7 @@ variable {D : Type u''} [Category.{v''} D]
 instance adhesive_functor [Adhesive C] [HasPullbacks C] [HasPushouts C] :
     Adhesive (D ⥤ C) := by
   constructor
-  intros W X Y Z f g h i hf H
+  intro W X Y Z f g h i hf H
   rw [IsPushout.isVanKampen_iff]
   apply isVanKampenColimit_of_evaluation
   intro x
@@ -287,7 +287,7 @@ theorem adhesive_of_preserves_and_reflects (F : C ⥤ D) [Adhesive D]
     [ReflectsColimitsOfShape WalkingSpan F] :
     Adhesive C := by
   apply Adhesive.mk (hasPullback_of_mono_left := H₁) (hasPushout_of_mono_left := H₂)
-  intros W X Y Z f g h i hf H
+  intro W X Y Z f g h i hf H
   rw [IsPushout.isVanKampen_iff]
   refine IsVanKampenColimit.of_mapCocone F ?_
   refine (IsVanKampenColimit.precompose_isIso_iff (diagramIsoSpan _).inv).mp ?_
