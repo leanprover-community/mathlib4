@@ -89,16 +89,10 @@ theorem Invariant.of_IsReversible
     {κ : Kernel α α} [IsMarkovKernel κ] {π : Measure α}
     (h_rev : IsReversible κ π) : Invariant κ π := by
   ext s hs
-  have h' := (h_rev hs MeasurableSet.univ).symm
-  have h'' : ∫⁻ x, κ x s ∂π = ∫⁻ x in s, κ x Set.univ ∂π := by
-    simpa [Measure.restrict_univ] using h'
-  have hConst : ∫⁻ x in s, κ x Set.univ ∂π = π s := by
-    classical
-    simp [measure_univ]
-  have hπ : ∫⁻ x, κ x s ∂π = π s := h''.trans hConst
-  calc
-    (π.bind κ) s = ∫⁻ x, κ x s ∂π := Measure.bind_apply hs (Kernel.aemeasurable _)
-    _ = π s := hπ
+  calc 
+    (κ ∘ₘ π) s = ∫⁻ x, κ x s ∂π := by rw [Measure.bind_apply hs (Kernel.aemeasurable _)]
+             _ = ∫⁻ x in s, κ x Set.univ ∂π := by simpa [restrict_univ] using (h_rev hs .univ).symm
+             _ = π s := by simp
 
 end Kernel
 
