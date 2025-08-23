@@ -296,7 +296,8 @@ lemma mul_geom_sum₂_Ico (x y : R) {m n : ℕ} (hmn : m ≤ n) :
 
 end CommRing
 
-section Nat
+namespace Nat
+variable {m k : ℕ}
 
 lemma nat_sub_dvd_pow_sub_pow (x y n : ℕ) : x - y ∣ x ^ n - y ^ n := by
   rcases le_or_gt y x with h | h
