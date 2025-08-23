@@ -141,7 +141,8 @@ lemma card_mono (ht : t.Finite) (h : s ⊆ t) : Nat.card s ≤ Nat.card t :=
   toNat_le_toNat (mk_le_mk_of_subset h) ht.lt_aleph0
 
 lemma card_image_le {f : α → β} (hs : s.Finite) : Nat.card (f '' s) ≤ Nat.card s :=
-  have := hs.to_subtype; card_le_card_of_surjective (imageFactorization f s) surjective_onto_image
+  have := hs.to_subtype
+  card_le_card_of_surjective (imageFactorization f s) imageFactorization_surjective
 
 lemma card_image_of_injOn {f : α → β} (hf : s.InjOn f) : Nat.card (f '' s) = Nat.card s := by
   classical
