@@ -324,8 +324,8 @@ variable {R}
 instance [Subsingleton M] : Unique (Submodule R M) :=
   ⟨⟨⊥⟩, fun a => @Subsingleton.elim _ ((subsingleton_iff R).mpr ‹_›) a _⟩
 
-instance unique' {R M} [MonoidWithZero R] [Nontrivial M] [AddCommMonoid M]
-    [MulActionWithZero R M] [Subsingleton R] : Unique (Submodule R M) := by
+instance unique' {R M} [MonoidWithZero R] [AddCommMonoid M] [MulActionWithZero R M]
+    [Subsingleton R] : Unique (Submodule R M) := by
   haveI := Module.subsingleton R M; infer_instance
 
 instance [Nontrivial M] : Nontrivial (Submodule R M) :=
