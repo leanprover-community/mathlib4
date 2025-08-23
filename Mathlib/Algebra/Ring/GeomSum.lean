@@ -310,8 +310,7 @@ lemma sub_one_dvd_pow_sub_one : x - 1 ∣ x ^ n - 1 := by
   simpa using x.sub_dvd_pow_sub_pow 1 n
 
 lemma pow_sub_pow_dvd_pow_sub_pow (hmk : m ∣ k) : x ^ m - y ^ m ∣ x ^ k - y ^ k := by
-  rcases hmk with ⟨n, hn⟩
-  simpa [← pow_mul, ← hn] using (x ^ m).sub_dvd_pow_sub_pow (y ^ m) n
+  obtain ⟨n, rfl⟩ := hmk; simpa [pow_mul] using (x ^ m).sub_dvd_pow_sub_pow (y ^ m) n
 
 lemma pow_sub_one_dvd_pow_sub_one (hmk : m ∣ k) : x ^ m - 1 ∣ x ^ k - 1 := by
   simpa using pow_sub_pow_dvd_pow_sub_pow x 1 hmk
@@ -321,7 +320,7 @@ lemma _root_.Odd.nat_add_dvd_pow_add_pow {n : ℕ} (h : Odd n) : x + y ∣ x ^ n
 
 /-- Value of a geometric sum over the naturals. Note: see `geom_sum_mul_add` for a formulation
 that avoids division and subtraction. -/
-lemma geomSum_eq {m : ℕ} (hm : 2 ≤ m) (n : ℕ) : ∑ k ∈ range n, m ^ k = (m ^ n - 1) / (m - 1) := by
+lemma geomSum_eq (hm : 2 ≤ m) (n : ℕ) : ∑ k ∈ range n, m ^ k = (m ^ n - 1) / (m - 1) := by
   refine (Nat.div_eq_of_eq_mul_left (tsub_pos_iff_lt.2 hm) <| tsub_eq_of_eq_add ?_).symm
   simpa only [tsub_add_cancel_of_le (by omega : 1 ≤ m), eq_comm] using geom_sum_mul_add (m - 1) n
 
