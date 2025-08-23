@@ -632,7 +632,7 @@ variable [LinearOrder R] [CanonicallyOrderedAdd R] [AddRightReflectLE R] [IsCanc
 theorem linearIndependent_iffₒ :
     LinearIndependent R v ↔
       ∀ (s t : Finset ι) (f : ι → R), Disjoint s t →
-        ∑ i ∈ s, f i • v i = ∑ i ∈ t, f i • v i → (∀ i ∈ s, f i = 0) ∧ (∀ i ∈ t, f i = 0) := by
+        ∑ i ∈ s, f i • v i = ∑ i ∈ t, f i • v i → (∀ i ∈ s, f i = 0) ∧ ∀ i ∈ t, f i = 0 := by
   classical
   letI : Sub R := CanonicallyOrderedAdd.toSub
   haveI : OrderedSub R := CanonicallyOrderedAdd.toSub.orderedSub
@@ -668,52 +668,60 @@ theorem not_linearIndependent_iffₒ :
     ¬ LinearIndependent R v ↔
       ∃ (s t : Finset ι) (f : ι → R),
         ∑ i ∈ s, f i • v i = ∑ i ∈ t, f i • v i ∧ Disjoint s t ∧ ∃ i ∈ s, 0 < f i := by
-  rw [linearIndependent_iffₒ]
-  simp only [not_forall]
-  refine ⟨fun ⟨s, t, f, hst, heq, h⟩ => ?_,
-    fun ⟨s, t, f, heq, hst, i, hfi⟩ =>
-      ⟨s, t, f, hst, heq, fun ⟨hf, _⟩ => pos_iff_ne_zero.1 hfi.2 (hf i hfi.1)⟩⟩
+  simp only [linearIndependent_iffₒ, not_forall]
+  refine ⟨fun ⟨s, t, f, hst, heq, h⟩ => ?_, fun ⟨s, t, f, heq, hst, i, hfi⟩ =>
+    ⟨s, t, f, hst, heq, fun ⟨hf, _⟩ => pos_iff_ne_zero.1 hfi.2 (hf i hfi.1)⟩⟩
   simp only [not_and, not_or, not_not, imp_iff_not_or, not_forall] at h
   rcases h with ⟨i, hi, hfi⟩ | ⟨i, hi, hgi⟩
   · exact ⟨s, t, f, heq, hst, i, hi, pos_of_ne_zero hfi⟩
   · exact ⟨t, s, f, heq.symm, hst.symm, i, hi, pos_of_ne_zero hgi⟩
 
+nonrec theorem Fintype.linearIndependent_iffₒ [DecidableEq ι] [Fintype ι] :
+    LinearIndependent R v ↔ ∀ t, ∀ (f : ι → R),
+      ∑ i ∈ t, f i • v i = ∑ i ∉ t, f i • v i → ∀ i, f i = 0 := by
+  rw [linearIndependent_iffₒ]
+  refine ⟨fun h t f heq i => ?_, fun h t₁ t₂ f ht₁t₂ heq => ?_⟩
+  · specialize h t tᶜ f disjoint_compl_right heq
+    by_cases hi : i ∈ t
+    · exact h.1 i hi
+    · exact h.2 i (Finset.mem_compl.2 hi)
+  · specialize h t₁ (fun i => if i ∈ t₁ ∨ i ∈ t₂ then f i else 0) ?_
+    · rw [← Finset.sum_subset (ht₁t₂.le_compl_left)]
+      · convert heq using 1 <;> refine Finset.sum_congr rfl fun i hi => ?_ <;> simp [hi]
+      · intro i hi hi'
+        simp [Finset.mem_compl.1 hi, hi']
+    · refine ⟨fun i hi => ?_, fun i hi => ?_⟩ <;> simpa [hi] using h i
+
+theorem Fintype.not_linearIndependent_iffₒ [DecidableEq ι] [Fintype ι] :
+    ¬ LinearIndependent R v ↔ ∃ t, ∃ (f : ι → R),
+      ∑ i ∈ t, f i • v i = ∑ i ∉ t, f i • v i ∧ ∃ i, 0 < f i := by
+  simp only [linearIndependent_iffₒ, not_forall]
+  refine ⟨fun ⟨t, f, heq, i, hfi⟩ => ?_, fun ⟨t, f, heq, i, hfi⟩ =>
+    ⟨t, f, heq, i, pos_iff_ne_zero.1 hfi⟩⟩
+  by_cases hi' : i ∈ t
+  · exact ⟨t, f, heq, i, pos_of_ne_zero hfi⟩
+  · refine ⟨tᶜ, f, ?_, i, pos_of_ne_zero hfi⟩
+    simp [heq]
+
 lemma linearIndepOn_finset_iffₒ [DecidableEq ι] {s : Finset ι} :
     LinearIndepOn R v s ↔ ∀ t ⊆ s, ∀ (f : ι → R),
       ∑ i ∈ t, f i • v i = ∑ i ∈ s \ t, f i • v i → ∀ i ∈ s, f i = 0 := by
-  rw [LinearIndepOn, linearIndependent_iffₒ]
-  constructor
-  · intro h t ht f heq i hi
-    specialize h {i | i.1 ∈ t} {i | i.1 ∉ t} (f ∘ Subtype.val)
-      (Finset.disjoint_filter_filter_neg _ _ _) ?_
-    · simp only [Function.comp_apply]
-      convert heq
-      · simp_rw [Finset.coe_sort_coe, Finset.univ_eq_attach, Finset.filter_attach (· ∈ t)]
-        simp only [Embedding.subtypeMap, Finset.sum_map, Embedding.coeFn_mk, Subtype.map_coe,
-          Embedding.refl_apply]
-        rw [Finset.sum_attach _ (fun x => f x • v x), Finset.filter_mem_eq_inter,
-          Finset.inter_eq_right.2 ht]
-      · simp_rw [Finset.coe_sort_coe, Finset.univ_eq_attach, Finset.filter_attach (· ∉ t)]
-        simp only [Embedding.subtypeMap, Finset.sum_map, Embedding.coeFn_mk, Subtype.map_coe,
-          Embedding.refl_apply]
-        rw [Finset.sum_attach _ (fun x => f x • v x), Finset.filter_notMem_eq_sdiff]
-    · by_cases hi' : i ∈ t
-      · exact h.1 ⟨i, hi⟩ (Finset.mem_filter.2 ⟨Finset.mem_univ _, hi'⟩)
-      · exact h.2 ⟨i, hi⟩ (Finset.mem_filter.2 ⟨Finset.mem_univ _, hi'⟩)
-  · intro h t₁ t₂ f ht₁t₂ heq
-    specialize h (t₁.map (Embedding.subtype _)) (Finset.map_subtype_subset _)
-      (fun i => if h : i ∈ s then if h' : ⟨i, h⟩ ∈ t₁ ∪ t₂ then f ⟨i, h⟩ else 0 else 0) ?_
+  rw [LinearIndepOn, Fintype.linearIndependent_iffₒ]
+  refine ⟨fun h t ht f heq i hi => h { i | i.1 ∈ t } (f ∘ Subtype.val) ?_ ⟨i, hi⟩,
+    fun h t f heq i => ?_⟩
+  · simp only [Finset.compl_filter, Finset.sum_filter, Function.comp_apply, Finset.coe_sort_coe]
+    rw [Finset.sum_coe_sort s fun i => if i ∈ t then f i • v i else 0,
+      Finset.sum_coe_sort s fun i => if i ∉ t then f i • v i else 0]
+    simpa [Finset.inter_eq_right.2 ht, Finset.sum_ite, Finset.filter_notMem_eq_sdiff]
+  · specialize h (t.map (Embedding.subtype _)) (Finset.map_subtype_subset _)
+      (fun i => if h : i ∈ s then f ⟨i, h⟩ else 0) ?_ i i.2
     · conv =>
         enter [2, 1, 1]
         rw [← s.subtype_map_of_mem (fun x hx => hx), Finset.subtype_eq_univ.2 (fun x hx => hx)]
         change Finset.map (Embedding.subtype (· ∈ (s : Set ι))) _
       rw [← Finset.map_sdiff]
-      simp only [Embedding.subtype, Finset.sum_map, Embedding.coeFn_mk]
-      rw [← Finset.sum_inter_add_sum_diff (_ \ t₁) t₂,
-        Finset.inter_eq_right.2 (Finset.subset_sdiff.2 ⟨t₂.subset_univ, ht₁t₂.symm⟩)]
-      rw [← add_zero (Finset.sum t₂ _), ← Finset.sum_const_zero (s := (.univ \ t₁) \ t₂)] at heq
-      convert heq <;> simp_all
-    · refine ⟨fun i hi => ?_, fun i hi => ?_⟩ <;> simpa [hi] using h i i.2
+      simpa [Embedding.subtype, ← Finset.compl_eq_univ_sdiff]
+    · simpa using h
 
 lemma not_linearIndepOn_finset_iffₒ [DecidableEq ι] {s : Finset ι} :
     ¬LinearIndepOn R v s ↔ ∃ t ⊆ s, ∃ (f : ι → R),
@@ -730,6 +738,8 @@ lemma not_linearIndepOn_finset_iffₒ [DecidableEq ι] {s : Finset ι} :
 end LinearlyCanonicallyOrdered
 
 end Semiring
+
+/-! ### Properties which require `Ring R` -/
 
 section Module
 
@@ -885,17 +895,6 @@ lemma linearIndepOn_iff'' : LinearIndepOn R v s ↔ ∀ (t : Finset ι) (g : ι 
     by simpa +contextual [h0] using h t (fun i ↦ if i ∈ t then g i else 0) hts⟩
 
 end LinearIndepOn
-
-end Module
-
-/-! ### Properties which require `Ring R` -/
-
-
-section Module
-
-variable {v : ι → M}
-variable [Ring R] [AddCommGroup M] [AddCommGroup M']
-variable [Module R M] [Module R M']
 
 open LinearMap
 
