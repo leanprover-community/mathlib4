@@ -283,14 +283,14 @@ noncomputable def asIso (f : X ⟶ Y) [IsIso f] : X ≅ Y :=
 -- but we've changed it to implicit as a `rw` in `Mathlib/CategoryTheory/Closed/Functor.lean`
 -- was failing to generate it by typeclass search.
 @[simp]
-theorem asIso_hom (f : X ⟶ Y) {_ : IsIso f} : (asIso f).hom = f :=
+theorem asIso_hom (f : X ⟶ Y) [IsIso f] : (asIso f).hom = f :=
   rfl
 
 -- Porting note: the `IsIso f` argument had been instance implicit,
 -- but we've changed it to implicit as a `rw` in `Mathlib/CategoryTheory/Closed/Functor.lean`
 -- was failing to generate it by typeclass search.
 @[simp]
-theorem asIso_inv (f : X ⟶ Y) {_ : IsIso f} : (asIso f).inv = inv f :=
+theorem asIso_inv (f : X ⟶ Y) [IsIso f] : (asIso f).inv = inv f :=
   rfl
 
 namespace IsIso

@@ -153,11 +153,10 @@ Its existence is ensured by `IsFiltered`.
 noncomputable def coeqHom {j j' : C} (f f' : j ⟶ j') : j' ⟶ coeq f f' :=
   (IsFilteredOrEmpty.cocone_maps f f').choose_spec.choose
 
--- Porting note: the simp tag has been removed as the linter complained
 /-- `coeq_condition f f'`, for morphisms `f f' : j ⟶ j'`, is the proof that
 `f ≫ coeqHom f f' = f' ≫ coeqHom f f'`.
 -/
-@[reassoc]
+@[reassoc] -- Not `@[simp]` as it does not fire.
 theorem coeq_condition {j j' : C} (f f' : j ⟶ j') : f ≫ coeqHom f f' = f' ≫ coeqHom f f' :=
   (IsFilteredOrEmpty.cocone_maps f f').choose_spec.choose_spec
 
@@ -575,11 +574,10 @@ Its existence is ensured by `IsCofiltered`.
 noncomputable def eqHom {j j' : C} (f f' : j ⟶ j') : eq f f' ⟶ j :=
   (IsCofilteredOrEmpty.cone_maps f f').choose_spec.choose
 
--- Porting note: the simp tag has been removed as the linter complained
 /-- `eq_condition f f'`, for morphisms `f f' : j ⟶ j'`, is the proof that
 `eqHom f f' ≫ f = eqHom f f' ≫ f'`.
 -/
-@[reassoc]
+@[reassoc] -- Not `@[simp]` as it does not fire.
 theorem eq_condition {j j' : C} (f f' : j ⟶ j') : eqHom f f' ≫ f = eqHom f f' ≫ f' :=
   (IsCofilteredOrEmpty.cone_maps f f').choose_spec.choose_spec
 

@@ -212,10 +212,6 @@ theorem zero_eq_zero' {P Q R : C} :
 def pseudoZero {P : C} : P :=
   ⟦(0 : P ⟶ P)⟧
 
--- Porting note: in mathlib3, we couldn't make this an instance
--- as it would have fired on `coe_sort`.
--- However now that coercions are treated differently, this is a structural instance triggered by
--- the appearance of `Pseudoelement`.
 instance hasZero {P : C} : Zero P :=
   ⟨pseudoZero⟩
 
