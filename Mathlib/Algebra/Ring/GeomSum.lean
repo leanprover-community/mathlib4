@@ -324,9 +324,9 @@ lemma nat_pow_one_sub_dvd_pow_sub_one_of_dvd (x m k : ℕ) (hmk : m ∣ k) : x ^
 
 lemma Odd.nat_add_dvd_pow_add_pow (x y : ℕ) {n : ℕ} (h : Odd n) : x + y ∣ x ^ n + y ^ n :=
   mod_cast Odd.add_dvd_pow_add_pow (x : ℤ) (↑y) h
+
 /-- Value of a geometric sum over the naturals. Note: see `geom_sum_mul_add` for a formulation
 that avoids division and subtraction. -/
-
 lemma Nat.geomSum_eq {m : ℕ} (hm : 2 ≤ m) (n : ℕ) :
     ∑ k ∈ range n, m ^ k = (m ^ n - 1) / (m - 1) := by
   refine (Nat.div_eq_of_eq_mul_left (tsub_pos_iff_lt.2 hm) <| tsub_eq_of_eq_add ?_).symm
