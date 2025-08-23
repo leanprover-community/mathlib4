@@ -296,6 +296,8 @@ lemma mul_geom_sum₂_Ico (x y : R) {m n : ℕ} (hmn : m ≤ n) :
 
 end CommRing
 
+section Nat
+
 lemma nat_sub_dvd_pow_sub_pow (x y n : ℕ) : x - y ∣ x ^ n - y ^ n := by
   rcases le_or_gt y x with h | h
   · have : y ^ n ≤ x ^ n := Nat.pow_le_pow_left h _
@@ -317,3 +319,27 @@ lemma Nat.geomSum_eq {m : ℕ} (hm : 2 ≤ m) (n : ℕ) :
     ∑ k ∈ range n, m ^ k = (m ^ n - 1) / (m - 1) := by
   refine (Nat.div_eq_of_eq_mul_left (tsub_pos_iff_lt.2 hm) <| tsub_eq_of_eq_add ?_).symm
   simpa only [tsub_add_cancel_of_le (by omega : 1 ≤ m), eq_comm] using geom_sum_mul_add (m - 1) n
+
+lemma nat_pow_sub_pow_dvd_pow_mul_sub_pow (x y m n : ℕ) :
+    x ^ m - y ^ m ∣ x ^ (m * n) - y ^ (m * n) := by
+  have := nat_sub_dvd_pow_sub_pow (x ^ m) (y ^ m) n
+  rwa [← Nat.pow_mul, ← Nat.pow_mul] at this
+
+lemma nat_pow_sub_pow_dvd_pow_sub_pow_of_dvd (x y m k : ℕ) (hmk : m ∣ k) :
+    x ^ m - y ^ m ∣ x ^ k - y ^ k := by
+  rcases hmk with ⟨n, hn⟩
+  simpa [hn] using nat_pow_sub_pow_dvd_pow_mul_sub_pow x y m n
+
+lemma pow_one_sub_dvd_pow_mul_sub_one [Ring R] (x : R) (m n : ℕ) :
+    ((x ^ m) - 1 : R) ∣ (x ^ (m * n) - 1) := by
+  rw [npow_mul]
+  exact sub_one_dvd_pow_sub_one (x := x ^ m) (n := n)
+
+lemma nat_pow_one_sub_dvd_pow_mul_sub_one (x m n : ℕ) : x ^ m - 1 ∣ x ^ (m * n) - 1 := by
+  simpa using nat_pow_sub_pow_dvd_pow_mul_sub_pow x 1 m n
+
+lemma nat_pow_one_sub_dvd_pow_sub_one_of_dvd (x m k : ℕ) (hmk : m ∣ k) : x ^ m - 1 ∣ x ^ k - 1 := by
+  rcases hmk with ⟨n, hn⟩
+  simpa [hn] using nat_pow_one_sub_dvd_pow_mul_sub_one x m n
+
+end Nat
