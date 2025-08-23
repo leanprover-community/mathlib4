@@ -200,20 +200,21 @@ lemma Even.tsub [AddLeftReflectLE α] {m n : α} (hm : Even m) (hn : Even n) :
 
 end CanonicallyLinearOrderedAddCommMonoid
 
-/-! ### `Sub` instance in linearly canonically ordered monoid using choice. -/
+/-! ### `Sub` structure in linearly canonically ordered monoid using choice. -/
 
 namespace CanonicallyOrderedAdd
 
 variable [AddCommMonoid α] [LinearOrder α] [CanonicallyOrderedAdd α]
 
-/-- `Sub` instance in linearly canonically ordered monoid using choice. -/
-noncomputable def toSub : Sub α where
+-- See note [reducible non instances]
+/-- `Sub` structure in linearly canonically ordered monoid using choice. -/
+noncomputable abbrev toSub : Sub α where
   sub x y := if h : y ≤ x then (exists_add_of_le h).choose else 0
 
 attribute [local instance] toSub
 
-/-- The `Sub` instance using choice satisfies `OrderedSub`. -/
-theorem toSub.orderedSub [AddRightReflectLE α] : OrderedSub α where
+/-- The `Sub` structure using choice satisfies `OrderedSub`. -/
+theorem toOrderedSub [AddRightReflectLE α] : OrderedSub α where
   tsub_le_iff_right a b c := by
     change dite _ _ _ ≤ c ↔ _
     split_ifs with h
