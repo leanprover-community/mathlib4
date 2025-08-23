@@ -5,7 +5,6 @@ Authors: Frédéric Dupuis
 -/
 import Mathlib.Algebra.Group.Subgroup.Defs
 import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Star.Pi
 import Mathlib.Algebra.Star.Rat
 
 /-!
