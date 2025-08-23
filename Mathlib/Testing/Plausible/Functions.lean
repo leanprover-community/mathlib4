@@ -300,7 +300,7 @@ def sliceSizes : ℕ → MLList Id ℕ+
 /-- Shrink a permutation of a list, slicing a segment in the middle.
 
 The sizes of the slice being removed start at `n` (with `n` the length
-of the list) and then `n / 2`, then `n / 4`, etc down to 1. The slices
+of the list) and then `n / 2`, then `n / 4`, etc. down to 1. The slices
 will be taken at index `0`, `n / k`, `2n / k`, `3n / k`, etc.
 -/
 protected def shrinkPerm {α : Type} [DecidableEq α] :
