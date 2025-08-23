@@ -314,6 +314,34 @@ theorem relNorm_relNorm (T : Type*) [CommRing T] [IsDedekindDomain T] [IsIntegra
     (I : Ideal S) : relNorm R (relNorm T I) = relNorm R I :=
   spanNorm_spanNorm _ _ _
 
+variable {R} (S)
+
+attribute [local instance] Localization.AtPrime.liftAlgebra in
+theorem relNorm_algebraMap (I : Ideal R) :
+    relNorm R (I.map (algebraMap R S)) =
+      I ^ Module.finrank (FractionRing R) (FractionRing S) := by
+  rw [← spanNorm_eq]
+  refine eq_of_localization_maximal (fun P hPd ↦ ?_)
+  let P' := Algebra.algebraMapSubmonoid S P.primeCompl
+  let Rₚ := Localization.AtPrime P
+  let K := FractionRing R
+  simp only [← spanIntNorm_localization (R := R) (Sₘ := Localization P') _ _
+    P.primeCompl_le_nonZeroDivisors]
+  rw [Ideal.map_pow, I.map_map, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq R Rₚ,
+    ← I.map_map, ← (I.map _).span_singleton_generator, Ideal.map_span, Set.image_singleton,
+    spanNorm_singleton, Ideal.span_singleton_pow]
+  congr 2
+  apply IsFractionRing.injective Rₚ K
+  rw [Algebra.algebraMap_intNorm (L := FractionRing S), ← IsScalarTower.algebraMap_apply,
+    IsScalarTower.algebraMap_apply Rₚ K, Algebra.norm_algebraMap, map_pow]
+
+variable (R)
+
+theorem relNorm_algebraMap' {R'} [CommRing R'] (I : Ideal R') [Algebra R' R]
+    [Algebra R' S] [IsScalarTower R' R S] : relNorm R (I.map (algebraMap R' S)) =
+      I.map (algebraMap R' R) ^ Module.finrank (FractionRing R) (FractionRing S) := by
+  rw [← relNorm_algebraMap, Ideal.map_map, IsScalarTower.algebraMap_eq R' R S]
+
 end Ideal
 
 end SpanNorm
