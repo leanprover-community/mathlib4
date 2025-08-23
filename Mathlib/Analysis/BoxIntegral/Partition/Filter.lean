@@ -179,7 +179,7 @@ used in the definition of a box-integrable function.
 -/
 @[ext]
 structure IntegrationParams : Type where
-  /-- `True` if the filter corresponds to a Riemann-style integral,
+  /-- `true` if the filter corresponds to a Riemann-style integral,
   i.e. in the definition of integrability we require a constant upper estimate `r` on the size of
   boxes of a tagged partition; the value `false` means that the estimate may depend on the position
   of the tag. -/
