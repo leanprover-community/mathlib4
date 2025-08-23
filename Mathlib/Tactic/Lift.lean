@@ -35,7 +35,7 @@ instance Pi.canLift (ι : Sort*) (α β : ι → Sort*) (coe : ∀ i, β i → �
     funext fun i => Classical.choose_spec (CanLift.prf (f i) (hf i))⟩
 
 /-- Enable automatic handling of product types in `CanLift`. -/
-instance Prod.instCanLift {α β γ δ coeβα condβα coeδγ condδγ} [CanLift α β coeβα condβα]
+instance Prod.instCanLift {α β γ δ : Type*} {coeβα condβα coeδγ condδγ} [CanLift α β coeβα condβα]
     [CanLift γ δ coeδγ condδγ] :
     CanLift (α × γ) (β × δ) (Prod.map coeβα coeδγ) (fun x ↦ condβα x.1 ∧ condδγ x.2) where
   prf := by
