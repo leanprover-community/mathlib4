@@ -369,8 +369,6 @@ theorem sSup_ord (s : Set Cardinal) : (sSup s).ord = sSup (ord '' s) := by
     · rw [csSup_of_not_bddAbove hs, csSup_of_not_bddAbove (bddAbove_ord_image_iff.not.2 hs)]
       simp
 
-@[deprecated (since := "2025-08-23")] alias iSup_ord := sSup_ord
-
 theorem iSup_ord {ι} (f : ι → Cardinal) : (⨆ i, f i).ord = ⨆ i, (f i).ord := by
   rw [iSup, iSup, sSup_ord, range_comp']
 

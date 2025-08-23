@@ -69,8 +69,6 @@ lemma IsPerfPair.restrict : (p.compl₁₂ i j).IsPerfPair where
   bijective_left := p.restrict_aux i j hi hj hij
   bijective_right := p.flip.restrict_aux j i hj hi hij.flip
 
-@[deprecated (since := "2025-08-23")] alias restrict_aux := IsPerfPair.restrict
-
 set_option linter.deprecated false in
 /-- The restriction of a perfect pairing to submodules (expressed as injections to provide
 definitional control). -/
@@ -79,8 +77,6 @@ def _root_.PerfectPairing.restrict : PerfectPairing R M' N' where
   toLinearMap := p.compl₁₂ i j
   bijective_left := p.restrict_aux i j hi hj hij
   bijective_right := p.flip.restrict_aux j i hj hi hij.flip
-
-@[deprecated (since := "2025-08-23")] alias restrict := _root_.PerfectPairing.restrict
 
 end Restrict
 

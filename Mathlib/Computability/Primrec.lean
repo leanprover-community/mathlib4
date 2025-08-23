@@ -411,20 +411,14 @@ protected lemma PrimrecPred.decide {p : α → Prop} [DecidablePred p] (hp : Pri
     Primrec (fun a => decide (p a)) := by
   convert hp.choose_spec
 
-@[deprecated (since := "2025-08-23")] alias PrimrecPred.comp := PrimrecPred.decide
-
 lemma Primrec.primrecPred {p : α → Prop} [DecidablePred p]
     (hp : Primrec (fun a => decide (p a))) : PrimrecPred p :=
   ⟨inferInstance, hp⟩
-
-@[deprecated (since := "2025-08-23")] alias PrimrecRel.comp := Primrec.primrecPred
 
 lemma primrecPred_iff_primrec_decide {p : α → Prop} [DecidablePred p] :
     PrimrecPred p ↔ Primrec (fun a => decide (p a)) where
   mp := PrimrecPred.decide
   mpr := Primrec.primrecPred
-
-@[deprecated (since := "2025-08-23")] alias PrimrecRel.comp₂ := primrecPred_iff_primrec_decide
 
 theorem PrimrecPred.comp {p : β → Prop} {f : α → β} :
     (hp : PrimrecPred p) → (hf : Primrec f) → PrimrecPred fun a => p (f a)
@@ -474,8 +468,6 @@ protected theorem swap {f : α → β → σ} (h : Primrec₂ f) : Primrec₂ (s
 protected theorem _root_.PrimrecRel.swap {r : α → β → Prop} (h : PrimrecRel r) :
     PrimrecRel (swap r) :=
   h.comp₂ Primrec₂.right Primrec₂.left
-
-@[deprecated (since := "2025-08-23")] alias swap := _root_.PrimrecRel.swap
 
 theorem nat_iff {f : α → β → σ} : Primrec₂ f ↔ Nat.Primrec
     (.unpaired fun m n => encode <| (@decode α _ m).bind fun a => (@decode β _ n).map (f a)) := by
@@ -660,11 +652,7 @@ protected theorem eq : PrimrecRel (@Eq α) :=
       (Primrec.encode.comp₂ Primrec₂.right)).primrecRel.of_eq
     fun _ _ => encode_injective.eq_iff
 
-@[deprecated (since := "2025-08-23")] alias beq := eq
-
 protected theorem beq [DecidableEq α] : Primrec₂ (@BEq.beq α _) := Primrec.eq.decide
-
-@[deprecated (since := "2025-08-23")] alias eq := beq
 
 theorem nat_lt : PrimrecRel ((· < ·) : ℕ → ℕ → Prop) :=
   (nat_le.comp snd fst).not.of_eq fun p => by simp

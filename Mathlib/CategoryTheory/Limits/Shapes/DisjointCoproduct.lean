@@ -47,8 +47,6 @@ class CoproductDisjoint {ι : Type*} (X : ι → C) : Prop where
     IsLimit s → Nonempty (IsInitial s.pt)
   mono_inj {c : Cofan X} (hc : IsColimit c) (i : ι) : Mono (c.inj i)
 
-@[deprecated (since := "2025-08-23")] alias isInitialOfIsPullbackOfCoproduct := CoproductDisjoint
-
 section
 
 variable {ι : Type*} {X : ι → C}
@@ -213,14 +211,8 @@ alias isInitialOfPullbackOfCoproduct := IsInitial.ofBinaryCoproductDisjoint
 @[deprecated (since := "2025-06-18")]
 alias CoproductDisjoint.mono_inl := CategoryTheory.Mono.of_binaryCoproductDisjoint_left
 
-@[deprecated (since := "2025-08-23")]
-alias isInitialOfPullbackOfIsCoproduct := CoproductDisjoint.mono_inl
-
 @[deprecated (since := "2025-06-18")]
 alias CoproductDisjoint.mono_inr := CategoryTheory.Mono.of_binaryCoproductDisjoint_right
-
-@[deprecated (since := "2025-08-23")]
-alias isInitialOfPullbackOfCoproduct := CoproductDisjoint.mono_inr
 
 end
 
@@ -240,8 +232,6 @@ lemma BinaryCoproductsDisjoint.mk (H : ∀ (X Y : C), BinaryCoproductDisjoint X 
     convert H (X .left) (X .right) using 2
     casesm WalkingPair <;> simp
 
-@[deprecated (since := "2025-08-23")] alias CoproductsDisjoint := BinaryCoproductsDisjoint.mk
-
 /-- If `C` has disjoint coproducts, any morphism out of initial is mono. Note it isn't true in
 general that `C` has strict initial objects, for instance consider the category of types and
 partial functions. -/
@@ -254,9 +244,6 @@ theorem initialMonoClass_of_coproductsDisjoint [BinaryCoproductsDisjoint C] :
           Discrete.casesOn j fun j => WalkingPair.casesOn j (hI.hom_ext _ _) (id_comp _)
         uniq := fun (_s : BinaryCofan _ _) _m w =>
           (id_comp _).symm.trans (w ⟨WalkingPair.right⟩) }
-
-@[deprecated (since := "2025-08-23")]
-alias initialMonoClass_of_disjoint_coproducts := initialMonoClass_of_coproductsDisjoint
 
 @[deprecated (since := "2025-06-18")]
 alias initialMonoClass_of_disjoint_coproducts := initialMonoClass_of_coproductsDisjoint

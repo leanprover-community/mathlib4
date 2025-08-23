@@ -44,8 +44,6 @@ abbrev zariskiTopology : GrothendieckTopology Scheme.{u} :=
 
 lemma zariskiTopology_eq : zariskiTopology.{u} = zariskiPretopology.toGrothendieck := rfl
 
-@[deprecated (since := "2025-08-23")] alias zariskiTopology := zariskiTopology_eq
-
 instance subcanonical_zariskiTopology : zariskiTopology.Subcanonical := by
   apply GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj
   intro X

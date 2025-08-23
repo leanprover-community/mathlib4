@@ -774,8 +774,6 @@ protected lemma lt_top_iff_ne_top : x < ⊤ ↔ x ≠ ⊤ := by cases x <;> simp
 @[simp] lemma untop_lt_iff (hx : x ≠ ⊤) : x.untop hx < b ↔ x < b := by lift x to α using id hx; simp
 lemma lt_untopD_iff (hy : y = ⊤ → a < b) : a < y.untopD b ↔ a < y := by cases y <;> simp [hy]
 
-@[deprecated (since := "2025-08-23")] alias untop_lt_iff := lt_untop_iff
-
 @[deprecated (since := "2025-02-11")]
 alias lt_untop'_iff := lt_untopD_iff
 

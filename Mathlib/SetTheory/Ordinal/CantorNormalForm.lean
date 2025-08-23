@@ -47,8 +47,6 @@ protected def rec (b : Ordinal) {C : Ordinal → Sort*} (H0 : C 0)
 termination_by o
 decreasing_by exact mod_opow_log_lt_self b h
 
-@[deprecated (since := "2025-08-23")] alias CNFRec := rec
-
 @[deprecated (since := "2025-08-18")]
 noncomputable alias _root_.Ordinal.CNFRec := CNF.rec
 
@@ -57,12 +55,8 @@ theorem rec_zero {C : Ordinal → Sort*} (b : Ordinal) (H0 : C 0)
     (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) : CNF.rec b H0 H 0 = H0 := by
   rw [CNF.rec, dif_pos rfl]
 
-@[deprecated (since := "2025-08-23")] alias CNFRec_zero := rec_zero
-
 @[deprecated (since := "2025-08-18")]
 alias _root_.Ordinal.CNFRec_zero := rec_zero
-
-@[deprecated (since := "2025-08-23")] alias CNFRec_pos := _root_.Ordinal.CNFRec_zero
 
 theorem rec_pos (b : Ordinal) {o : Ordinal} {C : Ordinal → Sort*} (ho : o ≠ 0) (H0 : C 0)
     (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) :
@@ -82,13 +76,9 @@ We special-case `CNF 0 o = CNF 1 o = [(0, o)]` for `o ≠ 0`.
 def _root_.Ordinal.CNF (b o : Ordinal) : List (Ordinal × Ordinal) :=
   CNF.rec b [] (fun o _ IH ↦ (log b o, o / b ^ log b o)::IH) o
 
-@[deprecated (since := "2025-08-23")] alias CNF := _root_.Ordinal.CNF
-
 @[simp]
 theorem zero_right (b : Ordinal) : CNF b 0 = [] :=
   rec_zero b _ _
-
-@[deprecated (since := "2025-08-23")] alias CNF_zero := zero_right
 
 @[deprecated (since := "2025-08-18")]
 alias _root_.Ordinal.CNF_zero := zero_right
@@ -97,8 +87,6 @@ alias _root_.Ordinal.CNF_zero := zero_right
 protected theorem ne_zero {b o : Ordinal} (ho : o ≠ 0) :
     CNF b o = (log b o, o / b ^ log b o)::CNF b (o % b ^ log b o) :=
   rec_pos b ho _ _
-
-@[deprecated (since := "2025-08-23")] alias CNF_ne_zero := ne_zero
 
 @[deprecated (since := "2025-08-18")]
 alias _root_.Ordinal.CNF_ne_zero := CNF.ne_zero
@@ -112,23 +100,15 @@ alias _root_.Ordinal.zero_CNF := CNF.zero_left
 protected theorem one_left {o : Ordinal} (ho : o ≠ 0) : CNF 1 o = [(0, o)] := by
   simp [CNF.ne_zero ho]
 
-@[deprecated (since := "2025-08-23")] alias zero_CNF := one_left
-
 @[deprecated (since := "2025-08-18")]
 alias _root_.Ordinal.one_CNF := CNF.one_left
-
-@[deprecated (since := "2025-08-23")] alias one_CNF := _root_.Ordinal.one_CNF
 
 protected theorem of_le_one {b o : Ordinal} (hb : b ≤ 1) (ho : o ≠ 0) : CNF b o = [(0, o)] := by
   rcases le_one_iff.1 hb with (rfl | rfl)
   exacts [CNF.zero_left ho, CNF.one_left ho]
 
-@[deprecated (since := "2025-08-23")] alias CNF_of_le_one := of_le_one
-
 @[deprecated (since := "2025-08-18")]
 alias _root_.Ordinal.CNF_of_le_one := CNF.of_le_one
-
-@[deprecated (since := "2025-08-23")] alias CNF_of_lt := _root_.Ordinal.CNF_of_le_one
 
 protected theorem of_lt {b o : Ordinal} (ho : o ≠ 0) (hb : o < b) : CNF b o = [(0, o)] := by
   rw [CNF.ne_zero ho, log_eq_zero hb, opow_zero, div_one, mod_one, zero_right]
@@ -143,8 +123,6 @@ protected theorem foldr (b o : Ordinal) : (CNF b o).foldr (fun p r ↦ b ^ p.1 *
   · intro o ho IH
     rw [CNF.ne_zero ho, foldr_cons, IH, div_add_mod]
 
-@[deprecated (since := "2025-08-23")] alias CNF_foldr := foldr
-
 @[deprecated (since := "2025-08-18")]
 alias _root_.Ordinal.CNF_foldr := CNF.foldr
 
@@ -157,8 +135,6 @@ theorem fst_le_log {b o : Ordinal.{u}} {x : Ordinal × Ordinal} : x ∈ CNF b o 
     · rfl
     · exact (H h).trans (log_mono_right _ (mod_opow_log_lt_self b ho).le)
 
-@[deprecated (since := "2025-08-23")] alias CNF_fst_le_log := fst_le_log
-
 @[deprecated (since := "2025-08-18")]
 alias _root_.Ordinal.CNF_fst_le_log := fst_le_log
 
@@ -169,8 +145,6 @@ theorem lt_snd {b o : Ordinal.{u}} {x : Ordinal × Ordinal} : x ∈ CNF b o → 
   rintro (h | ⟨_, h⟩)
   · exact div_opow_log_pos b ho
   · exact IH h
-
-@[deprecated (since := "2025-08-23")] alias CNF_lt_snd := lt_snd
 
 @[deprecated (since := "2025-08-18")]
 alias _root_.Ordinal.CNF_lt_snd := lt_snd
@@ -185,8 +159,6 @@ theorem snd_lt {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal × Ordinal} :
     obtain rfl | h := mem_cons.mp h
     · exact div_opow_log_lt o hb
     · exact IH h
-
-@[deprecated (since := "2025-08-23")] alias CNF_snd_lt := snd_lt
 
 @[deprecated (since := "2025-08-18")]
 alias _root_.Ordinal.CNF_snd_lt := snd_lt
@@ -207,8 +179,6 @@ protected theorem sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).Sorted (· >
         rw [mem_map] at H
         rcases H with ⟨⟨a, a'⟩, H, rfl⟩
         exact (fst_le_log H).trans_lt (log_mod_opow_log_lt_log_self hb hbo)
-
-@[deprecated (since := "2025-08-23")] alias CNF_sorted := sorted
 
 @[deprecated (since := "2025-08-18")]
 alias _root_.Ordinal.CNF_sorted := CNF.sorted

@@ -418,15 +418,10 @@ lemma toPerfPair_conj_reflection :
   ext f n
   simp [LinearEquiv.conj_apply, reflection_apply, coreflection_apply, mul_comm (f <| P.coroot i)]
 
-@[deprecated (since := "2025-08-23")] alias toDualLeft_conj_reflection := toPerfPair_conj_reflection
-
 @[simp]
 lemma toPerfPair_flip_conj_coreflection :
     P.toLinearMap.flip.toPerfPair.conj (P.coreflection i) = (P.reflection i).toLinearMap.dualMap :=
   P.flip.toPerfPair_conj_reflection i
-
-@[deprecated (since := "2025-08-23")]
-alias toDualRight_conj_coreflection := toPerfPair_flip_conj_coreflection
 
 @[simp]
 lemma pairing_reflectionPerm_self_left (P : RootPairing ι R M N) (i j : ι) :
@@ -604,12 +599,8 @@ alias _root_.RootSystem.reflection_perm_eq_reflection_perm_iff :=
 
 @[simp] lemma toPerfPair_comp_root : P.toPerfPair ∘ P.root = P.root' := rfl
 
-@[deprecated (since := "2025-08-23")] alias toDualLeft_comp_root := toPerfPair_comp_root
-
 @[simp] lemma toPerfPair_flip_comp_coroot :
     P.toLinearMap.flip.toPerfPair ∘ P.coroot = P.coroot' := rfl
-
-@[deprecated (since := "2025-08-23")] alias toDualRight_comp_root := toPerfPair_flip_comp_coroot
 
 /-- The Coxeter Weight of a pair gives the weight of an edge in a Coxeter diagram, when it is
 finite.  It is `4 cos² θ`, where `θ` describes the dihedral angle between hyperplanes. -/

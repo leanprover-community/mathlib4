@@ -328,8 +328,6 @@ def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} 
 lemma toSpecΓ_unop (R : CommRingCatᵒᵖ) :
     AlgebraicGeometry.toSpecΓ (Opposite.unop R) = toOpen R.unop ⊤ := rfl
 
-@[deprecated (since := "2025-08-23")] alias locallyRingedSpaceAdjunction_counit := toSpecΓ_unop
-
 /-- `@[simp]`-normal form of `locallyRingedSpaceAdjunction_counit_app'`. -/
 @[simp]
 lemma toSpecΓ_of (R : Type u) [CommRing R] :

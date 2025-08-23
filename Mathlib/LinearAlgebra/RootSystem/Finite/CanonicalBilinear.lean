@@ -96,16 +96,10 @@ lemma toLinearMap_apply_apply_Polarization (x y : M) :
     P.toLinearMap y (P.Polarization x) = P.RootForm x y := by
   simp [RootForm]
 
-@[deprecated (since := "2025-08-23")]
-alias toPerfectPairing_apply_apply_Polarization := toLinearMap_apply_apply_Polarization
-
 lemma toLinearMap_apply_CoPolarization (x : N) :
     P.toLinearMap (P.CoPolarization x) = P.CorootForm x := by
   ext y
   exact P.flip.toLinearMap_apply_apply_Polarization x y
-
-@[deprecated (since := "2025-08-23")]
-alias toPerfectPairing_apply_CoPolarization := toLinearMap_apply_CoPolarization
 
 lemma flip_comp_polarization_eq_rootForm :
     P.flip.toLinearMap ∘ₗ P.Polarization = P.RootForm := by
@@ -231,9 +225,6 @@ lemma toLinearMap_apply_PolarizationIn (x y : P.rootSpan S) :
       (algebraMap S R) (P.RootFormIn S x y) := by
   rw [PolarizationIn_eq, algebraMap_rootFormIn]
   exact toLinearMap_apply_apply_Polarization P x y
-
-@[deprecated (since := "2025-08-23")]
-alias toPerfectPairing_apply_PolarizationIn := toLinearMap_apply_PolarizationIn
 
 omit [IsScalarTower S R N] in
 lemma range_polarizationIn_le_span_coroot :

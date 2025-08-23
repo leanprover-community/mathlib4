@@ -278,14 +278,9 @@ lemma iInf_ker_coroot'_eq :
     (P.rootSpan R).map P.toPerfPair = span R (range P.root') := by
   rw [rootSpan, Submodule.map_span, ← image_univ, ← image_comp, image_univ, toPerfPair_comp_root]
 
-@[deprecated (since := "2025-08-23")] alias rootSpan_map_toDualLeft := rootSpan_map_toPerfPair
-
 @[simp] lemma corootSpan_map_flip_toPerfPair :
     (P.corootSpan R).map P.toLinearMap.flip.toPerfPair = span R (range P.coroot') :=
   P.flip.rootSpan_map_toPerfPair
-
-@[deprecated (since := "2025-08-23")]
-alias corootSpan_map_toDualRight := corootSpan_map_flip_toPerfPair
 
 @[simp] lemma span_root'_eq_top (P : RootSystem ι R M N) :
     span R (range P.root') = ⊤ := by

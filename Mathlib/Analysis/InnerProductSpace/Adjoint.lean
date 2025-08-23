@@ -372,9 +372,6 @@ theorem isStarProjection_iff_isSymmetricProjection :
   simp [isStarProjection_iff, LinearMap.isSymmetricProjection_iff,
     isSelfAdjoint_iff_isSymmetric, IsIdempotentElem, End.mul_eq_comp, ← coe_comp, mul_def]
 
-@[deprecated (since := "2025-08-23")]
-alias isSymmetric_adjoint_mul_self := isStarProjection_iff_isSymmetricProjection
-
 open ContinuousLinearMap in
 /-- Star projection operators are equal iff their range are. -/
 theorem IsStarProjection.ext_iff {S : E →L[𝕜] E}
@@ -603,9 +600,6 @@ theorem isStarProjection_iff_isSymmetricProjection {T : E →ₗ[𝕜] E} :
     IsStarProjection T ↔ T.IsSymmetricProjection := by
   simp [← isStarProjection_toContinuousLinearMap_iff,
     ContinuousLinearMap.isStarProjection_iff_isSymmetricProjection]
-
-@[deprecated (since := "2025-08-23")]
-alias isSymmetric_adjoint_mul_self := isStarProjection_iff_isSymmetricProjection
 
 open LinearMap in
 /-- Star projection operators are equal iff their range are. -/

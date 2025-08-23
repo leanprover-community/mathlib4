@@ -73,9 +73,6 @@ theorem Closeds.isClosed_subsets_of_isClosed (hs : IsClosed s) :
     exact ⟨y, hu hy, Dxy⟩
   rwa [hs.closure_eq] at this
 
-@[deprecated (since := "2025-08-23")]
-alias isClosed_subsets_of_isClosed := Closeds.isClosed_subsets_of_isClosed
-
 @[deprecated (since := "2025-08-20")]
 alias isClosed_subsets_of_isClosed := Closeds.isClosed_subsets_of_isClosed
 
@@ -247,9 +244,6 @@ theorem isUniformEmbedding_toCloseds :
     IsUniformEmbedding (@NonemptyCompacts.toCloseds α _ _) :=
   isometry_toCloseds.isUniformEmbedding
 
-@[deprecated (since := "2025-08-23")]
-alias NonemptyCompacts.ToCloseds.isUniformEmbedding := isUniformEmbedding_toCloseds
-
 @[deprecated (since := "2025-08-20")]
 alias ToCloseds.isUniformEmbedding := isUniformEmbedding_toCloseds
 
@@ -299,9 +293,6 @@ theorem isClosed_in_closeds [CompleteSpace α] :
         _ < ε / 2 + ε / 2 := ENNReal.add_lt_add Dxz Dzy
         _ = ε := ENNReal.add_halves _
     exact mem_biUnion hy this
-
-@[deprecated (since := "2025-08-23")]
-alias NonemptyCompacts.isClosed_in_closeds := isClosed_in_closeds
 
 /-- In a complete space, the type of nonempty compact subsets is complete. This follows
 from the same statement for closed subsets -/

@@ -580,8 +580,6 @@ variable (ι 𝕜) in
 protected noncomputable def singleton : OrthonormalBasis ι 𝕜 𝕜 :=
   (Basis.singleton ι 𝕜).toOrthonormalBasis (by simp [orthonormal_iff_ite, Unique.eq_default])
 
-@[deprecated (since := "2025-08-23")] alias EuclideanSpace.proj := singleton
-
 @[simp]
 theorem singleton_apply (i) : OrthonormalBasis.singleton ι 𝕜 i = 1 := Basis.singleton_apply _ _ _
 

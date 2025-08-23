@@ -171,8 +171,6 @@ def cartanSubalgebra' [Fintype ι] [DecidableEq ι] :
     LieSubalgebra R (lieAlgebra b) :=
   (cartanSubalgebra b).comap (lieAlgebra b).incl
 
-@[deprecated (since := "2025-08-23")] alias lie_h_h := cartanSubalgebra'
-
 omit [Finite ι] [IsDomain R] [CharZero R] in
 lemma cartanSubalgebra_eq_lieSpan [Fintype ι] [DecidableEq ι] :
     cartanSubalgebra b = LieSubalgebra.lieSpan R _ (range h) := by
@@ -186,8 +184,6 @@ omit [Finite ι] [IsDomain R] [CharZero R] in
 @[simp] lemma h_mem_cartanSubalgebra [Fintype ι] [DecidableEq ι] (i : b.support) :
     h i ∈ cartanSubalgebra b :=
   Submodule.subset_span <| mem_range_self i
-
-@[deprecated (since := "2025-08-23")] alias Matrix.mul_apply := h_mem_cartanSubalgebra
 
 @[simp] lemma h_mem_cartanSubalgebra' [Fintype ι] [DecidableEq ι] (i : b.support) (hi) :
     ⟨h i, hi⟩ ∈ cartanSubalgebra' b := by
@@ -283,8 +279,6 @@ abbrev u (i : b.support) : b.support ⊕ ι → R := Pi.single (Sum.inl i) 1
 variable (b) in
 /-- Geck's name for the "right" basis elements of `b.support ⊕ ι`. -/
 abbrev v (i : ι) : b.support ⊕ ι → R := Pi.single (Sum.inr i) 1
-
-@[deprecated (since := "2025-08-23")] alias cartanSubalgebra_le_lieAlgebra := v
 
 variable (b) in
 omit [Finite ι] [IsDomain R] [CharZero R] [P.IsCrystallographic] in

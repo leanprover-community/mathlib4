@@ -146,8 +146,6 @@ theorem coeff_def {s : Unit →₀ ℕ} {n : ℕ} (h : s () = n) :
     coeff (R := R) n = MvPowerSeries.coeff s := by
   rw [coeff, ← h, ← Finsupp.unique_single s]
 
-@[deprecated (since := "2025-08-23")] alias coeff_def := {s
-
 /-- Two formal power series are equal if all their coefficients are equal. -/
 @[ext]
 theorem ext {φ ψ : R⟦X⟧} (h : ∀ n, coeff n φ = coeff n ψ) : φ = ψ :=

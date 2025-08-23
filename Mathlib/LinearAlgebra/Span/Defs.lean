@@ -211,9 +211,6 @@ theorem span_nat_eq_addSubmonoidClosure (s : Set M) :
   rw [span_le]
   exact AddSubmonoid.subset_closure
 
-@[deprecated (since := "2025-08-23")]
-alias span_nat_eq_addSubmonoid_closure := span_nat_eq_addSubmonoidClosure
-
 @[deprecated (since := "2025-08-20")]
 alias span_nat_eq_addSubmonoid_closure := span_nat_eq_addSubmonoidClosure
 
@@ -227,9 +224,6 @@ theorem span_int_eq_addSubgroupClosure {M : Type*} [AddCommGroup M] (s : Set M) 
     AddSubgroup.closure_eq_of_le _ subset_span fun _ hx =>
       span_induction (fun _ hx => AddSubgroup.subset_closure hx) (AddSubgroup.zero_mem _)
         (fun _ _ _ _ => AddSubgroup.add_mem _) (fun _ _ _ _ => AddSubgroup.zsmul_mem _ ‹_› _) hx
-
-@[deprecated (since := "2025-08-23")]
-alias span_int_eq_addSubgroup_closure := span_int_eq_addSubgroupClosure
 
 @[deprecated (since := "2025-08-20")]
 alias span_int_eq_addSubgroup_closure := span_int_eq_addSubgroupClosure

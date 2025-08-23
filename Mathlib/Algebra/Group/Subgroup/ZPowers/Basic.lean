@@ -152,14 +152,8 @@ theorem Int.zmultiples_natAbs (a : ℤ) :
   ext
   simp [AddSubgroup.mem_closure_singleton]
 
-@[deprecated (since := "2025-08-23")]
-alias AddSubgroup.closure_singleton_int_one_eq_top := Int.addSubgroupClosure_one
-
 @[deprecated (since := "2025-08-12")]
 alias AddSubgroup.closure_singleton_int_one_eq_top := Int.addSubgroupClosure_one
-
-@[deprecated (since := "2025-08-23")]
-alias AddSubgroup.zmultiples_one_eq_top := AddSubgroup.closure_singleton_int_one_eq_top
 
 @[deprecated (since := "2025-08-12")]
 alias AddSubgroup.zmultiples_one_eq_top := Int.zmultiples_one

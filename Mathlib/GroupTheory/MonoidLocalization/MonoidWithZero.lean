@@ -34,16 +34,11 @@ protected theorem LocalizationMap.map_zero (f : LocalizationMap S N) : f 0 = 0 :
   have ⟨ms, eq⟩ := f.surj 0
   rw [← zero_mul, map_mul, ← eq, zero_mul, mul_zero]
 
-@[deprecated (since := "2025-08-23")] alias LocalizationWithZeroMap := LocalizationMap.map_zero
-
 variable {S N}
 
 /-- The monoid with zero hom underlying a `LocalizationMap`. -/
 def LocalizationMap.toMonoidWithZeroHom (f : LocalizationMap S N) : M →*₀ N :=
   { f with map_zero' := f.map_zero }
-
-@[deprecated (since := "2025-08-23")]
-alias LocalizationWithZeroMap.toMonoidWithZeroHom := LocalizationMap.toMonoidWithZeroHom
 
 @[deprecated (since := "2025-08-01")] alias LocalizationWithZeroMap := LocalizationMap
 @[deprecated (since := "2025-08-01")]
@@ -92,17 +87,11 @@ noncomputable def lift₀ (f : LocalizationMap S N) (g : M →*₀ P)
       rw [LocalizationMap.sec_zero_fst]
       exact f.toMonoidWithZeroHom.map_zero.symm }
 
-@[deprecated (since := "2025-08-23")] alias lift := lift₀
-
 lemma lift₀_def (f : LocalizationMap S N) (g : M →*₀ P) (hg : ∀ y : S, IsUnit (g y)) :
     ⇑(f.lift₀ g hg) = f.lift (g := g) hg := rfl
 
-@[deprecated (since := "2025-08-23")] alias lift_def := lift₀_def
-
 lemma lift₀_apply (f : LocalizationMap S N) (g : M →*₀ P) (hg : ∀ y : S, IsUnit (g y)) (x) :
     f.lift₀ g hg x = g (f.sec x).1 * (IsUnit.liftRight (g.restrict S) hg (f.sec x).2)⁻¹ := rfl
-
-@[deprecated (since := "2025-08-23")] alias leftCancelMulZero_of_le_isLeftRegular := lift₀_apply
 
 /-- Given a Localization map `f : M →*₀ N` for a Submonoid `S ⊆ M`,
 if `M` is a cancellative monoid with zero, and all elements of `S` are
@@ -115,8 +104,6 @@ theorem isCancelMulZero (f : LocalizationMap S N) [IsCancelMulZero M] : IsCancel
   refine (eq ▸ f.map_isRegular (isCancelMulZero_iff_forall_isRegular.mp ‹_› ?_)).2.of_mul
   refine fun h ↦ hn ?_
   rwa [h, f.map_zero, (f.map_units _).mul_left_eq_zero] at eq
-
-@[deprecated (since := "2025-08-23")] alias isLeftRegular_of_le_isCancelMulZero := isCancelMulZero
 
 end LocalizationMap
 

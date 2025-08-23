@@ -69,14 +69,10 @@ variable {R M N}
 noncomputable def equiv (h : IsTensorProduct f) : M₁ ⊗[R] M₂ ≃ₗ[R] M :=
   LinearEquiv.ofBijective _ h
 
-@[deprecated (since := "2025-08-23")] alias IsTensorProduct.equiv := equiv
-
 @[simp]
 theorem equiv_toLinearMap (h : IsTensorProduct f) :
     h.equiv.toLinearMap = TensorProduct.lift f :=
   rfl
-
-@[deprecated (since := "2025-08-23")] alias IsTensorProduct.equiv_toLinearMap := equiv_toLinearMap
 
 @[simp]
 theorem equiv_symm_apply (h : IsTensorProduct f) (x₁ : M₁) (x₂ : M₂) :
@@ -85,35 +81,25 @@ theorem equiv_symm_apply (h : IsTensorProduct f) (x₁ : M₁) (x₂ : M₂) :
   refine (h.equiv.apply_symm_apply _).trans ?_
   simp
 
-@[deprecated (since := "2025-08-23")] alias IsTensorProduct.equiv_symm_apply := equiv_symm_apply
-
 /-- If `M` is the tensor product of `M₁` and `M₂`, we may lift a bilinear map `M₁ →ₗ[R] M₂ →ₗ[R] M'`
 to a `M →ₗ[R] M'`. -/
 noncomputable def lift (h : IsTensorProduct f) (f' : M₁ →ₗ[R] M₂ →ₗ[R] M') :
     M →ₗ[R] M' :=
   (TensorProduct.lift f').comp h.equiv.symm.toLinearMap
 
-@[deprecated (since := "2025-08-23")] alias IsTensorProduct.lift := lift
-
 theorem lift_eq (h : IsTensorProduct f) (f' : M₁ →ₗ[R] M₂ →ₗ[R] M') (x₁ : M₁)
     (x₂ : M₂) : h.lift f' (f x₁ x₂) = f' x₁ x₂ := by
   simp [lift]
-
-@[deprecated (since := "2025-08-23")] alias IsTensorProduct.lift_eq := lift_eq
 
 /-- The tensor product of a pair of linear maps between modules. -/
 noncomputable def map (hf : IsTensorProduct f) (hg : IsTensorProduct g)
     (i₁ : M₁ →ₗ[R] N₁) (i₂ : M₂ →ₗ[R] N₂) : M →ₗ[R] N :=
   hg.equiv.toLinearMap.comp ((TensorProduct.map i₁ i₂).comp hf.equiv.symm.toLinearMap)
 
-@[deprecated (since := "2025-08-23")] alias IsTensorProduct.map := map
-
 @[simp]
 theorem map_eq (hf : IsTensorProduct f) (hg : IsTensorProduct g) (i₁ : M₁ →ₗ[R] N₁)
     (i₂ : M₂ →ₗ[R] N₂) (x₁ : M₁) (x₂ : M₂) : hf.map hg i₁ i₂ (f x₁ x₂) = g (i₁ x₁) (i₂ x₂) := by
   simp [map]
-
-@[deprecated (since := "2025-08-23")] alias IsTensorProduct.map_eq := map_eq
 
 @[elab_as_elim]
 theorem inductionOn (h : IsTensorProduct f) {motive : M → Prop} (m : M)
@@ -131,16 +117,12 @@ theorem inductionOn (h : IsTensorProduct f) {motive : M → Prop} (m : M)
     rw [map_add]
     apply add <;> assumption
 
-@[deprecated (since := "2025-08-23")] alias IsTensorProduct.inductionOn := inductionOn
-
 lemma of_equiv (e : M₁ ⊗[R] M₂ ≃ₗ[R] M) (he : ∀ x y, e (x ⊗ₜ y) = f x y) :
     IsTensorProduct f := by
   have : TensorProduct.lift f = e := by
     ext x y
     simp [he]
   simpa [IsTensorProduct, this] using e.bijective
-
-@[deprecated (since := "2025-08-23")] alias IsTensorProduct.of_equiv := of_equiv
 
 section map
 

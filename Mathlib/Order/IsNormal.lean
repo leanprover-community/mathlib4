@@ -142,8 +142,6 @@ protected theorem ext [OrderBot α] {g : α → β} (hf : IsNormal f) (hg : IsNo
     convert hg.isLUB_image_Iio_of_isSuccLimit ha using 1
     aesop
 
-@[deprecated (since := "2025-08-23")] alias of_succ_lt := ext
-
 end WellFoundedLT
 end LinearOrder
 

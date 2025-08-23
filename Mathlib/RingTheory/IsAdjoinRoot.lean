@@ -175,8 +175,6 @@ def adjoinRootAlgEquiv : AdjoinRoot f ≃ₐ[R] S :=
   (Ideal.quotientEquivAlgOfEq R h.ker_map.symm).trans <|
     Ideal.quotientKerAlgEquivOfSurjective h.map_surjective
 
-@[deprecated (since := "2025-08-23")] alias ext := adjoinRootAlgEquiv
-
 @[simp]
 theorem adjoinRootAlgEquiv_apply_mk (g : R[X]) :
     h.adjoinRootAlgEquiv (AdjoinRoot.mk f g) = h.map g := rfl
@@ -654,14 +652,9 @@ abbrev _root_.IsAdjoinRootMonic.mkOfAdjoinEqTop : IsAdjoinRootMonic S (minpoly R
   __ := IsAdjoinRoot.mkOfAdjoinEqTop hα hα₂
   monic := minpoly.monic hα
 
-@[deprecated (since := "2025-08-23")]
-alias algEquiv_root := _root_.IsAdjoinRootMonic.mkOfAdjoinEqTop
-
 @[simp]
 theorem mkOfAdjoinEqTop_root : (IsAdjoinRoot.mkOfAdjoinEqTop hα hα₂).root = α := by
   simp [IsAdjoinRoot.mkOfAdjoinEqTop, IsAdjoinRoot.root]
-
-@[deprecated (since := "2025-08-23")] alias algEquiv_self := mkOfAdjoinEqTop_root
 
 end mkOfAdjoinEqTop
 
@@ -732,8 +725,6 @@ namespace IsAdjoinRoot
 
 theorem primitive_element_root (h : IsAdjoinRoot E f) : F⟮h.root⟯ = ⊤ :=
   IntermediateField.adjoin_eq_top_of_algebra F {h.root} (adjoin_root_eq_top h)
-
-@[deprecated (since := "2025-08-23")] alias ofAlgEquiv_algEquiv := primitive_element_root
 
 /-- If `α` is primitive in `E/f`, then `E` is given by adjoining a root of `minpoly F α`. -/
 abbrev mkOfPrimitiveElement {α : E} (hα : IsIntegral F α) (hα₂ : F⟮α⟯ = ⊤) :

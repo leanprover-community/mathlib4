@@ -77,9 +77,6 @@ def jointlySurjectivePretopology [IsJointlySurjectivePreserving ⊤] : Pretopolo
     use Z, z, g ≫ f
     simpa [hz, hy] using Presieve.bind_comp f hf hg
 
-@[deprecated (since := "2025-08-23")]
-alias surjectiveFamiliesPretopology := jointlySurjectivePretopology
-
 @[deprecated (since := "2025-08-18")] alias surjectiveFamiliesPretopology :=
   jointlySurjectivePretopology
 

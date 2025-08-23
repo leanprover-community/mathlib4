@@ -407,9 +407,6 @@ lemma corootForm_rootSystem_eq_killing :
 @[simp] lemma rootSystem_root_apply (α) : (rootSystem H).root α = α := rfl
 @[simp] lemma rootSystem_coroot_apply (α) : (rootSystem H).coroot α = coroot α := rfl
 
-@[deprecated (since := "2025-08-23")]
-alias rootSystem_toPerfectPairing_apply := rootSystem_toLinearMap_apply
-
 instance : (rootSystem H).IsCrystallographic where
   exists_value α β :=
     ⟨chainBotCoeff β.1 α.1 - chainTopCoeff β.1 α.1, by simp [apply_coroot_eq_cast β.1 α.1]⟩
