@@ -31,6 +31,25 @@ This file contains one definition, and various results on boundedness in pseudo-
 metric, pseudo_metric, bounded, diameter, Heine-Borel theorem
 -/
 
+section UniformSpace
+variable {α : Type*} [UniformSpace α] [Preorder α] [CompactIccSpace α]
+
+open Set
+
+lemma totallyBounded_Icc (a b : α) : TotallyBounded (Icc a b) :=
+  isCompact_Icc.totallyBounded
+
+lemma totallyBounded_Ico (a b : α) : TotallyBounded (Ico a b) :=
+  (totallyBounded_Icc a b).subset Ico_subset_Icc_self
+
+lemma totallyBounded_Ioc (a b : α) : TotallyBounded (Ioc a b) :=
+  (totallyBounded_Icc a b).subset Ioc_subset_Icc_self
+
+lemma totallyBounded_Ioo (a b : α) : TotallyBounded (Ioo a b) :=
+  (totallyBounded_Icc a b).subset Ioo_subset_Icc_self
+
+end UniformSpace
+
 assert_not_exists Module.Basis
 
 open Set Filter Bornology
@@ -301,18 +320,6 @@ theorem compactSpace_iff_isBounded_univ [ProperSpace α] :
 section CompactIccSpace
 
 variable [Preorder α] [CompactIccSpace α]
-
-theorem _root_.totallyBounded_Icc (a b : α) : TotallyBounded (Icc a b) :=
-  isCompact_Icc.totallyBounded
-
-theorem _root_.totallyBounded_Ico (a b : α) : TotallyBounded (Ico a b) :=
-  (totallyBounded_Icc a b).subset Ico_subset_Icc_self
-
-theorem _root_.totallyBounded_Ioc (a b : α) : TotallyBounded (Ioc a b) :=
-  (totallyBounded_Icc a b).subset Ioc_subset_Icc_self
-
-theorem _root_.totallyBounded_Ioo (a b : α) : TotallyBounded (Ioo a b) :=
-  (totallyBounded_Icc a b).subset Ioo_subset_Icc_self
 
 theorem isBounded_Icc (a b : α) : IsBounded (Icc a b) :=
   (totallyBounded_Icc a b).isBounded
