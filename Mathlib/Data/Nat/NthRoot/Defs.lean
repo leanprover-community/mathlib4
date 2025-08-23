@@ -19,11 +19,11 @@ def Nat.nthRoot : Nat → Nat → Nat
   | 0, _ => 1
   | 1, a => a
   | n + 2, a =>
-    if a ≤ 1 then a else go a n a a
+    go n a a a
     where
       /-- Auxiliary definition for `Nat.nthRoot`.
 
-      Given natural numbers `fuel`, `n`, `a`, `guess`
+      Given natural numbers `n`, `a`, `fuel`, `guess`
       such that `⌊(a : ℝ) ^ (1 / (n + 2) : ℝ)⌋₊ ≤ guess ≤ fuel`,
       returns `⌊(a : ℝ) ^ (1 / (n + 2) : ℝ)⌋₊`.
 
@@ -36,8 +36,8 @@ def Nat.nthRoot : Nat → Nat → Nat
       If `fuel` is too small, then `Nat.nthRoot.go` returns the result of the `fuel`th step
       of Newthon's method.
       -/
-      go
-      | 0, _, _, guess => guess
-      | fuel + 1, n, a, guess =>
+      go (n a : Nat)
+      | 0, guess => guess
+      | fuel + 1, guess =>
         let next := (a / guess^(n + 1) + (n + 1) * guess) / (n + 2)
-        if next < guess then go fuel n a next else guess
+        if next < guess then go n a fuel next else guess

@@ -14,30 +14,65 @@ In this file we prove that `Nat.nthRoot n a` is indeed the floor of `ⁿ√a`.
 
 ## TODO
 
-Rewrite proofs to avoid dependencies on real numbers,
+Rewrite the proof of `Nat.nthRoot.lt_pow_go_succ_aux` to avoid dependencies on real numbers,
 so that we can move this file to Batteries.
 -/
 
 namespace Nat
 
+variable {m n a b guess fuel : ℕ}
+
 @[simp] theorem nthRoot_zero_left (a : ℕ) : nthRoot 0 a = 1 := rfl
 
 @[simp] theorem nthRoot_one_left : nthRoot 1 = id := rfl
 
-theorem nthRoot.pow_go_le (n a b : ℕ) : (go n a b) ^ (n + 2) ≤ a := by
-  induction b using Nat.strongRecOn with
-  | ind b ihb =>
+@[simp]
+theorem nthRoot_zero_right (h : n ≠ 0) : nthRoot n 0 = 0 := by
+  match n, h with
+  | 1, _ => simp
+  | n + 2, _ => simp [nthRoot, nthRoot.go]
+
+@[simp]
+theorem nthRoot_one_right : nthRoot n 1 = 1 := by
+  rcases n with _|_|_ <;> simp [nthRoot, nthRoot.go, Nat.add_comm 1]
+
+private theorem nthRoot.pow_go_le (hle : guess ≤ fuel) (n a : ℕ) :
+    go n a fuel guess ^ (n + 2) ≤ a := by
+  induction fuel generalizing guess with
+  | zero =>
+    obtain rfl : guess = 0 := by omega
+    simp [go]
+  | succ fuel ih =>
     rw [go]
     split_ifs with h
     case pos =>
-      exact ihb _ h
+      apply ih
+      omega
     case neg =>
-      have : b ≤ a / b^(n + 1) := by linarith only [Nat.mul_le_of_le_div _ _ _ (not_lt.1 h)]
+      have : guess ≤ a / guess ^ (n + 1) := by
+        linarith only [Nat.mul_le_of_le_div _ _ _ (not_lt.1 h)]
       replace := Nat.mul_le_of_le_div _ _ _ this
       rwa [← Nat.pow_succ'] at this
 
-variable {n a b : ℕ}
+/-- `nthRoot n a ^ n ≤ a` unless both `n` and `a` are zeros. -/
+@[simp]
+theorem pow_nthRoot_le_iff : nthRoot n a ^ n ≤ a ↔ n ≠ 0 ∨ a ≠ 0 := by
+  match n with
+  | 0 => simp [Nat.one_le_iff_ne_zero]
+  | 1 => simp
+  | n + 2 => simp [nthRoot, nthRoot.pow_go_le]
 
+alias ⟨_, pow_nthRoot_le⟩ := pow_nthRoot_le_iff
+
+/--
+An auxiliary lemma saying that if `b` is a strict upper estimate on `√[n + 1] a`,
+then so is `(a / b ^ n + n * b) / (n + 1) + 1`.
+
+Currently, the proof relies on the weighted AM-GM inequality,
+which increases the dependency closure of this file by a lot.
+
+A PR proving this inequality by more elementary means is very welcome.
+-/
 theorem nthRoot.lt_pow_go_succ_aux (h : a < b ^ (n + 1)) :
     a < ((a / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by
   rcases eq_or_ne b 0 with rfl | hb; · simp at h
@@ -62,49 +97,39 @@ theorem nthRoot.lt_pow_go_succ_aux (h : a < b ^ (n + 1)) :
       norm_cast
       rw [Nat.floor_div_natCast, Nat.floor_natCast]
 
-theorem nthRoot.lt_pow_go_succ (hb : a < (b + 1) ^ (n + 2)) : a < (go n a b + 1) ^ (n + 2) := by
-  induction b using Nat.strongRecOn with
-  | ind b ihb =>
+private theorem nthRoot.lt_pow_go_succ (hlt : a < (guess + 1) ^ (n + 2)) :
+    a < (go n a fuel guess + 1) ^ (n + 2) := by
+  induction fuel generalizing guess with
+  | zero => simpa [go]
+  | succ fuel ih =>
     rw [go]
     split_ifs with h
     case pos =>
-      rcases eq_or_ne b 0 with rfl | hb
+      rcases eq_or_ne guess 0 with rfl | hguess
       · simp at *
-      apply ihb _ h
-      replace h : a < b ^ (n + 2) := by
+      apply ih
+      replace h : a < guess ^ (n + 2) := by
         rw [Nat.div_lt_iff_lt_mul (by positivity)] at h
-        replace h : a / b ^ (n + 1) < b := by linarith only [h]
+        replace h : a / guess ^ (n + 1) < guess := by linarith only [h]
         rwa [Nat.div_lt_iff_lt_mul (by positivity), ← Nat.pow_succ'] at h
       exact Nat.nthRoot.lt_pow_go_succ_aux h
     case neg =>
       assumption
-
-theorem pow_nthRoot_le (hn : n ≠ 0) (a : ℕ) : (nthRoot n a) ^ n ≤ a := by
-  match n, hn with
-  | 1, _ => simp
-  | n + 2, _ =>
-    simp only [nthRoot]
-    split_ifs with h
-    case pos => interval_cases a <;> simp
-    case neg => apply nthRoot.pow_go_le
 
 theorem lt_pow_nthRoot_add_one (hn : n ≠ 0) (a : ℕ) : a < (nthRoot n a + 1) ^ n := by
   match n, hn with
   | 1, _ => simp
   | n + 2, hn =>
     simp only [nthRoot]
-    split_ifs with h
-    case pos => interval_cases a <;> simp
-    case neg =>
-      apply nthRoot.lt_pow_go_succ
-      exact a.lt_succ_self.trans_le (Nat.le_self_pow hn _)
+    apply nthRoot.lt_pow_go_succ
+    exact a.lt_succ_self.trans_le (Nat.le_self_pow hn _)
 
 @[simp]
 theorem le_nthRoot_iff (hn : n ≠ 0) : a ≤ nthRoot n b ↔ a ^ n ≤ b := by
   cases le_or_gt a (nthRoot n b) with
   | inl hle =>
     simp only [hle, true_iff]
-    refine le_trans ?_ (pow_nthRoot_le hn b)
+    refine le_trans ?_ (pow_nthRoot_le (.inl hn))
     gcongr
   | inr hlt =>
     simp only [hlt.not_ge, false_iff, not_le]
@@ -122,6 +147,7 @@ theorem nthRoot_pow (hn : n ≠ 0) (a : ℕ) : nthRoot n (a ^ n) = a := by
   rw [le_nthRoot_iff hn]
   exact (Nat.pow_left_strictMono hn).le_iff_le
 
+/-- If `a ^ n ≤ b < (a + 1) ^ n`, then `n` root of `b` equals `a`. -/
 theorem nthRoot_eq_of_le_of_lt (h₁ : a ^ n ≤ b) (h₂ : b < (a + 1) ^ n) :
     nthRoot n b = a := by
   rcases eq_or_ne n 0 with rfl | hn
