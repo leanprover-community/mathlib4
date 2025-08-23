@@ -23,7 +23,7 @@ Let `R` be a ring and let `M` be an `R`-module.
 
 ## Tags
 
-Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noetherian module
+Noetherian, Noetherian, Noetherian ring, Noetherian module, Noetherian ring, Noetherian module
 
 -/
 

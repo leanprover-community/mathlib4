@@ -17,7 +17,7 @@ In this file we establish exactness properties of adic completions. In particula
 - `AdicCompletion.map_surjective`: Adic completion preserves surjectivity.
 - `AdicCompletion.map_injective`: Adic completion preserves injectivity
   of maps between finite modules over a Noetherian ring.
-- `AdicCompletion.map_exact`: Over a noetherian ring adic completion is exact on finite
+- `AdicCompletion.map_exact`: Over a Noetherian ring adic completion is exact on finite
   modules.
 
 ## Implementation details

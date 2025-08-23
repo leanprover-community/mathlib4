@@ -58,7 +58,7 @@ General algebra:
     subring: 'Subring'
     localization: 'Localization'
     local ring: 'IsLocalRing'
-    noetherian ring: 'IsNoetherianRing'
+    Noetherian ring: 'IsNoetherianRing'
     ordered ring: 'OrderedRing'
 
   Ideals and quotients:
@@ -161,7 +161,7 @@ Linear algebra:
     vector space: 'Module'
     quotient space: 'Submodule.hasQuotient'
     tensor product: 'TensorProduct'
-    noetherian module: 'IsNoetherian'
+    Noetherian module: 'IsNoetherian'
     basis: 'Module.Basis'
     multilinear map: 'MultilinearMap'
     alternating map: 'AlternatingMap'

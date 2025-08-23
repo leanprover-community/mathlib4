@@ -47,7 +47,7 @@ is proved in `RingTheory.Polynomial`.
 
 ## Tags
 
-Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noetherian module
+Noetherian, Noetherian, Noetherian ring, Noetherian module, Noetherian ring, Noetherian module
 
 -/
 
@@ -262,7 +262,7 @@ theorem LinearIndependent.set_finite_of_isNoetherian [Nontrivial R] {s : Set M}
     (hi : LinearIndependent R ((↑) : s → M)) : s.Finite :=
   @Set.toFinite _ _ hi.finite_of_isNoetherian
 
-/-- A sequence `f` of submodules of a noetherian module,
+/-- A sequence `f` of submodules of a Noetherian module,
 with `f (n+1)` disjoint from the supremum of `f 0`, ..., `f n`,
 is eventually zero. -/
 theorem IsNoetherian.disjoint_partialSups_eventually_bot
@@ -294,7 +294,7 @@ theorem isNoetherian_of_submodule_of_noetherian (R M) [Semiring R] [AddCommMonoi
   isNoetherian_mk ⟨OrderEmbedding.wellFounded (Submodule.MapSubtype.orderEmbedding N).dual h.wf⟩
 
 /-- If `M / S / R` is a scalar tower, and `M / R` is Noetherian, then `M / S` is
-also noetherian. -/
+also Noetherian. -/
 theorem isNoetherian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid M] [SMul R S]
     [Module S M] [Module R M] [IsScalarTower R S M] (h : IsNoetherian R M) : IsNoetherian S M :=
   isNoetherian_mk ⟨(Submodule.restrictScalarsEmbedding R S M).dual.wellFounded h.wf⟩
