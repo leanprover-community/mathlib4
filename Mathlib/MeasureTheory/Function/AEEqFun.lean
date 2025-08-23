@@ -872,9 +872,7 @@ instance [InvolutiveStar R] [ContinuousStar R] : InvolutiveStar (α →ₘ[μ] R
   star_involutive f := comp_comp _ _ _ _ f |>.trans <| by simp [star_involutive.comp_self]
 
 instance [Star R] [TrivialStar R] [ContinuousStar R] : TrivialStar (α →ₘ[μ] R) where
-  star_trivial f := by
-    change comp (fun _ : R => star _) _ f = f
-    simpa [← (funext <| star_trivial : (fun _ : R => star _) = id)] using comp_id (f := f)
+  star_trivial f := show comp _ _ f = f by simp [funext star_trivial, ← Function.id_def]
 
 end Star
 
