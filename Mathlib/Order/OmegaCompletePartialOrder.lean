@@ -90,8 +90,8 @@ lemma isChain_range : IsChain (· ≤ ·) (Set.range c) := Monotone.isChain_rang
 lemma directed : Directed (· ≤ ·) c := directedOn_range.2 c.isChain_range.directedOn
 
 /-- `map` function for `Chain` -/
--- Porting note: `simps` doesn't work with type synonyms
--- @[simps! -fullyApplied]
+-- Not `@[simps]`: we need `@[simps!]` to see through the type synonym `Chain β = ℕ →o β`,
+-- but then we'd get the `FunLike` instance for `OrderHom` instead.
 def map : Chain β :=
   f.comp c
 
@@ -125,8 +125,8 @@ theorem map_le_map {g : α →o β} (h : f ≤ g) : c.map f ≤ c.map g :=
 
 /-- `OmegaCompletePartialOrder.Chain.zip` pairs up the elements of two chains
 that have the same index. -/
--- Porting note: `simps` doesn't work with type synonyms
--- @[simps!]
+-- Not `@[simps]`: we need `@[simps!]` to see through the type synonym `Chain β = ℕ →o β`,
+-- but then we'd get the `FunLike` instance for `OrderHom` instead.
 def zip (c₀ : Chain α) (c₁ : Chain β) : Chain (α × β) :=
   OrderHom.prod c₀ c₁
 
@@ -434,9 +434,8 @@ namespace CompleteLattice
 of arbitrary suprema. -/
 instance (priority := 100) [CompleteLattice α] : OmegaCompletePartialOrder α where
   ωSup c := ⨆ i, c i
-  ωSup_le := fun ⟨c, _⟩ s hs => by
-    simp only [iSup_le_iff] at hs ⊢; assumption
-  le_ωSup := fun ⟨c, _⟩ i => by apply le_iSup_of_le i; rfl
+  ωSup_le := fun ⟨c, _⟩ s hs => by simpa only [iSup_le_iff]
+  le_ωSup := fun ⟨c, _⟩ i => le_iSup_of_le i le_rfl
 
 variable [OmegaCompletePartialOrder α] [CompleteLattice β] {f g : α → β}
 

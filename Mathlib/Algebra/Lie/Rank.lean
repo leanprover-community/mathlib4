@@ -30,6 +30,8 @@ if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-
 
 -/
 
+open Module
+
 variable {R A L M ι ιₘ : Type*}
 variable [CommRing R]
 variable [CommRing A] [Algebra R A]

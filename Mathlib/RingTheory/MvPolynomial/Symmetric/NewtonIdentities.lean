@@ -156,7 +156,7 @@ private theorem sum_filter_pairs_eq_sum_powersetCard_mem_filter_antidiagonal_sum
   apply sum_finset_product
   simp only [mem_filter, mem_powersetCard_univ, mem_univ, and_true, and_iff_right_iff_imp]
   rintro p hp
-  have : #p.fst ≤ k := by apply le_of_lt; aesop
+  have : #p.fst ≤ k := by apply le_of_lt; simp_all
   aesop
 
 private lemma filter_pairs_lt (k : ℕ) :
@@ -180,12 +180,7 @@ private theorem disjoint_filter_pairs_lt_filter_pairs_eq (k : ℕ) :
 private theorem disjUnion_filter_pairs_eq_pairs (k : ℕ) :
     disjUnion {t ∈ pairs σ k | #t.1 < k} {t ∈ pairs σ k | #t.1 = k}
       (disjoint_filter_pairs_lt_filter_pairs_eq σ k) = pairs σ k := by
-  simp only [disjUnion_eq_union, Finset.ext_iff, pairs, filter_filter, mem_filter]
-  intro a
-  rw [← filter_or, mem_filter]
-  refine ⟨fun ha ↦ by tauto, fun ha ↦ ?_⟩
-  have hacard := le_iff_lt_or_eq.mp ha.2.1
-  tauto
+  grind [MvPolynomial.NewtonIdentities.pairs]
 
 end DecidableEq
 
