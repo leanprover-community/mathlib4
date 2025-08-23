@@ -64,6 +64,24 @@ lemma CFC.monotoneOn_one_sub_one_add_inv :
   exact rpow_neg_one_le_rpow_neg_one (add_nonneg zero_le_one ha) (by gcongr) <|
     isUnit_of_le isUnit_one zero_le_one <| le_add_of_nonneg_right ha
 
+lemma CFC.monotoneOn_one_sub_one_add_inv_real :
+    MonotoneOn (cfcₙ (fun x : ℝ => 1 - (1 + x)⁻¹)) (Set.Ici (0 : A)) := by
+  intro a (ha : 0 ≤ a) b (hb : 0 ≤ b) hab
+  calc _ = cfcₙ (fun x : ℝ≥0 => 1 - (1 + x)⁻¹) a := by
+          rw [cfcₙ_nnreal_eq_real _ ha]
+          refine cfcₙ_congr ?_
+          intro x hx
+          have hx' : 0 ≤ x := by grind
+          simp [hx']
+    _ ≤ cfcₙ (fun x : ℝ≥0 => 1 - (1 + x)⁻¹) b :=
+          CFC.monotoneOn_one_sub_one_add_inv ha hb hab
+    _ = cfcₙ (fun x : ℝ => 1 - (1 + x)⁻¹) b := by
+          rw [cfcₙ_nnreal_eq_real _ hb]
+          refine cfcₙ_congr ?_
+          intro x hx
+          have hx' : 0 ≤ x := by grind
+          simp [hx']
+
 lemma Set.InvOn.one_sub_one_add_inv : Set.InvOn (fun x ↦ 1 - (1 + x)⁻¹) (fun x ↦ x * (1 - x)⁻¹)
     {x : ℝ≥0 | x < 1} {x : ℝ≥0 | x < 1} := by
   have : (fun x : ℝ≥0 ↦ x * (1 + x)⁻¹) = fun x ↦ 1 - (1 + x)⁻¹ := by
@@ -252,7 +270,7 @@ private lemma tendsto_mul_right_approximateUnit (m : A) :
   generalize (x : A⁺¹) = x, (m : A⁺¹) = m at *
   set g : ℝ≥0 → ℝ≥0 := fun y ↦ 1 - (1 + y)⁻¹
   have hg : Continuous g := by
-    rw [continuous_iff_continuousOn_univ]
+    rw [← continuousOn_univ]
     fun_prop (disch := intro _ _; positivity)
   have hg' : ContinuousOn (fun y ↦ (1 + ε⁻¹ ^ 2 • y)⁻¹) (spectrum ℝ≥0 m) :=
     ContinuousOn.inv₀ (by fun_prop) fun _ _ ↦ by positivity

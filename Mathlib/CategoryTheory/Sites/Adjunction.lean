@@ -17,7 +17,7 @@ categories of sheaves. We also show that `G` preserves sheafification.
 
 namespace CategoryTheory
 
-open GrothendieckTopology Limits Opposite
+open GrothendieckTopology Limits Opposite Functor
 
 universe v₁ v₂ u₁ u₂
 
@@ -97,14 +97,6 @@ instance [G.IsLeftAdjoint] : J.PreservesSheafification G :=
 section ForgetToType
 
 variable [HasWeakSheafify J D] [HasForget D] [HasSheafCompose J (forget D)]
-
-@[deprecated (since := "2024-11-26")] alias composeAndSheafifyFromTypes := composeAndSheafify
-
-/-- The adjunction `composeAndSheafify J G ⊣ sheafForget J`. -/
-@[deprecated Sheaf.adjunction (since := "2024-11-26")] abbrev adjunctionToTypes
-    {G : Type max v₁ u₁ ⥤ D} (adj : G ⊣ forget D) :
-    composeAndSheafify J G ⊣ sheafForget J :=
-  adjunction _ adj
 
 example [(forget D).IsRightAdjoint] :
     (sheafForget.{_, _, _, _, max u₁ v₁} (D := D) J).IsRightAdjoint := by infer_instance

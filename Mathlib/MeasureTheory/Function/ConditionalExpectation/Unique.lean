@@ -71,8 +71,8 @@ theorem Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' (hm : m ≤ m0) (f : Lp E' 
   let f_meas : lpMeas E' 𝕜 m p μ := ⟨f, hf_meas⟩
   have hf_f_meas : f =ᵐ[μ] f_meas := by simp [f_meas]
   refine hf_f_meas.trans ?_
-  refine lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero hm f_meas hp_ne_zero hp_ne_top ?_ ?_ <;>
-    assumption
+  exact lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero
+    hm f_meas hp_ne_zero hp_ne_top hf_int_finite hf_zero
 
 include 𝕜 in
 /-- **Uniqueness of the conditional expectation** -/
@@ -189,10 +189,6 @@ theorem lintegral_enorm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g :
     ofReal_integral_norm_eq_lintegral_enorm hgi, ENNReal.ofReal_le_ofReal_iff]
   · exact integral_norm_le_of_forall_fin_meas_integral_eq hm hf hfi hg hgi hgf hs hμs
   · positivity
-
-@[deprecated (since := "2025-01-21")]
-alias lintegral_nnnorm_le_of_forall_fin_meas_integral_eq :=
-  lintegral_enorm_le_of_forall_fin_meas_integral_eq
 
 end IntegralNormLE
 

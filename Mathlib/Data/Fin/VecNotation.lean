@@ -252,18 +252,25 @@ theorem cons_val_fin_one (x : α) (u : Fin 0 → α) : ∀ (i : Fin 1), vecCons 
 theorem cons_fin_one (x : α) (u : Fin 0 → α) : vecCons x u = fun _ => x :=
   funext (cons_val_fin_one x u)
 
+@[simp]
+theorem vecCons_inj {x y : α} {u v : Fin n → α} : vecCons x u = vecCons y v ↔ x = y ∧ u = v :=
+  Fin.cons_inj
+
 open Lean Qq in
 /-- `mkVecLiteralQ ![x, y, z]` produces the term `q(![$x, $y, $z])`. -/
 def _root_.PiFin.mkLiteralQ {u : Level} {α : Q(Type u)} {n : ℕ} (elems : Fin n → Q($α)) :
     Q(Fin $n → $α) :=
-  loop 0 (Nat.zero_le _) q(vecEmpty)
+  loop 0 q(vecEmpty)
 where
-  loop (i : ℕ) (hi : i ≤ n) (rest : Q(Fin $i → $α)) : let i' : Nat := i + 1; Q(Fin $(i') → $α) :=
+  /-- The core logic of `loop` is that `loop 0 ![] = ![a 0, a 1, a 2] = loop 1 ![a 2]`, where
+  recursion starts from the end. In this example, on the right hand side, the variable `rest := 1`
+  tracks the length of the current generated notation `![a 2]`, and the last used index is
+  `n - rest` (`= 3 - 1 = 2`). -/
+  loop (i : ℕ) (rest : Q(Fin $i → $α)) : Q(Fin $n → $α) :=
     if h : i < n then
-      loop (i + 1) h q(vecCons $(elems (Fin.rev ⟨i, h⟩)) $rest)
+      loop (i + 1) q(vecCons $(elems (Fin.rev ⟨i, h⟩)) $rest)
     else
       rest
-attribute [nolint docBlame] _root_.PiFin.mkLiteralQ.loop
 
 open Lean Qq in
 protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToExpr (Fin n → α) :=

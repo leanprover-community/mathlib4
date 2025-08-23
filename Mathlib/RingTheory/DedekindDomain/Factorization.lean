@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.Order.Filter.Cofinite
-import Mathlib.RingTheory.DedekindDomain.Ideal
+import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 import Mathlib.RingTheory.UniqueFactorizationDomain.Finite
 
 /-!
@@ -583,7 +583,7 @@ end FractionalIdeal
 section div
 
 /-- In a Dedekind domain, for every ideals `0 < I ≤ J` there exists `a` such that `J = I + ⟨a⟩`.
-TODO: Show that this property uniquely characterizes dedekind domains. -/
+TODO: Show that this property uniquely characterizes Dedekind domains. -/
 lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : I ≠ 0) :
     ∃ a, I ⊔ Ideal.span {a} = J := by
   classical
@@ -709,8 +709,8 @@ lemma divMod_zero_of_not_le {a b c : FractionalIdeal R⁰ K} (hac : ¬ a ≤ c) 
 
 set_option maxHeartbeats 210000 in
 -- changed for new compiler
-/-- Let `I J I' J'` be nonzero fractional ideals in a dedekind domain with `J ≤ I` and `J' ≤ I'`.
-If `I/J = I'/J'` in the group of fractional ideals (i.e. ` I * J' = I' * J`),
+/-- Let `I J I' J'` be nonzero fractional ideals in a Dedekind domain with `J ≤ I` and `J' ≤ I'`.
+If `I/J = I'/J'` in the group of fractional ideals (i.e. `I * J' = I' * J`),
 then `I/J ≃ I'/J'` as quotient `R`-modules. -/
 noncomputable
 def quotientEquiv (I J I' J' : FractionalIdeal R⁰ K)

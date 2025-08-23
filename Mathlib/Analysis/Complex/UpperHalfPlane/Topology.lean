@@ -33,9 +33,6 @@ theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℍ → ℂ) :=
 theorem isEmbedding_coe : IsEmbedding ((↑) : ℍ → ℂ) :=
   IsEmbedding.subtypeVal
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_coe := isEmbedding_coe
-
 theorem continuous_coe : Continuous ((↑) : ℍ → ℂ) :=
   isEmbedding_coe.continuous
 
@@ -93,11 +90,9 @@ lemma verticalStrip_mono {A B A' B' : ℝ} (hA : A ≤ A') (hB : B' ≤ B) :
   rintro z ⟨hzre, hzim⟩
   exact ⟨hzre.trans hA, hB.trans hzim⟩
 
-@[gcongr]
 lemma verticalStrip_mono_left {A A'} (h : A ≤ A') (B) : verticalStrip A B ⊆ verticalStrip A' B :=
   verticalStrip_mono h le_rfl
 
-@[gcongr]
 lemma verticalStrip_anti_right (A) {B B'} (h : B' ≤ B) : verticalStrip A B ⊆ verticalStrip A B' :=
   verticalStrip_mono le_rfl h
 
@@ -167,7 +162,7 @@ lemma comp_ofComplex (f : ℍ → ℂ) (z : ℍ) : (↑ₕ f) z = f z :=
 lemma comp_ofComplex_of_im_pos (f : ℍ → ℂ) (z : ℂ) (hz : 0 < z.im) : (↑ₕ f) z = f ⟨z, hz⟩ :=
   congrArg _ <| ofComplex_apply ⟨z, hz⟩
 
-lemma comp_ofComplex_of_im_le_zero (f : ℍ → ℂ) (z z' : ℂ) (hz : z.im ≤ 0) (hz' : z'.im ≤ 0)  :
+lemma comp_ofComplex_of_im_le_zero (f : ℍ → ℂ) (z z' : ℂ) (hz : z.im ≤ 0) (hz' : z'.im ≤ 0) :
     (↑ₕ f) z = (↑ₕ f) z' := by
   simp [ofComplex_apply_of_im_nonpos, hz, hz']
 

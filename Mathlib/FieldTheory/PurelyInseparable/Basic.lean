@@ -321,7 +321,7 @@ lemma IsPurelyInseparable.finrank_eq_pow
   suffices ∀ (F E : Type v) [Field F] [Field E] [Algebra F E] (q : ℕ) [ExpChar F q]
       [IsPurelyInseparable F E] [FiniteDimensional F E], ∃ n, finrank F E = q ^ n by
     simpa using this (⊥ : IntermediateField F E) E q
-  intros F E _ _ _ q _ _ _
+  intro F E _ _ _ q _ _ _
   generalize hd : finrank F E = d
   induction d using Nat.strongRecOn generalizing F with
   | ind d IH =>
@@ -438,7 +438,7 @@ theorem isPurelyInseparable_iff_finSepDegree_eq_one :
   ⟨fun _ ↦ IsPurelyInseparable.finSepDegree_eq_one F E,
     fun h ↦ isPurelyInseparable_of_finSepDegree_eq_one h⟩
 
-lemma isSeparable_iff_finInsepDegree_eq_one  :
+lemma isSeparable_iff_finInsepDegree_eq_one :
     Algebra.IsSeparable F K ↔ finInsepDegree F K = 1 := by
   rw [← separableClosure.eq_top_iff, ← IntermediateField.finrank_eq_one_iff_eq_top, finInsepDegree]
 

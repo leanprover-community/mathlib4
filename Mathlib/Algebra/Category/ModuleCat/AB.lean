@@ -5,7 +5,7 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.Algebra.Category.Grp.AB
 import Mathlib.Algebra.Category.ModuleCat.Colimits
-import Mathlib.Algebra.Small.Module
+import Mathlib.Algebra.Module.Shrink
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 /-!
 
@@ -38,11 +38,12 @@ lemma ModuleCat.isSeparator [Small.{v} R] : IsSeparator (ModuleCat.of.{v} R (Shr
     fun X Y f g h ↦ by
   simp only [Set.mem_singleton_iff, forall_eq, ModuleCat.hom_ext_iff, LinearMap.ext_iff] at h
   ext x
-  simpa [linearEquivShrink, Equiv.linearEquiv] using
+  simpa [Shrink.linearEquiv, Equiv.linearEquiv] using
     h (ModuleCat.ofHom ((LinearMap.toSpanSingleton R X x).comp
-      ((linearEquivShrink R R).symm : Shrink R →ₗ[R] R))) 1
+      (Shrink.linearEquiv R R : Shrink R →ₗ[R] R))) 1
 
 instance [Small.{v} R] : HasSeparator (ModuleCat.{v} R) where
   hasSeparator := ⟨ModuleCat.of R (Shrink.{v} R), ModuleCat.isSeparator R⟩
 
 instance : IsGrothendieckAbelian.{u} (ModuleCat.{u} R) where
+
