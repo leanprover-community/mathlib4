@@ -503,7 +503,7 @@ noncomputable def toPiForkFunctor : Multifork I ⥤ Fork I.fstPiMap I.sndPiMap w
         · apply limit.hom_ext
           simp
         · apply limit.hom_ext
-          intros j
+          intro j
           simp only [Multifork.toPiFork_π_app_one, Multifork.pi_condition, Category.assoc]
           dsimp [sndPiMap]
           simp }

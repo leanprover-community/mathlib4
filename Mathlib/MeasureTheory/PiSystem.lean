@@ -327,7 +327,7 @@ theorem mem_generatePiSystem_iUnion_elim' {α β} {g : β → Set (Set α)} {s :
         revert h2
         rw [Subtype.val_injective.extend_apply]
         apply id
-  · intros b h_b
+  · intro b h_b
     simp_rw [Finset.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
       at h_b
     obtain ⟨h_b_w, h_b_h⟩ := h_b

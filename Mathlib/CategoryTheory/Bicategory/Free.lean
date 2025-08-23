@@ -330,7 +330,7 @@ def lift : Pseudofunctor (FreeBicategory B) C where
   -- Porting note: We'd really prefer not to be doing this by hand.
   -- in mathlib3 `tidy` did these inductions for us.
   map₂_comp := by
-    intros a b f g h η θ
+    intro a b f g h η θ
     induction η using Quot.rec
     · induction θ using Quot.rec <;> rfl
     · rfl

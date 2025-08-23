@@ -855,7 +855,7 @@ lemma leftMoves_mul_iff {x y : PGame} (P : Game → Prop) :
   cases x; cases y
   constructor <;> intro h
   on_goal 1 =>
-    constructor <;> intros i j
+    constructor <;> intro i j
     · exact h (Sum.inl (i, j))
     convert h (Sum.inr (i, j)) using 1
   on_goal 2 =>
@@ -877,7 +877,7 @@ lemma rightMoves_mul_iff {x y : PGame} (P : Game → Prop) :
   cases x; cases y
   constructor <;> intro h
   on_goal 1 =>
-    constructor <;> intros i j
+    constructor <;> intro i j
     on_goal 1 => convert h (Sum.inl (i, j))
   on_goal 2 => convert h (Sum.inr (i, j))
   on_goal 3 =>

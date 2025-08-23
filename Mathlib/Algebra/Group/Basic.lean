@@ -1029,7 +1029,7 @@ lemma multiplicative_of_symmetric_of_isTotal
     (hmul : ∀ {a b c}, r a b → r b c → p a b → p b c → p a c → f a c = f a b * f b c)
     {a b c : α} (pab : p a b) (pbc : p b c) (pac : p a c) : f a c = f a b * f b c := by
   have hmul' : ∀ {b c}, r b c → p a b → p b c → p a c → f a c = f a b * f b c := by
-    intros b c rbc pab pbc pac
+    intro b c rbc pab pbc pac
     obtain rab | rba := total_of r a b
     · exact hmul rab rbc pab pbc pac
     rw [← one_mul (f a c), ← hf_swap pab, mul_assoc]

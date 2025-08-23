@@ -262,7 +262,7 @@ theorem support_esymm'' [DecidableEq σ] [Nontrivial R] (n : ℕ) :
   have := congr_arg Finsupp.support h
   rw [Finsupp.support_sum_eq_biUnion, Finsupp.support_sum_eq_biUnion] at this
   · have hsingle : ∀ s : Finset σ, ∀ x : σ, x ∈ s → (Finsupp.single x 1).support = {x} := by
-      intros _ x _
+      intro _ x _
       rw [Finsupp.support_single_ne_zero x one_ne_zero]
     have hs := biUnion_congr (of_eq_true (eq_self s)) (hsingle s)
     have ht := biUnion_congr (of_eq_true (eq_self t)) (hsingle t)

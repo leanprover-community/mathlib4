@@ -335,7 +335,7 @@ lemma functor_additive_iff {E : Type*} [Category E] [Preadditive E] [Preadditive
         ← comp_add, ← comp_add, ← add_comp, ← add_comp, Functor.map_comp, Functor.map_comp] at eq
       rw [← cancel_mono (G.map (L.objObjPreimageIso Y).inv),
         ← cancel_epi (G.map (L.objObjPreimageIso X).hom), eq]
-    intros X Y f g
+    intro X Y f g
     obtain ⟨φ, rfl, rfl⟩ := exists_leftFraction₂ L W f g
     have := Localization.inverts L W φ.s φ.hs
     rw [← φ.map_add L (inverts L W), ← cancel_mono (G.map (L.map φ.s)), ← G.map_comp,

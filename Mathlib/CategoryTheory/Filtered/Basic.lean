@@ -328,10 +328,10 @@ theorem of_cocone_nonempty (h : ∀ {J : Type w} [SmallCategory J] [FinCategory 
     exact ⟨c.pt⟩
   have : IsFilteredOrEmpty C := by
     refine ⟨?_, ?_⟩
-    · intros X Y
+    · intro X Y
       obtain ⟨c⟩ := h (ULiftHom.down ⋙ ULift.downFunctor ⋙ pair X Y)
       exact ⟨c.pt, c.ι.app ⟨⟨WalkingPair.left⟩⟩, c.ι.app ⟨⟨WalkingPair.right⟩⟩, trivial⟩
-    · intros X Y f g
+    · intro X Y f g
       obtain ⟨c⟩ := h (ULiftHom.down ⋙ ULift.downFunctor ⋙ parallelPair f g)
       refine ⟨c.pt, c.ι.app ⟨WalkingParallelPair.one⟩, ?_⟩
       have h₁ := c.ι.naturality ⟨WalkingParallelPairHom.left⟩
@@ -786,10 +786,10 @@ theorem of_cone_nonempty (h : ∀ {J : Type w} [SmallCategory J] [FinCategory J]
     exact ⟨c.pt⟩
   have : IsCofilteredOrEmpty C := by
     refine ⟨?_, ?_⟩
-    · intros X Y
+    · intro X Y
       obtain ⟨c⟩ := h (ULiftHom.down ⋙ ULift.downFunctor ⋙ pair X Y)
       exact ⟨c.pt, c.π.app ⟨⟨WalkingPair.left⟩⟩, c.π.app ⟨⟨WalkingPair.right⟩⟩, trivial⟩
-    · intros X Y f g
+    · intro X Y f g
       obtain ⟨c⟩ := h (ULiftHom.down ⋙ ULift.downFunctor ⋙ parallelPair f g)
       refine ⟨c.pt, c.π.app ⟨WalkingParallelPair.zero⟩, ?_⟩
       have h₁ := c.π.naturality ⟨WalkingParallelPairHom.left⟩

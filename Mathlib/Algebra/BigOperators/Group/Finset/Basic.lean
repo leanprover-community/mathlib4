@@ -504,7 +504,7 @@ theorem prod_bij_ne_one {s : Finset ι} {t : Finset κ} {f : ι → M} {g : κ �
     _ = ∏ x ∈ t, g x := prod_filter_ne_one _
   · grind
   · solve_by_elim
-  · intros b hb
+  · intro b hb
     refine (mem_filter.mp hb).elim fun h₁ h₂ ↦ ?_
     obtain ⟨a, ha₁, ha₂, eq⟩ := i_surj b h₁ fun H ↦ by rw [H] at h₂; simp at h₂
     exact ⟨a, mem_filter.mpr ⟨ha₁, ha₂⟩, eq⟩

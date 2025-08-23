@@ -217,7 +217,7 @@ that `C` and `D` have pullbacks."]
 theorem ran_isSheaf_of_isCocontinuous (ℱ : Sheaf J A) :
     Presheaf.IsSheaf K (G.op.ran.obj ℱ.val) := by
   rw [Presheaf.isSheaf_iff_multifork]
-  intros X S
+  intro X S
   exact ⟨RanIsSheafOfIsCocontinuous.isLimitMultifork ℱ.2
     (G.op.isPointwiseRightKanExtensionRanCounit ℱ.val) S⟩
 

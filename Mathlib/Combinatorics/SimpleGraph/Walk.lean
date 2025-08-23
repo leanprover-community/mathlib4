@@ -1384,7 +1384,7 @@ abbrev toDeleteEdge (e : Sym2 V) (p : G.Walk v w) (hp : e ∉ p.edges) :
 theorem map_toDeleteEdges_eq (s : Set (Sym2 V)) {p : G.Walk v w} (hp) :
     Walk.map (.ofLE (G.deleteEdges_le s)) (p.toDeleteEdges s hp) = p := by
   rw [← transfer_eq_map_ofLE, transfer_transfer, transfer_self]
-  intros e
+  intro e
   rw [edges_transfer]
   apply edges_subset_edgeSet p
 

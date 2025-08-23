@@ -253,9 +253,9 @@ lemma mem_closure_X_union_C {R : Type*} [Ring R] (p : R[X]) :
     apply Subring.subset_closure
     apply Set.mem_insert_of_mem
     exact degree_C_le
-  · intros p1 p2 h1 h2
+  · intro p1 p2 h1 h2
     exact Subring.add_mem _ h1 h2
-  · intros n r hr
+  · intro n r hr
     rw [pow_succ, ← mul_assoc]
     apply Subring.mul_mem _ hr
     apply Subring.subset_closure

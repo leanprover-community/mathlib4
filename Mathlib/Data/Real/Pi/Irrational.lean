@@ -248,7 +248,7 @@ integral is bounded above by `2`.
 private lemma I_le (n : ℕ) : I n (π / 2) ≤ 2 := by
   rw [← norm_of_nonneg I_pos.le]
   refine (norm_integral_le_of_norm_le_const ?_).trans (show (1 : ℝ) * _ ≤ _ by norm_num)
-  intros x hx
+  intro x hx
   simp only [uIoc_of_le, neg_le_self_iff, zero_le_one, mem_Ioc] at hx
   rw [norm_eq_abs, abs_mul, abs_pow]
   refine mul_le_one₀ (pow_le_one₀ (abs_nonneg _) ?_) (abs_nonneg _) (abs_cos_le_one _)

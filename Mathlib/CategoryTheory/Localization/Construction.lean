@@ -134,7 +134,7 @@ def liftToPathCategory : Paths (LocQuiver W) ⥤ D :=
   Quiv.lift
     { obj := fun X => G.obj X.obj
       map := by
-        intros X Y
+        intro X Y
         rintro (f | ⟨g, hg⟩)
         · exact G.map f
         · haveI := hG g hg
@@ -207,7 +207,7 @@ theorem morphismProperty_is_top (P : MorphismProperty W.Localization)
       rcases X with ⟨⟨X⟩⟩
       rcases Y with ⟨⟨Y⟩⟩
       simpa only [Functor.map_preimage] using this _ _ (G.preimage f)
-    intros X₁ X₂ p
+    intro X₁ X₂ p
     induction p with
     | nil => simpa only [Functor.map_id] using hP₁ (𝟙 X₁.obj)
     | @cons X₂ X₃ p g hp =>
@@ -257,7 +257,7 @@ def natTransExtension {F₁ F₂ : W.Localization ⥤ D} (τ : W.Q ⋙ F₁ ⟶ 
     refine morphismProperty_is_top'
       (MorphismProperty.naturalityProperty (NatTransExtension.app τ))
       ?_ (MorphismProperty.naturalityProperty.stableUnderInverse _)
-    intros X Y f
+    intro X Y f
     dsimp
     simpa only [NatTransExtension.app_eq] using τ.naturality f
 

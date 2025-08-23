@@ -201,7 +201,7 @@ open Function
 
 example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : Injective <| g ∘ f) :
     Injective f := by
-  intros x x' h
+  intro x x' h
   apply_fun g at h
   exact H h
 ```

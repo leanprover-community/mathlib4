@@ -130,7 +130,7 @@ lemma UniformContinuousOn.cexp (a : ℝ) : UniformContinuousOn exp {x : ℂ | x.
   rw [Metric.eventually_nhds_iff] at H
   obtain ⟨δ, hδ⟩ := H
   refine ⟨δ, hδ.1, ?_⟩
-  intros x _ y hy hxy
+  intro x _ y hy hxy
   have h3 := hδ.2 (y := x - y) (by simpa only [dist_zero_right] using hxy)
   rw [dist_eq_norm, exp_zero] at *
   have : cexp x - cexp y = cexp y * (cexp (x - y) - 1) := by

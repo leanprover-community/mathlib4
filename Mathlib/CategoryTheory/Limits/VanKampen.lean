@@ -154,7 +154,7 @@ theorem IsVanKampenColimit.of_iso {F : J ⥤ C} {c c' : Cocone F} (H : IsVanKamp
 theorem IsVanKampenColimit.precompose_isIso {F G : J ⥤ C} (α : F ⟶ G) [IsIso α]
     {c : Cocone G} (hc : IsVanKampenColimit c) :
     IsVanKampenColimit ((Cocones.precompose α).obj c) := by
-  intros F' c' α' f e hα
+  intro F' c' α' f e hα
   refine (hc c' (α' ≫ α) f ((Category.assoc _ _ _).trans e)
     (hα.comp (NatTrans.equifibered_of_isIso _))).trans ?_
   apply forall_congr'
@@ -169,7 +169,7 @@ theorem IsVanKampenColimit.precompose_isIso {F G : J ⥤ C} (α : F ⟶ G) [IsIs
 theorem IsUniversalColimit.precompose_isIso {F G : J ⥤ C} (α : F ⟶ G) [IsIso α]
     {c : Cocone G} (hc : IsUniversalColimit c) :
     IsUniversalColimit ((Cocones.precompose α).obj c) := by
-  intros F' c' α' f e hα H
+  intro F' c' α' f e hα H
   apply (hc c' (α' ≫ α) f ((Category.assoc _ _ _).trans e)
     (hα.comp (NatTrans.equifibered_of_isIso _)))
   intro j
@@ -298,7 +298,7 @@ theorem IsUniversalColimit.map_reflective
     IsUniversalColimit (Gl.mapCocone c) := by
   have := adj.rightAdjoint_preservesLimits
   have : PreservesColimitsOfSize.{u', v'} Gl := adj.leftAdjoint_preservesColimits
-  intros F' c' α f h hα hc'
+  intro F' c' α f h hα hc'
   have : HasPullback (Gl.map (Gr.map f)) (Gl.map (adj.unit.app c.pt)) :=
     ⟨⟨_, isLimitPullbackConeMapOfIsLimit _ pullback.condition
       (IsPullback.of_hasPullback _ _).isLimit⟩⟩
@@ -329,7 +329,7 @@ theorem IsUniversalColimit.map_reflective
       rw [Gl.map_comp, hα'']
       dsimp
       simp only [Category.assoc, Functor.map_comp, adj.right_triangle_components_assoc]
-    · intros i j g
+    · intro i j g
       dsimp [α']
       ext
       all_goals simp only [Category.comp_id, Category.id_comp, Category.assoc,

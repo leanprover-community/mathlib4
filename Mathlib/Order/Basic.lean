@@ -1003,12 +1003,12 @@ abbrev LinearOrder.lift [LinearOrder β] [Max α] [Min α] (f : α → β) (inj 
     min := (· ⊓ ·)
     max := (· ⊔ ·)
     min_def := by
-      intros x y
+      intro x y
       apply inj
       rw [apply_ite f]
       exact (hinf _ _).trans (min_def _ _)
     max_def := by
-      intros x y
+      intro x y
       apply inj
       rw [apply_ite f]
       exact (hsup _ _).trans (max_def _ _)
@@ -1047,12 +1047,12 @@ abbrev LinearOrder.liftWithOrd [LinearOrder β] [Max α] [Min α] [Ord α] (f : 
     min := (· ⊓ ·)
     max := (· ⊔ ·)
     min_def := by
-      intros x y
+      intro x y
       apply inj
       rw [apply_ite f]
       exact (hinf _ _).trans (min_def _ _)
     max_def := by
-      intros x y
+      intro x y
       apply inj
       rw [apply_ite f]
       exact (hsup _ _).trans (max_def _ _)

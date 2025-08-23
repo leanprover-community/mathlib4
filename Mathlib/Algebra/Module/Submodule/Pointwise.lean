@@ -439,7 +439,7 @@ lemma set_smul_eq_map [SMulCommClass R R N] :
 lemma mem_set_smul (x : M) [SMulCommClass R R N] :
     x ∈ sR • N ↔ ∃ (c : R →₀ N), (c.support : Set R) ⊆ sR ∧ x = c.sum fun r m ↦ r • m := by
   fconstructor
-  · intros h
+  · intro h
     rw [set_smul_eq_map] at h
     obtain ⟨c, hc, rfl⟩ := h
     exact ⟨c, hc, rfl⟩

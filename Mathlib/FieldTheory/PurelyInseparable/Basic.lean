@@ -321,7 +321,7 @@ lemma IsPurelyInseparable.finrank_eq_pow
   suffices ∀ (F E : Type v) [Field F] [Field E] [Algebra F E] (q : ℕ) [ExpChar F q]
       [IsPurelyInseparable F E] [FiniteDimensional F E], ∃ n, finrank F E = q ^ n by
     simpa using this (⊥ : IntermediateField F E) E q
-  intros F E _ _ _ q _ _ _
+  intro F E _ _ _ q _ _ _
   generalize hd : finrank F E = d
   induction d using Nat.strongRecOn generalizing F with
   | ind d IH =>

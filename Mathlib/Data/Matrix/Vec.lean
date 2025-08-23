@@ -136,13 +136,13 @@ variable [Semiring R] [Fintype m] [Fintype n]
 theorem vec_mul_eq_mulVec [DecidableEq n] (A : Matrix l m R) (B : Matrix m n R) :
     vec (A * B) = (1 ⊗ₖ A) *ᵥ vec B := by
   rw [kronecker_mulVec_vec_of_commute, transpose_one, Matrix.mul_one]
-  intros x i j
+  intro x i j
   obtain rfl | hij := eq_or_ne i j <;> simp [*]
 
 theorem vec_mul_eq_vecMul [DecidableEq m] (A : Matrix m n R) (B : Matrix n p R) :
     vec (A * B) = A.vec ᵥ* (B ⊗ₖ 1) := by
   rw [vec_vecMul_kronecker_of_commute, transpose_one, Matrix.one_mul]
-  intros x i j
+  intro x i j
   obtain rfl | hij := eq_or_ne i j <;> simp [*]
 
 end Semiring

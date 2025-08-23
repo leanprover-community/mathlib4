@@ -89,7 +89,7 @@ theorem natDegree_divX_eq_natDegree_tsub_one : p.divX.natDegree = p.natDegree - 
   apply map_natDegree_eq_sub (φ := divX_hom)
   · intro f
     simpa [divX_hom, divX_eq_zero_iff] using eq_C_of_natDegree_eq_zero
-  · intros n c c0
+  · intro n c c0
     rw [← C_mul_X_pow_eq_monomial, divX_hom_toFun, divX_C_mul, divX_X_pow]
     split_ifs with n0
     · simp [n0]

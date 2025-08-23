@@ -352,7 +352,7 @@ protected theorem injective [DecidableEq α] (f : InjectiveFunction α) : Inject
         List.map, List.cons_inj_right]
       exact xs_ih
   revert hperm hnodup
-  rw [hxs]; intros hperm hnodup
+  rw [hxs]; intro hperm hnodup
   apply InjectiveFunction.applyId_injective
   · rwa [← h₀, hxs, hperm.nodup_iff]
   · rwa [← hxs, h₀, h₁] at hperm

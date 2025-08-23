@@ -413,10 +413,10 @@ lemma contMDiff_isOpenEmbedding [Nonempty M] :
   haveI := h.isManifold_singleton (I := I) (n := ω)
   rw [@contMDiff_iff _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace]
   use h.continuous
-  intros x y
+  intro x y
   -- show the function is actually the identity on the range of I ∘ e
   apply contDiffOn_id.congr
-  intros z hz
+  intro z hz
   -- factorise into the chart `e` and the model `id`
   simp only [mfld_simps]
   rw [h.toPartialHomeomorph_right_inv]
@@ -441,10 +441,10 @@ lemma contMDiffOn_isOpenEmbedding_symm [Nonempty M] :
   constructor
   · rw [← h.toPartialHomeomorph_target]
     exact (h.toPartialHomeomorph e).continuousOn_symm
-  · intros z hz
+  · intro z hz
     -- show the function is actually the identity on the range of I ∘ e
     apply contDiffOn_id.congr
-    intros z hz
+    intro z hz
     -- factorise into the chart `e` and the model `id`
     simp only [mfld_simps]
     have : I.symm z ∈ range e := by

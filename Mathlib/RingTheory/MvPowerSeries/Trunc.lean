@@ -88,7 +88,7 @@ def trunc : MvPowerSeries σ R →+ MvPolynomial σ R where
     simp [coeff_truncFun]
   map_add' := by
     classical
-    intros x y
+    intro x y
     ext m
     simp only [coeff_truncFun, MvPolynomial.coeff_add, ite_add_ite, ← map_add, add_zero]
 

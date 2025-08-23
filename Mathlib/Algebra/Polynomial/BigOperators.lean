@@ -73,7 +73,7 @@ theorem degree_list_sum_le_of_forall_degree_le (l : List S[X])
 
 theorem degree_list_sum_le (l : List S[X]) : degree l.sum ≤ (l.map natDegree).maximum := by
   apply degree_list_sum_le_of_forall_degree_le
-  intros p hp
+  intro p hp
   by_cases h : p = 0
   · subst h
     simp

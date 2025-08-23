@@ -38,7 +38,7 @@ lemma LocalizedModule.subsingleton_iff_disjoint {f : R} :
 
 lemma Module.stableUnderSpecialization_support :
     StableUnderSpecialization (Module.support R M) := by
-  intros x y e H
+  intro x y e H
   rw [mem_support_iff_exists_annihilator] at H ⊢
   obtain ⟨m, hm⟩ := H
   exact ⟨m, hm.trans ((PrimeSpectrum.le_iff_specializes _ _).mpr e)⟩

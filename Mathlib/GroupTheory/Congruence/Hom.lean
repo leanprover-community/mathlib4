@@ -141,7 +141,7 @@ def correspondence {c : Con M} : { d // c ≤ d } ≃o Con c.Quotient where
         Con.induction_on₂ x y fun w z h => ⟨w, z, h, rfl, rfl⟩⟩
   map_rel_iff' {s t} := by
     constructor
-    · intros h x y hs
+    · intro h x y hs
       rcases h ⟨x, y, hs, rfl, rfl⟩ with ⟨a, b, ht, hx, hy⟩
       exact t.1.trans (t.1.symm <| t.2 <| c.eq.1 hx) (t.1.trans ht (t.2 <| c.eq.1 hy))
     · exact Relation.map_mono

@@ -238,7 +238,7 @@ lemma farFromTriangleFree_of_disjoint_triangles (tris : Finset (Finset α))
     (tris_big : ε * (card α ^ 2 : ℕ) ≤ #tris) :
     G.FarFromTriangleFree ε := by
   rw [farFromTriangleFree_iff]
-  intros H _ hG hH
+  intro H _ hG hH
   rw [← Nat.cast_sub (card_le_card <| edgeFinset_mono hG)]
   exact tris_big.trans
     (Nat.cast_le.2 <| farFromTriangleFree_of_disjoint_triangles_aux htris pd hG hH)
