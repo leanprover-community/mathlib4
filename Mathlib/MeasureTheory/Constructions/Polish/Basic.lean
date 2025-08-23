@@ -567,7 +567,8 @@ theorem measurableSet_preimage_iff_preimage_val {f : X → Z} [CountablySeparate
     (hf : Measurable f) {s : Set Z} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet ((↑) ⁻¹' s : Set (range f)) :=
   have hf' : Measurable (rangeFactorization f) := hf.subtype_mk
-  hf'.measurableSet_preimage_iff_of_surjective (s := Subtype.val ⁻¹' s) surjective_onto_range
+  hf'.measurableSet_preimage_iff_of_surjective (s := Subtype.val ⁻¹' s)
+    rangeFactorization_surjective
 
 /-- If `f : X → Z` is a Borel measurable map from a standard Borel space to a
 countably separated measurable space and the range of `f` is measurable,

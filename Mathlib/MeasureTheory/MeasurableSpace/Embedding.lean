@@ -683,7 +683,7 @@ theorem of_measurable_inverse_on_range {g : range f → α} (hf₁ : Measurable 
     (hf₂ : MeasurableSet (range f)) (hg : Measurable g) (H : LeftInverse g (rangeFactorization f)) :
     MeasurableEmbedding f := by
   set e : α ≃ᵐ range f :=
-    ⟨⟨rangeFactorization f, g, H, H.rightInverse_of_surjective surjective_onto_range⟩,
+    ⟨⟨rangeFactorization f, g, H, H.rightInverse_of_surjective rangeFactorization_surjective⟩,
       hf₁.subtype_mk, hg⟩
   exact (MeasurableEmbedding.subtype_coe hf₂).comp e.measurableEmbedding
 
