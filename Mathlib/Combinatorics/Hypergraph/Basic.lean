@@ -295,7 +295,7 @@ def IsEmpty (H : Hypergraph α) : Prop := V(H) = ∅ ∧ E(H) = ∅
 /--
 Predicate to determine if a hypergraph is nonempty
 -/
-def IsNonempty (H : Hypergraph α) : Prop := ∃ x, x ∈ V(H)
+def IsNonempty (H : Hypergraph α) : Prop := (∃ x, x ∈ V(H)) ∨ (∃ e, e ∈ E(H))
 
 /--
 The empty hypergraph of type α
@@ -310,7 +310,7 @@ def emptyHypergraph (α : Type*) : Hypergraph α :=
     exact Set.subset_empty_iff.mpr h1
   )
 
-@[simp] lemma coe_nonempty_iff : V(H).Nonempty ↔ H.IsNonempty := Iff.rfl
+@[simp] lemma coe_nonempty_iff : V(H).Nonempty ↔ H.IsNonempty := by sorry
 
 lemma isEmpty_empty_hypergraph {α : Type*} : IsEmpty (Hypergraph.emptyHypergraph α) := by
   unfold IsEmpty
@@ -348,13 +348,33 @@ lemma IsEmpty.not_mem (hH : H.IsEmpty) {e : Set α} : e ∉ E(H) := by
   exact fun a ↦ a
 
 @[simp] lemma not_isEmpty : ¬ H.IsEmpty ↔ H.IsNonempty := by
-  rw [IsEmpty, ← coe_nonempty_iff]
+  unfold IsEmpty
+  unfold IsNonempty
   constructor
-  rw [not_and_or]
-  intro h
-  cases h with
-  | inl v_nonempty => exact nonempty_iff_ne_empty.mpr v_nonempty
-  | inr e_nonempty => by sorry
+  · intro h
+    rw [not_and_or] at h
+    cases h with
+    | inl v_nonempty => (
+      left
+      refine nonempty_def.mp ?_
+      exact nonempty_iff_ne_empty.mpr v_nonempty
+    )
+    | inr e_nonempty => (
+      right
+      refine nonempty_def.mp ?_
+      exact nonempty_iff_ne_empty.mpr e_nonempty
+    )
+  · intro h'
+    rw [not_and_or]
+    cases h' with
+    | inl v_nonempty => (
+      left
+      exact nonempty_iff_ne_empty.mp v_nonempty
+    )
+    | inr e_nonempty => (
+      right
+      exact nonempty_iff_ne_empty.mp e_nonempty
+    )
 
 @[simp] lemma not_isNonempty : ¬ H.IsNonempty ↔ H.IsEmpty :=
   not_iff_comm.mp not_isEmpty
@@ -362,20 +382,11 @@ lemma IsEmpty.not_mem (hH : H.IsEmpty) {e : Set α} : e ∉ E(H) := by
 alias ⟨_, IsEmpty.not_isNonempty⟩ := not_isNonempty
 alias ⟨_, IsNonempty.not_isEmpty⟩ := not_isEmpty
 
-variable (G) in
-lemma isEmpty_or_isNonempty : G.IsEmpty ∨ G.IsNonempty := G.edges.eq_empty_or_nonempty
-
-@[simp] lemma empty_isEmpty (S : Finset α) : (empty S).IsEmpty := rfl
-
-/-- A hypergraph is empty if and only if it is the empty hypergraph on some vertex set. -/
-lemma isEmpty_iff_eq_empty : G.IsEmpty ↔ ∃ S, G = empty S := by
-  refine ⟨fun h ↦ ⟨G.verts, ?_⟩, fun ⟨S, h⟩ ↦ h.symm ▸ empty_isEmpty S⟩
-  ext : 1
-  case verts => simp
-  case edges => simp [h.eq]
-
-@[simp] lemma completeOn_isNonempty {S : Finset α} : (completeOn S).IsNonempty :=
-  powerset_nonempty _
+variable (H) in
+lemma isEmpty_or_isNonempty : H.IsEmpty ∨ H.IsNonempty := by
+  unfold IsEmpty
+  unfold IsNonempty
+  grind
 
 
 /--
@@ -430,6 +441,15 @@ lemma mem_completeOn {e f : Set α} : e ∈ E(completeOn f) ↔ e ⊆ f := by
 
 @[simp]
 lemma isComplete_completeOn (f : Set α) : (completeOn f).IsComplete := by exact fun e a ↦ a
+
+@[simp] lemma completeOn_isNonempty {S : Set α} : (completeOn S).IsNonempty := by
+  have h : E(completeOn S) = 𝒫 S := rfl
+  have h' : {} ∈ E(completeOn S) := by
+    refine mem_completeOn.mpr ?_
+    apply Set.empty_subset
+  unfold IsNonempty
+  right
+  use ∅
 
 end DefsPreds
 
