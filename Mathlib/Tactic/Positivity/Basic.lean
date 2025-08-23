@@ -521,7 +521,8 @@ def evalPosPart : PositivityExt where eval {u α} zα pα e := do
     let _instαgrp ← synthInstanceQ q(AddGroup $α)
     assertInstancesCommute
     -- FIXME: There seems to be a bug in `Positivity.core` that makes it fail (instead of returning
-    -- `.none`) here sometimes. See eg the first test for `posPart`. This is why we need `catchNone`
+    -- `.none`) here sometimes. See e.g. the first test for `posPart`. This is why we need
+    -- `catchNone`
     match ← catchNone (core zα pα a) with
     | .positive pf => return .positive q(posPart_pos $pf)
     | _ => return .nonnegative q(posPart_nonneg $a)

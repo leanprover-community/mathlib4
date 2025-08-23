@@ -16,7 +16,7 @@ lemmas (`Measurable.sup`, `AEMeasurable.sup` etc). For binary operations we defi
 
 and similarly for other binary operations. The reason for introducing these classes is that in case
 of topological space `α` equipped with the Borel `σ`-algebra, instances for `MeasurableSup₂`
-etc require `α` to have a second countable topology.
+etc. require `α` to have a second countable topology.
 
 For instances relating, e.g., `ContinuousSup` to `MeasurableSup` see file
 `MeasureTheory.BorelSpace`.

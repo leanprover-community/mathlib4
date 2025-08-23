@@ -10,7 +10,7 @@ import Mathlib.Topology.Algebra.Star
 /-!
 # Topological sums and functorial constructions
 
-Lemmas on the interaction of `tprod`, `tsum`, `HasProd`, `HasSum` etc with products, Sigma and Pi
+Lemmas on the interaction of `tprod`, `tsum`, `HasProd`, `HasSum` etc. with products, Sigma and Pi
 types, `MulOpposite`, etc.
 
 -/

@@ -155,7 +155,7 @@ theorem mk_eq_iff {φ ψ : K →+* ℂ} : mk φ = mk ψ ↔ φ = ψ ∨ ComplexE
 /-- An infinite place is real if it is defined by a real embedding. -/
 def IsReal (w : InfinitePlace K) : Prop := ∃ φ : K →+* ℂ, ComplexEmbedding.IsReal φ ∧ mk φ = w
 
-/-- An infinite place is complex if it is defined by a complex (ie. not real) embedding. -/
+/-- An infinite place is complex if it is defined by a complex (i.e. not real) embedding. -/
 def IsComplex (w : InfinitePlace K) : Prop := ∃ φ : K →+* ℂ, ¬ComplexEmbedding.IsReal φ ∧ mk φ = w
 
 theorem embedding_mk_eq (φ : K →+* ℂ) :

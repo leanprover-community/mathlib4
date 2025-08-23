@@ -17,7 +17,7 @@ valuation.basic).
 We already know from valuation.topology that one can build a topology on `K` which
 makes it a topological ring.
 
-The first goal is to show `K` is a topological *field*, ie inversion is continuous
+The first goal is to show `K` is a topological *field*, i.e. inversion is continuous
 at every non-zero element.
 
 The next goal is to prove `K` is a *completable* topological field. This gives us

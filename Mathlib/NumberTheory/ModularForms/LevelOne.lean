@@ -9,7 +9,8 @@ import Mathlib.NumberTheory.ModularForms.QExpansion
 /-!
 # Level one modular forms
 
-This file contains results specific to modular forms of level one, ie. modular forms for `SL(2, ℤ)`.
+This file contains results specific to modular forms of level one, i.e. modular forms for
+`SL(2, ℤ)`.
 
 TODO: Add finite-dimensionality of these spaces of modular forms.
 

@@ -532,8 +532,8 @@ noncomputable def IsSheafFor.extend {P : Cᵒᵖ ⥤ Type v₁} (h : IsSheafFor 
   (isSheafFor_iff_yonedaSheafCondition.1 h f).exists.choose
 
 /--
-Show that the extension of `f : S.functor ⟶ P` to all of `yoneda.obj X` is in fact an extension, ie
-that the triangle below commutes, provided `P` is a sheaf for `S`
+Show that the extension of `f : S.functor ⟶ P` to all of `yoneda.obj X` is in fact an extension,
+i.e. that the triangle below commutes, provided `P` is a sheaf for `S`
 ```
       f
    S  →  P

@@ -25,7 +25,7 @@ preserving finite products is uniquely determined. See the `ofChosenFiniteProduc
 
 We however develop the theory for any `F.OplaxMonoidal`/`F.Monoidal`/`F.Braided` instance instead of
 requiring it to be the `ofChosenFiniteProducts` one. This is to avoid diamonds: Consider
-eg `𝟭 C` and `F ⋙ G`.
+e.g. `𝟭 C` and `F ⋙ G`.
 
 In applications requiring a finite preserving functor to be oplax-monoidal/monoidal/braided,
 avoid `attribute [local instance] ofChosenFiniteProducts` but instead turn on the corresponding

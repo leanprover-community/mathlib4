@@ -45,10 +45,10 @@ index of `L₁` inside `L₂` is equal to `covolume L₁ / covolume L₂`.
 
 Some results are true in the case where the ambient finite dimensional real vector space is the
 pi-space `ι → ℝ` and in the case where it is an `InnerProductSpace`. We use the following
-convention: the plain name is for the pi case, for eg. `volume_image_eq_volume_div_covolume`. For
-the same result in the `InnerProductSpace` case, we add a `prime`, for eg.
+convention: the plain name is for the pi case, for e.g. `volume_image_eq_volume_div_covolume`. For
+the same result in the `InnerProductSpace` case, we add a `prime`, for e.g.
 `volume_image_eq_volume_div_covolume'`. When the same result exists in the
-general case, we had two primes, eg. `covolume.tendsto_card_div_pow''`.
+general case, we had two primes, e.g. `covolume.tendsto_card_div_pow''`.
 
 -/
 
