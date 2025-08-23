@@ -54,7 +54,7 @@ theorem symm_subpath (γ : Path a b) (t₀ t₁ : I) : symm (γ.subpath t₀ t�
   ext s
   simp [subpath, add_comm]
 
-lemma subpathAux_range (t₀ t₁ : I) : range (subpathAux t₀ t₁) = uIcc t₀ t₁ := by
+lemma range_subpathAux (t₀ t₁ : I) : range (subpathAux t₀ t₁) = uIcc t₀ t₁ := by
   rw [range_eq_iff]
   constructor
   · intro s
@@ -71,7 +71,7 @@ lemma subpathAux_range (t₀ t₁ : I) : range (subpathAux t₀ t₁) = uIcc t�
 @[simp]
 theorem range_subpath (γ : Path a b) (t₀ t₁ : I) :
     range (γ.subpath t₀ t₁) = γ '' (uIcc t₀ t₁) := by
-  rw [← subpathAux_range, ← range_comp]
+  rw [← range_subpathAux, ← range_comp]
   rfl
 
 lemma range_subpath_of_le (γ : Path a b) (t₀ t₁ : I) (h : t₀ ≤ t₁) :
