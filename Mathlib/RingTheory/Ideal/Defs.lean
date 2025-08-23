@@ -33,14 +33,16 @@ open Pointwise
 
 /-- A (left) ideal in a semiring `R` is an additive submonoid `s` such that
 `a * b ∈ s` whenever `b ∈ s`. If `R` is a ring, then `s` is an additive subgroup. -/
-abbrev Ideal (R : Type u) [Semiring R] :=
+abbrev Ideal (R : Type u) [Mul R] [AddCommMonoid R] :=
   Submodule R R
 
-section Semiring
+section NonComm
 
 namespace Ideal
 
-variable [Semiring α] (I : Ideal α) {a b : α}
+section Mul
+
+variable [Mul α] [AddCommMonoid α] (I : Ideal α) {a b : α}
 
 /-- A left ideal `I : Ideal R` is two-sided if it is also a right ideal. -/
 @[mk_iff] class IsTwoSided : Prop where
@@ -57,7 +59,7 @@ variable (a)
 theorem mul_mem_left : b ∈ I → a * b ∈ I :=
   Submodule.smul_mem I a
 
-theorem mul_mem_right {α} {a : α} (b : α) [Semiring α] (I : Ideal α) [I.IsTwoSided]
+theorem mul_mem_right {α} {a : α} (b : α) [Mul α] [AddCommMonoid α] (I : Ideal α) [I.IsTwoSided]
     (h : a ∈ I) : a * b ∈ I :=
   IsTwoSided.mul_mem_of_left b h
 
@@ -67,12 +69,15 @@ variable {a}
 theorem ext {I J : Ideal α} (h : ∀ x, x ∈ I ↔ x ∈ J) : I = J :=
   Submodule.ext h
 
+end Mul
+
+section Monoid
+
+variable [Monoid α] [AddCommMonoid α] (I : Ideal α) {a b : α}
+
 @[simp]
-theorem unit_mul_mem_iff_mem {x y : α} (hy : IsUnit y) : y * x ∈ I ↔ x ∈ I := by
-  refine ⟨fun h => ?_, fun h => I.mul_mem_left y h⟩
-  obtain ⟨y', hy'⟩ := hy.exists_left_inv
-  have := I.mul_mem_left y' h
-  rwa [← mul_assoc, hy', one_mul] at this
+theorem unit_mul_mem_iff_mem {x y : α} (hy : IsUnit y) : y * x ∈ I ↔ x ∈ I :=
+  I.smul_mem_iff_of_isUnit hy
 
 theorem pow_mem_of_mem (ha : a ∈ I) (n : ℕ) (hn : 0 < n) : a ^ n ∈ I :=
   Nat.casesOn n (Not.elim (by decide))
@@ -81,6 +86,8 @@ theorem pow_mem_of_mem (ha : a ∈ I) (n : ℕ) (hn : 0 < n) : a ^ n ∈ I :=
 theorem pow_mem_of_pow_mem {m n : ℕ} (ha : a ^ m ∈ I) (h : m ≤ n) : a ^ n ∈ I := by
   rw [← Nat.add_sub_of_le h, add_comm, pow_add]
   exact I.mul_mem_left _ ha
+
+end Monoid
 
 end Ideal
 
@@ -93,9 +100,9 @@ def Module.eqIdeal (R) {M} [Semiring R] [AddCommMonoid M] [Module R M] (m m' : M
   zero_mem' := by simp_rw [Set.mem_setOf, zero_smul]
   smul_mem' _ _ h := by simpa [mul_smul] using congr(_ • $h)
 
-end Semiring
+end NonComm
 
-section CommSemiring
+section Comm
 
 variable {a b : α}
 
@@ -103,21 +110,23 @@ variable {a b : α}
 -- order.
 namespace Ideal
 
-variable [CommSemiring α] (I : Ideal α)
+instance [CommMagma α] [AddCommMonoid α] (I : Ideal α) : I.IsTwoSided :=
+  ⟨fun b ha ↦ mul_comm b _ ▸ I.smul_mem _ ha⟩
 
-instance : I.IsTwoSided := ⟨fun b ha ↦ mul_comm b _ ▸ I.smul_mem _ ha⟩
 instance {α} [CommRing α] (I : Ideal α) : I.IsTwoSided := inferInstance
 
 @[simp]
-theorem mul_unit_mem_iff_mem {x y : α} (hy : IsUnit y) : x * y ∈ I ↔ x ∈ I :=
+theorem mul_unit_mem_iff_mem [CommMonoid α] [AddCommMonoid α] (I : Ideal α) {x y : α}
+    (hy : IsUnit y) : x * y ∈ I ↔ x ∈ I :=
   mul_comm y x ▸ unit_mul_mem_iff_mem I hy
 
-lemma mem_of_dvd (hab : a ∣ b) (ha : a ∈ I) : b ∈ I := by
+lemma mem_of_dvd [CommSemigroup α] [AddCommMonoid α] (I : Ideal α) (hab : a ∣ b) (ha : a ∈ I) :
+    b ∈ I := by
   obtain ⟨c, rfl⟩ := hab; exact I.mul_mem_right _ ha
 
 end Ideal
 
-end CommSemiring
+end Comm
 
 section Ring
 

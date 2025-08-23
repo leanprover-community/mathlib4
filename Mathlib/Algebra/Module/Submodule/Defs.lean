@@ -254,6 +254,8 @@ section MulAction
 variable [Monoid R] {_ : MulAction R M} {p q : Submodule R M} {r : R} {x y : M}
 variable (p)
 
+-- TODO: most results do not use closure under addition
+
 theorem smul_of_tower_mem [SMul S R] [SMul S M] [IsScalarTower S R M] (r : S) (h : x ∈ p) :
     r • x ∈ p :=
   p.toSubMulAction.smul_of_tower_mem r h
