@@ -307,13 +307,31 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 /- The following proof is a warm-up for the real case; it should contain the main idea.
 -- TODO: complete the proof, and refactor the proof
 -- to prove ContMDiffWithinAt and ContMDiffAt versions first.
--- More bare hands proof, but actually clearer.
+-- More bare hands proof, but actually clearer. -/
 theorem contMDiffOn_writtenInExtend_iff (hφ : φ ∈ maximalAtlas I n M) (hψ : ψ ∈ maximalAtlas J n N)
     (hs : s ⊆ φ.source) (hmaps : MapsTo f s ψ.source) :
     ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, F) n (ψ.extend J ∘ f ∘ (φ.extend I).symm) (φ.extend I '' s) ↔
     ContMDiffOn I J n f s := by
   refine ⟨?_, fun h ↦ ?_⟩
   · intro h
+    set f' := (ψ.extend J) ∘ f ∘ (φ.extend I).symm
+    have : ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, F) n f' (φ.extend I).target :=
+      sorry -- by hypothesis... want to intersect with s also; do that in a second pass
+    have : ContMDiffOn I 𝓘(𝕜, F) n (f' ∘ (φ.extend I)) φ.source := by
+      apply this.comp (contMDiffOn_extend hφ)
+      trans (φ.extend I).source
+      · apply le_of_eq
+        rw [φ.extend_source (I := I)]
+      exact (φ.extend I).source_subset_preimage_target
+    have : ContMDiffOn I J n ((ψ.extend J).symm ∘ f' ∘ (φ.extend I)) φ.source := by
+      apply ContMDiffOn.comp (t := (ψ.extend J).target) ?_ this ?_
+      · rw [PartialHomeomorph.extend_target']
+        exact contMDiffOn_extend_symm hψ
+      · rw [← φ.extend_source (I := I)]
+        sorry -- inclusion of subsets, uses the mapsto property
+    -- finally, use congruence lemma --- and argue
+    -- f' ∘ φ.extend I = (ψ.extend J ∘ f) on φ.source
+    -- (ψ.extend J).symm ∘ f' ∘ (φ.extend I)) φ.source = f on φ.source
     sorry
   · -- Easy direction: extended charts and their inverse is smooth on their source,
     -- so composing with them preserves smoothness.
@@ -323,7 +341,9 @@ theorem contMDiffOn_writtenInExtend_iff (hφ : φ ∈ maximalAtlas I n M) (hψ :
       rintro x ⟨x', hx', rfl⟩
       rwa [mem_preimage, PartialHomeomorph.extend_left_inv φ (hs hx')]
     have := ((contMDiffOn_extend hψ).comp h hmaps).comp ((contMDiffOn_extend_symm hφ).mono this) aux
-    apply this.mono le_rfl -/
+    apply this.mono le_rfl
+
+#exit
 
 /-- This is a smooth analogue of `continuousWithinAt_writtenInExtend_iff`. -/
 theorem contMDiffWithinAt_writtenInExtend_iff {y : M}
