@@ -143,7 +143,7 @@ theorem MeasureTheory.IntegrableOn.intervalIntegrable (hf : IntegrableOn f [[a, 
 
 theorem intervalIntegrable_const_iff {c : ε} (hc : ‖c‖ₑ ≠ ⊤ := by finiteness) :
     IntervalIntegrable (fun _ => c) μ a b ↔ c = 0 ∨ μ (Ι a b) < ∞ := by
-  simp only [intervalIntegrable_iff, integrableOn_const_iff hc]
+  simp [intervalIntegrable_iff, integrableOn_const_iff hc]
 
 @[simp]
 theorem intervalIntegrable_const [IsLocallyFiniteMeasure μ]
@@ -299,7 +299,7 @@ theorem sum [ContinuousAdd ε]
     IntervalIntegrable (∑ i ∈ s, f i) μ a b :=
   ⟨integrable_finset_sum' s fun i hi => (h i hi).1, integrable_finset_sum' s fun i hi => (h i hi).2⟩
 
-/-- Finsums of interval integrable functions are interval integrable. -/
+/-- Finite sums of interval integrable functions are interval integrable. -/
 @[simp]
 protected theorem finsum [ContinuousAdd ε] [PseudoMetrizableSpace ε] {f : ι → ℝ → ε}
     (h : ∀ i, IntervalIntegrable (f i) μ a b) :

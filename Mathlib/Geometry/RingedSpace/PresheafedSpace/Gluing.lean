@@ -172,7 +172,7 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
   -- Porting note: I don't know what the magic was in Lean3 proof, it just skipped the proof of `eq`
   · delta IsOpenImmersion.opensFunctor
     dsimp only [Functor.op, Opens.map, IsOpenMap.functor, unop_op, Opens.coe_mk]
-    congr
+    congr 2
     have := (𝖣.t_fac k i j).symm
     rw [← IsIso.inv_comp_eq] at this
     replace this := (congr_arg ((PresheafedSpace.Hom.base ·)) this).symm
@@ -506,7 +506,10 @@ def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
     · rw [← cancel_mono (𝖣.ι j), Category.assoc, ← (𝖣.vPullbackCone i j).condition]
       conv_rhs => rw [← s.condition]
       erw [IsOpenImmersion.lift_fac_assoc]
-    · intro m e₁ _; rw [← cancel_mono (D.f i j)]; erw [e₁]; rw [IsOpenImmersion.lift_fac]
+    · intro m e₁ _
+      rw [← cancel_mono (D.f i j)]
+      simp only [lift_fac]
+      tauto
 
 theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (𝖣.ι i).base y = x :=
   𝖣.ι_jointly_surjective (PresheafedSpace.forget _ ⋙ CategoryTheory.forget TopCat) x

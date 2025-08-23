@@ -20,7 +20,7 @@ This tactic works by creating a weighted sum of the given equations with the
 given coefficients.  Then, it subtracts the right side of the weighted sum
 from the left side so that the right side equals 0, and it does the same with
 the target.  Afterwards, it sets the goal to be the equality between the
-lefthand side of the new goal and the lefthand side of the new weighted sum.
+left-hand side of the new goal and the left-hand side of the new weighted sum.
 Lastly, calls a normalization tactic on this target.
 
 This file contains the `linear_combination'` tactic (note the '): the original
