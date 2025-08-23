@@ -18,13 +18,15 @@ open Lean Mathlib
 /--
 Define a pass that tries replacing a specific tactic with `fun_prop`.
 
-`tacticKind` is the `SyntaxNodeKind` for the tactic's main parser,
+`tacticKind` is an array of `SyntaxNodeKind` for the tactic's main parsers,
 for example `Mathlib.Tactic.linarith`.
+This can be useful to cover all variants of one particular tactic.
 -/
-def funPropReplacementWith (tacticKind : SyntaxNodeKind) : TacticAnalysis.Config := .ofComplex {
+def funPropReplacementWith (tacticKinds : Array SyntaxNodeKind) :
+    TacticAnalysis.Config :=.ofComplex {
   out := (List MVarId × MessageData)
   ctx := Syntax
-  trigger _ stx := if stx.getKind == tacticKind
+  trigger _ stx := if tacticKinds.contains stx.getKind
     then .accept stx else .skip
   test _stx goal := do
     let tac ← `(tactic| fun_prop)
@@ -45,14 +47,9 @@ register_option linter.tacticAnalysis.continuityToFunProp : Bool := {
   defValue := false
 }
 
--- TODO: can I combine these two linters into one?
 @[tacticAnalysis linter.tacticAnalysis.continuityToFunProp,
   inherit_doc linter.tacticAnalysis.continuityToFunProp]
-def continuityToFunprop := funPropReplacementWith `tacticContinuity
-
-@[tacticAnalysis linter.tacticAnalysis.continuityToFunProp,
-  inherit_doc linter.tacticAnalysis.continuityToFunProp]
-def continuityToFunprop2 := funPropReplacementWith `tacticContinuity?
+def continuityToFunprop := funPropReplacementWith #[`tacticContinuity, `tacticContinuity?]
 
 /-- Suggest replacing the `measurability` tactic (and its variant `measurability?`, as well as the
 currently unimplemented stubs `measurability!` and `measurability!?`) with `fun_prop`
@@ -65,17 +62,7 @@ register_option linter.tacticAnalysis.measurabilityToFunProp : Bool := {
 
 @[tacticAnalysis linter.tacticAnalysis.measurabilityToFunProp,
   inherit_doc linter.tacticAnalysis.measurabilityToFunProp]
-def measurabilityToFunprop := funPropReplacementWith `tacticMeasurability
-
-@[tacticAnalysis linter.tacticAnalysis.measurabilityToFunProp,
-  inherit_doc linter.tacticAnalysis.measurabilityToFunProp]
-def measurabilityToFunprop2 := funPropReplacementWith `tacticMeasurability?
-
--- These two are stubs, but we might as well lint for them also.
-@[tacticAnalysis linter.tacticAnalysis.measurabilityToFunProp,
-  inherit_doc linter.tacticAnalysis.measurabilityToFunProp]
-def measurabilityToFunprop3 := funPropReplacementWith `measurability!
-
-@[tacticAnalysis linter.tacticAnalysis.measurabilityToFunProp,
-  inherit_doc linter.tacticAnalysis.measurabilityToFunProp]
-def measurabilityToFunprop4 := funPropReplacementWith `measurability!?
+def measurabilityToFunprop := funPropReplacementWith
+  #[`tacticMeasurability, `tacticMeasurability?,
+  -- These two are stubs, but we might as well lint for them also.
+  `measurability!, `measurability!?]
