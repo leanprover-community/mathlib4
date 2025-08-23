@@ -694,13 +694,13 @@ nonrec theorem Fintype.linearIndependent_iffₒ [DecidableEq ι] [Fintype ι] :
 
 theorem Fintype.not_linearIndependent_iffₒ [DecidableEq ι] [Fintype ι] :
     ¬ LinearIndependent R v ↔ ∃ t, ∃ (f : ι → R),
-      ∑ i ∈ t, f i • v i = ∑ i ∉ t, f i • v i ∧ ∃ i, 0 < f i := by
+      ∑ i ∈ t, f i • v i = ∑ i ∉ t, f i • v i ∧ ∃ i ∈ t, 0 < f i := by
   simp only [linearIndependent_iffₒ, not_forall]
-  refine ⟨fun ⟨t, f, heq, i, hfi⟩ => ?_, fun ⟨t, f, heq, i, hfi⟩ =>
+  refine ⟨fun ⟨t, f, heq, i, hfi⟩ => ?_, fun ⟨t, f, heq, i, hi, hfi⟩ =>
     ⟨t, f, heq, i, pos_iff_ne_zero.1 hfi⟩⟩
   by_cases hi' : i ∈ t
-  · exact ⟨t, f, heq, i, pos_of_ne_zero hfi⟩
-  · refine ⟨tᶜ, f, ?_, i, pos_of_ne_zero hfi⟩
+  · exact ⟨t, f, heq, i, hi', pos_of_ne_zero hfi⟩
+  · refine ⟨tᶜ, f, ?_, i, Finset.mem_compl.2 hi', pos_of_ne_zero hfi⟩
     simp [heq]
 
 lemma linearIndepOn_finset_iffₒ [DecidableEq ι] {s : Finset ι} :
