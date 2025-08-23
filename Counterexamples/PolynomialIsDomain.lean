@@ -20,6 +20,8 @@ As a consequence, the polynomial semiring `NatMaxAdd[X]` is not a domain.
 /-- A type synonym for ℕ equipped with maximum as addition. -/
 def NatMaxAdd := ℕ
 
+open scoped Polynomial
+
 namespace NatMaxAdd
 
 /-- Identification of `NatMaxAdd` with `ℕ`. -/
@@ -60,15 +62,13 @@ theorem natCast_eq_one (n : ℕ) : ∀ [NeZero n], (n : NatMaxAdd) = 1 := by
   · intro; rfl
   · rw [Nat.cast_succ, ih]; intro; rfl
 
-theorem not_isCancelAdd : ¬ IsCancelAdd NatMaxAdd := fun h ↦ by cases h.1.1 1 0 1 rfl
-
-open Polynomial
+theorem not_isCancelAdd : ¬ IsCancelAdd NatMaxAdd := fun h ↦ by cases @h.1.1 1 0 1 rfl
 
 theorem not_isDomain_polynomial : ¬ IsDomain NatMaxAdd[X] :=
-  isDomain_iff.not.mpr fun h ↦ not_isCancelAdd h.2
+  Polynomial.isDomain_iff.not.mpr fun h ↦ not_isCancelAdd h.2
 
 end NatMaxAdd
 
 theorem not_isDomain_commSemiring_imp_isDomain_polynomial :
-    ¬ (∀ (R : Type) [CommSemiring R] [IsDomain R], IsDomain (Polynomial R)) :=
+    ¬ ∀ (R : Type) [CommSemiring R] [IsDomain R], IsDomain R[X] :=
   fun h ↦ NatMaxAdd.not_isDomain_polynomial (h _)
