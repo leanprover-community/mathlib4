@@ -11,7 +11,7 @@ import Mathlib.Topology.UniformSpace.Equiv
 # Ascoli Theorem
 
 In this file, we prove the general **Arzela-Ascoli theorem**, and various related statements about
-the topology of equicontinuous subsetes of `X →ᵤ[𝔖] α`, where `X` is a topological space, `𝔖` is
+the topology of equicontinuous subsets of `X →ᵤ[𝔖] α`, where `X` is a topological space, `𝔖` is
 a family of compact subsets of `X`, and `α` is a uniform space.
 
 ## Main statements
@@ -52,7 +52,7 @@ a family of compact subsets of `X`, and `α` is a uniform space.
 ## TODO
 
 * Prove that, on an equicontinuous family, pointwise convergence and pointwise convergence on a
-  dense subset coincide, and deduce metrizability criterions for equicontinuous subsets.
+  dense subset coincide, and deduce metrizability criteria for equicontinuous subsets.
 
 * Prove the total boundedness version of the theorem
 
@@ -131,7 +131,7 @@ In other words, pointwise convergence and uniform convergence coincide on an equ
 subset of `X → α`.
 
 This is a version of `Equicontinuous.comap_uniformFun_eq` stated in terms of `IsUniformInducing`
-for convenuence. -/
+for convenience. -/
 lemma Equicontinuous.isUniformInducing_uniformFun_iff_pi [UniformSpace ι] [CompactSpace X]
     (F_eqcont : Equicontinuous F) :
     IsUniformInducing (UniformFun.ofFun ∘ F) ↔ IsUniformInducing F := by
@@ -147,7 +147,7 @@ In other words, pointwise convergence and uniform convergence coincide on an equ
 subset of `X → α`.
 
 This is a consequence of `Equicontinuous.comap_uniformFun_eq`, stated in terms of `IsInducing`
-for convenuence. -/
+for convenience. -/
 lemma Equicontinuous.inducing_uniformFun_iff_pi [TopologicalSpace ι] [CompactSpace X]
     (F_eqcont : Equicontinuous F) :
     IsInducing (UniformFun.ofFun ∘ F) ↔ IsInducing F := by
@@ -247,7 +247,7 @@ In particular, pointwise convergence and compact convergence coincide on an equi
 subset of `X → α`.
 
 This is a version of `EquicontinuousOn.comap_uniformOnFun_eq` stated in terms of `IsUniformInducing`
-for convenuence. -/
+for convenience. -/
 lemma EquicontinuousOn.isUniformInducing_uniformOnFun_iff_pi' [UniformSpace ι]
     {𝔖 : Set (Set X)} (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K)
     (F_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn F K) :

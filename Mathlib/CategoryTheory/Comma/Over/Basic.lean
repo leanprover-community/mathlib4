@@ -101,7 +101,7 @@ lemma homMk_eta {U V : Over X} (f : U ⟶ V) (h) :
 
 /-- This is useful when `homMk (· ≫ ·)` appears under `Functor.map` or a natural equivalence. -/
 lemma homMk_comp {U V W : Over X} (f : U.left ⟶ V.left) (g : V.left ⟶ W.left) (w_f w_g) :
-    homMk (f ≫ g) (by aesop) = homMk f w_f ≫ homMk g w_g := by
+    homMk (f ≫ g) (by simp_all) = homMk f w_f ≫ homMk g w_g := by
   ext
   simp
 
@@ -218,7 +218,7 @@ theorem mapForget_eq {X Y : T} (f : X ⟶ Y) :
     (map f) ⋙ (forget Y) = (forget X) := by
   fapply Functor.ext
   · dsimp [Over, Over.map]; intro x; exact rfl
-  · intros x y u; simp
+  · simp
 
 /-- The natural isomorphism arising from `mapForget_eq`. -/
 def mapForget {X Y : T} (f : X ⟶ Y) :
@@ -628,7 +628,7 @@ theorem mapForget_eq {X Y : T} (f : X ⟶ Y) :
     (map f) ⋙ (forget X) = (forget Y) := by
   fapply Functor.ext
   · dsimp [Under, Under.map]; intro x; exact rfl
-  · intros x y u; simp
+  · simp
 
 /-- The natural isomorphism arising from `mapForget_eq`. -/
 def mapForget {X Y : T} (f : X ⟶ Y) :
