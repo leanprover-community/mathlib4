@@ -316,7 +316,6 @@ lemma isEmpty_empty_hypergraph {α : Type*} : IsEmpty (Hypergraph.emptyHypergrap
   unfold IsEmpty
   exact Prod.mk_inj.mp rfl
 
-@[simp]
 lemma isEmpty_eq_empty_hypergraph {H : Hypergraph α} (h : H.IsEmpty) : emptyHypergraph α = H := by
   unfold IsEmpty at h
   have hv : V(emptyHypergraph α) = ∅ := rfl
