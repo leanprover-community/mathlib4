@@ -81,7 +81,7 @@ theorem colimitLimitToLimitColimit_injective :
     -- and they are equations in a filtered colimit,
     -- so for each `j` we have some place `k j` to the right of both `kx` and `ky`
     simp? [colimit_eq_iff] at h says
-      simp only [Functor.comp_obj, colim_obj, ι_colimitLimitToLimitColimit_π_apply,
+      simp only [comp_obj, colim_obj, ι_colimitLimitToLimitColimit_π_apply,
         colimit_eq_iff, curry_obj_obj_obj, curry_obj_obj_map] at h
     let k j := (h j).choose
     let f : ∀ j, kx ⟶ k j := fun j => (h j).choose_spec.choose
@@ -239,7 +239,7 @@ theorem colimitLimitToLimitColimit_surjective :
     -- satisfying `gf f ≫ i f = hf f' ≫ i f'`.
     let i : ∀ {j j'} (f : j ⟶ j'), kf f ⟶ k'' := fun {j} {j'} f => i' (kfO f)
     have s : ∀ {j₁ j₂ j₃ j₄} (f : j₁ ⟶ j₂) (f' : j₃ ⟶ j₄), gf f ≫ i f = hf f' ≫ i f' := by
-      intros j₁ j₂ j₃ j₄ f f'
+      intro j₁ j₂ j₃ j₄ f f'
       rw [s', s']
       · exact k'O
       · exact Finset.mem_biUnion.mpr ⟨j₃, Finset.mem_univ _,

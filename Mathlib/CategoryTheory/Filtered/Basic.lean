@@ -58,6 +58,8 @@ universe w v v₁ v₂ u u₁ u₂
 
 namespace CategoryTheory
 
+attribute [local instance] uliftCategory
+
 variable (C : Type u) [Category.{v} C]
 
 /-- A category `IsFilteredOrEmpty` if
@@ -206,7 +208,7 @@ variable [IsFiltered C]
 theorem sup_objs_exists (O : Finset C) : ∃ S : C, ∀ {X}, X ∈ O → Nonempty (X ⟶ S) := by
   classical
   induction' O using Finset.induction with X O' nm h
-  · exact ⟨Classical.choice IsFiltered.nonempty, by intro; simp⟩
+  · exact ⟨Classical.choice IsFiltered.nonempty, by simp⟩
   · obtain ⟨S', w'⟩ := h
     use max X S'
     rintro Y mY
@@ -326,10 +328,10 @@ theorem of_cocone_nonempty (h : ∀ {J : Type w} [SmallCategory J] [FinCategory 
     exact ⟨c.pt⟩
   have : IsFilteredOrEmpty C := by
     refine ⟨?_, ?_⟩
-    · intros X Y
+    · intro X Y
       obtain ⟨c⟩ := h (ULiftHom.down ⋙ ULift.downFunctor ⋙ pair X Y)
       exact ⟨c.pt, c.ι.app ⟨⟨WalkingPair.left⟩⟩, c.ι.app ⟨⟨WalkingPair.right⟩⟩, trivial⟩
-    · intros X Y f g
+    · intro X Y f g
       obtain ⟨c⟩ := h (ULiftHom.down ⋙ ULift.downFunctor ⋙ parallelPair f g)
       refine ⟨c.pt, c.ι.app ⟨WalkingParallelPair.one⟩, ?_⟩
       have h₁ := c.ι.naturality ⟨WalkingParallelPairHom.left⟩
@@ -661,7 +663,7 @@ variable [IsCofiltered C]
 theorem inf_objs_exists (O : Finset C) : ∃ S : C, ∀ {X}, X ∈ O → Nonempty (S ⟶ X) := by
   classical
   induction' O using Finset.induction with X O' nm h
-  · exact ⟨Classical.choice IsCofiltered.nonempty, by intro; simp⟩
+  · exact ⟨Classical.choice IsCofiltered.nonempty, by simp⟩
   · obtain ⟨S', w'⟩ := h
     use min X S'
     rintro Y mY
@@ -784,10 +786,10 @@ theorem of_cone_nonempty (h : ∀ {J : Type w} [SmallCategory J] [FinCategory J]
     exact ⟨c.pt⟩
   have : IsCofilteredOrEmpty C := by
     refine ⟨?_, ?_⟩
-    · intros X Y
+    · intro X Y
       obtain ⟨c⟩ := h (ULiftHom.down ⋙ ULift.downFunctor ⋙ pair X Y)
       exact ⟨c.pt, c.π.app ⟨⟨WalkingPair.left⟩⟩, c.π.app ⟨⟨WalkingPair.right⟩⟩, trivial⟩
-    · intros X Y f g
+    · intro X Y f g
       obtain ⟨c⟩ := h (ULiftHom.down ⋙ ULift.downFunctor ⋙ parallelPair f g)
       refine ⟨c.pt, c.π.app ⟨WalkingParallelPair.zero⟩, ?_⟩
       have h₁ := c.π.naturality ⟨WalkingParallelPairHom.left⟩

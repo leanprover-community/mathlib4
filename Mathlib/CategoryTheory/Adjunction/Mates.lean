@@ -259,7 +259,7 @@ composition with the unitors. Corresponding natural transformations are called `
 TODO: Generalise to when the two vertical functors are equivalences rather than being exactly `𝟭`.
 
 Furthermore, this bijection preserves (and reflects) isomorphisms, i.e. a transformation is an iso
-iff its image under the bijection is an iso, see eg `CategoryTheory.conjugateIsoEquiv`.
+iff its image under the bijection is an iso, see e.g. `CategoryTheory.conjugateIsoEquiv`.
 This is in contrast to the general case `mateEquiv` which does not in general have this property.
 -/
 @[simps!]

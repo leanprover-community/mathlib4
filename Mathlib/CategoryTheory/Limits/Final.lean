@@ -1009,7 +1009,6 @@ variable (F : D ⥤ Cat) (G : C ⥤ D)
 
 open Functor
 
-set_option backward.dsimp.proofs true in
 /-- A prefunctor mapping structured arrows on `G` to structured arrows on `pre F G` with their
 action on fibers being the identity. -/
 def Grothendieck.structuredArrowToStructuredArrowPre (d : D) (f : F.obj d) :
@@ -1019,8 +1018,10 @@ def Grothendieck.structuredArrowToStructuredArrowPre (d : D) (f : F.obj d) :
   map := fun g => StructuredArrow.homMk
     (Grothendieck.Hom.mk (by exact g.right)
       (eqToHom (by dsimp; rw [← StructuredArrow.w g, map_comp, Cat.comp_obj])))
-    (by simp only [StructuredArrow.mk_right]
-        apply Grothendieck.ext <;> simp)
+    (by
+      simp only [StructuredArrow.mk_right]
+      generalize_proofs
+      apply Grothendieck.ext <;> simp)
 
 instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final := by
   constructor

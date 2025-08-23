@@ -574,6 +574,12 @@ theorem map_prod_of_subset_primeFactors [CommMonoidWithZero R] {f : ArithmeticFu
     f (∏ a ∈ t, a) = ∏ a ∈ t, f a :=
   map_prod_of_prime h_mult t fun _ a => prime_of_mem_primeFactors (ht a)
 
+theorem prod_primeFactors [CommMonoidWithZero R] {f : ArithmeticFunction R}
+    (h_mult : f.IsMultiplicative) {l : ℕ} (hl : Squarefree l) :
+    ∏ a ∈ l.primeFactors, f a = f l := by
+  rw [← h_mult.map_prod_of_subset_primeFactors l _ Finset.Subset.rfl,
+    prod_primeFactors_of_squarefree hl]
+
 theorem map_div_of_coprime [GroupWithZero R] {f : ArithmeticFunction R}
     (hf : IsMultiplicative f) {l d : ℕ} (hdl : d ∣ l) (hl : (l / d).Coprime d) (hd : f d ≠ 0) :
     f (l / d) = f l / f d := by
