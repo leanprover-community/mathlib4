@@ -674,6 +674,7 @@ theorem Int.ModEq.pow_eq_pow {p x y : ℕ} (hp : Nat.Prime p) (h : p - 1 ∣ x -
           exact pow_one_sub_dvd_pow_mul_sub_one n (p - 1) m
     have : n ^ (x - y) * n ^ y ≡ 1 * n ^ y [ZMOD p] := Int.ModEq.mul this rfl
     rwa [← pow_add, one_mul, Nat.sub_add_cancel hxy] at this
+
 /-- **Fermat's Little Theorem**: for all `n : ℕ` coprime to `p`, we have
 `n ^ (p - 1) ≡ 1 [MOD p]`. -/
 theorem Nat.ModEq.pow_card_sub_one_eq_one {p : ℕ} (hp : p.Prime) {n : ℕ} (hpn : n.Coprime p) :

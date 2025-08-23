@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Yi Yuan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors:  Yi Yuan
+Authors: Yi Yuan
 -/
 import Mathlib.NumberTheory.LSeries.PrimesInAP
 import Mathlib.NumberTheory.LucasLehmer
@@ -42,14 +42,16 @@ lemma bonza_apply_prime_eq_one_or_dvd_self_sub_apply (hf : f ∈ bonza) {p : ℕ
   · right
     intro b hb
     have : (p : ℤ) ∣ (b : ℤ) ^ p - (f b) ^ f p := by calc
-      _ ∣ (f p : ℤ) := by grind [natCast_dvd_natCast, dvd_pow_self]
+      _ ∣ (f p : ℤ) := by
+        rw [eq, natCast_dvd_natCast]
+        exact dvd_pow_self p ch
       _ ∣ _ := hf.1 p b (Prime.pos hp) hb
     have : (b : ℤ) ≡ (f b : ℤ) [ZMOD p] := by calc
       _ ≡ (b : ℤ) ^ p [ZMOD p] := Int.ModEq.symm (ModEq.pow_card_eq_self hp)
       _ ≡ (f b) ^ f p [ZMOD p] := Int.ModEq.symm ((fun {n a b} ↦ Int.modEq_iff_dvd.mpr) this)
       _ ≡ _ [ZMOD p] := by
         rw [eq]
-        nth_rw 2 [← npow_one (f b)]
+        nth_rw 2 [← pow_one (f b : ℤ)]
         exact Int.ModEq.pow_eq_pow hp (nat_sub_one_dvd_pow_sub_one p k)
           (one_le_pow k p (Prime.pos hp)) (by norm_num)
     rwa [modEq_comm, Int.modEq_iff_dvd] at this
@@ -91,7 +93,9 @@ theorem bonza_apply_prime_gt_two_eq_one (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 
   by_cases ch : k = 0
   · simpa [ch] using ha2
   · have {p : ℕ} (pp : Nat.Prime p) (hp : p > N) : (q : ℤ) ∣ p ^ q - 1 := by calc
-      _ ∣ (f q : ℤ) := by grind [Int.natCast_pow, dvd_pow_self]
+      _ ∣ (f q : ℤ) := by
+        rw [ha2, Int.natCast_pow q k]
+        exact dvd_pow_self (q : ℤ) ch
       _ ∣ _ := apply_dvd_pow_sub (zero_lt_of_lt hq) pp hp
     obtain ⟨p, hp⟩ := Nat.exists_prime_gt_modEq_neg_one N (NeZero.of_gt hq)
     have : 1 ≡ -1 [ZMOD q] := by calc
@@ -129,7 +133,7 @@ def fExample : ℕ → ℕ := fun x ↦
 lemma LTE_lemma_of_pow_sub {a b : ℕ} (h1b : 1 < b) (hb : ¬2 ∣ b) (ha : a ≠ 0) (Evena : Even a) :
     (padicValNat 2 a + 2) ≤ padicValNat 2 (b ^ a - 1) := by
   have : padicValNat 2 ((b + 1) * (b - 1)) ≥ 3 := by
-    refine (padicValNat_dvd_iff_le (hp := fact_prime_two) (by grind)).mp ?_
+    refine (padicValNat_dvd_iff_le (hp := fact_prime_two) (by grind [mul_ne_zero])).mp ?_
     simpa [← Nat.pow_two_sub_pow_two b 1] using by grind [Nat.eight_dvd_sq_sub_one_of_odd]
   have := padicValNat.pow_two_sub_pow h1b (by grind) hb ha Evena
   grind [← padicValNat.mul]
@@ -164,7 +168,7 @@ lemma bonza_fExample : fExample ∈ bonza := by
     by_cases ch2 : a = 2
     · simp [fExample, ch2]
       split_ifs with hb1 hb2
-      · grind [Nat.odd_iff, sq_mod_four_eq_one_of_odd]
+      · grind [sq_mod_four_eq_one_of_odd]
       · simp [hb2]
       · refine dvd_sub ?_ ?_
         · have : 2 ∣ (b : ℤ) := by grind
