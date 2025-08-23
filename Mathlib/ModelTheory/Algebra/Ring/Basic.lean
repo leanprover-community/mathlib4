@@ -291,7 +291,7 @@ attribute [local instance] addOfRingStructure mulOfRingStructure negOfRingStruct
 
 /--
 Given a Type `R` with a `Language.ring.Structure R`, the instance given by
-`addOfRingStructure` etc are compatible with the `Language.ring.Structure` instance on `R`.
+`addOfRingStructure` etc. are compatible with the `Language.ring.Structure` instance on `R`.
 
 This definition is only to be used when `addOfRingStructure`, `mulOfRingStructure` etc
 are local instances.

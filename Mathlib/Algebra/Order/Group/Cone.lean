@@ -62,6 +62,9 @@ instance GroupCone.instGroupConeClass (G : Type*) [CommGroup G] :
 initialize_simps_projections GroupCone (carrier → coe, as_prefix coe)
 initialize_simps_projections AddGroupCone (carrier → coe, as_prefix coe)
 
+@[deprecated (since := "2025-08-21")] alias IsMaxCone := NegMemClass
+@[deprecated (since := "2025-08-21")] alias IsMaxMulCone := InvMemClass
+
 namespace GroupCone
 variable {H : Type*} [CommGroup H] [PartialOrder H] [IsOrderedMonoid H] {a : H}
 
@@ -79,10 +82,14 @@ lemma mem_oneLE : a ∈ oneLE H ↔ 1 ≤ a := Iff.rfl
 @[to_additive (attr := simp, norm_cast)]
 lemma coe_oneLE : oneLE H = {x : H | 1 ≤ x} := rfl
 
-@[to_additive nonneg.isMaxCone]
-instance oneLE.isMaxMulCone {H : Type*} [CommGroup H] [LinearOrder H] [IsOrderedMonoid H] :
+@[to_additive]
+instance oneLE.hasMemOrInvMem {H : Type*} [CommGroup H] [LinearOrder H] [IsOrderedMonoid H] :
     HasMemOrInvMem (oneLE H) where
   mem_or_inv_mem := by simpa using le_total 1
+
+@[deprecated (since := "2025-08-21")] alias oneLE.isMaxMulCone := oneLE.hasMemOrInvMem
+@[deprecated (since := "2025-08-21")] alias _root_.AddGroupCone.nonneg.isMaxCone :=
+  AddGroupCone.nonneg.hasMemOrNegMem
 
 end GroupCone
 

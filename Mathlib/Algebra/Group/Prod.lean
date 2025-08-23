@@ -6,15 +6,15 @@ Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Torsion
 import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.Algebra.Notation.Pi.Defs
 import Mathlib.Algebra.Notation.Prod
 import Mathlib.Logic.Equiv.Prod
 import Mathlib.Tactic.TermCongr
 
 /-!
-# Monoid, group etc structures on `M × N`
+# Monoid, group etc. structures on `M × N`
 
 In this file we define one-binop (`Monoid`, `Group` etc) structures on `M × N`.
 We also prove trivial `simp` lemmas, and define the following operations on `MonoidHom`s:

@@ -89,7 +89,7 @@ instance divisionMonoid [∀ i, DivisionMonoid (f i)] : DivisionMonoid (∀ i, f
   __ := divInvMonoid
   __ := involutiveInv
   mul_inv_rev := by intros; ext; exact mul_inv_rev _ _
-  inv_eq_of_mul := by intros _ _ h; ext; exact DivisionMonoid.inv_eq_of_mul _ _ (congrFun h _)
+  inv_eq_of_mul := by intro _ _ h; ext; exact DivisionMonoid.inv_eq_of_mul _ _ (congrFun h _)
 
 @[to_additive instSubtractionCommMonoid]
 instance divisionCommMonoid [∀ i, DivisionCommMonoid (f i)] : DivisionCommMonoid (∀ i, f i) :=
@@ -136,21 +136,6 @@ instance cancelMonoid [∀ i, CancelMonoid (f i)] : CancelMonoid (∀ i, f i) :=
 @[to_additive]
 instance cancelCommMonoid [∀ i, CancelCommMonoid (f i)] : CancelCommMonoid (∀ i, f i) :=
   { leftCancelMonoid, commMonoid with }
-
-/-- The mapping into a product type built from maps into each component. -/
-@[simp]
-protected def prod (f' : ∀ i, f i) (g' : ∀ i, g i) (i : I) : f i × g i :=
-  (f' i, g' i)
-
--- Porting note: simp now unfolds the lhs, so we are not marking these as simp.
--- @[simp]
-theorem prod_fst_snd : Pi.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id :=
-  rfl
-
--- Porting note: simp now unfolds the lhs, so we are not marking these as simp.
--- @[simp]
-theorem prod_snd_fst : Pi.prod (Prod.snd : α × β → β) (Prod.fst : α × β → α) = Prod.swap :=
-  rfl
 
 end Pi
 
