@@ -144,7 +144,7 @@ theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
     apply monotoneOn_posLog (by simp) (by simp [Finset.sum_nonneg])
     simp [Finset.abs_sum_le_sum_abs]
   _ ≤ log⁺ (∑ t ∈ s, |f t_max|) := by
-    apply monotoneOn_posLog (by simp [Finset.sum_nonneg]) (by simp [Finset.sum_nonneg]; positivity)
+    apply monotoneOn_posLog (by simp [Finset.sum_nonneg]) (by simp; positivity)
     apply Finset.sum_le_sum (fun i ih ↦ ht_max.2 i ih)
   _ = log⁺ (s.card * |f t_max|) := by
     simp [Finset.sum_const]

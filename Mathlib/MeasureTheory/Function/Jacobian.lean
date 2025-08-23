@@ -25,8 +25,8 @@ formula for the Lebesgue and Bochner integrals, in `lintegral_image_eq_lintegral
 and `integral_image_eq_integral_abs_det_fderiv_smul` respectively.
 
 Specialized versions in one dimension (using the derivative instead of the determinant of the
-Fréchet derivative) can be found in the file `MeasureTheory.Function.JacobianOneDim.lean`, together
-with versions for monotone and antitone functions.
+Fréchet derivative) can be found in the file `Mathlib/MeasureTheory/Function/JacobianOneDim.lean`,
+together with versions for monotone and antitone functions.
 
 ## Main results
 
@@ -336,7 +336,7 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
         calc
           ‖f z - f x - A (z - x)‖ ≤ δ * ‖z - x‖ := hf _ zs _ xs
           _ ≤ ε * r := by gcongr
-      · simp only [map_sub, Pi.sub_apply]
+      · simp only [map_sub]
         abel
     have :
       A '' closedBall 0 r + closedBall (f x) (ε * r) =
@@ -374,7 +374,7 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
         rw [biUnion_eq_iUnion] at st
         apply measure_mono
         rw [← image_iUnion, ← inter_iUnion]
-        exact image_subset _ (subset_inter (Subset.refl _) st)
+        exact Set.image_mono (subset_inter (Subset.refl _) st)
       _ ≤ ∑' x : t, μ (f '' (s ∩ closedBall x (r x))) := measure_iUnion_le _
       _ ≤ ∑' x : t, m * μ (closedBall x (r x)) :=
         (ENNReal.tsum_le_tsum fun x => I x (r x) (ts x.2) (rpos x x.2).le)
@@ -408,7 +408,7 @@ theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
   -- the determinant of `B.symm` is bounded by `m⁻¹`
   have I : ENNReal.ofReal |(B.symm : E →L[ℝ] E).det| < (m⁻¹ : ℝ≥0) := by
     simp only [ENNReal.ofReal, abs_inv, Real.toNNReal_inv, ContinuousLinearEquiv.det_coe_symm,
-      ContinuousLinearMap.coe_toContinuousLinearEquivOfDetNeZero, ENNReal.coe_lt_coe] at hm ⊢
+      ENNReal.coe_lt_coe] at hm ⊢
     exact NNReal.inv_lt_inv mpos.ne' hm
   -- therefore, we may apply `addHaar_image_le_mul_of_det_lt` to `B.symm` and `m⁻¹`.
   obtain ⟨δ₀, δ₀pos, hδ₀⟩ :
@@ -522,9 +522,8 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
       r * ‖(f' x - A) a‖ = ‖(f' x - A) (r • a)‖ := by
         simp only [ContinuousLinearMap.map_smul, norm_smul, Real.norm_eq_abs, abs_of_nonneg rpos.le]
       _ = ‖f y - f x - A (y - x) - (f y - f x - (f' x) (y - x))‖ := by
-        congr 1
         simp only [ya, add_sub_cancel_left, sub_sub_sub_cancel_left, ContinuousLinearMap.coe_sub',
-          eq_self_iff_true, sub_left_inj, Pi.sub_apply, ContinuousLinearMap.map_smul, smul_sub]
+          Pi.sub_apply, ContinuousLinearMap.map_smul, smul_sub]
       _ ≤ ‖f y - f x - A (y - x)‖ + ‖f y - f x - (f' x) (y - x)‖ := norm_sub_le _ _
       _ ≤ δ * ‖y - x‖ + ε * ‖y - x‖ := (add_le_add (hf _ ys _ xs) (hρ ⟨rρ hy, ys⟩))
       _ = r * (δ + ε) * ‖a‖ := by
@@ -583,7 +582,7 @@ theorem addHaar_image_eq_zero_of_differentiableOn_of_addHaar_eq_zero (hf : Diffe
     μ (f '' s) ≤ μ (⋃ n, f '' (s ∩ t n)) := by
       apply measure_mono
       rw [← image_iUnion, ← inter_iUnion]
-      exact image_subset f (subset_inter Subset.rfl t_cover)
+      exact Set.image_mono (subset_inter Subset.rfl t_cover)
     _ ≤ ∑' n, μ (f '' (s ∩ t n)) := measure_iUnion_le _
     _ ≤ ∑' n, (Real.toNNReal |(A n).det| + 1 : ℝ≥0) * μ (s ∩ t n) := by
       apply ENNReal.tsum_le_tsum fun n => ?_
@@ -849,7 +848,7 @@ theorem addHaar_image_le_lintegral_abs_det_fderiv_aux1 (hs : MeasurableSet s)
     μ (f '' s) ≤ μ (⋃ n, f '' (s ∩ t n)) := by
       apply measure_mono
       rw [← image_iUnion, ← inter_iUnion]
-      exact image_subset f (subset_inter Subset.rfl t_cover)
+      exact Set.image_mono (subset_inter Subset.rfl t_cover)
     _ ≤ ∑' n, μ (f '' (s ∩ t n)) := measure_iUnion_le _
     _ ≤ ∑' n, (ENNReal.ofReal |(A n).det| + ε) * μ (s ∩ t n) := by
       apply ENNReal.tsum_le_tsum fun n => ?_

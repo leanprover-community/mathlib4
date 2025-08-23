@@ -458,6 +458,12 @@ protected theorem smul_const {𝕜} [TopologicalSpace 𝕜] [SMul 𝕜 β] [Cont
     (hf : StronglyMeasurable f) (c : β) : StronglyMeasurable fun x => f x • c :=
   continuous_smul.comp_stronglyMeasurable (hf.prodMk stronglyMeasurable_const)
 
+/-- Pointwise star on functions induced from continuous star preserves strong measurability. -/
+@[measurability]
+protected theorem star {R : Type*} [MeasurableSpace α] [Star R] [TopologicalSpace R]
+    [ContinuousStar R] (f : α → R) (hf : StronglyMeasurable f) : StronglyMeasurable (star f) :=
+  ⟨fun n => star (hf.approx n), fun x => (hf.tendsto_approx x).star⟩
+
 /-- In a normed vector space, the addition of a measurable function and a strongly measurable
 function is measurable. Note that this is not true without further second-countability assumptions
 for the addition of two measurable functions. -/
@@ -553,7 +559,7 @@ section Monoid
 variable {M : Type*} [Monoid M] [TopologicalSpace M] [ContinuousMul M] {m : MeasurableSpace α}
 
 @[to_additive (attr := fun_prop, measurability)]
-theorem _root_.List.stronglyMeasurable_prod' (l : List (α → M))
+theorem _root_.List.stronglyMeasurable_prod (l : List (α → M))
     (hl : ∀ f ∈ l, StronglyMeasurable f) : StronglyMeasurable l.prod := by
   induction l with
   | nil => exact stronglyMeasurable_one
@@ -562,11 +568,16 @@ theorem _root_.List.stronglyMeasurable_prod' (l : List (α → M))
     rw [List.prod_cons]
     exact hl.1.mul (ihl hl.2)
 
+@[deprecated (since := "2025-05-30")]
+alias _root_.List.stronglyMeasurable_sum' := List.stronglyMeasurable_sum
+@[to_additive existing, deprecated (since := "2025-05-30")]
+alias _root_.List.stronglyMeasurable_prod' := List.stronglyMeasurable_prod
+
 @[to_additive (attr := fun_prop, measurability)]
-theorem _root_.List.stronglyMeasurable_prod (l : List (α → M))
+theorem _root_.List.stronglyMeasurable_fun_prod (l : List (α → M))
     (hl : ∀ f ∈ l, StronglyMeasurable f) :
     StronglyMeasurable fun x => (l.map fun f : α → M => f x).prod := by
-  simpa only [← Pi.list_prod_apply] using l.stronglyMeasurable_prod' hl
+  simpa only [← Pi.list_prod_apply] using l.stronglyMeasurable_prod hl
 
 end Monoid
 
@@ -574,27 +585,47 @@ section CommMonoid
 
 variable {M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M] {m : MeasurableSpace α}
 
+
 @[to_additive (attr := fun_prop, measurability)]
-theorem _root_.Multiset.stronglyMeasurable_prod' (l : Multiset (α → M))
+theorem _root_.Multiset.stronglyMeasurable_prod (l : Multiset (α → M))
     (hl : ∀ f ∈ l, StronglyMeasurable f) : StronglyMeasurable l.prod := by
   rcases l with ⟨l⟩
-  simpa using l.stronglyMeasurable_prod' (by simpa using hl)
+  simpa using l.stronglyMeasurable_prod (by simpa using hl)
+
+@[deprecated (since := "2025-05-30")]
+alias _root_.Multiset.stronglyMeasurable_sum' := Multiset.stronglyMeasurable_sum
+@[to_additive existing, deprecated (since := "2025-05-30")]
+alias _root_.Multiset.stronglyMeasurable_prod' := Multiset.stronglyMeasurable_prod
 
 @[to_additive (attr := fun_prop, measurability)]
-theorem _root_.Multiset.stronglyMeasurable_prod (s : Multiset (α → M))
+theorem _root_.Multiset.stronglyMeasurable_fun_prod (s : Multiset (α → M))
     (hs : ∀ f ∈ s, StronglyMeasurable f) :
     StronglyMeasurable fun x => (s.map fun f : α → M => f x).prod := by
-  simpa only [← Pi.multiset_prod_apply] using s.stronglyMeasurable_prod' hs
+  simpa only [← Pi.multiset_prod_apply] using s.stronglyMeasurable_prod hs
 
-@[to_additive (attr := fun_prop, measurability)]
-theorem _root_.Finset.stronglyMeasurable_prod' {ι : Type*} {f : ι → α → M} (s : Finset ι)
+@[to_additive (attr := measurability, fun_prop)]
+theorem _root_.Finset.stronglyMeasurable_prod {ι : Type*} {f : ι → α → M} (s : Finset ι)
     (hf : ∀ i ∈ s, StronglyMeasurable (f i)) : StronglyMeasurable (∏ i ∈ s, f i) :=
   Finset.prod_induction _ _ (fun _a _b ha hb => ha.mul hb) (@stronglyMeasurable_one α M _ _ _) hf
 
-@[to_additive (attr := fun_prop, measurability)]
-theorem _root_.Finset.stronglyMeasurable_prod {ι : Type*} {f : ι → α → M} (s : Finset ι)
+@[deprecated (since := "2025-05-30")]
+alias _root_.Finset.stronglyMeasurable_sum' := Finset.stronglyMeasurable_sum
+@[to_additive existing, deprecated (since := "2025-05-30")]
+alias _root_.Finset.stronglyMeasurable_prod' := Finset.stronglyMeasurable_prod
+
+@[to_additive (attr := measurability, fun_prop)]
+theorem _root_.Finset.stronglyMeasurable_fun_prod {ι : Type*} {f : ι → α → M} (s : Finset ι)
     (hf : ∀ i ∈ s, StronglyMeasurable (f i)) : StronglyMeasurable fun a => ∏ i ∈ s, f i a := by
-  simpa only [← Finset.prod_apply] using s.stronglyMeasurable_prod' hf
+  simpa only [← Finset.prod_apply] using s.stronglyMeasurable_prod hf
+
+variable {n : MeasurableSpace β} in
+/-- Compositional version of `Finset.stronglyMeasurable_prod` for use by `fun_prop`. -/
+@[to_additive (attr := measurability, fun_prop)
+/-- Compositional version of `Finset.stronglyMeasurable_sum` for use by `fun_prop`. -/]
+lemma Finset.stronglyMeasurable_prod_apply {ι : Type*} {f : ι → α → β → M} {g : α → β}
+    {s : Finset ι} (hf : ∀ i ∈ s, StronglyMeasurable ↿(f i)) (hg : Measurable g) :
+    StronglyMeasurable fun a ↦ (∏ i ∈ s, f i a) (g a) := by
+  simp; fun_prop (discharger := assumption)
 
 end CommMonoid
 
@@ -628,7 +659,7 @@ theorem _root_.Measurable.stronglyMeasurable [TopologicalSpace β] [PseudoMetriz
   letI := pseudoMetrizableSpacePseudoMetric β
   nontriviality β; inhabit β
   exact ⟨SimpleFunc.approxOn f hf Set.univ default (Set.mem_univ _), fun x ↦
-    SimpleFunc.tendsto_approxOn hf (Set.mem_univ _) (by rw [closure_univ]; simp)⟩
+    SimpleFunc.tendsto_approxOn hf (Set.mem_univ _) (by simp)⟩
 
 /-- In a space with second countable topology, strongly measurable and measurable are equivalent. -/
 theorem _root_.stronglyMeasurable_iff_measurable [TopologicalSpace β] [MetrizableSpace β]
@@ -791,7 +822,7 @@ theorem _root_.stronglyMeasurable_of_stronglyMeasurable_union_cover {m : Measura
   ext x
   by_cases hxs : x ∈ s
   · lift x to s using hxs
-    simp [Subtype.coe_injective.extend_apply]
+    simp
   · lift x to t using (h trivial).resolve_left hxs
     rw [extend_apply', Subtype.coe_injective.extend_apply]
     exact fun ⟨y, hy⟩ ↦ hxs <| hy ▸ y.2
@@ -865,6 +896,12 @@ protected theorem dist {_ : MeasurableSpace α} {β : Type*} [PseudoMetricSpace 
     StronglyMeasurable fun x => dist (f x) (g x) :=
   continuous_dist.comp_stronglyMeasurable (hf.prodMk hg)
 
+@[fun_prop, aesop safe 20 apply (rule_sets := [Measurable])]
+protected theorem edist {_ : MeasurableSpace α} {β : Type*} [PseudoEMetricSpace β] {f g : α → β}
+    (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
+    StronglyMeasurable fun x => edist (f x) (g x) :=
+  continuous_edist.comp_stronglyMeasurable (hf.prodMk hg)
+
 @[fun_prop, measurability]
 protected theorem norm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
     (hf : StronglyMeasurable f) : StronglyMeasurable fun x => ‖f x‖ :=
@@ -884,8 +921,6 @@ Unlike `StrongMeasurable.norm` and `StronglyMeasurable.nnnorm`, this lemma prove
 protected theorem enorm {_ : MeasurableSpace α} {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
     {f : α → ε} (hf : StronglyMeasurable f) : Measurable (‖f ·‖ₑ) :=
   (continuous_enorm.comp_stronglyMeasurable hf).measurable
-
-@[deprecated (since := "2025-01-21")] alias ennnorm := StronglyMeasurable.enorm
 
 @[fun_prop, measurability]
 protected theorem real_toNNReal {_ : MeasurableSpace α} {f : α → ℝ} (hf : StronglyMeasurable f) :
@@ -1017,7 +1052,7 @@ end StronglyMeasurable
 theorem finStronglyMeasurable_zero {α β} {m : MeasurableSpace α} {μ : Measure α} [Zero β]
     [TopologicalSpace β] : FinStronglyMeasurable (0 : α → β) μ :=
   ⟨0, by
-    simp only [Pi.zero_apply, SimpleFunc.coe_zero, support_zero', measure_empty,
+    simp only [Pi.zero_apply, SimpleFunc.coe_zero, support_zero, measure_empty,
       zero_lt_top, forall_const],
     fun _ => tendsto_const_nhds⟩
 
@@ -1101,9 +1136,9 @@ protected theorem add [AddZeroClass β] [ContinuousAdd β] (hf : FinStronglyMeas
 @[measurability]
 protected theorem neg [SubtractionMonoid β] [ContinuousNeg β] (hf : FinStronglyMeasurable f μ) :
     FinStronglyMeasurable (-f) μ := by
-  refine ⟨fun n => -hf.approx n, fun n => ?_, fun x => (hf.tendsto_approx x).neg⟩
-  suffices μ (Function.support fun x => -(hf.approx n) x) < ∞ by convert this
-  rw [Function.support_neg (hf.approx n)]
+  refine ⟨fun n ↦ -hf.approx n, fun n ↦ ?_, fun x ↦ (hf.tendsto_approx x).neg⟩
+  suffices μ (Function.support fun x ↦ -(hf.approx n) x) < ∞ by convert this
+  rw [Function.support_fun_neg (hf.approx n)]
   exact hf.fin_support_approx n
 
 @[measurability]

@@ -63,7 +63,7 @@ lemma bodd_succ (n : ℕ) : bodd (succ n) = not (bodd n) := by
 lemma bodd_add (m n : ℕ) : bodd (m + n) = bxor (bodd m) (bodd n) := by
   induction n
   case zero => simp
-  case succ n ih => simp [← Nat.add_assoc, Bool.xor_not, ih]
+  case succ n ih => simp [← Nat.add_assoc, ih]
 
 @[simp]
 lemma bodd_mul (m n : ℕ) : bodd (m * n) = (bodd m && bodd n) := by
@@ -96,14 +96,14 @@ lemma div2_two : div2 2 = 1 := rfl
 @[simp]
 lemma div2_succ (n : ℕ) : div2 (n + 1) = cond (bodd n) (succ (div2 n)) (div2 n) := by
   simp only [bodd, boddDiv2, div2]
-  rcases boddDiv2 n with ⟨_|_, _⟩ <;> simp
+  rcases boddDiv2 n with ⟨_ |_ , _⟩ <;> simp
 
 attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm Nat.mul_assoc
 
 lemma bodd_add_div2 : ∀ n, (bodd n).toNat + 2 * div2 n = n
   | 0 => rfl
   | succ n => by
-    simp only [bodd_succ, Bool.cond_not, div2_succ, Nat.mul_comm]
+    simp only [bodd_succ, div2_succ, Nat.mul_comm]
     refine Eq.trans ?_ (congr_arg succ (bodd_add_div2 n))
     cases bodd n
     · simp
@@ -152,7 +152,7 @@ def size : ℕ → ℕ :=
   binaryRec 0 fun _ _ => succ
 
 /-- `bits n` returns a list of Bools which correspond to the binary representation of n, where
-    the head of the list represents the least significant bit -/
+the head of the list represents the least significant bit -/
 def bits : ℕ → List Bool :=
   binaryRec [] fun b _ IH => b :: IH
 

@@ -27,7 +27,7 @@ import Mathlib.Topology.Instances.Rat
 * `Continuous.measurable` : a continuous function is measurable;
 * `Continuous.measurable2` : if `f : α → β` and `g : α → γ` are measurable and `op : β × γ → δ`
   is continuous, then `fun x => op (f x, g y)` is measurable;
-* `Measurable.add` etc : dot notation for arithmetic operations on `Measurable` predicates,
+* `Measurable.add` etc. : dot notation for arithmetic operations on `Measurable` predicates,
   and similarly for `dist` and `edist`;
 * `AEMeasurable.add` : similar dot notation for almost everywhere measurable functions;
 -/
@@ -399,10 +399,10 @@ instance Prod.opensMeasurableSpace [h : SecondCountableTopologyEither α β] :
         rcases isOpen_prod_iff.1 hs y1 y2 hy with ⟨u, v, u_open, v_open, yu, yv, huv⟩
         obtain ⟨a, ha, ya, au⟩ : ∃ a ∈ countableBasis α, y1 ∈ a ∧ a ⊆ u :=
           IsTopologicalBasis.exists_subset_of_mem_open (isBasis_countableBasis α) yu u_open
-        simp only [mem_iUnion, mem_prod, mem_setOf_eq, exists_and_left, exists_prop]
+        simp only [mem_iUnion, mem_prod, exists_and_left, exists_prop]
         exact ⟨a, ya, ha, v, v_open, yv, (Set.prod_mono_left au).trans huv⟩
       · rintro ⟨y1, y2⟩ hy
-        simp only [mem_iUnion, mem_prod, mem_setOf_eq, exists_and_left, exists_prop] at hy
+        simp only [mem_iUnion, mem_prod, exists_and_left, exists_prop] at hy
         rcases hy with ⟨a, ya, -, b, -, yb, hb⟩
         exact hb (mem_prod.2 ⟨ya, yb⟩)
     rw [this]
@@ -420,10 +420,10 @@ instance Prod.opensMeasurableSpace [h : SecondCountableTopologyEither α β] :
         rcases isOpen_prod_iff.1 hs y1 y2 hy with ⟨u, v, u_open, v_open, yu, yv, huv⟩
         obtain ⟨a, ha, ya, au⟩ : ∃ a ∈ countableBasis β, y2 ∈ a ∧ a ⊆ v :=
           IsTopologicalBasis.exists_subset_of_mem_open (isBasis_countableBasis β) yv v_open
-        simp only [mem_iUnion, mem_prod, mem_setOf_eq, exists_and_left, exists_prop]
+        simp only [mem_iUnion, mem_prod, exists_and_left, exists_prop]
         exact ⟨a, ⟨u, u_open, yu, (Set.prod_mono_right au).trans huv⟩, ha, ya⟩
       · rintro ⟨y1, y2⟩ hy
-        simp only [mem_iUnion, mem_prod, mem_setOf_eq, exists_and_left, exists_prop] at hy
+        simp only [mem_iUnion, mem_prod, exists_and_left, exists_prop] at hy
         rcases hy with ⟨a, ⟨b, -, yb, hb⟩, -, ya⟩
         exact hb (mem_prod.2 ⟨yb, ya⟩)
     rw [this]
@@ -451,6 +451,15 @@ theorem closure_ae_eq_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ 
 theorem measure_closure_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
     μ (closure s) = μ s :=
   measure_congr (closure_ae_eq_of_null_frontier h)
+
+theorem null_frontier_inter {μ : Measure α'} {s s' : Set α'}
+    (h : μ (frontier s) = 0) (h' : μ (frontier s') = 0) :
+    μ (frontier (s ∩ s')) = 0 := by
+  apply bot_unique
+  calc μ (frontier (s ∩ s'))
+  _ ≤ μ (frontier s ∪ frontier s') := measure_mono <| (frontier_inter_subset _ _).trans (by grind)
+  _ ≤ μ (frontier s) + μ (frontier s') := measure_union_le _ _
+  _ = 0 := by simp [h, h']
 
 instance separatesPointsOfOpensMeasurableSpaceOfT0Space [T0Space α] :
     MeasurableSpace.SeparatesPoints α where
@@ -634,9 +643,6 @@ protected theorem Topology.IsEmbedding.measurableEmbedding {f : α → β} (h₁
   show MeasurableEmbedding
       (((↑) : range f → β) ∘ h₁.toHomeomorph.toMeasurableEquiv) from
     (MeasurableEmbedding.subtype_coe h₂).comp (MeasurableEquiv.measurableEmbedding _)
-
-@[deprecated (since := "2024-10-26")]
-alias Embedding.measurableEmbedding := IsEmbedding.measurableEmbedding
 
 protected theorem Topology.IsClosedEmbedding.measurableEmbedding {f : α → β}
     (h : IsClosedEmbedding f) : MeasurableEmbedding f :=

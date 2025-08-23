@@ -103,7 +103,7 @@ private lemma recursion' (n : ℕ) :
   rw [integral_mul_deriv_eq_deriv_mul (fun x _ => hu₂ x) (fun x _ => hv₂ x)
     (hu₂d.intervalIntegrable _ _) (hv₂d.intervalIntegrable _ _),
     mul_sub, t, neg_mul, neg_mul, neg_mul, sub_neg_eq_add]
-  have (x) : u₂' x = (2 * n + 1) * f x ^ n - 2 * n * f x ^ (n - 1) := by
+  have (x : _) : u₂' x = (2 * n + 1) * f x ^ n - 2 * n * f x ^ (n - 1) := by
     cases n with
     | zero => simp [u₂']
     | succ n => ring!
@@ -163,7 +163,7 @@ explicit description of `sinPoly`.
 -/
 private lemma sinPoly_natDegree_le : ∀ n : ℕ, (sinPoly n).natDegree ≤ n
   | 0 => by simp [sinPoly]
-  | 1 => by simp only [natDegree_C, mul_one, zero_le', sinPoly]
+  | 1 => by simp only [natDegree_C, zero_le', sinPoly]
   | n + 2 => by
       rw [sinPoly]
       refine natDegree_add_le_of_degree_le ((natDegree_smul_le _ _).trans ?_) ?_
@@ -233,7 +233,7 @@ The integrand in the definition of `I` is nonnegative and takes a positive value
 so the integral is positive.
 -/
 private lemma I_pos : 0 < I n (π / 2) := by
-  refine integral_pos (by norm_num) (by fun_prop) ?_ ⟨0, by simp⟩
+  refine integral_pos (by simp) (by fun_prop) ?_ ⟨0, by simp⟩
   refine fun x hx => mul_nonneg (pow_nonneg ?_ _) ?_
   · rw [sub_nonneg, sq_le_one_iff_abs_le_one, abs_le]
     exact ⟨hx.1.le, hx.2⟩
@@ -248,7 +248,7 @@ integral is bounded above by `2`.
 private lemma I_le (n : ℕ) : I n (π / 2) ≤ 2 := by
   rw [← norm_of_nonneg I_pos.le]
   refine (norm_integral_le_of_norm_le_const ?_).trans (show (1 : ℝ) * _ ≤ _ by norm_num)
-  intros x hx
+  intro x hx
   simp only [uIoc_of_le, neg_le_self_iff, zero_le_one, mem_Ioc] at hx
   rw [norm_eq_abs, abs_mul, abs_pow]
   refine mul_le_one₀ (pow_le_one₀ (abs_nonneg _) ?_) (abs_nonneg _) (abs_cos_le_one _)
@@ -284,7 +284,7 @@ private lemma not_irrational_exists_rep {x : ℝ} :
   have k (n : ℕ) : 0 < (a : ℝ) ^ (2 * n + 1) / n ! := by positivity
   have j : ∀ᶠ n : ℕ in atTop, (a : ℝ) ^ (2 * n + 1) / n ! * I n (π / 2) < 1 := by
     have := (tendsto_pow_div_factorial_at_top_aux a).eventually_lt_const
-      (show (0 : ℝ) < 1 / 2 by norm_num)
+      (show (0 : ℝ) < 1 / 2 by simp)
     filter_upwards [this] with n hn
     rw [lt_div_iff₀ (zero_lt_two : (0 : ℝ) < 2)] at hn
     exact hn.trans_le' (mul_le_mul_of_nonneg_left (I_le _) (by positivity))

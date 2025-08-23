@@ -58,7 +58,7 @@ compile_inductive% Lists'
 corresponding to an element of `α`, or a "proper" ZFA list, inductively defined from the empty ZFA
 list and from appending a ZFA list to a proper ZFA list. -/
 def Lists (α : Type*) :=
-  Σb, Lists' α b
+  Σ b, Lists' α b
 
 namespace Lists'
 
@@ -173,7 +173,7 @@ theorem mem_of_subset' {a} : ∀ {l₁ l₂ : Lists' α true} (_ : l₁ ⊆ l₂
   | nil, _, Lists'.Subset.nil, h => by cases h
   | cons' a0 l0, l₂, s, h => by
     obtain - | ⟨e, m, s⟩ := s
-    simp only [toList, Sigma.eta, List.find?, List.mem_cons] at h
+    simp only [toList, Sigma.eta, List.mem_cons] at h
     rcases h with (rfl | h)
     · exact ⟨_, m, e⟩
     · exact mem_of_subset' s h
@@ -241,7 +241,7 @@ def inductionMut (C : Lists α → Sort*) (D : Lists' α true → Sort*)
         | true, l => D l
         | false, _ => PUnit)
     by exact ⟨fun ⟨b, l⟩ => (this _).1, fun l => (this l).2⟩
-  intros b l
+  intro b l
   induction l with
   | atom => exact ⟨C0 _, ⟨⟩⟩
   | nil => exact ⟨C1 _ D0, D0⟩

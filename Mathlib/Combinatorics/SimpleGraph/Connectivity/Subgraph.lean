@@ -191,8 +191,6 @@ theorem toSubgraph_map (f : G →g G') (p : G.Walk u v) :
 
 lemma adj_toSubgraph_mapLe {G' : SimpleGraph V} {w x : V} {p : G.Walk u v} (h : G ≤ G') :
     (p.mapLe h).toSubgraph.Adj w x ↔ p.toSubgraph.Adj w x := by
-  simp only [toSubgraph_map, Subgraph.map_adj]
-  nth_rewrite 1 [← Hom.ofLE_apply h w, ← Hom.ofLE_apply h x]
   simp
 
 @[simp]
@@ -258,7 +256,7 @@ theorem toSubgraph_adj_iff {u v u' v'} (w : G.Walk u v) :
         simp only [getVert_cons_succ]
         constructor
         · exact hi.1
-        · simp only [Walk.length_cons, add_lt_add_iff_right, Nat.add_lt_add_right hi.2 1]
+        · simp only [Walk.length_cons, Nat.add_lt_add_right hi.2 1]
   · rintro ⟨i, hi⟩
     rw [← Subgraph.mem_edgeSet, ← hi.1, Subgraph.mem_edgeSet]
     exact toSubgraph_adj_getVert _ hi.2
@@ -272,17 +270,17 @@ lemma neighborSet_toSubgraph_startpoint {u v} {p : G.Walk u v}
     (hp : p.IsPath) (hnp : ¬ p.Nil) : p.toSubgraph.neighborSet u = {p.snd} := by
   have hadj1 := p.toSubgraph_adj_snd hnp
   ext v
-  simp_all only [Subgraph.mem_neighborSet, Set.mem_insert_iff, Set.mem_singleton_iff,
+  simp_all only [Subgraph.mem_neighborSet, Set.mem_singleton_iff,
     SimpleGraph.Walk.toSubgraph_adj_iff, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
-  refine ⟨?_, by aesop⟩
+  refine ⟨?_, by simp_all⟩
   rintro ⟨i, hl | hr⟩
   · have : i = 0 := by
       apply hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by rw [Set.mem_setOf]; omega)
-      aesop
-    aesop
+      simp_all
+    simp_all
   · have : i + 1 = 0 := by
       apply hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by rw [Set.mem_setOf]; omega)
-      aesop
+      simp_all
     contradiction
 
 lemma neighborSet_toSubgraph_endpoint {u v} {p : G.Walk u v}
@@ -347,7 +345,7 @@ lemma neighborSet_toSubgraph_endpoint {u} {p : G.Walk u u} (hpc : p.IsCycle) :
   · rcases (hpc.getVert_endpoint_iff (by omega)).mp hr.2 with h1 | h2
     · contradiction
     · simp only [penultimate, ← h2, add_tsub_cancel_right]
-      aesop
+      simp_all
 
 lemma neighborSet_toSubgraph_internal {u} {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
     (h : i ≠ 0) (h' : i < p.length) :
@@ -363,7 +361,7 @@ lemma neighborSet_toSubgraph_internal {u} {i : ℕ} {p : G.Walk u u} (hpc : p.Is
   rintro ⟨i', ⟨hl1, hl2⟩ | ⟨hr1, hr2⟩⟩
   · apply hpc.getVert_injOn' (by rw [Set.mem_setOf_eq]; omega)
       (by rw [Set.mem_setOf_eq]; omega) at hl1
-    aesop
+    simp_all
   · apply hpc.getVert_injOn (by rw [Set.mem_setOf_eq]; omega)
       (by rw [Set.mem_setOf_eq]; omega) at hr2
     aesop
@@ -518,11 +516,11 @@ lemma induce_connected_adj_union {v w : V} {s t : Set V}
     (G.induce (s ∪ t)).Connected := by
   rw [connected_induce_iff] at sconn tconn ⊢
   apply (sconn.adj_union tconn hv hw ha).mono
-  · simp only [Set.mem_singleton_iff, sup_le_iff, Subgraph.le_induce_union_left,
+  · simp only [sup_le_iff, Subgraph.le_induce_union_left,
       Subgraph.le_induce_union_right, and_true, ← Subgraph.subgraphOfAdj_eq_induce ha]
     apply subgraphOfAdj_le_of_adj
     simp [hv, hw, ha]
-  · simp only [Set.mem_singleton_iff, sup_le_iff, Subgraph.verts_sup, Subgraph.induce_verts]
+  · simp only [Subgraph.verts_sup, Subgraph.induce_verts]
     rw [Set.union_assoc]
     simp [Set.insert_subset_iff, Set.singleton_subset_iff, hv, hw]
 
@@ -543,7 +541,7 @@ lemma induce_sUnion_connected_of_pairwise_not_disjoint {S : Set (Set V)} (Sn : S
   obtain ⟨v, vs⟩ := (Sc sS).nonempty
   apply G.induce_connected_of_patches _ (Set.subset_sUnion_of_mem sS vs)
   rintro w hw
-  simp only [Set.mem_sUnion, exists_prop] at hw
+  simp only [Set.mem_sUnion] at hw
   obtain ⟨t, tS, wt⟩ := hw
   refine ⟨s ∪ t, Set.union_subset (Set.subset_sUnion_of_mem sS) (Set.subset_sUnion_of_mem tS),
           Or.inl vs, Or.inr wt, induce_union_connected (Sc sS) (Sc tS) (Snd sS tS) _ _⟩
@@ -553,14 +551,14 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
   classical
   obtain ⟨u, ut⟩ := tn
   refine ⟨t.biUnion (fun v => (Gpc u v).some.support.toFinset), fun v vt => ?_, ?_⟩
-  · simp only [Finset.mem_biUnion, List.mem_toFinset, exists_prop]
+  · simp only [Finset.mem_biUnion, List.mem_toFinset]
     exact ⟨v, vt, Walk.end_mem_support _⟩
   · apply G.induce_connected_of_patches u
     · simp only [Finset.coe_biUnion, Finset.mem_coe, List.coe_toFinset, Set.mem_iUnion,
                  Set.mem_setOf_eq, Walk.start_mem_support, exists_prop, and_true]
       exact ⟨u, ut⟩
-    intros v hv
-    simp only [Finset.mem_coe, Finset.mem_biUnion, List.mem_toFinset, exists_prop] at hv
+    intro v hv
+    simp only [Finset.mem_coe, Finset.mem_biUnion, List.mem_toFinset] at hv
     obtain ⟨w, wt, hw⟩ := hv
     refine ⟨{x | x ∈ (Gpc u w).some.support}, ?_, ?_⟩
     · simp only [Finset.coe_biUnion, Finset.mem_coe, List.coe_toFinset]

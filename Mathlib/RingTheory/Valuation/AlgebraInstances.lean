@@ -23,10 +23,9 @@ of a field with a valuation, as well as their unit balls.
 -/
 
 open Function Valuation
+open scoped WithZero
 
-open scoped Multiplicative
-
-variable {K : Type*} [Field K] (v : Valuation K ℤₘ₀) (L : Type*) [Field L] [Algebra K L]
+variable {K : Type*} [Field K] (v : Valuation K ℤᵐ⁰) (L : Type*) [Field L] [Algebra K L]
 
 namespace ValuationSubring
 
@@ -58,12 +57,12 @@ instance algebra :
   RingHom.toAlgebra
     { toFun := fun k => ⟨algebraMap L E k, IsIntegral.algebraMap k.2⟩
       map_zero' :=
-        Subtype.ext <| by simp only [Subtype.coe_mk, Subalgebra.coe_zero, map_zero]
-      map_one' := Subtype.ext <| by simp only [Subtype.coe_mk, Subalgebra.coe_one, map_one]
+        Subtype.ext <| by simp only [Subalgebra.coe_zero, map_zero]
+      map_one' := Subtype.ext <| by simp only [Subalgebra.coe_one, map_one]
       map_add' := fun x y =>
-        Subtype.ext <| by simp only [map_add, Subalgebra.coe_add, Subtype.coe_mk]
+        Subtype.ext <| by simp only [map_add, Subalgebra.coe_add]
       map_mul' := fun x y =>
-        Subtype.ext <| by simp only [Subalgebra.coe_mul, map_mul, Subtype.coe_mk] }
+        Subtype.ext <| by simp only [Subalgebra.coe_mul, map_mul] }
 
 /-- A ring equivalence between the integral closure of the valuation subring of `K` in `L`
   and a ring `R` satisfying `isIntegralClosure R v.valuationSubring L`. -/

@@ -71,7 +71,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
   suffices ∀ i, μ (atTop.blimsup Y₁ p \ Z i) = 0 by
     rwa [ae_le_set, @blimsup_eq_iInf_biSup_of_nat _ _ _ Y₂, iInf_eq_iInter, diff_iInter,
       measure_iUnion_null_iff]
-  intros i
+  intro i
   set W := atTop.blimsup Y₁ p \ Z i
   by_contra contra
   obtain ⟨d, hd, hd'⟩ : ∃ d, d ∈ W ∧ ∀ {ι : Type _} {l : Filter ι} (w : ι → α) (δ : ι → ℝ),
@@ -208,9 +208,9 @@ theorem blimsup_cthickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M
     · simp [r', hi]
     · simp only [r', hi, one_div, mem_Ioi, if_false, inv_pos]; positivity
   have h₀ : ∀ i, p i ∧ 0 < r i → cthickening (r i) (s i) = cthickening (r' i) (s i) := by
-    rintro i ⟨-, hi⟩; congr! 1; change r i = ite (0 < r i) (r i) _; simp [hi]
+    grind
   have h₁ : ∀ i, p i ∧ 0 < r i → cthickening (M * r i) (s i) = cthickening (M * r' i) (s i) := by
-    rintro i ⟨-, hi⟩; simp only [r', hi, mul_ite, if_true]
+    rintro i ⟨-, hi⟩; simp only [r', hi, if_true]
   have h₂ : ∀ i, p i ∧ r i ≤ 0 → cthickening (M * r i) (s i) = cthickening (r i) (s i) := by
     rintro i ⟨-, hi⟩
     have hi' : M * r i ≤ 0 := mul_nonpos_of_nonneg_of_nonpos hM.le hi

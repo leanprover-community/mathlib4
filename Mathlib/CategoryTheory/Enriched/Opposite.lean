@@ -124,7 +124,7 @@ instance EnrichedOrdinaryCategory.opposite {D : Type u} [Category.{v} D]
   homEquiv := Quiver.Hom.opEquiv.symm.trans homEquiv
   homEquiv_id x := homEquiv_id (x.unop)
   homEquiv_comp f g := by
-    simp only [unop_comp, tensorHom_eComp_op_eq, leftUnitor_inv_braiding_assoc, ← unitors_inv_equal]
+    simp only [tensorHom_eComp_op_eq, leftUnitor_inv_braiding_assoc, ← unitors_inv_equal]
     exact homEquiv_comp g.unop f.unop
 
 end

@@ -130,19 +130,18 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact p
     discr K (hζ.powerBasis K).basis =
       (-1) ^ ((p ^ k).totient / 2) * p ^ (p ^ (k - 1) * ((p - 1) * k - 1)) := by
   rcases k with - | k
-  · simp only [coe_basis, _root_.pow_zero, powerBasis_gen _ hζ, totient_one, mul_zero, mul_one,
+  · simp only [coe_basis, _root_.pow_zero, powerBasis_gen _ hζ, totient_one, mul_zero,
       show 1 / 2 = 0 by rfl, discr, traceMatrix]
     have hζone : ζ = 1 := by simpa using hζ
     rw [hζ.powerBasis_dim _, hζone, ← (algebraMap K L).map_one,
       minpoly.eq_X_sub_C_of_algebraMap_inj _ (algebraMap K L).injective, natDegree_X_sub_C]
-    simp only [traceMatrix, map_one, one_pow, Matrix.det_unique, traceForm_apply, mul_one]
+    simp only [map_one, one_pow, Matrix.det_unique, traceForm_apply, mul_one]
     rw [← (algebraMap K L).map_one, trace_algebraMap, finrank _ hirr]
     norm_num
   · by_cases hk : p ^ (k + 1) = 2
-    · have hp : p = 2 := by
+    · obtain rfl : p = 2 := by
         rw [← pow_one 2] at hk
         exact eq_of_prime_pow_eq (prime_iff.1 hp.out) (prime_iff.1 Nat.prime_two) (succ_pos _) hk
-      subst hp
       nth_rw 2 [← pow_one 2] at hk
       replace hk := Nat.pow_right_injective rfl.le hk
       rw [add_eq_right] at hk
@@ -156,7 +155,7 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact p
       rw [← Algebra.discr_reindex K (hζ.powerBasis K).basis e, coe_basis, powerBasis_gen]; norm_num
       simp_rw [hζ.eq_neg_one_of_two_right, show (-1 : L) = algebraMap K L (-1) by simp]
       convert_to (discr K fun i : Fin 1 ↦ (algebraMap K L) (-1) ^ ↑i) = _
-      · congr
+      · congr 1
         ext i
         simp only [map_neg, map_one, Function.comp_apply, Fin.val_eq_zero, _root_.pow_zero]
         suffices (e.symm i : ℕ) = 0 by simp [this]

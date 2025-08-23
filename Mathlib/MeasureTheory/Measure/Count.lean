@@ -9,7 +9,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 /-!
 # Counting measure
 
-In this file we define the counting measure `MeasurTheory.Measure.count`
+In this file we define the counting measure `MeasureTheory.Measure.count`
 as `MeasureTheory.Measure.sum MeasureTheory.Measure.dirac`
 and prove basic properties of this measure.
 -/
@@ -107,11 +107,6 @@ lemma count_ne_zero_iff : count s ≠ 0 ↔ s.Nonempty :=
 
 alias ⟨_, count_ne_zero⟩ := count_ne_zero_iff
 
-@[deprecated (since := "2024-11-20")] alias ⟨empty_of_count_eq_zero, _⟩ := count_eq_zero_iff
-@[deprecated (since := "2024-11-20")] alias empty_of_count_eq_zero' := empty_of_count_eq_zero
-@[deprecated (since := "2024-11-20")] alias count_eq_zero_iff' := count_eq_zero_iff
-@[deprecated (since := "2024-11-20")] alias count_ne_zero' := count_ne_zero
-
 @[simp]
 lemma ae_count_iff {p : α → Prop} : (∀ᵐ x ∂count, p x) ↔ ∀ x, p x := by
   refine ⟨fun h x ↦ ?_, ae_of_all _⟩
@@ -122,8 +117,8 @@ lemma ae_count_iff {p : α → Prop} : (∀ᵐ x ∂count, p x) ↔ ∀ x, p x :
 @[simp]
 theorem count_singleton' {a : α} (ha : MeasurableSet ({a} : Set α)) : count ({a} : Set α) = 1 := by
   rw [count_apply_finite' (Set.finite_singleton a) ha, Set.Finite.toFinset]
-  simp [@toFinset_card _ _ (Set.finite_singleton a).fintype,
-    @Fintype.card_unique _ _ (Set.finite_singleton a).fintype]
+  simp [
+    ]
 
 theorem count_singleton [MeasurableSingletonClass α] (a : α) : count ({a} : Set α) = 1 :=
   count_singleton' (measurableSet_singleton a)
@@ -163,7 +158,7 @@ instance count.instSigmaFinite [MeasurableSingletonClass α] [Countable α] :
 
 instance count.isFiniteMeasure [Finite α] :
     IsFiniteMeasure (Measure.count : Measure α) :=
-  ⟨by cases nonempty_fintype α; simp [Measure.count_apply, finite_univ]⟩
+  ⟨by simp [Measure.count_apply, finite_univ]⟩
 
 @[simp]
 lemma count_univ : count (univ : Set α) = ENat.card α := by simp [count_apply .univ, encard_univ]

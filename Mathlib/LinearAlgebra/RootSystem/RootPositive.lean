@@ -89,7 +89,7 @@ lemma apply_weylGroup_smul (g : P.weylGroup) (x y : M) :
     rw [← Submonoid.mk_mul_mk _ _ _ hg₁ hg₂, mul_smul, mul_smul, hg₁', hg₂']
 
 @[simp]
-lemma apply_root_root_zero_iff [IsDomain R] [NeZero (2 : R)]:
+lemma apply_root_root_zero_iff [IsDomain R] [NeZero (2 : R)] :
     B.form (P.root i) (P.root j) = 0 ↔ P.pairing i j = 0 := by
   calc B.form (P.root i) (P.root j) = 0
       ↔ 2 * B.form (P.root i) (P.root j) = 0 := by simp [two_ne_zero]
@@ -169,10 +169,10 @@ lemma zero_lt_posForm_apply_root (i : ι)
   simpa only [zero_lt_posForm_iff] using B.exists_pos_eq i
 
 lemma isSymm_posForm :
-    B.posForm.IsSymm := by
-  intro x y
-  apply FaithfulSMul.algebraMap_injective S R
-  simpa using B.symm.eq x y
+    B.posForm.IsSymm where
+  eq x y := by
+    apply FaithfulSMul.algebraMap_injective S R
+    simpa using B.symm.eq x y
 
 /-- The length of the `i`-th root wrt a root-positive form taking values in `S`. -/
 def rootLength (i : ι) : S :=

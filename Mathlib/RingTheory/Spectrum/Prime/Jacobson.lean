@@ -63,7 +63,7 @@ lemma isJacobsonRing_iff_jacobsonSpace :
   apply vanishingIdeal_anti_mono
   rw [← H.1 (isClosed_zeroLocus I), (isClosed_zeroLocus _).closure_subset_iff]
   rintro x ⟨hx : I ≤ x.asIdeal, hx'⟩
-  show jacobson I ≤ x.asIdeal
+  change jacobson I ≤ x.asIdeal
   exact sInf_le ⟨hx, (isClosed_singleton_iff_isMaximal _).mp hx'⟩
 
 /--
@@ -98,7 +98,7 @@ lemma isOpen_singleton_tfae_of_isNoetherian_of_isJacobsonRing
     · rintro rfl _ _
       rw [stableUnderGeneralization_singleton, ← isMin_iff] at h₂
       exact h₂.eq_of_le
-    · intros hp
+    · intro hp
       apply h₁.eq_of_ge
       obtain ⟨q, hq, hq'⟩ := Ideal.exists_minimalPrimes_le (J := p.asIdeal) bot_le
       exact (hp ⟨q, hq.1.1⟩ (isMin_iff.mpr hq) hq').ge.trans hq'

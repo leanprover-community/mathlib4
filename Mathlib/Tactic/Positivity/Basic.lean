@@ -19,7 +19,7 @@ import Qq
 This file sets up the basic `positivity` extensions tagged with the `@[positivity]` attribute.
 -/
 
-variable {α β : Type*}
+variable {α : Type*}
 
 namespace Mathlib.Meta.Positivity
 open Lean Meta Qq Function
@@ -274,8 +274,8 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
     let _a ← synthInstanceQ q(Ring $α)
     let _a ← synthInstanceQ q(LinearOrder $α)
     let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
-    haveI' : $e =Q $a ^ $b := ⟨⟩
     assumeInstancesCommute
+    haveI' : $e =Q $a ^ $b := ⟨⟩
     pure (.nonnegative q((even_two_mul $m).pow_nonneg $a))
   orElse result do
     let ra ← core zα pα a
@@ -295,8 +295,8 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
       try
         let _a ← synthInstanceQ q(Semiring $α)
         let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
-        haveI' : $e =Q $a ^ $b := ⟨⟩
         assumeInstancesCommute
+        haveI' : $e =Q $a ^ $b := ⟨⟩
         pure (.positive q(pow_pos $pa $b))
       catch e : Exception =>
         trace[Tactic.positivity.failure] "{e.toMessageData}"
@@ -512,7 +512,7 @@ def evalRatDen : PositivityExt where eval {u α} _ _ e := do
     pure <| .positive q(den_pos $a)
   | _, _ => throwError "not Rat.num"
 
-/-- Extension for `posPart`. `a⁺` is always nonegative, and positive if `a` is. -/
+/-- Extension for `posPart`. `a⁺` is always nonnegative, and positive if `a` is. -/
 @[positivity _⁺]
 def evalPosPart : PositivityExt where eval {u α} zα pα e := do
   match e with
@@ -521,13 +521,14 @@ def evalPosPart : PositivityExt where eval {u α} zα pα e := do
     let _instαgrp ← synthInstanceQ q(AddGroup $α)
     assertInstancesCommute
     -- FIXME: There seems to be a bug in `Positivity.core` that makes it fail (instead of returning
-    -- `.none`) here sometimes. See eg the first test for `posPart`. This is why we need `catchNone`
+    -- `.none`) here sometimes. See e.g. the first test for `posPart`. This is why we need
+    -- `catchNone`
     match ← catchNone (core zα pα a) with
     | .positive pf => return .positive q(posPart_pos $pf)
     | _ => return .nonnegative q(posPart_nonneg $a)
   | _ => throwError "not `posPart`"
 
-/-- Extension for `negPart`. `a⁻` is always nonegative. -/
+/-- Extension for `negPart`. `a⁻` is always nonnegative. -/
 @[positivity _⁻]
 def evalNegPart : PositivityExt where eval {u α} _ _ e := do
   match e with
