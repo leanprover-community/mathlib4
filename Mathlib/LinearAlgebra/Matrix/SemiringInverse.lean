@@ -173,7 +173,7 @@ theorem isAddUnit_detp_smul_mul_adjp (hAB : A * B = 1) :
   rw [← hσ.1, ← hτ, ← sign_inv] at h
   replace h := ne_of_apply_ne sign h
   rw [ne_eq, eq_comm, eq_inv_iff_mul_eq_one] at h
-  obtain ⟨l, hl1, hl2⟩ := exists_ne_of_one_lt_card (one_lt_card_support_of_ne_one h) (τ⁻¹ j)
+  obtain ⟨l, hl1, hl2⟩ := exists_mem_ne (one_lt_card_support_of_ne_one h) (τ⁻¹ j)
   rw [mem_support, ne_comm] at hl1
   rw [ne_eq, ← mem_singleton, ← mem_compl] at hl2
   rw [← prod_mul_prod_compl {τ⁻¹ j}, mul_mul_mul_comm, mul_comm, ← smul_eq_mul]

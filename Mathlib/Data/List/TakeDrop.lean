@@ -73,7 +73,7 @@ lemma drop_length_sub_one {l : List α} (h : l ≠ []) : l.drop (l.length - 1) =
   | nil => aesop
   | cons a l ih =>
     by_cases hl : l = []
-    · aesop
+    · simp_all
     rw [length_cons, Nat.add_one_sub_one, List.drop_length_cons hl a]
     simp [getLast_cons, hl]
 

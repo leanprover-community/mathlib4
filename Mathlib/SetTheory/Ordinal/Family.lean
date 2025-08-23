@@ -361,20 +361,16 @@ theorem IsNormal.apply_of_isSuccLimit {f : Ordinal.{u} → Ordinal.{v}} (H : IsN
 @[deprecated (since := "2025-07-08")]
 alias IsNormal.apply_of_isLimit := IsNormal.apply_of_isSuccLimit
 
-theorem sSup_ord {s : Set Cardinal.{u}} (hs : BddAbove s) : (sSup s).ord = sSup (ord '' s) :=
-  eq_of_forall_ge_iff fun a => by
-    rw [csSup_le_iff'
-        (bddAbove_iff_small.2 (@small_image _ _ _ s (Cardinal.bddAbove_iff_small.1 hs))),
-      ord_le, csSup_le_iff' hs]
-    simp [ord_le]
+theorem sSup_ord (s : Set Cardinal) : (sSup s).ord = sSup (ord '' s) := by
+  obtain rfl | hn := s.eq_empty_or_nonempty
+  · simp
+  · by_cases hs : BddAbove s
+    · exact isNormal_ord.map_sSup hn hs
+    · rw [csSup_of_not_bddAbove hs, csSup_of_not_bddAbove (bddAbove_ord_image_iff.not.2 hs)]
+      simp
 
-theorem iSup_ord {ι} {f : ι → Cardinal} (hf : BddAbove (range f)) :
-    (iSup f).ord = ⨆ i, (f i).ord := by
-  unfold iSup
-  convert sSup_ord hf
-  -- Porting note: `change` is required.
-  conv_lhs => change range (ord ∘ f)
-  rw [range_comp]
+theorem iSup_ord {ι} (f : ι → Cardinal) : (⨆ i, f i).ord = ⨆ i, (f i).ord := by
+  rw [iSup, iSup, sSup_ord, range_comp']
 
 theorem lift_card_sInf_compl_le (s : Set Ordinal.{u}) :
     Cardinal.lift.{u + 1} (sInf sᶜ).card ≤ #s := by
@@ -946,22 +942,27 @@ end Ordinal
 /-! ### Results about injectivity and surjectivity -/
 
 
-theorem not_surjective_of_ordinal {α : Type u} (f : α → Ordinal.{u}) : ¬Surjective f := fun h =>
-  Ordinal.lsub_notMem_range.{u, u} f (h _)
+theorem not_surjective_of_ordinal {α : Type*} [Small.{u} α] (f : α → Ordinal.{u}) :
+    ¬ Surjective f := by
+  intro h
+  obtain ⟨a, ha⟩ := h (⨆ i, succ (f i))
+  apply ha.not_lt
+  rw [Ordinal.lt_iSup_iff]
+  exact ⟨a, Order.lt_succ _⟩
 
-theorem not_injective_of_ordinal {α : Type u} (f : Ordinal.{u} → α) : ¬Injective f := fun h =>
-  not_surjective_of_ordinal _ (invFun_surjective h)
+theorem not_injective_of_ordinal {α : Type*} [Small.{u} α] (f : Ordinal.{u} → α) :
+    ¬ Injective f := fun h ↦ not_surjective_of_ordinal _ (invFun_surjective h)
 
-theorem not_surjective_of_ordinal_of_small {α : Type v} [Small.{u} α] (f : α → Ordinal.{u}) :
-    ¬Surjective f := fun h => not_surjective_of_ordinal _ (h.comp (equivShrink _).symm.surjective)
+@[deprecated (since := "2025-08-21")]
+alias not_surjective_of_ordinal_of_small := not_surjective_of_ordinal
 
-theorem not_injective_of_ordinal_of_small {α : Type v} [Small.{u} α] (f : Ordinal.{u} → α) :
-    ¬Injective f := fun h => not_injective_of_ordinal _ ((equivShrink _).injective.comp h)
+@[deprecated (since := "2025-08-21")]
+alias not_injective_of_ordinal_of_small := not_injective_of_ordinal
 
 /-- The type of ordinals in universe `u` is not `Small.{u}`. This is the type-theoretic analog of
 the Burali-Forti paradox. -/
 theorem not_small_ordinal : ¬Small.{u} Ordinal.{max u v} := fun h =>
-  @not_injective_of_ordinal_of_small _ h _ fun _a _b => Ordinal.lift_inj.{v, u}.1
+  @not_injective_of_ordinal _ h _ fun _a _b => Ordinal.lift_inj.{v, u}.1
 
 instance Ordinal.uncountable : Uncountable Ordinal.{u} :=
   Uncountable.of_not_small not_small_ordinal.{u}

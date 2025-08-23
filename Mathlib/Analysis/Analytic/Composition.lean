@@ -641,7 +641,7 @@ theorem compPartialSumTarget_tendsto_prod_atTop :
   · intro m n hmn a ha
     have : ∀ i, i < m.1 → i < n.1 := fun i hi => lt_of_lt_of_le hi hmn.1
     have : ∀ i, i < m.2 → i < n.2 := fun i hi => lt_of_lt_of_le hi hmn.2
-    aesop
+    simp_all
   · rintro ⟨n, c⟩
     simp only [mem_compPartialSumTarget_iff]
     obtain ⟨n, hn⟩ : BddAbove ((Finset.univ.image fun i : Fin c.length => c.blocksFun i) : Set ℕ) :=

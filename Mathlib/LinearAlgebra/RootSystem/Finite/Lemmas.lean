@@ -105,7 +105,7 @@ lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed [P.IsReduced] :
         (-3, -1), (2, 2), (-2, -2)} : Set (ℤ × ℤ)) := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
   rcases eq_or_ne i j with rfl | h₁; · simp
-  rcases eq_or_ne (α i) (-α j) with h₂ | h₂; · aesop
+  rcases eq_or_ne (α i) (-α j) with h₂ | h₂; · simp_all
   have aux₁ := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
   have aux₂ : P.pairingIn ℤ i j * P.pairingIn ℤ j i ≠ 4 := P.coxeterWeightIn_ne_four ℤ h₁ h₂
   aesop -- #24551 (this should be faster)
@@ -117,7 +117,7 @@ lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' [P.IsReduced]
         (-3, -1)} : Set (ℤ × ℤ)) := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
   have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed i j
-  aesop
+  simp_all
 
 variable {P} in
 lemma RootPositiveForm.rootLength_le_of_pairingIn_eq (B : P.RootPositiveForm ℤ) {i j : ι}
@@ -174,7 +174,7 @@ lemma pairingIn_pairingIn_mem_set_of_length_eq_of_ne {B : P.InvariantForm}
     (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈ ({(0, 0), (1, 1), (-1, -1)} : Set (ℤ × ℤ)) := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
   have := P.pairingIn_pairingIn_mem_set_of_length_eq len_eq
-  aesop
+  simp_all
 
 omit [Finite ι] in
 lemma coxeterWeightIn_eq_zero_iff :
@@ -206,7 +206,7 @@ lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i �
       have aux₂ := (linearIndependent_iff_coxeterWeightIn_ne_four P ℤ).mp hli
       have aux₃ : P.coxeterWeightIn ℤ i j ≠ 0 := by
         simpa only [ne_eq, P.coxeterWeightIn_eq_zero_iff] using h.ne'
-      aesop
+      simp_all
     simp_rw [coxeterWeightIn, Int.mul_mem_one_two_three_iff, mem_insert_iff, mem_singleton_iff,
       Prod.mk.injEq] at this
     omega

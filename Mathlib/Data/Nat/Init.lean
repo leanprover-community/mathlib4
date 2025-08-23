@@ -67,13 +67,9 @@ alias _root_.LT.lt.nat_succ_le := succ_le_of_lt
 
 alias ⟨of_le_succ, _⟩ := le_succ_iff
 
-lemma forall_lt_succ : (∀ m < n + 1, p m) ↔ (∀ m < n, p m) ∧ p n := by
-  simp only [Nat.lt_succ_iff, Nat.le_iff_lt_or_eq, or_comm, forall_eq_or_imp, and_comm]
+@[deprecated (since := "2025-08-21")] alias forall_lt_succ := forall_lt_succ_right
 
-lemma exists_lt_succ : (∃ m < n + 1, p m) ↔ (∃ m < n, p m) ∨ p n := by
-  classical
-  rw [← Decidable.not_iff_not]
-  simpa [not_exists, not_or] using forall_lt_succ
+@[deprecated (since := "2025-08-15")] alias exists_lt_succ := exists_lt_succ_right
 
 lemma two_lt_of_ne : ∀ {n}, n ≠ 0 → n ≠ 1 → n ≠ 2 → 2 < n
   | 0, h, _, _ => (h rfl).elim
