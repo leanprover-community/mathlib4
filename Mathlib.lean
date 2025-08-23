@@ -6474,8 +6474,7 @@ import Mathlib.Topology.Instances.ENat
 import Mathlib.Topology.Instances.EReal.Lemmas
 import Mathlib.Topology.Instances.Int
 import Mathlib.Topology.Instances.Irrational
-import Mathlib.Topology.Instances.Matrix.Basic
-import Mathlib.Topology.Instances.Matrix.SpecialLinearGroup
+import Mathlib.Topology.Instances.Matrix
 import Mathlib.Topology.Instances.NNReal.Lemmas
 import Mathlib.Topology.Instances.Nat
 import Mathlib.Topology.Instances.PNat
