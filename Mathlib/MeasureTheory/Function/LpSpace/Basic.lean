@@ -917,22 +917,22 @@ variable {R : Type*} [NormedAddCommGroup R] [StarAddMonoid R] [NormedStarGroup R
 
 protected noncomputable instance {p : ℝ≥0∞} : Star (Lp R p μ) where
   star f := ⟨star (f : α →ₘ[μ] R),
-      by simpa [Lp.mem_Lp_iff_eLpNorm_lt_top] using Lp.eLpNorm_lt_top f⟩
+    by simpa [Lp.mem_Lp_iff_eLpNorm_lt_top] using Lp.eLpNorm_lt_top f⟩
 
 lemma coeFn_star {p : ℝ≥0∞} (f : Lp R p μ) : (star f : Lp R p μ) =ᵐ[μ] star f :=
     (f : α →ₘ[μ] R).coeFn_star
 
 noncomputable instance {p : ℝ≥0∞} : InvolutiveStar (Lp R p μ) where
   star_involutive f := by
-     ext
-     filter_upwards
-     exact congrFun (congrArg AEEqFun.cast <| star_involutive f.1)
+    ext
+    filter_upwards
+    exact congrFun (congrArg AEEqFun.cast <| star_involutive f.1)
 
 noncomputable instance [TrivialStar R] {p : ℝ≥0∞} : TrivialStar (Lp R p μ) where
   star_trivial f := by
-     ext
-     filter_upwards
-     exact congrFun (congrArg AEEqFun.cast <| star_trivial f.1)
+    ext
+    filter_upwards
+    exact congrFun (congrArg AEEqFun.cast <| star_trivial f.1)
 
 end Star
 
