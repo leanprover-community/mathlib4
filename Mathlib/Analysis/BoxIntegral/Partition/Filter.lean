@@ -184,10 +184,10 @@ structure IntegrationParams : Type where
   boxes of a tagged partition; the value `false` means that the estimate may depend on the position
   of the tag. -/
   (bRiemann : Bool)
-  /-- `True` if we require that each tag belongs to its own closed
+  /-- `true` if we require that each tag belongs to its own closed
   box; the value `false` means that we only require that tags belong to the ambient box. -/
   (bHenstock : Bool)
-  /-- `True` if `r` can depend on the maximal ratio of sides of the
+  /-- `true` if `r` can depend on the maximal ratio of sides of the
   same box of a partition. Presence of this case makes quite a few proofs harder but we can prove
   the divergence theorem only for the filter `BoxIntegral.IntegrationParams.GP = ⊥ =
   {bRiemann := false, bHenstock := true, bDistortion := true}`. -/
