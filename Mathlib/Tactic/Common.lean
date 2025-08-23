@@ -115,6 +115,8 @@ import Mathlib.Util.PrintSorries
 import Mathlib.Util.TransImports
 import Mathlib.Util.WhatsNew
 
+import Mathlib.Tactic.TacticAnalysis.FunProp
+
 /-!
 This file imports all tactics which do not have significant theory imports,
 and hence can be imported very low in the theory import hierarchy,
