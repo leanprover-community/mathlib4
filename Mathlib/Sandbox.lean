@@ -1,4 +1,4 @@
-import Mathlib
+import Mathlib.RingTheory.Ideal.Norm.RelNorm
 
 namespace Ideal
 
