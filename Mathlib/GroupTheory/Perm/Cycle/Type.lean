@@ -380,7 +380,7 @@ theorem exists_fixed_point_of_prime' {p n : ℕ} [hp : Fact p.Prime] (hα : p �
   classical
     have h : ∀ b : α, b ∈ σ.supportᶜ ↔ σ b = b := fun b => by
       rw [Finset.mem_compl, mem_support, Classical.not_not]
-    obtain ⟨b, hb1, hb2⟩ := Finset.exists_ne_of_one_lt_card (hp.out.one_lt.trans_le
+    obtain ⟨b, hb1, hb2⟩ := Finset.exists_mem_ne (hp.out.one_lt.trans_le
       (Nat.le_of_dvd (Finset.card_pos.mpr ⟨a, (h a).mpr ha⟩) (Nat.modEq_zero_iff_dvd.mp
         ((card_compl_support_modEq hσ).trans (Nat.modEq_zero_iff_dvd.mpr hα))))) a
     exact ⟨b, (h b).mp hb1, hb2⟩
