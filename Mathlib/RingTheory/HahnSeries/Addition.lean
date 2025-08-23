@@ -443,15 +443,16 @@ theorem sub_orderTop_ne_of_leadingCoeff_eq {x y : HahnSeries Γ R} {g : Γ}
     (x - y).orderTop ≠ g := by
   refine orderTop_ne_of_coeff_zero ?_
   have hx : x ≠ 0 := by
-    rw [ne_zero_iff_orderTop, hxg]
+    rw [← orderTop_ne_top, hxg]
     exact WithTop.coe_ne_top
-  rw [orderTop_of_ne hx, WithTop.coe_eq_coe] at hxg
+  rw [orderTop_of_ne_zero hx, WithTop.coe_eq_coe] at hxg
   have hy : y ≠ 0 := by
-    rw [ne_zero_iff_orderTop, hyg]
+    rw [← orderTop_ne_top, hyg]
     exact WithTop.coe_ne_top
-  rw [orderTop_of_ne hy, WithTop.coe_eq_coe] at hyg
-  simp only [leadingCoeff, hx, ↓reduceDIte, hy] at hxyc
-  rw [coeff_sub, sub_eq_zero, ← hxg, hxyc, hxg, hyg]
+  rw [orderTop_of_ne_zero hy, WithTop.coe_eq_coe] at hyg
+  simp only [leadingCoeff_of_ne_zero hx, leadingCoeff_of_ne_zero hy, untop_orderTop_of_ne_zero hx,
+    untop_orderTop_of_ne_zero hy, hxg, hyg] at hxyc
+  rwa [coeff_sub, sub_eq_zero]
 
 end AddGroup
 
@@ -620,17 +621,20 @@ theorem coeff_add_leading (hxy : x = y + x.leadingTerm) (h : x ≠ 0) :
     nth_rw 1 [hxy, coeff_add]
   have hxx : (leadingTerm x).coeff xo = x.leadingTerm.leadingCoeff := by
     rw [leadingCoeff_leadingTerm, leadingTerm_of_ne h, coeff_single_same]
-  rw [← (leadingCoeff_of_ne h), hxx, leadingCoeff_leadingTerm, right_eq_add] at hx
-  exact hx
+  rw [hxx, leadingCoeff_leadingTerm] at hx
+  have : x.leadingCoeff = x.coeff xo := by simp [leadingCoeff, orderTop, h, xo]
+  rwa [this, right_eq_add] at hx
 
 theorem add_leading_orderTop_ne (hxy : x = y + x.leadingTerm) (hy : y ≠ 0) :
     x.orderTop ≠ y.orderTop := by
   intro h
   have hyne : y.leadingTerm ≠ 0 := leadingTerm_ne_iff.mp hy
   have hx : x ≠ 0 := nonzero_of_nonzero_add_leading hxy hy
-  simp only [orderTop_of_ne hx, orderTop_of_ne hy,
+  simp only [orderTop_of_ne_zero hx, orderTop_of_ne_zero hy,
     WithTop.coe_eq_coe] at h
-  simp_rw [leadingTerm_of_ne hy, ← h, leadingCoeff_of_ne hy, ← h, coeff_add_leading hxy hx,
+  have := coeff_add_leading hxy hx
+  rw [h] at this
+  rw [leadingTerm_of_ne hy, ← h, leadingCoeff_of_ne_zero hy, untop_orderTop_of_ne_zero hy, this,
     single_eq_zero] at hyne
   exact hyne rfl
 
@@ -640,7 +644,7 @@ theorem coeff_eq_of_not_orderTop (hxy : x = y + x.leadingTerm) (g : Γ) (hg : �
   simp only [left_eq_add]
   split_ifs with hx
   · simp only [coeff_zero]
-  · simp only [orderTop_of_ne hx, ne_eq, WithTop.coe_eq_coe] at hg
+  · simp only [orderTop_of_ne_zero hx, ne_eq, WithTop.coe_eq_coe] at hg
     exact coeff_single_of_ne hg
 
 theorem support_subset_add_single_support (hxy : x = y + x.leadingTerm) :
@@ -655,13 +659,13 @@ theorem support_subset_add_single_support (hxy : x = y + x.leadingTerm) :
 theorem orderTop_lt_add_single_support_orderTop (hxy : x = y + x.leadingTerm) (hy : y ≠ 0) :
     x.orderTop < y.orderTop := by
   refine lt_of_le_of_ne ?_ (add_leading_orderTop_ne hxy hy)
-  rw [orderTop_of_ne hy, orderTop_of_ne <| nonzero_of_nonzero_add_leading hxy hy]
+  rw [orderTop_of_ne_zero hy, orderTop_of_ne_zero <| nonzero_of_nonzero_add_leading hxy hy]
   exact WithTop.coe_le_coe.mpr <| Set.IsWF.min_le_min_of_subset <|
     support_subset_add_single_support hxy
 
 theorem order_lt_add_single_support_order [Zero Γ] (hxy : x = y + x.leadingTerm) (hy : y ≠ 0) :
     x.order < y.order := by
-  rw [← WithTop.coe_lt_coe, order_eq_orderTop_of_ne hy, order_eq_orderTop_of_ne <|
+  rw [← WithTop.coe_lt_coe, order_eq_orderTop_of_ne_zero hy, order_eq_orderTop_of_ne_zero <|
     nonzero_of_nonzero_add_leading hxy hy]
   exact orderTop_lt_add_single_support_orderTop hxy hy
 

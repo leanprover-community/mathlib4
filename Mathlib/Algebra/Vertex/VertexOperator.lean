@@ -493,7 +493,7 @@ theorem resProdLeft_ne_neg_one_one_left {n : ℤ} (hn : n ≠ -1) (A : VertexOpe
     · set m : ℕ := n.toNat
       have : n = m := by omega
       have hmi : m < i := by omega
-      rw [this, Ring.choose_eq_nat_choose, (Nat.choose_eq_zero_iff).mpr hmi]
+      rw [this, Ring.choose_natCast, (Nat.choose_eq_zero_iff).mpr hmi]
       simp
     · rw [one_ncoeff_ne_neg_one (by omega)]
       simp
@@ -663,7 +663,7 @@ lemma resProdRight_hasseDeriv_left (m : ℕ) (k : ℤ) (A B : VertexOperator R V
       LinearMap.map_smul_of_tower]
     rw [show -(i + m : ℕ) - 1 + (m : ℤ) = - (i + 1) by omega, Ring.choose_neg, show
       (i : ℤ) + 1 + m - 1 = (m + i : ℕ) by omega, smul_comm (Ring.choose k (i + m)), smul_assoc,
-      ← smul_assoc (Ring.choose _ m), Ring.choose_eq_nat_choose, add_comm m i, natCast_zsmul,
+      ← smul_assoc (Ring.choose _ m), Ring.choose_natCast, add_comm m i, natCast_zsmul,
       Ring.choose_add_smul_choose, smul_comm (Ring.choose k m), ← smul_assoc, Units.smul_eq_mul,
       ← Int.negOnePow_sub, Nat.cast_add, Int.add_sub_cancel, ← smul_assoc (Ring.choose k m)]
     congr 2
@@ -673,7 +673,7 @@ lemma resProdRight_hasseDeriv_left (m : ℕ) (k : ℤ) (A B : VertexOperator R V
     intro i hi
     contrapose! hi
     rw [hasseDeriv_ncoeff, show -(i : ℤ) - 1 + m = -(i + 1 - m) by omega, Ring.choose_neg,
-      show (i : ℤ) + 1 - m + m - 1 = i by omega, Ring.choose_eq_nat_choose,
+      show (i : ℤ) + 1 - m + m - 1 = i by omega, Ring.choose_natCast,
       Nat.choose_eq_zero_of_lt (lt_of_lt_of_eq hi (zero_add m))]
     simp
 
@@ -711,16 +711,16 @@ theorem resProd_nat_one_right_apply (n : ℕ) (A : VertexOperator R V) :
       · rw [Units.ext_iff, Units.val_smul, Units.smul_def, zsmul_eq_mul', Int.cast_eq,
           ← Units.val_mul, ← Int.negOnePow_sub]
         simp [h, hmn]
-      · rw [Ring.choose_eq_nat_choose, Ring.choose_eq_nat_choose]
+      · rw [Ring.choose_natCast, Ring.choose_natCast]
         refine Int.ofNat_inj.mpr ?_
         rw [← Nat.choose_symm (by omega), show (n - m).toNat = n - m.toNat by omega]
       · simp [h, hmn]
-    · rw [Ring.choose_eq_nat_choose, Ring.choose_eq_nat_choose, Nat.choose_eq_zero_of_lt (by omega),
+    · rw [Ring.choose_natCast, Ring.choose_natCast, Nat.choose_eq_zero_of_lt (by omega),
         one_ncoeff_ne_neg_one (by omega)]
       simp
   · rw [one_ncoeff_ne_neg_one (by omega), resProdRight_apply_ncoeff,
       finsum_eq_single _ (n - m).toNat fun _ _ ↦ (by rw [one_ncoeff_ne_neg_one (by omega)]; simp),
-      Ring.choose_eq_nat_choose n (n - m).toNat, Nat.choose_eq_zero_of_lt (by omega)]
+      Ring.choose_natCast n (n - m).toNat, Nat.choose_eq_zero_of_lt (by omega)]
     simp
 
 lemma resProd_hasseDeriv_left (m : ℕ) (k : ℤ) (A B : VertexOperator R V) :

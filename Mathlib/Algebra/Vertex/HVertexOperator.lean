@@ -896,11 +896,11 @@ theorem subLeft_leadingCoeff [Nontrivial R] : (subLeft R).leadingCoeff = (1 : R)
   exact lex_basis_lt
 
 theorem subLeft_order [Nontrivial R] : (subLeft R).order = toLex (0,1) := by
-  rw [subLeft_eq, ← WithTop.coe_eq_coe, HahnSeries.order_eq_orderTop_of_ne, HahnSeries.orderTop_sub,
-    HahnSeries.orderTop_single one_ne_zero]
+  rw [subLeft_eq, ← WithTop.coe_eq_coe, HahnSeries.order_eq_orderTop_of_ne_zero,
+    HahnSeries.orderTop_sub, HahnSeries.orderTop_single one_ne_zero]
   · rw [HahnSeries.orderTop_single one_ne_zero, HahnSeries.orderTop_single one_ne_zero]
     exact compareOfLessAndEq_eq_lt.mp rfl
-  · refine HahnSeries.leadingCoeff_ne_iff.mp ?_
+  · refine HahnSeries.leadingCoeff_ne_zero.mp ?_
     rw [← subLeft_eq, subLeft_leadingCoeff]
     exact one_ne_zero
 

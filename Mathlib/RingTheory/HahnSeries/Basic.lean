@@ -364,7 +364,7 @@ theorem leadingTerm_ne_iff {x : HahnSeries Γ R} : x ≠ 0 ↔ leadingTerm x ≠
   · intro hx
     rw [leadingTerm_of_ne hx]
     simp_all only [ne_eq, single_eq_zero_iff]
-    exact leadingCoeff_ne_iff.mpr hx
+    exact leadingCoeff_ne_zero.mpr hx
   · contrapose!
     intro hx
     rw [hx]
@@ -375,23 +375,6 @@ theorem leadingCoeff_leadingTerm {x : HahnSeries Γ R} :
   by_cases h : x = 0
   · rw [h, leadingTerm_zero]
   · rw [leadingTerm_of_ne h, leadingCoeff_of_single]
-
-open Classical in
-/-- A leading term of a Hahn series is a Hahn series with subsingleton support at minimal-order.
-  This is uniquely defined if `Γ` is a linear order. -/
-def leadingTerm (x : HahnSeries Γ R) : HahnSeries Γ R :=
-  if h : x = 0 then 0
-    else single (x.isWF_support.min (support_nonempty_iff.2 h)) x.leadingCoeff
-
-@[simp]
-theorem leadingCoeff_of_single {a : Γ} {r : R} : leadingCoeff (single a r) = r := by
-  simp only [leadingCoeff, single_eq_zero_iff]
-  by_cases h : r = 0 <;> simp [h]
-
-theorem coeff_untop_eq_leadingCoeff {x : HahnSeries Γ R} (hx) :
-    x.coeff (x.orderTop.untop hx) = x.leadingCoeff := by
-  rw [orderTop_ne_top] at hx
-  rw [leadingCoeff_of_ne_zero hx, (WithTop.untop_eq_iff _).mpr (orderTop_of_ne_zero hx)]
 
 variable [Zero Γ]
 
@@ -471,12 +454,6 @@ theorem leadingCoeff_eq {x : HahnSeries Γ R} : x.leadingCoeff = x.coeff x.order
   by_cases h : x = 0
   · rw [h, leadingCoeff_zero, coeff_zero]
   · simp [leadingCoeff_of_ne_zero, orderTop_of_ne_zero, order_of_ne, h]
-
-theorem leadingTerm_eq {x : HahnSeries Γ R} :
-    x.leadingTerm = single x.order (x.coeff x.order) := by
-  by_cases h : x = 0
-  · rw [h, leadingTerm_zero, order_zero, coeff_zero, single_eq_zero]
-  · rw [leadingTerm_of_ne h, leadingCoeff_eq, order_of_ne h]
 
 theorem leadingTerm_eq {x : HahnSeries Γ R} :
     x.leadingTerm = single x.order (x.coeff x.order) := by
@@ -633,13 +610,13 @@ section LinearOrder
 
 theorem le_orderTop_iff [LinearOrder Γ] [Zero R] {x : HahnSeries Γ R} {i : WithTop Γ} :
     i ≤ x.orderTop ↔ (∀ (j : Γ), j < i → x.coeff j = 0) := by
-  refine { mp := fun hi j hj =>
-    coeff_eq_zero_of_lt_orderTop (lt_of_lt_of_le hj hi), mpr := fun hj => ?_ }
+  refine ⟨fun hi j hj => coeff_eq_zero_of_lt_orderTop (lt_of_lt_of_le hj hi), fun hj => ?_⟩
   by_cases hx : x = 0
-  · simp_all only [coeff_zero, implies_true, orderTop_zero, le_top]
-  · by_contra h
-    specialize hj (x.isWF_support.min (support_nonempty_iff.2 hx))
-    simp_all [not_le, orderTop_of_ne hx, ← leadingCoeff_of_ne hx, leadingCoeff_ne_iff.mpr hx]
+  · simp [hx]
+  · specialize hj (x.isWF_support.min (support_nonempty_iff.2 hx))
+    rw [orderTop_of_ne_zero hx]
+    contrapose! hj
+    exact ⟨hj, coeff_orderTop_ne <| orderTop_of_ne_zero hx⟩
 
 section LocallyFiniteLinearOrder
 

@@ -195,7 +195,7 @@ theorem locality_right_eq_Borcherds_sum_3 (a b c : V) (r s : ℤ) : Finset.sum (
     congr 1
     · rw [Int.negOnePow_add]
       rfl
-    · rw [Ring.choose_eq_nat_choose]
+    · rw [Ring.choose_natCast]
       norm_cast
       congr 1
       · rw [Nat.choose_symm (Nat.le_of_succ_le hi)]

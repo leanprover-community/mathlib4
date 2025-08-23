@@ -244,7 +244,7 @@ def meval [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) : PowerSeries R →+* H
       (toPowerSeries (R := R)).symm).comp (PowerSeries.rescale r)
 
 theorem meval_apply_coeff [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) (a : PowerSeries R)
-    (n : ℕ) : (meval hg r a).coeff (n • g) = r ^ n * PowerSeries.coeff R n a := by
+    (n : ℕ) : (meval hg r a).coeff (n • g) = r ^ n * PowerSeries.coeff n a := by
   let f : ℕ ↪o Γ := ⟨⟨multiplesHom Γ g, StrictMono.injective (nsmul_left_strictMono hg)⟩,
       (StrictMono.le_iff_le (nsmul_left_strictMono hg))⟩
   rw [meval, RingHom.comp_apply, RingHom.comp_apply, embDomainRingHom_apply,
@@ -276,7 +276,7 @@ theorem meval_X_npow [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) (n : ℕ) :
   rw [RingHom.map_pow (meval hg r) _ n, meval_X, single_pow g n r]
 
 theorem meval_C [CommSemiring R] {g : Γ} (hg : 0 < g) (r s : R) :
-    meval hg r (PowerSeries.C R s) = C s := by
+    meval hg r (PowerSeries.C s) = C s := by
   ext g'
   by_cases h : g' ∈ Set.range (multiplesHom Γ g)
   · obtain ⟨n, hn⟩ := h

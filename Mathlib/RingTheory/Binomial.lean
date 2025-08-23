@@ -521,10 +521,9 @@ theorem choose_eq_sum_choose_smul [Ring R] [BinomialRing R] {r : R} {n k : ℕ} 
   · intro i hi hk
     simp_all only [Nat.succ_eq_add_one, mem_range, id_eq, Set.image_id', coe_range, Set.mem_Iio,
       not_lt]
-    rw [choose_eq_nat_choose, Nat.choose_eq_zero_iff.mpr hk, Nat.cast_zero, zero_mul]
+    rw [choose_natCast, Nat.choose_eq_zero_iff.mpr hk, Nat.cast_zero, zero_mul]
   · intro i hi
-    simp only [nsmul_eq_mul, id_eq]
-    rw [choose_eq_nat_choose]
+    simp only [nsmul_eq_mul, id_eq, choose_natCast]
 
 theorem choose_mul_choose [Ring R] [BinomialRing R] (r : R) {n k : ℕ} (h : k ≤ n) :
     choose r k * choose r n = ∑ m ∈ range (k+1),

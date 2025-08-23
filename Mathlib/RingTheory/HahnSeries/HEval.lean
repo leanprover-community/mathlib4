@@ -405,12 +405,12 @@ elements. -/
 abbrev mvPowerSeriesFamily [Fintype σ] (y : σ →₀ HahnSeries Γ V)
     (f : MvPowerSeries σ R) :
     SummableFamily Γ V (σ →₀ ℕ) :=
-  smulFamily (fun n => MvPowerSeries.coeff R n f) (mvPowers y)
+  smulFamily (fun n => MvPowerSeries.coeff n f) (mvPowers y)
 
 theorem mvPowerSeriesFamily_toFun [Fintype σ] (y : σ →₀ HahnSeries Γ V)
     (hy : ∀ i, 0 < (y i).orderTop) (f : MvPowerSeries σ R) (n : σ →₀ ℕ) :
     mvPowerSeriesFamily y f n =
-      (MvPowerSeries.coeff R n f) • ∏ i, (y i) ^ (n i) := by
+      (MvPowerSeries.coeff n f) • ∏ i, (y i) ^ (n i) := by
   simp [hy]
 
 theorem mvPowerSeriesFamilyAdd [Fintype σ] (y : σ →₀ HahnSeries Γ R)
@@ -561,7 +561,7 @@ def heval : PowerSeries R →ₐ[R] HahnSeries Γ R where
     by_cases hg : g = 0 <;> simp [powers_toFun, hg, Algebra.algebraMap_eq_smul_one]
 
 theorem heval_of_orderTop_not_pos (hx : ¬ 0 < x.orderTop) (a : PowerSeries R) :
-    heval x a = (constantCoeff R) a • 1 := by
+    heval x a = constantCoeff a • 1 := by
   simp [powerSeriesFamily_of_not_orderTop_pos hx]
 
 theorem heval_mul {a b : PowerSeries R} : heval x (a * b) = heval x a * heval x b :=

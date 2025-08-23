@@ -577,8 +577,8 @@ theorem orderTop_mul_of_nonzero {x y : HahnSeries Γ R} (h : x.leadingCoeff * y.
   by_cases hy : y = 0; · simp [hy]
   have : (x * y).coeff (x.order + y.order) ≠ 0 := by rwa [coeff_mul_order_add_order x y]
   have hxy : x * y ≠ 0 := fun h ↦ (by simp [h] at this)
-  rw [← order_eq_orderTop_of_ne hx, ← order_eq_orderTop_of_ne hy, ← order_eq_orderTop_of_ne hxy,
-    ← WithTop.coe_add, WithTop.coe_eq_coe]
+  rw [← order_eq_orderTop_of_ne_zero hx, ← order_eq_orderTop_of_ne_zero hy,
+    ← order_eq_orderTop_of_ne_zero hxy, ← WithTop.coe_add, WithTop.coe_eq_coe]
   refine le_antisymm (order_le_of_coeff_ne_zero this) ?_
   rw [HahnSeries.order_of_ne hx, HahnSeries.order_of_ne hy, HahnSeries.order_of_ne hxy,
     ← Set.IsWF.min_add]
@@ -594,8 +594,9 @@ theorem orderTop_add_le_mul {x y : HahnSeries Γ R} :
 theorem order_add_le_mul {x y : HahnSeries Γ R} (hxy : x * y ≠ 0) :
     x.order + y.order ≤ (x * y).order := by
   refine WithTop.coe_le_coe.mp ?_
-  rw [WithTop.coe_add, order_eq_orderTop_of_ne (ne_zero_and_ne_zero_of_mul hxy).1,
-    order_eq_orderTop_of_ne (ne_zero_and_ne_zero_of_mul hxy).2, order_eq_orderTop_of_ne hxy]
+  rw [WithTop.coe_add, order_eq_orderTop_of_ne_zero (ne_zero_and_ne_zero_of_mul hxy).1,
+    order_eq_orderTop_of_ne_zero (ne_zero_and_ne_zero_of_mul hxy).2,
+    order_eq_orderTop_of_ne_zero hxy]
   exact orderTop_add_le_mul
 
 theorem order_mul_of_nonzero {x y : HahnSeries Γ R} (h : x.leadingCoeff * y.leadingCoeff ≠ 0) :
@@ -805,18 +806,6 @@ instance instGroupModule {V} [Ring R] [AddCommGroup V] [Module R V] : Module (Ha
   add_smul _ _ _ := add_smul Module.add_smul
   zero_smul _ := zero_smul'
 
-instance instNoZeroSMulDivisors {Γ} [AddCommMonoid Γ] [LinearOrder Γ]
-    [IsOrderedCancelAddMonoid Γ] [Zero R] [SMulWithZero R V] [NoZeroSMulDivisors R V] :
-    NoZeroSMulDivisors (HahnSeries Γ R) (HahnModule Γ R V) where
-  eq_zero_or_eq_zero_of_smul_eq_zero {x y} hxy := by
-    contrapose! hxy
-    simp only [ne_eq]
-    rw [HahnModule.ext_iff, funext_iff, not_forall]
-    refine ⟨x.order + ((of R).symm y).order, ?_⟩
-    rw [coeff_smul_order_add_order x y, of_symm_zero, HahnSeries.coeff_zero, smul_eq_zero]
-    simp only [HahnSeries.leadingCoeff_ne_iff.mpr hxy.1, false_or]
-    exact HahnSeries.leadingCoeff_ne_iff.mpr hxy.2 -- defeq abuse?
-
 instance [CommRing R] {S : Type*} [CommRing S] [Algebra R S] [Module R V] [Module S V]
     [IsScalarTower R S V] : IsScalarTower R S (HahnSeries Γ V) where
   smul_assoc r s a := by
@@ -928,7 +917,7 @@ theorem order_mul {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMo
     [NonUnitalNonAssocSemiring R]
     [NoZeroDivisors R] {x y : HahnSeries Γ R} (hx : x ≠ 0) (hy : y ≠ 0) :
     (x * y).order = x.order + y.order :=
-  order_mul_of_nonzero (mul_ne_zero (leadingCoeff_ne_iff.mpr hx) (leadingCoeff_ne_iff.mpr hy))
+  order_mul_of_nonzero (mul_ne_zero (leadingCoeff_ne_zero.mpr hx) (leadingCoeff_ne_zero.mpr hy))
 
 @[simp]
 theorem order_pow {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]

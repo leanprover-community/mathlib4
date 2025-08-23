@@ -320,7 +320,7 @@ theorem hsum_leadingCoeff_of_le {s : SummableFamily Γ R α} {g : Γ} {a : α} (
     by_contra h
     simp [h] at this
   simp only [hs, ↓reduceDIte, WithTop.coe_eq_coe] at this
-  simp only [leadingCoeff, hs, ↓reduceDIte, coeff_hsum, this]
+  simp only [leadingCoeff_of_ne_zero hs, coeff_hsum, untop_orderTop_of_ne_zero hs, this]
   rw [finsum_eq_single (fun i ↦ (s i).coeff g) a hna]
 
 end AddCommMonoid

@@ -142,7 +142,7 @@ theorem binomialPow_one {g g' : Γ} (h : g < g') :
     binomialPow A g g' (Nat.cast (R := R) 1) = ((single g) (1 : A) - (single g') 1) := by
   rw [binomialPow_apply, PowerSeries.binomialSeries_nat 1, pow_one, map_add,
     PowerSeries.heval_X _ (pos_orderTop_single_sub A h (-1)),
-    ← RingHom.map_one (f := PowerSeries.C A), PowerSeries.heval_C _, one_smul, mul_add, mul_one,
+    ← RingHom.map_one (f := PowerSeries.C), PowerSeries.heval_C _, one_smul, mul_add, mul_one,
     single_mul_single, one_mul, single_neg, Nat.cast_one, one_smul, add_sub_cancel,
     sub_eq_add_neg]
 
@@ -406,10 +406,10 @@ theorem orderTop_unitBinomial [Nontrivial R] {g g' : Γ} (hg : IsAddUnit g) (hgg
     rw [(orderTop_single (IsUnit.ne_zero ha))]
     exact WithTop.coe_lt_coe.mpr hgg'
 
-theorem order_unitBinomial [Nontrivial R] {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') {a : R}
-    (ha : IsUnit a) (b : R) : (UnitBinomial hg hgg' ha b).val.order = g := by
-  rw [← WithTop.coe_eq_coe, order_eq_orderTop_of_ne (Units.ne_zero (UnitBinomial hg hgg' ha b))]
-  exact orderTop_unitBinomial hg hgg' ha b
+theorem order_unitBinomial [Nontrivial R] {g g' : Γ} (hg : IsAddUnit g) (hg' : g < g') {a : R}
+    (ha : IsUnit a) (b : R) : (UnitBinomial hg hg' ha b).val.order = g := by
+  rw [← WithTop.coe_eq_coe, order_eq_orderTop_of_ne_zero (Units.ne_zero (UnitBinomial hg hg' ha b))]
+  exact orderTop_unitBinomial hg hg' ha b
 
 theorem leadingCoeff_unitBinomial [Nontrivial R] {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g')
     {a : R} (ha : IsUnit a) (b : R) : (UnitBinomial hg hgg' ha b).val.leadingCoeff = a := by
@@ -454,14 +454,15 @@ theorem leadingCoeff_single_add_single {g g' : Γ} (hgg' : g < g') {a b : R} (ha
     (single g a + single g' b).leadingCoeff = a := by
   have hn := single_add_single_ne hgg' ha b
   have ho := orderTop_single_add_single hgg' ha b
-  rw [orderTop_of_ne hn, WithTop.coe_eq_coe] at ho
-  rw [leadingCoeff_of_ne hn, ho, coeff_single_add_single hgg']
+  rw [orderTop_of_ne_zero hn, WithTop.coe_eq_coe] at ho
+  rw [leadingCoeff_of_ne_zero hn, untop_orderTop_of_ne_zero hn, ho, coeff_single_add_single hgg']
 
 omit [IsOrderedCancelAddMonoid Γ] in
 theorem order_single_add_single {g g' : Γ} (hgg' : g < g') {a b : R} (ha : a ≠ 0) :
     (single g a + single g' b).order = g := by
   refine WithTop.coe_eq_coe.mp ?_
-  rw [order_eq_orderTop_of_ne (single_add_single_ne hgg' ha b), orderTop_single_add_single hgg' ha]
+  rw [order_eq_orderTop_of_ne_zero (single_add_single_ne hgg' ha b),
+    orderTop_single_add_single hgg' ha]
 /-!
 theorem isUnit_single_add_single {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') (a : Units R)
     (b : R) : IsUnit (single g a.val + single g' b) := by
