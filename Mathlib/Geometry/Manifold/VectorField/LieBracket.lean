@@ -330,8 +330,8 @@ lemma aux_computation :
 variable (x V) in
 omit [CompleteSpace E] in
 lemma aux_computation2' :
-    (mfderivWithin 𝓘(𝕜, E) I (extChartAt I x).symm (extChartAt I x).target ((extChartAt I x) x)).inverse (V x)
-      = V x := by
+    letI φ := extChartAt I x
+    (mfderivWithin 𝓘(𝕜, E) I φ.symm φ.target (φ x)).inverse (V x) = V x := by
   set φ := extChartAt I x
   set x' := (extChartAt I x) x
   have : mfderivWithin 𝓘(𝕜, E) I φ.symm φ.target (φ x) = ContinuousLinearMap.id 𝕜 _ := by
@@ -360,8 +360,8 @@ lemma aux_computation2' :
 variable (x V) in
 omit [CompleteSpace E] in
 lemma aux_computation2 :
-    (mfderivWithin 𝓘(𝕜, E) I (extChartAt I x).symm (range I) ((extChartAt I x) x)).inverse (V x)
-      = V x := by
+    letI φ := extChartAt I x
+    (mfderivWithin 𝓘(𝕜, E) I φ.symm (range I) (φ x)).inverse (V x) = V x := by
   set φ := extChartAt I x
   set x' := (extChartAt I x) x
   -- this is almost true: it is true within a smaller set (namely extChartAt I x).target...
@@ -420,7 +420,7 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
   let aux := lieBracketWithin_smul_right (V := V') hf'
     hW.differentiableWithinAt_mpullbackWithin_vectorField hs
 
-  rw [← Pi.smul_def']
+  -- rw [← Pi.smul_def']
   -- We need the cast, since on the nose `B` is a map `E → E`,
   -- while we need a map between tangent spaces.
   let A (x₀) := (fderivWithin 𝕜 f' s' x₀) (V' x₀) • W' x₀
@@ -428,30 +428,26 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
   trans mpullback I 𝓘(𝕜, E) ((extChartAt I x)) (fun y ↦ A y + B y) x
   · simp only [mpullback_apply]
     congr
-  -- missing lemma; first part of the claim
-  have h1 : mpullback I 𝓘(𝕜, E) (extChartAt I x) A x
-      = (mfderivWithin I 𝓘(𝕜, 𝕜) f s x) (V x) • W x := by
-    unfold A
-    simp [mfderivWithin, hf]
-    simp [mpullback]
-    have cleanup1 : I ((chartAt H x) x) = x' := rfl
-    have cleanup2 : f ∘ (chartAt H x).symm ∘ ↑I.symm = f' := rfl
-    rw [cleanup1, cleanup2]
-    congr 1
-    · sorry -- is the sorry below
-    -- This statement is not fully true, but I only need a weaker version...
-    -- if V' x' is a tangent vector within s, i.e. my aux_computation' should suffice!
-    -- Make this intuitive hunch rigorous!
-    have : V' x' = V x := by
-      simp only [V', x', mpullbackWithin]
-      rw [extChartAt_to_inv x]
-      exact aux_computation2 x V
-    exact aux_computation x W
-  have h2 : mpullback I 𝓘(𝕜, E) (extChartAt I x) B x
-      = f x • mpullback I 𝓘(𝕜, E) (extChartAt I x) (lieBracketWithin 𝕜 V' W' s') x := by
-    simp [B, ← Pi.smul_def', mpullback_smul (V := lieBracketWithin 𝕜 V' W' s'), f']
-  -- Adding these identities proves the claim.
-  rw [← Pi.add_def, mpullback_add_apply]; congr
+  -- We prove the equality of each summand separately.
+  rw [← Pi.add_def, mpullback_add_apply]; congr; swap
+  · simp [B, ← Pi.smul_def', mpullback_smul (V := lieBracketWithin 𝕜 V' W' s'), f']
+
+  -- This part is still TODO/ in progress!!
+  unfold A
+  simp [mfderivWithin, hf]
+  simp [mpullback]
+  have cleanup1 : I ((chartAt H x) x) = x' := rfl
+  have cleanup2 : f ∘ (chartAt H x).symm ∘ I.symm = f' := rfl
+  rw [cleanup1, cleanup2, ← aux_computation x W]
+  congr -- congr 1 is less strong
+  -- This statement is not fully true, but I only need a weaker version...
+  -- if V' x' is a tangent vector within s, i.e. my aux_computation' should suffice!
+  -- Make this intuition hunch rigorous!
+  have : V' x' = V x := by
+    simp only [V', x', mpullbackWithin]
+    rw [extChartAt_to_inv x]
+    exact aux_computation2 x V
+  exact this
 
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
