@@ -507,10 +507,12 @@ end VonNBornologyEqMetric
 
 section QuasiCompleteSpace
 
-/-- A uniform space is quasi-complete if every closed and von Neumann bounded set is complete. -/
+/-- A locally convex space is quasi-complete if every closed and von Neumann bounded set is
+complete. -/
 class QuasiCompleteSpace (𝕜 : Type*) (E : Type*) [Zero E] [UniformSpace E] [SeminormedRing 𝕜]
     [SMul 𝕜 E] : Prop where
-  /-- A uniform space is quasi-complete if every closed and von Neumann bounded set is complete. -/
+  /-- A locally convex space is quasi-complete if every closed and von Neumann bounded set is
+  complete. -/
   quasiComplete : ∀ ⦃s : Set E⦄, Bornology.IsVonNBounded 𝕜 s → IsClosed s → IsComplete s
 
 variable {𝕜 : Type*} {E : Type*} [Zero E] [UniformSpace E] [SeminormedRing 𝕜] [SMul 𝕜 E]
