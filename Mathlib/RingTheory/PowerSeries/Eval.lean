@@ -34,7 +34,7 @@ namespace PowerSeries
 
 /-- Given a power series `f(X)`, a linear map taking `g(X)` to `g(X * f(X))`. -/
 def eval [Semiring R] (f : PowerSeries R) : PowerSeries R →ₗ[R] PowerSeries R where
-  toFun g := mk (fun n => ∑ i ∈ antidiagonal n, (coeff R i.1 g) * coeff R i.2 (f ^ i.1))
+  toFun g := mk (fun n => ∑ i ∈ antidiagonal n, (coeff i.1 g) * coeff i.2 (f ^ i.1))
   map_add' x y := by
     ext n
     simp [add_mul, sum_add_distrib]
@@ -43,8 +43,8 @@ def eval [Semiring R] (f : PowerSeries R) : PowerSeries R →ₗ[R] PowerSeries 
     simp [mul_sum, mul_assoc]
 
 lemma eval_coeff [Semiring R] (f g : PowerSeries R) (n : ℕ) :
-    (coeff R n) (eval f g) = ∑ i ∈ antidiagonal n, (coeff R i.1 g) • coeff R i.2 (f ^ i.1) :=
-  coeff_mk n fun n ↦ ∑ i ∈ antidiagonal n, (coeff R i.1 g) • coeff R i.2 (f ^ i.1)
+    (coeff n) (eval f g) = ∑ i ∈ antidiagonal n, (coeff i.1 g) • coeff i.2 (f ^ i.1) :=
+  coeff_mk n fun n ↦ ∑ i ∈ antidiagonal n, (coeff i.1 g) • coeff i.2 (f ^ i.1)
 
 @[simp]
 lemma eval_mul [CommSemiring R] (f g h : PowerSeries R) : eval f (g * h) = eval f g * eval f h := by
@@ -55,7 +55,7 @@ lemma eval_mul [CommSemiring R] (f g h : PowerSeries R) : eval f (g * h) = eval 
     (κ := ((_ : ℕ × ℕ) × (_ : ℕ × ℕ) × ℕ × ℕ))
     (t := (antidiagonal n).sigma fun a ↦ (antidiagonal a.1).sigma fun b ↦ antidiagonal a.2)
     (g := fun ⟨⟨_i, _j⟩, ⟨⟨k, l⟩, ⟨m, n⟩⟩⟩ =>
-      (coeff R k) g * (coeff R m) (f ^ k) * ((coeff R l) h * (coeff R n) (f ^ l)))
+      (coeff k) g * (coeff m) (f ^ k) * ((coeff l) h * (coeff n) (f ^ l)))
     (fun ⟨⟨i, j⟩, ⟨k, l⟩, ⟨m, n⟩⟩ ↦ ⟨(k + m, l + n), (k, m), (l, n)⟩)
     (fun ⟨⟨i, j⟩, ⟨k, l⟩, ⟨m, n⟩⟩ ↦ ⟨(k + m, l + n), (k, m), (l, n)⟩)]
   · simp_rw [sum_sigma]
@@ -85,7 +85,7 @@ lemma eval_one [Semiring R] (f : PowerSeries R) : eval f 1 = 1 := by
 
 @[simp]
 lemma eval_monomial [Semiring R] (f : PowerSeries R) (r : R) (n : ℕ) :
-    eval f (monomial R n r) = r • X ^ n * f ^ n := by
+    eval f (monomial n r) = r • X ^ n * f ^ n := by
   ext m
   simp only [eval_coeff, smul_eq_mul, coeff_mul, map_smul]
   refine sum_congr rfl fun ij hij => ?_
