@@ -85,7 +85,7 @@ theorem congr_comp_reverse {X Y : Paths <| Quiver.Symmetrify V} (p : X ⟶ Y) :
   | cons q f ih =>
     simp only [Quiver.Path.reverse]
     fapply EqvGen.trans
-    -- Porting note: `Quiver.Path.*` and `Quiver.Hom.*` notation not working
+    -- Porting note: dot notation for `Quiver.Path.*` and `Quiver.Hom.*` not working
     · exact q ≫ Quiver.Path.reverse q
     · apply EqvGen.symm
       apply EqvGen.rel

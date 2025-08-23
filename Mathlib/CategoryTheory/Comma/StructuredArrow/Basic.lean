@@ -36,8 +36,9 @@ and morphisms `C`-morphisms `Y ⟶ Y'` making the obvious triangle commute.
 def StructuredArrow (S : D) (T : C ⥤ D) :=
   Comma (Functor.fromPUnit.{0} S) T
 
--- Porting note: not found by inferInstance
-instance (S : D) (T : C ⥤ D) : Category (StructuredArrow S T) := commaCategory
+/-- See through the type synonym `StructuredArrow S T = Comma _ _`. -/
+instance (S : D) (T : C ⥤ D) : Category (StructuredArrow S T) :=
+  inferInstanceAs <| Category (Comma _ _)
 
 namespace StructuredArrow
 

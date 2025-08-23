@@ -471,8 +471,7 @@ def algebraCoalgebraEquiv (adj : F ⊣ G) : Algebra F ≌ Coalgebra G where
   counitIso := AlgCoalgEquiv.counitIso adj
   functor_unitIso_comp A := by
     ext
-    -- Porting note: why doesn't `simp` work here?
-    exact Category.comp_id _
+    simp
 
 end Adjunction
 
