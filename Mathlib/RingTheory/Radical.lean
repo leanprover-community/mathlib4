@@ -238,7 +238,7 @@ lemma isRadical_radical : IsRadical (radical a) := by
   simp only [mem_primeFactors] at hi
   have : i ∣ radical a := by
     rw [dvd_radical_iff_of_irreducible]
-    · exact dvd_of_normalized_factor hi
+    · exact dvd_of_mem_normalizedFactors hi
     · exact irreducible_of_normalized_factor i hi
     · rintro rfl
       simp only [normalizedFactors_zero, Multiset.notMem_zero] at hi

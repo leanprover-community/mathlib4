@@ -116,7 +116,7 @@ theorem isPrincipalIdealRing_of_isPrincipal_of_norm_le_of_isPrime
   refine h (((mem_normalizedFactors_iff (nonZeroDivisors.coe_ne_zero I)).mp hJ).1) ?_
   exact (cast_le.mpr <| le_of_dvd (absNorm_pos_of_nonZeroDivisors I) <|
     absNorm_dvd_absNorm_of_le <| le_of_dvd <|
-      UniqueFactorizationMonoid.dvd_of_normalized_factor hJ).trans hI
+      UniqueFactorizationMonoid.dvd_of_mem_normalizedFactors hJ).trans hI
 
 /-- Let `K` be a number field and let `M K` be the Minkowski bound of `K` (by definition it is
 `(4 / π) ^ nrComplexPlaces K * ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|)`).
