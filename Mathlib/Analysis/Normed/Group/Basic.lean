@@ -150,6 +150,8 @@ the topology coming from `edist`. -/
 structure ENormedAddCommMonoid (E : Type*) [TopologicalSpace E]
   extends ESeminormedAddCommMonoid E, ENormedAddMonoid E where
 
+attribute [nolint docBlame] ENormedAddCommMonoid.toENormedAddMonoid
+
 set_option linter.existingAttributeWarning false in
 /-- An e-seminormed commutative monoid is a commutative monoid endowed with a continuous enorm. -/
 @[to_additive,
@@ -165,6 +167,8 @@ which is positive definite. -/
   deprecated "Use `[CommMonoid E] [ENormedMonoid E]` instead." (since := "2025-08-23")]
 structure ENormedCommMonoid (E : Type*) [TopologicalSpace E]
   extends ESeminormedCommMonoid E, ENormedMonoid E where
+
+attribute [nolint docBlame] ENormedCommMonoid.toENormedMonoid
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖`
 defines a pseudometric space structure. -/
