@@ -11,7 +11,7 @@ import Mathlib.Topology.Homeomorph.Lemmas
 
 In this file we define `TopologicalSpace` structure on `Mᵐᵒᵖ`, `Mᵃᵒᵖ`, `Mˣ`, and `AddUnits M`.
 This file does not import definitions of a topological monoid and/or a continuous multiplicative
-action, so we postpone the proofs of `HasContinuousMul Mᵐᵒᵖ` etc till we have these definitions.
+action, so we postpone the proofs of `HasContinuousMul Mᵐᵒᵖ` etc. till we have these definitions.
 
 ## Tags
 
@@ -26,8 +26,8 @@ open Filter Topology
 namespace MulOpposite
 
 /-- Put the same topological space structure on the opposite monoid as on the original space. -/
-@[to_additive "Put the same topological space structure on the opposite monoid as on the original
-space."]
+@[to_additive /-- Put the same topological space structure on the opposite monoid as on the original
+space. -/]
 instance instTopologicalSpaceMulOpposite [TopologicalSpace M] : TopologicalSpace Mᵐᵒᵖ :=
   TopologicalSpace.induced (unop : Mᵐᵒᵖ → M) ‹_›
 
@@ -42,7 +42,7 @@ theorem continuous_op : Continuous (op : M → Mᵐᵒᵖ) :=
   continuous_induced_rng.2 continuous_id
 
 /-- `MulOpposite.op` as a homeomorphism. -/
-@[to_additive (attr := simps!) "`AddOpposite.op` as a homeomorphism."]
+@[to_additive (attr := simps!) /-- `AddOpposite.op` as a homeomorphism. -/]
 def opHomeomorph : M ≃ₜ Mᵐᵒᵖ where
   toEquiv := opEquiv
   continuous_toFun := continuous_op
@@ -94,8 +94,8 @@ open MulOpposite
 variable [TopologicalSpace M] [Monoid M] [TopologicalSpace X]
 
 /-- The units of a monoid are equipped with a topology, via the embedding into `M × M`. -/
-@[to_additive "The additive units of a monoid are equipped with a topology, via the embedding into
-`M × M`."]
+@[to_additive
+/-- The additive units of a monoid are equipped with a topology, via the embedding into `M × M`. -/]
 instance instTopologicalSpaceUnits : TopologicalSpace Mˣ :=
   TopologicalSpace.induced (embedProduct M) inferInstance
 
@@ -121,22 +121,22 @@ instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mˣ :=
 
 /-- An auxiliary lemma that can be used to prove that coercion `Mˣ → M` is a topological embedding.
 Use `Units.isEmbedding_val₀`, `Units.isEmbedding_val`, or `toUnits_homeomorph` instead. -/
-@[to_additive "An auxiliary lemma that can be used to prove that coercion `AddUnits M → M` is a
-topological embedding. Use `AddUnits.isEmbedding_val` or `toAddUnits_homeomorph` instead."]
+@[to_additive /-- An auxiliary lemma that can be used to prove that coercion `AddUnits M → M` is a
+topological embedding. Use `AddUnits.isEmbedding_val` or `toAddUnits_homeomorph` instead. -/]
 lemma isEmbedding_val_mk' {M : Type*} [Monoid M] [TopologicalSpace M] {f : M → M}
     (hc : ContinuousOn f {x : M | IsUnit x}) (hf : ∀ u : Mˣ, f u.1 = ↑u⁻¹) :
     IsEmbedding (val : Mˣ → M) := by
   refine ⟨⟨?_⟩, val_injective⟩
   rw [topology_eq_inf, inf_eq_left, ← continuous_iff_le_induced,
     @continuous_iff_continuousAt _ _ (.induced _ _)]
-  intros u s hs
+  intro u s hs
   simp only [← hf, nhds_induced, Filter.mem_map] at hs ⊢
   exact ⟨_, mem_inf_principal.1 (hc u u.isUnit hs), fun u' hu' ↦ hu' u'.isUnit⟩
 
 /-- An auxiliary lemma that can be used to prove that coercion `Mˣ → M` is a topological embedding.
 Use `Units.isEmbedding_val₀`, `Units.isEmbedding_val`, or `toUnits_homeomorph` instead. -/
-@[to_additive "An auxiliary lemma that can be used to prove that coercion `AddUnits M → M` is a
-topological embedding. Use `AddUnits.isEmbedding_val` or `toAddUnits_homeomorph` instead."]
+@[to_additive /-- An auxiliary lemma that can be used to prove that coercion `AddUnits M → M` is a
+topological embedding. Use `AddUnits.isEmbedding_val` or `toAddUnits_homeomorph` instead. -/]
 lemma embedding_val_mk {M : Type*} [DivisionMonoid M] [TopologicalSpace M]
     (h : ContinuousOn Inv.inv {x : M | IsUnit x}) : IsEmbedding (val : Mˣ → M) :=
   isEmbedding_val_mk' h fun u ↦ (val_inv_eq_inv_val u).symm
