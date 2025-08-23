@@ -368,6 +368,8 @@ def mapForallBinderNames : Expr → (Name → Name) → Expr
   | .forallE n d b bi, f => .forallE (f n) d (mapForallBinderNames b f) bi
   | e, _ => e
 
+@[deprecated (since := "2025-08-23")] alias mapPrefix := mapForallBinderNames
+
 open Lean.Elab.Term
 /-- Annotates a `binderIdent` with the binder information from an `fvar`. -/
 def addLocalVarInfoForBinderIdent (fvar : Expr) (tk : TSyntax ``binderIdent) : MetaM Unit :=

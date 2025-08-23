@@ -431,6 +431,9 @@ def openCoverOfMapIrrelevantEqTop : X.OpenCover :=
     rw [← Scheme.zeroLocus_span, Set.range_comp', ← Ideal.map_span, H, hf]
     simp)
 
+@[deprecated (since := "2025-08-23")]
+alias openCoverOfMapIrreleventEqTop := openCoverOfMapIrrelevantEqTop
+
 @[deprecated (since := "2025-08-22")] noncomputable alias openCoverOfMapIrreleventEqTop :=
   openCoverOfMapIrrelevantEqTop
 

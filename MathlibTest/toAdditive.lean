@@ -598,6 +598,8 @@ elab "#computability " decl:ident : command => do
 @[to_additive]
 def mulComputableTest : Nat := 0
 
+@[deprecated (since := "2025-08-23")] alias Bar.bar'_works := mulComputableTest
+
 /-- info: `mulComputableTest` is computable -/
 #guard_msgs in #computability mulComputableTest
 /-- info: `addComputableTest` is computable -/

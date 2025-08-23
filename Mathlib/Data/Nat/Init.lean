@@ -433,6 +433,8 @@ instance decidableLoHiLe (lo hi : ℕ) (P : ℕ → Prop) [DecidablePred P] :
 class AtLeastTwo (n : ℕ) : Prop where
   prop : 2 ≤ n
 
+@[deprecated (since := "2025-08-23")] alias exists_lt_succ := AtLeastTwo
+
 instance instAtLeastTwo {n : ℕ} : Nat.AtLeastTwo (n + 2) where
   prop := Nat.succ_le_succ <| Nat.succ_le_succ <| Nat.zero_le _
 

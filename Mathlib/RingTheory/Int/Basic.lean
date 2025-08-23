@@ -98,8 +98,12 @@ theorem exists_prime_and_dvd {n : ℤ} (hn : n.natAbs ≠ 1) : ∃ p, Prime p �
   obtain ⟨p, pp, pd⟩ := Nat.exists_prime_and_dvd hn
   exact ⟨p, Nat.prime_iff_prime_int.mp pp, Int.natCast_dvd.mpr pd⟩
 
+@[deprecated (since := "2025-08-23")] alias Int.exists_prime_and_dvd := exists_prime_and_dvd
+
 theorem prime_iff_natAbs_prime {k : ℤ} : Prime k ↔ Nat.Prime k.natAbs :=
   (Int.associated_natAbs k).prime_iff.trans Nat.prime_iff_prime_int.symm
+
+@[deprecated (since := "2025-08-23")] alias Int.prime_iff_natAbs_prime := prime_iff_natAbs_prime
 
 instance instDecidablePredPrime : DecidablePred (Prime : ℤ → Prop) := fun m ↦
   decidable_of_iff (Nat.Prime m.natAbs) prime_iff_natAbs_prime.symm

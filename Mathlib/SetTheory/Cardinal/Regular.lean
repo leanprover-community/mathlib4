@@ -265,6 +265,8 @@ theorem isInaccessible_def {c : Cardinal} :
   mp h := ⟨h.aleph0_lt, h.isRegular, h.isStrongLimit⟩
   mpr := fun ⟨h₁, h₂, h₃⟩ ↦ ⟨h₁, h₂.2, h₃.two_power_lt⟩
 
+@[deprecated (since := "2025-08-23")] alias isInaccesible_def := isInaccessible_def
+
 @[deprecated (since := "2025-08-20")] alias isInaccesible_def := isInaccessible_def
 
 -- Lean's foundations prove the existence of ℵ₀ many inaccessible cardinals

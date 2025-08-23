@@ -354,11 +354,15 @@ def equivCongr {δ : Sort*} (ab : α ≃ β) (cd : γ ≃ δ) : (α ≃ γ) ≃ 
 @[simp, grind =] theorem equivCongr_apply_apply {δ} (ab : α ≃ β) (cd : γ ≃ δ) (e : α ≃ γ) (x) :
     ab.equivCongr cd e x = cd (e (ab.symm x)) := rfl
 
+@[deprecated (since := "2025-08-23")] alias equivCongr_refl := equivCongr_apply_apply
+
 @[simp, grind =] theorem equivCongr_symm {δ} (ab : α ≃ β) (cd : γ ≃ δ) :
     (ab.equivCongr cd).symm = ab.symm.equivCongr cd.symm := by ext; rfl
 
 @[simp] theorem equivCongr_refl {α β} :
     (Equiv.refl α).equivCongr (Equiv.refl β) = Equiv.refl (α ≃ β) := by grind
+
+@[deprecated (since := "2025-08-23")] alias equivCongr_symm := equivCongr_refl
 
 @[simp] theorem equivCongr_trans {δ ε ζ} (ab : α ≃ β) (de : δ ≃ ε) (bc : β ≃ γ) (ef : ε ≃ ζ) :
     (ab.equivCongr de).trans (bc.equivCongr ef) = (ab.trans bc).equivCongr (de.trans ef) := by

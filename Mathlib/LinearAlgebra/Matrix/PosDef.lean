@@ -347,6 +347,8 @@ lemma IsHermitian.posSemidef_iff_eigenvalues_nonneg [DecidableEq n] {A : Matrix 
   refine (posSemidef_diagonal_iff.mpr ?_).mul_mul_conjTranspose_same _
   simpa using h
 
+@[deprecated (since := "2025-08-23")] alias A := IsHermitian.posSemidef_iff_eigenvalues_nonneg
+
 @[deprecated (since := "2025-08-17")] alias ⟨_, IsHermitian.posSemidef_of_eigenvalues_nonneg⟩ :=
   IsHermitian.posSemidef_iff_eigenvalues_nonneg
 

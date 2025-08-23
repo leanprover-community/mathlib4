@@ -407,6 +407,8 @@ theorem _root_.Ordinal.lift_omega (o : Ordinal.{u}) :
 theorem isNormal_aleph : Order.IsNormal aleph :=
   isNormal_preAleph.comp (isNormal_add_right _)
 
+@[deprecated (since := "2025-08-23")] alias aleph_limit := isNormal_aleph
+
 theorem aleph_limit {o : Ordinal} (ho : IsSuccLimit o) : ℵ_ o = ⨆ a : Iio o, ℵ_ a :=
   isNormal_aleph.apply_of_isSuccLimit ho
 
@@ -603,6 +605,8 @@ theorem beth_succ (o : Ordinal) : ℶ_ (succ o) = 2 ^ ℶ_ o := by
 
 theorem isNormal_beth : Order.IsNormal beth :=
   isNormal_preBeth.comp (isNormal_add_right _)
+
+@[deprecated (since := "2025-08-23")] alias beth_limit := isNormal_beth
 
 theorem beth_limit {o : Ordinal} (ho : IsSuccLimit o) : ℶ_ o = ⨆ a : Iio o, ℶ_ a :=
   isNormal_beth.apply_of_isSuccLimit ho

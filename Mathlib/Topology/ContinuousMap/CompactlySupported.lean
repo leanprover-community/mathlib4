@@ -839,6 +839,8 @@ noncomputable def toRealPositiveLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] �
           ring }
     (fun g hg ↦ by simp [nnrealPart_neg_eq_zero_of_nonneg hg])
 
+@[deprecated (since := "2025-08-23")] alias toRealLinear_nonneg := toRealPositiveLinear
+
 lemma toRealPositiveLinear_apply {Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0} (f : C_c(α, ℝ)) :
     toRealPositiveLinear Λ f = Λ (nnrealPart f) - Λ (nnrealPart (-f)) := rfl
 
@@ -847,11 +849,16 @@ lemma eq_toRealPositiveLinear_toReal (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ�
     toRealPositiveLinear Λ (toReal f) = Λ f := by
   simp [toRealPositiveLinear_apply]
 
+@[deprecated (since := "2025-08-23")] alias eq_toRealLinear_toReal := eq_toRealPositiveLinear_toReal
+
 @[simp]
 lemma eq_toNNRealLinear_toRealPositiveLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) :
     toNNRealLinear (toRealPositiveLinear Λ) = Λ := by
   ext f
   simp
+
+@[deprecated (since := "2025-08-23")]
+alias eq_toNNRealLinear_toRealLinear := eq_toNNRealLinear_toRealPositiveLinear
 
 @[deprecated (since := "2025-08-08")]
 alias toRealLinear := toRealPositiveLinear

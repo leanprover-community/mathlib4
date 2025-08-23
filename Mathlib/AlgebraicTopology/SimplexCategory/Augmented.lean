@@ -70,6 +70,10 @@ def equivAugmentedCosimplicialObjectFunctorCompPointIso :
     ((evaluation _ _).obj .star : (AugmentedSimplexCategory ⥤ C) ⥤ C) :=
   .refl _
 
+@[deprecated (since := "2025-08-23")]
+alias equivAugmentedCosimplicialObjecFunctorCompPointIso :=
+  equivAugmentedCosimplicialObjectFunctorCompPointIso
+
 @[deprecated (since := "2025-08-22")] alias equivAugmentedCosimplicialObjecFunctorCompPointIso :=
   equivAugmentedCosimplicialObjectFunctorCompPointIso
 

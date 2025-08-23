@@ -707,6 +707,8 @@ theorem natDegree_pos (h : Irreducible f) : 0 < f.natDegree := Nat.pos_of_ne_zer
   · rw [← hf, hx, map_zero] at h; exact not_irreducible_zero h
   exact h.1 (hf ▸ isUnit_C.2 (Ne.isUnit hx))
 
+@[deprecated (since := "2025-08-23")] alias Irreducible.natDegree_pos := natDegree_pos
+
 /-- An irreducible polynomial over a field must have positive degree. -/
 theorem degree_pos (h : Irreducible f) : 0 < f.degree := by
   rw [← natDegree_pos_iff_degree_pos]

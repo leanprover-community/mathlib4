@@ -201,6 +201,9 @@ lemma sub_one_dvd_pow_sub_one (x : R) (n : ℕ) : x - 1 ∣ x ^ n - 1 := by
   conv_rhs => rw [← one_pow n]
   exact (Commute.one_right x).sub_dvd_pow_sub_pow n
 
+@[deprecated (since := "2025-08-23")]
+alias nat_pow_one_sub_dvd_pow_mul_sub_one := sub_one_dvd_pow_sub_one
+
 lemma pow_one_sub_dvd_pow_mul_sub_one (x : R) (m n : ℕ) : x ^ m - 1 ∣ x ^ (m * n) - 1 := by
   rw [pow_mul]; exact sub_one_dvd_pow_sub_one (x ^ m) n
 
@@ -281,6 +284,8 @@ lemma geom_sum₂_mul (x y : R) (n : ℕ) :
 lemma sub_dvd_pow_sub_pow (x y : R) (n : ℕ) : x - y ∣ x ^ n - y ^ n :=
   (Commute.all x y).sub_dvd_pow_sub_pow n
 
+@[deprecated (since := "2025-08-23")] alias nat_sub_dvd_pow_sub_pow := sub_dvd_pow_sub_pow
+
 lemma Odd.add_dvd_pow_add_pow (x y : R) {n : ℕ} (h : Odd n) : x + y ∣ x ^ n + y ^ n := by
   have h₁ := geom_sum₂_mul x (-y) n
   rw [Odd.neg_pow h y, sub_neg_eq_add, sub_neg_eq_add] at h₁
@@ -306,14 +311,22 @@ protected lemma sub_dvd_pow_sub_pow : x - y ∣ x ^ n - y ^ n := by
   · have : x ^ n ≤ y ^ n := Nat.pow_le_pow_left h.le _
     exact (Nat.sub_eq_zero_of_le this).symm ▸ dvd_zero (x - y)
 
+@[deprecated (since := "2025-08-23")] alias nat_sub_dvd_pow_sub_pow := sub_dvd_pow_sub_pow
+
 lemma sub_one_dvd_pow_sub_one : x - 1 ∣ x ^ n - 1 := by
   simpa using x.sub_dvd_pow_sub_pow 1 n
+
+@[deprecated (since := "2025-08-23")]
+alias nat_pow_one_sub_dvd_pow_mul_sub_one := sub_one_dvd_pow_sub_one
 
 lemma pow_sub_pow_dvd_pow_sub_pow (hmk : m ∣ k) : x ^ m - y ^ m ∣ x ^ k - y ^ k := by
   obtain ⟨n, rfl⟩ := hmk; simpa [pow_mul] using (x ^ m).sub_dvd_pow_sub_pow (y ^ m) n
 
 lemma pow_sub_one_dvd_pow_sub_one (hmk : m ∣ k) : x ^ m - 1 ∣ x ^ k - 1 := by
   simpa using pow_sub_pow_dvd_pow_sub_pow x 1 hmk
+
+@[deprecated (since := "2025-08-23")]
+alias Odd.nat_add_dvd_pow_add_pow := pow_sub_one_dvd_pow_sub_one
 
 lemma _root_.Odd.nat_add_dvd_pow_add_pow {n : ℕ} (h : Odd n) : x + y ∣ x ^ n + y ^ n :=
   mod_cast Odd.add_dvd_pow_add_pow (x : ℤ) (↑y) h
@@ -323,5 +336,7 @@ that avoids division and subtraction. -/
 lemma geomSum_eq (hm : 2 ≤ m) (n : ℕ) : ∑ k ∈ range n, m ^ k = (m ^ n - 1) / (m - 1) := by
   refine (Nat.div_eq_of_eq_mul_left (tsub_pos_iff_lt.2 hm) <| tsub_eq_of_eq_add ?_).symm
   simpa only [tsub_add_cancel_of_le (by omega : 1 ≤ m), eq_comm] using geom_sum_mul_add (m - 1) n
+
+@[deprecated (since := "2025-08-23")] alias Nat.geomSum_eq := geomSum_eq
 
 end Nat

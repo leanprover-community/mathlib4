@@ -211,6 +211,8 @@ lemma alexandrovDiscrete_iff_nhds : AlexandrovDiscrete α ↔ (∀ a : α, 𝓝 
     specialize hS s hs a has
     exact mem_sUnion_of_mem hS hs
 
+@[deprecated (since := "2025-08-23")] alias isClosed_sUnion := alexandrovDiscrete_iff_nhds
+
 lemma alexandrovDiscrete_coinduced {β : Type*} {f : α → β} :
     @AlexandrovDiscrete β (coinduced f ‹_›) :=
   @AlexandrovDiscrete.mk β (coinduced f ‹_›) fun S hS ↦ by

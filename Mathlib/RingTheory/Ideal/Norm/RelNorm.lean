@@ -224,6 +224,8 @@ theorem le_spanNorm_spanNorm (I : Ideal S) : spanNorm R I ≤ spanNorm R (spanNo
   rintro _ ⟨x, hx, rfl⟩
   exact ⟨intNorm T S x, subset_span <| Set.mem_image_of_mem _ hx, by rw [intNorm_intNorm]⟩
 
+@[deprecated (since := "2025-08-23")] alias spanNorm_mul := le_spanNorm_spanNorm
+
 /--
 This condition `eq_bot_or_top` is equivalent to being a field. However,
 `Ideal.spanNorm_spanNorm_of_field` would be harder to apply since we'd need to upgrade

@@ -255,6 +255,9 @@ lemma isModuleTopologyOfFiniteDimensional [T2Space E] [FiniteDimensional 𝕜 E]
         (A := (Basis.ofVectorSpaceIndex 𝕜 E) → 𝕜) (B := E) b.equivFun.symm }
   IsModuleTopology.iso continuousEquiv.symm
 
+@[deprecated (since := "2025-08-23")]
+alias LinearMap.continuous_of_finiteDimensional := isModuleTopologyOfFiniteDimensional
+
 /-- Any linear map on a finite dimensional space over a complete field is continuous. -/
 theorem LinearMap.continuous_of_finiteDimensional [T2Space E] [FiniteDimensional 𝕜 E]
     (f : E →ₗ[𝕜] F') : Continuous f :=
