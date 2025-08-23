@@ -204,19 +204,14 @@ lemma pairingIn_mul_eq_pairingIn_mul_swap :
     B.algebraMap_rootLength] using B.toInvariantForm.pairing_mul_eq_pairing_mul_swap i j
 
 @[simp]
-lemma zero_lt_apply_root_root_iff [IsStrictOrderedRing S]
-    (hi : P.root i ∈ span S (range P.root) := subset_span (mem_range_self i))
-    (hj : P.root j ∈ span S (range P.root) := subset_span (mem_range_self j)) :
-    0 < B.posForm ⟨P.root i, hi⟩ ⟨P.root j, hj⟩ ↔ 0 < P.pairingIn S i j := by
-  let ri : span S (range P.root) := ⟨P.root i, hi⟩
-  let rj : span S (range P.root) := ⟨P.root j, hj⟩
-  have : 2 * B.posForm ri rj = P.pairingIn S i j * B.posForm rj rj := by
-    apply FaithfulSMul.algebraMap_injective S R
-    simpa [map_ofNat] using B.toInvariantForm.two_mul_apply_root_root i j
-  calc  0 < B.posForm ri rj
-      ↔ 0 < 2 * B.posForm ri rj := by rw [mul_pos_iff_of_pos_left zero_lt_two]
-    _ ↔ 0 < P.pairingIn S i j * B.posForm rj rj := by rw [this]
-    _ ↔ 0 < P.pairingIn S i j := by rw [mul_pos_iff_of_pos_right (B.zero_lt_posForm_apply_root j)]
+lemma zero_lt_apply_root_root_iff [IsStrictOrderedRing S] :
+    0 < B.posForm (P.rootSpanMem S i) (P.rootSpanMem S j) ↔ 0 < P.pairingIn S i j := by
+  calc 0 < B.posForm (P.rootSpanMem S i) (P.rootSpanMem S j)
+      ↔ 0 < 2 • B.posForm (P.rootSpanMem S i) (P.rootSpanMem S j) := by
+        rw [smul_pos_iff_of_pos_left zero_lt_two]
+    _ ↔ 0 < P.pairingIn S i j • B.posForm (P.rootSpanMem S j) (P.rootSpanMem S j) := by
+        rw [B.two_smul_apply_rootSpanMem_rootSpanMem i j, rootLength]
+    _ ↔ 0 < P.pairingIn S i j := by rw [smul_pos_iff_of_pos_right (B.zero_lt_posForm_apply_root j)]
 
 lemma posForm_eq_zero_iff_pairing [IsStrictOrderedRing S] (i j : ι) :
     B.posForm (P.rootSpanMem S i) (P.rootSpanMem S j) = 0 ↔ P.pairingIn S i j = 0 := by

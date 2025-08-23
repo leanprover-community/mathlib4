@@ -342,8 +342,8 @@ lemma rootFormIn_self_smul_coroot'In (i : ι) :
   refine (FaithfulSMul.algebraMap_injective S R) ?_
   simp only [LinearMap.smul_apply, smul_eq_mul, map_mul, algebraMap_rootFormIn,
     algebraMap_coroot'In_apply, nsmul_eq_mul, Nat.cast_ofNat]
-  rw [PerfectPairing.flip_apply_apply, ← smul_eq_mul, ← map_smul, rootForm_self_smul_coroot,
-    map_nsmul, toPerfectPairing_apply_apply_Polarization, ← Algebra.smul_def, two_nsmul, two_smul]
+  rw [LinearMap.flip_apply, ← smul_eq_mul, ← map_smul, rootForm_self_smul_coroot,
+    map_nsmul, toLinearMap_apply_apply_Polarization, ← Algebra.smul_def, two_nsmul, two_smul]
 
 lemma rootFormIn_self_mul_rootFormIn (i j : ι) :
     P.RootFormIn S (P.rootSpanMem S i) (P.rootSpanMem S i) * P.pairingIn S j i =

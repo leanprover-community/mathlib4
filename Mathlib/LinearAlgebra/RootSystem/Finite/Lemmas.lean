@@ -98,7 +98,7 @@ lemma rootLength_of_neg_three' (h : P.pairingIn ℤ i j = -3)
 lemma pairingIn_of_neg_two (h : P.pairingIn ℤ i j = -2)
     (hne' : α i ≠ -α j) :
     P.pairingIn ℤ j i = -1 := by
-  have := PerfectPairing.reflexive_left P.toPerfectPairing
+  have := Module.IsReflexive.of_isPerfPair P.toLinearMap
   have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
   have : P.pairingIn ℤ j i ≠ -2 := by
     contrapose! hne'

@@ -80,10 +80,6 @@ lemma FaithfulSMul.injective_smul_one (R A : Type*)
 lemma FaithfulSMul.of_injective_smul_one (R A : Type*) [One A] [SMul R A]
     (h : Injective (fun r : R ↦ r • (1 : A))) : FaithfulSMul R A where
   eq_of_smul_eq_smul hr := h (hr 1)
-  refine ⟨fun ⟨h⟩ {r₁ r₂} hr ↦ h fun a ↦ ?_, fun h ↦ ⟨fun {r₁ r₂} hr ↦ h ?_⟩⟩
-  · simp only at hr
-    rw [← one_mul a, ← smul_mul_assoc, ← smul_mul_assoc, hr]
-  · simpa using hr 1
 
 /--
 Let `Q / P / N / M` be a tower. If `Q / N / M`, `Q / P / M` and `Q / P / N` are
