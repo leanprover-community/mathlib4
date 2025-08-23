@@ -94,7 +94,7 @@ variable {f g : M → M'} {x : M}
 around `x` and `f x`, respectively such that in these charts, `f` looks like `u ↦ (u, 0)`.
 This version does not assume that `f` maps `φ.source` to `ψ.source`,
 but that `f` is continuous at `x`. -/
-def mk_of_continuousAt (f : M → M') (x : M) (hf : ContinuousAt f x)
+lemma mk_of_continuousAt (f : M → M') (x : M) (hf : ContinuousAt f x)
     (equiv : (E × F) ≃L[𝕜] E')
     (domChart : PartialHomeomorph M H)
     (codChart : PartialHomeomorph M' H')
@@ -118,12 +118,25 @@ def mk_of_continuousAt (f : M → M') (x : M) (hf : ContinuousAt f x)
     restr_mem_maximalAtlas (G := contDiffGroupoid n I) hdomChart hsopen, hcodChart, this,
     hwrittenInExtend.mono hmono⟩
 
+/-- A linear equivalence `E × F ≃L[𝕜] E'` which belongs to the data of an immersion `f` at `x`:
+the particular equivalence is arbitrary, but this choice matches the witnesses given by
+`h.domChart` and `h.codChart`. -/
 noncomputable def equiv (h : IsImmersionAt F I I' n f x) : (E × F) ≃L[𝕜] E' :=
   Classical.choose h
 
+/-- A choice of chart on the domain `M` of an immersion `f` at `x`:
+w.r.t. this chart and the data `h.codChart` and `h.equiv`,
+`f` will look like an inclusion `u ↦ (u, 0)` in these extended charts.
+The particular chart is arbitrary, but this choice matches the witnesses given by
+`h.codChart` and `h.codChart`. -/
 noncomputable def domChart (h : IsImmersionAt F I I' n f x) : PartialHomeomorph M H :=
   Classical.choose (Classical.choose_spec h)
 
+/-- A choice of chart on the co-domain `N` of an immersion `f` at `x`:
+w.r.t. this chart and the data `h.domChart` and `h.equiv`,
+`f` will look like an inclusion `u ↦ (u, 0)` in these extended charts.
+The particular chart is arbitrary, but this choice matches the witnesses given by
+`h.equiv` and `h.domChart`. -/
 noncomputable def codChart (h : IsImmersionAt F I I' n f x) : PartialHomeomorph M' H' :=
   Classical.choose (Classical.choose_spec (Classical.choose_spec h))
 
