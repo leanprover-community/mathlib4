@@ -216,6 +216,12 @@ incident upon
 def stars (H : Hypergraph α) : Set (Set (Set α)) :=
   {H.star x | x ∈ V(H)}
 
+/--
+The *image* of a hypergraph `H : Hypergraph α` under function `f : α → β` is `Hᶠ : Hypergraph β`.
+
+The vertex set of `Hᶠ` is the image of `V(H)` under `f`, and the hyperedge set of `Hᶠ` is the set
+of images of the hyperedges (subsets of vertices) in `E(H)`.
+-/
 @[simps]
 def image (H : Hypergraph α) (f : α → β) : Hypergraph β where
   vertexSet := V(H).image f
@@ -301,15 +307,25 @@ def emptyHypergraph (α : Type*) : Hypergraph α :=
     exact Set.subset_empty_iff.mpr h1
   )
 
-@[simp] lemma coe_nonempty_iff : V(H).Nonempty ↔ H.IsNonempty := by sorry
+@[simp] lemma coe_nonempty : V(H).Nonempty → H.IsNonempty := by
+  unfold IsNonempty
+  unfold Set.Nonempty
+  exact fun a ↦ Or.symm (Or.inr a)
 
 lemma isEmpty_empty_hypergraph {α : Type*} : IsEmpty (Hypergraph.emptyHypergraph α) := by
   unfold IsEmpty
   exact Prod.mk_inj.mp rfl
 
 @[simp]
-lemma isEmpty_eq_empty_hypergraph {H : Hypergraph α} (h : H.IsEmpty) : H = emptyHypergraph α := by
-  exact Hypergraph.ext_iff.mpr h
+lemma isEmpty_eq_empty_hypergraph {H : Hypergraph α} (h : H.IsEmpty) : emptyHypergraph α = H := by
+  unfold IsEmpty at h
+  have hv : V(emptyHypergraph α) = ∅ := rfl
+  have he : E(emptyHypergraph α) = ∅ := rfl
+  apply Hypergraph.ext_iff.mpr
+  rw [h.1, hv, h.2, he]
+  constructor
+  · exact hv
+  · exact he
 
 @[simp]
 lemma hyperedge_not_mem_empty {α : Type*} {e : Set α} : e ∉ E(emptyHypergraph α) :=
