@@ -14,7 +14,7 @@ Many lemmas in this file have been replaced by theorems in Lean4,
 in terms of `xs[i]?` and `xs[i]` rather than `get` and `get?`.
 
 The deprecated results here are unused in Mathlib.
-Any downstream users who can not easily adapt may remove the deprecations as needed.
+Any downstream users who cannot easily adapt may remove the deprecations as needed.
 -/
 
 namespace List

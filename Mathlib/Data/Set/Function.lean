@@ -55,7 +55,7 @@ theorem EqOn.symm (h : EqOn f₁ f₂ s) : EqOn f₂ f₁ s := fun _ hx => (h hx
 theorem eqOn_comm : EqOn f₁ f₂ s ↔ EqOn f₂ f₁ s :=
   ⟨EqOn.symm, EqOn.symm⟩
 
--- This can not be tagged as `@[refl]` with the current argument order.
+-- This cannot be tagged as `@[refl]` with the current argument order.
 -- See note below at `EqOn.trans`.
 theorem eqOn_refl (f : α → β) (s : Set α) : EqOn f f s := fun _ _ => rfl
 

@@ -128,7 +128,7 @@ theorem lift_mk_le {α : Type v} {β : Type w} :
     ⟨Embedding.congr Equiv.ulift.symm Equiv.ulift.symm f⟩⟩
 
 /-- A variant of `Cardinal.lift_mk_le` with specialized universes.
-Because Lean often can not realize it should use this specialization itself,
+Because Lean often cannot realize it should use this specialization itself,
 we provide this statement separately so you don't have to solve the specialization problem either.
 -/
 theorem lift_mk_le' {α : Type u} {β : Type v} : lift.{v} #α ≤ lift.{u} #β ↔ Nonempty (α ↪ β) :=
