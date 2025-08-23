@@ -86,7 +86,7 @@ on convex sets.
 
 The hypotheses hold automatically for `e := toWeakSpace 𝕜 E`, see `Convex.toWeakSpace_closure`. -/
 theorem LinearEquiv.image_closure_of_convex' {s : Set E} (hs : Convex ℝ s) (e : E ≃ₗ[𝕜] F)
-    (e_dual : (StrongDual 𝕜 F) ≃ (StrongDual 𝕜 E))
+    (e_dual : StrongDual 𝕜 F ≃ StrongDual 𝕜 E)
     (he : ∀ f : StrongDual 𝕜 F, (e_dual f : E →ₗ[𝕜] 𝕜) = e.dualMap f) :
     e '' (closure s) = closure (e '' s) := by
   have he' (f : StrongDual 𝕜 E) : (e_dual.symm f : F →ₗ[𝕜] 𝕜) = e.symm.dualMap f := by

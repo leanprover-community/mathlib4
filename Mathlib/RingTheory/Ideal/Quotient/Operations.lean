@@ -208,7 +208,7 @@ lemma quotientInfToPiQuotient_surj {I : ι → Ideal R}
   have key : ∀ i, ∃ e : R, mk (I i) e = 1 ∧ ∀ j, j ≠ i → mk (I j) e = 0 := by
     intro i
     have hI' : ∀ j ∈ ({i} : Finset ι)ᶜ, IsCoprime (I i) (I j) := by
-      intros j hj
+      intro j hj
       exact hI (by simpa [ne_comm, isCoprime_iff_add] using hj)
     rcases isCoprime_iff_exists.mp (isCoprime_biInf hI') with ⟨u, hu, e, he, hue⟩
     replace he : ∀ j, j ≠ i → e ∈ I j := by simpa using he
@@ -220,7 +220,7 @@ lemma quotientInfToPiQuotient_surj {I : ι → Ideal R}
   ext i
   rw [quotientInfToPiQuotient_mk', map_sum, Fintype.sum_eq_single i]
   · simp [(he i).1, hf]
-  · intros j hj
+  · intro j hj
     simp [(he j).2 i hj.symm]
 
 /-- **Chinese Remainder Theorem**. Eisenbud Ex.2.6.

@@ -592,7 +592,7 @@ theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
   let _ := fun i => Classical.decEq (G i)
   refine Function.Injective.of_comp
     (f := ((· • ·) : PushoutI φ → NormalWord d → NormalWord d)) ?_
-  intros _ _ h
+  intro _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
     by simp_all [funext_iff, of_smul_eq_smul])
 
@@ -603,7 +603,7 @@ theorem base_injective (hφ : ∀ i, Function.Injective (φ i)) :
   let _ := fun i => Classical.decEq (G i)
   refine Function.Injective.of_comp
     (f := ((· • ·) : PushoutI φ → NormalWord d → NormalWord d)) ?_
-  intros _ _ h
+  intro _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
     by simp_all [funext_iff, base_smul_eq_smul])
 
