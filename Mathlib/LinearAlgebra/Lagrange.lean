@@ -533,7 +533,7 @@ theorem eval_nodal_derivative_eval_node_eq [DecidableEq ι] {i : ι} (hi : i ∈
       nsmul_eq_mul, mul_one, Nat.cast_inj]
     exact rfl
   · rw [nodal_monic, leadingCoeff_sub_of_degree_lt h, monic_X_pow]
-  · intros i hi
+  · intro i hi
     rw [eval_nodal_at_node hi]
     replace hi : i ∈ G := by simpa using hi
     obtain ⟨g, rfl⟩ : ∃ g : G, g.val = i := ⟨⟨i, hi⟩, rfl⟩

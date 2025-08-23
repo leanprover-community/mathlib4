@@ -197,7 +197,7 @@ lemma getVert_takeUntil {u v : V} {n : ℕ} {p : G.Walk u v} (hw : w ∈ p.suppo
       simp_all
     simp only [support_cons, List.mem_cons, huw, false_or] at hw
     by_cases hn0 : n = 0
-    · aesop
+    · simp_all
     simp only [takeUntil_cons hw ((Ne.eq_def _ _).mpr huw).symm, length_cons,
       getVert_cons _ _ hn0] at hn ⊢
     apply q.getVert_takeUntil hw

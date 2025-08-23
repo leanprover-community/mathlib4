@@ -97,9 +97,8 @@ def lift : (L →ₗ⁅R⁆ A) ≃ (UniversalEnvelopingAlgebra R L →ₐ[R] A) 
     --   RingQuot.liftAlgHom_mkAlgHom_apply]
     simp only [LieHom.coe_comp, Function.comp_apply, AlgHom.coe_toLieHom,
       UniversalEnvelopingAlgebra.ι_apply, mkAlgHom]
-    dsimp [UniversalEnvelopingAlgebra]
-    rw [RingQuot.liftAlgHom_mkAlgHom_apply]
-    simp only [TensorAlgebra.lift_ι_apply, LieHom.coe_toLinearMap]
+    simp only [UniversalEnvelopingAlgebra, RingQuot.liftAlgHom_mkAlgHom_apply,
+      TensorAlgebra.lift_ι_apply, LieHom.coe_toLinearMap]
   right_inv F := by
     apply RingQuot.ringQuot_ext'
     ext
@@ -120,7 +119,7 @@ theorem lift_symm_apply (F : UniversalEnvelopingAlgebra R L →ₐ[R] A) :
 theorem ι_comp_lift : lift R f ∘ ι R = f :=
   funext <| LieHom.ext_iff.mp <| (lift R).symm_apply_apply f
 
--- Porting note: moved `@[simp]` to the next theorem (LHS simplifies)
+-- `simp`-normal form is `lift_ι_apply'`.
 theorem lift_ι_apply (x : L) : lift R f (ι R x) = f x := by
   rw [← Function.comp_apply (f := lift R f) (g := ι R) (x := x), ι_comp_lift]
 
@@ -140,7 +139,7 @@ theorem hom_ext {g₁ g₂ : UniversalEnvelopingAlgebra R L →ₐ[R] A}
       (g₁ : UniversalEnvelopingAlgebra R L →ₗ⁅R⁆ A).comp (ι R) =
         (g₂ : UniversalEnvelopingAlgebra R L →ₗ⁅R⁆ A).comp (ι R)) :
     g₁ = g₂ :=
-  have h' : (lift R).symm g₁ = (lift R).symm g₂ := by ext; simp [h]
+  have h' : (lift R).symm g₁ = (lift R).symm g₂ := by simp [h]
   (lift R).symm.injective h'
 
 end UniversalEnvelopingAlgebra

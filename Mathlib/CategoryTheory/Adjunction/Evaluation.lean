@@ -67,7 +67,7 @@ def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluatio
           right_inv := fun f => by
             simp }
       -- This used to be automatic before https://github.com/leanprover/lean4/pull/2644
-      homEquiv_naturality_right := by intros; simp }
+      homEquiv_naturality_right := by simp }
 
 instance evaluationIsRightAdjoint (c : C) : ((evaluation _ D).obj c).IsRightAdjoint  :=
   ⟨_, ⟨evaluationAdjunctionRight _ _⟩⟩
