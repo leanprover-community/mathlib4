@@ -14,7 +14,7 @@ import Mathlib.Logic.Equiv.Prod
 import Mathlib.Tactic.TermCongr
 
 /-!
-# Monoid, group etc structures on `M × N`
+# Monoid, group etc. structures on `M × N`
 
 In this file we define one-binop (`Monoid`, `Group` etc) structures on `M × N`.
 We also prove trivial `simp` lemmas, and define the following operations on `MonoidHom`s:

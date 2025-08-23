@@ -3,9 +3,6 @@ Copyright (c) 2025 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.DedekindDomain.PID
 import Mathlib.FieldTheory.Separable
 import Mathlib.RingTheory.RingHom.Finite
@@ -98,10 +95,15 @@ instance : NoZeroSMulDivisors R Sₚ := by
   have := IsLocalization.AtPrime.faithfulSMul Rₚ R P
   exact NoZeroSMulDivisors.trans_faithfulSMul R Rₚ _
 
-noncomputable instance : Algebra Sₚ L :=
+/--
+This is not an instance because it creates a diamond with `OreLocalization.instAlgebra`.
+-/
+noncomputable abbrev Localization.AtPrime.liftAlgebra : Algebra Sₚ L :=
   (map _ (T := S⁰) (RingHom.id S)
     (algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul _
       P.primeCompl_le_nonZeroDivisors)).toAlgebra
+
+attribute [local instance] Localization.AtPrime.liftAlgebra
 
 instance : IsScalarTower S Sₚ L :=
   localization_isScalarTower_of_submonoid_le _ _ _ _
@@ -156,13 +158,13 @@ local notation3 "Tₚ" => Localization P''
 
 variable [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 
-local instance : IsLocalization (algebraMapSubmonoid T P') Tₚ := by
+instance : IsLocalization (algebraMapSubmonoid T P') Tₚ := by
   rw [show algebraMapSubmonoid T P' = P'' by simp]
   exact Localization.isLocalization
 
 /--
 Let `R ⊆ S ⊆ T` be a tower of rings. Let `Sₚ` and `Tₚ` denote the localizations of `S` and `T` at
-the prime ideal `p` of `R`. Then `Tₚ` is a `Sₚ`-algebra.
+the prime ideal `P` of `R`. Then `Tₚ` is a `Sₚ`-algebra.
 This cannot be an instance since it creates a diamond when `S = T`.
 -/
 noncomputable abbrev Localization.AtPrime.algebra_localization_localization :

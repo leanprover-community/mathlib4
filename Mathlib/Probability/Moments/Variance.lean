@@ -195,7 +195,7 @@ theorem variance_smul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
 theorem variance_smul' {A : Type*} [CommSemiring A] [Algebra A ℝ] (c : A) (X : Ω → ℝ)
     (μ : Measure Ω) : variance (c • X) μ = c ^ 2 • variance X μ := by
   convert variance_smul (algebraMap A ℝ c) X μ using 1
-  · congr; simp only [algebraMap_smul]
+  · simp only [algebraMap_smul]
   · simp only [Algebra.smul_def, map_pow]
 
 theorem variance_eq_sub [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : MemLp X 2 μ) :
@@ -304,8 +304,7 @@ lemma variance_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
 lemma variance_map_equiv {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
     (X : Ω → ℝ) (Y : Ω' ≃ᵐ Ω) :
     Var[X; μ.map Y] = Var[X ∘ Y; μ] := by
-  simp_rw [variance, evariance, lintegral_map_equiv, integral_map_equiv]
-  rfl
+  simp_rw [variance, evariance, lintegral_map_equiv, integral_map_equiv, Function.comp_apply]
 
 lemma variance_id_map (hX : AEMeasurable X μ) : Var[id; μ.map X] = Var[X; μ] := by
   simp [variance_map measurable_id.aemeasurable hX]
@@ -450,7 +449,7 @@ lemma variance_le_sub_mul_sub [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → 
       linarith
     _ = (b - μ[X]) * (μ[X] - a) := by ring
 
-/-- **Popoviciu's inequality on variance**
+/-- **Popoviciu's inequality on variances**
 
 The variance of a random variable `X` satisfying `a ≤ X ≤ b` almost everywhere is at most
 `((b - a) / 2) ^ 2`. -/
