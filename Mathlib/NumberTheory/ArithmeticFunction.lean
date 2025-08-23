@@ -821,9 +821,10 @@ theorem sigma_apply {k n : ℕ} : σ k n = ∑ d ∈ divisors n, d ^ k :=
 theorem sigma_eq_zero {k n : ℕ} : σ k n = 0 ↔ n = 0 := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp
-  · suffices ∃ d, d ∣ n ∧ (d = 0 → k = 0) by simpa [ArithmeticFunction.sigma_apply, hn]
+  · refine iff_of_false ?_ hn
+    simp_rw [ArithmeticFunction.sigma_apply, Finset.sum_eq_zero_iff, not_forall]
     use 1
-    simp
+    simp [hn]
 
 @[simp]
 theorem sigma_pos {k n} : 0 < σ k n ↔ 0 < n := by
