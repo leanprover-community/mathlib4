@@ -89,7 +89,7 @@ theorem Invariant.of_IsReversible
     {κ : Kernel α α} [IsMarkovKernel κ] {π : Measure α}
     (h_rev : IsReversible κ π) : Invariant κ π := by
   ext s hs
-  calc 
+  calc
     (κ ∘ₘ π) s = ∫⁻ x, κ x s ∂π := by rw [Measure.bind_apply hs (Kernel.aemeasurable _)]
              _ = ∫⁻ x in s, κ x Set.univ ∂π := by simpa [restrict_univ] using (h_rev hs .univ).symm
              _ = π s := by simp
