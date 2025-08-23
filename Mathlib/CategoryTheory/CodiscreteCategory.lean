@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Adjunction.Basic
 /-!
 # Codiscrete categories
 
-We define `Codiscrete A` as an alias for the type `A` ,
+We define `Codiscrete A` as an alias for the type `A`,
 and use this type alias to provide a `Category` instance
 whose Hom type are Unit types.
 

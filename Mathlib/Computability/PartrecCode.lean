@@ -141,8 +141,8 @@ def ofNatCode : ℕ → Code
     match n.bodd, n.div2.bodd with
     | false, false => pair (ofNatCode m.unpair.1) (ofNatCode m.unpair.2)
     | false, true  => comp (ofNatCode m.unpair.1) (ofNatCode m.unpair.2)
-    | true , false => prec (ofNatCode m.unpair.1) (ofNatCode m.unpair.2)
-    | true , true  => rfind' (ofNatCode m)
+    | true, false => prec (ofNatCode m.unpair.1) (ofNatCode m.unpair.2)
+    | true, true  => rfind' (ofNatCode m)
 
 /-- Proof that `Nat.Partrec.Code.ofNatCode` is the inverse of `Nat.Partrec.Code.encodeCode` -/
 private theorem encode_ofNatCode : ∀ n, encodeCode (ofNatCode n) = n

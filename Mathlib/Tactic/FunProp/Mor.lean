@@ -127,7 +127,7 @@ where
       go (.app (.app c f) x) as
     | .app f a, as =>
       go f (as.push { expr := a })
-    | f        , as => k f as.reverse
+    | f       , as => k f as.reverse
 
 
 /--
