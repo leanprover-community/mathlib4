@@ -73,7 +73,7 @@ theorem effectiveEpiFamily_tfae
     TFAE
     [ EffectiveEpiFamily X π
     , Epi (Sigma.desc π)
-, ∀ b : B, ∃ (a : α) (x : X a), π a x = b
+    , ∀ b : B, ∃ (a : α) (x : X a), π a x = b
     ] := by
   tfae_have 2 → 1
   | _ => by
