@@ -466,8 +466,7 @@ theorem map_injective_of_injective' {f : R →+* S}
     simp [hRₘ.uniq x, hRₘ.uniq y] at h
   refine (injective_iff_map_eq_zero (map Sₘ f hf)).mpr fun x h ↦ ?_
   have h₁ : (sec M x).1 = 0 := by
-    simpa [map, lift, Submonoid.LocalizationWithZeroMap.lift_apply,
-      _root_.map_eq_zero_iff f hf'] using h
+    simpa [map, lift, Submonoid.LocalizationMap.lift₀_apply, _root_.map_eq_zero_iff f hf'] using h
   have h₂ : ((sec M x).2 : R) ≠ 0 := ne_of_mem_of_not_mem (SetLike.coe_mem (sec M x).2) hM
   simpa [h₁, map_zero, mul_eq_zero, FaithfulSMul.algebraMap_eq_zero_iff, h₂, or_false] using
     sec_spec M x
