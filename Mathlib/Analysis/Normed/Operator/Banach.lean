@@ -494,7 +494,6 @@ theorem closed_complemented_range_of_isCompl_of_ker_eq_bot {F : Type*} [NormedAd
     IsClosed (LinearMap.range f : Set F) := by
   haveI : CompleteSpace G := hG.completeSpace_coe
   let g := coprodSubtypeLEquivOfIsCompl f h hker
-  -- Porting note: was `rw [congr_arg coe ...]`
   rw [range_eq_map_coprodSubtypeLEquivOfIsCompl f h hker]
   apply g.toHomeomorph.isClosed_image.2
   exact isClosed_univ.prod isClosed_singleton
@@ -593,7 +592,7 @@ variable [CompleteSpace F]
 
 lemma _root_.AntilipschitzWith.completeSpace_range_clm {f : E →SL[σ] F} {c : ℝ≥0}
     (hf : AntilipschitzWith c f) : CompleteSpace (LinearMap.range f) :=
-  IsClosed.completeSpace_coe <| hf.isClosed_range f.uniformContinuous
+  IsClosed.completeSpace_coe (hs := hf.isClosed_range f.uniformContinuous)
 
 variable [RingHomInvPair σ' σ] [RingHomIsometric σ] [RingHomIsometric σ']
 

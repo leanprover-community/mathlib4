@@ -448,7 +448,7 @@ theorem induction_on {p : SkewMonoidAlgebra k G → Prop} (f : SkewMonoidAlgebra
     (zero : p 0) (single : ∀ g a, p (single g a)) (add : ∀ f g :
     SkewMonoidAlgebra k G, p f → p g → p (f + g)) : p f := by
   rw [← sum_single f, sum_def']
-  exact Finset.sum_induction _ _ add zero (by aesop)
+  exact Finset.sum_induction _ _ add zero (by simp_all)
 
 /-- Slightly less general but more convenient version of `SkewMonoidAlgebra.induction_on`. -/
 @[induction_eliminator]

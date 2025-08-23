@@ -38,7 +38,7 @@ differentiability, norm
 open ContinuousLinearMap Filter NNReal Real Set
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-variable {n : WithTop ℕ∞} {f : E →L[ℝ] ℝ} {x : E} {t : ℝ}
+variable {n : WithTop ℕ∞} {f : StrongDual ℝ E} {x : E} {t : ℝ}
 
 variable (E) in
 theorem not_differentiableAt_norm_zero [Nontrivial E] :

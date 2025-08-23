@@ -320,7 +320,7 @@ theorem absNorm_eq_zero_iff {I : Ideal S} : Ideal.absNorm I = 0 ↔ I = ⊥ := b
   constructor
   · intro hI
     rw [← le_bot_iff]
-    intros x hx
+    intro x hx
     rw [mem_bot, ← Algebra.norm_eq_zero_iff (R := ℤ), ← Int.natAbs_eq_zero,
       ← Ideal.absNorm_span_singleton, ← zero_dvd_iff, ← hI]
     apply Ideal.absNorm_dvd_absNorm_of_le
