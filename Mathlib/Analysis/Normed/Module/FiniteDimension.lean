@@ -13,7 +13,7 @@ import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Logic.Encodable.Pi
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Topology.Algebra.InfiniteSum.Module
-import Mathlib.Topology.Instances.Matrix.Basic
+import Mathlib.Topology.Instances.Matrix
 import Mathlib.LinearAlgebra.Dimension.LinearMap
 
 /-!
