@@ -13,15 +13,31 @@ The function is defined in terms of natural numbers with no dependencies outside
 
 /-- `Nat.nthRoot n a = ⌊(a : ℝ) ^ (1 / n : ℝ)⌋₊` defined in terms of natural numbers.
 
-We use Lagrange's method to find a root of $x^n = a$,
+We use Newthon's method to find a root of $x^n = a$,
 so it converges superexponentially fast. -/
 def Nat.nthRoot : Nat → Nat → Nat
   | 0, _ => 1
   | 1, a => a
   | n + 2, a =>
-    if a ≤ 1 then a else go n a a
+    if a ≤ 1 then a else go a n a a
     where
-      /-- Auxiliary definition for `Nat.nthRoot`. -/
-      go n a guess :=
+      /-- Auxiliary definition for `Nat.nthRoot`.
+
+      Given natural numbers `fuel`, `n`, `a`, `guess`
+      such that `⌊(a : ℝ) ^ (1 / (n + 2) : ℝ)⌋₊ ≤ guess ≤ fuel`,
+      returns `⌊(a : ℝ) ^ (1 / (n + 2) : ℝ)⌋₊`.
+
+      The auxiliary number `guess` is the current approximation in Newthon's method,
+      tracked in the arguments so that the definition uses a tail recursion
+      which is unfolded into a loop by the compiler.
+
+      The auxiliary number `fuel` is an upper estimate on the number of steps in Newthon's method.
+      Any number `fuel ≥ guess` is guaranteed to work, but smaller numbers may work as well.
+      If `fuel` is too small, then `Nat.nthRoot.go` returns the result of the `fuel`th step
+      of Newthon's method.
+      -/
+      go
+      | 0, _, _, guess => guess
+      | fuel + 1, n, a, guess =>
         let next := (a / guess^(n + 1) + (n + 1) * guess) / (n + 2)
-        if next < guess then go n a next else guess
+        if next < guess then go fuel n a next else guess
