@@ -306,8 +306,8 @@ lemma nat_sub_dvd_pow_sub_pow (x y n : ℕ) : x - y ∣ x ^ n - y ^ n := by
   · have : x ^ n ≤ y ^ n := Nat.pow_le_pow_left h.le _
     exact (Nat.sub_eq_zero_of_le this).symm ▸ dvd_zero (x - y)
 
-lemma nat_sub_one_dvd_pow_sub_one (x n : ℕ) : x - 1 ∣ x ^ n - 1 := by
-  simpa using nat_sub_dvd_pow_sub_pow x 1 n
+lemma sub_one_dvd_pow_sub_one (x n : ℕ) : x - 1 ∣ x ^ n - 1 := by
+  simpa using x.sub_dvd_pow_sub_pow 1 n
 
 lemma nat_pow_sub_pow_dvd_pow_mul_sub_pow (x y m n : ℕ) :
     x ^ m - y ^ m ∣ x ^ (m * n) - y ^ (m * n) := by
@@ -326,7 +326,7 @@ lemma nat_pow_one_sub_dvd_pow_sub_one_of_dvd (x m k : ℕ) (hmk : m ∣ k) : x ^
   rcases hmk with ⟨n, hn⟩
   simpa [hn] using nat_pow_one_sub_dvd_pow_mul_sub_one x m n
 
-lemma Odd.nat_add_dvd_pow_add_pow (x y : ℕ) {n : ℕ} (h : Odd n) : x + y ∣ x ^ n + y ^ n :=
+lemma _root_.Odd.nat_add_dvd_pow_add_pow (x y : ℕ) {n : ℕ} (h : Odd n) : x + y ∣ x ^ n + y ^ n :=
   mod_cast Odd.add_dvd_pow_add_pow (x : ℤ) (↑y) h
 
 /-- Value of a geometric sum over the naturals. Note: see `geom_sum_mul_add` for a formulation
