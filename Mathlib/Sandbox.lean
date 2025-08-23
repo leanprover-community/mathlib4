@@ -1,4 +1,10 @@
 import Mathlib.RingTheory.Ideal.Norm.RelNorm
+import Mathlib.NumberTheory.RamificationInertia.Galois
+import Mathlib.RingTheory.DedekindDomain.Factorization
+import Mathlib.Algebra.Ring.NonZeroDivisors
+import Mathlib.Algebra.GroupWithZero.Torsion
+
+set_option linter.style.header false
 
 namespace Ideal
 
