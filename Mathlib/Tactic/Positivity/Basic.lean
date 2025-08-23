@@ -446,7 +446,7 @@ def evalAscFactorial : PositivityExt where eval {u α} _ _ e := do
 /-- Extension for `Nat.gcd`.
 Uses positivity of the left term, if available, then tries the right term.
 
-The implementation relies on the fact that `core` on `ℕ` never returns `nonzero`. -/
+The implementation relies on the fact that `Positivity.core` on `ℕ` never returns `nonzero`. -/
 @[positivity Nat.gcd _ _]
 def evalNatGCD : PositivityExt where eval {u α} z p e := do
   match u, α, e with
