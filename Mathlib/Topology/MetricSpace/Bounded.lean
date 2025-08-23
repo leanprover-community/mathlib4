@@ -31,10 +31,17 @@ This file contains one definition, and various results on boundedness in pseudo-
 metric, pseudo_metric, bounded, diameter, Heine-Borel theorem
 -/
 
-section UniformSpace
-variable {α : Type*} [UniformSpace α] [Preorder α] [CompactIccSpace α]
+assert_not_exists Module.Basis
 
-open Set
+open Set Filter Bornology
+open scoped ENNReal Uniformity Topology Pointwise
+
+universe u v w
+
+variable {α : Type u} {β : Type v} {X ι : Type*}
+
+section UniformSpace
+variable [UniformSpace α] [Preorder α] [CompactIccSpace α]
 
 lemma totallyBounded_Icc (a b : α) : TotallyBounded (Icc a b) :=
   isCompact_Icc.totallyBounded
@@ -49,15 +56,6 @@ lemma totallyBounded_Ioo (a b : α) : TotallyBounded (Ioo a b) :=
   (totallyBounded_Icc a b).subset Ioo_subset_Icc_self
 
 end UniformSpace
-
-assert_not_exists Module.Basis
-
-open Set Filter Bornology
-open scoped ENNReal Uniformity Topology Pointwise
-
-universe u v w
-
-variable {α : Type u} {β : Type v} {X ι : Type*}
 
 namespace Metric
 
