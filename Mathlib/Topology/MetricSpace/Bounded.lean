@@ -610,8 +610,7 @@ theorem exists_forall_le_of_isBounded {f : β → α} (hf : Continuous f) (x₀ 
     refine Filter.mem_cocompact'.mpr ⟨_, ?_, fun ⦃_⦄ a ↦ a⟩
     simp only [Set.compl_setOf, not_lt]
     exact Metric.isCompact_of_isClosed_isBounded (isClosed_le (by fun_prop) (by fun_prop)) h
-  filter_upwards [hU] with x hx
-  exact hx.le
+  filter_upwards [hU] with x hx using hx.le
 
 /-- A version of the **Extreme Value Theorem**: if the set where a continuous function `f`
 into a linearly ordered space takes values `≥ f x₀` is bounded for some `x₀`,
