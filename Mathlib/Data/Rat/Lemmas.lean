@@ -96,32 +96,55 @@ theorem mul_den (q₁ q₂ : ℚ) :
   rw [mul_def, normalize_eq]
 
 @[simp]
-theorem add_int_den (q : ℚ) (n : ℤ) : (q + n).den = q.den := by
+theorem add_intCast_den (q : ℚ) (n : ℤ) : (q + n).den = q.den := by
   apply Nat.dvd_antisymm
   · simpa using add_den_dvd q n
   · simpa using add_den_dvd (q + n) (-n)
 
 @[simp]
-theorem int_add_den (n : ℤ) (q : ℚ) : (n + q).den = q.den := by
-  rw [add_comm, add_int_den]
+theorem intCast_add_den (n : ℤ) (q : ℚ) : (n + q).den = q.den := by
+  rw [add_comm, add_intCast_den]
 
 @[simp]
-theorem sub_int_den (q : ℚ) (n : ℤ) : (q - n).den = q.den := by
-  rw [sub_eq_add_neg, ← Int.cast_neg, add_int_den]
+theorem sub_intCast_den (q : ℚ) (n : ℤ) : (q - n).den = q.den := by
+  rw [sub_eq_add_neg, ← Int.cast_neg, add_intCast_den]
 
 @[simp]
-theorem int_sub_den (n : ℤ) (q : ℚ) : (n - q).den = q.den := by
-  rw [sub_eq_add_neg, int_add_den, neg_den]
+theorem intCast_sub_den (n : ℤ) (q : ℚ) : (n - q).den = q.den := by
+  rw [sub_eq_add_neg, intCast_add_den, neg_den]
 
-@[simp] theorem add_nat_den (q : ℚ) (n : ℕ) : (q + n).den = q.den := mod_cast add_int_den q n
-@[simp] theorem nat_add_den (n : ℕ) (q : ℚ) : (n + q).den = q.den := mod_cast int_add_den n q
-@[simp] theorem sub_nat_den (q : ℚ) (n : ℕ) : (q - n).den = q.den := mod_cast sub_int_den q n
-@[simp] theorem nat_sub_den (n : ℕ) (q : ℚ) : (n - q).den = q.den := mod_cast int_sub_den n q
+@[simp]
+theorem add_natCast_den (q : ℚ) (n : ℕ) : (q + n).den = q.den := mod_cast add_intCast_den q n
 
-@[simp] theorem add_one_den (q : ℚ) : (q + 1).den = q.den := add_nat_den q 1
-@[simp] theorem one_add_den (q : ℚ) : (1 + q).den = q.den := nat_add_den 1 q
-@[simp] theorem sub_one_den (q : ℚ) : (q - 1).den = q.den := sub_nat_den q 1
-@[simp] theorem one_sub_den (q : ℚ) : (1 - q).den = q.den := nat_sub_den 1 q
+@[simp]
+theorem natCast_add_den (n : ℕ) (q : ℚ) : (n + q).den = q.den := mod_cast intCast_add_den n q
+
+@[simp]
+theorem sub_natCast_den (q : ℚ) (n : ℕ) : (q - n).den = q.den := mod_cast sub_intCast_den q n
+
+@[simp]
+theorem natCast_sub_den (n : ℕ) (q : ℚ) : (n - q).den = q.den := mod_cast intCast_sub_den n q
+
+@[simp] theorem add_one_den (q : ℚ) : (q + 1).den = q.den := add_natCast_den q 1
+@[simp] theorem one_add_den (q : ℚ) : (1 + q).den = q.den := natCast_add_den 1 q
+@[simp] theorem sub_one_den (q : ℚ) : (q - 1).den = q.den := sub_natCast_den q 1
+@[simp] theorem one_sub_den (q : ℚ) : (1 - q).den = q.den := natCast_sub_den 1 q
+
+@[simp]
+theorem add_ofNat_den (q : ℚ) (n : ℕ) [n.AtLeastTwo] : (q + ofNat(n)).den = q.den :=
+  add_natCast_den q n
+
+@[simp]
+theorem ofNat_add_den (n : ℕ) (q : ℚ) [n.AtLeastTwo] : (ofNat(n) + q).den = q.den :=
+  natCast_add_den n q
+
+@[simp]
+theorem sub_ofNat_den (q : ℚ) (n : ℕ) [n.AtLeastTwo] : (q - ofNat(n)).den = q.den :=
+  sub_natCast_den ..
+
+@[simp]
+theorem ofNat_sub_den (n : ℕ) (q : ℚ) [n.AtLeastTwo] : (ofNat(n) - q).den = q.den :=
+  natCast_sub_den ..
 
 /-- A version of `Rat.mul_den` without division. -/
 theorem den_mul_den_eq_den_mul_gcd (q₁ q₂ : ℚ) :
