@@ -33,7 +33,7 @@ open Filter Topology
 
 variable {R : Type*} {a b u₀ : R}
 
-/-- Arithmetic-geometric sequence with starting value `u₀` and recurence relation
+/-- Arithmetic-geometric sequence with starting value `u₀` and recurrence relation
 `u (n + 1) = a * u n + b`. -/
 def arithGeom [Mul R] [Add R] (a b u₀ : R) : ℕ → R
 | 0 => u₀

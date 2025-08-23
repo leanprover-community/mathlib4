@@ -24,7 +24,7 @@ In this file we define the filter and prove some basic theorems about it.
 
 All notation introduced in this file
 reducibly unfolds to the corresponding definitions about filters,
-so generic lemmas about `Filter.Eventually`, `Filter.EventuallyEq` etc apply.
+so generic lemmas about `Filter.Eventually`, `Filter.EventuallyEq` etc. apply.
 However, we restate some lemmas specifically for `ae`.
 
 ## Tags

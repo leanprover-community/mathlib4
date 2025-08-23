@@ -98,7 +98,7 @@ lemma isOpen_singleton_tfae_of_isNoetherian_of_isJacobsonRing
     · rintro rfl _ _
       rw [stableUnderGeneralization_singleton, ← isMin_iff] at h₂
       exact h₂.eq_of_le
-    · intros hp
+    · intro hp
       apply h₁.eq_of_ge
       obtain ⟨q, hq, hq'⟩ := Ideal.exists_minimalPrimes_le (J := p.asIdeal) bot_le
       exact (hp ⟨q, hq.1.1⟩ (isMin_iff.mpr hq) hq').ge.trans hq'
