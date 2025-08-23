@@ -61,31 +61,14 @@ variable (p : ℕ) [Fact p.Prime] (n : ℕ)
 Every field with the same cardinality is (non-canonically)
 isomorphic to this field. -/
 def GaloisField := SplittingField (X ^ p ^ n - X : (ZMod p)[X])
--- The `Field` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance : Field (GaloisField p n) :=
-  inferInstanceAs (Field (SplittingField _))
-
-instance : Inhabited (@GaloisField 2 (Fact.mk Nat.prime_two) 1) := ⟨37⟩
+deriving Inhabited, Field, CharP _ p,
+  Algebra (ZMod p),
+  Finite, FiniteDimensional (ZMod p),
+  IsSplittingField (ZMod p) _ (X ^ p ^ n - X)
 
 namespace GaloisField
 
 variable (p : ℕ) [h_prime : Fact p.Prime] (n : ℕ)
-
-instance : Algebra (ZMod p) (GaloisField p n) := SplittingField.algebra _
-
-instance : IsSplittingField (ZMod p) (GaloisField p n) (X ^ p ^ n - X) :=
-  Polynomial.IsSplittingField.splittingField _
-
-instance : CharP (GaloisField p n) p :=
-  (Algebra.charP_iff (ZMod p) (GaloisField p n) p).mp (by infer_instance)
-
-instance : FiniteDimensional (ZMod p) (GaloisField p n) := by
-  dsimp only [GaloisField]; infer_instance
-
-instance : Finite (GaloisField p n) :=
-  Module.finite_of_finite (ZMod p)
 
 theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = n := by
   haveI : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)

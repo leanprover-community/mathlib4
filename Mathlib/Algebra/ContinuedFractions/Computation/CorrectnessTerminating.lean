@@ -146,8 +146,7 @@ theorem compExactValue_correctness_of_stream_eq_some :
       -- ifp_succ_n.fr ≠ 0
       -- use the IH to show that the following equality suffices
       suffices
-        compExactValue ppconts pconts ifp_n.fr = compExactValue pconts conts ifp_succ_n.fr by
-        grind
+        compExactValue ppconts pconts ifp_n.fr = compExactValue pconts conts ifp_succ_n.fr by grind
       -- get the correspondence between ifp_n and ifp_succ_n
       obtain ⟨ifp_n', nth_stream_eq', ifp_n_fract_ne_zero, ⟨refl⟩⟩ :
         ∃ ifp_n, IntFractPair.stream v n = some ifp_n ∧
@@ -167,7 +166,7 @@ theorem compExactValue_correctness_of_stream_eq_some :
       have : compExactValue ppconts pconts ifp_n.fr =
           (ppA + ifp_n.fr⁻¹ * pA) / (ppB + ifp_n.fr⁻¹ * pB) := by
         -- unfold compExactValue and the convergent computation once
-        field_simp [ifp_n_fract_ne_zero, compExactValue, nextConts, nextNum, nextDen, ppA, ppB]
+        simp [ifp_n_fract_ne_zero, compExactValue, nextConts, nextNum, nextDen, ppA, ppB]
         ac_rfl
       rw [this]
       -- two calculations needed to show the claim

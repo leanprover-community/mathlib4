@@ -343,7 +343,7 @@ theorem hasPullbacksOfInclusions
 noncomputable instance [HasExplicitPullbacksOfInclusions P] :
     PreservesPullbacksOfInclusions (compHausLikeToTop P) :=
   { preservesPullbackInl := by
-      intros X Y Z f
+      intro X Y Z f
       infer_instance }
 
 instance [HasExplicitPullbacksOfInclusions P] : FinitaryExtensive (CompHausLike P) :=

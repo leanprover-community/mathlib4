@@ -290,7 +290,7 @@ def check_and_create_fork(username: str, auto_accept: bool = False) -> str:
     if yes_no_prompt("Would you like to create a fork?", auto_accept=auto_accept):
         try:
             print("Creating fork...")
-            run_command(['gh', 'repo', 'fork', 'leanprover-community/mathlib4', '--clone=false'])
+            run_command(['gh', 'repo', 'fork', 'leanprover-community/mathlib4', '--default-branch-only', '--clone=false'])
             print_success(f"Fork created: {repo_name}")
             return get_remote_url(repo_name, use_ssh)
         except Exception as e:
