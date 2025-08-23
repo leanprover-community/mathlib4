@@ -331,6 +331,6 @@ lemma eqToHom_eq {x₀ x₁ : X} (h : x₀ = x₁) :
 
 lemma conj_eqToHom {x y x' y' : X} {p : Path x y} (hx : x' = x) (hy : y' = y) :
     eqToHom (congr_arg mk hx) ≫ ⟦p⟧ ≫ eqToHom (congr_arg mk hy.symm) = ⟦p.cast hx hy⟧ := by
-  subst hx hy; simp; rfl
+  subst hx hy; simp
 
 end FundamentalGroupoid
