@@ -89,8 +89,9 @@ lemma HasDerivAt.conj_conj {f : 𝕜 → 𝕜} {f' : 𝕜} (hf : HasDerivAt f f'
 
 /-- A function `f` has derivative `f'` at `z` iff `conj ∘ f ∘ conj` has derivative `conj f'` at
 `conj z`. -/
+@[simp]
 lemma hasDerivAt_conj_conj_iff {f : 𝕜 → 𝕜} {x f' : 𝕜} :
-    HasDerivAt (conj ∘ f ∘ conj) (conj f') (conj x) ↔ HasDerivAt f f' x :=
+    HasDerivAt (conj ∘ f ∘ conj) f' x ↔ HasDerivAt f (conj f') (conj x) :=
   hasDerivAt_star_conj_iff
 
 /-- If `f` is differentiable at `conj z`, then `star ∘ f ∘ conj` is differentiable at `z`. -/
