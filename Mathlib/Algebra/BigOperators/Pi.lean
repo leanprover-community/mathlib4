@@ -7,7 +7,7 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
 import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Group.Indicator
+import Mathlib.Algebra.Notation.Indicator
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Data.Fintype.Basic
@@ -205,3 +205,19 @@ lemma Pi.mulSingle_induction [CommMonoid M] (p : (ι → M) → Prop) (f : ι �
   cases nonempty_fintype ι
   rw [← Finset.univ_prod_mulSingle f]
   exact Finset.prod_induction _ _ mul one (by simp [mulSingle])
+
+section EqOn
+
+@[to_additive]
+theorem eqOn_finsetProd {ι α β : Type*} [CommMonoid α]
+    {s : Set β} {f f' : ι → β → α} (h : ∀ (i : ι), Set.EqOn (f i) (f' i) s) (v : Finset ι) :
+    Set.EqOn (∏ i ∈ v, f i) (∏ i ∈ v, f' i) s :=
+  fun t ht => by simp [funext fun i ↦ h i ht]
+
+@[to_additive]
+theorem eqOn_fun_finsetProd {ι α β : Type*} [CommMonoid α]
+    {s : Set β} {f f' : ι → β → α} (h : ∀ (i : ι), Set.EqOn (f i) (f' i) s) (v : Finset ι) :
+    Set.EqOn (fun b ↦ ∏ i ∈ v, f i b) (fun b ↦ ∏ i ∈ v, f' i b) s := by
+  convert eqOn_finsetProd h v <;> simp
+
+end EqOn

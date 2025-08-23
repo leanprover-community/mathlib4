@@ -351,9 +351,7 @@ theorem isometry_comap_mkMetric (m : ℝ≥0∞ → ℝ≥0∞) {f : X → Y} (h
   refine surjective_id.iSup_congr id fun ε => surjective_id.iSup_congr id fun hε => ?_
   rw [comap_boundedBy _ (H.imp _ id)]
   · congr with s : 1
-    apply extend_congr
-    · simp [hf.ediam_image]
-    · intros; simp [hf.ediam_image]
+    apply extend_congr <;> simp [hf.ediam_image]
   · intro h_mono s t hst
     simp only [extend, le_iInf_iff]
     intro ht
@@ -937,7 +935,7 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
       · filter_upwards [B] with _ hn
         apply Finset.sum_le_sum fun i _ => _
         simp only [ENNReal.rpow_natCast]
-        intros i _
+        intro i _
         exact pow_le_pow_left' (hn i) _
       · isBoundedDefault
     _ = liminf (fun n : ℕ => ∏ i : ι, (⌈((b i : ℝ) - a i) * n⌉₊ : ℝ≥0∞) / n) atTop := by
@@ -952,7 +950,7 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
             ((ENNReal.continuous_ofReal.tendsto _).comp
               ((tendsto_nat_ceil_mul_div_atTop (I i)).comp tendsto_natCast_atTop_atTop))
         apply eventually_atTop.2 ⟨1, fun n hn => _⟩
-        intros n hn
+        intro n hn
         simp only [ENNReal.ofReal_div_of_pos (Nat.cast_pos.mpr hn), comp_apply,
           ENNReal.ofReal_natCast]
       · simp only [ENNReal.ofReal_ne_top, Ne, not_false_iff]
