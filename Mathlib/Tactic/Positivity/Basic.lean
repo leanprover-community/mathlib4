@@ -457,7 +457,7 @@ def evalNatGCD : PositivityExt where eval {u α} z p e := do
     | _ =>
       match ← core z p b with
       | .positive pb => return .positive q(Nat.gcd_pos_of_pos_right $a $pb)
-      | _ =>  return .nonnegative q(Nat.zero_le _)
+      | _ => failure
   | _, _, _ => throwError "not Nat.gcd"
 
 /-- Extension for `Nat.lcm`. -/
@@ -471,8 +471,8 @@ def evalNatLCM : PositivityExt where eval {u α} z p e := do
       match ← core z p b with
       | .positive pb =>
         return .positive q(Nat.lcm_pos $pa $pb)
-      | _ => return .nonnegative q(Nat.zero_le _)
-    | _ => return .nonnegative q(Nat.zero_le _)
+      | _ => failure
+    | _ => failure
   | _, _, _ => throwError "not Nat.lcm"
 
 /-- Extension for `Nat.sqrt`. -/
@@ -483,7 +483,7 @@ def evalNatSqrt : PositivityExt where eval {u α} z p e := do
     assumeInstancesCommute
     match ← core z p n with
     | .positive pa => return .positive q(Nat.sqrt_pos.mpr $pa)
-    | _ =>  return .nonnegative q(Nat.zero_le _)
+    | _ => failure
   | _, _, _ => throwError "not Nat.sqrt"
 
 /-- Extension for `Int.gcd`.
@@ -498,9 +498,9 @@ def evalIntGCD : PositivityExt where eval {u α} _ _ e := do
     match (← catchNone (core z p a)).toNonzero with
     | some na => return .positive q(Int.gcd_pos_of_ne_zero_left $b $na)
     | none =>
-      match (← catchNone (core z p b)).toNonzero with
+      match (← core z p b).toNonzero with
       | some nb => return .positive q(Int.gcd_pos_of_ne_zero_right $a $nb)
-      | none => return .nonnegative q(Nat.zero_le _)
+      | none => failure
   | _, _, _ => throwError "not Int.gcd"
 
 /-- Extension for `Int.lcm`. -/
@@ -511,12 +511,12 @@ def evalIntLCM : PositivityExt where eval {u α} _ _ e := do
     let z ← synthInstanceQ (q(Zero ℤ) : Q(Type))
     let p ← synthInstanceQ (q(PartialOrder ℤ) : Q(Type))
     assertInstancesCommute
-    match (← catchNone (core z p a)).toNonzero with
+    match (← core z p a).toNonzero with
     | some na =>
-      match (← catchNone (core z p b)).toNonzero with
+      match (← core z p b).toNonzero with
       | some nb => return .positive q(Int.lcm_pos $na $nb)
-      | _ => return .nonnegative q(Nat.zero_le _)
-    | _ =>  return .nonnegative q(Nat.zero_le _)
+      | _ => failure
+    | _ => failure
   | _, _, _ => throwError "not Int.lcm"
 
 section NNRat
