@@ -77,26 +77,22 @@ We allow repeating representations like `0.999...` here. -/
 noncomputable def ofDigits {b : ℕ} (digits : ℕ → Fin b) : ℝ :=
   ∑' n, ofDigitsTerm digits n
 
-theorem ofDigits_nonneg {b : ℕ} {digits : ℕ → Fin b} : 0 ≤ ofDigits digits := by
+theorem ofDigits_nonneg {b : ℕ} (digits : ℕ → Fin b) : 0 ≤ ofDigits digits := by
   simp only [ofDigits]
-  apply tsum_nonneg
-  intro i
-  exact ofDigitsTerm_nonneg
+  exact tsum_nonneg fun _ ↦ ofDigitsTerm_nonneg
 
-theorem ofDigits_le_one {b : ℕ} {digits : ℕ → Fin b} :
+theorem ofDigits_le_one {b : ℕ} (digits : ℕ → Fin b) :
     ofDigits digits ≤ 1 := by
   have hb : 0 < b := b_pos digits
   obtain rfl | hb' := (Nat.one_le_of_lt hb).eq_or_lt
   · simp [ofDigits, ofDigitsTerm]
   rify at hb'
   have hb_inv_nonneg : 0 ≤ (b⁻¹ : ℝ) := by simp
-  have hb_inv_lt_one : (b⁻¹ : ℝ) < 1 := by
-    exact inv_lt_one_of_one_lt₀ hb'
+  have hb_inv_lt_one : (b⁻¹ : ℝ) < 1 := inv_lt_one_of_one_lt₀ hb'
   simp only [ofDigits]
   let g (i : ℕ) : ℝ := (1 - (b⁻¹ : ℝ)) * (b⁻¹ : ℝ) ^ i
-  have hg_summable : Summable g := by
-    apply Summable.mul_left
-    apply summable_geometric_of_lt_one (by simp) (inv_lt_one_of_one_lt₀ hb')
+  have hg_summable : Summable g :=
+    (summable_geometric_of_lt_one (by simp) (inv_lt_one_of_one_lt₀ hb')).mul_left _
   convert Summable.tsum_mono (summable_ofDigitsTerm) hg_summable _
   · simp [g, tsum_mul_left, -inv_pow]
     rw [tsum_geometric_of_lt_one hb_inv_nonneg hb_inv_lt_one, mul_inv_cancel₀]
@@ -132,9 +128,9 @@ theorem ofDigits_close_of_common_prefix {b : ℕ} {x y : ℕ → Fin b} {n : ℕ
   rw [← mul_sub, abs_mul, abs_of_nonneg (by positivity)]
   apply mul_le_of_le_one_right (by positivity)
   rw [abs_le']
-  constructor <;> linarith [ofDigits_nonneg (digits := fun i ↦ x (i + n)),
-    ofDigits_nonneg (digits := fun i ↦ y (i + n)), ofDigits_le_one (digits := fun i ↦ x (i + n)),
-    ofDigits_le_one (digits := fun i ↦ y (i + n))]
+  constructor <;> linarith [ofDigits_nonneg (fun i ↦ x (i + n)),
+    ofDigits_nonneg (fun i ↦ y (i + n)), ofDigits_le_one (fun i ↦ x (i + n)),
+    ofDigits_le_one (fun i ↦ y (i + n))]
 
 /-- Converts a real number `x` from the interval `[0, 1)` into sequence of
 its digits in base `b`. -/
@@ -142,7 +138,7 @@ noncomputable def digits (x : ℝ) (b : ℕ) [NeZero b] : ℕ → Fin b :=
   fun i ↦ Fin.ofNat _ <| ⌊x * b ^ (i + 1)⌋₊ % b
 
 theorem ofDigits_digits_partial_sum_eq {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < b)
-    (hx : x ∈ Set.Ico 0 1) {n : ℕ} :
+    (hx : x ∈ Set.Ico 0 1) (n : ℕ) :
     b ^ n * ∑ i ∈ Finset.range n, ofDigitsTerm (digits x b) i = ⌊b ^ n * x⌋₊ := by
   induction n with
   | zero =>
@@ -171,9 +167,9 @@ theorem ofDigits_digits_partial_sum_eq {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < 
     conv => rhs; rw [← Nat.mod_add_div ⌊(b : ℝ) * y⌋₊ b]
 
 theorem ofDigits_digits_partial_sum_ge {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < b)
-    (hx : x ∈ Set.Ico 0 1) {n : ℕ} :
+    (hx : x ∈ Set.Ico 0 1) (n : ℕ) :
     x - (b⁻¹ : ℝ) ^ n ≤ ∑ i ∈ Finset.range n, ofDigitsTerm (digits x b) i := by
-  have := ofDigits_digits_partial_sum_eq hb hx (n := n)
+  have := ofDigits_digits_partial_sum_eq hb hx n
   have h_le := Nat.lt_floor_add_one (b ^ n * x)
   rw [← this] at h_le
   rw [← mul_le_mul_left (show 0 < (b : ℝ) ^ n by positivity),
@@ -183,9 +179,8 @@ theorem ofDigits_digits_partial_sum_ge {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < 
 theorem ofDigits_digits_partial_sum_le {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < b) {n : ℕ}
     (hx : x ∈ Set.Ico 0 1) :
     ∑ i ∈ Finset.range n, ofDigitsTerm (digits x b) i ≤ x := by
-  have := ofDigits_digits_partial_sum_eq hb hx (n := n)
-  have h_le := Nat.floor_le (a := b ^ n * x)
-    (by rw [Set.mem_Ico] at hx; apply mul_nonneg _ hx.left; positivity)
+  have := ofDigits_digits_partial_sum_eq hb hx n
+  have h_le := Nat.floor_le (a := b ^ n * x) (by have := hx.left; positivity)
   rw [← this, mul_le_mul_iff_of_pos_left (by positivity)] at h_le
   exact h_le
 
@@ -206,7 +201,7 @@ theorem hasSum_ofDigitsTerm_digits (x : ℝ) {b : ℕ} [NeZero b] (hb : 1 < b) (
   · apply tendsto_const_nhds
   · intro n
     simp only [inv_pow, neg_le_sub_iff_le_add]
-    have := ofDigits_digits_partial_sum_ge hb hx (n := n)
+    have := ofDigits_digits_partial_sum_ge hb hx n
     simp only [inv_pow, tsub_le_iff_right] at this
     linarith
   · intro n
