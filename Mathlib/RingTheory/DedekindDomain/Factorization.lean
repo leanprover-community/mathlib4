@@ -793,6 +793,7 @@ variable {S : Type*} [CommRing S] [Algebra S R] [Algebra.IsIntegral S R] [NoZero
 
 open IsDedekindDomain Ideal.IsDedekindDomain HeightOneSpectrum
 
+variable (R) in
 /--
 If `p` is a maximal ideal, then the lift of `p` in an extension is the product of the primes
 over `p` to the power the ramification index.

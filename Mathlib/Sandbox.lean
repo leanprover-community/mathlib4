@@ -1,8 +1,6 @@
 import Mathlib
 
-namespace relNorm
-
-open Ideal
+namespace Ideal
 
 attribute [local instance] FractionRing.liftAlgebra
 
@@ -38,7 +36,7 @@ lemma res2 [p.IsMaximal] [P.IsPrime] [IsGalois (FractionRing R) (FractionRing S)
   have h := t₁.symm.trans t₂
   dsimp at h
   simp_rw [map_prod, map_pow] at h
-  obtain ⟨s, hs⟩ := res1 p P hp
+  obtain ⟨s, hs⟩ := exists_relNorm_eq_pow_of_liesOver P p
   have {Q} (hQ : Q ∈ (p.primesOver S).toFinset) :
       relNorm R Q ^ ramificationIdx (algebraMap R S) p Q = p ^ ((p.ramificationIdxIn S) * s) := by
     rw [Set.mem_toFinset] at hQ
@@ -46,8 +44,7 @@ lemma res2 [p.IsMaximal] [P.IsPrime] [IsGalois (FractionRing R) (FractionRing S)
     have : Q.LiesOver p := hQ.2
     rw [← ramificationIdxIn_eq_ramificationIdx p Q (FractionRing R) (FractionRing S)]
     obtain ⟨σ, rfl⟩ := Ideal.exists_map_eq_of_isGalois p P Q (FractionRing R) (FractionRing S)
-    have := relNorm_smul R P σ
-    rw [Ideal.smul_def] at this
+    have := relNorm_map_algEquiv R σ P
     rw [this]
     rw [hs, ← pow_mul, mul_comm]
   simp_rw +contextual [this] at h
@@ -66,4 +63,4 @@ lemma res2 [p.IsMaximal] [P.IsPrime] [IsGalois (FractionRing R) (FractionRing S)
     exact IsMaximal.ne_top inferInstance
 
 
-end relNorm
+end Ideal
