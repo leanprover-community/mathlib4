@@ -330,7 +330,7 @@ end
 
 /-! ### Lemmas used to prove uniqueness results for root data -/
 
-/-- See also `Module.Dual.eq_of_preReflection_mapsTo'` for a variant of this lemma which
+/-- See also `Module.Dual.eq_of_preReflection_mapsTo_iff_image_subset` for a variant of this lemma which
 applies when `Φ` does not span.
 
 This rather technical-looking lemma exists because it is exactly what is needed to establish various
@@ -370,7 +370,7 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
 /-- This rather technical-looking lemma exists because it is exactly what is needed to establish a
 uniqueness result for root data. See the doc string of `Module.Dual.eq_of_preReflection_mapsTo` for
 further remarks. -/
-lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [NoZeroSMulDivisors R M]
+lemma Dual.eq_of_preReflection_mapsTo_iff_image_subset [CharZero R] [NoZeroSMulDivisors R M]
     {x : M} {Φ : Set M} (hΦ₁ : Φ.Finite) (hx : x ∈ span R Φ) {f g : Dual R M}
     (hf₁ : f x = 2) (hf₂ : MapsTo (preReflection x f) Φ Φ)
     (hg₁ : g x = 2) (hg₂ : MapsTo (preReflection x g) Φ Φ) :

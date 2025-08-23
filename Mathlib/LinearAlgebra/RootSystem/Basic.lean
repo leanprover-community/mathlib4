@@ -107,7 +107,7 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
   ext i
   apply P₁.injOn_dualMap_subtype_span_root_coroot (mem_range_self i) (hc ▸ mem_range_self i)
   simp only [LinearMap.coe_comp, comp_apply]
-  apply Dual.eq_of_preReflection_mapsTo' (finite_range P₁.root)
+  apply Dual.eq_of_preReflection_mapsTo_iff_image_subset (finite_range P₁.root)
   · exact Submodule.subset_span (mem_range_self i)
   · exact P₁.coroot_root_two i
   · exact P₁.mapsTo_reflection_root i
@@ -149,7 +149,7 @@ private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [NoZeroSMulDivisor
   have := injOn_dualMap_subtype_span_range_range (finite_range root)
     (c := p.flip ∘ coroot) hp hr
   apply this (mem_range_self k) (mem_range_self l)
-  refine Dual.eq_of_preReflection_mapsTo' (finite_range root)
+  refine Dual.eq_of_preReflection_mapsTo_iff_image_subset (finite_range root)
     (Submodule.subset_span <| mem_range_self k) (hp k) (hr k) hkl ?_
   rw [comp_apply, hl, hk, hij]
   exact (hr i).comp <| (hr j).comp (hr i)
