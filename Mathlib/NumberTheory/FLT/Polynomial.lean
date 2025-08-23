@@ -235,7 +235,7 @@ theorem fermatLastTheoremWith'_polynomial {n : ℕ} (hn : 3 ≤ n) (chn : (n : k
     FermatLastTheoremWith' k[X] n := by
   classical
   rw [FermatLastTheoremWith']
-  intros a b c ha hb hc heq
+  intro a b c ha hb hc heq
   obtain ⟨a', eq_a⟩ := gcd_dvd_left a b
   obtain ⟨b', eq_b⟩ := gcd_dvd_right a b
   set d := gcd a b

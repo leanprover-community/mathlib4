@@ -21,7 +21,7 @@ separation axioms, and the related T₂.₅ condition.
   there is two open sets, one containing `x`, and the other `y`, whose closures are disjoint.
   T₂.₅ implies T₂.
 
-See `Mathlib/Topology/Separation/Regular.lean` for regular, T₃, etc spaces; and
+See `Mathlib/Topology/Separation/Regular.lean` for regular, T₃, etc. spaces; and
 `Mathlib/Topology/Separation/GDelta.lean` for the definitions of `PerfectlyNormalSpace` and
 `T6Space`.
 

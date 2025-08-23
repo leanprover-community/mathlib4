@@ -876,7 +876,9 @@ import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Algebra.Order.Hom.MonoidWithZero
 import Mathlib.Algebra.Order.Hom.Ring
+import Mathlib.Algebra.Order.Hom.Submonoid
 import Mathlib.Algebra.Order.Hom.TypeTags
+import Mathlib.Algebra.Order.Hom.Units
 import Mathlib.Algebra.Order.Interval.Basic
 import Mathlib.Algebra.Order.Interval.Finset.Basic
 import Mathlib.Algebra.Order.Interval.Finset.SuccPred
@@ -5289,6 +5291,7 @@ import Mathlib.RingTheory.Coalgebra.Basic
 import Mathlib.RingTheory.Coalgebra.Equiv
 import Mathlib.RingTheory.Coalgebra.Hom
 import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
+import Mathlib.RingTheory.Coalgebra.MulOpposite
 import Mathlib.RingTheory.Coalgebra.TensorProduct
 import Mathlib.RingTheory.Complex
 import Mathlib.RingTheory.Congruence.Basic
@@ -6646,6 +6649,7 @@ import Mathlib.Topology.Separation.CountableSeparatingOn
 import Mathlib.Topology.Separation.DisjointCover
 import Mathlib.Topology.Separation.GDelta
 import Mathlib.Topology.Separation.Hausdorff
+import Mathlib.Topology.Separation.LinearUpperLowerSetTopology
 import Mathlib.Topology.Separation.NotNormal
 import Mathlib.Topology.Separation.Profinite
 import Mathlib.Topology.Separation.Regular
