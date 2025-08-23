@@ -189,7 +189,7 @@ theorem ofDigits_digits_partial_sum_le {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < 
   rw [← this, mul_le_mul_iff_of_pos_left (by positivity)] at h_le
   exact h_le
 
-theorem hasSum_ofDigitsTerm_digits (x : ℝ) (b : ℕ) [NeZero b] (hb : 1 < b) (hx : x ∈ Set.Ico 0 1) :
+theorem hasSum_ofDigitsTerm_digits (x : ℝ) {b : ℕ} [NeZero b] (hb : 1 < b) (hx : x ∈ Set.Ico 0 1) :
     HasSum (ofDigitsTerm (digits x b)) x := by
   rw [hasSum_iff_tendsto_nat_of_summable_norm]
   swap
@@ -213,11 +213,11 @@ theorem hasSum_ofDigitsTerm_digits (x : ℝ) (b : ℕ) [NeZero b] (hb : 1 < b) (
     simp only [Pi.zero_apply, tsub_le_iff_right, zero_add]
     exact ofDigits_digits_partial_sum_le hb hx
 
-theorem ofDigits_digits (b : ℕ) [NeZero b] (x : ℝ) (hb : 1 < b) (hx : x ∈ Set.Ico 0 1) :
+theorem ofDigits_digits {b : ℕ} [NeZero b] {x : ℝ} (hb : 1 < b) (hx : x ∈ Set.Ico 0 1) :
     ofDigits (digits x b) = x := by
   simp only [ofDigits]
   rw [← Summable.hasSum_iff]
-  · exact hasSum_ofDigitsTerm_digits x b hb hx
+  · exact hasSum_ofDigitsTerm_digits x hb hx
   · exact summable_ofDigitsTerm
 
 end Real
