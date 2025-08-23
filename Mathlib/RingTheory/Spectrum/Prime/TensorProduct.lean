@@ -40,7 +40,7 @@ lemma PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks_aux
     (h : tensorProductTo R S T p₁ = tensorProductTo R S T p₂) :
     p₁ ≤ p₂ := by
   let g : T →+* S ⊗[R] T := Algebra.TensorProduct.includeRight.toRingHom
-  intros x hxp₁
+  intro x hxp₁
   by_contra hxp₂
   obtain ⟨t, r, a, ht, e⟩ := hRT.exists_mul_eq_tmul x
     (p₂.asIdeal.comap g) inferInstance

@@ -308,9 +308,9 @@ theorem coeIdeal_eq_one {I : Ideal R} : (I : FractionalIdeal R⁰ K) = 1 ↔ I =
 theorem coeIdeal_ne_one {I : Ideal R} : (I : FractionalIdeal R⁰ K) ≠ 1 ↔ I ≠ 1 :=
   not_iff_not.mpr coeIdeal_eq_one
 
-theorem num_eq_zero_iff [Nontrivial R] {I : FractionalIdeal R⁰ K} : I.num = 0 ↔ I = 0 :=
-   ⟨fun h ↦ zero_of_num_eq_bot zero_notMem_nonZeroDivisors h,
-     fun h ↦ h ▸ num_zero_eq (IsFractionRing.injective R K)⟩
+theorem num_eq_zero_iff [Nontrivial R] {I : FractionalIdeal R⁰ K} : I.num = 0 ↔ I = 0 where
+  mp h := zero_of_num_eq_bot zero_notMem_nonZeroDivisors h
+  mpr h := h ▸ num_zero_eq (IsFractionRing.injective R K)
 
 end IsFractionRing
 
