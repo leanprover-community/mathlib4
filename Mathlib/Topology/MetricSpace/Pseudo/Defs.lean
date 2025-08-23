@@ -110,7 +110,7 @@ Any pseudometric space is a topological space and a uniform space (see `Topologi
 `UniformSpace`), where the topology and uniformity come from the metric.
 Note that a T1 pseudometric space is just a metric space.
 
-We make the uniformity/topology part of the data instead of deriving it from the metric. This eg
+We make the uniformity/topology part of the data instead of deriving it from the metric. This e.g.
 ensures that we do not get a diamond when doing
 `[PseudoMetricSpace α] [PseudoMetricSpace β] : TopologicalSpace (α × β)`:
 The product metric and product topology agree, but not definitionally so.

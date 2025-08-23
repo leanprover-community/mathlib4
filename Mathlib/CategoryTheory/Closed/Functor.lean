@@ -118,7 +118,7 @@ theorem expComparison_whiskerLeft {A A' : C} (f : A' ⟶ A) :
   rw [← prodComparison_inv_natural_whiskerRight F f]
   simp
 
-/-- The functor `F` is cartesian closed (ie preserves exponentials) if each natural transformation
+/-- The functor `F` is cartesian closed (i.e. preserves exponentials) if each natural transformation
 `exp_comparison F A` is an isomorphism
 -/
 class CartesianClosedFunctor : Prop where

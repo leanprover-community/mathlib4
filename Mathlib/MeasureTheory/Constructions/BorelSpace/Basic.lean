@@ -27,7 +27,7 @@ import Mathlib.Topology.Instances.Rat
 * `Continuous.measurable` : a continuous function is measurable;
 * `Continuous.measurable2` : if `f : α → β` and `g : α → γ` are measurable and `op : β × γ → δ`
   is continuous, then `fun x => op (f x, g y)` is measurable;
-* `Measurable.add` etc : dot notation for arithmetic operations on `Measurable` predicates,
+* `Measurable.add` etc. : dot notation for arithmetic operations on `Measurable` predicates,
   and similarly for `dist` and `edist`;
 * `AEMeasurable.add` : similar dot notation for almost everywhere measurable functions;
 -/

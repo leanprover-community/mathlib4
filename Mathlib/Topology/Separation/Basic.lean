@@ -815,7 +815,7 @@ theorem isOpen_inter_eq_singleton_of_mem_discrete {s : Set X} [DiscreteTopology 
 
 /-- For point `x` in a discrete subset `s` of a topological space, there is a set `U`
 such that
-1. `U` is a punctured neighborhood of `x` (ie. `U ∪ {x}` is a neighbourhood of `x`),
+1. `U` is a punctured neighborhood of `x` (i.e. `U ∪ {x}` is a neighbourhood of `x`),
 2. `U` is disjoint from `s`.
 -/
 theorem disjoint_nhdsWithin_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X} (hx : x ∈ s) :

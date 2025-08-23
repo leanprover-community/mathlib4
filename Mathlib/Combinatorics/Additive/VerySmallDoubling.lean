@@ -106,7 +106,7 @@ private lemma mul_inv_eq_inv_mul_of_doubling_lt_two_aux (h : #(A * A) < 2 * #A) 
   rw [mul_inv_eq_iff_eq_mul, mul_assoc, ← hzxwy, inv_mul_cancel_left]
 
 -- TODO: is there a way to get wlog to make `mul_inv_eq_inv_mul_of_doubling_lt_two_aux` a goal?
--- ie wlog in the target rather than hypothesis
+-- i.e. wlog in the target rather than hypothesis
 -- (BM: third time seeing this pattern)
 -- I'm thinking something like wlog_suffices, where I could write
 -- wlog_suffices : A⁻¹ * A ⊆ A * A⁻¹

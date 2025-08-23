@@ -701,9 +701,9 @@ For a concrete category `(A, s)` where the forgetful functor `s : A ⥤ Type v` 
 reflects isomorphisms, and `A` has limits, an `A`-valued presheaf `P : Cᵒᵖ ⥤ A` is a sheaf iff its
 underlying `Type`-valued presheaf `P ⋙ s : Cᵒᵖ ⥤ Type` is a sheaf.
 
-Note this lemma applies for "algebraic" categories, eg groups, abelian groups and rings, but not
-for the category of topological spaces, topological rings, etc since reflecting isomorphisms doesn't
-hold.
+Note this lemma applies for "algebraic" categories, e.g. groups, abelian groups and rings, but not
+for the category of topological spaces, topological rings, etc. since reflecting isomorphisms does
+not hold.
 -/
 theorem isSheaf_iff_isSheaf_forget (s : A' ⥤ Type max v₁ u₁) [HasLimits A'] [PreservesLimits s]
     [s.ReflectsIsomorphisms] : IsSheaf J P' ↔ IsSheaf J (P' ⋙ s) := by
