@@ -53,20 +53,20 @@ of elements. `a` is said less than `b` if `b` is infinitesimal comparing to `a`,
 `∀ n, |b|ₘ ^ n < |a|ₘ`. If `a` and `b` are neither infinitesimal to each other, they are equivalent
 in this order. -/
 @[to_additive ArchimedeanOrder
-"Type synonym to equip a ordered group with a new `Preorder` defined by the infinitesimal order
+/-- Type synonym to equip a ordered group with a new `Preorder` defined by the infinitesimal order
 of elements. `a` is said less than `b` if `b` is infinitesimal comparing to `a`, or more precisely,
 `∀ n, n • |b| < |a|`. If `a` and `b` are neither infinitesimal to each other, they are equivalent
-in this order."]
+in this order. -/]
 def MulArchimedeanOrder := M
 
 namespace MulArchimedeanOrder
 
 /-- Create a `MulArchimedeanOrder` element from the underlying type. -/
-@[to_additive "Create a `ArchimedeanOrder` element from the underlying type."]
+@[to_additive /-- Create a `ArchimedeanOrder` element from the underlying type. -/]
 def of : M ≃ MulArchimedeanOrder M := Equiv.refl _
 
 /-- Retrieve the underlying value from a `MulArchimedeanOrder` element. -/
-@[to_additive "Retrieve the underlying value from a `ArchimedeanOrder` element."]
+@[to_additive /-- Retrieve the underlying value from a `ArchimedeanOrder` element. -/]
 def val : MulArchimedeanOrder M ≃ M := Equiv.refl _
 
 @[to_additive (attr := simp)]
@@ -126,8 +126,8 @@ instance : IsTotal (MulArchimedeanOrder M) (· ≤ ·) where
 variable {N : Type*} [CommGroup N] [LinearOrder N] [IsOrderedMonoid N]
 
 /-- An `OrderMonoidHom` can be made to an `OrderHom` between their `MulArchimedeanOrder`. -/
-@[to_additive "An `OrderAddMonoidHom` can be made to an `OrderHom` between their
-`ArchimedeanOrder`."]
+@[to_additive /-- An `OrderAddMonoidHom` can be made to an `OrderHom` between their
+`ArchimedeanOrder`. -/]
 noncomputable
 def orderHom (f : M →*o N) : MulArchimedeanOrder M →o MulArchimedeanOrder N where
   toFun a := of (f a.val)
@@ -146,17 +146,17 @@ variable [CommGroup M] [LinearOrder M] [IsOrderedMonoid M] {a b : M}
 variable (M) in
 /-- `MulArchimedeanClass` is the antisymmetrization of `MulArchimedeanOrder`. -/
 @[to_additive ArchimedeanClass
-"`ArchimedeanClass` is the antisymmetrization of `ArchimedeanOrder`."]
+/-- `ArchimedeanClass` is the antisymmetrization of `ArchimedeanOrder`. -/]
 def MulArchimedeanClass := Antisymmetrization (MulArchimedeanOrder M) (· ≤ ·)
 
 namespace MulArchimedeanClass
 
 /-- The archimedean class of a given element. -/
-@[to_additive "The archimedean class of a given element."]
+@[to_additive /-- The archimedean class of a given element. -/]
 def mk (a : M) : MulArchimedeanClass M := toAntisymmetrization _ (MulArchimedeanOrder.of a)
 
 /-- An induction principle for `MulArchimedeanClass`. -/
-@[to_additive (attr := elab_as_elim) "An induction principle for `ArchimedeanClass`"]
+@[to_additive (attr := elab_as_elim) /-- An induction principle for `ArchimedeanClass` -/]
 theorem ind {motive : MulArchimedeanClass M → Prop} (mk : ∀ a, motive (.mk a)) : ∀ x, motive x :=
   Antisymmetrization.ind _ mk
 
@@ -174,8 +174,20 @@ theorem mk_eq_mk {a b : M} : mk a = mk b ↔ (∃ m, |b|ₘ ≤ |a|ₘ ^ m) ∧ 
   rw [Quotient.eq]
   rfl
 
+/-- Lift a `M → α` function to `MulArchimedeanClass M → α`. -/
+@[to_additive /-- Lift a `M → α` function to `ArchimedeanClass M → α`. -/]
+def lift {α : Type*} (f : M → α) (h : ∀ a b, mk a = mk b → f a = f b) :
+    MulArchimedeanClass M → α :=
+  Quotient.lift f fun _ _ h' ↦ h _ _ <| mk_eq_mk.mpr h'
+
+@[to_additive (attr := simp)]
+theorem lift_mk {α : Type*} (f : M → α) (h : ∀ a b, mk a = mk b → f a = f b)
+    (a : M) : lift f h (mk a) = f a := by
+  unfold lift
+  exact Quotient.lift_mk f (fun _ _ h' ↦ h _ _ <| mk_eq_mk.mpr h') a
+
 /-- Choose a representative element from a given archimedean class. -/
-@[to_additive "Choose a representative element from a given archimedean class."]
+@[to_additive /-- Choose a representative element from a given archimedean class. -/]
 noncomputable
 def out (A : MulArchimedeanClass M) : M := (Quotient.out A).val
 
@@ -209,8 +221,8 @@ theorem mk_lt_mk : mk a < mk b ↔ ∀ n, |b|ₘ ^ n < |a|ₘ := .rfl
 
 /-- 1 is in its own class (see `MulArchimedeanClass.mk_eq_top_iff`),
 which is also the largest class. -/
-@[to_additive "0 is in its own class (see `ArchimedeanClass.mk_eq_top_iff`),
-which is also the largest class."]
+@[to_additive /-- 0 is in its own class (see `ArchimedeanClass.mk_eq_top_iff`),
+which is also the largest class. -/]
 noncomputable
 instance : OrderTop (MulArchimedeanClass M) where
   top := mk 1
@@ -297,7 +309,7 @@ theorem mk_mul_eq_mk_right (h : mk b < mk a) : mk (a * b) = mk b :=
   mul_comm a b ▸ mk_mul_eq_mk_left h
 
 /-- The product over a set of an elements in distinct classes is in the lowest class. -/
-@[to_additive "The sum over a set of an elements in distinct classes is in the lowest class."]
+@[to_additive /-- The sum over a set of an elements in distinct classes is in the lowest class. -/]
 theorem mk_prod {ι : Type*} [LinearOrder ι] {s : Finset ι} (hnonempty : s.Nonempty)
     {a : ι → M} :
     StrictMonoOn (mk ∘ a) s → mk (∏ i ∈ s, (a i)) = mk (a (s.min' hnonempty)) := by
@@ -308,7 +320,7 @@ theorem mk_prod {ι : Type*} [LinearOrder ι] {s : Finset ι} (hnonempty : s.Non
     obtain ih := ih (hmono.mono (by simp))
     rw [Finset.prod_cons]
     have hminmem : s.min' hs ∈ (Finset.cons i s hi) :=
-      Finset.mem_cons_of_mem (by apply Finset.min'_mem)
+      Finset.mem_cons_of_mem (Finset.min'_mem _ _)
     have hne : mk (a i) ≠ mk (a (s.min' hs)) := by
       by_contra!
       obtain eq := hmono.injOn (by simp) hminmem this
@@ -320,7 +332,7 @@ theorem mk_prod {ι : Type*} [LinearOrder ι] {s : Finset ι} (hnonempty : s.Non
       congr
       apply le_antisymm (Finset.le_min' _ _ _ ?_) (Finset.min'_le _ _ (by simp))
       intro y hy
-      obtain rfl|hmem := Finset.mem_cons.mp hy
+      obtain rfl | hmem := Finset.mem_cons.mp hy
       · rfl
       · refine (lt_of_lt_of_le ?_ (Finset.min'_le _ _ hmem)).le
         apply (hmono.lt_iff_lt (by simp) hminmem).mp
@@ -330,7 +342,7 @@ theorem mk_prod {ι : Type*} [LinearOrder ι] {s : Finset ι} (hnonempty : s.Non
       congr 2
       refine le_antisymm (Finset.le_min' _ _ _ ?_) (Finset.min'_le _ _ hminmem)
       intro y hy
-      obtain rfl|hmem := Finset.mem_cons.mp hy
+      obtain rfl | hmem := Finset.mem_cons.mp hy
       · apply ((hmono.lt_iff_lt hminmem (by simp)).mp ?_).le
         rw [ih] at hlt
         exact hlt
@@ -381,7 +393,8 @@ section Hom
 variable {N : Type*} [CommGroup N] [LinearOrder N] [IsOrderedMonoid N]
 
 /-- An `OrderMonoidHom` can be lifted to an `OrderHom` over archimedean classes. -/
-@[to_additive "An `OrderAddMonoidHom` can be lifted to an `OrderHom` over archimedean classes."]
+@[to_additive
+/-- An `OrderAddMonoidHom` can be lifted to an `OrderHom` over archimedean classes. -/]
 noncomputable
 def orderHom (f : M →*o N) : MulArchimedeanClass M →o MulArchimedeanClass N :=
   (MulArchimedeanOrder.orderHom f).antisymmetrization
@@ -414,5 +427,29 @@ theorem orderHom_top (f : M →*o N) : orderHom f ⊤ = ⊤ := by
   rw [← mk_one, ← mk_one, orderHom_mk, map_one]
 
 end Hom
+
+section LiftHom
+
+variable {α : Type*} [PartialOrder α]
+
+/-- Lift a function `M → α` that's monotone along archimedean classes to a
+monotone function `MulArchimedeanClass M →o α`. -/
+@[to_additive /-- Lift a function `M → α` that's monotone along archimedean classes to a
+monotone function `ArchimedeanClass M →o α`. -/]
+noncomputable
+def liftOrderHom (f : M → α) (h : ∀ a b, mk a ≤ mk b → f a ≤ f b) :
+    MulArchimedeanClass M →o α where
+  toFun := lift f fun a b heq ↦ le_antisymm (h a b heq.le) (h b a heq.ge)
+  monotone' A B hle := by
+    induction A using ind with | mk a
+    induction B using ind with | mk b
+    simpa using h a b (mk_le_mk.mp hle)
+
+@[to_additive (attr := simp)]
+theorem liftOrderHom_mk (f : M → α) (h : ∀ a b, mk a ≤ mk b → f a ≤ f b) (a : M) :
+    liftOrderHom f h (mk a) = f a :=
+  lift_mk f (fun a b heq ↦ le_antisymm (h a b heq.le) (h b a heq.ge)) a
+
+end LiftHom
 
 end MulArchimedeanClass

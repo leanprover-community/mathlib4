@@ -171,7 +171,7 @@ theorem abs_rpow_le_exp_log_mul (x y : ℝ) : |x ^ y| ≤ exp (log x * y) := by
 
 lemma rpow_inv_log (hx₀ : 0 < x) (hx₁ : x ≠ 1) : x ^ (log x)⁻¹ = exp 1 := by
   rw [rpow_def_of_pos hx₀, mul_inv_cancel₀]
-  exact log_ne_zero.2 ⟨hx₀.ne', hx₁, (hx₀.trans' <| by norm_num).ne'⟩
+  exact log_ne_zero.2 ⟨hx₀.ne', hx₁, by bound⟩
 
 /-- See `Real.rpow_inv_log` for the equality when `x ≠ 1` is strictly positive. -/
 lemma rpow_inv_log_le_exp_one : x ^ (log x)⁻¹ ≤ exp 1 := by
@@ -179,7 +179,7 @@ lemma rpow_inv_log_le_exp_one : x ^ (log x)⁻¹ ≤ exp 1 := by
     _ ≤ |x ^ (log x)⁻¹| := le_abs_self _
     _ ≤ |x| ^ (log x)⁻¹ := abs_rpow_le_abs_rpow ..
   rw [← log_abs]
-  obtain hx | hx := (abs_nonneg x).eq_or_gt
+  obtain hx | hx := (abs_nonneg x).eq_or_lt'
   · simp [hx]
   · rw [rpow_def_of_pos hx]
     gcongr

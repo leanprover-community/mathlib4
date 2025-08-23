@@ -56,7 +56,7 @@ theorem IsRegular.ord_pos {c : Cardinal} (H : c.IsRegular) : 0 < c.ord := by
   rw [Cardinal.lt_ord, card_zero]
   exact H.pos
 
-theorem isRegular_cof {o : Ordinal} (h : o.IsLimit) : IsRegular o.cof :=
+theorem isRegular_cof {o : Ordinal} (h : IsSuccLimit o) : IsRegular o.cof :=
   ⟨aleph0_le_cof.2 h, (cof_cof o).ge⟩
 
 /-- If `c` is a regular cardinal, then `c.ord.toType` has a least element. -/
@@ -76,7 +76,7 @@ theorem isRegular_succ {c : Cardinal.{u}} (h : ℵ₀ ≤ c) : IsRegular (succ c
         have αe := Cardinal.mk_out (succ c)
         set α := (succ c).out
         rcases ord_eq α with ⟨r, wo, re⟩
-        have := isLimit_ord (h.trans (le_succ _))
+        have := isSuccLimit_ord (h.trans (le_succ _))
         rw [← αe, re] at this ⊢
         rcases cof_eq' r this with ⟨S, H, Se⟩
         rw [← Se]
@@ -210,8 +210,8 @@ theorem derivFamily_lt_ord_lift {ι : Type u} {f : ι → Ordinal → Ordinal} {
     rw [derivFamily_succ]
     exact
       nfpFamily_lt_ord_lift hω (by rwa [hc.cof_eq]) hf
-        ((isLimit_ord hc.1).succ_lt (hb ((lt_succ b).trans hb')))
-  | isLimit b hb H =>
+        ((isSuccLimit_ord hc.1).succ_lt (hb ((lt_succ b).trans hb')))
+  | limit b hb H =>
     intro hb'
     -- TODO: generalize the universes of the lemmas in this file so we don't have to rely on bsup
     have : ⨆ a : Iio b, _ = _ :=
@@ -234,19 +234,43 @@ theorem deriv_lt_ord {f : Ordinal.{u} → Ordinal} {c} (hc : IsRegular c) (hc' :
 /-! ### Inaccessible cardinals -/
 
 /-- A cardinal is inaccessible if it is an uncountable regular strong limit cardinal. -/
-def IsInaccessible (c : Cardinal) :=
-  ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c
+def IsInaccessible (c : Cardinal) : Prop :=
+  ℵ₀ < c ∧ c ≤ c.ord.cof ∧ ∀ x < c, 2 ^ x < c
 
+@[deprecated "use the default constructor for `IsInaccesible`" (since := "2025-07-01")]
 theorem IsInaccessible.mk {c} (h₁ : ℵ₀ < c) (h₂ : c ≤ c.ord.cof) (h₃ : ∀ x < c, (2 ^ x) < c) :
     IsInaccessible c :=
-  ⟨h₁, ⟨h₁.le, h₂⟩, (aleph0_pos.trans h₁).ne', @h₃⟩
+  ⟨h₁, h₂, h₃⟩
+
+theorem IsInaccessible.aleph0_lt {c : Cardinal} (h : IsInaccessible c) : ℵ₀ < c :=
+  h.1
+
+theorem IsInaccessible.nat_lt {c : Cardinal} (h : IsInaccessible c) (n : ℕ) : n < c :=
+  (nat_lt_aleph0 n).trans h.1
+
+theorem IsInaccessible.pos {c : Cardinal} (h : IsInaccessible c) : 0 < c :=
+  aleph0_pos.trans h.1
+
+theorem IsInaccessible.ne_zero {c : Cardinal} (h : IsInaccessible c) : c ≠ 0 :=
+  h.pos.ne'
+
+theorem IsInaccessible.isRegular {c : Cardinal} (h : IsInaccessible c) : IsRegular c :=
+  ⟨h.aleph0_lt.le, h.2.1⟩
+
+theorem IsInaccessible.isStrongLimit {c : Cardinal} (h : IsInaccessible c) : IsStrongLimit c :=
+  ⟨h.ne_zero, h.2.2⟩
+
+theorem isInaccesible_def {c : Cardinal} :
+    IsInaccessible c ↔ ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c where
+  mp h := ⟨h.aleph0_lt, h.isRegular, h.isStrongLimit⟩
+  mpr := fun ⟨h₁, h₂, h₃⟩ ↦ ⟨h₁, h₂.2, h₃.two_power_lt⟩
 
 -- Lean's foundations prove the existence of ℵ₀ many inaccessible cardinals
-theorem univ_inaccessible : IsInaccessible univ.{u, v} :=
-  IsInaccessible.mk (by simpa using lift_lt_univ' ℵ₀) (by simp) fun c h => by
-    rcases lt_univ'.1 h with ⟨c, rfl⟩
-    rw [← lift_two_power]
-    apply lift_lt_univ'
+theorem IsInaccessible.univ : IsInaccessible univ.{u, v} :=
+  ⟨aleph0_lt_univ, by simp, IsStrongLimit.univ.two_power_lt⟩
+
+@[deprecated IsInaccessible.univ (since := "2025-07-01")]
+alias univ_inaccessible := IsInaccessible.univ
 
 -- TODO: prove that `IsInaccessible o.card` implies `IsInaccesible (ℵ_ o)` and
 -- `IsInaccesible (ℶ_ o)`

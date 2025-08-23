@@ -212,7 +212,7 @@ theorem pi_div_two_eq_arcsin {x} : π / 2 = arcsin x ↔ 1 ≤ x :=
 
 @[simp]
 theorem pi_div_two_le_arcsin {x} : π / 2 ≤ arcsin x ↔ 1 ≤ x :=
-  (arcsin_le_pi_div_two x).le_iff_eq.trans pi_div_two_eq_arcsin
+  (arcsin_le_pi_div_two x).ge_iff_eq'.trans pi_div_two_eq_arcsin
 
 @[simp]
 theorem arcsin_eq_neg_pi_div_two {x : ℝ} : arcsin x = -(π / 2) ↔ x ≤ -1 :=
@@ -224,7 +224,7 @@ theorem neg_pi_div_two_eq_arcsin {x} : -(π / 2) = arcsin x ↔ x ≤ -1 :=
 
 @[simp]
 theorem arcsin_le_neg_pi_div_two {x} : arcsin x ≤ -(π / 2) ↔ x ≤ -1 :=
-  (neg_pi_div_two_le_arcsin x).le_iff_eq.trans arcsin_eq_neg_pi_div_two
+  (neg_pi_div_two_le_arcsin x).ge_iff_eq'.trans arcsin_eq_neg_pi_div_two
 
 @[simp]
 theorem pi_div_four_le_arcsin {x} : π / 4 ≤ arcsin x ↔ √2 / 2 ≤ x := by
@@ -395,7 +395,7 @@ theorem tan_arccos (x : ℝ) : tan (arccos x) = √(1 - x ^ 2) / x := by
 -- The junk values for `arccos` and `sqrt` make this true even for `1 < x`.
 theorem arccos_eq_arcsin {x : ℝ} (h : 0 ≤ x) : arccos x = arcsin (√(1 - x ^ 2)) :=
   (arcsin_eq_of_sin_eq (sin_arccos _)
-      ⟨(Left.neg_nonpos_iff.2 (div_nonneg pi_pos.le (by norm_num))).trans (arccos_nonneg _),
+      ⟨(Left.neg_nonpos_iff.2 (div_nonneg pi_pos.le (by simp))).trans (arccos_nonneg _),
         arccos_le_pi_div_two.2 h⟩).symm
 
 -- The junk values for `arcsin` and `sqrt` make this true even for `1 < x`.

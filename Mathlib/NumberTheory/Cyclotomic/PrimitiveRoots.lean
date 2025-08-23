@@ -3,6 +3,7 @@ Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Riccardo Brasca, Eric Rodriguez
 -/
+import Mathlib.Data.Nat.Factorization.LCM
 import Mathlib.Data.PNat.Prime
 import Mathlib.NumberTheory.Cyclotomic.Basic
 import Mathlib.RingTheory.Adjoin.PowerBasis

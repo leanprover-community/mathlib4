@@ -206,7 +206,7 @@ def erase [DecidableEq α] (s : Sym α (n + 1)) (a : α) (h : a ∈ s) : Sym α 
 @[simp]
 theorem erase_mk [DecidableEq α] (m : Multiset α)
     (hc : Multiset.card m = n + 1) (a : α) (h : a ∈ m) :
-    (mk m hc).erase a h =mk (m.erase a)
+    (mk m hc).erase a h = mk (m.erase a)
         (by rw [Multiset.card_erase_of_mem h, hc, Nat.add_one, Nat.pred_succ]) :=
   rfl
 

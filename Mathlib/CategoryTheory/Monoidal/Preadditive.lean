@@ -29,10 +29,10 @@ Note we don't `extend Preadditive C` here, as `Abelian C` already extends it,
 and we'll need to have both typeclasses sometimes.
 -/
 class MonoidalPreadditive : Prop where
-  whiskerLeft_zero : ∀ {X Y Z : C}, X ◁ (0 : Y ⟶ Z) = 0 := by aesop_cat
-  zero_whiskerRight : ∀ {X Y Z : C}, (0 : Y ⟶ Z) ▷ X = 0 := by aesop_cat
-  whiskerLeft_add : ∀ {X Y Z : C} (f g : Y ⟶ Z), X ◁ (f + g) = X ◁ f + X ◁ g := by aesop_cat
-  add_whiskerRight : ∀ {X Y Z : C} (f g : Y ⟶ Z), (f + g) ▷ X = f ▷ X + g ▷ X := by aesop_cat
+  whiskerLeft_zero : ∀ {X Y Z : C}, X ◁ (0 : Y ⟶ Z) = 0 := by cat_disch
+  zero_whiskerRight : ∀ {X Y Z : C}, (0 : Y ⟶ Z) ▷ X = 0 := by cat_disch
+  whiskerLeft_add : ∀ {X Y Z : C} (f g : Y ⟶ Z), X ◁ (f + g) = X ◁ f + X ◁ g := by cat_disch
+  add_whiskerRight : ∀ {X Y Z : C} (f g : Y ⟶ Z), (f + g) ▷ X = f ▷ X + g ▷ X := by cat_disch
 
 attribute [simp] MonoidalPreadditive.whiskerLeft_zero MonoidalPreadditive.zero_whiskerRight
 attribute [simp] MonoidalPreadditive.whiskerLeft_add MonoidalPreadditive.add_whiskerRight
@@ -118,7 +118,7 @@ instance (X : C) : PreservesFiniteBiproducts (tensorLeft X) where
         { preserves := fun {b} i => ⟨isBilimitOfTotal _ (by
             dsimp
             simp_rw [← id_tensorHom]
-            simp only [← tensor_comp, Category.comp_id, ← tensor_sum, ← tensor_id,
+            simp only [← tensor_comp, Category.comp_id, ← tensor_sum, ← id_tensorHom_id,
               IsBilimit.total i])⟩ } }
 
 instance (X : C) : PreservesFiniteBiproducts (tensorRight X) where
@@ -128,7 +128,7 @@ instance (X : C) : PreservesFiniteBiproducts (tensorRight X) where
         { preserves := fun {b} i => ⟨isBilimitOfTotal _ (by
             dsimp
             simp_rw [← tensorHom_id]
-            simp only [← tensor_comp, Category.comp_id, ← sum_tensor, ← tensor_id,
+            simp only [← tensor_comp, Category.comp_id, ← sum_tensor, ← id_tensorHom_id,
                IsBilimit.total i])⟩ } }
 
 variable [HasFiniteBiproducts C]
