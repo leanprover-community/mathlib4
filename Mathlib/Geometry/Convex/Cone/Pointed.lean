@@ -181,4 +181,16 @@ theorem toConvexCone_positive : ↑(positive R E) = ConvexCone.positive R E :=
   rfl
 
 end PositiveCone
+
+section OrderedAddCommGroup
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [PartialOrder E]
+  [Module R E]
+
+/-- Constructs an ordered module given an ordered group, a cone, and a proof that
+the order relation is the one defined by the cone. -/
+lemma to_posSMulMono (C : PointedCone R E) (h : ∀ x y : E, x ≤ y ↔ y - x ∈ C) :
+    PosSMulMono R E where
+  elim r hr x y := by simpa [h, ← smul_sub] using C.smul_mem ⟨r, hr⟩
+
+end OrderedAddCommGroup
 end PointedCone
