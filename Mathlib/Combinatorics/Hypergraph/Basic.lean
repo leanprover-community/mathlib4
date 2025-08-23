@@ -96,8 +96,6 @@ instance : Membership (Set α) (Hypergraph α) where
   mem H e := e ∈ E(H)
 
 
-section Incidence
-
 /-! ## Vertex-Hyperedge Incidence -/
 
 @[simp] lemma hyperedge_isSubset_vertexSet {H : Hypergraph α} {e : Set α} (he : e ∈ E(H)) :
@@ -128,10 +126,6 @@ lemma forall_of_forall_verts {e e' : Set α} (he : e ∈ E(H)) (he' : e' ∈ E(H
 lemma sUnion_hyperedgeSet_subset_vertexSet : Set.sUnion E(H) ⊆ V(H) := by
   refine subset_powerset_iff.mp ?_
   exact coe_isSubset_vertexSet_powerset
-
-end Incidence
-
-section Adjacency
 
 /-! ## Vertex and Hyperedge Adjacency -/
 
@@ -206,9 +200,6 @@ incident on both `e` and `f`, i.e., if the two hyperedges are adjacent (see `Hyp
 -/
 def hyperedgeNeighbors (H : Hypergraph α) (e : Set α) : Set (Set α) := {f | H.EAdj e f}
 
-end Adjacency
-
-section DefsPreds
 
 /-! ## Basic Hypergraph Definitions & Predicates-/
 
@@ -427,6 +418,9 @@ the vertices (`𝒫 V(H)`) is represented in `E(H)`
 -/
 def IsComplete (H : Hypergraph α) : Prop := ∀ e ∈ 𝒫 V(H), e ∈ E(H)
 
+/--
+A complete hypergraph with vertex set f
+-/
 @[simps]
 def completeOn (f : Set α) : Hypergraph α where
   vertexSet := f
@@ -442,15 +436,42 @@ lemma mem_completeOn {e f : Set α} : e ∈ E(completeOn f) ↔ e ⊆ f := by
 @[simp]
 lemma isComplete_completeOn (f : Set α) : (completeOn f).IsComplete := by exact fun e a ↦ a
 
-@[simp] lemma completeOn_isNonempty {S : Set α} : (completeOn S).IsNonempty := by
+@[simp]
+lemma isComplete_not_isEmpty {H : Hypergraph α} (h : H.IsComplete) : ¬ H.IsEmpty := by
+  unfold IsComplete at h
+  unfold IsEmpty
+  have h0 : ∅ ∈ 𝒫 V(H) := by
+    refine mem_powerset ?_
+    apply Set.empty_subset
+  apply not_and_or.mpr
+  right
+  grind
+
+@[simp]
+lemma completeOn_isNonempty {S : Set α} : (completeOn S).IsNonempty := by
   have h : E(completeOn S) = 𝒫 S := rfl
-  have h' : {} ∈ E(completeOn S) := by
+  have h' : ∅ ∈ E(completeOn S) := by
     refine mem_completeOn.mpr ?_
     apply Set.empty_subset
   unfold IsNonempty
   right
   use ∅
 
-end DefsPreds
+@[simp]
+lemma isComplete_not_isTrivial {H : Hypergraph α} (h : H.IsComplete) : ¬H.IsTrivial := by
+  unfold IsComplete at h
+  unfold IsTrivial
+  have h' : ∅ ∈ E(H) := by grind
+  apply not_and_or.mpr
+  right
+  exact ne_of_mem_of_not_mem' h' fun a ↦ a
+
+@[simp]
+lemma completeOn_not_isTrivial {S : Set α} : ¬(completeOn S).IsTrivial := by
+  unfold IsTrivial
+  apply not_and_or.mpr
+  right
+  simp
+  exact ne_of_mem_of_not_mem' (fun ⦃a⦄ a ↦ a) fun a ↦ a
 
 end Hypergraph
