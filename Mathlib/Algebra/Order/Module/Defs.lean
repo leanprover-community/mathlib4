@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Ring.Defs
@@ -20,9 +21,9 @@ We use eight typeclasses to encode the various properties we care about for thos
 These typeclasses are meant to be mostly internal to this file, to set up each lemma in the
 appropriate generality.
 
-Less granular typeclasses like `OrderedAddCommMonoid`, `LinearOrderedField`, `OrderedSMul` should be
-enough for most purposes, and the system is set up so that they imply the correct granular
-typeclasses here. If those are enough for you, you may stop reading here! Else, beware that what
+Less granular typeclasses like `IsOrderedAddMonoid` and `IsOrderedModule` should be enough for most
+purposes, and the system is set up so that they imply the correct granular typeclasses here.
+If those are enough for you, you may stop reading here! Else, beware that what
 follows is a bit technical.
 
 ## Definitions
@@ -42,6 +43,13 @@ We use the following four typeclasses to reason about right scalar multiplicatio
 * `SMulPosStrictMono`: If `b > 0`, then `a₁ < a₂` implies `a₁ • b < a₂ • b`.
 * `SMulPosReflectLT`: If `b ≥ 0`, then `a₁ • b < a₂ • b` implies `a₁ < a₂`.
 * `SMulPosReflectLE`: If `b > 0`, then `a₁ • b ≤ a₂ • b` implies `a₁ ≤ a₂`.
+
+Furthermore, in a *module*, i.e. a group acted on by a ring, `PosSMulMono` and `SMulPosMono` are
+equivalent (they are both the same as `∀ r ≥ 0, ∀ m ≥ 0, 0 ≤ r • m`),
+and similarly for `PosSMulStrictMono` and `SMulPosStrictMono`.
+To avoid dangerous instances going both, we have the extra two typeclasses:
+* `IsOrderedModule`: Conjunction of `PosSMulMono` and `SMulPosMono`
+* `IsStrictrOrderedModule`: Conjunction of `PosSMulStrictMono` and `SMulPosStrictMono`.
 
 ## Constructors
 
@@ -79,8 +87,10 @@ used implications are:
   * `SMulPosMono → SMulPosStrictMono` (not registered as instance)
 
 Further, the bundled non-granular typeclasses imply the granular ones like so:
-* `OrderedSMul → PosSMulStrictMono`
-* `OrderedSMul → PosSMulReflectLT`
+* `IsOrderedModule → PosSMulMono`
+* `IsOrderedModule → SMulPosMono`
+* `IsStrictOrderedModule → PosSMulStrictMono`
+* `IsStrictOrderedModule → SMulPosStrictMono`
 
 Unless otherwise stated, all these implications are registered as instances,
 which means that in practice you should not worry about these implications.
@@ -108,17 +118,9 @@ because:
 
 In the future, it would be good to make the corresponding typeclasses in
 `Mathlib/Algebra/Order/GroupWithZero/Unbundled.lean` custom typeclasses too.
-
-## TODO
-
-This file acts as a substitute for `Mathlib/Algebra/Order/SMul.lean`. We now need to
-* finish the transition by deleting the duplicate lemmas
-* rearrange the non-duplicate lemmas into new files
-* generalise (most of) the lemmas from `Mathlib/Algebra/Order/Module.lean` to here
-* rethink `OrderedSMul`
 -/
 
-assert_not_exists Field
+assert_not_exists Field Finset
 
 open OrderDual
 
@@ -134,7 +136,7 @@ variable [Zero α]
 namely `b₁ ≤ b₂ → a • b₁ ≤ a • b₂` if `0 ≤ a`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedSMul`. -/
+`IsOrderedModule`. -/
 class PosSMulMono : Prop where
   /-- Do not use this. Use `smul_le_smul_of_nonneg_left` instead. -/
   protected elim ⦃a : α⦄ (ha : 0 ≤ a) ⦃b₁ b₂ : β⦄ (hb : b₁ ≤ b₂) : a • b₁ ≤ a • b₂
@@ -143,7 +145,7 @@ class PosSMulMono : Prop where
 namely `b₁ < b₂ → a • b₁ < a • b₂` if `0 < a`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedSMul`. -/
+`IsOrderedModule`. -/
 class PosSMulStrictMono : Prop where
   /-- Do not use this. Use `smul_lt_smul_of_pos_left` instead. -/
   protected elim ⦃a : α⦄ (ha : 0 < a) ⦃b₁ b₂ : β⦄ (hb : b₁ < b₂) : a • b₁ < a • b₂
@@ -152,7 +154,7 @@ class PosSMulStrictMono : Prop where
 the left, namely `a • b₁ < a • b₂ → b₁ < b₂` if `0 ≤ a`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedSMul`. -/
+`IsOrderedModule`. -/
 class PosSMulReflectLT : Prop where
   /-- Do not use this. Use `lt_of_smul_lt_smul_left` instead. -/
   protected elim ⦃a : α⦄ (ha : 0 ≤ a) ⦃b₁ b₂ : β⦄ (hb : a • b₁ < a • b₂) : b₁ < b₂
@@ -161,7 +163,7 @@ class PosSMulReflectLT : Prop where
 namely `a • b₁ ≤ a • b₂ → b₁ ≤ b₂` if `0 < a`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedSMul`. -/
+`IsOrderedModule`. -/
 class PosSMulReflectLE : Prop where
   /-- Do not use this. Use `le_of_smul_lt_smul_left` instead. -/
   protected elim ⦃a : α⦄ (ha : 0 < a) ⦃b₁ b₂ : β⦄ (hb : a • b₁ ≤ a • b₂) : b₁ ≤ b₂
@@ -175,7 +177,7 @@ variable [Zero β]
 namely `a₁ ≤ a₂ → a₁ • b ≤ a₂ • b` if `0 ≤ b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedSMul`. -/
+`IsOrderedModule`. -/
 class SMulPosMono : Prop where
   /-- Do not use this. Use `smul_le_smul_of_nonneg_right` instead. -/
   protected elim ⦃b : β⦄ (hb : 0 ≤ b) ⦃a₁ a₂ : α⦄ (ha : a₁ ≤ a₂) : a₁ • b ≤ a₂ • b
@@ -184,7 +186,7 @@ class SMulPosMono : Prop where
 namely `a₁ < a₂ → a₁ • b < a₂ • b` if `0 < b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedSMul`. -/
+`IsOrderedModule`. -/
 class SMulPosStrictMono : Prop where
   /-- Do not use this. Use `smul_lt_smul_of_pos_right` instead. -/
   protected elim ⦃b : β⦄ (hb : 0 < b) ⦃a₁ a₂ : α⦄ (ha : a₁ < a₂) : a₁ • b < a₂ • b
@@ -193,7 +195,7 @@ class SMulPosStrictMono : Prop where
 the left, namely `a₁ • b < a₂ • b → a₁ < a₂` if `0 ≤ b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedSMul`. -/
+`IsOrderedModule`. -/
 class SMulPosReflectLT : Prop where
   /-- Do not use this. Use `lt_of_smul_lt_smul_right` instead. -/
   protected elim ⦃b : β⦄ (hb : 0 ≤ b) ⦃a₁ a₂ : α⦄ (hb : a₁ • b < a₂ • b) : a₁ < a₂
@@ -202,12 +204,37 @@ class SMulPosReflectLT : Prop where
 namely `a₁ • b ≤ a₂ • b → a₁ ≤ a₂` if `0 < b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedSMul`. -/
+`IsOrderedModule`. -/
 class SMulPosReflectLE : Prop where
   /-- Do not use this. Use `le_of_smul_lt_smul_right` instead. -/
   protected elim ⦃b : β⦄ (hb : 0 < b) ⦃a₁ a₂ : α⦄ (hb : a₁ • b ≤ a₂ • b) : a₁ ≤ a₂
 
 end Right
+
+section LeftRight
+variable [Zero α] [Zero β]
+
+/-- An ordered module is a module with a partial order such that scalar multiplication by a
+nonnegative scalar and of a nonnegative vector are both monotone. -/
+class IsOrderedModule where
+  /-- Do not use this. Use `smul_le_smul_of_nonneg_left` instead. -/
+  protected smul_le_smul_of_nonneg_left ⦃a : α⦄ (ha : 0 ≤ a) ⦃b₁ b₂ : β⦄ (hb : b₁ ≤ b₂) :
+    a • b₁ ≤ a • b₂
+  /-- Do not use this. Use `smul_le_smul_of_nonneg_right` instead. -/
+  protected smul_le_smul_of_nonneg_right ⦃b : β⦄ (hb : 0 ≤ b) ⦃a₁ a₂ : α⦄ (ha : a₁ ≤ a₂) :
+    a₁ • b ≤ a₂ • b
+
+/-- An ordered module is a module with a partial order such that scalar multiplication by a
+positive scalar and of a positive vector are both strictly monotone. -/
+class IsStrictOrderedModule where
+  /-- Do not use this. Use `smul_lt_smul_of_pos_left` instead. -/
+  protected smul_lt_smul_of_pos_left ⦃a : α⦄ (ha : 0 < a) ⦃b₁ b₂ : β⦄ (hb : b₁ < b₂) :
+    a • b₁ < a • b₂
+  /-- Do not use this. Use `smul_lt_smul_of_pos_right` instead. -/
+  protected smul_lt_smul_of_pos_right ⦃b : β⦄ (hb : 0 < b) ⦃a₁ a₂ : α⦄ (ha : a₁ < a₂) :
+    a₁ • b < a₂ • b
+
+end LeftRight
 end Defs
 
 variable {α β} {a a₁ a₂ : α} {b b₁ b₂ : β}
@@ -348,6 +375,26 @@ end Right
 section LeftRight
 variable [Zero α] [Zero β]
 
+-- See note [lower instance priority]
+instance (priority := 100) IsOrderedModule.toPosSMulMono [IsOrderedModule α β] :
+    PosSMulMono α β where
+  elim _a ha _b₁ _b₂ hb := IsOrderedModule.smul_le_smul_of_nonneg_left ha hb
+
+-- See note [lower instance priority]
+instance (priority := 100) IsOrderedModule.toSMulPosMono [IsOrderedModule α β] :
+    SMulPosMono α β where
+  elim _a ha _b₁ _b₂ hb := IsOrderedModule.smul_le_smul_of_nonneg_right ha hb
+
+-- See note [lower instance priority]
+instance (priority := 100) IsStrictOrderedModule.toPosSMulStrictMono [IsStrictOrderedModule α β] :
+    PosSMulStrictMono α β where
+  elim _a ha _b₁ _b₂ hb := IsStrictOrderedModule.smul_lt_smul_of_pos_left ha hb
+
+-- See note [lower instance priority]
+instance (priority := 100) IsStrictOrderedModule.toSMulPosStrictMono [IsStrictOrderedModule α β] :
+    SMulPosStrictMono α β where
+  elim _a ha _b₁ _b₂ hb := IsStrictOrderedModule.smul_lt_smul_of_pos_right ha hb
+
 lemma smul_lt_smul_of_le_of_lt [PosSMulStrictMono α β] [SMulPosMono α β] (ha : a₁ ≤ a₂)
     (hb : b₁ < b₂) (h₁ : 0 < a₁) (h₂ : 0 ≤ b₂) : a₁ • b₁ < a₂ • b₂ :=
   (smul_lt_smul_of_pos_left hb h₁).trans_le (smul_le_smul_of_nonneg_right ha h₂)
@@ -382,6 +429,23 @@ lemma smul_le_smul' [PosSMulMono α β] [SMulPosMono α β] (ha : a₁ ≤ a₂)
 
 end LeftRight
 end Preorder
+
+section PartialOrder
+variable [Semiring α] [PartialOrder α]
+
+-- See note [lower instance priority]
+instance (priority := 100) IsOrderedRing.toIsOrderedModule [IsOrderedRing α] :
+    IsOrderedModule α α where
+  smul_le_smul_of_nonneg_left _b hb _a₁ _a₂ ha := smul_le_smul_of_nonneg_left ha hb
+  smul_le_smul_of_nonneg_right _b hb _a₁ _a₂ ha := smul_le_smul_of_nonneg_right ha hb
+
+-- See note [lower instance priority]
+instance (priority := 100) IsStrictOrderedRing.toIsStrictOrderedModule [IsStrictOrderedRing α] :
+    IsStrictOrderedModule α α where
+  smul_lt_smul_of_pos_left _b hb _a₁ _a₂ ha := smul_lt_smul_of_pos_left ha hb
+  smul_lt_smul_of_pos_right _b hb _a₁ _a₂ ha := smul_lt_smul_of_pos_right ha hb
+
+end PartialOrder
 
 section LinearOrder
 variable [Preorder α] [LinearOrder β]
@@ -604,6 +668,12 @@ instance (priority := 100) SMulPosReflectLE.toSMulPosReflectLT [SMulPosReflectLE
   SMulPosReflectLT.of_pos fun b hb a₁ a₂ h ↦
     (le_of_smul_le_smul_of_pos_right h.le hb).lt_of_ne <| by rintro rfl; simp at h
 
+-- See note [lower instance priority]
+instance (priority := 100) IsStrictOrderedModule.toIsOrderedModule [IsStrictOrderedModule α β] :
+    IsOrderedModule α β where
+  smul_le_smul_of_nonneg_left _b hb _a₁ _a₂ ha := smul_le_smul_of_nonneg_left ha hb
+  smul_le_smul_of_nonneg_right _b hb _a₁ _a₂ ha := smul_le_smul_of_nonneg_right ha hb
+
 lemma smul_eq_smul_iff_eq_and_eq_of_pos [PosSMulStrictMono α β] [SMulPosStrictMono α β]
     (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) (h₁ : 0 < a₁) (h₂ : 0 < b₂) :
     a₁ • b₁ = a₂ • b₂ ↔ a₁ = a₂ ∧ b₁ = b₂ := by
@@ -694,7 +764,14 @@ end Preorder
 end MulAction
 
 section Semiring
-variable [Semiring α] [AddCommGroup β] [Module α β] [NoZeroSMulDivisors α β]
+variable [Semiring α] [AddCommGroup β] [Module α β]
+
+/-- Constructor for `PosSMulMono` when the semimodule is in fact a group. -/
+lemma PosSMulMono.of_smul_nonneg [PartialOrder α] [PartialOrder β] [IsOrderedAddMonoid β]
+    (h : ∀ a : α, 0 ≤ a → ∀ b : β, 0 ≤ b → 0 ≤ a • b) : PosSMulMono α β where
+  elim _a ha b₁ b₂ := by simpa [sub_nonneg, smul_sub] using h _ ha (b₂ - b₁)
+
+variable [NoZeroSMulDivisors α β]
 
 section PartialOrder
 variable [Preorder α] [PartialOrder β]
@@ -808,6 +885,20 @@ instance instSMulPosReflectLE [SMulPosReflectLE α β] : SMulPosReflectLE α β�
     exact le_of_smul_le_smul_right (β := β) h <| neg_pos.2 hb
 
 end Right
+
+section LeftRight
+variable [Preorder α] [MonoidWithZero α] [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]
+  [DistribMulAction α β]
+
+instance instIsOrderedModule [IsOrderedModule α β] : IsOrderedModule α βᵒᵈ where
+  smul_le_smul_of_nonneg_left _b hb _a₁ _a₂ ha := smul_le_smul_of_nonneg_left ha hb
+  smul_le_smul_of_nonneg_right _b hb _a₁ _a₂ ha := smul_le_smul_of_nonneg_right ha hb
+
+instance instIsStrictOrderedModule [IsStrictOrderedModule α β] : IsStrictOrderedModule α βᵒᵈ where
+  smul_lt_smul_of_pos_left _b hb _a₁ _a₂ ha := smul_lt_smul_of_pos_left ha hb
+  smul_lt_smul_of_pos_right _b hb _a₁ _a₂ ha := smul_lt_smul_of_pos_right ha hb
+
+end LeftRight
 end OrderDual
 
 section OrderedAddCommMonoid
