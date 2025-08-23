@@ -252,28 +252,28 @@ theorem ContMDiffAt.comp₂_of_eq {h : M' × N' → N} {f : M → M'} {g : M →
   rw [← e] at ha
   exact ha.comp₂ fa ga
 
-/-- Curried analytic functions are analytic in the first coordinate -/
+/-- Curried `C^n` functions are `C^n` in the first coordinate. -/
 theorem ContMDiffAt.curry_left {f : M → M' → N} {x : M} {y : M'}
     (fa : ContMDiffAt (I.prod I') J n (uncurry f) (x, y)) :
     ContMDiffAt I J n (fun x ↦ f x y) x :=
   fa.comp₂ contMDiffAt_id contMDiffAt_const
 alias ContMDiffAt.along_fst := ContMDiffAt.curry_left
 
-/-- Curried analytic functions are analytic in the second coordinate -/
+/-- Curried `C^n` functions are `C^n` in the second coordinate. -/
 theorem ContMDiffAt.curry_right {f : M → M' → N} {x : M} {y : M'}
     (fa : ContMDiffAt (I.prod I') J n (uncurry f) (x, y)) :
     ContMDiffAt I' J n (fun y ↦ f x y) y :=
   fa.comp₂ contMDiffAt_const contMDiffAt_id
 alias ContMDiffAt.along_snd := ContMDiffAt.curry_right
 
-/-- Curried analytic functions are analytic in the first coordinate -/
+/-- Curried `C^n` functions are `C^n` in the first coordinate. -/
 theorem ContMDiff.curry_left {f : M → M' → N}
     (fa : ContMDiff (I.prod I') J n (uncurry f)) {y : M'} :
     ContMDiff I J n (fun x ↦ f x y) :=
   fun _ ↦ (fa _).along_fst
 alias ContMDiff.along_fst := ContMDiff.curry_left
 
-/-- Curried analytic functions are analytic in the second coordinate -/
+/-- Curried `C^n` functions are `C^n` in the second coordinate. -/
 theorem ContMDiff.curry_right {f : M → M' → N} {x : M}
     (fa : ContMDiff (I.prod I') J n (uncurry f)) :
     ContMDiff I' J n (fun y ↦ f x y) :=
