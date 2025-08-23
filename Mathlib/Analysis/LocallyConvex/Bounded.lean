@@ -520,7 +520,7 @@ seminormed ring. -/
 instance [CompleteSpace E] : QuasiCompleteSpace 𝕜 E where
   quasiComplete _ _ := IsClosed.isComplete
 
-/- TVS III.8 -/
+/-- [Bourbaki, *Topological Vector Spaces*, III §1.6][bourbaki1987] -/
 theorem isCompact_closure_of_totallyBounded_quasiComplete {E : Type*} {𝕜 : Type*} [NormedField 𝕜]
     [AddCommGroup E] [Module 𝕜 E] [UniformSpace E] [IsUniformAddGroup E] [ContinuousSMul 𝕜 E]
     [QuasiCompleteSpace 𝕜 E] {s : Set E} (hs : TotallyBounded s) : IsCompact (closure s) :=
