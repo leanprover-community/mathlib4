@@ -54,36 +54,33 @@ theorem symm_subpath (γ : Path a b) (t₀ t₁ : I) : symm (γ.subpath t₀ t�
   ext s
   simp [subpath, add_comm]
 
-@[simp]
-lemma range_subpath_of_le (γ : Path a b) (t₀ t₁ : I) (h : t₀ ≤ t₁) :
-    range (γ.subpath t₀ t₁) = γ '' (Icc t₀ t₁) := by
-  ext z
+lemma subpathAux_range (t₀ t₁ : I) : range (subpathAux t₀ t₁) = uIcc t₀ t₁ := by
+  rw [range_eq_iff]
   constructor
-  · rintro ⟨s, rfl⟩
-    apply mem_image_of_mem
-    exact convex_Icc (t₀ : ℝ) t₁ (left_mem_Icc.mpr h) (right_mem_Icc.mpr h) (one_minus_nonneg s)
-      s.prop.left (sub_add_cancel _ _)
-  · rintro ⟨t, ht : (t : ℝ) ∈ Icc (t₀ : ℝ) (t₁ : ℝ), rfl⟩
-    rw [Convex.mem_Icc (show (t₀ : ℝ) ≤ (t₁ : ℝ) from h)] at ht
-    obtain ⟨a, b, ha, hb, hab, ht⟩ := ht
-    rw [mem_range]
-    use ⟨b, hb, Trans.trans (eq_sub_of_add_eq' hab) (sub_le_self 1 ha)⟩
-    simp [subpath, ← eq_sub_of_add_eq hab, ht]
-
-@[simp]
-lemma range_subpath_of_ge (γ : Path a b) (t₀ t₁ : I) (h : t₁ ≤ t₀) :
-    range (γ.subpath t₀ t₁) = γ '' (Icc t₁ t₀) := by
-  rw [← symm_subpath, symm_range, range_subpath_of_le _ _ _ h]
+  · intro s
+    exact convex_uIcc (t₀ : ℝ) t₁ left_mem_uIcc right_mem_uIcc
+      (one_minus_nonneg s) (nonneg s) (sub_add_cancel _ _)
+  · intro t (ht : (t : ℝ) ∈ uIcc (t₀ : ℝ) (t₁ : ℝ))
+    rw [← segment_eq_uIcc, segment_eq_image] at ht
+    obtain ⟨s, hs, hst⟩ := ht
+    use ⟨s, hs⟩
+    ext
+    exact hst
 
 /-- The range of a subpath is the image of the original path on the relevant interval. -/
 @[simp]
 theorem range_subpath (γ : Path a b) (t₀ t₁ : I) :
     range (γ.subpath t₀ t₁) = γ '' (uIcc t₀ t₁) := by
-  rcases le_total t₀ t₁ with h | h
-  · rw [uIcc_of_le h]
-    exact range_subpath_of_le _ _ _ h
-  · rw [uIcc_of_ge h]
-    exact range_subpath_of_ge _ _ _ h
+  rw [← subpathAux_range, ← range_comp]
+  rfl
+
+lemma range_subpath_of_le (γ : Path a b) (t₀ t₁ : I) (h : t₀ ≤ t₁) :
+    range (γ.subpath t₀ t₁) = γ '' (Icc t₀ t₁) := by
+  simp [h]
+
+lemma range_subpath_of_ge (γ : Path a b) (t₀ t₁ : I) (h : t₁ ≤ t₀) :
+    range (γ.subpath t₀ t₁) = γ '' (Icc t₁ t₀) := by
+  simp [h]
 
 /-- The subpath of `γ` from `t` to `t` is just the constant path at `γ t`. -/
 @[simp]
