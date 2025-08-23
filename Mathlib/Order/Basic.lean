@@ -1003,12 +1003,12 @@ abbrev LinearOrder.lift [LinearOrder β] [Max α] [Min α] (f : α → β) (inj 
     min := (· ⊓ ·)
     max := (· ⊔ ·)
     min_def := by
-      intros x y
+      intro x y
       apply inj
       rw [apply_ite f]
       exact (hinf _ _).trans (min_def _ _)
     max_def := by
-      intros x y
+      intro x y
       apply inj
       rw [apply_ite f]
       exact (hsup _ _).trans (max_def _ _)
@@ -1047,12 +1047,12 @@ abbrev LinearOrder.liftWithOrd [LinearOrder β] [Max α] [Min α] [Ord α] (f : 
     min := (· ⊓ ·)
     max := (· ⊔ ·)
     min_def := by
-      intros x y
+      intro x y
       apply inj
       rw [apply_ite f]
       exact (hinf _ _).trans (min_def _ _)
     max_def := by
-      intros x y
+      intro x y
       apply inj
       rw [apply_ite f]
       exact (hsup _ _).trans (max_def _ _)
@@ -1077,12 +1077,6 @@ abbrev LinearOrder.liftWithOrd' [LinearOrder β] [Ord α] (f : α → β)
 
 
 namespace Subtype
-
-instance le [LE α] {p : α → Prop} : LE (Subtype p) :=
-  ⟨fun x y ↦ (x : α) ≤ y⟩
-
-instance lt [LT α] {p : α → Prop} : LT (Subtype p) :=
-  ⟨fun x y ↦ (x : α) < y⟩
 
 @[simp]
 theorem mk_le_mk [LE α] {p : α → Prop} {x y : α} {hx : p x} {hy : p y} :

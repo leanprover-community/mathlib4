@@ -116,7 +116,7 @@ theorem bodd_coe (n : ℕ) : Int.bodd n = Nat.bodd n :=
 @[simp]
 theorem bodd_subNatNat (m n : ℕ) : bodd (subNatNat m n) = xor m.bodd n.bodd := by
   apply subNatNat_elim m n fun m n i => bodd i = xor m.bodd n.bodd <;>
-  intros i j <;>
+  intro i j <;>
   simp only [Int.bodd, Nat.bodd_add] <;>
   cases Nat.bodd i <;> simp
 
@@ -264,7 +264,7 @@ theorem bitwise_xor : bitwise xor = Int.xor := by
     <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.bne_eq_xor,
       cond_false, cond_true, negSucc.injEq, Bool.false_xor,
       Bool.true_xor, Bool.not_true,
-      Int.xor, HXor.hXor, Xor.xor, Nat.xor] <;> simp
+      Int.xor, HXor.hXor, XorOp.xor, Nat.xor] <;> simp
 
 @[simp]
 theorem bitwise_bit (f : Bool → Bool → Bool) (a m b n) :
