@@ -92,3 +92,67 @@ theorem floor_natCast_div_natCast (n d : ℕ) : ⌊(↑n / ↑d : ℚ≥0)⌋₊
   Rat.natFloor_natCast_div_natCast n d
 
 end NNRat
+
+namespace Mathlib.Meta.NormNum
+
+/-!
+### `norm_num` extesion for `Nat.ceil`
+-/
+
+theorem IsNat.natCeil {R : Type*} [Semiring R] [LinearOrder R] [IsStrictOrderedRing R]
+    [FloorSemiring R] (r : R) (m : ℕ) : IsNat r m → IsNat (⌈r⌉₊) m := by
+  rintro ⟨⟨⟩⟩
+  exact ⟨by simp⟩
+
+theorem IsInt.natCeil {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorSemiring R]
+    (r : R) (m : ℕ) : IsInt r (.negOfNat m) → IsNat (⌈r⌉₊) 0 := by
+  rintro ⟨⟨⟩⟩
+  exact ⟨by simp⟩
+
+theorem IsNNRat.natCeil {R : Type*} [Semifield R] [LinearOrder R] [IsStrictOrderedRing R]
+    [FloorSemiring R] (r : R) (n d : ℕ) (h : IsNNRat r n d) : IsNat ⌈r⌉₊ (⌈(n / d : NNRat)⌉₊) := by
+  constructor
+  rw [h.to_eq rfl rfl, ← @NNRat.ceil_cast R]
+  simp
+
+theorem IsRat.natCeil {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+    [FloorSemiring R] (r : R) (n d : ℕ) (h : IsRat r (.negOfNat n) d) : IsNat ⌈r⌉₊ 0 := by
+  constructor
+  simp [h.neg_to_eq, div_nonneg]
+
+open Lean in
+/-- `norm_num` extension for `Nat.ceil` -/
+@[norm_num ⌈_⌉₊]
+def evalNatCeil : NormNumExt where eval {u αZ} e := do
+  match u, αZ, e with
+  | 0, ~q(ℕ), ~q(@Nat.ceil $α $instR $instLO $instF $x) =>
+    match ← derive x with
+    | .isBool .. => failure
+    | .isNat sα nb pb => do
+      let _i ← synthInstanceQ (q(LinearOrder $α) : Q(Type u_1))
+      let _i' ← synthInstanceQ (q(IsStrictOrderedRing $α))
+      assertInstancesCommute
+      return .isNat q(inferInstance) nb q(IsNat.natCeil $x _ $pb)
+    | .isNegNat sα nb pb => do
+      let _i ← synthInstanceQ (q(LinearOrder $α) : Q(Type u_1))
+      let _i' ← synthInstanceQ (q(IsStrictOrderedRing $α))
+      assertInstancesCommute
+      return .isNat q(inferInstance) (mkRawNatLit 0) q(IsInt.natCeil _ _ $pb)
+    | .isNNRat _ q n d h => do
+      let _i ← synthInstanceQ (q(Semifield $α) : Q(Type u_1))
+      let _i' ← synthInstanceQ (q(LinearOrder $α) : Q(Type u_1))
+      let _i'' ← synthInstanceQ (q(IsStrictOrderedRing $α))
+      let _i''' ← synthInstanceQ (q(FloorSemiring $α))
+      assertInstancesCommute
+      have z : Q(ℕ) := mkRawNatLit (⌈q⌉₊)
+      letI : $z =Q ⌈($n / $d : NNRat)⌉₊ := ⟨⟩
+      return .isNat q(inferInstance) z q(IsNNRat.natCeil _ $n $d $h)
+    | .isNegNNRat _ q n d h => do
+      let _iF ← synthInstanceQ q(Field $α)
+      let _i ← synthInstanceQ q(LinearOrder $α)
+      let _i' ← synthInstanceQ q(IsStrictOrderedRing $α)
+      assertInstancesCommute
+      return .isNat q(inferInstance) (mkRawNatLit 0) q(IsRat.natCeil _ _ _ $h)
+  | _, _, _ => failure
+
+end Mathlib.Meta.NormNum
