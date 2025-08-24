@@ -257,7 +257,7 @@ open Subgroup
 instance decidableMemRange (f : G →* N) [Fintype G] [DecidableEq N] : DecidablePred (· ∈ f.range) :=
   fun _ => Fintype.decidableExistsFintype
 
--- this instance can't go just after the definition of `mrange` because `Fintype` is
+-- this instance cannot go just after the definition of `mrange` because `Fintype` is
 -- not imported at that stage
 /-- The range of a finite monoid under a monoid homomorphism is finite.
 Note: this instance can form a diamond with `Subtype.fintype` in the

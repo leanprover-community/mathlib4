@@ -171,7 +171,7 @@ dsimproc cons_val (Matrix.vecCons _ _ _) := fun e => do
   -- Wrap the index if possible, and abort if not
   let wrapped_i ←
     if variadic then
-      -- can't wrap as we don't know the length
+      -- cannot wrap as we don't know the length
       unless 0 ≤ i ∧ i < xs.length + tailn do return .continue
       pure i.toNat
     else

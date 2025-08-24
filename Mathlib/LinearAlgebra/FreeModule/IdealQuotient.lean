@@ -37,7 +37,7 @@ noncomputable def quotientEquivPiZMod (I : Ideal S) (b : Basis ι ℤ S) (hI : I
 
 /--
 A nonzero ideal over a free finite extension of `ℤ` has a finite quotient.
-It can't be an instance because of the side condition `I ≠ ⊥`.
+It cannot be an instance because of the side condition `I ≠ ⊥`.
 -/
 theorem finiteQuotientOfFreeOfNeBot [Module.Free ℤ S] [Module.Finite ℤ S]
     (I : Ideal S) (hI : I ≠ ⊥) : Finite (S ⧸ I) :=

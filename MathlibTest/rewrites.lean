@@ -41,7 +41,7 @@ example [Group G] (h : G) : 1 * h = h := by
   rw? [-mul_left_eq_self] -- exclude deprecated name for mul_eq_right, it is found first otherwise
 
 #adaptation_note /-- nightly-2024-03-27
-`rw?` upstream no longer uses `MVarId.applyRefl`, so it can't deal with `Iff` goals.
+`rw?` upstream no longer uses `MVarId.applyRefl`, so it cannot deal with `Iff` goals.
 I'm out of time to deal with this, so I'll just drop the test for now.
 This may need to wait until the next release. -/
 -- /--

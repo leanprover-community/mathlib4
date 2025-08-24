@@ -159,7 +159,7 @@ theorem factors_add {X Y : C} {P : Subobject Y} (f g : X ⟶ Y) (wf : P.Factors 
     (wg : P.Factors g) : P.Factors (f + g) :=
   (factors_iff _ _).mpr ⟨P.factorThru f wf + P.factorThru g wg, by simp⟩
 
--- This can't be a `simp` lemma as `wf` and `wg` may not exist.
+-- This cannot be a `simp` lemma as `wf` and `wg` may not exist.
 -- However you can `rw` by it to assert that `f` and `g` factor through `P` separately.
 theorem factorThru_add {X Y : C} {P : Subobject Y} (f g : X ⟶ Y) (w : P.Factors (f + g))
     (wf : P.Factors f) (wg : P.Factors g) :

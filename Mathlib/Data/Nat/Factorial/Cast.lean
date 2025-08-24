@@ -12,7 +12,7 @@ This file allows calculating factorials (including ascending and descending ones
 semiring.
 
 This is particularly crucial for `Nat.descFactorial` as subtraction on `ℕ` does **not** correspond
-to subtraction on a general semiring. For example, we can't rely on existing cast lemmas to prove
+to subtraction on a general semiring. For example, we cannot rely on existing cast lemmas to prove
 `↑(a.descFactorial 2) = ↑a * (↑a - 1)`. We must use the fact that, whenever `↑(a - 1)` is not equal
 to `↑a - 1`, the other factor is `0` anyway.
 -/

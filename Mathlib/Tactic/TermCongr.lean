@@ -660,7 +660,7 @@ partial def mkCongrOfApp (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr)
               | .subsingletonInst =>
                 -- Warning: we're not processing any congruence holes here.
                 -- Users shouldn't be intentionally placing them in such arguments anyway.
-                -- We can't throw an error because these arguments might incidentally have
+                -- We cannot throw an error because these arguments might incidentally have
                 -- congruence holes by unification.
                 let lhs' := removeCHoles lhs'
                 let rhs' := removeCHoles rhs'

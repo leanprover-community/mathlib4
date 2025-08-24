@@ -591,7 +591,7 @@ example  (hK : ∀ ξ : K, ξ + 1 ≠ 0) (x : K) : 1 / |x + 1| = 5 := by
   guard_target = 1 = 5 * |x + 1|
   exact test_sorry
 
-/-! the `positivity` part of the discharger can't take help from user-provided terms -/
+/-! the `positivity` part of the discharger cannot take help from user-provided terms -/
 
 -- mimic discharger
 /-- error: failed to prove positivity/nonnegativity/nonzeroness -/

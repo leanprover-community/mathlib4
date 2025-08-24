@@ -315,7 +315,7 @@ lemma ext_apply {X Y : C} {f g : X ⟶ Y} (h : ∀ x, f x = g x) : f = g :=
 
 /-- A concrete category comes with a forgetful functor to `Type`.
 
-Warning: because of the way that `ConcreteCategory` and `HasForget` are set up, we can't make
+Warning: because of the way that `ConcreteCategory` and `HasForget` are set up, we cannot make
 `forget Type` reducibly defeq to the identity functor. -/
 instance toHasForget : HasForget C where
   forget.obj := ToType

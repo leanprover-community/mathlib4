@@ -532,7 +532,7 @@ def ofLeftInverse {α β : Sort _} (f : α → β) (f_inv : Nonempty α → β �
 
 /-- If `f : α → β` has a left-inverse, then `α` is computably equivalent to the range of `f`.
 
-Note that if `α` is empty, no such `f_inv` exists and so this definition can't be used, unlike
+Note that if `α` is empty, no such `f_inv` exists and so this definition cannot be used, unlike
 the stronger but less convenient `ofLeftInverse`. -/
 abbrev ofLeftInverse' {α β : Sort _} (f : α → β) (f_inv : β → α) (hf : LeftInverse f_inv f) :
     α ≃ range f :=

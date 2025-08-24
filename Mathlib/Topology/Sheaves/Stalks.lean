@@ -171,7 +171,7 @@ theorem stalkPushforward_germ (f : X ⟶ Y) (F : X.Presheaf C) (U : Opens Y)
 
 -- Here are two other potential solutions, suggested by @fpvandoorn at
 -- <https://github.com/leanprover-community/mathlib/pull/1018#discussion_r283978240>
--- However, I can't get the subsequent two proofs to work with either one.
+-- However, I cannot get the subsequent two proofs to work with either one.
 -- def stalkPushforward'' (f : X ⟶ Y) (ℱ : X.Presheaf C) (x : X) :
 --   (f _* ℱ).stalk (f x) ⟶ ℱ.stalk x :=
 -- colim.map ((Functor.associator _ _ _).inv ≫

@@ -37,7 +37,7 @@ charted spaces. For instance, `hG.liftPropWithinAt_inter` says that `P g s x` is
 
 We do not use dot notation for properties of the lifted property. For instance, we have
 `hG.liftPropWithinAt_congr` saying that if `LiftPropWithinAt P g s x` holds, and `g` and `g'`
-coincide on `s`, then `LiftPropWithinAt P g' s x` holds. We can't call it
+coincide on `s`, then `LiftPropWithinAt P g' s x` holds. We cannot call it
 `LiftPropWithinAt.congr` as it is in the namespace associated to `LocalInvariantProp`, not
 in the one for `LiftPropWithinAt`.
 -/
@@ -266,7 +266,7 @@ structure groupoid (by composition in the source space and in the target space),
 expressing it in charted spaces does not depend on the element of the maximal atlas one uses
 both in the source and in the target manifolds, provided they are defined around `x` and `g x`
 respectively, and provided `g` is continuous within `s` at `x` (otherwise, the local behavior
-of `g` at `x` can not be captured with a chart in the target). -/
+of `g` at `x` cannot be captured with a chart in the target). -/
 theorem liftPropWithinAt_indep_chart_aux (he : e ∈ G.maximalAtlas M) (xe : x ∈ e.source)
     (he' : e' ∈ G.maximalAtlas M) (xe' : x ∈ e'.source) (hf : f ∈ G'.maximalAtlas M')
     (xf : g x ∈ f.source) (hf' : f' ∈ G'.maximalAtlas M') (xf' : g x ∈ f'.source)

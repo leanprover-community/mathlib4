@@ -35,7 +35,7 @@ def runCoreMWithMessages (info : ContextInfo) (x : CoreM α) : CommandElabM α :
   /-
     We must execute `x` using the `ngen` stored in `info`. Otherwise, we may create `MVarId`s and
     `FVarId`s that have been used in `lctx` and `info.mctx`.
-    Similarly, we need to pass in a `namePrefix` because otherwise we can't create auxiliary
+    Similarly, we need to pass in a `namePrefix` because otherwise we cannot create auxiliary
     definitions.
   -/
   let (x, newState) ←

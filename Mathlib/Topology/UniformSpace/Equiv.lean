@@ -123,7 +123,7 @@ protected theorem continuous (h : α ≃ᵤ β) : Continuous h :=
 protected theorem uniformContinuous_symm (h : α ≃ᵤ β) : UniformContinuous h.symm :=
   h.uniformContinuous_invFun
 
--- otherwise `by continuity` can't prove continuity of `h.to_equiv.symm`
+-- otherwise `by continuity` cannot prove continuity of `h.to_equiv.symm`
 @[continuity]
 protected theorem continuous_symm (h : α ≃ᵤ β) : Continuous h.symm :=
   h.uniformContinuous_symm.continuous

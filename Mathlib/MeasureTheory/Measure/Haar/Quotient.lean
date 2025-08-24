@@ -396,7 +396,7 @@ lemma QuotientGroup.integral_eq_integral_automorphize {E : Type*} [NormedAddComm
   · rw [← h𝓕.lintegral_eq_tsum'' (‖f ·‖ₑ)]
     exact ne_of_lt hf₁.2
 
--- we can't use `to_additive`, because it tries to translate `*` into `+`
+-- we cannot use `to_additive`, because it tries to translate `*` into `+`
 /-- This is the **Unfolding Trick**: Given a subgroup `Γ` of a group `G`, the integral of a
   function `f` on `G` times the lift to `G` of a function `g` on the quotient `G ⧸ Γ` with respect
   to a right-invariant measure `μ` on `G`, is equal to the integral over the quotient of the

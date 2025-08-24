@@ -255,7 +255,7 @@ macro "pgame_wf_tac" : tactic =>
 variable {xl xr : Type u}
 
 -- This is different from mk_right from the POV of the simplifier,
--- because the unifier can't solve `xr =?= RightMoves (mk xl xr xL xR)` at reducible transparency.
+-- because the unifier cannot solve `xr =?= RightMoves (mk xl xr xL xR)` at reducible transparency.
 @[simp]
 theorem Subsequent.mk_right' (xL : xl → PGame) (xR : xr → PGame) (j : RightMoves (mk xl xr xL xR)) :
     Subsequent (xR j) (mk xl xr xL xR) := by

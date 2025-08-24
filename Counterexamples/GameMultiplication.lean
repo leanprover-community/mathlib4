@@ -13,7 +13,7 @@ deprecated_module
   (since := "2025-08-06")
 
 /-!
-# Multiplication of pre-games can't be lifted to the quotient
+# Multiplication of pre-games cannot be lifted to the quotient
 
 We show that there exist equivalent pregames `x₁ ≈ x₂` and `y` such that `x₁ * y ≉ x₂ * y`. In
 particular, we cannot define the multiplication of games in general.
@@ -61,7 +61,7 @@ theorem star_sq : star * star ≈ star := by
       case' hr => rw [mul_moveLeft_inr]
       all_goals rw [lf_iff_game_lf]; simpa using zero_lf_star
     · refine lf_zero.2 ⟨toRightMovesMul (Sum.inl default), ?_⟩
-      rintro (j | j) <;> -- Instance can't be inferred otherwise.
+      rintro (j | j) <;> -- Instance cannot be inferred otherwise.
       exact isEmptyElim j
   constructor
   case' right =>

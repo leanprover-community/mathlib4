@@ -167,7 +167,7 @@ theorem map_update_smul [DecidableEq ι] (i : ι) (r : R) (x : M) :
     f (update v i (r • x)) = r • f (update v i x) :=
   f.map_update_smul' v i r x
 
--- Cannot be @[simp] because `i` and `j` can not be inferred by `simp`.
+-- Cannot be @[simp] because `i` and `j` cannot be inferred by `simp`.
 theorem map_eq_zero_of_eq (v : ι → M) {i j : ι} (h : v i = v j) (hij : i ≠ j) : f v = 0 :=
   f.map_eq_zero_of_eq' v i j h hij
 

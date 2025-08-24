@@ -790,7 +790,7 @@ theorem not_compactSpace_iff : ¬CompactSpace X ↔ NoncompactSpace X :=
 instance : NoncompactSpace ℤ :=
   noncompactSpace_of_neBot <| by simp only [Filter.cocompact_eq_cofinite, Filter.cofinite_neBot]
 
--- Note: We can't make this into an instance because it loops with `Finite.compactSpace`.
+-- Note: We cannot make this into an instance because it loops with `Finite.compactSpace`.
 /-- A compact discrete space is finite. -/
 theorem finite_of_compact_of_discrete [CompactSpace X] [DiscreteTopology X] : Finite X :=
   Finite.of_finite_univ <| isCompact_univ.finite_of_discrete

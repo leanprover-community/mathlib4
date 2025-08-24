@@ -30,12 +30,12 @@ this map to be injective it suffices that the range omits `1`. In this setting w
   from the unitization of a non-unital subsemiring `s` into the ring containing it. The range of
   this map is `subalgebraOfSubsemiring (Subsemiring.closure s)`.
   This is just `NonUnitalSubalgebra.unitization s` but we provide a separate declaration because
-  there is an instance Lean can't find on its own due to `outParam`.
+  there is an instance Lean cannot find on its own due to `outParam`.
 * `NonUnitalSubring.unitization : Unitization ℤ s →ₐ[ℤ] R`:
   the natural `ℤ`-algebra homomorphism from the unitization of a non-unital subring `s` into the
   ring containing it. The range of this map is `subalgebraOfSubring (Subring.closure s)`.
   This is just `NonUnitalSubalgebra.unitization s` but we provide a separate declaration because
-  there is an instance Lean can't find on its own due to `outParam`.
+  there is an instance Lean cannot find on its own due to `outParam`.
 * `NonUnitalStarSubalgebra s : Unitization R s →⋆ₐ[R] A`: a version of
   `NonUnitalSubalgebra.unitization` for star algebras.
 * `NonUnitalStarSubalgebra.unitizationStarAlgEquiv s :`

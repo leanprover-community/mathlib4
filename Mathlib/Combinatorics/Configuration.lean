@@ -473,7 +473,7 @@ instance : Membership (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) :=
 lemma mem_iff (v w : ℙ K (Fin 3 → K)) : v ∈ w ↔ orthogonal v w :=
   Iff.rfl
 
--- This lemma can't be moved to the crossProduct file due to heavy imports
+-- This lemma cannot be moved to the crossProduct file due to heavy imports
 lemma crossProduct_eq_zero_of_dotProduct_eq_zero {a b c d : Fin 3 → K} (hac : a ⬝ᵥ c = 0)
     (hbc : b ⬝ᵥ c = 0) (had : a ⬝ᵥ d = 0) (hbd : b ⬝ᵥ d = 0) :
     crossProduct a b = 0 ∨ crossProduct c d = 0 := by

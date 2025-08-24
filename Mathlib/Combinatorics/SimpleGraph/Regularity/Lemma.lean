@@ -28,7 +28,7 @@ The proof we formalise goes as follows:
   of the pairs of parts are non-`ε`-uniform.
 4. Check that this results in an equipartition with an energy greater than the energy of the current
   partition, plus some constant.
-5. Since the energy is between zero and one, we can't run this process forever. Check that when the
+5. Since the energy is between zero and one, we cannot run this process forever. Check that when the
   process stops we have an `ε`-uniform equipartition.
 
 This file only contains the final result. The supporting material is spread across the
@@ -95,7 +95,7 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
     exact (bound_pos _ _).trans_le hα
   suffices h : ∀ i, ∃ P : Finpartition (univ : Finset α), P.IsEquipartition ∧ t ≤ #P.parts ∧
     #P.parts ≤ stepBound^[i] t ∧ (P.IsUniform G ε ∨ ε ^ 5 / 4 * i ≤ P.energy G) by
-  -- For `i > 4 / ε ^ 5` we know that the partition we get can't have energy `≥ ε ^ 5 / 4 * i > 1`,
+  -- For `i > 4 / ε ^ 5` we know that the partition we get cannot have energy `≥ ε ^ 5 / 4 * i > 1`,
   -- so it must instead be `ε`-uniform and we won.
     obtain ⟨P, hP₁, hP₂, hP₃, hP₄⟩ := h (⌊4 / ε ^ 5⌋₊ + 1)
     refine ⟨P, hP₁, (le_initialBound _ _).trans hP₂, hP₃.trans ?_,

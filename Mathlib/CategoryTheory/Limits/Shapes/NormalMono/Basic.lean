@@ -41,7 +41,7 @@ variable [HasZeroMorphisms C]
 
 /-- A normal monomorphism is a morphism which is the kernel of some morphism. -/
 class NormalMono (f : X ⟶ Y) where
-  Z : C -- Porting note: violates naming convention but can't think of a better one
+  Z : C -- Porting note: violates naming convention but cannot think of a better one
   g : Y ⟶ Z
   w : f ≫ g = 0
   isLimit : IsLimit (KernelFork.ofι f w)

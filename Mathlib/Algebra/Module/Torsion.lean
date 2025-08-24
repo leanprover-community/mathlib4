@@ -489,12 +489,12 @@ namespace Module
 variable [Ring R] [AddCommGroup M] [Module R M]
 variable {I : Ideal R} {r : R}
 
-/-- can't be an instance because `hM` can't be inferred -/
+/-- Cannot be an instance because `hM` cannot be inferred -/
 def IsTorsionBySet.hasSMul (hM : IsTorsionBySet R M I) : SMul (R ⧸ I) M where
   smul b := QuotientAddGroup.lift I.toAddSubgroup (smulAddHom R M)
     (by rwa [isTorsionBySet_iff_subset_annihilator] at hM) b
 
-/-- can't be an instance because `hM` can't be inferred -/
+/-- Cannot be an instance because `hM` cannot be inferred -/
 abbrev IsTorsionBy.hasSMul (hM : IsTorsionBy R M r) : SMul (R ⧸ Ideal.span {r}) M :=
   ((isTorsionBySet_span_singleton_iff r).mpr hM).hasSMul
 

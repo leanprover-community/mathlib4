@@ -342,7 +342,7 @@ partial def visitInner (e : Expr) (et? : Option Expr) : M Expr := do
     /- Otherwise the term in structure position was rewritten to have a different type,
     so cast it back to the original type.
     (While the other type may itself be a structure type,
-    we can't assume that its projections are the same as those of the original.) -/
+    we cannot assume that its projections are the same as those of the original.) -/
     let some bup' ← castBack? bup tbup ctx.x ctx.h ctx.Δ ctx.δ
       | throwError "internal error: could not cast back in{indentExpr bup}"
     return .proj n i bup'

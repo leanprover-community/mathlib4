@@ -99,7 +99,7 @@ partial def isCongruent (e₁ e₂ : Expr) : CCM Bool := do
     else
       /-
       f and g are not congruent nor they have the same type.
-      We can't generate a congruence proof in this case because the following lemma
+      We cannot generate a congruence proof in this case because the following lemma
         `hcongr : f₁ ≍ f₂ → a₁ ≍ a₂ → f₁ a₁ ≍ f₂ a₂`
       is not provable.
       Remark: it is also not provable in MLTT, Coq and Agda (even if we assume UIP).

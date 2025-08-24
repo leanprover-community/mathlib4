@@ -109,7 +109,7 @@ lemma IsFlat.iInter {ι : Type*} [Nonempty ι] {Fs : ι → Set α}
 
 /-- The property of being a flat gives rise to a `ClosureOperator` on the subsets of `M.E`,
 in which the `IsClosed` sets correspond to flats.
-(We can't define such an operator on all of `Set α`,
+(We cannot define such an operator on all of `Set α`,
 since this would incorrectly force `univ` to always be a flat.) -/
 def subtypeClosure (M : Matroid α) : ClosureOperator (Iic M.E) :=
   ClosureOperator.ofCompletePred (fun F ↦ M.IsFlat F.1) fun s hs ↦ by

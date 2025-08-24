@@ -373,7 +373,7 @@ instance coeToLaurentSeries : Coe (RatFunc F) F⸨X⸩ :=
 theorem coe_coe (P : Polynomial F) : ((P : F⟦X⟧) : F⸨X⸩) = (P : RatFunc F) := by
   simp [coePolynomial, coe_def, ← IsScalarTower.algebraMap_apply]
 
--- Porting note: removed `norm_cast` because "badly shaped lemma, rhs can't start with coe"
+-- Porting note: removed `norm_cast` because "badly shaped lemma, rhs cannot start with coe"
 -- even though `single 1 1` is a bundled function application, not a "real" coercion
 @[simp]
 theorem coe_X : ((X : RatFunc F) : F⸨X⸩) = single 1 1 := by

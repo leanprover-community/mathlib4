@@ -71,7 +71,7 @@ def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
   -- Sometimes there might be the wrong LinearOrder available!
   let handleIneq (e₁ e₂ : Expr) (notThm : Name) : SimpM (Option Simp.Step) := do
     try
-      -- Allowed to fail if it can't synthesize an instance:
+      -- Allowed to fail if it cannot synthesize an instance:
       let thm ← mkAppM notThm #[e₁, e₂]
       let some (_, lhs, rhs) := (← inferType thm).eq? | failure -- this should never fail
       -- Make sure the inferred instances are right:

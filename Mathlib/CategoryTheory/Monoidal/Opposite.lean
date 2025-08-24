@@ -45,7 +45,7 @@ theorem unmop_inj_iff (x y : Cᴹᵒᵖ) : unmop x = unmop y ↔ x = y := unmop_
 @[simp]
 theorem mop_unmop (X : Cᴹᵒᵖ) : mop (unmop X) = X := rfl
 
--- can't be simp bc after putting the lhs in whnf it's `X = X`
+-- Cannot be simp bc after putting the lhs in whnf it's `X = X`
 theorem unmop_mop (X : C) : unmop (mop X) = X := rfl
 
 instance monoidalOppositeCategory [Category.{v₁} C] : Category Cᴹᵒᵖ where

@@ -129,7 +129,7 @@ theorem norm_le_gronwallBound_of_norm_deriv_right_le {f f' : ℝ → E} {δ K ε
 variable {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0} {f g f' g' : ℝ → E} {a b t₀ : ℝ} {εf εg δ : ℝ}
 
 /-- If `f` and `g` are two approximate solutions of the same ODE, then the distance between them
-can't grow faster than exponentially. This is a simple corollary of Grönwall's inequality, and some
+cannot grow faster than exponentially. This is a simple corollary of Grönwall's inequality, and some
 people call this Grönwall's inequality too.
 
 This version assumes all inequalities to be true in some time-dependent set `s t`,
@@ -158,7 +158,7 @@ theorem dist_le_of_approx_trajectories_ODE_of_mem
   rw [add_comm]
 
 /-- If `f` and `g` are two approximate solutions of the same ODE, then the distance between them
-can't grow faster than exponentially. This is a simple corollary of Grönwall's inequality, and some
+cannot grow faster than exponentially. This is a simple corollary of Grönwall's inequality, and some
 people call this Grönwall's inequality too.
 
 This version assumes all inequalities to be true in the whole space. -/
@@ -177,7 +177,7 @@ theorem dist_le_of_approx_trajectories_ODE
     f_bound hfs hg hg' g_bound (fun _ _ => trivial) ha
 
 /-- If `f` and `g` are two exact solutions of the same ODE, then the distance between them
-can't grow faster than exponentially. This is a simple corollary of Grönwall's inequality, and some
+cannot grow faster than exponentially. This is a simple corollary of Grönwall's inequality, and some
 people call this Grönwall's inequality too.
 
 This version assumes all inequalities to be true in some time-dependent set `s t`,
@@ -198,7 +198,7 @@ theorem dist_le_of_trajectories_ODE_of_mem
   rwa [zero_add, gronwallBound_ε0] at this
 
 /-- If `f` and `g` are two exact solutions of the same ODE, then the distance between them
-can't grow faster than exponentially. This is a simple corollary of Grönwall's inequality, and some
+cannot grow faster than exponentially. This is a simple corollary of Grönwall's inequality, and some
 people call this Grönwall's inequality too.
 
 This version assumes all inequalities to be true in the whole space. -/

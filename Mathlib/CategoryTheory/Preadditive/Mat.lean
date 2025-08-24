@@ -33,7 +33,7 @@ in the sense that any additive functor `F : C ⥤ D` to a category `D` with bipr
 lifts to a functor `Mat_.lift F : Mat_ C ⥤ D`,
 Moreover, this functor is unique (up to natural isomorphisms) amongst functors `L : Mat_ C ⥤ D`
 such that `embedding C ⋙ L ≅ F`.
-(As we don't have 2-category theory, we can't explicitly state that `Mat_ C` is
+(As we don't have 2-category theory, we cannot explicitly state that `Mat_ C` is
 the initial object in the 2-category of categories under `C` which have biproducts.)
 
 As a consequence, when `C` already has finite biproducts we have `Mat_ C ≌ C`.

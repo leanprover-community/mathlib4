@@ -56,7 +56,7 @@ section
 satisfy `r a b → s (f a) (f b)`.
 
 The relations `r` and `s` are `outParam`s since figuring them out from a goal is a higher-order
-matching problem that Lean usually can't do unaided.
+matching problem that Lean usually cannot do unaided.
 -/
 class RelHomClass (F : Type*) {α β : outParam Type*} (r : outParam <| α → α → Prop)
   (s : outParam <| β → β → Prop) [FunLike F α β] : Prop where

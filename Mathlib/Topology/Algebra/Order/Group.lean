@@ -133,9 +133,9 @@ theorem denseRange_zpow_iff_surjective {a : G} :
     exact ⟨div_lt_iff_lt_mul.1 hlt, hm⟩
 
 /-- In a nontrivial densely linearly ordered commutative group,
-the integer powers of an element can't be dense. -/
+the integer powers of an element cannot be dense. -/
 @[to_additive /-- In a nontrivial densely linearly ordered additive group,
-the integer multiples of an element can't be dense. -/]
+the integer multiples of an element cannot be dense. -/]
 theorem not_denseRange_zpow [Nontrivial G] [DenselyOrdered G] {a : G} :
     ¬DenseRange (a ^ · : ℤ → G) :=
   denseRange_zpow_iff_surjective.not.mpr fun h ↦

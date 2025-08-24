@@ -81,7 +81,7 @@ bipartite graph that may not correspond to a function at all (See [oxley2011], T
 It would have been nice to use this more general construction as a basis for the definition
 of both `Matroid.map` and `Matroid.comap`.
 
-Unfortunately, we can't do this, because the construction doesn't extend to infinite matroids.
+Unfortunately, we cannot do this, because the construction doesn't extend to infinite matroids.
 Specifically, if `M₁` and `M₂` are matroids on the same type `α`,
 and `f` is the natural function from `α ⊕ α` to `α`,
 then the images under `f` of the independent sets of the direct sum `M₁ ⊕ M₂` are

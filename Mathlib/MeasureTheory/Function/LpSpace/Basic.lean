@@ -212,7 +212,7 @@ theorem const_mem_Lp (α) {_ : MeasurableSpace α} (μ : Measure α) (c : E) [Is
 instance instNorm : Norm (Lp E p μ) where norm f := ENNReal.toReal (eLpNorm f p μ)
 
 -- note: we need this to be defeq to the instance from `SeminormedAddGroup.toNNNorm`, so
--- can't use `ENNReal.toNNReal (eLpNorm f p μ)`
+-- cannot use `ENNReal.toNNReal (eLpNorm f p μ)`
 instance instNNNorm : NNNorm (Lp E p μ) where nnnorm f := ⟨‖f‖, ENNReal.toReal_nonneg⟩
 
 instance instDist : Dist (Lp E p μ) where dist f g := ‖f - g‖

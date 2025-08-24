@@ -485,7 +485,7 @@ def rootMultiplicity (a : R) (p : R[X]) : ℕ :=
     Nat.find (finiteMultiplicity_X_sub_C a h0)
 
 theorem rootMultiplicity_eq_nat_find_of_nonzero [DecidableEq R] {p : R[X]} (p0 : p ≠ 0) {a : R} :
-    -- `decidableDvdMonic` can't be an instance, so we inline it here.
+    -- `decidableDvdMonic` cannot be an instance, so we inline it here.
     letI : DecidablePred fun n : ℕ => ¬(X - C a) ^ (n + 1) ∣ p := fun n =>
       have := decidableDvdMonic p ((monic_X_sub_C a).pow (n + 1))
       inferInstanceAs (Decidable ¬_)

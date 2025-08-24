@@ -13,7 +13,7 @@ In this file we define `FreeMonoid.countP`, `FreeMonoid.count`, `FreeAddMonoid.c
 `FreeAddMonoid.count`. These are `List.countP` and `List.count` bundled as multiplicative and
 additive homomorphisms from `FreeMonoid` and `FreeAddMonoid`.
 
-We do not use `to_additive` too much because it can't map `Multiplicative ℕ` to `ℕ`.
+We do not use `to_additive` too much because it cannot map `Multiplicative ℕ` to `ℕ`.
 -/
 
 variable {α : Type*} (p : α → Prop) [DecidablePred p]

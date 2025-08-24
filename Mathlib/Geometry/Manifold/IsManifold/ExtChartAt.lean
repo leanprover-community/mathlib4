@@ -772,7 +772,7 @@ variable {𝕜}
 theorem extChartAt_prod (x : M × M') :
     extChartAt (I.prod I') x = (extChartAt I x.1).prod (extChartAt I' x.2) := by
   simp only [mfld_simps]
-  -- Porting note: `simp` can't use `PartialEquiv.prod_trans` here because of a type
+  -- Porting note: `simp` cannot use `PartialEquiv.prod_trans` here because of a type
   -- synonym
   rw [PartialEquiv.prod_trans]
 

@@ -273,7 +273,7 @@ theorem natAbs_det_equiv (I : Ideal S) {E : Type*} [EquivLike E S I] [AddEquivCl
         (LinearMap.det
           ((Submodule.subtype I).restrictScalars ℤ ∘ₗ AddMonoidHom.toIntLinearMap (e : S →+ I))) =
       Ideal.absNorm I := by
-  -- `S ⧸ I` might be infinite if `I = ⊥`, but then `e` can't be an equiv.
+  -- `S ⧸ I` might be infinite if `I = ⊥`, but then `e` cannot be an equiv.
   by_cases hI : I = ⊥
   · subst hI
     have : (1 : S) ≠ 0 := one_ne_zero

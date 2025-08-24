@@ -54,7 +54,7 @@ def free : Type u ⥤ AddCommGrp where
 theorem free_obj_coe {α : Type u} : (free.obj α : Type u) = FreeAbelianGroup α :=
   rfl
 
--- This currently can't be a `simp` lemma,
+-- This currently cannot be a `simp` lemma,
 -- because `free_obj_coe` will simplify implicit arguments in the LHS.
 -- (The `simpNF` linter will, correctly, complain.)
 theorem free_map_coe {α β : Type u} {f : α → β} (x : FreeAbelianGroup α) :

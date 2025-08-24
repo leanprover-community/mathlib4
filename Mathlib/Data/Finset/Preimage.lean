@@ -67,7 +67,7 @@ theorem preimage_compl' [DecidableEq α] [DecidableEq β] [Fintype α] [Fintype 
     preimage sᶜ f hfc = (preimage s f hf)ᶜ :=
   Finset.coe_injective (by simp)
 
--- Not `@[simp]` since `simp` can't figure out `hf`; `simp`-normal form is `preimage_compl'`.
+-- Not `@[simp]` since `simp` cannot figure out `hf`; `simp`-normal form is `preimage_compl'`.
 theorem preimage_compl [DecidableEq α] [DecidableEq β] [Fintype α] [Fintype β] {f : α → β}
     (s : Finset β) (hf : Function.Injective f) :
     preimage sᶜ f hf.injOn = (preimage s f hf.injOn)ᶜ :=

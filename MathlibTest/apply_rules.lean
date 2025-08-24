@@ -35,7 +35,7 @@ example {P Q : Prop} (p : P) (f : P → Q) : Q := by
 example (P : Nat → Type) (f : {n : Nat} → P n → P (n + 1)) (g : P 0) : P 2 := by
   apply_rules only [f, g]
 
--- Check that `apply_rules` solves goals that come after goals that it can't solve
+-- Check that `apply_rules` solves goals that come after goals that it cannot solve
 example (Q : Type) (f : Nat → Q) : Int × Q := by
   apply_rules only [Prod.mk, f]
   guard_target = Int

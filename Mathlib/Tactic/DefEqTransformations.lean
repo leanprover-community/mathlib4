@@ -306,7 +306,7 @@ where
       if S == fVal.induct && i == j then
         return .some x
       else
-        -- Then the eta rule can't apply since there's an obviously wrong projection
+        -- Then the eta rule cannot apply since there's an obviously wrong projection
         return .none
     return .undef
 

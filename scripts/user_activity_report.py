@@ -463,7 +463,7 @@ def main():
                             should_remove = True
                             reason = f"last commit {days_ago} days ago"
                     except ValueError:
-                        # If we can't parse the date, treat as old
+                        # If we cannot parse the date, treat as old
                         should_remove = True
                         reason = "unparsable commit date"
 

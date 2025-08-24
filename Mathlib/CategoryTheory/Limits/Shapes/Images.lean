@@ -68,7 +68,7 @@ variable {X Y : C} (f : X ⟶ Y)
 
 /-- A factorisation of a morphism `f = e ≫ m`, with `m` monic. -/
 structure MonoFactorisation (f : X ⟶ Y) where
-  I : C -- Porting note: violates naming conventions but can't think a better replacement
+  I : C -- Porting note: violates naming conventions but cannot think a better replacement
   m : I ⟶ Y
   [m_mono : Mono m]
   e : X ⟶ I

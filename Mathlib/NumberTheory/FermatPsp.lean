@@ -323,7 +323,7 @@ theorem exists_infinite_pseudoprimes {b : ℕ} (h : 1 ≤ b) (m : ℕ) :
   -- If `2 ≤ b`, then because there exist infinite prime numbers, there is a prime number p with
   -- `m ≤ p` and `¬p ∣ b*(b^2 - 1)`. We pick a prime number `b*(b^2 - 1) + 1 + m ≤ p` because we
   -- automatically know that `p` is greater than m and that it does not divide `b*(b^2 - 1)`
-  -- (because `p` can't divide a number less than `p`).
+  -- (because `p` cannot divide a number less than `p`).
   -- From `p`, we can use the lemmas we proved earlier to show that
   -- `((b^p - 1)/(b - 1)) * ((b^p + 1)/(b + 1))` is a pseudoprime to base `b`.
   · have h := Nat.exists_infinite_primes (b * (b ^ 2 - 1) + 1 + m)

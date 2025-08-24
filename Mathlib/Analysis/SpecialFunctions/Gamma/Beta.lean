@@ -127,7 +127,7 @@ theorem betaIntegral_scaled (s t : ℂ) {a : ℝ} (ha : 0 < a) :
 /-- Relation between Beta integral and Gamma function. -/
 theorem Gamma_mul_Gamma_eq_betaIntegral {s t : ℂ} (hs : 0 < re s) (ht : 0 < re t) :
     Gamma s * Gamma t = Gamma (s + t) * betaIntegral s t := by
-  -- Note that we haven't proved (yet) that the Gamma function has no zeroes, so we can't formulate
+  -- Note that we haven't proved (yet) that the Gamma function has no zeroes, so we cannot formulate
   -- this as a formula for the Beta function.
   have conv_int := integral_posConvolution
     (GammaIntegral_convergent hs) (GammaIntegral_convergent ht) (ContinuousLinearMap.mul ℝ ℂ)

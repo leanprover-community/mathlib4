@@ -108,7 +108,7 @@ theorem localization_surjective : Function.Surjective (algebraMap R L) := by
 theorem localization_artinian : IsArtinianRing L :=
   (localization_surjective S L).isArtinianRing
 
-/-- `IsArtinianRing.localization_artinian` can't be made an instance, as it would make `S` + `R`
+/-- `IsArtinianRing.localization_artinian` cannot be made an instance, as it would make `S` + `R`
 into metavariables. However, this is safe. -/
 instance : IsArtinianRing (Localization S) :=
   localization_artinian S _

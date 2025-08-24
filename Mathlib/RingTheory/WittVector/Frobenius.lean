@@ -20,7 +20,7 @@ that do not depend on `R` or the fact that it has characteristic `p`.
 In this way, we obtain a Frobenius endomorphism `WittVector.frobeniusFun : 𝕎 R → 𝕎 R`
 for every commutative ring `R`.
 
-Unfortunately, the aforementioned polynomials can not be obtained using the machinery
+Unfortunately, the aforementioned polynomials cannot be obtained using the machinery
 of `wittStructureInt` that was developed in `StructurePolynomial.lean`.
 We therefore have to define the polynomials by hand, and check that they have the required property.
 

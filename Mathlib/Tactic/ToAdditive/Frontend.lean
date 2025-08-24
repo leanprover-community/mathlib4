@@ -398,7 +398,7 @@ def findTranslation? (env : Environment) : Name → Option Name :=
   (ToAdditive.translations.getState env).find?
 
 /-- Get the multiplicative → additive translation for the given name,
-falling back to translating a prefix of the name if the full name can't be translated.
+falling back to translating a prefix of the name if the full name cannot be translated.
 This allows translating automatically generated declarations such as `IsRegular.casesOn`. -/
 def findPrefixTranslation? (env : Environment) (nm : Name) : Name :=
   nm.mapPrefix (findTranslation? env)

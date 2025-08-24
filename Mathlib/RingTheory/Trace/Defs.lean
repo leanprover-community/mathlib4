@@ -79,7 +79,7 @@ theorem trace_eq_zero_of_not_exists_basis (h : ¬∃ s : Finset S, Nonempty (Bas
 
 variable {R}
 
--- Can't be a `simp` lemma because it depends on a choice of basis
+-- Cannot be a `simp` lemma because it depends on a choice of basis
 theorem trace_eq_matrix_trace [DecidableEq ι] (b : Basis ι R S) (s : S) :
     trace R S s = Matrix.trace (Algebra.leftMulMatrix b s) := by
   rw [trace_apply, LinearMap.trace_eq_matrix_trace _ b, ← toMatrix_lmul_eq]; rfl

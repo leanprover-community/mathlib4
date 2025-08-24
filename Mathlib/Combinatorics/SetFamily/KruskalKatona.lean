@@ -201,7 +201,7 @@ Note that this does depend on the order of the ground set, unlike the Kruskal-Ka
 private def familyMeasure (𝒜 : Finset (Finset (Fin n))) : ℕ := ∑ A ∈ 𝒜, ∑ a ∈ A, 2 ^ (a : ℕ)
 
 /-- Applying a compression strictly decreases the measure. This helps show that "compress until we
-can't any more" is a terminating process. -/
+cannot any more" is a terminating process. -/
 private lemma familyMeasure_compression_lt_familyMeasure {U V : Finset (Fin n)} {hU : U.Nonempty}
     {hV : V.Nonempty} (h : max' U hU < max' V hV) {𝒜 : Finset (Finset (Fin n))} (a : 𝓒 U V 𝒜 ≠ 𝒜) :
     familyMeasure (𝓒 U V 𝒜) < familyMeasure 𝒜 := by
@@ -224,8 +224,8 @@ private lemma familyMeasure_compression_lt_familyMeasure {U V : Finset (Fin n)} 
   exact toColex_compress_lt_toColex h <| q _ hA
 
 /-- The main Kruskal-Katona helper: use induction with our measure to keep compressing until
-we can't any more, which gives a set family which is fully compressed and has the nice properties we
-want. -/
+we cannot any more, which gives a set family which is fully compressed and has the nice properties
+we want. -/
 private lemma kruskal_katona_helper {r : ℕ} (𝒜 : Finset (Finset (Fin n)))
     (h : (𝒜 : Set (Finset (Fin n))).Sized r) :
     ∃ ℬ : Finset (Finset (Fin n)), #(∂ ℬ) ≤ #(∂ 𝒜) ∧ #𝒜 = #ℬ ∧

@@ -754,7 +754,7 @@ def span (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α × Ordn
 /-- Auxiliary definition for `ofAscList`.
 
 **Note:** This function is defined by well founded recursion, so it will probably not compute
-in the kernel, meaning that you probably can't prove things like
+in the kernel, meaning that you probably cannot prove things like
 `ofAscList [1, 2, 3] = {1, 2, 3}` by `rfl`.
 This implementation is optimized for VM evaluation. -/
 def ofAscListAux₁ : ∀ l : List α, ℕ → Ordnode α × { l' : List α // l'.length ≤ l.length }

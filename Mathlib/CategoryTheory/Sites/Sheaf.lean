@@ -501,7 +501,7 @@ variable {C : Type u₁} [Category.{v₁} C]
 -- `A` is a general category; `A'` is a variant where the morphisms live in a large enough
 -- universe to guarantee that we can take limits in A of things coming from C.
 -- I would have liked to use something like `UnivLE.{max v₁ u₁, v₂}` as a hypothesis on
--- `A`'s morphism universe rather than introducing `A'` but I can't get it to work.
+-- `A`'s morphism universe rather than introducing `A'` but I cannot get it to work.
 -- So, for now, results which need max v₁ u₁ ≤ v₂ are just stated for `A'` and `P' : Cᵒᵖ ⥤ A'`
 -- instead.
 variable {A : Type u₂} [Category.{v₂} A]

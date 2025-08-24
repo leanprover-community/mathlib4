@@ -39,7 +39,7 @@ variable (F K L : Type*) [Field F] [Field K] [Field L] [Algebra F K] [Algebra F 
 class IsNormalClosure : Prop where
   splits (x : K) : (minpoly F x).Splits (algebraMap F L)
   adjoin_rootSet : ⨆ x : K, adjoin F ((minpoly F x).rootSet L) = ⊤
-/- TODO: show `IsNormalClosure F K L ↔ IsNormalClosure F (integralClosure F K) L`; we can't state
+/- TODO: show `IsNormalClosure F K L ↔ IsNormalClosure F (integralClosure F K) L`; we cannot state
   this yet because `integralClosure F K` needs to have a `Field` instance. -/
 
 /-- The normal closure of `K/F` in `L/F`. -/

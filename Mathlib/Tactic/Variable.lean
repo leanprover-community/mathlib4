@@ -115,7 +115,7 @@ def pendingActionableSynthMVar (binder : TSyntax ``bracketedBinder) :
       if !ty.hasExprMVar then
         return mvarId
     | _ => pure ()
-  throwErrorAt binder "Can not satisfy requirements for {binder} due to metavariables."
+  throwErrorAt binder "Cannot satisfy requirements for {binder} due to metavariables."
 
 /-- Try elaborating `ty`. Returns `none` if it doesn't need any additional typeclasses,
 or it returns a new binder that needs to come first. Does not add info unless it throws
@@ -274,7 +274,7 @@ where
       if let some expectedBinders := expectedBinders? then
         trace[«variable?»] "checking expected binders"
         /- We re-elaborate the binders to create an expression that represents the entire resulting
-        local context (auto-bound implicits mean we can't just the `binders` array). -/
+        local context (auto-bound implicits mean we cannot just the `binders` array). -/
         let elabAndPackageBinders (binders : TSyntaxArray ``bracketedBinder) :
             TermElabM AbstractMVarsResult :=
           withoutModifyingStateWithInfoAndMessages <| Term.withAutoBoundImplicit <|

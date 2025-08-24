@@ -265,7 +265,7 @@ open Function in
 lemma elim'_update {α : Type*} {β : Type*} [DecidableEq α]
     (f : β) (g : α → β) (a : α) (x : β) :
     Option.elim' f (update g a x) = update (Option.elim' f g) (.some a) x :=
-  -- Can't reuse `Option.rec_update` as `Option.elim'` is not defeq.
+  -- Cannot reuse `Option.rec_update` as `Option.elim'` is not defeq.
   Function.rec_update (α := fun _ => β) (@Option.some.inj _) (Option.elim' f) (fun _ _ => rfl) (fun
     | _, _, .some _, h => (h _ rfl).elim
     | _, _, .none, _ => rfl) _ _ _

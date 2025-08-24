@@ -558,7 +558,7 @@ def showLinter : Linter where run := withSetOptionIn fun stx => do
         let some _ := tac.stx.getRange? true | return
         let (goal :: goals) := tac.goalsBefore | return
         let (goal' :: goals') := tac.goalsAfter | return
-        if goals != goals' then return -- `show` didn't act on first goal -> can't replace with `change`
+        if goals != goals' then return -- `show` didn't act on first goal -> cannot replace with `change`
         if goal == goal' then return -- same goal, no need to check
         let diff ← ci.runCoreM do
           let before ← (do instantiateMVars (← goal.getType)).run' {} { mctx := tac.mctxBefore }

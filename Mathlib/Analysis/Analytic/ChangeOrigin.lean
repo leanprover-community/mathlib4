@@ -134,7 +134,7 @@ def changeOriginIndexEquiv :
   left_inv := by
     rintro ⟨k, l, ⟨s : Finset (Fin <| k + l), hs : s.card = l⟩⟩
     dsimp only [Subtype.coe_mk]
-    -- Lean can't automatically generalize `k' = k + l - s.card`, `l' = s.card`, so we explicitly
+    -- Lean cannot automatically generalize `k' = k + l - s.card`, `l' = s.card`, so we explicitly
     -- formulate the generalized goal
     suffices ∀ k' l', k' = k → l' = l → ∀ (hkl : k + l = k' + l') (hs'),
         (⟨k', l', ⟨s.map (finCongr hkl).toEmbedding, hs'⟩⟩ :

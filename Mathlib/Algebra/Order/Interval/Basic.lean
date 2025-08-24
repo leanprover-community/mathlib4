@@ -309,7 +309,7 @@ end NonemptyInterval
 Subtraction is defined more generally than division so that it applies to `ℕ` (and `OrderedDiv`
 is not a thing and probably should not become one).
 
-However, this means that we can't use `to_additive` in this section.
+However, this means that we cannot use `to_additive` in this section.
 -/
 
 

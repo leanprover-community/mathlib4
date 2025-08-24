@@ -23,7 +23,7 @@ initialize registerTraceClass `Tactic.field_simp
 `one_div`, `mul_eq_zero` and `one_divp` are excluded because we don't want those rewrites.
 
 The remaining constants are excluded for efficiency. These are lemmas consisting of just
-`*`, `/` and `=` that are applicable in a typeclass that can't be a field. -/
+`*`, `/` and `=` that are applicable in a typeclass that cannot be a field. -/
 def fieldSimpExcluded : List Name := [
   ``one_div, ``mul_eq_zero, ``one_divp,
 
@@ -73,7 +73,7 @@ will try to apply `norm_num` to close numerical goals.
 
 The invocation of `field_simp` removes the lemma `one_div` from the simpset, as this lemma
 works against the algorithm explained above. It also removes
-`mul_eq_zero : x * y = 0 ↔ x = 0 ∨ y = 0`, as `norm_num` can not work on disjunctions to
+`mul_eq_zero : x * y = 0 ↔ x = 0 ∨ y = 0`, as `norm_num` cannot work on disjunctions to
 close goals of the form `24 ≠ 0`, and replaces it with `mul_ne_zero : x ≠ 0 → y ≠ 0 → x * y ≠ 0`
 creating two goals instead of a disjunction.
 

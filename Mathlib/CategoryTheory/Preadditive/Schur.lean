@@ -96,7 +96,7 @@ variable [IsAlgClosed 𝕜] [Linear 𝕜 C]
 -- Porting note: the defeq issue in lean3 described below is no longer a problem in Lean4.
 -- In the proof below we have some difficulty using `I : FiniteDimensional 𝕜 (X ⟶ X)`
 -- where we need a `FiniteDimensional 𝕜 (End X)`.
--- These are definitionally equal, but without eta reduction Lean can't see this.
+-- These are definitionally equal, but without eta reduction Lean cannot see this.
 -- To get around this, we use `convert I`,
 -- then check the various instances agree field-by-field,
 -- We prove this with the explicit `isIso_iff_nonzero` assumption,
@@ -134,7 +134,7 @@ theorem endomorphism_simple_eq_smul_id {X : C} [Simple X] [FiniteDimensional �
     f
 
 /-- Endomorphisms of a simple object form a field if they are finite dimensional.
-This can't be an instance as `𝕜` would be undetermined.
+This cannot be an instance as `𝕜` would be undetermined.
 -/
 noncomputable def fieldEndOfFiniteDimensional (X : C) [Simple X] [I : FiniteDimensional 𝕜 (X ⟶ X)] :
     Field (End X) := by

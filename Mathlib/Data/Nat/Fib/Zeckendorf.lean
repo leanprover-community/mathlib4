@@ -43,7 +43,7 @@ namespace List
 increasing sequence of non-consecutive numbers greater than or equal to `2`.
 
 This is relevant for Zeckendorf's theorem, since if we write a natural `n` as a sum of Fibonacci
-numbers `(l.map fib).sum`, `IsZeckendorfRep l` exactly means that we can't simplify any expression
+numbers `(l.map fib).sum`, `IsZeckendorfRep l` exactly means that we cannot simplify any expression
 of the form `fib n + fib (n + 1) = fib (n + 2)`, `fib 1 = fib 2` or `fib 0 = 0` in the sum. -/
 def IsZeckendorfRep (l : List ℕ) : Prop := (l ++ [0]).Chain' (fun a b ↦ b + 2 ≤ a)
 

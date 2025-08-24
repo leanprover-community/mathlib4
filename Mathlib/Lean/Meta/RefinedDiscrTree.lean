@@ -74,7 +74,7 @@ only if the lookup algorithm reaches this leaf.
 try to use it linearly (i.e. having reference count 1). This is ideal for library search purposes,
 which build the discrimination tree once, and store a reference to the tree.
 
-However, for tactics like `simp` and `fun_prop` this is less ideal, because they can't use the
+However, for tactics like `simp` and `fun_prop` this is less ideal, because they cannot use the
 data-structure linearly, since copies of the data structure must regularly be stored in the
 environment. For `fun_prop` this is not a serious problem since it doesn't have that many
 different lemmas anyways.

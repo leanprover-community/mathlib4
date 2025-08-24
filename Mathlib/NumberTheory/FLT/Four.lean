@@ -151,7 +151,7 @@ theorem Int.isCoprime_of_sq_sum' {r s : ℤ} (h : IsCoprime r s) :
 namespace Fermat42
 
 -- If we have a solution to a ^ 4 + b ^ 4 = c ^ 2, we can construct a smaller one. This
--- implies there can't be a smallest solution.
+-- implies there cannot be a smallest solution.
 theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 < c) : False := by
   -- Use the fact that a ^ 2, b ^ 2, c form a pythagorean triple to obtain m and n such that
   -- a ^ 2 = m ^ 2 - n ^ 2, b ^ 2 = 2 * m * n and c = m ^ 2 + n ^ 2

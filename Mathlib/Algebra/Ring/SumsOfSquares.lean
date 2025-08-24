@@ -5,7 +5,7 @@ Authors: Florent Schaffhauser, Artie Khovanov
 -/
 import Mathlib.Algebra.Group.Subgroup.Even
 import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Ring.Parity -- Algebra.Group.Even can't prove `IsSquare 0` by simp
+import Mathlib.Algebra.Ring.Parity -- Algebra.Group.Even cannot prove `IsSquare 0` by simp
 import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.Tactic.ApplyFun
 

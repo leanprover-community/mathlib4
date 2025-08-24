@@ -374,7 +374,7 @@ def colimitCoconeOfComp (t : ColimitCocone (F ⋙ G)) : ColimitCocone G where
 
 /-- When `F` is final, and `F ⋙ G` has a colimit, then `G` has a colimit also.
 
-We can't make this an instance, because `F` is not determined by the goal.
+We cannot make this an instance, because `F` is not determined by the goal.
 (Even if this weren't a problem, it would cause a loop with `comp_hasColimit`.)
 -/
 theorem hasColimit_of_comp [HasColimit (F ⋙ G)] : HasColimit G :=
@@ -710,7 +710,7 @@ def limitConeOfComp (t : LimitCone (F ⋙ G)) : LimitCone G where
 
 /-- When `F` is initial, and `F ⋙ G` has a limit, then `G` has a limit also.
 
-We can't make this an instance, because `F` is not determined by the goal.
+We cannot make this an instance, because `F` is not determined by the goal.
 (Even if this weren't a problem, it would cause a loop with `comp_hasLimit`.)
 -/
 theorem hasLimit_of_comp [HasLimit (F ⋙ G)] : HasLimit G :=

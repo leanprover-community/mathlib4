@@ -50,7 +50,7 @@ def dualNumberEquiv : Quaternion (DualNumber R) ≃ₐ[R] DualNumber (Quaternion
 /-! Lemmas characterizing `Quaternion.dualNumberEquiv`. -/
 
 
--- `simps` can't work on `DualNumber` because it's not a structure
+-- `simps` cannot work on `DualNumber` because it's not a structure
 @[simp]
 theorem re_fst_dualNumberEquiv (q : Quaternion (DualNumber R)) :
     (dualNumberEquiv q).fst.re = q.re.fst :=

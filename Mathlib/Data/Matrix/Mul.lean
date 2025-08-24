@@ -241,7 +241,7 @@ namespace Matrix
 /-- `M * N` is the usual product of matrices `M` and `N`, i.e. we have that
 `(M * N) i k` is the dot product of the `i`-th row of `M` by the `k`-th column of `N`.
 This is currently only defined when `m` is finite. -/
--- We want to be lower priority than `instHMul`, but without this we can't have operands with
+-- We want to be lower priority than `instHMul`, but without this we cannot have operands with
 -- implicit dimensions.
 @[default_instance 100]
 instance [Fintype m] [Mul α] [AddCommMonoid α] :

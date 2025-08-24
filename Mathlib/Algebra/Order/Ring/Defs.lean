@@ -225,7 +225,7 @@ instance (priority := 100) IsStrictOrderedRing.noZeroDivisors : NoZeroDivisors R
     exacts [(mul_pos_of_neg_of_neg ha hb).ne', (mul_neg_of_neg_of_pos ha hb).ne,
       (mul_neg_of_pos_of_neg ha hb).ne, (mul_pos ha hb).ne']
 
--- Note that we can't use `NoZeroDivisors.to_isDomain` since we are merely in a semiring.
+-- Note that we cannot use `NoZeroDivisors.to_isDomain` since we are merely in a semiring.
 -- See note [lower instance priority]
 instance (priority := 100) IsStrictOrderedRing.isDomain : IsDomain R where
   mul_left_cancel_of_ne_zero {a} ha _ _ h := by

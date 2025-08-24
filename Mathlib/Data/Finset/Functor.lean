@@ -80,7 +80,7 @@ theorem seqLeft_def (s : Finset α) (t : Finset β) : s <* t = if t = ∅ then �
 theorem seqRight_def (s : Finset α) (t : Finset β) : s *> t = if s = ∅ then ∅ else t :=
   rfl
 
-/-- `Finset.image₂` in terms of monadic operations. Note that this can't be taken as the definition
+/-- `Finset.image₂` in terms of monadic operations. Note that this cannot be taken as the definition
 because of the lack of universe polymorphism. -/
 theorem image₂_def {α β γ : Type u} (f : α → β → γ) (s : Finset α) (t : Finset β) :
     image₂ f s t = f <$> s <*> t := by

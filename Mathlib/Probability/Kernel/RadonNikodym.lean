@@ -25,7 +25,7 @@ for two finite kernels `κ' : Kernel α (γ × β)` and `η' : Kernel α γ` wit
 the function `density κ' η' : α → γ → Set β → ℝ` is jointly measurable in the first two arguments
 and satisfies that for all `a : α` and all measurable sets `s : Set β` and `A : Set γ`,
 `∫ x in A, density κ' η' a x s ∂(η' a) = (κ' a (A ×ˢ s)).toReal`.
-We use that definition for `β = Unit` and `κ' = map κ (fun a ↦ (a, ()))`. We can't choose `η' = η`
+We use that definition for `β = Unit` and `κ' = map κ (fun a ↦ (a, ()))`. We cannot choose `η' = η`
 in general because we might not have `κ ≤ η`, but if we could, we would get a measurable function
 `f` with the property `κ = withDensity η f`, which is the decomposition we want for `κ ≤ η`.
 To circumvent that difficulty, we take `η' = κ + η` and thus define `rnDerivAux κ η`.
@@ -36,7 +36,7 @@ Up to some conversions between `ℝ` and `ℝ≥0`, the singular part is
 
 The countably generated measurable space assumption is not needed to have a decomposition for
 measures, but the additional difficulty with kernels is to obtain joint measurability of the
-derivative. This is why we can't simply define `rnDeriv κ η` by `a ↦ (κ a).rnDeriv (ν a)`
+derivative. This is why we cannot simply define `rnDeriv κ η` by `a ↦ (κ a).rnDeriv (ν a)`
 everywhere unless `α` is countable (although `rnDeriv κ η` has that value almost everywhere).
 See the construction of `Kernel.density` for details on how the countably generated hypothesis
 is used.

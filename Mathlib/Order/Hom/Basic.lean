@@ -27,7 +27,7 @@ In this file we define the following bundled monotone maps:
 
 We also define many `OrderHom`s. In some cases we define two versions, one with `ₘ` suffix and
 one without it (e.g., `OrderHom.compₘ` and `OrderHom.comp`). This means that the former
-function is a "more bundled" version of the latter. We can't just drop the "less bundled" version
+function is a "more bundled" version of the latter. We cannot just drop the "less bundled" version
 because the more bundled version usually does not work with dot notation.
 
 * `OrderHom.id`: identity map as `α →o α`;

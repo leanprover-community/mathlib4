@@ -96,7 +96,7 @@ as their product. -/
 nonrec def fst : WithZero (αˣ ×ₗ βˣ) →*₀o α where
   __ := (fst α β).comp (WithZero.map' (toLexMulEquiv ..).symm.toMonoidHom)
   monotone' := by
-    -- this can't rely on `Monotone.comp` since `ofLex` is not monotone
+    -- this cannot rely on `Monotone.comp` since `ofLex` is not monotone
     intro x y
     cases x <;>
     cases y

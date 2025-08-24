@@ -90,7 +90,7 @@ lemma locally_of_exists (hP : RespectsIso P) (f : R →+* S) {ι : Type*} (s : �
   exact hP.left _ _ (hf i)
 
 /-- Equivalence variant of `locally_of_exists`. This is sometimes easier to use, if the
-`IsLocalization.Away` instance can't be automatically inferred. -/
+`IsLocalization.Away` instance cannot be automatically inferred. -/
 lemma locally_iff_exists (hP : RespectsIso P) (f : R →+* S) :
     Locally P f ↔ ∃ (ι : Type u) (s : ι → S) (_ : Ideal.span (Set.range s) = ⊤) (Sₜ : ι → Type u)
       (_ : (i : ι) → CommRing (Sₜ i)) (_ : (i : ι) → Algebra S (Sₜ i))

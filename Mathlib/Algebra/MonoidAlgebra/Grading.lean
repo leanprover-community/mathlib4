@@ -170,7 +170,7 @@ instance gradeBy.gradedAlgebra : GradedAlgebra (gradeBy R f) :=
       rw [decomposeAux_single, DirectSum.coeAlgHom_of, Subtype.coe_mk])
     fun i x => by rw [decomposeAux_coe f x]
 
--- Lean can't find this later without us repeating it
+-- Lean cannot find this later without us repeating it
 instance gradeBy.decomposition : DirectSum.Decomposition (gradeBy R f) := by infer_instance
 
 @[simp]
@@ -188,7 +188,7 @@ theorem GradesBy.decompose_single (m : M) (r : R) :
 instance grade.gradedAlgebra : GradedAlgebra (grade R : ι → Submodule _ _) :=
   AddMonoidAlgebra.gradeBy.gradedAlgebra (AddMonoidHom.id _)
 
--- Lean can't find this later without us repeating it
+-- Lean cannot find this later without us repeating it
 instance grade.decomposition : DirectSum.Decomposition (grade R : ι → Submodule _ _) := by
   infer_instance
 

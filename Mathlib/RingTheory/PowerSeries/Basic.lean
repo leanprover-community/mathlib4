@@ -290,7 +290,7 @@ theorem coeff_zero_one : coeff 0 (1 : R⟦X⟧) = 1 :=
 
 theorem coeff_mul (n : ℕ) (φ ψ : R⟦X⟧) :
     coeff n (φ * ψ) = ∑ p ∈ antidiagonal n, coeff p.1 φ * coeff p.2 ψ := by
-  -- `rw` can't see that `PowerSeries = MvPowerSeries Unit`, so use `.trans`
+  -- `rw` cannot see that `PowerSeries = MvPowerSeries Unit`, so use `.trans`
   refine (MvPowerSeries.coeff_mul _ φ ψ).trans ?_
   rw [Finsupp.antidiagonal_single, Finset.sum_map]
   rfl

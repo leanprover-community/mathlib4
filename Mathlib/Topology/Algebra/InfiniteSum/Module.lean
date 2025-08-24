@@ -197,7 +197,7 @@ noncomputable def MulAction.automorphize [Group α] [MulAction α β] (f : β �
   congr 1
   simp only [mul_smul]
 
--- we can't use `to_additive`, because it tries to translate `•` into `+ᵥ`
+-- we cannot use `to_additive`, because it tries to translate `•` into `+ᵥ`
 
 /-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/

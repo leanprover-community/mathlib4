@@ -175,7 +175,7 @@ theorem exists_dual_vector' [Nontrivial E] (x : E) : ∃ g : StrongDual 𝕜 E, 
   · exact exists_dual_vector 𝕜 x hx
 
 /-- Variant of Hahn-Banach, eliminating the hypothesis that `x` be nonzero, but only ensuring that
-the dual element has norm at most `1` (this can not be improved for the trivial
+the dual element has norm at most `1` (this cannot be improved for the trivial
 vector space). -/
 theorem exists_dual_vector'' (x : E) : ∃ g : StrongDual 𝕜 E, ‖g‖ ≤ 1 ∧ g x = ‖x‖ := by
   by_cases hx : x = 0

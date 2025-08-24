@@ -456,7 +456,7 @@ theorem quot_neg (x : Prequotient F) :
     Quot.mk Setoid.r (neg x) = -(show ColimitType F from Quot.mk Setoid.r x) :=
   rfl
 
--- Porting note: Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
+-- Porting note: Lean cannot see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
 -- unless we use `by exact` to change the elaboration order.
 @[simp]
 theorem quot_add (x y) :
@@ -464,7 +464,7 @@ theorem quot_add (x y) :
       (show ColimitType F from Quot.mk _ x) + (show ColimitType F from Quot.mk _ y) :=
   rfl
 
--- Porting note: Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
+-- Porting note: Lean cannot see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
 -- unless we use `by exact` to change the elaboration order.
 @[simp]
 theorem quot_mul (x y) :

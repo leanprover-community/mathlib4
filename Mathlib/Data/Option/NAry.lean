@@ -41,7 +41,7 @@ Mathematically this should be thought of as the image of the corresponding funct
 def map₂ (f : α → β → γ) (a : Option α) (b : Option β) : Option γ :=
   a.bind fun a => b.map <| f a
 
-/-- `Option.map₂` in terms of monadic operations. Note that this can't be taken as the definition
+/-- `Option.map₂` in terms of monadic operations. Note that this cannot be taken as the definition
 because of the lack of universe polymorphism. -/
 theorem map₂_def {α β γ : Type u} (f : α → β → γ) (a : Option α) (b : Option β) :
     map₂ f a b = f <$> a <*> b := by
