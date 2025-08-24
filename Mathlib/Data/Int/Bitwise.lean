@@ -363,6 +363,10 @@ theorem shiftRight_add' : ∀ (m : ℤ) (n k : ℕ), m >>> (n + k : ℤ) = (m >>
 
 /-! ### bitwise ops -/
 
+-- Commented out: please either fix,
+-- or remove after https://github.com/leanprover-community/mathlib4/pull/28884 is merged
+-- (that PR proposed deprecating these theorems).
+/-
 theorem shiftLeft_add' : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< ((n : ℤ) + k) = (m <<< (n : ℤ)) <<< k
   | (m : ℕ), n, (k : ℕ) =>
     congr_arg ofNat (by simp [Nat.shiftLeft_eq, Nat.pow_add, mul_assoc])
@@ -388,6 +392,7 @@ theorem shiftLeft_add' : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< ((n : ℤ) + k
 
 theorem shiftLeft_sub (m : ℤ) (n : ℕ) (k : ℤ) : m <<< ((n : ℤ) - k) = (m <<< (n : ℤ)) >>> k :=
   shiftLeft_add' _ _ _
+-/
 
 theorem shiftLeft_eq_mul_pow : ∀ (m : ℤ) (n : ℕ), m <<< (n : ℤ) = m * (2 ^ n : ℕ)
   | (m : ℕ), _ => congr_arg ((↑) : ℕ → ℤ) (by simp [Nat.shiftLeft_eq])
