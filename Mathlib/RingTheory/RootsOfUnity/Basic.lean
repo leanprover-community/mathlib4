@@ -158,7 +158,7 @@ theorem Units.val_set_image_rootsOfUnity [NeZero k] :
   exact ⟨fun ⟨y,hy1,hy2⟩ => by rw [← hy2]; exact (mem_rootsOfUnity' k y).mp hy1,
     fun h ↦ ⟨(rootsOfUnity.mkOfPowEq x h), ⟨Subtype.coe_prop (rootsOfUnity.mkOfPowEq x h), rfl⟩⟩⟩
 
-theorem rootsOfUnity_one_set : ((↑) : Rˣ → R) '' (rootsOfUnity 1 R) = {1} := by
+theorem Units.val_set_image_rootsOfUnity_one : ((↑) : Rˣ → R) '' (rootsOfUnity 1 R) = {1} := by
   ext x
   simp
 
