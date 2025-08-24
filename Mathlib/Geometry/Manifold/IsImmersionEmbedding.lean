@@ -345,11 +345,11 @@ lemma _root_.continuousAt_iff_comp_isImmersionAt [IsManifold I n M] [IsManifold 
   -- TODO: warm-up exercise, need to think!
   sorry
 
-lemma _root_.ContMDiffAt.iff_comp_isImmersionAt [IsManifold I n M] [IsManifold J n N] [IsManifold J' n N']
+lemma _root_.ContMDiffAt.iff_comp_isImmersionAt
+    [IsManifold I n M] [IsManifold J n N] [IsManifold J' n N']
     {f : M → N} {φ : N → N'} (h : IsImmersionAt F J J' n φ (f x)) :
     ContMDiffAt I J n f x ↔ ContMDiffAt I J' n (φ ∘ f) x := by
   refine ⟨fun hf ↦ h.contMDiffAt.comp x hf, fun h' ↦ ?_⟩
-  let nchart := h.domChart
   -- Since `f` is continuous at `x`, some neighbourhood `t` of `x` is mapped
   -- into `h.domChart.source` under `f`. By restriction, we may assume `t` is open.
   have hf₁ : ContinuousAt f x :=
@@ -404,11 +404,13 @@ lemma _root_.ContMDiffAt.iff_comp_isImmersionAt [IsManifold I n M] [IsManifold J
     rw [h.domChart.extend_target_eq_image_source]
     exact ⟨(f ∘ ((chartAt H x).extend I).symm) y, ht hy.1, by simp⟩
   -- Compose with a suitable projection to cancel the inclusion.
-  have h'''' : ContDiffWithinAt 𝕜 n (Prod.fst ∘ h.equiv.symm ∘ f'') s x' := by
-    sorry -- easy, just composition
+  have h'''' : ContDiffWithinAt 𝕜 n ((Prod.fst ∘ h.equiv.symm) ∘ f'') s x' := by
+    refine ContDiffWithinAt.comp x' ?_ h''' (mapsTo_univ _ _)
+    rw [contDiffWithinAt_univ]
+    exact contDiffAt_fst.comp _ h.equiv.symm.contDiff.contDiffAt
   exact h''''.congr_of_mem (fun y hy ↦ by simp [f'']) hx'
 
-  #exit
+  /- old code, probably obsolete
   rw [contMDiffAt_iff_of_mem_maximalAtlas (IsManifold.chart_mem_maximalAtlas x)
     h.domChart_mem_maximalAtlas (mem_chart_source H x) h.mem_domChart_source]
   refine ⟨sorry, ?_⟩ -- think! continuity is the warm-up problem!
@@ -445,10 +447,7 @@ lemma _root_.ContMDiffAt.iff_comp_isImmersionAt [IsManifold I n M] [IsManifold J
     sorry -- easy, just composition
   apply h''''.congr_of_mem ?_ (mem_range_self _)
   intro y hy
-  simp [f'']
-
-
-end IsImmersionAt
+  simp [f''] -/
 
 variable (F I I' n) in
 /-- `f : M → N` is a `C^k` immersion if around each point `x ∈ M`,
