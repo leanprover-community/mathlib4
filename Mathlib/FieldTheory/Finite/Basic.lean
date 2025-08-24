@@ -643,10 +643,8 @@ theorem Int.prime_dvd_pow_self_sub {p : ℕ} (hp : Nat.Prime p) {n : ℤ} : (p :
   · have hnp : IsCoprime n p := by
       rw [ofNat_dvd_left, ← Nat.Prime.coprime_iff_not_dvd hp] at ch
       exact IsCoprime.symm ((fun {m n} ↦ isCoprime_iff_gcd_eq_one.mpr) ch)
-    have : n ^ (p - 1) - 1 ∣ n ^ p - n := by
-      use n
-      simp [Int.sub_mul, ← Int.pow_succ, Nat.sub_one_add_one_eq_of_pos (Nat.Prime.one_le hp)]
-    exact Int.dvd_trans (prime_dvd_pow_sub_one hp hnp) this
+    refine Int.dvd_trans (prime_dvd_pow_sub_one hp hnp) ⟨n, ?_⟩
+    simp [Int.sub_mul, ← Int.pow_succ, Nat.sub_one_add_one_eq_of_pos (Nat.Prime.one_le hp)]
 
 theorem Int.ModEq.pow_card_eq_self {p : ℕ} (hp : Nat.Prime p) {n : ℤ} : n ^ p ≡ n [ZMOD p] :=
   ModEq.symm ((fun {_ _ _} ↦ modEq_iff_dvd.mpr) (prime_dvd_pow_self_sub hp))
