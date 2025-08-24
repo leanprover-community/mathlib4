@@ -856,7 +856,7 @@ theorem mk_one_eq_algebraMap (x) : mk x 1 = algebraMap R (Localization M) x :=
 theorem mk_eq_mk'_apply (x y) : mk x y = IsLocalization.mk' (Localization M) x y := by
   rw [mk_eq_monoidOf_mk'_apply, mk', toLocalizationMap_eq_monoidOf]
 
--- Porting note: removed `simp`. Left hand side can be simplified; not clear what normal form should
+-- Porting note: removed `simp`. Left-hand side can be simplified; not clear what normal form should
 --be.
 theorem mk_eq_mk' : (mk : R → M → Localization M) = IsLocalization.mk' (Localization M) :=
   mk_eq_monoidOf_mk'

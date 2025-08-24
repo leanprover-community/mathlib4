@@ -325,7 +325,7 @@ open ZeroObject
 @[simp]
 theorem id_zero : 𝟙 (0 : C) = (0 : (0 : C) ⟶ 0) := by apply HasZeroObject.from_zero_ext
 
--- This can't be a `simp` lemma because the left hand side would be a metavariable.
+-- This can't be a `simp` lemma because the left-hand side would be a metavariable.
 /-- An arrow ending in the zero object is zero -/
 theorem zero_of_to_zero {X : C} (f : X ⟶ 0) : f = 0 := by ext
 
