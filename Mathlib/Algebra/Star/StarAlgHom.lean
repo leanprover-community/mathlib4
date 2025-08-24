@@ -830,6 +830,7 @@ section AlgEquiv
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] [Star A] [Star B]
 
+/-- Interpret a ⋆-algebra equivalence as an algebra equivalence. -/
 def toAlgEquiv (f : A ≃⋆ₐ[R] B) : A ≃ₐ[R] B where
   toRingEquiv := f.toRingEquiv
   commutes' r := by simp_rw [Algebra.algebraMap_eq_smul_one', map_smul']; simp
@@ -840,6 +841,8 @@ theorem toAlgEquiv_apply (f : A ≃⋆ₐ[R] B) (x : A) : f.toAlgEquiv x = f x :
 @[simp]
 theorem toAlgEquiv_symm (f : A ≃⋆ₐ[R] B) : f.toAlgEquiv.symm = f.symm.toAlgEquiv := rfl
 
+/-- Upgrade an algebra equivalence to a ⋆-algebra equivalence given that it preserves the
+`star` operation. -/
 def ofAlgEquiv (f : A ≃ₐ[R] B) (hf : ∀ x, f (star x) = star (f x)) :
     A ≃⋆ₐ[R] B where
   toRingEquiv := f.toRingEquiv
