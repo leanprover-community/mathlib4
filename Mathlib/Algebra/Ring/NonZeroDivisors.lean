@@ -39,6 +39,15 @@ theorem IsRightRegular.pow_inj {M : Type*} [Monoid M] [IsMulTorsionFree M] {x : 
   MulOpposite.unop_injective.comp <| (isLeftRegular_op.mpr hx).pow_inj  <|
     (MulOpposite.op_eq_one_iff x).not.mpr hx'
 
+theorem pow_right_inj' {M : Type*} [CancelMonoid M] [IsMulTorsionFree M] {x : M} (hx : x ≠ 1) :
+    Function.Injective (fun n ↦ x ^ n) :=
+  IsLeftRegular.pow_inj (IsLeftRegular.all x) hx
+
+theorem pow_right_inj₀' {M : Type*} [CancelMonoidWithZero M] [IsMulTorsionFree M] {x : M}
+    (hx : x ≠ 1) (hx' : x ≠ 0) :
+    Function.Injective (fun n ↦ x ^ n) :=
+  IsLeftRegular.pow_inj (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero hx') hx
+
 variable [Finite R]
 
 theorem IsLeftRegular.isUnit_of_finite (h : IsLeftRegular r) : IsUnit r := by
