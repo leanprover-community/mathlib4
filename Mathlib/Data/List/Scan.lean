@@ -35,8 +35,8 @@ theorem scanl_ne_nil : scanl f b l ≠ [] := by
   cases l <;> simp
 
 @[simp]
-theorem scanl_iff_nil : scanl f b l = [b] ↔ l = [] := by
-  constructor <;> cases l <;> simp
+theorem scanl_iff_nil (c : β) : scanl f b l = [c] ↔ c = b ∧ l = [] := by
+  constructor <;> cases l <;> simp_all
 
 @[simp]
 theorem scanl_cons : scanl f b (a :: l) = [b] ++ scanl f (f b a) l := by
@@ -50,7 +50,7 @@ theorem getElem_scanl_zero : (scanl f b l)[0] = b := by
   cases l <;> simp
 
 @[simp]
-theorem head_scanl : (scanl f b l).head scanl_ne_nil = b := by
+theorem head_scanl (h : scanl f b l ≠ []) : (scanl f b l).head h = b := by
   cases l <;> simp
 
 theorem getElem?_succ_scanl {i : ℕ} : (scanl f b l)[i + 1]? =
@@ -105,26 +105,19 @@ theorem scanr_cons : scanr f b (a :: l) = foldr f b (a :: l) :: scanr f b l := b
   | cons hd tl ih => simp only [foldr, ih]
 
 @[simp]
-theorem scanr_iff_nil : scanr f b l = [b] ↔ l = [] := by
-  constructor <;> cases l <;> simp
+theorem scanr_iff_nil (c : β) : scanr f b l = [c] ↔ c = b ∧ l = [] := by
+  constructor <;> cases l <;> simp_all
 
 @[simp]
 theorem length_scanr (b : β) (l : List α) : length (scanr f b l) = l.length + 1 := by
   induction l <;> simp_all
-
-theorem getElem?_scanr_zero : (scanr f b l)[0]? = foldr f b l := by
-  cases l <;> simp
 
 theorem scanr_append (l₁ l₂ : List α) :
     scanr f b (l₁ ++ l₂) = (scanr f (foldr f b l₂) l₁) ++ (scanr f b l₂).tail := by
   induction l₁ <;> induction l₂ <;> simp [*]
 
 @[simp]
-theorem getElem_scanr_zero : (scanr f b l)[0] = foldr f b l := by
-  cases l <;> simp
-
-@[simp]
-theorem head_scanr : (scanr f b l).head scanr_ne_nil = foldr f b l := by
+theorem head_scanr (h : scanr f b l ≠ []) : (scanr f b l).head h = foldr f b l := by
   cases l <;> simp
 
 theorem tail_scanr (h : 0 < l.length) : (scanr f b l).tail = scanr f b l.tail := by
@@ -137,19 +130,29 @@ theorem drop_scanr {i : ℕ} (h : i ≤ l.length) : (scanr f b l).drop i = scanr
     rw [← drop_drop]
     simp [ih (by omega), tail_scanr (l := l.drop i) (by rw [length_drop]; omega)]
 
-theorem getElem_scanr {i : ℕ} (h : i < l.length + 1) :
-    (scanr f b l)[i]'(by simp [h]) = foldr f b (l.drop i) := by
+@[simp]
+theorem getElem_scanr_zero : (scanr f b l)[0] = foldr f b l := by
+  cases l <;> simp
+
+theorem getElem?_scanr_zero : (scanr f b l)[0]? = foldr f b l := by
+  simp
+
+theorem getElem_scanr {i : ℕ} (h : i < (scanr f b l).length) :
+    (scanr f b l)[i] = foldr f b (l.drop i) := by
   induction l generalizing i with
   | nil => simp
   | cons head tail ih =>
-    obtain rfl |  h' := eq_or_ne i 0
+    obtain rfl | h' := eq_or_ne i 0
     · simp
-    · rw [length_cons] at h
-      obtain ⟨m, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h'
-      simp [@ih m (by omega)]
+    · obtain ⟨m, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h'
+      simp [@ih m (by simp_all [length_scanr])]
 
 theorem getElem?_scanr {i : ℕ} (h : i < l.length + 1) :
+    (scanr f b l)[i]? = if i < l.length + 1 then some (foldr f b (l.drop i)) else none := by
+  split <;> simp_all [getElem_scanr]
+
+theorem getElem?_scanr_of_lt {i : ℕ} (h : i < l.length + 1) :
     (scanr f b l)[i]? = some (foldr f b (l.drop i)) := by
-  rw [List.getElem?_eq_getElem (by simp [h]), getElem_scanr h]
+  simpa [getElem?_scanr h]
 
 end List
