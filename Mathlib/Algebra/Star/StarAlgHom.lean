@@ -839,7 +839,7 @@ def toAlgEquiv (f : A ≃⋆ₐ[R] B) : A ≃ₐ[R] B where
 theorem toAlgEquiv_apply (f : A ≃⋆ₐ[R] B) (x : A) : f.toAlgEquiv x = f x := rfl
 
 @[simp]
-theorem toAlgEquiv_symm (f : A ≃⋆ₐ[R] B) : f.toAlgEquiv.symm = f.symm.toAlgEquiv := rfl
+theorem toAlgEquiv_symm (f : A ≃⋆ₐ[R] B) : f.symm.toAlgEquiv = f.toAlgEquiv.symm := rfl
 
 /-- Upgrade an algebra equivalence to a ⋆-algebra equivalence given that it preserves the
 `star` operation. -/
