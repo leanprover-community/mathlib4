@@ -123,7 +123,7 @@ private theorem exp_polynomial_approx_aux (f : ℤ[X]) (s : ℂ) :
   simp_rw [Real.norm_eq_abs] at h
   refine P_le _ s c (fun p x hx => ?_)
   specialize h (max (x * ‖s‖) 1 * ‖aeval (x * s) f‖) (Set.mem_image_of_mem _ hx)
-  refine le_trans ?_ (pow_le_pow_left₀ (abs_nonneg _) h _)
+  grw [← h]
   simp_rw [Polynomial.map_mul, Polynomial.map_pow, map_X, eval_mul, eval_pow, eval_X, norm_mul,
     Complex.norm_pow, real_smul, norm_mul, norm_real, ← eval₂_eq_eval_map, ← aeval_def, abs_mul,
     abs_norm, mul_pow, Real.norm_of_nonneg hx.1.le]

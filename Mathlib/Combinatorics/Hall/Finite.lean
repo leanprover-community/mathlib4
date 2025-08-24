@@ -141,7 +141,7 @@ theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
   rw [this, hus]
   refine (Nat.sub_le_sub_right (ht _) _).trans ?_
   rw [← card_sdiff]
-  · refine (card_le_card ?_).trans le_rfl
+  · gcongr
     intro t
     simp only [mem_biUnion, mem_sdiff, not_exists, mem_image, and_imp, mem_union,
       exists_imp]

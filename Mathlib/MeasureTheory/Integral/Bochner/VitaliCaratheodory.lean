@@ -211,7 +211,7 @@ theorem exists_lt_lowerSemicontinuous_lintegral_ge [SigmaFinite μ] (f : α → 
       (∫⁻ x : α, g x ∂μ) ≤ (∫⁻ x : α, f x + w x ∂μ) + ε / 2 := gint
       _ = ((∫⁻ x : α, f x ∂μ) + ∫⁻ x : α, w x ∂μ) + ε / 2 := by
         rw [lintegral_add_right _ wmeas.coe_nnreal_ennreal]
-      _ ≤ (∫⁻ x : α, f x ∂μ) + ε / 2 + ε / 2 := add_le_add_right (add_le_add_left wint.le _) _
+      _ ≤ (∫⁻ x : α, f x ∂μ) + ε / 2 + ε / 2 := by grw [wint]
       _ = (∫⁻ x : α, f x ∂μ) + ε := by rw [add_assoc, ENNReal.add_halves]
 
 /-- Given an almost everywhere measurable function `f` with values in `ℝ≥0` in a sigma-finite space,

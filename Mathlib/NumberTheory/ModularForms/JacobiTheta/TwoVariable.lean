@@ -164,11 +164,8 @@ lemma norm_jacobiTheta₂_term_fderiv_le (n : ℤ) (z τ : ℂ) :
   refine mul_le_mul_of_nonneg_left ((norm_add_le _ _).trans (add_le_add ?_ ?_)) (norm_nonneg _)
   · simp_rw [hns, norm_mul, ← ofReal_ofNat, ← ofReal_intCast,
       norm_real, norm_of_nonneg zero_le_two, Real.norm_of_nonneg pi_pos.le, norm_I, mul_one,
-      Real.norm_eq_abs, Int.cast_abs, mul_assoc]
-    refine mul_le_mul_of_nonneg_left (mul_le_mul_of_nonneg_left ?_ pi_pos.le) two_pos.le
-    refine le_trans ?_ (?_ : |(n : ℝ)| ≤ |(n : ℝ)| ^ 2)
-    · exact mul_le_of_le_one_right (abs_nonneg _) (ContinuousLinearMap.norm_fst_le ..)
-    · exact_mod_cast Int.le_self_sq |n|
+      Real.norm_eq_abs, ← Int.cast_abs, ← Int.cast_pow]
+    grw [ContinuousLinearMap.norm_fst_le, mul_one, ← Int.le_self_sq]
   · simp_rw [hns, norm_mul, one_mul, norm_I, mul_one,
       norm_real, norm_of_nonneg pi_pos.le, ← ofReal_intCast, ← ofReal_pow, norm_real,
       Real.norm_eq_abs, Int.cast_abs, abs_pow]
