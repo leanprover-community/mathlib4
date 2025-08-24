@@ -10,16 +10,15 @@ import Mathlib.Algebra.Order.Nonneg.Basic
 /-!
 # Modules over nonnegative elements
 
-This file defines instances and prove some properties about modules over nonnegative elements
-`{c : R // 0 ≤ c}` of an arbitrary `OrderedSemiring R`.
+For an ordered ring `R`, this file proves that any (ordered) `R`-module `M` is also an (ordered)
+`R≥0`-module`.
 
-These instances are useful for working with `ConvexCone`.
-
+Among other things, these instances are useful for working with `ConvexCone`.
 -/
 
 assert_not_exists Finset
 
-variable {R S E : Type*}
+variable {R S M : Type*}
 
 local notation3 "R≥0" => {c : R // 0 ≤ c}
 
@@ -45,9 +44,9 @@ end SMul
 
 section IsScalarTower
 
-variable [IsOrderedRing R] [SMul R S] [SMul R E] [SMul S E] [IsScalarTower R S E]
+variable [IsOrderedRing R] [SMul R S] [SMul R M] [SMul S M] [IsScalarTower R S M]
 
-instance instIsScalarTower : IsScalarTower R≥0 S E :=
+instance instIsScalarTower : IsScalarTower R≥0 S M :=
   SMul.comp.isScalarTower ↑Nonneg.coeRingHom
 
 end IsScalarTower
@@ -64,20 +63,20 @@ end SMulWithZero
 
 section OrderedSMul
 
-variable [IsOrderedRing R] [AddCommMonoid E] [PartialOrder E] [IsOrderedAddMonoid E]
-  [SMulWithZero R E] [hE : OrderedSMul R E]
+variable [IsOrderedRing R] [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
+  [SMulWithZero R M] [hE : OrderedSMul R M]
 
-instance instOrderedSMul : OrderedSMul R≥0 E :=
+instance instOrderedSMul : OrderedSMul R≥0 M :=
   ⟨hE.1, hE.2⟩
 
 end OrderedSMul
 
 section Module
 
-variable [IsOrderedRing R] [AddCommMonoid E] [Module R E]
+variable [IsOrderedRing R] [AddCommMonoid M] [Module R M]
 
 /-- A module over an ordered semiring is also a module over just the non-negative scalars. -/
-instance instModule : Module R≥0 E := .compHom E coeRingHom
+instance instModule : Module R≥0 M := .compHom M coeRingHom
 
 end Module
 end Nonneg
