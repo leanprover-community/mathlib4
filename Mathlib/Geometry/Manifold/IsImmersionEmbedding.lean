@@ -337,13 +337,78 @@ end IsImmersionAt
 
 variable {x : M}
 
-lemma _root_.ContMDiffAt.iff_comp_immersionAt [IsManifold I n M] [IsManifold J n N] [IsManifold J' n N']
+-- TODO: are the manifold hypotheses necessary now? think!
+lemma _root_.continuousAt_iff_comp_isImmersionAt [IsManifold I n M] [IsManifold J n N] [IsManifold J' n N']
+    {f : M → N} {φ : N → N'} (h : IsImmersionAt F J J' n φ (f x)) :
+    ContinuousAt f x ↔ ContinuousAt (φ ∘ f) x := by
+  refine ⟨fun hf ↦ h.continuousAt.comp hf, fun h' ↦ ?_⟩
+  -- TODO: warm-up exercise, need to think!
+  sorry
+
+lemma _root_.ContMDiffAt.iff_comp_isImmersionAt [IsManifold I n M] [IsManifold J n N] [IsManifold J' n N']
     {f : M → N} {φ : N → N'} (h : IsImmersionAt F J J' n φ (f x)) :
     ContMDiffAt I J n f x ↔ ContMDiffAt I J' n (φ ∘ f) x := by
   refine ⟨fun hf ↦ h.contMDiffAt.comp x hf, fun h' ↦ ?_⟩
   let nchart := h.domChart
-  -- maybe: prove ContMDiffWithinAt I J n f (chartAt H x).source x instead,
-  -- and use WithinAt all the way instead?
+  -- Since `f` is continuous at `x`, some neighbourhood `t` of `x` is mapped
+  -- into `h.domChart.source` under `f`. By restriction, we may assume `t` is open.
+  have hf₁ : ContinuousAt f x :=
+    ((continuousAt_iff_comp_isImmersionAt h (I := I)).mpr h'.continuousAt)
+  have : h.domChart.source ∈ 𝓝 (f x) := h.domChart.open_source.mem_nhds h.mem_domChart_source
+  obtain ⟨t, ht, htopen, hxt⟩ := mem_nhds_iff.mp (hf₁ this)
+  set s := (extChartAt I x).symm ⁻¹' t ∩ range I
+  have hx' : (((chartAt H x).extend I) x) ∈ s := by
+    refine ⟨?_, mem_range_self _⟩
+    rw [mem_preimage, ← (extChartAt I x).left_inv (mem_extChartAt_source x)]
+    simpa
+  suffices ContMDiffWithinAt I J n f t x from this.contMDiffAt <| htopen.mem_nhds hxt
+  rw [contMDiffWithinAt_iff_of_mem_maximalAtlas (IsManifold.chart_mem_maximalAtlas x)
+    h.domChart_mem_maximalAtlas (mem_chart_source H x) h.mem_domChart_source]
+  refine ⟨hf₁.continuousWithinAt, ?_⟩
+  let n'chart := h.codChart
+  set f' := (h.domChart.extend J) ∘ f ∘ ↑((chartAt H x).extend I).symm
+  set φ' := (h.codChart.extend J') ∘ φ ∘ (h.domChart.extend J).symm
+  set x' := (((chartAt H x).extend I) x)
+
+  -- old code, probably obsolete
+  -- set s := ((chartAt H x).extend I).symm ⁻¹' (chartAt H x).source ∩ range I
+  -- have hx' : x' ∈ s := by
+  --   refine ⟨?_, mem_range_self _⟩
+  --   refine mem_preimage.mpr ?_
+  --   simp only [x']
+  --   -- can or should this be a separate lemma? there is nothing going on here!
+  --   rw [← PartialHomeomorph.extend_source (I := I)]
+  --   refine PartialEquiv.map_target ((chartAt H x).extend I) ?_
+  --   refine PartialEquiv.map_source ((chartAt H x).extend I) ?_
+  --   rw [PartialHomeomorph.extend_source]
+  --   exact ChartedSpace.mem_chart_source x
+  --replace h' : ContMDiffWithinAt I J' n (φ ∘ f) (chartAt H x).source x := h'.contMDiffWithinAt
+  replace h' : ContMDiffWithinAt I J' n (φ ∘ f) t x := h'.contMDiffWithinAt
+  rw [contMDiffWithinAt_iff_of_mem_maximalAtlas
+    (IsManifold.chart_mem_maximalAtlas x) h.codChart_mem_maximalAtlas (mem_chart_source H x)
+    h.mem_codChart_source] at h'
+  replace h' := h'.2
+  have := h.writtenInCharts
+  have h'' : ContDiffWithinAt 𝕜 n (φ' ∘ f') s x' := by
+    apply h'.congr_of_mem (fun y hy ↦ ?_) hx'
+    simp [φ', f']
+    congr
+    exact h.domChart.left_inv (ht hy.1)
+  set f'' := ((h.equiv ∘ fun x ↦ (x, 0)) ∘ f')
+  have h''' : ContDiffWithinAt 𝕜 n f'' s x' := by
+    refine h''.congr_of_mem (fun y hy ↦ ?_) hx'
+    simp only [f'', φ', f']
+    nth_rw 2 [comp_apply]
+    rw [h.writtenInCharts]
+    congr
+    rw [h.domChart.extend_target_eq_image_source]
+    exact ⟨(f ∘ ((chartAt H x).extend I).symm) y, ht hy.1, by simp⟩
+  -- Compose with a suitable projection to cancel the inclusion.
+  have h'''' : ContDiffWithinAt 𝕜 n (Prod.fst ∘ h.equiv.symm ∘ f'') s x' := by
+    sorry -- easy, just composition
+  exact h''''.congr_of_mem (fun y hy ↦ by simp [f'']) hx'
+
+  #exit
   rw [contMDiffAt_iff_of_mem_maximalAtlas (IsManifold.chart_mem_maximalAtlas x)
     h.domChart_mem_maximalAtlas (mem_chart_source H x) h.mem_domChart_source]
   refine ⟨sorry, ?_⟩ -- think! continuity is the warm-up problem!
@@ -383,7 +448,6 @@ lemma _root_.ContMDiffAt.iff_comp_immersionAt [IsManifold I n M] [IsManifold J n
   simp [f'']
 
 
-#exit
 end IsImmersionAt
 
 variable (F I I' n) in
