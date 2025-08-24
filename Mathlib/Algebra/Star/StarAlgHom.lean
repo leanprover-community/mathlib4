@@ -843,28 +843,28 @@ theorem toAlgEquiv_symm (f : A ≃⋆ₐ[R] B) : f.symm.toAlgEquiv = f.toAlgEqui
 
 /-- Upgrade an algebra equivalence to a ⋆-algebra equivalence given that it preserves the
 `star` operation. -/
-def ofAlgEquiv (f : A ≃ₐ[R] B) (hf : ∀ x, f (star x) = star (f x)) :
+def ofAlgEquiv (f : A ≃ₐ[R] B) (map_star : ∀ x, f (star x) = star (f x)) :
     A ≃⋆ₐ[R] B where
   toRingEquiv := f.toRingEquiv
   map_smul' := f.toLinearEquiv.map_smul
-  map_star' := hf
+  map_star' := map_star
 
 @[simp]
-theorem ofAlgEquiv_apply (f : A ≃ₐ[R] B) (hf : ∀ x, f (star x) = star (f x)) (x : A) :
-    ofAlgEquiv f hf x = f x := rfl
+theorem ofAlgEquiv_apply (f : A ≃ₐ[R] B) (map_star : ∀ x, f (star x) = star (f x)) (x : A) :
+    ofAlgEquiv f map_star x = f x := rfl
 
 @[simp]
-theorem ofAlgEquiv_symm (f : A ≃ₐ[R] B) (hf : ∀ x, f (star x) = star (f x)) :
-    (ofAlgEquiv f hf).symm = ofAlgEquiv f.symm (ofAlgEquiv f hf).symm.map_star' :=
+theorem ofAlgEquiv_symm (f : A ≃ₐ[R] B) (map_star : ∀ x, f (star x) = star (f x)) :
+    (ofAlgEquiv f map_star).symm = ofAlgEquiv f.symm (ofAlgEquiv f map_star).symm.map_star' :=
   rfl
 
 @[simp]
-theorem toAlgEquiv_ofAlgEquiv (f : A ≃ₐ[R] B) (hf : ∀ x, f (star x) = star (f x)) :
-    (ofAlgEquiv f hf).toAlgEquiv = f := rfl
+theorem toAlgEquiv_ofAlgEquiv (f : A ≃ₐ[R] B) (map_star : ∀ x, f (star x) = star (f x)) :
+    (ofAlgEquiv f map_star).toAlgEquiv = f := rfl
 
 @[simp]
-theorem ofAlgEquiv_toAlgEquiv (f : A ≃⋆ₐ[R] B) :
-    ofAlgEquiv f.toAlgEquiv f.map_star' = f := rfl
+theorem ofAlgEquiv_toAlgEquiv (f : A ≃⋆ₐ[R] B) (map_star) :
+    ofAlgEquiv f.toAlgEquiv map_star = f := rfl
 
 end AlgEquiv
 
