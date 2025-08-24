@@ -333,18 +333,28 @@ private theorem contMDiffOn (h : IsImmersionAt F I I' n f x) :
 theorem contMDiffAt (h : IsImmersionAt F I I' n f x) : ContMDiffAt I I' n f x :=
   h.contMDiffOn.contMDiffAt (h.domChart.open_source.mem_nhds (mem_domChart_source h))
 
+-- TODO: are the manifold hypotheses necessary now? think!
+/-- A point-wise version of `Topology.IsInducing.nhds_eq_comap` -/
+lemma nhds_eq_comap {f : M → N} (hf : IsImmersionAt F I J n f x) :
+    𝓝 x = Filter.comap f (𝓝 (f x)) := by
+  apply le_antisymm
+  · exact Filter.map_le_iff_le_comap.mp hf.continuousAt
+  · rw [le_nhds_iff]
+    intro s hxs hs
+    rw [Filter.mem_comap]
+    sorry
+
 end IsImmersionAt
 
 variable {x : M}
 
 -- TODO: are the manifold hypotheses necessary now? think!
-lemma _root_.continuousAt_iff_comp_isImmersionAt [IsManifold I n M] [IsManifold J n N] [IsManifold J' n N']
+lemma _root_.continuousAt_iff_comp_isImmersionAt [IsManifold J n N] [IsManifold J' n N']
     {f : M → N} {φ : N → N'} (h : IsImmersionAt F J J' n φ (f x)) :
     ContinuousAt f x ↔ ContinuousAt (φ ∘ f) x := by
-  refine ⟨fun hf ↦ h.continuousAt.comp hf, fun h' ↦ ?_⟩
-  -- TODO: warm-up exercise, need to think!
-  sorry
+  simp_rw [ContinuousAt, h.nhds_eq_comap, Filter.tendsto_comap_iff, comp_apply]
 
+#exit
 lemma _root_.ContMDiffAt.iff_comp_isImmersionAt
     [IsManifold I n M] [IsManifold J n N] [IsManifold J' n N']
     {f : M → N} {φ : N → N'} (h : IsImmersionAt F J J' n φ (f x)) :
