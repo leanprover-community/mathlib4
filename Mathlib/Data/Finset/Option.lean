@@ -148,4 +148,19 @@ theorem eraseNone_insertNone (s : Finset α) : eraseNone (insertNone s) = s := b
   ext
   simp
 
+theorem card_eraseNone_eq_card_erase [DecidableEq (Option α)] (s : Finset (Option α)) :
+    #s.eraseNone = #(s.erase none) := by
+  rw [← card_map Function.Embedding.some, map_some_eraseNone]
+
+theorem card_eraseNone_le (s : Finset (Option α)) : #s.eraseNone ≤ #s := by
+  classical
+  rw [card_eraseNone_eq_card_erase]
+  apply card_erase_le
+
+theorem card_eraseNone_of_mem {s : Finset (Option α)} (h : none ∈ s) : #s.eraseNone = #s - 1 := by
+  classical rw [card_eraseNone_eq_card_erase, card_erase_of_mem h]
+
+theorem card_eraseNone_of_not_mem {s : Finset (Option α)} (h : none ∉ s) : #s.eraseNone = #s := by
+  classical rw [card_eraseNone_eq_card_erase, erase_eq_of_notMem h]
+
 end Finset
