@@ -52,8 +52,8 @@ lemma bonza_apply_prime_eq_one_or_dvd_self_sub_apply (hf : f ∈ bonza) {p : ℕ
       _ ≡ _ [ZMOD p] := by
         rw [eq]
         nth_rw 2 [← pow_one (f b : ℤ)]
-        exact Int.ModEq.pow_eq_pow hp (nat_sub_one_dvd_pow_sub_one p k)
-          (one_le_pow k p (Prime.pos hp)) (by norm_num)
+        exact Int.ModEq.pow_eq_pow hp (p.sub_one_dvd_pow_sub_one k) (one_le_pow k p (Prime.pos hp))
+          (by norm_num)
     rwa [modEq_comm, Int.modEq_iff_dvd] at this
 
 /- For each bonza function $f$, then $f p = 1$ for sufficient big prime $p$
