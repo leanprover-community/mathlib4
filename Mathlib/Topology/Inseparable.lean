@@ -51,8 +51,8 @@ below. -/
 theorem specializes_TFAE (x y : X) :
     List.TFAE [x ⤳ y,
       pure x ≤ 𝓝 y,
-      ∀ s : Set X , IsOpen s → y ∈ s → x ∈ s,
-      ∀ s : Set X , IsClosed s → x ∈ s → y ∈ s,
+      ∀ s : Set X, IsOpen s → y ∈ s → x ∈ s,
+      ∀ s : Set X, IsClosed s → x ∈ s → y ∈ s,
       y ∈ closure ({ x } : Set X),
       closure ({ y } : Set X) ⊆ closure { x },
       ClusterPt y (pure x)] := by
