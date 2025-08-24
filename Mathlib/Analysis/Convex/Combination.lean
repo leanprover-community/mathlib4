@@ -469,9 +469,9 @@ theorem convexHull_basis_eq_stdSimplex [DecidableEq ι] :
   · rintro _ ⟨i, rfl⟩
     exact single_mem_stdSimplex R i
   · rintro w ⟨hw₀, hw₁⟩
-    rw [pi_eq_sum_univ w, ← Finset.univ.centerMass_eq_of_sum_1 _ hw₁]
+    rw [pi_eq_sum_univ' w, ← Finset.univ.centerMass_eq_of_sum_1 _ hw₁]
     exact Finset.univ.centerMass_mem_convexHull (fun i _ => hw₀ i) (hw₁.symm ▸ zero_lt_one)
-      fun i _ => ⟨i, by aesop⟩
+      fun i _ => mem_range_self i
 
 variable {ι}
 
