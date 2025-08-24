@@ -14,8 +14,8 @@ jobs:
       - name: clean up
         run: |
           rm -rf docs
-          rm -rf $HOME/.elan
-          rm -rf $HOME/.cache/mathlib
+          rm -rf "$HOME/.elan"
+          rm -rf "$HOME/.cache/mathlib"
 
       - name: Checkout mathlib
         uses: actions/checkout@v4
@@ -69,7 +69,7 @@ jobs:
           lake update
 
           # Disable an error message due to a non-blocking bug. See Zulip
-          MATHLIB_NO_CACHE_ON_UPDATE=1 lake update $NAME
+          MATHLIB_NO_CACHE_ON_UPDATE=1 lake update "$NAME"
 
           # Copy references.bib over while doc-gen lacks support for subproject references.bib
           mkdir docs/
@@ -95,8 +95,8 @@ jobs:
         if: always()
         run: |
           rm -rf docs
-          rm -rf $HOME/.elan
-          rm -rf $HOME/.cache/mathlib
+          rm -rf "$HOME/.elan"
+          rm -rf "$HOME/.cache/mathlib"
 
       - name: Send success message on Zulip
         uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2

@@ -66,14 +66,14 @@ jobs:
       continue-on-error: true
       run: |
         delimiter=$(cat /proc/sys/kernel/random/uuid)
-        echo "buildlog<<${delimiter}" >> $GITHUB_OUTPUT
+        echo "buildlog<<${delimiter}" >> "$GITHUB_OUTPUT"
         # Pipe to tee so we see the build results both on Zulip and in the log.
         # For Zulip:
         # * drop the "✔ [n/k] Built Mathlib.Foo.Bar" lines.
         # * cut off after 9000 characters (so we have 1000 characters to add some info before and after).
-        lake build | tee >(grep -v '^✔' | head --bytes=9000 >> $GITHUB_OUTPUT)
-        echo "..." >> $GITHUB_OUTPUT # This also ensures the output ends with a newline.
-        echo "${delimiter}" >> $GITHUB_OUTPUT
+        lake build | tee >(grep -v '^✔' | head --bytes=9000 >> "$GITHUB_OUTPUT")
+        echo "..." >> "$GITHUB_OUTPUT" # This also ensures the output ends with a newline.
+        echo "${delimiter}" >> "$GITHUB_OUTPUT"
 
     - name: Post output to Zulip (linarith)
       uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
@@ -108,14 +108,14 @@ jobs:
       continue-on-error: true
       run: |
         delimiter=$(cat /proc/sys/kernel/random/uuid)
-        echo "buildlog<<${delimiter}" >> $GITHUB_OUTPUT
+        echo "buildlog<<${delimiter}" >> "$GITHUB_OUTPUT"
         # Pipe to tee so we see the build results both on Zulip and in the log.
         # For Zulip:
         # * drop the "✔ [n/k] Built Mathlib.Foo.Bar" lines.
         # * cut off after 9000 characters (so we have 1000 characters to add some info before and after).
-        lake build | tee >(grep -v '^✔' | head --bytes=9000 >> $GITHUB_OUTPUT)
-        echo "..." >> $GITHUB_OUTPUT # This also ensures the output ends with a newline.
-        echo "${delimiter}" >> $GITHUB_OUTPUT
+        lake build | tee >(grep -v '^✔' | head --bytes=9000 >> "$GITHUB_OUTPUT")
+        echo "..." >> "$GITHUB_OUTPUT" # This also ensures the output ends with a newline.
+        echo "${delimiter}" >> "$GITHUB_OUTPUT"
 
     - name: Post output to Zulip (omega)
       uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
@@ -150,14 +150,14 @@ jobs:
       continue-on-error: true
       run: |
         delimiter=$(cat /proc/sys/kernel/random/uuid)
-        echo "buildlog<<${delimiter}" >> $GITHUB_OUTPUT
+        echo "buildlog<<${delimiter}" >> "$GITHUB_OUTPUT"
         # Pipe to tee so we see the build results both on Zulip and in the log.
         # For Zulip:
         # * drop the "✔ [n/k] Built Mathlib.Foo.Bar" lines.
         # * cut off after 9000 characters (so we have 1000 characters to add some info before and after).
-        lake build | tee >(grep -v '^✔' | head --bytes=9000 >> $GITHUB_OUTPUT)
-        echo "..." >> $GITHUB_OUTPUT # This also ensures the output ends with a newline.
-        echo "${delimiter}" >> $GITHUB_OUTPUT
+        lake build | tee >(grep -v '^✔' | head --bytes=9000 >> "$GITHUB_OUTPUT")
+        echo "..." >> "$GITHUB_OUTPUT" # This also ensures the output ends with a newline.
+        echo "${delimiter}" >> "$GITHUB_OUTPUT"
 
     - name: Remove GitHub problem matcher wrapper
       uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
@@ -175,4 +175,3 @@ jobs:
         type: 'stream'
         topic: ring to grind regression log
         content: ${{ steps.build-ring.outputs.buildlog }}
-
