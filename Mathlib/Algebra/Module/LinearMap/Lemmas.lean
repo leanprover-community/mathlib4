@@ -9,6 +9,8 @@ import Mathlib.LinearAlgebra.Span.Defs
 /-!
 # Some lemmas about linear maps
 
+This file shows some results on linear functionals on division semirings, such as
+`LinearMap.surjective_iff_ne_zero` and `LinearMap.range_smulRight_apply`.
 -/
 
 namespace LinearMap
