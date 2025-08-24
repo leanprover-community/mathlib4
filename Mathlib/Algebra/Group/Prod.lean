@@ -81,6 +81,7 @@ instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
     one_mul := by simp,
     mul_one := by simp }
 
+@[to_additive]
 instance instIsMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionFree M] [IsMulTorsionFree N] :
     IsMulTorsionFree (M × N) where
   pow_left_injective n hn a b hab := by
