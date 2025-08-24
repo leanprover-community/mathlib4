@@ -123,6 +123,7 @@ lemma ordinaryHypergeometricSeries_eq_zero_of_neg_nat {n k : ℕ} (habc : k = -a
   rw [ordinaryHypergeometricSeries, ofScalars]
   rcases habc with h | h | h
   all_goals
+    ext
     simp [(ascPochhammer_eval_eq_zero_iff n _).2 ⟨k, hk, h⟩]
 
 end Field
