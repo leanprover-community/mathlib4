@@ -378,6 +378,7 @@ section submoduleMap
 variable {R R₁ R₂ M M₁ : Type*}
 variable [Ring R] [SeminormedAddCommGroup M] [SeminormedAddCommGroup M₁]
 variable [Module R M] [Module R M₁]
+
 /-- A linear isometry between two modules restricts to a linear isometry
 from any submodule `p` of the domain onto the image of that submodule.
 
