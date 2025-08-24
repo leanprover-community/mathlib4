@@ -66,7 +66,7 @@ variable {N : ℕ} [NeZero N]
 /-- If `Φ` is a periodic function, then the L-series of `Φ` converges for `1 < re s`. -/
 lemma LSeriesSummable_of_one_lt_re (Φ : ZMod N → ℂ) {s : ℂ} (hs : 1 < re s) :
     LSeriesSummable (Φ ·) s :=
-  LSeriesSummable_of_bounded_of_one_lt_re (fun n _ ↦ le_max' _ _ (by simp))
+  LSeriesSummable_of_bounded_of_one_lt_re (fun n _ ↦ le_max' _ _ (by grind))
     (m := max' _ <| univ_nonempty.image (norm ∘ Φ)) hs
 
 /--
@@ -99,17 +99,21 @@ lemma LFunction_eq_LSeries (Φ : ZMod N → ℂ) {s : ℂ} (hs : 1 < re s) :
   -- false for general complex `x`, `y`, but it is true if `x` and `y` are non-negative reals, so
   -- we have to carefully juggle coercions `ℕ → ℝ → ℂ`.
   calc N ^ (-s) * Φ j * (1 / (m + (j.val / N : ℝ)) ^ s)
-  _ = Φ j * (N ^ (-s) * (1 / (m + (j.val / N : ℝ)) ^ s)) := by ring
+  _ = Φ j * (N ^ (-s) * (1 / (m + (j.val / N : ℝ)) ^ s)) := by
+    rw [← mul_assoc, mul_comm _ (Φ _)]
   _ = Φ j * (1 / (N : ℝ) ^ s * (1 / ((j.val + N * m) / N : ℝ) ^ s)) := by
     simp only [cpow_neg, ← one_div, ofReal_div, ofReal_natCast, add_comm, add_div, ofReal_add,
       ofReal_mul, mul_div_cancel_left₀ (m : ℂ) (Nat.cast_ne_zero.mpr (NeZero.ne N))]
   _ = Φ j / ((N : ℝ) * ((j.val + N * m) / N : ℝ)) ^ s := by -- this is the delicate step!
     rw [one_div_mul_one_div, mul_one_div, mul_cpow_ofReal_nonneg] <;> positivity
-  _ = Φ j / (N * (j.val + N * m) / N) ^ s := by simp [-natCast_val, mul_div_assoc]
+  _ = Φ j / (N * (j.val + N * m) / N) ^ s := by
+    simp only [ofReal_natCast, ofReal_div, ofReal_add, ofReal_mul, mul_div_assoc]
   _ = Φ j / (j.val + N * m) ^ s := by
     rw [mul_div_cancel_left₀ _ (Nat.cast_ne_zero.mpr (NeZero.ne N))]
+  _ = Φ ↑(j.val + N * m) / (↑(j.val + N * m)) ^ s := by
+    simp only [Nat.cast_add, Nat.cast_mul, natCast_zmod_val, natCast_self, zero_mul, add_zero]
   _ = LSeries.term (Φ ·) s (j.val + N * m) := by
-    simp [LSeries.term_of_ne_zero' (ne_zero_of_one_lt_re hs)]
+    rw [LSeries.term_of_ne_zero' (ne_zero_of_one_lt_re hs)]
 
 lemma differentiableAt_LFunction (Φ : ZMod N → ℂ) (s : ℂ) (hs : s ≠ 1 ∨ ∑ j, Φ j = 0) :
     DifferentiableAt ℂ (LFunction Φ) s := by
@@ -297,13 +301,15 @@ lemma completedLFunction_def_even (hΦ : Φ.Even) (s : ℂ) :
     completedLFunction Φ s = N ^ (-s) * ∑ j, Φ j * completedHurwitzZetaEven (toAddCircle j) s := by
   suffices ∑ j, Φ j * completedHurwitzZetaOdd (toAddCircle j) s = 0 by
     rw [completedLFunction, this, mul_zero, add_zero]
-  exact (hΦ.mul_odd fun j ↦ by simp).sum_eq_zero
+  refine (hΦ.mul_odd fun j ↦ ?_).sum_eq_zero
+  rw [map_neg, completedHurwitzZetaOdd_neg]
 
 lemma completedLFunction_def_odd (hΦ : Φ.Odd) (s : ℂ) :
     completedLFunction Φ s = N ^ (-s) * ∑ j, Φ j * completedHurwitzZetaOdd (toAddCircle j) s := by
   suffices ∑ j, Φ j * completedHurwitzZetaEven (toAddCircle j) s = 0 by
     rw [completedLFunction, this, mul_zero, zero_add]
-  exact (hΦ.mul_even fun j ↦ by simp).sum_eq_zero
+  refine (hΦ.mul_even fun j ↦ ?_).sum_eq_zero
+  rw [map_neg, completedHurwitzZetaEven_neg]
 
 /--
 The completed L-function of a function `ZMod 1 → ℂ` is a scalar multiple of the completed Riemann
@@ -351,11 +357,11 @@ lemma differentiableAt_completedLFunction (Φ : ZMod N → ℂ) (s : ℂ) (hs₀
   · -- term with `1 / s`
     refine .mul (by fun_prop) (hs₀.elim ?_ ?_)
     · exact fun h ↦ (differentiableAt_const _).div differentiableAt_id h
-    · simp +contextual [funext zero_div]
+    · exact fun h ↦ by simp only [h, funext zero_div, differentiableAt_const]
   · -- term with `1 / (1 - s)`
     refine .mul (by fun_prop) (hs₁.elim ?_ ?_)
     · exact fun h ↦ .div (by fun_prop) (by fun_prop) (by grind)
-    · simp +contextual
+    · exact fun h ↦ by simp only [h, zero_div, differentiableAt_const]
 
 /--
 Special case of `differentiableAt_completedLFunction` asserting differentiability everywhere
