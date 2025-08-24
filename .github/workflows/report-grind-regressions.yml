@@ -69,9 +69,9 @@ jobs:
         echo "buildlog<<${delimiter}" >> "$GITHUB_OUTPUT"
         # Pipe to tee so we see the build results both on Zulip and in the log.
         # For Zulip:
-        # * drop the "✔ [n/k] Built Mathlib.Foo.Bar" lines.
+        # * drop the noisy "✔ [n/k] Built Mathlib.Foo.Bar" and "trace: .> LEAN_PATH" lines.
         # * cut off after 9000 characters (so we have 1000 characters to add some info before and after).
-        lake build | tee >(grep -v '^✔' | head --bytes=9000 >> "$GITHUB_OUTPUT")
+        lake build | tee >(grep -v '^✔' | grep -v '^trace: ' | head --bytes=9000 >> "$GITHUB_OUTPUT")
         echo "..." >> "$GITHUB_OUTPUT" # This also ensures the output ends with a newline.
         echo "${delimiter}" >> "$GITHUB_OUTPUT"
 
