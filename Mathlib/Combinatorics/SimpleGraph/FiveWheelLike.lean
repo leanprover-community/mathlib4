@@ -343,7 +343,7 @@ lemma exists_isFiveWheelLike_succ_of_not_adj_le_two (hW : ∀ ⦃y⦄, y ∈ s �
 If `G` is a `Kᵣ₊₂`-free graph with `n` vertices containing a `Wᵣ,ₖ` but no `Wᵣ,ₖ₊₁`
 then `G.minDegree ≤ (2 * r + k) * n / (2 * r + k + 3)`
 -/
-lemma minDegree_le_of_cliqueFree_FiveWheelLikeFree_succ [Fintype α]
+lemma minDegree_le_of_cliqueFree_fiveWheelLikeFree_succ [Fintype α]
     (hm : G.FiveWheelLikeFree r (k + 1)) : G.minDegree ≤ (2 * r + k) * ‖α‖ / (2 * r + k + 3) := by
   let X : Finset α := {x | ∀ ⦃y⦄, y ∈ s ∩ t → G.Adj x y}
   let W := {v} ∪ ({w₁} ∪ ({w₂} ∪ (s ∪ t)))
