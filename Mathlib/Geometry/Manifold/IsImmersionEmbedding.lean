@@ -421,10 +421,10 @@ lemma exists_nbhd_restr_isEmbedding (h : IsImmersionAt F I I' n f x) :
   use h.domChart.source -- does this do the trick?
   refine ⟨h.domChart.open_source, h.domChart.open_source.mem_nhds h.mem_domChart_source, ?_⟩
 
-  have : Topology.IsEmbedding (h.equiv ∘ fun x ↦ (x, 0)) :=
+  have hj : Topology.IsEmbedding (h.equiv ∘ fun x ↦ (x, 0)) :=
     h.equiv.toHomeomorph.isEmbedding.comp (isEmbedding_prodMkLeft 0)
   letI rhs := (h.codChart.extend I').symm ∘ (h.equiv ∘ fun x ↦ (x, 0)) ∘ (h.domChart.extend I)
-  have : EqOn f rhs h.domChart.source := by -- extract as helper lemma!
+  have : EqOn f rhs h.domChart.source := by -- TODO: extract as helper lemma!
     simp only [rhs]
     have : EqOn f (((h.codChart.extend I').symm ∘
         ((h.codChart.extend I') ∘ f ∘ (h.domChart.extend I).symm) ∘ (h.domChart.extend I)))
@@ -451,24 +451,29 @@ lemma exists_nbhd_restr_isEmbedding (h : IsImmersionAt F I I' n f x) :
     simpa using this hx
   have hrhs : Topology.IsEmbedding (h.domChart.source.restrict rhs) := by
     set s := h.domChart.source
-    --set s' := sorry
-    have : s.restrict rhs = (s.restrict ((h.codChart.extend I').symm)) ∘ (h.equiv ∘ fun x ↦ (x, 0)) ∘ (s'.restrict (h.domChart.extend I)) := sorry
-    sorry
+    /- write s.restrict rhs as the composition of
+    - some restriction of h.codChart.extend I').symm --- which is an embedding because restricted appropriately
+    - (h.equiv ∘ fun x ↦ (x, 0)) (which is an embedding, see above)
+    - h.domChart.extend I restricted appropriately (to s'), similarly
+    then use IsEmbedding.comp
+    -/
+    let A : _ → M' := (h.codChart.extend I').target.restrict ((h.codChart.extend I').symm)
+    have hA : Topology.IsEmbedding A := by
+      sorry -- should be a lemma
+    let C : s → E := s.restrict (h.domChart.extend I)
+    have hC : Topology.IsEmbedding C := by
+      sorry -- should be a lemma... refine (Topology.isEmbedding_iff C).mpr ?_
+    let as : s → E' := (h.equiv ∘ fun x ↦ (x, (0 : F))) ∘ C
+    -- try co-restricting this one instead
+    let bs : s → ↑(h.codChart.extend I').target := Set.codRestrict as (h.codChart.extend I').target sorry
+    have : s.restrict rhs = A ∘ bs := by
+      sorry
+    rw [this]
+    refine hA.comp  ?_
+    unfold bs as
+    exact (hj.comp hC).codRestrict (h.codChart.extend I').target sorry -- copy-paste same sorry
   rw [this]
   exact hrhs
-
-#exit
-
--- TODO: are the manifold hypotheses necessary now? think!
-/-- A point-wise version of `Topology.IsInducing.nhds_eq_comap` -/
-lemma nhds_eq_comap {f : M → N} (hf : IsImmersionAt F I J n f x) :
-    𝓝 x = Filter.comap f (𝓝 (f x)) := by
-  apply le_antisymm
-  · exact Filter.map_le_iff_le_comap.mp hf.continuousAt
-  · rw [le_nhds_iff]
-    intro s hxs hs
-    rw [Filter.mem_comap]
-    sorry
 
 end IsImmersionAt
 
@@ -478,7 +483,15 @@ variable {x : M}
 lemma continuousAt_iff_comp_isImmersionAt [IsManifold J n N] [IsManifold J' n N']
     {f : M → N} {φ : N → N'} (h : IsImmersionAt F J J' n φ (f x)) :
     ContinuousAt f x ↔ ContinuousAt (φ ∘ f) x := by
-  simp_rw [ContinuousAt, h.nhds_eq_comap, Filter.tendsto_comap_iff, comp_apply]
+  choose t ht hxt htφ using h.exists_nbhd_restr_isEmbedding
+  refine ⟨fun hf ↦ h.continuousAt.comp hf, fun h ↦ ?_⟩
+  -- should be easy now; the following does not typecheck, but is the idea
+  -- have h' := ContinuousAt ((t.restrict φ) ∘ f) x := sorry -- "should be easy"
+  sorry
+  -- lemma: if φ is locally an embedding, the same result holds (prove something),
+  -- then apply to immersions at x
+
+-- TODO: add same lemma for immersions and continuity
 
 lemma aux {f : M → N} {φ : N → N'} [IsManifold I n M] [IsManifold J' n N']
     (h : IsImmersionAt F J J' n φ (f x)) (h' : ContMDiffAt I J' n (φ ∘ f) x)
@@ -549,7 +562,6 @@ lemma ContMDiffAt.iff_comp_isImmersionAt
   refine ⟨hf₁.continuousWithinAt, ?_⟩
   exact aux h h' ht hxt
 
-#exit
   /- old code, probably obsolete
   rw [contMDiffAt_iff_of_mem_maximalAtlas (IsManifold.chart_mem_maximalAtlas x)
     h.domChart_mem_maximalAtlas (mem_chart_source H x) h.mem_domChart_source]
