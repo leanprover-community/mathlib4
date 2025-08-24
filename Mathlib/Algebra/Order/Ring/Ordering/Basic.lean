@@ -61,7 +61,7 @@ variable {R : Type*} [CommRing R] {P : Subsemiring R}
   {le : Subsemiring.sumSq R ≤ P} {minus : -1 ∉ P}
 
 variable (P le minus) in
-/- Construct a preordering from a subsemiring. -/
+/-- Construct a preordering from a subsemiring. -/
 def mkOfSubsemiring : RingPreordering R where toSubsemiring := P
 
 @[simp]
@@ -75,7 +75,7 @@ section mk'
 
 variable {R : Type*} [CommRing R] {P : Set R} {add} {mul} {sq} {minus}
 
-/- Construct a preordering from a minimal set of axioms. -/
+/-- Construct a preordering from a minimal set of axioms. -/
 def mk' {R : Type*} [CommRing R] (P : Set R)
     (add   : ∀ {x y : R}, x ∈ P → y ∈ P → x + y ∈ P)
     (mul   : ∀ {x y : R}, x ∈ P → y ∈ P → x * y ∈ P)
@@ -114,8 +114,8 @@ theorem support_ne_top [P.HasIdealSupport] : P.support ≠ ⊤ := by
   apply_fun Submodule.toAddSubgroup
   simpa using supportAddSubgroup_ne_top P
 
-/- Constructor for IsOrdering that doesn't require `ne_top'`. -/
-def IsOrdering.mk' [HasMemOrNegMem P]
+/-- Constructor for IsOrdering that doesn't require `ne_top'`. -/
+theorem IsOrdering.mk' [HasMemOrNegMem P]
     (h : ∀ {x y}, x * y ∈ P.support → x ∈ P.support ∨ y ∈ P.support) : P.IsOrdering where
   ne_top' := support_ne_top P
   mem_or_mem' := h
