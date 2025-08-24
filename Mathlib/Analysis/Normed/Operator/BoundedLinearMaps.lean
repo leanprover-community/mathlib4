@@ -126,7 +126,7 @@ theorem smul (c : 𝕜) (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap �
       _ = ‖c‖ * M * ‖x‖ := (mul_assoc _ _ _).symm
 
 theorem neg (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap 𝕜 fun e => -f e := by
-  rw [show (fun e => -f e) = fun e => (-1 : 𝕜) • f e by funext; simp]
+  rw [show (fun e => -f e) = fun e => (-1 : 𝕜) • f e by simp]
   exact smul (-1) hf
 
 theorem add (hf : IsBoundedLinearMap 𝕜 f) (hg : IsBoundedLinearMap 𝕜 g) :

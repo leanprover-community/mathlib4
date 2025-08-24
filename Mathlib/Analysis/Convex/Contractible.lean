@@ -30,10 +30,8 @@ protected theorem StarConvex.contractibleSpace (h : StarConvex ℝ x s) (hne : s
             ((continuous_const.sub continuous_subtype_val.fst').smul
               continuous_subtype_val.snd')).subtype_mk
         _
-  · ext1
-    simp
-  · ext1
-    simp
+  · simp
+  · simp
 
 /-- A non-empty convex set is a contractible space. -/
 protected theorem Convex.contractibleSpace (hs : Convex ℝ s) (hne : s.Nonempty) :
