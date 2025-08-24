@@ -3,7 +3,6 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.RingTheory.HahnSeries.Finsupp
 import Mathlib.RingTheory.HahnSeries.HEval
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.PowerSeries.Binomial
@@ -146,10 +145,10 @@ theorem binomialPow_one {g g' : Γ} (h : g < g') :
     single_mul_single, one_mul, single_neg, Nat.cast_one, one_smul, add_sub_cancel,
     sub_eq_add_neg]
 
-theorem finsupp_binomialPow_one {g g' : Γ} (h : g < g') :
-    ofFinsupp (Finsupp.single g 1 - Finsupp.single g' 1) =
+theorem ofAddMonoidAlgebra_single_sub_single {g g' : Γ} (h : g < g') :
+    ofAddMonoidAlgebra (Finsupp.single g 1 - Finsupp.single g' 1) =
       binomialPow A g g' (Nat.cast (R := R) 1) := by
-  rw [binomialPow_one A h]
+  rw [binomialPow_one A h, map_sub]
   simp
 
 theorem binomialPow_nat {g g' : Γ} (h : g < g') (n : ℕ) :

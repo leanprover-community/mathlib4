@@ -3,8 +3,7 @@ Copyright (c) 2025 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Data.Finsupp.Defs
+import Mathlib.Algebra.MonoidAlgebra.Defs
 import Mathlib.Data.Set.SMulAntidiagonal
 
 /-!
@@ -64,6 +63,34 @@ theorem antidiagonal_of_addGroup [AddGroup G] [AddAction G P] [Zero R] [AddCommM
     gh ∈ vaddAntidiagonal f x p ↔ (f gh.1) ≠ 0 ∧ (x gh.2) ≠ 0 ∧ gh.2 = -gh.1 +ᵥ p := by
   rw [mem_vaddAntidiagonal_iff]
   exact and_congr_right' <| and_congr_right' <| vadd_eq_iff_eq_neg_vadd gh.1
+
+/-- A convolution-type scalar multiplication of the monoid algebra on the function space. -/
+scoped instance [AddCancelMonoid G] [Semiring R] :
+    SMul (AddMonoidAlgebra R G) (G → R) := Finsupp.instSMulForallOfIsLeftCancelVAddOfSMulWithZero
+
+theorem smul_eq_addMonoidAlgebra_mul [Semiring R] [AddCancelMonoid G] (a b : AddMonoidAlgebra R G) :
+    a • ⇑b = (a * b : AddMonoidAlgebra R G) := by
+  ext g
+  classical
+  rw [smul_eq, AddMonoidAlgebra.mul_apply, sum]
+  simp_rw [sum]
+  rw [Finset.sum_sigma', Finset.sum_of_injOn]
+  · exact fun (x, y) ↦ ⟨x, y⟩
+  · simp
+  · intro gh h
+    rw [mem_coe, mem_vaddAntidiagonal_iff] at h
+    have : b gh.2 ≠ 0 := h.2.1
+    simp [h.1, this]
+  · intro gh _ h
+    simp only [Set.mem_image, mem_coe, Prod.exists, not_exists, not_and] at h
+    contrapose! h
+    use gh.fst, gh.snd
+    rw [mem_vaddAntidiagonal_iff]
+    simp only [ne_eq, ite_eq_right_iff, Classical.not_imp] at h
+    exact ⟨⟨(by simp [left_ne_zero_of_mul h.2]), right_ne_zero_of_mul h.2, h.1⟩, rfl⟩
+  · intro _ h
+    rw [mem_vaddAntidiagonal_iff, vadd_eq_add] at h
+    simp [h.2.2]
 
 theorem smul_apply_addAction [AddGroup G] [AddAction G P] [Zero R] [AddCommMonoid V]
     [SMulWithZero R V] (f : G →₀ R) (x : P → V) (p : P) :

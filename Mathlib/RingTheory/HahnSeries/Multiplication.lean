@@ -9,6 +9,7 @@ import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Finset.MulAntidiagonal
 import Mathlib.Data.Finset.SMulAntidiagonal
+import Mathlib.Data.Finsupp.PointwiseSMul
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.HahnSeries.Addition
 import Mathlib.RingTheory.Nilpotent.Defs
@@ -288,6 +289,21 @@ theorem coeff_smul_left [SMulWithZero R V] {x : HahnSeries Γ R}
   rw [hb.2 ⟨hb.1.2.1, hb.1.2.2⟩, zero_smul]
 
 @[deprecated (since := "2025-01-31")] alias smul_coeff_left := coeff_smul_left
+
+open Finsupp in
+theorem ofFinsupp_smul_coeff [SMulWithZero R V] (f : Γ →₀ R) (x : HahnModule Γ' R V) :
+    ((of R).symm ((HahnSeries.ofFinsupp f) • x)).coeff = f • ((of R).symm x).coeff := by
+  ext g
+  rw [coeff_smul,  Finsupp.smul_eq, HahnSeries.coeff_ofFinsupp]
+  refine (Finset.sum_of_injOn (M := V) id (Set.injOn_id _) ?_ ?_ ?_).symm
+  · intro gh h
+    simpa [mem_coe, mem_vaddAntidiagonal_iff] using h
+  · intro gh h hn
+    simp only [mem_vaddAntidiagonal] at h
+    simp only [id_eq, Set.image_id', mem_coe, mem_vaddAntidiagonal_iff, h.2.2, and_true] at hn
+    aesop
+  · intro gh h
+    simp
 
 end HahnSMul
 
@@ -1403,7 +1419,7 @@ instance [Nontrivial Γ] [Nontrivial R] : Nontrivial (Subalgebra R (HahnSeries �
 
 /-- An algebra homomorphism from `AddMonoidAlgebra` -/
 @[simps]
-def ofAddMonoidAlgebra [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] :
+def ofAddMonoidAlgebra {Γ} [PartialOrder Γ] [AddCancelCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] :
     AddMonoidAlgebra R Γ →ₐ[R] HahnSeries Γ R where
   toFun := ofFinsupp
   map_one' := by
@@ -1413,29 +1429,10 @@ def ofAddMonoidAlgebra [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] :
     · simpa [h] using Finsupp.single_eq_of_ne fun a ↦ h a.symm
   map_mul' x y := by
       ext g
-      rw [coeff_mul, AddMonoidAlgebra.mul_def]
-      simp only [Finsupp.sum, coeff_ofFinsupp]
-      rw [sum_sigma', sum_apply']
-      refine (Finset.sum_of_injOn (fun i ↦ ⟨i.1, i.2⟩)
-        (fun _ _ _ _ _ ↦ Prod.ext_iff.mpr (by simp_all)) ?_ ?_ ?_).symm
-      · intro i hi
-        simp only [coe_sigma, Set.mem_sigma_iff, mem_coe, Finsupp.mem_support_iff]
-        simp only [mem_coe, mem_addAntidiagonal, mem_support, coeff_ofFinsupp] at hi
-        exact ⟨hi.1, hi.2.1⟩
-      · intro i hi hin
-        rw [Finsupp.single_apply_eq_zero]
-        intro hg
-        simp only [Set.mem_image, mem_coe, mem_addAntidiagonal, mem_support, coeff_ofFinsupp, ne_eq,
-          Prod.exists, not_exists, not_and, and_imp] at hin
-        have := hin i.1 i.2
-        simp only [Sigma.eta, not_true_eq_false, imp_false] at this
-        simp only [mem_sigma, Finsupp.mem_support_iff, ne_eq] at hi
-        exact (this hi.1 hi.2 hg.symm).elim
-      · intro i hi
-        rw [← AddMonoidAlgebra.single_mul_single, AddMonoidAlgebra.mul_def]
-        simp only [mul_zero, Finsupp.single_zero, Finsupp.sum_single_index, zero_mul]
-        rw [mem_addAntidiagonal] at hi
-        rw [hi.2.2, Finsupp.single_eq_same]
+      rw [← of_symm_smul_of_eq_mul,
+        HahnModule.ofFinsupp_smul_coeff x (HahnModule.of R (ofFinsupp y)),
+        Equiv.symm_apply_apply, coeff_ofFinsupp, coeff_ofFinsupp,
+        Finsupp.smul_eq_addMonoidAlgebra_mul]
   map_zero' := rfl
   map_add' x y := by simp [← ofFinsuppLinearMap_apply R (x + y), LinearMap.map_add]
   commutes' r := by

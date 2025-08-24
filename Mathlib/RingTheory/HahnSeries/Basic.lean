@@ -5,7 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.Notation.Support
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-import Mathlib.Data.Finsupp.Defs
+import Mathlib.Data.Finsupp.Single
 import Mathlib.Order.WellFoundedSet
 
 /-!
@@ -471,7 +471,14 @@ def ofFinsupp : ZeroHom (Γ →₀ R) (HahnSeries Γ R) where
   map_zero' := by simp
 
 @[simp]
-theorem coeff_ofFinsupp (f : Γ →₀ R) (a : Γ) : (ofFinsupp f).coeff a = f a := rfl
+theorem coeff_ofFinsupp (f : Γ →₀ R) : (ofFinsupp f).coeff = f := rfl
+
+@[simp]
+theorem ofFinsupp_single (g : Γ) (r : R) : ofFinsupp (Finsupp.single g r) = single g r := by
+  ext g'
+  by_cases h : g = g'
+  · simp [h]
+  · simp [Finsupp.single_eq_of_ne h, coeff_single_of_ne fun a ↦ h a.symm]
 
 end Finsupp
 
