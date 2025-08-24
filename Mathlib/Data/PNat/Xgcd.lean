@@ -399,7 +399,7 @@ theorem gcd_props :
         b = b' * d ∧
           z * a' = succPNat (x * b') ∧
             w * b' = succPNat (y * a') ∧ (z * a : ℕ) = x * b + d ∧ (w * b : ℕ) = y * a + d := by
-  intros d w x y z a' b'
+  intro d w x y z a' b'
   let u := XgcdType.start a b
   let ur := u.reduce
   have _ : d = ur.a := rfl

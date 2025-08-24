@@ -68,9 +68,6 @@ protected theorem _root_.Topology.IsInducing.noetherianSpace [NoetherianSpace α
     (hi : IsInducing i) : NoetherianSpace β :=
   (noetherianSpace_iff_opens _).2 fun _ => hi.isCompact_iff.2 (NoetherianSpace.isCompact _)
 
-@[deprecated (since := "2024-10-28")]
-alias _root_.Inducing.noetherianSpace := IsInducing.noetherianSpace
-
 @[stacks 0052 "(1)"]
 instance NoetherianSpace.set [NoetherianSpace α] (s : Set α) : NoetherianSpace s :=
   IsInducing.subtypeVal.noetherianSpace
@@ -117,7 +114,7 @@ theorem noetherianSpace_iff_of_homeomorph (f : α ≃ₜ β) : NoetherianSpace �
 theorem NoetherianSpace.range [NoetherianSpace α] (f : α → β) (hf : Continuous f) :
     NoetherianSpace (Set.range f) :=
   noetherianSpace_of_surjective (Set.rangeFactorization f) (hf.subtype_mk _)
-    Set.surjective_onto_range
+    Set.rangeFactorization_surjective
 
 theorem noetherianSpace_set_iff (s : Set α) :
     NoetherianSpace s ↔ ∀ t, t ⊆ s → IsCompact t := by

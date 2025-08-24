@@ -44,11 +44,9 @@ theorem norm_coe_mul (x : ℝ) (t : ℝ) :
   obtain rfl | ht := eq_or_ne t 0
   · simp
   simp only [norm_eq_infDist, ← Real.norm_eq_abs, ← infDist_smul₀ ht, smul_zero]
-  congr with m
-  simp only [zmultiples, eq_iff_sub_mem, zsmul_eq_mul, mem_mk, mem_setOf_eq,
-    mem_smul_set_iff_inv_smul_mem₀ ht, smul_eq_mul]
-  simp_rw [mul_left_comm, ← smul_eq_mul, Set.range_smul, mem_smul_set_iff_inv_smul_mem₀ ht]
-  simp [mul_sub, ht, -mem_range]
+  congr 1 with m
+  simp_rw [zmultiples, eq_iff_sub_mem, zsmul_eq_mul, mul_left_comm, ← smul_eq_mul, Set.range_smul]
+  simp [mem_smul_set_iff_inv_smul_mem₀ ht, mul_sub, ht]
 
 theorem norm_neg_period (x : ℝ) : ‖(x : AddCircle (-p))‖ = ‖(x : AddCircle p)‖ := by
   suffices ‖(↑(-1 * x) : AddCircle (-1 * p))‖ = ‖(x : AddCircle p)‖ by
@@ -71,7 +69,7 @@ theorem norm_eq {x : ℝ} : ‖(x : AddCircle p)‖ = |x - round (p⁻¹ * x) * 
     rw [abs_inv, eq_inv_mul_iff_mul_eq₀ ((not_congr abs_eq_zero).mpr hp)] at hx
     rw [← hx, inv_mul_cancel₀ hp, this, ← abs_mul, mul_sub, mul_inv_cancel_left₀ hp, mul_comm p]
   clear! x p
-  intros x
+  intro x
   simp only [le_antisymm_iff, le_norm_iff, Real.norm_eq_abs]
   refine ⟨le_of_forall_le fun r hr ↦ ?_, ?_⟩
   · rw [abs_sub_round_eq_min, le_inf_iff]

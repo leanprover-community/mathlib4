@@ -83,12 +83,10 @@ theorem restrict_mono {_m0 : MeasurableSpace α} ⦃s s' : Set α⦄ (hs : s ⊆
     (hμν : μ ≤ ν) : μ.restrict s ≤ ν.restrict s' :=
   restrict_mono' (ae_of_all _ hs) hμν
 
-@[gcongr]
 theorem restrict_mono_measure {_ : MeasurableSpace α} {μ ν : Measure α} (h : μ ≤ ν) (s : Set α) :
     μ.restrict s ≤ ν.restrict s :=
   restrict_mono subset_rfl h
 
-@[gcongr]
 theorem restrict_mono_set {_ : MeasurableSpace α} (μ : Measure α) {s t : Set α} (h : s ⊆ t) :
     μ.restrict s ≤ μ.restrict t :=
   restrict_mono h le_rfl
@@ -814,8 +812,7 @@ theorem Subtype.volume_def : (volume : Measure u) = volume.comap Subtype.val :=
 
 theorem Subtype.volume_univ (hu : NullMeasurableSet u) : volume (univ : Set u) = volume u := by
   rw [Subtype.volume_def, comap_apply₀ _ _ _ _ MeasurableSet.univ.nullMeasurableSet]
-  · congr
-    simp only [image_univ, Subtype.range_coe_subtype, setOf_mem_eq]
+  · simp only [image_univ, Subtype.range_coe_subtype, setOf_mem_eq]
   · exact Subtype.coe_injective
   · exact fun t => MeasurableSet.nullMeasurableSet_subtype_coe hu
 

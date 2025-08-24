@@ -52,7 +52,7 @@ This relation is user-visible, so we compact it by removing each `b_j` where a `
 hence `a_i = b_j`. We need to take care when there are `p_i` and `p_j` with `p_i = p_j = b_k`.
 -/
 partial def compactRelation :
-  List Expr → List (Expr × Expr) → List (Option Expr) × List (Expr × Expr) × (Expr → Expr)
+    List Expr → List (Expr × Expr) → List (Option Expr) × List (Expr × Expr) × (Expr → Expr)
 | [],    as_ps => ([], as_ps, id)
 | b::bs, as_ps =>
   match as_ps.span (fun ⟨_, p⟩ ↦ p != b) with
