@@ -85,7 +85,7 @@ def IsReversible (κ : Kernel α α) (π : Measure α) : Prop :=
     ∫⁻ x in A, κ x B ∂π = ∫⁻ x in B, κ x A ∂π
 
 /-- A reversible Markov kernel leaves the measure `π` invariant. -/
-theorem Invariant.of_IsReversible
+theorem IsReversible.invariant
     {κ : Kernel α α} [IsMarkovKernel κ] {π : Measure α}
     (h_rev : IsReversible κ π) : Invariant κ π := by
   ext s hs
