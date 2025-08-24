@@ -316,9 +316,10 @@ theorem lift_unique {r : Setoid α} {f : α → β} (H : r ≤ ker f) (g : Quoti
   ext ⟨x⟩
   rw [← Quotient.mk, Quotient.lift_mk f H, Hg, Function.comp_apply, Quotient.mk''_eq_mk]
 
+/-- Given a function f, lift it to the quotient by its kernel. -/
 abbrev ker_lift (f : α → β) : Quotient (ker f) → β := Quotient.lift f fun _ _ => id
 
-theorem ker_lift_mk (f : α → β) (x : α) : ker_lift f (Quotient.mk _ x) = f x := rfl
+theorem ker_lift_mk (f : α → β) (x : α) : ker_lift f ⟦x⟧ = f x := rfl
 
 theorem ker_lift_out_eq (f : α → β) (q : Quotient (ker f)) : ker_lift f q = f q.out := by
   nth_rw 1 [← q.out_eq]
@@ -340,9 +341,12 @@ theorem ker_eq_lift_of_injective {r : Setoid α} (f : α → β) (H : r ≤ ker 
 
 variable (r : Setoid α) (f : α → β)
 
+/-- The image of f lifted to the quotient by its kernel is equal to the image of f itself. -/
 theorem ker_lift_range_eq_range : Set.range (ker_lift f) = Set.range f :=
   @Set.range_quotient_lift _ _ _ (ker f) fun _ _ => id
 
+/-- The quotient of α by the kernel of a function f
+bijects with the image of f lifted to the quotient. -/
 noncomputable def quotientKerEquivRangeLift : Quotient (ker f) ≃ Set.range (ker_lift f) :=
   Equiv.ofInjective _ (ker_lift_injective _)
 
