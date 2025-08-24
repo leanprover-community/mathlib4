@@ -14,7 +14,7 @@ import Mathlib.Logic.Equiv.Prod
 import Mathlib.Tactic.TermCongr
 
 /-!
-# Monoid, group etc structures on `M × N`
+# Monoid, group etc. structures on `M × N`
 
 In this file we define one-binop (`Monoid`, `Group` etc) structures on `M × N`.
 We also prove trivial `simp` lemmas, and define the following operations on `MonoidHom`s:
@@ -104,7 +104,7 @@ instance [DivisionMonoid G] [DivisionMonoid H] : DivisionMonoid (G × H) :=
 
 @[to_additive SubtractionCommMonoid]
 instance [DivisionCommMonoid G] [DivisionCommMonoid H] : DivisionCommMonoid (G × H) :=
-  { mul_comm := fun ⟨g₁ , h₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mul_comm g₁, mul_comm h₁]; rfl }
+  { mul_comm := fun ⟨g₁, h₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mul_comm g₁, mul_comm h₁]; rfl }
 
 @[to_additive]
 instance instGroup [Group G] [Group H] : Group (G × H) where
