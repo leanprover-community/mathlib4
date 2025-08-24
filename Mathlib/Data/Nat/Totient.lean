@@ -370,3 +370,19 @@ theorem totient_mul_of_prime_of_not_dvd {p n : ℕ} (hp : p.Prime) (h : ¬p ∣ 
   simpa [h] using coprime_or_dvd_of_prime hp n
 
 end Nat
+
+namespace Mathlib.Meta.Positivity
+open Lean Meta Qq
+
+/-- Extension for `Nat.totient`. -/
+@[positivity Nat.totient _]
+def evalNatTotient : PositivityExt where eval {u α} z p e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(Nat.totient $n) =>
+    assumeInstancesCommute
+    match ← core z p n with
+    | .positive pa => return .positive q(Nat.totient_pos.mpr $pa)
+    | _ => failure
+  | _, _, _ => throwError "not Nat.totient"
+
+end Mathlib.Meta.Positivity
