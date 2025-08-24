@@ -59,7 +59,7 @@ variable [Algebra R P] [Algebra P S]
 section ofSection
 
 variable [Algebra R S] [IsScalarTower R P S]
--- Suppose we have a section (as alghom) of `P →ₐ[R] S`.
+-- Suppose we have a section (as an algebra homomorphism) of `P →ₐ[R] S`.
 variable (g : S →ₐ[R] P)
 
 /--

@@ -318,9 +318,9 @@ theorem prod_subset_prod_iff : s ×ˢ t ⊆ s₁ ×ˢ t₁ ↔ s ⊆ s₁ ∧ t 
   · simp [h, prod_eq_empty_iff.1 h]
   have st : s.Nonempty ∧ t.Nonempty := by rwa [prod_nonempty_iff] at h
   refine ⟨fun H => Or.inl ⟨?_, ?_⟩, ?_⟩
-  · have := image_subset (Prod.fst : α × β → α) H
+  · have := image_mono (f := Prod.fst) H
     rwa [fst_image_prod _ st.2, fst_image_prod _ (h.mono H).snd] at this
-  · have := image_subset (Prod.snd : α × β → β) H
+  · have := image_mono (f := Prod.snd) H
     rwa [snd_image_prod st.1, snd_image_prod (h.mono H).fst] at this
   · intro H
     simp only [st.1.ne_empty, st.2.ne_empty, or_false] at H
@@ -600,10 +600,7 @@ theorem offDiag_union (h : Disjoint s t) :
       exact (Set.disjoint_right.mp h h0 h1).elim
 
 theorem offDiag_insert (ha : a ∉ s) : (insert a s).offDiag = s.offDiag ∪ {a} ×ˢ s ∪ s ×ˢ {a} := by
-  rw [insert_eq, union_comm, offDiag_union, offDiag_singleton, union_empty, union_right_comm]
-  rw [disjoint_left]
-  rintro b hb (rfl : b = a)
-  exact ha hb
+  grind
 
 end OffDiag
 
@@ -629,7 +626,11 @@ theorem pi_univ (s : Set ι) : (pi s fun i => (univ : Set (α i))) = univ :=
 theorem pi_univ_ite (s : Set ι) [DecidablePred (· ∈ s)] (t : ∀ i, Set (α i)) :
     (pi univ fun i => if i ∈ s then t i else univ) = s.pi t := by grind
 
-theorem pi_mono (h : ∀ i ∈ s, t₁ i ⊆ t₂ i) : pi s t₁ ⊆ pi s t₂ := fun _ hx i hi => h i hi <| hx i hi
+@[gcongr]
+theorem pi_mono' (h : ∀ i ∈ s₂, t₁ i ⊆ t₂ i) (h' : s₂ ⊆ s₁) : pi s₁ t₁ ⊆ pi s₂ t₂ :=
+  fun _ hx i hi ↦ h i hi (hx i (h' hi))
+
+theorem pi_mono (h : ∀ i ∈ s, t₁ i ⊆ t₂ i) : pi s t₁ ⊆ pi s t₂ := pi_mono' h Subset.rfl
 
 theorem pi_inter_distrib : (s.pi fun i => t i ∩ t₁ i) = s.pi t ∩ s.pi t₁ := by grind
 
@@ -716,8 +717,6 @@ theorem union_pi : (s₁ ∪ s₂).pi t = s₁.pi t ∩ s₂.pi t := by
 theorem union_pi_inter
     (ht₁ : ∀ i ∉ s₁, t₁ i = univ) (ht₂ : ∀ i ∉ s₂, t₂ i = univ) :
     (s₁ ∪ s₂).pi (fun i ↦ t₁ i ∩ t₂ i) = s₁.pi t₁ ∩ s₂.pi t₂ := by
-  ext x
-  simp only [mem_pi, mem_inter_iff]
   grind
 
 @[simp]
@@ -817,7 +816,7 @@ theorem pi_subset_pi_iff : pi s t₁ ⊆ pi s t₂ ↔ (∀ i ∈ s, t₁ i ⊆ 
   rw [← Ne, ← nonempty_iff_ne_empty]
   intro hne i hi
   simpa only [eval_image_pi hi hne, eval_image_pi hi (hne.mono h)] using
-    image_subset (fun f : ∀ i, α i => f i) h
+    image_mono (f := fun f : ∀ i, α i => f i) h
 
 theorem univ_pi_subset_univ_pi_iff :
     pi univ t₁ ⊆ pi univ t₂ ↔ (∀ i, t₁ i ⊆ t₂ i) ∨ ∃ i, t₁ i = ∅ := by simp [pi_subset_pi_iff]

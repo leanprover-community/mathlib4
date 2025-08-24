@@ -371,7 +371,7 @@ def removeArgRule (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     let arg := fData.args[n]
 
     if arg.coe.isSome then
-      -- if have to apply morphisms rules if we deal with morphims
+      -- if have to apply morphisms rules if we deal with morphisms
       return ← applyMorRules funPropDecl e fData funProp
     else
       let .some (f,g) ← fData.peeloffArgDecomposition | return none
