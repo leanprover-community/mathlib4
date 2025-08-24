@@ -45,18 +45,9 @@ lemma mk'_num_den (q : ℚ) : mk' q.num q.den q.den_nz q.reduced = q := rfl
 theorem ofInt_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
   rfl
 
--- TODO: Replace `Rat.ofNat_num`/`Rat.ofNat_den` in Batteries
-@[simp] lemma num_ofNat (n : ℕ) : num ofNat(n) = ofNat(n) := rfl
-@[simp] lemma den_ofNat (n : ℕ) : den ofNat(n) = 1 := rfl
-
 @[simp, norm_cast] lemma num_natCast (n : ℕ) : num n = n := rfl
 
 @[simp, norm_cast] lemma den_natCast (n : ℕ) : den n = 1 := rfl
-
--- TODO: Replace `intCast_num`/`intCast_den` the names in Batteries
-@[simp, norm_cast] lemma num_intCast (n : ℤ) : (n : ℚ).num = n := rfl
-
-@[simp, norm_cast] lemma den_intCast (n : ℤ) : (n : ℚ).den = 1 := rfl
 
 lemma intCast_injective : Injective (Int.cast : ℤ → ℚ) := fun _ _ ↦ congr_arg num
 lemma natCast_injective : Injective (Nat.cast : ℕ → ℚ) :=
@@ -90,49 +81,19 @@ lemma num_ne_zero {q : ℚ} : q.num ≠ 0 ↔ q ≠ 0 := num_eq_zero.not
 
 @[simp]
 theorem divInt_eq_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b = 0 ↔ a = 0 := by
-  rw [← zero_divInt b, divInt_eq_iff b0 b0, Int.zero_mul, Int.mul_eq_zero, or_iff_left b0]
+  rw [← zero_divInt b, divInt_eq_divInt_iff b0 b0, Int.zero_mul, Int.mul_eq_zero, or_iff_left b0]
 
 theorem divInt_ne_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b ≠ 0 ↔ a ≠ 0 :=
   (divInt_eq_zero b0).not
 
--- TODO: this can move to Batteries
-theorem normalize_eq_mk' (n : Int) (d : Nat) (h : d ≠ 0) (c : Nat.gcd (Int.natAbs n) d = 1) :
-    normalize n d h = mk' n d h c := (mk_eq_normalize ..).symm
-
 -- TODO: Rename `mkRat_num_den` in Batteries
 @[simp] alias mkRat_num_den' := mkRat_self
-
--- TODO: Rename `Rat.divInt_self` to `Rat.num_divInt_den` in Batteries
-lemma num_divInt_den (q : ℚ) : q.num /. q.den = q := divInt_self _
-
-lemma mk'_eq_divInt {n d h c} : (⟨n, d, h, c⟩ : ℚ) = n /. d := (num_divInt_den _).symm
 
 theorem intCast_eq_divInt (z : ℤ) : (z : ℚ) = z /. 1 := mk'_eq_divInt
 
 -- TODO: Rename `divInt_self` in Batteries to `num_divInt_den`
 @[simp] lemma divInt_self' {n : ℤ} (hn : n ≠ 0) : n /. n = 1 := by
   simpa using divInt_mul_right (n := 1) (d := 1) hn
-
-/-- Define a (dependent) function or prove `∀ r : ℚ, p r` by dealing with rational
-numbers of the form `n /. d` with `0 < d` and coprime `n`, `d`. -/
-@[elab_as_elim]
-def numDenCasesOn.{u} {C : ℚ → Sort u} :
-    ∀ (a : ℚ) (_ : ∀ n d, 0 < d → (Int.natAbs n).Coprime d → C (n /. d)), C a
-  | ⟨n, d, h, c⟩, H => by rw [mk'_eq_divInt]; exact H n d (Nat.pos_of_ne_zero h) c
-
-/-- Define a (dependent) function or prove `∀ r : ℚ, p r` by dealing with rational
-numbers of the form `n /. d` with `d ≠ 0`. -/
-@[elab_as_elim]
-def numDenCasesOn'.{u} {C : ℚ → Sort u} (a : ℚ) (H : ∀ (n : ℤ) (d : ℕ), d ≠ 0 → C (n /. d)) :
-    C a :=
-  numDenCasesOn a fun n d h _ => H n d h.ne'
-
-/-- Define a (dependent) function or prove `∀ r : ℚ, p r` by dealing with rational
-numbers of the form `mk' n d` with `d ≠ 0`. -/
-@[elab_as_elim]
-def numDenCasesOn''.{u} {C : ℚ → Sort u} (a : ℚ)
-    (H : ∀ (n : ℤ) (d : ℕ) (nz red), C (mk' n d nz red)) : C a :=
-  numDenCasesOn a fun n d h h' ↦ by rw [← mk_eq_divInt _ _ h.ne' h']; exact H n d h.ne' _
 
 theorem lift_binop_eq (f : ℚ → ℚ → ℚ) (f₁ : ℤ → ℤ → ℤ → ℤ → ℤ) (f₂ : ℤ → ℤ → ℤ → ℤ → ℤ)
     (fv :
@@ -149,8 +110,8 @@ theorem lift_binop_eq (f : ℚ → ℚ → ℚ) (f₁ : ℤ → ℤ → ℤ → 
   rw [fv]
   have d₁0 := Int.ofNat_ne_zero.2 h₁
   have d₂0 := Int.ofNat_ne_zero.2 h₂
-  exact (divInt_eq_iff (f0 d₁0 d₂0) (f0 b0 d0)).2
-    (H ((divInt_eq_iff b0 d₁0).1 ha) ((divInt_eq_iff d0 d₂0).1 hc))
+  exact (divInt_eq_divInt_iff (f0 d₁0 d₂0) (f0 b0 d0)).2
+    (H ((divInt_eq_divInt_iff b0 d₁0).1 ha) ((divInt_eq_divInt_iff d0 d₂0).1 hc))
 
 attribute [simp] divInt_add_divInt
 
@@ -224,10 +185,6 @@ lemma div_def' (q r : ℚ) : q / r = (q.num * r.den) /. (q.den * r.num) := by
   rw [← divInt_div_divInt, num_divInt_den, num_divInt_den]
 
 variable (a b c : ℚ)
-
-protected lemma add_zero : a + 0 = a := by simp [add_def, normalize_eq_mkRat]
-
-protected lemma zero_add : 0 + a = a := by simp [add_def, normalize_eq_mkRat]
 
 protected lemma add_comm : a + b = b + a := by
   simp [add_def, Int.add_comm, Nat.mul_comm]
@@ -337,7 +294,7 @@ theorem eq_iff_mul_eq_mul {p q : ℚ} : p = q ↔ p.num * q.den = q.num * p.den 
   conv =>
     lhs
     rw [← num_divInt_den p, ← num_divInt_den q]
-  apply Rat.divInt_eq_iff <;>
+  apply Rat.divInt_eq_divInt_iff <;>
     · rw [← Int.natCast_zero, Ne, Int.ofNat_inj]
       apply den_nz
 
@@ -391,7 +348,7 @@ section Casts
 protected theorem add_divInt (a b c : ℤ) : (a + b) /. c = a /. c + b /. c :=
   if h : c = 0 then by simp [h]
   else by
-    rw [divInt_add_divInt _ _ h h, divInt_eq_iff h (Int.mul_ne_zero h h)]
+    rw [divInt_add_divInt _ _ h h, divInt_eq_divInt_iff h (Int.mul_ne_zero h h)]
     simp [Int.add_mul, Int.mul_assoc]
 
 theorem divInt_eq_div (n d : ℤ) : n /. d = (n : ℚ) / d := by simp [div_def']
