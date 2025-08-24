@@ -269,6 +269,14 @@ theorem mk_mul_mk (x y : M) (hx : x ∈ S') (hy : y ∈ S') :
 theorem mul_def (x y : S') : x * y = ⟨x * y, mul_mem x.2 y.2⟩ :=
   rfl
 
+@[to_additive] instance [IsLeftCancelMul M] : IsLeftCancelMul S' where
+  mul_left_cancel _ _ _ eq := Subtype.val_injective <| mul_left_cancel (congr_arg (·.1) eq)
+
+@[to_additive] instance [IsRightCancelMul M] : IsRightCancelMul S' where
+  mul_right_cancel _ _ _ eq := Subtype.val_injective <| mul_right_cancel (congr_arg (·.1) eq)
+
+@[to_additive] instance [IsCancelMul M] : IsCancelMul S' where
+
 /-- A subsemigroup of a semigroup inherits a semigroup structure. -/
 @[to_additive
 /-- An `AddSubsemigroup` of an `AddSemigroup` inherits an `AddSemigroup` structure. -/]

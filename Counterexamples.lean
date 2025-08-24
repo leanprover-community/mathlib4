@@ -7,6 +7,7 @@ import Counterexamples.DirectSumIsInternal
 import Counterexamples.DiscreteTopologyNonDiscreteUniformity
 import Counterexamples.GameMultiplication
 import Counterexamples.Girard
+import Counterexamples.GrothendieckAddGroupIsDomain
 import Counterexamples.HomogeneousPrimeNotPrime
 import Counterexamples.IrrationalPowerOfIrrational
 import Counterexamples.LinearOrderWithPosMulPosEqZero

@@ -3909,12 +3909,14 @@ import Mathlib.GroupTheory.GroupExtension.Defs
 import Mathlib.GroupTheory.HNNExtension
 import Mathlib.GroupTheory.Index
 import Mathlib.GroupTheory.IndexNormal
+import Mathlib.GroupTheory.MonoidLocalization.Archimedean
 import Mathlib.GroupTheory.MonoidLocalization.Away
 import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.GroupTheory.MonoidLocalization.Cardinality
 import Mathlib.GroupTheory.MonoidLocalization.DivPairs
 import Mathlib.GroupTheory.MonoidLocalization.Finite
 import Mathlib.GroupTheory.MonoidLocalization.GrothendieckGroup
+import Mathlib.GroupTheory.MonoidLocalization.Lemmas
 import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 import Mathlib.GroupTheory.MonoidLocalization.Order
 import Mathlib.GroupTheory.Nilpotent
@@ -5505,6 +5507,7 @@ import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
 import Mathlib.RingTheory.LocalRing.Subring
+import Mathlib.RingTheory.Localization.Additive
 import Mathlib.RingTheory.Localization.Algebra
 import Mathlib.RingTheory.Localization.AsSubring
 import Mathlib.RingTheory.Localization.AtPrime
@@ -5528,6 +5531,7 @@ import Mathlib.RingTheory.Localization.Module
 import Mathlib.RingTheory.Localization.NormTrace
 import Mathlib.RingTheory.Localization.NumDen
 import Mathlib.RingTheory.Localization.Pi
+import Mathlib.RingTheory.Localization.StrongRankCondition
 import Mathlib.RingTheory.Localization.Submodule
 import Mathlib.RingTheory.MatrixAlgebra
 import Mathlib.RingTheory.MatrixPolynomialAlgebra
