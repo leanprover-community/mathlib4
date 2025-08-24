@@ -3,7 +3,8 @@ Copyright (c) 2025 Concordance Inc. dba Harmonic. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib
+import Mathlib.Data.Finsupp.Notation
+import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
 /-!
 # Homogenize a univariate polynomial
@@ -33,7 +34,7 @@ returns a homogeneous bivariate polynomial `q` of degree `n` such that `q(x, 1) 
 
 It is defined as `∑ k + l = n, a_k X_0^k X_1^l`, where `a_k` is the `k`th coefficient of `p`. -/
 noncomputable def homogenize (p : R[X]) (n : ℕ) : MvPolynomial (Fin 2) R :=
-  ∑ kl ∈ antidiagonal n, .monomial ((fun₀ | 0 => kl.1) + fun₀ | 1 => kl.2) (p.coeff kl.1)
+  ∑ kl ∈ antidiagonal n, .monomial (fun₀ | 0 => kl.1 | 1 => kl.2) (p.coeff kl.1)
 
 @[simp]
 lemma homogenize_zero (n : ℕ) : homogenize (0 : R[X]) n = 0 := by
@@ -71,41 +72,29 @@ lemma homogenize_C_mul (c : R) (p : R[X]) (n : ℕ) :
   simp only [C_mul', homogenize_smul, MvPolynomial.C_mul']
 
 @[simp]
-lemma homogenize_X_pow {m n : ℕ} (h : m ≤ n) :
-    homogenize (X ^ m : R[X]) n = .X 0 ^ m * .X 1 ^ (n - m) := by
-  rw [homogenize, Finset.sum_eq_single (a := (m, n - m))]
-  · -- We use `simp only` here, because otherwise we would need to disable `Finsupp.single_tsub`
-    -- which is more fragile.
-    simp only [MvPolynomial.monomial_single_add, ← MvPolynomial.X_pow_eq_monomial,
-      coeff_X_pow, if_true]
-  · rintro ⟨a, b⟩ hab hne
-    rcases eq_or_ne m a with rfl | hma
-    · obtain rfl : m + b = n := by simpa using hab
-      simp at hne
-    · simp [hma.symm]
-  · simp [h]
-
-@[simp]
-lemma homogenize_X {n : ℕ} (hn : n ≠ 0) : homogenize (X : R[X]) n = .X 0 * .X 1 ^ (n - 1) := by
-  rw [← pow_one X, homogenize_X_pow, pow_one]
-  rwa [Nat.one_le_iff_ne_zero]
-
-@[simp]
 lemma homogenize_monomial {m n : ℕ} (h : m ≤ n) (r : R) :
     homogenize (monomial m r) n = .monomial (fun₀ | 0 => m | 1 => n - m) r := by
-  simp only [← C_mul_X_pow_eq_monomial, C_mul', homogenize_smul, homogenize_X_pow h]
-  simp only [← MvPolynomial.C_mul', MvPolynomial.X_pow_eq_monomial, MvPolynomial.monomial_mul,
-    MvPolynomial.C_mul_monomial, mul_one]
-  congr 2 with i
-  fin_cases i <;> simp
+  rw [homogenize, Finset.sum_eq_single (a := (m, n - m))]
+  · simp
+  · aesop (add simp coeff_monomial)
+  · simp [h]
 
 lemma homogenize_monomial_of_lt {m n : ℕ} (h : n < m) (r : R) :
     homogenize (monomial m r) n = 0 := by
   rw [homogenize]
   apply Finset.sum_eq_zero
-  simp only [mem_antidiagonal]
-  rintro ⟨i, j⟩ rfl
   aesop (add simp coeff_monomial)
+
+@[simp]
+lemma homogenize_X_pow {m n : ℕ} (h : m ≤ n) :
+    homogenize (X ^ m : R[X]) n = .X 0 ^ m * .X 1 ^ (n - m) := by
+  rw [X_pow_eq_monomial, homogenize_monomial h, Finsupp.update_eq_add_single (by simp),
+    MvPolynomial.monomial_single_add, ← MvPolynomial.X_pow_eq_monomial]
+
+@[simp]
+lemma homogenize_X {n : ℕ} (hn : n ≠ 0) : homogenize (X : R[X]) n = .X 0 * .X 1 ^ (n - 1) := by
+  rw [← pow_one X, homogenize_X_pow, pow_one]
+  rwa [Nat.one_le_iff_ne_zero]
 
 @[simp]
 lemma homogenize_C (c : R) (n : ℕ) : homogenize (.C c) n = .C c * .X 1 ^ n := by
@@ -119,23 +108,13 @@ lemma coeff_homogenize (p : R[X]) (n : ℕ) (m : Fin 2 →₀ ℕ) :
     (homogenize p n).coeff m = if m 0 + m 1 = n then coeff p (m 0) else 0 := by
   induction p using Polynomial.induction_on' with
   | add p q ihp ihq =>
-    simp [*]
-    split_ifs <;> simp
+    simp [*, ite_add_ite]
   | monomial k c =>
     rcases le_or_gt k n with hkn | hnk
     · rw [homogenize_monomial hkn, coeff_monomial, MvPolynomial.coeff_monomial]
-      split_ifs with H₁ H₂ H₃ H₄ H₅ <;> try rfl
-      · subst m
-        simp at H₃
-      · subst m
-        simp [hkn] at H₂
-      · subst k n
-        refine absurd ?_ H₁
-        simp [DFunLike.ext_iff, Fin.forall_fin_two]
-    · symm
-      simp [homogenize_monomial_of_lt hnk, coeff_monomial]
-      rintro rfl rfl
-      simp at hnk
+      have : (fun₀ | 0 => m 0 | 1 => m 1) = m := by ext i; fin_cases i <;> simp
+      aesop
+    · aesop (add simp homogenize_monomial_of_lt) (add simp coeff_monomial)
 
 lemma eval₂_homogenize_of_eq_one {S : Type*} [CommSemiring S] {p : R[X]} {n : ℕ}
     (hn : natDegree p ≤ n) (f : R →+* S) (g : Fin 2 → S) (hg : g 1 = 1) :
@@ -143,20 +122,19 @@ lemma eval₂_homogenize_of_eq_one {S : Type*} [CommSemiring S] {p : R[X]} {n : 
   apply Polynomial.induction_with_natDegree_le
     (fun p ↦ MvPolynomial.eval₂ f g (p.homogenize n) = p.eval₂ f (g 0)) (N := n)
   · simp
-  · intro d r _hr hdn
-    simp [hdn, hg]
+  · simp +contextual [hg]
   · simp +contextual
   · assumption
 
 lemma aeval_homogenize_of_eq_one {A : Type*} [CommSemiring A] [Algebra R A] {p : R[X]} {n : ℕ}
     (hn : natDegree p ≤ n) (g : Fin 2 → A) (hg : g 1 = 1) :
-    MvPolynomial.aeval (R := R) g (p.homogenize n) = aeval (R := R) (g 0) p := by
+    MvPolynomial.aeval g (p.homogenize n) = aeval (g 0) p := by
   apply eval₂_homogenize_of_eq_one <;> assumption
 
 /-- If `deg p ≤ n`, then `homogenize p n (x, 1) = p x`. -/
 @[simp]
 lemma aeval_homogenize_X_one (p : R[X]) {n : ℕ} (hn : natDegree p ≤ n) :
-    MvPolynomial.aeval (R := R) (S₁ := R[X]) ![X, 1] (p.homogenize n) = p := by
+    MvPolynomial.aeval ![X, 1] (p.homogenize n) = p := by
   rw [aeval_homogenize_of_eq_one] <;> simp [*]
 
 @[simp]
@@ -165,10 +143,10 @@ lemma isHomogeneous_homogenize {n : ℕ} (p : R[X]) : (p.homogenize n).IsHomogen
   simp only [Prod.forall, mem_antidiagonal]
   rintro a b rfl
   apply MvPolynomial.isHomogeneous_monomial
-  simp
+  simp [Finsupp.update_eq_add_single]
 
 lemma homogenize_eq_of_isHomogeneous {p : R[X]} {n : ℕ} {q : MvPolynomial (Fin 2) R}
-    (hq : q.IsHomogeneous n) (hpq : MvPolynomial.aeval (R := R) (S₁ := R[X]) ![X, 1] q = p) :
+    (hq : q.IsHomogeneous n) (hpq : MvPolynomial.aeval ![X, 1] q = p) :
     p.homogenize n = q := by
   subst p
   rw [q.as_sum]
@@ -200,24 +178,28 @@ lemma homogenize_finsetProd {ι : Type*} {s : Finset ι} {p : ι → R[X]} {n : 
 lemma homogenize_dvd [NoZeroDivisors R] {p q : R[X]} (h : p ∣ q) :
     homogenize p p.natDegree ∣ homogenize q q.natDegree := by
   rcases h with ⟨r, rfl⟩
-  rcases eq_or_ne p 0 with rfl | hp₀
+  obtain rfl | rfl | ⟨hp₀, hr₀⟩ : p = 0 ∨ r = 0 ∨ p ≠ 0 ∧ r ≠ 0 := by tauto
   · simp
-  · rcases eq_or_ne r 0 with rfl | hr₀
-    · simp
-    · rw [natDegree_mul hp₀ hr₀, homogenize_mul _ _ le_rfl le_rfl]
-      apply dvd_mul_right
+  · simp
+  · rw [natDegree_mul hp₀ hr₀, homogenize_mul _ _ le_rfl le_rfl]
+    apply dvd_mul_right
 
 end CommSemiring
 
+section CommRing
+
+variable {R : Type*} [CommRing R]
+
 @[simp]
-lemma homogenize_neg {R : Type*} [CommRing R] (p : R[X]) (n : ℕ) :
-    (-p).homogenize n = -p.homogenize n :=
+lemma homogenize_neg (p : R[X]) (n : ℕ) : (-p).homogenize n = -p.homogenize n :=
   map_neg (homogenizeLM n) p
 
 @[simp]
-lemma homogenize_sub {R : Type*} [CommRing R] (p q : R[X]) (n : ℕ) :
+lemma homogenize_sub (p q : R[X]) (n : ℕ) :
     (p - q).homogenize n = p.homogenize n - q.homogenize n :=
   map_sub (homogenizeLM n) p q
+
+end CommRing
 
 variable {K : Type*} [Semifield K]
 
@@ -226,9 +208,9 @@ lemma eval_homogenize {p : K[X]} {n : ℕ} (hn : p.natDegree ≤ n) (x : Fin 2 �
   simp only [homogenize, Polynomial.eval_eq_sum_range' (Nat.lt_succ.mpr hn),
     Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk, Finset.sum_mul, MvPolynomial.eval_sum]
   refine Finset.sum_congr rfl fun k hk ↦ ?_
-  rw [MvPolynomial.eval_monomial, Finsupp.prod_add_index', Finsupp.prod_single_index,
-    Finsupp.prod_single_index, pow_sub₀]
-  · field_simp [mul_assoc]
+  rw [MvPolynomial.eval_monomial, Finsupp.update_eq_add_single, Finsupp.prod_add_index',
+    Finsupp.prod_single_index, Finsupp.prod_single_index, pow_sub₀]
+  · ring
   all_goals simp_all [pow_add, Nat.lt_add_one_iff]
 
 end Polynomial
