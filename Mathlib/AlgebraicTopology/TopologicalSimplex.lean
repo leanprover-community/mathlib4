@@ -188,7 +188,7 @@ lemma eq_affineCombination (s : TopologicalSimplex X) :
 
 lemma exists_eq_affineCombination (s : TopologicalSimplex X) :
     ∃ (w : X → ℝ) (hw₀ : ∀ (i : X), 0 ≤ w i) (hw₁ : ∑ i, w i = 1),
-      s = (convex X).affineCombination .univ vertex w hw₀ hw₁ :=
+      s = affineCombination .univ vertex w hw₀ hw₁ :=
   ⟨_, _, _, eq_affineCombination s⟩
 
 lemma vertex_injective : Function.Injective (vertex (X := X)) := by
@@ -204,7 +204,7 @@ lemma eq_convexHull :
   refine subset_antisymm (fun f hf ↦ ?_)
     (convexHull_min (by rintro _ ⟨i, rfl⟩; simp) (convex X))
   obtain ⟨w, hw₀, hw₁, h⟩ := exists_eq_affineCombination ⟨f, hf⟩
-  simp only [Subtype.ext_iff, Convex.affineCombination_coe] at h
+  rw [Subtype.ext_iff] at h
   subst h
   apply affineCombination_mem_convexHull
   all_goals aesop
@@ -397,7 +397,7 @@ noncomputable def toTop₀ : CosimplicialObject TopCat.{0} where
 /-- The functor `SimplexCategory ⥤ TopCat.{u}`
 associating the topological `n`-simplex to `⦋n⦌ : SimplexCategory`. -/
 @[simps! obj map, pp_with_univ]
-noncomputable def toTop : SimplexCategory ⥤ TopCat.{u} :=
+noncomputable def toTop : CosimplicialObject TopCat.{u} :=
   toTop₀ ⋙ TopCat.uliftFunctor
 
 end SimplexCategory
