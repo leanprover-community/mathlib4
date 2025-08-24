@@ -393,9 +393,9 @@ theorem zeta_apply {x : ℕ} : ζ x = if x = 0 then 0 else 1 :=
 theorem zeta_apply_ne {x : ℕ} (h : x ≠ 0) : ζ x = 1 :=
   if_neg h
 
-@[simp] theorem zeta_eq_zero {x : ℕ} : ζ x = 0 ↔ x = 0 := by simp [zeta]
+theorem zeta_eq_zero {x : ℕ} : ζ x = 0 ↔ x = 0 := by simp [zeta]
 
-@[simp] theorem zeta_pos {x : ℕ} : 0 < ζ x ↔ 0 < x := by simp [Nat.pos_iff_ne_zero]
+theorem zeta_pos {x : ℕ} : 0 < ζ x ↔ 0 < x := by simp [Nat.pos_iff_ne_zero]
 
 -- Porting note: removed `@[simp]`, LHS not in normal form
 theorem coe_zeta_smul_apply {M} [Semiring R] [AddCommMonoid M] [MulAction R M]
@@ -821,9 +821,10 @@ theorem sigma_apply {k n : ℕ} : σ k n = ∑ d ∈ divisors n, d ^ k :=
 theorem sigma_eq_zero {k n : ℕ} : σ k n = 0 ↔ n = 0 := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp
-  · suffices ∃ d, d ∣ n ∧ (d = 0 → k = 0) by simpa [ArithmeticFunction.sigma_apply, hn]
+  · refine iff_of_false ?_ hn
+    simp_rw [ArithmeticFunction.sigma_apply, Finset.sum_eq_zero_iff, not_forall]
     use 1
-    simp
+    simp [hn]
 
 @[simp]
 theorem sigma_pos {k n} : 0 < σ k n ↔ 0 < n := by
