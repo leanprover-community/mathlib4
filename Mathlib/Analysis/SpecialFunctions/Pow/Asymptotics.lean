@@ -79,11 +79,7 @@ lemma tendsto_rpow_atBot_of_base_lt_one (b : ℝ) (hb₀ : 0 < b) (hb₁ : b < 1
   exact (log_neg_iff hb₀).mpr hb₁
 
 lemma tendsto_rpow_atBot_of_base_gt_one (b : ℝ) (hb : 1 < b) :
-    Tendsto (b ^ · : ℝ → ℝ) atBot (𝓝 0) := by
-  simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
-  refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_iff_pos <| tendsto_id (α := ℝ)).mpr ?_
-  exact (log_pos_iff (by positivity)).mpr <| by aesop
-
+    Tendsto (b ^ · : ℝ → ℝ) atBot (𝓝 0) := tendsto_rpow_atTop_of_base_gt_one b hb
 
 /-- The function `x ^ (a / (b * x + c))` tends to `1` at `+∞`, for any real numbers `a`, `b`, and
 `c` such that `b` is nonzero. -/
