@@ -303,6 +303,21 @@ theorem map_relNorm (I : Ideal S) {T : Type*} [Semiring T] (f : R →+* T) :
 theorem relNorm_mono {I J : Ideal S} (h : I ≤ J) : relNorm R I ≤ relNorm R J :=
   spanNorm_mono R h
 
+open MulSemiringAction Pointwise in
+@[simp]
+theorem relNorm_smul {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S] (g : G)
+    (I : Ideal S) : relNorm R (g • I) = relNorm R I := by
+  have h (J : Ideal S) (h : G) : relNorm R (h • J) ≤ relNorm R J :=
+    span_mono fun _ ⟨x, hx₁, hx₂⟩ ↦ ⟨h⁻¹ • x, mem_pointwise_smul_iff_inv_smul_mem.mp hx₁,
+      by simpa [hx₂] using Algebra.intNorm_map_algEquiv x (toAlgEquiv R S h⁻¹)⟩
+  refine le_antisymm (h I g) ?_
+  convert h (g • I) g⁻¹
+  rw [inv_smul_smul]
+
+@[simp]
+theorem relNorm_map_algEquiv (σ : S ≃ₐ[R] S) (I : Ideal S) :
+    relNorm R (I.map σ) = relNorm R I := relNorm_smul R σ I
+
 theorem relNorm_le_comap (I : Ideal S) :
     relNorm R I ≤ comap (algebraMap R S) I := spanNorm_le_comap R I
 
@@ -313,6 +328,34 @@ theorem relNorm_relNorm (T : Type*) [CommRing T] [IsDedekindDomain T] [IsIntegra
     [Algebra.IsSeparable (FractionRing T) (FractionRing S)]
     (I : Ideal S) : relNorm R (relNorm T I) = relNorm R I :=
   spanNorm_spanNorm _ _ _
+
+variable {R} (S)
+
+attribute [local instance] Localization.AtPrime.liftAlgebra in
+theorem relNorm_algebraMap (I : Ideal R) :
+    relNorm R (I.map (algebraMap R S)) =
+      I ^ Module.finrank (FractionRing R) (FractionRing S) := by
+  rw [← spanNorm_eq]
+  refine eq_of_localization_maximal (fun P hPd ↦ ?_)
+  let P' := Algebra.algebraMapSubmonoid S P.primeCompl
+  let Rₚ := Localization.AtPrime P
+  let K := FractionRing R
+  simp only [← spanIntNorm_localization (R := R) (Sₘ := Localization P') _ _
+    P.primeCompl_le_nonZeroDivisors]
+  rw [Ideal.map_pow, I.map_map, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq R Rₚ,
+    ← I.map_map, ← (I.map _).span_singleton_generator, Ideal.map_span, Set.image_singleton,
+    spanNorm_singleton, Ideal.span_singleton_pow]
+  congr 2
+  apply IsFractionRing.injective Rₚ K
+  rw [Algebra.algebraMap_intNorm (L := FractionRing S), ← IsScalarTower.algebraMap_apply,
+    IsScalarTower.algebraMap_apply Rₚ K, Algebra.norm_algebraMap, map_pow]
+
+variable (R)
+
+theorem relNorm_algebraMap' {R'} [CommRing R'] (I : Ideal R') [Algebra R' R]
+    [Algebra R' S] [IsScalarTower R' R S] : relNorm R (I.map (algebraMap R' S)) =
+      I.map (algebraMap R' R) ^ Module.finrank (FractionRing R) (FractionRing S) := by
+  rw [← relNorm_algebraMap, Ideal.map_map, IsScalarTower.algebraMap_eq R' R S]
 
 end Ideal
 
