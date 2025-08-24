@@ -308,8 +308,12 @@ add_decl_doc RightCancelSemigroup.toIsRightCancelMul
 /-- Any `AddRightCancelSemigroup` satisfies `IsRightCancelAdd`. -/
 add_decl_doc AddRightCancelSemigroup.toIsRightCancelAdd
 
+/-- Bundling an `Add` and `Zero` structure together without any axioms about their
+compatibility. See `AddZeroClass` for the additional assumption that 0 is an identity. -/
 class AddZero (M : Type*) extends Zero M, Add M
 
+/-- Bundling a `Mul` and `One` structure together without any axioms about their
+compatibility. See `MulOneClass` for the additional assumption that 1 is an identity. -/
 @[to_additive, ext]
 class MulOne (M : Type*) extends One M, Mul M
 
