@@ -71,6 +71,7 @@ example : ∀ a b : Unit, a = b := by
   intro b
   rfl
 
+#guard_msgs in
 example : ∀ a b : Unit, a = b := by
   intro a b
   rfl
