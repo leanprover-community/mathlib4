@@ -327,12 +327,6 @@ theorem colimitPresheafObjIsoComponentwiseLimit_inv_ι_app (F : J ⥤ Presheafed
       ← comp_c_app_assoc,
       congr_app (colimit.isoColimitCocone_ι_hom _ _), assoc]
   erw [limitObjIsoLimitCompEvaluation_inv_π_app_assoc, limMap_π_assoc]
-  -- Porting note: `convert` doesn't work due to meta variable, so change to a `suffices` block
-  set f := _
-  change _ ≫ f = _
-  suffices f_eq : f = 𝟙 _ by rw [f_eq, comp_id]
-  erw [← (F.obj j).presheaf.map_id]
-  change (F.obj j).presheaf.map _ ≫ _ = _
   simp
 
 @[simp]

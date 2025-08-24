@@ -57,7 +57,7 @@ be in the same universe. But
 `FreeAbelianGroup.map (f : α → β)` is defined to be the `AddGroup`
 homomorphism `FreeAbelianGroup α →+ FreeAbelianGroup β` (with `α` and `β` now
 allowed to be in different universes), so `(map f).map_add`
-etc can be used to prove that `FreeAbelianGroup.map` preserves addition. The
+etc. can be used to prove that `FreeAbelianGroup.map` preserves addition. The
 functions `map_id`, `map_id_apply`, `map_comp`, `map_comp_apply` and `map_of_apply`
 are about `FreeAbelianGroup.map`.
 

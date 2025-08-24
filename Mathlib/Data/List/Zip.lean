@@ -130,8 +130,7 @@ theorem mem_zip_inits_tails {l : List α} {init tail : List α} :
       · simp
       · simp [ih.mp h]
     · rcases init with - | ⟨hd', tl'⟩
-      · rintro rfl
-        simp
+      · simp
       · intro h
         right
         use tl', tail

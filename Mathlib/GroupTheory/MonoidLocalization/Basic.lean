@@ -1479,7 +1479,7 @@ variable {M N : Type*} [CommMonoid M] {S : Submonoid M} [CommMonoid N]
   simp_rw [mul_left_comm _ m] at eq
   exact eq.imp fun _ ↦ (hm.1 ·)
 
-@[to_additive] theorem isCancelMul [IsCancelMul M] (f : LocalizationMap S N) : IsCancelMul N := by
+@[to_additive] theorem isCancelMul (f : LocalizationMap S N) [IsCancelMul M] : IsCancelMul N := by
   simp_rw [isCancelMul_iff_forall_isRegular, Commute.isRegular_iff (Commute.all _),
     ← Commute.isRightRegular_iff (Commute.all _)]
   intro n
