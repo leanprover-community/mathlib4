@@ -753,7 +753,7 @@ theorem im_eq_sub_conj (z : ℂ) : (z.im : ℂ) = (z - conj z) / (2 * I) := by
 
 /-- Show the imaginary number ⟨x, y⟩ as an "x + y*I" string
 
-Note that the Real numbers used for x and y will show as cauchy sequences due to the way Real
+Note that the Real numbers used for x and y will show as Cauchy sequences due to the way Real
 numbers are represented.
 -/
 unsafe instance instRepr : Repr ℂ where
