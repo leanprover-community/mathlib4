@@ -387,7 +387,7 @@ protected lemma IsOfFinOrder.orderOf_pow (h : IsOfFinOrder x) :
 @[to_additive]
 lemma Nat.Coprime.orderOf_pow (h : (orderOf y).Coprime m) : orderOf (y ^ m) = orderOf y := by
   by_cases hg : IsOfFinOrder y
-  · rw [hg.orderOf_pow y m , h.gcd_eq_one, Nat.div_one]
+  · rw [hg.orderOf_pow y m, h.gcd_eq_one, Nat.div_one]
   · rw [m.coprime_zero_left.1 (orderOf_eq_zero hg ▸ h), pow_one]
 
 @[to_additive]
