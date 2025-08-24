@@ -214,6 +214,7 @@ theorem coe_eval₂RingHom (f : R →+* S) (x) : ⇑(eval₂RingHom f x) = eval�
 theorem eval₂_pow (n : ℕ) : (p ^ n).eval₂ f x = p.eval₂ f x ^ n :=
   (eval₂RingHom _ _).map_pow _ _
 
+@[gcongr]
 theorem eval₂_dvd : p ∣ q → eval₂ f x p ∣ eval₂ f x q :=
   map_dvd (eval₂RingHom f x)
 
@@ -651,6 +652,7 @@ theorem isRoot_prod {R} [CommSemiring R] [IsDomain R] {ι : Type*} (s : Finset �
     (x : R) : IsRoot (∏ j ∈ s, p j) x ↔ ∃ i ∈ s, IsRoot (p i) x := by
   simp only [IsRoot, eval_prod, Finset.prod_eq_zero_iff]
 
+@[gcongr]
 theorem eval_dvd : p ∣ q → eval x p ∣ eval x q :=
   eval₂_dvd _ _
 
