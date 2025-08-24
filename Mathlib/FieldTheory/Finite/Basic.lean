@@ -658,7 +658,7 @@ theorem Int.ModEq.pow_eq_pow {p x y : ℕ} (hp : Nat.Prime p) (h : p - 1 ∣ x -
     _ ≡ _ [ZMOD p] :=
       Int.ModEq.symm ((fun {n a} ↦ Int.modEq_zero_iff_dvd.mpr) (Dvd.dvd.pow ch (by omega)))
   · have : n ^ (x - y) ≡ 1 [ZMOD p] := by
-      refine Int.ModEq.symm ((fun {n a b} ↦ Int.modEq_iff_dvd.mpr) ?_)
+      refine Int.ModEq.symm (Int.modEq_iff_dvd.mpr ?_)
       calc
         _ ∣ n ^ (p - 1) - 1 :=
           have : IsCoprime n p := by
