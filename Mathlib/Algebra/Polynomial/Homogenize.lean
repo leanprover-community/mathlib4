@@ -105,10 +105,7 @@ lemma homogenize_monomial_of_lt {m n : ℕ} (h : n < m) (r : R) :
   apply Finset.sum_eq_zero
   simp only [mem_antidiagonal]
   rintro ⟨i, j⟩ rfl
-  suffices m = i → MvPolynomial.C (σ := Fin 2) r = 0 by
-    simpa [coeff_monomial, apply_ite MvPolynomial.C]
-  rintro rfl
-  simp at h
+  aesop (add simp coeff_monomial)
 
 @[simp]
 lemma homogenize_C (c : R) (n : ℕ) : homogenize (.C c) n = .C c * .X 1 ^ n := by
@@ -148,7 +145,7 @@ lemma eval₂_homogenize_of_eq_one {S : Type*} [CommSemiring S] {p : R[X]} {n : 
   · simp
   · intro d r _hr hdn
     simp [hdn, hg]
-  · simp (config := {contextual := true})
+  · simp +contextual
   · assumption
 
 lemma aeval_homogenize_of_eq_one {A : Type*} [CommSemiring A] [Algebra R A] {p : R[X]} {n : ℕ}
