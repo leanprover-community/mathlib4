@@ -845,12 +845,10 @@ theorem coe_toAlgEquiv (f : A ≃⋆ₐ[R] B) : ⇑f.toAlgEquiv = f := rfl
 theorem coe_symm_toAlgEquiv (f : A ≃⋆ₐ[R] B) : ⇑f.toAlgEquiv.symm = f.symm := rfl
 
 @[simp]
-theorem toAlgEquiv_trans {C : Type*} [Semiring C] [Algebra R C] [Star C]
-    (f : A ≃⋆ₐ[R] B) (g : B ≃⋆ₐ[R] C) :
-    (f.trans g).toAlgEquiv = f.toAlgEquiv.trans g.toAlgEquiv := rfl
+theorem toAlgEquiv_trans {C : Type*} [Semiring C] [Algebra R C] [Star C] (f : A ≃⋆ₐ[R] B)
+    (g : B ≃⋆ₐ[R] C) : (f.trans g).toAlgEquiv = f.toAlgEquiv.trans g.toAlgEquiv := rfl
 
-theorem toAlgEquiv_injective :
-    Function.Injective (toAlgEquiv (R:=R) (A:=A) (B:=B)) :=
+theorem toAlgEquiv_injective : Function.Injective (toAlgEquiv (R:=R) (A:=A) (B:=B)) :=
   fun _ _  h => ext <| AlgEquiv.congr_fun h
 
 /-- Upgrade an algebra equivalence to a ⋆-algebra equivalence given that it preserves the
