@@ -118,7 +118,7 @@ abbrev Hom.id (X : WalkingSpan) : X ⟶ X :=
   WidePushoutShape.Hom.id X
 
 instance (X Y : WalkingSpan) : Subsingleton (X ⟶ Y) := by
-  constructor; intros a b; simp [eq_iff_true_of_subsingleton]
+  constructor; intro a b; simp [eq_iff_true_of_subsingleton]
 
 end WalkingSpan
 
