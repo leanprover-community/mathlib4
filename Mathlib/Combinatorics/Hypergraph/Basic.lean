@@ -419,7 +419,10 @@ def completeOn (f : Set α) : Hypergraph α where
   hyperedge_isSubset_vertexSet' := by simp
 
 @[simp]
-lemma mem_completeOn {e f : Set α} : e ⊆ f ↔ e ∈ E(completeOn f) := by simp
+lemma mem_completeOn {e f : Set α} : e ⊆ f ↔ e ∈ E(completeOn f) := by
+  constructor
+  · exact fun a ↦ a
+  · exact fun a ↦ a
 
 @[simp]
 lemma isComplete_completeOn (f : Set α) : (completeOn f).IsComplete := by exact fun e a ↦ a
@@ -455,6 +458,11 @@ lemma isComplete_not_isTrivial {H : Hypergraph α} (h : H.IsComplete) : ¬H.IsTr
   exact ne_of_mem_of_not_mem' h' fun a ↦ a
 
 @[simp]
-lemma completeOn_not_isTrivial {S : Set α} : ¬(completeOn S).IsTrivial := by simp
+lemma completeOn_not_isTrivial {S : Set α} : ¬(completeOn S).IsTrivial := by
+  unfold IsTrivial
+  apply not_and_or.mpr
+  right
+  simp
+  exact ne_of_mem_of_not_mem' (fun ⦃a⦄ a ↦ a) fun a ↦ a
 
 end Hypergraph
