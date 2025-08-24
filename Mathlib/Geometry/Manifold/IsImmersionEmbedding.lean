@@ -428,37 +428,24 @@ end IsImmersionAt
 variable {x : M}
 
 -- TODO: are the manifold hypotheses necessary now? think!
-lemma _root_.continuousAt_iff_comp_isImmersionAt [IsManifold J n N] [IsManifold J' n N']
+lemma continuousAt_iff_comp_isImmersionAt [IsManifold J n N] [IsManifold J' n N']
     {f : M → N} {φ : N → N'} (h : IsImmersionAt F J J' n φ (f x)) :
     ContinuousAt f x ↔ ContinuousAt (φ ∘ f) x := by
   simp_rw [ContinuousAt, h.nhds_eq_comap, Filter.tendsto_comap_iff, comp_apply]
 
-#exit
-lemma _root_.ContMDiffAt.iff_comp_isImmersionAt
-    [IsManifold I n M] [IsManifold J n N] [IsManifold J' n N']
-    {f : M → N} {φ : N → N'} (h : IsImmersionAt F J J' n φ (f x)) :
-    ContMDiffAt I J n f x ↔ ContMDiffAt I J' n (φ ∘ f) x := by
-  refine ⟨fun hf ↦ h.contMDiffAt.comp x hf, fun h' ↦ ?_⟩
-  -- Since `f` is continuous at `x`, some neighbourhood `t` of `x` is mapped
-  -- into `h.domChart.source` under `f`. By restriction, we may assume `t` is open.
-  have hf₁ : ContinuousAt f x :=
-    ((continuousAt_iff_comp_isImmersionAt h (I := I)).mpr h'.continuousAt)
-  have : h.domChart.source ∈ 𝓝 (f x) := h.domChart.open_source.mem_nhds h.mem_domChart_source
-  obtain ⟨t, ht, htopen, hxt⟩ := mem_nhds_iff.mp (hf₁ this)
+lemma aux {f : M → N} {φ : N → N'} [IsManifold I n M] [IsManifold J' n N']
+    (h : IsImmersionAt F J J' n φ (f x)) (h' : ContMDiffAt I J' n (φ ∘ f) x)
+    {t : Set M} (ht : t ⊆ f ⁻¹' h.domChart.source) (hxt : x ∈ t) :
+    ContDiffWithinAt 𝕜 n (↑(h.domChart.extend J) ∘ f ∘ ↑((chartAt H x).extend I).symm)
+      (((chartAt H x).extend I).symm ⁻¹' t ∩ range I) (((chartAt H x).extend I) x) := by
+  set f' := (h.domChart.extend J) ∘ f ∘ ↑((chartAt H x).extend I).symm
+  set φ' := (h.codChart.extend J') ∘ φ ∘ (h.domChart.extend J).symm
+  set x' := (((chartAt H x).extend I) x)
   set s := (extChartAt I x).symm ⁻¹' t ∩ range I
   have hx' : (((chartAt H x).extend I) x) ∈ s := by
     refine ⟨?_, mem_range_self _⟩
     rw [mem_preimage, ← (extChartAt I x).left_inv (mem_extChartAt_source x)]
     simpa
-  suffices ContMDiffWithinAt I J n f t x from this.contMDiffAt <| htopen.mem_nhds hxt
-  rw [contMDiffWithinAt_iff_of_mem_maximalAtlas (IsManifold.chart_mem_maximalAtlas x)
-    h.domChart_mem_maximalAtlas (mem_chart_source H x) h.mem_domChart_source]
-  refine ⟨hf₁.continuousWithinAt, ?_⟩
-  let n'chart := h.codChart
-  set f' := (h.domChart.extend J) ∘ f ∘ ↑((chartAt H x).extend I).symm
-  set φ' := (h.codChart.extend J') ∘ φ ∘ (h.domChart.extend J).symm
-  set x' := (((chartAt H x).extend I) x)
-
   -- old code, probably obsolete
   -- set s := ((chartAt H x).extend I).symm ⁻¹' (chartAt H x).source ∩ range I
   -- have hx' : x' ∈ s := by
@@ -499,6 +486,23 @@ lemma _root_.ContMDiffAt.iff_comp_isImmersionAt
     exact contDiffAt_fst.comp _ h.equiv.symm.contDiff.contDiffAt
   exact h''''.congr_of_mem (fun y hy ↦ by simp [f'']) hx'
 
+lemma ContMDiffAt.iff_comp_isImmersionAt
+    [IsManifold I n M] [IsManifold J n N] [IsManifold J' n N']
+    {f : M → N} {φ : N → N'} (h : IsImmersionAt F J J' n φ (f x)) :
+    ContMDiffAt I J n f x ↔ ContMDiffAt I J' n (φ ∘ f) x := by
+  refine ⟨fun hf ↦ h.contMDiffAt.comp x hf, fun h' ↦ ?_⟩
+  -- Since `f` is continuous at `x`, some neighbourhood `t` of `x` is mapped
+  -- into `h.domChart.source` under `f`. By restriction, we may assume `t` is open.
+  have hf₁ : ContinuousAt f x := ((continuousAt_iff_comp_isImmersionAt h).mpr h'.continuousAt)
+  have : h.domChart.source ∈ 𝓝 (f x) := h.domChart.open_source.mem_nhds h.mem_domChart_source
+  obtain ⟨t, ht, htopen, hxt⟩ := mem_nhds_iff.mp (hf₁ this)
+  suffices ContMDiffWithinAt I J n f t x from this.contMDiffAt <| htopen.mem_nhds hxt
+  rw [contMDiffWithinAt_iff_of_mem_maximalAtlas (IsManifold.chart_mem_maximalAtlas x)
+    h.domChart_mem_maximalAtlas (mem_chart_source H x) h.mem_domChart_source]
+  refine ⟨hf₁.continuousWithinAt, ?_⟩
+  exact aux h h' ht hxt
+
+#exit
   /- old code, probably obsolete
   rw [contMDiffAt_iff_of_mem_maximalAtlas (IsManifold.chart_mem_maximalAtlas x)
     h.domChart_mem_maximalAtlas (mem_chart_source H x) h.mem_domChart_source]
