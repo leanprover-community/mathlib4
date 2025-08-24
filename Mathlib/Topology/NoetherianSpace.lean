@@ -114,7 +114,7 @@ theorem noetherianSpace_iff_of_homeomorph (f : α ≃ₜ β) : NoetherianSpace �
 theorem NoetherianSpace.range [NoetherianSpace α] (f : α → β) (hf : Continuous f) :
     NoetherianSpace (Set.range f) :=
   noetherianSpace_of_surjective (Set.rangeFactorization f) (hf.subtype_mk _)
-    Set.surjective_onto_range
+    Set.rangeFactorization_surjective
 
 theorem noetherianSpace_set_iff (s : Set α) :
     NoetherianSpace s ↔ ∀ t, t ⊆ s → IsCompact t := by

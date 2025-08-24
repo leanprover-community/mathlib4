@@ -8,11 +8,11 @@ import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 import Mathlib.Topology.JacobsonSpace
 
 /-!
-# The prime spectrum of a jacobson ring
+# The prime spectrum of a Jacobson ring
 
 ## Main results
 - `PrimeSpectrum.exists_isClosed_singleton_of_isJacobson`:
-  The spectrum of a jacobson ring is a jacobson space.
+  The spectrum of a Jacobson ring is a Jacobson space.
 - `PrimeSpectrum.isOpen_singleton_tfae_of_isNoetherian_of_isJacobson`:
   If `R` is both Noetherian and Jacobson, then the following are equivalent for `x : Spec R`:
   1. `{x}` is open (i.e. `x` is an isolated point)

@@ -17,7 +17,7 @@ with this order `ℂ` is a `StrictOrderedCommRing` and the coercion `(↑) : ℝ
 embedding.
 
 This file only provides `Complex.partialOrder` and lemmas about it. Further structural classes are
-provided by `Mathlib/Data/RCLike/Basic.lean` as
+provided in `Mathlib/Analysis/RCLike/Basic.lean` as
 
 * `RCLike.toStrictOrderedCommRing`
 * `RCLike.toStarOrderedRing`
