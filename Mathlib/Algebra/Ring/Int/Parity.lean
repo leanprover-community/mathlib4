@@ -98,8 +98,7 @@ lemma even_mul_add_one (m : ℤ) : Even (m * (m + 1)) := by
   · exact even_mul_succ_self m
 
 lemma two_dvd_mul_add_one (k : ℤ) : 2 ∣ k * (k + 1) :=
-  have : Even (k * (k + 1)) := even_mul_succ_self k
-  even_iff_two_dvd.mp this
+  even_iff_two_dvd.mp (even_mul_succ_self k)
 
 lemma two_mul_ediv_two_add_one_of_odd : Odd n → 2 * (n / 2) + 1 = n := by grind
 
