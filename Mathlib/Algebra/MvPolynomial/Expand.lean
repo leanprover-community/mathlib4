@@ -109,25 +109,30 @@ lemma eval_expand (f : σ → R) (φ : MvPolynomial σ R) (p : ℕ) :
     eval f (expand p φ) = eval (f ^ p) φ :=
   eval₂_expand ..
 
+@[simp]
 lemma coeff_expand_smul (φ : MvPolynomial σ R) {p : ℕ} (hp : p ≠ 0) (m : σ →₀ ℕ) :
     (expand p φ).coeff (p • m) = φ.coeff m := by
   classical
-  induction φ using induction_on' <;> simp [*, nsmul_right_inj (M := σ →₀ ℕ) hp]
+  induction φ using induction_on' <;> simp [*, nsmul_right_inj hp]
 
-lemma support_expand [DecidableEq σ] (φ : MvPolynomial σ R) {p : ℕ} (hp : p ≠ 0) :
-    (expand m p).support = p.support.ima
-
-lemma support_expand_subset [DecidableEq σ] (p : MvPolynomial σ R) (m : ℕ) :
-    (expand m p).support ⊆ p.support.image (m • ·) := by
-  conv_lhs => rw [p.as_sum]
+lemma support_expand_subset [DecidableEq σ] (φ : MvPolynomial σ R) (p : ℕ) :
+    (expand p φ).support ⊆ φ.support.image (p • ·) := by
+  conv_lhs => rw [φ.as_sum]
   simp only [map_sum, expand_monomial]
   refine MvPolynomial.support_sum.trans ?_
-  simp
-  simp_rw [Finset.biUnion_subset, Finset.subset_iff, mem_support_iff, coeff_monomial,
-    ite_ne_right_iff]
-  rintro k hkp l ⟨rfl, -⟩
-  apply Finset.mem_image_of_mem
-  rwa [mem_support_iff]
+  aesop (add simp Finset.subset_iff)
 
+lemma coeff_expand_of_not_dvd (φ : MvPolynomial σ R) {p : ℕ} {m : σ →₀ ℕ} {i : σ} (h : ¬(p ∣ m i)) :
+    (expand p φ).coeff m = 0 := by
+  classical
+  contrapose! h
+  grw [← mem_support_iff, support_expand_subset, Finset.mem_image] at h
+  rcases h with ⟨a, -, rfl⟩
+  exact ⟨a i, by simp⟩
+
+lemma support_expand [DecidableEq σ] (φ : MvPolynomial σ R) {p : ℕ} (hp : p ≠ 0) :
+    (expand p φ).support = φ.support.image (p • ·) := by
+  refine (support_expand_subset φ p).antisymm ?_
+  simp [Finset.image_subset_iff, hp]
 
 end MvPolynomial
