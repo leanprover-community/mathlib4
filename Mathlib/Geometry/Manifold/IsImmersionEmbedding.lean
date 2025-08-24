@@ -233,26 +233,29 @@ lemma congr_of_eventuallyEq {x : M} (h : IsImmersionAt F I I' n f x) (h' : f =�
     rw [Function.comp_apply, ← this]
     simp [Φ]
 
-omit [ChartedSpace H M] [ChartedSpace H' M'] in
-lemma _root_.PartialHomeomorph.extend_prod
-    (f : PartialHomeomorph M H) (f' : PartialHomeomorph M' H') :
-    (f.prod f').extend (I.prod I') = (f.extend I).prod (f'.extend I') := by simp
-
--- Can grind prove both of these, after sufficient future tagging?
+-- Can grind prove the next two lemmas, after sufficient future tagging?
+-- Which of these two proofs is better?
 lemma aux1 {α β γ δ : Type*} {f f' : α → γ} {g g' : β → δ} {s : Set α} {t : Set β}
-    (h : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t)) (hs : Set.Nonempty s) (ht : Set.Nonempty t) :
-    EqOn f f' s ∧ EqOn g g' t := by
-  choose xs hxs using hs
-  choose xt hxt using ht
-  refine ⟨fun x hx ↦ ?_, fun x hx ↦ ?_⟩
-  · have h' := h <| mk_mem_prod hx hxt
-    simp at h'
-    exact h'.1
-  · have h' := h <| mk_mem_prod hxs hx
-    simp at h'
-    exact h'.2
+    (h : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t)) (ht : Set.Nonempty t) :
+    EqOn f f' s := by
+  choose x0 hx0 using ht
+  have a : f = (Prod.fst) ∘ (Prod.map f g) ∘ (·, x0) := by ext x; simp
+  have b : f' = Prod.fst ∘ (Prod.map f' g') ∘ (·, x0) := by ext x; simp
+  rw [a, b]
+  exact (eqOn_comp_right_iff.mpr <| h.mono (image_prodMk_subset_prod_left hx0)).comp_left
 
 lemma aux2 {α β γ δ : Type*} {f f' : α → γ} {g g' : β → δ} {s : Set α} {t : Set β}
+    (h : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t)) (hs : Set.Nonempty s) :
+    EqOn g g' t := by
+  choose xs hxs using hs
+  intro x hx
+  have h' := h <| mk_mem_prod hxs hx
+  simp at h'
+  exact h'.2
+
+-- TODO: move to Data.Set.Operations
+lemma _root_.Set.EqOn.prodMap {α β γ δ : Type*}
+    {f f' : α → γ} {g g' : β → δ} {s : Set α} {t : Set β}
     (hf : EqOn f f' s) (hg : EqOn g g' t) : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t) := by
   rintro ⟨x, x'⟩ ⟨hx, hx'⟩
   simp [hf hx, hg hx']
@@ -260,7 +263,7 @@ lemma aux2 {α β γ δ : Type*} {f f' : α → γ} {g g' : β → δ} {s : Set 
 lemma aux {α β γ δ : Type*} {f f' : α → γ} {g g' : β → δ}
     {s : Set α} {t : Set β} (hs : Set.Nonempty s) (ht : Set.Nonempty t) :
     EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t) ↔ EqOn f f' s ∧ EqOn g g' t :=
-  ⟨fun h ↦ aux1 h hs ht, fun ⟨h, h'⟩ ↦ aux2 h h'⟩
+  ⟨fun h ↦ ⟨aux1 h ht, aux2 h hs⟩, fun ⟨h, h'⟩ ↦ h.prodMap h'⟩
 
 /-- If `f: M → N` and `g: M' × N'` are immersions at `x` and `x'`, respectively,
 then `f × g: M × N → M' × N'` is an immersion at `(x, x')`. -/
@@ -289,7 +292,7 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
       (h.equiv.prodCongr h'.equiv)) ∘ (·, 0))
     have hΦ: Φ = Prod.map (h.equiv ∘ (·, 0)) (h'.equiv ∘ (·, 0)) := by ext x <;> simp [Φ]
     rw [hC, hΦ]
-    exact aux2 (writtenInCharts h) (writtenInCharts h')
+    exact (writtenInCharts h).prodMap (writtenInCharts h')
 
 /-- This lemma is marked private since `h.domChart` is an arbitrary representative:
 `continuousAt` is part of the public API -/
