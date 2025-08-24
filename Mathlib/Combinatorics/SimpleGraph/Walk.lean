@@ -363,7 +363,7 @@ theorem exists_length_eq_zero_iff {u v : V} : (∃ p : G.Walk u v, p.length = 0)
 @[simp]
 lemma exists_length_eq_one_iff {u v : V} : (∃ (p : G.Walk u v), p.length = 1) ↔ G.Adj u v := by
   refine ⟨?_, fun h ↦ ⟨h.toWalk, by simp⟩⟩
-  rintro ⟨p , hp⟩
+  rintro ⟨p, hp⟩
   induction p with
   | nil => simp only [Walk.length_nil, zero_ne_one] at hp
   | cons h p' =>
@@ -1384,7 +1384,7 @@ abbrev toDeleteEdge (e : Sym2 V) (p : G.Walk v w) (hp : e ∉ p.edges) :
 theorem map_toDeleteEdges_eq (s : Set (Sym2 V)) {p : G.Walk v w} (hp) :
     Walk.map (.ofLE (G.deleteEdges_le s)) (p.toDeleteEdges s hp) = p := by
   rw [← transfer_eq_map_ofLE, transfer_transfer, transfer_self]
-  intros e
+  intro e
   rw [edges_transfer]
   apply edges_subset_edgeSet p
 
