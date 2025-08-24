@@ -77,9 +77,9 @@ variable {R : Type*} [CommRing R] {P : Set R} {add} {mul} {sq} {minus}
 
 /-- Construct a preordering from a minimal set of axioms. -/
 def mk' {R : Type*} [CommRing R] (P : Set R)
-    (add   : ∀ {x y : R}, x ∈ P → y ∈ P → x + y ∈ P)
-    (mul   : ∀ {x y : R}, x ∈ P → y ∈ P → x * y ∈ P)
-    (sq    : ∀ x : R, x * x ∈ P)
+    (add : ∀ {x y : R}, x ∈ P → y ∈ P → x + y ∈ P)
+    (mul : ∀ {x y : R}, x ∈ P → y ∈ P → x * y ∈ P)
+    (sq : ∀ x : R, x * x ∈ P)
     (minus : -1 ∉ P) :
     RingPreordering R where
   carrier := P
