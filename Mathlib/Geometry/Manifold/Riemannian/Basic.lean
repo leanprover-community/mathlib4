@@ -93,7 +93,7 @@ two points is the infimum of the length of paths between these points.
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
 variable (F) in
-/-- The standard riemannian metric on a vector space with an inner product, given by this inner
+/-- The standard Riemannian metric on a vector space with an inner product, given by this inner
 product on each tangent space. -/
 noncomputable def riemannianMetricVectorSpace :
     ContMDiffRiemannianMetric 𝓘(ℝ, F) ω F (fun (x : F) ↦ TangentSpace 𝓘(ℝ, F) x) where
