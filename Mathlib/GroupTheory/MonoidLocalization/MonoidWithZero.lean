@@ -117,28 +117,6 @@ theorem isCancelMulZero (f : LocalizationMap S N) [IsCancelMulZero M] : IsCancel
 theorem map_eq_zero_iff (f : LocalizationMap S N) {m : M} : f m = 0 ↔ ∃ s : S, s * m = 0 := by
   simp_rw [← f.map_zero, eq_iff_exists, mul_zero]
 
-theorem nonZeroDivisors_le_comap (f : LocalizationMap S N) :
-    nonZeroDivisors M ≤ (nonZeroDivisors N).comap f := by
-  refine fun m hm ↦ nonZeroDivisorsRight_eq_nonZeroDivisors (M₀ := N) ▸ fun n h0 ↦ ?_
-  have ⟨ms, eq⟩ := f.surj n
-  rw [← (f.map_units ms.2).mul_left_eq_zero, mul_right_comm, eq, ← map_mul, map_eq_zero_iff] at h0
-  simp_rw [← mul_assoc, mul_right_mem_nonZeroDivisorsRight_eq_zero_iff hm.2] at h0
-  rwa [← (f.map_units ms.2).mul_left_eq_zero, eq, map_eq_zero_iff]
-
-theorem map_nonZeroDivisors_le (f : LocalizationMap S N) :
-    (nonZeroDivisors M).map f ≤ nonZeroDivisors N :=
-  map_le_iff_le_comap.mpr f.nonZeroDivisors_le_comap
-
-theorem noZeroDivisors (f : LocalizationMap S N) [NoZeroDivisors M] : NoZeroDivisors N := by
-  refine noZeroDivisors_iff_forall_mem_nonZeroDivisors.mpr fun n hn ↦ ?_
-  have ⟨ms, eq⟩ := f.surj n
-  have hs : ms.1 ≠ 0 := fun h ↦ hn (by rwa [h, f.map_zero, (f.map_units _).mul_left_eq_zero] at eq)
-  exact And.left <| mul_mem_nonZeroDivisors.mp
-    (eq ▸ f.map_nonZeroDivisors_le ⟨_, mem_nonZeroDivisors_of_ne_zero hs, rfl⟩)
-
-theorem map_eq_zero_iff (f : LocalizationMap S N) {m : M} : f m = 0 ↔ ∃ s : S, s * m = 0 := by
-  simp_rw [← f.map_zero, eq_iff_exists, mul_zero]
-
 theorem mk'_eq_zero_iff (f : LocalizationMap S N) (m : M) (s : S) :
     f.mk' m s = 0 ↔ ∃ s : S, s * m = 0 := by
   rw [← (f.map_units s).mul_left_inj, mk'_spec, zero_mul, map_eq_zero_iff]
