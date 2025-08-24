@@ -26,69 +26,86 @@ defined to be the restriction of the norm map of `Frac(B)/Frac(A)`.
 -/
 open nonZeroDivisors
 
-variable (A K L B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Field K] [Field L]
-    [Algebra A K] [IsFractionRing A K] [Algebra B L]
-    [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
-    [IsIntegralClosure B A L]
+variable (A K L F B C : Type*)
+variable [CommRing A] [CommRing B] [CommRing C]
+variable [Algebra A B] [Algebra A C]
+variable [Field K] [Field L] [Field F]
+variable [Algebra A K] [IsFractionRing A K]
+variable [Algebra K L] [Algebra A L] [IsScalarTower A K L]
+variable [Algebra K F] [Algebra A F] [IsScalarTower A K F]
+variable [Algebra B L] [IsScalarTower A B L] [IsIntegralClosure B A L]
+variable [Algebra C F] [IsScalarTower A C F] [IsIntegralClosure C A F]
 
 section galois
 
-variable [Algebra.IsAlgebraic K L]
+/-- A generalization of `galRestrictHom` beyond endomorphisms. -/
+noncomputable
+def galRestrict' (f : L →ₐ[K] F) : (B →ₐ[A] C) :=
+  (IsIntegralClosure.equiv A (integralClosure A F) F C).toAlgHom.comp
+      (((f.restrictScalars A).comp (IsScalarTower.toAlgHom A B L)).codRestrict
+        (integralClosure A F) (fun x ↦ IsIntegral.map _ (IsIntegralClosure.isIntegral A L x)))
 
-/-- The lift `End(B/A) → End(L/K)` in an ALKB setup.
+omit [IsFractionRing A K] in
+@[simp]
+lemma algebraMap_galRestrict'_apply (σ : L →ₐ[K] F) (x : B) :
+    algebraMap C F (galRestrict' A K L F B C σ x) = σ (algebraMap B L x) := by
+  simp [galRestrict', galRestrict', Subalgebra.algebraMap_eq]
+
+variable [Algebra.IsAlgebraic K L] [Algebra.IsAlgebraic K F]
+
+/-- A generalization of the the lift `End(B/A) → End(L/K)` in an ALKB setup.
 This is inverse to the restriction. See `galRestrictHom`. -/
 noncomputable
-def galLift (σ : B →ₐ[A] B) : L →ₐ[K] L :=
+def galLift (σ : B →ₐ[A] C) : L →ₐ[K] F :=
   haveI := (IsFractionRing.injective A K).isDomain
-  haveI := NoZeroSMulDivisors.trans_faithfulSMul A K L
+  haveI := NoZeroSMulDivisors.trans_faithfulSMul A K F
   haveI := IsIntegralClosure.isLocalization A K L B
   haveI H : ∀ (y :  Algebra.algebraMapSubmonoid B A⁰),
-      IsUnit (((algebraMap B L).comp σ) (y : B)) := by
+      IsUnit (((algebraMap C F).comp σ) (y : B)) := by
     rintro ⟨_, x, hx, rfl⟩
     simpa only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, AlgHom.commutes,
       isUnit_iff_ne_zero, ne_eq, map_eq_zero_iff _ (FaithfulSMul.algebraMap_injective _ _),
       ← IsScalarTower.algebraMap_apply] using nonZeroDivisors.ne_zero hx
-  haveI H_eq : (IsLocalization.lift (S := L) H).comp (algebraMap K L) = (algebraMap K L) := by
+  haveI H_eq : (IsLocalization.lift (S := L) H).comp (algebraMap K L) = (algebraMap K F) := by
     apply IsLocalization.ringHom_ext A⁰
     ext
     simp only [RingHom.coe_comp, Function.comp_apply, ← IsScalarTower.algebraMap_apply A K L,
-      IsScalarTower.algebraMap_apply A B L, IsLocalization.lift_eq,
-      RingHom.coe_coe, AlgHom.commutes]
+      ← IsScalarTower.algebraMap_apply A K F,
+      IsScalarTower.algebraMap_apply A B L, IsScalarTower.algebraMap_apply A C F,
+      IsLocalization.lift_eq, RingHom.coe_coe, AlgHom.commutes]
   { IsLocalization.lift (S := L) H with commutes' := DFunLike.congr_fun H_eq }
 
 /-- The restriction `End(L/K) → End(B/A)` in an AKLB setup.
 Also see `galRestrict` for the `AlgEquiv` version. -/
 noncomputable
 def galRestrictHom : (L →ₐ[K] L) ≃* (B →ₐ[A] B) where
-  toFun := fun f ↦ (IsIntegralClosure.equiv A (integralClosure A L) L B).toAlgHom.comp
-      (((f.restrictScalars A).comp (IsScalarTower.toAlgHom A B L)).codRestrict
-        (integralClosure A L) (fun x ↦ IsIntegral.map _ (IsIntegralClosure.isIntegral A L x)))
+  toFun f := galRestrict' A K L L B B f
   map_mul' := by
     intro σ₁ σ₂
     ext x
     apply (IsIntegralClosure.equiv A (integralClosure A L) L B).symm.injective
     ext
-    dsimp
+    dsimp [galRestrict']
     simp only [AlgEquiv.symm_apply_apply, AlgHom.coe_codRestrict, AlgHom.coe_restrictScalars',
       AlgHom.coe_comp, IsScalarTower.coe_toAlgHom', Function.comp_apply,
       AlgHom.mul_apply, IsIntegralClosure.algebraMap_equiv, Subalgebra.algebraMap_eq]
     rfl
-  invFun := galLift A K L B
+  invFun := galLift A K L L B B
   left_inv σ :=
     have := (IsFractionRing.injective A K).isDomain
     have := IsIntegralClosure.isLocalization A K L B
     AlgHom.coe_ringHom_injective <| IsLocalization.ringHom_ext (Algebra.algebraMapSubmonoid B A⁰)
-      <| RingHom.ext fun x ↦ by simp [Subalgebra.algebraMap_eq, galLift]
+      <| RingHom.ext fun x ↦ by simp [galRestrict', Subalgebra.algebraMap_eq, galLift]
   right_inv σ :=
     have := (IsFractionRing.injective A K).isDomain
     have := IsIntegralClosure.isLocalization A K L B
     AlgHom.ext fun x ↦ IsIntegralClosure.algebraMap_injective B A L
-      (by simp [Subalgebra.algebraMap_eq, galLift])
+      (by simp [galRestrict', Subalgebra.algebraMap_eq, galLift])
 
 @[simp]
 lemma algebraMap_galRestrictHom_apply (σ : L →ₐ[K] L) (x : B) :
     algebraMap B L (galRestrictHom A K L B σ x) = σ (algebraMap B L x) := by
-  simp [galRestrictHom, Subalgebra.algebraMap_eq]
+  simp [galRestrictHom]
 
 @[simp, nolint unusedHavesSuffices] -- false positive from unfolding galRestrictHom
 lemma galRestrictHom_symm_algebraMap_apply (σ : B →ₐ[A] B) (x : B) :
