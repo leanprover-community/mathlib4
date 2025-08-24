@@ -97,11 +97,11 @@ scoped notation "E(" H ")" => Hypergraph.hyperedgeSet H
 lemma _root_.Membership.mem.subset_vertexSet {H : Hypergraph α} {e : Set α} (he : e ∈ E(H)) :
   e ⊆ V(H) := H.hyperedge_isSubset_vertexSet he
 
-lemma edgeSet_subset_powerset_vertexSet {H : Hypergraph α} : E(H) ⊆ V(H).powerset := by
+lemma hyperedgeSet_subset_powerset_vertexSet {H : Hypergraph α} : E(H) ⊆ V(H).powerset := by
   intro e (he : e ∈ E(H))
   simpa using he.subset_vertexSet
 
-lemma mem_vertexSet_of_mem_edgeSet {H : Hypergraph α} {e : Set α} {x : α}
+lemma mem_vertexSet_of_mem_hyperedgeSet {H : Hypergraph α} {e : Set α} {x : α}
   (he : e ∈ H.hyperedgeSet) (hx : x ∈ e) : x ∈ H.vertexSet := by
   have h1 : e ⊆ V(H) := by apply H.hyperedge_isSubset_vertexSet he
   apply Set.mem_of_subset_of_mem h1 hx
@@ -118,7 +118,7 @@ lemma forall_of_forall_verts {e e' : Set α} (he : e ∈ E(H)) (he' : e' ∈ E(H
 
 lemma sUnion_hyperedgeSet_subset_vertexSet : ⋃₀ E(H) ⊆ V(H) := by
   refine subset_powerset_iff.mp ?_
-  exact edgeSet_subset_powerset_vertexSet
+  exact hyperedgeSet_subset_powerset_vertexSet
 
 /-! ## Vertex and Hyperedge Adjacency -/
 
@@ -329,7 +329,7 @@ lemma IsEmpty.not_mem (hH : H.IsEmpty) {e : Set α} : e ∉ E(H) := by
   rw [hH.2]
   exact fun a ↦ a
 
-@[simp] lemma not_isEmpty : ¬ H.IsEmpty ↔ H.IsNonempty := by
+@[simp] lemma not_isEmpty : ¬H.IsEmpty ↔ H.IsNonempty := by
   unfold IsEmpty
   unfold IsNonempty
   constructor
@@ -462,7 +462,6 @@ lemma completeOn_not_isTrivial {S : Set α} : ¬(completeOn S).IsTrivial := by
   unfold IsTrivial
   apply not_and_or.mpr
   right
-  simp
   exact ne_of_mem_of_not_mem' (fun ⦃a⦄ a ↦ a) fun a ↦ a
 
 end Hypergraph
