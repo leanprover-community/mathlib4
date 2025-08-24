@@ -53,7 +53,7 @@ base case of `I 1 θ`, it is in fact more convenient to give the recursive formu
 in terms of `I n θ` and `I (n - 1) θ` (note the natural subtraction!).
 Despite the usually inconvenient subtraction, this in fact allows deducing both of the above facts
 with significantly fewer analysis computations.
-In addition, note the `0 ^ n` on the right hand side - this is intentional, and again allows
+In addition, note the `0 ^ n` on the right-hand side - this is intentional, and again allows
 combining the proof of the "usual" recursion formula and the base case `I 1 θ`.
 -/
 private lemma recursion' (n : ℕ) :
