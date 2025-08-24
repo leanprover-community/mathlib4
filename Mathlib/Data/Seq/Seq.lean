@@ -453,7 +453,6 @@ theorem terminated_stable : ∀ (s : Seq α) {m n : ℕ}, m ≤ n → s.Terminat
 theorem not_terminates_iff {s : Seq α} : ¬s.Terminates ↔ ∀ n, (s.get? n).isSome := by
   simp only [Terminates, TerminatedAt, ← Ne.eq_def, Option.ne_none_iff_isSome, not_exists, iff_self]
 
-@[simp]
 theorem terminatedAt_nil {n : ℕ} : TerminatedAt (nil : Seq α) n := rfl
 
 @[simp]
@@ -1656,7 +1655,7 @@ section AtLeastAsLongAs
 theorem AtLeastAsLongAs.nil {a : Seq α} :
     a.AtLeastAsLongAs (@nil β) := by
   unfold AtLeastAsLongAs
-  simp
+  simp [terminatedAt_nil]
 
 theorem AtLeastAsLongAs.cons {a_hd : α} {a_tl : Seq α} {b_hd : β} {b_tl : Seq β}
     (h : a_tl.AtLeastAsLongAs b_tl) :
