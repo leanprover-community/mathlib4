@@ -329,10 +329,22 @@ theorem contMDiffOn_writtenInExtend_iff (hφ : φ ∈ maximalAtlas I n M) (hψ :
         exact contMDiffOn_extend_symm hψ
       · rw [← φ.extend_source (I := I)]
         sorry -- inclusion of subsets, uses the mapsto property
-    -- finally, use congruence lemma --- and argue
-    -- f' ∘ φ.extend I = (ψ.extend J ∘ f) on φ.source
-    -- (ψ.extend J).symm ∘ f' ∘ (φ.extend I)) φ.source = f on φ.source
-    sorry
+    have : ContMDiffOn I J n ((ψ.extend J).symm ∘ f' ∘ (φ.extend I)) s := this.mono hs
+    have eq1 : EqOn (f' ∘ φ.extend I) (ψ.extend J ∘ f) s := by
+      have : (f' ∘ φ.extend I) = (ψ.extend J ∘ f) ∘ ((φ.extend I).symm ∘ (φ.extend I)) := by
+        simp only [f', Function.comp_assoc]
+      intro x hx
+      rw [this]
+      rw [Function.comp_apply]
+      congr
+      simp only [comp_apply]
+      apply PartialHomeomorph.extend_left_inv φ (hs hx)
+    have eq2 : EqOn ((ψ.extend J).symm ∘ f' ∘ (φ.extend I)) f s := by
+      intro x hx
+      rw [Function.comp_apply, eq1 hx, Function.comp_apply]
+      exact PartialEquiv.left_inv _ (by simpa using hmaps hx)
+    exact this.congr eq2.symm
+    -- TODO: re-do everything with s and not φ.source; then done!
   · -- Easy direction: extended charts and their inverse is smooth on their source,
     -- so composing with them preserves smoothness.
     have : (φ.extend I) '' s ⊆ ↑I '' φ.target := by
