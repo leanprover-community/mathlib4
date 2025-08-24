@@ -78,17 +78,9 @@ theorem ker_mk_eq (r : Setoid α) : ker (@Quotient.mk'' _ r) = r :=
 theorem ker_apply_mk_out {f : α → β} (a : α) : f (⟦a⟧ : Quotient (ker f)).out = f a :=
   @Quotient.mk_out _ (ker f) a
 
+@[simp]
 theorem ker_def {f : α → β} {x y : α} : ker f x y ↔ f x = f y :=
   Iff.rfl
-
-@[simp]
-theorem coe_eq_coe {f : α → β} {x y : α} :
-    (⟦x⟧ : Quotient (ker f)) = ⟦y⟧ ↔ f x = f y :=
-  Quotient.eq
-
-theorem coe_ne_coe {f : α → β} {x y : α} :
-    (⟦x⟧ : Quotient (ker f)) ≠ ⟦y⟧ ↔ f x ≠ f y :=
-  coe_eq_coe.not
 
 /-- Given types `α`, `β`, the product of two equivalence relations `r` on `α` and `s` on `β`:
 `(x₁, x₂), (y₁, y₂) ∈ α × β` are related by `r.prod s` iff `x₁` is related to `y₁`
