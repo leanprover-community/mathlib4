@@ -670,9 +670,11 @@ def stdSimplexEquivIcc : stdSimplex 𝕜 (Fin 2) ≃ Icc (0 : 𝕜) 1 where
     rw [Fin.sum_univ_two] at this
     simp [← this]
 
+@[simp]
 lemma stdSimplexEquivIcc_zero :
     stdSimplexEquivIcc 𝕜 ⟨_, single_mem_stdSimplex 𝕜 0⟩ = ⟨0, by simp⟩ := rfl
 
+@[simp]
 lemma stdSimplexEquivIcc_one :
     stdSimplexEquivIcc 𝕜 ⟨_, single_mem_stdSimplex 𝕜 1⟩ = ⟨1, by simp⟩ := rfl
 
