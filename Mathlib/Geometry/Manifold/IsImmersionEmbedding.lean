@@ -414,6 +414,45 @@ theorem contMDiffAt (h : IsImmersionAt F I I' n f x) : ContMDiffAt I I' n f x :=
 
 end IsImmersionAt
 
+variable {x : M}
+
+lemma _root_.ContMDiffAt.iff_comp_immersionAt [IsManifold I n M] [IsManifold J n N] [IsManifold J' n N']
+    {f : M → N} {φ : N → N'} (h : IsImmersionAt F J J' n φ (f x)) :
+    ContMDiffAt I J n f x ↔ ContMDiffAt I J' n (φ ∘ f) x := by
+  refine ⟨fun hf ↦ h.contMDiffAt.comp x hf, fun h' ↦ ?_⟩
+  let nchart := h.domChart
+  rw [contMDiffAt_iff_of_mem_maximalAtlas (IsManifold.chart_mem_maximalAtlas x)
+    h.domChart_mem_maximalAtlas (mem_chart_source H x) h.mem_domChart_source]
+  refine ⟨sorry, ?_⟩ -- think! continuity is the warm-up problem!
+  let n'chart := h.codChart
+  rw [contMDiffAt_iff_of_mem_maximalAtlas (e := chartAt H x) (e' := h.codChart)
+    (IsManifold.chart_mem_maximalAtlas x) h.codChart_mem_maximalAtlas (mem_chart_source H x)
+    h.mem_codChart_source] at h'
+  replace h' := h'.2
+  have := h.writtenInCharts
+  set f' := (h.domChart.extend J) ∘ f ∘ ↑((chartAt H x).extend I).symm
+  set φ' := (h.codChart.extend J') ∘ φ ∘ (h.domChart.extend J).symm
+  set x' := (((chartAt H x).extend I) x)
+
+  have h'' : ContDiffWithinAt 𝕜 n (φ' ∘ f') (range I) x' := by
+    -- use h' and cancellation
+    sorry
+  set f'' := ((h.equiv ∘ fun x ↦ (x, 0)) ∘ f')
+  have h''' : ContDiffWithinAt 𝕜 n f'' (range I) x' := by
+    -- use h'' and h.writtenInCharts
+    sorry
+  -- Compose with a suitable projection to cancel the inclusion.
+  have h'''' : ContDiffWithinAt 𝕜 n (((Prod.fst : F × F → F) ∘ h.equiv.symm) ∘ f'') (range I) x' := by
+    sorry -- easy, just composition
+  -- merge master, then use ContMDiffWithinAt.congr' to deduplicate
+  apply h''''.congr
+  · intro y hy
+    simp [f'']
+  · simp [f'']
+
+#exit
+end IsImmersionAt
+
 variable (F I I' n) in
 /-- `f : M → N` is a `C^k` immersion if around each point `x ∈ M`,
 there are charts `φ` and `ψ` of `M` and `N` around `x` and `f x`, respectively
