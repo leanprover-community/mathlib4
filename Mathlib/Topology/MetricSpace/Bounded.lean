@@ -40,6 +40,23 @@ universe u v w
 
 variable {α : Type u} {β : Type v} {X ι : Type*}
 
+section UniformSpace
+variable [UniformSpace α] [Preorder α] [CompactIccSpace α]
+
+lemma totallyBounded_Icc (a b : α) : TotallyBounded (Icc a b) :=
+  isCompact_Icc.totallyBounded
+
+lemma totallyBounded_Ico (a b : α) : TotallyBounded (Ico a b) :=
+  (totallyBounded_Icc a b).subset Ico_subset_Icc_self
+
+lemma totallyBounded_Ioc (a b : α) : TotallyBounded (Ioc a b) :=
+  (totallyBounded_Icc a b).subset Ioc_subset_Icc_self
+
+lemma totallyBounded_Ioo (a b : α) : TotallyBounded (Ioo a b) :=
+  (totallyBounded_Icc a b).subset Ioo_subset_Icc_self
+
+end UniformSpace
+
 namespace Metric
 
 section Bounded
@@ -148,6 +165,7 @@ theorem _root_.TotallyBounded.isBounded {s : Set α} (h : TotallyBounded s) : Is
   ((isBounded_biUnion fint).2 fun _ _ => isBounded_ball).subset subs
 
 /-- A compact set is bounded -/
+@[aesop 50% apply, grind ←]
 theorem _root_.IsCompact.isBounded {s : Set α} (h : IsCompact s) : IsBounded s :=
   -- A compact set is totally bounded, thus bounded
   h.totallyBounded.isBounded
@@ -300,18 +318,6 @@ theorem compactSpace_iff_isBounded_univ [ProperSpace α] :
 section CompactIccSpace
 
 variable [Preorder α] [CompactIccSpace α]
-
-theorem _root_.totallyBounded_Icc (a b : α) : TotallyBounded (Icc a b) :=
-  isCompact_Icc.totallyBounded
-
-theorem _root_.totallyBounded_Ico (a b : α) : TotallyBounded (Ico a b) :=
-  (totallyBounded_Icc a b).subset Ico_subset_Icc_self
-
-theorem _root_.totallyBounded_Ioc (a b : α) : TotallyBounded (Ioc a b) :=
-  (totallyBounded_Icc a b).subset Ioc_subset_Icc_self
-
-theorem _root_.totallyBounded_Ioo (a b : α) : TotallyBounded (Ioo a b) :=
-  (totallyBounded_Icc a b).subset Ioo_subset_Icc_self
 
 theorem isBounded_Icc (a b : α) : IsBounded (Icc a b) :=
   (totallyBounded_Icc a b).isBounded

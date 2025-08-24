@@ -261,6 +261,10 @@ theorem coe_copy (f : α →o β) (f' : α → β) (h : f' = f) : (f.copy f' h) 
 theorem copy_eq (f : α →o β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
   DFunLike.ext' h
 
+instance {α : Type*} (β : Type*) [PartialOrder α] [PartialOrder β] [DecidableEq (α → β)] :
+    DecidableEq (α →o β) := fun a b =>
+  decidable_of_iff (a.toFun = b.toFun) OrderHom.ext_iff.symm
+
 /-- The identity function as bundled monotone function. -/
 @[simps -fullyApplied]
 def id : α →o α :=
@@ -986,7 +990,7 @@ def ofCmpEqCmp {α β} [LinearOrder α] [LinearOrder β] (f : α → β) (g : β
       intro
       rw [← cmp_eq_eq_iff, ← h, cmp_self_eq_eq],
     map_rel_iff' := by
-      intros a b
+      intro a b
       apply le_iff_le_of_cmp_eq_cmp
       convert (h a (f b)).symm
       apply gf }
