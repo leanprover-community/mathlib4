@@ -850,22 +850,21 @@ def ofAlgEquiv (f : A ≃ₐ[R] B) (hf : ∀ x, f (star x) = star (f x)) :
   map_star' := hf
 
 @[simp]
-theorem ofAlgEquiv_apply (f : A ≃ₐ[R] B) (hf : ∀ x, f (star x) = star (f x))
-    (x : A) : StarAlgEquiv.ofAlgEquiv f hf x = f x := rfl
+theorem ofAlgEquiv_apply (f : A ≃ₐ[R] B) (hf : ∀ x, f (star x) = star (f x)) (x : A) :
+    ofAlgEquiv f hf x = f x := rfl
 
 @[simp]
 theorem ofAlgEquiv_symm (f : A ≃ₐ[R] B) (hf : ∀ x, f (star x) = star (f x)) :
-    (StarAlgEquiv.ofAlgEquiv f hf).symm = StarAlgEquiv.ofAlgEquiv f.symm
-    (fun x => by simp [← f.apply_symm_apply _ ▸ hf (f.symm x)]) :=
+    (ofAlgEquiv f hf).symm = ofAlgEquiv f.symm (ofAlgEquiv f hf).symm.map_star' :=
   rfl
 
 @[simp]
 theorem toAlgEquiv_ofAlgEquiv (f : A ≃ₐ[R] B) (hf : ∀ x, f (star x) = star (f x)) :
-    (StarAlgEquiv.ofAlgEquiv f hf).toAlgEquiv = f := rfl
+    (ofAlgEquiv f hf).toAlgEquiv = f := rfl
 
 @[simp]
 theorem ofAlgEquiv_toAlgEquiv (f : A ≃⋆ₐ[R] B) :
-  StarAlgEquiv.ofAlgEquiv f.toAlgEquiv f.map_star' = f := rfl
+    ofAlgEquiv f.toAlgEquiv f.map_star' = f := rfl
 
 end AlgEquiv
 
