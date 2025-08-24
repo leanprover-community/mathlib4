@@ -75,11 +75,12 @@ variable (X Y Z : Type*) [Fintype X] [Fintype Y] [Fintype Z]
 /-- The simplex with a given type of vertices `X`. -/
 def topologicalSimplex : Set (X → ℝ) := setOf (fun f ↦ (∀ i, 0 ≤ f i) ∧ ∑ i, f i = 1)
 
-/-- The simplex with a given type of vertices `X`, as a type. -/
-abbrev TopologicalSimplex : Type _ := topologicalSimplex X
-
+variable {X} in
 lemma mem_topologicalSimplex_iff (f : X → ℝ) :
     f ∈ topologicalSimplex X ↔ (∀ i, 0 ≤ f i) ∧ ∑ i, f i = 1 := Iff.rfl
+
+/-- The simplex with a given type of vertices `X`, as a type. -/
+abbrev TopologicalSimplex : Type _ := topologicalSimplex X
 
 namespace TopologicalSimplex
 
