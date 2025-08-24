@@ -354,40 +354,32 @@ lemma _root_.ContMDiffAt.iff_comp_immersionAt [IsManifold I n M] [IsManifold J n
   set f' := (h.domChart.extend J) ∘ f ∘ ↑((chartAt H x).extend I).symm
   set φ' := (h.codChart.extend J') ∘ φ ∘ (h.domChart.extend J).symm
   set x' := (((chartAt H x).extend I) x)
-
+  -- Current WIP code!
   have h'' : ContDiffWithinAt 𝕜 n (φ' ∘ f') (range I) x' := by
-    apply h'.congr
-    · intro y hy
-      simp only [φ', f']
-      simp
-      congr
-      refine PartialHomeomorph.left_inv h.domChart ?_
-      sorry -- need to think!
-    -- deduplicate again!
-    -- use h' and cancellation
-    sorry
+    apply h'.congr_of_mem (fun y hy ↦ ?_) (mem_range_self _)
+    simp only [φ', f']
+    simp
+    congr
+    refine PartialHomeomorph.left_inv h.domChart ?_
+    sorry -- need to think!
   set f'' := ((h.equiv ∘ fun x ↦ (x, 0)) ∘ f')
   have h''' : ContDiffWithinAt 𝕜 n f'' (range I) x' := by
-    -- deduplicate!
-    apply h''.congr
-    · intro y hy
-      simp only [f'']
-      nth_rw 2 [comp_apply]
-      simp only [φ']
-      rw [h.writtenInCharts]
-      congr
-      -- need to think, is y in the right set?
-      simp only [f']
-      sorry
-    · sorry
+    apply h''.congr_of_mem (fun y hy ↦ ?_) (mem_range_self _)
+    simp only [f'']
+    nth_rw 2 [comp_apply]
+    simp only [φ']
+    rw [h.writtenInCharts]
+    congr
+    -- need to think, is y in the right set?
+    simp only [f']
+    sorry
   -- Compose with a suitable projection to cancel the inclusion.
-  have h'''' : ContDiffWithinAt 𝕜 n (((Prod.fst : F × F → F) ∘ h.equiv.symm) ∘ f'') (range I) x' := by
+  have h'''' : ContDiffWithinAt 𝕜 n (Prod.fst ∘ h.equiv.symm ∘ f'') (range I) x' := by
     sorry -- easy, just composition
-  -- merge master, then use ContMDiffWithinAt.congr' to deduplicate
-  apply h''''.congr
-  · intro y hy
-    simp [f'']
-  · simp [f'']
+  apply h''''.congr_of_mem ?_ (mem_range_self _)
+  intro y hy
+  simp [f'']
+
 
 #exit
 end IsImmersionAt
