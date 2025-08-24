@@ -35,11 +35,12 @@ This shortens the overall argument, as the definition of submersions has the sam
 ## Main results
 * `IsImmersionAt.congr_of_eventuallyEq`: being an immersion is a local property.
   If `f` and `g` agree near `x` and `f` is an immersion at `x`, so is `g`
+* `IsImmersionAt.prodMap`: the product of two immersions at `x` is an immersion
+* `IsImmersion.prodMap`: the product of two immersions is an immersion
 
 ## TODO
 * `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
 * `IsImmersion.contMDiff`: if f is an immersion, it is `C^n`.
-* `IsImmersionAt.prodMap`: the product of two immersions is an immersion
 * If `f` is an immersion at `x`, its differential splits, hence is injective.
 * If `f: M → M'` is a map between Banach manifolds, `mfderiv I I' f x` splitting implies `f` is an
   immersion at `x`. (This requires the inverse function theorem.)
@@ -242,6 +243,37 @@ in the `atlas` would be too optimistic: lying in the `maximalAtlas` is sufficien
 def IsImmersionAt (f : M → M') (x : M) : Prop :=
   LiftSourceTargetPropertyAt I I' n f x (ImmersionAtProp F I I' M M')
 
+section
+
+-- Can grind prove the next two lemmas, after sufficient future tagging?
+-- Which of these two proofs is better?
+lemma aux1 {α β γ δ : Type*} {f f' : α → γ} {g g' : β → δ} {s : Set α} {t : Set β}
+    (h : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t)) (ht : Set.Nonempty t) :
+    EqOn f f' s := by
+  choose x0 hx0 using ht
+  have a : f = (Prod.fst) ∘ (Prod.map f g) ∘ (·, x0) := by ext x; simp
+  have b : f' = Prod.fst ∘ (Prod.map f' g') ∘ (·, x0) := by ext x; simp
+  rw [a, b]
+  exact (eqOn_comp_right_iff.mpr <| h.mono (image_prodMk_subset_prod_left hx0)).comp_left
+
+lemma aux2 {α β γ δ : Type*} {f f' : α → γ} {g g' : β → δ} {s : Set α} {t : Set β}
+    (h : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t)) (hs : Set.Nonempty s) :
+    EqOn g g' t := by
+  choose xs hxs using hs
+  intro x hx
+  have h' := h <| mk_mem_prod hxs hx
+  simp at h'
+  exact h'.2
+
+-- TODO: move to Data.Set.Operations
+lemma Set.EqOn.prodMap {α β γ δ : Type*}
+    {f f' : α → γ} {g g' : β → δ} {s : Set α} {t : Set β}
+    (hf : EqOn f f' s) (hg : EqOn g g' t) : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t) := by
+  rintro ⟨x, x'⟩ ⟨hx, hx'⟩
+  simp [hf hx, hg hx']
+
+end
+
 namespace IsImmersionAt
 
 variable {f g : M → M'} {x : M}
@@ -363,6 +395,43 @@ lemma congr_of_eventuallyEq {x : M} (h : IsImmersionAt F I I' n f x) (h' : f =�
     IsImmersionAt F I I' n g x :=
   LiftSourceTargetPropertyAt.congr_of_eventuallyEq ImmersionAtPropIsNice h.property h'
 
+lemma aux {α β γ δ : Type*} {f f' : α → γ} {g g' : β → δ}
+    {s : Set α} {t : Set β} (hs : Set.Nonempty s) (ht : Set.Nonempty t) :
+    EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t) ↔ EqOn f f' s ∧ EqOn g g' t :=
+  --⟨fun h ↦ aux1 h hs ht, fun ⟨h, h'⟩ ↦ aux2 h h'⟩
+  ⟨fun h ↦ ⟨aux1 h ht, aux2 h hs⟩, fun ⟨h, h'⟩ ↦ h.prodMap h'⟩
+
+/-- If `f: M → N` and `g: M' × N'` are immersions at `x` and `x'`, respectively,
+then `f × g: M × N → M' × N'` is an immersion at `(x, x')`. -/
+theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
+    [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
+    (h : IsImmersionAt F I J n f x) (h' : IsImmersionAt F' I' J' n g x') :
+    IsImmersionAt (F × F') (I.prod I') (J.prod J') n (Prod.map f g) (x, x') := by
+  sorry
+  /- use (ContinuousLinearEquiv.prodProdProdComm 𝕜 E E' F F').trans (h.equiv.prodCongr h'.equiv)
+  use h.domChart.prod h'.domChart, h.codChart.prod h'.codChart
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · simp [h.mem_domChart_source, h'.mem_domChart_source]
+  · simp [mem_codChart_source h, mem_codChart_source h']
+  · exact IsManifold.mem_maximalAtlas_prod
+      (domChart_mem_maximalAtlas h) (domChart_mem_maximalAtlas h')
+  · apply IsManifold.mem_maximalAtlas_prod
+      (codChart_mem_maximalAtlas h) (codChart_mem_maximalAtlas h')
+  · rw [PartialHomeomorph.prod_toPartialEquiv, PartialEquiv.prod_source, prodMap_image_prod]
+    exact prod_mono (map_source_subset_source h) (map_source_subset_source h')
+  · rw [h.domChart.extend_prod h'.domChart, h.codChart.extend_prod, PartialEquiv.prod_target]
+    set C := ((h.codChart.extend J).prod (h'.codChart.extend J')) ∘
+      Prod.map f g ∘ ((h.domChart.extend I).prod (h'.domChart.extend I')).symm
+    have hC : C = Prod.map ((h.codChart.extend J) ∘ f ∘ (h.domChart.extend I).symm)
+        ((h'.codChart.extend J') ∘ g ∘ (h'.domChart.extend I').symm) := by
+      ext x <;> simp [C]
+    set Φ := (((ContinuousLinearEquiv.prodProdProdComm 𝕜 E E' F F').trans
+      (h.equiv.prodCongr h'.equiv)) ∘ (·, 0))
+    have hΦ: Φ = Prod.map (h.equiv ∘ (·, 0)) (h'.equiv ∘ (·, 0)) := by ext x <;> simp [Φ]
+    rw [hC, hΦ]
+    exact aux2 (writtenInCharts h) (writtenInCharts h')
+    exact (writtenInCharts h).prodMap (writtenInCharts h') -/
+
 end IsImmersionAt
 
 variable (F I I' n) in
@@ -384,5 +453,13 @@ lemma isImmersionAt (h : IsImmersion F I I' n f) (x : M) : IsImmersionAt F I I' 
 /-- If `f = g` and `f` is an immersion, so is `g`. -/
 theorem congr (h : IsImmersion F I I' n f) (heq : f = g) : IsImmersion F I I' n g :=
   heq ▸ h
+
+/-- If `f: M → N` and `g: M' × N'` are immersions at `x` and `x'`, respectively,
+then `f × g: M × N → M' × N'` is an immersion at `(x, x')`. -/
+theorem prodMap {f : M → N} {g : M' → N'}
+    [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
+    (h : IsImmersion F I J n f) (h' : IsImmersion F' I' J' n g) :
+    IsImmersion (F × F') (I.prod I') (J.prod J') n (Prod.map f g) :=
+  fun ⟨x, x'⟩ ↦ (h x).prodMap (h' x')
 
 end IsImmersion
