@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Topology.Algebra.Module.Basic
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
+import Mathlib.Algebra.Module.LinearMap.Lemmas
 import Mathlib.LinearAlgebra.Projection
+import Mathlib.Topology.Algebra.ContinuousMonoidHom
 import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # Continuous linear maps
@@ -703,15 +704,6 @@ theorem smulRight_comp [ContinuousMul R₁] {x : M₂} {c : R₁} :
       smulRight (1 : R₁ →L[R₁] R₁) (c • x) := by
   ext
   simp
-
-/-- The range of `f.smulRight x` is the span of `{x}`. -/
-theorem _root_.LinearMap.range_smulRight_apply {R M M₁ : Type*} [AddCommMonoid M] [AddCommMonoid M₁]
-    [DivisionSemiring R] [Module R M] [Module R M₁] {f : M →ₗ[R] R} (hf : f ≠ 0) (x : M₁) :
-    range (f.smulRight x) = Submodule.span R {x} := Submodule.ext fun z => by
-  simp only [LinearMap.mem_range, LinearMap.smulRight_apply, Submodule.mem_span_singleton]
-  refine ⟨fun ⟨w, hw⟩ => ⟨f w, hw ▸ rfl⟩, fun ⟨w, hw⟩ => ?_⟩
-  obtain ⟨y, hy⟩ : ∃ y, f y ≠ 0 := by simpa [Ne, LinearMap.ext_iff] using hf
-  exact ⟨(w * (f y)⁻¹) • y, by simp [hw, mul_assoc, inv_mul_cancel₀ hy]⟩
 
 theorem range_smulRight_apply {R : Type*} [DivisionSemiring R] [Module R M₁] [Module R M₂]
     [TopologicalSpace R] [ContinuousSMul R M₂] {f : M₁ →L[R] R} (hf : f ≠ 0) (x : M₂) :
