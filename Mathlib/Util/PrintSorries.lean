@@ -18,6 +18,8 @@ by the given command.
 
 ## TODO
 
+* Add configuration options. `#print sorries +positions -types` would print file/line/col
+  information and not print the types.
 * Make versions for other axioms/constants.
   The `#print sorries` command itself shouldn't be generalized, since `sorry` is a special concept,
   representing unfinished proofs, and it has special support for "go to definition", etc.
