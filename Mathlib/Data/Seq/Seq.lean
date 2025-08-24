@@ -709,6 +709,21 @@ def fold (s : Seq α) (init : β) (f : β → α → β) : Seq β :=
     | some (x, s) => .some (f acc x, f acc x, s)
   cons init <| corec f (init, s)
 
+/-- Applies `f` to the `n`th element of the sequence, if it exists, replacing that element
+with the result. -/
+def update (s : Seq α) (n : ℕ) (f : α → α) : Seq α where
+  val := Function.update s.val n ((s.val n).map f)
+  property := by
+    have (i : ℕ) : Function.update s.val n ((s.get? n).map f) i = none ↔ s.get? i = none := by
+      by_cases hi : i = n <;> simp [Function.update, hi]
+    simp only [IsSeq, val_eq_get, this]
+    exact @s.prop
+
+/-- Sets the value of sequence `s` at index `n` to `a`. If the `n`th element does not exist
+(`s` terminates earlier), the sequence is left unchanged. -/
+def set (s : Seq α) (n : ℕ) (a : α) : Seq α :=
+  update s n fun _ ↦ a
+
 section OfStream
 
 @[simp]
@@ -1237,6 +1252,60 @@ theorem fold_head (init : β) (f : β → α → β) (s : Seq α) :
   simp [fold]
 
 end Fold
+
+section Update
+
+variable (hd x : α) (tl : Seq α) (f : α → α)
+
+theorem get?_update (s : Seq α) (n : ℕ) (m : ℕ) :
+    (s.update n f).get? m = if m = n then (s.get? m).map f else s.get? m := by
+  simp [update, Function.update]
+  split_ifs with h_if
+  · simp [h_if]
+  · rfl
+
+@[simp]
+theorem update_nil (n : ℕ) : update nil n f = nil := by
+  ext1 m
+  simp [get?_update]
+
+@[simp]
+theorem set_nil (n : ℕ) (x : α) : set nil n x = nil := update_nil _ _
+
+@[simp]
+theorem update_cons_zero : (cons hd tl).update 0 f = cons (f hd) tl := by
+  ext1 n
+  cases n <;> simp [get?_update]
+
+@[simp]
+theorem set_cons_zero (hd' : α) : (cons hd tl).set 0 hd' = cons hd' tl :=
+  update_cons_zero _ _ _
+
+@[simp]
+theorem update_cons_succ (n : ℕ) : (cons hd tl).update (n + 1) f = cons hd (tl.update n f) := by
+  ext1 n
+  cases n <;> simp [get?_update]
+
+@[simp]
+theorem set_cons_succ (n : ℕ) : (cons hd tl).set (n + 1) x = cons hd (tl.set n x) :=
+  update_cons_succ _ _ _ _
+
+theorem get?_set_of_not_terminatedAt {s : Seq α} {n : ℕ} (h_not_terminated : ¬ s.TerminatedAt n) :
+    (s.set n x).get? n = x := by
+  simpa [set, update, ← Option.ne_none_iff_exists'] using h_not_terminated
+
+theorem get?_set_of_terminatedAt {s : Seq α} {n : ℕ} (h_terminated : s.TerminatedAt n) :
+    (s.set n x).get? n = .none := by
+  simpa [set, get?_update] using h_terminated
+
+theorem get?_set_of_ne (s : Seq α) {m n : ℕ} (h : n ≠ m) : (s.set m x).get? n = s.get? n := by
+  simp [set, get?_update, h]
+
+theorem drop_set_of_lt (s : Seq α) {m n : ℕ} (h : m < n) : (s.set m x).drop n = s.drop n := by
+  ext1 i
+  simp [get?_set_of_ne _ _ (show n + i ≠ m by omega)]
+
+end Update
 
 instance : Functor Seq where map := @map
 
