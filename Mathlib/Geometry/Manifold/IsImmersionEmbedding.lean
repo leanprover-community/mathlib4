@@ -412,6 +412,53 @@ private theorem contMDiffOn (h : IsImmersionAt F I I' n f x) :
 theorem contMDiffAt (h : IsImmersionAt F I I' n f x) : ContMDiffAt I I' n f x :=
   h.contMDiffOn.contMDiffAt (h.domChart.open_source.mem_nhds (mem_domChart_source h))
 
+-- TODO: generalise to x being an interior point!
+/-- If `M` is boundaryless and `f` an immersion at `x`,
+then `x` has an open neighbourhood `s` such that the restriction of `f` to `s` is an embedding. -/
+lemma exists_nbhd_restr_isEmbedding (h : IsImmersionAt F I I' n f x) :
+    ∃ s : Set M, IsOpen s ∧ s ∈ 𝓝 x ∧ Topology.IsEmbedding (s.restrict f) := by
+  have := h.writtenInCharts
+  use h.domChart.source -- does this do the trick?
+  refine ⟨h.domChart.open_source, h.domChart.open_source.mem_nhds h.mem_domChart_source, ?_⟩
+
+  have : Topology.IsEmbedding (h.equiv ∘ fun x ↦ (x, 0)) :=
+    h.equiv.toHomeomorph.isEmbedding.comp (isEmbedding_prodMkLeft 0)
+  letI rhs := (h.codChart.extend I').symm ∘ (h.equiv ∘ fun x ↦ (x, 0)) ∘ (h.domChart.extend I)
+  have : EqOn f rhs h.domChart.source := by -- extract as helper lemma!
+    simp only [rhs]
+    have : EqOn f (((h.codChart.extend I').symm ∘
+        ((h.codChart.extend I') ∘ f ∘ (h.domChart.extend I).symm) ∘ (h.domChart.extend I)))
+        h.domChart.source := by
+      intro x hx
+      symm
+      trans f ((h.domChart.extend I).symm ((h.domChart.extend I) x))
+      · simp only [PartialHomeomorph.extend, PartialEquiv.coe_trans_symm,
+          PartialHomeomorph.coe_coe_symm, ModelWithCorners.toPartialEquiv_coe_symm,
+          PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe,
+          PartialHomeomorph.toFun_eq_coe, comp_apply, ModelWithCorners.left_inv]
+        refine h.codChart.left_inv ?_
+        apply h.map_source_subset_source
+        apply mem_image_of_mem
+        rwa [h.domChart.left_inv hx]
+      · simp [h.domChart.left_inv  hx]
+    apply this.trans
+    apply EqOn.comp_left
+    apply EqOn.comp_right (t := (h.domChart.extend I).target) h.writtenInCharts
+    rw [h.domChart.extend_target_eq_image_source]
+    exact mapsTo_image _ h.domChart.source
+  have : h.domChart.source.restrict f = h.domChart.source.restrict rhs := by
+    ext ⟨x, hx⟩
+    simpa using this hx
+  have hrhs : Topology.IsEmbedding (h.domChart.source.restrict rhs) := by
+    set s := h.domChart.source
+    --set s' := sorry
+    have : s.restrict rhs = (s.restrict ((h.codChart.extend I').symm)) ∘ (h.equiv ∘ fun x ↦ (x, 0)) ∘ (s'.restrict (h.domChart.extend I)) := sorry
+    sorry
+  rw [this]
+  exact hrhs
+
+#exit
+
 -- TODO: are the manifold hypotheses necessary now? think!
 /-- A point-wise version of `Topology.IsInducing.nhds_eq_comap` -/
 lemma nhds_eq_comap {f : M → N} (hf : IsImmersionAt F I J n f x) :
