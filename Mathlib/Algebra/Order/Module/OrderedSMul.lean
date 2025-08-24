@@ -107,7 +107,7 @@ end LinearOrderedSemiring
 
 section LinearOrderedSemifield
 
-variable [Semifield 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+variable [Semifield 𝕜] [PartialOrder 𝕜] [IsStrictOrderedRing 𝕜] [PosMulReflectLT 𝕜]
   [AddCommMonoid M] [PartialOrder M]
   [AddCommMonoid N] [PartialOrder N]
   [MulActionWithZero 𝕜 M] [MulActionWithZero 𝕜 N]
