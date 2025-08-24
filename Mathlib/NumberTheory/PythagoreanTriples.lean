@@ -14,7 +14,7 @@ import Mathlib.Tactic.FieldSimp
 The main result is the classification of Pythagorean triples. The final result is for general
 Pythagorean triples. It follows from the more interesting relatively prime case. We use the
 "rational parametrization of the circle" method for the proof. The parametrization maps the point
-`(x / z, y / z)` to the slope of the line through `(-1 , 0)` and `(x / z, y / z)`. This quickly
+`(x / z, y / z)` to the slope of the line through `(-1, 0)` and `(x / z, y / z)`. This quickly
 shows that `(x / z, y / z) = (2 * m * n / (m ^ 2 + n ^ 2), (m ^ 2 - n ^ 2) / (m ^ 2 + n ^ 2))` where
 `m / n` is the slope. In order to identify numerators and denominators we now need results showing
 that these are coprime. This is easy except for the prime 2. In order to deal with that we have to

@@ -228,7 +228,7 @@ noncomputable def extendTo𝕜'ₗ [ContinuousConstSMul 𝕜 E] : StrongDual ℝ
 lemma re_extendTo𝕜'ₗ [ContinuousConstSMul 𝕜 E] (g : StrongDual ℝ E) (x : E) :
     re ((extendTo𝕜'ₗ g) x : 𝕜) = g x := by
   have h g (x : E) : extendTo𝕜'ₗ g x = ((g x : 𝕜) - (I : 𝕜) * (g ((I : 𝕜) • x) : 𝕜)) := rfl
-  simp only [h , map_sub, ofReal_re, mul_re, I_re, zero_mul, ofReal_im, mul_zero,
+  simp only [h, map_sub, ofReal_re, mul_re, I_re, zero_mul, ofReal_im, mul_zero,
     sub_self, sub_zero]
 
 variable [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]

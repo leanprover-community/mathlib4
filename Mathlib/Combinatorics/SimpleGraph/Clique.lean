@@ -781,7 +781,7 @@ instance [DecidableEq α] [DecidableRel G.Adj] {s : Finset α} : Decidable (G.Is
 lemma IsIndepSet.nonempty_mem_compl_mem_edge
     [Fintype α] [DecidableEq α] {s : Finset α} (indA : G.IsIndepSet s) {e} (he : e ∈ G.edgeSet) :
     { b ∈ sᶜ | b ∈ e }.Nonempty := by
-  obtain ⟨v , w⟩ := e
+  obtain ⟨v, w⟩ := e
   by_contra c
   rw [IsIndepSet] at indA
   rw [mem_edgeSet] at he
