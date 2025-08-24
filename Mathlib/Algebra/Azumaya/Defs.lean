@@ -20,7 +20,7 @@ TODO : Add the three more definitions and prove they are equivalent:
 
 ## Reference
 
-* [Benson Farb , R. Keith Dennis, *Noncommutative Algebra*][bensonfarb1993]
+* [Benson Farb, R. Keith Dennis, *Noncommutative Algebra*][bensonfarb1993]
 
 ## Tags
 
@@ -55,4 +55,3 @@ lemma AlgHom.mulLeftRight_apply (a : A) (b : Aᵐᵒᵖ) (x : A) :
   `AlgHom.mulLeftRight R A : (A ⊗[R] Aᵐᵒᵖ) →ₐ[R] Module.End R A` is an isomorphism. -/
 class IsAzumaya : Prop extends Module.Projective R A, FaithfulSMul R A, Module.Finite R A where
     bij : Function.Bijective <| AlgHom.mulLeftRight R A
-

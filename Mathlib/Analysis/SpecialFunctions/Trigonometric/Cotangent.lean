@@ -91,7 +91,7 @@ theorem multipliable_sineTerm (x : ℂ) : Multipliable fun i ↦ (1 + sineTerm x
 
 lemma euler_sineTerm_tprod (hx : x ∈ ℂ_ℤ) :
     ∏' i : ℕ, (1 + sineTerm x i) = Complex.sin (π * x) / (π * x) := by
-  rw [← Multipliable.hasProd_iff (multipliable_sineTerm x) ,
+  rw [← Multipliable.hasProd_iff (multipliable_sineTerm x),
     Multipliable.hasProd_iff_tendsto_nat (multipliable_sineTerm x)]
   exact tendsto_euler_sin_prod' (integerComplement.ne_zero hx)
 
@@ -141,7 +141,7 @@ theorem tendsto_logDeriv_euler_sin_div (hx : x ∈ ℂ_ℤ) :
       HasProdLocallyUniformlyOn_euler_sin_prod.tendstoLocallyUniformlyOn_finsetRange ?_ ?_
   · filter_upwards with n using by fun_prop
   · simp only [ne_eq, div_eq_zero_iff, mul_eq_zero, ofReal_eq_zero, not_or]
-    exact ⟨sin_pi_z_ne_zero hx, Real.pi_ne_zero , integerComplement.ne_zero hx⟩
+    exact ⟨sin_pi_z_ne_zero hx, Real.pi_ne_zero, integerComplement.ne_zero hx⟩
 
 theorem logDeriv_sin_div_eq_cot (hz : x ∈ ℂ_ℤ) :
     logDeriv (fun t ↦ (Complex.sin (π * t) / (π * t))) x = π * cot (π * x) - 1 / x := by

@@ -753,7 +753,7 @@ lemma inl_rel'_inl_iff (x₁ y₁ : X₁) :
   · rintro (_ | ⟨_, _, h⟩)
     · exact Or.inl rfl
     · exact Or.inr ⟨_, _, h, rfl, rfl⟩
-  · rintro (rfl | ⟨_,_ , h, rfl, rfl⟩)
+  · rintro (rfl | ⟨_, _, h, rfl, rfl⟩)
     · apply Rel'.refl
     · exact Rel'.inl_inl _ _ h
 

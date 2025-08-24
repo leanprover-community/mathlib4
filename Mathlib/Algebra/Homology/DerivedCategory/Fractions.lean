@@ -136,7 +136,7 @@ lemma left_fac_of_isStrictlyLE_of_isStrictlyGE
     {X Y : CochainComplex C ℤ} (a b : ℤ)
     [X.IsStrictlyLE b] [Y.IsStrictlyGE a] [Y.IsStrictlyLE b] (f : Q.obj X ⟶ Q.obj Y) :
     ∃ (Y' : CochainComplex C ℤ) ( _ : Y'.IsStrictlyGE a) (_ : Y'.IsStrictlyLE b)
-    (g : X ⟶ Y') (s : Y ⟶ Y') (_ : IsIso (Q.map s)) , f = Q.map g ≫ inv (Q.map s) := by
+    (g : X ⟶ Y') (s : Y ⟶ Y') (_ : IsIso (Q.map s)), f = Q.map g ≫ inv (Q.map s) := by
   obtain ⟨Y', hY', g, s, hs, fac⟩ := left_fac_of_isStrictlyGE f a
   have : IsIso (Q.map (CochainComplex.truncLEMap s b)) := by
     rw [isIso_Q_map_iff_quasiIso] at hs

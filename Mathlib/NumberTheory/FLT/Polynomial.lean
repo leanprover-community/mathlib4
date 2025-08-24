@@ -20,7 +20,7 @@ all polynomials must be constants.
 
 More generally, we can prove non-solvability of the Fermat-Catalan equation: there are no
 non-constant polynomial solutions to the equation `u * a ^ p + v * b ^ q + w * c ^ r = 0`, where
-`p, q, r ≥ 3` with `p * q + q * r + r * p ≤ p * q * r` , `p, q, r` not divisible by `char k`,
+`p, q, r ≥ 3` with `p * q + q * r + r * p ≤ p * q * r`, `p, q, r` not divisible by `char k`,
 and `u, v, w` are nonzero elements in `k`.
 FLT is the special case where `p = q = r = n`, `u = v = 1`, and `w = -1`.
 

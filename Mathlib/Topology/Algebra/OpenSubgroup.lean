@@ -503,7 +503,7 @@ open Set Filter
 @[to_additive]
 lemma exist_mul_closure_nhds {W : Set G} (WClopen : IsClopen W) : ∃ T ∈ 𝓝 (1 : G), W * T ⊆ W := by
   apply WClopen.isClosed.isCompact.induction_on (p := fun S ↦ ∃ T ∈ 𝓝 (1 : G), S * T ⊆ W)
-    ⟨Set.univ ,by simp only [univ_mem, empty_mul, empty_subset, and_self]⟩
+    ⟨Set.univ, by simp only [univ_mem, empty_mul, empty_subset, and_self]⟩
     (fun _ _ huv ⟨T, hT, mem⟩ ↦ ⟨T, hT, (mul_subset_mul_right huv).trans mem⟩)
     fun U V ⟨T₁, hT₁, mem1⟩ ⟨T₂, hT₂, mem2⟩ ↦ ⟨T₁ ∩ T₂, inter_mem hT₁ hT₂, by
       rw [union_mul]
@@ -539,7 +539,7 @@ theorem exist_openSubgroup_sub_clopen_nhds_of_one {G : Type*} [Group G] [Topolog
     ∃ H : OpenSubgroup G, (H : Set G) ⊆ W := by
   rcases exists_mulInvClosureNhd WClopen with ⟨V, hV⟩
   let S : Subgroup G := {
-    carrier := ⋃ n , V ^ (n + 1)
+    carrier := ⋃ n, V ^ (n + 1)
     mul_mem' := fun ha hb ↦ by
       rcases mem_iUnion.mp ha with ⟨k, hk⟩
       rcases mem_iUnion.mp hb with ⟨l, hl⟩
@@ -557,7 +557,7 @@ theorem exist_openSubgroup_sub_clopen_nhds_of_one {G : Type*} [Group G] [Topolog
       use k
       rw [← hV.inv]
       simpa only [inv_pow, Set.mem_inv, inv_inv] using hk }
-  have : IsOpen (⋃ n , V ^ (n + 1)) := by
+  have : IsOpen (⋃ n, V ^ (n + 1)) := by
     refine isOpen_iUnion (fun n ↦ ?_)
     rw [pow_succ]
     exact hV.isOpen.mul_left

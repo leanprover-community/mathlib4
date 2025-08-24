@@ -149,7 +149,7 @@ theorem BaireMeasurableSet.residualEq_isOpen (h : BaireMeasurableSet s) :
 /-- A set is Baire measurable if and only if it differs from some open set by a meager set. -/
 theorem BaireMeasurableSet.iff_residualEq_isOpen :
     BaireMeasurableSet s ↔ ∃ u : Set α, (IsOpen u) ∧ s =ᵇ u :=
-  ⟨fun h => h.residualEq_isOpen , fun ⟨_, uo, ueq⟩ => uo.baireMeasurableSet.congr ueq.symm⟩
+  ⟨fun h => h.residualEq_isOpen, fun ⟨_, uo, ueq⟩ => uo.baireMeasurableSet.congr ueq.symm⟩
 
 section Map
 

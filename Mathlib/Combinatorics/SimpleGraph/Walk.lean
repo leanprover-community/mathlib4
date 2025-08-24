@@ -363,7 +363,7 @@ theorem exists_length_eq_zero_iff {u v : V} : (∃ p : G.Walk u v, p.length = 0)
 @[simp]
 lemma exists_length_eq_one_iff {u v : V} : (∃ (p : G.Walk u v), p.length = 1) ↔ G.Adj u v := by
   refine ⟨?_, fun h ↦ ⟨h.toWalk, by simp⟩⟩
-  rintro ⟨p , hp⟩
+  rintro ⟨p, hp⟩
   induction p with
   | nil => simp only [Walk.length_nil, zero_ne_one] at hp
   | cons h p' =>

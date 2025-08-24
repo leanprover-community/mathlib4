@@ -157,7 +157,7 @@ theorem freeOn_indep (hIE : I ⊆ E) : (freeOn E).Indep I :=
   freeOn_indep_iff.2 hIE
 
 @[simp] theorem freeOn_isBasis_iff : (freeOn E).IsBasis I X ↔ I = X ∧ X ⊆ E := by
-  use fun h ↦ ⟨(freeOn_indep h.subset_ground).eq_of_isBasis h ,h.subset_ground⟩
+  use fun h ↦ ⟨(freeOn_indep h.subset_ground).eq_of_isBasis h, h.subset_ground⟩
   rintro ⟨rfl, hIE⟩
   exact (freeOn_indep hIE).isBasis_self
 

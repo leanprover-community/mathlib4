@@ -218,11 +218,10 @@ private theorem isCycleOn_support_cycleOf_aux [DecidableEq α] [Fintype α] (f :
     · exact ⟨sameCycle_apply_right.1 (mem_support_cycleOf_iff_aux.1 h).1,
       (mem_support_cycleOf_iff_aux.1 h).2⟩
     · exact ⟨sameCycle_apply_right.2 (mem_support_cycleOf_iff_aux.1 h).1,
-      (mem_support_cycleOf_iff_aux.1 h).2⟩
-    , fun a ha b hb =>
-      by
-        rw [mem_coe, mem_support_cycleOf_iff_aux] at ha hb
-        exact ha.1.symm.trans hb.1⟩
+      (mem_support_cycleOf_iff_aux.1 h).2⟩,
+    fun a ha b hb ↦ by
+      rw [mem_coe, mem_support_cycleOf_iff_aux] at ha hb
+      exact ha.1.symm.trans hb.1⟩
 
 private theorem SameCycle.exists_pow_eq_of_mem_support_aux {f} [DecidableEq α] [Fintype α]
     [DecidableRel f.SameCycle] (h : SameCycle f x y) (hx : x ∈ f.support) :
