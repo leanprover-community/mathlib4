@@ -85,28 +85,6 @@ theorem Monotone.smul {γ : Type*} [Preorder G] [Preorder P] [Preorder γ] [SMul
   fun _ _ hab => (IsOrderedSMul.smul_le_smul_left _ _ (hg hab) _).trans
     (IsOrderedSMul.smul_le_smul_right _ _ (hf hab) _)
 
-/-- A vector addition is left-cancellative if it is pointwise injective on the left. -/
-class IsLeftCancelVAdd (G P : Type*) [VAdd G P] : Prop where
-  protected left_cancel : ∀ (a : G) (b c : P), a +ᵥ b = a +ᵥ c → b = c
-
-/-- A scalar multiplication is left-cancellative if it is pointwise injective on the left. -/
-@[to_additive]
-class IsLeftCancelSMul (G P : Type*) [SMul G P] : Prop where
-  protected left_cancel : ∀ (a : G) (b c : P), a • b = a • c → b = c
-
-/-- A vector addition is cancellative if it is pointwise injective on the left and right. -/
-class IsCancelVAdd (G P : Type*) [VAdd G P] : Prop extends IsLeftCancelVAdd G P where
-  protected right_cancel : ∀ (a b : G) (c : P), a +ᵥ c = b +ᵥ c → a = b
-
-/-- A scalar multiplication is cancellative if it is pointwise injective on the left and right. -/
-@[to_additive]
-class IsCancelSMul (G P : Type*) [SMul G P] : Prop extends IsLeftCancelSMul G P where
-  protected right_cancel : ∀ (a b : G) (c : P), a • c = b • c → a = b
-
-@[to_additive]
-instance (G P : Type*) [Group G] [MulAction G P] : IsLeftCancelSMul G P where
-  left_cancel a _ _ := (smul_left_cancel_iff a).mp
-
 /-- An ordered cancellative vector addition is an ordered vector addition that is cancellative. -/
 class IsOrderedCancelVAdd (G P : Type*) [LE G] [LE P] [VAdd G P] : Prop
     extends IsOrderedVAdd G P where
