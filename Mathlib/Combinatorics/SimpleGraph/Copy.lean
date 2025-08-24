@@ -197,6 +197,7 @@ instance [Fintype {f : G →g H // Injective f}] : Fintype (G.Copy H) :=
   }
 
 /-- A copy of `⊤` gives rise to an embedding of `⊤`. -/
+@[simps!]
 def topEmbedding (f : Copy (⊤ : SimpleGraph α) G) : (⊤ : SimpleGraph α) ↪g G :=
   { f.toEmbedding with
     map_rel_iff' := fun {v w} ↦ ⟨fun h ↦ by simpa using h.ne, f.toHom.map_adj⟩}
