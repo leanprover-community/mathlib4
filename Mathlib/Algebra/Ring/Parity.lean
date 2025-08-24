@@ -296,8 +296,7 @@ lemma even_mul_add_one (m : ℕ) : Even (m * (m + 1)) := by
   grind
 
 lemma two_dvd_mul_add_one (k : ℕ) : 2 ∣ k * (k + 1) :=
-  have : Even (k * (k + 1)) := even_mul_succ_self k
-  even_iff_two_dvd.mp this
+  even_iff_two_dvd.mp (even_mul_succ_self k)
 
 -- Here are examples of how `parity_simps` can be used with `Nat`.
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
