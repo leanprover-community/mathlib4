@@ -95,6 +95,8 @@ end NNRat
 
 namespace Mathlib.Meta.NormNum
 
+open Qq
+
 /-!
 ### `norm_num` extesion for `Nat.ceil`
 -/
@@ -129,28 +131,28 @@ def evalNatCeil : NormNumExt where eval {u αZ} e := do
     match ← derive x with
     | .isBool .. => failure
     | .isNat sα nb pb => do
-      let _i ← synthInstanceQ (q(LinearOrder $α) : Q(Type u_1))
-      let _i' ← synthInstanceQ (q(IsStrictOrderedRing $α))
+      let instLinearOrder ← synthInstanceQ q(LinearOrder $α)
+      let instIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       return .isNat q(inferInstance) nb q(IsNat.natCeil $x _ $pb)
     | .isNegNat sα nb pb => do
-      let _i ← synthInstanceQ (q(LinearOrder $α) : Q(Type u_1))
-      let _i' ← synthInstanceQ (q(IsStrictOrderedRing $α))
+      let instLinearOrder ← synthInstanceQ q(LinearOrder $α)
+      let instIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       return .isNat q(inferInstance) (mkRawNatLit 0) q(IsInt.natCeil _ _ $pb)
     | .isNNRat _ q n d h => do
-      let _i ← synthInstanceQ (q(Semifield $α) : Q(Type u_1))
-      let _i' ← synthInstanceQ (q(LinearOrder $α) : Q(Type u_1))
-      let _i'' ← synthInstanceQ (q(IsStrictOrderedRing $α))
-      let _i''' ← synthInstanceQ (q(FloorSemiring $α))
+      let instSemifield ← synthInstanceQ q(Semifield $α)
+      let instLinearOrder ← synthInstanceQ q(LinearOrder $α)
+      let instIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $α)
+      let instFloorSemiring ← synthInstanceQ q(FloorSemiring $α)
       assertInstancesCommute
       have z : Q(ℕ) := mkRawNatLit (⌈q⌉₊)
       letI : $z =Q ⌈($n / $d : NNRat)⌉₊ := ⟨⟩
       return .isNat q(inferInstance) z q(IsNNRat.natCeil _ $n $d $h)
     | .isNegNNRat _ q n d h => do
-      let _iF ← synthInstanceQ q(Field $α)
-      let _i ← synthInstanceQ q(LinearOrder $α)
-      let _i' ← synthInstanceQ q(IsStrictOrderedRing $α)
+      let instField ← synthInstanceQ q(Field $α)
+      let instLinearOrder ← synthInstanceQ q(LinearOrder $α)
+      let instIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       return .isNat q(inferInstance) (mkRawNatLit 0) q(IsRat.natCeil _ _ _ $h)
   | _, _, _ => failure
