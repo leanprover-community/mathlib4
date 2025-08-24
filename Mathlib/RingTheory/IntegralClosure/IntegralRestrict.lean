@@ -75,6 +75,12 @@ def galLift (σ : B →ₐ[A] C) : L →ₐ[K] F :=
       IsLocalization.lift_eq, RingHom.coe_coe, AlgHom.commutes]
   { IsLocalization.lift (S := L) H with commutes' := DFunLike.congr_fun H_eq }
 
+omit [IsIntegralClosure C A F] [Algebra.IsAlgebraic K F] in
+@[simp]
+theorem galLift_algebraMap_apply (σ : B →ₐ[A] C) (x : B) :
+    galLift A K L F B C σ (algebraMap B L x) = algebraMap C F (σ x) := by
+  simp [galLift]
+
 /-- The restriction `End(L/K) → End(B/A)` in an AKLB setup.
 Also see `galRestrict` for the `AlgEquiv` version. -/
 noncomputable
@@ -104,15 +110,13 @@ def galRestrictHom : (L →ₐ[K] L) ≃* (B →ₐ[A] B) where
 
 @[simp]
 lemma algebraMap_galRestrictHom_apply (σ : L →ₐ[K] L) (x : B) :
-    algebraMap B L (galRestrictHom A K L B σ x) = σ (algebraMap B L x) := by
-  simp [galRestrictHom]
+    algebraMap B L (galRestrictHom A K L B σ x) = σ (algebraMap B L x) :=
+  algebraMap_galRestrict'_apply _ _ _ _ _ _ _ _
 
 @[simp, nolint unusedHavesSuffices] -- false positive from unfolding galRestrictHom
 lemma galRestrictHom_symm_algebraMap_apply (σ : B →ₐ[A] B) (x : B) :
-    (galRestrictHom A K L B).symm σ (algebraMap B L x) = algebraMap B L (σ x) := by
-  have := (IsFractionRing.injective A K).isDomain
-  have := IsIntegralClosure.isLocalization A K L B
-  simp [galRestrictHom, galLift]
+    (galRestrictHom A K L B).symm σ (algebraMap B L x) = algebraMap B L (σ x) :=
+  galLift_algebraMap_apply _ _ _ _ _ _ _ _
 
 /-- The restriction `Aut(L/K) → Aut(B/A)` in an AKLB setup. -/
 noncomputable
