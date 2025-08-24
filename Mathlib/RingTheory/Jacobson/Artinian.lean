@@ -7,7 +7,7 @@ import Mathlib.RingTheory.HopkinsLevitzki
 import Mathlib.RingTheory.Jacobson.Ring
 
 /-!
-# Artinian rings over jacobson rings
+# Artinian rings over Jacobson rings
 
 ## Main results
 - `Module.finite_iff_isArtinianRing`: If `A` is a finite type algebra over an artinian ring `R`,
@@ -25,7 +25,7 @@ lemma Module.finite_of_isSemisimpleRing [IsJacobsonRing R] [IsSemisimpleRing A] 
   have (I : MaximalSpectrum A) := finite_of_finite_type_of_isJacobsonRing R (A ⧸ I.asIdeal)
   Finite.pi
 
-/-- If `A` is a finite type algebra over `R`, then `A` is an artinian ring and `R` is jacobson
+/-- If `A` is a finite type algebra over `R`, then `A` is an artinian ring and `R` is Jacobson
 implies `A` is finite over `R`. -/
 /- If made an instance, causes timeouts synthesizing `FaithfulSMul R I.ResidueField` at
 `Ideal.algebraMap_residueField_eq_zero` and `Ideal.ker_algebraMap_residueField` during
