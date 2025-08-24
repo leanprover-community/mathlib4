@@ -312,39 +312,32 @@ theorem contMDiffOn_writtenInExtend_iff (hφ : φ ∈ maximalAtlas I n M) (hψ :
     (hs : s ⊆ φ.source) (hmaps : MapsTo f s ψ.source) :
     ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, F) n (ψ.extend J ∘ f ∘ (φ.extend I).symm) (φ.extend I '' s) ↔
     ContMDiffOn I J n f s := by
-  refine ⟨?_, fun h ↦ ?_⟩
-  · intro h
-    set f' := (ψ.extend J) ∘ f ∘ (φ.extend I).symm
-    have : ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, F) n f' (φ.extend I).target :=
-      sorry -- by hypothesis... want to intersect with s also; do that in a second pass
-    have : ContMDiffOn I 𝓘(𝕜, F) n (f' ∘ (φ.extend I)) φ.source := by
-      apply this.comp (contMDiffOn_extend hφ)
-      trans (φ.extend I).source
-      · apply le_of_eq
-        rw [φ.extend_source (I := I)]
-      exact (φ.extend I).source_subset_preimage_target
-    have : ContMDiffOn I J n ((ψ.extend J).symm ∘ f' ∘ (φ.extend I)) φ.source := by
-      apply ContMDiffOn.comp (t := (ψ.extend J).target) ?_ this ?_
-      · rw [PartialHomeomorph.extend_target']
-        exact contMDiffOn_extend_symm hψ
-      · rw [← φ.extend_source (I := I)]
-        sorry -- inclusion of subsets, uses the mapsto property
-    have : ContMDiffOn I J n ((ψ.extend J).symm ∘ f' ∘ (φ.extend I)) s := this.mono hs
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · set f' := (ψ.extend J) ∘ f ∘ (φ.extend I).symm
     have eq1 : EqOn (f' ∘ φ.extend I) (ψ.extend J ∘ f) s := by
       have : (f' ∘ φ.extend I) = (ψ.extend J ∘ f) ∘ ((φ.extend I).symm ∘ (φ.extend I)) := by
         simp only [f', Function.comp_assoc]
       intro x hx
-      rw [this]
-      rw [Function.comp_apply]
+      rw [this, Function.comp_apply]
       congr
       simp only [comp_apply]
       apply PartialHomeomorph.extend_left_inv φ (hs hx)
+    have : ContMDiffOn I 𝓘(𝕜, F) n (f' ∘ (φ.extend I)) s := by
+      apply h.comp ((contMDiffOn_extend hφ).mono hs)
+      exact subset_preimage_image (↑(φ.extend I)) s
+    have : ContMDiffOn I J n ((ψ.extend J).symm ∘ f' ∘ (φ.extend I)) s := by
+      apply ContMDiffOn.comp (t := (ψ.extend J).target) ?_ this ?_
+      · rw [PartialHomeomorph.extend_target']
+        exact contMDiffOn_extend_symm hψ
+      · refine image_subset_iff.mp ?_
+        rintro x ⟨x', hx's, rfl⟩
+        rw [eq1 hx's, ψ.extend_target_eq_image_source]
+        exact mem_image_of_mem (ψ.extend J) (hmaps hx's)
     have eq2 : EqOn ((ψ.extend J).symm ∘ f' ∘ (φ.extend I)) f s := by
       intro x hx
       rw [Function.comp_apply, eq1 hx, Function.comp_apply]
       exact PartialEquiv.left_inv _ (by simpa using hmaps hx)
     exact this.congr eq2.symm
-    -- TODO: re-do everything with s and not φ.source; then done!
   · -- Easy direction: extended charts and their inverse is smooth on their source,
     -- so composing with them preserves smoothness.
     have : (φ.extend I) '' s ⊆ ↑I '' φ.target := by
