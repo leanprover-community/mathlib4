@@ -1010,11 +1010,14 @@ lemma tail_nil : (@nil _ G v).tail = .nil := rfl
 @[simp]
 lemma tail_cons_nil (h : G.Adj u v) : (Walk.cons h .nil).tail = .nil := rfl
 
-lemma tail_cons_eq (h : G.Adj u v) (p : G.Walk v w) :
+@[simp]
+lemma tail_cons (h : G.Adj u v) (p : G.Walk v w) :
     (p.cons h).tail = p.copy (getVert_zero p).symm rfl := by
   match p with
   | .nil => rfl
   | .cons h q => rfl
+
+@[deprecated (since := "2025-08-19")] alias tail_cons_eq := tail_cons
 
 @[simp]
 lemma dropLast_nil : (@nil _ G v).dropLast = nil := rfl
@@ -1067,7 +1070,7 @@ lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
   cases p with
   | nil => simp at hp
   | cons h q =>
-    simp only [getVert_cons_succ, tail_cons_eq, cons_copy, copy_rfl_rfl]
+    simp only [getVert_cons_succ, tail_cons, cons_copy, copy_rfl_rfl]
 
 @[simp]
 lemma concat_dropLast (p : G.Walk x y) (hp : G.Adj p.penultimate y) :
@@ -1099,13 +1102,6 @@ lemma not_nil_of_tail_not_nil {p : G.Walk v w} (hp : ¬ p.tail.Nil) : ¬ p.Nil :
     p.tail.support = p.support.tail := by
   rw [← cons_support_tail p hp, List.tail_cons]
 
-@[simp]
-lemma tail_cons {t u v} (p : G.Walk u v) (h : G.Adj t u) :
-    (p.cons h).tail = p.copy (getVert_zero p).symm rfl := by
-  match p with
-  | .nil => rfl
-  | .cons h q => rfl
-
 lemma support_tail_of_not_nil (p : G.Walk u v) (hnp : ¬p.Nil) :
     p.tail.support = p.support.tail := by
   match p with
@@ -1136,7 +1132,7 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
   match p with
   | .nil => rfl
   | .cons h q =>
-    simp only [getVert_cons_succ, tail_cons_eq]
+    simp only [getVert_cons_succ, tail_cons]
     exact getVert_copy q n (getVert_zero q).symm rfl
 
 lemma ext_support {u v} {p q : G.Walk u v} (h : p.support = q.support) :
@@ -1497,5 +1493,3 @@ lemma isSubwalk_antisymm {u v} {p₁ p₂ : G.Walk u v} (h₁ : p₁.IsSubwalk p
 end Walk
 
 end SimpleGraph
-
-set_option linter.style.longFile 1700

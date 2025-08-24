@@ -83,7 +83,7 @@ instance : Inhabited (Colex α) := ⟨⟨∅⟩⟩
 lemma ofColex_toColex (s : Finset α) : ofColex (toColex s) = s := rfl
 lemma toColex_inj {s t : Finset α} : toColex s = toColex t ↔ s = t := by simp
 @[simp]
-lemma ofColex_inj {s t : Colex α} : ofColex s = ofColex t ↔ s = t := by cases s; cases t; simp
+lemma ofColex_inj {s t : Colex α} : ofColex s = ofColex t ↔ s = t := Colex.ext_iff.symm
 lemma toColex_ne_toColex {s t : Finset α} : toColex s ≠ toColex t ↔ s ≠ t := by simp
 lemma ofColex_ne_ofColex {s t : Colex α} : ofColex s ≠ ofColex t ↔ s ≠ t := by simp
 
