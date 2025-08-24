@@ -232,6 +232,64 @@ lemma congr_of_eventuallyEq {x : M} (h : IsImmersionAt F I I' n f x) (h' : f =�
     rw [Function.comp_apply, ← this]
     simp [Φ]
 
+omit [ChartedSpace H M] [ChartedSpace H' M'] in
+lemma _root_.PartialHomeomorph.extend_prod
+    (f : PartialHomeomorph M H) (f' : PartialHomeomorph M' H') :
+    (f.prod f').extend (I.prod I') = (f.extend I).prod (f'.extend I') := by simp
+
+-- Can grind prove both of these, after sufficient future tagging?
+lemma aux1 {α β γ δ : Type*} {f f' : α → γ} {g g' : β → δ} {s : Set α} {t : Set β}
+    (h : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t)) (hs : Set.Nonempty s) (ht : Set.Nonempty t) :
+    EqOn f f' s ∧ EqOn g g' t := by
+  choose xs hxs using hs
+  choose xt hxt using ht
+  refine ⟨fun x hx ↦ ?_, fun x hx ↦ ?_⟩
+  · have h' := h <| mk_mem_prod hx hxt
+    simp at h'
+    exact h'.1
+  · have h' := h <| mk_mem_prod hxs hx
+    simp at h'
+    exact h'.2
+
+lemma aux2 {α β γ δ : Type*} {f f' : α → γ} {g g' : β → δ} {s : Set α} {t : Set β}
+    (hf : EqOn f f' s) (hg : EqOn g g' t) : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t) := by
+  rintro ⟨x, x'⟩ ⟨hx, hx'⟩
+  simp [hf hx, hg hx']
+
+lemma aux {α β γ δ : Type*} {f f' : α → γ} {g g' : β → δ}
+    {s : Set α} {t : Set β} (hs : Set.Nonempty s) (ht : Set.Nonempty t) :
+    EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t) ↔ EqOn f f' s ∧ EqOn g g' t :=
+  ⟨fun h ↦ aux1 h hs ht, fun ⟨h, h'⟩ ↦ aux2 h h'⟩
+
+/-- If `f: M → N` and `g: M' × N'` are immersions at `x` and `x'`, respectively,
+then `f × g: M × N → M' × N'` is an immersion at `(x, x')`. -/
+theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
+    [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
+    (h : IsImmersionAt F I J n f x) (h' : IsImmersionAt F' I' J' n g x') :
+    IsImmersionAt (F × F') (I.prod I') (J.prod J') n (Prod.map f g) (x, x') := by
+  use (ContinuousLinearEquiv.prodProdProdComm 𝕜 E E' F F').trans (h.equiv.prodCongr h'.equiv)
+  use h.domChart.prod h'.domChart, h.codChart.prod h'.codChart
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · simp [h.mem_domChart_source, h'.mem_domChart_source]
+  · simp [mem_codChart_source h, mem_codChart_source h']
+  · exact IsManifold.mem_maximalAtlas_prod
+      (domChart_mem_maximalAtlas h) (domChart_mem_maximalAtlas h')
+  · apply IsManifold.mem_maximalAtlas_prod
+      (codChart_mem_maximalAtlas h) (codChart_mem_maximalAtlas h')
+  · rw [PartialHomeomorph.prod_toPartialEquiv, PartialEquiv.prod_source, prodMap_image_prod]
+    exact prod_mono (map_source_subset_source h) (map_source_subset_source h')
+  · rw [h.domChart.extend_prod h'.domChart, h.codChart.extend_prod, PartialEquiv.prod_target]
+    set C := ((h.codChart.extend J).prod (h'.codChart.extend J')) ∘
+      Prod.map f g ∘ ((h.domChart.extend I).prod (h'.domChart.extend I')).symm
+    have hC : C = Prod.map ((h.codChart.extend J) ∘ f ∘ (h.domChart.extend I).symm)
+        ((h'.codChart.extend J') ∘ g ∘ (h'.domChart.extend I').symm) := by
+      ext x <;> simp [C]
+    set Φ := (((ContinuousLinearEquiv.prodProdProdComm 𝕜 E E' F F').trans
+      (h.equiv.prodCongr h'.equiv)) ∘ (·, 0))
+    have hΦ: Φ = Prod.map (h.equiv ∘ (·, 0)) (h'.equiv ∘ (·, 0)) := by ext x <;> simp [Φ]
+    rw [hC, hΦ]
+    exact aux2 (writtenInCharts h) (writtenInCharts h')
+
 /-- This lemma is marked private since `h.domChart` is an arbitrary representative:
 `continuousAt` is part of the public API -/
 private theorem continuousOn (h : IsImmersionAt F I I' n f x) :
@@ -292,6 +350,14 @@ lemma isImmersionAt (h : IsImmersion F I I' n f) (x : M) : IsImmersionAt F I I' 
 /-- If `f = g` and `f` is an immersion, so is `g`. -/
 theorem congr (h : IsImmersion F I I' n f) (heq : f = g) : IsImmersion F I I' n g :=
   fun x ↦ (h x).congr_of_eventuallyEq heq.eventuallyEq
+
+/-- If `f: M → N` and `g: M' × N'` are immersions at `x` and `x'`, respectively,
+then `f × g: M × N → M' × N'` is an immersion at `(x, x')`. -/
+theorem prodMap {f : M → N} {g : M' → N'}
+    [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
+    (h : IsImmersion F I J n f) (h' : IsImmersion F' I' J' n g) :
+    IsImmersion (F × F') (I.prod I') (J.prod J') n (Prod.map f g) :=
+  fun ⟨x, x'⟩ ↦ (h x).prodMap (h' x')
 
 variable [IsManifold I n M] [IsManifold I' n M']
 /-- A `C^k` immersion is `C^k`. -/
