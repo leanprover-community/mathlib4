@@ -170,7 +170,7 @@ lemma isInducing_stoneCechUnit [CompletelyRegularSpace X] :
     intro U hxU hU
     obtain ⟨f, hf, efx, hfU⟩ :=
       CompletelyRegularSpace.completely_regular_isOpen x U hU hxU
-    conv at hfU => equals Uᶜ ⊆ f ⁻¹' {1} => ext; simp [EqOn, subset_def]
+    conv at hfU => equals Uᶜ ⊆ f ⁻¹' {1} => simp [EqOn, subset_def]
     rw [← compl_subset_comm, ← preimage_compl, ← stoneCechExtend_extends hf, preimage_comp] at hfU
     refine ⟨stoneCechExtend hf ⁻¹' {1}ᶜ, ?_,
       isOpen_compl_singleton.preimage (continuous_stoneCechExtend hf), hfU⟩
