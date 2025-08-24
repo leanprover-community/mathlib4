@@ -130,9 +130,7 @@ theorem colimitLimitToLimitColimit_injective :
     -- Now it's just a calculation using `W` and `w`.
     simp only [Functor.comp_map]
     rw [← W _ _ (fH j), ← W _ _ (gH j)]
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): had to add `Limit.map_π_apply`
-    -- (which was un-tagged simp since "simp can prove it")
-    simp [Limit.map_π_apply, w]
+    simp [w]
 
 end
 
@@ -304,9 +302,6 @@ theorem colimitLimitToLimitColimit_surjective :
           colimit_eq_iff, Bifunctor.map_id_comp, types_comp_apply, curry_obj_obj_map,
           Functor.comp_obj, colim_obj, Limit.π_mk]
       refine ⟨k'', 𝟙 k'', g j ≫ gf (𝟙 j) ≫ i (𝟙 j), ?_⟩
-      -- Porting note: the lean 3 proof finished with
-      -- `simp only [Bifunctor.map_id_comp, types_comp_apply, Bifunctor.map_id, types_id_apply]`
-      -- which doesn't work; the corresponding `rw` works fine:
       rw [Bifunctor.map_id_comp, Bifunctor.map_id_comp, types_comp_apply, types_comp_apply,
         Bifunctor.map_id, types_id_apply]
 
