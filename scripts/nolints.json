@@ -317,11 +317,9 @@
  ["docBlame", "Mathlib.Meta.NormNum.Result.add.intArm"],
  ["docBlame", "Mathlib.Meta.NormNum.Result.add.nnratArm"],
  ["docBlame", "Mathlib.Meta.NormNum.Result.add.ratArm"],
+ ["docBlame", "Mathlib.Meta.NormNum.Result.mul.ratArm"],
  ["docBlame", "Mathlib.Meta.NormNum.evalLE.core.intArm"],
  ["docBlame", "Mathlib.Meta.NormNum.evalLE.core.ratArm"],
  ["docBlame", "Mathlib.Meta.NormNum.evalLT.core.intArm"],
  ["docBlame", "Mathlib.Meta.NormNum.evalLT.core.nnratArm"],
- ["docBlame", "Mathlib.Meta.NormNum.evalLT.core.ratArm"],
- ["docBlame", "Mathlib.Meta.NormNum.Result.mul.intArm"],
- ["docBlame", "Mathlib.Meta.NormNum.Result.mul.nnratArm"],
- ["docBlame", "Mathlib.Meta.NormNum.Result.mul.ratArm"]]
+ ["docBlame", "Mathlib.Meta.NormNum.evalLT.core.ratArm"]]
