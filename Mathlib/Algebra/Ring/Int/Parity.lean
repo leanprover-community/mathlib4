@@ -93,9 +93,7 @@ lemma four_dvd_add_or_sub_of_odd {a b : ℤ} (ha : Odd a) (hb : Odd b) :
     4 ∣ a + b ∨ 4 ∣ a - b := by grind
 
 lemma even_mul_add_one (m : ℤ) : Even (m * (m + 1)) := by
-  rcases (Int.even_or_odd m) with ch | ch
-  · exact even_mul_succ_self m
-  · exact even_mul_succ_self m
+  grind
 
 lemma two_dvd_mul_add_one (k : ℤ) : 2 ∣ k * (k + 1) :=
   even_iff_two_dvd.mp (even_mul_succ_self k)
