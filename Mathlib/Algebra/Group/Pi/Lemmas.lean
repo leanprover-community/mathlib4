@@ -38,6 +38,7 @@ theorem Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : 
 
 namespace Pi
 
+@[to_additive]
 instance instIsMulTorsionFree [∀ i, Monoid (M i)] [∀ i, IsMulTorsionFree (M i)] :
     IsMulTorsionFree (∀ i, M i) where
   pow_left_injective n hn a b hab := by ext i; exact pow_left_injective hn <| congr_fun hab i
