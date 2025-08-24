@@ -237,12 +237,6 @@ theorem map_rootsOfUnity_eq_pow_self [FunLike F R R] [MonoidHomClass F R R] (σ 
     zpow_natCast, rootsOfUnity.coe_pow]
   exact ⟨(m % orderOf ζ).toNat, rfl⟩
 
-lemma coe_rootsOfUnity_to_nthRootsFinset :
-    ((↑) : Rˣ → R) '' (rootsOfUnity k R) = nthRootsFinset k (1 : R) := by
-  ext x
-  rw [mem_coe, Polynomial.mem_nthRootsFinset (Nat.pos_of_neZero k),
-    Units.val_set_image_rootsOfUnity, Set.mem_setOf_eq]
-
 end IsDomain
 
 section Reduced
