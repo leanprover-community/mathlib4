@@ -322,7 +322,7 @@ theorem ofRestrict_top_c (X : PresheafedSpace C) :
         (by
           rw [restrict_top_presheaf, ← Presheaf.Pushforward.comp_eq]
           tauto) := by
-  /- another approach would be to prove the left hand side
+  /- another approach would be to prove the left-hand side
        is a natural isomorphism, but I encountered a universe
        issue when `apply NatIso.isIso_of_isIso_app`. -/
   ext

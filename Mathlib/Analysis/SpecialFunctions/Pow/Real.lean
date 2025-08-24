@@ -212,7 +212,7 @@ theorem rpow_add_of_nonneg (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 ≤ z) :
   exact rpow_add' hx (ne_of_gt <| add_pos_of_pos_of_nonneg hy hz)
 
 /-- For `0 ≤ x`, the only problematic case in the equality `x ^ y * x ^ z = x ^ (y + z)` is for
-`x = 0` and `y + z = 0`, where the right hand side is `1` while the left hand side can vanish.
+`x = 0` and `y + z = 0`, where the right-hand side is `1` while the left-hand side can vanish.
 The inequality is always true, though, and given in this lemma. -/
 theorem le_rpow_add {x : ℝ} (hx : 0 ≤ x) (y z : ℝ) : x ^ y * x ^ z ≤ x ^ (y + z) := by
   rcases le_iff_eq_or_lt.1 hx with (H | pos)

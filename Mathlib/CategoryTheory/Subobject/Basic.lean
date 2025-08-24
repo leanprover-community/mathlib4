@@ -627,7 +627,7 @@ def mapIso {A B : C} (e : A ≅ B) : Subobject A ≌ Subobject B :=
 
 -- Porting note: the note below doesn't seem true anymore
 -- @[simps] here generates a lemma `map_iso_to_order_iso_to_equiv_symm_apply`
--- whose left hand side is not in simp normal form.
+-- whose left-hand side is not in simp normal form.
 /-- In fact, there's a type level bijection between the subobjects of isomorphic objects,
 which preserves the order. -/
 def mapIsoToOrderIso (e : X ≅ Y) : Subobject X ≃o Subobject Y where

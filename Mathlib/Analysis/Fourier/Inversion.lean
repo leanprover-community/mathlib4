@@ -25,7 +25,7 @@ However, the Fubini step does not make sense for lack of integrability, and the 
 To gain integrability, one multiplies with a Gaussian function `exp (-c⁻¹ ‖w‖^2)`, with a large
 (but finite) `c`. As this function converges pointwise to `1` when `c → ∞`, we get
 `∫_w exp (2 I π ⟪w, v⟫) 𝓕 f (w) dw = lim_c ∫_w exp (-c⁻¹ ‖w‖^2 + 2 I π ⟪w, v⟫) 𝓕 f (w) dw`.
-One can perform Fubini on the right hand side for fixed `c`, writing the integral as
+One can perform Fubini on the right-hand side for fixed `c`, writing the integral as
 `∫_x (∫_w exp (-c⁻¹‖w‖^2 + 2 I π ⟪w, v - x⟫ dw)) f x dx`.
 The middle factor is the Fourier transform of a more and more flat function
 (converging to the constant `1`), hence it becomes more and more concentrated, around the

@@ -653,7 +653,7 @@ theorem prod.lift_fst_comp_snd_comp {W X Y Z : C} [HasBinaryProduct W Y] [HasBin
   rw [← prod.lift_map]
   simp
 
--- We take the right hand side here to be simp normal form, as this way composition lemmas for
+-- We take the right-hand side here to be simp normal form, as this way composition lemmas for
 -- `f ≫ h` and `g ≫ k` can fire (e.g. `id_comp`) , while `map_fst` and `map_snd` can still work just
 -- as well.
 @[reassoc (attr := simp)]
@@ -757,7 +757,7 @@ theorem coprod.desc_comp_inl_comp_inr {W X Y Z : C} [HasBinaryCoproduct W Y]
     coprod.desc (g ≫ coprod.inl) (g' ≫ coprod.inr) = coprod.map g g' := by
   rw [← coprod.map_desc]; simp
 
--- We take the right hand side here to be simp normal form, as this way composition lemmas for
+-- We take the right-hand side here to be simp normal form, as this way composition lemmas for
 -- `f ≫ h` and `g ≫ k` can fire (e.g. `id_comp`) , while `inl_map` and `inr_map` can still work just
 -- as well.
 @[reassoc (attr := simp)]
