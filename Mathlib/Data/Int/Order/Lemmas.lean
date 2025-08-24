@@ -35,10 +35,8 @@ theorem natAbs_le_iff_mul_self_le {a b : ℤ} : a.natAbs ≤ b.natAbs ↔ a * a 
 
 theorem abs_le_sqrt {a b : ℤ} (hn : 0 ≤ b) :
     |a| ≤ b.sqrt ↔ a * a ≤ b := by
-  rw [← abs_mul_abs_self]
-  rw [show b = b.toNat from eq_natCast_toNat.mpr hn]
-  rw [show |a| = |a|.toNat by simp]
-  rw [Int.sqrt_natCast, ← Int.natCast_mul, Nat.cast_le, Nat.cast_le, Nat.le_sqrt]
+  rw [← abs_mul_abs_self, eq_natCast_toNat.mpr hn, eq_natCast_toNat.mpr (abs_nonneg a),
+    Int.sqrt_natCast, ← Int.natCast_mul, Nat.cast_le, Nat.cast_le, Nat.le_sqrt]
 
 theorem abs_le_sqrt_iff_sq_le {a b : ℤ} (hn : 0 ≤ b) :
     |a| ≤ b.sqrt ↔ a ^ 2 ≤ b :=
