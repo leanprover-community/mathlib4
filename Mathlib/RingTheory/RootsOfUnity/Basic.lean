@@ -165,7 +165,7 @@ theorem Units.val_set_image_rootsOfUnity_one : ((↑) : Rˣ → R) '' (rootsOfUn
 end CommMonoid
 
 open Set in
-theorem rootsOfUnity_two_set [CommRing R] [NoZeroDivisors R] :
+theorem Units.val_set_image_rootsOfUnity_two [CommRing R] [NoZeroDivisors R] :
     ((↑) : Rˣ → R) '' (rootsOfUnity 2 R) = {1, -1} := by
   ext x
   rw [mem_insert_iff, mem_singleton_iff, ← sq_eq_one_iff, Units.val_set_image_rootsOfUnity,
