@@ -84,6 +84,7 @@ protected def xor : ℤ → ℤ → ℤ
 
 /-- `m <<< n` produces an integer whose binary representation
   is obtained by left-shifting the binary representation of `m` by `n` places -/
+@[deprecated "No replacement." (since := "2025-08-25")]
 instance : ShiftLeft ℤ where
   shiftLeft
   | (m : ℕ), (n : ℕ) => Nat.shiftLeft' false m n
@@ -93,6 +94,7 @@ instance : ShiftLeft ℤ where
 
 /-- `m >>> n` produces an integer whose binary representation
   is obtained by right-shifting the binary representation of `m` by `n` places -/
+@[deprecated "No replacement." (since := "2025-08-25")]
 instance : ShiftRight ℤ where
   shiftRight m n := m <<< (-n)
 
@@ -363,6 +365,8 @@ theorem shiftRight_add' : ∀ (m : ℤ) (n k : ℕ), m >>> (n + k : ℤ) = (m >>
 
 /-! ### bitwise ops -/
 
+set_option linter.deprecated false in
+@[deprecated "No replacement." (since := "2025-08-25")]
 theorem shiftLeft_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<< (n : ℤ)) <<< k
   | (m : ℕ), n, (k : ℕ) =>
     congr_arg ofNat (by simp [Nat.shiftLeft_eq, Nat.pow_add, mul_assoc])
@@ -386,23 +390,31 @@ theorem shiftLeft_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<
       congr_arg negSucc <| by rw [add_assoc, Nat.shiftRight_add, ← Nat.shiftLeft'_sub _ _ le_rfl,
           Nat.sub_self, Nat.shiftLeft']
 
+set_option linter.deprecated false in
+@[deprecated "No replacement." (since := "2025-08-25")]
 theorem shiftLeft_sub (m : ℤ) (n : ℕ) (k : ℤ) : m <<< (n - k) = (m <<< (n : ℤ)) >>> k :=
   shiftLeft_add _ _ _
 
+set_option linter.deprecated false in
+@[deprecated "No replacement." (since := "2025-08-25")]
 theorem shiftLeft_eq_mul_pow : ∀ (m : ℤ) (n : ℕ), m <<< (n : ℤ) = m * (2 ^ n : ℕ)
   | (m : ℕ), _ => congr_arg ((↑) : ℕ → ℤ) (by simp [Nat.shiftLeft_eq])
   | -[_+1], _ => @congr_arg ℕ ℤ _ _ (fun i => -i) (Nat.shiftLeft'_tt_eq_mul_pow _ _)
 
+set_option linter.deprecated false in
+@[deprecated "No replacement." (since := "2025-08-25")]
 theorem one_shiftLeft (n : ℕ) : 1 <<< (n : ℤ) = (2 ^ n : ℕ) :=
   congr_arg ((↑) : ℕ → ℤ) (by simp [Nat.shiftLeft_eq])
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated "No replacement." (since := "2025-08-25")]
 theorem zero_shiftLeft : ∀ n : ℤ, 0 <<< n = 0
   | (n : ℕ) => congr_arg ((↑) : ℕ → ℤ) (by simp)
   | -[_+1] => congr_arg ((↑) : ℕ → ℤ) (by simp)
 
+set_option linter.deprecated false in
 /-- Compare with `Int.zero_shiftRight`, which has `n : ℕ`. -/
-@[simp]
+@[deprecated "No replacement." (since := "2025-08-25")]
 theorem zero_shiftRight' (n : ℤ) : 0 >>> n = 0 :=
   zero_shiftLeft _
 
