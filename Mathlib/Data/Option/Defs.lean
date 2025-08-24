@@ -11,7 +11,7 @@ import Batteries.Tactic.Alias
 # Extra definitions on `Option`
 
 This file defines more operations involving `Option α`. Lemmas about them are located in other
-files under `Mathlib.Data.Option`.
+files under `Mathlib/Data/Option.lean`.
 Other basic operations on `Option` are defined in the core library.
 -/
 
@@ -51,21 +51,20 @@ abbrev iget [Inhabited α] : Option α → α
 theorem iget_some [Inhabited α] {a : α} : (some a).iget = a :=
   rfl
 
-instance merge_isCommutative (f : α → α → α) [Std.Commutative f] :
-    Std.Commutative (merge f) :=
-  ⟨fun a b ↦ by cases a <;> cases b <;> simp [merge, Std.Commutative.comm]⟩
+@[deprecated commutative_merge (since := "2025-06-03")]
+theorem merge_isCommutative (f : α → α → α) [Std.Commutative f] :
+    Std.Commutative (merge f) := commutative_merge f
 
-instance merge_isAssociative (f : α → α → α) [Std.Associative f] :
-    Std.Associative (merge f) :=
-  ⟨fun a b c ↦ by cases a <;> cases b <;> cases c <;> simp [merge, Std.Associative.assoc]⟩
+@[deprecated associative_merge (since := "2025-06-03")]
+theorem merge_isAssociative (f : α → α → α) [Std.Associative f] :
+    Std.Associative (merge f) := associative_merge f
 
-instance merge_isIdempotent (f : α → α → α) [Std.IdempotentOp f] :
-    Std.IdempotentOp (merge f) :=
-  ⟨fun a ↦ by cases a <;> simp [merge, Std.IdempotentOp.idempotent]⟩
+@[deprecated idempotentOp_merge (since := "2025-06-03")]
+theorem merge_isIdempotent (f : α → α → α) [Std.IdempotentOp f] :
+    Std.IdempotentOp (merge f) := idempotentOp_merge f
 
-instance merge_isId (f : α → α → α) : Std.LawfulIdentity (merge f) none where
-  left_id a := by cases a <;> simp [merge]
-  right_id a := by cases a <;> simp [merge]
+@[deprecated lawfulIdentity_merge (since := "2025-06-03")]
+theorem merge_isId (f : α → α → α) : Std.LawfulIdentity (merge f) none := lawfulIdentity_merge f
 
 @[deprecated (since := "2025-04-04")] alias liftOrGet_isCommutative :=
   merge_isCommutative

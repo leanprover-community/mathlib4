@@ -16,7 +16,7 @@ In `IsDiscreteValuationRing.TFAE`, we show that the following are equivalent for
 noetherian local domain that is not a field `(R, m, k)`:
 - `R` is a discrete valuation ring
 - `R` is a valuation ring
-- `R` is a dedekind domain
+- `R` is a Dedekind domain
 - `R` is integrally closed with a unique prime ideal
 - `m` is principal
 - `dimₖ m/m² = 1`
@@ -109,7 +109,7 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [IsLocalRing R] [IsDomain R
   · have := Nat.find_spec this
     rw [hn, pow_zero, Ideal.one_eq_top] at this
     exact (Ideal.IsMaximal.ne_top inferInstance (eq_top_iff.mpr <| this.trans hle)).elim
-  obtain ⟨b, hb₁, hb₂⟩ : ∃ b ∈ maximalIdeal R ^ n, ¬b ∈ Ideal.span {a} := by
+  obtain ⟨b, hb₁, hb₂⟩ : ∃ b ∈ maximalIdeal R ^ n, b ∉ Ideal.span {a} := by
     by_contra! h'; rw [Nat.find_eq_iff] at hn; exact hn.2 n n.lt_succ_self fun x hx => h' x hx
   have hb₃ : ∀ m ∈ maximalIdeal R, ∃ k : R, k * a = b * m := by
     intro m hm; rw [← Ideal.mem_span_singleton']; apply Nat.find_spec this
@@ -152,7 +152,7 @@ Let `(R, m, k)` be a noetherian local domain (possibly a field).
 The following are equivalent:
 0. `R` is a PID
 1. `R` is a valuation ring
-2. `R` is a dedekind domain
+2. `R` is a Dedekind domain
 3. `R` is integrally closed with at most one non-zero prime ideal
 4. `m` is principal
 5. `dimₖ m/m² ≤ 1`
@@ -194,7 +194,7 @@ The following are equivalent for a
 noetherian local domain that is not a field `(R, m, k)`:
 0. `R` is a discrete valuation ring
 1. `R` is a valuation ring
-2. `R` is a dedekind domain
+2. `R` is a Dedekind domain
 3. `R` is integrally closed with a unique non-zero prime ideal
 4. `m` is principal
 5. `dimₖ m/m² = 1`
@@ -229,17 +229,11 @@ lemma IsLocalRing.finrank_CotangentSpace_eq_one_iff [IsNoetherianRing R] [IsLoca
     exact fun h ↦ h.3 maximalIdeal_eq_bot
   · exact (IsDiscreteValuationRing.TFAE R hR).out 5 0
 
-@[deprecated (since := "2024-11-09")]
-alias LocalRing.finrank_CotangentSpace_eq_one_iff := IsLocalRing.finrank_CotangentSpace_eq_one_iff
-
 variable (R)
 
 lemma IsLocalRing.finrank_CotangentSpace_eq_one [IsDomain R] [IsDiscreteValuationRing R] :
     finrank (ResidueField R) (CotangentSpace R) = 1 :=
   finrank_CotangentSpace_eq_one_iff.mpr ‹_›
-
-@[deprecated (since := "2024-11-09")]
-alias LocalRing.finrank_CotangentSpace_eq_one := IsLocalRing.finrank_CotangentSpace_eq_one
 
 instance (priority := 100) IsDedekindDomain.isPrincipalIdealRing
     [IsLocalRing R] [IsDedekindDomain R] : IsPrincipalIdealRing R :=

@@ -197,10 +197,10 @@ structure Matroid (α : Type*) where
   /-- There is at least one `Base`. -/
   (exists_isBase : ∃ B, IsBase B)
   /-- For any bases `B`, `B'` and `e ∈ B \ B'`, there is some `f ∈ B' \ B` for which `B-e+f`
-    is a base. -/
+  is a base. -/
   (isBase_exchange : Matroid.ExchangeProperty IsBase)
   /-- Every independent subset `I` of a set `X` for is contained in a maximal independent
-    subset of `X`. -/
+  subset of `X`. -/
   (maximality : ∀ X, X ⊆ E → Matroid.ExistsMaximalSubsetProperty Indep X)
   /-- Every base is contained in the ground set. -/
   (subset_ground : ∀ B, IsBase B → B ⊆ E)
@@ -274,8 +274,6 @@ instance rankPos_nonempty {M : Matroid α} [M.RankPos] : M.Nonempty := by
   · exact False.elim <| RankPos.empty_not_isBase hB
   exact ⟨e, M.subset_ground B hB heB ⟩
 
-@[deprecated (since := "2025-01-20")] alias rkPos_iff_empty_not_base := rankPos_iff
-
 section exchange
 namespace ExchangeProperty
 
@@ -294,16 +292,12 @@ theorem encard_diff_le_aux {B₁ B₂ : Set α}
     (B₂ \ B₁).eq_empty_or_encard_eq_top_or_encard_diff_singleton_lt
   · rw [exch.antichain hB₂ hB₁ (diff_eq_empty.mp he)]
   · exact le_top.trans_eq hinf.symm
-
   obtain ⟨f, hf, hB'⟩ := exch B₂ B₁ hB₂ hB₁ e he
-
   have : encard (insert f (B₂ \ {e}) \ B₁) < encard (B₂ \ B₁) := by
     rw [insert_diff_of_mem _ hf.1, diff_diff_comm]; exact hcard
-
   have hencard := encard_diff_le_aux exch hB₁ hB'
   rw [insert_diff_of_mem _ hf.1, diff_diff_comm, ← union_singleton, ← diff_diff, diff_diff_right,
     inter_singleton_eq_empty.mpr he.2, union_empty] at hencard
-
   rw [← encard_diff_singleton_add_one he, ← encard_diff_singleton_add_one hf]
   exact add_le_add_right hencard 1
 termination_by (B₂ \ B₁).encard
@@ -333,7 +327,7 @@ section aesop
   It uses a `[Matroid]` ruleset, and is allowed to fail. -/
 macro (name := aesop_mat) "aesop_mat" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  aesop $c* (config := { terminal := true })
+  aesop $c* (config := {terminal := true})
   (rule_sets := [$(Lean.mkIdent `Matroid):ident]))
 
 /- We add a number of trivial lemmas (deliberately specialized to statements in terms of the
@@ -391,7 +385,7 @@ theorem IsBase.subset_ground (hB : M.IsBase B) : B ⊆ M.E :=
   M.subset_ground B hB
 
 theorem IsBase.exchange {e : α} (hB₁ : M.IsBase B₁) (hB₂ : M.IsBase B₂) (hx : e ∈ B₁ \ B₂) :
-    ∃ y ∈ B₂ \ B₁, M.IsBase (insert y (B₁ \ {e}))  :=
+    ∃ y ∈ B₂ \ B₁, M.IsBase (insert y (B₁ \ {e})) :=
   M.isBase_exchange B₁ B₂ hB₁ hB₂ _ hx
 
 theorem IsBase.exchange_mem {e : α}
@@ -495,8 +489,6 @@ theorem ext_isBase {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E)
     fun B ↦ ⟨fun hB ↦ (h hB.subset_ground).1 hB,
       fun hB ↦ (h <| hB.subset_ground.trans_eq hE.symm).2 hB⟩
   ext <;> simp [hE, M₁.indep_iff', M₂.indep_iff', h']
-
-@[deprecated (since := "2024-12-25")] alias eq_of_isBase_iff_isBase_forall := ext_isBase
 
 theorem ext_iff_isBase {M₁ M₂ : Matroid α} :
     M₁ = M₂ ↔ M₁.E = M₂.E ∧ ∀ ⦃B⦄, B ⊆ M₁.E → (M₁.IsBase B ↔ M₂.IsBase B) :=
@@ -646,7 +638,7 @@ theorem IsBase.exchange_isBase_of_indep (hB : M.IsBase B) (hf : f ∉ B)
   rw [insert_subset_iff, ← diff_eq_empty, diff_diff_comm, diff_eq_empty, subset_singleton_iff_eq]
     at hIB'
   obtain ⟨hfB, (h | h)⟩ := hIB'
-  · rw [h, encard_empty, encard_eq_zero, eq_empty_iff_forall_not_mem] at hcard
+  · rw [h, encard_empty, encard_eq_zero, eq_empty_iff_forall_notMem] at hcard
     exact (hcard f ⟨hfB, hf⟩).elim
   rw [h, encard_singleton, encard_eq_one] at hcard
   obtain ⟨x, hx⟩ := hcard
@@ -680,7 +672,7 @@ theorem Indep.exists_insert_of_not_isBase (hI : M.Indep I) (hI' : ¬M.IsBase I) 
   by_cases hxB : x ∈ B
   · exact ⟨x, ⟨hxB, hx⟩, hB'.indep.subset (insert_subset hxB' hIB')⟩
   obtain ⟨e,he, hBase⟩ := hB'.exchange hB ⟨hxB',hxB⟩
-  exact ⟨e, ⟨he.1, not_mem_subset hIB' he.2⟩,
+  exact ⟨e, ⟨he.1, notMem_subset hIB' he.2⟩,
     indep_iff.2 ⟨_, hBase, insert_subset_insert (subset_diff_singleton hIB' hx)⟩⟩
 
 /-- This is the same as `Indep.exists_insert_of_not_isBase`, but phrased so that
@@ -719,13 +711,9 @@ theorem IsBase.exists_insert_of_ssubset (hB : M.IsBase B) (hIB : I ⊂ B) (hB' :
       (fun hi ↦ hI (hi.subset_ground.trans_eq hE.symm))
   ext_isBase hE (fun B _ ↦ by simp_rw [isBase_iff_maximal_indep, h'])
 
-@[deprecated (since := "2024-12-25")] alias eq_of_indep_iff_indep_forall := ext_indep
-
 theorem ext_iff_indep {M₁ M₂ : Matroid α} :
     M₁ = M₂ ↔ (M₁.E = M₂.E) ∧ ∀ ⦃I⦄, I ⊆ M₁.E → (M₁.Indep I ↔ M₂.Indep I) :=
   ⟨fun h ↦ by (subst h; simp), fun h ↦ ext_indep h.1 h.2⟩
-
-@[deprecated (since := "2024-12-25")] alias eq_iff_indep_iff_indep_forall := ext_iff_indep
 
 /-- If every base of `M₁` is independent in `M₂` and vice versa, then `M₁ = M₂`. -/
 lemma ext_isBase_indep {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E)
@@ -1109,7 +1097,7 @@ theorem finite_setOf_matroid {E : Set α} (hE : E.Finite) : {M : Matroid α | M.
   rw [← Set.finite_image_iff hf.injOn]
   refine (hE.finite_subsets.prod hE.finite_subsets.finite_subsets).subset ?_
   rintro _ ⟨M, hE : M.E ⊆ E, rfl⟩
-  simp only [Set.mem_prod, Set.mem_setOf_eq, Set.setOf_subset_setOf]
+  simp only [Set.mem_prod, Set.mem_setOf_eq]
   exact ⟨hE, fun B hB ↦ hB.subset_ground.trans hE⟩
 
 /-- For finite `E`, finitely many matroids have ground set `E`. -/

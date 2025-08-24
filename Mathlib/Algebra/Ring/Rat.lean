@@ -78,7 +78,7 @@ lemma num_div_den (r : ℚ) : (r.num : ℚ) / (r.den : ℚ) = r := by
   rw [← Int.cast_natCast, ← divInt_eq_div, num_divInt_den]
 
 @[simp] lemma divInt_pow (num : ℕ) (den : ℤ) (n : ℕ) : (num /. den) ^ n = num ^ n /. den ^ n := by
-  simp [divInt_eq_div, div_pow, Int.natCast_pow]
+  simp [divInt_eq_div, div_pow]
 
 @[simp] lemma mkRat_pow (num den : ℕ) (n : ℕ) : mkRat num den ^ n = mkRat (num ^ n) (den ^ n) := by
   rw [mkRat_eq_divInt, mkRat_eq_divInt, divInt_pow, Int.natCast_pow]
@@ -86,9 +86,7 @@ lemma num_div_den (r : ℚ) : (r.num : ℚ) / (r.den : ℚ) = r := by
 lemma natCast_eq_divInt (n : ℕ) : ↑n = n /. 1 := by rw [← Int.cast_natCast, intCast_eq_divInt]
 
 @[simp] lemma mul_den_eq_num (q : ℚ) : q * q.den = q.num := by
-  suffices (q.num /. ↑q.den) * (↑q.den /. 1) = q.num /. 1 by
-    conv => pattern (occs := 1) q; (rw [← num_divInt_den q])
-    simp only [intCast_eq_divInt, natCast_eq_divInt, num_divInt_den] at this ⊢; assumption
+  suffices (q.num /. ↑q.den) * (↑q.den /. 1) = q.num /. 1 by simp_all
   have : (q.den : ℤ) ≠ 0 := mod_cast q.den_ne_zero
   rw [divInt_mul_divInt _ _ this Int.one_ne_zero, mul_comm (q.den : ℤ) 1, divInt_mul_right this]
 

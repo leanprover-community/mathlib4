@@ -49,7 +49,7 @@ def get? : Seq α → ℕ → Option α :=
   Subtype.val
 
 @[simp]
-theorem val_eq_get (s : Seq α) (n : ℕ) : s.val n = s.get? n := by
+theorem val_eq_get (s : Seq α) (n : ℕ) : s.val n = s.get? n :=
   rfl
 
 @[simp]
@@ -354,13 +354,7 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
       · intro _ this
         rw [destruct_nil, destruct_cons] at this
         exact False.elim this
-      · intro _ this
-        rw [destruct_cons, destruct_cons] at this
-        rw [head_cons, head_cons, tail_cons, tail_cons]
-        obtain ⟨h1, h2⟩ := this
-        constructor
-        · rw [h1]
-        · exact h2
+      · simp
   · exact ⟨s₁, s₂, rfl, rfl, r⟩
 
 /-- Version of `eq_of_bisim` that looks more like an induction principle. -/
@@ -385,7 +379,7 @@ theorem eq_of_bisim_strong {s₁ s₂ : Seq α}
     (h_base : motive s₁ s₂)
     (h_step : ∀ s₁ s₂, motive s₁ s₂ →
       (s₁ = s₂) ∨
-      (∃ x s₁' s₂', s₁ = cons x s₁' ∧ s₂ = cons x s₂' ∧ (motive s₁' s₂'))): s₁ = s₂ := by
+      (∃ x s₁' s₂', s₁ = cons x s₁' ∧ s₂ = cons x s₂' ∧ (motive s₁' s₂'))) : s₁ = s₂ := by
   let motive' : Seq α → Seq α → Prop := fun s₁ s₂ => s₁ = s₂ ∨ motive s₁ s₂
   apply eq_of_bisim' motive'
   · simp [motive']
@@ -544,11 +538,13 @@ protected def Mem (s : Seq α) (a : α) :=
 instance : Membership α (Seq α) :=
   ⟨Seq.Mem⟩
 
-@[simp]
+-- Cannot be @[simp] because `n` can not be inferred by `simp`.
 theorem get?_mem {s : Seq α} {n : ℕ} {x : α} (h : s.get? n = .some x) : x ∈ s := ⟨n, h.symm⟩
 
 @[simp]
-theorem not_mem_nil (a : α) : a ∉ @nil α := fun ⟨_, (h : some a = none)⟩ => by injection h
+theorem notMem_nil (a : α) : a ∉ @nil α := fun ⟨_, (h : some a = none)⟩ => by injection h
+
+@[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
 
 theorem mem_cons (a : α) : ∀ s : Seq α, a ∈ cons a s
   | ⟨_, _⟩ => Stream'.mem_cons (some a) _
@@ -767,30 +763,20 @@ def fold (s : Seq α) (init : β) (f : β → α → β) : Seq β :=
     | some (x, s) => .some (f acc x, f acc x, s)
   cons init <| corec f (init, s)
 
-/-- Apply `f` to the nth element of the list, if it exists, replacing that element
+/-- Applies `f` to the `n`th element of the sequence, if it exists, replacing that element
 with the result. -/
-def modify (s : Seq α) (n : ℕ) (f : α → α) : Seq α where
-  val := fun i =>
-    if i = n then
-      (s.val i).map f
-    else
-      s.val i
+def update (s : Seq α) (n : ℕ) (f : α → α) : Seq α where
+  val := Function.update s.val n ((s.val n).map f)
   property := by
-    simp only [IsSeq]
-    intro i h
-    split_ifs with h_if
-    · split_ifs at h
-      · omega
-      · rw [s.property h]
-        rfl
-    · split_ifs at h with h_if'
-      · simp only [Option.map_eq_none_iff] at h
-        exact s.property h
-      · exact s.property h
+    have (i : ℕ) : Function.update s.val n ((s.get? n).map f) i = none ↔ s.get? i = none := by
+      by_cases hi : i = n <;> simp [Function.update, hi]
+    simp only [IsSeq, val_eq_get, this]
+    exact @s.prop
 
-/-- `s.set n a` sets the value of sequence `s` at (zero-based) index `n` to `a`. -/
+/-- Sets the value of sequence `s` at index `n` to `a`. If the `n`th element does not exist
+(`s` terminates earlier), the sequence is left unchanged. -/
 def set (s : Seq α) (n : ℕ) (a : α) : Seq α :=
-  modify s n (fun _ ↦ a)
+  update s n fun _ ↦ a
 
 /-!
 ### Predicates on sequences
@@ -933,7 +919,7 @@ theorem length_toList (s : Seq α) (h : s.Terminates) : (toList s h).length = le
 @[simp]
 theorem getElem?_toList (s : Seq α) (h : s.Terminates) (n : ℕ) : (toList s h)[n]? = s.get? n := by
   ext k
-  simp only [ofList, toList, get?_mk, Option.mem_def, getElem?_take, Nat.lt_find_iff, length,
+  simp only [toList, getElem?_take, Nat.lt_find_iff, length,
     Option.ite_none_right_eq_some, and_iff_right_iff_imp, TerminatedAt]
   intro h m hmn
   let ⟨a, ha⟩ := ge_stable s hmn h
@@ -1145,7 +1131,7 @@ theorem join_cons (a : α) (s S) : join (cons (a, s) S) = cons a (append s (join
         exact ⟨rfl, Or.inl rfl⟩
     | _, _, Or.inr ⟨a, s, S, rfl, rfl⟩ => by
       cases s
-      · simp [join_cons_cons, join_cons_nil]
+      · simp [join_cons_nil]
       · simpa [join_cons_cons, join_cons_nil] using Or.inr ⟨_, _, S, rfl, rfl⟩
 
 @[simp]
@@ -1354,72 +1340,59 @@ theorem fold_head (init : β) (f : β → α → β) (s : Seq α) :
 
 end Fold
 
-section Modify
+section Update
+
+variable (hd x : α) (tl : Seq α) (f : α → α)
+
+theorem get?_update (s : Seq α) (n : ℕ) (m : ℕ) :
+    (s.update n f).get? m = if m = n then (s.get? m).map f else s.get? m := by
+  simp [update, Function.update]
+  split_ifs with h_if
+  · simp [h_if]
+  · rfl
 
 @[simp]
-theorem modify_nil {f : α → α} {n} :
-    modify nil n f = nil := by
-  simp [modify]
-  rfl
+theorem update_nil (n : ℕ) : update nil n f = nil := by
+  ext1 m
+  simp [get?_update]
 
 @[simp]
-theorem set_nil {n : ℕ} {x : α} :
-    set nil n x = nil :=
-  modify_nil
+theorem set_nil (n : ℕ) (x : α) : set nil n x = nil := update_nil _ _
 
 @[simp]
-theorem modify_cons_zero {f : α → α} {hd : α} {tl : Seq α} :
-    (cons hd tl).modify 0 f = cons (f hd) tl := by
+theorem update_cons_zero : (cons hd tl).update 0 f = cons (f hd) tl := by
   ext1 n
-  cases n <;> simp [modify]
+  cases n <;> simp [get?_update]
 
 @[simp]
-theorem set_cons_zero {hd hd' : α} {tl : Seq α} :
-    (cons hd tl).set 0 hd' = cons hd' tl :=
-  modify_cons_zero
+theorem set_cons_zero (hd' : α) : (cons hd tl).set 0 hd' = cons hd' tl :=
+  update_cons_zero _ _ _
 
 @[simp]
-theorem modify_cons_succ {hd : α} {f : α → α} {n : ℕ} {tl : Seq α} :
-    (cons hd tl).modify (n + 1) f = cons hd (tl.modify n f) := by
+theorem update_cons_succ (n : ℕ) : (cons hd tl).update (n + 1) f = cons hd (tl.update n f) := by
   ext1 n
-  cases n <;> simp [modify]
+  cases n <;> simp [get?_update]
 
 @[simp]
-theorem set_cons_succ {hd x : α} {n : ℕ} {tl : Seq α} :
-    (cons hd tl).set (n + 1) x = cons hd (tl.set n x) :=
-  modify_cons_succ
+theorem set_cons_succ (n : ℕ) : (cons hd tl).set (n + 1) x = cons hd (tl.set n x) :=
+  update_cons_succ _ _ _ _
 
-theorem set_get_of_not_terminated {s : Seq α} {x : α} {n : ℕ}
-    (h_not_terminated : ¬ s.TerminatedAt n) :
+theorem get?_set_of_not_terminatedAt {s : Seq α} {n : ℕ} (h_not_terminated : ¬ s.TerminatedAt n) :
     (s.set n x).get? n = x := by
-  simp [set, modify]
-  simp [TerminatedAt] at h_not_terminated
-  cases h : s.get? n with
-  | none => simp [h] at h_not_terminated
-  | some => simp
+  simpa [set, update, ← Option.ne_none_iff_exists'] using h_not_terminated
 
-theorem set_get_of_terminated {s : Seq α} {x : α} {n : ℕ}
-    (h_terminated : s.TerminatedAt n) :
+theorem get?_set_of_terminatedAt {s : Seq α} {n : ℕ} (h_terminated : s.TerminatedAt n) :
     (s.set n x).get? n = .none := by
-  simp [set, modify]
-  simpa [TerminatedAt] using h_terminated
+  simpa [set, get?_update] using h_terminated
 
-theorem set_get_stable {s : Seq α} {x : α} {n m : ℕ}
-    (h : n ≠ m) :
-    (s.set m x).get? n = s.get? n := by
-  simp [set, modify]
-  intro h'
-  exact (h h').elim
+theorem get?_set_of_ne (s : Seq α) {m n : ℕ} (h : n ≠ m) : (s.set m x).get? n = s.get? n := by
+  simp [set, get?_update, h]
 
-theorem set_dropn_stable_of_lt {s : Seq α} {m n : ℕ} {x : α}
-    (h : m < n) :
-    (s.set m x).drop n = s.drop n := by
+theorem drop_set_of_lt (s : Seq α) {m n : ℕ} (h : m < n) : (s.set m x).drop n = s.drop n := by
   ext1 i
-  simp
-  rw [set_get_stable]
-  omega
+  simp [get?_set_of_ne _ _ (show n + i ≠ m by omega)]
 
-end Modify
+end Update
 
 section All
 
@@ -1530,9 +1503,9 @@ theorem set_All {p : α → Prop} {s : Seq α} (h_all : s.All p) {n : ℕ} {x : 
   by_cases h_nm : n = m
   · subst h_nm
     by_cases h_term : s.TerminatedAt n
-    · simp [set_get_of_terminated h_term]
-    · simpa [set_get_of_not_terminated h_term]
-  · rw [set_get_stable]
+    · simp [get?_set_of_terminatedAt _ h_term]
+    · simpa [get?_set_of_not_terminatedAt _ h_term]
+  · rw [get?_set_of_ne]
     · intro x hx
       exact All_get h_all hx
     · omega
@@ -1715,7 +1688,7 @@ theorem cons_AtLeastAsLongAs_cons {a_hd : α} {a_tl : Seq α} {b_hd : β}
   simpa using h
 
 theorem AtLeastAsLongAs_map {α : Type v} {γ : Type w} {f : β → γ} {a : Seq α}
-    {b : Seq β} (h : a.AtLeastAsLongAs b):
+    {b : Seq β} (h : a.AtLeastAsLongAs b) :
     a.AtLeastAsLongAs (b.map f) := by
   simp only [AtLeastAsLongAs, terminatedAt_map_iff] at h ⊢
   intro n ha

@@ -77,14 +77,11 @@ attribute [coe] ContinuousAffineEquiv.toAffineEquiv
 /-- Coerce continuous affine equivalences to affine equivalences. -/
 instance coe : Coe (P₁ ≃ᴬ[k] P₂) (P₁ ≃ᵃ[k] P₂) := ⟨toAffineEquiv⟩
 
-theorem coe_injective : Function.Injective ((↑) : (P₁ ≃ᴬ[k] P₂) → P₁ ≃ᵃ[k] P₂) := by
-  intro e e' H
-  cases e
-  congr
+@[deprecated (since := "2025-08-15")] alias coe_injective := toAffineEquiv_injective
 
 instance instFunLike : FunLike (P₁ ≃ᴬ[k] P₂) P₁ P₂ where
   coe f := f.toAffineEquiv
-  coe_injective' _ _ h := coe_injective (DFunLike.coe_injective h)
+  coe_injective' _ _ h := toAffineEquiv_injective (DFunLike.coe_injective h)
 
 @[simp, norm_cast]
 theorem coe_coe (e : P₁ ≃ᴬ[k] P₂) : ⇑(e : P₁ ≃ᵃ[k] P₂) = e :=
@@ -172,11 +169,24 @@ def symm (e : P₁ ≃ᴬ[k] P₂) : P₂ ≃ᴬ[k] P₁ where
   continuous_invFun := e.continuous_toFun
 
 @[simp]
+theorem toAffineEquiv_symm (e : P₁ ≃ᴬ[k] P₂) : e.symm.toAffineEquiv = e.toAffineEquiv.symm :=
+  rfl
+
+@[deprecated "use instead `toAffineEquiv_symm`, in the reverse direction" (since := "2025-06-08")]
 theorem symm_toAffineEquiv (e : P₁ ≃ᴬ[k] P₂) : e.toAffineEquiv.symm = e.symm.toAffineEquiv :=
   rfl
 
 @[simp]
+theorem coe_symm_toAffineEquiv (e : P₁ ≃ᴬ[k] P₂) : ⇑e.toAffineEquiv.symm = e.symm := rfl
+
+@[simp]
+theorem toEquiv_symm (e : P₁ ≃ᴬ[k] P₂) : e.symm.toEquiv = e.toEquiv.symm := rfl
+
+@[deprecated "use instead `symm_toEquiv`, in the reverse direction" (since := "2025-06-08")]
 theorem symm_toEquiv (e : P₁ ≃ᴬ[k] P₂) : e.toEquiv.symm = e.symm.toEquiv := rfl
+
+@[simp]
+theorem coe_symm_toEquiv (e : P₁ ≃ᴬ[k] P₂) : ⇑e.toEquiv.symm = e.symm := rfl
 
 @[simp]
 theorem apply_symm_apply (e : P₁ ≃ᴬ[k] P₂) (p : P₂) : e (e.symm p) = p :=

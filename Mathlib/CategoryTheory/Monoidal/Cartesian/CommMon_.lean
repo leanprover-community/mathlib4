@@ -9,10 +9,12 @@ import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
 # Yoneda embedding of `CommMon_ C`
 -/
 
-open CategoryTheory MonoidalCategory Limits Opposite ChosenFiniteProducts Mon_Class
+assert_not_exists MonoidWithZero
+
+open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory Mon_Class
 
 universe w v u
-variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C] [BraidedCategory C] {X : C}
+variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] [BraidedCategory C] {X : C}
 
 variable (X) in
 /-- If `X` represents a presheaf of commutative monoids, then `X` is a commutative monoid object. -/

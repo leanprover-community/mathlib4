@@ -32,7 +32,7 @@ lemma exists_isClosed_singleton_of_isJacobsonRing [IsJacobsonRing R]
     ∃ x ∈ s, IsClosed {x} := by
   simp_rw [isClosed_singleton_iff_isMaximal]
   obtain ⟨I, hI'⟩ := (isClosed_iff_zeroLocus_ideal _).mp hs.isClosed_compl
-  simp_rw [← @Set.not_mem_compl_iff _ s, hI', mem_zeroLocus]
+  simp_rw [← @Set.notMem_compl_iff _ s, hI', mem_zeroLocus]
   have := hs'.ne_empty
   contrapose! this
   simp_rw [not_imp_not] at this
@@ -63,7 +63,7 @@ lemma isJacobsonRing_iff_jacobsonSpace :
   apply vanishingIdeal_anti_mono
   rw [← H.1 (isClosed_zeroLocus I), (isClosed_zeroLocus _).closure_subset_iff]
   rintro x ⟨hx : I ≤ x.asIdeal, hx'⟩
-  show jacobson I ≤ x.asIdeal
+  change jacobson I ≤ x.asIdeal
   exact sInf_le ⟨hx, (isClosed_singleton_iff_isMaximal _).mp hx'⟩
 
 /--
@@ -98,7 +98,7 @@ lemma isOpen_singleton_tfae_of_isNoetherian_of_isJacobsonRing
     · rintro rfl _ _
       rw [stableUnderGeneralization_singleton, ← isMin_iff] at h₂
       exact h₂.eq_of_le
-    · intros hp
+    · intro hp
       apply h₁.eq_of_ge
       obtain ⟨q, hq, hq'⟩ := Ideal.exists_minimalPrimes_le (J := p.asIdeal) bot_le
       exact (hp ⟨q, hq.1.1⟩ (isMin_iff.mpr hq) hq').ge.trans hq'

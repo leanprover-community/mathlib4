@@ -40,7 +40,7 @@ noncomputable def MvPolynomial.rTensor' :
 noncomputable def MvPolynomial.rTensor :
     MvPolynomial σ R ⊗[R] N ≃ₗ[R] (σ →₀ ℕ) →₀ N :=
   TensorProduct.finsuppScalarLeft
- ```
+```
 
 However, to be actually usable, these definitions need lemmas to be given in companion PR.
 
@@ -108,7 +108,7 @@ theorem finsuppLeft_apply (t : (ι →₀ M) ⊗[R] N) (i : ι) :
 lemma finsuppLeft_symm_apply_single (i : ι) (m : M) (n : N) :
     (finsuppLeft R M N ι).symm (Finsupp.single i (m ⊗ₜ[R] n)) =
       Finsupp.single i m ⊗ₜ[R] n := by
-  simp [finsuppLeft, Finsupp.lsum]
+  simp [finsuppLeft]
 
 variable (R M N ι)
 /-- The tensor product of `M` and `ι →₀ N` is linearly equivalent to `ι →₀ M ⊗[R] N` -/
@@ -143,7 +143,7 @@ theorem finsuppRight_apply (t : M ⊗[R] (ι →₀ N)) (i : ι) :
 lemma finsuppRight_symm_apply_single (i : ι) (m : M) (n : N) :
     (finsuppRight R M N ι).symm (Finsupp.single i (m ⊗ₜ[R] n)) =
       m ⊗ₜ[R] Finsupp.single i n := by
-  simp [finsuppRight, Finsupp.lsum]
+  simp [finsuppRight]
 
 variable {S : Type*} [CommSemiring S] [Algebra R S]
   [Module S M] [IsScalarTower R S M]

@@ -43,7 +43,7 @@ theorem tendsto_rpow_neg_atTop {y : ℝ} (hy : 0 < y) : Tendsto (fun x : ℝ => 
 open Asymptotics in
 lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 1) :
     Tendsto (b ^ · : ℝ → ℝ) atTop (𝓝 (0 : ℝ)) := by
-  rcases lt_trichotomy b 0 with hb|rfl|hb
+  rcases lt_trichotomy b 0 with hb | rfl | hb
   case inl => -- b < 0
     simp_rw [Real.rpow_def_of_nonpos hb.le, hb.ne, ite_false]
     rw [← isLittleO_const_iff (c := (1 : ℝ)) one_ne_zero, (one_mul (1 : ℝ)).symm]
@@ -79,11 +79,7 @@ lemma tendsto_rpow_atBot_of_base_lt_one (b : ℝ) (hb₀ : 0 < b) (hb₁ : b < 1
   exact (log_neg_iff hb₀).mpr hb₁
 
 lemma tendsto_rpow_atBot_of_base_gt_one (b : ℝ) (hb : 1 < b) :
-    Tendsto (b ^ · : ℝ → ℝ) atBot (𝓝 0) := by
-  simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
-  refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_iff_pos <| tendsto_id (α := ℝ)).mpr ?_
-  exact (log_pos_iff (by positivity)).mpr <| by aesop
-
+    Tendsto (b ^ · : ℝ → ℝ) atBot (𝓝 0) := tendsto_rpow_atTop_of_base_gt_one b hb
 
 /-- The function `x ^ (a / (b * x + c))` tends to `1` at `+∞`, for any real numbers `a`, `b`, and
 `c` such that `b` is nonzero. -/
@@ -192,7 +188,7 @@ theorem isBigO_cpow_rpow (hl : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|)
     _ =Θ[l] (show α → ℝ from fun x => ‖f x‖ ^ (g x).re / (1 : ℝ)) :=
       ((isTheta_refl _ _).div (isTheta_exp_arg_mul_im hl))
     _ =ᶠ[l] (show α → ℝ from fun x => ‖f x‖ ^ (g x).re) := by
-      simp only [ofReal_one, div_one, EventuallyEq.rfl]
+      simp only [div_one, EventuallyEq.rfl]
 
 theorem isTheta_cpow_rpow (hl_im : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|)
     (hl : ∀ᶠ x in l, f x = 0 → re (g x) = 0 → g x = 0) :
@@ -204,7 +200,7 @@ theorem isTheta_cpow_rpow (hl_im : IsBoundedUnder (· ≤ ·) l fun x => |(g x).
     _ =Θ[l] fun x => ‖f x‖ ^ (g x).re / (1 : ℝ) :=
       (isTheta_refl _ _).div (isTheta_exp_arg_mul_im hl_im)
     _ =ᶠ[l] (fun x => ‖f x‖ ^ (g x).re) := by
-      simp only [ofReal_one, div_one, EventuallyEq.rfl]
+      simp only [div_one, EventuallyEq.rfl]
 
 theorem isTheta_cpow_const_rpow {b : ℂ} (hl : b.re = 0 → b ≠ 0 → ∀ᶠ x in l, f x ≠ 0) :
     (fun x => f x ^ b) =Θ[l] fun x => ‖f x‖ ^ b.re :=

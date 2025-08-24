@@ -7,6 +7,7 @@ import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.MeasureTheory.Measure.Haar.Quotient
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 import Mathlib.Topology.Algebra.Order.Floor
+import Mathlib.Topology.Instances.AddCircle.Real
 
 /-!
 # Integrals of periodic functions
@@ -83,7 +84,7 @@ instance : AddQuotientMeasureEqMeasurePreimage volume (volume : Measure (AddCirc
 
 /-- The covering map from `ℝ` to the "additive circle" `ℝ ⧸ (ℤ ∙ T)` is measure-preserving,
 considered with respect to the standard measure (defined to be the Haar measure of total mass `T`)
-on the additive circle, and with respect to the restriction of Lebsegue measure on `ℝ` to an
+on the additive circle, and with respect to the restriction of Lebesgue measure on `ℝ` to an
 interval (t, t + T]. -/
 protected theorem measurePreserving_mk (t : ℝ) :
     MeasurePreserving (β := AddCircle T) ((↑) : ℝ → AddCircle T)
@@ -196,7 +197,7 @@ protected theorem measure_univ : volume (Set.univ : Set UnitAddCircle) = 1 := by
 
 /-- The covering map from `ℝ` to the "unit additive circle" `ℝ ⧸ ℤ` is measure-preserving,
 considered with respect to the standard measure (defined to be the Haar measure of total mass 1)
-on the additive circle, and with respect to the restriction of Lebsegue measure on `ℝ` to an
+on the additive circle, and with respect to the restriction of Lebesgue measure on `ℝ` to an
 interval (t, t + 1]. -/
 protected theorem measurePreserving_mk (t : ℝ) :
     MeasurePreserving (β := UnitAddCircle) ((↑) : ℝ → UnitAddCircle)
@@ -238,7 +239,8 @@ variable {f : ℝ → E} {T : ℝ}
 
 /-- A periodic function is interval integrable over every interval if it is interval integrable
 over one period. -/
-theorem intervalIntegrable {t : ℝ} (h₁f : Function.Periodic f T) (hT : 0 < T)
+theorem intervalIntegrable {t : ℝ} (h₁f : Function.Periodic f T)
+    (hT : 0 < T) (hT' : ‖f (min t (t + T))‖ₑ ≠ ∞ := by finiteness)
     (h₂f : IntervalIntegrable f MeasureTheory.volume t (t + T)) (a₁ a₂ : ℝ) :
     IntervalIntegrable f MeasureTheory.volume a₁ a₂ := by
   -- Replace [a₁, a₂] by [t - n₁ * T, t + n₂ * T], where n₁ and n₂ are natural numbers
@@ -260,7 +262,7 @@ theorem intervalIntegrable {t : ℝ} (h₁f : Function.Periodic f T) (hT : 0 < T
   apply IntervalIntegrable.trans_iterate
   -- Show integrability over a shifted period
   intro k hk
-  convert (IntervalIntegrable.comp_sub_right h₂f ((k - n₁) * T)) using 1
+  convert (IntervalIntegrable.comp_sub_right h₂f ((k - n₁) * T) hT') using 1
   · funext x
     simpa using (h₁f.sub_int_mul_eq (k - n₁)).symm
   · simp [a, Nat.cast_add]
@@ -318,9 +320,10 @@ theorem intervalIntegral_add_zsmul_eq (hf : Periodic f T) (n : ℤ) (t : ℝ)
       this]
   -- First prove it for natural numbers
   have : ∀ m : ℕ, (∫ x in (0)..m • T, f x) = m • ∫ x in (0)..T, f x := fun m ↦ by
-    induction' m with m ih
-    · simp
-    · simp only [succ_nsmul, hf.intervalIntegral_add_eq_add 0 (m • T) h_int, ih, zero_add]
+    induction m with
+    | zero => simp
+    | succ m ih =>
+      simp only [succ_nsmul, hf.intervalIntegral_add_eq_add 0 (m • T) h_int, ih, zero_add]
   -- Then prove it for all integers
   rcases n with n | n
   · simp [← this n]

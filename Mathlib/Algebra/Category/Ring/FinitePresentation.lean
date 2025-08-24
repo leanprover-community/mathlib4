@@ -60,7 +60,7 @@ lemma RingHom.EssFiniteType.exists_comp_map_eq_of_isColimit (hf : f.hom.EssFinit
     simp [← α.naturality]
   · intro x hx
     rw [← c'.w (.fst (by exact ⟨x, hx⟩)), ← c'.w (.snd (by exact ⟨x, hx⟩))]
-    have (x) : F.map (f₁ x) (a x) = F.map (f₂ x) (b x) := h x
+    have (x : _) : F.map (f₁ x) (a x) = F.map (f₂ x) (b x) := h x
     simp [D, this]
 
 include hc in
@@ -103,7 +103,7 @@ lemma RingHom.EssFiniteType.exists_eq_comp_ι_app_of_isColimit (hf : f.hom.Finit
     · ext x
       simp [P, iP]
   have : ∀ r : s, ∃ (i' : J) (hi' : i ⟶ i'), F.map hi' (g' r) = 0 := by
-    intros r
+    intro r
     have := Types.FilteredColimit.isColimit_eq_iff _ hc' (xi := g' r) (j := i) (xj := (0 : F.obj i))
     suffices H : (g' ≫ c.ι.app i) r = 0 by
       obtain ⟨k, f, g, e⟩ := this.mp (by simpa using H)

@@ -52,13 +52,13 @@ theorem decomposition_Q (n q : ℕ) :
       ∑ i : Fin (n + 1) with i.val < q, (P i).f (n + 1) ≫ X.δ i.rev.succ ≫ X.σ (Fin.rev i) := by
   induction' q with q hq
   · simp only [Q_zero, HomologicalComplex.zero_f_apply, Nat.not_lt_zero,
-      Finset.filter_False, Finset.sum_empty]
+      Finset.filter_false, Finset.sum_empty]
   · by_cases hqn : q + 1 ≤ n + 1
     swap
     · rw [Q_is_eventually_constant (show n + 1 ≤ q by omega), hq]
       congr 1
       ext ⟨x, hx⟩
-      simp only [Nat.succ_eq_add_one, Finset.mem_filter, Finset.mem_univ, true_and]
+      simp_rw [Finset.mem_filter_univ]
       omega
     · obtain ⟨a, ha⟩ := Nat.le.dest (Nat.succ_le_succ_iff.mp hqn)
       rw [Q_succ, HomologicalComplex.sub_f_apply, HomologicalComplex.comp_f, hq]
@@ -68,14 +68,11 @@ theorem decomposition_Q (n q : ℕ) :
       rw [← @Finset.add_sum_erase _ _ _ _ _ _ q' (by simp [q'])]
       congr
       · have hnaq' : n = a + q := by omega
-        simp only [Fin.val_mk, (HigherFacesVanish.of_P q n).comp_Hσ_eq hnaq',
-          q'.rev_eq hnaq', neg_neg]
+        simp only [(HigherFacesVanish.of_P q n).comp_Hσ_eq hnaq', q'.rev_eq hnaq', neg_neg]
         rfl
       · ext ⟨i, hi⟩
-        simp only [q', Nat.succ_eq_add_one, Nat.lt_succ_iff_lt_or_eq, Finset.mem_univ,
-          forall_true_left, Finset.mem_filter, lt_self_iff_false, or_true, and_self, not_true,
-          Finset.mem_erase, ne_eq, Fin.mk.injEq, true_and]
-        aesop
+        simp_rw [Finset.mem_erase, Finset.mem_filter_univ, q', ne_eq, Fin.mk.injEq]
+        omega
 
 variable (X)
 
