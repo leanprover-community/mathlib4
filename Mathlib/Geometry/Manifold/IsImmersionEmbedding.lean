@@ -435,12 +435,30 @@ lemma _root_.ContMDiffAt.iff_comp_immersionAt [IsManifold I n M] [IsManifold J n
   set x' := (((chartAt H x).extend I) x)
 
   have h'' : ContDiffWithinAt 𝕜 n (φ' ∘ f') (range I) x' := by
+    apply h'.congr
+    · intro y hy
+      simp only [φ', f']
+      simp
+      congr
+      refine PartialHomeomorph.left_inv h.domChart ?_
+      sorry -- need to think!
+    -- deduplicate again!
     -- use h' and cancellation
     sorry
   set f'' := ((h.equiv ∘ fun x ↦ (x, 0)) ∘ f')
   have h''' : ContDiffWithinAt 𝕜 n f'' (range I) x' := by
-    -- use h'' and h.writtenInCharts
-    sorry
+    -- deduplicate!
+    apply h''.congr
+    · intro y hy
+      simp only [f'']
+      nth_rw 2 [comp_apply]
+      simp only [φ']
+      rw [h.writtenInCharts]
+      congr
+      -- need to think, is y in the right set?
+      simp only [f']
+      sorry
+    · sorry
   -- Compose with a suitable projection to cancel the inclusion.
   have h'''' : ContDiffWithinAt 𝕜 n (((Prod.fst : F × F → F) ∘ h.equiv.symm) ∘ f'') (range I) x' := by
     sorry -- easy, just composition
