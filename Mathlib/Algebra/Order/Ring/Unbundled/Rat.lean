@@ -29,7 +29,7 @@ variable {a b c p q : ℚ}
 
 @[simp] lemma divInt_nonneg_iff_of_pos_right {a b : ℤ} (hb : 0 < b) : 0 ≤ a /. b ↔ 0 ≤ a := by
   rcases hab : a /. b with ⟨n, d, hd, hnd⟩
-  rw [mk'_eq_divInt, divInt_eq_iff hb.ne' (mod_cast hd)] at hab
+  rw [mk'_eq_divInt, divInt_eq_divInt_iff hb.ne' (mod_cast hd)] at hab
   rw [← num_nonneg, ← Int.mul_nonneg_iff_of_pos_right hb, ← hab,
     Int.mul_nonneg_iff_of_pos_right (mod_cast Nat.pos_of_ne_zero hd)]
 
