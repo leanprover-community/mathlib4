@@ -296,11 +296,8 @@ lemma nsmul_apply (n : ℕ) (f : ι →₀ M) (x : ι) : (n • f) x = n • f x
 instance instAddMonoid : AddMonoid (ι →₀ M) :=
   fast_instance% DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
 
-instance instIsAddTorsionFree [IsAddTorsionFree M] : IsAddTorsionFree (ι →₀ M) where
-  nsmul_right_injective n hn x y heq := by
-    ext i
-    apply nsmul_right_injective hn
-    exact DFunLike.congr_fun heq i
+instance instIsAddTorsionFree [IsAddTorsionFree M] : IsAddTorsionFree (ι →₀ M) :=
+  DFunLike.coe_injective.isAddTorsionFree coeFnAddHom
 
 end AddMonoid
 
