@@ -89,26 +89,19 @@ scoped notation "V(" H ")" => Hypergraph.vertexSet H
 scoped notation "E(" H ")" => Hypergraph.hyperedgeSet H
 
 
-instance : Membership (α) (Hypergraph α) where
-  mem H x := x ∈ V(H)
-
-instance : Membership (Set α) (Hypergraph α) where
-  mem H e := e ∈ E(H)
-
-
 /-! ## Vertex-Hyperedge Incidence -/
 
 @[simp] lemma hyperedge_isSubset_vertexSet {H : Hypergraph α} {e : Set α} (he : e ∈ E(H)) :
   e ⊆ V(H) := H.hyperedge_isSubset_vertexSet' he
 
-lemma _root_.Membership.mem.isSubset_vertexSet {H : Hypergraph α} {e : Set α} (he : e ∈ E(H)) :
+lemma _root_.Membership.mem.subset_vertexSet {H : Hypergraph α} {e : Set α} (he : e ∈ E(H)) :
   e ⊆ V(H) := H.hyperedge_isSubset_vertexSet he
 
-lemma coe_isSubset_vertexSet_powerset {H : Hypergraph α} : E(H) ⊆ V(H).powerset := by
+lemma edgeSet_subset_powerset_vertexSet {H : Hypergraph α} : E(H) ⊆ V(H).powerset := by
   intro e (he : e ∈ E(H))
-  simpa using he.isSubset_vertexSet
+  simpa using he.subset_vertexSet
 
-lemma vertex_mem_if_mem_hyperedge {H : Hypergraph α} {e : Set α} {x : α}
+lemma mem_vertexSet_of_mem_edgeSet {H : Hypergraph α} {e : Set α} {x : α}
   (he : e ∈ H.hyperedgeSet) (hx : x ∈ e) : x ∈ H.vertexSet := by
   have h1 : e ⊆ V(H) := by apply H.hyperedge_isSubset_vertexSet he
   apply Set.mem_of_subset_of_mem h1 hx
@@ -120,12 +113,12 @@ tactic.
 -/
 lemma forall_of_forall_verts {e e' : Set α} (he : e ∈ E(H)) (he' : e' ∈ E(H))
     (h : ∀ x ∈ V(H), x ∈ e ↔ x ∈ e') : ∀ x, x ∈ e ↔ x ∈ e' :=
-  fun x ↦ ⟨fun y ↦ (h x (he.isSubset_vertexSet y)).1 y,
-  fun y ↦ (h x (he'.isSubset_vertexSet y)).2 y⟩
+  fun x ↦ ⟨fun y ↦ (h x (he.subset_vertexSet y)).1 y,
+  fun y ↦ (h x (he'.subset_vertexSet y)).2 y⟩
 
-lemma sUnion_hyperedgeSet_subset_vertexSet : Set.sUnion E(H) ⊆ V(H) := by
+lemma sUnion_hyperedgeSet_subset_vertexSet : ⋃₀ E(H) ⊆ V(H) := by
   refine subset_powerset_iff.mp ?_
-  exact coe_isSubset_vertexSet_powerset
+  exact edgeSet_subset_powerset_vertexSet
 
 /-! ## Vertex and Hyperedge Adjacency -/
 
@@ -184,23 +177,6 @@ lemma EAdj.inter_nonempty {H : Hypergraph α} {e f : Set α} (hef : H.EAdj e f) 
 lemma hypergraph_eadj_comm (e f) : H.EAdj e f ↔ H.EAdj f e :=
   ⟨.symm, .symm⟩
 
-/--
-Neighbors of a vertex `x` in hypergraph `H`
-
-A vertex `y` is a neighbor of vertex `x` if there exists some hyperedge `e ∈ E(H)` where `x` and
-`y` are both incident on `e`, i.e., if the two vertices are adjacent (see `Hypergraph.Adj`)
--/
-def neighbors (H : Hypergraph α) (x : α) : Set α := {y | H.Adj x y}
-
-/--
-Neighbors of a hyperedge `e` in hypergraph `H`
-
-A hyperedge `f` is a neighbor of hyperedge `e` if there exists some vertex `x ∈ V(H)` where `x` is
-incident on both `e` and `f`, i.e., if the two hyperedges are adjacent (see `Hypergraph.EAdj`)
--/
-def hyperedgeNeighbors (H : Hypergraph α) (e : Set α) : Set (Set α) := {f | H.EAdj e f}
-
-
 /-! ## Basic Hypergraph Definitions & Predicates-/
 
 /--
@@ -229,12 +205,12 @@ def image (H : Hypergraph α) (f : α → β) : Hypergraph β where
   hyperedge_isSubset_vertexSet' := by
     simp
     intro e he
-    have hev : e ⊆ V(H) := by exact Membership.mem.isSubset_vertexSet he
+    have hev : e ⊆ V(H) := by exact Membership.mem.subset_vertexSet he
     refine image_subset_iff.mp ?_
     exact image_mono hev
 
 @[simp] lemma mem_image {f : α → β} {e : Set β} {H : Hypergraph α} :
-    e ∈ H.image f ↔ ∃ e' ∈ E(H), e'.image f = e := by exact Eq.to_iff rfl
+    e ∈ E(H.image f) ↔ ∃ e' ∈ E(H), f '' e' = e := Iff.rfl
 
 lemma image_mem_image {f : α → β} {e : Set α} {H : Hypergraph α} (he : e ∈ E(H)) :
     e.image f ∈ E(H.image f) :=
@@ -443,10 +419,7 @@ def completeOn (f : Set α) : Hypergraph α where
   hyperedge_isSubset_vertexSet' := by simp
 
 @[simp]
-lemma mem_completeOn {e f : Set α} : e ∈ E(completeOn f) ↔ e ⊆ f := by
-  constructor
-  · exact fun a ↦ a
-  · exact fun a ↦ a
+lemma mem_completeOn {e f : Set α} : e ⊆ f ↔ e ∈ E(completeOn f) := by simp
 
 @[simp]
 lemma isComplete_completeOn (f : Set α) : (completeOn f).IsComplete := by exact fun e a ↦ a
@@ -482,11 +455,6 @@ lemma isComplete_not_isTrivial {H : Hypergraph α} (h : H.IsComplete) : ¬H.IsTr
   exact ne_of_mem_of_not_mem' h' fun a ↦ a
 
 @[simp]
-lemma completeOn_not_isTrivial {S : Set α} : ¬(completeOn S).IsTrivial := by
-  unfold IsTrivial
-  apply not_and_or.mpr
-  right
-  simp
-  exact ne_of_mem_of_not_mem' (fun ⦃a⦄ a ↦ a) fun a ↦ a
+lemma completeOn_not_isTrivial {S : Set α} : ¬(completeOn S).IsTrivial := by simp
 
 end Hypergraph
