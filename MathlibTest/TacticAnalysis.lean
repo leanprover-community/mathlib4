@@ -59,3 +59,20 @@ example : 1 + 1 = 2 := by
   rfl
 
 end replaceWithGrind
+
+section introMerge
+
+set_option linter.tacticAnalysis.introMerge true
+
+/-- warning: Try this: intro a b -/
+#guard_msgs in
+example : ∀ a b : Unit, a = b := by
+  intro a
+  intro b
+  rfl
+
+example : ∀ a b : Unit, a = b := by
+  intro a b
+  rfl
+
+end introMerge
