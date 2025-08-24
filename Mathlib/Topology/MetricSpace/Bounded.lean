@@ -341,6 +341,23 @@ theorem isBounded_of_bddAbove_of_bddBelow {s : Set α} (h₁ : BddAbove s) (h₂
 
 end CompactIccSpace
 
+section CompactIccSpace_abs
+
+variable {α : Type*} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] [PseudoMetricSpace α]
+  [CompactIccSpace α]
+
+lemma isBounded_of_abs_le (C : α) : Bornology.IsBounded {x : α | |x| ≤ C} := by
+  convert Metric.isBounded_Icc (-C) C
+  ext1 x
+  simp [abs_le]
+
+lemma isBounded_of_abs_lt (C : α) : Bornology.IsBounded {x : α | |x| < C} := by
+  convert Metric.isBounded_Ioo (-C) C
+  ext1 x
+  simp [abs_lt]
+
+end CompactIccSpace_abs
+
 end Bounded
 
 section Diam
@@ -546,6 +563,8 @@ def evalDiam : PositivityExt where eval {u α} _zα _pα e := do
 
 end Mathlib.Meta.Positivity
 
+section
+
 open Metric
 
 variable [PseudoMetricSpace α]
@@ -575,3 +594,39 @@ theorem Metric.finite_isBounded_inter_isClosed [ProperSpace α] {K s : Set α} [
   refine Set.Finite.subset (IsCompact.finite ?_ ?_) (Set.inter_subset_inter_left s subset_closure)
   · exact hK.isCompact_closure.inter_right hs
   · exact DiscreteTopology.of_subset inferInstance Set.inter_subset_right
+
+end
+
+namespace Continuous
+
+variable {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α]
+  [PseudoMetricSpace β] [ProperSpace β]
+
+/-- A version of the **Extreme Value Theorem**: if the set where a continuous function `f`
+into a linearly ordered space takes values `≤ f x₀` is bounded for some `x₀`,
+then `f` has a global minimum (under suitable topological assumptions).
+
+This is a convenient combination of `Continuous.exists_forall_le'` and
+`Metric.isCompact_of_isClosed_isBounded`. -/
+theorem exists_forall_le_of_isBounded {f : β → α} (hf : Continuous f) (x₀ : β)
+    (h : Bornology.IsBounded {x : β | f x ≤ f x₀}) :
+    ∃ x, ∀ y, f x ≤ f y := by
+  refine hf.exists_forall_le' (x₀ := x₀) ?_
+  have hU : {x : β | f x₀ < f x} ∈ Filter.cocompact β := by
+    refine Filter.mem_cocompact'.mpr ⟨_, ?_, fun ⦃_⦄ a ↦ a⟩
+    simp only [Set.compl_setOf, not_lt]
+    exact Metric.isCompact_of_isClosed_isBounded (isClosed_le (by fun_prop) (by fun_prop)) h
+  filter_upwards [hU] with x hx using hx.le
+
+/-- A version of the **Extreme Value Theorem**: if the set where a continuous function `f`
+into a linearly ordered space takes values `≥ f x₀` is bounded for some `x₀`,
+then `f` has a global maximum (under suitable topological assumptions).
+
+This is a convenient combination of `Continuous.exists_forall_ge'` and
+`Metric.isCompact_of_isClosed_isBounded`. -/
+theorem exists_forall_ge_of_isBounded {f : β → α} (hf : Continuous f) (x₀ : β)
+    (h : Bornology.IsBounded {x : β | f x₀ ≤ f x}) :
+    ∃ x, ∀ y, f y ≤ f x :=
+  hf.exists_forall_le_of_isBounded (α := αᵒᵈ) x₀ h
+
+end Continuous
