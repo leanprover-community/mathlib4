@@ -654,7 +654,7 @@ theorem Int.ModEq.pow_eq_pow {p x y : ℕ} (hp : Nat.Prime p) (h : p - 1 ∣ x -
   haveI : Fact p.Prime := ⟨hp⟩
   by_cases ch : (p : ℤ) ∣ n
   · calc
-    _ ≡ 0 [ZMOD p] := Dvd.dvd.modEq_zero_int (Dvd.dvd.pow ch (by omega))
+    _ ≡ 0 [ZMOD p] := (dvd_pow ch (by omega)).modEq_zero_int
     _ ≡ _ [ZMOD p] :=
       Int.ModEq.symm ((fun {n a} ↦ Int.modEq_zero_iff_dvd.mpr) (Dvd.dvd.pow ch (by omega)))
   · have : n ^ (x - y) ≡ 1 [ZMOD p] := by
