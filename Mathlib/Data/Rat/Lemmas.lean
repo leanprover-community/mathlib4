@@ -16,6 +16,9 @@ import Mathlib.Data.PNat.Defs
 
 namespace Rat
 
+-- TODO: move this to Lean
+attribute [norm_cast] num_intCast den_intCast
+
 theorem num_dvd (a) {b : ℤ} (b0 : b ≠ 0) : (a /. b).num ∣ a := by
   rcases e : a /. b with ⟨n, d, h, c⟩
   rw [Rat.mk'_eq_divInt, divInt_eq_divInt_iff b0 (mod_cast h)] at e
