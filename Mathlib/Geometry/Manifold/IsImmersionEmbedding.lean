@@ -26,11 +26,12 @@ manifolds.
 ## Main results
 * `IsImmersionAt.congr_of_eventuallyEq`: being an immersion is a local property.
   If `f` and `g` agree near `x` and `f` is an immersion at `x`, so is `g`
-
-## TODO
 * `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
 * `IsImmersion.contMDiff`: if f is an immersion, it is `C^n`.
-* `IsImmersionAt.prodMap`: the product of two immersions is an immersion
+* `IsImmersionAt.prodMap`: the product of two immersions at `x` is an immersion
+* `IsImmersion.prodMap`: the product of two immersions is an immersion
+
+## TODO
 * If `f` is an immersion at `x`, its differential splits, hence is injective.
 * If `f: M → M'` is a map between Banach manifolds, `mfderiv I I' f x` splitting implies `f` is an
   immersion at `x`. (This requires the inverse function theorem.)
