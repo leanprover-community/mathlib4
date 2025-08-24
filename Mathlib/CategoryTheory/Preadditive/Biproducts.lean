@@ -55,13 +55,11 @@ and `Matrix.invertibleOfFromBlocks₁₁Invertible` are all closely related.
 
 open CategoryTheory
 
-open CategoryTheory.Preadditive
+open CategoryTheory.Presemiadditive
 
 open CategoryTheory.Limits
 
 open CategoryTheory.Functor
-
-open CategoryTheory.Preadditive
 
 universe v v' u u'
 
@@ -69,7 +67,7 @@ noncomputable section
 
 namespace CategoryTheory
 
-variable {C : Type u} [Category.{v} C] [Preadditive C]
+variable {C : Type u} [Category.{v} C] [Presemiadditive C]
 
 namespace Limits
 
@@ -288,7 +286,7 @@ def biproduct.reindex {β γ : Type} [Finite β] (ε : β ≃ γ)
     cases nonempty_fintype β
     ext g g'
     by_cases h : g' = g <;>
-      simp [Preadditive.sum_comp, biproduct.lift_desc,
+      simp [Presemiadditive.sum_comp, biproduct.lift_desc,
         biproduct.ι_π, comp_dite, Equiv.apply_eq_iff_eq_symm_apply,
         h]
 
@@ -469,6 +467,12 @@ lemma biprod.ext_from_iff {f g : X ⊞ Y ⟶ Z} :
 
 end
 
+section Preadditive
+
+open Preadditive
+
+variable {C : Type u} [Category.{v} C] [Preadditive C]
+
 /-- Every split mono `f` with a cokernel induces a binary bicone with `f` as its `inl` and
 the cokernel map as its `snd`.
 We will show in `is_bilimit_binary_bicone_of_split_mono_of_cokernel` that this binary bicone is in
@@ -612,6 +616,8 @@ def isBilimitBinaryBiconeOfIsSplitEpiOfKernel {X Y : C} {f : X ⟶ Y} [IsSplitEp
     {c : KernelFork f} (i : IsLimit c) : (binaryBiconeOfIsSplitEpiOfKernel i).IsBilimit :=
   BinaryBicone.isBilimitOfKernelInl _ <| i.ofIsoLimit <| Fork.ext (Iso.refl _) (by simp)
 
+end Preadditive
+
 end
 
 section
@@ -634,19 +640,25 @@ open CategoryTheory.Limits
 
 section
 
-attribute [local ext] Preadditive
+attribute [local ext] Presemiadditive
 
-/-- The existence of binary biproducts implies that there is at most one preadditive structure. -/
-instance subsingleton_preadditive_of_hasBinaryBiproducts {C : Type u} [Category.{v} C]
-    [HasZeroMorphisms C] [HasBinaryBiproducts C] : Subsingleton (Preadditive C) where
+/-- The existence of binary biproducts implies that
+there is at most one presemiadditive structure. -/
+instance subsingleton_presemiadditive_of_hasBinaryBiproducts {C : Type u} [Category.{v} C]
+    [HasZeroMorphisms C] [HasBinaryBiproducts C] : Subsingleton (Presemiadditive C) where
   allEq := fun a b => by
-    apply Preadditive.ext; funext X Y; apply AddCommGroup.ext; funext f g
+    apply Presemiadditive.ext; funext X Y; apply AddCommMonoid.ext; funext f g
     have h₁ := @biprod.add_eq_lift_id_desc _ _ a _ _ f g
       (by convert (inferInstance : HasBinaryBiproduct X X); subsingleton)
     have h₂ := @biprod.add_eq_lift_id_desc _ _ b _ _ f g
       (by convert (inferInstance : HasBinaryBiproduct X X); subsingleton)
     refine h₁.trans (Eq.trans ?_ h₂.symm)
     congr! 2 <;> subsingleton
+
+/-- The existence of binary biproducts implies that there is at most one preadditive structure. -/
+instance subsingleton_preadditive_of_hasBinaryBiproducts {C : Type u} [Category.{v} C]
+    [HasZeroMorphisms C] [HasBinaryBiproducts C] : Subsingleton (Preadditive C) :=
+  Preadditive.instPresemiadditive_injective.subsingleton
 
 end
 
@@ -690,7 +702,7 @@ theorem Biprod.ofComponents_eq (f : X₁ ⊞ X₂ ⟶ Y₁ ⊞ Y₂) :
   ext <;>
     simp only [Category.comp_id, biprod.inr_fst, biprod.inr_snd, biprod.inl_snd, add_zero, zero_add,
       Biprod.inl_ofComponents, Biprod.inr_ofComponents, Category.assoc,
-      comp_zero, biprod.inl_fst, Preadditive.add_comp]
+      comp_zero, biprod.inl_fst, Presemiadditive.add_comp]
 
 @[simp]
 theorem Biprod.ofComponents_comp {X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C} (f₁₁ : X₁ ⟶ Y₁) (f₁₂ : X₁ ⟶ Y₂)
@@ -704,6 +716,12 @@ theorem Biprod.ofComponents_comp {X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C} (f₁₁ : 
     simp only [add_comp, comp_add, add_zero, zero_add, biprod.inl_fst,
       biprod.inl_snd, biprod.inr_fst, biprod.inr_snd, biprod.inl_fst_assoc, biprod.inl_snd_assoc,
       biprod.inr_fst_assoc, biprod.inr_snd_assoc, comp_zero, zero_comp, Category.assoc]
+
+section Preadditive
+
+variable {C : Type u} [Category.{v} C] [Preadditive C] [HasBinaryBiproducts.{v} C]
+variable {X₁ X₂ Y₁ Y₂ : C}
+variable (f₁₁ : X₁ ⟶ Y₁) (f₁₂ : X₁ ⟶ Y₂) (f₂₁ : X₂ ⟶ Y₁) (f₂₂ : X₂ ⟶ Y₂)
 
 /-- The unipotent upper triangular matrix
 ```
@@ -779,6 +797,8 @@ def Biprod.isoElim (f : X₁ ⊞ X₂ ≅ Y₁ ⊞ Y₂) [IsIso (biprod.inl ≫ 
   Biprod.isoElim' (biprod.inl ≫ f.hom ≫ biprod.fst) (biprod.inl ≫ f.hom ≫ biprod.snd)
     (biprod.inr ≫ f.hom ≫ biprod.fst) (biprod.inr ≫ f.hom ≫ biprod.snd)
 
+end Preadditive
+
 theorem Biprod.column_nonzero_of_iso {W X Y Z : C} (f : W ⊞ X ⟶ Y ⊞ Z) [IsIso f] :
     𝟙 W = 0 ∨ biprod.inl ≫ f ≫ biprod.fst ≠ 0 ∨ biprod.inl ≫ f ≫ biprod.snd ≠ 0 := by
   by_contra! h
@@ -841,9 +861,9 @@ def Biproduct.columnNonzeroOfIso {σ τ : Type} [Fintype τ] {S : σ → C} [Has
     simp only [not_exists_not] at h
     exact nz (t h)
 
-section Preadditive
+section Presemiadditive
 
-variable {D : Type u'} [Category.{v'} D] [Preadditive.{v'} D]
+variable {D : Type u'} [Category.{v'} D] [Presemiadditive.{v'} D]
 variable (F : C ⥤ D) [PreservesZeroMorphisms F]
 
 namespace Limits
@@ -1078,6 +1098,6 @@ lemma preservesBinaryBiproducts_of_preservesBinaryCoproducts
 
 end Limits
 
-end Preadditive
+end Presemiadditive
 
 end CategoryTheory

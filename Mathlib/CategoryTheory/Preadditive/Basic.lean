@@ -3,12 +3,11 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Jakob von Raumer
 -/
-import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.Action.Units
-import Mathlib.Algebra.Module.End
-import Mathlib.CategoryTheory.Endomorphism
+import Mathlib.Algebra.Group.Ext
+import Mathlib.Algebra.Module.NatInt
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+import Mathlib.CategoryTheory.Preadditive.Semi
 
 /-!
 # Preadditive categories
@@ -117,12 +116,22 @@ def leftComp {P Q : C} (R : C) (f : P ⟶ Q) : (Q ⟶ R) →+ (P ⟶ R) :=
 def rightComp (P : C) {Q R : C} (g : Q ⟶ R) : (P ⟶ Q) →+ (P ⟶ R) :=
   mk' (fun f => f ≫ g) fun f f' => by simp
 
+instance [Preadditive C] : Presemiadditive C where
+  homMonoid _ _ := inferInstance
+  zero_comp _ _ _ _ := (rightComp ..).map_zero
+  comp_zero _ _ _ _ := (leftComp ..).map_zero
+
+attribute [local ext] Preadditive
+
+omit [Preadditive C] in
+lemma instPresemiadditive_injective : Function.Injective (@Preadditive.instPresemiadditive C _) :=
+  fun _ _ eq ↦ by ext; exact congr((($eq).homMonoid _ _).add ..)
+
 variable {P Q R : C} (f f' : P ⟶ Q) (g g' : Q ⟶ R)
 
 /-- Composition as a bilinear group homomorphism -/
-def compHom : (P ⟶ Q) →+ (Q ⟶ R) →+ (P ⟶ R) :=
-  AddMonoidHom.mk' (fun f => leftComp _ f) fun f₁ f₂ =>
-    AddMonoidHom.ext fun g => (rightComp _ g).map_add f₁ f₂
+abbrev compHom : (P ⟶ Q) →+ (Q ⟶ R) →+ (P ⟶ R) :=
+  Presemiadditive.compHom
 
 -- simp can prove the reassoc version
 @[reassoc, simp]
@@ -171,9 +180,8 @@ theorem sum_comp {P Q R : C} {J : Type*} (s : Finset J) (f : J → (P ⟶ Q)) (g
 
 @[reassoc]
 theorem sum_comp' {P Q R S : C} {J : Type*} (s : Finset J) (f : J → (P ⟶ Q)) (g : J → (Q ⟶ R))
-    (h : R ⟶ S) : (∑ j ∈ s, f j ≫ g j) ≫ h = ∑ j ∈ s, f j ≫ g j ≫ h := by
-  simp only [← Category.assoc]
-  apply sum_comp
+    (h : R ⟶ S) : (∑ j ∈ s, f j ≫ g j) ≫ h = ∑ j ∈ s, f j ≫ g j ≫ h :=
+  Presemiadditive.sum_comp' ..
 
 instance {P Q : C} {f : P ⟶ Q} [Epi f] : Epi (-f) :=
   ⟨fun g g' H => by rwa [neg_comp, neg_comp, ← comp_neg, ← comp_neg, cancel_epi, neg_inj] at H⟩
@@ -181,33 +189,12 @@ instance {P Q : C} {f : P ⟶ Q} [Epi f] : Epi (-f) :=
 instance {P Q : C} {f : P ⟶ Q} [Mono f] : Mono (-f) :=
   ⟨fun g g' H => by rwa [comp_neg, comp_neg, ← neg_comp, ← neg_comp, cancel_mono, neg_inj] at H⟩
 
-instance (priority := 100) preadditiveHasZeroMorphisms : HasZeroMorphisms C where
-  zero := inferInstance
-  comp_zero f R := show leftComp R f 0 = 0 from map_zero _
-  zero_comp P _ _ f := show rightComp P f 0 = 0 from map_zero _
-
-/-- Porting note: adding this before the ring instance allowed moduleEndRight to find
-the correct Monoid structure on End. Moved both down after preadditiveHasZeroMorphisms
-to make use of them -/
-instance {X : C} : Semiring (End X) :=
-  { End.monoid with
-    zero_mul := fun f => by dsimp [mul]; exact HasZeroMorphisms.comp_zero f _
-    mul_zero := fun f => by dsimp [mul]; exact HasZeroMorphisms.zero_comp _ f
-    left_distrib := fun f g h => Preadditive.add_comp X X X g h f
-    right_distrib := fun f g h => Preadditive.comp_add X X X h f g }
-
 /-- Porting note: It looks like Ring's parent classes changed in
 Lean 4 so the previous instance needed modification. Was following my nose here. -/
 instance {X : C} : Ring (End X) :=
   { (inferInstance : Semiring (End X)),
     (inferInstance : AddCommGroup (End X)) with
     neg_add_cancel := neg_add_cancel }
-
-instance moduleEndRight {X Y : C} : Module (End Y) (X ⟶ Y) where
-  smul_add _ _ _ := add_comp _ _ _ _ _ _
-  smul_zero _ := zero_comp
-  add_smul _ _ _ := comp_add _ _ _ _ _ _
-  zero_smul _ := comp_zero
 
 theorem mono_of_cancel_zero {Q R : C} (f : Q ⟶ R) (h : ∀ {P : C} (g : P ⟶ Q), g ≫ f = 0 → g = 0) :
     Mono f where
@@ -272,12 +259,12 @@ lemma epi_iff_isZero_cokernel {X Y : C} (f : X ⟶ Y) [HasCokernel f] :
 namespace IsIso
 
 @[simp]
-theorem comp_left_eq_zero [IsIso f] : f ≫ g = 0 ↔ g = 0 := by
-  rw [← IsIso.eq_inv_comp, Limits.comp_zero]
+theorem comp_left_eq_zero [IsIso f] : f ≫ g = 0 ↔ g = 0 :=
+  Presemiadditive.IsIso.comp_left_eq_zero ..
 
 @[simp]
-theorem comp_right_eq_zero [IsIso g] : f ≫ g = 0 ↔ f = 0 := by
-  rw [← IsIso.eq_comp_inv, Limits.zero_comp]
+theorem comp_right_eq_zero [IsIso g] : f ≫ g = 0 ↔ f = 0 :=
+  Presemiadditive.IsIso.comp_right_eq_zero ..
 
 end IsIso
 
