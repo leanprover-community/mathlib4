@@ -329,7 +329,7 @@ lemma IsEmpty.not_mem (hH : H.IsEmpty) {e : Set α} : e ∉ E(H) := by
   rw [hH.2]
   exact fun a ↦ a
 
-@[simp] lemma not_isEmpty : ¬H.IsEmpty ↔ H.IsNonempty := by
+lemma not_isEmpty : ¬H.IsEmpty ↔ H.IsNonempty := by
   unfold IsEmpty
   unfold IsNonempty
   constructor
@@ -358,7 +358,7 @@ lemma IsEmpty.not_mem (hH : H.IsEmpty) {e : Set α} : e ∉ E(H) := by
       exact nonempty_iff_ne_empty.mp e_nonempty
     )
 
-@[simp] lemma not_isNonempty : ¬ H.IsNonempty ↔ H.IsEmpty :=
+lemma not_isNonempty : ¬ H.IsNonempty ↔ H.IsEmpty :=
   not_iff_comm.mp not_isEmpty
 
 alias ⟨_, IsEmpty.not_isNonempty⟩ := not_isNonempty
@@ -397,7 +397,6 @@ lemma not_isEmpty_trivial_hypergraph {H : Hypergraph α} (hh : IsTrivial H) : ¬
   left
   apply Set.nonempty_iff_ne_empty.mp hh.1
 
-@[simp]
 lemma hyperedge_not_mem_trivial {α : Type*} {e : Set α} {H : Hypergraph α} (h : H.IsTrivial) :
   e ∉ E(H) := by
     unfold IsTrivial at *
@@ -424,10 +423,8 @@ lemma mem_completeOn {e f : Set α} : e ⊆ f ↔ e ∈ E(completeOn f) := by
   · exact fun a ↦ a
   · exact fun a ↦ a
 
-@[simp]
 lemma isComplete_completeOn (f : Set α) : (completeOn f).IsComplete := by exact fun e a ↦ a
 
-@[simp]
 lemma isComplete_not_isEmpty {H : Hypergraph α} (h : H.IsComplete) : ¬ H.IsEmpty := by
   unfold IsComplete at h
   unfold IsEmpty
@@ -438,7 +435,6 @@ lemma isComplete_not_isEmpty {H : Hypergraph α} (h : H.IsComplete) : ¬ H.IsEmp
   right
   grind
 
-@[simp]
 lemma completeOn_isNonempty {S : Set α} : (completeOn S).IsNonempty := by
   have h : E(completeOn S) = 𝒫 S := rfl
   have h' : ∅ ∈ E(completeOn S) := by
@@ -448,7 +444,6 @@ lemma completeOn_isNonempty {S : Set α} : (completeOn S).IsNonempty := by
   right
   use ∅
 
-@[simp]
 lemma isComplete_not_isTrivial {H : Hypergraph α} (h : H.IsComplete) : ¬H.IsTrivial := by
   unfold IsComplete at h
   unfold IsTrivial
@@ -457,7 +452,6 @@ lemma isComplete_not_isTrivial {H : Hypergraph α} (h : H.IsComplete) : ¬H.IsTr
   right
   exact ne_of_mem_of_not_mem' h' fun a ↦ a
 
-@[simp]
 lemma completeOn_not_isTrivial {S : Set α} : ¬(completeOn S).IsTrivial := by
   unfold IsTrivial
   apply not_and_or.mpr
