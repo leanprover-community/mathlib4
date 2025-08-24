@@ -209,7 +209,7 @@ theorem differentiable_set_subset_D :
 /-- Harder inclusion: at a point in `D f K`, the function `f` has a derivative, in `K`. -/
 theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete K) :
     D f K ⊆ { x | DifferentiableAt 𝕜 f x ∧ fderiv 𝕜 f x ∈ K } := by
-  have P : ∀ {n : ℕ}, (0 : ℝ) < (1 / 2) ^ n := fun {n} => pow_pos (by simp) n
+  have P : ∀ {n : ℕ}, (0 : ℝ) < (1 / 2) ^ n := fun {n} => pow_pos (by norm_num) n
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
   intro x hx
   have :
@@ -239,7 +239,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
     intro e p q e' p' q' hp hq hp' hq' he'
     let r := max (n e) (n e')
     have I : ((1 : ℝ) / 2) ^ e' ≤ (1 / 2) ^ e :=
-      pow_le_pow_of_le_one (by simp) (by norm_num) he'
+      pow_le_pow_of_le_one (by norm_num) (by norm_num) he'
     have J1 : ‖L e p q - L e p r‖ ≤ 4 * ‖c‖ * (1 / 2) ^ e := by
       have I1 : x ∈ A f (L e p q) ((1 / 2) ^ p) ((1 / 2) ^ e) := (hn e p q hp hq).2.1
       have I2 : x ∈ A f (L e p r) ((1 / 2) ^ p) ((1 / 2) ^ e) := (hn e p r hp (le_max_left _ _)).2.1
@@ -303,15 +303,15 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
     · simp [y_pos]
     have yzero : 0 < ‖y‖ := norm_pos_iff.mpr y_pos
     have y_lt : ‖y‖ < (1 / 2) ^ (n e + 1) := by simpa using mem_ball_iff_norm.1 hy
-    have yone : ‖y‖ ≤ 1 := le_trans y_lt.le (pow_le_one₀ (by simp) (by norm_num))
+    have yone : ‖y‖ ≤ 1 := le_trans y_lt.le (pow_le_one₀ (by norm_num) (by norm_num))
     -- define the scale `k`.
     obtain ⟨k, hk, h'k⟩ : ∃ k : ℕ, (1 / 2) ^ (k + 1) < ‖y‖ ∧ ‖y‖ ≤ (1 / 2) ^ k :=
-      exists_nat_pow_near_of_lt_one yzero yone (by simp : (0 : ℝ) < 1 / 2)
+      exists_nat_pow_near_of_lt_one yzero yone (by norm_num : (0 : ℝ) < 1 / 2)
         (by norm_num : (1 : ℝ) / 2 < 1)
     -- the scale is large enough (as `y` is small enough)
     have k_gt : n e < k := by
       have : ((1 : ℝ) / 2) ^ (k + 1) < (1 / 2) ^ (n e + 1) := lt_trans hk y_lt
-      rw [pow_lt_pow_iff_right_of_lt_one₀ (by simp : (0 : ℝ) < 1 / 2) (by norm_num)] at this
+      rw [pow_lt_pow_iff_right_of_lt_one₀ (by norm_num : (0 : ℝ) < 1 / 2) (by norm_num)] at this
       omega
     set m := k - 1
     have m_ge : n e ≤ m := Nat.le_sub_one_of_lt k_gt
@@ -528,7 +528,7 @@ theorem differentiable_set_subset_D :
   intro x hx
   rw [D, mem_iInter]
   intro e
-  have : (0 : ℝ) < (1 / 2) ^ e := pow_pos (by simp) _
+  have : (0 : ℝ) < (1 / 2) ^ e := pow_pos (by norm_num) _
   rcases mem_A_of_differentiable this hx.1 with ⟨R, R_pos, hR⟩
   obtain ⟨n, hn⟩ : ∃ n : ℕ, (1 / 2) ^ n < R :=
     exists_pow_lt_of_lt_one R_pos (by norm_num : (1 : ℝ) / 2 < 1)
@@ -540,7 +540,7 @@ theorem differentiable_set_subset_D :
 /-- Harder inclusion: at a point in `D f K`, the function `f` has a derivative, in `K`. -/
 theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     D f K ⊆ { x | DifferentiableWithinAt ℝ f (Ici x) x ∧ derivWithin f (Ici x) x ∈ K } := by
-  have P : ∀ {n : ℕ}, (0 : ℝ) < (1 / 2) ^ n := fun {n} => pow_pos (by simp) n
+  have P : ∀ {n : ℕ}, (0 : ℝ) < (1 / 2) ^ n := fun {n} => pow_pos (by norm_num) n
   intro x hx
   have :
     ∀ e : ℕ, ∃ n : ℕ, ∀ p q, n ≤ p → n ≤ q →
@@ -568,7 +568,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     intro e p q e' p' q' hp hq hp' hq' he'
     let r := max (n e) (n e')
     have I : ((1 : ℝ) / 2) ^ e' ≤ (1 / 2) ^ e :=
-      pow_le_pow_of_le_one (by simp) (by norm_num) he'
+      pow_le_pow_of_le_one (by norm_num) (by norm_num) he'
     have J1 : ‖L e p q - L e p r‖ ≤ 4 * (1 / 2) ^ e := by
       have I1 : x ∈ A f (L e p q) ((1 / 2) ^ p) ((1 / 2) ^ e) := (hn e p q hp hq).2.1
       have I2 : x ∈ A f (L e p r) ((1 / 2) ^ p) ((1 / 2) ^ e) := (hn e p r hp (le_max_left _ _)).2.1
@@ -598,7 +598,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     rw [Metric.cauchySeq_iff']
     intro ε εpos
     obtain ⟨e, he⟩ : ∃ e : ℕ, (1 / 2) ^ e < ε / 12 :=
-      exists_pow_lt_of_lt_one (div_pos εpos (by simp)) (by norm_num)
+      exists_pow_lt_of_lt_one (div_pos εpos (by norm_num)) (by norm_num)
     refine ⟨e, fun e' he' => ?_⟩
     rw [dist_comm, dist_eq_norm]
     calc
@@ -622,7 +622,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
       the whole interval of length `(1/2)^(n e)`. -/
     intro ε εpos
     obtain ⟨e, he⟩ : ∃ e : ℕ, (1 / 2) ^ e < ε / 16 :=
-      exists_pow_lt_of_lt_one (div_pos εpos (by simp)) (by norm_num)
+      exists_pow_lt_of_lt_one (div_pos εpos (by norm_num)) (by norm_num)
     filter_upwards [Icc_mem_nhdsGE <| show x < x + (1 / 2) ^ (n e + 1) by simp] with y hy
     -- We need to show that `f y - f x - f' (y - x)` is small. For this, we will work at scale
     -- `k` where `k` is chosen with `‖y - x‖ ∼ 2 ^ (-k)`.
@@ -630,15 +630,15 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     · simp only [sub_self, zero_smul, norm_zero, mul_zero, le_rfl]
     have yzero : 0 < y - x := sub_pos.2 xy
     have y_le : y - x ≤ (1 / 2) ^ (n e + 1) := by linarith [hy.2]
-    have yone : y - x ≤ 1 := le_trans y_le (pow_le_one₀ (by simp) (by norm_num))
+    have yone : y - x ≤ 1 := le_trans y_le (pow_le_one₀ (by norm_num) (by norm_num))
     -- define the scale `k`.
     obtain ⟨k, hk, h'k⟩ : ∃ k : ℕ, (1 / 2) ^ (k + 1) < y - x ∧ y - x ≤ (1 / 2) ^ k :=
-      exists_nat_pow_near_of_lt_one yzero yone (by simp : (0 : ℝ) < 1 / 2)
+      exists_nat_pow_near_of_lt_one yzero yone (by norm_num : (0 : ℝ) < 1 / 2)
         (by norm_num : (1 : ℝ) / 2 < 1)
     -- the scale is large enough (as `y - x` is small enough)
     have k_gt : n e < k := by
       have : ((1 : ℝ) / 2) ^ (k + 1) < (1 / 2) ^ (n e + 1) := lt_of_lt_of_le hk y_le
-      rw [pow_lt_pow_iff_right_of_lt_one₀ (by simp : (0 : ℝ) < 1 / 2) (by norm_num)] at this
+      rw [pow_lt_pow_iff_right_of_lt_one₀ (by norm_num : (0 : ℝ) < 1 / 2) (by norm_num)] at this
       omega
     set m := k - 1
     have m_ge : n e ≤ m := Nat.le_sub_one_of_lt k_gt
