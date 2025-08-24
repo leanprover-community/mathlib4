@@ -76,7 +76,7 @@ section dual
     refine ⟨(X \ B') ∩ M.E, ?_, ⟨⟨inter_subset_right, ?_⟩, ?_⟩, ?_⟩
     · rw [subset_inter_iff, and_iff_left hI'E, subset_diff, and_iff_right hI'X]
       exact Disjoint.mono_right hB'IB <| disjoint_union_right.2
-        ⟨disjoint_sdiff_right.mono_left hI'X  , hI'B⟩
+        ⟨disjoint_sdiff_right.mono_left hI'X, hI'B⟩
     · exact ⟨B', hB', (disjoint_sdiff_left (t := X)).mono_left inter_subset_left⟩
     · exact inter_subset_left.trans diff_subset
     simp only [subset_inter_iff, subset_diff, and_imp, forall_exists_index]
