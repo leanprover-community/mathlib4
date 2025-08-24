@@ -5,6 +5,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 import Mathlib.Algebra.Regular.Basic
+import Mathlib.Algebra.Ring.NonZeroDivisors
 import Mathlib.Data.Fintype.Prod
 import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 import Mathlib.RingTheory.OreLocalization.Ring
@@ -217,8 +218,7 @@ variable {M}
 theorem subsingleton (h : 0 ∈ M) : Subsingleton S := (toLocalizationMap M S).subsingleton h
 
 protected theorem subsingleton_iff : Subsingleton S ↔ 0 ∈ M :=
-  ⟨fun _ ↦ have ⟨c, eq⟩ := exists_of_eq (M := M) (S := S) (x := 0) (y := 1) (Subsingleton.elim _ _)
-    by rw [mul_zero, mul_one] at eq; exact eq ▸ c.2, subsingleton⟩
+  (toLocalizationMap M S).subsingleton_iff
 
 theorem map_right_cancel {x y} {c : M} (h : algebraMap R S (c * x) = algebraMap R S (c * y)) :
     algebraMap R S x = algebraMap R S y :=
@@ -235,14 +235,8 @@ theorem eq_zero_of_fst_eq_zero {z x} {y : M} (h : z * algebraMap R S y = algebra
 
 variable (M S)
 
-theorem map_eq_zero_iff (r : R) : algebraMap R S r = 0 ↔ ∃ m : M, ↑m * r = 0 := by
-  constructor
-  · intro h
-    obtain ⟨m, hm⟩ := (IsLocalization.eq_iff_exists M S).mp ((algebraMap R S).map_zero.trans h.symm)
-    exact ⟨m, by simpa using hm.symm⟩
-  · rintro ⟨m, hm⟩
-    rw [← (IsLocalization.map_units S m).mul_right_inj, mul_zero, ← RingHom.map_mul, hm,
-      RingHom.map_zero]
+theorem map_eq_zero_iff (r : R) : algebraMap R S r = 0 ↔ ∃ m : M, ↑m * r = 0 :=
+  (toLocalizationMap M S).map_eq_zero_iff
 
 variable {M}
 
@@ -332,12 +326,12 @@ protected theorem eq {a₁ b₁} {a₂ b₂ : M} :
     mk' S a₁ a₂ = mk' S b₁ b₂ ↔ ∃ c : M, ↑c * (↑b₂ * a₁) = c * (a₂ * b₁) :=
   (toLocalizationMap M S).eq
 
-theorem mk'_eq_zero_iff (x : R) (s : M) : mk' S x s = 0 ↔ ∃ m : M, ↑m * x = 0 := by
-  rw [← (map_units S s).mul_left_inj, mk'_spec, zero_mul, map_eq_zero_iff M]
+theorem mk'_eq_zero_iff (x : R) (s : M) : mk' S x s = 0 ↔ ∃ m : M, ↑m * x = 0 :=
+  (toLocalizationMap M S).mk'_eq_zero_iff x s
 
 @[simp]
-theorem mk'_zero (s : M) : IsLocalization.mk' S 0 s = 0 := by
-  rw [eq_comm, IsLocalization.eq_mk'_iff_mul_eq, zero_mul, map_zero]
+theorem mk'_zero (s : M) : IsLocalization.mk' S 0 s = 0 :=
+  (toLocalizationMap M S).mk'_zero s
 
 theorem ne_zero_of_mk'_ne_zero {x : R} {y : M} (hxy : IsLocalization.mk' S x y ≠ 0) : x ≠ 0 := by
   rintro rfl
@@ -346,16 +340,8 @@ theorem ne_zero_of_mk'_ne_zero {x : R} {y : M} (hxy : IsLocalization.mk' S x y �
 include M in
 variable (M) in
 /-- Any localization of a commutative semiring without zero-divisors also has no zero-divisors. -/
-theorem noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors S where
-  eq_zero_or_eq_zero_of_mul_eq_zero {x y} eq := by
-    nontriviality S
-    obtain ⟨x, s, rfl⟩ := mk'_surjective M x
-    obtain ⟨y, t, rfl⟩ := mk'_surjective M y
-    rw [← mk'_mul, mk'_eq_zero_iff] at eq
-    have ⟨m, eq⟩ := eq
-    obtain eq | eq := eq_zero_or_eq_zero_of_mul_eq_zero eq
-    · exact absurd (subsingleton (eq ▸ m.2)) (not_subsingleton S)
-    obtain rfl | rfl := eq_zero_or_eq_zero_of_mul_eq_zero eq <;> simp
+theorem noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors S :=
+  (toLocalizationMap M S).noZeroDivisors
 
 theorem sec_fst_ne_zero {x : S} (hx : x ≠ 0) : (sec M x).fst ≠ 0 :=
   mt (fun h ↦ by rw [← mk'_sec (M := M) S x, h, mk'_zero]) hx
@@ -774,20 +760,12 @@ end
 variable (M)
 
 theorem nonZeroDivisors_le_comap [IsLocalization M S] :
-    nonZeroDivisors R ≤ (nonZeroDivisors S).comap (algebraMap R S) := by
-  simp_rw [← nonZeroDivisorsRight_eq_nonZeroDivisors]
-  rintro a ha b (e : b * algebraMap R S a = 0)
-  obtain ⟨x, s, rfl⟩ := mk'_surjective M b
-  rw [← @mk'_one R _ M, ← mk'_mul, ← (algebraMap R S).map_zero, ← @mk'_one R _ M,
-    IsLocalization.eq] at e
-  obtain ⟨c, e⟩ := e
-  rw [mul_zero, mul_zero, Submonoid.coe_one, one_mul, ← mul_assoc] at e
-  rw [mk'_eq_zero_iff]
-  exact ⟨c, ha _ e⟩
+    nonZeroDivisors R ≤ (nonZeroDivisors S).comap (algebraMap R S) :=
+  (toLocalizationMap M S).nonZeroDivisors_le_comap
 
 theorem map_nonZeroDivisors_le [IsLocalization M S] :
     (nonZeroDivisors R).map (algebraMap R S) ≤ nonZeroDivisors S :=
-  Submonoid.map_le_iff_le_comap.mpr (nonZeroDivisors_le_comap M S)
+  (toLocalizationMap M S).map_nonZeroDivisors_le
 
 end IsLocalization
 
@@ -867,6 +845,48 @@ theorem mk_algebraMap {A : Type*} [CommSemiring A] [Algebra A R] (m : A) :
 
 end Localization
 
+namespace IsLocalization
+
+variable [IsLocalization M S]
+
+theorem to_map_eq_zero_iff {x : R} (hM : M ≤ nonZeroDivisors R) : algebraMap R S x = 0 ↔ x = 0 := by
+  constructor <;> intro h
+  · obtain ⟨c, hc⟩ := (map_eq_zero_iff M _ _).mp h
+    exact (hM c.2).1 x hc
+  · rw [h, map_zero]
+
+protected theorem injectiveₛ (hM : ∀ m ∈ M, IsRegular m) : Injective (algebraMap R S) :=
+  (toLocalizationMap M S).injective_iff.mpr hM
+
+protected theorem to_map_ne_zero_of_mem_nonZeroDivisors [Nontrivial R] (hM : M ≤ nonZeroDivisors R)
+    {x : R} (hx : x ∈ nonZeroDivisors R) : algebraMap R S x ≠ 0 := by
+  rw [Ne, to_map_eq_zero_iff S hM]
+  exact nonZeroDivisors.ne_zero hx
+
+variable {S}
+
+theorem sec_snd_ne_zero [Nontrivial R] (hM : M ≤ nonZeroDivisors R) (x : S) :
+    ((sec M x).snd : R) ≠ 0 :=
+  nonZeroDivisors.coe_ne_zero ⟨(sec M x).snd.val, hM (sec M x).snd.property⟩
+
+variable [IsDomain R]
+
+@[deprecated (since := "2025-03-18")] alias noZeroDivisors_of_le_nonZeroDivisors := noZeroDivisors
+
+variable (S) in
+/-- A `CommRing` `S` which is the localization of an integral domain `R` at a subset of
+non-zero elements is an integral domain. -/
+theorem isDomain_of_le_nonZeroDivisors (hM : M ≤ nonZeroDivisors R) : IsDomain S where
+  __ : IsCancelMulZero S := (toLocalizationMap M S).isCancelMulZero
+  __ : Nontrivial S := (toLocalizationMap M S).nontrivial fun h ↦ zero_notMem_nonZeroDivisors (hM h)
+
+/-- The localization of an integral domain to a set of non-zero elements is an integral domain. -/
+theorem isDomain_localization {M : Submonoid R} (hM : M ≤ nonZeroDivisors R) :
+    IsDomain (Localization M) :=
+  isDomain_of_le_nonZeroDivisors _ hM
+
+end IsLocalization
+
 end CommSemiring
 
 section CommRing
@@ -886,7 +906,7 @@ end Localization
 
 namespace IsLocalization
 
-variable {K : Type*} [IsLocalization M S]
+variable [IsLocalization M S]
 
 theorem mk'_neg (x : R) (y : M) :
     mk' S (-x) y = - mk' S x y := by
@@ -906,51 +926,8 @@ lemma injective_of_map_algebraMap_zero {T} [CommRing T] (f : S →+* T)
   apply h at hz
   rwa [map_sub, sub_eq_zero] at hz
 
-theorem to_map_eq_zero_iff {x : R} (hM : M ≤ nonZeroDivisors R) : algebraMap R S x = 0 ↔ x = 0 := by
-  rw [← (algebraMap R S).map_zero]
-  constructor <;> intro h
-  · obtain ⟨c, hc⟩ := (eq_iff_exists M S).mp h
-    rw [mul_zero, mul_comm] at hc
-    exact (hM c.2).2 x hc
-  · rw [h]
-
-protected theorem injective (hM : M ≤ nonZeroDivisors R) : Injective (algebraMap R S) := by
-  rw [injective_iff_map_eq_zero (algebraMap R S)]
-  intro a ha
-  rwa [to_map_eq_zero_iff S hM] at ha
-
-protected theorem to_map_ne_zero_of_mem_nonZeroDivisors [Nontrivial R] (hM : M ≤ nonZeroDivisors R)
-    {x : R} (hx : x ∈ nonZeroDivisors R) : algebraMap R S x ≠ 0 :=
-  show (algebraMap R S).toMonoidWithZeroHom x ≠ 0 from
-    map_ne_zero_of_mem_nonZeroDivisors (algebraMap R S) (IsLocalization.injective S hM) hx
-
-variable {S}
-
-theorem sec_snd_ne_zero [Nontrivial R] (hM : M ≤ nonZeroDivisors R) (x : S) :
-    ((sec M x).snd : R) ≠ 0 :=
-  nonZeroDivisors.coe_ne_zero ⟨(sec M x).snd.val, hM (sec M x).snd.property⟩
-
-variable {Q : Type*} [CommRing Q] {g : R →+* P} [Algebra P Q]
-variable (A : Type*) [CommRing A] [IsDomain A]
-
-@[deprecated (since := "2025-03-18")] alias noZeroDivisors_of_le_nonZeroDivisors := noZeroDivisors
-
-/-- A `CommRing` `S` which is the localization of an integral domain `R` at a subset of
-non-zero elements is an integral domain. -/
-theorem isDomain_of_le_nonZeroDivisors [Algebra A S] {M : Submonoid A} [IsLocalization M S]
-    (hM : M ≤ nonZeroDivisors A) : IsDomain S := by
-  apply @NoZeroDivisors.to_isDomain _ _ (id _) (id _)
-  · exact
-      ⟨⟨(algebraMap A S) 0, (algebraMap A S) 1, fun h =>
-          zero_ne_one (IsLocalization.injective S hM h)⟩⟩
-  · exact noZeroDivisors M
-
-variable {A}
-
-/-- The localization of an integral domain to a set of non-zero elements is an integral domain. -/
-theorem isDomain_localization {M : Submonoid A} (hM : M ≤ nonZeroDivisors A) :
-    IsDomain (Localization M) :=
-  isDomain_of_le_nonZeroDivisors _ hM
+protected theorem injective (hM : M ≤ nonZeroDivisors R) : Injective (algebraMap R S) :=
+  IsLocalization.injectiveₛ S fun _x hx ↦ isRegular_iff_mem_nonZeroDivisors.mpr (hM hx)
 
 end IsLocalization
 

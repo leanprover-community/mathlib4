@@ -560,9 +560,8 @@ theorem exists_reduced_fraction' {b : B} (hb : b ≠ 0) (hx : Irreducible x) :
   obtain ⟨⟨a₀, y⟩, H⟩ := surj (Submonoid.powers x) b
   obtain ⟨d, hy⟩ := (Submonoid.mem_powers_iff y.1 x).mp y.2
   have ha₀ : a₀ ≠ 0 := by
-    haveI :=
-      @isDomain_of_le_nonZeroDivisors B _ R _ _ _ (Submonoid.powers x) _
-        (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
+    haveI := isDomain_of_le_nonZeroDivisors B
+      (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
     simp only [← hy, map_pow] at H
     apply ((injective_iff_map_eq_zero' (algebraMap R B)).mp _ a₀).mpr.mt
     · rw [← H]
