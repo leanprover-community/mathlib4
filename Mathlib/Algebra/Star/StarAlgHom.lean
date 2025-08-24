@@ -826,6 +826,46 @@ theorem leftInverse_symm (e : A ≃⋆ₐ[R] B) : Function.LeftInverse e.symm e 
 theorem rightInverse_symm (e : A ≃⋆ₐ[R] B) : Function.RightInverse e.symm e :=
   e.right_inv
 
+section AlgEquiv
+variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
+  [Algebra R A] [Algebra R B] [Star A] [Star B]
+
+def toAlgEquiv (f : A ≃⋆ₐ[R] B) : A ≃ₐ[R] B where
+  toRingEquiv := f.toRingEquiv
+  commutes' r := by simp_rw [Algebra.algebraMap_eq_smul_one', map_smul']; simp
+
+@[simp]
+theorem toAlgEquiv_apply (f : A ≃⋆ₐ[R] B) (x : A) : f.toAlgEquiv x = f x := rfl
+
+@[simp]
+theorem toAlgEquiv_symm (f : A ≃⋆ₐ[R] B) : f.toAlgEquiv.symm = f.symm.toAlgEquiv := rfl
+
+def ofAlgEquiv (f : A ≃ₐ[R] B) (hf : ∀ x, f (star x) = star (f x)) :
+    A ≃⋆ₐ[R] B where
+  toRingEquiv := f.toRingEquiv
+  map_smul' := f.toLinearEquiv.map_smul
+  map_star' := hf
+
+@[simp]
+theorem ofAlgEquiv_apply (f : A ≃ₐ[R] B) (hf : ∀ x, f (star x) = star (f x))
+    (x : A) : StarAlgEquiv.ofAlgEquiv f hf x = f x := rfl
+
+@[simp]
+theorem ofAlgEquiv_symm (f : A ≃ₐ[R] B) (hf : ∀ x, f (star x) = star (f x)) :
+    (StarAlgEquiv.ofAlgEquiv f hf).symm = StarAlgEquiv.ofAlgEquiv f.symm
+    (fun x => by simp [← f.apply_symm_apply _ ▸ hf (f.symm x)]) :=
+  rfl
+
+@[simp]
+theorem toAlgEquiv_ofAlgEquiv (f : A ≃ₐ[R] B) (hf : ∀ x, f (star x) = star (f x)) :
+    (StarAlgEquiv.ofAlgEquiv f hf).toAlgEquiv = f := rfl
+
+@[simp]
+theorem ofAlgEquiv_toAlgEquiv (f : A ≃⋆ₐ[R] B) :
+  StarAlgEquiv.ofAlgEquiv f.toAlgEquiv f.map_star' = f := rfl
+
+end AlgEquiv
+
 end Basic
 
 section Bijective
