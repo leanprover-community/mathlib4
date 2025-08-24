@@ -58,7 +58,7 @@ private theorem LSeriesSummable_of_sum_norm_bigO_aux (hf : f 0 = 0)
     (g := fun t ↦ t ^ (-(s.re + 1) + r)) _ h₃ ?_ ?_ ?_ ?_
   · refine (Iff.mpr integrableOn_Ici_iff_integrableOn_Ioi
       (integrableOn_Ioi_deriv_norm_ofReal_cpow zero_lt_one ?_)).locallyIntegrableOn
-    exact neg_re _ ▸ neg_nonpos.mpr <| hr.trans hs.le
+    grind
   · refine (IsBigO.mul_atTop_rpow_natCast_of_isBigO_rpow _ _ _ ?_ hO h₂).congr_right (by simp)
     exact (norm_ofReal_cpow_eventually_eq_atTop _).isBigO.natCast_atTop
   · refine h₄.isBigO.of_const_mul_right.mul_atTop_rpow_of_isBigO_rpow _ r _ ?_ le_rfl
@@ -110,9 +110,7 @@ private theorem LSeries_eq_mul_integral_aux {f : ℕ → ℂ} (hf : f 0 = 0) {r 
     ?_ hf h₃ ?_ ?_ ?_ (integrableAtFilter_rpow_atTop_iff.mpr h₁)
   · rw [zero_sub, ← integral_neg]
     refine setIntegral_congr_fun measurableSet_Ioi fun t ht ↦ ?_
-    rw [deriv_ofReal_cpow_const (zero_lt_one.trans ht).ne', h₄]
-    · ring_nf
-    · exact neg_ne_zero.mpr <| ne_zero_of_re_pos (hr.trans_lt hs)
+    rw [deriv_ofReal_cpow_const (zero_lt_one.trans ht).ne', h₄] <;> grind
   · refine (Iff.mpr integrableOn_Ici_iff_integrableOn_Ioi <|
       integrableOn_Ioi_deriv_ofReal_cpow zero_lt_one
         (by simpa using hr.trans_lt hs)).locallyIntegrableOn
@@ -242,8 +240,7 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂ {s T 
         Real.rpow_nonneg (zero_le_one.trans ht.le) _
     _ = ε := by
       rw [integral_Ioi_rpow_of_lt (by rwa [neg_lt_neg_iff]) zero_lt_one, Real.one_rpow]
-      field_simp [show -s + 1 ≠ 0 by linarith, hε.ne']
-      ring
+      grind
 
 private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃
     (hlim : Tendsto (fun n : ℕ ↦ (∑ k ∈ Icc 1 n, f k) / n) atTop (𝓝 l))
@@ -292,7 +289,7 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃
       exact isBigO_atTop_natCast_rpow_of_tendsto_div_rpow (a := l) (by simpa using hlim)
     _ = ‖(s - 1) * s * ∫ t in Set.Ioi 1, (S t * (t : ℂ) ^ (-s - 1 : ℂ) - l * t ^ (-s : ℂ))‖ := by
       rw [integral_sub, integral_const_mul]
-      · congr; ring
+      · grind
       · exact (lemma₁ hlim hs).mono_set Set.Ioi_subset_Ici_self
       · exact (integrableOn_Ioi_cpow_of_lt
           (by rwa [neg_re, ofReal_re, neg_lt_neg_iff]) zero_lt_one).const_mul _

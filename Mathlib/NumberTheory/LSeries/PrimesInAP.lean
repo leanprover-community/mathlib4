@@ -134,10 +134,7 @@ lemma residueClass_nonneg (n : ℕ) : 0 ≤ residueClass a n :=
 lemma residueClass_le (n : ℕ) : residueClass a n ≤ vonMangoldt n :=
   Set.indicator_apply_le' (fun _ ↦ le_rfl) (fun _ ↦ vonMangoldt_nonneg)
 
-@[simp]
-lemma residueClass_apply_zero : residueClass a 0 = 0 := by
-  simp only [Set.indicator_apply_eq_zero, Set.mem_setOf_eq, Nat.cast_zero, map_zero,
-    implies_true]
+
 
 lemma abscissaOfAbsConv_residueClass_le_one :
     abscissaOfAbsConv ↗(residueClass a) ≤ 1 := by
@@ -229,30 +226,22 @@ lemma summable_residueClass_non_primes_div :
     refine div_le_div_of_nonneg_right ?_ n.cast_nonneg
     split_ifs; exacts [le_rfl, residueClass_le a n]
   refine Summable.of_nonneg_of_le h₀ hleF₀ ?_
-  have hF₀ (p : Nat.Primes) : F₀ p.val = 0 := by
-    simp only [p.prop, ↓reduceIte, zero_div, F₀]
+  have hF₀ (p : Nat.Primes) : F₀ p.val = 0 := by simp [p.prop, F₀]
   refine (summable_subtype_iff_indicator (s := {n | IsPrimePow n}).mp ?_).congr
       fun n ↦ Set.indicator_apply_eq_self.mpr fun (hn : ¬ IsPrimePow n) ↦ ?_
   swap
   · simp +contextual only [div_eq_zero_iff, ite_eq_left_iff, vonMangoldt_eq_zero_iff, hn,
       not_false_eq_true, implies_true, Nat.cast_eq_zero, true_or, F₀]
-  have hFF' :
-      F₀ ∘ Subtype.val (p := fun n ↦ n ∈ {n | IsPrimePow n}) = F' ∘ ⇑prodNatEquiv.symm := by
-    refine (Equiv.eq_comp_symm prodNatEquiv (F₀ ∘ Subtype.val) F').mpr ?_
-    ext1 n
-    simp only [Function.comp_apply, F']
-    congr
+  have hFF' : F₀ ∘ Subtype.val (p := fun n ↦ n ∈ {n | IsPrimePow n}) = F' ∘ ⇑prodNatEquiv.symm :=
+    (Equiv.eq_comp_symm prodNatEquiv (F₀ ∘ Subtype.val) F').mpr rfl
   rw [hFF']
   refine (Nat.Primes.prodNatEquiv.symm.summable_iff (f := F')).mpr ?_
-  have hF'₀ (p : Nat.Primes) : F' (p, 0) = 0 := by simp only [zero_add, pow_one, hF₀, F']
-  have hF'₁ : F'' = F' ∘ (Prod.map _root_.id (· + 1)) := by
-    ext1
-    simp only [Function.comp_apply, Prod.map_fst, id_eq, Prod.map_snd, F'', F']
+  have hF'₀ (p : Nat.Primes) : F' (p, 0) = 0 := by simp [hF₀, F']
+  have hF'₁ : F'' = F' ∘ (Prod.map _root_.id (· + 1)) := by simp [F'']
   refine (Function.Injective.summable_iff ?_ fun u hu ↦ ?_).mp <| hF'₁ ▸ summable_F''
-  · exact Function.Injective.prodMap (fun ⦃a₁ a₂⦄ a ↦ a) <| add_left_injective 1
-  · simp only [Set.range_prodMap, Set.range_id, Set.mem_prod, Set.mem_univ, Set.mem_range,
-      Nat.exists_add_one_eq, true_and, not_lt, nonpos_iff_eq_zero] at hu
-    rw [← hF'₀ u.1, ← hu]
+  · exact Function.injective_id.prodMap (add_left_injective 1)
+  · have : u.2 = 0 := by simpa using hu
+    grind
 
 variable [NeZero q] {a}
 
@@ -379,7 +368,7 @@ lemma LFunctionResidueClassAux_real (ha : IsUnit a) {x : ℝ} (hx : 1 < x) :
     push_cast
     refine tsum_congr fun n ↦ ?_
     rcases eq_or_ne n 0 with rfl | hn
-    · simp only [term_zero, zero_re, ofReal_zero]
+    · abel
     · simp only [term_of_ne_zero hn, ← ofReal_natCast n, ← ofReal_cpow n.cast_nonneg, ← ofReal_div,
         ofReal_re]
   · rw [← ofReal_natCast, ← ofReal_one, ← ofReal_sub, ← ofReal_inv,
@@ -403,7 +392,7 @@ lemma LSeries_residueClass_lower_bound (ha : IsUnit a) :
       LSeries, term]
     refine tsum_congr fun n ↦ ?_
     split_ifs with hn
-    · simp only [hn, residueClass_apply_zero, ofReal_zero, zero_div]
+    · simp [hn]
     · rfl
   have : ContinuousOn (fun x : ℝ ↦ (LFunctionResidueClassAux a x).re) (Set.Icc 1 2) :=
     continuous_re.continuousOn.comp (t := Set.univ) (continuousOn_LFunctionResidueClassAux a)
@@ -413,9 +402,7 @@ lemma LSeries_residueClass_lower_bound (ha : IsUnit a) :
   replace hC {x : ℝ} (hx : x ∈ Set.Icc 1 2) : C ≤ (LFunctionResidueClassAux a x).re :=
     hC (LFunctionResidueClassAux a x).re <|
       Set.mem_image_of_mem (fun x : ℝ ↦ (LFunctionResidueClassAux a x).re) hx
-  refine ⟨-C, fun {x} hx ↦ ?_⟩
-  rw [H hx.1, add_comm, sub_neg_eq_add, add_le_add_iff_left]
-  exact hC <| Set.mem_Icc_of_Ioc hx
+  exact ⟨-C, by grind⟩
 
 open vonMangoldt Filter Topology in
 /-- The function `n ↦ Λ n / n` restricted to primes in an invertible residue class
@@ -430,7 +417,7 @@ lemma not_summable_residueClass_prime_div (ha : IsUnit a) :
   have H₁ {x : ℝ} (hx : 1 < x) : ∑' n, residueClass a n / (n : ℝ) ^ x ≤ C := by
     refine Summable.tsum_le_tsum (fun n ↦ ?_) ?_ key
     · rcases n.eq_zero_or_pos with rfl | hn
-      · simp only [Nat.cast_zero, Real.zero_rpow (zero_lt_one.trans hx).ne', div_zero, le_refl]
+      · simp [Real.zero_rpow (zero_lt_one.trans hx).ne']
       · refine div_le_div_of_nonneg_left (residueClass_nonneg a _) (mod_cast hn) ?_
         conv_lhs => rw [← Real.rpow_one n]
         exact Real.rpow_le_rpow_of_exponent_le (by norm_cast) hx.le
@@ -443,15 +430,14 @@ lemma not_summable_residueClass_prime_div (ha : IsUnit a) :
   have hq : 0 < (q.totient : ℝ)⁻¹ := inv_pos.mpr (mod_cast q.totient.pos_of_neZero)
   rcases le_or_gt (C + C') 0 with h₀ | h₀
   · have := hq.trans_le (H₁ (Set.right_mem_Ioc.mpr one_lt_two))
-    rw [show (2 : ℝ) - 1 = 1 by norm_num, mul_one] at this
-    exact (this.trans_le h₀).false
+    grind
   · obtain ⟨ξ, hξ₁, hξ₂⟩ : ∃ ξ ∈ Set.Ioc 1 2, (C + C') * (ξ - 1) < (q.totient : ℝ)⁻¹ := by
       refine ⟨min (1 + (q.totient : ℝ)⁻¹ / (C + C') / 2) 2, ⟨?_, min_le_right ..⟩, ?_⟩
       · simpa only [lt_inf_iff, lt_add_iff_pos_right, Nat.ofNat_pos, div_pos_iff_of_pos_right,
           Nat.one_lt_ofNat, and_true] using div_pos hq h₀
       · rw [← min_sub_sub_right, add_sub_cancel_left, ← lt_div_iff₀' h₀]
         exact (min_le_left ..).trans_lt <| div_lt_self (div_pos hq h₀) one_lt_two
-    exact ((H₁ hξ₁).trans_lt hξ₂).false
+    grind
 
 end ArithmeticFunction.vonMangoldt
 

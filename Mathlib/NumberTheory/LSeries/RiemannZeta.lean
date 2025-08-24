@@ -204,10 +204,9 @@ lemma riemannZeta_residue_one : Tendsto (fun s ↦ (s - 1) * riemannZeta s) (�
 /-- The residue of `ζ(s)` at `s = 1` is equal to 1, expressed using `tsum`. -/
 theorem tendsto_sub_mul_tsum_nat_cpow :
     Tendsto (fun s : ℂ ↦ (s - 1) * ∑' (n : ℕ), 1 / (n : ℂ) ^ s) (𝓝[{s | 1 < re s}] 1) (𝓝 1) := by
-  refine (tendsto_nhdsWithin_mono_left ?_ riemannZeta_residue_one).congr' ?_
-  · simp only [subset_compl_singleton_iff, mem_setOf_eq, one_re, not_lt, le_refl]
-  · filter_upwards [eventually_mem_nhdsWithin] with s hs using
-      congr_arg _ <| zeta_eq_tsum_one_div_nat_cpow hs
+  refine (tendsto_nhdsWithin_mono_left (by simp) riemannZeta_residue_one).congr' ?_
+  filter_upwards [eventually_mem_nhdsWithin] with s hs using
+    congr_arg _ <| zeta_eq_tsum_one_div_nat_cpow hs
 
 /-- The residue of `ζ(s)` at `s = 1` is equal to 1 expressed using `tsum` and for a
 real variable. -/
@@ -217,5 +216,4 @@ theorem tendsto_sub_mul_tsum_nat_rpow :
   have : Tendsto (fun s : ℝ ↦ (s : ℂ)) (𝓝[>] 1) (𝓝[{s | 1 < re s}] 1) :=
     continuous_ofReal.continuousWithinAt.tendsto_nhdsWithin (fun _ _ ↦ by simp_all)
   apply (tendsto_sub_mul_tsum_nat_cpow.comp this).congr fun s ↦ ?_
-  simp only [one_div, Function.comp_apply, ofReal_mul, ofReal_sub, ofReal_one, ofReal_tsum,
-    ofReal_inv, ofReal_cpow (Nat.cast_nonneg _), ofReal_natCast]
+  simp [ofReal_tsum, ofReal_cpow (Nat.cast_nonneg _)]

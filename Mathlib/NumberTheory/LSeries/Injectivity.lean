@@ -237,8 +237,5 @@ of `f` converges somewhere. -/
 lemma LSeries_injOn : Set.InjOn LSeries {f | f 0 = 0 ∧ abscissaOfAbsConv f < ⊤} := by
   intro f hf g hg h
   simp only [Set.mem_setOf] at hf hg
-  replace h := (LSeries_eq_iff_of_abscissaOfAbsConv_lt_top hf.2 hg.2).mp h
-  ext1 n
-  cases n with
-  | zero => exact hf.1.trans hg.1.symm
-  | succ n => exact h _ n.zero_ne_add_one.symm
+  rw [LSeries_eq_iff_of_abscissaOfAbsConv_lt_top hf.2 hg.2] at h
+  grind

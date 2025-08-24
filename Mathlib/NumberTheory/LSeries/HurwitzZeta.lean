@@ -70,9 +70,7 @@ lemma hasSum_hurwitzZeta_of_one_lt_re {a : ℝ} (ha : a ∈ Icc 0 1) {s : ℂ} (
     HasSum (fun n : ℕ ↦ 1 / (n + a : ℂ) ^ s) (hurwitzZeta a s) := by
   convert (hasSum_nat_hurwitzZetaEven_of_mem_Icc ha hs).add
       (hasSum_nat_hurwitzZetaOdd_of_mem_Icc ha hs) using 1
-  ext1 n
-  -- plain `ring_nf` works here, but the following is faster:
-  apply show ∀ (x y : ℂ), x = (x + y) / 2 + (x - y) / 2 by intros; ring
+  grind
 
 /-- The residue of the Hurwitz zeta function at `s = 1` is `1`. -/
 lemma hurwitzZeta_residue_one (a : UnitAddCircle) :
@@ -127,7 +125,7 @@ lemma hasSum_expZeta_of_one_lt_re (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   convert (hasSum_nat_cosZeta a hs).add ((hasSum_nat_sinZeta a hs).mul_left I) using 1
   ext1 n
   simp only [mul_right_comm _ I, ← cos_add_sin_I, push_cast]
-  rw [add_div, mul_div, mul_comm _ I]
+  grind
 
 lemma differentiableAt_expZeta (a : UnitAddCircle) (s : ℂ) (hs : s ≠ 1 ∨ a ≠ 0) :
     DifferentiableAt ℂ (expZeta a) s := by
@@ -156,14 +154,7 @@ lemma hurwitzZeta_one_sub (a : UnitAddCircle) {s : ℂ}
     (exp (-π * I * s / 2) * expZeta a s + exp (π * I * s / 2) * expZeta (-a) s) := by
   rw [hurwitzZeta, hurwitzZetaEven_one_sub a hs hs', hurwitzZetaOdd_one_sub a hs,
     expZeta, expZeta, Complex.cos, Complex.sin, sinZeta_neg, cosZeta_neg]
-  rw [show ↑π * I * s / 2 = ↑π * s / 2 * I by ring,
-    show -↑π * I * s / 2 = -(↑π * s / 2) * I by ring]
-  -- these `generalize` commands are not strictly needed for the `ring_nf` call to succeed, but
-  -- make it run faster:
-  generalize (2 * π : ℂ) ^ (-s) = x
-  generalize (↑π * s / 2 * I).exp = y
-  generalize (-(↑π * s / 2) * I).exp = z
-  ring_nf
+  grind
 
 /-- Functional equation for the exponential zeta function. -/
 lemma expZeta_one_sub (a : UnitAddCircle) {s : ℂ} (hs : ∀ (n : ℕ), s ≠ 1 - n) :

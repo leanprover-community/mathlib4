@@ -79,32 +79,27 @@ lemma LSeriesSummable_zetaMul (χ : DirichletCharacter ℂ N) {s : ℂ} (hs : 1 
     LSeriesSummable χ.zetaMul s := by
   refine ArithmeticFunction.LSeriesSummable_mul (LSeriesSummable_zeta_iff.mpr hs) <|
     LSeriesSummable_of_bounded_of_one_lt_re (m := 1) (fun n hn ↦ ?_) hs
-  simpa only [toArithmeticFunction, coe_mk, hn, ↓reduceIte]
-  using norm_le_one χ _
+  simpa [toArithmeticFunction, hn] using norm_le_one χ _
 
 lemma zetaMul_prime_pow_nonneg {χ : DirichletCharacter ℂ N} (hχ : χ ^ 2 = 1) {p : ℕ}
     (hp : p.Prime) (k : ℕ) :
     0 ≤ zetaMul χ (p ^ k) := by
-  simp only [zetaMul, toArithmeticFunction, coe_zeta_mul_apply, coe_mk,
-    Nat.sum_divisors_prime_pow hp, pow_eq_zero_iff', hp.ne_zero, ne_eq, false_and, ↓reduceIte,
-    Nat.cast_pow, map_pow]
+  suffices 0 ≤ ∑ j ∈ Finset.range (k + 1), χ p ^ j by
+    simpa [zetaMul, toArithmeticFunction, coe_zeta_mul_apply, Nat.sum_divisors_prime_pow hp,
+      hp.ne_zero, -mul_apply]
   rcases MulChar.isQuadratic_iff_sq_eq_one.mpr hχ p with h | h | h
-  · refine Finset.sum_nonneg fun i _ ↦ ?_
-    simp only [h, le_refl, pow_nonneg]
-  · refine Finset.sum_nonneg fun i _ ↦ ?_
-    simp only [h, one_pow, zero_le_one]
+  · exact Finset.sum_nonneg fun i _ ↦ by simp [h]
+  · exact Finset.sum_nonneg fun i _ ↦ by simp [h]
   · simp only [h, neg_one_geom_sum]
-    split_ifs
-    exacts [le_rfl, zero_le_one]
+    split_ifs <;> simp
 
 /-- `zetaMul χ` takes nonnegative real values when `χ` is a quadratic character. -/
 lemma zetaMul_nonneg {χ : DirichletCharacter ℂ N} (hχ : χ ^ 2 = 1) (n : ℕ) :
     0 ≤ zetaMul χ n := by
   rcases eq_or_ne n 0 with rfl | hn
-  · simp only [ArithmeticFunction.map_zero, le_refl]
+  · simp
   · simpa only [χ.isMultiplicative_zetaMul.multiplicative_factorization _ hn] using
-      Finset.prod_nonneg
-        fun p hp ↦ zetaMul_prime_pow_nonneg hχ (Nat.prime_of_mem_primeFactors hp) _
+      Finset.prod_nonneg fun p hp ↦ zetaMul_prime_pow_nonneg hχ (Nat.prime_of_mem_primeFactors hp) _
 
 /-
 ### "Bad" Dirichlet characters
@@ -226,7 +221,7 @@ private lemma re_log_comb_nonneg' {a : ℝ} (ha₀ : 0 ≤ a) (ha₁ : a < 1) {z
   simp only [← ofReal_pow, div_natCast_re, ofReal_re, mul_pow, mul_re, ofReal_im, zero_mul,
     sub_zero]
   rcases n.eq_zero_or_pos with rfl | hn
-  · simp only [pow_zero, Nat.cast_zero, div_zero, mul_zero, one_re, mul_one, add_zero, le_refl]
+  · simp
   · simp only [← mul_div_assoc, ← add_div]
     refine div_nonneg ?_ n.cast_nonneg
     rw [← pow_mul, pow_mul', sq, mul_re, ← sq, ← sq, ← sq_norm_sub_sq_re, norm_pow, hz]
@@ -315,7 +310,7 @@ lemma LFunctionTrivChar_isBigO_near_one_horizontal :
     have H : Tendsto (fun w ↦ w * LFunctionTrivChar N (1 + w)) (𝓝[≠] 0)
         (𝓝 <| ∏ p ∈ N.primeFactors, (1 - (p : ℂ)⁻¹)) := by
       convert (LFunctionTrivChar_residue_one (N := N)).comp (f := fun w ↦ 1 + w) ?_ using 1
-      · simp only [Function.comp_def, add_sub_cancel_left]
+      · grind
       · simpa only [tendsto_iff_comap, Homeomorph.coe_addLeft, add_zero, map_le_iff_le_comap] using
           ((Homeomorph.addLeft (1 : ℂ)).map_punctured_nhds_eq 0).le
     exact (isBigO_mul_iff_isBigO_div eventually_mem_nhdsWithin).mp <| H.isBigO_one ℂ
@@ -354,11 +349,7 @@ private lemma LFunction_ne_zero_of_not_quadratic_or_ne_one {t : ℝ} (h : χ ^ 2
     simp only [H, one_pow, ne_eq, not_true_eq_false] at h
   have hz₂ : 2 * t ≠ 0 ∨ χ ^ 2 ≠ 1 :=
     h.symm.imp_left <| mul_ne_zero two_ne_zero
-  have help (x : ℝ) : ((1 / x) ^ 3 * x ^ 4 * 1 : ℂ) = x := by
-    rcases eq_or_ne x 0 with rfl | h
-    · rw [ofReal_zero, zero_pow (by omega), mul_zero, mul_one]
-    · rw [one_div, inv_pow, pow_succ _ 3, ← mul_assoc,
-        inv_mul_cancel₀ <| pow_ne_zero 3 (ofReal_ne_zero.mpr h), one_mul, mul_one]
+  have help (x : ℝ) : ((1 / x) ^ 3 * x ^ 4 * 1 : ℂ) = x := by grind
   -- put together the various `IsBigO` statements and `norm_LFunction_product_ge_one`
   -- to derive a contradiction
   have H₀ : (fun _ : ℝ ↦ (1 : ℝ)) =O[𝓝[>] 0]

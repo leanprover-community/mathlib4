@@ -453,8 +453,7 @@ theorem Λ_residue_k :
   · refine (tendsto_const_nhds.mono_left nhdsWithin_le_nhds).congr' ?_
     refine eventually_nhdsWithin_of_forall (fun s (hs : s ≠ P.k) ↦ ?_)
     match_scalars
-    field_simp [sub_ne_zero.mpr hs.symm]
-    ring
+    grind
 
 /-- The residue of `Λ` at `s = 0` is equal to `-f₀`. -/
 theorem Λ_residue_zero :
@@ -465,7 +464,7 @@ theorem Λ_residue_zero :
   · refine (tendsto_const_nhds.mono_left nhdsWithin_le_nhds).congr' ?_
     refine eventually_nhdsWithin_of_forall (fun s (hs : s ≠ 0) ↦ ?_)
     match_scalars
-    field_simp [sub_ne_zero.mpr hs.symm]
+    grind
   · rw [show 𝓝 0 = 𝓝 ((0 : ℂ) • (P.ε / (P.k - 0 : ℂ)) • P.g₀) by rw [zero_smul]]
     exact (continuousAt_id.smul ((continuousAt_const.div ((continuous_sub_left _).continuousAt)
       (by simpa using P.hk.ne')).smul continuousAt_const)).mono_left nhdsWithin_le_nhds

@@ -65,10 +65,9 @@ variable {N : ℕ} [NeZero N]
 
 /-- If `Φ` is a periodic function, then the L-series of `Φ` converges for `1 < re s`. -/
 lemma LSeriesSummable_of_one_lt_re (Φ : ZMod N → ℂ) {s : ℂ} (hs : 1 < re s) :
-    LSeriesSummable (Φ ·) s := by
-  let c := max' _ <| univ_nonempty.image (norm ∘ Φ)
-  refine LSeriesSummable_of_bounded_of_one_lt_re (fun n _ ↦ le_max' _ _ ?_) (m := c) hs
-  exact mem_image_of_mem _ (mem_univ _)
+    LSeriesSummable (Φ ·) s :=
+  LSeriesSummable_of_bounded_of_one_lt_re (fun n _ ↦ le_max' _ _ (by simp))
+    (m := max' _ <| univ_nonempty.image (norm ∘ Φ)) hs
 
 /--
 The unique meromorphic function `ℂ → ℂ` which agrees with `∑' n : ℕ, Φ n / n ^ s` wherever the
@@ -100,21 +99,17 @@ lemma LFunction_eq_LSeries (Φ : ZMod N → ℂ) {s : ℂ} (hs : 1 < re s) :
   -- false for general complex `x`, `y`, but it is true if `x` and `y` are non-negative reals, so
   -- we have to carefully juggle coercions `ℕ → ℝ → ℂ`.
   calc N ^ (-s) * Φ j * (1 / (m + (j.val / N : ℝ)) ^ s)
-  _ = Φ j * (N ^ (-s) * (1 / (m + (j.val / N : ℝ)) ^ s)) := by
-    rw [← mul_assoc, mul_comm _ (Φ _)]
+  _ = Φ j * (N ^ (-s) * (1 / (m + (j.val / N : ℝ)) ^ s)) := by ring
   _ = Φ j * (1 / (N : ℝ) ^ s * (1 / ((j.val + N * m) / N : ℝ) ^ s)) := by
     simp only [cpow_neg, ← one_div, ofReal_div, ofReal_natCast, add_comm, add_div, ofReal_add,
       ofReal_mul, mul_div_cancel_left₀ (m : ℂ) (Nat.cast_ne_zero.mpr (NeZero.ne N))]
   _ = Φ j / ((N : ℝ) * ((j.val + N * m) / N : ℝ)) ^ s := by -- this is the delicate step!
     rw [one_div_mul_one_div, mul_one_div, mul_cpow_ofReal_nonneg] <;> positivity
-  _ = Φ j / (N * (j.val + N * m) / N) ^ s := by
-    simp only [ofReal_natCast, ofReal_div, ofReal_add, ofReal_mul, mul_div_assoc]
+  _ = Φ j / (N * (j.val + N * m) / N) ^ s := by simp [-natCast_val, mul_div_assoc]
   _ = Φ j / (j.val + N * m) ^ s := by
     rw [mul_div_cancel_left₀ _ (Nat.cast_ne_zero.mpr (NeZero.ne N))]
-  _ = Φ ↑(j.val + N * m) / (↑(j.val + N * m)) ^ s := by
-    simp only [Nat.cast_add, Nat.cast_mul, natCast_zmod_val, natCast_self, zero_mul, add_zero]
   _ = LSeries.term (Φ ·) s (j.val + N * m) := by
-    rw [LSeries.term_of_ne_zero' (ne_zero_of_one_lt_re hs)]
+    simp [LSeries.term_of_ne_zero' (ne_zero_of_one_lt_re hs)]
 
 lemma differentiableAt_LFunction (Φ : ZMod N → ℂ) (s : ℂ) (hs : s ≠ 1 ∨ ∑ j, Φ j = 0) :
     DifferentiableAt ℂ (LFunction Φ) s := by
@@ -135,7 +130,7 @@ lemma LFunction_residue_one (Φ : ZMod N → ℂ) :
   simp only [LFunction, mul_sum]
   refine tendsto_finset_sum _ fun j _ ↦ ?_
   rw [(by ring : Φ j / N = Φ j * (1 / N * 1)), one_div, ← cpow_neg_one]
-  simp only [show ∀ a b c d : ℂ, a * (b * (c * d)) = c * (b * (a * d)) by intros; ring]
+  simp only [show ∀ a b c d : ℂ, a * (b * (c * d)) = c * (b * (a * d)) by grind]
   refine tendsto_const_nhds.mul (.mul ?_ <| hurwitzZeta_residue_one _)
   exact ((continuous_neg.const_cpow (Or.inl <| NeZero.ne _)).tendsto _).mono_left
     nhdsWithin_le_nhds
@@ -206,14 +201,13 @@ lemma LFunction_dft (Φ : ZMod N → ℂ) {s : ℂ} (hs : Φ 0 = 0 ∨ s ≠ 1) 
       Φ j * expZeta (toAddCircle (-j)) s := by
     by_cases h : -j ≠ 0 ∨ s ≠ 1
     · rw [LFunction_stdAddChar_eq_expZeta _ _ h]
-    · simp only [neg_ne_zero, not_or, not_not] at h
-      rw [h.1, show Φ 0 = 0 by tauto, zero_mul, zero_mul]
+    · grind
   simp only [LFunction, ← this, mul_sum]
   rw [dft_def, sum_comm]
-  simp only [sum_mul, mul_sum, smul_eq_mul, stdAddChar_apply, ← mul_assoc]
+  simp only [sum_mul, mul_sum, smul_eq_mul, stdAddChar_apply]
   congr 1 with j
   congr 1 with k
-  rw [mul_assoc (Φ _), mul_comm (Φ _), neg_mul]
+  ring_nf
 
 /-- Functional equation for `ZMod` L-functions, in terms of discrete Fourier transform. -/
 theorem LFunction_one_sub (Φ : ZMod N → ℂ) {s : ℂ}
@@ -227,7 +221,7 @@ theorem LFunction_one_sub (Φ : ZMod N → ℂ) {s : ℂ}
       expZeta (toAddCircle j) s + cexp (π * I * s / 2) * expZeta (-toAddCircle j) s)) := by
     rcases eq_or_ne j 0 with rfl | hj
     · rcases hs' with hΦ | hs'
-      · simp only [hΦ, zero_mul]
+      · grind
       · rw [hurwitzZeta_one_sub _ hs (Or.inr hs')]
     · rw [hurwitzZeta_one_sub _ hs (Or.inl <| toAddCircle_eq_zero.not.mpr hj)]
   simp only [this, mul_assoc _ _ (Gamma s)]
@@ -297,21 +291,19 @@ noncomputable def completedLFunction (Φ : ZMod N → ℂ) (s : ℂ) : ℂ :=
 lemma completedLFunction_const_mul (a : ℂ) (Φ : ZMod N → ℂ) (s : ℂ) :
     completedLFunction (fun j ↦ a * Φ j) s = a * completedLFunction Φ s := by
   simp only [completedLFunction, mul_add, mul_sum]
-  congr with i <;> ring
+  grind
 
 lemma completedLFunction_def_even (hΦ : Φ.Even) (s : ℂ) :
     completedLFunction Φ s = N ^ (-s) * ∑ j, Φ j * completedHurwitzZetaEven (toAddCircle j) s := by
   suffices ∑ j, Φ j * completedHurwitzZetaOdd (toAddCircle j) s = 0 by
     rw [completedLFunction, this, mul_zero, add_zero]
-  refine (hΦ.mul_odd fun j ↦ ?_).sum_eq_zero
-  rw [map_neg, completedHurwitzZetaOdd_neg]
+  exact (hΦ.mul_odd fun j ↦ by simp).sum_eq_zero
 
 lemma completedLFunction_def_odd (hΦ : Φ.Odd) (s : ℂ) :
     completedLFunction Φ s = N ^ (-s) * ∑ j, Φ j * completedHurwitzZetaOdd (toAddCircle j) s := by
   suffices ∑ j, Φ j * completedHurwitzZetaEven (toAddCircle j) s = 0 by
     rw [completedLFunction, this, mul_zero, zero_add]
-  refine (hΦ.mul_even fun j ↦ ?_).sum_eq_zero
-  rw [map_neg, completedHurwitzZetaEven_neg]
+  exact (hΦ.mul_even fun j ↦ by simp).sum_eq_zero
 
 /--
 The completed L-function of a function `ZMod 1 → ℂ` is a scalar multiple of the completed Riemann
@@ -359,11 +351,11 @@ lemma differentiableAt_completedLFunction (Φ : ZMod N → ℂ) (s : ℂ) (hs₀
   · -- term with `1 / s`
     refine .mul (by fun_prop) (hs₀.elim ?_ ?_)
     · exact fun h ↦ (differentiableAt_const _).div differentiableAt_id h
-    · exact fun h ↦ by simp only [h, funext zero_div, differentiableAt_const]
+    · simp +contextual [funext zero_div]
   · -- term with `1 / (1 - s)`
     refine .mul (by fun_prop) (hs₁.elim ?_ ?_)
-    · exact fun h ↦ .div (by fun_prop) (by fun_prop) (by rwa [sub_ne_zero, ne_comm])
-    · exact fun h ↦ by simp only [h, zero_div, differentiableAt_const]
+    · exact fun h ↦ .div (by fun_prop) (by fun_prop) (by grind)
+    · simp +contextual
 
 /--
 Special case of `differentiableAt_completedLFunction` asserting differentiability everywhere
@@ -386,7 +378,7 @@ lemma LFunction_eq_completed_div_gammaFactor_even (hΦ : Φ.Even) (s : ℂ) (hs 
   · rw [hurwitzZetaEven_def_of_ne_or_ne (.inl (hi ∘ toAddCircle_eq_zero.mp))]
   · rcases hs with hs | hΦ'
     · rw [hurwitzZetaEven_def_of_ne_or_ne (.inr hs)]
-    · simp only [hΦ', map_zero, zero_mul]
+    · grind
 
 /--
 Relation between the completed L-function and the usual one (odd case).

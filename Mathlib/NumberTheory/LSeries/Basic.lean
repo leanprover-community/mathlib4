@@ -124,7 +124,7 @@ lemma norm_term_le_of_re_le_re (f : ℕ → ℂ) {s s' : ℂ} (h : s.re ≤ s'.r
     ‖term f s' n‖ ≤ ‖term f s n‖ := by
   simp only [norm_term_eq]
   split
-  · next => rfl
+  · rfl
   · next hn => gcongr; exact Nat.one_le_cast.mpr <| Nat.one_le_iff_ne_zero.mpr hn
 
 section positivity
@@ -377,8 +377,7 @@ lemma LSeriesSummable_of_isBigO_rpow {f : ℕ → ℂ} {x : ℝ} {s : ℂ} (hs :
     rw [Real.norm_eq_abs, abs_rpow_of_nonneg hn₀, abs_of_nonneg hn₀]
   · have hn' : 0 < n := Nat.pos_of_ne_zero hn₀
     refine (div_le_iff₀ <| rpow_pos_of_pos (cast_pos.mpr hn') _).mp ?_
-    refine (le_max' _ _ <| mem_insert_of_mem ?_).trans <| le_max_right ..
-    exact mem_image.mpr ⟨n, mem_range.mpr hn, rfl⟩
+    exact (le_max' _ _ <| mem_insert_of_mem (by grind)).trans <| le_max_right ..
 
 /-- If `f` is bounded, then its `LSeries` is summable at `s` when `re s > 1`. -/
 theorem LSeriesSummable_of_bounded_of_one_lt_re {f : ℕ → ℂ} {m : ℝ}

@@ -29,7 +29,7 @@ lemma hasSum_mellin {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ} {s : ℂ
     (F := fun i t ↦ t ^ (s - 1) * (a i * rexp (-p i * t))) (fun i ↦ ?_) ?_ using 2 with i
   · simp_rw [← mul_assoc, mul_comm _ (a _), mul_assoc (a _), mul_div_assoc, integral_const_mul]
     rcases hp i with hai | hpi
-    · rw [hai, zero_mul, zero_mul]
+    · grind
     have := integral_cpow_mul_exp_neg_mul_Ioi hs hpi
     simp_rw [← ofReal_mul, ← ofReal_neg, ← ofReal_exp, ← neg_mul (p i)] at this
     rw [this, one_div, inv_cpow _ _ (arg_ofReal_of_nonneg hpi.le ▸ pi_pos.ne), div_eq_inv_mul]
@@ -69,13 +69,11 @@ lemma hasSum_mellin_pi_mul {a : ι → ℂ} {q : ι → ℝ} {F : ℝ → ℂ} {
     HasSum (fun i ↦ π ^ (-s) * Gamma s * a i / q i ^ s) (mellin F s) := by
   have hp i : a i = 0 ∨ 0 < π * q i := by rcases hq i with h | h <;> simp [h, pi_pos]
   convert hasSum_mellin hp hs (by simpa using hF) ?_ using 2 with i
-  · have : a i / ↑(π * q i) ^ s = π ^ (-s) * a i / q i ^ s := by
-      rcases hq i with h | h
-      · simp [h]
-      · rw [ofReal_mul, mul_cpow_ofReal_nonneg pi_pos.le h.le, ← div_div, cpow_neg,
-          ← div_eq_inv_mul]
-    simp_rw [mul_div_assoc, this]
-    ring_nf
+  · suffices a i / ↑(π * q i) ^ s = π ^ (-s) * a i / q i ^ s by grind
+    rcases hq i with h | h
+    · simp [h]
+    · rw [ofReal_mul, mul_cpow_ofReal_nonneg pi_pos.le h.le, ← div_div, cpow_neg,
+        ← div_eq_inv_mul]
   · have (i : _) : ‖a i‖ / ↑(π * q i) ^ s.re = π ^ (-s.re) * ‖a i‖ / q i ^ s.re := by
       rcases hq i with h | h
       · simp [h]
@@ -90,10 +88,7 @@ lemma hasSum_mellin_pi_mul₀ {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ
     HasSum (fun i ↦ π ^ (-s) * Gamma s * a i / p i ^ s) (mellin F s) := by
   have hs' : s ≠ 0 := fun h ↦ lt_irrefl _ (zero_re ▸ h ▸ hs)
   let a' i := if p i = 0 then 0 else a i
-  have hp' i : a' i = 0 ∨ 0 < p i := by
-    simp only [a']
-    split_ifs with h <;> try tauto
-    exact Or.inr (lt_of_le_of_ne (hp i) (Ne.symm h))
+  have hp' i : a' i = 0 ∨ 0 < p i := by grind
   have (i t : _) : (if p i = 0 then 0 else a i * rexp (-π * p i * t)) =
       a' i * rexp (-π * p i * t) := by
     simp [a']

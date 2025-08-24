@@ -124,10 +124,10 @@ lemma mul_convolution_distrib {R : Type*} [CommSemiring R] {n : ℕ} (χ : Diric
   simp only [Pi.mul_apply, LSeries.convolution_def, Finset.mul_sum]
   refine Finset.sum_congr rfl fun p hp ↦ ?_
   rw [(mem_divisorsAntidiagonal.mp hp).1.symm, cast_mul, map_mul]
-  exact mul_mul_mul_comm ..
+  ring
 
 lemma mul_delta {n : ℕ} (χ : DirichletCharacter ℂ n) : ↗χ * δ = δ :=
-  LSeries.mul_delta <| by rw [cast_one, map_one]
+  LSeries.mul_delta <| by simp
 
 lemma delta_mul {n : ℕ} (χ : DirichletCharacter ℂ n) : δ * ↗χ = δ :=
   mul_comm δ _ ▸ mul_delta ..
