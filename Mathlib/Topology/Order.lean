@@ -792,7 +792,7 @@ theorem closure_induced {f : α → β} {a : α} {s : Set α} :
 
 theorem isClosed_induced_iff' {f : α → β} {s : Set α} :
     IsClosed[t.induced f] s ↔ ∀ a, f a ∈ closure (f '' s) → a ∈ s := by
-   simp only [← closure_subset_iff_isClosed, subset_def, closure_induced]
+  simp only [← closure_subset_iff_isClosed, subset_def, closure_induced]
 
 end Induced
 
