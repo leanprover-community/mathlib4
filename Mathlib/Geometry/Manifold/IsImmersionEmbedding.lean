@@ -421,6 +421,8 @@ lemma _root_.ContMDiffAt.iff_comp_immersionAt [IsManifold I n M] [IsManifold J n
     ContMDiffAt I J n f x ↔ ContMDiffAt I J' n (φ ∘ f) x := by
   refine ⟨fun hf ↦ h.contMDiffAt.comp x hf, fun h' ↦ ?_⟩
   let nchart := h.domChart
+  -- maybe: prove ContMDiffWithinAt I J n f (chartAt H x).source x instead,
+  -- and use WithinAt all the way instead?
   rw [contMDiffAt_iff_of_mem_maximalAtlas (IsManifold.chart_mem_maximalAtlas x)
     h.domChart_mem_maximalAtlas (mem_chart_source H x) h.mem_domChart_source]
   refine ⟨sorry, ?_⟩ -- think! continuity is the warm-up problem!
