@@ -507,3 +507,11 @@ theorem add_choose_eq [Ring R] [BinomialRing R] {r s : R} (k : ℕ) (h : Commute
 end Ring
 
 end Choose
+
+section Multiset
+
+instance {M : Type*} : IsAddTorsionFree (Multiset M) :=
+  ⟨fun n hn x y h ↦ open Classical in Multiset.ext' fun t ↦ (nsmul_right_inj hn).mp <| by
+    simp_rw [nsmul_eq_mul, ← Multiset.count_nsmul, Nat.cast_id, h]⟩
+
+end Multiset

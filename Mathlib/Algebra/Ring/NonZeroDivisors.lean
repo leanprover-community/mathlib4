@@ -5,6 +5,7 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Regular.Basic
+import Mathlib.Algebra.Regular.Opposite
 import Mathlib.Algebra.Ring.Basic
 
 /-!
@@ -17,7 +18,28 @@ open scoped nonZeroDivisors
 
 section Monoid
 
-variable {R : Type*} [Monoid R] [Finite R] {r : R}
+variable {R : Type*} [Monoid R] {r : R}
+
+@[to_additive]
+theorem IsLeftRegular.pow_inj [IsMulTorsionFree R]
+    (hx : IsLeftRegular r) (hx' : r ≠ 1) : Function.Injective (fun n ↦ r ^ n) := by
+  intro n m hnm
+  have main {n m} (h₁ : n ≤ m) (h₂ : r ^ n = r ^ m) : n = m := by
+    obtain ⟨l, rfl⟩ := Nat.exists_eq_add_of_le h₁
+    rw [pow_add, eq_comm, IsLeftRegular.mul_left_eq_self_iff (hx.pow n),
+      IsMulTorsionFree.pow_eq_one_iff' hx'] at h₂
+    rw [h₂, Nat.add_zero]
+  obtain h | h := Nat.le_or_le n m
+  · exact main h hnm
+  · exact (main h hnm.symm).symm
+
+@[to_additive]
+theorem IsRightRegular.pow_inj {M : Type*} [Monoid M] [IsMulTorsionFree M] {x : M}
+    (hx : IsRightRegular x) (hx' : x ≠ 1) : Function.Injective (fun n ↦ x ^ n) :=
+  MulOpposite.unop_injective.comp <| (isLeftRegular_op.mpr hx).pow_inj  <|
+    (MulOpposite.op_eq_one_iff x).not.mpr hx'
+
+variable [Finite R]
 
 theorem IsLeftRegular.isUnit_of_finite (h : IsLeftRegular r) : IsUnit r := by
   rwa [IsUnit.isUnit_iff_mulLeft_bijective, ← Finite.injective_iff_bijective]
@@ -25,7 +47,7 @@ theorem IsLeftRegular.isUnit_of_finite (h : IsLeftRegular r) : IsUnit r := by
 theorem IsRightRegular.isUnit_of_finite (h : IsRightRegular r) : IsUnit r := by
   rwa [IsUnit.isUnit_iff_mulRight_bijective, ← Finite.injective_iff_bijective]
 
-theorem isRegular_iff_isUnit_of_finite {r : R} : IsRegular r ↔ IsUnit r where
+theorem isRegular_iff_isUnit_of_finite : IsRegular r ↔ IsUnit r where
   mp h := h.1.isUnit_of_finite
   mpr h := h.isRegular
 

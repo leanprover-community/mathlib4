@@ -42,6 +42,11 @@ theorem cast_mem_ideal_iff {d : ℤ} :
 
 variable (I)
 
+theorem prime_absNorm_under (h₁ : I.IsPrime) (h₂ : absNorm (under ℤ I) ≠ 0) :
+    Prime (absNorm (under ℤ I) : ℤ) := by
+  rw [← span_singleton_prime (ofNat_ne_zero.mpr h₂), ideal_span_absNorm_eq_self]
+  exact h₁.under ℤ
+
 theorem absNorm_under_mem :
     (absNorm (under ℤ I) : R) ∈ I := by
   rw [← cast_natCast, cast_mem_ideal_iff]
@@ -78,5 +83,11 @@ theorem absNorm_under_dvd_absNorm {S : Type*} [CommRing S] [IsDedekindDomain S] 
   · rw [show absNorm I = 0 by
       exact AddSubgroup.index_eq_zero_iff_infinite.mpr <| not_finite_iff_infinite.mp h]
     exact Nat.dvd_zero _
+
+theorem absNorm_under_ne_zero {S : Type*} [CommRing S] [IsDedekindDomain S] [Module.Free ℤ S]
+    {I : Ideal S} (hI : absNorm I ≠ 0) :
+    absNorm (under ℤ I) ≠ 0 := by
+  contrapose! hI
+  exact Nat.eq_zero_of_zero_dvd (hI ▸ absNorm_under_dvd_absNorm I)
 
 end Int
