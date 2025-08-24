@@ -407,9 +407,7 @@ theorem head!_append [Inhabited α] (t : List α) {s : List α} (h : s ≠ []) :
 
 theorem mem_head?_append_of_mem_head? {s t : List α} {x : α} (h : x ∈ s.head?) :
     x ∈ (s ++ t).head? := by
-  cases s
-  · contradiction
-  · exact h
+  grind [Option.mem_def]
 
 theorem head?_append_of_ne_nil :
     ∀ (l₁ : List α) {l₂ : List α} (_ : l₁ ≠ []), head? (l₁ ++ l₂) = head? l₁
