@@ -1063,7 +1063,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
     exact of_not_not fun h ↦ hx.2 i (mem_sdiff.mpr ⟨hi, h⟩) hxs
   calc ∑ i ∈ F, (μ.restrict (s i)) t
     _ ≤ ∑ i ∈ F, Measure.sum (fun (C : G i) ↦ μ.restrict (P C)) t :=
-      F.sum_le_sum fun i hi ↦ le_trans (restrict_mono_set μ (P_cover hi) t) <|
+      F.sum_le_sum fun i hi ↦ (restrict_mono_set μ (P_cover hi) t).trans <|
         restrict_biUnion_le ((finite_toSet F.powerset).subset (sep_subset _ _)).countable t
     _ = ∑ i ∈ F, ∑' (C : G i), μ.restrict (P C) t := by simp_rw [Measure.sum_apply _ ht]
     _ = ∑' C, ∑ i ∈ F, (G i).indicator (fun C ↦ μ.restrict (P C) t) C := by
@@ -1082,7 +1082,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
       · simp [hPC]
       have hCM : C.toSet.encard ≤ M :=
         have ⟨x, hx⟩ := Set.nonempty_iff_ne_empty.mpr hPC
-        le_trans (encard_mono (mem_iInter₂.mp hx.1)) (hs x)
+        (encard_mono (mem_iInter₂.mp hx.1)).trans (hs x)
       exact nsmul_le_nsmul_left (zero_le _) <| calc {a ∈ F | a ∈ C}.card
         _ ≤ C.card := card_mono <| fun i hi ↦ (F.mem_filter.mp hi).2
         _ = C.toSet.ncard := (ncard_coe_finset C).symm
