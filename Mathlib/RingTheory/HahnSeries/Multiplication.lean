@@ -769,9 +769,7 @@ theorem C_injective : Function.Injective (C : R → HahnSeries Γ R) := by
   rwa [C_apply, coeff_single_same, C_apply, coeff_single_same] at h
 
 theorem C_ne_zero {r : R} (h : r ≠ 0) : (C r : HahnSeries Γ R) ≠ 0 := by
-  contrapose! h
-  rw [← C_zero] at h
-  exact C_injective h
+  grind [C_apply, single_eq_zero_iff]
 
 theorem order_C {r : R} : order (C r : HahnSeries Γ R) = 0 := by
   by_cases h : r = 0
