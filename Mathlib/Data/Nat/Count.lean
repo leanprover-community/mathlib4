@@ -133,8 +133,7 @@ alias ⟨_, count_of_forall⟩ := count_iff_forall
 @[simp] theorem count_true (n : ℕ) : count (fun _ ↦ True) n = n := count_of_forall fun _ _ ↦ trivial
 
 theorem count_iff_forall_not {n : ℕ} : count p n = 0 ↔ ∀ m < n, ¬p m := by
-  simpa [count_eq_card_filter_range, mem_range] using
-    card_filter_eq_zero_iff (p := p) (s := range n)
+  simp [count_eq_card_filter_range]
 
 alias ⟨_, count_of_forall_not⟩ := count_iff_forall_not
 

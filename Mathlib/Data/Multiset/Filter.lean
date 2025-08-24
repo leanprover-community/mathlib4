@@ -96,14 +96,22 @@ theorem mem_of_mem_filter {a : α} {s} (h : a ∈ filter p s) : a ∈ s :=
 theorem mem_filter_of_mem {a : α} {l} (m : a ∈ l) (h : p a) : a ∈ filter p l :=
   mem_filter.2 ⟨m, h⟩
 
+@[simp]
 theorem filter_eq_self {s} : filter p s = s ↔ ∀ a ∈ s, p a :=
   Quot.inductionOn s fun _l =>
     Iff.trans ⟨fun h => filter_sublist.eq_of_length (congr_arg card h),
       congr_arg ofList⟩ <| by simp
 
+@[simp]
 theorem filter_eq_nil {s} : filter p s = 0 ↔ ∀ a ∈ s, ¬p a :=
   Quot.inductionOn s fun _l =>
     Iff.trans ⟨fun h => eq_nil_of_length_eq_zero (congr_arg card h), congr_arg ofList⟩ (by simp)
+
+@[simp]
+lemma filter_true (s : Multiset α) : s.filter (fun _ ↦ True) = s := by simp
+
+@[simp]
+lemma filter_false (s : Multiset α) : s.filter (fun _ ↦ False) = 0 := by simp
 
 theorem le_filter {s t} : s ≤ filter p t ↔ s ≤ t ∧ ∀ a ∈ s, p a :=
   ⟨fun h => ⟨le_trans h (filter_le _ _), fun _a m => of_mem_filter (mem_of_le h m)⟩, fun ⟨h, al⟩ =>
