@@ -151,7 +151,8 @@ theorem MulEquiv.restrictRootsOfUnity_symm (σ : R ≃* S) :
     (σ.restrictRootsOfUnity k).symm = σ.symm.restrictRootsOfUnity k :=
   rfl
 
-theorem coe_rootsOfUnity_to_set [NeZero k] :
+@[simp]
+theorem Units.val_set_image_rootsOfUnity [NeZero k] :
     ((↑) : Rˣ → _) '' (rootsOfUnity k R) = {z : R | z^k = 1} := by
   ext x
   exact ⟨fun ⟨y,hy1,hy2⟩ => by rw [← hy2]; exact (mem_rootsOfUnity' k y).mp hy1,
@@ -167,7 +168,8 @@ open Set in
 theorem rootsOfUnity_two_set [CommRing R] [NoZeroDivisors R] :
     ((↑) : Rˣ → R) '' (rootsOfUnity 2 R) = {1, -1} := by
   ext x
-  rw [mem_insert_iff, mem_singleton_iff, ← sq_eq_one_iff, coe_rootsOfUnity_to_set, mem_setOf_eq]
+  rw [mem_insert_iff, mem_singleton_iff, ← sq_eq_one_iff, Units.val_set_image_rootsOfUnity,
+    mem_setOf_eq]
 
 section IsDomain
 
@@ -239,8 +241,8 @@ theorem map_rootsOfUnity_eq_pow_self [FunLike F R R] [MonoidHomClass F R R] (σ 
 lemma coe_rootsOfUnity_to_nthRootsFinset :
     ((↑) : Rˣ → R) '' (rootsOfUnity k R) = nthRootsFinset k (1 : R) := by
   ext x
-  rw [mem_coe, Polynomial.mem_nthRootsFinset (Nat.pos_of_neZero k), coe_rootsOfUnity_to_set,
-    Set.mem_setOf_eq]
+  rw [mem_coe, Polynomial.mem_nthRootsFinset (Nat.pos_of_neZero k),
+    Units.val_set_image_rootsOfUnity, Set.mem_setOf_eq]
 
 end IsDomain
 
