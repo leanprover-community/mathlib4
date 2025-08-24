@@ -375,7 +375,6 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
   | cast k =>
     cases k using Fin.cases with
     | zero =>
-      ext
       simp
     | succ k =>
       rcases le_or_gt i k with (h | h)

@@ -160,7 +160,7 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : X.Opens
     rw [← X.sheaf.presheaf.germ_res_apply i x hx s]
     exact H
   | h₂ X Y f =>
-    refine ⟨f ⁻¹ᵁ f.opensRange, f.opensRange, by ext1; simp, rfl, ?_⟩
+    refine ⟨f ⁻¹ᵁ f.opensRange, f.opensRange, by simp, rfl, ?_⟩
     rintro H hX s hs _ ⟨x, rfl⟩
     haveI := isReduced_of_isOpenImmersion f
     specialize H (f.app _ s) _ x ⟨x, rfl⟩
