@@ -51,7 +51,7 @@ lemma algebraMap_galRestrict'_apply (σ : L →ₐ[K] F) (x : B) :
     algebraMap C F (galRestrict' A K L F B C σ x) = σ (algebraMap B L x) := by
   simp [galRestrict', galRestrict', Subalgebra.algebraMap_eq]
 
-variable [Algebra.IsAlgebraic K L] [Algebra.IsAlgebraic K F]
+variable [Algebra.IsAlgebraic K L]
 
 /-- A generalization of the the lift `End(B/A) → End(L/K)` in an ALKB setup.
 This is inverse to the restriction. See `galRestrictHom`. -/
@@ -75,19 +75,34 @@ def galLift (σ : B →ₐ[A] C) : L →ₐ[K] F :=
       IsLocalization.lift_eq, RingHom.coe_coe, AlgHom.commutes]
   { IsLocalization.lift (S := L) H with commutes' := DFunLike.congr_fun H_eq }
 
-omit [IsIntegralClosure C A F] [Algebra.IsAlgebraic K F] in
+omit [IsIntegralClosure C A F] in
 @[simp]
 theorem galLift_algebraMap_apply (σ : B →ₐ[A] C) (x : B) :
     galLift A K L F B C σ (algebraMap B L x) = algebraMap C F (σ x) := by
   simp [galLift]
+
+@[simp]
+theorem galLift_galRestrict' (σ : L →ₐ[K] F) :
+    galLift A K L F B C (galRestrict' A K L F B C σ) = σ :=
+  have := (IsFractionRing.injective A K).isDomain
+  have := IsIntegralClosure.isLocalization A K L B
+  AlgHom.coe_ringHom_injective <| IsLocalization.ringHom_ext (Algebra.algebraMapSubmonoid B A⁰)
+    <| RingHom.ext fun x ↦ by simp [galRestrict', Subalgebra.algebraMap_eq, galLift]
+
+@[simp]
+theorem galRestrict'_galLift (σ : B →ₐ[A] C) :
+    galRestrict' A K L F B C (galLift A K L F B C σ) = σ :=
+  have := (IsFractionRing.injective A K).isDomain
+  have := IsIntegralClosure.isLocalization A K L B
+  AlgHom.ext fun x ↦ IsIntegralClosure.algebraMap_injective C A F
+    (by simp [galRestrict', Subalgebra.algebraMap_eq, galLift])
 
 /-- The restriction `End(L/K) → End(B/A)` in an AKLB setup.
 Also see `galRestrict` for the `AlgEquiv` version. -/
 noncomputable
 def galRestrictHom : (L →ₐ[K] L) ≃* (B →ₐ[A] B) where
   toFun f := galRestrict' A K L L B B f
-  map_mul' := by
-    intro σ₁ σ₂
+  map_mul' σ₁ σ₂ := by
     ext x
     apply (IsIntegralClosure.equiv A (integralClosure A L) L B).symm.injective
     ext
@@ -97,16 +112,8 @@ def galRestrictHom : (L →ₐ[K] L) ≃* (B →ₐ[A] B) where
       AlgHom.mul_apply, IsIntegralClosure.algebraMap_equiv, Subalgebra.algebraMap_eq]
     rfl
   invFun := galLift A K L L B B
-  left_inv σ :=
-    have := (IsFractionRing.injective A K).isDomain
-    have := IsIntegralClosure.isLocalization A K L B
-    AlgHom.coe_ringHom_injective <| IsLocalization.ringHom_ext (Algebra.algebraMapSubmonoid B A⁰)
-      <| RingHom.ext fun x ↦ by simp [galRestrict', Subalgebra.algebraMap_eq, galLift]
-  right_inv σ :=
-    have := (IsFractionRing.injective A K).isDomain
-    have := IsIntegralClosure.isLocalization A K L B
-    AlgHom.ext fun x ↦ IsIntegralClosure.algebraMap_injective B A L
-      (by simp [galRestrict', Subalgebra.algebraMap_eq, galLift])
+  left_inv σ := galLift_galRestrict' _ _ _ _ _ _ _
+  right_inv σ := galRestrict'_galLift _ _ _ _ _ _ _
 
 @[simp]
 lemma algebraMap_galRestrictHom_apply (σ : L →ₐ[K] L) (x : B) :
