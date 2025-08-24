@@ -665,8 +665,7 @@ theorem Int.ModEq.pow_eq_pow {p x y : ℕ} (hp : Nat.Prime p) (h : p - 1 ∣ x -
           exact IsCoprime.symm (Int.isCoprime_iff_gcd_eq_one.mpr ch)
         _ ∣ _ := by
           rcases h with ⟨m, hm⟩
-          rw [hm]
-          exact pow_one_sub_dvd_pow_mul_sub_one n (p - 1) m
+          simp [hm, pow_one_sub_dvd_pow_mul_sub_one]
     have : n ^ (x - y) * n ^ y ≡ 1 * n ^ y [ZMOD p] := Int.ModEq.mul this rfl
     rwa [← pow_add, one_mul, Nat.sub_add_cancel hxy] at this
 
