@@ -987,6 +987,10 @@ theorem prod_eq_prod_of_nonempty'
     (h : (eX'.prod eY').source.Nonempty) : eX.prod eY = eX'.prod eY' ↔ eX = eX' ∧ eY = eY' := by
   rw [eq_comm, prod_eq_prod_of_nonempty h, eq_comm, @eq_comm _ eY']
 
+theorem prod_symm_trans_prod (e f : PartialHomeomorph X Y) (e' f' : PartialHomeomorph X' Y') :
+    (e.prod e').symm.trans (f.prod f') = (e.symm.trans f).prod (e'.symm.trans f') := by
+  simp
+
 end Prod
 
 /-! finite product of partial homeomorphisms -/
