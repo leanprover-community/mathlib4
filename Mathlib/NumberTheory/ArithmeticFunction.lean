@@ -393,6 +393,10 @@ theorem zeta_apply {x : ℕ} : ζ x = if x = 0 then 0 else 1 :=
 theorem zeta_apply_ne {x : ℕ} (h : x ≠ 0) : ζ x = 1 :=
   if_neg h
 
+@[simp] theorem zeta_eq_zero {x : ℕ} : ζ x = 0 ↔ x = 0 := by simp [zeta]
+
+@[simp] theorem zeta_pos {x : ℕ} : 0 < ζ x ↔ 0 < x := by simp [Nat.pos_iff_ne_zero]
+
 -- Porting note: removed `@[simp]`, LHS not in normal form
 theorem coe_zeta_smul_apply {M} [Semiring R] [AddCommMonoid M] [MulAction R M]
     {f : ArithmeticFunction M} {x : ℕ} :
@@ -813,6 +817,18 @@ scoped[ArithmeticFunction.sigma] notation "σ" => ArithmeticFunction.sigma
 theorem sigma_apply {k n : ℕ} : σ k n = ∑ d ∈ divisors n, d ^ k :=
   rfl
 
+@[simp]
+theorem sigma_eq_zero {k n : ℕ} : σ k n = 0 ↔ n = 0 := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp
+  · suffices ∃ d, d ∣ n ∧ (d = 0 → k = 0) by simpa [ArithmeticFunction.sigma_apply, hn]
+    use 1
+    simp
+
+@[simp]
+theorem sigma_pos {k n} : 0 < σ k n ↔ 0 < n := by
+  simp [pos_iff_ne_zero]
+
 theorem sigma_apply_prime_pow {k p i : ℕ} (hp : p.Prime) :
     σ k (p ^ i) = ∑ j ∈ .range (i + 1), p ^ (j * k) := by
   simp [sigma_apply, divisors_prime_pow hp, Nat.pow_mul]
@@ -890,6 +906,13 @@ lemma cardFactors_zero : Ω 0 = 0 := by simp
 @[simp] theorem cardFactors_one : Ω 1 = 0 := by simp [cardFactors_apply]
 
 @[simp]
+theorem cardFactors_eq_zero {n : ℕ} : Ω n = 0 ↔ n ≤ 1 := by
+  simp [cardFactors_apply, Nat.le_one_iff_eq_zero_or_eq_one]
+
+@[simp]
+theorem cardFactors_pos {n : ℕ} : 0 < Ω n ↔ 1 < n := by simp [pos_iff_ne_zero]
+
+@[simp]
 theorem cardFactors_eq_one_iff_prime {n : ℕ} : Ω n = 1 ↔ n.Prime := by
   refine ⟨fun h => ?_, fun h => List.length_eq_one_iff.2 ⟨n, primeFactorsList_prime h⟩⟩
   cases n with | zero => simp at h | succ n =>
@@ -944,6 +967,13 @@ theorem cardDistinctFactors_one : ω 1 = 0 := by simp [cardDistinctFactors]
 
 theorem cardDistinctFactors_apply {n : ℕ} : ω n = n.primeFactorsList.dedup.length :=
   rfl
+
+@[simp]
+theorem cardDistinctFactors_eq_zero {n : ℕ} : ω n = 0 ↔ n ≤ 1 := by
+  simp [cardDistinctFactors_apply, Nat.le_one_iff_eq_zero_or_eq_one]
+
+@[simp]
+theorem cardDistinctFactors_pos {n : ℕ} : 0 < ω n ↔ 1 < n := by simp [pos_iff_ne_zero]
 
 theorem cardDistinctFactors_eq_cardFactors_iff_squarefree {n : ℕ} (h0 : n ≠ 0) :
     ω n = Ω n ↔ Squarefree n := by
@@ -1318,3 +1348,32 @@ theorem sum_divisors_mul {m n : ℕ} (hmn : m.Coprime n) :
   simp only [← sigma_one_apply, isMultiplicative_sigma.map_mul_of_coprime hmn]
 
 end Nat.Coprime
+
+namespace Mathlib.Meta.Positivity
+open Lean Meta Qq
+
+/-- Extension for `ArithmeticFunction.sigma`. -/
+@[positivity ArithmeticFunction.sigma _ _]
+def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(ArithmeticFunction.sigma $k $n) =>
+    let rn ← core z p n
+    assumeInstancesCommute
+    match rn with
+    | .positive pn => return .positive q(Iff.mpr ArithmeticFunction.sigma_pos $pn)
+    | _ => return .nonnegative q(Nat.zero_le _)
+  | _, _, _ => throwError "not ArithmeticFunction.sigma"
+
+/-- Extension for `ArithmeticFunction.zeta`. -/
+@[positivity ArithmeticFunction.zeta _]
+def evalArithmeticFunctionZeta : PositivityExt where eval {u α} z p e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(ArithmeticFunction.zeta $n) =>
+    let rn ← core z p n
+    assumeInstancesCommute
+    match rn with
+    | .positive pn => return .positive q(Iff.mpr ArithmeticFunction.zeta_pos $pn)
+    | _ => return .nonnegative q(Nat.zero_le _)
+  | _, _, _ => throwError "not ArithmeticFunction.zeta"
+
+end Mathlib.Meta.Positivity
