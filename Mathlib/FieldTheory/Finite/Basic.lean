@@ -647,7 +647,7 @@ theorem Int.prime_dvd_pow_self_sub {p : ℕ} (hp : Nat.Prime p) {n : ℤ} : (p :
     simp [Int.sub_mul, ← Int.pow_succ, Nat.sub_one_add_one_eq_of_pos (Nat.Prime.one_le hp)]
 
 theorem Int.ModEq.pow_card_eq_self {p : ℕ} (hp : Nat.Prime p) {n : ℤ} : n ^ p ≡ n [ZMOD p] :=
-  ModEq.symm ((fun {_ _ _} ↦ modEq_iff_dvd.mpr) (prime_dvd_pow_self_sub hp))
+  ModEq.symm (modEq_iff_dvd.mpr (prime_dvd_pow_self_sub hp))
 
 theorem Int.ModEq.pow_eq_pow {p x y : ℕ} (hp : Nat.Prime p) (h : p - 1 ∣ x - y) (hxy : x ≥ y)
     (hy : y > 0) {n : ℤ} : n ^ x ≡ n ^ y [ZMOD p] := by
