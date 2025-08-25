@@ -577,7 +577,7 @@ Probability Theory:
     $\mathrm{L}^p$ convergence: 'MeasureTheory.Lp'
     almost surely convergence: 'MeasureTheory.ae'
     Markov inequality: 'MeasureTheory.mul_meas_ge_le_lintegral'
-    Chebychev inequality: 'ProbabilityTheory.meas_ge_le_variance_div_sq'
+    Chebyshev inequality: 'ProbabilityTheory.meas_ge_le_variance_div_sq'
     Lévy's theorem: ''
     weak law of large numbers: ''
     strong law of large numbers: 'ProbabilityTheory.strong_law_ae'
@@ -606,7 +606,7 @@ Distribution calculus:
     Schwartz space of rapidly decreasing functions: 'SchwartzMap'
     stability by derivation: 'SchwartzMap.fderivCLM'
     stability by multiplication by a slowly growing smooth function: ''
-    gaussian functions: ''
+    Gaussian functions: ''
     Fourier transforms on $\mathcal{S}(\R^d)$: ''
     convolution of two functions of $\mathcal{S}(\R^d)$: ''
   Tempered distributions:
