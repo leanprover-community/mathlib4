@@ -33,7 +33,7 @@ The locale `Matrix` gives the following notation:
 
 ## Tags
 
-crossproduct
+cross product
 -/
 
 

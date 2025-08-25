@@ -289,22 +289,18 @@ theorem map_toDual_max (s : Finset α) : s.max.map toDual = (s.image toDual).min
 
 theorem ofDual_min' {s : Finset αᵒᵈ} (hs : s.Nonempty) :
     ofDual (min' s hs) = max' (s.image ofDual) (hs.image _) := by
-  rw [← WithBot.coe_eq_coe]
   simp [min'_eq_inf', max'_eq_sup']
 
 theorem ofDual_max' {s : Finset αᵒᵈ} (hs : s.Nonempty) :
     ofDual (max' s hs) = min' (s.image ofDual) (hs.image _) := by
-  rw [← WithTop.coe_eq_coe]
   simp [min'_eq_inf', max'_eq_sup']
 
 theorem toDual_min' {s : Finset α} (hs : s.Nonempty) :
     toDual (min' s hs) = max' (s.image toDual) (hs.image _) := by
-  rw [← WithBot.coe_eq_coe]
   simp [min'_eq_inf', max'_eq_sup']
 
 theorem toDual_max' {s : Finset α} (hs : s.Nonempty) :
     toDual (max' s hs) = min' (s.image toDual) (hs.image _) := by
-  rw [← WithTop.coe_eq_coe]
   simp [min'_eq_inf', max'_eq_sup']
 
 theorem max'_subset {s t : Finset α} (H : s.Nonempty) (hst : s ⊆ t) :
