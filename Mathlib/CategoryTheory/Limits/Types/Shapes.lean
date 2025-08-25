@@ -691,16 +691,6 @@ theorem pullbackIsoPullback_inv_fst :
 theorem pullbackIsoPullback_inv_snd :
     (pullbackIsoPullback f g).inv ≫ pullback.snd _ _ = fun p => (p.1 : X × Y).snd := by aesop
 
-@[simp]
-lemma pullback_lift_fst_apply (h : W → X) (k : W → Y) (fac : h ≫ f = k ≫ g) (w : W) :
-    pullback.fst f g ((pullback.lift h k fac : _ ⟶ pullback f g) w) = h w :=
-  congr_fun (pullback.lift_fst (C := Type u) h k fac) w
-
-@[simp]
-lemma pullback_lift_snd_apply (h : W → X) (k : W → Y) (fac : h ≫ f = k ≫ g) (w : W) :
-    pullback.snd f g ((pullback.lift h k fac : _ ⟶ pullback f g) w) = k w :=
-  congr_fun (pullback.lift_snd (C := Type u) h k fac) w
-
 @[ext]
 lemma pullback_ext {z₁ z₂ : pullback f g}
     (h₁ : pullback.fst f g z₁ = pullback.fst f g z₂)
