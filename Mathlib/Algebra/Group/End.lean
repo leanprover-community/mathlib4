@@ -292,6 +292,16 @@ extend_docs Equiv.permCongrHom after "This is `Equiv.permCongr` as a `MulEquiv`.
 @[deprecated (since := "2025-08-23")] alias permCongrHom := Equiv.permCongrHom
 
 @[simp]
+theorem _root_.Equiv.permCongrHom_symm {α β : Type*} (e : α ≃ β) :
+    e.permCongrHom.symm = e.symm.permCongrHom :=
+  rfl
+
+@[simp]
+theorem _root_.Equiv.permCongrHom_trans {α β γ : Type*} (e : α ≃ β) (e' : β ≃ γ) :
+    e.permCongrHom.trans e'.permCongrHom = (e.trans e').permCongrHom :=
+  rfl
+
+@[simp]
 lemma _root_.Equiv.permCongrHom_coe_equiv (e : α ≃ β) :
     (↑e.permCongrHom : Perm α ≃ Perm β) = e.permCongr :=
   rfl
