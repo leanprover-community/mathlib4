@@ -63,7 +63,7 @@ def EuclideanQuadrant (n : ℕ) : Type :=
 
 section
 
-/- Register class instances for euclidean half-space and quadrant, that can not be noticed
+/- Register class instances for Euclidean half-space and quadrant, that can not be noticed
 without the following reducibility attribute (which is only set in this section). -/
 
 variable {n : ℕ}

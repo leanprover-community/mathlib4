@@ -837,7 +837,7 @@ instance : BorelSpace (euclidean.mixedSpace K) := ⟨rfl⟩
 variable [NumberField K]
 
 open Classical in
-/-- The continuous linear equivalence between the euclidean mixed space and the mixed space. -/
+/-- The continuous linear equivalence between the Euclidean mixed space and the mixed space. -/
 def toMixed : (euclidean.mixedSpace K) ≃L[ℝ] (mixedSpace K) :=
   (WithLp.linearEquiv _ _ _).toContinuousLinearEquiv
 
@@ -848,7 +848,7 @@ protected theorem finrank :
   rw [LinearEquiv.finrank_eq (toMixed K).toLinearEquiv, mixedEmbedding.finrank]
 
 open Classical in
-/-- An orthonormal basis of the euclidean mixed space. -/
+/-- An orthonormal basis of the Euclidean mixed space. -/
 def stdOrthonormalBasis : OrthonormalBasis (index K) ℝ (euclidean.mixedSpace K) :=
   OrthonormalBasis.prod (EuclideanSpace.basisFun _ ℝ)
     ((Pi.orthonormalBasis fun _ ↦ Complex.orthonormalBasisOneI).reindex (Equiv.sigmaEquivProd _ _))
@@ -876,7 +876,7 @@ theorem volumePreserving_toMixed_symm :
   exact this.symm
 
 open Classical in
-/-- The image of ring of integers `𝓞 K` in the euclidean mixed space. -/
+/-- The image of ring of integers `𝓞 K` in the Euclidean mixed space. -/
 protected def integerLattice : Submodule ℤ (euclidean.mixedSpace K) :=
   ZLattice.comap ℝ (mixedEmbedding.integerLattice K) (toMixed K).toLinearMap
 

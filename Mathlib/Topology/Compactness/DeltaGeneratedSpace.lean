@@ -9,7 +9,7 @@ import Mathlib.Analysis.LocallyConvex.WithSeminorms
 # Delta-generated topological spaces
 
 This file defines delta-generated spaces, as topological spaces whose topology is coinduced by all
-maps from euclidean spaces into them. This is the strongest topological property that holds for
+maps from Euclidean spaces into them. This is the strongest topological property that holds for
 all CW-complexes and is closed under quotients and disjoint unions; every delta-generated space is
 locally path-connected, sequential and in particular compactly generated.
 
