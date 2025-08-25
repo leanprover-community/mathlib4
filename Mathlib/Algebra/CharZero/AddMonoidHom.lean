@@ -5,6 +5,7 @@ Authors: Paul Lezeau
 -/
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Data.Nat.Cast.Basic
 
 /-! # Transporting `CharZero` accross injective `AddHom`s
 This file exists in order to avoid adding extra imports to other files in this subdirectory.
@@ -13,9 +14,5 @@ This file exists in order to avoid adding extra imports to other files in this s
 theorem CharZero.of_addMonoidHom {M N : Type*} [AddCommMonoidWithOne M] [AddCommMonoidWithOne N]
     [CharZero M] {e : M →+ N} (he : e 1 = 1) (he' : Function.Injective e) : CharZero N := by
   constructor
-  have (n : ℕ) : (n : N) = e (n : M) := by
-    induction n with
-    | zero => simp
-    | succ n ih => simp [ih, he]
   intro n m h
-  rwa [this, this, he'.eq_iff, Nat.cast_inj] at h
+  rwa [← map_natCast' _ he, ← map_natCast' _ he, he'.eq_iff, Nat.cast_inj] at h
