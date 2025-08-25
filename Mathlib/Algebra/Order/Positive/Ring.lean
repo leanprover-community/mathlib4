@@ -123,8 +123,8 @@ instance isOrderedMonoid [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing 
 /-- If `R` is a nontrivial linear ordered commutative semiring, then `{x : R // 0 < x}` is a linear
 ordered cancellative commutative monoid. -/
 instance isOrderedCancelMonoid [CommSemiring R] [LinearOrder R] [IsStrictOrderedRing R] :
-    IsOrderedCancelMonoid { x : R // 0 < x } :=
-  { le_of_mul_le_mul_left := fun a _ _ h => Subtype.coe_le_coe.1 <| (mul_le_mul_left a.2).1 h }
+    IsOrderedCancelMonoid { x : R // 0 < x } where
+  le_of_mul_le_mul_left a _ _ := (mul_le_mul_iff_right₀ a.2).1
 
 end mul_comm
 

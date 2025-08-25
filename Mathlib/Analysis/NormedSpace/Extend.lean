@@ -106,7 +106,7 @@ theorem norm_extendTo𝕜'_bound (fr : StrongDual ℝ F) (x : F) :
   by_cases h : lm x = 0
   · rw [h, norm_zero]
     apply mul_nonneg <;> exact norm_nonneg _
-  rw [← mul_le_mul_left (norm_pos_iff.2 h), ← sq]
+  rw [← mul_le_mul_iff_right₀ (norm_pos_iff.2 h), ← sq]
   calc
     ‖lm x‖ ^ 2 = fr (conj (lm x : 𝕜) • x) := fr.toLinearMap.norm_extendTo𝕜'_apply_sq x
     _ ≤ ‖fr (conj (lm x : 𝕜) • x)‖ := le_abs_self _
