@@ -493,7 +493,7 @@ theorem isRegular_iff_isUnit [IsArtinianRing R] {x : R} : IsRegular x ↔ IsUnit
   rw [isRegular_iff, isRightRegular_iff_isUnit, and_iff_right_of_imp (·.isRegular.1)]
 
 theorem isLeftRegular_iff_isUnit [IsArtinianRing Rᵐᵒᵖ] {x : R} : IsLeftRegular x ↔ IsUnit x := by
-  rw [← isRightRegular_op, ← isUnit_op]; exact isRightRegular_iff_isUnit
+  rw [← isRightRegular_op, ← isUnit_op, isRightRegular_iff_isUnit]
 
 theorem isRegular_iff_isUnit_of_mulOpposite [IsArtinianRing Rᵐᵒᵖ] {x : R} :
     IsRegular x ↔ IsUnit x := by
@@ -507,19 +507,19 @@ variable (R : Type*) [Ring R]
 
 theorem nonZeroDivisorsRight_eq_isUnitSubmonoid [IsArtinianRing R] :
     nonZeroDivisorsRight R = IsUnit.submonoid R := by
-  ext; rw [← isRightRegular_iff_mem_nonZeroDivisorsRight]; apply isRightRegular_iff_isUnit
+  ext; rw [← isRightRegular_iff_mem_nonZeroDivisorsRight]; exact isRightRegular_iff_isUnit
 
 theorem nonZeroDivisors_eq_isUnitSubmonoid [IsArtinianRing R] :
     nonZeroDivisors R = IsUnit.submonoid R := by
-  ext; rw [← isRegular_iff_mem_nonZeroDivisors]; apply isRegular_iff_isUnit
+  ext; rw [← isRegular_iff_mem_nonZeroDivisors]; exact isRegular_iff_isUnit
 
 theorem nonZeroDivisorsLeft_eq_isUnitSubmonoid [IsArtinianRing Rᵐᵒᵖ] :
     nonZeroDivisorsLeft R = IsUnit.submonoid R := by
-  ext; rw [← isLeftRegular_iff_mem_nonZeroDivisorsLeft]; apply isLeftRegular_iff_isUnit
+  ext; rw [← isLeftRegular_iff_mem_nonZeroDivisorsLeft]; exact isLeftRegular_iff_isUnit
 
 theorem nonZeroDivisors_eq_isUnitSubmonoid_of_mulOpposite [IsArtinianRing Rᵐᵒᵖ] :
     nonZeroDivisors R = IsUnit.submonoid R := by
-  ext; rw [← isRegular_iff_mem_nonZeroDivisors]; apply isRegular_iff_isUnit_of_mulOpposite
+  ext; rw [← isRegular_iff_mem_nonZeroDivisors]; exact isRegular_iff_isUnit_of_mulOpposite
 
 end Ring
 
