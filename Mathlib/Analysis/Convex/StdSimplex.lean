@@ -43,9 +43,57 @@ lemma le_one (s : stdSimplex R X) [IsOrderedRing R] (x : X) : s x ≤ 1 := by
     le_add_iff_nonneg_left]
   exact Finset.sum_nonneg (by simp)
 
+lemma add_eq_one (s : stdSimplex S (Fin 2)) :
+    s 0 + s 1 = 1 := by
+  simpa only [Fin.sum_univ_two] using sum_eq_one s
+
 section
 
 variable [IsOrderedRing S]
+
+/-- The vertex corresponding to `x : X` in `stdSimplex S X`. -/
+abbrev vertex [DecidableEq X] (x : X) : stdSimplex S X :=
+  ⟨Pi.single x 1, single_mem_stdSimplex S x⟩
+
+@[simp]
+lemma vertex_coe [DecidableEq X] (x : X) :
+    ⇑(vertex (S := S) x) = Pi.single x 1 := rfl
+
+lemma vertex_injective [Nontrivial S] [DecidableEq X] :
+    Function.Injective (vertex (S := S) (X := X)) := by
+  intro x y h
+  replace h := DFunLike.congr_fun h x
+  by_contra!
+  simp [Pi.single_eq_of_ne this] at h
+
+instance [Nonempty X] : Nonempty (stdSimplex S X) := by
+  classical
+  exact ⟨vertex (Classical.arbitrary _)⟩
+
+instance [Nontrivial S] [Nontrivial X] : Nontrivial (stdSimplex S X) where
+  exists_pair_ne := by
+    classical
+    obtain ⟨x, y, hxy⟩ := exists_pair_ne X
+    exact ⟨vertex x, vertex y, fun h ↦ hxy (vertex_injective h)⟩
+
+instance [Subsingleton X] : Subsingleton (stdSimplex S X) where
+  allEq s t := by
+    ext i
+    have (u : stdSimplex S X) : u i = 1 := by
+      rw [← sum_eq_one u, Finset.sum_eq_single i _ (by simp)]
+      intro j _ hj
+      exact (hj (Subsingleton.elim j i)).elim
+    simp [this]
+
+instance [Unique X] : Unique (stdSimplex S X) where
+  default := ⟨1, by simp, by simp⟩
+  uniq := by subsingleton
+
+@[simp]
+lemma eq_one_of_unique [Unique X] (s : stdSimplex S X) (x : X) :
+    s x = 1 := by
+  obtain rfl : s = default := by subsingleton
+  rfl
 
 lemma image_linearMap (f : X → Y) :
     Set.image (FunOnFinite.linearMap S S f) (stdSimplex S X) ⊆ stdSimplex S Y := by
@@ -73,14 +121,6 @@ lemma map_comp_apply (f : X → Y) (g : Y → Z) (x : stdSimplex S X) :
     map g (map f x) = map (g.comp f) x := by
   ext
   simp [FunOnFinite.linearMap_comp]
-
-/-- The vertex corresponding to `x : X` in `stdSimplex S X`. -/
-abbrev vertex [DecidableEq X] (x : X) : stdSimplex S X :=
-  ⟨Pi.single x 1, single_mem_stdSimplex S x⟩
-
-@[simp]
-lemma vertex_coe [DecidableEq X] (x : X) :
-    ⇑(vertex (S := S) x) = Pi.single x 1 := rfl
 
 @[simp]
 lemma map_vertex [DecidableEq X] [DecidableEq Y] (f : X → Y) (x : X) :
