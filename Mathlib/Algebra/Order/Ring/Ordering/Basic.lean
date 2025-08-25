@@ -197,7 +197,7 @@ theorem mem_of_neg_notMem (x : R) (h : -x ∉ P) : x ∈ P := by
 end HasMemOrNegMem
 
 theorem isOrdering_iff :
-    P.IsOrdering ↔ (∀ a b : R, -(a * b) ∈ P → a ∈ P ∨ b ∈ P) := by
+    P.IsOrdering ↔ ∀ a b : R, -(a * b) ∈ P → a ∈ P ∨ b ∈ P := by
   refine ⟨fun _ a b h₁ => ?_, fun h => ?_⟩
   · by_contra
     have : a * b ∈ P := by simpa using mul_mem (by aesop : -a ∈ P) (by aesop : -b ∈ P)
