@@ -230,6 +230,12 @@ theorem incidenceFinset_subset [DecidableEq V] [Fintype G.edgeSet] :
     G.incidenceFinset v ⊆ G.edgeFinset :=
   Set.toFinset_subset_toFinset.mpr (G.incidenceSet_subset v)
 
+/-- The degree of a vertex is at most the number of edges. -/
+theorem degree_le_card_edgeFinset [DecidableEq V] [Fintype G.edgeSet] :
+    G.degree v ≤ #G.edgeFinset := by
+  rw [← card_incidenceFinset_eq_degree]
+  exact card_le_card (G.incidenceFinset_subset v)
+
 variable {G v}
 
 /-- If `G ≤ H` then `G.degree v ≤ H.degree v` for any vertex `v`. -/
@@ -291,7 +297,7 @@ theorem complete_graph_degree [DecidableEq V] (v : V) :
 
 @[simp]
 theorem bot_degree (v : V) : (⊥ : SimpleGraph V).degree v = 0 := by
-  simp_rw [degree, neighborFinset_eq_filter, bot_adj, filter_False]
+  simp_rw [degree, neighborFinset_eq_filter, bot_adj, filter_false]
   exact Finset.card_empty
 
 theorem IsRegularOfDegree.top [DecidableEq V] :
@@ -343,6 +349,17 @@ lemma minDegree_le_minDegree {H : SimpleGraph V} [DecidableRel G.Adj] [Decidable
     exact fun v ↦ (G.minDegree_le_degree v).trans (G.degree_le_of_le hle)
   · rw [not_nonempty_iff] at hne
     simp
+
+/-- In a nonempty graph, the minimal degree is less than the number of vertices. -/
+theorem minDegree_lt_card [DecidableRel G.Adj] [Nonempty V] :
+    G.minDegree < Fintype.card V := by
+  obtain ⟨v, hδ⟩ := G.exists_minimal_degree_vertex
+  rw [hδ, ← card_neighborFinset_eq_degree, ← card_univ]
+  have h : v ∉ G.neighborFinset v :=
+    (G.mem_neighborFinset v v).not.mpr (G.loopless v)
+  contrapose! h
+  rw [eq_of_subset_of_card_le (subset_univ _) h]
+  exact mem_univ v
 
 /-- The maximum degree of all vertices (and `0` if there are no vertices).
 The key properties of this are given in `exists_maximal_degree_vertex`, `degree_le_maxDegree`

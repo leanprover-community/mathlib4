@@ -17,7 +17,7 @@ In this file we define the following structures on the space `ℍ := ℍ[ℝ]` o
 * normed ring;
 * normed space over `ℝ`.
 
-We show that the norm on `ℍ[ℝ]` agrees with the euclidean norm of its components.
+We show that the norm on `ℍ[ℝ]` agrees with the Euclidean norm of its components.
 
 ## Notation
 
@@ -146,7 +146,7 @@ def ofComplex : ℂ →ₐ[ℝ] ℍ where
 @[simp]
 theorem coe_ofComplex : ⇑ofComplex = coeComplex := rfl
 
-/-- The norm of the components as a euclidean vector equals the norm of the quaternion. -/
+/-- The norm of the components as a Euclidean vector equals the norm of the quaternion. -/
 lemma norm_toLp_equivTuple (x : ℍ) : ‖WithLp.toLp 2 (equivTuple ℝ x)‖ = ‖x‖ := by
   rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner, inner_self, normSq_def', PiLp.inner_apply,
     Fin.sum_univ_four]
