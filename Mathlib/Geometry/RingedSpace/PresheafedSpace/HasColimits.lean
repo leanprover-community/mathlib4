@@ -267,8 +267,7 @@ instance : PreservesColimitsOfShape J (PresheafedSpace.forget.{u, v, v} C) :=
     apply IsColimit.ofIsoColimit (colimit.isColimit _)
     fapply Cocones.ext
     · rfl
-    · intro j
-      simp⟩
+    · simp⟩
 
 /-- When `C` has limits, the category of presheafed spaces with values in `C` itself has colimits.
 -/

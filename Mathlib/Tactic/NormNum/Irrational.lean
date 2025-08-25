@@ -134,8 +134,7 @@ private theorem not_power_rat_of_num_aux {a b d : ℕ}
   rw [div_eq_div_iff] at h
   rotate_left
   · simpa
-  · apply pow_ne_zero
-    simp [y]
+  · simp [y]
   replace h : a * y ^ d = x ^ d * b := by
     qify
     assumption

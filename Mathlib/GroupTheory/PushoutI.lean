@@ -506,8 +506,7 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
       convert cons i g ⟨w, 1, fun _ _ h => h3 _ _ (List.mem_cons_of_mem _ h)⟩
         h1 (h3 _ _ List.mem_cons_self) ?_ rfl
         (ih ?_)
-      · ext
-        simp only [Word.cons, NormalWord.cons, map_one, mul_one,
+      · simp only [Word.cons, NormalWord.cons, map_one, mul_one,
           (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
           (h3 _ _ List.mem_cons_self)]
       · apply d.injective i
