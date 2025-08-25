@@ -378,7 +378,7 @@ theorem mdifferentiableOn_prod_iff (f : M → M' × N') :
     MDifferentiableOn I (I'.prod J') f s ↔
       MDifferentiableOn I I' (Prod.fst ∘ f) s ∧ MDifferentiableOn I J' (Prod.snd ∘ f) s :=
   ⟨fun h ↦ ⟨fun x hx ↦ ((mdifferentiableWithinAt_prod_iff f).1 (h x hx)).1,
-      fun x hx ↦ ((mdifferentiableWithinAt_prod_iff f).1 (h x hx)).2⟩ ,
+      fun x hx ↦ ((mdifferentiableWithinAt_prod_iff f).1 (h x hx)).2⟩,
     fun h x hx ↦ (mdifferentiableWithinAt_prod_iff f).2 ⟨h.1 x hx, h.2 x hx⟩⟩
 
 theorem mdifferentiableOn_prod_module_iff (f : M → F₁ × F₂) :

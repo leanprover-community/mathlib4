@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.Topology.Sheaves.Stalks
 
 /-!
-# Stalks for presheaved spaces
+# Stalks for presheafed spaces
 
 This file lifts constructions of stalks and pushforwards of stalks to work with
 the category of presheafed spaces. Additionally, we prove that restriction of

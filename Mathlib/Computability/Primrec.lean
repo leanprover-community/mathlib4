@@ -677,12 +677,14 @@ theorem list_findIdx₁ {p : α → β → Bool} (hp : Primrec₂ p) :
 theorem list_idxOf₁ [DecidableEq α] (l : List α) : Primrec fun a => l.idxOf a :=
   list_findIdx₁ (.swap .beq) l
 
-theorem dom_fintype [Finite α] (f : α → σ) : Primrec f :=
+theorem dom_finite [Finite α] (f : α → σ) : Primrec f :=
   let ⟨l, _, m⟩ := Finite.exists_univ_list α
   option_some_iff.1 <| by
     haveI := decidableEqOfEncodable α
     refine ((list_getElem?₁ (l.map f)).comp (list_idxOf₁ l)).of_eq fun a => ?_
     rw [List.getElem?_map, List.getElem?_idxOf (m a), Option.map_some]
+
+@[deprecated (since := "2025-08-23")] alias dom_fintype := dom_finite
 
 -- Porting note: These are new lemmas
 -- I added it because it actually simplified the proofs

@@ -64,7 +64,7 @@ def galRestrictHom : (L →ₐ[K] L) ≃* (B →ₐ[A] B) where
       (((f.restrictScalars A).comp (IsScalarTower.toAlgHom A B L)).codRestrict
         (integralClosure A L) (fun x ↦ IsIntegral.map _ (IsIntegralClosure.isIntegral A L x)))
   map_mul' := by
-    intros σ₁ σ₂
+    intro σ₁ σ₂
     ext x
     apply (IsIntegralClosure.equiv A (integralClosure A L) L B).symm.injective
     ext
