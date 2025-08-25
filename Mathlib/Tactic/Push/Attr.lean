@@ -94,7 +94,7 @@ To avoid this, use the `push only` syntax.
 
 To use the reverse direction of the lemma, use the `push ←` syntax.
 -/
-syntax (name := pushAttr) "push" (" ←" <|> " <-")? (" only")? (ppSpace prio)? : attr
+syntax (name := pushAttr) "push" (" ←" <|> " <-")? (&" only")? (ppSpace prio)? : attr
 
 @[inherit_doc pushAttr]
 initialize registerBuiltinAttribute {
