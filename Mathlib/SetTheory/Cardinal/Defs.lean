@@ -10,7 +10,8 @@ import Mathlib.Util.AssertExists
 /-!
 # Cardinal Numbers
 
-We define cardinal numbers as a quotient of types under the equivalence relation of equinumerity.
+We define cardinal numbers as a quotient of types under the equivalence relation of equinumerosity
+(i.e., existence of a bijection).
 
 ## Main definitions
 
@@ -192,7 +193,7 @@ theorem lift_mk_eq {α : Type u} {β : Type v} :
       ⟨Equiv.ulift.trans <| f.trans Equiv.ulift.symm⟩⟩
 
 /-- A variant of `Cardinal.lift_mk_eq` with specialized universes.
-Because Lean often can not realize it should use this specialization itself,
+Because Lean often cannot realize it should use this specialization itself,
 we provide this statement separately so you don't have to solve the specialization problem either.
 -/
 theorem lift_mk_eq' {α : Type u} {β : Type v} : lift.{v} #α = lift.{u} #β ↔ Nonempty (α ≃ β) :=
