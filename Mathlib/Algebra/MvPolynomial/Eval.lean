@@ -556,6 +556,9 @@ lemma coe_aeval_eq_eval : RingHomClass.toRingHom (MvPolynomial.aeval f) = MvPoly
   rfl
 
 @[simp]
+lemma aeval_eq_eval : ⇑(aeval f) = eval f := rfl
+
+@[simp]
 theorem aeval_X (s : σ) : aeval f (X s : MvPolynomial _ R) = f s :=
   eval₂_X _ _ _
 
