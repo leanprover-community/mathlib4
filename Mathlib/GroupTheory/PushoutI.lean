@@ -467,16 +467,12 @@ noncomputable instance mulAction : MulAction (PushoutI φ) (NormalWord d) :=
 
 theorem base_smul_def (h : H) (w : NormalWord d) :
     base φ h • w = { w with head := h * w.head } := by
-  dsimp [NormalWord.mulAction, instHSMul, SMul.smul]
-  rw [lift_base]
   rfl
 
 theorem summand_smul_def {i : ι} (g : G i) (w : NormalWord d) :
     of (φ := φ) i g • w = (equivPair i).symm
       { equivPair i w with
         head := g * (equivPair i w).head } := by
-  dsimp [NormalWord.mulAction, instHSMul, SMul.smul]
-  rw [lift_of]
   rfl
 
 theorem of_smul_eq_smul {i : ι} (g : G i) (w : NormalWord d) :
